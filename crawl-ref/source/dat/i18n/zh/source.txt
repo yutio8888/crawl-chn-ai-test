@@ -16090,7 +16090,7 @@ Chaos Breath
 混沌吐息
 %%%%
 Cold Breath
-寒冷吐息
+寒霜吐息
 %%%%
 Glacial Breath
 冰川吐息
@@ -16366,16 +16366,16 @@ Awaken Flesh
 唤醒血肉
 %%%%
 gehenna serpent of hell breath
-火焚地狱蛇之吐息
+欣嫩谷地狱巨蛇吐息
 %%%%
 cocytus serpent of hell breath
-冰狱蛇之吐息
+悲叹河地狱巨蛇吐息
 %%%%
 dis serpent of hell breath
-铁城蛇之吐息
+铁城地狱巨蛇吐息
 %%%%
 tartarus serpent of hell breath
-悲叹地狱蛇之吐息
+塔尔塔罗斯地狱巨蛇吐息
 %%%%
 Summon Emperor Scorpions
 召唤帝王蝎
@@ -16678,7 +16678,7 @@ Hurl Torchlight
 投掷火炬之光
 %%%%
 Combustion Breath
-燃烧吐息
+爆燃吐息
 %%%%
 Nullifying Breath
 消魔吐息
@@ -36809,7 +36809,7 @@ Error! The help for "%s" is missing!
 （取消当前传送）
 %%%%
 Serpent of Hell (%s)
-地狱蛇（%s）
+地狱巨蛇（%s）
 %%%%
 (CTRL-S to sort by monster toughness)
 （CTRL-S 按怪物强度排序）

@@ -1106,6 +1106,52 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-018 — Spell name review: Breath 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中法术/能力描述、zap 实现、
+  地狱巨蛇分支技能表与实体映射逐项复核
+- **Scope**: 22 项含独立 `Breath` 词形的标题；20 项现行、2 项
+  `TAG_MAJOR_VERSION == 34` 已移除兼容
+- **Choice**:
+  - 14 项现行标题保留；
+  - 6 项现行标题重译：
+    - `Cold Breath`: 寒冷吐息 → **寒霜吐息**
+    - `Combustion Breath`: 燃烧吐息 → **爆燃吐息**
+    - `gehenna serpent of hell breath`: 火焚地狱蛇之吐息 →
+      **欣嫩谷地狱巨蛇吐息**
+    - `cocytus serpent of hell breath`: 冰狱蛇之吐息 →
+      **悲叹河地狱巨蛇吐息**
+    - `dis serpent of hell breath`: 铁城蛇之吐息 →
+      **铁城地狱巨蛇吐息**
+    - `tartarus serpent of hell breath`: 悲叹地狱蛇之吐息 →
+      **塔尔塔罗斯地狱巨蛇吐息**
+  - 2 项已移除兼容标题因当前描述与实现均不存在而暂沿用。
+- **Series rule**: 法术标题中的 `Breath` 稳定后置为“吐息”；标题明确
+  指向具体实体变体时，复用完整的分支限定实体名，不另造简称。
+- **Rationale**: `Cold Breath` 复用既有能力术语
+  `Breathe Frost → 吐息寒霜`，并继续与能封冰的 `Glacial Breath`
+  区分；`Combustion Breath` 射出的挥发余烬会在触及每个生物时爆炸，
+  “爆燃”比泛称“燃烧”更准确。其余现行标题准确概括实际吐息。
+  `Golden Breath` 仅由非龙人龙形态使用，对应金龙的火、冰、毒三重
+  吐息，保留“金龙吐息”；4 个地狱巨蛇标题则复用已确认的分支实体名。
+- **Description corrections**: 补回 `Miasma Breath` 只影响活物的条件；
+  将 `Noxious Breath` 的 vapour 从“蒸汽”修正为“毒雾”，并保留毒素
+  抵抗、混乱及随等级扩展范围和持续时间的机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `crawl-ref/source/dat/descript/zh/ability.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Related entity sync**: `Serpent of Hell (%s)` 同步为
+  “地狱巨蛇（%s）”，与 `Serpent of Hell → 地狱巨蛇` 一致。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1606,3 +1652,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
 | D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；7 description fixes | active |
 | D-C-017 | Spell name review — Summon 词形系列 | 8 fixes；34 current + 8 axed compatibility | active |
+| D-C-018 | Spell name review — Breath 词形系列 | 6 fixes；20 current + 2 axed compatibility | active |

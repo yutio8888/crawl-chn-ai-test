@@ -695,3 +695,78 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 `7536042fedba3d2b7d933e51babaeb079b7acda69d8b20f26bd573d4bb4faf9f`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `7d23cc171b690aa07c54d40963ba751c894a65cdf64f0c7cf43c7992b1917228`。
+
+## Breath 词形系列（已完成）
+
+边界：英文标题中含独立 `Breath` 词形，共 22 项；其中 20 项现行、
+2 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。现行成员中 14 项有法术
+TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4 个
+地狱巨蛇内部法术与 `Rust Breath`、`Golden Breath` 依实现和调用路径
+核对。两项已移除兼容成员没有当前描述或实现。
+
+| Enum | 生命周期 | 当前译名 | 核心效果证据 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_MIASMA_BREATH` | 现行 | 瘴气吐息 | 瘴气云；使活物中毒并可能减速 | 保留 |
+| `SPELL_CAUSTIC_BREATH` | 现行 | 腐蚀吐息 | 浓酸喷流；沿途留腐蚀云并腐蚀目标 | 保留 |
+| `SPELL_FIRE_BREATH` | 现行 | 火焰吐息 | 对目标喷吐火焰 | 保留 |
+| `SPELL_SEARING_BREATH` | 现行 | 灼热吐息 | 火焰束；终点留下火焰云 | 保留 |
+| `SPELL_CHAOS_BREATH` | 现行 | 混沌吐息 | 产生大片混沌精能烟云 | 保留 |
+| `SPELL_COLD_BREATH` | 现行 | 寒冷吐息 | 凝聚的冰寒气流 | 重译为“寒霜吐息” |
+| `SPELL_GLACIAL_BREATH` | 现行 | 冰川吐息 | 强力冰霜波；被击杀者封入耐久冰块 | 保留 |
+| `SPELL_HOLY_BREATH` | 现行 | 神圣吐息 | 神圣火焰云；克制亡灵与恶魔，不伤神圣生物 | 保留 |
+| `SPELL_SERPENT_OF_HELL_GEH_BREATH` | 现行 | 火焚地狱蛇之吐息 | 欣嫩谷变体随机使用火焰吐息、熔岩箭或火球 | 重译为“欣嫩谷地狱巨蛇吐息” |
+| `SPELL_SERPENT_OF_HELL_COC_BREATH` | 现行 | 冰狱蛇之吐息 | 悲叹河变体随机使用寒冷吐息、寒风或急冻 | 重译为“悲叹河地狱巨蛇吐息” |
+| `SPELL_SERPENT_OF_HELL_DIS_BREATH` | 现行 | 铁城蛇之吐息 | 铁城变体随机使用铁弹、水银箭或腐蚀箭 | 重译为“铁城地狱巨蛇吐息” |
+| `SPELL_SERPENT_OF_HELL_TAR_BREATH` | 现行 | 悲叹地狱蛇之吐息 | 塔尔塔罗斯变体随机使用幽灵火球、瘴气或毒箭 | 重译为“塔尔塔罗斯地狱巨蛇吐息” |
+| `SPELL_NOXIOUS_BREATH` | 现行 | 毒瘴吐息 | 毒雾使未抵抗毒素者混乱；范围与持续时间成长 | 保留 |
+| `SPELL_COMBUSTION_BREATH` | 现行 | 燃烧吐息 | 挥发余烬接触生物后爆炸；使用者免疫 | 重译为“爆燃吐息” |
+| `SPELL_NULLIFYING_BREATH` | 现行 | 消魔吐息 | 驱散魔法效果并施加反魔法；使用者免疫 | 保留 |
+| `SPELL_STEAM_BREATH` | 现行 | 蒸汽吐息 | 蒸汽烫伤并留下遮挡视线的蒸汽云 | 保留 |
+| `SPELL_MUD_BREATH` | 现行 | 泥浆吐息 | 泥球击退；泥泞阻碍移动并可能使攻击失手 | 保留 |
+| `SPELL_GALVANIC_BREATH` | 现行 | 电击吐息 | 电流经目标及与其相连的生物传导 | 保留 |
+| `SPELL_RUST_BREATH` | 现行 | 锈蚀吐息 | 堡垒蟹形态喷出锈蚀云 | 保留 |
+| `SPELL_GOLDEN_BREATH` | 现行 | 金龙吐息 | 非龙人龙形态的火、冰伤害与沿途毒云 | 保留 |
+| `SPELL_DRACONIAN_BREATH` | 已移除兼容 | 龙人吐息 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_SERPENT_OF_HELL_BREATH_REMOVED` | 已移除兼容 | 地狱古蛇吐息 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+系列结论：20 项现行标题中 14 项保留、6 项重译。`Cold Breath` 改为
+“寒霜吐息”，复用 `Breathe Frost → 吐息寒霜`，并与能将被击杀者封入
+冰块的 `Glacial Breath → 冰川吐息` 保持区别。`Combustion Breath`
+改为“爆燃吐息”，明确挥发余烬逐目标爆炸的核心特征。其余 4 项重译
+让内部标题完整复用 `Serpent of Hell` 的分支限定实体名。
+`Golden Breath → 金龙吐息` 由非龙人龙形态专用，其实现正是金龙式
+火、冰、毒三重吐息，因此保留上下文明确的现译。
+
+描述审阅同步修正两项 Needs Fix：
+
+- `Miasma Breath` 原中文称影响“任何生物”，遗漏英文与机制限定的
+  living creatures；现改为“活物”。
+- `Noxious Breath` 的 vapour 原译成“蒸汽”，与 Steam Breath 混淆；
+  现改为“毒雾”，并保留毒素抵抗、混乱和等级成长条件。
+
+证据：`spl-data.h:1489`、`spl-data.h:1558`—`1628`、
+`spl-data.h:1929`、`spl-data.h:2676`—`2712`、
+`spl-data.h:3857`—`3935`、`spl-data.h:4475`—`4486`、
+`spl-util.cc:2450`—`2474`、`spl-zap.cc:49`、`spl-zap.cc:128`—`159`、
+`spl-zap.cc:176`、`zap-data.h:255`—`447`、
+`zap-data.h:1101`—`1116`、`zap-data.h:1221`、
+`zap-data.h:1352`、`zap-data.h:1976`—`2021`、
+`zap-data.h:2622`—`2670`、`ability.cc:766`—`776`、
+`ability.cc:4425`—`4427`、`transform.cc:809`—`821`、
+`spl-damage.cc:3232`—`3260`。
+
+### 落地状态
+
+- [x] 22/22 机制证据与名称裁定
+- [x] 单一翻译写入者完整系列落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-018`）
+
+验证结果：首次 translation profile 因同批新增的 `Cold Breath` 与
+`Combustion Breath` 裁定尚未重新导出 `docs/glossary.utf8` 而失败；
+重新生成派生术语表后复测通过，0 项失败。通过的 Run ID 为
+`20260725T162553943198000+0800-1418-1db80705e827`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`af5f6da8cb91917fef04a63bf9f797af0cb8839717e754e04781cb4f9cc61496`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`688fb5c82db1bca051c42f179fe491817c3cf94e419f8596f715d93fd938b224`。

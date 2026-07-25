@@ -863,7 +863,7 @@ Metal Splinters spell
 %%%%
 Miasma Breath spell
 
-产生一大团恶臭的瘟疫云，对接触到的任何生物造成毒害并有时会造成减速。
+产生一大团恶臭的瘟疫云，使接触到的活物中毒，有时还会使其减速。
 %%%%
 Might Other spell
 

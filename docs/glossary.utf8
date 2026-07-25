@@ -155,6 +155,7 @@ bound soul	缚魂	domain=monsters; source=EN/ZH; Scope / comment=monster; source
 Brain Bite	脑噬	domain=spells; source=EN/ZH; 备注=✅
 brain worm	脑虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 brand	铭印	domain=items; source=EN/ZH
+Breath	吐息	domain=magic; source=EN/ZH; 状态=✅ 已确认（20 项现行；另有 2 项已移除／TAG 34 兼容记录）
 Breathe Acid	吐息酸液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Breathe Fire	吐息火焰	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Breathe Frost	吐息寒霜	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
@@ -216,9 +217,9 @@ clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=m
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，机制证据不足，暂沿用
 clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
-cocytus serpent of hell breath	冰狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
-Cold Breath	寒冷吐息	domain=spells; source=EN/ZH; 备注=✅
-Combustion Breath	燃烧吐息	domain=spells; source=EN/ZH; 备注=✅
+cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
+Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
+Combustion Breath	爆燃吐息	domain=spells; source=EN/ZH; 备注=✅；射出的挥发余烬会在每个触及生物周围爆炸
 Concentrate Venom	浓缩毒液	domain=spells; source=EN/ZH; 备注=✅
 Condensation Shield	凝结之盾	domain=spells; source=EN/ZH; 备注=🆕
 Confuse	混乱	domain=spells; source=EN/ZH; 备注=✅
@@ -284,7 +285,7 @@ Dimension Anchor	维度锚定	domain=spells; source=EN/ZH; 备注=✅
 Dimensional Bullseye	维度靶心	domain=spells; source=EN/ZH; 备注=✅
 Diminish Spells	削弱法术	domain=spells; source=EN/ZH; 备注=✅
 dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
-dis serpent of hell breath	铁城蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+dis serpent of hell breath	铁城地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -306,7 +307,7 @@ Doomsaying	宣告厄运	domain=spells; source=EN/ZH; 备注=✅
 dopey	愚钝	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 draconian	龙人	domain=species; source=EN/ZH; 裁决=[D-A-007]; 复合格式=颜色 + 龙人（黑龙人、绿龙人）
-Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=✅
+Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 dragon	龙	domain=core; source=EN/ZH
 Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=✅
 Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
@@ -405,7 +406,7 @@ Funeral Dirge	葬礼哀歌	domain=spells; source=EN/ZH; 备注=✅
 Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
 gargoyle	石像鬼	domain=species; source=EN/ZH
 Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-gehenna serpent of hell breath	火焚地狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -619,7 +620,7 @@ ogre	食人魔	domain=species; source=EN/ZH; 复合格式=食人魔 + 职业
 Okawaru	奥卡瓦鲁	domain=gods; source=EN/ZH; 类型=音译
 Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
 old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
-Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=✅
+Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅
 Orb of Destruction	毁灭之球	domain=spells; source=EN/ZH; 备注=✅
 Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅
@@ -875,7 +876,7 @@ Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=✅
 Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=✅
 Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
-tartarus serpent of hell breath	悲叹地狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
 Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
 Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅

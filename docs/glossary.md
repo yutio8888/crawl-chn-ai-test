@@ -88,6 +88,7 @@
 | Bolt | 箭 | ✅ 已确认（常规现行法术；Blinkbolt 保留“闪烁箭”，Thunderbolt 采用“雷击”例外） |
 | Cloud | 云 | ✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录） |
 | Summon | 召唤 | ✅ 已确认 |
+| Breath | 吐息 | ✅ 已确认（20 项现行；另有 2 项已移除／TAG 34 兼容记录） |
 | Dispel | 驱散 | ✅ 已确认 |
 
 待审阅词根：Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
@@ -822,9 +823,9 @@
 |---------|------|------|
 | Caustic Breath | 腐蚀吐息 | ✅ |
 | Chaos Breath | 混沌吐息 | ✅ |
-| Cold Breath | 寒冷吐息 | ✅ |
-| Combustion Breath | 燃烧吐息 | ✅ |
-| Draconian Breath | 龙人吐息 | ✅ |
+| Cold Breath | 寒霜吐息 | ✅；与 `Breathe Frost → 吐息寒霜` 复用元素词 |
+| Combustion Breath | 爆燃吐息 | ✅；射出的挥发余烬会在每个触及生物周围爆炸 |
+| Draconian Breath | 龙人吐息 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Fire Breath | 火焰吐息 | ✅ |
 | Galvanic Breath | 电击吐息 | ✅ |
 | Glacial Breath | 冰川吐息 | ✅ |
@@ -834,14 +835,14 @@
 | Mud Breath | 泥浆吐息 | ✅ |
 | Noxious Breath | 毒瘴吐息 | ✅ |
 | Nullifying Breath | 消魔吐息 | ✅ |
-| Old serpent of hell breath | 地狱古蛇吐息 | ✅ |
+| Old serpent of hell breath | 地狱古蛇吐息 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Rust Breath | 锈蚀吐息 | ✅ |
 | Searing Breath | 灼热吐息 | 📝 |
 | Steam Breath | 蒸汽吐息 | ✅ |
-| cocytus serpent of hell breath | 冰狱蛇之吐息 | ✅ |
-| dis serpent of hell breath | 铁城蛇之吐息 | ✅ |
-| gehenna serpent of hell breath | 火焚地狱蛇之吐息 | ✅ |
-| tartarus serpent of hell breath | 悲叹地狱蛇之吐息 | ✅ |
+| cocytus serpent of hell breath | 悲叹河地狱巨蛇吐息 | ✅；复用分支限定实体名 |
+| dis serpent of hell breath | 铁城地狱巨蛇吐息 | ✅；复用分支限定实体名 |
+| gehenna serpent of hell breath | 欣嫩谷地狱巨蛇吐息 | ✅；复用分支限定实体名 |
+| tartarus serpent of hell breath | 塔尔塔罗斯地狱巨蛇吐息 | ✅；复用分支限定实体名 |
 
 ### Gaze（7）
 

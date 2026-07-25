@@ -886,8 +886,8 @@ Mud Breath ability
 %%%%
 Noxious Breath ability
 
-喷出一条有毒蒸汽线，可以使站在其中且不抵抗毒素的任何生物困惑。
-在更高等级时，云雾可以覆盖更大范围并持续更久。
+喷吐出一道毒雾，无法抵抗毒素、站在其中的生物可能陷入混乱。
+随着等级提高，云雾可以覆盖更大范围并持续更久。
 %%%%
 Nullifying Breath ability
 
