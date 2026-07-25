@@ -1,8 +1,7 @@
 # 法术名称全量复审修改说明
 
 本文汇总“法术名称逐项复审”实际落地到游戏文本的修改。比较范围为复审计划
-冻结基线 `5cb9aa27a224a81da780757f8445cfc07de09dfd` 到已提交候选
-`8a5cb19202e1a2eb21bd32578b92e0aed97b86af`。
+冻结基线 `5cb9aa27a224a81da780757f8445cfc07de09dfd` 到本文件所在的最终合并候选。
 
 ## 汇总
 
@@ -121,6 +120,8 @@
 | `Summon Seismosaurus Egg` | 实体名不统一，部分句子生硬 | 统一“地震龙”，并澄清孵化、相邻维持、冲击波和威力缩放 |
 | `Death Channel` | 将 `living creatures, demons and holy beings` 误写成“生物、邪物和圣物” | 改为“活物、恶魔和神圣生物”，并明确引导期间留下幽魂 |
 | `Borgnjor's Revivification` | 使用错误术语“法术力量” | 统一为“法术威力”；标题同时由“复活”改为“复苏” |
+| `Ghostly Sacrifice` | 将负能量造成的 `draining` 状态误写成“汲取活物” | 改为使负能量笼罩的所有活物陷入衰竭 |
+| `Sign of Ruin` | 将有害状态 `heavy draining` 误写成“严重汲取” | 改为“陷入严重衰竭”，与缓慢、虚弱和失明等负面状态并列 |
 
 ### 完整描述条目清单（201 项）
 
@@ -159,7 +160,7 @@ TextDB 条目名；每个条目的逐字修改可用文末命令复核。
 
 - `Mesmerise` 系列状态和提示统一使用“迷魂／迷住”，不再误称“催眠”；
   涉及 `Mesm`、`mesmerised`、`mesmerising`、状态栏短名、冷却提示、
-  凝视提示、宝珠充能提示和装备限制说明。
+  凝视提示、宝珠充能提示和装备限制说明；其中被动状态统一写作自然的“被迷住”。
 - `mana viper` 的出现提示由“魔力蝰蛇”统一为“魔力毒蛇”。
 - `Serpent of Hell (%s)` 由“地狱蛇”统一为“地狱巨蛇”。
 - 普通名词 `vortex` / `vortices` 由“涡流”统一为“漩涡”。
@@ -172,14 +173,14 @@ TextDB 条目名；每个条目的逐字修改可用文末命令复核。
 查看所有法术标题及关联 `source.txt` 修改：
 
 ```bash
-git diff 5cb9aa27a224a81da780757f8445cfc07de09dfd..8a5cb19202e1a2eb21bd32578b92e0aed97b86af \
+git diff 5cb9aa27a224a81da780757f8445cfc07de09dfd..codex/spell-name-review \
   -- crawl-ref/source/dat/i18n/zh/source.txt
 ```
 
 查看所有中文法术描述修改：
 
 ```bash
-git diff 5cb9aa27a224a81da780757f8445cfc07de09dfd..8a5cb19202e1a2eb21bd32578b92e0aed97b86af \
+git diff 5cb9aa27a224a81da780757f8445cfc07de09dfd..codex/spell-name-review \
   -- crawl-ref/source/dat/descript/zh/spells.txt
 ```
 

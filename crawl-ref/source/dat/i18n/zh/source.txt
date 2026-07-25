@@ -5099,7 +5099,7 @@ Mesm
 迷魂
 %%%%
 mesmerised
-受迷魂
+被迷住
 %%%%
 metal staircase leading down
 向下通往的金属楼梯
@@ -38081,7 +38081,7 @@ status|marked
 被标记
 %%%%
 status|mesmerised
-受迷魂
+被迷住
 %%%%
 status|mighty
 强力

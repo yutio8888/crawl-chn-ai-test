@@ -1145,7 +1145,7 @@
 | Fulsome Fusillade | 猛烈连射 | ✅ |
 | Funeral Dirge | 葬礼哀歌 | ✅ |
 | Ghostly Fireball | 幽灵火球 | ✅；负能量爆炸使范围内活物衰竭 |
-| Ghostly Sacrifice | 幽灵献祭 | ✅；吞噬友方并产生汲取活物的负能量爆发 |
+| Ghostly Sacrifice | 幽灵献祭 | ✅；吞噬友方并产生使活物衰竭的负能量爆发 |
 | Glaciate | 冰封 | 🆕；锥形寒冰冲击会冰封并减速目标 |
 | Gloom | 阴郁 | ✅ |
 | Goad Beasts | 激怒野兽 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
