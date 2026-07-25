@@ -1734,6 +1734,38 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `b0e73be1fa96d25dead8cb7fe00588c6e718ad560d0458ec70f78c019ae20930`。
 
+## Permafrost Eruption
+
+边界：`Permafrost Eruption` 这一项现行法术。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_PERMAFROST_ERUPTION` | 6 / 冰、土 / `destructive` | 玩家、怪物 | 永冻爆发 | 落石必中目标；严寒无视护甲并冻结邻近生物；自动选择敌人密集处 | 保留 |
+
+名称结论：“永冻”准确表达潜藏于大地的古老严寒，“爆发”概括其猛烈
+喷涌和震落岩石的表现；标题不必展开自动选取目标和安全距离。
+
+原中文描述误写为施法者周围的普通冰冻爆发，遗漏落石必中、寒冷无视
+护甲、邻近目标、自动选取敌人密集处及不在施法者身旁爆发，本批已按
+现行英文描述重译。
+
+证据：`spl-data.h` 中 `SPELL_PERMAFROST_ERUPTION` 条目、
+`dat/descript/spells.txt:1506`—`1515` 及对应施法实现。
+
+### 落地状态
+
+- [x] 1/1 机制证据与名称裁定
+- [x] 单一翻译写入者描述重译
+- [x] translation profile
+- [x] 单项裁定登记（`D-C-051`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T174607102817000+0800-67581-68f23c07c5ca`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`ae1ab8dbe6d738426bd8f8f3ebe255ea6a74b528d4a7257b84252b5199141c08`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`b0e73be1fa96d25dead8cb7fe00588c6e718ad560d0458ec70f78c019ae20930`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

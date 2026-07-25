@@ -1961,6 +1961,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-051 — Spell name review: Permafrost Eruption
+
+- **Type**: C — Single-item ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: `Permafrost Eruption` 现行法术标题
+- **Choice**: 保留 `Permafrost Eruption → 永冻爆发`。
+- **Rationale**: “永冻”准确表达潜藏于大地的 ancient cold，
+  “爆发”同时概括严寒喷涌与落石轰击；无需把自动选取敌人密集处写入标题。
+- **Description corrections**: 重译中文描述，补回落石必中、寒冷无视护甲、
+  邻近目标、自动选择敌人密集处及不在施法者身旁爆发。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2494,3 +2513,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-048 | Spell name review — Freeze/Freezing/Frozen 词形系列 | 4 current + 1 axed；1 rename + 2 description fixes | active |
 | D-C-049 | Spell name review — Acid/Corrosive 词形系列 | 3 current；1 reused；no text fixes | active |
 | D-C-050 | Spell name review — Frost/Rime/Chill 寒冷术语批次 | 4 current；1 rename + 2 description retranslations | active |
+| D-C-051 | Spell name review — Permafrost Eruption | 1 current；1 description retranslation | active |

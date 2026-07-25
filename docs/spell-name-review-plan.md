@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 232/511 项逐项审阅。
+当前已完成 233/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -149,6 +149,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Freeze/Freezing/Frozen 词形系列（5 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Acid/Corrosive 词形系列（3 项均已审阅；其中 1 项复用既有证据，translation profile 已完成）
   - [x] Frost/Rime/Chill 寒冷术语批次（4 项证据、裁定、名称与描述落地及 translation profile 已完成）
+  - [x] Permafrost Eruption（1 项证据、裁定、描述落地及 translation profile 已完成）
 - [ ] 独立法术
 - [ ] 集合相等性终检
 

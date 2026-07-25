@@ -1227,7 +1227,7 @@
 | Paralyse | 麻痹 | ✅ |
 | Passage of Golubria | 戈卢布里亚之通道 | ✅ |
 | Passwall | 穿墙术 | ✅ |
-| Permafrost Eruption | 永冻爆发 | ✅ |
+| Permafrost Eruption | 永冻爆发 | ✅；地底严寒与落石轰击敌人最密集处，不在施法者身旁爆发 |
 | Petrify | 石化 | ✅ |
 | Phantom Blitz | 幻影突击 | ✅ |
 | Phantom Mirror | 幻影镜 | ✅ |
