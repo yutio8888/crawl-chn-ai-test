@@ -16180,7 +16180,7 @@ Injury Mirror
 伤害反射
 %%%%
 Drain Life
-吸取生命
+汲取生命
 %%%%
 Leda's Liquefaction
 勒达之液化
@@ -16225,7 +16225,7 @@ Gloom
 阴郁
 %%%%
 Beckoning Gale
-召唤强风
+招引之风
 %%%%
 Force Lance
 力量之矛
@@ -16501,7 +16501,7 @@ Dream Dust
 梦尘
 %%%%
 Lesser Beckoning
-次级召唤
+次级招引
 %%%%
 Upheaval
 剧变

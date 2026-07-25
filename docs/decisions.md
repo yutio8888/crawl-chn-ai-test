@@ -2648,6 +2648,58 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-083 — Spell name review: Malign 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术
+- **Choice**: 保留 `Malign Gateway → 邪恶传送门` 与
+  `Malign Offering → 邪恶献祭`。
+- **Series rule**: `Malign → 邪恶`；实体与行为分别采用
+  `Gateway → 传送门`、`Offering → 献祭`。
+- **Rationale**: Gateway 具有不洁、混沌属性并开启污秽异界传送门；
+  Offering 以死灵术汲取敌人生命来治疗盟友，“邪恶”准确保留两项原名
+  的负面道德色彩和系列辨识。
+- **Description corrections**: 补回 `Malign Gateway` 描述中未知异界及
+  传送门自我维系的限定；`Malign Offering` 描述无需修改。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-084 — Spell name review: 成对词根批次
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 23 项现行或已移除兼容法术；覆盖 Spells、Magic、Holy、
+  Hellfire、Golubria、Fulsome、Forceful、Drain、Corrupt、Beckoning、
+  Arms 与 Agony 成对词根，Malign 由 D-C-083 独立覆盖
+- **Choice**: 将 `Beckoning Gale → 召唤强风` 重译为“招引之风”，
+  `Lesser Beckoning → 次级召唤` 重译为“次级招引”，
+  `Drain Life → 吸取生命` 微调为“汲取生命”；其余 20 项保留。
+- **Series rule**: `Beckoning → 招引` 表示把现有目标拉近，不使用会误示
+  生成实体的“召唤”；`Drain → 汲取` 用于生命或魔力的抽离机制；
+  同形词须按 `Arms` 的战友/武器等具体语义分别处理。
+- **Rationale**: 三项改名修复机制误示或同词根不一致；其余现行标题均能
+  概括实际效果，已移除兼容标题在缺少当前实现时不作推测性重译。
+- **Description corrections**: 修正 Curse of Agony 的逐次触发、
+  Sap Magic 的施法后封锁、Diminish Spells 的单目标与非固定减半语义、
+  Hellfire Mortar 的裂隙移动机制、Hellfire Court 的并列关系及
+  Forceful Invitation 语序；润色 Conjure Living Spells 自行施放表述。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3213,3 +3265,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-080 | Spell name review — Healing 强度系列 | 2 current；2 description fixes | active |
 | D-C-081 | Spell name review — Injury 词形系列 | 2 current；1 rename + 1 description retranslation | active |
 | D-C-082 | Spell name review — Ensnare 词形系列 | 2 current；1 description retranslation | active |
+| D-C-083 | Spell name review — Malign 词形系列 | 2 current；1 description fix | active |
+| D-C-084 | Spell name review — 成对词根批次 | 16 current + 7 axed；3 renames + 7 description fixes | active |

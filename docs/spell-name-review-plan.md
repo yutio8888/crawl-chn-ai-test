@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 315/511 项逐项审阅。
+当前已完成 340/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -181,6 +181,8 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Healing 强度系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Injury 词形系列（2 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Ensnare 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
+  - [x] Malign 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
+  - [x] 成对词根批次（23 项证据、裁定、名称与描述落地及 translation profile 已完成）
 - [ ] 独立法术
 - [ ] 集合相等性终检
 

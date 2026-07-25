@@ -310,8 +310,8 @@ Conjure Ball Lightning spell
 %%%%
 Conjure Living Spells spell
 
-创造几个活的、自主的法术，它们会向第一个进入其射程的敌人施放自己。
-一旦施放，它们就会消散。
+创造几个活体自主法术；它们会在第一个敌人进入射程时自行施放，
+随后消散。
 %%%%
 Corona spell
 
@@ -339,7 +339,8 @@ Creeping Frost spell
 %%%%
 Curse of Agony spell
 
-诅咒一个敌人，接着施法者近战攻击他两次，其剩余生命值将会减半。
+诅咒一个敌人；施法者接下来两次以近战击中该敌人时，
+每次都会使其剩余生命值减半。
 %%%%
 Gloom spell
 
@@ -520,7 +521,7 @@ Force Lance spell
 %%%%
 Forceful Invitation spell
 
-从蛇穴、蜘蛛巢、沼泽、海滩、精灵殿堂、宝库或墓室，其中之一召唤一些生物，
+从蛇穴、蜘蛛巢、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
 具体分支因施法者而异。
 %%%%
 Foxfire spell
@@ -619,7 +620,7 @@ Heal Other spell
 %%%%
 Hellfire Court spell
 
-召唤火属性的恶魔和天谴。
+召唤火焰与天谴恶魔。
 %%%%
 Hunting Call spell
 
@@ -781,7 +782,7 @@ Major Healing spell
 Malign Gateway spell
 
 这道法术能在现实世界中撕开一道裂口，
-创造出能暂时维系、通往另一个被污染的世界的传送门。
+创造出一座能暂时自我维系、通往某个未知且污秽异界的传送门。
 该法术需要开阔的空间才能成功。
 片刻之后，一条强大的长有爪子的触手将穿过传送门，
 在一段时间内会受施法者的意志所制约，其持续时间取决于法术威力。
@@ -1059,8 +1060,8 @@ Sandblast spell
 %%%%
 Sap Magic spell
 
-腐化目标生物施放咒语的能力。
-施法时如果被它影响会被打断，并被短暂阻止再次施法。
+腐化目标生物的施法能力。受此状态影响时施放法术，
+会使目标暂时失去魔法，短时间内无法继续施法。
 %%%%
 Scorch spell
 
@@ -1615,7 +1616,7 @@ Diamond Sawblades spell
 %%%%
 Diminish Spells spell
 
-暂时将附近所有敌对施法者的法术威力减半。
+不可抵抗地暂时削弱一个敌人的法术威力。
 %%%%
 Divine Armament spell
 
@@ -1728,7 +1729,11 @@ Greater Ensnare spell
 %%%%
 Hellfire Mortar spell
 
-召唤一个燃烧的地狱火迫击炮，向其创造者的敌人倾泻火焰弹幕。
+劈开施法者前方的地面，以熔岩塑造出一门可怕的武器。
+这门迫击炮会沿充满熔岩的裂隙缓慢移动，并自动向施法者的敌人发射岩浆。
+
+迫击炮抵达路径终点或被其他生物挡住时，会沉回熔岩；
+裂隙随后也会很快闭合。
 %%%%
 Hoarfrost Bullet spell
 

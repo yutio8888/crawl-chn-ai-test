@@ -763,7 +763,7 @@
 | Call of Chaos | 混沌呼唤 | ✅ |
 | Demonic Horde | 恶魔大军 | ✅ |
 | Hunting Call | 狩猎呼唤 | ✅ |
-| Malign Gateway | 邪恶传送门 | ✅ |
+| Malign Gateway | 邪恶传送门 | ✅；通往未知污秽异界的临时自维持传送门 |
 | Mara Summon | 玛拉召唤 | ✅ |
 | Monstrous Menagerie | 怪物动物园 | ✅ |
 | Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
@@ -1048,7 +1048,7 @@
 | Awaken Vines | 唤醒藤蔓 | ✅ |
 | Banishment | 放逐 | ✅ |
 | Battlecry | 战吼 | ✅ |
-| Beckoning Gale | 召唤强风 | ✅ |
+| Beckoning Gale | 招引之风 | 🆕；扭曲目标周围空气，造成伤害并将其拉近 |
 | Berserk Other | 狂暴他人 | ✅；使附近一个盟友进入狂暴 |
 | Berserker Rage | 狂暴之怒 | ✅ |
 | Bestow Arms | 赐予武器 | ✅ |
@@ -1102,7 +1102,7 @@
 | Divine Armament | 神圣武装 | ✅ |
 | Dominate Undead | 支配亡灵 | ✅ |
 | Doomsaying | 宣告厄运 | ✅ |
-| Drain Life | 吸取生命 | ✅ |
+| Drain Life | 汲取生命 | 🆕；与 `Drain Magic → 汲取魔力` 统一 |
 | Drain Magic | 汲取魔力 | ✅ |
 | Dream Dust | 梦尘 | ✅ |
 | Enfeeble | 衰弱 | ✅ |
@@ -1194,14 +1194,14 @@
 | Launch Clockwork Bee | 发射发条蜜蜂 | ✅；制造、上紧发条并放出机械蜜蜂 |
 | Launch Sporangium | 发射孢子囊 | ✅；追踪目标并以酸液爆炸生成原生质体 |
 | Legendary Destruction | 传奇毁灭 | ✅；立刻连续产生两种爆炸法术效果 |
-| Lesser Beckoning | 次级召唤 | ✅ |
+| Lesser Beckoning | 次级招引 | 🆕；把目标拉至施法者相邻位置，不是召唤法术 |
 | Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |
 | Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
 | Major Destruction | 强力毁灭 | 🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸 |
 | Major Healing | 大型治疗 | ✅；治疗施法者身体所受的大量伤害 |
-| Malign Offering | 邪恶献祭 | ✅ |
+| Malign Offering | 邪恶献祭 | ✅；汲取敌人生命并治疗附近盟友 |
 | Malmutate | 恶性变异 | ✅ |
 | Manifold Assault | 多重攻击 | ✅ |
 | March of Sorrows | 悲伤行军 | ✅ |

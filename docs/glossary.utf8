@@ -102,7 +102,7 @@ Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
 battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Beam	光束	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅）
-Beckoning Gale	召唤强风	domain=spells; source=EN/ZH; 备注=✅
+Beckoning Gale	招引之风	domain=spells; source=EN/ZH; 备注=🆕；扭曲目标周围空气，造成伤害并将其拉近
 begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
@@ -317,7 +317,7 @@ Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
 dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
 Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Drain Life	吸取生命	domain=spells; source=EN/ZH; 备注=✅
+Drain Life	汲取生命	domain=spells; source=EN/ZH; 备注=🆕；与 `Drain Magic → 汲取魔力` 统一
 Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=✅
 Draining Gaze	衰竭凝视	domain=spells; source=EN/ZH; 备注=✅；施加 Drain/衰竭，不治疗施法者
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
@@ -532,7 +532,7 @@ Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备�
 Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅；立刻连续产生两种爆炸法术效果
 Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
+Lesser Beckoning	次级招引	domain=spells; source=EN/ZH; 备注=🆕；把目标拉至施法者相邻位置，不是召唤法术
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -552,8 +552,8 @@ Magnavolt	磁暴	domain=spells; source=EN/ZH; 备注=✅
 Major Destruction	强力毁灭	domain=spells; source=EN/ZH; 备注=🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸
 Major Healing	大型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的大量伤害
 Makhleb	马科列布	domain=gods; source=EN/ZH; 类型=音译
-Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅
-Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅
+Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅；通往未知污秽异界的临时自维持传送门
+Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅；汲取敌人生命并治疗附近盟友
 Malmutate	恶性变异	domain=spells; source=EN/ZH; 备注=✅
 Manifold Assault	多重攻击	domain=spells; source=EN/ZH; 备注=✅
 Mara	玛拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

@@ -2850,6 +2850,110 @@ Greater 版提高命中，并把控制扩展到目标附近，现有“强力束
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `4a194db035d4f372a80378bb5ce3f3573ea44d5c5e634909ce57c6a6deac5e42`。
 
+## Malign 词形系列
+
+边界：英文标题以 `Malign` 开头的 2 项现行法术。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_MALIGN_GATEWAY` | 现行 | 邪恶传送门 | 开启通往污秽异界的传送门，召来暂时受控的利爪触手 | 保留 |
+| `SPELL_MALIGN_OFFERING` | 现行 | 邪恶献祭 | 汲取敌人生命并治疗附近盟友 | 保留 |
+
+名称结论：两项稳定采用 `Malign → 邪恶`。Gateway 具有不洁、混沌属性，
+并连通污秽异界；Offering 通过死灵术伤害敌人来治疗盟友。现译准确保留
+负面道德色彩，同时由“传送门 / 献祭”清楚区分实体与行为。
+
+描述审阅发现 `Malign Gateway` 中文遗漏英文 `unknown` 和
+`self-sustained` 两项限定，现已补回“未知且污秽异界”和“暂时自我维系”。
+`Malign Offering` 中英文描述一致。
+
+证据：`spl-data.h:577`—`585`、`2321`—`2329`，
+`dat/descript/spells.txt:1238`—`1249`，
+`spl-summoning.cc:1359`—`1367`、`mon-cast.cc:9843`—`9846`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者完成描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-083`）
+
+验证结果：覆盖 Malign 与后续成对词根差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T185830923643000+0800-22443-9b28b0b0f251`。本次验证后的
+`docs/glossary.md` SHA-256 为
+`7548bf15eaf7d86c778710dc639248c4f377f516c89ccef61d64667a3faf4c7c`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c0ce5598b036d61d8dbd87e7801ae5817d663c3525406b8d3fee1d8edfe029fb`。
+
+## 成对词根批次
+
+边界：差集中仅余两个成员的 Spells、Magic、Holy、Hellfire、Golubria、
+Fulsome、Forceful、Drain、Corrupt、Beckoning、Arms 与 Agony 词根；
+共 23 个唯一枚举（16 项现行、7 项已移除兼容）。`Drain Magic` 同时属于
+Magic 与 Drain，只计一次；Malign 两项已由 D-C-083 覆盖。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_DIMINISH_SPELLS` | 现行 | 削弱法术 | 不可抵抗地暂时削弱一个敌人的法术威力 | 保留 |
+| `SPELL_CONJURE_LIVING_SPELLS` | 现行 | 召唤活体法术 | 创造多个遇敌后自行施放并消散的活体法术 | 保留 |
+| `SPELL_SAP_MAGIC` | 现行 | 削弱魔法 | 目标施法后暂时失去继续施法能力 | 保留 |
+| `SPELL_DRAIN_MAGIC` | 已移除兼容 | 汲取魔力 | 现存兼容描述称其造成反魔法武器般的魔力流失 | 保留 |
+| `SPELL_HOLY_LIGHT` | 已移除兼容 | 圣光术 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_HOLY_WORD` | 已移除兼容 | 圣言术 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_HELLFIRE_COURT` | 现行 | 地狱火法庭 | 召唤火焰与天谴恶魔 | 保留 |
+| `SPELL_HELLFIRE_MORTAR` | 现行 | 地狱火迫击炮 | 沿熔岩裂隙移动并自动发射岩浆的迫击炮 | 保留 |
+| `SPELL_GOLUBRIAS_PASSAGE` | 现行 | 戈卢布里亚之通道 | 开启成对、进入即关闭的随机互通传送门 | 保留 |
+| `SPELL_SHROUD_OF_GOLUBRIA` | 已移除兼容 | 戈卢布里亚之幕 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_FULSOME_FUSILLADE` | 现行 | 猛烈连射 | 数回合向随机敌人倾泻可叠加反应的爆炸试剂 | 保留 |
+| `SPELL_FULSOME_DISTILLATION` | 已移除兼容 | 精华蒸馏 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_FORCEFUL_INVITATION` | 现行 | 强制邀请 | 从指定分支之一召唤生物 | 保留 |
+| `SPELL_FORCEFUL_DISMISSAL` | 已移除兼容 | 强制驱逐 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_DRAIN_LIFE` | 现行 | 吸取生命 | 汲取附近所有敌人的生命并按伤害治疗使用者 | 微调为“汲取生命” |
+| `SPELL_CORRUPT_LOCALE` | 现行 | 腐化 | 以深渊能量改变附近区域并暂时召来深渊生物 | 保留 |
+| `SPELL_CORRUPT_BODY` | 已移除兼容 | 腐化躯体 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_BECKONING_GALE` | 现行 | 召唤强风 | 扭曲目标周围空气，造成伤害并将其拉近 | 重译为“招引之风” |
+| `SPELL_BECKONING` | 现行 | 次级召唤 | 把目标拉至施法者相邻位置 | 重译为“次级招引” |
+| `SPELL_BROTHERS_IN_ARMS` | 现行 | 战友 | 复用同名能力，召来战友 | 保留 |
+| `SPELL_BESTOW_ARMS` | 现行 | 赐予武器 | 暂时向附近盟友授予军械库中的魔法武器 | 保留 |
+| `SPELL_CURSE_OF_AGONY` | 现行 | 痛苦诅咒 | 施法者接下来两次近战命中时各将目标剩余生命减半 | 保留 |
+| `SPELL_AGONY` | 现行 | 剧痛 | 将目标生命减半但不直接致死 | 保留 |
+
+名称结论：`Beckoning` 两项都把既有目标拉近，旧译“召唤”会误示创造或
+召来新实体，统一采用“招引”；Gale 由“之风”明确执行招引的是气流。
+`Drain Life` 改为“汲取生命”，与 `Drain Magic → 汲取魔力` 及战斗域
+`Drain → 汲取` 一致。`Arms` 在 Brothers in Arms 中指战友，在
+Bestow Arms 中指武器，现译分别处理词义，不能机械统一。其余标题准确；
+已移除兼容成员不以历史猜测替代当前证据。
+
+描述审阅修正六项机制偏差：Curse of Agony 的两次命中分别触发减半；
+Sap Magic 不会打断当前施法，而是在施法后短暂封锁后续施法；
+Diminish Spells 是单个敌人且英文未承诺固定减半；Hellfire Mortar
+补回裂隙、移动、受阻和闭合全过程；Hellfire Court 明确召唤的是两类
+恶魔；Forceful Invitation 修复分支选择语序。另润色
+Conjure Living Spells 的“自行施放”表述。
+
+证据：各项等级、学派、flags 与生命周期来自 `spl-data.h` 的对应
+`SPELL_*` 记录及 `AXED_SPELL` 区；描述来自
+`dat/descript/spells.txt` 同名键。实现交叉核对：
+`spl-summoning.cc:1362`、`2470`、`2493`—`2511`、`3369`—`3438`，
+`spl-transloc.cc:1669`、`mon-cast.cc:263`—`273`、`471`、
+`1505`、`2375`、`6538`、`8000`—`8063`、`8278`、`8691`、
+`9843`，以及 `spl-zap.cc:90`、`111`—`112`。
+
+### 落地状态
+
+- [x] 23/23 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者完成 3 项名称与 7 项描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-084`）
+
+验证结果：与 Malign 批次共同运行的 translation profile 通过，0 项失败；
+Run ID `20260725T185830923643000+0800-22443-9b28b0b0f251`。
+本批裁定后的 glossary 与 inventory SHA-256 分别为
+`7548bf15eaf7d86c778710dc639248c4f377f516c89ccef61d64667a3faf4c7c`
+和 `c0ce5598b036d61d8dbd87e7801ae5817d663c3525406b8d3fee1d8edfe029fb`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
