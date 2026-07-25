@@ -49,7 +49,7 @@ expect_failure() {
 REMOTE="$TMP_ROOT/origin.git"
 SEED="$TMP_ROOT/seed"
 BUILD="$TMP_ROOT/build"
-TAG="0.34.1-zh2"
+TAG="0.34.1-zh5-1-001"
 
 git init -q --bare "$REMOTE"
 git init -q "$SEED"
@@ -112,9 +112,12 @@ expect_failure "tag pointing at another commit is rejected" \
     run_tag_build "$TAG" "$WRONG_COMMIT"
 
 expect_failure "invalid release tag name is rejected before fetch" \
-    run_tag_build "0.34.1-zh0" "$COMMIT"
+    run_tag_build "0.34.1-zh5-1-000" "$COMMIT"
 
-LIGHTWEIGHT_TAG="0.34.1-zh3"
+expect_failure "legacy single-component release tag is rejected" \
+    run_tag_build "0.34.1-zh5" "$COMMIT"
+
+LIGHTWEIGHT_TAG="0.34.1-zh5-1-002"
 git -C "$SEED" tag "$LIGHTWEIGHT_TAG" "$COMMIT"
 git -C "$SEED" push -q origin "refs/tags/$LIGHTWEIGHT_TAG"
 expect_failure "remote lightweight release tag is rejected" \

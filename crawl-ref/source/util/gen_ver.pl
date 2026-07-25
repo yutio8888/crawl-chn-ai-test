@@ -28,12 +28,14 @@ $_ = `git describe $mergebase 2> $nullfile`
 
 chomp;
 
-/v?(([0-9]+\.[0-9]+)(?:\.[0-9]+)?(?:-([a-zA-Z]+[0-9]+))?)(?:-[0-9]+-g[a-fA-F0-9]+)?/
+/v?(?<tag>(?<major>[0-9]+\.[0-9]+)(?:\.[0-9]+)?(?:-(?<pretyp>[a-zA-Z]+[0-9]+(?:-[0-9]+-[0-9]{3})?))?)(?:-[0-9]+-g[a-fA-F0-9]+)?/
     or die "Version string '$_' is malformed.\n";
 
-my ($major, $tag, $pretyp) = ($2, $1, $3);
+my ($major, $tag, $pretyp) = @+{qw(major tag pretyp)};
 
-my $rel = !defined($pretyp) || $pretyp =~ /^zh[1-9][0-9]*$/
+my $rel = !defined($pretyp)
+    || $pretyp =~ /^zh[1-9][0-9]*$/
+    || $pretyp =~ /^zh[1-9][0-9]*-[1-9][0-9]*-(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$/
     ? "FINAL"
     : $pretyp le "b" ? "ALPHA" : "BETA";
 

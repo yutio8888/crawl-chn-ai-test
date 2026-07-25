@@ -16,8 +16,8 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     tag="${GITHUB_REF_NAME:-}"
     commit="${GITHUB_SHA:-}"
 
-    [[ "$tag" =~ ^0\.34\.1-zh[1-9][0-9]*$ ]] \
-        || die "release tag must match 0.34.1-zhN with N >= 1"
+    [[ "$tag" =~ ^0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$ ]] \
+        || die "release tag must match 0.34.1-zhA-B-CCC with A and B >= 1 and CCC in 001-999"
     [[ "$commit" =~ ^[0-9a-f]{40}$ ]] \
         || die "GITHUB_SHA must be a lowercase 40-character commit SHA"
 

@@ -5,7 +5,7 @@ on:
     branches:
       - chn-0.34.1-base
     tags:
-      - '0.34.1-zh*'
+      - '0.34.1-zh*-*-???'
   pull_request:
     branches:
       - chn-0.34.1-base
