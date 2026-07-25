@@ -2457,6 +2457,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-074 — Spell name review: Strike 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术
+- **Choice**: 保留 `Momentum Strike → 动量打击` 与
+  `Resonance Strike → 共鸣打击`。
+- **Series rule**: 直接攻击语境中的 `Strike → 打击`。
+- **Rationale**: 前者以未来移动动量换取攻击，后者借附近造物共鸣增强；
+  修饰词和“打击”均准确反映机制。
+- **Description corrections**: 无；中英文描述一致。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3013,3 +3032,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-071 | Spell name review — Warp 词形系列 | 2 current + 1 axed；2 description retranslations | active |
 | D-C-072 | Spell name review — Might/Other 目标系列 | 5 current；5 description fixes | active |
 | D-C-073 | Spell name review — Vortex 词形系列 | 1 current + 1 axed；1 rename + wording fixes | active |
+| D-C-074 | Spell name review — Strike 词形系列 | 2 current；no text fixes | active |

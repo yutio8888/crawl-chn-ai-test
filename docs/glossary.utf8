@@ -590,7 +590,7 @@ miss	未命中	domain=combat; source=EN/ZH
 Mlioglotl	姆利奥格洛特尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mnoleg	姆诺雷格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 molten scales	熔融鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
-Momentum Strike	动量打击	domain=spells; source=EN/ZH; 备注=✅
+Momentum Strike	动量打击	domain=spells; source=EN/ZH; 备注=✅；借用未来移动能量攻击并令施法者短时无法移动
 Monk	武僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
@@ -706,7 +706,7 @@ Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅；近战命�
 repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅
+Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅；经目标附近造物级联并逐个增强
 Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
 Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH

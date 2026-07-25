@@ -1217,7 +1217,7 @@
 | Mindburst | 心智爆发 | ✅ |
 | Minor Healing | 小型治疗 | ✅ |
 | Mislead | 误导术 | ✅ |
-| Momentum Strike | 动量打击 | ✅ |
+| Momentum Strike | 动量打击 | ✅；借用未来移动能量攻击并令施法者短时无法移动 |
 | Mourning Wail | 哀悼嚎哭 | ✅ |
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
 | Old Deflect Missiles | 旧版偏转飞弹 | ✅ |
@@ -1253,7 +1253,7 @@
 | Regenerate Other | 再生他人 | ✅；恢复量与目标最大生命值成正比 |
 | Regeneration | 快速再生 | ✅ |
 | Rending Blade | 撕裂之刃 | ✅；近战命中时在附近敌人间来回撕裂 |
-| Resonance Strike | 共鸣打击 | ✅ |
+| Resonance Strike | 共鸣打击 | ✅；经目标附近造物级联并逐个增强 |
 | Resurrect | 复活术 | ✅ |
 | Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
 | Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
