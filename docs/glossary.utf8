@@ -414,8 +414,8 @@ gargoyle	石像鬼	domain=species; source=EN/ZH
 Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
-Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅
-Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅
+Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
+Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅

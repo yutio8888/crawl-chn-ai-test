@@ -1240,6 +1240,42 @@ charge 错解成静态电学名词，与实际冲向敌人的核心动作不符�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `2ba444c35624ab694f679a68438eeb7f77653e66ed611744db47f82c204ef7e9`。
 
+## Gell's 专名系列
+
+边界：英文标题以 `Gell's` 开头的 2 项现行效果。Gavotte 有独立法术
+描述；Gravitas 仅供盖尔的重力铃鼓使用，其说明由物品 TextDB 承载。
+
+| Enum | 使用入口 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_GELLS_GAVOTTE` | 6 级传送法术 | 盖尔之加沃特 | 改变局部重力方向，使视野内生物翻滚并承受碰撞 | 保留 |
+| `SPELL_GRAVITAS` | 重力铃鼓 | 盖尔之重力 | 将范围内怪物拉向中心并固定敌对目标 | 保留 |
+
+名称结论：专名稳定采用 `Gell → 盖尔`。“加沃特”保留舞曲名及群体随
+方向移动的意象；“重力”准确对应铃鼓施加的向心引力，也保留原词的
+重量双关。两项标题都无需塞入碰撞、固定或范围等二级机制。
+
+描述审阅发现 1 项关联 Needs Fix：Gavotte 中文完整对应当前英文；
+Gravitas 没有独立法术描述，但重力铃鼓的中文说明把效果范围和持续时间
+所依赖的 `Evocations` 错译成“召唤术”。本批修正为“激活技能”。
+
+证据：`spl-data.h:3025`—`3035`、`spl-data.h:3957`—`3964`、
+`dat/descript/spells.txt:860`—`875`、`dat/descript/items.txt:723`—`733`、
+`spl-transloc.cc:1828`—`1879`、`evoke.cc:970`—`984`。
+
+### 落地状态
+
+- [x] 2/2 入口、机制证据与名称裁定
+- [x] 单一翻译写入者关联物品描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-037`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T171729292505000+0800-4902-33df8f9204b0`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`fbca868a01d12b1e8bdd013ef12d6eefef71f199f002fac6c3d009bcc2872a1c`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`2ba444c35624ab694f679a68438eeb7f77653e66ed611744db47f82c204ef7e9`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

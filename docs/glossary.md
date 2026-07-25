@@ -951,8 +951,8 @@
 | Druid's Call | 德鲁伊呼唤 | ✅；召回同层已有林地生物，非创造召唤物 |
 | Eringya's Noxious Bog | 埃林吉亚之毒沼 | 📝 |
 | Eringya's Surprising Crocodile | 埃林吉亚之意外鳄鱼 | 📝 |
-| Gell's Gavotte | 盖尔之加沃特 | ✅ |
-| Gell's Gravitas | 盖尔之重力 | ✅ |
+| Gell's Gavotte | 盖尔之加沃特 | ✅；重定向局部重力，使视野内生物随方向翻滚 |
+| Gell's Gravitas | 盖尔之重力 | ✅；重力铃鼓专用效果，将怪物拉拢并固定 |
 | Iskenderun's Battlesphere | 伊斯肯德伦之战斗法球 | 🆕；与实体及运行时 `battlesphere → 战斗法球` 统一 |
 | Iskenderun's Mystic Blast | 伊斯肯德伦之神秘冲击 | ✅ |
 | Leda's Liquefaction | 勒达之液化 | ✅ |

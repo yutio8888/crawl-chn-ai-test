@@ -1528,7 +1528,7 @@ gell's gravitambourine
 一个狭窄的空间中，并用无法逃脱的碾压重力波将所有敌对目标
 固定在原地一小段时间。
 
-效果范围和持续时间随召唤术技能提升。
+效果范围和持续时间随激活技能提升。
 %%%%
 handbook of applied construction
 

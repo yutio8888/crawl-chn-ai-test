@@ -1634,6 +1634,31 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-037 — Spell name review: Gell's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、加沃特法术描述、重力铃鼓描述与两项重力实现逐项复核
+- **Scope**: 2 项以 `Gell's` 开头的现行标题
+- **Choice**: 保留 `Gell's Gavotte → 盖尔之加沃特` 与
+  `Gell's Gravitas → 盖尔之重力`。
+- **Series rule**: 人名 `Gell → 盖尔`，所有格采用“盖尔之……”；
+  舞曲名 `Gavotte → 加沃特`，引力效果 `Gravitas → 重力`。
+- **Rationale**: 加沃特本是舞曲名，能保留让全体生物随重力方向翻滚的
+  舞蹈意象；“重力”直接对应铃鼓将怪物拉向中心并固定的效果，也保留
+  `gravitas` 的重量感。两项无需改名。
+- **Description corrections**: Gavotte 法术描述与当前英文一致；
+  Gravitas 没有独立法术描述，其效果由重力铃鼓物品描述承载。该描述把
+  `Evocations` 误译成“召唤术”，本批修正为术语表规定的“激活技能”。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/items.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2153,3 +2178,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-034 | Spell name review — Vhi's 专名系列 | 2 fixes；2 current；2 description fixes | active |
 | D-C-035 | Spell name review — Cigotuvi's 专名系列 | 1 current + 2 axed compatibility；1 description fix | active |
 | D-C-036 | Spell name review — Ozocubu's 专名系列 | 2 current | active |
+| D-C-037 | Spell name review — Gell's 专名系列 | 2 current；1 related item description fix | active |
