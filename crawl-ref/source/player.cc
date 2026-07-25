@@ -6081,7 +6081,7 @@ bool player::cannot_speak() const
 string player::shout_verb(bool directed) const
 {
     if (!get_form()->shout_verb.empty())
-        return get_form()->shout_verb;
+        return T_(get_form()->shout_verb.c_str());
 
     const int screaminess = get_mutation_level(MUT_SCREAM);
     return species::shout_verb(you.species, screaminess, directed);
