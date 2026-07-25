@@ -503,11 +503,41 @@ run_phase() {
     run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
         run_message_overlay_static || RESULTS=$((RESULTS + 1))
 
+    resolve_build_python() {
+        local candidate resolved
+
+        if [[ -n "${ZH_VERIFY_BUILD_PYTHON:-}" ]]; then
+            candidate="$ZH_VERIFY_BUILD_PYTHON"
+            if "$candidate" -c 'import yaml' >/dev/null 2>&1; then
+                printf '%s\n' "$candidate"
+                return 0
+            fi
+            echo "ERROR: ZH_VERIFY_BUILD_PYTHON cannot import PyYAML: $candidate" >&2
+            return 1
+        fi
+
+        for candidate in python3 /usr/bin/python3 python; do
+            resolved="$(command -v "$candidate" 2>/dev/null || true)"
+            if [[ -n "$resolved" ]] \
+                && "$resolved" -c 'import yaml' >/dev/null 2>&1
+            then
+                printf '%s\n' "$resolved"
+                return 0
+            fi
+        done
+
+        echo "ERROR: no Python interpreter with PyYAML is available." >&2
+        echo "Set ZH_VERIFY_BUILD_PYTHON to a suitable interpreter." >&2
+        return 1
+    }
+
     run_incremental_build() {
         if [[ -n "${ZH_VERIFY_BUILD_COMMAND:-}" ]]; then
             bash -c "$ZH_VERIFY_BUILD_COMMAND"
         else
-            make -C crawl-ref/source -j4 STDFLAG=-std=c++14
+            local build_python
+            build_python="$(resolve_build_python)" || return 2
+            make -C crawl-ref/source PYTHON="$build_python" -j4
         fi
     }
     run_zh_smoke() {

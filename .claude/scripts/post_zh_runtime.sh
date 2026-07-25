@@ -47,6 +47,32 @@ WORKFLOW_BOT_TIMEOUT="${ZH_RUNTIME_WORKFLOW_BOT_TIMEOUT:-45}"
 
 MODE="${1:-fast}"
 
+resolve_build_python() {
+    local candidate resolved
+
+    if [[ -n "${ZH_RUNTIME_BUILD_PYTHON:-}" ]]; then
+        candidate="$ZH_RUNTIME_BUILD_PYTHON"
+        if "$candidate" -c 'import yaml' >/dev/null 2>&1; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+        echo "ERROR: ZH_RUNTIME_BUILD_PYTHON cannot import PyYAML: $candidate" >&2
+        return 1
+    fi
+
+    for candidate in python3 /usr/bin/python3 python; do
+        resolved="$(command -v "$candidate" 2>/dev/null || true)"
+        if [[ -n "$resolved" ]] && "$resolved" -c 'import yaml' >/dev/null 2>&1; then
+            printf '%s\n' "$resolved"
+            return 0
+        fi
+    done
+
+    echo "ERROR: no Python interpreter with PyYAML is available." >&2
+    echo "Set ZH_RUNTIME_BUILD_PYTHON to a suitable interpreter." >&2
+    return 1
+}
+
 usage() {
     cat <<'EOF'
 Usage: post_zh_runtime.sh <mode>
@@ -75,6 +101,13 @@ case "$MODE" in
         usage >&2
         echo "Unknown mode: $MODE" >&2
         exit 2
+        ;;
+esac
+
+BUILD_PYTHON=""
+case "$MODE" in
+    catch2|full|bot|baseline|help-full|help-baseline)
+        BUILD_PYTHON="$(resolve_build_python)" || exit 2
         ;;
 esac
 
@@ -123,7 +156,7 @@ STDOUT_C2="$METRICS_DIR/catch2-stdout.log"
 run_catch2() {
     cd "$SOURCE_DIR"
     echo "  Building catch2-tests..."
-    make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+    make catch2-tests-executable COVERAGE=YesPlease PYTHON="$BUILD_PYTHON" -j4 \
         > "$STDOUT_C2" 2>&1 || {
         echo "  catch2-tests build failed; last 100 log lines:"
         tail -n 100 "$STDOUT_C2" || true
@@ -146,14 +179,14 @@ STDERR_L2="$METRICS_DIR/lua-stderr.log"
 run_lua() {
     cd "$SOURCE_DIR"
     echo "  Building DB cache..."
-    make builddb > "$METRICS_DIR/lua-build.log" 2>&1 || {
+    make builddb PYTHON="$BUILD_PYTHON" > "$METRICS_DIR/lua-build.log" 2>&1 || {
         echo "  builddb failed (see $METRICS_DIR/lua-build.log)"
         return 1
     }
     # Rebuild debug after builddb: the builddb target relinks ./crawl as a
     # regular binary, which cannot execute `-test`.
     echo "  Building debug binary..."
-    make debug -j4 >> "$METRICS_DIR/lua-build.log" 2>&1 || {
+    make debug PYTHON="$BUILD_PYTHON" -j4 >> "$METRICS_DIR/lua-build.log" 2>&1 || {
         echo "  Debug build failed (see $METRICS_DIR/lua-build.log)"
         return 1
     }
@@ -198,7 +231,7 @@ run_bot() {
     cd "$SOURCE_DIR"
     if [ "${1:-build}" = "build" ]; then
         echo "  Building current console binary once..."
-        make -j8 > "$METRICS_DIR/bot-build.log" 2>&1 || {
+        make PYTHON="$BUILD_PYTHON" -j8 > "$METRICS_DIR/bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/bot-build.log)"
             return 1
         }
@@ -265,7 +298,7 @@ STDERR_HELP_BOT="$METRICS_DIR/help-bot-stderr.log"
 run_help_catch2() {
     cd "$SOURCE_DIR"
     echo "  Building catch2-tests..."
-    make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+    make catch2-tests-executable COVERAGE=YesPlease PYTHON="$BUILD_PYTHON" -j4 \
         > "$STDOUT_HELP_C2" 2>&1 || {
         echo "  catch2-tests build failed; last 100 log lines:"
         tail -n 100 "$STDOUT_HELP_C2" || true
@@ -288,7 +321,7 @@ run_help_bot() {
     cd "$SOURCE_DIR"
     # [zh-help] Catch2 uses different coverage flags in the same object tree;
     # always restore a current console build before the PTY test.
-    make -j8 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
+    make PYTHON="$BUILD_PYTHON" -j8 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/help-bot-build.log)"
             return 1
     }
@@ -404,7 +437,7 @@ case "$MODE" in
         # Build once
         echo "  Building catch2-tests..."
         cd "$SOURCE_DIR"
-        make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+        make catch2-tests-executable COVERAGE=YesPlease PYTHON="$BUILD_PYTHON" -j4 \
             > "$METRICS_DIR/catch2-build.log" 2>&1 || {
             echo "  catch2-tests build failed; last 100 log lines:"
             tail -n 100 "$METRICS_DIR/catch2-build.log" || true

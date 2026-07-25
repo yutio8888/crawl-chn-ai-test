@@ -43,9 +43,29 @@
 #include <array>
 #include <string>
 #include <tuple>
+#ifdef UNIX
+#include <fcntl.h>
+#include <unistd.h>
+#endif
 
 namespace
 {
+#ifdef UNIX
+int count_open_file_descriptors()
+{
+    const long system_limit = sysconf(_SC_OPEN_MAX);
+    const int scan_limit = system_limit > 0 && system_limit < 4096
+                         ? static_cast<int>(system_limit) : 4096;
+    int count = 0;
+    for (int fd = 0; fd < scan_limit; ++fd)
+    {
+        if (fcntl(fd, F_GETFD) != -1)
+            ++count;
+    }
+    return count;
+}
+#endif
+
 mons_spec parse_des_monster(const char* definition, lang_t language)
 {
     Options.language = language;
@@ -62,6 +82,37 @@ mons_spec parse_des_monster(const char* definition, lang_t language)
     REQUIRE(monsters.slot_size(0) == 1);
     return monsters.get_monster(0, 0);
 }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: repeated TextDB initialization keeps descriptor ownership stable",
+                 "[zh-translation][textdb][fd-lifecycle]")
+{
+#ifdef UNIX
+    const int before = count_open_file_descriptors();
+    for (int i = 0; i < 4; ++i)
+        databaseSystemInit();
+    const int after = count_open_file_descriptors();
+
+    CHECK(after == before);
+#else
+    SUCCEED("File-descriptor counting is only available on Unix builds.");
+#endif
+    CHECK(std::string(T_("You hit %s.")) != "You hit %s.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: a language without TextDB inputs falls back safely",
+                 "[zh-translation][textdb][language-lifecycle]")
+{
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zz-no-textdb";
+    databaseSystemInit();
+    CHECK(std::string(T_("You hit %s.")) == "You hit %s.");
+
+    Options.lang_name = "zh";
+    databaseSystemInit();
+    CHECK(std::string(T_("You hit %s.")) != "You hit %s.");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -179,8 +230,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           != spell_english_name(SPELL_BLINK));
 }
 
-TEST_CASE("Issue 16 TextDB lookup consumes identical gameplay RNG in EN and ZH",
-          "[zh-translation][issue-16][textdb][rng]")
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 16 TextDB lookup consumes identical gameplay RNG in EN and ZH",
+                 "[zh-translation][issue-16][textdb][rng]")
 {
     struct observation
     {
@@ -867,6 +919,10 @@ TEST_CASE("embedded Lua errors are detected independently of CJK content",
         "value (global 'monster')}}";
     CHECK(rule_embedded_lua_error(real_lua_error));
     CHECK(rule_mixed_cn_en(real_lua_error));
+
+    const auto issues = scan_text(real_lua_error, "dynamic status", "status.txt");
+    REQUIRE(issues.size() == 1);
+    CHECK(issues.front().kind == ZhIssue::EMBEDDED_LUA_ERROR);
 
     CHECK(rule_embedded_lua_error(
         "[string \"db_embedded_lua\"]:1: synthetic failure"));

@@ -608,20 +608,32 @@ bool check_mkdir(const string &whatdir, string *dir, bool silent)
     if ((*dir)[dir->length() - 1] != FILE_SEPARATOR)
         *dir += FILE_SEPARATOR;
 
-    if (!dir_exists(*dir) && !_create_dirs(*dir))
+    errno = 0;
+    if (!dir_exists(*dir))
     {
-        if (!silent)
+        const int exists_error = errno;
+        errno = 0;
+        if (!_create_dirs(*dir))
         {
+            const int create_error = errno;
+            const int error_code = create_error ? create_error : exists_error;
+            const char * const error_text =
+                error_code ? strerror(error_code) : "unknown error";
+            if (!silent)
+            {
 #ifdef __ANDROID__
-            __android_log_print(ANDROID_LOG_INFO, "Crawl",
-                                "%s \"%s\" does not exist and I can't create it.",
-                                whatdir.c_str(), dir->c_str());
+                __android_log_print(
+                    ANDROID_LOG_INFO, "Crawl",
+                    "%s \"%s\" does not exist and I can't create it: "
+                    "%s (errno %d).",
+                    whatdir.c_str(), dir->c_str(), error_text, error_code);
 #endif
-            fprintf(stderr, "%s \"%s\" does not exist "
-                    "and I can't create it.\n",
-                    whatdir.c_str(), dir->c_str());
+                fprintf(stderr, "%s \"%s\" does not exist "
+                        "and I can't create it: %s (errno %d).\n",
+                        whatdir.c_str(), dir->c_str(), error_text, error_code);
+            }
+            return false;
         }
-        return false;
     }
 
     return true;

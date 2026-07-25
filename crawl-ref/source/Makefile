@@ -919,10 +919,12 @@ ifneq (,$(filter profile,$(MAKECMDGOALS)))
 	COVERAGE=YesPlease
 endif
 
-# Unit tests
-ifneq (,$(filter catch2-tests,$(MAKECMDGOALS)))
+# Unit tests. Catch2 v3 requires C++14. Keep the standard selection here so
+# direct executable/dump builds do not rely on callers passing STDFLAG.
+CATCH2_GOALS = catch2-tests catch2-tests-executable plug-and-play-tests \
+               textdb-phase0-dump textdb-monspell-candidate-dump
+ifneq (,$(filter $(CATCH2_GOALS),$(MAKECMDGOALS)))
 	COVERAGE=YesPlease
-	# current catch2 doesn't support c++11
 	STDFLAG = -std=c++14
 endif
 
@@ -1424,6 +1426,11 @@ GAME_OBJS=$(OBJECTS) main.o $(EXTRA_OBJECTS)
 MONSTER_OBJS=$(OBJECTS) util/monster/monster-main.o $(EXTRA_OBJECTS)
 CATCH2_TEST_OBJECTS = $(OBJECTS) $(TEST_OBJECTS) catch2-tests/catch_amalgamated.o catch2-tests/test_main.o $(EXTRA_OBJECTS)
 
+# The amalgamated Catch2 v3 source provides a default main unless this is
+# defined. crawl's test_main.cc owns main so it can initialise shared runtime
+# tables before handing control to Catch::Session.
+catch2-tests/catch_amalgamated.o: ALL_CFLAGS += -DCATCH_AMALGAMATED_CUSTOM_MAIN
+
 
 ifneq (,$(filter plug-and-play-tests,$(MAKECMDGOALS)))
     ifeq ("$(wildcard catch2-tests/test_plug_and_play.cc)","")
@@ -1783,6 +1790,7 @@ catch2-tests-executable: $(CATCH2_TEST_OBJECTS) $(CONTRIB_LIBS) dat/dlua/tags.lu
 	+$(QUIET_LINK)$(CXX) $(LDFLAGS) $(CATCH2_TEST_OBJECTS) -o catch2-tests-executable $(LIBS)
 
 CATCH2_PNP_OBJECTS = $(OBJECTS) catch2-tests/test_plug_and_play.o \
+                     catch2-tests/catch_amalgamated.o \
                      catch2-tests/test_main.o $(EXTRA_OBJECTS)
 
 plug-and-play-tests: $(CATCH2_PNP_OBJECTS) $(CONTRIB_LIBS) dat/dlua/tags.lua
@@ -1792,7 +1800,6 @@ catch2-tests: catch2-tests-executable
 	./catch2-tests-executable
 
 .PHONY: textdb-phase0-dump
-textdb-phase0-dump: STDFLAG = -std=c++14
 textdb-phase0-dump: catch2-tests-executable
 	@test -n "$(TEXTDB_PHASE0_DUMP)" || \
 	  { echo "TEXTDB_PHASE0_DUMP must name an output file" >&2; exit 2; }
@@ -1801,7 +1808,6 @@ textdb-phase0-dump: catch2-tests-executable
 	  ./catch2-tests-executable "[.textdb-phase0-dump]" --reporter compact
 
 .PHONY: textdb-monspell-candidate-dump
-textdb-monspell-candidate-dump: STDFLAG = -std=c++14
 textdb-monspell-candidate-dump: catch2-tests-executable
 	@test -n "$(TEXTDB_MONSPELL_CANDIDATE_DUMP)" || \
 	  { echo "TEXTDB_MONSPELL_CANDIDATE_DUMP must name an output file" >&2; \

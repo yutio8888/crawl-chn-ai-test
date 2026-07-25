@@ -196,11 +196,14 @@ void emit_jsonl_issue(const std::string& suite,
     static const char* kind_names[] = {
         "UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN",
         "GARBLED_UTF8", "EMPTY_DB", "WHITESPACE_ANOMALY",
-        "INVISIBLE_CHAR", "PUNCT_STYLE"
+        "INVISIBLE_CHAR", "PUNCT_STYLE", "EMBEDDED_LUA_ERROR"
     };
     const char* kind_str = "UNKNOWN";
-    if (issue.kind >= ZhIssue::UNTRANSLATED && issue.kind <= ZhIssue::PUNCT_STYLE)
+    if (issue.kind >= ZhIssue::UNTRANSLATED
+        && issue.kind <= ZhIssue::EMBEDDED_LUA_ERROR)
+    {
         kind_str = kind_names[issue.kind];
+    }
 
     // Compact JSON construction using snprintf to avoid JSON library dependency.
     // Manual construction is simpler than streaming JSON.
@@ -686,6 +689,15 @@ std::vector<ZhIssue> scan_text(const std::string& text,
         iss.sample  = sample_of(sample);
         issues.push_back(iss);
     };
+
+    // The evaluator's diagnostic is not rendered translation text. Report
+    // the underlying failure once instead of deriving mixed-language,
+    // punctuation, or formatting false positives from the error message.
+    if (rule_embedded_lua_error(text))
+    {
+        add(ZhIssue::EMBEDDED_LUA_ERROR, text);
+        return issues;
+    }
 
     if (!key.empty() && rule_untranslated(text, key))
         add(ZhIssue::UNTRANSLATED, text);

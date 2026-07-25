@@ -14,8 +14,10 @@
 #include <functional>
 #include <fstream>
 #include <map>
+#include <memory>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <utility>
 #if defined(UNIX) || defined(TARGET_COMPILER_MINGW)
 #include <unistd.h>
 #endif
@@ -40,8 +42,12 @@ public:
     // minus the "db" extension.
     TextDB(const char* db_name, const char* dir, vector<string> files);
     TextDB(TextDB *parent);
-    ~TextDB() { shutdown(true); delete translation; }
-    void init();
+    TextDB(TextDB &&other);
+    TextDB(const TextDB &) = delete;
+    TextDB &operator=(const TextDB &) = delete;
+    TextDB &operator=(TextDB &&) = delete;
+    ~TextDB() { shutdown(true); }
+    bool init();
     void shutdown(bool recursive = false);
     DBM* get() { return _db; }
 
@@ -55,7 +61,7 @@ public:
     operator DBM*() const { return _db; }
 
  private:
-    bool _needs_update() const;
+    bool _needs_update(bool &has_input_files) const;
     void _regenerate_db();
 
  private:
@@ -68,7 +74,7 @@ public:
     TextDB *_parent;
     const char* lang() { return _parent ? Options.lang_name : 0; }
 public:
-    TextDB *translation;
+    unique_ptr<TextDB> translation;
 };
 
 // Convenience functions for (read-only) access to generic
@@ -195,7 +201,7 @@ static string _db_cache_path(string db, const char *lang)
 
 TextDB::TextDB(const char* db_name, const char* dir, vector<string> files)
     : _db_name(db_name), _directory(dir), _input_files(files),
-      _db(nullptr), timestamp(""), _parent(0), translation(0)
+      _db(nullptr), timestamp(""), _parent(nullptr), translation(nullptr)
 {
 }
 
@@ -236,6 +242,20 @@ TextDB::TextDB(TextDB *parent)
     }
 }
 
+TextDB::TextDB(TextDB &&other)
+    : _db_name(other._db_name),
+      _directory(std::move(other._directory)),
+      _input_files(std::move(other._input_files)),
+      _db(other._db),
+      timestamp(std::move(other.timestamp)),
+      _parent(other._parent),
+      translation(std::move(other.translation))
+{
+    other._db = nullptr;
+    if (translation)
+        translation->_parent = this;
+}
+
 bool TextDB::open_db()
 {
     if (_db)
@@ -253,18 +273,27 @@ bool TextDB::open_db()
     return true;
 }
 
-void TextDB::init()
+bool TextDB::init()
 {
-    if (Options.lang_name && !_parent)
+    if (!_parent)
     {
-        translation = new TextDB(this);
-        translation->init();
+        // A parent owns at most one language-specific layer. Reconcile that
+        // layer on every init so repeated initialization and language changes
+        // cannot retain DBM handles from an earlier generation.
+        translation.reset();
+        if (Options.lang_name)
+        {
+            unique_ptr<TextDB> candidate(new TextDB(this));
+            if (candidate->init())
+                translation = std::move(candidate);
+        }
     }
 
     open_db();
 
-    if (!_needs_update())
-        return;
+    bool has_input_files = false;
+    if (!_needs_update(has_input_files))
+        return has_input_files;
     _regenerate_db();
 
     if (!open_db())
@@ -272,6 +301,7 @@ void TextDB::init()
         end(1, true, "Failed to open DB: %s",
             _db_cache_path(_db_name, lang()).c_str());
     }
+    return true;
 }
 
 void TextDB::shutdown(bool recursive)
@@ -281,11 +311,11 @@ void TextDB::shutdown(bool recursive)
         dbm_close(_db);
         _db = nullptr;
     }
-    if (recursive && translation)
-        translation->shutdown(recursive);
+    if (recursive)
+        translation.reset();
 }
 
-bool TextDB::_needs_update() const
+bool TextDB::_needs_update(bool &has_input_files) const
 {
     string ts;
     bool no_files = true;
@@ -308,6 +338,7 @@ bool TextDB::_needs_update() const
         }
     }
 
+    has_input_files = !no_files;
     if (no_files)
     {
         // No point in empty databases, although for simplicity keep ones
@@ -315,9 +346,6 @@ bool TextDB::_needs_update() const
         ASSERTM(_parent,
             "No readable database files in `%s` (internal error).",
             _directory.c_str());
-        TextDB *en = _parent;
-        delete en->translation; // ie, ourself
-        en->translation = 0;
         return false;
     }
 

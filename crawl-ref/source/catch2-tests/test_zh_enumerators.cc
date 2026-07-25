@@ -257,6 +257,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: features",
                  "[zh-translation]")
 {
+    init_show_table();
     init_feat_desc_cache();
 
     std::vector<ZhIssue> issues;
@@ -314,9 +315,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation]")
 {
     std::vector<ZhIssue> issues;
+    const std::vector<mutation_type> removed = get_removed_mutations();
     for (int mi = 0; mi < NUM_MUTATIONS; ++mi)
     {
         const mutation_type m = static_cast<mutation_type>(mi);
+        if (m == MUT_REMOVED_MUTATION
+            || std::find(removed.begin(), removed.end(), m) != removed.end())
+        {
+            continue;
+        }
         const char* name = mutation_name(m);
         if (!name || !name[0])
             continue;

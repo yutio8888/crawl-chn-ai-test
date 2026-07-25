@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-// ZhIssue represents a single i18n defect of one of the 8 enumerated kinds.
+// ZhIssue represents a single i18n defect of one of the enumerated kinds.
 // It carries optional telemetry about where it came from (the English key
 // that produced the offending text and a short file/domain tag) so the
 // aggregator (.claude/scripts/zh_runtime_check.py) can produce a readable
@@ -20,6 +20,7 @@ struct ZhIssue
         WHITESPACE_ANOMALY,  // 6: \r remnant / double space / leading/trailing whitespace
         INVISIBLE_CHAR,      // 7: U+200B / U+FEFF / U+00A0 / PUA / emoji ranges
         PUNCT_STYLE,         // 8: half-width ( ) , . : ; embedded in Chinese text
+        EMBEDDED_LUA_ERROR,  // 9: TextDB returned an embedded-Lua evaluator error
     };
 
     Kind        kind;
@@ -60,7 +61,7 @@ void emit_issue_protocol(const std::string& suite,
                          const std::string& enumerator,
                          const std::vector<ZhIssue>& issues);
 
-// scan_text applies all 8 scan rules to `text` (the rendered / translated
+// scan_text applies all scan rules to `text` (the rendered / translated
 // string) given the optional English `key` that produced it. `source_tag` is
 // an arbitrary short identifier for grouping the report (e.g. the enumerator
 // name or TextDB file). Returns a vector of detected ZhIssue entries (may be

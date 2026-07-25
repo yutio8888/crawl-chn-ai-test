@@ -24,7 +24,7 @@
         "sequence": { "type": "integer", "minimum": 0 },
         "kind": {
           "type": "string",
-          "enum": ["UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN", "GARBLED_UTF8", "EMPTY_DB", "WHITESPACE_ANOMALY", "INVISIBLE_CHAR", "PUNCT_STYLE"]
+          "enum": ["UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN", "GARBLED_UTF8", "EMPTY_DB", "WHITESPACE_ANOMALY", "INVISIBLE_CHAR", "PUNCT_STYLE", "EMBEDDED_LUA_ERROR"]
         },
         "source": { "type": "string" },
         "key": { "type": "string" },

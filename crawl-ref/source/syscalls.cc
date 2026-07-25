@@ -28,7 +28,6 @@
 #include "unicode.h"
 
 #ifdef __ANDROID__
-#define HAVE_STAT
 #include "player.h"
 #include <errno.h>
 #include <android/asset_manager.h>
@@ -467,18 +466,9 @@ bool dir_exists(const string &dir)
         return false;
     }
 #endif
-#ifdef HAVE_STAT
     struct stat st;
     const int err = ::stat(OUTS(dir), &st);
     return !err && S_ISDIR(st.st_mode);
-#else
-    DIR *d = opendir(OUTS(dir));
-    const bool exists = !!d;
-    if (d)
-        closedir(d);
-
-    return exists;
-#endif
 #endif
 }
 

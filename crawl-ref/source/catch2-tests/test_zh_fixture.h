@@ -2,8 +2,8 @@
 
 #include "lang-t.h"
 
-// ZhTranslationFixture — sets Options.language=ZH and clears the i18n cache so
-// that T_(...) lookups consult dat/i18n/zh/source.txt during a catch2 test.
+// Translation fixtures set a requested display language, reconcile the
+// language-specific TextDB layers, and restore both on teardown.
 //
 // Solves plan v2 Blocker B3: catch2-tests-executable defaults to
 // lang_t::EN (lang_t::EN == 0, options.h), so without switching the language
@@ -18,13 +18,21 @@
 // which proves dat/i18n/zh/source.txt was actually loaded and T_() returns
 // a Chinese translation rather than the English key.
 
-struct ZhTranslationFixture
+struct TranslationFixture
 {
-    // Snapshots to restore on teardown so that any subsequent EN-default
-    // test is unaffected.
     lang_t saved_lang;            // Options.language snapshot
     const char* saved_lang_name;   // Options.lang_name snapshot
 
+    TranslationFixture(lang_t language, const char* language_name);
+    ~TranslationFixture();
+};
+
+struct ZhTranslationFixture : TranslationFixture
+{
     ZhTranslationFixture();
-    ~ZhTranslationFixture();
+};
+
+struct EnTranslationFixture : TranslationFixture
+{
+    EnTranslationFixture();
 };

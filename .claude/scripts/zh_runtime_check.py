@@ -66,6 +66,7 @@ VALID_SUITES = {"zh_translation", "zh_help"}
 VALID_KINDS = {
     "UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN", "GARBLED_UTF8",
     "EMPTY_DB", "WHITESPACE_ANOMALY", "INVISIBLE_CHAR", "PUNCT_STYLE",
+    "EMBEDDED_LUA_ERROR",
 }
 
 # Exact RC-bot coverage contract. Counts alone are insufficient: every case
@@ -937,6 +938,7 @@ def parse_catch2_stderr(path: str) -> Tuple[Dict[str, int], List[dict]]:
                     0: "UNTRANSLATED", 1: "MIXED_CN_EN", 2: "FORMAT_BROKEN",
                     3: "GARBLED_UTF8", 4: "EMPTY_DB", 5: "WHITESPACE_ANOMALY",
                     6: "INVISIBLE_CHAR", 7: "PUNCT_STYLE",
+                    8: "EMBEDDED_LUA_ERROR",
                 }
                 by_kind[KIND_NAMES_OLD.get(kind, str(kind))] += 1
                 issues.append({

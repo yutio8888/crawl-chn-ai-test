@@ -1848,10 +1848,17 @@ static feat_desc_map feat_desc_cache;
 
 void init_feat_desc_cache()
 {
+    feat_desc_cache.clear();
+
     for (int i = 0; i < NUM_FEATURES; i++)
     {
         dungeon_feature_type feat = static_cast<dungeon_feature_type>(i);
+        if (!is_valid_feature_type(feat))
+            continue;
+
         string               desc = feature_description(feat);
+        if (desc.empty())
+            continue;
 
         lowercase(desc);
         if (!feat_desc_cache.count(desc))

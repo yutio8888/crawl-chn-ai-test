@@ -195,6 +195,29 @@ TEST_CASE("Test all_item_subtypes() does not include removed items",
     const auto has_removed_item = find(items.begin(), items.end(), POT_POISON) != items.end();
 
     REQUIRE(has_removed_item == false);
+
+#if TAG_MAJOR_VERSION == 34
+    const auto armour = all_item_subtypes(OBJ_ARMOUR);
+    const int removed_hides[] = {
+        ARM_TROLL_HIDE,
+        ARM_FIRE_DRAGON_HIDE,
+        ARM_ICE_DRAGON_HIDE,
+        ARM_STEAM_DRAGON_HIDE,
+        ARM_ACID_DRAGON_HIDE,
+        ARM_STORM_DRAGON_HIDE,
+        ARM_GOLDEN_DRAGON_HIDE,
+        ARM_SWAMP_DRAGON_HIDE,
+        ARM_PEARL_DRAGON_HIDE,
+        ARM_SHADOW_DRAGON_HIDE,
+        ARM_QUICKSILVER_DRAGON_HIDE,
+    };
+    for (const int hide : removed_hides)
+    {
+        INFO("removed armour subtype: " << hide);
+        CHECK(item_type_removed(OBJ_ARMOUR, hide));
+        CHECK(find(armour.begin(), armour.end(), hide) == armour.end());
+    }
+#endif
 }
 
 TEST_CASE("Test all_item_subtypes() does include items for each category",

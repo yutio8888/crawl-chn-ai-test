@@ -280,17 +280,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // --- feature: feat_by_desc round-trip is known-flaky (DESC formatting).
     //     Lenient: only assert non-crash + valid-enum bound; do not hard-fail
     //     on mismatch. ---
+    init_show_table();
     init_feat_desc_cache();
     for (int fi = 0; fi < NUM_FEATURES; ++fi)
     {
         const dungeon_feature_type f = static_cast<dungeon_feature_type>(fi);
+        if (!is_valid_feature_type(f))
+            continue;
         const feature_def& def = get_feature_def(f);
         if (!def.name || !def.name[0])
             continue;
         const dungeon_feature_type back = feat_by_desc(def.name);
-        // Only non-crash + valid enum bound is required.
-        CHECK(back >= DNGN_UNSEEN);
-        CHECK(back <= NUM_FEATURES);
+        CHECK(is_valid_feature_type(back));
     }
 }
 
@@ -338,8 +339,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // holds. (god_name's EN behavior confirmed: short names go through T_() which
 // falls back to English when Options.language == EN.)
 // =============================================================================
-TEST_CASE("zh-help: god EN round-trip (no fixture)",
-          "[zh-help][god]")
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "zh-help: god EN round-trip",
+                 "[zh-help][god]")
 {
     REQUIRE(Options.language == lang_t::EN);
     for (int gi = GOD_NO_GOD + 1; gi < NUM_GODS; ++gi)
@@ -581,8 +583,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // (me->name) as internal keys; this test verifies that every monster's DB
 // name resolves back to the correct enum.
 // =============================================================================
-TEST_CASE("zh-help: monster EN round-trip (no fixture)",
-          "[zh-help][monster]")
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "zh-help: monster EN round-trip",
+                 "[zh-help][monster]")
 {
     REQUIRE(Options.language == lang_t::EN);
     init_monsters();
