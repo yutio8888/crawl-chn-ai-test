@@ -3362,7 +3362,8 @@ Seismic Stomp、Flashing Balestra 与 Grave Claw 均按当前英文和实现
 
 名称结论：现行标题仅 Ravenous Swarm 存在确定误示，改为“饥渴蝠群”；
 其余现行、dummy 和 placeholder 标题均合理。31 项已移除兼容记录没有
-当前实现和描述，不以历史猜测替代证据，逐项暂沿用。
+当前实现和描述，不以历史猜测替代证据，逐项裁定为暂缓术语
+（恢复时复审）。
 
 描述审阅修正十三项：Kinetic Grapnel、Diamond Sawblades、Shred、
 Magma Barrage、Vex、Dominate Undead、Detonation Catalyst、
@@ -3383,9 +3384,9 @@ Sleetstrike 与 Landbreaker 均恢复当前目标、范围、条件与后果。
 
 验证结果：在将已移除兼容项统一归类为带恢复入口的“暂缓术语”后，
 `verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T193120931844000+0800-94327-9fd9148effa7`。最终
+`20260725T195550854715000+0800-7475-8a5cb19202e1`。最终
 `docs/glossary.md` SHA-256 为
-`6bc106736f5b823f7d75823f3f968c5450aa9534fb686e1641443c5c812ced15`；
+`3a2d51e01b9680933a1790a3ceeb7da46d22667b7ac9e98f3c6567b503862cc8`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `e0aec9932c914db4cbe9f4e81043ae70bf74bf013792b1c68b42c68be7816afa`。
 inventory enum 集合与本文件审阅 enum 集合均为 511，双向差集为空。

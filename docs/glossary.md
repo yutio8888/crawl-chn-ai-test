@@ -724,7 +724,7 @@
 | Blink Other | 使他人闪烁 | 📝 现行 |
 | Blink Other Close | 使他人闪烁靠近 | 📝 现行 |
 | Blink Range | 退避闪烁 | ✅ 现行 |
-| Controlled Blink | 受控闪烁 | ✅ 已移除／TAG 34 兼容 |
+| Controlled Blink | 受控闪烁 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Bolt（现行 16；已移除／TAG 34 兼容 3）
 
@@ -761,13 +761,13 @@
 | Call Lost Souls | 呼唤迷失灵魂 | ✅ |
 | Call Tide | 呼唤潮汐 | ✅ |
 | Call of Chaos | 混沌呼唤 | ✅ |
-| Demonic Horde | 恶魔大军 | ✅ |
+| Demonic Horde | 恶魔大军 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Hunting Call | 狩猎呼唤 | ✅ |
 | Malign Gateway | 邪恶传送门 | ✅；通往未知污秽异界的临时自维持传送门 |
 | Mara Summon | 玛拉召唤 | ✅ |
 | Monstrous Menagerie | 怪物动物园 | ✅ |
 | Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
-| Recall | 召回术 | ✅；已移除兼容标题 |
+| Recall | 召回术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Shadow Creatures | 暗影生物 | ✅ |
 | Spawn Tentacles | 生成触须 | ✅ |
 | Summon Air Elementals | 召唤气元素 | ✅ |
@@ -886,9 +886,9 @@
 | Cleansing Flame | 净化之焰 | ✅ |
 | Stoke Flames | 煽旺火焰 | 📝；`stoke` 指添燃料使火势更旺，并召出蔓延炼狱 |
 | Flame Wave | 火焰波 | ✅ |
-| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容 |
-| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容 |
-| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容 |
+| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Form（6）
 
@@ -910,10 +910,10 @@
 | Ignite Poison | 点燃毒素 | ✅ |
 | Spit Poison | 喷吐毒液 | 📝；与同名能力及其描述统一 |
 | Poisonous Vapours | 毒气 | ✅；瞬时气体，不形成持续云 |
-| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容 |
-| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容 |
-| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容 |
-| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容 |
+| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Awaken（5）
 
@@ -943,8 +943,8 @@
 | Borgnjor's Revivification | 博格尼尔之复苏 | 🆕；完全治愈仍活着的施法者，不会复活死者 |
 | Borgnjor's Vile Clutch | 博格尼尔之邪恶抓握 | ✅ |
 | Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅；滚石碾过死者并推动幸存者 |
-| Cigotuvi's Degeneration | 西格图维之退化 | ✅；已移除兼容标题，无当前机制可供反推 |
-| Cigotuvi's Embrace | 西格图维之拥抱 | ✅；已移除兼容标题，无当前机制可供反推 |
+| Cigotuvi's Degeneration | 西格图维之退化 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推 |
+| Cigotuvi's Embrace | 西格图维之拥抱 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推 |
 | Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取 |
 | Death's Door | 死亡之门 | ✅；近乎免疫伤害但将生命降至濒死状态 |
 | Dragon's Call | 龙之呼唤 | ✅ |
@@ -1036,10 +1036,10 @@
 | Airstrike | 空袭 | ✅ |
 | Anguish | 哀痛 | 📝 |
 | Animate Dead | 操纵死尸 | ✅；使施法者杀死的活物有概率化作丧尸复起 |
-| Animate Skeleton | 操纵骷髅 | 🆕；已移除兼容标题，统一 `Animate → 操纵` |
+| Animate Skeleton | 操纵骷髅 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；统一 `Animate → 操纵` |
 | Apportation | 隔空取物 | ✅ |
 | Arcjolt | 电弧震击 | ✅ |
-| Aura of Abjuration | 驱逐灵气 | ✅；已移除兼容标题 |
+| Aura of Abjuration | 驱逐灵气 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Avatar Song | 化身之歌 | ✅；限制冒险者远离、眩晕其他生物并可能召来溺魂 |
 | Awaken Armour | 唤醒护甲 | ✅ |
 | Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
@@ -1051,9 +1051,10 @@
 | Beckoning Gale | 招引之风 | 🆕；扭曲目标周围空气，造成伤害并将其拉近 |
 | Berserk Other | 狂暴他人 | ✅；使附近一个盟友进入狂暴 |
 | Berserker Rage | 狂暴之怒 | ✅ |
+| Beastly Appendage | 野兽肢体 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Bestow Arms | 赐予武器 | ✅ |
 | Bind Souls | 束缚灵魂 | 🆕；使附近其他活物死后化为拟像 |
-| Blade Hands | 利刃之手 | ✅；已移除兼容标题 |
+| Blade Hands | 利刃之手 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Bombard | 炮击 | ✅ |
 | Brain Bite | 脑噬 | ✅ |
 | Brothers in Arms | 战友 | 📝 |
@@ -1061,35 +1062,35 @@
 | Cause Fear | 恐惧术 | ✅ |
 | Chain Lightning | 连锁闪电 | ✅；从最近生物开始向外连锁，距离越远伤害越低 |
 | Chain of Chaos | 混沌之链 | ✅ |
-| Chant Fire Storm | 咏唱火焰风暴 | ✅；已移除／TAG 34 兼容标题 |
+| Chant Fire Storm | 咏唱火焰风暴 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Charm | 魅惑 | ✅ |
 | Cleansing Flame | 净化之焰 | ✅ |
 | Cloud Cone | 云雾锥 | ⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审 |
 | Concentrate Venom | 浓缩毒液 | ✅ |
-| Condensation Shield | 凝结之盾 | 🆕 |
+| Condensation Shield | 凝结护盾 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Confuse | 混乱 | ✅ |
 | Conjure Ball Lightning | 召唤球形闪电 | ✅；创造会追敌并爆炸的球状闪电 |
 | Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
-| Control Teleport | 控制传送 | 🆕；已移除兼容标题，修正中文倒装 |
-| Control Undead | 控制亡灵 | 🆕；已移除兼容标题，修正中文倒装 |
-| Control Winds | 控风术 | ✅；已移除兼容标题 |
+| Control Teleport | 控制传送 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装 |
+| Control Undead | 控制亡灵 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装 |
+| Control Winds | 控风术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Corona | 光晕 | 🆕；环绕并勾勒目标轮廓，使其更易被击中 |
-| Corpse Rot | 尸体腐烂 | ✅ |
+| Corpse Rot | 尸体腐烂 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Corrupt | 腐化 | ✅ |
-| Corrupt Body | 腐化躯体 | ✅ |
+| Corrupt Body | 腐化躯体 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Corrupting Pulse | 腐化脉冲 | ✅ |
 | Creeping Frost | 蔓延冰霜 | ✅；从墙壁唤出冻气，冻结并减速墙边敌人 |
 | Crystallising Shot | 结晶射击 | ✅；水晶碎片命中后可能使目标脆化 |
 | Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
-| Darkness | 黑暗术 | ✅ |
+| Darkness | 黑暗术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Death Channel | 死亡通道 | ✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 |
 | Death Rattle | 死亡之响 | ✅；呼出垂死精粹并生成瘴气云 |
 | Debugging Ray | 调试射线 | ✅ |
 | Deflect Missiles | 偏转飞弹 | ✅；排斥力场提高对所有投射物的闪避 |
-| Delayed Fireball | 延迟火球 | ✅；已移除兼容标题 |
+| Delayed Fireball | 延迟火球 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Detonation Catalyst | 引爆催化剂 | ✅ |
 | Diamond Sawblades | 钻石锯片 | ✅ |
 | Dig | 挖掘 | ✅ |
@@ -1103,18 +1104,18 @@
 | Dominate Undead | 支配亡灵 | ✅ |
 | Doomsaying | 宣告厄运 | ✅ |
 | Drain Life | 汲取生命 | 🆕；与 `Drain Magic → 汲取魔力` 统一 |
-| Drain Magic | 汲取魔力 | ✅ |
+| Drain Magic | 汲取魔力 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Dream Dust | 梦尘 | ✅ |
 | Enfeeble | 衰弱 | ✅ |
 | Ensnare | 束缚 | ✅；射出蛛网困住单个目标 |
 | Ensorcelled Hibernation | 冬眠 | ✅ |
 | Entropic Weave | 熵之编织 | ✅ |
-| Ephemeral Infusion | 短暂灌注 | ✅；已移除兼容标题 |
+| Ephemeral Infusion | 短暂灌注 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Eruption | 喷发 | ✅ |
-| Evaporate | 蒸发术 | ✅ |
-| Excruciating Wounds | 剧痛之伤 | ✅ |
+| Evaporate | 蒸发术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Excruciating Wounds | 剧痛之伤 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Fastroot | 速生根须 | 🆕；射出种子，以速生树根缠住并挤压目标 |
-| Fire Brand | 火焰烙印 | ✅ |
+| Fire Brand | 火焰烙印 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Fire Storm | 火焰风暴 | ✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡 |
 | Fireball | 火球 | ✅；投掷会爆炸的火焰球 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
@@ -1123,9 +1124,9 @@
 | Flashing Balestra | 闪跃突刺 | 🆕；`balestra` 为击剑前跃接突刺，灵魂跃出持械攻击 |
 | Flay | 剥皮 | ✅ |
 | Fleetfoot | 轻快脚步 | ✅ |
-| Flight | 飞行术 | ✅ |
+| Flight | 飞行术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Force Lance | 力量之矛 | ✅ |
-| Forceful Dismissal | 强制驱逐 | ✅ |
+| Forceful Dismissal | 强制驱逐 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Forceful Invitation | 强制邀请 | ✅ |
 | Forge Blazeheart Golem | 锻造炽心魔像 | ✅ |
 | Forge Lightning Spire | 锻造闪电尖塔 | ✅ |
@@ -1134,21 +1135,21 @@
 | Fortress Blast | 堡垒冲击 | ✅；以施法者护甲决定伤害的延时动能冲击波 |
 | Foxfire | 狐火 | 🆕 |
 | Freeze | 冰冻 | ✅；相邻单体寒冷攻击，伤害无视护甲 |
-| Freezing Aura | 冰封灵气 | ✅；已移除兼容标题 |
+| Freezing Aura | 冰封灵气 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Freezing Gust | 冰冻阵风 | 🆕；穿透性严寒气流，沿途留下寒气云 |
-| Frenzy | 狂乱术 | ✅ |
+| Frenzy | 狂乱术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Frozen Ramparts | 冰冻壁垒 | ✅；短暂冰封周围墙壁并伤害邻近敌人 |
 | Fugue of the Fallen | 亡灵赋格 | ✅ |
 | Fulminant Prism | 爆裂棱镜 | ✅ |
-| Fulsome Distillation | 精华蒸馏 | ✅ |
+| Fulsome Distillation | 精华蒸馏 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Fulsome Fusillade | 猛烈连射 | ✅ |
 | Funeral Dirge | 葬礼哀歌 | ✅ |
 | Ghostly Fireball | 幽灵火球 | ✅；负能量爆炸使范围内活物衰竭 |
 | Ghostly Sacrifice | 幽灵献祭 | ✅；吞噬友方并产生汲取活物的负能量爆发 |
 | Glaciate | 冰封 | 🆕；锥形寒冰冲击会冰封并减速目标 |
 | Gloom | 阴郁 | ✅ |
-| Goad Beasts | 激怒野兽 | ✅ |
-| Grand Avatar | 大化身 | ✅ |
+| Goad Beasts | 激怒野兽 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Grand Avatar | 大化身 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Grasping Roots | 抓握根须 | ✅ |
 | Grave Claw | 墓爪 | ✅ |
 | Greater Ensnare | 强力束缚 | ✅；命中更高，并在目标附近散布短时蛛网 |
@@ -1156,7 +1157,7 @@
 | Harpoon Shot | 鱼叉射击 | ✅；命中后将目标拉近或使其撞上障碍 |
 | Haste | 加速 | ✅；提高施法者行动速度 |
 | Haste Other | 加速他人 | ✅；提高附近盟友行动速度 |
-| Haste Plants | 加速植物 | ✅；已移除兼容标题 |
+| Haste Plants | 加速植物 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Haunt | 鬼魂缠身 | ✅ |
 | Heal Other | 治愈他人 | ✅；治疗附近一个盟友 |
 | Hellfire Court | 地狱火法庭 | ✅ |
@@ -1164,10 +1165,10 @@
 | Hoarfrost Bullet | 白霜弹 | ✅；火炮发射的冰霜碎片，命中后施加脆霜减速 |
 | Hoarfrost Cannonade | 白霜炮击 | ✅；塑造两座自耗式远程冰霜火炮 |
 | Holy Flames | 神圣火焰 | ✅ |
-| Holy Light | 圣光术 | ✅ |
-| Holy word | 圣言术 | ✅ |
-| Homunculus | 人造人 | ✅ |
-| Hunting Cry | 狩猎战吼 | ✅ |
+| Holy Light | 圣光术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Holy word | 圣言术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Homunculus | 人造人 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Hunting Cry | 狩猎战吼 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Hurl Damnation | 投掷天谴 | 🆕；无视护甲与抗性的 `Damnation` 伤害，非 curse |
 | Hurl Sludge | 投掷污泥 | ✅；剧毒污泥会使目标中毒并浸湿周围 |
 | Hurl Torchlight | 投掷火炬之光 | ✅；暗影火炬光伤害并强化友方亡灵 |
@@ -1177,11 +1178,11 @@
 | Ill Omen | 凶兆 | ✅ |
 | Infernal Servant | 地狱仆从 | ✅ |
 | Infestation | 虫群侵扰 | ✅ |
-| Infusion | 灌注术 | ✅；已移除兼容标题 |
+| Infusion | 灌注术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Injury Bond | 伤害联结 | ✅；与附近盟友联结，替其承担被减免伤害的一半 |
 | Injury Mirror | 伤害反射 | ✅ |
 | Inner Flame | 内焰 | ✅ |
-| Insulation | 绝缘术 | ✅ |
+| Insulation | 绝缘术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Invisibility | 隐身术 | ✅；使施法者隐形 |
 | Invisibility Other | 使他人隐形 | 🆕；使附近盟友隐形 |
 | Iron Shot | 铁弹 | ✅；`shot` 指重型金属弹体，不机械统一为“射击” |
@@ -1195,7 +1196,7 @@
 | Launch Sporangium | 发射孢子囊 | ✅；追踪目标并以酸液爆炸生成原生质体 |
 | Legendary Destruction | 传奇毁灭 | ✅；立刻连续产生两种爆炸法术效果 |
 | Lesser Beckoning | 次级招引 | 🆕；把目标拉至施法者相邻位置，不是召唤法术 |
-| Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |
+| Lethal Infusion | 致命灌注 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
@@ -1211,16 +1212,17 @@
 | Melee | 近战 | ✅ |
 | Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
 | Metabolic Englaciation | 代谢冻结 | 🆕；降低周围生物代谢并减速 |
-| Metal Splinters | 金属碎片 | ✅ |
+| Metal Splinters | 金属碎刺 | ✅ |
 | Might | 强壮 | ✅；法术显示标题，区别于状态/机制域 `Might → 强效` |
 | Might Other | 强壮他人 | ✅；对附近友方施加同类近战伤害增益 |
 | Mindburst | 心智爆发 | ✅ |
 | Minor Healing | 小型治疗 | ✅；治疗施法者身体所受的少量伤害 |
-| Mislead | 误导术 | ✅ |
+| Mislead | 误导术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Momentum Strike | 动量打击 | ✅；借用未来移动能量攻击并令施法者短时无法移动 |
 | Mourning Wail | 哀恸之嚎 | 🆕；吐出遗忘悲恸形成负能量云 |
+| Necromutation | 亡灵变形 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
-| Old Deflect Missiles | 旧版偏转飞弹 | ✅；已移除兼容标题 |
+| Old Deflect Missiles | 旧版偏转飞弹 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Orb of Destruction | 毁灭法球 | ✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球 |
 | Orb of Electricity | 电光球 | ✅；命中时产生大型电能爆炸 |
 | Ostracise | 排斥 | ✅ |
@@ -1232,7 +1234,7 @@
 | Petrify | 石化 | ✅ |
 | Phantom Blitz | 幻影突击 | ✅；发射保有施法者战斗能力的幻影复制体 |
 | Phantom Mirror | 幻影镜 | ✅；制造较脆弱但近似原体的怪物幻影 |
-| Phase Shift | 相位变换 | ✅ |
+| Phase Shift | 相位变换 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Planar Overlay | 位面叠加 | ✅ |
 | Plane Rend | 位面撕裂 | ✅ |
 | Platinum Paragon | 白金典范 | ✅ |
@@ -1245,51 +1247,51 @@
 | Primal Wave | 原初浪潮 | 🆕；召出激流击退目标并留下短时浅水 |
 | Pyroclastic Surge | 火山碎屑涌 | ✅ |
 | Pyrrhic Recollection | 惨胜回忆 | ✅ |
-| Random Effects | 随机效果 | ✅ |
+| Random Effects | 随机效果 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Ravenous Swarm | 饥渴蝠群 | 🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡 |
-| Rearrange the Pieces | 重新布局 | ✅ |
+| Rearrange the Pieces | 重新布局 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Rebounding Blaze | 弹跳烈焰 | ✅ |
 | Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |
 | Regenerate Other | 再生他人 | ✅；恢复量与目标最大生命值成正比 |
-| Regeneration | 再生 | ✅；已移除兼容标题，同步 inventory 实际译名 |
+| Regeneration | 再生 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；同步 inventory 实际译名 |
 | Rending Blade | 撕裂之刃 | ✅；近战命中时在附近敌人间来回撕裂 |
 | Resonance Strike | 共鸣打击 | ✅；经目标附近造物级联并逐个增强 |
-| Resurrect | 复活术 | ✅ |
+| Resurrect | 复活术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
 | Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
-| Ring of Thunder | 雷霆之环 | ✅；已移除兼容标题 |
+| Ring of Thunder | 雷霆之环 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Roll | 翻滚 | ✅ |
-| Sacrifice | 献祭 | ✅；已移除兼容标题 |
+| Sacrifice | 献祭 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Sandblast | 沙爆 | 📝 |
 | Sap Magic | 削弱魔法 | ✅ |
-| Scattershot | 散射术 | ✅ |
+| Scattershot | 散射术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Scorch | 烧焦 | ✅ |
 | Sculpt Simulacrum | 塑造拟像 | ✅ |
 | Seal Doors | 封印门 | ✅ |
 | Searing Ray | 灼热射线 | ✅ |
-| See Invisible | 侦测隐形 | 🆕 |
+| See Invisible | 识破隐形 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Seismic Stomp | 地震践踏 | ✅ |
 | Seracfall | 冰塔崩塌 | ✅ |
-| Shaft Self | 自我竖井 | ✅ |
+| Shaft Self | 自我竖井 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Shatter | 粉碎 | ✅ |
 | Shock | 震击 | ✅ |
 | Shred | 撕裂 | ✅ |
-| Shroud of Golubria | 戈卢布里亚之幕 | ✅ |
+| Shroud of Golubria | 戈卢布里亚之幕 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Sigil of Binding | 束缚符文 | ✅ |
-| Sign of Ruin | 毁灭征兆 | 🆕 |
+| Sign of Ruin | 毁灭印记 | 🆕 |
 | Silence | 沉默 | 🆕 |
-| Silver Blast | 白银冲击 | ✅；已移除兼容标题 |
-| Singularity | 奇点术 | ✅ |
+| Silver Blast | 白银冲击 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Singularity | 奇点术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Siphon Essence | 吸取精华 | ✅ |
 | Siren Song | 塞壬之歌 | ✅；迷魂附近听众，离开施法者视野后解除移动限制 |
 | Sleep | 睡眠 | ✅ |
 | Sleetstrike | 冰雨打击 | ✅ |
-| Slow | 减速 | 📝 |
+| Slow | 缓慢 | 📝 |
 | Smiting | 惩击 | ✅ |
-| Song of Shielding | 护盾之歌 | ✅；已移除兼容标题 |
+| Song of Shielding | 护盾之歌 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Sonic wave | 音波 | ✅ |
 | Soul Splinter | 灵魂分裂 | ✅ |
-| Spectral Weapon | 灵体武器 | ✅ |
+| Spectral Weapon | 灵体武器 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Spellspark Servitor | 法术火花仆从 | ✅ |
 | Sphinx Sisters | 斯芬克斯姐妹 | ✅ |
 | Spit Acid | 喷吐酸液 | ✅；向单个目标喷吐酸液 |
@@ -1304,19 +1306,19 @@
 | Sticks to Snakes | 棍变蛇 | ✅ |
 | Sticky Flame | 黏着火焰 | ✅ |
 | Still Winds | 静止风 | ✅ |
-| Sting | 毒刺 | 🆕 |
+| Sting | 刺痛 | 🆕 |
 | Stoke Flames | 煽旺火焰 | 📝；`stoke` 指添燃料使火势更旺 |
-| Stoneskin | 石肤术 | ✅ |
-| Striking | 打击术 | ✅ |
+| Stoneskin | 石肤术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Striking | 打击术 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Strip Willpower | 剥离意志力 | ✅ |
 | Stunning Burst | 眩晕爆发 | ✅ |
 | Sublimation of Blood | 血液升华 | ✅ |
-| Sunray | 阳光射线 | ✅ |
-| Sure Blade | 精准之刃 | ✅；已移除兼容标题 |
+| Sunray | 阳光射线 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Sure Blade | 精准之刃 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Swiftness | 迅捷 | ✅ |
 | Symbol of Torment | 折磨之符 | ✅ |
 | Teleport Other | 传送他人 | ✅；短暂延迟后尝试将目标传送出施法者视野 |
-| Teleport Self | 自我传送 | ✅；已移除兼容标题 |
+| Teleport Self | 自我传送 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Throw | 投掷 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Throw Ally | 投掷盟友 | ✅ |
 | Throw Barbs | 投掷倒刺 | ✅ |
@@ -1325,9 +1327,9 @@
 | Throw Frost | 投掷冰霜 | ✅ |
 | Throw Icicle | 投掷冰柱 | ✅ |
 | Throw Klown Pie | 投掷小丑派 | ✅ |
-| Tomb of Doroklohe | 多洛克洛之墓 | ✅ |
+| Tomb of Doroklohe | 多洛克洛之墓 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Tremorstone | 震石 | ✅ |
-| Twisted Resurrection | 扭曲复活 | ✅ |
+| Twisted Resurrection | 扭曲复活 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Unleash Destruction | 释放毁灭 | ✅；马科列布能力的虚拟法术标题 |
 | Upheaval | 剧变 | ✅ |
 | Vampiric Draining | 吸血术 | ✅ |
@@ -1337,18 +1339,18 @@
 | Vitrify | 玻璃化 | ✅ |
 | Volatile Blastmotes | 不稳定爆尘 | ✅ |
 | Volley of Thorns | 荆棘齐射 | ✅ |
-| Vortex | 漩涡 | 🆕；已移除兼容标题，与 `Polar Vortex` 统一词根 |
+| Vortex | 漩涡 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；与 `Polar Vortex` 统一词根 |
 | Wall of Brambles | 荆棘之墙 | ✅ |
 | Warning Cry | 警告之嚎 | ✅ |
 | Warp Body | 扭曲身体 | ✅；造成少量伤害和短暂变异，变异过多时改为玻璃化 |
 | Warp Space | 扭曲空间 | ✅；空间裂隙造成范围伤害并可能短距闪现目标 |
-| Warp Weapon | 扭曲武器 | ✅；已移除兼容标题 |
+| Warp Weapon | 扭曲武器 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Waterstrike | 水击 | ✅ |
 | Wind Blast | 风击 | ✅；锥形强风推开生物和云雾，碰撞会造成伤害 |
 | Woodweal | 林木疗愈 | 🆕；借相邻树木的叶与树皮活力治疗伤势 |
 | nonexistent spell | 不存在的法术 | ✅ |
 
-**汇总**：511 法术，✅ 保留 469，📝 修订 30，🆕 新增 12。
+**汇总**：511 法术，✅ 保留 370，📝 修订 15，🆕 新增 28，⚠️ 已移除兼容 98。
 
 ---
 

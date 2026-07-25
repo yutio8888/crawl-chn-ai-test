@@ -44,7 +44,7 @@ ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; sour
 angel	天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Anguish	哀痛	domain=spells; source=EN/ZH; 备注=📝
 Animate Dead	操纵死尸	domain=spells; source=EN/ZH; 备注=✅；使施法者杀死的活物有概率化作丧尸复起
-Animate Skeleton	操纵骷髅	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，统一 `Animate → 操纵
+Animate Skeleton	操纵骷髅	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；统一 `Animate → 操纵
 Antaeus	安泰俄斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Antaeus title	安泰俄斯，悲叹河的守卫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 antennae	触角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -72,7 +72,7 @@ aspiring flesh	渴望之肉	domain=monsters; source=EN/ZH; Scope / comment=monst
 Asterion	阿斯忒里翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 attack	攻击	domain=combat; source=EN/ZH
-Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅；限制冒险者远离、眩晕其他生物并可能召来溺魂
 Awaken	唤醒	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；另有 1 项已移除兼容）
 Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅
@@ -102,6 +102,7 @@ Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
 battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Beam	光束	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅）
+Beastly Appendage	野兽肢体	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Beckoning Gale	招引之风	domain=spells; source=EN/ZH; 备注=🆕；扭曲目标周围空气，造成伤害并将其拉近
 begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -115,7 +116,7 @@ Bind Souls	束缚灵魂	domain=spells; source=EN/ZH; 备注=🆕；使附近其�
 black bear	黑熊	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black draconian	黑龙人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -200,7 +201,7 @@ Cerebov title	塞雷波夫，火与钢之恶魔领主	domain=monster-titles; sou
 cerulean imp	蔚蓝小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅；从最近生物开始向外连锁，距离越远伤害越低
 Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
-Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=✅；已移除／TAG 34 兼容标题
+Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
 Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -210,8 +211,8 @@ cherub	智天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=
 Chuck	查克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Chuck title	收集者查克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 chuckles	咯咯笑着	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
-Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，无当前机制可供反推
-Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，无当前机制可供反推
+Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推
+Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推
 Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备注=✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
@@ -223,7 +224,7 @@ cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source
 Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
 Combustion Breath	爆燃吐息	domain=spells; source=EN/ZH; 备注=✅；射出的挥发余烬会在每个触及生物周围爆炸
 Concentrate Venom	浓缩毒液	domain=spells; source=EN/ZH; 备注=✅
-Condensation Shield	凝结之盾	domain=spells; source=EN/ZH; 备注=🆕
+Condensation Shield	凝结护盾	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Confuse	混乱	domain=spells; source=EN/ZH; 备注=✅
 Confusing Touch	困惑之触	domain=spells; source=EN/ZH; 备注=✅
 Confusion	混乱	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -231,22 +232,22 @@ Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
 Conjuration	咒法系	domain=magic; source=EN/ZH
 Conjurations	咒法系	domain=magic; source=EN/ZH
 Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅；创造会追敌并爆炸的球状闪电
-Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
 Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
 Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
-Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
-Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
-Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除／TAG 34 兼容
+Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
+Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
+Control Winds	控风术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Corona	光晕	domain=spells; source=EN/ZH; 备注=🆕；环绕并勾勒目标轮廓，使其更易被击中
-Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
+Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Corrosion	腐蚀	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Corrosive Bolt	腐蚀箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Corrupt	腐化	domain=spells; source=EN/ZH; 备注=✅
-Corrupt Body	腐化躯体	domain=spells; source=EN/ZH; 备注=✅
+Corrupt Body	腐化躯体	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Corrupting Pulse	腐化脉冲	domain=spells; source=EN/ZH; 备注=✅
 Crazy Yiuf	疯狂的尤夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Crazy Yiuf title	开悟者疯狂的尤夫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -260,7 +261,7 @@ crystal echidna	水晶针鼹	domain=monsters; source=EN/ZH; Scope / comment=mons
 crystal guardian	水晶守护者	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅；水晶碎片命中后可能使目标脆化
 culicivora	库蚊蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 curse	诅咒	domain=core; source=EN/ZH | domain=items; source=EN/ZH
 Curse of Agony	痛苦诅咒	domain=spells; source=EN/ZH; 备注=✅
 curse skull	诅咒颅骨	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -268,7 +269,7 @@ curse toe	诅咒趾	domain=monsters; source=EN/ZH; Scope / comment=monster; sour
 cyclops	独眼巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 daeva	德瓦	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 damage	伤害	domain=combat; source=EN/ZH
-Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=✅
+Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
 Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死精粹并生成瘴气云
@@ -276,10 +277,10 @@ Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；排斥力场提高对所有投射物的闪避
-Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 demon	恶魔	domain=core; source=EN/ZH
-Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=✅
+Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 demonspawn	恶魔裔	domain=species; source=EN/ZH; 复合格式=恶魔裔 + 职业
 Detonation Catalyst	引爆催化剂	domain=spells; source=EN/ZH; 备注=✅
 Diamond Sawblades	钻石锯片	domain=spells; source=EN/ZH; 备注=✅
@@ -318,7 +319,7 @@ dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=ta
 Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
 Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Drain Life	汲取生命	domain=spells; source=EN/ZH; 备注=🆕；与 `Drain Magic → 汲取魔力` 统一
-Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=✅
+Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Draining Gaze	衰竭凝视	domain=spells; source=EN/ZH; 备注=✅；施加 Drain/衰竭，不治疗施法者
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
 Druid's Call	德鲁伊呼唤	domain=spells; source=EN/ZH; 备注=✅；召回同层已有林地生物，非创造召唤物
@@ -337,7 +338,7 @@ Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
 Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅；射出蛛网困住单个目标
 Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
 Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
-Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Ereshkigal	埃列什基伽勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erica	艾丽卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=✅；有毒污泥将附近坚实地面暂时转为毒沼
@@ -345,11 +346,11 @@ Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source
 Erolcha	伊罗查	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
 Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Evaporate	蒸发术	domain=spells; source=EN/ZH; 备注=✅
+Evaporate	蒸发术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 eveningstar	暮星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with morningstar; decision=D-B-017
 Evocations	激活技能	domain=core; source=EN/ZH; 注意事项=**绝不**译为"召唤术"——那是 Summoning
 Evocations	魔力释放	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=✅
+Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 experience	经验值	domain=core; source=EN/ZH
 Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -364,7 +365,7 @@ felid	猫	domain=species; source=EN/ZH; 裁决=[D-A-039]
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=✅
+Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
 Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -372,7 +373,7 @@ Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH
 Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡
 Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
-Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
 Flames	焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flaming Cloud	燃烧云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -381,9 +382,9 @@ Flashing Balestra	闪跃突刺	domain=spells; source=EN/ZH; 备注=🆕；`bales
 Flay	剥皮	domain=spells; source=EN/ZH; 备注=✅
 flee	逃跑	domain=core; source=EN/ZH
 Fleetfoot	轻快脚步	domain=spells; source=EN/ZH; 备注=✅
-Flight	飞行术	domain=spells; source=EN/ZH; 备注=✅
+Flight	飞行术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Force Lance	力量之矛	domain=spells; source=EN/ZH; 备注=✅
-Forceful Dismissal	强制驱逐	domain=spells; source=EN/ZH; 备注=✅
+Forceful Dismissal	强制驱逐	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Forceful Invitation	强制邀请	domain=spells; source=EN/ZH; 备注=✅
 Forge	锻造	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行）
 Forge Blazeheart Golem	锻造炽心魔像	domain=spells; source=EN/ZH; 备注=✅
@@ -399,15 +400,15 @@ Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
 Frances	弗朗西斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Frederick	弗雷德里克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Freeze	冰冻	domain=spells; source=EN/ZH; 备注=✅；相邻单体寒冷攻击，伤害无视护甲
-Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Freezing Cloud	冰冻云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Freezing Gust	冰冻阵风	domain=spells; source=EN/ZH; 备注=🆕；穿透性严寒气流，沿途留下寒气云
-Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=✅
+Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅；短暂冰封周围墙壁并伤害邻近敌人
 Fugue of the Fallen	亡灵赋格	domain=spells; source=EN/ZH; 备注=✅
 Fulminant Prism	爆裂棱镜	domain=spells; source=EN/ZH; 备注=✅
-Fulsome Distillation	精华蒸馏	domain=spells; source=EN/ZH; 备注=✅
+Fulsome Distillation	精华蒸馏	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Fulsome Fusillade	猛烈连射	domain=spells; source=EN/ZH; 备注=✅
 Funeral Dirge	葬礼哀歌	domain=spells; source=EN/ZH; 备注=✅
 Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -428,12 +429,12 @@ Gloom	阴郁	domain=spells; source=EN/ZH; 备注=✅
 Gloorx Vloq	格洛克斯·弗洛克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 gnoll	豺狼人	domain=species; source=EN/ZH; 复合格式=豺狼人 + 职业
 gnoll bouda	豺狼人布达	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Goad Beasts	激怒野兽	domain=spells; source=EN/ZH; 备注=✅
+Goad Beasts	激怒野兽	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 goblin	地精	domain=species; source=EN/ZH; 复合格式=地精 + 职业
 god	神祇 / 神	domain=core; source=EN/ZH; 注意事项=正式语境用"神祇"，口语可用"神"
 Golden Breath	金龙吐息	domain=spells; source=EN/ZH; 备注=🆕
 Gozag	哥萨戈·亿·赛格斯	domain=gods; source=EN/ZH; 类型=音译
-Grand Avatar	大化身	domain=spells; source=EN/ZH; 备注=✅
+Grand Avatar	大化身	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Grasping Roots	抓握根须	domain=spells; source=EN/ZH; 备注=✅
 Grave Claw	墓爪	domain=spells; source=EN/ZH; 备注=✅
 great mace	巨型钉头锤	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
@@ -447,7 +448,7 @@ Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mo
 Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅；命中后将目标拉近或使其撞上障碍
 Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅；提高施法者行动速度
 Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅；提高附近盟友行动速度
-Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Haunt	鬼魂缠身	domain=spells; source=EN/ZH; 备注=✅
 Heal Other	治愈他人	domain=spells; source=EN/ZH; 备注=✅；治疗附近一个盟友
 Heal Wounds	治疗创伤	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
@@ -463,14 +464,14 @@ Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发�
 Hoarfrost Cannonade	白霜炮击	domain=spells; source=EN/ZH; 备注=✅；塑造两座自耗式远程冰霜火炮
 Holy Breath	神圣吐息	domain=spells; source=EN/ZH; 备注=✅
 Holy Flames	神圣火焰	domain=spells; source=EN/ZH; 备注=✅
-Holy Light	圣光术	domain=spells; source=EN/ZH; 备注=✅
-Holy word	圣言术	domain=spells; source=EN/ZH; 备注=✅
-Homunculus	人造人	domain=spells; source=EN/ZH; 备注=✅
+Holy Light	圣光术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Holy word	圣言术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Homunculus	人造人	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 hooves	蹄	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 horns	角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Hunter	猎手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hunting Call	狩猎呼唤	domain=spells; source=EN/ZH; 备注=✅
-Hunting Cry	狩猎战吼	domain=spells; source=EN/ZH; 备注=✅
+Hunting Cry	狩猎战吼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=🆕；无视护甲与抗性的 `Damnation` 伤害，非 curse
 Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅；剧毒污泥会使目标中毒并浸湿周围
 Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅；暗影火炬光伤害并强化友方亡灵
@@ -491,12 +492,12 @@ immune	免疫	domain=combat; source=EN/ZH
 Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
 Infestation	虫群侵扰	domain=spells; source=EN/ZH; 备注=✅
-Infusion	灌注术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Infusion	灌注术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Injury Bond	伤害联结	domain=spells; source=EN/ZH; 备注=✅；与附近盟友联结，替其承担被减免伤害的一半
 Injury Mirror	伤害反射	domain=spells; source=EN/ZH; 备注=✅
 Ink Cloud	墨云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Inner Flame	内焰	domain=spells; source=EN/ZH; 备注=✅
-Insulation	绝缘术	domain=spells; source=EN/ZH; 备注=✅
+Insulation	绝缘术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
@@ -533,10 +534,10 @@ Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅；立
 Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lesser Beckoning	次级招引	domain=spells; source=EN/ZH; 备注=🆕；把目标拉至施法者相邻位置，不是召唤法术
-Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
-Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -575,7 +576,7 @@ Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅；与 `Quicksilver 
 merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
 Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
 Metabolic Englaciation	代谢冻结	domain=spells; source=EN/ZH; 备注=🆕；降低周围生物代谢并减速
-Metal Splinters	金属碎片	domain=spells; source=EN/ZH; 备注=✅
+Metal Splinters	金属碎刺	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅
 Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Might	强壮	domain=spells; source=EN/ZH; 备注=✅；法术显示标题，区别于状态/机制域 `Might → 强效
@@ -585,7 +586,7 @@ Mindburst	心智爆发	domain=spells; source=EN/ZH; 备注=✅
 Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的少量伤害
 minotaur	牛头人	domain=species; source=EN/ZH
 miscast	施法失误	domain=core; source=EN/ZH; 注意事项=非"施法失败"（后者指被中断）
-Mislead	误导术	domain=spells; source=EN/ZH; 备注=✅
+Mislead	误导术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 miss	未命中	domain=combat; source=EN/ZH
 Mlioglotl	姆利奥格洛特尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mnoleg	姆诺雷格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -610,6 +611,7 @@ Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/
 Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅；修复并强化施法者锻造的构装体
 Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Necromancy	死灵术	domain=magic; source=EN/ZH
+Necromutation	亡灵变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Nellie	内莉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Nemelex Xobeh	尼姆雷斯·索布	domain=gods; source=EN/ZH; 类型=音译·U+00B7; 裁决=[D-A-004]
 Nergalle	内尔加勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -624,7 +626,7 @@ Oblivion Howl	湮灭嚎叫	domain=spells; source=EN/ZH; 备注=✅
 octopode	章鱼	domain=species; source=EN/ZH; 裁决=[D-A-040]
 ogre	食人魔	domain=species; source=EN/ZH; 复合格式=食人魔 + 职业
 Okawaru	奥卡瓦鲁	domain=gods; source=EN/ZH; 类型=音译
-Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
 Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅；持续毒害视线内所有生物
@@ -654,7 +656,7 @@ Petrify	石化	domain=spells; source=EN/ZH; 备注=✅
 Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Phantom Blitz	幻影突击	domain=spells; source=EN/ZH; 备注=✅；发射保有施法者战斗能力的幻影复制体
 Phantom Mirror	幻影镜	domain=spells; source=EN/ZH; 备注=✅；制造较脆弱但近似原体的怪物幻影
-Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=✅
+Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Pikel	皮克尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Planar Overlay	位面叠加	domain=spells; source=EN/ZH; 备注=✅
 Plane Rend	位面撕裂	domain=spells; source=EN/ZH; 备注=✅
@@ -665,9 +667,9 @@ pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Poison	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅；复用 Arrow 系列证据 | domain=spells; source=EN/ZH; 备注=✅
-Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容
+Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Poison Magic	毒素魔法	domain=magic; source=EN/ZH
-Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Poisonous	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行 | domain=spells; source=EN/ZH; 备注=✅；复用 Cloud 系列证据
 Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅；瞬时气体，不形成持续云 | domain=spells; source=EN/ZH; 备注=✅
@@ -690,28 +692,28 @@ Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
 Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=✅
+Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Ravenous Swarm	饥渴蝠群	domain=spells; source=EN/ZH; 备注=🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡
-Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=✅
+Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Reaver	掠夺者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Rebounding Blaze	弹跳烈焰	domain=spells; source=EN/ZH; 备注=✅
 Rebounding Chill	弹跳寒流	domain=spells; source=EN/ZH; 备注=🆕；穿透性寒气束可从墙壁反弹并命中两次
-Recall	召回术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Recall	召回术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Recite	吟诵	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=✅；恢复量与目标最大生命值成正比
-Regeneration	再生	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，同步 inventory 实际译名
+Regeneration	再生	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；同步 inventory 实际译名
 remove	卸下	domain=items; source=EN/ZH
 Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅；近战命中时在附近敌人间来回撕裂
 repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅；经目标附近造物级联并逐个增强
-Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
+Resurrect	复活术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH
-Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 roars	咆哮道 / 吼道	domain=dialogue; source=EN/ZH; 适用角色=龙、大型怪物
 Robin	罗宾	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Roll	翻滚	domain=spells; source=EN/ZH; 备注=✅
@@ -720,21 +722,21 @@ Ru	入	domain=gods; source=EN/ZH; 类型=意译（"enter"）
 rugged brown scales	粗糙褐鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Rupert	鲁珀特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Rust Breath	锈蚀吐息	domain=spells; source=EN/ZH; 备注=✅
-Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Saint Roka	圣罗卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Sandblast	沙爆	domain=spells; source=EN/ZH; 备注=📝
 sanguine talisman	血色护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Sap Magic	削弱魔法	domain=spells; source=EN/ZH; 备注=✅
 says	说 / 说道	domain=dialogue; source=EN/ZH; 适用角色=通用
-Scattershot	散射术	domain=spells; source=EN/ZH; 备注=✅
+Scattershot	散射术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
 scroll	卷轴	domain=items; source=EN/ZH
 Sculpt Simulacrum	塑造拟像	domain=spells; source=EN/ZH; 备注=✅
 Seal Doors	封印门	domain=spells; source=EN/ZH; 备注=✅
 Searing Breath	灼热吐息	domain=spells; source=EN/ZH; 备注=📝
 Searing Ray	灼热射线	domain=spells; source=EN/ZH; 备注=✅
-See Invisible	侦测隐形	domain=spells; source=EN/ZH; 备注=🆕
+See Invisible	识破隐形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Seismic Stomp	地震践踏	domain=spells; source=EN/ZH; 备注=✅
 Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅；向同层所有生物暴露目标的位置
 Seracfall	冰塔崩塌	domain=spells; source=EN/ZH; 备注=✅
@@ -756,7 +758,7 @@ Shadow Torpor	暗影麻木	domain=spells; source=EN/ZH; 备注=✅
 Shadow Turret	暗影炮塔	domain=spells; source=EN/ZH; 备注=✅
 Shadowball	暗影球	domain=spells; source=EN/ZH; 备注=✅
 shadows	暗影	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-018
-Shaft Self	自我竖井	domain=spells; source=EN/ZH; 备注=✅
+Shaft Self	自我竖井	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 shaggy fur	浓密皮毛	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Shapeshifter	变形人	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Shapeshifting	变形术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -770,22 +772,23 @@ Short Blades	短刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=s
 shout	喊叫	domain=core; source=EN/ZH; 注意事项=非"吼叫"（那是 roar）
 shouts	喊道	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Shred	撕裂	domain=spells; source=EN/ZH; 备注=✅
-Shroud of Golubria	戈卢布里亚之幕	domain=spells; source=EN/ZH; 备注=✅
+Shroud of Golubria	戈卢布里亚之幕	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Sick	患病	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Sif Muna	西芙·穆娜	domain=gods; source=EN/ZH; 类型=音译·U+00B7; 裁决=[D-A-001]
 Sigil of Binding	束缚符文	domain=spells; source=EN/ZH; 备注=✅
 Sigmund	西格蒙德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Sign of Ruin	毁灭征兆	domain=spells; source=EN/ZH; 备注=🆕
+Sign of Ruin	毁灭印记	domain=spells; source=EN/ZH; 备注=🆕
 Silence	沉默	domain=core; source=EN/ZH; 注意事项=禁止施法/阅读卷轴 | domain=spells; source=EN/ZH; 备注=🆕
-Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
-Singularity	奇点术	domain=spells; source=EN/ZH; 备注=✅
+Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Singularity	奇点术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Siphon Essence	吸取精华	domain=spells; source=EN/ZH; 备注=✅
 Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅；迷魂附近听众，离开施法者视野后解除移动限制
 skill	技能	domain=core; source=EN/ZH
 Sleep	睡眠	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅
 Sleetstrike	冰雨打击	domain=spells; source=EN/ZH; 备注=✅
 slimy green scales	黏滑绿鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
-Slow	减速	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=📝
+Slow	减速	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Slow	缓慢	domain=spells; source=EN/ZH; 备注=📝
 Slug Dart	蛞蝓飞镖	domain=spells; source=EN/ZH; 备注=✅；由飞镖蛞蝓发射硬化甲壳质尖镖
 Smiting	惩击	domain=spells; source=EN/ZH; 备注=✅
 snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟
@@ -793,7 +796,7 @@ snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojourning Bolt	羁旅箭	domain=spells; source=EN/ZH; 备注=📝 现行
-Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Sonic wave	音波	domain=spells; source=EN/ZH; 备注=✅
 Sonja	索尼娅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 soul	灵魂	domain=core; source=EN/ZH
@@ -802,7 +805,7 @@ Spatial Maelstrom	空间乱流	domain=monsters; source=EN/ZH; Scope / comment=mo
 spatial vortex	空间漩涡	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Spawn Tentacles	生成触须	domain=spells; source=EN/ZH; 备注=✅
 Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=✅
+Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 spell	法术	domain=core; source=EN/ZH; 注意事项=泛指
 Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
@@ -826,13 +829,13 @@ Steam cloud	蒸汽云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG
 Sticks to Snakes	棍变蛇	domain=spells; source=EN/ZH; 备注=✅
 Sticky Flame	黏着火焰	domain=spells; source=EN/ZH; 备注=✅
 Still Winds	静止风	domain=spells; source=EN/ZH; 备注=✅
-Sting	毒刺	domain=spells; source=EN/ZH; 备注=🆕
+Sting	刺痛	domain=spells; source=EN/ZH; 备注=🆕
 stinger	毒刺	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Stoke Flames	煽旺火焰	domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺，并召出蔓延炼狱 | domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺
 Stone Arrow	石箭	domain=spells; source=EN/ZH; 备注=✅
-Stoneskin	石肤术	domain=spells; source=EN/ZH; 备注=✅
+Stoneskin	石肤术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-Striking	打击术	domain=spells; source=EN/ZH; 备注=✅
+Striking	打击术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
 strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Stunning Burst	眩晕爆发	domain=spells; source=EN/ZH; 备注=✅
@@ -880,15 +883,15 @@ Summon Water Elementals	召唤水元素	domain=spells; source=EN/ZH; 备注=✅
 Summoner	召唤师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Summoning	召唤系	domain=magic; source=EN/ZH
 Summonings	召唤系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=✅
-Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
 Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
 Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后尝试将目标传送出施法者视野
-Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒术师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
@@ -905,7 +908,7 @@ Throw Klown Pie	投掷小丑派	domain=spells; source=EN/ZH; 备注=✅
 Throwing	投掷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅ 现行；固定词形例外
 Tiamat	提亚马特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=✅
+Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
 Touch	触	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行）
 tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -917,7 +920,7 @@ Trog	特洛格	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-002]
 Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅；提供强力恢复与意志力
 troll	巨魔	domain=species; source=EN/ZH; 复合格式=巨魔 + 职业
 Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅；活化敌方武器使其倒戈
-Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=✅
+Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Unarmed Combat	徒手格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 undead	亡灵	domain=core; source=EN/ZH
 Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅；马科列布能力的虚拟法术标题
@@ -941,7 +944,7 @@ Vitrify	玻璃化	domain=spells; source=EN/ZH; 备注=✅
 Vitrifying Gaze	玻璃化凝视	domain=spells; source=EN/ZH; 备注=✅
 Volatile Blastmotes	不稳定爆尘	domain=spells; source=EN/ZH; 备注=✅
 Volley of Thorns	荆棘齐射	domain=spells; source=EN/ZH; 备注=✅
-Vortex	漩涡	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，与 `Polar Vortex` 统一词根
+Vortex	漩涡	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；与 `Polar Vortex` 统一词根
 vulnerable	脆弱	domain=combat; source=EN/ZH
 Vv	芙芙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Wall of Brambles	荆棘之墙	domain=spells; source=EN/ZH; 备注=✅
@@ -950,7 +953,7 @@ Wanderer	漫游者	domain=backgrounds; source=EN/ZH; Scope / comment=background;
 Warning Cry	警告之嚎	domain=spells; source=EN/ZH; 备注=✅
 Warp Body	扭曲身体	domain=spells; source=EN/ZH; 备注=✅；造成少量伤害和短暂变异，变异过多时改为玻璃化
 Warp Space	扭曲空间	domain=spells; source=EN/ZH; 备注=✅；空间裂隙造成范围伤害并可能短距闪现目标
-Warp Weapon	扭曲武器	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
+Warp Weapon	扭曲武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Warper	折跃者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Waterstrike	水击	domain=spells; source=EN/ZH; 备注=✅
 weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
