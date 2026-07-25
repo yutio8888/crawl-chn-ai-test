@@ -2495,9 +2495,9 @@ Iskenderun's 专名系列完成，不重复计数。
 - [x] 系列裁定登记（`D-C-072`）
 
 验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T182823288832000+0800-57186-aff7f30708d3`。本批裁定后的
+`20260725T182929824503000+0800-60256-156463cba939`。本批裁定后的
 `docs/glossary.md` SHA-256 为
-`0932d0066d6f177c03c952916cb43af86a7a87f5bcf2501c1b19630309859427`；
+`eb00287ea625d3fcae5c5b5c1afc8966687b12ed7922e7a9457bc7b7e6979ef4`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `dfb2d3c1272afacf21d92cce46a0d8ca727c66118ef0fea25ea0735190bbdfa6`。
 

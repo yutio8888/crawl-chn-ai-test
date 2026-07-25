@@ -107,7 +107,7 @@ begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
 Berserk	狂暴	domain=core; source=EN/ZH; 注意事项=近战加成但结束后减速 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近友方进入狂暴
+Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近一个盟友进入狂暴
 Berserker	狂战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Berserker Rage	狂暴之怒	domain=spells; source=EN/ZH; 备注=✅
 Bestow Arms	赐予武器	domain=spells; source=EN/ZH; 备注=✅
@@ -449,7 +449,7 @@ Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=
 Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅；提高附近盟友行动速度
 Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Haunt	鬼魂缠身	domain=spells; source=EN/ZH; 备注=✅
-Heal Other	治愈他人	domain=spells; source=EN/ZH; 备注=✅；治疗附近友方
+Heal Other	治愈他人	domain=spells; source=EN/ZH; 备注=✅；治疗附近一个盟友
 Heal Wounds	治疗创伤	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Hedge Wizard	杂学巫师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
