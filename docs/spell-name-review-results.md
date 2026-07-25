@@ -2602,6 +2602,40 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
 
+## Regeneration 词形系列
+
+边界：英文标题含独立 `Regeneration` 的 2 项法术；1 项现行，
+1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_MASS_REGENERATION` | 现行 | 群体再生 | 使附近所有友方怪物快速再生 | 保留 |
+| `SPELL_REGENERATION` | 已移除兼容 | 再生 | 无当前描述或实现 | 保留 |
+
+名称结论：两项采用 `Regeneration → 再生`，现行范围修饰
+`Mass → 群体`，准确清晰。术语表旧记“快速再生”与 inventory 不符，
+已同步为实际兼容标题“再生”。
+
+描述审阅发现 `Mass Regeneration` 中文错误包含施法者，且漏掉每个目标
+按自身最大生命值计算恢复量；现已按英文修正。
+
+证据：`spl-data.h:3846`—`3854`、`4688`，
+`dat/descript/spells.txt:1298`—`1302`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-076`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T183922443035000+0800-78133-08bcc7e78e87`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`91ad17c22f6f5073f0eff020de5705d0f42929b9a6be9c0d20970957d0b2e1ce`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

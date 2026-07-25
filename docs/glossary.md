@@ -1207,7 +1207,7 @@
 | March of Sorrows | 悲伤行军 | ✅ |
 | Marshlight | 沼泽之光 | ✅ |
 | Mass Confusion | 群体混乱 | ✅ |
-| Mass Regeneration | 群体再生 | ✅ |
+| Mass Regeneration | 群体再生 | ✅；附近所有友方怪物按各自最大生命值快速恢复 |
 | Melee | 近战 | ✅ |
 | Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
 | Metabolic Englaciation | 深度冻结 | ✅ |
@@ -1251,7 +1251,7 @@
 | Rebounding Blaze | 弹跳烈焰 | ✅ |
 | Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |
 | Regenerate Other | 再生他人 | ✅；恢复量与目标最大生命值成正比 |
-| Regeneration | 快速再生 | ✅ |
+| Regeneration | 再生 | ✅；已移除兼容标题，同步 inventory 实际译名 |
 | Rending Blade | 撕裂之刃 | ✅；近战命中时在附近敌人间来回撕裂 |
 | Resonance Strike | 共鸣打击 | ✅；经目标附近造物级联并逐个增强 |
 | Resurrect | 复活术 | ✅ |

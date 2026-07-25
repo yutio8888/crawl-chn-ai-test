@@ -2498,6 +2498,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-076 — Spell name review: Regeneration 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Mass Regeneration → 群体再生` 与 inventory 实际使用的
+  `Regeneration → 再生`；同步术语表旧记录“快速再生”。
+- **Series rule**: `Regeneration → 再生`；范围修饰 `Mass → 群体`。
+- **Rationale**: “群体再生”准确表示对附近所有友方怪物施加再生，
+  基础标题“再生”简洁且与系列词根一致。
+- **Description corrections**: 修正 `Mass Regeneration` 错误包含施法者，
+  并补回每个目标的恢复量与其最大生命值成正比。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3056,3 +3077,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-073 | Spell name review — Vortex 词形系列 | 1 current + 1 axed；1 rename + wording fixes | active |
 | D-C-074 | Spell name review — Strike 词形系列 | 2 current；no text fixes | active |
 | D-C-075 | Spell name review — Sacrifice 词形系列 | 1 current + 1 axed；1 description retranslation | active |
+| D-C-076 | Spell name review — Regeneration 词形系列 | 1 current + 1 axed；1 description fix + glossary sync | active |

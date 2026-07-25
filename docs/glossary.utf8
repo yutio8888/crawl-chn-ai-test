@@ -563,7 +563,7 @@ Margery	玛杰丽	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 Marshlight	沼泽之光	domain=spells; source=EN/ZH; 备注=✅
 Martyr's Knell	殉道者之丧钟	domain=spells; source=EN/ZH; 备注=✅；殉道者灵魂替盟友分担伤害
 Mass Confusion	群体混乱	domain=spells; source=EN/ZH; 备注=✅
-Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅
+Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅；附近所有友方怪物按各自最大生命值快速恢复
 Maurice	莫里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Maxwell's Capacitive Coupling	麦克斯韦之电容耦合	domain=spells; source=EN/ZH; 备注=✅；专名统一为“麦克斯韦”
 Maxwell's Portable Piledriver	麦克斯韦之便携打桩机	domain=spells; source=EN/ZH; 备注=✅；空间压缩后将整列生物推向障碍物
@@ -700,7 +700,7 @@ Rebounding Chill	弹跳寒流	domain=spells; source=EN/ZH; 备注=🆕；穿透�
 Recall	召回术	domain=spells; source=EN/ZH; 备注=✅
 Recite	吟诵	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=✅；恢复量与目标最大生命值成正比
-Regeneration	快速再生	domain=spells; source=EN/ZH; 备注=✅
+Regeneration	再生	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，同步 inventory 实际译名
 remove	卸下	domain=items; source=EN/ZH
 Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅；近战命中时在附近敌人间来回撕裂
 repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

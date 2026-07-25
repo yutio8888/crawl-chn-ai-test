@@ -1790,7 +1790,8 @@ Magnavolt spell
 %%%%
 Mass Regeneration spell
 
-暂时大幅提高施法者和所有附近盟友的生命值恢复速度。
+使附近所有友方怪物在短时间内快速再生。
+每个目标的恢复量都与其自身最大生命值成正比。
 %%%%
 Maxwell's Portable Piledriver spell
 
