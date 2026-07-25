@@ -36,6 +36,7 @@ REPO="$TMP_ROOT/repo"
 mkdir -p "$REPO/crawl-ref/source" "$REPO/docs" "$REPO/.claude/scripts"
 echo '# glossary' > "$REPO/docs/glossary.md"
 cp "$SMOKE_SCRIPT" "$REPO/.claude/scripts/smoke_test.sh"
+cp "$SCRIPT_DIR/../run_with_timeout.py" "$REPO/.claude/scripts/run_with_timeout.py"
 chmod +x "$REPO/.claude/scripts/smoke_test.sh"
 
 # Create a fake init.txt
@@ -69,16 +70,11 @@ echo "OK"
 exit 0
 SCRIPT
 chmod +x "$REPO/crawl-ref/source/crawl"
-# Need timeout tool
-if command -v timeout &>/dev/null; then
-    set +e
-    (cd "$REPO" && bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/normal.out" 2>&1
-    RC=$?
-    set -e
-    assert_rc "normal binary exits 0" 0 "$RC"
-else
-    fail "timeout tool not available for test 2"
-fi
+set +e
+(cd "$REPO" && bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/normal.out" 2>&1
+RC=$?
+set -e
+assert_rc "normal binary exits 0" 0 "$RC"
 
 # ── Test 3: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"

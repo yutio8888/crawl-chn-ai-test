@@ -282,7 +282,8 @@ async function removeWorktree(input, context) {
   const { mainRoot } = await discoverMainRoot(exec, cwd, signal);
   const relativePath = relativeWorktreePath(name);
   const absolutePath = expectedAbsolutePath(mainRoot, name);
-  if (pathIsInside(path.resolve(cwd), absolutePath)) throw new Error("cannot remove the worktree containing the active Pi session");
+  const activeCwd = await realpath(cwd);
+  if (pathIsInside(activeCwd, absolutePath)) throw new Error("cannot remove the worktree containing the active Pi session");
 
   const records = await inventory(exec, mainRoot, signal);
   const record = records.find((candidate) => path.resolve(candidate.path) === absolutePath);

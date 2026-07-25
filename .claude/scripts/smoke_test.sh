@@ -10,7 +10,7 @@
 # Exit codes:
 #   0 — normal run, no issues found (or empty output with 0 exit)
 #   1 — protocol leak, English residue, or crash detected
-#   2 — binary or timeout tool missing
+#   2 — binary or portable timeout helper missing
 #   124 — child timeout (output still scanned for issues)
 #
 # Note: crawl's ncurses console mode reads from /dev/tty, not stdin,
@@ -27,6 +27,8 @@ SOURCE_DIR="crawl-ref/source"
 CRAWL="$SOURCE_DIR/crawl"
 ZH_OUT="/tmp/crawl_smoke_zh_$$.txt"
 TIMEOUT_SEC=10
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TIMEOUT_RUNNER="$SCRIPT_DIR/run_with_timeout.py"
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
@@ -36,9 +38,9 @@ if [ ! -x "$CRAWL" ]; then
     exit 2
 fi
 
-# Exit 2 if timeout tool missing
-if ! command -v timeout &>/dev/null; then
-    echo "Required tool 'timeout' not found" >&2
+# Exit 2 if the repository-owned timeout helper is missing
+if [ ! -f "$TIMEOUT_RUNNER" ]; then
+    echo "Portable timeout helper not found at $TIMEOUT_RUNNER" >&2
     exit 2
 fi
 
@@ -64,7 +66,8 @@ echo 'language = zh' > "$SOURCE_DIR/init.txt"
 # strings in printf/fprintf-based messages.
 # Capturing both stdout and stderr; child exit preserved.
 CHILD_RC=0
-timeout "$TIMEOUT_SEC" "$CRAWL" > "$ZH_OUT" 2>&1 || CHILD_RC=$?
+python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" -- \
+    "$CRAWL" > "$ZH_OUT" 2>&1 || CHILD_RC=$?
 
 # Acceptable: 0 (normal exit) or 124 (timeout). Any other rc/signal → exit 1.
 if [ "$CHILD_RC" -ne 0 ] && [ "$CHILD_RC" -ne 124 ]; then
@@ -81,15 +84,15 @@ echo ""
 # Lua identifiers and .des tags that must never appear in ZH output.
 echo "--- Protocol leaks ---"
 PROTOCOL_PATTERNS=(
-    '\.des\b'
-    'you\.race\b'
-    'you\.god\b'
+    '\.des([^[:alnum:]_]|$)'
+    'you\.race([^[:alnum:]_]|$)'
+    'you\.god([^[:alnum:]_]|$)'
 )
 PROTOCOL_COUNT=0
 for pat in "${PROTOCOL_PATTERNS[@]}"; do
-    if grep -qPn "$pat" "$ZH_OUT" 2>/dev/null; then
+    if grep -qEn "$pat" "$ZH_OUT" 2>/dev/null; then
         echo "  PROTOCOL: $pat"
-        grep -nP "$pat" "$ZH_OUT" | head -5 | sed 's/^/     /'
+        grep -nE "$pat" "$ZH_OUT" | head -5 | sed 's/^/     /'
         PROTOCOL_COUNT=$((PROTOCOL_COUNT + 1))
         ERRORS=$((ERRORS + 1))
     fi
@@ -103,18 +106,18 @@ fi
 # Word-boundary matching (no ^ anchor) — output may contain CSI escapes.
 echo "--- English residue ---"
 EN_UI=(
-    'Hit Points\b'
-    'Magic Points\b'
-    'Strength\b'
-    'Intelligence\b'
-    'Dexterity\b'
-    'Armour Class\b'
-    'Evasion\b'
-    'Shield\b'
+    'Hit Points([^[:alnum:]_]|$)'
+    'Magic Points([^[:alnum:]_]|$)'
+    'Strength([^[:alnum:]_]|$)'
+    'Intelligence([^[:alnum:]_]|$)'
+    'Dexterity([^[:alnum:]_]|$)'
+    'Armour Class([^[:alnum:]_]|$)'
+    'Evasion([^[:alnum:]_]|$)'
+    'Shield([^[:alnum:]_]|$)'
 )
 RESIDUE_COUNT=0
 for pat in "${EN_UI[@]}"; do
-    if grep -qPn "$pat" "$ZH_OUT" 2>/dev/null; then
+    if grep -qEn "$pat" "$ZH_OUT" 2>/dev/null; then
         echo "  RESIDUE: $pat"
         RESIDUE_COUNT=$((RESIDUE_COUNT + 1))
         ERRORS=$((ERRORS + 1))
@@ -126,9 +129,9 @@ fi
 
 # ── Check 3: Crashes ──────────────────────────────────────────────────
 echo "--- Crashes ---"
-if grep -qPi '(Segmentation fault|Aborted|assertion failed|core dumped|SIGSEGV|SIGABRT)' "$ZH_OUT" 2>/dev/null; then
+if grep -qiE '(Segmentation fault|Aborted|assertion failed|core dumped|SIGSEGV|SIGABRT)' "$ZH_OUT" 2>/dev/null; then
     echo "  CRASH detected"
-    grep -nPi '(Segmentation fault|Aborted|assertion failed)' "$ZH_OUT" | head -10 | sed 's/^/     /'
+    grep -niE '(Segmentation fault|Aborted|assertion failed)' "$ZH_OUT" | head -10 | sed 's/^/     /'
     ERRORS=$((ERRORS + 1))
 else
     echo "  No crashes"

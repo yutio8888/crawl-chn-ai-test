@@ -18,6 +18,7 @@ DISCOVERED=()
 EXECUTED=()
 MAX_JOBS="${ZH_TOOLING_TEST_JOBS:-4}"
 ACTIVE=0
+ACTIVE_PIDS=()
 TEST_LOG_DIR=$(mktemp -d)
 
 cleanup() {
@@ -80,20 +81,26 @@ requires_foreground() {
     [[ "$(basename "$1")" == "test_post_coder_cleanup.sh" ]]
 }
 
+wait_oldest_worker() {
+    local pid="${ACTIVE_PIDS[0]}"
+    wait "$pid"
+    ACTIVE_PIDS=("${ACTIVE_PIDS[@]:1}")
+    ACTIVE=$((ACTIVE - 1))
+}
+
 for index in "${!DISCOVERED[@]}"; do
     if requires_foreground "${DISCOVERED[$index]}"; then
         continue
     fi
     (run_test_worker "$index" "${DISCOVERED[$index]}") &
+    ACTIVE_PIDS+=("$!")
     ACTIVE=$((ACTIVE + 1))
     if [[ "$ACTIVE" -ge "$MAX_JOBS" ]]; then
-        wait -n
-        ACTIVE=$((ACTIVE - 1))
+        wait_oldest_worker
     fi
 done
 while [[ "$ACTIVE" -gt 0 ]]; do
-    wait -n
-    ACTIVE=$((ACTIVE - 1))
+    wait_oldest_worker
 done
 
 # Run signal-sensitive tests in the foreground after parallel workers finish.
@@ -123,16 +130,17 @@ done
 # Require set equality between discovered and executed
 if [ "${#DISCOVERED[@]}" -ne "${#EXECUTED[@]}" ]; then
     echo "Test count mismatch: discovered ${#DISCOVERED[@]}, executed ${#EXECUTED[@]}" >&2
-    # Build lists for comparison
-    declare -A discovered_set
+    # Report missing entries without Bash 4 associative arrays.
     for t in "${DISCOVERED[@]}"; do
-        discovered_set["$t"]=1
-    done
-    for t in "${EXECUTED[@]}"; do
-        unset 'discovered_set[$t]'
-    done
-    for t in "${!discovered_set[@]}"; do
-        echo "  Not executed: $(basename "$t")" >&2
+        executed=0
+        for completed in "${EXECUTED[@]}"; do
+            if [[ "$t" == "$completed" ]]; then
+                executed=1
+                break
+            fi
+        done
+        [[ "$executed" -eq 1 ]] \
+            || echo "  Not executed: $(basename "$t")" >&2
     done
     FAIL=$((FAIL + 1))
 fi

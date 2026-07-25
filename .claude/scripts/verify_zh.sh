@@ -163,7 +163,8 @@ fi
 for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do
     digest_value="${!digest_name}"
     if [[ -n "$digest_value" && ! "$digest_value" =~ ^[0-9a-f]{64}$ ]]; then
-        argument_error "${digest_name,,} must be a lowercase SHA-256"
+        digest_label=$(printf '%s' "$digest_name" | tr '[:upper:]' '[:lower:]')
+        argument_error "$digest_label must be a lowercase SHA-256"
     fi
 done
 

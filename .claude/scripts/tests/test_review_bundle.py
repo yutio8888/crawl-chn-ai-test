@@ -380,6 +380,39 @@ raise SystemExit(7 if mode == 'fail' else 0)
             hashlib.sha256(MODULE.canonical_json_bytes(identity)).hexdigest(),
         )
 
+    def test_checkout_root_alias_is_safe_but_descendant_symlink_is_rejected(
+        self,
+    ) -> None:
+        physical_repo = Path(os.path.realpath(self.repo))
+        if physical_repo != Path(os.path.abspath(self.repo)):
+            resolved, relative = MODULE._path_under_checkout(
+                physical_repo, self.verifier, "trusted verifier"
+            )
+            self.assertEqual(".trusted/fake_verify.py", relative)
+            self.assertEqual(
+                os.path.realpath(self.verifier),
+                os.path.realpath(resolved),
+            )
+
+        alias = self.temp / "checkout-alias"
+        alias.symlink_to(self.repo, target_is_directory=True)
+        aliased_verifier = alias / ".trusted/fake_verify.py"
+        with self.assertRaisesRegex(
+            MODULE.UnsafeObjectError, "alias must be a real directory"
+        ):
+            MODULE._path_under_checkout(
+                self.repo, aliased_verifier, "trusted verifier"
+            )
+
+        linked = self.repo / "linked-verifier.py"
+        linked.symlink_to(self.verifier)
+        with self.assertRaisesRegex(
+            MODULE.UnsafeObjectError, "may not contain symlinks"
+        ):
+            MODULE._path_under_checkout(
+                self.repo, linked, "trusted verifier"
+            )
+
     def test_routing_and_readiness_are_cryptographically_bound(self) -> None:
         created = self.create()
         bundle_path = Path(created["bundle_path"])

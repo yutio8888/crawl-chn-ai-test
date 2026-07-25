@@ -221,8 +221,19 @@ else
     fail "Bot checker rejected the Lua producer's exact L2 marker order"
 fi
 
-sed '/portal_late_translation/{h;d}; /item_trigger_identity/{p;x}' \
-    "$L2_LOG" > "$L2_LOG.mutated"
+awk '
+    /portal_late_translation/ { portal = $0; next }
+    /item_trigger_identity/ {
+        print
+        if (portal != "") {
+            print portal
+            portal = ""
+        }
+        next
+    }
+    { print }
+    END { if (portal != "") print portal }
+' "$L2_LOG" > "$L2_LOG.mutated"
 if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
     --bot-stderr "$L2_LOG.mutated" --bot-manifest issue68-l2 \
     >/dev/null 2>&1; then

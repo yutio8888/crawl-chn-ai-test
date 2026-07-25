@@ -47,7 +47,7 @@ check_entity() {
     echo "--- $label (correct: $correct) ---"
     for wrong in "$@"; do
         local found
-        found=$(grep -rn "$wrong" "$SOURCEDIR" "${GREP_SCOPE[@]}" 2>/dev/null | grep -vE "$EXCLUDE_PATTERN" || true)
+        found=$(grep -rn "${GREP_SCOPE[@]}" "$wrong" "$SOURCEDIR" 2>/dev/null | grep -vE "$EXCLUDE_PATTERN" || true)
         if [ -n "$found" ]; then
             echo "  ❌ Found rejected name '$wrong':"
             echo "$found" | while IFS= read -r line; do
@@ -144,10 +144,20 @@ do_rulings() {
     # Check for conj_verb called with Chinese string arguments (pattern: conj_verb("中...))
     echo "--- conj_verb with Chinese strings (should be none) ---"
     local cv_found
-    cv_found=$(grep -rn 'conj_verb(' "$SOURCEDIR" "${GREP_SCOPE[@]}" 2>/dev/null | grep -vE "$EXCLUDE_PATTERN" || true)
+    cv_found=$(grep -rn "${GREP_SCOPE[@]}" 'conj_verb(' "$SOURCEDIR" 2>/dev/null | grep -vE "$EXCLUDE_PATTERN" || true)
     # Filter: show only lines where a Chinese string (CJK char) appears near conj_verb
     local cv_zh
-    cv_zh=$(echo "$cv_found" | grep -P '[\x{2E80}-\x{9FFF}]' || true)
+    cv_zh=$(printf '%s\n' "$cv_found" | python3 -c '
+import sys
+
+for line in sys.stdin:
+    if any(
+        "\u2e80" <= character <= "\u9fff"
+        or "\uf900" <= character <= "\ufaff"
+        for character in line
+    ):
+        sys.stdout.write(line)
+')
     if [ -n "$cv_zh" ]; then
         echo "  ❌ conj_verb called with Chinese string:"
         echo "$cv_zh" | while IFS= read -r line; do echo "     $line"; done

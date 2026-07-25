@@ -339,7 +339,36 @@ def _path_under_checkout(
     try:
         relative = path.relative_to(top).as_posix()
     except ValueError as exc:
-        raise ReviewBundleError(f"{label} must be under the target checkout") from exc
+        # macOS exposes the same temporary directory through /var and
+        # /private/var. Accept an equivalent alias for the checkout root, but
+        # never resolve away a symlink inside the checkout: descendants are
+        # still checked component by component with lstat below.
+        physical_top = Path(os.path.realpath(top))
+        physical_path = Path(os.path.realpath(path))
+        try:
+            physical_relative = physical_path.relative_to(physical_top)
+        except ValueError:
+            raise ReviewBundleError(
+                f"{label} must be under the target checkout"
+            ) from exc
+        alias_top = path
+        for _part in physical_relative.parts:
+            alias_top = alias_top.parent
+        if Path(os.path.realpath(alias_top)) != physical_top:
+            raise ReviewBundleError(
+                f"{label} must be under the target checkout"
+            ) from exc
+        alias_info = _lstat(alias_top)
+        if (
+            alias_info is None
+            or stat.S_ISLNK(alias_info.st_mode)
+            or not stat.S_ISDIR(alias_info.st_mode)
+        ):
+            raise UnsafeObjectError(
+                f"{label} checkout alias must be a real directory: {alias_top}"
+            )
+        top = alias_top
+        relative = physical_relative.as_posix()
     relative = _safe_relative_path(relative, label)
     current = top
     for part in Path(relative).parts:
@@ -349,8 +378,9 @@ def _path_under_checkout(
             raise ReviewBundleError(f"{label} does not exist: {current}")
         if stat.S_ISLNK(info.st_mode):
             raise UnsafeObjectError(f"{label} path may not contain symlinks: {current}")
-    _require_regular_file(path, label)
-    return path, relative
+    lexical_path = top / relative
+    _require_regular_file(lexical_path, label)
+    return lexical_path, relative
 
 
 def _lstat(path: Path) -> os.stat_result | None:
@@ -476,8 +506,8 @@ def _read_regular_bytes(path: Path) -> bytes:
         os.close(fd)
 
 
-def _rename_noreplace(source: Path, target: Path) -> None:
-    """Atomically rename without replacing an existing deterministic object."""
+def _atomic_rename_noreplace(source: Path, target: Path) -> None:
+    """Atomically rename a path without replacing an existing target."""
     libc = ctypes.CDLL(None, use_errno=True)
     renameat2 = getattr(libc, "renameat2", None)
     if renameat2 is not None:
@@ -503,6 +533,35 @@ def _rename_noreplace(source: Path, target: Path) -> None:
             raise FileExistsError(error, os.strerror(error), os.fspath(target))
         if error not in (errno.ENOSYS, errno.EINVAL):
             raise OSError(error, os.strerror(error), os.fspath(target))
+
+    renamex_np = getattr(libc, "renamex_np", None)
+    if renamex_np is not None:
+        renamex_np.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint)
+        renamex_np.restype = ctypes.c_int
+        result = renamex_np(
+            os.fsencode(source),
+            os.fsencode(target),
+            0x00000004,  # Darwin RENAME_EXCL
+        )
+        if result == 0:
+            return
+        error = ctypes.get_errno()
+        if error == errno.EEXIST:
+            raise FileExistsError(error, os.strerror(error), os.fspath(target))
+        if error not in (errno.ENOSYS, errno.EINVAL, errno.ENOTSUP):
+            raise OSError(error, os.strerror(error), os.fspath(target))
+
+    raise OSError(errno.ENOSYS, "atomic no-replace rename is unavailable")
+
+
+def _rename_noreplace(source: Path, target: Path) -> None:
+    """Atomically publish a regular file without replacing an existing object."""
+    try:
+        _atomic_rename_noreplace(source, target)
+        return
+    except OSError as exc:
+        if exc.errno != errno.ENOSYS:
+            raise
 
     # Portable fail-closed fallback.  link() performs the no-replace atomic
     # publication; unlinking the source completes the same-directory move.
@@ -575,24 +634,10 @@ def _atomic_publish_directory(source: Path, target: Path) -> None:
     """Publish a fully fsynced staging directory without replacing evidence."""
     _require_directory(source, "attempt staging directory")
     _require_directory(target.parent, "attempts directory")
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
-        raise OSError(errno.ENOSYS, "atomic no-replace directory rename is unavailable")
-    renameat2.argtypes = (
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    )
-    renameat2.restype = ctypes.c_int
-    result = renameat2(-100, os.fsencode(source), -100, os.fsencode(target), 1)
-    if result:
-        error = ctypes.get_errno()
-        if error == errno.EEXIST:
-            raise ContentConflictError(f"attempt id already exists: {target.name}")
-        raise OSError(error, os.strerror(error), os.fspath(target))
+    try:
+        _atomic_rename_noreplace(source, target)
+    except FileExistsError as exc:
+        raise ContentConflictError(f"attempt id already exists: {target.name}") from exc
     _fsync_directory(target.parent)
 
 
@@ -944,10 +989,10 @@ def _resolve_bundle_path(
         roots: list[Path] = []
         for resolver in (evidence_root, legacy_evidence_root):
             try:
-                roots.append(Path(os.path.abspath(os.fspath(resolver(repo)))))
+                roots.append(Path(os.path.realpath(resolver(repo))))
             except ReviewBundleError:
                 pass
-        if path.parent not in roots:
+        if Path(os.path.realpath(path.parent)) not in roots:
             raise ReviewBundleError("bundle path is outside the v3/v4 evidence roots")
     else:
         path = git_common_dir(repo).joinpath(*EVIDENCE_PARTS, raw)
@@ -1372,20 +1417,143 @@ def _attempt_digest(path: Path) -> str:
 
 
 def _proc_start_token(pid: int) -> str | None:
+    if sys.platform == "darwin":
+        return _darwin_proc_start_token(pid)
     try:
         fields = Path(f"/proc/{pid}/stat").read_text(encoding="ascii").split()
     except (FileNotFoundError, OSError, UnicodeDecodeError):
-        return None
+        return _ps_start_token(pid)
     return fields[21] if len(fields) > 21 else None
 
 
+class _DarwinProcBsdInfo(ctypes.Structure):
+    _fields_ = [
+        ("pbi_flags", ctypes.c_uint32),
+        ("pbi_status", ctypes.c_uint32),
+        ("pbi_xstatus", ctypes.c_uint32),
+        ("pbi_pid", ctypes.c_uint32),
+        ("pbi_ppid", ctypes.c_uint32),
+        ("pbi_uid", ctypes.c_uint32),
+        ("pbi_gid", ctypes.c_uint32),
+        ("pbi_ruid", ctypes.c_uint32),
+        ("pbi_rgid", ctypes.c_uint32),
+        ("pbi_svuid", ctypes.c_uint32),
+        ("pbi_svgid", ctypes.c_uint32),
+        ("rfu_1", ctypes.c_uint32),
+        ("pbi_comm", ctypes.c_char * 16),
+        ("pbi_name", ctypes.c_char * 32),
+        ("pbi_nfiles", ctypes.c_uint32),
+        ("pbi_pgid", ctypes.c_uint32),
+        ("pbi_pjobc", ctypes.c_uint32),
+        ("e_tdev", ctypes.c_uint32),
+        ("e_tpgid", ctypes.c_uint32),
+        ("pbi_nice", ctypes.c_int32),
+        ("pbi_start_tvsec", ctypes.c_uint64),
+        ("pbi_start_tvusec", ctypes.c_uint64),
+    ]
+
+
+def _darwin_proc_start_token(pid: int) -> str | None:
+    """Read a process start token through macOS libproc without spawning ps."""
+    try:
+        libproc = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+    except OSError:
+        return None
+    proc_pidinfo = libproc.proc_pidinfo
+    proc_pidinfo.argtypes = [
+        ctypes.c_int,
+        ctypes.c_int,
+        ctypes.c_uint64,
+        ctypes.c_void_p,
+        ctypes.c_int,
+    ]
+    proc_pidinfo.restype = ctypes.c_int
+    info = _DarwinProcBsdInfo()
+    size = ctypes.sizeof(info)
+    received = proc_pidinfo(
+        pid, 3, 0, ctypes.byref(info), size  # PROC_PIDTBSDINFO
+    )
+    if received != size or info.pbi_pid != pid:
+        return None
+    return f"darwin:{info.pbi_start_tvsec}:{info.pbi_start_tvusec}"
+
+
+class _DarwinTimeval(ctypes.Structure):
+    _fields_ = [
+        ("tv_sec", ctypes.c_long),
+        ("tv_usec", ctypes.c_int32),
+    ]
+
+
+def _darwin_boot_id() -> str | None:
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+        sysctlbyname = libc.sysctlbyname
+    except (AttributeError, OSError):
+        return None
+    sysctlbyname.argtypes = [
+        ctypes.c_char_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_void_p,
+        ctypes.c_size_t,
+    ]
+    sysctlbyname.restype = ctypes.c_int
+    boot = _DarwinTimeval()
+    size = ctypes.c_size_t(ctypes.sizeof(boot))
+    if sysctlbyname(
+        b"kern.boottime", ctypes.byref(boot), ctypes.byref(size), None, 0
+    ):
+        return None
+    if size.value < ctypes.sizeof(boot) or boot.tv_sec <= 0:
+        return None
+    return f"darwin-boot:{boot.tv_sec}:{boot.tv_usec}"
+
+
+def _ps_start_token(pid: int) -> str | None:
+    """Return a stable process start token on systems without procfs."""
+    try:
+        proc = subprocess.run(
+            ["/bin/ps", "-o", "lstart=", "-p", str(pid)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+            env={"PATH": TRUSTED_SYSTEM_PATH, "LC_ALL": "C"},
+        )
+    except OSError:
+        return None
+    if proc.returncode:
+        return None
+    try:
+        value = proc.stdout.decode("ascii", errors="strict")
+    except UnicodeDecodeError:
+        return None
+    normalized = " ".join(value.split())
+    return f"ps:{normalized}" if normalized else None
+
+
 def _boot_id() -> str | None:
+    if sys.platform == "darwin":
+        native = _darwin_boot_id()
+        if native:
+            return native
+        # Sandboxed macOS processes may deny kern.boottime and virtualize the
+        # monotonic clock per process. The run directory identity is stable
+        # across those processes; the independently checked absolute process
+        # start timestamp still prevents PID-reuse false positives.
+        try:
+            run_info = os.stat("/private/var/run", follow_symlinks=False)
+            birth_ns = int(run_info.st_birthtime * 1_000_000_000)
+        except (AttributeError, OSError):
+            return None
+        return f"darwin-run:{run_info.st_dev}:{run_info.st_ino}:{birth_ns}"
     try:
         return Path("/proc/sys/kernel/random/boot_id").read_text(
             encoding="ascii"
         ).strip()
     except (FileNotFoundError, OSError, UnicodeDecodeError):
-        return None
+        token = _ps_start_token(1)
+        return f"pid1:{token}" if token else None
 
 
 def _running_marker_live(marker: dict[str, Any]) -> bool:
@@ -1620,9 +1788,9 @@ def _validate_bundle_locked(
     legacy = schema == LEGACY_BUNDLE_SCHEMA
     expected_root_parts = LEGACY_EVIDENCE_PARTS if legacy else EVIDENCE_PARTS
     expected_root = Path(
-        os.path.abspath(os.fspath(git_common_dir(repo).joinpath(*expected_root_parts)))
+        os.path.realpath(git_common_dir(repo).joinpath(*expected_root_parts))
     )
-    actual_root = Path(os.path.abspath(os.fspath(bundle_path.parent)))
+    actual_root = Path(os.path.realpath(bundle_path.parent))
     if actual_root != expected_root:
         raise ReviewBundleError(
             f"{schema} bundle is stored outside its required evidence namespace"

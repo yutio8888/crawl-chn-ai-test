@@ -56,7 +56,6 @@ if [ ${#WORKTREES[@]} -ge 2 ]; then
     echo ""
     echo "--- Key overlap analysis ---"
 
-    declare -A ALL_KEYS
     for WT in "${WORKTREES[@]}"; do
         git diff "$TARGET..$WT" -- "$SOURCE_TXT" > "$TMPDIR/$WT.diff" 2>/dev/null || true
         if [ ! -s "$TMPDIR/$WT.diff" ]; then

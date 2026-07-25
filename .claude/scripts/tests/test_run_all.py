@@ -48,7 +48,7 @@ class RunAllTests(unittest.TestCase):
             env.update({"ZH_TOOLING_TEST_JOBS": "2",
                         "RUN_ALL_TEST_SYNC": str(sync)})
             proc = subprocess.run(
-                ["bash", str(runner)], cwd=root, env=env, text=True,
+                ["/bin/bash", str(runner)], cwd=root, env=env, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
 
         self.assertEqual(1, proc.returncode, proc.stderr)
@@ -64,7 +64,7 @@ class RunAllTests(unittest.TestCase):
         env = os.environ.copy()
         env["ZH_TOOLING_TEST_JOBS"] = "zero"
         proc = subprocess.run(
-            ["bash", str(RUNNER)], env=env, text=True,
+            ["/bin/bash", str(RUNNER)], env=env, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         self.assertEqual(2, proc.returncode)
         self.assertIn("positive integer", proc.stderr)

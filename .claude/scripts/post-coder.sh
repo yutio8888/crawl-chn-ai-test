@@ -29,7 +29,7 @@ release_temp() {
 
 cleanup_temps() {
     local path
-    for path in "${TEMP_FILES[@]}"; do
+    for path in ${TEMP_FILES+"${TEMP_FILES[@]}"}; do
         rm -f -- "$path"
     done
     TEMP_FILES=()
@@ -51,18 +51,23 @@ if [[ -z "$CPP_AST_SCAN_SKIP_COMPONENTS" ]]; then
     echo "ERROR: CPP_AST_SCAN_SKIP_DIRS import returned no directory components" >&2
     exit 2
 fi
-declare -A CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP=()
-while IFS= read -r component; do
-    CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP["$component"]=1
-done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
+
+is_cpp_ast_skip_component() {
+    local candidate="$1" excluded
+    while IFS= read -r excluded; do
+        [[ "$candidate" == "$excluded" ]] && return 0
+    done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
+    return 1
+}
 
 SCOPE="${ZH_VERIFY_SCOPE:-full}"
 CHANGED_CPP=()
 while IFS= read -r path; do
+    [[ -n "$path" ]] || continue
     skip_path=0
     IFS='/' read -r -a path_components <<< "$path"
     for component in "${path_components[@]}"; do
-        if [[ -n "${CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP["$component"]:-}" ]]; then
+        if is_cpp_ast_skip_component "$component"; then
             skip_path=1
             break
         fi
@@ -78,24 +83,25 @@ while IFS= read -r path; do
     esac
 done <<< "${ZH_VERIFY_CHANGED_FILES:-}"
 
-scanner_args() {
+build_scanner_args() {
     local scanner="$1"
+    SCANNER_ARGS=()
     if [[ "$SCOPE" == changed ]]; then
         if [[ "${#CHANGED_CPP[@]}" -eq 0 ]]; then
             return 1
         fi
         case "$scanner" in
             lifetime)
-                printf '%s\0' --files "${CHANGED_CPP[@]}"
+                SCANNER_ARGS=(--files "${CHANGED_CPP[@]}")
                 ;;
             *)
                 local csv
                 csv=$(IFS=,; echo "${CHANGED_CPP[*]}")
-                printf '%s\0' --files "$csv"
+                SCANNER_ARGS=(--files "$csv")
                 ;;
         esac
     else
-        printf '%s\0' crawl-ref/source/
+        SCANNER_ARGS=(crawl-ref/source/)
     fi
 }
 
@@ -130,7 +136,8 @@ run_scoped_scanner() {
         echo ""
         return 0
     fi
-    mapfile -d '' -t args < <(scanner_args "$scanner")
+    build_scanner_args "$scanner"
+    args=("${SCANNER_ARGS[@]}")
     run_check "$title" "$blocking" "$@" "${args[@]}"
 }
 
@@ -148,7 +155,8 @@ run_concat_advisory() {
         release_temp "$scan_json"
         return 0
     fi
-    mapfile -d '' -t args < <(scanner_args concat)
+    build_scanner_args concat
+    args=("${SCANNER_ARGS[@]}")
     # Findings are advisory, but discovery/parser/read failures are not.
     set +e
     python3 "$SCRIPT_DIR/scan_string_concat.py" "${args[@]}" \
@@ -170,6 +178,10 @@ run_concat_advisory() {
         echo "$comparison"
         local new_count
         new_count=$(sed -n 's/^New warnings introduced by diff: //p' <<< "$comparison")
+        if [[ ! "$new_count" =~ ^[0-9]+$ ]]; then
+            echo "ERROR: advisory baseline returned an invalid warning count" >&2
+            return 2
+        fi
         WARNINGS=$((WARNINGS + ${new_count:-0}))
         echo "RESULT: PASS (advisory)"
     else

@@ -66,6 +66,12 @@ sudo apt install build-essential libncursesw5-dev bison flex liblua5.4-dev \
 Tiles 版还需要 SDL2、Freetype、libpng 和 MinGW 等目标相关依赖。其他发行版、macOS、
 MSYS2 和 Android 的依赖说明以 [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md) 为准。
 
+中文验证工具链同时支持 Ubuntu 与 macOS 自带的 `/bin/bash`（3.2）。
+静态门禁需要 Python 3、Node.js，以及
+`tree-sitter==0.26.0`、`tree-sitter-cpp==0.23.4`、`pyyaml`；通用脚本不要求
+GNU `timeout`、`flock`、`grep -P` 或 GNU `script`。Windows、Android 和各
+Tiles 构建脚本仍按目标平台安装其专用依赖。
+
 ### 2. 中文默认配置
 
 中文语言、Maple Mono NF CN 字体和本地 Tiles 窗口尺寸由 C++ 提供默认值，

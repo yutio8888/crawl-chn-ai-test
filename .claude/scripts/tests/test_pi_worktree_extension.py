@@ -113,7 +113,7 @@ class PiWorktreeExtensionTests(unittest.TestCase):
         script = textwrap.dedent(
             f"""
             import assert from "node:assert/strict";
-            import {{ existsSync, mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync }} from "node:fs";
+            import {{ existsSync, mkdtempSync, mkdirSync, realpathSync, rmSync, symlinkSync, writeFileSync }} from "node:fs";
             import os from "node:os";
             import path from "node:path";
             import {{ spawnSync }} from "node:child_process";
@@ -137,6 +137,7 @@ class PiWorktreeExtensionTests(unittest.TestCase):
             }};
 
             try {{
+              const canonicalRoot = realpathSync(root);
               git(root, ["init"]);
               git(root, ["config", "user.email", "test@example.invalid"]);
               git(root, ["config", "user.name", "Test"]);
@@ -153,17 +154,17 @@ class PiWorktreeExtensionTests(unittest.TestCase):
               const created = await manageProjectWorktree(
                 {{ action: "create", name: "isolated", branch: "pi/isolated" }}, context
               );
-              assert.equal(created.cwd, path.join(root, ".worktrees", "isolated"));
+              assert.equal(created.cwd, path.join(canonicalRoot, ".worktrees", "isolated"));
               assert.equal(created.worktreePath, ".worktrees/isolated");
               assert.equal(created.head, head);
               const addCall = calls.find((call) => call.args[0] === "worktree" && call.args[1] === "add");
               assert.ok(addCall);
-              assert.equal(addCall.cwd, root);
+              assert.equal(addCall.cwd, canonicalRoot);
               assert.ok(addCall.args.includes(".worktrees/isolated"));
               assert.equal(addCall.args.some((arg) => path.isAbsolute(arg) && arg.includes("isolated")), false);
 
               const listed = await manageProjectWorktree({{ action: "list" }}, context);
-              assert.equal(listed.mainRoot, root);
+              assert.equal(listed.mainRoot, canonicalRoot);
               assert.ok(listed.worktrees.some((item) => item.name === "isolated"));
 
               const removed = await manageProjectWorktree({{ action: "remove", name: "isolated" }}, context);

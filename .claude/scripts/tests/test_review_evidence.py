@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -81,6 +82,48 @@ class ReviewEvidenceTests(unittest.TestCase):
             self.assertEqual(first.returncode, 0)
             self.assertNotEqual(second.returncode, 0)
             self.assertEqual(len((root / ".claude/metrics/review-log.jsonl").read_text().splitlines()), 1)
+
+    def test_concurrent_duplicate_review_id_is_serialized(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            entry = {
+                "schema_version": 2,
+                "review_id": "concurrent-id",
+                "date": "2026-07-15T00:00:00+08:00",
+                "agent_type": "zh-code-reviewer",
+                "task_summary": "concurrent unit test",
+                "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+                "fix_iterations": 0,
+                "verdict": "Go",
+                "trigger": "pre-commit",
+            }
+            command = [
+                "/bin/bash",
+                str(SCRIPTS / "record_review.sh"),
+                json.dumps(entry),
+            ]
+            first = subprocess.Popen(
+                command, cwd=root, text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                env=os.environ.copy(),
+            )
+            second = subprocess.Popen(
+                command, cwd=root, text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                env=os.environ.copy(),
+            )
+            first_output = first.communicate()
+            second_output = second.communicate()
+            results = (
+                (first.returncode, first_output),
+                (second.returncode, second_output),
+            )
+            self.assertEqual([0, 1], sorted(result[0] for result in results))
+            lines = (
+                root / ".claude/metrics/review-log.jsonl"
+            ).read_text(encoding="utf-8").splitlines()
+            self.assertEqual(1, len(lines))
+            self.assertEqual("concurrent-id", json.loads(lines[0])["review_id"])
 
     def test_migration_preserves_raw_and_canonicalises(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -32,6 +32,7 @@ REPO_ROOT="${ZH_RUNTIME_REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null)}
 }
 CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
 UI_BOT_SCRIPT="${ZH_RUNTIME_UI_BOT_SCRIPT:-$SCRIPT_DIR/zh_console_ui_bot.py}"
+TIMEOUT_RUNNER="${ZH_RUNTIME_TIMEOUT_RUNNER:-$SCRIPT_DIR/run_with_timeout.py}"
 SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$REPO_ROOT/crawl-ref/source}"
 METRICS_ROOT="${ZH_RUNTIME_METRICS_DIR:-$REPO_ROOT/.claude/metrics/verify}"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
@@ -78,6 +79,10 @@ case "$MODE" in
 esac
 
 mkdir -p "$METRICS_DIR"
+[ -f "$TIMEOUT_RUNNER" ] || {
+    echo "ERROR: portable timeout helper missing: $TIMEOUT_RUNNER" >&2
+    exit 2
+}
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -215,9 +220,12 @@ run_bot() {
         transcript="$METRICS_DIR/bot-$shard.typescript"
         echo "  Running Bot shard: $shard"
         rc=0
-        LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm timeout --foreground "$BOT_TIMEOUT" \
-            script -qefc "./crawl -seed 1 -no-save -name bot_$shard -wizard -no-throttle -extra-opt-first language=zh -rc $rcfile" \
-            "$transcript" >/dev/null || rc=$?
+        LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm \
+            python3 "$TIMEOUT_RUNNER" --timeout "$BOT_TIMEOUT" \
+            --pty-transcript "$transcript" -- \
+            ./crawl -seed 1 -no-save -name "bot_$shard" -wizard \
+            -no-throttle -extra-opt-first language=zh -rc "$rcfile" \
+            >/dev/null || rc=$?
         if [ "$rc" -ne 0 ]; then
             echo "  Bot shard $shard exited with $rc (timeouts always fail)"
             return 1
@@ -233,12 +241,14 @@ run_bot() {
     python3 "$CHECK_SCRIPT" --mode bot --bot-stderr "$STDERR_L3" \
         --bot-manifest all || return 1
     echo "  Running rendered panel PTY assertions"
-    timeout --foreground "$BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+    python3 "$TIMEOUT_RUNNER" --timeout "$BOT_TIMEOUT" -- \
+        python3 "$UI_BOT_SCRIPT" \
         --crawl "$SOURCE_DIR/crawl" --mode panels \
         --transcript "$METRICS_DIR/panels.typescript" \
         > "$METRICS_DIR/panels-results.jsonl" || return 1
     echo "  Running wizard-assisted gameplay workflow assertions"
-    timeout --foreground "$WORKFLOW_BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+    python3 "$TIMEOUT_RUNNER" --timeout "$WORKFLOW_BOT_TIMEOUT" -- \
+        python3 "$UI_BOT_SCRIPT" \
         --crawl "$SOURCE_DIR/crawl" --mode workflows \
         --transcript "$METRICS_DIR/workflows.typescript" \
         > "$METRICS_DIR/workflows-results.jsonl" || return 1
@@ -285,7 +295,8 @@ run_help_bot() {
 
     echo "  Running rendered help PTY bot..."
     local timeout_rc=0
-    timeout --foreground "$HELP_BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+    python3 "$TIMEOUT_RUNNER" --timeout "$HELP_BOT_TIMEOUT" -- \
+        python3 "$UI_BOT_SCRIPT" \
         --crawl "$SOURCE_DIR/crawl" --mode help \
         --transcript "$METRICS_DIR/help.typescript" \
         > "$STDERR_HELP_BOT" || timeout_rc=$?

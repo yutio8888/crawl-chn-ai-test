@@ -201,7 +201,7 @@ assert data["head"] == head
 assert data["diff_hash"] == diff_hash
 assert data["diff_sha256"] == diff_sha256
 assert data["glossary_sha256"] == glossary_sha
-assert data["worktree"] == worktree
+assert os.path.realpath(data["worktree"]) == os.path.realpath(worktree)
 assert data["started_at"]
 assert data["completed_at"]
 assert data["failures"] == 0

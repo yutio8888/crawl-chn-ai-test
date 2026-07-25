@@ -106,3 +106,11 @@ historical read-only evidence.
 The current CI definition is `.github/workflows/ci.yml`; it is authoritative
 for job names and commands. Agent documentation should link to it instead of
 copying job inventories that drift.
+
+The tooling suite and combined static gate run on both Ubuntu and macOS. The
+macOS lane deliberately uses the system `/bin/bash` contract, so generic
+verification scripts must remain compatible with Bash 3.2 and BSD userland.
+Python 3, Node.js, `tree-sitter`, `tree-sitter-cpp`, and PyYAML are installed
+explicitly in CI; GNU `timeout`, `flock`, `grep -P`, and GNU `script` are not
+generic-tooling prerequisites. Target-only Windows, Android, and Tiles helpers
+may retain dependencies documented by their target build workflow.

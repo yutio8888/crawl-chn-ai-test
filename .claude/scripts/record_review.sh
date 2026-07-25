@@ -97,16 +97,22 @@ print(json.dumps(d, ensure_ascii=False, separators=(',', ':')))
 }
 
 mkdir -p "$METRICS_DIR"
-# Serialise concurrent agents and append exactly one physical line.
-exec 9>>"$LOGFILE"
-flock -x 9
+# Serialise concurrent agents and append exactly one physical line. Python's
+# fcntl is available on both Linux and macOS, unlike the external flock CLI.
 python3 -c '
-import json, pathlib, sys
+import fcntl
+import json
+import os
+import pathlib
+import sys
+
 path = pathlib.Path(sys.argv[1])
 new = json.loads(sys.argv[2])
 review_id = new.get("review_id")
-if review_id and path.exists():
-    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+with path.open("a+", encoding="utf-8") as stream:
+    fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+    stream.seek(0)
+    for lineno, line in enumerate(stream, 1):
         if not line.strip():
             continue
         try:
@@ -117,11 +123,12 @@ if review_id and path.exists():
         if old.get("review_id") == review_id:
             print(f"Duplicate review_id: {review_id}", file=sys.stderr)
             raise SystemExit(1)
+    stream.seek(0, os.SEEK_END)
+    stream.write(sys.argv[2] + "\n")
+    stream.flush()
+    os.fsync(stream.fileno())
 ' "$LOGFILE" "$CANONICAL" || {
-    flock -u 9
     echo "ERROR: Review record was not appended."
     exit 1
 }
-printf '%s\n' "$CANONICAL" >&9
-flock -u 9
 echo "OK: Recorded to $LOGFILE"

@@ -356,6 +356,26 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("gh release edit", workflow)
 
+    def test_zh_static_tooling_runs_on_linux_and_macos(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+        tooling = workflow.split("  zh_tooling_tests:\n", 1)[1].split(
+            "\n  zh_ci_gate:", 1
+        )[0]
+        gate = workflow.split("  zh_ci_gate:\n", 1)[1].split(
+            "\n  zh_runtime_catch2:", 1
+        )[0]
+        for job in (tooling, gate):
+            self.assertIn("os: [ubuntu-latest, macos-latest]", job)
+            self.assertIn("runs-on: ${{ matrix.os }}", job)
+            self.assertIn("uses: actions/setup-python@v4", job)
+        self.assertIn("uses: actions/setup-node@v4", tooling)
+        self.assertIn(
+            "run: /bin/bash .claude/scripts/tests/run_all.sh", tooling
+        )
+        self.assertIn(
+            "run: /bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
+        )
+
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
         for pattern in (r"~30,", r"30,452", r"~93%", r"\*\*活跃开发分支\*\*"):

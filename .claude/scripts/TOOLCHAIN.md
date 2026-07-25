@@ -66,6 +66,15 @@ Parser (统一):
 | **统一 Catch2 运行时** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
 | **运行工具测试** | `bash .claude/scripts/tests/run_all.sh` |
 
+### 支持平台与依赖
+
+通用验证入口支持 Ubuntu 和 macOS 系统 `/bin/bash`（包括 Bash 3.2），依赖
+Python 3、Node.js、`tree-sitter==0.26.0`、`tree-sitter-cpp==0.23.4` 和
+PyYAML。仓库内的 `run_with_timeout.py` 负责跨平台超时与 PTY transcript，
+审阅证据锁由 Python `fcntl` 实现，因此无需额外安装 GNU `timeout`、`flock`、
+`grep -P` 或 GNU `script`。Windows、Android 与 Tiles 构建辅助脚本属于
+目标专用入口，其依赖以对应构建文档为准。
+
 ## 脚本详解
 
 ### glossary_query.py — 当前术语表上下文
@@ -580,12 +589,12 @@ test/baselines/zh-help/zh-help-baseline.json  # [zh-help] 帮助系统基线
 
 ### CI 分层
 
-GitHub Actions 中 5 个 zh-specific job：
+GitHub Actions 的 zh-specific job 以工作流文件为准：
 
 | Job | 触发 | 需编译 | 说明 |
 |-----|------|--------|------|
-| `zh_tooling_tests` | push/PR | 否 | `run_all.sh`（自动发现所有 test_*） |
-| `zh_ci_gate` | push/PR | 否 | `verify_zh.sh --profile ci`（纯静态） |
+| `zh_tooling_tests` | push/PR | 否 | Ubuntu + macOS：`run_all.sh`（自动发现所有 test_*） |
+| `zh_ci_gate` | push/PR | 否 | Ubuntu + macOS：`verify_zh.sh --profile ci`（纯静态） |
 | `zh_runtime_catch2` | push/PR | 是 | 统一 Catch2 驱动：[zh-translation] + [message-overlay] |
 | `zh_runtime_full` | schedule/workflow_dispatch | 是 | L1+L2+L3 全量运行时 |
 | `zh_help_runtime` | push/PR | 是 | [zh-help] catch2 + zh_help.rc bot |

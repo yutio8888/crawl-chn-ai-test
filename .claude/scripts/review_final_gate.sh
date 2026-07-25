@@ -130,7 +130,7 @@ RESULT=$(python3 "$BUNDLE_SCRIPT" run-final \
     --target-repo "$TARGET_ROOT" \
     --verifier "$VERIFIER" \
     --contract "$CONTRACT" \
-    "${EXTRA_ARGS[@]}" 2>&1)
+    ${EXTRA_ARGS+"${EXTRA_ARGS[@]}"} 2>&1)
 RESULT_RC=$?
 set -e
 printf '%s\n' "$RESULT"
