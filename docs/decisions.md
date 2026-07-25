@@ -2778,8 +2778,29 @@ file exists and should be consulted. This file stores the actual ruling content.
   `Rebounding Blaze → 弹跳烈焰` 与已裁定的
   `Rebounding Chill → 弹跳寒流` 保持同机制词根一致。
 - **Description corrections**: 修正 Plane Rend 的召唤分支和强度、
-  Rebounding Blaze 的穿透反弹机制，以及 Sign of Ruin 的群体目标、
-  汲取和附加状态。
+  Rebounding Blaze 的穿透反弹机制、Sign of Ruin 的群体目标与附加状态，
+  并补正 Spellspark Servitor、Spit Lava、Seal Doors、Corrupting Pulse。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-089 — Spell name review: 独立批次 B1
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: A4 之后的 10 项现行独立法术
+- **Choice**: 将 `Bind Souls → 绑定灵魂` 重译为“束缚灵魂”；
+  其余 9 项保留。
+- **Rationale**: “绑定”带有界面与技术语感；法术实际束缚附近活物的
+  灵魂，使其死后化为拟像，“束缚灵魂”自然且准确。
+- **Description corrections**: Fleetfoot 补回风力来源并明确移动加速；
+  Bind Souls 补回“其他附近活物”与死后拟像条件。
 - **Affected files**:
   - `crawl-ref/source/dat/i18n/zh/source.txt`
   - `crawl-ref/source/dat/descript/zh/spells.txt`
@@ -3359,4 +3380,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-085 | Spell name review — 独立批次 A1 | 20 current；6 description fixes | active |
 | D-C-086 | Spell name review — 独立批次 A2 | 20 current；2 renames + 9 description fixes | active |
 | D-C-087 | Spell name review — 独立批次 A3 | 20 current；2 renames + 7 description fixes | active |
-| D-C-088 | Spell name review — 独立批次 A4 | 20 current；1 rename + 3 description fixes | active |
+| D-C-088 | Spell name review — 独立批次 A4 | 20 current；1 rename + 7 description fixes | active |
+| D-C-089 | Spell name review — 独立批次 B1 | 10 current；1 rename + 2 description fixes | active |

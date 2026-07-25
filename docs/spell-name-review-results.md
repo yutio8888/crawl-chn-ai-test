@@ -3169,9 +3169,11 @@ Dimension Anchor 将“跨层”纠正为跨位面。
 “哀恸之嚎”自然保留悲恸情绪与发声意象。其余 19 项准确概括目标、
 投射物、状态或核心动作。
 
-描述审阅修正三项：Plane Rend 补回佐特领域并明确召来强大威胁；
+描述审阅修正七项：Plane Rend 补回佐特领域并明确召来强大威胁；
 Rebounding Blaze 改回穿透且可沿墙反弹的火焰束；Sign of Ruin
-补回群体目标、汲取及缓慢、虚弱或失明的附加状态。
+补回群体目标、汲取及缓慢、虚弱或失明的附加状态；Spellspark Servitor
+恢复当前金属构造体和灌注能力；Spit Lava、Seal Doors 与
+Corrupting Pulse 分别修正岩浆抗性、通行阵营和亡灵腐朽规则。
 
 证据：对应 `spl-data.h` 的 20 个 `SPELL_*` 记录、
 `dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
@@ -3180,13 +3182,57 @@ Rebounding Blaze 改回穿透且可沿墙反弹的火焰束；Sign of Ruin
 ### 落地状态
 
 - [x] 20/20 机制证据与名称裁定
-- [x] 单一翻译写入者完成 1 项名称与 3 项描述落地
+- [x] 单一翻译写入者完成 1 项名称与 7 项描述落地
 - [x] translation profile
 - [x] 批次裁定登记（`D-C-088`）
 
 验证结果：覆盖 A3 自然度复核与 A4 当前差异的
 `verify_zh.sh --profile translation` 通过，0 项失败；Run ID
 `20260725T191540235476000+0800-61036-bdfb8a964679`。
+本批裁定后的 glossary 与 inventory SHA-256 分别为
+`7dacdefbc4d60ecc52c335def33e07962b4a54782d5565e96e11c2be0abc35ce`
+和 `6452c99a6a751039be6531bd14c2439c08a1c1cc834ade1e7d9057d53aed4e99`。
+补充四项描述修正后，与 B1 共同运行的 translation profile 仍通过，
+0 项失败；Run ID
+`20260725T191721888947000+0800-64295-a7ede56e0456`。
+
+## 独立法术批次 B1
+
+边界：A4 之后的 10 项现行独立法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_MARCH_OF_SORROWS` | 悲伤行军 | 生成痛苦之流并在路径及目标周围留下负能量云 | 保留 |
+| `SPELL_ENTROPIC_WEAVE` | 熵之编织 | 无需直射地腐蚀目标 | 保留 |
+| `SPELL_OBLIVION_HOWL` | 湮灭嚎叫 | 在受害者心中留下会引来噩梦生物的回声 | 保留 |
+| `SPELL_PRAYER_OF_BRILLIANCE` | 聪慧祈祷 | 强化附近友方法师的施法威力与频率 | 保留 |
+| `SPELL_FLEETFOOT` | 轻快脚步 | 召风短暂提高施法者移动速度 | 保留 |
+| `SPELL_GREATER_SERVANT_MAKHLEB` | 地狱仆从 | 召唤一个大恶魔 | 保留 |
+| `SPELL_BIND_SOULS` | 绑定灵魂 | 使附近其他活物死后化为拟像 | 重译为“束缚灵魂” |
+| `SPELL_INFESTATION` | 虫群侵扰 | 侵染生物并在其死后孵出死亡甲虫 | 保留 |
+| `SPELL_STILL_WINDS` | 静止风 | 维持大范围静止空气并阻止云雾形成 | 保留 |
+| `SPELL_DREAM_DUST` | 梦尘 | 以催眠梦尘使目标入睡，梦羊会增强效果 | 保留 |
+
+名称结论：`Bind Souls` 改为“束缚灵魂”，避免界面式“绑定”并准确表达
+死灵魔法关系；其余九项标题准确概括声音、祈祷、移动、召唤或状态机制。
+
+描述审阅修正 Fleetfoot 与 Bind Souls 两项：前者恢复召风来源与移动速度
+增益，后者补回“其他附近活物”及死后化为拟像的附魔条件。
+
+证据：对应 `spl-data.h` 的 10 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
+`spl-summoning.cc`、`spl-necromancy.cc` 中相应 enum 分支。
+
+### 落地状态
+
+- [x] 10/10 机制证据与名称裁定
+- [x] 单一翻译写入者完成 1 项名称与 2 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-089`）
+
+验证结果：与 A4 补充修正共同运行的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T191721888947000+0800-64295-a7ede56e0456`。
 本批裁定后的 glossary 与 inventory SHA-256 分别为
 `7dacdefbc4d60ecc52c335def33e07962b4a54782d5565e96e11c2be0abc35ce`
 和 `6452c99a6a751039be6531bd14c2439c08a1c1cc834ade1e7d9057d53aed4e99`。
