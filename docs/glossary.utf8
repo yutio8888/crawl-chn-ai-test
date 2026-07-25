@@ -523,9 +523,9 @@ kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
-Launch Bomblet	发射小型炸弹	domain=spells; source=EN/ZH; 备注=✅
-Launch Clockwork Bee	发射发条蜜蜂	domain=spells; source=EN/ZH; 备注=✅
-Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅
+Launch Bomblet	发射小型炸弹	domain=spells; source=EN/ZH; 备注=✅；弹道无视火线并将炸弹部署在目标附近
+Launch Clockwork Bee	发射发条蜜蜂	domain=spells; source=EN/ZH; 备注=✅；制造、上紧发条并放出机械蜜蜂
+Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅；追踪目标并以酸液爆炸生成原生质体
 Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅；液化施法者周围地面
 Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅；粉碎墙壁或脆性目标形成爆炸碎片
 Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅

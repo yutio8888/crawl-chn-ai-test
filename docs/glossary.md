@@ -1189,9 +1189,9 @@
 | Kinetic Grapnel | 动力抓钩 | ✅ |
 | Kiss of Death | 死亡之吻 | ✅；衰竭目标并暂时降低施法者生命值 |
 | Landbreaker | 裂地 | ✅ |
-| Launch Bomblet | 发射小型炸弹 | ✅ |
-| Launch Clockwork Bee | 发射发条蜜蜂 | ✅ |
-| Launch Sporangium | 发射孢子囊 | ✅ |
+| Launch Bomblet | 发射小型炸弹 | ✅；弹道无视火线并将炸弹部署在目标附近 |
+| Launch Clockwork Bee | 发射发条蜜蜂 | ✅；制造、上紧发条并放出机械蜜蜂 |
+| Launch Sporangium | 发射孢子囊 | ✅；追踪目标并以酸液爆炸生成原生质体 |
 | Legendary Destruction | 传奇毁灭 | ✅ |
 | Lesser Beckoning | 次级召唤 | ✅ |
 | Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |

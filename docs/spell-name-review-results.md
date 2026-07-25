@@ -2286,6 +2286,38 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `3799be0da35c486f957e2336146596875cddb75ff522e561762abe1f9b000519`。
 
+## Launch 词形系列
+
+边界：英文标题以 `Launch` 开头的 3 项现行法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_LAUNCH_SPORANGIUM` | 发射孢子囊 | 发射追踪目标并以酸液爆炸的孢子囊 | 保留 |
+| `SPELL_CLOCKWORK_BEE` | 发射发条蜜蜂 | 制造、上紧发条并放出机械蜜蜂 | 保留 |
+| `SPELL_DEPLOY_BOMBLET` | 发射小型炸弹 | 以无视火线的弹道命中目标并在附近部署炸弹 | 保留 |
+
+名称结论：三项均实际将相应实体投送到战场，采用 `Launch → 发射`
+准确自然。描述审阅重译了 `Launch Bomblet` 的现行弹道、部署和目标限制，
+并将 `Launch Sporangium` 误写的“孢子囊间距”修正为原生质体生成间距。
+`Launch Clockwork Bee` 中英文一致。
+
+证据：`spl-data.h:3359`—`3367`、`4230`—`4238`、
+`4329`—`4337`，`dat/descript/spells.txt:1141`—`1167`。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-067`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T181700801813000+0800-34284-6a659ade6bd3`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`8dc14c4f4072fb1707ca79ec3d0cbba7861e4dd0b82e76be9fd91b8efaa5194d`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`3799be0da35c486f957e2336146596875cddb75ff522e561762abe1f9b000519`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

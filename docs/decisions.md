@@ -2302,6 +2302,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-067 — Spell name review: Launch 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项现行法术
+- **Choice**: 保留 `Launch Sporangium → 发射孢子囊`、
+  `Launch Clockwork Bee → 发射发条蜜蜂` 与
+  `Launch Bomblet → 发射小型炸弹`。
+- **Series rule**: 对实体进行投送时，`Launch → 发射`。
+- **Rationale**: 三项均实际把孢子囊、机械蜜蜂或小型炸弹送向战场。
+- **Description corrections**: 重译 `Launch Bomblet` 的现行部署机制；
+  修正 `Launch Sporangium` 将原生质体间距误写为孢子囊间距的问题。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2851,3 +2872,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-064 | Spell name review — Animate 词形系列 | 1 current + 1 axed；1 rename + 1 description fix | active |
 | D-C-065 | Spell name review — Shot 词形系列 | 3 current；1 description retranslation | active |
 | D-C-066 | Spell name review — Hurl 词形系列 | 3 current；1 rename + shared description fixes | active |
+| D-C-067 | Spell name review — Launch 词形系列 | 3 current；2 description fixes | active |
