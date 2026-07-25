@@ -984,7 +984,7 @@ Petrifying Cloud spell
 %%%%
 Phantom Mirror spell
 
-创造一个怪物的幻影。复制品会比较脆弱，但除此之外与原品无别。
+创造一个怪物的幻影复制体。复制体会较为脆弱，但除此之外几乎与原体无异。
 %%%%
 Plane Rend spell
 

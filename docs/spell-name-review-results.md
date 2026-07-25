@@ -2681,7 +2681,8 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 
 描述审阅发现 `Phantom Blitz` 中文仍写成施法者自身化为幻影冲刺，
 与英文和实现不符。现已重译为编织并发射施法者复制体，说明复制体保有
-同等武艺和神秘力量；`Phantom Mirror` 描述准确。
+同等武艺和神秘力量；`Phantom Mirror` 原文漏掉“almost”的限定，
+已修正为“几乎与原体无异”。
 
 证据：`spl-data.h:2609`—`2617`、`4047`—`4055`，
 `dat/descript/spells.txt:1528`—`1537`，
@@ -2690,12 +2691,13 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 ### 落地状态
 
 - [x] 2/2 生命周期、机制证据与名称裁定
-- [x] 单一翻译写入者描述落地
+- [x] 单一翻译写入者完成 2 项描述修复
 - [x] translation profile
 - [x] 系列裁定登记（`D-C-078`）
 
-验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T184328894563000+0800-86978-aabb733ff919`。本批裁定后的
+验证结果：覆盖两项描述修复的 `verify_zh.sh --profile translation`
+通过，0 项失败；Run ID
+`20260725T184449555127000+0800-90256-28f3c8c24ac6`。本批裁定后的
 `docs/glossary.md` SHA-256 为
 `84583fd23a5b0fe50e5b9893b8ccc47ec5314af68dd2de5d1e1aedde175e877f`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
