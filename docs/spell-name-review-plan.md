@@ -90,7 +90,7 @@ SPELL_*：
 `TAG_MAJOR_VERSION == 34` 已移除兼容记录、2 项描述专用 dummy、2 项内部
 placeholder；中文标题映射 511/511，英文与中文描述均为 402/511。
 默认参数下 inventory JSON 的 SHA-256 为
-`962566ed7c2ecfcfab845243c439dcb551aa31644ff46c026645dc9beb56d909`。
+`46ae59b963872f6ac9908d06fae38123873e47e64ee851175d18e6cc0eb4e7c0`。
 聚焦测试 8/8 通过，code profile 0 项失败；开发复审为 0 Blocker /
 0 Needs Fix。
 清单命令：

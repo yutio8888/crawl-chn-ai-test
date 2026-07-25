@@ -437,6 +437,8 @@
 
 Dispersal 与 Mesmerise 校准批次验证结果：
 `verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T155555947020000+0800-44924-8cbecea16c3d`。本批裁定后的
+`20260725T155659431750000+0800-47686-8cbecea16c3d`。本批裁定后的
 `docs/glossary.md` SHA-256 为
-`217f831015878666f6f5797978bcdd7d1c5b0fd1b6ce861466ba772a54d1ae1d`。
+`e71f034792ca67686c5de48a6d467ca27ce0dbf8ab8f67ce64061344502b48df`；
+重新生成后的 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`46ae59b963872f6ac9908d06fae38123873e47e64ee851175d18e6cc0eb4e7c0`。
