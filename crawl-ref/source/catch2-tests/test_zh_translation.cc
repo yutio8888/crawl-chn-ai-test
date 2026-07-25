@@ -864,7 +864,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     init_spell_name_cache();
     REQUIRE(std::string(spell_title(SPELL_STING)) == "毒刺");
     REQUIRE(std::string(spell_title(SPELL_METAL_SPLINTERS)) == "金属碎片");
-    REQUIRE(std::string(spell_title(SPELL_IOOD)) == "毁灭之球");
+    REQUIRE(std::string(spell_title(SPELL_IOOD)) == "毁灭法球");
     REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭征兆");
     REQUIRE(std::string(spell_title(SPELL_SUMMON_UNDEAD)) == "召唤亡灵");
     REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭征兆");
