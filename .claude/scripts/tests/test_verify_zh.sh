@@ -59,6 +59,17 @@ printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/check_agent_policies.py"
 chmod +x "$REPO/.claude/scripts/check_agent_policies.py"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'import sys' \
+    'from pathlib import Path' \
+    'observed = Path(".observed-item-inventory")' \
+    'observed.write_text(observed.read_text() + "run\n" if observed.exists() else "run\n")' \
+    'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
+    'output.write_text("{}\n")' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/audit_item_name_inventory.py"
+chmod +x "$REPO/.claude/scripts/audit_item_name_inventory.py"
 printf '%s\n' '# test glossary' > "$REPO/docs/glossary.md"
 printf '%s\n' \
     '#!/bin/bash' \
@@ -215,6 +226,8 @@ assert [phase["id"] for phase in data["phases"]] == [
 assert all(phase["status"] == "pass" for phase in data["phases"])
 assert data["artifacts"][0]["path"] == "verify.log"
 assert data["artifacts"][0]["size"] > 0
+assert data["artifacts"][1]["path"] == "item-name-inventory.json"
+assert data["artifacts"][1]["size"] > 0
 PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
 assert_contains "bound run exports glossary comparison base" \
@@ -222,6 +235,14 @@ assert_contains "bound run exports glossary comparison base" \
 EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
 assert_status "review profile runs i18n_extract once through source-db-static" \
     1 "$EXTRACT_COUNT"
+ITEM_INVENTORY_COUNT=$(wc -l < "$REPO/.observed-item-inventory")
+assert_status "review profile runs item inventory once through source-db-static" \
+    1 "$ITEM_INVENTORY_COUNT"
+if [[ -f "$RUN_DIR/item-name-inventory.json" ]]; then
+    pass "source-db-static preserves item inventory evidence"
+else
+    fail "source-db-static did not preserve item inventory evidence"
+fi
 (
     cd "$REPO"
     bash .claude/scripts/post-reviewer.sh
@@ -371,6 +392,8 @@ with open(sys.argv[1], encoding="utf-8") as stream:
     contract = json.load(stream)
 assert contract["verification_contract"] == "dcss-zh-review-v4"
 assert ".claude/scripts/data/review_findings_v1.schema.json" in contract["control_plane_files"]
+assert ".claude/scripts/audit_item_name_inventory.py" in contract["control_plane_files"]
+assert ".claude/scripts/tests/test_audit_item_name_inventory.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
     "message-overlay-static", "cpp-build", "zh-smoke",

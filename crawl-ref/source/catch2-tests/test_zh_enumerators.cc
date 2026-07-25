@@ -35,10 +35,13 @@
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
 
 // batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
-#include "item-prop.h"        // item_base_name
+#include "item-def.h"         // item_def
+#include "item-name.h"        // item_def::name(), brand/ego display helpers
+#include "item-prop.h"        // init_properties
 #include "item-prop-enum.h"   // brand_type, special_armour_type, NUM_* bounds
-#include "item-name.h"        // brand_type_name(_en), special_armour_type_name(_en)
+#include "item-status-flag-type.h" // ISFLAG_IDENTIFIED
 #include "items.h"            // all_item_subtypes
+#include "lang-en-guard.h"    // ScopedLangEn
 #include "object-class-type.h" // object_class_type + OBJ_* + NUM_OBJECT_CLASSES
 #include "options.h"          // Options.language / lang_name for EN-toggle
 #include "lang-t.h"           // lang_t::EN / lang_t::ZH
@@ -46,7 +49,6 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -76,6 +78,22 @@ void scan_T_key(const char* english_key, const std::string& source_tag,
 {
     const char* tr = T_(english_key);
     scan_one(tr, english_key, source_tag, out);
+}
+
+item_def make_identified_item(object_class_type base, int sub_type)
+{
+    static const bool properties_initialized = []() {
+        init_properties();
+        return true;
+    }();
+    (void) properties_initialized;
+
+    item_def item;
+    item.base_type = base;
+    item.sub_type = sub_type;
+    item.quantity = 1;
+    item.flags |= ISFLAG_IDENTIFIED;
+    return item;
 }
 
 } // anonymous namespace
@@ -699,6 +717,20 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             const char* tr = brand_type_name(b, terse);
             scan_one(tr ? tr : "", en, "source.txt", issues);
         }
+
+        // Adjective forms have a separate production display path and no
+        // dedicated _en accessor. Capture the English form under the existing
+        // language guard, then exercise the real ZH accessor.
+        std::string en_adj;
+        {
+            ScopedLangEn english;
+            en_adj = brand_type_adj(b);
+        }
+        if (!en_adj.empty())
+        {
+            const char* tr_adj = brand_type_adj(b);
+            scan_one(tr_adj ? tr_adj : "", en_adj, "source.txt", issues);
+        }
     }
     emit_issue_protocol("zh_translation", "weapon_brands", issues);
     WARN("zh enumerator summary: weapon_brands -> " << issues.size()
@@ -741,26 +773,19 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 // =============================================================================
-// Enumerator 3 — item base names. item_base_name(type, sub_type)
-// (item-prop.h:260) is the T_()-wrapped "long-form" name for items: e.g.
-// "scroll of fear", "sword", "ring of protection from fire". Unlike
-// brand_type_name / special_armour_type_name, there is no _en variant exposed,
-// so we use an EN-toggle baseline technique:
+// Enumerator 3 — identified item display names. The old implementation called
+// item_base_name(type, sub_type), but that helper only handles weapons,
+// missiles, armour, generic ring/amulet classes, and talismans. Wands, scrolls,
+// potions, books, staves, orbs, miscellany, baubles, and concrete jewellery
+// effects therefore produced no evidence.
 //
-//   1. Toggle Options.language = EN (i18n_source_lookup short-circuits to
-//      `en` without caching, so this leaves the ZH cache untouched) and
-//      capture English names for every (base, sub_type) candidate.
-//   2. Restore Options.language = ZH (i18n_cache_clear not needed; EN-mode
-//      T_() does not write the cache).
-//   3. For each candidate, call item_base_name again — now T_() looks up ZH
-//      translations — and scan against the captured English key.
+// Construct an identified item_def and call item.name(DESC_PLAIN), the actual
+// display producer, once under ScopedLangEn and once under the fixture's ZH
+// language. all_item_subtypes supplies the known subtype set; explicit checks
+// below exclude internal book sentinels and save-compatibility miscellany.
 //
-// Iterate major user-visible item classes via all_item_subtypes(base)
-// (items.h:248). Skips OBJ_GOLD / OBJ_CORPSES / OBJ_RUNES (state-based names
-// or pseudo-items) and tag-gated OBJ_FOOD / OBJ_RODS which are kept only under
-// TAG_MAJOR_VERSION==34. Plan v2 §2.4 (#3): full enumeration of stable item
-// base names across weapon, missile, armour, wand, scroll, jewellery,
-// potion, book, staff, orb, miscellany classes.
+// The protocol enumerator remains item_base_names for compatibility with the
+// existing aggregator and schema.
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: item base names",
@@ -769,11 +794,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     static const object_class_type kClasses[] = {
         OBJ_WEAPONS, OBJ_MISSILES, OBJ_ARMOUR, OBJ_WANDS,
         OBJ_SCROLLS, OBJ_JEWELLERY, OBJ_POTIONS, OBJ_BOOKS,
-        OBJ_STAVES, OBJ_ORBS, OBJ_MISCELLANY,
+        OBJ_STAVES, OBJ_ORBS, OBJ_MISCELLANY, OBJ_TALISMANS,
+        OBJ_BAUBLES,
     };
 
-    // Build candidate (base, sub_type) pairs first so the two language-mode
-    // passes iterate in the same order and keys line up exactly.
+    // Build the complete production candidate set before scanning it.
     std::vector<std::pair<int, int>> candidates;
     for (object_class_type bc : kClasses)
     {
@@ -787,49 +812,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         return;
     }
 
-    // Snapshot fixture language, flip to EN, capture English baselines.
-    const lang_t prev_lang = Options.language;
-    const char* prev_lang_name = Options.lang_name ? Options.lang_name : "";
-    Options.language = lang_t::EN;
-    Options.lang_name = "en";
-
-    std::map<std::pair<int,int>, std::string> en_names;
-    for (const auto& c : candidates)
-    {
-        const auto base = static_cast<object_class_type>(c.first);
-        const std::string en = item_base_name(base, c.second);
-        if (!en.empty())
-            en_names[c] = en;
-    }
-
-    // Back to ZH. We deliberately do NOT i18n_cache_clear(): EN-mode T_()
-    // short-circuits via `database.cc:1063-1064` and writes nothing, so the
-    // ZH cache still holds any previously cached zh translations.
-    Options.language = lang_t::ZH;
-    Options.lang_name = "zh";
-
     std::vector<ZhIssue> issues;
     for (const auto& c : candidates)
     {
-        auto it = en_names.find(c);
-        if (it == en_names.end())
-            continue; // No English name to compare against (uninteresting).
-        const std::string en = it->second;
-        if (en.empty())
-            continue;
         const auto base = static_cast<object_class_type>(c.first);
-        const std::string zh = item_base_name(base, c.second);
-        if (zh.empty())
+        if (base == OBJ_BOOKS
+            && (c.second == BOOK_RANDART_LEVEL
+                || c.second == BOOK_RANDART_THEME))
+        {
+            continue;
+        }
+        const item_def item = make_identified_item(base, c.second);
+        std::string en;
+        {
+            ScopedLangEn english;
+            en = item.name(DESC_PLAIN, false, true, false);
+        }
+        if (base == OBJ_MISCELLANY
+            && (c.second == MISC_BOTTLED_EFREET
+                || en.find("removed ") == 0
+                || en.find("obsolete ") == 0))
+        {
+            continue;
+        }
+        const std::string zh = item.name(DESC_PLAIN, false, true, false);
+        INFO("item class=" << static_cast<int>(base)
+                           << " subtype=" << c.second);
+        CHECK_FALSE(en.empty());
+        CHECK_FALSE(zh.empty());
+        if (en.empty() || zh.empty())
             continue;
         // Tag each issue with the source.txt domain even though the name
         // itself comes from T_(key) lookup — this lets M5 aggregator route
         // regressions to source.txt vs an item-specific db file cleanly.
         scan_one(zh.c_str(), en, "source.txt", issues);
     }
-
-    // Restore the fixture language for any subsequent test case in the run.
-    Options.language = prev_lang;
-    Options.lang_name = prev_lang_name;
 
     emit_issue_protocol("zh_translation", "item_base_names", issues);
     WARN("zh enumerator summary: item_base_names -> " << issues.size()

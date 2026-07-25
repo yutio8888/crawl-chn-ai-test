@@ -51,6 +51,7 @@ Parser (统一):
 | **合并前审查** | `bash .claude/scripts/verify_zh.sh --profile review` |
 | **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
 | **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
+| **冻结常规物品与 ego 名称清单** | `python3 .claude/scripts/audit_item_name_inventory.py --output /tmp/item-name-inventory.json` |
 | **检查本次修改的精确术语键** | `python3 .claude/scripts/check_glossary_terms.py --base HEAD` |
 | **检查持久化 T_()/C_() 指针** | `python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser` |
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
@@ -76,6 +77,20 @@ PyYAML。仓库内的 `run_with_timeout.py` 负责跨平台超时与 PTY transcr
 目标专用入口，其依赖以对应构建文档为准。
 
 ## 脚本详解
+
+### audit_item_name_inventory.py — 常规物品与 ego 名称清单
+
+从生产枚举、物品属性表和实际名称 producer 派生常规物品 subtype、武器品牌
+verbose/terse/adjective、护甲 ego verbose/terse，以及具体首饰效果名称。
+它不会用手写数量证明覆盖；生产枚举身份集和名称 producer 产物集必须双向
+相等。输出包含稳定身份、生命周期、每种显示形态、TextDB 翻译状态、输入
+文件摘要和清单内容摘要。漏项、多项、重复身份、缺失中文或缺失显示形态
+都会以非零状态退出。
+
+```bash
+python3 .claude/scripts/audit_item_name_inventory.py \
+    --output /tmp/item-name-inventory.json
+```
 
 ### glossary_query.py — 当前术语表上下文
 

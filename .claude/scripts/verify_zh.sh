@@ -42,6 +42,7 @@ REPORT_FILE=""
 WRAPPER_FILE=""
 METADATA_FILE=""
 PHASES_FILE=""
+ITEM_INVENTORY_FILE=""
 METADATA_INITIALIZED=0
 FINALIZED=0
 RESULTS=0
@@ -258,6 +259,7 @@ RUN_DIR="$OUTPUT_DIR/$RUN_ID"
 REPORT_FILE="$RUN_DIR/verify.log"
 METADATA_FILE="$RUN_DIR/metadata.json"
 PHASES_FILE="$RUN_DIR/phases.tsv"
+ITEM_INVENTORY_FILE="$RUN_DIR/item-name-inventory.json"
 WRAPPER_FILE="$OUTPUT_DIR/verify-${PROFILE}-${RUN_ID}.log"
 mkdir -p "$RUN_DIR"
 : > "$PHASES_FILE"
@@ -275,7 +277,8 @@ write_metadata() {
         "$ROUTING_SHA256" "$CONTROL_PLANE_SHA256" "$VERIFICATION_CONTRACT" \
         "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_ZH_TEST_RUNTIME" \
         "$RISK_MESSAGE_OVERLAY" \
-        "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" <<'PY'
+        "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" \
+        "$ITEM_INVENTORY_FILE" <<'PY'
 import json
 import os
 import sys
@@ -286,6 +289,7 @@ import sys
     scope, routing_sha256, control_plane_sha256, verification_contract,
     risk_cpp_i18n, risk_cjk_runtime, risk_zh_test_runtime,
     risk_message_overlay, explicit_full, phases_path, report_path,
+    item_inventory_path,
 ) = sys.argv[1:]
 phases = []
 if os.path.isfile(phases_path):
@@ -307,6 +311,14 @@ if os.path.isfile(report_path):
     data = open(report_path, "rb").read()
     artifacts.append({
         "path": "verify.log",
+        "size": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    })
+if os.path.isfile(item_inventory_path):
+    import hashlib
+    data = open(item_inventory_path, "rb").read()
+    artifacts.append({
+        "path": "item-name-inventory.json",
         "size": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
     })
@@ -451,6 +463,8 @@ run_phase() {
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
         python3 "$SCRIPT_DIR/i18n_extract.py" validate "$WORKTREE/crawl-ref/source" \
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+        python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
+            --output "$ITEM_INVENTORY_FILE" || rc=$?
         python3 "$SCRIPT_DIR/check_default_utf8.py" \
             --defaults-dir "$WORKTREE/crawl-ref/source/dat/defaults" || rc=$?
         return "$rc"

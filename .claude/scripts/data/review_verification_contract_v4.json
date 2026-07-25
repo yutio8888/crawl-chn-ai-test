@@ -1,5 +1,6 @@
 {
   "control_plane_files": [
+    ".claude/scripts/audit_item_name_inventory.py",
     ".claude/scripts/audit_message_overlay.py",
     ".claude/scripts/audit_monspell_behavior.py",
     ".claude/scripts/audit_monspell_phase0.py",
@@ -31,6 +32,7 @@
     ".claude/scripts/smoke_test.sh",
     ".claude/scripts/source_control_parity.py",
     ".claude/scripts/sync_agent_policies.py",
+    ".claude/scripts/tests/test_audit_item_name_inventory.py",
     ".claude/scripts/tests/test_audit_monspell_behavior.py",
     ".claude/scripts/tests/test_i18n_extract.py",
     ".claude/scripts/tests/test_message_overlay.py",
