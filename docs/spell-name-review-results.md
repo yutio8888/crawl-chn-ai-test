@@ -281,3 +281,90 @@
 
 验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
 `20260725T152511196031000+0800-92653-8e6c745c786a`。
+
+## Cloud 词形系列
+
+系列结论：现行 `X Cloud` 后缀构词稳定保留中心词“云”。8 项现行标题
+全部保留；4 项 `X Cloud` 历史兼容标题和反向复合词 `Cloud Cone` 均因
+缺少现行 metadata、描述与实现而暂沿用，不反向约束现行译名。
+`Cloud Cone` 的中心词是 Cone，不计入 `X Cloud` 后缀系列，但仍留在全法术
+词形索引中。
+
+| Enum | 生命周期 | 当前译名 | 裁定 | 建议译名 | 置信度 |
+|---|---|---|---|---|---|
+| `SPELL_FREEZING_CLOUD` | 现行 | 冰冻云 | 保留 | 冰冻云 | 高 |
+| `SPELL_MEPHITIC_CLOUD` | 现行 | 迷瘴云 | 保留 | 迷瘴云 | 中高 |
+| `SPELL_POISONOUS_CLOUD` | 现行 | 毒云 | 保留 | 毒云 | 高 |
+| `SPELL_NOXIOUS_CLOUD` | 现行 | 毒瘴云 | 保留 | 毒瘴云 | 中高 |
+| `SPELL_INK_CLOUD` | 现行 | 墨云 | 保留 | 墨云 | 高 |
+| `SPELL_PETRIFYING_CLOUD` | 现行 | 石化云 | 保留 | 石化云 | 高 |
+| `SPELL_SPECTRAL_CLOUD` | 现行 | 幽灵云 | 保留 | 幽灵云 | 中高 |
+| `SPELL_FLAMING_CLOUD` | 现行 | 燃烧云 | 保留 | 燃烧云 | 高 |
+| `SPELL_MIASMA_CLOUD` | 已移除兼容 | 瘴气云 | 证据不足 | 暂沿用瘴气云 | 暂缓高 |
+| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 证据不足 | 暂沿用毒气云 | 暂缓高 |
+| `SPELL_FIRE_CLOUD` | 已移除兼容 | 火云 | 证据不足 | 暂沿用火云 | 暂缓高 |
+| `SPELL_STEAM_CLOUD` | 已移除兼容 | 蒸汽云 | 证据不足 | 暂沿用蒸汽云 | 暂缓高 |
+| `SPELL_CLOUD_CONE` | 已移除兼容 | 云雾锥 | 证据不足 | 暂沿用云雾锥 | 暂缓高 |
+
+### 逐项机制与命名证据
+
+- `SPELL_FREEZING_CLOUD`：5 级玩家寒冰／空气法术，在目标处形成大团
+  `CLOUD_COLD` 并持续造成寒冷伤害。“冰冻云”表达致伤动态；“冻结云”
+  易读成云本身被冻结。证据：`spl-data.h:309`、
+  `dat/descript/spells.txt:799`、`spl-clouds.cc:104`。
+- `SPELL_MEPHITIC_CLOUD`：3 级玩家瓶式小范围爆炸，生成短命
+  `CLOUD_MEPHITIC`，核心效果为对无毒抗目标施加混乱。“迷瘴云”用机制
+  导向词区分 Noxious 和历史 Miasma；“混乱云”会过度以机制替代原名。
+  证据：`spl-data.h:331`、`dat/descript/spells.txt:1321`、
+  `beam.cc:3133`、`cloud.cc:1090`。
+- `SPELL_POISONOUS_CLOUD`：5 级怪物法术，产生 `CLOUD_POISON`，具有毒性
+  直击、路径和终点毒云，并造成毒伤与中毒。“毒云”直接、准确。
+  证据：`spl-data.h:465`、`zap-data.h:67`、
+  `beam.cc:2451`、`cloud.cc:1146`。
+- `SPELL_NOXIOUS_CLOUD`：沼泽龙的大型呼气云，同样生成
+  `CLOUD_MEPHITIC`，零直伤、主效果混乱；“毒瘴云”与“毒瘴吐息”一致，
+  并避免和 Poisonous Cloud 重名。证据：`spl-data.h:1366`、
+  `mon-spell.h:320`、`zap-data.h:52`。
+- `SPELL_INK_CLOUD`：海怪在水中以自身为中心生成 opaque、无伤害的浓墨，
+  主要遮挡视线。“墨云”准确且不暗示伤害。证据：`spl-data.h:1796`、
+  `mon-cast.cc:7837`、`cloud.cc:176`。
+- `SPELL_PETRIFYING_CLOUD`：石化牛呼出的钙化尘沿路径生成
+  `CLOUD_PETRIFY`；云本身无伤害，持续暴露会石化。“石化云”保留核心
+  玩法效果。证据：`spl-data.h:2007`、`zap-data.h:285`、
+  `cloud.cc:1121`。
+- `SPELL_SPECTRAL_CLOUD`：`CLOUD_SPECTRAL` 会伤害非亡灵，并逐渐生成
+  短命灵体亡灵；“幽灵云”在复合词中可表示 spectral 属性，不必理解为
+  单只 ghost。证据：`spl-data.h:2175`、`beam.cc:3066`、
+  `cloud.cc:628`、`cloud.cc:660`。
+- `SPELL_FLAMING_CLOUD`：火蟹使用的现行法术，沿路径及终点产生
+  `CLOUD_FIRE` 火焰伤害云；“燃烧云”与已移除 Fire cloud 保持身份区分。
+  证据：`spl-data.h:2770`、`zap-data.h:467`、
+  `beam.cc:3028`。
+- `SPELL_MIASMA_CLOUD`、`SPELL_POISON_CLOUD`、`SPELL_FIRE_CLOUD`、
+  `SPELL_STEAM_CLOUD`：当前只有 TAG 34 `AXED_SPELL`、removed set 和标题
+  映射；不能从现行同名 cloud type 或其他能力反推历史机制。证据：
+  `spl-data.h:4712`、`spl-util.cc:2560`、`spl-util.cc:2582`、
+  `spl-util.cc:2586`、`spl-util.cc:2608`。
+- `SPELL_CLOUD_CONE`：当前同样只有 TAG 34 兼容占位；英文语法是 Cloud
+  修饰 Cone，不属于 `X Cloud` 后缀系列。证据：`spl-data.h:4720`、
+  `spell-type.h:402`、`spl-util.cc:2537`。
+
+### 附带描述问题
+
+- `Mephitic Cloud`：中文遗漏脆弱瓶爆炸的投送方式，并把英文
+  `creatures` 缩窄为“怪物”。
+- `Petrifying Cloud`：中文把“受尘雾影响超过片刻才石化”的触发条件误译
+  成“被石化较长时间”。
+- `Flaming Cloud`：中文遗漏英文 `large` 的规模信息。
+- `Poisonous Cloud`：中文遗漏英文 `great` 的规模信息。
+
+### 落地状态
+
+- [x] 机制证据收集
+- [x] 翻译审阅裁定
+- [x] 单一翻译写入者落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-015`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T155003270263000+0800-32795-ed4f20cfc60f`。

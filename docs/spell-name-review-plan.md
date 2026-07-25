@@ -103,7 +103,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 - [x] Blink 系列（证据、裁定、翻译落地及 translation profile 已完成）
 - [x] Bolt 系列（证据、裁定、翻译落地及 translation profile 已完成）
-- [ ] Cloud 系列
+- [x] Cloud 系列（证据、裁定、翻译落地及 translation profile 已完成）
 - [ ] Dispersal
 - [ ] Mesmerise
 

@@ -503,7 +503,7 @@ Flame Wave spell
 %%%%
 Flaming Cloud spell
 
-生成一团咆哮的火焰云。
+生成一大团咆哮的火焰云。
 %%%%
 Flash Freeze spell
 
@@ -841,8 +841,9 @@ Maxwell's Capacitive Coupling spell
 %%%%
 Mephitic Cloud spell
 
-生成一团短暂存在的毒性烟雾，这可能会对任何没有毒抗的生物造成混乱。
-越坚韧、经验等级越高的怪物越不会受此影响。
+召出一个脆弱的瓶子，瓶子爆炸后形成一团短暂存在的有害烟雾。
+烟雾可能使任何没有毒抗的生物陷入混乱。
+越坚韧、经验等级越高的生物越不容易受影响。
 %%%%
 Mesmerise spell
 
@@ -972,7 +973,7 @@ Petrify spell
 %%%%
 Petrifying Cloud spell
 
-呼出僵化尘，受影响的会被石化较长一段时间。
+呼出一股钙化尘雾。任何受其影响超过片刻的生物都会被石化。
 %%%%
 Phantom Mirror spell
 
@@ -995,7 +996,7 @@ Poison Arrow spell
 %%%%
 Poisonous Cloud spell
 
-生成一团致命的毒云。
+生成一大团致命的毒云。
 %%%%
 Polar Vortex spell
 

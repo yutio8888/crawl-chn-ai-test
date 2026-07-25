@@ -86,10 +86,11 @@
 |------|------|------|
 | Blink | 闪烁 | ✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） |
 | Bolt | 箭 | ✅ 已确认（常规现行法术；Blinkbolt 保留“闪烁箭”，Thunderbolt 采用“雷击”例外） |
+| Cloud | 云 | ✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录） |
 | Summon | 召唤 | ✅ 已确认 |
 | Dispel | 驱散 | ✅ 已确认 |
 
-待审阅词根：Cloud、Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
+待审阅词根：Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
 
 ---
@@ -798,22 +799,22 @@
 | Vampire Summon | 召唤吸血鬼 | ✅ |
 | Word of Recall | 召回之言 | ✅ |
 
-### Cloud（12）
+### X Cloud 后缀系列（现行 8；已移除／TAG 34 兼容 4）
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Fire cloud | 火云 | ✅ |
-| Flaming Cloud | 燃烧云 | ✅ |
-| Freezing Cloud | 冰冻云 | ✅ |
-| Ink Cloud | 墨云 | ✅ |
-| Mephitic Cloud | 迷瘴云 | 📝 |
-| Miasma cloud | 瘴气云 | ✅ |
-| Noxious Cloud | 毒瘴云 | 📝 |
-| Petrifying Cloud | 石化云 | ✅ |
-| Poison cloud | 毒气云 | ✅ |
-| Poisonous Cloud | 毒云 | ✅ |
-| Spectral Cloud | 幽灵云 | ✅ |
-| Steam cloud | 蒸汽云 | ✅ |
+| Flaming Cloud | 燃烧云 | ✅ 现行 |
+| Freezing Cloud | 冰冻云 | ✅ 现行 |
+| Ink Cloud | 墨云 | ✅ 现行 |
+| Mephitic Cloud | 迷瘴云 | ✅ 现行 |
+| Noxious Cloud | 毒瘴云 | ✅ 现行 |
+| Petrifying Cloud | 石化云 | ✅ 现行 |
+| Poisonous Cloud | 毒云 | ✅ 现行 |
+| Spectral Cloud | 幽灵云 | ✅ 现行 |
+| Fire cloud | 火云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Miasma cloud | 瘴气云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Steam cloud | 蒸汽云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 
 ### Breath（22）
 
@@ -995,7 +996,7 @@
 | Chant Fire Storm | 咏唱火焰风暴 | ✅ |
 | Charm | 魅惑 | ✅ |
 | Cleansing Flame | 净化之焰 | ✅ |
-| Cloud Cone | 云雾锥 | ✅ |
+| Cloud Cone | 云雾锥 | ⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，机制证据不足，暂沿用 |
 | Concentrate Venom | 浓缩毒液 | ✅ |
 | Condensation Shield | 凝结之盾 | 🆕 |
 | Confuse | 混乱 | ✅ |

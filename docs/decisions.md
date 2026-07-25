@@ -841,10 +841,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Source**: spell naming rules batch review (Cloud系列)
 - **Choice**: 2对重名Cloud法术拆分:
   - Noxious Cloud: 毒云 → 毒瘴云（消除与Poisonous Cloud重名，与Noxious Breath毒瘴吐息词根一致）
-  - Mephitic Cloud: 瘴气云 → 迷瘴云（消除与Miasma Cloud重名；"迷"指困惑/nausea效果）
+  - Mephitic Cloud: 瘴气云 → 迷瘴云（消除与Miasma Cloud重名；“迷”指混乱效果）
 - **Rejected**: 保留两对重名（违反§5.4 不同英文法术不得同中文名）
-- **Rationale**: Poisonous Cloud保留"毒云"为L6玩家法术；Noxious Cloud改为"毒瘴云"匹配其毒瘴属性。Miasma Cloud保留"瘴气云"；Mephitic Cloud改为"迷瘴云"突出其迷惑效果
+- **Rationale**: Poisonous Cloud保留“毒云”，当前为产生毒伤与中毒云的L5怪物法术；Noxious Cloud改为“毒瘴云”，当前为沼泽龙产生混乱云的呼气法术。Miasma Cloud保留“瘴气云”仅作为已移除兼容标题；Mephitic Cloud改为“迷瘴云”突出其混乱效果
 - **Scope**: `dat/i18n/zh/source.txt` Cloud条目
+- **Current-state correction**: 2026-07-25 经 D-C-015 复核，纠正旧记录中的
+  `nausea` 与“L6玩家法术”两项过时事实；原重名拆分裁定继续有效。
 
 ---
 
@@ -981,6 +983,37 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `docs/glossary.md`
   - `docs/decisions.md`
 - **Affected decisions**: 补充并更新 D-C-007；其“去多余之”的结构裁定仍有效。
+
+---
+
+### D-C-015 — Spell name review: Cloud 后缀系列、生命周期与描述校准
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: Cloud 词形系列逐项复审；对照当前 `spl-data.h`、英中描述、云类型及命中效果实现
+- **Choice**:
+  - 确认现行 `X Cloud` 后缀系列的中心词根 `Cloud → 云`。
+  - 保留 8 项现行标题：`Flaming Cloud → 燃烧云`、`Freezing Cloud → 冰冻云`、`Ink Cloud → 墨云`、`Mephitic Cloud → 迷瘴云`、`Noxious Cloud → 毒瘴云`、`Petrifying Cloud → 石化云`、`Poisonous Cloud → 毒云`、`Spectral Cloud → 幽灵云`。
+  - `Mephitic Cloud` 与 `Noxious Cloud` 都生成以混乱为主效果的 `CLOUD_MEPHITIC`，但前者是玩家使用的瓶式小范围爆炸，后者是沼泽龙的大型呼气云；`Poisonous Cloud` 则生成造成毒伤与中毒的 `CLOUD_POISON`。三者名称须保持区分。
+- **Lifecycle boundary**:
+  - `Miasma cloud → 瘴气云`、`Poison cloud → 毒气云`、`Fire cloud → 火云`、`Steam cloud → 蒸汽云` 仅作为已移除／TAG 34 兼容标题暂沿用。当前没有 metadata、描述或实现足以完成其历史机制复核。
+  - `Cloud Cone → 云雾锥` 同样仅为已移除兼容标题且机制证据不足。英文中心词是 `Cone`，因此它不属于 `X Cloud` 后缀系列，但仍保留在全法术词形索引中。
+  - 现行 `Flaming Cloud` 与已移除 `Fire cloud` 是不同生命周期的独立身份，不得因都关联火焰云类型而合并。
+- **Rejected**:
+  - 将 `Mephitic Cloud`、`Noxious Cloud`、`Poisonous Cloud` 合并为同一中文名：会掩盖混乱云与毒伤云，以及不同投送方式的玩法差异。
+  - 以现行 cloud type、吐息或辅助实现反推五项已移除法术的历史机制。
+  - 把 `Cloud Cone` 计入 `X Cloud` 后缀词根统计：其中心词是 `Cone`。
+  - 将“冰冻云”改成“冻结云”、将“幽灵云”改成说明式机制标题：均无足够辨识收益。
+- **Description corrections**:
+  - `Mephitic Cloud`：恢复脆弱瓶爆炸的投送方式，并将英文 `creatures` 完整译为“生物”。
+  - `Petrifying Cloud`：恢复“受钙化尘雾影响超过片刻才石化”的触发条件，不再误写为石化持续时间。
+  - `Flaming Cloud` 与 `Poisonous Cloud`：恢复英文 `large`／`great` 的规模信息。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/decisions.md`
+- **Affected decisions**: 更新 D-C-008 的当前事实；其消除重名的标题裁定继续有效。
 
 ---
 
@@ -1446,3 +1479,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-012 | Spell name revision — 元素召唤统一 | 3 fixes | active |
 | D-C-013 | Spell name revision — Blink 系列 | 4 fixes；8 current + 1 axed compatibility | active |
 | D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |
+| D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
