@@ -2112,6 +2112,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-058 — Spell name review: Fire Storm 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Fire Storm → 火焰风暴` 与
+  `Chant Fire Storm → 咏唱火焰风暴`。
+- **Series rule**: `Fire Storm → 火焰风暴`；仪式动作 `Chant → 咏唱`。
+- **Rationale**: 现行法术是 9 级塑能／火焰法术，在指定目标处制造大范围
+  火焰风暴并留下短暂火旋涡，“火焰风暴”忠实且与宏大强度相称。
+  已移除标题完整保留咏唱动作和基础法术名，无需重译。
+- **Description corrections**: 将 `Fire Storm` 末句调整为自然中文，
+  明确一半伤害无视火焰抗性，不改变机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2652,3 +2674,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-055 | Spell name review — Death 独立词形系列 | 3 current；2 description fixes | active |
 | D-C-056 | Spell name review — Teleport 词形系列 | 1 current + 2 axed；1 rename + 1 description retranslation | active |
 | D-C-057 | Spell name review — Control 词形系列 | 3 axed；2 new + 1 reused；1 rename | active |
+| D-C-058 | Spell name review — Fire Storm 词形系列 | 1 current + 1 axed；1 description wording fix | active |

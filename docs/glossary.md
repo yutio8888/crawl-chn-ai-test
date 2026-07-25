@@ -1060,7 +1060,7 @@
 | Cause Fear | 恐惧术 | ✅ |
 | Chain Lightning | 连锁闪电 | ✅；从最近生物开始向外连锁，距离越远伤害越低 |
 | Chain of Chaos | 混沌之链 | ✅ |
-| Chant Fire Storm | 咏唱火焰风暴 | ✅ |
+| Chant Fire Storm | 咏唱火焰风暴 | ✅；已移除／TAG 34 兼容标题 |
 | Charm | 魅惑 | ✅ |
 | Cleansing Flame | 净化之焰 | ✅ |
 | Cloud Cone | 云雾锥 | ⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，机制证据不足，暂沿用 |
@@ -1114,7 +1114,7 @@
 | Excruciating Wounds | 剧痛之伤 | ✅ |
 | Fastroot | 快速扎根 | ✅ |
 | Fire Brand | 火焰烙印 | ✅ |
-| Fire Storm | 火焰风暴 | ✅ |
+| Fire Storm | 火焰风暴 | ✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡 |
 | Fireball | 火球 | ✅；投掷会爆炸的火焰球 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Flame Wave | 火焰波 | ✅ |

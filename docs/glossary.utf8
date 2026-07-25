@@ -199,7 +199,7 @@ Cerebov title	塞雷波夫，火与钢之恶魔领主	domain=monster-titles; sou
 cerulean imp	蔚蓝小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅；从最近生物开始向外连锁，距离越远伤害越低
 Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
-Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=✅
+Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=✅；已移除／TAG 34 兼容标题
 Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
 Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -368,7 +368,7 @@ Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
 Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅
+Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡
 Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用

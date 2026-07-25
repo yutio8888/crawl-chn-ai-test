@@ -1986,6 +1986,39 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
 
+## Fire Storm 词形系列
+
+边界：包含完整 `Fire Storm` 的 2 项标题；1 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 / 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_FIRE_STORM` | 现行 / 9 / 塑能、火焰 / `target, needs_tracer` | 火焰风暴 | 在目标处制造大范围火焰爆炸，留下短暂火旋涡；一半伤害无视火焰抗性 | 保留 |
+| `SPELL_CHANT_FIRE_STORM` | 已移除兼容 | 咏唱火焰风暴 | 无当前描述或实现 | 保留 |
+
+名称结论：现行标题准确表达法术的火焰属性、风暴规模和 9 级宏大强度；
+兼容标题完整保留 `Chant` 的咏唱动作及基础法术名。两项均忠实且不误导。
+
+描述审阅发现一项 Needs Fix：Fire Storm 末句“它造成的一半伤害，火抗
+无法抵御”语序生硬。本批改为“一半伤害无视火焰抗性”，机制不变。
+
+证据：`spl-data.h:476`—`483`、`spl-data.h:4647`、
+`dat/descript/spells.txt:688`—`692`、`spl-cast.cc:1346`—`1347`
+及 `beam.cc:3147`—`3161`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-058`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T175912759124000+0800-96031-f7109482eddb`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`e1c9a71325bc68d058d325f98196788d46c52bd5f462b0a30d63d06266944f91`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
