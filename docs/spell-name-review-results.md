@@ -810,6 +810,46 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
 
+## Gaze 词形系列
+
+边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_PARALYSIS_GAZE` | 麻痹凝视 | 不可抵抗的短时麻痹；需要充能 | 保留 |
+| `SPELL_CONFUSION_GAZE` | 困惑凝视 | 通过意志检定的困惑 | 保留 |
+| `SPELL_ANTIMAGIC_GAZE` | 反魔法凝视 | 汲取魔力并按汲取量治疗施法者 | 保留 |
+| `SPELL_DRAINING_GAZE` | 吸取凝视 | 负能量按最大生命比例施加衰竭 | 重译为“衰竭凝视” |
+| `SPELL_WEAKENING_GAZE` | 虚弱凝视 | 不可抵抗地削弱近战攻击 | 保留 |
+| `SPELL_VITRIFYING_GAZE` | 玻璃化凝视 | 不可抵抗地提高所受全部伤害 | 保留 |
+| `SPELL_MUTAGENIC_GAZE` | 变异凝视 | 积累变异能量，导致有害变异或爆炸 | 保留 |
+
+名称结论：稳定采用 `Gaze → 凝视`。唯一重译项 `Draining Gaze`
+不把生命转移给施法者，而是施加 Drain/衰竭；“吸取凝视”会与真正汲取
+魔力并治疗施法者的 `Antimagic Gaze` 混淆，因此改为“衰竭凝视”。
+
+描述审阅同步修正 7 项：明确 gaze 只需视线而无需直达射线，恢复
+Draining 的活物、负能量及最大生命比例机制，恢复 Mutagenic 的能量
+积累与爆炸后果，并修正麻痹、玻璃化和虚弱等表述。
+
+证据：`spl-data.h:2904`—`2959`、`spl-data.h:3802`、
+`spl-data.h:4553`、`mon-cast.cc:472`—`529`、
+`mon-cast.cc:1468`—`1496`、`mon-cast.cc:7776`—`7795`。
+
+### 落地状态
+
+- [x] 7/7 机制证据与名称裁定
+- [x] 单一翻译写入者名称及描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-023`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T163930499789000+0800-27732-4448e8a3e80a`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`dc35d644bd70de1bc9da131717d485fb1153f622a5bbde1336062416d5dba3be`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Beam 词形系列
 
 边界：英文标题以独立 `Beam` 结尾的 2 项现行法术，无已移除兼容成员。

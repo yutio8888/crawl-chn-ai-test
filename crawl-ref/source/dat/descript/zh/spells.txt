@@ -50,7 +50,7 @@ Animate Dead spell
 Antimagic Gaze spell
 
 使目标的魔力泄入空气，如同被反魔法武器击中，并按汲取的魔力量治疗施法者；
-无需直接射线即可生效。
+只需视线，无需直达射线即可生效。
 %%%%
 Apportation spell
 
@@ -298,7 +298,7 @@ Confusing Touch spell
 %%%%
 Confusion Gaze spell
 
-在一个生物的头脑中引发困惑和混乱，无需直射。
+使一个生物的心智陷入迷茫与混乱，只需视线，无需直达射线。
 %%%%
 Conjure Ball Lightning spell
 
@@ -950,7 +950,8 @@ Paralyse spell
 %%%%
 Paralysis Gaze spell
 
-让一个生物在短期内不可抗拒地无法做出任何行动，需要多次充能但不需要发射。
+不可抵抗地使一个生物短时间无法采取任何行动。该凝视需要多次充能，
+但只需视线，无需直达射线。
 %%%%
 Passage of Golubria spell
 
@@ -1496,8 +1497,8 @@ Vitrify spell
 %%%%
 Vitrifying Gaze spell
 
-使一个生物的身体结构不可抗拒地变得像玻璃那样易碎而脆弱，
-任何来源的攻击都会对其造成更多伤害。该法术依赖视线而不是射线。
+不可抵抗地使一个生物的身体结构变得如玻璃般易碎，使其承受的所有伤害
+增加。该法术只需视线，无需直达射线。
 %%%%
 Volley of Thorns spell
 
@@ -1520,7 +1521,7 @@ Waterstrike spell
 %%%%
 Weakening Gaze spell
 
-在一段时间内不可抗拒地削弱一个生物的近战攻击，它依赖视线而不是射线。
+不可抵抗地使一个生物的近战攻击暂时变弱。该法术只需视线，无需直达射线。
 %%%%
 Wind Blast spell
 
@@ -1632,7 +1633,8 @@ Doomsaying spell
 %%%%
 Draining Gaze spell
 
-凝视一个目标，吸取其生命力，无需直接视线。
+以负能量充斥一个活物，使其按最大生命值的一定比例陷入衰竭。
+该法术需要视线，但无需直达射线。
 %%%%
 Eringya's Surprising Crocodile spell
 
@@ -1776,7 +1778,8 @@ Mud Breath spell
 %%%%
 Mutagenic Gaze spell
 
-凝视一个目标，暂时对其施加有害的变异。
+使目标体内积累变异能量，最终可能达到足以造成有害变异或不稳定魔法能量
+爆炸的程度。该法术需要视线，但无需直达射线。
 %%%%
 Nazja's All-Purpose Tempering spell
 

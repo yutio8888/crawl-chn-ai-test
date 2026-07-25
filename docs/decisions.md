@@ -1261,6 +1261,33 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-023 — Spell name review: Gaze 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与怪物凝视实现逐项复核
+- **Scope**: 7 项含独立 `Gaze` 词形的现行标题，无已移除兼容成员
+- **Choice**: 6 项标题保留；`Draining Gaze` 由“吸取凝视”重译为
+  **“衰竭凝视”**。
+- **Series rule**: `Gaze` 稳定后置为“凝视”；`draining` 若施加
+  Drain/衰竭而没有把生命或魔力转移给施法者，译为“衰竭”，不用“吸取”。
+- **Rationale**: `Draining Gaze` 以负能量按最大生命比例施加衰竭，
+  不治疗施法者；旧名会误示生命转移。`Antimagic Gaze` 则确实汲取魔力
+  并治疗施法者，但标题重点是反魔法效果，现译准确。其余标题直接对应
+  麻痹、困惑、虚弱、玻璃化和变异效果。
+- **Description corrections**: 重译 `Draining Gaze` 与
+  `Mutagenic Gaze` 的过时描述，并统一 7 项关于 line of sight 与
+  line of fire 的表述；补回比例衰竭、能量积累、爆炸和不可抵抗等机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1766,3 +1793,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-020 | Spell name review — Shadow/Shadows 词形系列 | 12 current + 1 axed compatibility；10 description fixes | active |
 | D-C-021 | Spell name review — Throw 词形系列 | 7 current + 1 axed compatibility；5 description fixes | active |
 | D-C-022 | Spell name review — Beam 词形系列 | 2 current；1 description fix | active |
+| D-C-023 | Spell name review — Gaze 词形系列 | 1 fix；7 current；7 description fixes | active |

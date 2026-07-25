@@ -16435,7 +16435,7 @@ Antimagic Gaze
 反魔法凝视
 %%%%
 Draining Gaze
-吸取凝视
+衰竭凝视
 %%%%
 Weakening Gaze
 虚弱凝视

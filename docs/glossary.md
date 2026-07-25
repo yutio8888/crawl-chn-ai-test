@@ -93,6 +93,7 @@
 | Shadow | 暗影 | ✅ 已确认（12 项现行；另有 1 项已移除／TAG 34 兼容记录） |
 | Throw | 投掷 | ✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） |
 | Beam | 光束 | ✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅） |
+| Gaze | 凝视 | ✅ 已确认（7 项现行） |
 | Dispel | 驱散 | ✅ 已确认 |
 
 待审阅词根：Arrow、Touch 等——将在逐批审阅中确认并补充。
@@ -854,7 +855,7 @@
 |---------|------|------|
 | Antimagic Gaze | 反魔法凝视 | ✅ |
 | Confusion Gaze | 困惑凝视 | ✅ |
-| Draining Gaze | 吸取凝视 | ✅ |
+| Draining Gaze | 衰竭凝视 | ✅；施加 Drain/衰竭，不治疗施法者 |
 | Mutagenic Gaze | 变异凝视 | ✅ |
 | Paralysis Gaze | 麻痹凝视 | ✅ |
 | Vitrifying Gaze | 玻璃化凝视 | ✅ |

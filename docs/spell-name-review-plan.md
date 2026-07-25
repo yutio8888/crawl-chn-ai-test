@@ -90,7 +90,7 @@ SPELL_*：
 `TAG_MAJOR_VERSION == 34` 已移除兼容记录、2 项描述专用 dummy、2 项内部
 placeholder；中文标题映射 511/511，英文与中文描述均为 402/511。
 默认参数下 inventory JSON 的 SHA-256 为
-`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 聚焦测试 8/8 通过，code profile 0 项失败；开发复审为 0 Blocker /
 0 Needs Fix。
 清单命令：
@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 141/511 项逐项审阅。
+当前已完成 148/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -119,6 +119,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Shadow/Shadows 词形系列（13 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Throw 词形系列（8 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Beam 词形系列（2 项均已审阅；其中 1 项复用 Shadow 证据，translation profile 已完成）
+  - [x] Gaze 词形系列（7 项证据、裁定、名称与描述落地及 translation profile 已完成）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术

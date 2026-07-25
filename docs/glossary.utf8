@@ -318,7 +318,7 @@ Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
 Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Drain Life	吸取生命	domain=spells; source=EN/ZH; 备注=✅
 Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=✅
-Draining Gaze	吸取凝视	domain=spells; source=EN/ZH; 备注=✅
+Draining Gaze	衰竭凝视	domain=spells; source=EN/ZH; 备注=✅；施加 Drain/衰竭，不治疗施法者
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
 Druid's Call	德鲁伊呼唤	domain=spells; source=EN/ZH; 备注=✅；召回同层已有林地生物，非创造召唤物
 Dungeon	地牢	domain=core; source=EN/ZH
@@ -408,6 +408,7 @@ Funeral Dirge	葬礼哀歌	domain=spells; source=EN/ZH; 备注=✅
 Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
 gargoyle	石像鬼	domain=species; source=EN/ZH
 Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅
