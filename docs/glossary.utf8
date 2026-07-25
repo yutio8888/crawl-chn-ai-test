@@ -550,7 +550,7 @@ magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源
 Magma Barrage	岩浆弹幕	domain=spells; source=EN/ZH; 备注=✅
 Magnavolt	磁暴	domain=spells; source=EN/ZH; 备注=✅
 Major Destruction	强力毁灭	domain=spells; source=EN/ZH; 备注=🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸
-Major Healing	大型治疗	domain=spells; source=EN/ZH; 备注=✅
+Major Healing	大型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的大量伤害
 Makhleb	马科列布	domain=gods; source=EN/ZH; 类型=音译
 Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅
 Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅
@@ -582,7 +582,7 @@ Might	强壮	domain=spells; source=EN/ZH; 备注=✅；法术显示标题，区�
 Might	强效	domain=core; source=EN/ZH; 注意事项=+10% 伤害 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Might Other	强壮他人	domain=spells; source=EN/ZH; 备注=✅；对附近友方施加同类近战伤害增益
 Mindburst	心智爆发	domain=spells; source=EN/ZH; 备注=✅
-Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅
+Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的少量伤害
 minotaur	牛头人	domain=species; source=EN/ZH
 miscast	施法失误	domain=core; source=EN/ZH; 注意事项=非"施法失败"（后者指被中断）
 Mislead	误导术	domain=spells; source=EN/ZH; 备注=✅

@@ -1200,7 +1200,7 @@
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
 | Major Destruction | 强力毁灭 | 🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸 |
-| Major Healing | 大型治疗 | ✅ |
+| Major Healing | 大型治疗 | ✅；治疗施法者身体所受的大量伤害 |
 | Malign Offering | 邪恶献祭 | ✅ |
 | Malmutate | 恶性变异 | ✅ |
 | Manifold Assault | 多重攻击 | ✅ |
@@ -1215,7 +1215,7 @@
 | Might | 强壮 | ✅；法术显示标题，区别于状态/机制域 `Might → 强效` |
 | Might Other | 强壮他人 | ✅；对附近友方施加同类近战伤害增益 |
 | Mindburst | 心智爆发 | ✅ |
-| Minor Healing | 小型治疗 | ✅ |
+| Minor Healing | 小型治疗 | ✅；治疗施法者身体所受的少量伤害 |
 | Mislead | 误导术 | ✅ |
 | Momentum Strike | 动量打击 | ✅；借用未来移动能量攻击并令施法者短时无法移动 |
 | Mourning Wail | 哀悼嚎哭 | ✅ |

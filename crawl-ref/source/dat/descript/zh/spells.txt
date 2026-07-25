@@ -775,7 +775,7 @@ Major Destruction spell
 %%%%
 Major Healing spell
 
-治愈施法者所受的大部分创伤。
+治疗施法者身体所受的大量伤害。
 %%%%
 Malign Gateway spell
 
@@ -880,7 +880,7 @@ Mindburst spell
 %%%%
 Minor Healing spell
 
-治愈施法者所受的小部分创伤。
+治疗施法者身体所受的少量伤害。
 %%%%
 Monstrous Menagerie spell
 

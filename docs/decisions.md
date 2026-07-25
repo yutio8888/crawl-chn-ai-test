@@ -2581,6 +2581,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-080 — Spell name review: Healing 强度系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术
+- **Choice**: 保留 `Minor Healing → 小型治疗` 与
+  `Major Healing → 大型治疗`。
+- **Series rule**: `Healing → 治疗`；强度递进采用
+  `Minor → 小型`、`Major → 大型`。
+- **Rationale**: 两项分别为 2 级和 6 级自我治疗法术，名称准确保留原文
+  的少量/大量强度差异，且不会误示额外目标或效果。
+- **Description corrections**: 修正两项中文将 `small/large amount`
+  误写成“小部分/大部分创伤”的比例语义，恢复身体伤害和治疗量信息。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3143,3 +3165,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-077 | Spell name review — Recall 词形系列 | 1 current + 1 axed；no text fixes | active |
 | D-C-078 | Spell name review — Phantom 词形系列 | 2 current；2 description fixes | active |
 | D-C-079 | Spell name review — Missiles 词形系列 | 1 current + 1 axed；1 description retranslation | active |
+| D-C-080 | Spell name review — Healing 强度系列 | 2 current；2 description fixes | active |
