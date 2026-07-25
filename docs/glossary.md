@@ -767,7 +767,7 @@
 | Mara Summon | 玛拉召唤 | ✅ |
 | Monstrous Menagerie | 怪物动物园 | ✅ |
 | Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Recall | 召回术 | ✅ |
+| Recall | 召回术 | ✅；已移除兼容标题 |
 | Shadow Creatures | 暗影生物 | ✅ |
 | Spawn Tentacles | 生成触须 | ✅ |
 | Summon Air Elementals | 召唤气元素 | ✅ |
@@ -810,7 +810,7 @@
 | Summon Water Elementals | 召唤水元素 | ✅ |
 | Summon swarm | 召唤虫群 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Vampire Summon | 召唤吸血鬼 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Word of Recall | 召回之言 | ✅ |
+| Word of Recall | 召回之言 | ✅；短暂延迟后召回同层有智慧盟友 |
 
 ### X Cloud 后缀系列（现行 8；已移除／TAG 34 兼容 4）
 
