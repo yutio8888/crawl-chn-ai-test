@@ -567,7 +567,7 @@ Funeral Dirge spell
 %%%%
 Ghostly Fireball spell
 
-掷出一个负能量爆炸球，将衰竭所吞噬的生物。
+掷出一颗爆炸性的负能量球，使其笼罩的所有活物陷入衰竭。
 %%%%
 Ghostly Sacrifice spell
 

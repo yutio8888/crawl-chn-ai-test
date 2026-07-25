@@ -1850,6 +1850,41 @@ Ball Lightning` 使用了指人的“他们”指代球状闪电。其余新增�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
 
+## Fireball 词形系列
+
+边界：标题含 `Fireball` 的 3 项法术；2 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_FIREBALL` | 现行 | 火球 | 投掷会爆炸的火焰球 | 保留 |
+| `SPELL_GHOSTLY_FIREBALL` | 现行 | 幽灵火球 | 负能量爆炸使范围内活物衰竭 | 保留 |
+| `SPELL_DELAYED_FIREBALL` | 已移除兼容 | 延迟火球 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：“火球”准确概括普通法术的爆炸投射物；“幽灵火球”保留
+Ghostly 的死灵意象，同时与造成火焰伤害的普通火球明确区分。已移除的
+延迟火球缺少当前机制证据，暂沿用。
+
+普通 Fireball 的中英文描述一致。Ghostly Fireball 原中文存在语法缺失，
+且没有明确只影响活物，本批改为“使其笼罩的所有活物陷入衰竭”。
+
+证据：`spl-data.h:52`—`60`、`spl-data.h:2186`—`2194`、
+`spl-data.h:4659`，`dat/descript/spells.txt:694`—`696`、
+`dat/descript/spells.txt:874`—`877`，以及对应爆炸 zap 实现。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-054`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T175125508466000+0800-79351-5bcf280899f5`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`8bb9f80d039c66166c2173fe5cfe2a8b80f9bc7c94686cba2b99d8e7a04691bf`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

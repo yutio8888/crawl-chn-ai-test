@@ -275,7 +275,7 @@ Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
-Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=✅
+Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 demon	恶魔	domain=core; source=EN/ZH
 Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=✅
@@ -369,7 +369,7 @@ Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅
-Fireball	火球	domain=spells; source=EN/ZH; 备注=🆕
+Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
@@ -417,7 +417,7 @@ gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅
+Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能量爆炸使范围内活物衰竭
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅

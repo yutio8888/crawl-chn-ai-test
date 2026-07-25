@@ -1088,7 +1088,7 @@
 | Death Rattle | 死亡之响 | ✅ |
 | Debugging Ray | 调试射线 | ✅ |
 | Deflect Missiles | 偏转飞弹 | ✅ |
-| Delayed Fireball | 延迟火球 | ✅ |
+| Delayed Fireball | 延迟火球 | ✅；已移除兼容标题 |
 | Detonation Catalyst | 引爆催化剂 | ✅ |
 | Diamond Sawblades | 钻石锯片 | ✅ |
 | Dig | 挖掘 | ✅ |
@@ -1115,7 +1115,7 @@
 | Fastroot | 快速扎根 | ✅ |
 | Fire Brand | 火焰烙印 | ✅ |
 | Fire Storm | 火焰风暴 | ✅ |
-| Fireball | 火球 | 🆕 |
+| Fireball | 火球 | ✅；投掷会爆炸的火焰球 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Flame Wave | 火焰波 | ✅ |
 | Flash Freeze | 急冻 | ✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性 |
@@ -1142,7 +1142,7 @@
 | Fulsome Distillation | 精华蒸馏 | ✅ |
 | Fulsome Fusillade | 猛烈连射 | ✅ |
 | Funeral Dirge | 葬礼哀歌 | ✅ |
-| Ghostly Fireball | 幽灵火球 | ✅ |
+| Ghostly Fireball | 幽灵火球 | ✅；负能量爆炸使范围内活物衰竭 |
 | Ghostly Sacrifice | 幽灵献祭 | ✅ |
 | Glaciate | 冰封 | 🆕；锥形寒冰冲击会冰封并减速目标 |
 | Gloom | 阴郁 | ✅ |

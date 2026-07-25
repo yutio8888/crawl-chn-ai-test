@@ -2026,6 +2026,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-054 — Spell name review: Fireball 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Fireball → 火球`、`Ghostly Fireball → 幽灵火球`
+  与 `Delayed Fireball → 延迟火球`。
+- **Series rule**: `Fireball → 火球`；复合标题保留幽灵性质或延迟方式。
+- **Rationale**: 普通火球是爆炸火焰球；幽灵火球虽造成负能量而非火焰，
+  但“幽灵”保留原名的死灵意象并与普通火球区分；已移除标题无当前机制
+  证据，不用历史印象反推重译。
+- **Description corrections**: 修正 `Ghostly Fireball` 中文病句，并补明
+  其只会使爆炸范围内的活物衰竭。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2562,3 +2584,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-051 | Spell name review — Permafrost Eruption | 1 current；1 description retranslation | active |
 | D-C-052 | Spell name review — Lightning/Electricity/Thunder 元素系列 | 9 current + 1 axed；4 new + 6 reused；2 description fixes | active |
 | D-C-053 | Spell name review — Glaciate/Iceblast/Hailstorm 寒冷术语批次 | 3 current；1 rename + 3 description fixes | active |
+| D-C-054 | Spell name review — Fireball 词形系列 | 2 current + 1 axed；1 description fix | active |
