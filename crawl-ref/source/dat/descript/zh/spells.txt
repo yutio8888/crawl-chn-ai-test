@@ -919,7 +919,7 @@ Noxious Cloud spell
 %%%%
 Olgreb's Toxic Radiance spell
 
-施法者放出毒能量，在法术持续时内持续对视线内的所有生物造成毒害。
+施法者放出毒能量，在法术持续期间不断毒害视线内的所有生物。
 %%%%
 Orb of Destruction spell
 

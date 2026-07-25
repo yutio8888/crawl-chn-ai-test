@@ -1762,6 +1762,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-042 — Spell name review: Olgreb's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与持续毒害实现逐项复核
+- **Scope**: 1 项以 `Olgreb's` 开头的现行标题
+- **Choice**: 保留 `Olgreb's Toxic Radiance → 奥尔格雷布之毒辐射`。
+- **Series rule**: `Olgreb → 奥尔格雷布`；`Toxic Radiance → 毒辐射`。
+- **Rationale**: 法术使施法者持续向整个视野辐射毒能量，“毒辐射”准确
+  同时表达毒属性、向外放射和持续范围效果。
+- **Description corrections**: 机制内容完整；将“在法术持续时内持续”的
+  重复病句润色为“在法术持续期间不断”，不改变语义。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2286,3 +2307,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-039 | Spell name review — Alistair's 专名系列 | 2 current；1 description clarification | active |
 | D-C-040 | Spell name review — Eringya's 专名系列 | 2 current；1 description + 1 quote fix | active |
 | D-C-041 | Spell name review — Nazja's 专名系列 | 2 current；2 description fixes | active |
+| D-C-042 | Spell name review — Olgreb's 专名系列 | 1 current；1 wording fix | active |
