@@ -2814,6 +2814,42 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `4a194db035d4f372a80378bb5ce3f3573ea44d5c5e634909ce57c6a6deac5e42`。
 
+## Ensnare 词形系列
+
+边界：英文标题含 `Ensnare` 的 2 项现行怪物法术。
+
+| Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_ENSNARE` | 6 / 塑能、妖术 / `dir_or_target, needs_tracer, monster` | 束缚 | 射出高命中蛛网，困住单个目标 | 保留 |
+| `SPELL_GREATER_ENSNARE` | 6 / 塑能、妖术 / `dir_or_target, needs_tracer, monster` | 强力束缚 | 更高命中地困住目标，并在附近散布 3–6 张短时蛛网 | 保留 |
+
+系列结论：两项都以蛛网困住目标为核心，`Ensnare → 束缚` 准确；
+Greater 版提高命中，并把控制扩展到目标附近，现有“强力束缚”能够自然
+表达同源强化，不必改成只强调数量的“蛛网散布”。
+
+普通版中文描述与英文机制一致。Greater 版旧中文仍称其“大幅降低闪避和
+格挡能力”，当前英文与实现均无此效果；现已重译为困住目标并在附近散布
+会短时消散的额外蛛网。
+
+证据：`spl-data.h:2029`—`2051`，
+`dat/descript/spells.txt:638`—`640`、`927`—`930`，
+`dat/descript/zh/spells.txt:454`—`456`、`1724`—`1727`，
+`mon-cast.cc:2472`—`2487`、`beam.cc:2812`—`2825`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者完成描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-082`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T185400584507000+0800-11877-38c230fa39a0`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`9e5b0830967bf1f52ccf60e0cbd70dd8075b5ad533d2eff41034ac0e2433ef07`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`4a194db035d4f372a80378bb5ce3f3573ea44d5c5e634909ce57c6a6deac5e42`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

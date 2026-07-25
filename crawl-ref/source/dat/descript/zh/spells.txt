@@ -1723,7 +1723,8 @@ Grave Claw spell
 %%%%
 Greater Ensnare spell
 
-召唤一个更强大的网，束缚一个目标，大幅降低其闪避和格挡能力。
+向生物射出一连串的网，使目标困于黏性的网中，并在附近散布额外蛛网；
+这些蛛网会在短时间后消散。
 %%%%
 Hellfire Mortar spell
 

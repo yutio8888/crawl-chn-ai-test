@@ -2626,6 +2626,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-082 — Spell name review: Ensnare 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行怪物法术
+- **Choice**: 保留 `Ensnare → 束缚` 与
+  `Greater Ensnare → 强力束缚`。
+- **Series rule**: `Ensnare → 束缚`；`Greater → 强力` 表示命中增强及
+  额外区域控制，而非目标的防御属性削弱。
+- **Rationale**: 两项都以蛛网困住目标为核心；Greater 版提高命中并在
+  目标附近散布额外短时蛛网，现有标题准确表达同源的强化版本。
+- **Description corrections**: 重译 `Greater Ensnare` 中文描述，删除
+  已不存在的“大幅降低闪避和格挡”，补回附近散布短时蛛网。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3190,3 +3212,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-079 | Spell name review — Missiles 词形系列 | 1 current + 1 axed；1 description retranslation | active |
 | D-C-080 | Spell name review — Healing 强度系列 | 2 current；2 description fixes | active |
 | D-C-081 | Spell name review — Injury 词形系列 | 2 current；1 rename + 1 description retranslation | active |
+| D-C-082 | Spell name review — Ensnare 词形系列 | 2 current；1 description retranslation | active |

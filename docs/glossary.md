@@ -1106,7 +1106,7 @@
 | Drain Magic | 汲取魔力 | ✅ |
 | Dream Dust | 梦尘 | ✅ |
 | Enfeeble | 衰弱 | ✅ |
-| Ensnare | 束缚 | ✅ |
+| Ensnare | 束缚 | ✅；射出蛛网困住单个目标 |
 | Ensorcelled Hibernation | 冬眠 | ✅ |
 | Entropic Weave | 熵之编织 | ✅ |
 | Ephemeral Infusion | 短暂灌注 | ✅；已移除兼容标题 |
@@ -1151,7 +1151,7 @@
 | Grand Avatar | 大化身 | ✅ |
 | Grasping Roots | 抓握根须 | ✅ |
 | Grave Claw | 墓爪 | ✅ |
-| Greater Ensnare | 强力束缚 | ✅ |
+| Greater Ensnare | 强力束缚 | ✅；命中更高，并在目标附近散布短时蛛网 |
 | Hailstorm | 冰雹风暴 | ✅；环形冰雹避开紧邻施法者的目标 |
 | Harpoon Shot | 鱼叉射击 | ✅；命中后将目标拉近或使其撞上障碍 |
 | Haste | 加速 | ✅；提高施法者行动速度 |

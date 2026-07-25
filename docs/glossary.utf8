@@ -334,7 +334,7 @@ enchant	附魔	domain=items; source=EN/ZH
 Enchanter	惑控师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Enchantress	妖术女王	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
-Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅
+Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅；射出蛛网困住单个目标
 Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
 Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
 Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
@@ -437,7 +437,7 @@ Grand Avatar	大化身	domain=spells; source=EN/ZH; 备注=✅
 Grasping Roots	抓握根须	domain=spells; source=EN/ZH; 备注=✅
 Grave Claw	墓爪	domain=spells; source=EN/ZH; 备注=✅
 great mace	巨型钉头锤	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
-Greater Ensnare	强力束缚	domain=spells; source=EN/ZH; 备注=✅
+Greater Ensnare	强力束缚	domain=spells; source=EN/ZH; 备注=✅；命中更高，并在目标附近散布短时蛛网
 Grinder	格林德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 growls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Grum	格拉姆	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
