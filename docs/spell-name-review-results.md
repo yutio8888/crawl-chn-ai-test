@@ -1885,6 +1885,42 @@ Ghostly 的死灵意象，同时与造成火焰伤害的普通火球明确区分
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
 
+## Death 独立词形系列
+
+边界：标题含独立 `Death` 的 3 项现行法术；已审阅的 `Death's Door`
+不重复计数。
+
+| Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_DEATH_CHANNEL` | 6 / 死灵 / `helpful, selfench` | 死亡通道 | 引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 | 保留 |
+| `SPELL_DEATH_RATTLE` | 7 / 塑能、死灵、气 / `dir_or_target, monster` | 死亡之响 | 呼出垂死精粹并生成瘴气云 | 保留 |
+| `SPELL_KISS_OF_DEATH` | 1 / 塑能、死灵 / `dir_or_target, needs_tracer, not_self` | 死亡之吻 | 衰竭目标，同时暂时降低施法者生命值 | 保留 |
+
+名称结论：三项标题分别保留死亡力量的持续通道、临终喘响和“死亡之吻”
+的原名意象，并能区分幽魂生成、瘴气吐息与双方生命代价三种机制。
+
+描述审阅发现两项 Needs Fix：Death Channel 将 living、demonic、holy
+误译成“生物、邪物、圣物”，并重复使用“灵魂”；Kiss of Death 的
+fragment 机械重复且使用指人复数代词。本批已按英文含义修正。
+Death Rattle 的中英文描述一致。
+
+证据：`spl-data.h` 对应三项条目、`dat/descript/spells.txt:462`—`469`、
+`2300`—`2304`，以及幽魂生成、瘴气吐息和生命汲取实现。
+
+### 落地状态
+
+- [x] 3/3 机制证据与名称裁定
+- [x] 单一翻译写入者两项描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-055`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T175315514034000+0800-83103-7dea740d5619`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`22b7d9fd8160ab3bffb23692177a8a811b4339995b964683b6a613ccb7d8a90e`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

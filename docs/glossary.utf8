@@ -269,8 +269,8 @@ daeva	德瓦	domain=monsters; source=EN/ZH; Scope / comment=monster; source=sour
 damage	伤害	domain=combat; source=EN/ZH
 Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=✅
 Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
-Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅
-Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅
+Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战
+Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死精粹并生成瘴气云
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
@@ -519,7 +519,7 @@ Khufu	胡夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monste
 Kikubaaqudgha	奇库巴库哈	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-003]
 Kinetic Grapnel	动力抓钩	domain=spells; source=EN/ZH; 备注=✅
 Kirke	喀耳刻	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅
+Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目标并暂时降低施法者生命值
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

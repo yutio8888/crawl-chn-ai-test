@@ -2048,6 +2048,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-055 — Spell name review: Death 独立词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 标题含独立 `Death` 的 3 项现行法术，不含已审阅的
+  `Death's Door`
+- **Choice**: 保留 `Death Channel → 死亡通道`、
+  `Death Rattle → 死亡之响`、`Kiss of Death → 死亡之吻`。
+- **Rationale**: 三项分别保留持续引导死亡力量、垂死喘响与死亡之吻的
+  原名意象，能与幽魂留存、瘴气吐息和双方生命代价机制对应。
+- **Description corrections**: 修正 `Death Channel` 对 living、demonic、
+  holy 与 spectres 的错误翻译；润色 `Kiss of Death` 的机械直译和代词。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2585,3 +2606,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-052 | Spell name review — Lightning/Electricity/Thunder 元素系列 | 9 current + 1 axed；4 new + 6 reused；2 description fixes | active |
 | D-C-053 | Spell name review — Glaciate/Iceblast/Hailstorm 寒冷术语批次 | 3 current；1 rename + 3 description fixes | active |
 | D-C-054 | Spell name review — Fireball 词形系列 | 2 current + 1 axed；1 description fix | active |
+| D-C-055 | Spell name review — Death 独立词形系列 | 3 current；2 description fixes | active |

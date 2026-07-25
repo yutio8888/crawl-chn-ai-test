@@ -1084,8 +1084,8 @@
 | Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
 | Darkness | 黑暗术 | ✅ |
-| Death Channel | 死亡通道 | ✅ |
-| Death Rattle | 死亡之响 | ✅ |
+| Death Channel | 死亡通道 | ✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 |
+| Death Rattle | 死亡之响 | ✅；呼出垂死精粹并生成瘴气云 |
 | Debugging Ray | 调试射线 | ✅ |
 | Deflect Missiles | 偏转飞弹 | ✅ |
 | Delayed Fireball | 延迟火球 | ✅；已移除兼容标题 |
@@ -1187,7 +1187,7 @@
 | Irradiate | 辐射 | ✅ |
 | Jinxbite | 厄运之咬 | ✅ |
 | Kinetic Grapnel | 动力抓钩 | ✅ |
-| Kiss of Death | 死亡之吻 | ✅ |
+| Kiss of Death | 死亡之吻 | ✅；衰竭目标并暂时降低施法者生命值 |
 | Landbreaker | 裂地 | ✅ |
 | Launch Bomblet | 发射小型炸弹 | ✅ |
 | Launch Clockwork Bee | 发射发条蜜蜂 | ✅ |
