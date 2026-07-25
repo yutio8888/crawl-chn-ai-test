@@ -1826,6 +1826,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-045 — Spell name review: 单成员专名批次 B
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: Brom、Trog、Tukima、Sheza、Sentinel 各 1 项现行标题
+- **Choice**: 保留“布罗姆之碾压巨石”“特洛格之手”“图基玛之舞”
+  “谢扎之舞”“哨兵印记”。
+- **Rationale**: 五项分别准确对应滚石碾压、神祇庇护、武器倒戈之舞、
+  群体活化武器之舞，以及暴露目标位置的标记。
+- **Description corrections**: 重译 Sentinel 的全层信标机制；Brom 恢复
+  碾过死者、连锁推动、窄道磨损及碎裂条件并删除旧爆炸机制；Sheza 修正
+  武器代词；Trog 能力说明补足“恢复效果”中心词。Tukima 描述完整。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `crawl-ref/source/dat/descript/zh/ability.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2353,3 +2375,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-042 | Spell name review — Olgreb's 专名系列 | 1 current；1 wording fix | active |
 | D-C-043 | Spell name review — Lehudib's 专名系列 | 1 current；1 wording fix | active |
 | D-C-044 | Spell name review — 单成员专名批次 A | 4 current；1 description clarification | active |
+| D-C-045 | Spell name review — 单成员专名批次 B | 5 current；4 description fixes | active |

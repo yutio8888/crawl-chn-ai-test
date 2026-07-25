@@ -1512,6 +1512,39 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## 单成员专名批次 B
+
+边界：Brom、Trog、Tukima、Sheza、Sentinel 各自唯一的现行法术，共 5 项。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_BOULDER` | 布罗姆之碾压巨石 | 滚石碾过死者并推动幸存者 | 保留 |
+| `SPELL_TROGS_HAND` | 特洛格之手 | 强力恢复并提高意志力 | 保留 |
+| `SPELL_TUKIMAS_DANCE` | 图基玛之舞 | 活化敌方武器使其倒戈 | 保留 |
+| `SPELL_SHEZAS_DANCE` | 谢扎之舞 | 从各处召来并活化武器 | 保留 |
+| `SPELL_SENTINEL_MARK` | 哨兵印记 | 向同层所有生物暴露目标的位置 | 保留 |
+
+名称结论：五项名称均准确对应当前效果。描述修正 4 项：Sentinel 原中文
+完全属于另一套机制；Brom 残留旧爆炸、磨损和摆动规则；Sheza 武器代词
+错误；Trog 能力说明缺少中心词。Tukima 描述与英文一致。
+
+证据：对应 `spl-data.h` 条目、英文与中文 spell/ability TextDB，以及
+滚石、标记、武器活化和恢复效果实现。
+
+### 落地状态
+
+- [x] 5/5 机制证据与名称裁定
+- [x] 单一翻译写入者四项描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-045`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T173313984361000+0800-38838-9c6076d62e63`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`59bd489694d613edf3bf5ae6ab3a5432f6601656e45f88f3084f06454272ba9c`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

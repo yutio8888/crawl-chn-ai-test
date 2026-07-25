@@ -167,7 +167,7 @@ briar patch	荆棘丛	domain=monsters; source=EN/ZH; Scope / comment=monster; so
 Brigand	强盗	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Brimstone Fiend	硫磺邪魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 broad axe	阔刃斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
-Brom's Barrelling Boulder	布罗姆之碾压巨石	domain=spells; source=EN/ZH; 备注=✅
+Brom's Barrelling Boulder	布罗姆之碾压巨石	domain=spells; source=EN/ZH; 备注=✅；滚石碾过死者并推动幸存者
 broodmother	育母蜘蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Brothers in Arms	战友	domain=spells; source=EN/ZH; 备注=📝
 bullfrog	牛蛙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -736,7 +736,7 @@ Searing Breath	灼热吐息	domain=spells; source=EN/ZH; 备注=📝
 Searing Ray	灼热射线	domain=spells; source=EN/ZH; 备注=✅
 See Invisible	侦测隐形	domain=spells; source=EN/ZH; 备注=🆕
 Seismic Stomp	地震践踏	domain=spells; source=EN/ZH; 备注=✅
-Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅
+Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅；向同层所有生物暴露目标的位置
 Seracfall	冰塔崩塌	domain=spells; source=EN/ZH; 备注=✅
 Serpent of Hell cocytus	悲叹河地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Serpent of Hell dis	铁城地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
@@ -762,7 +762,7 @@ Shapeshifter	变形人	domain=backgrounds; source=EN/ZH; Scope / comment=backgro
 Shapeshifting	变形术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 sharp scales	锐利鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Shatter	粉碎	domain=spells; source=EN/ZH; 备注=✅
-Sheza's Dance	谢扎之舞	domain=spells; source=EN/ZH; 备注=✅
+Sheza's Dance	谢扎之舞	domain=spells; source=EN/ZH; 备注=✅；从各处召来并活化武器
 shield	盾牌	domain=combat; source=EN/ZH
 Shields	盾牌	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Shock	震击	domain=spells; source=EN/ZH; 备注=✅
@@ -914,9 +914,9 @@ Translocations	传送系	domain=skills; source=EN/ZH; Scope / comment=skill; sou
 Tremorstone	震石	domain=spells; source=EN/ZH; 备注=✅
 triple crossbow	三弦弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
 Trog	特洛格	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-002]
-Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅
+Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅；提供强力恢复与意志力
 troll	巨魔	domain=species; source=EN/ZH; 复合格式=巨魔 + 职业
-Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅
+Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅；活化敌方武器使其倒戈
 Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=✅
 Unarmed Combat	徒手格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 undead	亡灵	domain=core; source=EN/ZH

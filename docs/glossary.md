@@ -942,7 +942,7 @@
 | Alistair's Walking Alembic | 阿利斯泰尔之行走蒸馏器 | ✅；战斗构装酿造并分发药水 |
 | Borgnjor's Revivification | 博格尼尔之复苏 | 🆕；完全治愈仍活着的施法者，不会复活死者 |
 | Borgnjor's Vile Clutch | 博格尼尔之邪恶抓握 | ✅ |
-| Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅ |
+| Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅；滚石碾过死者并推动幸存者 |
 | Cigotuvi's Degeneration | 西格图维之退化 | ✅；已移除兼容标题，无当前机制可供反推 |
 | Cigotuvi's Embrace | 西格图维之拥抱 | ✅；已移除兼容标题，无当前机制可供反推 |
 | Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取 |
@@ -966,10 +966,10 @@
 | Olgreb's Toxic Radiance | 奥尔格雷布之毒辐射 | ✅；持续毒害视线内所有生物 |
 | Ozocubu's Armour | 奥佐库布之护甲 | ✅；厚冰护体并提高护甲，移动后消失 |
 | Ozocubu's Refrigeration | 奥佐库布之制冷 | ✅；冻结视野内其他生物，邻接盟友可减伤 |
-| Sentinel's Mark | 哨兵印记 | ✅ |
-| Sheza's Dance | 谢扎之舞 | ✅ |
-| Trog's Hand | 特洛格之手 | ✅ |
-| Tukima's Dance | 图基玛之舞 | ✅ |
+| Sentinel's Mark | 哨兵印记 | ✅；向同层所有生物暴露目标的位置 |
+| Sheza's Dance | 谢扎之舞 | ✅；从各处召来并活化武器 |
+| Trog's Hand | 特洛格之手 | ✅；提供强力恢复与意志力 |
+| Tukima's Dance | 图基玛之舞 | ✅；活化敌方武器使其倒戈 |
 | Vhi's Electric Charge | 维之电击冲锋 | 🆕；`charge` 是向敌人冲锋，不是静态“电荷” |
 | Vhi's Electrolunge | 维之电击突进 | 🆕；怪物版近身突进，与玩家版“冲锋”区分 |
 | Yara's Violent Unravelling | 亚拉之猛烈解构 | ✅；撕裂附魔并转化为诱变爆炸 |
