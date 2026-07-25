@@ -322,6 +322,11 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("validate_chinese_init", deploy)
 
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+        self.assertIn(
+            "'0.34.1-zh[0-9]+-[0-9]+-[0-9][0-9][0-9]'",
+            workflow,
+        )
+        self.assertNotIn("'0.34.1-zh*-*-???'", workflow)
         self.assertIn("package-windows-tiles", workflow)
         self.assertIn("name: windows-tiles", workflow)
         self.assertIn("stone_soup-*-tiles-win32.zip", workflow)
