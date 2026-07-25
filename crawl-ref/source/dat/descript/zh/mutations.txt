@@ -1169,9 +1169,13 @@ potion fungus mutation
 %%%%
 protean grace mutation
 
-{{ num = math.min(7, you.num_noninnate_mutations()) }}
-每项非先天突变为你提供 +1 闪避和 +1 杀戮加成（最多 +{{ num }}）。
-你当前获得 +{{ num }} 闪避和 +{{ num }} 杀戮加成。
+你的四肢充满了变形之力，引导着你的一举一动。
+你拥有的每项其他非先天突变还会提供 +1 闪避和 +1 杀戮加成（上限为 7），
+提高你的近战和远程攻击的命中率与伤害。
+即使这些突变因另一种形态而受到抑制，此效果仍然生效。
+
+{{ num = math.min(you.how_mutated(true, false, false, true, false), 7) - 1 }}
+你当前从此突变获得 +{{ num }} 闪避和 +{{ num }} 杀戮加成。
 %%%%
 reckless mutation
 

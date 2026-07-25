@@ -18443,6 +18443,9 @@ initially attractive
 innate caster
 天生施法者
 %%%%
+inexperienced
+经验不足
+%%%%
 inviolate magic
 不可侵犯魔法
 %%%%
@@ -18464,6 +18467,9 @@ large bone plates
 low MP
 低魔力
 %%%%
+lucky
+幸运
+%%%%
 magic link
 魔力链接
 %%%%
@@ -18481,6 +18487,9 @@ missing a hand
 %%%%
 missing an eye
 缺失一只眼
+%%%%
+mnemnophage
+噬忆
 %%%%
 molten scales
 熔岩鳞片
@@ -18587,11 +18596,17 @@ powered by death
 powered by pain
 痛苦赋能
 %%%%
+protean grace
+百变灵巧
+%%%%
 reduced AC
 降低防御
 %%%%
 reduced EV
 降低闪避
+%%%%
+reckless
+鲁莽
 %%%%
 renounce potions
 放弃药水
@@ -18607,6 +18622,9 @@ retaliatory headbutt
 %%%%
 robust
 强健
+%%%%
+rollpage
+翻滚冲锋
 %%%%
 rugged brown scales
 粗糙棕鳞
@@ -18718,6 +18736,9 @@ weak-willed
 %%%%
 weakness stinger
 虚弱毒刺
+%%%%
+wild magic
+狂野魔法
 %%%%
 word of chaos
 混沌之语
@@ -21914,6 +21935,9 @@ Your resistance to elements expires.
 Your unholy channel expires.
 你的不洁引导结束了。
 %%%%
+Zot trap
+佐特陷阱
+%%%%
 a binding sigil
 束缚符文
 %%%%
@@ -22151,6 +22175,9 @@ magical portal
 mechanical trap
 机械陷阱
 %%%%
+net trap
+网陷阱
+%%%%
 metal statue
 金属雕像
 %%%%
@@ -22223,6 +22250,9 @@ runed door
 runed translucent door
 刻有符文的透明门
 %%%%
+runelight
+符文之光
+%%%%
 sacrificial altar of Ru
 入的献祭祭坛
 %%%%
@@ -22267,6 +22297,9 @@ some deep water
 %%%%
 some lava
 一片熔岩
+%%%%
+some mud
+一片泥地
 %%%%
 some shallow water
 一片浅水
