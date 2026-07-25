@@ -2232,6 +2232,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-064 — Spell name review: Animate 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Animate Dead → 操纵死尸`；将
+  `Animate Skeleton → 召唤骷髅`修正为“操纵骷髅”。
+- **Series rule**: 此死灵法术系列统一采用 `Animate → 操纵`，不得与
+  `Summon → 召唤`混用。
+- **Rationale**: 现行法术使施法者杀死的活物化作丧尸复起，“操纵死尸”
+  保留驱使尸体行动的死灵意象；兼容标题原译把 Animate 误作 Summon，
+  “操纵骷髅”忠实保留动作和对象，并恢复系列一致性。
+- **Description corrections**: 将“复活成丧尸／复活怪物”改为“化作丧尸
+  复起”，避免误示真正复生，同时保留概率、持续时间、重施和离层规则。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2778,3 +2802,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-061 | Spell name review — Abjuration 词形系列 | 1 current + 1 axed；1 wording fix | active |
 | D-C-062 | Spell name review — Infusion 词形系列 | 3 axed；no text fixes | active |
 | D-C-063 | Spell name review — Song 词形系列 | 2 current + 1 axed；no text fixes | active |
+| D-C-064 | Spell name review — Animate 词形系列 | 1 current + 1 axed；1 rename + 1 description fix | active |

@@ -2177,6 +2177,41 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
 
+## Animate 词形系列
+
+边界：标题以 `Animate` 开头的 2 项法术；1 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 / 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_ANIMATE_DEAD` | 现行 / 4 / 死灵 / `helpful, no_ghost` | 操纵死尸 | 施法后一段时间内，杀死的活物有概率化作丧尸复起 | 保留 |
+| `SPELL_ANIMATE_SKELETON` | 已移除兼容 | 召唤骷髅 | 无当前描述或实现 | 修正为“操纵骷髅” |
+
+名称结论：“操纵死尸”准确保留驱使尸体行动的死灵意象；“召唤骷髅”
+把 Animate 错译成 Summon，改为“操纵骷髅”后既忠实原名，也恢复系列
+词根一致性。
+
+描述审阅发现一项 Needs Fix：“复活成丧尸／复活怪物”容易误示真正
+复生。本批改为“化作丧尸复起”，保留生成概率、持续时间、重施遣散及
+离开楼层遣散等全部机制。
+
+证据：`spl-data.h:600`—`607`、`spl-data.h:4742`、
+`dat/descript/spells.txt:47`—`52`、`mon-death.cc:2004`—`2014`
+及 `spl-other.cc:85`—`101`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者名称与描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-064`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T181106715819000+0800-23171-2de6fad2050b`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`b2586168f5593fe9f9af9e364e98162a644d54876bb914ff663d1a25c0dd2610`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`18c48b881a3dd29790ab0387d80ea51ae1e9d5ed27396991365e9066a9b32f42`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

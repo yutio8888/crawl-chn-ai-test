@@ -43,8 +43,8 @@ ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster
 ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 angel	天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Anguish	哀痛	domain=spells; source=EN/ZH; 备注=📝
-Animate Dead	操纵死尸	domain=spells; source=EN/ZH; 备注=✅
-Animate Skeleton	召唤骷髅	domain=spells; source=EN/ZH; 备注=✅
+Animate Dead	操纵死尸	domain=spells; source=EN/ZH; 备注=✅；使施法者杀死的活物有概率化作丧尸复起
+Animate Skeleton	操纵骷髅	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，统一 `Animate → 操纵
 Antaeus	安泰俄斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Antaeus title	安泰俄斯，悲叹河的守卫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 antennae	触角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

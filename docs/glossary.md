@@ -1035,8 +1035,8 @@
 | Agony | 剧痛 | 🆕 |
 | Airstrike | 空袭 | ✅ |
 | Anguish | 哀痛 | 📝 |
-| Animate Dead | 操纵死尸 | ✅ |
-| Animate Skeleton | 召唤骷髅 | ✅ |
+| Animate Dead | 操纵死尸 | ✅；使施法者杀死的活物有概率化作丧尸复起 |
+| Animate Skeleton | 操纵骷髅 | 🆕；已移除兼容标题，统一 `Animate → 操纵` |
 | Apportation | 隔空取物 | ✅ |
 | Arcjolt | 电弧震击 | ✅ |
 | Aura of Abjuration | 驱逐灵气 | ✅；已移除兼容标题 |

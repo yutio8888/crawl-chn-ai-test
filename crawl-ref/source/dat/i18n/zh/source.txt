@@ -17140,7 +17140,7 @@ Awaken Earth
 唤醒大地
 %%%%
 Animate Skeleton
-召唤骷髅
+操纵骷髅
 %%%%
 throws
 投掷
