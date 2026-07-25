@@ -393,7 +393,7 @@ Forgecraft	锻造术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; S
 Forgewright	锻造师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Form	变形	domain=magic; source=EN/ZH; 状态=⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用）
 formicid	蚁人	domain=species; source=EN/ZH
-Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅
+Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅；以施法者护甲决定伤害的延时动能冲击波
 Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
 Frances	弗朗西斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Frederick	弗雷德里克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -776,7 +776,7 @@ Sigil of Binding	束缚符文	domain=spells; source=EN/ZH; 备注=✅
 Sigmund	西格蒙德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sign of Ruin	毁灭征兆	domain=spells; source=EN/ZH; 备注=🆕
 Silence	沉默	domain=core; source=EN/ZH; 注意事项=禁止施法/阅读卷轴 | domain=spells; source=EN/ZH; 备注=🆕
-Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=✅
+Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Singularity	奇点术	domain=spells; source=EN/ZH; 备注=✅
 Siphon Essence	吸取精华	domain=spells; source=EN/ZH; 备注=✅
 Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅；迷魂附近听众，离开施法者视野后解除移动限制
@@ -959,7 +959,7 @@ wear	穿戴	domain=items; source=EN/ZH
 Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
 wield	持握	domain=items; source=EN/ZH
-Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅
+Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅；锥形强风推开生物和云雾，碰撞会造成伤害
 Woodweal	木质愈合	domain=spells; source=EN/ZH; 备注=✅
 Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅

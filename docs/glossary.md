@@ -1130,7 +1130,7 @@
 | Forge Lightning Spire | 锻造闪电尖塔 | ✅ |
 | Forge Monarch Bomb | 锻造君主炸弹 | ✅ |
 | Forge Phalanx Beetle | 锻造方阵甲虫 | ✅ |
-| Fortress Blast | 堡垒冲击 | ✅ |
+| Fortress Blast | 堡垒冲击 | ✅；以施法者护甲决定伤害的延时动能冲击波 |
 | Foxfire | 狐火 | 🆕 |
 | Freeze | 冰冻 | ✅；相邻单体寒冷攻击，伤害无视护甲 |
 | Freezing Aura | 冰封灵气 | ✅；已移除兼容标题 |
@@ -1277,7 +1277,7 @@
 | Sigil of Binding | 束缚符文 | ✅ |
 | Sign of Ruin | 毁灭征兆 | 🆕 |
 | Silence | 沉默 | 🆕 |
-| Silver Blast | 白银冲击 | ✅ |
+| Silver Blast | 白银冲击 | ✅；已移除兼容标题 |
 | Singularity | 奇点术 | ✅ |
 | Siphon Essence | 吸取精华 | ✅ |
 | Siren Song | 塞壬之歌 | ✅；迷魂附近听众，离开施法者视野后解除移动限制 |
@@ -1343,7 +1343,7 @@
 | Warp Space | 扭曲空间 | ✅ |
 | Warp Weapon | 扭曲武器 | ✅ |
 | Waterstrike | 水击 | ✅ |
-| Wind Blast | 风击 | ✅ |
+| Wind Blast | 风击 | ✅；锥形强风推开生物和云雾，碰撞会造成伤害 |
 | Woodweal | 木质愈合 | ✅ |
 | nonexistent spell | 不存在的法术 | ✅ |
 

@@ -2323,6 +2323,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-068 — Spell name review: Blast 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术及 1 项已移除兼容标题；已在专名系列审阅的
+  `Iskenderun's Mystic Blast` 不重复计数
+- **Choice**: 保留 `Wind Blast → 风击`、`Fortress Blast → 堡垒冲击`
+  与 `Silver Blast → 白银冲击`。
+- **Series rule**: `blast` 按介质和表现可译为“击”或“冲击”，不机械统一。
+- **Rationale**: “风击”简洁表达强风冲击，“堡垒冲击”保留以自身坚固程度
+  蓄积动能波的意象；已移除标题缺乏现行机制证据，暂沿用“白银冲击”。
+- **Description corrections**: 重译 `Fortress Blast`，恢复蓄力、固定、
+  被位移取消、法术威力影响蓄力速度及护甲值决定伤害等现行机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2873,3 +2895,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-065 | Spell name review — Shot 词形系列 | 3 current；1 description retranslation | active |
 | D-C-066 | Spell name review — Hurl 词形系列 | 3 current；1 rename + shared description fixes | active |
 | D-C-067 | Spell name review — Launch 词形系列 | 3 current；2 description fixes | active |
+| D-C-068 | Spell name review — Blast 词形系列 | 2 current + 1 axed；1 description retranslation | active |
