@@ -508,7 +508,7 @@ Flaming Cloud spell
 Flash Freeze spell
 
 冻结一个目标周围的空气，对目标造成重大伤害并减慢其移动速度。
-它造成的一半伤害，寒抗无法抵御。它对已被冻结的目标没有影响。
+它造成的一半伤害无法被寒冷抗性抵御。
 %%%%
 Fleetfoot spell
 
@@ -1683,7 +1683,7 @@ Fortress Blast spell
 %%%%
 Freezing Gust spell
 
-创造一股冰冻的强风，伤害并减速路径上的敌人。
+发射一道穿透性的严寒气流，在沿途留下致命的寒气云。
 %%%%
 Fulsome Fusillade spell
 

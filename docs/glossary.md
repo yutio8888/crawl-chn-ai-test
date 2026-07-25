@@ -1118,7 +1118,7 @@
 | Fireball | 火球 | 🆕 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Flame Wave | 火焰波 | ✅ |
-| Flash Freeze | 急冻 | ✅ |
+| Flash Freeze | 急冻 | ✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性 |
 | Flashing Balestra | 闪光弩击 | ✅ |
 | Flay | 剥皮 | ✅ |
 | Fleetfoot | 轻快脚步 | ✅ |
@@ -1132,11 +1132,11 @@
 | Forge Phalanx Beetle | 锻造方阵甲虫 | ✅ |
 | Fortress Blast | 堡垒冲击 | ✅ |
 | Foxfire | 狐火 | 🆕 |
-| Freeze | 冰冻 | ✅ |
-| Freezing Aura | 冰封灵气 | ✅ |
-| Freezing Gust | 冰冻狂风 | ✅ |
+| Freeze | 冰冻 | ✅；相邻单体寒冷攻击，伤害无视护甲 |
+| Freezing Aura | 冰封灵气 | ✅；已移除兼容标题 |
+| Freezing Gust | 冰冻阵风 | 🆕；穿透性严寒气流，沿途留下寒气云 |
 | Frenzy | 狂乱术 | ✅ |
-| Frozen Ramparts | 冰冻壁垒 | ✅ |
+| Frozen Ramparts | 冰冻壁垒 | ✅；短暂冰封周围墙壁并伤害邻近敌人 |
 | Fugue of the Fallen | 亡灵赋格 | ✅ |
 | Fulminant Prism | 爆裂棱镜 | ✅ |
 | Fulsome Distillation | 精华蒸馏 | ✅ |

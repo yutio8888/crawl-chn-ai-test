@@ -321,7 +321,7 @@ Fortress Blast
 堡垒冲击
 %%%%
 Freezing Gust
-冰冻狂风
+冰冻阵风
 %%%%
 Godly wrath is upon you!
 神怒降临于你！

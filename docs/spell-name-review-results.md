@@ -946,8 +946,8 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 边界：英文标题含独立 `Poison` 或 `Poisonous` 词形的 9 项法术；其中
 5 项现行、4 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。
-`Poisonous Cloud` 与 `Poison Arrow` 已在既有批次审阅，本批复用未变化
-证据且不重复计数；新增审阅身份为 7 项。
+`Poisonous Cloud`、`Poison Cloud` 与 `Poison Arrow` 已在既有批次审阅，
+本批复用未变化证据且不重复计数；新增审阅身份为 6 项。
 
 | Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
@@ -959,7 +959,7 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 | `SPELL_CURE_POISON` | 已移除兼容 | 解毒术 | 无当前描述或实现 | 证据不足，暂沿用 |
 | `SPELL_IGNITE_POISON_SINGLE` | 已移除兼容 | 局部引爆毒素 | 无当前描述或实现 | 证据不足，暂沿用 |
 | `SPELL_POISON_WEAPON` | 已移除兼容 | 淬毒武器 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前描述或实现 | 证据不足，暂沿用（复用 D-C-015） |
 
 名称结论：`Spit Poison` 重译为“喷吐毒液”，与其直接引用的同名能力、
 能力描述及怪物施法消息统一；旧译“喷毒”过度缩略。其余标题保留，
@@ -979,7 +979,7 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 ### 落地状态
 
-- [x] 9/9 名称裁定（7 项新增证据，2 项复用未变化证据）
+- [x] 9/9 名称裁定（6 项新增证据，3 项复用未变化证据）
 - [x] 单一翻译写入者名称与描述修正
 - [x] translation profile
 - [x] 系列裁定登记（`D-C-028`）
@@ -1613,6 +1613,48 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 `58ebdb5137d6d3fdf8a406dd2d11f25cb7bf9a96400e0c9dad75e41a0f9ba140`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
+## Freeze/Freezing/Frozen 词形系列
+
+边界：标题中含独立 `Freeze`、`Freezing` 或 `Frozen` 词形的 5 项法术；
+其中 4 项现行、1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。已在 Cloud
+批次审阅的 `Freezing Cloud` 不重复计数。
+
+| Enum | 生命周期 | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_FREEZE` | 现行 | 1 / 冰 / `dir_or_target, not_self, destructive` | 冰冻 | 相邻单体伤害，无视护甲，可减速冷血生物 | 保留 |
+| `SPELL_FLASH_FREEZE` | 现行 | 7 / 塑能、冰 / `dir_or_target, monster, needs_tracer` | 急冻 | 高额伤害并短时减速；一半伤害无视寒冷抗性 | 保留 |
+| `SPELL_FREEZING_GUST` | 现行 | 5 / 塑能、冰、气 / `target, needs_tracer, cloud, monster` | 冰冻狂风 | 穿透性严寒气流，沿途留下致命寒气云 | 重译为“冰冻阵风” |
+| `SPELL_FROZEN_RAMPARTS` | 现行 | 3 / 冰 / `no_ghost, destructive` | 冰冻壁垒 | 冰封周围墙壁，伤害墙边敌人；移动后解除 | 保留 |
+| `SPELL_FREEZING_AURA` | 已移除兼容 | — | 冰封灵气 | 无当前描述或实现 | 保留兼容标题 |
+
+名称结论：Freeze 词形不必机械统一为单个中文字样，应按构词和机制分别
+采用“冰冻／急冻／冰封”。唯一名称问题是 `Gust` 被夸大为“狂风”；
+“冰冻阵风”既忠实于短促气流原义，也符合穿透性寒气束的实际表现。
+
+描述审阅发现两项 Needs Fix：`Freezing Gust` 原中文误写成伤害并减速
+路径敌人的强风，遗漏穿透和沿途生成寒气云；`Flash Freeze` 原中文声称
+对已冻结目标无效，但现行英文与实现只是不重复施加冻结，伤害仍然生效。
+
+证据：`spl-data.h:320`—`327`、`spl-data.h:679`—`686`、
+`spl-data.h:2388`—`2395`、`spl-data.h:3448`—`3455`、
+`spl-data.h:4669`、`dat/descript/spells.txt:708`—`711`、
+`dat/descript/spells.txt:794`—`814`、`beam.cc:2435`—`2510`、
+`beam.cc:4529`—`4539`、`spl-damage.cc:4498`—`4555`。
+
+### 落地状态
+
+- [x] 5/5 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者名称和描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-048`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T173948204505000+0800-54736-80411c83e378`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`1fc790829eafef04efb4f0153a724bfb05fcf23ff4e5fb6c4e948d53b2fcbc15`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`cd53a3e0eeee8ac15014ba0ad88ede96cdcddbee06f81b4468a347334d97a580`。
 
 ## Awaken 词形系列
 

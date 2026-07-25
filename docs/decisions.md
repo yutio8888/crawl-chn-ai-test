@@ -1890,6 +1890,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-048 — Spell name review: Freeze/Freezing/Frozen 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 4 项现行法术及 1 项已移除兼容标题
+- **Choice**: 将 `Freezing Gust → 冰冻狂风` 重译为“冰冻阵风”；保留
+  `Freeze → 冰冻`、`Flash Freeze → 急冻`、
+  `Frozen Ramparts → 冰冻壁垒` 与 `Freezing Aura → 冰封灵气`。
+- **Series rule**: Freeze 词形按实际语法和机制译为“冰冻／急冻／冰封”；
+  `Gust → 阵风`，不得夸大为“狂风”。
+- **Rationale**: “阵风”准确对应 gust 的短促气流，并与穿透性寒气束机制
+  一致；其余标题分别准确表达直接冻结、瞬发急冻、覆冰墙壁和已移除灵气。
+- **Description corrections**: 重译 `Freezing Gust` 的穿透寒气与沿途
+  留云机制；删除 `Flash Freeze` 对已冻结目标“没有影响”的过时说法。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2420,3 +2444,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-045 | Spell name review — 单成员专名批次 B | 5 current；4 description fixes | active |
 | D-C-046 | Spell name review — Hoarfrost 词根系列 | 2 current；1 description retranslation | active |
 | D-C-047 | Spell name review — Death's Door | 1 current；2 wording fixes | active |
+| D-C-048 | Spell name review — Freeze/Freezing/Frozen 词形系列 | 4 current + 1 axed；1 rename + 2 description fixes | active |

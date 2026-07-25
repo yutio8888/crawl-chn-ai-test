@@ -375,7 +375,7 @@ Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
 Flames	焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flaming Cloud	燃烧云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Flash Freeze	急冻	domain=spells; source=EN/ZH; 备注=✅
+Flash Freeze	急冻	domain=spells; source=EN/ZH; 备注=✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性
 Flashing Balestra	闪光弩击	domain=spells; source=EN/ZH; 备注=✅
 Flay	剥皮	domain=spells; source=EN/ZH; 备注=✅
 flee	逃跑	domain=core; source=EN/ZH
@@ -397,13 +397,13 @@ Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅
 Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
 Frances	弗朗西斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Frederick	弗雷德里克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Freeze	冰冻	domain=spells; source=EN/ZH; 备注=✅
-Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=✅
+Freeze	冰冻	domain=spells; source=EN/ZH; 备注=✅；相邻单体寒冷攻击，伤害无视护甲
+Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Freezing Cloud	冰冻云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Freezing Gust	冰冻狂风	domain=spells; source=EN/ZH; 备注=✅
+Freezing Gust	冰冻阵风	domain=spells; source=EN/ZH; 备注=🆕；穿透性严寒气流，沿途留下寒气云
 Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=✅
 Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅
+Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅；短暂冰封周围墙壁并伤害邻近敌人
 Fugue of the Fallen	亡灵赋格	domain=spells; source=EN/ZH; 备注=✅
 Fulminant Prism	爆裂棱镜	domain=spells; source=EN/ZH; 备注=✅
 Fulsome Distillation	精华蒸馏	domain=spells; source=EN/ZH; 备注=✅
