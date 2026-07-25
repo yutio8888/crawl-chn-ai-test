@@ -479,8 +479,7 @@ static int _issue_orders_prompt()
     mprf(MSGCH_PROMPT, T_("What are your orders?"));
     if (!you.cannot_speak())
     {
-        string cap_shout = you.shout_verb(false);
-        cap_shout[0] = toupper_safe(cap_shout[0]);
+        const string cap_shout = uppercase_first(you.shout_verb(false));
         mprf(T_(" t - %s!"), cap_shout.c_str());
     }
 
@@ -633,7 +632,7 @@ static string _allies_who_cant_see_invis()
         if (!_follows_orders(*mi) || mi->can_see_invisible())
             continue;
         if (non_sinv_ally)
-            return "some of your allies";
+            return T_("some of your allies");
         non_sinv_ally = *mi;
     }
 
@@ -734,10 +733,10 @@ void yell(const actor* target)
 
     if (target)
     {
-        mprf(T_("You %s%s at %s!"),
+        mprf_p(T_("You %s%s at %s!"),
              shout_verb.c_str(),
-             you.duration[DUR_RECITE] ? " your recitation" : "",
-             target && target->is_player() ? "yourself"
+             you.duration[DUR_RECITE] ? T_(" your recitation") : "",
+             target && target->is_player() ? T_("yourself")
                                            : target->name(DESC_THE).c_str());
     }
     else

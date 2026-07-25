@@ -12,6 +12,7 @@
 #include "dungeon.h"
 #include "duration-type.h"
 #include "env.h"
+#include "english.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
@@ -27,6 +28,7 @@
 #include "random.h"
 #include "religion.h"
 #include "skills.h"
+#include "shout.h"
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
@@ -34,6 +36,7 @@
 #include "stringutil.h"
 #include "tags.h"
 #include "terrain.h"
+#include "transform.h"
 #include "unicode.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
@@ -482,6 +485,46 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             break;
         }
     REQUIRE(has_non_ascii);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 21 display boundaries translate ugly, shout, and wall keys",
+                 "[zh-translation][issue-21][display-boundary]")
+{
+    const auto require_translated = [](const char* key)
+    {
+        INFO("key=\"" << key << "\"");
+        REQUIRE(std::string(T_(key)) != key);
+    };
+
+    for (const char* key : {
+             " basks in your mutagenic energy and changes!",
+             " basks in the mutagenic energy from its kin and changes!",
+             " basks in the mutagenic energy and changes!",
+             "slime", "weird stuff", "rock"})
+    {
+        require_translated(key);
+    }
+
+    for (const char* key : {"shout", "yell", "scream", "meow", "yowl",
+                            "caterwaul", "croak", "ribbit", "bellow",
+                            "bark", "howl", "screech", "wail", "shriek",
+                            "growl", "hiss", "sporulate"})
+    {
+        require_translated(key);
+    }
+
+    // Species and form verbs are translated at the display boundary.  The
+    // Chinese article helper must still avoid English articles.
+    CHECK(species::shout_verb(SP_BARACHI, 2, false) == T_("bellow"));
+    CHECK(species::shout_verb(SP_FELID, 0, true) == T_("hiss"));
+    CHECK(species::shout_verb(SP_POLTERGEIST, 1, false) == T_("shriek"));
+    const transformation saved_form = you.form;
+    you.form = transformation::fungus;
+    CHECK(you.shout_verb(false) == T_("sporulate"));
+    CHECK(uppercase_first(you.shout_verb(false)) == T_("sporulate"));
+    you.form = saved_form;
+    CHECK(article_a("howl") == "howl");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

@@ -8291,7 +8291,7 @@ You %s towards %s!
 你%s%s！
 %%%%
 You %s%s at %s!
-你对%s%s%s！
+你向%3$s%1$s%2$s！
 %%%%
 You %s%s%s!
 你%s%s%s！
@@ -38445,6 +38445,102 @@ spell or ability title|Sign of Ruin
 %%%%
 spell title|Sting
 毒刺
+%%%%
+ basks in your mutagenic energy and changes!
+ 沐浴在你的变异能量中并发生了变化！
+%%%%
+ basks in the mutagenic energy from its kin and changes!
+ 沐浴在同族的变异能量中并发生了变化！
+%%%%
+ basks in the mutagenic energy and changes!
+ 沐浴在变异能量中并发生了变化！
+%%%%
+ your recitation
+ 并吟诵
+%%%%
+some of your allies
+你的一些盟友
+%%%%
+yourself
+自己
+%%%%
+slime
+黏液
+%%%%
+weird stuff
+怪东西
+%%%%
+rock
+岩石
+%%%%
+shout
+喊叫
+%%%%
+yell
+大喊
+%%%%
+scream
+尖叫
+%%%%
+meow
+喵叫
+%%%%
+yowl
+哀叫
+%%%%
+caterwaul
+怪叫
+%%%%
+croak
+呱呱叫
+%%%%
+ribbit
+呱呱叫
+%%%%
+bellow
+吼叫
+%%%%
+bark
+吠叫
+%%%%
+howl
+嚎叫
+%%%%
+screech
+尖啸
+%%%%
+wail
+哀号
+%%%%
+shriek
+惨叫
+%%%%
+roar
+咆哮
+%%%%
+clack
+咔哒作响
+%%%%
+squeak
+吱吱叫
+%%%%
+shout twice
+喊两声
+%%%%
+flutter
+发出簌簌声
+%%%%
+whoosh
+呼呼作响
+%%%%
+creak
+吱嘎作响
+%%%%
+gurgle
+咕噜作响
+%%%%
+squeal
+尖叫
 %%%%
 growl
 低吼

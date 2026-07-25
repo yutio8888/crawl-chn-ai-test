@@ -119,12 +119,12 @@ bool ugly_thing_mutate(monster& ugly, bool force)
 
         if (act->is_player() && player_harmful_contamination())
         {
-            msg = " basks in your mutagenic energy and changes!";
+            msg = T_(" basks in your mutagenic energy and changes!");
             break;
         }
         else if (mons_genus(act->type) == MONS_UGLY_THING)
         {
-            msg = " basks in the mutagenic energy from its kin and changes!";
+            msg = T_(" basks in the mutagenic energy from its kin and changes!");
             const colour_t other_colour =
                 make_low_colour(act->as_monster()->colour);
             if (make_low_colour(ugly.colour) != other_colour)
@@ -134,7 +134,7 @@ bool ugly_thing_mutate(monster& ugly, bool force)
     }
 
     if (force)
-        msg = " basks in the mutagenic energy and changes!";
+        msg = T_(" basks in the mutagenic energy and changes!");
 
     if (!msg) // didn't find anything to mutate off of
         return false;

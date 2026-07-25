@@ -887,11 +887,11 @@ void bolt::digging_wall_effect()
                 return;
             }
             else if (feat == DNGN_SLIMY_WALL)
-                wall = "slime";
+                wall = T_("slime");
             else if (player_in_branch(BRANCH_PANDEMONIUM))
-                wall = "weird stuff";
+                wall = T_("weird stuff");
             else
-                wall = "rock";
+                wall = T_("rock");
 
             mprf(T_("%s %s shatters into small pieces."),
                  agent() && agent()->is_player() ? T_("The") : T_("Some"),
