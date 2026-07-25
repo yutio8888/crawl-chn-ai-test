@@ -1476,6 +1476,31 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-031 — Spell name review: Maxwell's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与通道／空间位移实现逐项复核
+- **Scope**: 2 项以 `Maxwell's` 开头的现行标题，无已移除兼容成员
+- **Choice**: 保留 `Maxwell's Capacitive Coupling → 麦克斯韦之电容耦合`
+  与 `Maxwell's Portable Piledriver → 麦克斯韦之便携打桩机`。
+- **Series rule**: 人名 `Maxwell → 麦克斯韦`，法术所有格结构稳定采用
+  “麦克斯韦之……”。
+- **Rationale**: 两项标题均准确保留专名及电学／机械意象。电容耦合通过
+  通道积累电荷并蒸发最近敌人；便携打桩机以空间压缩和骤然舒张把整列
+  生物推向障碍物，标题的夸张机械比喻与实际效果相符。
+- **Description corrections**: 为电容耦合补回启动需要可见目标、释放时
+  可能选中另一个敌人的规则；完全重译仍误写为“召唤移动桩锤”的便携
+  打桩机描述，恢复空间压缩、整列推进、碰撞目标及距离增伤机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1989,3 +2014,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-028 | Spell name review — Poison/Poisonous 词形系列 | 1 fix；5 current + 4 axed compatibility；2 description fixes | active |
 | D-C-029 | Spell name review — Dispel 词形系列 | 2 current；2 description fixes | active |
 | D-C-030 | Spell name review — Awaken 词形系列 | 4 current + 1 axed compatibility | active |
+| D-C-031 | Spell name review — Maxwell's 专名系列 | 2 current；2 description fixes | active |

@@ -564,8 +564,8 @@ Martyr's Knell	殉道者之丧钟	domain=spells; source=EN/ZH; 备注=✅
 Mass Confusion	群体混乱	domain=spells; source=EN/ZH; 备注=✅
 Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅
 Maurice	莫里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Maxwell's Capacitive Coupling	麦克斯韦之电容耦合	domain=spells; source=EN/ZH; 备注=✅
-Maxwell's Portable Piledriver	麦克斯韦之便携打桩机	domain=spells; source=EN/ZH; 备注=✅
+Maxwell's Capacitive Coupling	麦克斯韦之电容耦合	domain=spells; source=EN/ZH; 备注=✅；专名统一为“麦克斯韦”
+Maxwell's Portable Piledriver	麦克斯韦之便携打桩机	domain=spells; source=EN/ZH; 备注=✅；空间压缩后将整列生物推向障碍物
 Melee	近战	domain=spells; source=EN/ZH; 备注=✅
 Menkaure	门卡拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mennas	门纳斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

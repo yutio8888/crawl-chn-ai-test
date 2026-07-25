@@ -949,8 +949,8 @@
 | Lee's Rapid Deconstruction | 李之快速解构 | ✅ |
 | Lehudib's Crystal Spear | 勒胡迪布之水晶矛 | ✅ |
 | Martyr's Knell | 殉道者之丧钟 | ✅ |
-| Maxwell's Capacitive Coupling | 麦克斯韦之电容耦合 | ✅ |
-| Maxwell's Portable Piledriver | 麦克斯韦之便携打桩机 | ✅ |
+| Maxwell's Capacitive Coupling | 麦克斯韦之电容耦合 | ✅；专名统一为“麦克斯韦” |
+| Maxwell's Portable Piledriver | 麦克斯韦之便携打桩机 | ✅；空间压缩后将整列生物推向障碍物 |
 | Nazja's All-Purpose Tempering | 纳兹亚之通用淬炼 | ✅ |
 | Nazja's Percussive Tempering | 纳兹亚之冲击淬炼 | ✅ |
 | Olgreb's Toxic Radiance | 奥尔格雷布之毒辐射 | ✅ |
