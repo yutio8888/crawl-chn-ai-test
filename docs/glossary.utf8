@@ -458,8 +458,8 @@ Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 Hexes	诅咒系	domain=magic; source=EN/ZH
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 hit	击中	domain=combat; source=EN/ZH
-Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅
-Hoarfrost Cannonade	白霜炮击	domain=spells; source=EN/ZH; 备注=✅
+Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发射的冰霜碎片，命中后施加脆霜减速
+Hoarfrost Cannonade	白霜炮击	domain=spells; source=EN/ZH; 备注=✅；塑造两座自耗式远程冰霜火炮
 Holy Breath	神圣吐息	domain=spells; source=EN/ZH; 备注=✅
 Holy Flames	神圣火焰	domain=spells; source=EN/ZH; 备注=✅
 Holy Light	圣光术	domain=spells; source=EN/ZH; 备注=✅

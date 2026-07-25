@@ -1160,8 +1160,8 @@
 | Heal Other | 治愈他人 | ✅ |
 | Hellfire Court | 地狱火法庭 | ✅ |
 | Hellfire Mortar | 地狱火迫击炮 | ✅ |
-| Hoarfrost Bullet | 白霜弹 | ✅ |
-| Hoarfrost Cannonade | 白霜炮击 | ✅ |
+| Hoarfrost Bullet | 白霜弹 | ✅；火炮发射的冰霜碎片，命中后施加脆霜减速 |
+| Hoarfrost Cannonade | 白霜炮击 | ✅；塑造两座自耗式远程冰霜火炮 |
 | Holy Flames | 神圣火焰 | ✅ |
 | Holy Light | 圣光术 | ✅ |
 | Holy word | 圣言术 | ✅ |

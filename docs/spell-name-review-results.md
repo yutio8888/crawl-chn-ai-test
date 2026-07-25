@@ -1545,6 +1545,41 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## Hoarfrost 词根系列
+
+边界：英文标题含 `Hoarfrost` 的 2 项现行法术。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_HOARFROST_CANNONADE` | 5 / 锻造、冰 / 无 | 玩家、怪物 | 白霜炮击 | 塑造两座远程火炮；逐发自耗，最终齐射强化 | 保留 |
+| `SPELL_HOARFROST_BULLET` | 5 / 塑能、冰 / `dir_or_target, needs_tracer, monster` | 白霜火炮 | 白霜弹 | 冰霜碎片命中后减速；第五发碎裂并产生额外范围伤害 | 保留 |
+
+名称结论：两项稳定采用 `Hoarfrost → 白霜`。“白霜弹”准确指向火炮的
+单发冰霜碎片；“白霜炮击”表达两座火炮连续射击形成的 cannonade，
+不需要因实体数量改为“炮台”。
+
+中文 `Hoarfrost Bullet` 描述与英文和实现一致。`Hoarfrost Cannonade`
+原中文仍称“一座冰霜炮台”且只写攻击附近敌人，遗漏脆霜减速、逐发自耗
+及强化终幕，本批已按当前英文与实现重译。
+
+证据：`spl-data.h:4003`—`4032`、`dat/descript/spells.txt:990`—`1007`、
+`spl-summoning.cc:3274`—`3313`、`mon-cast.cc:347`—`378`、
+`beam.cc:4529`—`4539`、`beam.cc:5249`—`5265`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者描述重译
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-046`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T173458047137000+0800-43342-80216cf5184d`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`a40d58378839e4dc1d746fdbb71e6839f3fed49c7ebb132182d56d5d2d0ff686`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

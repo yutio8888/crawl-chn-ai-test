@@ -1848,6 +1848,29 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-046 — Spell name review: Hoarfrost 词根系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项含 `Hoarfrost` 的现行标题
+- **Choice**: 保留 `Hoarfrost Cannonade → 白霜炮击` 与
+  `Hoarfrost Bullet → 白霜弹`。
+- **Series rule**: `Hoarfrost → 白霜`；`Cannonade → 炮击`；
+  `Bullet → 弹`。
+- **Rationale**: 两项属于同一冰霜火炮机制；“白霜”准确表达覆盖目标并
+  减速的脆霜，“炮击”表达两座火炮持续齐射，“弹”对应火炮发射的单枚
+  冰霜碎片。
+- **Description corrections**: 重译 `Hoarfrost Cannonade` 中文描述，
+  补回两座火炮、远程攻击、脆霜减速、逐发自耗及强化最终齐射。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2376,3 +2399,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-043 | Spell name review — Lehudib's 专名系列 | 1 current；1 wording fix | active |
 | D-C-044 | Spell name review — 单成员专名批次 A | 4 current；1 description clarification | active |
 | D-C-045 | Spell name review — 单成员专名批次 B | 5 current；4 description fixes | active |
+| D-C-046 | Spell name review — Hoarfrost 词根系列 | 2 current；1 description retranslation | active |
