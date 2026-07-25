@@ -762,10 +762,12 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 - [x] translation profile
 - [x] 系列裁定登记（`D-C-018`）
 
-验证结果：首次 translation profile 因同批新增的 `Cold Breath` 与
-`Combustion Breath` 裁定尚未重新导出 `docs/glossary.utf8` 而失败；
-重新生成派生术语表后复测通过，0 项失败。通过的 Run ID 为
-`20260725T162553943198000+0800-1418-1db80705e827`。本批裁定后的
+验证结果：首次 translation profile（Run ID
+`20260725T162450588680000+0800-99223-1db80705e827`）因同批新增的
+`Cold Breath` 与 `Combustion Breath` 裁定尚未重新导出
+`docs/glossary.utf8` 而失败；重新生成派生术语表后复测通过，0 项失败。
+最新通过的 Run ID 为
+`20260725T162619124811000+0800-2244-1db80705e827`。本批裁定后的
 `docs/glossary.md` SHA-256 为
 `af5f6da8cb91917fef04a63bf9f797af0cb8839717e754e04781cb4f9cc61496`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
