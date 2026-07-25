@@ -324,7 +324,7 @@ marked with the sign of ruin monstatus
 %%%%
 mesmerising monstatus
 
-这个生物已经迷惑了你，使你无法自愿地远离它。
+这个生物已经迷住了你，使你无法主动远离它。
 
 如果你失去这个生物的视野，此效果会消失。
 %%%%
