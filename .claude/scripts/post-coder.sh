@@ -24,7 +24,10 @@ release_temp() {
     for path in "${TEMP_FILES[@]}"; do
         [[ "$path" == "$target" ]] || retained+=("$path")
     done
-    TEMP_FILES=("${retained[@]}")
+    TEMP_FILES=()
+    if [[ "${#retained[@]}" -gt 0 ]]; then
+        TEMP_FILES=("${retained[@]}")
+    fi
 }
 
 cleanup_temps() {

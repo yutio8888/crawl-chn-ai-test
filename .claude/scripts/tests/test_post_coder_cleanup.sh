@@ -111,6 +111,20 @@ run_mode normal
     || fail "normal advisory run succeeds (rc=$MODE_RC)"
 assert_clean "normal return removes advisory temp"
 
+# Exercise the early advisory return with exactly one registered temp file.
+# Bash 3.2 treats an empty "${array[@]}" assignment as an unbound variable
+# under set -u, so this proves release_temp handles an empty retained array.
+set +e
+(cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
+    ZH_VERIFY_SCOPE=changed ZH_VERIFY_CHANGED_FILES="" CLEANUP_MODE=normal \
+    /bin/bash .claude/scripts/post-coder.sh) >/dev/null 2>&1
+empty_retained_rc=$?
+set -e
+[[ "$empty_retained_rc" -eq 0 ]] \
+    && pass "empty retained temp array is Bash 3.2 safe" \
+    || fail "empty retained temp array (rc=$empty_retained_rc)"
+assert_clean "empty retained array removes advisory temp"
+
 while IFS= read -r excluded; do
     changed_files=$'crawl-ref/source/sample.cc\n'"crawl-ref/source/nested/$excluded/test_sample.cc"
     set +e
