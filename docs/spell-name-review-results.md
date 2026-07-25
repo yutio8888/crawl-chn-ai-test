@@ -3301,6 +3301,94 @@ Seismic Stomp、Flashing Balestra 与 Grave Claw 均按当前英文和实现
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `56e546f71165560597db443ed7ed5ca5ca8bbb612e5e0696518a80b02958d2de`。
 
+## 独立法术终批 B3
+
+边界：最后 51 个未审阅枚举，包括 16 项现行法术、2 项内部 placeholder、
+2 项描述 dummy 与 31 项已移除兼容记录。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 / 证据状态 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_SPIKE_LAUNCHER` | 现行 | 构建尖刺发射器 | 在相邻墙内构造反复刺击邻敌的陷阱 | 保留 |
+| `SPELL_KINETIC_GRAPNEL` | 现行 | 动力抓钩 | 命中嵌入后使下次近战必中并获杀伤加成 | 保留 |
+| `SPELL_DIAMOND_SAWBLADES` | 现行 | 钻石锯片 | 固定锻造至多四片锯片，数回合撕裂邻敌 | 保留 |
+| `SPELL_SHRED` | 现行 | 撕裂 | 以锯齿躯体旋转重创相邻敌人 | 保留 |
+| `SPELL_PLATINUM_PARAGON` | 现行 | 白金典范 | 构造复制神器、联动攻击并可过载的金属勇士 | 保留 |
+| `SPELL_MAGMA_BARRAGE` | 现行 | 岩浆弹幕 | 向至多两敌发射穿透熔岩弹，半伤无视火抗 | 保留 |
+| `SPELL_VEX` | 现行 | 激怒 | 迫使目标数回合攻击附近格子，可能打空或误伤盟友 | 保留 |
+| `SPELL_RAVENOUS_SWARM` | 现行 | 贪婪虫群 | 吸血蝙蝠啃咬非亡灵并最终使其入睡 | 重译为“饥渴蝠群” |
+| `SPELL_DOMINATE_UNDEAD` | 现行 | 支配亡灵 | 群体改变附近亡灵阵营，冒险者改为随机攻击 | 保留 |
+| `SPELL_DETONATION_CATALYST` | 现行 | 引爆催化剂 | 近战触发友方免疫爆炸，持续攻击可维持 | 保留 |
+| `SPELL_SPHINX_SISTERS` | 现行 | 斯芬克斯姐妹 | 召一守卫一劫掠斯芬克斯施妖术与狂风 | 保留 |
+| `SPELL_ILL_OMEN` | 现行 | 凶兆 | 无阻碍时扭曲命运并施加大量厄运 | 保留 |
+| `SPELL_OSTRACISE` | 现行 | 排斥 | 暂降有效虔诚并封锁相应神圣能力 | 保留 |
+| `SPELL_PYRRHIC_RECOLLECTION` | 描述 dummy | 惨胜回忆 | 点燃记忆，暂获强力法术知识并治疗 | 保留 |
+| `SPELL_PLANAR_OVERLAY` | 描述 dummy | 位面叠加 | 叠加相邻现实，使本地怪物在楼层出现 | 保留 |
+| `SPELL_DOOMSAYING` | 现行 | 宣告厄运 | 施加厄运并在施法者死后触发伏击、封楼梯 | 保留 |
+| `SPELL_SLEETSTRIKE` | 现行 | 冰雨打击 | 严寒气旋冰封减速，空旷增伤且半伤无视寒抗 | 保留 |
+| `SPELL_LANDBREAKER` | 现行 | 裂地 | 落石攻击多敌并阻塞其后方退路 | 保留 |
+| `SPELL_NO_SPELL` | 内部 placeholder | 不存在的法术 | 测试占位，无玩家机制 | 保留 |
+| `SPELL_CONDENSATION_SHIELD` | 已移除兼容 | 凝结护盾 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_DARKNESS` | 已移除兼容 | 黑暗术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_DEMONIC_HORDE` | 已移除兼容 | 恶魔大军 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_EVAPORATE` | 已移除兼容 | 蒸发术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_FIRE_BRAND` | 已移除兼容 | 火焰烙印 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_FLY` | 已移除兼容 | 飞行术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_FRENZY` | 已移除兼容 | 狂乱术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_GRAND_AVATAR` | 已移除兼容 | 大化身 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_HUNTING_CRY` | 已移除兼容 | 狩猎战吼 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_INSULATION` | 已移除兼容 | 绝缘术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_MELEE` | 内部 placeholder | 近战 | 内部兼容占位，无当前描述 | 保留 |
+| `SPELL_MISLEAD` | 已移除兼容 | 误导术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_PHASE_SHIFT` | 已移除兼容 | 相位变换 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_REARRANGE_PIECES` | 已移除兼容 | 重新布局 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SEE_INVISIBLE` | 已移除兼容 | 识破隐形 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SHAFT_SELF` | 已移除兼容 | 自我竖井 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SINGULARITY` | 已移除兼容 | 奇点术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SPECTRAL_WEAPON` | 已移除兼容 | 灵体武器 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_STONESKIN` | 已移除兼容 | 石肤术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SUNRAY` | 已移除兼容 | 阳光射线 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_STRIKING` | 已移除兼容 | 打击术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_RESURRECT` | 已移除兼容 | 复活术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_HOMUNCULUS` | 已移除兼容 | 人造人 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_SCATTERSHOT` | 已移除兼容 | 散射术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_TWISTED_RESURRECTION` | 已移除兼容 | 扭曲复活 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_RANDOM_EFFECTS` | 已移除兼容 | 随机效果 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_GOAD_BEASTS` | 已移除兼容 | 激怒野兽 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_TOMB_OF_DOROKLOHE` | 已移除兼容 | 多洛克洛之墓 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_EXCRUCIATING_WOUNDS` | 已移除兼容 | 剧痛之伤 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_CORPSE_ROT` | 已移除兼容 | 尸体腐烂 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_BEASTLY_APPENDAGE` | 已移除兼容 | 野兽肢体 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_NECROMUTATION` | 已移除兼容 | 亡灵变形 | 无当前实现或描述 | 证据不足，暂沿用 |
+
+名称结论：现行标题仅 Ravenous Swarm 存在确定误示，改为“饥渴蝠群”；
+其余现行、dummy 和 placeholder 标题均合理。31 项已移除兼容记录没有
+当前实现和描述，不以历史猜测替代证据，逐项暂沿用。
+
+描述审阅修正十三项：Kinetic Grapnel、Diamond Sawblades、Shred、
+Magma Barrage、Vex、Dominate Undead、Detonation Catalyst、
+Sphinx Sisters、Ill Omen、Ostracise、Pyrrhic Recollection、
+Sleetstrike 与 Landbreaker 均恢复当前目标、范围、条件与后果。
+
+证据：现行及 dummy 项对应 `spl-data.h` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
+`spl-forge.cc`、`spl-summoning.cc`、`spl-zap.cc` 中相应 enum 分支；
+兼容项对应 `spl-data.h` 的 `AXED_SPELL` 区和 `spell-type.h` 身份记录。
+
+### 落地状态
+
+- [x] 51/51 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者完成 1 项名称与 13 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-091`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T192758463521000+0800-87264-1fd10fc50b37`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`0d99fac5d8f9df500afc4d96fb986049eaec8ebf2612413ccba579e1788a7a69`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`e0aec9932c914db4cbe9f4e81043ae70bf74bf013792b1c68b42c68be7816afa`。
+inventory enum 集合与本文件审阅 enum 集合均为 511，双向差集为空。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

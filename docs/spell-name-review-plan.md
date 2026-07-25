@@ -109,9 +109,9 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 460/511 项逐项审阅。
+当前已完成 511/511 项逐项审阅。
 
-- [ ] 共享词根系列
+- [x] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
   - [x] Summon 词形系列（42 项证据、裁定、单批落地及 translation profile 已完成）
   - [x] Breath 词形系列（22 项证据、裁定、单批落地及 translation profile 已完成）
@@ -144,7 +144,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] 单成员专名批次 A（Yara、Leda、Lee、Martyr；4 项证据、裁定及 translation profile 已完成）
   - [x] 单成员专名批次 B（Brom、Trog、Tukima、Sheza、Sentinel；5 项及 translation profile 已完成）
   - [x] Death's Door（1 项证据、裁定、描述修正及 translation profile 已完成）
-- [ ] 实体、元素和状态术语系列
+- [x] 实体、元素和状态术语系列
   - [x] Hoarfrost 词根系列（2 项证据、裁定、描述修正及 translation profile 已完成）
   - [x] Freeze/Freezing/Frozen 词形系列（5 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Acid/Corrosive 词形系列（3 项均已审阅；其中 1 项复用既有证据，translation profile 已完成）
@@ -183,14 +183,15 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Ensnare 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Malign 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] 成对词根批次（23 项证据、裁定、名称与描述落地及 translation profile 已完成）
-- [ ] 独立法术
+- [x] 独立法术
   - [x] 独立批次 A1（20 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] 独立批次 A2（20 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] 独立批次 A3（20 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] 独立批次 A4（20 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] 独立批次 B1（10 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] 独立批次 B2（30 项证据、裁定、名称与描述落地及 translation profile 已完成）
-- [ ] 集合相等性终检
+  - [x] 独立终批 B3（51 项证据、裁定、名称与描述落地及 translation profile 已完成）
+- [x] 集合相等性终检（inventory 与审阅 enum 集合均为 511，双向差集为空）
 
 ## 落地规则
 

@@ -1246,7 +1246,7 @@
 | Pyroclastic Surge | 火山碎屑涌 | ✅ |
 | Pyrrhic Recollection | 惨胜回忆 | ✅ |
 | Random Effects | 随机效果 | ✅ |
-| Ravenous Swarm | 贪婪虫群 | ✅ |
+| Ravenous Swarm | 饥渴蝠群 | 🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡 |
 | Rearrange the Pieces | 重新布局 | ✅ |
 | Rebounding Blaze | 弹跳烈焰 | ✅ |
 | Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |

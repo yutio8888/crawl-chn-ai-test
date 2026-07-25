@@ -16816,7 +16816,7 @@ Vex
 激怒
 %%%%
 Ravenous Swarm
-贪婪虫群
+饥渴蝠群
 %%%%
 Dominate Undead
 支配亡灵

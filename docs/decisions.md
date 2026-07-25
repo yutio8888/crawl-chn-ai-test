@@ -2833,6 +2833,31 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-091 — Spell name review: 独立终批 B3
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 最后 51 项；16 项现行、2 项内部占位、2 项描述虚拟记录、
+  31 项已移除兼容
+- **Choice**: 将 `Ravenous Swarm → 贪婪虫群` 重译为“饥渴蝠群”；
+  其余 50 项保留或在无当前机制时暂沿用。
+- **Rationale**: Ravenous Swarm 实际释放吸血蝙蝠，旧译“虫群”误示
+  生物类别；“饥渴蝠群”同时恢复 ravenous 与 bats 的效果语义。
+  已移除兼容标题没有当前实现，不作推测性改名。
+- **Description corrections**: 修正 Kinetic Grapnel、Diamond Sawblades、
+  Shred、Magma Barrage、Vex、Dominate Undead、Detonation Catalyst、
+  Sphinx Sisters、Ill Omen、Ostracise、Pyrrhic Recollection、
+  Sleetstrike 与 Landbreaker。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3406,3 +3431,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-088 | Spell name review — 独立批次 A4 | 20 current；1 rename + 7 description fixes | active |
 | D-C-089 | Spell name review — 独立批次 B1 | 10 current；1 rename + 2 description fixes | active |
 | D-C-090 | Spell name review — 独立批次 B2 | 30 current；2 renames + 10 description fixes | active |
+| D-C-091 | Spell name review — 独立终批 B3 | 16 active + 2 internal + 2 dummy + 31 axed；1 rename + 13 description fixes | active |

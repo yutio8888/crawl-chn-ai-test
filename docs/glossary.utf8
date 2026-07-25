@@ -692,7 +692,7 @@ Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人�
 Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=✅
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Ravenous Swarm	贪婪虫群	domain=spells; source=EN/ZH; 备注=✅
+Ravenous Swarm	饥渴蝠群	domain=spells; source=EN/ZH; 备注=🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡
 Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=✅
 Reaver	掠夺者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Rebounding Blaze	弹跳烈焰	domain=spells; source=EN/ZH; 备注=✅
