@@ -1501,6 +1501,33 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-032 — Spell name review: Forge 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与锻造构装实现逐项复核
+- **Scope**: 4 项以 `Forge` 开头的现行标题，无已移除兼容成员
+- **Choice**: `Forge Lightning Spire → 锻造闪电尖塔`、
+  `Forge Blazeheart Golem → 锻造炽心魔像`、
+  `Forge Monarch Bomb → 锻造君主炸弹` 与
+  `Forge Phalanx Beetle → 锻造方阵甲虫` 均保留。
+- **Series rule**: 锻造术系列稳定采用 `Forge X → 锻造X`。
+- **Rationale**: 四项都由施法者构建持续存在的机械或元素造物，而不是
+  临时召来既存生物；“锻造”准确表达学派与创造动作。尖塔、炽心魔像、
+  君主炸弹和方阵甲虫也分别对应实际生成物及其核心战术角色。
+- **Description corrections**: 四项中文描述均按当前英文重译或补全；
+  恢复闪电尖塔优先攻击最远敌人、炽心魔像的创造者依存与法术威力效果、
+  君主炸弹的部署／追踪／再次施法引爆规则，以及方阵甲虫的护甲加成、
+  啃咬、回归优先级和法术威力缩放。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2015,3 +2042,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-029 | Spell name review — Dispel 词形系列 | 2 current；2 description fixes | active |
 | D-C-030 | Spell name review — Awaken 词形系列 | 4 current + 1 axed compatibility | active |
 | D-C-031 | Spell name review — Maxwell's 专名系列 | 2 current；2 description fixes | active |
+| D-C-032 | Spell name review — Forge 词形系列 | 4 current；4 description fixes | active |

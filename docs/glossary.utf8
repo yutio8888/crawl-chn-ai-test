@@ -384,6 +384,7 @@ Flight	飞行术	domain=spells; source=EN/ZH; 备注=✅
 Force Lance	力量之矛	domain=spells; source=EN/ZH; 备注=✅
 Forceful Dismissal	强制驱逐	domain=spells; source=EN/ZH; 备注=✅
 Forceful Invitation	强制邀请	domain=spells; source=EN/ZH; 备注=✅
+Forge	锻造	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行）
 Forge Blazeheart Golem	锻造炽心魔像	domain=spells; source=EN/ZH; 备注=✅
 Forge Lightning Spire	锻造闪电尖塔	domain=spells; source=EN/ZH; 备注=✅
 Forge Monarch Bomb	锻造君主炸弹	domain=spells; source=EN/ZH; 备注=✅

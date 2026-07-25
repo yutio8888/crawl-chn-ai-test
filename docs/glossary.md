@@ -101,6 +101,7 @@
 | Poison / Poisonous | 毒素 / 毒 / 淬毒 | ✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`） |
 | Dispel | 驱散 | ✅ 已确认（2 项现行；指破坏维系亡灵形体的魔力） |
 | Awaken | 唤醒 | ✅ 已确认（4 项现行；另有 1 项已移除兼容） |
+| Forge | 锻造 | ✅ 已确认（4 项现行） |
 
 其他词根将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
@@ -923,6 +924,15 @@
 | Awaken Forest | 唤醒森林 | ✅ |
 | Awaken Vines | 唤醒藤蔓 | ✅ |
 | Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+
+### Forge（4）
+
+| EN | ZH | 备注 |
+|---------|------|------|
+| Forge Blazeheart Golem | 锻造炽心魔像 | ✅ |
+| Forge Lightning Spire | 锻造闪电尖塔 | ✅ |
+| Forge Monarch Bomb | 锻造君主炸弹 | ✅ |
+| Forge Phalanx Beetle | 锻造方阵甲虫 | ✅ |
 
 ### Possessive（35）
 
