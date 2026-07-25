@@ -184,16 +184,16 @@
 | `SPELL_BOLT_OF_DRAINING` | 现行 | 吸取箭 | 重译 | 衰竭箭 | 高 |
 | `SPELL_BOLT_OF_FIRE` | 现行 | 火焰箭 | 保留 | 火焰箭 | 高 |
 | `SPELL_BOLT_OF_FLESH` | 现行 | 血肉箭 | 保留 | 血肉箭 | 高 |
-| `SPELL_BOLT_OF_INACCURACY` | 已移除兼容 | 偏差箭矢 | 证据不足 | 暂沿用偏差箭矢 | 暂缓高 |
+| `SPELL_BOLT_OF_INACCURACY` | 已移除兼容 | 偏差箭矢 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用偏差箭矢） | 高 |
 | `SPELL_BOLT_OF_LIGHT` | 现行 | 光箭 | 保留 | 光箭 | 高 |
 | `SPELL_BOLT_OF_MAGMA` | 现行 | 岩浆箭 | 保留 | 岩浆箭 | 高 |
 | `SPELL_CORROSIVE_BOLT` | 现行 | 腐蚀箭 | 保留 | 腐蚀箭 | 高 |
 | `SPELL_DOOM_BOLT` | 现行 | 厄运箭 | 保留 | 厄运箭 | 高 |
 | `SPELL_ELECTRICAL_BOLT` | 现行 | 电击箭 | 保留 | 电击箭 | 高 |
-| `SPELL_EXPLOSIVE_BOLT` | 已移除兼容 | 爆裂弩矢 | 证据不足 | 暂沿用爆裂弩矢 | 暂缓高 |
+| `SPELL_EXPLOSIVE_BOLT` | 已移除兼容 | 爆裂弩矢 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用爆裂弩矢） | 高 |
 | `SPELL_LIGHTNING_BOLT` | 现行 | 闪电箭 | 保留 | 闪电箭 | 高 |
 | `SPELL_QUICKSILVER_BOLT` | 现行 | 水银箭 | 保留 | 水银箭 | 高 |
-| `SPELL_RANDOM_BOLT` | 已移除兼容 | 随机箭矢 | 证据不足 | 暂沿用随机箭矢 | 暂缓高 |
+| `SPELL_RANDOM_BOLT` | 已移除兼容 | 随机箭矢 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用随机箭矢） | 高 |
 | `SPELL_SOJOURNING_BOLT` | 现行 | 旅居箭 | 微调 | 羁旅箭 | 中 |
 | `SPELL_THUNDERBOLT` | 现行 | 雷击 | 保留 | 雷击 | 高 |
 | `SPELL_VENOM_BOLT` | 现行 | 毒液箭 | 保留 | 毒液箭 | 高 |
@@ -300,11 +300,11 @@
 | `SPELL_PETRIFYING_CLOUD` | 现行 | 石化云 | 保留 | 石化云 | 高 |
 | `SPELL_SPECTRAL_CLOUD` | 现行 | 幽灵云 | 保留 | 幽灵云 | 中高 |
 | `SPELL_FLAMING_CLOUD` | 现行 | 燃烧云 | 保留 | 燃烧云 | 高 |
-| `SPELL_MIASMA_CLOUD` | 已移除兼容 | 瘴气云 | 证据不足 | 暂沿用瘴气云 | 暂缓高 |
-| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 证据不足 | 暂沿用毒气云 | 暂缓高 |
-| `SPELL_FIRE_CLOUD` | 已移除兼容 | 火云 | 证据不足 | 暂沿用火云 | 暂缓高 |
-| `SPELL_STEAM_CLOUD` | 已移除兼容 | 蒸汽云 | 证据不足 | 暂沿用蒸汽云 | 暂缓高 |
-| `SPELL_CLOUD_CONE` | 已移除兼容 | 云雾锥 | 证据不足 | 暂沿用云雾锥 | 暂缓高 |
+| `SPELL_MIASMA_CLOUD` | 已移除兼容 | 瘴气云 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用瘴气云） | 高 |
+| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用毒气云） | 高 |
+| `SPELL_FIRE_CLOUD` | 已移除兼容 | 火云 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用火云） | 高 |
+| `SPELL_STEAM_CLOUD` | 已移除兼容 | 蒸汽云 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用蒸汽云） | 高 |
+| `SPELL_CLOUD_CONE` | 已移除兼容 | 云雾锥 | 无当前机制 | 暂缓术语（恢复时复审；暂沿用云雾锥） | 高 |
 
 ### 逐项机制与命名证据
 
@@ -644,14 +644,14 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 
 | Enum | 英文名 | 当前译名 | 裁定 |
 |---|---|---|---|
-| `SPELL_FAKE_RAKSHASA_SUMMON` | Rakshasa Summon | 召唤罗刹 | 证据不足，暂沿用 |
-| `SPELL_IRON_ELEMENTALS` | Summon Iron Elementals | 召唤铁元素 | 证据不足，暂沿用 |
-| `SPELL_SUMMON_BUTTERFLIES` | Summon Butterflies | 召唤蝴蝶 | 证据不足，暂沿用 |
-| `SPELL_SUMMON_ELEMENTAL` | Summon Elemental | 召唤元素 | 证据不足，暂沿用 |
-| `SPELL_SUMMON_RAKSHASA` | Summon Rakshasa | 召唤罗刹 | 证据不足，暂沿用 |
-| `SPELL_SUMMON_TWISTER` | Summon Twister | 召唤旋风 | 证据不足，暂沿用 |
-| `SPELL_VAMPIRE_SUMMON` | Vampire Summon | 召唤吸血鬼 | 证据不足，暂沿用 |
-| `SPELL_SUMMON_SWARM` | Summon swarm | 召唤虫群 | 证据不足，暂沿用 |
+| `SPELL_FAKE_RAKSHASA_SUMMON` | Rakshasa Summon | 召唤罗刹 | 暂缓术语（恢复时复审） |
+| `SPELL_IRON_ELEMENTALS` | Summon Iron Elementals | 召唤铁元素 | 暂缓术语（恢复时复审） |
+| `SPELL_SUMMON_BUTTERFLIES` | Summon Butterflies | 召唤蝴蝶 | 暂缓术语（恢复时复审） |
+| `SPELL_SUMMON_ELEMENTAL` | Summon Elemental | 召唤元素 | 暂缓术语（恢复时复审） |
+| `SPELL_SUMMON_RAKSHASA` | Summon Rakshasa | 召唤罗刹 | 暂缓术语（恢复时复审） |
+| `SPELL_SUMMON_TWISTER` | Summon Twister | 召唤旋风 | 暂缓术语（恢复时复审） |
+| `SPELL_VAMPIRE_SUMMON` | Vampire Summon | 召唤吸血鬼 | 暂缓术语（恢复时复审） |
+| `SPELL_SUMMON_SWARM` | Summon swarm | 召唤虫群 | 暂缓术语（恢复时复审） |
 
 八项均只有 TAG 34 `AXED_SPELL` 占位、removed set 与标题映射，没有当前
 描述和实现；不能从现行同名实体或其他召唤法术反推历史机制。它们不参与
@@ -726,8 +726,8 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 | `SPELL_GALVANIC_BREATH` | 现行 | 电击吐息 | 电流经目标及与其相连的生物传导 | 保留 |
 | `SPELL_RUST_BREATH` | 现行 | 锈蚀吐息 | 堡垒蟹形态喷出锈蚀云 | 保留 |
 | `SPELL_GOLDEN_BREATH` | 现行 | 金龙吐息 | 非龙人龙形态的火、冰伤害与沿途毒云 | 保留 |
-| `SPELL_DRACONIAN_BREATH` | 已移除兼容 | 龙人吐息 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_SERPENT_OF_HELL_BREATH_REMOVED` | 已移除兼容 | 地狱古蛇吐息 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_DRACONIAN_BREATH` | 已移除兼容 | 龙人吐息 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_SERPENT_OF_HELL_BREATH_REMOVED` | 已移除兼容 | 地狱古蛇吐息 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 系列结论：20 项现行标题中 14 项保留、6 项重译。`Cold Breath` 改为
 “寒霜吐息”，复用 `Breathe Frost → 吐息寒霜`，并与能将被击杀者封入
@@ -867,9 +867,9 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 | `SPELL_CLEANSING_FLAME` | 现行 | 净化之焰 | 以施法者为中心的神圣净化爆发 | 保留 |
 | `SPELL_STOKE_FLAMES` | 现行 | 煽动火焰 | 召出会蔓延的炼狱 | 重译为“煽旺火焰” |
 | `SPELL_FLAME_WAVE` | 现行 | 火焰波 | 引导逐步向外扩张的火焰波 | 保留 |
-| `SPELL_RING_OF_FLAMES` | 已移除兼容 | 烈焰之环 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_CONJURE_FLAME` | 已移除兼容 | 召唤火焰 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_FLAME_TONGUE` | 已移除兼容 | 火焰之舌 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_RING_OF_FLAMES` | 已移除兼容 | 烈焰之环 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_CONJURE_FLAME` | 已移除兼容 | 召唤火焰 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_FLAME_TONGUE` | 已移除兼容 | 火焰之舌 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：9 项标题保留，`Stoke Flames` 重译为“煽旺火焰”。
 `stoke` 是添燃料或拨动燃料使火势更旺；旧译“煽动火焰”套用了
@@ -913,12 +913,12 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 | Enum | 生命周期 | 当前译名 | 当前机制证据 | 裁定 |
 |---|---|---|---|---|
-| `SPELL_HYDRA_FORM` | 已移除兼容 | 多头蛇变形 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_SPIDER_FORM` | 已移除兼容 | 蜘蛛变形 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_ICE_FORM` | 已移除兼容 | 寒冰变形 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_STATUE_FORM` | 已移除兼容 | 石像变形 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_STORM_FORM` | 已移除兼容 | 风暴变形 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_DRAGON_FORM` | 已移除兼容 | 巨龙变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_HYDRA_FORM` | 已移除兼容 | 多头蛇变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_SPIDER_FORM` | 已移除兼容 | 蜘蛛变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_ICE_FORM` | 已移除兼容 | 寒冰变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_STATUE_FORM` | 已移除兼容 | 石像变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_STORM_FORM` | 已移除兼容 | 风暴变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_DRAGON_FORM` | 已移除兼容 | 巨龙变形 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：六项都采用自然且一致的 `Form → 变形` 结构，并准确标出目标
 形态；但当前源码只有 `AXED_SPELL` 身份。没有现行描述和实现时，不凭
@@ -956,10 +956,10 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 | `SPELL_IGNITE_POISON` | 现行 | 点燃毒素 | 把附近毒素及毒性云雾转为液态火焰 | 保留 |
 | `SPELL_SPIT_POISON` | 现行 | 喷毒 | 喷吐毒液；描述直接引用同名能力 | 重译为“喷吐毒液” |
 | `SPELL_POISONOUS_VAPOURS` | 现行 | 毒气 | 瞬时毒气；任何毒素抗性均可免疫 | 保留 |
-| `SPELL_CURE_POISON` | 已移除兼容 | 解毒术 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_IGNITE_POISON_SINGLE` | 已移除兼容 | 局部引爆毒素 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_POISON_WEAPON` | 已移除兼容 | 淬毒武器 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前描述或实现 | 证据不足，暂沿用（复用 D-C-015） |
+| `SPELL_CURE_POISON` | 已移除兼容 | 解毒术 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_IGNITE_POISON_SINGLE` | 已移除兼容 | 局部引爆毒素 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_POISON_WEAPON` | 已移除兼容 | 淬毒武器 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前描述或实现 | 暂缓术语（恢复时复审；复用 D-C-015） |
 
 名称结论：`Spit Poison` 重译为“喷吐毒液”，与其直接引用的同名能力、
 能力描述及怪物施法消息统一；旧译“喷毒”过度缩略。其余标题保留，
@@ -1178,8 +1178,8 @@ charge 错解成静态电学名词，与实际冲向敌人的核心动作不符�
 | Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
 | `SPELL_PUTREFACTION` | 现行 | 西格图维之腐烂 | 使重伤活物在数回合内涌出瘴气，并暂时汲取施法者生命 | 保留 |
-| `SPELL_CIGOTUVIS_DEGENERATION` | 已移除兼容 | 西格图维之退化 | 无当前描述或实现 | 证据不足，暂沿用 |
-| `SPELL_CIGOTUVIS_EMBRACE` | 已移除兼容 | 西格图维之拥抱 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_CIGOTUVIS_DEGENERATION` | 已移除兼容 | 西格图维之退化 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
+| `SPELL_CIGOTUVIS_EMBRACE` | 已移除兼容 | 西格图维之拥抱 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：三项均保留稳定的 `Cigotuvi → 西格图维` 与
 “专名之……”结构。“腐烂”准确表达受损活体组织加速腐败这一触发机制；
@@ -1777,7 +1777,7 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 | `SPELL_CONJURE_BALL_LIGHTNING` | 现行 | 召唤球形闪电 | 创造会追敌并爆炸的球状闪电 | 保留 |
 | `SPELL_CHAIN_LIGHTNING` | 现行 | 连锁闪电 | 从最近生物开始向外连锁，距离越远伤害越低 | 保留 |
 | `SPELL_ORB_OF_ELECTRICITY` | 现行 | 电光球 | 电能球命中时产生大型爆炸 | 保留 |
-| `SPELL_RING_OF_THUNDER` | 已移除兼容 | 雷霆之环 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_RING_OF_THUNDER` | 已移除兼容 | 雷霆之环 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 | `SPELL_LIGHTNING_BOLT` | 现行 | 闪电箭 | 穿透闪电束 | 保留（复用 D-C-014） |
 | `SPELL_ELECTRICAL_BOLT` | 现行 | 电击箭 | 高命中电束，可墙面反弹 | 保留（复用 D-C-014） |
 | `SPELL_CALL_DOWN_LIGHTNING` | 现行 | 降下闪电 | 从目标上方降下闪电 | 保留（复用 D-C-016） |
@@ -1858,7 +1858,7 @@ Ball Lightning` 使用了指人的“他们”指代球状闪电。其余新增�
 |---|---|---|---|---|
 | `SPELL_FIREBALL` | 现行 | 火球 | 投掷会爆炸的火焰球 | 保留 |
 | `SPELL_GHOSTLY_FIREBALL` | 现行 | 幽灵火球 | 负能量爆炸使范围内活物衰竭 | 保留 |
-| `SPELL_DELAYED_FIREBALL` | 已移除兼容 | 延迟火球 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_DELAYED_FIREBALL` | 已移除兼容 | 延迟火球 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：“火球”准确概括普通法术的爆炸投射物；“幽灵火球”保留
 Ghostly 的死灵意象，同时与造成火焰伤害的普通火球明确区分。已移除的
@@ -2328,7 +2328,7 @@ Iskenderun's 专名系列完成，不重复计数。
 |---|---|---|---|---|
 | `SPELL_WIND_BLAST` | 现行 | 风击 | 锥形强风推开生物和云雾，碰撞造成伤害 | 保留 |
 | `SPELL_FORTRESS_BLAST` | 现行 | 堡垒冲击 | 延时形成大范围动能波，伤害完全取决于施法者护甲 | 保留 |
-| `SPELL_SILVER_BLAST` | 已移除兼容 | 白银冲击 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_SILVER_BLAST` | 已移除兼容 | 白银冲击 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：`blast` 可描述爆发性的风力或冲击波；“风击”和“堡垒冲击”
 分别贴合介质与表现，无需机械统一。已移除标题没有现行机制可供反推。
@@ -2899,19 +2899,19 @@ Magic 与 Drain，只计一次；Malign 两项已由 D-C-083 覆盖。
 | `SPELL_CONJURE_LIVING_SPELLS` | 现行 | 召唤活体法术 | 创造多个遇敌后自行施放并消散的活体法术 | 保留 |
 | `SPELL_SAP_MAGIC` | 现行 | 削弱魔法 | 目标施法后暂时失去继续施法能力 | 保留 |
 | `SPELL_DRAIN_MAGIC` | 已移除兼容 | 汲取魔力 | 现存兼容描述称其造成反魔法武器般的魔力流失 | 保留 |
-| `SPELL_HOLY_LIGHT` | 已移除兼容 | 圣光术 | 无当前实现与描述 | 证据不足，暂沿用 |
-| `SPELL_HOLY_WORD` | 已移除兼容 | 圣言术 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_HOLY_LIGHT` | 已移除兼容 | 圣光术 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
+| `SPELL_HOLY_WORD` | 已移除兼容 | 圣言术 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
 | `SPELL_HELLFIRE_COURT` | 现行 | 地狱火法庭 | 召唤火焰与天谴恶魔 | 保留 |
 | `SPELL_HELLFIRE_MORTAR` | 现行 | 地狱火迫击炮 | 沿熔岩裂隙移动并自动发射岩浆的迫击炮 | 保留 |
 | `SPELL_GOLUBRIAS_PASSAGE` | 现行 | 戈卢布里亚之通道 | 开启成对、进入即关闭的随机互通传送门 | 保留 |
-| `SPELL_SHROUD_OF_GOLUBRIA` | 已移除兼容 | 戈卢布里亚之幕 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_SHROUD_OF_GOLUBRIA` | 已移除兼容 | 戈卢布里亚之幕 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
 | `SPELL_FULSOME_FUSILLADE` | 现行 | 猛烈连射 | 数回合向随机敌人倾泻可叠加反应的爆炸试剂 | 保留 |
-| `SPELL_FULSOME_DISTILLATION` | 已移除兼容 | 精华蒸馏 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_FULSOME_DISTILLATION` | 已移除兼容 | 精华蒸馏 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
 | `SPELL_FORCEFUL_INVITATION` | 现行 | 强制邀请 | 从指定分支之一召唤生物 | 保留 |
-| `SPELL_FORCEFUL_DISMISSAL` | 已移除兼容 | 强制驱逐 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_FORCEFUL_DISMISSAL` | 已移除兼容 | 强制驱逐 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
 | `SPELL_DRAIN_LIFE` | 现行 | 吸取生命 | 汲取附近所有敌人的生命并按伤害治疗使用者 | 微调为“汲取生命” |
 | `SPELL_CORRUPT_LOCALE` | 现行 | 腐化 | 以深渊能量改变附近区域并暂时召来深渊生物 | 保留 |
-| `SPELL_CORRUPT_BODY` | 已移除兼容 | 腐化躯体 | 无当前实现与描述 | 证据不足，暂沿用 |
+| `SPELL_CORRUPT_BODY` | 已移除兼容 | 腐化躯体 | 无当前实现与描述 | 暂缓术语（恢复时复审） |
 | `SPELL_BECKONING_GALE` | 现行 | 召唤强风 | 扭曲目标周围空气，造成伤害并将其拉近 | 重译为“招引之风” |
 | `SPELL_BECKONING` | 现行 | 次级召唤 | 把目标拉至施法者相邻位置 | 重译为“次级招引” |
 | `SPELL_BROTHERS_IN_ARMS` | 现行 | 战友 | 复用同名能力，召来战友 | 保留 |
@@ -3327,38 +3327,38 @@ Seismic Stomp、Flashing Balestra 与 Grave Claw 均按当前英文和实现
 | `SPELL_SLEETSTRIKE` | 现行 | 冰雨打击 | 严寒气旋冰封减速，空旷增伤且半伤无视寒抗 | 保留 |
 | `SPELL_LANDBREAKER` | 现行 | 裂地 | 落石攻击多敌并阻塞其后方退路 | 保留 |
 | `SPELL_NO_SPELL` | 内部 placeholder | 不存在的法术 | 测试占位，无玩家机制 | 保留 |
-| `SPELL_CONDENSATION_SHIELD` | 已移除兼容 | 凝结护盾 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_DARKNESS` | 已移除兼容 | 黑暗术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_DEMONIC_HORDE` | 已移除兼容 | 恶魔大军 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_EVAPORATE` | 已移除兼容 | 蒸发术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_FIRE_BRAND` | 已移除兼容 | 火焰烙印 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_FLY` | 已移除兼容 | 飞行术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_FRENZY` | 已移除兼容 | 狂乱术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_GRAND_AVATAR` | 已移除兼容 | 大化身 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_HUNTING_CRY` | 已移除兼容 | 狩猎战吼 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_INSULATION` | 已移除兼容 | 绝缘术 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_CONDENSATION_SHIELD` | 已移除兼容 | 凝结护盾 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_DARKNESS` | 已移除兼容 | 黑暗术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_DEMONIC_HORDE` | 已移除兼容 | 恶魔大军 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_EVAPORATE` | 已移除兼容 | 蒸发术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_FIRE_BRAND` | 已移除兼容 | 火焰烙印 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_FLY` | 已移除兼容 | 飞行术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_FRENZY` | 已移除兼容 | 狂乱术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_GRAND_AVATAR` | 已移除兼容 | 大化身 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_HUNTING_CRY` | 已移除兼容 | 狩猎战吼 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_INSULATION` | 已移除兼容 | 绝缘术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
 | `SPELL_MELEE` | 内部 placeholder | 近战 | 内部兼容占位，无当前描述 | 保留 |
-| `SPELL_MISLEAD` | 已移除兼容 | 误导术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_PHASE_SHIFT` | 已移除兼容 | 相位变换 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_REARRANGE_PIECES` | 已移除兼容 | 重新布局 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SEE_INVISIBLE` | 已移除兼容 | 识破隐形 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SHAFT_SELF` | 已移除兼容 | 自我竖井 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SINGULARITY` | 已移除兼容 | 奇点术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SPECTRAL_WEAPON` | 已移除兼容 | 灵体武器 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_STONESKIN` | 已移除兼容 | 石肤术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SUNRAY` | 已移除兼容 | 阳光射线 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_STRIKING` | 已移除兼容 | 打击术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_RESURRECT` | 已移除兼容 | 复活术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_HOMUNCULUS` | 已移除兼容 | 人造人 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_SCATTERSHOT` | 已移除兼容 | 散射术 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_TWISTED_RESURRECTION` | 已移除兼容 | 扭曲复活 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_RANDOM_EFFECTS` | 已移除兼容 | 随机效果 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_GOAD_BEASTS` | 已移除兼容 | 激怒野兽 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_TOMB_OF_DOROKLOHE` | 已移除兼容 | 多洛克洛之墓 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_EXCRUCIATING_WOUNDS` | 已移除兼容 | 剧痛之伤 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_CORPSE_ROT` | 已移除兼容 | 尸体腐烂 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_BEASTLY_APPENDAGE` | 已移除兼容 | 野兽肢体 | 无当前实现或描述 | 证据不足，暂沿用 |
-| `SPELL_NECROMUTATION` | 已移除兼容 | 亡灵变形 | 无当前实现或描述 | 证据不足，暂沿用 |
+| `SPELL_MISLEAD` | 已移除兼容 | 误导术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_PHASE_SHIFT` | 已移除兼容 | 相位变换 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_REARRANGE_PIECES` | 已移除兼容 | 重新布局 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SEE_INVISIBLE` | 已移除兼容 | 识破隐形 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SHAFT_SELF` | 已移除兼容 | 自我竖井 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SINGULARITY` | 已移除兼容 | 奇点术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SPECTRAL_WEAPON` | 已移除兼容 | 灵体武器 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_STONESKIN` | 已移除兼容 | 石肤术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SUNRAY` | 已移除兼容 | 阳光射线 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_STRIKING` | 已移除兼容 | 打击术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_RESURRECT` | 已移除兼容 | 复活术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_HOMUNCULUS` | 已移除兼容 | 人造人 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_SCATTERSHOT` | 已移除兼容 | 散射术 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_TWISTED_RESURRECTION` | 已移除兼容 | 扭曲复活 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_RANDOM_EFFECTS` | 已移除兼容 | 随机效果 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_GOAD_BEASTS` | 已移除兼容 | 激怒野兽 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_TOMB_OF_DOROKLOHE` | 已移除兼容 | 多洛克洛之墓 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_EXCRUCIATING_WOUNDS` | 已移除兼容 | 剧痛之伤 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_CORPSE_ROT` | 已移除兼容 | 尸体腐烂 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_BEASTLY_APPENDAGE` | 已移除兼容 | 野兽肢体 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
+| `SPELL_NECROMUTATION` | 已移除兼容 | 亡灵变形 | 无当前实现或描述 | 暂缓术语（恢复时复审） |
 
 名称结论：现行标题仅 Ravenous Swarm 存在确定误示，改为“饥渴蝠群”；
 其余现行、dummy 和 placeholder 标题均合理。31 项已移除兼容记录没有
@@ -3381,13 +3381,18 @@ Sleetstrike 与 Landbreaker 均恢复当前目标、范围、条件与后果。
 - [x] translation profile
 - [x] 批次裁定登记（`D-C-091`）
 
-验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T192758463521000+0800-87264-1fd10fc50b37`。本批裁定后的
+验证结果：在将已移除兼容项统一归类为带恢复入口的“暂缓术语”后，
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T193120931844000+0800-94327-9fd9148effa7`。最终
 `docs/glossary.md` SHA-256 为
-`0d99fac5d8f9df500afc4d96fb986049eaec8ebf2612413ccba579e1788a7a69`；
+`6bc106736f5b823f7d75823f3f968c5450aa9534fb686e1641443c5c812ced15`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `e0aec9932c914db4cbe9f4e81043ae70bf74bf013792b1c68b42c68be7816afa`。
 inventory enum 集合与本文件审阅 enum 集合均为 511，双向差集为空。
+结构终检共有 522 个表格引用、509 个表格唯一 enum；13 个额外引用分别
+属于 13 个跨系列成员，且每项恰有一行明确标为“复用”。因此表格中仍只有
+509 张规范证据卡，再加上 Dispersal 与 Mesmerise 的两张独立证据卡，
+合计恰好 511 张，不存在第二张相互竞争的裁定。
 
 ## Awaken 词形系列
 
@@ -3400,7 +3405,7 @@ inventory enum 集合与本文件审阅 enum 集合均为 511，双向差集为�
 | `SPELL_AWAKEN_VINES` | 现行 | 唤醒藤蔓 | 藤蔓抓住闯入者并拖向树木 | 保留 |
 | `SPELL_AWAKEN_FLESH` | 现行 | 唤醒血肉 | 肉堆化为强化大型憎恶并伤害邻敌 | 保留 |
 | `SPELL_AWAKEN_ARMOUR` | 现行 | 唤醒护甲 | 从所穿护甲记忆显现战斗回响 | 保留 |
-| `SPELL_AWAKEN_EARTH` | 已移除兼容 | 唤醒大地 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_AWAKEN_EARTH` | 已移除兼容 | 唤醒大地 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：四项现行标题准确采用 `Awaken X → 唤醒X`，共同表达让原本
 静止的树木、藤蔓、血肉或护甲力量开始行动。标题无需枚举攻击、拖拽、
@@ -3551,7 +3556,7 @@ Draining 的活物、负能量及最大生命比例机制，恢复 Mutagenic 的
 | `SPELL_THROW_ALLY` | 现行 | 投掷盟友 | 将附近盟友扔到敌人附近 | 保留 |
 | `SPELL_THROW_BOLAS` | 现行 | 投掷流星索 | 无视敌人体型并束缚在原地 | 保留 |
 | `SPELL_THROW_PIE` | 现行 | 投掷小丑派 | 施加不可抵抗的随机临时削弱 | 保留 |
-| `SPELL_THROW` | 已移除兼容 | 投掷 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_THROW` | 已移除兼容 | 投掷 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：7 项现行标题全部保留，稳定采用 `Throw → 投掷`。实现中的
 fire/hurl 描述具体发射动作，不构成标题重译依据；“小丑派”也能表达
@@ -3602,7 +3607,7 @@ Killer Klown 专属物件，不误示为投掷小丑本体。
 | `SPELL_SHADOW_BIND` | 现行 | 暗影束缚 | 随机将多名附近敌人钉在影子上 | 保留 |
 | `SPELL_SHADOW_TORPOR` | 现行 | 暗影麻木 | 直线群体减速 | 保留 |
 | `SPELL_SHADOW_DRAINING` | 现行 | 暗影吸取 | 附近群体无视护甲伤害 | 保留 |
-| `SPELL_WEAVE_SHADOWS` | 已移除兼容 | 编织暗影 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_WEAVE_SHADOWS` | 已移除兼容 | 编织暗影 | 无当前描述或实现 | 暂缓术语（恢复时复审） |
 
 名称结论：12 项现行标题全部准确保留 `Shadow/Shadows → 暗影` 词根；
 已移除的 `Weave Shadows` 不用现行机制反推。描述审阅发现 10 项中文

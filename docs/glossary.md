@@ -97,7 +97,7 @@
 | Arrow | 箭 | ✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外） |
 | Flame / Flames | 火焰 / 焰 | ✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”） |
 | Touch | 触 | ✅ 已确认（2 项现行） |
-| Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用） |
+| Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；暂缓术语；恢复时复审） |
 | Poison / Poisonous | 毒素 / 毒 / 淬毒 | ✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`） |
 | Dispel | 驱散 | ✅ 已确认（2 项现行；指破坏维系亡灵形体的魔力） |
 | Awaken | 唤醒 | ✅ 已确认（4 项现行；另有 1 项已移除兼容） |
@@ -746,9 +746,9 @@
 | Sojourning Bolt | 羁旅箭 | 📝 现行 |
 | Thunderbolt | 雷击 | ✅ 现行；固定词形例外 |
 | Venom Bolt | 毒液箭 | ✅ 现行 |
-| Bolt of Inaccuracy | 偏差箭矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Explosive Bolt | 爆裂弩矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Random Bolt | 随机箭矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Bolt of Inaccuracy | 偏差箭矢 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Explosive Bolt | 爆裂弩矢 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Random Bolt | 随机箭矢 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Summon（57）
 
@@ -766,18 +766,18 @@
 | Malign Gateway | 邪恶传送门 | ✅；通往未知污秽异界的临时自维持传送门 |
 | Mara Summon | 玛拉召唤 | ✅ |
 | Monstrous Menagerie | 怪物动物园 | ✅ |
-| Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Recall | 召回术 | ✅；已移除兼容标题 |
 | Shadow Creatures | 暗影生物 | ✅ |
 | Spawn Tentacles | 生成触须 | ✅ |
 | Summon Air Elementals | 召唤气元素 | ✅ |
-| Summon Butterflies | 召唤蝴蝶 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Butterflies | 召唤蝴蝶 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Cactus Giant | 召唤仙人掌巨人 | ✅ |
 | Summon Demon | 召唤恶魔 | ✅ |
 | Summon Dragon | 召唤巨龙 | ✅ |
 | Summon Drakes | 召唤幼龙 | ✅ |
 | Summon Earth Elementals | 召唤地元素 | ✅ |
-| Summon Elemental | 召唤元素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Elemental | 召唤元素 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Emperor Scorpions | 召唤帝王蝎 | ✅；复用实体 `emperor scorpion → 帝王蝎` |
 | Summon Executioners | 召唤处刑人 | ✅；复用实体 `Executioner → 处刑人` |
 | Summon Eyeballs | 召唤眼球 | ✅ |
@@ -790,26 +790,26 @@
 | Summon Hydra | 召唤多头蛇 | ✅ |
 | Summon Ice Beast | 召唤冰兽 | ✅ |
 | Summon Illusion | 召唤幻象 | ✅ |
-| Summon Iron Elementals | 召唤铁元素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Iron Elementals | 召唤铁元素 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Mana Viper | 召唤魔力毒蛇 | ✅；复用实体 `mana viper → 魔力毒蛇` |
 | Summon Minor Demon | 召唤次级恶魔 | ✅ |
 | Summon Mortal Champion | 召唤凡人冠军 | ✅ |
 | Summon Mushrooms | 召唤蘑菇 | ✅ |
-| Summon Rakshasa | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Rakshasa | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Scarabs | 召唤圣甲虫 | ✅ |
 | Summon Scorpions | 召唤蝎子 | ✅ |
 | Summon Seismosaurus Egg | 召唤地震龙蛋 | ✅；复用实体 `seismosaurus egg → 地震龙蛋` |
 | Summon Sin Beast | 召唤罪孽兽 | ✅；复用实体 `sin beast → 罪孽兽` |
 | Summon Small Mammal | 召唤小型哺乳动物 | ✅ |
 | Summon Spiders | 召唤蜘蛛 | ✅ |
-| Summon Twister | 召唤旋风 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Twister | 召唤旋风 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Tzitzimitl | 召唤齐齐米特尔 | ✅ |
 | Summon Ufetubus | 召唤乌菲特布斯 | ✅；复用实体 `ufetubus → 乌菲特布斯` |
 | Summon Undead | 召唤亡灵 | ✅ |
 | Summon Vermin | 召唤害虫 | ✅ |
 | Summon Water Elementals | 召唤水元素 | ✅ |
-| Summon swarm | 召唤虫群 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Vampire Summon | 召唤吸血鬼 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon swarm | 召唤虫群 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Vampire Summon | 召唤吸血鬼 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Word of Recall | 召回之言 | ✅；短暂延迟后召回同层有智慧盟友 |
 
 ### X Cloud 后缀系列（现行 8；已移除／TAG 34 兼容 4）
@@ -824,10 +824,10 @@
 | Petrifying Cloud | 石化云 | ✅ 现行 |
 | Poisonous Cloud | 毒云 | ✅ 现行 |
 | Spectral Cloud | 幽灵云 | ✅ 现行 |
-| Fire cloud | 火云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Miasma cloud | 瘴气云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Steam cloud | 蒸汽云 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Fire cloud | 火云 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Miasma cloud | 瘴气云 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Steam cloud | 蒸汽云 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Breath（22）
 
@@ -837,7 +837,7 @@
 | Chaos Breath | 混沌吐息 | ✅ |
 | Cold Breath | 寒霜吐息 | ✅；与 `Breathe Frost → 吐息寒霜` 复用元素词 |
 | Combustion Breath | 爆燃吐息 | ✅；射出的挥发余烬会在每个触及生物周围爆炸 |
-| Draconian Breath | 龙人吐息 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Draconian Breath | 龙人吐息 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Fire Breath | 火焰吐息 | ✅ |
 | Galvanic Breath | 电击吐息 | ✅ |
 | Glacial Breath | 冰川吐息 | ✅ |
@@ -847,7 +847,7 @@
 | Mud Breath | 泥浆吐息 | ✅ |
 | Noxious Breath | 毒瘴吐息 | ✅ |
 | Nullifying Breath | 消魔吐息 | ✅ |
-| Old serpent of hell breath | 地狱古蛇吐息 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Old serpent of hell breath | 地狱古蛇吐息 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Rust Breath | 锈蚀吐息 | ✅ |
 | Searing Breath | 灼热吐息 | 📝 |
 | Steam Breath | 蒸汽吐息 | ✅ |
@@ -894,12 +894,12 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Dragon Form | 巨龙变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Hydra Form | 多头蛇变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Ice Form | 寒冰变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Spider Form | 蜘蛛变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Statue Form | 石像变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Storm Form | 风暴变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Dragon Form | 巨龙变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Hydra Form | 多头蛇变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Ice Form | 寒冰变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Spider Form | 蜘蛛变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Statue Form | 石像变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
+| Storm Form | 风暴变形 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Poison / Poisonous（9）
 
@@ -923,7 +923,7 @@
 | Awaken Flesh | 唤醒血肉 | ✅ |
 | Awaken Forest | 唤醒森林 | ✅ |
 | Awaken Vines | 唤醒藤蔓 | ✅ |
-| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Forge（4）
 
@@ -1017,7 +1017,7 @@
 | Shadow Torpor | 暗影麻木 | ✅ |
 | Shadow Turret | 暗影炮塔 | ✅ |
 | Shadowball | 暗影球 | ✅ |
-| Weave Shadows | 编织暗影 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Weave Shadows | 编织暗影 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 
 ### Dispel（2）
 
@@ -1042,7 +1042,7 @@
 | Aura of Abjuration | 驱逐灵气 | ✅；已移除兼容标题 |
 | Avatar Song | 化身之歌 | ✅；限制冒险者远离、眩晕其他生物并可能召来溺魂 |
 | Awaken Armour | 唤醒护甲 | ✅ |
-| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Awaken Flesh | 唤醒血肉 | ✅ |
 | Awaken Forest | 唤醒森林 | ✅ |
 | Awaken Vines | 唤醒藤蔓 | ✅ |
@@ -1064,12 +1064,12 @@
 | Chant Fire Storm | 咏唱火焰风暴 | ✅；已移除／TAG 34 兼容标题 |
 | Charm | 魅惑 | ✅ |
 | Cleansing Flame | 净化之焰 | ✅ |
-| Cloud Cone | 云雾锥 | ⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，机制证据不足，暂沿用 |
+| Cloud Cone | 云雾锥 | ⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审 |
 | Concentrate Venom | 浓缩毒液 | ✅ |
 | Condensation Shield | 凝结之盾 | 🆕 |
 | Confuse | 混乱 | ✅ |
 | Conjure Ball Lightning | 召唤球形闪电 | ✅；创造会追敌并爆炸的球状闪电 |
-| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
 | Control Teleport | 控制传送 | 🆕；已移除兼容标题，修正中文倒装 |
@@ -1082,7 +1082,7 @@
 | Corrupting Pulse | 腐化脉冲 | ✅ |
 | Creeping Frost | 蔓延冰霜 | ✅；从墙壁唤出冻气，冻结并减速墙边敌人 |
 | Crystallising Shot | 结晶射击 | ✅；水晶碎片命中后可能使目标脆化 |
-| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
 | Darkness | 黑暗术 | ✅ |
 | Death Channel | 死亡通道 | ✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 |
@@ -1117,7 +1117,7 @@
 | Fire Brand | 火焰烙印 | ✅ |
 | Fire Storm | 火焰风暴 | ✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡 |
 | Fireball | 火球 | ✅；投掷会爆炸的火焰球 |
-| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Flame Wave | 火焰波 | ✅ |
 | Flash Freeze | 急冻 | ✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性 |
 | Flashing Balestra | 闪跃突刺 | 🆕；`balestra` 为击剑前跃接突刺，灵魂跃出持械攻击 |
@@ -1196,7 +1196,7 @@
 | Legendary Destruction | 传奇毁灭 | ✅；立刻连续产生两种爆炸法术效果 |
 | Lesser Beckoning | 次级招引 | 🆕；把目标拉至施法者相邻位置，不是召唤法术 |
 | Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |
-| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
 | Major Destruction | 强力毁灭 | 🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸 |
@@ -1236,7 +1236,7 @@
 | Planar Overlay | 位面叠加 | ✅ |
 | Plane Rend | 位面撕裂 | ✅ |
 | Platinum Paragon | 白金典范 | ✅ |
-| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Polar Vortex | 极地漩涡 | ✅；冰冻漩涡随施法者移动并抛动范围内生物 |
 | Polymorph | 变形术 | ✅ |
 | Porkalator | 变猪术 | ✅ |
@@ -1256,7 +1256,7 @@
 | Resonance Strike | 共鸣打击 | ✅；经目标附近造物级联并逐个增强 |
 | Resurrect | 复活术 | ✅ |
 | Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
-| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Ring of Thunder | 雷霆之环 | ✅；已移除兼容标题 |
 | Roll | 翻滚 | ✅ |
 | Sacrifice | 献祭 | ✅；已移除兼容标题 |
@@ -1317,7 +1317,7 @@
 | Symbol of Torment | 折磨之符 | ✅ |
 | Teleport Other | 传送他人 | ✅；短暂延迟后尝试将目标传送出施法者视野 |
 | Teleport Self | 自我传送 | ✅；已移除兼容标题 |
-| Throw | 投掷 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Throw | 投掷 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Throw Ally | 投掷盟友 | ✅ |
 | Throw Barbs | 投掷倒刺 | ✅ |
 | Throw Bolas | 投掷流星索 | ✅ |

@@ -76,7 +76,7 @@ Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅；已移
 Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅；限制冒险者远离、眩晕其他生物并可能召来溺魂
 Awaken	唤醒	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；另有 1 项已移除兼容）
 Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅
-Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Awaken Flesh	唤醒血肉	domain=spells; source=EN/ZH; 备注=✅
 Awaken Forest	唤醒森林	domain=spells; source=EN/ZH; 备注=✅
 Awaken Vines	唤醒藤蔓	domain=spells; source=EN/ZH; 备注=✅
@@ -141,7 +141,7 @@ Bolt of Devastation	毁灭箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bolt of Draining	衰竭箭	domain=spells; source=EN/ZH; 备注=📝 现行；Drain 状态，不表示生命／魔力转移
 Bolt of Fire	火焰箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bolt of Flesh	血肉箭	domain=spells; source=EN/ZH; 备注=✅ 现行
-Bolt of Inaccuracy	偏差箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Bolt of Inaccuracy	偏差箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Bolt of Light	光箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
@@ -217,7 +217,7 @@ claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mu
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
-Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，机制证据不足，暂沿用
+Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
 clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
@@ -231,7 +231,7 @@ Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
 Conjuration	咒法系	domain=magic; source=EN/ZH
 Conjurations	咒法系	domain=magic; source=EN/ZH
 Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅；创造会追敌并爆炸的球状闪电
-Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
 Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -260,7 +260,7 @@ crystal echidna	水晶针鼹	domain=monsters; source=EN/ZH; Scope / comment=mons
 crystal guardian	水晶守护者	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅；水晶碎片命中后可能使目标脆化
 culicivora	库蚊蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 curse	诅咒	domain=core; source=EN/ZH | domain=items; source=EN/ZH
 Curse of Agony	痛苦诅咒	domain=spells; source=EN/ZH; 备注=✅
 curse skull	诅咒颅骨	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -310,9 +310,9 @@ Doomsaying	宣告厄运	domain=spells; source=EN/ZH; 备注=✅
 dopey	愚钝	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 draconian	龙人	domain=species; source=EN/ZH; 裁决=[D-A-007]; 复合格式=颜色 + 龙人（黑龙人、绿龙人）
-Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 dragon	龙	domain=core; source=EN/ZH
-Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
 dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
@@ -352,7 +352,7 @@ Evocations	魔力释放	domain=skills; source=EN/ZH; Scope / comment=skill; sour
 Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=✅
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 experience	经验值	domain=core; source=EN/ZH
-Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 falchion	弯刃剑	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
 fangs	尖牙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Fannar	凡纳尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -366,13 +366,13 @@ Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=sourc
 Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=✅
 Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
-Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡
 Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
-Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
 Flames	焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flaming Cloud	燃烧云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -392,7 +392,7 @@ Forge Monarch Bomb	锻造君主炸弹	domain=spells; source=EN/ZH; 备注=✅
 Forge Phalanx Beetle	锻造方阵甲虫	domain=spells; source=EN/ZH; 备注=✅
 Forgecraft	锻造术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Forgewright	锻造师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Form	变形	domain=magic; source=EN/ZH; 状态=⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用）
+Form	变形	domain=magic; source=EN/ZH; 状态=⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；暂缓术语；恢复时复审）
 formicid	蚁人	domain=species; source=EN/ZH
 Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅；以施法者护甲决定伤害的延时动能冲击波
 Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
@@ -474,8 +474,8 @@ Hunting Cry	狩猎战吼	domain=spells; source=EN/ZH; 备注=✅
 Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=🆕；无视护甲与抗性的 `Damnation` 伤害，非 curse
 Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅；剧毒污泥会使目标中毒并浸湿周围
 Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅；暗影火炬光伤害并强化友方亡灵
-Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
-Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅；冰块撞击后爆炸，一半伤害无视寒冷抗性
 icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -536,7 +536,7 @@ Lesser Beckoning	次级招引	domain=spells; source=EN/ZH; 备注=🆕；把目�
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
-Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -577,7 +577,7 @@ Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法�
 Metabolic Englaciation	代谢冻结	domain=spells; source=EN/ZH; 备注=🆕；降低周围生物代谢并减速
 Metal Splinters	金属碎片	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅
-Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Might	强壮	domain=spells; source=EN/ZH; 备注=✅；法术显示标题，区别于状态/机制域 `Might → 强效
 Might	强效	domain=core; source=EN/ZH; 注意事项=+10% 伤害 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Might Other	强壮他人	domain=spells; source=EN/ZH; 备注=✅；对附近友方施加同类近战伤害增益
@@ -626,7 +626,7 @@ ogre	食人魔	domain=species; source=EN/ZH; 复合格式=食人魔 + 职业
 Okawaru	奥卡瓦鲁	domain=gods; source=EN/ZH; 类型=音译
 Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
-Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅；持续毒害视线内所有生物
 Orb of Destruction	毁灭法球	domain=spells; source=EN/ZH; 备注=✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球
 Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅；命中时产生大型电能爆炸
@@ -665,9 +665,9 @@ pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Poison	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅；复用 Arrow 系列证据 | domain=spells; source=EN/ZH; 备注=✅
-Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容
+Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容
 Poison Magic	毒素魔法	domain=magic; source=EN/ZH
-Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Poisonous	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行 | domain=spells; source=EN/ZH; 备注=✅；复用 Cloud 系列证据
 Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅；瞬时气体，不形成持续云 | domain=spells; source=EN/ZH; 备注=✅
@@ -687,9 +687,9 @@ Pyrrhic Recollection	惨胜回忆	domain=spells; source=EN/ZH; 备注=✅
 Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
 quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
-Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
-Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=✅
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Ravenous Swarm	饥渴蝠群	domain=spells; source=EN/ZH; 备注=🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡
@@ -710,7 +710,7 @@ Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅；经目�
 Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
 Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH
-Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 roars	咆哮道 / 吼道	domain=dialogue; source=EN/ZH; 适用角色=龙、大型怪物
 Robin	罗宾	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -808,7 +808,7 @@ Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; so
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
 Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
 Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
-Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅；向单个目标喷吐酸液
 Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
 Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=📝；与同名能力及其描述统一
@@ -818,11 +818,11 @@ Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅
 spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=小精灵 + 职业（小精灵气法师、小精灵狂战士）
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
-Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
-Steam cloud	蒸汽云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Steam cloud	蒸汽云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Sticks to Snakes	棍变蛇	domain=spells; source=EN/ZH; 备注=✅
 Sticky Flame	黏着火焰	domain=spells; source=EN/ZH; 备注=✅
 Still Winds	静止风	domain=spells; source=EN/ZH; 备注=✅
@@ -831,7 +831,7 @@ stinger	毒刺	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=
 Stoke Flames	煽旺火焰	domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺，并召出蔓延炼狱 | domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺
 Stone Arrow	石箭	domain=spells; source=EN/ZH; 备注=✅
 Stoneskin	石肤术	domain=spells; source=EN/ZH; 备注=✅
-Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Striking	打击术	domain=spells; source=EN/ZH; 备注=✅
 Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
 strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -839,13 +839,13 @@ Stunning Burst	眩晕爆发	domain=spells; source=EN/ZH; 备注=✅
 Sublimation of Blood	血液升华	domain=spells; source=EN/ZH; 备注=✅
 Summon	召唤	domain=magic; source=EN/ZH; 状态=✅ 已确认
 Summon Air Elementals	召唤气元素	domain=spells; source=EN/ZH; 备注=✅
-Summon Butterflies	召唤蝴蝶	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Summon Butterflies	召唤蝴蝶	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Summon Cactus Giant	召唤仙人掌巨人	domain=spells; source=EN/ZH; 备注=✅
 Summon Demon	召唤恶魔	domain=spells; source=EN/ZH; 备注=✅
 Summon Dragon	召唤巨龙	domain=spells; source=EN/ZH; 备注=✅
 Summon Drakes	召唤幼龙	domain=spells; source=EN/ZH; 备注=✅
 Summon Earth Elementals	召唤地元素	domain=spells; source=EN/ZH; 备注=✅
-Summon Elemental	召唤元素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Summon Elemental	召唤元素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Summon Emperor Scorpions	召唤帝王蝎	domain=spells; source=EN/ZH; 备注=✅；复用实体 `emperor scorpion → 帝王蝎
 Summon Executioners	召唤处刑人	domain=spells; source=EN/ZH; 备注=✅；复用实体 `Executioner → 处刑人
 Summon Eyeballs	召唤眼球	domain=spells; source=EN/ZH; 备注=✅
@@ -858,20 +858,20 @@ Summon Horrible Things	召唤恐怖之物	domain=spells; source=EN/ZH; 备注=�
 Summon Hydra	召唤多头蛇	domain=spells; source=EN/ZH; 备注=✅
 Summon Ice Beast	召唤冰兽	domain=spells; source=EN/ZH; 备注=✅
 Summon Illusion	召唤幻象	domain=spells; source=EN/ZH; 备注=✅
-Summon Iron Elementals	召唤铁元素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Summon Iron Elementals	召唤铁元素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Summon Mana Viper	召唤魔力毒蛇	domain=spells; source=EN/ZH; 备注=✅；复用实体 `mana viper → 魔力毒蛇
 Summon Minor Demon	召唤次级恶魔	domain=spells; source=EN/ZH; 备注=✅
 Summon Mortal Champion	召唤凡人冠军	domain=spells; source=EN/ZH; 备注=✅
 Summon Mushrooms	召唤蘑菇	domain=spells; source=EN/ZH; 备注=✅
-Summon Rakshasa	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Summon Rakshasa	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Summon Scarabs	召唤圣甲虫	domain=spells; source=EN/ZH; 备注=✅
 Summon Scorpions	召唤蝎子	domain=spells; source=EN/ZH; 备注=✅
 Summon Seismosaurus Egg	召唤地震龙蛋	domain=spells; source=EN/ZH; 备注=✅；复用实体 `seismosaurus egg → 地震龙蛋
 Summon Sin Beast	召唤罪孽兽	domain=spells; source=EN/ZH; 备注=✅；复用实体 `sin beast → 罪孽兽
 Summon Small Mammal	召唤小型哺乳动物	domain=spells; source=EN/ZH; 备注=✅
 Summon Spiders	召唤蜘蛛	domain=spells; source=EN/ZH; 备注=✅
-Summon swarm	召唤虫群	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
-Summon Twister	召唤旋风	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Summon swarm	召唤虫群	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Summon Twister	召唤旋风	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Summon Tzitzimitl	召唤齐齐米特尔	domain=spells; source=EN/ZH; 备注=✅
 Summon Ufetubus	召唤乌菲特布斯	domain=spells; source=EN/ZH; 备注=✅；复用实体 `ufetubus → 乌菲特布斯
 Summon Undead	召唤亡灵	domain=spells; source=EN/ZH; 备注=✅
@@ -894,7 +894,7 @@ Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 thin skeletal structure	纤细骨骼	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
-Throw	投掷	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Throw	投掷	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Throw Ally	投掷盟友	domain=spells; source=EN/ZH; 备注=✅
 Throw Barbs	投掷倒刺	domain=spells; source=EN/ZH; 备注=✅
 Throw Bolas	投掷流星索	domain=spells; source=EN/ZH; 备注=✅
@@ -925,7 +925,7 @@ Upheaval	剧变	domain=spells; source=EN/ZH; 备注=✅
 Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Uskayaw	乌斯卡亚	domain=gods; source=EN/ZH; 类型=音译
 vampire	吸血鬼	domain=species; source=EN/ZH; 复合格式=吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师）
-Vampire Summon	召唤吸血鬼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Vampire Summon	召唤吸血鬼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Vampiric Draining	吸血术	domain=spells; source=EN/ZH; 备注=✅
 Vanquished Vanguard	败军先锋	domain=spells; source=EN/ZH; 备注=📝
 Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -957,7 +957,7 @@ weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mut
 Weakening Gaze	虚弱凝视	domain=spells; source=EN/ZH; 备注=✅
 weapon	武器	domain=items; source=EN/ZH
 wear	穿戴	domain=items; source=EN/ZH
-Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
 wield	持握	domain=items; source=EN/ZH
 Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅；锥形强风推开生物和云雾，碰撞会造成伤害
