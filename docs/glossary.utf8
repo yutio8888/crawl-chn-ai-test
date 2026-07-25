@@ -530,7 +530,7 @@ Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅
 Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅
 Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅
 Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅
-Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅
+Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅

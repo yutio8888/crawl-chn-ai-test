@@ -957,7 +957,7 @@
 | Iskenderun's Mystic Blast | 伊斯肯德伦之神秘冲击 | ✅ |
 | Leda's Liquefaction | 勒达之液化 | ✅ |
 | Lee's Rapid Deconstruction | 李之快速解构 | ✅ |
-| Lehudib's Crystal Spear | 勒胡迪布之水晶矛 | ✅ |
+| Lehudib's Crystal Spear | 勒胡迪布之水晶矛 | ✅；短射程高伤害水晶投射物 |
 | Martyr's Knell | 殉道者之丧钟 | ✅ |
 | Maxwell's Capacitive Coupling | 麦克斯韦之电容耦合 | ✅；专名统一为“麦克斯韦” |
 | Maxwell's Portable Piledriver | 麦克斯韦之便携打桩机 | ✅；空间压缩后将整列生物推向障碍物 |

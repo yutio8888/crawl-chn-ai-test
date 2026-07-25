@@ -1449,6 +1449,38 @@ bog 的地形与毒害效果；“意外鳄鱼”保留英文故意突兀的戏�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## Lehudib's 专名系列
+
+边界：英文标题以 `Lehudib's` 开头的 1 项现行法术。
+
+| Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_LEHUDIBS_CRYSTAL_SPEAR` | 8 / 塑能、土 / `dir_or_target, needs_tracer` | 勒胡迪布之水晶矛 | 短射程发射尖锐水晶投射物，造成极高物理伤害 | 保留 |
+
+名称结论：专名稳定采用 `Lehudib → 勒胡迪布`。“水晶矛”忠实保留
+Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高伤害的
+8 级法术强度，不需要改成实现描述中的“水晶碎片”。
+
+中英文描述机制一致；本批只把生硬的量词和顿号结构改为“一枚致命而锋利
+的水晶碎片”。
+
+证据：`spl-data.h:443`—`450`、`dat/descript/spells.txt:1196`—`1198`、
+`zap-data.h:834`—`846`、`mon-cast.cc:2330`、`mon-spell.h:66`—`73`。
+
+### 落地状态
+
+- [x] 1/1 机制证据与名称裁定
+- [x] 单一翻译写入者描述润色
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-043`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T172950885503000+0800-32198-45d6f29f31c6`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`7cba810aa7ec02c684b444ebd699410f24d383ce7b45e3c9157c27b0daa52f02`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

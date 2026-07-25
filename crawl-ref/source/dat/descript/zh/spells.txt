@@ -756,7 +756,7 @@ Legendary Destruction spell
 %%%%
 Lehudib's Crystal Spear spell
 
-掷出一个致命、锋利的水晶碎片。
+掷出一枚致命而锋利的水晶碎片。
 %%%%
 Lesser Beckoning spell
 

@@ -1783,6 +1783,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-043 — Spell name review: Lehudib's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与水晶投射物伤害实现逐项复核
+- **Scope**: 1 项以 `Lehudib's` 开头的现行标题
+- **Choice**: 保留 `Lehudib's Crystal Spear → 勒胡迪布之水晶矛`。
+- **Series rule**: 人名 `Lehudib → 勒胡迪布`，所有格采用
+  “勒胡迪布之……”；`Crystal Spear → 水晶矛`。
+- **Rationale**: 该法术以短射程发射致命尖锐的水晶碎片，标题中的“水晶矛”
+  同时保留材质、长尖投射物意象及原名强度，符合 8 级塑能／土系高伤害机制。
+- **Description corrections**: 将“一个致命、锋利的水晶碎片”润色为
+  “一枚致命而锋利的水晶碎片”，修正量词和连接，不改变机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2308,3 +2330,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-040 | Spell name review — Eringya's 专名系列 | 2 current；1 description + 1 quote fix | active |
 | D-C-041 | Spell name review — Nazja's 专名系列 | 2 current；2 description fixes | active |
 | D-C-042 | Spell name review — Olgreb's 专名系列 | 1 current；1 wording fix | active |
+| D-C-043 | Spell name review — Lehudib's 专名系列 | 1 current；1 wording fix | active |
