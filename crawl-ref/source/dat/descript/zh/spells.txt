@@ -160,7 +160,7 @@ Bolt of Devastation spell
 %%%%
 Bolt of Draining spell
 
-射出一道穿透性的负能量箭，被击中的生物会陷入衰竭。
+射出一道穿透性的负能量箭，对击中的任何活物造成负能量伤害并使其衰竭。
 %%%%
 Bolt of Fire spell
 
@@ -322,7 +322,7 @@ Corona spell
 %%%%
 Corrosive Bolt spell
 
-射出一道穿透性的酸。
+射出一道由强腐蚀性酸液构成的穿透箭。
 %%%%
 Corrupt spell
 
@@ -1618,7 +1618,7 @@ Dominate Undead spell
 %%%%
 Doom Bolt spell
 
-发射一道凝聚了厄运与毁灭的穿透性负能量束。
+发射一道由受诅恶意凝聚而成的箭，使目标遭受厄运。
 %%%%
 Doomsaying spell
 
@@ -1766,7 +1766,7 @@ Maxwell's Portable Piledriver spell
 %%%%
 Quicksilver Bolt spell
 
-发射一支水银箭矢，造成部分无视护甲的伤害。
+向目标生物发射一道驱散能量，可能移除其部分魔法效果。
 %%%%
 Mud Breath spell
 
@@ -1927,7 +1927,9 @@ Sleetstrike spell
 %%%%
 Sojourning Bolt spell
 
-发射一道穿越多个维度的穿透性能量束，在不同维度间弹跳。
+吐出一道穿透性且不稳定的双射能量冲击。若命中，它可能会在短暂延迟后
+传送受害者。对于像你这样格外可口的冒险者，这次传送会将受害者移向
+施法者的盟友，并在可能的情况下捎上施法者同行。
 %%%%
 Soul Splinter spell
 

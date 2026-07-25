@@ -125,7 +125,7 @@ blink frog	闪烁蛙	domain=monsters; source=EN/ZH; Scope / comment=monster; sou
 Blink Other	使他人闪烁	domain=spells; source=EN/ZH; 备注=📝 现行
 Blink Other Close	使他人闪烁靠近	domain=spells; source=EN/ZH; 备注=📝 现行
 Blink Range	退避闪烁	domain=spells; source=EN/ZH; 备注=✅ 现行
-Blinkbolt	闪烁箭	domain=spells; source=EN/ZH; 备注=✅
+Blinkbolt	闪烁箭	domain=spells; source=EN/ZH; 备注=✅ 现行；复合词形保留
 blizzard demon	暴雪恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bloated husk	肿胀尸壳	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 block	格挡	domain=combat; source=EN/ZH
@@ -133,14 +133,15 @@ block of ice	冰块	domain=monsters; source=EN/ZH; Scope / comment=monster; sour
 blood	鲜血 / 血	domain=core; source=EN/ZH; 注意事项=强调用"鲜血"，普通用"血"
 bog body	沼泽之躯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 boggart	博加特	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Bolt of Cold	寒冰箭	domain=spells; source=EN/ZH; 备注=✅
-Bolt of Devastation	毁灭箭	domain=spells; source=EN/ZH; 备注=📝
-Bolt of Draining	吸取箭	domain=spells; source=EN/ZH; 备注=📝
-Bolt of Fire	火焰箭	domain=spells; source=EN/ZH; 备注=✅
-Bolt of Flesh	血肉箭	domain=spells; source=EN/ZH; 备注=📝
-Bolt of Inaccuracy	偏差箭矢	domain=spells; source=EN/ZH; 备注=✅
-Bolt of Light	光箭	domain=spells; source=EN/ZH; 备注=📝
-Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅
+Bolt	箭	domain=magic; source=EN/ZH; 状态=✅ 已确认（常规现行法术；Blinkbolt 保留“闪烁箭”，Thunderbolt 采用“雷击”例外）
+Bolt of Cold	寒冰箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+Bolt of Devastation	毁灭箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+Bolt of Draining	衰竭箭	domain=spells; source=EN/ZH; 备注=📝 现行；Drain 状态，不表示生命／魔力转移
+Bolt of Fire	火焰箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+Bolt of Flesh	血肉箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+Bolt of Inaccuracy	偏差箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Bolt of Light	光箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
 bombardier beetle	投弹甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bone dragon	骨龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -239,7 +240,7 @@ Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除�
 Corona	怪异发光球	domain=spells; source=EN/ZH; 备注=✅
 Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
 Corrosion	腐蚀	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Corrosive Bolt	腐蚀箭	domain=spells; source=EN/ZH; 备注=✅
+Corrosive Bolt	腐蚀箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Corrupt	腐化	domain=spells; source=EN/ZH; 备注=✅
 Corrupt Body	腐化躯体	domain=spells; source=EN/ZH; 备注=✅
 Corrupting Pulse	腐化脉冲	domain=spells; source=EN/ZH; 备注=✅
@@ -299,7 +300,7 @@ dodge	闪避	domain=combat; source=EN/ZH
 Dodging	闪避	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Dominate Undead	支配亡灵	domain=spells; source=EN/ZH; 备注=✅
 Donald	唐纳德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Doom Bolt	厄运箭	domain=spells; source=EN/ZH; 备注=📝
+Doom Bolt	厄运箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Doomsaying	宣告厄运	domain=spells; source=EN/ZH; 备注=✅
 dopey	愚钝	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -322,7 +323,7 @@ Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / commen
 Earth Magic	大地魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Edmund	埃德蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
-Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅
+Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Elyvilon	艾利维隆	domain=gods; source=EN/ZH; 类型=音译
 enchant	附魔	domain=items; source=EN/ZH
 Enchanter	惑控师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -346,7 +347,7 @@ Evocations	魔力释放	domain=skills; source=EN/ZH; Scope / comment=skill; sour
 Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=✅
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 experience	经验值	domain=core; source=EN/ZH
-Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=✅
+Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 falchion	弯刃剑	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
 fangs	尖牙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Fannar	凡纳尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -525,7 +526,7 @@ Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / com
 Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
-Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅
+Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=✅
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -675,10 +676,10 @@ Pyroclastic Surge	火山碎屑涌	domain=spells; source=EN/ZH; 备注=✅
 Pyrrhic Recollection	惨胜回忆	domain=spells; source=EN/ZH; 备注=✅
 Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
 quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
-Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅
+Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=✅
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
-Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=✅
+Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=✅
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Ravenous Swarm	贪婪虫群	domain=spells; source=EN/ZH; 备注=✅
@@ -780,7 +781,7 @@ snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; s
 snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Sojourning Bolt	旅居箭	domain=spells; source=EN/ZH; 备注=📝
+Sojourning Bolt	羁旅箭	domain=spells; source=EN/ZH; 备注=📝 现行
 Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=✅
 Sonic wave	音波	domain=spells; source=EN/ZH; 备注=✅
 Sonja	索尼娅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -892,7 +893,7 @@ Throw Frost	投掷冰霜	domain=spells; source=EN/ZH; 备注=✅
 Throw Icicle	投掷冰柱	domain=spells; source=EN/ZH; 备注=✅
 Throw Klown Pie	投掷小丑派	domain=spells; source=EN/ZH; 备注=✅
 Throwing	投掷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅
+Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅ 现行；固定词形例外
 Tiamat	提亚马特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=✅
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
@@ -918,7 +919,7 @@ Vampiric Draining	吸血术	domain=spells; source=EN/ZH; 备注=✅
 Vanquished Vanguard	败军先锋	domain=spells; source=EN/ZH; 备注=📝
 Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
-Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅
+Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Vex	激怒	domain=spells; source=EN/ZH; 备注=✅
 Vhi's Electric Charge	维之电荷	domain=spells; source=EN/ZH; 备注=✅
 Vhi's Electrolunge	维之电冲	domain=spells; source=EN/ZH; 备注=✅

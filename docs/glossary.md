@@ -85,10 +85,11 @@
 | 词根 | 译法 | 状态 |
 |------|------|------|
 | Blink | 闪烁 | ✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） |
+| Bolt | 箭 | ✅ 已确认（常规现行法术；Blinkbolt 保留“闪烁箭”，Thunderbolt 采用“雷击”例外） |
 | Summon | 召唤 | ✅ 已确认 |
 | Dispel | 驱散 | ✅ 已确认 |
 
-待审阅词根：Bolt、Cloud、Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
+待审阅词根：Cloud、Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
 
 ---
@@ -711,29 +712,29 @@
 | Blink Range | 退避闪烁 | ✅ 现行 |
 | Controlled Blink | 受控闪烁 | ✅ 已移除／TAG 34 兼容 |
 
-### Bolt（19）
+### Bolt（现行 16；已移除／TAG 34 兼容 3）
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Blinkbolt | 闪烁箭 | ✅ |
-| Bolt of Cold | 寒冰箭 | ✅ |
-| Bolt of Devastation | 毁灭箭 | 📝 |
-| Bolt of Draining | 吸取箭 | 📝 |
-| Bolt of Fire | 火焰箭 | ✅ |
-| Bolt of Flesh | 血肉箭 | 📝 |
-| Bolt of Inaccuracy | 偏差箭矢 | ✅ |
-| Bolt of Light | 光箭 | 📝 |
-| Bolt of Magma | 岩浆箭 | ✅ |
-| Corrosive Bolt | 腐蚀箭 | ✅ |
-| Doom Bolt | 厄运箭 | 📝 |
-| Electrical Bolt | 电击箭 | ✅ |
-| Explosive Bolt | 爆裂弩矢 | ✅ |
-| Lightning Bolt | 闪电箭 | ✅ |
-| Quicksilver Bolt | 水银箭 | ✅ |
-| Random Bolt | 随机箭矢 | ✅ |
-| Sojourning Bolt | 旅居箭 | 📝 |
-| Thunderbolt | 雷击 | ✅ |
-| Venom Bolt | 毒液箭 | ✅ |
+| Blinkbolt | 闪烁箭 | ✅ 现行；复合词形保留 |
+| Bolt of Cold | 寒冰箭 | ✅ 现行 |
+| Bolt of Devastation | 毁灭箭 | ✅ 现行 |
+| Bolt of Draining | 衰竭箭 | 📝 现行；Drain 状态，不表示生命／魔力转移 |
+| Bolt of Fire | 火焰箭 | ✅ 现行 |
+| Bolt of Flesh | 血肉箭 | ✅ 现行 |
+| Bolt of Light | 光箭 | ✅ 现行 |
+| Bolt of Magma | 岩浆箭 | ✅ 现行 |
+| Corrosive Bolt | 腐蚀箭 | ✅ 现行 |
+| Doom Bolt | 厄运箭 | ✅ 现行 |
+| Electrical Bolt | 电击箭 | ✅ 现行 |
+| Lightning Bolt | 闪电箭 | ✅ 现行 |
+| Quicksilver Bolt | 水银箭 | ✅ 现行 |
+| Sojourning Bolt | 羁旅箭 | 📝 现行 |
+| Thunderbolt | 雷击 | ✅ 现行；固定词形例外 |
+| Venom Bolt | 毒液箭 | ✅ 现行 |
+| Bolt of Inaccuracy | 偏差箭矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Explosive Bolt | 爆裂弩矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Random Bolt | 随机箭矢 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 
 ### Summon（57）
 

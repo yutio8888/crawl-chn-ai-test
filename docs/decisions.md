@@ -949,6 +949,41 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-014 — Spell name revision: Bolt 系列词根、生命周期与描述校准
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: Bolt 系列逐项复审；对照当前英文法术描述、现行法术登记及命中效果实现
+- **Choice**:
+  - 确认常规现行法术的系列词根 `Bolt → 箭`，并将 16 项现行法术与 3 项已移除／TAG 34 兼容记录分开登记。
+  - `Bolt of Draining`：吸取箭 → **衰竭箭**。这里的 Drain 是负能量造成的“衰竭”状态，不会把生命或魔力转给施法者。
+  - `Sojourning Bolt`：旅居箭 → **羁旅箭**。新译保留旅途、漂泊之意，同时避免“旅居”偏向定居生活的静态语感。
+  - 保留其余 14 项现行标题：`Blinkbolt → 闪烁箭`、`Bolt of Cold → 寒冰箭`、`Bolt of Devastation → 毁灭箭`、`Bolt of Fire → 火焰箭`、`Bolt of Flesh → 血肉箭`、`Bolt of Light → 光箭`、`Bolt of Magma → 岩浆箭`、`Corrosive Bolt → 腐蚀箭`、`Doom Bolt → 厄运箭`、`Electrical Bolt → 电击箭`、`Lightning Bolt → 闪电箭`、`Quicksilver Bolt → 水银箭`、`Thunderbolt → 雷击`、`Venom Bolt → 毒液箭`。
+- **Form exceptions**:
+  - `Blinkbolt → 闪烁箭` 保留复合词的既有标题，不机械拆写。
+  - `Thunderbolt → 雷击` 是固定词形例外，不改成“雷箭”。
+- **Lifecycle boundary**: `Bolt of Inaccuracy → 偏差箭矢`、`Explosive Bolt → 爆裂弩矢`、`Random Bolt → 随机箭矢` 仅作为已移除／TAG 34 兼容标题暂沿用，不计入 16 项现行成员或现行词根统计。现有证据不足以确认其历史机制，本裁定不声称已完成机制审阅。
+- **Rejected**:
+  - 将现行 Bolt 一律译为“束”：会把系列标题误收窄为 beam 形态，并破坏既有“箭”词根。
+  - 将现行 Bolt 一律译为“弩矢”：英文没有 crossbow 语义，且会凭空加入武器来源。
+  - 保留“吸取箭”：暗示生命或魔力被转移给施法者，与实际衰竭效果不符。
+  - 保留“旅居箭”：静态定居语感弱化了法术的旅途意象。
+- **Description corrections**:
+  - `Bolt of Draining`：恢复仅影响 `living creature` 的限定，并准确说明负能量伤害会造成衰竭。
+  - `Corrosive Bolt`：恢复 `highly-corrosive` 的强腐蚀修辞。
+  - `Doom Bolt`：删除未实现的“穿透性负能量束”和“毁灭”效果，改为由受诅恶意凝聚而成的箭并施加厄运。
+  - `Quicksilver Bolt`：删除错误的“部分无视护甲”，改为驱散能量可能移除目标的部分魔法效果。
+  - `Sojourning Bolt`：删除虚构的多维弹跳；完整保留穿透且不稳定的双射能量、命中后延迟传送，以及以玩家为目标时将受害者移向施法者盟友并尽可能捎上施法者的特殊逻辑。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/decisions.md`
+- **Affected decisions**: 补充并更新 D-C-007；其“去多余之”的结构裁定仍有效。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1410,3 +1445,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-011 | Spell name revision — 新增缺失法术 | 12 new entries | active |
 | D-C-012 | Spell name revision — 元素召唤统一 | 3 fixes | active |
 | D-C-013 | Spell name revision — Blink 系列 | 4 fixes；8 current + 1 axed compatibility | active |
+| D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |

@@ -15808,7 +15808,7 @@ Abjuration
 驱逐术
 %%%%
 Bolt of Draining
-吸取箭
+衰竭箭
 %%%%
 Lehudib's Crystal Spear
 勒胡迪布之水晶矛
@@ -16525,7 +16525,7 @@ Warp Space
 扭曲空间
 %%%%
 Sojourning Bolt
-旅居箭
+羁旅箭
 %%%%
 Harpoon Shot
 鱼叉射击
