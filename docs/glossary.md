@@ -1141,7 +1141,7 @@
 | Mass Confusion | 群体混乱 | ✅ |
 | Mass Regeneration | 群体再生 | ✅ |
 | Melee | 近战 | ✅ |
-| Mesmerise | 催眠 | 📝 |
+| Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
 | Metabolic Englaciation | 深度冻结 | ✅ |
 | Metal Splinters | 金属碎片 | ✅ |
 | Might | 强壮 | ✅ |

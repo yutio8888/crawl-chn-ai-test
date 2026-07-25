@@ -1493,7 +1493,7 @@ mimic reveal plural|%s are mimics!
 %s被轰平了%s
 %%%%
 %s is briefly mesmerised by your gaze.
-%s被你的凝视短暂迷惑了。
+%s被你的凝视短暂迷住了。
 %%%%
 %s is briefly surrounded by shifting shadows.
 %s被变幻的阴影短暂包围。
@@ -5096,10 +5096,10 @@ Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s
 记忆燃烧殆尽。
 %%%%
 Mesm
-催眠
+迷魂
 %%%%
 mesmerised
-被催眠
+受迷魂
 %%%%
 metal staircase leading down
 向下通往的金属楼梯
@@ -8432,7 +8432,7 @@ You are level %d %s %s.
 你是 %d 级的 %s%s。
 %%%%
 You are mesmerised.
-你被催眠了。
+你陷入了迷魂状态。
 %%%%
 You are no longer being poisoned.
 你不再中毒了。
@@ -15010,7 +15010,7 @@ Infuse
 注入
 %%%%
 Mesmerism
-催眠
+迷魂
 %%%%
 Parrying
 格挡
@@ -16189,7 +16189,7 @@ Summon Hydra
 召唤多头蛇
 %%%%
 Mesmerise
-催眠
+迷魂
 %%%%
 Hellfire Court
 地狱火法庭
@@ -20124,7 +20124,7 @@ wandering
 游荡
 %%%%
 mesmerising
-魅惑中
+迷魂中
 %%%%
 fast
 快速
@@ -20796,7 +20796,7 @@ flag long|weak
 虚弱
 %%%%
 flag long|mesmerising
-正在魅惑
+正在使人着迷
 %%%%
 flag long|rolling
 正在滚动
@@ -21366,7 +21366,7 @@ Your noxious spew wanes.
 你的毒雾喷吐减弱了。
 %%%%
 Your orb has recharged its mesmeric power.
-你的宝珠重新充能了其催眠之力。
+你的宝珠重新充能了迷魂之力。
 %%%%
 Your slime shroud regrows.
 你的黏液护盾重新生长了。
@@ -26215,7 +26215,7 @@ It berserks you when you make melee attacks (%d% chance).
 近战攻击时有概率使你狂暴（%d%%概率）。
 %%%%
 It protects you from confusion, rage, mesmerisation and fear.
-保护你免受困惑、狂怒、迷惑和恐惧。
+保护你免受困惑、狂怒、迷魂和恐惧。
 %%%%
 It causes magical contamination when unequipped.
 卸下时造成魔法污染。
@@ -29435,7 +29435,7 @@ It occasionally summons demons to assist the wielder when it strikes in combat.
 战斗时攻击偶尔召唤恶魔前来协助使用者。
 %%%%
 Its wielder is mesmerised by any visible foes, and it cannot be unequipped while any foes are visible.
-使用者会被任何可见的敌人催眠，且在有敌人可见时无法被卸下。
+使用者会被任何可见的敌人迷住，且在有敌人可见时无法卸下它。
 %%%%
 It allows the wearer to cover ground more swiftly.
 使穿戴者能够更快地移动。
@@ -34054,7 +34054,7 @@ Key pressed, interrupting miscast testing.
 \n你的法术失败率将
 %%%%
 \n\nMesmerism radius: %d (max %d)
-\n\n催眠半径：%d（最大%d）
+\n\n迷魂半径：%d（最大%d）
 %%%%
 exit
 离开
@@ -37265,7 +37265,7 @@ status|-Lithotox
 -石毒
 %%%%
 status|-Mesm
--催眠
+-迷魂
 %%%%
 status|-Move
 -移动
@@ -37583,7 +37583,7 @@ status|Memories (%d)
 记忆(%d)
 %%%%
 status|Mesm
-催眠
+迷魂
 %%%%
 status|Might
 强效
@@ -38081,7 +38081,7 @@ status|marked
 被标记
 %%%%
 status|mesmerised
-被催眠
+受迷魂
 %%%%
 status|mighty
 强力
@@ -38129,7 +38129,7 @@ status|on lithotoxin cooldown
 石毒素冷却
 %%%%
 status|on mesmerism cooldown
-催眠冷却
+迷魂冷却
 %%%%
 status|on recite cooldown
 吟诵冷却

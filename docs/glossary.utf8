@@ -565,7 +565,7 @@ Mennas	门纳斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mo
 Mephitic Cloud	迷瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅
 merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
-Mesmerise	催眠	domain=spells; source=EN/ZH; 备注=📝
+Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
 Metabolic Englaciation	深度冻结	domain=spells; source=EN/ZH; 备注=✅
 Metal Splinters	金属碎片	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅

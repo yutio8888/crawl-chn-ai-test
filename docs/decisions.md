@@ -919,7 +919,8 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rejected**: 保留长格式（与其他元素"水元素/铁元素"格式不一致）
 - **Rationale**: 实体名（air elemental→气元素, fire elemental→火元素, earth elemental→地元素）使用单字前缀+元素，法术名应复用。Water/Iron已为"水元素/铁元素"，Air/Fire/Earth不应使用"空气/火焰/大地"长格式
 - **Scope**: `dat/i18n/zh/source.txt`, `docs/glossary.md`
-- **Note**: Mesmerise审阅后保留"催眠"——该术语已用于全部12处status文本（mesmerised/descriptions等），单改法术名会制造分裂。目前Mesmerise系L2诅咒系法术，效果为禁止目标远离施法者而非使其睡眠；"催眠"确有误导，但需作为跨领域术语统一处理（涉及C++ status键和全部source.txt引用）
+- **Historical note (superseded by D-A-043)**: 当时因相关状态文本使用“催眠”而
+  暂缓单改法术名；其中“L2”及“全部 12 处”的记录也已不符合当前数据。
 
 ---
 
@@ -1421,8 +1422,42 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Rationale**: `Dispersal` 会将施法者附近的生物传送到远处；成功抵抗的生物仍会被强制闪送一小段距离。“空间驱离”同时表达空间位移和使目标远离，并与已确认的 `Dispel → 驱散` 明确区分，避免误解为解除魔法效果。
 - **Affected files**:
   - `crawl-ref/source/dat/i18n/zh/source.txt` ✅
+  - `crawl-ref/source/dat/descript/zh/spells.txt` ✅
   - `docs/glossary.md` ✅
   - `docs/glossary.utf8` ✅
+- **Description correction**: 复核时同步修正“传送掉”“被……被闪送”及
+  “被空间的扭曲所混乱”等病句，并明确混乱使用一次独立的意志检定。
+- **Resolved**: 2026-07-25
+
+---
+
+### D-A-043 — Mesmerise → 迷魂
+
+- **Type**: A — Entity and terminology ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 当前法术数据、描述、`_mesmerise_los` 与移动限制实现复核
+- **Choice**: 迷魂
+- **Rejected**:
+  - 催眠（旧译；错误暗示睡眠，而法术不施加睡眠）
+  - 魅惑（容易与 charming 及阵营控制混淆）
+- **Rationale**: 当前 `Mesmerise` 是 5 级怪物诅咒法术，对视野内敌人进行
+  意志检定。失败的冒险者无法主动远离施法者，其他生物则陷入
+  `ENCH_DAZED`；离开施法者视野会解除玩家的移动限制。“迷魂”保留
+  `entrance/mesmerise` 的心智攫取含义，不暗示睡眠或阵营转化，并与既有
+  “迷魂宝珠”一致。
+- **Terminology scope**: 同批统一直接表示 `mesmerise/mesmerism` 机制的
+  法术名、状态短名、冷却、半径、装备说明和消息；自然句中的“迷住”可按
+  中文语法保留。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt` ✅
+  - `crawl-ref/source/dat/descript/zh/status.txt` ✅
+  - `crawl-ref/source/dat/descript/zh/monstatus.txt` ✅
+  - `docs/glossary.md` ✅
+  - `docs/glossary.utf8` ✅
+  - `docs/decisions.md` ✅
+- **Supersedes**: `D-C-012` 中暂缓修改 Mesmerise 的历史注记；不影响该
+  裁定的元素召唤规则。
 - **Resolved**: 2026-07-25
 
 ---
@@ -1471,6 +1506,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-040 | Octopode (player species) | 章鱼 | active ✅ |
 | D-A-041 | non-unique monster display names and quote exceptions | 术士 / 巨鳄龟 / 乱流 / 丧尸 | active ✅ |
 | D-A-042 | Dispersal | 空间驱离 | active ✅ |
+| D-A-043 | Mesmerise | 迷魂 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
 | D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |
