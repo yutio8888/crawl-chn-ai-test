@@ -345,7 +345,7 @@ Shadow Turret
 暗影炮塔
 %%%%
 Slug Dart
-弹丸飞镖
+蛞蝓飞镖
 %%%%
 Sticky Flame
 黏着火焰

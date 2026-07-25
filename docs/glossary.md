@@ -89,9 +89,11 @@
 | Cloud | 云 | ✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录） |
 | Summon | 召唤 | ✅ 已确认 |
 | Breath | 吐息 | ✅ 已确认（20 项现行；另有 2 项已移除／TAG 34 兼容记录） |
+| Dart | 飞镖 | ✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外） |
+| Shadow | 暗影 | ✅ 已确认（12 项现行；另有 1 项已移除／TAG 34 兼容记录） |
 | Dispel | 驱散 | ✅ 已确认 |
 
-待审阅词根：Dart、Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
+待审阅词根：Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
 
 ---
@@ -926,7 +928,7 @@
 | Poison Arrow | 毒箭 | ✅ |
 | Poisonous Vapours | 毒气 | ✅ |
 | Pyre Arrow | 烈火箭 | 📝 |
-| Slug Dart | 弹丸飞镖 | ✅ |
+| Slug Dart | 蛞蝓飞镖 | ✅；由飞镖蛞蝓发射硬化甲壳质尖镖 |
 | Stone Arrow | 石箭 | ✅ |
 
 ### Beam（1）
@@ -951,7 +953,7 @@
 | Shadow Torpor | 暗影麻木 | ✅ |
 | Shadow Turret | 暗影炮塔 | ✅ |
 | Shadowball | 暗影球 | ✅ |
-| Weave Shadows | 编织暗影 | ✅ |
+| Weave Shadows | 编织暗影 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 
 ### Dispel（2）
 

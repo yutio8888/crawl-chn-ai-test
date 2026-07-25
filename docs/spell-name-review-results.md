@@ -772,3 +772,143 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 `af5f6da8cb91917fef04a63bf9f797af0cb8839717e754e04781cb4f9cc61496`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `688fb5c82db1bca051c42f179fe491817c3cf94e419f8596f715d93fd938b224`。
+
+## Dart 词形系列
+
+边界：英文标题以独立 `Dart` 结尾的 2 项现行法术，无已移除兼容成员。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 原中文名 | 裁定中文名 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_MAGIC_DART` | 1 / 塑能 / `dir_or_target, needs_tracer` | 玩家、怪物 | 魔法飞弹 | 魔法飞弹 | 保留 |
+| `SPELL_SLUG_DART` | 1 / 塑能 / `dir_or_target, needs_tracer, monster` | 飞镖蛞蝓 | 弹丸飞镖 | 蛞蝓飞镖 | 重译 |
+
+- `Magic Dart` 发射必中小型魔法射弹；zap 使用自动命中，标题和描述都把
+  dart 作为魔法射弹意象。“魔法飞弹”准确且是稳定固定词形，不为形式
+  统一改成“魔法飞镖”。
+- `Slug Dart` 是飞镖蛞蝓的天生攻击，发射硬化甲壳质尖镖，zap 颜色还
+  明确与蛞蝓自身颜色一致。“弹丸飞镖”把 slug 错解成 projectile slug，
+  且“弹丸／飞镖”重复描述投射物；改为“蛞蝓飞镖”，保留使用者双关并
+  与实体 `dart slug → 飞镖蛞蝓` 对应。
+
+英中两项描述键均存在且机制一致，无需修改正文。证据：
+`spl-data.h:41`、`spl-data.h:3104`、`spl-zap.cc:11`、
+`spl-zap.cc:103`、`zap-data.h:563`、`zap-data.h:1524`、
+`mon-spell.h:423`、`mon-spell.h:708`、`dat/descript/spells.txt:1209`、
+`dat/descript/spells.txt:1920`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者完整系列落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-019`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T163018947719000+0800-11363-971a54b02563`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`5b97f68339de1634fbfd1f8fdaa783d23297a5ac0979bf1cce393eaed4fec04d`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
+
+## Shadow/Shadows 词形系列
+
+边界：英文标题中含独立 `Shadow` 或 `Shadows` 词形，共 13 项；其中
+12 项现行、1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。连写的
+`Shadowball` 不属于本次机械边界。
+
+| Enum | 生命周期 | 当前译名 | 核心效果证据 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_SHADOW_CREATURES` | 现行 | 暗影生物 | 以暗影与深渊物质复制当前地域原生生物 | 保留 |
+| `SPELL_SHADOW_SHARD` | 现行 | 暗影碎片 | 向单个敌人射出硬化暗影碎片 | 保留 |
+| `SPELL_SHADOW_BEAM` | 现行 | 暗影光束 | 发射穿透性暗影束 | 保留 |
+| `SPELL_CREEPING_SHADOW` | 现行 | 蔓延暗影 | 从附近墙角袭击紧邻墙角的敌人 | 保留 |
+| `SPELL_SHADOW_TEMPEST` | 现行 | 暗影风暴 | 对至多半数可见敌人降下不可抵抗的暗影闪电 | 保留 |
+| `SPELL_SHADOW_PRISM` | 现行 | 暗影棱镜 | 延迟爆炸；提前摧毁会显著减弱爆炸 | 保留 |
+| `SPELL_SHADOW_PUPPET` | 现行 | 暗影傀儡 | 召唤会骚扰并缠住敌人的活影仆从 | 保留 |
+| `SPELL_SHADOW_TURRET` | 现行 | 暗影炮塔 | 形成固定炮塔并反复向敌人开火 | 保留 |
+| `SPELL_SHADOW_SHOT` | 现行 | 暗影射击 | 向单个敌人射出小型硬化暗影弹 | 保留 |
+| `SPELL_SHADOW_BIND` | 现行 | 暗影束缚 | 将附近随机多名敌人钉在影子上 | 保留 |
+| `SPELL_SHADOW_TORPOR` | 现行 | 暗影麻木 | 减速一列敌人；强者可能更快恢复 | 保留 |
+| `SPELL_SHADOW_DRAINING` | 现行 | 暗影吸取 | 从附近所有敌人影子夺取一缕，完全无视护甲 | 保留 |
+| `SPELL_WEAVE_SHADOWS` | 已移除兼容 | 编织暗影 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+系列结论：12 项现行标题均准确保留 `Shadow/Shadows → 暗影` 词根，无需
+改名。`Shadow Shot → 暗影射击` 虽可提出“暗影弹”，但原名是动作名，
+现译也不误导，不因纯风格偏好重译。已移除的 `Weave Shadows` 没有
+现行描述或实现，不能反向推定历史机制。
+
+名称无需修改，但描述审阅发现并修复 10 项 Needs Fix：恢复
+`Shadow Creatures` 的地域原生限定、`Creeping Shadow` 的墙角触发、
+`Shadow Bind` 的随机多目标与威力成长、`Shadow Draining` 的范围和
+无视护甲，以及 `Shadow Prism`、`Shadow Puppet`、`Shadow Shot`、
+`Shadow Tempest`、`Shadow Torpor`、`Shadow Turret` 各自遗漏的延时、
+减弱、缠绕、投射物、目标比例、持续时间或固定炮塔机制。
+
+证据：`spl-data.h` 中对应 13 项记录、`dat/descript/spells.txt:446`、
+`dat/descript/spells.txt:1785`—`1836`、Dithmenos shadow mimic 调度及
+各法术实现。英中 12 项现行描述键完整；已移除兼容项无描述。
+
+### 落地状态
+
+- [x] 13/13 机制证据与名称裁定
+- [x] 单一翻译写入者描述修正
+- [x] translation profile（与 Dart 批次同一完整工作树验证）
+- [x] 系列裁定登记（`D-C-020`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T163018947719000+0800-11363-971a54b02563`。裁定后的
+`docs/glossary.md` SHA-256 为
+`5b97f68339de1634fbfd1f8fdaa783d23297a5ac0979bf1cce393eaed4fec04d`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
+
+## Shadow/Shadows 词形系列
+
+边界：英文标题中含独立 `Shadow` 或 `Shadows` 词形，共 13 项；其中
+12 项现行、1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。连写的
+`Shadowball` 不在本系列。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_SHADOW_CREATURES` | 现行 | 暗影生物 | 复制当前地域原生生物 | 保留 |
+| `SPELL_SHADOW_SHARD` | 现行 | 暗影碎片 | 单体硬化暗影碎片 | 保留 |
+| `SPELL_SHADOW_BEAM` | 现行 | 暗影光束 | 穿透暗影束 | 保留 |
+| `SPELL_CREEPING_SHADOW` | 现行 | 蔓延暗影 | 从墙角袭击相邻敌人 | 保留 |
+| `SPELL_SHADOW_TEMPEST` | 现行 | 暗影风暴 | 暗影闪电攻击至多半数可见敌人 | 保留 |
+| `SPELL_SHADOW_PRISM` | 现行 | 暗影棱镜 | 延时爆炸；提前摧毁则减弱 | 保留 |
+| `SPELL_SHADOW_PUPPET` | 现行 | 暗影傀儡 | 活影仆从骚扰并缠绕敌人 | 保留 |
+| `SPELL_SHADOW_TURRET` | 现行 | 暗影炮塔 | 固定炮塔反复开火 | 保留 |
+| `SPELL_SHADOW_SHOT` | 现行 | 暗影射击 | 单体小型硬化暗影弹 | 保留 |
+| `SPELL_SHADOW_BIND` | 现行 | 暗影束缚 | 随机将多名附近敌人钉在影子上 | 保留 |
+| `SPELL_SHADOW_TORPOR` | 现行 | 暗影麻木 | 直线群体减速 | 保留 |
+| `SPELL_SHADOW_DRAINING` | 现行 | 暗影吸取 | 附近群体无视护甲伤害 | 保留 |
+| `SPELL_WEAVE_SHADOWS` | 已移除兼容 | 编织暗影 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：12 项现行标题全部准确保留 `Shadow/Shadows → 暗影` 词根；
+已移除的 `Weave Shadows` 不用现行机制反推。描述审阅发现 10 项中文
+仍对应旧机制或遗漏关键规则，本批已按当前英文与实现修正：
+`Shadow Creatures`、`Creeping Shadow`、`Shadow Bind`、
+`Shadow Draining`、`Shadow Prism`、`Shadow Puppet`、
+`Shadow Shot`、`Shadow Tempest`、`Shadow Torpor`、
+`Shadow Turret`。`Shadow Shard` 与 `Shadow Beam` 原描述一致。
+
+证据：`spl-data.h:1040`、`spl-data.h:4081`—`4208`、
+`spl-data.h:4707`、`mon-cast.cc:775`—`859`、
+`mon-cast.cc:3646`、`mon-cast.cc:5651`—`5663`、
+`god-passive.cc:1713`—`1800`、`zap-data.h:2191`—`2312`、
+`spl-summoning.cc:2233`、`spl-summoning.cc:2517`—`2518`。
+
+### 落地状态
+
+- [x] 13/13 机制证据与名称裁定
+- [x] 单一翻译写入者完整系列描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-020`）
+
+验证结果：覆盖 Dart 与 Shadow 当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T163136983447000+0800-13931-971a54b02563`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`5b97f68339de1634fbfd1f8fdaa783d23297a5ac0979bf1cce393eaed4fec04d`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。

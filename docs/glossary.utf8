@@ -267,6 +267,7 @@ cyclops	独眼巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; sou
 daeva	德瓦	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 damage	伤害	domain=combat; source=EN/ZH
 Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=✅
+Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
 Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅
@@ -734,6 +735,7 @@ Serpent of Hell cocytus	悲叹河地狱巨蛇	domain=monsters; source=EN/ZH; mon
 Serpent of Hell dis	铁城地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Serpent of Hell gehenna	欣嫩谷地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Serpent of Hell tartarus	塔尔塔罗斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Shadow	暗影	domain=magic; source=EN/ZH; 状态=✅ 已确认（12 项现行；另有 1 项已移除／TAG 34 兼容记录）
 Shadow Beam	暗影光束	domain=spells; source=EN/ZH; 备注=✅
 Shadow Bind	暗影束缚	domain=spells; source=EN/ZH; 备注=✅
 Shadow Creatures	暗影生物	domain=spells; source=EN/ZH; 备注=✅
@@ -777,7 +779,7 @@ Sleep	睡眠	domain=status; source=EN/ZH; Scope / comment=status; source=status.
 Sleetstrike	冰雨打击	domain=spells; source=EN/ZH; 备注=✅
 slimy green scales	黏滑绿鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Slow	减速	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=📝
-Slug Dart	弹丸飞镖	domain=spells; source=EN/ZH; 备注=✅
+Slug Dart	蛞蝓飞镖	domain=spells; source=EN/ZH; 备注=✅；由飞镖蛞蝓发射硬化甲壳质尖镖
 Smiting	惩击	domain=spells; source=EN/ZH; 备注=✅
 snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟
 snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
@@ -948,7 +950,7 @@ weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mut
 Weakening Gaze	虚弱凝视	domain=spells; source=EN/ZH; 备注=✅
 weapon	武器	domain=items; source=EN/ZH
 wear	穿戴	domain=items; source=EN/ZH
-Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=✅
+Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
 wield	持握	domain=items; source=EN/ZH
 Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅

@@ -1152,6 +1152,63 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-019 — Spell name review: Dart 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、英中描述、zap 数据与实际使用者逐项复核
+- **Scope**: 2 项现行标题，无已移除兼容成员
+- **Choice**:
+  - `Magic Dart → 魔法飞弹` 保留；
+  - `Slug Dart` 由“弹丸飞镖”重译为 **“蛞蝓飞镖”**。
+- **Series rule**: 普通 `Dart` 作为尖细投射物时译为“飞镖”；但
+  `Magic Dart` 的原文描述明确称其为必中魔法射弹，保留稳定固定译名
+  “魔法飞弹”，不为表面统一牺牲意象与辨识度。
+- **Rationale**: `Slug Dart` 是飞镖蛞蝓的天生攻击，发射硬化甲壳质
+  尖镖；zap 颜色也明确与蛞蝓自身颜色一致。旧译“弹丸飞镖”把 slug
+  错解为弹丸并重复表达投射物；“蛞蝓飞镖”保留原名对使用者的双关，
+  同时复用 `dart slug → 飞镖蛞蝓` 的实体词。
+- **Rejected**:
+  - “魔法飞镖”：破坏 `Magic Dart` 已稳定的魔法射弹意象。
+  - “弹丸飞镖”：误解 slug，并形成近义重复。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-020 — Spell name review: Shadow/Shadows 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、Dithmenos shadow
+  mimic 调度与各法术实现逐项复核
+- **Scope**: 13 项含独立 `Shadow` 或 `Shadows` 词形的标题；12 项现行、
+  1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容；连写的 `Shadowball`
+  不属于该机械边界
+- **Choice**: 12 项现行标题全部保留；`Weave Shadows` 因当前描述和实现
+  均不存在而暂沿用。
+- **Series rule**: 此系列的 `Shadow/Shadows` 稳定译为“暗影”；后接实体、
+  投射物或效果名时使用自然中文定中结构。
+- **Rationale**: 现行标题准确表达复制生物、投射物、墙角袭击、范围风暴、
+  延时棱镜、召唤物、炮塔、束缚、减速及范围伤害等实际机制。
+  `Shadow Shot → 暗影射击` 虽也可提议“暗影弹”，但原名采用动作名且
+  现译没有机制误导，不为纯风格偏好改名。
+- **Description corrections**: 依当前英文与实现修正 10 项旧描述，恢复
+  墙角触发、随机多目标、无视护甲、延时爆炸、提前摧毁减伤、缠绕、
+  投射物类型、可见敌人比例、直线减速、强者更快恢复与固定炮塔等信息。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1653,3 +1710,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；7 description fixes | active |
 | D-C-017 | Spell name review — Summon 词形系列 | 8 fixes；34 current + 8 axed compatibility | active |
 | D-C-018 | Spell name review — Breath 词形系列 | 6 fixes；20 current + 2 axed compatibility | active |
+| D-C-019 | Spell name review — Dart 词形系列 | 1 fix；2 current | active |
+| D-C-020 | Spell name review — Shadow/Shadows 词形系列 | 12 current + 1 axed compatibility；10 description fixes | active |
