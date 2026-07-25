@@ -32,6 +32,39 @@ def split_variants(value: str):
     return [part.strip() for part in re.split(r"\s+/\s+", value) if part.strip()]
 
 
+def split_markdown_row(line: str):
+    r"""Split on unescaped Markdown pipes and decode ``\|`` literals."""
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        raise ValueError(f"malformed Markdown table row: {line!r}")
+
+    cells = []
+    cell = []
+    escaped = False
+    for char in stripped[1:-1]:
+        if escaped:
+            if char == "|":
+                cell.append("|")
+            else:
+                cell.extend(("\\", char))
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == "|":
+            cells.append("".join(cell).strip())
+            cell = []
+        else:
+            cell.append(char)
+    if escaped:
+        cell.append("\\")
+    cells.append("".join(cell).strip())
+    if any(value.count("`") % 2 for value in cells):
+        raise ValueError(
+            f"unescaped pipe or unmatched code span in Markdown row: {line!r}"
+        )
+    return [clean_cell(value) for value in cells]
+
+
 def parse_tables(path: Path):
     lines = path.read_text(encoding="utf-8").splitlines()
     domain = None
@@ -55,8 +88,7 @@ def parse_tables(path: Path):
 
         parsed = []
         for line in table:
-            columns = [clean_cell(value) for value in line.strip().strip("|").split("|")]
-            parsed.append(columns)
+            parsed.append(split_markdown_row(line))
         if len(parsed[1]) < 2 or all(set(value) <= {"-"} for value in parsed[1]):
             header = parsed[0]
             data = parsed[2:]

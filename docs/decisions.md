@@ -3130,10 +3130,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | electrocution | elec | electric | 电击 | 雷电 | — |
 | venom | venom | venomous | 剧毒 | 剧毒 | — |
 | protection | protect | protective | 防护 | 防护 | adj=name |
-| draining | drain | draining | 吸血 | 生命吸取 | — |
+| draining | drain | draining | 汲取 | 汲取 | 与 vampirism 区分 |
 | speed | fast | fast | 疾速 | 疾速 | — |
 | heavy | heavy | heavy | 沉重 | 沉重 | adj=name |
-| vampirism | vamp | vampiric | 吸血(vampirism) | 吸血 | — |
+| vampirism | vamp | vampiric | 吸血 | 吸血 | — |
 | pain | pain | painful | 痛苦 | 痛苦 | — |
 | antimagic | antimagic | antimagic | 禁魔 | 禁魔 | adj=name |
 | distortion | distort | distorting | 扭曲 | 扭曲 | — |
@@ -3148,15 +3148,20 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | concussion | concuss | concussing | 震荡 | 震荡 | — |
 | devious | devious | devious | 狡诈 | 狡诈 | adj=name |
 | acid | acid | acidic | 酸蚀 | 酸蚀 | — |
-| confusion | confuse | confusing | 迷惑 | 迷惑 | v34+ |
+| confusion | confuse | confusing | 混乱 | 混乱 | v34+ internal |
 | weakness | weak | weakening | 弱化 | 弱化 | v34+ |
 | vulnerability | vuln | will-reducing | 意志削弱 | 意志削弱 | v34+ |
 | foul flame | foul flame | foul flame | 秽焰 | 秽焰 | v34+ |
 
 - **Rejected**: 英文 terse 形式直接音译（"flame→弗莱姆"），保持全部意译
-- **Rationale**: 统一 adj 和 name 形式，除部分特殊项外尽量一致。draining 和 vampirism 的中文区分："吸血"(draining, 每次吸少量) vs "吸血(vampirism)"(不死生物吸血)
+- **Rationale**: 统一 adj 和 name 形式，除部分特殊项外尽量一致。
+  `draining` 表示汲取并削弱目标，三形统一为“汲取”；
+  `vampirism` 会把造成的伤害转化为生命值，三形统一为“吸血”。
+  两者不得再共用“吸血”。
 - **Scope**: `source.txt` 中的 `weapon_brands_verbose[]` / `weapon_brands_terse[]` / `weapon_brands_adj[]` 对应 T_() 条目
-- **Note**: 所有品牌名翻译统一通过 source.txt 中的 T_() 条目管理，无重复数据
+- **Note**: 品牌名翻译统一由 `source.txt` 管理；无同形冲突的形式使用
+  `T_()`，`draining/drain` 等与其他消费者同键但译义不同的形式使用
+  `C_()` 上下文条目。不得依赖重复键覆盖。
 
 ### D-B-017 — 基础武器名称纠偏（结构、材质与系列关系）
 
@@ -3206,6 +3211,49 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   - `triple crossbow`：三连弩 → **三弦弩**。当前描述明确为三根弦串联以提高威力，不是三发连射。
 - **Rejected**: “阔刃戟”“龙卷护符”“血族护符”“暗影庇护”“三连弩”等会混淆武器类别、形态或机制的译法。
 - **Scope**: `source.txt`、旧版本 `old falchion` 条目、神器/测试名称、引文标题和术语表；不改动普通叙事文本中“空气”等自然用语。
+
+---
+
+### D-B-020 — 常规物品与 ego 名称复审
+
+- **Type**: B — Batch naming revision
+- **Status**: active
+- **Date**: 2026-07-26
+- **Source**: 390 项常规物品、武器品牌、护甲 ego 与首饰效果冻结清单复审；
+  对照当前英文描述、枚举身份、显示名生产路径和实际机制
+- **Choice**:
+  - `quill talisman → 棘刺护符`，因为这里的 `quill` 由仙人掌状外观、
+    遍体尖刺和近战反伤共同限定为棘刺，而非羽毛。
+  - `potion of moonshine → 私酒药水`，避免把蒸馏烈酒误解为月光。
+  - `scroll of immolation → 内焰卷轴`，与其施加的 `Inner Flame`
+    机制一致，且不再误示读者自焚。
+  - `flux bauble → 变形球`，与 `status|Flux → 变形` 及其扭曲形体的
+    效果一致。
+  - 物品域 `air → 空气`；护甲 ego `mayhem → 暴乱`、
+    `rampaging → 冲锋`、`invisibility → 隐形`、`infusion → 灌注`。
+  - 首饰效果 `magic regeneration → 法力再生`、
+    `magical power → 法力强化`、`flight → 飞行`。
+  - 书名域 `Necromancy → 死灵术`；药水域
+    `invisibility → 隐形`、`might → 强效`。
+- **Context isolation**: 名称域使用 `C_()` 上下文键隔离同形异义。
+  保留法术标题 `Invisibility → 隐身术`、`Might → 强壮`、
+  `Infusion → 灌注术`、`Flight → 飞行术`，并保留法杖名中的
+  `necromancy → 死灵`。武器品牌 `draining` 三形通过上下文键统一为
+  “汲取”，不覆盖其他 `drain/draining` 消费者。
+- **Weapon brands**: 本批确认 `draining → 汲取`、
+  `vampirism → 吸血`、`confusion → 混乱`、`chaos → 混沌`、
+  `spectralising → 幽魂` 的三形一致性；完整表以 D-B-016 为准。
+- **Description corrections**: 同批修复物品和 ego 描述中的机制条件、
+  数值范围、因果关系、技能名、神祇专名及失真的物件结构描述；
+  不修改 44 项仅供旧版本兼容的暂缓术语。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/items.txt`
+  - `crawl-ref/source/dat/descript/zh/egos.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+- **Supersedes**: D-B-016 中 `draining`、`vampirism` 和 `confusion`
+  三行的旧译；D-B-016 表格已同步为本裁决。
 
 ---
 
@@ -3336,6 +3384,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-015 | Demon/Sacred/Eudemon prefix | 恶魔/善灵/神圣 | active |
 | D-B-016 | Weapon brand dictionary | full ZH table (29 brands) | active |
 | D-B-019 | Barding → 马铠 | 马铠 | active ✅ |
+| D-B-020 | Item and ego name review | 390 identities; current/internal fixes | active |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |

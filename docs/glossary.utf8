@@ -21,6 +21,7 @@ Agnes	艾格尼丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-
 Agnes title	漫游者艾格尼丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Agonising Touch	剧痛之触	domain=spells; source=EN/ZH; 备注=✅
 Agony	剧痛	domain=spells; source=EN/ZH; 备注=🆕
+air	空气	domain=items; source=EN/ZH; Scope / comment=item display fragment; armour ego, book, staff; decision=D-B-020
 air elemental	气元素	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Air Elementalist	气元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Air Magic	空气魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -62,6 +63,8 @@ armor	护甲	domain=combat; source=EN/ZH
 armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
 Armour	护甲	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 armour echo	铠甲回响	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+armour ego full name|infusion	灌注	domain=items; source=EN/ZH; Scope / comment=armour ego context key; decision=D-B-020
+armour ego full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=armour ego context key; decision=D-B-020
 Arrow	箭	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外）
 artefact	神器	domain=items; source=EN/ZH
 Artificer	技师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -148,6 +151,7 @@ Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
 bombardier beetle	投弹甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bone dragon	骨龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+book full name|Necromancy	死灵术	domain=items; source=EN/ZH; Scope / comment=book context key; decision=D-B-020
 Borgnjor's Revivification	博格尼尔之复苏	domain=spells; source=EN/ZH; 备注=🆕；完全治愈仍活着的施法者，不会复活死者
 Borgnjor's Vile Clutch	博格尼尔之邪恶抓握	domain=spells; source=EN/ZH; 备注=✅
 Boris	鲍里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -202,9 +206,11 @@ cerulean imp	蔚蓝小恶魔	domain=monsters; source=EN/ZH; Scope / comment=mons
 Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅；从最近生物开始向外连锁，距离越远伤害越低
 Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
 Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+chaos	混沌	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose/terse; decision=D-B-016/D-B-020
 Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
 Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+chaotic	混沌	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
 Charm	魅惑	domain=spells; source=EN/ZH; 备注=✅
 Cheibriados	切布理亚多	domain=gods; source=EN/ZH; 类型=音译
 cherub	智天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -225,8 +231,10 @@ Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe 
 Combustion Breath	爆燃吐息	domain=spells; source=EN/ZH; 备注=✅；射出的挥发余烬会在每个触及生物周围爆炸
 Concentrate Venom	浓缩毒液	domain=spells; source=EN/ZH; 备注=✅
 Condensation Shield	凝结护盾	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
-Confuse	混乱	domain=spells; source=EN/ZH; 备注=✅
+Confuse	混乱	domain=items; source=EN/ZH; Scope / comment=internal weapon brand terse; decision=D-B-016/D-B-020 | domain=spells; source=EN/ZH; 备注=✅
+confusing	混乱	domain=items; source=EN/ZH; Scope / comment=internal weapon brand adjective; decision=D-B-016/D-B-020
 Confusing Touch	困惑之触	domain=spells; source=EN/ZH; 备注=✅
+confusion	混乱	domain=items; source=EN/ZH; Scope / comment=internal weapon brand verbose; decision=D-B-016/D-B-020
 Confusion	混乱	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
 Conjuration	咒法系	domain=magic; source=EN/ZH
@@ -383,6 +391,7 @@ Flay	剥皮	domain=spells; source=EN/ZH; 备注=✅
 flee	逃跑	domain=core; source=EN/ZH
 Fleetfoot	轻快脚步	domain=spells; source=EN/ZH; 备注=✅
 Flight	飞行术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+flux bauble	变形球	domain=items; source=EN/ZH; Scope / comment=bauble; decision=D-B-020
 Force Lance	力量之矛	domain=spells; source=EN/ZH; 备注=✅
 Forceful Dismissal	强制驱逐	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Forceful Invitation	强制邀请	domain=spells; source=EN/ZH; 备注=✅
@@ -488,6 +497,7 @@ Ignition	点火	domain=spells; source=EN/ZH; 备注=✅
 Ijyb	艾吉布	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Ill Omen	凶兆	domain=spells; source=EN/ZH; 备注=✅
 Ilsuiw	伊尔苏伊	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+immolation	内焰	domain=items; source=EN/ZH; Scope / comment=scroll effect; decision=D-B-020
 immune	免疫	domain=combat; source=EN/ZH
 Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
@@ -508,6 +518,7 @@ Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=E
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
 Jeremiah	耶利米	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Jessica	杰西卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+jewellery full name|flight	飞行	domain=items; source=EN/ZH; Scope / comment=jewellery context key; decision=D-B-020
 Jiangshi	僵尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; Chinese hopping-vampire name, distinguished from zombie → 丧尸
 Jinxbite	厄运之咬	domain=spells; source=EN/ZH; 备注=✅
 Jiyva	吉瓦	domain=gods; source=EN/ZH; 类型=音译
@@ -548,6 +559,8 @@ Maces & Flails	锤与链枷	domain=skills; source=EN/ZH; Scope / comment=skill; 
 Maggie	玛吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Magic Dart	魔法飞弹	domain=spells; source=EN/ZH; 备注=✅
 magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源
+magic regeneration	法力再生	domain=items; source=EN/ZH; Scope / comment=jewellery effect; decision=D-B-020
+magical power	法力强化	domain=items; source=EN/ZH; Scope / comment=jewellery effect; decision=D-B-020
 Magma Barrage	岩浆弹幕	domain=spells; source=EN/ZH; 备注=✅
 Magnavolt	磁暴	domain=spells; source=EN/ZH; 备注=✅
 Major Destruction	强力毁灭	domain=spells; source=EN/ZH; 备注=🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸
@@ -568,6 +581,7 @@ Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅；附近�
 Maurice	莫里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Maxwell's Capacitive Coupling	麦克斯韦之电容耦合	domain=spells; source=EN/ZH; 备注=✅；专名统一为“麦克斯韦”
 Maxwell's Portable Piledriver	麦克斯韦之便携打桩机	domain=spells; source=EN/ZH; 备注=✅；空间压缩后将整列生物推向障碍物
+mayhem	暴乱	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-020
 Melee	近战	domain=spells; source=EN/ZH; 备注=✅
 Menkaure	门卡拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mennas	门纳斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -595,6 +609,7 @@ Momentum Strike	动量打击	domain=spells; source=EN/ZH; 备注=✅；借用未
 Monk	武僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
+moonshine	私酒	domain=items; source=EN/ZH; Scope / comment=potion effect; decision=D-B-020
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
@@ -680,6 +695,8 @@ Polyphemus	波吕斐摩斯	domain=unique-monsters; source=EN/ZH; Scope / comment
 Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
 Portal Projectile	传送投射物	domain=spells; source=EN/ZH; 备注=✅
 potion	药水	domain=items; source=EN/ZH
+potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
+potion full name|might	强效	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -689,8 +706,10 @@ Pyrrhic Recollection	惨胜回忆	domain=spells; source=EN/ZH; 备注=✅
 Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
 quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+quill talisman	棘刺护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-020
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
+rampaging	冲锋	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-020
 Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -804,8 +823,11 @@ Soul Splinter	灵魂分裂	domain=spells; source=EN/ZH; 备注=✅
 Spatial Maelstrom	空间乱流	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from spatial vortex → 空间漩涡
 spatial vortex	空间漩涡	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Spawn Tentacles	生成触须	domain=spells; source=EN/ZH; 备注=✅
+spect	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand terse; decision=D-B-016/D-B-020
+spectral	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
 Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+spectralising	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose; decision=D-B-016/D-B-020
 spell	法术	domain=core; source=EN/ZH; 注意事项=泛指
 Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
@@ -927,9 +949,12 @@ Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅；马�
 Upheaval	剧变	domain=spells; source=EN/ZH; 备注=✅
 Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Uskayaw	乌斯卡亚	domain=gods; source=EN/ZH; 类型=音译
+vamp	吸血	domain=items; source=EN/ZH; Scope / comment=weapon brand terse; decision=D-B-016/D-B-020
 vampire	吸血鬼	domain=species; source=EN/ZH; 复合格式=吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师）
 Vampire Summon	召唤吸血鬼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+vampiric	吸血	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
 Vampiric Draining	吸血术	domain=spells; source=EN/ZH; 备注=✅
+vampirism	吸血	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose; decision=D-B-016/D-B-020
 Vanquished Vanguard	败军先锋	domain=spells; source=EN/ZH; 备注=📝
 Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
@@ -959,6 +984,9 @@ Waterstrike	水击	domain=spells; source=EN/ZH; 备注=✅
 weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Weakening Gaze	虚弱凝视	domain=spells; source=EN/ZH; 备注=✅
 weapon	武器	domain=items; source=EN/ZH
+weapon brand adjective|draining	汲取	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective context key; decision=D-B-016/D-B-020
+weapon brand full name|draining	汲取	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose context key; decision=D-B-016/D-B-020
+weapon brand terse|drain	汲取	domain=items; source=EN/ZH; Scope / comment=weapon brand terse context key; decision=D-B-016/D-B-020
 wear	穿戴	domain=items; source=EN/ZH
 Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色

@@ -3217,7 +3217,7 @@ Brand Self
 烙印自身
 %%%%
 brand weapon
-烙印武器
+武器铭印
 %%%%
 brilliance
 智慧
@@ -3399,6 +3399,33 @@ Cheibriados
 %%%%
 jewellery full name|chemistry
 炼金术
+%%%%
+armour ego full name|invisibility
+隐形
+%%%%
+armour ego full name|infusion
+灌注
+%%%%
+book full name|Necromancy
+死灵术
+%%%%
+jewellery full name|flight
+飞行
+%%%%
+potion full name|invisibility
+隐形
+%%%%
+potion full name|might
+强效
+%%%%
+weapon brand adjective|draining
+汲取
+%%%%
+weapon brand full name|draining
+汲取
+%%%%
+weapon brand terse|drain
+汲取
 %%%%
  choice.
 的选择。
@@ -4397,7 +4424,7 @@ Ignis
 的幻象
 %%%%
 immolation
-自焚
+内焰
 %%%%
 immune to
 免疫
@@ -5018,7 +5045,7 @@ magic
 魔力不再被扰乱。
 %%%%
 magic regeneration
-魔力再生
+法力再生
 %%%%
 Magic restored.
 魔力已恢复。
@@ -5033,7 +5060,7 @@ Magical energy flows into your mind!
 魔法能量流入了你的心智！
 %%%%
 magical power
-魔力强化
+法力强化
 %%%%
 Magma suddenly erupts from the ground!
 岩浆突然从地面喷涌而出！
@@ -5081,7 +5108,7 @@ Max Damage
 最大伤害
 %%%%
 mayhem
-混乱
+暴乱
 %%%%
 melt
 融化
@@ -5162,7 +5189,7 @@ Monsters! Monsters everywhere! You have to get out of here!
 怪物！到处都是怪物！你必须离开这里！
 %%%%
 moonshine
-月光
+私酒
 %%%%
 More spells requested for fixed level (%d) randart spellbook than there are valid spells.
 为固定等级（%d）的随机法术书请求的法术数量超过了有效法术数量。
@@ -12027,8 +12054,7 @@ helpless
 无助
 %%%%
 spectral
-
-幻影
+幽魂
 %%%%
 spectral %s
 幽灵%s
@@ -12177,8 +12203,7 @@ cursed
 诅咒的
 %%%%
 chaotic
-
-混乱的
+混沌
 %%%%
 %s %s!
 
@@ -15040,7 +15065,7 @@ acid dragon scales
 酸龙鳞甲
 %%%%
 air
-大气
+空气
 %%%%
 alchemy
 炼金
@@ -15280,10 +15305,10 @@ quicksilver dragon scales
 水银龙鳞甲
 %%%%
 quill talisman
-羽毛护符
+棘刺护符
 %%%%
 rampaging
-狂暴冲锋
+冲锋
 %%%%
 rapier
 刺剑
@@ -15436,10 +15461,10 @@ concussion
 震荡
 %%%%
 confusing
-迷惑
+混乱
 %%%%
 confusion
-迷惑
+混乱
 %%%%
 devious
 狡诈
@@ -15535,7 +15560,7 @@ valourous
 勇武
 %%%%
 vamp
-生命吸取
+吸血
 %%%%
 vampiric
 吸血
@@ -20895,7 +20920,7 @@ you subdued it
 *狂怒
 %%%%
 +Inv
-+隐身
++隐形
 %%%%
 AC+3
 护甲+3
@@ -33598,7 +33623,7 @@ Other monster isn't holding it, though.
 %s不在任何地牢中。
 %%%%
 flux bauble
-通量球
+变形球
 %%%%
 Results written into 'xom_debug.stat'.
 结果已写入"xom_debug.stat"。

@@ -33,6 +33,44 @@ def parse_source(path: Path):
     return entries
 
 
+def split_markdown_row(line: str):
+    r"""Split a Markdown table row on unescaped pipes.
+
+    Markdown requires a literal pipe inside a cell to be written as ``\|``.
+    Decode that escape here so context-qualified glossary keys match the
+    production ``context|key`` form.
+    """
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        raise ValueError(f"malformed Markdown table row: {line!r}")
+
+    cells = []
+    cell = []
+    escaped = False
+    for char in stripped[1:-1]:
+        if escaped:
+            if char == "|":
+                cell.append("|")
+            else:
+                cell.extend(("\\", char))
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == "|":
+            cells.append("".join(cell).strip())
+            cell = []
+        else:
+            cell.append(char)
+    if escaped:
+        cell.append("\\")
+    cells.append("".join(cell).strip())
+    if any(value.count("`") % 2 for value in cells):
+        raise ValueError(
+            f"unescaped pipe or unmatched code span in Markdown row: {line!r}"
+        )
+    return cells
+
+
 def parse_item_glossary(path: Path):
     """Read EN→ZH pairs from the item-name-terms table in glossary.md."""
     content = path.read_text(encoding="utf-8")
@@ -44,10 +82,16 @@ def parse_item_glossary(path: Path):
 
     terms = {}
     for line in section.splitlines():
-        match = re.match(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|", line)
-        if not match or set(match.group(1).strip()) <= {"-"}:
+        if not line.lstrip().startswith("|"):
             continue
-        en, zh, _comment = match.groups()
+        columns = split_markdown_row(line)
+        if len(columns) != 3:
+            raise ValueError(
+                f"malformed item glossary row in {path}: {line!r}"
+            )
+        en, zh, _comment = columns
+        if set(en.strip()) <= {"-"}:
+            continue
         if en.strip().lower() == "en":
             continue
         # Qualifiers document scope but are not part of the source.txt key.
