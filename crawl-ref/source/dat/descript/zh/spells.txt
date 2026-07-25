@@ -1420,7 +1420,7 @@ Symbol of Torment spell
 %%%%
 Teleport Other spell
 
-随机传送一个目标生物。
+尝试在短暂延迟后将目标生物传送出施法者的视野。
 %%%%
 Throw Ally spell
 

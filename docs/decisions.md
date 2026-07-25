@@ -2069,6 +2069,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-056 — Spell name review: Teleport 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 2 项已移除兼容标题
+- **Choice**: 将 `Control Teleport → 传送控制` 修正为“控制传送”；
+  保留 `Teleport Other → 传送他人` 与 `Teleport Self → 自我传送`。
+- **Series rule**: `Teleport → 传送`；受事者后置，控制动作前置。
+- **Rationale**: “传送他人”和“自我传送”正确表达对象；“传送控制”
+  是英语词序倒装，“控制传送”才是自然的动宾结构。
+- **Description corrections**: 重译 `Teleport Other`，补回尝试判定、
+  短暂延迟和将目标送出施法者视野三项机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2607,3 +2629,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-053 | Spell name review — Glaciate/Iceblast/Hailstorm 寒冷术语批次 | 3 current；1 rename + 3 description fixes | active |
 | D-C-054 | Spell name review — Fireball 词形系列 | 2 current + 1 axed；1 description fix | active |
 | D-C-055 | Spell name review — Death 独立词形系列 | 3 current；2 description fixes | active |
+| D-C-056 | Spell name review — Teleport 词形系列 | 1 current + 2 axed；1 rename + 1 description retranslation | active |

@@ -1071,7 +1071,7 @@
 | Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
-| Control Teleport | 传送控制 | ✅ |
+| Control Teleport | 控制传送 | 🆕；已移除兼容标题，修正中文倒装 |
 | Control Undead | 亡灵控制 | ✅ |
 | Control Winds | 控风术 | ✅ |
 | Corona | 怪异发光球 | ✅ |
@@ -1314,8 +1314,8 @@
 | Sure Blade | 精准之刃 | ✅ |
 | Swiftness | 迅捷 | ✅ |
 | Symbol of Torment | 折磨之符 | ✅ |
-| Teleport Other | 传送他人 | ✅ |
-| Teleport Self | 自我传送 | ✅ |
+| Teleport Other | 传送他人 | ✅；短暂延迟后尝试将目标传送出施法者视野 |
+| Teleport Self | 自我传送 | ✅；已移除兼容标题 |
 | Throw | 投掷 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Throw Ally | 投掷盟友 | ✅ |
 | Throw Barbs | 投掷倒刺 | ✅ |

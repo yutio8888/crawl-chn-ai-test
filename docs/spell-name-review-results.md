@@ -1921,6 +1921,40 @@ Death Rattle 的中英文描述一致。
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
 
+## Teleport 词形系列
+
+边界：标题含 `Teleport` 的 3 项法术；1 项现行，2 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_TELEPORT_OTHER` | 现行 | 传送他人 | 短暂延迟后尝试将目标传送出施法者视野 | 保留 |
+| `SPELL_CONTROL_TELEPORT` | 已移除兼容 | 传送控制 | 无当前描述或实现 | 修正为“控制传送” |
+| `SPELL_TELEPORT_SELF` | 已移除兼容 | 自我传送 | 无当前描述或实现 | 保留 |
+
+名称结论：`Teleport → 传送` 稳定一致。“传送他人”和“自我传送”
+准确表达受事者；“传送控制”是英语词序倒装，即使不依赖历史机制也能
+确定为语言错误，改为自然的动宾结构“控制传送”。
+
+Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟、尝试判定
+和传出施法者视野的目的，本批已按现行英文描述重译。
+
+证据：`spl-data.h:364`—`372`、`spl-data.h:4652`、
+`spl-data.h:4727`、`dat/descript/spells.txt:2252`—`2255` 及传送实现。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制／语言证据与名称裁定
+- [x] 单一翻译写入者名称与描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-056`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T175500604011000+0800-86234-9cc288086e3d`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`ed8fb9766d8e81c16df038c1d97e46c8a38e0ce4f4634d28bae76551b5b1fb1b`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`63c8bea2fe5acdd6995eda8e5bae0ba2992814c508c09b323c59e27984ee7e1b`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

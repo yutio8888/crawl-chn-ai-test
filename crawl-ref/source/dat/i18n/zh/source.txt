@@ -16885,7 +16885,7 @@ Controlled Blink
 受控闪烁
 %%%%
 Control Teleport
-传送控制
+控制传送
 %%%%
 Control Undead
 亡灵控制

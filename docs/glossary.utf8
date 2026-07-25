@@ -236,7 +236,7 @@ Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background;
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
 Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Control Teleport	传送控制	domain=spells; source=EN/ZH; 备注=✅
+Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
 Control Undead	亡灵控制	domain=spells; source=EN/ZH; 备注=✅
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅
 Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除／TAG 34 兼容
@@ -887,8 +887,8 @@ Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
 Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
-Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅
-Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=✅
+Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后尝试将目标传送出施法者视野
+Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒术师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
