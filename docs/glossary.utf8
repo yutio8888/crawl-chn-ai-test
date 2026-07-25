@@ -635,8 +635,8 @@ orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人�
 orc sorcerer	兽人术士	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from orc wizard → 兽人巫师
 orc wizard	兽人巫师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Ostracise	排斥	domain=spells; source=EN/ZH; 备注=✅
-Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅
-Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅
+Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅；厚冰护体并提高护甲，移动后消失
+Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅；冻结视野内其他生物，邻接盟友可减伤
 Pain	痛苦	domain=spells; source=EN/ZH; 备注=✅
 Pakellas	帕克拉斯	domain=gods; source=EN/ZH; 类型=音译
 Paralyse	麻痹	domain=spells; source=EN/ZH; 备注=✅

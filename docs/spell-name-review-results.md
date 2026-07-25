@@ -1230,8 +1230,15 @@ charge 错解成静态电学名词，与实际冲向敌人的核心动作不符�
 
 - [x] 2/2 机制证据与名称裁定
 - [x] 无名称或描述翻译修改
-- [ ] translation profile
+- [x] translation profile
 - [x] 系列裁定登记（`D-C-036`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T171537550373000+0800-1624-c8efa2a0ba07`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`f5165a99af6ace1d05c6db8e3b5c2b1a7ee7c3e0a375c009a815e06b3e8f4045`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`2ba444c35624ab694f679a68438eeb7f77653e66ed611744db47f82c204ef7e9`。
 
 ## Awaken 词形系列
 

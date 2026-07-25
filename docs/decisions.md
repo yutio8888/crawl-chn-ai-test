@@ -1612,6 +1612,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-036 — Spell name review: Ozocubu's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与冰甲／视野制冷实现逐项复核
+- **Scope**: 2 项以 `Ozocubu's` 开头的现行标题，无已移除兼容成员
+- **Choice**: 保留 `Ozocubu's Armour → 奥佐库布之护甲` 与
+  `Ozocubu's Refrigeration → 奥佐库布之制冷`。
+- **Series rule**: 人名 `Ozocubu → 奥佐库布`，所有格采用
+  “奥佐库布之……”；`Armour → 护甲`、`Refrigeration → 制冷`。
+- **Rationale**: “护甲”准确概括厚冰提供护甲加成的自我防护；
+  “制冷”保留将整片视野空气降至严寒的主动过程，也与单体“冰冻”等法术
+  区分。标题无需枚举移动解除或相邻盟友减伤等二级规则。
+- **Description corrections**: 无；两项中文描述均覆盖当前英文机制。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2130,3 +2152,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-033 | Spell name review — Iskenderun's 专名系列 | 1 fix；2 current；2 description fixes | active |
 | D-C-034 | Spell name review — Vhi's 专名系列 | 2 fixes；2 current；2 description fixes | active |
 | D-C-035 | Spell name review — Cigotuvi's 专名系列 | 1 current + 2 axed compatibility；1 description fix | active |
+| D-C-036 | Spell name review — Ozocubu's 专名系列 | 2 current | active |

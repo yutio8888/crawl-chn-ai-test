@@ -964,8 +964,8 @@
 | Nazja's All-Purpose Tempering | 纳兹亚之通用淬炼 | ✅ |
 | Nazja's Percussive Tempering | 纳兹亚之冲击淬炼 | ✅ |
 | Olgreb's Toxic Radiance | 奥尔格雷布之毒辐射 | ✅ |
-| Ozocubu's Armour | 奥佐库布之护甲 | ✅ |
-| Ozocubu's Refrigeration | 奥佐库布之制冷 | ✅ |
+| Ozocubu's Armour | 奥佐库布之护甲 | ✅；厚冰护体并提高护甲，移动后消失 |
+| Ozocubu's Refrigeration | 奥佐库布之制冷 | ✅；冻结视野内其他生物，邻接盟友可减伤 |
 | Sentinel's Mark | 哨兵印记 | ✅ |
 | Sheza's Dance | 谢扎之舞 | ✅ |
 | Trog's Hand | 特洛格之手 | ✅ |

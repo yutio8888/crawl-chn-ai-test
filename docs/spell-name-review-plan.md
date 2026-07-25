@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 196/511 项逐项审阅。
+当前已完成 198/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -133,6 +133,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Iskenderun's 专名系列（2 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Vhi's 专名系列（2 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Cigotuvi's 专名系列（1 项现行、2 项已移除兼容；描述落地及 translation profile 已完成）
+  - [x] Ozocubu's 专名系列（2 项证据、裁定及 translation profile 已完成）
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术
 - [ ] 集合相等性终检
