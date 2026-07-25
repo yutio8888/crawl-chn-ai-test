@@ -943,9 +943,9 @@
 | Borgnjor's Revivification | 博格尼尔之复活 | ✅ |
 | Borgnjor's Vile Clutch | 博格尼尔之邪恶抓握 | ✅ |
 | Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅ |
-| Cigotuvi's Degeneration | 西格图维之退化 | ✅ |
-| Cigotuvi's Embrace | 西格图维之拥抱 | ✅ |
-| Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅ |
+| Cigotuvi's Degeneration | 西格图维之退化 | ✅；已移除兼容标题，无当前机制可供反推 |
+| Cigotuvi's Embrace | 西格图维之拥抱 | ✅；已移除兼容标题，无当前机制可供反推 |
+| Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取 |
 | Death's Door | 死亡之门 | ✅ |
 | Dragon's Call | 龙之呼唤 | ✅ |
 | Druid's Call | 德鲁伊呼唤 | ✅；召回同层已有林地生物，非创造召唤物 |

@@ -209,9 +209,9 @@ cherub	智天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=
 Chuck	查克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Chuck title	收集者查克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 chuckles	咯咯笑着	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
-Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=✅
-Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=✅
-Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备注=✅
+Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，无当前机制可供反推
+Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题，无当前机制可供反推
+Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备注=✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

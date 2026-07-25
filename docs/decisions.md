@@ -1584,6 +1584,34 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-035 — Spell name review: Cigotuvi's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与瘴气扩散实现逐项复核
+- **Scope**: 1 项现行标题与 2 项已移除兼容标题
+- **Choice**: 保留 `Cigotuvi's Putrefaction → 西格图维之腐烂`、
+  `Cigotuvi's Degeneration → 西格图维之退化` 与
+  `Cigotuvi's Embrace → 西格图维之拥抱`。
+- **Series rule**: 人名 `Cigotuvi → 西格图维`，所有格采用
+  “西格图维之……”；已移除兼容标题只按现存英语语义判断，不用现行法术
+  机制反推。
+- **Rationale**: “腐烂”准确概括加速伤口组织腐败并涌出瘴气的现行效果；
+  “退化”和“拥抱”忠实对应两项已移除标题，缺乏当前描述与实现，不作
+  推测性改名。
+- **Description corrections**: 现行法术中文描述完全沿用旧版杀死目标后
+  制造骷髅的机制。本批按当前英文与实现重译，恢复重伤活物目标限制、
+  数回合瘴气扩散、减速与剧毒、施法者脚下不生成但并非免疫，以及暂时
+  生命汲取会随法术威力减轻的规则。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2101,3 +2129,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-032 | Spell name review — Forge 词形系列 | 4 current；4 description fixes | active |
 | D-C-033 | Spell name review — Iskenderun's 专名系列 | 1 fix；2 current；2 description fixes | active |
 | D-C-034 | Spell name review — Vhi's 专名系列 | 2 fixes；2 current；2 description fixes | active |
+| D-C-035 | Spell name review — Cigotuvi's 专名系列 | 1 current + 2 axed compatibility；1 description fix | active |
