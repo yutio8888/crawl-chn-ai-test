@@ -2173,6 +2173,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-061 — Spell name review: Abjuration 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Abjuration → 驱逐术` 与
+  `Aura of Abjuration → 驱逐灵气`。
+- **Series rule**: `Abjuration → 驱逐`，表示削减敌对召唤物存续时间。
+- **Rationale**: “驱逐”准确表达让召唤生物提前离场，而不误示直接伤害
+  或普通击退；灵气兼容标题沿用同一词根。
+- **Description corrections**: 润色 Abjuration 中文描述，删除冗余量词并
+  明确作用于所有附近敌对召唤生物。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2716,3 +2737,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-058 | Spell name review — Fire Storm 词形系列 | 1 current + 1 axed；1 description wording fix | active |
 | D-C-059 | Spell name review — Haste 词形系列 | 2 current + 1 axed；no text fixes | active |
 | D-C-060 | Spell name review — Invisibility 词形系列 | 2 current；1 rename | active |
+| D-C-061 | Spell name review — Abjuration 词形系列 | 1 current + 1 axed；1 wording fix | active |

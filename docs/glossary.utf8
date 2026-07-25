@@ -9,7 +9,7 @@ __ROAR	咆哮	domain=shouts; source=EN/ZH
 __SCREAM	尖叫	domain=shouts; source=EN/ZH
 __SHOUT	喊叫	domain=shouts; source=EN/ZH
 __SKITTER	窸窣声	domain=shouts; source=EN/ZH
-Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅
+Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅；缩短附近所有敌对召唤生物的剩余存续时间
 Abyss	深渊	domain=core; source=EN/ZH
 Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅；投掷后爆炸的腐蚀性酸液球
 acid blob	酸液团	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -72,7 +72,7 @@ aspiring flesh	渴望之肉	domain=monsters; source=EN/ZH; Scope / comment=monst
 Asterion	阿斯忒里翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 attack	攻击	domain=combat; source=EN/ZH
-Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅
+Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅
 Awaken	唤醒	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；另有 1 项已移除兼容）
 Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅

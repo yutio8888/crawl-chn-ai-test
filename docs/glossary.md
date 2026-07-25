@@ -1030,7 +1030,7 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Abjuration | 驱逐术 | ✅ |
+| Abjuration | 驱逐术 | ✅；缩短附近所有敌对召唤生物的剩余存续时间 |
 | Acid Ball | 酸液球 | ✅；投掷后爆炸的腐蚀性酸液球 |
 | Agony | 剧痛 | 🆕 |
 | Airstrike | 空袭 | ✅ |
@@ -1039,7 +1039,7 @@
 | Animate Skeleton | 召唤骷髅 | ✅ |
 | Apportation | 隔空取物 | ✅ |
 | Arcjolt | 电弧震击 | ✅ |
-| Aura of Abjuration | 驱逐灵气 | ✅ |
+| Aura of Abjuration | 驱逐灵气 | ✅；已移除兼容标题 |
 | Avatar Song | 化身之歌 | ✅ |
 | Awaken Armour | 唤醒护甲 | ✅ |
 | Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |

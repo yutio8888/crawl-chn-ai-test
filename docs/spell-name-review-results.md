@@ -2082,6 +2082,39 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
 
+## Abjuration 词形系列
+
+边界：标题含 `Abjuration` 的 2 项法术；1 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_ABJURATION` | 现行 | 驱逐术 | 缩短附近所有敌对召唤生物的剩余存续时间 | 保留 |
+| `SPELL_AURA_OF_ABJURATION` | 已移除兼容 | 驱逐灵气 | 无当前描述或实现 | 保留 |
+
+名称结论：“驱逐”准确表达让召唤生物提前离场，不会误示普通击退；
+“驱逐灵气”沿用相同词根，作为兼容标题自然明确。
+
+现行中文描述语义正确但“附近任何敌对的召唤物”结构冗余，本批润色为
+“附近所有敌对召唤生物”，与英文 any nearby hostile summoned creatures
+一致。
+
+证据：`spl-data.h` 的现行 Abjuration 条目、Aura of Abjuration 兼容记录，
+以及 `dat/descript/spells.txt:2`—`4`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述润色
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-061`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T180448437054000+0800-9047-5f09f674dad3`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`60ef8d04e4ec41f1156b3b50e2612600bf7ec2792e2cadfbb5c4a51859caa120`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

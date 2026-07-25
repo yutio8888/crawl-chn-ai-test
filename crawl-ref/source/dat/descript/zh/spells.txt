@@ -1,7 +1,7 @@
 %%%%
 Abjuration spell
 
-减少附近任何敌对的召唤物的剩余存续时间。
+缩短附近所有敌对召唤生物的剩余存续时间。
 %%%%
 Acid Ball spell
 
