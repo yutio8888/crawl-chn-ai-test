@@ -241,7 +241,7 @@ Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=🆕；已移�
 Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除／TAG 34 兼容
-Corona	怪异发光球	domain=spells; source=EN/ZH; 备注=✅
+Corona	光晕	domain=spells; source=EN/ZH; 备注=🆕；环绕并勾勒目标轮廓，使其更易被击中
 Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
 Corrosion	腐蚀	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Corrosive Bolt	腐蚀箭	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -574,7 +574,7 @@ Mephitic Cloud	迷瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅；与 `Quicksilver Bolt → 水银箭` 区分的辨识性例外 | domain=spells; source=EN/ZH; 备注=✅；为避免与 `Quicksilver Bolt → 水银箭` 重名，不套用常规“箭”词尾
 merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
 Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
-Metabolic Englaciation	深度冻结	domain=spells; source=EN/ZH; 备注=✅
+Metabolic Englaciation	代谢冻结	domain=spells; source=EN/ZH; 备注=🆕；降低周围生物代谢并减速
 Metal Splinters	金属碎片	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅
 Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用

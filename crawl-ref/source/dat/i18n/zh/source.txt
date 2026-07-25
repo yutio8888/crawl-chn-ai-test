@@ -153,7 +153,7 @@ a dead tree
 一棵枯树
 %%%%
 Corona
-怪异发光球
+光晕
 %%%%
 weirdly glowing ball
 怪异发光球
@@ -15967,7 +15967,7 @@ Ensorcelled Hibernation
 冬眠
 %%%%
 Metabolic Englaciation
-深度冻结
+代谢冻结
 %%%%
 Shatter
 粉碎

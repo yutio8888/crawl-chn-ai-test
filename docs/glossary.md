@@ -1075,7 +1075,7 @@
 | Control Teleport | 控制传送 | 🆕；已移除兼容标题，修正中文倒装 |
 | Control Undead | 控制亡灵 | 🆕；已移除兼容标题，修正中文倒装 |
 | Control Winds | 控风术 | ✅；已移除兼容标题 |
-| Corona | 怪异发光球 | ✅ |
+| Corona | 光晕 | 🆕；环绕并勾勒目标轮廓，使其更易被击中 |
 | Corpse Rot | 尸体腐烂 | ✅ |
 | Corrupt | 腐化 | ✅ |
 | Corrupt Body | 腐化躯体 | ✅ |
@@ -1210,7 +1210,7 @@
 | Mass Regeneration | 群体再生 | ✅；附近所有友方怪物按各自最大生命值快速恢复 |
 | Melee | 近战 | ✅ |
 | Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
-| Metabolic Englaciation | 深度冻结 | ✅ |
+| Metabolic Englaciation | 代谢冻结 | 🆕；降低周围生物代谢并减速 |
 | Metal Splinters | 金属碎片 | ✅ |
 | Might | 强壮 | ✅；法术显示标题，区别于状态/机制域 `Might → 强效` |
 | Might Other | 强壮他人 | ✅；对附近友方施加同类近战伤害增益 |

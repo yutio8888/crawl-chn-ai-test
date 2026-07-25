@@ -3017,6 +3017,62 @@ Pain 当前英文没有施法者反噬。
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `c0ce5598b036d61d8dbd87e7801ae5817d663c3525406b8d3fee1d8edfe029fb`。
 
+## 独立法术批次 A2
+
+边界：inventory 差集顺序第 21–40 项，共 20 项现行独立法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_SUBLIMATION_OF_BLOOD` | 血液升华 | 以部分生命换取魔法能量，且不直接致命 | 保留 |
+| `SPELL_BOMBARD` | 炮击 | 轰出铁球并常使施法者后退 | 保留 |
+| `SPELL_SHOCK` | 震击 | 发射反弹电击束，半数伤害无视护甲 | 保留 |
+| `SPELL_SWIFTNESS` | 迅捷 | 大幅提高移动速度，结束后暂时迟缓 | 保留 |
+| `SPELL_DEBUGGING_RAY` | 调试射线 | 测试用必中高伤害射线 | 保留 |
+| `SPELL_MINDBURST` | 心智爆发 | 突破意志后造成完全无视护甲的心灵伤害 | 保留 |
+| `SPELL_SYMBOL_OF_TORMENT` | 折磨之符 | 折磨附近活物与神圣生物，生命减半但不致死 | 保留 |
+| `SPELL_SIPHON_ESSENCE` | 吸取精华 | 折磨附近活物敌人并以造成的痛苦治疗使用者 | 保留 |
+| `SPELL_AIRSTRIKE` | 空袭 | 扭曲目标周围空气，周边越空旷伤害越高 | 保留 |
+| `SPELL_PASSWALL` | 穿墙术 | 长时间施法后穿过相邻岩墙，期间获得护甲 | 保留 |
+| `SPELL_HIBERNATION` | 冬眠 | 降低单体代谢使其入睡，醒后暂时免疫睡眠 | 保留 |
+| `SPELL_ENGLACIATION` | 深度冻结 | 降低周围生物代谢并按寒抗、体质减速 | 重译为“代谢冻结” |
+| `SPELL_SILENCE` | 沉默 | 消除附近声音并阻止多类有声行动 | 保留 |
+| `SPELL_SHATTER` | 粉碎 | 以巨大冲击伤害附近生物并可能摧毁墙壁 | 保留 |
+| `SPELL_DISCHARGE` | 静电释放 | 电流在相邻生物与施法者间跳跃 | 保留 |
+| `SPELL_CORONA` | 怪异发光球 | 以光晕勾勒目标，使其更易被击中 | 重译为“光晕” |
+| `SPELL_SANDBLAST` | 沙爆 | 高速岩屑攻击，施法较慢且易受护甲削减 | 保留 |
+| `SPELL_SIMULACRUM` | 塑造拟像 | 以相邻生物塑造至多五个冰制拟像 | 保留 |
+| `SPELL_PORTAL_PROJECTILE` | 传送投射物 | 把射出或投掷的弹药传送至指定敌人 | 保留 |
+| `SPELL_MONSTROUS_MENAGERIE` | 怪物动物园 | 召唤蝎尾狮、林德虫或劫掠斯芬克斯之一 | 保留 |
+
+名称结论：`Metabolic Englaciation` 的辨识核心是降低代谢，改为
+“代谢冻结”恢复原名与机制；`Corona` 是目标周围的光晕而非发光球实体，
+改为“光晕”。其余 18 项现译均准确且自然。
+
+描述审阅修正九项：Shock 的半护甲无视；Mindburst 的双关与无心智免疫；
+Symbol of Torment 的目标类别和负能量抗性；Siphon Essence 的范围、
+生命减半与非致死规则；Passwall 的护甲术语；Silence 的神力祈求；
+Static Discharge 的返回伤害与护甲；Sculpt Simulacrum 的目标类别及
+上限格式；Monstrous Menagerie 的当前候选集合并删除旧强度规则。
+
+证据：对应 `spl-data.h` 的 20 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `spl-cast.cc`、
+`spl-damage.cc`、`spl-earth.cc`、`spl-summoning.cc`、`mon-cast.cc`
+中对应 enum 的施法分支。
+
+### 落地状态
+
+- [x] 20/20 机制证据与名称裁定
+- [x] 单一翻译写入者完成 2 项名称与 9 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-086`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T190704753008000+0800-40579-bd282bcbbce9`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`3e50a70435f1e1e74d824e7356910d199785f6fb1f565d551884905463cacba1`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`ea22e8f4f4ab3b1cc76e9abea565aea7b3c85035418a8074a2b9c26ed95ffb03`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
