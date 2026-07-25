@@ -2278,6 +2278,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-066 — Spell name review: Hurl 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项现行法术
+- **Choice**: 将 `Hurl Damnation` 从“投掷诅咒”改为“投掷天谴”；
+  保留 `Hurl Sludge → 投掷污泥` 与
+  `Hurl Torchlight → 投掷火炬之光`。
+- **Series rule**: `Hurl → 投掷`；伤害机制 `Damnation → 天谴`，
+  不得与 `curse → 诅咒` 混同。
+- **Rationale**: 三项标题均描述掷出相应能量或物质；Damnation
+  明确是无视常规防护的专门伤害机制，而非诅咒状态。
+- **Description corrections**: 修正共用能力描述中的“天遣”错字、
+  相邻范围、护甲术语、伊莱德莱姆努尔译名及不自然的生物类别表述。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/ability.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2826,3 +2850,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-063 | Spell name review — Song 词形系列 | 2 current + 1 axed；no text fixes | active |
 | D-C-064 | Spell name review — Animate 词形系列 | 1 current + 1 axed；1 rename + 1 description fix | active |
 | D-C-065 | Spell name review — Shot 词形系列 | 3 current；1 description retranslation | active |
+| D-C-066 | Spell name review — Hurl 词形系列 | 3 current；1 rename + shared description fixes | active |

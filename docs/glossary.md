@@ -1167,9 +1167,9 @@
 | Holy word | 圣言术 | ✅ |
 | Homunculus | 人造人 | ✅ |
 | Hunting Cry | 狩猎战吼 | ✅ |
-| Hurl Damnation | 投掷诅咒 | ✅ |
-| Hurl Sludge | 投掷污泥 | ✅ |
-| Hurl Torchlight | 投掷火炬之光 | ✅ |
+| Hurl Damnation | 投掷天谴 | 🆕；无视护甲与抗性的 `Damnation` 伤害，非 curse |
+| Hurl Sludge | 投掷污泥 | ✅；剧毒污泥会使目标中毒并浸湿周围 |
+| Hurl Torchlight | 投掷火炬之光 | ✅；暗影火炬光伤害并强化友方亡灵 |
 | Iceblast | 冰爆 | ✅；冰块撞击后爆炸，一半伤害无视寒冷抗性 |
 | Ignite Poison | 点燃毒素 | ✅ |
 | Ignition | 点火 | ✅ |
