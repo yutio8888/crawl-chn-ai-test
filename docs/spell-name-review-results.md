@@ -2960,6 +2960,63 @@ Run ID `20260725T185830923643000+0800-22443-9b28b0b0f251`。
 `glossary.utf8` 后，上述最终运行通过；该失败未涉及 TextDB 结构或
 游戏机制文本。
 
+## 独立法术批次 A1
+
+边界：inventory 与既有审阅证据差集中的前 20 项现行法术；这些标题没有
+尚未审阅的同词根依赖，逐项独立裁定。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_CAUSE_FEAR` | 恐惧术 | 使附近生物无法接近且可能近战失手，离开视野即结束 | 保留 |
+| `SPELL_APPORTATION` | 隔空取物 | 把远处物品堆顶端物品拉向施法者 | 保留 |
+| `SPELL_BLASTMOTE` | 不稳定爆尘 | 生成接触火焰或生物后爆炸并击退的粉尘云 | 保留 |
+| `SPELL_DIG` | 挖掘 | 在天然岩石中挖出通道 | 保留 |
+| `SPELL_ARCJOLT` | 电弧震击 | 电流由近邻目标继续连锁，半数伤害无视护甲 | 保留 |
+| `SPELL_POLYMORPH` | 变形术 | 随机改变生物形态，对变形生物尤其有效 | 保留 |
+| `SPELL_SLOW` | 缓慢 | 减慢目标行动 | 保留 |
+| `SPELL_PETRIFY` | 石化 | 连锁至多三目标，先减速再石化且承伤减半 | 保留 |
+| `SPELL_CONFUSE` | 混乱 | 使目标心智陷入混乱 | 保留 |
+| `SPELL_DISJUNCTION` | 空间分离 | 使施法者附近生物按距离概率闪烁远离 | 保留 |
+| `SPELL_MASS_CONFUSION` | 群体混乱 | 混乱所有注视施法者的生物 | 保留 |
+| `SPELL_SMITING` | 惩击 | 无需直射路径地惩击视野内指定敌人 | 保留 |
+| `SPELL_CHARMING` | 魅惑 | 使敌对生物暂时倒戈；冒险者只会短暂混乱 | 保留 |
+| `SPELL_PAIN` | 痛苦 | 对一个活物造成痛苦伤害 | 保留 |
+| `SPELL_SOUL_SPLINTER` | 灵魂分裂 | 分出目标灵魂碎片形成魂灵并削弱本体 | 保留 |
+| `SPELL_VAMPIRIC_DRAINING` | 吸血术 | 窃取相邻活物生命并给予施法者 | 保留 |
+| `SPELL_HAUNT` | 鬼魂缠身 | 召唤仅攻击指定目标、目标死后消散的幽魂 | 保留 |
+| `SPELL_BERSERKER_RAGE` | 狂暴之怒 | 复用狂暴能力效果 | 保留 |
+| `SPELL_BANISHMENT` | 放逐 | 把生物放逐至深渊 | 保留 |
+| `SPELL_STING` | 刺痛 | 发射结晶毒刺，兼具物理伤害与中毒 | 保留 |
+
+名称结论：20 项现译均准确保留核心动作或状态，且没有会把目标、范围或
+机制类别引向错误理解的措辞。`Vampiric Draining` 采用自然的“吸血术”
+比机械拼接“吸血汲取”更符合中文法术名；`Smiting → 惩击` 也与其无视
+直射路径的神罚式攻击吻合。
+
+描述审阅修正六项：Apportation 的物品来自远处而非附近；
+Volatile Blastmotes 会把相邻生物推开；Arcjolt 沿相连目标跳跃且半数
+伤害无视护甲；Smiting 指定视野内敌人；Charm 对冒险者只造成短暂混乱；
+Pain 当前英文没有施法者反噬。
+
+证据：对应 `spl-data.h` 的 20 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与 `dat/descript/zh/spells.txt` 同名键；
+实现交叉核对 `spl-transloc.cc`、`spl-zap.cc`、`mon-cast.cc`、
+`spl-summoning.cc` 中对应 enum 分支及 zap 映射。
+
+### 落地状态
+
+- [x] 20/20 机制证据与名称裁定
+- [x] 单一翻译写入者完成 6 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-085`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T190249229858000+0800-30821-825be7a16f59`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`7548bf15eaf7d86c778710dc639248c4f377f516c89ccef61d64667a3faf4c7c`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c0ce5598b036d61d8dbd87e7801ae5817d663c3525406b8d3fee1d8edfe029fb`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
