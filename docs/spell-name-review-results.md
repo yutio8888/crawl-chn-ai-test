@@ -814,58 +814,6 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 边界：英文标题中含独立 `Shadow` 或 `Shadows` 词形，共 13 项；其中
 12 项现行、1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。连写的
-`Shadowball` 不属于本次机械边界。
-
-| Enum | 生命周期 | 当前译名 | 核心效果证据 | 裁定 |
-|---|---|---|---|---|
-| `SPELL_SHADOW_CREATURES` | 现行 | 暗影生物 | 以暗影与深渊物质复制当前地域原生生物 | 保留 |
-| `SPELL_SHADOW_SHARD` | 现行 | 暗影碎片 | 向单个敌人射出硬化暗影碎片 | 保留 |
-| `SPELL_SHADOW_BEAM` | 现行 | 暗影光束 | 发射穿透性暗影束 | 保留 |
-| `SPELL_CREEPING_SHADOW` | 现行 | 蔓延暗影 | 从附近墙角袭击紧邻墙角的敌人 | 保留 |
-| `SPELL_SHADOW_TEMPEST` | 现行 | 暗影风暴 | 对至多半数可见敌人降下不可抵抗的暗影闪电 | 保留 |
-| `SPELL_SHADOW_PRISM` | 现行 | 暗影棱镜 | 延迟爆炸；提前摧毁会显著减弱爆炸 | 保留 |
-| `SPELL_SHADOW_PUPPET` | 现行 | 暗影傀儡 | 召唤会骚扰并缠住敌人的活影仆从 | 保留 |
-| `SPELL_SHADOW_TURRET` | 现行 | 暗影炮塔 | 形成固定炮塔并反复向敌人开火 | 保留 |
-| `SPELL_SHADOW_SHOT` | 现行 | 暗影射击 | 向单个敌人射出小型硬化暗影弹 | 保留 |
-| `SPELL_SHADOW_BIND` | 现行 | 暗影束缚 | 将附近随机多名敌人钉在影子上 | 保留 |
-| `SPELL_SHADOW_TORPOR` | 现行 | 暗影麻木 | 减速一列敌人；强者可能更快恢复 | 保留 |
-| `SPELL_SHADOW_DRAINING` | 现行 | 暗影吸取 | 从附近所有敌人影子夺取一缕，完全无视护甲 | 保留 |
-| `SPELL_WEAVE_SHADOWS` | 已移除兼容 | 编织暗影 | 无当前描述或实现 | 证据不足，暂沿用 |
-
-系列结论：12 项现行标题均准确保留 `Shadow/Shadows → 暗影` 词根，无需
-改名。`Shadow Shot → 暗影射击` 虽可提出“暗影弹”，但原名是动作名，
-现译也不误导，不因纯风格偏好重译。已移除的 `Weave Shadows` 没有
-现行描述或实现，不能反向推定历史机制。
-
-名称无需修改，但描述审阅发现并修复 10 项 Needs Fix：恢复
-`Shadow Creatures` 的地域原生限定、`Creeping Shadow` 的墙角触发、
-`Shadow Bind` 的随机多目标与威力成长、`Shadow Draining` 的范围和
-无视护甲，以及 `Shadow Prism`、`Shadow Puppet`、`Shadow Shot`、
-`Shadow Tempest`、`Shadow Torpor`、`Shadow Turret` 各自遗漏的延时、
-减弱、缠绕、投射物、目标比例、持续时间或固定炮塔机制。
-
-证据：`spl-data.h` 中对应 13 项记录、`dat/descript/spells.txt:446`、
-`dat/descript/spells.txt:1785`—`1836`、Dithmenos shadow mimic 调度及
-各法术实现。英中 12 项现行描述键完整；已移除兼容项无描述。
-
-### 落地状态
-
-- [x] 13/13 机制证据与名称裁定
-- [x] 单一翻译写入者描述修正
-- [x] translation profile（与 Dart 批次同一完整工作树验证）
-- [x] 系列裁定登记（`D-C-020`）
-
-验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T163018947719000+0800-11363-971a54b02563`。裁定后的
-`docs/glossary.md` SHA-256 为
-`5b97f68339de1634fbfd1f8fdaa783d23297a5ac0979bf1cce393eaed4fec04d`；
-511 项 inventory 完整性断言全部通过，JSON SHA-256 为
-`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
-
-## Shadow/Shadows 词形系列
-
-边界：英文标题中含独立 `Shadow` 或 `Shadows` 词形，共 13 项；其中
-12 项现行、1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。连写的
 `Shadowball` 不在本系列。
 
 | Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
