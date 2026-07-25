@@ -175,13 +175,13 @@ bush	灌木	domain=monsters; source=EN/ZH; Scope / comment=monster; source=sourc
 butterfly	蝴蝶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 cacodemon	恶灵恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 cactus giant	仙人掌巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Call Canine Familiar	呼唤犬类使魔	domain=spells; source=EN/ZH; 备注=📝
-Call Down Damnation	降下天谴	domain=spells; source=EN/ZH; 备注=📝
+Call Canine Familiar	呼唤犬类使魔	domain=spells; source=EN/ZH; 备注=✅
+Call Down Damnation	降下天谴	domain=spells; source=EN/ZH; 备注=✅；`Call Down` 为“降下”，不属于呼唤词根
 Call Down Lightning	降下闪电	domain=spells; source=EN/ZH; 备注=✅
-Call Imp	呼唤小恶魔	domain=spells; source=EN/ZH; 备注=📝
-Call Lost Souls	呼唤迷失灵魂	domain=spells; source=EN/ZH; 备注=📝
-Call of Chaos	混沌呼唤	domain=spells; source=EN/ZH; 备注=📝
-Call Tide	呼唤潮汐	domain=spells; source=EN/ZH; 备注=📝
+Call Imp	呼唤小恶魔	domain=spells; source=EN/ZH; 备注=✅
+Call Lost Souls	呼唤迷失灵魂	domain=spells; source=EN/ZH; 备注=✅
+Call of Chaos	混沌呼唤	domain=spells; source=EN/ZH; 备注=✅
+Call Tide	呼唤潮汐	domain=spells; source=EN/ZH; 备注=✅
 camouflage	伪装	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 cane toad	海蟾蜍	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Cantrip	小戏法	domain=spells; source=EN/ZH; 备注=✅
@@ -317,7 +317,7 @@ Drain Life	吸取生命	domain=spells; source=EN/ZH; 备注=✅
 Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=✅
 Draining Gaze	吸取凝视	domain=spells; source=EN/ZH; 备注=✅
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
-Druid's Call	德鲁伊召唤	domain=spells; source=EN/ZH; 备注=✅
+Druid's Call	德鲁伊呼唤	domain=spells; source=EN/ZH; 备注=✅；召回同层已有林地生物，非创造召唤物
 Dungeon	地牢	domain=core; source=EN/ZH
 Duvessa	杜维莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt

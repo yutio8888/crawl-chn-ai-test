@@ -741,13 +741,13 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Call Canine Familiar | 呼唤犬类使魔 | 📝 |
-| Call Down Damnation | 降下天谴 | 📝 |
+| Call Canine Familiar | 呼唤犬类使魔 | ✅ |
+| Call Down Damnation | 降下天谴 | ✅；`Call Down` 为“降下”，不属于呼唤词根 |
 | Call Down Lightning | 降下闪电 | ✅ |
-| Call Imp | 呼唤小恶魔 | 📝 |
-| Call Lost Souls | 呼唤迷失灵魂 | 📝 |
-| Call Tide | 呼唤潮汐 | 📝 |
-| Call of Chaos | 混沌呼唤 | 📝 |
+| Call Imp | 呼唤小恶魔 | ✅ |
+| Call Lost Souls | 呼唤迷失灵魂 | ✅ |
+| Call Tide | 呼唤潮汐 | ✅ |
+| Call of Chaos | 混沌呼唤 | ✅ |
 | Demonic Horde | 恶魔大军 | ✅ |
 | Hunting Call | 狩猎呼唤 | ✅ |
 | Malign Gateway | 邪恶传送门 | ✅ |
@@ -890,7 +890,7 @@
 | Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅ |
 | Death's Door | 死亡之门 | ✅ |
 | Dragon's Call | 龙之呼唤 | ✅ |
-| Druid's Call | 德鲁伊召唤 | ✅ |
+| Druid's Call | 德鲁伊呼唤 | ✅；召回同层已有林地生物，非创造召唤物 |
 | Eringya's Noxious Bog | 埃林吉亚之毒沼 | 📝 |
 | Eringya's Surprising Crocodile | 埃林吉亚之意外鳄鱼 | 📝 |
 | Gell's Gavotte | 盖尔之加沃特 | ✅ |

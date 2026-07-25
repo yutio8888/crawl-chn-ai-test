@@ -442,3 +442,120 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 `e71f034792ca67686c5de48a6d467ca27ce0dbf8ab8f67ce64061344502b48df`；
 重新生成后的 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `46ae59b963872f6ac9908d06fae38123873e47e64ee851175d18e6cc0eb4e7c0`。
+
+## Call 词形系列
+
+系列结论：10 项均为现行法术。`call/call upon` 表示呼唤既有实体、号令
+盟友或祈请力量时保留“呼唤”；`call down` 是“降下”的短语动词，不属于
+同一中文词根。9 项保留，`Druid's Call` 因实际召回同层既有林地生物而由
+“德鲁伊召唤”改为“德鲁伊呼唤”。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 原中文名 | 裁定中文名 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_CALL_CANINE_FAMILIAR` | 3 / 召唤 / `none` | 玩家 | 呼唤犬类使魔 | 呼唤犬类使魔 | 保留 |
+| `SPELL_CALL_DOWN_DAMNATION` | 9 / 塑能 / `target, unholy, needs_tracer, monster` | 怪物 | 降下天谴 | 降下天谴 | 保留 |
+| `SPELL_CALL_DOWN_LIGHTNING` | 4 / 塑能、气 / `target, monster` | 怪物 | 降下闪电 | 降下闪电 | 保留 |
+| `SPELL_CALL_IMP` | 2 / 召唤 / `unholy` | 玩家 | 呼唤小恶魔 | 呼唤小恶魔 | 保留 |
+| `SPELL_CALL_LOST_SOULS` | 5 / 召唤、死灵 / `unholy, monster` | 怪物 | 呼唤迷失灵魂 | 呼唤迷失灵魂 | 保留 |
+| `SPELL_CALL_OF_CHAOS` | 7 / 诅咒 / `chaotic, monster` | 怪物 | 混沌呼唤 | 混沌呼唤 | 保留 |
+| `SPELL_CALL_TIDE` | 7 / 位移 / `monster` | 怪物 | 呼唤潮汐 | 呼唤潮汐 | 保留 |
+| `SPELL_DRAGON_CALL` | 9 / 召唤 / `none` | 玩家 | 龙之呼唤 | 龙之呼唤 | 保留 |
+| `SPELL_DRUIDS_CALL` | 6 / 召唤 / `monster` | 怪物 | 德鲁伊召唤 | 德鲁伊呼唤 | 重译 |
+| `SPELL_HUNTING_CALL` | 6 / 诅咒 / `monster, selfench` | 怪物 | 狩猎呼唤 | 狩猎呼唤 | 保留 |
+
+### 逐项证据卡
+
+- `SPELL_CALL_CANINE_FAMILIAR`：召出与法术威力同步成长的犬神；重施会
+  治疗、清除中毒并强化下一次攻击。“呼唤犬类使魔”忠实于标题及施法
+  消息中的 call，保留。证据：`spl-data.h:1084`、
+  `spl-summoning.cc:235`、`dat/descript/spells.txt:262`。
+- `SPELL_CALL_DOWN_DAMNATION`：无需直射地对指定敌人及相邻格造成无视
+  防护的天谴伤害，部分能施放天谴的生物免疫。“降下天谴”准确体现
+  `call down` 与强度，保留。证据：`spl-data.h:487`、
+  `spl-cast.cc:2502`、`beam.cc:6797`、`dat/descript/spells.txt:272`。
+- `SPELL_CALL_DOWN_LIGHTNING`：无需直射地以闪电轰击远处目标，近身目标
+  不可选。“降下闪电”准确，保留。证据：`spl-data.h:498`、
+  `mon-cast.cc:3611`、`dat/descript/spells.txt:280`。
+- `SPELL_CALL_IMP`：从地狱呼来持矛小恶魔，武器质量随法术威力提高。
+  “呼唤小恶魔”保留 Call 与 Summon 的命名区别。证据：
+  `spl-data.h:734`、`spl-summoning.cc:1096`、
+  `dat/descript/spells.txt:286`。
+- `SPELL_CALL_LOST_SOULS`：召出 2–3 个迷失灵魂，能挽救强大亡灵或把
+  垂死活物转为幽灵形态。“呼唤迷失灵魂”准确，保留。证据：
+  `spl-data.h:2198`、`mon-cast.cc:8330`、
+  `dat/descript/spells.txt:292`。
+- `SPELL_CALL_OF_CHAOS`：祈请混沌之力影响附近盟友，多数为增益，少数
+  会反噬。“混沌呼唤”准确表达 call upon，保留。证据：
+  `spl-data.h:2454`、`mon-cast.cc:3071`、
+  `dat/descript/spells.txt:298`。
+- `SPELL_CALL_TIDE`：改变大片水域潮汐，最终令整层水域涨潮，施法者附近
+  涨得更高。“呼唤潮汐”准确，保留。证据：`spl-data.h:1774`、
+  `mon-cast.cc:7821`、`dat/descript/spells.txt:305`。
+- `SPELL_DRAGON_CALL`：向龙域发出持续呼唤，龙会逐一应召并持续消耗
+  施法者法力。“龙之呼唤”准确，保留。证据：`spl-data.h:2576`、
+  `spl-summoning.cc:504`、`dat/descript/spells.txt:594`。
+- `SPELL_DRUIDS_CALL`：把同层既有林地生物移到目标附近并令其参战，不会
+  创造召唤物。“德鲁伊召唤”会误导为生成生物，重译为“德鲁伊呼唤”。
+  被拒方案：“德鲁伊召回”虽贴近实现，却偏离英文标题稳定意象。
+  证据：`spl-data.h:1840`、`mon-cast.cc:2878`、
+  `mon-cast.cc:4223`、`dat/descript/spells.txt:623`。
+- `SPELL_HUNTING_CALL`：发出可被沉默阻止的狩猎号令，使附近同类盟友
+  获得加速移动效果。“狩猎呼唤”准确，保留。证据：
+  `spl-data.h:2816`、`mon-cast.cc:2976`、
+  `dat/descript/spells.txt:976`。
+
+十项英文与中文描述键均存在。中文描述整体语义一致；本批同时修复犬类
+使魔、降下天谴、迷失灵魂、呼唤潮汐、龙之呼唤和狩猎呼唤共 6 项描述
+中的机制遗漏、范围误写或生硬表述。
+
+### 落地状态
+
+- [x] 机制证据收集
+- [x] 翻译审阅裁定
+- [x] 单一翻译写入者落地
+- [ ] translation profile
+- [x] 系列裁定登记（`D-C-016`）
+
+## 共享词根批次：Call
+
+系列边界为英文标题中独立的 `Call` 词，共 10 项现行法术；`Recall`
+不是该词成员。`Call Down` 是“降下”的动词短语例外。
+
+| Enum | 英文名 | 原中文名 | 裁定中文名 | 裁定 | 置信度 |
+|---|---|---|---|---|---|
+| `SPELL_CALL_DOWN_DAMNATION` | Call Down Damnation | 降下天谴 | 降下天谴 | 保留 | 高 |
+| `SPELL_CALL_DOWN_LIGHTNING` | Call Down Lightning | 降下闪电 | 降下闪电 | 保留 | 高 |
+| `SPELL_CALL_IMP` | Call Imp | 呼唤小恶魔 | 呼唤小恶魔 | 保留 | 高 |
+| `SPELL_CALL_CANINE_FAMILIAR` | Call Canine Familiar | 呼唤犬类使魔 | 呼唤犬类使魔 | 保留 | 高 |
+| `SPELL_CALL_TIDE` | Call Tide | 呼唤潮汐 | 呼唤潮汐 | 保留 | 高 |
+| `SPELL_DRUIDS_CALL` | Druid's Call | 德鲁伊召唤 | 德鲁伊呼唤 | 重译 | 高 |
+| `SPELL_CALL_LOST_SOULS` | Call Lost Souls | 呼唤迷失灵魂 | 呼唤迷失灵魂 | 保留 | 高 |
+| `SPELL_CALL_OF_CHAOS` | Call of Chaos | 混沌呼唤 | 混沌呼唤 | 保留 | 高 |
+| `SPELL_DRAGON_CALL` | Dragon's Call | 龙之呼唤 | 龙之呼唤 | 保留 | 高 |
+| `SPELL_HUNTING_CALL` | Hunting Call | 狩猎呼唤 | 狩猎呼唤 | 保留 | 中高 |
+
+`Druid's Call` 会把同层其他位置的已有林地生物召回；旧译“德鲁伊召唤”
+既误示创造召唤物，也破坏 `Call/呼唤` 与 `Summon/召唤` 的区分，故改为
+“德鲁伊呼唤”。其余标题分别准确表达降下天谴/闪电、呼来实体或力量、
+驱动潮汐，以及用呼号激励盟友。证据：`spl-data.h:487`、
+`spl-data.h:734`、`spl-data.h:1774`、`spl-data.h:1840`、
+`spl-data.h:2198`、`spl-data.h:2454`、`spl-data.h:2576`、
+`spl-data.h:2816`、`mon-cast.cc:7821`、`mon-cast.cc:8147`、
+`mon-cast.cc:8480`、`dat/descript/spells.txt:272`。
+
+附带修正：`Call Canine Familiar` 中文描述补回清除中毒和劈砍相邻敌人；
+`Call Lost Souls` 将泛化的“死灵”改为死灵魔法形成的幽魂。
+
+### 落地状态
+
+- [x] 10/10 机制证据与名称裁定
+- [x] 单一翻译写入者落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-016`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T160140801756000+0800-55158-29111a192cdf`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`0abeba2a2d9ad32a2d3891389d4b6a14848e7e27600b35330887aa24defed6de`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`240df3fc2e2a6cce722ad4294c122385b5f8712be7bb0c7f2805b9f922d00dfa`。

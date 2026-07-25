@@ -866,6 +866,14 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: Call不同于Summon——Call是"呼唤/召唤某一实体前来"，Summon是"召唤创造实体"。英文系列内部及Dragon's Call已用"呼唤"；统一后可清晰区分两个词根
 - **Scope**: `dat/i18n/zh/source.txt` Call系列条目
 - **Note**: Call Down Damnation 不在本系列内——该法术是Down + Damnation，"降下天谴"不涉及呼唤
+- **Current-state correction**: 2026-07-25 经 `D-C-016` 复核，本系列按
+  完整 inventory 扩展为 10 项现行标题；`Call Down Lightning` 与
+  `Call Down Damnation` 都是短语动词 `call down → 降下`，不属于
+  “呼唤”词根。原 5 项改名继续有效。
+- **Current-state extension**: 2026-07-25 经 `D-C-016` 复核，系列扩展至
+  当前全部 10 个含独立 `Call` 词的现行标题；`Druid's Call` 从
+  “德鲁伊召唤”改为“德鲁伊呼唤”。`Call Down` 两项继续作为“降下”
+  句式例外。
 
 ---
 
@@ -1015,6 +1023,47 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `docs/glossary.md`
   - `docs/decisions.md`
 - **Affected decisions**: 更新 D-C-008 的当前事实；其消除重名的标题裁定继续有效。
+
+---
+
+### D-C-016 — Spell name review: Call 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英文描述及各法术实际实现逐项复核
+- **Scope**: 10 项现行标题：
+  - `Call Canine Familiar → 呼唤犬类使魔`
+  - `Call Down Damnation → 降下天谴`
+  - `Call Down Lightning → 降下闪电`
+  - `Call Imp → 呼唤小恶魔`
+  - `Call Lost Souls → 呼唤迷失灵魂`
+  - `Call of Chaos → 混沌呼唤`
+  - `Call Tide → 呼唤潮汐`
+  - `Dragon's Call → 龙之呼唤`
+  - `Druid's Call → 德鲁伊呼唤`
+  - `Hunting Call → 狩猎呼唤`
+- **Choice**:
+  - 保留前述九项标题。
+  - `Druid's Call` 由“德鲁伊召唤”改为“德鲁伊呼唤”；实现会把同层既有
+    林地生物移到目标附近，并不创造召唤物。
+  - `call/call upon` 表示发出呼唤、号令或祈请时保留“呼唤”词根；
+    `call down` 作为短语动词固定译为“降下”，不机械套用词根。
+- **Rejected**:
+  - 所有 `Call` 一律译为“召唤”：抹去呼唤既有实体、号令盟友和祈请力量
+    与 `Summon` 创造召唤物之间的原名差异。
+  - “呼唤天谴／呼唤闪电”：误解 `call down` 的短语结构。
+  - “德鲁伊召唤”：对当前召回同层既有生物的机制有明确误导。
+- **Description corrections**: 恢复犬类使魔重施时清除中毒、提前攻击和
+  横扫相邻敌人的效果；明确天谴仅波及相邻生物且通常由能降下天谴者免疫；
+  修正迷失灵魂、潮汐、龙之呼唤及狩猎呼唤的遗漏或生硬表述。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Affected decisions**: 完整复核并扩展 D-C-009；其 5 项既有改名继续有效。
 
 ---
 
@@ -1462,6 +1511,39 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-016 — Spell name review: Call 词根与句式边界
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 当前清单、英文/中文描述与召唤、召回、潮汐及增益实现复核
+- **Scope**: 10 个含独立 `Call` 词的现行法术标题
+- **Choice**:
+  - `Druid's Call`: 德鲁伊召唤 → **德鲁伊呼唤**
+  - 其余 9 项保留当前译名
+- **Series rule**:
+  - 实体或力量回应 `Call` 时，核心词根为“呼唤”；
+  - `Call Down X` 是“降下 X”的动词短语，不机械套用“呼唤”；
+  - 自然中文允许 `Dragon's Call → 龙之呼唤`、
+    `Call of Chaos → 混沌呼唤` 等结构变化；
+  - `Hunting Call` 是激励盟友的狩猎呼号，保留“狩猎呼唤”；
+  - `Recall` 不是独立 `Call` 词成员，不纳入本系列。
+- **Rationale**: `Druid's Call` 的实现把同层其他位置的已有林地生物召回，
+  不是创造召唤物；“德鲁伊呼唤”既符合机制，也恢复
+  `Call → 呼唤` / `Summon → 召唤` 的辨识边界。
+- **Description corrections**:
+  - `Call Canine Familiar` 补回清除中毒和劈砍相邻敌人的效果；
+  - `Call Lost Souls` 将过泛的“死灵”还原为死灵魔法形成的幽魂。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt` ✅
+  - `crawl-ref/source/dat/descript/zh/spells.txt` ✅
+  - `docs/glossary.md` ✅
+  - `docs/glossary.utf8` ✅
+- **Extends**: `D-C-009`
+- **Resolved**: 2026-07-25
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -1516,3 +1598,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-013 | Spell name revision — Blink 系列 | 4 fixes；8 current + 1 axed compatibility | active |
 | D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |
 | D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
+| D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；6 description fixes | active |
+| D-C-016 | Spell name review — Call 词根 | 1 fix；10 current；2 description fixes | active |
