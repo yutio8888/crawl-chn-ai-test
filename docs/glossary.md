@@ -1052,7 +1052,7 @@
 | Berserk Other | 狂暴他人 | ✅；使附近一个盟友进入狂暴 |
 | Berserker Rage | 狂暴之怒 | ✅ |
 | Bestow Arms | 赐予武器 | ✅ |
-| Bind Souls | 绑定灵魂 | ✅ |
+| Bind Souls | 束缚灵魂 | 🆕；使附近其他活物死后化为拟像 |
 | Blade Hands | 利刃之手 | ✅；已移除兼容标题 |
 | Bombard | 炮击 | ✅ |
 | Brain Bite | 脑噬 | ✅ |
@@ -1113,14 +1113,14 @@
 | Eruption | 喷发 | ✅ |
 | Evaporate | 蒸发术 | ✅ |
 | Excruciating Wounds | 剧痛之伤 | ✅ |
-| Fastroot | 快速扎根 | ✅ |
+| Fastroot | 速生根须 | 🆕；射出种子，以速生树根缠住并挤压目标 |
 | Fire Brand | 火焰烙印 | ✅ |
 | Fire Storm | 火焰风暴 | ✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡 |
 | Fireball | 火球 | ✅；投掷会爆炸的火焰球 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Flame Wave | 火焰波 | ✅ |
 | Flash Freeze | 急冻 | ✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性 |
-| Flashing Balestra | 闪光弩击 | ✅ |
+| Flashing Balestra | 闪跃突刺 | 🆕；`balestra` 为击剑前跃接突刺，灵魂跃出持械攻击 |
 | Flay | 剥皮 | ✅ |
 | Fleetfoot | 轻快脚步 | ✅ |
 | Flight | 飞行术 | ✅ |

@@ -3230,12 +3230,11 @@ Corrupting Pulse 分别修正岩浆抗性、通行阵营和亡灵腐朽规则。
 - [x] translation profile
 - [x] 批次裁定登记（`D-C-089`）
 
-验证结果：与 A4 补充修正共同运行的
-`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T191721888947000+0800-64295-a7ede56e0456`。
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T191834040957000+0800-68051-6a67aa2193c9`。
 本批裁定后的 glossary 与 inventory SHA-256 分别为
-`7dacdefbc4d60ecc52c335def33e07962b4a54782d5565e96e11c2be0abc35ce`
-和 `6452c99a6a751039be6531bd14c2439c08a1c1cc834ade1e7d9057d53aed4e99`。
+`ee024106cd48cddf7e8a567e4f75e95ed6fed81b5436207ff3b1286ab6f6e878`
+和 `adcd05d7de8811a4894c1fc723811f6588ebe724cb8fb85256feed2d05fb623d`。
 
 ## Awaken 词形系列
 

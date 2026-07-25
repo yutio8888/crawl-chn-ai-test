@@ -16483,7 +16483,7 @@ Infernal Servant
 地狱仆从
 %%%%
 Bind Souls
-绑定灵魂
+束缚灵魂
 %%%%
 Infestation
 虫群侵扰
@@ -16519,7 +16519,7 @@ Borgnjor's Vile Clutch
 博格尼尔之邪恶抓握
 %%%%
 Fastroot
-快速扎根
+速生根须
 %%%%
 Warp Space
 扭曲空间
@@ -16717,7 +16717,7 @@ Hoarfrost Bullet
 白霜弹
 %%%%
 Flashing Balestra
-闪光弩击
+闪跃突刺
 %%%%
 Phantom Blitz
 幻影突击

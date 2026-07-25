@@ -111,7 +111,7 @@ Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近�
 Berserker	狂战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Berserker Rage	狂暴之怒	domain=spells; source=EN/ZH; 备注=✅
 Bestow Arms	赐予武器	domain=spells; source=EN/ZH; 备注=✅
-Bind Souls	绑定灵魂	domain=spells; source=EN/ZH; 备注=✅
+Bind Souls	束缚灵魂	domain=spells; source=EN/ZH; 备注=🆕；使附近其他活物死后化为拟像
 black bear	黑熊	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black draconian	黑龙人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
