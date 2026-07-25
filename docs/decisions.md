@@ -2741,6 +2741,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-087 — Spell name review: 独立批次 A3
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: inventory 差集顺序第 41–60 项现行独立法术
+- **Choice**: 将 `Primal Wave → 原始波浪` 重译为“原初浪潮”；
+  其余 19 项保留。
+- **Rationale**: Primal 表示原初力量，Wave 的实际表现是可击退目标并留下
+  浅水的激流；“原初浪潮”比生硬的“原始波浪”更符合强度与语体。
+- **Description corrections**: 修正 Fulminant Prism、Primal Wave、
+  Vanquished Vanguard、Sticks to Snakes、Malmutate、Gloom 与
+  Dimension Anchor 的机制、目标类别或位面术语。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3310,3 +3332,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-084 | Spell name review — 成对词根批次 | 16 current + 7 axed；3 renames + 7 description fixes | active |
 | D-C-085 | Spell name review — 独立批次 A1 | 20 current；6 description fixes | active |
 | D-C-086 | Spell name review — 独立批次 A2 | 20 current；2 renames + 9 description fixes | active |
+| D-C-087 | Spell name review — 独立批次 A3 | 20 current；1 rename + 7 description fixes | active |

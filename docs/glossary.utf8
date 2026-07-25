@@ -679,7 +679,7 @@ Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
 Portal Projectile	传送投射物	domain=spells; source=EN/ZH; 备注=✅
 potion	药水	domain=items; source=EN/ZH
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
-Primal Wave	原始波浪	domain=spells; source=EN/ZH; 备注=✅
+Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Pyre Arrow	烈火箭	domain=spells; source=EN/ZH; 备注=✅；液态火焰附着目标并持续灼烧
 Pyroclastic Surge	火山碎屑涌	domain=spells; source=EN/ZH; 备注=✅

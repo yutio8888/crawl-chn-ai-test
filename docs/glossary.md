@@ -1242,7 +1242,7 @@
 | Porkalator | 变猪术 | ✅ |
 | Portal Projectile | 传送投射物 | ✅ |
 | Prayer of Brilliance | 聪慧祈祷 | ✅ |
-| Primal Wave | 原始波浪 | ✅ |
+| Primal Wave | 原初浪潮 | 🆕；召出激流击退目标并留下短时浅水 |
 | Pyroclastic Surge | 火山碎屑涌 | ✅ |
 | Pyrrhic Recollection | 惨胜回忆 | ✅ |
 | Random Effects | 随机效果 | ✅ |

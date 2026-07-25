@@ -344,8 +344,9 @@ Curse of Agony spell
 %%%%
 Gloom spell
 
-施法者爆发出闪烁的光芒。
-附近的任何普通、恶魔或天使类动物都可能会目眩，盲目地跌跌撞撞。
+释放一波有害阴霾，试图吞没附近生物周围的光亮。
+任何被波及的活物、恶魔或神圣生物都可能短暂失明，盲目踉跄。
+意志力无法抵抗此法术，但更强壮的生物仍可能摆脱效果。
 %%%%
 Death Channel spell
 
@@ -381,7 +382,7 @@ Dig spell
 Dimension Anchor spell
 
 阻止受影响目标尝试进行的任何移位，无论是否是主动的。
-这甚至包括一些跨层移位，但不包括放逐。
+这甚至包括一些跨位面效果，但不包括放逐。
 %%%%
 Dimensional Bullseye spell
 
@@ -557,8 +558,8 @@ Fugue of the Fallen spell
 %%%%
 Fulminant Prism spell
 
-生成一个棱镜，它会在短时间内释放出猛烈的奥术力量。
-如果提前摧毁它，它的爆炸力会弱得多。
+生成一个由不稳定软金合金制成的闪亮棱镜。可惜它不能充当法定货币，
+因为短时间后便会以奥术力量猛烈爆炸；若提前摧毁，爆炸会弱得多。
 %%%%
 Funeral Dirge spell
 
@@ -796,7 +797,7 @@ Malign Offering spell
 Malmutate spell
 
 让一个目标发生一次变异。这种变异几乎总是有害的。
-它不会影响人造物，亡灵受到影响也能消解它。
+它不会影响人造物；亡灵若受到影响则会腐朽。
 %%%%
 Manifold Assault spell
 
@@ -1027,7 +1028,7 @@ Portal Projectile spell
 %%%%
 Primal Wave spell
 
-生成一湍激流，它可能会击倒目标，并在短时间内形成一滩浅水。
+召出一股激流，可能将目标击退，并在短时间内形成一滩浅水。
 %%%%
 Pyre Arrow spell
 
@@ -1381,7 +1382,9 @@ Summon Small Mammal spell
 %%%%
 Vanquished Vanguard spell
 
-召唤一到三个兽人幽灵，它们专精于近战，装备着幽灵武器和盔甲。
+呼唤远古战死兽人的徘徊灵魂，让它们短暂重拾战斗使命。
+这些先锋比多数幽灵更依恋生前，能以生者般的技巧挥舞长柄武器，
+并冷酷高效地包围猎物。
 %%%%
 Summon Spiders spell
 
@@ -2020,7 +2023,7 @@ Steam Breath spell
 %%%%
 Sticks to Snakes spell
 
-将地面上的箭矢和飞镖变成蛇，为施法者战斗。
+掷出棍棒并将其变成蛇；施法者越强，生成的蛇也必定越强。
 %%%%
 Summon Mortal Champion spell
 

@@ -3073,6 +3073,67 @@ Static Discharge 的返回伤害与护甲；Sculpt Simulacrum 的目标类别及
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `ea22e8f4f4ab3b1cc76e9abea565aea7b3c85035418a8074a2b9c26ed95ffb03`。
 
+首轮 Run ID `20260725T190402692280000+0800-33775-bd282bcbbce9`
+在 changed exact-key terminology 阶段失败：A2 的名称裁定尚未完成，
+`Corona` 与 `Metabolic Englaciation` 的 source 映射已分别改为
+“光晕”“代谢冻结”，但 glossary 仍记录“怪异发光球”“深度冻结”。
+统一 `source.txt`、`glossary.md` 并重新导出 `glossary.utf8` 后，上述
+最终运行通过；该失败未涉及 TextDB 结构或描述格式。
+
+## 独立法术批次 A3
+
+边界：inventory 差集顺序第 41–60 项，共 20 项现行独立法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_FULMINANT_PRISM` | 爆裂棱镜 | 生成延时爆炸、提前摧毁则减弱的棱镜 | 保留 |
+| `SPELL_PARALYSE` | 麻痹 | 短时间阻止目标采取行动 | 保留 |
+| `SPELL_WOODWEAL` | 木质愈合 | 借相邻树木的活力治疗大量伤害 | 保留 |
+| `SPELL_BRAIN_BITE` | 脑噬 | 汲取可见敌人的心智和魔力，低魔力时伤害翻倍 | 保留 |
+| `SPELL_STEAM_BALL` | 蒸汽球 | 向目标投射高温蒸汽球 | 保留 |
+| `SPELL_CANTRIP` | 小戏法 | 随机施放无明显效果的微小法术鼓舞自己 | 保留 |
+| `SPELL_METAL_SPLINTERS` | 金属碎刺 | 发射易被护甲削减的金属碎片 | 保留 |
+| `SPELL_SPLINTERSPRAY` | 碎片喷射 | 发射易被护甲削减的木屑 | 保留 |
+| `SPELL_PORKALATOR` | 变猪术 | 把目标变成移动迅速但无法施法的猪 | 保留 |
+| `SPELL_CREATE_TENTACLES` | 生成触须 | 伸出大型触须攻击附近敌人 | 保留 |
+| `SPELL_SLEEP` | 睡眠 | 使目标入睡，受伤或巨响可能唤醒 | 保留 |
+| `SPELL_PRIMAL_WAVE` | 原始波浪 | 召出激流击退目标并留下短时浅水 | 重译为“原初浪潮” |
+| `SPELL_VANQUISHED_VANGUARD` | 败军先锋 | 召来远古兽人先锋灵魂以长柄武器合围猎物 | 保留 |
+| `SPELL_STICKS_TO_SNAKES` | 棍变蛇 | 掷出棍棒并变成随施法者增强的蛇 | 保留 |
+| `SPELL_MALMUTATE` | 恶性变异 | 施加几乎总是有害的变异 | 保留 |
+| `SPELL_GLOOM` | 阴郁 | 释放吞没光亮、可致盲的阴霾 | 保留 |
+| `SPELL_FORCE_LANCE` | 力量之矛 | 震荡力击退目标，撞墙或生物时追加伤害 | 保留 |
+| `SPELL_DIMENSION_ANCHOR` | 维度锚定 | 阻止目标移位及部分跨位面效果，但不阻止放逐 | 保留 |
+| `SPELL_THORN_VOLLEY` | 荆棘齐射 | 发射一小阵锋利荆棘 | 保留 |
+| `SPELL_WALL_OF_BRAMBLES` | 荆棘之墙 | 生长脆弱但难清除、可被弹药穿过的荆棘 | 保留 |
+
+名称结论：`Primal Wave` 以原初力量召出具有击退效果的激流，
+“原初浪潮”比“原始波浪”更自然，也更符合六级怪物法术的规模。
+其余 19 项标题都能准确辨识其核心实体、动作或状态。
+
+描述审阅修正七项：Fulminant Prism 补回材质与延时爆炸；
+Primal Wave 把“击倒”纠正为击退；Vanquished Vanguard、
+Sticks to Snakes 与 Gloom 按当前英文重译；Malmutate 修复亡灵腐朽；
+Dimension Anchor 将“跨层”纠正为跨位面。
+
+证据：对应 `spl-data.h` 的 20 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
+`spl-summoning.cc`、`spl-zap.cc`、`beam.cc` 中相应 enum 分支。
+
+### 落地状态
+
+- [x] 20/20 机制证据与名称裁定
+- [x] 单一翻译写入者完成 1 项名称与 7 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-087`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T190954711331000+0800-47257-38b7c6fc44e1`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`603168dd636a8189c12626ddd48c4c880d4a1610381bc51667377e5f09497176`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`dbef292f63a05cedcef2e2bc712213b8703dd1f19a0454634aa16790f7b30cf1`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
