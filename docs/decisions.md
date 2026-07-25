@@ -870,10 +870,6 @@ file exists and should be consulted. This file stores the actual ruling content.
   完整 inventory 扩展为 10 项现行标题；`Call Down Lightning` 与
   `Call Down Damnation` 都是短语动词 `call down → 降下`，不属于
   “呼唤”词根。原 5 项改名继续有效。
-- **Current-state extension**: 2026-07-25 经 `D-C-016` 复核，系列扩展至
-  当前全部 10 个含独立 `Call` 词的现行标题；`Druid's Call` 从
-  “德鲁伊召唤”改为“德鲁伊呼唤”。`Call Down` 两项继续作为“降下”
-  句式例外。
 
 ---
 
@@ -1056,7 +1052,7 @@ file exists and should be consulted. This file stores the actual ruling content.
   - “德鲁伊召唤”：对当前召回同层既有生物的机制有明确误导。
 - **Description corrections**: 恢复犬类使魔重施时清除中毒、提前攻击和
   横扫相邻敌人的效果；明确天谴仅波及相邻生物且通常由能降下天谴者免疫；
-  修正迷失灵魂、潮汐、龙之呼唤及狩猎呼唤的遗漏或生硬表述。
+  修正小恶魔、迷失灵魂、潮汐、龙之呼唤及狩猎呼唤的遗漏或生硬表述。
 - **Affected files**:
   - `crawl-ref/source/dat/i18n/zh/source.txt`
   - `crawl-ref/source/dat/descript/zh/spells.txt`
@@ -1565,4 +1561,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-013 | Spell name revision — Blink 系列 | 4 fixes；8 current + 1 axed compatibility | active |
 | D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |
 | D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
-| D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；6 description fixes | active |
+| D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；7 description fixes | active |
