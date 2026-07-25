@@ -1108,7 +1108,7 @@
 | Ensnare | 束缚 | ✅ |
 | Ensorcelled Hibernation | 冬眠 | ✅ |
 | Entropic Weave | 熵之编织 | ✅ |
-| Ephemeral Infusion | 短暂灌注 | ✅ |
+| Ephemeral Infusion | 短暂灌注 | ✅；已移除兼容标题 |
 | Eruption | 喷发 | ✅ |
 | Evaporate | 蒸发术 | ✅ |
 | Excruciating Wounds | 剧痛之伤 | ✅ |
@@ -1176,7 +1176,7 @@
 | Ill Omen | 凶兆 | ✅ |
 | Infernal Servant | 地狱仆从 | ✅ |
 | Infestation | 虫群侵扰 | ✅ |
-| Infusion | 灌注术 | ✅ |
+| Infusion | 灌注术 | ✅；已移除兼容标题 |
 | Injury Bond | 伤害链接 | ✅ |
 | Injury Mirror | 伤害反射 | ✅ |
 | Inner Flame | 内焰 | ✅ |
@@ -1194,7 +1194,7 @@
 | Launch Sporangium | 发射孢子囊 | ✅ |
 | Legendary Destruction | 传奇毁灭 | ✅ |
 | Lesser Beckoning | 次级召唤 | ✅ |
-| Lethal Infusion | 致命灌注 | ✅ |
+| Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |
 | Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |

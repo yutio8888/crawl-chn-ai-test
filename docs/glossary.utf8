@@ -336,7 +336,7 @@ Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
 Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅
 Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
 Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
-Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅
+Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Ereshkigal	埃列什基伽勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erica	艾丽卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=✅；有毒污泥将附近坚实地面暂时转为毒沼
@@ -491,7 +491,7 @@ immune	免疫	domain=combat; source=EN/ZH
 Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
 Infestation	虫群侵扰	domain=spells; source=EN/ZH; 备注=✅
-Infusion	灌注术	domain=spells; source=EN/ZH; 备注=✅
+Infusion	灌注术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Injury Bond	伤害链接	domain=spells; source=EN/ZH; 备注=✅
 Injury Mirror	伤害反射	domain=spells; source=EN/ZH; 备注=✅
 Ink Cloud	墨云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -533,7 +533,7 @@ Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅
 Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
-Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅
+Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用

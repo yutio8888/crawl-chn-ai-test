@@ -2115,6 +2115,36 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
 
+## Infusion 词形系列
+
+边界：标题含 `Infusion` 的 3 项法术，全部为已移除兼容记录。
+
+| Enum | 当前译名 | 机制证据 | 裁定 |
+|---|---|---|---|
+| `SPELL_EPHEMERAL_INFUSION` | 短暂灌注 | 无当前描述或实现 | 保留 |
+| `SPELL_INFUSION` | 灌注术 | 无当前描述或实现 | 保留 |
+| `SPELL_LETHAL_INFUSION` | 致命灌注 | 无当前描述或实现 | 保留 |
+
+名称结论：三项稳定采用 `Infusion → 灌注`，修饰语位置自然；单独成名的
+“灌注术”也符合中文法术名习惯。缺少当前机制证据，不作推测性改名。
+
+证据：`spl-data.h:4662`、`spl-data.h:4678`、`spl-data.h:4680`
+的 AXED 兼容记录及中文标题映射。
+
+### 落地状态
+
+- [x] 3/3 生命周期与名称裁定
+- [x] 无游戏文本修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-062`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T180655285530000+0800-13139-525f35b6ef1c`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`29260c7727bfea4f1ff0ce097806af61521baab73d7a431b1722e3ba552b505a`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

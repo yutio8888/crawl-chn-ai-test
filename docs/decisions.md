@@ -2194,6 +2194,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-062 — Spell name review: Infusion 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项已移除兼容标题
+- **Choice**: 保留 `Ephemeral Infusion → 短暂灌注`、
+  `Infusion → 灌注术`、`Lethal Infusion → 致命灌注`。
+- **Series rule**: `Infusion → 灌注`；修饰语前置，单独成名时可加“术”。
+- **Rationale**: 三项中文结构自然且词根一致；由于没有当前描述或实现，
+  不依据历史印象扩写机制或改名。
+- **Description corrections**: 无。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2738,3 +2757,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-059 | Spell name review — Haste 词形系列 | 2 current + 1 axed；no text fixes | active |
 | D-C-060 | Spell name review — Invisibility 词形系列 | 2 current；1 rename | active |
 | D-C-061 | Spell name review — Abjuration 词形系列 | 1 current + 1 axed；1 wording fix | active |
+| D-C-062 | Spell name review — Infusion 词形系列 | 3 axed；no text fixes | active |
