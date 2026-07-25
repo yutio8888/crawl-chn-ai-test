@@ -2569,6 +2569,39 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
 
+## Sacrifice 词形系列
+
+边界：英文标题含独立 `Sacrifice` 的 2 项法术；1 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_GHOSTLY_SACRIFICE` | 现行 | 幽灵献祭 | 吞噬友方并产生汲取范围内活物的负能量爆发 | 保留 |
+| `SPELL_SACRIFICE` | 已移除兼容 | 献祭 | 无当前描述或实现 | 保留 |
+
+名称结论：两项均以 `Sacrifice → 献祭` 准确表达不可逆地消耗生物或其
+本质作为法术代价；现行标题中的“幽灵”保留负能量与鬼魅意象。
+
+描述审阅发现 `motivating essence` 被误译成“行动力”，且原中文将彻底
+吞噬、抹除献祭对象弱化为“衰竭或破坏”。现已重译，并明确燃料既可为
+活物也可为造物。
+
+证据：`spl-data.h:3181`—`3189` 及 `SPELL_SACRIFICE` 兼容条目，
+`dat/descript/spells.txt:879`—`883`，`mon-cast.cc:4570` 起。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-075`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T183745913739000+0800-76159-0d7a5c6144c0`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`55e88b1b9bf2a66c337a4ec7fb27cc935467686af6f10bacbef928661fcef5b7`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

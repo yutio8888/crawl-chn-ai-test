@@ -419,7 +419,7 @@ Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重�
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能量爆炸使范围内活物衰竭
-Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅
+Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅；吞噬友方并产生汲取活物的负能量爆发
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
 Glaciate	冰封	domain=spells; source=EN/ZH; 备注=🆕；锥形寒冰冲击会冰封并减速目标
@@ -720,7 +720,7 @@ Ru	入	domain=gods; source=EN/ZH; 类型=意译（"enter"）
 rugged brown scales	粗糙褐鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Rupert	鲁珀特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Rust Breath	锈蚀吐息	domain=spells; source=EN/ZH; 备注=✅
-Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=✅
+Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Saint Roka	圣罗卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Sandblast	沙爆	domain=spells; source=EN/ZH; 备注=📝

@@ -2476,6 +2476,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-075 — Spell name review: Sacrifice 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Ghostly Sacrifice → 幽灵献祭` 与
+  `Sacrifice → 献祭`。
+- **Series rule**: 以生物或其本质作为不可逆代价时，
+  `Sacrifice → 献祭`。
+- **Rationale**: 现行法术会吞噬友方以制造负能量爆发，“献祭”准确体现
+  代价；“幽灵”保留其负能量与鬼魅意象。
+- **Description corrections**: 重译 `Ghostly Sacrifice`，将误译的
+  “行动力”恢复为活力精华，并明确活物或造物都会被吞噬并彻底抹除。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3033,3 +3055,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-072 | Spell name review — Might/Other 目标系列 | 5 current；5 description fixes | active |
 | D-C-073 | Spell name review — Vortex 词形系列 | 1 current + 1 axed；1 rename + wording fixes | active |
 | D-C-074 | Spell name review — Strike 词形系列 | 2 current；no text fixes | active |
+| D-C-075 | Spell name review — Sacrifice 词形系列 | 1 current + 1 axed；1 description retranslation | active |

@@ -1144,7 +1144,7 @@
 | Fulsome Fusillade | 猛烈连射 | ✅ |
 | Funeral Dirge | 葬礼哀歌 | ✅ |
 | Ghostly Fireball | 幽灵火球 | ✅；负能量爆炸使范围内活物衰竭 |
-| Ghostly Sacrifice | 幽灵献祭 | ✅ |
+| Ghostly Sacrifice | 幽灵献祭 | ✅；吞噬友方并产生汲取活物的负能量爆发 |
 | Glaciate | 冰封 | 🆕；锥形寒冰冲击会冰封并减速目标 |
 | Gloom | 阴郁 | ✅ |
 | Goad Beasts | 激怒野兽 | ✅ |
@@ -1259,7 +1259,7 @@
 | Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Ring of Thunder | 雷霆之环 | ✅；已移除兼容标题 |
 | Roll | 翻滚 | ✅ |
-| Sacrifice | 献祭 | ✅ |
+| Sacrifice | 献祭 | ✅；已移除兼容标题 |
 | Sandblast | 沙爆 | 📝 |
 | Sap Magic | 削弱魔法 | ✅ |
 | Scattershot | 散射术 | ✅ |
