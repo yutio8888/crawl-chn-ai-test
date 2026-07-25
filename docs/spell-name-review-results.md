@@ -1313,6 +1313,41 @@ Gravitas 没有独立法术描述，但重力铃鼓的中文说明把效果范�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## Alistair's 专名系列
+
+边界：英文标题以 `Alistair's` 开头的 2 项现行法术。
+
+| Enum | 等级 / 学派 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_INTOXICATE` | 5 / 炼金 | 阿利斯泰尔之醉 | 混乱视野内智慧生物；成功时施法者短暂眩晕 | 保留 |
+| `SPELL_WALKING_ALEMBIC` | 5 / 锻造、炼金 | 阿利斯泰尔之行走蒸馏器 | 构建近战炼金构装，酿造并向盟友分发药水 | 保留 |
+
+名称结论：专名稳定采用 `Alistair → 阿利斯泰尔`。“醉”保留脑组织转化
+为酒精的荒诞炼金意象；“行走蒸馏器”准确指向能移动、战斗、酿造和分发
+药水的构装。两项名称均与当前效果一致。
+
+描述审阅修正 1 项指代歧义：Intoxication 英文明确是施法者在成功接触
+其他心灵后短暂眩晕，旧中文的“他们”可能被理解为受术目标；本批明确
+主语为施法者。Walking Alembic 描述完整。
+
+证据：`spl-data.h:1185`—`1192`、`spl-data.h:4307`—`4314`、
+`dat/descript/spells.txt:25`—`39`、Intoxication 群体惑控实现、
+`spl-summoning.cc:4264`—`4282`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者描述澄清
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-039`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T172145181943000+0800-14637-8739dacfd4a7`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`fdc97e93f4e4ac985d49635a6cd0585d1418e985c2fbce0cf8c154b4d633051f`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

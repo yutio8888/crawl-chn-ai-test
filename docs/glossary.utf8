@@ -29,8 +29,8 @@ Aizul	艾祖尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mon
 Aizul title	疏忽的守卫艾祖尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Alchemist	炼金术士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Alchemy	炼金术	domain=magic; source=EN/ZH
-Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅
-Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅
+Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅；混乱视野内智慧生物，成功时施法者短暂眩晕
+Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅；战斗构装酿造并分发药水
 alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 alligator snapping turtle	巨鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from snapping turtle → 鳄龟
 Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

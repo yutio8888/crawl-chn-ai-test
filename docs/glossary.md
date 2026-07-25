@@ -938,8 +938,8 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Alistair's Intoxication | 阿利斯泰尔之醉 | ✅ |
-| Alistair's Walking Alembic | 阿利斯泰尔之行走蒸馏器 | ✅ |
+| Alistair's Intoxication | 阿利斯泰尔之醉 | ✅；混乱视野内智慧生物，成功时施法者短暂眩晕 |
+| Alistair's Walking Alembic | 阿利斯泰尔之行走蒸馏器 | ✅；战斗构装酿造并分发药水 |
 | Borgnjor's Revivification | 博格尼尔之复苏 | 🆕；完全治愈仍活着的施法者，不会复活死者 |
 | Borgnjor's Vile Clutch | 博格尼尔之邪恶抓握 | ✅ |
 | Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅ |

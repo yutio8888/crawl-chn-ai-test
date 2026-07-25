@@ -1686,6 +1686,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-039 — Spell name review: Alistair's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与醉酒／行走蒸馏器实现逐项复核
+- **Scope**: 2 项以 `Alistair's` 开头的现行标题
+- **Choice**: 保留 `Alistair's Intoxication → 阿利斯泰尔之醉` 与
+  `Alistair's Walking Alembic → 阿利斯泰尔之行走蒸馏器`。
+- **Series rule**: 人名 `Alistair → 阿利斯泰尔`，所有格采用
+  “阿利斯泰尔之……”；`Intoxication → 醉`，`Alembic → 蒸馏器`。
+- **Rationale**: “醉”简洁概括将脑组织转化为酒精并造成混乱的炼金效果；
+  “行走蒸馏器”准确表现能近战、酿造药水并自行分发的移动炼金构装。
+- **Description corrections**: Walking Alembic 描述完整。Intoxication
+  原中文用复数代词“他们”承接单数施法者，容易误读为被接触的目标眩晕；
+  本批明确为施法者成功接触其他心灵后会短暂眩晕。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2207,3 +2231,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-036 | Spell name review — Ozocubu's 专名系列 | 2 current | active |
 | D-C-037 | Spell name review — Gell's 专名系列 | 2 current；1 related item description fix | active |
 | D-C-038 | Spell name review — Borgnjor's 专名系列 | 1 fix；2 current；1 description fix | active |
+| D-C-039 | Spell name review — Alistair's 专名系列 | 2 current；1 description clarification | active |
