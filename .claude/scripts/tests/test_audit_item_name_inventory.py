@@ -24,21 +24,35 @@ SPEC.loader.exec_module(MODULE)
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
-    def test_source_entries_match_textdb_trim_and_replace_semantics(self):
+    def test_source_entries_match_localized_sourcedb_semantics(self):
         with tempfile.TemporaryDirectory() as directory:
-            source = Path(directory) / "source.txt"
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
             source.write_text(
                 "%%%%\n"
                 "Death\n"
                 "死亡\n"
                 "%%%%\n"
                 " death \n"
-                "\n"
-                "的死亡\n",
+                "带空格\n",
                 encoding="utf-8",
             )
-            entries = MODULE.source_entries(source)
-        self.assertEqual({"death": "的死亡"}, entries)
+            (source_dir / "items.txt").write_text(
+                "%%%%\n"
+                "Death\n"
+                "后定义\n",
+                encoding="utf-8",
+            )
+            entries = MODULE.source_entries(source_dir)
+        self.assertEqual(
+            {"death": "后定义", " death ": "带空格"},
+            entries,
+        )
+
+    def test_source_entries_requires_source_txt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(FileNotFoundError):
+                MODULE.source_entries(Path(directory))
 
     def test_tag_branch_filter_works_without_generated_build_headers(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -60,6 +74,22 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertIn("current", active)
         self.assertNotIn("future", active)
         self.assertIn("after", active)
+
+    def test_tag_branch_filter_rejects_unknown_tag_expression(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "sample.cc"
+            source.write_text(
+                "#if TAG_MAJOR_VERSION == 34 || defined(TEST_ONLY)\n"
+                "ambiguous\n"
+                "#endif\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(MODULE, "tag_major_version",
+                                   return_value=34):
+                with self.assertRaisesRegex(
+                    RuntimeError, "unsupported TAG_MAJOR_VERSION condition"
+                ):
+                    MODULE.active_source(source)
 
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
@@ -110,13 +140,30 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             ],
         )
 
-        missing_form = [dict(valid[0])]
-        missing_form[0]["forms"] = {
+        missing_form_translation = [dict(valid[0])]
+        missing_form_translation[0]["category"] = "weapon_brand"
+        missing_form_translation[0]["forms"] = {
             "verbose": {"en": "test", "zh": None},
+            "terse": {"en": "test", "zh": "测试"},
+            "adj": {"en": "test", "zh": "测试"},
         }
         self.assertEqual(
             ["weapon:WPN_TEST:verbose"],
-            MODULE.inventory_violations(missing_form)["missing_forms"],
+            MODULE.inventory_violations(missing_form_translation)[
+                "missing_forms"
+            ],
+        )
+
+        missing_form_producer = [dict(valid[0])]
+        missing_form_producer[0]["category"] = "armour_ego"
+        missing_form_producer[0]["forms"] = {
+            "verbose": {"en": "test", "zh": "测试"},
+        }
+        self.assertEqual(
+            ["weapon:WPN_TEST:terse"],
+            MODULE.inventory_violations(missing_form_producer)[
+                "missing_forms"
+            ],
         )
 
     def test_cli_builds_complete_unique_production_inventory(self):

@@ -20,22 +20,33 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE = SRC / "dat/i18n/zh/source.txt"
+ZH_SOURCE_DIR = ZH_SOURCE.parent
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from i18n_shared import parse_entries
+from i18n_shared import parse_entries_physical, runtime_normalize_value
 
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def source_entries(path):
-    # i18n_shared owns source.txt block structure. Match database.cc's
-    # trim_keys=true and leading-newline handling here; later canonical-key
-    # definitions replace earlier ones, as DBM_REPLACE does at build time.
+def source_files(directory):
+    """Return localized SourceDB inputs in the production load order."""
+    source = directory / "source.txt"
+    if not source.is_file():
+        raise FileNotFoundError(f"required SourceDB input is missing: {source}")
+    files = sorted(directory.glob("*.txt"), key=lambda path: path.name)
+    return [source, *(path for path in files if path != source)]
+
+
+def source_entries(directory):
+    # Localized SourceDB loads source.txt first, then every other sorted .txt
+    # file with trim_keys=false. DBM_REPLACE makes the final exact canonical
+    # key definition authoritative.
     result = {}
-    for entry in parse_entries(str(path), lowercase_keys=False):
-        result[entry.key.strip().lower()] = entry.value.lstrip("\n").rstrip("\n")
+    for path in source_files(directory):
+        for entry in parse_entries_physical(str(path)):
+            result[entry.canonical_key] = runtime_normalize_value(entry.value)
     return result
 
 
@@ -54,6 +65,10 @@ def _tag_condition(expression, version):
         expression,
     )
     if not match:
+        if "TAG_MAJOR_VERSION" in expression:
+            raise RuntimeError(
+                f"unsupported TAG_MAJOR_VERSION condition: {expression.strip()}"
+            )
         return None
     operator, raw_target = match.groups()
     target = int(raw_target)
@@ -88,7 +103,17 @@ def active_source(path):
 
         kind, expression = directive.groups()
         if kind in {"if", "ifdef", "ifndef"}:
-            condition = _tag_condition(expression, version) if kind == "if" else None
+            if kind == "if":
+                condition = _tag_condition(expression, version)
+            elif expression.strip() == "TAG_MAJOR_VERSION":
+                condition = kind == "ifdef"
+            elif "TAG_MAJOR_VERSION" in expression:
+                raise RuntimeError(
+                    "unsupported TAG_MAJOR_VERSION directive: "
+                    f"#{kind} {expression.strip()}"
+                )
+            else:
+                condition = None
             frame = {
                 "parent": active,
                 "tag": condition is not None,
@@ -271,12 +296,17 @@ def inventory_violations(rows, expected_identities=None):
             bool(row.get("current_chinese_name")),
         )
     ]
-    missing_forms = [
-        f"{row['identity']}:{form}"
-        for row in rows
-        for form, data in row.get("forms", {}).items()
-        if data.get("en") and data.get("zh") is None
-    ]
+    required_forms = {
+        "weapon_brand": ("verbose", "terse", "adj"),
+        "armour_ego": ("verbose", "terse"),
+    }
+    missing_forms = []
+    for row in rows:
+        forms = row.get("forms", {})
+        for form in required_forms.get(row.get("category"), ()):
+            data = forms.get(form)
+            if not data or not data.get("en") or data.get("zh") is None:
+                missing_forms.append(f"{row['identity']}:{form}")
     return {
         "duplicates": duplicates,
         "missing_identities": sorted(expected_identities - actual_identities),
@@ -358,7 +388,7 @@ def expected_identities(enums, removed_pairs):
 
 
 def build_inventory():
-    db = source_entries(ZH_SOURCE)
+    db = source_entries(ZH_SOURCE_DIR)
     item_prop = active_source(SRC / "item-prop.cc")
     item_name = active_source(SRC / "item-name.cc")
     enums = enum_constants(
@@ -619,7 +649,8 @@ def build_inventory():
         "input_sha256": {
             str(p.relative_to(ROOT)): sha(p)
             for p in [
-                ZH_SOURCE, SRC / "item-name.cc", SRC / "item-prop.cc",
+                *source_files(ZH_SOURCE_DIR),
+                SRC / "item-name.cc", SRC / "item-prop.cc",
                 SRC / "item-prop-enum.h", SRC / "potion-type.h",
                 SRC / "book-type.h",
             ]
