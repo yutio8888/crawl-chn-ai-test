@@ -110,6 +110,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 ### 全量复审
 
 - [ ] 共享词根系列
+  - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术

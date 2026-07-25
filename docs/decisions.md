@@ -1511,39 +1511,6 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
-### D-C-016 — Spell name review: Call 词根与句式边界
-
-- **Type**: C — Batch ruling
-- **Status**: active
-- **Date**: 2026-07-25
-- **Source**: 当前清单、英文/中文描述与召唤、召回、潮汐及增益实现复核
-- **Scope**: 10 个含独立 `Call` 词的现行法术标题
-- **Choice**:
-  - `Druid's Call`: 德鲁伊召唤 → **德鲁伊呼唤**
-  - 其余 9 项保留当前译名
-- **Series rule**:
-  - 实体或力量回应 `Call` 时，核心词根为“呼唤”；
-  - `Call Down X` 是“降下 X”的动词短语，不机械套用“呼唤”；
-  - 自然中文允许 `Dragon's Call → 龙之呼唤`、
-    `Call of Chaos → 混沌呼唤` 等结构变化；
-  - `Hunting Call` 是激励盟友的狩猎呼号，保留“狩猎呼唤”；
-  - `Recall` 不是独立 `Call` 词成员，不纳入本系列。
-- **Rationale**: `Druid's Call` 的实现把同层其他位置的已有林地生物召回，
-  不是创造召唤物；“德鲁伊呼唤”既符合机制，也恢复
-  `Call → 呼唤` / `Summon → 召唤` 的辨识边界。
-- **Description corrections**:
-  - `Call Canine Familiar` 补回清除中毒和劈砍相邻敌人的效果；
-  - `Call Lost Souls` 将过泛的“死灵”还原为死灵魔法形成的幽魂。
-- **Affected files**:
-  - `crawl-ref/source/dat/i18n/zh/source.txt` ✅
-  - `crawl-ref/source/dat/descript/zh/spells.txt` ✅
-  - `docs/glossary.md` ✅
-  - `docs/glossary.utf8` ✅
-- **Extends**: `D-C-009`
-- **Resolved**: 2026-07-25
-
----
-
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -1599,4 +1566,3 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |
 | D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
 | D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；6 description fixes | active |
-| D-C-016 | Spell name review — Call 词根 | 1 fix；10 current；2 description fixes | active |

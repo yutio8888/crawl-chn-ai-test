@@ -513,48 +513,11 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 - [x] 机制证据收集
 - [x] 翻译审阅裁定
 - [x] 单一翻译写入者落地
-- [ ] translation profile
-- [x] 系列裁定登记（`D-C-016`）
-
-## 共享词根批次：Call
-
-系列边界为英文标题中独立的 `Call` 词，共 10 项现行法术；`Recall`
-不是该词成员。`Call Down` 是“降下”的动词短语例外。
-
-| Enum | 英文名 | 原中文名 | 裁定中文名 | 裁定 | 置信度 |
-|---|---|---|---|---|---|
-| `SPELL_CALL_DOWN_DAMNATION` | Call Down Damnation | 降下天谴 | 降下天谴 | 保留 | 高 |
-| `SPELL_CALL_DOWN_LIGHTNING` | Call Down Lightning | 降下闪电 | 降下闪电 | 保留 | 高 |
-| `SPELL_CALL_IMP` | Call Imp | 呼唤小恶魔 | 呼唤小恶魔 | 保留 | 高 |
-| `SPELL_CALL_CANINE_FAMILIAR` | Call Canine Familiar | 呼唤犬类使魔 | 呼唤犬类使魔 | 保留 | 高 |
-| `SPELL_CALL_TIDE` | Call Tide | 呼唤潮汐 | 呼唤潮汐 | 保留 | 高 |
-| `SPELL_DRUIDS_CALL` | Druid's Call | 德鲁伊召唤 | 德鲁伊呼唤 | 重译 | 高 |
-| `SPELL_CALL_LOST_SOULS` | Call Lost Souls | 呼唤迷失灵魂 | 呼唤迷失灵魂 | 保留 | 高 |
-| `SPELL_CALL_OF_CHAOS` | Call of Chaos | 混沌呼唤 | 混沌呼唤 | 保留 | 高 |
-| `SPELL_DRAGON_CALL` | Dragon's Call | 龙之呼唤 | 龙之呼唤 | 保留 | 高 |
-| `SPELL_HUNTING_CALL` | Hunting Call | 狩猎呼唤 | 狩猎呼唤 | 保留 | 中高 |
-
-`Druid's Call` 会把同层其他位置的已有林地生物召回；旧译“德鲁伊召唤”
-既误示创造召唤物，也破坏 `Call/呼唤` 与 `Summon/召唤` 的区分，故改为
-“德鲁伊呼唤”。其余标题分别准确表达降下天谴/闪电、呼来实体或力量、
-驱动潮汐，以及用呼号激励盟友。证据：`spl-data.h:487`、
-`spl-data.h:734`、`spl-data.h:1774`、`spl-data.h:1840`、
-`spl-data.h:2198`、`spl-data.h:2454`、`spl-data.h:2576`、
-`spl-data.h:2816`、`mon-cast.cc:7821`、`mon-cast.cc:8147`、
-`mon-cast.cc:8480`、`dat/descript/spells.txt:272`。
-
-附带修正：`Call Canine Familiar` 中文描述补回清除中毒和劈砍相邻敌人；
-`Call Lost Souls` 将泛化的“死灵”改为死灵魔法形成的幽魂。
-
-### 落地状态
-
-- [x] 10/10 机制证据与名称裁定
-- [x] 单一翻译写入者落地
 - [x] translation profile
 - [x] 系列裁定登记（`D-C-016`）
 
 验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T160140801756000+0800-55158-29111a192cdf`。本批裁定后的
+`20260725T160443184505000+0800-60545-9db1ba2ba80d`。本批裁定后的
 `docs/glossary.md` SHA-256 为
 `0abeba2a2d9ad32a2d3891389d4b6a14848e7e27600b35330887aa24defed6de`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
