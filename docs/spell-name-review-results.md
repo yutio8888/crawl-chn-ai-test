@@ -523,3 +523,63 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 `0abeba2a2d9ad32a2d3891389d4b6a14848e7e27600b35330887aa24defed6de`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `240df3fc2e2a6cce722ad4294c122385b5f8712be7bb0c7f2805b9f922d00dfa`。
+
+## Summon 词形系列（进行中）
+
+边界：英文标题中含独立 `Summon` 词形，共 42 项；其中 34 项现行、
+8 项 `TAG_MAJOR_VERSION == 34` 已移除兼容记录。`Call` 系列、`Recall`
+以及仅因学派为 Summoning 而不含该标题词形的法术均不在本系列。为遵守
+“完整系列审完后再落地”的规则，本节只累计证据；42 项裁定齐备前不修改
+本系列标题或关联描述。
+
+### 首批：现行非 `monster` flag 成员（8/42）
+
+这 8 项均有英文和中文描述。flags 不含 `monster` 只说明玩家施法路径
+存在；其中若干也可由怪物使用，使用者字段以实际调度为准。
+
+| Enum | 等级 / 学派 / flags | 实际使用者 | 当前译名 | 初步裁定 | 置信度 |
+|---|---|---|---|---|---|
+| `SPELL_SUMMON_SMALL_MAMMAL` | 1 / 召唤 / `none` | 玩家、怪物 | 召唤小型哺乳动物 | 保留 | 高 |
+| `SPELL_SUMMON_HORRIBLE_THINGS` | 8 / 召唤 / `unholy, chaotic, mons_abjure` | 玩家、怪物 | 召唤恐怖之物 | 保留 | 高 |
+| `SPELL_SUMMON_ICE_BEAST` | 3 / 冰、召唤 / `none` | 玩家、怪物 | 召唤冰兽 | 保留 | 高 |
+| `SPELL_SUMMON_HYDRA` | 7 / 召唤 / `mons_abjure` | 玩家、怪物 | 召唤多头蛇 | 保留 | 高 |
+| `SPELL_SUMMON_FOREST` | 5 / 召唤、位移 / `none` | 玩家 | 召唤森林 | 保留 | 高 |
+| `SPELL_SUMMON_MANA_VIPER` | 5 / 召唤、诅咒 / `mons_abjure` | 玩家、怪物 | 召唤魔力蝰蛇 | 保留 | 高 |
+| `SPELL_SUMMON_CACTUS` | 6 / 召唤 / `none` | 玩家 | 召唤仙人掌巨人 | 保留 | 高 |
+| `SPELL_SUMMON_SEISMOSAURUS_EGG` | 4 / 召唤、土 / `none` | 玩家 | 召唤震龙蛋 | 保留 | 高 |
+
+- `Summon Small Mammal` 召出老鼠、蝙蝠或短尾矮袋鼠，法术威力提高出现
+  短尾矮袋鼠的概率；标题完整保留 Small 与实体类别。
+- `Summon Horrible Things` 打开通往深渊的门并召来至少两个憎恶，同时
+  令施法者承受 Doom 风险；“恐怖之物”忠实于刻意泛称的原名。
+- `Summon Ice Beast` 召出强度随法术威力变化的冰兽；标题直接复用实体名。
+- `Summon Hydra` 召出短暂作战的多头蛇，法术威力决定头数；标题不需要
+  加入持续时间或头数细节。
+- `Summon Forest` 将森林位面与当前世界强行交叠，召出森林之灵并唤醒
+  树木；虽然效果不只一个生物，“召唤森林”准确保留法术的宏观中心意象。
+- `Summon Mana Viper` 召出咬击带反魔法效果的魔力蝰蛇；标题复用实体名。
+- `Summon Cactus Giant` 召出会反伤近战攻击者的仙人掌巨人，高威力会
+  召来更老练强壮的个体；标题准确。
+- `Summon Seismosaurus Egg` 召出需施法者相邻守护数回合才会孵化的震龙蛋；
+  标题准确保留对象是“蛋”而非直接召唤震龙。
+
+描述审阅发现两项明确 Needs Fix，暂记录、不提前落地：
+
+- `Summon Horrible Things` 中文仍声称会损失智力，却遗漏当前效果会积累
+  Doom 风险。数量随法术威力提高的趋势在实现中仍存在，但当前英文描述
+  不再陈述该细节；重译时应删除旧智力机制并完整恢复 Doom 后果。
+- `Summon Mana Viper` 的“迅速耗掉敌人几乎所有的魔力”把
+  `nearly any foe` 错解为“几乎所有魔力”；应改为该咬击几乎能影响
+  任何敌人的魔力储备。
+
+证据：`spl-data.h:408`、`spl-data.h:566`、`spl-data.h:712`、
+`spl-data.h:1974`、`spl-data.h:2510`、`spl-data.h:2598`、
+`spl-data.h:3614`、`spl-data.h:4385`；`spl-summoning.cc:193`、
+`spl-summoning.cc:297`、`spl-summoning.cc:363`、
+`spl-summoning.cc:459`、`spl-summoning.cc:675`、
+`spl-summoning.cc:1402`、`spl-summoning.cc:1482`、
+`spl-summoning.cc:4659`；`dat/descript/spells.txt:2081`、
+`dat/descript/spells.txt:2123`、`dat/descript/spells.txt:2147`、
+`dat/descript/spells.txt:2154`、`dat/descript/spells.txt:2159`、
+`dat/descript/spells.txt:2169`、`dat/descript/spells.txt:2197`、
+`dat/descript/spells.txt:2211`。
