@@ -1053,6 +1053,7 @@
 | Berserker Rage | 狂暴之怒 | ✅ |
 | Bestow Arms | 赐予武器 | ✅ |
 | Bind Souls | 绑定灵魂 | ✅ |
+| Blade Hands | 利刃之手 | ✅；已移除兼容标题 |
 | Bombard | 炮击 | ✅ |
 | Brain Bite | 脑噬 | ✅ |
 | Brothers in Arms | 战友 | 📝 |
@@ -1251,7 +1252,7 @@
 | Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |
 | Regenerate Other | 再生他人 | 📝 |
 | Regeneration | 快速再生 | ✅ |
-| Rending Blade | 撕裂之刃 | ✅ |
+| Rending Blade | 撕裂之刃 | ✅；近战命中时在附近敌人间来回撕裂 |
 | Resonance Strike | 共鸣打击 | ✅ |
 | Resurrect | 复活术 | ✅ |
 | Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
@@ -1311,7 +1312,7 @@
 | Stunning Burst | 眩晕爆发 | ✅ |
 | Sublimation of Blood | 血液升华 | ✅ |
 | Sunray | 阳光射线 | ✅ |
-| Sure Blade | 精准之刃 | ✅ |
+| Sure Blade | 精准之刃 | ✅；已移除兼容标题 |
 | Swiftness | 迅捷 | ✅ |
 | Symbol of Torment | 折磨之符 | ✅ |
 | Teleport Other | 传送他人 | ✅；短暂延迟后尝试将目标传送出施法者视野 |

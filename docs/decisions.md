@@ -2345,6 +2345,26 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-069 — Spell name review: Blade 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 2 项已移除兼容标题
+- **Choice**: 保留 `Rending Blade → 撕裂之刃`、
+  `Sure Blade → 精准之刃` 与 `Blade Hands → 利刃之手`。
+- **Series rule**: 武器或肢体刃化语境中的 `blade → 刃`。
+- **Rationale**: 三项分别准确表达来回撕裂的能量刃、精准之刃和手部刃化。
+- **Description corrections**: 重译 `Rending Blade`，补全来回攻击附近敌人、
+  无法抵抗、封存全部剩余法力、结束返还及每点法力增伤。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2896,3 +2916,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-066 | Spell name review — Hurl 词形系列 | 3 current；1 rename + shared description fixes | active |
 | D-C-067 | Spell name review — Launch 词形系列 | 3 current；2 description fixes | active |
 | D-C-068 | Spell name review — Blast 词形系列 | 2 current + 1 axed；1 description retranslation | active |
+| D-C-069 | Spell name review — Blade 词形系列 | 1 current + 2 axed；1 description retranslation | active |

@@ -115,6 +115,7 @@ Bind Souls	绑定灵魂	domain=spells; source=EN/ZH; 备注=✅
 black bear	黑熊	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black draconian	黑龙人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -701,7 +702,7 @@ Recite	吟诵	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ab
 Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=📝
 Regeneration	快速再生	domain=spells; source=EN/ZH; 备注=✅
 remove	卸下	domain=items; source=EN/ZH
-Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅
+Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅；近战命中时在附近敌人间来回撕裂
 repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -880,7 +881,7 @@ Summoner	召唤师	domain=backgrounds; source=EN/ZH; Scope / comment=background;
 Summoning	召唤系	domain=magic; source=EN/ZH
 Summonings	召唤系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=✅
-Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=✅
+Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
