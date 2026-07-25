@@ -1766,6 +1766,90 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `b0e73be1fa96d25dead8cb7fe00588c6e718ad560d0458ec70f78c019ae20930`。
 
+## Lightning/Electricity/Thunder 元素系列
+
+边界：标题含 `Lightning`、`Electric`、`Electrical`、`Electricity`
+或 `Thunder` 的 10 项法术。6 项已在既有批次审阅，本批新增 3 项现行
+法术和 1 项已移除兼容标题。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_CONJURE_BALL_LIGHTNING` | 现行 | 召唤球形闪电 | 创造会追敌并爆炸的球状闪电 | 保留 |
+| `SPELL_CHAIN_LIGHTNING` | 现行 | 连锁闪电 | 从最近生物开始向外连锁，距离越远伤害越低 | 保留 |
+| `SPELL_ORB_OF_ELECTRICITY` | 现行 | 电光球 | 电能球命中时产生大型爆炸 | 保留 |
+| `SPELL_RING_OF_THUNDER` | 已移除兼容 | 雷霆之环 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_LIGHTNING_BOLT` | 现行 | 闪电箭 | 穿透闪电束 | 保留（复用 D-C-014） |
+| `SPELL_ELECTRICAL_BOLT` | 现行 | 电击箭 | 高命中电束，可墙面反弹 | 保留（复用 D-C-014） |
+| `SPELL_CALL_DOWN_LIGHTNING` | 现行 | 降下闪电 | 从目标上方降下闪电 | 保留（复用 D-C-016） |
+| `SPELL_FORGE_LIGHTNING_SPIRE` | 现行 | 锻造闪电尖塔 | 锻造远程闪电构装 | 保留（复用 D-C-032） |
+| `SPELL_ELECTRIC_CHARGE` | 现行 | 维之电击冲锋 | 沿最短路径冲锋并电击目标 | 保留（复用 D-C-034） |
+| `SPELL_THUNDERBOLT` | 现行 | 雷击 | 连续施放时形成扇形电弧 | 保留（复用 D-C-014） |
+
+名称结论：该组按实际构词分别使用“闪电／电击／电光／雷霆”，无需机械
+统一。三项新增现行标题准确区分会追敌的球状闪电、逐目标扩散的电弧和
+命中爆炸的电能球；已移除的 Ring of Thunder 缺少当前机制证据，暂沿用。
+
+描述审阅发现两处 Needs Fix：`Chain Lightning` 原中文残留“不断弹跳
+直到接地”的旧机制，现行法术是先击中最近生物再向外连锁；`Conjure
+Ball Lightning` 使用了指人的“他们”指代球状闪电。其余新增描述一致。
+
+证据：`spl-data.h:1231`—`1249`、`spl-data.h:2377`—`2385`、
+`spl-data.h:4721`，对应英文与中文描述，以及连锁电弧、球状闪电和
+电能球的施法实现；其余六项复用对应既有裁定。
+
+### 落地状态
+
+- [x] 10/10 生命周期、机制证据与名称裁定（4 项新增，6 项复用）
+- [x] 单一翻译写入者两处描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-052`）
+
+验证结果：覆盖 Lightning/Electricity/Thunder 与寒冷术语当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T174921709354000+0800-75557-976d5f4df2cc`。裁定后的
+`docs/glossary.md` SHA-256 为
+`dd8fb9706ab97e86f9ab65f79db16b91d4255ba62530b44d099de48e4fabf109`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
+
+## Glaciate/Iceblast/Hailstorm 寒冷术语批次
+
+边界：寒冷元素剩余的 `Glaciate`、`Iceblast`、`Hailstorm` 三项现行法术。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_GLACIATE` | 9 / 塑能、冰 / `dir_or_target, monster` | 怪物 | 冰川 | 锥形寒冰冲击；近处伤害更高，命中后冰封减速，击杀可能生成冰块 | 重译为“冰封” |
+| `SPELL_ICEBLAST` | 5 / 塑能、冰 / `dir_or_target, needs_tracer` | 玩家道具、怪物 | 冰爆 | 大团冰块撞击爆炸，一半伤害无视寒冷抗性 | 保留 |
+| `SPELL_HAILSTORM` | 3 / 塑能、冰 / 无 | 玩家 | 冰雹风暴 | 环形冰雹攻击；紧邻施法者处为安全风暴眼 | 保留 |
+
+名称结论：`Glaciate` 是“使冰封”的动词，当前“冰川”误作地貌名词；
+改为“冰封”能准确表达命中目标覆冰减速、击杀者化为冰块的机制。
+“冰爆”和“冰雹风暴”分别忠实保留投射物爆炸与天气形态。
+
+三项中文描述均有语言或准确性问题：`Glaciate` 缺少被卷入者中心词，
+`Hailstorm` 将 adjacent 泛化为附近，`Iceblast` 将单个 large mass
+写成大量冰块；三项寒冷抗性句式亦不自然，本批已统一修正。
+
+证据：`spl-data.h:2565`—`2572`、`spl-data.h:3093`—`3100`、
+`spl-data.h:3403`—`3410`、`dat/descript/spells.txt:889`—`895`、
+`dat/descript/spells.txt:932`—`937`、`dat/descript/spells.txt:1027`—`1030`、
+`spl-damage.cc:3987`—`4059`、`spl-damage.cc:4295`—`4297`。
+
+### 落地状态
+
+- [x] 3/3 机制证据与名称裁定
+- [x] 单一翻译写入者名称与描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-053`）
+
+验证结果：覆盖 Lightning/Electricity/Thunder 与寒冷术语当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T174921709354000+0800-75557-976d5f4df2cc`。裁定后的
+`docs/glossary.md` SHA-256 为
+`dd8fb9706ab97e86f9ab65f79db16b91d4255ba62530b44d099de48e4fabf109`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`0574e4bd74af7ee549cb29d9d4bd00a855c3a0a67edfd5800cbecc41976bedf8`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

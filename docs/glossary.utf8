@@ -197,7 +197,7 @@ centaur warrior	半人马战士	domain=monsters; source=EN/ZH; Scope / comment=m
 Cerebov	塞雷波夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Cerebov title	塞雷波夫，火与钢之恶魔领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 cerulean imp	蔚蓝小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅
+Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅；从最近生物开始向外连锁，距离越远伤害越低
 Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
 Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=✅
 Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -229,7 +229,7 @@ Confusion	混乱	domain=status; source=EN/ZH; Scope / comment=status; source=sta
 Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
 Conjuration	咒法系	domain=magic; source=EN/ZH
 Conjurations	咒法系	domain=magic; source=EN/ZH
-Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅
+Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅；创造会追敌并爆炸的球状闪电
 Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
 Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -421,7 +421,7 @@ Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
-Glaciate	冰川	domain=spells; source=EN/ZH; 备注=✅
+Glaciate	冰封	domain=spells; source=EN/ZH; 备注=🆕；锥形寒冰冲击会冰封并减速目标
 Gladiator	角斗士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Gloom	阴郁	domain=spells; source=EN/ZH; 备注=✅
 Gloorx Vloq	格洛克斯·弗洛克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -441,7 +441,7 @@ Grinder	格林德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 growls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Grum	格拉姆	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Grunn	格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅
+Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅；环形冰雹避开紧邻施法者的目标
 Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅
 Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=🆕
@@ -477,7 +477,7 @@ Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅
 Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅
+Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅；冰块撞击后爆炸，一半伤害无视寒冷抗性
 icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 identify	鉴定	domain=items; source=EN/ZH
 Ignacio	伊格纳西奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -629,7 +629,7 @@ old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy wea
 Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅；持续毒害视线内所有生物
 Orb of Destruction	毁灭之球	domain=spells; source=EN/ZH; 备注=✅
-Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅
+Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅；命中时产生大型电能爆炸
 Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=两种译法均可
 orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人骑士、兽人大祭司）
 orc sorcerer	兽人术士	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from orc wizard → 兽人巫师
@@ -711,7 +711,7 @@ Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
 Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH
 Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
-Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅
+Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 roars	咆哮道 / 吼道	domain=dialogue; source=EN/ZH; 适用角色=龙、大型怪物
 Robin	罗宾	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Roll	翻滚	domain=spells; source=EN/ZH; 备注=✅

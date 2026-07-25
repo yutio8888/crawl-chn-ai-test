@@ -1980,6 +1980,52 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-052 — Spell name review: Lightning/Electricity/Thunder 元素系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 10 项标题含 `Lightning`、`Electric/Electrical/Electricity`
+  或 `Thunder` 的法术；4 项新增审阅，6 项复用既有证据
+- **Choice**: 保留全部现行中文标题及已移除的“雷霆之环”兼容标题。
+- **Series rule**: 依构词分别采用“闪电／电击／电光／雷霆”，不机械
+  统一；标题需保留投射物、连锁、召唤或环形等核心形态。
+- **Rationale**: “召唤球形闪电”“连锁闪电”“电光球”分别准确表达
+  追敌爆炸实体、逐目标连锁电弧和命中爆炸的电能球；“雷霆之环”缺少
+  当前机制证据，保留兼容译名。其余六项已经由 Bolt、Call、Forge、
+  Breath、Vhi 或单词标题批次确认。
+- **Description corrections**: 修正 `Chain Lightning` 旧版“不断弹跳直至
+  接地”机制；修正 `Conjure Ball Lightning` 球状闪电的代词。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-053 — Spell name review: Glaciate/Iceblast/Hailstorm 寒冷术语批次
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: `Glaciate`、`Iceblast` 与 `Hailstorm` 三项现行标题
+- **Choice**: 将 `Glaciate → 冰川` 重译为“冰封”；保留
+  `Iceblast → 冰爆` 与 `Hailstorm → 冰雹风暴`。
+- **Rationale**: `Glaciate` 是使目标覆冰、冻结的动词，而“冰川”仅表示
+  地貌名词；“冰封”准确对应锥形寒冰冲击造成的减速与冰块化。另两项
+  分别准确表达撞击爆炸的冰块和环形冰雹风暴。
+- **Description corrections**: 重译并润色三项中文描述，修正缺失中心词、
+  风暴眼邻接范围、冰块数量及寒冷抗性措辞，不改变机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2514,3 +2560,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-049 | Spell name review — Acid/Corrosive 词形系列 | 3 current；1 reused；no text fixes | active |
 | D-C-050 | Spell name review — Frost/Rime/Chill 寒冷术语批次 | 4 current；1 rename + 2 description retranslations | active |
 | D-C-051 | Spell name review — Permafrost Eruption | 1 current；1 description retranslation | active |
+| D-C-052 | Spell name review — Lightning/Electricity/Thunder 元素系列 | 9 current + 1 axed；4 new + 6 reused；2 description fixes | active |
+| D-C-053 | Spell name review — Glaciate/Iceblast/Hailstorm 寒冷术语批次 | 3 current；1 rename + 3 description fixes | active |

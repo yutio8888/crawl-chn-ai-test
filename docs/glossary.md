@@ -1058,7 +1058,7 @@
 | Brothers in Arms | 战友 | 📝 |
 | Cantrip | 小戏法 | ✅ |
 | Cause Fear | 恐惧术 | ✅ |
-| Chain Lightning | 连锁闪电 | ✅ |
+| Chain Lightning | 连锁闪电 | ✅；从最近生物开始向外连锁，距离越远伤害越低 |
 | Chain of Chaos | 混沌之链 | ✅ |
 | Chant Fire Storm | 咏唱火焰风暴 | ✅ |
 | Charm | 魅惑 | ✅ |
@@ -1067,7 +1067,7 @@
 | Concentrate Venom | 浓缩毒液 | ✅ |
 | Condensation Shield | 凝结之盾 | 🆕 |
 | Confuse | 混乱 | ✅ |
-| Conjure Ball Lightning | 召唤球形闪电 | ✅ |
+| Conjure Ball Lightning | 召唤球形闪电 | ✅；创造会追敌并爆炸的球状闪电 |
 | Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
@@ -1144,14 +1144,14 @@
 | Funeral Dirge | 葬礼哀歌 | ✅ |
 | Ghostly Fireball | 幽灵火球 | ✅ |
 | Ghostly Sacrifice | 幽灵献祭 | ✅ |
-| Glaciate | 冰川 | ✅ |
+| Glaciate | 冰封 | 🆕；锥形寒冰冲击会冰封并减速目标 |
 | Gloom | 阴郁 | ✅ |
 | Goad Beasts | 激怒野兽 | ✅ |
 | Grand Avatar | 大化身 | ✅ |
 | Grasping Roots | 抓握根须 | ✅ |
 | Grave Claw | 墓爪 | ✅ |
 | Greater Ensnare | 强力束缚 | ✅ |
-| Hailstorm | 冰雹风暴 | ✅ |
+| Hailstorm | 冰雹风暴 | ✅；环形冰雹避开紧邻施法者的目标 |
 | Harpoon Shot | 鱼叉射击 | ✅ |
 | Haste | 加速 | 🆕 |
 | Haste Other | 加速他人 | ✅ |
@@ -1170,7 +1170,7 @@
 | Hurl Damnation | 投掷诅咒 | ✅ |
 | Hurl Sludge | 投掷污泥 | ✅ |
 | Hurl Torchlight | 投掷火炬之光 | ✅ |
-| Iceblast | 冰爆 | ✅ |
+| Iceblast | 冰爆 | ✅；冰块撞击后爆炸，一半伤害无视寒冷抗性 |
 | Ignite Poison | 点燃毒素 | ✅ |
 | Ignition | 点火 | ✅ |
 | Ill Omen | 凶兆 | ✅ |
@@ -1221,7 +1221,7 @@
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
 | Old Deflect Missiles | 旧版偏转飞弹 | ✅ |
 | Orb of Destruction | 毁灭之球 | ✅ |
-| Orb of Electricity | 电光球 | ✅ |
+| Orb of Electricity | 电光球 | ✅；命中时产生大型电能爆炸 |
 | Ostracise | 排斥 | ✅ |
 | Pain | 痛苦 | ✅ |
 | Paralyse | 麻痹 | ✅ |
@@ -1256,7 +1256,7 @@
 | Resurrect | 复活术 | ✅ |
 | Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
 | Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Ring of Thunder | 雷霆之环 | ✅ |
+| Ring of Thunder | 雷霆之环 | ✅；已移除兼容标题 |
 | Roll | 翻滚 | ✅ |
 | Sacrifice | 献祭 | ✅ |
 | Sandblast | 沙爆 | 📝 |
