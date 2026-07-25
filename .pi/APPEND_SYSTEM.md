@@ -41,10 +41,19 @@ Pi discovers the shared skills under `.agents/skills/`. Load them on demand:
 ```text
 /skill:dcss-translation-context <task>
 /skill:translation-pipeline <task>
+/skill:batch-translation-review <task>
 ```
 
 For every applicable dispatch, run `context_resolve.sh` in the current
 worktree first and pass its complete output to the child.
+
+For an enumerable full-category translation audit, load
+`batch-translation-review` and follow its frozen inventory, evidence-card,
+dependency-group, and coverage-proof stages. Use `scout` for parallel
+read-only evidence discovery, `translation-reviewer` for wording judgments,
+one `zh-translator` for sequential translation-asset edits, and
+`crawl-coder` only for separately owned implementation support. Do not create
+a Pi-only copy of the shared workflow or bypass the existing final review.
 
 ## Workflow Fallback
 

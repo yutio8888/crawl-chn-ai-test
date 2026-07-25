@@ -1,0 +1,4 @@
+interface:
+  display_name: "批量翻译审阅"
+  short_description: "逐项审阅可枚举的完整翻译集合，分批落地并证明覆盖无遗漏"
+  default_prompt: "使用 $batch-translation-review 对一个完整翻译集合进行逐项审阅、分批裁定并证明覆盖完整。"

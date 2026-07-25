@@ -135,6 +135,20 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn('task(subagent_type=', text)
         self.assertNotIn("node .claude/workflows/", text)
 
+    def test_batch_translation_review_skill_is_shared_with_pi(self) -> None:
+        skill = ROOT / ".agents/skills/batch-translation-review/SKILL.md"
+        text = skill.read_text()
+        self.assertIn("$dcss-translation-context", text)
+        self.assertIn("exactly one evidence card", text)
+        self.assertIn("inventory and reviewed identity sets are equal", text)
+        self.assertIn("review_prepare.sh", text)
+        self.assertIn("review_final_gate.sh", text)
+
+        adapter = (ROOT / ".pi/APPEND_SYSTEM.md").read_text()
+        self.assertIn("/skill:batch-translation-review <task>", adapter)
+        self.assertIn("Do not create", adapter)
+        self.assertIn("Pi-only copy of the shared workflow", adapter)
+
     def test_plan_review_enforces_minimal_sufficient_design(self) -> None:
         required_fragments = (
             "acceptanceCriteria",
