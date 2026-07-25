@@ -118,7 +118,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Dart 词形系列（2 项证据、裁定、单批落地及 translation profile 已完成）
   - [x] Shadow/Shadows 词形系列（13 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Throw 词形系列（8 项证据、裁定、描述落地及 translation profile 已完成）
-  - [ ] Beam 词形系列（2 项均已审阅；其中 1 项复用 Shadow 证据，待 translation profile）
+  - [x] Beam 词形系列（2 项均已审阅；其中 1 项复用 Shadow 证据，translation profile 已完成）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术

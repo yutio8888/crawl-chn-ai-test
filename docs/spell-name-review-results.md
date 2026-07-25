@@ -838,8 +838,16 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 - [x] 2/2 名称裁定（1 项新增证据，1 项复用未变化证据）
 - [x] 单一翻译写入者描述修正
-- [ ] translation profile
+- [x] translation profile
 - [x] 系列裁定登记（`D-C-022`）
+
+验证结果：覆盖 Beam 当前差异的 `verify_zh.sh --profile translation`
+通过，0 项失败；Run ID
+`20260725T163645858802000+0800-23887-6f9d722cf77d`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`d359c94d477bd28ff04a58662f1a2635a83294a49bded08e18cb997ef78d35c9`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
 
 ## Throw 词形系列
 
