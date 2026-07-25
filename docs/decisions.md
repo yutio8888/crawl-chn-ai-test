@@ -1209,6 +1209,58 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-021 — Spell name review: Throw 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、zap 与怪物施法实现逐项复核
+- **Scope**: 8 项含独立 `Throw` 词形的标题；7 项现行、1 项
+  `TAG_MAJOR_VERSION == 34` 已移除兼容
+- **Choice**: 7 项现行标题全部保留；已移除的 `Throw → 投掷` 因当前
+  描述与实现均不存在而暂沿用。
+- **Series rule**: 标题动词 `Throw` 稳定译为“投掷”；实际表现使用
+  fire/hurl 等实现动词不改变标题词根。
+- **Rationale**: 火焰、冰霜、冰柱、倒刺、盟友、流星索和小丑派均准确
+  标示投掷对象。`Throw Klown Pie → 投掷小丑派` 保留 Killer Klown
+  的专属物件意象，又不会误示为投掷小丑本体。
+- **Description corrections**: 修正 5 项旧描述，恢复 `Throw Ally` 的
+  施法者/落点关系、倒刺移动伤害、巨型流星索无视体型的束缚、冰片
+  一半伤害无视寒冷抗性，以及小丑派六类不可抵抗临时效果并删除旧机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-022 — Spell name review: Beam 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、目标选择及双段 beam
+  实现逐项复核
+- **Scope**: 2 项以独立 `Beam` 结尾的现行标题；`Shadow Beam` 已由
+  `D-C-020` 审阅，本批复用机制未变化的证据
+- **Choice**:
+  - `Plasma Beam → 等离子光束` 保留；
+  - `Shadow Beam → 暗影光束` 保留（复用 `D-C-020`）。
+- **Series rule**: 表示连续束状投射物的 `Beam` 稳定译为“光束”。
+- **Rationale**: `Plasma Beam` 自动选择最远敌人之一，先发射穿透性
+  电击束并无视一半护甲，再沿同一路径追加火焰束；“等离子光束”忠实于
+  原名且不遗漏形态。无需添加原名没有的“雷火”等机制说明词。
+- **Description corrections**: 将“穿透一半防具”修正为“无视目标一半的
+  护甲”，并明确火焰束沿同一路径随后射出。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1712,3 +1764,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-018 | Spell name review — Breath 词形系列 | 6 fixes；20 current + 2 axed compatibility | active |
 | D-C-019 | Spell name review — Dart 词形系列 | 1 fix；2 current | active |
 | D-C-020 | Spell name review — Shadow/Shadows 词形系列 | 12 current + 1 axed compatibility；10 description fixes | active |
+| D-C-021 | Spell name review — Throw 词形系列 | 7 current + 1 axed compatibility；5 description fixes | active |
+| D-C-022 | Spell name review — Beam 词形系列 | 2 current；1 description fix | active |

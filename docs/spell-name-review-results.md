@@ -810,6 +810,82 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
 
+## Beam 词形系列
+
+边界：英文标题以独立 `Beam` 结尾的 2 项现行法术，无已移除兼容成员。
+`Shadow Beam` 已在 Shadow/Shadows 批次审阅，本批复用其机制未变化的
+证据且不重复计数；新增审阅身份仅为 `Plasma Beam`。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_PLASMA_BEAM` | 6 / 火、气 / `noisy, destructive` | 玩家、怪物 | 等离子光束 | 自动选择最远敌人之一；穿透电击束无视一半护甲，再追加同路径火焰束 | 保留 |
+| `SPELL_SHADOW_BEAM` | 5 / 塑能 / `dir_or_target, monster, needs_tracer, silent` | 怪物 | 暗影光束 | 穿透性暗影束 | 保留（复用 D-C-020） |
+
+系列结论：两项都以穿透性 beam 为核心，`Beam → 光束` 自然且准确。
+`Plasma Beam` 的火、气学派和双段实现支持“等离子光束”；不应为了强调
+双元素改成原名不存在的“雷火光束”。`Shadow Beam` 已有完整独立证据。
+
+标题无需修改。描述审阅修正一项 Needs Fix：旧文“穿透防御者的一半防具”
+既混用装备类别，也没有清楚表达 armour bypass；现改为“无视目标一半的
+护甲”，并明确火焰束沿同一路径随后射出。
+
+证据：`spl-data.h:140`、`spl-data.h:4093`、
+`dat/descript/spells.txt:1555`、`dat/descript/spells.txt:1785`、
+`spl-cast.cc:1393`、`spl-cast.cc:2531`、`zap-data.h:1883`、
+`zap-data.h:1898`、`spl-util.cc:2367`。
+
+### 落地状态
+
+- [x] 2/2 名称裁定（1 项新增证据，1 项复用未变化证据）
+- [x] 单一翻译写入者描述修正
+- [ ] translation profile
+- [x] 系列裁定登记（`D-C-022`）
+
+## Throw 词形系列
+
+边界：英文标题中含独立 `Throw` 词形，共 8 项；其中 7 项现行、
+1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_THROW_FLAME` | 现行 | 投掷火焰 | 小团火焰 | 保留 |
+| `SPELL_THROW_FROST` | 现行 | 投掷冰霜 | 小团冰霜 | 保留 |
+| `SPELL_THROW_ICICLE` | 现行 | 投掷冰柱 | 冰片；一半伤害无视寒冷抗性 | 保留 |
+| `SPELL_THROW_BARBS` | 现行 | 投掷倒刺 | 倒刺使目标移动时受伤 | 保留 |
+| `SPELL_THROW_ALLY` | 现行 | 投掷盟友 | 将附近盟友扔到敌人附近 | 保留 |
+| `SPELL_THROW_BOLAS` | 现行 | 投掷流星索 | 无视敌人体型并束缚在原地 | 保留 |
+| `SPELL_THROW_PIE` | 现行 | 投掷小丑派 | 施加不可抵抗的随机临时削弱 | 保留 |
+| `SPELL_THROW` | 已移除兼容 | 投掷 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：7 项现行标题全部保留，稳定采用 `Throw → 投掷`。实现中的
+fire/hurl 描述具体发射动作，不构成标题重译依据；“小丑派”也能表达
+Killer Klown 专属物件，不误示为投掷小丑本体。
+
+描述审阅修正 5 项 Needs Fix：`Throw Ally` 的施法者和落点关系、
+`Throw Barbs` 的移动伤害、`Throw Bolas` 对最大体型仍能束缚、
+`Throw Icicle` 一半伤害无视寒冷抗性，以及 `Throw Klown Pie`
+遗漏失明并残留旧版月亮派文本的问题。
+
+证据：`spl-data.h:276`—`287`、`spl-data.h:1007`、
+`spl-data.h:2782`、`spl-data.h:3004`、`spl-data.h:3325`—`3337`、
+`spl-data.h:4704`、`mon-cast.cc:2318`—`2356`、
+`mon-cast.cc:2513`、`mon-cast.cc:2719`、`beam.cc:4447`、
+`beam.cc:4519`、`beam.cc:5285`—`5292`。
+
+### 落地状态
+
+- [x] 8/8 机制证据与名称裁定
+- [x] 单一翻译写入者完整系列描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-021`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T163550762468000+0800-21896-882a67b66967`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`d359c94d477bd28ff04a58662f1a2635a83294a49bded08e18cb997ef78d35c9`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
+
 ## Shadow/Shadows 词形系列
 
 边界：英文标题中含独立 `Shadow` 或 `Shadows` 词形，共 13 项；其中

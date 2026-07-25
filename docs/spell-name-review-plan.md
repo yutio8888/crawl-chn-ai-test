@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 132/511 项逐项审阅。
+当前已完成 141/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -117,6 +117,8 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Breath 词形系列（22 项证据、裁定、单批落地及 translation profile 已完成）
   - [x] Dart 词形系列（2 项证据、裁定、单批落地及 translation profile 已完成）
   - [x] Shadow/Shadows 词形系列（13 项证据、裁定、描述落地及 translation profile 已完成）
+  - [x] Throw 词形系列（8 项证据、裁定、描述落地及 translation profile 已完成）
+  - [ ] Beam 词形系列（2 项均已审阅；其中 1 项复用 Shadow 证据，待 translation profile）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术

@@ -91,9 +91,11 @@
 | Breath | 吐息 | ✅ 已确认（20 项现行；另有 2 项已移除／TAG 34 兼容记录） |
 | Dart | 飞镖 | ✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外） |
 | Shadow | 暗影 | ✅ 已确认（12 项现行；另有 1 项已移除／TAG 34 兼容记录） |
+| Throw | 投掷 | ✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） |
+| Beam | 光束 | ✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅） |
 | Dispel | 驱散 | ✅ 已确认 |
 
-待审阅词根：Beam、Arrow、Touch 等——将在逐批审阅中确认并补充。
+待审阅词根：Arrow、Touch 等——将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
 
 ---
@@ -935,7 +937,7 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Plasma Beam | 等离子光束 | ✅ |
+| Plasma Beam | 等离子光束 | ✅；电击束无视一半护甲，随后追加同路径火焰束 |
 
 ### Shadow（13）
 
@@ -1252,7 +1254,7 @@
 | Symbol of Torment | 折磨之符 | ✅ |
 | Teleport Other | 传送他人 | ✅ |
 | Teleport Self | 自我传送 | ✅ |
-| Throw | 投掷 | 🆕 |
+| Throw | 投掷 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Throw Ally | 投掷盟友 | ✅ |
 | Throw Barbs | 投掷倒刺 | ✅ |
 | Throw Bolas | 投掷流星索 | ✅ |

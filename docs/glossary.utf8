@@ -99,6 +99,7 @@ bat	蝙蝠	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source
 Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
 battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Beam	光束	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅）
 Beastly Appendage	野兽肢体	domain=spells; source=EN/ZH; 备注=✅
 Beckoning Gale	召唤强风	domain=spells; source=EN/ZH; 备注=✅
 begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
@@ -653,7 +654,7 @@ Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=✅
 Pikel	皮克尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Planar Overlay	位面叠加	domain=spells; source=EN/ZH; 备注=✅
 Plane Rend	位面撕裂	domain=spells; source=EN/ZH; 备注=✅
-Plasma Beam	等离子光束	domain=spells; source=EN/ZH; 备注=✅
+Plasma Beam	等离子光束	domain=spells; source=EN/ZH; 备注=✅；电击束无视一半护甲，随后追加同路径火焰束
 Platinum Paragon	白金典范	domain=spells; source=EN/ZH; 备注=✅
 player ghost	玩家鬼魂	domain=core; source=EN/ZH
 pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
@@ -888,7 +889,7 @@ Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 thin skeletal structure	纤细骨骼	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
-Throw	投掷	domain=spells; source=EN/ZH; 备注=🆕
+Throw	投掷	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Throw Ally	投掷盟友	domain=spells; source=EN/ZH; 备注=✅
 Throw Barbs	投掷倒刺	domain=spells; source=EN/ZH; 备注=✅
 Throw Bolas	投掷流星索	domain=spells; source=EN/ZH; 备注=✅
