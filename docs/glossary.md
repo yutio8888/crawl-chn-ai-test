@@ -753,50 +753,50 @@
 | Malign Gateway | 邪恶传送门 | ✅ |
 | Mara Summon | 玛拉召唤 | ✅ |
 | Monstrous Menagerie | 怪物动物园 | ✅ |
-| Rakshasa Summon | 召唤罗刹 | ✅ |
+| Rakshasa Summon | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Recall | 召回术 | ✅ |
 | Shadow Creatures | 暗影生物 | ✅ |
 | Spawn Tentacles | 生成触须 | ✅ |
-| Summon Air Elementals | 召唤气元素 | 📝 |
-| Summon Butterflies | 召唤蝴蝶 | ✅ |
+| Summon Air Elementals | 召唤气元素 | ✅ |
+| Summon Butterflies | 召唤蝴蝶 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Summon Cactus Giant | 召唤仙人掌巨人 | ✅ |
 | Summon Demon | 召唤恶魔 | ✅ |
 | Summon Dragon | 召唤巨龙 | ✅ |
 | Summon Drakes | 召唤幼龙 | ✅ |
-| Summon Earth Elementals | 召唤地元素 | 📝 |
-| Summon Elemental | 召唤元素 | ✅ |
-| Summon Emperor Scorpions | 召唤帝蝎 | ✅ |
-| Summon Executioners | 召唤行刑者 | ✅ |
+| Summon Earth Elementals | 召唤地元素 | ✅ |
+| Summon Elemental | 召唤元素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Emperor Scorpions | 召唤帝王蝎 | ✅；复用实体 `emperor scorpion → 帝王蝎` |
+| Summon Executioners | 召唤处刑人 | ✅；复用实体 `Executioner → 处刑人` |
 | Summon Eyeballs | 召唤眼球 | ✅ |
-| Summon Fire Elementals | 召唤火元素 | 📝 |
+| Summon Fire Elementals | 召唤火元素 | ✅ |
 | Summon Forest | 召唤森林 | ✅ |
-| Summon Greater Demon | 召唤高级恶魔 | ✅ |
+| Summon Greater Demon | 召唤高等恶魔 | ✅ |
 | Summon Hell Sentinel | 召唤地狱哨兵 | ✅ |
-| Summon Holies | 召唤圣灵 | ✅ |
+| Summon Holies | 召唤神圣生物 | ✅；召出天使等神圣生物，非灵体 |
 | Summon Horrible Things | 召唤恐怖之物 | ✅ |
 | Summon Hydra | 召唤多头蛇 | ✅ |
 | Summon Ice Beast | 召唤冰兽 | ✅ |
 | Summon Illusion | 召唤幻象 | ✅ |
-| Summon Iron Elementals | 召唤铁元素 | ✅ |
-| Summon Mana Viper | 召唤魔力蝰蛇 | ✅ |
-| Summon Minor Demon | 召唤次级恶魔 | 📝 |
+| Summon Iron Elementals | 召唤铁元素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Summon Mana Viper | 召唤魔力毒蛇 | ✅；复用实体 `mana viper → 魔力毒蛇` |
+| Summon Minor Demon | 召唤次级恶魔 | ✅ |
 | Summon Mortal Champion | 召唤凡人冠军 | ✅ |
 | Summon Mushrooms | 召唤蘑菇 | ✅ |
-| Summon Rakshasa | 召唤罗刹 | ✅ |
+| Summon Rakshasa | 召唤罗刹 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Summon Scarabs | 召唤圣甲虫 | ✅ |
 | Summon Scorpions | 召唤蝎子 | ✅ |
-| Summon Seismosaurus Egg | 召唤震龙蛋 | ✅ |
-| Summon Sin Beast | 召唤罪兽 | ✅ |
+| Summon Seismosaurus Egg | 召唤地震龙蛋 | ✅；复用实体 `seismosaurus egg → 地震龙蛋` |
+| Summon Sin Beast | 召唤罪孽兽 | ✅；复用实体 `sin beast → 罪孽兽` |
 | Summon Small Mammal | 召唤小型哺乳动物 | ✅ |
 | Summon Spiders | 召唤蜘蛛 | ✅ |
-| Summon Twister | 召唤旋风 | ✅ |
+| Summon Twister | 召唤旋风 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Summon Tzitzimitl | 召唤齐齐米特尔 | ✅ |
-| Summon Ufetubus | 召唤乌菲图布斯 | ✅ |
+| Summon Ufetubus | 召唤乌菲特布斯 | ✅；复用实体 `ufetubus → 乌菲特布斯` |
 | Summon Undead | 召唤亡灵 | ✅ |
 | Summon Vermin | 召唤害虫 | ✅ |
 | Summon Water Elementals | 召唤水元素 | ✅ |
-| Summon swarm | 召唤虫群 | ✅ |
-| Vampire Summon | 召唤吸血鬼 | ✅ |
+| Summon swarm | 召唤虫群 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Vampire Summon | 召唤吸血鬼 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Word of Recall | 召回之言 | ✅ |
 
 ### X Cloud 后缀系列（现行 8；已移除／TAG 34 兼容 4）

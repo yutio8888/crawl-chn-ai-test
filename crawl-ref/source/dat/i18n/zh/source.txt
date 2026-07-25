@@ -2600,7 +2600,7 @@ A malignant aura surrounds %s.
 一股邪恶灵气环绕着%s。
 %%%%
 A mana viper appears with a sibilant hiss.
-一条魔力蝰蛇伴随着嘶嘶声出现了。
+一条魔力毒蛇伴随着嘶嘶声出现了。
 %%%%
 A massive air vortex appears!
 一个巨大的空气漩涡出现了！
@@ -15898,7 +15898,7 @@ Summon Demon
 召唤恶魔
 %%%%
 Summon Greater Demon
-召唤高级恶魔
+召唤高等恶魔
 %%%%
 Cigotuvi's Putrefaction
 西格图维之腐烂
@@ -16027,10 +16027,10 @@ Steam Ball
 蒸汽球
 %%%%
 Summon Ufetubus
-召唤乌菲图布斯
+召唤乌菲特布斯
 %%%%
 Summon Sin Beast
-召唤罪兽
+召唤罪孽兽
 %%%%
 Bolt of Devastation
 毁灭箭
@@ -16165,7 +16165,7 @@ Vanquished Vanguard
 败军先锋
 %%%%
 Summon Holies
-召唤圣灵
+召唤神圣生物
 %%%%
 Heal Other
 治愈他人
@@ -16345,7 +16345,7 @@ Spellspark Servitor
 法术火花仆从
 %%%%
 Summon Mana Viper
-召唤魔力蝰蛇
+召唤魔力毒蛇
 %%%%
 Phantom Mirror
 幻影镜
@@ -16378,7 +16378,7 @@ tartarus serpent of hell breath
 悲叹地狱蛇之吐息
 %%%%
 Summon Emperor Scorpions
-召唤帝蝎
+召唤帝王蝎
 %%%%
 Irradiate
 辐射
@@ -16468,7 +16468,7 @@ Entropic Weave
 熵之编织
 %%%%
 Summon Executioners
-召唤行刑者
+召唤处刑人
 %%%%
 Oblivion Howl
 湮灭嚎叫
@@ -16801,7 +16801,7 @@ Nazja's All-Purpose Tempering
 纳兹亚之通用淬炼
 %%%%
 Summon Seismosaurus Egg
-召唤震龙蛋
+召唤地震龙蛋
 %%%%
 Forge Phalanx Beetle
 锻造方阵甲虫

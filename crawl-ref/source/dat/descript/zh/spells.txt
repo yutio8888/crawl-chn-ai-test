@@ -809,7 +809,7 @@ Manifold Assault spell
 %%%%
 Mara Summon spell
 
-编织施法者的幻象。这类幻象与原先的有同样的物理能力，并能施同样的法术。
+编织出施法者的幻象。这些幻象拥有与本体相同的物理战斗能力，也能施放相同的法术。
 %%%%
 March of Sorrows spell
 
@@ -1250,8 +1250,8 @@ Summon Air Elementals spell
 %%%%
 Summon Cactus Giant spell
 
-召唤一个来自多刺部落的战士。在近战中攻击这些巨人的敌人会体验到痛苦的惊喜！
-当以更高法术威力施放，会让老练的、更强壮的战士响应召唤。
+召唤一名来自格外多刺部落的战士。近战攻击这名巨人的敌人将遭到痛苦反击！
+法术威力越高，响应召唤的战士越老练、强壮。
 %%%%
 Summon Demon spell
 
@@ -1264,23 +1264,23 @@ Summon Dragon spell
 %%%%
 Summon Drakes spell
 
-召唤多条亚龙和林德虫。
+召唤多只幼龙和蛇龙。
 %%%%
 Summon Earth Elementals spell
 
-召唤一个或多个土元素。
+召唤一个或多个地元素。
 %%%%
 Summon Emperor Scorpions spell
 
-召唤多条高贵而凶暴的帝王蝎。
+召唤多只高贵而凶暴的帝王蝎。
 %%%%
 Summon Executioners spell
 
-召唤多个处决者撕裂施法者的敌人。
+召唤多个处刑人撕裂施法者的敌人。
 %%%%
 Summon Eyeballs spell
 
-召唤多个浮动眼球，它们可能会造成玻化、变形、混乱、变异或碎裂。
+召唤多个浮空眼球，它们可能会造成玻化、变形、混乱、变异或碎裂。
 %%%%
 Summon Fire Elementals spell
 
@@ -1295,7 +1295,7 @@ Summon Forest spell
 %%%%
 Summon Greater Demon spell
 
-召唤一个魔窟的高阶恶魔为施法者效劳。
+召唤一名魔窟的高等恶魔为施法者效劳。
 %%%%
 Forge Blazeheart Golem spell
 
@@ -1311,24 +1311,25 @@ Forge Blazeheart Golem spell
 %%%%
 Summon Sin Beast spell
 
-召唤一个致命的地狱兽。
+召唤一只致命的罪孽兽。
 %%%%
 Summon Hell Sentinel spell
 
-召唤一个地狱哨兵，一个充满仇恨的噩梦般的造物。
+召唤一尊地狱哨兵——一座由仇恨驱动的噩梦般建筑。
 %%%%
 Summon Holies spell
 
-召唤圣战士来帮助施法者。
+召来神圣战士协助施法者。
 %%%%
 Summon Horrible Things spell
 
-打开一扇通往深渊的大门，并从那个恐怖领域中召唤两个或更多可怕的憎恶。
-打开此门可能会消耗施法者的一部分智力。召唤出的憎恶数量随法术威力增强而增加。
+打开一扇通往深渊的大门，并从那片可怖之地呼来两个或更多畸形的可憎之物。
+它们虽强大，但以这种方式让心智触及深渊的本质会使施法者遭受厄运，
+最终可能付出惨重代价。
 %%%%
 Summon Hydra spell
 
-召唤一只多头蛇来在短时间内与施法者并肩战斗。
+召唤一只多头蛇，在短时间内与施法者并肩战斗。
 法术威力决定着头的数量。
 %%%%
 Summon Ice Beast spell
@@ -1337,8 +1338,8 @@ Summon Ice Beast spell
 %%%%
 Summon Illusion spell
 
-召唤一个暂时存在的敌人的镜像。
-这个复制品与原先的有同样的物理能力，并能施同样的法术。
+召唤一个暂时存在的敌人镜像。
+该复制品拥有与本体相同的物理战斗能力，也能施放相同的法术。
 %%%%
 Forge Lightning Spire spell
 
@@ -1347,16 +1348,16 @@ Forge Lightning Spire spell
 %%%%
 Summon Mana Viper spell
 
-召唤一条紫色鳞片的蛇，其撕咬可以迅速耗掉敌人几乎所有的魔力。
-法术威力越强，蝰蛇叮咬所具有的反魔法属性就越强。
+召唤一条紫鳞魔力毒蛇，其咬击能够迅速削减几乎任何敌人的魔力储备。
+法术威力越强，魔力毒蛇咬击的反魔法效果越强。
 %%%%
 Summon Minor Demon spell
 
-召唤1到3个小恶魔（等级5）。
+召唤一至三个次级（第 5 阶）恶魔。
 %%%%
 Summon Mushrooms spell
 
-在一个目标生物旁召唤漫游的蘑菇和毒鹅膏。
+在目标生物附近召唤游走蘑菇和死亡菌。
 %%%%
 Summon Scarabs spell
 
@@ -1381,19 +1382,19 @@ Summon Spiders spell
 %%%%
 Summon Tzitzimitl spell
 
-召唤一个蚀日星髅，一个疾病和绝望的恶魔。
+召唤一个齐齐米特尔——传播疾病与绝望的恶魔。
 %%%%
 Summon Ufetubus spell
 
-召唤多个尖喙魔；小而恼人的恶魔。
+召唤多个乌菲特布斯；它们是小而恼人的恶魔。
 %%%%
 Summon Undead spell
 
-召唤多个亡灵怪物，生成各种鬼魂、吸血鬼、幽灵和其他次要的亡灵生物。
+召唤多个亡灵怪物，包括各种鬼魂、吸血鬼、幽魂和其他低阶亡灵。
 %%%%
 Summon Vermin spell
 
-召唤多只老鼠，蜘蛛、蠕虫和蛙类动物。
+召唤多只老鼠、蜘蛛、蠕虫和蛙。
 %%%%
 Summon Water Elementals spell
 
@@ -1958,17 +1959,19 @@ Sticks to Snakes spell
 %%%%
 Summon Mortal Champion spell
 
-从另一个位面召唤一位凡人冠军为施法者战斗。
+召来光辉者麾下最强大、最迅捷的凡人冠军之一。
+在这座地牢中，会响应召唤的是小精灵防御者和精灵剑圣。
 %%%%
 Summon Seismosaurus Egg spell
 
-召唤一颗即将孵化的凶猛蜥蜴蛋。只要附近有敌人且施法者始终与蛋相邻，
-它就会在召唤数回合后孵化，蹂躏召唤者的敌人。
+召唤一颗即将孵化的地震龙蛋。只要附近有敌人且施法者始终与蛋相邻，
+它便会在被召唤数回合后孵化，蹂躏召唤者的敌人。
 
-震龙即使年幼也不容小觑。它坚韧得近乎山岳，脚步能产生猛烈地震冲击波。
-每道冲击波都会对不会飞的敌人造成大量伤害，有时甚至会使其彻底失去平衡。
+地震龙即使尚未成年也不容小觑。它坚韧得近乎山岳，脚步能产生猛烈的
+地震冲击波。每道冲击波都会对不会飞的敌人造成大量伤害，有时甚至会
+让它们彻底站立不稳。
 
-法术威力会提高蛋的耐久度和其中震龙的力量，但不会缩短孵化时间。
+法术威力会提高蛋的耐久度和其中地震龙的力量，但不会缩短孵化时间。
 %%%%
 Throw Bolas spell
 

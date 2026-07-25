@@ -90,7 +90,7 @@ SPELL_*：
 `TAG_MAJOR_VERSION == 34` 已移除兼容记录、2 项描述专用 dummy、2 项内部
 placeholder；中文标题映射 511/511，英文与中文描述均为 402/511。
 默认参数下 inventory JSON 的 SHA-256 为
-`46ae59b963872f6ac9908d06fae38123873e47e64ee851175d18e6cc0eb4e7c0`。
+`7d23cc171b690aa07c54d40963ba751c894a65cdf64f0c7cf43c7992b1917228`。
 聚焦测试 8/8 通过，code profile 0 项失败；开发复审为 0 Blocker /
 0 Needs Fix。
 清单命令：
@@ -109,9 +109,11 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
+当前已完成 95/511 项逐项审阅。
+
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
-  - [ ] Summon 词形系列（42 项：34 现行、8 已移除兼容；已完成首批 8 项证据，不做部分落地）
+  - [x] Summon 词形系列（42 项证据、裁定、单批落地及 translation profile 已完成）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术

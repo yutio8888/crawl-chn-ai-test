@@ -524,13 +524,13 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `240df3fc2e2a6cce722ad4294c122385b5f8712be7bb0c7f2805b9f922d00dfa`。
 
-## Summon 词形系列（进行中）
+## Summon 词形系列（已完成）
 
 边界：英文标题中含独立 `Summon` 词形，共 42 项；其中 34 项现行、
 8 项 `TAG_MAJOR_VERSION == 34` 已移除兼容记录。`Call` 系列、`Recall`
-以及仅因学派为 Summoning 而不含该标题词形的法术均不在本系列。为遵守
-“完整系列审完后再落地”的规则，本节只累计证据；42 项裁定齐备前不修改
-本系列标题或关联描述。
+以及仅因学派为 Summoning 而不含该标题词形的法术均不在本系列。遵守
+“完整系列审完后再落地”的规则，42 项裁定齐备后才一次性修改本系列
+标题、关联描述与直接引用实体的文本。
 
 ### 首批：现行非 `monster` flag 成员（8/42）
 
@@ -544,9 +544,9 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 | `SPELL_SUMMON_ICE_BEAST` | 3 / 冰、召唤 / `none` | 玩家、怪物 | 召唤冰兽 | 保留 | 高 |
 | `SPELL_SUMMON_HYDRA` | 7 / 召唤 / `mons_abjure` | 玩家、怪物 | 召唤多头蛇 | 保留 | 高 |
 | `SPELL_SUMMON_FOREST` | 5 / 召唤、位移 / `none` | 玩家 | 召唤森林 | 保留 | 高 |
-| `SPELL_SUMMON_MANA_VIPER` | 5 / 召唤、诅咒 / `mons_abjure` | 玩家、怪物 | 召唤魔力蝰蛇 | 保留 | 高 |
+| `SPELL_SUMMON_MANA_VIPER` | 5 / 召唤、诅咒 / `mons_abjure` | 玩家、怪物 | 召唤魔力蝰蛇 | 重译为“召唤魔力毒蛇” | 高 |
 | `SPELL_SUMMON_CACTUS` | 6 / 召唤 / `none` | 玩家 | 召唤仙人掌巨人 | 保留 | 高 |
-| `SPELL_SUMMON_SEISMOSAURUS_EGG` | 4 / 召唤、土 / `none` | 玩家 | 召唤震龙蛋 | 保留 | 高 |
+| `SPELL_SUMMON_SEISMOSAURUS_EGG` | 4 / 召唤、土 / `none` | 玩家 | 召唤震龙蛋 | 重译为“召唤地震龙蛋” | 高 |
 
 - `Summon Small Mammal` 召出老鼠、蝙蝠或短尾矮袋鼠，法术威力提高出现
   短尾矮袋鼠的概率；标题完整保留 Small 与实体类别。
@@ -557,20 +557,21 @@ Dispersal 与 Mesmerise 校准批次验证结果：
   加入持续时间或头数细节。
 - `Summon Forest` 将森林位面与当前世界强行交叠，召出森林之灵并唤醒
   树木；虽然效果不只一个生物，“召唤森林”准确保留法术的宏观中心意象。
-- `Summon Mana Viper` 召出咬击带反魔法效果的魔力蝰蛇；标题复用实体名。
+- `Summon Mana Viper` 召出咬击带反魔法效果的魔力毒蛇；旧标题没有复用
+  当前实体名，因此改为“召唤魔力毒蛇”。
 - `Summon Cactus Giant` 召出会反伤近战攻击者的仙人掌巨人，高威力会
   召来更老练强壮的个体；标题准确。
-- `Summon Seismosaurus Egg` 召出需施法者相邻守护数回合才会孵化的震龙蛋；
-  标题准确保留对象是“蛋”而非直接召唤震龙。
+- `Summon Seismosaurus Egg` 召出需施法者相邻守护数回合才会孵化的
+  地震龙蛋；改名后既复用实体名，也保留对象是“蛋”而非直接召唤地震龙。
 
-描述审阅发现两项明确 Needs Fix，暂记录、不提前落地：
+描述审阅发现并已修正两项明确 Needs Fix：
 
 - `Summon Horrible Things` 中文仍声称会损失智力，却遗漏当前效果会积累
   Doom 风险。数量随法术威力提高的趋势在实现中仍存在，但当前英文描述
-  不再陈述该细节；重译时应删除旧智力机制并完整恢复 Doom 后果。
+  不再陈述该细节；本批已删除旧智力机制并完整恢复 Doom 后果。
 - `Summon Mana Viper` 的“迅速耗掉敌人几乎所有的魔力”把
   `nearly any foe` 错解为“几乎所有魔力”；应改为该咬击几乎能影响
-  任何敌人的魔力储备。
+  任何敌人的魔力储备；本批已按英文语义修正。
 
 证据：`spl-data.h:408`、`spl-data.h:566`、`spl-data.h:712`、
 `spl-data.h:1974`、`spl-data.h:2510`、`spl-data.h:2598`、
@@ -583,3 +584,114 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 `dat/descript/spells.txt:2154`、`dat/descript/spells.txt:2159`、
 `dat/descript/spells.txt:2169`、`dat/descript/spells.txt:2197`、
 `dat/descript/spells.txt:2211`。
+
+### 其余现行成员（34/42）
+
+| Enum | 当前译名 | 裁定 | 建议译名 | 置信度 |
+|---|---|---|---|---|
+| `SPELL_SUMMON_DEMON` | 召唤恶魔 | 保留 | 召唤恶魔 | 高 |
+| `SPELL_SUMMON_GREATER_DEMON` | 召唤高级恶魔 | 重译 | 召唤高等恶魔 | 高 |
+| `SPELL_SUMMON_DRAGON` | 召唤巨龙 | 保留 | 召唤巨龙 | 高 |
+| `SPELL_SUMMON_UFETUBUS` | 召唤乌菲图布斯 | 重译 | 召唤乌菲特布斯 | 高 |
+| `SPELL_SUMMON_SIN_BEAST` | 召唤罪兽 | 重译 | 召唤罪孽兽 | 高 |
+| `SPELL_SUMMON_UNDEAD` | 召唤亡灵 | 保留 | 召唤亡灵 | 高 |
+| `SPELL_SUMMON_DRAKES` | 召唤幼龙 | 保留 | 召唤幼龙 | 高 |
+| `SPELL_SUMMON_MUSHROOMS` | 召唤蘑菇 | 保留 | 召唤蘑菇 | 高 |
+| `SPELL_WATER_ELEMENTALS` | 召唤水元素 | 保留 | 召唤水元素 | 高 |
+| `SPELL_SUMMON_EYEBALLS` | 召唤眼球 | 保留 | 召唤眼球 | 高 |
+| `SPELL_EARTH_ELEMENTALS` | 召唤地元素 | 保留 | 召唤地元素 | 高 |
+| `SPELL_AIR_ELEMENTALS` | 召唤气元素 | 保留 | 召唤气元素 | 高 |
+| `SPELL_FIRE_ELEMENTALS` | 召唤火元素 | 保留 | 召唤火元素 | 高 |
+| `SPELL_FAKE_MARA_SUMMON` | 玛拉召唤 | 保留 | 玛拉召唤 | 中高 |
+| `SPELL_SUMMON_ILLUSION` | 召唤幻象 | 保留 | 召唤幻象 | 高 |
+| `SPELL_SUMMON_MORTAL_CHAMPION` | 召唤凡人冠军 | 保留 | 召唤凡人冠军 | 中高 |
+| `SPELL_SUMMON_HOLIES` | 召唤圣灵 | 重译 | 召唤神圣生物 | 高 |
+| `SPELL_SUMMON_MINOR_DEMON` | 召唤次级恶魔 | 保留 | 召唤次级恶魔 | 高 |
+| `SPELL_SUMMON_VERMIN` | 召唤害虫 | 保留 | 召唤害虫 | 高 |
+| `SPELL_SUMMON_EMPEROR_SCORPIONS` | 召唤帝蝎 | 重译 | 召唤帝王蝎 | 高 |
+| `SPELL_SUMMON_SCARABS` | 召唤圣甲虫 | 保留 | 召唤圣甲虫 | 高 |
+| `SPELL_SUMMON_EXECUTIONERS` | 召唤行刑者 | 重译 | 召唤处刑人 | 高 |
+| `SPELL_SUMMON_TZITZIMITL` | 召唤齐齐米特尔 | 保留 | 召唤齐齐米特尔 | 高 |
+| `SPELL_SUMMON_HELL_SENTINEL` | 召唤地狱哨兵 | 保留 | 召唤地狱哨兵 | 高 |
+| `SPELL_SUMMON_SPIDERS` | 召唤蜘蛛 | 保留 | 召唤蜘蛛 | 高 |
+| `SPELL_SUMMON_SCORPIONS` | 召唤蝎子 | 保留 | 召唤蝎子 | 高 |
+
+六项重译均来自当前实体词不一致，而非对机制的自由改名：
+
+- `greater demon` 在现有语体术语中为“高等恶魔”，“高级恶魔”生硬；
+- `ufetubus → 乌菲特布斯`、`sin beast → 罪孽兽`、
+  `emperor scorpion → 帝王蝎`、`Executioner → 处刑人` 均已有当前实体
+  映射，法术标题应直接复用；
+- `Summon Holies` 实际召出天使、智天使、德瓦或奥法等神圣生物；
+  “圣灵”会误示为灵体或特定宗教概念，改为“召唤神圣生物”。
+
+首批中的两项初步裁定据实体表复核后修正：
+
+- `Summon Mana Viper`：魔力蝰蛇 → **魔力毒蛇**；
+- `Summon Seismosaurus Egg`：震龙蛋 → **地震龙蛋**。
+
+这两项分别复用 `mana viper → 魔力毒蛇` 与
+`seismosaurus egg → 地震龙蛋` 的当前实体映射。标题仍准确保留召唤
+对象及“蛋”的机制重点。
+
+其余现行标题与召出的实体、群体或位面效果一致。特殊形态
+`Mara Summon` 是玛拉制造自身幻象的内部怪物法术，保留原名结构；
+`Summon Forest` 虽不只生成单一生物，但标题准确概括森林位面交叠的
+整体效果；`Summon Mortal Champion` 的 champion 与项目既有“冠军”
+用语一致。
+
+### 已移除兼容成员（42/42）
+
+| Enum | 英文名 | 当前译名 | 裁定 |
+|---|---|---|---|
+| `SPELL_FAKE_RAKSHASA_SUMMON` | Rakshasa Summon | 召唤罗刹 | 证据不足，暂沿用 |
+| `SPELL_IRON_ELEMENTALS` | Summon Iron Elementals | 召唤铁元素 | 证据不足，暂沿用 |
+| `SPELL_SUMMON_BUTTERFLIES` | Summon Butterflies | 召唤蝴蝶 | 证据不足，暂沿用 |
+| `SPELL_SUMMON_ELEMENTAL` | Summon Elemental | 召唤元素 | 证据不足，暂沿用 |
+| `SPELL_SUMMON_RAKSHASA` | Summon Rakshasa | 召唤罗刹 | 证据不足，暂沿用 |
+| `SPELL_SUMMON_TWISTER` | Summon Twister | 召唤旋风 | 证据不足，暂沿用 |
+| `SPELL_VAMPIRE_SUMMON` | Vampire Summon | 召唤吸血鬼 | 证据不足，暂沿用 |
+| `SPELL_SUMMON_SWARM` | Summon swarm | 召唤虫群 | 证据不足，暂沿用 |
+
+八项均只有 TAG 34 `AXED_SPELL` 占位、removed set 与标题映射，没有当前
+描述和实现；不能从现行同名实体或其他召唤法术反推历史机制。它们不参与
+现行 `Summon → 召唤` 词根与实体一致性的计数，若恢复须按恢复版本重审。
+
+### 附带描述修正
+
+除首批已记录的两项外，本批已同步修正以下确定性问题：
+
+- `Summon Ufetubus`、`Summon Sin Beast`、`Summon Drakes`、
+  `Summon Earth Elementals`、`Summon Mana Viper`、
+  `Summon Emperor Scorpions`、`Summon Executioners`、
+  `Summon Tzitzimitl`、`Summon Seismosaurus Egg` 的对象名与当前实体
+  映射不一致；
+- `Summon Mushrooms` 的 `wandering mushroom` 与 `deathcap` 未复用
+  “游走蘑菇”“死亡菌”实体名；
+- `Summon Undead` 将 wraith 译成“幽灵”并把 lesser undead 生硬译作
+  “次要亡灵”；
+- `Summon Mortal Champion` 遗漏光辉者、最强且最快，以及本地会响应的
+  两类具体生物；
+- `Summon Minor Demon` 把 minor demon 缩成“小恶魔”，会与 imp 混淆；
+- `Mara Summon` 与 `Summon Illusion` 含“与原先的有同样……”病句；
+- `Summon Vermin` 标点错误；`Summon Cactus Giant` 语序生硬；
+- 魔力毒蛇出现消息、Execution 状态和马科列布神罚文本仍分别使用
+  “魔力蝰蛇”“行刑者”“处决者”，本批一并统一到现行实体名。
+
+完整系列裁定：34 项现行标题中 26 项保留、8 项重译；8 项已移除兼容
+标题全部因机制证据不足而暂沿用。名称、描述与直接关联实体文本已由
+单一翻译写入者一次性落地，避免同一词根出现发布中的过渡状态。
+
+### 落地状态
+
+- [x] 42/42 机制证据与名称裁定
+- [x] 单一翻译写入者完整系列落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-017`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T161824296144000+0800-88221-3612fab09f35`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`7536042fedba3d2b7d933e51babaeb079b7acda69d8b20f26bd573d4bb4faf9f`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`7d23cc171b690aa07c54d40963ba751c894a65cdf64f0c7cf43c7992b1917228`。

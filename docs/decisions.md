@@ -1063,6 +1063,49 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-017 — Spell name review: Summon 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、召唤实现与实体映射逐项复核
+- **Scope**: 42 项含独立 `Summon` 词形的标题；34 项现行、8 项
+  `TAG_MAJOR_VERSION == 34` 已移除兼容
+- **Choice**:
+  - 26 项现行标题保留；
+  - 8 项现行标题重译：
+    - `Summon Greater Demon`: 召唤高级恶魔 → **召唤高等恶魔**
+    - `Summon Ufetubus`: 召唤乌菲图布斯 → **召唤乌菲特布斯**
+    - `Summon Sin Beast`: 召唤罪兽 → **召唤罪孽兽**
+    - `Summon Holies`: 召唤圣灵 → **召唤神圣生物**
+    - `Summon Mana Viper`: 召唤魔力蝰蛇 → **召唤魔力毒蛇**
+    - `Summon Emperor Scorpions`: 召唤帝蝎 → **召唤帝王蝎**
+    - `Summon Executioners`: 召唤行刑者 → **召唤处刑人**
+    - `Summon Seismosaurus Egg`: 召唤震龙蛋 → **召唤地震龙蛋**
+  - 8 项已移除兼容标题因机制证据不足暂沿用。
+- **Series rule**: 现行 `Summon` 稳定译为“召唤”；召唤具体当前实体时，
+  标题必须复用实体显示名。已移除兼容标题不反向约束现行实体词。
+- **Rationale**: 七项修正消除标题与现行实体映射的分裂；`Summon Holies`
+  实际召出天使、智天使、德瓦或奥法等神圣生物，“圣灵”会误示为灵体或
+  特定宗教概念。其余标题与召出的实体、群体、幻象或位面效果一致。
+- **Description corrections**: 按当前英文描述与实体词同步修正
+  `Summon Horrible Things` 的过时智力机制、`Summon Mana Viper` 的
+  量词歧义、`Summon Mortal Champion` 的机制遗漏，以及关联实体名和
+  确定性病句；并将直接关联的魔力毒蛇出现消息、处刑人状态与神罚文本
+  同步到同一实体词。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `crawl-ref/source/dat/descript/zh/status.txt`
+  - `crawl-ref/source/dat/descript/zh/gods.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Affected decisions**: 复核并确认 `D-C-012` 的现行元素召唤名称；
+  补充现行与已移除兼容标题的生命周期边界。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1562,3 +1605,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-014 | Spell name revision — Bolt 系列 | 2 fixes；16 current + 3 axed compatibility | active |
 | D-C-015 | Spell name review — Cloud 后缀系列 | 8 current + 5 axed compatibility；4 description fixes | active |
 | D-C-016 | Spell name review — Call 词形系列 | 1 fix；10 current；7 description fixes | active |
+| D-C-017 | Spell name review — Summon 词形系列 | 8 fixes；34 current + 8 axed compatibility | active |
