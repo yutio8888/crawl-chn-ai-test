@@ -16237,7 +16237,7 @@ Word of Recall
 召回之言
 %%%%
 Injury Bond
-伤害链接
+伤害联结
 %%%%
 Spectral Cloud
 幽灵云

@@ -1178,7 +1178,7 @@
 | Infernal Servant | 地狱仆从 | ✅ |
 | Infestation | 虫群侵扰 | ✅ |
 | Infusion | 灌注术 | ✅；已移除兼容标题 |
-| Injury Bond | 伤害链接 | ✅ |
+| Injury Bond | 伤害联结 | ✅；与附近盟友联结，替其承担被减免伤害的一半 |
 | Injury Mirror | 伤害反射 | ✅ |
 | Inner Flame | 内焰 | ✅ |
 | Insulation | 绝缘术 | ✅ |

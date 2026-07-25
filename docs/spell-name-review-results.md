@@ -2772,6 +2772,48 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
 
+## Injury 词形系列
+
+边界：英文标题以 `Injury` 开头的 2 项现行怪物法术。
+
+| Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_INJURY_MIRROR` | 4 / 无 / `selfench, monster` | 伤害反射 | 短时间把所受伤害反射给攻击者，结束后暂时无法再次施放 | 保留 |
+| `SPELL_INJURY_BOND` | 5 / 妖术 / `helpful, monster` | 伤害链接 | 与附近盟友联结，使其伤害减半，施法者承担被阻止伤害的一半 | 微调为“伤害联结” |
+
+系列结论：`Mirror → 反射` 准确表达以所受伤害触发对攻击者的反馈；
+`Bond` 及英文描述中的 `Binds` 强调施法者与盟友间建立的关系，
+“链接”带有较强的技术语感，改为“联结”更符合魔法效果，也与伤害反射
+形成清楚区分。
+
+`Injury Mirror` 中文描述与英文机制一致。`Injury Bond` 旧描述用
+“转移一半伤害”概括结果，但未明确盟友先获得伤害减半、施法者再承受
+被阻止伤害的一半；现已按英文描述重译。
+
+被拒方案：“伤害纽带”容易被理解为伤害本身形成的实体；“伤势联结”
+偏离标题中更宽泛的 damage/injury 机制语义；保留“伤害链接”则语体
+不够自然。
+
+证据：`spl-data.h:1941`—`1948`、`2164`—`2171`，
+`dat/descript/spells.txt:1055`—`1064`、
+`dat/descript/zh/spells.txt:668`—`676`、
+`mon-cast.cc:1393`、`4688`、`8311`—`8323`、
+`monster.cc:4268`—`4273`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者完成名称与描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-081`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T185211631005000+0800-8084-fae7b846fb79`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`1076ac9ecbeffdb7447bd913e0fb0b01bb8c4db9fdc164c8623dd2a9b8c41923`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`4a194db035d4f372a80378bb5ce3f3573ea44d5c5e634909ce57c6a6deac5e42`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

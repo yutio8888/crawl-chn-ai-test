@@ -492,7 +492,7 @@ Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=
 Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
 Infestation	虫群侵扰	domain=spells; source=EN/ZH; 备注=✅
 Infusion	灌注术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
-Injury Bond	伤害链接	domain=spells; source=EN/ZH; 备注=✅
+Injury Bond	伤害联结	domain=spells; source=EN/ZH; 备注=✅；与附近盟友联结，替其承担被减免伤害的一半
 Injury Mirror	伤害反射	domain=spells; source=EN/ZH; 备注=✅
 Ink Cloud	墨云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Inner Flame	内焰	domain=spells; source=EN/ZH; 备注=✅

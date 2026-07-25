@@ -2603,6 +2603,29 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-081 — Spell name review: Injury 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行怪物法术
+- **Choice**: 保留 `Injury Mirror → 伤害反射`；将
+  `Injury Bond → 伤害链接` 微调为“伤害联结”。
+- **Series rule**: `Mirror → 反射` 表示把所受伤害反馈给攻击者；
+  `Bond → 联结` 表示施法者与盟友建立关系并分担伤害。
+- **Rationale**: “伤害反射”准确概括触发条件和反馈目标；`Bond` 及描述
+  中的 `Binds` 都强调关系，“联结”比技术语感较强的“链接”更自然。
+- **Description corrections**: 重译 `Injury Bond` 中文描述，明确盟友
+  所受伤害减半，而施法者承受被阻止伤害的一半。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3166,3 +3189,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-078 | Spell name review — Phantom 词形系列 | 2 current；2 description fixes | active |
 | D-C-079 | Spell name review — Missiles 词形系列 | 1 current + 1 axed；1 description retranslation | active |
 | D-C-080 | Spell name review — Healing 强度系列 | 2 current；2 description fixes | active |
+| D-C-081 | Spell name review — Injury 词形系列 | 2 current；1 rename + 1 description retranslation | active |

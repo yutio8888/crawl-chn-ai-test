@@ -667,7 +667,8 @@ Infestation spell
 %%%%
 Injury Bond spell
 
-将施法者与附近的友方连接，将他们受到的任何伤害的一半转移给施法者。
+将施法者与附近的盟友联结起来，使他们受到的所有伤害减半；
+作为代价，施法者会承受被阻止伤害的一半。
 %%%%
 Injury Mirror spell
 
