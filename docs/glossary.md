@@ -1193,13 +1193,13 @@
 | Launch Bomblet | 发射小型炸弹 | ✅；弹道无视火线并将炸弹部署在目标附近 |
 | Launch Clockwork Bee | 发射发条蜜蜂 | ✅；制造、上紧发条并放出机械蜜蜂 |
 | Launch Sporangium | 发射孢子囊 | ✅；追踪目标并以酸液爆炸生成原生质体 |
-| Legendary Destruction | 传奇毁灭 | ✅ |
+| Legendary Destruction | 传奇毁灭 | ✅；立刻连续产生两种爆炸法术效果 |
 | Lesser Beckoning | 次级召唤 | ✅ |
 | Lethal Infusion | 致命灌注 | ✅；已移除兼容标题 |
 | Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
-| Major Destruction | 大型毁灭 | ✅ |
+| Major Destruction | 强力毁灭 | 🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸 |
 | Major Healing | 大型治疗 | ✅ |
 | Malign Offering | 邪恶献祭 | ✅ |
 | Malmutate | 恶性变异 | ✅ |
@@ -1221,7 +1221,7 @@
 | Mourning Wail | 哀悼嚎哭 | ✅ |
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
 | Old Deflect Missiles | 旧版偏转飞弹 | ✅ |
-| Orb of Destruction | 毁灭之球 | ✅ |
+| Orb of Destruction | 毁灭法球 | ✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球 |
 | Orb of Electricity | 电光球 | ✅；命中时产生大型电能爆炸 |
 | Ostracise | 排斥 | ✅ |
 | Pain | 痛苦 | ✅ |
@@ -1328,7 +1328,7 @@
 | Tomb of Doroklohe | 多洛克洛之墓 | ✅ |
 | Tremorstone | 震石 | ✅ |
 | Twisted Resurrection | 扭曲复活 | ✅ |
-| Unleash Destruction | 释放毁灭 | ✅ |
+| Unleash Destruction | 释放毁灭 | ✅；马科列布能力的虚拟法术标题 |
 | Upheaval | 剧变 | ✅ |
 | Vampiric Draining | 吸血术 | ✅ |
 | Vanquished Vanguard | 败军先锋 | 📝 |

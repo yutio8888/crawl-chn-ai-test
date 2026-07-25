@@ -16315,7 +16315,7 @@ Sap Magic
 削弱魔法
 %%%%
 Major Destruction
-大型毁灭
+强力毁灭
 %%%%
 Blink Allies Away
 使盟友闪烁远离

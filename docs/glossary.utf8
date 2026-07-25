@@ -529,7 +529,7 @@ Launch Clockwork Bee	发射发条蜜蜂	domain=spells; source=EN/ZH; 备注=✅�
 Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅；追踪目标并以酸液爆炸生成原生质体
 Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅；液化施法者周围地面
 Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅；粉碎墙壁或脆性目标形成爆炸碎片
-Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅
+Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅；立刻连续产生两种爆炸法术效果
 Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
@@ -549,7 +549,7 @@ Magic Dart	魔法飞弹	domain=spells; source=EN/ZH; 备注=✅
 magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源
 Magma Barrage	岩浆弹幕	domain=spells; source=EN/ZH; 备注=✅
 Magnavolt	磁暴	domain=spells; source=EN/ZH; 备注=✅
-Major Destruction	大型毁灭	domain=spells; source=EN/ZH; 备注=✅
+Major Destruction	强力毁灭	domain=spells; source=EN/ZH; 备注=🆕；随机发射有害射束或爆炸，`major` 表示强度而非尺寸
 Major Healing	大型治疗	domain=spells; source=EN/ZH; 备注=✅
 Makhleb	马科列布	domain=gods; source=EN/ZH; 类型=音译
 Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅
@@ -628,7 +628,7 @@ Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
 old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
 Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅；持续毒害视线内所有生物
-Orb of Destruction	毁灭之球	domain=spells; source=EN/ZH; 备注=✅
+Orb of Destruction	毁灭法球	domain=spells; source=EN/ZH; 备注=✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球
 Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅；命中时产生大型电能爆炸
 Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=两种译法均可
 orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人骑士、兽人大祭司）
@@ -920,7 +920,7 @@ Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅；活化�
 Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=✅
 Unarmed Combat	徒手格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 undead	亡灵	domain=core; source=EN/ZH
-Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅
+Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅；马科列布能力的虚拟法术标题
 Upheaval	剧变	domain=spells; source=EN/ZH; 备注=✅
 Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Uskayaw	乌斯卡亚	domain=gods; source=EN/ZH; 类型=音译

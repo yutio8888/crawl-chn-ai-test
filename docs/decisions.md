@@ -2365,6 +2365,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-070 — Spell name review: Destruction 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 4 项现行法术
+- **Choice**: 将 `Major Destruction` 从“大型毁灭”改为“强力毁灭”；
+  保留 `Orb of Destruction → 毁灭法球`、
+  `Legendary Destruction → 传奇毁灭` 与
+  `Unleash Destruction → 释放毁灭`。
+- **Series rule**: `Destruction → 毁灭`；强度级别 `major → 强力`，
+  不误译成物理尺寸“大型”。
+- **Rationale**: 四项均表示高破坏力魔法；“强力毁灭”准确反映随机有害
+  射束或爆炸的等级，避免暗示效果范围或实体尺寸。
+- **Description corrections**: 无；中英文描述一致。同步术语表中
+  `Orb of Destruction` 的旧记录“毁灭之球”为实际标题“毁灭法球”。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2917,3 +2941,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-067 | Spell name review — Launch 词形系列 | 3 current；2 description fixes | active |
 | D-C-068 | Spell name review — Blast 词形系列 | 2 current + 1 axed；1 description retranslation | active |
 | D-C-069 | Spell name review — Blade 词形系列 | 1 current + 2 axed；1 description retranslation | active |
+| D-C-070 | Spell name review — Destruction 词形系列 | 4 current；1 rename + glossary sync | active |
