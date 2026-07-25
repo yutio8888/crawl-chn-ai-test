@@ -2954,6 +2954,12 @@ Run ID `20260725T185830923643000+0800-22443-9b28b0b0f251`。
 `7548bf15eaf7d86c778710dc639248c4f377f516c89ccef61d64667a3faf4c7c`
 和 `c0ce5598b036d61d8dbd87e7801ae5817d663c3525406b8d3fee1d8edfe029fb`。
 
+首轮 Run ID `20260725T185650139651000+0800-19332-9b28b0b0f251`
+曾在 changed exact-key terminology 阶段失败：三项新标题已写入
+`source.txt`，但 glossary 尚保留旧译。同步三项术语并重新导出
+`glossary.utf8` 后，上述最终运行通过；该失败未涉及 TextDB 结构或
+游戏机制文本。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
