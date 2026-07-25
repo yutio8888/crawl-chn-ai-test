@@ -1656,6 +1656,84 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `cd53a3e0eeee8ac15014ba0ad88ede96cdcddbee06f81b4468a347334d97a580`。
 
+## Acid/Corrosive 词形系列
+
+边界：以酸液物质或腐蚀性质为核心的 3 项现行法术。`Corrosive Bolt`
+已在 Bolt 批次审阅，本批复用其未变化的机制证据且不重复计数；新增
+审阅身份为 2 项。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_SPIT_ACID` | 5 / 炼金 / `dir_or_target, monster, noisy, needs_tracer` | 怪物 | 喷吐酸液 | 向单个目标喷出酸液 | 保留 |
+| `SPELL_ACID_BALL` | 5 / 塑能、炼金 / `dir_or_target, needs_tracer, monster` | 怪物 | 酸液球 | 投掷会爆炸的腐蚀性酸液球 | 保留 |
+| `SPELL_CORROSIVE_BOLT` | 6 / 塑能、炼金 / `dir_or_target, needs_tracer` | 玩家、怪物 | 腐蚀箭 | 穿透酸液束，可施加腐蚀 | 保留（复用 D-C-014） |
+
+名称结论：`Acid` 作为攻击物质稳定译为“酸液”，因此“喷吐酸液”和
+“酸液球”分别准确表达动作与投射物形态；`Corrosive` 强调腐蚀性质，
+“腐蚀箭”与 Bolt 系列规则一致。三项无需强制使用同一个中文字根。
+
+`Spit Acid` 与 `Acid Ball` 的中英文描述均准确且完整，不需要修改。
+
+证据：`spl-data.h:1546`—`1554`、`spl-data.h:4564`—`4572`、
+`dat/descript/spells.txt:6`—`8`、`dat/descript/spells.txt:1975`—`1977`、
+`mon-cast.cc:2362`—`2389`、`zap-data.h:2703`—`2716`；Corrosive Bolt
+复用 `D-C-014` 的机制证据。
+
+### 落地状态
+
+- [x] 3/3 机制证据与名称裁定（2 项新增，1 项复用）
+- [x] 描述一致，无需修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-049`）
+
+验证结果：覆盖 Acid/Corrosive 与 Frost/Rime/Chill 当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T174356732603000+0800-63283-7833d575d6e4`。裁定后的
+`docs/glossary.md` SHA-256 为
+`539fb3f7d74593a7c20d04f0011a4c33d120e230cee42a027eda458162a56381`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`b0e73be1fa96d25dead8cb7fe00588c6e718ad560d0458ec70f78c019ae20930`。
+
+## Frost/Rime/Chill 寒冷术语批次
+
+边界：尚未审阅且标题含 `Frost`、`Rime` 或 `Chill` 的 4 项现行法术。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_CREEPING_FROST` | 5 / 塑能、冰 / `monster` | 怪物 | 蔓延冰霜 | 从墙壁唤出冻气，伤害、冻结并减速墙边敌人 | 保留 |
+| `SPELL_REBOUNDING_CHILL` | 7 / 塑能、冰 / `dir_or_target, needs_tracer, monster` | 怪物 | 弹跳寒冷 | 穿透寒气束沿墙反弹，可命中目标两次 | 重译为“弹跳寒流” |
+| `SPELL_RIMEBLIGHT` | 7 / 死灵、冰 / `dir_or_target, unclean, destructive, not_self` | 玩家、怪物 | 霜疫 | 持续从体内冻结宿主，迸射冰片并可能在死亡时传播 | 保留 |
+| `SPELL_SPLINTERFROST_SHELL` | 7 / 锻造、冰 / `target, not_self` | 玩家、怪物 | 碎霜之壳 | 构筑半圆冰障；墙段破裂时向破坏者齐射冰片 | 保留 |
+
+名称结论：“蔓延冰霜”“霜疫”“碎霜之壳”均准确传达当前机制；
+`Rebounding Chill` 的 cold bolt 是可穿透、可沿墙反弹的具体寒气流，
+“弹跳寒流”比抽象且搭配生硬的“弹跳寒冷”准确自然。
+
+描述审阅发现两项 Needs Fix：`Rebounding Chill` 原中文属于不存在的
+近战反击冰环；`Splinterfrost Shell` 原中文属于不存在的吸伤贴身护盾，
+两项均已按当前英文描述和实现完整重译。另两项中英文机制一致。
+
+证据：`spl-data.h:2399`—`2406`、`spl-data.h:2554`—`2561`、
+`spl-data.h:3991`—`3998`、`spl-data.h:4340`—`4347`、
+`dat/descript/spells.txt:440`—`444`、`dat/descript/spells.txt:1669`—`1672`、
+`dat/descript/spells.txt:1697`—`1709`、`dat/descript/spells.txt:1987`—`1995`、
+`beam.cc:2418`、`spl-summoning.cc:4599`—`4604`。
+
+### 落地状态
+
+- [x] 4/4 机制证据与名称裁定
+- [x] 单一翻译写入者名称与描述重译
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-050`）
+
+验证结果：覆盖 Acid/Corrosive 与 Frost/Rime/Chill 当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T174356732603000+0800-63283-7833d575d6e4`。裁定后的
+`docs/glossary.md` SHA-256 为
+`539fb3f7d74593a7c20d04f0011a4c33d120e230cee42a027eda458162a56381`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`b0e73be1fa96d25dead8cb7fe00588c6e718ad560d0458ec70f78c019ae20930`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

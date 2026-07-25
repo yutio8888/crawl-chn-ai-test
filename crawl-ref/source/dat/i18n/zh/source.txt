@@ -16333,7 +16333,7 @@ Rebounding Blaze
 弹跳烈焰
 %%%%
 Rebounding Chill
-弹跳寒冷
+弹跳寒流
 %%%%
 Glaciate
 冰川

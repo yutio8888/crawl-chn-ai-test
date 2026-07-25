@@ -1031,7 +1031,7 @@
 | EN | ZH | 备注 |
 |---------|------|------|
 | Abjuration | 驱逐术 | ✅ |
-| Acid Ball | 酸液球 | ✅ |
+| Acid Ball | 酸液球 | ✅；投掷后爆炸的腐蚀性酸液球 |
 | Agony | 剧痛 | 🆕 |
 | Airstrike | 空袭 | ✅ |
 | Anguish | 哀痛 | 📝 |
@@ -1079,7 +1079,7 @@
 | Corrupt | 腐化 | ✅ |
 | Corrupt Body | 腐化躯体 | ✅ |
 | Corrupting Pulse | 腐化脉冲 | ✅ |
-| Creeping Frost | 蔓延冰霜 | ✅ |
+| Creeping Frost | 蔓延冰霜 | ✅；从墙壁唤出冻气，冻结并减速墙边敌人 |
 | Crystallising Shot | 结晶射击 | ✅ |
 | Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
@@ -1248,13 +1248,13 @@
 | Ravenous Swarm | 贪婪虫群 | ✅ |
 | Rearrange the Pieces | 重新布局 | ✅ |
 | Rebounding Blaze | 弹跳烈焰 | ✅ |
-| Rebounding Chill | 弹跳寒冷 | ✅ |
+| Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |
 | Regenerate Other | 再生他人 | 📝 |
 | Regeneration | 快速再生 | ✅ |
 | Rending Blade | 撕裂之刃 | ✅ |
 | Resonance Strike | 共鸣打击 | ✅ |
 | Resurrect | 复活术 | ✅ |
-| Rimeblight | 霜疫 | ✅ |
+| Rimeblight | 霜疫 | ✅；从体内冻结宿主并可能在死亡时传播 |
 | Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Ring of Thunder | 雷霆之环 | ✅ |
 | Roll | 翻滚 | ✅ |
@@ -1291,10 +1291,10 @@
 | Spectral Weapon | 灵体武器 | ✅ |
 | Spellspark Servitor | 法术火花仆从 | ✅ |
 | Sphinx Sisters | 斯芬克斯姐妹 | ✅ |
-| Spit Acid | 喷吐酸液 | ✅ |
+| Spit Acid | 喷吐酸液 | ✅；向单个目标喷吐酸液 |
 | Spit Lava | 喷吐岩浆 | ✅ |
 | Spit Poison | 喷吐毒液 | 📝；与同名能力及其描述统一 |
-| Splinterfrost Shell | 碎霜之壳 | ✅ |
+| Splinterfrost Shell | 碎霜之壳 | ✅；半圆冰障破裂时向破坏者齐射冰片 |
 | Splinterspray | 碎片喷射 | ✅ |
 | Sporulate | 产孢 | ✅ |
 | Starburst | 星爆 | ✅ |

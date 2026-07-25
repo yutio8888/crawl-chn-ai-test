@@ -11,7 +11,7 @@ __SHOUT	喊叫	domain=shouts; source=EN/ZH
 __SKITTER	窸窣声	domain=shouts; source=EN/ZH
 Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅
 Abyss	深渊	domain=core; source=EN/ZH
-Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅
+Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅；投掷后爆炸的腐蚀性酸液球
 acid blob	酸液团	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 acid dragon	酸龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 acidic bite	酸性撕咬	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -249,7 +249,7 @@ Corrupt Body	腐化躯体	domain=spells; source=EN/ZH; 备注=✅
 Corrupting Pulse	腐化脉冲	domain=spells; source=EN/ZH; 备注=✅
 Crazy Yiuf	疯狂的尤夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Crazy Yiuf title	开悟者疯狂的尤夫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Creeping Frost	蔓延冰霜	domain=spells; source=EN/ZH; 备注=✅
+Creeping Frost	蔓延冰霜	domain=spells; source=EN/ZH; 备注=✅；从墙壁唤出冻气，冻结并减速墙边敌人
 creeping inferno	蔓延地狱火	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Creeping Shadow	蔓延暗影	domain=spells; source=EN/ZH; 备注=✅
 crimson imp	深红小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -696,7 +696,7 @@ Ravenous Swarm	贪婪虫群	domain=spells; source=EN/ZH; 备注=✅
 Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=✅
 Reaver	掠夺者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Rebounding Blaze	弹跳烈焰	domain=spells; source=EN/ZH; 备注=✅
-Rebounding Chill	弹跳寒冷	domain=spells; source=EN/ZH; 备注=✅
+Rebounding Chill	弹跳寒流	domain=spells; source=EN/ZH; 备注=🆕；穿透性寒气束可从墙壁反弹并命中两次
 Recall	召回术	domain=spells; source=EN/ZH; 备注=✅
 Recite	吟诵	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=📝
@@ -708,7 +708,7 @@ resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅
 Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
-Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅
+Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH
 Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅
@@ -809,10 +809,10 @@ spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为
 Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
 Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
 Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
-Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅
+Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅；向单个目标喷吐酸液
 Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
 Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=📝；与同名能力及其描述统一
-Splinterfrost Shell	碎霜之壳	domain=spells; source=EN/ZH; 备注=✅
+Splinterfrost Shell	碎霜之壳	domain=spells; source=EN/ZH; 备注=✅；半圆冰障破裂时向破坏者齐射冰片
 Splinterspray	碎片喷射	domain=spells; source=EN/ZH; 备注=✅
 Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅
 spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=小精灵 + 职业（小精灵气法师、小精灵狂战士）

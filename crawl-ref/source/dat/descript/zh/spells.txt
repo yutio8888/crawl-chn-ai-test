@@ -1881,7 +1881,7 @@ Rebounding Blaze spell
 %%%%
 Rebounding Chill spell
 
-在施法者周围创造一圈寒冰，反弹近战攻击并冻结攻击者。
+发射一道穿透性的强力寒流，能从墙壁反弹并命中目标两次。
 %%%%
 Regenerate Other spell
 
@@ -1986,7 +1986,13 @@ Sphinx Sisters spell
 %%%%
 Splinterfrost Shell spell
 
-在施法者周围创造一面冰盾，吸收伤害并在破碎时造成寒冷伤害。
+在施法者周围构筑一道半圆形的强化冰壳；如果空间允许，
+它会将生物推开，为自身腾出位置。
+
+这道屏障十分坚固；每当一段冰壳被摧毁时，都会碎裂成一阵冰片，
+向摧毁它的生物齐射。
+
+如果施法者离屏障太远，冰壳会迅速融化。
 %%%%
 Steam Breath spell
 

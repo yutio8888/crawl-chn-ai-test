@@ -1914,6 +1914,53 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-049 — Spell name review: Acid/Corrosive 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项以酸液或腐蚀为核心的现行法术标题
+- **Choice**: 保留 `Spit Acid → 喷吐酸液`、`Acid Ball → 酸液球` 与
+  `Corrosive Bolt → 腐蚀箭`。
+- **Series rule**: `Acid → 酸液` 表达攻击物质；`Corrosive → 腐蚀`
+  表达性质或附加效果，不强制合并为单一汉字词根。
+- **Rationale**: 两项 Acid 标题分别准确表达喷吐动作和爆炸球状投射物；
+  “腐蚀箭”则准确表达穿透酸液束造成的腐蚀效果，且已在 Bolt 批次完成
+  机制审阅。
+- **Description corrections**: 无；两项新增审阅法术的中英文描述一致。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-050 — Spell name review: Frost/Rime/Chill 寒冷术语批次
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: `Creeping Frost`、`Rebounding Chill`、`Rimeblight` 与
+  `Splinterfrost Shell` 四项现行标题
+- **Choice**: 将 `Rebounding Chill → 弹跳寒冷` 重译为“弹跳寒流”；
+  保留“蔓延冰霜”“霜疫”与“碎霜之壳”。
+- **Series rule**: `frost → 冰霜／霜`、`rime → 霜`；
+  投射性 `chill → 寒流`。
+- **Rationale**: “寒流”能作为反弹穿透束的具体实体，避免“弹跳寒冷”的
+  抽象搭配；其余三项分别准确表达沿墙蔓延冻气、致命霜冻瘟疫和会碎裂
+  发射冰片的冰壳。
+- **Description corrections**: 重译 `Rebounding Chill` 的穿透、沿墙
+  反弹与双次命中机制；重译 `Splinterfrost Shell` 的半圆屏障、推开生物、
+  墙段反击和远离融化机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2445,3 +2492,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-046 | Spell name review — Hoarfrost 词根系列 | 2 current；1 description retranslation | active |
 | D-C-047 | Spell name review — Death's Door | 1 current；2 wording fixes | active |
 | D-C-048 | Spell name review — Freeze/Freezing/Frozen 词形系列 | 4 current + 1 axed；1 rename + 2 description fixes | active |
+| D-C-049 | Spell name review — Acid/Corrosive 词形系列 | 3 current；1 reused；no text fixes | active |
+| D-C-050 | Spell name review — Frost/Rime/Chill 寒冷术语批次 | 4 current；1 rename + 2 description retranslations | active |
