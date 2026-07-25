@@ -2559,6 +2559,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-079 — Spell name review: Missiles 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Deflect Missiles → 偏转飞弹` 与
+  `Old Deflect Missiles → 旧版偏转飞弹`。
+- **Series rule**: 防御性改变投射物轨迹时，
+  `Deflect Missiles → 偏转飞弹`。
+- **Rationale**: 名称准确概括排斥力场使各类投射物偏离目标的效果；
+  兼容标题明确标示旧版。
+- **Description corrections**: 重译现行描述，移除旧版单目标/穿透攻击差异，
+  恢复所有投射物及无法行动时仍有效的规则。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3120,3 +3142,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-076 | Spell name review — Regeneration 词形系列 | 1 current + 1 axed；1 description fix + glossary sync | active |
 | D-C-077 | Spell name review — Recall 词形系列 | 1 current + 1 axed；no text fixes | active |
 | D-C-078 | Spell name review — Phantom 词形系列 | 2 current；2 description fixes | active |
+| D-C-079 | Spell name review — Missiles 词形系列 | 1 current + 1 axed；1 description retranslation | active |

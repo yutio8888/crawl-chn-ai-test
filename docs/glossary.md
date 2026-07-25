@@ -1088,7 +1088,7 @@
 | Death Channel | 死亡通道 | ✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 |
 | Death Rattle | 死亡之响 | ✅；呼出垂死精粹并生成瘴气云 |
 | Debugging Ray | 调试射线 | ✅ |
-| Deflect Missiles | 偏转飞弹 | ✅ |
+| Deflect Missiles | 偏转飞弹 | ✅；排斥力场提高对所有投射物的闪避 |
 | Delayed Fireball | 延迟火球 | ✅；已移除兼容标题 |
 | Detonation Catalyst | 引爆催化剂 | ✅ |
 | Diamond Sawblades | 钻石锯片 | ✅ |
@@ -1220,7 +1220,7 @@
 | Momentum Strike | 动量打击 | ✅；借用未来移动能量攻击并令施法者短时无法移动 |
 | Mourning Wail | 哀悼嚎哭 | ✅ |
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
-| Old Deflect Missiles | 旧版偏转飞弹 | ✅ |
+| Old Deflect Missiles | 旧版偏转飞弹 | ✅；已移除兼容标题 |
 | Orb of Destruction | 毁灭法球 | ✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球 |
 | Orb of Electricity | 电光球 | ✅；命中时产生大型电能爆炸 |
 | Ostracise | 排斥 | ✅ |
