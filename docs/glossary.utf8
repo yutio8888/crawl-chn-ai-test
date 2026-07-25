@@ -271,7 +271,7 @@ Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=✅
 Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
 Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅
-Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅
+Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅

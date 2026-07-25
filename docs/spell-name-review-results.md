@@ -1580,6 +1580,40 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## Death's Door
+
+边界：`Death's Door` 这一项现行法术。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_DEATHS_DOOR` | 9 / 死灵 / `no_ghost` | 玩家、怪物 | 死亡之门 | 短暂近乎免疫伤害；生命降至濒死值且不能接受治疗；结束后进入重施冷却 | 保留 |
+
+名称结论：“死亡之门”准确保留 `at death's door` 的濒死门槛意象，并与
+施法消息中的 doorway 意象一致。标题无需枚举法术威力决定的剩余生命、
+结束警告或冷却机制。
+
+英文描述与实现一致。中文描述完整覆盖近乎免疫伤害、濒死生命值、治疗
+无效、到期警告、重施冷却、法术威力影响结束生命值和亡灵限制；本批只
+修正施法者代词指代与亡灵限制末句的中文语法。
+
+证据：`spl-data.h:375`—`382`、`dat/descript/spells.txt:471`—`481`、
+`spl-selfench.cc:36`—`51`、`duration-data.h:358`—`371`、
+`ouch.cc:1384`—`1390`、`player-reacts.cc:894`—`904`。
+
+### 落地状态
+
+- [x] 1/1 机制证据与名称裁定
+- [x] 单一翻译写入者两处措辞修正
+- [x] translation profile
+- [x] 单项裁定登记（`D-C-047`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T173722806271000+0800-48561-103eb2887a70`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`58ebdb5137d6d3fdf8a406dd2d11f25cb7bf9a96400e0c9dad75e41a0f9ba140`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

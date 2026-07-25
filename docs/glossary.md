@@ -946,7 +946,7 @@
 | Cigotuvi's Degeneration | 西格图维之退化 | ✅；已移除兼容标题，无当前机制可供反推 |
 | Cigotuvi's Embrace | 西格图维之拥抱 | ✅；已移除兼容标题，无当前机制可供反推 |
 | Cigotuvi's Putrefaction | 西格图维之腐烂 | ✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取 |
-| Death's Door | 死亡之门 | ✅ |
+| Death's Door | 死亡之门 | ✅；近乎免疫伤害但将生命降至濒死状态 |
 | Dragon's Call | 龙之呼唤 | ✅ |
 | Druid's Call | 德鲁伊呼唤 | ✅；召回同层已有林地生物，非创造召唤物 |
 | Eringya's Noxious Bog | 埃林吉亚之毒沼 | ✅；有毒污泥将附近坚实地面暂时转为毒沼 |

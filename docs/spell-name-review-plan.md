@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 221/511 项逐项审阅。
+当前已完成 222/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -128,7 +128,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Dispel 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Awaken 词形系列（5 项证据、裁定及 translation profile 已完成）
   - [x] Forge 词形系列（4 项证据、裁定、描述落地及 translation profile 已完成）
-- [ ] 人物专名系列
+- [x] 人物专名系列
   - [x] Maxwell's 专名系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Iskenderun's 专名系列（2 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Vhi's 专名系列（2 项证据、裁定、名称与描述落地及 translation profile 已完成）
@@ -143,6 +143,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Lehudib's 专名系列（1 项证据、裁定、描述润色及 translation profile 已完成）
   - [x] 单成员专名批次 A（Yara、Leda、Lee、Martyr；4 项证据、裁定及 translation profile 已完成）
   - [x] 单成员专名批次 B（Brom、Trog、Tukima、Sheza、Sentinel；5 项及 translation profile 已完成）
+  - [x] Death's Door（1 项证据、裁定、描述修正及 translation profile 已完成）
 - [ ] 实体、元素和状态术语系列
   - [x] Hoarfrost 词根系列（2 项证据、裁定、描述修正及 translation profile 已完成）
 - [ ] 独立法术

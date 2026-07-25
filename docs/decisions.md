@@ -1871,6 +1871,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-047 — Spell name review: Death's Door
+
+- **Type**: C — Single-item ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: `Death's Door` 现行法术标题
+- **Choice**: 保留 `Death's Door → 死亡之门`。
+- **Rationale**: “死亡之门”准确保留英文习语的门槛意象，也与施法者将
+  生命降至濒死值、短暂近乎免疫伤害、结束后暂时不能重施的机制一致。
+- **Description corrections**: 修正施法者代词指代和亡灵限制末句的
+  中文语法，不改变机制含义。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2400,3 +2419,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-044 | Spell name review — 单成员专名批次 A | 4 current；1 description clarification | active |
 | D-C-045 | Spell name review — 单成员专名批次 B | 5 current；4 description fixes | active |
 | D-C-046 | Spell name review — Hoarfrost 词根系列 | 2 current；1 description retranslation | active |
+| D-C-047 | Spell name review — Death's Door | 1 current；2 wording fixes | active |
