@@ -1080,7 +1080,7 @@
 | Corrupt Body | 腐化躯体 | ✅ |
 | Corrupting Pulse | 腐化脉冲 | ✅ |
 | Creeping Frost | 蔓延冰霜 | ✅；从墙壁唤出冻气，冻结并减速墙边敌人 |
-| Crystallising Shot | 结晶射击 | ✅ |
+| Crystallising Shot | 结晶射击 | ✅；水晶碎片命中后可能使目标脆化 |
 | Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
 | Darkness | 黑暗术 | ✅ |
@@ -1152,7 +1152,7 @@
 | Grave Claw | 墓爪 | ✅ |
 | Greater Ensnare | 强力束缚 | ✅ |
 | Hailstorm | 冰雹风暴 | ✅；环形冰雹避开紧邻施法者的目标 |
-| Harpoon Shot | 鱼叉射击 | ✅ |
+| Harpoon Shot | 鱼叉射击 | ✅；命中后将目标拉近或使其撞上障碍 |
 | Haste | 加速 | ✅；提高施法者行动速度 |
 | Haste Other | 加速他人 | ✅；提高附近盟友行动速度 |
 | Haste Plants | 加速植物 | ✅；已移除兼容标题 |
@@ -1183,7 +1183,7 @@
 | Insulation | 绝缘术 | ✅ |
 | Invisibility | 隐身术 | ✅；使施法者隐形 |
 | Invisibility Other | 使他人隐形 | 🆕；使附近盟友隐形 |
-| Iron Shot | 铁弹 | ✅ |
+| Iron Shot | 铁弹 | ✅；`shot` 指重型金属弹体，不机械统一为“射击” |
 | Irradiate | 辐射 | ✅ |
 | Jinxbite | 厄运之咬 | ✅ |
 | Kinetic Grapnel | 动力抓钩 | ✅ |

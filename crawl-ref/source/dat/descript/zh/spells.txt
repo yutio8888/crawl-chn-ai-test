@@ -1602,8 +1602,8 @@ Creeping Shadow spell
 %%%%
 Crystallising Shot spell
 
-向目标发射一支水晶子弹，对击中的第一个生物造成寒冷伤害，
-并在其位置留下一道持续数回合的冰霜路障。
+掷出一块巨大而沉重的水晶碎片。它可能令生物的身体结构变得如破碎的
+粗制水晶般脆弱，使其受到的所有伤害增加。
 %%%%
 Detonation Catalyst spell
 

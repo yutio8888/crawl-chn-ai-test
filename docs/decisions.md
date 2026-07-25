@@ -2256,6 +2256,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-065 — Spell name review: Shot 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项现行怪物法术
+- **Choice**: 保留 `Crystallising Shot → 结晶射击`、
+  `Harpoon Shot → 鱼叉射击` 与 `Iron Shot → 铁弹`。
+- **Series rule**: `shot` 须按标题中的实际指称判断；表示射击动作时采用
+  “射击”，表示所发射的重型弹体时可采用“弹”，不作机械统一。
+- **Rationale**: 前两项标题突出结晶化和鱼叉拉拽攻击，`Iron Shot`
+  则直接指巨大沉重的金属弹体；三项均符合描述和实现。
+- **Description corrections**: 重译 `Crystallising Shot` 中文描述，
+  移除旧版寒冷伤害与冰霜路障机制，恢复水晶碎片及全伤害脆化效果。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2803,3 +2825,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-062 | Spell name review — Infusion 词形系列 | 3 axed；no text fixes | active |
 | D-C-063 | Spell name review — Song 词形系列 | 2 current + 1 axed；no text fixes | active |
 | D-C-064 | Spell name review — Animate 词形系列 | 1 current + 1 axed；1 rename + 1 description fix | active |
+| D-C-065 | Spell name review — Shot 词形系列 | 3 current；1 description retranslation | active |

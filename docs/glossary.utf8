@@ -257,7 +257,7 @@ critical hit	暴击	domain=combat; source=EN/ZH
 crocodile	鳄鱼	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 crystal echidna	水晶针鼹	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 crystal guardian	水晶守护者	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅
+Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅；水晶碎片命中后可能使目标脆化
 culicivora	库蚊蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 curse	诅咒	domain=core; source=EN/ZH | domain=items; source=EN/ZH
@@ -443,7 +443,7 @@ Grum	格拉姆	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mons
 Grunn	格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅；环形冰雹避开紧邻施法者的目标
 Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅
+Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅；命中后将目标拉近或使其撞上障碍
 Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅；提高施法者行动速度
 Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅；提高附近盟友行动速度
 Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
@@ -501,7 +501,7 @@ Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | do
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅
+Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
 Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
