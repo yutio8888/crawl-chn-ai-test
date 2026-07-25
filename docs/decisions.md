@@ -1555,6 +1555,35 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-034 — Spell name review: Vhi's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与冲锋、近战附伤及怪物施法实现逐项复核
+- **Scope**: 2 项以 `Vhi's` 开头的现行标题，无已移除兼容成员
+- **Choice**:
+  - `Vhi's Electric Charge`：维之电荷 → **维之电击冲锋**
+  - `Vhi's Electrolunge`：维之电冲 → **维之电击突进**
+- **Series rule**: 人名 `Vhi → 维`，所有格采用“维之……”；`Electric
+  Charge` 保留向敌人冲锋的动作义，`Electrolunge` 用“突进”保留
+  lunge 的近身攻击义。
+- **Rationale**: 玩家版会沿路径冲到附近敌人身边并发动高命中近战攻击，
+  “电荷”把 `charge` 错解为静态电学名词，完全隐藏核心动作。怪物版采用
+  同一位移攻击实现，但英文以 `lunge` 区分；“电冲”构词生硬且动作不清，
+  “电击突进”既与玩家版形成系列，也保留原名差异。
+- **Description corrections**: 玩家版把误译的“蓄力长度”改为“冲锋距离”；
+  怪物版删除旧机制“化作穿透性闪电并传送”，恢复冲向敌人、高命中近战、
+  法术威力附加电击伤害、穿过危险格与置换目的地生物的当前规则。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2071,3 +2100,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-031 | Spell name review — Maxwell's 专名系列 | 2 current；2 description fixes | active |
 | D-C-032 | Spell name review — Forge 词形系列 | 4 current；4 description fixes | active |
 | D-C-033 | Spell name review — Iskenderun's 专名系列 | 1 fix；2 current；2 description fixes | active |
+| D-C-034 | Spell name review — Vhi's 专名系列 | 2 fixes；2 current；2 description fixes | active |

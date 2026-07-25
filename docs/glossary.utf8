@@ -932,8 +932,8 @@ Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=uniqu
 Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
 Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Vex	激怒	domain=spells; source=EN/ZH; 备注=✅
-Vhi's Electric Charge	维之电荷	domain=spells; source=EN/ZH; 备注=✅
-Vhi's Electrolunge	维之电冲	domain=spells; source=EN/ZH; 备注=✅
+Vhi's Electric Charge	维之电击冲锋	domain=spells; source=EN/ZH; 备注=🆕；`charge` 是向敌人冲锋，不是静态“电荷”
+Vhi's Electrolunge	维之电击突进	domain=spells; source=EN/ZH; 备注=🆕；怪物版近身突进，与玩家版“冲锋”区分
 vine stalker	藤蔓行者	domain=species; source=EN/ZH
 Virulence	毒性	domain=spells; source=EN/ZH; 备注=✅
 Vitalisation	活力再生	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt

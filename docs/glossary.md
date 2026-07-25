@@ -970,8 +970,8 @@
 | Sheza's Dance | 谢扎之舞 | ✅ |
 | Trog's Hand | 特洛格之手 | ✅ |
 | Tukima's Dance | 图基玛之舞 | ✅ |
-| Vhi's Electric Charge | 维之电荷 | ✅ |
-| Vhi's Electrolunge | 维之电冲 | ✅ |
+| Vhi's Electric Charge | 维之电击冲锋 | 🆕；`charge` 是向敌人冲锋，不是静态“电荷” |
+| Vhi's Electrolunge | 维之电击突进 | 🆕；怪物版近身突进，与玩家版“冲锋”区分 |
 | Yara's Violent Unravelling | 亚拉之猛烈解构 | ✅ |
 
 ### Projectile（7）

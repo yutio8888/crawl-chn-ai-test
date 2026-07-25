@@ -15766,10 +15766,10 @@ Blinkbolt
 闪烁箭
 %%%%
 Vhi's Electric Charge
-维之电荷
+维之电击冲锋
 %%%%
 Vhi's Electrolunge
-维之电冲
+维之电击突进
 %%%%
 Petrify
 石化
