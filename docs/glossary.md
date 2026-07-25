@@ -84,7 +84,7 @@
 
 | 词根 | 译法 | 状态 |
 |------|------|------|
-| Blink | 闪烁 | ✅ 已确认（系列完整） |
+| Blink | 闪烁 | ✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） |
 | Summon | 召唤 | ✅ 已确认 |
 | Dispel | 驱散 | ✅ 已确认 |
 
@@ -697,19 +697,19 @@
 > 最终译名依据 `docs/spell-naming-rules.md` 审阅确定。
 > 修订标记：✅ 保留原译，📝 修订，🆕 新增。
 
-### Blink（9）
+### Blink（现行 8；已移除／TAG 34 兼容 1）
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Blink | 闪烁 | ✅ |
-| Blink Allies Away | 闪烁盟友远离 | ✅ |
-| Blink Allies Encircling | 闪烁盟友包围 | ✅ |
-| Blink Away | 远离闪烁 | ✅ |
-| Blink Close | 接近闪烁 | ✅ |
-| Blink Other | 闪烁他人 | ✅ |
-| Blink Other Close | 闪烁他人接近 | ✅ |
-| Blink Range | 退避闪烁 | ✅ |
-| Controlled Blink | 受控闪烁 | ✅ |
+| Blink | 闪烁 | ✅ 现行 |
+| Blink Allies Away | 使盟友闪烁远离 | 📝 现行 |
+| Blink Allies Encircling | 使盟友闪烁合围 | 📝 现行 |
+| Blink Away | 远离闪烁 | ✅ 现行 |
+| Blink Close | 接近闪烁 | ✅ 现行 |
+| Blink Other | 使他人闪烁 | 📝 现行 |
+| Blink Other Close | 使他人闪烁靠近 | 📝 现行 |
+| Blink Range | 退避闪烁 | ✅ 现行 |
+| Controlled Blink | 受控闪烁 | ✅ 已移除／TAG 34 兼容 |
 
 ### Bolt（19）
 

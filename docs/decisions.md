@@ -921,6 +921,34 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-013 — Spell name revision: Blink 系列使役结构与生命周期
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: Blink 系列逐项复审；对照当前 `spl-data.h`、英文法术描述及位移实现
+- **Choice**:
+  - 保留系列核心词根 `Blink → 闪烁`，并将 8 项现行法术与 1 项已移除兼容记录分开登记。
+  - `Blink Allies Away`：闪烁盟友远离 → **使盟友闪烁远离**。
+  - `Blink Allies Encircling`：闪烁盟友包围 → **使盟友闪烁合围**。
+  - `Blink Other`：闪烁他人 → **使他人闪烁**。
+  - `Blink Other Close`：闪烁他人接近 → **使他人闪烁靠近**。
+  - 保留 `Blink → 闪烁`、`Blink Away → 远离闪烁`、`Blink Close → 接近闪烁`、`Blink Range → 退避闪烁`、`Controlled Blink → 受控闪烁`。
+- **Mechanism basis**: 四项修订法术均由施法者使盟友或目标发生闪烁位移，旧译把不及物的“闪烁”机械置于受事者之前，弱化或混淆了使役关系。`Blink Allies Away` 使靠近敌人的盟友闪烁至更远位置；`Blink Allies Encircling` 将 3–6 名盟友移动至目标敌人的相邻格形成合围；`Blink Other` 使目标敌人进行无法以意志抵抗的随机短距闪烁；`Blink Other Close` 使目标敌人向施法者闪烁靠近一小段距离。
+- **Rejected**:
+  - “盟友远离闪烁”“盟友环绕闪烁”“他人闪烁”：弱化施法者对受事者的使役关系。
+  - “闪送盟友远离／合围”“闪送他人”：丢失已确认的 Blink 系列“闪烁”词根。
+  - “盟友退避闪烁”：与 `Blink Range → 退避闪烁` 的特殊机制混淆。
+  - “使盟友闪烁包围”：结果补语生硬；“使他人接近闪烁”可能被理解为在近处闪烁；“使他人闪烁近身”误示目标必定抵达相邻格；“使敌人闪烁”不必要地把较中性的 `Other` 改写为机制限定。
+- **Lifecycle**: `Controlled Blink` 仅存在于 `TAG_MAJOR_VERSION == 34` 的 `AXED_SPELL` 与存档兼容路径，不是现行可施放法术，也没有现行英中描述。历史标题“受控闪烁”保留，但不计入 8 项现行成员；当前仍存在的同名实现辅助函数用于物品路径，不改变该法术的已移除状态。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1381,3 +1409,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-010 | Spell name revision — 杂项 | 11 fixes | active |
 | D-C-011 | Spell name revision — 新增缺失法术 | 12 new entries | active |
 | D-C-012 | Spell name revision — 元素召唤统一 | 3 fixes | active |
+| D-C-013 | Spell name revision — Blink 系列 | 4 fixes；8 current + 1 axed compatibility | active |

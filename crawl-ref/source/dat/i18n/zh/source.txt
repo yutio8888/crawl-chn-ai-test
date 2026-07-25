@@ -16060,10 +16060,10 @@ Summon Drakes
 召唤幼龙
 %%%%
 Blink Other
-闪烁他人
+使他人闪烁
 %%%%
 Blink Other Close
-闪烁他人接近
+使他人闪烁靠近
 %%%%
 Summon Mushrooms
 召唤蘑菇
@@ -16252,7 +16252,7 @@ Dimension Anchor
 维度锚定
 %%%%
 Blink Allies Encircling
-闪烁盟友包围
+使盟友闪烁合围
 %%%%
 Awaken Vines
 唤醒藤蔓
@@ -16318,7 +16318,7 @@ Major Destruction
 大型毁灭
 %%%%
 Blink Allies Away
-闪烁盟友远离
+使盟友闪烁远离
 %%%%
 Summon Forest
 召唤森林

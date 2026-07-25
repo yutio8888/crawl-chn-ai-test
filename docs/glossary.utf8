@@ -116,15 +116,15 @@ black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster;
 Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=✅
 blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（系列完整） | domain=spells; source=EN/ZH; 备注=✅
-Blink Allies Away	闪烁盟友远离	domain=spells; source=EN/ZH; 备注=✅
-Blink Allies Encircling	闪烁盟友包围	domain=spells; source=EN/ZH; 备注=✅
-Blink Away	远离闪烁	domain=spells; source=EN/ZH; 备注=✅
-Blink Close	接近闪烁	domain=spells; source=EN/ZH; 备注=✅
+Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=✅ 现行
+Blink Allies Away	使盟友闪烁远离	domain=spells; source=EN/ZH; 备注=📝 现行
+Blink Allies Encircling	使盟友闪烁合围	domain=spells; source=EN/ZH; 备注=📝 现行
+Blink Away	远离闪烁	domain=spells; source=EN/ZH; 备注=✅ 现行
+Blink Close	接近闪烁	domain=spells; source=EN/ZH; 备注=✅ 现行
 blink frog	闪烁蛙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Blink Other	闪烁他人	domain=spells; source=EN/ZH; 备注=✅
-Blink Other Close	闪烁他人接近	domain=spells; source=EN/ZH; 备注=✅
-Blink Range	退避闪烁	domain=spells; source=EN/ZH; 备注=✅
+Blink Other	使他人闪烁	domain=spells; source=EN/ZH; 备注=📝 现行
+Blink Other Close	使他人闪烁靠近	domain=spells; source=EN/ZH; 备注=📝 现行
+Blink Range	退避闪烁	domain=spells; source=EN/ZH; 备注=✅ 现行
 Blinkbolt	闪烁箭	domain=spells; source=EN/ZH; 备注=✅
 blizzard demon	暴雪恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bloated husk	肿胀尸壳	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -235,7 +235,7 @@ Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; 
 Control Teleport	传送控制	domain=spells; source=EN/ZH; 备注=✅
 Control Undead	亡灵控制	domain=spells; source=EN/ZH; 备注=✅
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅
-Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅
+Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除／TAG 34 兼容
 Corona	怪异发光球	domain=spells; source=EN/ZH; 备注=✅
 Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
 Corrosion	腐蚀	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt

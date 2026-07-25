@@ -127,7 +127,7 @@ Blink Away spell
 %%%%
 Blink Close spell
 
-将施法者转移到靠近目标敌人的位置。
+将施法者向目标敌人转移一小段距离。
 %%%%
 Blink Other Close spell
 
