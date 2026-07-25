@@ -575,6 +575,12 @@ const char* brand_type_name(brand_type brand, bool terse)
     if (brand < 0 || brand >= NUM_SPECIAL_WEAPONS)
         return terse ? "buggy" : "bugginess";
 
+    if (brand == SPWPN_DRAINING)
+    {
+        return terse ? C_("weapon brand terse", "drain")
+                     : C_("weapon brand full name", "draining");
+    }
+
     return T_(terse ? weapon_brands_terse[brand]
                     : weapon_brands_verbose[brand]);
 }
@@ -583,6 +589,9 @@ const char* brand_type_adj(brand_type brand)
 {
     if (brand < 0 || brand >= NUM_SPECIAL_WEAPONS)
         return "buggy";
+
+    if (brand == SPWPN_DRAINING)
+        return C_("weapon brand adjective", "draining");
 
     return T_(weapon_brands_adj[brand]);
 }
@@ -629,7 +638,8 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
         case SPARM_COLD_RESISTANCE:   return T_("cold resistance");
         case SPARM_POISON_RESISTANCE: return T_("poison resistance");
         case SPARM_SEE_INVISIBLE:     return T_("see invisible");
-        case SPARM_INVISIBILITY:      return T_("invisibility");
+        case SPARM_INVISIBILITY:
+            return C_("armour ego full name", "invisibility");
         case SPARM_STRENGTH:          return T_("strength");
         case SPARM_DEXTERITY:         return T_("dexterity");
         case SPARM_INTELLIGENCE:      return T_("intelligence");
@@ -649,7 +659,8 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
         case SPARM_HARM:              return T_("harm");
         case SPARM_SHADOWS:           return T_("shadows");
         case SPARM_RAMPAGING:         return T_("rampaging");
-        case SPARM_INFUSION:          return T_("infusion");
+        case SPARM_INFUSION:
+            return C_("armour ego full name", "infusion");
         case SPARM_LIGHT:             return T_("light");
         case SPARM_RAGE:              return T_("wrath");
         case SPARM_MAYHEM:            return T_("mayhem");
@@ -897,13 +908,14 @@ const char* potion_type_name(int potiontype)
     case POT_CURING:            return T_("curing");
     case POT_HEAL_WOUNDS:       return T_("heal wounds");
     case POT_HASTE:             return T_("haste");
-    case POT_MIGHT:             return T_("might");
+    case POT_MIGHT:             return C_("potion full name", "might");
     case POT_ATTRACTION:        return T_("attraction");
     case POT_BRILLIANCE:        return T_("brilliance");
     case POT_ENLIGHTENMENT:     return T_("enlightenment");
     case POT_CANCELLATION:      return T_("cancellation");
     case POT_AMBROSIA:          return T_("ambrosia");
-    case POT_INVISIBILITY:      return T_("invisibility");
+    case POT_INVISIBILITY:
+        return C_("potion full name", "invisibility");
     case POT_MOONSHINE:         return T_("moonshine");
     case POT_EXPERIENCE:        return T_("experience");
     case POT_MAGIC:             return T_("magic");
@@ -989,7 +1001,8 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_INTELLIGENCE:          return T_("intelligence");
         case RING_WIZARDRY:              return T_("wizardry");
         case RING_MAGICAL_POWER:         return T_("magical power");
-        case RING_FLIGHT:                return T_("flight");
+        case RING_FLIGHT:
+            return C_("jewellery full name", "flight");
         case RING_POSITIVE_ENERGY:       return T_("positive energy");
         case RING_WILLPOWER:             return T_("willpower");
 #if TAG_MAJOR_VERSION == 34
@@ -1505,10 +1518,16 @@ string sub_type_string(const item_def &item, bool known)
             return "Akashic Record";
 #endif
         default:
+        {
             // Structural: ZH "X之书" vs EN "book of X"
+            const string book_type =
+                sub_type == BOOK_NECROMANCY
+                    ? C_("book full name", "Necromancy")
+                    : T_(_book_type_name(sub_type));
             if (Options.language == lang_t::ZH)
-                return string(T_(_book_type_name(sub_type))) + T_("之书");
-            return string(T_("book of ")) + T_(_book_type_name(sub_type));
+                return string(book_type) + T_("之书");
+            return string(T_("book of ")) + book_type;
+        }
         }
     }
 #if TAG_MAJOR_VERSION == 34

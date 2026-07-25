@@ -70,12 +70,12 @@ heavy (heavy) weapon ego ranged
 %%%%
 holy wrath (holy) weapon ego
 
-它受到了辉光之神的祝福，对亡灵和恶魔造成穿透护甲伤害的额外四分之三伤害。
+它受到了光辉者的祝福，对亡灵和恶魔造成穿透护甲伤害的额外四分之三伤害。
 亡灵和恶魔无法使用此武器。
 %%%%
 pain (pain) weapon ego
 
-它对活着的生物造成与其死灵术技能成比例的额外伤害。{{
+它对活着的生物造成与你的死灵术技能成比例的额外伤害。{{
     if you.god() == "Trog" then
         return "特洛格阻止你释放此效果。";
     end
@@ -92,7 +92,7 @@ penetration (penet) weapon ego
 %%%%
 protection (protect) weapon ego
 
-它在攻击后为你提供临时防护（+7 AC）。
+它在击中目标后为你提供临时防护（+7 AC）。
 %%%%
 reaping (reap) weapon ego
 
@@ -142,7 +142,7 @@ archery (Archery) armour ego
 attunement (Attunement) armour ego
 
 当与魔法杖一同穿戴时，它会使该法杖的主要增强效果加倍，
-并使使用它进行的近战攻击恢复少量魔力。
+并使使用它进行的近战攻击恢复少量法力。
 %%%%
 cold resistance (rC+) armour ego
 
@@ -170,8 +170,8 @@ earth (Earth) armour ego
 %%%%
 energy (Energy) armour ego
 
-它可能会返还施法消耗的魔力，但会降低法术成功率。
-它总是返还因施法失败而消耗的魔力。法术返还概率随你的激活技能技能提升。
+它可能会返还施法消耗的法力，但会降低法术成功率。
+它总会返还因施法失误而消耗的法力。返还概率随你的魔力释放技能提升。
 %%%%
 fire (Fire) armour ego
 
@@ -188,12 +188,12 @@ flying (Fly) armour ego
 glass (Glass) armour ego
 
 当你伤害敌人时，它可能会使敌人玻璃化，使它们更容易受到后续伤害。
-你的激活技能技能会提高玻璃化的概率和持续时间。
+你的魔力释放技能会提高玻璃化的概率和持续时间。
 %%%%
 guile (Guile) armour ego
 
 它同时削弱你的意志力以及你所施放诅咒的每个目标的意志力，
-后者随你的激活技能技能而增强。
+后者的削弱幅度随你的魔力释放技能提高。
 %%%%
 harm (Harm) armour ego
 
@@ -232,7 +232,7 @@ mesmerism (Mesmerism) armour ego
 
 当你在近战中被击中时，它会短暂地使所有附近的敌人晕眩，
 之后需要通过静止不动来重新充能。其持续时间、范围和充能速度
-随你的激活技能技能提升。
+随你的魔力释放技能提升。
 %%%%
 parrying (Parrying) armour ego
 
@@ -258,7 +258,7 @@ protection (AC+3) armour ego
 pyromania (Pyromania) armour ego
 
 它可以增强你的火焰魔法，并可能在你以攻击之外的任何方式击杀敌人时
-在你周围释放火焰爆发。爆炸概率和伤害都随激活技能技能提升，
+在你周围释放火焰爆发。爆炸概率和伤害都随魔力释放技能提升，
 每回合最多触发一次。
 %%%%
 rampaging (Rampage) armour ego
@@ -280,7 +280,7 @@ resistance (rC+ rF+) armour ego
 %%%%
 resonance (Resonance) armour ego
 
-它可以提高你的锻造法术的成功率，并根据你的锻造技能比例增强
+它可以提高你的锻造法术的成功率，并根据你的锻造术技能比例增强
 你的近战攻击。
 %%%%
 see invisible (SInv) armour ego
@@ -298,13 +298,13 @@ sniping (Snipe) armour ego
 %%%%
 spirit shield (Spirit) armour ego
 
-它使受到的伤害在你的生命值和魔力储备之间分摊。
+它使受到的伤害在你的生命值和法力储备之间分摊。
 %%%%
 stardust (Stardust) armour ego
 
-在每场战斗中，当你第一次消耗魔力使用法术或能力时，它会召唤一阵流星雨，
-只有当你魔力恢复且不再有敌人时才能重新充能。你的激活技能技能会增加
-流星的数量和伤害，消耗的魔力会进一步增加伤害。
+在每场战斗中，当你第一次消耗法力使用法术或能力时，它会召唤一阵流星雨，
+只有当你法力恢复且不再有敌人时才能重新充能。你的魔力释放技能会增加
+流星的数量和伤害，消耗的法力会进一步增加伤害。
 %%%%
 stealth (Stlth+) armour ego
 

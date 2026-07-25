@@ -202,22 +202,56 @@
 <!-- item-name-terms -->
 | EN | ZH | Scope / comment |
 |----|----|----------------|
+| air | 空气 | item display fragment; armour ego, book, staff; decision=D-B-020 |
 | arbalest | 重弩 | weapon; decision=D-B-017 |
 | Barding | 马铠 | armour; decision=D-B-019 |
+| `armour ego full name\|infusion` | 灌注 | armour ego context key; decision=D-B-020 |
+| `armour ego full name\|invisibility` | 隐形 | armour ego context key; decision=D-B-020 |
+| `book full name\|Necromancy` | 死灵术 | book context key; decision=D-B-020 |
 | broad axe | 阔刃斧 | weapon; decision=D-B-018 |
 | dragon-coil talisman | 盘龙护符 | talisman; decision=D-B-018 |
 | dire flail | 双头链枷 | weapon; decision=D-B-017 |
 | falchion | 弯刃剑 | weapon; decision=D-B-018 |
+| flux bauble | 变形球 | bauble; decision=D-B-020 |
 | great mace | 巨型钉头锤 | weapon; decision=D-B-017 |
+| magic regeneration | 法力再生 | jewellery effect; decision=D-B-020 |
+| magical power | 法力强化 | jewellery effect; decision=D-B-020 |
+| mayhem | 暴乱 | armour ego; decision=D-B-020 |
+| moonshine | 私酒 | potion effect; decision=D-B-020 |
 | morningstar | 晨星锤 | weapon; paired with eveningstar; decision=D-B-017 |
 | eveningstar | 暮星锤 | weapon; paired with morningstar; decision=D-B-017 |
 | old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
 | partisan | 阔头枪 | weapon; decision=D-B-018 |
+| `potion full name\|invisibility` | 隐形 | potion context key; decision=D-B-020 |
+| `potion full name\|might` | 强效 | potion context key; decision=D-B-020 |
 | quarterstaff | 长棍 | weapon; decision=D-B-017 |
+| quill talisman | 棘刺护符 | talisman; decision=D-B-020 |
+| rampaging | 冲锋 | armour ego; decision=D-B-020 |
+| `jewellery full name\|flight` | 飞行 | jewellery context key; decision=D-B-020 |
 | sanguine talisman | 血色护符 | talisman; decision=D-B-018 |
+| immolation | 内焰 | scroll effect; decision=D-B-020 |
 | shadows | 暗影 | armour ego; decision=D-B-018 |
 | triple crossbow | 三弦弩 | weapon; decision=D-B-018 |
 | executioner's axe | 刽子手斧 | weapon; decision=D-B-017 |
+
+### 武器品牌显示名称
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| chaos | 混沌 | weapon brand verbose/terse; decision=D-B-016/D-B-020 |
+| chaotic | 混沌 | weapon brand adjective; decision=D-B-016/D-B-020 |
+| confusion | 混乱 | internal weapon brand verbose; decision=D-B-016/D-B-020 |
+| Confuse | 混乱 | internal weapon brand terse; decision=D-B-016/D-B-020 |
+| confusing | 混乱 | internal weapon brand adjective; decision=D-B-016/D-B-020 |
+| `weapon brand full name\|draining` | 汲取 | weapon brand verbose context key; decision=D-B-016/D-B-020 |
+| `weapon brand adjective\|draining` | 汲取 | weapon brand adjective context key; decision=D-B-016/D-B-020 |
+| `weapon brand terse\|drain` | 汲取 | weapon brand terse context key; decision=D-B-016/D-B-020 |
+| spectralising | 幽魂 | weapon brand verbose; decision=D-B-016/D-B-020 |
+| spect | 幽魂 | weapon brand terse; decision=D-B-016/D-B-020 |
+| spectral | 幽魂 | weapon brand adjective; decision=D-B-016/D-B-020 |
+| vampirism | 吸血 | weapon brand verbose; decision=D-B-016/D-B-020 |
+| vamp | 吸血 | weapon brand terse; decision=D-B-016/D-B-020 |
+| vampiric | 吸血 | weapon brand adjective; decision=D-B-016/D-B-020 |
 
 ---
 

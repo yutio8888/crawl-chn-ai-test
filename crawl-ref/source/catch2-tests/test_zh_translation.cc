@@ -872,6 +872,72 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: contextual item names do not overwrite spell or global terms",
+                 "[zh-translation][item-name][context]")
+{
+    init_properties();
+
+    const auto make_identified_item = [](object_class_type base_type,
+                                         int sub_type)
+    {
+        item_def item;
+        item.base_type = base_type;
+        item.sub_type = sub_type;
+        item.quantity = 1;
+        item.flags |= ISFLAG_IDENTIFIED;
+        return item;
+    };
+
+    item_def infusion_robe = make_identified_item(OBJ_ARMOUR, ARM_ROBE);
+    infusion_robe.brand = SPARM_INFUSION;
+    REQUIRE(infusion_robe.name(DESC_PLAIN) == "+0 灌注之长袍");
+
+    item_def invisibility_robe = make_identified_item(OBJ_ARMOUR, ARM_ROBE);
+    invisibility_robe.brand = SPARM_INVISIBILITY;
+    REQUIRE(invisibility_robe.name(DESC_PLAIN) == "+0 隐形之长袍");
+
+    const item_def invisibility_potion =
+        make_identified_item(OBJ_POTIONS, POT_INVISIBILITY);
+    const item_def might_potion =
+        make_identified_item(OBJ_POTIONS, POT_MIGHT);
+    const item_def necromancy_book =
+        make_identified_item(OBJ_BOOKS, BOOK_NECROMANCY);
+    const item_def flight_ring =
+        make_identified_item(OBJ_JEWELLERY, RING_FLIGHT);
+    REQUIRE(invisibility_potion.name(DESC_PLAIN) == "隐形药水");
+    REQUIRE(might_potion.name(DESC_PLAIN) == "强效药水");
+    REQUIRE(necromancy_book.name(DESC_PLAIN) == "死灵术之书");
+    REQUIRE(flight_ring.name(DESC_PLAIN) == "飞行戒指");
+
+    REQUIRE(std::string(brand_type_name(SPWPN_DRAINING, false)) == "汲取");
+    REQUIRE(std::string(brand_type_name(SPWPN_DRAINING, true)) == "汲取");
+    REQUIRE(std::string(brand_type_adj(SPWPN_DRAINING)) == "汲取");
+    REQUIRE(std::string(T_("drain")) == "吸血");
+    REQUIRE(std::string(T_("draining")) == "吸取");
+
+    init_spell_descs();
+    init_spell_name_cache();
+    REQUIRE(std::string(spell_title(SPELL_INFUSION)) == "灌注术");
+    REQUIRE(std::string(spell_title(SPELL_FLY)) == "飞行术");
+    REQUIRE(std::string(spell_title(SPELL_INVISIBILITY)) == "隐身术");
+    REQUIRE(std::string(spell_title(SPELL_MIGHT)) == "强壮");
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: contextual book name keeps the canonical display",
+                 "[zh-translation][item-name][context]")
+{
+    init_properties();
+    item_def book;
+    book.base_type = OBJ_BOOKS;
+    book.sub_type = BOOK_NECROMANCY;
+    book.quantity = 1;
+    book.flags |= ISFLAG_IDENTIFIED;
+
+    REQUIRE(book.name(DESC_PLAIN) == "book of Necromancy");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Issue 66 status lights use full labels",
                  "[zh-translation][issue-66][status]")
 {
