@@ -94,10 +94,11 @@
 | Throw | 投掷 | ✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） |
 | Beam | 光束 | ✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅） |
 | Gaze | 凝视 | ✅ 已确认（7 项现行） |
+| Arrow | 箭 | ✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外） |
 | Touch | 触 | ✅ 已确认（2 项现行） |
 | Dispel | 驱散 | ✅ 已确认 |
 
-待审阅词根：Arrow、Touch 等——将在逐批审阅中确认并补充。
+其他词根将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
 
 ---
@@ -928,11 +929,20 @@
 | EN | ZH | 备注 |
 |---------|------|------|
 | Magic Dart | 魔法飞弹 | ✅ |
-| Mercury Arrow | 汞矢 | ✅ |
+| Mercury Arrow | 汞矢 | ✅；与 `Quicksilver Bolt → 水银箭` 区分的辨识性例外 |
 | Poison Arrow | 毒箭 | ✅ |
 | Poisonous Vapours | 毒气 | ✅ |
-| Pyre Arrow | 烈火箭 | 📝 |
+| Pyre Arrow | 烈火箭 | ✅；液态火焰附着目标并持续灼烧 |
 | Slug Dart | 蛞蝓飞镖 | ✅；由飞镖蛞蝓发射硬化甲壳质尖镖 |
+| Stone Arrow | 石箭 | ✅ |
+
+### Arrow（4）
+
+| EN | ZH | 备注 |
+|---------|------|------|
+| Mercury Arrow | 汞矢 | ✅；为避免与 `Quicksilver Bolt → 水银箭` 重名，不套用常规“箭”词尾 |
+| Poison Arrow | 毒箭 | ✅ |
+| Pyre Arrow | 烈火箭 | ✅；液态火焰附着目标并持续灼烧 |
 | Stone Arrow | 石箭 | ✅ |
 
 ### Beam（1）

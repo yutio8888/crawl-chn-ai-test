@@ -1311,6 +1311,37 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-025 — Spell name review: Arrow 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、zap 与 beam 实现逐项复核
+- **Scope**: 4 项以独立 `Arrow` 结尾的现行标题，无已移除兼容成员
+- **Choice**: 保留 `Poison Arrow → 毒箭`、`Stone Arrow → 石箭`、
+  `Pyre Arrow → 烈火箭` 与 `Mercury Arrow → 汞矢`。
+- **Series rule**: 投射物形态明确为 arrow 的标题通常后置为“箭”；
+  `Mercury Arrow → 汞矢` 是为避免与 `Quicksilver Bolt → 水银箭`
+  重名而保留的辨识性例外。
+- **Rationale**: `Mercury Arrow` 与 `Quicksilver Bolt` 的英文名称、
+  伤害类型和附加效果均不同，不能合并为同一中文名。旧裁定 `D-C-002`
+  已用“汞矢”保留 mercury 与 quicksilver 的词面差异，本次机制复核未发现
+  足以推翻它的误导。其余三项分别准确对应剧毒魔法箭、岩刺投射物和会
+  附着目标的液态火焰。
+- **Description corrections**: 用当前机制重译 `Mercury Arrow` 的过时
+  气态汞描述；修正 `Poison Arrow` 的抗性术语和伤害比例表述、
+  `Pyre Arrow` 的附着条件及中文语病，并使 `Stone Arrow` 与
+  `sharp spine of rock` 对齐。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Affected decisions**: 复核并保留 `D-C-002` 的 Mercury Arrow
+  消除重名裁定。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1818,3 +1849,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-022 | Spell name review — Beam 词形系列 | 2 current；1 description fix | active |
 | D-C-023 | Spell name review — Gaze 词形系列 | 1 fix；7 current；7 description fixes | active |
 | D-C-024 | Spell name review — Touch 词形系列 | 2 current；1 description fix | active |
+| D-C-025 | Spell name review — Arrow 词形系列 | 4 current；4 description fixes | active |

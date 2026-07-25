@@ -62,6 +62,7 @@ armor	护甲	domain=combat; source=EN/ZH
 armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
 Armour	护甲	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 armour echo	铠甲回响	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Arrow	箭	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外）
 artefact	神器	domain=items; source=EN/ZH
 Artificer	技师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Ashenzari	艾申扎利	domain=gods; source=EN/ZH; 类型=音译
@@ -567,7 +568,7 @@ Melee	近战	domain=spells; source=EN/ZH; 备注=✅
 Menkaure	门卡拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mennas	门纳斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mephitic Cloud	迷瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅
+Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅；与 `Quicksilver Bolt → 水银箭` 区分的辨识性例外 | domain=spells; source=EN/ZH; 备注=✅；为避免与 `Quicksilver Bolt → 水银箭` 重名，不套用常规“箭”词尾
 merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
 Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
 Metabolic Englaciation	深度冻结	domain=spells; source=EN/ZH; 备注=✅
@@ -676,7 +677,7 @@ potion	药水	domain=items; source=EN/ZH
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原始波浪	domain=spells; source=EN/ZH; 备注=✅
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Pyre Arrow	烈火箭	domain=spells; source=EN/ZH; 备注=📝
+Pyre Arrow	烈火箭	domain=spells; source=EN/ZH; 备注=✅；液态火焰附着目标并持续灼烧
 Pyroclastic Surge	火山碎屑涌	domain=spells; source=EN/ZH; 备注=✅
 Pyrrhic Recollection	惨胜回忆	domain=spells; source=EN/ZH; 备注=✅
 Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译

@@ -810,6 +810,47 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
 
+## Arrow 词形系列
+
+边界：英文标题以独立 `Arrow` 结尾的 4 项现行法术，无已移除兼容成员。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_POISON_ARROW` | 毒箭 | 剧毒魔法箭；少量直接伤害无视毒素抗性 | 保留 |
+| `SPELL_STONE_ARROW` | 石箭 | 发射尖锐岩刺 | 保留 |
+| `SPELL_PYRE_ARROW` | 烈火箭 | 附着液态火焰；持续造成无视护甲的火焰伤害 | 保留 |
+| `SPELL_MERCURY_ARROW` | 汞矢 | 元素汞箭造成毒素伤害并可能溅射削弱效果 | 保留（辨识性例外） |
+
+名称结论：常规采用 `Arrow → 箭`。`Mercury Arrow → 汞矢` 保留为
+辨识性例外，因为 `Quicksilver Bolt` 已译为“水银箭”；两者的英文名称、
+伤害类型和附加效果不同，统一成同一个中文标题会妨碍玩家识别。
+其余三项准确表达英文标题，不在标题中额外添加原名没有的附着、持续伤害
+或抗性机制。
+
+描述审阅同步修正 4 项：以当前机制重译 Mercury 的过时气态汞描述，
+补回箭矢冲击伤害、毒素免疫、削弱溅射与无视抗性；统一 Poison 的抗性
+术语和少量直接伤害表述；修正 Pyre 的附着条件及语病；使 Stone 与
+`sharp spine of rock` 对齐。
+
+证据：`spl-data.h:778`、`spl-data.h:893`、`spl-data.h:1569`、
+`spl-data.h:3226`、`zap-data.h:882`、`zap-data.h:994`、
+`zap-data.h:1316`、`zap-data.h:2561`、`spl-cast.cc:1432`、
+`spl-cast.cc:2090`、`beam.cc:4569`、`beam.cc:7525`。
+
+### 落地状态
+
+- [x] 4/4 机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-025`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T164427329781000+0800-36468-088c4f20c97e`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`5c7b299a9d61ee61b35910a6ef40c4644b35a5130b77736da9d13931b1ddcf72`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。
