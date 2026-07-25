@@ -1659,6 +1659,33 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-038 — Spell name review: Borgnjor's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与完全治疗、最大生命损失及尸手束缚实现逐项复核
+- **Scope**: 2 项以 `Borgnjor's` 开头的现行标题，无已移除兼容成员
+- **Choice**: `Borgnjor's Revivification` 由“博格尼尔之复活”重译为
+  **“博格尼尔之复苏”**；保留
+  `Borgnjor's Vile Clutch → 博格尼尔之邪恶抓握`。
+- **Series rule**: 人名 `Borgnjor → 博格尼尔`，所有格采用
+  “博格尼尔之……”。
+- **Rationale**: Revivification 只能由仍活着的施法者使用，效果是完全
+  治疗并永久牺牲部分最大生命，不能使死者复活；“复活”会与真正的
+  resurrection 机制混淆，“复苏”保留恢复生命力的原义而不制造死亡复生
+  暗示。Vile Clutch 召出尸手抓住并持续束缚区域内敌人，现译准确。
+- **Description corrections**: Revivification 将错误术语“法术力量”统一为
+  “法术威力”；Vile Clutch 的区域、束缚与挣脱条件均已完整译出。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2179,3 +2206,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-035 | Spell name review — Cigotuvi's 专名系列 | 1 current + 2 axed compatibility；1 description fix | active |
 | D-C-036 | Spell name review — Ozocubu's 专名系列 | 2 current | active |
 | D-C-037 | Spell name review — Gell's 专名系列 | 2 current；1 related item description fix | active |
+| D-C-038 | Spell name review — Borgnjor's 专名系列 | 1 fix；2 current；1 description fix | active |

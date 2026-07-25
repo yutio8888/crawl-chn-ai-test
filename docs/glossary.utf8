@@ -146,7 +146,7 @@ Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
 bombardier beetle	投弹甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bone dragon	骨龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Borgnjor's Revivification	博格尼尔之复活	domain=spells; source=EN/ZH; 备注=✅
+Borgnjor's Revivification	博格尼尔之复苏	domain=spells; source=EN/ZH; 备注=🆕；完全治愈仍活着的施法者，不会复活死者
 Borgnjor's Vile Clutch	博格尼尔之邪恶抓握	domain=spells; source=EN/ZH; 备注=✅
 Boris	鲍里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Boris title	鲍里斯，生死大师	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

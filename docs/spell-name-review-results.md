@@ -1276,6 +1276,43 @@ Gravitas 没有独立法术描述，但重力铃鼓的中文说明把效果范�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `2ba444c35624ab694f679a68438eeb7f77653e66ed611744db47f82c204ef7e9`。
 
+## Borgnjor's 专名系列
+
+边界：英文标题以 `Borgnjor's` 开头的 2 项现行法术，无已移除兼容成员。
+
+| Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|---|
+| `SPELL_BORGNJORS_REVIVIFICATION` | 8 / 死灵 / `none` | 玩家 | 博格尼尔之复活 | 完全治愈仍活着的施法者，永久降低最大生命；可解除死亡之门并短暂麻痹 | 重译为“博格尼尔之复苏” |
+| `SPELL_BORGNJORS_VILE_CLUTCH` | 5 / 死灵、土 / `dir_or_target, not_self, needs_tracer` | 玩家、怪物 | 博格尼尔之邪恶抓握 | 区域内尸手将敌人束缚在原地并持续收紧，直到挣脱 | 保留 |
+
+名称结论：专名稳定采用 `Borgnjor → 博格尼尔`。Revivification 不会
+使死者复活，且亡灵无法施放；“复活”会错误暗示 resurrection，改为
+“复苏”以表达恢复仍存的生命力。Vile Clutch 的现译保留 vile 的邪恶
+意象与 clutch 的抓握动作，符合尸手束缚机制。
+
+描述审阅修正 1 项术语错误：`power` 应按术语表译为“法术威力”，不能写成
+“法术力量”。其余完全治疗、最大生命永久损失、死亡之门交互、亡灵限制，
+以及尸手的区域束缚和挣脱条件均与英文一致。
+
+证据：`spl-data.h:668`—`675`、`spl-data.h:3259`—`3266`、
+`dat/descript/spells.txt:226`—`238`、`spl-selfench.cc:94`—`109`、
+`spl-util.cc:1856`—`1864`、`beam.cc:3952`—`3957`、
+`beam.cc:6700`—`6706`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者名称与描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-038`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T172013512876000+0800-11309-2c87f4b8d28b`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`80577c85b430dc87f7a7c4fd3b9a24624d303db34f196bfe3f54aed008f4cf2d`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

@@ -940,7 +940,7 @@
 |---------|------|------|
 | Alistair's Intoxication | 阿利斯泰尔之醉 | ✅ |
 | Alistair's Walking Alembic | 阿利斯泰尔之行走蒸馏器 | ✅ |
-| Borgnjor's Revivification | 博格尼尔之复活 | ✅ |
+| Borgnjor's Revivification | 博格尼尔之复苏 | 🆕；完全治愈仍活着的施法者，不会复活死者 |
 | Borgnjor's Vile Clutch | 博格尼尔之邪恶抓握 | ✅ |
 | Brom's Barrelling Boulder | 布罗姆之碾压巨石 | ✅ |
 | Cigotuvi's Degeneration | 西格图维之退化 | ✅；已移除兼容标题，无当前机制可供反推 |
