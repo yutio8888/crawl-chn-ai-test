@@ -100,6 +100,7 @@
 | Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用） |
 | Poison / Poisonous | 毒素 / 毒 / 淬毒 | ✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`） |
 | Dispel | 驱散 | ✅ 已确认（2 项现行；指破坏维系亡灵形体的魔力） |
+| Awaken | 唤醒 | ✅ 已确认（4 项现行；另有 1 项已移除兼容） |
 
 其他词根将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
@@ -913,6 +914,16 @@
 | Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容 |
 | Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容 |
 
+### Awaken（5）
+
+| EN | ZH | 备注 |
+|---------|------|------|
+| Awaken Armour | 唤醒护甲 | ✅ |
+| Awaken Flesh | 唤醒血肉 | ✅ |
+| Awaken Forest | 唤醒森林 | ✅ |
+| Awaken Vines | 唤醒藤蔓 | ✅ |
+| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+
 ### Possessive（35）
 
 | EN | ZH | 备注 |
@@ -1021,7 +1032,7 @@
 | Aura of Abjuration | 驱逐灵气 | ✅ |
 | Avatar Song | 化身之歌 | ✅ |
 | Awaken Armour | 唤醒护甲 | ✅ |
-| Awaken Earth | 唤醒大地 | ✅ |
+| Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Awaken Flesh | 唤醒血肉 | ✅ |
 | Awaken Forest | 唤醒森林 | ✅ |
 | Awaken Vines | 唤醒藤蔓 | ✅ |

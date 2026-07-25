@@ -1453,6 +1453,29 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-030 — Spell name review: Awaken 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与召唤／激活实现逐项复核
+- **Scope**: 5 项以 `Awaken` 开头的标题；4 项现行、1 项已移除兼容
+- **Choice**: `Awaken Forest → 唤醒森林`、`Awaken Vines → 唤醒藤蔓`、
+  `Awaken Flesh → 唤醒血肉`、`Awaken Armour → 唤醒护甲` 与
+  `Awaken Earth → 唤醒大地` 均保留。
+- **Series rule**: 此系列稳定采用 `Awaken X → 唤醒X`。
+- **Rationale**: 四项现行法术分别赋予树木攻击能力、使藤蔓破土抓取敌人、
+  激活肉堆形成憎恶及从护甲记忆显现战斗回响；“唤醒”能自然覆盖使静物
+  或潜在力量开始行动的共同语义。`Awaken Earth` 已移除且缺少当前机制，
+  暂沿用。
+- **Description corrections**: 无；四项现行中文描述与英文机制一致。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1965,3 +1988,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-027 | Spell name review — Form 词形系列 | 6 axed compatibility | active |
 | D-C-028 | Spell name review — Poison/Poisonous 词形系列 | 1 fix；5 current + 4 axed compatibility；2 description fixes | active |
 | D-C-029 | Spell name review — Dispel 词形系列 | 2 current；2 description fixes | active |
+| D-C-030 | Spell name review — Awaken 词形系列 | 4 current + 1 axed compatibility | active |

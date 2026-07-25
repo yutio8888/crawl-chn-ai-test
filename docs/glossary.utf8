@@ -74,8 +74,9 @@ Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; 
 attack	攻击	domain=combat; source=EN/ZH
 Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅
 Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅
+Awaken	唤醒	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；另有 1 项已移除兼容）
 Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅
-Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=✅
+Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Awaken Flesh	唤醒血肉	domain=spells; source=EN/ZH; 备注=✅
 Awaken Forest	唤醒森林	domain=spells; source=EN/ZH; 备注=✅
 Awaken Vines	唤醒藤蔓	domain=spells; source=EN/ZH; 备注=✅

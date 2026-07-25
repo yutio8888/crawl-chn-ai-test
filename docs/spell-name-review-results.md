@@ -1026,6 +1026,44 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Awaken 词形系列
+
+边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
+1 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_AWAKEN_FOREST` | 现行 | 唤醒森林 | 附近树木攻击相邻敌人 | 保留 |
+| `SPELL_AWAKEN_VINES` | 现行 | 唤醒藤蔓 | 藤蔓抓住闯入者并拖向树木 | 保留 |
+| `SPELL_AWAKEN_FLESH` | 现行 | 唤醒血肉 | 肉堆化为强化大型憎恶并伤害邻敌 | 保留 |
+| `SPELL_AWAKEN_ARMOUR` | 现行 | 唤醒护甲 | 从所穿护甲记忆显现战斗回响 | 保留 |
+| `SPELL_AWAKEN_EARTH` | 已移除兼容 | 唤醒大地 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：四项现行标题准确采用 `Awaken X → 唤醒X`，共同表达让原本
+静止的树木、藤蔓、血肉或护甲力量开始行动。标题无需枚举攻击、拖拽、
+憎恶生成或护甲重量等后续机制。已移除的 `Awaken Earth` 没有当前机制
+证据，暂沿用。
+
+描述审阅未发现语义偏差。证据：`spl-data.h:1829`、
+`spl-data.h:2232`、`spl-data.h:2665`、`spl-data.h:3525`、
+`spl-data.h:4741`；`dat/descript/spells.txt:87`—`111`；
+对应中文描述；`mon-cast.cc` 的森林、藤蔓与血肉施法路径及
+Awaken Armour 的锻造实现。
+
+### 落地状态
+
+- [x] 5/5 机制／生命周期证据与名称裁定
+- [x] 无翻译资产修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-030`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T165940431722000+0800-67902-a9927e7b16f9`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`d6fa21c7c034bdf3f6f40655ec5977826979e4f3c8c7e3279220064b09130ee1`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。
