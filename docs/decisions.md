@@ -2153,6 +2153,26 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-060 — Spell name review: Invisibility 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术
+- **Choice**: 将 `Invisibility Other → 隐身他人` 重译为“使他人隐形”；
+  保留 `Invisibility → 隐身术`。
+- **Series rule**: 状态采用“隐形”；对他人施加时用显式使役结构。
+- **Rationale**: “隐身他人”把不及物的“隐身”机械用作及物动词；
+  “使他人隐形”明确受事者和结果。自身法术“隐身术”自然明确。
+- **Description corrections**: 无；两项中英文描述一致。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2695,3 +2715,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-057 | Spell name review — Control 词形系列 | 3 axed；2 new + 1 reused；1 rename | active |
 | D-C-058 | Spell name review — Fire Storm 词形系列 | 1 current + 1 axed；1 description wording fix | active |
 | D-C-059 | Spell name review — Haste 词形系列 | 2 current + 1 axed；no text fixes | active |
+| D-C-060 | Spell name review — Invisibility 词形系列 | 2 current；1 rename | active |

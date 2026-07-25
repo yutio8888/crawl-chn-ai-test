@@ -16288,7 +16288,7 @@ Discord
 纷乱
 %%%%
 Invisibility Other
-隐身他人
+使他人隐形
 %%%%
 Virulence
 毒性

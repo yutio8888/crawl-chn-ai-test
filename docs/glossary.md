@@ -1181,8 +1181,8 @@
 | Injury Mirror | 伤害反射 | ✅ |
 | Inner Flame | 内焰 | ✅ |
 | Insulation | 绝缘术 | ✅ |
-| Invisibility | 隐身术 | ✅ |
-| Invisibility Other | 隐身他人 | ✅ |
+| Invisibility | 隐身术 | ✅；使施法者隐形 |
+| Invisibility Other | 使他人隐形 | 🆕；使附近盟友隐形 |
 | Iron Shot | 铁弹 | ✅ |
 | Irradiate | 辐射 | ✅ |
 | Jinxbite | 厄运之咬 | ✅ |

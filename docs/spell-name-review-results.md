@@ -2051,6 +2051,37 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
 
+## Invisibility 词形系列
+
+边界：标题含 `Invisibility` 的 2 项现行法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_INVISIBILITY` | 隐身术 | 使施法者隐形 | 保留 |
+| `SPELL_INVISIBILITY_OTHER` | 隐身他人 | 使附近盟友隐形 | 重译为“使他人隐形” |
+
+名称结论：“隐身术”作为自身法术名自然明确；“隐身他人”把不及物的
+“隐身”机械用作及物动词，改为“使他人隐形”以明确受事者与结果状态。
+
+两项中英文描述准确一致，不需要修改。
+
+证据：对应 `spl-data.h` 两项条目及
+`dat/descript/spells.txt:1076`—`1082`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者名称落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-060`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T180330242874000+0800-6605-140e18dd488e`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`2e035cc7fa6b46892579a755db4589768f92ba2ac233b3228bef9c8f1792d2f9`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

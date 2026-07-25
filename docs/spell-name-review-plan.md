@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 256/511 项逐项审阅。
+当前已完成 258/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -158,6 +158,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Control 词形系列（3 项均已审阅；1 项复用既有证据，translation profile 已完成）
   - [x] Fire Storm 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Haste 词形系列（3 项证据、裁定及 translation profile 已完成）
+  - [x] Invisibility 词形系列（2 项证据、裁定、名称落地及 translation profile 已完成）
 - [ ] 独立法术
 - [ ] 集合相等性终检
 

@@ -498,8 +498,8 @@ Ink Cloud	墨云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Inner Flame	内焰	domain=spells; source=EN/ZH; 备注=✅
 Insulation	绝缘术	domain=spells; source=EN/ZH; 备注=✅
 Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅
-Invisibility Other	隐身他人	domain=spells; source=EN/ZH; 备注=✅
+Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
+Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
