@@ -903,6 +903,7 @@ Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅ 现行；固定词形
 Tiamat	提亚马特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=✅
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
+Touch	触	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行）
 tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Translocation	传送系	domain=magic; source=EN/ZH
 Translocations	传送系	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001

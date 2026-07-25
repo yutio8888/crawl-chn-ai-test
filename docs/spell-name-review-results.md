@@ -850,6 +850,37 @@ Draining 的活物、负能量及最大生命比例机制，恢复 Mutagenic 的
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Touch 词形系列
+
+边界：英文标题含独立 `Touch` 词形的 2 项现行法术，无已移除兼容成员。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_AGONISING_TOUCH` | 剧痛之触 | 相邻目标生命减半，但不直接致死 | 保留 |
+| `SPELL_CONFUSING_TOUCH` | 困惑之触 | 惯用手附魔；无伤害触碰可能使目标困惑 | 保留 |
+
+名称结论：两项均自然采用 `Touch → 之触`，准确表达近距离触碰机制与
+结果。描述审阅只发现 `Confusing Touch` 漏译 dominant hand，本批补为
+“惯用手”；其余机制与英文一致。
+
+证据：`spl-data.h:937`、`spl-data.h:1051`、
+`dat/descript/spells.txt:131`、`dat/descript/spells.txt:382`、
+`spl-cast.cc:2701` 及 Confusing Touch 近战触发实现。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-024`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T164128898119000+0800-31160-c33b6eda4ced`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`dd7c8fee1a58e245c8764d1dcdff62f35d464926788c038207979917d21dbb71`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Beam 词形系列
 
 边界：英文标题以独立 `Beam` 结尾的 2 项现行法术，无已移除兼容成员。

@@ -1288,6 +1288,29 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-024 — Spell name review: Touch 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与施法实现逐项复核
+- **Scope**: 2 项含独立 `Touch` 词形的现行标题，无已移除兼容成员
+- **Choice**: `Agonising Touch → 剧痛之触` 与
+  `Confusing Touch → 困惑之触` 均保留。
+- **Series rule**: 此系列的名词性 `Touch` 后置译为“之触”。
+- **Rationale**: 前者直接将相邻生物生命减半但不致死，后者给惯用手附魔，
+  通过不造成伤害的触碰尝试使目标困惑；两个标题都准确概括结果与施法
+  方式，不需要把全部限制写入名称。
+- **Description correction**: 为 `Confusing Touch` 补回 dominant hand
+  的“惯用手”限定。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1794,3 +1817,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-021 | Spell name review — Throw 词形系列 | 7 current + 1 axed compatibility；5 description fixes | active |
 | D-C-022 | Spell name review — Beam 词形系列 | 2 current；1 description fix | active |
 | D-C-023 | Spell name review — Gaze 词形系列 | 1 fix；7 current；7 description fixes | active |
+| D-C-024 | Spell name review — Touch 词形系列 | 2 current；1 description fix | active |
