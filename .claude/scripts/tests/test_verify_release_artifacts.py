@@ -25,7 +25,7 @@ MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
 
-TAG = "0.34.1-zh1"
+TAG = "0.34.1-zh5-1-001"
 COMMIT = "a" * 40
 
 
@@ -164,7 +164,15 @@ class ReleaseArtifactTest(unittest.TestCase):
         )
 
     def test_tag_and_commit_identity_are_strict(self) -> None:
-        for tag in ("0.34.1", "0.34.1-zh0", "v0.34.1-zh1", "0.35.0-zh1"):
+        for tag in (
+            "0.34.1",
+            "0.34.1-zh5",
+            "0.34.1-zh5-0-001",
+            "0.34.1-zh5-1-000",
+            "0.34.1-zh5-1-1000",
+            "v0.34.1-zh5-1-001",
+            "0.35.0-zh5-1-001",
+        ):
             with self.subTest(tag=tag):
                 self.assert_rejected("release tag", tag=tag)
         for commit in ("a" * 39, "A" * 40, "not-a-sha"):
@@ -365,17 +373,25 @@ class ReleaseArtifactTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             copied = Path(directory) / "gen_ver.pl"
             shutil.copy2(ROOT / "crawl-ref/source/util/gen_ver.pl", copied)
-            (Path(directory) / "release_ver").write_text(f"{TAG}\n", encoding="utf-8")
             output = Path(directory) / "version.h"
-            subprocess.run(
-                ["perl", str(copied), str(output)],
-                cwd=directory,
-                check=True,
-                env={**os.environ, "PATH": os.environ["PATH"]},
-            )
-            generated = output.read_text(encoding="utf-8")
-            self.assertIn('#define CRAWL_VERSION_RELEASE VER_FINAL', generated)
-            self.assertIn(f'#define CRAWL_VERSION_SHORT "{TAG}"', generated)
+            for tag in (TAG, "0.34.1-zh4"):
+                with self.subTest(tag=tag):
+                    (Path(directory) / "release_ver").write_text(
+                        f"{tag}\n", encoding="utf-8"
+                    )
+                    subprocess.run(
+                        ["perl", str(copied), str(output)],
+                        cwd=directory,
+                        check=True,
+                        env={**os.environ, "PATH": os.environ["PATH"]},
+                    )
+                    generated = output.read_text(encoding="utf-8")
+                    self.assertIn(
+                        '#define CRAWL_VERSION_RELEASE VER_FINAL', generated
+                    )
+                    self.assertIn(
+                        f'#define CRAWL_VERSION_SHORT "{tag}"', generated
+                    )
 
 
 if __name__ == "__main__":

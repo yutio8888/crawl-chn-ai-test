@@ -12,7 +12,10 @@ from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
 
 
-RELEASE_TAG_RE = re.compile(r"0\.34\.1-zh[1-9][0-9]*\Z")
+RELEASE_TAG_RE = re.compile(
+    r"0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-"
+    r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})\Z"
+)
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
 ZH_DATA_TREES = (
     "crawl-ref/source/dat/i18n/zh",
@@ -398,8 +401,8 @@ def validate_release(
 ) -> None:
     if RELEASE_TAG_RE.fullmatch(tag) is None:
         raise ReleaseArtifactError(
-            "release tag must match the first-release convention "
-            "'0.34.1-zhN' with N >= 1"
+            "release tag must match '0.34.1-zhA-B-CCC' with A and B >= 1 "
+            "and CCC in the range 001-999"
         )
     if COMMIT_RE.fullmatch(commit) is None:
         raise ReleaseArtifactError("commit must be a lowercase 40-character SHA-1")
