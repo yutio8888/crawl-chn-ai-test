@@ -653,8 +653,8 @@ Iceblast spell
 %%%%
 Ignite Poison spell
 
-将附近的所有毒素变成液态火焰，以此从内部灼烧有毒的生物。
-它还会将有毒云和毒气变成火焰。施法者不会直接受到影响。
+将附近的所有毒素变成液态火焰，从内部灼烧中毒的生物。
+它还会将毒云和迷乱烟雾变成火焰。施法者不会直接受到影响。
 %%%%
 Ignition spell
 
@@ -1833,7 +1833,8 @@ Platinum Paragon spell
 %%%%
 Poisonous Vapours spell
 
-在目标周围创造毒气，使站在其中的生物中毒。
+将目标周围的少量空气转化为有毒气体，使吸入者中毒。
+受影响的气体只存在于施法当回合，且无法影响任何具有毒素抗性的生物。
 %%%%
 Pyrrhic Recollection spell
 

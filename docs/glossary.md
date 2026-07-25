@@ -98,6 +98,7 @@
 | Flame / Flames | 火焰 / 焰 | ✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”） |
 | Touch | 触 | ✅ 已确认（2 项现行） |
 | Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用） |
+| Poison / Poisonous | 毒素 / 毒 / 淬毒 | ✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`） |
 | Dispel | 驱散 | ✅ 已确认 |
 
 其他词根将在逐批审阅中确认并补充。
@@ -898,6 +899,20 @@
 | Statue Form | 石像变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Storm Form | 风暴变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 
+### Poison / Poisonous（9）
+
+| EN | ZH | 备注 |
+|---------|------|------|
+| Poisonous Cloud | 毒云 | ✅；复用 Cloud 系列证据 |
+| Poison Arrow | 毒箭 | ✅；复用 Arrow 系列证据 |
+| Ignite Poison | 点燃毒素 | ✅ |
+| Spit Poison | 喷吐毒液 | 📝；与同名能力及其描述统一 |
+| Poisonous Vapours | 毒气 | ✅；瞬时气体，不形成持续云 |
+| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容 |
+| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容 |
+| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容 |
+| Poison cloud | 毒气云 | ⚠️ 已移除／TAG 34 兼容 |
+
 ### Possessive（35）
 
 | EN | ZH | 备注 |
@@ -1045,7 +1060,7 @@
 | Corrupting Pulse | 腐化脉冲 | ✅ |
 | Creeping Frost | 蔓延冰霜 | ✅ |
 | Crystallising Shot | 结晶射击 | ✅ |
-| Cure Poison | 解毒术 | ✅ |
+| Cure Poison | 解毒术 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Curse of Agony | 痛苦诅咒 | ✅ |
 | Darkness | 黑暗术 | ✅ |
 | Death Channel | 死亡通道 | ✅ |
@@ -1159,7 +1174,7 @@
 | Legendary Destruction | 传奇毁灭 | ✅ |
 | Lesser Beckoning | 次级召唤 | ✅ |
 | Lethal Infusion | 致命灌注 | ✅ |
-| Localized Ignite Poison | 局部引爆毒素 | ✅ |
+| Localized Ignite Poison | 局部引爆毒素 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Magma Barrage | 岩浆弹幕 | ✅ |
 | Magnavolt | 磁暴 | ✅ |
 | Major Destruction | 大型毁灭 | ✅ |
@@ -1199,7 +1214,7 @@
 | Planar Overlay | 位面叠加 | ✅ |
 | Plane Rend | 位面撕裂 | ✅ |
 | Platinum Paragon | 白金典范 | ✅ |
-| Poison Weapon | 淬毒武器 | ✅ |
+| Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Polar Vortex | 极地漩涡 | ✅ |
 | Polymorph | 变形术 | ✅ |
 | Porkalator | 变猪术 | ✅ |
@@ -1257,7 +1272,7 @@
 | Sphinx Sisters | 斯芬克斯姐妹 | ✅ |
 | Spit Acid | 喷吐酸液 | ✅ |
 | Spit Lava | 喷吐岩浆 | ✅ |
-| Spit Poison | 喷毒 | ✅ |
+| Spit Poison | 喷吐毒液 | 📝；与同名能力及其描述统一 |
 | Splinterfrost Shell | 碎霜之壳 | ✅ |
 | Splinterspray | 碎片喷射 | ✅ |
 | Sporulate | 产孢 | ✅ |

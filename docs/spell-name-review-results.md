@@ -942,6 +942,55 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Poison/Poisonous 词形系列
+
+边界：英文标题含独立 `Poison` 或 `Poisonous` 词形的 9 项法术；其中
+5 项现行、4 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。
+`Poisonous Cloud` 与 `Poison Arrow` 已在既有批次审阅，本批复用未变化
+证据且不重复计数；新增审阅身份为 7 项。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_POISONOUS_CLOUD` | 现行 | 毒云 | 生成致命毒云 | 保留（复用 D-C-015） |
+| `SPELL_POISON_ARROW` | 现行 | 毒箭 | 剧毒魔法箭 | 保留（复用 D-C-025） |
+| `SPELL_IGNITE_POISON` | 现行 | 点燃毒素 | 把附近毒素及毒性云雾转为液态火焰 | 保留 |
+| `SPELL_SPIT_POISON` | 现行 | 喷毒 | 喷吐毒液；描述直接引用同名能力 | 重译为“喷吐毒液” |
+| `SPELL_POISONOUS_VAPOURS` | 现行 | 毒气 | 瞬时毒气；任何毒素抗性均可免疫 | 保留 |
+| `SPELL_CURE_POISON` | 已移除兼容 | 解毒术 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_IGNITE_POISON_SINGLE` | 已移除兼容 | 局部引爆毒素 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_POISON_WEAPON` | 已移除兼容 | 淬毒武器 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_POISON_CLOUD` | 已移除兼容 | 毒气云 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：`Spit Poison` 重译为“喷吐毒液”，与其直接引用的同名能力、
+能力描述及怪物施法消息统一；旧译“喷毒”过度缩略。其余标题保留，
+`Poison/Poisonous` 根据名词结构自然采用“毒素／毒／淬毒”，不机械限定
+为单一汉字词根。
+
+描述审阅修正 2 项：`Ignite Poison` 将 poisoned creatures 从“有毒的
+生物”纠正为“中毒的生物”，并明确两类毒性云雾；`Poisonous Vapours`
+补回气体只存在于施法当回合，以及任何毒素抗性都可完全免疫的规则。
+
+证据：`spl-data.h:465`、`spl-data.h:778`、`spl-data.h:1073`、
+`spl-data.h:1422`、`spl-data.h:3237`、`spl-data.h:4676`、
+`spl-data.h:4684` 与其余 AXED 记录；
+`dat/descript/spells.txt:1032`、`dat/descript/spells.txt:1583`—
+`1593`、`dat/descript/spells.txt:1983`；
+`dat/descript/zh/ability.txt:6`、`dat/database/zh/monspell.txt:327`。
+
+### 落地状态
+
+- [x] 9/9 名称裁定（7 项新增证据，2 项复用未变化证据）
+- [x] 单一翻译写入者名称与描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-028`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T165416323974000+0800-56496-e1215c094df5`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`8bf9969e96c966b80bd0ad1b6631e4ade79d1b8c629c14065090f63e61745547`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。

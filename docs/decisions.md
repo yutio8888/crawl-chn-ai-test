@@ -1398,6 +1398,37 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-028 — Spell name review: Poison/Poisonous 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与毒素效果实现逐项复核
+- **Scope**: 9 项含独立 `Poison` 或 `Poisonous` 词形的标题；5 项现行、
+  4 项已移除兼容
+- **Choice**: 8 项标题保留；`Spit Poison` 由“喷毒”重译为
+  **“喷吐毒液”**，与其直接引用的同名能力及既有能力术语一致。
+- **Series rule**: `Poison/Poisonous` 按语境译为“毒素／毒／淬毒”；
+  法术标题若直接复用同名能力描述，应保持同一动作名称。
+- **Rationale**: “喷吐毒液”准确表达怪物从口中喷出毒液，也避免法术标题
+  与其 `<Spit Poison ability>` 描述目标使用两个译名。其余现行标题分别
+  对应毒云、毒箭、点燃毒素和瞬时毒气；四项已移除兼容记录缺少当前
+  描述或实现，暂沿用。
+- **Description corrections**: `Ignite Poison` 的 poisoned creatures
+  由误译的“有毒的生物”改为“中毒的生物”，并明确毒云与迷乱烟雾；
+  `Poisonous Vapours` 补回只存在于施法当回合及任何毒素抗性即可免疫的
+  机制。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Affected decisions**: `Poisonous Cloud` 与 `Poison Arrow` 分别复用
+  `D-C-015`、`D-C-025` 的未变化证据，不重复计入全量进度。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1908,3 +1939,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-025 | Spell name review — Arrow 词形系列 | 4 current；4 description fixes | active |
 | D-C-026 | Spell name review — Flame/Flames 词形系列 | 1 fix；7 current + 3 axed compatibility；2 description fixes | active |
 | D-C-027 | Spell name review — Form 词形系列 | 6 axed compatibility | active |
+| D-C-028 | Spell name review — Poison/Poisonous 词形系列 | 1 fix；5 current + 4 axed compatibility；2 description fixes | active |

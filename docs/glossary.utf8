@@ -258,7 +258,7 @@ crystal echidna	水晶针鼹	domain=monsters; source=EN/ZH; Scope / comment=mons
 crystal guardian	水晶守护者	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅
 culicivora	库蚊蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=✅
+Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 curse	诅咒	domain=core; source=EN/ZH | domain=items; source=EN/ZH
 Curse of Agony	痛苦诅咒	domain=spells; source=EN/ZH; 备注=✅
 curse skull	诅咒颅骨	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -534,7 +534,7 @@ Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
-Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=✅
+Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -661,12 +661,14 @@ Platinum Paragon	白金典范	domain=spells; source=EN/ZH; 备注=✅
 player ghost	玩家鬼魂	domain=core; source=EN/ZH
 pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
-Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅
-Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Poison	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
+Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅；复用 Arrow 系列证据 | domain=spells; source=EN/ZH; 备注=✅
+Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容
 Poison Magic	毒素魔法	domain=magic; source=EN/ZH
-Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=✅
-Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅
+Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容 | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Poisonous	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
+Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行 | domain=spells; source=EN/ZH; 备注=✅；复用 Cloud 系列证据
+Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅；瞬时气体，不形成持续云 | domain=spells; source=EN/ZH; 备注=✅
 Polar Vortex	极地漩涡	domain=spells; source=EN/ZH; 备注=✅
 Polearms	长柄武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Polymorph	变形术	domain=spells; source=EN/ZH; 备注=✅
@@ -807,8 +809,7 @@ Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
 Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅
 Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
-Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
-Spit Poison	喷毒	domain=spells; source=EN/ZH; 备注=✅
+Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=📝；与同名能力及其描述统一
 Splinterfrost Shell	碎霜之壳	domain=spells; source=EN/ZH; 备注=✅
 Splinterspray	碎片喷射	domain=spells; source=EN/ZH; 备注=✅
 Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅

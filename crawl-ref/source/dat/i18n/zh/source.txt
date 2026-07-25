@@ -16036,7 +16036,7 @@ Bolt of Devastation
 毁灭箭
 %%%%
 Spit Poison
-喷毒
+喷吐毒液
 %%%%
 Summon Undead
 召唤亡灵
