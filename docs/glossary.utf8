@@ -356,7 +356,7 @@ Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除
 falchion	弯刃剑	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
 fangs	尖牙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Fannar	凡纳尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Fastroot	快速扎根	domain=spells; source=EN/ZH; 备注=✅
+Fastroot	速生根须	domain=spells; source=EN/ZH; 备注=🆕；射出种子，以速生树根缠住并挤压目标
 faun	牧神	domain=species; source=EN/ZH
 Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
@@ -377,7 +377,7 @@ Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
 Flames	焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flaming Cloud	燃烧云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Flash Freeze	急冻	domain=spells; source=EN/ZH; 备注=✅；对目标造成高额伤害和短时减速，一半伤害无视寒冷抗性
-Flashing Balestra	闪光弩击	domain=spells; source=EN/ZH; 备注=✅
+Flashing Balestra	闪跃突刺	domain=spells; source=EN/ZH; 备注=🆕；`balestra` 为击剑前跃接突刺，灵魂跃出持械攻击
 Flay	剥皮	domain=spells; source=EN/ZH; 备注=✅
 flee	逃跑	domain=core; source=EN/ZH
 Fleetfoot	轻快脚步	domain=spells; source=EN/ZH; 备注=✅

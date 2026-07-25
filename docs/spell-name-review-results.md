@@ -3236,6 +3236,71 @@ Corrupting Pulse 分别修正岩浆抗性、通行阵营和亡灵腐朽规则。
 `ee024106cd48cddf7e8a567e4f75e95ed6fed81b5436207ff3b1286ab6f6e878`
 和 `adcd05d7de8811a4894c1fc723811f6588ebe724cb8fb85256feed2d05fb623d`。
 
+## 独立法术批次 B2
+
+边界：B1 之后的 30 项现行独立法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_UPHEAVAL` | 剧变 | 以岩浆、冰、风或碎石轰击小范围 | 保留 |
+| `SPELL_IGNITION` | 点火 | 以火球吞噬周围所有敌人，施法者及盟友免疫 | 保留 |
+| `SPELL_FASTROOT` | 快速扎根 | 射出种子，以速生树根缠绕挤压目标 | 重译为“速生根须” |
+| `SPELL_GRASPING_ROOTS` | 抓握根须 | 从地下召根抓住并挤压目标 | 保留 |
+| `SPELL_SPORULATE` | 产孢 | 释放追敌爆炸并混乱活物的浮游孢子 | 保留 |
+| `SPELL_STARBURST` | 星爆 | 向各方向射出穿透火焰束 | 保留 |
+| `SPELL_FOXFIRE` | 狐火 | 生成两个自动寻敌的燃烧沼气球 | 保留 |
+| `SPELL_MARSHLIGHT` | 沼泽之光 | 生成比狐火更强的两个燃烧沼气球 | 保留 |
+| `SPELL_SONIC_WAVE` | 音波 | 内部无描述的声波法术记录 | 保留 |
+| `SPELL_ROLL` | 翻滚 | 巨砾甲虫滚成球并获得高速与双倍近战伤害 | 保留 |
+| `SPELL_MANIFOLD_ASSAULT` | 多重攻击 | 扭曲空间，以一次近战攻击命中多个可见敌人 | 保留 |
+| `SPELL_CONCENTRATE_VENOM` | 浓缩毒液 | 强化目标天然毒液，使咬击与喷吐可减速、窒息 | 保留 |
+| `SPELL_ERUPTION` | 喷发 | 在目标下方形成短命局部火山 | 保留 |
+| `SPELL_PYROCLASTIC_SURGE` | 火山碎屑涌 | 从岩浆引火焚烧邻近或位于其上的敌人 | 保留 |
+| `SPELL_STUNNING_BURST` | 眩晕爆发 | 弱电击造成极短麻痹，电抗可防而意志无效 | 保留 |
+| `SPELL_SERACFALL` | 冰塔崩塌 | 将附近拟像崩成爆炸冰块 | 保留 |
+| `SPELL_SCORCH` | 烧焦 | 灼烧随机敌人并暂时剥除火抗 | 保留 |
+| `SPELL_ENFEEBLE` | 衰弱 | 削弱近战与法术，抵抗失败还会眩晕、失明 | 保留 |
+| `SPELL_ANGUISH` | 哀痛 | 使附近敌人造成的伤害反弹给自身 | 保留 |
+| `SPELL_DIVINE_ARMAMENT` | 神圣武装 | 将信仰显化为自行战斗的固定灵体武器 | 保留 |
+| `SPELL_JINXBITE` | 厄运之咬 | 顽劣之灵追击并伤害、汲取目标 | 保留 |
+| `SPELL_SIGIL_OF_BINDING` | 束缚符文 | 两个符文限制移动，结束后给予迅捷 | 保留 |
+| `SPELL_DIMENSIONAL_BULLSEYE` | 维度靶心 | 攻击其他敌人时复制投射物传送至标记目标 | 保留 |
+| `SPELL_VITRIFY` | 玻璃化 | 使目标如玻璃般脆弱并提高所受全部伤害 | 保留 |
+| `SPELL_TREMORSTONE` | 震石 | 内部无描述的震石法术记录 | 保留 |
+| `SPELL_MAGNAVOLT` | 磁暴 | 磁化目标并向所有标记者发射必中电束 | 保留 |
+| `SPELL_SEISMIC_STOMP` | 地震践踏 | 震裂地面，地面生物可能失衡延后行动 | 保留 |
+| `SPELL_FLASHING_BALESTRA` | 闪光弩击 | 灵魂跃出持械攻击并短暂独立决斗 | 重译为“闪跃突刺” |
+| `SPELL_SHADOW_BALL` | 暗影球 | 投出小范围爆炸的闪烁暗影球 | 保留 |
+| `SPELL_GRAVE_CLAW` | 墓爪 | 消耗死亡余韵，以必中骨片固定目标 | 保留 |
+
+名称结论：Fastroot 改为“速生根须”，避免误示施法者扎根；
+Flashing Balestra 改为“闪跃突刺”，恢复 balestra 的击剑前跃接突刺
+含义并吻合灵魂跃出持械攻击。其余 28 项准确保留核心机制。
+
+描述审阅修正十项：Grasping Roots、Sporulate、Starburst、
+Manifold Assault、Enfeeble、Divine Armament、Magnavolt、
+Seismic Stomp、Flashing Balestra 与 Grave Claw 均按当前英文和实现
+补全目标、条件、例外或玩法后果。
+
+证据：对应 `spl-data.h` 的 30 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
+`spl-damage.cc`、`spl-summoning.cc`、`spl-forge.cc`、`beam.cc`
+中相应 enum 分支。Balestra 词义另以击剑辞书“前跃后接突刺”交叉确认。
+
+### 落地状态
+
+- [x] 30/30 机制证据与名称裁定
+- [x] 单一翻译写入者完成 2 项名称与 10 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-090`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T192149011346000+0800-74419-1362cc07f134`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`4e6017f9b1a8de1b194b731840a9690b541edce884e594f49d954aa258c42385`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`56e546f71165560597db443ed7ed5ca5ca8bbb612e5e0696518a80b02958d2de`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

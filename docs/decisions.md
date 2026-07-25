@@ -2810,6 +2810,29 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-090 — Spell name review: 独立批次 B2
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: B1 之后的 30 项现行独立法术
+- **Choice**: 将 `Fastroot → 快速扎根` 重译为“速生根须”，
+  `Flashing Balestra → 闪光弩击` 重译为“闪跃突刺”；其余 28 项保留。
+- **Rationale**: Fastroot 向受害者射出会快速生长的树根，不是施法者
+  自身扎根；balestra 是击剑中的前跃接突刺，且当前效果是军械库灵魂
+  跃出持械攻击，并非发射弩箭。
+- **Description corrections**: 修正 Grasping Roots、Sporulate、
+  Starburst、Manifold Assault、Enfeeble、Divine Armament、
+  Magnavolt、Seismic Stomp、Flashing Balestra 与 Grave Claw。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3382,3 +3405,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-087 | Spell name review — 独立批次 A3 | 20 current；2 renames + 7 description fixes | active |
 | D-C-088 | Spell name review — 独立批次 A4 | 20 current；1 rename + 7 description fixes | active |
 | D-C-089 | Spell name review — 独立批次 B1 | 10 current；1 rename + 2 description fixes | active |
+| D-C-090 | Spell name review — 独立批次 B2 | 30 current；2 renames + 10 description fixes | active |
