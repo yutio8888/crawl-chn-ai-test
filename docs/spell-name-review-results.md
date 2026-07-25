@@ -991,6 +991,41 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Dispel 词形系列
+
+边界：英文标题以 `Dispel Undead` 为核心的 2 项现行法术，无已移除
+兼容成员。
+
+| Enum | 等级 / 使用者 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_DISPEL_UNDEAD` | 4 / 玩家 | 驱散亡灵 | 对相邻亡灵造成极大伤害 | 保留 |
+| `SPELL_DISPEL_UNDEAD_RANGE` | 5 / 怪物 | 远程驱散亡灵 | 射程 4；远程重创亡灵 | 保留 |
+
+名称结论：两项均保留。这里的 `Dispel → 驱散` 是破坏维系亡灵形体的
+魔力，并非把亡灵推开或传送；因此“驱散亡灵”符合效果，也不会与
+`Dispersal → 空间驱离` 混淆。Range 版以“远程”准确标出关键差别。
+
+描述审阅将两项生硬的“干扰将亡灵的身体缚在一起的力量”改为
+“扰乱维系亡灵形体的力量”，不改变伤害或目标机制。
+
+证据：`spl-data.h:767`、`spl-data.h:3437`；
+`dat/descript/spells.txt:537`—`545`；`spl-zap.cc` 的 zap 映射及
+`zap-data.h` 的亡灵伤害配置。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-029`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T165720573835000+0800-63302-8e041c646575`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`d24c3375aea4350a6379bbc8e4b9bd4c1d3581abbd8ecf2bea530cff0caa78d6`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。

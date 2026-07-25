@@ -1429,6 +1429,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-029 — Spell name review: Dispel 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述、法术 metadata 与 zap 实现逐项复核
+- **Scope**: 2 项含独立 `Dispel` 词形的现行标题，无已移除兼容成员
+- **Choice**: 保留 `Dispel Undead → 驱散亡灵` 与
+  `Dispel Undead Range → 远程驱散亡灵`。
+- **Series rule**: 此处 `Dispel → 驱散` 表示破坏维系魔法造物的力量；
+  不与表示把生物传送远离的 `Dispersal → 空间驱离` 混用。
+- **Rationale**: 两项法术都以 `BEAM_DISPEL_UNDEAD` 扰乱维系亡灵形体
+  的力量并自动命中；区别在于玩家版仅作用于相邻目标，怪物 Range 版射程
+  为 4。“驱散亡灵”准确保留原名的魔法语义，“远程”也清楚标示版本差异。
+- **Description corrections**: 将生硬的“干扰将亡灵的身体缚在一起的
+  力量”改为“扰乱维系亡灵形体的力量”，并统一相邻目标表述。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1940,3 +1964,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-026 | Spell name review — Flame/Flames 词形系列 | 1 fix；7 current + 3 axed compatibility；2 description fixes | active |
 | D-C-027 | Spell name review — Form 词形系列 | 6 axed compatibility | active |
 | D-C-028 | Spell name review — Poison/Poisonous 词形系列 | 1 fix；5 current + 4 axed compatibility；2 description fixes | active |
+| D-C-029 | Spell name review — Dispel 词形系列 | 2 current；2 description fixes | active |

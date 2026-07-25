@@ -291,9 +291,9 @@ Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dispater title	迪斯帕特，铁城领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Dispel	驱散	domain=magic; source=EN/ZH; 状态=✅ 已确认
-Dispel Undead	驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
-Dispel Undead Range	远程驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
+Dispel	驱散	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；指破坏维系亡灵形体的魔力）
+Dispel Undead	驱散亡灵	domain=spells; source=EN/ZH; 备注=✅；相邻目标
+Dispel Undead Range	远程驱散亡灵	domain=spells; source=EN/ZH; 备注=✅；射程 4 的怪物版本
 Dispersal	空间驱离	domain=spells; source=EN/ZH; 备注=✅；传送系法术，将附近生物传送或闪送离开；与 Dispel「驱散」区分
 Dissolution	分解者	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dissolution title	分解者，吉瓦的高级祭司	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

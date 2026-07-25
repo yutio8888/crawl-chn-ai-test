@@ -99,7 +99,7 @@
 | Touch | 触 | ✅ 已确认（2 项现行） |
 | Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用） |
 | Poison / Poisonous | 毒素 / 毒 / 淬毒 | ✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`） |
-| Dispel | 驱散 | ✅ 已确认 |
+| Dispel | 驱散 | ✅ 已确认（2 项现行；指破坏维系亡灵形体的魔力） |
 
 其他词根将在逐批审阅中确认并补充。
 强度审查标签定义见 `docs/spell-naming-rules.md` Section 四。
@@ -1002,8 +1002,8 @@
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Dispel Undead | 驱散亡灵 | ✅ |
-| Dispel Undead Range | 远程驱散亡灵 | ✅ |
+| Dispel Undead | 驱散亡灵 | ✅；相邻目标 |
+| Dispel Undead Range | 远程驱散亡灵 | ✅；射程 4 的怪物版本 |
 
 ### Other（316）
 

@@ -401,11 +401,11 @@ Disjunction spell
 %%%%
 Dispel Undead spell
 
-通过干扰将亡灵的身体缚在一起的力量，对邻近的亡灵造成极大伤害。
+通过扰乱维系亡灵形体的力量，对相邻的亡灵造成极大伤害。
 %%%%
 Dispel Undead Range spell
 
-通过干扰将亡灵的身体缚在一起的力量，对一个亡灵造成极大伤害。
+通过扰乱维系亡灵形体的力量，对一个亡灵造成极大伤害。
 %%%%
 Dispersal spell
 
