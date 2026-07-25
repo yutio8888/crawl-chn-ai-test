@@ -1342,6 +1342,38 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-026 — Spell name review: Flame/Flames 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与火焰效果实现逐项复核
+- **Scope**: 10 项含独立 `Flame` 或 `Flames` 词形的标题；7 项现行、
+  3 项已移除兼容
+- **Choice**: 9 项标题保留；`Stoke Flames` 由“煽动火焰”重译为
+  **“煽旺火焰”**。通常采用“火焰”，在
+  `Inner Flame → 内焰`、`Cleansing Flame → 净化之焰`、
+  `Ring of Flames → 烈焰之环` 等凝练复合名称中保留“焰／烈焰”变体。
+- **Series rule**: `Flame/Flames` 的核心语义统一为“火焰”；“焰”是
+  不改变机制含义的紧凑词形，不强制把已经自然且可辨识的复合标题机械
+  改成同一字面后缀。
+- **Rationale**: 7 项现行法术分别对应小团火焰、黏着燃烧物、神圣火环、
+  目标体内火焰、神圣净化爆发、煽旺成蔓延炼狱及向外扩张的火焰波；
+  “煽旺”准确表达 `stoke` 的添燃料使火势更旺，而旧译“煽动”通常用于
+  挑动情绪或事端，动宾搭配生硬。其余当前标题准确概括核心效果。
+  3 项已移除兼容成员没有当前描述或实现，不用历史记忆反推重译。
+- **Description corrections**: 为 `Inner Flame` 补回目标每次被击中时
+  也会释放火焰的机制；清理 `Sticky Flame` 非实体附着条件中的中文语病。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+- **Affected decisions**: `Throw Flame` 复用 `D-C-021` 的未变化证据，
+  不重复计入全量进度。
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1850,3 +1882,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-023 | Spell name review — Gaze 词形系列 | 1 fix；7 current；7 description fixes | active |
 | D-C-024 | Spell name review — Touch 词形系列 | 2 current；1 description fix | active |
 | D-C-025 | Spell name review — Arrow 词形系列 | 4 current；4 description fixes | active |
+| D-C-026 | Spell name review — Flame/Flames 词形系列 | 1 fix；7 current + 3 axed compatibility；2 description fixes | active |

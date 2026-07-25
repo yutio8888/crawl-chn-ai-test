@@ -95,6 +95,7 @@
 | Beam | 光束 | ✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅） |
 | Gaze | 凝视 | ✅ 已确认（7 项现行） |
 | Arrow | 箭 | ✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外） |
+| Flame / Flames | 火焰 / 焰 | ✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”） |
 | Touch | 触 | ✅ 已确认（2 项现行） |
 | Dispel | 驱散 | ✅ 已确认 |
 
@@ -870,6 +871,21 @@
 | Agonising Touch | 剧痛之触 | ✅ |
 | Confusing Touch | 困惑之触 | ✅ |
 
+### Flame / Flames（10）
+
+| EN | ZH | 备注 |
+|---------|------|------|
+| Throw Flame | 投掷火焰 | ✅；复用 Throw 系列证据 |
+| Sticky Flame | 黏着火焰 | ✅ |
+| Holy Flames | 神圣火焰 | ✅ |
+| Inner Flame | 内焰 | ✅ |
+| Cleansing Flame | 净化之焰 | ✅ |
+| Stoke Flames | 煽旺火焰 | 📝；`stoke` 指添燃料使火势更旺，并召出蔓延炼狱 |
+| Flame Wave | 火焰波 | ✅ |
+| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容 |
+| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容 |
+| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容 |
+
 ### Form（9）
 
 | EN | ZH | 备注 |
@@ -1018,7 +1034,7 @@
 | Condensation Shield | 凝结之盾 | 🆕 |
 | Confuse | 混乱 | ✅ |
 | Conjure Ball Lightning | 召唤球形闪电 | ✅ |
-| Conjure Flame | 召唤火焰 | ✅ |
+| Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
 | Control Teleport | 传送控制 | ✅ |
@@ -1066,7 +1082,7 @@
 | Fire Brand | 火焰烙印 | ✅ |
 | Fire Storm | 火焰风暴 | ✅ |
 | Fireball | 火球 | 🆕 |
-| Flame Tongue | 火焰之舌 | ✅ |
+| Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Flame Wave | 火焰波 | ✅ |
 | Flash Freeze | 急冻 | ✅ |
 | Flashing Balestra | 闪光弩击 | ✅ |
@@ -1205,7 +1221,7 @@
 | Resonance Strike | 共鸣打击 | ✅ |
 | Resurrect | 复活术 | ✅ |
 | Rimeblight | 霜疫 | ✅ |
-| Ring of Flames | 烈焰之环 | ✅ |
+| Ring of Flames | 烈焰之环 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Ring of Thunder | 雷霆之环 | ✅ |
 | Roll | 翻滚 | ✅ |
 | Sacrifice | 献祭 | ✅ |
@@ -1254,7 +1270,7 @@
 | Sticky Flame | 黏着火焰 | ✅ |
 | Still Winds | 静止风 | ✅ |
 | Sting | 毒刺 | 🆕 |
-| Stoke Flames | 煽动火焰 | ✅ |
+| Stoke Flames | 煽旺火焰 | 📝；`stoke` 指添燃料使火势更旺 |
 | Stoneskin | 石肤术 | ✅ |
 | Striking | 打击术 | ✅ |
 | Strip Willpower | 剥离意志力 | ✅ |

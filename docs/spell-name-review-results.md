@@ -851,6 +851,61 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Flame/Flames 词形系列
+
+边界：英文标题含独立 `Flame` 或 `Flames` 词形的 10 项法术；其中
+7 项现行、3 项 `TAG_MAJOR_VERSION == 34` 已移除兼容。`Throw Flame`
+已在 Throw 批次审阅，本批复用其机制未变化的证据且不重复计数；新增
+审阅身份为 9 项。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_THROW_FLAME` | 现行 | 投掷火焰 | 抛出一小团火焰 | 保留（复用 D-C-021） |
+| `SPELL_STICKY_FLAME` | 现行 | 黏着火焰 | 邻接黏着燃烧；移动可提前扑灭 | 保留 |
+| `SPELL_HOLY_FLAMES` | 现行 | 神圣火焰 | 以神圣火环困住敌人 | 保留 |
+| `SPELL_INNER_FLAME` | 现行 | 内焰 | 击中时释火，死亡时按体形爆炸 | 保留 |
+| `SPELL_CLEANSING_FLAME` | 现行 | 净化之焰 | 以施法者为中心的神圣净化爆发 | 保留 |
+| `SPELL_STOKE_FLAMES` | 现行 | 煽动火焰 | 召出会蔓延的炼狱 | 重译为“煽旺火焰” |
+| `SPELL_FLAME_WAVE` | 现行 | 火焰波 | 引导逐步向外扩张的火焰波 | 保留 |
+| `SPELL_RING_OF_FLAMES` | 已移除兼容 | 烈焰之环 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_CONJURE_FLAME` | 已移除兼容 | 召唤火焰 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_FLAME_TONGUE` | 已移除兼容 | 火焰之舌 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：9 项标题保留，`Stoke Flames` 重译为“煽旺火焰”。
+`stoke` 是添燃料或拨动燃料使火势更旺；旧译“煽动火焰”套用了
+“煽动情绪／事端”的常见搭配，既不自然，也弱化了火势增强的动作。
+`Flame/Flames` 的核心语义稳定为“火焰”，
+但自然的复合标题允许使用更凝练的“焰”或带强度色彩的“烈焰”，不应
+机械统一字面后缀。`内焰`、`净化之焰` 与 `烈焰之环` 都没有改变原名
+或机制指向。
+
+描述审阅发现 2 项需要修正：`Inner Flame` 漏译目标每次被击中时也会
+释放火焰；`Sticky Flame` 的非实体附着条件有多余空格和生硬语病。
+其余 5 项现行描述与英文机制一致。
+
+证据：`spl-data.h:701`、`spl-data.h:1918`、`spl-data.h:2018`、
+`spl-data.h:3015`、`spl-data.h:3625`、`spl-data.h:3658`、
+`spl-data.h:4689`、`spl-data.h:4730`—`4732`、
+`dat/descript/spells.txt:361`、`dat/descript/spells.txt:698`、
+`dat/descript/spells.txt:1015`、`dat/descript/spells.txt:1070`、
+`dat/descript/spells.txt:2031`、`dat/descript/spells.txt:2052`、
+`mon-cast.cc:8532`、`mon-cast.cc:8652`、
+`spl-damage.cc:3798`—`3855`、`mon-explode.cc:317`—`392`。
+
+### 落地状态
+
+- [x] 10/10 名称裁定（9 项新增证据，1 项复用未变化证据）
+- [x] 单一翻译写入者描述修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-026`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T164855022535000+0800-45680-95fedcbdcb73`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`f52c123564259105c5a6d64ed3d7f9d65a906ba6f043782276721fe3ca85f57b`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。

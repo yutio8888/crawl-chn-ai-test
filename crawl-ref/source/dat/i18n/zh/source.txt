@@ -16609,7 +16609,7 @@ Summon Cactus Giant
 召唤仙人掌巨人
 %%%%
 Stoke Flames
-煽动火焰
+煽旺火焰
 %%%%
 Seracfall
 冰塔崩塌

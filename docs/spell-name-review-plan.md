@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 154/511 项逐项审阅。
+当前已完成 163/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -122,6 +122,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Gaze 词形系列（7 项证据、裁定、名称与描述落地及 translation profile 已完成）
   - [x] Touch 词形系列（2 项证据、裁定、描述落地及 translation profile 已完成）
   - [x] Arrow 词形系列（4 项证据、裁定、描述落地及 translation profile 已完成）
+  - [x] Flame/Flames 词形系列（10 项均已审阅；其中 1 项复用 Throw 证据，translation profile 已完成）
 - [ ] 人物专名系列
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术
