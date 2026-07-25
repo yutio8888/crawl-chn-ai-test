@@ -1237,7 +1237,7 @@
 | Plane Rend | 位面撕裂 | ✅ |
 | Platinum Paragon | 白金典范 | ✅ |
 | Poison Weapon | 淬毒武器 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
-| Polar Vortex | 极地漩涡 | ✅ |
+| Polar Vortex | 极地漩涡 | ✅；冰冻漩涡随施法者移动并抛动范围内生物 |
 | Polymorph | 变形术 | ✅ |
 | Porkalator | 变猪术 | ✅ |
 | Portal Projectile | 传送投射物 | ✅ |
@@ -1337,7 +1337,7 @@
 | Vitrify | 玻璃化 | ✅ |
 | Volatile Blastmotes | 不稳定爆尘 | ✅ |
 | Volley of Thorns | 荆棘齐射 | ✅ |
-| Vortex | 漩涡 | 🆕 |
+| Vortex | 漩涡 | 🆕；已移除兼容标题，与 `Polar Vortex` 统一词根 |
 | Wall of Brambles | 荆棘之墙 | ✅ |
 | Warning Cry | 警告之嚎 | ✅ |
 | Warp Body | 扭曲身体 | ✅；造成少量伤害和短暂变异，变异过多时改为玻璃化 |

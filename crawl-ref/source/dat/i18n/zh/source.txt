@@ -20169,10 +20169,10 @@ can howl
 可嚎叫
 %%%%
 vortex
-涡流
+漩涡
 %%%%
 vortices
-涡流
+漩涡
 %%%%
 gust of wind
 阵风

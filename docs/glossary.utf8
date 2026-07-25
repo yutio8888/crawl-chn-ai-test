@@ -671,7 +671,7 @@ Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 Poisonous	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行 | domain=spells; source=EN/ZH; 备注=✅；复用 Cloud 系列证据
 Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅；瞬时气体，不形成持续云 | domain=spells; source=EN/ZH; 备注=✅
-Polar Vortex	极地漩涡	domain=spells; source=EN/ZH; 备注=✅
+Polar Vortex	极地漩涡	domain=spells; source=EN/ZH; 备注=✅；冰冻漩涡随施法者移动并抛动范围内生物
 Polearms	长柄武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Polymorph	变形术	domain=spells; source=EN/ZH; 备注=✅
 Polyphemus	波吕斐摩斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -941,7 +941,7 @@ Vitrify	玻璃化	domain=spells; source=EN/ZH; 备注=✅
 Vitrifying Gaze	玻璃化凝视	domain=spells; source=EN/ZH; 备注=✅
 Volatile Blastmotes	不稳定爆尘	domain=spells; source=EN/ZH; 备注=✅
 Volley of Thorns	荆棘齐射	domain=spells; source=EN/ZH; 备注=✅
-Vortex	漩涡	domain=spells; source=EN/ZH; 备注=🆕
+Vortex	漩涡	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，与 `Polar Vortex` 统一词根
 vulnerable	脆弱	domain=combat; source=EN/ZH
 Vv	芙芙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Wall of Brambles	荆棘之墙	domain=spells; source=EN/ZH; 备注=✅

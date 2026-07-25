@@ -953,6 +953,8 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `crawl-ref/source/dat/descript/zh/spells.txt`
   - `docs/glossary.md`
   - `docs/decisions.md`
+- **Integrity note**: TextDB 键大小写折叠，故不新增重复的 `Vortex` 键；
+  由既有通用 `vortex/vortices` 键统一提供“漩涡”译值。
 
 ---
 
@@ -2433,6 +2435,28 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-073 — Spell name review: Vortex 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 1 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Polar Vortex → 极地漩涡`；将已移除的
+  `Vortex` 从“涡流”统一为“漩涡”。
+- **Series rule**: 法术标题中的 `Vortex → 漩涡`。
+- **Rationale**: “漩涡”准确表达围绕中心旋转并卷动生物的结构，
+  且使基础兼容标题与现行极地漩涡保持一致。
+- **Description corrections**: 修正 `Polar Vortex` 缺失中心语的病句，
+  明确寒冷抗性最多减免一半伤害及长距离传送后无法跟随。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2988,3 +3012,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-070 | Spell name review — Destruction 词形系列 | 4 current；1 rename + glossary sync | active |
 | D-C-071 | Spell name review — Warp 词形系列 | 2 current + 1 axed；2 description retranslations | active |
 | D-C-072 | Spell name review — Might/Other 目标系列 | 5 current；5 description fixes | active |
+| D-C-073 | Spell name review — Vortex 词形系列 | 1 current + 1 axed；1 rename + wording fixes | active |
