@@ -2,7 +2,7 @@
 
 ## 冻结边界
 
-- 基线提交：`7b0224b32c0bd4b7b79119776762ee623857adc9`
+- 基线提交：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 目标分支：`chn-0.34.1-base`
 - 依赖：Issue #16 已关闭；其怪物名称完整性修复已包含在基线中。
 - 生产身份源：`crawl-ref/source/monster-type.h` 中 `NUM_MONSTERS` 之前的

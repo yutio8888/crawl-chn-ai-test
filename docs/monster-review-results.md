@@ -1,12 +1,12 @@
 # Issue #24 怪物翻译全量复审结果
 
-- 基线：`7b0224b32c0bd4b7b79119776762ee623857adc9`
-- 术语表 SHA-256：`07eaf4d7f33cb4b982d54ebce05efbc4c28d8edb61b1b35db441605cd5d8efb9`
+- 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
+- 术语表 SHA-256：`91f0638a60e633d450ded2b6e7efdd3449e7ad2e0e27e710a52cd0dd2565d645`
 - 清单 SHA-256：`ba026460abdfa08154e68a670c0cd4e42996080ece2a6bd69ecf1e17b351e97e`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
-- 重建命令：`python3 .claude/scripts/monster_name_ssot.py --inventory-output /tmp/monster-inventory.json --review-results docs/monster-review-results.md --baseline-ref 7b0224b32c0bd4b7b79119776762ee623857adc9`。
+- 重建命令：`python3 .claude/scripts/monster_name_ssot.py --inventory-output /tmp/monster-inventory.json --review-results docs/monster-review-results.md --baseline-ref 7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`。
 
 | 身份 | 证据卡 | 终态结论 |
 |---|---|---|
