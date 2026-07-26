@@ -60,6 +60,15 @@ chmod +x "$REPO/.claude/scripts/scan_i18n.py"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/i18n_extract.py"
 chmod +x "$REPO/.claude/scripts/i18n_extract.py"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'import sys' \
+    'from pathlib import Path' \
+    'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
+    'output.write_text("{}\n")' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/audit_item_name_inventory.py"
+chmod +x "$REPO/.claude/scripts/audit_item_name_inventory.py"
 export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 
 (

@@ -514,7 +514,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         require_translated(key);
     }
 
-    // Species and form verbs are translated at the display boundary.  The
+    // Species and form verbs are translated at the display boundary. The
     // Chinese article helper must still avoid English articles.
     CHECK(species::shout_verb(SP_BARACHI, 2, false) == T_("bellow"));
     CHECK(species::shout_verb(SP_FELID, 0, true) == T_("hiss"));
