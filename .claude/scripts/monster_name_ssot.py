@@ -907,6 +907,15 @@ TERMINAL_CONCLUSIONS = {
 def review_coverage(payload: Mapping[str, object], path: Path) -> dict[str, object]:
     """Prove one evidence-card row and terminal conclusion per identity."""
     text = path.read_text(encoding="utf-8")
+    baseline_matches = re.findall(
+        r"^- 基线：`([0-9a-f]{40})`$",
+        text,
+        re.MULTILINE,
+    )
+    expected_text = (
+        render_review_results(payload, baseline_matches[0])
+        if len(baseline_matches) == 1 else None
+    )
     matches = re.findall(
         r"^\|\s*`(monster:MONS_[A-Z0-9_]+)`\s*\|.*?"
         r"\|\s*([^|\n]+?)\s*\|\s*$",
@@ -926,6 +935,8 @@ def review_coverage(payload: Mapping[str, object], path: Path) -> dict[str, obje
     result = {
         "review_results": _relative(path),
         "review_results_sha256": _sha(path),
+        "artifact_exact": text == expected_text,
+        "baseline_header_count": len(baseline_matches),
         "evidence_card_count": len(identities),
         "duplicate_evidence_cards": sorted(
             identity for identity, count in Counter(identities).items()
@@ -947,6 +958,7 @@ def review_coverage(payload: Mapping[str, object], path: Path) -> dict[str, obje
         and actual == expected
         and not result["duplicate_evidence_cards"]
         and not invalid
+        and result["artifact_exact"]
     )
     return result
 
@@ -967,12 +979,11 @@ def _git_text(ref: str, path: Path) -> str:
         ) from error
 
 
-def write_review_results(
+def render_review_results(
     payload: Mapping[str, object],
-    output: Path,
     baseline_ref: str,
-) -> None:
-    """Write one evidence-backed terminal conclusion per frozen identity."""
+) -> str:
+    """Render one evidence-backed terminal conclusion per frozen identity."""
     baseline_names = _parse_textdb_content(
         f"{baseline_ref}:{_relative(ZH_SOURCE)}",
         _git_text(baseline_ref, ZH_SOURCE),
@@ -1047,8 +1058,20 @@ def write_review_results(
                 conclusion = "keep"
         lines.append(f"| `{identity}` | {evidence} | {conclusion} |")
 
+    return "\n".join(lines) + "\n"
+
+
+def write_review_results(
+    payload: Mapping[str, object],
+    output: Path,
+    baseline_ref: str,
+) -> None:
+    """Write the deterministic per-identity review ledger."""
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    output.write_text(
+        render_review_results(payload, baseline_ref),
+        encoding="utf-8",
+    )
 
 
 def inventory_has_violations(payload: Mapping[str, object]) -> bool:

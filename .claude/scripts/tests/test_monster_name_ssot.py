@@ -3,7 +3,10 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -162,37 +165,69 @@ class MonsterNameSsotTests(unittest.TestCase):
             identities = audit._active_monster_enum_identities(path)
         self.assertEqual(["MONS_ALPHA", "MONS_BETA"], identities)
 
-    def test_review_coverage_requires_one_terminal_conclusion(self) -> None:
-        payload = {
-            "rows": [
-                {"identity": "monster:MONS_ALPHA"},
-                {"identity": "monster:MONS_BETA"},
-            ]
-        }
+    def test_review_coverage_fails_closed_on_any_artifact_mutation(self) -> None:
+        payload = audit.build_inventory()
+        baseline = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            text=True,
+        ).strip()
+        rendered = audit.render_review_results(payload, baseline)
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "results.md"
-            path.write_text(
-                "| 身份 | 证据 | 终态结论 |\n"
-                "|---|---|---|\n"
-                "| `monster:MONS_ALPHA` | evidence | keep |\n"
-                "| `monster:MONS_BETA` | evidence | defer terminology: removed |\n",
-                encoding="utf-8",
-            )
+            inventory = Path(tmp) / "inventory.json"
+
+            def cli_result() -> int:
+                with (
+                    contextlib.redirect_stdout(io.StringIO()),
+                    contextlib.redirect_stderr(io.StringIO()),
+                ):
+                    return audit.main([
+                        "--inventory-output", str(inventory),
+                        "--review-results", str(path),
+                    ])
+
+            path.write_text(rendered, encoding="utf-8")
             result = audit.review_coverage(payload, path)
             self.assertTrue(result["coverage_equal"])
+            self.assertTrue(result["artifact_exact"])
+            self.assertEqual(0, cli_result())
 
             path.write_text(
-                "| 身份 | 证据 | 终态结论 |\n"
-                "|---|---|---|\n"
-                "| `monster:MONS_ALPHA` | evidence | unsure |\n",
+                rendered.replace(
+                    "current; exposure=internal_or_special;",
+                    "CORRUPTED EVIDENCE;",
+                    1,
+                ),
                 encoding="utf-8",
             )
             result = audit.review_coverage(payload, path)
-        self.assertFalse(result["coverage_equal"])
-        self.assertEqual(
-            ["monster:MONS_ALPHA"], result["invalid_terminal_conclusions"]
-        )
-        self.assertEqual(["monster:MONS_BETA"], result["missing_evidence_cards"])
+            self.assertFalse(result["coverage_equal"])
+            self.assertFalse(result["artifact_exact"])
+            self.assertEqual(1, cli_result())
+
+            path.write_text(
+                rendered.replace(
+                    payload["glossary_sha256"],
+                    "0" * 64,
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            result = audit.review_coverage(payload, path)
+            self.assertFalse(result["coverage_equal"])
+            self.assertFalse(result["artifact_exact"])
+            self.assertEqual(1, cli_result())
+
+            path.write_text(
+                rendered
+                + "| `monster:NOT_A_VALID_ENUM` | forged | keep |\n",
+                encoding="utf-8",
+            )
+            result = audit.review_coverage(payload, path)
+            self.assertFalse(result["coverage_equal"])
+            self.assertFalse(result["artifact_exact"])
+            self.assertEqual(1, cli_result())
 
     def test_reverse_duplicate_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
