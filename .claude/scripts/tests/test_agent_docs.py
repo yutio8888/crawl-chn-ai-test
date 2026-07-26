@@ -149,6 +149,18 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("Do not create", adapter)
         self.assertIn("Pi-only copy of the shared workflow", adapter)
 
+        routing = (ROOT / "docs/agent-routing.md").read_text()
+        self.assertIn("## Batch Translation Review", routing)
+        self.assertIn("`batch-translation-review` skill", routing)
+        self.assertIn(
+            "| Complete enumerable translation-category or series audit |",
+            (ROOT / "AGENTS.md").read_text(),
+        )
+        self.assertIn(
+            "| Complete enumerable translation audit |",
+            (ROOT / ".agents/README.md").read_text(),
+        )
+
     def test_plan_review_enforces_minimal_sufficient_design(self) -> None:
         required_fragments = (
             "acceptanceCriteria",
