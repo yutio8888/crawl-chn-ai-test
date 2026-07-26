@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib.util
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -21,21 +22,19 @@ def review_header():
     )
 
 
-def review_card(identity, conclusion="keep", overrides=None):
-    card = {column: "reviewed evidence" for column in MODULE.REVIEW_COLUMNS}
-    card.update({
-        "identity": f"`{identity}`",
-        "lifecycle": "current",
-        "en": "English",
-        "zh": "中文",
+def review_card(payload, row, conclusion="keep", overrides=None):
+    facts, expected_adopted = MODULE.review_expected_fact_cells(payload, row)
+    card = {
+        "identity": f"`{row['identity']}`",
+        **facts,
         "proposed_translation": "候选译文",
-        "adopted_translation": "采用译文",
+        "adopted_translation": expected_adopted or "not applicable",
         "rejected_alternatives": "not applicable",
         "confidence": "high: direct production evidence",
         "deferred_follow_up": "not applicable",
         "re_entry_conditions": "not applicable",
         "conclusion": conclusion,
-    })
+    }
     card.update(overrides or {})
     return "| " + " | ".join(
         card[column] for column in MODULE.REVIEW_COLUMNS
@@ -448,6 +447,49 @@ end
             self.payload["violations"]["unknown_des_producers"]
         )
 
+    def test_producer_universe_explicit_classes_and_unknown_fail_closed(self):
+        path = self.write_des(
+            """lua {{
+function producer_classes()
+  crawl.mpr("display")
+  crawl.t_("translation")
+  crawl.mark_milestone("tag", "payload", "parent")
+  crawl.dpr("diagnostic")
+  crawl.more()
+  crawl.game_started()
+  crawl.coinflip()
+  crawl.silent_probe()
+  local display_marker = portal_desc { desc = "portal" }
+  local protocol_marker = tutorial_hint("hint")
+end
+}}
+"""
+        )
+        universe, unknown = MODULE.des_producer_universe([path])
+        classified = {
+            row["producer"]: row["classification"] for row in universe
+        }
+        self.assertEqual({
+            "crawl.mpr": "included_player_display",
+            "crawl.t_": "display_translation_helper",
+            "crawl.mark_milestone": "persistent_protocol",
+            "crawl.dpr": "diagnostic",
+            "crawl.more": "ui_control",
+            "crawl.game_started": "gameplay_state_or_lookup",
+            "crawl.coinflip": "randomness",
+            "portal_desc": "included_display_marker",
+            "tutorial_hint": "excluded_lookup_protocol_owned",
+        }, {
+            producer: classified[producer]
+            for producer in (
+                "crawl.mpr", "crawl.t_", "crawl.mark_milestone",
+                "crawl.dpr", "crawl.more", "crawl.game_started",
+                "crawl.coinflip", "portal_desc", "tutorial_hint",
+            )
+        })
+        self.assertEqual("unknown", classified["crawl.silent_probe"])
+        self.assertEqual(["crawl.silent_probe"], unknown)
+
     def test_every_portal_file_has_a_family_row_without_fixed_count(self):
         expected = {
             f"portal_family:{path.stem}"
@@ -459,14 +501,75 @@ end
         }
         self.assertEqual(expected, actual)
 
+    def test_finite_portal_titles_equal_production_callsites_and_are_exact(self):
+        expected = set()
+        for filename, producer in (
+            ("trove.des", "trove_milestone"),
+            ("wizlab.des", "wizlab_milestone"),
+        ):
+            text = (MODULE.DES_ROOT / "portals" / filename).read_text(
+                encoding="utf-8"
+            )
+            expected.update(
+                match.group(1)
+                for match in re.finditer(
+                    rf"\b{producer}\s*\(\s*_G\s*,\s*"
+                    r'"((?:[^"\\]|\\.)*)"\s*\)',
+                    text,
+                )
+            )
+        rows = [
+            row for row in self.payload["rows"]
+            if row.get("finite_title_producer")
+        ]
+        self.assertTrue(expected)
+        self.assertEqual(expected, {row["static_english"] for row in rows})
+        self.assertEqual(len(expected), len(rows))
+        self.assertEqual(len(rows), len({row["identity"] for row in rows}))
+        for row in rows:
+            self.assertTrue(row["source_exact_match"])
+            self.assertTrue(row["current_chinese"])
+            self.assertEqual("crawl.t_", row["late_translation_consumer"])
+            self.assertIn(":NAME:", row["identity"])
+
+    def test_missing_finite_portal_title_fails_exact_key_coverage(self):
+        path = self.write_des(
+            """NAME: fixture_trove
+epilogue {{
+  trove_milestone(_G, "Missing production title")
+}}
+"""
+        )
+        rows = MODULE.scan_des_file(path, {})
+        title = next(row for row in rows if row.get("finite_title_producer"))
+        empty_db = {"raw": {}, "duplicates": []}
+        violations = MODULE.inventory_violations(
+            rows,
+            {"enum_order": [], "data_order": []},
+            {"enum_order": [], "data_order": []},
+            (empty_db, empty_db),
+            (empty_db, empty_db),
+        )
+        self.assertFalse(title["source_exact_match"])
+        self.assertIn(
+            title["identity"], violations["missing_exact_source_keys"]
+        )
+
     def test_review_coverage_requires_bijection_and_terminal_conclusion(self):
-        fixture = {"inventory_sha256": "a" * 64, "rows": [
-            {"identity": "branch:BRANCH_A"},
-            {"identity": "feature:DNGN_A"},
-        ]}
+        branch_row = next(
+            row for row in self.payload["rows"] if row["category"] == "branch"
+        )
+        feature_row = next(
+            row for row in self.payload["rows"] if row["category"] == "feature"
+        )
+        fixture = {
+            **self.payload,
+            "inventory_sha256": "a" * 64,
+            "rows": [branch_row, feature_row],
+        }
         header = review_header()
-        card_a = review_card("branch:BRANCH_A", "保留：正确")
-        card_b = review_card("feature:DNGN_A", "adjust wording")
+        card_a = review_card(fixture, branch_row, "保留：正确")
+        card_b = review_card(fixture, feature_row, "adjust wording")
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"
             path.write_text(
@@ -476,11 +579,51 @@ end
             )
             coverage = MODULE.review_coverage(fixture, path)
             self.assertTrue(coverage["coverage_equal"])
+            for field, mutation in {
+                "mechanics_behavior": '{"mechanics": "incorrect"}',
+                "format_entity_markup_structure_tokens":
+                    '{"placeholders": ["%q"]}',
+                "evidence_locations":
+                    '{"file": "crawl-ref/source/nonexistent.cc"}',
+                "producer": "reviewed evidence",
+            }.items():
+                path.write_text(
+                    f"Inventory-SHA256: {'a' * 64}\n\n"
+                    + header
+                    + review_card(
+                        fixture, branch_row, "keep", {field: mutation}
+                    )
+                    + card_b,
+                    encoding="utf-8",
+                )
+                mutated = MODULE.review_coverage(fixture, path)
+                self.assertFalse(mutated["coverage_equal"], msg=field)
+                self.assertIn(
+                    field,
+                    mutated["fact_mismatches"][branch_row["identity"]],
+                    msg=field,
+                )
+            path.write_text(
+                f"Inventory-SHA256: {'a' * 64}\n\n"
+                + header
+                + review_card(
+                    fixture, branch_row, "keep",
+                    {"adopted_translation": "错误采用值"},
+                )
+                + card_b,
+                encoding="utf-8",
+            )
+            wrong_adopted = MODULE.review_coverage(fixture, path)
+            self.assertFalse(wrong_adopted["coverage_equal"])
+            self.assertIn(
+                branch_row["identity"],
+                wrong_adopted["adopted_translation_mismatches"],
+            )
             path.write_text(
                 f"Inventory-SHA256: {'a' * 64}\n\n"
                 + header + card_a
                 + review_card(
-                    "feature:DNGN_A", "insufficient evidence",
+                    fixture, feature_row, "insufficient evidence",
                     {
                         "proposed_translation": MODULE.PENDING_REVIEW,
                         "adopted_translation": MODULE.PENDING_REVIEW,
@@ -495,12 +638,12 @@ end
             pending = MODULE.review_coverage(fixture, path)
             self.assertFalse(pending["coverage_equal"])
             self.assertEqual(
-                ["feature:DNGN_A"],
+                [feature_row["identity"]],
                 pending["invalid_terminal_conclusions"],
             )
             for column in coverage["required_columns"][1:]:
                 broken_card = review_card(
-                    "branch:BRANCH_A", "keep", {column: ""}
+                    fixture, branch_row, "keep", {column: ""}
                 )
                 path.write_text(
                     f"Inventory-SHA256: {'a' * 64}\n\n"
@@ -512,13 +655,13 @@ end
                     broken_field["coverage_equal"], msg=column
                 )
                 self.assertIn(
-                    "branch:BRANCH_A",
+                    branch_row["identity"],
                     broken_field["missing_required_fields"],
                     msg=column,
                 )
             for column in MODULE.REVIEW_DECISION_FIELDS:
                 pending_card = review_card(
-                    "branch:BRANCH_A", "keep",
+                    fixture, branch_row, "keep",
                     {column: MODULE.PENDING_REVIEW},
                 )
                 path.write_text(
@@ -531,14 +674,14 @@ end
                 self.assertIn(
                     column,
                     pending_field["invalid_decision_fields"][
-                        "branch:BRANCH_A"
+                        branch_row["identity"]
                     ],
                 )
             path.write_text(
                 f"Inventory-SHA256: {'a' * 64}\n\n"
                 + header
                 + review_card(
-                    "branch:BRANCH_A", "keep",
+                    fixture, branch_row, "keep",
                     {"confidence": "not applicable"},
                 )
                 + card_b,
@@ -547,7 +690,7 @@ end
             invalid_confidence = MODULE.review_coverage(fixture, path)
             self.assertFalse(invalid_confidence["coverage_equal"])
             self.assertEqual(
-                ["branch:BRANCH_A"],
+                [branch_row["identity"]],
                 invalid_confidence["invalid_confidence"],
             )
             path.write_text(
@@ -557,10 +700,52 @@ end
             )
             broken = MODULE.review_coverage(fixture, path)
             self.assertFalse(broken["inventory_digest_matches"])
-            self.assertEqual(["branch:BRANCH_A"],
+            self.assertEqual([branch_row["identity"]],
                              broken["duplicate_evidence_cards"])
-            self.assertEqual(["feature:DNGN_A"],
+            self.assertEqual([feature_row["identity"]],
                              broken["missing_evidence_cards"])
+
+    def test_review_cells_normalize_only_serialization_edge_whitespace(self):
+        range_row = next(
+            row for row in self.payload["rows"]
+            if row.get("static_english") == "faint "
+        )
+        self.assertEqual("faint ", range_row["static_english"])
+        self.assertEqual("faint ", range_row["source_lookup_key"])
+        self.assertTrue(range_row["source_exact_match"])
+        fixture = {
+            **self.payload,
+            "inventory_sha256": "d" * 64,
+            "rows": [range_row],
+        }
+        prefix = f"Inventory-SHA256: {'d' * 64}\n\n" + review_header()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.md"
+            path.write_text(
+                prefix + review_card(fixture, range_row),
+                encoding="utf-8",
+            )
+            representable = MODULE.review_coverage(fixture, path)
+            self.assertTrue(representable["coverage_equal"])
+            expected, _ = MODULE.review_expected_fact_cells(
+                fixture, range_row
+            )
+            self.assertEqual("faint", expected["en"])
+
+            for mismatch in ("fai nt", "faint noise"):
+                path.write_text(
+                    prefix + review_card(
+                        fixture, range_row, overrides={"en": mismatch}
+                    ),
+                    encoding="utf-8",
+                )
+                rejected = MODULE.review_coverage(fixture, path)
+                self.assertFalse(rejected["coverage_equal"], msg=mismatch)
+                self.assertIn(
+                    "en",
+                    rejected["fact_mismatches"][range_row["identity"]],
+                    msg=mismatch,
+                )
 
     def test_complete_review_results_prefills_strict_pending_cards(self):
         fixture = {

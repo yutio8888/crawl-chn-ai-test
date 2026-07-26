@@ -53,6 +53,16 @@ ZH_SOURCE_DIR = SRC / "dat/i18n/zh"
 GLOSSARY = ROOT / "docs/glossary.md"
 
 DIRECT_SINKS = {"mpr", "formatted_mpr", "yesno", "take_note", "god_speaks"}
+FINITE_TITLE_PRODUCERS = {
+    "trove_milestone": {
+        "sink_kind": "trove_milestone_title",
+        "consumer": "trove_milestone:crawl.mpr",
+    },
+    "wizlab_milestone": {
+        "sink_kind": "wizlab_milestone_title",
+        "consumer": "wizlab_milestone:crawl.mpr",
+    },
+}
 TIMED_FIELDS = {
     "initmsg", "finalmsg", "range_msg_fmt", "ranges", "messages", "verb",
     "noisemaker", "disappear", "entity", "desc",
@@ -67,6 +77,42 @@ DISPLAY_ASSIGNMENTS = TIMED_FIELDS | {"toll_desc"}
 PROTOCOL_ASSIGNMENTS = {
     "NAME", "TAGS", "KFEAT", "MARKER", "replica_name", "feature",
     "vaultname",
+}
+CRAWL_API_CLASSIFICATIONS = {
+    "included_player_display": {
+        "formatted_mpr", "god_speaks", "mpr", "take_note", "yesno",
+    },
+    "display_translation_helper": {
+        "grammar", "t_",
+    },
+    "persistent_protocol": {
+        "mark_game_won", "mark_milestone",
+    },
+    "diagnostic": {
+        "dpr",
+    },
+    "ui_control": {
+        "more", "redraw_view", "tutorial_msg",
+    },
+    "gameplay_state_or_lookup": {
+        "game_started", "make_name", "set_max_runes", "split_bytes",
+    },
+    "randomness": {
+        "coinflip", "div_rand_round", "one_chance_in", "random2",
+        "random2avg", "random_range", "random_real", "rng_wrap", "roll_dice",
+        "x_chance_in_y",
+    },
+}
+CONSTRUCTOR_CLASSIFICATIONS = {
+    "timed_msg": "included_display_marker",
+    "timed_marker": "included_display_marker",
+    "portal_desc": "included_display_marker",
+    "trove_marker": "included_display_marker",
+    "tutorial_msg": "excluded_lookup_protocol_owned",
+    "tutorial_hint": "excluded_lookup_protocol_owned",
+    "get_marker": "excluded_lookup_protocol_owned",
+    "lua_marker": "excluded_lookup_protocol_owned",
+    "props_marker": "excluded_lookup_protocol_owned",
 }
 REVIEW_COLUMNS = [
     "identity",
@@ -662,7 +708,8 @@ def _des_lua_view(text):
     in_block = False
     interesting = re.compile(
         r"crawl\.(?:mpr|formatted_mpr|yesno|take_note)|"
-        r"set_feature_name|portal_desc|toll_desc"
+        r"set_feature_name|portal_desc|toll_desc|"
+        r"trove_milestone|wizlab_milestone"
     )
     for line in text.splitlines(keepends=True):
         stripped = line.lstrip()
@@ -850,6 +897,38 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
             record["unsupported"] = "dynamic direct display expression"
         candidates.append(_source_lookup(record, source_exact))
 
+    # Finite runtime title producers. Their literal callsite arguments are
+    # distinct display values consumed through crawl.t_(..._desc) by the
+    # milestone display helper; inventory them independently of the shared
+    # format-template row.
+    for index in range(len(tokens) - 1):
+        token = tokens[index]
+        if (token[0] != "IDENT"
+                or token[1] not in FINITE_TITLE_PRODUCERS
+                or tokens[index + 1][0] != "("):
+            continue
+        closing = _matching_token(tokens, index + 1)
+        arguments = _top_level_args(tokens, index + 1, closing)
+        if len(arguments) < 2:
+            continue
+        start, end = arguments[1]
+        record = _expression_record(text, tokens, start, end)
+        if record["static_english"] is None:
+            continue
+        producer = FINITE_TITLE_PRODUCERS[token[1]]
+        record.update({
+            "sink_kind": producer["sink_kind"],
+            "channel": "message_title",
+            "trigger": "vault_epilogue",
+            "persistence": False,
+            "late_translation_consumer": "crawl.t_",
+            "finite_title_producer": token[1],
+            "finite_title_consumer": producer["consumer"],
+            "offset": token[2],
+            "line": _line_number(text, token[2]),
+        })
+        candidates.append(_source_lookup(record, source_exact))
+
     # Production display-producing fields.  Each literal is an independent
     # stable slot; table-valued fields therefore retain every alternative.
     for index, token in enumerate(tokens):
@@ -1009,11 +1088,14 @@ def des_producer_universe(files):
     """Enumerate and classify every production crawl call/marker constructor."""
     calls = {}
     constructors = {}
-    included = {"timed_msg", "timed_marker", "portal_desc", "trove_marker"}
-    excluded = {
-        "tutorial_msg", "tutorial_hint", "get_marker", "lua_marker",
-        "props_marker",
-    }
+    crawl_classification = {}
+    for classification, methods in CRAWL_API_CLASSIFICATIONS.items():
+        for method in methods:
+            if method in crawl_classification:
+                raise ValueError(
+                    f"crawl.{method} appears in multiple producer classes"
+                )
+            crawl_classification[method] = classification
     for path in files:
         text = path.read_text(encoding="utf-8")
         tokens = list(_lua_tokens(_des_lua_view(text)))
@@ -1047,22 +1129,17 @@ def des_producer_universe(files):
     unknown = []
     for name, evidence in sorted(calls.items()):
         method = name.split(".", 1)[1]
-        classification = (
-            "included_player_display" if method in DIRECT_SINKS
-            else "excluded_non_display_gameplay_or_lookup_api"
-        )
+        classification = crawl_classification.get(method, "unknown")
+        if classification == "unknown":
+            unknown.append(name)
         classified.append(
             {"producer": name, "classification": classification, **evidence}
         )
     for required in {"tutorial_msg", "tutorial_hint"}:
         constructors.setdefault(required, {"count": 0, "evidence": []})
     for name, evidence in sorted(constructors.items()):
-        if name in included:
-            classification = "included_display_marker"
-        elif name in excluded:
-            classification = "excluded_lookup_protocol_owned"
-        else:
-            classification = "unknown"
+        classification = CONSTRUCTOR_CLASSIFICATIONS.get(name, "unknown")
+        if classification == "unknown":
             unknown.append(name)
         classified.append(
             {"producer": name, "classification": classification, **evidence}
@@ -1214,6 +1291,155 @@ def inventory_violations(rows, branch_proof, feature_proof,
     }
 
 
+def _review_safe(value):
+    value = str(value if value is not None and value != "" else "(none)")
+    # Markdown table parsing strips cell-edge whitespace. Normalize the
+    # production-derived expectation to that representable boundary only;
+    # inventory identities and SourceDB lookup values remain untouched.
+    return re.sub(r"\s+", " ", value).strip().replace("|", "/")
+
+
+def _row_current_chinese(row):
+    return (
+        row.get("current_chinese")
+        or row.get("current_chinese_name")
+        or next((
+            item.get("zh") for item in row.get("display_strings", [])
+            if item.get("zh")
+        ), None)
+        or row.get("chinese_description")
+    )
+
+
+def review_expected_fact_cells(payload, row):
+    """Return production-derived evidence cells shared by writer and validator."""
+    evidence = row.get("evidence", {})
+    producer = evidence.get("file") or evidence.get("initializer") or (
+        row.get("file") or row["category"]
+    )
+    consumers = (
+        row.get("behavior_evidence_refs")
+        or row.get("protocol_identity", {}).get("required_consumer_refs")
+        or row.get("shortname_paths", {}).get("required_consumer_refs")
+        or [row.get("finite_title_consumer")
+            or row.get("late_translation_consumer")
+            or "inventory parent"]
+    )
+    english = (
+        row.get("static_english") or row.get("name")
+        or row.get("shortname") or row.get("file")
+    )
+    chinese = _row_current_chinese(row)
+    if row["category"] == "feature":
+        mechanics = {
+            "flags": row.get("flags"),
+            "minimap": row.get("minimap"),
+            "raw_producer": row.get("raw_producer"),
+            "behavior_evidence_refs": row.get("behavior_evidence_refs"),
+        }
+    elif row["category"] == "branch":
+        mechanics = {
+            "mechanics": row.get("mechanics"),
+            "raw_producer": row.get("raw_producer"),
+        }
+    elif row["category"] == "portal_family":
+        mechanics = {
+            "display_slot_count": row.get("display_slot_count"),
+            "file": row.get("file"),
+        }
+    else:
+        mechanics = {
+            "sink_kind": row.get("sink_kind"),
+            "tokens": row.get("tokens"),
+            "dynamic_parameters": row.get("dynamic_parameters"),
+            "translated_dynamic_parameters": row.get(
+                "translated_dynamic_parameters"
+            ),
+        }
+    protocol = bool(
+        row.get("protocol_identity") or row.get("lookup_identity")
+        or row.get("protocol_deferral")
+    )
+    tokens = row.get("tokens") or {
+        "format": "not applicable",
+        "entity_macro": "not applicable",
+        "markup": "not applicable",
+        "structure": row["category"],
+    }
+    dependencies = (
+        row.get("name_alias_group")
+        or row.get("vaultname_alias_group")
+        or [row.get("finite_title_producer") or row["category"]]
+    )
+    authority = {
+        "glossary_sha256": payload.get("glossary_sha256", "not supplied"),
+        "decisions_sha256": payload.get("input_sha256", {}).get(
+            "docs/decisions.md", "not supplied"
+        ),
+    }
+    target_scope = {
+        "category": row["category"],
+        "identity": row["identity"],
+        "lifecycle": row["lifecycle"],
+        "conditions": row.get("trigger") or row["lifecycle"],
+        "exceptions": row.get("protocol_deferral") or "none",
+        "consequences": row.get("channel") or row["category"],
+    }
+    facts = {
+        "producer_consumer": _review_safe(
+            f"{producer}; {', '.join(consumers)}"
+        ),
+        "trigger_context": _review_safe(
+            f"{row.get('trigger', row['category'])}; "
+            f"{row.get('channel', row['lifecycle'])}"
+        ),
+        "persistence_protocol": _review_safe(
+            f"persistent={row.get('persistence', False)}; "
+            f"protocol={protocol}"
+        ),
+        "en": _review_safe(english),
+        "zh": _review_safe(chinese if chinese else "(missing)"),
+        "mechanics_tokens": _review_safe(json.dumps(
+            mechanics, ensure_ascii=False, sort_keys=True
+        )),
+        "lifecycle": _review_safe(row["lifecycle"]),
+        "display_context": _review_safe(
+            row.get("channel") or row.get("category")
+        ),
+        "producer": _review_safe(producer),
+        "consumers_users": _review_safe(", ".join(consumers)),
+        "mechanics_behavior": _review_safe(json.dumps(
+            mechanics, ensure_ascii=False, sort_keys=True
+        )),
+        "target_scope_conditions_exceptions_consequences": _review_safe(
+            json.dumps(target_scope, ensure_ascii=False, sort_keys=True)
+        ),
+        "trigger_timing": _review_safe(
+            row.get("trigger") or "inventory parent lifecycle"
+        ),
+        "persistence_serialization": _review_safe(
+            f"persistent={row.get('persistence', False)}; "
+            f"serialization_protocol={protocol}"
+        ),
+        "late_translation_sink": _review_safe(
+            row.get("late_translation_consumer") or "not applicable"
+        ),
+        "format_entity_markup_structure_tokens": _review_safe(json.dumps(
+            tokens, ensure_ascii=False, sort_keys=True
+        )),
+        "glossary_decision_authority": _review_safe(json.dumps(
+            authority, ensure_ascii=False, sort_keys=True
+        )),
+        "shared_dependency_group": _review_safe(json.dumps(
+            dependencies, ensure_ascii=False, sort_keys=True
+        )),
+        "evidence_locations": _review_safe(json.dumps(
+            evidence, ensure_ascii=False, sort_keys=True
+        )),
+    }
+    return facts, (_review_safe(chinese) if chinese else None)
+
+
 def review_coverage(payload, path):
     """Prove exactly one terminal conclusion per frozen inventory identity."""
     text = path.read_text(encoding="utf-8")
@@ -1260,6 +1486,28 @@ def review_coverage(payload, path):
     identities = [identity for identity, _ in rows]
     actual = set(identities)
     cards = {identity: card for identity, card in rows}
+    inventory_rows = {row["identity"]: row for row in payload["rows"]}
+    fact_mismatches = {}
+    adopted_translation_mismatches = {}
+    for identity, card in cards.items():
+        row = inventory_rows.get(identity)
+        if row is None:
+            continue
+        expected_facts, expected_adopted = review_expected_fact_cells(
+            payload, row
+        )
+        mismatched = sorted(
+            field for field, expected in expected_facts.items()
+            if card.get(field) != expected
+        )
+        if mismatched:
+            fact_mismatches[identity] = mismatched
+        if (expected_adopted is not None
+                and card.get("adopted_translation") != expected_adopted):
+            adopted_translation_mismatches[identity] = {
+                "expected": expected_adopted,
+                "actual": card.get("adopted_translation"),
+            }
     conclusions = {
         identity: card["conclusion"] for identity, card in rows
     }
@@ -1333,6 +1581,10 @@ def review_coverage(payload, path):
         "pending_required_fields": pending_required_fields,
         "invalid_decision_fields": invalid_decision_fields,
         "invalid_confidence": invalid_confidence,
+        "fact_mismatches": fact_mismatches,
+        "adopted_translation_mismatches": (
+            adopted_translation_mismatches
+        ),
         "coverage_equal": (
             len(identities) == len(known)
             and actual == known
@@ -1341,6 +1593,8 @@ def review_coverage(payload, path):
             and not pending_required_fields
             and not invalid_decision_fields
             and not invalid_confidence
+            and not fact_mismatches
+            and not adopted_translation_mismatches
             and header == required_columns
             and bool(digest_match)
             and digest_match.group(1) == payload["inventory_sha256"]
@@ -1352,10 +1606,6 @@ def complete_review_results(payload, path):
     """Write/replace the script-owned strict evidence-card table."""
     columns = REVIEW_COLUMNS
 
-    def safe(value):
-        value = str(value if value is not None and value != "" else "(none)")
-        return re.sub(r"\s+", " ", value).replace("|", "/")
-
     lines = [
         "<!-- BEGIN WORLD INVENTORY EVIDENCE -->",
         f"Inventory-SHA256: {payload['inventory_sha256']}",
@@ -1364,101 +1614,10 @@ def complete_review_results(payload, path):
         "|" + "|".join("---" for _ in columns) + "|",
     ]
     for row in payload["rows"]:
-        evidence = row.get("evidence", {})
-        producer = evidence.get("file") or evidence.get("initializer") or (
-            row.get("file") or row["category"]
-        )
-        consumer = (
-            row.get("behavior_evidence_refs")
-            or row.get("protocol_identity", {}).get("required_consumer_refs")
-            or row.get("shortname_paths", {}).get("required_consumer_refs")
-            or [row.get("late_translation_consumer") or "inventory parent"]
-        )
-        english = (
-            row.get("static_english") or row.get("name")
-            or row.get("shortname") or row.get("file")
-        )
-        chinese = (
-            row.get("current_chinese") or row.get("current_chinese_name")
-            or next((
-                item.get("zh") for item in row.get("display_strings", [])
-                if item.get("zh")
-            ), None)
-        )
-        mechanics = (
-            row.get("mechanics") or row.get("tokens")
-            or {"lifecycle": row["lifecycle"]}
-        )
-        protocol = bool(
-            row.get("protocol_identity") or row.get("lookup_identity")
-        )
-        tokens = row.get("tokens") or {
-            "format": "not applicable",
-            "entity_macro": "not applicable",
-            "markup": "not applicable",
-            "structure": row["category"],
-        }
-        dependencies = (
-            row.get("name_alias_group")
-            or row.get("vaultname_alias_group")
-            or [row["category"]]
-        )
-        authority = {
-            "glossary_sha256": payload.get("glossary_sha256", "not supplied"),
-            "decisions_sha256": payload.get("input_sha256", {}).get(
-                "docs/decisions.md", "not supplied"
-            ),
-        }
+        facts, _expected_adopted = review_expected_fact_cells(payload, row)
         card = {
             "identity": f"`{row['identity']}`",
-            "producer_consumer": safe(
-                f"{producer}; {', '.join(consumer)}"
-            ),
-            "trigger_context": safe(
-                f"{row.get('trigger', row['category'])}; "
-                f"{row.get('channel', row['lifecycle'])}"
-            ),
-            "persistence_protocol": safe(
-                f"persistent={row.get('persistence', False)}; "
-                f"protocol={protocol}"
-            ),
-            "en": safe(english),
-            "zh": safe(chinese if chinese else "(missing)"),
-            "mechanics_tokens": safe(json.dumps(
-                mechanics, ensure_ascii=False, sort_keys=True
-            )),
-            "lifecycle": safe(row["lifecycle"]),
-            "display_context": safe(
-                row.get("channel") or row.get("category")
-            ),
-            "producer": safe(producer),
-            "consumers_users": safe(", ".join(consumer)),
-            "mechanics_behavior": safe(json.dumps(
-                mechanics, ensure_ascii=False, sort_keys=True
-            )),
-            "target_scope_conditions_exceptions_consequences": PENDING_REVIEW,
-            "trigger_timing": safe(
-                row.get("trigger") or "inventory parent lifecycle"
-            ),
-            "persistence_serialization": safe(
-                f"persistent={row.get('persistence', False)}; "
-                f"serialization_protocol={protocol}"
-            ),
-            "late_translation_sink": safe(
-                row.get("late_translation_consumer") or "not applicable"
-            ),
-            "format_entity_markup_structure_tokens": safe(json.dumps(
-                tokens, ensure_ascii=False, sort_keys=True
-            )),
-            "glossary_decision_authority": safe(json.dumps(
-                authority, ensure_ascii=False, sort_keys=True
-            )),
-            "shared_dependency_group": safe(json.dumps(
-                dependencies, ensure_ascii=False, sort_keys=True
-            )),
-            "evidence_locations": safe(json.dumps(
-                evidence, ensure_ascii=False, sort_keys=True
-            )),
+            **facts,
             # These are reviewer decisions. Never infer them from current
             # assets or prefill them with a fabricated terminal answer.
             "proposed_translation": PENDING_REVIEW,

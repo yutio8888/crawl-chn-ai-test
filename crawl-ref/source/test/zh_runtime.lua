@@ -415,6 +415,60 @@ emit("portal_distance_late_translation",
      distance_zh_to_en .. " || " .. distance_en_to_zh)
 crawl.set_test_language("zh")
 
+-- Issue 28 readiness: use the Sewer's production keys through the real
+-- TimedMessaging serializer and display sink. "sewer drain" is an English
+-- identity until emission; it must never collide with the unrelated "drain"
+-- translation.
+local function roundtrip_sewer_message(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        verb = "rusting",
+        noisemaker = "sewer drain",
+        ranges = {
+            {5000, "slow "}, {4000, ""},
+            {2500, "brisk "}, {1500, "quick "}, {0, "rapid "},
+        },
+        range_adjectives = {
+            {28, "very distant"}, {21, "distant"},
+            {14, "$F nearby"}, {7, "$F very nearby"}, {0, "$F"},
+        },
+        range_msg_fmt =
+            "You hear the {prefix}rusting of the {distance} {noisemaker}.",
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "sewer drain"
+           and loaded.verb == "rusting"
+           and loaded.range_msg_fmt
+               == "You hear the {prefix}rusting of the {distance} {noisemaker}.",
+           "sewer marker persisted translated identity or format")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px + 10, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    if emitted_language == "en" then
+        assert(string.find(rendered, "sewer drain", 1, true),
+               "ZH-created sewer marker did not emit canonical English")
+    else
+        local translated = crawl.t_("sewer drain")
+        assert(translated ~= "sewer drain"
+               and string.find(rendered, translated, 1, true),
+               "EN-created sewer marker omitted translated sewer drain")
+        assert(not string.find(rendered, "sewer drain", 1, true)
+               and not string.find(rendered, "吸血", 1, true),
+               "sewer marker leaked English or unrelated drain translation")
+    end
+    return rendered
+end
+local sewer_zh_to_en = roundtrip_sewer_message("zh", "en")
+local sewer_en_to_zh = roundtrip_sewer_message("en", "zh")
+emit("sewer_late_translation",
+     sewer_zh_to_en .. " || " .. sewer_en_to_zh)
+crawl.set_test_language("zh")
+
 -- Issue 28: portal milestones and notes retain canonical English payloads,
 -- while the complete display template and its destination title are
 -- translated only at mpr time.
@@ -432,41 +486,42 @@ crawl.mark_milestone = function (tag, milestone, parent)
 end
 
 local function portal_milestone_language(language)
+    local trove_title = "The Name-Rending Infernalists' Reservoir"
+    local wizlab_title = "The Chambers of the Cloud Mage"
     captured_notes = {}
     captured_milestones = {}
     crawl.set_test_language(language)
     crawl.clear_message_store()
-    trove_milestone(nil, "a treasure trove")
-    wizlab_milestone(nil, "a wizard's laboratory")
+    trove_milestone(nil, trove_title)
+    wizlab_milestone(nil, wizlab_title)
     crawl.redraw_view()
     local rendered = crawl.messages(10) or ""
 
-    assert(captured_notes[1] == "Entered a treasure trove"
-           and captured_notes[2] == "Entered a wizard's laboratory",
+    assert(captured_notes[1] == "Entered " .. trove_title
+           and captured_notes[2] == "Entered " .. wizlab_title,
            "portal note persisted localized or incomplete text")
     assert(captured_milestones[1].milestone
-               == "entered a treasure trove."
+               == "entered " .. trove_title .. "."
            and captured_milestones[2].milestone
-               == "entered a wizard's laboratory.",
+               == "entered " .. wizlab_title .. ".",
            "portal milestone persisted localized or incomplete text")
 
     if language == "en" then
         assert(string.find(rendered,
-                           "You've discovered a treasure trove!", 1, true)
+                           "You've discovered " .. trove_title .. "!", 1, true)
                and string.find(rendered,
-                               "Welcome to a wizard's laboratory!", 1, true),
+                               "Welcome to " .. wizlab_title .. "!", 1, true),
                "English portal display changed")
     else
-        local trove_title = crawl.t_("a treasure trove")
-        local wizlab_title = crawl.t_("a wizard's laboratory")
-        assert(trove_title ~= "a treasure trove"
-               and wizlab_title ~= "a wizard's laboratory"
-               and string.find(rendered, trove_title, 1, true)
-               and string.find(rendered, wizlab_title, 1, true),
+        local trove_zh = crawl.t_(trove_title)
+        local wizlab_zh = crawl.t_(wizlab_title)
+        assert(trove_zh ~= trove_title
+               and wizlab_zh ~= wizlab_title
+               and string.find(rendered, trove_zh, 1, true)
+               and string.find(rendered, wizlab_zh, 1, true),
                "Chinese portal display omitted translated title")
-        assert(not string.find(rendered, "a treasure trove", 1, true)
-               and not string.find(
-                   rendered, "a wizard's laboratory", 1, true),
+        assert(not string.find(rendered, trove_title, 1, true)
+               and not string.find(rendered, wizlab_title, 1, true),
                "Chinese portal display leaked English title")
     end
     return rendered
@@ -479,10 +534,30 @@ assert(captured_notes[1] == stored_note_en
        and captured_milestones[1].milestone == stored_milestone_en,
        "language switch changed stored portal note or milestone")
 local portal_milestone_zh = portal_milestone_language("zh")
+
+-- Missing finite-title keys use T_()'s exact English fallback through the
+-- production milestone display path, while stored note/milestone payloads
+-- remain canonical English.
+local missing_portal_title = "Issue 28 missing portal title"
+captured_notes = {}
+captured_milestones = {}
+crawl.clear_message_store()
+trove_milestone(nil, missing_portal_title)
+crawl.redraw_view()
+local missing_portal_rendered = crawl.messages(5) or ""
+assert(crawl.t_(missing_portal_title) == missing_portal_title
+       and captured_notes[1] == "Entered " .. missing_portal_title
+       and captured_milestones[1].milestone
+           == "entered " .. missing_portal_title .. "."
+       and string.find(missing_portal_rendered,
+                       missing_portal_title, 1, true),
+       "missing portal title did not follow exact English fallback")
+
 crawl.take_note = original_take_note
 crawl.mark_milestone = original_mark_milestone
 emit("portal_milestone_boundary",
-     portal_milestone_en .. " || " .. portal_milestone_zh)
+     portal_milestone_en .. " || " .. portal_milestone_zh
+     .. " || fallback: " .. missing_portal_rendered)
 crawl.set_test_language("zh")
 
 if script_args[1] == "portal_distance" then

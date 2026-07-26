@@ -29648,7 +29648,7 @@ You hear the hiss of flowing sand.
 你听到了流沙的嘶嘶声。
 %%%%
 There is an entrance to an ossuary on this level. Hurry and find it before the portal is buried!
-这个楼层有一个通往骨灰堂的入口。在传送门被掩埋前找到它！
+这个楼层有一个通往骨堂的入口。在传送门被掩埋前找到它！
 %%%%
 The hiss of flowing sand is almost imperceptible now.
 流沙的嘶嘶声现在几乎听不到了。
@@ -29660,7 +29660,7 @@ You hear the roar of battle.
 你听到了战斗的怒吼。
 %%%%
 There is an entrance to a bailey on this level. Hurry and find it before the portal closes forever!
-这个楼层有一个通往城寨的入口。在传送门永久关闭前找到它！
+这个楼层有一个通往堡垒的入口。在传送门永久关闭前找到它！
 %%%%
 $F{The} has been lowered almost to the ground.
 $F{The}几乎已降至地面。
@@ -29672,7 +29672,7 @@ You feel a wave of frost pass over you.
 你感到一阵寒霜掠过全身。
 %%%%
 There is an entrance to an ice cave on this level. Hurry and find it before the portal melts!
-这个楼层有一个通往冰洞的入口。在传送门融化前找到它！
+这个楼层有一个通往冰窟的入口。在传送门融化前找到它！
 %%%%
 The crackling of melting ice is subsiding rapidly.
 冰层融化的噼啪声正在迅速减弱。
@@ -29696,7 +29696,7 @@ You hear a distant wind.
 你听到了远处的风声。
 %%%%
 There is a portal to the Desolation of Salt on this level. Hurry and find it before the gateway collapses!
-这个楼层有一个通往盐碱荒原的传送门。在入口坍塌前找到它！
+这个楼层有一个通往盐之荒原的传送门。在入口坍塌前找到它！
 %%%%
 The wind is rapidly growing quiet.
 风正在迅速平息。
@@ -29708,7 +29708,7 @@ You hear a distant snort.
 你听到了远处的一声鼻息。
 %%%%
 Hark! There is a gateway to a gauntlet on this level. Find the entrance quickly before the gate is sealed!
-听！这个楼层有一个通往挑战场的入口。在大门封闭前赶快找到它！
+听！这个楼层有一个通往试炼场的入口。在大门封闭前赶快找到它！
 %%%%
 After a thunderous strike, the drumbeats cease.
 一声雷鸣般的敲击后，鼓声停止了。
@@ -29717,7 +29717,7 @@ You hear the solemn chanting of funerary rites.
 你听到了葬礼仪式庄严的吟唱。
 %%%%
 There is an entrance to the Necropolis on this level. Hurry and find it before the portal closes!
-这个楼层有一个通往死者之城的入口。在传送门关闭前找到它！
+这个楼层有一个通往死灵城的入口。在传送门关闭前找到它！
 %%%%
 The funeral rites reach a fever pitch!
 葬礼仪式达到了狂热的高潮！
@@ -41357,7 +41357,7 @@ You hear the chatter and bustle of other customers!
 赶快在入口坍塌前找到它！
 %%%%
 There is a portal to the Desolation of Salt on this level.
-这个楼层有一个通往盐碱荒原的传送门。
+这个楼层有一个通往盐之荒原的传送门。
 %%%%
 whistling
 呼啸
@@ -41387,7 +41387,7 @@ You hear the {distance} {noisemaker} {prefix}.
 你听到{distance}{noisemaker}中传来{prefix}。
 %%%%
 <red>Going directly to Necropolis without placing an entry vault is buggy. Placing a Depths / Crypt Necropolis.</red>
-<red>未放置入口地图就直接前往死者之城会导致错误。现正放置一个位于深层区 / 墓穴的死者之城。</red>
+<red>未放置入口地图就直接前往死灵城会导致错误。现正放置一个位于深层区 / 墓穴的死灵城。</red>
 %%%%
 Hurry and find it before the portal is buried!
 赶快在传送门被掩埋前找到它！
@@ -41513,10 +41513,10 @@ An item emerges from the Abyss! Perhaps it is an incitement to worship... or eve
 “小心！这是限时优惠！”
 %%%%
 A transporter appears.
-一个传送装置出现了。
+一个传送器出现了。
 %%%%
 <white>The transporter glows with a rainbow of weird colours and disappears.</white>
-<white>传送装置泛起诡异的虹彩光芒，随后消失了。</white>
+<white>传送器泛起诡异的虹彩光芒，随后消失了。</white>
 %%%%
 Nemelex Xobeh says: You win!
 尼姆雷斯·索布说道：“你赢了！”
@@ -41621,7 +41621,7 @@ The demonic rune of Zot may be found here.
 这里或许能找到佐特恶魔符文。
 %%%%
 A powerful Pandemonium lord resides here.
-一位强大的潘地狱领主盘踞于此。
+一位强大的万魔殿领主盘踞于此。
 %%%%
 It guards the demonic rune of Zot.
 它守护着佐特恶魔符文。
@@ -41886,3 +41886,87 @@ Welcome to arena %s.
 %%%%
 <red>%s--                    </red><lightred>You have destroyed The Meatlord.</lightred><red>                      --\n%s</red>
 <red>%s--                    </red><lightred>你消灭了肉之领主。</lightred><red>                      --\n%s</red>
+%%%%
+The Name-Rending Infernalists' Reservoir
+裂名炼狱术士的秘库
+%%%%
+Ozocubu's Refrigerator
+奥佐库布的冷藏库
+%%%%
+The Storm Queen's Palace Crash-Site
+风暴女王宫殿坠毁地
+%%%%
+Leda's Sunken Stockpile
+勒达的沉没储藏室
+%%%%
+Eringya's Secret Bog
+埃林吉亚的秘密毒沼
+%%%%
+Rutra's Hidden Sanctum
+鲁特拉的隐秘圣所
+%%%%
+The Dread Knight's Derelict Chapel
+恐惧骑士的废弃礼拜堂
+%%%%
+The First Justicar's Armoury
+初代执法官的军械库
+%%%%
+The Octopus King's Forgotten Garden
+章鱼王的遗忘花园
+%%%%
+The Lost Hoard of Erebora
+埃雷博拉失落的宝藏
+%%%%
+a devouring Rift
+吞噬万物的裂隙
+%%%%
+an orange crystal hatchery
+橙晶孵化场
+%%%%
+The Chambers of the Cloud Mage
+云中法师的密室
+%%%%
+The Hall of the Hellbinder
+地狱缚者的大厅
+%%%%
+Doroklohe's Tomb
+多洛克洛之墓
+%%%%
+Cigotuvi's Fleshworks
+西格图维的血肉工坊
+%%%%
+Iskenderun's Mystic Tower
+伊斯肯德伦的神秘高塔
+%%%%
+Zonguldrok's Shrine
+宗古德洛克的神殿
+%%%%
+Wucad Mu's Monastery
+吴卡德·穆的修道院
+%%%%
+The Roulette of Golubria
+戈卢布里亚的轮盘赌
+%%%%
+Lehudib's Moon Base
+勒胡迪布的月球基地
+%%%%
+Eringya's Formal Garden
+埃林吉亚的规整花园
+%%%%
+Maxwell's Workshop
+麦克斯韦的工坊
+%%%%
+Yara's Duelist Academy
+亚拉的决斗学院
+%%%%
+Borgnjor's Mausoleum
+博格尼尔的陵墓
+%%%%
+Tukima's Studio
+图基玛的工作室
+%%%%
+Alistair's Party Mansion
+阿利斯泰尔的宴会庄园
+%%%%
+sewer drain
+排水口
