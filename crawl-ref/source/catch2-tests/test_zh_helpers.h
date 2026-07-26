@@ -81,6 +81,12 @@ std::vector<ZhIssue> scan_translation(const char* translated,
                                       const std::string& key,
                                       const std::string& source_tag);
 
+// Replace balanced TextDB @marker@ controls with a non-letter placeholder
+// before scanning rendered-template source. Pairing follows the production
+// TextDB parser's left-to-right "next @" rule; unbalanced input is retained so
+// it remains visible to diagnostics.
+std::string mask_textdb_template_tokens(const std::string& text);
+
 // Helper predicates split out so M1 table-driven unit tests (test_zh_translation.cc)
 // can target individual rules without running all 8.
 bool rule_untranslated   (const std::string& text, const std::string& key);

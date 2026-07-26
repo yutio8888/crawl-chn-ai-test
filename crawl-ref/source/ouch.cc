@@ -1212,7 +1212,7 @@ static void _god_death_messages(kill_method_type death_type,
     const bool was_undead = bool(holi & MH_UNDEAD);
     const bool was_nonliving = bool(holi & MH_NONLIVING);
 
-    string key = god_name(you.religion) + " death";
+    string key = string(_god_name_en(you.religion)) + " death";
 
     string key_extended = key;
     if (left_corpse)

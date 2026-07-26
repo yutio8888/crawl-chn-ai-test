@@ -49,6 +49,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -115,12 +116,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation]")
 {
     std::vector<ZhIssue> issues;
+    std::set<std::string> god_names;
     for (int gi = GOD_NO_GOD + 1; gi < NUM_GODS; ++gi)
     {
         const god_type g = static_cast<god_type>(gi);
         const std::string god = _god_name_en(g);
-        if (god.empty())
-            continue;
+        REQUIRE_FALSE(god.empty());
+        REQUIRE(god_names.insert(god).second);
 
         // Main description ("Trog") and three suffix-keyed sub-descriptions
         // used by describe-god.cc.
@@ -590,9 +592,9 @@ bool parse_db_file(const std::string& path, std::vector<std::pair<std::string,st
 } // anonymous namespace
 
 // =============================================================================
-// Enumerator 1a — godspeak. Parses dat/database/zh/godspeak.txt for keys
+// Enumerator 1a — godspeak. Parses canonical dat/database/godspeak.txt keys
 // (line `<god_en> <event>` after each %%%%), then looks up the value via
-// getMiscString(key) and scans it. Plan v2 §2.4 (#1a, Q6-corrected: key
+// getSpeakString(key) and scans it. Plan v2 §2.4 (#1a, Q6-corrected: key
 // separator is space, not colon).
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -601,19 +603,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     std::vector<ZhIssue> issues;
     std::vector<std::pair<std::string, std::string>> blocks;
-    if (!parse_db_file("dat/database/zh/godspeak.txt", blocks))
-    {
-        WARN("godsspeak.txt missing, skipping godspeak enumerator");
-        REQUIRE(true);
-        return;
-    }
+    REQUIRE(parse_db_file("dat/database/godspeak.txt", blocks));
+    REQUIRE_FALSE(blocks.empty());
+    std::set<std::string> keys;
     for (auto& kv : blocks)
     {
         const std::string& key = kv.first;
-        const std::string val = getMiscString(key);
-        if (val.empty())
-            continue;
-        scan_one(val.c_str(), key, "godspeak.txt", issues);
+        REQUIRE_FALSE(key.empty());
+        REQUIRE(keys.insert(key).second);
+        const std::string val = getSpeakString(key);
+        REQUIRE_FALSE(val.empty());
+        const std::string scan_val = mask_textdb_template_tokens(val);
+        scan_one(scan_val.c_str(), key, "godspeak.txt", issues);
     }
     emit_issue_protocol("zh_translation", "godspeak", issues);
     WARN("zh enumerator summary: godspeak -> " << issues.size() << " issues");

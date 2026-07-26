@@ -2155,6 +2155,9 @@ const char* _god_name_en(god_type which_god)
     case GOD_GOZAG:         return "Gozag";
     case GOD_QAZLAL:        return "Qazlal";
     case GOD_RU:            return "Ru";
+#if TAG_MAJOR_VERSION == 34
+    case GOD_PAKELLAS:      return "Pakellas";
+#endif
     case GOD_USKAYAW:       return "Uskayaw";
     case GOD_HEPLIAKLQANA:  return "Hepliaklqana";
     case GOD_WU_JIAN:       return "Wu Jian";

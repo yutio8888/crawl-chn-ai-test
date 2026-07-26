@@ -4418,7 +4418,7 @@ If you tried to rewind gears in your present state, you'd only break them.
 以你现在的状态试图重绕齿轮的话，你只会把它们弄坏。
 %%%%
 Ignis
-伊格尼斯
+曳焰
 %%%%
  illusion
 的幻象
@@ -4906,7 +4906,7 @@ Kikubaaqudgha
 奇库巴库哈
 %%%%
 Kikubaaqudgha's malice focuses upon you.
-库巴库德加的恶意聚焦在你身上。
+奇库巴库哈的恶意聚焦在你身上。
 %%%%
 Killing monsters will force the Abyss to allow you passage.
 击杀怪物将迫使深渊允许你通过。
@@ -10121,7 +10121,7 @@ You hear a triple crossbow go thunk-thunk-thunk.
 你听到三弦弩“咚、咚、咚”地连响三声。
 %%%%
 You hear Kikubaaqudgha cackling.
-你听到库巴库德加咯咯地笑。
+你听到奇库巴库哈咯咯地笑。
 %%%%
 You hear strange and distant voices.
 你听到了一阵奇怪而遥远的声音。
@@ -10148,7 +10148,7 @@ You insert the %s rune into the lock.
 你将%s符文插入锁中。
 %%%%
 You invoke the name of Kikubaaqudgha!
-你唤起了库巴库德加之名！
+你唤起了奇库巴库哈之名！
 %%%%
 You jump in place.
 你在原地跳了一下。
@@ -14308,6 +14308,9 @@ Bringer of Blasphemy
 Toy
 玩具
 %%%%
+god title|Meek
+温顺者
+%%%%
 Sorcerer's Apprentice
 术士学徒
 %%%%
@@ -14407,8 +14410,11 @@ Troglodyte
 Angry Troglodyte
 愤怒的穴居者
 %%%%
+god title|Frenzied
+狂乱者
+%%%%
 @Genus@ of Prey
-掠食@Genus@
+待宰的@Genus@
 %%%%
 Rampant
 暴怒者
@@ -14533,6 +14539,9 @@ Scum
 Squelcher
 踩踏者
 %%%%
+god title|Ooze
+软泥
+%%%%
 Slime Creature
 史莱姆生物
 %%%%
@@ -14592,6 +14601,9 @@ Timeless
 %%%%
 Star-crossed
 厄运缠身者
+%%%%
+god title|Cursed
+受诅咒者
 %%%%
 Initiated
 入门者
@@ -14666,7 +14678,7 @@ Unspoiled
 @Adj@小灾
 %%%%
 Lightning Rod
-雷击杖
+避雷针
 %%%%
 @Adj@ Disaster
 @Adj@灾难
@@ -30849,7 +30861,7 @@ Advanced
 高级
 %%%%
 Recite
-诵经
+吟诵
 %%%%
 Divine Shield
 神圣护盾
@@ -30885,7 +30897,7 @@ Idealise
 理想化
 %%%%
 Imprison
-禁锢
+监禁
 %%%%
 Line Pass
 穿行
@@ -30909,7 +30921,7 @@ Vessel of Slaughter
 杀戮容器
 %%%%
 Vitalisation
-活力化
+活力再生
 %%%%
 Wall Jump
 蹬墙跳
@@ -31086,7 +31098,7 @@ Fathomless Shackles
 深不可测的枷锁
 %%%%
 Grow Ballistomycete
-生长弩菌
+生长孢子炮菌
 %%%%
 Grow Oklob
 生长奥克罗布
@@ -38292,7 +38304,7 @@ status|shroud timeout
 黏液护罩破损
 %%%%
 status|sign of ruin
-毁灭征兆
+毁灭印记
 %%%%
 status|silenced
 沉默
@@ -38487,7 +38499,7 @@ acrobat
 杂技
 %%%%
 spell or ability title|Sign of Ruin
-毁灭征兆
+毁灭印记
 %%%%
 spell title|Sting
 毒刺
@@ -40107,7 +40119,7 @@ efficient metabolism
  你可以用<w>%s</w>检查它，然后按<w>%s</w>来查看其通往的位置。
 %%%%
  powers are based on %s instead of Invocations skill.
- 能力基于 %s 而非祈祷技能。
+ 能力基于 %s 而非祈神技能。
 %%%%
 %s stares at you suspiciously for a moment, then relaxes.
 %s怀疑地凝视了你一会儿，然后放松了下来。

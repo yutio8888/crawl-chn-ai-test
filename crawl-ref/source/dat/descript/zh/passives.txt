@@ -74,7 +74,7 @@ archmagi passive
 channel magic passive
 
 当你成功施法时，有可能重新获得施法时所消耗的魔力；
-当你施法失败时，总是能重新获得所消耗的魔力。
+当你发生施法失误时，总是能重新获得所消耗的魔力。
 %%%%
 infuse magic passive
 

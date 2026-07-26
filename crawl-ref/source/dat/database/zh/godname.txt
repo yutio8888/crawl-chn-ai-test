@@ -5,7 +5,7 @@ Zin lastname
 %%%%
 Yredelemnul lastname
 
-黑暗神伊莱德莱姆努尔
+堕落者伊莱德莱姆努尔
 %%%%
 Okawaru lastname
 
@@ -45,7 +45,7 @@ Cheibriados lastname
 %%%%
 Ashenzari lastname
 
-束缚者艾申扎利
+被缚者艾申扎利
 %%%%
 Dithmenos lastname
 
@@ -53,7 +53,7 @@ Dithmenos lastname
 %%%%
 Nemelex Xobeh lastname
 
-杂耍者尼姆雷斯·索布
+诡术者尼姆雷斯·索布
 %%%%
 Gozag lastname
 
@@ -81,7 +81,7 @@ Hepliaklqana lastname
 %%%%
 Ignis lastname
 
-伊格尼斯，曳焰
+曳焰，垂死之火
 %%%%
 Wu Jian lastname
 

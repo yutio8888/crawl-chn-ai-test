@@ -74,15 +74,9 @@ Xom scenery generic
 
 佐姆略略地接触你周围的环境。
 
-佐姆给你的环境加入了一些个人元素。
-
 佐姆抱怨景色不够好。
 
 佐姆改变了你周围的地牢环境。
-
-“好了，这看起来就更好了。”
-
-“只是一个小小的改进……”
 %%%%
 ##################
 # 佐姆的恶意
@@ -273,6 +267,8 @@ Xom good mutations
 有那么一会儿，佐姆的力量触动到了你。
 
 你听到佐姆疯狂的咯咯笑声。
+
+伴随着一阵 [@rainbow_colour@|@misc_colour@] 光芒，佐姆重塑了你的身体。
 %%%%
 Xom random mutations
 
@@ -283,6 +279,8 @@ Xom random mutations
 有那么一会儿，佐姆的力量轻拂过你。
 
 你听到佐姆慈爱的轻笑声。
+
+伴随着一阵 [@rainbow_colour@|@misc_colour@] 光芒，佐姆重塑了你的身体。
 %%%%
 Xom snakes to sticks
 
@@ -305,6 +303,9 @@ Xom destruction
 佐姆激发了巨大的爆炸。
 
 佐姆将灾难倾泻而下！
+
+w:5
+佐姆猛地打了个喷嚏。
 
 @Xom fake destruction@
 %%%%
@@ -341,6 +342,8 @@ Xom resurrection
 
 “玩具，你先别死在我的眼前！”
 
+在一切变成 @mono_colour@ 之前，佐姆救了你。
+
 w:1
 “再[活|试|出发]一次。”
 %%%%
@@ -348,7 +351,11 @@ Xom repel stairs
 
 佐姆改变了场景。
 
-佐姆戳了戳附近的一个楼梯。
+佐姆戳了戳附近的 @staircase@。
+
+佐姆推了推附近的 @staircase@。
+
+佐姆拉了拉附近的 @staircase@。
 
 “抓到你了！”
 
@@ -496,9 +503,9 @@ Ignis elemental wrath
 
 “进攻，我最后的坚定仆从！”
 
-伊格尼斯哀号着，狂怒倾泻而出！
+曳焰哀号着，狂怒倾泻而出！
 
-伊格尼斯召唤火之灵来毁灭你！
+曳焰召唤火之灵来毁灭你！
 
 “燃烧吧！烧到什么都不剩！”
 
@@ -541,7 +548,7 @@ Cheibriados death
 %%%%
 Dithmenos welcome
 
-迪斯姆诺说：铺开永恒的黑夜。
+迪斯姆诺说：行于黑暗之处。
 %%%%
 Elyvilon penance
 
@@ -577,11 +584,11 @@ Hepliaklqana death
 %%%%
 Ignis welcome
 
-伊格尼斯的火焰柔和地温暖着你。
+曳焰的火焰柔和地温暖着你。
 %%%%
 Ignis death
 
-伊格尼斯寂灭了，和你一起走向死亡。
+曳焰寂灭了，和你一起走向死亡。
 %%%%
 Jiyva welcome
 
@@ -604,7 +611,7 @@ Jiyva death corpse nonliving
 %%%%
 Kikubaaqudgha welcome
 
-奇库巴库哈说：散播无尽的折磨和黑暗！
+奇库巴库哈说：散播无尽的毁灭与绝望！
 %%%%
 Kikubaaqudgha death
 
@@ -721,11 +728,11 @@ Sif Muna welcome
 %%%%
 the Shining One penance
 
-光明神说：成为一名殉道者才有可能洗去你的罪恶！
+光辉者说：成为一名殉道者才有可能洗去你的罪恶！
 %%%%
 the Shining One welcome
 
-光明神说：带领光明力量走向胜利！
+光辉者说：带领光明力量走向胜利！
 %%%%
 Trog penance
 
@@ -753,7 +760,7 @@ Uskayaw death corpse nonliving
 %%%%
 Vehumet welcome
 
-维胡梅特说：让一切在深渊之火中终结吧！
+维胡梅特说：让一切在地狱之火中终结吧！
 %%%%
 Wu Jian welcome
 
@@ -847,6 +854,8 @@ _trout_species_rare_
 
 一条虚假的
 
+一条湿润的
+
 w:2
 一条基尔戈
 %%%%
@@ -927,14 +936,10 @@ w:40
 
 "再来！再来！再来！"
 
-"屠杀。他们。全部！"
+“屠杀。他们。全部！”
 
-w:1
-"献上你的鲜血，凡人！"
-
-"马科列布等待着你！"
-
-"你的痛苦就是我的力量！"
+w:5
+“一切都该死！”
 
 %%%%
 Xom amulet slot
@@ -967,15 +972,10 @@ Xom bazaar trip
 w:5
 佐姆为你提供你所需要的一切（依佐姆那无懈可击的神圣判断）。
 
-佐姆一时兴起，决定带你观光。
+世界疯狂旋转，佐姆欢快的笑声回荡四周。
 
-w:1
-佐姆送你进入了一个充满无底折扣的领域。每一个都令人沉醉。
-
-佐姆喊道："购物时间！"
-
-w:5
-佐姆对当地经济产生了浓厚兴趣。
+w:2
+“凡人，你的钱袋在自己的小天地里过得太舒服了！”
 
 %%%%
 Xom boots slot
@@ -1042,10 +1042,6 @@ w:30
 
 w:1
 佐姆向副本的墙壁揭示了那伟大的毁灭真理！
-
-佐姆朝副本的结构眨了眨眼。
-
-佐姆专注于数万码外一颗遥远的石英晶体——副本隆隆作响。
 
 %%%%
 Xom fast forward
@@ -1115,11 +1111,9 @@ Xom feature shallow water
 
 @The_feature@ 短暂地闪烁着 @any_colour@。
 
-@The_feature@ 短暂地被 @any_colour_pattern@ 覆盖了。
+@The_feature@ 短暂地沸腾起来。
 
-@The_feature@ 短暂地被 @any_glowing_colour_pattern@ 覆盖了。
-
-@The_feature@ 短暂地呈现出玻璃般的透明。
+@The_feature@ 短暂地冻结了。
 
 %%%%
 Xom feature statuelike
@@ -1145,12 +1139,9 @@ Xom feature stone arch
 
 @The_feature@ 的另一侧短暂地显示出一面被 @any_colour_pattern@ 覆盖的半透明墙壁。
 
-@The_feature@ 的另一侧短暂地显示出一个充满闪烁 @any_glowing_colour@ 球体的洞穴。
+@The_feature@ 的另一侧短暂地显示出一面被 @any_glowing_colour_pattern@ 覆盖的半透明墙壁。
 
-@The_feature@ 微弱地回响着，仿佛来自另一边。
-
-w:1
-@The_feature@ 提供了一个诱人的门，通往一个被 @any_glowing_colour_pattern@ 覆盖的世界。
+@The_feature@ 的另一侧短暂地显示出一面被 @any_graffiti@ 覆盖的半透明墙壁。
 
 %%%%
 Xom feature translucent wall
@@ -1206,17 +1197,13 @@ Xom flora ring
 
 佐姆煽动邻近的地板霉菌进行一场戏剧性的进化。
 
-"活了！活了！"
+“活了！活了！”
 
 w:5
-佐姆宣告你的环是任何常绿园艺师的最佳选择。
+佐姆给这道地牢大餐添了些新鲜蔬菜。
 
-佐姆向你周围的活物输送了些许可疑的营养物。
-
-佐姆赠送给你一株活生生的风滚草。
-
-w:1
-佐姆将你的一件 @your_item@ 嫁接到了一株特别活泼的玫瑰上，就在你的背包里。
+w:5
+佐姆在地上种了些魔豆。
 
 %%%%
 Xom force lance fleet
@@ -1230,11 +1217,8 @@ Xom force lance fleet
 w:1
 佐姆发射了整整一火车的弹幕！
 
-佐姆的躁狂多动症创造了一支完整的能量方阵！
-
-佐姆抓了一把爆米花，并发起了一场力量闪电战。你付钱。
-
-"哇！哇！哇！哇！哇！"
+w:1
+佐姆奏响了气势恢宏的管风琴和弦！
 
 %%%%
 Xom gizmo slot
@@ -1309,15 +1293,13 @@ Xom inventory plural
 
 @your_item@ 中的一件短暂地闪烁了 @any_colour@。
 
-@your_item@ 中的一件短暂地闪烁了 @any_colour_pattern@。
+@Your_item@ 短暂地发光。
 
-@your_item@ 中的一件短暂地闪烁了 @any_glowing_colour_pattern@。
+@Your_item@ 短暂地发出 @any_glowing_colour@ 光芒。
 
-@your_item@ 中的一件短暂地获得了奇怪的颜色。
+@Your_item@ 短暂地振动。
 
-@your_item@ 中的一件短暂地失去了颜色。
-
-@your_item@ 中的一件短暂地浮起了。
+@Your_item@ 短暂地闪烁着 @any_colour@。
 
 %%%%
 Xom inventory singular
@@ -1361,16 +1343,13 @@ Xom mass charm
 
 佐姆抓住了一把傀儡线。
 
-"想要更多朋友吗，我的孩子？"
+“想要更多朋友吗，我的孩子？”
 
 w:5
-佐姆指挥了一场群众快闪。
+佐姆以 @_trout_species_@ 鳟鱼为诱饵，收买了附近的敌人。
 
-佐姆表示大家应该努力相处。或者至少一起打你。
-
-佐姆打了一个响指——又一根傀儡线就位。
-
-佐姆提出了一个提议。无法拒绝。
+w:5
+佐姆之手戳了戳在场众生的心智。
 
 %%%%
 Xom mean door ring
@@ -1544,10 +1523,8 @@ Xom torment all
 
 佐姆那恶意的注意力短暂地转向了你的处境。
 
-佐姆[欢快地|幸灾乐祸地][收割了痛苦|探索了你的生理极限]。
-
 w:5
-佐姆短暂地被你的生存意志逗乐了。
+佐姆之手戳了戳在场所有灵魂。
 
 %%%%
 Xom unarmed one hand
@@ -1623,22 +1600,18 @@ dance_name
 
 吉格
 
-华尔兹
+排舞
+
+玛卡雷娜舞
 
 探戈
 
-萨尔萨
+踢踏舞
 
-波尔卡
-
-加洛普
-
-康康
+华尔兹
 
 %%%%
 _xom_number_
-
-一
 
 两
 
@@ -1646,16 +1619,9 @@ _xom_number_
 
 四
 
-w:5
 五
 
 六
-
-w:2
-七
-
-w:1
-八
 
 %%%%
 Xom send in the clones
@@ -1676,6 +1642,12 @@ w:20
 
 w:20
 佐姆好奇地将能量从你的身体中导出了。
+
+佐姆捡起你的心智，却不小心把它摔在地上。
+
+佐姆让你头痛欲裂。
+
+“你不需要这个，对吧？”
 %%%%
 # 仅在成功召唤出召唤物时显示
 Xom drained brain

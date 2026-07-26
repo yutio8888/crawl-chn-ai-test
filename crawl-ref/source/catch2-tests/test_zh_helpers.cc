@@ -187,6 +187,21 @@ std::string sample_to_hex(const std::string& s)
     return hex;
 }
 
+std::string mask_textdb_template_tokens(const std::string& text)
+{
+    std::string masked = text;
+    size_t begin = masked.find('@');
+    while (begin != std::string::npos)
+    {
+        const size_t end = masked.find('@', begin + 1);
+        if (end == std::string::npos)
+            break;
+        masked.replace(begin, end - begin + 1, "#");
+        begin = masked.find('@', begin + 1);
+    }
+    return masked;
+}
+
 void emit_jsonl_issue(const std::string& suite,
                       const std::string& enumerator,
                       int sequence,
