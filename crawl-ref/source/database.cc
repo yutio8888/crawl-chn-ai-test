@@ -1524,9 +1524,7 @@ static canonical_weighted_lookup _canonical_weighted_lookup(
                 return entry.canonical_key < candidate;
             });
         if (found == entries.end() || found->canonical_key != canonical_key)
-        {
             return nullptr;
-        }
         // Only a zero-length TextDB value is MISSING before the chooser. A
         // non-empty body that parses to no variants must return its BUG text.
         if (found->body_empty)

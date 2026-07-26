@@ -1141,9 +1141,11 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
             colour_name = T_(colour_to_str(colour, true).c_str());
 
         if (flying)
+        {
             description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s."),
                                         name.c_str(), colour_name.c_str(),
                                         body.c_str(), wings.c_str(), head);
+        }
         else
             description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s."),
                                         name.c_str(), colour_name.c_str(),
@@ -4090,9 +4092,7 @@ command_type describe_item_popup(const item_def &item,
 
     string quote;
     if (is_unrandom_artefact(item) && item.is_identified())
-    {
         quote = getQuoteString(get_unrand_name_en(item));
-    }
     else
         quote = getQuoteString(item.name(DESC_DBNAME, true, false, false));
 
@@ -4635,9 +4635,7 @@ static string _player_spell_desc(spell_type spell)
         if (failure_rate_to_int(raw_spell_fail(spell)) <= 20)
             description << T_("Your servitor can be imbued with this spell.\n");
         else
-        {
             description << (T_("Your servitor could be imbued with this spell if your spell success rate were higher.\n"));
-        }
     }
 
     if (spell == SPELL_IRRADIATE)
@@ -5870,8 +5868,10 @@ static string _monster_notice_chance(const monster_info& mi)
 
     string pronoun = uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE));
     if (mi.pronoun_plurality())
+    {
         result << make_stringf(T_("%s have a %d%% chance to notice you each turn.\n"),
                               pronoun.c_str(), chance);
+    }
     else
         result << make_stringf(T_("%s has a %d%% chance to notice you each turn.\n"),
                               pronoun.c_str(), chance);
@@ -6025,9 +6025,11 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
     if (you.duration[DUR_BLIND])
     {
         if (verbose)
+        {
             result << (T_(" (while you are blinded and from distance "))
                    << distance_from
                    << (T_(")"));
+        }
         else
             result << (T_(" at this distance"));
     }
@@ -6094,8 +6096,10 @@ static void _describe_mons_to_hit(const monster_info& mi, ostringstream &result)
     const int hit_chance = beat_ev_chance * beat_sh_chance / 100;
     string pronoun = uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE));
     if (mi.pronoun_plurality())
+    {
         result << make_stringf(T_("%s have about %d%% to hit you.\n"),
                               pronoun.c_str(), hit_chance);
+    }
     else
         result << make_stringf(T_("%s has about %d%% to hit you.\n"),
                               pronoun.c_str(), hit_chance);
@@ -6646,16 +6650,18 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     {
         const vector<string> unusual_items = mi.get_unusual_items();
 
-        
+
         string str;
         string pronoun_upper = uppercase_first(pronoun);
         if (!mons_class_is_animated_weapon(mi.type))
         {
             if (plural)
+            {
                 str = make_stringf(T_("%s have an unusual item: %s"),
                                    pronoun_upper.c_str(),
                                    comma_separated_line(unusual_items.begin(),
                                                         unusual_items.end()).c_str());
+            }
             else
                 str = make_stringf(T_("%s has an unusual item: %s"),
                                    pronoun_upper.c_str(),
@@ -6665,8 +6671,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             if (plural)
+            {
                 str = make_stringf(T_("%s are an unusual item"),
                                    pronoun_upper.c_str());
+            }
             else
                 str = make_stringf(T_("%s is an unusual item."),
                                    pronoun_upper.c_str());
@@ -6736,8 +6744,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         && get_resist(resist, MR_RES_COLD) <= 0)
     {
         if (zh)
+        {
             result << uppercase_first(pronoun)
                    << "是冷血动物，可能被寒冷攻击减速。\n";
+        }
         else
             result << uppercase_first(pronoun)
                    << " " << conjugate_verb(T_("are"), plural)
@@ -6775,8 +6785,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     if (mons_class_flag(mi.type, M_INSUBSTANTIAL))
     {
         if (zh)
+        {
             result << uppercase_first(pronoun)
                    << "是无实体的，免疫缠绕。\n";
+        }
         else
             result << uppercase_first(pronoun) << " "
                    << conjugate_verb(T_("are"), plural)
@@ -6785,8 +6797,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     else if (mons_class_flag(mi.type, M_AMORPHOUS))
     {
         if (zh)
+        {
             result << uppercase_first(pronoun)
                    << "是无定形的，免疫缠绕。\n";
+        }
         else
             result << uppercase_first(pronoun) << " "
                    << conjugate_verb(T_("are"), plural)
@@ -6834,8 +6848,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     }
 
     if (mi.airborne())
+    {
         result << uppercase_first(pronoun)
                << (T_(" can fly.\n"));
+    }
 
     if (in_good_standing(GOD_ZIN, 0) && !mi.pos.origin() && monster_at(mi.pos))
     {
@@ -6884,13 +6900,17 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         !mons_class_is_stationary(mi.type))
     {
         if (mon_shape_is_humanoid(get_mon_shape(mi.type)))
+        {
             result << uppercase_first(pronoun)
                    << (T_(" can open doors.\n"));
+        }
         else
         {
             if (zh)
+            {
                 result << "尽管外表" << mi.pronoun(PRONOUN_POSSESSIVE)
                        << "，但它能开门。\n";
+            }
             else
                 result << T_("Despite ") << mi.pronoun(PRONOUN_POSSESSIVE)
                        << T_(" appearance, ") << pronoun << T_(" can open doors.\n");
@@ -7100,8 +7120,10 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         string str = make_stringf(T_(" will inflict a necromantic curse on %s foe when destroyed.\n"),
                                   mi.pronoun(PRONOUN_POSSESSIVE));
         if (curse_power > 10)
+        {
             str = make_stringf(T_(" will inflict a powerful necromantic curse on %s foe when destroyed.\n"),
                                mi.pronoun(PRONOUN_POSSESSIVE));
+        }
         inf.body << str;
     }
 
@@ -7141,8 +7163,10 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
             // Chinese uses complete sentences instead of English pronoun and
             // verb fragments, which would otherwise be separated by spaces.
             if (mi.is(MB_ABJURABLE))
+            {
                 inf.body << T_("\nThis monster has been temporarily summoned to this "
                                "location.\n");
+            }
             else if (mi.is(MB_MINION))
                 inf.body << T_("\nThis monster has been created by magic and is "
                                "temporary.\n");
