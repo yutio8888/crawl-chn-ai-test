@@ -121,6 +121,79 @@ class MonsterNameSsotTests(unittest.TestCase):
         self.assertEqual(667, result.monster_count)
         self.assertEqual((), result.findings)
 
+    def test_issue_24_inventory_cross_checks_production_enum(self) -> None:
+        payload = audit.build_inventory()
+        enum_identities = audit._active_monster_enum_identities()
+        rows = payload["rows"]
+        self.assertEqual(len(enum_identities), payload["count"])
+        self.assertEqual(
+            {f"monster:{identity}" for identity in enum_identities},
+            {row["identity"] for row in rows},
+        )
+        self.assertEqual(
+            payload["definition_count"] + payload["compatibility_count"],
+            payload["count"],
+        )
+        self.assertFalse(audit.inventory_has_violations(payload))
+        compatibility_rows = [
+            row for row in rows
+            if row["lifecycle"] == "compatibility_enum"
+        ]
+        self.assertTrue(compatibility_rows)
+        for row in compatibility_rows:
+            self.assertIsNone(row["english_source_name"])
+            self.assertIsNone(row["current_chinese_name"])
+            self.assertIsNone(row["english_description"])
+            self.assertIsNone(row["chinese_description"])
+
+    def test_active_enum_excludes_aliases_and_post_num_sentinels(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "monster-type.h"
+            path.write_text(
+                "enum monster_type {\n"
+                " MONS_ALPHA,\n"
+                " MONS_0 = MONS_ALPHA,\n"
+                " MONS_BETA,\n"
+                " NUM_MONSTERS,\n"
+                " MONS_NO_MONSTER = 1000,\n"
+                "};\n",
+                encoding="utf-8",
+            )
+            identities = audit._active_monster_enum_identities(path)
+        self.assertEqual(["MONS_ALPHA", "MONS_BETA"], identities)
+
+    def test_review_coverage_requires_one_terminal_conclusion(self) -> None:
+        payload = {
+            "rows": [
+                {"identity": "monster:MONS_ALPHA"},
+                {"identity": "monster:MONS_BETA"},
+            ]
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "results.md"
+            path.write_text(
+                "| 身份 | 证据 | 终态结论 |\n"
+                "|---|---|---|\n"
+                "| `monster:MONS_ALPHA` | evidence | keep |\n"
+                "| `monster:MONS_BETA` | evidence | defer terminology: removed |\n",
+                encoding="utf-8",
+            )
+            result = audit.review_coverage(payload, path)
+            self.assertTrue(result["coverage_equal"])
+
+            path.write_text(
+                "| 身份 | 证据 | 终态结论 |\n"
+                "|---|---|---|\n"
+                "| `monster:MONS_ALPHA` | evidence | unsure |\n",
+                encoding="utf-8",
+            )
+            result = audit.review_coverage(payload, path)
+        self.assertFalse(result["coverage_equal"])
+        self.assertEqual(
+            ["monster:MONS_ALPHA"], result["invalid_terminal_conclusions"]
+        )
+        self.assertEqual(["monster:MONS_BETA"], result["missing_evidence_cards"])
+
     def test_reverse_duplicate_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             fixture = Fixture(Path(tmp))

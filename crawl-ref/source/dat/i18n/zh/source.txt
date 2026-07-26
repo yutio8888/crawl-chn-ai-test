@@ -20956,7 +20956,7 @@ Inventor
 发明家
 %%%%
 Jelly
-凝胶
+果冻怪
 %%%%
 Knight
 骑士
@@ -21598,7 +21598,7 @@ kobold fleshcrafter
 狗头人血肉匠师
 %%%%
 kobold geomancer
-狗头人地理术士
+狗头人大地术士
 %%%%
 large abomination
 大型畸变体
@@ -21730,7 +21730,7 @@ raiju
 雷兽
 %%%%
 revenant soulmonger
-灵魂贩子亡魂
+贩魂归来者
 %%%%
 sacred lotus
 圣莲
@@ -21745,7 +21745,7 @@ scrub nettle
 矮荨麻
 %%%%
 searing wretch
-灼烧恶徒
+灼炎苦尸
 %%%%
 seismosaurus
 地震龙
@@ -31773,7 +31773,7 @@ chimera
 奇美拉
 %%%%
 chonchon
-春春鸟
+飞头妖
 %%%%
 clay golem
 黏土魔像
@@ -31809,7 +31809,7 @@ dart slug
 飞镖蛞蝓
 %%%%
 death cob
-死亡天鹅
+死亡玉米棒
 %%%%
 death drake
 死亡幼龙
@@ -32028,7 +32028,7 @@ eye of draining
 吸取之眼
 %%%%
 faun
-半羊人
+牧神
 %%%%
 felid
 猫
@@ -32343,7 +32343,7 @@ lurking horror
 潜伏恐怖
 %%%%
 malarious merfolk avatar
-疟疾的人鱼化身
+疟病人鱼化身
 %%%%
 manticore
 蝎尾狮
@@ -32532,7 +32532,7 @@ player
 玩家
 %%%%
 player ghost
-玩家幽灵
+玩家鬼魂
 %%%%
 player illusion
 玩家幻象
@@ -32703,7 +32703,7 @@ shock serpent
 电击蛇
 %%%%
 sickly merfolk siren
-病弱的人鱼塞壬
+病弱人鱼塞壬
 %%%%
 silver star
 银色之星
@@ -32736,7 +32736,7 @@ soul eater
 噬魂者
 %%%%
 soul wisp
-灵魂之息
+灵魂微光
 %%%%
 spark wasp
 火花蜂
@@ -32973,10 +32973,10 @@ yak
 牦牛
 %%%%
 yaktaur
-牦牛人
+牦牛人马
 %%%%
 yaktaur captain
-牦牛人头领
+牦牛人马头领
 %%%%
 yellow draconian
 黄龙人

@@ -176,16 +176,17 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
-### D-A-010 — merfolk → 鱼人
+### D-A-010 — merfolk → 人鱼
 
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-05
 - **Source**: Monster name terminology batch
-- **Choice**: 鱼人
-- **Rejected**: 人鱼 (美人鱼 — too mermaid-associated, gendered)
-- **Rationale**: 鱼人 captures the fish-human hybrid nature. Murloc-style naming fits DCSS's merfolk design.
-- **Examples**: merfolk aquamancer → 鱼人水法师, merfolk impaler → 鱼人穿刺者, merfolk siren → 鱼人塞壬
+- **Choice**: 人鱼
+- **Rejected**: 鱼人（与现行名称、术语表及人鱼职业系列不一致）
+- **Rationale**: 人鱼是现行 `source.txt` 与术语表采用的族名；职业和
+  特殊个体均以前缀方式继承，避免名称与描述消费者分裂。
+- **Examples**: merfolk aquamancer → 人鱼水法师, merfolk impaler → 人鱼穿刺者, merfolk siren → 人鱼塞壬
 
 ---
 
@@ -355,7 +356,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Choice**: 死亡
 - **Rejected**: 死 (too short, parsing ambiguity), 亡 (too literary, ambiguous standalone)
 - **Rationale**: 死亡 is the standard undead-monster prefix. Note: standalone "death" as a spell school is translated differently (亡语), but in monster name prefixes, always use 死亡.
-- **Examples**: death cob → 死亡天鹅, death knight → 死亡骑士, deathcap → 死亡菌
+- **Examples**: death cob → 死亡玉米棒, death knight → 死亡骑士, deathcap → 死亡菌
 
 ---
 
@@ -605,7 +606,8 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-09
 - **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms] (P2)
 - **Choice**: Canonical monster orb naming pattern: `X之球`
-  - `Orb of Destruction → 毁灭之球` (no change)
+  - `Orb of Destruction → 毁灭法球` (shared spell/projectile exception;
+    governed by D-C-070)
   - `great orb of eyes → 巨眼之球` (no change)
   - `orb of entropy → 熵之球` (no change)
   - `orb of fire → 火焰之球` (no change)
@@ -613,8 +615,12 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `orb of Dispater → 迪斯帕特之球` (from 迪斯帕特之法球)
   - `Orb of Electricity → 电光球` (kept — short punchy spell name, not a monster entity)
   - `Orb of Zot → 佐特宝珠` (kept — unique key game object, not a monster)
-- **Rejected**: `X法球` (arcane orb, reads as a spell school rather than monster); mixed patterns (inconsistent genus-species feel)
-- **Rationale**: `X之球` is the dominant pattern (6 of 8 cases). Standardizing eliminates the exception without affecting the two justified outliers (Orb of Zot as a unique game object, Orb of Electricity as a spell name).
+- **Rejected**: using `X法球` as a general monster-orb pattern; mixed entity
+  patterns without a consumer-specific reason.
+- **Rationale**: `X之球` is the monster-entity pattern. `Orb of Destruction`
+  is a spell/projectile display name rather than a monster entity and therefore
+  follows the later D-C-070 ruling `毁灭法球`; Orb of Zot and Orb of
+  Electricity retain their own object/spell conventions.
 - **Scope**: All monster orbs (entity names, not spell names)
 - **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
@@ -2858,6 +2864,42 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-092 — Monster full-inventory review
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-26
+- **Scope**: 795 个具体 `monster_type` 身份；671 个现行定义、124 个
+  仅保留枚举兼容的身份
+- **Choice**: 保留 560 项现行译文；修正 13 个现行显示名，其中 4 项
+  同时重译描述；另重译 98 项描述。124 个无现行定义或显示消费者的兼容
+  身份不作推测性翻译，记为 `defer implementation`。
+- **Name corrections**: `jelly → 果冻怪`、`death cob → 死亡玉米棒`、
+  `yaktaur → 牦牛人马`、`yaktaur captain → 牦牛人马头领`、
+  `player ghost → 玩家鬼魂`、`faun → 牧神`、
+  `revenant soulmonger → 贩魂归来者`、`soul wisp → 灵魂微光`、
+  `kobold geomancer → 狗头人大地术士`、
+  `searing wretch → 灼炎苦尸`、`malarious merfolk avatar → 疟病人鱼化身`
+  与 `sickly merfolk siren → 病弱人鱼塞壬`，以及民俗实体
+  `chonchon → 飞头妖`。
+- **Rationale**: 名称以现行术语表、genus/species 和实体描述共同裁定；
+  描述必须保留英文中的生命值、距离减伤、死亡触发、抗魔、法术强化、
+  位移和状态效果等玩家可见机制。兼容枚举与当前 SourceDB 同名不能证明
+  存在现行怪物消费者。
+- **Evidence**: `docs/monster-review-plan.md` 与
+  `docs/monster-review-results.md`；完整原始字段由
+  `.claude/scripts/monster_name_ssot.py --inventory-output` 确定性重建。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/monsters.txt`
+  - `docs/monster-review-plan.md`
+  - `docs/monster-review-results.md`
+  - `.claude/scripts/monster_name_ssot.py`
+  - `.claude/scripts/tests/test_monster_name_ssot.py`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3481,3 +3523,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-089 | Spell name review — 独立批次 B1 | 10 current；1 rename + 2 description fixes | active |
 | D-C-090 | Spell name review — 独立批次 B2 | 30 current；2 renames + 10 description fixes | active |
 | D-C-091 | Spell name review — 独立终批 B3 | 16 active + 2 internal + 2 dummy + 31 axed；1 rename + 13 description fixes | active |
+| D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |

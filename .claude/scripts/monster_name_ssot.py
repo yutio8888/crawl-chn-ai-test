@@ -9,12 +9,32 @@ and quotations are checked for every normalized monster name.
 
 from __future__ import annotations
 
+import argparse
+from collections import Counter
+import hashlib
+import json
 import os
 import re
+import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Mapping
+
+
+ROOT = Path(__file__).resolve().parents[2]
+SRC = ROOT / "crawl-ref" / "source"
+MONSTER_ENUMS = SRC / "monster-type.h"
+MONSTER_DATA_DIR = SRC / "dat" / "mons"
+ZH_SOURCE = SRC / "dat" / "i18n" / "zh" / "source.txt"
+EN_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "monsters.txt"
+ZH_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "zh" / "monsters.txt"
+ZH_MONSTER_TITLES = SRC / "dat" / "database" / "zh" / "montitle.txt"
+GLOSSARY = ROOT / "docs" / "glossary.md"
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from audit_item_name_inventory import active_source  # noqa: E402
 
 
 # These quotation entries deliberately use a literary, historical, religious,
@@ -68,8 +88,11 @@ class AuditInputError(ValueError):
 @dataclass(frozen=True)
 class MonsterDefinition:
     en_name: str
+    enum_identity: str
     yaml_file: str
     is_unique: bool
+    flags: tuple[str, ...]
+    fields: Mapping[str, str]
 
 
 @dataclass(frozen=True)
@@ -87,6 +110,18 @@ class AuditResult:
     findings: tuple[str, ...]
 
 
+def _sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _relative(path: str | Path) -> str:
+    resolved = Path(path).resolve()
+    try:
+        return str(resolved.relative_to(ROOT))
+    except ValueError:
+        return str(resolved)
+
+
 def _read(path: str) -> str:
     try:
         with open(path, "r", encoding="utf-8", errors="strict") as stream:
@@ -95,9 +130,13 @@ def _read(path: str) -> str:
         raise AuditInputError(f"cannot read required input '{path}': {exc}") from exc
 
 
-def _parse_required_textdb(path: str, *, trim_keys: bool = True) -> dict[str, str]:
-    """Parse one required TextDB with database.cc `_parse_text_db` semantics."""
-    content = _read(path)
+def _parse_textdb_content(
+    path: str,
+    content: str,
+    *,
+    trim_keys: bool = True,
+) -> dict[str, str]:
+    """Parse TextDB content with database.cc `_parse_text_db` semantics."""
     if "\0" in content:
         raise AuditInputError(f"required TextDB contains an embedded NUL: '{path}'")
     if content.startswith("\ufeff"):
@@ -142,6 +181,99 @@ def _parse_required_textdb(path: str, *, trim_keys: bool = True) -> dict[str, st
     return entries
 
 
+def _parse_required_textdb(path: str, *, trim_keys: bool = True) -> dict[str, str]:
+    """Parse one required TextDB with database.cc `_parse_text_db` semantics."""
+    return _parse_textdb_content(path, _read(path), trim_keys=trim_keys)
+
+
+def _parse_yaml_top_level(path: str, content: str) -> dict[str, str]:
+    """Return deterministic raw values for the mon-gen YAML subset.
+
+    The production generator owns YAML decoding. The audit only needs complete
+    top-level evidence and therefore preserves each field as normalized source
+    text instead of implementing a second semantic YAML parser.
+    """
+    fields: dict[str, str] = {}
+    current = None
+    value_lines: list[str] = []
+
+    def flush() -> None:
+        nonlocal current, value_lines
+        if current is not None:
+            if current in fields:
+                raise AuditInputError(
+                    f"monster YAML has duplicate top-level field {current!r}: '{path}'"
+                )
+            fields[current] = "\n".join(value_lines).strip()
+        current = None
+        value_lines = []
+
+    for line in content.splitlines():
+        if not line or line.startswith("#"):
+            if current is not None and line:
+                value_lines.append(line)
+            continue
+        match = re.match(r"^([a-z][a-z0-9_]*):(?:\s*(.*))?$", line)
+        if match:
+            flush()
+            current = match.group(1)
+            value_lines = [match.group(2) or ""]
+        elif current is not None and (line.startswith(" ") or line.startswith("\t")):
+            value_lines.append(line)
+        else:
+            raise AuditInputError(
+                f"unsupported top-level monster YAML syntax in '{path}': {line!r}"
+            )
+    flush()
+    if not fields:
+        raise AuditInputError(f"monster YAML contains no fields: '{path}'")
+    return fields
+
+
+def _quoted_scalar(fields: Mapping[str, str], key: str, path: str) -> str | None:
+    raw = fields.get(key)
+    if raw is None:
+        return None
+    match = re.fullmatch(r'"([^"\n]+)"', raw.strip())
+    if not match:
+        raise AuditInputError(
+            f"monster YAML {key} must be one non-empty quoted string: '{path}'"
+        )
+    return match.group(1)
+
+
+def _enum_scalar(fields: Mapping[str, str], key: str, path: str) -> str | None:
+    raw = fields.get(key)
+    if raw is None:
+        return None
+    value = raw.strip()
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", value):
+        raise AuditInputError(
+            f"monster YAML {key} must be an enum token: '{path}'"
+        )
+    return value.lower()
+
+
+def _flag_values(fields: Mapping[str, str], path: str) -> tuple[str, ...]:
+    raw = fields.get("flags", "[]").strip()
+    match = re.fullmatch(r"\[(.*?)\]", raw)
+    if not match:
+        raise AuditInputError(
+            f"monster YAML flags must be a bracketed list: '{path}'"
+        )
+    flags = tuple(sorted(
+        part.strip() for part in match.group(1).split(",") if part.strip()
+    ))
+    if any(not re.fullmatch(r"[a-z][a-z0-9_]*", flag) for flag in flags):
+        raise AuditInputError(f"monster YAML has an invalid flag: '{path}'")
+    return flags
+
+
+def _default_enum(name: str) -> str:
+    """Match util/mon-gen.py's default enum derivation exactly."""
+    return "MONS_" + name.upper().replace(" ", "_")
+
+
 def _load_monster_definitions(source_dir: str) -> list[MonsterDefinition]:
     mons_dir = os.path.join(source_dir, "dat", "mons")
     try:
@@ -159,40 +291,28 @@ def _load_monster_definitions(source_dir: str) -> list[MonsterDefinition]:
     for filename in filenames:
         path = os.path.join(mons_dir, filename)
         content = _read(path)
-        name_lines = re.findall(r"^name:\s*(.*?)\s*$", content, re.MULTILINE)
-        if len(name_lines) != 1:
+        fields = _parse_yaml_top_level(path, content)
+        name = _quoted_scalar(fields, "name", path)
+        if name is None:
             raise AuditInputError(
-                f"monster YAML must contain exactly one top-level name field: "
-                f"'{path}' has {len(name_lines)}"
+                f"monster YAML must contain exactly one top-level name field: '{path}'"
             )
-        name_match = re.fullmatch(r'"([^"\n]+)"', name_lines[0])
-        if not name_match:
+        enum_token = _enum_scalar(fields, "enum", path)
+        enum_identity = (
+            f"MONS_{enum_token.upper()}" if enum_token else _default_enum(name)
+        )
+        if not re.fullmatch(r"MONS_[A-Z0-9_]+", enum_identity):
             raise AuditInputError(
-                f"monster YAML name must be one non-empty quoted string: '{path}'"
+                f"monster YAML name requires an explicit valid enum: '{path}'"
             )
-
-        flags_lines = re.findall(r"^flags:\s*(.*?)\s*$", content, re.MULTILINE)
-        if len(flags_lines) > 1:
-            raise AuditInputError(
-                f"monster YAML has multiple top-level flags fields: '{path}'"
-            )
-        if flags_lines:
-            flags_match = re.fullmatch(r"\[(.*?)\]", flags_lines[0])
-            if not flags_match:
-                raise AuditInputError(
-                    f"monster YAML flags must be a bracketed list: '{path}'"
-                )
-            flags = {
-                part.strip()
-                for part in flags_match.group(1).split(",")
-                if part.strip()
-            }
-        else:
-            flags = set()
+        flags = _flag_values(fields, path)
         definitions.append(MonsterDefinition(
-            en_name=name_match.group(1),
+            en_name=name,
+            enum_identity=enum_identity,
             yaml_file=path,
             is_unique="unique" in flags,
+            flags=flags,
+            fields=fields,
         ))
     return definitions
 
@@ -217,6 +337,36 @@ def _canonicalize(definitions: list[MonsterDefinition]) -> dict[str, Monster]:
 
 def _rel(path: str) -> str:
     return os.path.relpath(path, os.getcwd())
+
+
+def _active_monster_enum_identities(path: Path = MONSTER_ENUMS) -> list[str]:
+    """Return concrete save-compatible identities before NUM_MONSTERS."""
+    text = active_source(path)
+    text = text.split("NUM_MONSTERS", 1)[0]
+    identities = []
+    for match in re.finditer(
+        r"^\s*(MONS_[A-Z0-9_]+)\s*(?:=\s*([^,]+))?\s*,",
+        text,
+        re.MULTILINE,
+    ):
+        identity, assignment = match.groups()
+        # MONS_0 aliases MONS_PROGRAM_BUG and is not a separate identity.
+        if assignment and re.search(r"\bMONS_[A-Z0-9_]+\b", assignment):
+            continue
+        identities.append(identity)
+    if not identities:
+        raise AuditInputError(
+            f"active monster enum inventory is empty: '{path}'"
+        )
+    duplicates = sorted(
+        identity for identity, count in Counter(identities).items()
+        if count > 1
+    )
+    if duplicates:
+        raise AuditInputError(
+            f"active monster enum inventory contains duplicates: {duplicates!r}"
+        )
+    return identities
 
 
 def _contains(text: str, name: str) -> bool:
@@ -483,12 +633,441 @@ def audit_repository(
     )
 
 
-def main() -> int:
-    if len(sys.argv) != 3 or sys.argv[1] != "--source-txt":
-        print("Usage: monster_name_ssot.py --source-txt <source.txt>", file=sys.stderr)
-        return 2
+def _textdb_duplicate_keys(path: Path, *, trim_keys: bool = True) -> list[str]:
+    content = _read(str(path))
+    keys = []
+    awaiting_key = False
+    for line in content.splitlines():
+        if line.startswith("#"):
+            continue
+        if line.startswith("%%%%"):
+            awaiting_key = True
+            continue
+        if awaiting_key:
+            key = (line.strip() if trim_keys else line).casefold()
+            if key:
+                keys.append(key)
+                awaiting_key = False
+    return sorted(
+        key for key, count in Counter(keys).items() if count > 1
+    )
 
-    source_txt = os.path.abspath(sys.argv[2])
+
+def _field_enum(fields: Mapping[str, str], key: str,
+                default: str) -> str:
+    value = fields.get(key, default).strip()
+    return f"MONS_{value.upper()}"
+
+
+def _exposure(definition: MonsterDefinition) -> str:
+    if (
+        "cant_spawn" in definition.flags
+        or definition.enum_identity.startswith(("MONS_SENSED", "MONS_TEST_"))
+        or definition.enum_identity == "MONS_PROGRAM_BUG"
+    ):
+        return "internal_or_special"
+    if definition.is_unique:
+        return "unique"
+    return "ordinary"
+
+
+def _core_facts(fields: Mapping[str, str]) -> dict[str, str | None]:
+    keys = (
+        "hd", "hp_10x", "ac", "ev", "will", "will_per_hd", "speed",
+        "energy", "holiness", "flags", "resists", "attacks", "spells",
+        "shout", "intelligence", "uses", "size", "shape", "god",
+        "has_corpse",
+    )
+    return {key: fields.get(key) for key in keys}
+
+
+def _inventory_rows(
+    definitions: list[MonsterDefinition],
+    enum_identities: list[str],
+    source_entries: Mapping[str, str],
+    en_descriptions: Mapping[str, str],
+    zh_descriptions: Mapping[str, str],
+    zh_titles: Mapping[str, str],
+) -> list[dict[str, object]]:
+    definitions_by_enum = {
+        definition.enum_identity: definition for definition in definitions
+    }
+    rows: list[dict[str, object]] = []
+    for identity in enum_identities:
+        definition = definitions_by_enum.get(identity)
+        if definition is None:
+            rows.append({
+                "identity": f"monster:{identity}",
+                "enum_identity": identity,
+                "lifecycle": "compatibility_enum",
+                "exposure": "not_applicable",
+                "english_source_name": None,
+                "current_chinese_name": None,
+                "genus_identity": None,
+                "species_identity": None,
+                "unique": False,
+                "metadata_and_display_context": (
+                    "save-compatible monster_type identity without a current "
+                    "dat/mons definition; no current mon-data display consumer"
+                ),
+                "producer_consumer": {
+                    "producer": _relative(MONSTER_ENUMS),
+                    "consumer": "save compatibility / enum identity only",
+                },
+                "core_facts": None,
+                "english_description": None,
+                "chinese_description": None,
+                "chinese_title": None,
+                "source_file": _relative(MONSTER_ENUMS),
+                "production_data": None,
+            })
+            continue
+
+        key = _normalize(definition.en_name)
+        fields = definition.fields
+        rows.append({
+            "identity": f"monster:{identity}",
+            "enum_identity": identity,
+            "lifecycle": "current_definition",
+            "exposure": _exposure(definition),
+            "english_source_name": definition.en_name,
+            "current_chinese_name": source_entries.get(key, "").strip() or None,
+            "genus_identity": _field_enum(
+                fields, "genus",
+                fields.get("species", identity.removeprefix("MONS_").lower()),
+            ),
+            "species_identity": _field_enum(
+                fields, "species",
+                identity.removeprefix("MONS_").lower(),
+            ),
+            "unique": definition.is_unique,
+            "metadata_and_display_context": (
+                "dat/mons -> generated mon-data.h -> mons_class_name / "
+                "mons_type_name -> monster_info::common_name; SourceDB "
+                "translation is applied only for display"
+            ),
+            "producer_consumer": {
+                "definition": _relative(definition.yaml_file),
+                "generator": "crawl-ref/source/util/mon-gen.py",
+                "name_consumer": "crawl-ref/source/mon-util.cc:3063",
+                "display_consumer": "crawl-ref/source/mon-info.cc:1216",
+                "description_consumer": "crawl-ref/source/describe.cc:6944",
+            },
+            "core_facts": _core_facts(fields),
+            "english_description": en_descriptions.get(key),
+            "chinese_description": zh_descriptions.get(key),
+            "chinese_title": (
+                zh_titles.get(f"{key} title") if definition.is_unique else None
+            ),
+            "source_file": _relative(definition.yaml_file),
+            "production_data": dict(fields),
+        })
+    return rows
+
+
+def _inventory_violations(
+    definitions: list[MonsterDefinition],
+    enum_identities: list[str],
+    rows: list[dict[str, object]],
+    ssot_findings: tuple[str, ...],
+) -> dict[str, object]:
+    definition_identities = [
+        definition.enum_identity for definition in definitions
+    ]
+    enum_set = set(enum_identities)
+    row_identities = [str(row["identity"]) for row in rows]
+    return {
+        "duplicate_definition_identities": sorted(
+            identity for identity, count in Counter(definition_identities).items()
+            if count > 1
+        ),
+        "definition_identities_absent_from_enum": sorted(
+            set(definition_identities) - enum_set
+        ),
+        "duplicate_inventory_identities": sorted(
+            identity for identity, count in Counter(row_identities).items()
+            if count > 1
+        ),
+        "missing_current_chinese_names": sorted(
+            str(row["identity"]) for row in rows
+            if row["lifecycle"] == "current_definition"
+            and not row["current_chinese_name"]
+        ),
+        "ssot_findings": list(ssot_findings),
+        "duplicate_description_keys": {
+            "english": _textdb_duplicate_keys(EN_MONSTER_DESCRIPTIONS),
+            "chinese": _textdb_duplicate_keys(ZH_MONSTER_DESCRIPTIONS),
+        },
+    }
+
+
+def build_inventory(
+    source_dir: Path = SRC,
+    source_txt: Path = ZH_SOURCE,
+) -> dict[str, object]:
+    definitions = _load_monster_definitions(str(source_dir))
+    enum_identities = _active_monster_enum_identities(
+        source_dir / "monster-type.h"
+    )
+    source_entries = _parse_required_textdb(
+        str(source_txt), trim_keys=False
+    )
+    en_descriptions = _parse_required_textdb(
+        str(source_dir / "dat/descript/monsters.txt")
+    )
+    zh_descriptions = _parse_required_textdb(
+        str(source_dir / "dat/descript/zh/monsters.txt")
+    )
+    zh_titles = _parse_required_textdb(
+        str(source_dir / "dat/database/zh/montitle.txt")
+    )
+    ssot = audit_repository(str(source_dir), str(source_txt))
+    rows = _inventory_rows(
+        definitions,
+        enum_identities,
+        source_entries,
+        en_descriptions,
+        zh_descriptions,
+        zh_titles,
+    )
+    violations = _inventory_violations(
+        definitions, enum_identities, rows, ssot.findings
+    )
+    input_paths = [
+        source_dir / "monster-type.h",
+        source_dir / "util/mon-gen.py",
+        source_dir / "dat/mons/README.md",
+        *sorted((source_dir / "dat/mons").glob("*.yaml")),
+        source_txt,
+        source_dir / "dat/database/zh/montitle.txt",
+        source_dir / "dat/descript/monsters.txt",
+        source_dir / "dat/descript/zh/monsters.txt",
+        source_dir / "dat/descript/quotes.txt",
+        source_dir / "dat/descript/zh/quotes.txt",
+        GLOSSARY,
+    ]
+    encoded_rows = json.dumps(
+        rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode()
+    payload: dict[str, object] = {
+        "schema": "dcss-monster-review-inventory-v1",
+        "baseline": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip(),
+        "glossary_sha256": _sha(GLOSSARY),
+        "input_sha256": {
+            _relative(path): _sha(path) for path in input_paths
+        },
+        "inventory_sha256": hashlib.sha256(encoded_rows).hexdigest(),
+        "scope": {
+            "included": [
+                "all concrete monster_type identities before NUM_MONSTERS",
+                "all current dat/mons definitions and generated mon-data facts",
+                "current and compatibility enum lifecycle",
+                "ordinary, unique, internal and special exposure categories",
+                "source.txt display names, unique titles and monster descriptions",
+                "genus/species relationships, stats, attacks, resists, spells and behaviour fields",
+            ],
+            "excluded": [
+                "post-NUM_MONSTERS sentinels and random-selection pseudo-values",
+                "balance changes, AI changes and spawn-table changes",
+                "independent spell-name conclusions",
+                "generic monspeak dialogue not tied to entity naming",
+                "Wiki-derived identity counts",
+            ],
+        },
+        "count": len(rows),
+        "definition_count": len(definitions),
+        "compatibility_count": sum(
+            row["lifecycle"] == "compatibility_enum" for row in rows
+        ),
+        "lifecycle_counts": {
+            lifecycle: sum(row["lifecycle"] == lifecycle for row in rows)
+            for lifecycle in sorted({str(row["lifecycle"]) for row in rows})
+        },
+        "exposure_counts": {
+            exposure: sum(row["exposure"] == exposure for row in rows)
+            for exposure in sorted({str(row["exposure"]) for row in rows})
+        },
+        **violations,
+        "rows": rows,
+    }
+    return payload
+
+
+TERMINAL_CONCLUSIONS = {
+    "keep",
+    "adjust",
+    "retranslate",
+    "defer terminology",
+    "defer implementation",
+}
+
+
+def review_coverage(payload: Mapping[str, object], path: Path) -> dict[str, object]:
+    """Prove one evidence-card row and terminal conclusion per identity."""
+    text = path.read_text(encoding="utf-8")
+    matches = re.findall(
+        r"^\|\s*`(monster:MONS_[A-Z0-9_]+)`\s*\|.*?"
+        r"\|\s*([^|\n]+?)\s*\|\s*$",
+        text,
+        re.MULTILINE,
+    )
+    identities = [identity for identity, _conclusion in matches]
+    conclusions = {
+        identity: conclusion.strip() for identity, conclusion in matches
+    }
+    expected = {str(row["identity"]) for row in payload["rows"]}
+    actual = set(identities)
+    invalid = sorted(
+        identity for identity, conclusion in conclusions.items()
+        if conclusion.split(":", 1)[0].strip() not in TERMINAL_CONCLUSIONS
+    )
+    result = {
+        "review_results": _relative(path),
+        "review_results_sha256": _sha(path),
+        "evidence_card_count": len(identities),
+        "duplicate_evidence_cards": sorted(
+            identity for identity, count in Counter(identities).items()
+            if count > 1
+        ),
+        "missing_evidence_cards": sorted(expected - actual),
+        "unexpected_evidence_cards": sorted(actual - expected),
+        "invalid_terminal_conclusions": invalid,
+        "conclusion_counts": {
+            conclusion: sum(
+                value.split(":", 1)[0].strip() == conclusion
+                for value in conclusions.values()
+            )
+            for conclusion in sorted(TERMINAL_CONCLUSIONS)
+        },
+    }
+    result["coverage_equal"] = (
+        len(identities) == len(expected)
+        and actual == expected
+        and not result["duplicate_evidence_cards"]
+        and not invalid
+    )
+    return result
+
+
+def _git_text(ref: str, path: Path) -> str:
+    relative = _relative(path)
+    try:
+        return subprocess.check_output(
+            ["git", "show", f"{ref}:{relative}"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            errors="strict",
+        )
+    except subprocess.CalledProcessError as error:
+        raise AuditInputError(
+            f"cannot read baseline input {relative!r} at {ref!r}"
+        ) from error
+
+
+def write_review_results(
+    payload: Mapping[str, object],
+    output: Path,
+    baseline_ref: str,
+) -> None:
+    """Write one evidence-backed terminal conclusion per frozen identity."""
+    baseline_names = _parse_textdb_content(
+        f"{baseline_ref}:{_relative(ZH_SOURCE)}",
+        _git_text(baseline_ref, ZH_SOURCE),
+        trim_keys=False,
+    )
+    current_names = _parse_required_textdb(
+        str(ZH_SOURCE), trim_keys=False
+    )
+    baseline_descriptions = _parse_textdb_content(
+        f"{baseline_ref}:{_relative(ZH_MONSTER_DESCRIPTIONS)}",
+        _git_text(baseline_ref, ZH_MONSTER_DESCRIPTIONS),
+    )
+    current_descriptions = _parse_required_textdb(
+        str(ZH_MONSTER_DESCRIPTIONS)
+    )
+
+    lines = [
+        "# Issue #24 怪物翻译全量复审结果",
+        "",
+        f"- 基线：`{baseline_ref}`",
+        f"- 术语表 SHA-256：`{payload['glossary_sha256']}`",
+        f"- 清单 SHA-256：`{payload['inventory_sha256']}`",
+        f"- 身份总数：{payload['count']}（现行 {payload['definition_count']}；"
+        f"兼容枚举 {payload['compatibility_count']}）",
+        "- 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、"
+        "genus/species、生产数据文件及描述存在性；完整原始字段由同一清单"
+        "命令生成的 JSON 提供。",
+        "- 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，"
+        "统一记为 `defer implementation`；现行项逐项对照后，未改动者为 "
+        "`keep`，名称改动为 `adjust`，描述改动为 `retranslate`。",
+        "- 重建命令："
+        "`python3 .claude/scripts/monster_name_ssot.py "
+        "--inventory-output /tmp/monster-inventory.json "
+        "--review-results docs/monster-review-results.md`。",
+        "",
+        "| 身份 | 证据卡 | 终态结论 |",
+        "|---|---|---|",
+    ]
+    for row in payload["rows"]:
+        identity = str(row["identity"])
+        if row["lifecycle"] == "compatibility_enum":
+            evidence = (
+                "compatibility_enum; exposure=N/A; current consumer=none; "
+                f"source={row['source_file']}"
+            )
+            conclusion = (
+                "defer implementation: restore only with a current definition "
+                "and display consumer"
+            )
+        else:
+            key = _normalize(str(row["english_source_name"]))
+            name_changed = baseline_names.get(key) != current_names.get(key)
+            description_changed = (
+                baseline_descriptions.get(key) != current_descriptions.get(key)
+            )
+            evidence = (
+                f"current; exposure={row['exposure']}; "
+                f"name={row['english_source_name']}→{row['current_chinese_name']}; "
+                f"genus={row['genus_identity']}; species={row['species_identity']}; "
+                f"data={row['source_file']}; "
+                f"desc={'EN/ZH' if row['english_description'] and row['chinese_description'] else 'N/A'}"
+            )
+            if description_changed:
+                conclusion = (
+                    "retranslate: name and description corrected"
+                    if name_changed else
+                    "retranslate: description corrected"
+                )
+            elif name_changed:
+                conclusion = "adjust: display name corrected"
+            else:
+                conclusion = "keep"
+        lines.append(f"| `{identity}` | {evidence} | {conclusion} |")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def inventory_has_violations(payload: Mapping[str, object]) -> bool:
+    keys = (
+        "duplicate_definition_identities",
+        "definition_identities_absent_from_enum",
+        "duplicate_inventory_identities",
+        "missing_current_chinese_names",
+        "ssot_findings",
+    )
+    duplicate_descriptions = payload["duplicate_description_keys"]
+    return (
+        any(payload[key] for key in keys)
+        or any(duplicate_descriptions.values())
+    )
+
+
+def _run_ssot(source_txt: str) -> int:
+    source_txt = os.path.abspath(source_txt)
     source_dir = os.path.dirname(
         os.path.dirname(os.path.dirname(os.path.dirname(source_txt)))
     )
@@ -512,6 +1091,93 @@ def main() -> int:
         "follow source.txt SSOT."
     )
     return 0
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
+        "--source-txt",
+        help="run the blocking monster-name SSOT check",
+    )
+    mode.add_argument(
+        "--inventory-output",
+        type=Path,
+        help="write the deterministic Issue #24 JSON inventory",
+    )
+    parser.add_argument(
+        "--review-results",
+        type=Path,
+        help="prove exact evidence-card and terminal-conclusion coverage",
+    )
+    parser.add_argument(
+        "--write-review-results",
+        type=Path,
+        help="write the Issue #24 per-identity review ledger",
+    )
+    parser.add_argument(
+        "--baseline-ref",
+        help="git ref used to classify review-result changes",
+    )
+    args = parser.parse_args(argv)
+    if args.source_txt:
+        if args.review_results or args.write_review_results or args.baseline_ref:
+            parser.error("review options require --inventory-output")
+        return _run_ssot(args.source_txt)
+    if bool(args.write_review_results) != bool(args.baseline_ref):
+        parser.error(
+            "--write-review-results and --baseline-ref must be used together"
+        )
+
+    try:
+        payload = build_inventory()
+        if args.write_review_results:
+            write_review_results(
+                payload, args.write_review_results, args.baseline_ref
+            )
+        if args.review_results:
+            payload["review_coverage"] = review_coverage(
+                payload, args.review_results
+            )
+    except (
+        AuditInputError,
+        OSError,
+        RuntimeError,
+        subprocess.SubprocessError,
+        ValueError,
+    ) as error:
+        print(f"ERROR: monster inventory could not be built: {error}",
+              file=sys.stderr)
+        return 2
+
+    encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    args.inventory_output.parent.mkdir(parents=True, exist_ok=True)
+    args.inventory_output.write_text(encoded, encoding="utf-8")
+    summary_keys = (
+        "baseline",
+        "glossary_sha256",
+        "inventory_sha256",
+        "count",
+        "definition_count",
+        "compatibility_count",
+        "lifecycle_counts",
+        "exposure_counts",
+        "duplicate_definition_identities",
+        "definition_identities_absent_from_enum",
+        "duplicate_inventory_identities",
+        "missing_current_chinese_names",
+        "ssot_findings",
+        "duplicate_description_keys",
+    )
+    summary = {key: payload[key] for key in summary_keys}
+    if "review_coverage" in payload:
+        summary["review_coverage"] = payload["review_coverage"]
+    print(json.dumps(summary, ensure_ascii=False, indent=2), file=sys.stderr)
+    coverage_failed = (
+        "review_coverage" in payload
+        and not payload["review_coverage"]["coverage_equal"]
+    )
+    return 1 if inventory_has_violations(payload) or coverage_failed else 0
 
 
 if __name__ == "__main__":
