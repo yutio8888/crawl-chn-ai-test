@@ -925,7 +925,7 @@ taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反�
 Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
 Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后尝试将目标传送出施法者视野
 Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
-tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒术师）
+tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒法师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
