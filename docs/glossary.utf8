@@ -58,6 +58,7 @@ Arachne title	编织者阿拉克涅	domain=monster-titles; source=EN/ZH; Scope /
 arbalest	重弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 arcanist	奥术师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Arcjolt	电弧震击	domain=spells; source=EN/ZH; 备注=✅
+Arena	竞技场	domain=core; source=EN/ZH; 注意事项=分支、地下城特征与世界显示文本统一；裁决 [D-A-044]
 armataur	甲马人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 armor	护甲	domain=combat; source=EN/ZH
 armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
@@ -427,6 +428,7 @@ Funeral Dirge	葬礼哀歌	domain=spells; source=EN/ZH; 备注=✅
 Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
 gargoyle	石像鬼	domain=species; source=EN/ZH
 Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Gauntlet	试炼场	domain=core; source=EN/ZH; 注意事项=分支、地下城特征与世界显示文本统一；裁决 [D-A-045]
 Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
