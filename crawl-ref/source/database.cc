@@ -1524,9 +1524,7 @@ static canonical_weighted_lookup _canonical_weighted_lookup(
                 return entry.canonical_key < candidate;
             });
         if (found == entries.end() || found->canonical_key != canonical_key)
-        {
             return nullptr;
-        }
         // Only a zero-length TextDB value is MISSING before the chooser. A
         // non-empty body that parses to no variants must return its BUG text.
         if (found->body_empty)
@@ -2382,6 +2380,196 @@ string getMiscString(const string &misc, const string &suffix)
     _execute_embedded_lua(txt);
 
     return txt;
+}
+
+static weighted_lookup_result _getWeightedSelectionAtOrdinal(
+    TextDB &db, const string &key, const string &suffix, bool base_only,
+    size_t ordinal)
+{
+    string canonical_key = key + suffix;
+    lowercase(canonical_key);
+
+    auto fetch = [&](const string &lookup_key) -> datum
+    {
+        datum result;
+        result.dptr = nullptr;
+        result.dsize = 0;
+        if (!base_only && db.translation)
+            result = _database_fetch(db.translation->get(), lookup_key);
+        if (!_database_has_entry(result) || result.dsize == 0)
+            result = _database_fetch(db.get(), lookup_key);
+        return result;
+    };
+
+    datum raw = fetch(canonical_key);
+    if (!_database_has_entry(raw) || raw.dsize == 0)
+    {
+        canonical_key = key;
+        lowercase(canonical_key);
+        raw = fetch(canonical_key);
+    }
+    if (!_database_has_entry(raw) || raw.dsize == 0)
+        return weighted_lookup_result();
+
+    const parsed_weighted_entry parsed =
+        _parse_weighted_entry(string((const char *)raw.dptr, raw.dsize));
+    weighted_lookup_result result;
+    result.resolved_key = canonical_key;
+    if (!parsed.error.empty())
+    {
+        result.status = textdb_phase0::raw_selection_status::CORRUPT;
+        return result;
+    }
+    for (const textdb_phase0::weighted_variant &variant : parsed.variants)
+    {
+        if (variant.variant_ordinal == ordinal)
+        {
+            result.status = textdb_phase0::raw_selection_status::SELECTED;
+            result.pattern = variant.raw_pattern;
+            result.variant_ordinal = variant.variant_ordinal;
+            result.weight = variant.weight;
+            return result;
+        }
+    }
+    result.status = textdb_phase0::raw_selection_status::CORRUPT;
+    return result;
+}
+
+static string _encode_misc_recipe(const string &key,
+                                  const vector<size_t> &ordinals)
+{
+    string result = "v1:" + key + ":";
+    for (size_t i = 0; i < ordinals.size(); ++i)
+    {
+        if (i)
+            result += ",";
+        result += std::to_string(ordinals[i]);
+    }
+    return result;
+}
+
+static bool _decode_misc_recipe(const string &locator, string &key,
+                                vector<size_t> &ordinals)
+{
+    if (!starts_with(locator, "v1:"))
+        return false;
+    const size_t separator = locator.find(':', 3);
+    if (separator == string::npos || separator == 3)
+        return false;
+    key = locator.substr(3, separator - 3);
+    if (!all_of(key.begin(), key.end(), [](char c) {
+            return isalnum(static_cast<unsigned char>(c)) || c == '_';
+        }))
+    {
+        return false;
+    }
+
+    const string encoded = locator.substr(separator + 1);
+    if (encoded.empty())
+        return false;
+    for (const string &part : split_string(",", encoded))
+    {
+        if (part.empty() || !all_of(part.begin(), part.end(), [](char c) {
+                return isdigit(static_cast<unsigned char>(c));
+            }))
+        {
+            return false;
+        }
+        try
+        {
+            ordinals.push_back(static_cast<size_t>(stoul(part)));
+        }
+        catch (const std::exception &)
+        {
+            return false;
+        }
+    }
+    return !ordinals.empty();
+}
+
+misc_string_recipe selectMiscStringRecipe(const string &misc)
+{
+    vector<size_t> ordinals;
+    const auto lookup =
+        [&ordinals](const string &lookup_key, const string &lookup_suffix,
+                    textdb_phase0::selection_trace *,
+                    const vector<size_t> &path, int depth, int replacements)
+        {
+            weighted_lookup_result result = _getWeightedSelection(
+                MiscDB, lookup_key, lookup_suffix, true, nullptr, path, depth,
+                replacements);
+            if (result.status == textdb_phase0::raw_selection_status::SELECTED)
+                ordinals.push_back(result.variant_ordinal);
+            return result;
+        };
+    int replacements = 0;
+    const vector<size_t> path;
+    textdb_phase0::recursive_site_status status =
+        textdb_phase0::recursive_site_status::MISSING;
+    bool corrupt = false;
+    const string english = _getRandomisedStr(
+        lookup, misc, "", replacements, 0, path, nullptr, &status, &corrupt);
+    if (corrupt || status != textdb_phase0::recursive_site_status::SELECTED
+        || english.empty())
+    {
+        return misc_string_recipe();
+    }
+    return {_encode_misc_recipe(misc, ordinals), english};
+}
+
+string materializeMiscStringRecipe(const string &locator, bool translated)
+{
+    string key;
+    vector<size_t> ordinals;
+    if (!_decode_misc_recipe(locator, key, ordinals))
+        return "";
+
+    size_t next = 0;
+    bool replay_failed = false;
+    const auto lookup =
+        [&ordinals, &next, &replay_failed, translated](
+            const string &lookup_key, const string &lookup_suffix,
+            textdb_phase0::selection_trace *, const vector<size_t> &, int,
+            int)
+        {
+            if (next >= ordinals.size())
+            {
+                replay_failed = true;
+                return weighted_lookup_result();
+            }
+            const size_t ordinal = ordinals[next++];
+            const weighted_lookup_result canonical =
+                _getWeightedSelectionAtOrdinal(
+                    MiscDB, lookup_key, lookup_suffix, true, ordinal);
+            weighted_lookup_result result = translated
+                ? _getWeightedSelectionAtOrdinal(
+                    MiscDB, lookup_key, lookup_suffix, false, ordinal)
+                : canonical;
+            if (canonical.status
+                    != textdb_phase0::raw_selection_status::SELECTED
+                || result.status
+                    != textdb_phase0::raw_selection_status::SELECTED
+                || canonical.resolved_key != result.resolved_key
+                || canonical.weight != result.weight)
+            {
+                replay_failed = true;
+            }
+            return result;
+        };
+    int replacements = 0;
+    const vector<size_t> path;
+    textdb_phase0::recursive_site_status status =
+        textdb_phase0::recursive_site_status::MISSING;
+    bool corrupt = false;
+    string result = _getRandomisedStr(
+        lookup, key, "", replacements, 0, path, nullptr, &status, &corrupt);
+    if (replay_failed || corrupt || next != ordinals.size()
+        || status != textdb_phase0::recursive_site_status::SELECTED)
+    {
+        return "";
+    }
+    _execute_embedded_lua(result);
+    return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -5,10 +5,12 @@
 #include "i18n.h"                // T_()
 #include "ability.h"
 #include "ability-type.h"
+#include "acquire.h"
 #include "art-enum.h"
 #include "artefact.h"
 #include "database.h"
 #include "decks.h"
+#include "describe.h"
 #include "describe-god.h"
 #include "dungeon.h"
 #include "duration-type.h"
@@ -677,7 +679,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     using Row = std::tuple<int, const char*, const char*, const char*>;
     const auto row = GENERATE(table<int, const char*, const char*, const char*>({
         Row{UNRAND_CEREBOV, "great serpentine sword", "蛇形巨剑",
-            "塞雷博夫之剑"},
+            "塞雷波夫之剑"},
         Row{UNRAND_ASMODEUS, "ruby sceptre", "红宝石权杖",
             "阿斯摩蒂斯之权杖"},
         Row{UNRAND_DRAGONSKIN, "opalescent scaly cloak",
@@ -736,6 +738,155 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(loaded.props[ARTEFACT_APPEAR_KEY].get_string()
             == "great serpentine sword");
     REQUIRE(get_artefact_name(loaded) == "蛇形巨剑");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: fixed artefact descriptions use canonical English keys",
+                 "[zh-translation][artefact-description]")
+{
+    item_def item;
+    item.quantity = 1;
+    const unique_item_status_type prior_status =
+        get_unique_item_status(UNRAND_CEREBOV);
+    REQUIRE(make_item_unrandart(item, UNRAND_CEREBOV));
+    unwinder restore_status([&item, prior_status]() {
+        set_unique_item_status(item, prior_status);
+    });
+    item.flags |= ISFLAG_IDENTIFIED;
+
+    REQUIRE(get_artefact_name(item) == "塞雷波夫之剑");
+    REQUIRE(string(get_unrand_name_en(item)) == "sword of Cerebov");
+    REQUIRE(getLongDescription(get_artefact_name(item)).empty());
+    const string canonical = getLongDescription(get_unrand_name_en(item));
+    REQUIRE_FALSE(canonical.empty());
+    REQUIRE(get_item_description(item).find(trimmed_string(canonical))
+            != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: gizmo recipe identity localizes without consuming RNG",
+                 "[zh-translation][gizmo][rng]")
+{
+    rng::subgenerator scoped_rng(0x2900290029002900ULL,
+                                 0x29c09c09c09c09c0ULL);
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    const misc_string_recipe adjective =
+        selectMiscStringRecipe("gizmo_adjective");
+    REQUIRE_FALSE(noun.locator.empty());
+    REQUIRE_FALSE(modifier.locator.empty());
+    REQUIRE_FALSE(adjective.locator.empty());
+
+    item_def item;
+    item.base_type = OBJ_GIZMOS;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.props[ARTEFACT_NAME_KEY].get_string() =
+        adjective.english + " " + noun.english;
+    item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        "v1|2|" + noun.locator + "|" + modifier.locator + "|"
+        + adjective.locator + "|";
+
+    const uint64_t before_state = rng::current_generator().get_state();
+    const uint64_t before_count = rng::current_generator().get_count();
+    const string zh = get_gizmo_name(item);
+    REQUIRE_FALSE(zh.empty());
+    REQUIRE(rng::current_generator().get_state() == before_state);
+    REQUIRE(rng::current_generator().get_count() == before_count);
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    const string en = get_gizmo_name(item);
+    REQUIRE(en == item.props[ARTEFACT_NAME_KEY].get_string());
+    REQUIRE(rng::current_generator().get_state() == before_state);
+    REQUIRE(rng::current_generator().get_count() == before_count);
+
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    REQUIRE(get_gizmo_name(item) == zh);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: gizmo recipe survives save and old saves fail safely",
+                 "[zh-translation][gizmo][tags][compat]")
+{
+    rng::subgenerator scoped_rng(0x29aa29aa29aa29aaULL,
+                                 0x29bb29bb29bb29bbULL);
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    REQUIRE_FALSE(noun.locator.empty());
+    REQUIRE_FALSE(modifier.locator.empty());
+
+    item_def item;
+    item.base_type = OBJ_GIZMOS;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.pos = coord_def(-1, -1);
+    item.props[ARTEFACT_NAME_KEY].get_string() =
+        modifier.english + noun.english + " Mk.1";
+    item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        "v1|0|" + noun.locator + "|" + modifier.locator + "|-|Mk.1";
+
+    vector<unsigned char> buffer;
+    writer output(&buffer);
+    marshallItem(output, item, true);
+    reader input(buffer);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    item_def loaded;
+    unmarshallItem(input, loaded);
+    REQUIRE(loaded.props[GIZMO_NAME_RECIPE_KEY].get_string()
+            == item.props[GIZMO_NAME_RECIPE_KEY].get_string());
+    REQUIRE(get_gizmo_name(loaded) == get_gizmo_name(item));
+
+    item_def legacy = item;
+    legacy.props.erase(GIZMO_NAME_RECIPE_KEY);
+    legacy.props[ARTEFACT_NAME_KEY].get_string() = "legacy locale name";
+    REQUIRE(get_gizmo_name(legacy) == "legacy locale name");
+
+    item_def corrupt = item;
+    corrupt.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        "v1|0|v1:gizmo_noun:999999|bad|-|Mk.1";
+    REQUIRE(get_gizmo_name(corrupt)
+            == item.props[ARTEFACT_NAME_KEY].get_string());
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: announcing after legacy gizmo names preserves indices",
+                 "[zh-translation][gizmo][compat]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    CrawlVector &names = you.props[COGLIN_GIZMO_NAMES_KEY].get_vector();
+    CrawlVector &recipes = you.props[COGLIN_GIZMO_RECIPES_KEY].get_vector();
+    names.push_back("legacy locale name");
+    REQUIRE(recipes.empty());
+
+    coglin_announce_gizmo_name();
+
+    REQUIRE(names.size() == 2);
+    REQUIRE(recipes.size() == names.size());
+    REQUIRE(recipes[0].get_string().empty());
+    REQUIRE_FALSE(recipes[1].get_string().empty());
+
+    item_def legacy;
+    legacy.base_type = OBJ_GIZMOS;
+    legacy.quantity = 1;
+    legacy.rnd = 1;
+    legacy.props[ARTEFACT_NAME_KEY].get_string() = names[0].get_string();
+    legacy.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        recipes[0].get_string();
+    REQUIRE(get_gizmo_name(legacy) == "legacy locale name");
+
+    item_def announced;
+    announced.base_type = OBJ_GIZMOS;
+    announced.quantity = 1;
+    announced.rnd = 1;
+    announced.props[ARTEFACT_NAME_KEY].get_string() = names[1].get_string();
+    announced.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        recipes[1].get_string();
+    REQUIRE_FALSE(get_gizmo_name(announced).empty());
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

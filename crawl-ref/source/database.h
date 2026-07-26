@@ -51,6 +51,19 @@ string getRandMonNameString(const string &montype);
 string getRandNameString(const string &itemtype, const string &suffix = "");
 string getHelpString(const string &topic);
 string getMiscString(const string &misc, const string &suffix = "");
+
+// A narrow, language-neutral locator for one fully expanded MiscDB choice.
+// Selection consumes the same game RNG calls as getMiscString();
+// materialization consumes none and fails closed on database drift.
+struct misc_string_recipe
+{
+    string locator;
+    string english;
+};
+misc_string_recipe selectMiscStringRecipe(const string &misc);
+string materializeMiscStringRecipe(const string &locator,
+                                   bool translated = true);
+
 string getHintString(const string &key);
 string getEgoString(const string &key);
 

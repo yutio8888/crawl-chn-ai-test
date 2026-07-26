@@ -21,6 +21,7 @@
 #define ARTEFACT_PROPS_KEY  "artefact_props"
 #define ARTEFACT_NAME_KEY   "artefact_name"
 #define ARTEFACT_APPEAR_KEY "artefact_appearance"
+#define GIZMO_NAME_RECIPE_KEY "gizmo_name_recipe"
 #define FIXED_PROPS_KEY     "artefact_fixed_props"
 
 #define EMBRACE_ARMOUR_KEY "embrace_armour"
@@ -98,6 +99,8 @@ void set_unique_item_status(const item_def& item,
 
 string get_artefact_base_name(const item_def &item, bool terse = false);
 string get_artefact_name(const item_def &item, bool force_known = false);
+const char *get_unrand_name_en(const item_def &item);
+string get_gizmo_name(const item_def &item);
 
 void set_artefact_name(item_def &item, const string &name);
 

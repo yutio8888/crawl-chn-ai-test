@@ -374,14 +374,30 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation]")
 {
     std::vector<ZhIssue> issues;
-    for (int i = 0; i < NUM_UNRANDARTS; ++i)
+    std::set<int> enum_values;
+    std::set<std::string> names;
+    int current = 0;
+    int compatibility = 0;
+    int internal = 0;
+    for (int i = UNRAND_START; i <= UNRAND_LAST; ++i)
     {
+        REQUIRE(enum_values.insert(i).second);
         const unrandart_entry* e = get_unrand_entry(i);
-        if (!e || !e->name || !e->name[0])
+        REQUIRE(e);
+        REQUIRE(e->name);
+        REQUIRE(e->name[0]);
+        REQUIRE(names.insert(e->name).second);
+
+        const bool dummy = string(e->name).find("DUMMY UNRANDART") == 0;
+        if (dummy)
+        {
+            ++internal;
             continue;
-        // Skip the dummy unrand entry (index 0 is "DUMMY UNRANDART 1").
-        if (string(e->name).find("DUMMY") != string::npos)
-            continue;
+        }
+        if (e->flags & UNRAND_FLAG_DELETED)
+            ++compatibility;
+        else
+            ++current;
 
         // (a) The artefact's true display name goes through T_() at runtime
         //     via item-name.cc when displaying the artefact. Scan T_(e->name)
@@ -395,13 +411,30 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (!tr.empty())
             scan_one(tr.c_str(), e->name, "unrand.txt", issues);
 
-        // (c) The `descrip` field (short flavour string) and `unid_name`
-        //     (unidentified alias) also flow through T_() at runtime.
-        if (e->descrip && e->descrip[0])
-            scan_T_key(e->descrip, "unrand.descrip", issues);
+        // (c) The unidentified alias is also a name producer. Special
+        // property descriptions are outside this item-name inventory.
         if (e->unid_name && e->unid_name[0])
             scan_T_key(e->unid_name, "unrand.unid_name", issues);
+
+        // Exercise both actual display producer branches. Identity and TextDB
+        // lookup stay English even though both visible names are localized.
+        item_def item;
+        item.base_type = e->base_type;
+        item.sub_type = e->sub_type;
+        item.quantity = 1;
+        item.flags = ISFLAG_UNRANDART;
+        item.unrand_idx = i;
+        const std::string unid_display = get_artefact_name(item);
+        REQUIRE_FALSE(unid_display.empty());
+        item.flags |= ISFLAG_IDENTIFIED;
+        const std::string identified_display = get_artefact_name(item);
+        REQUIRE_FALSE(identified_display.empty());
+        REQUIRE(string(get_unrand_name_en(item)) == e->name);
     }
+    REQUIRE(enum_values.size() == NUM_UNRANDARTS);
+    REQUIRE(current == 121);
+    REQUIRE(compatibility == 19);
+    REQUIRE(internal == 2);
     emit_issue_protocol("zh_translation", "fixed_artefacts", issues);
     WARN("zh enumerator summary: fixed artefacts -> " << issues.size() << " issues");
     REQUIRE(true);

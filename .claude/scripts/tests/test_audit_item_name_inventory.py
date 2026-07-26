@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import contextlib
+import copy
 import importlib.util
 import io
 import json
@@ -248,6 +249,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(0, proc.returncode, proc.stderr)
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
+        self.assertEqual(390, payload["count"])
+        self.assertEqual(
+            "40fe2a9be419868de3ffd8ece736861b81823046654fd4710da62ec5fe2b81f4",
+            payload["inventory_sha256"],
+        )
         self.assertEqual(payload["count"], len(payload["rows"]))
         self.assertEqual(
             payload["category_counts"],
@@ -314,6 +320,297 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 with contextlib.redirect_stderr(io.StringIO()):
                     result = MODULE.main(["--output", str(output)])
         self.assertEqual(1, result)
+
+    def test_issue29_v2_freezes_every_finite_production_boundary(self):
+        payload, internal_rows = MODULE.build_extended_inventory()
+        self.assertEqual(
+            "dcss-item-extended-review-inventory-v2", payload["schema"]
+        )
+        self.assertEqual(390, payload["ordinary_v1"]["count"])
+        self.assertEqual(
+            {
+                "unrand": 142,
+                "unident": 7,
+                "appearance": 186,
+                "special": 23,
+                "gizmo": 539,
+                "item-description": 307,
+                "randart-component": 2440,
+                "randart-grammar": 115,
+            },
+            payload["category_counts"],
+        )
+        self.assertEqual(payload["count"], len(payload["rows"]))
+        self.assertEqual(
+            payload["count"],
+            len({row["identity"] for row in payload["rows"]}),
+        )
+        self.assertFalse(payload["duplicates"])
+        self.assertEqual(payload["count"], len(internal_rows))
+        self.assertEqual(
+            {
+                "grammar_keys": 115,
+                "physical_variant_identities": 2440,
+                "raw_nonempty_grammar_lines": 2734,
+                "explicit_weight_marker_lines": 293,
+                "continuation_lines": 1,
+                "weight_mass": 27304,
+            },
+            payload["scope"]["randart_component_metrics"]["totals"],
+        )
+
+    def test_paired_components_reject_minimal_key_count_token_mutations(self):
+        def write(path, entries):
+            chunks = []
+            for key, values in entries:
+                chunks.append("%%%%\n" + key + "\n\n"
+                              + "\n\n".join(values) + "\n")
+            path.write_text("".join(chunks), encoding="utf-8")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en = root / "en.txt"
+            zh = root / "zh.txt"
+            valid = [("key", ["plain", "@child@tail"]),
+                     ("child", ["nested"])]
+            write(en, valid)
+            write(zh, [("key", ["普通", "@child@尾"]),
+                       ("child", ["嵌套"])])
+            self.assertEqual(
+                3, len(MODULE.paired_component_rows(
+                    en, zh, "fixture"
+                ))
+            )
+
+            write(zh, [("other", ["普通", "@child@尾"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "key mismatch"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(zh, [("key", ["普通"]), ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "physical count"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(zh, [("key", ["普通", "@other@尾"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "recursive token"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(en, [("key", ["value %1$s"]), ("child", ["nested"])])
+            write(zh, [("key", ["值 %2$s"]), ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "placeholder"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(en, [("key", ["w:3\nweighted"]),
+                       ("child", ["nested"])])
+            write(zh, [("key", ["w:4\n加权"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "weight mismatch"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+    def test_weighted_metrics_distinguish_variants_from_raw_lines(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "input.txt"
+            path.write_text(
+                "%%%%\nkey\n\nplain\n\nw:3\nweighted\n",
+                encoding="utf-8",
+            )
+            expected = {
+                "physical_variant_identities": 2,
+                "raw_nonempty_grammar_lines": 3,
+                "explicit_weight_marker_lines": 1,
+                "continuation_lines": 0,
+                "weight_mass": 13,
+            }
+            actual = MODULE.weighted_grammar_metrics(
+                MODULE.textdb_rows(path)
+            )
+            MODULE.require_weighted_metrics(actual, expected, "fixture")
+
+            path.write_text(
+                "%%%%\nkey\n\nplain\ncontinuation\n\nw:3\nweighted\n",
+                encoding="utf-8",
+            )
+            mutated = MODULE.weighted_grammar_metrics(
+                MODULE.textdb_rows(path)
+            )
+            self.assertEqual(
+                expected["physical_variant_identities"],
+                mutated["physical_variant_identities"],
+            )
+            with self.assertRaisesRegex(RuntimeError, "metric drift"):
+                MODULE.require_weighted_metrics(
+                    mutated, expected, "fixture"
+                )
+
+    def test_review_base_survives_a_clean_committed_candidate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "fixture@example.invalid"],
+                cwd=root, check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Fixture"],
+                cwd=root, check=True,
+            )
+            tracked = root / "input.txt"
+            tracked.write_text("before\n", encoding="utf-8")
+            subprocess.run(["git", "add", "input.txt"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "commit", "-qm", "base"], cwd=root, check=True
+            )
+            base = MODULE.resolve_commit("HEAD", root)
+            tracked.write_text("after\n", encoding="utf-8")
+            subprocess.run(["git", "add", "input.txt"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "commit", "-qm", "candidate"], cwd=root, check=True
+            )
+            self.assertFalse(subprocess.check_output(
+                ["git", "status", "--porcelain"], cwd=root, text=True
+            ))
+            self.assertEqual(
+                "before\n",
+                MODULE.git_revision_text(tracked, base, root),
+            )
+            self.assertEqual("after\n", tracked.read_text(encoding="utf-8"))
+            with self.assertRaisesRegex(RuntimeError, "invalid review base"):
+                MODULE.resolve_commit("missing-review-base", root)
+
+    def test_review_coverage_rejects_each_minimal_mutation(self):
+        def card(identity, conclusion):
+            return {
+                "identity": identity,
+                "lifecycle": "current",
+                "english_source": f"English {identity}",
+                "pre_review_chinese": f"旧{identity}",
+                "current_chinese": f"新{identity}",
+                "adopted_english": f"English {identity}",
+                "adopted_chinese": f"新{identity}",
+                "producer": "fixture producer",
+                "consumer": "fixture consumer",
+                "metadata": {"category": "fixture"},
+                "input": "fixture.txt",
+                "source_files": [{
+                    "path": "fixture.txt",
+                    "review_base_sha256": "0" * 64,
+                    "current_sha256": "1" * 64,
+                }],
+                "terminal_conclusion": conclusion,
+                "semantic_reason": f"{conclusion}: fixture reason",
+                "reentry_trigger": "Re-review on fixture change.",
+            }
+
+        valid = [card("a", "keep"), card("b", "adjust")]
+        inventory = copy.deepcopy(valid)
+        self.assertFalse(any(
+            MODULE.review_violations(inventory, valid).values()
+        ))
+
+        duplicate = valid + [dict(valid[0])]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, duplicate)[
+                "review_duplicates"
+            ],
+        )
+        self.assertEqual(
+            ["b"],
+            MODULE.review_violations(inventory, valid[:1])[
+                "inventory_minus_review"
+            ],
+        )
+        extra = valid + [card("c", "keep")]
+        self.assertEqual(
+            ["c"],
+            MODULE.review_violations(inventory, extra)[
+                "review_minus_inventory"
+            ],
+        )
+        invalid = [
+            dict(valid[0], terminal_conclusion="pending"), valid[1]
+        ]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, invalid)[
+                "invalid_terminal_conclusions"
+            ],
+        )
+        deferred = [dict(
+            valid[0],
+            terminal_conclusion="defer implementation",
+            semantic_reason="not applicable",
+            reentry_trigger="not applicable",
+        ), valid[1]]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, deferred)[
+                "invalid_deferrals"
+            ],
+        )
+
+        for field, value in [
+            ("adopted_english", "changed English"),
+            ("adopted_chinese", "改坏"),
+        ]:
+            mutated = copy.deepcopy(valid)
+            mutated[0][field] = value
+            self.assertEqual(
+                ["a"],
+                MODULE.review_violations(inventory, mutated)[
+                    "mismatched_evidence_cards"
+                ],
+            )
+
+        mutated_sha = copy.deepcopy(valid)
+        mutated_sha[0]["source_files"][0]["current_sha256"] = "2" * 64
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, mutated_sha)[
+                "mismatched_evidence_cards"
+            ],
+        )
+
+        missing = copy.deepcopy(valid)
+        del missing[0]["adopted_chinese"]
+        violations = MODULE.review_violations(inventory, missing)
+        self.assertEqual(["a:adopted_chinese"],
+                         violations["missing_required_fields"])
+        self.assertEqual(["a"], violations["mismatched_evidence_cards"])
+
+    def test_issue29_cli_review_results_has_exact_bidirectional_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inventory = root / "inventory.json"
+            results = root / "results.md"
+            generated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--output", str(inventory),
+                    "--write-review-results", str(results),
+                ],
+                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
+            )
+            self.assertEqual(0, generated.returncode, generated.stderr)
+            validated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--output", str(inventory),
+                    "--review-results", str(results),
+                ],
+                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
+            )
+            payload = json.loads(inventory.read_text(encoding="utf-8"))
+            result_text = results.read_text(encoding="utf-8")
+            parsed_results = MODULE.parse_review_results(results)
+        self.assertEqual(0, validated.returncode, validated.stderr)
+        self.assertFalse(any(payload["review_violations"].values()))
+        self.assertEqual(
+            payload["rows"], parsed_results
+        )
+        self.assertIn(payload["baseline"], result_text)
+        self.assertNotIn(payload["candidate_head"], result_text)
 
 
 if __name__ == "__main__":

@@ -2257,10 +2257,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_GIZMOS:
     {
-        if (props.exists(ARTEFACT_NAME_KEY))
-            buff << props[ARTEFACT_NAME_KEY].get_string();
-        else
-            buff << (T_("Unnamed gizmo"));
+        buff << get_gizmo_name(*this);
     }
     break;
 
@@ -2502,8 +2499,10 @@ static MenuEntry* _fixup_runeorb_entry(MenuEntry* me)
         text += make_stringf_p(T_("%1$s rune of Zot"),
                                 T_(rune_type_name(rune)));
         if (!you.runes[rune])
+        {
             text += make_stringf_p(T_(" (%1$s)"),
                                     T_(branches[rune_location(rune)].longname));
+        }
         text += "</";
         text += colour_to_str(colour);
         text += ">";

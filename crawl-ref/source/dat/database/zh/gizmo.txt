@@ -14,14 +14,14 @@ gizmo_adjective
 
 驱动
 
-# A. E. van Vogt, "Far Centaurus"
+# A. E. 范·沃格特，《遥远的半人马座》
 阿德莱迪坎德
 
 交变
 
 铝质
 
-# from the "turbo encabulator" article/engineer in-joke, it's in here a lot
+# 出自“涡轮封装器”工程师笑话；下文多次引用
 双效
 
 环形
@@ -42,10 +42,10 @@ gizmo_adjective
 
 备用
 
-# another from the turbo encabulator article
+# 同样出自“涡轮封装器”
 裸露
 
-# Look Around You
+# 《看看你周围》
 贝塞尔海姆
 
 分叉
@@ -54,7 +54,7 @@ gizmo_adjective
 
 碳质
 
-# This Island Earth
+# 《孤岛世界》
 卡瑟里明
 
 同轴
@@ -75,7 +75,7 @@ gizmo_adjective
 
 循环
 
-# turbo encabulator, from "depleneration"
+# “涡轮封装器”中的“depleneration”
 耗竭
 
 差分
@@ -84,7 +84,7 @@ gizmo_adjective
 
 扩散
 
-# Captain Atom
+# 《原子队长》
 迪鲁斯特
 
 偶极
@@ -101,7 +101,7 @@ gizmo_adjective
 
 应急
 
-# This Island Earth
+# 《孤岛世界》
 恩迪姆
 
 能量
@@ -116,12 +116,12 @@ gizmo_adjective
 
 通量
 
-# The Royal Tenenbaums
+# 《天才一族》
 弗里斯卡
 
 电镀
 
-# MST3K
+# 《神秘科学剧院3000》
 机关
 
 石墨
@@ -134,7 +134,7 @@ gizmo_adjective
 
 液压
 
-# Marvin the Martian
+# 火星人马文
 伊鲁迪姆
 
 脉冲
@@ -165,14 +165,14 @@ gizmo_adjective
 
 磁力
 
-# turbo encabulator, as "manestically"
+# “涡轮封装器”中的“manestically”
 曼内斯
 
 金属
 
 模态
 
-# turbo encabulator
+# “涡轮封装器”
 莫迪亚
 
 钼质
@@ -187,7 +187,7 @@ gizmo_adjective
 
 振荡
 
-# turbo encabulator
+# “涡轮封装器”
 泛皮
 
 渗透
@@ -198,7 +198,7 @@ gizmo_adjective
 
 引导
 
-# turbo encabulator
+# “涡轮封装器”
 管正弦
 
 塑料
@@ -211,7 +211,7 @@ gizmo_adjective
 
 动力
 
-# turbo encabulator
+# “涡轮封装器”
 预构
 
 初步
@@ -252,7 +252,7 @@ gizmo_adjective
 
 螺旋
 
-# turbo encabulator
+# “涡轮封装器”
 斯珀文
 
 静态
@@ -261,12 +261,12 @@ gizmo_adjective
 
 随机
 
-# Magic: the Gathering
+# 《万智牌》
 斯特里奥
 
 对称
 
-# The Sirens of Titan
+# 《泰坦的海妖》
 同弯
 
 合成
@@ -277,33 +277,33 @@ gizmo_adjective
 
 测试
 
-torque
+转矩
 
-trial
+试验
 
 钨质
 
-tuning
+调谐
 
-twisted
+扭曲
 
-utility
+实用
 
-vacuum
+真空
 
-vanadium
+钒质
 
 可变
 
-vectored
+矢量
 
 垂直
 
-voltage
+电压
 
 伏打
 
-@gizmo_modifier@axial
+@gizmo_modifier@轴向
 
 @gizmo_modifier@bolic
 
@@ -311,30 +311,30 @@ voltage
 
 @gizmo_modifier@choric
 
-@gizmo_modifier@controlled
+@gizmo_modifier@控制
 
-# backformed from "hydrocoptic", from the turbo encabulator article
+# 从“涡轮封装器”的“hydrocoptic”反向构词
 @gizmo_modifier@coptic
 
-@gizmo_modifier@coupled
+@gizmo_modifier@耦合
 
-@gizmo_modifier@current
+@gizmo_modifier@电流
 
-@gizmo_modifier@cyclic
+@gizmo_modifier@循环
 
 @gizmo_modifier@dermic
 
-@gizmo_modifier@dynamic
+@gizmo_modifier@动态
 
-@gizmo_modifier@faceted
+@gizmo_modifier@多面
 
-@gizmo_modifier@functional
+@gizmo_modifier@功能
 
 @gizmo_modifier@genic
 
-@gizmo_modifier@grade
+@gizmo_modifier@级
 
-@gizmo_modifier@graphic
+@gizmo_modifier@图形
 
 @gizmo_modifier@gravic
 
@@ -342,15 +342,15 @@ voltage
 
 @gizmo_modifier@matic
 
-@gizmo_modifier@metric
+@gizmo_modifier@度量
 
 @gizmo_modifier@meric
 
-@gizmo_modifier@phasic
+@gizmo_modifier@相位
 
 @gizmo_modifier@scopic
 
-@gizmo_modifier@static
+@gizmo_modifier@静态
 
 @gizmo_modifier@strophic
 
@@ -371,52 +371,52 @@ gizmo_noun
 
 执行器
 
-amplidyne
+增幅发电机
 
 放大器
 
-apparatus
+装置
 
 阵列
 
-assembler
+装配器
 
-assembly
+总成
 
 衰减器
 
-balancer
+平衡器
 
-ballast
+镇流器
 
-battery
+电池
 
 轴承
 
-booster
+增压器
 
-bracket
+支架
 
-bushing
+套管
 
-bypass
+旁路
 
-# as in the mechanical component, not as in "camera"
-cam
+# 指机械零件，不是“相机”
+凸轮
 
-camshaft
+凸轮轴
 
 电容器
 
-capsule
+胶囊
 
-# Australian spelling of "carburetor"
-carburettor
+# “carburetor”的澳大利亚拼法
+化油器
 
-# "catch you later!"
-catchulator
+# 双关“catch you later!”
+迟见器
 
-chamber
+腔室
 
 电路
 
@@ -424,66 +424,66 @@ chamber
 
 线圈
 
-collator
+整理器
 
-collimator
+准直器
 
 换向器
 
-comparator
+比较器
 
 补偿器
 
-conditioner
+调节器
 
 导体
 
-conduit
+导管
 
 连接器
 
-constructor
+构造器
 
 控制器
 
 转换器
 
-core
+核心
 
-correlator
+相关器
 
-crankshaft
+曲轴
 
-demodulator
+解调器
 
-device
+装置
 
 二极管
 
 分配器
 
-dongle
+加密狗
 
-doodad
+小玩意
 
-drive
+驱动器
 
-driveshaft
+传动轴
 
 发电机
 
-effector
+执行器
 
-# you may have guessed: it's from the turbo encabulator article
-encabulator
+# 你大概猜到了：出自“涡轮封装器”
+封装器
 
-engine
+引擎
 
 均衡器
 
-escapement
+擒纵机构
 
-filament
+灯丝
 
 过滤器
 
@@ -491,76 +491,76 @@ filament
 
 框架
 
-# hacker slang
-frob
+# 黑客俚语
+福罗布
 
-# ibid.
-frobnicator
+# 同上
+福罗布尼卡特器
 
-# ibid.
-frobnitz
+# 同上
+福罗布尼茨
 
-gasket
+垫圈
 
-gauge
+仪表
 
 发生器
 
-# Hogan's Heroes
-gonkulator
+# 《霍根英雄》
+冈库莱特器
 
 调速器
 
-# turbo encabulator
-grammeter
+# “涡轮封装器”
+克拉姆计
 
-grating
+光栅
 
-# Look Around You
-gribbin
+# 《看看你周围》
+格里宾
 
-grid
+网格
 
-grommet
+护环
 
-gyre
+回转器
 
-hopper
+料斗
 
-impeller
+叶轮
 
 诱导器
 
-# funnel, but in a technobabble context from The Sirens of Titan
-infundibulum
+# “漏斗”，取自《泰坦的海妖》中的技术黑话
+漏斗管
 
-initiator
+起动器
 
 注入器
 
-instantiator
+实例化器
 
 积分器
 
-interface
+接口
 
-# This Island Earth
-interocitor
+# 《孤岛世界》
+英特罗西特器
 
 逆变器
 
-iterator
+迭代器
 
 联动装置
 
-loader
+装载器
 
-# turbo encabulator
-marzlevane
+# “涡轮封装器”
+马兹勒叶片
 
-matrix
+矩阵
 
-mesh
+网孔
 
 计量器
 
@@ -570,24 +570,24 @@ mesh
 
 马达
 
-nacelle
+机舱
 
-node
+节点
 
 喷嘴
 
 振荡器
 
-# "phase modulator"
-phasor
+# “相位调制器”
+相量器
 
-pinion
+小齿轮
 
-pivot
+枢轴
 
-plating
+镀层
 
-plug
+插头
 
 端口
 
@@ -595,9 +595,9 @@ plug
 
 泵
 
-pylon
+塔架
 
-ramjet
+冲压发动机
 
 接收器
 
@@ -609,60 +609,60 @@ ramjet
 
 谐振器
 
-rig
+机组
 
-rod
+杆
 
 转子
 
-# ThunderCats
-samoflange
+# 《霹雳猫》
+萨莫法兰
 
 扫描仪
 
-scope
+镜
 
 传感器
 
 轴
 
-sheave
+滑轮
 
-shunt
+分流器
 
 螺线管
 
-spandrel
+拱肩
 
-spanner
+扳手
 
-spline
+花键
 
-spring
+弹簧
 
-sprocket
+链轮
 
 稳定器
 
 定子
 
-stridulator
+摩擦发声器
 
-substantiator
+实证器
 
-subsystem
+子系统
 
-suspension
+悬架
 
 开关
 
-synthesiser
+合成器
 
-tensor
+张量器
 
-throttle
+节流阀
 
-toroid
+环形体
 
 换能器
 
@@ -670,106 +670,106 @@ toroid
 
 晶体管
 
-transmission
+传动装置
 
-# Calvin and Hobbes
-transmogrifier
+# 《卡尔文与霍布斯》
+变形器
 
-transponder
+应答器
 
-# Friends
-transponster
+# 《老友记》
+特兰斯庞斯特
 
-# FoxTrot
-trapovaloid
+# 《狐步舞》
+特拉波瓦体
 
-trunnion
+耳轴
 
-tube
+管
 
 涡轮
 
 阀门
 
-variator
+变速器
 
-varistor
+压敏电阻
 
-# This Island Earth
-volterator
+# 《孤岛世界》
+伏特发生器
 
-# turbo encabulator. told you it was in here a lot
-waneshaft
+# “涡轮封装器”；说过它会出现很多次
+韦恩轴
 
 波导
 
-wheel
+轮
 
-whirligig
+旋转玩具
 
-widget
+小部件
 
-@gizmo_modifier@corder
+@gizmo_modifier@绕线器
 
-@gizmo_modifier@cycler
+@gizmo_modifier@循环器
 
-@gizmo_modifier@former
+@gizmo_modifier@成形器
 
 @gizmo_modifier@lator
 
-@gizmo_modifier@lyser
+@gizmo_modifier@溶解器
 
-@gizmo_modifier@sorter
+@gizmo_modifier@分选器
 
-@gizmo_modifier@stat
+@gizmo_modifier@稳态器
 
-@gizmo_modifier@tron
+@gizmo_modifier@电子管
 
-@gizmo_modifier@vator
+@gizmo_modifier@调节器
 
 %%%%
 gizmo_modifier
 
 航空
 
-algo
+痛觉
 
-allo
+异源
 
-ambi
+双向
 
-amphi
+双侧
 
-ana
+逆向
 
-aniso
+各向异性
 
-annulo
+环
 
-ante
+前
 
 反
 
-apeiro
+无限
 
 航天
 
 自
 
-auxo
+生长
 
-# Smells Like Nirvana
+# 《闻起来像涅槃》
 bargle
 
-baro
+气压
 
-baryo
+重子
 
-bathy
+深
 
 beepo
 
-benzo
+苯
 
 双
 
@@ -777,195 +777,195 @@ bingo
 
 生物
 
-# hacker slang
+# 黑客俚语
 bogo
 
-calli
+美
 
-cata
+分解
 
-ceno
+新
 
-chiro
+手
 
-chromo
+色
 
-chrono
+时间
 
-circum
+环绕
 
-cis
+顺式
 
-combi
+组合
 
-compu
+计算
 
-contra
+对抗
 
 反
 
-cross
+交叉
 
 低温
 
-cyclo
+环
 
 十
 
 半
 
-dextro
+右旋
 
 二
 
-dia
+贯穿
 
 dingle
 
 十二
 
-ecto
+外
 
-eigen
+本征
 
-eka
+一
 
 电
 
-enantio
+对映
 
-endo
+内
 
-epi
+表
 
-exa
+艾
 
 外
 
-ferro
+铁
 
 柔
 
-fluoro
+氟
 
-galvano
+电流
 
 地
 
-giga
+吉
 
-# of or relating to goblins, of course
+# 当然，指地精或与地精有关
 gobbo
 
-gonio
+角
 
 陀螺
 
-hecto
+百
 
-helico
+螺旋
 
 半
 
 七
 
-hetero
+异
 
 六
 
 全息
 
-homeo
+稳态
 
-homo
+同
 
 液压
 
-hygro
+湿
 
 超
 
 次
 
-icosa
+二十
 
-idio
+特异
 
 亚
 
-insta
+瞬时
 
 间
 
-intra
+内
 
-intro
+内向
 
-ipsi
+同侧
 
 等
 
 千
 
-kine
+动
 
-kineto
+运动
 
-latero
+侧
 
-levo
+左旋
 
-litho
+石
 
-ludo
+游戏
 
-lyso
+溶解
 
 宏
 
-magico
+魔法
 
 磁
 
-magni
+大
 
-manu
+手
 
-maxi
+最大
 
-mecha
+机械
 
-mechano
+机械
 
-medio
+中
 
 兆
 
-megalo
+巨
 
-mero
+部分
 
-meso
+中
 
 元
 
-metro
+度量
 
 微
 
-mnemo
+记忆
 
 单
 
-morpho
+形态
 
 多
 
-myria
+万
 
-myxo
+黏液
 
-nega
+负
 
 新
 
@@ -973,27 +973,27 @@ nega
 
 nico
 
-nitro
+硝基
 
-nona
+九
 
-nulli
+零
 
-octo
+八
 
 全
 
-oneiro
+梦
 
 正
 
-osmo
+渗透
 
 过
 
-oxy
+氧
 
-pano
+全景
 
 副
 
@@ -1001,79 +1001,79 @@ pano
 
 周
 
-peta
+拍
 
-petro
+石油
 
-phono
+声
 
-phospho
+磷
 
 光
 
-physio
+生理
 
 压电
 
-placo
+板
 
 聚
 
-posi
+正
 
 后
 
-potentio
+电势
 
 前
 
-preter
+超
 
-pro
+促
 
 原
 
 伪
 
-psychro
+冷
 
 火
 
-quadro
+四
 
 准
 
 无线电
 
-recti
+直
 
-reticulo
+网状
 
 复古
 
-rhabdo
+杆
 
-rheo
+流变
 
-roto
+旋转
 
 半
 
-septa
+七
 
 一倍半
 
-sinistro
+左旋
 
 光谱
 
-sphero
+球
 
-spiro
+螺旋
 
 立体
 
-strato
+层
 
 子
 
@@ -1083,26 +1083,26 @@ strato
 
 同步
 
-tachy
+快速
 
 技术
 
 远程
 
-tera
+太
 
 四
 
-# after the late Thag Simmons (Far Side)
+# 纪念已故的萨格·西蒙斯（《远方》）
 thago
 
-thauma
+奇迹
 
-theo
+神
 
 热
 
-topo
+拓扑
 
 跨
 
@@ -1116,25 +1116,25 @@ topo
 
 单
 
-vario
+可变
 
-vibro
+振动
 
-visco
+黏性
 
-vitreo
+玻璃
 
-volu
+体积
 
-xeno
+异
 
-xero
+干
 
-xylo
+木
 
-# of or relating to Zot, of course
-zotto
+# 当然，指佐特或与佐特有关
+佐特
 
-zygo
+接合
 
-zymo
+发酵
