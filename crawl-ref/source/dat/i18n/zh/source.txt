@@ -4336,7 +4336,7 @@ headlock
 锁头
 %%%%
 heal wounds
-疗伤
+治疗创伤
 %%%%
 health
 生命
@@ -15080,7 +15080,7 @@ air
 空气
 %%%%
 alchemy
-炼金
+炼金术
 %%%%
 animal skin
 动物皮
@@ -15278,7 +15278,7 @@ morningstar
 晨星锤
 %%%%
 necromancy
-死灵
+死灵术
 %%%%
 off
 关闭
@@ -17033,7 +17033,7 @@ Ring of Flames
 烈焰之环
 %%%%
 Shaft Self
-自我竖井
+自掘竖井
 %%%%
 Shroud of Golubria
 戈卢布里亚之幕
@@ -24734,7 +24734,7 @@ You are losing your grip on the fallen.
 你对亡者的掌控正在减弱。
 %%%%
 You are making an unholy racket with your haunted armour.
-你被诅咒的盔甲正在发出不洁的噪音。
+你被诅咒的护甲正在发出不洁的噪音。
 %%%%
 You are more vulnerable to fire.
 你更容易受到火焰伤害。
@@ -24959,7 +24959,7 @@ You can no longer study or use magical devices.
 你无法再学习或使用魔法装置。
 %%%%
 You can no longer train Armour skill.
-你无法再训练盔甲技能。
+你无法再训练护甲技能。
 %%%%
 You can no longer train Dodging skill.
 你无法再训练闪避技能。
@@ -24971,7 +24971,7 @@ You can no longer voluntarily change form.
 你无法再主动变形。
 %%%%
 You can no longer wear armour.
-你无法再穿戴盔甲。
+你无法再穿戴护甲。
 %%%%
 You can now gain extra lives.
 你现在可以获得额外生命。
@@ -24983,7 +24983,7 @@ You can now use scrolls of enchantment on lesser artefacts.
 你现在可以对低级神器使用附魔卷轴了。
 %%%%
 You can now wear armour.
-你现在可以穿戴盔甲了。
+你现在可以穿戴护甲了。
 %%%%
 You can once more be stealthy.
 你可以重新潜行了。
@@ -25028,7 +25028,7 @@ You can once more study and use magical devices.
 你可以重新学习和使用魔法装置。
 %%%%
 You can once more train Armour skill.
-你可以重新训练盔甲技能。
+你可以重新训练护甲技能。
 %%%%
 You can once more train Dodging skill.
 你可以重新训练闪避技能。
@@ -25172,7 +25172,7 @@ You feel less concerned about heat.
 你感到不那么受高温影响了。
 %%%%
 You feel less encumbered by your armour.
-你感到盔甲不那么累赘了。
+你感到护甲不那么累赘了。
 %%%%
 You feel less energetic.
 你感到精力不足。
@@ -25241,7 +25241,7 @@ You feel more divine.
 你感到更加神圣。
 %%%%
 You feel more encumbered by your armour.
-你感到盔甲更加累赘了。
+你感到护甲更加累赘了。
 %%%%
 You feel more energetic.
 你感到精力充沛。
@@ -25574,7 +25574,7 @@ You voice quiets to a reasonable volume.
 你的声音安静到了合理的音量。
 %%%%
 You will be able to unleash your equipped armour.
-你将能够发动装备的盔甲。
+你将能够发动装备的护甲。
 %%%%
 You will become an instrument of Makhleb's will.
 你将成为马克勒布意志的工具。
@@ -26057,10 +26057,10 @@ Your spell have diminished power.
 你的法术威力减弱了。
 %%%%
 Your spellcasting becomes less encumbered by armour.
-你的施法受到盔甲的阻碍减小了。
+你的施法受到护甲的阻碍减小了。
 %%%%
 Your spellcasting no longer less encumbered by armour.
-你的施法不再受到盔甲的阻碍。
+你的施法不再受到护甲的阻碍。
 %%%%
 Your stinger grows larger and begins to produce weakening toxins.
 你的毒刺变得更大并开始产生衰弱毒素。
@@ -31008,7 +31008,7 @@ Evoke Invisibility
 激发隐形
 %%%%
 Evoke Damnation
-激发诅咒
+激发天谴
 %%%%
 Evoke the Staff of Olgreb
 激发奥尔格雷布之杖
@@ -31026,7 +31026,7 @@ Recall Ancestor
 召回先祖
 %%%%
 Breathe Poison Gas
-喷吐毒气
+吐息毒气
 %%%%
 Breathe Rust
 喷吐铁锈
@@ -41203,3 +41203,117 @@ ruby sceptre
 %%%%
 opalescent scaly cloak
 乳白色鳞片斗篷
+%%%%
+You can use scrolls of enchantment on lesser artefacts.
+你可以使用附魔卷轴强化次级神器。
+%%%%
+Your tail will grow strong enough to constrict your foes.
+你的尾巴将变得足够有力，可以束缚敌人。
+%%%%
+You feel dragged down by the weight of the world.
+你感到世界的重负将你向下拖拽。
+%%%%
+You begin to emit a foul stench of rot and decay.
+你开始散发腐败与朽烂的恶臭。
+%%%%
+Your foul stench grows more powerful.
+你的恶臭变得更加强烈。
+%%%%
+You begin to radiate miasma.
+你开始散发瘴气。
+%%%%
+Your life and magic unlink.
+你的生命与法力不再相连。
+%%%%
+You feel a greater respect for book-learning.
+你开始更加尊重书本知识。
+%%%%
+Your legs no longer feel aquatic.
+你的双腿不再适应水中生活。
+%%%%
+Your flames flicker hungrily.
+你的火焰饥渴地闪烁着。
+%%%%
+You will be able to burn memories to enhance your damage-dealing spells.
+你将能够燃烧记忆来强化伤害类法术。
+%%%%
+You feel willing to use your scrolls freely once again.
+你又愿意自由使用卷轴了。
+%%%%
+You regenerate magic when rolling toward enemies. (Rampage MPRegen)
+你向敌人翻滚时会恢复法力。（冲锋法力再生）
+%%%%
+You regenerate magic and health when rolling toward enemies. (Rampage Regen)
+你向敌人翻滚时会恢复法力和生命。（冲锋再生）
+%%%%
+Your shaggy fur will keep you warm. (AC + 3, rC+)
+你的浓密皮毛将为你保暖。（AC + 3, rC+）
+%%%%
+You feel space start to knot itself around you.
+你感到周围的空间开始纠结在一起。
+%%%%
+mutation|acidic bite
+酸性撕咬
+%%%%
+mutation|beak
+鸟喙
+%%%%
+mutation|clever
+聪慧
+%%%%
+mutation|clumsy
+笨拙
+%%%%
+mutation|repulsion field
+排斥力场
+%%%%
+mutation|dopey
+愚钝
+%%%%
+mutation|fangs
+尖牙
+%%%%
+mutation|horns
+角
+%%%%
+mutation|molten scales
+熔融鳞片
+%%%%
+mutation|rugged brown scales
+粗糙褐鳞
+%%%%
+mutation|shaggy fur
+浓密皮毛
+%%%%
+mutation|sharp scales
+锐利鳞片
+%%%%
+mutation|thin skeletal structure
+纤细骨骼
+%%%%
+mutation|tough skin
+硬化表皮
+%%%%
+status|acrobatic
+身手敏捷
+%%%%
+status|gold aura
+金币光环笼罩
+%%%%
+status|in a heavenly storm
+身处天界风暴
+%%%%
+status|parry
+招架中
+%%%%
+status|phalanx barrier
+方阵屏障
+%%%%
+status|under a protective aura
+受到防护光环保护
+%%%%
+status|strong-willed
+意志坚定
+%%%%
+coated in regenerative ooze
+你被再生软泥覆盖。

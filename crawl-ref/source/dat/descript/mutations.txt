@@ -728,11 +728,6 @@ nightstalker mutation
 You are attuned to the shadows, reducing the distance that you can see or be
 seen from.
 %%%%
-+LOS mutation
-
-You are born to the light, increasing the distance that you can see and be seen
-from.
-%%%%
 stone body mutation
 
 You are made of living stone which is very resistant to damage. You gain a
@@ -952,10 +947,9 @@ Your grasping arms need time to limber up, making your first few attacks in
 each fight less effective. Slow, heavy attacks help more than fast attacks.
 Both weapon-based and unarmed attacks are affected.
 %%%%
-no rings mutation
+no jewellery mutation
 
-Your hands are embedded into the controls for your grasping arms, leaving you
-with no place to wear magical rings without disastrous magical interference.
+You cannot equip rings or amulets.
 %%%%
 iron-fused scales mutation
 

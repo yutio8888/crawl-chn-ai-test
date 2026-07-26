@@ -2533,7 +2533,7 @@ const char* mutation_name(mutation_type mut, bool allow_category)
     else
         en = _get_mutation_def(mut).short_desc;
 
-    return T_(en);
+    return C_("mutation", en);
 }
 
 const char* category_mutation_name(mutation_type mut)

@@ -92,11 +92,11 @@ clumsy mutation
 %%%%
 high mp mutation
 
-你的魔力储备会增加。这个变异每升一级会加10点魔力。
+你的法力储备会增加。这个变异每升一级会使法力上限提高 10%。
 %%%%
 low mp mutation
 
-你的魔力储备会减少。这个变异每升一级会减10点魔力。
+你的法力容量较低。这个变异每升一级会使法力上限降低 10%。
 %%%%
 camouflage mutation
 
@@ -124,7 +124,7 @@ acidic bite mutation
 antimagic bite mutation
 
 你对魔法有着渴求，在近战时能够咬伤敌人。
-这可以恢复你的魔力并扰乱使用魔法的敌人，有时会让他们无法行动。
+这可以恢复你的法力并扰乱使用魔法的敌人，有时会让他们无法行动。
 %%%%
 claws mutation
 
@@ -162,7 +162,8 @@ tentacle spike mutation
 %%%%
 naga tail mutation
 
-你的脚变成一条长长的蛇状尾巴。这个变异达到第二级，
+你的脚变成一条长长的蛇状尾巴，使你能在水中保持稳定，
+但移动速度会比大多数物种慢得多。这个变异达到第二级，
 你在近战时可以用尾巴束缚敌人。你的尾巴一次只能束缚一个敌人，
 在这个变异等级，每次攻击都会尝试开始或再次进行束缚。
 成功率主要取决于敏捷、格斗技能和任何杀戮加成。
@@ -273,8 +274,8 @@ sense surroundings mutation
 %%%%
 MP-powered wands mutation
 
-你的魔杖会汲取你的魔力，在这个过程中会变得更强大。
-如果你没有魔力了，你的魔杖的效果会恢复正常。
+你的魔杖会汲取你的法力，在这个过程中会变得更强大。
+如果你没有法力了，你的魔杖的效果会恢复正常。
 %%%%
 # ------ 有对应效果的好变异/坏变异 -----
 regeneration mutation
@@ -324,8 +325,10 @@ subdued magic mutation
 # ------ 只有坏变异，没有对应的好变异 -----
 teleportitis mutation
 
-你偶尔会穿过本层，传送到敌方怪物那里。
-这个变异每升一级，就会增加这种情况发生的频率。
+你会周期性地传送到敌对怪物附近。传送发生前数回合，你会感觉自身开始变得不稳定；
+阅读传送卷轴可以暂时抑制这种情况。
+
+这个变异每升一级，开始传送的频率都会提高。
 %%%%
 deformed body mutation
 
@@ -355,7 +358,7 @@ demonic guardian mutation
 %%%%
 powered by pain mutation
 
-当你受伤时，有时你会获得能量，它会注入你的魔力储备，
+当你受伤时，有时你会获得能量，它会注入你的法力储备，
 有时你的敏捷或力量会得到暂时的提升。这个变异每升一级，其效果就会增强。
 %%%%
 foul stench mutation
@@ -372,7 +375,7 @@ passive freeze mutation
 spiny mutation
 
 近战中，你的敌人有50%的几率被你的尖刺所刺穿，并受到伤害。
-这个变异每升一级，就会增加攻击力。
+这个变异每升一级，尖刺造成的伤害都会提高。此变异还使你免疫束缚。
 %%%%
 augmentation mutation
 
@@ -381,15 +384,15 @@ augmentation mutation
 %%%%
 magic shield mutation
 
-当你受到伤害时，一些伤害会转而消耗你的魔力储备。
+当你受到伤害时，一些伤害会转而消耗你的法力储备。
 %%%%
 magic regeneration mutation
 
-你的魔力储备的恢复速度变快。
+你的法力储备的恢复速度变快。
 %%%%
 magic link mutation
 
-当魔力不足时，你会恢复魔法而不是生命值。
+当法力不足时，你会恢复法力而不是生命值。
 %%%%
 demonic magic mutation
 
@@ -449,7 +452,7 @@ aura of silence mutation
 %%%%
 bedevilling mutation
 
-你施放的妖术威力增强。
+你施放的诅咒系法术威力增强。
 %%%%
 demonic willpower mutation
 
@@ -507,8 +510,8 @@ innate caster mutation
 %%%%
 hp casting mutation
 
-你没有独立的魔力储备，任何会影响魔力的都将对你失效。
-当施展法术、使用能力或做任何对其他物种来说需要花费魔力的事时，
+你没有独立的法力储备，任何会影响法力的效果都将对你失效。
+当施展法术、使用能力或做任何对其他物种来说需要花费法力的事时，
 你将转而消耗生命值。
 %%%%
 extra vitality mutation
@@ -523,10 +526,6 @@ forlorn mutation
 nightstalker mutation
 
 你适应了阴影，减小了你能看到和被看到的距离。
-%%%%
-+LOS mutation
-
-你生来就向着光，增加了你能看到和被看到的距离。
 %%%%
 cold-blooded mutation
 
@@ -545,7 +544,8 @@ four strong arms mutation
 %%%%
 retaliatory headbutt mutation
 
-当敌人未在近战中击中你时，你可能会本能地进行报复，试图用你的角顶伤攻击者。
+当敌人的近战攻击未命中你时，你可能会本能地反击，尝试用角顶伤攻击者。
+每次玩家行动中，对同一个敌人最多只能发动一次这种反击。
 %%%%
 multi-lived mutation
 
@@ -597,7 +597,7 @@ no regeneration mutation
 至于提升生命力的手段，像药水和虔诚的祈祷仍能治疗你，
 某些神圣祈祷能力可以短暂赋予你自愈的能力。
 作为补偿，你可以通过<input>$cmd[CMD_USE_ABILITY]</input> 键治疗自己，
-但代价是要永久地失去一些魔力。
+但代价是要永久地失去一些法力。
 %%%%
 # ------ 吉瓦的变异 ------
 gelatinous body mutation
@@ -635,7 +635,7 @@ otherworldly mutation
 %%%%
 explore regen mutation
 
-探索未知会让你精神振奋。当你探索地牢时，你的伤口会愈合，你的魔力会恢复。
+探索未知会让你精神振奋。当你探索地牢时，你的伤口会愈合，你的法力会恢复。
 %%%%
 faith mutation
 
@@ -649,29 +649,23 @@ devour on kill mutation
 rollpage mutation
 
 当你移向敌人时会本能地翻滚，会向前再冲出一格。
-这个变异能在你滚动时提升魔力恢复速度；
-这个变异达到第二级，魔力和生命值的恢复速度会同时提升。
+这个变异能在你滚动时提升法力恢复速度；
+这个变异达到第二级，法力和生命值的恢复速度会同时提升。
 %%%%
 double potion healing mutation
 
-每当药水恢复你的生命值或魔力时，其恢复量是原先的两倍。
+每当药水恢复你的生命值或法力时，其恢复量是原先的两倍。
 %%%%
 drunken brawling mutation
 
-当你喝下恢复健康或魔力的药水时，你会立即攻击附近的所有敌人。
+当你喝下恢复健康或法力的药水时，你会立即攻击附近的所有敌人。
 
-（这包括治疗、愈伤、魔力和琼浆药水。）
-%%%%
-# ------ 入要求的舍弃 ------
-inability to drink after injury mutation
-
-当你受伤时，你有可能暂时无法饮用药水。
-这个变异每升一级，几率就会增加1％。
+（这包括治疗、愈伤、法力和琼浆药水。）
 %%%%
 missing a hand mutation
 
 你的手要比以前不方便得多。
-你不能使用双手武器、装备盾牌、发起徒手攻击或一次使用多个魔法戒指。
+你不能使用双手武器、装备盾牌、发动副手攻击或一次使用多个魔法戒指。
 %%%%
 no stealth mutation
 
@@ -680,14 +674,14 @@ no stealth mutation
 %%%%
 no forms mutation
 
-你无法通过符咒、药水或其他任何方式自行改变形态。
+你无法通过护符、药水或其他任何方式自行改变形态。
 但你仍有可能会被变形魔杖等方式不由自主地改变形态。
 %%%%
 inability to use devices mutation
 
 你无法使用魔法设备。
 其中包括魔杖和大多数需要通过<input>$cmd[CMD_EVOKE]</input>激活的物品，
-但不包括获得的武器、符咒和金字塔雕像。这也使得法杖在近战时的威力大大降低。
+但不包括触及武器、护符和金字塔雕像。这也使得法杖在近战时的威力大大降低。
 %%%%
 hated by all mutation
 
@@ -710,7 +704,7 @@ unskilled mutation
 %%%%
 reduced AC mutation
 
-你很容易受到创伤，你的防具的增益受到削弱。
+你很容易受到创伤，你从护甲获得的增益会被削弱。
 %%%%
 reduced EV mutation
 
@@ -734,7 +728,7 @@ no weapons or thrown items mutation
 %%%%
 no armour mutation
 
-你无法装备防具。
+你无法穿戴护甲。
 %%%%
 # ------ 技能受制 ------
 # 技能出现，技能消失。无法解释那个！
@@ -749,27 +743,27 @@ inability to train armour mutation
 %%%%
 no air magic mutation
 
-你的气系魔法技能等级为0，你也无法训练它。
+你的空气魔法技能等级为 0，你也无法训练它。
 %%%%
 no conjurations magic mutation
 
-你的咒法技能等级为0，你也无法训练它。
+你的咒法系技能等级为 0，你也无法训练它。
 %%%%
 no earth magic mutation
 
-你的土系魔法技能等级为0，你也无法训练它。
+你的大地魔法技能等级为 0，你也无法训练它。
 %%%%
 no fire magic mutation
 
-你的火系魔法技能等级为0，你也无法训练它。
+你的火焰魔法技能等级为 0，你也无法训练它。
 %%%%
 no hexes magic mutation
 
-你的妖术技能等级为0，你也无法训练它。
+你的诅咒系技能等级为 0，你也无法训练它。
 %%%%
 no ice magic mutation
 
-你的冰系魔法技能等级为0，你也无法训练它。
+你的寒冰魔法技能等级为 0，你也无法训练它。
 %%%%
 no necromancy magic mutation
 
@@ -781,11 +775,11 @@ no alchemy magic mutation
 %%%%
 no summoning magic mutation
 
-你的召唤技能等级为0，你也无法训练它。
+你的召唤系技能等级为 0，你也无法训练它。
 %%%%
 no translocations magic mutation
 
-你的移位技能等级为0，你也无法训练它。
+你的传送系技能等级为0，你也无法训练它。
 %%%%
 %%%%
 Cocytus destruction mutation
@@ -797,14 +791,6 @@ Dis destruction mutation
 
 你的释放毁灭能力被铁城强化。你能够投掷腐蚀性酸液束和金属碎片束
 而不是负能量。
-%%%%
-East Wind's embodiment mutation
-
-每当你狂暴冲锋时，你恢复一小部分最大魔力，并释放一阵刺骨寒风，
-使2格内的所有敌人暴露，增加他们从非攻击来源受到的伤害35%，
-以及他们被这些来源命中或影响的概率。
-
-此外，施放法术不会导致你停止践踏。
 %%%%
 Gehenna destruction mutation
 
@@ -861,7 +847,8 @@ Mark of Execution mutation
 有很小概率它会醒来并显现为包围你的镰刀刀锋漩涡。这些刀锋会在你
 攻击时一起攻击，并在你成功闪避敌人攻击时反击。
 
-你获得向敌人快速狂暴冲锋的能力。
+附身期间，你可以快速冲锋接近敌人；但若有超过短暂片刻未进行攻击，
+恶魔存在就会再次在你体内沉睡。
 %%%%
 Mark of Haemoclasm mutation
 
@@ -876,6 +863,8 @@ Mark of the Celebrant mutation
 向附近的敌人释放一阵血箭齐射。你将为每个有效目标至少射出一支箭，
 但如果目标较少可能射出额外的箭。祈神技能提高这些箭的伤害，
 马赫勒布总会为被此效果击杀的敌人赐予你治疗。
+
+完成一次鲜血仪式后，必须等生命值完全恢复才能再次发动。
 %%%%
 Mark of the Fanatic mutation
 
@@ -896,24 +885,10 @@ Mark of the Tyrant mutation
 召唤更强大的仆从（以额外的虔诚值为代价）。当你杀死敌人时，
 一个随机仆从可能获得以下之一：加速、强壮、再生或聪慧。
 %%%%
-North Wind's embodiment mutation
-
-你在践踏期间迅速恢复所受伤害的最多70%。恢复速度随你的最大生命值提高。
-%%%%
-South Wind's embodiment mutation
-
-你在狂暴冲锋期间潜行提高50%，每当你成功偷袭一个敌人时，
-你的下一次狂暴冲锋移动变为瞬间。
-%%%%
 Tartarus destruction mutation
 
 你的释放毁灭能力被悲叹地狱强化。你能够投掷毁灭束而不是闪电，
 它会降低受害者的意志力，且你的负能量束更加强大。
-%%%%
-West Wind's embodiment mutation
-
-每当你手持远程武器向敌人狂暴冲锋时，你还会射出一发射击，
-造成更高的伤害。你的下一次普通攻击会变为同时对多个敌人射击。
 %%%%
 accursed mutation
 
@@ -932,7 +907,9 @@ armoured shell mutation
 %%%%
 artefact enchanting mutation
 
-你可以使用卷轴为一些神器物品附魔，尽管这比附魔普通物品更困难。
+你可以对随机生成的神器使用武器附魔卷轴和护甲附魔卷轴。
+
+附魔等级不能超过同类普通物品通常可达到的上限，特别奇异的神器则完全无法附魔。
 %%%%
 blade parry mutation
 
@@ -987,7 +964,8 @@ eeljolt mutation
 %%%%
 efficient magic mutation
 
-你更有效率地引导魔法能量，略微降低施法的魔力消耗。
+你天生理解并能更精确地掌控法力流动，因此施法效率更高。
+这个变异每升一级会使法术消耗减少 1 点法力，最低仍为 1 点法力。
 %%%%
 efficient metabolism mutation
 
@@ -1007,7 +985,7 @@ ephemeral shield mutation
 feed off suffering mutation
 
 一股邪恶却振奋人心的能量弥漫在你的灵魂中，与死亡瞬间释放的某些能量产生共鸣。
-每当中毒或被汲取的敌人在你视野内死亡时，你有概率吸取其少量生命力和魔力。
+每当中毒或被汲取的敌人在你视野内死亡时，你有概率吸取其少量生命力和法力。
 每级此变异都会提高触发概率和吸取量。
 %%%%
 formless mutation
@@ -1076,7 +1054,9 @@ hypnotic gaze mutation
 %%%%
 initially attractive mutation
 
-当第一次看到某只怪物时，它可能会被魔法拉向你。可能惊醒沉睡的怪物，虽然它们不一定能发现你的位置。
+当你第一次看到某只怪物时，它可能会被魔法拉向你。
+这有概率惊醒沉睡的怪物，但它们不一定会察觉你的位置。
+这个变异达到第二级后，触发概率会提高。
 %%%%
 insubstantial mutation
 
@@ -1085,12 +1065,12 @@ insubstantial mutation
 %%%%
 inviolate magic mutation
 
-你的魔法能抵抗外力干扰。敌对效果对你汲取的魔力只有正常的三分之一，
+你的魔法能抵抗外力干扰。敌对效果对你汲取的法力只有正常的三分之一，
 而且除你自己以外，任何人都无法移除你的魔法效果。
 %%%%
 iron-fused scales mutation
 
-你的一些鳞片已经融合了铁，提高你的护甲等级和对某些物理伤害的抗性。
+你的鳞片与厚重铁层融合，坚韧程度如同一套护甲（AC +5）。
 %%%%
 lethargy bane
 
@@ -1104,7 +1084,9 @@ lithotoxin mutation
 %%%%
 lucky mutation
 
-你有一种不可思议的直觉，能发现别人可能当作凡品忽略的物品的隐藏属性。偶尔会发现看似普通的物品其实是神器。
+你有一种不可思议的直觉，能发现别人可能当作凡品忽略的物品的隐藏属性。
+每当你第一次遇到地上的新物品时，都有极小概率发现它其实是神器。
+这个变异每升一级都会提高该概率。
 %%%%
 maw attack mutation
 
@@ -1113,7 +1095,8 @@ maw attack mutation
 %%%%
 meek mutation
 
-你的性格胆小，不太擅长战斗，略微降低你的近战伤害。
+你的所有攻击都会变弱，伤害降低，命中率也会略微下降。
+这个变异每升一级，负面效果都会加重。
 %%%%
 mnemnophage mutation
 
@@ -1138,15 +1121,17 @@ multiplicity bane
 %%%%
 no forgecraft magic mutation
 
-你的思维无法理解锻造术魔法的原理，阻止你学习或施放锻造术法术。
+你的锻造术技能固定为 0，且无法训练该技能。
 %%%%
-no rings mutation
+no jewellery mutation
 
-你的手指无法佩戴戒指，阻止你装备任何戒指。
+你无法装备戒指或项链。
 %%%%
 off-hand wielding mutation
 
-你发展了用副手持有额外武器的能力，允许你双持。
+只要没有持握双手武器，也没有装备盾牌或魔法球，你就可以在副手持握一件单手武器。
+主手攻击后会追加一次副手攻击，攻击延迟由两件武器的平均值决定。
+远程武器只能追击远程武器的攻击，近战武器也同样只能追击近战攻击。
 %%%%
 ooze flood mutation
 
@@ -1160,7 +1145,8 @@ paradox bane
 %%%%
 poor constitution mutation
 
-受到伤害时，你的攻击可能在短时间内被削弱。
+你的身体难以承受伤势；受到伤害时，攻击有概率在短时间内被削弱。
+这个变异达到第二级后，有时还会同时使你减速。
 %%%%
 potion fungus mutation
 
@@ -1204,7 +1190,8 @@ runic magic mutation
 %%%%
 slime shroud mutation
 
-你的身体被一层薄薄的保护性软泥覆盖，偶尔吸收一次近战攻击。
+覆盖身体的黏液护罩在你受到近战攻击时可能将其偏转。
+但偏转会破坏护罩，需要一段时间才能重新形成。
 %%%%
 slow wielding mutation
 
@@ -1215,13 +1202,12 @@ snow-blindness bane
 当你受到寒冷伤害时，有很高概率虚弱并失明一段中等长度的时间。
 你当前的寒冷抗性越高，此概率越低。
 %%%%
-spark swarm mutation
-
-你体内充满了小型电火花，在受到近战伤害时会周期性地释放。
-%%%%
 spatial entanglement mutation
 
-当你施展移位法术时，有一定几率在传送后将另一只怪物拉到你的新位置。
+每当你发生传送时，都有概率将另一只怪物一同拉到你的新位置。
+短距离传送只会拉走你原位置视野内的怪物，长距离传送则可能拉来本层任何地方的怪物。
+
+这种经历会使怪物略感迷乱，被拉来后无法立即行动。
 %%%%
 spellclaws mutation
 
@@ -1241,10 +1227,6 @@ sporulate mutation
 
 你的近战攻击会使多个爆裂菇在目标后方的空地上开始生长。
 若让它们生长数回合，它们会爆成孢子，伤害附近敌人并可能使其短暂眩晕。
-%%%%
-stampede mutation
-
-你获得践踏能力，允许你向敌人野蛮冲锋并践踏他们。
 %%%%
 steam response mutation
 
@@ -1279,7 +1261,8 @@ time-warped blood mutation
 %%%%
 treasure sense mutation
 
-你能够感觉到附近珍贵物品的存在，偶尔在你的地图上揭示它们的位置。
+你对物品所在位置有不可思议的感知。探索地牢时，
+附近那些你无法直接看见、尚未发现的物品位置会在地图上获得标记。
 %%%%
 trickster mutation
 

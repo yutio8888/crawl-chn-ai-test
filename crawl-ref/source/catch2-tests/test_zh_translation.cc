@@ -24,6 +24,7 @@
 #include "mgen-data.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
+#include "mutation.h"
 #include "options.h"
 #include "player.h"
 #include "random.h"
@@ -35,6 +36,7 @@
 #include "spl-util.h"
 #include "spell-type.h"
 #include "stringutil.h"
+#include "status.h"
 #include "tags.h"
 #include "terrain.h"
 #include "transform.h"
@@ -117,6 +119,26 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     Options.lang_name = "zh";
     databaseSystemInit();
     CHECK(std::string(T_("You hit %s.")) != "You hit %s.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: character mechanics use their display contexts",
+                 "[zh-translation][character-mechanics][issue-27]")
+{
+    CHECK(std::string(mutation_name(MUT_CLEVER))
+          == std::string(C_("mutation", "clever")));
+    CHECK(std::string(mutation_name(MUT_CLEVER))
+          != std::string(T_("clever")));
+
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.duration[DUR_NO_SCROLLS] = 10;
+
+    status_info info;
+    REQUIRE(fill_status_info(STATUS_NO_SCROLL, info));
+    CHECK(info.short_text == C_("status", "unable to read"));
+    CHECK(info.long_text == C_("status", "You cannot read scrolls."));
+    CHECK(info.long_text != "You cannot read scrolls.");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

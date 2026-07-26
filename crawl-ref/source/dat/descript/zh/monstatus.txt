@@ -200,11 +200,6 @@ entangled in a web monstatus
 
 [[low-tier stab monstatus]]
 %%%%
-exposed monstatus
-
-这个生物受到所有非攻击来源的伤害增加（毒素除外），非攻击投射物
-对其更精准，其意志力也略微降低。
-%%%%
 extremely poisoned monstatus
 
 这个生物每回合受到毒素伤害，且无法被进一步中毒。
@@ -304,7 +299,7 @@ lightly drained monstatus
 %%%%
 lost in madness monstatus
 
-这个生物被泽恩的力量逼疯了。它将再也不会使用法术或能力，会随机踉跄而行，
+这个生物被辛的力量逼疯了。它将再也不会使用法术或能力，会随机踉跄而行，
 攻击撞到的任何东西——无论是友方、敌方，有时甚至是它们自己。
 %%%%
 magic disrupted monstatus
@@ -350,7 +345,7 @@ more vulnerable to poison monstatus
 %%%%
 mute monstatus
 
-这个生物被泽恩的力量永久地沉默了。这将阻止该生物发出的一切噪音，
+这个生物被辛的力量永久地沉默了。这将阻止该生物发出的一切噪音，
 包括大多数生物施法所需的发声。
 %%%%
 not watching you monstatus
@@ -520,11 +515,6 @@ stilling the winds monstatus
 
 这个生物正在阻止当前楼层产生任何云雾。
 %%%%
-stampeding monstatus
-
-这个生物正以惊人的速度朝单一方向移动。任何被撞到的敌人将被向后推开，
-受到50%额外伤害且命中率提升。
-%%%%
 strong monstatus
 
 这个生物的近战攻击伤害提升50%。
@@ -535,7 +525,7 @@ strong-willed monstatus
 %%%%
 stupefied monstatus
 
-这个生物被泽恩的力量震慑而无法行动。
+这个生物被辛的力量震慑而无法行动。
 
 [[high-tier stab monstatus]]
 %%%%

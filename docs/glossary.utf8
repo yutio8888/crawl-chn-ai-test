@@ -789,7 +789,7 @@ Shadow Torpor	暗影麻木	domain=spells; source=EN/ZH; 备注=✅
 Shadow Turret	暗影炮塔	domain=spells; source=EN/ZH; 备注=✅
 Shadowball	暗影球	domain=spells; source=EN/ZH; 备注=✅
 shadows	暗影	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-018
-Shaft Self	自我竖井	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Shaft Self	自掘竖井	domain=spells; source=EN/ZH; 备注=✅ 现行能力；同名法术仍为 TAG 34 兼容记录
 shaggy fur	浓密皮毛	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Shapeshifter	变形人	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Shapeshifting	变形术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001

@@ -1323,7 +1323,7 @@
 | See Invisible | 识破隐形 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
 | Seismic Stomp | 地震践踏 | ✅ |
 | Seracfall | 冰塔崩塌 | ✅ |
-| Shaft Self | 自我竖井 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Shaft Self | 自掘竖井 | ✅ 现行能力；同名法术仍为 TAG 34 兼容记录 |
 | Shatter | 粉碎 | ✅ |
 | Shock | 震击 | ✅ |
 | Shred | 撕裂 | ✅ |

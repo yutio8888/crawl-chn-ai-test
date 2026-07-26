@@ -1128,6 +1128,8 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_text = C_("status", inf.light_text.c_str());
         if (!inf.short_text.empty())
             inf.short_text = C_("status", inf.short_text.c_str());
+        if (!inf.long_text.empty())
+            inf.long_text = C_("status", inf.long_text.c_str());
     }
     return true;
 }
