@@ -114,6 +114,26 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                         ):
                             MODULE.active_source(source)
 
+    def test_contextual_item_overrides_fail_closed_on_syntax_drift(self):
+        item_name = MODULE.active_source(MODULE.SRC / "item-name.cc")
+        broken_brand = item_name.replace(
+            "brand == SPWPN_DRAINING", "brand != SPWPN_DRAINING", 1
+        )
+        with self.assertRaisesRegex(
+            RuntimeError, "unparsed contextual weapon-brand"
+        ):
+            MODULE.contextual_brand_forms(broken_brand)
+
+        broken_book = item_name.replace(
+            "sub_type == BOOK_NECROMANCY",
+            "sub_type != BOOK_NECROMANCY",
+            1,
+        )
+        with self.assertRaisesRegex(
+            RuntimeError, "unparsed contextual book-name"
+        ):
+            MODULE.contextual_book_names(broken_book)
+
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
             "identity": "weapon:WPN_TEST",
@@ -231,6 +251,22 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(
             "armour ego full name|infusion",
             by_identity["armour_ego:SPARM_INFUSION"]["translation_key"],
+        )
+        self.assertEqual(
+            "book full name|Necromancy",
+            by_identity["book:BOOK_NECROMANCY"]["translation_key"],
+        )
+        draining = by_identity["weapon_brand:SPWPN_DRAINING"]
+        self.assertEqual(
+            "weapon brand full name|draining",
+            draining["translation_key"],
+        )
+        self.assertEqual(
+            {"verbose": "汲取", "terse": "汲取", "adj": "汲取"},
+            {
+                form: data["zh"]
+                for form, data in draining["forms"].items()
+            },
         )
 
     def test_cli_returns_failure_when_inventory_has_violation(self):

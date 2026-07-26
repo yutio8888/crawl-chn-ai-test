@@ -215,6 +215,64 @@ def property_literals(text, array_name):
     return rows
 
 
+def contextual_brand_forms(text):
+    """Parse the narrow C_() overrides layered over weapon-brand arrays."""
+    name_body = function_body(text, "brand_type_name")
+    adj_body = function_body(text, "brand_type_adj")
+    overrides = {}
+    name_pattern = re.compile(
+        r"if\s*\(\s*brand\s*==\s*(SPWPN_[A-Z0-9_]+)\s*\)\s*\{\s*"
+        r"return\s+terse\s*\?\s*C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)"
+        r"\s*:\s*C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;\s*\}",
+        re.S,
+    )
+    for identity, terse_context, terse, verbose_context, verbose in (
+        name_pattern.findall(name_body)
+    ):
+        overrides.setdefault(identity, {}).update({
+            "terse": {"key": f"{terse_context}|{terse}", "en": terse},
+            "verbose": {
+                "key": f"{verbose_context}|{verbose}", "en": verbose,
+            },
+        })
+    adj_pattern = re.compile(
+        r"if\s*\(\s*brand\s*==\s*(SPWPN_[A-Z0-9_]+)\s*\)\s*"
+        r"return\s+C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;"
+    )
+    for identity, context, literal in adj_pattern.findall(adj_body):
+        overrides.setdefault(identity, {})["adj"] = {
+            "key": f"{context}|{literal}", "en": literal,
+        }
+    parsed = sum(len(forms) for forms in overrides.values())
+    expected = len(re.findall(r"\bC_\(", name_body + adj_body))
+    if parsed != expected:
+        raise RuntimeError(
+            "unparsed contextual weapon-brand producer override"
+        )
+    return overrides
+
+
+def contextual_book_names(text):
+    """Parse contextual full-name overrides in the OBJ_BOOKS producer."""
+    body = function_body(text, "sub_type_string")
+    pattern = re.compile(
+        r"sub_type\s*==\s*(BOOK_[A-Z0-9_]+)\s*\?\s*"
+        r"C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*"
+        r":\s*T_\(_book_type_name\(sub_type\)\)",
+        re.S,
+    )
+    rows = {
+        identity: {
+            "key": f"{context}|{literal}",
+            "en": f"book of {literal}",
+        }
+        for identity, context, literal in pattern.findall(body)
+    }
+    if len(rows) != len(re.findall(r"\bC_\(", body)):
+        raise RuntimeError("unparsed contextual book-name producer override")
+    return rows
+
+
 def enum_constants(headers, enum_names):
     source = "\n".join(f'#include "{header}"' for header in headers)
     with tempfile.TemporaryDirectory(prefix="dcss-item-audit-") as directory:
@@ -488,6 +546,7 @@ def build_inventory():
         literal = "".join(re.findall(r'"([^"]*)"', string_expression))
         explicit[identity] = {"key": literal, "en": literal}
     book_rows.update(explicit)
+    book_rows.update(contextual_book_names(item_name))
     # Internal randart-book generation sentinels are not stable ordinary
     # display identities and are explicitly outside this audit.
     book_rows.pop("BOOK_RANDART_LEVEL", None)
@@ -546,6 +605,7 @@ def build_inventory():
     ).group(1)
     literals = lambda block: re.findall(r'"([^"]*)"', block)
     terse, verbose, adj = map(literals, (terse_block, verbose_block, adj_block))
+    brand_overrides = contextual_brand_forms(item_name)
     real_brand_limit = dict(enums["brand_type"])["NUM_REAL_SPECIAL_WEAPONS"]
     # Enum declaration order includes markers; numeric values select the arrays.
     seen_brand_values = set()
@@ -558,24 +618,34 @@ def build_inventory():
         seen_brand_values.add(value)
         if identity == "SPWPN_NORMAL":
             continue
-        forms = {"verbose": verbose[value], "terse": terse[value], "adj": adj[value]}
+        forms = {
+            "verbose": {"key": verbose[value], "en": verbose[value]},
+            "terse": {"key": terse[value], "en": terse[value]},
+            "adj": {"key": adj[value], "en": adj[value]},
+        }
+        forms.update(brand_overrides.get(identity, {}))
+        verbose_form = forms["verbose"]
         rows.append({
             "identity": f"weapon_brand:{identity}",
             "category": "weapon_brand",
             "lifecycle": (
-                "compatibility" if forms["verbose"] == "obsolescence"
+                "compatibility" if verbose_form["en"] == "obsolescence"
                 else "internal" if identity == "SPWPN_CONFUSE"
                 else "current"
             ),
-            "english_source_name": forms["verbose"],
-            "translation_key": forms["verbose"],
-            "current_chinese_name": db.get(forms["verbose"].lower(),
-                                           forms["verbose"]),
-            "translation_present": forms["verbose"].lower() in db,
+            "english_source_name": verbose_form["en"],
+            "translation_key": verbose_form["key"],
+            "current_chinese_name": db.get(
+                verbose_form["key"].lower(), verbose_form["en"]
+            ),
+            "translation_present": verbose_form["key"].lower() in db,
             "runtime_lookup": True,
             "forms": {
-                form: {"en": key, "zh": db.get(key.lower())}
-                for form, key in forms.items()
+                form: {
+                    "en": data["en"],
+                    "zh": db.get(data["key"].lower()),
+                }
+                for form, data in forms.items()
             },
         })
 
