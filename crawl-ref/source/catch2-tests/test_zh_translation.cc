@@ -5,6 +5,7 @@
 #include "i18n.h"                // T_()
 #include "ability.h"
 #include "ability-type.h"
+#include "acquire.h"
 #include "art-enum.h"
 #include "artefact.h"
 #include "database.h"
@@ -849,6 +850,43 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         "v1|0|v1:gizmo_noun:999999|bad|-|Mk.1";
     REQUIRE(get_gizmo_name(corrupt)
             == item.props[ARTEFACT_NAME_KEY].get_string());
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: announcing after legacy gizmo names preserves indices",
+                 "[zh-translation][gizmo][compat]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    CrawlVector &names = you.props[COGLIN_GIZMO_NAMES_KEY].get_vector();
+    CrawlVector &recipes = you.props[COGLIN_GIZMO_RECIPES_KEY].get_vector();
+    names.push_back("legacy locale name");
+    REQUIRE(recipes.empty());
+
+    coglin_announce_gizmo_name();
+
+    REQUIRE(names.size() == 2);
+    REQUIRE(recipes.size() == names.size());
+    REQUIRE(recipes[0].get_string().empty());
+    REQUIRE_FALSE(recipes[1].get_string().empty());
+
+    item_def legacy;
+    legacy.base_type = OBJ_GIZMOS;
+    legacy.quantity = 1;
+    legacy.rnd = 1;
+    legacy.props[ARTEFACT_NAME_KEY].get_string() = names[0].get_string();
+    legacy.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        recipes[0].get_string();
+    REQUIRE(get_gizmo_name(legacy) == "legacy locale name");
+
+    item_def announced;
+    announced.base_type = OBJ_GIZMOS;
+    announced.quantity = 1;
+    announced.rnd = 1;
+    announced.props[ARTEFACT_NAME_KEY].get_string() = names[1].get_string();
+    announced.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        recipes[1].get_string();
+    REQUIRE_FALSE(get_gizmo_name(announced).empty());
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

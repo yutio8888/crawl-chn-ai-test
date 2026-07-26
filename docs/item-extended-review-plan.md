@@ -7,8 +7,8 @@
   `8ddd7dc86af7dc0b6e717ca3ed5b7b3fdf82c50e7441ab0dec62bf2396898a81`
 - 资产裁决后的 glossary SHA-256：
   `8b2a0a03173972806573f0ee0414d1a905e4c70aacd6f9f1368b92b0505b2036`
-- 当前清单状态：**provisional inventory**。本文件冻结资产审阅边界；后续
-  `crawl-coder` 扩展现有只读 inventory 后，必须机械验证 inventory 与
+- 当前清单状态：**mechanically frozen inventory**。本文件冻结资产审阅边界；
+  `crawl-coder` 扩展的只读 inventory 必须机械验证 inventory 与
   `item-extended-review-results.md` 的 identity 双向差集为空。该机械化工作
   不得改变本批已经审阅的集合或普通物品 D-B-020 的结论边界。
 
@@ -37,7 +37,8 @@
 | F | 普通物品生产 identity | 390 | 只用于 description slot 映射；不重做 D-B-020 名称审计 |
 | F | 英文普通描述 DB key | 307 | ZH 初始 310；反向差集须解释或清零 |
 | G | randart TextDB grammar key | 115 | `randname/rand_wpn/rand_arm/rand_all` |
-| G | randart 候选物理组件 | 2734 | 33/45/19/18 个 key 中的有限候选行 |
+| G | randart 物理候选 identity | 2440 | production 空行分隔语法得到的 weighted variant |
+| G | randart 原始非空语法行 | 2734 | 2440 个 variant + 293 个 `w:N` 行 + 1 个 continuation 行 |
 
 普通未鉴定外观组件按独立槽计数：wand `12 + 16`，ring `29 + 13`，
 amulet `29 + 13`，staff `4 + 10`，potion `23 + 15`，中文 scroll
@@ -63,7 +64,8 @@ modifier 递归、两类序列号模板、随机数字与大写字母，并将�
 3. 19 rune、corpse grammar、gold、Orb。
 4. gizmo 三个稳定槽和 539 个物理组件。
 5. 当前普通物品 description slot 与 307 个英文 DB key。
-6. randart 115 个 grammar key、2734 个有限候选和不可枚举生成语法。
+6. randart 115 个 grammar key、2440 个物理候选 identity、2734 个原始
+   非空语法行和不可枚举生成语法。2734 是源行守恒指标，不是额外 identity。
 7. 同步 SourceDB、`decisions.md`、`glossary.md` 与 `glossary.utf8`。
 
 共享专名和技能术语必须整组检查后再落地。D-B-020 只有输入、行为、生命周期、
@@ -72,9 +74,11 @@ glossary 与 decisions 均未变化的单卡才可复用；由于历史批次没
 
 ## 证据卡字段
 
-结果表每一行即一张紧凑证据卡，至少含 identity、生命周期、英文源、
-当前/最终中文、producer/consumer 或元数据、输入位置、终态和 deferred
-re-entry trigger。`not applicable` 必须显式出现，不能用空白隐去。
+结果文件的 JSONL 每一行即一张规范证据卡，完整绑定 identity、生命周期、
+英文源、review-base 中文、candidate/current 中文、adopted/final 英中、
+producer、consumer、结构化元数据、输入位置、每个 source 的 target/current
+SHA-256、终态、按终态分类的语义理由和 re-entry trigger。验证器逐字段与固定
+review base 重建值比较；只改 identity/label 仍会被 adopted 值或 SHA 绑定阻断。
 
 后续 coder 机制必须独立输出并阻断：
 
@@ -85,6 +89,15 @@ re-entry trigger。`not applicable` 必须显式出现，不能用空白隐去�
 - 非终态结论；
 - 无理由或无 re-entry trigger 的 defer；
 - EN/ZH key、物理序号或递归 token 不等。
+- evidence card 缺字段或任一 adopted EN/ZH、source SHA、元数据值不等；
+- randart 2440 个 variant identity、2734 个原始非空行、293 个权重行、
+  1 个 continuation 行或权重质量不等。
+
+`issue29-v2` 的 before 值固定读取 review base
+`01dc9911ec9948aff661f6ec0b9b0a798fcf909d`，不读取 candidate 的 `HEAD:`
+作为 before。这样 candidate 提交并保持 clean 后仍能重建 target→candidate
+差异；缺少 commit 或 target 文件时验证器 fail closed。tracked results 不记录
+candidate HEAD，避免自引用 commit OID。
 
 ## 验证
 
@@ -96,3 +109,13 @@ bash .claude/scripts/verify_zh.sh --profile translation
 
 不在本阶段运行 code、ci、review 或 final gate。完整原始报告路径与所有相关
 warning/failure 记录在结果文档。
+
+干净 candidate 的重建与结果绑定使用：
+
+```bash
+python3 .claude/scripts/audit_item_name_inventory.py \
+  --scope issue29-v2 \
+  --review-base 01dc9911ec9948aff661f6ec0b9b0a798fcf909d \
+  --review-results docs/item-extended-review-results.md \
+  --output /tmp/issue29-v2.json
+```

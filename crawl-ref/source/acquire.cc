@@ -1918,7 +1918,7 @@ static string _generate_gizmo_serial_number(bool at_end = false)
     // 1 or 2 uppercase letters
     int num_letters = coinflip() ? 2 : 1;
     for (int i = 0; i < num_letters; ++i)
-        serial += random2(26) + 'A';
+        serial += rand() % 26 + 'A';
 
     serial += "-";
 
@@ -2087,6 +2087,12 @@ void coglin_announce_gizmo_name()
     CrawlVector& names = you.props[COGLIN_GIZMO_NAMES_KEY].get_vector();
     CrawlVector& recipes = you.props[COGLIN_GIZMO_RECIPES_KEY].get_vector();
     const generated_gizmo_name generated = _generate_gizmo_name();
+
+    // Old saves may have announced names but no parallel recipe vector.
+    // Preserve every legacy index as an empty-recipe fallback before adding
+    // the new aligned pair.
+    while (recipes.size() < names.size())
+        recipes.push_back("");
     names.push_back(generated.english);
     recipes.push_back(generated.recipe);
 

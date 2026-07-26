@@ -21,6 +21,57 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE = SRC / "dat/i18n/zh/source.txt"
 ZH_SOURCE_DIR = ZH_SOURCE.parent
+ISSUE29_REVIEW_BASE = "01dc9911ec9948aff661f6ec0b9b0a798fcf909d"
+
+DEVELOPMENT_REPORTS = [
+    {
+        "path": (
+            ".claude/metrics/verify/"
+            "20260727T010743460030000+0800-11676-01dc9911ec99/"
+            "verify.log"
+        ),
+        "profile": "translation",
+        "status": "fail",
+        "blocking_failures": 1,
+        "note": "initial translation development run; retained raw failure",
+    },
+    {
+        "path": (
+            ".claude/metrics/verify/"
+            "20260727T010920784160000+0800-12201-01dc9911ec99/"
+            "verify.log"
+        ),
+        "profile": "translation",
+        "status": "pass",
+        "blocking_failures": 0,
+        "note": "translation development rerun",
+    },
+    {
+        "path": (
+            ".claude/metrics/verify/"
+            "20260727T014522409076000+0800-30190-01dc9911ec99/"
+            "verify.log"
+        ),
+        "profile": "code",
+        "status": "fail",
+        "blocking_failures": 3,
+        "note": (
+            "initial code run: missing AST dependencies, headless smoke, "
+            "and 83 over-broad enumerator reports"
+        ),
+    },
+    {
+        "path": (
+            ".claude/metrics/verify/"
+            "20260727T020030796997000+0800-50072-01dc9911ec99/"
+            "verify.log"
+        ),
+        "profile": "code",
+        "status": "pass",
+        "blocking_failures": 0,
+        "note": "full code development rerun; all phases passed",
+    },
+]
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import parse_entries_physical, runtime_normalize_value
@@ -28,6 +79,47 @@ from i18n_shared import parse_entries_physical, runtime_normalize_value
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def sha_bytes(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def resolve_commit(revision, root=ROOT):
+    if not revision:
+        raise RuntimeError("review base is required")
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--verify", f"{revision}^{{commit}}"],
+            cwd=root, text=True, stderr=subprocess.PIPE,
+        ).strip()
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(f"invalid review base: {revision}") from error
+
+
+def git_revision_bytes(path, revision, root=ROOT):
+    try:
+        relative = path.relative_to(root).as_posix()
+    except ValueError as error:
+        raise RuntimeError(f"path is outside review repository: {path}") from error
+    try:
+        return subprocess.check_output(
+            ["git", "show", f"{revision}:{relative}"],
+            cwd=root, stderr=subprocess.PIPE,
+        )
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(
+            f"required review-base input is missing: {revision}:{relative}"
+        ) from error
+
+
+def git_revision_text(path, revision, root=ROOT):
+    try:
+        return git_revision_bytes(path, revision, root).decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise RuntimeError(
+            f"review-base input is not UTF-8: {revision}:{path}"
+        ) from error
 
 
 def source_files(directory):
@@ -824,11 +916,92 @@ def physical_candidates(entry):
     return candidates
 
 
-def git_head_text(path):
-    relative = str(path.relative_to(ROOT))
-    return subprocess.check_output(
-        ["git", "show", f"HEAD:{relative}"], cwd=ROOT, text=True
+def weighted_grammar_metrics(entries):
+    variants = 0
+    raw_nonempty_lines = 0
+    weight_marker_lines = 0
+    weight_mass = 0
+    for entry in entries:
+        candidates = physical_candidates(entry)
+        variants += len(candidates)
+        weight_mass += sum(weight for weight, _ in candidates)
+        nonempty = [line for line in entry.value.splitlines() if line]
+        raw_nonempty_lines += len(nonempty)
+        weight_marker_lines += sum(
+            bool(re.fullmatch(r"w:[+-]?\d+", line)) for line in nonempty
+        )
+    continuation_lines = (
+        raw_nonempty_lines - variants - weight_marker_lines
     )
+    if continuation_lines < 0:
+        raise RuntimeError("weighted grammar line accounting is negative")
+    return {
+        "physical_variant_identities": variants,
+        "raw_nonempty_grammar_lines": raw_nonempty_lines,
+        "explicit_weight_marker_lines": weight_marker_lines,
+        "continuation_lines": continuation_lines,
+        "weight_mass": weight_mass,
+    }
+
+
+def require_weighted_metrics(actual, expected, label):
+    if actual != expected:
+        raise RuntimeError(f"{label} metric drift: {actual}")
+
+
+RANDART_METRICS = {
+    "randname.txt": {
+        "grammar_keys": 33,
+        "physical_variant_identities": 482,
+        "raw_nonempty_grammar_lines": 698,
+        "explicit_weight_marker_lines": 215,
+        "continuation_lines": 1,
+        "weight_mass": 8007,
+    },
+    "rand_wpn.txt": {
+        "grammar_keys": 45,
+        "physical_variant_identities": 845,
+        "raw_nonempty_grammar_lines": 867,
+        "explicit_weight_marker_lines": 22,
+        "continuation_lines": 0,
+        "weight_mass": 8346,
+    },
+    "rand_arm.txt": {
+        "grammar_keys": 19,
+        "physical_variant_identities": 529,
+        "raw_nonempty_grammar_lines": 537,
+        "explicit_weight_marker_lines": 8,
+        "continuation_lines": 0,
+        "weight_mass": 5242,
+    },
+    "rand_all.txt": {
+        "grammar_keys": 18,
+        "physical_variant_identities": 584,
+        "raw_nonempty_grammar_lines": 632,
+        "explicit_weight_marker_lines": 48,
+        "continuation_lines": 0,
+        "weight_mass": 5709,
+    },
+}
+
+
+def validate_randart_metrics(filename, en_entries, zh_entries):
+    expected = RANDART_METRICS[filename]
+    en_metrics = {
+        "grammar_keys": len(en_entries),
+        **weighted_grammar_metrics(en_entries),
+    }
+    zh_metrics = {
+        "grammar_keys": len(zh_entries),
+        **weighted_grammar_metrics(zh_entries),
+    }
+    require_weighted_metrics(
+        en_metrics, expected, f"randart production {filename}"
+    )
+    require_weighted_metrics(
+        zh_metrics, expected, f"randart ZH {filename}"
+    )
+    return expected
 
 
 def physical_entries_from_text(text):
@@ -838,10 +1011,48 @@ def physical_entries_from_text(text):
         return parse_entries_physical(str(path))
 
 
-def changed_textdb_keys(path):
+def revision_textdb_rows(path, revision):
+    return physical_entries_from_text(git_revision_text(path, revision))
+
+
+def source_entries_at_revision(directory, revision):
+    try:
+        relative = directory.relative_to(ROOT).as_posix()
+    except ValueError as error:
+        raise RuntimeError(
+            f"SourceDB directory is outside review repository: {directory}"
+        ) from error
+    try:
+        listing = subprocess.check_output(
+            ["git", "ls-tree", "-r", "--name-only", revision, "--", relative],
+            cwd=ROOT, text=True, stderr=subprocess.PIPE,
+        ).splitlines()
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(
+            f"cannot enumerate review-base SourceDB: {revision}:{relative}"
+        ) from error
+    paths = sorted(
+        (ROOT / line for line in listing if line.endswith(".txt")),
+        key=lambda path: path.name,
+    )
+    source = directory / "source.txt"
+    if source not in paths:
+        raise RuntimeError(
+            f"required review-base SourceDB input is missing: "
+            f"{revision}:{source.relative_to(ROOT)}"
+        )
+    paths = [source, *(path for path in paths if path != source)]
+    result = {}
+    for path in paths:
+        for entry in revision_textdb_rows(path, revision):
+            result[entry.canonical_key] = runtime_normalize_value(entry.value)
+    return result
+
+
+def changed_textdb_keys(path, review_base):
     before = {
         entry.canonical_key: runtime_normalize_value(entry.value)
-        for entry in physical_entries_from_text(git_head_text(path))
+        for entry in revision_textdb_rows(path, review_base)
     }
     after = {
         entry.canonical_key: runtime_normalize_value(entry.value)
@@ -863,9 +1074,48 @@ def array_literals(text, array_name):
     return re.findall(r'"([^"]*)"', match.group(1))
 
 
-def unrand_rows(db, source_db):
+def unrand_enum_identity(name, block):
+    explicit = re.search(r"(?m)^ENUM:\s*(.+?)\s*$", block)
+    if explicit:
+        enum_name = explicit.group(1)
+    else:
+        enum_name = name.replace("'", "")
+        quoted = re.search(r'"(.*)"', enum_name)
+        after_of = re.search(r" of (?:the )?(.*)", enum_name)
+        if quoted:
+            enum_name = quoted.group(1)
+        elif after_of:
+            enum_name = after_of.group(1)
+        enum_name = enum_name.upper().replace(" ", "_").replace("-", "_")
+    if not re.fullmatch(r"[A-Z0-9_]+", enum_name):
+        raise RuntimeError(
+            f"invalid production-derived unrand enum: {enum_name}"
+        )
+    return f"UNRAND_{enum_name}"
+
+
+def art_data_blocks(text):
+    """Match util/art-data.pl's comment stripping and blank-line records."""
+    blocks = []
+    current = []
+    for raw_line in text.splitlines():
+        if raw_line.startswith("#"):
+            continue
+        line = re.sub(r"#.*", "", raw_line).rstrip()
+        if not line:
+            if current:
+                blocks.append("\n".join(current))
+                current = []
+            continue
+        current.append(line)
+    if current:
+        blocks.append("\n".join(current))
+    return blocks
+
+
+def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     art = active_source(SRC / "art-data.txt")
-    blocks = re.split(r"\n(?=\s*(?:# [^\n]*\n)*NAME:\s*)", art)
+    blocks = art_data_blocks(art)
     definitions = []
     for block in blocks:
         name = re.search(r"(?m)^NAME:\s*(.+?)\s*$", block)
@@ -873,6 +1123,7 @@ def unrand_rows(db, source_db):
             continue
         definitions.append({
             "name": name.group(1),
+            "enum": unrand_enum_identity(name.group(1), block),
             "unid": (
                 re.search(r"(?m)^APPEAR:\s*(.+?)\s*$", block)
                 or re.search(r"(?m)^UNID:\s*(.+?)\s*$", block)
@@ -881,32 +1132,27 @@ def unrand_rows(db, source_db):
                 r"(?m)^BOOL:.*\bdeleted\b", block
             )),
         })
-    enum_text = (SRC / "art-enum.h").read_text(encoding="utf-8")
-    enums = re.findall(
-        r"^\s*(UNRAND_[A-Z0-9_]+)(?:\s*=\s*UNRAND_START)?\s*,?",
-        enum_text, re.MULTILINE,
-    )
-    enums = [
-        enum_id for enum_id in enums
-        if enum_id not in {"UNRAND_START", "UNRAND_LAST"}
-    ]
+    enums = [definition["enum"] for definition in definitions]
     if len(definitions) != 142 or len(enums) != 142:
         raise RuntimeError(
             f"unrand inventory drift: definitions={len(definitions)} "
             f"enums={len(enums)}"
         )
+    enum_duplicates = sorted(
+        enum_id for enum_id, count in Counter(enums).items() if count > 1
+    )
+    if enum_duplicates:
+        raise RuntimeError(
+            f"duplicate production-derived unrand enums: {enum_duplicates}"
+        )
 
     changed_desc = changed_textdb_keys(
-        SRC / "dat/descript/zh/unrand.txt"
+        SRC / "dat/descript/zh/unrand.txt", review_base
     )
     changed_names = set()
-    before_source = {
-        entry.canonical_key: runtime_normalize_value(entry.value)
-        for entry in physical_entries_from_text(git_head_text(ZH_SOURCE))
-    }
     for definition in definitions:
         key = definition["name"].lower()
-        if before_source.get(key) != source_db.get(key):
+        if base_source_db.get(key) != source_db.get(key):
             changed_names.add(key)
     expected_changed_names = {
         "glaive of prune", 'morningstar "eos"',
@@ -941,6 +1187,7 @@ def unrand_rows(db, source_db):
             "category": "unrand",
             "lifecycle": lifecycle,
             "english_source": name,
+            "_pre_review_chinese": base_source_db.get(key),
             "current_chinese": source_db.get(key),
             "description_key": name,
             "description_present": key in db,
@@ -950,12 +1197,18 @@ def unrand_rows(db, source_db):
                 "get_unrand_name_en TextDB lookup"
             ),
             "input": "crawl-ref/source/art-data.txt",
+            "_metadata": {
+                "description_pre_review_chinese": base_db.get(key),
+                "description_current_chinese": db.get(key),
+                "description_present_at_review_base": key in base_db,
+                "description_present_in_candidate": key in db,
+            },
             "_conclusion": conclusion,
         })
     return rows
 
 
-def unidentified_appearance_rows(source_db):
+def unidentified_appearance_rows(source_db, base_source_db):
     item_name = active_source(SRC / "item-name.cc")
     scroll = active_source(SRC / "zh-scroll-appearance.cc")
     specs = [
@@ -1001,15 +1254,20 @@ def unidentified_appearance_rows(source_db):
     for family, values in specs:
         for ordinal, value in enumerate(values):
             english = value.strip()
+            current_chinese = (
+                value if family.startswith("scroll-")
+                else source_db.get(english.lower(), english)
+            )
             rows.append({
                 "identity": f"appearance:{family}:{ordinal:03d}",
                 "category": "appearance",
                 "lifecycle": "current",
                 "english_source": english or "(empty component)",
-                "current_chinese": (
-                    value if family.startswith("scroll-")
-                    else source_db.get(english.lower(), english)
+                "_pre_review_chinese": (
+                    current_chinese if family.startswith("scroll-")
+                    else base_source_db.get(english.lower(), english)
                 ),
+                "current_chinese": current_chinese,
                 "producer": "item-name.cc unidentified appearance arrays",
                 "consumer": "item_def::name unidentified display grammar",
                 "input": (
@@ -1017,12 +1275,16 @@ def unidentified_appearance_rows(source_db):
                     if family.startswith("scroll-")
                     else "crawl-ref/source/item-name.cc"
                 ),
+                "_metadata": {
+                    "family": family,
+                    "physical_ordinal": ordinal,
+                },
                 "_conclusion": "keep",
             })
     return rows
 
 
-def special_item_rows(source_db):
+def special_item_rows(source_db, base_source_db):
     item_name = active_source(SRC / "item-name.cc")
     body = function_body(item_name, "rune_type_name")
     runes = re.findall(
@@ -1039,10 +1301,12 @@ def special_item_rows(source_db):
             "category": "special",
             "lifecycle": "current",
             "english_source": english,
+            "_pre_review_chinese": base_source_db.get(key),
             "current_chinese": source_db.get(key),
             "producer": "rune_type_name",
             "consumer": "item_def::name OBJ_RUNES",
             "input": "crawl-ref/source/item-name.cc",
+            "_metadata": {"enum_identity": enum_id},
             "_conclusion": "keep",
         })
     for identity, english in [
@@ -1056,10 +1320,14 @@ def special_item_rows(source_db):
             "category": "special",
             "lifecycle": "current",
             "english_source": english,
+            "_pre_review_chinese": base_source_db.get(
+                english.lower(), english
+            ),
             "current_chinese": source_db.get(english.lower()),
             "producer": "item_def::name switch",
             "consumer": "item display",
             "input": "crawl-ref/source/item-name.cc",
+            "_metadata": {"enum_identity": identity},
             "_conclusion": "keep",
         })
     if len(rows) != 23:
@@ -1067,11 +1335,40 @@ def special_item_rows(source_db):
     return rows
 
 
-def paired_component_rows(en_path, zh_path, category, changed_keys=None):
+def _pre_review_variant_value(current, ordinal, base_values):
+    base_patterns = [pattern for _, pattern in base_values]
+    if current in base_patterns:
+        return current
+    for start in range(len(base_patterns)):
+        combined = ""
+        for end in range(start, len(base_patterns)):
+            combined = (
+                base_patterns[end] if end == start
+                else combined + "\n" + base_patterns[end]
+            )
+            if combined == current:
+                return current
+            if len(combined) > len(current):
+                break
+    if ordinal < len(base_patterns):
+        return base_patterns[ordinal]
+    return None
+
+
+def paired_component_rows(
+    en_path, zh_path, category, review_base=None, changed_keys=None
+):
     en_entries = textdb_rows(en_path)
     zh_entries = textdb_rows(zh_path)
+    base_zh_entries = (
+        revision_textdb_rows(zh_path, review_base)
+        if review_base else zh_entries
+    )
     en = {entry.canonical_key: entry for entry in en_entries}
     zh = {entry.canonical_key: entry for entry in zh_entries}
+    base_zh = {
+        entry.canonical_key: entry for entry in base_zh_entries
+    }
     if en.keys() != zh.keys():
         raise RuntimeError(
             f"{category} key mismatch: missing={sorted(en.keys()-zh.keys())} "
@@ -1085,6 +1382,9 @@ def paired_component_rows(en_path, zh_path, category, changed_keys=None):
     for key in sorted(en):
         en_values = physical_candidates(en[key])
         zh_values = physical_candidates(zh[key])
+        base_values = (
+            physical_candidates(base_zh[key]) if key in base_zh else []
+        )
         if len(en_values) != len(zh_values):
             raise RuntimeError(
                 f"{category}:{key} physical count mismatch "
@@ -1117,6 +1417,9 @@ def paired_component_rows(en_path, zh_path, category, changed_keys=None):
                 "category": category,
                 "lifecycle": "current",
                 "english_source": english,
+                "_pre_review_chinese": _pre_review_variant_value(
+                    chinese, ordinal, base_values
+                ),
                 "current_chinese": chinese,
                 "producer": f"TextDB weighted key {key} physical ordinal",
                 "consumer": (
@@ -1124,6 +1427,11 @@ def paired_component_rows(en_path, zh_path, category, changed_keys=None):
                     "procedural string explicitly non-enumerable"
                 ),
                 "input": input_name,
+                "_metadata": {
+                    "grammar_key": key,
+                    "physical_ordinal": ordinal,
+                    "weight": en_weight,
+                },
                 "_conclusion": (
                     "adjust" if changed_keys
                     and (key, ordinal) in changed_keys else "keep"
@@ -1132,10 +1440,10 @@ def paired_component_rows(en_path, zh_path, category, changed_keys=None):
     return rows
 
 
-def changed_physical_ordinals(path):
+def changed_physical_ordinals(path, review_base):
     before_entries = {
         entry.canonical_key: physical_candidates(entry)
-        for entry in physical_entries_from_text(git_head_text(path))
+        for entry in revision_textdb_rows(path, review_base)
     }
     after_entries = {
         entry.canonical_key: physical_candidates(entry)
@@ -1153,9 +1461,141 @@ def changed_physical_ordinals(path):
     return changed
 
 
-def build_extended_inventory():
+def evidence_source_paths(row):
+    category = row["category"]
+    input_path = row["input"]
+    paths = [input_path]
+    if category == "unrand":
+        paths.extend([
+            "crawl-ref/source/dat/i18n/zh/source.txt",
+            "crawl-ref/source/dat/descript/unrand.txt",
+            "crawl-ref/source/dat/descript/zh/unrand.txt",
+        ])
+    elif category == "unident":
+        paths.append("crawl-ref/source/dat/descript/zh/unident.txt")
+    elif category in {"appearance", "special"}:
+        if input_path != "crawl-ref/source/zh-scroll-appearance.cc":
+            paths.append("crawl-ref/source/dat/i18n/zh/source.txt")
+    elif category in {"gizmo", "randart-component", "randart-grammar"}:
+        paths.append(input_path.replace(
+            "crawl-ref/source/dat/database/",
+            "crawl-ref/source/dat/database/zh/",
+        ))
+    elif category == "item-description":
+        paths.append("crawl-ref/source/dat/descript/zh/items.txt")
+    return sorted(set(paths))
+
+
+def conclusion_reason(row):
+    conclusion = row["_conclusion"]
+    changed_fields = []
+    if row.get("_pre_review_chinese") != row.get("current_chinese"):
+        changed_fields.append("display/component Chinese")
+    metadata = row.get("_metadata", {})
+    if (
+        metadata.get("description_pre_review_chinese")
+        != metadata.get("description_current_chinese")
+    ):
+        changed_fields.append("long-description Chinese")
+    changed = ", ".join(changed_fields) or "no adopted semantic field"
+    boundary = (
+        f"{row['identity']} at {row['producer']} -> {row['consumer']}"
+    )
+    if conclusion == "keep":
+        return (
+            f"keep: {boundary} has {changed} differing from the review base; "
+            "the adopted rendering preserves the accepted meaning, "
+            "terminology, grammar identity, and gameplay-facing consumer."
+        )
+    if conclusion == "adjust":
+        return (
+            f"adjust: {boundary} changes {changed}; the candidate adopts that "
+            "targeted wording or structural correction while preserving the "
+            "same gameplay identity."
+        )
+    if conclusion == "retranslate":
+        return (
+            f"retranslate: {boundary} changes {changed}; the candidate "
+            "replaces the review-base Chinese rendering to restore semantic "
+            "or glossary fidelity."
+        )
+    if conclusion == "defer terminology":
+        return (
+            "defer terminology: no final wording is adopted until the "
+            "terminology authority records a ruling."
+        )
+    if conclusion == "defer implementation":
+        return (
+            "defer implementation: the wording cannot safely land until the "
+            "display/identity implementation boundary is repaired."
+        )
+    raise RuntimeError(
+        f"unsupported terminal conclusion for {row['identity']}: {conclusion}"
+    )
+
+
+def build_source_evidence(rows, review_base):
+    relative_paths = sorted({
+        relative
+        for row in rows
+        for relative in evidence_source_paths(row)
+    })
+    result = {}
+    for relative in relative_paths:
+        path = ROOT / relative
+        if not path.is_file():
+            raise RuntimeError(
+                f"required candidate evidence input is missing: {relative}"
+            )
+        result[relative] = {
+            "path": relative,
+            "review_base_sha256": sha_bytes(
+                git_revision_bytes(path, review_base)
+            ),
+            "current_sha256": sha(path),
+        }
+    return result
+
+
+def evidence_card(row, source_evidence):
+    source_files = []
+    for relative in evidence_source_paths(row):
+        source_files.append(source_evidence[relative])
+    metadata = {
+        "category": row["category"],
+        **row.get("_metadata", {}),
+    }
+    return {
+        "identity": row["identity"],
+        "lifecycle": row["lifecycle"],
+        "english_source": row["english_source"],
+        "pre_review_chinese": row.get("_pre_review_chinese"),
+        "current_chinese": row["current_chinese"],
+        "adopted_english": row["english_source"],
+        "adopted_chinese": row["current_chinese"],
+        "producer": row["producer"],
+        "consumer": row["consumer"],
+        "metadata": metadata,
+        "input": row["input"],
+        "source_files": source_files,
+        "terminal_conclusion": row["_conclusion"],
+        "semantic_reason": conclusion_reason(row),
+        "reentry_trigger": (
+            "Re-review if the English source, adopted Chinese, lifecycle, "
+            "producer/consumer, glossary, grammar metrics, or source SHA "
+            "changes."
+        ),
+    }
+
+
+def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE):
+    review_base = resolve_commit(review_base)
+    candidate_head = resolve_commit("HEAD")
     ordinary = build_inventory()
     source_db = source_entries(ZH_SOURCE_DIR)
+    base_source_db = source_entries_at_revision(
+        ZH_SOURCE_DIR, review_base
+    )
     description_en = SRC / "dat/descript/items.txt"
     description_zh = SRC / "dat/descript/zh/items.txt"
     unident_en = SRC / "dat/descript/unident.txt"
@@ -1164,13 +1604,25 @@ def build_extended_inventory():
         entry.canonical_key: runtime_normalize_value(entry.value)
         for entry in textdb_rows(SRC / "dat/descript/zh/unrand.txt")
     }
+    base_desc_db = {
+        entry.canonical_key: runtime_normalize_value(entry.value)
+        for entry in revision_textdb_rows(
+            SRC / "dat/descript/zh/unrand.txt", review_base
+        )
+    }
 
     rows = []
-    rows.extend(unrand_rows(desc_db, source_db))
+    rows.extend(unrand_rows(
+        desc_db, source_db, base_desc_db, base_source_db, review_base
+    ))
 
-    changed_unident = changed_textdb_keys(unident_zh)
+    changed_unident = changed_textdb_keys(unident_zh, review_base)
     en_unident = {e.canonical_key: e for e in textdb_rows(unident_en)}
     zh_unident = {e.canonical_key: e for e in textdb_rows(unident_zh)}
+    base_zh_unident = {
+        e.canonical_key: e
+        for e in revision_textdb_rows(unident_zh, review_base)
+    }
     if en_unident.keys() != zh_unident.keys() or len(en_unident) != 7:
         raise RuntimeError("unident EN/ZH key inventory drift")
     for key in sorted(en_unident):
@@ -1179,27 +1631,35 @@ def build_extended_inventory():
             "category": "unident",
             "lifecycle": "current",
             "english_source": runtime_normalize_value(en_unident[key].value),
+            "_pre_review_chinese": runtime_normalize_value(
+                base_zh_unident[key].value
+            ),
             "current_chinese": runtime_normalize_value(zh_unident[key].value),
             "producer": f"DescriptionDB key {key}",
             "consumer": "unidentified item description",
             "input": str(unident_en.relative_to(ROOT)),
+            "_metadata": {"description_key": key},
             "_conclusion": (
                 "retranslate" if key in changed_unident else "keep"
             ),
         })
 
-    rows.extend(unidentified_appearance_rows(source_db))
-    rows.extend(special_item_rows(source_db))
+    rows.extend(unidentified_appearance_rows(source_db, base_source_db))
+    rows.extend(special_item_rows(source_db, base_source_db))
 
     gizmo_en = SRC / "dat/database/gizmo.txt"
     gizmo_zh = SRC / "dat/database/zh/gizmo.txt"
     rows.extend(paired_component_rows(
-        gizmo_en, gizmo_zh, "gizmo",
-        changed_physical_ordinals(gizmo_zh),
+        gizmo_en, gizmo_zh, "gizmo", review_base,
+        changed_physical_ordinals(gizmo_zh, review_base),
     ))
 
     en_items = {e.canonical_key: e for e in textdb_rows(description_en)}
     zh_items = {e.canonical_key: e for e in textdb_rows(description_zh)}
+    base_zh_items = {
+        e.canonical_key: e
+        for e in revision_textdb_rows(description_zh, review_base)
+    }
     allowed_zh_extra = {"athame"}
     if set(en_items) - set(zh_items) or set(zh_items) - set(en_items) != (
         allowed_zh_extra
@@ -1208,36 +1668,47 @@ def build_extended_inventory():
             "ordinary description EN/ZH key mismatch outside explicit "
             "athame compatibility key"
         )
-    changed_items = changed_textdb_keys(description_zh)
+    changed_items = changed_textdb_keys(description_zh, review_base)
     for key in sorted(en_items):
         rows.append({
             "identity": f"item-description:{key}",
             "category": "item-description",
             "lifecycle": "current",
             "english_source": runtime_normalize_value(en_items[key].value),
+            "_pre_review_chinese": runtime_normalize_value(
+                base_zh_items[key].value
+            ),
             "current_chinese": runtime_normalize_value(zh_items[key].value),
             "producer": f"DescriptionDB key {key}",
             "consumer": "item_def::name(DESC_DBNAME) -> getLongDescription",
             "input": str(description_en.relative_to(ROOT)),
+            "_metadata": {"description_key": key},
             "_conclusion": "adjust" if key in changed_items else "keep",
         })
 
     randart_files = [
         "randname.txt", "rand_wpn.txt", "rand_arm.txt", "rand_all.txt"
     ]
+    randart_metrics = {}
     for filename in randart_files:
+        en_randart = textdb_rows(SRC / "dat/database" / filename)
+        zh_randart = textdb_rows(SRC / "dat/database/zh" / filename)
+        randart_metrics[filename] = validate_randart_metrics(
+            filename, en_randart, zh_randart
+        )
         component_rows = paired_component_rows(
             SRC / "dat/database" / filename,
             SRC / "dat/database/zh" / filename,
-            "randart-component",
+            "randart-component", review_base,
         )
         rows.extend(component_rows)
-        for entry in textdb_rows(SRC / "dat/database" / filename):
+        for entry in en_randart:
             rows.append({
                 "identity": f"randart-grammar:{filename}:{entry.canonical_key}",
                 "category": "randart-grammar",
                 "lifecycle": "current",
                 "english_source": entry.raw_key,
+                "_pre_review_chinese": entry.raw_key,
                 "current_chinese": entry.raw_key,
                 "producer": f"RandartDB key {entry.raw_key}",
                 "consumer": (
@@ -1245,6 +1716,10 @@ def build_extended_inventory():
                     "is intentionally non-enumerable and opaque display"
                 ),
                 "input": f"crawl-ref/source/dat/database/{filename}",
+                "_metadata": {
+                    "grammar_file": filename,
+                    "grammar_key": entry.canonical_key,
+                },
                 "_conclusion": "keep",
             })
 
@@ -1285,18 +1760,17 @@ def build_extended_inventory():
     if unrand_zh - unrand_en != allowed_unrand_extra:
         raise RuntimeError("unrand compatibility key classification drift")
 
-    public_rows = [
-        {key: value for key, value in row.items() if key != "_conclusion"}
-        for row in rows
-    ]
+    source_evidence = build_source_evidence(rows, review_base)
+    public_rows = [evidence_card(row, source_evidence) for row in rows]
     digest = hashlib.sha256(json.dumps(
         public_rows, ensure_ascii=False, sort_keys=True,
         separators=(",", ":"),
     ).encode()).hexdigest()
     input_paths = [
-        SRC / "art-data.txt", SRC / "art-enum.h", SRC / "item-name.cc",
+        SRC / "art-data.txt", SRC / "item-name.cc",
         SRC / "zh-scroll-appearance.cc", unident_en, unident_zh,
         description_en, description_zh,
+        ZH_SOURCE,
         SRC / "dat/descript/unrand.txt",
         SRC / "dat/descript/zh/unrand.txt",
         gizmo_en, gizmo_zh,
@@ -1309,9 +1783,39 @@ def build_extended_inventory():
             for filename in randart_files
         ],
     ]
+    current_input_sha = {
+        str(path.relative_to(ROOT)): sha(path) for path in input_paths
+    }
+    review_base_input_sha = {
+        str(path.relative_to(ROOT)): sha_bytes(
+            git_revision_bytes(path, review_base)
+        )
+        for path in input_paths
+    }
+    randart_totals = {
+        key: sum(metrics[key] for metrics in randart_metrics.values())
+        for key in [
+            "grammar_keys", "physical_variant_identities",
+            "raw_nonempty_grammar_lines", "explicit_weight_marker_lines",
+            "continuation_lines", "weight_mass",
+        ]
+    }
+    expected_randart_totals = {
+        "grammar_keys": 115,
+        "physical_variant_identities": 2440,
+        "raw_nonempty_grammar_lines": 2734,
+        "explicit_weight_marker_lines": 293,
+        "continuation_lines": 1,
+        "weight_mass": 27304,
+    }
+    if randart_totals != expected_randart_totals:
+        raise RuntimeError(
+            f"randart aggregate metric drift: {randart_totals}"
+        )
     payload = {
         "schema": "dcss-item-extended-review-inventory-v2",
-        "baseline": ordinary["baseline"],
+        "baseline": review_base,
+        "candidate_head": candidate_head,
         "glossary_sha256": sha(ROOT / "docs/glossary.md"),
         "ordinary_v1": {
             "schema": ordinary["schema"],
@@ -1320,7 +1824,8 @@ def build_extended_inventory():
             "category_counts": ordinary["category_counts"],
         },
         "input_sha256": {
-            str(path.relative_to(ROOT)): sha(path) for path in input_paths
+            "review_base": review_base_input_sha,
+            "current": current_input_sha,
         },
         "scope": {
             "lifecycle": {
@@ -1348,6 +1853,20 @@ def build_extended_inventory():
                     "reverse lookup consumer"
                 ),
             },
+            "randart_component_metrics": {
+                "definition": {
+                    "physical_variant_identities": (
+                        "production blank-line weighted variants; these 2440 "
+                        "objects are the review identities"
+                    ),
+                    "raw_nonempty_grammar_lines": (
+                        "all non-comment, non-empty grammar lines; the plan's "
+                        "2734 includes 293 w:N lines and one continuation line"
+                    ),
+                },
+                "per_file": randart_metrics,
+                "totals": randart_totals,
+            },
             "ordinary_description_slots": {
                 "count": ordinary["count"],
                 "mapping": [
@@ -1368,55 +1887,101 @@ def build_extended_inventory():
         "category_counts": expected_counts,
         "duplicates": duplicates,
         "inventory_sha256": digest,
+        "development_reports": DEVELOPMENT_REPORTS,
         "rows": public_rows,
     }
-    return payload, rows
+    return payload, public_rows
 
 
 TERMINAL_CONCLUSIONS = {
     "keep", "adjust", "retranslate",
     "defer terminology", "defer implementation",
 }
+REQUIRED_CARD_FIELDS = {
+    "identity", "lifecycle", "english_source", "pre_review_chinese",
+    "current_chinese", "adopted_english", "adopted_chinese", "producer",
+    "consumer", "metadata", "input", "source_files",
+    "terminal_conclusion", "semantic_reason", "reentry_trigger",
+}
 
 
 def parse_review_results(path):
     rows = []
+    in_cards = False
+    saw_cards = False
     for line_number, line in enumerate(
         path.read_text(encoding="utf-8").splitlines(), start=1
     ):
-        if not line.startswith("| `"):
+        if line == "```jsonl":
+            if in_cards or saw_cards:
+                raise RuntimeError("duplicate evidence-card JSONL block")
+            in_cards = True
+            saw_cards = True
             continue
-        fields = [field.strip() for field in line.strip().strip("|").split("|")]
-        if len(fields) != 4:
+        if in_cards and line == "```":
+            in_cards = False
+            continue
+        if not in_cards:
+            continue
+        if not line:
             raise RuntimeError(
-                f"review result row {line_number} has {len(fields)} fields"
+                f"blank evidence-card line at {line_number}"
             )
-        identity = fields[0]
-        if not identity.startswith("`") or not identity.endswith("`"):
-            raise RuntimeError(f"invalid review identity at line {line_number}")
-        rows.append({
-            "identity": identity[1:-1],
-            "conclusion": fields[1],
-            "reason": fields[2],
-            "reentry": fields[3],
-        })
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise RuntimeError(
+                f"invalid evidence-card JSON at line {line_number}"
+            ) from error
+        if not isinstance(row, dict):
+            raise RuntimeError(
+                f"evidence card at line {line_number} is not an object"
+            )
+        rows.append(row)
+    if in_cards:
+        raise RuntimeError("unterminated evidence-card JSONL block")
+    if not saw_cards:
+        raise RuntimeError("evidence-card JSONL block is missing")
     return rows
 
 
 def review_violations(inventory_rows, review_rows):
-    inventory_ids = [row["identity"] for row in inventory_rows]
-    review_ids = [row["identity"] for row in review_rows]
+    inventory_ids = [
+        row.get("identity", "<missing>") for row in inventory_rows
+    ]
+    review_ids = [row.get("identity", "<missing>") for row in review_rows]
     inventory_set = set(inventory_ids)
     review_set = set(review_ids)
+    missing_required = sorted(
+        f"{row.get('identity', '<missing>')}:{field}"
+        for row in review_rows
+        for field in REQUIRED_CARD_FIELDS - set(row)
+    )
     invalid_terminal = sorted(
-        row["identity"] for row in review_rows
-        if row["conclusion"] not in TERMINAL_CONCLUSIONS
+        row.get("identity", "<missing>") for row in review_rows
+        if row.get("terminal_conclusion") not in TERMINAL_CONCLUSIONS
     )
     invalid_deferral = sorted(
-        row["identity"] for row in review_rows
-        if row["conclusion"].startswith("defer ")
-        and (not row["reason"] or row["reason"] == "not applicable"
-             or not row["reentry"] or row["reentry"] == "not applicable")
+        row.get("identity", "<missing>") for row in review_rows
+        if str(row.get("terminal_conclusion", "")).startswith("defer ")
+        and (
+            not row.get("semantic_reason")
+            or row.get("semantic_reason") == "not applicable"
+            or not row.get("reentry_trigger")
+            or row.get("reentry_trigger") == "not applicable"
+        )
+    )
+    inventory_by_id = {
+        row["identity"]: row for row in inventory_rows
+        if "identity" in row
+    }
+    review_by_id = {
+        row["identity"]: row for row in review_rows
+        if "identity" in row
+    }
+    mismatched = sorted(
+        identity for identity in inventory_set & review_set
+        if inventory_by_id.get(identity) != review_by_id.get(identity)
     )
     return {
         "inventory_duplicates": sorted(
@@ -1427,13 +1992,16 @@ def review_violations(inventory_rows, review_rows):
         ),
         "inventory_minus_review": sorted(inventory_set - review_set),
         "review_minus_inventory": sorted(review_set - inventory_set),
+        "missing_required_fields": missing_required,
+        "mismatched_evidence_cards": mismatched,
         "invalid_terminal_conclusions": invalid_terminal,
         "invalid_deferrals": invalid_deferral,
     }
 
 
 def write_review_results(path, inventory, rows):
-    counts = Counter(row["_conclusion"] for row in rows)
+    counts = Counter(row["terminal_conclusion"] for row in rows)
+    metrics = inventory["scope"]["randart_component_metrics"]["totals"]
     lines = [
         "# Issue #29 扩展物品翻译复审结果",
         "",
@@ -1442,9 +2010,17 @@ def write_review_results(path, inventory, rows):
         "",
         f"- Inventory SHA-256: `{inventory['inventory_sha256']}`",
         f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
+        f"- Review base: `{inventory['baseline']}`",
         f"- Inventory rows: `{inventory['count']}`",
         "- Terminal conclusions: "
         + ", ".join(f"`{key}={counts[key]}`" for key in sorted(counts)),
+        "- Randart production boundary: "
+        f"`{metrics['physical_variant_identities']} physical variant "
+        "identities`; "
+        f"`{metrics['raw_nonempty_grammar_lines']} raw non-empty grammar "
+        "lines` (including "
+        f"`{metrics['explicit_weight_marker_lines']} w:N markers` and "
+        f"`{metrics['continuation_lines']} continuation line`).",
         "",
         "## Producer / consumer implementation evidence",
         "",
@@ -1458,21 +2034,33 @@ def write_review_results(path, inventory, rows):
         "display caches. Their consumers do not reverse-map them to gameplay "
         "identity; base/subtype and artefact properties remain authoritative.",
         "",
+        "## Raw development reports",
+        "",
+    ]
+    for report in inventory["development_reports"]:
+        lines.append(
+            f"- `{report['path']}` — profile={report['profile']}; "
+            f"status={report['status']}; "
+            f"blocking_failures={report['blocking_failures']}; "
+            f"{report['note']}."
+        )
+    lines.extend([
+        "",
+        "所有失败与告警均保留在上述原始报告中；失败的开发运行未被后续通过"
+        "记录覆盖或删除。",
+        "",
         "## Evidence cards",
         "",
-        "| identity | conclusion | reason | re-entry trigger |",
-        "|---|---|---|---|",
-    ]
+        "以下 JSONL 是规范化、逐字段绑定的完整证据卡；验证器将每张卡与当前"
+        "工作树按固定 review base 重建的期望值做精确比较。",
+        "",
+        "```jsonl",
+    ])
     for row in rows:
-        conclusion = row["_conclusion"]
-        reason = (
-            f"{row['producer']} → {row['consumer']}; "
-            f"lifecycle={row['lifecycle']}; input={row['input']}"
-        )
-        lines.append(
-            f"| `{row['identity']}` | {conclusion} | {reason} | "
-            "not applicable |"
-        )
+        lines.append(json.dumps(
+            row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ))
+    lines.append("```")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -1491,6 +2079,13 @@ def main(argv=None):
         help="select the isolated inventory boundary (default: ordinary-v1)",
     )
     parser.add_argument(
+        "--review-base",
+        help=(
+            "target commit for issue29-v2 before/after evidence "
+            f"(default: {ISSUE29_REVIEW_BASE})"
+        ),
+    )
+    parser.add_argument(
         "--review-results",
         type=Path,
         help="validate exact Issue 29 inventory/review identity coverage",
@@ -1504,7 +2099,9 @@ def main(argv=None):
 
     try:
         if args.scope == "issue29-v2":
-            payload, internal_rows = build_extended_inventory()
+            payload, internal_rows = build_extended_inventory(
+                args.review_base or ISSUE29_REVIEW_BASE
+            )
             if args.write_review_results:
                 write_review_results(
                     args.write_review_results, payload, internal_rows
@@ -1515,9 +2112,12 @@ def main(argv=None):
                     payload["rows"], review
                 )
         else:
-            if args.review_results or args.write_review_results:
+            if (
+                args.review_results or args.write_review_results
+                or args.review_base
+            ):
                 raise RuntimeError(
-                    "review results are valid only for --scope issue29-v2"
+                    "review options are valid only for --scope issue29-v2"
                 )
             payload = build_inventory()
     except (
@@ -1540,7 +2140,8 @@ def main(argv=None):
         sys.stdout.write(encoded)
 
     summary = {key: payload[key] for key in [
-        "baseline", "glossary_sha256", "inventory_sha256", "count",
+        "baseline", "candidate_head", "glossary_sha256",
+        "inventory_sha256", "count",
         "category_counts", "duplicates", "missing_identities",
         "unexpected_identities", "missing_chinese", "missing_forms",
     ] if key in payload}
