@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib.util
+import json
 import re
 import tempfile
 import unittest
@@ -24,10 +25,20 @@ def review_header():
 
 def review_card(payload, row, conclusion="keep", overrides=None):
     facts, expected_adopted = MODULE.review_expected_fact_cells(payload, row)
+    composite = MODULE.review_expected_composite_adoption(row)
+    proposed = (
+        json.dumps(
+            {"adopt": composite["values"]},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        if composite else "候选译文"
+    )
     card = {
         "identity": f"`{row['identity']}`",
         **facts,
-        "proposed_translation": "候选译文",
+        "proposed_translation": proposed,
         "adopted_translation": expected_adopted or "not applicable",
         "rejected_alternatives": "not applicable",
         "confidence": "high: direct production evidence",
@@ -114,6 +125,19 @@ class WorldInventoryUnitTest(unittest.TestCase):
             db = MODULE.physical_db(path)
         self.assertEqual(["known"], db["duplicates"])
         self.assertEqual({"Known", "Stale"}, set(db["raw"]))
+
+    def test_physical_textdb_keeps_leading_entry_after_comment_banner(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "leading.txt"
+            path.write_text(
+                "### heading\nLeading key\n\nLeading value\n%%%%\n"
+                "Second key\nSecond value\n",
+                encoding="utf-8",
+            )
+            db = MODULE.physical_db(path)
+        self.assertEqual("Leading value", db["raw"]["Leading key"])
+        self.assertEqual("Leading value", db["effective"]["leading key"])
+        self.assertNotIn("leading key", db["duplicates"])
 
     def test_all_supported_des_producer_classes_are_extracted(self):
         path = self.write_des(
@@ -560,7 +584,10 @@ epilogue {{
             row for row in self.payload["rows"] if row["category"] == "branch"
         )
         feature_row = next(
-            row for row in self.payload["rows"] if row["category"] == "feature"
+            row for row in self.payload["rows"]
+            if row["category"] == "feature"
+            and row["lifecycle"] == "current"
+            and row.get("current_chinese_name")
         )
         fixture = {
             **self.payload,
@@ -619,6 +646,69 @@ epilogue {{
                 branch_row["identity"],
                 wrong_adopted["adopted_translation_mismatches"],
             )
+            branch_values = MODULE.review_expected_composite_adoption(
+                branch_row
+            )["values"]
+            feature_values = MODULE.review_expected_composite_adoption(
+                feature_row
+            )["values"]
+            composite_mutations = [
+                (
+                    branch_row,
+                    {
+                        "adopt": {
+                            **branch_values,
+                            "description": "伪造的非主描述",
+                        }
+                    },
+                ),
+                (
+                    branch_row,
+                    {
+                        "adopt": {
+                            **branch_values,
+                            "longname": "伪造的非主长名",
+                        }
+                    },
+                ),
+                (branch_row, {"forged": branch_values}),
+                (
+                    feature_row,
+                    {
+                        "adopt": {
+                            **feature_values,
+                            "vaultname":
+                                "preserve canonical English: forged_marker",
+                        }
+                    },
+                ),
+            ]
+            for row, proposal in composite_mutations:
+                other = feature_row if row is branch_row else branch_row
+                path.write_text(
+                    f"Inventory-SHA256: {'a' * 64}\n\n"
+                    + header
+                    + review_card(
+                        fixture,
+                        row,
+                        overrides={
+                            "proposed_translation": json.dumps(
+                                proposal,
+                                ensure_ascii=False,
+                                sort_keys=True,
+                                separators=(",", ":"),
+                            )
+                        },
+                    )
+                    + review_card(fixture, other),
+                    encoding="utf-8",
+                )
+                mutated = MODULE.review_coverage(fixture, path)
+                self.assertFalse(mutated["coverage_equal"])
+                self.assertIn(
+                    row["identity"],
+                    mutated["composite_adoption_mismatches"],
+                )
             path.write_text(
                 f"Inventory-SHA256: {'a' * 64}\n\n"
                 + header + card_a
@@ -704,6 +794,64 @@ epilogue {{
                              broken["duplicate_evidence_cards"])
             self.assertEqual([feature_row["identity"]],
                              broken["missing_evidence_cards"])
+
+    def test_composite_adoption_binds_protected_tokens(self):
+        source = next(
+            row for row in self.payload["rows"]
+            if row["category"] == "branch"
+        )
+        row = json.loads(json.dumps(source))
+        row["identity"] = "branch:BRANCH_TOKEN_FIXTURE"
+        row["chinese_description"] = "向{foe}显示%s。"
+        fixture = {
+            **self.payload,
+            "inventory_sha256": "e" * 64,
+            "rows": [row],
+        }
+        expected = MODULE.review_expected_composite_adoption(row)
+        self.assertEqual(
+            ["%s"], expected["tokens"]["description"]["adopted"][
+                "placeholders"
+            ]
+        )
+        self.assertEqual(
+            ["{foe}"], expected["tokens"]["description"]["adopted"][
+                "entity_macros"
+            ]
+        )
+        values = expected["values"]
+        mutated_values = {
+            **values,
+            "description": "向敌人显示。",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.md"
+            path.write_text(
+                f"Inventory-SHA256: {'e' * 64}\n\n"
+                + review_header()
+                + review_card(
+                    fixture,
+                    row,
+                    overrides={
+                        "proposed_translation": json.dumps(
+                            {"adopt": mutated_values},
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        )
+                    },
+                ),
+                encoding="utf-8",
+            )
+            coverage = MODULE.review_coverage(fixture, path)
+            self.assertFalse(coverage["coverage_equal"])
+            mismatch = coverage["composite_adoption_mismatches"][
+                row["identity"]
+            ]
+            self.assertNotEqual(
+                mismatch["expected"]["tokens"]["description"],
+                mismatch["actual"]["tokens"]["description"],
+            )
 
     def test_review_cells_normalize_only_serialization_edge_whitespace(self):
         range_row = next(

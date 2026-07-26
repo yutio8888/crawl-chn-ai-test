@@ -175,28 +175,48 @@ function TimedMessaging:say_message(cm, dur)
       distance_adj = raw_adj or ""
   end
 
+  local function format_range_message(template_key)
+    local msg = translate_key(template_key)
+    if raw_adj and string.find(raw_adj, '$F') and msg == template_key then
+      -- English fallback retains the production grammar/article path. Replace
+      -- the complete source phrase so "the a bell" cannot be produced.
+      local source = self:range_adjective(cm)
+      local replacements
+      msg, replacements = msg:gsub(
+          "the%s+{distance}%s+{noisemaker}", source, 1)
+      if replacements == 0 then
+        msg = msg:gsub("{distance}%s+{noisemaker}", source, 1)
+      end
+    elseif distance_adj == "" then
+      -- A translated $F terminal case has no distance adjective. Consume the
+      -- placeholder separator with it; Chinese receives no English article.
+      msg = msg:gsub(
+          "{distance}%s*{noisemaker}", translate_key(self.noisemaker), 1)
+    else
+      msg = msg
+        :gsub("{distance}", translate_key(distance_adj))
+        :gsub("{noisemaker}", translate_key(self.noisemaker))
+    end
+    return msg
+  end
+
   if self.range_msg_fmt then
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                        local msg = translate_key(self.range_msg_fmt)
+                        local msg = format_range_message(self.range_msg_fmt)
                           :gsub("{prefix}", translate_key(chk[2]))
                           :gsub("{verb}", translate_key(self.verb))
-                          :gsub("{noisemaker}", translate_key(self.noisemaker))
-                          :gsub("{distance}", translate_key(distance_adj))
                         self:emit_message(nil, msg)
                      end)
   else
     self:proc_ranges(self.ranges, dur,
                      function (chk)
                         local msg =
-                          translate_key("You hear the {prefix} of the {distance} {noisemaker}.")
+                          format_range_message(
+                            "You hear the {prefix} of the {distance} {noisemaker}.")
                             :gsub("{prefix}",
                                   translate_key(chk[2])
                                   .. translate_key(self.verb))
-                            :gsub("{distance}",
-                                  translate_key(distance_adj))
-                            :gsub("{noisemaker}",
-                                  translate_key(self.noisemaker))
                         self:emit_message(nil, msg)
                      end)
   end

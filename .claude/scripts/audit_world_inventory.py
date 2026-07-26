@@ -172,6 +172,23 @@ def physical_db(path):
     for entry in entries:
         effective[entry.canonical_key] = runtime_normalize_value(entry.value)
         raw[entry.raw_key] = runtime_normalize_value(entry.value)
+    # TextDB accepts an entry before the first separator. The shared physical
+    # parser intentionally exposes separator-delimited entries, so recover
+    # that production-visible leading entry after any comment banner.
+    prefix = Path(path).read_text(encoding="utf-8").split("%%%%", 1)[0]
+    prefix_lines = prefix.splitlines()
+    first_key = next((
+        index for index, line in enumerate(prefix_lines)
+        if line.strip() and not line.lstrip().startswith("#")
+    ), None)
+    if first_key is not None:
+        raw_key = prefix_lines[first_key].strip()
+        value = "\n".join(prefix_lines[first_key + 1:]).strip()
+        canonical_key = lowercase_string(raw_key)
+        if raw_key not in raw:
+            counts[canonical_key] += 1
+            effective[canonical_key] = runtime_normalize_value(value)
+            raw[raw_key] = runtime_normalize_value(value)
     return {
         "effective": effective,
         "raw": raw,
@@ -471,6 +488,20 @@ def feature_rows():
     source = source_entries(ZH_SOURCE_DIR)
     en_desc = physical_db(EN_FEATURES)
     zh_desc = physical_db(ZH_FEATURES)
+    en_desc_keys = {key.lower(): key for key in en_desc["raw"]}
+    zh_desc_keys = {key.lower(): key for key in zh_desc["raw"]}
+
+    def description_value(db, keys, feature_name):
+        for candidate in (
+                feature_name,
+                f"A {feature_name}",
+                f"An {feature_name}",
+                f"The {feature_name}"):
+            matched = keys.get(candidate.lower())
+            if matched is not None:
+                return db["raw"].get(matched)
+        return None
+
     alias_names = {}
     alias_vaultnames = {}
     for item in data:
@@ -488,8 +519,12 @@ def feature_rows():
             "name": name,
             "vaultname": item["vaultname"],
             "current_chinese_name": source.get(name.lower()) if name else None,
-            "english_description": en_desc["raw"].get(name),
-            "chinese_description": zh_desc["raw"].get(name),
+            "english_description": description_value(
+                en_desc, en_desc_keys, name
+            ),
+            "chinese_description": description_value(
+                zh_desc, zh_desc_keys, name
+            ),
             "name_alias_group": alias_names[name],
             "vaultname_alias_group": alias_vaultnames[item["vaultname"]],
             "protocol_identity": {
@@ -1311,6 +1346,82 @@ def _row_current_chinese(row):
     )
 
 
+def review_expected_composite_adoption(row, adopted_values=None):
+    """Build the complete branch/feature adoption object bound to review."""
+    if row["category"] == "branch":
+        displays = {
+            item["field"]: item.get("zh")
+            for item in row.get("display_strings", [])
+        }
+        expected_values = {
+            "description": row.get("chinese_description"),
+            "entry_message": displays.get("entry_message"),
+            "longname": displays.get("longname"),
+            "shortname": displays.get("shortname"),
+        }
+        english_values = {
+            "description": row.get("english_description"),
+            "entry_message": row.get("entry_message"),
+            "longname": row.get("longname"),
+            "shortname": row.get("shortname"),
+        }
+    elif row["category"] == "feature":
+        expected_values = {
+            "description": row.get("chinese_description"),
+            "name": row.get("current_chinese_name"),
+            "vaultname": (
+                "preserve canonical English: " + row["vaultname"]
+                if row.get("vaultname") else None
+            ),
+        }
+        english_values = {
+            "description": row.get("english_description"),
+            "name": row.get("name"),
+            "vaultname": row.get("vaultname"),
+        }
+    else:
+        return None
+
+    values = expected_values if adopted_values is None else adopted_values
+    return {
+        "category": row["category"],
+        "values": values,
+        "tokens": {
+            field: {
+                "english": _tokensets(english_values.get(field) or ""),
+                "adopted": _tokensets(values.get(field) or ""),
+            }
+            for field in expected_values
+        },
+    }
+
+
+def _submitted_composite_adoption(row, cell):
+    """Canonicalize the adopted/current object carried by a decision cell."""
+    try:
+        decision = json.loads(cell)
+    except (TypeError, json.JSONDecodeError):
+        return {"invalid_json": cell}
+    if not isinstance(decision, dict):
+        return {"invalid_structure": decision}
+    if "adopt" in decision:
+        adopted = decision["adopt"]
+    elif "current" in decision:
+        # Keep/defer cards preserve the production value rather than proposing
+        # a replacement, so their current object is the adopted object.
+        adopted = decision["current"]
+    elif set(decision) == set(
+            review_expected_composite_adoption(row)["values"]):
+        # Some terminal adjustment cards carry the complete adopted object
+        # directly, without historical/current wrapper metadata.
+        adopted = decision
+    else:
+        return {"missing_adopt_or_current": decision}
+    if not isinstance(adopted, dict):
+        return {"invalid_adopted_object": adopted}
+    return review_expected_composite_adoption(row, adopted)
+
+
 def review_expected_fact_cells(payload, row):
     """Return production-derived evidence cells shared by writer and validator."""
     evidence = row.get("evidence", {})
@@ -1489,6 +1600,7 @@ def review_coverage(payload, path):
     inventory_rows = {row["identity"]: row for row in payload["rows"]}
     fact_mismatches = {}
     adopted_translation_mismatches = {}
+    composite_adoption_mismatches = {}
     for identity, card in cards.items():
         row = inventory_rows.get(identity)
         if row is None:
@@ -1508,6 +1620,17 @@ def review_coverage(payload, path):
                 "expected": expected_adopted,
                 "actual": card.get("adopted_translation"),
             }
+        expected_composite = review_expected_composite_adoption(row)
+        if expected_composite is not None:
+            actual_composite = _submitted_composite_adoption(
+                row, card.get("proposed_translation")
+            )
+            if actual_composite != expected_composite:
+                composite_adoption_mismatches[identity] = {
+                    "decision_field": "proposed_translation",
+                    "expected": expected_composite,
+                    "actual": actual_composite,
+                }
     conclusions = {
         identity: card["conclusion"] for identity, card in rows
     }
@@ -1585,6 +1708,7 @@ def review_coverage(payload, path):
         "adopted_translation_mismatches": (
             adopted_translation_mismatches
         ),
+        "composite_adoption_mismatches": composite_adoption_mismatches,
         "coverage_equal": (
             len(identities) == len(known)
             and actual == known
@@ -1595,6 +1719,7 @@ def review_coverage(payload, path):
             and not invalid_confidence
             and not fact_mismatches
             and not adopted_translation_mismatches
+            and not composite_adoption_mismatches
             and header == required_columns
             and bool(digest_match)
             and digest_match.group(1) == payload["inventory_sha256"]

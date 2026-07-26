@@ -415,6 +415,54 @@ emit("portal_distance_late_translation",
      distance_zh_to_en .. " || " .. distance_en_to_zh)
 crawl.set_test_language("zh")
 
+-- Issue 28 final readiness: distance zero selects the terminal "$F" branch.
+-- English must retain crawl.grammar(..., "a") ("an alarm"), while Chinese
+-- receives only the translated entity and neither language gets a doubled
+-- placeholder separator.
+local function roundtrip_portal_close(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        noisemaker = "alarm",
+        verb = "tolling",
+        ranges = {{0, "brisk "}},
+        range_adjectives = {{0, "$F"}},
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "alarm"
+           and loaded.verb == "tolling"
+           and loaded.range_adjectives[1][2] == "$F",
+           "close portal message persisted translated components")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    assert(not string.find(rendered, "  ", 1, true),
+           "close portal message contains doubled placeholder spacing")
+    if emitted_language == "en" then
+        local grammatical_entity = crawl.grammar("alarm", "a")
+        assert(grammatical_entity == "an alarm"
+               and string.find(rendered, grammatical_entity, 1, true),
+               "close English portal omitted grammar/article path")
+    else
+        local translated = crawl.t_("alarm")
+        assert(translated ~= "alarm"
+               and string.find(rendered, translated, 1, true)
+               and not string.find(rendered, "an alarm", 1, true)
+               and not string.find(rendered, " alarm", 1, true),
+               "close Chinese portal leaked English article/entity")
+    end
+    return rendered
+end
+local close_zh_to_en = roundtrip_portal_close("zh", "en")
+local close_en_to_zh = roundtrip_portal_close("en", "zh")
+emit("portal_close_grammar",
+     close_zh_to_en .. " || " .. close_en_to_zh)
+crawl.set_test_language("zh")
+
 -- Issue 28 readiness: use the Sewer's production keys through the real
 -- TimedMessaging serializer and display sink. "sewer drain" is an English
 -- identity until emission; it must never collide with the unrelated "drain"
