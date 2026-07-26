@@ -126,7 +126,7 @@ class WorldInventoryUnitTest(unittest.TestCase):
         self.assertEqual(["known"], db["duplicates"])
         self.assertEqual({"Known", "Stale"}, set(db["raw"]))
 
-    def test_physical_textdb_keeps_leading_entry_after_comment_banner(self):
+    def test_physical_textdb_ignores_content_before_first_separator(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "leading.txt"
             path.write_text(
@@ -135,9 +135,19 @@ class WorldInventoryUnitTest(unittest.TestCase):
                 encoding="utf-8",
             )
             db = MODULE.physical_db(path)
-        self.assertEqual("Leading value", db["raw"]["Leading key"])
-        self.assertEqual("Leading value", db["effective"]["leading key"])
-        self.assertNotIn("leading key", db["duplicates"])
+        self.assertNotIn("Leading key", db["raw"])
+        self.assertNotIn("leading key", db["effective"])
+        self.assertEqual("Second value", db["raw"]["Second key"])
+        self.assertEqual("Second value", db["effective"]["second key"])
+
+        unknown_altar = next(
+            row for row in self.payload["rows"]
+            if row["identity"] == "feature:DNGN_UNKNOWN_ALTAR"
+        )
+        self.assertIsNone(unknown_altar["english_description"])
+        self.assertIsNone(unknown_altar["chinese_description"])
+        adoption = MODULE.review_expected_composite_adoption(unknown_altar)
+        self.assertIsNone(adoption["values"]["description"])
 
     def test_all_supported_des_producer_classes_are_extracted(self):
         path = self.write_des(

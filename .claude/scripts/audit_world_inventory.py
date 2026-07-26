@@ -172,23 +172,6 @@ def physical_db(path):
     for entry in entries:
         effective[entry.canonical_key] = runtime_normalize_value(entry.value)
         raw[entry.raw_key] = runtime_normalize_value(entry.value)
-    # TextDB accepts an entry before the first separator. The shared physical
-    # parser intentionally exposes separator-delimited entries, so recover
-    # that production-visible leading entry after any comment banner.
-    prefix = Path(path).read_text(encoding="utf-8").split("%%%%", 1)[0]
-    prefix_lines = prefix.splitlines()
-    first_key = next((
-        index for index, line in enumerate(prefix_lines)
-        if line.strip() and not line.lstrip().startswith("#")
-    ), None)
-    if first_key is not None:
-        raw_key = prefix_lines[first_key].strip()
-        value = "\n".join(prefix_lines[first_key + 1:]).strip()
-        canonical_key = lowercase_string(raw_key)
-        if raw_key not in raw:
-            counts[canonical_key] += 1
-            effective[canonical_key] = runtime_normalize_value(value)
-            raw[raw_key] = runtime_normalize_value(value)
     return {
         "effective": effective,
         "raw": raw,

@@ -3446,15 +3446,17 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Status**: active
 - **Date**: 2026-07-26
 - **Inventory**: 最终 788 个唯一身份；inventory SHA-256
-  `3b49625119479dddeaa9aee96790bf2cc056e834fb781bca21b0daf774cd15d8`。
+  `98bf113173ab65ba614b960d827553aae31a5bc52c55e993706f686468ab1cb4`。
   范围为 40 个分支、211 个地下城特征、14 个传送门家族及 523 个生产
   `.des` 玩家显示槽。最初发现清单的 781 个身份及
   `05dcadd34933fae5b5f62d892e3dbd29acbe5fdf0bac9647d6303809c911d96b`
   已由最终身份纠错取代，不得作为最终覆盖数。上一 readiness 候选的同一
   788 项成员集合及 inventory SHA-256
   `34d8c6bbf8cdb440253fe49435ac7d719921ccad72aec91e506456d5e14d937c`
-  保留为审计历史；完整 composite adoption facts 与 TextDB parser
-  纠正后的新 digest 才是最终绑定。
+  保留为审计历史。完整 composite adoption facts 候选
+  `3b49625119479dddeaa9aee96790bf2cc056e834fb781bca21b0daf774cd15d8`
+  因错误采用首个分隔符前的非生产 TextDB prefix 语义而被 code review
+  拒绝；绑定生产 TextDB prefix 语义的新 digest 才是最终结果。
 - **Identity correction**: 旧 516 个 `.des` 槽迁移为 496 个：
   12 个 `initmsg` 拼接片段纠正为完整运行时备选项，另排除 8 个地图生成
   坐标／诊断输出；old-only 20、new-only 0，显示 wrapper 前后集合差为 0。
