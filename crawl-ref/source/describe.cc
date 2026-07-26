@@ -2797,7 +2797,9 @@ string get_item_description(const item_def &item,
         }
         else if (is_unrandom_artefact(item) && item.is_identified())
         {
-            const string desc = getLongDescription(get_artefact_name(item));
+            // TextDB identity remains the canonical English true name; the
+            // localized artefact name is display-only.
+            const string desc = getLongDescription(get_unrand_name_en(item));
             if (!desc.empty())
             {
                 description << desc;
@@ -4088,7 +4090,9 @@ command_type describe_item_popup(const item_def &item,
 
     string quote;
     if (is_unrandom_artefact(item) && item.is_identified())
-        quote = getQuoteString(get_artefact_name(item));
+    {
+        quote = getQuoteString(get_unrand_name_en(item));
+    }
     else
         quote = getQuoteString(item.name(DESC_DBNAME, true, false, false));
 

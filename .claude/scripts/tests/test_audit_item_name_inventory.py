@@ -248,6 +248,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(0, proc.returncode, proc.stderr)
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
+        self.assertEqual(390, payload["count"])
+        self.assertEqual(
+            "40fe2a9be419868de3ffd8ece736861b81823046654fd4710da62ec5fe2b81f4",
+            payload["inventory_sha256"],
+        )
         self.assertEqual(payload["count"], len(payload["rows"]))
         self.assertEqual(
             payload["category_counts"],
@@ -314,6 +319,165 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 with contextlib.redirect_stderr(io.StringIO()):
                     result = MODULE.main(["--output", str(output)])
         self.assertEqual(1, result)
+
+    def test_issue29_v2_freezes_every_finite_production_boundary(self):
+        payload, internal_rows = MODULE.build_extended_inventory()
+        self.assertEqual(
+            "dcss-item-extended-review-inventory-v2", payload["schema"]
+        )
+        self.assertEqual(390, payload["ordinary_v1"]["count"])
+        self.assertEqual(
+            {
+                "unrand": 142,
+                "unident": 7,
+                "appearance": 186,
+                "special": 23,
+                "gizmo": 539,
+                "item-description": 307,
+                "randart-component": 2440,
+                "randart-grammar": 115,
+            },
+            payload["category_counts"],
+        )
+        self.assertEqual(payload["count"], len(payload["rows"]))
+        self.assertEqual(
+            payload["count"],
+            len({row["identity"] for row in payload["rows"]}),
+        )
+        self.assertFalse(payload["duplicates"])
+        self.assertEqual(payload["count"], len(internal_rows))
+
+    def test_paired_components_reject_minimal_key_count_token_mutations(self):
+        def write(path, entries):
+            chunks = []
+            for key, values in entries:
+                chunks.append("%%%%\n" + key + "\n\n"
+                              + "\n\n".join(values) + "\n")
+            path.write_text("".join(chunks), encoding="utf-8")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en = root / "en.txt"
+            zh = root / "zh.txt"
+            valid = [("key", ["plain", "@child@tail"]),
+                     ("child", ["nested"])]
+            write(en, valid)
+            write(zh, [("key", ["普通", "@child@尾"]),
+                       ("child", ["嵌套"])])
+            self.assertEqual(
+                3, len(MODULE.paired_component_rows(
+                    en, zh, "fixture"
+                ))
+            )
+
+            write(zh, [("other", ["普通", "@child@尾"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "key mismatch"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(zh, [("key", ["普通"]), ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "physical count"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(zh, [("key", ["普通", "@other@尾"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "recursive token"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(en, [("key", ["value %1$s"]), ("child", ["nested"])])
+            write(zh, [("key", ["值 %2$s"]), ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "placeholder"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+            write(en, [("key", ["w:3\nweighted"]),
+                       ("child", ["nested"])])
+            write(zh, [("key", ["w:4\n加权"]),
+                       ("child", ["嵌套"])])
+            with self.assertRaisesRegex(RuntimeError, "weight mismatch"):
+                MODULE.paired_component_rows(en, zh, "fixture")
+
+    def test_review_coverage_rejects_each_minimal_mutation(self):
+        inventory = [{"identity": "a"}, {"identity": "b"}]
+        valid = [
+            {
+                "identity": "a", "conclusion": "keep",
+                "reason": "not applicable", "reentry": "not applicable",
+            },
+            {
+                "identity": "b", "conclusion": "adjust",
+                "reason": "not applicable", "reentry": "not applicable",
+            },
+        ]
+        self.assertFalse(any(
+            MODULE.review_violations(inventory, valid).values()
+        ))
+
+        duplicate = valid + [dict(valid[0])]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, duplicate)[
+                "review_duplicates"
+            ],
+        )
+        self.assertEqual(
+            ["b"],
+            MODULE.review_violations(inventory, valid[:1])[
+                "inventory_minus_review"
+            ],
+        )
+        extra = valid + [{
+            "identity": "c", "conclusion": "keep",
+            "reason": "not applicable", "reentry": "not applicable",
+        }]
+        self.assertEqual(
+            ["c"],
+            MODULE.review_violations(inventory, extra)[
+                "review_minus_inventory"
+            ],
+        )
+        invalid = [dict(valid[0], conclusion="pending"), valid[1]]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, invalid)[
+                "invalid_terminal_conclusions"
+            ],
+        )
+        deferred = [
+            dict(valid[0], conclusion="defer implementation"),
+            valid[1],
+        ]
+        self.assertEqual(
+            ["a"],
+            MODULE.review_violations(inventory, deferred)[
+                "invalid_deferrals"
+            ],
+        )
+
+    def test_issue29_cli_review_results_has_exact_bidirectional_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inventory = root / "inventory.json"
+            results = root / "results.md"
+            generated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--output", str(inventory),
+                    "--write-review-results", str(results),
+                ],
+                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
+            )
+            self.assertEqual(0, generated.returncode, generated.stderr)
+            validated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--output", str(inventory),
+                    "--review-results", str(results),
+                ],
+                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
+            )
+            payload = json.loads(inventory.read_text(encoding="utf-8"))
+        self.assertEqual(0, validated.returncode, validated.stderr)
+        self.assertFalse(any(payload["review_violations"].values()))
 
 
 if __name__ == "__main__":

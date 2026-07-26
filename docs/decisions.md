@@ -3299,6 +3299,61 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-B-021 — 扩展物品、固定神器与 gizmo 组件复审
+
+- **Type**: B — Batch naming and description revision
+- **Status**: active
+- **Date**: 2026-07-27
+- **Source**: [GitHub Issue #29](https://github.com/yutio8888/crawl-chn-ai-test/issues/29)；
+  基线 `01dc9911ec9948aff661f6ec0b9b0a798fcf909d` 的固定神器、未鉴定外观、
+  特殊物品身份、gizmo 有限组件及普通物品描述冻结清单
+- **Inventory boundary**:
+  - `art-data.txt` 的 121 项现行与 19 项已删除兼容固定神器逐项审阅；2 个
+    dummy 只作内部生命周期分类。
+  - gizmo 最终随机名称不可有限枚举；审阅三个稳定语法槽及其 539 个物理序号
+    组件，并保留 `@gizmo_modifier@` 递归 token。
+  - 7 项 `unident.txt` 通用描述、19 种佐特符文、尸体语法、金币和佐特宝珠均
+    作为稳定玩家身份审阅。随机神器和普通未鉴定最终外观只审有限组件与生成语法，
+    不硬编码历史组合总数。
+  - 普通物品描述以当前生产 identity 与英文 DB key 为准；D-B-020 仅作校准，
+    因没有逐项持久证据卡且 glossary 已变，不整批复用。
+- **Naming choices**:
+  - `glaive of Prune → 梅干长柄刀`，并统一其 `Prune` 铭文及诅咒消息。
+    `Prune` 在当前长描述中确指将持有者变成巨大梅干的双关，不作人名音译。
+  - `sword of Cerebov → 塞雷波夫之剑`，跟随 unique 专名
+    `Cerebov → 塞雷波夫`。
+  - `amulet of the Air → 空气项链`，跟随 D-B-020 的物品域 `air → 空气`；
+    `morningstar "Eos" → 晨星锤"厄俄斯"`，跟随 D-B-017。
+  - 固定神器传说专名统一为 `Eiolaiphi → 埃奥莱菲`、
+    `Rutra → 鲁特拉`、`St. Lee → 圣李`；前两项纠正 Zephyr 与暗夜之袍
+    旧译中遗漏或错误的人名，圣李沿用既有译名并明确“圣李修士会”的所属关系。
+- **Description choices**:
+  - `Shapeshifting → 变形术`、`Hexes → 诅咒系`、`Evocations → 激活技能`；
+    删除与当前英文块不符的 Zephyr、盗贼斗篷与术士之镜旧文本，并恢复其余
+    固定神器描述中遗漏或误写的条件、因果、专名和玩法后果。
+  - `unident` 描述不得凭空加入“古老”“木制”等属性，也不得删去
+    `single dose` 或把 `unusually magical` 弱化成“可能有魔力”。
+  - 仅中文存在且无普通 producer/兼容 consumer 的 `ring of fire` 与
+    `ring of ice` 描述删除；`athame` 与 `athame "Fimbulwinter"` 的固定神器
+    兼容依赖保留并单独分类。
+- **Gizmo rule**: 普通技术词译成中文；引用专名、工程笑话和伪希腊词根可保留
+  或音译。递归 token、物理序号和三个英文 TextDB key 不变。中文组件不反向
+  充当存档或协议 identity。
+- **Implementation deferrals**:
+  - 固定神器长描述当前以本地化显示名查询英文 DB key。
+  - gizmo 当前把 locale 生成的最终名称持久化，切换语言后不会延迟本地化。
+  两项均由后续 `crawl-coder` 处理，本批不改变 C++、存档 schema 或生成概率。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/unrand.txt`
+  - `crawl-ref/source/dat/descript/zh/items.txt`
+  - `crawl-ref/source/dat/descript/zh/unident.txt`
+  - `crawl-ref/source/dat/database/zh/gizmo.txt`
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
 ### D-A-041 — 非 unique 怪物显示名消歧与文学引文例外
 
 - **Type**: A — Entity ruling
@@ -3427,6 +3482,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-016 | Weapon brand dictionary | full ZH table (29 brands) | active |
 | D-B-019 | Barding → 马铠 | 马铠 | active ✅ |
 | D-B-020 | Item and ego name review | 390 identities; current/internal fixes | active |
+| D-B-021 | Extended item/unrand/gizmo review | fixed identities, finite components and descriptions | active |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |

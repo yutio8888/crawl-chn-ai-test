@@ -13691,13 +13691,13 @@ The staff's sickly green glow vanishes.
 法杖的病态绿光消失了。
 %%%%
 You struggle to resist the curse of the Prune...
-你挣扎着抵抗诅咒之梅的诅咒……
+你挣扎着抵抗梅干长柄刀的诅咒……
 %%%%
 The curse of the Prune has no hold on the dead.
-诅咒之梅的诅咒对亡者无效。
+梅干长柄刀的诅咒对亡者无效。
 %%%%
 The curse of the Prune lifts from you.
-诅咒之梅的诅咒从你身上解除了。
+梅干长柄刀的诅咒从你身上解除了。
 %%%%
 You feel lightning quick.
 你感到迅如闪电。
@@ -17509,7 +17509,7 @@ A demonic guardian appears!
 一个恶魔守护者出现了！
 %%%%
 The curse of the Prune grips you.
-普鲁恩的诅咒攫住了你。
+梅干长柄刀的诅咒攫住了你。
 %%%%
 You cannot enter the water in your current form.
 你当前形态下无法进入水中。
@@ -28269,7 +28269,7 @@ PotionHeal*2
 药效*2
 %%%%
 Prune
-修剪
+梅干
 %%%%
 Rampage+∞
 冲锋+∞
@@ -28448,6 +28448,9 @@ Delatra's gloves
 Elemental Staff
 元素之杖
 %%%%
+Eiolaiphi
+埃奥莱菲
+%%%%
 Hermit's Pendant
 隐士之坠
 %%%%
@@ -28506,7 +28509,7 @@ amulet of invisibility
 隐身项链
 %%%%
 amulet of the Air
-大气项链
+空气项链
 %%%%
 amulet of the Four Winds
 四方之风项链
@@ -28620,7 +28623,7 @@ giant club "Skullcrusher"
 巨棒"碎颅者"
 %%%%
 glaive of Prune
-普鲁恩之刃
+梅干长柄刀
 %%%%
 glaive of the Guard
 守卫之刃
@@ -28716,7 +28719,7 @@ moon troll leather armour
 月之巨魔皮甲
 %%%%
 morningstar "Eos"
-钉头锤"厄俄斯"
+晨星锤"厄俄斯"
 %%%%
 mountain boots
 山岳之靴
@@ -28778,6 +28781,9 @@ robe of Night
 robe of Vines
 藤蔓之袍
 %%%%
+Rutra
+鲁特拉
+%%%%
 salamander hide armour
 火蜥蜴皮甲
 %%%%
@@ -28838,6 +28844,9 @@ sphere of Battle
 staff of Olgreb
 奥尔格雷布之杖
 %%%%
+St. Lee
+圣李
+%%%%
 staff of the Meek
 谦卑者之杖
 %%%%
@@ -28845,7 +28854,7 @@ storm bow
 风暴之弓
 %%%%
 sword of Cerebov
-塞雷博夫之剑
+塞雷波夫之剑
 %%%%
 sword of Power
 力量之剑

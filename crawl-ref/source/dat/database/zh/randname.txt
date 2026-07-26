@@ -178,7 +178,6 @@ w:20
 
 w:5
 @_adjective_@@_profession_name_@
-
 @_politics_name_armour_@
 
 w:3

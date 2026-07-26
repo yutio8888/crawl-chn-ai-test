@@ -235,6 +235,13 @@
 | shadows | 暗影 | armour ego; decision=D-B-018 |
 | triple crossbow | 三弦弩 | weapon; decision=D-B-018 |
 | executioner's axe | 刽子手斧 | weapon; decision=D-B-017 |
+| amulet of the Air | 空气项链 | unrand; decision=D-B-021 |
+| Eiolaiphi | 埃奥莱菲 | unrand lore proper name; decision=D-B-021 |
+| glaive of Prune | 梅干长柄刀 | unrand; `Prune` is the giant-prune transformation pun; decision=D-B-021 |
+| morningstar "Eos" | 晨星锤"厄俄斯" | unrand; decision=D-B-017/D-B-021 |
+| Rutra | 鲁特拉 | unrand lore proper name; decision=D-B-021 |
+| St. Lee | 圣李 | unrand lore proper name; decision=D-B-021 |
+| sword of Cerebov | 塞雷波夫之剑 | unrand; follows unique name; decision=D-B-021 |
 
 ### 武器品牌显示名称
 

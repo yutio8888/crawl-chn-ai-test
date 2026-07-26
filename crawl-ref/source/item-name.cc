@@ -2257,10 +2257,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_GIZMOS:
     {
-        if (props.exists(ARTEFACT_NAME_KEY))
-            buff << props[ARTEFACT_NAME_KEY].get_string();
-        else
-            buff << (T_("Unnamed gizmo"));
+        buff << get_gizmo_name(*this);
     }
     break;
 

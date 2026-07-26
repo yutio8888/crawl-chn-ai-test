@@ -1918,7 +1918,7 @@ static string _generate_gizmo_serial_number(bool at_end = false)
     // 1 or 2 uppercase letters
     int num_letters = coinflip() ? 2 : 1;
     for (int i = 0; i < num_letters; ++i)
-        serial += rand() % 26 + 65;
+        serial += random2(26) + 'A';
 
     serial += "-";
 
@@ -1937,45 +1937,76 @@ static string _generate_gizmo_serial_number(bool at_end = false)
     return serial;
 }
 
-static string _generate_gizmo_name()
+struct generated_gizmo_name
 {
-    string name;
+    string english;
+    string recipe;
+};
 
-    string noun = getMiscString("gizmo_noun");
-    string modifier = getMiscString("gizmo_modifier");
+static generated_gizmo_name _generate_gizmo_name()
+{
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    ASSERT(!noun.locator.empty());
+    ASSERT(!modifier.locator.empty());
 
     // Chance of serial number name
     if (one_chance_in(3))
     {
+        string serial;
+        int style;
         // 50% chance to be first or second
         if (coinflip())
-            name += modifier + noun + " " + _generate_gizmo_serial_number(true);
-        else
-            name += _generate_gizmo_serial_number() + " " + modifier + noun;
-    }
-    // Use adjective
-    else
-    {
-        string adj = getMiscString("gizmo_adjective");
-
-        // 50% chance of modifier, applied to either noun or adjective
-        if (coinflip())
         {
-            if (coinflip())
-                adj = modifier + adj;
-            else
-                noun = modifier + noun;
+            style = 0;
+            serial = _generate_gizmo_serial_number(true);
         }
-
-        name = adj + " " + noun;
+        else
+        {
+            style = 1;
+            serial = _generate_gizmo_serial_number();
+        }
+        const string english = style == 0
+            ? modifier.english + noun.english + " " + serial
+            : serial + " " + modifier.english + noun.english;
+        return {
+            english,
+            make_stringf("v1|%d|%s|%s|-|%s", style,
+                         noun.locator.c_str(), modifier.locator.c_str(),
+                         serial.c_str())
+        };
     }
 
-    return name;
+    const misc_string_recipe adjective =
+        selectMiscStringRecipe("gizmo_adjective");
+    ASSERT(!adjective.locator.empty());
+
+    int style = 2;
+    if (coinflip())
+    {
+        // Preserve the production RNG order: the second coinflip is made only
+        // when a modifier is used.
+        style = coinflip() ? 3 : 4;
+    }
+    string english;
+    if (style == 2)
+        english = adjective.english + " " + noun.english;
+    else if (style == 3)
+        english = modifier.english + adjective.english + " " + noun.english;
+    else
+        english = adjective.english + " " + modifier.english + noun.english;
+    return {
+        english,
+        make_stringf("v1|%d|%s|%s|%s|", style, noun.locator.c_str(),
+                     modifier.locator.c_str(), adjective.locator.c_str())
+    };
 }
 
 static void _make_coglin_gizmos()
 {
     CrawlVector &names = you.props[COGLIN_GIZMO_NAMES_KEY].get_vector();
+    CrawlVector &recipes = you.props[COGLIN_GIZMO_RECIPES_KEY].get_vector();
 
     CrawlVector &acq_items = you.props[COGLIN_GIZMO_KEY].get_vector();
     acq_items.clear();
@@ -1988,9 +2019,21 @@ static void _make_coglin_gizmos()
         if (item.defined())
         {
             if (names.size() > i)
+            {
                 item.props[ARTEFACT_NAME_KEY].get_string() = names[i].get_string();
+                if (recipes.size() > i)
+                {
+                    item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+                        recipes[i].get_string();
+                }
+            }
             else
-                item.props[ARTEFACT_NAME_KEY].get_string() = _generate_gizmo_name();
+            {
+                const generated_gizmo_name generated = _generate_gizmo_name();
+                item.props[ARTEFACT_NAME_KEY].get_string() = generated.english;
+                item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+                    generated.recipe;
+            }
 
             acq_items.push_back(item);
         }
@@ -2042,9 +2085,20 @@ bool coglin_invent_gizmo()
 void coglin_announce_gizmo_name()
 {
     CrawlVector& names = you.props[COGLIN_GIZMO_NAMES_KEY].get_vector();
-    string name = _generate_gizmo_name();
-    names.push_back(name);
+    CrawlVector& recipes = you.props[COGLIN_GIZMO_RECIPES_KEY].get_vector();
+    const generated_gizmo_name generated = _generate_gizmo_name();
+    names.push_back(generated.english);
+    recipes.push_back(generated.recipe);
+
+    item_def preview;
+    preview.base_type = OBJ_GIZMOS;
+    preview.quantity = 1;
+    preview.props[ARTEFACT_NAME_KEY].get_string() = generated.english;
+    preview.props[GIZMO_NAME_RECIPE_KEY].get_string() = generated.recipe;
+    const string name = get_gizmo_name(preview);
+    const string display_name = Options.language == lang_t::ZH
+        ? name : article_a(name);
 
     mprf(T_("Your brain swirls with designs for %s. You just need some more time..."),
-         article_a(name).c_str());
+         display_name.c_str());
 }

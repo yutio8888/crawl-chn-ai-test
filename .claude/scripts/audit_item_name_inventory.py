@@ -774,6 +774,709 @@ def build_inventory():
     return payload
 
 
+def textdb_rows(path):
+    entries = parse_entries_physical(str(path))
+    keys = [entry.canonical_key for entry in entries]
+    duplicates = sorted(
+        key for key, count in Counter(keys).items() if count > 1
+    )
+    if duplicates:
+        raise RuntimeError(f"duplicate TextDB keys in {path}: {duplicates}")
+    return entries
+
+
+def physical_candidates(entry):
+    """Parse TextDB weighted variants with the production blank-line grammar."""
+    lines = entry.value.splitlines()
+    candidates = []
+    index = 0
+    while index < len(lines):
+        while index < len(lines) and not lines[index]:
+            index += 1
+        if index == len(lines):
+            break
+
+        weight = 10
+        match = re.fullmatch(r"w:([+-]?\d+)", lines[index])
+        if match:
+            weight = int(match.group(1))
+            index += 1
+            if index == len(lines):
+                raise RuntimeError(
+                    f"{entry.source_file}:{entry.raw_key}: "
+                    "weight at end of entry"
+                )
+
+        pattern = []
+        while index < len(lines) and lines[index]:
+            pattern.append(lines[index])
+            index += 1
+        if not pattern:
+            raise RuntimeError(
+                f"{entry.source_file}:{entry.raw_key}: empty weighted variant"
+            )
+        candidates.append((weight, "\n".join(pattern).strip()))
+
+    if not candidates:
+        raise RuntimeError(
+            f"{entry.source_file}:{entry.raw_key}: empty weighted entry"
+        )
+    return candidates
+
+
+def git_head_text(path):
+    relative = str(path.relative_to(ROOT))
+    return subprocess.check_output(
+        ["git", "show", f"HEAD:{relative}"], cwd=ROOT, text=True
+    )
+
+
+def physical_entries_from_text(text):
+    with tempfile.TemporaryDirectory(prefix="dcss-item-v2-textdb-") as tmp:
+        path = Path(tmp) / "input.txt"
+        path.write_text(text, encoding="utf-8")
+        return parse_entries_physical(str(path))
+
+
+def changed_textdb_keys(path):
+    before = {
+        entry.canonical_key: runtime_normalize_value(entry.value)
+        for entry in physical_entries_from_text(git_head_text(path))
+    }
+    after = {
+        entry.canonical_key: runtime_normalize_value(entry.value)
+        for entry in textdb_rows(path)
+    }
+    return {
+        key for key in before.keys() | after.keys()
+        if before.get(key) != after.get(key)
+    }
+
+
+def array_literals(text, array_name):
+    match = re.search(
+        r"\b" + re.escape(array_name)
+        + r"\s*\[\]\s*=\s*\{(.*?)\};", text, re.S,
+    )
+    if not match:
+        raise RuntimeError(f"array not found: {array_name}")
+    return re.findall(r'"([^"]*)"', match.group(1))
+
+
+def unrand_rows(db, source_db):
+    art = active_source(SRC / "art-data.txt")
+    blocks = re.split(r"\n(?=\s*(?:# [^\n]*\n)*NAME:\s*)", art)
+    definitions = []
+    for block in blocks:
+        name = re.search(r"(?m)^NAME:\s*(.+?)\s*$", block)
+        if not name:
+            continue
+        definitions.append({
+            "name": name.group(1),
+            "unid": (
+                re.search(r"(?m)^APPEAR:\s*(.+?)\s*$", block)
+                or re.search(r"(?m)^UNID:\s*(.+?)\s*$", block)
+            ),
+            "deleted": bool(re.search(
+                r"(?m)^BOOL:.*\bdeleted\b", block
+            )),
+        })
+    enum_text = (SRC / "art-enum.h").read_text(encoding="utf-8")
+    enums = re.findall(
+        r"^\s*(UNRAND_[A-Z0-9_]+)(?:\s*=\s*UNRAND_START)?\s*,?",
+        enum_text, re.MULTILINE,
+    )
+    enums = [
+        enum_id for enum_id in enums
+        if enum_id not in {"UNRAND_START", "UNRAND_LAST"}
+    ]
+    if len(definitions) != 142 or len(enums) != 142:
+        raise RuntimeError(
+            f"unrand inventory drift: definitions={len(definitions)} "
+            f"enums={len(enums)}"
+        )
+
+    changed_desc = changed_textdb_keys(
+        SRC / "dat/descript/zh/unrand.txt"
+    )
+    changed_names = set()
+    before_source = {
+        entry.canonical_key: runtime_normalize_value(entry.value)
+        for entry in physical_entries_from_text(git_head_text(ZH_SOURCE))
+    }
+    for definition in definitions:
+        key = definition["name"].lower()
+        if before_source.get(key) != source_db.get(key):
+            changed_names.add(key)
+    expected_changed_names = {
+        "glaive of prune", 'morningstar "eos"',
+        "sword of cerebov", "amulet of the air",
+    }
+    if changed_names != expected_changed_names:
+        raise RuntimeError(
+            f"unrand SourceDB conclusion boundary drift: "
+            f"{sorted(changed_names)}"
+        )
+    adjust_names = {"glaive of prune", 'morningstar "eos"'}
+
+    rows = []
+    for enum_id, definition in zip(enums, definitions):
+        name = definition["name"]
+        key = name.lower()
+        dummy = name.startswith("DUMMY UNRANDART")
+        lifecycle = (
+            "internal" if dummy else
+            "compatibility" if definition["deleted"] else "current"
+        )
+        if dummy:
+            conclusion = "keep"
+        elif key in adjust_names:
+            conclusion = "adjust"
+        elif key in changed_desc or key in changed_names:
+            conclusion = "retranslate"
+        else:
+            conclusion = "keep"
+        rows.append({
+            "identity": f"unrand:{enum_id}",
+            "category": "unrand",
+            "lifecycle": lifecycle,
+            "english_source": name,
+            "current_chinese": source_db.get(key),
+            "description_key": name,
+            "description_present": key in db,
+            "producer": "art-data.txt -> unranddata[]",
+            "consumer": (
+                "get_artefact_name display; canonical English "
+                "get_unrand_name_en TextDB lookup"
+            ),
+            "input": "crawl-ref/source/art-data.txt",
+            "_conclusion": conclusion,
+        })
+    return rows
+
+
+def unidentified_appearance_rows(source_db):
+    item_name = active_source(SRC / "item-name.cc")
+    scroll = active_source(SRC / "zh-scroll-appearance.cc")
+    specs = [
+        ("wand-primary", array_literals(item_name, "primary_strings")[:12]),
+        ("wand-secondary",
+         array_literals(function_body(item_name, "wand_secondary_string"),
+                        "secondary_strings")),
+        ("ring-primary",
+         array_literals(function_body(item_name, "ring_primary_string"),
+                        "primary_strings")),
+        ("ring-secondary",
+         array_literals(function_body(item_name, "ring_secondary_string"),
+                        "secondary_strings")),
+        ("amulet-primary",
+         array_literals(function_body(item_name, "amulet_primary_string"),
+                        "primary_strings")),
+        ("amulet-secondary",
+         array_literals(function_body(item_name, "amulet_secondary_string"),
+                        "secondary_strings")),
+        ("staff-primary",
+         array_literals(function_body(item_name, "staff_primary_string"),
+                        "primary_strings")),
+        ("staff-secondary",
+         array_literals(function_body(item_name, "staff_secondary_string"),
+                        "secondary_strings")),
+        ("potion-colour", array_literals(item_name, "potion_colours")),
+        ("potion-qualifier", array_literals(item_name, "potion_qualifiers")),
+        ("scroll-binding", array_literals(scroll, "scroll_binding_zh")),
+        ("scroll-seal", array_literals(scroll, "scroll_seal_zh")),
+    ]
+    expected = {
+        "wand-primary": 12, "wand-secondary": 16,
+        "ring-primary": 29, "ring-secondary": 13,
+        "amulet-primary": 29, "amulet-secondary": 13,
+        "staff-primary": 4, "staff-secondary": 10,
+        "potion-colour": 23, "potion-qualifier": 15,
+        "scroll-binding": 12, "scroll-seal": 10,
+    }
+    counts = {name: len(values) for name, values in specs}
+    if counts != expected:
+        raise RuntimeError(f"unidentified appearance drift: {counts}")
+    rows = []
+    for family, values in specs:
+        for ordinal, value in enumerate(values):
+            english = value.strip()
+            rows.append({
+                "identity": f"appearance:{family}:{ordinal:03d}",
+                "category": "appearance",
+                "lifecycle": "current",
+                "english_source": english or "(empty component)",
+                "current_chinese": (
+                    value if family.startswith("scroll-")
+                    else source_db.get(english.lower(), english)
+                ),
+                "producer": "item-name.cc unidentified appearance arrays",
+                "consumer": "item_def::name unidentified display grammar",
+                "input": (
+                    "crawl-ref/source/zh-scroll-appearance.cc"
+                    if family.startswith("scroll-")
+                    else "crawl-ref/source/item-name.cc"
+                ),
+                "_conclusion": "keep",
+            })
+    return rows
+
+
+def special_item_rows(source_db):
+    item_name = active_source(SRC / "item-name.cc")
+    body = function_body(item_name, "rune_type_name")
+    runes = re.findall(
+        r"case\s+(RUNE_[A-Z0-9_]+)\s*:\s*return\s+"
+        r"C_\(\"rune_name\",\s*\"([^\"]+)\"\)", body,
+    )
+    if len(runes) != 19:
+        raise RuntimeError(f"rune producer drift: {len(runes)}")
+    rows = []
+    for enum_id, english in runes:
+        key = f"rune_name|{english}".lower()
+        rows.append({
+            "identity": f"special:{enum_id}",
+            "category": "special",
+            "lifecycle": "current",
+            "english_source": english,
+            "current_chinese": source_db.get(key),
+            "producer": "rune_type_name",
+            "consumer": "item_def::name OBJ_RUNES",
+            "input": "crawl-ref/source/item-name.cc",
+            "_conclusion": "keep",
+        })
+    for identity, english in [
+        ("CORPSE_BODY", "corpse"),
+        ("CORPSE_SKELETON", "skeleton"),
+        ("OBJ_GOLD", "gold piece"),
+        ("ORB_ZOT", "Orb of Zot"),
+    ]:
+        rows.append({
+            "identity": f"special:{identity}",
+            "category": "special",
+            "lifecycle": "current",
+            "english_source": english,
+            "current_chinese": source_db.get(english.lower()),
+            "producer": "item_def::name switch",
+            "consumer": "item display",
+            "input": "crawl-ref/source/item-name.cc",
+            "_conclusion": "keep",
+        })
+    if len(rows) != 23:
+        raise RuntimeError(f"special item inventory drift: {len(rows)}")
+    return rows
+
+
+def paired_component_rows(en_path, zh_path, category, changed_keys=None):
+    en_entries = textdb_rows(en_path)
+    zh_entries = textdb_rows(zh_path)
+    en = {entry.canonical_key: entry for entry in en_entries}
+    zh = {entry.canonical_key: entry for entry in zh_entries}
+    if en.keys() != zh.keys():
+        raise RuntimeError(
+            f"{category} key mismatch: missing={sorted(en.keys()-zh.keys())} "
+            f"extra={sorted(zh.keys()-en.keys())}"
+        )
+    try:
+        input_name = str(en_path.relative_to(ROOT))
+    except ValueError:
+        input_name = str(en_path)
+    rows = []
+    for key in sorted(en):
+        en_values = physical_candidates(en[key])
+        zh_values = physical_candidates(zh[key])
+        if len(en_values) != len(zh_values):
+            raise RuntimeError(
+                f"{category}:{key} physical count mismatch "
+                f"{len(en_values)} != {len(zh_values)}"
+            )
+        for ordinal, (en_variant, zh_variant) in enumerate(
+            zip(en_values, zh_values)
+        ):
+            en_weight, english = en_variant
+            zh_weight, chinese = zh_variant
+            if en_weight != zh_weight:
+                raise RuntimeError(
+                    f"{category}:{key}:{ordinal} weight mismatch "
+                    f"{en_weight} != {zh_weight}"
+                )
+            en_markers = re.findall(r"@[A-Za-z_][A-Za-z0-9_]*@", english)
+            zh_markers = re.findall(r"@[A-Za-z_][A-Za-z0-9_]*@", chinese)
+            if Counter(en_markers) != Counter(zh_markers):
+                raise RuntimeError(
+                    f"{category}:{key}:{ordinal} recursive token mismatch"
+                )
+            en_placeholders = Counter(re.findall(r"%\d*\$?[a-zA-Z]", english))
+            zh_placeholders = Counter(re.findall(r"%\d*\$?[a-zA-Z]", chinese))
+            if en_placeholders != zh_placeholders:
+                raise RuntimeError(
+                    f"{category}:{key}:{ordinal} placeholder mismatch"
+                )
+            rows.append({
+                "identity": f"{category}:{key}:{ordinal:04d}",
+                "category": category,
+                "lifecycle": "current",
+                "english_source": english,
+                "current_chinese": chinese,
+                "producer": f"TextDB weighted key {key} physical ordinal",
+                "consumer": (
+                    "finite grammar/component materialization; final "
+                    "procedural string explicitly non-enumerable"
+                ),
+                "input": input_name,
+                "_conclusion": (
+                    "adjust" if changed_keys
+                    and (key, ordinal) in changed_keys else "keep"
+                ),
+            })
+    return rows
+
+
+def changed_physical_ordinals(path):
+    before_entries = {
+        entry.canonical_key: physical_candidates(entry)
+        for entry in physical_entries_from_text(git_head_text(path))
+    }
+    after_entries = {
+        entry.canonical_key: physical_candidates(entry)
+        for entry in textdb_rows(path)
+    }
+    changed = set()
+    for key in before_entries.keys() | after_entries.keys():
+        before = before_entries.get(key, [])
+        after = after_entries.get(key, [])
+        for ordinal in range(max(len(before), len(after))):
+            if (before[ordinal] if ordinal < len(before) else None) != (
+                after[ordinal] if ordinal < len(after) else None
+            ):
+                changed.add((key, ordinal))
+    return changed
+
+
+def build_extended_inventory():
+    ordinary = build_inventory()
+    source_db = source_entries(ZH_SOURCE_DIR)
+    description_en = SRC / "dat/descript/items.txt"
+    description_zh = SRC / "dat/descript/zh/items.txt"
+    unident_en = SRC / "dat/descript/unident.txt"
+    unident_zh = SRC / "dat/descript/zh/unident.txt"
+    desc_db = {
+        entry.canonical_key: runtime_normalize_value(entry.value)
+        for entry in textdb_rows(SRC / "dat/descript/zh/unrand.txt")
+    }
+
+    rows = []
+    rows.extend(unrand_rows(desc_db, source_db))
+
+    changed_unident = changed_textdb_keys(unident_zh)
+    en_unident = {e.canonical_key: e for e in textdb_rows(unident_en)}
+    zh_unident = {e.canonical_key: e for e in textdb_rows(unident_zh)}
+    if en_unident.keys() != zh_unident.keys() or len(en_unident) != 7:
+        raise RuntimeError("unident EN/ZH key inventory drift")
+    for key in sorted(en_unident):
+        rows.append({
+            "identity": f"unident:{key}",
+            "category": "unident",
+            "lifecycle": "current",
+            "english_source": runtime_normalize_value(en_unident[key].value),
+            "current_chinese": runtime_normalize_value(zh_unident[key].value),
+            "producer": f"DescriptionDB key {key}",
+            "consumer": "unidentified item description",
+            "input": str(unident_en.relative_to(ROOT)),
+            "_conclusion": (
+                "retranslate" if key in changed_unident else "keep"
+            ),
+        })
+
+    rows.extend(unidentified_appearance_rows(source_db))
+    rows.extend(special_item_rows(source_db))
+
+    gizmo_en = SRC / "dat/database/gizmo.txt"
+    gizmo_zh = SRC / "dat/database/zh/gizmo.txt"
+    rows.extend(paired_component_rows(
+        gizmo_en, gizmo_zh, "gizmo",
+        changed_physical_ordinals(gizmo_zh),
+    ))
+
+    en_items = {e.canonical_key: e for e in textdb_rows(description_en)}
+    zh_items = {e.canonical_key: e for e in textdb_rows(description_zh)}
+    allowed_zh_extra = {"athame"}
+    if set(en_items) - set(zh_items) or set(zh_items) - set(en_items) != (
+        allowed_zh_extra
+    ):
+        raise RuntimeError(
+            "ordinary description EN/ZH key mismatch outside explicit "
+            "athame compatibility key"
+        )
+    changed_items = changed_textdb_keys(description_zh)
+    for key in sorted(en_items):
+        rows.append({
+            "identity": f"item-description:{key}",
+            "category": "item-description",
+            "lifecycle": "current",
+            "english_source": runtime_normalize_value(en_items[key].value),
+            "current_chinese": runtime_normalize_value(zh_items[key].value),
+            "producer": f"DescriptionDB key {key}",
+            "consumer": "item_def::name(DESC_DBNAME) -> getLongDescription",
+            "input": str(description_en.relative_to(ROOT)),
+            "_conclusion": "adjust" if key in changed_items else "keep",
+        })
+
+    randart_files = [
+        "randname.txt", "rand_wpn.txt", "rand_arm.txt", "rand_all.txt"
+    ]
+    for filename in randart_files:
+        component_rows = paired_component_rows(
+            SRC / "dat/database" / filename,
+            SRC / "dat/database/zh" / filename,
+            "randart-component",
+        )
+        rows.extend(component_rows)
+        for entry in textdb_rows(SRC / "dat/database" / filename):
+            rows.append({
+                "identity": f"randart-grammar:{filename}:{entry.canonical_key}",
+                "category": "randart-grammar",
+                "lifecycle": "current",
+                "english_source": entry.raw_key,
+                "current_chinese": entry.raw_key,
+                "producer": f"RandartDB key {entry.raw_key}",
+                "consumer": (
+                    "make_artefact_name recursive grammar; final string "
+                    "is intentionally non-enumerable and opaque display"
+                ),
+                "input": f"crawl-ref/source/dat/database/{filename}",
+                "_conclusion": "keep",
+            })
+
+    identities = [row["identity"] for row in rows]
+    duplicates = sorted(
+        identity for identity, count in Counter(identities).items()
+        if count > 1
+    )
+    counts = Counter(row["category"] for row in rows)
+    expected_counts = {
+        "unrand": 142,
+        "unident": 7,
+        "appearance": 186,
+        "special": 23,
+        "gizmo": 539,
+        "item-description": 307,
+        "randart-component": 2440,
+        "randart-grammar": 115,
+    }
+    if dict(counts) != expected_counts:
+        raise RuntimeError(
+            f"Issue 29 category inventory drift: {dict(counts)}"
+        )
+    unrand_zh = {
+        entry.canonical_key
+        for entry in textdb_rows(SRC / "dat/descript/zh/unrand.txt")
+    }
+    unrand_en = {
+        entry.canonical_key
+        for entry in textdb_rows(SRC / "dat/descript/unrand.txt")
+    }
+    allowed_unrand_extra = {
+        'athame "fimbulwinter"',
+        "fire dragon occultist's scales",
+        "ice dragon arcanist's scales",
+        "swamp witch's dragon scales",
+    }
+    if unrand_zh - unrand_en != allowed_unrand_extra:
+        raise RuntimeError("unrand compatibility key classification drift")
+
+    public_rows = [
+        {key: value for key, value in row.items() if key != "_conclusion"}
+        for row in rows
+    ]
+    digest = hashlib.sha256(json.dumps(
+        public_rows, ensure_ascii=False, sort_keys=True,
+        separators=(",", ":"),
+    ).encode()).hexdigest()
+    input_paths = [
+        SRC / "art-data.txt", SRC / "art-enum.h", SRC / "item-name.cc",
+        SRC / "zh-scroll-appearance.cc", unident_en, unident_zh,
+        description_en, description_zh,
+        SRC / "dat/descript/unrand.txt",
+        SRC / "dat/descript/zh/unrand.txt",
+        gizmo_en, gizmo_zh,
+        *[
+            SRC / "dat/database" / filename
+            for filename in randart_files
+        ],
+        *[
+            SRC / "dat/database/zh" / filename
+            for filename in randart_files
+        ],
+    ]
+    payload = {
+        "schema": "dcss-item-extended-review-inventory-v2",
+        "baseline": ordinary["baseline"],
+        "glossary_sha256": sha(ROOT / "docs/glossary.md"),
+        "ordinary_v1": {
+            "schema": ordinary["schema"],
+            "count": ordinary["count"],
+            "inventory_sha256": ordinary["inventory_sha256"],
+            "category_counts": ordinary["category_counts"],
+        },
+        "input_sha256": {
+            str(path.relative_to(ROOT)): sha(path) for path in input_paths
+        },
+        "scope": {
+            "lifecycle": {
+                "unrand": "121 current / 19 compatibility / 2 internal",
+                "all_other_rows": "current unless explicitly stated",
+            },
+            "excluded": [
+                "procedural final randart strings",
+                "procedural final unidentified appearance combinations",
+                "procedural final gizmo serial/name combinations",
+            ],
+            "exclusion_reason": (
+                "runtime names depend on weighted recursion, player/world "
+                "inputs, pseudo-words, serials, or combinatorial assembly; "
+                "finite keys, physical ordinals, tokens and grammar are frozen"
+            ),
+            "randart_cache_audit": {
+                "ARTEFACT_NAME_KEY": (
+                    "opaque display cache consumed by get_artefact_name and "
+                    "item_def::name; stable gameplay identity remains "
+                    "base_type/sub_type/artefact properties"
+                ),
+                "ARTEFACT_APPEAR_KEY": (
+                    "opaque unidentified display cache; no TextDB/protocol "
+                    "reverse lookup consumer"
+                ),
+            },
+            "ordinary_description_slots": {
+                "count": ordinary["count"],
+                "mapping": [
+                    {
+                        "identity": row["identity"],
+                        "dbname_key": row["english_source_name"],
+                        "lifecycle": row["lifecycle"],
+                    }
+                    for row in ordinary["rows"]
+                ],
+            },
+            "compatibility_key_exceptions": {
+                "items_zh_only": sorted(allowed_zh_extra),
+                "unrand_zh_only": sorted(allowed_unrand_extra),
+            },
+        },
+        "count": len(public_rows),
+        "category_counts": expected_counts,
+        "duplicates": duplicates,
+        "inventory_sha256": digest,
+        "rows": public_rows,
+    }
+    return payload, rows
+
+
+TERMINAL_CONCLUSIONS = {
+    "keep", "adjust", "retranslate",
+    "defer terminology", "defer implementation",
+}
+
+
+def parse_review_results(path):
+    rows = []
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        if not line.startswith("| `"):
+            continue
+        fields = [field.strip() for field in line.strip().strip("|").split("|")]
+        if len(fields) != 4:
+            raise RuntimeError(
+                f"review result row {line_number} has {len(fields)} fields"
+            )
+        identity = fields[0]
+        if not identity.startswith("`") or not identity.endswith("`"):
+            raise RuntimeError(f"invalid review identity at line {line_number}")
+        rows.append({
+            "identity": identity[1:-1],
+            "conclusion": fields[1],
+            "reason": fields[2],
+            "reentry": fields[3],
+        })
+    return rows
+
+
+def review_violations(inventory_rows, review_rows):
+    inventory_ids = [row["identity"] for row in inventory_rows]
+    review_ids = [row["identity"] for row in review_rows]
+    inventory_set = set(inventory_ids)
+    review_set = set(review_ids)
+    invalid_terminal = sorted(
+        row["identity"] for row in review_rows
+        if row["conclusion"] not in TERMINAL_CONCLUSIONS
+    )
+    invalid_deferral = sorted(
+        row["identity"] for row in review_rows
+        if row["conclusion"].startswith("defer ")
+        and (not row["reason"] or row["reason"] == "not applicable"
+             or not row["reentry"] or row["reentry"] == "not applicable")
+    )
+    return {
+        "inventory_duplicates": sorted(
+            key for key, count in Counter(inventory_ids).items() if count > 1
+        ),
+        "review_duplicates": sorted(
+            key for key, count in Counter(review_ids).items() if count > 1
+        ),
+        "inventory_minus_review": sorted(inventory_set - review_set),
+        "review_minus_inventory": sorted(review_set - inventory_set),
+        "invalid_terminal_conclusions": invalid_terminal,
+        "invalid_deferrals": invalid_deferral,
+    }
+
+
+def write_review_results(path, inventory, rows):
+    counts = Counter(row["_conclusion"] for row in rows)
+    lines = [
+        "# Issue #29 扩展物品翻译复审结果",
+        "",
+        "本文件由 `audit_item_name_inventory.py --scope issue29-v2` "
+        "按冻结 inventory identity 机械生成。",
+        "",
+        f"- Inventory SHA-256: `{inventory['inventory_sha256']}`",
+        f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
+        f"- Inventory rows: `{inventory['count']}`",
+        "- Terminal conclusions: "
+        + ", ".join(f"`{key}={counts[key]}`" for key in sorted(counts)),
+        "",
+        "## Producer / consumer implementation evidence",
+        "",
+        "- Fixed artefact descriptions and quotes now query TextDB with "
+        "`get_unrand_name_en()`; localized true names remain display-only.",
+        "- Gizmos persist canonical English `ARTEFACT_NAME_KEY` plus a "
+        "finite recursive physical-ordinal recipe. Current-locale rendering "
+        "uses zero RNG; old saves without a recipe retain their old opaque "
+        "display string as a safe fallback.",
+        "- Randart `ARTEFACT_NAME_KEY` and `ARTEFACT_APPEAR_KEY` are opaque "
+        "display caches. Their consumers do not reverse-map them to gameplay "
+        "identity; base/subtype and artefact properties remain authoritative.",
+        "",
+        "## Evidence cards",
+        "",
+        "| identity | conclusion | reason | re-entry trigger |",
+        "|---|---|---|---|",
+    ]
+    for row in rows:
+        conclusion = row["_conclusion"]
+        reason = (
+            f"{row['producer']} → {row['consumer']}; "
+            f"lifecycle={row['lifecycle']}; input={row['input']}"
+        )
+        lines.append(
+            f"| `{row['identity']}` | {conclusion} | {reason} | "
+            "not applicable |"
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -781,10 +1484,42 @@ def main(argv=None):
         type=Path,
         help="write the full JSON inventory to this path (default: stdout)",
     )
+    parser.add_argument(
+        "--scope",
+        choices=("ordinary-v1", "issue29-v2"),
+        default="ordinary-v1",
+        help="select the isolated inventory boundary (default: ordinary-v1)",
+    )
+    parser.add_argument(
+        "--review-results",
+        type=Path,
+        help="validate exact Issue 29 inventory/review identity coverage",
+    )
+    parser.add_argument(
+        "--write-review-results",
+        type=Path,
+        help="mechanically write Issue 29 evidence cards",
+    )
     args = parser.parse_args(argv)
 
     try:
-        payload = build_inventory()
+        if args.scope == "issue29-v2":
+            payload, internal_rows = build_extended_inventory()
+            if args.write_review_results:
+                write_review_results(
+                    args.write_review_results, payload, internal_rows
+                )
+            if args.review_results:
+                review = parse_review_results(args.review_results)
+                payload["review_violations"] = review_violations(
+                    payload["rows"], review
+                )
+        else:
+            if args.review_results or args.write_review_results:
+                raise RuntimeError(
+                    "review results are valid only for --scope issue29-v2"
+                )
+            payload = build_inventory()
     except (
         AttributeError,
         OSError,
@@ -808,15 +1543,18 @@ def main(argv=None):
         "baseline", "glossary_sha256", "inventory_sha256", "count",
         "category_counts", "duplicates", "missing_identities",
         "unexpected_identities", "missing_chinese", "missing_forms",
-    ]}
+    ] if key in payload}
+    if "review_violations" in payload:
+        summary["review_violations"] = payload["review_violations"]
     print(json.dumps(summary, ensure_ascii=False, indent=2), file=sys.stderr)
-    return 1 if any(
-        payload[key] for key in
-        (
-            "duplicates", "missing_identities", "unexpected_identities",
-            "missing_chinese", "missing_forms",
-        )
-    ) else 0
+    blocking_keys = (
+        "duplicates", "missing_identities", "unexpected_identities",
+        "missing_chinese", "missing_forms",
+    )
+    blocked = any(payload.get(key) for key in blocking_keys)
+    if "review_violations" in payload:
+        blocked = blocked or any(payload["review_violations"].values())
+    return 1 if blocked else 0
 
 
 if __name__ == "__main__":

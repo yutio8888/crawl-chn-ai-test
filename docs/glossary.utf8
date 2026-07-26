@@ -37,6 +37,7 @@ alligator snapping turtle	巨鳄龟	domain=monsters; source=EN/ZH; Scope / comme
 Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Amaemon title	恶魔投毒者亚麦蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 amulet	项链	domain=items; source=EN/ZH
+amulet of the Air	空气项链	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-021
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -341,6 +342,7 @@ Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / commen
 Earth Magic	大地魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Edmund	埃德蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
+Eiolaiphi	埃奥莱菲	domain=items; source=EN/ZH; Scope / comment=unrand lore proper name; decision=D-B-021
 Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Elyvilon	艾利维隆	domain=gods; source=EN/ZH; 类型=音译
 enchant	附魔	domain=items; source=EN/ZH
@@ -438,6 +440,7 @@ ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
 Glaciate	冰封	domain=spells; source=EN/ZH; 备注=🆕；锥形寒冰冲击会冰封并减速目标
 Gladiator	角斗士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+glaive of Prune	梅干长柄刀	domain=items; source=EN/ZH; Scope / comment=unrand; `Prune` is the giant-prune transformation pun; decision=D-B-021
 Gloom	阴郁	domain=spells; source=EN/ZH; 备注=✅
 Gloorx Vloq	格洛克斯·弗洛克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 gnoll	豺狼人	domain=species; source=EN/ZH; 复合格式=豺狼人 + 职业
@@ -619,6 +622,7 @@ monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
 moonshine	私酒	domain=items; source=EN/ZH; Scope / comment=potion effect; decision=D-B-020
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
+morningstar "Eos"	晨星锤"厄俄斯"	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021
 mountain dwarf	山矮人	domain=species; source=EN/ZH
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
@@ -753,6 +757,7 @@ Ru	入	domain=gods; source=EN/ZH; 类型=意译（"enter"）
 rugged brown scales	粗糙褐鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Rupert	鲁珀特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Rust Breath	锈蚀吐息	domain=spells; source=EN/ZH; 备注=✅
+Rutra	鲁特拉	domain=items; source=EN/ZH; Scope / comment=unrand lore proper name; decision=D-B-021
 Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Saint Roka	圣罗卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
@@ -853,6 +858,7 @@ Splinterfrost Shell	碎霜之壳	domain=spells; source=EN/ZH; 备注=✅；半�
 Splinterspray	碎片喷射	domain=spells; source=EN/ZH; 备注=✅
 Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅
 spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=小精灵 + 职业（小精灵气法师、小精灵狂战士）
+St. Lee	圣李	domain=items; source=EN/ZH; Scope / comment=unrand lore proper name; decision=D-B-021
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -920,6 +926,7 @@ Summonings	召唤系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; S
 Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
+sword of Cerebov	塞雷波夫之剑	domain=items; source=EN/ZH; Scope / comment=unrand; follows unique name; decision=D-B-021
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派

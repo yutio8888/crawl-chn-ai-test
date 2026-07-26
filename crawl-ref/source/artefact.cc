@@ -1755,6 +1755,66 @@ string get_artefact_name(const item_def &item, bool force_known)
     return is_unrandom_artefact(item) ? T_(appearance.c_str()) : appearance;
 }
 
+const char *get_unrand_name_en(const item_def &item)
+{
+    ASSERT(is_unrandom_artefact(item));
+    return _seekunrandart(item)->name;
+}
+
+string get_gizmo_name(const item_def &item)
+{
+    ASSERT(item.base_type == OBJ_GIZMOS);
+    const string fallback = item.props.exists(ARTEFACT_NAME_KEY)
+        ? item.props[ARTEFACT_NAME_KEY].get_string() : T_("Unnamed gizmo");
+    if (!item.props.exists(GIZMO_NAME_RECIPE_KEY)
+        || item.props[GIZMO_NAME_RECIPE_KEY].get_type() != SV_STR)
+    {
+        return fallback;
+    }
+
+    const vector<string> fields = split_string(
+        "|", item.props[GIZMO_NAME_RECIPE_KEY].get_string(),
+        false, true);
+    if (fields.size() != 6 || fields[0] != "v1"
+        || fields[1].size() != 1 || fields[1][0] < '0'
+        || fields[1][0] > '4')
+    {
+        return fallback;
+    }
+
+    const bool translated = Options.language == lang_t::ZH;
+    const string noun = materializeMiscStringRecipe(fields[2], translated);
+    const string modifier =
+        materializeMiscStringRecipe(fields[3], translated);
+    if (noun.empty() || modifier.empty())
+        return fallback;
+
+    const int style = fields[1][0] - '0';
+    switch (style)
+    {
+    case 0:
+        return modifier + noun + " " + fields[5];
+    case 1:
+        return fields[5] + " " + modifier + noun;
+    case 2:
+    case 3:
+    case 4:
+    {
+        const string adjective =
+            materializeMiscStringRecipe(fields[4], translated);
+        if (adjective.empty())
+            return fallback;
+        if (style == 2)
+            return adjective + " " + noun;
+        if (style == 3)
+            return modifier + adjective + " " + noun;
+        return adjective + " " + modifier + noun;
+    }
+    default:
+        return fallback;
+    }
+}
+
 void set_artefact_name(item_def &item, const string &name)
 {
     ASSERT(is_artefact(item));

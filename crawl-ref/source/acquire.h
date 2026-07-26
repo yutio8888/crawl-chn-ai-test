@@ -18,6 +18,7 @@
 #define INVENT_GIZMO_USED_KEY "invent_gizmo_used"
 #define COGLIN_GIZMO_KEY "coglin_gizmos"
 #define COGLIN_GIZMO_NAMES_KEY "coglin_gizmo_names"
+#define COGLIN_GIZMO_RECIPES_KEY "coglin_gizmo_recipes"
 
 const int COGLIN_GIZMO_NUM = 3;
 const int COGLIN_GIZMO_XL = 14;
