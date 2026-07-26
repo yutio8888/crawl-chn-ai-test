@@ -166,9 +166,6 @@ function TimedMessaging:say_message(cm, dur)
     return
   end
 
-  local noisemaker =
-    self.noisemaker and self:range_adjective(cm, self.noisemaker)
-
   -- Extract pure distance adjective (strip $F entity placeholder)
   local raw_adj = self.noisemaker and self:choose_range_adjective(self:player_distance(cm))
   local distance_adj
@@ -191,9 +188,16 @@ function TimedMessaging:say_message(cm, dur)
   else
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                        self:emit_message(nil,
-                                          "You hear the " .. chk[2] .. self.verb
-                                          .. " of " .. noisemaker .. ".")
+                        local msg =
+                          translate_key("You hear the {prefix} of the {distance} {noisemaker}.")
+                            :gsub("{prefix}",
+                                  translate_key(chk[2])
+                                  .. translate_key(self.verb))
+                            :gsub("{distance}",
+                                  translate_key(distance_adj))
+                            :gsub("{noisemaker}",
+                                  translate_key(self.noisemaker))
+                        self:emit_message(nil, msg)
                      end)
   end
 

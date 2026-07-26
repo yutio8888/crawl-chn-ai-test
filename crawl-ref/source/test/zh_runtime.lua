@@ -22,6 +22,7 @@
 --           -extra-opt-first 'language=zh' -test zh_runtime
 
 local eol = string.char(13)
+local script_args = crawl.script_args()
 
 local function emit(case_id, text)
     if text == nil then text = "<nil>" end
@@ -360,6 +361,135 @@ local zh_to_en = roundtrip_portal_message("zh", "en")
 local en_to_zh = roundtrip_portal_message("en", "zh")
 emit("portal_late_translation", zh_to_en .. " || " .. en_to_zh)
 crawl.set_test_language("zh")
+
+-- Issue 28: the default distance message is also a single complete key.
+-- Its canonical components survive serialization and are interpolated only
+-- after the load-time language has been selected.
+local function roundtrip_portal_distance(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        noisemaker = "bell",
+        verb = "tolling",
+        ranges = {{0, "brisk "}},
+        range_adjectives = {{0, "distant"}},
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "bell" and loaded.verb == "tolling"
+           and loaded.ranges[1][2] == "brisk "
+           and loaded.range_adjectives[1][2] == "distant",
+           "portal distance message persisted translated components")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px + 10, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    if emitted_language == "en" then
+        assert(string.find(rendered, "You hear the brisk tolling", 1, true)
+               and string.find(rendered, "distant bell", 1, true),
+               "ZH-created distance message did not render complete English")
+    else
+        local translated_components = {
+            crawl.t_("brisk"),
+            crawl.t_("tolling"),
+            crawl.t_("distant"),
+            crawl.t_("bell"),
+        }
+        assert(not string.find(rendered, "You hear the", 1, true)
+               and not is_ascii(rendered),
+               "EN-created distance message leaked English after ZH load")
+        for _, component in ipairs(translated_components) do
+            assert(not is_ascii(component)
+                   and string.find(rendered, component, 1, true),
+                   "ZH distance message omitted translated component: "
+                   .. component)
+        end
+    end
+    return rendered
+end
+local distance_zh_to_en = roundtrip_portal_distance("zh", "en")
+local distance_en_to_zh = roundtrip_portal_distance("en", "zh")
+emit("portal_distance_late_translation",
+     distance_zh_to_en .. " || " .. distance_en_to_zh)
+crawl.set_test_language("zh")
+
+-- Issue 28: portal milestones and notes retain canonical English payloads,
+-- while the complete display template and its destination title are
+-- translated only at mpr time.
+local original_take_note = crawl.take_note
+local original_mark_milestone = crawl.mark_milestone
+local captured_notes = {}
+local captured_milestones = {}
+crawl.take_note = function (note)
+    table.insert(captured_notes, note)
+end
+crawl.mark_milestone = function (tag, milestone, parent)
+    table.insert(captured_milestones, {
+        tag = tag, milestone = milestone, parent = parent
+    })
+end
+
+local function portal_milestone_language(language)
+    captured_notes = {}
+    captured_milestones = {}
+    crawl.set_test_language(language)
+    crawl.clear_message_store()
+    trove_milestone(nil, "a treasure trove")
+    wizlab_milestone(nil, "a wizard's laboratory")
+    crawl.redraw_view()
+    local rendered = crawl.messages(10) or ""
+
+    assert(captured_notes[1] == "Entered a treasure trove"
+           and captured_notes[2] == "Entered a wizard's laboratory",
+           "portal note persisted localized or incomplete text")
+    assert(captured_milestones[1].milestone
+               == "entered a treasure trove."
+           and captured_milestones[2].milestone
+               == "entered a wizard's laboratory.",
+           "portal milestone persisted localized or incomplete text")
+
+    if language == "en" then
+        assert(string.find(rendered,
+                           "You've discovered a treasure trove!", 1, true)
+               and string.find(rendered,
+                               "Welcome to a wizard's laboratory!", 1, true),
+               "English portal display changed")
+    else
+        local trove_title = crawl.t_("a treasure trove")
+        local wizlab_title = crawl.t_("a wizard's laboratory")
+        assert(trove_title ~= "a treasure trove"
+               and wizlab_title ~= "a wizard's laboratory"
+               and string.find(rendered, trove_title, 1, true)
+               and string.find(rendered, wizlab_title, 1, true),
+               "Chinese portal display omitted translated title")
+        assert(not string.find(rendered, "a treasure trove", 1, true)
+               and not string.find(
+                   rendered, "a wizard's laboratory", 1, true),
+               "Chinese portal display leaked English title")
+    end
+    return rendered
+end
+local portal_milestone_en = portal_milestone_language("en")
+local stored_note_en = captured_notes[1]
+local stored_milestone_en = captured_milestones[1].milestone
+crawl.set_test_language("zh")
+assert(captured_notes[1] == stored_note_en
+       and captured_milestones[1].milestone == stored_milestone_en,
+       "language switch changed stored portal note or milestone")
+local portal_milestone_zh = portal_milestone_language("zh")
+crawl.take_note = original_take_note
+crawl.mark_milestone = original_mark_milestone
+emit("portal_milestone_boundary",
+     portal_milestone_en .. " || " .. portal_milestone_zh)
+crawl.set_test_language("zh")
+
+if script_args[1] == "portal_distance" then
+    crawl.stderr(
+        "FRAME_MARKER: targeted_end | portal boundaries ok" .. eol)
+    return
+end
 
 -- Issue 68 S8: protocol accessors are covered by the RC fixture; exercise the
 -- paired production C++ display helpers here to prove they remain localized.

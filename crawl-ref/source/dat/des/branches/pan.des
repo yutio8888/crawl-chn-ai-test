@@ -33,10 +33,13 @@ function pan_lord_epilogue(name)
         ['Gloorx Vloq'] = "dark"
     }
 
-    crawl.mpr(msgs[name], "warning")
-    crawl.mpr("The mighty Pandemonium lord " .. name .. " resides here.", "warning")
+    crawl.mpr(crawl.t_(msgs[name]), "warning")
+    crawl.mpr(string.format(
+        crawl.t_("The mighty Pandemonium lord %s resides here."),
+        crawl.t_(name)), "warning")
     -- Counterpart to branch_rune_desc from lookup-help.cc
-    crawl.mpr("They guard the " .. runes[name] .. " rune of Zot.")
+    crawl.mpr(string.format(crawl.t_("They guard the %s rune of Zot."),
+                           crawl.t_(runes[name])))
     crawl.take_note('Entered the realm of ' .. name .. '.')
     crawl.mark_milestone('br.enter', 'entered the realm of ' .. name .. '.', "")
 end
@@ -277,11 +280,11 @@ end
 
 function pan_declare_demonic_rune(holy)
   if holy then
-    crawl.mpr("The tension of great conflict fills the air!", "warning")
-    crawl.mpr("The demonic rune of Zot may be found here.")
+    crawl.mpr(crawl.t_("The tension of great conflict fills the air!"), "warning")
+    crawl.mpr(crawl.t_("The demonic rune of Zot may be found here."))
   else
-    crawl.mpr("A powerful Pandemonium lord resides here.", "warning")
-    crawl.mpr("It guards the demonic rune of Zot.")
+    crawl.mpr(crawl.t_("A powerful Pandemonium lord resides here."), "warning")
+    crawl.mpr(crawl.t_("It guards the demonic rune of Zot."))
   end
 end
 
@@ -2662,9 +2665,9 @@ FTILE:   HJKLMNOPQRSTUYZcx-+_. = floor_limestone
 # lords' levels.
 epilogue {{
 if not you.have_rune("demonic") then
-    crawl.mpr("A powerful Pandemonium lord resides here.", "warning")
-    crawl.mpr("<yellow>A demonic rune of Zot can be found here... " ..
-              "for a price.</yellow>")
+    crawl.mpr(crawl.t_("A powerful Pandemonium lord resides here."), "warning")
+    crawl.mpr(crawl.t_("<yellow>A demonic rune of Zot can be found here... " ..
+              "for a price.</yellow>"))
 end
 }}
 MAP
@@ -3170,9 +3173,9 @@ local function swineherd_die(monster, killer_type, killer_index, silent, wizard)
   end
   dgn.grid(p.x, p.y, "floor")
   if (you.see_cell(p.x, p.y)) then
-    crawl.mpr("The grate goes up!")
+    crawl.mpr(crawl.t_("The grate goes up!"))
   else
-    crawl.mpr("You hear a sound of rusty metal sliding.")
+    crawl.mpr(crawl.t_("You hear a sound of rusty metal sliding."))
   end
 end
 }}

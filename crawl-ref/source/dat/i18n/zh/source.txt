@@ -111,46 +111,46 @@ ash-covered pillar
 灰烬覆盖的柱子
 %%%%
 archival metal wall
-档案金属墙
+档案库金属墙
 %%%%
 adventurer's gravestone
 冒险者的墓碑
 %%%%
 a statue of an imp
-一座小恶魔雕像
+小恶魔雕像
 %%%%
 a statue of an archer
-一座弓箭手雕像
+弓箭手雕像
 %%%%
 a statue of a tengu
-一座天狗雕像
+天狗雕像
 %%%%
 a statue of a princess
-一座公主雕像
+公主雕像
 %%%%
 a statue of a hydra
-一座多头蛇雕像
+多头蛇雕像
 %%%%
 a statue of a dwarf
-一座矮人雕像
+矮人雕像
 %%%%
 a statue of a dreadful foe
-一座可怕敌人的雕像
+可怕敌人的雕像
 %%%%
 a statue of a chess piece
-一座棋子雕像
+棋子雕像
 %%%%
 a polished mirror
-一面抛光的镜子
+抛光镜
 %%%%
 a gravestone
-一个墓碑
+墓碑
 %%%%
 a glacial archway
-一个冰川拱门
+冰川拱门
 %%%%
 a dead tree
-一棵枯树
+枯树
 %%%%
 Corona
 光晕
@@ -288,19 +288,19 @@ granite statue wielding a fearsome trident
 手持可怕三叉戟的花岗岩雕像
 %%%%
 Frost-covered floor
-霜冻覆盖的地面
+覆霜地面
 %%%%
 flower patch
 花丛
 %%%%
 defaced carved stone wall
-被毁容的雕刻石墙
+刻纹遭毁的石墙
 %%%%
 dead tree
 枯树
 %%%%
 dead mangrove
-枯死的红树林
+枯死的红树
 %%%%
 damp floor
 潮湿的地面
@@ -11771,8 +11771,7 @@ Bailey
 堡垒
 %%%%
 Gauntlet
-
-竞技场
+试炼场
 %%%%
 Ice Cave
 
@@ -11911,8 +11910,7 @@ the Desolation of Salt
 盐之荒原
 %%%%
 a Gauntlet
-
-竞技长廊
+试炼场
 %%%%
 the Crucible of Flesh
 
@@ -11939,7 +11937,7 @@ a Labyrinth
 \n\n此分支的入口位于%3$s的第%1$d层到第%2$d层之间。
 %%%%
 Welcome to Hell!\nPlease enjoy your stay.
-欢迎来到地狱！\n祝你入住愉快。
+欢迎来到地狱！\n请尽情享受此行。
 %%%%
 An ancient malice corrodes your equipment.
 
@@ -11994,8 +11992,7 @@ You enter a bailey!
 你进入了一座堡垒！
 %%%%
 You enter a gauntlet!
-
-你进入了一座竞技场！
+你进入了试炼场！
 %%%%
 You enter an ice cave!
 
@@ -12014,8 +12011,7 @@ You enter a great desolation of salt!
 你进入了一片广袤的盐之荒原！
 %%%%
 You enter Okawaru's Arena!
-
-你进入了欧卡瓦鲁的竞技场！
+你进入了奥卡瓦鲁的竞技场！
 %%%%
 You are dragged down into the Crucible of Flesh!
 
@@ -14090,7 +14086,7 @@ Almost silent
 几乎无声
 %%%%
 Quiet
-安静
+低微
 %%%%
 A bit loud
 稍响
@@ -15308,7 +15304,7 @@ quarterstaff
 长棍
 %%%%
 quick
-快
+急促
 %%%%
 quick blade
 迅捷之刃
@@ -21022,7 +21018,7 @@ empty arch of ancient stone
 古老的石制空拱门
 %%%%
 gate leading back out of this place
-通往此地的出口
+离开此地的传送门
 %%%%
 glowing drain
 发光的排水口
@@ -22009,7 +22005,7 @@ broken altar of Ashenzari
 艾申扎利的破碎祭坛
 %%%%
 broken door
-破门
+损坏的门
 %%%%
 broken translucent door
 破碎的半透明门
@@ -22042,7 +22038,7 @@ corrupted
 已腐化
 %%%%
 crawl-hole back to the Lair
-返回巢穴的爬洞
+返回兽巢的爬洞
 %%%%
 crumbling gateway
 崩坏的传送门
@@ -22069,10 +22065,10 @@ devourer's trap
 吞噬者陷阱
 %%%%
 dispersal trap
-驱散陷阱
+空间驱离陷阱
 %%%%
 dispersal trap (recharging)
-驱散陷阱（充能中）
+空间驱离陷阱（重新充能中）
 %%%%
 dormant shadow trap
 休眠暗影陷阱
@@ -22102,7 +22098,7 @@ fountain of eyes
 眼之喷泉
 %%%%
 fountain of sparkling water
-闪烁水喷泉
+波光粼粼的喷泉
 %%%%
 frigid wall
 冰墙
@@ -22111,7 +22107,7 @@ frozen archway
 冰封拱门
 %%%%
 gate leading out of Pandemonium
-通往魔窟之外的传送门
+离开万魔殿的传送门
 %%%%
 gate leading to Okawaru's Arena
 通往奥卡瓦鲁竞技场的传送门
@@ -22123,7 +22119,7 @@ gate leading to a gauntlet
 通往试炼场的传送门
 %%%%
 gate leading to another region of Pandemonium
-通往魔窟另一区域的传送门
+通往万魔殿另一区域的传送门
 %%%%
 gate leading to the Crucible of Flesh
 通往血肉熔炉的传送门
@@ -22135,7 +22131,7 @@ gate to the Vaults
 通往宝库的传送门
 %%%%
 gateway back to the Dungeon
-返回地城的传送门
+返回地牢的传送门
 %%%%
 gateway leading deeper into the Abyss
 通往深渊深处的传送门
@@ -22174,7 +22170,7 @@ gateway to the freezing wastes of Cocytus
 通往悲叹河的传送门
 %%%%
 glowing golden altar of the Shining One
-光辉者的金色祭坛
+光辉者的金色辉光祭坛
 %%%%
 glowing silver altar of Zin
 辛的银色祭坛
@@ -22234,19 +22230,19 @@ one-way gate to the infinite horrors of the Abyss
 通往无尽恐怖深渊的单向传送门
 %%%%
 one-way gateway to a ziggurat
-通往通灵塔的单向传送门
+通往通天塔的单向传送门
 %%%%
 open translucent door
-打开的透明门
+打开的半透明门
 %%%%
 opulent altar of Gozag
-哥萨戈·亿·赛格斯的奢华祭坛
+哥萨戈的奢华祭坛
 %%%%
 orcish idol
 兽人神像
 %%%%
 ornate altar of the Wu Jian Council
-无间门派议会的华丽祭坛
+无间门派的华丽祭坛
 %%%%
 permanent teleport trap
 永久传送陷阱
@@ -22285,7 +22281,7 @@ runed door
 符文门
 %%%%
 runed translucent door
-刻有符文的透明门
+刻有符文的半透明门
 %%%%
 runelight
 符文之光
@@ -22306,10 +22302,10 @@ sealed passage leading up
 向上通往的封印通道
 %%%%
 sealed translucent door
-封印的透明门
+封印的半透明门
 %%%%
 shadow trap
-阴影陷阱
+暗影陷阱
 %%%%
 shadowy altar of Dithmenos
 迪斯姆诺的幽影祭坛
@@ -22342,7 +22338,7 @@ some shallow water
 一片浅水
 %%%%
 sparkling altar of Nemelex Xobeh
-内姆雷斯·索贝赫的闪烁祭坛
+尼姆雷斯·索布的闪光祭坛
 %%%%
 spear trap
 长矛陷阱
@@ -22354,10 +22350,10 @@ staircase back to the Crypt
 返回墓穴的楼梯
 %%%%
 staircase back to the Dungeon
-返回地城的楼梯
+返回地牢的楼梯
 %%%%
 staircase back to the Lair
-返回巢穴的楼梯
+返回兽巢的楼梯
 %%%%
 staircase back to the Mines
 返回矿井的楼梯
@@ -22387,13 +22383,13 @@ staircase to the Lair
 通往巢穴的楼梯
 %%%%
 staircase to the Orcish Mines
-通往兽人矿井的楼梯
+通往兽人矿坑的楼梯
 %%%%
 staircase to the Shoals
 通往浅滩的楼梯
 %%%%
 staircase to the Slime Pits
-通往史莱姆深渊的楼梯
+通往史莱姆之坑的楼梯
 %%%%
 staircase to the Snake Pit
 通往蛇坑的楼梯
@@ -22402,7 +22398,7 @@ staircase to the Swamp
 通往沼泽的楼梯
 %%%%
 staircase to the Tomb
-通往古墓的楼梯
+通往陵墓的楼梯
 %%%%
 stone wall
 石墙
@@ -22432,7 +22428,7 @@ translucent unnaturally hard rock wall
 半透明异常坚硬岩壁
 %%%%
 transporter landing site
-传送台着陆点
+传送器落点
 %%%%
 transporter
 传送器
@@ -29646,7 +29642,7 @@ There is an entrance to a sewer on this level. Hurry and find it before the port
 这个楼层有一个通往下水道的入口。在传送门生锈消失前找到它！
 %%%%
 You hear the drain falling apart.
-你听到下水道崩塌的声音。
+你听到排水口散架的声音。
 %%%%
 You hear the hiss of flowing sand.
 你听到了流沙的嘶嘶声。
@@ -29667,7 +29663,7 @@ There is an entrance to a bailey on this level. Hurry and find it before the por
 这个楼层有一个通往城寨的入口。在传送门永久关闭前找到它！
 %%%%
 $F{The} has been lowered almost to the ground.
-吊闸几乎已降至地面。
+$F{The}几乎已降至地面。
 %%%%
 The portal closes with a thud.
 传送门砰然关闭。
@@ -29799,19 +29795,19 @@ You hear the {prefix}crackle of the {distance} {noisemaker}.
 你听到{distance}{noisemaker}发出{prefix}的噼啪声。
 %%%%
 You hear the {prefix} of the {distance} {noisemaker}.
-你听到了{distance}{noisemaker}。
+你听到{distance}{noisemaker}{prefix}。
 %%%%
 brisk
-快速
+轻快
 %%%%
 rapid
-急速
+飞快
 %%%%
 faint
 微弱
 %%%%
 steady
-持续
+平稳
 %%%%
 ear-piercing
 刺耳
@@ -29829,16 +29825,16 @@ frantic
 狂乱
 %%%%
 lone wailing
-单一的哀嚎
+孤零零的哀号
 %%%%
 small ensemble
-小合奏
+小规模合唱
 %%%%
 gathering chorus
 渐强的合唱
 %%%%
 rising multitudes
-越来越响亮的众多声音
+愈发响亮的众声
 %%%%
 full choir
 齐声合唱
@@ -29856,7 +29852,7 @@ very distant
 遥远的
 %%%%
 avalanche of sand
-流沙的雪崩
+沙瀑
 %%%%
 portcullis
 吊闸
@@ -41317,3 +41313,576 @@ status|strong-willed
 %%%%
 coated in regenerative ooze
 你被再生软泥覆盖。
+%%%%
+Welcome to the Realm of Zot!\nYou feel the power of the Orb interfering with translocations here.
+欢迎来到佐特领域！\n你感到宝珠的力量在这里干扰着空间转移。
+%%%%
+You enter the halls of Pandemonium!\nTo return, you must find a gate leading back.
+你进入了万魔殿的厅堂！\n若想返回，必须找到通往外界的门。
+%%%%
+Trove
+宝藏库
+%%%%
+Hurry and find it before the portal closes forever!
+赶快在传送门永久关闭前找到它！
+%%%%
+creaking
+吱嘎作响
+%%%%
+they move on!
+他们启程前找到入口！
+%%%%
+tolling
+鸣响
+%%%%
+flickering gateway to a bazaar
+通往集市的闪烁门户
+%%%%
+Upon your arrival, your hatred by all makes the other customers disperse.
+你一到来，因为所有人都憎恨你，其他顾客便纷纷散去。
+%%%%
+Upon your arrival, your lonesome duelist's vow makes the other customers flee.
+你一到来，孤高决斗者的誓言便让其他顾客纷纷逃走。
+%%%%
+Xom shifts dimensions to make the bazaar a little more interesting.
+佐姆扭转维度，让集市变得更有趣了一点。
+%%%%
+You hear the bustle and chatter of other... customers...?
+你听到了其他……顾客……？的喧闹与交谈声。
+%%%%
+You hear the chatter and bustle of other customers!
+你听到了其他顾客的交谈与喧闹声！
+%%%%
+ Hurry and find it before the gateway collapses!
+赶快在入口坍塌前找到它！
+%%%%
+There is a portal to the Desolation of Salt on this level.
+这个楼层有一个通往盐碱荒原的传送门。
+%%%%
+whistling
+呼啸
+%%%%
+gateway
+入口
+%%%%
+Find the entrance quickly before the gate is sealed!
+赶快在大门封闭前找到入口！
+%%%%
+beating
+敲击
+%%%%
+Hurry and find it before the portal melts!
+赶快在传送门融化前找到它！
+%%%%
+crackling
+噼啪作响
+%%%%
+archway
+拱门
+%%%%
+Hurry and find it before the portal closes!
+赶快在传送门关闭前找到它！
+%%%%
+You hear the {distance} {noisemaker} {prefix}.
+你听到{distance}{noisemaker}中传来{prefix}。
+%%%%
+<red>Going directly to Necropolis without placing an entry vault is buggy. Placing a Depths / Crypt Necropolis.</red>
+<red>未放置入口地图就直接前往死者之城会导致错误。现正放置一个位于深层区 / 墓穴的死者之城。</red>
+%%%%
+Hurry and find it before the portal is buried!
+赶快在传送门被掩埋前找到它！
+%%%%
+There is a click, and some walls slide away!
+咔哒一声，几面墙滑开了！
+%%%%
+Hurry and find it before the portal rusts away!
+赶快在传送门锈蚀殆尽前找到它！
+%%%%
+rusting
+锈蚀
+%%%%
+The drain falls to bits.
+排水口散架了。
+%%%%
+Entered %s
+进入了%s
+%%%%
+You've discovered %s!
+你发现了%s！
+%%%%
+Hurry and find it before the entrance collapses!
+赶快在入口坍塌前找到它！
+%%%%
+rumble
+轰隆作响
+%%%%
+tunnel
+隧道
+%%%%
+There is a rumble as the volcano erupts. The roof shakes.
+火山爆发时传来一阵轰鸣，洞顶随之震动。
+%%%%
+The volcano erupts! Nearby, a roof collapses.
+火山爆发了！附近一处洞顶随之坍塌。
+%%%%
+The ground shudders ominously.
+地面不祥地震颤起来。
+%%%%
+In the distance, the volcano explodes with a roar! Lava spreads onto the path.
+远处的火山轰然爆发！熔岩漫上了道路。
+%%%%
+The air is thick with the scent of sulphur.
+空气中弥漫着浓重的硫磺味。
+%%%%
+There is another distant roar. More lava overflows!
+远处又传来一声轰鸣。更多熔岩溢了出来！
+%%%%
+The ground moves violently!
+地面剧烈震动！
+%%%%
+The volcano erupts again! A thin layer of lava overflows to fill the cavern.
+火山再次爆发！一层薄薄的熔岩溢出，灌满了洞穴。
+%%%%
+The ground shudders. Some of the lava has hardened enough to walk over!
+地面一阵震颤。部分熔岩已经凝固，足以供人通行了！
+%%%%
+portal closes forever!
+传送门永久关闭！
+%%%%
+crackle
+噼啪作响
+%%%%
+The walls briefly shake.
+墙壁短暂地震动了一下。
+%%%%
+The walls violently shake.
+墙壁剧烈震动。
+%%%%
+The walls fall away. The entombed are set free!
+墙壁轰然倒塌。被封葬者重获自由！
+%%%%
+A door appears!
+一扇门出现了！
+%%%%
+The walls vibrate.
+墙壁震动起来。
+%%%%
+Strange, shadowy figures dance through the air in front of you.
+奇异的暗影人形在你面前的空中舞动。
+%%%%
+This room is filled with shadowy figures, quietly meditating.
+房间里满是静静冥想的暗影人形。
+%%%%
+Here, spectral monks perform complicated, martial routines; they fade quickly.
+幽魂僧侣在这里演练复杂的武术套路；他们很快便消散了。
+%%%%
+Faint laughter comes from somewhere. Too faint to be real.
+不知何处传来微弱的笑声，微弱得不像真实存在。
+%%%%
+There is a faint scream of pain from a crouched figure. This too fades quickly.
+一个蜷伏的人影发出微弱的痛苦尖叫，声音也很快消散了。
+%%%%
+One of the shadowy figures appears more solid!
+其中一个暗影人形变得更加凝实了！
+%%%%
+Shadows coalesce into solid form.
+暗影凝聚成了实体。
+%%%%
+The shadows inhabiting this place fade forever.
+盘踞此地的暗影永远消散了。
+%%%%
+A lost soul coalesces out of thin air!
+一个迷失的灵魂凭空凝聚成形！
+%%%%
+Zonguldrok's gravestone
+宗古多克的墓碑
+%%%%
+Ashenzari says: See what I see, mortal...
+艾申扎利说道：“凡人，看看我所看到的……”
+%%%%
+Miasma emanates from the human's flesh.
+瘴气从人类的血肉中散发出来。
+%%%%
+The human rises from the dead!
+那个人类死而复生了！
+%%%%
+An item emerges from the Abyss! Perhaps it is an incitement to worship... or even an insult?
+一件物品从深渊中浮现！这或许是在诱你皈依……甚至可能是在侮辱你？
+%%%%
+"Beware! This is a limited time offer!"
+“小心！这是限时优惠！”
+%%%%
+A transporter appears.
+一个传送装置出现了。
+%%%%
+<white>The transporter glows with a rainbow of weird colours and disappears.</white>
+<white>传送装置泛起诡异的虹彩光芒，随后消失了。</white>
+%%%%
+Nemelex Xobeh says: You win!
+尼姆雷斯·索布说道：“你赢了！”
+%%%%
+Nemelex Xobeh says: You lose!
+尼姆雷斯·索布说道：“你输了！”
+%%%%
+The portcullises are lifted away, releasing the combatants.
+吊闸升起，参战者被放了出来。
+%%%%
+The doors seal shut behind you!
+你身后的门封死了！
+%%%%
+Okawaru booms: Excellent! You may choose a reward.
+奥卡瓦鲁轰声说道：“很好！你可以选择一份奖励。”
+%%%%
+The gates behind the altar rise, and the entry reopens.
+祭坛后方的闸门升起，入口重新开启。
+%%%%
+As you approach the altar, the fountains begin to flow with blood!
+当你靠近祭坛时，喷泉开始涌出鲜血！
+%%%%
+Let the past return from memory!
+让往昔从记忆中归来！
+%%%%
+"WORSHIP ME, MORTAL," Xom booms, "AND I SHALL GRANT YOU THE GREATEST GIFT OF ALL."
+“崇拜我吧，凡人，”佐姆轰声说道，“我将赐予你世间最珍贵的礼物。”
+%%%%
+A goblin pops into existence! It looks at you with admiration.
+一只地精凭空冒了出来！它满怀敬仰地看着你。
+%%%%
+"Friendship. The greatest gift is friendship!"
+“友谊。最珍贵的礼物就是友谊！”
+%%%%
+For a moment, you catch a glimpse of warriors who walked this path long ago.
+刹那间，你瞥见了很久以前走过这条道路的战士。
+%%%%
+"I found one of your ancestors!"
+“我找到了你的一位祖先！”
+%%%%
+The spellbook bursts into flames! Trog roars with delight!
+法术书猛然燃烧起来！特洛格欣喜地咆哮！
+%%%%
+Flames erupt from the bowels of the wizard! Trog roars with satisfaction!
+烈焰从法师体内喷涌而出！特洛格满意地咆哮！
+%%%%
+Vehumet offers to free you in exchange for your devotion to destruction.
+维胡梅特愿意释放你，以换取你献身于毁灭之道。
+%%%%
+Suddenly, the trees start to burn!
+树木突然燃烧起来！
+%%%%
+You feel as though Xom is toying with you.
+你感觉佐姆似乎在戏弄你。
+%%%%
+Suddenly, the walls become transparent!
+墙壁突然变得透明！
+%%%%
+The walls suddenly crumble!
+墙壁突然崩塌了！
+%%%%
+A dream sheep catches fire!
+一只梦境绵羊着火了！
+%%%%
+You hear mad divine giggling.
+你听到神祇疯狂的窃笑。
+%%%%
+You sense Yredelemnul urging you to kill the trapped human.
+你感觉伊莱德莱姆努尔正在催促你杀死受困的人类。
+%%%%
+Yredelemnul welcomes your deed!
+伊莱德莱姆努尔赞许你的所作所为！
+%%%%
+You feel a numb sensation.
+你感到一阵麻木。
+%%%%
+You hear a strange fizzling.
+你听到奇怪的嘶嘶消散声。
+%%%%
+There is a click. Suddenly, the grates are dropped!
+咔哒一声。铁栅突然落下！
+%%%%
+There is a click. Nothing appears to happen.
+咔哒一声。似乎什么也没发生。
+%%%%
+Something awakens from inside the sarcophagi!
+有什么东西从石棺中苏醒了！
+%%%%
+The ground shakes!
+地面震动起来！
+%%%%
+You hear grinding stone!
+你听到石块摩擦的声音！
+%%%%
+You hear the creaking of ancient metal!
+你听到古老金属的吱嘎声！
+%%%%
+The tension of great conflict fills the air!
+大战将临的紧张气息弥漫在空气中！
+%%%%
+The demonic rune of Zot may be found here.
+这里或许能找到佐特恶魔符文。
+%%%%
+A powerful Pandemonium lord resides here.
+一位强大的潘地狱领主盘踞于此。
+%%%%
+It guards the demonic rune of Zot.
+它守护着佐特恶魔符文。
+%%%%
+<yellow>A demonic rune of Zot can be found here... for a price.</yellow>
+<yellow>这里能找到佐特恶魔符文……只要你付得起代价。</yellow>
+%%%%
+The grate goes up!
+铁栅升起来了！
+%%%%
+You hear a sound of rusty metal sliding.
+你听到锈蚀金属滑动的声音。
+%%%%
+The surface of the water froths suddenly, and then rushes away.
+水面突然泛起泡沫，随后水流奔涌而去。
+%%%%
+You feel a strange vibration for a moment.
+你短暂地感觉到一阵奇怪的震动。
+%%%%
+You hear the sound of toppling stones.
+你听到石块倾倒的声音。
+%%%%
+The stone walls suddenly crumble and collapse.
+石墙突然碎裂坍塌。
+%%%%
+A basket of spiders falls from above!
+一篮蜘蛛从上方落下！
+%%%%
+You notice webbing strewn about the room and hear a chittering noise in the background.
+你注意到房间里到处散布着蛛网，还听到背景中传来吱吱声。
+%%%%
+A figure emerges from the depths of the water!
+一个身影从水底深处浮现！
+%%%%
+The water ripples visibly.
+水面明显泛起涟漪。
+%%%%
+You hear an unearthly scream, and the grinding of stone!
+你听到一声非尘世的尖叫，以及石块摩擦的声音！
+%%%%
+The path is suddenly blocked!
+道路突然被堵住了！
+%%%%
+The air is stale and forgotten.
+空气陈腐，仿佛被遗忘已久。
+%%%%
+A rune of Zot has appeared.
+一枚佐特符文出现了。
+%%%%
+The exit has re-opened... for now.
+出口重新开启了……暂时如此。
+%%%%
+The exit has re-opened.
+出口重新开启了。
+%%%%
+The Orb of Zot has appeared in the centre of the arena!
+佐特宝珠出现在竞技场中央！
+%%%%
+<yellow>You have won a prize for killing the boss!</yellow>
+<yellow>你因杀死首领而赢得了奖品！</yellow>
+%%%%
+<yellow>Victory!</yellow>
+<yellow>胜利！</yellow>
+%%%%
+Score multiplier reset to 27x
+分数倍率重置为 27 倍。
+%%%%
+You lost your score multiplier.
+你的分数倍率消失了。
+%%%%
+You now have 1 arena point.
+你现在有 1 点竞技场点数。
+%%%%
+<white>The arena falls silent. Everyone but you is dead.</white>
+<white>竞技场归于寂静。除你之外，所有人都死了。</white>
+%%%%
+<white>There is nothing to do now but take the Orb and leave.</white>
+<white>现在只需拿起宝珠离开。</white>
+%%%%
+<white>Congratulations, champion.</white>
+<white>恭喜你，冠军。</white>
+%%%%
+Time's up!
+时间到！
+%%%%
+The arena falls silent.
+竞技场归于寂静。
+%%%%
+<yellow>Get ready!</yellow>
+<yellow>准备好！</yellow>
+%%%%
+FINAL BOSS!
+最终首领！
+%%%%
+BOSS ROUND!
+首领回合！
+%%%%
+ZOT ROUND!
+佐特回合！
+%%%%
+FIGHT!
+开战！
+%%%%
+LIGHTNING ROUND!
+闪电回合！
+%%%%
+The exit has been sealed! It will re-open when you get the next rune.
+出口已被封死！取得下一枚符文后才会重新开启。
+%%%%
+<cyan>You have entered the arena!\nYou will win if you kill everything that spawns (including allies).\nIf it is a boss round, you only need to kill the boss in order to win.\nIf it is a lightning round, you only need to survive!</cyan>
+<cyan>你进入了竞技场！\n杀死所有生成的生物（包括盟友）即可获胜。\n若是首领回合，只需杀死首领即可获胜。\n若是闪电回合，只需活下来！</cyan>
+%%%%
+The Orb of Zot has appeared underneath you.
+佐特宝珠出现在你脚下。
+%%%%
+<lightgreen>The slimy rune of Zot has appeared underneath you.</lightgreen>
+<lightgreen>佐特黏液符文出现在你脚下。</lightgreen>
+%%%%
+<red>------------------------------------------------------------------------------\n------------------------------------------------------------------------------\n--                                                                          --\n--                            The Arena Of Blood                            --\n--                                                                          --\n--                                                                          --</red>
+<red>------------------------------------------------------------------------------\n------------------------------------------------------------------------------\n--                                                                          --\n--                                鲜血竞技场                                --\n--                                                                          --\n--                                                                          --</red>
+%%%%
+<red>--                                                                          --\n--                You descend into the pit of gibs and meat,                --\n--                    The sunken abyss of the depraved,                     --\n--                       The mill of turgid gutspawn.                       --\n--                The writhen instruments serve in adoration,               --\n--                     Immured beneath a rotten throne.                     --</red>
+<red>--                                                                          --\n--                          你步入碎肉与血块之坑，                          --\n--                            堕落者沉沦的深渊，                            --\n--                            臃肿肠胎的磨坊。                              --\n--                          扭曲的器具虔诚侍奉，                            --\n--                            囚于腐烂王座之下。                            --</red>
+%%%%
+<red>--                                                                          --\n--                  Before you lies the servitor of chaos,                  --\n--                           The cleaver,                                   --\n--                             The blasphemer,                              --\n--                              The destroyer,                              --\n--                               The Axe of Woe.                            --</red>
+<red>--                                                                          --\n--                          混沌的仆从横在你面前，                          --\n--                              劈斩者，                                    --\n--                              渎神者，                                    --\n--                              毁灭者，                                    --\n--                              灾祸之斧。                                  --</red>
+%%%%
+<red>--                                                                          --\n--                            Vessel of Makhleb,                            --\n--                           You are the unmaker,                           --\n--                          You bring the rapture,                          --\n--                     The murmurs of the thralls rise...                   --\n--                       The theatre of blood begins.                       --\n--                                                                          --\n------------------------------------------------------------------------------\n------------------------------------------------------------------------------</red>
+<red>--                                                                          --\n--                            马科列布的容器，                              --\n--                              你是毁灭者，                                --\n--                              你带来狂喜，                                --\n--                          奴仆的低语渐渐高涨……                            --\n--                              血之剧场开幕。                              --\n--                                                                          --\n------------------------------------------------------------------------------\n------------------------------------------------------------------------------</red>
+%%%%
+Murray drops in to check on your progress.
+默里顺道来看看你的进展。
+%%%%
+You hear a whooshing noise from somewhere close by.
+你听到附近某处传来呼啸声。
+%%%%
+Your surroundings seem different!
+你周围的环境似乎变了！
+%%%%
+<magenta>An exit appears before you!</magenta>
+<magenta>一道出口出现在你面前！</magenta>
+%%%%
+You hear a faint click.
+你听到轻微的咔哒声。
+%%%%
+You hear a click.
+你听到咔哒一声。
+%%%%
+You step on to a pressure plate.
+你踩上了一块压力板。
+%%%%
+Suddenly a wall slides open!
+一面墙突然滑开了！
+%%%%
+You hear a click...
+你听到咔哒一声……
+%%%%
+Nothing continues to happen.
+依然什么也没发生。
+%%%%
+Luckily, nothing happens.
+幸运的是，什么也没发生。
+%%%%
+Several panes of glass retract into the floor.
+几块玻璃板缩入地面。
+%%%%
+There is a strange hissing noise.
+传来一阵奇怪的嘶嘶声。
+%%%%
+Your surroundings suddenly seem different!
+你周围的环境突然变得不同了！
+%%%%
+As the champion is destroyed, a metal wall slides away!
+随着冠军被消灭，一面金属墙滑开了！
+%%%%
+As the champion is destroyed, you hear a distant grinding noise.
+随着冠军被消灭，你听到远处传来摩擦声。
+%%%%
+Your presence is welcomed at the altar of Beogh.
+比欧弗的祭坛欢迎你的到来。
+%%%%
+Beogh's servants are called upon to defend the altar!
+比欧弗的仆从应召前来守卫祭坛！
+%%%%
+Nemelex Xobeh says, "You win!"
+尼姆雷斯·索布说道：“你赢了！”
+%%%%
+Nemelex Xobeh says, "You lose!"
+尼姆雷斯·索布说道：“你输了！”
+%%%%
+<white>The teleporter glows with a rainbow of weird colours and disappears.</white>
+<white>传送器泛起诡异的虹彩光芒，随后消失了。</white>
+%%%%
+You have a sense of imminent foreboding.
+你产生了一种灾祸将至的预感。
+%%%%
+One of the plants suddenly grows acid sacs!
+其中一株植物突然长出了酸液囊！
+%%%%
+Another plant grows acid sacs!
+另一株植物长出了酸液囊！
+%%%%
+A fountain of clear blue water erupts!
+一股清澈的蓝色泉水喷涌而出！
+%%%%
+A fountain of sparkling water erupts!
+一股波光粼粼的泉水喷涌而出！
+%%%%
+You hear a distant splash.
+你听到远处传来水花声。
+%%%%
+The fountain becomes smaller until it vanishes.
+喷泉逐渐缩小，直至消失。
+%%%%
+You hear a hidden mechanism click...the prison walls lower!
+你听到隐藏机关咔哒作响……监狱的墙壁降下了！
+%%%%
+You have a sudden vision%s!
+你突然看到了关于%s的幻象！
+%%%%
+Nemelex Xobeh says: %s
+尼姆雷斯·索布说道：“%s”
+%%%%
+A %s emerges from the mists of... memory?....
+%s从……记忆的迷雾中浮现？……
+%%%%
+Flames erupt from the wizard's %scell! Trog roars with frustration!
+烈焰从法师的%s牢房中喷涌而出！特洛格沮丧地咆哮！
+%%%%
+The mighty Pandemonium lord %s resides here.
+强大的万魔殿领主%s盘踞于此。
+%%%%
+They guard the %s rune of Zot.
+其守护着佐特%s符文。
+%%%%
+You now have %s arena points (gained %s).
+你现在有%s点竞技场点数（获得了%s点）。
+%%%%
+Score multiplier: %sx
+分数倍率：%s倍
+%%%%
+%s...
+%s……
+%%%%
+ROUND %s!
+第%s回合！
+%%%%
+You sense a tension in the %s.
+你感觉%s传来一阵紧张气息。
+%%%%
+Welcome to arena %s.
+欢迎来到竞技场%s。
+%%%%
+<red>%s--                        </red><lightred>You will die a champion.</lightred><red>                          --\n%s</red>
+<red>%s--                        </red><lightred>你将以冠军之身死去。</lightred><red>                          --\n%s</red>
+%%%%
+<red>%s--                      </red><lightred>The Meatlord has descended...</lightred><red>                       --\n%s</red>
+<red>%s--                      </red><lightred>肉之领主降临了……</lightred><red>                       --\n%s</red>
+%%%%
+<red>%s--                    </red><lightred>You have destroyed The Unspeakable.</lightred><red>                   --\n%s</red>
+<red>%s--                    </red><lightred>你消灭了不可言说者。</lightred><red>                   --\n%s</red>
+%%%%
+<red>%s--                    </red><lightred>You have destroyed The Meatlord.</lightred><red>                      --\n%s</red>
+<red>%s--                    </red><lightred>你消灭了肉之领主。</lightred><red>                      --\n%s</red>

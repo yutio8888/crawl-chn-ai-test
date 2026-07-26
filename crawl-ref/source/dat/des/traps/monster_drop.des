@@ -27,7 +27,7 @@ function callback.drop_trap_stepped(data, triggerable, triggerer, marker, ev)
     end
   end
  if (spawns > 0) then
-   crawl.mpr(data.msg)
+   crawl.mpr(crawl.t_(data.msg))
  end
 end
 }}
