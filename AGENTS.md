@@ -90,6 +90,7 @@ available, follow the same contract inline. Full boundaries and examples are in
 | Verbatim text extraction from a screenshot or image | `ocr` |
 | Read-only code search | runtime read-only explorer |
 | End-to-end translation bug | `translation-pipeline` skill or its documented fallback |
+| Complete enumerable translation-category or series audit | `batch-translation-review` skill |
 
 Translation assets have one writer per task. By default, `zh-translator` owns
 `crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and

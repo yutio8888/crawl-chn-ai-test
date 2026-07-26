@@ -34,9 +34,33 @@ are normative in `.agents/policies/review-contract.md`.
 - Read-only search → the runtime's explorer.
 - A reported translation bug spanning analysis, assets, code, and review → the
   `translation-pipeline` skill.
+- A finite, enumerable translation category or series requiring one conclusion
+  per identity, dependency-group consistency, or complete-coverage proof → the
+  `batch-translation-review` skill.
 
 For every translation, i18n implementation, or review route, run
 `context_resolve.sh` first and attach its complete output.
+
+## Batch Translation Review
+
+Use `.agents/skills/batch-translation-review/SKILL.md` as the procedural
+authority for a complete category or series audit. Keep this route distinct
+from one wording judgment and from one reported translation bug.
+
+- Freeze a deterministic inventory before judging wording; do not claim full
+  coverage when the production identity set cannot be enumerated reliably.
+- Give every identity exactly one evidence-backed terminal conclusion and
+  prove the reviewed and inventory identity sets are equal in both directions.
+- Parallelize read-only evidence discovery, then let one `zh-translator`
+  update translation assets sequentially by complete dependency group.
+- Stop at the evidence report for review-only requests. Land changes, build an
+  inventory helper, or enter final review only when the user authorized those
+  actions.
+- Reuse the normal `review_prepare.sh`, mechanical reviewer routing, and
+  `review_final_gate.sh` boundaries after an accepted batch is committed.
+
+Completed audit plans and result files are task evidence. They do not replace
+the current glossary, decision log, shared policies, or this Skill.
 
 ## Full Pipeline
 
