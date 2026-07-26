@@ -220,6 +220,7 @@ chuckles	咯咯笑着	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶�
 Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推
 Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；无当前机制可供反推
 Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备注=✅；使重伤活物持续涌出瘴气，施法者承受暂时生命汲取
+Cinder Acolyte	灰烬侍僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -227,6 +228,7 @@ Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` �
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
 clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
+coglin	齿轮地精	domain=species; source=EN/ZH
 Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
 Combustion Breath	爆燃吐息	domain=spells; source=EN/ZH; 备注=✅；射出的挥发余烬会在每个触及生物周围爆炸
 Concentrate Venom	浓缩毒液	domain=spells; source=EN/ZH; 备注=✅
@@ -287,6 +289,7 @@ deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；排斥力场提高对所有投射物的闪避
 Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+demigod	半神	domain=species; source=EN/ZH; 复合格式=半神 + 职业
 demon	恶魔	domain=core; source=EN/ZH
 Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 demonspawn	恶魔裔	domain=species; source=EN/ZH; 复合格式=恶魔裔 + 职业
@@ -310,6 +313,7 @@ Dissolution	分解者	domain=unique-monsters; source=EN/ZH; Scope / comment=uniq
 Dissolution title	分解者，吉瓦的高级祭司	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Dithmenos	迪斯姆诺	domain=gods; source=EN/ZH; 类型=音译
 Divine Armament	神圣武装	domain=spells; source=EN/ZH; 备注=✅
+djinni	灯神	domain=species; source=EN/ZH; 复合格式=灯神 + 职业
 dodge	闪避	domain=combat; source=EN/ZH
 Dodging	闪避	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Dominate Undead	支配亡灵	domain=spells; source=EN/ZH; 备注=✅
@@ -467,6 +471,7 @@ Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 Hexes	诅咒系	domain=magic; source=EN/ZH
+Hexslinger	诅咒射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 hit	击中	domain=combat; source=EN/ZH
 Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发射的冰霜碎片，命中后施加脆霜减速
@@ -478,6 +483,7 @@ Holy word	圣言术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容�
 Homunculus	人造人	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 hooves	蹄	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 horns	角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+human	人类	domain=species; source=EN/ZH; 复合格式=人类 + 职业
 Hunter	猎手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hunting Call	狩猎呼唤	domain=spells; source=EN/ZH; 备注=✅
 Hunting Cry	狩猎战吼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -485,6 +491,7 @@ Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=abil
 Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅；剧毒污泥会使目标中毒并浸湿周围
 Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅；暗影火炬光伤害并强化友方亡灵
 Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Ice Elementalist	冰元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅；冰块撞击后爆炸，一半伤害无视寒冷抗性
@@ -611,6 +618,7 @@ monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
 moonshine	私酒	domain=items; source=EN/ZH; Scope / comment=potion effect; decision=D-B-020
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
+mountain dwarf	山矮人	domain=species; source=EN/ZH
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
 Mud Breath	泥浆吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -645,6 +653,7 @@ Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=⚠�
 old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
 Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅；持续毒害视线内所有生物
+oni	鬼	domain=species; source=EN/ZH
 Orb of Destruction	毁灭法球	domain=spells; source=EN/ZH; 备注=✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球
 Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅；命中时产生大型电能爆炸
 Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=两种译法均可
@@ -690,6 +699,7 @@ Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅ 现行 | domain=s
 Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅；瞬时气体，不形成持续云 | domain=spells; source=EN/ZH; 备注=✅
 Polar Vortex	极地漩涡	domain=spells; source=EN/ZH; 备注=✅；冰冻漩涡随施法者移动并抛动范围内生物
 Polearms	长柄武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+poltergeist	骚灵	domain=species; source=EN/ZH; 裁决=[D-A-033]
 Polymorph	变形术	domain=spells; source=EN/ZH; 备注=✅
 Polyphemus	波吕斐摩斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
@@ -729,6 +739,7 @@ resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅；经目标附近造物级联并逐个增强
 Resurrect	复活术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+revenant	归来者	domain=species; source=EN/ZH
 Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅；从体内冻结宿主并可能在死亡时传播
 ring	戒指	domain=items; source=EN/ZH
 Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审

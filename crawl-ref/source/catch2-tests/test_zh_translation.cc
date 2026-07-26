@@ -514,7 +514,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         require_translated(key);
     }
 
-    // Species and form verbs are translated at the display boundary.  The
+    // Species and form verbs are translated at the display boundary. The
     // Chinese article helper must still avoid English articles.
     CHECK(species::shout_verb(SP_BARACHI, 2, false) == T_("bellow"));
     CHECK(species::shout_verb(SP_FELID, 0, true) == T_("hiss"));
@@ -868,7 +868,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭征兆");
     REQUIRE(std::string(spell_title(SPELL_SUMMON_UNDEAD)) == "召唤亡灵");
     REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭征兆");
-    REQUIRE(species::name(SP_POLTERGEIST) == "吵闹鬼");
+    REQUIRE(species::name(SP_POLTERGEIST) == "骚灵");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

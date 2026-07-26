@@ -359,6 +359,7 @@
 
 | EN | ZH | 裁决 | 复合格式 |
 |----|----|------|---------|
+| human | 人类 | — | 人类 + 职业 |
 | deep elf | 精灵 | [D-A-008] | 精灵 + 职业（精灵剑圣、精灵湮灭者） |
 | spriggan | 小精灵 | [D-A-011] | 小精灵 + 职业（小精灵气法师、小精灵狂战士） |
 | naga / nagaraja | 纳迦 / 纳迦王 | [D-A-012] | 纳迦 + 职业（纳迦法师、纳迦神射手） |
@@ -377,6 +378,8 @@
 | mummy | 木乃伊 | — | 木乃伊 + 职业 |
 | ghoul | 食尸鬼 | — | 食尸鬼 + 职业 |
 | demonspawn | 恶魔裔 | — | 恶魔裔 + 职业 |
+| demigod | 半神 | — | 半神 + 职业 |
+| djinni | 灯神 | — | 灯神 + 职业 |
 | minotaur | 牛头人 | — | — |
 | felid | 猫 | [D-A-039] | — |
 | octopode | 章鱼 | [D-A-040] | — |
@@ -385,9 +388,18 @@
 | barachi | 蛙人 | — | — |
 | vine stalker | 藤蔓行者 | — | — |
 | armataur | 甲马人 | — | — |
+| coglin | 齿轮地精 | — | — |
+| mountain dwarf | 山矮人 | — | — |
+| oni | 鬼 | — | — |
+| poltergeist | 骚灵 | [D-A-033] | — |
+| revenant | 归来者 | — | — |
 | faun | 牧神 | — | — |
 
 **复合命名规则**：`[种族基词] + [职业/角色名]`，不使用斜杠、破折号或空格分隔。
+
+生产数据中的种族形容词形态沿用中文基词：`Barachian → 蛙人`、
+`Dwarven → 矮人`、`Elven → 精灵`、`Ghoulish → 食尸鬼`、
+`Merfolkian → 人鱼`、`Meteoric → 流星`、`Trollish → 巨魔`。
 
 ---
 
@@ -457,6 +469,7 @@
 | Berserker | 狂战士 | background; source=backgrounds.txt |
 | Brigand | 强盗 | background; source=backgrounds.txt |
 | Chaos Knight | 混沌骑士 | background; source=backgrounds.txt |
+| Cinder Acolyte | 灰烬侍僧 | background; source=backgrounds.txt |
 | Conjurer | 塑能师 | background; source=backgrounds.txt |
 | Delver | 挖掘者 | background; source=backgrounds.txt |
 | Earth Elementalist | 土元素使 | background; source=backgrounds.txt |
@@ -465,7 +478,9 @@
 | Fire Elementalist | 火元素使 | background; source=backgrounds.txt |
 | Gladiator | 角斗士 | background; source=backgrounds.txt |
 | Hedge Wizard | 杂学巫师 | background; source=backgrounds.txt |
+| Hexslinger | 诅咒射手 | background; source=backgrounds.txt |
 | Hunter | 猎手 | background; source=backgrounds.txt |
+| Ice Elementalist | 冰元素使 | background; source=backgrounds.txt |
 | Monk | 武僧 | background; source=backgrounds.txt |
 | Necromancer | 死灵法师 | background; source=backgrounds.txt |
 | Reaver | 掠夺者 | background; source=backgrounds.txt |
