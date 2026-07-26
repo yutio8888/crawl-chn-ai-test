@@ -244,7 +244,7 @@ Conjurations	咒法系	domain=magic; source=EN/ZH
 Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅；创造会追敌并爆炸的球状闪电
 Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
-Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Conjurer	咒法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
 Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt

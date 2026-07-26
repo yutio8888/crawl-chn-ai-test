@@ -11,9 +11,9 @@
 - 修订前 inventory：
   `0ec14d56abeab2738a5ffdef86a6686ddd75f03ae636bc822dbfb60b80401302`
 - 修订后 inventory：
-  `84ef62e67a0c8c1216054395ed832d02aa362ded5f3b7a00f54b102dc29279eb`
+  `47ef0d83b4278e2a432668d0d1f8a2e54bc176fd3d9b46c84c188693d9e9d399`
 - 最终术语表 SHA-256：
-  `0fca188e16f9942d6b0b5a0db4675fe8854eafea66ead0e599a92145ebe3bb41`
+  `9f18585115284f42d29b3a232140937bcc26356e74bb87c0f6ba63f1a37110ff`
 - `inventory identities = evidence-card identities = terminal-conclusion identities = 80`
 - 分类：种族 47，背景 33；生命周期：现役可选 53，现役变体 8，兼容 19。
 - 结构结果：重复、漏项、意外身份、名称/形式缺译、描述缺失、描述重复和陈旧键
@@ -90,7 +90,7 @@
 | `background:JOB_BRIGAND` | current_playable | Brigand → 强盗 | 3/3/6；Fighting2/Dodging1/Stealth4/Throwing2/Weapon2；+2 dagger、robe、cloak、poison×9、curare×3 | 修订：描述 |
 | `background:JOB_CHAOS_KNIGHT` | current_playable | Chaos Knight → 混沌骑士 | 4/4/4；Fighting3/Dodging1/Armour1/Weapon3；+2 leather armour、butterflies；Xom 起始信仰由实现核对 | 修订：描述 |
 | `background:JOB_CINDER_ACOLYTE` | current_playable | Cinder Acolyte → 灰烬侍僧 | 6/6/0；Fighting3/Weapon3/Spellcasting1/Fire3；robe；Scorch；Ignis 引用按 #25 术语权威为“曳焰” | 修订：描述 |
-| `background:JOB_CONJURER` | current_playable | Conjurer → 塑能师 | -1/10/3；Dodging2/Spellcasting2/Conjurations4/Stealth2；robe、magic；Magic Dart 等 4 法术 | 修订：名称、描述 |
+| `background:JOB_CONJURER` | current_playable | Conjurer → 咒法师 | -1/10/3；Dodging2/Spellcasting2/Conjurations4/Stealth2；robe、magic；Magic Dart 等 4 法术 | 修订：描述 |
 | `background:JOB_DEATH_KNIGHT` | compatibility | Death Knight → 死亡骑士 | abbr DK；TAG 34 迁移身份；无现役起始配置或描述 | 保留：兼容身份 |
 | `background:JOB_DELVER` | current_playable | Delver → 挖掘者 | 4/2/6；Fighting3/Dodging2/Stealth5/Weapon2；leather armour、fog/revelation/fear、haste、digging | 修订：描述 |
 | `background:JOB_EARTH_ELEMENTALIST` | current_playable | Earth Elementalist → 土元素使 | 0/7/5；Dodging2/Stealth2/Spellcasting2/Conjurations1/Earth3；robe、magic；Sandblast 等 5 法术 | 修订：名称、描述 |
@@ -118,7 +118,7 @@
 
 ## 变更摘要
 
-- 统一 12 个现役背景名，并补齐 `Cinder Acolyte`、`Hexslinger`、
+- 统一 11 个现役背景名，并补齐 `Cinder Acolyte`、`Hexslinger`、
   `Ice Elementalist` 的术语权威。
 - 补齐 7 个种族形容词 key，覆盖 10 个生产身份。
 - 执行既有 D-A-033，将玩家种族 `Poltergeist` 从“吵闹鬼”修为“骚灵”。

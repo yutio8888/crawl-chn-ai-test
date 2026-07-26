@@ -453,8 +453,8 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 | Enum | 等级 / 学派 / flags | 使用者 | 原中文名 | 裁定中文名 | 裁定 |
 |---|---|---|---|---|---|
 | `SPELL_CALL_CANINE_FAMILIAR` | 3 / 召唤 / `none` | 玩家 | 呼唤犬类使魔 | 呼唤犬类使魔 | 保留 |
-| `SPELL_CALL_DOWN_DAMNATION` | 9 / 塑能 / `target, unholy, needs_tracer, monster` | 怪物 | 降下天谴 | 降下天谴 | 保留 |
-| `SPELL_CALL_DOWN_LIGHTNING` | 4 / 塑能、气 / `target, monster` | 怪物 | 降下闪电 | 降下闪电 | 保留 |
+| `SPELL_CALL_DOWN_DAMNATION` | 9 / 咒法 / `target, unholy, needs_tracer, monster` | 怪物 | 降下天谴 | 降下天谴 | 保留 |
+| `SPELL_CALL_DOWN_LIGHTNING` | 4 / 咒法、气 / `target, monster` | 怪物 | 降下闪电 | 降下闪电 | 保留 |
 | `SPELL_CALL_IMP` | 2 / 召唤 / `unholy` | 玩家 | 呼唤小恶魔 | 呼唤小恶魔 | 保留 |
 | `SPELL_CALL_LOST_SOULS` | 5 / 召唤、死灵 / `unholy, monster` | 怪物 | 呼唤迷失灵魂 | 呼唤迷失灵魂 | 保留 |
 | `SPELL_CALL_OF_CHAOS` | 7 / 诅咒 / `chaotic, monster` | 怪物 | 混沌呼唤 | 混沌呼唤 | 保留 |
@@ -779,8 +779,8 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 
 | Enum | 等级 / 学派 / flags | 使用者 | 原中文名 | 裁定中文名 | 裁定 |
 |---|---|---|---|---|---|
-| `SPELL_MAGIC_DART` | 1 / 塑能 / `dir_or_target, needs_tracer` | 玩家、怪物 | 魔法飞弹 | 魔法飞弹 | 保留 |
-| `SPELL_SLUG_DART` | 1 / 塑能 / `dir_or_target, needs_tracer, monster` | 飞镖蛞蝓 | 弹丸飞镖 | 蛞蝓飞镖 | 重译 |
+| `SPELL_MAGIC_DART` | 1 / 咒法 / `dir_or_target, needs_tracer` | 玩家、怪物 | 魔法飞弹 | 魔法飞弹 | 保留 |
+| `SPELL_SLUG_DART` | 1 / 咒法 / `dir_or_target, needs_tracer, monster` | 飞镖蛞蝓 | 弹丸飞镖 | 蛞蝓飞镖 | 重译 |
 
 - `Magic Dart` 发射必中小型魔法射弹；zap 使用自动命中，标题和描述都把
   dart 作为魔法射弹意象。“魔法飞弹”准确且是稳定固定词形，不为形式
@@ -1455,7 +1455,7 @@ bog 的地形与毒害效果；“意外鳄鱼”保留英文故意突兀的戏�
 
 | Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
-| `SPELL_LEHUDIBS_CRYSTAL_SPEAR` | 8 / 塑能、土 / `dir_or_target, needs_tracer` | 勒胡迪布之水晶矛 | 短射程发射尖锐水晶投射物，造成极高物理伤害 | 保留 |
+| `SPELL_LEHUDIBS_CRYSTAL_SPEAR` | 8 / 咒法、土 / `dir_or_target, needs_tracer` | 勒胡迪布之水晶矛 | 短射程发射尖锐水晶投射物，造成极高物理伤害 | 保留 |
 
 名称结论：专名稳定采用 `Lehudib → 勒胡迪布`。“水晶矛”忠实保留
 Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高伤害的
@@ -1552,7 +1552,7 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 | Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
 | `SPELL_HOARFROST_CANNONADE` | 5 / 锻造、冰 / 无 | 玩家、怪物 | 白霜炮击 | 塑造两座远程火炮；逐发自耗，最终齐射强化 | 保留 |
-| `SPELL_HOARFROST_BULLET` | 5 / 塑能、冰 / `dir_or_target, needs_tracer, monster` | 白霜火炮 | 白霜弹 | 冰霜碎片命中后减速；第五发碎裂并产生额外范围伤害 | 保留 |
+| `SPELL_HOARFROST_BULLET` | 5 / 咒法、冰 / `dir_or_target, needs_tracer, monster` | 白霜火炮 | 白霜弹 | 冰霜碎片命中后减速；第五发碎裂并产生额外范围伤害 | 保留 |
 
 名称结论：两项稳定采用 `Hoarfrost → 白霜`。“白霜弹”准确指向火炮的
 单发冰霜碎片；“白霜炮击”表达两座火炮连续射击形成的 cannonade，
@@ -1623,8 +1623,8 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 | Enum | 生命周期 | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
 | `SPELL_FREEZE` | 现行 | 1 / 冰 / `dir_or_target, not_self, destructive` | 冰冻 | 相邻单体伤害，无视护甲，可减速冷血生物 | 保留 |
-| `SPELL_FLASH_FREEZE` | 现行 | 7 / 塑能、冰 / `dir_or_target, monster, needs_tracer` | 急冻 | 高额伤害并短时减速；一半伤害无视寒冷抗性 | 保留 |
-| `SPELL_FREEZING_GUST` | 现行 | 5 / 塑能、冰、气 / `target, needs_tracer, cloud, monster` | 冰冻狂风 | 穿透性严寒气流，沿途留下致命寒气云 | 重译为“冰冻阵风” |
+| `SPELL_FLASH_FREEZE` | 现行 | 7 / 咒法、冰 / `dir_or_target, monster, needs_tracer` | 急冻 | 高额伤害并短时减速；一半伤害无视寒冷抗性 | 保留 |
+| `SPELL_FREEZING_GUST` | 现行 | 5 / 咒法、冰、气 / `target, needs_tracer, cloud, monster` | 冰冻狂风 | 穿透性严寒气流，沿途留下致命寒气云 | 重译为“冰冻阵风” |
 | `SPELL_FROZEN_RAMPARTS` | 现行 | 3 / 冰 / `no_ghost, destructive` | 冰冻壁垒 | 冰封周围墙壁，伤害墙边敌人；移动后解除 | 保留 |
 | `SPELL_FREEZING_AURA` | 已移除兼容 | — | 冰封灵气 | 无当前描述或实现 | 保留兼容标题 |
 
@@ -1665,8 +1665,8 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 | Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
 | `SPELL_SPIT_ACID` | 5 / 炼金 / `dir_or_target, monster, noisy, needs_tracer` | 怪物 | 喷吐酸液 | 向单个目标喷出酸液 | 保留 |
-| `SPELL_ACID_BALL` | 5 / 塑能、炼金 / `dir_or_target, needs_tracer, monster` | 怪物 | 酸液球 | 投掷会爆炸的腐蚀性酸液球 | 保留 |
-| `SPELL_CORROSIVE_BOLT` | 6 / 塑能、炼金 / `dir_or_target, needs_tracer` | 玩家、怪物 | 腐蚀箭 | 穿透酸液束，可施加腐蚀 | 保留（复用 D-C-014） |
+| `SPELL_ACID_BALL` | 5 / 咒法、炼金 / `dir_or_target, needs_tracer, monster` | 怪物 | 酸液球 | 投掷会爆炸的腐蚀性酸液球 | 保留 |
+| `SPELL_CORROSIVE_BOLT` | 6 / 咒法、炼金 / `dir_or_target, needs_tracer` | 玩家、怪物 | 腐蚀箭 | 穿透酸液束，可施加腐蚀 | 保留（复用 D-C-014） |
 
 名称结论：`Acid` 作为攻击物质稳定译为“酸液”，因此“喷吐酸液”和
 “酸液球”分别准确表达动作与投射物形态；`Corrosive` 强调腐蚀性质，
@@ -1700,8 +1700,8 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 
 | Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
-| `SPELL_CREEPING_FROST` | 5 / 塑能、冰 / `monster` | 怪物 | 蔓延冰霜 | 从墙壁唤出冻气，伤害、冻结并减速墙边敌人 | 保留 |
-| `SPELL_REBOUNDING_CHILL` | 7 / 塑能、冰 / `dir_or_target, needs_tracer, monster` | 怪物 | 弹跳寒冷 | 穿透寒气束沿墙反弹，可命中目标两次 | 重译为“弹跳寒流” |
+| `SPELL_CREEPING_FROST` | 5 / 咒法、冰 / `monster` | 怪物 | 蔓延冰霜 | 从墙壁唤出冻气，伤害、冻结并减速墙边敌人 | 保留 |
+| `SPELL_REBOUNDING_CHILL` | 7 / 咒法、冰 / `dir_or_target, needs_tracer, monster` | 怪物 | 弹跳寒冷 | 穿透寒气束沿墙反弹，可命中目标两次 | 重译为“弹跳寒流” |
 | `SPELL_RIMEBLIGHT` | 7 / 死灵、冰 / `dir_or_target, unclean, destructive, not_self` | 玩家、怪物 | 霜疫 | 持续从体内冻结宿主，迸射冰片并可能在死亡时传播 | 保留 |
 | `SPELL_SPLINTERFROST_SHELL` | 7 / 锻造、冰 / `target, not_self` | 玩家、怪物 | 碎霜之壳 | 构筑半圆冰障；墙段破裂时向破坏者齐射冰片 | 保留 |
 
@@ -1818,9 +1818,9 @@ Ball Lightning` 使用了指人的“他们”指代球状闪电。其余新增�
 
 | Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
-| `SPELL_GLACIATE` | 9 / 塑能、冰 / `dir_or_target, monster` | 怪物 | 冰川 | 锥形寒冰冲击；近处伤害更高，命中后冰封减速，击杀可能生成冰块 | 重译为“冰封” |
-| `SPELL_ICEBLAST` | 5 / 塑能、冰 / `dir_or_target, needs_tracer` | 玩家道具、怪物 | 冰爆 | 大团冰块撞击爆炸，一半伤害无视寒冷抗性 | 保留 |
-| `SPELL_HAILSTORM` | 3 / 塑能、冰 / 无 | 玩家 | 冰雹风暴 | 环形冰雹攻击；紧邻施法者处为安全风暴眼 | 保留 |
+| `SPELL_GLACIATE` | 9 / 咒法、冰 / `dir_or_target, monster` | 怪物 | 冰川 | 锥形寒冰冲击；近处伤害更高，命中后冰封减速，击杀可能生成冰块 | 重译为“冰封” |
+| `SPELL_ICEBLAST` | 5 / 咒法、冰 / `dir_or_target, needs_tracer` | 玩家道具、怪物 | 冰爆 | 大团冰块撞击爆炸，一半伤害无视寒冷抗性 | 保留 |
+| `SPELL_HAILSTORM` | 3 / 咒法、冰 / 无 | 玩家 | 冰雹风暴 | 环形冰雹攻击；紧邻施法者处为安全风暴眼 | 保留 |
 
 名称结论：`Glaciate` 是“使冰封”的动词，当前“冰川”误作地貌名词；
 改为“冰封”能准确表达命中目标覆冰减速、击杀者化为冰块的机制。
@@ -1893,8 +1893,8 @@ Ghostly 的死灵意象，同时与造成火焰伤害的普通火球明确区分
 | Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
 | `SPELL_DEATH_CHANNEL` | 6 / 死灵 / `helpful, selfench` | 死亡通道 | 引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战 | 保留 |
-| `SPELL_DEATH_RATTLE` | 7 / 塑能、死灵、气 / `dir_or_target, monster` | 死亡之响 | 呼出垂死精粹并生成瘴气云 | 保留 |
-| `SPELL_KISS_OF_DEATH` | 1 / 塑能、死灵 / `dir_or_target, needs_tracer, not_self` | 死亡之吻 | 衰竭目标，同时暂时降低施法者生命值 | 保留 |
+| `SPELL_DEATH_RATTLE` | 7 / 咒法、死灵、气 / `dir_or_target, monster` | 死亡之响 | 呼出垂死精粹并生成瘴气云 | 保留 |
+| `SPELL_KISS_OF_DEATH` | 1 / 咒法、死灵 / `dir_or_target, needs_tracer, not_self` | 死亡之吻 | 衰竭目标，同时暂时降低施法者生命值 | 保留 |
 
 名称结论：三项标题分别保留死亡力量的持续通道、临终喘响和“死亡之吻”
 的原名意象，并能区分幽魂生成、瘴气吐息与双方生命代价三种机制。
@@ -1992,7 +1992,7 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 
 | Enum | 生命周期 / 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
-| `SPELL_FIRE_STORM` | 现行 / 9 / 塑能、火焰 / `target, needs_tracer` | 火焰风暴 | 在目标处制造大范围火焰爆炸，留下短暂火旋涡；一半伤害无视火焰抗性 | 保留 |
+| `SPELL_FIRE_STORM` | 现行 / 9 / 咒法、火焰 / `target, needs_tracer` | 火焰风暴 | 在目标处制造大范围火焰爆炸，留下短暂火旋涡；一半伤害无视火焰抗性 | 保留 |
 | `SPELL_CHANT_FIRE_STORM` | 已移除兼容 | 咏唱火焰风暴 | 无当前描述或实现 | 保留 |
 
 名称结论：现行标题准确表达法术的火焰属性、风暴规模和 9 级宏大强度；
@@ -2820,8 +2820,8 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 
 | Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|
-| `SPELL_ENSNARE` | 6 / 塑能、妖术 / `dir_or_target, needs_tracer, monster` | 束缚 | 射出高命中蛛网，困住单个目标 | 保留 |
-| `SPELL_GREATER_ENSNARE` | 6 / 塑能、妖术 / `dir_or_target, needs_tracer, monster` | 强力束缚 | 更高命中地困住目标，并在附近散布 3–6 张短时蛛网 | 保留 |
+| `SPELL_ENSNARE` | 6 / 咒法、妖术 / `dir_or_target, needs_tracer, monster` | 束缚 | 射出高命中蛛网，困住单个目标 | 保留 |
+| `SPELL_GREATER_ENSNARE` | 6 / 咒法、妖术 / `dir_or_target, needs_tracer, monster` | 强力束缚 | 更高命中地困住目标，并在附近散布 3–6 张短时蛛网 | 保留 |
 
 系列结论：两项都以蛛网困住目标为核心，`Ensnare → 束缚` 准确；
 Greater 版提高命中，并把控制扩展到目标附近，现有“强力束缚”能够自然
@@ -3513,7 +3513,7 @@ Draining 的活物、负能量及最大生命比例机制，恢复 Mutagenic 的
 | Enum | 等级 / 学派 / flags | 使用者 | 当前译名 | 核心效果 | 裁定 |
 |---|---|---|---|---|---|
 | `SPELL_PLASMA_BEAM` | 6 / 火、气 / `noisy, destructive` | 玩家、怪物 | 等离子光束 | 自动选择最远敌人之一；穿透电击束无视一半护甲，再追加同路径火焰束 | 保留 |
-| `SPELL_SHADOW_BEAM` | 5 / 塑能 / `dir_or_target, monster, needs_tracer, silent` | 怪物 | 暗影光束 | 穿透性暗影束 | 保留（复用 D-C-020） |
+| `SPELL_SHADOW_BEAM` | 5 / 咒法 / `dir_or_target, monster, needs_tracer, silent` | 怪物 | 暗影光束 | 穿透性暗影束 | 保留（复用 D-C-020） |
 
 系列结论：两项都以穿透性 beam 为核心，`Beam → 光束` 自然且准确。
 `Plasma Beam` 的火、气学派和双段实现支持“等离子光束”；不应为了强调

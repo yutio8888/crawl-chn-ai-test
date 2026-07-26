@@ -753,7 +753,7 @@ no air magic mutation
 %%%%
 no conjurations magic mutation
 
-你的塑能技能等级为0，你也无法训练它。
+你的咒法技能等级为0，你也无法训练它。
 %%%%
 no earth magic mutation
 

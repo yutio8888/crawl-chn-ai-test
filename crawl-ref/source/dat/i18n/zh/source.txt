@@ -13073,7 +13073,7 @@ Hunter
 猎手
 %%%%
 Conjurer
-塑能师
+咒法师
 %%%%
 Enchanter
 惑控师
@@ -40245,7 +40245,7 @@ Note that as long as there's a non-friendly monster in view you won't be able to
 注意，只要视野中有非友好怪物，你就无法自动移动到远处格子。
 %%%%
 However, as a hunter you will want to deal with it using your bow. If you have a look at your shortbow from your <w>i</w>nventory, you'll find an explanation of how to do this. 
-然而，作为一名猎人，你会想用弓箭来对付它。如果你从<w>i</w>背包中查看你的短弓，你会找到相关的操作说明。
+然而，作为一名猎手，你会想用弓箭来对付它。如果你从<w>i</w>背包中查看你的短弓，你会找到相关的操作说明。
 %%%%
 First <w>w</w>ield it, then follow the instructions.<tiles>\nAs a short-cut you can also <w>right-click</w> on your shortbow to read its description, and <w>left-click</w> to wield it.</tiles>
 首先<w>w</w>持它，然后按照说明操作。<tiles>\n作为快捷方式，你也可以<w>鼠标右键</w>点击你的短弓来阅读其描述。</tiles>
@@ -40254,7 +40254,7 @@ First <w>w</w>ield it, then follow the instructions.<tiles>\nAs a short-cut you 
 <tiles>用<w>鼠标右键</w>点击你的短弓也可阅读其描述。</tiles>
 %%%%
 However, as a conjurer you will want to deal with it using magic. If you look at the help entry for the <w>M</w>emorisation screen you'll find an explanation of how to do this.
-然而，作为一名咒术师，你会想用魔法来对付它。如果你查看<w>M</w>记忆法术的帮助条目
+然而，作为一名咒法师，你会想用魔法来对付它。如果你查看<w>M</w>记忆法术界面的帮助条目，就能了解具体操作。
 %%%%
  just excommunicated you for running out of piety (your divine favour went to nothing). Maybe you repeatedly violated the religious rules, or maybe you failed to please your deity often enough, or some combination of the two. If you can find an altar dedicated to 
  刚刚因你的虔诚耗尽而将你逐出教门（你的神恩已化为乌有）。也许你一再违反教规，或者未能经常取悦你的神祇，抑或两者皆有。如果你能找到

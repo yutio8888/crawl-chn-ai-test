@@ -470,7 +470,7 @@
 | Brigand | 强盗 | background; source=backgrounds.txt |
 | Chaos Knight | 混沌骑士 | background; source=backgrounds.txt |
 | Cinder Acolyte | 灰烬侍僧 | background; source=backgrounds.txt |
-| Conjurer | 塑能师 | background; source=backgrounds.txt |
+| Conjurer | 咒法师 | background; source=backgrounds.txt |
 | Delver | 挖掘者 | background; source=backgrounds.txt |
 | Earth Elementalist | 土元素使 | background; source=backgrounds.txt |
 | Enchanter | 惑控师 | background; source=backgrounds.txt |

@@ -1796,7 +1796,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Series rule**: 人名 `Lehudib → 勒胡迪布`，所有格采用
   “勒胡迪布之……”；`Crystal Spear → 水晶矛`。
 - **Rationale**: 该法术以短射程发射致命尖锐的水晶碎片，标题中的“水晶矛”
-  同时保留材质、长尖投射物意象及原名强度，符合 8 级塑能／土系高伤害机制。
+  同时保留材质、长尖投射物意象及原名强度，符合 8 级咒法／土系高伤害机制。
 - **Description corrections**: 将“一个致命、锋利的水晶碎片”润色为
   “一枚致命而锋利的水晶碎片”，修正量词和连接，不改变机制。
 - **Affected files**:
@@ -2123,7 +2123,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Choice**: 保留 `Fire Storm → 火焰风暴` 与
   `Chant Fire Storm → 咏唱火焰风暴`。
 - **Series rule**: `Fire Storm → 火焰风暴`；仪式动作 `Chant → 咏唱`。
-- **Rationale**: 现行法术是 9 级塑能／火焰法术，在指定目标处制造大范围
+- **Rationale**: 现行法术是 9 级咒法／火焰法术，在指定目标处制造大范围
   火焰风暴并留下短暂火旋涡，“火焰风暴”忠实且与宏大强度相称。
   已移除标题完整保留咏唱动作和基础法术名，无需重译。
 - **Description corrections**: 将 `Fire Storm` 末句调整为自然中文，
@@ -3063,7 +3063,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | 弹药品牌(postfix) | `body of brand` | `brand之body` | 剧毒之飞镖 |
 | 药水 | `potion of effect` | `effect药水` | 治疗药水、加速药水 |
 | 魔杖 | `wand of effect` | `effect魔杖` | 火焰魔杖、麻痹魔杖 |
-| 法杖 | `staff of type` | `type法杖` | 火焰法杖、塑能法杖 |
+| 法杖 | `staff of type` | `type法杖` | 火焰法杖、咒法法杖 |
 | 卷轴 | `scroll of effect` | `effect卷轴` | 鉴定卷轴、传送卷轴 |
 | 书籍 | `book of type` | `type之书` | 火焰之书、召唤之书 |
 | 手册 | `manual of skill` | `skill手册` | 长剑手册、火焰魔法手册 |
