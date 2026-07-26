@@ -24,7 +24,7 @@
 
 - Git 基线：`7b0224b32c0bd4b7b79119776762ee623857adc9`
 - `docs/glossary.md` SHA-256：
-  `07eaf4d7f33cb4b982d54ebce05efbc4c28d8edb61b1b35db441605cd5d8efb9`
+  `91f0638a60e633d450ded2b6e7efdd3449e7ad2e0e27e710a52cd0dd2565d645`
 - 最终 inventory SHA-256：
   `2985c819290cbffc213152d41cee8db7faa5a14bdd196c90cf76a7b4375c9575`
 - 父项：27（current 26，compatibility-disabled 1）

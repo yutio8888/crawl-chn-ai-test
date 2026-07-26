@@ -26,14 +26,16 @@
 | Ashenzari | 艾申扎利 | 音译 | — |
 | Dithmenos | 迪斯姆诺 | 音译 | — |
 | Nemelex Xobeh | 尼姆雷斯·索布 | 音译·U+00B7 | [D-A-004] |
-| Gozag | 哥萨戈·亿·赛格斯 | 音译 | — |
+| Gozag | 哥萨戈 | 运行时短名 | — |
+| Gozag Ym Sagoz the Greedy | 贪婪者哥萨戈·亿·赛格斯 | 神祇长名 | — |
 | Qazlal | 卡兹拉尔 | 音译 | — |
 | Ru | 入 | 意译（"enter"） | — |
 | Pakellas | 帕克拉斯 | 音译 | — |
 | Uskayaw | 乌斯卡亚 | 音译 | — |
 | Hepliaklqana | 惠普利亚卡纳 | 音译 | — |
 | Ignis | 曳焰 | 意译 | — |
-| Wu Jian | 无间门派 | 意译（门派=sect） | — |
+| Wu Jian | 无间 | 运行时短名 | — |
+| the Wu Jian Council | 无间门派 | 实体／派别长名（门派=sect） | — |
 | Xom | 佐姆 | 音译 | — |
 | Zot | 佐特 | 音译 | — |
 | Jiyva | 吉瓦 | 音译 | — |
