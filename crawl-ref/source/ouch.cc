@@ -88,8 +88,10 @@ void maybe_melt_player_enchantments(beam_type flavour, int damage)
             if (!you.duration[DUR_ICEMAIL_DEPLETED])
             {
                 if (you.has_mutation(MUT_ICEMAIL))
+                {
                     mprf(MSGCH_DURATION,
                          T_("Your icy armour dissipates!"));
+                }
                 else
                     mprf(MSGCH_DURATION,
                          T_("Your condensation shield dissipates!"));
@@ -543,8 +545,10 @@ bool drain_player(int power, bool announce_full, bool ignore_protection, bool qu
             intensifier = T_("heavily ");
 
         if (!quiet)
+        {
             mprf(T_("You feel %sweakened."),
                  intensifier.c_str());
+        }
         xom_is_stimulated(15);
         return true;
     }
@@ -1212,7 +1216,7 @@ static void _god_death_messages(kill_method_type death_type,
     const bool was_undead = bool(holi & MH_UNDEAD);
     const bool was_nonliving = bool(holi & MH_NONLIVING);
 
-    string key = god_name(you.religion) + " death";
+    string key = string(_god_name_en(you.religion)) + " death";
 
     string key_extended = key;
     if (left_corpse)

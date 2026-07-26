@@ -446,7 +446,8 @@ Goad Beasts	激怒野兽	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼
 goblin	地精	domain=species; source=EN/ZH; 复合格式=地精 + 职业
 god	神祇 / 神	domain=core; source=EN/ZH; 注意事项=正式语境用"神祇"，口语可用"神"
 Golden Breath	金龙吐息	domain=spells; source=EN/ZH; 备注=🆕
-Gozag	哥萨戈·亿·赛格斯	domain=gods; source=EN/ZH; 类型=音译
+Gozag	哥萨戈	domain=gods; source=EN/ZH; 类型=运行时短名
+Gozag Ym Sagoz the Greedy	贪婪者哥萨戈·亿·赛格斯	domain=gods; source=EN/ZH; 类型=神祇长名
 Grand Avatar	大化身	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Grasping Roots	抓握根须	domain=spells; source=EN/ZH; 备注=✅
 Grave Claw	墓爪	domain=spells; source=EN/ZH; 备注=✅
@@ -928,6 +929,7 @@ Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒法师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
+the Wu Jian Council	无间门派	domain=gods; source=EN/ZH; 类型=实体／派别长名（门派=sect）
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 thin skeletal structure	纤细骨骼	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Throw	投掷	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -1006,7 +1008,7 @@ Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅；锥形强风推开�
 Woodweal	林木疗愈	domain=spells; source=EN/ZH; 备注=🆕；借相邻树木的叶与树皮活力治疗伤势
 Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后召回同层有智慧盟友
-Wu Jian	无间门派	domain=gods; source=EN/ZH; 类型=意译（门派=sect）
+Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
 XP	经验值	domain=core; source=EN/ZH
 Xtahua	扎塔瓦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

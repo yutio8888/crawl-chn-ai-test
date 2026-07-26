@@ -252,13 +252,13 @@ string god_title(god_type which_god, species_type which_species, int piety)
 {
     string title;
     if (player_under_penance(which_god))
-        title = T_(divine_title[which_god][0]);
+        title = C_("god title", divine_title[which_god][0]);
     else if (which_god == GOD_USKAYAW)
-        title = T_(divine_title[which_god][_invocations_level()]);
+        title = C_("god title", divine_title[which_god][_invocations_level()]);
     else if (which_god == GOD_GOZAG)
-        title = T_(divine_title[which_god][_gold_level()]);
+        title = C_("god title", divine_title[which_god][_gold_level()]);
     else
-        title = T_(divine_title[which_god][_piety_level(piety)]);
+        title = C_("god title", divine_title[which_god][_piety_level(piety)]);
 
     const map<string, string> replacements =
     {
@@ -593,8 +593,10 @@ static string _describe_deck_summary()
 
     string stack = stack_contents();
     if (!stack.empty())
+    {
         desc << (T_("\n stacked deck: "))
              << stack << "\n";
+    }
 
     return desc.str();
 }
@@ -1200,9 +1202,7 @@ static const string _god_service_fee_description(god_type which_god)
             return RANDOM_ELEMENT(fees);
         }
         else
-        {
             return make_stringf(T_(" (%d gold; you have %d)"), fee, you.gold);
-        }
     }
 
     return "";

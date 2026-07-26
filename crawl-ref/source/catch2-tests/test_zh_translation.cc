@@ -9,6 +9,7 @@
 #include "artefact.h"
 #include "database.h"
 #include "decks.h"
+#include "describe-god.h"
 #include "dungeon.h"
 #include "duration-type.h"
 #include "env.h"
@@ -222,6 +223,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(skill_name_en(SK_FIGHTING)) == "Fighting");
     REQUIRE(std::string(spelltype_long_name_en(spschool::fire)) == "Fire");
     REQUIRE(std::string(spell_english_name(SPELL_BLINK)) == "Blink");
+#if TAG_MAJOR_VERSION == 34
+    REQUIRE(std::string(_god_name_en(GOD_PAKELLAS)) == "Pakellas");
+#endif
 
     CHECK(god_name(GOD_ZIN) != _god_name_en(GOD_ZIN));
     CHECK(std::string(get_job_name(JOB_FIGHTER))
@@ -231,6 +235,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           != spelltype_long_name_en(spschool::fire));
     CHECK(std::string(spell_title(SPELL_BLINK))
           != spell_english_name(SPELL_BLINK));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: god titles use their display context with fallback",
+                 "[zh-translation][god-title][i18n-context]")
+{
+    unwind_var<uint8_t> no_vehumet_penance(
+        you.penance[GOD_VEHUMET], 0);
+    unwind_var<uint8_t> no_trog_penance(you.penance[GOD_TROG], 0);
+    unwind_var<uint8_t> no_jiyva_penance(you.penance[GOD_JIYVA], 0);
+    unwind_var<uint8_t> no_ashenzari_penance(
+        you.penance[GOD_ASHENZARI], 0);
+    unwind_var<uint8_t> no_zin_penance(you.penance[GOD_ZIN], 0);
+
+    REQUIRE(god_title(GOD_VEHUMET, SP_HUMAN, 0) == "温顺者");
+    REQUIRE(god_title(GOD_TROG, SP_HUMAN, piety_breakpoint(1))
+            == "狂乱者");
+    REQUIRE(god_title(GOD_JIYVA, SP_HUMAN, piety_breakpoint(0))
+            == "软泥");
+    REQUIRE(god_title(GOD_ASHENZARI, SP_HUMAN, 1) == "受诅咒者");
+
+    // Context-free legacy title keys remain valid through C_() fallback.
+    REQUIRE(god_title(GOD_ZIN, SP_HUMAN, 0) == "亵渎者");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -865,9 +892,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(spell_title(SPELL_STING)) == "毒刺");
     REQUIRE(std::string(spell_title(SPELL_METAL_SPLINTERS)) == "金属碎片");
     REQUIRE(std::string(spell_title(SPELL_IOOD)) == "毁灭法球");
-    REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭征兆");
+    REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭印记");
     REQUIRE(std::string(spell_title(SPELL_SUMMON_UNDEAD)) == "召唤亡灵");
-    REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭征兆");
+    REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭印记");
+    // The status display remains a separately qualified lowercase lookup.
+    REQUIRE(std::string(C_("status", "sign of ruin")) == "毁灭印记");
     REQUIRE(species::name(SP_POLTERGEIST) == "骚灵");
 }
 
@@ -1018,6 +1047,28 @@ TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
         });
     REQUIRE(found != issues.end());
     CHECK(found->sample.find("Butterfly") != std::string::npos);
+}
+
+TEST_CASE("TextDB template masking preserves real English leak detection",
+          "[zh-translation][zh-helpers][godspeak]")
+{
+    const std::set<std::string> canonical_tokens =
+        textdb_template_tokens(
+            "@The_feature@ [@singular_choice@|@plural_choice@]");
+    const std::string legal = mask_textdb_template_tokens(
+        "中文 @The_feature@ [@singular_choice@|@plural_choice@]。",
+        canonical_tokens);
+    CHECK_FALSE(rule_mixed_cn_en(legal));
+
+    const std::string leaked = mask_textdb_template_tokens(
+        "中文 @The_feature@ Butterfly。", canonical_tokens);
+    CHECK(rule_mixed_cn_en(leaked));
+
+    // Balanced but unknown controls and malformed controls are not hidden.
+    CHECK(rule_mixed_cn_en(mask_textdb_template_tokens(
+        "中文 @Butterfly prose@。", canonical_tokens)));
+    CHECK(rule_mixed_cn_en(mask_textdb_template_tokens(
+        "中文 @Butterfly。", canonical_tokens)));
 }
 
 TEST_CASE("embedded Lua errors are detected independently of CJK content",

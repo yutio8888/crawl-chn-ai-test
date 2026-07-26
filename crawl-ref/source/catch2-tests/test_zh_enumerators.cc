@@ -46,9 +46,13 @@
 #include "options.h"          // Options.language / lang_name for EN-toggle
 #include "lang-t.h"           // lang_t::EN / lang_t::ZH
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -115,12 +119,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation]")
 {
     std::vector<ZhIssue> issues;
+    std::set<std::string> god_names;
     for (int gi = GOD_NO_GOD + 1; gi < NUM_GODS; ++gi)
     {
         const god_type g = static_cast<god_type>(gi);
         const std::string god = _god_name_en(g);
-        if (god.empty())
-            continue;
+        REQUIRE_FALSE(god.empty());
+        REQUIRE(god_names.insert(god).second);
 
         // Main description ("Trog") and three suffix-keyed sub-descriptions
         // used by describe-god.cc.
@@ -587,12 +592,50 @@ bool parse_db_file(const std::string& path, std::vector<std::pair<std::string,st
     return true;
 }
 
+std::string canonical_godspeak_key(std::string key)
+{
+    std::transform(key.begin(), key.end(), key.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return key;
+}
+
+std::set<std::string> reachable_godspeak_tokens(
+    const std::string& root,
+    const std::map<std::string, std::string>& canonical_blocks)
+{
+    std::set<std::string> allowed;
+    std::set<std::string> visited;
+    std::vector<std::string> pending{
+        canonical_godspeak_key(root)
+    };
+    while (!pending.empty())
+    {
+        const std::string key = pending.back();
+        pending.pop_back();
+        if (!visited.insert(key).second)
+            continue;
+        const auto block = canonical_blocks.find(key);
+        if (block == canonical_blocks.end())
+            continue;
+        for (const std::string& token :
+             textdb_template_tokens(block->second))
+        {
+            allowed.insert(token);
+            const std::string target = canonical_godspeak_key(
+                token.substr(1, token.size() - 2));
+            if (canonical_blocks.count(target) && !visited.count(target))
+                pending.push_back(target);
+        }
+    }
+    return allowed;
+}
+
 } // anonymous namespace
 
 // =============================================================================
-// Enumerator 1a — godspeak. Parses dat/database/zh/godspeak.txt for keys
+// Enumerator 1a — godspeak. Parses canonical dat/database/godspeak.txt keys
 // (line `<god_en> <event>` after each %%%%), then looks up the value via
-// getMiscString(key) and scans it. Plan v2 §2.4 (#1a, Q6-corrected: key
+// getSpeakString(key) and scans it. Plan v2 §2.4 (#1a, Q6-corrected: key
 // separator is space, not colon).
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -601,19 +644,25 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     std::vector<ZhIssue> issues;
     std::vector<std::pair<std::string, std::string>> blocks;
-    if (!parse_db_file("dat/database/zh/godspeak.txt", blocks))
+    REQUIRE(parse_db_file("dat/database/godspeak.txt", blocks));
+    REQUIRE_FALSE(blocks.empty());
+    std::map<std::string, std::string> canonical_blocks;
+    for (const auto& kv : blocks)
     {
-        WARN("godsspeak.txt missing, skipping godspeak enumerator");
-        REQUIRE(true);
-        return;
+        REQUIRE_FALSE(kv.first.empty());
+        REQUIRE(canonical_blocks.emplace(
+            canonical_godspeak_key(kv.first), kv.second).second);
     }
     for (auto& kv : blocks)
     {
         const std::string& key = kv.first;
-        const std::string val = getMiscString(key);
-        if (val.empty())
-            continue;
-        scan_one(val.c_str(), key, "godspeak.txt", issues);
+        const std::string val = getSpeakString(key);
+        REQUIRE_FALSE(val.empty());
+        const std::set<std::string> allowed =
+            reachable_godspeak_tokens(key, canonical_blocks);
+        const std::string scan_val =
+            mask_textdb_template_tokens(val, allowed);
+        scan_one(scan_val.c_str(), key, "godspeak.txt", issues);
     }
     emit_issue_protocol("zh_translation", "godspeak", issues);
     WARN("zh enumerator summary: godspeak -> " << issues.size() << " issues");

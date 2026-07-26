@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -80,6 +81,16 @@ std::vector<ZhIssue> scan_text(const std::string& text,
 std::vector<ZhIssue> scan_translation(const char* translated,
                                       const std::string& key,
                                       const std::string& source_tag);
+
+// Enumerate balanced TextDB @marker@ controls using the production parser's
+// left-to-right "next @" pairing rule.
+std::set<std::string> textdb_template_tokens(const std::string& text);
+
+// Replace only caller-proven TextDB controls with a non-letter placeholder.
+// Unknown and unbalanced markers remain visible to diagnostics.
+std::string mask_textdb_template_tokens(
+    const std::string& text,
+    const std::set<std::string>& allowed_tokens);
 
 // Helper predicates split out so M1 table-driven unit tests (test_zh_translation.cc)
 // can target individual rules without running all 8.

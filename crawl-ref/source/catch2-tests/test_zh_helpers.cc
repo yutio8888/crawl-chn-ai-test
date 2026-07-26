@@ -187,6 +187,43 @@ std::string sample_to_hex(const std::string& s)
     return hex;
 }
 
+std::set<std::string> textdb_template_tokens(const std::string& text)
+{
+    std::set<std::string> tokens;
+    size_t begin = text.find('@');
+    while (begin != std::string::npos)
+    {
+        const size_t end = text.find('@', begin + 1);
+        if (end == std::string::npos)
+            break;
+        tokens.insert(text.substr(begin, end - begin + 1));
+        begin = text.find('@', end + 1);
+    }
+    return tokens;
+}
+
+std::string mask_textdb_template_tokens(
+    const std::string& text,
+    const std::set<std::string>& allowed_tokens)
+{
+    std::string masked;
+    size_t cursor = 0;
+    size_t begin = text.find('@');
+    while (begin != std::string::npos)
+    {
+        const size_t end = text.find('@', begin + 1);
+        if (end == std::string::npos)
+            break;
+        masked.append(text, cursor, begin - cursor);
+        const std::string token = text.substr(begin, end - begin + 1);
+        masked += allowed_tokens.count(token) ? "#" : token;
+        cursor = end + 1;
+        begin = text.find('@', cursor);
+    }
+    masked.append(text, cursor, std::string::npos);
+    return masked;
+}
+
 void emit_jsonl_issue(const std::string& suite,
                       const std::string& enumerator,
                       int sequence,
@@ -417,9 +454,7 @@ static size_t mixed_cn_en_offender(const std::string& text)
             i = j;
         }
         else
-        {
             ++i;
-        }
     }
     return std::string::npos;
 }
@@ -515,7 +550,9 @@ bool rule_format_broken(const std::string& text, const std::string& key)
                             || conv == 'i' || conv == 'l' || conv == 'f'
                             || conv == 'g' || conv == 'x' || conv == 'X'
                             || conv == 'c' || conv == 'p')
+                        {
                             ++n;
+                        }
                     }
                     k = j;
                 }
