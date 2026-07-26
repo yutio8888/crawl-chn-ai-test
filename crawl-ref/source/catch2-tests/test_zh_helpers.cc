@@ -187,18 +187,40 @@ std::string sample_to_hex(const std::string& s)
     return hex;
 }
 
-std::string mask_textdb_template_tokens(const std::string& text)
+std::set<std::string> textdb_template_tokens(const std::string& text)
 {
-    std::string masked = text;
-    size_t begin = masked.find('@');
+    std::set<std::string> tokens;
+    size_t begin = text.find('@');
     while (begin != std::string::npos)
     {
-        const size_t end = masked.find('@', begin + 1);
+        const size_t end = text.find('@', begin + 1);
         if (end == std::string::npos)
             break;
-        masked.replace(begin, end - begin + 1, "#");
-        begin = masked.find('@', begin + 1);
+        tokens.insert(text.substr(begin, end - begin + 1));
+        begin = text.find('@', end + 1);
     }
+    return tokens;
+}
+
+std::string mask_textdb_template_tokens(
+    const std::string& text,
+    const std::set<std::string>& allowed_tokens)
+{
+    std::string masked;
+    size_t cursor = 0;
+    size_t begin = text.find('@');
+    while (begin != std::string::npos)
+    {
+        const size_t end = text.find('@', begin + 1);
+        if (end == std::string::npos)
+            break;
+        masked.append(text, cursor, begin - cursor);
+        const std::string token = text.substr(begin, end - begin + 1);
+        masked += allowed_tokens.count(token) ? "#" : token;
+        cursor = end + 1;
+        begin = text.find('@', cursor);
+    }
+    masked.append(text, cursor, std::string::npos);
     return masked;
 }
 

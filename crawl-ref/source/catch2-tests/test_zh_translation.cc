@@ -1052,17 +1052,23 @@ TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
 TEST_CASE("TextDB template masking preserves real English leak detection",
           "[zh-translation][zh-helpers][godspeak]")
 {
+    const std::set<std::string> canonical_tokens =
+        textdb_template_tokens(
+            "@The_feature@ [@singular_choice@|@plural_choice@]");
     const std::string legal = mask_textdb_template_tokens(
-        "中文 @The_feature@ [@singular_choice@|@plural_choice@]。");
+        "中文 @The_feature@ [@singular_choice@|@plural_choice@]。",
+        canonical_tokens);
     CHECK_FALSE(rule_mixed_cn_en(legal));
 
     const std::string leaked = mask_textdb_template_tokens(
-        "中文 @The_feature@ Butterfly。");
+        "中文 @The_feature@ Butterfly。", canonical_tokens);
     CHECK(rule_mixed_cn_en(leaked));
 
-    // Malformed controls are not silently hidden by the masking helper.
+    // Balanced but unknown controls and malformed controls are not hidden.
     CHECK(rule_mixed_cn_en(mask_textdb_template_tokens(
-        "中文 @Butterfly。")));
+        "中文 @Butterfly prose@。", canonical_tokens)));
+    CHECK(rule_mixed_cn_en(mask_textdb_template_tokens(
+        "中文 @Butterfly。", canonical_tokens)));
 }
 
 TEST_CASE("embedded Lua errors are detected independently of CJK content",

@@ -46,9 +46,12 @@
 #include "options.h"          // Options.language / lang_name for EN-toggle
 #include "lang-t.h"           // lang_t::EN / lang_t::ZH
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -589,6 +592,44 @@ bool parse_db_file(const std::string& path, std::vector<std::pair<std::string,st
     return true;
 }
 
+std::string canonical_godspeak_key(std::string key)
+{
+    std::transform(key.begin(), key.end(), key.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return key;
+}
+
+std::set<std::string> reachable_godspeak_tokens(
+    const std::string& root,
+    const std::map<std::string, std::string>& canonical_blocks)
+{
+    std::set<std::string> allowed;
+    std::set<std::string> visited;
+    std::vector<std::string> pending{
+        canonical_godspeak_key(root)
+    };
+    while (!pending.empty())
+    {
+        const std::string key = pending.back();
+        pending.pop_back();
+        if (!visited.insert(key).second)
+            continue;
+        const auto block = canonical_blocks.find(key);
+        if (block == canonical_blocks.end())
+            continue;
+        for (const std::string& token :
+             textdb_template_tokens(block->second))
+        {
+            allowed.insert(token);
+            const std::string target = canonical_godspeak_key(
+                token.substr(1, token.size() - 2));
+            if (canonical_blocks.count(target) && !visited.count(target))
+                pending.push_back(target);
+        }
+    }
+    return allowed;
+}
+
 } // anonymous namespace
 
 // =============================================================================
@@ -605,15 +646,22 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     std::vector<std::pair<std::string, std::string>> blocks;
     REQUIRE(parse_db_file("dat/database/godspeak.txt", blocks));
     REQUIRE_FALSE(blocks.empty());
-    std::set<std::string> keys;
+    std::map<std::string, std::string> canonical_blocks;
+    for (const auto& kv : blocks)
+    {
+        REQUIRE_FALSE(kv.first.empty());
+        REQUIRE(canonical_blocks.emplace(
+            canonical_godspeak_key(kv.first), kv.second).second);
+    }
     for (auto& kv : blocks)
     {
         const std::string& key = kv.first;
-        REQUIRE_FALSE(key.empty());
-        REQUIRE(keys.insert(key).second);
         const std::string val = getSpeakString(key);
         REQUIRE_FALSE(val.empty());
-        const std::string scan_val = mask_textdb_template_tokens(val);
+        const std::set<std::string> allowed =
+            reachable_godspeak_tokens(key, canonical_blocks);
+        const std::string scan_val =
+            mask_textdb_template_tokens(val, allowed);
         scan_one(scan_val.c_str(), key, "godspeak.txt", issues);
     }
     emit_issue_protocol("zh_translation", "godspeak", issues);
