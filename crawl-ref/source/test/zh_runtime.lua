@@ -12,7 +12,7 @@
 --
 -- Full runtime message capture (item ego names, combat messages, god
 -- speech triggered by piety changes) is deferred to Layer 3 (RC bot,
--- clua, full API).  This smoke test validates that the infrastructure
+-- clua, full API). This smoke test validates that the infrastructure
 -- works: i18n DB loads, T_() returns Chinese, and dlua can capture
 -- game-generated message text.
 --
@@ -36,7 +36,7 @@ if not you.wizard then
     return
 end
 
--- 1.  Probe: verify i18n DB loaded + T_() returns Chinese -----------------
+-- 1. Probe: verify i18n DB loaded + T_() returns Chinese -----------------
 crawl.stderr("FRAME_MARKER: setup | language=" .. crawl.language()
              .. " t_probe=" .. crawl.t_("You attack %s.") .. eol)
 
@@ -46,7 +46,7 @@ if crawl.t_("You attack %s.") == "You attack %s." then
     return
 end
 
--- 2.  Character + level setup -----------------------------------------------
+-- 2. Character + level setup -----------------------------------------------
 you.init("mifi", "mace")
 -- Protocol identities must remain canonical English even while display text is ZH.
 assert(you.race() == "Minotaur", "you.race() is not canonical English")
@@ -769,7 +769,7 @@ assert(not string.find(explorer_display, explorer_monster.type_name, 1, true),
        "explorer leaked canonical monster identity")
 
 -- Exercise the production monster_dies listener with the canonical full_name
--- exposed by DLua.  Registering the marker during a -test level requires an
+-- exposed by DLua. Registering the marker during a -test level requires an
 -- explicit activation, matching map_markers::activate_all on normal entry.
 crawl_require("dlua/lm_monst.lua")
 local death_spawn = monster_on_death {
@@ -875,7 +875,7 @@ emit("zot_boundary", table.concat(zot_evidence, ",")
      .. " || " .. zot_overview)
 crawl.set_zot_orb_monster("restore")
 
--- 3.  Capture level-up messages from you.set_xl(20) ------------------------
+-- 3. Capture level-up messages from you.set_xl(20) ------------------------
 -- Produces ~19 "你已达到 N 级！" messages through mprf via gain_exp →
 -- set_xl. These are all T_()-wrapped and provide a strong baseline
 -- verification that runtime mprf output includes Chinese text.
@@ -885,7 +885,7 @@ local msgs1 = crawl.messages(30) or ""
 emit("level_up", msgs1)
 crawl.clear_message_store()
 
--- 4.  Use case: crawl.god_speaks (synthetic mprf path) -------------------
+-- 4. Use case: crawl.god_speaks (synthetic mprf path) -------------------
 -- Sends raw text through god_speaks → mprf, exercising the message
 -- delivery path that Layer 1 Catch2 can't reach.
 crawl.god_speaks("Trog", "Trog bestows a gift upon you!")
