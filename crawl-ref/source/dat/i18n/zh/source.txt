@@ -13052,7 +13052,7 @@ Fighter
 战士
 %%%%
 Hedge Wizard
-杂学派法师
+杂学巫师
 %%%%
 Priest
 祭司
@@ -13070,19 +13070,19 @@ Berserker
 狂战士
 %%%%
 Hunter
-猎人
+猎手
 %%%%
 Conjurer
-咒法师
+塑能师
 %%%%
 Enchanter
 惑控师
 %%%%
 Fire Elementalist
-火系元素师
+火元素使
 %%%%
 Ice Elementalist
-冰系元素师
+冰元素使
 %%%%
 Warrior
 勇士
@@ -13331,10 +13331,10 @@ Summoner
 召唤师
 %%%%
 Air Elementalist
-气系元素师
+气元素使
 %%%%
 Earth Elementalist
-地系元素师
+土元素使
 %%%%
 Skald
 吟游诗人
@@ -13346,7 +13346,7 @@ Chaos Knight
 混沌骑士
 %%%%
 Shapeshifter
-变形者
+变形人
 %%%%
 Healer
 治疗师
@@ -13358,16 +13358,16 @@ Monk
 武僧
 %%%%
 Warper
-扭曲者
+折跃者
 %%%%
 Wanderer
-流浪者
+漫游者
 %%%%
 Artificer
-工匠
+技师
 %%%%
 Hexslinger
-诅咒枪手
+诅咒射手
 %%%%
 Convoker
 召集者
@@ -32987,8 +32987,14 @@ ynoxinul
 Deep Elf
 精灵
 %%%%
+Elven
+精灵
+%%%%
 Mountain Dwarf
 山矮人
+%%%%
+Dwarven
+矮人
 %%%%
 High Elf
 高等精灵
@@ -33004,6 +33010,21 @@ Mayflytaur
 %%%%
 Sludge Elf
 污泥精灵
+%%%%
+Barachian
+蛙人
+%%%%
+Ghoulish
+食尸鬼
+%%%%
+Merfolkian
+人鱼
+%%%%
+Meteoric
+流星
+%%%%
+Trollish
+巨魔
 %%%%
  with an invisible shield
 用隐形的盾牌
@@ -39489,7 +39510,7 @@ of Bugginess
 故障之
 %%%%
 species name|Poltergeist
-吵闹鬼
+骚灵
 %%%%
 non-descript
 朴素

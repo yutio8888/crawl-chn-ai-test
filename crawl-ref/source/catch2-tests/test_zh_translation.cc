@@ -868,7 +868,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭征兆");
     REQUIRE(std::string(spell_title(SPELL_SUMMON_UNDEAD)) == "召唤亡灵");
     REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭征兆");
-    REQUIRE(species::name(SP_POLTERGEIST) == "吵闹鬼");
+    REQUIRE(species::name(SP_POLTERGEIST) == "骚灵");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
