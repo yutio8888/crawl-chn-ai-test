@@ -904,18 +904,33 @@ TERMINAL_CONCLUSIONS = {
 }
 
 
-def review_coverage(payload: Mapping[str, object], path: Path) -> dict[str, object]:
+def _resolve_commit(ref: str) -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--verify", f"{ref}^{{commit}}"],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    except subprocess.CalledProcessError as error:
+        raise AuditInputError(
+            f"review baseline does not name a commit: {ref!r}"
+        ) from error
+
+
+def review_coverage(
+    payload: Mapping[str, object],
+    path: Path,
+    baseline_ref: str,
+) -> dict[str, object]:
     """Prove one evidence-card row and terminal conclusion per identity."""
     text = path.read_text(encoding="utf-8")
+    baseline_oid = _resolve_commit(baseline_ref)
     baseline_matches = re.findall(
-        r"^- 基线：`([0-9a-f]{40})`$",
+        rf"^- 基线：`{re.escape(baseline_oid)}`$",
         text,
         re.MULTILINE,
     )
-    expected_text = (
-        render_review_results(payload, baseline_matches[0])
-        if len(baseline_matches) == 1 else None
-    )
+    expected_text = render_review_results(payload, baseline_oid)
     matches = re.findall(
         r"^\|\s*`(monster:MONS_[A-Z0-9_]+)`\s*\|.*?"
         r"\|\s*([^|\n]+?)\s*\|\s*$",
@@ -984,6 +999,7 @@ def render_review_results(
     baseline_ref: str,
 ) -> str:
     """Render one evidence-backed terminal conclusion per frozen identity."""
+    baseline_ref = _resolve_commit(baseline_ref)
     baseline_names = _parse_textdb_content(
         f"{baseline_ref}:{_relative(ZH_SOURCE)}",
         _git_text(baseline_ref, ZH_SOURCE),
@@ -1017,7 +1033,8 @@ def render_review_results(
         "- 重建命令："
         "`python3 .claude/scripts/monster_name_ssot.py "
         "--inventory-output /tmp/monster-inventory.json "
-        "--review-results docs/monster-review-results.md`。",
+        "--review-results docs/monster-review-results.md "
+        f"--baseline-ref {baseline_ref}`。",
         "",
         "| 身份 | 证据卡 | 终态结论 |",
         "|---|---|---|",
@@ -1147,9 +1164,10 @@ def main(argv=None) -> int:
         if args.review_results or args.write_review_results or args.baseline_ref:
             parser.error("review options require --inventory-output")
         return _run_ssot(args.source_txt)
-    if bool(args.write_review_results) != bool(args.baseline_ref):
+    needs_baseline = bool(args.write_review_results or args.review_results)
+    if needs_baseline != bool(args.baseline_ref):
         parser.error(
-            "--write-review-results and --baseline-ref must be used together"
+            "--baseline-ref is required by, and only valid with, review options"
         )
 
     try:
@@ -1160,7 +1178,7 @@ def main(argv=None) -> int:
             )
         if args.review_results:
             payload["review_coverage"] = review_coverage(
-                payload, args.review_results
+                payload, args.review_results, args.baseline_ref
             )
     except (
         AuditInputError,

@@ -6,7 +6,7 @@
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
-- 重建命令：`python3 .claude/scripts/monster_name_ssot.py --inventory-output /tmp/monster-inventory.json --review-results docs/monster-review-results.md`。
+- 重建命令：`python3 .claude/scripts/monster_name_ssot.py --inventory-output /tmp/monster-inventory.json --review-results docs/monster-review-results.md --baseline-ref 7b0224b32c0bd4b7b79119776762ee623857adc9`。
 
 | 身份 | 证据卡 | 终态结论 |
 |---|---|---|

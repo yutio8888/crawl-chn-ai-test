@@ -168,7 +168,7 @@ class MonsterNameSsotTests(unittest.TestCase):
     def test_review_coverage_fails_closed_on_any_artifact_mutation(self) -> None:
         payload = audit.build_inventory()
         baseline = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"],
+            ["git", "rev-parse", "HEAD^"],
             cwd=REPO_ROOT,
             text=True,
         ).strip()
@@ -185,10 +185,11 @@ class MonsterNameSsotTests(unittest.TestCase):
                     return audit.main([
                         "--inventory-output", str(inventory),
                         "--review-results", str(path),
+                        "--baseline-ref", baseline,
                     ])
 
             path.write_text(rendered, encoding="utf-8")
-            result = audit.review_coverage(payload, path)
+            result = audit.review_coverage(payload, path, baseline)
             self.assertTrue(result["coverage_equal"])
             self.assertTrue(result["artifact_exact"])
             self.assertEqual(0, cli_result())
@@ -201,7 +202,21 @@ class MonsterNameSsotTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path)
+            result = audit.review_coverage(payload, path, baseline)
+            self.assertFalse(result["coverage_equal"])
+            self.assertFalse(result["artifact_exact"])
+            self.assertEqual(1, cli_result())
+
+            forged_baseline = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"],
+                cwd=REPO_ROOT,
+                text=True,
+            ).strip()
+            path.write_text(
+                audit.render_review_results(payload, forged_baseline),
+                encoding="utf-8",
+            )
+            result = audit.review_coverage(payload, path, baseline)
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
@@ -214,7 +229,7 @@ class MonsterNameSsotTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path)
+            result = audit.review_coverage(payload, path, baseline)
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
@@ -224,7 +239,7 @@ class MonsterNameSsotTests(unittest.TestCase):
                 + "| `monster:NOT_A_VALID_ENUM` | forged | keep |\n",
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path)
+            result = audit.review_coverage(payload, path, baseline)
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
