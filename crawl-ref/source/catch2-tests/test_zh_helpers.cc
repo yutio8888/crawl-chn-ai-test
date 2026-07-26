@@ -454,9 +454,7 @@ static size_t mixed_cn_en_offender(const std::string& text)
             i = j;
         }
         else
-        {
             ++i;
-        }
     }
     return std::string::npos;
 }
@@ -552,7 +550,9 @@ bool rule_format_broken(const std::string& text, const std::string& key)
                             || conv == 'i' || conv == 'l' || conv == 'f'
                             || conv == 'g' || conv == 'x' || conv == 'X'
                             || conv == 'c' || conv == 'p')
+                        {
                             ++n;
+                        }
                     }
                     k = j;
                 }

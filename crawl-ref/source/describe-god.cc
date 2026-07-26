@@ -593,8 +593,10 @@ static string _describe_deck_summary()
 
     string stack = stack_contents();
     if (!stack.empty())
+    {
         desc << (T_("\n stacked deck: "))
              << stack << "\n";
+    }
 
     return desc.str();
 }
@@ -1200,9 +1202,7 @@ static const string _god_service_fee_description(god_type which_god)
             return RANDOM_ELEMENT(fees);
         }
         else
-        {
             return make_stringf(T_(" (%d gold; you have %d)"), fee, you.gold);
-        }
     }
 
     return "";

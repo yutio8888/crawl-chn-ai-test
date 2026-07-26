@@ -851,9 +851,7 @@ string ignore_faith_reason()
         return T_(" already offers you all the fire that remains!");
     case GOD_RU:
         if (you.raw_piety >= piety_breakpoint(5))
-        {
             return T_(" says: An ascetic of your devotion has no use for such trinkets.");
-        }
         break;
     default:
         break;
@@ -1611,9 +1609,7 @@ static bool _handle_veh_gift(bool forced)
                 T_(" offers you knowledge of %s."),
                 comma_separated_line(spell_names.begin(), spell_names.end()).c_str());
             if (gifts >= NUM_VEHUMET_GIFTS - 1)
-            {
                 prompt += T_(" These spells will remain available as long as you worship Vehumet.");
-            }
 
             you.duration[DUR_VEHUMET_GIFT] = (100 + random2avg(100, 2)) * BASELINE_DELAY;
             if (gifts >= 5)
@@ -2170,9 +2166,11 @@ string god_name(god_type which_god, bool long_name)
 {
     // Jiyva long name (dynamic second_name) — wrap static parts in T_().
     if (which_god == GOD_JIYVA && long_name)
+    {
         return make_stringf("%s %s %s", T_("Jiyva"),
                             you.jiyva_second_name.c_str(),
                             T_("the Shapeless"));
+    }
 
     if (long_name)
     {
@@ -2473,9 +2471,7 @@ static void _handle_piety_gain(int old_piety)
             if (rank == rank_for_passive(passive_t::umbra))
                 mprf(MSGCH_GOD, T_("You are shrouded in an aura of darkness!"));
             if (rank == rank_for_passive(passive_t::jelly_regen))
-            {
                 simple_god_message(T_(" begins accelerating your health and magic regeneration."));
-            }
             if (rank == rank_for_passive(passive_t::sinv))
                 autotoggle_autopickup(false);
             if (rank == rank_for_passive(passive_t::clarity))
