@@ -12,7 +12,7 @@
 --
 -- Full runtime message capture (item ego names, combat messages, god
 -- speech triggered by piety changes) is deferred to Layer 3 (RC bot,
--- clua, full API).  This smoke test validates that the infrastructure
+-- clua, full API). This smoke test validates that the infrastructure
 -- works: i18n DB loads, T_() returns Chinese, and dlua can capture
 -- game-generated message text.
 --
@@ -22,6 +22,7 @@
 --           -extra-opt-first 'language=zh' -test zh_runtime
 
 local eol = string.char(13)
+local script_args = crawl.script_args()
 
 local function emit(case_id, text)
     if text == nil then text = "<nil>" end
@@ -35,7 +36,7 @@ if not you.wizard then
     return
 end
 
--- 1.  Probe: verify i18n DB loaded + T_() returns Chinese -----------------
+-- 1. Probe: verify i18n DB loaded + T_() returns Chinese -----------------
 crawl.stderr("FRAME_MARKER: setup | language=" .. crawl.language()
              .. " t_probe=" .. crawl.t_("You attack %s.") .. eol)
 
@@ -45,7 +46,7 @@ if crawl.t_("You attack %s.") == "You attack %s." then
     return
 end
 
--- 2.  Character + level setup -----------------------------------------------
+-- 2. Character + level setup -----------------------------------------------
 you.init("mifi", "mace")
 -- Protocol identities must remain canonical English even while display text is ZH.
 assert(you.race() == "Minotaur", "you.race() is not canonical English")
@@ -361,6 +362,258 @@ local en_to_zh = roundtrip_portal_message("en", "zh")
 emit("portal_late_translation", zh_to_en .. " || " .. en_to_zh)
 crawl.set_test_language("zh")
 
+-- Issue 28: the default distance message is also a single complete key.
+-- Its canonical components survive serialization and are interpolated only
+-- after the load-time language has been selected.
+local function roundtrip_portal_distance(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        noisemaker = "bell",
+        verb = "tolling",
+        ranges = {{0, "brisk "}},
+        range_adjectives = {{0, "distant"}},
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "bell" and loaded.verb == "tolling"
+           and loaded.ranges[1][2] == "brisk "
+           and loaded.range_adjectives[1][2] == "distant",
+           "portal distance message persisted translated components")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px + 10, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    if emitted_language == "en" then
+        assert(string.find(rendered, "You hear the brisk tolling", 1, true)
+               and string.find(rendered, "distant bell", 1, true),
+               "ZH-created distance message did not render complete English")
+    else
+        local translated_components = {
+            crawl.t_("brisk"),
+            crawl.t_("tolling"),
+            crawl.t_("distant"),
+            crawl.t_("bell"),
+        }
+        assert(not string.find(rendered, "You hear the", 1, true)
+               and not is_ascii(rendered),
+               "EN-created distance message leaked English after ZH load")
+        for _, component in ipairs(translated_components) do
+            assert(not is_ascii(component)
+                   and string.find(rendered, component, 1, true),
+                   "ZH distance message omitted translated component: "
+                   .. component)
+        end
+    end
+    return rendered
+end
+local distance_zh_to_en = roundtrip_portal_distance("zh", "en")
+local distance_en_to_zh = roundtrip_portal_distance("en", "zh")
+emit("portal_distance_late_translation",
+     distance_zh_to_en .. " || " .. distance_en_to_zh)
+crawl.set_test_language("zh")
+
+-- Issue 28 final readiness: distance zero selects the terminal "$F" branch.
+-- English must retain crawl.grammar(..., "a") ("an alarm"), while Chinese
+-- receives only the translated entity and neither language gets a doubled
+-- placeholder separator.
+local function roundtrip_portal_close(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        noisemaker = "alarm",
+        verb = "tolling",
+        ranges = {{0, "brisk "}},
+        range_adjectives = {{0, "$F"}},
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "alarm"
+           and loaded.verb == "tolling"
+           and loaded.range_adjectives[1][2] == "$F",
+           "close portal message persisted translated components")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    assert(not string.find(rendered, "  ", 1, true),
+           "close portal message contains doubled placeholder spacing")
+    if emitted_language == "en" then
+        local grammatical_entity = crawl.grammar("alarm", "a")
+        assert(grammatical_entity == "an alarm"
+               and string.find(rendered, grammatical_entity, 1, true),
+               "close English portal omitted grammar/article path")
+    else
+        local translated = crawl.t_("alarm")
+        assert(translated ~= "alarm"
+               and string.find(rendered, translated, 1, true)
+               and not string.find(rendered, "an alarm", 1, true)
+               and not string.find(rendered, " alarm", 1, true),
+               "close Chinese portal leaked English article/entity")
+    end
+    return rendered
+end
+local close_zh_to_en = roundtrip_portal_close("zh", "en")
+local close_en_to_zh = roundtrip_portal_close("en", "zh")
+emit("portal_close_grammar",
+     close_zh_to_en .. " || " .. close_en_to_zh)
+crawl.set_test_language("zh")
+
+-- Issue 28 readiness: use the Sewer's production keys through the real
+-- TimedMessaging serializer and display sink. "sewer drain" is an English
+-- identity until emission; it must never collide with the unrelated "drain"
+-- translation.
+local function roundtrip_sewer_message(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        verb = "rusting",
+        noisemaker = "sewer drain",
+        ranges = {
+            {5000, "slow "}, {4000, ""},
+            {2500, "brisk "}, {1500, "quick "}, {0, "rapid "},
+        },
+        range_adjectives = {
+            {28, "very distant"}, {21, "distant"},
+            {14, "$F nearby"}, {7, "$F very nearby"}, {0, "$F"},
+        },
+        range_msg_fmt =
+            "You hear the {prefix}rusting of the {distance} {noisemaker}.",
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.noisemaker == "sewer drain"
+           and loaded.verb == "rusting"
+           and loaded.range_msg_fmt
+               == "You hear the {prefix}rusting of the {distance} {noisemaker}.",
+           "sewer marker persisted translated identity or format")
+
+    local px, py = you.pos()
+    local marker = {pos = function () return px + 10, py end}
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:say_message(marker, 1000)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    if emitted_language == "en" then
+        assert(string.find(rendered, "sewer drain", 1, true),
+               "ZH-created sewer marker did not emit canonical English")
+    else
+        local translated = crawl.t_("sewer drain")
+        assert(translated ~= "sewer drain"
+               and string.find(rendered, translated, 1, true),
+               "EN-created sewer marker omitted translated sewer drain")
+        assert(not string.find(rendered, "sewer drain", 1, true)
+               and not string.find(rendered, "吸血", 1, true),
+               "sewer marker leaked English or unrelated drain translation")
+    end
+    return rendered
+end
+local sewer_zh_to_en = roundtrip_sewer_message("zh", "en")
+local sewer_en_to_zh = roundtrip_sewer_message("en", "zh")
+emit("sewer_late_translation",
+     sewer_zh_to_en .. " || " .. sewer_en_to_zh)
+crawl.set_test_language("zh")
+
+-- Issue 28: portal milestones and notes retain canonical English payloads,
+-- while the complete display template and its destination title are
+-- translated only at mpr time.
+local original_take_note = crawl.take_note
+local original_mark_milestone = crawl.mark_milestone
+local captured_notes = {}
+local captured_milestones = {}
+crawl.take_note = function (note)
+    table.insert(captured_notes, note)
+end
+crawl.mark_milestone = function (tag, milestone, parent)
+    table.insert(captured_milestones, {
+        tag = tag, milestone = milestone, parent = parent
+    })
+end
+
+local function portal_milestone_language(language)
+    local trove_title = "The Name-Rending Infernalists' Reservoir"
+    local wizlab_title = "The Chambers of the Cloud Mage"
+    captured_notes = {}
+    captured_milestones = {}
+    crawl.set_test_language(language)
+    crawl.clear_message_store()
+    trove_milestone(nil, trove_title)
+    wizlab_milestone(nil, wizlab_title)
+    crawl.redraw_view()
+    local rendered = crawl.messages(10) or ""
+
+    assert(captured_notes[1] == "Entered " .. trove_title
+           and captured_notes[2] == "Entered " .. wizlab_title,
+           "portal note persisted localized or incomplete text")
+    assert(captured_milestones[1].milestone
+               == "entered " .. trove_title .. "."
+           and captured_milestones[2].milestone
+               == "entered " .. wizlab_title .. ".",
+           "portal milestone persisted localized or incomplete text")
+
+    if language == "en" then
+        assert(string.find(rendered,
+                           "You've discovered " .. trove_title .. "!", 1, true)
+               and string.find(rendered,
+                               "Welcome to " .. wizlab_title .. "!", 1, true),
+               "English portal display changed")
+    else
+        local trove_zh = crawl.t_(trove_title)
+        local wizlab_zh = crawl.t_(wizlab_title)
+        assert(trove_zh ~= trove_title
+               and wizlab_zh ~= wizlab_title
+               and string.find(rendered, trove_zh, 1, true)
+               and string.find(rendered, wizlab_zh, 1, true),
+               "Chinese portal display omitted translated title")
+        assert(not string.find(rendered, trove_title, 1, true)
+               and not string.find(rendered, wizlab_title, 1, true),
+               "Chinese portal display leaked English title")
+    end
+    return rendered
+end
+local portal_milestone_en = portal_milestone_language("en")
+local stored_note_en = captured_notes[1]
+local stored_milestone_en = captured_milestones[1].milestone
+crawl.set_test_language("zh")
+assert(captured_notes[1] == stored_note_en
+       and captured_milestones[1].milestone == stored_milestone_en,
+       "language switch changed stored portal note or milestone")
+local portal_milestone_zh = portal_milestone_language("zh")
+
+-- Missing finite-title keys use T_()'s exact English fallback through the
+-- production milestone display path, while stored note/milestone payloads
+-- remain canonical English.
+local missing_portal_title = "Issue 28 missing portal title"
+captured_notes = {}
+captured_milestones = {}
+crawl.clear_message_store()
+trove_milestone(nil, missing_portal_title)
+crawl.redraw_view()
+local missing_portal_rendered = crawl.messages(5) or ""
+assert(crawl.t_(missing_portal_title) == missing_portal_title
+       and captured_notes[1] == "Entered " .. missing_portal_title
+       and captured_milestones[1].milestone
+           == "entered " .. missing_portal_title .. "."
+       and string.find(missing_portal_rendered,
+                       missing_portal_title, 1, true),
+       "missing portal title did not follow exact English fallback")
+
+crawl.take_note = original_take_note
+crawl.mark_milestone = original_mark_milestone
+emit("portal_milestone_boundary",
+     portal_milestone_en .. " || " .. portal_milestone_zh
+     .. " || fallback: " .. missing_portal_rendered)
+crawl.set_test_language("zh")
+
+if script_args[1] == "portal_distance" then
+    crawl.stderr(
+        "FRAME_MARKER: targeted_end | portal boundaries ok" .. eol)
+    return
+end
+
 -- Issue 68 S8: protocol accessors are covered by the RC fixture; exercise the
 -- paired production C++ display helpers here to prove they remain localized.
 local trap_display = crawl.test_trap_display_name("permanent teleport")
@@ -516,7 +769,7 @@ assert(not string.find(explorer_display, explorer_monster.type_name, 1, true),
        "explorer leaked canonical monster identity")
 
 -- Exercise the production monster_dies listener with the canonical full_name
--- exposed by DLua.  Registering the marker during a -test level requires an
+-- exposed by DLua. Registering the marker during a -test level requires an
 -- explicit activation, matching map_markers::activate_all on normal entry.
 crawl_require("dlua/lm_monst.lua")
 local death_spawn = monster_on_death {
@@ -622,7 +875,7 @@ emit("zot_boundary", table.concat(zot_evidence, ",")
      .. " || " .. zot_overview)
 crawl.set_zot_orb_monster("restore")
 
--- 3.  Capture level-up messages from you.set_xl(20) ------------------------
+-- 3. Capture level-up messages from you.set_xl(20) ------------------------
 -- Produces ~19 "你已达到 N 级！" messages through mprf via gain_exp →
 -- set_xl. These are all T_()-wrapped and provide a strong baseline
 -- verification that runtime mprf output includes Chinese text.
@@ -632,7 +885,7 @@ local msgs1 = crawl.messages(30) or ""
 emit("level_up", msgs1)
 crawl.clear_message_store()
 
--- 4.  Use case: crawl.god_speaks (synthetic mprf path) -------------------
+-- 4. Use case: crawl.god_speaks (synthetic mprf path) -------------------
 -- Sends raw text through god_speaks → mprf, exercising the message
 -- delivery path that Layer 1 Catch2 can't reach.
 crawl.god_speaks("Trog", "Trog bestows a gift upon you!")

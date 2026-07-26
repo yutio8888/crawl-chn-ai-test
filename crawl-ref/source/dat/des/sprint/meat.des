@@ -159,15 +159,15 @@
 
     if triggerer.type == "monster_dies" then
       crawl.more()
-      crawl.mpr("<red>" .. border_top .. "" ..
-      "--                    </red><lightred>You have destroyed The Meatlord.</lightred><red>                      --\n" ..
-      "" .. border_bottom .. "</red>")
+      crawl.mpr(string.format(crawl.t_(
+      "<red>%s--                    </red><lightred>You have destroyed The Meatlord.</lightred><red>                      --\n%s</red>"),
+      border_top, border_bottom))
       crawl.more()
-      crawl.mpr("<red>" .. border_top .. "" ..
-      "--                        </red><lightred>You will die a champion.</lightred><red>                          --\n" ..
-      "" .. border_bottom .. "</red>")
+      crawl.mpr(string.format(crawl.t_(
+      "<red>%s--                        </red><lightred>You will die a champion.</lightred><red>                          --\n%s</red>"),
+      border_top, border_bottom))
       crawl.more()
-      crawl.mpr("The Orb of Zot has appeared underneath you.", "orb")
+      crawl.mpr(crawl.t_("The Orb of Zot has appeared underneath you."), "orb")
       dgn.create_item(you_x, you_y, "orb of zot")
       crawl.more()
       return
@@ -179,11 +179,11 @@
 
     if triggerer.type == "monster_dies" then
       crawl.more()
-      crawl.mpr("<red>" .. border_top .. "" ..
-      "--                    </red><lightred>You have destroyed The Unspeakable.</lightred><red>                   --\n" ..
-      "" .. border_bottom .. "</red>")
+      crawl.mpr(string.format(crawl.t_(
+      "<red>%s--                    </red><lightred>You have destroyed The Unspeakable.</lightred><red>                   --\n%s</red>"),
+      border_top, border_bottom))
       crawl.more()
-      crawl.mpr("<lightgreen>The slimy rune of Zot has appeared underneath you.</lightgreen>")
+      crawl.mpr(crawl.t_("<lightgreen>The slimy rune of Zot has appeared underneath you.</lightgreen>"))
       dgn.create_item(you_x, you_y, "slimy rune of zot")
       return
     end
@@ -289,9 +289,9 @@
         end
           dgn.create_monster(m_x, m_y, meatlord)
           crawl.more()
-          crawl.mpr("<red>" .. border_top .. "" ..
-          "--                      </red><lightred>The Meatlord has descended...</lightred><red>                       --\n" ..
-          "" .. border_bottom .. "</red>")
+          crawl.mpr(string.format(crawl.t_(
+          "<red>%s--                      </red><lightred>The Meatlord has descended...</lightred><red>                       --\n%s</red>"),
+          border_top, border_bottom))
           crawl.more()
     elseif data.spawn_count == 300 then
       create_and_tele(33, 63, avatar)
@@ -363,7 +363,7 @@ NSUBST:    ' = 1:& / *:.
   lua_marker("&", spawn_marker)
 
   crawl.more()
-  crawl.mpr("<red>" ..
+  crawl.mpr(crawl.t_("<red>" ..
 -----11------------------------------------@@------------------------------------11
     "------------------------------------------------------------------------------\n" ..
     "------------------------------------------------------------------------------\n" ..
@@ -371,27 +371,27 @@ NSUBST:    ' = 1:& / *:.
     "--                            The Arena Of Blood                            --\n" ..
     "--                                                                          --\n" ..
     "--                                                                          --" ..
-    "</red>")
+    "</red>"))
   crawl.more()
-  crawl.mpr("<red>" ..
+  crawl.mpr(crawl.t_("<red>" ..
     "--                                                                          --\n" ..
     "--                You descend into the pit of gibs and meat,                --\n" ..
     "--                    The sunken abyss of the depraved,                     --\n" ..
     "--                       The mill of turgid gutspawn.                       --\n" ..
     "--                The writhen instruments serve in adoration,               --\n" ..
     "--                     Immured beneath a rotten throne.                     --" ..
-    "</red>")
+    "</red>"))
   crawl.more()
-  crawl.mpr("<red>" ..
+  crawl.mpr(crawl.t_("<red>" ..
     "--                                                                          --\n" ..
     "--                  Before you lies the servitor of chaos,                  --\n" ..
     "--                           The cleaver,                                   --\n" ..
     "--                             The blasphemer,                              --\n" ..
     "--                              The destroyer,                              --\n" ..
     "--                               The Axe of Woe.                            --" ..
-    "</red>")
+    "</red>"))
   crawl.more()
-  crawl.mpr("<red>" ..
+  crawl.mpr(crawl.t_("<red>" ..
     "--                                                                          --\n" ..
     "--                            Vessel of Makhleb,                            --\n" ..
     "--                           You are the unmaker,                           --\n" ..
@@ -401,7 +401,7 @@ NSUBST:    ' = 1:& / *:.
     "--                                                                          --\n" ..
     "------------------------------------------------------------------------------\n" ..
     "------------------------------------------------------------------------------" ..
-    "</red>")
+    "</red>"))
 
 }}
 KITEM:     + = ring of see invisible

@@ -32,7 +32,7 @@ function sewer_portal(e)
       finalmsg = "You hear the drain falling apart.",
 
       verb = 'rusting',
-      noisemaker = 'drain',
+      noisemaker = 'sewer drain',
       ranges = {
         { 5000, 'slow ' },  { 4000, '' },
         { 2500, 'brisk ' }, { 1500, 'quick ' },
@@ -44,7 +44,7 @@ function sewer_portal(e)
   e.lua_marker('O',
       timed_marker {
         disappear = "The drain falls to bits.",
-        entity = 'drain',
+        entity = 'sewer drain',
         turns = timeout_turns,
         single_timed = true,
         floor = "expired_portal",

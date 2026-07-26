@@ -13,7 +13,7 @@ A faded altar of an unknown god
 %%%%
 A glowing golden altar of the Shining One
 
-光明神的祭坛，由纯金制成，发出几近眩目的光芒。
+光辉者的祭坛，由最纯净的黄金制成，光辉几乎令人目眩。
 %%%%
 A broken altar of Ashenzari
 
@@ -53,8 +53,7 @@ A hazy altar of Hepliaklqana
 %%%%
 A candlelit altar of Ignis
 
-曳焰伊格尼斯的祭坛。上面摆满了各种形状和大小的蜡烛，
-但只有一根还亮着，它纤细的火焰在微风中摇曳。
+曳焰——将熄之火的祭坛。祭坛完全被形状、大小各异的蜡烛覆盖，但只有一根仍在燃烧；它纤细的火焰在最轻微的风中摇曳。
 %%%%
 A viscous altar of Jiyva
 
@@ -77,8 +76,7 @@ A burning altar of Makhleb
 %%%%
 A sparkling altar of Nemelex Xobeh
 
-这座祭坛上的灯光比任何一个赌场都要亮，
-尼姆雷斯・索布在靠这种手段来吸引信徒。
+这座祭坛上的灯光秀比任何赌场都更加耀眼，以此为尼姆雷斯·索布吸引信徒。
 %%%%
 An iron altar of Okawaru
 
@@ -105,9 +103,7 @@ A bloodstained altar of Trog
 %%%%
 A hide-covered altar of Uskayaw
 
-狂欢者阿斯卡亚的祭坛。
-它似乎是中空的，被一层皮覆盖着，形成了能够共振的表面。
-侧面的雕刻描绘着一群人，他们可能在跳舞、爱恋或战斗。
+狂欢者乌斯卡亚的祭坛。它似乎中空，表面覆有兽皮，因而能够产生共鸣。侧面的雕刻描绘着成群的人影，可能在舞蹈、相爱或战斗。
 %%%%
 A radiant altar of Vehumet
 
@@ -169,8 +165,8 @@ A toxic bog
 %%%%
 Some mud
 
-一层厚厚的含有沙砾的泥。
-<liquefied>
+一层厚厚的砂砾泥浆。
+[[liquefied]]
 %%%%
 The open sea
 
@@ -1251,11 +1247,6 @@ A mourning vase
 一朵被悲伤浸透的孤独之花，被陶瓷容器握持着。
 很难判断它是否还活着。
 %%%%
-A mutagenic drain
-
-一条通向沟壑峡谷的通道，正逐渐生锈。进入它将对你施加三种临时变异，
-如果你是亡灵则会使你腐烂。
-%%%%
 A mystic cage
 
 一个坚固的金属笼子，刻有神秘的魔法。它曾经关押的一切——
@@ -1267,11 +1258,6 @@ A nascence circuit
 一个闪耀的火花间隙，由难以理解地先进的技术的双电极组成。
 这些用于锻造和为奇术构造体供能，但尽管不断发出噼啪声，
 这个已经耗尽，除了无害地舞动着创造生命的喜悦外无法做得更多。
-%%%%
-A patch of mould
-
-一层厚厚的彩色霉菌地毯，沙沙作响着肥沃的生命力。
-从其中萌发的高耸真菌无论被砍倒多少次都可以在眨眼间重新生长。
 %%%%
 A phantasmal passage
 
@@ -1371,10 +1357,6 @@ An archmage's trap
 你将失去一定比例的魔力，而视野中最多三个最强的敌对施法者的法术将被增强。
 你的盟友会避免踩到它。
 %%%%
-An assortment of trash
-
-一堆散乱的碎裂、破碎的垃圾，覆盖着灰烬和泥土。
-%%%%
 An enigmatic dynamo
 
 一个无害而坚固的金属构造体，无论是能源还是用途都是神秘的。
@@ -1407,18 +1389,8 @@ The orb dais
 一个高高升起的基座，上面放着传说中的佐特之球。它甚至比地牢本身还要古老，
 无法以任何方式被摧毁或变形。
 %%%%
-a purified mutation catalyst
-
-一个实验性的奥术蒸馏器，正在酿造某种不完整——但已精炼的——变异血清。
-打破它将使你沐浴在神秘雾气中，赋予你一个有益的变异
-（不包括可能限制装备槽位的那些）。
-%%%%
 a skull pike
 
 骸骨在地牢中是常见的景象，但以伯劳鸟的方式展示被刺穿的头骨
 向侵入者传达了一个更刻意的信息：矛上还有空位再放一个头骨，
 而设置它的人很乐意帮助其原主人把脑袋移过来。
-%%%%
-an empty mutation catalyst
-
-一个复杂的奥术蒸馏器，已被撬开并完全倒空了内容物。

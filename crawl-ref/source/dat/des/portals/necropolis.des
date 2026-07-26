@@ -389,8 +389,8 @@ end
 -- Without this, using &~ on a fresh character will crash going here.
 function necropolis_wizmode_handling(e)
   if not dgn.persist.necropolis_difficulty then
-    crawl.mpr("<red>Going directly to Necropolis without placing an entry " ..
-              "vault is buggy. Placing a Depths / Crypt Necropolis.</red>")
+    crawl.mpr(crawl.t_("<red>Going directly to Necropolis without placing an entry " ..
+              "vault is buggy. Placing a Depths / Crypt Necropolis.</red>"))
     dgn.persist.necropolis_difficulty = "depths_crypt"
   end
 end

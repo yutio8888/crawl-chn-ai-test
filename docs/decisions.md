@@ -3447,6 +3447,117 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-044 — Arena → 竞技场
+
+- **Type**: A — Entity and terminology ruling
+- **Status**: active
+- **Date**: 2026-07-26
+- **Source**: Issue #28 当前分支、地下城特征与世界显示文本全量审阅
+- **Choice**: 竞技场
+- **Rejected**:
+  - 比武场（语义偏向武术比试，不能覆盖当前分支及场景的通用战斗场地）
+  - 角斗场（无依据地限定为角斗用途）
+- **Rationale**: 当前 `Arena` 同时出现在分支显示名、出入口特征和世界场景
+  文本中。“竞技场”能稳定覆盖这些玩家可见语境，不改变英文
+  `BRANCH_ARENA`、feature、DES、lookup 或持久化身份。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/branches.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/world-review-results.md`
+- **Resolved**: 2026-07-26
+
+---
+
+### D-A-045 — Gauntlet → 试炼场
+
+- **Type**: A — Entity and terminology ruling
+- **Status**: active
+- **Date**: 2026-07-26
+- **Source**: Issue #28 当前分支、地下城特征与世界显示文本全量审阅
+- **Choice**: 试炼场
+- **Rejected**:
+  - 挑战场（未充分表达连续关卡式试炼）
+  - 铁手套（误取普通名词义，完全不符分支机制）
+- **Rationale**: 当前 `Gauntlet` 是由连续选择与战斗组成的传送门分支，
+  “试炼场”既保留挑战含义，也适用于分支显示名、出入口特征和相关世界文本；
+  英文 `BRANCH_GAUNTLET`、feature、DES、lookup 与持久化身份保持不变。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/branches.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/world-review-results.md`
+- **Resolved**: 2026-07-26
+
+---
+
+### D-C-093 — Issue #28 地牢世界显示文本全量审阅
+
+- **Type**: C — Finite inventory translation review
+- **Status**: active
+- **Date**: 2026-07-26
+- **Inventory**: 最终 788 个唯一身份；inventory SHA-256
+  `98bf113173ab65ba614b960d827553aae31a5bc52c55e993706f686468ab1cb4`。
+  范围为 40 个分支、211 个地下城特征、14 个传送门家族及 523 个生产
+  `.des` 玩家显示槽。最初发现清单的 781 个身份及
+  `05dcadd34933fae5b5f62d892e3dbd29acbe5fdf0bac9647d6303809c911d96b`
+  已由最终身份纠错取代，不得作为最终覆盖数。上一 readiness 候选的同一
+  788 项成员集合及 inventory SHA-256
+  `34d8c6bbf8cdb440253fe49435ac7d719921ccad72aec91e506456d5e14d937c`
+  保留为审计历史。完整 composite adoption facts 候选
+  `3b49625119479dddeaa9aee96790bf2cc056e834fb781bca21b0daf774cd15d8`
+  因错误采用首个分隔符前的非生产 TextDB prefix 语义而被 code review
+  拒绝；绑定生产 TextDB prefix 语义的新 digest 才是最终结果。
+- **Identity correction**: 旧 516 个 `.des` 槽迁移为 496 个：
+  12 个 `initmsg` 拼接片段纠正为完整运行时备选项，另排除 8 个地图生成
+  坐标／诊断输出；old-only 20、new-only 0，显示 wrapper 前后集合差为 0。
+  Readiness 修复随后机械枚举 12 个 Trove 与 15 个 Wizlab 的有限生产标题，
+  将同一 761 项成员集合扩展为 788 项；added 27、removed 0。完整映射、
+  分类和逐项终态记录于 `docs/world-review-results.md`。
+- **Choice**: 玩家可见文本采用英文 exact SourceDB key 并在最终显示 sink
+  late translate；分支 shortname/abbrev、feature vaultname、DES
+  NAME/TAGS/KFEAT/MARKER、比较值、查找身份、协议与持久化值始终保持英文。
+- **Context collisions**: 污水道排水口、陵墓嘶声等共享英文片段不得覆盖全局
+  key；使用包含完整语境的最终英文句或模板，由后续实现连接。
+- **Implemented sinks**: 162 个静态直接显示调用与 21 个动态模板／参数路径在
+  最终显示处 late translate。`lm_tmsg.translate_key()` 的 `ranges`、`verb`
+  等独立词项使用 trimmed 英文 key；相邻 `initmsg` 字面量先组成完整英文
+  runtime key，再由 `lm_tmsg`／`lm_timed` 翻译，禁止登记带尾空格的物理片段。
+- **Finite title coverage**: 每个 `trove_milestone(_G, "literal")` 与
+  `wizlab_milestone(_G, "literal")` 的有限标题参数都具有独立 inventory
+  identity 和 exact SourceDB 中文；解析覆盖相邻字面量、Lua 转义及唯一性，
+  缺键、重复键或未枚举生产者均为审计失败。
+- **Dynamic titles and persistence**: Trove 与 Wizlab 的玩家显示模板及 title
+  参数分别 late translate；`crawl.take_note`、milestone、xlog 与存档载荷仍
+  保存 canonical English。协议负向扫描与 EN↔ZH／storage 定向测试证明中文
+  不进入比较、查找或持久化身份。
+- **Readiness translation corrections**: 污水道实体使用语境键
+  `sewer drain → 排水口`，不覆盖全局 `drain → 吸血`；传送门名称统一为
+  骨堂、堡垒、冰窟、盐之荒原、试炼场、死灵城；Geryon、Cerebov、
+  Mnoleg、Gloorx Vloq 采用词汇表拼写；Pandemonium lord 统一为
+  “万魔殿领主”，transporter 统一为“传送器”。
+- **Evidence binding**: scanner 从生产 inventory 生成并校验证据卡的
+  producer/consumer、触发与持久化边界、mechanics、tokens、事实来源及
+  adopted translation；伪造或过期的事实、译文、token 或 evidence
+  reference 均使 `coverage_equal` 为 false。
+- **Lifecycle boundary**: 已移除、兼容、内部与 dummy 身份保留证据卡，但不
+  虚构现役显示译文；仅在恢复生产行为或获得新的玩家显示 sink 后重新进入。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/branches.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+  - `docs/world-review-results.md`
+- **Resolved**: 2026-07-26
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -3494,6 +3605,8 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-041 | non-unique monster display names and quote exceptions | 术士 / 巨鳄龟 / 乱流 / 丧尸 | active ✅ |
 | D-A-042 | Dispersal | 空间驱离 | active ✅ |
 | D-A-043 | Mesmerise | 迷魂 | active ✅ |
+| D-A-044 | Arena | 竞技场 | active ✅ |
+| D-A-045 | Gauntlet | 试炼场 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
 | D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |
@@ -3580,3 +3693,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-090 | Spell name review — 独立批次 B2 | 30 current；2 renames + 10 description fixes | active |
 | D-C-091 | Spell name review — 独立终批 B3 | 16 active + 2 internal + 2 dummy + 31 axed；1 rename + 13 description fixes | active |
 | D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |
+| D-C-093 | Dungeon world display-text review | 788 identities；523 DES slots；20 corrections + 27 finite titles；production-bound evidence | active |
