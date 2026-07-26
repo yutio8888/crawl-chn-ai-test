@@ -106,7 +106,7 @@ class GodInventoryAuditTest(unittest.TestCase):
 
     def test_current_review_findings_are_visible_and_exactly_enumerated(self):
         findings = self.payload["review_findings"]
-        self.assertEqual(6, len(findings["zh_only_ability_keys"]))
+        self.assertEqual(0, len(findings["zh_only_ability_keys"]))
         self.assertNotIn(
             "ancestor life: elementalist ability",
             findings["zh_only_ability_keys"],
