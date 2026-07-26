@@ -222,8 +222,8 @@ def contextual_brand_forms(text):
     overrides = {}
     name_pattern = re.compile(
         r"if\s*\(\s*brand\s*==\s*(SPWPN_[A-Z0-9_]+)\s*\)\s*\{\s*"
-        r"return\s+terse\s*\?\s*C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)"
-        r"\s*:\s*C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;\s*\}",
+        r"return\s+terse\s*\?\s*C_\s*\(\"([^\"]+)\",\s*\"([^\"]+)\"\)"
+        r"\s*:\s*C_\s*\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;\s*\}",
         re.S,
     )
     for identity, terse_context, terse, verbose_context, verbose in (
@@ -237,14 +237,14 @@ def contextual_brand_forms(text):
         })
     adj_pattern = re.compile(
         r"if\s*\(\s*brand\s*==\s*(SPWPN_[A-Z0-9_]+)\s*\)\s*"
-        r"return\s+C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;"
+        r"return\s+C_\s*\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*;"
     )
     for identity, context, literal in adj_pattern.findall(adj_body):
         overrides.setdefault(identity, {})["adj"] = {
             "key": f"{context}|{literal}", "en": literal,
         }
     parsed = sum(len(forms) for forms in overrides.values())
-    expected = len(re.findall(r"\bC_\(", name_body + adj_body))
+    expected = len(re.findall(r"\bC_\s*\(", name_body + adj_body))
     if parsed != expected:
         raise RuntimeError(
             "unparsed contextual weapon-brand producer override"
@@ -257,7 +257,7 @@ def contextual_book_names(text):
     body = function_body(text, "sub_type_string")
     pattern = re.compile(
         r"sub_type\s*==\s*(BOOK_[A-Z0-9_]+)\s*\?\s*"
-        r"C_\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*"
+        r"C_\s*\(\"([^\"]+)\",\s*\"([^\"]+)\"\)\s*"
         r":\s*T_\(_book_type_name\(sub_type\)\)",
         re.S,
     )
@@ -268,7 +268,7 @@ def contextual_book_names(text):
         }
         for identity, context, literal in pattern.findall(body)
     }
-    if len(rows) != len(re.findall(r"\bC_\(", body)):
+    if len(rows) != len(re.findall(r"\bC_\s*\(", body)):
         raise RuntimeError("unparsed contextual book-name producer override")
     return rows
 

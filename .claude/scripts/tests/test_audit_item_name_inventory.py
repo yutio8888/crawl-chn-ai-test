@@ -134,6 +134,30 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         ):
             MODULE.contextual_book_names(broken_book)
 
+        spaced_brand = item_name.replace(
+            'return C_("weapon brand adjective",',
+            'return C_ ("weapon brand adjective",',
+            1,
+        )
+        self.assertEqual(
+            "weapon brand adjective|draining",
+            MODULE.contextual_brand_forms(spaced_brand)[
+                "SPWPN_DRAINING"
+            ]["adj"]["key"],
+        )
+
+        spaced_book = item_name.replace(
+            'C_("book full name", "Necromancy")',
+            'C_ ("book full name", "Necromancy")',
+            1,
+        )
+        self.assertEqual(
+            "book full name|Necromancy",
+            MODULE.contextual_book_names(spaced_book)[
+                "BOOK_NECROMANCY"
+            ]["key"],
+        )
+
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
             "identity": "weapon:WPN_TEST",
