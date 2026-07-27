@@ -26,7 +26,49 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SCRIPT_REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
+
+audit_root_error() {
+    echo "ERROR: $*" >&2
+    exit 2
+}
+
+if [[ -n "${ZH_VERIFY_AUDIT_ROOT+x}" ]]; then
+    [[ -n "$ZH_VERIFY_AUDIT_ROOT" ]] \
+        || audit_root_error "ZH_VERIFY_AUDIT_ROOT must not be empty"
+    [[ "$ZH_VERIFY_AUDIT_ROOT" = /* ]] \
+        || audit_root_error "ZH_VERIFY_AUDIT_ROOT must be an absolute path"
+    [[ -d "$ZH_VERIFY_AUDIT_ROOT" ]] \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT is not a directory: $ZH_VERIFY_AUDIT_ROOT"
+
+    REPO_ROOT=$(cd "$ZH_VERIFY_AUDIT_ROOT" && pwd -P) \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT cannot be resolved: $ZH_VERIFY_AUDIT_ROOT"
+    AUDIT_TOP=$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null) \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT is not inside a readable Git worktree: $REPO_ROOT"
+    AUDIT_TOP=$(cd "$AUDIT_TOP" && pwd -P) \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT Git top-level cannot be resolved: $AUDIT_TOP"
+    [[ "$AUDIT_TOP" == "$REPO_ROOT" ]] \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT must equal its real Git top-level: $REPO_ROOT != $AUDIT_TOP"
+
+    CALLER_CWD=$(pwd -P) \
+        || audit_root_error "current working directory cannot be resolved"
+    CALLER_TOP=$(git -C "$CALLER_CWD" rev-parse --show-toplevel 2>/dev/null) \
+        || audit_root_error \
+            "current working directory is not inside a readable Git worktree: $CALLER_CWD"
+    CALLER_TOP=$(cd "$CALLER_TOP" && pwd -P) \
+        || audit_root_error \
+            "current working directory Git top-level cannot be resolved: $CALLER_TOP"
+    [[ "$CALLER_TOP" == "$REPO_ROOT" ]] \
+        || audit_root_error \
+            "ZH_VERIFY_AUDIT_ROOT must equal the current working directory Git top-level: $REPO_ROOT != $CALLER_TOP"
+else
+    REPO_ROOT="$SCRIPT_REPO_ROOT"
+fi
 cd "$REPO_ROOT"
 
 SOURCEDIR="crawl-ref/source"
