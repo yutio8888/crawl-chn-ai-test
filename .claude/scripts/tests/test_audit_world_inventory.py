@@ -238,6 +238,8 @@ function boundary()
       "Entered %s", destination_title))
   crawl.take_note(util.i18n_format_or_english(
       runtime_format_key, destination_title))
+  crawl.take_note("English prefix " .. util.i18n_format_or_english(
+      "Entered %s", destination_title))
   crawl.take_note(string.format(crawl.t_("Found %s"), raw_name))
   crawl.mpr(string.format(crawl.t_("Welcome to %s!"), destination_title))
   crawl.mpr(string.format(crawl.t_("Found %s!"),
@@ -252,7 +254,8 @@ end
             "welcome to %s!": "欢迎来到%s！",
             "found %s!": "发现了%s！",
         })
-        note, dynamic_note, mixed_note, untranslated, translated = rows
+        (note, dynamic_note, prefixed_note, mixed_note,
+         untranslated, translated) = rows
         self.assertEqual("localized_display_snapshot",
                          note["persistence_snapshot"]["classification"])
         self.assertEqual("util.i18n_format_or_english",
@@ -264,6 +267,11 @@ end
             "localized note snapshot format key must be a static English "
             "literal",
             dynamic_note["unsupported"],
+        )
+        self.assertEqual(
+            "localized note snapshot helper must cover the complete note "
+            "expression",
+            prefixed_note["unsupported"],
         )
         self.assertIn("before storage",
                       mixed_note["protocol_boundary_issue"])
@@ -297,6 +305,10 @@ end
         )
         self.assertIn(
             dynamic_note["identity"],
+            violations["unresolved_or_unsupported_display_slots"],
+        )
+        self.assertIn(
+            prefixed_note["identity"],
             violations["unresolved_or_unsupported_display_slots"],
         )
 

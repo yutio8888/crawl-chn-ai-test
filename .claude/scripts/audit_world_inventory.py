@@ -866,8 +866,12 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
         selected_snapshot = (
             snapshot_wrappers[0] if len(snapshot_wrappers) == 1 else None
         )
+        snapshot_covers_argument = False
         if selected_snapshot is not None:
-            _, _, _, record = selected_snapshot
+            snapshot_start, snapshot_end, _, record = selected_snapshot
+            snapshot_covers_argument = (
+                snapshot_start == start and snapshot_end == end - 1
+            )
             record["expression"] = text[
                 tokens[start][2]:tokens[end - 1][2] + 1
             ].strip()
@@ -951,7 +955,15 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
                     "retranslation"
                 ),
             }
-            if untranslated_display_title_parameters:
+            if (
+                selected_snapshot is not None
+                and not snapshot_covers_argument
+            ):
+                record["unsupported"] = (
+                    "localized note snapshot helper must cover the complete "
+                    "note expression"
+                )
+            elif untranslated_display_title_parameters:
                 record["protocol_boundary_issue"] = (
                     "persistent note display title lacks translation before "
                     "storage: "
