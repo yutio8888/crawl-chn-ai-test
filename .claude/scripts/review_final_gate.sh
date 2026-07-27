@@ -32,7 +32,7 @@ TARGET_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || {
 BUNDLE_SCRIPT="$TARGET_ROOT/.claude/scripts/review_bundle.py"
 CLASSIFIER="$TARGET_ROOT/.claude/scripts/classify_reviewers.py"
 VERIFIER="$TARGET_ROOT/.claude/scripts/verify_zh.sh"
-CONTRACT="$TARGET_ROOT/.claude/scripts/data/review_verification_contract_v4.json"
+CONTRACT="$TARGET_ROOT/.claude/scripts/data/review_verification_contract_v5.json"
 
 CANDIDATE_BRANCH="$1"
 shift

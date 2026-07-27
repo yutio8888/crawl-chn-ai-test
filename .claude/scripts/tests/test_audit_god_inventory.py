@@ -2,6 +2,7 @@
 
 import copy
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -257,6 +258,9 @@ class GodInventoryAuditTest(unittest.TestCase):
 
     def test_review_coverage_requires_one_terminal_row_per_parent(self):
         payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
             "parents": [
                 {"identity": "GOD_TEST"},
                 {"identity": "GOD_OTHER"},
@@ -265,18 +269,18 @@ class GodInventoryAuditTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             path.write_text(
-                "| `GOD_TEST` | current | facts | 保留 |\n"
-                "| `GOD_OTHER` | current | facts | 修订 |\n",
+                MODULE.strict_review_block(
+                    payload, {"GOD_TEST": "keep", "GOD_OTHER": "adjust"}
+                ) + "\n",
                 encoding="utf-8",
             )
             self.assertTrue(MODULE.review_coverage(payload, path)[
                 "coverage_equal"
             ])
-            path.write_text(
-                "| `GOD_TEST` | current | facts | 保留 |\n"
-                "| `GOD_TEST` | current | facts | 保留 |\n",
-                encoding="utf-8",
-            )
+            lines = path.read_text(encoding="utf-8").splitlines()
+            path.write_text("\n".join([
+                *lines[:3], lines[4], lines[4], *lines[5:]
+            ]) + "\n", encoding="utf-8")
             coverage = MODULE.review_coverage(payload, path)
             self.assertFalse(coverage["coverage_equal"])
             self.assertEqual(["GOD_TEST"], coverage[
@@ -285,6 +289,78 @@ class GodInventoryAuditTest(unittest.TestCase):
             self.assertEqual(["GOD_OTHER"], coverage[
                 "missing_evidence_cards"
             ])
+
+    def test_strict_review_rejects_stale_bindings_fact_pending_and_extra(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
+            "parents": [
+                {"identity": "GOD_OTHER", "fact": "other"},
+                {"identity": "GOD_TEST", "fact": "test"},
+            ],
+        }
+        clean = MODULE.strict_review_block(
+            payload, {"GOD_OTHER": "keep", "GOD_TEST": "adjust"}
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_text(clean + "\n", encoding="utf-8")
+            self.assertTrue(MODULE.review_coverage(payload, path)[
+                "coverage_equal"
+            ])
+            lines = clean.splitlines()
+            mutations = {}
+            for field, value in (
+                ("baseline", "0" * 40),
+                ("glossary_sha256", "0" * 64),
+                ("inventory_sha256", "1" * 64),
+                ("identity_count", 3),
+            ):
+                changed = list(lines)
+                metadata = json.loads(changed[1])
+                metadata[field] = value
+                changed[1] = json.dumps(
+                    metadata, sort_keys=True, separators=(",", ":")
+                )
+                mutations[field] = changed
+            first = json.loads(lines[3])
+            mutations.update({
+                "fact": [
+                    *lines[:3],
+                    json.dumps(
+                        dict(first, fact_sha256="0" * 64),
+                        sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[4:],
+                ],
+                "pending": [
+                    *lines[:3],
+                    json.dumps(
+                        dict(first, terminal_conclusion="pending"),
+                        sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[4:],
+                ],
+                "missing": [*lines[:3], *lines[4:]],
+                "extra": [
+                    *lines[:5],
+                    json.dumps(
+                        dict(first, identity="GOD_EXTRA"),
+                        sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[5:],
+                ],
+                "reordered": [*lines[:3], lines[4], lines[3], *lines[5:]],
+            })
+            for name, changed in mutations.items():
+                with self.subTest(mutation=name):
+                    path.write_text(
+                        "\n".join(changed) + "\n", encoding="utf-8"
+                    )
+                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                        "coverage_equal"
+                    ])
 
 
 if __name__ == "__main__":

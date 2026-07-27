@@ -2,7 +2,10 @@
 
 import importlib.util
 import json
+import os
 import re
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -56,6 +59,38 @@ class WorldInventoryUnitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_all_ledger_auditors_reject_unsafe_bound_roots(self):
+        scripts = [
+            "audit_character_mechanics_inventory.py",
+            "audit_god_inventory.py",
+            "audit_species_background_inventory.py",
+            "audit_item_name_inventory.py",
+            "monster_name_ssot.py",
+            "audit_world_inventory.py",
+        ]
+        for configured, expected in (
+            ("relative-candidate", "must be an absolute path"),
+            (str(MODULE.ROOT.parent), "must equal its real Git top-level"),
+        ):
+            for name in scripts:
+                with self.subTest(root=configured, script=name):
+                    env = os.environ.copy()
+                    env["ZH_VERIFY_AUDIT_ROOT"] = configured
+                    proc = subprocess.run(
+                        [
+                            shutil.which("python3") or "python3",
+                            str(MODULE.SCRIPT_DIR / name),
+                            "--help",
+                        ],
+                        cwd=MODULE.ROOT,
+                        env=env,
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(2, proc.returncode, proc.stderr)
+                    self.assertIn(expected, proc.stderr)
 
     def write_des(self, text):
         directory = tempfile.TemporaryDirectory()

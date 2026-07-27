@@ -61,16 +61,61 @@ printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
 chmod +x "$REPO/.claude/scripts/check_agent_policies.py"
 printf '%s\n' \
     '#!/usr/bin/env python3' \
-    'import sys' \
+    'import os, sys' \
     'from pathlib import Path' \
     'observed = Path(".observed-item-inventory")' \
     'observed.write_text(observed.read_text() + "run\n" if observed.exists() else "run\n")' \
+    'roots = Path(".observed-audit-roots")' \
+    'entry = "item:" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
+    'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
     'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/audit_item_name_inventory.py"
 chmod +x "$REPO/.claude/scripts/audit_item_name_inventory.py"
+for auditor in \
+    audit_character_mechanics_inventory.py \
+    audit_god_inventory.py \
+    audit_species_background_inventory.py \
+    audit_world_inventory.py
+do
+    printf '%s\n' \
+        '#!/usr/bin/env python3' \
+        'import os, sys' \
+        'from pathlib import Path' \
+        'name = Path(sys.argv[0]).stem' \
+        'roots = Path(".observed-audit-roots")' \
+        'entry = name + ":" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
+        'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+        'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
+        'output.write_text("{}\n")' \
+        'raise SystemExit(0)' \
+        > "$REPO/.claude/scripts/$auditor"
+    chmod +x "$REPO/.claude/scripts/$auditor"
+done
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'import os, sys' \
+    'from pathlib import Path' \
+    'roots = Path(".observed-audit-roots")' \
+    'entry = "monster:" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
+    'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+    'output = Path(sys.argv[sys.argv.index("--inventory-output") + 1])' \
+    'output.write_text("{}\n")' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/monster_name_ssot.py"
+chmod +x "$REPO/.claude/scripts/monster_name_ssot.py"
 printf '%s\n' '# test glossary' > "$REPO/docs/glossary.md"
+for ledger in \
+    character-mechanics-review-results.md \
+    god-review-results.md \
+    item-extended-review-results.md \
+    monster-review-results.md \
+    species-background-review-results.md \
+    world-review-results.md
+do
+    printf '%s\n' '# fixture ledger' > "$REPO/docs/$ledger"
+done
 printf '%s\n' \
     '#!/bin/bash' \
     'echo "${GLOSSARY_DIFF_BASE-}" >> .observed-glossary-base' \
@@ -203,7 +248,7 @@ path, base, head, diff_hash, diff_sha256, glossary_sha, worktree = sys.argv[1:]
 with open(path, encoding="utf-8") as stream:
     data = json.load(stream)
 assert data["schema_version"] == 3
-assert data["verification_contract"] == "dcss-zh-review-v4"
+assert data["verification_contract"] == "dcss-zh-review-v5"
 assert data["status"] == "pass"
 assert data["profile"] == "review"
 assert data["scope"] == "full"
@@ -221,13 +266,19 @@ assert data["runtime_mode"] == "catch2"
 assert data["run_id"] == os.path.basename(os.path.dirname(path))
 assert [phase["id"] for phase in data["phases"]] == [
     "policy-sync", "source-db-static", "review-static",
-    "message-overlay-static", "zh-runtime-catch2",
+    "review-ledgers", "message-overlay-static", "zh-runtime-catch2",
 ]
 assert all(phase["status"] == "pass" for phase in data["phases"])
-assert data["artifacts"][0]["path"] == "verify.log"
-assert data["artifacts"][0]["size"] > 0
-assert data["artifacts"][1]["path"] == "item-name-inventory.json"
-assert data["artifacts"][1]["size"] > 0
+assert [artifact["path"] for artifact in data["artifacts"]] == [
+    "verify.log",
+    "character-mechanics-inventory.json",
+    "god-inventory.json",
+    "item-name-inventory.json",
+    "monster-name-inventory.json",
+    "species-background-inventory.json",
+    "world-inventory.json",
+]
+assert all(artifact["size"] > 0 for artifact in data["artifacts"])
 PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
 assert_contains "bound run exports glossary comparison base" \
@@ -236,8 +287,14 @@ EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
 assert_status "review profile runs i18n_extract once through source-db-static" \
     1 "$EXTRACT_COUNT"
 ITEM_INVENTORY_COUNT=$(wc -l < "$REPO/.observed-item-inventory")
-assert_status "review profile runs item inventory once through source-db-static" \
-    1 "$ITEM_INVENTORY_COUNT"
+assert_status "review profile runs item inventory in source and ledger phases" \
+    2 "$ITEM_INVENTORY_COUNT"
+EXPECTED_AUDIT_ROOT=$(cd "$REPO" && pwd -P)
+if grep -Fv ":$EXPECTED_AUDIT_ROOT" "$REPO/.observed-audit-roots" | grep -q .; then
+    fail "bound verifier did not override every ledger auditor root"
+else
+    pass "bound verifier overrides every ledger auditor root with candidate top-level"
+fi
 if [[ -f "$RUN_DIR/item-name-inventory.json" ]]; then
     pass "source-db-static preserves item inventory evidence"
 else
@@ -384,20 +441,77 @@ PY
     rm "$ordinary"
 done
 
-python3 - "$SCRIPT_DIR/../data/review_verification_contract_v4.json" <<'PY'
+echo "--- target-code candidate-data ledger isolation ---"
+TRUSTED_SCRIPTS="$TMP_ROOT/trusted-scripts"
+cp -R "$REPO/.claude/scripts" "$TRUSTED_SCRIPTS"
+cp "$VERIFY_SOURCE" "$TRUSTED_SCRIPTS/verify_zh.sh"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'import os, sys' \
+    'from pathlib import Path' \
+    'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
+    'output.write_text("{}\n")' \
+    'root = os.environ.get("ZH_VERIFY_AUDIT_ROOT")' \
+    'if root != str(Path.cwd().resolve()):' \
+    '    raise SystemExit(9)' \
+    'if "MUTATED_CARD" in Path("docs/world-review-results.md").read_text():' \
+    '    raise SystemExit(7)' \
+    'raise SystemExit(0)' \
+    > "$TRUSTED_SCRIPTS/audit_world_inventory.py"
+chmod +x "$TRUSTED_SCRIPTS/audit_world_inventory.py"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'from pathlib import Path' \
+    'Path(".candidate-auditor-ran").write_text("unsafe\n")' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/audit_world_inventory.py"
+printf '%s\n' 'MUTATED_CARD' >> "$REPO/docs/world-review-results.md"
+rm -f "$REPO"/.observed-* "$REPO"/.phase-rc
+git -C "$REPO" add \
+    .claude/scripts/audit_world_inventory.py \
+    docs/world-review-results.md
+git -C "$REPO" commit -qm "mutate candidate ledger and auditor"
+MUTATION_HEAD=$(git -C "$REPO" rev-parse HEAD)
+set +e
+(
+    cd "$REPO"
+    bash "$TRUSTED_SCRIPTS/verify_zh.sh" --profile review \
+        --base "$HEAD_SHA" --head "$MUTATION_HEAD"
+) > "$TMP_ROOT/candidate-ledger-mutation.out" 2>&1
+RC=$?
+set -e
+assert_status "candidate ledger mutation fails trusted review-ledgers" 1 "$RC"
+ISOLATION_RUN_DIR=$(latest_run_dir)
+assert_contains "review-ledgers reports the trusted auditor failure" \
+    "RESULT: FAIL (exit 7)" "$ISOLATION_RUN_DIR/verify.log"
+if [[ -e "$REPO/.candidate-auditor-ran" ]]; then
+    fail "candidate auditor was executed by the trusted verifier"
+else
+    pass "candidate auditor is never executed by the trusted verifier"
+fi
+
+python3 - "$SCRIPT_DIR/../data/review_verification_contract_v5.json" <<'PY'
 import json
 import sys
 
 with open(sys.argv[1], encoding="utf-8") as stream:
     contract = json.load(stream)
-assert contract["verification_contract"] == "dcss-zh-review-v4"
-assert ".claude/scripts/data/review_findings_v1.schema.json" in contract["control_plane_files"]
+assert contract["verification_contract"] == "dcss-zh-review-v5"
+assert ".claude/scripts/data/review_findings_v2.schema.json" in contract["control_plane_files"]
 assert ".claude/scripts/audit_item_name_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/tests/test_audit_item_name_inventory.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
-    "message-overlay-static", "cpp-build", "zh-smoke",
+    "review-ledgers", "message-overlay-static", "cpp-build", "zh-smoke",
     "zh-runtime-catch2",
+]
+assert contract["required_artifacts"] == [
+    "character-mechanics-inventory.json",
+    "god-inventory.json",
+    "item-name-inventory.json",
+    "monster-name-inventory.json",
+    "species-background-inventory.json",
+    "world-inventory.json",
 ]
 PY
 assert_status "trusted final contract matches the frozen phase plan" 0 "$?"

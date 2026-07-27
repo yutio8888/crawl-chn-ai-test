@@ -16,10 +16,18 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "crawl-ref/source"
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
+from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
+
+SRC = ROOT / "crawl-ref/source"
 
 from audit_god_inventory import ordered_initializer_rows  # noqa: E402
 from audit_item_name_inventory import (  # noqa: E402

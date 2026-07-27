@@ -69,6 +69,26 @@ class ReviewerRoutingTests(unittest.TestCase):
             "code", ["zh-code-reviewer"],
         )
 
+    def test_root_review_result_ledgers_route_both_reviewers_only(self):
+        ledgers = sorted(REPO.glob("docs/*-review-results.md"))
+        self.assertEqual(7, len(ledgers))
+        for path in ledgers:
+            with self.subTest(path=path.name):
+                self.assert_route(
+                    [path.relative_to(REPO).as_posix()],
+                    "mixed",
+                    ["zh-code-reviewer", "translation-reviewer"],
+                )
+        for path in (
+            "docs/nested/character-review-results.md",
+            "docs/character-review-results.md.bak",
+            "docs/review-plan.md",
+            "docs/review-note.md",
+        ):
+            with self.subTest(nonmatch=path):
+                category, _reason = MODULE.classify_file(path)
+                self.assertNotEqual("mixed", category)
+
     def test_explicit_absolute_and_parent_paths_fail_closed(self):
         for path in ("/tmp/source.txt", "../source.txt", "docs/../CLAUDE.md", "C:/repo/file.cc"):
             with self.subTest(path=path):
@@ -126,12 +146,12 @@ class ReviewerRoutingTests(unittest.TestCase):
             self.assertIn("review_prepare.sh", text, name)
             self.assertIn("review_boundary_arguments_required", text, name)
             self.assertIn("const REVIEW_ROUTING = reviewBoundary.routing", text, name)
-            self.assertIn("REVIEW_ROUTING?.schema_version !== 1", text, name)
+            self.assertIn("REVIEW_ROUTING?.schema_version !== 2", text, name)
             self.assertIn("JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)", text, name)
             self.assertIn("routedReviewers.includes('zh-code-reviewer')", text, name)
             self.assertIn("routedReviewers.includes('translation-reviewer')", text, name)
             self.assertIn("reviewJobs.length ? await parallel(reviewJobs) : []", text, name)
-            self.assertIn("review-contract-v4", text, name)
+            self.assertIn("review-contract-v5", text, name)
             self.assertIn("Ready for Final Gate", text, name)
             self.assertIn("persist-review-readiness", text, name)
             self.assertIn("run-single-final-gate", text, name)
@@ -160,7 +180,7 @@ class ReviewerRoutingTests(unittest.TestCase):
         self.assertIn("只对\n`reviewers`", skill)
 
     def test_forged_routing_payload_is_rejected_by_workflow_contract(self):
-        forged = {"schema_version": 1, "classification": "code", "reviewers": []}
+        forged = {"schema_version": 2, "classification": "code", "reviewers": []}
         expected = {
             "none": [],
             "code": ["zh-code-reviewer"],
@@ -181,7 +201,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             cwd=REPO, text=True, capture_output=True, check=True,
         )
         output = proc.stdout
-        self.assertIn("review-contract-v4", output)
+        self.assertIn("review-contract-v5", output)
         self.assertIn("**Blocker**", output)
         self.assertIn("**Needs Fix**", output)
         self.assertIn("**Suggestion**", output)

@@ -110,14 +110,13 @@ class ReviewAtMergeTests(unittest.TestCase):
                 result[relative] = ("file", item.read_bytes())
         return result
 
-    def test_unrouted_change_is_mergeable_without_writing_evidence(self) -> None:
-        head = self.commit_candidate("notes/review-note.txt", "documentation only\n")
+    def test_unrouted_change_still_requires_final_evidence(self) -> None:
+        self.commit_candidate("notes/review-note.txt", "documentation only\n")
         evidence = self.repo / ".git/zh-review-evidence"
         self.assertFalse(evidence.exists())
         proc = self.run_gate()
-        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn('"state":"MERGEABLE"', proc.stdout)
-        self.assertIn(f"Approved candidate OID: {head}", proc.stdout)
+        self.assertEqual(proc.returncode, 11, proc.stdout + proc.stderr)
+        self.assertIn('"state":"FINAL_GATE_REQUIRED"', proc.stdout)
         self.assertFalse(evidence.exists(), "read-only gate created evidence")
 
     def test_routed_change_without_bundle_requires_final_gate_read_only(self) -> None:
@@ -167,10 +166,10 @@ class ReviewAtMergeTests(unittest.TestCase):
         self.assertFalse((self.repo / ".git/zh-review-evidence").exists())
 
     def test_gate_scrubs_path_and_git_repository_overrides(self) -> None:
-        head = self.commit_candidate("notes/environment-test.txt", "safe\n")
+        self.commit_candidate("notes/environment-test.txt", "safe\n")
         proc = self.run_gate(PATH="/tmp/unsafe-path", GIT_DIR="/tmp/not-the-repo")
-        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn(f"Approved candidate OID: {head}", proc.stdout)
+        self.assertEqual(proc.returncode, 11, proc.stdout + proc.stderr)
+        self.assertIn('"state":"FINAL_GATE_REQUIRED"', proc.stdout)
 
     def test_merge_gate_contains_no_verification_invocation(self) -> None:
         text = (SOURCE_ROOT / ".claude/scripts/review_at_merge.sh").read_text(
@@ -182,12 +181,17 @@ class ReviewAtMergeTests(unittest.TestCase):
     def test_repository_contract_matches_bundle_core(self) -> None:
         contract_path = (
             SOURCE_ROOT
-            / ".claude/scripts/data/review_verification_contract_v4.json"
+            / ".claude/scripts/data/review_verification_contract_v5.json"
         )
         contract = MODULE._parse_contract(contract_path.read_bytes())
         self.assertIn(MODULE.TRUSTED_CLASSIFIER_PATH, contract["control_plane_files"])
         self.assertIn(".claude/scripts/verify_zh.sh", contract["control_plane_files"])
         self.assertIn(".claude/scripts/review_prepare.sh", contract["control_plane_files"])
+        self.assertIn(
+            "review-ledgers",
+            [phase["id"] for phase in contract["phase_plan"]],
+        )
+        self.assertEqual(6, len(contract["required_artifacts"]))
         self.assertEqual(
             [phase["id"] for phase in contract["phase_plan"]][-1],
             "zh-runtime-catch2",

@@ -65,11 +65,12 @@ UNSAFE_CHILD_ENV_EXACT = frozenset(
 )
 
 BUNDLE_SCHEMA = "dcss-zh-review-bundle-v4"
-READINESS_SCHEMA = "dcss-zh-review-readiness-v2"
-FINDINGS_INPUT_SCHEMA = "dcss-zh-review-findings-v1"
-VERIFICATION_CONTRACT = "dcss-zh-review-v4"
+READINESS_SCHEMA = "dcss-zh-review-readiness-v3"
+FINDINGS_INPUT_SCHEMA = "dcss-zh-review-findings-v2"
+VERIFICATION_CONTRACT = "dcss-zh-review-v5"
 LEGACY_BUNDLE_SCHEMA = "dcss-zh-review-bundle-v3"
 LEGACY_READINESS_SCHEMA = "dcss-zh-review-readiness-v1"
+LEGACY_V4_READINESS_SCHEMA = "dcss-zh-review-readiness-v2"
 ATTEMPT_COMPLETION_SCHEMA = "dcss-zh-final-attempt-v1"
 FINAL_APPROVAL_SCHEMA = "dcss-zh-final-approval-v1"
 RUNNING_SCHEMA = "dcss-zh-final-running-v1"
@@ -92,13 +93,20 @@ READINESS_FIELDS = frozenset(
         "bundle_sha256",
         "routing_sha256",
         "reviewer",
+        "reviewed_scope",
         "findings",
         "ready",
     )
 )
+LEGACY_V4_READINESS_FIELDS = frozenset(
+    field for field in READINESS_FIELDS if field != "reviewed_scope"
+)
 LEGACY_FINDING_FIELDS = frozenset(("blocker", "needs_fix", "suggestion"))
 FINDINGS_INPUT_FIELDS = frozenset(
-    ("schema", "bundle_id", "bundle_sha256", "routing_sha256", "reviewer", "findings")
+    (
+        "schema", "bundle_id", "bundle_sha256", "routing_sha256",
+        "reviewer", "reviewed_scope", "findings",
+    )
 )
 FINDING_FIELDS = frozenset(("id", "severity", "file", "line", "evidence", "impact", "fix"))
 TRANSLATION_FINDING_FIELDS = frozenset((*FINDING_FIELDS, "english", "chinese"))
@@ -729,11 +737,47 @@ def _validate_sha256(value: str, label: str) -> str:
     return value
 
 
+def _validate_reviewed_scope(value: Any, expected: list[str], label: str) -> list[str]:
+    if not isinstance(value, list):
+        raise ReviewBundleError(f"{label} must be a list")
+    normalized = []
+    for index, path in enumerate(value):
+        if not isinstance(path, str) or "\\" in path:
+            raise ReviewBundleError(f"{label}[{index}] must be a POSIX relative path")
+        normalized.append(_safe_relative_path(path, f"{label}[{index}]"))
+    if len(normalized) != len(set(normalized)):
+        raise ReviewBundleError(f"{label} contains duplicate paths")
+    if normalized != expected:
+        raise ReviewBundleError(f"{label} must exactly equal routing.files")
+    return normalized
+
+
+def _route_from_categories(categories: list[str]) -> tuple[str, list[str]]:
+    has_code = any(category in ("code", "mixed") for category in categories)
+    has_translation = any(
+        category in ("translation", "mixed") for category in categories
+    )
+    if has_code and has_translation:
+        return "mixed", ["zh-code-reviewer", "translation-reviewer"]
+    if has_code:
+        return "code", ["zh-code-reviewer"]
+    if has_translation:
+        return "translation", ["translation-reviewer"]
+    return "none", []
+
+
 def _validate_routing(routing: Any, target_head: str, candidate_head: str) -> list[str]:
     if not isinstance(routing, dict):
         raise ReviewBundleError("classifier output must be a JSON object")
+    schema_version = routing.get("schema_version")
+    if schema_version not in (1, 2):
+        raise ReviewBundleError("unsupported routing schema_version")
     source = routing.get("source")
-    if not isinstance(source, dict) or source.get("type") != "git":
+    if (
+        not isinstance(source, dict)
+        or frozenset(source) != frozenset(("type", "base", "head"))
+        or source.get("type") != "git"
+    ):
         raise ReviewBundleError("routing must identify its immutable git source")
     if source.get("base") != target_head or source.get("head") != candidate_head:
         raise ReviewBundleError("routing source is not bound to the exact target/candidate heads")
@@ -747,6 +791,67 @@ def _validate_routing(routing: Any, target_head: str, candidate_head: str) -> li
         if role in result:
             raise ReviewBundleError(f"duplicate reviewer role in routing: {role}")
         result.append(role)
+    if schema_version == 1:
+        return result
+
+    expected_fields = {
+        "schema_version", "classification", "reviewers", "files",
+        "classified_files", "source",
+    }
+    if frozenset(routing) != frozenset(expected_fields):
+        raise ReviewBundleError("routing v2 top-level fields are invalid")
+    files = routing.get("files")
+    if not isinstance(files, list):
+        raise ReviewBundleError("routing.files must be a list")
+    normalized = []
+    for index, path in enumerate(files):
+        if not isinstance(path, str) or "\\" in path:
+            raise ReviewBundleError(
+                f"routing.files[{index}] must be a POSIX relative path"
+            )
+        normalized.append(_safe_relative_path(path, f"routing.files[{index}]"))
+    if normalized != sorted(set(normalized)):
+        raise ReviewBundleError(
+            "routing.files must be normalized, sorted, and unique"
+        )
+    classified = routing.get("classified_files")
+    if not isinstance(classified, list) or len(classified) != len(normalized):
+        raise ReviewBundleError(
+            "routing.classified_files must correspond one-to-one with files"
+        )
+    categories = []
+    for index, item in enumerate(classified):
+        if not isinstance(item, dict) or frozenset(item) != frozenset(
+            ("path", "category", "reason")
+        ):
+            raise ReviewBundleError(
+                f"routing.classified_files[{index}] fields are invalid"
+            )
+        if item.get("path") != normalized[index]:
+            raise ReviewBundleError(
+                "routing.classified_files paths must exactly match routing.files"
+            )
+        category = item.get("category")
+        if category not in ("ignored", "code", "translation", "mixed"):
+            raise ReviewBundleError(
+                f"routing.classified_files[{index}].category is invalid"
+            )
+        if not isinstance(item.get("reason"), str) or not item["reason"]:
+            raise ReviewBundleError(
+                f"routing.classified_files[{index}].reason is invalid"
+            )
+        categories.append(category)
+    expected_classification, expected_reviewers = _route_from_categories(
+        categories
+    )
+    if routing.get("classification") != expected_classification:
+        raise ReviewBundleError(
+            "routing.classification cannot be recomputed from file categories"
+        )
+    if result != expected_reviewers:
+        raise ReviewBundleError(
+            "routing.reviewers cannot be recomputed from file categories"
+        )
     return result
 
 
@@ -1094,6 +1199,7 @@ def _load_findings_input(
     bundle_id: str,
     bundle_sha256: str,
     routing_sha256: str,
+    routing_files: list[str],
 ) -> list[dict[str, Any]]:
     input_path = Path(path)
     info = _require_regular_file(input_path, "findings JSON")
@@ -1124,6 +1230,11 @@ def _load_findings_input(
     for field, expected_value in expected.items():
         if value.get(field) != expected_value:
             raise ReviewBundleError(f"findings JSON {field} binding failed")
+    _validate_reviewed_scope(
+        value.get("reviewed_scope"),
+        routing_files,
+        "findings JSON reviewed_scope",
+    )
     return _validate_findings(value.get("findings"), reviewer)
 
 
@@ -1132,19 +1243,29 @@ def _parse_contract(data: bytes, label: str = "final-gate contract") -> dict[str
         contract = json.loads(data.decode("utf-8", errors="strict"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ReviewBundleError(f"{label} is not valid UTF-8 JSON: {exc}") from exc
-    required_fields = {
+    legacy_fields = {
         "schema",
         "verification_contract",
         "control_plane_files",
         "phase_plan",
     }
-    if not isinstance(contract, dict) or frozenset(contract) != frozenset(required_fields):
+    current_fields = legacy_fields | {"required_artifacts"}
+    if not isinstance(contract, dict) or frozenset(contract) not in (
+        frozenset(legacy_fields),
+        frozenset(current_fields),
+    ):
         raise ReviewBundleError(f"{label} fields do not match the trusted schema")
     if contract.get("schema") != CONTRACT_SCHEMA:
         raise ReviewBundleError(f"unsupported {label} schema")
     verification_contract = contract.get("verification_contract")
     if not isinstance(verification_contract, str) or not verification_contract:
         raise ReviewBundleError("verification_contract must be a non-empty string")
+    if "required_artifacts" not in contract:
+        if verification_contract != "dcss-zh-review-v4":
+            raise ReviewBundleError(
+                "current final-gate contract is missing required_artifacts"
+            )
+        contract["required_artifacts"] = []
     files = contract.get("control_plane_files")
     if not isinstance(files, list) or not files:
         raise ReviewBundleError("control_plane_files must be a non-empty list")
@@ -1153,6 +1274,15 @@ def _parse_contract(data: bytes, label: str = "final-gate contract") -> dict[str
     ]
     if normalized_files != sorted(set(normalized_files)):
         raise ReviewBundleError("control_plane_files must be sorted and unique")
+    required_artifacts = contract.get("required_artifacts")
+    if not isinstance(required_artifacts, list):
+        raise ReviewBundleError("required_artifacts must be a list")
+    normalized_artifacts = [
+        _safe_relative_path(path, "required_artifacts entry")
+        for path in required_artifacts
+    ]
+    if normalized_artifacts != sorted(set(normalized_artifacts)):
+        raise ReviewBundleError("required_artifacts must be sorted and unique")
     phases = contract.get("phase_plan")
     if not isinstance(phases, list) or not phases:
         raise ReviewBundleError("phase_plan must be a non-empty list")
@@ -1394,7 +1524,17 @@ def _validate_metadata(
         phase["status"] == "fail" for phase in phases
     ):
         raise ReviewBundleError("pass metadata contains a failed phase")
-    _artifact_paths(metadata, attempt_path)
+    artifact_paths = _artifact_paths(metadata, attempt_path)
+    if status_value != "interrupted":
+        missing_artifacts = sorted(
+            set(contract_info["contract"]["required_artifacts"])
+            - set(artifact_paths)
+        )
+        if missing_artifacts:
+            raise ReviewBundleError(
+                "verification metadata is missing required artifacts: "
+                + ", ".join(missing_artifacts)
+            )
 
 
 def _attempt_digest(path: Path) -> str:
@@ -1785,8 +1925,8 @@ def _validate_bundle_locked(
     schema = manifest.get("schema")
     if schema not in (BUNDLE_SCHEMA, LEGACY_BUNDLE_SCHEMA):
         raise ReviewBundleError("unsupported review bundle schema")
-    legacy = schema == LEGACY_BUNDLE_SCHEMA
-    expected_root_parts = LEGACY_EVIDENCE_PARTS if legacy else EVIDENCE_PARTS
+    schema_v3 = schema == LEGACY_BUNDLE_SCHEMA
+    expected_root_parts = LEGACY_EVIDENCE_PARTS if schema_v3 else EVIDENCE_PARTS
     expected_root = Path(
         os.path.realpath(git_common_dir(repo).joinpath(*expected_root_parts))
     )
@@ -1813,6 +1953,8 @@ def _validate_bundle_locked(
         raise ReviewBundleError("bundle directory id does not match its identity fields")
     routing, routing_bytes = _load_canonical_object(bundle_path / "routing.json")
     reviewers = _validate_routing(routing, target_head, candidate_head)
+    routing_v1 = routing.get("schema_version") == 1
+    legacy = schema_v3 or routing_v1
     if sha256_bytes(routing_bytes) != manifest["routing_sha256"]:
         raise ReviewBundleError("routing_sha256 does not match routing.json")
     trusted_routing = generate_routing_from_target(
@@ -1845,10 +1987,19 @@ def _validate_bundle_locked(
                 if reviewer is None:
                     raise UnsafeObjectError(f"unexpected readiness object: {entry.path}")
                 record, record_bytes = _load_canonical_object(Path(entry.path))
-                if frozenset(record) != READINESS_FIELDS:
+                expected_readiness_fields = (
+                    LEGACY_V4_READINESS_FIELDS if legacy else READINESS_FIELDS
+                )
+                if frozenset(record) != expected_readiness_fields:
                     raise ReviewBundleError(f"invalid readiness fields for {reviewer}")
                 expected_readiness_schema = (
-                    LEGACY_READINESS_SCHEMA if legacy else READINESS_SCHEMA
+                    LEGACY_READINESS_SCHEMA
+                    if schema_v3
+                    else (
+                        LEGACY_V4_READINESS_SCHEMA
+                        if routing_v1
+                        else READINESS_SCHEMA
+                    )
                 )
                 if record.get("schema") != expected_readiness_schema:
                     raise ReviewBundleError(f"invalid readiness schema for {reviewer}")
@@ -1861,7 +2012,7 @@ def _validate_bundle_locked(
                 if record.get("reviewer") != reviewer:
                     raise ReviewBundleError(f"readiness reviewer binding failed for {reviewer}")
                 findings = record.get("findings")
-                if legacy:
+                if schema_v3:
                     if not isinstance(findings, dict) or frozenset(findings) != LEGACY_FINDING_FIELDS:
                         raise ReviewBundleError(f"invalid legacy readiness findings for {reviewer}")
                     blocker = _validate_count(findings.get("blocker"), "findings.blocker")
@@ -1879,6 +2030,12 @@ def _validate_bundle_locked(
                     )
                     suggestion = sum(
                         finding["severity"] == "suggestion" for finding in validated_findings
+                    )
+                if not legacy:
+                    _validate_reviewed_scope(
+                        record.get("reviewed_scope"),
+                        routing["files"],
+                        f"readiness reviewed_scope for {reviewer}",
                     )
                 expected_ready = blocker == 0 and needs_fix == 0
                 if record.get("ready") is not expected_ready:
@@ -1931,6 +2088,7 @@ def _validate_bundle_locked(
         "diff_sha256": manifest["diff_sha256"],
         "glossary_sha256": manifest["glossary_sha256"],
         "routing_sha256": manifest["routing_sha256"],
+        "routing_files": list(routing.get("files", [])),
         "required_reviewers": reviewers,
         "ready_reviewers": ready_reviewers,
         "missing_reviewers": missing_reviewers,
@@ -2034,7 +2192,7 @@ def record_readiness(
     with bundle_lock(path):
         status = _validate_bundle_locked(repo, path, check_clean=True)
         if status.get("legacy_read_only"):
-            raise ReviewBundleError("schema-v3 bundles are historical read-only evidence")
+            raise ReviewBundleError("legacy bundles are historical read-only evidence")
         if reviewer not in status["required_reviewers"]:
             raise ReviewBundleError(f"reviewer role is not required by routing: {reviewer}")
         findings = _load_findings_input(
@@ -2043,6 +2201,7 @@ def record_readiness(
             bundle_id=status["bundle_id"],
             bundle_sha256=status["bundle_sha256"],
             routing_sha256=status["routing_sha256"],
+            routing_files=status["routing_files"],
         )
         readiness_dir = _ensure_child_directory(path, "readiness")
         record = {
@@ -2051,6 +2210,7 @@ def record_readiness(
             "bundle_sha256": status["bundle_sha256"],
             "routing_sha256": status["routing_sha256"],
             "reviewer": reviewer,
+            "reviewed_scope": status["routing_files"],
             "findings": findings,
             "ready": not any(
                 finding["severity"] in ("blocker", "needs_fix")
@@ -2456,7 +2616,7 @@ def run_final(
             _recover_stale_locked(bundle_path, bundle_path.name)
             status = _validate_bundle_locked(repo, bundle_path, check_clean=True)
         if status.get("legacy_read_only"):
-            raise ReviewBundleError("schema-v3 bundles cannot create new merge authorization")
+            raise ReviewBundleError("legacy bundles cannot create new merge authorization")
         if not status["ready"]:
             return status
         if status["exit_code"] == FINAL_GATE_RUNNING:
@@ -2568,7 +2728,7 @@ def final_gate(
     with bundle_lock(path, exclusive=True):
         status = _validate_bundle_locked(repo, path, check_clean=True)
         if status.get("legacy_read_only"):
-            raise ReviewBundleError("schema-v3 bundles cannot authorize final actions")
+            raise ReviewBundleError("legacy bundles cannot authorize final actions")
         if require_ready and not status["ready"]:
             raise ReviewBundleError("bundle is valid but not ready for final approval")
         yield status

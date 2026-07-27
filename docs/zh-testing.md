@@ -98,8 +98,17 @@ checks, compilation, runtime tests, readiness binding, or evidence sealing.
 
 Reviewers never run `verify_zh.sh --profile review` themselves. The complete
 security contract is `.agents/policies/review-contract.md`. New authorization
-uses schema-v4 bundles with schema-v2 atomic readiness; schema-v3 bundles are
-historical read-only evidence.
+uses schema-v4 bundles with routing-v2, findings-v2, schema-v3 atomic
+readiness, and verification-v5. Routing-v1/readiness-v2 objects in the v4
+directory and schema-v3 bundles are historical read-only evidence and never
+authorize merge.
+
+The review profile includes a required, independent `review-ledgers` phase.
+It executes the target checkout's trusted character, god, item, monster,
+species/background, and world auditors against the validated candidate root.
+Each resulting inventory JSON is an individually required verification-v5
+artifact. The phase is unconditional: dependency or glossary drift must fail
+even when the corresponding ledger is absent from the prepared diff.
 
 ## CI
 

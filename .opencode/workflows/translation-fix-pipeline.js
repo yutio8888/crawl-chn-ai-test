@@ -116,27 +116,31 @@ const CODE_REVIEW_SCHEMA = {
   type: 'object',
   properties: {
     findings: { type: 'array', maxItems: 200, items: CODE_FINDING_SCHEMA },
+    reviewedScope: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
   },
-  required: ['findings', 'glossarySha256'],
+  required: ['findings', 'reviewedScope', 'glossarySha256'],
 }
 
 const TRANS_REVIEW_SCHEMA = {
   type: 'object',
   properties: {
     findings: { type: 'array', maxItems: 200, items: TRANS_FINDING_SCHEMA },
+    reviewedScope: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
   },
-  required: ['findings', 'glossarySha256'],
+  required: ['findings', 'reviewedScope', 'glossarySha256'],
 }
 
-const validateReviewFindings = (kind, result, expectedGlossarySha256) => {
+const validateReviewFindings = (kind, result, expectedGlossarySha256, expectedScope) => {
   if (result.glossarySha256 !== expectedGlossarySha256)
     throw new Error(`${kind} reviewer glossary SHA-256 does not match the bundle`)
   if (!Array.isArray(result.findings) || result.findings.length > 200)
     throw new Error(`${kind} reviewer findings must be an array of at most 200 items`)
+  if (JSON.stringify(result.reviewedScope) !== JSON.stringify(expectedScope))
+    throw new Error(`${kind} reviewer reviewedScope must exactly equal routing.files`)
   const translation = kind === 'translation'
   const fields = ['id', 'severity', 'file', 'line', 'evidence', 'impact', 'fix']
     .concat(translation ? ['english', 'chinese'] : []).sort()
@@ -484,7 +488,7 @@ const routingMatrix = {
   mixed: ['zh-code-reviewer', 'translation-reviewer'],
 }
 const expectedReviewers = routingMatrix[REVIEW_ROUTING?.classification]
-if (REVIEW_ROUTING?.schema_version !== 1
+if (REVIEW_ROUTING?.schema_version !== 2
     || !Array.isArray(routedReviewers)
     || !expectedReviewers
     || JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)) {
@@ -514,10 +518,11 @@ Then review the diff:
 4. Database integrity — %%%% parity, duplicate keys, @keyword@ refs?
 5. EN mode safety — does English mode still work?
 
-Use review-contract-v4 severities: blocker | needs_fix | suggestion. Return the
+Use review-contract-v5 severities: blocker | needs_fix | suggestion. Return the
 complete findings array; every finding must contain id, severity, file, line,
 evidence, impact, and fix. Do not return counts or a readiness verdict. Interpret
-every relevant failure or warning and report the glossary SHA-256.`,
+every relevant failure or warning, report the glossary SHA-256, and return
+reviewedScope exactly as ${JSON.stringify(REVIEW_ROUTING.files)}.`,
     { agentType: 'zh-code-reviewer', label: 'code-review', schema: CODE_REVIEW_SCHEMA }
   ) }))
 }
@@ -540,10 +545,11 @@ Then review:
 4. Precision — numbers/percentages preserved?
 5. Cross-reference docs/glossary.md for terminology.
 
-Use review-contract-v4 severities: blocker | needs_fix | suggestion. Return the
+Use review-contract-v5 severities: blocker | needs_fix | suggestion. Return the
 complete findings array; every finding must contain id, severity, file, line,
 evidence, impact, fix, english, and chinese. Do not return counts or a readiness
-verdict. Interpret every relevant failure or warning and report the glossary SHA-256.`,
+verdict. Interpret every relevant failure or warning, report the glossary SHA-256,
+and return reviewedScope exactly as ${JSON.stringify(REVIEW_ROUTING.files)}.`,
     { agentType: 'translation-reviewer', label: 'trans-review', schema: TRANS_REVIEW_SCHEMA }
   ) }))
 }
@@ -552,7 +558,8 @@ const reviews = reviewJobs.length ? await parallel(reviewJobs) : []
 const reviewResult = kind => {
   const result = reviews.find(item => item?.kind === kind)?.result || null
   if (!result) return null
-  const findings = validateReviewFindings(kind, result, reviewBoundary.glossary_sha256)
+  const findings = validateReviewFindings(
+    kind, result, reviewBoundary.glossary_sha256, REVIEW_ROUTING.files)
   const count = severity => findings.filter(item => item.severity === severity).length
   const blockers = count('blocker')
   const needsFix = count('needs_fix')
@@ -638,10 +645,6 @@ if (!reviewFailure && routedReviewers.length === 0) {
     completed: true, state: 'READINESS_NOT_REQUIRED', exitCode: 0,
     recordedReviewers: [], summary: 'Mechanical routing requires no reviewers.',
   }
-  finalGate = {
-    completed: true, state: 'MERGEABLE', exitCode: 0,
-    recordedReviewers: [], summary: 'No final review profile is required for an unrouted diff.',
-  }
 } else if (!reviewFailure) {
   readinessEvidence = await agent(
     `Persist the exact schema-v4 reviewer findings and readiness records. This is an evidence
@@ -651,6 +654,7 @@ Target checkout: ${TARGET_ROOT}
 Candidate branch: ${CANDIDATE_BRANCH}
 Bundle id: ${reviewBoundary.bundle_id}
 Required routed reviewers: ${JSON.stringify(routedReviewers)}
+Reviewed scope: ${JSON.stringify(REVIEW_ROUTING.files)}
 Code findings: ${JSON.stringify(codeReview?.findings || [])}
 Translation findings: ${JSON.stringify(transReview?.findings || [])}
 
@@ -660,8 +664,9 @@ Translation findings: ${JSON.stringify(transReview?.findings || [])}
    candidate worktree, --bundle ${reviewBoundary.bundle_id}, the exact reviewer
    role, and --findings-json naming a canonical ordinary JSON file outside both
    clean Git worktrees (for example under /tmp). The file must
-   contain schema, bundle_id, bundle_sha256, routing_sha256, reviewer, and the
-   exact findings array. Obtain all bindings from validated bundle status; never
+   contain schema, bundle_id, bundle_sha256, routing_sha256, reviewer,
+   reviewed_scope exactly equal to routing.files, and the exact findings array.
+   Obtain all bindings from validated bundle status; never
    invent or copy them from reviewer prose.
 3. Run review_bundle.py status for the same bundle. Return completed=true only
    when every routed role was recorded and status is FINAL_GATE_REQUIRED (11)
@@ -670,8 +675,9 @@ Translation findings: ${JSON.stringify(transReview?.findings || [])}
     { label: 'persist-review-readiness', schema: EVIDENCE_RESULT_SCHEMA }
   )
 
-  if (readinessEvidence?.completed) {
-    finalGate = await agent(
+}
+if (!reviewFailure && readinessEvidence?.completed) {
+  finalGate = await agent(
       `Run the single schema-v4 final gate now that all required reviewers are ready.
 Do not run verify_zh.sh directly, do not pass retry/recovery flags, and do not
 modify source or evidence manually.
@@ -684,7 +690,6 @@ code 0. For any other state preserve the exact state, exit code, and diagnostic;
 do not retry automatically.`,
       { label: 'run-single-final-gate', schema: EVIDENCE_RESULT_SCHEMA }
     )
-  }
 }
 
 const hardFailure = reviewFailure || !readinessEvidence?.completed

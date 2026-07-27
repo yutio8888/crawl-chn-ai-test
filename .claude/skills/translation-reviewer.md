@@ -9,7 +9,7 @@ argument-hint: "[commit-ish or leave empty for current diff]"
 Use `.claude/agents/translation-reviewer.md` for content-quality review.
 
 <!-- BEGIN GENERATED: review-contract -->
-# review-contract-v4
+# review-contract-v5
 
 Translation-related review separates domain review from expensive final
 verification. A reviewer never runs `verify_zh.sh --profile review` during the
@@ -80,8 +80,12 @@ For mixed changes, each reviewer stays within that ownership and inspects the
 shared context/fallback boundary only where the two domains meet. Neither
 reviewer reruns whole-project verification suites during readiness.
 
-The mechanically generated routing for the immutable target/candidate range is
-authoritative. Mixed changes require both readiness records; a final evidence
+The mechanically generated routing-v2 record for the immutable
+target/candidate range is authoritative. It uses normalized, sorted, unique
+paths and a one-to-one classified-file record whose category and reviewer set
+are recomputed before any evidence is accepted. Root-level
+`docs/*-review-results.md` ledgers are mixed changes and always require both
+reviewers. Mixed changes require both readiness records; a final evidence
 approver cannot replace a missing domain readiness record.
 
 ## Immutable readiness
@@ -94,8 +98,10 @@ missing or mismatched. The target checkout must remain clean through the final
 gate. Each readiness record binds the exact
 target head, candidate head, binary diff SHA-256, glossary SHA-256, routing
 digest, reviewer role, reviewed scope, and the complete structured findings
-array. Any ref, diff,
-glossary, or routing change invalidates the record.
+array. Findings-v2 and readiness-v3 both carry `reviewed_scope`, which must
+equal the complete `routing.files` array item for item and in order; a missing,
+partial, extended, reordered, duplicated, absolute, or traversing scope is
+rejected. Any ref, diff, glossary, or routing change invalidates the record.
 
 Every finding is persisted inside the reviewer's atomic readiness object and
 cites a unique id, severity, exact file and line, evidence, impact, and a
@@ -125,15 +131,26 @@ bundle-specific lock, and creates a new attempt only when no valid pass exists.
 Failed, interrupted, abandoned, incomplete, or tampered attempts never approve
 a merge. A valid pass is reused and never rerun for the same bundle.
 
+The review profile always runs the independent required `review-ledgers`
+phase. Trusted auditor code comes from the target checkout while the validated
+candidate root supplies the read-only data. All six strict inventories
+(character, god, item, monster, species/background, and world) run regardless
+of the changed-file set. Verification-v5 metadata binds each inventory
+artifact individually; missing ledger input, incomplete parsing, stale facts,
+or an unknown state fails closed.
+
 The final evidence approver inspects the published verification artifacts and
 records a final Go bound to the verification digest, routing digest, and every
 required readiness digest. `review_at_merge.sh` is a read-only validator: it
 does not build, test, create, repair, or update evidence.
 
 Historical schema-v1/v2 log records and schema-v3 bundles remain read-only
-metrics only. New merge authorization is written exclusively as a schema-v4
-bundle with schema-v2 readiness. Old records are never upgraded, appended to,
-or converted into a schema-v4 Go.
+metrics only. Routing-v1/readiness-v2 objects found in the v4 directory are
+also legacy read-only, including bundles that already contain approval. They
+cannot accept new readiness or final evidence and never authorize merge.
+New merge authorization is written exclusively as a schema-v4 bundle with
+routing-v2, findings-v2, readiness-v3, and verification-v5. Old records are
+never upgraded, appended to, copied, or converted into a new Go.
 <!-- END GENERATED: review-contract -->
 
 Resolve current terminology, compare the exact committed EN/ZH diff in context,

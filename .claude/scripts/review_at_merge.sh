@@ -110,9 +110,6 @@ BUNDLE_ID=$(printf '%s' "$DESCRIPTION" | python3 -c \
     'import json,sys; print(json.load(sys.stdin)["bundle_id"])')
 BUNDLE_PATH=$(printf '%s' "$DESCRIPTION" | python3 -c \
     'import json,sys; print(json.load(sys.stdin)["bundle_path"])')
-REVIEWER_COUNT=$(printf '%s' "$DESCRIPTION" | python3 -c \
-    'import json,sys; print(len(json.load(sys.stdin)["routing"]["reviewers"]))')
-
 recheck_refs() {
     local target_now candidate_now
     target_now=$(git -C "$TARGET_ROOT" rev-parse --verify "${TARGET_BRANCH}^{commit}" 2>/dev/null || true)
@@ -124,17 +121,6 @@ echo "=== Read-only Schema-v4 Merge Gate ==="
 echo "Target:    $TARGET_BRANCH @ $START_TARGET_HEAD"
 echo "Candidate: $CANDIDATE_BRANCH @ $START_CANDIDATE_HEAD"
 echo "Bundle:    $BUNDLE_ID"
-
-if [[ "$REVIEWER_COUNT" -eq 0 ]]; then
-    recheck_refs || {
-        echo "ERROR: a branch ref moved during merge authorization." >&2
-        exit 15
-    }
-    echo '{"approved":true,"exit_code":0,"state":"MERGEABLE","valid":true}'
-    echo "Approved candidate OID: $START_CANDIDATE_HEAD"
-    echo "Merge with: git merge --ff-only $START_CANDIDATE_HEAD"
-    exit 0
-fi
 
 if [[ ! -d "$BUNDLE_PATH" ]]; then
     recheck_refs || {

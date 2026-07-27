@@ -18,7 +18,16 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
+
 SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE_DIR = SRC / "dat/i18n/zh"
 
@@ -58,7 +67,6 @@ DESCRIPTION_FILES = {
     ),
 }
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from audit_god_inventory import (  # noqa: E402
     _matching_brace,
     _strip_cpp_comments,
@@ -88,6 +96,12 @@ TERMINAL_CONCLUSIONS = {
     "重译",
     "暂缓术语",
     "暂缓实现",
+}
+CHARACTER_REVIEW_BASE = "76c815b2ac79d11a8066597ad04d127a1636e153"
+STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->"
+STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v1 -->"
+STRICT_CARD_FIELDS = {
+    "fact_sha256", "identity", "terminal_conclusion",
 }
 
 REVISED_MUTATION_IDENTITIES = {
@@ -196,6 +210,8 @@ REVISED_MONSTER_STATUS_KEYS = {
     "stupefied monstatus",
 }
 
+STATUS_PRODUCERLESS_EXCEPTIONS = {"STATUS_IN_DEBT"}
+
 
 def relative(path):
     path = path.resolve()
@@ -231,11 +247,17 @@ def concrete_enum_identities(path, prefix):
     for line in active_source(path).splitlines():
         match = re.match(
             rf"^\s*({re.escape(prefix)}[A-Z0-9_]+)"
-            r"\s*(?:=\s*[^,]+)?\s*,",
+            r"\s*(?:=\s*([^,]+))?\s*,",
             line,
         )
-        if match and "=" not in line.split(",", 1)[0]:
-            identities.append(match.group(1))
+        if not match:
+            continue
+        rhs = (match.group(2) or "").strip()
+        if rhs and re.fullmatch(
+            rf"{re.escape(prefix)}[A-Z0-9_]+", rhs
+        ):
+            continue
+        identities.append(match.group(1))
     if not identities:
         raise RuntimeError(f"no {prefix} identities parsed from {relative(path)}")
     return identities
@@ -301,6 +323,60 @@ def status_display_literals(fragment):
             if value and value not in display:
                 display.append(value)
     return display
+
+
+def status_db_keys(fragment):
+    return sorted(set(re.findall(
+        r'\binf\.db_key\s*=\s*"((?:[^"\\]|\\.)*)"', fragment
+    )))
+
+
+def status_producer_proof(declared, fragments, source):
+    """Prove enum/producer conservation and resolve one helper call."""
+    declared_set = set(declared)
+    producer_set = set(fragments)
+    resolved = {}
+    unresolved = []
+    for identity in sorted(producer_set & declared_set):
+        fragment = fragments[identity]
+        calls = re.findall(
+            r"\b(_describe_[a-z0-9_]+)\s*\(\s*inf\s*\)\s*;",
+            fragment,
+        )
+        mentions = set(re.findall(r"\b(_describe_[a-z0-9_]+)\b", fragment))
+        if mentions != set(calls) or len(calls) > 1:
+            unresolved.append(identity)
+            resolved[identity] = fragment
+            continue
+        if not calls:
+            resolved[identity] = fragment
+            continue
+        try:
+            helper = exact_function_body(
+                _strip_cpp_comments(source),
+                rf"\b(?:static\s+)?void\s+{re.escape(calls[0])}",
+            )
+        except RuntimeError:
+            unresolved.append(identity)
+            resolved[identity] = fragment
+            continue
+        if re.search(r"\b_describe_[a-z0-9_]+\s*\(", helper):
+            unresolved.append(identity)
+            resolved[identity] = fragment
+            continue
+        resolved[identity] = fragment + "\n" + helper
+    return {
+        "resolved_fragments": resolved,
+        "missing_status_producers": sorted(
+            declared_set - producer_set - STATUS_PRODUCERLESS_EXCEPTIONS
+        ),
+        "unexpected_status_producers": sorted(producer_set - declared_set),
+        "stale_producerless_status_exceptions": sorted(
+            exception for exception in STATUS_PRODUCERLESS_EXCEPTIONS
+            if exception not in declared_set or exception in producer_set
+        ),
+        "unresolved_status_helpers": unresolved,
+    }
 
 
 def mutation_rows(db, descriptions):
@@ -400,27 +476,28 @@ def duration_rows(db):
     return rows
 
 
-def status_rows(db):
+def status_rows(db, with_proof=False):
+    source = active_source(STATUS_CODE)
     body = exact_function_body(
-        active_source(STATUS_CODE),
+        source,
         r"\bbool\s+fill_status_info",
     )
     fragments = case_fragments(body, "STATUS_")
     declared = concrete_enum_identities(STATUS_TYPE, "STATUS_")
+    proof = status_producer_proof(declared, fragments, source)
     rows = []
     for identity in declared:
-        fragment = fragments.get(identity, "")
+        fragment = proof["resolved_fragments"].get(identity, "")
         display = [
             translation(db, value, "status")
             for value in status_display_literals(fragment)
         ]
-        db_keys = sorted(set(re.findall(
-            r'\binf\.db_key\s*=\s*"((?:[^"\\]|\\.)*)"', fragment
-        )))
+        db_keys = status_db_keys(fragment)
+        producer_present = identity in fragments
         rows.append({
             "identity": f"status:{identity}",
             "category": "status",
-            "lifecycle": "current" if fragment else "internal",
+            "lifecycle": "current" if producer_present else "internal",
             "english_source_name": db_keys[0] if db_keys else identity,
             "current_chinese_name": (
                 translation(db, db_keys[0], "status")["chinese"]
@@ -428,9 +505,14 @@ def status_rows(db):
             ),
             "db_keys": db_keys,
             "display_strings": display,
-            "producer_present": bool(fragment),
+            "producer_present": producer_present,
             "source_file": relative(STATUS_CODE),
         })
+    if with_proof:
+        return rows, {
+            key: value for key, value in proof.items()
+            if key != "resolved_fragments"
+        }
     return rows
 
 
@@ -606,7 +688,7 @@ def description_payload():
     return result
 
 
-def inventory_violations(rows, descriptions):
+def inventory_violations(rows, descriptions, status_proof=None):
     identities = [row["identity"] for row in rows]
     missing_names = sorted(
         row["identity"] for row in rows
@@ -638,6 +720,27 @@ def inventory_violations(rows, descriptions):
         for item in row.get(field, [])
         if item["english"] and not item["translation_present"]
     )
+    required_status_facts = {
+        "status:STATUS_AIRBORNE": {
+            "db_keys": {"Fly"},
+            "display": {"Fly", "flying", "You are flying."},
+        },
+    }
+    missing_status_display_facts = []
+    rows_by_identity = {row["identity"]: row for row in rows}
+    for identity, expected_facts in required_status_facts.items():
+        row = rows_by_identity.get(identity)
+        if row is None:
+            missing_status_display_facts.append(identity)
+            continue
+        actual_display = {
+            item.get("english") for item in row.get("display_strings", [])
+        }
+        if (
+            not expected_facts["db_keys"].issubset(set(row.get("db_keys", [])))
+            or not expected_facts["display"].issubset(actual_display)
+        ):
+            missing_status_display_facts.append(identity)
     return {
         "duplicate_identities": sorted(
             identity for identity, count in Counter(identities).items()
@@ -646,6 +749,7 @@ def inventory_violations(rows, descriptions):
         "missing_chinese_names": missing_names,
         "missing_descriptions": missing_descriptions,
         "missing_display_translations": missing_display,
+        "missing_status_display_facts": missing_status_display_facts,
         "description_findings": {
             category: {
                 key: value
@@ -655,7 +759,12 @@ def inventory_violations(rows, descriptions):
             }
             for category, payload in descriptions.items()
         },
-        "missing_status_producers": [],
+        **(status_proof or {
+            "missing_status_producers": [],
+            "unexpected_status_producers": [],
+            "stale_producerless_status_exceptions": [],
+            "unresolved_status_helpers": [],
+        }),
     }
 
 
@@ -667,7 +776,11 @@ def has_violations(payload):
             "missing_chinese_names",
             "missing_descriptions",
             "missing_display_translations",
+            "missing_status_display_facts",
             "missing_status_producers",
+            "unexpected_status_producers",
+            "stale_producerless_status_exceptions",
+            "unresolved_status_helpers",
         )
     ):
         return True
@@ -689,7 +802,7 @@ def build_inventory():
         ),
     )
     durations = duration_rows(db)
-    statuses = status_rows(db)
+    statuses, status_proof = status_rows(db, with_proof=True)
     abilities, excluded_abilities = ability_rows(
         db,
         (
@@ -769,7 +882,7 @@ def build_inventory():
             lifecycle: sum(row["lifecycle"] == lifecycle for row in rows)
             for lifecycle in sorted({row["lifecycle"] for row in rows})
         },
-        "violations": inventory_violations(rows, descriptions),
+        "violations": inventory_violations(rows, descriptions, status_proof),
         "rows": rows,
     }
     encoded = json.dumps(
@@ -779,42 +892,167 @@ def build_inventory():
     return payload
 
 
-def review_coverage(payload, path):
-    text = path.read_text(encoding="utf-8")
+def legacy_review_conclusions(text):
     matches = re.findall(
         r"^\|\s*`((?:mutation|duration|status|ability|skill|attribute|"
         r"monster_status):[^`]+)`\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
         text,
         re.MULTILINE,
     )
-    identities = [identity for identity, _conclusion in matches]
-    conclusions = {
-        identity: conclusion.strip().split("：", 1)[0].strip()
+    mapping = {
+        "保留": "keep",
+        "修订": "adjust",
+        "重译": "retranslate",
+        "暂缓术语": "defer terminology",
+        "暂缓实现": "defer implementation",
+    }
+    return {
+        identity: mapping.get(
+            conclusion.strip().split("：", 1)[0].strip(),
+            conclusion.strip().split("：", 1)[0].strip(),
+        )
         for identity, conclusion in matches
     }
-    expected = {row["identity"] for row in payload["rows"]}
+
+
+def fact_sha256(row):
+    encoded = json.dumps(
+        row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def parse_strict_review_evidence(path):
+    text = path.read_text(encoding="utf-8")
+    if text.count(STRICT_REVIEW_BEGIN) != 1 or text.count(STRICT_REVIEW_END) != 1:
+        raise RuntimeError("strict review evidence block is missing or duplicated")
+    block = text.split(STRICT_REVIEW_BEGIN, 1)[1].split(
+        STRICT_REVIEW_END, 1
+    )[0].strip().splitlines()
+    if len(block) < 4 or block[1] != "```jsonl" or block[-1] != "```":
+        raise RuntimeError("strict review evidence block structure is invalid")
+    metadata = json.loads(block[0])
+    if not isinstance(metadata, dict) or set(metadata) != {
+        "baseline", "glossary_sha256", "identity_count", "inventory_sha256",
+    }:
+        raise RuntimeError("strict review metadata fields are invalid")
+    if block[0] != json.dumps(
+        metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ):
+        raise RuntimeError("strict review metadata is not canonical JSON")
+    cards = []
+    for line in block[2:-1]:
+        card = json.loads(line)
+        if not isinstance(card, dict) or set(card) != STRICT_CARD_FIELDS:
+            raise RuntimeError("strict review evidence-card fields are invalid")
+        if line != json.dumps(
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ):
+            raise RuntimeError("strict review evidence card is not canonical JSON")
+        cards.append(card)
+    return metadata, cards
+
+
+def review_coverage(payload, path):
+    metadata, cards = parse_strict_review_evidence(path)
+    expected_rows = sorted(payload["rows"], key=lambda row: row["identity"])
+    expected_ids = [row["identity"] for row in expected_rows]
+    identities = [card["identity"] for card in cards]
+    expected = set(expected_ids)
     actual = set(identities)
     invalid = sorted(
-        identity for identity, conclusion in conclusions.items()
-        if conclusion not in TERMINAL_CONCLUSIONS
+        card["identity"] for card in cards
+        if card["terminal_conclusion"] not in TERMINAL_CONCLUSIONS
     )
+    expected_by_id = {row["identity"]: row for row in expected_rows}
+    mismatched_facts = sorted(
+        card["identity"] for card in cards
+        if card["identity"] in expected_by_id
+        and card["fact_sha256"] != fact_sha256(
+            expected_by_id[card["identity"]]
+        )
+    )
+    bindings = {
+        "baseline": metadata["baseline"] == CHARACTER_REVIEW_BASE,
+        "glossary_sha256": (
+            metadata["glossary_sha256"] == payload["glossary_sha256"]
+        ),
+        "inventory_sha256": (
+            metadata["inventory_sha256"] == payload["inventory_sha256"]
+        ),
+        "identity_count": metadata["identity_count"] == payload["count"],
+    }
+    duplicate = sorted(
+        identity for identity, count in Counter(identities).items()
+        if count > 1
+    )
+    missing = sorted(expected - actual)
+    unexpected = sorted(actual - expected)
+    order_matches = identities == expected_ids
     return {
         "review_results": relative(path),
         "review_results_sha256": sha(path),
         "evidence_card_count": len(identities),
-        "duplicate_evidence_cards": sorted(
-            identity for identity, count in Counter(identities).items()
-            if count > 1
-        ),
-        "missing_evidence_cards": sorted(expected - actual),
-        "unexpected_evidence_cards": sorted(actual - expected),
+        "binding_matches": bindings,
+        "duplicate_evidence_cards": duplicate,
+        "missing_evidence_cards": missing,
+        "unexpected_evidence_cards": unexpected,
+        "canonical_card_order": order_matches,
+        "mismatched_fact_sha256": mismatched_facts,
         "invalid_terminal_conclusions": invalid,
         "coverage_equal": (
-            len(identities) == len(expected)
-            and actual == expected
+            all(bindings.values())
+            and len(identities) == len(expected_ids)
+            and not duplicate
+            and not missing
+            and not unexpected
+            and order_matches
+            and not mismatched_facts
             and not invalid
         ),
     }
+
+
+def strict_review_block(payload, conclusions):
+    metadata = {
+        "baseline": CHARACTER_REVIEW_BASE,
+        "glossary_sha256": payload["glossary_sha256"],
+        "identity_count": payload["count"],
+        "inventory_sha256": payload["inventory_sha256"],
+    }
+    lines = [
+        STRICT_REVIEW_BEGIN,
+        json.dumps(
+            metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ),
+        "```jsonl",
+    ]
+    for row in sorted(payload["rows"], key=lambda item: item["identity"]):
+        card = {
+            "fact_sha256": fact_sha256(row),
+            "identity": row["identity"],
+            "terminal_conclusion": conclusions.get(row["identity"], "pending"),
+        }
+        lines.append(json.dumps(
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ))
+    lines.extend(["```", STRICT_REVIEW_END])
+    return "\n".join(lines)
+
+
+def write_strict_review_evidence(payload, path):
+    text = path.read_text(encoding="utf-8")
+    conclusions = legacy_review_conclusions(text)
+    block = strict_review_block(payload, conclusions)
+    if STRICT_REVIEW_BEGIN in text:
+        prefix, remainder = text.split(STRICT_REVIEW_BEGIN, 1)
+        if STRICT_REVIEW_END not in remainder:
+            raise RuntimeError("unterminated existing strict review evidence")
+        suffix = remainder.split(STRICT_REVIEW_END, 1)[1]
+        text = prefix.rstrip() + "\n\n" + block + suffix
+    else:
+        text = text.rstrip() + "\n\n" + block + "\n"
+    path.write_text(text, encoding="utf-8")
 
 
 def table_text(value, limit=72):
@@ -935,6 +1173,7 @@ def complete_review_results(payload, path):
         ),
     ]
     path.write_text(text.rstrip() + "\n\n" + "\n".join(sections), encoding="utf-8")
+    write_strict_review_evidence(payload, path)
 
 
 def main(argv=None):
