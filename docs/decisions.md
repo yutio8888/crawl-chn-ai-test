@@ -3537,7 +3537,12 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   参数分别翻译。`crawl.take_note` 保存创建时语言的纯显示快照：仅当完整模板
   及所有字符串参数都有中文时才保存完整中文，否则整条回退英文，避免中英文
   混杂；切换界面语言不会追溯重译已有笔记。milestone、xlog、比较、查找及
-  持久化身份仍保持 canonical English。
+  持久化身份仍保持 canonical English。该例外严格限于
+  `crawl.take_note → NOTE_MESSAGE.name`：`l-crawl.cc::crawl_take_note`
+  负责创建，`Note::save/load` 仅原样往返，`Note::describe`、笔记界面及
+  chardump/morgue 为最终显示消费者；milestone 仅处理
+  `NOTE_DUNGEON_LEVEL_CHANGE`，且 xlog、Lua 比较、查找和玩法逻辑均不读取
+  `NOTE_MESSAGE.name`。其他 note type 或字段不得沿用此例外。
 - **Readiness translation corrections**: 污水道实体使用语境键
   `sewer drain → 排水口`，不覆盖全局 `drain → 吸血`；传送门名称统一为
   骨堂、堡垒、冰窟、盐之荒原、试炼场、死灵城；Geryon、Cerebov、

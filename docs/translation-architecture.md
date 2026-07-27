@@ -46,10 +46,19 @@ values are translated. Preserve separators, format placeholders, control charact
 
 Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
 identifiers, and TextDB lookup keys stay English. Translate only at a display
-boundary. A save file may also contain a language-locked display snapshot when
-the value has no identity, lookup, comparison, protocol, or gameplay consumer;
-such a snapshot is not retranslated after a language change. The
-protocol-facing Lua bindings `you.race()`,
+boundary. The one approved save-file exception is `Note::name` for
+`NOTE_MESSAGE` values created by `crawl.take_note`: it is a language-locked
+display snapshot and is not retranslated after a language change. The exception
+does not cover other note types or fields. Its complete consumer boundary is:
+
+| Stage | Consumer | Contract |
+|---|---|---|
+| Producer | `l-crawl.cc::crawl_take_note` | Constructs only `NOTE_MESSAGE` from the supplied display string |
+| Persistence | `Note::save` / `Note::load` | Round-trips `Note::name` without interpreting it |
+| Display | `Note::describe`, notes UI, chardump/morgue | Emits the stored snapshot |
+| Excluded logic | milestone handling, xlog, Lua comparisons, lookup, gameplay | Does not consume `NOTE_MESSAGE.name` |
+
+The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore
 produce canonical English identities (using raw or `_en` accessors); callers
 may still apply their existing lowercase/pluralisation conventions.

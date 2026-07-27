@@ -957,6 +957,14 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
                     "storage: "
                     + ", ".join(untranslated_display_title_parameters)
                 )
+            elif (
+                selected_snapshot is not None
+                and record["static_english"] is None
+            ):
+                record["unsupported"] = (
+                    "localized note snapshot format key must be a static "
+                    "English literal"
+                )
             elif record["static_english"] is None and late_consumer is None:
                 record["unsupported"] = (
                     "dynamic persistent display snapshot expression"

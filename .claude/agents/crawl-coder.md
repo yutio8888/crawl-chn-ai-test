@@ -34,11 +34,14 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   Translate them with `translated_move_phrase()` and the applicable grammar
   context; update `move_i18n_manifest.json` and require exact-key coverage.
 - Keep protocol, lookup, serialization identities, Lua comparison, and TextDB
-  key values in English. A serialized display snapshot may use the current
-  display language only when every consumer is display-only and no gameplay,
-  protocol, lookup, or comparison path reuses it. Such snapshots are
-  language-locked: changing the UI language does not retroactively retranslate
-  existing records.
+  key values in English. The sole localized serialization exception is
+  `Note::name` on `NOTE_MESSAGE` records created through `crawl.take_note`:
+  consumer tracing proves that value is a display-only snapshot, not an
+  identity. It may use the current display language only when the complete
+  template and every string parameter translate; otherwise the whole note
+  remains English. This snapshot is language-locked, so changing the UI
+  language does not retroactively retranslate it. Do not extend the exception
+  to other note types or fields without a new consumer audit and policy change.
 - When a changed value may serve both identity and display, enumerate its
   producer, every intermediate consumer, and its final sinks. Identity and
   lookup paths use the original value or an English accessor (for example,
