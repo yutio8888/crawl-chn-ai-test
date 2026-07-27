@@ -42,11 +42,14 @@ Long descriptions live in `%%%%`-separated databases under
 values are translated. Preserve separators, format placeholders, control characters,
 `@keyword@` markers, and embedded template syntax exactly.
 
-### Type V — protocol and internal values
+### Type V — protocol, internal values, and display snapshots
 
-Serialization identifiers, Lua/JSON comparison keys, `.des` tags, save-file
-values, enum identifiers, and TextDB lookup keys stay English. Translate only
-at a display boundary. The protocol-facing Lua bindings `you.race()`,
+Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
+identifiers, and TextDB lookup keys stay English. Translate only at a display
+boundary. A save file may also contain a language-locked display snapshot when
+the value has no identity, lookup, comparison, protocol, or gameplay consumer;
+such a snapshot is not retranslated after a language change. The
+protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore
 produce canonical English identities (using raw or `_en` accessors); callers
 may still apply their existing lowercase/pluralisation conventions.

@@ -165,7 +165,7 @@ end
 
 function wizlab_milestone (e, wizlab_desc)
     crawl.mark_milestone("br.enter", "entered " .. wizlab_desc .. ".", "parent")
-    crawl.take_note("Entered " .. wizlab_desc)
+    crawl.take_note(util.i18n_format_or_english("Entered %s", wizlab_desc))
     crawl.mpr(string.format(crawl.t_("Welcome to %s!"),
                             crawl.t_(wizlab_desc)))
 end

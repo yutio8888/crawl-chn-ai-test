@@ -41416,6 +41416,24 @@ The drain falls to bits.
 Entered %s
 进入了%s
 %%%%
+Saw a vision of the %s.
+看到了%s的幻象。
+%%%%
+Saw a vision of the %s and the %s.
+看到了%s与%s的幻象。
+%%%%
+Entered the realm of %s.
+进入了%s的领域。
+%%%%
+Arena points: %s (+%s) [x%s]
+竞技场点数：%s（+%s）[x%s]
+%%%%
+Round %s.
+第%s回合。
+%%%%
+Entered arena %s.
+进入了竞技场%s。
+%%%%
 You've discovered %s!
 你发现了%s！
 %%%%

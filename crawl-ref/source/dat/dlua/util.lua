@@ -47,6 +47,33 @@ function util.identity(x)
   return x
 end
 
+--- Format a language-locked display snapshot without mixing languages.
+-- String arguments are canonical English translation keys. If either the
+-- format or any string argument lacks a translation, the complete result
+-- falls back to canonical English. Non-string arguments are opaque values.
+function util.i18n_format_or_english(format_key, ...)
+  local canonical_args = { ... }
+  local translated_args = { }
+  local translated_format = crawl.t_(format_key)
+  local complete = translated_format ~= format_key
+
+  for index, value in ipairs(canonical_args) do
+    if type(value) == "string" then
+      translated_args[index] = crawl.t_(value)
+      if translated_args[index] == value then
+        complete = false
+      end
+    else
+      translated_args[index] = value
+    end
+  end
+
+  if complete then
+    return string.format(translated_format, table.unpack(translated_args))
+  end
+  return string.format(format_key, table.unpack(canonical_args))
+end
+
 --- Slice a list.
 -- @return the sublist of elements at indices [istart, iend) of the
 -- supplied list.

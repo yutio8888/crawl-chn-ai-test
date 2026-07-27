@@ -230,11 +230,13 @@ end
             "unknown display-like crawl sink: message", unsupported
         )
 
-    def test_persistent_translation_and_untranslated_titles_fail_visible(self):
+    def test_localized_note_snapshot_and_untranslated_titles_fail_visible(self):
         path = self.write_des(
             """lua {{
 function boundary()
-  crawl.take_note(crawl.t_("Entered ") .. destination)
+  crawl.take_note(util.i18n_format_or_english(
+      "Entered %s", destination_title))
+  crawl.take_note(string.format(crawl.t_("Found %s"), raw_name))
   crawl.mpr(string.format(crawl.t_("Welcome to %s!"), destination_title))
   crawl.mpr(string.format(crawl.t_("Found %s!"),
                            crawl.t_(translated_name)))
@@ -243,12 +245,21 @@ end
 """
         )
         rows = MODULE.scan_des_file(path, {
-            "entered ": "进入了",
+            "entered %s": "进入了%s",
+            "found %s": "发现了%s",
             "welcome to %s!": "欢迎来到%s！",
             "found %s!": "发现了%s！",
         })
-        note, untranslated, translated = rows
-        self.assertIn("before storage", note["protocol_boundary_issue"])
+        note, mixed_note, untranslated, translated = rows
+        self.assertEqual("localized_display_snapshot",
+                         note["persistence_snapshot"]["classification"])
+        self.assertEqual("util.i18n_format_or_english",
+                         note["late_translation_consumer"])
+        self.assertEqual(["destination_title"],
+                         note["translated_dynamic_parameters"])
+        self.assertNotIn("protocol_boundary_issue", note)
+        self.assertIn("before storage",
+                      mixed_note["protocol_boundary_issue"])
         self.assertEqual(
             ["destination_title"],
             untranslated["untranslated_display_title_parameters"],
@@ -274,7 +285,7 @@ end
             (empty_db, empty_db),
         )
         self.assertEqual(
-            {note["identity"], untranslated["identity"]},
+            {mixed_note["identity"], untranslated["identity"]},
             set(violations["protocol_display_boundary_issues"]),
         )
 

@@ -27,6 +27,7 @@
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "mutation.h"
+#include "notes.h"
 #include "options.h"
 #include "player.h"
 #include "random.h"
@@ -121,6 +122,30 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     Options.lang_name = "zh";
     databaseSystemInit();
     CHECK(std::string(T_("You hit %s.")) != "You hit %s.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: localized note snapshots survive save roundtrip",
+                 "[zh-translation][notes][persistence]")
+{
+    const string snapshot = "进入了云中法师的密室";
+    const Note original(NOTE_MESSAGE, 0, 0, snapshot);
+
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    original.save(output);
+
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+
+    CHECK(loaded.name == snapshot);
+    CHECK(loaded.describe(false, false, true) == snapshot);
+
+    Options.language = lang_t::EN;
+    i18n_cache_clear();
+    CHECK(loaded.describe(false, false, true) == snapshot);
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

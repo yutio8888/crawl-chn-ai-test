@@ -3500,9 +3500,9 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Type**: C — Finite inventory translation review
 - **Status**: active
 - **Date**: 2026-07-26
-- **Inventory**: 最终 788 个唯一身份；inventory SHA-256
-  `98bf113173ab65ba614b960d827553aae31a5bc52c55e993706f686468ab1cb4`。
-  范围为 40 个分支、211 个地下城特征、14 个传送门家族及 523 个生产
+- **Inventory**: 最终 789 个唯一身份；inventory SHA-256
+  `fae158ab3d86729924978f2124d79c05ea3f598d93d6e925171b911cdeb3d335`。
+  范围为 40 个分支、211 个地下城特征、14 个传送门家族及 524 个生产
   `.des` 玩家显示槽。最初发现清单的 781 个身份及
   `05dcadd34933fae5b5f62d892e3dbd29acbe5fdf0bac9647d6303809c911d96b`
   已由最终身份纠错取代，不得作为最终覆盖数。上一 readiness 候选的同一
@@ -3517,7 +3517,9 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   坐标／诊断输出；old-only 20、new-only 0，显示 wrapper 前后集合差为 0。
   Readiness 修复随后机械枚举 12 个 Trove 与 15 个 Wizlab 的有限生产标题，
   将同一 761 项成员集合扩展为 788 项；added 27、removed 0。完整映射、
-  分类和逐项终态记录于 `docs/world-review-results.md`。
+  分类和逐项终态记录于 `docs/world-review-results.md`。本次笔记快照修复将
+  Ashenzari 单分支与双分支的两个真实模板分别纳入清单，新增 1 个生产身份，
+  形成最终 789 项集合。
 - **Choice**: 玩家可见文本采用英文 exact SourceDB key 并在最终显示 sink
   late translate；分支 shortname/abbrev、feature vaultname、DES
   NAME/TAGS/KFEAT/MARKER、比较值、查找身份、协议与持久化值始终保持英文。
@@ -3532,9 +3534,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   identity 和 exact SourceDB 中文；解析覆盖相邻字面量、Lua 转义及唯一性，
   缺键、重复键或未枚举生产者均为审计失败。
 - **Dynamic titles and persistence**: Trove 与 Wizlab 的玩家显示模板及 title
-  参数分别 late translate；`crawl.take_note`、milestone、xlog 与存档载荷仍
-  保存 canonical English。协议负向扫描与 EN↔ZH／storage 定向测试证明中文
-  不进入比较、查找或持久化身份。
+  参数分别翻译。`crawl.take_note` 保存创建时语言的纯显示快照：仅当完整模板
+  及所有字符串参数都有中文时才保存完整中文，否则整条回退英文，避免中英文
+  混杂；切换界面语言不会追溯重译已有笔记。milestone、xlog、比较、查找及
+  持久化身份仍保持 canonical English。
 - **Readiness translation corrections**: 污水道实体使用语境键
   `sewer drain → 排水口`，不覆盖全局 `drain → 吸血`；传送门名称统一为
   骨堂、堡垒、冰窟、盐之荒原、试炼场、死灵城；Geryon、Cerebov、
@@ -3693,4 +3696,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-090 | Spell name review — 独立批次 B2 | 30 current；2 renames + 10 description fixes | active |
 | D-C-091 | Spell name review — 独立终批 B3 | 16 active + 2 internal + 2 dummy + 31 axed；1 rename + 13 description fixes | active |
 | D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |
-| D-C-093 | Dungeon world display-text review | 788 identities；523 DES slots；20 corrections + 27 finite titles；production-bound evidence | active |
+| D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |

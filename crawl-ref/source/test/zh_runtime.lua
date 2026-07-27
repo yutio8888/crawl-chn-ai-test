@@ -517,9 +517,9 @@ emit("sewer_late_translation",
      sewer_zh_to_en .. " || " .. sewer_en_to_zh)
 crawl.set_test_language("zh")
 
--- Issue 28: portal milestones and notes retain canonical English payloads,
--- while the complete display template and its destination title are
--- translated only at mpr time.
+-- Issue 28: portal milestones retain canonical English protocol payloads.
+-- Notes are language-locked display snapshots: each note is either completely
+-- localized when created or completely English when any key is missing.
 local original_take_note = crawl.take_note
 local original_mark_milestone = crawl.mark_milestone
 local captured_notes = {}
@@ -545,9 +545,13 @@ local function portal_milestone_language(language)
     crawl.redraw_view()
     local rendered = crawl.messages(10) or ""
 
-    assert(captured_notes[1] == "Entered " .. trove_title
-           and captured_notes[2] == "Entered " .. wizlab_title,
-           "portal note persisted localized or incomplete text")
+    local expected_trove_note =
+        util.i18n_format_or_english("Entered %s", trove_title)
+    local expected_wizlab_note =
+        util.i18n_format_or_english("Entered %s", wizlab_title)
+    assert(captured_notes[1] == expected_trove_note
+           and captured_notes[2] == expected_wizlab_note,
+           "portal note did not persist a complete language snapshot")
     assert(captured_milestones[1].milestone
                == "entered " .. trove_title .. "."
            and captured_milestones[2].milestone
@@ -555,6 +559,9 @@ local function portal_milestone_language(language)
            "portal milestone persisted localized or incomplete text")
 
     if language == "en" then
+        assert(captured_notes[1] == "Entered " .. trove_title
+               and captured_notes[2] == "Entered " .. wizlab_title,
+               "English portal note changed")
         assert(string.find(rendered,
                            "You've discovered " .. trove_title .. "!", 1, true)
                and string.find(rendered,
@@ -563,6 +570,13 @@ local function portal_milestone_language(language)
     else
         local trove_zh = crawl.t_(trove_title)
         local wizlab_zh = crawl.t_(wizlab_title)
+        assert(not is_ascii(captured_notes[1])
+               and not is_ascii(captured_notes[2])
+               and not string.find(captured_notes[1],
+                                   trove_title, 1, true)
+               and not string.find(captured_notes[2],
+                                   wizlab_title, 1, true),
+               "Chinese portal note mixed English and Chinese")
         assert(trove_zh ~= trove_title
                and wizlab_zh ~= wizlab_title
                and string.find(rendered, trove_zh, 1, true)
@@ -583,9 +597,8 @@ assert(captured_notes[1] == stored_note_en
        "language switch changed stored portal note or milestone")
 local portal_milestone_zh = portal_milestone_language("zh")
 
--- Missing finite-title keys use T_()'s exact English fallback through the
--- production milestone display path, while stored note/milestone payloads
--- remain canonical English.
+-- Missing finite-title or template keys make the complete note fall back to
+-- English, while milestone payloads remain canonical English.
 local missing_portal_title = "Issue 28 missing portal title"
 captured_notes = {}
 captured_milestones = {}
@@ -600,6 +613,11 @@ assert(crawl.t_(missing_portal_title) == missing_portal_title
        and string.find(missing_portal_rendered,
                        missing_portal_title, 1, true),
        "missing portal title did not follow exact English fallback")
+assert(util.i18n_format_or_english(
+           "Issue 28 missing %s",
+           "The Chambers of the Cloud Mage")
+       == "Issue 28 missing The Chambers of the Cloud Mage",
+       "missing note template produced a mixed-language fallback")
 
 crawl.take_note = original_take_note
 crawl.mark_milestone = original_mark_milestone

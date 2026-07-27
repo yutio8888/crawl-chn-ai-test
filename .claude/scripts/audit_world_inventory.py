@@ -819,7 +819,28 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
         # (crawl.mpr(crawl.t_(...))) or followed by interpolation
         # (crawl.mpr(string.format(crawl.t_(...), value))).
         translations = []
+        snapshot_wrappers = []
         for pos in range(start, max(start, end - 3)):
+            if (
+                tokens[pos][:2] == ("IDENT", "util")
+                and tokens[pos + 1][0] == "."
+                and tokens[pos + 2][:2]
+                    == ("IDENT", "i18n_format_or_english")
+                and tokens[pos + 3][0] == "("
+            ):
+                wrapper_end = _matching_token(tokens, pos + 3)
+                if wrapper_end < end:
+                    wrapper_args = _top_level_args(
+                        tokens, pos + 3, wrapper_end
+                    )
+                    if wrapper_args:
+                        key_start, key_end = wrapper_args[0]
+                        snapshot_wrappers.append((
+                            pos, wrapper_end, wrapper_args,
+                            _expression_record(
+                                text, tokens, key_start, key_end
+                            ),
+                        ))
             if not (
                 tokens[pos][:2] == ("IDENT", "crawl")
                 and tokens[pos + 1][0] == "."
@@ -842,7 +863,26 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
             else translations[0] if len(translations) == 1
             else None
         )
-        if selected_translation is not None:
+        selected_snapshot = (
+            snapshot_wrappers[0] if len(snapshot_wrappers) == 1 else None
+        )
+        if selected_snapshot is not None:
+            _, _, _, record = selected_snapshot
+            record["expression"] = text[
+                tokens[start][2]:tokens[end - 1][2] + 1
+            ].strip()
+            record["dynamic_parameters"] = sorted(set(
+                record["dynamic_parameters"]
+                + [
+                    token[1] for token in tokens[start:end]
+                    if token[0] == "IDENT"
+                    and token[1] not in {
+                        "util", "i18n_format_or_english",
+                    }
+                ]
+            ))
+            late_consumer = "util.i18n_format_or_english"
+        elif selected_translation is not None:
             _, _, record = selected_translation
             record["expression"] = text[
                 tokens[start][2]:tokens[end - 1][2] + 1
@@ -863,13 +903,23 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
                 record["unsupported"] = (
                     "no unique static translated template in display expression"
                 )
-        translated_dynamic_parameters = sorted({
-            token[1]
-            for translation_start, translation_end, translation in translations
-            if translation["static_english"] is None
-            for token in tokens[translation_start:translation_end]
-            if token[0] == "IDENT"
-        })
+        if selected_snapshot is not None:
+            _, _, wrapper_args, _ = selected_snapshot
+            translated_dynamic_parameters = sorted({
+                token[1]
+                for argument_start, argument_end in wrapper_args[1:]
+                for token in tokens[argument_start:argument_end]
+                if token[0] == "IDENT"
+            })
+        else:
+            translated_dynamic_parameters = sorted({
+                token[1]
+                for translation_start, translation_end, translation
+                in translations
+                if translation["static_english"] is None
+                for token in tokens[translation_start:translation_end]
+                if token[0] == "IDENT"
+            })
         display_title_parameters = sorted({
             parameter for parameter in record["dynamic_parameters"]
             if re.search(r"(?:^|_)(?:desc|name|title)$", parameter)
@@ -894,17 +944,22 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
         if sink not in DIRECT_SINKS:
             record["unsupported"] = f"unknown display-like crawl sink: {sink}"
         elif sink == "take_note":
-            record["protocol_deferral"] = {
-                "classification": "canonical_english_persistent_payload",
-                "owner": "save/note schema maintainer",
-                "re_entry": (
-                    "Re-enter when notes support canonical-English storage "
-                    "with language-dependent late display."
+            record["persistence_snapshot"] = {
+                "classification": "localized_display_snapshot",
+                "language_semantics": (
+                    "stored in the creation language; no retroactive "
+                    "retranslation"
                 ),
             }
-            if translations:
+            if untranslated_display_title_parameters:
                 record["protocol_boundary_issue"] = (
-                    "persistent note payload invokes crawl.t_ before storage"
+                    "persistent note display title lacks translation before "
+                    "storage: "
+                    + ", ".join(untranslated_display_title_parameters)
+                )
+            elif record["static_english"] is None and late_consumer is None:
+                record["unsupported"] = (
+                    "dynamic persistent display snapshot expression"
                 )
         elif untranslated_display_title_parameters:
             record["protocol_boundary_issue"] = (
@@ -1450,6 +1505,8 @@ def review_expected_fact_cells(payload, row):
                 "translated_dynamic_parameters"
             ),
         }
+        if row.get("persistence_snapshot"):
+            mechanics["persistence_snapshot"] = row["persistence_snapshot"]
     protocol = bool(
         row.get("protocol_identity") or row.get("lookup_identity")
         or row.get("protocol_deferral")

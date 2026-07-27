@@ -8,24 +8,26 @@ function callback.grunt_ashenzari_visionary_reveal(data,triggerable,triggerer,ma
     for replica in iter.replica_iterator("revealing_wall", 1) do
         dgn.terrain_changed(replica.x, replica.y, "clear_stone_wall", false)
     end
-    local note_msg = ""
     local display_msg = ""
     if #data.branches > 0 then
-      note_msg = " of"
       display_msg = crawl.t_(" of")
       for i, name in ipairs(data.branches) do
         if i == 1 then
         elseif i == #data.branches then
-          note_msg = note_msg .. " and"
           display_msg = display_msg .. crawl.t_(" and")
         else
-          note_msg = note_msg .. ","
           display_msg = display_msg .. crawl.t_(",")
         end
-        note_msg = note_msg .. " the " .. name
         display_msg = display_msg .. crawl.t_(" the ") .. crawl.t_(name)
       end
-      crawl.take_note("Saw a vision" .. note_msg .. ".")
+      if #data.branches == 1 then
+        crawl.take_note(util.i18n_format_or_english(
+            "Saw a vision of the %s.", data.branches[1]))
+      else
+        crawl.take_note(util.i18n_format_or_english(
+            "Saw a vision of the %s and the %s.",
+            data.branches[1], data.branches[2]))
+      end
     end
     crawl.god_speaks("Ashenzari",
         string.format(crawl.t_("You have a sudden vision%s!"), display_msg))

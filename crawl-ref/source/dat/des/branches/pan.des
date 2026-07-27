@@ -40,7 +40,8 @@ function pan_lord_epilogue(name)
     -- Counterpart to branch_rune_desc from lookup-help.cc
     crawl.mpr(string.format(crawl.t_("They guard the %s rune of Zot."),
                            crawl.t_(runes[name])))
-    crawl.take_note('Entered the realm of ' .. name .. '.')
+    crawl.take_note(util.i18n_format_or_english(
+        "Entered the realm of %s.", name))
     crawl.mark_milestone('br.enter', 'entered the realm of ' .. name .. '.', "")
 end
 

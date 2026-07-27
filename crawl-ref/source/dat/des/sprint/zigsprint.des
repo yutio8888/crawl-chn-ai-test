@@ -44,7 +44,8 @@ function callback.zig_tele(data, triggerable, triggerer, marker, ev)
   if data.teleport_spot < 28 then
     crawl.mpr(string.format(crawl.t_("Welcome to arena %s."),
                             data.teleport_spot))
-    crawl.take_note("Entered arena " .. data.teleport_spot .. ".")
+    crawl.take_note(util.i18n_format_or_english(
+        "Entered arena %s.", data.teleport_spot))
 --  crawl.mark_milestone("sprint", "entered arena " .. data.teleport_spot ..
 --                       " of Ziggurat Sprint.", "")
   end
@@ -55,7 +56,8 @@ function callback.zig_message(data, triggerable, triggerer, marker, ev)
   if data.arena_number > 1 then
     crawl.mpr(string.format(crawl.t_("Welcome to arena %s."),
                             data.arena_number - 1))
-    crawl.take_note("Entered arena " .. data.arena_number .. ".")
+    crawl.take_note(util.i18n_format_or_english(
+        "Entered arena %s.", data.arena_number))
 --  crawl.mark_milestone("sprint", "entered arena " .. data.arena_number ..
 --                       " of Ziggurat Sprint.", "")
   end
