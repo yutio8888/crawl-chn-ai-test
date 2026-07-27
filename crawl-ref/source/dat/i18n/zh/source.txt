@@ -2039,7 +2039,7 @@ barrage of energy
 （已装入箭袋）
 %%%%
 (Slaying mortal victims (and occasionally demons) will eventually satisfy Makhleb and create an exit.)
-(屠杀凡人受害者（有时甚至是恶魔）将最终满足马赫勒布并创造一个出口。）
+(屠杀凡人受害者（有时甚至是恶魔）将最终满足马科列布并创造一个出口。）
 %%%%
 (You may use Imbue Servitor from the <w>%s</w>bility menu to change which spell your servitor casts.)
 (你可以在<w>%s</w>能力菜单中使用灌能仆从来更改仆从施放的法术。)
@@ -5826,7 +5826,7 @@ Repeat Exegesis
 重复释经
 %%%%
 repel missiles
-弹开飞弹
+排斥飞弹
 %%%%
 replica
 复制品
@@ -10286,7 +10286,7 @@ You offer a %sprayer to %s.
 你向%2$s献上了%1$s祈祷。
 %%%%
 You offer yourself as an instrument of Makhleb's will and feel overwhelming power flowing through you!
-你将自身献为马赫勒布意志的工具，感到无比的力量在你体内流动！
+你将自身献为马科列布意志的工具，感到无比的力量在你体内流动！
 %%%%
 You ooze up the stairs.
 你沿楼梯缓缓渗了上去。
@@ -10669,7 +10669,7 @@ You unleash the spiteful dead!
 你释放了怨恨的亡灵！
 %%%%
 You utter a prayer to Makhleb and carve the %s into yourself.
-你向马赫勒布祈祷，将%s刻入自己的身体。
+你向马科列布祈祷，将%s刻入自己的身体。
 %%%%
 You weave more energy into your solar ember.
 你将更多能量编织进你的太阳余烬。
@@ -17224,7 +17224,7 @@ you %1$sreach %2$d.%3$d in about %4$d.%5$d XLs.
 \n    当前攻击延迟: %.1f。
 %%%%
 your enemies will bleed and die for Makhleb.
-你的敌人将为马赫勒布流血而死。
+你的敌人将为马科列布流血而死。
 %%%%
 [%d + %d (Thrw)]
 [%d + %d (投掷)]
@@ -19209,7 +19209,7 @@ You are surrounded by a moderate repulsion field. (EV +3)
 你被一个中等的排斥场包围。（闪避+3）
 %%%%
 You are surrounded by a strong repulsion field. (EV +4, RMsl)
-你被一个强大的排斥场包围。（闪避+4，弹飞弹）
+你被一个强大的排斥场包围。（闪避+4，排斥飞弹）
 %%%%
 You are surrounded by an aura of silence.
 你被一个沉默光环包围。
@@ -23886,7 +23886,7 @@ Your quills recede back into your body.
 刺缩回了你的体内。
 %%%%
 Makhleb calls their payment due...
-马克勒布索要了应付的代价……
+马科列布索要了应付的代价……
 %%%%
 vessel of slaughter (+%d%% damage done)
 杀戮之器（伤害+%d%%）
@@ -24247,7 +24247,7 @@ The air fills with toxic fumes!
 空气中充满了毒雾！
 %%%%
 The lords of Pandemonium are not amused. Beware!
-魔窟的领主们被激怒了。小心！
+万魔殿领主们被激怒了。小心！
 %%%%
 The runic seal fades away.
 符文封印消散了。
@@ -25573,7 +25573,7 @@ You will be able to unleash your equipped armour.
 你将能够发动装备的护甲。
 %%%%
 You will become an instrument of Makhleb's will.
-你将成为马克勒布意志的工具。
+你将成为马科列布意志的工具。
 %%%%
 You will scour this world clean.
 你将净化这个世界。
@@ -37409,7 +37409,7 @@ status|Blind
 致盲
 %%%%
 status|Blood
-嗜血
+血甲
 %%%%
 status|Bog
 沼泽
@@ -38459,10 +38459,10 @@ status|regen
 再生
 %%%%
 status|repelling missiles
-弹开飞弹
+排斥飞弹
 %%%%
 status|rmissile
-弹飞弹
+排斥飞弹
 %%%%
 status|sapped magic
 魔力枯竭
@@ -41522,7 +41522,7 @@ A lost soul coalesces out of thin air!
 一个迷失的灵魂凭空凝聚成形！
 %%%%
 Zonguldrok's gravestone
-宗古多克的墓碑
+宗古德洛克的墓碑
 %%%%
 Ashenzari says: See what I see, mortal...
 艾申扎利说道：“凡人，看看我所看到的……”

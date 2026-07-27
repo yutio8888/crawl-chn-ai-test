@@ -136,6 +136,11 @@
 | Dungeon | 地牢 | — |
 | Arena | 竞技场 | 分支、地下城特征与世界显示文本统一；裁决 [D-A-044] |
 | Gauntlet | 试炼场 | 分支、地下城特征与世界显示文本统一；裁决 [D-A-045] |
+| Pandemonium | 万魔殿 | 分支、世界与传说专名；裁决 [D-A-046] |
+| Pandemonium lord | 万魔殿领主 | 怪物、称号与传说实体；裁决 [D-A-046] |
+| Erebora | 埃雷博拉 | 世界与固定神器传说专名；裁决 [D-A-048] |
+| Ereborans | 埃雷博拉人 | Erebora 居民；裁决 [D-A-048] |
+| Zonguldrok | 宗古德洛克 | 巫师实验室与相关物品传说专名；裁决 [D-A-049] |
 | Orb of Zot | 佐特宝珠 / 力量宝珠 | 两种译法均可 |
 | player ghost | 玩家鬼魂 | — |
 | skill | 技能 | — |
@@ -224,6 +229,7 @@
 | moonshine | 私酒 | potion effect; decision=D-B-020 |
 | morningstar | 晨星锤 | weapon; paired with eveningstar; decision=D-B-017 |
 | eveningstar | 暮星锤 | weapon; paired with morningstar; decision=D-B-017 |
+| lajatang | 双头杖 | weapon; decision=D-A-050 |
 | old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
 | partisan | 阔头枪 | weapon; decision=D-B-018 |
 | `potion full name\|invisibility` | 隐形 | potion context key; decision=D-B-020 |
@@ -452,6 +458,9 @@
 | Haste | 加速 | status; source=status.txt |
 | Invisibility | 隐形 | status; source=status.txt |
 | Might | 强效 | status; source=status.txt |
+| Repel Missiles | 排斥飞弹 | spell and status; source=source.txt; decision=D-A-047 |
+| `status\|Blood` | 血甲 | defensive sanguine armour status; decision=D-D-005 |
+| DUR_SANGUINE_ARMOUR | 血甲 | internal duration identity; decision=D-D-005 |
 | Berserk | 狂暴 | status; source=status.txt |
 | Poison | 中毒 | status; source=status.txt |
 | Confusion | 混乱 | status; source=status.txt |

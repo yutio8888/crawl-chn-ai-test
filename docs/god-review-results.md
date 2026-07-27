@@ -174,3 +174,36 @@ active 裁决，不另建命名决定。
 父 identity 集与 27 行证据卡一一相等；所有父身份均有唯一终态结论。
 神祇专属孤立 ZH 能力块已删除，剩余六项已有明确 owner 与重新进入条件。
 godspeak topology drift、结构 violations 均为 0。
+
+<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->
+{"baseline":"7b0224b32c0bd4b7b79119776762ee623857adc9","glossary_sha256":"4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e","identity_count":27,"inventory_sha256":"5bec3509985c3d108cc049d15c419e12e1794e3bbabfd537da011f6592860cf6"}
+```jsonl
+{"fact_sha256":"4cfa66a9df4352d05a0ede0b6afbf59b2c5e994f84c3ddce1253ce82d6d0df53","identity":"GOD_ASHENZARI","terminal_conclusion":"adjust"}
+{"fact_sha256":"869768c268699ca8a3830a0a8dc18975ee69f807da0c7e25b79d286676006675","identity":"GOD_BEOGH","terminal_conclusion":"adjust"}
+{"fact_sha256":"5d57be430957138270bb2393cbeab39927dfc7e3a20001b172b3baa57e59ce75","identity":"GOD_CHEIBRIADOS","terminal_conclusion":"adjust"}
+{"fact_sha256":"9b4cf5682c96241912d31b21d37a84c18dcdcd28b1c080c6fbd0e070942f8b0f","identity":"GOD_DITHMENOS","terminal_conclusion":"adjust"}
+{"fact_sha256":"a953dcda8be85b1c06eb88d9d3b901f59828018b1cacf4e4d710b6a070f04d99","identity":"GOD_ELYVILON","terminal_conclusion":"adjust"}
+{"fact_sha256":"5011ea4081f8c9cbc741b42a4ec99ef03f3102e72d338485d6b06079b22b7d89","identity":"GOD_FEDHAS","terminal_conclusion":"adjust"}
+{"fact_sha256":"268659efaa772ab5961be0c64b7f80bd3769999a74e203c9457d595bd0f0d7ce","identity":"GOD_GOZAG","terminal_conclusion":"keep"}
+{"fact_sha256":"63c23d8a6fd0bc0a7c07f5010eb9fddd3ecbcda265f7a2b393c670ea0083e87b","identity":"GOD_HEPLIAKLQANA","terminal_conclusion":"adjust"}
+{"fact_sha256":"26e6a7c502b9dbbb4a44dab5225d15d2ba014dd691a629cdb48589ca47183684","identity":"GOD_IGNIS","terminal_conclusion":"adjust"}
+{"fact_sha256":"d31b70bfdee36c892f71e2b841ab894819070ef72efb2bb7937f536437024941","identity":"GOD_JIYVA","terminal_conclusion":"adjust"}
+{"fact_sha256":"c7084ad1707c78edbd94f577b63940ad9ee65bcf289a86be0ba343db2a461c8f","identity":"GOD_KIKUBAAQUDGHA","terminal_conclusion":"adjust"}
+{"fact_sha256":"6e7777e57a66b5b347b96088f3ecd4d211e9deab58df302ce406baa8e19b3775","identity":"GOD_LUGONU","terminal_conclusion":"adjust"}
+{"fact_sha256":"1075c02e3f3e7cb408d6eca7f440c99770446485696b81409d54081a806afc41","identity":"GOD_MAKHLEB","terminal_conclusion":"adjust"}
+{"fact_sha256":"aca3b4b94f4559c4097e1bb95eeb4a75bf100fbd4aec8d67a5c789429764dc80","identity":"GOD_NEMELEX_XOBEH","terminal_conclusion":"adjust"}
+{"fact_sha256":"d395a1f341dbb39fc795a501a879faab2312e19daca06f852d68207b50b79e4e","identity":"GOD_OKAWARU","terminal_conclusion":"adjust"}
+{"fact_sha256":"acd86eb8e746ea4cd09d040b6e5d0f13236ee16520afda080f255df3e81404a6","identity":"GOD_PAKELLAS","terminal_conclusion":"keep"}
+{"fact_sha256":"06739f13060bb637c81932bc1f57d3d6b6470471ce7068eba135a3a57ed13042","identity":"GOD_QAZLAL","terminal_conclusion":"adjust"}
+{"fact_sha256":"4b9dd64bd356b9dfefb956ec7a752ead0c896af22078e2a7ff5510960337fcf9","identity":"GOD_RU","terminal_conclusion":"keep"}
+{"fact_sha256":"2c6cbd00fceb0eeea0af7f03729b2f8bbabf7ab8c123edd6f7d652882e823436","identity":"GOD_SHINING_ONE","terminal_conclusion":"adjust"}
+{"fact_sha256":"e7aa44489f5d45fc0bf6f437c3f93dcc3ff12052c3925d742c9825807ef25bde","identity":"GOD_SIF_MUNA","terminal_conclusion":"adjust"}
+{"fact_sha256":"2dd00cb7d55f9bc10ee8b27d207f692f0a1c71ead5a41c34e1792e3fa346f334","identity":"GOD_TROG","terminal_conclusion":"adjust"}
+{"fact_sha256":"b45df044ef99e55d2d8a6203f70adb7d46efab1ff8fee4c94fe11d2094159c47","identity":"GOD_USKAYAW","terminal_conclusion":"adjust"}
+{"fact_sha256":"859a55219aa5c8dceb1f8bff2176cdb4dcda55b8410a437c0792426197e899f5","identity":"GOD_VEHUMET","terminal_conclusion":"adjust"}
+{"fact_sha256":"701c109b6e8b4b5b4a5bb9d0903a1c0dcb44c57643dec178abbb0e2c29cf4869","identity":"GOD_WU_JIAN","terminal_conclusion":"adjust"}
+{"fact_sha256":"a7594c54e03f144e310ca80cf61a9c4cedee68e48e5c5af6e01243f45a161959","identity":"GOD_XOM","terminal_conclusion":"adjust"}
+{"fact_sha256":"2be80c2a04167f5d5c5ced28c0f0b63b091f7ac18eae4c785f8e538f80144a89","identity":"GOD_YREDELEMNUL","terminal_conclusion":"adjust"}
+{"fact_sha256":"562e0121b75cc4b31717c6ec79ca0bc4886df8b746c8eeb728ccab2c49dd7798","identity":"GOD_ZIN","terminal_conclusion":"adjust"}
+```
+<!-- END STRICT REVIEW EVIDENCE v1 -->

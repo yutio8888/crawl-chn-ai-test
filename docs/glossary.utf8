@@ -338,6 +338,7 @@ Draining Gaze	衰竭凝视	domain=spells; source=EN/ZH; 备注=✅；施加 Drai
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
 Druid's Call	德鲁伊呼唤	domain=spells; source=EN/ZH; 备注=✅；召回同层已有林地生物，非创造召唤物
 Dungeon	地牢	domain=core; source=EN/ZH
+DUR_SANGUINE_ARMOUR	血甲	domain=status; source=EN/ZH; Scope / comment=internal duration identity; decision=D-D-005
 Duvessa	杜维莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Earth Magic	大地魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -354,6 +355,8 @@ Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅；射出蛛网困住单�
 Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
 Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
 Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Erebora	埃雷博拉	domain=core; source=EN/ZH; 注意事项=世界与固定神器传说专名；裁决 [D-A-048]
+Ereborans	埃雷博拉人	domain=core; source=EN/ZH; 注意事项=Erebora 居民；裁决 [D-A-048]
 Ereshkigal	埃列什基伽勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erica	艾丽卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=✅；有毒污泥将附近坚实地面暂时转为毒沼
@@ -546,6 +549,7 @@ Kinetic Grapnel	动力抓钩	domain=spells; source=EN/ZH; 备注=✅
 Kirke	喀耳刻	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目标并暂时降低施法者生命值
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
+lajatang	双头杖	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-A-050
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
@@ -672,6 +676,8 @@ Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅�
 Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅；冻结视野内其他生物，邻接盟友可减伤
 Pain	痛苦	domain=spells; source=EN/ZH; 备注=✅
 Pakellas	帕克拉斯	domain=gods; source=EN/ZH; 类型=音译
+Pandemonium	万魔殿	domain=core; source=EN/ZH; 注意事项=分支、世界与传说专名；裁决 [D-A-046]
+Pandemonium lord	万魔殿领主	domain=core; source=EN/ZH; 注意事项=怪物、称号与传说实体；裁决 [D-A-046]
 Paralyse	麻痹	domain=spells; source=EN/ZH; 备注=✅
 Paralysis	麻痹	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Paralysis Gaze	麻痹凝视	domain=spells; source=EN/ZH; 备注=✅
@@ -741,6 +747,7 @@ Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=✅；恢复�
 Regeneration	再生	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；同步 inventory 实际译名
 remove	卸下	domain=items; source=EN/ZH
 Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅；近战命中时在附近敌人间来回撕裂
+Repel Missiles	排斥飞弹	domain=status; source=EN/ZH; Scope / comment=spell and status; source=source.txt; decision=D-A-047
 repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 resist	抵抗	domain=combat; source=EN/ZH
 Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -864,6 +871,7 @@ St. Lee	圣李	domain=items; source=EN/ZH; Scope / comment=unrand lore proper na
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -1029,4 +1037,5 @@ Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
 zombie	丧尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸”
+Zonguldrok	宗古德洛克	domain=core; source=EN/ZH; 注意事项=巫师实验室与相关物品传说专名；裁决 [D-A-049]
 Zot	佐特	domain=gods; source=EN/ZH; 类型=音译

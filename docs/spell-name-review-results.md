@@ -7,7 +7,7 @@
 冻结基线：`5cb9aa27a224a81da780757f8445cfc07de09dfd`
 
 术语上下文 SHA-256：
-`1af737231c2c1287c9cc3f3bb34cfa3890138ae2553c955c73db70b41701df3f`
+`4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`
 
 ## Blink 系列
 
@@ -590,7 +590,7 @@ Dispersal 与 Mesmerise 校准批次验证结果：
 | Enum | 当前译名 | 裁定 | 建议译名 | 置信度 |
 |---|---|---|---|---|
 | `SPELL_SUMMON_DEMON` | 召唤恶魔 | 保留 | 召唤恶魔 | 高 |
-| `SPELL_SUMMON_GREATER_DEMON` | 召唤高级恶魔 | 重译 | 召唤高等恶魔 | 高 |
+| `SPELL_SUMMON_GREATER_DEMON` | 召唤高等恶魔 | 重译 | 召唤高等恶魔 | 高 |
 | `SPELL_SUMMON_DRAGON` | 召唤巨龙 | 保留 | 召唤巨龙 | 高 |
 | `SPELL_SUMMON_UFETUBUS` | 召唤乌菲图布斯 | 重译 | 召唤乌菲特布斯 | 高 |
 | `SPELL_SUMMON_SIN_BEAST` | 召唤罪兽 | 重译 | 召唤罪孽兽 | 高 |
@@ -3638,3 +3638,28 @@ Killer Klown 专属物件，不误示为投掷小丑本体。
 `5b97f68339de1634fbfd1f8fdaa783d23297a5ac0979bf1cce393eaed4fec04d`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `660ff3a19309d42de3109f6af54dab6c29613bd73064e7edb6c33f8dfe2ed759`。
+
+## Stage B 最终冻结清单复核
+
+本节记录当前工作树的最终绑定，不改写上文各历史批次当时的 SHA。当前
+`docs/glossary.md` SHA-256 为
+`4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`；
+以 `migrate_spell_titles.py inventory --require-zh-titles` 重新生成的
+JSON SHA-256 为
+`39e5f81f49162f31506b9960ffe3756b7141d753a0ca753c29a28dc7aa929e67`。
+
+冻结清单的机械断言为：预期 enum 511 项、实际解析 511 项、唯一 enum
+511 项，`enum_identity_complete_and_unique=true`。另将清单中的 enum
+集合与本文全部 `SPELL_*` 身份去重集合双向比较：两侧均为 511 项，
+inventory 减本文为 0 项，本文减 inventory 也为 0 项。因此这里证明的是
+既有复审文档与当前生产清单的身份双向覆盖，不另造简单逐卡协议。
+
+本轮因术语与译文变化直接复核两项现行召唤法术：
+
+- `SPELL_SUMMON_DEMON`：5 级召唤法术，flags 为 `unholy`、
+  `mons_abjure`、`monster`，英文与中文描述均存在；当前标题“召唤恶魔”
+  与对象一致，终态仍为保留。
+- `SPELL_SUMMON_GREATER_DEMON`：7 级召唤法术，flags 为 `unholy`、
+  `mons_abjure`、`monster`，英文与中文描述均存在；当前标题已为
+  “召唤高等恶魔”，准确复用 `greater demon → 高等恶魔`，历史重译裁定
+  已落地，终态仍记为重译。

@@ -160,7 +160,7 @@
 | `mutation:MUT_DEMONIC_WILL` | current | demonic willpower → 恶魔意志；显示：恶魔意志；你惩罚那些试图扭曲你意志的人。（意志+）；你感到任性。 | 1 级；weight 0；flags mutflag::good；说明：你的意志力有了自己的意图，有时它会伤害那些试图给你下咒的人。 这个变异还会增强你的意志力。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_DEVOLUTION` | current | devolution → 退化；显示：退化；你拥有隐藏的基因缺陷。；你拥有可怕的隐藏基因缺陷。；你感到体内有一种隐藏的恶念正在成长。；你体内的恶念增长了。；你不再感到体内有恶念。；你基因的恶念减弱了。 | 2 级；weight 4；flags mutflag::bad；说明：当你获得经验时，你身体的隐藏特质会导致新的有害变异。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_DEVOUR_ON_KILL` | current | devour on kill → 击杀吞噬；显示：击杀吞噬；你通过杀戮活物而茁壮成长。；你感到渴望血肉。；你感到不那么渴望血肉了。 | 1 级；weight 0；flags mutflag::good；说明：当你杀死生物时，你有机会吞噬它们的生命力并恢复健康。 | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_DISTORTION_FIELD` | current | repulsion field → 排斥力场；显示：排斥力场；你被一个温和的排斥场包围。（闪避+2）；你被一个中等的排斥场包围。（闪避+3）；你被一个强大的排斥场包围。（闪避+4，弹飞弹）；你开始散发出排斥能量。；你的排斥辐射变强了。；你感到不那么排斥他人了。 | 3 级；weight 0；flags mutflag::good；说明：你被排斥力场围绕，这会提供少量闪避。 这个变异每升一级会提供更多闪避。 这个变异达到第三级也会使射向你的远程攻击的命中率减半。 | 修订：校准名称、术语或机制说明 |
+| `mutation:MUT_DISTORTION_FIELD` | current | repulsion field → 排斥力场；显示：排斥力场；你被一个温和的排斥场包围。（闪避+2）；你被一个中等的排斥场包围。（闪避+3）；你被一个强大的排斥场包围。（闪避+4，排斥飞弹）；你开始散发出排斥能量。；你的排斥辐射变强了。；你感到不那么排斥他人了。 | 3 级；weight 0；flags mutflag::good；说明：你被排斥力场围绕，这会提供少量闪避。 这个变异每升一级会提供更多闪避。 这个变异达到第三级也会使射向你的远程攻击的命中率减半。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_DISTRIBUTED_TRAINING` | current | distributed training → 分散训练；显示：分散训练；你的经验平均分配于所有技能。；你的经验现在均等地应用于所有技能。；你的经验不再均等地应用于所有技能。 | 1 级；weight 0；flags mutflag::good；说明：无论你何时获得经验，它都会分配到你的所有技能之中。 你无法选择技能进行着重训练。 此效果让你无法训练特定技能，仿佛是神的限制，不会让你的其他技… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_DIVINE_ATTRS` | current | divine attributes → 神圣属性；显示：神圣属性；你的神圣血统在升级时大幅提升你的属性。；你感到更加神圣。；你感到更加凡俗。 | 1 级；weight 0；flags mutflag::good；说明：当你与其他物种相比，无论是在数值还是在发育程度的掌控上， 神圣属性都显著提升了你的属性增益（力量、智力和敏捷）。 每过三级，你可以选一个属性，… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_DOPEY` | current | dopey → 愚钝；显示：愚钝；你很迟钝。（智力-3）；你非常迟钝。（智力-6） | 2 级；weight 8；flags mutflag::bad；说明：你的心智变得异常愚钝。这个变异每升一级会减3点智力。 | 修订：校准名称、术语或机制说明 |
@@ -219,7 +219,7 @@
 | `mutation:MUT_MAKHLEB_MARK_CARNAGE` | current | Mark of Carnage → 杀戮印记；显示：杀戮印记；你携带着杀戮印记。；你的仆从们渴望释放毁灭。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从现在被召唤到随机敌人旁边而不是你附近。当它们出现时， 它们会以你特征性的毁灭能量爆发出现（不会伤害你或其他盟友）。 （你的仆从释放… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MAKHLEB_MARK_CELEBRANT` | current | Mark of the Celebrant → 颂礼者印记；显示：颂礼者印记；你携带着颂礼者印记。；你的苦难将以鲜血偿还。 | 1 级；weight 0；flags mutflag::makhleb；说明：每当你的生命值降至最大生命值的50%以下时，你进行一次地狱仪式， 向附近的敌人释放一阵血箭齐射。你将为每个有效目标至少射出一支箭， 但如果目标… | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_MAKHLEB_MARK_EXECUTION` | current | Mark of Execution → 处决印记；显示：处决印记；你携带着处决印记。；杀戮在你灵魂中扎下了根。 | 1 级；weight 0；flags mutflag::makhleb；说明：一个谋杀之恶魔化身潜伏在你的灵魂中。每当你用近战击杀一个敌人时， 有很小概率它会醒来并显现为包围你的镰刀刀锋漩涡。这些刀锋会在你 攻击时一起攻… | 修订：校准名称、术语或机制说明 |
-| `mutation:MUT_MAKHLEB_MARK_FANATIC` | current | Mark of the Fanatic → 狂热者印记；显示：狂热者印记；你携带着狂热者印记。；你将成为马克勒布意志的工具。 | 1 级；weight 0；flags mutflag::makhleb；说明：赋予你杀戮化身能力，允许你在短时间内变身为一个强大的恶魔化身， 大幅提升攻击和防御，代价是之后被拖入血肉熔炉并被迫为自由而战。 | 保留：名称、等级显示与机制说明准确 |
+| `mutation:MUT_MAKHLEB_MARK_FANATIC` | current | Mark of the Fanatic → 狂热者印记；显示：狂热者印记；你携带着狂热者印记。；你将成为马科列布意志的工具。 | 1 级；weight 0；flags mutflag::makhleb；说明：赋予你杀戮化身能力，允许你在短时间内变身为一个强大的恶魔化身， 大幅提升攻击和防御，代价是之后被拖入血肉熔炉并被迫为自由而战。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MAKHLEB_MARK_HAEMOCLASM` | current | Mark of Haemoclasm → 血破印记；显示：血破印记；你携带着血破印记。；血雨将降在你敌人头上。 | 1 级；weight 0；flags mutflag::makhleb；说明：当你击杀敌人时，它们有很小概率爆炸为一阵猛烈的血雨，对相邻的敌人造成 与受害者最大生命值成比例的伤害。 死于这种爆炸的敌人自身也总是会爆炸。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MAKHLEB_MARK_LEGION` | current | Mark of the Legion → 军团印记；显示：军团印记；你携带着军团印记。；混沌大军现在由你统领。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从能力被替换为地狱军团，允许你随时间召唤一小支恶魔军队。 虽然个体存活短暂，但只要状态持续，它们的数量无穷无尽， 并且永远不会对你敌… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MAKHLEB_MARK_TYRANT` | current | Mark of the Tyrant → 暴君印记；显示：暴君印记；你携带着暴君印记。；即使是恶魔现在也会在你面前下跪。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从持续时间更长，在非常高的祈神技能下你甚至可以 召唤更强大的仆从（以额外的虔诚值为代价）。当你杀死敌人时， 一个随机仆从可能获得以下… | 保留：名称、等级显示与机制说明准确 |
@@ -272,7 +272,7 @@
 | `mutation:MUT_POOR_CONSTITUTION` | current | poor constitution → 体质虚弱；显示：体质虚弱；你的身体有时在受伤后会变得虚弱。；你的身体有时在受伤后会变得虚弱和缓慢。；你感到体质变弱了。；你感到体质变得更加虚弱。；你感到体质恢复了正常。；你感到体质略有改善。 | 2 级；weight 10；flags mutflag::bad；说明：你的身体难以承受伤势；受到伤害时，攻击有概率在短时间内被削弱。 这个变异达到第二级后，有时还会同时使你减速。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_POTION_FUNGUS` | current | potion fungus → 药水真菌；显示：药水真菌；你饮用药水的效果可能会传播到附近的怪物。；一种共生真菌蔓延到你全身。；遍布你全身的真菌枯萎脱落了。 | 1 级；weight 4；flags mutflag::bad；说明：你的身体覆盖着一种真菌，它会代谢你喝下的有益药水，并有时释放孢子， 将这些药水的效果传给附近的怪物——无论敌友。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_POWERED_BY_DEATH` | current | powered by death → 死亡赋能；显示：死亡赋能；你通过击杀恢复少量生命。；你通过击杀恢复生命。；你通过击杀恢复大量生命。；一波死亡之潮席卷了你。；死亡之潮的力量增长了。；你对周围生命力的控制消失了。；你对周围生命力的控制减弱了。 | 3 级；weight 0；flags mutflag::good；说明：死亡滋养着你，你每夺取一条生命，就能得到一定程度的治疗。 这个变异每升一级，治疗效果就会增强。 | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_POWERED_BY_PAIN` | current | powered by pain → 痛苦赋能；显示：痛苦赋能；你有时通过承受伤害获得少量力量。；你有时通过承受伤害获得力量。；你被痛苦所赋能。；你因痛苦而感到充满能量。；你因痛苦而感到更加充满能量。；你因痛苦而感到完全充满能量。 | 3 级；weight 0；flags mutflag::good；说明：当你受伤时，有时你会获得能量，它会注入你的法力储备， 有时你的敏捷或力量会得到暂时的提升。这个变异每升一级，其效果就会增强。 | 修订：校准名称、术语或机制说明 |
+| `mutation:MUT_POWERED_BY_PAIN` | current | powered by pain → 痛苦赋能；显示：痛苦赋能；你有时通过承受伤害获得少量力量。；你有时通过承受伤害获得力量。；你被痛苦所赋能。；你因痛苦而感到充满能量。；你因痛苦而感到更加充满能量。；你因痛苦而感到完全充满能量。 | 3 级；weight 0；flags mutflag::good；说明：当你受伤时，有时你会获得能量，它会注入你的法力储备， 有时还会使你暂时获得敏捷或强效状态。这个变异每升一级，其效果就会增强。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_PROTEAN_GRACE` | current | protean grace → 百变灵巧；显示：百变灵巧；你被你非先天变异所增强。（+；突变能量在你四肢中涌动。；在你四肢中涌动的突变能量消散了。 | 1 级；weight 2；flags mutflag::good；说明：你的四肢充满了变形之力，引导着你的一举一动。 你拥有的每项其他非先天突变还会提供 +1 闪避和 +1 杀戮加成（上限为 7）， 提高你的近战和… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_PSEUDOPODS` | current | pseudopods → 伪足；显示：伪足；护甲在你的伪足上不合身。；护甲在你较大的伪足上不合身。；护甲在你巨大的伪足上不合身。；伪足从你的身体长出。；你的伪足变大了。；你的伪足缩回了体内。；你的伪足变小了。 | 3 级；weight 0；flags mutflag::good ／ mutflag::ji…；说明：你身上长满了伪足，在近战时能够扫打敌人，但在一定程度上会削弱护甲提供的防护。 这对护甲附魔提供的防护没有影响，也不会影响训练的护甲技能的防御效… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_QUADRUMANOUS` | current | four strong arms → 四条强壮手臂；显示：四条强壮手臂；你的四条强壮手臂可以持盾使用双手武器。；你的两只手臂萎缩消失了。；你长出了两只额外的手臂。 | 1 级；weight 0；flags mutflag::good；说明：你有两对双臂，可以一对手持双手武器，另一对手持盾牌。 你甚至可以挥舞极其巨大的武器，比如大棒，不过这需要两对手臂的配合。 每对手臂的副臂的形状… | 保留：名称、等级显示与机制说明准确 |
@@ -301,7 +301,7 @@
 | `mutation:MUT_SLOW_WIELD` | current | slow wielding → 缓慢持武；显示：缓慢持武；你持握或移除武器需要很长时间。 | 1 级；weight 0；flags mutflag::bad；说明：装备或卸下武器时，你必须重新校准抓握手臂，所需时间与穿戴护甲相同。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_SPATIAL_ENTANGLEMENT` | current | spatial entanglement → 空间纠缠；显示：空间纠缠；当你位移时，有时会将一个怪物一起拉过去。；你感到周围的空间开始纠结在一起。；你感到空间从你身上解开了纠缠。 | 1 级；weight 2；flags mutflag::bad；说明：每当你发生传送时，都有概率将另一只怪物一同拉到你的新位置。 短距离传送只会拉走你原位置视野内的怪物，长距离传送则可能拉来本层任何地方的怪物。 … | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_SPELLCLAWS` | current | spellclaws → 法术之爪；显示：法术之爪；每当你施放伤害法术时，你会进行一次近战攻击。；你感到毁灭魔法在爪间流淌。；你不再感到毁灭魔法在爪间流淌。 | 1 级；weight 0；flags mutflag::good；说明：你会本能地通过利爪引导破坏性魔法。施放伤害法术时， 你还会对攻击范围内生命值最高的敌人发动一次近战攻击。 如果你的攻击速度慢于施法速度，此次攻… | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_SPINY` | current | spiny → 尖刺；显示：尖刺；你部分覆盖着锋利的尖刺。；你大部分覆盖着锋利的尖刺。；你完全覆盖着锋利的尖刺。；锐利的尖刺从你身体的部分部位长出。；锐利的尖刺从你身体的更多部位长出。；锐利的尖刺从你的全身长出。；你锐利的尖刺完全消失了。；你锐利的尖刺有所收缩。 | 3 级；weight 0；flags mutflag::good ／ mutflag::an…；说明：近战中，你的敌人有50%的几率被你的尖刺所刺穿，并受到伤害。 这个变异每升一级，尖刺造成的伤害都会提高。此变异还使你免疫束缚。 | 修订：校准名称、术语或机制说明 |
+| `mutation:MUT_SPINY` | current | spiny → 尖刺；显示：尖刺；你部分覆盖着锋利的尖刺。；你大部分覆盖着锋利的尖刺。；你完全覆盖着锋利的尖刺。；锐利的尖刺从你身体的部分部位长出。；锐利的尖刺从你身体的更多部位长出。；锐利的尖刺从你的全身长出。；你锐利的尖刺完全消失了。；你锐利的尖刺有所收缩。 | 3 级；weight 0；flags mutflag::good ／ mutflag::an…；说明：近战击中你的敌人有50%的几率被你的尖刺刺穿并受到伤害。 这个变异每升一级，尖刺造成的伤害都会提高。此变异还使你免疫束缚。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_SPITEFUL_BLOOD` | current | spiteful blood → 怨恨之血；显示：怨恨之血；你流出的血液可能会起来攻击你。；你流出的血液可能会成群地起来攻击你。；你感到血液中积聚着一股任性的愤怒。；你感到血液中的怨恨更加强烈了。；你的血液再次平静下来。；你感到血液中的怨恨少了一些。 | 2 级；weight 2；flags mutflag::bad ／ mutflag::nee…；说明：你的血液涌动着奇异的捕食恶意。当你受到重伤时，一部分血液可能会升起并攻击你—— 但在你完全恢复前，此事不会再次发生。 此变异的第二级会同时产生… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_SPIT_POISON` | current | spit poison → 喷吐毒液；显示：喷吐毒液；你可以喷吐毒素。；你可以喷吐一团毒雾。；你口中一时有种恶心的味道。；你感到喉咙疼痛。 | 2 级；weight 8；flags mutflag::good ／ mutflag::an…；说明：你可以通过<input>$cmd[CMD_USE_ABILITY]</input>喷吐毒液。 这个变异达到第二级，毒素会从一小团毒液，变成一大… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_STEAM_RESISTANCE` | current | steam resistance → 蒸汽抗性；显示：蒸汽抗性；你对蒸汽效果免疫。；你现在对蒸汽效果免疫了。；你不再对蒸汽效果免疫。 | 1 级；weight 0；flags mutflag::good ／ mutflag::su…；说明：你对蒸汽吐息和蒸汽云的伤害免疫。 | 保留：名称、等级显示与机制说明准确 |
@@ -309,7 +309,7 @@
 | `mutation:MUT_STONE_BODY` | current | stone body → 石质身体；显示：石质身体；你的石质身体坚韧且免疫石化。（防御+；你的身体在震动。；你短暂地停止了移动。 | 1 级；weight 0；flags mutflag::good ／ mutflag::su…；说明：你由极为耐受伤害的活石构成。你会获得大量护甲等级加成， 且加成随经验等级提高；你还免疫石化、中毒、疾病、睡眠及其他某些效果。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_STRONG` | current | strong → 强壮；显示：强壮；你很强壮。（力量+4，智力/敏捷-1）；你非常强壮。（力量+8，智力/敏捷-2） | 2 级；weight 7；flags mutflag::good；说明：你的肌肉变得异常强壮。这个变异每升一级会加4点力量， 但额外的肌肉会让你的动作和思维变得迟钝，每升一级，你的智力和敏捷会减1点。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_STRONG_WILLED` | current | strong-willed → 意志坚强；显示：意志坚强；你意志坚强。（意志+）；你意志非常坚强。（意志++）；你意志极其坚强。（意志+++）；你感到意志坚定。；你感到意志更加坚定。；你感到意志几乎牢不可破。；你不再感到意志坚定。；你感到意志不再那么坚定。 | 3 级；weight 5；flags mutflag::good；说明：你有着异常强大的意志，提升了对某类敌对魔法的抵抗力。 这个变异每升一级，就会增加你的意志力。 | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_STURDY_FRAME` | current | sturdy frame → 健壮体格；显示：健壮体格；护甲对你的移动阻碍略微减少。（负重-2）；护甲对你的移动阻碍减少。（负重-4）；护甲对你的移动阻碍显著减少。（负重-6）；你感到护甲不那么累赘了。；你感到护甲更加累赘了。 | 3 级；weight 2；flags mutflag::good；说明：你的行动将少受到护甲的阻碍， 并减少了护甲对施法的成功率、命中率和远程武器的攻击速度的负面影响。 这个变异每升一级，就会减少2点护甲的妨碍等级。 | 修订：校准名称、术语或机制说明 |
+| `mutation:MUT_STURDY_FRAME` | current | sturdy frame → 健壮体格；显示：健壮体格；护甲对你的移动阻碍略微减少。（负重-2）；护甲对你的移动阻碍减少。（负重-4）；护甲对你的移动阻碍显著减少。（负重-6）；你感到护甲不那么累赘了。；你感到护甲更加累赘了。 | 3 级；weight 2；flags mutflag::good；说明：你的行动将少受到护甲的阻碍， 并减少了护甲对施法成功率、闪避和远程武器攻击速度的负面影响。 这个变异每升一级，就会减少2点护甲的妨碍等级。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_SUBDUED_MAGIC` | current | subdued magic → 压制魔法；显示：压制魔法；你的法术施放稍微更容易，但威力稍微更弱。；你的法术施放更容易，但威力更弱。；你的法术施放容易得多，但威力弱得多。；你与魔法的连接感到被抑制了。；你与魔法的连接感到更加被抑制了。；你与魔法的连接几乎沉睡。；你的魔法恢复了正常的活力。；你与魔法的连接不那么被抑制了。 | 3 级；weight 6；flags mutflag::bad；说明：你的法术将略易施放（减少了失误率和判定的严苛程度），但威力会变弱。 这个变异每升一级，两方面的效果都会增强。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_TALONS` | current | talons → 爪；显示：爪；你有锋利的趾甲。；你有剃刀般锋利的趾甲。；你脚上有爪子。；你的趾甲变长变锋利了。；你的双脚伸成了利爪。；你的利爪变钝缩成了脚。；你的利爪看起来更像脚了。 | 3 级；weight 5；flags mutflag::good ／ mutflag::an…；说明：你长出锋利的趾甲，如果不穿靴子，在近战时能够踢击敌人。这个变异每升一级， 你的趾甲就会更尖、更长、更强。这个变异达到第三级，你将无法穿靴子。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_TELEPORTITIS` | current | teleportitis → 传送症；显示：传送症；你偶尔会被传送到怪物旁边。；你经常会被传送到怪物旁边。；你感到莫名的不确定。；你感到更加莫名的不确定。；你感到稳定。 | 2 级；weight 3；flags mutflag::bad；说明：你会周期性地传送到敌对怪物附近。传送发生前数回合，你会感觉自身开始变得不稳定； 阅读传送卷轴可以暂时抑制这种情况。 这个变异每升一级，开始传送… | 修订：校准名称、术语或机制说明 |
@@ -510,7 +510,7 @@
 | `duration:DUR_REVELATION` | internal | revelation → — | `duration_data` 显示槽 0/3；flags D_NO_FLAGS；内部名 revelation | 保留：无玩家显示槽的内部计时身份 |
 | `duration:DUR_RIME_YAK_AURA` | internal | cold aura → — | `duration_data` 显示槽 0/3；flags D_NO_FLAGS；内部名 cold aura | 保留：无玩家显示槽的内部计时身份 |
 | `duration:DUR_RISING_FLAME` | current | rising → 上升中；显示：升起；上升中；你正在向天花板上升。 | `duration_data` 显示槽 3/3；flags D_NO_FLAGS；内部名 rise | 保留：显示槽、颜色标记与说明准确 |
-| `duration:DUR_SANGUINE_ARMOUR` | current | sanguine armoured → 血甲护体；显示：嗜血；血甲护体；你流出的血液附着并保护着你。 | `duration_data` 显示槽 3/3；flags D_NO_FLAGS；内部名 sanguine armour | 修订：补齐显示翻译或统一相关说明术语 |
+| `duration:DUR_SANGUINE_ARMOUR` | current | sanguine armoured → 血甲护体；显示：血甲；血甲护体；你流出的血液附着并保护着你。 | `duration_data` 显示槽 3/3；flags D_NO_FLAGS；内部名 sanguine armour | 修订：补齐显示翻译或统一相关说明术语 |
 | `duration:DUR_SAP_MAGIC` | current | magic-sapped → 魔力枯竭；显示：枯竭；魔力枯竭；施法可能导致你失去使用魔法的能力。 | `duration_data` 显示槽 3/3；flags D_DISPELLABLE ／ D_NEGATIVE；内部名 sap magic | 保留：显示槽、颜色标记与说明准确 |
 | `duration:DUR_SCRYING` | internal | old scrying → — | `duration_data` 显示槽 0/3；flags D_NO_FLAGS；内部名 old scrying | 保留：无玩家显示槽的内部计时身份 |
 | `duration:DUR_SEE_INVISIBLE` | internal | old see invisible → — | `duration_data` 显示槽 0/3；flags D_NO_FLAGS；内部名 old see invisible | 保留：无玩家显示槽的内部计时身份 |
@@ -564,10 +564,11 @@
 | `duration:DUR_WEREFURY` | current | full of bloodlust → 充满嗜血；显示：杀戮；充满嗜血；你的近战攻击被原始嗜血所增强。 | `duration_data` 显示槽 3/3；flags D_EXPIRES ／ D_ATTACK_EXTENDED；内部名 bloodlust | 保留：显示槽、颜色标记与说明准确 |
 | `duration:DUR_WORD_OF_CHAOS_COOLDOWN` | current | on word of chaos cooldown → 混沌之语冷却；显示：-混沌；混沌之语冷却；你无法说出混沌之语。 | `duration_data` 显示槽 3/3；flags D_COOLDOWN；内部名 word of chaos cooldown | 保留：显示槽、颜色标记与说明准确 |
 
-## 附加状态证据卡（48）
+## 附加状态证据卡（49）
 
 | 身份 | 生命周期 | 名称与显示形式 | 生产事实 | 终态结论 |
 |---|---|---|---|---|
+| `status:STATUS_AIRBORNE` | current | Fly → 飞行；显示：飞行；飞行中；你正在飞行。 | `fill_status_info` producer=true；db_key Fly；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_AUGMENTED` | current | Aug → 增幅 | `fill_status_info` producer=true；db_key Aug；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_BACKLIT` | current | STATUS_BACKLIT → —；显示：发光；你在发光。 | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_BEHELD` | current | Mesm → 迷魂；显示：迷魂；被迷住；你陷入了迷魂状态。 | `fill_status_info` producer=true；db_key Mesm；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
@@ -575,21 +576,21 @@
 | `status:STATUS_BLACK_TORCH` | current | Torch → 火炬；显示：火炬；火炬(%d)；火炬点燃 | `fill_status_info` producer=true；db_key Torch；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_BRIBE` | current | Bribe → 贿赂；显示：贿赂；贿赂[%s]；、；你正在贿赂：；。 | `fill_status_info` producer=true；db_key Bribe；显示字面量 5 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CANINE_FAMILIAR_ACTIVE` | current | Dog → 犬灵；显示：犬灵；犬神已召；你的犬神已被召唤。 | `fill_status_info` producer=true；db_key Dog；显示字面量 3 | 修订：长文本纳入 status 上下文翻译 |
-| `status:STATUS_CHANNELLING_SPELL` | current | STATUS_CHANNELLING_SPELL → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_CHANNELLING_SPELL` | current | Ray → 射线；显示：火焰波；射线；缠绕 | `fill_status_info` producer=true；db_key Ray、Wave、Winding；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CLAUSTROPHOBIA` | current | STATUS_CLAUSTROPHOBIA → —；显示：恐惧(-%d) | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CLOUD` | current | Cloud → 云雾 | `fill_status_info` producer=true；db_key Cloud；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CONSTRICTED` | current | Constr → 束缚；显示：束缚；被根缠绕；被尸手缠绕；被缠绕 | `fill_status_info` producer=true；db_key Constr；显示字面量 4 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_CONTAMINATION` | current | STATUS_CONTAMINATION → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_CONTAMINATION` | current | Contam → 诱变辐射 | `fill_status_info` producer=true；db_key Contam；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CORROSION` | current | STATUS_CORROSION → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CRUCIBLE_DEBT` | current | Escape! → 逃脱!；显示：契约；逃脱! | `fill_status_info` producer=true；db_key Escape!、Pact；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DIG` | current | Dig → 挖掘 | `fill_status_info` producer=true；db_key Dig；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DRACONIAN_BREATH` | current | Breath → 吐息 | `fill_status_info` producer=true；db_key Breath；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DRAINED` | current | Drain → 衰竭；显示：衰竭；极度削命；你的生命力被极度削弱了。；严重削命；你的生命力被严重削弱了。；重度削命；你的生命力被大幅削弱了。；削命；你的生命力被削弱了。；轻度削命；你的生命力被轻度削弱了。 | `fill_status_info` producer=true；db_key Drain；显示字面量 11 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DUEL` | current | Duel → 决斗；显示：决斗；决斗中；你正在单挑中。 | `fill_status_info` producer=true；db_key Duel；显示字面量 3 | 修订：长文本纳入 status 上下文翻译 |
-| `status:STATUS_GEM` | current | STATUS_GEM → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_GEM` | current | Gem → 远古宝石；显示：宝石(*)；宝石(%d) | `fill_status_info` producer=true；db_key Gem；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_GRAVE_CLAW_UNAVAILABLE` | current | -GClaw → -巨爪 | `fill_status_info` producer=true；db_key -GClaw；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_HEAVENLY_STORM` | current | STATUS_HEAVENLY_STORM → —；显示：天威(%d) | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_INVISIBLE` | current | STATUS_INVISIBLE → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_INVISIBLE` | current | Invis → 隐形；显示：隐形；你现在；。 | `fill_status_info` producer=true；db_key Invis；显示字面量 4 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_IN_DEBT` | internal | STATUS_IN_DEBT → — | `fill_status_info` producer=false；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：枚举保留、无独立 producer |
 | `status:STATUS_LIQUEFIED` | current | SlowM → 慢移；显示：慢移；移动减速；在液化地面上你的移动减缓了。 | `fill_status_info` producer=true；db_key SlowM；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_LOWERED_WL` | current | STATUS_LOWERED_WL → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
@@ -601,21 +602,21 @@
 | `status:STATUS_ORB` | current | Orb → 宝珠；显示：宝珠；宝珠? | `fill_status_info` producer=true；db_key Orb；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_OSTRACISM` | current | Ostracised → 被排斥 | `fill_status_info` producer=true；db_key Ostracised；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_PEEKING` | current | Peek → 窥视；显示：窥视；窥视中；你正在朝楼梯下窥视。 | `fill_status_info` producer=true；db_key Peek；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_REGENERATION` | current | STATUS_REGENERATION → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_REV` | current | STATUS_REV → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_REGENERATION` | current | -Regen → -再生；显示：再生 意志++；再生中；你正在恢复生命。；-再生；恢复受阻；你的恢复被附近的怪物抑制了。 | `fill_status_info` producer=true；db_key -Regen、Regen Will++；显示字面量 6 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_REV` | current | Rev → 暖机；显示：暖机；加速中；你开始热身。；暖机+；你正在热身。；暖机*；运转中；你已完全热身。 | `fill_status_info` producer=true；db_key Rev；显示字面量 8 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_RF_ZERO` | current | rF0 → 无抗火；显示：无抗火；火焰易伤；你无法抵抗火焰。 | `fill_status_info` producer=true；db_key rF0；显示字面量 3 | 修订：长文本纳入 status 上下文翻译 |
 | `status:STATUS_SERPENTS_LASH` | current | STATUS_SERPENTS_LASH → —；显示：鞭击(%u)；蛇之鞭；你以超自然速度移动。 | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 3 | 修订：长文本纳入 status 上下文翻译 |
 | `status:STATUS_SHROUD` | current | Shroud → 护罩；显示：护罩；黏液护罩 | `fill_status_info` producer=true；db_key Shroud；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_SILENCE` | current | Sil → 沉默；显示：沉默；你被沉默了。 | `fill_status_info` producer=true；db_key Sil；显示字面量 3 | 修订：长文本纳入 status 上下文翻译 |
-| `status:STATUS_SPEED` | current | STATUS_SPEED → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_SPEED` | current | Fast → 加速；显示：加速+减速；加速且减速；你同时受到减速和加速效果。；减速；你被减速了。；加速；加速中；你的行动被加速了。 | `fill_status_info` producer=true；db_key Fast、Fast+Slow、Slow；显示字面量 9 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_STAT_ZERO` | current | Crippled → 残废；显示：残废；迷失%s；你已经没有%s了！ | `fill_status_info` producer=true；db_key Crippled；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_STILL_WINDS` | current | -Clouds → -云雾 | `fill_status_info` producer=true；db_key -Clouds；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_SUNDER_READY` | current | Sunder → 碎裂 | `fill_status_info` producer=true；db_key Sunder；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_TERRAIN` | current | STATUS_TERRAIN → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_TERRAIN` | current | Lava → 熔岩；显示：水域；熔岩 | `fill_status_info` producer=true；db_key Lava、Water；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_TESSERACT` | current | Tesseract → 超立方体 | `fill_status_info` producer=true；db_key Tesseract；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_TRICKSTER` | current | STATUS_TRICKSTER → —；显示：诡术(+%d甲)；散布的厄运强化了你（AC +%d） | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_UMBRA` | current | STATUS_UMBRA → —；显示：暗影缠绕；你被暗影环绕着。 | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_ZOT` | current | STATUS_ZOT → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_ZOT` | current | Zot → 佐特领域；显示：沉醉；佐特正在逼近！；佐特(%d) | `fill_status_info` producer=true；db_key Zot；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 
 ## 怪物状态证据卡（139）
 
@@ -663,7 +664,7 @@
 | `monster_status:extremely poisoned monstatus` | current | extremely poisoned monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物每回合受到毒素伤害，且无法被进一步中毒。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:fast monstatus` | current | fast monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物的行动和移动速度提升50%。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:feeble figment monstatus` | current | feeble figment monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物只是另一个生物的脆弱复制体。其生命值减少66%，攻击伤害减少33%， 法术威力显著减弱。 | 保留：状态语义、效果说明与术语准确 |
-| `monster_status:flame-wreathed monstatus` | current | flame-wreathed monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物被伊格尼斯的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%， AC和火焰抗性提高。 | 保留：状态语义、效果说明与术语准确 |
+| `monster_status:flame-wreathed monstatus` | current | flame-wreathed monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物被曳焰的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%， AC和火焰抗性提高。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:fleeing monstatus` | current | fleeing monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物因恐惧而逃跑，每回合都会尝试远离恐惧来源。除移动外， 它只能施放认为有助于逃跑的法术，比如闪烁。 如果被直接伤害或被地形逼入绝境，它会… | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:fragile as glass monstatus` | current | fragile as glass monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物受到的所有来源伤害增加50%。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:frenzied and wild monstatus` | current | frenzied and wild monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物近战攻击伤害提升50%，移动和攻击速度提升50%。它无法施法， 每回合会优先攻击最近的生物，无论对方是友方还是敌方。 | 保留：状态语义、效果说明与术语准确 |
@@ -760,3 +761,705 @@
 | `monster_status:weak-willed monstatus` | current | weak-willed monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物的意志力降低了一半。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:winding a clockwork bee monstatus` | current | winding a clockwork bee monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物正在准备发射一只发条蜜蜂，必须专注于这个任务数回合。 大多数阻止该生物施法的效果也会中断这个进程。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:withering away monstatus` | current | withering away monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物将在几回合后死亡。 | 保留：状态语义、效果说明与术语准确 |
+
+<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->
+{"baseline":"76c815b2ac79d11a8066597ad04d127a1636e153","glossary_sha256":"4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e","identity_count":696,"inventory_sha256":"e75cde5f3c281bb5b2c2a516c2510210d3014fdb51a1e61afdf3ffaa597b355e"}
+```jsonl
+{"fact_sha256":"f666db6e05027d87e75f2accbe661c0bcef11a0e22e07854dbff254e18b1ad20","identity":"ability:ABIL_BAT_SWARM","terminal_conclusion":"adjust"}
+{"fact_sha256":"e7f4f548944e3af58d29ceb28bb38907262ac568622f5bd3e4fe30c219feedb5","identity":"ability:ABIL_BESTIAL_TAKEDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"a4a1cf5d9d337e4bf4b434e11f97e2258a6dd69c278a24ed72d33fc134c9d0bf","identity":"ability:ABIL_BLINKBOLT","terminal_conclusion":"adjust"}
+{"fact_sha256":"238b50a6aabff588a36e28984749a93256626d9696e937123ab4cbb470a5dde4","identity":"ability:ABIL_BREATHE_POISON","terminal_conclusion":"adjust"}
+{"fact_sha256":"907112d7397994f76c8a502375ba6cb79ac7876b5d1dce28f15b259bbdd6f11c","identity":"ability:ABIL_BREATHE_RUST","terminal_conclusion":"adjust"}
+{"fact_sha256":"d5ba03ca31cb5c3a84aa1c2cb43e346e9fa1f9c2ebb54796b7bb5dfac9fbb131","identity":"ability:ABIL_CACOPHONY","terminal_conclusion":"retranslate"}
+{"fact_sha256":"a5ddcf286d3b0e40733e364aadd1806a4a50396a4267a805455d46d3c90ee55d","identity":"ability:ABIL_CAUSTIC_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"d82bfae053aba3dbb3adf2236b9b9a14c16e36a077ab459c7cac372c06120988","identity":"ability:ABIL_COMBUSTION_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"1db917b21dfad6d4edf078bb6f142945a0d3571ad3014b6b9cbcad3127b8c8b0","identity":"ability:ABIL_DAMNATION","terminal_conclusion":"keep"}
+{"fact_sha256":"d9f454a5c306d6e330bac49c4010b2627a826a884d048b293df27c90feb9c07c","identity":"ability:ABIL_DIG","terminal_conclusion":"retranslate"}
+{"fact_sha256":"03c05b28141d41af1f9a4c61b5c7b7294ad7582bead9c13de37c47f2067ed11a","identity":"ability:ABIL_END_TRANSFORMATION","terminal_conclusion":"keep"}
+{"fact_sha256":"4ca76e38e2d59bb42458147bcc2b79676678a5809044af330f93642a1f01417a","identity":"ability:ABIL_ENKINDLE","terminal_conclusion":"adjust"}
+{"fact_sha256":"727f2631219c6b14bc86a88e7a001980fd42aea91a4f6404b5cbd3decc3165c7","identity":"ability:ABIL_EVOKE_BLINK","terminal_conclusion":"retranslate"}
+{"fact_sha256":"2b18648c8aa6e876b3c72d006fa9cf6094196abed65aad716b9915b2e12062c1","identity":"ability:ABIL_EVOKE_DISPATER","terminal_conclusion":"retranslate"}
+{"fact_sha256":"c8d7e1b5be3d6b3598aba508308cd7cebe057f777646ac201e078747cef1789b","identity":"ability:ABIL_EVOKE_OLGREB","terminal_conclusion":"adjust"}
+{"fact_sha256":"0f02216a1e62de1ecbad93eac8138637a370f19f3d6be88e3c2391c3cc0f98a7","identity":"ability:ABIL_EVOKE_TURN_INVISIBLE","terminal_conclusion":"adjust"}
+{"fact_sha256":"ef73e50b96b97578699acf0a6ca78166667a0070a7b897f3678c351622d19ae4","identity":"ability:ABIL_GALVANIC_BREATH","terminal_conclusion":"adjust"}
+{"fact_sha256":"ce604fe9e1f65288323a608cb4bfa30a0f6275e9c7eca266dc0dd39940cdac6a","identity":"ability:ABIL_GLACIAL_BREATH","terminal_conclusion":"adjust"}
+{"fact_sha256":"dffecd7d3ebd573a54131388dc236a312c94183d2e40c984503aa0910dcf9abe","identity":"ability:ABIL_GOLDEN_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"b246a4cfd06c9a2c52e3e385f0984f67faadd9e0b103d252ea3d71cfe80e9064","identity":"ability:ABIL_HEAL_WOUNDS","terminal_conclusion":"adjust"}
+{"fact_sha256":"1978bd09cabe09a4d03f253f6756fadc27757d2e615f76d919db18a7c076f34a","identity":"ability:ABIL_HOP","terminal_conclusion":"adjust"}
+{"fact_sha256":"01e6394517a95c37a2b28d77a0389b7c22760c41a00c15c894571ea7f2f78aa2","identity":"ability:ABIL_IMBUE_SERVITOR","terminal_conclusion":"keep"}
+{"fact_sha256":"19b1b82b81c882024385cf39835ebc52ad92fbc721de75464b785a40f090b09e","identity":"ability:ABIL_IMPRINT_WEAPON","terminal_conclusion":"adjust"}
+{"fact_sha256":"76e74f7573999c81d943e6fe8be7ff5a01968e43faa3911fda0a26beaa31bdf3","identity":"ability:ABIL_INVENT_GIZMO","terminal_conclusion":"adjust"}
+{"fact_sha256":"d65aed4ae3110d7737a85ecc67bdfc7f293f9bbce34e90db6f12cb82a948dcbb","identity":"ability:ABIL_MUD_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"7b128eede6d6ea9aabc5524449fb482aa4f71aaab6d419f5ed13572928cfda92","identity":"ability:ABIL_NON_ABILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"d2709f82b258ae5a6bf666c3de77437996dd3e371f29129ec55692cea2249c91","identity":"ability:ABIL_NOXIOUS_BREATH","terminal_conclusion":"adjust"}
+{"fact_sha256":"918e3df063e1548f3d097d5bddf29217dd72c5fa534b4eccf1e017bdf941309c","identity":"ability:ABIL_NULLIFYING_BREATH","terminal_conclusion":"adjust"}
+{"fact_sha256":"40ea5e6ddcdd1f79df9183396aa32648f3dbcc761ad707dbb8a07f8c7902e23b","identity":"ability:ABIL_SHAFT_SELF","terminal_conclusion":"retranslate"}
+{"fact_sha256":"d044c212bc1091c1c3cb33b3410eb5b7fe62b629d8b5da9b631af91c001c0fe7","identity":"ability:ABIL_SIPHON_ESSENCE","terminal_conclusion":"adjust"}
+{"fact_sha256":"f6e83cbabbf41398eaae3662b332fa71fc160f6eff1f2bcc610325a7a336bc32","identity":"ability:ABIL_SPIDER_JUMP","terminal_conclusion":"adjust"}
+{"fact_sha256":"f60378d763e15f21a28a42dc6e5583ffa9ccf81df058773e9801728ab040636a","identity":"ability:ABIL_SPIT_POISON","terminal_conclusion":"keep"}
+{"fact_sha256":"579b76b46565cc4ebbc6d20f3d68acf325ef92f864afb9e0106b2b507b5c0c3c","identity":"ability:ABIL_STEAM_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"1c57c8c34914ae3b305458fb954ed84b25749c5c92afa84383b47e0f215838c9","identity":"ability:ABIL_WATERY_GRAVE","terminal_conclusion":"adjust"}
+{"fact_sha256":"0ecda84192ec1bc606856b49e9deebbb29eec5204e73d4c994a5b39d61edd70b","identity":"ability:ABIL_WORD_OF_CHAOS","terminal_conclusion":"retranslate"}
+{"fact_sha256":"ec28300db1da3f08e8e38792ef9cc135c60e5e8b8d08a6e1ed9ba307a17029a6","identity":"attribute:STAT_DEX","terminal_conclusion":"keep"}
+{"fact_sha256":"515e8676215aef774b18530c1a7e19f8b5d01a93e2f5a294df975639df6ecab9","identity":"attribute:STAT_INT","terminal_conclusion":"keep"}
+{"fact_sha256":"6ed1df501603b43763bae88ac4e7bbb3c917521e70de09f98e6f9168d49abdab","identity":"attribute:STAT_STR","terminal_conclusion":"keep"}
+{"fact_sha256":"223792c280ccc539836d6a6c1bd7a1481fbac7b31f06176b82df58aab90ea374","identity":"duration:DUR_ABJURATION_AURA","terminal_conclusion":"keep"}
+{"fact_sha256":"1d8a8e4263e2411b87d927f653d125624a8549dbaf66a8567712be8cca6a0c05","identity":"duration:DUR_ACROBAT","terminal_conclusion":"adjust"}
+{"fact_sha256":"e1a1e70526d19e351118b8f009ac20c190bc1cd79914a0c12054f77902946c16","identity":"duration:DUR_AFRAID","terminal_conclusion":"keep"}
+{"fact_sha256":"d0d82f962d51a73dbb27f1e8bacd347300ea5e331582d44d31811a0f85bd9ab5","identity":"duration:DUR_AGILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"5f1ee5b2da679287f094fa2b28f2a2030087a1bc39e5e1b07f262d233d425a1f","identity":"duration:DUR_ALLY_RESET_TIMER","terminal_conclusion":"keep"}
+{"fact_sha256":"c127a78cc8e7807de22da86efca16e65c3fb6a972ac0f6e2a9810205d41a9e78","identity":"duration:DUR_AMBROSIA","terminal_conclusion":"adjust"}
+{"fact_sha256":"a17600d52dd316f90a7efa01f6ef461e4b98ff254d45030c20d8382344e6ee38","identity":"duration:DUR_ANCESTOR_DELAY","terminal_conclusion":"keep"}
+{"fact_sha256":"c21b5539437298901ed438f116457efb4590406bac7d5cf469b686f84204a461","identity":"duration:DUR_ANIMATE_DEAD","terminal_conclusion":"keep"}
+{"fact_sha256":"d54d66260548f31fcea3e48bbde45528de33a603b0e210c0d69a91cf5c918416","identity":"duration:DUR_ANTENNAE_EXTEND","terminal_conclusion":"keep"}
+{"fact_sha256":"4173f852dce7a8ebb1b08aaa3e548c24134435de2a34513f20345fd072c427d2","identity":"duration:DUR_ANTIMAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"683dec7e4969fe91c713b912b61c8948f9d57302454b6667919d87c405f54f9a","identity":"duration:DUR_ATTRACTIVE","terminal_conclusion":"keep"}
+{"fact_sha256":"79a010b5b3d3b9a84ae1f59aa2ae6a89e11f0210aaa8ac512eec83460121a973","identity":"duration:DUR_AUTODODGE","terminal_conclusion":"keep"}
+{"fact_sha256":"95f74f67af3f5a052d2e4f01f6ce8b71c5398b3df56f740c371679168904f11f","identity":"duration:DUR_BARBS","terminal_conclusion":"keep"}
+{"fact_sha256":"0dc856244725d79c367103d57d1db288e2b965caa843d7233acc97fdf78fae0c","identity":"duration:DUR_BARGAIN","terminal_conclusion":"keep"}
+{"fact_sha256":"15419baeeaa10dd15354b6524e59ef8d73f625fb44896b87afe44ebb79d29341","identity":"duration:DUR_BATTLESPHERE","terminal_conclusion":"keep"}
+{"fact_sha256":"742fb5fa8f85c7b1a7eb65dac119c769e3ef81b52afbffa4afdc53cb70461180","identity":"duration:DUR_BEOGH_CAN_RECRUIT","terminal_conclusion":"keep"}
+{"fact_sha256":"aaed3474e88db20afc0cb36084d6c1c7cf8605e555a7cb179ffe4952109acabc","identity":"duration:DUR_BEOGH_DIVINE_CHALLENGE","terminal_conclusion":"keep"}
+{"fact_sha256":"5523999d6f4c51f25ef0e498d0c8e829d5d27150c724b7ae11ebae21870fc45d","identity":"duration:DUR_BEOGH_SEEKING_VENGEANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"3192b92220751d6b3ad91dc78b96b21803061207501bd8d4e7f3517c65ccf92f","identity":"duration:DUR_BERSERK","terminal_conclusion":"keep"}
+{"fact_sha256":"9d18afb0047942aeeee4d74fabae82eef098fe3c92e68284420f2491c18b2ad9","identity":"duration:DUR_BERSERK_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"a869f562528085971d6d1950bb14ada656c73294143caa18bbedd2a10f85408d","identity":"duration:DUR_BINDING_SIGIL_WARNING","terminal_conclusion":"keep"}
+{"fact_sha256":"24387b2592de16e9153b51f4157ca3b4538afb0f21b3436ebb0779dba2cb738b","identity":"duration:DUR_BLIND","terminal_conclusion":"keep"}
+{"fact_sha256":"37b90b256f07c9402e485638a95f3346d9c980b66761ebef9bdc173a2228e5cc","identity":"duration:DUR_BLINKBOLT_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"28821c4cd374afac26a0aca237f10426712e71266146afef9e574c9c2cd513b0","identity":"duration:DUR_BLINKITIS","terminal_conclusion":"keep"}
+{"fact_sha256":"7999e8e15b04685ac4207ca4d10eb3c8f7cd4c827fe16758e9786d2a57abf93b","identity":"duration:DUR_BLINK_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"1d70bb63ff1cb4293c193a9de053c68f472aa1234f612afdf0e1dc1a74045aeb","identity":"duration:DUR_BLOOD_FOR_BLOOD","terminal_conclusion":"keep"}
+{"fact_sha256":"a3cfb62672a0cb7b2085e1ad3d6b36e8959199d5d56018ba46462b3ad87a5dad","identity":"duration:DUR_BRAINLESS","terminal_conclusion":"keep"}
+{"fact_sha256":"bfc64cee999593825f6ea919870a54538bf00e9ec79461f626400bbaa803d41c","identity":"duration:DUR_BREATH_WEAPON","terminal_conclusion":"keep"}
+{"fact_sha256":"0963ea02304385cadd8fbbb8970b7bcaa4227fff4e4b99bfa76fbbbdaf10e22a","identity":"duration:DUR_BRILLIANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"31a9655316ff77e3429877f5622d102c3810f9268d4a152ac4bd8b2fbc57c526","identity":"duration:DUR_BUILDING_RAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"8183b529d017811ca6e79e8604f1ddfc09289a90f173eff47faecaeefdeb1626","identity":"duration:DUR_CACOPHONY","terminal_conclusion":"adjust"}
+{"fact_sha256":"7e3ff1aa5e6137a7976eb91fd2bcbf3694e274b25e3902b90cfb2235b054f90c","identity":"duration:DUR_CANINE_FAMILIAR_DEAD","terminal_conclusion":"keep"}
+{"fact_sha256":"c4d02692e277dde6e009a39724a7a1685af5fa6e6e4e7f6a0b1942bbaea16452","identity":"duration:DUR_CELEBRANT_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"04c50e35a11a1b267ba02ee82935d0dfbb68758820a752fa5d097a1f44945cfd","identity":"duration:DUR_CHANNEL_ENERGY","terminal_conclusion":"keep"}
+{"fact_sha256":"73ea0490ab24a1b50aa8c7c6b1d65626d66c67745f6f5f823ca41c6b217e1e0a","identity":"duration:DUR_CLEAVE","terminal_conclusion":"keep"}
+{"fact_sha256":"93011333a0215d61abbfcdbace2fec89b741f5238ad608ee36191fcaed411f55","identity":"duration:DUR_CLOUD_TRAIL","terminal_conclusion":"keep"}
+{"fact_sha256":"0c96fa165263e52d75aa04292435951d1d4992556a37be1c37c90c40763a1337","identity":"duration:DUR_CLUMSY","terminal_conclusion":"keep"}
+{"fact_sha256":"78a02db00a28c2ef90ac254e60435cde6781d50a6997b36717609cbc00d4c177","identity":"duration:DUR_COLLAPSE","terminal_conclusion":"keep"}
+{"fact_sha256":"e671ebe355367514fa3c904cddbee4356bf66fa4ba5061e3a7704feaa0627acc","identity":"duration:DUR_CONDENSATION_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"a356d394f7d3b9d9e58e4c061c416f5fbc0b53b174c7b86162d21319380f38f5","identity":"duration:DUR_CONF","terminal_conclusion":"keep"}
+{"fact_sha256":"ddcb0159f9d14ad528fb5703aa09d0b805ed748c5015ed2f1403acd47a43badc","identity":"duration:DUR_CONFUSING_TOUCH","terminal_conclusion":"keep"}
+{"fact_sha256":"a2531e3514b9039cf24cd9cdb3bf0a107699ead8a866d9ee5f6986dd9b4e8f84","identity":"duration:DUR_CONSTRICTED","terminal_conclusion":"keep"}
+{"fact_sha256":"380844239af9c2e799b816341a3c954abaebd9305769df88ba074e490ff653d3","identity":"duration:DUR_CONSTRICTION_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"7a3c8a8230a25299460f819c4083ff40da4e5968ee86987d1af11348a9c8b35f","identity":"duration:DUR_CONTROLLED_FLIGHT","terminal_conclusion":"keep"}
+{"fact_sha256":"ca7979d19688cfac88c7c8a089241da2210454e84202ecd9ece4699a2274aa23","identity":"duration:DUR_CONTROL_TELEPORT","terminal_conclusion":"keep"}
+{"fact_sha256":"8e373214cf5bf0af3eed113f2a9d861c50638867e2e9b94cba4ec903726da846","identity":"duration:DUR_CORONA","terminal_conclusion":"keep"}
+{"fact_sha256":"7f1368efaf5c60a09d984be77272dbaa5a658d2cae716a8a4b88339f994ed519","identity":"duration:DUR_CORPSE_ROT","terminal_conclusion":"keep"}
+{"fact_sha256":"17562522120125286e65789e1dfcb8d3fb01a968e89379590afe621c842e1079","identity":"duration:DUR_CORROSION","terminal_conclusion":"keep"}
+{"fact_sha256":"2d4ce17198f5c07125295d31fb3dadaf40e4d45b80826a9d5971a72f5deb9894","identity":"duration:DUR_DARKNESS","terminal_conclusion":"keep"}
+{"fact_sha256":"54a65353d6e890cd5901eea31400fae20dd66fe3230349094cc835f761fa63e6","identity":"duration:DUR_DAZED","terminal_conclusion":"keep"}
+{"fact_sha256":"73d1e11f6840ba786eec2fe99d346829ffa225e7a332cb6ad2107a893819b316","identity":"duration:DUR_DEATHS_DOOR","terminal_conclusion":"keep"}
+{"fact_sha256":"58e345d28188b9eb1abf5e83f03cce8e0acf49f7cb8379e8f2ed9d49aff66cfa","identity":"duration:DUR_DEATHS_DOOR_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"f04324843b8f36efb257dd6afcced5ad9066cd0c894c1dbf3b89a9ea65f1f629","identity":"duration:DUR_DEATH_CHANNEL","terminal_conclusion":"keep"}
+{"fact_sha256":"241ca8b38fa2c64b49ffb6086db8fd11a2874c577437e1d278d9437858bdb8c9","identity":"duration:DUR_DEFLECT_MISSILES","terminal_conclusion":"keep"}
+{"fact_sha256":"00994148c912e8a0e3ab3e2b499d3ed005fadec7e4662665fcd36442d98ce035","identity":"duration:DUR_DEMONIC_GUARDIAN","terminal_conclusion":"keep"}
+{"fact_sha256":"1067f137b36e3d9be371f666b43d951ff7c880a38f68386b0c2c99939e45e760","identity":"duration:DUR_DETONATION_CATALYST","terminal_conclusion":"keep"}
+{"fact_sha256":"e158c49892e0ba496874d66027321507fb72b8dfac03226d2a501aac4d7128ab","identity":"duration:DUR_DEVICE_SURGE","terminal_conclusion":"keep"}
+{"fact_sha256":"13f85f843028880ee038334ab33070196cba6d84dab47a5a124a4b74e4fdb617","identity":"duration:DUR_DEVIOUS","terminal_conclusion":"keep"}
+{"fact_sha256":"be9968aaf044e21cd36c73e144905ef9f4b36fcdd669087e5f086f1f15272aa9","identity":"duration:DUR_DIMENSIONAL_BULLSEYE","terminal_conclusion":"keep"}
+{"fact_sha256":"7bc238f991d39e9bfd60fcb98060538e5f993d90b3ee1a3bdfe3f76a15559b6f","identity":"duration:DUR_DIMENSION_ANCHOR","terminal_conclusion":"keep"}
+{"fact_sha256":"5ce42703bfedee13dcb61c06e98efa835423797c55e48ce2212eee165dcacd5a","identity":"duration:DUR_DIMINISHED_SPELLS","terminal_conclusion":"keep"}
+{"fact_sha256":"d9f1d3bb5329007a7f2211bcbbd1e26c8dd0f8d7ba03eb1346687679706fb0ea","identity":"duration:DUR_DISJUNCTION","terminal_conclusion":"keep"}
+{"fact_sha256":"b0e71c5ec6db8801880926248d8b0eb06429e58a55ae4ff47317b35c58013ead","identity":"duration:DUR_DIVINE_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"3d1de28646b6e101e34c59c61513ca60def2251359da6e979018d656e0de1bf2","identity":"duration:DUR_DIVINE_STAMINA","terminal_conclusion":"keep"}
+{"fact_sha256":"2661367a29fb66588be198f55fff63ae04e771cf673692788d850d52f4a729d8","identity":"duration:DUR_DIVINE_VIGOUR","terminal_conclusion":"keep"}
+{"fact_sha256":"d0307cbb53491b9161f0d7771f33ef1c42548e8339b420054571038f976e2613","identity":"duration:DUR_DRAGON_CALL","terminal_conclusion":"keep"}
+{"fact_sha256":"16c0d19f742171315383b9683d6494b8a824336edaafbc0e9214868a39680913","identity":"duration:DUR_DRAGON_CALL_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"1bab0687c6aef067375640772621f4d6664172585f4c8f3cacbf2a5799b7d170","identity":"duration:DUR_DROWSY","terminal_conclusion":"keep"}
+{"fact_sha256":"84f9f5d231c3f0fbf193bcd9c1fe1626006578e6870344b37ee5ef465e27db0f","identity":"duration:DUR_DUEL_COMPLETE","terminal_conclusion":"keep"}
+{"fact_sha256":"aeabbf63f1a1367994da7f2f9cb73e4b07d78d076350d927e04be9456875c8e6","identity":"duration:DUR_EELJOLT_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"47266604a36a79c8eb8a1cd1fbf85047a558614cdea3d93736a5f71253c90f41","identity":"duration:DUR_ELIXIR","terminal_conclusion":"keep"}
+{"fact_sha256":"b8bbc0f68d858fab3e911bb3d493629160fe486671f2b2410d34314ad5644f77","identity":"duration:DUR_ELIXIR_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"640d3aad6e51727c5d98fa5d8575de22c483046f3dc01249c9960d477be193e8","identity":"duration:DUR_ENGORGED","terminal_conclusion":"keep"}
+{"fact_sha256":"5f9c68fc3315b6174f4b4cc19a0ccbbb2cc3cbe4b5b06863d0ecc855276489e1","identity":"duration:DUR_ENKINDLED","terminal_conclusion":"keep"}
+{"fact_sha256":"dd553789a3f8383d9a200ad0433081248bd7cb277545d0189604968f35fd5b4b","identity":"duration:DUR_ENLIGHTENED","terminal_conclusion":"keep"}
+{"fact_sha256":"8c2f3584adca6b8201ab9d5ba7da09d8086960ac61be19adae14540178319632","identity":"duration:DUR_EPHEMERAL_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"16b48248943c082660cb1c26d646f9fb264d9f0b80ff810027f16a8c7fdb8832","identity":"duration:DUR_EXCRUCIATING_WOUNDS","terminal_conclusion":"keep"}
+{"fact_sha256":"2f52845ed52512b2402bc33b7b408d75760208163c43425410c02c9e653dad2d","identity":"duration:DUR_EXECUTION","terminal_conclusion":"keep"}
+{"fact_sha256":"575397d9debebcc6a76f7541ea91a619f87b3c3a8c3483b3ebd059579050307a","identity":"duration:DUR_EXHAUSTED","terminal_conclusion":"keep"}
+{"fact_sha256":"2605b35070e472cb28ab2f040fb0fc3e5920bf7644c3600706b6b14fa38a553c","identity":"duration:DUR_FATHOMLESS_SHACKLES","terminal_conclusion":"keep"}
+{"fact_sha256":"bb59e95312af2aa2b6ffc9c5d775ee951fa4c7b03faf46dee0fdf7109354bd85","identity":"duration:DUR_FIERY_ARMOUR","terminal_conclusion":"keep"}
+{"fact_sha256":"d888ee0ecf3af8527c38c722d331a68defea0a5b38c58b3ca1fe4d666139890e","identity":"duration:DUR_FINESSE","terminal_conclusion":"keep"}
+{"fact_sha256":"ecc5c8ed6b5a47c59994eb27c9a4e322da9aae99a504b3d355b17b4644cbce3b","identity":"duration:DUR_FIRE_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"f32e7329431898f68b9148f57c597fed861be866e310bc0ca76d5281c660d246","identity":"duration:DUR_FIRE_VULN","terminal_conclusion":"keep"}
+{"fact_sha256":"dc22be43d1a7dc9c3cd447fe14cab70d6f83de2cfe9eec967c764f2895076432","identity":"duration:DUR_FLAYED","terminal_conclusion":"keep"}
+{"fact_sha256":"1e6787558e59014134dc703db2130d0e9652f064231b1a472b603cf1692ba45c","identity":"duration:DUR_FLIGHT","terminal_conclusion":"keep"}
+{"fact_sha256":"ef6f9cf484038578cde8172958fafd801c95d5c974764da424d44e8e0e605eaf","identity":"duration:DUR_FLOODED","terminal_conclusion":"keep"}
+{"fact_sha256":"c173f3c084378d2aaa8f6ca0e01607c451ed974797b57c651d1775ac7bc6c3e1","identity":"duration:DUR_FLOODED_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"ef6c84cad5303a3ce41502f65e370457105be74a71b544884b70ce4532c52c46","identity":"duration:DUR_FORESTED","terminal_conclusion":"keep"}
+{"fact_sha256":"9296a475e7977c90b6dc2a674c818a55babdf1ff47ba767d7a10f586c4c3b743","identity":"duration:DUR_FORTITUDE","terminal_conclusion":"keep"}
+{"fact_sha256":"d7015234908ddd7f45c8b551ba6070b66771b790b12d2e6559b51466bd8a91c6","identity":"duration:DUR_FORTRESS_BLAST_TIMER","terminal_conclusion":"keep"}
+{"fact_sha256":"c4453b79fff1baec40dc4ba0c8f5fe1707ecc81295095664553ee0aac376f8fe","identity":"duration:DUR_FROZEN","terminal_conclusion":"keep"}
+{"fact_sha256":"ab2a7f78dab9d138973693f9e3fad21646b72bf15b1e82538dc9e59ff472ee69","identity":"duration:DUR_FROZEN_RAMPARTS","terminal_conclusion":"keep"}
+{"fact_sha256":"e1ecb4e5b6d995d2ad6de720aa1411469d08e7dcf30c2c7cb5bb3d408738d1ee","identity":"duration:DUR_FUGUE","terminal_conclusion":"keep"}
+{"fact_sha256":"7f1f053b797cb26b728c72ded499da6952ffabd149b34a5a1198d58d41f9cc6a","identity":"duration:DUR_FUSILLADE","terminal_conclusion":"keep"}
+{"fact_sha256":"4042fba91cb896651f1350ed8d61850e1883b24853dd2f1e0eb035cc2e952bb9","identity":"duration:DUR_GAVOTTE_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"6daeeeab1e26ec1aa37e3d276485c11f120bcf67cf49234306e2ee5818d75b5a","identity":"duration:DUR_GOURMAND","terminal_conclusion":"keep"}
+{"fact_sha256":"b187533cf97d859003b0491fe762a32a6f324a6efb131af86d8a0e52518fe9cf","identity":"duration:DUR_GOZAG_GOLD_AURA","terminal_conclusion":"adjust"}
+{"fact_sha256":"ee01e54e920f4845f4571a7f9bc5cada010f71e95539b1ee776cfabf09c21559","identity":"duration:DUR_GRAVE_CLAW_RECHARGE","terminal_conclusion":"keep"}
+{"fact_sha256":"c6432e59fd5799ac3041c2b7eda2a2097e3717c9439cd31a21f75dbdfb9a3c83","identity":"duration:DUR_GROWING_DESTRUCTION","terminal_conclusion":"keep"}
+{"fact_sha256":"8a15a8fa324b3f73c7eb35e67e058f7e9cf7b234e8728e93f1cbd68f74a3abad","identity":"duration:DUR_HASTE","terminal_conclusion":"keep"}
+{"fact_sha256":"6a44d079418b2e88fd2153ada94a2b4ef62e454a7a94dc3774c62fc62639561a","identity":"duration:DUR_HEAVENLY_STORM","terminal_conclusion":"adjust"}
+{"fact_sha256":"ea13dc14e2bb313fdf54f9f9d1b38a5b60f47dc2fcb2895f456ed59955056212","identity":"duration:DUR_HELLFIRE_MORTAR_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"8e8b6b34691801114e52d33a40848308f41482f5167ddf15380339186a1eb186","identity":"duration:DUR_HEROISM","terminal_conclusion":"keep"}
+{"fact_sha256":"a0560e4269405967939b55195e7a928312fe000667deadb8fbae97cd0e9171e9","identity":"duration:DUR_HIVE_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"ea6986af85f42aea186c96fe31025bb1f455eeebe1614dbc2c5c5941ec977b93","identity":"duration:DUR_HORROR","terminal_conclusion":"keep"}
+{"fact_sha256":"427780f63ce06f35a514abb7d9e56e86d7b7e0cf6bc87a64cd30e82341a0656f","identity":"duration:DUR_ICEMAIL_DEPLETED","terminal_conclusion":"keep"}
+{"fact_sha256":"cc891c038782c59928be7c00a342271bee37474f9eb4f277a11c0877b75b1321","identity":"duration:DUR_ICY_ARMOUR","terminal_conclusion":"keep"}
+{"fact_sha256":"5c41b56d62f7c7ba83720df5c6a2fdfb3162226090e9ee737d81218b5ed12c1e","identity":"duration:DUR_INFERNAL_LEGION","terminal_conclusion":"keep"}
+{"fact_sha256":"690d350d8b442909dc7c0c76c5b3c4cf989e82c95d594c966d1c2879b3c572b5","identity":"duration:DUR_INFUSION","terminal_conclusion":"keep"}
+{"fact_sha256":"db927b71845c4fdcbde43955a8d3269e4609501a3831586f8ce0dabbb3a31670","identity":"duration:DUR_INSULATION","terminal_conclusion":"keep"}
+{"fact_sha256":"604707664f25e43a3c3242614b071c2788d93e36d1f4f02b3e64b530eece210d","identity":"duration:DUR_INVIS","terminal_conclusion":"keep"}
+{"fact_sha256":"4bc96fde8a40a8ccdbbacff0f16cfb4c3e947a7e412c0bf0ccbc966c2715b6ff","identity":"duration:DUR_JELLY_PRAYER","terminal_conclusion":"keep"}
+{"fact_sha256":"d4ec0f412c588e7b79e2b81ddca9a46a8805340702b1f3d7194b77382cfff577","identity":"duration:DUR_JINXBITE","terminal_conclusion":"keep"}
+{"fact_sha256":"f294620ac04c0e39417054ec2cda261e4e20ec54af5e956d04a9066c7341fa0e","identity":"duration:DUR_JINXBITE_LOST_INTEREST","terminal_conclusion":"keep"}
+{"fact_sha256":"021aa521dec16e78973aa47690e9694c0bd1312693a464913120fa400342e731","identity":"duration:DUR_LIFESAVING","terminal_conclusion":"keep"}
+{"fact_sha256":"b16b36b9414e221bd8857b42d34d3abe5c2eefdc3dd45a935230a8a0b14930c9","identity":"duration:DUR_LIQUEFYING","terminal_conclusion":"keep"}
+{"fact_sha256":"5fca349d959afb70b363701b42cec1e68265570c4129362b048e65f94d55bc40","identity":"duration:DUR_LOCKED_DOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"41eb7d2d8b03552bd79339fec133db7fdbfbb8974bc6f4bc592aeb1d5764f90d","identity":"duration:DUR_LOWERED_WL","terminal_conclusion":"keep"}
+{"fact_sha256":"65f20a08fc021911f1fc03b93bc46ec129b08a16feefa6e35ad85e1f65d21017","identity":"duration:DUR_MAGIC_ARMOUR","terminal_conclusion":"keep"}
+{"fact_sha256":"e71b6428c5cf16f72f53b7a13ab22f5e8a979992cd95a0ecd22dc54000b16f7f","identity":"duration:DUR_MAGIC_SAPPED","terminal_conclusion":"keep"}
+{"fact_sha256":"0aba62ddd80cb24bf496f2c9921a83b05d64fdc825a4f5f56c51a8ed84817b1a","identity":"duration:DUR_MAGIC_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"0676e6b5022e2ae648a5105f59daa97d13458c677fe0e76fbb4304cdf4f140c1","identity":"duration:DUR_MEDUSA_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"d070f2f6107f5d0c349a3f0731e2c6aba072163091b3c737f6c7958ce3693b0e","identity":"duration:DUR_MESMERISED","terminal_conclusion":"keep"}
+{"fact_sha256":"bc3f8ed61afc2d57060f9f27ac1f1b25efb60c0b61be0275edbcceb9886816b4","identity":"duration:DUR_MESMERISE_IMMUNE","terminal_conclusion":"keep"}
+{"fact_sha256":"3c70d68b3974f3a77dff051c3b296b19abebb35ed6a9d0c8f6d7b32334b10b0c","identity":"duration:DUR_MESMERISM_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"2c32710ceaa527e617cd664c5a96255a50aacab98c92e1b847115074f5f0cf69","identity":"duration:DUR_MIGHT","terminal_conclusion":"keep"}
+{"fact_sha256":"8f25c1917b9c5727c4ed88741dea706ce06732d592bc114af503c8a4fc69206c","identity":"duration:DUR_MIRROR_DAMAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"de53228fabb827f977844b990303112a247491cce7c3ead4e16ca57f60aac0d4","identity":"duration:DUR_MISLED","terminal_conclusion":"keep"}
+{"fact_sha256":"06c56e2f1779027340611a4d5ab6430d74049993d4715f55277f9f5b9f2c037a","identity":"duration:DUR_NAUSEA","terminal_conclusion":"keep"}
+{"fact_sha256":"fd27f245f1bb187b311104277831d4ec614213cd33d71bdaa8252a78b890a347","identity":"duration:DUR_NEGATIVE_VULN","terminal_conclusion":"keep"}
+{"fact_sha256":"a7252040eaea28ce99e4abf3179a613cba685e0e03b29187d8912bd05faa097e","identity":"duration:DUR_NOXIOUS_BOG","terminal_conclusion":"keep"}
+{"fact_sha256":"cb790ab12e3ee23fd1cfe3660e4a3f8ba536a1828d13537fd47354914c3f828f","identity":"duration:DUR_NO_CAST","terminal_conclusion":"keep"}
+{"fact_sha256":"7cff32680ac1e084896c4f301eaf3bc1998042de49d0f18a8a2f690b6c09da63","identity":"duration:DUR_NO_HOP","terminal_conclusion":"keep"}
+{"fact_sha256":"f7a05e54e9ebcb063dc385e5c0ed0ef820ba3a50f387447dfc55c80a533c4762","identity":"duration:DUR_NO_MOMENTUM","terminal_conclusion":"keep"}
+{"fact_sha256":"4e697bc9bd397f08f99a91f404eca253af7947ae576129cb92f688ccf442940d","identity":"duration:DUR_NO_POTIONS","terminal_conclusion":"keep"}
+{"fact_sha256":"c9878579b88d3c200f96927de3cd3e826bfb2a2c265f8424c8f07c1f78881bc1","identity":"duration:DUR_NO_SCROLLS","terminal_conclusion":"keep"}
+{"fact_sha256":"6e6dcfe7ba43f71cdc64d3d1c37e5910cfdb3919f023d6fc9261ac2ecf93dab1","identity":"duration:DUR_OBLIVION_HOWL","terminal_conclusion":"keep"}
+{"fact_sha256":"07b0b9324d0bf0b784e60d000b7890d96c4b33a304ec9c5d9723b804deab5b75","identity":"duration:DUR_OBLIVION_HOWL_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"3f9fdc27f120b5ceecfba5253e3804fff340eac9ba543da6e17b288bd2015185","identity":"duration:DUR_OOZEMANCY","terminal_conclusion":"keep"}
+{"fact_sha256":"7a9ee5079b2b861adf95ef19597a06b003e466d280bba5e68ad2e933940caeeb","identity":"duration:DUR_OOZE_REGEN","terminal_conclusion":"adjust"}
+{"fact_sha256":"d714d308aa8c77659966afeabbb86e3ebe4c4ee80a3a082d422631550c2f06a5","identity":"duration:DUR_PARAGON_ACTIVE","terminal_conclusion":"keep"}
+{"fact_sha256":"5232749ebb50ab3b3a108c5e6cd32dd27761fd0aa3f861366c2a049f2e37d01c","identity":"duration:DUR_PARALYSIS","terminal_conclusion":"keep"}
+{"fact_sha256":"ff4dba592ceb600d27cbbca9f3c3d4c01bae7c000708d90f38be2b1cb71ce7a6","identity":"duration:DUR_PARRYING","terminal_conclusion":"adjust"}
+{"fact_sha256":"1c7b8c8dec916b87c2805842e486a01e4aeff5a62134c1cae9f96f2bb2f2a6ea","identity":"duration:DUR_PETRIFIED","terminal_conclusion":"keep"}
+{"fact_sha256":"130c3e7aee6fe173174233a79de3c33ba0dce63d3c4dba9ca375a9126974c33d","identity":"duration:DUR_PETRIFYING","terminal_conclusion":"keep"}
+{"fact_sha256":"7b677e07e8f3ef5d80625c900306c3f7c56c411235f3d574d1dc48a58d66a9a2","identity":"duration:DUR_PHALANX_BARRIER","terminal_conclusion":"adjust"}
+{"fact_sha256":"e1c5de1502d84f63f830cd2b0ce1634d97580705ceb1a05e9dc2ae362b4ad5a1","identity":"duration:DUR_PHASE_SHIFT","terminal_conclusion":"keep"}
+{"fact_sha256":"8c5a6970ddab66e8f8f6a5df5a01f9166cb10208bdf59b41624a24888cb8ef25","identity":"duration:DUR_PIETY_POOL","terminal_conclusion":"keep"}
+{"fact_sha256":"c23db9a0aa2bcf911e138281dd4c90df30ac95df49cf166c5ed5dab68c6134e5","identity":"duration:DUR_POISONING","terminal_conclusion":"keep"}
+{"fact_sha256":"13c6269f10af5ff46b2660c4f8a120f1dc4cbb8fbb00ac1bedf173a99cee16ad","identity":"duration:DUR_POISON_VULN","terminal_conclusion":"keep"}
+{"fact_sha256":"9304e786805077446c1162df93bfbb26572965078830fb3d335d51e4626e1d57","identity":"duration:DUR_POWERED_BY_DEATH","terminal_conclusion":"keep"}
+{"fact_sha256":"b9a82f8316b41f211a23291b0be0e8a7fec4bf8e3863d13e61e49710d9c2f5b7","identity":"duration:DUR_PRIMORDIAL_NIGHTFALL","terminal_conclusion":"keep"}
+{"fact_sha256":"0134d1bcf7387e8db9283b17305e72f1699f28749e258651d232bc0c1961fed2","identity":"duration:DUR_QAZLAL_AC","terminal_conclusion":"keep"}
+{"fact_sha256":"6f9775312eb1bbf15a14fedca3d315fe81d48eb76241bd9e3698f0193c5b6ade","identity":"duration:DUR_QAZLAL_COLD_RES","terminal_conclusion":"keep"}
+{"fact_sha256":"434412fe7d9de1238afe5a2156110cce35939ef5068ae932771a541afd4e2c62","identity":"duration:DUR_QAZLAL_ELEC_RES","terminal_conclusion":"keep"}
+{"fact_sha256":"e1cdbeacbb9ee1c5db98c16387ccabaee47871a84c594e0174b3f3c3d4916c7b","identity":"duration:DUR_QAZLAL_FIRE_RES","terminal_conclusion":"keep"}
+{"fact_sha256":"daeab40548c45f7fadcaf47b8e60594a5106303b2d50d94af4d354adbc5bf60a","identity":"duration:DUR_QUAD_DAMAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"bfc58278b2d75295db7fbdc7e920ecd352aa311e27cfb4389e3fa275eab429f3","identity":"duration:DUR_RAMPAGE_HEAL","terminal_conclusion":"keep"}
+{"fact_sha256":"a41dbcd8787e8e6207a4edffd47d26993d1ea5addf7b759c6a2c77f3be014ca0","identity":"duration:DUR_RECITE","terminal_conclusion":"keep"}
+{"fact_sha256":"2115bb277ff97b64e9c6566e5be41503adca9339073af672f7b4b1c28460bd59","identity":"duration:DUR_RECITE_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"be83bbd2ec0c3df43ea5cb0ec838303ffe2b129a2d574eacf2923bd0de0e5eec","identity":"duration:DUR_REGENERATION","terminal_conclusion":"keep"}
+{"fact_sha256":"0d0bf0d0342274da0be51cd5121cc8d62ceb7c162183d2dc96d05b30ab54168c","identity":"duration:DUR_REPEL_MISSILES","terminal_conclusion":"keep"}
+{"fact_sha256":"2c818cf434d5f76102d894134c12cea18c211501721e379061f37cb553f3c559","identity":"duration:DUR_REPEL_STAIRS_CLIMB","terminal_conclusion":"keep"}
+{"fact_sha256":"9b087c42896e871e7c9584fc48fca221509dcc4994953b05d57ce0fb4fee5959","identity":"duration:DUR_REPEL_STAIRS_MOVE","terminal_conclusion":"keep"}
+{"fact_sha256":"d3fc1e08fde37edd7300181ae067da7e5d959fcb3aabb1b0a498dea592492750","identity":"duration:DUR_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"698202154dd39374e3655ee16638cbba94778d7a4bd122e73525f5fccf53423a","identity":"duration:DUR_RETCHING","terminal_conclusion":"keep"}
+{"fact_sha256":"32202c3c702304f2e62f600f5d45878d39c4e1ecd4628b081aa7ac35887b6f98","identity":"duration:DUR_REVELATION","terminal_conclusion":"keep"}
+{"fact_sha256":"c65ff40e64ca66a9eecddde2cd1c98cdb8415964218db1664b383a07e4e86755","identity":"duration:DUR_RIME_YAK_AURA","terminal_conclusion":"keep"}
+{"fact_sha256":"decd4005c0b79f358c32f5ce2a6cf8dbe7cf64ea2ebfa1ebd490629d7909a4b9","identity":"duration:DUR_RISING_FLAME","terminal_conclusion":"keep"}
+{"fact_sha256":"06d8ad2b96e68bf4c6ac41b46b19ec61db9c1edfd1a4709295b2d061cb9b4a7e","identity":"duration:DUR_SANGUINE_ARMOUR","terminal_conclusion":"adjust"}
+{"fact_sha256":"7597311806fba65296b5271e9db2eaab50e9de04dc72bba23989100420df08ac","identity":"duration:DUR_SAP_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"20dca303046b8bfb5478fbc9780e726fe58b43a435bcb6c5e169b8d0a990f494","identity":"duration:DUR_SCRYING","terminal_conclusion":"keep"}
+{"fact_sha256":"f5b42ad7323568caf5d52c1cc1121abaa69901913a8870f34b7bca057ef8c2ae","identity":"duration:DUR_SEE_INVISIBLE","terminal_conclusion":"keep"}
+{"fact_sha256":"b8ac9964d1f1c26ec219070f57d2d842dc054c884d18015ceedbfac219af74c3","identity":"duration:DUR_SENTINEL_MARK","terminal_conclusion":"keep"}
+{"fact_sha256":"204afa9fca67833b3c3d58c66cc085fee9f0fa26cb29f9bd3320d26db1a3be40","identity":"duration:DUR_SHAFT_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"30f9a5b9fe4dbc71073791f04d9d865e19006ff80b7ceddbd512fb59d0ed449d","identity":"duration:DUR_SHROUD_OF_GOLUBRIA","terminal_conclusion":"keep"}
+{"fact_sha256":"2b189435d7db055c6b5b054ed51562eaff650ac8c2cd8409b0dbed8af1fe0920","identity":"duration:DUR_SHROUD_TIMEOUT","terminal_conclusion":"keep"}
+{"fact_sha256":"145d2a9c6ad6b9f7b4e18f9b8ff153715cc6786bd381d5add41c51d4792b43e5","identity":"duration:DUR_SICKENING","terminal_conclusion":"keep"}
+{"fact_sha256":"7df3cfff01cf7d502a1d0d6610f512a16c44d95a5917c8297e44abb62bcfa95c","identity":"duration:DUR_SICKNESS","terminal_conclusion":"keep"}
+{"fact_sha256":"f2dba942b5b16920fdffebbd3cdbc48081e1c89d17d0a146432f2f790adcb635","identity":"duration:DUR_SIGN_OF_RUIN","terminal_conclusion":"keep"}
+{"fact_sha256":"63be65f8cbded0d1447b1c3b482ec907e137398add365b900ef4458ba6748d14","identity":"duration:DUR_SILENCE","terminal_conclusion":"keep"}
+{"fact_sha256":"4c1e159a10b4f2ccb0990aea03b079b60d696dc07daee28d40e1a04803698ad7","identity":"duration:DUR_SIPHON_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"c4ba1225c19d0e71f830a68563d0a58335ad117a0dd43e25aa57b9e006af6d70","identity":"duration:DUR_SLAYING","terminal_conclusion":"keep"}
+{"fact_sha256":"21aaa9870e4bbde1741066a6305a9b15d1a214d403eba83ddbc6fc95fda9b792","identity":"duration:DUR_SLEEP","terminal_conclusion":"keep"}
+{"fact_sha256":"ddbdad9d400c2ba138cf0d41236bb1bca7cbc5bb7a886e02e48ecf78d047b5f3","identity":"duration:DUR_SLEEP_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"b44ca4cf221358c414d94f67037edd3b19f592bc2a318b373c46371b916d65b1","identity":"duration:DUR_SLIMIFY","terminal_conclusion":"keep"}
+{"fact_sha256":"573f385083729db4031bb6dff3e908fd562d61bac679f62e63ace93ca4de0e43","identity":"duration:DUR_SLIMIFYING","terminal_conclusion":"keep"}
+{"fact_sha256":"93c25d2d1788e06274939810e8315f5a52627b5509caa32dd68909a0a2031f78","identity":"duration:DUR_SLOW","terminal_conclusion":"keep"}
+{"fact_sha256":"b02074fddfa1f1c995b6d1c40f3161b9aeb07c02265aa71d639f353a3ca7b252","identity":"duration:DUR_SONG_OF_SHIELDING","terminal_conclusion":"keep"}
+{"fact_sha256":"3b239643b34cee8c740432271a121478c7bffa4b1efcf0b25c6454569be9cfda","identity":"duration:DUR_SPIKE_LAUNCHER_ACTIVE","terminal_conclusion":"keep"}
+{"fact_sha256":"f3f84edf9d5dba907ee64e129c221d78b84c07f266594947dd0e6dcd89d32392","identity":"duration:DUR_SPIRIT_HOWL","terminal_conclusion":"keep"}
+{"fact_sha256":"b5a83bc936439ce079241e5a12871d6605a7649b2e0203b6999a69a942d42cc3","identity":"duration:DUR_SPITEFUL_BLOOD_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"c367904495b52370f4837150be7d3b31d270a394c79fef2eb65577bf942a5401","identity":"duration:DUR_SPWPN_PROTECTION","terminal_conclusion":"adjust"}
+{"fact_sha256":"0d04c3b7350993e255c40780f2aa6871f4f5f2e67be628def28c88379dcd9397","identity":"duration:DUR_STABBING","terminal_conclusion":"keep"}
+{"fact_sha256":"7e82173e50599ee9419b0a15d313a76f1ffa8cbf654611df7173e7b8c20cec3f","identity":"duration:DUR_STARDUST_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"bdb019b2f2f4dd1050bb1adbb4854a3321180642dee9a9f776601847a8d35a51","identity":"duration:DUR_STEALTH","terminal_conclusion":"keep"}
+{"fact_sha256":"f33d7e9a771d8a034ed2e85e245ab786359c8fa7a9c6094c1406201623bd1031","identity":"duration:DUR_STICKY_FLAME","terminal_conclusion":"keep"}
+{"fact_sha256":"935b4921ac101726a6b30bd7193309f529e91470cf691a57363f453e5062aaa7","identity":"duration:DUR_STUN_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"14ad2081feb931de47dc89c47143ac0fcf62944659bd06daf80d3784c4d691cf","identity":"duration:DUR_SURE_BLADE","terminal_conclusion":"keep"}
+{"fact_sha256":"79e1868938dd7344c8deac126e34afb6d0a11118005486fdaff7d22f41ccb64f","identity":"duration:DUR_SWIFTNESS","terminal_conclusion":"keep"}
+{"fact_sha256":"a4d7e884aa2fe2d4130904142f710c1a6a2fa5dfd1a43c977e0ba69c58d71c2a","identity":"duration:DUR_TELEPATHY","terminal_conclusion":"keep"}
+{"fact_sha256":"a633d953fa3b1bcd728037b5bdba90363e6f4e996e84706a04647625c564102a","identity":"duration:DUR_TELEPORT","terminal_conclusion":"keep"}
+{"fact_sha256":"0196c7d351f5320827a4ebf5ee5b29f30d89e30e4a75f8adcc9d350a5e0806f9","identity":"duration:DUR_TEMP_CLOUD_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"74153493086c374e306eb4333585137f2cafc49cb339b5851f4382e7ef5e17a0","identity":"duration:DUR_TEMP_MUTATIONS","terminal_conclusion":"keep"}
+{"fact_sha256":"5dc5d3e78d36d43b58d38673ac95440be2b096464827f387fb8f32951cf809db","identity":"duration:DUR_TIME_STEP","terminal_conclusion":"keep"}
+{"fact_sha256":"89f5dfdd343443d634d1ed9cac179bebb701341e2f6d4e99c292e7483cf17d93","identity":"duration:DUR_TIME_WARPED_BLOOD_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"ee9f3e68447c9a3c80a20e134ada1f93f5ad0ec0bc5ee3e67e237ef8c06fe64b","identity":"duration:DUR_TOXIC_RADIANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"50961e79613965972dfa9640c09a4c793385366c91a5b979655cc66856000548","identity":"duration:DUR_TRANSFORMATION","terminal_conclusion":"keep"}
+{"fact_sha256":"55ace86f22fe5e8465e55a0d4d2e2af938df9273b30bd8cebdc7c96bd7ad01b2","identity":"duration:DUR_TRICKSTER_GRACE","terminal_conclusion":"keep"}
+{"fact_sha256":"b200b8f52dd8f516104c4dda1148f3dbf3b5c83ca1b1e9ff384b683d4af1620b","identity":"duration:DUR_TROGS_HAND","terminal_conclusion":"adjust"}
+{"fact_sha256":"76ba9e08ad03886ff83f71715c93ba01c76519fa57ba0b7229c6bc42f5963735","identity":"duration:DUR_VAINGLORY","terminal_conclusion":"keep"}
+{"fact_sha256":"bec1bda1263448f79a28f98d995f5733e538c3bc79a2cd69f15c543f3199ae49","identity":"duration:DUR_VEHUMET_GIFT","terminal_conclusion":"keep"}
+{"fact_sha256":"45bf9de636634d50dcdbd4e998fc6d40b4fe791964f8fa27d378169003e01400","identity":"duration:DUR_VERTIGO","terminal_conclusion":"keep"}
+{"fact_sha256":"a65e8ede828eb893fa516daa4dc42c5f8fe704f8081138b55d67ecc954f126b8","identity":"duration:DUR_VEXED","terminal_conclusion":"keep"}
+{"fact_sha256":"3fdcea7d0daa05c99c0e883eb4902b501924f54609816895486711bbd0872f87","identity":"duration:DUR_VILE_CLUTCH_OLD","terminal_conclusion":"keep"}
+{"fact_sha256":"2ce8b23b9bbc5088a6124cbc0d1f56b7bf3e95450b369acbdd1eaa69285adb0e","identity":"duration:DUR_VITRIFIED","terminal_conclusion":"keep"}
+{"fact_sha256":"30bcdacd5751d7be2a0758b19c0503d9c13c302599bdb8a1e3a6dcec16b3cc87","identity":"duration:DUR_VORTEX","terminal_conclusion":"keep"}
+{"fact_sha256":"e24f4d0aab024b8b470c151bfdae6f7bf05067e5db01e83b4336266facf98e70","identity":"duration:DUR_VORTEX_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"9ba86bda765a386622bac53e84df897daa7eacab34347d4e6435296a6dc708a8","identity":"duration:DUR_WATER_HOLD_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"cfe8a609ffc223618a8a2d3e79abd5d1c4831fd839a4ff656d190c3e50efcc47","identity":"duration:DUR_WEAK","terminal_conclusion":"keep"}
+{"fact_sha256":"71fa45af0fc392d543a59e8acbec265768cf334df881c5ffecb463e5b1390b94","identity":"duration:DUR_WEREFURY","terminal_conclusion":"keep"}
+{"fact_sha256":"b47958fa90b32220d02a66831a671733f3a3229c965bbaf30ec87c6c7a338505","identity":"duration:DUR_WORD_OF_CHAOS_COOLDOWN","terminal_conclusion":"keep"}
+{"fact_sha256":"c3a30e2c87e9f8d26fc1c9d2e8321688af2a32e113fc906f210267fe68005fe4","identity":"monster_status:ablaze with memories monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"499a6f615c76650988326d32d20c940bf35ffd8b741c611335112918484608ce","identity":"monster_status:about to teleport monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"595a5ee7c0085f39241b39821d41834f2472beaedae14e3cec1cec5d66cf352e","identity":"monster_status:afflicted by rimeblight monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"15898f09430a62ca9c99edfcc73437b6f1aa3e2b2aea8e82f19692cb344fb87d","identity":"monster_status:ally target monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c6ed27e2b62e9eb28c81b02a4281700fb1f56cfe4136e03fed923fd13e724295","identity":"monster_status:anguished monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"1a490070fae47720eb9b768ffcef72043e28958aef0aa9dc9b438c86af5ab290","identity":"monster_status:asleep monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"8e743167e2710156e27f90a212bd53dbde287a6a7d4c38abb60c5ac3af659835","identity":"monster_status:berserk monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6f0a4f0bd8ecbcb062d5500f1c049a04ac5c21d2ab486f5a6489fcd4e0d9032b","identity":"monster_status:blind monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f5b3bf7df0a4f7ee0fbaf393b35897ee6f6c9a8e2d5c25ce3a92a1203ac9ccb0","identity":"monster_status:bound in place monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"7cdc595f59d27142c8f83dd95c82c302ad4665f57c7db03c65387abb3399f4a0","identity":"monster_status:called by a tesseract monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ccca5c80c9786f520a2e8f9b69d16853dc468a5c6c11118cd12d544bdb4586d8","identity":"monster_status:catching her breath monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"90f11a21159b34f36b5ef5cb5c25d09eaf79c3335c281713eb809cf1903c42d4","identity":"monster_status:catching his breath monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"613b76ae5f5d7d40478db94871b8faa7535aa0346a9a98964aa43e917ecce964","identity":"monster_status:catching its breath monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"29a6ea98bf66f21b7a92138dbb5f3f2a95b9c30d657f5279e67537cfa43f201b","identity":"monster_status:catching their breath monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"e2343ae1702de32331d146efdb2f492e943a52e43f81ddafaf0c92cd93e74929","identity":"monster_status:chanting recall monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c6747c192532ec8c322dd5dff8af4a07ead68debe293fff33cd81c8046ce104f","identity":"monster_status:charmed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"614f4261f144384db0207bc119ce95ae564d53445a5aafa1557b9868ef230f79","identity":"monster_status:concentrated venom monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"307dd279c46b319e7b806945f23504e1a090d6e8ca59c3cccd5cbd2b92bc8e0a","identity":"monster_status:confused monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"588c1f7a5cecac1606583bc72429a773be5b7e25cf54925453f2b3bce88e1cf6","identity":"monster_status:constricted by roots monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"aed430c8bf8bb79adc1a8b7f73863d13169747db1472b27ddc6646307dbea8f3","identity":"monster_status:constricted by zombie hands monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"3164bd2e56948610d6e93b196a789ba1ec19bfa7f52ebead14fdea70bec5363f","identity":"monster_status:contaminated monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"14956c7205720d938bc5ac5c647bae2489931568681228d027248f0ed1c293dc","identity":"monster_status:control wrested from you monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"9ba1000b38af2e213cb5bf04c0d0127fc92637458c0cdccea7c665f05c567706","identity":"monster_status:corroded monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2d6710c77a35cf98b63714d8cc4f64d75deab1bf5657c82a851994154071e087","identity":"monster_status:covered in liquid flames monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6dd3af23a2851089bdf7df09f8534435a43c264ebcde439b167fd1728bd5263d","identity":"monster_status:covered in magnetic dust monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"8f4b87fc9ddf5e00c0cee43d450308292424323f256c1e1a48a05f516b5a80e4","identity":"monster_status:covered in terrible wounds monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"28e01e1f9d074d1a3a987ea8da26369a8b961d03b4f3ae28634d67ac1120c4b5","identity":"monster_status:covering ground quickly monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"516f8a1f4abe3c9c9bf868c0cc5d4e578d00d0ed7a949104bada67d00e180910","identity":"monster_status:covering ground slowly monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b9b63d077ea9da081edf6a6d082738bab7e7a4956c2ca2acc7b2c4912f4e670f","identity":"monster_status:crumbling away monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c301f0b65f52b5fce44f3740ea6cefec7d25beddbe215d97c2e4d33464aa1ac7","identity":"monster_status:cursed with the promise of agony monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5efe8e9ce1468ff8225e1e5b5e3acc3dfeac5b63eb5bb0304692efa4273dfd1e","identity":"monster_status:damage-immune at range monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f842f459abf1d2e258e0a2678023b3bccdbe74e68f92bd641a9c1932ec7b8638","identity":"monster_status:dazed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"25e73ca7778c0f85f7a5a1e98607bb9a44541067f301e9ff45d2a57f75073415","identity":"monster_status:diminished spells monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"1890be094b41d648061a53593183f0146e66d1d5144a72803b983b31df2c2f3b","identity":"monster_status:dormant monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"971fec82c5bb3c0c0fd15b6f65f78425b86024059b919efcfd9966d39560929c","identity":"monster_status:doubled in vigour monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"337af0f79ebc09853a248568e14e6624056273a448f24a2528633ca71581ea69","identity":"monster_status:empowered by the touch of beogh monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"3496180467af26c6e34578bcf70669997da46348c482cc6462cf516f3eab08a4","identity":"monster_status:encased in ice monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"557600720d92fc589d9a63ba5fe7cca3a77aa9c2c2c32a82f6bcb275140bc270","identity":"monster_status:entangled in a net monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"87a5816cdb2faa2fa5f0f6b1052f0888bcd93002f80612b71b495e74174ce587","identity":"monster_status:entangled in a web monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"08211467a58051e5722284f4a851ac61bc2dc375a7ac42185e7af66661db85da","identity":"monster_status:extremely poisoned monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"95ca52922ed4ac9f934e6b8d659853684d5e6bad0c7e70b20b774e716f52ca5e","identity":"monster_status:fast monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f3f53db10c2ded6a007f5e7b4a39e8d8716a93e38687eb69796b309c09c64a75","identity":"monster_status:feeble figment monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b567bbfdedde7247bad0f88a5b7489115d5ee48ca0d956120dc8291acb1289d6","identity":"monster_status:flame-wreathed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6219b179f6951d6c3bc8e5695729838a60ac8fbda095dacf979a265cbfe80be2","identity":"monster_status:fleeing monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"bcac8e513a88a4f7d21efccbc4322552b8eed28347ce1bdac13cef47fa1148f1","identity":"monster_status:fragile as glass monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"71ba754d4dbfb131377934a6f83ecba72520bf4f329371da90319849e4ec051e","identity":"monster_status:frenzied and wild monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"41ca7ae0c9ed63bd7d037e49b5762da85e49d013b5b296116396011cfc5407da","identity":"monster_status:fully charged monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"192b188ede5df0e15ca5d54e71fe9d5c0b89171379827cd483618698057d7aa5","identity":"monster_status:grapneled monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6a0d2e259ccbaf6b4290c1a2cd24268ab3de163563502986bada0ff060838b2a","identity":"monster_status:heavily contaminated monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"8ec7dabbb6c496062962349f836bad474c16ecdc32abb59c49e285cdf99b03c3","identity":"monster_status:heavily drained monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"42e7f72bfca386ad87c8086f55e06cc448c6a66ce94aa54dd96d079207d53fcd","identity":"monster_status:high-tier stab monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"4f9ad1d297b8622f24fd23c2434b4975230a39b2c2844bffd30a4f3771b173c1","identity":"monster_status:idealised monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"adade7becff6f74571bf34a51e15537c5f88872249fc5fe9c8c0289ceac5a761","identity":"monster_status:incited by gozag monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"7f86a5882bdd52b110ec21f65b67088d4530d2adbb6decfe88ebbda3871cb0e4","identity":"monster_status:indifferent monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"622c44d4f9e6438982266bb34a32ecfc3c7f2f43d11913ff51ce914076585851","identity":"monster_status:infested monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ab6f7a8b4385b0b4b2462bc6dd59cd02dfc61c3383b5e545ae22db9929106573","identity":"monster_status:inner flame monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5e017cf0b08641687c83509c89dd01daf9ae094b34548a1e3811503879e090b9","identity":"monster_status:inspiring fear monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"cbe6b4ff3ccd087caa5228627c57a8598dfb9361b56ba99cacdbf055015ebd8b","identity":"monster_status:interlaced with chaos monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"3511e8e14da23962bd6e9b51a0596dd091b23a4cac73b75fb57238fa425517ee","identity":"monster_status:lashing out in frustration monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f4aaf919933514fb2f04dac3d42e907d0964e52fe30abbb3bff1f276d197fc45","identity":"monster_status:lightly drained monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"09a0d8bd09270e9e1268d26d86378fe3d48016e6e81ba47cacf010c878126d31","identity":"monster_status:lost in madness monstatus","terminal_conclusion":"adjust"}
+{"fact_sha256":"c4fdea03a302fb1059d251b82d47ef746d164f4f8df567fe96a6ef73786d8eb9","identity":"monster_status:low-tier stab monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f49854258cc73e96f7da32a9a2113b7c7a3d003239c8b8e70d09343104f4513c","identity":"monster_status:magic disrupted monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"d5e9bef8e9e8080490970846cebbee26ed71564022f1becb6c061a40644770ac","identity":"monster_status:magic-sapped monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"3f055eb2e1952e33c66c4964845661938b69598283cb1f0fff80e4ee8cc74e22","identity":"monster_status:marked with the sign of ruin monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2d877e7c0e4d22b3b54d975d30513ceccc567674ac9aa87935a61a456e14a307","identity":"monster_status:mesmerising monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5fa79cd80b3e43a9bbb0b1b7e6573c03dcf296422bf2be4b0f849b4fde83d8a5","identity":"monster_status:minion monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5eb1357a51e607d485ce029bfcec3da8ce4894913947d5f22e3c35db44dc316f","identity":"monster_status:misshapen and mutated monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"683c8c6c1199a274c7eb65886856522ef7e364e6c91170c8fb9c55e5ef181f3a","identity":"monster_status:missing a shadow monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"17b245935b8ef140664021453dd7987271d1bc2919ffec5b2f59880fcc970f7f","identity":"monster_status:more vulnerable to fire monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"1599e826233417f108ea847d60a4f4aa9a51b1dbff7227f298efa14f565f4b1b","identity":"monster_status:more vulnerable to poison monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"82494c3a118478265913d2074576007634db3a29e6ff4896f5f12f45da2b645c","identity":"monster_status:mute monstatus","terminal_conclusion":"adjust"}
+{"fact_sha256":"86aa95197b162c627bfba9af4f7d8d0f4bb3835e76e892a9d3c49226acf4ad2d","identity":"monster_status:not watching you monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b2983486a2904b40ef2b096d2d674061f44b75872b768f66f5a37b631dac16dc","identity":"monster_status:paralysed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"068419b51b3bcef55a29f38a7aac660b6e6470b898f9a14d2ee220cf9a7d6eb4","identity":"monster_status:paralysed with fear monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"d3c36ee9409d1b1e7bf89b1ec1275e7e2016d404459af5664e2dba975ec76168","identity":"monster_status:partially charged monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2d68e28ccd3aae122185597a73a5ac4f1f6e302b9481dc6dca4cdd919b183c8b","identity":"monster_status:peaceful monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"75291f0101abfc98fea4150db942630fc9021cb008e8380a9627e01b0c701d49","identity":"monster_status:petrified monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"588fc253b20fc7855a9ccf44d4ef4c1ad0564d32b5d552cbcec2b39474d91a01","identity":"monster_status:petrifying slowly monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"861fc2c17fdfc4333fb9b2d07be5356bc4baa28928a928d68133089d348d12dc","identity":"monster_status:poisoned monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f9c34c9e0548b356b9bd62964f4d7b5c3733a0704359760e9a094a15ea2ecc89","identity":"monster_status:radiating silence monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"16e94b9c180585b6d3e89bcb8fe6e04125bbbd096d93d548b0bae1c7d39f6e6d","identity":"monster_status:radiating toxic energy monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"0cb09beda273c61a0624ead2a9066a8edbae8165306b2e1b014fe5d187ee066b","identity":"monster_status:ready to become your apostle monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"efa35229657b5bc6e19979e1e699bdc169a4a1499bbee8c208f6be1e115a2523","identity":"monster_status:ready to howl monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"39dac682937ae7aae3385279c195ef7906b433d9b33df67848b039472e932341","identity":"monster_status:ready to sunder monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"16f3e92d42cb473e3e3fb5a5d90ab5b161c80676899975dac753e5221613230e","identity":"monster_status:reflecting blocked projectiles monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"735762f1249fad0e40943617a58767db022a9e65ab73ff0f0e69fe867d86319e","identity":"monster_status:reflecting injuries monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2ee87380eb4b4be15de7cecf2be9fa309e86781536d50e0d88e71ca15023b8cd","identity":"monster_status:regenerating monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ac3ec04de2dc6d3f16c38b5ec5ada72d30b8dbc6c753e7efa63e6e76885275a3","identity":"monster_status:repelling missiles monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2746203f0dad4c9c58cc09092e217f1a0c5da973e2f68998b8d26848d74bba47","identity":"monster_status:retreating monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"4eea9db74ef3d94aed43bf990c99b0cccb103413c8927601a1db7f6d74333678","identity":"monster_status:rolling monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"d71b336047d2ccb533b995d73b5b2349180fe2c9a342457e2b1d55c17b4540c0","identity":"monster_status:sharing her pain monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f5133622dd9bc8e87a4b2c70f45b8819ab8b458b84ecb91846eb896740818ec1","identity":"monster_status:sharing his pain monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"cc06570cf6efdd41641e0dd40720906a8be0b6e333eb60e2f6330d243ff4c79c","identity":"monster_status:sharing its pain monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b484422db67a3c3481ea3426ba837b66396ea369bd756b1f44e62c688f1141c5","identity":"monster_status:sharing their pain monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6f58c2084410a07fb6fe30a2c95ff66f6d9649d8a2c78fd137d77f47279b483b","identity":"monster_status:sheltered from injuries monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"61aec2f80a32585edce249447c3ab0c4fb56f5c44bf5a01b2dad3d69c31f56c7","identity":"monster_status:sick monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ace207be00272acc0d5f8813b03f30e869c1831387aa3d2ca707009148b68397","identity":"monster_status:silenced monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"77593643769d3f14863d8042c6e1eb2436d2f77c98fbe83225e2272b3188c45b","identity":"monster_status:skewered by barbs monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"8396e09729909059069190eab11ae5ab1da025d03df77cf858ece17724bf0324","identity":"monster_status:slightly transparent monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"7ad9757048c984ad0dc8e5a5a1ef0dd1479cd3dd5345586be73418af3e4b235b","identity":"monster_status:slow monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"08c29749fcc7fc8afdbe95d6f3f01cc5a25291ff1ace6a18cbebd334a25b5073","identity":"monster_status:softly glowing monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"4f55bc67762c80e0bcd3d1b46e06ba7147e93110c533eab6e915455b5ee1deaf","identity":"monster_status:soul bound monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c5dbe68ef3b2e1b44ffe8f21e3668ee3166d45382c7bda34d8bd203cc78fe047","identity":"monster_status:soul-gripped monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ce15c52944af34053b7cc8e5b793faeecc42c36894ef6a75e1182cd4dec61d08","identity":"monster_status:soul-splintered monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"cfbece95bd446e94b93cbfdcab0a8e18dab76cbb2e5821fb0332200754b9a724","identity":"monster_status:spells diminished monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"d3a6fdc78f090b0ed1f1f8cf5d7a88bc2e5d39bcbcb4e1cfb0395f3af5c10d73","identity":"monster_status:spells empowered monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"09a8a931110e67a6cac5222f25b8226a483bed799306bc101b3a5c0a4d52137d","identity":"monster_status:stilling the winds monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c9f753504ef445e9f29d7da3c3551c40ec46ed504f11f9dba57faf17fc682758","identity":"monster_status:strong monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"6a1428f45ad94b90a2c1f6c7d4b72a971e5d7e3439e60f7e5fb779bf92f2e3b7","identity":"monster_status:strong-willed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"72f728c7ce849bfe2d272998654658e60daaa6b1fa1a3fdf42553ce61042a269","identity":"monster_status:stupefied monstatus","terminal_conclusion":"adjust"}
+{"fact_sha256":"c1bf56da9523030690dae76bad6499ba8880381b1fa8b95884827227fecc9e96","identity":"monster_status:surrounded by a freezing vortex monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c03a10940b59ef9296e2ec3bea15c1830700d0c0997be47a021b77e0c2080a11","identity":"monster_status:surrounded by acidic fog monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"15e1e1bb8d9c4d705f9750311a53a6b609f6531e80bb031733e8b6c713b4b021","identity":"monster_status:surrounded by chaotic energy monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c0d9cd443adc715d2a9e8ada411df0b1160093330eaf748588d767a5262d10ee","identity":"monster_status:surrounded by flames monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"dd87b63bd75e69e9146fde60a8be42cd5f90a0e78a657067133f1749b1ef9341","identity":"monster_status:surrounded by fog monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b0a3ba96b32a06330a003c01cd41fc9b2e11a0e4696b442689ad685bcc84c6ac","identity":"monster_status:surrounded by foul miasma monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ea91efde65dfd0df4b14c095dadc8b1a684da8c4e7af7841e87a98b20e5799f5","identity":"monster_status:surrounded by freezing clouds monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5832ece7de33bc46f703bfe0a87feef73e758973d6ac577db3ebe94afe15e18a","identity":"monster_status:surrounded by mutagenic energy monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"e917069f539232d26abca5b810ad2ce137ef393cec1709bf2a7d1ffd0e1260ab","identity":"monster_status:surrounded by negative energy monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"f67ba1424b728d53ab6f208dc35471f249b1ab7fc8df07c5b0f2ae09af014f91","identity":"monster_status:surrounded by restless winds monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"9fa872a38cfae6a544f6fba1a41be0662d4707e603495703e823a271e3611a04","identity":"monster_status:surrounded by thunder monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"ccbfbbdfe43b0fa3009ff1943debbeeb03b608086530bdc53a71e3b2e569350d","identity":"monster_status:target of orcish vengeance monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5b218bd7a2d511ad2cb300b2c668614670ad4f13782ba3ac5bf6d40a5a1e520d","identity":"monster_status:targeted by your dimensional bullseye monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"082f843974e92d3c89655cdd79dd29e378b28b7c395233710fb3bf7b96a8d14c","identity":"monster_status:tempered monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"dbcc0e8bdffed984a3ad1ecd89a6ce5b65876ce6f59cb9c237b30b6ce9a88b97","identity":"monster_status:touched by paradox monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"2c53de1ef94b5ed2dbbba77e7a2d814151f5bbe48473527fc8400cf39ed8784a","identity":"monster_status:unable to breathe monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"dcf10667b8fb82c196a0fb9bd0b501d031b9fdb460ba9ef4cd1ed2d74329981f","identity":"monster_status:unable to see you monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"7aa8edd02c2263bb31f382905e2dd5742fc410a7ac5274f536e443107434372a","identity":"monster_status:unable to translocate monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"5db0df097ab678c403cf6e179b1bc9cd5a56163f6381e9559f2e047cde8489b5","identity":"monster_status:unaffected by silence monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"7a883b890c344e9696b211130dc5a25e9c3a046b76b88ac5c8398750f087c906","identity":"monster_status:unrewarding monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"431cbab63c4a33b94662cd4c473807f1a7e65754806500913052d924edfd1740","identity":"monster_status:untethered in space monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"a1828b3b5b2a9a71eec66964cf8767008aeab90f1003a99c5926beaccda14c96","identity":"monster_status:unusually agile monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"3fbf6d85f8c06d1cc0ff5eb5516baa78475f98f8ed68b3a0ff70e5d08926b17d","identity":"monster_status:unusually resistant monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"a5aabf28d15ea12ff6f255ac8c1344ed1e2f641ced53919ed1cdaa02f3ff10c0","identity":"monster_status:very poisoned monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"77d78321812c685699a6673e10f82d686b52fd32ef1958c3a46009965a1353df","identity":"monster_status:weak monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"c194eec4d5e6249aace228956168b4d1621308e39d8aeecd6c587b562977547e","identity":"monster_status:weak-willed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"1364c33b0dd481d5176a5cb114f4f314a6e341a0553e79153e82c70ced5e7b0a","identity":"monster_status:winding a clockwork bee monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"30c8dbcce83729cb3f04caa1b5554ad1906b4c756344d2a59bcab6094f33233e","identity":"monster_status:withering away monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"4fcac30ccd576417434d75d5ea193fc081e060c2a32c7c3fac01f97c199f2b48","identity":"mutation:MUT_ACCURSED","terminal_conclusion":"keep"}
+{"fact_sha256":"859c6377a7e4c507b5dab9a170b42279ed7ab0b4d582dee18f41cfa93118640c","identity":"mutation:MUT_ACIDIC_BITE","terminal_conclusion":"adjust"}
+{"fact_sha256":"82bb53ec4c69a6320c63b1c65fedf34a9de02dfdb6fbf5cf614fff31eba3799f","identity":"mutation:MUT_ACID_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"fd70339d7cae8d2536ba0ab091342bdd062c5466f14c48c3faa8cdf425615a75","identity":"mutation:MUT_ACROBATIC","terminal_conclusion":"keep"}
+{"fact_sha256":"7e53506b5f045a75ce57487af12f2be1a29194bd0a0f23c21019d5c2e88429f1","identity":"mutation:MUT_ACUTE_VISION","terminal_conclusion":"keep"}
+{"fact_sha256":"0b2eb65bf714cade197be7d9e5d215300c054ff1a301ca3d7bbe5719ecf94f14","identity":"mutation:MUT_AGILE","terminal_conclusion":"keep"}
+{"fact_sha256":"7a7bb6debee21fbabca71b711f7f2bd7de7618432177effdae1bbe8bbf9adf9f","identity":"mutation:MUT_ANTENNAE","terminal_conclusion":"keep"}
+{"fact_sha256":"5904945e0425875a04b1171daeafbcb8e407370767695a49f6a454ee65293ba4","identity":"mutation:MUT_ANTIMAGIC_BITE","terminal_conclusion":"adjust"}
+{"fact_sha256":"4dec02982e4df90d4694bf1da90c008cccae101b4f6b54927a137c4ff384ed8e","identity":"mutation:MUT_ANTI_WIZARDRY","terminal_conclusion":"adjust"}
+{"fact_sha256":"30d6a59a7d1011c9d774886296a9c09ed566bb3593bedfaa00072944a337a530","identity":"mutation:MUT_ARMOURED_TAIL","terminal_conclusion":"keep"}
+{"fact_sha256":"c09a75ad368b51244dcac30830d7b53eb06628f9f73f07fedbd91bc72b4a0201","identity":"mutation:MUT_ARTEFACT_ENCHANTING","terminal_conclusion":"adjust"}
+{"fact_sha256":"9457c2319f16eeae1b6fd4e4c75ae3b42770ef2c9cee2a3e825771e9d6d62253","identity":"mutation:MUT_AUGMENTATION","terminal_conclusion":"keep"}
+{"fact_sha256":"3aa20ed3e6f6f3f3b385b969eede44ffb0b8fd00ee7543b698cfc40ec5838e06","identity":"mutation:MUT_BEAK","terminal_conclusion":"adjust"}
+{"fact_sha256":"5d90c37eb5d7e4f60b69eba1db428791f4c5c1c9bae1fc3ae8386f767b55e999","identity":"mutation:MUT_BIG_BRAIN","terminal_conclusion":"keep"}
+{"fact_sha256":"f792e40c6bd18d29974adc0b17b2c95dadbd615b23d603360c34772cb81dbad0","identity":"mutation:MUT_BIG_WINGS","terminal_conclusion":"keep"}
+{"fact_sha256":"4a8eebfb08f73d030737020619171d464fb192544eb950ab8ea083365a17d28b","identity":"mutation:MUT_BLACK_MARK","terminal_conclusion":"keep"}
+{"fact_sha256":"6b382fe2edc1ff9341a4323cb91ace4edad109e7f5489c77657ebad75ca2582e","identity":"mutation:MUT_BOOMING_VOICE","terminal_conclusion":"keep"}
+{"fact_sha256":"c9137915921198c7b3efabfca89a4d6980b1d2260caf5adb70bed6ed5c64a6ea","identity":"mutation:MUT_CAMOUFLAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"062a56b11408dce92a0308af04ac4e695c2e56bc8fdd59084296c6aec63ac0dc","identity":"mutation:MUT_CLARITY","terminal_conclusion":"keep"}
+{"fact_sha256":"313378dbd926e85f721a30ee0215fba14fafaef5d0e385bdf1b95541fae4abf9","identity":"mutation:MUT_CLAWS","terminal_conclusion":"keep"}
+{"fact_sha256":"259829e12aa51d95a73617e05caa58af0e5584b25ab3516ecb0f7ccf4c81e94c","identity":"mutation:MUT_CLEVER","terminal_conclusion":"adjust"}
+{"fact_sha256":"d314735acbf6a824a4bc96fe23b4f5a95dd745e8067837da0778df1c3c43105b","identity":"mutation:MUT_CLUMSY","terminal_conclusion":"adjust"}
+{"fact_sha256":"f6a52c0dfd74865227c3d72844e045b6811c096741bcbe77364dff25288b5187","identity":"mutation:MUT_COLD_BLOODED","terminal_conclusion":"keep"}
+{"fact_sha256":"72e06fb117cf58f970b76d80ed742115f961c83b946b6e8a41fa23bafb64e387","identity":"mutation:MUT_COLD_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"b8361cf4bfaade9a8dfc1de218116b9b3a002b082fef42a976a67294187b8e9f","identity":"mutation:MUT_COLD_VULNERABILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"b54379cf3eb416b8a4b0c12bbaf7df3a4cb65d78f06a8af77ff2a5d84f433762","identity":"mutation:MUT_CONDENSATION_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"d1350a6e30c238ea7decc79d534a91e6f5338855716a16cf08c049e45b32db71","identity":"mutation:MUT_CONSTRICTING_TAIL","terminal_conclusion":"adjust"}
+{"fact_sha256":"f467a9714360c981243d10cd1c9150b0b73d59df2f3e1c79c318e78f98b46029","identity":"mutation:MUT_CONTAMINATION_SUSCEPTIBLE","terminal_conclusion":"keep"}
+{"fact_sha256":"7a674d2ddfae923c51957856363895ff2ad593b3091305da4ed2545775ff867d","identity":"mutation:MUT_CORRUPTING_PRESENCE","terminal_conclusion":"keep"}
+{"fact_sha256":"2bbcd61af1a4574982b52944d18ecd35c87dea007b4d49eb828393acd77abff7","identity":"mutation:MUT_COWARDICE","terminal_conclusion":"adjust"}
+{"fact_sha256":"0d56234d679c41e7bc366691493a7c2e458ee07df3cc20ee6bea4b5c2703d29d","identity":"mutation:MUT_DAYSTALKER","terminal_conclusion":"keep"}
+{"fact_sha256":"493fafa35ca685c21f5b8eda264235ea1993428a22f0d73e66c3459301fc0d04","identity":"mutation:MUT_DEFORMED","terminal_conclusion":"keep"}
+{"fact_sha256":"273f455b8ad4dcf084764e8dbe1204dfc2e5ba36eca7c05582581991ffcb93b1","identity":"mutation:MUT_DEMONIC_GUARDIAN","terminal_conclusion":"keep"}
+{"fact_sha256":"0712103cf5b8fd27808b8d4af65d65cfc97cc6a683d3050475b96dfda63003ff","identity":"mutation:MUT_DEMONIC_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"e2a6312727d6ed301a912fee75a75d150c52e1aff2898b15509eff5d8554f7d7","identity":"mutation:MUT_DEMONIC_TOUCH","terminal_conclusion":"keep"}
+{"fact_sha256":"d7bd6a172b67e30424d33772a3a8b28d6652f4bfc85dddd7e528bbc59bb5cd6a","identity":"mutation:MUT_DEMONIC_WILL","terminal_conclusion":"keep"}
+{"fact_sha256":"6bfb181bff4c35df4b7fe66c26c4c46e4e92f09d592c835cbeb9a39a2459ff3e","identity":"mutation:MUT_DEVOLUTION","terminal_conclusion":"keep"}
+{"fact_sha256":"603a71555cc2e287908ef6d873f137eba4776bfb877b7abf4d3af6f50c57dc0d","identity":"mutation:MUT_DEVOUR_ON_KILL","terminal_conclusion":"keep"}
+{"fact_sha256":"6fa33cd9dc275a167b8c85cc4d9ab697f4f4b0d8adda24a40222b8a625d1308e","identity":"mutation:MUT_DISTORTION_FIELD","terminal_conclusion":"adjust"}
+{"fact_sha256":"3b34af489d0e906a8b65351396de414dc0856806eab097a05c907350f8c81a18","identity":"mutation:MUT_DISTRIBUTED_TRAINING","terminal_conclusion":"keep"}
+{"fact_sha256":"68dd0f551318647ed049012002c2403c7030eb59638b01838a870f31d3c6e489","identity":"mutation:MUT_DIVINE_ATTRS","terminal_conclusion":"keep"}
+{"fact_sha256":"2e59a7d302f327671b7822be17ea88f49e73fd601e9c323b9f1d56783a366cc4","identity":"mutation:MUT_DOPEY","terminal_conclusion":"adjust"}
+{"fact_sha256":"45ba8995bcd160ad8c9a5004e2cab5733fd3d5165b0959de695746057f5c75bb","identity":"mutation:MUT_DOUBLE_POTION_HEAL","terminal_conclusion":"adjust"}
+{"fact_sha256":"19f00514c3842a653d025e7ceb5e577b7a9ab6c37ff9884351a91219febb3d9d","identity":"mutation:MUT_DRUNKEN_BRAWLING","terminal_conclusion":"adjust"}
+{"fact_sha256":"9904f562cb9f202b6aaeb281b0c556927b0f771466c904c120c7733ee9888343","identity":"mutation:MUT_EFFICIENT_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"2c704ea69b2aa43491db86b581ddf6b4952d93d57e90901d2707779ce251bd48","identity":"mutation:MUT_EFFICIENT_METABOLISM","terminal_conclusion":"keep"}
+{"fact_sha256":"ab3aee75af68e0f9b66a804ab566735282dd32255ac9dd388d750768acd1e114","identity":"mutation:MUT_EPHEMERAL_SHIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"148e51b456c8a8d8f2a55b7d88a6ccb36114a80edb378fef812d4c7fc28466ba","identity":"mutation:MUT_EVOLUTION","terminal_conclusion":"keep"}
+{"fact_sha256":"26b60615438b13fed37a2d973cab960693ceffa8a756bc2d09e863d3adde5692","identity":"mutation:MUT_EXPLORE_REGEN","terminal_conclusion":"adjust"}
+{"fact_sha256":"4e86a3542c9eb24f786530507c77ef37a5de25b617576754b060684ce40da397","identity":"mutation:MUT_EYEBALLS","terminal_conclusion":"keep"}
+{"fact_sha256":"a2632cf7496bb8ab015350403ab1e451c9f7a9a305ba662b4797137718205b84","identity":"mutation:MUT_FAITH","terminal_conclusion":"keep"}
+{"fact_sha256":"16397588967245464ec1c5c1ddd9e81b05670524658702d86d258a96e66aab55","identity":"mutation:MUT_FANGS","terminal_conclusion":"adjust"}
+{"fact_sha256":"e40b8d22fabe7b40e86a8a4adaef6a051b911c7febada5feb0ba7b834b0dcb6f","identity":"mutation:MUT_FAST","terminal_conclusion":"keep"}
+{"fact_sha256":"cf60b1bf2266ee34ddfe5095006273a69a19d337296a4de5a2b1d221c07cbab7","identity":"mutation:MUT_FEED_OFF_SUFFERING","terminal_conclusion":"adjust"}
+{"fact_sha256":"96115e231b15b1fc1adb8ded1a621be472d185eab7965ba82f3bcd825021d31a","identity":"mutation:MUT_FLAME_CLOUD_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"64ac3f58ef80a3988b69f3011c0934baafb973804f952d09e9b6c60a709d59fb","identity":"mutation:MUT_FLAT_HP","terminal_conclusion":"keep"}
+{"fact_sha256":"e1b17fe60256ab8ae6850239bbd3620fefcce0a1960957c4a12af5e1723fc417","identity":"mutation:MUT_FLOAT","terminal_conclusion":"keep"}
+{"fact_sha256":"a8bdeee8a0c6c2020ee4ff377b70cb51cc27f1d64b092783ad3538fe2384d2d7","identity":"mutation:MUT_FORLORN","terminal_conclusion":"keep"}
+{"fact_sha256":"44e150809bd651e79a94564f7db782b76793f1416abeef9cde49c2dfc9d03a0b","identity":"mutation:MUT_FORMLESS","terminal_conclusion":"adjust"}
+{"fact_sha256":"c6cdba104cc0c8aaee278aa1b229a2405d0a2423524c2f1e30a29f8268f75e82","identity":"mutation:MUT_FOUL_SHADOW","terminal_conclusion":"keep"}
+{"fact_sha256":"5562e78573aad209521c7369f21c4c38376dd00c19f69d944edc24008c99990a","identity":"mutation:MUT_FOUL_STENCH","terminal_conclusion":"adjust"}
+{"fact_sha256":"6da8433f305eb072a1da05c0c4870ada61b459e72aa6acdc16f39f3feb51ed71","identity":"mutation:MUT_FRAIL","terminal_conclusion":"adjust"}
+{"fact_sha256":"414136fc296c3aef1d5a37466d86801a9af5c59d099a21032280744fce86a6fb","identity":"mutation:MUT_FREEZING_CLOUD_IMMUNITY","terminal_conclusion":"keep"}
+{"fact_sha256":"8b9a94338a06fe5d372a803c50545321af964fab066581276341971f15c0b615","identity":"mutation:MUT_FROG_LEGS","terminal_conclusion":"keep"}
+{"fact_sha256":"6ccbd654f1d2b4f7e31bcb2449c7051b7db9c1f3cd6da33514444412d1080156","identity":"mutation:MUT_GELATINOUS_BODY","terminal_conclusion":"keep"}
+{"fact_sha256":"48d2fba35a66bf40f0d1749672274475bb6f76b8aff4288ff7cb6f60031c75fa","identity":"mutation:MUT_HEAT_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"6f601efae5e3410ac2cc01d56d5a6a90e02c9605b7e7186366ffb4142d25b422","identity":"mutation:MUT_HEAT_VULNERABILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"1c32fa5c4186459641d44cfa27d118794a40609295bbba5389c522859cac8244","identity":"mutation:MUT_HEX_ENHANCER","terminal_conclusion":"adjust"}
+{"fact_sha256":"f97ec8966f451f706b51e3b315c5c20b0bfba11b240e4ec4888b7c2772667232","identity":"mutation:MUT_HIGH_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"5584d1116cea7c695abc0ebe1fdacfeb5f191e9bdf0d9a5d327ef120c0af2c4f","identity":"mutation:MUT_HOOVES","terminal_conclusion":"keep"}
+{"fact_sha256":"14c3bba7c47b0f50d071ec38abe0e96cf5501c1280e1ddc31b098b5b61197c97","identity":"mutation:MUT_HORNS","terminal_conclusion":"adjust"}
+{"fact_sha256":"a50cca7b6f94a1ed63dbf1885141e55e1d60e3850ab0731e80797cf271520427","identity":"mutation:MUT_HP_CASTING","terminal_conclusion":"adjust"}
+{"fact_sha256":"b458a3f8282c565293ce46197836d62df2f2a5d6e4e32c603a4d3556fbf45dec","identity":"mutation:MUT_HURL_DAMNATION","terminal_conclusion":"keep"}
+{"fact_sha256":"77cf71f5b8fa3417193d684908335dbb7156d8163eead6953bd424e4b530dda8","identity":"mutation:MUT_ICEMAIL","terminal_conclusion":"keep"}
+{"fact_sha256":"dcd44641e96951a0ba99bbf2ce5c53daa24636df540d961a02b6ab7763c604a5","identity":"mutation:MUT_ICY_BLUE_SCALES","terminal_conclusion":"keep"}
+{"fact_sha256":"9da94cf2d3ee6241c00a12465788fbb8342f8be93efe943fa2f71e0fe308f869","identity":"mutation:MUT_IGNITE_BLOOD","terminal_conclusion":"adjust"}
+{"fact_sha256":"ec2c48cac45dbbe676a803b73eefed0c3f29b6bbfbe450af619b67ec1aff9b64","identity":"mutation:MUT_INEXPERIENCED","terminal_conclusion":"keep"}
+{"fact_sha256":"99ab216ba705f4f45a044da0c2af15d5eb74bae998126f9ff56450984e3ea42c","identity":"mutation:MUT_INHIBITED_REGENERATION","terminal_conclusion":"keep"}
+{"fact_sha256":"4f38ad86e0890b5393a914f5f1dec284c5378b85b5698112c603a882038486d4","identity":"mutation:MUT_INITIALLY_ATTRACTIVE","terminal_conclusion":"adjust"}
+{"fact_sha256":"c9f2424a4d595b4de55c376f2832f05246dc3dd3f59f5219f0cd163f38c0241f","identity":"mutation:MUT_INNATE_CASTER","terminal_conclusion":"keep"}
+{"fact_sha256":"6c521b044e4a0e4ee5a70aafadc789a586e11ed328e02ee8c41bf6d9ff7f8924","identity":"mutation:MUT_INVIOLATE_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"6fda396fb0fa5d0b800f38ce928ffdf34d76e8982eef2e250f6256f729412346","identity":"mutation:MUT_IRIDESCENT_SCALES","terminal_conclusion":"keep"}
+{"fact_sha256":"e7b04d6baac610454ad9ea222da6a4a51bcc8b7a7bcbaeafcc60af8c0fad4939","identity":"mutation:MUT_IRON_FUSED_SCALES","terminal_conclusion":"adjust"}
+{"fact_sha256":"70d0a679158a7b3c73f0b4bea821be2444799808b98a5a0c625570f322ccd3e3","identity":"mutation:MUT_JELLY_GROWTH","terminal_conclusion":"keep"}
+{"fact_sha256":"87a8361d3a4b6d2ccad288670b370881fee7eb3e30d3707612934de9cb1aad12","identity":"mutation:MUT_JELLY_MISSILE","terminal_conclusion":"keep"}
+{"fact_sha256":"738576edf1962f2dd4bddea9538ebc847fb2388b037e942f6e0a4bd7bebff4b3","identity":"mutation:MUT_LARGE_BONE_PLATES","terminal_conclusion":"keep"}
+{"fact_sha256":"d7d2be9f574118176dc03dc4be0e9953add6bdcbc87b8a106edbdafc2df5e2f6","identity":"mutation:MUT_LOW_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"c288215305dc59fc2b4212c4ae3b0b4b92034f5e6c6186d7aac7cd9a49795fa3","identity":"mutation:MUT_LUCKY","terminal_conclusion":"adjust"}
+{"fact_sha256":"b33015a9c4ff50848a7e28d75026ca8c84d130a2e381ae1cee1e084e005b3237","identity":"mutation:MUT_MAKHLEB_DESTRUCTION_COC","terminal_conclusion":"keep"}
+{"fact_sha256":"6ebde81121d7b41f82fb95d26a351dd1b434ec9068266cf804495c895d77c4b3","identity":"mutation:MUT_MAKHLEB_DESTRUCTION_DIS","terminal_conclusion":"keep"}
+{"fact_sha256":"2e47e5a0773ce64d771ae2533416c44889f30a75702c808371f1d3f2c67f76c4","identity":"mutation:MUT_MAKHLEB_DESTRUCTION_GEH","terminal_conclusion":"keep"}
+{"fact_sha256":"a60d977a82fed05971479165bc0543510ff6e6945b9d0043a69f36c5e0df45bd","identity":"mutation:MUT_MAKHLEB_DESTRUCTION_TAR","terminal_conclusion":"keep"}
+{"fact_sha256":"074d54b1b177c12cc36065317b8c9737e87a3c79be31a29b1b52f6d3607db8dc","identity":"mutation:MUT_MAKHLEB_MARK_ANNIHILATION","terminal_conclusion":"keep"}
+{"fact_sha256":"aed67da33408df5e47393be199580c33ba0e94d79812fe1782043532de5c04b5","identity":"mutation:MUT_MAKHLEB_MARK_ATROCITY","terminal_conclusion":"keep"}
+{"fact_sha256":"42b837b92c7bf5b998363315642c2936747af8cb9084d5a278232caea58be3ea","identity":"mutation:MUT_MAKHLEB_MARK_CARNAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"13c96a1cc56ca294e5b19353e044709dd13db73d8aeb05f38b49f2a1d56abdb3","identity":"mutation:MUT_MAKHLEB_MARK_CELEBRANT","terminal_conclusion":"adjust"}
+{"fact_sha256":"74dae63ba161720a8e3f7a652252266fd1fefbada566a8bcd1ae21a21afc9150","identity":"mutation:MUT_MAKHLEB_MARK_EXECUTION","terminal_conclusion":"adjust"}
+{"fact_sha256":"cbfe9046d367ea57c1740d3354ab9ebb358936790af2c4bfbee5ad86a3c70304","identity":"mutation:MUT_MAKHLEB_MARK_FANATIC","terminal_conclusion":"keep"}
+{"fact_sha256":"971a586b8dfc64891d41485f0e18ec42dfc842fb4cf1026e07ed2774c0b68edf","identity":"mutation:MUT_MAKHLEB_MARK_HAEMOCLASM","terminal_conclusion":"keep"}
+{"fact_sha256":"2f85a620ad441fbae324e1698d3c637bfe99548777372bcfba523f9fa087b003","identity":"mutation:MUT_MAKHLEB_MARK_LEGION","terminal_conclusion":"keep"}
+{"fact_sha256":"6b2d4808022732703e970a8bfb8e0c9216e3bdcfe9b2efba3df0a8a20c07a04b","identity":"mutation:MUT_MAKHLEB_MARK_TYRANT","terminal_conclusion":"keep"}
+{"fact_sha256":"8e19dc7976d5191094ed470f1682b36454c9f9fd0dea7a0dfc4541faa482387c","identity":"mutation:MUT_MANA_LINK","terminal_conclusion":"adjust"}
+{"fact_sha256":"cbf95ca8a7e5c0d2e507e59dc03fc1cd75ab3b199a0e9e038810953134e44ffc","identity":"mutation:MUT_MANA_REGENERATION","terminal_conclusion":"adjust"}
+{"fact_sha256":"0f8eeda7404d7f65f1d7b9b10ea7dbf17562652019c95300ae3b4aed2f71b449","identity":"mutation:MUT_MANA_SHIELD","terminal_conclusion":"adjust"}
+{"fact_sha256":"245fa31dd2625f326057a766de1224bddd7b7f53b490eeaa07cfa0a978c0efb8","identity":"mutation:MUT_MEEK","terminal_conclusion":"adjust"}
+{"fact_sha256":"ef65e04c8490dd91dde7f6b515074867e756e776d76956225292420cb882511c","identity":"mutation:MUT_MERTAIL","terminal_conclusion":"adjust"}
+{"fact_sha256":"270992bffe48203c5d91b58baf116c2fca9dc559650ae39c33fabfb374453adc","identity":"mutation:MUT_MISSING_EYE","terminal_conclusion":"keep"}
+{"fact_sha256":"74f177d389b5479f4f18137a1db0f90d5ddeece52c9a959224d65f7ae5400e05","identity":"mutation:MUT_MISSING_HAND","terminal_conclusion":"adjust"}
+{"fact_sha256":"91011dda40d21d0a65c032a0e851d492307a4d631e75d32818268588a57e0718","identity":"mutation:MUT_MNEMOPHAGE","terminal_conclusion":"adjust"}
+{"fact_sha256":"7bc60d5f9170394ffb6f408c8bf955d7937a0f8935c81b0758737b8a36c1c094","identity":"mutation:MUT_MOLTEN_SCALES","terminal_conclusion":"adjust"}
+{"fact_sha256":"a040a34fb626eba3190679609c88ccc0f78f1a39a8e3586b1bd96623db5b1424","identity":"mutation:MUT_MP_WANDS","terminal_conclusion":"adjust"}
+{"fact_sha256":"f67d732b0a782bd0360aaf530da426077a63081ab058d1d905c73730bf99b0a2","identity":"mutation:MUT_MULTILIVED","terminal_conclusion":"keep"}
+{"fact_sha256":"9063104287c4c102b1a62fa966b9447759a342e07e00f2386db490fb202b1958","identity":"mutation:MUT_MUTATION_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"fc5d7fbf347910d212f4eea6b3230d03b1b6097ea478deaa825cd5b297625b0b","identity":"mutation:MUT_NECRO_ENHANCER","terminal_conclusion":"keep"}
+{"fact_sha256":"f6d81077b7ffc4bb21ae6fb6496276e6c5ad3a204028fe03f0486241f86175f1","identity":"mutation:MUT_NEGATIVE_ENERGY_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"b7c20326532051f8126c26eb7e03c8a3195f46ffe8b1a9598aab47dc0cd6654a","identity":"mutation:MUT_NIGHTSTALKER","terminal_conclusion":"keep"}
+{"fact_sha256":"495f471fc0f3ed7d28080b29de1145cf7bd5b2778d104c35d837f0232bf22720","identity":"mutation:MUT_NIMBLE_SWIMMER","terminal_conclusion":"keep"}
+{"fact_sha256":"47bd93fa14cb5bee3ff168255f2e1f482b71e60c9b27ab1850cdef706dc2e2df","identity":"mutation:MUT_NO_AIR_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"09a92ff5d57423575a4016faaaca9e73a49d46bf47c947185ae6a95aa4ebd1d2","identity":"mutation:MUT_NO_ALCHEMY_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"99f6854d0509694f56371b1af5078aae7a4f1b14133c502f1fc0006a91d5bee9","identity":"mutation:MUT_NO_ARMOUR","terminal_conclusion":"adjust"}
+{"fact_sha256":"988a7f3ff13cf93c0250e2c46bcdd9f6e21cff0f716c25c95eab71d6f1f084d6","identity":"mutation:MUT_NO_ARMOUR_SKILL","terminal_conclusion":"adjust"}
+{"fact_sha256":"9c1916ed37a3e0cc8fe0c7ec1b266372199984377339edcdd957bbc2da88d51c","identity":"mutation:MUT_NO_ARTIFICE","terminal_conclusion":"adjust"}
+{"fact_sha256":"0bef8dde75e5d40d548636f4a26c3b07b7e2fe64ba1c893eaac06964f961d3e8","identity":"mutation:MUT_NO_CONJURATION_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"9580e283d10192e0d356dd179ca7341bf794062b3e9f75768d5a929f2da81673","identity":"mutation:MUT_NO_DODGING","terminal_conclusion":"keep"}
+{"fact_sha256":"90909542183c6f16bafc5fa11dd16a0b79977a8eafaa7c25e7c622d69988f1e7","identity":"mutation:MUT_NO_DRINK","terminal_conclusion":"keep"}
+{"fact_sha256":"42ea828630ae6c8408e144dbfb26c0167e5e6ae4c6fbf84c0c1f01fbde3844b1","identity":"mutation:MUT_NO_EARTH_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"26bf2bc7d3b4a3700c84c0115a71ab9c3f54afa25347a9251ad7aea1a93b4ba5","identity":"mutation:MUT_NO_FIRE_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"81c5bcb04014b80663710b28b0787cf7451cce75e2d2907f5f25cdda0ae459c8","identity":"mutation:MUT_NO_FORGECRAFT_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"8476e69e1b83bd8f6ed09c033cac5904e1dc74ccdbdbb17473a0470093d888fa","identity":"mutation:MUT_NO_FORMS","terminal_conclusion":"adjust"}
+{"fact_sha256":"624c789b8cf1af606d8789ed8b0d50bade5309845cc8dac6930ce3d948080b63","identity":"mutation:MUT_NO_GRASPING","terminal_conclusion":"keep"}
+{"fact_sha256":"fe4a32a54d0689de9d3858f9414a80c836f3a961720a836073503f3f9c3fbb50","identity":"mutation:MUT_NO_HEXES_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"928cf5776907a1b4507b7286534e30c8b51f8d5b9a7affa514604ec545e8021b","identity":"mutation:MUT_NO_ICE_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"4ee4fac37537fdee89d6e47b485c5ec631c5afd045306b323ea4d36b5f86f3da","identity":"mutation:MUT_NO_JEWELLERY","terminal_conclusion":"adjust"}
+{"fact_sha256":"9480c5e775e9b3d8c4a23f05d3e3f74ffdf809aba14fcc6d04fdec1c7d265f96","identity":"mutation:MUT_NO_LOVE","terminal_conclusion":"keep"}
+{"fact_sha256":"63bec44c218c39a34e6e5f2ede6a407ba7c16b7e45b65761fb71713b904e0de9","identity":"mutation:MUT_NO_NECROMANCY_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"a5b37454017e8c15fdfb15a4378c69f974170570970a3867a987d5ef1b309cd6","identity":"mutation:MUT_NO_POTION_HEAL","terminal_conclusion":"keep"}
+{"fact_sha256":"a14e2e97240182994a5aa4f755fcdd5fbfceaf9699af5b99dd2b9eb194e36f54","identity":"mutation:MUT_NO_REGENERATION","terminal_conclusion":"adjust"}
+{"fact_sha256":"adbd2d6b3ba648cb6dc616ac2daec6e5c3c236de38f64693dec0356c47124008","identity":"mutation:MUT_NO_STEALTH","terminal_conclusion":"keep"}
+{"fact_sha256":"661bd977889f5741b57fbf6a335e17d9a7905ec7b353035f9e3d993ae2eeea34","identity":"mutation:MUT_NO_SUMMONING_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"91f8e10ddbe92bdd0d9532474a1a10eef548d8f91945ffd121bf3ba835fa453b","identity":"mutation:MUT_NO_TRANSLOCATION_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"142adabf53dbeffc7e91210f4a9fb4e0915d347d7e26f0a4b099c3dae59ce257","identity":"mutation:MUT_OOZE_FLOOD","terminal_conclusion":"keep"}
+{"fact_sha256":"47fb22064162980f6c5494ba5067a03a21ab15d31a06f03f0708c2de228f5f6f","identity":"mutation:MUT_PASSIVE_FREEZE","terminal_conclusion":"keep"}
+{"fact_sha256":"8c83fdca8d912e9056c828ca11dfaa792d03ff1ae53812aad26e8342509c0a81","identity":"mutation:MUT_PASSIVE_MAPPING","terminal_conclusion":"keep"}
+{"fact_sha256":"cd236dc36f990d653b123c1dc0d4f4d64ae7e3a505d59efbe4fb06ba05bec4eb","identity":"mutation:MUT_PAWS","terminal_conclusion":"keep"}
+{"fact_sha256":"c76f9629a355bcdb802639019c22af718f0f4e665403e1de611666356509fbe0","identity":"mutation:MUT_PERSISTENT_DRAIN","terminal_conclusion":"keep"}
+{"fact_sha256":"1d4268c8ec6abb32e4e49a58560e3259e54a162505242c494871bd0d8b239784","identity":"mutation:MUT_PHYSICAL_VULNERABILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"4b04fd283fa78bc7c1f73ea4ea45e1a51ddc01afee89f4a622fecf1cd94bd6f7","identity":"mutation:MUT_POISON_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"2e506bc899848325f08381628f96a544175daa51f59c64a451a4a8f168005c64","identity":"mutation:MUT_POOR_CONSTITUTION","terminal_conclusion":"adjust"}
+{"fact_sha256":"cd6dea986ad3ea43904bfeee7a960e27c2556f499ed85c84c2dc5b1d1bad2fd5","identity":"mutation:MUT_POTION_FUNGUS","terminal_conclusion":"keep"}
+{"fact_sha256":"6cc932bd09fc8f8424157a956d85caf466dda48551efd525a229d32bfb06b24f","identity":"mutation:MUT_POWERED_BY_DEATH","terminal_conclusion":"keep"}
+{"fact_sha256":"d0c93461632b07860d6435540efbfc7a95557681f70fab6c598ab6e364e5666c","identity":"mutation:MUT_POWERED_BY_PAIN","terminal_conclusion":"adjust"}
+{"fact_sha256":"218f6f5bb2361772ce34d29886363f2987c15ab224587e08c7f97cd4e80cff58","identity":"mutation:MUT_PROTEAN_GRACE","terminal_conclusion":"keep"}
+{"fact_sha256":"d6f788a74d75cef4900c5d4f9eadfe3181a83767f3b2e10a2c9f03485820369f","identity":"mutation:MUT_PSEUDOPODS","terminal_conclusion":"keep"}
+{"fact_sha256":"eb3e3e75b26bea59e9645abd109ed776b93734b7d4f3a874298956a4988fc6b1","identity":"mutation:MUT_QUADRUMANOUS","terminal_conclusion":"keep"}
+{"fact_sha256":"fed03c777ac7d371a47f34e246840bcdc650cc29b94e73e06281e478c7f8054f","identity":"mutation:MUT_RECKLESS","terminal_conclusion":"keep"}
+{"fact_sha256":"efaf63702c0cee85680535410aa7dcc9d282a3be77a7af3e8ca2a77b8c3381dc","identity":"mutation:MUT_REFLEXIVE_HEADBUTT","terminal_conclusion":"adjust"}
+{"fact_sha256":"17565a19fb0e43cb67476759fd59973c7fd604ff11d6628052f7b4e2fa0353da","identity":"mutation:MUT_REGENERATION","terminal_conclusion":"keep"}
+{"fact_sha256":"bb1309d717b98babcbfc675bd09ff163caa907907f7715e30ad09a42a6867643","identity":"mutation:MUT_REMOVED_MUTATION","terminal_conclusion":"keep"}
+{"fact_sha256":"8e925a2f303c225ed7a2c50517d5223a7cb8840d896d3a23357bad10f7f9160d","identity":"mutation:MUT_RENOUNCE_POTIONS","terminal_conclusion":"keep"}
+{"fact_sha256":"f92a4dbe3d793503fcc0f81f5e035fdb4af3cf0e552be1aa7b9039898406a874","identity":"mutation:MUT_RENOUNCE_SCROLLS","terminal_conclusion":"adjust"}
+{"fact_sha256":"8aa8a10c5970ea5e7d5aa39aff4a837271cc18fc40bbcd19907e10495c9d67e7","identity":"mutation:MUT_ROBUST","terminal_conclusion":"keep"}
+{"fact_sha256":"71ef837f0a9e3c07212b65fe96425137e6ad8b9eb374c7cee048688d71f81742","identity":"mutation:MUT_ROLLPAGE","terminal_conclusion":"adjust"}
+{"fact_sha256":"c2fd6ab9621d7e50faf433c7f81742481146b205a12414cf5fd3107b98f681cf","identity":"mutation:MUT_RUGGED_BROWN_SCALES","terminal_conclusion":"adjust"}
+{"fact_sha256":"7126a2623747dc1e1f3bb58a620c7988d31def82ca40cfe84ded49386a666ea3","identity":"mutation:MUT_RUNIC_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"a8653830baf7d9d27efcde5e180208e55ba494a8ebbe9370772f60d5308cab89","identity":"mutation:MUT_SANGUINE_ARMOUR","terminal_conclusion":"keep"}
+{"fact_sha256":"39c55fa02b990e562bbafa1210fc3dbb377890dcb94aca17c4da42e7bbee737d","identity":"mutation:MUT_SCREAM","terminal_conclusion":"keep"}
+{"fact_sha256":"1e7a117cf5f5c96642aa7a9804cea3afd89fdab8f2ff705964545124955a32a4","identity":"mutation:MUT_SHAGGY_FUR","terminal_conclusion":"adjust"}
+{"fact_sha256":"dc308444f7ec1b31b3f25f5681a1da9f7f3756453e4a91e560be0ba999c240af","identity":"mutation:MUT_SHARP_SCALES","terminal_conclusion":"adjust"}
+{"fact_sha256":"372cc9f15e51737dac66a50e8d4e4c3e68ba8ebc455618a31b1c477ac9b460d6","identity":"mutation:MUT_SHOCK_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"3dc65a5314b4f458989ff4edefbc1b99635852d5f9309c1d4a341099c219e1ed","identity":"mutation:MUT_SHOCK_VULNERABILITY","terminal_conclusion":"keep"}
+{"fact_sha256":"a29f5e51280510ba999d44e43d7327fdf578bc353551651749af56a90e14f8f1","identity":"mutation:MUT_SHORT_LIFESPAN","terminal_conclusion":"keep"}
+{"fact_sha256":"04d1f5a754a7ba0b1b86c5e7bd806cdc6c52a6288aafb1a0cc35e05a6293d2e5","identity":"mutation:MUT_SILENCE_AURA","terminal_conclusion":"keep"}
+{"fact_sha256":"8cac3d8f9399622046a383039ea9d7d014d3114bcef108c05153546ce204315b","identity":"mutation:MUT_SLIME_SHROUD","terminal_conclusion":"adjust"}
+{"fact_sha256":"cdb11c88febee13981d1af85a4e0689056fb5070c347f2913f7509800a9c07e0","identity":"mutation:MUT_SLIMY_GREEN_SCALES","terminal_conclusion":"keep"}
+{"fact_sha256":"1c0c60d69f255bd063a8dfc0a253e830a05d1dca1f113292af87f9bab5a01bbb","identity":"mutation:MUT_SLOW","terminal_conclusion":"keep"}
+{"fact_sha256":"f4880f786ff640282eb3a63e715bcbd1c3428eeb1e1fa6d06cbb6a989b5f7198","identity":"mutation:MUT_SLOW_REFLEXES","terminal_conclusion":"keep"}
+{"fact_sha256":"a5648baa19ab99b544fcd8a108ab1128eda017d7417b4989fc875c1715a3b255","identity":"mutation:MUT_SLOW_WIELD","terminal_conclusion":"keep"}
+{"fact_sha256":"0b862057c981ebf99ad7e14f0e873df5d621cab4ab4ad0e4729258587403d100","identity":"mutation:MUT_SPATIAL_ENTANGLEMENT","terminal_conclusion":"adjust"}
+{"fact_sha256":"f790f2ac238d5008ff2eedd536ef99a7f72ff6eb43033dc25cd5f7f88e480eda","identity":"mutation:MUT_SPELLCLAWS","terminal_conclusion":"keep"}
+{"fact_sha256":"094df52215714603f1aac6636ff125709485185888bc8fea79511fef98b9e8de","identity":"mutation:MUT_SPINY","terminal_conclusion":"adjust"}
+{"fact_sha256":"592215ce6ecf718de50483329d637f06ccdc0d2401a50f810046d5b9063dc190","identity":"mutation:MUT_SPITEFUL_BLOOD","terminal_conclusion":"keep"}
+{"fact_sha256":"7e981f630eef0777dfba4f8521efca8b99bc69e07d521a78fdff4851d8a4cb54","identity":"mutation:MUT_SPIT_POISON","terminal_conclusion":"keep"}
+{"fact_sha256":"0424178b8aa9687c0c9e89e3e2c19286a5ce248f64ca18d749e6cdae4bd23fa8","identity":"mutation:MUT_STEAM_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"e628f95e557c4c3cb14d45f998ac029b3228bd47128591315469f2503c12e0a2","identity":"mutation:MUT_STINGER","terminal_conclusion":"keep"}
+{"fact_sha256":"d3a3bb58583cfd109f2dd1d9aa37c4c28726fc26b7f279173af4643854c428c3","identity":"mutation:MUT_STONE_BODY","terminal_conclusion":"keep"}
+{"fact_sha256":"f3db6a2f61c9644f92040542a699544a02209062555148eac886e4b945db4a76","identity":"mutation:MUT_STRONG","terminal_conclusion":"keep"}
+{"fact_sha256":"d1881d92cdf29afb8a170a81fd72fbb15d62b91ebd15b3b6ccda21db68e365e6","identity":"mutation:MUT_STRONG_WILLED","terminal_conclusion":"keep"}
+{"fact_sha256":"911dcf3d1bc149f747e7b9430aebff54c082896d4b7760fb685b2d701b6c217d","identity":"mutation:MUT_STURDY_FRAME","terminal_conclusion":"adjust"}
+{"fact_sha256":"07c58a92f642810e936a05468c2c01f059c6cbfba4a8142e9b53122beacdc6d6","identity":"mutation:MUT_SUBDUED_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"61e6a1e08a275a31bfac1f841ab01a20f496fbf7392cd02ecbe00b4e92d7fdc1","identity":"mutation:MUT_TALONS","terminal_conclusion":"keep"}
+{"fact_sha256":"5f6a2d743944525461fc52860cfab057d480f5bb59da2b7110923c19bb319532","identity":"mutation:MUT_TELEPORTITIS","terminal_conclusion":"adjust"}
+{"fact_sha256":"996fa210031aae38e8c42b6f3914e0b2d60de6810333040b5872379ee25736f3","identity":"mutation:MUT_TEMPERATURE_SENSITIVITY","terminal_conclusion":"keep"}
+{"fact_sha256":"3ff5cc02921c3aa59615b3afa663caefdbe5afc13af54ef3d1c208fd36e2d6e8","identity":"mutation:MUT_TENDRILS","terminal_conclusion":"keep"}
+{"fact_sha256":"fcd8f2c9fd3ca6ebe085ded6e0f454433ceadd799567125123ceb0aac4f6e3ec","identity":"mutation:MUT_TENGU_FLIGHT","terminal_conclusion":"keep"}
+{"fact_sha256":"a25955552d5e051aaeceabee2ac45e1d0334f5e23e972ba84b4f7b6d361bfffc","identity":"mutation:MUT_TENTACLE_ARMS","terminal_conclusion":"keep"}
+{"fact_sha256":"21aa9a8303d8a232ed48e8d8000a260c3179c3a1c6ec205e846522e3a4d9e290","identity":"mutation:MUT_TENTACLE_SPIKE","terminal_conclusion":"keep"}
+{"fact_sha256":"2533167af17186dd19db96dfc4b1e73aed55bc502d2239931e44652ffcd05d42","identity":"mutation:MUT_THIN_METALLIC_SCALES","terminal_conclusion":"keep"}
+{"fact_sha256":"2170f1c3005752da39136c7dcb7828fe5de80769a6e1cd8e4e5d6f3a1a0bd358","identity":"mutation:MUT_THIN_SKELETAL_STRUCTURE","terminal_conclusion":"adjust"}
+{"fact_sha256":"0e075d6c00b2474ed7e4be40ceb20f04d88cfcfe31c603ba462cba4f828039f2","identity":"mutation:MUT_TIME_WARPED_BLOOD","terminal_conclusion":"keep"}
+{"fact_sha256":"fdab202770ec6eab99129131dcf2618a2cb743da441a7263a9c1ce977e2e0d22","identity":"mutation:MUT_TORMENT_RESISTANCE","terminal_conclusion":"keep"}
+{"fact_sha256":"17b7cdae565c90da406b7d78b95333669eec97fad895215df74418b3e20e7943","identity":"mutation:MUT_TOUGH_SKIN","terminal_conclusion":"adjust"}
+{"fact_sha256":"9bdd4b168a1976744dcc9d1e08592bc02fad79b7f8b1b638bc7da333ccd34667","identity":"mutation:MUT_TRANSLUCENT_SKIN","terminal_conclusion":"keep"}
+{"fact_sha256":"c5285ce8c5dd763f17887b0714976a1a32d3c7a3bb36e31545314f7fc2d8c6cf","identity":"mutation:MUT_TREASURE_SENSE","terminal_conclusion":"adjust"}
+{"fact_sha256":"9dd22b7365cf1099c47cce5dedd5e85c3d2416a8264f4c7e8bae483303e128f4","identity":"mutation:MUT_TRICKSTER","terminal_conclusion":"keep"}
+{"fact_sha256":"f1a9e58b2e58459790c94a412dc626f5e805ad615f2cc4fc5dbf54e3d41e8b91","identity":"mutation:MUT_UNSKILLED","terminal_conclusion":"keep"}
+{"fact_sha256":"ed50348e626fbef759eec219488b5d91a95bf4a3b5b59b18d780ae3ae7e55090","identity":"mutation:MUT_WARMUP_STRIKES","terminal_conclusion":"keep"}
+{"fact_sha256":"d965623e81f2a94f6f98b67ab86ff3548662b967a95ea88d2225275a31598f6b","identity":"mutation:MUT_WEAK","terminal_conclusion":"keep"}
+{"fact_sha256":"5e459b62f61cd324f7dd0c86c6ca7b40f56f2ebdc7f32c42ae69e822fe3780bf","identity":"mutation:MUT_WEAKNESS_STINGER","terminal_conclusion":"keep"}
+{"fact_sha256":"dabcb46d529b4ac0f7bf4ba1f3527a28b8b322c6b3558bab07ecbf1ce952a085","identity":"mutation:MUT_WEAK_WILLED","terminal_conclusion":"keep"}
+{"fact_sha256":"1b28eb0eadf3136eecea8ba214cca297c91b80d563a198449ca544c8956bb3bd","identity":"mutation:MUT_WIELD_OFFHAND","terminal_conclusion":"adjust"}
+{"fact_sha256":"250c27a0924bc5f3aabe820e182040be60920a0a32c0bdf001525578d8672c3d","identity":"mutation:MUT_WILD_MAGIC","terminal_conclusion":"keep"}
+{"fact_sha256":"2e44c9639d576479f15dcb02a4f76494cb22c8d6c6fb4fbd1f074e39d467ce93","identity":"mutation:MUT_WORD_OF_CHAOS","terminal_conclusion":"keep"}
+{"fact_sha256":"8949e516aefc207f8df8cdf2088611fadaf472e0fb0ef848d90e1e1d4ae319a3","identity":"mutation:MUT_YELLOW_SCALES","terminal_conclusion":"keep"}
+{"fact_sha256":"a85900a8cb09dab214c1c567525a2c158ea89f85b8b71e0fba2f6321ea805f6f","identity":"skill:SK_AIR_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"5b698bb25143f66b43fc3b69eb597e961aa80d8cc09141d368e4c2fa0bdec758","identity":"skill:SK_ALCHEMY","terminal_conclusion":"adjust"}
+{"fact_sha256":"345ad11f647fa5cdc4e7819838ef4daa6ae60d10ab8df4689749562b117c0982","identity":"skill:SK_ARMOUR","terminal_conclusion":"adjust"}
+{"fact_sha256":"9b5423ff41ac1c18e08707598e27a6adf1a63e00859ca0f584f1945ec580da49","identity":"skill:SK_AXES","terminal_conclusion":"adjust"}
+{"fact_sha256":"853921845b5cf1e13c8bc233136c5cb3aa8447240c0196cdd2ed88ef77fe0e21","identity":"skill:SK_CHARMS","terminal_conclusion":"keep"}
+{"fact_sha256":"128dbf362346bf253a716aa62318460a471a678b799be9dfdc16283293242bb2","identity":"skill:SK_CONJURATIONS","terminal_conclusion":"adjust"}
+{"fact_sha256":"007740c1551ffb86664cb86a7220bdecf8de46493bf7bb7a8612b51a0bae59e0","identity":"skill:SK_CROSSBOWS","terminal_conclusion":"keep"}
+{"fact_sha256":"6e67fd17cf737f81ed4135e8341cf5af5e93eed6229e842924584b5ee1ba931f","identity":"skill:SK_DODGING","terminal_conclusion":"adjust"}
+{"fact_sha256":"b54b117f8f55a90dcebb84b4417761bab1ace5a6c5db8f4a5bc04f2f0c8e2cd7","identity":"skill:SK_EARTH_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"917473fbddcd787b0333bff8648c4ebfbb951fb1d9a5b4339f27c03db6c54a25","identity":"skill:SK_EVOCATIONS","terminal_conclusion":"adjust"}
+{"fact_sha256":"fc8414aae2cc1827b124d4b9a5787412aae8721905277231124e8731fd0b7c1b","identity":"skill:SK_FIGHTING","terminal_conclusion":"adjust"}
+{"fact_sha256":"ebae98f01548f5e2d58a4e3e7740cd178c87b4de340f92ad2de964e44a4be813","identity":"skill:SK_FIRE_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"189b424ad8dff236c7f4d56e24d658b0b9a7b8b524f26df329be9f123409fdf5","identity":"skill:SK_FORGECRAFT","terminal_conclusion":"keep"}
+{"fact_sha256":"7a8070402e0d1a80e0147292c8c2496284f6fc15c5c1dd19f073b87fb4bc1b1f","identity":"skill:SK_HEXES","terminal_conclusion":"retranslate"}
+{"fact_sha256":"12e9fde4aeab95c55ee6559f8be812f45d21f2c859f0126871b7de84583f9ac4","identity":"skill:SK_ICE_MAGIC","terminal_conclusion":"adjust"}
+{"fact_sha256":"5b0c93e5252f3f26a500300d136b4757fccb5ffc1d0247fc9a7a0278e5e36e8e","identity":"skill:SK_INVOCATIONS","terminal_conclusion":"adjust"}
+{"fact_sha256":"d95d33fe8ab4d108a2370ef61177e6fc48a425ab7c83d9758b8c39239d0fa1ff","identity":"skill:SK_LONG_BLADES","terminal_conclusion":"keep"}
+{"fact_sha256":"38f7b636b87d0939e991641497f402a42d177c1302484b802d24f0b0c1664ac9","identity":"skill:SK_MACES_FLAILS","terminal_conclusion":"adjust"}
+{"fact_sha256":"516ee17cd6159c60de774a20b36f77a4d6422bb0f259abdb090894df73cc5a03","identity":"skill:SK_NECROMANCY","terminal_conclusion":"adjust"}
+{"fact_sha256":"6ff2a5d99103f67cd9f2e1b460827a5dfc5c69d554d991ad6b742f0a91cb4b0f","identity":"skill:SK_POLEARMS","terminal_conclusion":"adjust"}
+{"fact_sha256":"707531ef19d3cb4abb34bf466723d9506cc5bc7e382539b155bf14950388358a","identity":"skill:SK_RANGED_WEAPONS","terminal_conclusion":"keep"}
+{"fact_sha256":"e3453414f1d88c45e06a4b2c3081f668e7a1316107f619622120c84f60a0701d","identity":"skill:SK_SHAPESHIFTING","terminal_conclusion":"retranslate"}
+{"fact_sha256":"c93f8c84b66573c4458f07648fad5e1223e008bd8aac3bb71dbe2c685ac83c1f","identity":"skill:SK_SHIELDS","terminal_conclusion":"adjust"}
+{"fact_sha256":"00a6783ca4efbf9a3f99164e19510c46515c63d8c3e028813987ca9378247152","identity":"skill:SK_SHORT_BLADES","terminal_conclusion":"adjust"}
+{"fact_sha256":"33c63c49208c5feca79a683ffaa22d9b06fb18bd92592405da0c943bc677f3a2","identity":"skill:SK_SLINGS","terminal_conclusion":"keep"}
+{"fact_sha256":"443a000621007b4d6da30a0b71aaaf26d984d07356604a83273a5ea59860d410","identity":"skill:SK_SPELLCASTING","terminal_conclusion":"adjust"}
+{"fact_sha256":"94f008645d29b0a3f5f89977ad6fceeeeb867835dfbedc89a10ed55e2e5f1b1b","identity":"skill:SK_STABBING","terminal_conclusion":"keep"}
+{"fact_sha256":"42ef1caa67fb9075bedb2b01e29b9398f0c95821a050010bdec14341e9730d7e","identity":"skill:SK_STAVES","terminal_conclusion":"adjust"}
+{"fact_sha256":"514c937e3480111c550da1c2f3683f7d4ba8b637c898d937679fc6cf1ef21ae6","identity":"skill:SK_STEALTH","terminal_conclusion":"adjust"}
+{"fact_sha256":"4c82d2f138950cab02df1deb7be775c73d4305b9d13d6cffdc391fbabc43f976","identity":"skill:SK_SUMMONINGS","terminal_conclusion":"adjust"}
+{"fact_sha256":"b7f66a51352e3e8f0ceffdd4f768462bf423175d796d1799664bb790edcfe17b","identity":"skill:SK_THROWING","terminal_conclusion":"adjust"}
+{"fact_sha256":"b5870354c165ddaaaf64934c30c725a96bb5acb77b34a29aef1fa5bf3c3fbee8","identity":"skill:SK_TRANSLOCATIONS","terminal_conclusion":"retranslate"}
+{"fact_sha256":"31e5c0b23043871c1e78d321035cfa5e98724d81b80a7c28757903c978c2ff4e","identity":"skill:SK_TRAPS","terminal_conclusion":"keep"}
+{"fact_sha256":"eb90551d35fb5102b5d7286db797579cffd68122b08af5bdb62fa799f06f5ff6","identity":"skill:SK_UNARMED_COMBAT","terminal_conclusion":"keep"}
+{"fact_sha256":"f44a5f1cbd89ec0e43039b0c86cd8d69b1da8cd553696348aba82dad6a3f0b83","identity":"status:STATUS_AIRBORNE","terminal_conclusion":"keep"}
+{"fact_sha256":"8c2f376a49fcfba976cbbb5a6c1845e46c9f8339fd0aa98b9f2085dfb7f4db21","identity":"status:STATUS_AUGMENTED","terminal_conclusion":"keep"}
+{"fact_sha256":"e21a0e397e7ff3a57708fc279ff5fb69dace6adbbfe8a6265cc2255ba372c605","identity":"status:STATUS_BACKLIT","terminal_conclusion":"keep"}
+{"fact_sha256":"af1802391e7f727902fe92b8c58cef6ad3616c2e420da84ba6d00a827f991a72","identity":"status:STATUS_BEHELD","terminal_conclusion":"keep"}
+{"fact_sha256":"ee5a915782f8f03c9f094db58891c27553904eae62b2882dcaaf0c69cf591ef7","identity":"status:STATUS_BEOGH","terminal_conclusion":"keep"}
+{"fact_sha256":"dcc5fbca04c43984d1d0dc73b435e470c1d031370379c34514a71863f8021c8d","identity":"status:STATUS_BLACK_TORCH","terminal_conclusion":"keep"}
+{"fact_sha256":"9f1332011897bb833b0d73526af5eb7fe2030ff10da089c19def3aeb090a3885","identity":"status:STATUS_BRIBE","terminal_conclusion":"keep"}
+{"fact_sha256":"7205b2828c44b99d0155a9b0ca5874e3846889d5df215907ecfbbf96aae506bc","identity":"status:STATUS_CANINE_FAMILIAR_ACTIVE","terminal_conclusion":"adjust"}
+{"fact_sha256":"cef674b743799c0c4c2d4467bcbaf5ce4b338ea9748a8441c87cbf2635bd461b","identity":"status:STATUS_CHANNELLING_SPELL","terminal_conclusion":"keep"}
+{"fact_sha256":"1503da17a1343d93264496e6cedc9bddf59d6994376215b57e6b1572f81e0f4e","identity":"status:STATUS_CLAUSTROPHOBIA","terminal_conclusion":"keep"}
+{"fact_sha256":"7691cc1bca46f5f77c2969191d229e0c380d68717e36391ef9874c95611d8d0b","identity":"status:STATUS_CLOUD","terminal_conclusion":"keep"}
+{"fact_sha256":"f5e7bb3ede4d80edbf3f0640c3f8d03ce69190344eadd925514db6c4d4bfcd83","identity":"status:STATUS_CONSTRICTED","terminal_conclusion":"keep"}
+{"fact_sha256":"9135888452a2f49eb051840ea8320faa884dc688b2d5f589aeb799ff08ecafd6","identity":"status:STATUS_CONTAMINATION","terminal_conclusion":"keep"}
+{"fact_sha256":"4e69daf24794c63271997b71cb9a5d9ca646bb75f8ea8ae5d31f5724623f869a","identity":"status:STATUS_CORROSION","terminal_conclusion":"keep"}
+{"fact_sha256":"46ad7f1c4a90c7331178e3eb68941a3706489cf4667f8af1dcc6197001870350","identity":"status:STATUS_CRUCIBLE_DEBT","terminal_conclusion":"keep"}
+{"fact_sha256":"6a476401757e8f8bddefa63f459c3be1608aaa8581721676a6b112bc2d9223c4","identity":"status:STATUS_DIG","terminal_conclusion":"keep"}
+{"fact_sha256":"be922d009532c5f88c3ff268453c6246dba624cd0fd77a94136144a2bff0db5e","identity":"status:STATUS_DRACONIAN_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"6303f55b4fdd0c711fbb25c74b8b9100f3486360f0693ca754f6392aa8803dde","identity":"status:STATUS_DRAINED","terminal_conclusion":"keep"}
+{"fact_sha256":"7b1c1d809d9e6458a00d0c50bb3b2558543a57c05a04c1b4a818a8f9964d3d08","identity":"status:STATUS_DUEL","terminal_conclusion":"adjust"}
+{"fact_sha256":"40ca0d98b35039939219e53ff01660a56e2ec0956514a7b217f3b9ffcff8a5d8","identity":"status:STATUS_GEM","terminal_conclusion":"keep"}
+{"fact_sha256":"cd5afd21036ea227f57b575d3b4c7cb468f233066858b6465b0d3e9732f9e66e","identity":"status:STATUS_GRAVE_CLAW_UNAVAILABLE","terminal_conclusion":"keep"}
+{"fact_sha256":"fa6469a23ef46cfd3c7e7fcee497009ac8352ade00740077d97403608f0cc910","identity":"status:STATUS_HEAVENLY_STORM","terminal_conclusion":"keep"}
+{"fact_sha256":"5668c63b9df61e36f5418e8d4a227ac1f67a728e5c12eeefd3fade6659a92794","identity":"status:STATUS_INVISIBLE","terminal_conclusion":"keep"}
+{"fact_sha256":"88af719c73876e1eebf51fe21cec87ebef04a951e8fbdb345bf5ab7a1809f640","identity":"status:STATUS_IN_DEBT","terminal_conclusion":"keep"}
+{"fact_sha256":"60efd706e238dbb88cee866f29634d92b8295d44a2694039437ce24dcfabd73f","identity":"status:STATUS_LIQUEFIED","terminal_conclusion":"keep"}
+{"fact_sha256":"5366a78020f29daf080ec628253f26d02a53284fb408ccd656ff1c4589364116","identity":"status:STATUS_LOWERED_WL","terminal_conclusion":"keep"}
+{"fact_sha256":"9ee2fb78f30ce48c0d7236eb662f7b16c2849830b33acae5bc1201dbf1c6872c","identity":"status:STATUS_MANUAL","terminal_conclusion":"keep"}
+{"fact_sha256":"b5eb2551ff73277c0da4bb09b9dff05efe9c6e2db340a5ba7e6677a16d31337d","identity":"status:STATUS_MNEMOPHAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"23afa445a28ba16df03686e3225d8af4e2e5226cdd8a7a0182377340c84e2c3c","identity":"status:STATUS_NET","terminal_conclusion":"keep"}
+{"fact_sha256":"cb39e4fb68ab392b58a9734b058f9a53a69ff629f9889f74a47ae72cc99098fb","identity":"status:STATUS_NO_POTIONS","terminal_conclusion":"keep"}
+{"fact_sha256":"20ad36f0e558a4551d63435ee33046b63fae581ee31ecec92a502127dbc5400b","identity":"status:STATUS_NO_SCROLL","terminal_conclusion":"adjust"}
+{"fact_sha256":"ffa7abdf53779b7bc05fb7db4381b2274f2b0fca90d4b679ca65787787f94a1e","identity":"status:STATUS_ORB","terminal_conclusion":"keep"}
+{"fact_sha256":"041ded0f0dd1259200ba0062aac8db8628754f19b1e3b5e266836b5b35b0a3a6","identity":"status:STATUS_OSTRACISM","terminal_conclusion":"keep"}
+{"fact_sha256":"7b1fd2464371ab82d91281c0d5268084003e0865cdf31277e7b3e2f3df50358d","identity":"status:STATUS_PEEKING","terminal_conclusion":"keep"}
+{"fact_sha256":"d2aa7e6d994db44eb048009878397e2a24dc472bc9619e5cf5f4cab078293a90","identity":"status:STATUS_REGENERATION","terminal_conclusion":"keep"}
+{"fact_sha256":"e1f4e36b4a347d3762dcb051c37cf07ec11e9d6abba304084b39077752042402","identity":"status:STATUS_REV","terminal_conclusion":"keep"}
+{"fact_sha256":"9f2c241c7a0cb0c3c1bd4ee3fa65c46596e99f5f18be9f9120ce18b6919ce26a","identity":"status:STATUS_RF_ZERO","terminal_conclusion":"adjust"}
+{"fact_sha256":"15169884fcd5c5b63c068d2641fc6208baf5472dd1731b8a1d36efa1a60d6b90","identity":"status:STATUS_SERPENTS_LASH","terminal_conclusion":"adjust"}
+{"fact_sha256":"8bee875f4c212bd06d096e9102a578322cb655a4d7c559795ff778250fea5e31","identity":"status:STATUS_SHROUD","terminal_conclusion":"keep"}
+{"fact_sha256":"4fa3a3ac02e34c4e3dd06c5592e81ef8fff5460b3aa705e221dae37df6178832","identity":"status:STATUS_SILENCE","terminal_conclusion":"adjust"}
+{"fact_sha256":"9d1aa040a952aa80d37fe9d1c6d21093fcd189419319c17e9ad36d4d7c38a784","identity":"status:STATUS_SPEED","terminal_conclusion":"keep"}
+{"fact_sha256":"0bec4960d48cadeac988c66393b6265ed9656c0f570c9f635998f0e24e2393c0","identity":"status:STATUS_STAT_ZERO","terminal_conclusion":"keep"}
+{"fact_sha256":"2f54cc48a7a0c61d0b1ee297a149cf4cb0621e8ad5ba1febb787b57e9c9c205d","identity":"status:STATUS_STILL_WINDS","terminal_conclusion":"keep"}
+{"fact_sha256":"3e0488d641961444d65123d11484805c3702759f735f40f8f342c88f2051f742","identity":"status:STATUS_SUNDER_READY","terminal_conclusion":"keep"}
+{"fact_sha256":"329069fbe891f035964de69101423abe48542d435beb3a7df9d8b39024a3d130","identity":"status:STATUS_TERRAIN","terminal_conclusion":"keep"}
+{"fact_sha256":"9a41b96311a8bf1ebbef36db7b4de3e311f71ea1a9f1931dbd5a96b9b69b67b5","identity":"status:STATUS_TESSERACT","terminal_conclusion":"keep"}
+{"fact_sha256":"070bb4b090d26d4c1e67f3dc46c8a38dd92019e92eae271dcce5157b1d2c182d","identity":"status:STATUS_TRICKSTER","terminal_conclusion":"keep"}
+{"fact_sha256":"92aed87331005fee8326eac123182ffd70f0fb7960fb46fa99291d5692f5a8f4","identity":"status:STATUS_UMBRA","terminal_conclusion":"keep"}
+{"fact_sha256":"9e7f9b0c2c64383665ef9c0ae116eb1824d02a794b7d71917efa1d96cb660af8","identity":"status:STATUS_ZOT","terminal_conclusion":"keep"}
+```
+<!-- END STRICT REVIEW EVIDENCE v1 -->

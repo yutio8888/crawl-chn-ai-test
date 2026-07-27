@@ -215,7 +215,7 @@ feeble figment monstatus
 %%%%
 flame-wreathed monstatus
 
-这个生物被伊格尼斯的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%，
+这个生物被曳焰的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%，
 AC和火焰抗性提高。
 %%%%
 fleeing monstatus
