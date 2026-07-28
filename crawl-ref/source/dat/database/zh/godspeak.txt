@@ -1133,9 +1133,9 @@ Xom feature stone arch
 
 @The_feature@ 的另一侧短暂地显示出一片死气沉沉的荒地。
 
-@The_feature@ 的另一侧短暂地显示出奇怪的 @glowing_adj@ 身影。
+@The_feature@ 的另一侧短暂地显示出 @glowing_adj@ 奇怪身影。
 
-@The_feature@ 的另一侧短暂地显示出奇异的 @glowing_adj@ 建筑。
+@The_feature@ 的另一侧短暂地显示出 @glowing_adj@ 奇异建筑。
 
 @The_feature@ 的另一侧短暂地显示出一面被 @any_colour_pattern@ 覆盖的半透明墙壁。
 

@@ -3,14 +3,14 @@
 ## 冻结边界
 
 - 基线提交：`7b0224b32c0bd4b7b79119776762ee623857adc9`
-- 术语表 SHA-256：`91f0638a60e633d450ded2b6e7efdd3449e7ad2e0e27e710a52cd0dd2565d645`
-- 终态 inventory SHA-256：`2985c819290cbffc213152d41cee8db7faa5a14bdd196c90cf76a7b4375c9575`
+- 术语表 SHA-256：`4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`
+- 终态 inventory SHA-256：`5bec3509985c3d108cc049d15c419e12e1794e3bbabfd537da011f6592860cf6`
 - 父身份：27（现役 26，兼容禁用 1）
 - TextDB 身份：描述 82、长名 23、godspeak 193
 - 子身份：能力 89、被动 78、行为 30、愤怒神祇引用 28
 - 神祇称号槽：224（28 行，含 `GOD_NO_GOD`，每行 8 槽）
 - 终态 godspeak topology drift：0
-- 终态 ZH-only ability：6
+- 终态 ZH-only ability：0
 - 结构 violations：0。重复、父身份缺失/多余、英文名或显示名缺失、
   中英文描述/长名/godspeak key 集不一致、非法长名 key、称号行列数错误、
   子身份行数错误、未知子身份 token、死亡消息误用显示名等字段均为空。

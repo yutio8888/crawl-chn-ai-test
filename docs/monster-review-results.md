@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`
-- 清单 SHA-256：`4c664d76ca3cf4fd16fc8a6eb000a2d77bd9ce3b6dce21b75e702b625bac88d0`
+- 清单 SHA-256：`382f7bf37767f5bfa1434609dc4c264e97349515f666814a6113c26f4afd1fa2`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。

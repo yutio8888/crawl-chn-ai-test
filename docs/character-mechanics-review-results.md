@@ -2,7 +2,7 @@
 
 本文件是 GitHub Issue #27 的逐项审计记录。每一行是一张规范证据卡：身份、
 生命周期、英文/中文显示、生产事实和唯一终态结论均来自冻结 inventory。
-全量 695 个身份均有且仅有一张证据卡；审计器机械证明 inventory 与结果集合相等。
+全量 696 个身份均有且仅有一张证据卡；审计器机械证明 inventory 与结果集合相等。
 
 ## 冻结与当前进度
 
@@ -16,9 +16,9 @@
 - 全量变异、时长状态、附加状态与怪物状态完成后的 inventory：
   `2f0d20bbb5ce9829af7f7f0f683f36620cc31513f6825765ab39e212cd8000f5`
 - 术语表 SHA-256：
-  `8ddd7dc86af7dc0b6e717ca3ed5b7b3fdf82c50e7441ab0dec62bf2396898a81`
-- 当前证据卡：变异 213、时长状态 223、附加状态 48、怪物状态 139、
-  非神祇能力 35、技能 34、属性 3，共 695。
+  `4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`
+- 当前证据卡：变异 213、时长状态 223、附加状态 49、怪物状态 139、
+  非神祇能力 35、技能 34、属性 3，共 696。
 - 结构结果：重复、漏译、描述缺失、描述重复与陈旧描述键均为零。
 
 技能的五档常规称号继续采用有效裁定 D-C-001：生产称号输入在本候选中未改，
@@ -219,9 +219,9 @@
 | `mutation:MUT_MAKHLEB_MARK_CARNAGE` | current | Mark of Carnage → 杀戮印记；显示：杀戮印记；你携带着杀戮印记。；你的仆从们渴望释放毁灭。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从现在被召唤到随机敌人旁边而不是你附近。当它们出现时， 它们会以你特征性的毁灭能量爆发出现（不会伤害你或其他盟友）。 （你的仆从释放… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MAKHLEB_MARK_CELEBRANT` | current | Mark of the Celebrant → 颂礼者印记；显示：颂礼者印记；你携带着颂礼者印记。；你的苦难将以鲜血偿还。 | 1 级；weight 0；flags mutflag::makhleb；说明：每当你的生命值降至最大生命值的50%以下时，你进行一次地狱仪式， 向附近的敌人释放一阵血箭齐射。你将为每个有效目标至少射出一支箭， 但如果目标… | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_MAKHLEB_MARK_EXECUTION` | current | Mark of Execution → 处决印记；显示：处决印记；你携带着处决印记。；杀戮在你灵魂中扎下了根。 | 1 级；weight 0；flags mutflag::makhleb；说明：一个谋杀之恶魔化身潜伏在你的灵魂中。每当你用近战击杀一个敌人时， 有很小概率它会醒来并显现为包围你的镰刀刀锋漩涡。这些刀锋会在你 攻击时一起攻… | 修订：校准名称、术语或机制说明 |
-| `mutation:MUT_MAKHLEB_MARK_FANATIC` | current | Mark of the Fanatic → 狂热者印记；显示：狂热者印记；你携带着狂热者印记。；你将成为马科列布意志的工具。 | 1 级；weight 0；flags mutflag::makhleb；说明：赋予你杀戮化身能力，允许你在短时间内变身为一个强大的恶魔化身， 大幅提升攻击和防御，代价是之后被拖入血肉熔炉并被迫为自由而战。 | 保留：名称、等级显示与机制说明准确 |
+| `mutation:MUT_MAKHLEB_MARK_FANATIC` | current | Mark of the Fanatic → 狂热者印记；显示：狂热者印记；你携带着狂热者印记。；你将成为马科列布意志的工具。 | 1 级；weight 0；flags mutflag::makhleb；说明：赋予你杀戮化身能力，允许你在短时间内变身为一个强大的恶魔化身， 大幅提升攻击和防御，代价是之后被拖入血肉熔炉并被迫为自由而战。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_MAKHLEB_MARK_HAEMOCLASM` | current | Mark of Haemoclasm → 血破印记；显示：血破印记；你携带着血破印记。；血雨将降在你敌人头上。 | 1 级；weight 0；flags mutflag::makhleb；说明：当你击杀敌人时，它们有很小概率爆炸为一阵猛烈的血雨，对相邻的敌人造成 与受害者最大生命值成比例的伤害。 死于这种爆炸的敌人自身也总是会爆炸。 | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_MAKHLEB_MARK_LEGION` | current | Mark of the Legion → 军团印记；显示：军团印记；你携带着军团印记。；混沌大军现在由你统领。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从能力被替换为地狱军团，允许你随时间召唤一小支恶魔军队。 虽然个体存活短暂，但只要状态持续，它们的数量无穷无尽， 并且永远不会对你敌… | 保留：名称、等级显示与机制说明准确 |
+| `mutation:MUT_MAKHLEB_MARK_LEGION` | current | Mark of the Legion → 军团印记；显示：军团印记；你携带着军团印记。；混沌大军现在由你统领。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从能力被替换为地狱军团，允许你随时间召唤一小支恶魔军队。 虽然个体存活短暂，但只要状态持续，它们的数量无穷无尽， 并且永远不会对你敌… | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_MAKHLEB_MARK_TYRANT` | current | Mark of the Tyrant → 暴君印记；显示：暴君印记；你携带着暴君印记。；即使是恶魔现在也会在你面前下跪。 | 1 级；weight 0；flags mutflag::makhleb；说明：你的地狱仆从持续时间更长，在非常高的祈神技能下你甚至可以 召唤更强大的仆从（以额外的虔诚值为代价）。当你杀死敌人时， 一个随机仆从可能获得以下… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_MANA_LINK` | current | magic link → 魔力链接；显示：魔力链接；当魔力不足时，你以消耗生命为代价恢复魔力。；你感到生命力和魔法精华融合了。 | 1 级；weight 0；flags mutflag::good；说明：当法力不足时，你会恢复法力而不是生命值。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_MANA_REGENERATION` | current | magic regeneration → 法力再生；显示：法力再生；你快速恢复魔力。；你的魔力开始快速再生。 | 1 级；weight 0；flags mutflag::good；说明：你的法力储备的恢复速度变快。 | 修订：校准名称、术语或机制说明 |
@@ -272,7 +272,7 @@
 | `mutation:MUT_POOR_CONSTITUTION` | current | poor constitution → 体质虚弱；显示：体质虚弱；你的身体有时在受伤后会变得虚弱。；你的身体有时在受伤后会变得虚弱和缓慢。；你感到体质变弱了。；你感到体质变得更加虚弱。；你感到体质恢复了正常。；你感到体质略有改善。 | 2 级；weight 10；flags mutflag::bad；说明：你的身体难以承受伤势；受到伤害时，攻击有概率在短时间内被削弱。 这个变异达到第二级后，有时还会同时使你减速。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_POTION_FUNGUS` | current | potion fungus → 药水真菌；显示：药水真菌；你饮用药水的效果可能会传播到附近的怪物。；一种共生真菌蔓延到你全身。；遍布你全身的真菌枯萎脱落了。 | 1 级；weight 4；flags mutflag::bad；说明：你的身体覆盖着一种真菌，它会代谢你喝下的有益药水，并有时释放孢子， 将这些药水的效果传给附近的怪物——无论敌友。 | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_POWERED_BY_DEATH` | current | powered by death → 死亡赋能；显示：死亡赋能；你通过击杀恢复少量生命。；你通过击杀恢复生命。；你通过击杀恢复大量生命。；一波死亡之潮席卷了你。；死亡之潮的力量增长了。；你对周围生命力的控制消失了。；你对周围生命力的控制减弱了。 | 3 级；weight 0；flags mutflag::good；说明：死亡滋养着你，你每夺取一条生命，就能得到一定程度的治疗。 这个变异每升一级，治疗效果就会增强。 | 保留：名称、等级显示与机制说明准确 |
-| `mutation:MUT_POWERED_BY_PAIN` | current | powered by pain → 痛苦赋能；显示：痛苦赋能；你有时通过承受伤害获得少量力量。；你有时通过承受伤害获得力量。；你被痛苦所赋能。；你因痛苦而感到充满能量。；你因痛苦而感到更加充满能量。；你因痛苦而感到完全充满能量。 | 3 级；weight 0；flags mutflag::good；说明：当你受伤时，有时你会获得能量，它会注入你的法力储备， 有时还会使你暂时获得敏捷或强效状态。这个变异每升一级，其效果就会增强。 | 修订：校准名称、术语或机制说明 |
+| `mutation:MUT_POWERED_BY_PAIN` | current | powered by pain → 痛苦赋能；显示：痛苦赋能；你有时通过承受伤害获得少量力量。；你有时通过承受伤害获得力量。；你被痛苦所赋能。；你因痛苦而感到充满能量。；你因痛苦而感到更加充满能量。；你因痛苦而感到完全充满能量。 | 3 级；weight 0；flags mutflag::good；说明：当你受伤时，有时会获得以下一种效果：补充法力储备，或暂时获得敏捷或强效状态。 这个变异每升一级，效果的幅度都会提高。 | 修订：校准名称、术语或机制说明 |
 | `mutation:MUT_PROTEAN_GRACE` | current | protean grace → 百变灵巧；显示：百变灵巧；你被你非先天变异所增强。（+；突变能量在你四肢中涌动。；在你四肢中涌动的突变能量消散了。 | 1 级；weight 2；flags mutflag::good；说明：你的四肢充满了变形之力，引导着你的一举一动。 你拥有的每项其他非先天突变还会提供 +1 闪避和 +1 杀戮加成（上限为 7）， 提高你的近战和… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_PSEUDOPODS` | current | pseudopods → 伪足；显示：伪足；护甲在你的伪足上不合身。；护甲在你较大的伪足上不合身。；护甲在你巨大的伪足上不合身。；伪足从你的身体长出。；你的伪足变大了。；你的伪足缩回了体内。；你的伪足变小了。 | 3 级；weight 0；flags mutflag::good ／ mutflag::ji…；说明：你身上长满了伪足，在近战时能够扫打敌人，但在一定程度上会削弱护甲提供的防护。 这对护甲附魔提供的防护没有影响，也不会影响训练的护甲技能的防御效… | 保留：名称、等级显示与机制说明准确 |
 | `mutation:MUT_QUADRUMANOUS` | current | four strong arms → 四条强壮手臂；显示：四条强壮手臂；你的四条强壮手臂可以持盾使用双手武器。；你的两只手臂萎缩消失了。；你长出了两只额外的手臂。 | 1 级；weight 0；flags mutflag::good；说明：你有两对双臂，可以一对手持双手武器，另一对手持盾牌。 你甚至可以挥舞极其巨大的武器，比如大棒，不过这需要两对手臂的配合。 每对手臂的副臂的形状… | 保留：名称、等级显示与机制说明准确 |
@@ -581,7 +581,7 @@
 | `status:STATUS_CLOUD` | current | Cloud → 云雾 | `fill_status_info` producer=true；db_key Cloud；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CONSTRICTED` | current | Constr → 束缚；显示：束缚；被根缠绕；被尸手缠绕；被缠绕 | `fill_status_info` producer=true；db_key Constr；显示字面量 4 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CONTAMINATION` | current | Contam → 诱变辐射 | `fill_status_info` producer=true；db_key Contam；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_CORROSION` | current | STATUS_CORROSION → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_CORROSION` | current | Corr → 腐蚀；显示：腐蚀(%d)；腐蚀；你被腐蚀了。 | `fill_status_info` producer=true；db_key Corr；显示字面量 5 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_CRUCIBLE_DEBT` | current | Escape! → 逃脱!；显示：契约；逃脱! | `fill_status_info` producer=true；db_key Escape!、Pact；显示字面量 2 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DIG` | current | Dig → 挖掘 | `fill_status_info` producer=true；db_key Dig；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_DRACONIAN_BREATH` | current | Breath → 吐息 | `fill_status_info` producer=true；db_key Breath；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
@@ -593,7 +593,7 @@
 | `status:STATUS_INVISIBLE` | current | Invis → 隐形；显示：隐形；你现在；。 | `fill_status_info` producer=true；db_key Invis；显示字面量 4 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_IN_DEBT` | internal | STATUS_IN_DEBT → — | `fill_status_info` producer=false；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：枚举保留、无独立 producer |
 | `status:STATUS_LIQUEFIED` | current | SlowM → 慢移；显示：慢移；移动减速；在液化地面上你的移动减缓了。 | `fill_status_info` producer=true；db_key SlowM；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
-| `status:STATUS_LOWERED_WL` | current | STATUS_LOWERED_WL → — | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 0 | 保留：生产条件、显示文本与 TextDB 键准确 |
+| `status:STATUS_LOWERED_WL` | current | Will/2 → 意志/2；显示：意志/2；意志薄弱；你意志薄弱。 | `fill_status_info` producer=true；db_key Will/2；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_MANUAL` | current | STATUS_MANUAL → —；显示：学习中；你正在学习：；。 | `fill_status_info` producer=true；db_key 动态/无 TextDB 键；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_MNEMOPHAGE` | current | Memories → —；显示：记忆(%d) | `fill_status_info` producer=true；db_key Memories；显示字面量 1 | 保留：生产条件、显示文本与 TextDB 键准确 |
 | `status:STATUS_NET` | current | Held → 受困；显示：受困；你被%s了。 | `fill_status_info` producer=true；db_key Held；显示字面量 3 | 保留：生产条件、显示文本与 TextDB 键准确 |
@@ -664,7 +664,7 @@
 | `monster_status:extremely poisoned monstatus` | current | extremely poisoned monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物每回合受到毒素伤害，且无法被进一步中毒。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:fast monstatus` | current | fast monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物的行动和移动速度提升50%。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:feeble figment monstatus` | current | feeble figment monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物只是另一个生物的脆弱复制体。其生命值减少66%，攻击伤害减少33%， 法术威力显著减弱。 | 保留：状态语义、效果说明与术语准确 |
-| `monster_status:flame-wreathed monstatus` | current | flame-wreathed monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物被曳焰的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%， AC和火焰抗性提高。 | 保留：状态语义、效果说明与术语准确 |
+| `monster_status:flame-wreathed monstatus` | current | flame-wreathed monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物被曳焰的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%， AC和火焰抗性提高。 | 修订：神名与状态术语已校准 |
 | `monster_status:fleeing monstatus` | current | fleeing monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物因恐惧而逃跑，每回合都会尝试远离恐惧来源。除移动外， 它只能施放认为有助于逃跑的法术，比如闪烁。 如果被直接伤害或被地形逼入绝境，它会… | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:fragile as glass monstatus` | current | fragile as glass monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物受到的所有来源伤害增加50%。 | 保留：状态语义、效果说明与术语准确 |
 | `monster_status:frenzied and wild monstatus` | current | frenzied and wild monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物近战攻击伤害提升50%，移动和攻击速度提升50%。它无法施法， 每回合会优先攻击最近的生物，无论对方是友方还是敌方。 | 保留：状态语义、效果说明与术语准确 |
@@ -763,7 +763,7 @@
 | `monster_status:withering away monstatus` | current | withering away monstatus；中文说明已配对 | 英文/中文 TextDB 一一配对；说明：这个生物将在几回合后死亡。 | 保留：状态语义、效果说明与术语准确 |
 
 <!-- BEGIN STRICT REVIEW EVIDENCE v1 -->
-{"baseline":"76c815b2ac79d11a8066597ad04d127a1636e153","glossary_sha256":"4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e","identity_count":696,"inventory_sha256":"e75cde5f3c281bb5b2c2a516c2510210d3014fdb51a1e61afdf3ffaa597b355e"}
+{"baseline":"76c815b2ac79d11a8066597ad04d127a1636e153","glossary_sha256":"4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e","identity_count":696,"inventory_sha256":"0ae072d63a8a7606a48760b5391aebd0913498c178c59df62f2511421b408639"}
 ```jsonl
 {"fact_sha256":"f666db6e05027d87e75f2accbe661c0bcef11a0e22e07854dbff254e18b1ad20","identity":"ability:ABIL_BAT_SWARM","terminal_conclusion":"adjust"}
 {"fact_sha256":"e7f4f548944e3af58d29ceb28bb38907262ac568622f5bd3e4fe30c219feedb5","identity":"ability:ABIL_BESTIAL_TAKEDOWN","terminal_conclusion":"keep"}
@@ -1068,7 +1068,7 @@
 {"fact_sha256":"08211467a58051e5722284f4a851ac61bc2dc375a7ac42185e7af66661db85da","identity":"monster_status:extremely poisoned monstatus","terminal_conclusion":"keep"}
 {"fact_sha256":"95ca52922ed4ac9f934e6b8d659853684d5e6bad0c7e70b20b774e716f52ca5e","identity":"monster_status:fast monstatus","terminal_conclusion":"keep"}
 {"fact_sha256":"f3f53db10c2ded6a007f5e7b4a39e8d8716a93e38687eb69796b309c09c64a75","identity":"monster_status:feeble figment monstatus","terminal_conclusion":"keep"}
-{"fact_sha256":"b567bbfdedde7247bad0f88a5b7489115d5ee48ca0d956120dc8291acb1289d6","identity":"monster_status:flame-wreathed monstatus","terminal_conclusion":"keep"}
+{"fact_sha256":"b567bbfdedde7247bad0f88a5b7489115d5ee48ca0d956120dc8291acb1289d6","identity":"monster_status:flame-wreathed monstatus","terminal_conclusion":"adjust"}
 {"fact_sha256":"6219b179f6951d6c3bc8e5695729838a60ac8fbda095dacf979a265cbfe80be2","identity":"monster_status:fleeing monstatus","terminal_conclusion":"keep"}
 {"fact_sha256":"bcac8e513a88a4f7d21efccbc4322552b8eed28347ce1bdac13cef47fa1148f1","identity":"monster_status:fragile as glass monstatus","terminal_conclusion":"keep"}
 {"fact_sha256":"71ba754d4dbfb131377934a6f83ecba72520bf4f329371da90319849e4ec051e","identity":"monster_status:frenzied and wild monstatus","terminal_conclusion":"keep"}
@@ -1262,9 +1262,9 @@
 {"fact_sha256":"42b837b92c7bf5b998363315642c2936747af8cb9084d5a278232caea58be3ea","identity":"mutation:MUT_MAKHLEB_MARK_CARNAGE","terminal_conclusion":"keep"}
 {"fact_sha256":"13c96a1cc56ca294e5b19353e044709dd13db73d8aeb05f38b49f2a1d56abdb3","identity":"mutation:MUT_MAKHLEB_MARK_CELEBRANT","terminal_conclusion":"adjust"}
 {"fact_sha256":"74dae63ba161720a8e3f7a652252266fd1fefbada566a8bcd1ae21a21afc9150","identity":"mutation:MUT_MAKHLEB_MARK_EXECUTION","terminal_conclusion":"adjust"}
-{"fact_sha256":"cbfe9046d367ea57c1740d3354ab9ebb358936790af2c4bfbee5ad86a3c70304","identity":"mutation:MUT_MAKHLEB_MARK_FANATIC","terminal_conclusion":"keep"}
+{"fact_sha256":"cbfe9046d367ea57c1740d3354ab9ebb358936790af2c4bfbee5ad86a3c70304","identity":"mutation:MUT_MAKHLEB_MARK_FANATIC","terminal_conclusion":"adjust"}
 {"fact_sha256":"971a586b8dfc64891d41485f0e18ec42dfc842fb4cf1026e07ed2774c0b68edf","identity":"mutation:MUT_MAKHLEB_MARK_HAEMOCLASM","terminal_conclusion":"keep"}
-{"fact_sha256":"2f85a620ad441fbae324e1698d3c637bfe99548777372bcfba523f9fa087b003","identity":"mutation:MUT_MAKHLEB_MARK_LEGION","terminal_conclusion":"keep"}
+{"fact_sha256":"2f85a620ad441fbae324e1698d3c637bfe99548777372bcfba523f9fa087b003","identity":"mutation:MUT_MAKHLEB_MARK_LEGION","terminal_conclusion":"adjust"}
 {"fact_sha256":"6b2d4808022732703e970a8bfb8e0c9216e3bdcfe9b2efba3df0a8a20c07a04b","identity":"mutation:MUT_MAKHLEB_MARK_TYRANT","terminal_conclusion":"keep"}
 {"fact_sha256":"8e19dc7976d5191094ed470f1682b36454c9f9fd0dea7a0dfc4541faa482387c","identity":"mutation:MUT_MANA_LINK","terminal_conclusion":"adjust"}
 {"fact_sha256":"cbf95ca8a7e5c0d2e507e59dc03fc1cd75ab3b199a0e9e038810953134e44ffc","identity":"mutation:MUT_MANA_REGENERATION","terminal_conclusion":"adjust"}
@@ -1315,7 +1315,7 @@
 {"fact_sha256":"2e506bc899848325f08381628f96a544175daa51f59c64a451a4a8f168005c64","identity":"mutation:MUT_POOR_CONSTITUTION","terminal_conclusion":"adjust"}
 {"fact_sha256":"cd6dea986ad3ea43904bfeee7a960e27c2556f499ed85c84c2dc5b1d1bad2fd5","identity":"mutation:MUT_POTION_FUNGUS","terminal_conclusion":"keep"}
 {"fact_sha256":"6cc932bd09fc8f8424157a956d85caf466dda48551efd525a229d32bfb06b24f","identity":"mutation:MUT_POWERED_BY_DEATH","terminal_conclusion":"keep"}
-{"fact_sha256":"d0c93461632b07860d6435540efbfc7a95557681f70fab6c598ab6e364e5666c","identity":"mutation:MUT_POWERED_BY_PAIN","terminal_conclusion":"adjust"}
+{"fact_sha256":"4f0efe08c17dea4cbb1636451051d0d66b16eb27784aee9b1afc7ef929593873","identity":"mutation:MUT_POWERED_BY_PAIN","terminal_conclusion":"adjust"}
 {"fact_sha256":"218f6f5bb2361772ce34d29886363f2987c15ab224587e08c7f97cd4e80cff58","identity":"mutation:MUT_PROTEAN_GRACE","terminal_conclusion":"keep"}
 {"fact_sha256":"d6f788a74d75cef4900c5d4f9eadfe3181a83767f3b2e10a2c9f03485820369f","identity":"mutation:MUT_PSEUDOPODS","terminal_conclusion":"keep"}
 {"fact_sha256":"eb3e3e75b26bea59e9645abd109ed776b93734b7d4f3a874298956a4988fc6b1","identity":"mutation:MUT_QUADRUMANOUS","terminal_conclusion":"keep"}
@@ -1412,54 +1412,54 @@
 {"fact_sha256":"b5870354c165ddaaaf64934c30c725a96bb5acb77b34a29aef1fa5bf3c3fbee8","identity":"skill:SK_TRANSLOCATIONS","terminal_conclusion":"retranslate"}
 {"fact_sha256":"31e5c0b23043871c1e78d321035cfa5e98724d81b80a7c28757903c978c2ff4e","identity":"skill:SK_TRAPS","terminal_conclusion":"keep"}
 {"fact_sha256":"eb90551d35fb5102b5d7286db797579cffd68122b08af5bdb62fa799f06f5ff6","identity":"skill:SK_UNARMED_COMBAT","terminal_conclusion":"keep"}
-{"fact_sha256":"f44a5f1cbd89ec0e43039b0c86cd8d69b1da8cd553696348aba82dad6a3f0b83","identity":"status:STATUS_AIRBORNE","terminal_conclusion":"keep"}
-{"fact_sha256":"8c2f376a49fcfba976cbbb5a6c1845e46c9f8339fd0aa98b9f2085dfb7f4db21","identity":"status:STATUS_AUGMENTED","terminal_conclusion":"keep"}
-{"fact_sha256":"e21a0e397e7ff3a57708fc279ff5fb69dace6adbbfe8a6265cc2255ba372c605","identity":"status:STATUS_BACKLIT","terminal_conclusion":"keep"}
-{"fact_sha256":"af1802391e7f727902fe92b8c58cef6ad3616c2e420da84ba6d00a827f991a72","identity":"status:STATUS_BEHELD","terminal_conclusion":"keep"}
-{"fact_sha256":"ee5a915782f8f03c9f094db58891c27553904eae62b2882dcaaf0c69cf591ef7","identity":"status:STATUS_BEOGH","terminal_conclusion":"keep"}
-{"fact_sha256":"dcc5fbca04c43984d1d0dc73b435e470c1d031370379c34514a71863f8021c8d","identity":"status:STATUS_BLACK_TORCH","terminal_conclusion":"keep"}
-{"fact_sha256":"9f1332011897bb833b0d73526af5eb7fe2030ff10da089c19def3aeb090a3885","identity":"status:STATUS_BRIBE","terminal_conclusion":"keep"}
-{"fact_sha256":"7205b2828c44b99d0155a9b0ca5874e3846889d5df215907ecfbbf96aae506bc","identity":"status:STATUS_CANINE_FAMILIAR_ACTIVE","terminal_conclusion":"adjust"}
-{"fact_sha256":"cef674b743799c0c4c2d4467bcbaf5ce4b338ea9748a8441c87cbf2635bd461b","identity":"status:STATUS_CHANNELLING_SPELL","terminal_conclusion":"keep"}
-{"fact_sha256":"1503da17a1343d93264496e6cedc9bddf59d6994376215b57e6b1572f81e0f4e","identity":"status:STATUS_CLAUSTROPHOBIA","terminal_conclusion":"keep"}
-{"fact_sha256":"7691cc1bca46f5f77c2969191d229e0c380d68717e36391ef9874c95611d8d0b","identity":"status:STATUS_CLOUD","terminal_conclusion":"keep"}
-{"fact_sha256":"f5e7bb3ede4d80edbf3f0640c3f8d03ce69190344eadd925514db6c4d4bfcd83","identity":"status:STATUS_CONSTRICTED","terminal_conclusion":"keep"}
-{"fact_sha256":"9135888452a2f49eb051840ea8320faa884dc688b2d5f589aeb799ff08ecafd6","identity":"status:STATUS_CONTAMINATION","terminal_conclusion":"keep"}
-{"fact_sha256":"4e69daf24794c63271997b71cb9a5d9ca646bb75f8ea8ae5d31f5724623f869a","identity":"status:STATUS_CORROSION","terminal_conclusion":"keep"}
-{"fact_sha256":"46ad7f1c4a90c7331178e3eb68941a3706489cf4667f8af1dcc6197001870350","identity":"status:STATUS_CRUCIBLE_DEBT","terminal_conclusion":"keep"}
-{"fact_sha256":"6a476401757e8f8bddefa63f459c3be1608aaa8581721676a6b112bc2d9223c4","identity":"status:STATUS_DIG","terminal_conclusion":"keep"}
-{"fact_sha256":"be922d009532c5f88c3ff268453c6246dba624cd0fd77a94136144a2bff0db5e","identity":"status:STATUS_DRACONIAN_BREATH","terminal_conclusion":"keep"}
-{"fact_sha256":"6303f55b4fdd0c711fbb25c74b8b9100f3486360f0693ca754f6392aa8803dde","identity":"status:STATUS_DRAINED","terminal_conclusion":"keep"}
-{"fact_sha256":"7b1c1d809d9e6458a00d0c50bb3b2558543a57c05a04c1b4a818a8f9964d3d08","identity":"status:STATUS_DUEL","terminal_conclusion":"adjust"}
-{"fact_sha256":"40ca0d98b35039939219e53ff01660a56e2ec0956514a7b217f3b9ffcff8a5d8","identity":"status:STATUS_GEM","terminal_conclusion":"keep"}
-{"fact_sha256":"cd5afd21036ea227f57b575d3b4c7cb468f233066858b6465b0d3e9732f9e66e","identity":"status:STATUS_GRAVE_CLAW_UNAVAILABLE","terminal_conclusion":"keep"}
-{"fact_sha256":"fa6469a23ef46cfd3c7e7fcee497009ac8352ade00740077d97403608f0cc910","identity":"status:STATUS_HEAVENLY_STORM","terminal_conclusion":"keep"}
-{"fact_sha256":"5668c63b9df61e36f5418e8d4a227ac1f67a728e5c12eeefd3fade6659a92794","identity":"status:STATUS_INVISIBLE","terminal_conclusion":"keep"}
-{"fact_sha256":"88af719c73876e1eebf51fe21cec87ebef04a951e8fbdb345bf5ab7a1809f640","identity":"status:STATUS_IN_DEBT","terminal_conclusion":"keep"}
-{"fact_sha256":"60efd706e238dbb88cee866f29634d92b8295d44a2694039437ce24dcfabd73f","identity":"status:STATUS_LIQUEFIED","terminal_conclusion":"keep"}
-{"fact_sha256":"5366a78020f29daf080ec628253f26d02a53284fb408ccd656ff1c4589364116","identity":"status:STATUS_LOWERED_WL","terminal_conclusion":"keep"}
-{"fact_sha256":"9ee2fb78f30ce48c0d7236eb662f7b16c2849830b33acae5bc1201dbf1c6872c","identity":"status:STATUS_MANUAL","terminal_conclusion":"keep"}
-{"fact_sha256":"b5eb2551ff73277c0da4bb09b9dff05efe9c6e2db340a5ba7e6677a16d31337d","identity":"status:STATUS_MNEMOPHAGE","terminal_conclusion":"keep"}
-{"fact_sha256":"23afa445a28ba16df03686e3225d8af4e2e5226cdd8a7a0182377340c84e2c3c","identity":"status:STATUS_NET","terminal_conclusion":"keep"}
-{"fact_sha256":"cb39e4fb68ab392b58a9734b058f9a53a69ff629f9889f74a47ae72cc99098fb","identity":"status:STATUS_NO_POTIONS","terminal_conclusion":"keep"}
-{"fact_sha256":"20ad36f0e558a4551d63435ee33046b63fae581ee31ecec92a502127dbc5400b","identity":"status:STATUS_NO_SCROLL","terminal_conclusion":"adjust"}
-{"fact_sha256":"ffa7abdf53779b7bc05fb7db4381b2274f2b0fca90d4b679ca65787787f94a1e","identity":"status:STATUS_ORB","terminal_conclusion":"keep"}
-{"fact_sha256":"041ded0f0dd1259200ba0062aac8db8628754f19b1e3b5e266836b5b35b0a3a6","identity":"status:STATUS_OSTRACISM","terminal_conclusion":"keep"}
-{"fact_sha256":"7b1fd2464371ab82d91281c0d5268084003e0865cdf31277e7b3e2f3df50358d","identity":"status:STATUS_PEEKING","terminal_conclusion":"keep"}
-{"fact_sha256":"d2aa7e6d994db44eb048009878397e2a24dc472bc9619e5cf5f4cab078293a90","identity":"status:STATUS_REGENERATION","terminal_conclusion":"keep"}
-{"fact_sha256":"e1f4e36b4a347d3762dcb051c37cf07ec11e9d6abba304084b39077752042402","identity":"status:STATUS_REV","terminal_conclusion":"keep"}
-{"fact_sha256":"9f2c241c7a0cb0c3c1bd4ee3fa65c46596e99f5f18be9f9120ce18b6919ce26a","identity":"status:STATUS_RF_ZERO","terminal_conclusion":"adjust"}
-{"fact_sha256":"15169884fcd5c5b63c068d2641fc6208baf5472dd1731b8a1d36efa1a60d6b90","identity":"status:STATUS_SERPENTS_LASH","terminal_conclusion":"adjust"}
-{"fact_sha256":"8bee875f4c212bd06d096e9102a578322cb655a4d7c559795ff778250fea5e31","identity":"status:STATUS_SHROUD","terminal_conclusion":"keep"}
-{"fact_sha256":"4fa3a3ac02e34c4e3dd06c5592e81ef8fff5460b3aa705e221dae37df6178832","identity":"status:STATUS_SILENCE","terminal_conclusion":"adjust"}
-{"fact_sha256":"9d1aa040a952aa80d37fe9d1c6d21093fcd189419319c17e9ad36d4d7c38a784","identity":"status:STATUS_SPEED","terminal_conclusion":"keep"}
-{"fact_sha256":"0bec4960d48cadeac988c66393b6265ed9656c0f570c9f635998f0e24e2393c0","identity":"status:STATUS_STAT_ZERO","terminal_conclusion":"keep"}
-{"fact_sha256":"2f54cc48a7a0c61d0b1ee297a149cf4cb0621e8ad5ba1febb787b57e9c9c205d","identity":"status:STATUS_STILL_WINDS","terminal_conclusion":"keep"}
-{"fact_sha256":"3e0488d641961444d65123d11484805c3702759f735f40f8f342c88f2051f742","identity":"status:STATUS_SUNDER_READY","terminal_conclusion":"keep"}
-{"fact_sha256":"329069fbe891f035964de69101423abe48542d435beb3a7df9d8b39024a3d130","identity":"status:STATUS_TERRAIN","terminal_conclusion":"keep"}
-{"fact_sha256":"9a41b96311a8bf1ebbef36db7b4de3e311f71ea1a9f1931dbd5a96b9b69b67b5","identity":"status:STATUS_TESSERACT","terminal_conclusion":"keep"}
-{"fact_sha256":"070bb4b090d26d4c1e67f3dc46c8a38dd92019e92eae271dcce5157b1d2c182d","identity":"status:STATUS_TRICKSTER","terminal_conclusion":"keep"}
-{"fact_sha256":"92aed87331005fee8326eac123182ffd70f0fb7960fb46fa99291d5692f5a8f4","identity":"status:STATUS_UMBRA","terminal_conclusion":"keep"}
-{"fact_sha256":"9e7f9b0c2c64383665ef9c0ae116eb1824d02a794b7d71917efa1d96cb660af8","identity":"status:STATUS_ZOT","terminal_conclusion":"keep"}
+{"fact_sha256":"7efe488ce29c00d90f3254fb20da414ec54b361254cd906830929f414f44c99d","identity":"status:STATUS_AIRBORNE","terminal_conclusion":"keep"}
+{"fact_sha256":"37b3b9eaf845f264512502b467cc0cf92d74ab33d04b23bec0042222da29cea4","identity":"status:STATUS_AUGMENTED","terminal_conclusion":"keep"}
+{"fact_sha256":"71782144e93038243c18621536c94c67774b1394f5f8d1ae2100aa1862dba71a","identity":"status:STATUS_BACKLIT","terminal_conclusion":"keep"}
+{"fact_sha256":"ec79bd1da78ce5228d47b0640dc4ccdde13efcfac74beb3f03e48da5277099ac","identity":"status:STATUS_BEHELD","terminal_conclusion":"keep"}
+{"fact_sha256":"d9416d739cdd2cb8b86c45dfef0ede5c334ffa47b9ce17672b1dc5c9e016fd4c","identity":"status:STATUS_BEOGH","terminal_conclusion":"keep"}
+{"fact_sha256":"4e8e2ec1ea03c85ae4e6c17b277c23dfec6236793d2d6a3111620d6c90e10e47","identity":"status:STATUS_BLACK_TORCH","terminal_conclusion":"keep"}
+{"fact_sha256":"b2d00e3d687b265435cc3e164f467a1d74e255fd690f45a6a8b0ff11146932c7","identity":"status:STATUS_BRIBE","terminal_conclusion":"keep"}
+{"fact_sha256":"f85bc00d7b40a7a0f3babf96420b2a26fd7ccfca422ea5ce875d7c946fd91100","identity":"status:STATUS_CANINE_FAMILIAR_ACTIVE","terminal_conclusion":"adjust"}
+{"fact_sha256":"ed1a8d4636b4438597acbd18de9c80b693e80410d3574eba62ec7b9cce459870","identity":"status:STATUS_CHANNELLING_SPELL","terminal_conclusion":"keep"}
+{"fact_sha256":"f1621fb418608a6d44675a065bbe40ef7a14a1f41ab3c416b525cf0de641af98","identity":"status:STATUS_CLAUSTROPHOBIA","terminal_conclusion":"keep"}
+{"fact_sha256":"959bd84e74be7539bc5f991bb147eed7509074aff0eae046e9ac54a206a287fc","identity":"status:STATUS_CLOUD","terminal_conclusion":"keep"}
+{"fact_sha256":"720e6e6b3f806410a7eb9a7ebb6eae61edfeb3b811d2d21b93f3a5117476995f","identity":"status:STATUS_CONSTRICTED","terminal_conclusion":"keep"}
+{"fact_sha256":"5663efd7bfab02639b404be045e3751f6d2eda490a5695437e9f0fad661f151f","identity":"status:STATUS_CONTAMINATION","terminal_conclusion":"keep"}
+{"fact_sha256":"65dbdde6b52ecb929be8f8890b5369be8e2834e6bfcaf67043389f3737030490","identity":"status:STATUS_CORROSION","terminal_conclusion":"keep"}
+{"fact_sha256":"63f46588276cd8c3017e637099a4344dff7be9e667798a0b897277d79677d3f0","identity":"status:STATUS_CRUCIBLE_DEBT","terminal_conclusion":"keep"}
+{"fact_sha256":"a6d1c7713ce74ef9288c6b7f798243e88a20e4e53d1e7ab806de6479cb9b1598","identity":"status:STATUS_DIG","terminal_conclusion":"keep"}
+{"fact_sha256":"4b8ba4a2f277eed7fa545b4a58965152f006c3c3d78bdaa36533c1d2b7621f39","identity":"status:STATUS_DRACONIAN_BREATH","terminal_conclusion":"keep"}
+{"fact_sha256":"55b41ddc073a2a08155c18482efd328c86f7da5ed9f5a1857d653aa97e4347d0","identity":"status:STATUS_DRAINED","terminal_conclusion":"keep"}
+{"fact_sha256":"a74f203413ceddcaaf10f328065f4080d76de225b845bdff3917d3ab537f3f75","identity":"status:STATUS_DUEL","terminal_conclusion":"adjust"}
+{"fact_sha256":"70ce5d7225d038b77cf0d3d280ca7512078d61339249c6e19ca4990e2a3e6d86","identity":"status:STATUS_GEM","terminal_conclusion":"keep"}
+{"fact_sha256":"ccb66aa873fb4d04408587196f6e8d11cfb9e13c9d3017bba1f76938e357880a","identity":"status:STATUS_GRAVE_CLAW_UNAVAILABLE","terminal_conclusion":"keep"}
+{"fact_sha256":"a9dd3c845d26e61f8bb3c6e48cc7c0ef56ca0f4d4e7ea718ee4d0d7261a09d89","identity":"status:STATUS_HEAVENLY_STORM","terminal_conclusion":"keep"}
+{"fact_sha256":"700d8a321a449207efb2f07fdddbec5bda6d8b3b04033128aad9626830bc85a5","identity":"status:STATUS_INVISIBLE","terminal_conclusion":"keep"}
+{"fact_sha256":"98cd1b0d7f478d08887ec21090c84ba58ad4bfe57e5784deaac85a030774d1a2","identity":"status:STATUS_IN_DEBT","terminal_conclusion":"keep"}
+{"fact_sha256":"9358e242ae124919962e2f244fd9394dc25d98fcf61ae02467efe4d3c5224f4a","identity":"status:STATUS_LIQUEFIED","terminal_conclusion":"keep"}
+{"fact_sha256":"25eeb1a0b95a2cd0b3176537beee26a910061f04ef5a1cfd95f98efb67765dd4","identity":"status:STATUS_LOWERED_WL","terminal_conclusion":"keep"}
+{"fact_sha256":"43901a7f896b28bf3d61e73303e120b088e5efe0d07824a4bb3c7fe78f3499ee","identity":"status:STATUS_MANUAL","terminal_conclusion":"keep"}
+{"fact_sha256":"d94afe773ca30365529e50fa52b99fb1e3c56c1d45ec02279bb50756ed5d2fd6","identity":"status:STATUS_MNEMOPHAGE","terminal_conclusion":"keep"}
+{"fact_sha256":"9fe415f27e8f78318548eadfebef672ab753a12adfca5c501f74b206fd7a0090","identity":"status:STATUS_NET","terminal_conclusion":"keep"}
+{"fact_sha256":"52f85c40a1e11a9395abdf13d2c9cb2088264446303075219a9bc730b3ef30a0","identity":"status:STATUS_NO_POTIONS","terminal_conclusion":"keep"}
+{"fact_sha256":"2023a6b256666d046e9bac6331330ba69fc7e91f4181e9b4371789cf9c6df41d","identity":"status:STATUS_NO_SCROLL","terminal_conclusion":"adjust"}
+{"fact_sha256":"3f3f5a5e4035836a13b9a08fea1c544544a937a31b9b492796729cba29d6c0f0","identity":"status:STATUS_ORB","terminal_conclusion":"keep"}
+{"fact_sha256":"98f0ea5ab23b441e95426c9d49e1c49d455c4c41247f312bcd33e38663301e10","identity":"status:STATUS_OSTRACISM","terminal_conclusion":"keep"}
+{"fact_sha256":"b6a7a15f3dac8176ce32bf4d7d7e9dc0991eb4c6a80bb8363f2e733283800b29","identity":"status:STATUS_PEEKING","terminal_conclusion":"keep"}
+{"fact_sha256":"bf0e6de02e49a9cf862d26dc34b10751cae9997b8f5528779da699642385ba32","identity":"status:STATUS_REGENERATION","terminal_conclusion":"keep"}
+{"fact_sha256":"17b7d92301915b6078befac159cef3fe05295344543730fe02428beaaf60799c","identity":"status:STATUS_REV","terminal_conclusion":"keep"}
+{"fact_sha256":"a39b329a16046afffaa9dab41f00e5a05d5955d4806e131696f3012db9ffae7e","identity":"status:STATUS_RF_ZERO","terminal_conclusion":"adjust"}
+{"fact_sha256":"803d22f71a1e71d52726cbc8a8195f813949e79477879796ba8dc32964f0c5c9","identity":"status:STATUS_SERPENTS_LASH","terminal_conclusion":"adjust"}
+{"fact_sha256":"1fce445b368e93c5d77e6de1a1ec870696bca7399b37e39da4c66fd8c43f1a8f","identity":"status:STATUS_SHROUD","terminal_conclusion":"keep"}
+{"fact_sha256":"1a720e3e664d90cdbdac75de0fa73d1cdb5cd758e6c8acfd4e51c5a00a8d7f5a","identity":"status:STATUS_SILENCE","terminal_conclusion":"adjust"}
+{"fact_sha256":"2bf6d2a15d40cbf947cff5b28eb0ca872e2e67dd0b9b9af6e949af0a3ad8affc","identity":"status:STATUS_SPEED","terminal_conclusion":"keep"}
+{"fact_sha256":"bc6c994fb7408046118e98d81d07a62e40ad0d5826ad99aecedade6c3cbaa150","identity":"status:STATUS_STAT_ZERO","terminal_conclusion":"keep"}
+{"fact_sha256":"14a15c6466207dd89bce64c7b4da37fc162313159c1975ad250b09a284640d61","identity":"status:STATUS_STILL_WINDS","terminal_conclusion":"keep"}
+{"fact_sha256":"2df14c65a76a05fce8d65fecd297f99c56d3f5c6ae2b02557fed3c1a39a16799","identity":"status:STATUS_SUNDER_READY","terminal_conclusion":"keep"}
+{"fact_sha256":"92b64698d08706973e2071218ea056e9285ad6cd06b6f41189dac629060319a1","identity":"status:STATUS_TERRAIN","terminal_conclusion":"keep"}
+{"fact_sha256":"ea9ca86c833d7ae25d4bfab0ba29232c8b5989b8fd60887b29f13cef0b65c678","identity":"status:STATUS_TESSERACT","terminal_conclusion":"keep"}
+{"fact_sha256":"980c62ea480b6f1614b1a6cf465e56db531367a484199666c1ae83ee86120bbd","identity":"status:STATUS_TRICKSTER","terminal_conclusion":"keep"}
+{"fact_sha256":"cb112662e5e63d3062a0005ef2954cf0e285cb47f29d399c4407671226939a37","identity":"status:STATUS_UMBRA","terminal_conclusion":"keep"}
+{"fact_sha256":"b81654444c324a17ed2fd06f86951036805e46ef2e423d8f70ff5c1750c92a7f","identity":"status:STATUS_ZOT","terminal_conclusion":"keep"}
 ```
 <!-- END STRICT REVIEW EVIDENCE v1 -->

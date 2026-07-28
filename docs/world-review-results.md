@@ -91,8 +91,8 @@ identity 均保存创建时语言的完整显示快照；模板或任一字符�
 - `adjust`：298
 - `defer implementation`：17
 - `defer terminology`：5
-- `keep`：381
-- `retranslate`：88
+- `keep`：380
+- `retranslate`：89
 
 - 每个 identity 恰有一张 terminal evidence card；全部生产事实单元由 scanner 的 `review_expected_fact_cells()` 从当前生产源重新导出，人工结论不充当 producer/consumer、机制、token 或 sink 事实来源。
 - 静态与动态显示路径均在最终显示 sink 翻译；Trove/Wizlab 玩家显示 title 参数使用有限 SourceDB 标题翻译。note 保存语言锁定的完整显示快照，缺键时整条英文回退；milestone 保持 canonical English。

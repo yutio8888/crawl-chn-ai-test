@@ -13,7 +13,7 @@
 - 修订后 inventory：
   `47ef0d83b4278e2a432668d0d1f8a2e54bc176fd3d9b46c84c188693d9e9d399`
 - 最终术语表 SHA-256：
-  `07eaf4d7f33cb4b982d54ebce05efbc4c28d8edb61b1b35db441605cd5d8efb9`
+  `4070a396e65a4bdf1fd2dfbc9e95bcc40053391e65441053f73c08146ed31d9e`
 - `inventory identities = evidence-card identities = terminal-conclusion identities = 80`
 - 分类：种族 47，背景 33；生命周期：现役可选 53，现役变体 8，兼容 19。
 - 结构结果：重复、漏项、意外身份、名称/形式缺译、描述缺失、描述重复和陈旧键
