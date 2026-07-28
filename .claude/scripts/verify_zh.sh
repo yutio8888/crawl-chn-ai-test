@@ -36,7 +36,7 @@ DIFF_SHA256=""
 OUTPUT_DIR=".claude/metrics/verify"
 ROUTING_SHA256=""
 CONTROL_PLANE_SHA256=""
-VERIFICATION_CONTRACT="dcss-zh-review-v4"
+VERIFICATION_CONTRACT="dcss-zh-review-v5"
 RUN_DIR=""
 RUN_ID=""
 REPORT_FILE=""
@@ -44,6 +44,11 @@ WRAPPER_FILE=""
 METADATA_FILE=""
 PHASES_FILE=""
 ITEM_INVENTORY_FILE=""
+CHARACTER_INVENTORY_FILE=""
+GOD_INVENTORY_FILE=""
+SPECIES_BACKGROUND_INVENTORY_FILE=""
+MONSTER_INVENTORY_FILE=""
+WORLD_INVENTORY_FILE=""
 METADATA_INITIALIZED=0
 FINALIZED=0
 RESULTS=0
@@ -274,6 +279,11 @@ REPORT_FILE="$RUN_DIR/verify.log"
 METADATA_FILE="$RUN_DIR/metadata.json"
 PHASES_FILE="$RUN_DIR/phases.tsv"
 ITEM_INVENTORY_FILE="$RUN_DIR/item-name-inventory.json"
+CHARACTER_INVENTORY_FILE="$RUN_DIR/character-mechanics-inventory.json"
+GOD_INVENTORY_FILE="$RUN_DIR/god-inventory.json"
+SPECIES_BACKGROUND_INVENTORY_FILE="$RUN_DIR/species-background-inventory.json"
+MONSTER_INVENTORY_FILE="$RUN_DIR/monster-name-inventory.json"
+WORLD_INVENTORY_FILE="$RUN_DIR/world-inventory.json"
 WRAPPER_FILE="$OUTPUT_DIR/verify-${PROFILE}-${RUN_ID}.log"
 mkdir -p "$RUN_DIR"
 : > "$PHASES_FILE"
@@ -292,7 +302,9 @@ write_metadata() {
         "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_ZH_TEST_RUNTIME" \
         "$RISK_MESSAGE_OVERLAY" \
         "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" \
-        "$ITEM_INVENTORY_FILE" <<'PY'
+        "$ITEM_INVENTORY_FILE" "$CHARACTER_INVENTORY_FILE" \
+        "$GOD_INVENTORY_FILE" "$SPECIES_BACKGROUND_INVENTORY_FILE" \
+        "$MONSTER_INVENTORY_FILE" "$WORLD_INVENTORY_FILE" <<'PY'
 import json
 import os
 import sys
@@ -303,7 +315,9 @@ import sys
     scope, routing_sha256, control_plane_sha256, verification_contract,
     risk_cpp_i18n, risk_cjk_runtime, risk_zh_test_runtime,
     risk_message_overlay, explicit_full, phases_path, report_path,
-    item_inventory_path,
+    item_inventory_path, character_inventory_path, god_inventory_path,
+    species_background_inventory_path, monster_inventory_path,
+    world_inventory_path,
 ) = sys.argv[1:]
 phases = []
 if os.path.isfile(phases_path):
@@ -328,11 +342,20 @@ if os.path.isfile(report_path):
         "size": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
     })
-if os.path.isfile(item_inventory_path):
+for artifact_path, artifact_name in (
+    (character_inventory_path, "character-mechanics-inventory.json"),
+    (god_inventory_path, "god-inventory.json"),
+    (item_inventory_path, "item-name-inventory.json"),
+    (monster_inventory_path, "monster-name-inventory.json"),
+    (species_background_inventory_path, "species-background-inventory.json"),
+    (world_inventory_path, "world-inventory.json"),
+):
+    if not os.path.isfile(artifact_path):
+        continue
     import hashlib
-    data = open(item_inventory_path, "rb").read()
+    data = open(artifact_path, "rb").read()
     artifacts.append({
-        "path": "item-name-inventory.json",
+        "path": artifact_name,
         "size": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
     })
@@ -500,6 +523,57 @@ run_phase() {
             run_phase "review-static" 1 "Review verification (post-reviewer.sh)" \
                 env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
                     bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
+            run_review_ledgers() {
+                local rc=0
+                local ledgers=(
+                    "$WORKTREE/docs/character-mechanics-review-results.md"
+                    "$WORKTREE/docs/god-review-results.md"
+                    "$WORKTREE/docs/item-extended-review-results.md"
+                    "$WORKTREE/docs/monster-review-results.md"
+                    "$WORKTREE/docs/species-background-review-results.md"
+                    "$WORKTREE/docs/world-review-results.md"
+                )
+                PYTHONDONTWRITEBYTECODE=1 \
+                    PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \
+                    python3 - "$WORKTREE" "${ledgers[@]}" <<'PY' || return $?
+import sys
+from pathlib import Path
+
+from review_bundle import _path_under_checkout
+
+checkout = Path(sys.argv[1])
+for supplied in sys.argv[2:]:
+    _path_under_checkout(checkout, supplied, "review ledger")
+PY
+                python3 "$SCRIPT_DIR/audit_character_mechanics_inventory.py" \
+                    --review-results \
+                    "${ledgers[0]}" \
+                    --output "$CHARACTER_INVENTORY_FILE" || rc=$?
+                python3 "$SCRIPT_DIR/audit_god_inventory.py" \
+                    --review-results "${ledgers[1]}" \
+                    --output "$GOD_INVENTORY_FILE" || rc=$?
+                python3 "$SCRIPT_DIR/audit_species_background_inventory.py" \
+                    --review-results \
+                    "${ledgers[4]}" \
+                    --output "$SPECIES_BACKGROUND_INVENTORY_FILE" || rc=$?
+                python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
+                    --scope issue29-v2 \
+                    --review-base 01dc9911ec9948aff661f6ec0b9b0a798fcf909d \
+                    --review-results \
+                    "${ledgers[2]}" \
+                    --output "$ITEM_INVENTORY_FILE" || rc=$?
+                python3 "$SCRIPT_DIR/monster_name_ssot.py" \
+                    --inventory-output "$MONSTER_INVENTORY_FILE" \
+                    --review-results "${ledgers[3]}" \
+                    --baseline-ref \
+                    7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c || rc=$?
+                python3 "$SCRIPT_DIR/audit_world_inventory.py" \
+                    --review-results "${ledgers[5]}" \
+                    --output "$WORLD_INVENTORY_FILE" || rc=$?
+                return "$rc"
+            }
+            run_phase "review-ledgers" 1 "Strict review ledger audit" \
+                run_review_ledgers || RESULTS=$((RESULTS + 1))
             ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.

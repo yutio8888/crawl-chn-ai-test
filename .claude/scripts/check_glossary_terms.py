@@ -9,8 +9,14 @@ from pathlib import Path
 import re
 import subprocess
 
+from i18n_shared import AuditRootError, resolve_audit_root
 
-ROOT = Path(__file__).resolve().parents[2]
+
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    raise SystemExit(f"ERROR: invalid audit root: {error}") from error
 DEFAULT_GLOSSARY = ROOT / "docs/glossary.utf8"
 DEFAULT_PATHS = (
     ROOT / "crawl-ref/source/dat/i18n/zh/source.txt",

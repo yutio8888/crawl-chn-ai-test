@@ -6,6 +6,7 @@ import ctypes.util
 import hashlib
 import os
 import re
+import subprocess
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -21,6 +22,59 @@ DEFAULT_SCAN_SKIP_DIRS = frozenset({
 CPP_AST_SCAN_SKIP_DIRS = DEFAULT_SCAN_SKIP_DIRS | frozenset({
     "catch2-tests", "rltiles", "util",
 })
+
+
+class AuditRootError(RuntimeError):
+    """The bound candidate-data root is missing, unsafe, or inconsistent."""
+
+
+def _git_toplevel(path: Path, label: str) -> Path:
+    try:
+        output = subprocess.check_output(
+            ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+            text=True,
+            stderr=subprocess.PIPE,
+        ).strip()
+    except (OSError, subprocess.SubprocessError) as error:
+        raise AuditRootError(
+            f"{label} is not inside a readable Git worktree: {path}"
+        ) from error
+    if not output:
+        raise AuditRootError(f"{label} Git top-level is empty: {path}")
+    return Path(output).resolve()
+
+
+def resolve_audit_root(default_root: Path) -> Path:
+    """Resolve candidate data without allowing target-code/root confusion."""
+    configured = os.environ.get("ZH_VERIFY_AUDIT_ROOT")
+    if configured is None:
+        return default_root.resolve()
+    candidate = Path(configured)
+    if not candidate.is_absolute():
+        raise AuditRootError("ZH_VERIFY_AUDIT_ROOT must be an absolute path")
+    try:
+        candidate = candidate.resolve(strict=True)
+    except OSError as error:
+        raise AuditRootError(
+            f"ZH_VERIFY_AUDIT_ROOT cannot be resolved: {configured}"
+        ) from error
+    if not candidate.is_dir():
+        raise AuditRootError(
+            f"ZH_VERIFY_AUDIT_ROOT is not a directory: {candidate}"
+        )
+    candidate_top = _git_toplevel(candidate, "ZH_VERIFY_AUDIT_ROOT")
+    if candidate_top != candidate:
+        raise AuditRootError(
+            "ZH_VERIFY_AUDIT_ROOT must equal its real Git top-level: "
+            f"{candidate} != {candidate_top}"
+        )
+    cwd_top = _git_toplevel(Path.cwd(), "current working directory")
+    if cwd_top != candidate:
+        raise AuditRootError(
+            "ZH_VERIFY_AUDIT_ROOT must equal the current working directory "
+            f"Git top-level: {candidate} != {cwd_top}"
+        )
+    return candidate
 
 
 @dataclass

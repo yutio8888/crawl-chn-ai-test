@@ -2,7 +2,10 @@
 
 import importlib.util
 import json
+import os
 import re
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -20,6 +23,17 @@ def review_header():
     return (
         "| " + " | ".join(MODULE.REVIEW_COLUMNS) + " |\n"
         + "|" + "|".join("---" for _ in MODULE.REVIEW_COLUMNS) + "|\n"
+    )
+
+
+def review_summary(counts):
+    return (
+        "## 最终结论与实现证据\n\n"
+        + "".join(
+            f"- `{kind}`：{counts.get(kind, 0)}\n"
+            for kind in MODULE.TERMINAL_CONCLUSION_KINDS
+        )
+        + "\n"
     )
 
 
@@ -56,6 +70,46 @@ class WorldInventoryUnitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_all_ledger_auditors_reject_unsafe_bound_roots(self):
+        scripts = [
+            "audit_character_mechanics_inventory.py",
+            "audit_god_inventory.py",
+            "audit_species_background_inventory.py",
+            "audit_item_name_inventory.py",
+            "monster_name_ssot.py",
+            "audit_world_inventory.py",
+        ]
+        with tempfile.TemporaryDirectory() as outside:
+            for configured, expected in (
+                ("relative-candidate", "must be an absolute path"),
+                (
+                    str(MODULE.ROOT / "crawl-ref"),
+                    "must equal its real Git top-level",
+                ),
+                (
+                    outside,
+                    "is not inside a readable Git worktree",
+                ),
+            ):
+                for name in scripts:
+                    with self.subTest(root=configured, script=name):
+                        env = os.environ.copy()
+                        env["ZH_VERIFY_AUDIT_ROOT"] = configured
+                        proc = subprocess.run(
+                            [
+                                shutil.which("python3") or "python3",
+                                str(MODULE.SCRIPT_DIR / name),
+                                "--help",
+                            ],
+                            cwd=MODULE.ROOT,
+                            env=env,
+                            text=True,
+                            capture_output=True,
+                            check=False,
+                        )
+                        self.assertEqual(2, proc.returncode, proc.stderr)
+                        self.assertIn(expected, proc.stderr)
 
     def write_des(self, text):
         directory = tempfile.TemporaryDirectory()
@@ -623,6 +677,79 @@ epilogue {{
             title["identity"], violations["missing_exact_source_keys"]
         )
 
+    def test_visible_terminal_summary_matches_all_evidence_conclusions(self):
+        expected = {
+            "adjust": 298,
+            "defer implementation": 17,
+            "defer terminology": 5,
+            "keep": 380,
+            "retranslate": 89,
+        }
+        self.assertEqual(789, sum(expected.values()))
+        correct = MODULE.visible_terminal_summary_coverage(
+            review_summary(expected), expected
+        )
+        self.assertTrue(correct["counts_match"])
+        self.assertEqual(expected, correct["summary_counts"])
+        self.assertEqual(789, correct["summary_total"])
+        self.assertEqual(789, correct["evidence_conclusion_total"])
+
+        stale = MODULE.visible_terminal_summary_coverage(
+            review_summary({
+                **expected,
+                "keep": 381,
+                "retranslate": 88,
+            }),
+            expected,
+        )
+        self.assertFalse(stale["counts_match"])
+        self.assertEqual(381, stale["summary_counts"]["keep"])
+        self.assertEqual(88, stale["summary_counts"]["retranslate"])
+
+        malformed_documents = {
+            "missing": review_summary(expected).replace(
+                "- `defer terminology`：5\n", ""
+            ),
+            "duplicate": review_summary(expected).replace(
+                "- `keep`：380\n",
+                "- `keep`：380\n- `keep`：380\n",
+            ),
+            "format": review_summary(expected).replace(
+                "- `adjust`：298\n", "- `adjust`: 298\n"
+            ),
+        }
+        for failure, document in malformed_documents.items():
+            with self.subTest(failure=failure):
+                coverage = MODULE.visible_terminal_summary_coverage(
+                    document, expected
+                )
+                self.assertFalse(coverage["counts_match"])
+
+        unknown = MODULE.visible_terminal_summary_coverage(
+            review_summary(expected).replace(
+                "- `defer terminology`：5\n",
+                "- `defer policy`：5\n",
+            ),
+            expected,
+        )
+        self.assertFalse(unknown["counts_match"])
+        self.assertEqual(
+            ["defer policy"], unknown["unexpected_summary_categories"]
+        )
+
+        summary = review_summary(expected)
+        duplicate_heading = MODULE.visible_terminal_summary_coverage(
+            summary + summary, expected
+        )
+        self.assertFalse(duplicate_heading["counts_match"])
+        self.assertEqual(2, duplicate_heading["heading_count"])
+
+        missing_heading = MODULE.visible_terminal_summary_coverage(
+            review_header(), expected
+        )
+        self.assertFalse(missing_heading["counts_match"])
+        self.assertEqual(0, missing_heading["heading_count"])
+
     def test_review_coverage_requires_bijection_and_terminal_conclusion(self):
         branch_row = next(
             row for row in self.payload["rows"] if row["category"] == "branch"
@@ -638,7 +765,7 @@ epilogue {{
             "inventory_sha256": "a" * 64,
             "rows": [branch_row, feature_row],
         }
-        header = review_header()
+        header = review_summary({"adjust": 1, "keep": 1}) + review_header()
         card_a = review_card(fixture, branch_row, "保留：正确")
         card_b = review_card(fixture, feature_row, "adjust wording")
         with tempfile.TemporaryDirectory() as directory:
@@ -872,6 +999,7 @@ epilogue {{
             path = Path(directory) / "review.md"
             path.write_text(
                 f"Inventory-SHA256: {'e' * 64}\n\n"
+                + review_summary({"keep": 1})
                 + review_header()
                 + review_card(
                     fixture,
@@ -910,7 +1038,11 @@ epilogue {{
             "inventory_sha256": "d" * 64,
             "rows": [range_row],
         }
-        prefix = f"Inventory-SHA256: {'d' * 64}\n\n" + review_header()
+        prefix = (
+            f"Inventory-SHA256: {'d' * 64}\n\n"
+            + review_summary({"keep": 1})
+            + review_header()
+        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"
             path.write_text(

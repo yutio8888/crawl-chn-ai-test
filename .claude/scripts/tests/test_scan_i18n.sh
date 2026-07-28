@@ -378,6 +378,197 @@ python3 "$SCAN_I18N" arg-mismatch --source-txt "$FIXTURES/arg-mismatch/source.tx
 assert_output "arg-mismatch: finds %s count mismatch" \
     /tmp/actual_arg.txt "$EXPECTED/arg-mismatch.txt"
 
+# ── active rejected-term decisions ──
+echo "--- validate-terms decisions parser ---"
+TERMS_ROOT=$(mktemp -d)
+DECISIONS="$TERMS_ROOT/decisions.md"
+printf '%s\n' \
+    '### D-Z-901 — multiline parser fixture' \
+    '- **Type**: Z — arbitrary fixture type' \
+    '- **Status**: active' \
+    '- **Choice**:' \
+    '  - `Pandemonium → 万魔殿`' \
+    '  - `Pandemonium lord → 万魔殿领主`' \
+    '- **Rejected**: 魔窟、魔窟领主' \
+    '### D-Z-902 — paired rejected-term fixture' \
+    '- **Type**: Z — arbitrary fixture type' \
+    '- **Status**: active' \
+    '- **Choice**: 排斥飞弹' \
+    '- **Rejected**: 弹飞弹、弹开飞弹' \
+    '### D-Z-903 — multiline proper-name fixture' \
+    '- **Type**: Z — arbitrary fixture type' \
+    '- **Status**: active' \
+    '- **Choice**:' \
+    '  - `Erebora → 埃雷博拉`' \
+    '  - `Ereborans → 埃雷博拉人`' \
+    '- **Rejected**: 埃瑞博拉、埃瑞博拉人' \
+    '### D-Z-904 — shared replacement fixture' \
+    '- **Type**: Z — arbitrary fixture type' \
+    '- **Status**: active' \
+    '- **Choice**: 宗古德洛克' \
+    '- **Rejected**: 宗古多克、宗古尔德罗克' \
+    '### D-Q-905 — contextual fixture' \
+    '- **Type**: Q — arbitrary contextual fixture type' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: `status|Blood → 嗜血`（fixture）' \
+    > "$DECISIONS"
+python3 - "$SCAN_I18N" "$DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+rejected = module.parse_decisions(sys.argv[2])
+expected = {
+    "魔窟", "弹飞弹", "弹开飞弹", "埃瑞博拉",
+    "宗古多克", "宗古尔德罗克",
+}
+assert expected.issubset(rejected)
+assert "嗜血" not in rejected
+assert {
+    "鱼人（与现行名称", "保留原译", "保留两对重名",
+    '混合使用"的"和"之', "仅否定该法术名", "死", "亡", "魔", "驱散",
+}.isdisjoint(rejected)
+contextual = module.parse_contextual_decisions(sys.argv[2])
+assert {
+    (rule["key"], rule["rejected"], rule["correct"])
+    for rule in contextual
+} >= {("status|Blood", "嗜血", "血甲")}
+PY
+assert_status "validate-terms: active multiline/arbitrary-type decisions parse" \
+    0 "$?"
+
+TERMS_FIXTURE="/tmp/test_scan_i18n_terms_$$.txt"
+for rejected in 魔窟 弹飞弹 弹开飞弹 埃瑞博拉 宗古多克 宗古尔德罗克; do
+    printf '%s\n%s\n%s\n' '%%%%' 'fixture key' "包含${rejected}的残留。" \
+        > "$TERMS_FIXTURE"
+    set +e
+    python3 "$SCAN_I18N" validate-terms \
+        --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+        > /tmp/actual_validate_terms.txt 2>&1
+    terms_status=$?
+    set -e
+    assert_status "validate-terms: rejects global legacy term $rejected" \
+        1 "$terms_status"
+done
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_FIXTURE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+context_status=$?
+set -e
+assert_status "validate-terms: rejects exact defensive status Blood mapping" \
+    1 "$context_status"
+
+printf '%s\n%s\n%s\n' '%%%%' 'Status|Blood' '嗜血' > "$TERMS_FIXTURE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: context key matching remains exact" 0 "$?"
+
+TERMS_SOURCE="$TERMS_ROOT/i18n/zh/source.txt"
+TERMS_DESCRIPT="$TERMS_ROOT/descript/zh/fixture.txt"
+TERMS_DATABASE="$TERMS_ROOT/database/zh/fixture.txt"
+mkdir -p "$(dirname "$TERMS_SOURCE")" \
+    "$(dirname "$TERMS_DESCRIPT")" "$(dirname "$TERMS_DATABASE")"
+printf '%s\n%s\n%s\n' '%%%%' 'bloodlust flavour' '嗜血' > "$TERMS_SOURCE"
+printf '%s\n%s\n%s\n' '%%%%' 'descript fixture' '残留魔窟。' \
+    > "$TERMS_DESCRIPT"
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '合法文本。' \
+    > "$TERMS_DATABASE"
+python3 - "$SCAN_I18N" "$TERMS_SOURCE" \
+    "$TERMS_ROOT/i18n/zh" "$TERMS_ROOT/descript/zh" \
+    "$TERMS_ROOT/database/zh" <<'PY'
+import importlib.util
+import os
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+files, errors = module._collect_zh_textdb_files(sys.argv[2], sys.argv[3:])
+assert not errors
+assert len(files) == 3
+assert files.count(os.path.abspath(sys.argv[2])) == 1
+PY
+assert_status "validate-terms: source.txt is deduplicated across explicit roots" \
+    0 "$?"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+descript_status=$?
+set -e
+assert_status "validate-terms: rejects descript/zh legacy term" \
+    1 "$descript_status"
+assert_contains "validate-terms: reports descript/zh source file" \
+    "$TERMS_DESCRIPT" /tmp/actual_validate_terms.txt
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_DESCRIPT"
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '残留宗古多克。' \
+    > "$TERMS_DATABASE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+database_status=$?
+set -e
+assert_status "validate-terms: rejects database/zh legacy term" \
+    1 "$database_status"
+assert_contains "validate-terms: reports database/zh source file" \
+    "$TERMS_DATABASE" /tmp/actual_validate_terms.txt
+
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '合法文本。' \
+    > "$TERMS_DATABASE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: exact context stays SourceDB-only and bloodlust is legal" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/missing" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_zh_dir_status=$?
+set -e
+assert_status "validate-terms: missing required ZH directory fails closed" \
+    2 "$missing_zh_dir_status"
+
+printf '%s\n%s\n' '%%%%' 'invalid UTF-8 fixture' > "$TERMS_DATABASE"
+printf '\377\n' >> "$TERMS_DATABASE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+unreadable_zh_status=$?
+set -e
+assert_status "validate-terms: unreadable ZH TextDB fails closed" \
+    2 "$unreadable_zh_status"
+assert_contains "validate-terms: unreadable TextDB diagnostic is explicit" \
+    "cannot parse required TextDB file" /tmp/actual_validate_terms.txt
+rm -f "$TERMS_FIXTURE" /tmp/actual_validate_terms.txt
+rm -rf "$TERMS_ROOT"
+
 # ── check-gaps ──
 echo "--- check-gaps ---"
 python3 "$SCAN_I18N" check-gaps --source-txt "$FIXTURES/arg-mismatch/gap_source.txt" > /tmp/actual_gaps.txt 2>&1 || true
@@ -435,7 +626,7 @@ assert_contains "i18n-lifetime: post-reviewer supports changed-file scope" \
     "args=(--files" \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
-    '"$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/' \
+    '"$SCRIPT_DIR/i18n_extract.py" validate' \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "source-db dedup: post-reviewer standalone coverage is conditional" \
     'ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE' \

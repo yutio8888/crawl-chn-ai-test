@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import posixpath
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -37,7 +38,6 @@ POLICY_PREFIXES = (
     ".codex/",
     ".github/",
     ".opencode/",
-    ".pi/",
 )
 POLICY_FILES = {
     "AGENTS.md",
@@ -45,7 +45,6 @@ POLICY_FILES = {
     "CODEX.md",
     "docs/build-workflow.md",
     "docs/dual-agent-workflow.md",
-    "docs/zh-testing.md",
 }
 CODE_SUFFIXES = {
     ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx",
@@ -53,6 +52,7 @@ CODE_SUFFIXES = {
     ".sh", ".toml", ".ts", ".yml", ".yaml",
 }
 CODE_BASENAMES = {"Makefile", "makefile", "CMakeLists.txt"}
+REVIEW_RESULTS_RE = re.compile(r"^docs/[^/]+-review-results\.md$")
 
 
 def normalize_path(raw: str) -> str:
@@ -72,6 +72,9 @@ def classify_file(raw: str) -> tuple[str, str]:
     path = normalize_path(raw)
     if not path or path == ".":
         return "ignored", "empty path"
+
+    if REVIEW_RESULTS_RE.fullmatch(path):
+        return "mixed", "complete translation review ledger"
 
     if path in TRANSLATION_GOVERNANCE:
         return "translation", "translation terminology/governance text"
@@ -133,7 +136,7 @@ def classify_files(raw_files: list[str], *, source: dict | None = None) -> dict:
         reviewers = []
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "classification": classification,
         "reviewers": reviewers,
         "files": files,

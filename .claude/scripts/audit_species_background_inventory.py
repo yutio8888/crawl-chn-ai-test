@@ -15,10 +15,19 @@ import subprocess
 import sys
 from pathlib import Path
 
-import yaml
 
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
+
+import yaml  # noqa: E402
+
 SRC = ROOT / "crawl-ref/source"
 SPECIES_DIR = SRC / "dat/species"
 JOBS_DIR = SRC / "dat/jobs"
@@ -30,8 +39,14 @@ EN_SPECIES_DESCRIPTIONS = SRC / "dat/descript/species.txt"
 ZH_SPECIES_DESCRIPTIONS = SRC / "dat/descript/zh/species.txt"
 EN_BACKGROUND_DESCRIPTIONS = SRC / "dat/descript/backgrounds.txt"
 ZH_BACKGROUND_DESCRIPTIONS = SRC / "dat/descript/zh/backgrounds.txt"
+SPECIES_BACKGROUND_REVIEW_BASE = "05c1f1ff519450a8d1b29ec1df74a476042f4a23"
+STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->"
+STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v1 -->"
+TERMINAL_CONCLUSIONS = {
+    "keep", "adjust", "retranslate",
+    "defer terminology", "defer implementation",
+}
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from audit_item_name_inventory import (  # noqa: E402
     active_source,
     function_body,
@@ -398,39 +413,159 @@ def has_violations(payload):
     return any(payload[key] for key in keys)
 
 
-def review_coverage(payload, path):
-    """Prove one evidence-card row and terminal conclusion per identity."""
-    text = path.read_text(encoding="utf-8")
+def fact_sha256(row):
+    encoded = json.dumps(
+        row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def legacy_review_conclusions(text):
     rows = re.findall(
         r"^\|\s*`((?:species:SP|background:JOB)_[A-Z0-9_]+)`"
         r"\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
         text,
         re.MULTILINE,
     )
-    identities = [identity for identity, _conclusion in rows]
-    conclusions = {
-        identity: conclusion.strip() for identity, conclusion in rows
+    mapping = {
+        "保留": "keep",
+        "修订": "adjust",
+        "重译": "retranslate",
+        "暂缓术语": "defer terminology",
+        "暂缓实现": "defer implementation",
     }
-    expected = {row["identity"] for row in payload["rows"]}
+    return {
+        identity: mapping.get(
+            conclusion.strip().split("：", 1)[0].strip(),
+            conclusion.strip().split("：", 1)[0].strip(),
+        )
+        for identity, conclusion in rows
+    }
+
+
+def strict_review_block(payload, conclusions):
+    metadata = {
+        "baseline": SPECIES_BACKGROUND_REVIEW_BASE,
+        "glossary_sha256": payload["glossary_sha256"],
+        "identity_count": payload["count"],
+        "inventory_sha256": payload["inventory_sha256"],
+    }
+    lines = [
+        STRICT_REVIEW_BEGIN,
+        json.dumps(
+            metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ),
+        "```jsonl",
+    ]
+    for row in sorted(payload["rows"], key=lambda item: item["identity"]):
+        card = {
+            "fact_sha256": fact_sha256(row),
+            "identity": row["identity"],
+            "terminal_conclusion": conclusions.get(row["identity"], "pending"),
+        }
+        lines.append(json.dumps(
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ))
+    lines.extend(["```", STRICT_REVIEW_END])
+    return "\n".join(lines)
+
+
+def write_strict_review_evidence(payload, path):
+    text = path.read_text(encoding="utf-8")
+    block = strict_review_block(payload, legacy_review_conclusions(text))
+    if STRICT_REVIEW_BEGIN in text:
+        prefix, remainder = text.split(STRICT_REVIEW_BEGIN, 1)
+        if STRICT_REVIEW_END not in remainder:
+            raise RuntimeError("unterminated existing strict review evidence")
+        suffix = remainder.split(STRICT_REVIEW_END, 1)[1]
+        text = prefix.rstrip() + "\n\n" + block + suffix
+    else:
+        text = text.rstrip() + "\n\n" + block + "\n"
+    path.write_text(text, encoding="utf-8")
+
+
+def parse_strict_review_evidence(path):
+    text = path.read_text(encoding="utf-8")
+    if text.count(STRICT_REVIEW_BEGIN) != 1 or text.count(STRICT_REVIEW_END) != 1:
+        raise RuntimeError("strict review evidence block is missing or duplicated")
+    lines = text.split(STRICT_REVIEW_BEGIN, 1)[1].split(
+        STRICT_REVIEW_END, 1
+    )[0].strip().splitlines()
+    if len(lines) < 4 or lines[1] != "```jsonl" or lines[-1] != "```":
+        raise RuntimeError("strict review evidence block structure is invalid")
+    metadata = json.loads(lines[0])
+    if set(metadata) != {
+        "baseline", "glossary_sha256", "identity_count", "inventory_sha256",
+    } or lines[0] != json.dumps(
+        metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ):
+        raise RuntimeError("strict review metadata is invalid")
+    cards = []
+    for line in lines[2:-1]:
+        card = json.loads(line)
+        if set(card) != {
+            "fact_sha256", "identity", "terminal_conclusion",
+        } or line != json.dumps(
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ):
+            raise RuntimeError("strict review evidence card is invalid")
+        cards.append(card)
+    return metadata, cards
+
+
+def review_coverage(payload, path):
+    """Prove exact metadata, facts, order, and conclusions per identity."""
+    metadata, cards = parse_strict_review_evidence(path)
+    expected_rows = sorted(payload["rows"], key=lambda row: row["identity"])
+    expected_ids = [row["identity"] for row in expected_rows]
+    identities = [card["identity"] for card in cards]
+    expected = set(expected_ids)
     actual = set(identities)
+    expected_by_id = {row["identity"]: row for row in expected_rows}
+    bindings = {
+        "baseline": metadata["baseline"] == SPECIES_BACKGROUND_REVIEW_BASE,
+        "glossary_sha256": (
+            metadata["glossary_sha256"] == payload["glossary_sha256"]
+        ),
+        "inventory_sha256": (
+            metadata["inventory_sha256"] == payload["inventory_sha256"]
+        ),
+        "identity_count": metadata["identity_count"] == payload["count"],
+    }
+    duplicate = sorted(
+        identity for identity, count in Counter(identities).items()
+        if count > 1
+    )
+    missing = sorted(expected - actual)
+    unexpected = sorted(actual - expected)
+    mismatched = sorted(
+        card["identity"] for card in cards
+        if card["identity"] in expected_by_id
+        and card["fact_sha256"] != fact_sha256(
+            expected_by_id[card["identity"]]
+        )
+    )
+    invalid = sorted(
+        card["identity"] for card in cards
+        if card["terminal_conclusion"] not in TERMINAL_CONCLUSIONS
+    )
     return {
         "review_results": relative(path),
         "review_results_sha256": sha(path),
         "evidence_card_count": len(identities),
-        "duplicate_evidence_cards": sorted(
-            identity for identity, count in Counter(identities).items()
-            if count > 1
-        ),
-        "missing_evidence_cards": sorted(expected - actual),
-        "unexpected_evidence_cards": sorted(actual - expected),
-        "missing_terminal_conclusions": sorted(
-            identity for identity in actual
-            if not conclusions.get(identity)
-        ),
+        "binding_matches": bindings,
+        "duplicate_evidence_cards": duplicate,
+        "missing_evidence_cards": missing,
+        "unexpected_evidence_cards": unexpected,
+        "canonical_card_order": identities == expected_ids,
+        "mismatched_fact_sha256": mismatched,
+        "invalid_terminal_conclusions": invalid,
         "coverage_equal": (
-            len(identities) == len(expected)
-            and actual == expected
-            and all(conclusions.values())
+            all(bindings.values())
+            and len(identities) == len(expected_ids)
+            and not duplicate and not missing and not unexpected
+            and identities == expected_ids
+            and not mismatched and not invalid
         ),
     }
 
@@ -450,9 +585,16 @@ def main(argv=None):
             "(use docs/species-background-review-results.md for Issue 26)"
         ),
     )
+    parser.add_argument(
+        "--write-review-results",
+        type=Path,
+        help="append or replace the strict evidence-card block",
+    )
     args = parser.parse_args(argv)
     try:
         payload = build_inventory()
+        if args.write_review_results:
+            write_strict_review_evidence(payload, args.write_review_results)
     except (
         AttributeError,
         OSError,

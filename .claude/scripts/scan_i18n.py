@@ -2239,13 +2239,134 @@ def cmd_lang_args(args):
 # Subcommand: validate-terms
 # ══════════════════════════════════════════════════════════════════════════════
 
-def parse_decisions(filepath: str) -> dict:
-    """Parse decisions.md and return {rejected_name: correct_name} for active Type-A decisions.
+def _decision_field(block: str, name: str):
+    match = re.search(
+        rf"(?ms)^-\s+\*\*{re.escape(name)}\*\*:\s*(.*?)"
+        r"(?=^\s*-\s+\*\*[A-Za-z][^*]*\*\*:\s*|^---\s*$|^###\s|\Z)",
+        block,
+    )
+    return match.group(1).strip() if match else None
 
-    Only Type-A (entity rulings) are processed — they have specific rejected
-    term strings. Type-B (process) and Type-C (constraint) decisions use
-    descriptive Rejected fields that are not searchable terms.
-    """
+
+def _strip_parenthetical_explanations(value: str) -> str:
+    previous = None
+    while value != previous:
+        previous = value
+        value = re.sub(r"\([^()]*\)|（[^（）]*）", "", value)
+    return value.strip()
+
+
+def _split_decision_term_tokens(value: str) -> list[str]:
+    value = re.sub(r"\n\s*-\s+", "、", value)
+    tokens = []
+    current = []
+    depth = 0
+    for char in value:
+        if char in "(（":
+            depth += 1
+        elif char in ")）" and depth:
+            depth -= 1
+        if depth == 0 and char in ",，、;；":
+            tokens.append("".join(current))
+            current = []
+        else:
+            current.append(char)
+    tokens.append("".join(current))
+    return tokens
+
+
+def _searchable_decision_terms(value: str) -> list[str]:
+    terms = []
+    value = re.sub(r"(?ms)```.*?```", "", value)
+    for raw in _split_decision_term_tokens(value):
+        explanation = " ".join(
+            part
+            for match in re.findall(r"\(([^()]*)\)|（([^（）]*)）", raw)
+            for part in match
+            if part
+        )
+        if re.search(
+            r"(?i)collision|overlap|ambiguous|too broad|different concept|"
+            r"仅否定|不否定|普通动词",
+            explanation,
+        ):
+            continue
+        raw = _strip_parenthetical_explanations(raw)
+        term = re.sub(r"^\s*-\s+", "", raw).strip()
+        term = term.strip(" `*\"'“”")
+        if not term or re.match(r"^[（(]?\s*none\b", term, re.I):
+            continue
+        if "→" in term or "->" in term:
+            continue
+        if not re.search(r"[\u3400-\u9fff]", term):
+            continue
+        if (
+            len(term) > 24
+            or re.search(r"[。！？:：]", term)
+            or re.search(r"\s", term)
+            or "`" in term
+            or re.match(
+                r"^(?:保留|混合|仅|将|珠宝|英文|调用|翻译|原始|部分|"
+                r"当前|使用)",
+                term,
+            )
+            or len(term) < 2
+            or not re.fullmatch(
+                r"[\u3400-\u9fffA-Za-z0-9·・'’\-]+", term
+            )
+        ):
+            continue
+        terms.append(term)
+    return terms
+
+
+def _decision_choices(value: str) -> list[str]:
+    choices = []
+    for line in value.splitlines():
+        line = re.sub(r"^\s*-\s+", "", line).strip()
+        if not line:
+            continue
+        stripped = line.strip(" `*")
+        arrow = re.fullmatch(r"[^`]+?(?:→|->)\s*([^`]+)", stripped)
+        candidate = arrow.group(1).strip() if arrow else stripped
+        parsed = _searchable_decision_terms(candidate)
+        if len(parsed) != 1:
+            return []
+        choices.extend(parsed)
+    return choices
+
+
+def _iter_decision_blocks(content: str):
+    pattern = re.compile(
+        r"(?ms)^###\s+(D-[A-Z]-\d+)\b.*?(?=^###\s+D-[A-Z]-\d+\b|\Z)"
+    )
+    for match in pattern.finditer(content):
+        yield match.group(1), match.group(0)
+
+
+def _markdown_table_cells(line: str) -> list[str]:
+    if not line.strip().startswith("|"):
+        return []
+    cells = []
+    current = []
+    escaped = False
+    for char in line.strip()[1:-1]:
+        if escaped:
+            current.append(char)
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == "|":
+            cells.append("".join(current).strip())
+            current = []
+        else:
+            current.append(char)
+    cells.append("".join(current).strip())
+    return cells
+
+
+def parse_decisions(filepath: str) -> dict:
+    """Return searchable global rejected terms from every active decision."""
     rejected_map = {}
     if not os.path.exists(filepath):
         return rejected_map
@@ -2253,61 +2374,198 @@ def parse_decisions(filepath: str) -> dict:
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Only Type-A: entity name rulings have specific rejected terms
-    blocks = re.split(r'\n(?=### D-A-\d+)', content)
-
-    for block in blocks:
-        if not re.search(r'\*\*Status\*\*:\s*active', block):
+    for _decision_id, block in _iter_decision_blocks(content):
+        if not re.search(
+            r"(?mi)^-\s+\*\*Status\*\*:\s*active\b", block
+        ):
             continue
-        choice_m = re.search(r'\*\*Choice\*\*:\s*(.+)', block)
-        rejected_m = re.search(r'\*\*Rejected\*\*:\s*(.+)', block)
-        if not choice_m or not rejected_m:
+        choice_raw = _decision_field(block, "Choice")
+        rejected_raw = _decision_field(block, "Rejected")
+        if not choice_raw or not rejected_raw:
             continue
-        choice = choice_m.group(1).strip()
-        rejected_raw = rejected_m.group(1).strip()
-
-        # Skip explanatory markers: "(none — confirmed correct)" etc.
-        if rejected_raw.startswith('(none'):
+        # Context-qualified mappings are checked only at their exact key/value
+        # sink and must never become global substring bans.
+        if re.search(r"`[^`]+(?:→|->)[^`]+`", rejected_raw):
             continue
-
-        # Rejected can be comma-separated: "席夫·穆纳, 席夫穆納"
-        for r in re.split(r'[,;]', rejected_raw):
-            r = r.strip()
-            # Skip non-term entries: descriptions, code snippets, etc.
-            # Real rejected terms are Chinese/Unicode strings, not sentences.
-            if not r:
-                continue
-            # Skip entries that are clearly descriptive (contain spaces
-            # and English words, indicating a sentence rather than a term)
-            if ' ' in r and re.search(r'[A-Za-z]{3,}', r):
-                continue
-            rejected_map[r] = choice
+        # A parenthetical qualifier makes the rejection contextual or
+        # explanatory rather than a globally safe substring ban.  Only plain,
+        # independently searchable term tokens enter the global map.
+        if re.search(r"[()（）]", rejected_raw):
+            continue
+        rejected = _searchable_decision_terms(rejected_raw)
+        choices = _decision_choices(choice_raw)
+        if not rejected or not choices:
+            continue
+        for index, term in enumerate(rejected):
+            rejected_map[term] = choices[min(index, len(choices) - 1)]
     return rejected_map
 
 
+def parse_contextual_decisions(filepath: str) -> list[dict]:
+    """Return exact key/value rejected mappings from active decisions."""
+    if not os.path.exists(filepath):
+        return []
+    with open(filepath, "r", encoding="utf-8") as stream:
+        content = stream.read()
+    rules = []
+    for decision_id, block in _iter_decision_blocks(content):
+        if not re.search(
+            r"(?mi)^-\s+\*\*Status\*\*:\s*active\b", block
+        ):
+            continue
+        rejected_raw = _decision_field(block, "Rejected") or ""
+        for match in re.finditer(
+            r"`([^`\n]+?)\s*(?:→|->)\s*([^`\n]+?)`",
+            rejected_raw,
+        ):
+            key = match.group(1).replace(r"\|", "|").strip()
+            rejected = match.group(2).strip()
+            if (
+                "|" not in key
+                or not re.fullmatch(r"[^|\n]+\|[^|\n]+", key)
+                or len(_searchable_decision_terms(rejected)) != 1
+            ):
+                continue
+            correct = None
+            for line in block.splitlines():
+                cells = _markdown_table_cells(line)
+                if len(cells) >= 2 and key in cells[0].replace(r"\|", "|"):
+                    correct = cells[1].strip(" `")
+                    break
+            rules.append({
+                "decision": decision_id,
+                "key": key,
+                "rejected": rejected,
+                "correct": correct or "contextual decision",
+            })
+    return rules
+
+
+def _collect_zh_textdb_files(source_txt, zh_dirs):
+    """Return unique required ZH TextDB files, or input errors.
+
+    ``parse_entries`` remains the parser for every selected file.  This helper
+    only expands the explicitly bound inputs and fails closed when a requested
+    directory is missing, unreadable, or contains no ``*.txt`` files.
+    """
+    requested = []
+    if source_txt:
+        requested.append(source_txt)
+    requested.extend(zh_dirs or [])
+
+    files = []
+    seen = set()
+    errors = []
+    for raw_path in requested:
+        path = os.path.abspath(raw_path)
+        candidates = []
+        if os.path.isfile(path):
+            if not path.endswith(".txt"):
+                errors.append(f"required TextDB file is not *.txt: {path}")
+                continue
+            candidates.append(path)
+        elif os.path.isdir(path):
+            walk_errors = []
+
+            def _record_walk_error(error):
+                walk_errors.append(str(error))
+
+            for dirpath, dirnames, filenames in os.walk(
+                path, onerror=_record_walk_error
+            ):
+                dirnames.sort()
+                for filename in sorted(filenames):
+                    if filename.endswith(".txt"):
+                        candidates.append(os.path.join(dirpath, filename))
+            if walk_errors:
+                errors.extend(
+                    f"cannot traverse required TextDB directory {path}: {error}"
+                    for error in walk_errors
+                )
+            if not candidates:
+                errors.append(
+                    f"required TextDB directory contains no *.txt files: {path}"
+                )
+        else:
+            errors.append(f"required TextDB path does not exist: {path}")
+            continue
+
+        for candidate in candidates:
+            identity = os.path.normcase(os.path.abspath(candidate))
+            if identity not in seen:
+                seen.add(identity)
+                files.append(candidate)
+    return files, errors
+
+
 def cmd_validate_terms(args):
-    """Check for rejected translation terms in source.txt and C++ source."""
+    """Check rejected terms in all bound ZH TextDB and C++ sources."""
     # Parse decisions
     rejected_map = parse_decisions(args.glossary)
-    if not rejected_map:
+    contextual_rules = parse_contextual_decisions(args.glossary)
+    textdb_files, input_errors = _collect_zh_textdb_files(
+        args.source_txt, args.zh_dirs
+    )
+    if input_errors:
+        for error in input_errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 2
+
+    # Scan every explicitly bound ZH TextDB translation for global terms.
+    textdb_entries = []
+    for textdb_file in textdb_files:
+        try:
+            textdb_entries.extend(
+                parse_entries(
+                    textdb_file, lowercase_keys=False, unescape_hash=True
+                )
+            )
+        except (OSError, UnicodeError) as error:
+            print(
+                f"ERROR: cannot parse required TextDB file "
+                f"{textdb_file}: {error}",
+                file=sys.stderr,
+            )
+            return 2
+
+    if not rejected_map and not contextual_rules:
         print("OK: No active rejected-name decisions found in glossary.")
         return 0
 
-    # Scan source.txt CN translations for rejected terms
-    entries = parse_source_txt(args.source_txt) if args.source_txt else {}
+    # Context-qualified rules intentionally remain SourceDB-only.
+    contextual_entries = (
+        {
+            entry.key: entry.value
+            for entry in parse_entries(
+                args.source_txt, lowercase_keys=False, unescape_hash=True
+            )
+        }
+        if args.source_txt else {}
+    )
     findings = []
 
-    # Check source.txt
-    for en_key, cn_val in entries.items():
+    for entry in textdb_entries:
+        cn_val = entry.value
         for rejected, correct in rejected_map.items():
             if rejected in cn_val:
                 cn_snippet = cn_val[:80]
                 findings.append({
-                    'location': f'source.txt: "{en_key[:60]}"',
+                    'location': (
+                        f'{entry.source_file}: "{entry.key[:60]}"'
+                    ),
                     'rejected': rejected,
                     'correct': correct,
                     'snippet': cn_snippet,
                 })
+    for rule in contextual_rules:
+        cn_val = contextual_entries.get(rule["key"])
+        if cn_val is not None and cn_val.strip() == rule["rejected"]:
+            findings.append({
+                "location": f'source.txt: "{rule["key"][:60]}"',
+                "rejected": rule["rejected"],
+                "correct": rule["correct"],
+                "snippet": cn_val[:80],
+            })
 
     # Check C++ source for hardcoded rejected terms in strings (if source_dir given)
     if args.source_dir:
@@ -4337,7 +4595,16 @@ def main():
     p_terms.add_argument("--glossary", required=True,
                          help="Path to decisions.md")
     p_terms.add_argument("--source-txt",
-                         help="Path to source.txt (CN translations)")
+                         help=("Path to source.txt (global scan plus exact "
+                               "SourceDB contextual rules)"))
+    p_terms.add_argument(
+        "--zh-dir",
+        dest="zh_dirs",
+        action="append",
+        default=[],
+        help=("Required ZH TextDB directory to scan recursively for global "
+              "rejected terms (repeatable)"),
+    )
     p_terms.add_argument("--source-dir",
                          help="Root of C++ source tree (optional)")
 

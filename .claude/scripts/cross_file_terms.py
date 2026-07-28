@@ -20,11 +20,15 @@ import os
 import re
 import sys
 from collections import defaultdict
+from pathlib import Path
 
 # Import parse_decisions from sibling script, parse_entries from i18n_shared
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scan_i18n import parse_decisions
-from i18n_shared import parse_entries
+from i18n_shared import AuditRootError, parse_entries, resolve_audit_root
+
+
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def parse_source_txt(filepath: str) -> dict:
@@ -141,9 +145,11 @@ def main():
         description="Cross-file i18n term consistency scanner"
     )
     parser.add_argument('zh_dir', help='Path to i18n zh directory')
-    default_glossary = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        '..', '..', 'docs', 'decisions.md')
+    try:
+        audit_root = resolve_audit_root(SCRIPT_ROOT)
+    except AuditRootError as error:
+        parser.error(f"invalid audit root: {error}")
+    default_glossary = audit_root / 'docs/decisions.md'
     parser.add_argument('--glossary', default=default_glossary,
                         help='Path to decisions.md')
     args = parser.parse_args()

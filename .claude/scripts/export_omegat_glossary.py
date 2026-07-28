@@ -12,8 +12,15 @@ import re
 import sys
 from pathlib import Path
 
+from i18n_shared import AuditRootError, resolve_audit_root
 
-ROOT = Path(__file__).resolve().parents[2]
+
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
 DEFAULT_SOURCE = ROOT / "docs/glossary.md"
 DEFAULT_OUTPUT = ROOT / "docs/glossary.utf8"
 EXPORT_DOMAINS = {

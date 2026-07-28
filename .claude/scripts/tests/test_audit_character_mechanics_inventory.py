@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import importlib.util
+import json
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 TEST_DIR = Path(__file__).resolve().parent
@@ -70,6 +72,281 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         self.assertEqual(
             ["Two long"],
             MODULE.status_display_literals(fragments["STATUS_TWO"]),
+        )
+
+    def test_enum_parser_keeps_explicit_expressions_and_excludes_aliases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "status.h"
+            source = (
+                "STATUS_AIRBORNE = NUM_DURATIONS + 1,\n"
+                "STATUS_CURRENT,\n"
+                "STATUS_LAST_STATUS = STATUS_CURRENT,\n"
+            )
+            with mock.patch.object(MODULE, "active_source", return_value=source):
+                self.assertEqual(
+                    ["STATUS_AIRBORNE", "STATUS_CURRENT"],
+                    MODULE.concrete_enum_identities(path, "STATUS_"),
+                )
+
+    def test_status_producer_proof_rejects_each_conservation_failure(self):
+        source = """
+        static void _describe_one(status_info& inf)
+        {
+            inf.light_text = T_("One");
+        }
+        """
+        clean = MODULE.status_producer_proof(
+            ["STATUS_ONE", "STATUS_IN_DEBT"],
+            {"STATUS_ONE": "case STATUS_ONE: _describe_one(inf); break;"},
+            source,
+        )
+        self.assertFalse(any(
+            clean[key] for key in (
+                "missing_status_producers",
+                "unexpected_status_producers",
+                "stale_producerless_status_exceptions",
+                "unresolved_status_helpers",
+            )
+        ))
+
+        missing = MODULE.status_producer_proof(
+            ["STATUS_ONE", "STATUS_TWO", "STATUS_IN_DEBT"],
+            {"STATUS_ONE": "case STATUS_ONE: break;"},
+            source,
+        )
+        self.assertEqual(
+            ["STATUS_TWO"], missing["missing_status_producers"]
+        )
+
+        unexpected = MODULE.status_producer_proof(
+            ["STATUS_ONE", "STATUS_IN_DEBT"],
+            {
+                "STATUS_ONE": "case STATUS_ONE: break;",
+                "STATUS_UNKNOWN": "case STATUS_UNKNOWN: break;",
+            },
+            source,
+        )
+        self.assertEqual(
+            ["STATUS_UNKNOWN"], unexpected["unexpected_status_producers"]
+        )
+
+        stale = MODULE.status_producer_proof(
+            ["STATUS_ONE", "STATUS_IN_DEBT"],
+            {
+                "STATUS_ONE": "case STATUS_ONE: break;",
+                "STATUS_IN_DEBT": "case STATUS_IN_DEBT: break;",
+            },
+            source,
+        )
+        self.assertEqual(
+            ["STATUS_IN_DEBT"],
+            stale["stale_producerless_status_exceptions"],
+        )
+
+        unresolved = MODULE.status_producer_proof(
+            ["STATUS_ONE", "STATUS_IN_DEBT"],
+            {"STATUS_ONE": "case STATUS_ONE: _describe_missing(inf); break;"},
+            source,
+        )
+        self.assertEqual(
+            ["STATUS_ONE"], unresolved["unresolved_status_helpers"]
+        )
+
+    def test_airborne_card_contains_helper_display_facts(self):
+        rows, proof = MODULE.status_rows({}, with_proof=True)
+        airborne = next(
+            row for row in rows
+            if row["identity"] == "status:STATUS_AIRBORNE"
+        )
+        self.assertTrue(airborne["producer_present"])
+        self.assertEqual(["Fly"], airborne["db_keys"])
+        self.assertEqual(
+            ["Fly", "flying", "You are flying."],
+            [item["english"] for item in airborne["display_strings"]],
+        )
+        self.assertFalse(any(proof.values()))
+
+    def test_duration_helper_and_fallthrough_facts_fail_closed(self):
+        helper_source = """
+        static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
+        {
+            inf.db_key = ddef->light_text;
+            return true;
+        }
+        """
+        duration_facts = {
+            "DUR_ONE": (
+                'inf.db_key = "One";\n'
+                'inf.light_text = C_("status", "One");'
+            ),
+            "DUR_TWO": (
+                'inf.db_key = "Two";\n'
+                'inf.light_text = C_("status", "Two");'
+            ),
+        }
+        one = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {
+                "STATUS_ONE": (
+                    "case STATUS_ONE:\n"
+                    "_fill_inf_from_ddef(DUR_ONE, inf);\n"
+                    "break;"
+                ),
+            },
+            helper_source,
+            duration_facts,
+        )
+        two = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {
+                "STATUS_ONE": (
+                    "case STATUS_ONE:\n"
+                    "_fill_inf_from_ddef(DUR_TWO, inf);\n"
+                    "break;"
+                ),
+            },
+            helper_source,
+            duration_facts,
+        )
+        self.assertFalse(one["unresolved_status_helpers"])
+        self.assertFalse(two["unresolved_status_helpers"])
+        self.assertEqual(
+            ["One"],
+            MODULE.status_db_keys(one["resolved_fragments"]["STATUS_ONE"]),
+        )
+        self.assertEqual(
+            ["Two"],
+            MODULE.status_db_keys(two["resolved_fragments"]["STATUS_ONE"]),
+        )
+        self.assertNotEqual(
+            MODULE.normalize_producer_fragment(
+                one["resolved_fragments"]["STATUS_ONE"]
+            ),
+            MODULE.normalize_producer_fragment(
+                two["resolved_fragments"]["STATUS_ONE"]
+            ),
+        )
+        self.assertNotEqual(
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    one["resolved_fragments"]["STATUS_ONE"]
+                ),
+            }),
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    two["resolved_fragments"]["STATUS_ONE"]
+                ),
+            }),
+        )
+
+        fallthrough = """
+        case STATUS_ONE:
+            inf.db_key = "Before";
+            // Intentional fallthrough
+        case DUR_ONE:
+            inf.short_text = T_("after");
+            break;
+        """
+        fragments = MODULE.case_fragments(fallthrough, "STATUS_")
+        self.assertEqual(
+            ["Before"], MODULE.status_db_keys(fragments["STATUS_ONE"])
+        )
+        self.assertEqual(
+            ["after"], MODULE.status_display_literals(fragments["STATUS_ONE"])
+        )
+        changed = fallthrough.replace(
+            'inf.short_text = T_("after");',
+            'inf.short_text = T_("changed");',
+        )
+        changed_fragment = MODULE.case_fragments(changed, "STATUS_")[
+            "STATUS_ONE"
+        ]
+        self.assertNotEqual(
+            MODULE.normalize_producer_fragment(fragments["STATUS_ONE"]),
+            MODULE.normalize_producer_fragment(changed_fragment),
+        )
+        self.assertNotEqual(
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    fragments["STATUS_ONE"]
+                ),
+            }),
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    changed_fragment
+                ),
+            }),
+        )
+
+        unknown = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {"STATUS_ONE": "case STATUS_ONE: _unknown(inf); break;"},
+            "",
+        )
+        self.assertEqual(
+            ["STATUS_ONE"], unknown["unresolved_status_helpers"]
+        )
+        empty = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {"STATUS_ONE": "case STATUS_ONE: break;"},
+            "",
+        )
+        self.assertEqual(["STATUS_ONE"], empty["unresolved_status_helpers"])
+
+    def test_corrosion_and_lowered_willpower_cards_bind_real_producers(self):
+        rows, proof = MODULE.status_rows({}, with_proof=True)
+        by_id = {row["identity"]: row for row in rows}
+        corrosion = by_id["status:STATUS_CORROSION"]
+        lowered = by_id["status:STATUS_LOWERED_WL"]
+        self.assertEqual(["Corr"], corrosion["db_keys"])
+        self.assertIn(
+            "corroded (%d)",
+            [item["english"] for item in corrosion["display_strings"]],
+        )
+        self.assertIn("case DUR_CORROSION:", corrosion["producer_fragment"])
+        self.assertEqual(["Will/2"], lowered["db_keys"])
+        self.assertIn(
+            "You are weak-willed.",
+            [item["english"] for item in lowered["display_strings"]],
+        )
+        self.assertIn(
+            "_fill_inf_from_ddef(DUR_LOWERED_WL, inf)",
+            lowered["producer_fragment"],
+        )
+        self.assertFalse(any(proof.values()))
+
+    def test_airborne_missing_or_incomplete_card_is_a_violation(self):
+        descriptions = {}
+        missing = MODULE.inventory_violations(
+            [], descriptions,
+            {
+                "missing_status_producers": ["STATUS_AIRBORNE"],
+                "unexpected_status_producers": [],
+                "stale_producerless_status_exceptions": [],
+                "unresolved_status_helpers": [],
+            },
+        )
+        self.assertEqual(
+            ["STATUS_AIRBORNE"], missing["missing_status_producers"]
+        )
+        incomplete = [{
+            "identity": "status:STATUS_AIRBORNE",
+            "category": "status",
+            "lifecycle": "current",
+            "display_strings": [{
+                "lookup_key": "Fly",
+                "english": "Fly",
+                "translation_present": True,
+            }],
+        }]
+        facts = MODULE.inventory_violations(incomplete, descriptions)
+        self.assertIn(
+            "status:STATUS_AIRBORNE",
+            facts["missing_status_display_facts"],
         )
 
     def test_inventory_identities_are_unique_and_category_totals_match(self):
@@ -151,6 +428,9 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
 
     def test_review_coverage_requires_exact_terminal_rows(self):
         payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
             "rows": [
                 {"identity": "mutation:MUT_TEST"},
                 {"identity": "attribute:STAT_STR"},
@@ -158,18 +438,24 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         }
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
+            conclusions = {
+                "mutation:MUT_TEST": "keep",
+                "attribute:STAT_STR": "adjust",
+            }
             path.write_text(
-                "| `mutation:MUT_TEST` | current | 测试 | 事实 | 保留 |\n"
-                "| `attribute:STAT_STR` | current | 力量 | 事实 | 修订：措辞 |\n",
+                MODULE.strict_review_block(payload, conclusions) + "\n",
                 encoding="utf-8",
             )
             clean = MODULE.review_coverage(payload, path)
             self.assertTrue(clean["coverage_equal"])
 
-            path.write_text(
-                "| `mutation:MUT_TEST` | current | 测试 | 事实 | 未决定 |\n",
-                encoding="utf-8",
+            conclusions["mutation:MUT_TEST"] = "pending"
+            text = MODULE.strict_review_block(payload, conclusions)
+            text = "\n".join(
+                line for line in text.splitlines()
+                if '"identity":"attribute:STAT_STR"' not in line
             )
+            path.write_text(text + "\n", encoding="utf-8")
             broken = MODULE.review_coverage(payload, path)
         self.assertFalse(broken["coverage_equal"])
         self.assertEqual(
@@ -178,6 +464,96 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         self.assertEqual(
             ["mutation:MUT_TEST"], broken["invalid_terminal_conclusions"]
         )
+
+    def test_strict_review_rejects_stale_bindings_fact_and_card_mutations(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
+            "rows": [
+                {"identity": "status:STATUS_ONE", "fact": "one"},
+                {"identity": "status:STATUS_TWO", "fact": "two"},
+            ],
+        }
+        clean_text = MODULE.strict_review_block(
+            payload,
+            {
+                "status:STATUS_ONE": "keep",
+                "status:STATUS_TWO": "adjust",
+            },
+        )
+
+        def mutate_metadata(text, field, value):
+            lines = text.splitlines()
+            metadata = json.loads(lines[1])
+            metadata[field] = value
+            lines[1] = json.dumps(
+                metadata, sort_keys=True, separators=(",", ":")
+            )
+            return "\n".join(lines)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_text(clean_text + "\n", encoding="utf-8")
+            self.assertTrue(MODULE.review_coverage(payload, path)[
+                "coverage_equal"
+            ])
+            for field, value in (
+                ("baseline", "0" * 40),
+                ("glossary_sha256", "0" * 64),
+                ("inventory_sha256", "1" * 64),
+                ("identity_count", 3),
+            ):
+                with self.subTest(field=field):
+                    path.write_text(
+                        mutate_metadata(clean_text, field, value) + "\n",
+                        encoding="utf-8",
+                    )
+                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                        "coverage_equal"
+                    ])
+
+            lines = clean_text.splitlines()
+            first = json.loads(lines[3])
+            second = json.loads(lines[4])
+            mutations = {
+                "fact": [
+                    *lines[:3],
+                    json.dumps(
+                        dict(first, fact_sha256="0" * 64),
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ),
+                    *lines[4:],
+                ],
+                "pending": [
+                    *lines[:3],
+                    json.dumps(
+                        dict(first, terminal_conclusion="pending"),
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ),
+                    *lines[4:],
+                ],
+                "duplicate": [*lines[:4], lines[3], *lines[4:]],
+                "missing": [*lines[:3], *lines[4:]],
+                "extra": [
+                    *lines[:5],
+                    json.dumps(
+                        dict(second, identity="status:STATUS_EXTRA"),
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ),
+                    *lines[5:],
+                ],
+                "reordered": [*lines[:3], lines[4], lines[3], *lines[5:]],
+            }
+            for name, mutated in mutations.items():
+                with self.subTest(mutation=name):
+                    path.write_text("\n".join(mutated) + "\n", encoding="utf-8")
+                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                        "coverage_equal"
+                    ])
 
     def test_cli_persists_inventory_when_findings_exist(self):
         with tempfile.TemporaryDirectory() as directory:

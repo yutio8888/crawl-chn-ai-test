@@ -97,9 +97,39 @@ An explicit valid `TERM` only permits ncurses startup. It does not skip static
 checks, compilation, runtime tests, readiness binding, or evidence sealing.
 
 Reviewers never run `verify_zh.sh --profile review` themselves. The complete
-security contract is `.agents/policies/review-contract.md`. New authorization
-uses schema-v4 bundles with schema-v2 atomic readiness; schema-v3 bundles are
-historical read-only evidence.
+security contract is `.agents/policies/review-contract.md`.
+
+By default, every new authorization uses schema-v4 bundles with routing-v2,
+findings-v2, readiness-v3, and verification-v5. Routing-v1/readiness-v2
+objects in the v4 directory and schema-v3 bundles are historical read-only
+evidence and never authorize merge.
+
+The sole temporary exception is
+`DCSS-ZH-BOOTSTRAP-2026-07-29`, defined in the review contract. It permits new
+target-era routing-v1, findings-v1, readiness-v2, and verification-v4 evidence
+only for the consecutive recovery edges:
+
+1. `fa0144cb3729e2fdae70e070946fe89f0b6cec15 → S`
+2. the exact approved full OID of S `→ C`
+
+Both edges must satisfy the exception's exact path boundary, complete
+reviewer-scope declaration, tree-equivalence, glossary, clean-worktree,
+full-OID, new-evidence, final-gate, and merge-time conditions. The tools must
+come from each edge's trusted target checkout; a newer candidate or unrelated
+checkout must not authorize itself.
+
+The exception expires permanently when the approved C full OID is merged into
+the dedicated recovery target. `C → R` and every later edge must use the normal
+routing-v2, findings-v2, readiness-v3, and verification-v5 workflow. The
+exception does not authorize reuse of old evidence, replacement of
+`chn-0.34.1-base`, pushing, releasing, or deployment.
+
+The review profile includes a required, independent `review-ledgers` phase.
+It executes the target checkout's trusted character, god, item, monster,
+species/background, and world auditors against the validated candidate root.
+Each resulting inventory JSON is an individually required verification-v5
+artifact. The phase is unconditional: dependency or glossary drift must fail
+even when the corresponding ledger is absent from the prepared diff.
 
 ## CI
 

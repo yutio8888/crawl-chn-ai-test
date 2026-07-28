@@ -7,6 +7,8 @@ import hashlib
 import importlib.util
 import json
 import os
+import posixpath
+import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +17,7 @@ import time
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from unittest import mock
 
 
 sys.dont_write_bytecode = True
@@ -44,15 +47,146 @@ if os.environ.get('FAKE_CLASSIFIER_REQUIRE_CLEAN_ENV'):
         print('unsafe classifier environment', file=sys.stderr)
         raise SystemExit(9)
 result = {
-    'schema_version': 1,
+    'schema_version': 2,
     'classification': 'code',
     'reviewers': ['zh-code-reviewer'],
     'files': ['tracked.txt'],
-    'note': '可信路由',
+    'classified_files': [{
+        'path': 'tracked.txt',
+        'category': 'code',
+        'reason': 'fixture code',
+    }],
     'source': {'type': 'git', 'base': args.base, 'head': args.head},
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 """
+
+
+def production_review_execution_closure(
+    contract: dict, text_overrides: dict[str, str] | None = None
+) -> set[str]:
+    """Enumerate target code referenced by the real review control plane."""
+    repo = SCRIPT.parents[2]
+    entrypoints = {
+        ".claude/scripts/review_prepare.sh",
+        ".claude/scripts/review_final_gate.sh",
+        ".claude/scripts/review_at_merge.sh",
+        ".claude/scripts/context_resolve.sh",
+        ".claude/scripts/data/review_findings_v2.schema.json",
+        ".claude/scripts/data/zh_issue_protocol_v1.schema.json",
+    }
+    pending = list(entrypoints)
+    closure: set[str] = set()
+    path_patterns = (
+        re.compile(
+            r"\.claude/scripts/[A-Za-z0-9_./-]+\.(?:py|sh|json)"
+        ),
+        re.compile(
+            r"\$\{?SCRIPT_DIR\}?/"
+            r"([A-Za-z0-9_./-]+\.(?:py|sh|json))"
+        ),
+        re.compile(
+            r"""SCRIPT_DIR\s*/\s*["']([^"']+\.(?:py|sh|json))["']"""
+        ),
+    )
+    while pending:
+        relative = posixpath.normpath(pending.pop())
+        if relative in closure:
+            continue
+        closure.add(relative)
+        # The contract is a bound manifest, not an executable dependency list.
+        # Scanning its own entries would make every unreachable cycle appear
+        # reachable and reduce this check to a tautology.
+        if relative.endswith("review_verification_contract_v5.json"):
+            continue
+        path = repo / relative
+        text = (text_overrides or {}).get(relative)
+        if text is None:
+            text = path.read_text(encoding="utf-8")
+        referenced: set[str] = set()
+        for index, pattern in enumerate(path_patterns):
+            for match in pattern.finditer(text):
+                value = match.group(0) if index == 0 else match.group(1)
+                if not value.startswith(".claude/scripts/"):
+                    value = (Path(relative).parent / value).as_posix()
+                referenced.add(posixpath.normpath(value))
+        if relative.endswith(".py"):
+            for match in re.finditer(
+                r"^(?:from|import)\s+([A-Za-z_][A-Za-z0-9_]*)",
+                text,
+                re.MULTILINE,
+            ):
+                sibling = posixpath.normpath(
+                    (Path(relative).parent / f"{match.group(1)}.py").as_posix()
+                )
+                if (repo / sibling).is_file():
+                    referenced.add(sibling)
+        # verify_zh's non-review profiles are unreachable in the final gate.
+        referenced.difference_update({
+            ".claude/scripts/post-coder.sh",
+            ".claude/scripts/post-translator.sh",
+        })
+        pending.extend(referenced)
+    return closure
+
+
+class ProductionControlPlaneClosureTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.contract_path = (
+            SCRIPT.parent / "data/review_verification_contract_v5.json"
+        )
+        self.contract = json.loads(
+            self.contract_path.read_text(encoding="utf-8")
+        )
+
+    def assert_closure_matches(
+        self, contract: dict, text_overrides: dict[str, str] | None = None
+    ) -> None:
+        self.assertEqual(
+            set(contract["control_plane_files"]),
+            production_review_execution_closure(contract, text_overrides),
+        )
+
+    def test_real_review_entry_closure_matches_contract_exactly(self) -> None:
+        self.assert_closure_matches(self.contract)
+        verifier = (SCRIPT.parent / "verify_zh.sh").read_text(encoding="utf-8")
+        smoke = (SCRIPT.parent / "smoke_test.sh").read_text(encoding="utf-8")
+        runtime = (SCRIPT.parent / "post_zh_runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('$SCRIPT_DIR/check_default_utf8.py', verifier)
+        self.assertIn('$SCRIPT_DIR/run_with_timeout.py', smoke)
+        self.assertIn('$SCRIPT_DIR/run_with_timeout.py', runtime)
+
+    def test_missing_and_unknown_contract_entries_are_rejected(self) -> None:
+        missing = dict(self.contract)
+        missing["control_plane_files"] = [
+            path for path in self.contract["control_plane_files"]
+            if path != ".claude/scripts/check_default_utf8.py"
+        ]
+        with self.assertRaises(AssertionError):
+            self.assert_closure_matches(missing)
+
+        unknown = dict(self.contract)
+        unknown["control_plane_files"] = sorted([
+            *self.contract["control_plane_files"],
+            ".claude/scripts/not-a-review-control-a.py",
+            ".claude/scripts/not-a-review-control-b.py",
+            ".claude/scripts/tests/evil.py",
+        ])
+        with self.assertRaises(AssertionError):
+            self.assert_closure_matches(
+                unknown,
+                {
+                    ".claude/scripts/not-a-review-control-a.py": (
+                        'SCRIPT_DIR / "not-a-review-control-b.py"\n'
+                    ),
+                    ".claude/scripts/not-a-review-control-b.py": (
+                        'SCRIPT_DIR / "not-a-review-control-a.py"\n'
+                    ),
+                    ".claude/scripts/tests/evil.py": "",
+                },
+            )
 
 
 class ReviewBundleTests(unittest.TestCase):
@@ -76,11 +210,19 @@ class ReviewBundleTests(unittest.TestCase):
         self.contract = trusted / "final_contract.json"
         contract = {
             "schema": MODULE.CONTRACT_SCHEMA,
-            "verification_contract": "dcss-zh-review-v4",
+            "verification_contract": MODULE.VERIFICATION_CONTRACT,
             "control_plane_files": [
                 MODULE.TRUSTED_CLASSIFIER_PATH,
                 ".trusted/fake_verify.py",
                 ".trusted/final_contract.json",
+            ],
+            "required_artifacts": [
+                "character-mechanics-inventory.json",
+                "god-inventory.json",
+                "item-name-inventory.json",
+                "monster-name-inventory.json",
+                "species-background-inventory.json",
+                "world-inventory.json",
             ],
             "phase_plan": [
                 {"id": "policy-sync", "required": True, "when": "always"},
@@ -154,6 +296,17 @@ run_dir = Path(args.output_dir) / run_id
 run_dir.mkdir(parents=True)
 verify_log = run_dir / 'verify.log'
 verify_log.write_text(f'fake verifier mode={mode}\\n', encoding='utf-8')
+required_artifacts = [
+    'character-mechanics-inventory.json',
+    'god-inventory.json',
+    'item-name-inventory.json',
+    'monster-name-inventory.json',
+    'species-background-inventory.json',
+    'world-inventory.json',
+]
+for artifact_name in required_artifacts:
+    (run_dir / artifact_name).write_text(
+        artifact_name + '\\n', encoding='utf-8')
 diff = subprocess.check_output([
     'git', 'diff', '--no-ext-diff', '--no-textconv', '--binary', '--full-index',
     f'{args.base}..{args.head}', '--',
@@ -175,7 +328,7 @@ if mode == 'missing-phase':
     phases.pop()
 metadata = {
     'schema_version': 2 if mode == 'v2' else 3,
-    'verification_contract': 'dcss-zh-review-v4',
+    'verification_contract': 'dcss-zh-review-v5',
     'run_id': 'wrong-run' if mode == 'wrong-run-id' else run_id,
     'status': 'fail' if mode == 'fail' else 'pass',
     'profile': 'code' if mode == 'wrong-profile' else args.profile,
@@ -195,7 +348,12 @@ metadata = {
         'path': 'verify.log',
         'size': verify_log.stat().st_size,
         'sha256': hashlib.sha256(verify_log.read_bytes()).hexdigest(),
-    }],
+    }] + [{
+        'path': artifact_name,
+        'size': (run_dir / artifact_name).stat().st_size,
+        'sha256': hashlib.sha256(
+            (run_dir / artifact_name).read_bytes()).hexdigest(),
+    } for artifact_name in required_artifacts],
     'failures': 1 if mode == 'fail' else 0,
 }
 (run_dir / 'metadata.json').write_text(json.dumps(metadata), encoding='utf-8')
@@ -217,12 +375,12 @@ raise SystemExit(7 if mode == 'fail' else 0)
         shutil.copy2(SCRIPT.parent / "review_final_gate.sh", shell_scripts / "review_final_gate.sh")
         shell_verifier = shell_scripts / "verify_zh.sh"
         shutil.copy2(self.verifier, shell_verifier)
-        shell_contract_path = shell_scripts / "data/review_verification_contract_v4.json"
+        shell_contract_path = shell_scripts / "data/review_verification_contract_v5.json"
         shell_contract_path.parent.mkdir(parents=True)
         shell_contract = dict(contract)
         shell_contract["control_plane_files"] = sorted([
             MODULE.TRUSTED_CLASSIFIER_PATH,
-            ".claude/scripts/data/review_verification_contract_v4.json",
+            ".claude/scripts/data/review_verification_contract_v5.json",
             ".claude/scripts/review_bundle.py",
             ".claude/scripts/review_final_gate.sh",
             ".claude/scripts/verify_zh.sh",
@@ -286,6 +444,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
             "bundle_sha256": created["bundle_sha256"],
             "routing_sha256": created["routing_sha256"],
             "reviewer": reviewer,
+            "reviewed_scope": created["routing"]["files"],
             "findings": findings,
         }))
         return path
@@ -448,9 +607,101 @@ raise SystemExit(7 if mode == 'fail' else 0)
         self.assertEqual(readiness["bundle_sha256"], created["bundle_sha256"])
         self.assertEqual(readiness["routing_sha256"], created["routing_sha256"])
         self.assertEqual(readiness["reviewer"], "zh-code-reviewer")
+        self.assertEqual(readiness["reviewed_scope"], routing["files"])
         self.assertTrue(readiness["ready"])
         with MODULE.final_gate(self.candidate, created["bundle_id"]) as gated:
             self.assertTrue(gated["ready"])
+
+    def test_routing_v2_rejects_structural_and_recomputation_mutations(self):
+        created = self.create()
+        routing = created["routing"]
+        mutations = []
+        value = json.loads(json.dumps(routing)); value["unknown"] = True
+        mutations.append(value)
+        value = json.loads(json.dumps(routing)); value["files"].append("tracked.txt")
+        mutations.append(value)
+        value = json.loads(json.dumps(routing)); value["files"] = ["./tracked.txt"]
+        mutations.append(value)
+        value = json.loads(json.dumps(routing)); value["classified_files"][0]["path"] = "other.txt"
+        mutations.append(value)
+        value = json.loads(json.dumps(routing)); value["classified_files"][0]["category"] = "translation"
+        mutations.append(value)
+        value = json.loads(json.dumps(routing)); value["reviewers"] = []
+        mutations.append(value)
+        for index, value in enumerate(mutations):
+            with self.subTest(index=index), self.assertRaises(
+                MODULE.ReviewBundleError
+            ):
+                MODULE._validate_routing(value, self.base, self.head)
+
+    def test_reviewed_scope_requires_exact_ordered_routing_files(self):
+        expected = ["a.txt", "b.txt"]
+        self.assertEqual(
+            expected,
+            MODULE._validate_reviewed_scope(
+                expected, expected, "reviewed_scope"
+            ),
+        )
+        for scope in (
+            ["a.txt"],
+            ["a.txt", "b.txt", "c.txt"],
+            ["b.txt", "a.txt"],
+            ["a.txt", "a.txt"],
+            ["/a.txt", "b.txt"],
+            ["../a.txt", "b.txt"],
+            ["a\\b.txt", "b.txt"],
+        ):
+            with self.subTest(scope=scope), self.assertRaises(
+                MODULE.ReviewBundleError
+            ):
+                MODULE._validate_reviewed_scope(
+                    scope, expected, "reviewed_scope"
+                )
+
+    def test_routing_v1_bundle_in_v4_is_legacy_read_only_even_if_approved(self):
+        created = self.create()
+        bundle_path = Path(created["bundle_path"])
+        routing = json.loads((bundle_path / "routing.json").read_bytes())
+        routing["schema_version"] = 1
+        routing_bytes = MODULE.canonical_json_bytes(routing)
+        (bundle_path / "routing.json").write_bytes(routing_bytes)
+        manifest = json.loads((bundle_path / "bundle.json").read_bytes())
+        manifest["routing_sha256"] = MODULE.sha256_bytes(routing_bytes)
+        (bundle_path / "bundle.json").write_bytes(
+            MODULE.canonical_json_bytes(manifest)
+        )
+        with mock.patch.object(
+            MODULE, "generate_routing_from_target", return_value=routing
+        ):
+            empty = MODULE.status_bundle(
+                self.candidate, created["bundle_id"]
+            )
+            self.assertEqual("LEGACY_READ_ONLY", empty["state"])
+            self.assertTrue(empty["legacy_read_only"])
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError, "historical read-only"
+            ):
+                MODULE.record_readiness(
+                    self.candidate,
+                    created["bundle_id"],
+                    "zh-code-reviewer",
+                    self.findings_file(created, []),
+                )
+            with mock.patch.object(
+                MODULE, "_validate_approval", return_value={"verdict": "go"}
+            ):
+                approved = MODULE.status_bundle(
+                    self.candidate, created["bundle_id"]
+                )
+            self.assertEqual("LEGACY_READ_ONLY", approved["state"])
+            self.assertTrue(approved["approved"])
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError, "cannot authorize"
+            ):
+                with MODULE.final_gate(
+                    self.candidate, created["bundle_id"]
+                ):
+                    self.fail("routing-v1 bundle authorized a final action")
 
     def test_trusted_classifier_scrubs_loader_and_override_environment(self) -> None:
         with self.fake_environment(
@@ -477,7 +728,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         )
         forged.chmod(0o755)
         with self.assertRaisesRegex(
-            MODULE.ReviewBundleError, "target-head classifier"
+            MODULE.ReviewBundleError, "cannot be recomputed"
         ):
             MODULE.create_bundle(
                 self.candidate, "target", "HEAD", GLOSSARY_SHA256, forged
@@ -558,6 +809,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
             "bundle_sha256": created["bundle_sha256"],
             "routing_sha256": created["routing_sha256"],
             "reviewer": "zh-code-reviewer",
+            "reviewed_scope": created["routing"]["files"],
             "findings": [self.finding()],
         }
 
@@ -781,6 +1033,19 @@ raise SystemExit(7 if mode == 'fail' else 0)
                     self.wrong_contract,
                 )
         self.assertFalse(count.exists(), "wrong contract started the verifier")
+
+    def test_bound_control_file_mutation_is_rejected_before_verifier_start(
+        self,
+    ) -> None:
+        created = self.ready()
+        original = self.verifier.read_bytes()
+        count = self.temp / "mutated-control-verify-count"
+        self.verifier.write_bytes(original + b"\n# one-byte binding mutation\n")
+        with self.fake_environment(FAKE_VERIFY_COUNT=str(count)):
+            with self.assertRaisesRegex(MODULE.ReviewBundleError, "dirty"):
+                self.run_final(created)
+        self.assertFalse(count.exists(), "mutated control file started verifier")
+        self.verifier.write_bytes(original)
 
     def test_final_verifier_scrubs_override_and_loader_environment(self) -> None:
         created = self.ready()
@@ -1016,6 +1281,22 @@ raise SystemExit(7 if mode == 'fail' else 0)
                     MODULE.validate_bundle(self.candidate, created["bundle_id"])
                 metadata_path.write_bytes(original_metadata)
                 completion_path.write_bytes(original_completion)
+        metadata = json.loads(original_metadata)
+        metadata["artifacts"] = [
+            artifact for artifact in metadata["artifacts"]
+            if artifact["path"] != "world-inventory.json"
+        ]
+        world_artifact = attempt / "world-inventory.json"
+        world_bytes = world_artifact.read_bytes()
+        world_artifact.unlink()
+        self.rewrite_attempt_metadata(attempt, metadata)
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "missing required artifacts"
+        ):
+            MODULE.validate_bundle(self.candidate, created["bundle_id"])
+        world_artifact.write_bytes(world_bytes)
+        metadata_path.write_bytes(original_metadata)
+        completion_path.write_bytes(original_completion)
         self.assertEqual(result["state"], "MERGEABLE")
 
     def test_artifact_symlink_missing_completion_and_unknown_object_are_rejected(self) -> None:

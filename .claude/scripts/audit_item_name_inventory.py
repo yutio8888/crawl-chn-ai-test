@@ -17,7 +17,16 @@ import sys
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
+
 SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE = SRC / "dat/i18n/zh/source.txt"
 ZH_SOURCE_DIR = ZH_SOURCE.parent
@@ -73,7 +82,6 @@ DEVELOPMENT_REPORTS = [
     },
 ]
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import parse_entries_physical, runtime_normalize_value
 
 
@@ -1945,7 +1953,25 @@ def parse_review_results(path):
     return rows
 
 
-def review_violations(inventory_rows, review_rows):
+def parse_review_header(path):
+    text = path.read_text(encoding="utf-8")
+    patterns = {
+        "inventory_sha256": r"^- Inventory SHA-256: `([0-9a-f]{64})`$",
+        "glossary_sha256": r"^- Glossary SHA-256: `([0-9a-f]{64})`$",
+        "baseline": r"^- Review base: `([0-9a-f]{40})`$",
+        "count": r"^- Inventory rows: `([0-9]+)`$",
+    }
+    result = {}
+    for field, pattern in patterns.items():
+        matches = re.findall(pattern, text, re.MULTILINE)
+        result[field] = matches[0] if len(matches) == 1 else None
+        result[field + "_header_count"] = len(matches)
+    if result["count"] is not None:
+        result["count"] = int(result["count"])
+    return result
+
+
+def review_violations(inventory_rows, review_rows, inventory=None, header=None):
     inventory_ids = [
         row.get("identity", "<missing>") for row in inventory_rows
     ]
@@ -1983,7 +2009,7 @@ def review_violations(inventory_rows, review_rows):
         identity for identity in inventory_set & review_set
         if inventory_by_id.get(identity) != review_by_id.get(identity)
     )
-    return {
+    violations = {
         "inventory_duplicates": sorted(
             key for key, count in Counter(inventory_ids).items() if count > 1
         ),
@@ -1997,6 +2023,20 @@ def review_violations(inventory_rows, review_rows):
         "invalid_terminal_conclusions": invalid_terminal,
         "invalid_deferrals": invalid_deferral,
     }
+    if inventory is not None:
+        header = header or {}
+        expected_header = {
+            "inventory_sha256": inventory["inventory_sha256"],
+            "glossary_sha256": inventory["glossary_sha256"],
+            "baseline": inventory["baseline"],
+            "count": inventory["count"],
+        }
+        violations["header_mismatches"] = sorted(
+            field for field, expected in expected_header.items()
+            if header.get(field) != expected
+            or header.get(field + "_header_count") != 1
+        )
+    return violations
 
 
 def write_review_results(path, inventory, rows):
@@ -2108,8 +2148,9 @@ def main(argv=None):
                 )
             if args.review_results:
                 review = parse_review_results(args.review_results)
+                review_header = parse_review_header(args.review_results)
                 payload["review_violations"] = review_violations(
-                    payload["rows"], review
+                    payload["rows"], review, payload, review_header
                 )
         else:
             if (

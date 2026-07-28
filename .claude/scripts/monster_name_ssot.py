@@ -23,7 +23,16 @@ from pathlib import Path
 from typing import Mapping
 
 
-ROOT = Path(__file__).resolve().parents[2]
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
+
 SRC = ROOT / "crawl-ref" / "source"
 MONSTER_ENUMS = SRC / "monster-type.h"
 MONSTER_DATA_DIR = SRC / "dat" / "mons"
@@ -33,7 +42,6 @@ ZH_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "zh" / "monsters.txt"
 ZH_MONSTER_TITLES = SRC / "dat" / "database" / "zh" / "montitle.txt"
 GLOSSARY = ROOT / "docs" / "glossary.md"
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from audit_item_name_inventory import active_source  # noqa: E402
 
 

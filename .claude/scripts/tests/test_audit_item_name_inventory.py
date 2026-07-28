@@ -612,6 +612,49 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertIn(payload["baseline"], result_text)
         self.assertNotIn(payload["candidate_head"], result_text)
 
+    def test_issue29_review_header_rejects_each_minimal_mutation(self):
+        inventory = {
+            "inventory_sha256": "1" * 64,
+            "glossary_sha256": "2" * 64,
+            "baseline": "3" * 40,
+            "count": 2,
+        }
+        labels = {
+            "inventory_sha256": "Inventory SHA-256",
+            "glossary_sha256": "Glossary SHA-256",
+            "baseline": "Review base",
+            "count": "Inventory rows",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+
+            def write(values):
+                path.write_text("\n".join(
+                    f"- {labels[field]}: `{values[field]}`"
+                    for field in labels
+                ) + "\n```jsonl\n```\n", encoding="utf-8")
+
+            write(inventory)
+            clean = MODULE.review_violations(
+                [], [], inventory, MODULE.parse_review_header(path)
+            )
+            self.assertFalse(clean["header_mismatches"])
+            for field, value in (
+                ("inventory_sha256", "4" * 64),
+                ("glossary_sha256", "5" * 64),
+                ("baseline", "6" * 40),
+                ("count", 3),
+            ):
+                with self.subTest(field=field):
+                    changed = dict(inventory, **{field: value})
+                    write(changed)
+                    violations = MODULE.review_violations(
+                        [], [], inventory, MODULE.parse_review_header(path)
+                    )
+                    self.assertEqual(
+                        [field], violations["header_mismatches"]
+                    )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

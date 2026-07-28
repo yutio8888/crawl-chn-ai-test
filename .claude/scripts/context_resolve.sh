@@ -109,7 +109,7 @@ fi
 
 # ── Review context ──
 if [ "$TASK_TYPE" = "review" ]; then
-    echo "### Review Contract (review-contract-v4)"
+    echo "### Review Contract (review-contract-v5)"
     echo ""
     echo "#### Finding severity"
     echo "- **Blocker**: runtime/functional failure, undefined behaviour, protocol or lookup corruption, structural data damage, compilation failure, failure to review the complete prepared diff, an unmet confirmed acceptance criterion within that diff, or interrupted required verification"
