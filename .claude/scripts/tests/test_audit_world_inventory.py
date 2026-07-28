@@ -26,6 +26,17 @@ def review_header():
     )
 
 
+def review_summary(counts):
+    return (
+        "## 最终结论与实现证据\n\n"
+        + "".join(
+            f"- `{kind}`：{counts.get(kind, 0)}\n"
+            for kind in MODULE.TERMINAL_CONCLUSION_KINDS
+        )
+        + "\n"
+    )
+
+
 def review_card(payload, row, conclusion="keep", overrides=None):
     facts, expected_adopted = MODULE.review_expected_fact_cells(payload, row)
     composite = MODULE.review_expected_composite_adoption(row)
@@ -658,6 +669,54 @@ epilogue {{
             title["identity"], violations["missing_exact_source_keys"]
         )
 
+    def test_visible_terminal_summary_matches_all_evidence_conclusions(self):
+        expected = {
+            "adjust": 298,
+            "defer implementation": 17,
+            "defer terminology": 5,
+            "keep": 380,
+            "retranslate": 89,
+        }
+        self.assertEqual(789, sum(expected.values()))
+        correct = MODULE.visible_terminal_summary_coverage(
+            review_summary(expected), expected
+        )
+        self.assertTrue(correct["counts_match"])
+        self.assertEqual(expected, correct["summary_counts"])
+        self.assertEqual(789, correct["summary_total"])
+        self.assertEqual(789, correct["evidence_conclusion_total"])
+
+        stale = MODULE.visible_terminal_summary_coverage(
+            review_summary({
+                **expected,
+                "keep": 381,
+                "retranslate": 88,
+            }),
+            expected,
+        )
+        self.assertFalse(stale["counts_match"])
+        self.assertEqual(381, stale["summary_counts"]["keep"])
+        self.assertEqual(88, stale["summary_counts"]["retranslate"])
+
+        malformed_documents = {
+            "missing": review_summary(expected).replace(
+                "- `defer terminology`：5\n", ""
+            ),
+            "duplicate": review_summary(expected).replace(
+                "- `keep`：380\n",
+                "- `keep`：380\n- `keep`：380\n",
+            ),
+            "format": review_summary(expected).replace(
+                "- `adjust`：298\n", "- `adjust`: 298\n"
+            ),
+        }
+        for failure, document in malformed_documents.items():
+            with self.subTest(failure=failure):
+                coverage = MODULE.visible_terminal_summary_coverage(
+                    document, expected
+                )
+                self.assertFalse(coverage["counts_match"])
+
     def test_review_coverage_requires_bijection_and_terminal_conclusion(self):
         branch_row = next(
             row for row in self.payload["rows"] if row["category"] == "branch"
@@ -673,7 +732,7 @@ epilogue {{
             "inventory_sha256": "a" * 64,
             "rows": [branch_row, feature_row],
         }
-        header = review_header()
+        header = review_summary({"adjust": 1, "keep": 1}) + review_header()
         card_a = review_card(fixture, branch_row, "保留：正确")
         card_b = review_card(fixture, feature_row, "adjust wording")
         with tempfile.TemporaryDirectory() as directory:
@@ -907,6 +966,7 @@ epilogue {{
             path = Path(directory) / "review.md"
             path.write_text(
                 f"Inventory-SHA256: {'e' * 64}\n\n"
+                + review_summary({"keep": 1})
                 + review_header()
                 + review_card(
                     fixture,
@@ -945,7 +1005,11 @@ epilogue {{
             "inventory_sha256": "d" * 64,
             "rows": [range_row],
         }
-        prefix = f"Inventory-SHA256: {'d' * 64}\n\n" + review_header()
+        prefix = (
+            f"Inventory-SHA256: {'d' * 64}\n\n"
+            + review_summary({"keep": 1})
+            + review_header()
+        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"
             path.write_text(

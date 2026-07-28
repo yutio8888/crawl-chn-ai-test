@@ -162,6 +162,27 @@ REVIEW_DECISION_FIELDS = {
     "re_entry_conditions",
 }
 PENDING_REVIEW = "pending review"
+TERMINAL_CONCLUSION_KINDS = (
+    "adjust",
+    "defer implementation",
+    "defer terminology",
+    "keep",
+    "retranslate",
+)
+TERMINAL_CONCLUSION_PATTERNS = (
+    ("adjust", re.compile(r"^(?:adjust|调整)\b", re.I)),
+    (
+        "defer implementation",
+        re.compile(r"^(?:defer implementation|暂缓实现)\b", re.I),
+    ),
+    (
+        "defer terminology",
+        re.compile(r"^(?:defer terminology|暂缓术语)\b", re.I),
+    ),
+    ("keep", re.compile(r"^(?:keep|保留)\b", re.I)),
+    ("retranslate", re.compile(r"^(?:retranslate|重译)\b", re.I)),
+)
+VISIBLE_TERMINAL_SUMMARY_HEADING = "最终结论与实现证据"
 
 
 def relative(path):
@@ -1619,6 +1640,106 @@ def review_expected_fact_cells(payload, row):
     return facts, (_review_safe(chinese) if chinese else None)
 
 
+def terminal_conclusion_kind(value):
+    stripped = value.strip()
+    for kind, pattern in TERMINAL_CONCLUSION_PATTERNS:
+        if pattern.match(stripped):
+            return kind
+    return None
+
+
+def visible_terminal_summary_coverage(text, conclusion_counts):
+    """Bind the visible terminal summary to the evidence-card conclusions."""
+    heading_pattern = re.compile(
+        rf"(?m)^##\s+{re.escape(VISIBLE_TERMINAL_SUMMARY_HEADING)}\s*$"
+    )
+    headings = list(heading_pattern.finditer(text))
+    result = {
+        "heading_count": len(headings),
+        "summary_counts": {},
+        "evidence_conclusion_counts": {
+            kind: conclusion_counts.get(kind, 0)
+            for kind in TERMINAL_CONCLUSION_KINDS
+        },
+        "duplicate_summary_categories": [],
+        "missing_summary_categories": list(TERMINAL_CONCLUSION_KINDS),
+        "unexpected_summary_categories": [],
+        "malformed_summary_lines": [],
+        "summary_total": None,
+        "evidence_conclusion_total": sum(conclusion_counts.values()),
+        "counts_match": False,
+    }
+    if len(headings) != 1:
+        return result
+
+    section_start = headings[0].end()
+    next_heading = re.search(r"(?m)^##(?:\s|$)", text[section_start:])
+    section_end = (
+        section_start + next_heading.start()
+        if next_heading else len(text)
+    )
+    section_lines = text[section_start:section_end].splitlines()
+    while section_lines and not section_lines[0].strip():
+        section_lines.pop(0)
+    summary_lines = []
+    for line in section_lines:
+        if not line.strip():
+            break
+        summary_lines.append(line)
+
+    line_pattern = re.compile(
+        r"^- `([^`]+)`：(0|[1-9][0-9]*)$"
+    )
+    parsed = []
+    malformed = []
+    unexpected = []
+    for line in summary_lines:
+        match = line_pattern.fullmatch(line)
+        if not match:
+            malformed.append(line)
+            continue
+        category, count = match.groups()
+        if category not in TERMINAL_CONCLUSION_KINDS:
+            unexpected.append(category)
+            continue
+        parsed.append((category, int(count)))
+
+    category_counts = Counter(category for category, _ in parsed)
+    duplicates = sorted(
+        category for category, count in category_counts.items()
+        if count > 1
+    )
+    summary_counts = {
+        category: count for category, count in parsed
+        if category_counts[category] == 1
+    }
+    missing = [
+        category for category in TERMINAL_CONCLUSION_KINDS
+        if category not in summary_counts
+    ]
+    expected = result["evidence_conclusion_counts"]
+    result.update({
+        "summary_counts": summary_counts,
+        "duplicate_summary_categories": duplicates,
+        "missing_summary_categories": missing,
+        "unexpected_summary_categories": sorted(unexpected),
+        "malformed_summary_lines": malformed,
+        "summary_total": (
+            sum(summary_counts.values()) if not missing else None
+        ),
+        "counts_match": (
+            len(summary_lines) == len(TERMINAL_CONCLUSION_KINDS)
+            and not duplicates
+            and not missing
+            and not unexpected
+            and not malformed
+            and summary_counts == expected
+            and sum(summary_counts.values()) == sum(expected.values())
+        ),
+    })
+    return result
+
+
 def review_coverage(payload, path):
     """Prove exactly one terminal conclusion per frozen inventory identity."""
     text = path.read_text(encoding="utf-8")
@@ -1702,14 +1823,19 @@ def review_coverage(payload, path):
     conclusions = {
         identity: card["conclusion"] for identity, card in rows
     }
-    terminal = re.compile(
-        r"^(?:keep|adjust|retranslate|defer terminology|"
-        r"defer implementation|保留|调整|重译|暂缓(?:术语|实现))\b",
-        re.I,
-    )
     invalid = sorted(
         identity for identity, conclusion in conclusions.items()
-        if not terminal.match(conclusion.strip())
+        if terminal_conclusion_kind(conclusion) is None
+    )
+    conclusion_counts = Counter(
+        kind for kind in (
+            terminal_conclusion_kind(card["conclusion"])
+            for _, card in rows
+        )
+        if kind is not None
+    )
+    visible_summary = visible_terminal_summary_coverage(
+        text, conclusion_counts
     )
     pending_pattern = re.compile(
         r"^(?:pending(?: review| evidence review)?|insufficient evidence|"
@@ -1722,7 +1848,7 @@ def review_coverage(payload, path):
             if pending_pattern.match(card[field].strip())
         )
         for identity, card in cards.items()
-        if terminal.match(card["conclusion"].strip())
+        if terminal_conclusion_kind(card["conclusion"]) is not None
         and any(
             pending_pattern.match(card[field].strip())
             for field in required_columns[1:]
@@ -1734,7 +1860,7 @@ def review_coverage(payload, path):
             if pending_pattern.match(card[field].strip())
         )
         for identity, card in cards.items()
-        if terminal.match(card["conclusion"].strip())
+        if terminal_conclusion_kind(card["conclusion"]) is not None
         and any(
             pending_pattern.match(card[field].strip())
             for field in REVIEW_DECISION_FIELDS
@@ -1745,7 +1871,7 @@ def review_coverage(payload, path):
     )
     invalid_confidence = sorted(
         identity for identity, card in cards.items()
-        if terminal.match(card["conclusion"].strip())
+        if terminal_conclusion_kind(card["conclusion"]) is not None
         and not confidence_pattern.match(card["confidence"].strip())
     )
     return {
@@ -1772,6 +1898,7 @@ def review_coverage(payload, path):
         "pending_required_fields": pending_required_fields,
         "invalid_decision_fields": invalid_decision_fields,
         "invalid_confidence": invalid_confidence,
+        "visible_terminal_summary": visible_summary,
         "fact_mismatches": fact_mismatches,
         "adopted_translation_mismatches": (
             adopted_translation_mismatches
@@ -1785,6 +1912,7 @@ def review_coverage(payload, path):
             and not pending_required_fields
             and not invalid_decision_fields
             and not invalid_confidence
+            and visible_summary["counts_match"]
             and not fact_mismatches
             and not adopted_translation_mismatches
             and not composite_adoption_mismatches
