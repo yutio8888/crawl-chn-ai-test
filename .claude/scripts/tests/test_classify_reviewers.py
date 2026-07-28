@@ -79,6 +79,24 @@ class ReviewerRoutingTests(unittest.TestCase):
             "ignored",
         )
 
+    def test_complete_seed_s_path_set_routes_code_with_schema_v1(self):
+        seed_s_files = [
+            ".claude/scripts/check_consistency.sh",
+            ".claude/scripts/classify_reviewers.py",
+            ".claude/scripts/tests/test_check_consistency.sh",
+            ".claude/scripts/tests/test_classify_reviewers.py",
+            ".claude/scripts/tests/test_verify_zh.sh",
+            ".claude/scripts/verify_zh.sh",
+        ]
+        routing = MODULE.classify_files(seed_s_files)
+        self.assertEqual(routing["schema_version"], 1)
+        self.assertEqual(routing["classification"], "code")
+        self.assertEqual(routing["reviewers"], ["zh-code-reviewer"])
+        self.assertEqual(
+            routing["files"],
+            sorted({MODULE.normalize_path(path) for path in seed_s_files}),
+        )
+
     def test_explicit_absolute_and_parent_paths_fail_closed(self):
         for path in ("/tmp/source.txt", "../source.txt", "docs/../CLAUDE.md", "C:/repo/file.cc"):
             with self.subTest(path=path):
