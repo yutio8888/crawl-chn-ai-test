@@ -80,28 +80,36 @@ class WorldInventoryUnitTest(unittest.TestCase):
             "monster_name_ssot.py",
             "audit_world_inventory.py",
         ]
-        for configured, expected in (
-            ("relative-candidate", "must be an absolute path"),
-            (str(MODULE.ROOT.parent), "must equal its real Git top-level"),
-        ):
-            for name in scripts:
-                with self.subTest(root=configured, script=name):
-                    env = os.environ.copy()
-                    env["ZH_VERIFY_AUDIT_ROOT"] = configured
-                    proc = subprocess.run(
-                        [
-                            shutil.which("python3") or "python3",
-                            str(MODULE.SCRIPT_DIR / name),
-                            "--help",
-                        ],
-                        cwd=MODULE.ROOT,
-                        env=env,
-                        text=True,
-                        capture_output=True,
-                        check=False,
-                    )
-                    self.assertEqual(2, proc.returncode, proc.stderr)
-                    self.assertIn(expected, proc.stderr)
+        with tempfile.TemporaryDirectory() as outside:
+            for configured, expected in (
+                ("relative-candidate", "must be an absolute path"),
+                (
+                    str(MODULE.ROOT / "crawl-ref"),
+                    "must equal its real Git top-level",
+                ),
+                (
+                    outside,
+                    "is not inside a readable Git worktree",
+                ),
+            ):
+                for name in scripts:
+                    with self.subTest(root=configured, script=name):
+                        env = os.environ.copy()
+                        env["ZH_VERIFY_AUDIT_ROOT"] = configured
+                        proc = subprocess.run(
+                            [
+                                shutil.which("python3") or "python3",
+                                str(MODULE.SCRIPT_DIR / name),
+                                "--help",
+                            ],
+                            cwd=MODULE.ROOT,
+                            env=env,
+                            text=True,
+                            capture_output=True,
+                            check=False,
+                        )
+                        self.assertEqual(2, proc.returncode, proc.stderr)
+                        self.assertIn(expected, proc.stderr)
 
     def write_des(self, text):
         directory = tempfile.TemporaryDirectory()
