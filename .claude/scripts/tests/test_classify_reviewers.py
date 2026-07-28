@@ -65,8 +65,18 @@ class ReviewerRoutingTests(unittest.TestCase):
 
     def test_policy_infrastructure_requires_code_review(self):
         self.assert_route(
-            [".opencode/workflows/translation-fix-pipeline.js"],
+            [
+                ".opencode/workflows/translation-fix-pipeline.js",
+                ".pi/agents/zh-code-reviewer.md",
+                "docs/zh-testing.md",
+            ],
             "code", ["zh-code-reviewer"],
+        )
+        result = MODULE.classify_files(["docs/zh-testing.md"])
+        self.assertEqual(result["schema_version"], 1)
+        self.assertEqual(
+            MODULE.classify_file("docs/zh-testing.md.bak")[0],
+            "ignored",
         )
 
     def test_explicit_absolute_and_parent_paths_fail_closed(self):
@@ -111,6 +121,77 @@ class ReviewerRoutingTests(unittest.TestCase):
             empty_result = json.loads(empty.stdout)
             self.assertEqual(empty_result["classification"], "none")
             self.assertEqual(empty_result["reviewers"], [])
+
+    def test_git_renames_preserve_both_endpoints_and_review_risk(self):
+        cases = (
+            (
+                "crawl-ref/source/review_probe.cc",
+                "docs/review_probe",
+                "code",
+                ["zh-code-reviewer"],
+            ),
+            (
+                "docs/review_probe",
+                "crawl-ref/source/review_probe.cc",
+                "code",
+                ["zh-code-reviewer"],
+            ),
+            (
+                "crawl-ref/source/review_probe.cc",
+                "crawl-ref/source/dat/i18n/zh/review_probe.txt",
+                "mixed",
+                ["zh-code-reviewer", "translation-reviewer"],
+            ),
+        )
+        for old_path, new_path, classification, reviewers in cases:
+            with self.subTest(old=old_path, new=new_path):
+                with tempfile.TemporaryDirectory() as tmp:
+                    repo = Path(tmp)
+                    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+                    subprocess.run(
+                        ["git", "-C", str(repo), "config", "user.email",
+                         "test@example.invalid"],
+                        check=True,
+                    )
+                    subprocess.run(
+                        ["git", "-C", str(repo), "config", "user.name", "Test"],
+                        check=True,
+                    )
+                    old = repo / old_path
+                    old.parent.mkdir(parents=True)
+                    old.write_text("rename payload\n", encoding="utf-8")
+                    subprocess.run(
+                        ["git", "-C", str(repo), "add", "."], check=True
+                    )
+                    subprocess.run(
+                        ["git", "-C", str(repo), "commit", "-qm", "base"],
+                        check=True,
+                    )
+                    base = subprocess.check_output(
+                        ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                        text=True,
+                    ).strip()
+                    new = repo / new_path
+                    new.parent.mkdir(parents=True, exist_ok=True)
+                    subprocess.run(
+                        ["git", "-C", str(repo), "mv", old_path, new_path],
+                        check=True,
+                    )
+                    subprocess.run(
+                        ["git", "-C", str(repo), "commit", "-qm", "rename"],
+                        check=True,
+                    )
+                    head = subprocess.check_output(
+                        ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                        text=True,
+                    ).strip()
+
+                    changed = MODULE.git_changed_files(base, head, str(repo))
+                    self.assertEqual(sorted((old_path, new_path)), sorted(changed))
+                    result = MODULE.classify_files(changed)
+                    self.assertEqual(1, result["schema_version"])
+                    self.assertEqual(classification, result["classification"])
+                    self.assertEqual(reviewers, result["reviewers"])
 
     def test_workflows_and_fallback_consume_shared_result(self):
         workflow_dir = REPO / ".opencode/workflows"

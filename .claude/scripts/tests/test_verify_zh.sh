@@ -74,6 +74,8 @@ printf '%s\n' '# test glossary' > "$REPO/docs/glossary.md"
 printf '%s\n' \
     '#!/bin/bash' \
     'echo "${GLOSSARY_DIFF_BASE-}" >> .observed-glossary-base' \
+    'printf "%s\n" "${ZH_VERIFY_CHANGED_FILES-}" > .observed-changed-files' \
+    'printf "%s\n" "${ZH_VERIFY_AUDIT_ROOT-<unset>}" >> .observed-audit-roots' \
     'if [[ "${ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE:-0}" != 1 ]]; then' \
     '    python3 .claude/scripts/i18n_extract.py validate' \
     'fi' \
@@ -188,8 +190,9 @@ rm "$REPO/dirty.txt"
 echo "--- successful bound evidence run ---"
 (
     cd "$REPO"
-    bash .claude/scripts/verify_zh.sh --profile review \
-        --base "$BASE" --head "$HEAD_SHA"
+    env ZH_VERIFY_AUDIT_ROOT=/hostile/stale/root \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$BASE" --head "$HEAD_SHA"
 ) > "$TMP_ROOT/pass.out" 2>&1
 RUN_DIR=$(latest_run_dir)
 METADATA="$RUN_DIR/metadata.json"
@@ -232,6 +235,9 @@ PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
 assert_contains "bound run exports glossary comparison base" \
     "$BASE" "$REPO/.observed-glossary-base"
+EXPECTED_AUDIT_ROOT=$(cd "$REPO" && pwd -P)
+assert_contains "bound run replaces hostile audit root with candidate top-level" \
+    "$EXPECTED_AUDIT_ROOT" "$REPO/.observed-audit-roots"
 EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
 assert_status "review profile runs i18n_extract once through source-db-static" \
     1 "$EXTRACT_COUNT"
@@ -265,7 +271,8 @@ printf '%s\n' 7 > "$REPO/.phase-rc"
 set +e
 (
     cd "$REPO"
-    bash .claude/scripts/verify_zh.sh --profile review
+    env ZH_VERIFY_AUDIT_ROOT=/hostile/stale/root \
+        bash .claude/scripts/verify_zh.sh --profile review
 ) > "$TMP_ROOT/fail.out" 2>&1
 RC=$?
 set -e
@@ -284,6 +291,11 @@ assert data["diff_hash"] is None
 assert data["failures"] == 1
 PY
 assert_status "unbound invocation writes compatible failure evidence" 0 "$?"
+if [[ "$(tail -1 "$REPO/.observed-audit-roots")" == "<unset>" ]]; then
+    pass "unbound run clears inherited audit root without exporting a replacement"
+else
+    fail "unbound run retained or exported an audit root"
+fi
 WRAPPER=$(find "$REPO/.claude/metrics/verify" -maxdepth 1 -type f \
     -name 'verify-review-*.log' -print | sort | tail -1)
 assert_contains "top-level compatibility wrapper records failure" \
@@ -383,6 +395,45 @@ PY
     fi
     rm "$ordinary"
 done
+
+echo "--- rename risk conservation ---"
+printf '%s\n' 'const char *probe = T_("rename risk");' \
+    > "$REPO/crawl-ref/source/review_probe.cc"
+git -C "$REPO" add crawl-ref/source/review_probe.cc
+git -C "$REPO" commit -qm "add rename risk probe"
+RENAME_BASE=$(git -C "$REPO" rev-parse HEAD)
+mkdir -p "$REPO/docs"
+git -C "$REPO" mv crawl-ref/source/review_probe.cc docs/review_probe
+git -C "$REPO" commit -qm "rename code into ignored path"
+RENAME_HEAD=$(git -C "$REPO" rev-parse HEAD)
+rm -f "$REPO"/.observed-* "$REPO/.phase-rc"
+set +e
+(
+    cd "$REPO"
+    env ZH_VERIFY_BUILD_COMMAND=true ZH_VERIFY_RUNTIME_COMMAND=true \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$RENAME_BASE" --head "$RENAME_HEAD"
+) > "$TMP_ROOT/rename-risk.out" 2>&1
+RC=$?
+set -e
+if [[ "$RC" -ne 0 ]]; then
+    cat "$TMP_ROOT/rename-risk.out"
+    git -C "$REPO" status --short
+fi
+assert_status "code-to-ignored rename review run succeeds" 0 "$RC"
+RENAME_RUN_DIR=$(latest_run_dir)
+python3 - "$RENAME_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+assert data["risk_cpp_i18n"] is True
+PY
+assert_status "code-to-ignored rename preserves C++ i18n risk" 0 "$?"
+assert_contains "rename changed set preserves old code endpoint" \
+    "crawl-ref/source/review_probe.cc" "$REPO/.observed-changed-files"
+assert_contains "rename changed set preserves new ignored endpoint" \
+    "docs/review_probe" "$REPO/.observed-changed-files"
 
 python3 - "$SCRIPT_DIR/../data/review_verification_contract_v4.json" <<'PY'
 import json

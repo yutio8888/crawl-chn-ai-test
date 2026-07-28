@@ -21,6 +21,7 @@
 #   2 — invalid arguments or an invalid commit range
 
 set -euo pipefail
+unset ZH_VERIFY_AUDIT_ROOT
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROFILE=""
@@ -141,6 +142,16 @@ esac
 
 WORKTREE=$(git rev-parse --show-toplevel 2>/dev/null) \
     || argument_error "verification must run inside a git worktree"
+[[ "$WORKTREE" = /* ]] \
+    || argument_error "Git worktree top-level must be an absolute path"
+WORKTREE=$(cd "$WORKTREE" && pwd -P) \
+    || argument_error "Git worktree top-level cannot be resolved"
+CWD_TOP=$(git -C "$(pwd -P)" rev-parse --show-toplevel 2>/dev/null) \
+    || argument_error "current working directory is not inside a Git worktree"
+CWD_TOP=$(cd "$CWD_TOP" && pwd -P) \
+    || argument_error "current working directory Git top-level cannot be resolved"
+[[ "$CWD_TOP" == "$WORKTREE" ]] \
+    || argument_error "current working directory Git top-level does not match worktree"
 CURRENT_HEAD=$(git rev-parse --verify HEAD 2>/dev/null) \
     || argument_error "the current worktree has no valid HEAD commit"
 
@@ -159,6 +170,7 @@ if [[ -n "$BASE" ]]; then
     DIFF_SHA256=$(git diff --no-ext-diff --no-textconv --binary --full-index \
         "$BASE_SHA..$HEAD_SHA" -- | sha256sum | awk '{print $1}')
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
+    export ZH_VERIFY_AUDIT_ROOT="$WORKTREE"
 fi
 
 for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do
@@ -172,10 +184,10 @@ done
 # The changed set is used only to narrow checks that accept explicit file
 # lists and to select risk tests. Global integrity and policy gates remain full.
 if [[ -n "$BASE_SHA" ]]; then
-    CHANGED_FILES=$(git diff --name-only "$BASE_SHA..$HEAD_SHA")
+    CHANGED_FILES=$(git diff --no-renames --name-only "$BASE_SHA..$HEAD_SHA")
 else
     CHANGED_FILES=$({
-        git diff --name-only HEAD
+        git diff --no-renames --name-only HEAD
         git ls-files --others --exclude-standard
     } | LC_ALL=C sort -u)
 fi
@@ -190,9 +202,11 @@ if [[ -n "$CHANGED_FILES" ]]; then
             crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
             crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)
                 if [[ -n "$BASE_SHA" ]]; then
-                    diff_text=$(git diff -U0 "$BASE_SHA..$HEAD_SHA" -- "$changed_file" || true)
+                    diff_text=$(git diff --no-renames -U0 \
+                        "$BASE_SHA..$HEAD_SHA" -- "$changed_file" || true)
                 elif git ls-files --error-unmatch -- "$changed_file" >/dev/null 2>&1; then
-                    diff_text=$(git diff -U0 HEAD -- "$changed_file" || true)
+                    diff_text=$(git diff --no-renames -U0 HEAD \
+                        -- "$changed_file" || true)
                 else
                     # git diff omits untracked files; represent the new file as
                     # additions so risk classification sees its i18n content.

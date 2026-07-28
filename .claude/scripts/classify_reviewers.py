@@ -37,6 +37,7 @@ POLICY_PREFIXES = (
     ".codex/",
     ".github/",
     ".opencode/",
+    ".pi/",
 )
 POLICY_FILES = {
     "AGENTS.md",
@@ -44,6 +45,7 @@ POLICY_FILES = {
     "CODEX.md",
     "docs/build-workflow.md",
     "docs/dual-agent-workflow.md",
+    "docs/zh-testing.md",
 }
 CODE_SUFFIXES = {
     ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx",
@@ -142,7 +144,7 @@ def classify_files(raw_files: list[str], *, source: dict | None = None) -> dict:
 
 def git_changed_files(base: str, head: str, repo: str) -> list[str]:
     command = [
-        "git", "-C", repo, "diff", "--name-only", "-z",
+        "git", "-C", repo, "diff", "--no-renames", "--name-only", "-z",
         "--diff-filter=ACDMRTUXB", f"{base}..{head}", "--",
     ]
     proc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
