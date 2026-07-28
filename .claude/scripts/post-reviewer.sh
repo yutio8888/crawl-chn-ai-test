@@ -109,7 +109,10 @@ run_scoped_scanner() {
     run_check "Term validation (rejected names from decisions.md)" \
         python3 "$SCRIPT_DIR/scan_i18n.py" validate-terms \
         --glossary "$AUDIT_ROOT/docs/decisions.md" \
-        --source-txt "$AUDIT_ROOT/crawl-ref/source/dat/i18n/zh/source.txt"
+        --source-txt "$AUDIT_ROOT/crawl-ref/source/dat/i18n/zh/source.txt" \
+        --zh-dir "$AUDIT_ROOT/crawl-ref/source/dat/i18n/zh" \
+        --zh-dir "$AUDIT_ROOT/crawl-ref/source/dat/descript/zh" \
+        --zh-dir "$AUDIT_ROOT/crawl-ref/source/dat/database/zh"
     run_check "OmegaT glossary export freshness" \
         python3 "$SCRIPT_DIR/export_omegat_glossary.py" \
         --source "$AUDIT_ROOT/docs/glossary.md" \

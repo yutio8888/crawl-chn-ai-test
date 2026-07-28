@@ -602,11 +602,13 @@ cp "$SCRIPT_DIR/../export_omegat_glossary.py" \
 cp "$SCRIPT_DIR/../check_glossary_terms.py" \
     "$TRUSTED_REVIEW/check_glossary_terms.py"
 cp "$SCRIPT_DIR/../i18n_shared.py" "$TRUSTED_REVIEW/i18n_shared.py"
+cp "$SCRIPT_DIR/../scan_i18n.py" "$TRUSTED_REVIEW/scan_i18n.py"
+chmod +x "$TRUSTED_REVIEW/scan_i18n.py"
 printf '%s\n' '#!/bin/bash' 'exit 0' \
     > "$TRUSTED_REVIEW/check_consistency.sh"
 chmod +x "$TRUSTED_REVIEW/check_consistency.sh"
 for script in \
-    source_control_parity.py scan_i18n.py i18n_extract.py audit_move_i18n.py \
+    source_control_parity.py i18n_extract.py audit_move_i18n.py \
     cross_file_terms.py monster_name_ssot.py scan_varargs_string.py \
     scan_i18n_lifetime.py
 do
@@ -617,10 +619,26 @@ printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$TRUSTED_REVIEW/tests/test_monster_name_ssot.py"
 
 POST_REVIEW_BASE=$(git -C "$REPO" rev-parse HEAD)
-mkdir -p "$REPO/crawl-ref/source/dat/i18n/zh"
+mkdir -p "$REPO/crawl-ref/source/dat/i18n/zh" \
+    "$REPO/crawl-ref/source/dat/descript/zh" \
+    "$REPO/crawl-ref/source/dat/database/zh"
 printf 'Probe\t正确\tdomain=test\n' > "$REPO/docs/glossary.utf8"
+printf '%s\n' \
+    '### D-Z-901 — fixture global rejected term' \
+    '- **Status**: active' \
+    '- **Choice**: 试炼场' \
+    '- **Rejected**: 魔窟' \
+    '### D-Z-902 — fixture global rejected term' \
+    '- **Status**: active' \
+    '- **Choice**: 宗古尔德罗克' \
+    '- **Rejected**: 宗古多克' \
+    > "$REPO/docs/decisions.md"
 printf '%s\n%s\n%s\n' '%%%%' 'Probe' '错误' \
     > "$REPO/crawl-ref/source/dat/i18n/zh/source.txt"
+printf '%s\n%s\n%s\n' '%%%%' 'descript fixture' '残留魔窟。' \
+    > "$REPO/crawl-ref/source/dat/descript/zh/fixture.txt"
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '残留宗古多克。' \
+    > "$REPO/crawl-ref/source/dat/database/zh/fixture.txt"
 printf '%s\n' \
     '#!/bin/bash' \
     'touch .candidate-post-reviewer-ran' \
@@ -632,9 +650,16 @@ printf '%s\n' \
     'Path(".candidate-exporter-ran").touch()' \
     'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/export_omegat_glossary.py"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'from pathlib import Path' \
+    'Path(".candidate-scan-i18n-ran").touch()' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/scan_i18n.py"
 git -C "$REPO" add .claude docs crawl-ref
 git -C "$REPO" commit -qm "candidate glossary and verifier mutation"
-rm -f "$REPO/.candidate-post-reviewer-ran" "$REPO/.candidate-exporter-ran"
+rm -f "$REPO/.candidate-post-reviewer-ran" \
+    "$REPO/.candidate-exporter-ran" "$REPO/.candidate-scan-i18n-ran"
 set +e
 (
     cd "$REPO"
@@ -655,13 +680,18 @@ if ! grep -Fq -- "expected exactly one of: 正确" "$POST_REVIEW_LOG"; then
 fi
 assert_contains "candidate exact-key term violation reaches real phase" \
     "expected exactly one of: 正确" "$POST_REVIEW_LOG"
+assert_contains "candidate descript/zh rejected term reaches trusted scanner" \
+    "Rejected: '魔窟'" "$POST_REVIEW_LOG"
+assert_contains "candidate database/zh rejected term reaches trusted scanner" \
+    "Rejected: '宗古多克'" "$POST_REVIEW_LOG"
 assert_contains "candidate data produces blocking post-reviewer summary" \
     "blocking failure(s)" "$POST_REVIEW_LOG"
 if [[ -e "$REPO/.candidate-post-reviewer-ran" \
-      || -e "$REPO/.candidate-exporter-ran" ]]; then
-    fail "candidate post-reviewer/exporter was executed"
+      || -e "$REPO/.candidate-exporter-ran" \
+      || -e "$REPO/.candidate-scan-i18n-ran" ]]; then
+    fail "candidate post-reviewer/exporter/scanner was executed"
 else
-    pass "candidate post-reviewer/exporter is never executed"
+    pass "candidate post-reviewer/exporter/scanner is never executed"
 fi
 
 python3 - "$SCRIPT_DIR/../data/review_verification_contract_v5.json" <<'PY'

@@ -438,12 +438,103 @@ python3 "$SCAN_I18N" validate-terms \
     > /tmp/actual_validate_terms.txt 2>&1
 assert_status "validate-terms: context key matching remains exact" 0 "$?"
 
-printf '%s\n%s\n%s\n' '%%%%' 'bloodlust flavour' '嗜血' > "$TERMS_FIXTURE"
+TERMS_ROOT=$(mktemp -d)
+TERMS_SOURCE="$TERMS_ROOT/i18n/zh/source.txt"
+TERMS_DESCRIPT="$TERMS_ROOT/descript/zh/fixture.txt"
+TERMS_DATABASE="$TERMS_ROOT/database/zh/fixture.txt"
+mkdir -p "$(dirname "$TERMS_SOURCE")" \
+    "$(dirname "$TERMS_DESCRIPT")" "$(dirname "$TERMS_DATABASE")"
+printf '%s\n%s\n%s\n' '%%%%' 'bloodlust flavour' '嗜血' > "$TERMS_SOURCE"
+printf '%s\n%s\n%s\n' '%%%%' 'descript fixture' '残留魔窟。' \
+    > "$TERMS_DESCRIPT"
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '合法文本。' \
+    > "$TERMS_DATABASE"
+python3 - "$SCAN_I18N" "$TERMS_SOURCE" \
+    "$TERMS_ROOT/i18n/zh" "$TERMS_ROOT/descript/zh" \
+    "$TERMS_ROOT/database/zh" <<'PY'
+import importlib.util
+import os
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+files, errors = module._collect_zh_textdb_files(sys.argv[2], sys.argv[3:])
+assert not errors
+assert len(files) == 3
+assert files.count(os.path.abspath(sys.argv[2])) == 1
+PY
+assert_status "validate-terms: source.txt is deduplicated across explicit roots" \
+    0 "$?"
+set +e
 python3 "$SCAN_I18N" validate-terms \
-    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
     > /tmp/actual_validate_terms.txt 2>&1
-assert_status "validate-terms: permits legal bloodlust text" 0 "$?"
+descript_status=$?
+set -e
+assert_status "validate-terms: rejects descript/zh legacy term" \
+    1 "$descript_status"
+assert_contains "validate-terms: reports descript/zh source file" \
+    "$TERMS_DESCRIPT" /tmp/actual_validate_terms.txt
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_DESCRIPT"
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '残留宗古多克。' \
+    > "$TERMS_DATABASE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+database_status=$?
+set -e
+assert_status "validate-terms: rejects database/zh legacy term" \
+    1 "$database_status"
+assert_contains "validate-terms: reports database/zh source file" \
+    "$TERMS_DATABASE" /tmp/actual_validate_terms.txt
+
+printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '合法文本。' \
+    > "$TERMS_DATABASE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: exact context stays SourceDB-only and bloodlust is legal" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/missing" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_zh_dir_status=$?
+set -e
+assert_status "validate-terms: missing required ZH directory fails closed" \
+    2 "$missing_zh_dir_status"
+
+printf '%s\n%s\n' '%%%%' 'invalid UTF-8 fixture' > "$TERMS_DATABASE"
+printf '\377\n' >> "$TERMS_DATABASE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    --zh-dir "$TERMS_ROOT/i18n/zh" \
+    --zh-dir "$TERMS_ROOT/descript/zh" \
+    --zh-dir "$TERMS_ROOT/database/zh" \
+    > /tmp/actual_validate_terms.txt 2>&1
+unreadable_zh_status=$?
+set -e
+assert_status "validate-terms: unreadable ZH TextDB fails closed" \
+    2 "$unreadable_zh_status"
+assert_contains "validate-terms: unreadable TextDB diagnostic is explicit" \
+    "cannot parse required TextDB file" /tmp/actual_validate_terms.txt
 rm -f "$TERMS_FIXTURE" /tmp/actual_validate_terms.txt
+rm -rf "$TERMS_ROOT"
 
 # ── check-gaps ──
 echo "--- check-gaps ---"

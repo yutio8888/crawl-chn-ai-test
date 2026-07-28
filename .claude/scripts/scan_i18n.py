@@ -2441,17 +2441,98 @@ def parse_contextual_decisions(filepath: str) -> list[dict]:
     return rules
 
 
+def _collect_zh_textdb_files(source_txt, zh_dirs):
+    """Return unique required ZH TextDB files, or input errors.
+
+    ``parse_entries`` remains the parser for every selected file.  This helper
+    only expands the explicitly bound inputs and fails closed when a requested
+    directory is missing, unreadable, or contains no ``*.txt`` files.
+    """
+    requested = []
+    if source_txt:
+        requested.append(source_txt)
+    requested.extend(zh_dirs or [])
+
+    files = []
+    seen = set()
+    errors = []
+    for raw_path in requested:
+        path = os.path.abspath(raw_path)
+        candidates = []
+        if os.path.isfile(path):
+            if not path.endswith(".txt"):
+                errors.append(f"required TextDB file is not *.txt: {path}")
+                continue
+            candidates.append(path)
+        elif os.path.isdir(path):
+            walk_errors = []
+
+            def _record_walk_error(error):
+                walk_errors.append(str(error))
+
+            for dirpath, dirnames, filenames in os.walk(
+                path, onerror=_record_walk_error
+            ):
+                dirnames.sort()
+                for filename in sorted(filenames):
+                    if filename.endswith(".txt"):
+                        candidates.append(os.path.join(dirpath, filename))
+            if walk_errors:
+                errors.extend(
+                    f"cannot traverse required TextDB directory {path}: {error}"
+                    for error in walk_errors
+                )
+            if not candidates:
+                errors.append(
+                    f"required TextDB directory contains no *.txt files: {path}"
+                )
+        else:
+            errors.append(f"required TextDB path does not exist: {path}")
+            continue
+
+        for candidate in candidates:
+            identity = os.path.normcase(os.path.abspath(candidate))
+            if identity not in seen:
+                seen.add(identity)
+                files.append(candidate)
+    return files, errors
+
+
 def cmd_validate_terms(args):
-    """Check for rejected translation terms in source.txt and C++ source."""
+    """Check rejected terms in all bound ZH TextDB and C++ sources."""
     # Parse decisions
     rejected_map = parse_decisions(args.glossary)
     contextual_rules = parse_contextual_decisions(args.glossary)
+    textdb_files, input_errors = _collect_zh_textdb_files(
+        args.source_txt, args.zh_dirs
+    )
+    if input_errors:
+        for error in input_errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 2
+
+    # Scan every explicitly bound ZH TextDB translation for global terms.
+    textdb_entries = []
+    for textdb_file in textdb_files:
+        try:
+            textdb_entries.extend(
+                parse_entries(
+                    textdb_file, lowercase_keys=False, unescape_hash=True
+                )
+            )
+        except (OSError, UnicodeError) as error:
+            print(
+                f"ERROR: cannot parse required TextDB file "
+                f"{textdb_file}: {error}",
+                file=sys.stderr,
+            )
+            return 2
+
     if not rejected_map and not contextual_rules:
         print("OK: No active rejected-name decisions found in glossary.")
         return 0
 
-    # Scan source.txt CN translations for rejected terms
-    entries = parse_source_txt(args.source_txt) if args.source_txt else {}
+    # Context-qualified rules intentionally remain SourceDB-only.
     contextual_entries = (
         {
             entry.key: entry.value
@@ -2463,13 +2544,15 @@ def cmd_validate_terms(args):
     )
     findings = []
 
-    # Check source.txt
-    for en_key, cn_val in entries.items():
+    for entry in textdb_entries:
+        cn_val = entry.value
         for rejected, correct in rejected_map.items():
             if rejected in cn_val:
                 cn_snippet = cn_val[:80]
                 findings.append({
-                    'location': f'source.txt: "{en_key[:60]}"',
+                    'location': (
+                        f'{entry.source_file}: "{entry.key[:60]}"'
+                    ),
                     'rejected': rejected,
                     'correct': correct,
                     'snippet': cn_snippet,
@@ -4512,7 +4595,16 @@ def main():
     p_terms.add_argument("--glossary", required=True,
                          help="Path to decisions.md")
     p_terms.add_argument("--source-txt",
-                         help="Path to source.txt (CN translations)")
+                         help=("Path to source.txt (global scan plus exact "
+                               "SourceDB contextual rules)"))
+    p_terms.add_argument(
+        "--zh-dir",
+        dest="zh_dirs",
+        action="append",
+        default=[],
+        help=("Required ZH TextDB directory to scan recursively for global "
+              "rejected terms (repeatable)"),
+    )
     p_terms.add_argument("--source-dir",
                          help="Root of C++ source tree (optional)")
 
