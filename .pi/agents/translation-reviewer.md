@@ -158,6 +158,119 @@ cannot accept new readiness or final evidence and never authorize merge.
 New merge authorization is written exclusively as a schema-v4 bundle with
 routing-v2, findings-v2, readiness-v3, and verification-v5. Old records are
 never upgraded, appended to, copied, or converted into a new Go.
+
+## Temporary owner-authorized recovery bootstrap exception
+
+**Exception ID:** `DCSS-ZH-BOOTSTRAP-2026-07-29`
+**Authority:** repository owner and sole project-policy administrator
+**Effective date:** 2026-07-29
+**Status:** active only until the approved control candidate C is merged
+
+This section is a narrow administrative exception to the legacy read-only
+restriction above. It exists only to bootstrap a new continuously authorized
+recovery lineage when no already-authorized verification-v5 target can approve
+the first control-plane repair.
+
+The exception authorizes new target-era routing-v1, findings-v1,
+readiness-v2, and verification-v4 evidence only for these two consecutive
+edges:
+
+1. `fa0144cb3729e2fdae70e070946fe89f0b6cec15 → S`
+2. the exact approved full OID of S `→ C`
+
+Here, S and C mean the unique final committed candidates selected under the
+conditions below. Their full target and candidate OIDs must be recorded in
+their newly prepared bundles and in the owner-maintained recovery record.
+Changing either candidate invalidates all readiness, final evidence, and
+merge-time authorization produced for its previous OID.
+
+### Stage S boundary
+
+S must be a clean committed descendant of
+`fa0144cb3729e2fdae70e070946fe89f0b6cec15`. Its complete changed-path set,
+computed with rename detection disabled, must be exactly:
+
+- `.claude/scripts/check_consistency.sh`
+- `.claude/scripts/tests/test_check_consistency.sh`
+- `.claude/scripts/classify_reviewers.py`
+- `.claude/scripts/tests/test_classify_reviewers.py`
+- `.claude/scripts/verify_zh.sh`
+- `.claude/scripts/tests/test_verify_zh.sh`
+
+The existing file modes must be preserved. For every path outside this
+six-file set, the target and S trees must have identical path existence, mode,
+object type, and object OID. S must not modify review schemas, ledgers,
+translation assets, glossary or decision files, policies, runtime agent files,
+or any other repository path.
+
+S may contain only the minimum target-root/candidate-root binding, reviewer
+routing coverage, rename-preserving changed-file discovery, and their focused
+tests described by the approved recovery design.
+
+### Stage C boundary
+
+C must be a clean committed descendant of the exact approved full OID of S.
+Before `review_prepare.sh` is run, the repository owner must approve one
+normalized, sorted, unique control-plane manifest for C.
+
+The complete `S..C` changed-path set, computed with rename detection disabled,
+must equal that manifest exactly. Every path outside the manifest must have
+identical path existence, mode, object type, and object OID in S and C.
+
+C is code/control-plane only. It must not change Chinese translation assets,
+`docs/glossary.md`, `docs/glossary.utf8`, `docs/decisions.md`, or any root
+translation-review ledger. C must install the routing-v2, findings-v2,
+readiness-v3, verification-v5, immutable candidate-input, and fail-closed
+control plane required for the later content candidate R.
+
+### Required evidence for both edges
+
+For each exceptional edge:
+
+- The target and candidate must be identified by complete Git commit OIDs.
+- The target checkout and candidate worktree must be clean.
+- The target must be an ancestor of the candidate.
+- The glossary SHA-256 resolved from the candidate worktree must be recorded.
+- Focused tests and the single exact-bound code development profile must pass
+  before formal readiness is recorded.
+- The target checkout's own trusted classifier, verifier, final gate, and
+  merge-time validator must be used.
+- The mechanically routed reviewer set must be exactly one
+  `zh-code-reviewer`.
+- Because readiness-v2 has no mechanical `reviewed_scope`, the reviewer must
+  explicitly declare that every entry in the complete frozen ordered path
+  manifest was reviewed. A partial, reordered, extended, duplicated, absolute,
+  or traversing scope is No-Go.
+- Every routing, readiness, verification, final-approval, and merge-time object
+  must be newly produced for that exact edge.
+- No historical bundle, readiness, attempt, artifact, approval, or merge
+  authorization may be copied, appended to, converted, migrated, or reused.
+- A candidate OID, diff, routing, glossary, reviewer set, or frozen-manifest
+  change invalidates the complete evidence set and requires a new preparation
+  and review.
+- Landing is permitted only as an `ff-only` update to the dedicated recovery
+  target using the exact candidate OID printed by the merge-time validator.
+
+This exception does not authorize deletion or rewriting of failed evidence. It
+does not authorize a non-fast-forward replacement of
+`chn-0.34.1-base`, a push, a release, or deployment.
+
+### Expiration
+
+This exception expires immediately and permanently when the approved full OID
+of C is merged into the dedicated recovery target.
+
+After expiration:
+
+- all routing-v1, findings-v1, readiness-v2, and verification-v4 objects return
+  to legacy read-only status;
+- they cannot authorize any additional edge, retry, amended candidate, or
+  unrelated merge;
+- `C → R` and every later candidate must use routing-v2, findings-v2,
+  readiness-v3, verification-v5, the normal final gate, and the normal
+  merge-time validator;
+- this section remains only as the historical record of the repository owner's
+  bounded bootstrap authorization.
 <!-- END GENERATED: review-contract -->
 
 ## Required workflow
