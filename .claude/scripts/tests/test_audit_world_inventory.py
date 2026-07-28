@@ -717,6 +717,31 @@ epilogue {{
                 )
                 self.assertFalse(coverage["counts_match"])
 
+        unknown = MODULE.visible_terminal_summary_coverage(
+            review_summary(expected).replace(
+                "- `defer terminology`：5\n",
+                "- `defer policy`：5\n",
+            ),
+            expected,
+        )
+        self.assertFalse(unknown["counts_match"])
+        self.assertEqual(
+            ["defer policy"], unknown["unexpected_summary_categories"]
+        )
+
+        summary = review_summary(expected)
+        duplicate_heading = MODULE.visible_terminal_summary_coverage(
+            summary + summary, expected
+        )
+        self.assertFalse(duplicate_heading["counts_match"])
+        self.assertEqual(2, duplicate_heading["heading_count"])
+
+        missing_heading = MODULE.visible_terminal_summary_coverage(
+            review_header(), expected
+        )
+        self.assertFalse(missing_heading["counts_match"])
+        self.assertEqual(0, missing_heading["heading_count"])
+
     def test_review_coverage_requires_bijection_and_terminal_conclusion(self):
         branch_row = next(
             row for row in self.payload["rows"] if row["category"] == "branch"
