@@ -11,8 +11,15 @@ from pathlib import Path
 import re
 import sys
 
+from i18n_shared import AuditRootError, resolve_audit_root
 
-ROOT = Path(__file__).resolve().parents[2]
+
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+try:
+    ROOT = resolve_audit_root(SCRIPT_ROOT)
+except AuditRootError as error:
+    print(f"ERROR: invalid audit root: {error}", file=sys.stderr)
+    raise SystemExit(2)
 SOURCE = ROOT / "crawl-ref/source/dat/i18n/zh/source.txt"
 DEFAULT_GLOSSARY = ROOT / "docs/glossary.md"
 DEFAULT_DECISIONS = ROOT / "docs/decisions.md"

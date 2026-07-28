@@ -189,10 +189,10 @@ done
 # The changed set is used only to narrow checks that accept explicit file
 # lists and to select risk tests. Global integrity and policy gates remain full.
 if [[ -n "$BASE_SHA" ]]; then
-    CHANGED_FILES=$(git diff --name-only "$BASE_SHA..$HEAD_SHA")
+    CHANGED_FILES=$(git diff --no-renames --name-only "$BASE_SHA..$HEAD_SHA")
 else
     CHANGED_FILES=$({
-        git diff --name-only HEAD
+        git diff --no-renames --name-only HEAD
         git ls-files --others --exclude-standard
     } | LC_ALL=C sort -u)
 fi
@@ -207,9 +207,11 @@ if [[ -n "$CHANGED_FILES" ]]; then
             crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
             crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)
                 if [[ -n "$BASE_SHA" ]]; then
-                    diff_text=$(git diff -U0 "$BASE_SHA..$HEAD_SHA" -- "$changed_file" || true)
+                    diff_text=$(git diff --no-renames -U0 \
+                        "$BASE_SHA..$HEAD_SHA" -- "$changed_file" || true)
                 elif git ls-files --error-unmatch -- "$changed_file" >/dev/null 2>&1; then
-                    diff_text=$(git diff -U0 HEAD -- "$changed_file" || true)
+                    diff_text=$(git diff --no-renames -U0 HEAD \
+                        -- "$changed_file" || true)
                 else
                     # git diff omits untracked files; represent the new file as
                     # additions so risk classification sees its i18n content.
@@ -523,30 +525,50 @@ run_phase() {
                     bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
             run_review_ledgers() {
                 local rc=0
+                local ledgers=(
+                    "$WORKTREE/docs/character-mechanics-review-results.md"
+                    "$WORKTREE/docs/god-review-results.md"
+                    "$WORKTREE/docs/item-extended-review-results.md"
+                    "$WORKTREE/docs/monster-review-results.md"
+                    "$WORKTREE/docs/species-background-review-results.md"
+                    "$WORKTREE/docs/world-review-results.md"
+                )
+                PYTHONDONTWRITEBYTECODE=1 \
+                    PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \
+                    python3 - "$WORKTREE" "${ledgers[@]}" <<'PY' || return $?
+import sys
+from pathlib import Path
+
+from review_bundle import _path_under_checkout
+
+checkout = Path(sys.argv[1])
+for supplied in sys.argv[2:]:
+    _path_under_checkout(checkout, supplied, "review ledger")
+PY
                 python3 "$SCRIPT_DIR/audit_character_mechanics_inventory.py" \
                     --review-results \
-                    "$WORKTREE/docs/character-mechanics-review-results.md" \
+                    "${ledgers[0]}" \
                     --output "$CHARACTER_INVENTORY_FILE" || rc=$?
                 python3 "$SCRIPT_DIR/audit_god_inventory.py" \
-                    --review-results "$WORKTREE/docs/god-review-results.md" \
+                    --review-results "${ledgers[1]}" \
                     --output "$GOD_INVENTORY_FILE" || rc=$?
                 python3 "$SCRIPT_DIR/audit_species_background_inventory.py" \
                     --review-results \
-                    "$WORKTREE/docs/species-background-review-results.md" \
+                    "${ledgers[4]}" \
                     --output "$SPECIES_BACKGROUND_INVENTORY_FILE" || rc=$?
                 python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
                     --scope issue29-v2 \
                     --review-base 01dc9911ec9948aff661f6ec0b9b0a798fcf909d \
                     --review-results \
-                    "$WORKTREE/docs/item-extended-review-results.md" \
+                    "${ledgers[2]}" \
                     --output "$ITEM_INVENTORY_FILE" || rc=$?
                 python3 "$SCRIPT_DIR/monster_name_ssot.py" \
                     --inventory-output "$MONSTER_INVENTORY_FILE" \
-                    --review-results "$WORKTREE/docs/monster-review-results.md" \
+                    --review-results "${ledgers[3]}" \
                     --baseline-ref \
                     7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c || rc=$?
                 python3 "$SCRIPT_DIR/audit_world_inventory.py" \
-                    --review-results "$WORKTREE/docs/world-review-results.md" \
+                    --review-results "${ledgers[5]}" \
                     --output "$WORLD_INVENTORY_FILE" || rc=$?
                 return "$rc"
             }

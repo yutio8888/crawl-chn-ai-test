@@ -7,6 +7,8 @@ import hashlib
 import importlib.util
 import json
 import os
+import posixpath
+import re
 import shutil
 import subprocess
 import sys
@@ -58,6 +60,133 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 """
+
+
+def production_review_execution_closure(
+    contract: dict, text_overrides: dict[str, str] | None = None
+) -> set[str]:
+    """Enumerate target code referenced by the real review control plane."""
+    repo = SCRIPT.parents[2]
+    entrypoints = {
+        ".claude/scripts/review_prepare.sh",
+        ".claude/scripts/review_final_gate.sh",
+        ".claude/scripts/review_at_merge.sh",
+        ".claude/scripts/context_resolve.sh",
+        ".claude/scripts/data/review_findings_v2.schema.json",
+        ".claude/scripts/data/zh_issue_protocol_v1.schema.json",
+    }
+    pending = list(entrypoints)
+    closure: set[str] = set()
+    path_patterns = (
+        re.compile(
+            r"\.claude/scripts/[A-Za-z0-9_./-]+\.(?:py|sh|json)"
+        ),
+        re.compile(
+            r"\$\{?SCRIPT_DIR\}?/"
+            r"([A-Za-z0-9_./-]+\.(?:py|sh|json))"
+        ),
+        re.compile(
+            r"""SCRIPT_DIR\s*/\s*["']([^"']+\.(?:py|sh|json))["']"""
+        ),
+    )
+    while pending:
+        relative = posixpath.normpath(pending.pop())
+        if relative in closure:
+            continue
+        closure.add(relative)
+        # The contract is a bound manifest, not an executable dependency list.
+        # Scanning its own entries would make every unreachable cycle appear
+        # reachable and reduce this check to a tautology.
+        if relative.endswith("review_verification_contract_v5.json"):
+            continue
+        path = repo / relative
+        text = (text_overrides or {}).get(relative)
+        if text is None:
+            text = path.read_text(encoding="utf-8")
+        referenced: set[str] = set()
+        for index, pattern in enumerate(path_patterns):
+            for match in pattern.finditer(text):
+                value = match.group(0) if index == 0 else match.group(1)
+                if not value.startswith(".claude/scripts/"):
+                    value = (Path(relative).parent / value).as_posix()
+                referenced.add(posixpath.normpath(value))
+        if relative.endswith(".py"):
+            for match in re.finditer(
+                r"^(?:from|import)\s+([A-Za-z_][A-Za-z0-9_]*)",
+                text,
+                re.MULTILINE,
+            ):
+                sibling = posixpath.normpath(
+                    (Path(relative).parent / f"{match.group(1)}.py").as_posix()
+                )
+                if (repo / sibling).is_file():
+                    referenced.add(sibling)
+        # verify_zh's non-review profiles are unreachable in the final gate.
+        referenced.difference_update({
+            ".claude/scripts/post-coder.sh",
+            ".claude/scripts/post-translator.sh",
+        })
+        pending.extend(referenced)
+    return closure
+
+
+class ProductionControlPlaneClosureTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.contract_path = (
+            SCRIPT.parent / "data/review_verification_contract_v5.json"
+        )
+        self.contract = json.loads(
+            self.contract_path.read_text(encoding="utf-8")
+        )
+
+    def assert_closure_matches(
+        self, contract: dict, text_overrides: dict[str, str] | None = None
+    ) -> None:
+        self.assertEqual(
+            set(contract["control_plane_files"]),
+            production_review_execution_closure(contract, text_overrides),
+        )
+
+    def test_real_review_entry_closure_matches_contract_exactly(self) -> None:
+        self.assert_closure_matches(self.contract)
+        verifier = (SCRIPT.parent / "verify_zh.sh").read_text(encoding="utf-8")
+        smoke = (SCRIPT.parent / "smoke_test.sh").read_text(encoding="utf-8")
+        runtime = (SCRIPT.parent / "post_zh_runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('$SCRIPT_DIR/check_default_utf8.py', verifier)
+        self.assertIn('$SCRIPT_DIR/run_with_timeout.py', smoke)
+        self.assertIn('$SCRIPT_DIR/run_with_timeout.py', runtime)
+
+    def test_missing_and_unknown_contract_entries_are_rejected(self) -> None:
+        missing = dict(self.contract)
+        missing["control_plane_files"] = [
+            path for path in self.contract["control_plane_files"]
+            if path != ".claude/scripts/check_default_utf8.py"
+        ]
+        with self.assertRaises(AssertionError):
+            self.assert_closure_matches(missing)
+
+        unknown = dict(self.contract)
+        unknown["control_plane_files"] = sorted([
+            *self.contract["control_plane_files"],
+            ".claude/scripts/not-a-review-control-a.py",
+            ".claude/scripts/not-a-review-control-b.py",
+            ".claude/scripts/tests/evil.py",
+        ])
+        with self.assertRaises(AssertionError):
+            self.assert_closure_matches(
+                unknown,
+                {
+                    ".claude/scripts/not-a-review-control-a.py": (
+                        'SCRIPT_DIR / "not-a-review-control-b.py"\n'
+                    ),
+                    ".claude/scripts/not-a-review-control-b.py": (
+                        'SCRIPT_DIR / "not-a-review-control-a.py"\n'
+                    ),
+                    ".claude/scripts/tests/evil.py": "",
+                },
+            )
 
 
 class ReviewBundleTests(unittest.TestCase):
@@ -904,6 +1033,19 @@ raise SystemExit(7 if mode == 'fail' else 0)
                     self.wrong_contract,
                 )
         self.assertFalse(count.exists(), "wrong contract started the verifier")
+
+    def test_bound_control_file_mutation_is_rejected_before_verifier_start(
+        self,
+    ) -> None:
+        created = self.ready()
+        original = self.verifier.read_bytes()
+        count = self.temp / "mutated-control-verify-count"
+        self.verifier.write_bytes(original + b"\n# one-byte binding mutation\n")
+        with self.fake_environment(FAKE_VERIFY_COUNT=str(count)):
+            with self.assertRaisesRegex(MODULE.ReviewBundleError, "dirty"):
+                self.run_final(created)
+        self.assertFalse(count.exists(), "mutated control file started verifier")
+        self.verifier.write_bytes(original)
 
     def test_final_verifier_scrubs_override_and_loader_environment(self) -> None:
         created = self.ready()

@@ -49,10 +49,12 @@ latest_run_dir() {
 
 REPO="$TMP_ROOT/repo"
 mkdir -p "$REPO/.claude/scripts" "$REPO/docs"
-printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' '.risk-runs' \
+printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' \
+    '.risk-runs' '__pycache__/' '.observed-*' '.ledger-auditor-started' \
     > "$REPO/.gitignore"
 cp "$VERIFY_SOURCE" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
+cp "$SCRIPT_DIR/../review_bundle.py" "$REPO/.claude/scripts/review_bundle.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
 mkdir -p "$REPO/crawl-ref/source/dat/defaults"
 printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
@@ -87,6 +89,8 @@ do
         'roots = Path(".observed-audit-roots")' \
         'entry = name + ":" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
         'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+        'if "--review-results" in sys.argv:' \
+        '    Path(".ledger-auditor-started").write_text("started\n")' \
         'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
         'output.write_text("{}\n")' \
         'raise SystemExit(0)' \
@@ -119,6 +123,7 @@ done
 printf '%s\n' \
     '#!/bin/bash' \
     'echo "${GLOSSARY_DIFF_BASE-}" >> .observed-glossary-base' \
+    'printf "%s\n" "${ZH_VERIFY_CHANGED_FILES-}" > .observed-changed-files' \
     'if [[ "${ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE:-0}" != 1 ]]; then' \
     '    python3 .claude/scripts/i18n_extract.py validate' \
     'fi' \
@@ -441,6 +446,47 @@ PY
     rm "$ordinary"
 done
 
+echo "--- rename risk conservation ---"
+printf '%s\n' 'const char *probe = T_("rename risk");' \
+    > "$REPO/crawl-ref/source/review_probe.cc"
+git -C "$REPO" add crawl-ref/source/review_probe.cc
+git -C "$REPO" commit -qm "add rename risk probe"
+RENAME_BASE=$(git -C "$REPO" rev-parse HEAD)
+mkdir -p "$REPO/docs"
+git -C "$REPO" mv crawl-ref/source/review_probe.cc docs/review_probe
+git -C "$REPO" commit -qm "rename code into ignored path"
+RENAME_HEAD=$(git -C "$REPO" rev-parse HEAD)
+rm -f "$REPO"/.observed-* "$REPO/.ledger-auditor-started" \
+    "$REPO/.phase-rc"
+set +e
+(
+    cd "$REPO"
+    env ZH_VERIFY_BUILD_COMMAND=true ZH_VERIFY_RUNTIME_COMMAND=true \
+        bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$RENAME_BASE" --head "$RENAME_HEAD"
+) > "$TMP_ROOT/rename-risk.out" 2>&1
+RC=$?
+set -e
+if [[ "$RC" -ne 0 ]]; then
+    cat "$TMP_ROOT/rename-risk.out"
+    git -C "$REPO" status --short
+fi
+assert_status "code-to-ignored rename review run succeeds" 0 "$RC"
+RENAME_RUN_DIR=$(latest_run_dir)
+python3 - "$RENAME_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+assert data["risk_cpp_i18n"] is True
+PY
+assert_status "code-to-ignored rename preserves C++ i18n risk" 0 "$?"
+assert_contains "rename changed set preserves old code endpoint" \
+    "crawl-ref/source/review_probe.cc" "$REPO/.observed-changed-files"
+assert_contains "rename changed set preserves new ignored endpoint" \
+    "docs/review_probe" "$REPO/.observed-changed-files"
+HEAD_SHA="$RENAME_HEAD"
+
 echo "--- target-code candidate-data ledger isolation ---"
 TRUSTED_SCRIPTS="$TMP_ROOT/trusted-scripts"
 cp -R "$REPO/.claude/scripts" "$TRUSTED_SCRIPTS"
@@ -480,6 +526,9 @@ set +e
 ) > "$TMP_ROOT/candidate-ledger-mutation.out" 2>&1
 RC=$?
 set -e
+if [[ "$RC" -ne 1 ]]; then
+    cat "$TMP_ROOT/candidate-ledger-mutation.out"
+fi
 assert_status "candidate ledger mutation fails trusted review-ledgers" 1 "$RC"
 ISOLATION_RUN_DIR=$(latest_run_dir)
 assert_contains "review-ledgers reports the trusted auditor failure" \
@@ -488,6 +537,131 @@ if [[ -e "$REPO/.candidate-auditor-ran" ]]; then
     fail "candidate auditor was executed by the trusted verifier"
 else
     pass "candidate auditor is never executed by the trusted verifier"
+fi
+
+echo "--- review ledger object safety ---"
+LEDGER="$REPO/docs/character-mechanics-review-results.md"
+LEDGER_BACKUP="$TMP_ROOT/character-ledger"
+cp "$LEDGER" "$LEDGER_BACKUP"
+
+run_ledger_rejection() {
+    local label="$1" output="$2"
+    rm -f "$REPO/.ledger-auditor-started"
+    set +e
+    (
+        cd "$REPO"
+        bash .claude/scripts/verify_zh.sh --profile review
+    ) > "$output" 2>&1
+    local rc=$?
+    set -e
+    assert_status "$label" 1 "$rc"
+    if [[ -e "$REPO/.ledger-auditor-started" ]]; then
+        fail "$label starts an auditor before rejecting the ledger"
+    else
+        pass "$label rejects before any ledger auditor starts"
+    fi
+}
+
+EXTERNAL_LEDGER="$TMP_ROOT/external-ledger.md"
+printf '%s\n' outside > "$EXTERNAL_LEDGER"
+rm "$LEDGER"
+ln -s "$EXTERNAL_LEDGER" "$LEDGER"
+run_ledger_rejection "external ledger symlink fails closed" \
+    "$TMP_ROOT/external-ledger.out"
+printf '%s\n' changed-outside > "$EXTERNAL_LEDGER"
+run_ledger_rejection "external referent mutation remains rejected" \
+    "$TMP_ROOT/external-ledger-mutated.out"
+rm "$LEDGER"
+cp "$LEDGER_BACKUP" "$LEDGER"
+
+mv "$REPO/docs" "$REPO/docs-real"
+ln -s docs-real "$REPO/docs"
+run_ledger_rejection "symlinked ledger parent directory fails closed" \
+    "$TMP_ROOT/ledger-parent-symlink.out"
+rm "$REPO/docs"
+mv "$REPO/docs-real" "$REPO/docs"
+
+rm "$LEDGER"
+run_ledger_rejection "missing ledger fails closed" \
+    "$TMP_ROOT/missing-ledger.out"
+cp "$LEDGER_BACKUP" "$LEDGER"
+
+rm "$LEDGER"
+mkfifo "$LEDGER"
+run_ledger_rejection "special ledger file fails closed" \
+    "$TMP_ROOT/special-ledger.out"
+rm "$LEDGER"
+cp "$LEDGER_BACKUP" "$LEDGER"
+
+echo "--- target-code candidate-data post-reviewer isolation ---"
+TRUSTED_REVIEW="$TMP_ROOT/trusted-review/.claude/scripts"
+mkdir -p "$TRUSTED_REVIEW/tests"
+cp "$SCRIPT_DIR/../post-reviewer.sh" "$TRUSTED_REVIEW/post-reviewer.sh"
+cp "$SCRIPT_DIR/../export_omegat_glossary.py" \
+    "$TRUSTED_REVIEW/export_omegat_glossary.py"
+cp "$SCRIPT_DIR/../check_glossary_terms.py" \
+    "$TRUSTED_REVIEW/check_glossary_terms.py"
+cp "$SCRIPT_DIR/../i18n_shared.py" "$TRUSTED_REVIEW/i18n_shared.py"
+printf '%s\n' '#!/bin/bash' 'exit 0' \
+    > "$TRUSTED_REVIEW/check_consistency.sh"
+chmod +x "$TRUSTED_REVIEW/check_consistency.sh"
+for script in \
+    source_control_parity.py scan_i18n.py i18n_extract.py audit_move_i18n.py \
+    cross_file_terms.py monster_name_ssot.py scan_varargs_string.py \
+    scan_i18n_lifetime.py
+do
+    printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+        > "$TRUSTED_REVIEW/$script"
+done
+printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+    > "$TRUSTED_REVIEW/tests/test_monster_name_ssot.py"
+
+POST_REVIEW_BASE=$(git -C "$REPO" rev-parse HEAD)
+mkdir -p "$REPO/crawl-ref/source/dat/i18n/zh"
+printf 'Probe\t正确\tdomain=test\n' > "$REPO/docs/glossary.utf8"
+printf '%s\n%s\n%s\n' '%%%%' 'Probe' '错误' \
+    > "$REPO/crawl-ref/source/dat/i18n/zh/source.txt"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'touch .candidate-post-reviewer-ran' \
+    'exit 0' \
+    > "$REPO/.claude/scripts/post-reviewer.sh"
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'from pathlib import Path' \
+    'Path(".candidate-exporter-ran").touch()' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/export_omegat_glossary.py"
+git -C "$REPO" add .claude docs crawl-ref
+git -C "$REPO" commit -qm "candidate glossary and verifier mutation"
+rm -f "$REPO/.candidate-post-reviewer-ran" "$REPO/.candidate-exporter-ran"
+set +e
+(
+    cd "$REPO"
+    env ZH_VERIFY_AUDIT_ROOT="$REPO" \
+        GLOSSARY_DIFF_BASE="$POST_REVIEW_BASE" \
+        bash "$TRUSTED_REVIEW/post-reviewer.sh"
+) > "$TMP_ROOT/candidate-data-post-reviewer.out" 2>&1
+RC=$?
+set -e
+assert_status "trusted post-reviewer rejects candidate glossary/export data" \
+    1 "$RC"
+POST_REVIEW_LOG=$(find "$REPO/.claude/metrics/verify" \
+    -name 'reviewer-*.log' -type f -print | sort | tail -1)
+assert_contains "candidate OmegaT export violation reaches real phase" \
+    "is stale; regenerate from" "$POST_REVIEW_LOG"
+if ! grep -Fq -- "expected exactly one of: 正确" "$POST_REVIEW_LOG"; then
+    cat "$POST_REVIEW_LOG"
+fi
+assert_contains "candidate exact-key term violation reaches real phase" \
+    "expected exactly one of: 正确" "$POST_REVIEW_LOG"
+assert_contains "candidate data produces blocking post-reviewer summary" \
+    "blocking failure(s)" "$POST_REVIEW_LOG"
+if [[ -e "$REPO/.candidate-post-reviewer-ran" \
+      || -e "$REPO/.candidate-exporter-ran" ]]; then
+    fail "candidate post-reviewer/exporter was executed"
+else
+    pass "candidate post-reviewer/exporter is never executed"
 fi
 
 python3 - "$SCRIPT_DIR/../data/review_verification_contract_v5.json" <<'PY'
@@ -499,7 +673,8 @@ with open(sys.argv[1], encoding="utf-8") as stream:
 assert contract["verification_contract"] == "dcss-zh-review-v5"
 assert ".claude/scripts/data/review_findings_v2.schema.json" in contract["control_plane_files"]
 assert ".claude/scripts/audit_item_name_inventory.py" in contract["control_plane_files"]
-assert ".claude/scripts/tests/test_audit_item_name_inventory.py" in contract["control_plane_files"]
+assert ".claude/scripts/check_default_utf8.py" in contract["control_plane_files"]
+assert ".claude/scripts/run_with_timeout.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
     "review-ledgers", "message-overlay-static", "cpp-build", "zh-smoke",

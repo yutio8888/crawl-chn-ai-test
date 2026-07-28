@@ -166,6 +166,159 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         )
         self.assertFalse(any(proof.values()))
 
+    def test_duration_helper_and_fallthrough_facts_fail_closed(self):
+        helper_source = """
+        static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
+        {
+            inf.db_key = ddef->light_text;
+            return true;
+        }
+        """
+        duration_facts = {
+            "DUR_ONE": (
+                'inf.db_key = "One";\n'
+                'inf.light_text = C_("status", "One");'
+            ),
+            "DUR_TWO": (
+                'inf.db_key = "Two";\n'
+                'inf.light_text = C_("status", "Two");'
+            ),
+        }
+        one = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {
+                "STATUS_ONE": (
+                    "case STATUS_ONE:\n"
+                    "_fill_inf_from_ddef(DUR_ONE, inf);\n"
+                    "break;"
+                ),
+            },
+            helper_source,
+            duration_facts,
+        )
+        two = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {
+                "STATUS_ONE": (
+                    "case STATUS_ONE:\n"
+                    "_fill_inf_from_ddef(DUR_TWO, inf);\n"
+                    "break;"
+                ),
+            },
+            helper_source,
+            duration_facts,
+        )
+        self.assertFalse(one["unresolved_status_helpers"])
+        self.assertFalse(two["unresolved_status_helpers"])
+        self.assertEqual(
+            ["One"],
+            MODULE.status_db_keys(one["resolved_fragments"]["STATUS_ONE"]),
+        )
+        self.assertEqual(
+            ["Two"],
+            MODULE.status_db_keys(two["resolved_fragments"]["STATUS_ONE"]),
+        )
+        self.assertNotEqual(
+            MODULE.normalize_producer_fragment(
+                one["resolved_fragments"]["STATUS_ONE"]
+            ),
+            MODULE.normalize_producer_fragment(
+                two["resolved_fragments"]["STATUS_ONE"]
+            ),
+        )
+        self.assertNotEqual(
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    one["resolved_fragments"]["STATUS_ONE"]
+                ),
+            }),
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    two["resolved_fragments"]["STATUS_ONE"]
+                ),
+            }),
+        )
+
+        fallthrough = """
+        case STATUS_ONE:
+            inf.db_key = "Before";
+            // Intentional fallthrough
+        case DUR_ONE:
+            inf.short_text = T_("after");
+            break;
+        """
+        fragments = MODULE.case_fragments(fallthrough, "STATUS_")
+        self.assertEqual(
+            ["Before"], MODULE.status_db_keys(fragments["STATUS_ONE"])
+        )
+        self.assertEqual(
+            ["after"], MODULE.status_display_literals(fragments["STATUS_ONE"])
+        )
+        changed = fallthrough.replace(
+            'inf.short_text = T_("after");',
+            'inf.short_text = T_("changed");',
+        )
+        changed_fragment = MODULE.case_fragments(changed, "STATUS_")[
+            "STATUS_ONE"
+        ]
+        self.assertNotEqual(
+            MODULE.normalize_producer_fragment(fragments["STATUS_ONE"]),
+            MODULE.normalize_producer_fragment(changed_fragment),
+        )
+        self.assertNotEqual(
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    fragments["STATUS_ONE"]
+                ),
+            }),
+            MODULE.fact_sha256({
+                "identity": "status:STATUS_ONE",
+                "producer_fragment": MODULE.normalize_producer_fragment(
+                    changed_fragment
+                ),
+            }),
+        )
+
+        unknown = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {"STATUS_ONE": "case STATUS_ONE: _unknown(inf); break;"},
+            "",
+        )
+        self.assertEqual(
+            ["STATUS_ONE"], unknown["unresolved_status_helpers"]
+        )
+        empty = MODULE.status_producer_proof(
+            ["STATUS_ONE"],
+            {"STATUS_ONE": "case STATUS_ONE: break;"},
+            "",
+        )
+        self.assertEqual(["STATUS_ONE"], empty["unresolved_status_helpers"])
+
+    def test_corrosion_and_lowered_willpower_cards_bind_real_producers(self):
+        rows, proof = MODULE.status_rows({}, with_proof=True)
+        by_id = {row["identity"]: row for row in rows}
+        corrosion = by_id["status:STATUS_CORROSION"]
+        lowered = by_id["status:STATUS_LOWERED_WL"]
+        self.assertEqual(["Corr"], corrosion["db_keys"])
+        self.assertIn(
+            "corroded (%d)",
+            [item["english"] for item in corrosion["display_strings"]],
+        )
+        self.assertIn("case DUR_CORROSION:", corrosion["producer_fragment"])
+        self.assertEqual(["Will/2"], lowered["db_keys"])
+        self.assertIn(
+            "You are weak-willed.",
+            [item["english"] for item in lowered["display_strings"]],
+        )
+        self.assertIn(
+            "_fill_inf_from_ddef(DUR_LOWERED_WL, inf)",
+            lowered["producer_fragment"],
+        )
+        self.assertFalse(any(proof.values()))
+
     def test_airborne_missing_or_incomplete_card_is_a_violation(self):
         descriptions = {}
         missing = MODULE.inventory_violations(

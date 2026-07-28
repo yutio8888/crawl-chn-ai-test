@@ -378,6 +378,73 @@ python3 "$SCAN_I18N" arg-mismatch --source-txt "$FIXTURES/arg-mismatch/source.tx
 assert_output "arg-mismatch: finds %s count mismatch" \
     /tmp/actual_arg.txt "$EXPECTED/arg-mismatch.txt"
 
+# ── active rejected-term decisions ──
+echo "--- validate-terms decisions parser ---"
+DECISIONS="$REPO_ROOT/docs/decisions.md"
+python3 - "$SCAN_I18N" "$DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+rejected = module.parse_decisions(sys.argv[2])
+expected = {
+    "魔窟", "弹飞弹", "弹开飞弹", "埃瑞博拉",
+    "宗古多克", "宗古尔德罗克",
+}
+assert expected.issubset(rejected)
+assert "嗜血" not in rejected
+assert {
+    "鱼人（与现行名称", "保留原译", "保留两对重名",
+    '混合使用"的"和"之', "仅否定该法术名", "死", "亡", "魔", "驱散",
+}.isdisjoint(rejected)
+contextual = module.parse_contextual_decisions(sys.argv[2])
+assert {
+    (rule["key"], rule["rejected"], rule["correct"])
+    for rule in contextual
+} >= {("status|Blood", "嗜血", "血甲")}
+PY
+assert_status "validate-terms: active multiline/arbitrary-type decisions parse" \
+    0 "$?"
+
+TERMS_FIXTURE="/tmp/test_scan_i18n_terms_$$.txt"
+for rejected in 魔窟 弹飞弹 弹开飞弹 埃瑞博拉 宗古多克 宗古尔德罗克; do
+    printf '%s\n%s\n%s\n' '%%%%' 'fixture key' "包含${rejected}的残留。" \
+        > "$TERMS_FIXTURE"
+    set +e
+    python3 "$SCAN_I18N" validate-terms \
+        --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+        > /tmp/actual_validate_terms.txt 2>&1
+    terms_status=$?
+    set -e
+    assert_status "validate-terms: rejects global legacy term $rejected" \
+        1 "$terms_status"
+done
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_FIXTURE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+context_status=$?
+set -e
+assert_status "validate-terms: rejects exact defensive status Blood mapping" \
+    1 "$context_status"
+
+printf '%s\n%s\n%s\n' '%%%%' 'Status|Blood' '嗜血' > "$TERMS_FIXTURE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: context key matching remains exact" 0 "$?"
+
+printf '%s\n%s\n%s\n' '%%%%' 'bloodlust flavour' '嗜血' > "$TERMS_FIXTURE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: permits legal bloodlust text" 0 "$?"
+rm -f "$TERMS_FIXTURE" /tmp/actual_validate_terms.txt
+
 # ── check-gaps ──
 echo "--- check-gaps ---"
 python3 "$SCAN_I18N" check-gaps --source-txt "$FIXTURES/arg-mismatch/gap_source.txt" > /tmp/actual_gaps.txt 2>&1 || true
@@ -435,7 +502,7 @@ assert_contains "i18n-lifetime: post-reviewer supports changed-file scope" \
     "args=(--files" \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
-    '"$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/' \
+    '"$SCRIPT_DIR/i18n_extract.py" validate' \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "source-db dedup: post-reviewer standalone coverage is conditional" \
     'ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE' \

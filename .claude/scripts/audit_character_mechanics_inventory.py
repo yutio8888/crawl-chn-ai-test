@@ -303,7 +303,26 @@ def case_fragments(body, prefix):
         if default:
             end = match.end() + default.start()
         if match.group(1).startswith(prefix):
-            result[match.group(1)] = body[match.start():end].strip()
+            fragment = body[match.start():end].strip()
+            if (
+                "Intentional fallthrough" in fragment
+                and index + 1 < len(matches)
+                and matches[index + 1].group(1).startswith("DUR_")
+            ):
+                fallthrough_end = (
+                    matches[index + 2].start()
+                    if index + 2 < len(matches) else len(body)
+                )
+                fallthrough = body[
+                    matches[index + 1].start():fallthrough_end
+                ].strip()
+                if not re.search(r"\bbreak\s*;", fallthrough):
+                    raise RuntimeError(
+                        "intentional status fallthrough has no bounded break: "
+                        f"{match.group(1)}"
+                    )
+                fragment += "\n" + fallthrough
+            result[match.group(1)] = fragment
     return result
 
 
@@ -331,40 +350,127 @@ def status_db_keys(fragment):
     )))
 
 
-def status_producer_proof(declared, fragments, source):
-    """Prove enum/producer conservation and resolve one helper call."""
+def duration_status_fragments():
+    """Return literal status facts loaded by _fill_inf_from_ddef."""
+    result = {}
+    rows = ordered_initializer_rows(
+        active_source(DURATION_DATA),
+        r"\bstatic\s+const\s+duration_def\s+duration_data\s*\[\]",
+    )
+    for raw in rows:
+        fields = initializer_fields(raw)
+        match = re.search(r"\b(DUR_[A-Z0-9_]+)\b", fields[0])
+        if not match or len(fields) < 6:
+            raise RuntimeError(
+                f"unparsed duration facts for status producer: {raw[:100]}"
+            )
+        strings = [cpp_strings(field) for field in fields[2:6]]
+        if any(len(values) != 1 for values in strings):
+            raise RuntimeError(
+                f"unparsed duration display facts: {match.group(1)}"
+            )
+        light, short, _name, long_text = [values[0] for values in strings]
+        assignments = []
+        if light:
+            assignments.extend((
+                f'inf.db_key = "{light}";',
+                f'inf.light_text = C_("status", "{light}");',
+            ))
+        if short:
+            assignments.extend((
+                f'inf.short_db_key = "{short}";',
+                f'inf.short_text = C_("status", "{short}");',
+            ))
+        if long_text:
+            assignments.append(f'inf.long_text = T_("{long_text}");')
+        result[match.group(1)] = "\n".join(assignments)
+    return result
+
+
+def normalize_producer_fragment(fragment):
+    return re.sub(r"\s+", " ", _strip_cpp_comments(fragment)).strip()
+
+
+def status_producer_proof(
+    declared, fragments, source, duration_fragments=None
+):
+    """Prove enum/producer conservation and resolve bounded helper calls."""
     declared_set = set(declared)
     producer_set = set(fragments)
+    duration_fragments = duration_fragments or {}
     resolved = {}
     unresolved = []
     for identity in sorted(producer_set & declared_set):
         fragment = fragments[identity]
-        calls = re.findall(
+        describe_calls = re.findall(
             r"\b(_describe_[a-z0-9_]+)\s*\(\s*inf\s*\)\s*;",
             fragment,
         )
-        mentions = set(re.findall(r"\b(_describe_[a-z0-9_]+)\b", fragment))
-        if mentions != set(calls) or len(calls) > 1:
+        describe_mentions = set(re.findall(
+            r"\b(_describe_[a-z0-9_]+)\b", fragment
+        ))
+        fill_calls = re.findall(
+            r"\b_fill_inf_from_ddef\s*\(\s*(DUR_[A-Z0-9_]+)\s*,"
+            r"\s*inf\s*\)\s*;",
+            fragment,
+        )
+        fill_mentions = re.findall(r"\b_fill_inf_from_ddef\b", fragment)
+        inf_call_names = set(re.findall(
+            r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\([^()]*\binf\b[^()]*\)"
+            r"\s*;",
+            fragment,
+        ))
+        known_calls = set(describe_calls)
+        if fill_calls:
+            known_calls.add("_fill_inf_from_ddef")
+        if (
+            describe_mentions != set(describe_calls)
+            or len(describe_calls) > 1
+            or len(fill_mentions) != len(fill_calls)
+            or len(fill_calls) > 1
+            or inf_call_names != known_calls
+        ):
             unresolved.append(identity)
             resolved[identity] = fragment
             continue
-        if not calls:
-            resolved[identity] = fragment
-            continue
-        try:
-            helper = exact_function_body(
-                _strip_cpp_comments(source),
-                rf"\b(?:static\s+)?void\s+{re.escape(calls[0])}",
-            )
-        except RuntimeError:
+        resolved_fragment = fragment
+        if describe_calls:
+            try:
+                helper = exact_function_body(
+                    _strip_cpp_comments(source),
+                    rf"\b(?:static\s+)?void\s+{re.escape(describe_calls[0])}",
+                )
+            except RuntimeError:
+                unresolved.append(identity)
+                resolved[identity] = fragment
+                continue
+            if re.search(r"\b_describe_[a-z0-9_]+\s*\(", helper):
+                unresolved.append(identity)
+                resolved[identity] = fragment
+                continue
+            resolved_fragment += "\n" + helper
+        if fill_calls:
+            duration_fragment = duration_fragments.get(fill_calls[0])
+            if not duration_fragment:
+                unresolved.append(identity)
+                resolved[identity] = fragment
+                continue
+            try:
+                helper = exact_function_body(
+                    _strip_cpp_comments(source),
+                    r"\bstatic\s+bool\s+_fill_inf_from_ddef",
+                )
+            except RuntimeError:
+                unresolved.append(identity)
+                resolved[identity] = fragment
+                continue
+            resolved_fragment += "\n" + helper + "\n" + duration_fragment
+        resolved[identity] = resolved_fragment
+        if (
+            not status_db_keys(resolved_fragment)
+            and not status_display_literals(resolved_fragment)
+        ):
             unresolved.append(identity)
-            resolved[identity] = fragment
-            continue
-        if re.search(r"\b_describe_[a-z0-9_]+\s*\(", helper):
-            unresolved.append(identity)
-            resolved[identity] = fragment
-            continue
-        resolved[identity] = fragment + "\n" + helper
     return {
         "resolved_fragments": resolved,
         "missing_status_producers": sorted(
@@ -484,7 +590,9 @@ def status_rows(db, with_proof=False):
     )
     fragments = case_fragments(body, "STATUS_")
     declared = concrete_enum_identities(STATUS_TYPE, "STATUS_")
-    proof = status_producer_proof(declared, fragments, source)
+    proof = status_producer_proof(
+        declared, fragments, source, duration_status_fragments()
+    )
     rows = []
     for identity in declared:
         fragment = proof["resolved_fragments"].get(identity, "")
@@ -506,6 +614,10 @@ def status_rows(db, with_proof=False):
             "db_keys": db_keys,
             "display_strings": display,
             "producer_present": producer_present,
+            "producer_fragment": (
+                normalize_producer_fragment(fragment)
+                if producer_present else None
+            ),
             "source_file": relative(STATUS_CODE),
         })
     if with_proof:
