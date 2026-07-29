@@ -124,6 +124,194 @@ routing-v2, findings-v2, readiness-v3, and verification-v5 workflow. The
 exception does not authorize reuse of old evidence, replacement of
 `chn-0.34.1-base`, pushing, releasing, or deployment.
 
+The separately owner-governed `DCSS-ZH-ROOTFIX-2026-07-29` exception addresses
+one later candidate-root regression in the trusted monster-name test. Its
+policy candidate P is not self-authorizing: a separate repository-owner action
+must approve and install the exact policy-and-gate edge from Base C
+`8aae77c60a5e537e76c7b252c6a311fade4264c2` to P before the exception becomes
+active.
+
+P must be one commit whose parent is exactly Base C. P is not Go merely because
+it contains the exception; the target must not move until the owner separately
+approves its exact 16-path manifest, focused gate and bundle regressions, and
+exact-bound code profile, then installs its exact OID. Once installed, the
+exception permits only a one-commit `P → F` edge whose sole changed path is
+`.claude/scripts/tests/test_monster_name_ssot.py`.
+
+The target-P classifier, schema-v4 bundle, findings-v2 and readiness-v3 remain
+mandatory. The dedicated `review_rootfix_gate.py` proves the 16-path P boundary
+and one-path F boundary, reads only the committed test blob from F, proves all
+other F objects identical to P, runs the focused cross-root regression and one
+exact-bound full-scope code profile, then writes canonical digest-bound
+write-once evidence under `zh-review-evidence/rootfix-v1/`. Its `check`
+subcommand is the read-only merge-time validator. Only
+`ROOTFIX_MERGEABLE` authorizes the exact fast-forward; P and F otherwise remain
+No-Go.
+
+P and F must be distinct linked worktrees from the same physical Git common
+directory, and F must appear with its exact HEAD in P's own worktree inventory.
+The gate, `review_bundle.py`, `i18n_shared.py`, verification contract and
+verifier must be byte-equal to their P Git blobs. With replacement objects
+disabled, the gate loads and compiles both Python helpers from the exact P Git
+blobs in the checkout containing the installed gate; `--target-repo` cannot
+select code before validation. It retains the P contract bytes and executes
+the retained P verifier source rather than reopening its pathname. All gate,
+metadata, artifact,
+marker and approval reads are no-follow, single-link, inode-bound single
+reads which also compare size, mtime and ctime before/open/after so same-inode,
+same-size mutation during a multi-chunk read fails closed; the focused input
+is read once from the exact F Git blob, copied into
+the attempt, SHA-256 checked and supplied through an anonymous child input.
+One held evidence-root/attempts-directory descriptor pair and the first
+inventory bind both directory identities plus the presence and inode of
+`running.json` and `approval.json`. A later disappearance, replacement or
+whole-directory swap fails closed.
+Before any repository import, the source-invoked gate selects an unpredictable,
+absent private bytecode-cache prefix outside the checkout and disables writes;
+the focused child and full profile receive separate attempt-private prefixes.
+Ignored checkout `__pycache__` objects and modified working-copy module
+sources therefore cannot become trusted input.
+Every failed, interrupted or passing attempt records and digests its complete
+directory-and-file inventory, including empty directories; unknown, unsafe or
+changed objects and hard-linked artifacts fail closed. A retired marker outside
+the attempt binds the exact attempt digest, so a coherent artifact plus
+internal-inventory rewrite cannot establish a new accepted digest. Before a
+retry executes, the complete validated attempt inventory is frozen as a lower
+bound: every pre-existing attempt ID and digest must remain unchanged after
+the execution, even when the retry fails or is interrupted. Failed and
+interrupted attempts require the exact raw file set implied by their durably
+started commands. Without a profile command they forbid all profile output;
+with one they require one exact terminal metadata run and its exact known
+tree, metadata-bound report and semantic wrapper. Incomplete output remains
+unpublished staging. The parent-captured focused and profile logs retain their
+writer FDs through fsync and snapshot; sealing requires the same inode, size,
+digest and bytes at the evidence pathname. The inner signal handler remains
+active until the snapshot is fsynced and entered into the writer-seal map and,
+after child exit, through profile metadata validation. A focused-phase signal
+still publishes exact interrupted evidence. A signal after the profile
+metadata establishes a pass, fail or interrupted terminal preserves that exact
+terminal; invalid metadata leaves unpublished staging.
+Post-execution archive, evidence,
+history and marker-conservation checks run before either a normal return or an
+exception/signal rethrow. Canonical-byte comparison makes JSON numeric and
+Boolean types distinct in approval and artifact bindings. Attempt inventories
+also bind empty directories plus every file's mtime/ctime generation, keep
+child directory descriptors through the complete recursive walk, re-stat all
+read files, and require stable directory size/mtime/ctime before returning.
+An object injected after `scandir` or an in-place post-read rewrite therefore
+fails closed.
+
+The full code profile metadata validator binds schema and the retained
+contract, `profile=code`, `scope=full`, P/F/Git-diff/diff-SHA-256/glossary,
+run ID and worktree, exact JSON integer and Boolean types, risk and runtime
+fields, every required phase and the exact artifact sizes and SHA-256s. It
+validates metadata, phases and artifacts from the same attempt snapshot;
+missing, extra, skipped, failed or drifted output is rejected. Passing
+attempts require exact profile directories/files, the wrapper log, candidate
+input, both raw phase logs and both process records. Metadata must equal the
+retained verifier's deterministic sorted/indented UTF-8 JSON; duplicate keys
+at any depth fail closed. The report parser binds its structured timestamp,
+run ID, scope, risk, Base/Head, diff, glossary, ordered phase results and exact
+terminal summary to metadata. An exact post-summary HEAD/glossary drift footer
+is accepted only with the production ordering and a metadata failure count one
+greater than that earlier summary. Wrapper paths must equal the lexical absolute
+paths under the attempt's original staging output root, not merely share a
+filename suffix. The parent-captured `code-profile.log` is also parsed: a
+complete pass/fail stdout must exactly bind the same run ID, report, metadata,
+wrapper paths and failure count; interrupted or unexpected output may only be
+a byte prefix of that production stdout.
+
+The gate uses a bundle-bound running marker and supervised child process groups
+with signal forwarding. Each child waits on a release pipe until a durable
+attempt-local record binds its phase, command digest, PID, PGID, process-start
+token and boot identity. Stale recovery rejects a live recorded group even
+after a Darwin or Linux gate parent was killed. A signal received while that
+record is being written is retained before the blocked child is released or
+killed. On `SIGINT`, `SIGTERM` or
+`SIGHUP`, it first sends the whole focused or profile process group
+cleanup-safe `SIGINT`, then after
+bounded grace the original termination signal and finally `SIGKILL`; evidence
+retains the initiating signal identity. This lets Python temporary fixture
+contexts unwind while still preserving exact interruption evidence. It
+preserves interrupted attempts instead of silently deleting them, and an
+interruption during metadata handoff, post-validation, sealing or retirement
+keeps the already established pass/fail/interrupted terminal only when outcome,
+exit, signal, commands and metadata path all match it. Once a terminal is
+established, the complete seal, publication and marker-retirement critical
+section masks catchable signals until the attempt and marker are durably
+published and revalidated and the held directories are closed, then rethrows
+the original signum. A secondary sealing or retirement error may not replace
+that signum, nor may a second signal delivered while restoring the mask; if
+sealing fails before publication, marker plus staging remain for explicit
+recovery. If the attempt directory was published but marker retirement did not
+produce its external digest seal, all objects remain fail-closed and that
+incomplete boundary is intentionally not reusable. An uncatchable
+interruption requires explicit
+`--recover-stale` before validated bundle-local staging or exact bounded
+regular `running.json`/`approval.json` atomic-write residue can be recovered.
+If a catchable signal lands after profile execution but before metadata
+establishes an exact profile terminal, the marker/staging boundary is
+retained for recovery and the exact signum is rethrown; a secondary sealing
+error may not replace it. A non-signal validation failure before publication
+also retains that boundary and is not converted into a generic failed attempt.
+Post-wait process-group cleanup also compares the retained boot and
+process-start identity before any `SIGKILL`; PID reuse produces No-Go without
+signalling the unrelated group.
+The gate never unlinks such residue or performs check-then-unlink cleanup of
+an unpublished temporary: it keeps the validated descriptor open, uses a
+no-replace atomic move into
+`zh-review-evidence/rootfix-recovered-v1/<bundle-id>/`, and retains the object
+under an exact name binding its source form, writer identity, content SHA-256
+and recovery identity. Both `run` and read-only `check` fail closed on an
+unknown, unsafe, hard-linked, digest-drifted or otherwise malformed archive
+object; `check` does not create an absent archive, and a non-empty set of
+required seals cannot validate against an archive that disappeared. The
+complete first-inventory
+bytes, size, digest and inode remain the required baseline before, throughout
+and after archive validation, so same-inode content drift is rejected. A
+read-to-move regular-file or symlink replacement is retained in that archive
+and rejected. The bound staging tree is also moved without replacement and
+accepted only under an exact name binding its complete directory-and-file tree
+digest; a staging pathname replacement is retained and rejected. Every object
+moved by the current invocation remains required by path, inode, size and
+digest before and after staging archival. Long-term
+retention between invocations is owner-governed; a conforming gate never
+deletes the archive. Staging names
+must use the exact generated operation-ID grammar: a marker may bind at most
+its one directory, and markerless recovery permits at most one valid residue.
+Malformed, multiple or unsafe objects fail closed without deletion, and all
+clean-tree checks still apply. A new run after immutable failed evidence
+requires `--retry-failed`. If a unique passing attempt and its exact
+digest-bound retired marker were durably published before `approval.json`
+could be written, the next run deterministically completes that approval
+without rerunning or deleting the attempt. A published attempt whose marker
+was not durably retired has no external digest authority and remains No-Go.
+
+`running.json` is never removed by pathname unlink. Normal attempt publication
+and explicit stale recovery both re-read the canonical marker, keep its
+pre-read inode and validated descriptor bound, require a positive integer PID
+and non-empty process-start and boot identifiers, and use the same no-replace
+move into the retained bundle archive. Its exact archive name binds the
+operation ID, marker content SHA-256, exact attempt SHA-256 (or explicit
+`none`) and recovery identity; a regular-file or symlink replacement is
+retained and rejected in both paths. Recovery binds the evidence root,
+attempts directory, marker, approval and atomic residue from one first
+inventory, and retires and revalidates a valid dead marker before and after
+archiving its bound staging residue. Every published attempt must have exactly
+one valid retired marker with the same operation ID and digest before pass
+reuse, approval or `check`. `run` and `check` independently
+re-resolve the archive path at every post-verification and approval boundary,
+so an archive absent at startup but created during a long run cannot be hidden
+by a cached absence.
+
+The abandoned C2 bundle has no reusable formal attempt: three ledgers lack
+strict evidence blocks and their three required inventory artifacts were never
+produced. C2 readiness and bundle objects must not migrate. After F lands, the
+contextual parser, all approved R content and every required strict ledger must
+be rebuilt as one new candidate with new mixed review and a complete normal
+verification-v5 final gate. The rootfix exception expires permanently when F
+lands.
+
 The review profile includes a required, independent `review-ledgers` phase.
 It executes the target checkout's trusted character, god, item, monster,
 species/background, and world auditors against the validated candidate root.
