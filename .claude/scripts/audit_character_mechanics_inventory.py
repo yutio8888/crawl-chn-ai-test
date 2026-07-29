@@ -20,7 +20,12 @@ from pathlib import Path
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+from i18n_shared import (  # noqa: E402
+    AuditRootError,
+    load_review_input,
+    resolve_audit_root,
+    review_input_metadata,
+)
 
 try:
     ROOT = resolve_audit_root(SCRIPT_ROOT)
@@ -100,6 +105,8 @@ TERMINAL_CONCLUSIONS = {
 CHARACTER_REVIEW_BASE = "76c815b2ac79d11a8066597ad04d127a1636e153"
 STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->"
 STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v1 -->"
+REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN CHARACTER REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_END = "<!-- END CHARACTER REVIEW ARTIFACT v1 -->"
 STRICT_CARD_FIELDS = {
     "fact_sha256", "identity", "terminal_conclusion",
 }
@@ -1034,8 +1041,11 @@ def fact_sha256(row):
     return hashlib.sha256(encoded).hexdigest()
 
 
-def parse_strict_review_evidence(path):
-    text = path.read_text(encoding="utf-8")
+def parse_strict_review_evidence(review_input):
+    return _parse_strict_review_text(review_input.text)
+
+
+def _parse_strict_review_text(text):
     if text.count(STRICT_REVIEW_BEGIN) != 1 or text.count(STRICT_REVIEW_END) != 1:
         raise RuntimeError("strict review evidence block is missing or duplicated")
     block = text.split(STRICT_REVIEW_BEGIN, 1)[1].split(
@@ -1065,8 +1075,8 @@ def parse_strict_review_evidence(path):
     return metadata, cards
 
 
-def review_coverage(payload, path):
-    metadata, cards = parse_strict_review_evidence(path)
+def review_coverage(payload, review_input):
+    metadata, cards = parse_strict_review_evidence(review_input)
     expected_rows = sorted(payload["rows"], key=lambda row: row["identity"])
     expected_ids = [row["identity"] for row in expected_rows]
     identities = [card["identity"] for card in cards]
@@ -1101,9 +1111,16 @@ def review_coverage(payload, path):
     missing = sorted(expected - actual)
     unexpected = sorted(actual - expected)
     order_matches = identities == expected_ids
+    conclusions = {
+        card["identity"]: card["terminal_conclusion"] for card in cards
+    }
+    artifact_exact = (
+        review_input.text == render_review_results(payload, conclusions)
+    )
     return {
-        "review_results": relative(path),
-        "review_results_sha256": sha(path),
+        **review_input_metadata(review_input),
+        "review_results": review_input.logical_path,
+        "review_results_sha256": review_input.sha256,
         "evidence_card_count": len(identities),
         "binding_matches": bindings,
         "duplicate_evidence_cards": duplicate,
@@ -1112,6 +1129,7 @@ def review_coverage(payload, path):
         "canonical_card_order": order_matches,
         "mismatched_fact_sha256": mismatched_facts,
         "invalid_terminal_conclusions": invalid,
+        "artifact_exact": artifact_exact,
         "coverage_equal": (
             all(bindings.values())
             and len(identities) == len(expected_ids)
@@ -1121,6 +1139,7 @@ def review_coverage(payload, path):
             and order_matches
             and not mismatched_facts
             and not invalid
+            and artifact_exact
         ),
     }
 
@@ -1152,19 +1171,48 @@ def strict_review_block(payload, conclusions):
     return "\n".join(lines)
 
 
+def review_artifact_summary(payload):
+    return {
+        "category_counts": payload.get("category_counts", {}),
+        "glossary_sha256": payload["glossary_sha256"],
+        "identity_count": payload["count"],
+        "lifecycle_counts": payload.get("lifecycle_counts", {}),
+        "violations": payload.get("violations", {}),
+        "violations_zero": (
+            not has_violations(payload) if "violations" in payload else True
+        ),
+    }
+
+
+def render_review_results(payload, conclusions):
+    summary = json.dumps(
+        review_artifact_summary(payload),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return (
+        "# Character mechanics translation review\n\n"
+        f"{REVIEW_ARTIFACT_BEGIN}\n"
+        f"{summary}\n"
+        f"{REVIEW_ARTIFACT_END}\n\n"
+        f"{strict_review_block(payload, conclusions)}\n"
+    )
+
+
 def write_strict_review_evidence(payload, path):
     text = path.read_text(encoding="utf-8")
-    conclusions = legacy_review_conclusions(text)
-    block = strict_review_block(payload, conclusions)
-    if STRICT_REVIEW_BEGIN in text:
-        prefix, remainder = text.split(STRICT_REVIEW_BEGIN, 1)
-        if STRICT_REVIEW_END not in remainder:
-            raise RuntimeError("unterminated existing strict review evidence")
-        suffix = remainder.split(STRICT_REVIEW_END, 1)[1]
-        text = prefix.rstrip() + "\n\n" + block + suffix
+    if STRICT_REVIEW_BEGIN in text or STRICT_REVIEW_END in text:
+        _metadata, cards = _parse_strict_review_text(text)
+        conclusions = {
+            card["identity"]: card["terminal_conclusion"] for card in cards
+        }
     else:
-        text = text.rstrip() + "\n\n" + block + "\n"
-    path.write_text(text, encoding="utf-8")
+        conclusions = legacy_review_conclusions(text)
+    path.write_text(
+        render_review_results(payload, conclusions),
+        encoding="utf-8",
+    )
 
 
 def table_text(value, limit=72):
@@ -1272,19 +1320,6 @@ def generated_evidence_section(payload, category, heading):
 
 
 def complete_review_results(payload, path):
-    text = path.read_text(encoding="utf-8")
-    marker = "\n## 变异证据卡（"
-    if marker in text:
-        text = text.split(marker, 1)[0].rstrip() + "\n"
-    sections = [
-        generated_evidence_section(payload, "mutation", "变异证据卡"),
-        generated_evidence_section(payload, "duration", "时长状态证据卡"),
-        generated_evidence_section(payload, "status", "附加状态证据卡"),
-        generated_evidence_section(
-            payload, "monster_status", "怪物状态证据卡"
-        ),
-    ]
-    path.write_text(text.rstrip() + "\n\n" + "\n".join(sections), encoding="utf-8")
     write_strict_review_evidence(payload, path)
 
 
@@ -1299,8 +1334,10 @@ def main(argv=None):
         if args.complete_review_results:
             complete_review_results(payload, args.complete_review_results)
         if args.review_results:
+            review_input = load_review_input(ROOT, args.review_results)
+            payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
-                payload, args.review_results
+                payload, review_input
             )
     except (
         AttributeError,

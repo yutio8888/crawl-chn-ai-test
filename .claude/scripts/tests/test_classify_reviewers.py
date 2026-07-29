@@ -69,6 +69,16 @@ class ReviewerRoutingTests(unittest.TestCase):
             "code", ["zh-code-reviewer"],
         )
 
+    def test_pi_policy_and_zh_testing_route_only_code_reviewer(self):
+        for path in (
+            ".pi/agents/translation-reviewer.md",
+            "docs/zh-testing.md",
+        ):
+            with self.subTest(path=path):
+                self.assert_route(
+                    [path], "code", ["zh-code-reviewer"],
+                )
+
     def test_root_review_result_ledgers_route_both_reviewers_only(self):
         ledgers = sorted(REPO.glob("docs/*-review-results.md"))
         self.assertEqual(7, len(ledgers))

@@ -2408,37 +2408,139 @@ def parse_contextual_decisions(filepath: str) -> list[dict]:
     with open(filepath, "r", encoding="utf-8") as stream:
         content = stream.read()
     rules = []
+    errors = []
     for decision_id, block in _iter_decision_blocks(content):
         if not re.search(
             r"(?mi)^-\s+\*\*Status\*\*:\s*active\b", block
         ):
             continue
         rejected_raw = _decision_field(block, "Rejected") or ""
-        for match in re.finditer(
-            r"`([^`\n]+?)\s*(?:→|->)\s*([^`\n]+?)`",
-            rejected_raw,
-        ):
-            key = match.group(1).replace(r"\|", "|").strip()
+        for token in re.findall(r"`([^`\n]+)`", rejected_raw):
+            unescaped = token.replace(r"\|", "|")
+            if "|" not in unescaped:
+                continue
+            match = re.fullmatch(
+                r"(.+?)\s*(?:→|->)\s*(.+)", unescaped
+            )
+            if not match:
+                errors.append(
+                    f"{decision_id}: contextual Rejected mapping is missing "
+                    f"an arrow: `{token}`"
+                )
+                continue
+            key = match.group(1).strip()
             rejected = match.group(2).strip()
             if (
-                "|" not in key
+                key.count("|") != 1
                 or not re.fullmatch(r"[^|\n]+\|[^|\n]+", key)
                 or len(_searchable_decision_terms(rejected)) != 1
             ):
+                errors.append(
+                    f"{decision_id}: invalid contextual Rejected mapping: "
+                    f"`{token}`"
+                )
                 continue
             correct = None
             for line in block.splitlines():
                 cells = _markdown_table_cells(line)
-                if len(cells) >= 2 and key in cells[0].replace(r"\|", "|"):
+                if (
+                    len(cells) >= 2
+                    and cells[0].replace(r"\|", "|").strip(" `") == key
+                ):
                     correct = cells[1].strip(" `")
                     break
+            if not correct:
+                errors.append(
+                    f"{decision_id}: contextual key {key!r} is missing an "
+                    "exact non-empty table value"
+                )
+                continue
             rules.append({
                 "decision": decision_id,
                 "key": key,
                 "rejected": rejected,
-                "correct": correct or "contextual decision",
+                "correct": correct,
             })
+    if errors:
+        raise ValueError("; ".join(errors))
     return rules
+
+
+def _validate_contextual_decisions(rules):
+    """Reject duplicate/conflicting rules after production key folding."""
+    errors = []
+    seen = {}
+    for rule in rules:
+        canonical_key = compute_canonical_key(rule["key"])
+        signature = (rule["rejected"], rule["correct"])
+        previous = seen.get(canonical_key)
+        if previous is not None:
+            kind = "duplicate" if previous["signature"] == signature \
+                else "conflicting"
+            errors.append(
+                f"{kind} contextual rules for normalized key "
+                f"{canonical_key!r}: {previous['decision']} and "
+                f"{rule['decision']}"
+            )
+            continue
+        seen[canonical_key] = {
+            "decision": rule["decision"],
+            "signature": signature,
+        }
+    return errors
+
+
+def _collect_effective_sourcedb_files(source_txt):
+    """Mirror localized SourceDB file discovery and production load order."""
+    if not source_txt:
+        return [], []
+
+    source_path = os.path.abspath(source_txt)
+    errors = []
+    if os.path.basename(source_path) != "source.txt":
+        return [], [
+            f"SourceDB root must be named source.txt: {source_path}"
+        ]
+    if not os.path.isfile(source_path):
+        return [], [
+            f"required SourceDB source.txt does not exist or is not a file: "
+            f"{source_path}"
+        ]
+
+    directory = os.path.dirname(source_path)
+    try:
+        names = sorted(os.listdir(directory), key=os.fsencode)
+    except OSError as error:
+        return [], [
+            f"cannot enumerate required SourceDB directory "
+            f"{directory}: {error}"
+        ]
+
+    candidates = []
+    for name in names:
+        if not name.endswith(".txt"):
+            continue
+        candidate = os.path.join(directory, name)
+        if os.path.isfile(candidate):
+            candidates.append(os.path.abspath(candidate))
+        else:
+            errors.append(
+                f"required SourceDB *.txt path is not a file: {candidate}"
+            )
+
+    source_identity = os.path.normcase(source_path)
+    others = [
+        path for path in candidates
+        if os.path.normcase(path) != source_identity
+    ]
+    if not any(
+        os.path.normcase(path) == source_identity for path in candidates
+    ):
+        errors.append(
+            f"required SourceDB source.txt was not discovered: {source_path}"
+        )
+        return [], errors
+    return [source_path, *others], errors
 
 
 def _collect_zh_textdb_files(source_txt, zh_dirs):
@@ -2448,14 +2550,12 @@ def _collect_zh_textdb_files(source_txt, zh_dirs):
     only expands the explicitly bound inputs and fails closed when a requested
     directory is missing, unreadable, or contains no ``*.txt`` files.
     """
-    requested = []
-    if source_txt:
-        requested.append(source_txt)
+    sourcedb_files, errors = _collect_effective_sourcedb_files(source_txt)
+    requested = list(sourcedb_files)
     requested.extend(zh_dirs or [])
 
     files = []
     seen = set()
-    errors = []
     for raw_path in requested:
         path = os.path.abspath(raw_path)
         candidates = []
@@ -2495,30 +2595,47 @@ def _collect_zh_textdb_files(source_txt, zh_dirs):
             if identity not in seen:
                 seen.add(identity)
                 files.append(candidate)
-    return files, errors
+    return files, errors, sourcedb_files
 
 
 def cmd_validate_terms(args):
     """Check rejected terms in all bound ZH TextDB and C++ sources."""
-    # Parse decisions
-    rejected_map = parse_decisions(args.glossary)
-    contextual_rules = parse_contextual_decisions(args.glossary)
-    textdb_files, input_errors = _collect_zh_textdb_files(
+    if not os.path.isfile(args.glossary):
+        print(
+            f"ERROR: required decisions file does not exist or is not a "
+            f"file: {os.path.abspath(args.glossary)}",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        rejected_map = parse_decisions(args.glossary)
+        contextual_rules = parse_contextual_decisions(args.glossary)
+    except (OSError, UnicodeError, ValueError) as error:
+        print(f"ERROR: cannot parse required decisions file: {error}",
+              file=sys.stderr)
+        return 2
+
+    contextual_errors = _validate_contextual_decisions(contextual_rules)
+    if contextual_rules and not args.source_txt:
+        contextual_errors.append(
+            "--source-txt is required to evaluate contextual decisions"
+        )
+
+    textdb_files, input_errors, sourcedb_files = _collect_zh_textdb_files(
         args.source_txt, args.zh_dirs
     )
+    input_errors.extend(contextual_errors)
     if input_errors:
         for error in input_errors:
             print(f"ERROR: {error}", file=sys.stderr)
         return 2
 
-    # Scan every explicitly bound ZH TextDB translation for global terms.
     textdb_entries = []
+    entries_by_file = {}
     for textdb_file in textdb_files:
         try:
-            textdb_entries.extend(
-                parse_entries(
-                    textdb_file, lowercase_keys=False, unescape_hash=True
-                )
+            entries = parse_entries(
+                textdb_file, lowercase_keys=False, unescape_hash=False
             )
         except (OSError, UnicodeError) as error:
             print(
@@ -2527,21 +2644,34 @@ def cmd_validate_terms(args):
                 file=sys.stderr,
             )
             return 2
+        entries_by_file[os.path.normcase(os.path.abspath(textdb_file))] = (
+            entries
+        )
+        textdb_entries.extend(entries)
+
+    effective_sourcedb = {}
+    for textdb_file in sourcedb_files:
+        identity = os.path.normcase(os.path.abspath(textdb_file))
+        for entry in entries_by_file[identity]:
+            effective_sourcedb[compute_canonical_key(entry.key)] = entry
+
+    missing_contextual = []
+    for rule in contextual_rules:
+        canonical_key = compute_canonical_key(rule["key"])
+        if canonical_key not in effective_sourcedb:
+            missing_contextual.append(
+                f"contextual key {rule['key']!r} from {rule['decision']} "
+                "is missing from the effective SourceDB"
+            )
+    if missing_contextual:
+        for error in missing_contextual:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 2
 
     if not rejected_map and not contextual_rules:
         print("OK: No active rejected-name decisions found in glossary.")
         return 0
 
-    # Context-qualified rules intentionally remain SourceDB-only.
-    contextual_entries = (
-        {
-            entry.key: entry.value
-            for entry in parse_entries(
-                args.source_txt, lowercase_keys=False, unescape_hash=True
-            )
-        }
-        if args.source_txt else {}
-    )
     findings = []
 
     for entry in textdb_entries:
@@ -2558,10 +2688,13 @@ def cmd_validate_terms(args):
                     'snippet': cn_snippet,
                 })
     for rule in contextual_rules:
-        cn_val = contextual_entries.get(rule["key"])
-        if cn_val is not None and cn_val.strip() == rule["rejected"]:
+        entry = effective_sourcedb[compute_canonical_key(rule["key"])]
+        cn_val = entry.value
+        if rule["rejected"] in cn_val:
             findings.append({
-                "location": f'source.txt: "{rule["key"][:60]}"',
+                "location": (
+                    f'{entry.source_file}: "{entry.key[:60]}"'
+                ),
                 "rejected": rule["rejected"],
                 "correct": rule["correct"],
                 "snippet": cn_val[:80],

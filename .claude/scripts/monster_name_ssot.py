@@ -25,7 +25,12 @@ from typing import Mapping
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+from i18n_shared import (  # noqa: E402
+    AuditRootError,
+    load_review_input,
+    resolve_audit_root,
+    review_input_metadata,
+)
 
 try:
     ROOT = resolve_audit_root(SCRIPT_ROOT)
@@ -927,11 +932,11 @@ def _resolve_commit(ref: str) -> str:
 
 def review_coverage(
     payload: Mapping[str, object],
-    path: Path,
+    review_input,
     baseline_ref: str,
 ) -> dict[str, object]:
     """Prove one evidence-card row and terminal conclusion per identity."""
-    text = path.read_text(encoding="utf-8")
+    text = review_input.text
     baseline_oid = _resolve_commit(baseline_ref)
     baseline_matches = re.findall(
         rf"^- 基线：`{re.escape(baseline_oid)}`$",
@@ -956,8 +961,9 @@ def review_coverage(
         if conclusion.split(":", 1)[0].strip() not in TERMINAL_CONCLUSIONS
     )
     result = {
-        "review_results": _relative(path),
-        "review_results_sha256": _sha(path),
+        **review_input_metadata(review_input),
+        "review_results": review_input.logical_path,
+        "review_results_sha256": review_input.sha256,
         "artifact_exact": text == expected_text,
         "baseline_header_count": len(baseline_matches),
         "evidence_card_count": len(identities),
@@ -1185,8 +1191,10 @@ def main(argv=None) -> int:
                 payload, args.write_review_results, args.baseline_ref
             )
         if args.review_results:
+            review_input = load_review_input(ROOT, args.review_results)
+            payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
-                payload, args.review_results, args.baseline_ref
+                payload, review_input, args.baseline_ref
             )
     except (
         AuditInputError,

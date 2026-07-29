@@ -55,6 +55,7 @@ printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' \
 cp "$VERIFY_SOURCE" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
 cp "$SCRIPT_DIR/../review_bundle.py" "$REPO/.claude/scripts/review_bundle.py"
+cp "$SCRIPT_DIR/../i18n_shared.py" "$REPO/.claude/scripts/i18n_shared.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
 mkdir -p "$REPO/crawl-ref/source/dat/defaults"
 printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
@@ -70,6 +71,9 @@ printf '%s\n' \
     'roots = Path(".observed-audit-roots")' \
     'entry = "item:" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
     'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+    'commits = Path(".observed-audit-commits")' \
+    'commit = "item:" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
+    'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
     'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -89,6 +93,9 @@ do
         'roots = Path(".observed-audit-roots")' \
         'entry = name + ":" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
         'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+        'commits = Path(".observed-audit-commits")' \
+        'commit = name + ":" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
+        'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
         'if "--review-results" in sys.argv:' \
         '    Path(".ledger-auditor-started").write_text("started\n")' \
         'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
@@ -104,6 +111,9 @@ printf '%s\n' \
     'roots = Path(".observed-audit-roots")' \
     'entry = "monster:" + os.environ.get("ZH_VERIFY_AUDIT_ROOT", "<unset>") + "\n"' \
     'roots.write_text(roots.read_text() + entry if roots.exists() else entry)' \
+    'commits = Path(".observed-audit-commits")' \
+    'commit = "monster:" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
+    'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
     'output = Path(sys.argv[sys.argv.index("--inventory-output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -225,8 +235,10 @@ printf '%s\n' dirty > "$REPO/dirty.txt"
 set +e
 (
     cd "$REPO"
-    bash .claude/scripts/verify_zh.sh --profile review \
-        --base "$BASE" --head "$HEAD_SHA"
+    env ZH_VERIFY_AUDIT_ROOT=/stale/root \
+        ZH_VERIFY_AUDIT_COMMIT=0000000000000000000000000000000000000000 \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$BASE" --head "$HEAD_SHA"
 ) > "$TMP_ROOT/dirty.out" 2>&1
 RC=$?
 set -e
@@ -238,8 +250,10 @@ rm "$REPO/dirty.txt"
 echo "--- successful bound evidence run ---"
 (
     cd "$REPO"
-    bash .claude/scripts/verify_zh.sh --profile review \
-        --base "$BASE" --head "$HEAD_SHA"
+    env ZH_VERIFY_AUDIT_ROOT=/hostile/stale/root \
+        ZH_VERIFY_AUDIT_COMMIT=ffffffffffffffffffffffffffffffffffffffff \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$BASE" --head "$HEAD_SHA"
 ) > "$TMP_ROOT/pass.out" 2>&1
 RUN_DIR=$(latest_run_dir)
 METADATA="$RUN_DIR/metadata.json"
@@ -300,6 +314,11 @@ if grep -Fv ":$EXPECTED_AUDIT_ROOT" "$REPO/.observed-audit-roots" | grep -q .; t
 else
     pass "bound verifier overrides every ledger auditor root with candidate top-level"
 fi
+if grep -Fv ":$HEAD_SHA" "$REPO/.observed-audit-commits" | grep -q .; then
+    fail "bound verifier did not give every ledger auditor the candidate HEAD"
+else
+    pass "bound verifier gives all six ledger auditors the same candidate HEAD"
+fi
 if [[ -f "$RUN_DIR/item-name-inventory.json" ]]; then
     pass "source-db-static preserves item inventory evidence"
 else
@@ -321,6 +340,47 @@ if find "$RUN_DIR" -maxdepth 1 -name '.*.tmp.*' | grep -q .; then
 else
     pass "metadata updates leave no temporary file"
 fi
+
+echo "--- repository replace refs cannot alter bound evidence ---"
+git -C "$REPO" replace "$HEAD_SHA" "$BASE"
+REPLACED_RAW_DIFF_SHA256=$(
+    env -u GIT_NO_REPLACE_OBJECTS \
+        git -C "$REPO" diff --no-ext-diff --no-textconv \
+        --binary --full-index "$BASE..$HEAD_SHA" -- \
+        | sha256sum | awk '{print $1}'
+)
+if [[ "$REPLACED_RAW_DIFF_SHA256" != "$EXPECTED_DIFF_SHA256" ]]; then
+    pass "replace-ref fixture changes an unprotected Git diff"
+else
+    fail "replace-ref fixture did not change the unprotected Git diff"
+fi
+set +e
+(
+    cd "$REPO"
+    env GIT_NO_REPLACE_OBJECTS=0 \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$BASE" --head "$HEAD_SHA"
+) > "$TMP_ROOT/replace-ref.out" 2>&1
+RC=$?
+set -e
+assert_status "bound verifier ignores repository replace refs" 0 "$RC"
+REPLACE_RUN_DIR=$(latest_run_dir)
+python3 - "$REPLACE_RUN_DIR/metadata.json" "$BASE" "$HEAD_SHA" \
+    "$EXPECTED_DIFF_HASH" "$EXPECTED_DIFF_SHA256" <<'PY'
+import json
+import sys
+
+path, base, head, diff_hash, diff_sha256 = sys.argv[1:]
+with open(path, encoding="utf-8") as stream:
+    data = json.load(stream)
+assert data["status"] == "pass"
+assert data["base"] == base
+assert data["head"] == head
+assert data["diff_hash"] == diff_hash
+assert data["diff_sha256"] == diff_sha256
+PY
+assert_status "replace refs do not alter immutable bound metadata" 0 "$?"
+git -C "$REPO" replace -d "$HEAD_SHA" >/dev/null
 
 echo "--- failed unbound compatibility run ---"
 printf '%s\n' 7 > "$REPO/.phase-rc"
@@ -378,10 +438,10 @@ assert_status "interruption is distinct from ordinary failure" 0 "$?"
 
 RUN_COUNT=$(find "$REPO/.claude/metrics/verify" -mindepth 1 -maxdepth 1 \
     -type d | wc -l)
-if [[ "$RUN_COUNT" -eq 3 ]]; then
+if [[ "$RUN_COUNT" -eq 4 ]]; then
     pass "each started invocation creates a unique run directory"
 else
-    fail "expected 3 unique run directories, found $RUN_COUNT"
+    fail "expected 4 unique run directories, found $RUN_COUNT"
 fi
 
 echo "--- ZH Catch2 risk routing ---"

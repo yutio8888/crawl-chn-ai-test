@@ -442,13 +442,20 @@ PY
 assert_status "validate-terms: active multiline/arbitrary-type decisions parse" \
     0 "$?"
 
-TERMS_FIXTURE="/tmp/test_scan_i18n_terms_$$.txt"
+TERMS_SOURCE="$TERMS_ROOT/i18n/zh/source.txt"
+TERMS_DESCRIPT="$TERMS_ROOT/descript/zh/fixture.txt"
+TERMS_DATABASE="$TERMS_ROOT/database/zh/fixture.txt"
+mkdir -p "$(dirname "$TERMS_SOURCE")" \
+    "$(dirname "$TERMS_DESCRIPT")" "$(dirname "$TERMS_DATABASE")"
+
 for rejected in 魔窟 弹飞弹 弹开飞弹 埃瑞博拉 宗古多克 宗古尔德罗克; do
-    printf '%s\n%s\n%s\n' '%%%%' 'fixture key' "包含${rejected}的残留。" \
-        > "$TERMS_FIXTURE"
+    printf '%s\n' \
+        '%%%%' 'fixture key' "包含${rejected}的残留。" \
+        '%%%%' 'status|Blood' '血甲' \
+        > "$TERMS_SOURCE"
     set +e
     python3 "$SCAN_I18N" validate-terms \
-        --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+        --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
         > /tmp/actual_validate_terms.txt 2>&1
     terms_status=$?
     set -e
@@ -456,28 +463,180 @@ for rejected in 魔窟 弹飞弹 弹开飞弹 埃瑞博拉 宗古多克 宗古�
         1 "$terms_status"
 done
 
-printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_FIXTURE"
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '嗜血' > "$TERMS_SOURCE"
 set +e
 python3 "$SCAN_I18N" validate-terms \
-    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
     > /tmp/actual_validate_terms.txt 2>&1
 context_status=$?
 set -e
 assert_status "validate-terms: rejects exact defensive status Blood mapping" \
     1 "$context_status"
 
-printf '%s\n%s\n%s\n' '%%%%' 'Status|Blood' '嗜血' > "$TERMS_FIXTURE"
+printf '%s\n%s\n%s\n' '%%%%' 'STATUS|BLOOD' '前缀嗜血后缀' \
+    > "$TERMS_SOURCE"
+set +e
 python3 "$SCAN_I18N" validate-terms \
-    --glossary "$DECISIONS" --source-txt "$TERMS_FIXTURE" \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
     > /tmp/actual_validate_terms.txt 2>&1
-assert_status "validate-terms: context key matching remains exact" 0 "$?"
+case_substring_status=$?
+set -e
+assert_status "validate-terms: production lowercase and substring match" \
+    1 "$case_substring_status"
 
-TERMS_SOURCE="$TERMS_ROOT/i18n/zh/source.txt"
-TERMS_DESCRIPT="$TERMS_ROOT/descript/zh/fixture.txt"
-TERMS_DATABASE="$TERMS_ROOT/database/zh/fixture.txt"
-mkdir -p "$(dirname "$TERMS_SOURCE")" \
-    "$(dirname "$TERMS_DESCRIPT")" "$(dirname "$TERMS_DATABASE")"
-printf '%s\n%s\n%s\n' '%%%%' 'bloodlust flavour' '嗜血' > "$TERMS_SOURCE"
+printf '%s\n' \
+    '%%%%' 'status|Blood' '血甲' \
+    '%%%%' 'other|Blood' '前缀嗜血后缀' \
+    > "$TERMS_SOURCE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: non-matching contextual scope is legal" 0 "$?"
+
+printf '%s\n%s\n%s\n' '%%%%' 'STATUS|BLOOD' '源文件含嗜血' \
+    > "$TERMS_SOURCE"
+TERMS_OVERRIDE="$TERMS_ROOT/i18n/zh/a-override.txt"
+printf '%s\n%s\n%s\n' '%%%%' 'status|blood' '血甲' > "$TERMS_OVERRIDE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: source.txt loads before sorted override files" \
+    0 "$?"
+
+TERMS_LAST="$TERMS_ROOT/i18n/zh/z-last.txt"
+printf '%s\n%s\n%s\n' '%%%%' 'Status|Blood' '最后定义仍有嗜血' \
+    > "$TERMS_LAST"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+last_definition_status=$?
+set -e
+assert_status "validate-terms: final sorted definition wins" \
+    1 "$last_definition_status"
+rm -f "$TERMS_LAST"
+
+rm -f "$TERMS_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_source_status=$?
+set -e
+assert_status "validate-terms: missing source.txt fails closed" \
+    2 "$missing_source_status"
+assert_contains "validate-terms: missing source.txt diagnostic is explicit" \
+    "required SourceDB source.txt does not exist" \
+    /tmp/actual_validate_terms.txt
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '血甲' > "$TERMS_SOURCE"
+
+TERMS_INVALID="$TERMS_ROOT/i18n/zh/z-invalid.txt"
+printf '%s\n%s\n' '%%%%' 'invalid UTF-8 fixture' > "$TERMS_INVALID"
+printf '\377\n' >> "$TERMS_INVALID"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+invalid_sourcedb_status=$?
+set -e
+assert_status "validate-terms: invalid UTF-8 SourceDB file fails closed" \
+    2 "$invalid_sourcedb_status"
+assert_contains "validate-terms: invalid SourceDB diagnostic is explicit" \
+    "cannot parse required TextDB file" /tmp/actual_validate_terms.txt
+rm -f "$TERMS_INVALID"
+
+rm -f "$TERMS_OVERRIDE"
+printf '%s\n%s\n%s\n' '%%%%' 'other|Blood' '血甲' > "$TERMS_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_context_status=$?
+set -e
+assert_status "validate-terms: missing contextual SourceDB key fails closed" \
+    2 "$missing_context_status"
+assert_contains "validate-terms: missing contextual key diagnostic is explicit" \
+    "is missing from the effective SourceDB" /tmp/actual_validate_terms.txt
+printf '%s\n%s\n%s\n' '%%%%' 'status|blood' '血甲' > "$TERMS_OVERRIDE"
+
+INVALID_DECISIONS="$TERMS_ROOT/invalid-decisions.md"
+printf '%s\n' \
+    '### D-Q-910 — invalid contextual fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|\|Blood` | 血甲 |' \
+    '- **Rejected**: `status||Blood → 嗜血`' \
+    > "$INVALID_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$INVALID_DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+invalid_context_status=$?
+set -e
+assert_status "validate-terms: invalid contextual rule fails closed" \
+    2 "$invalid_context_status"
+assert_contains "validate-terms: invalid contextual rule diagnostic is explicit" \
+    "invalid contextual Rejected mapping" /tmp/actual_validate_terms.txt
+
+DUPLICATE_DECISIONS="$TERMS_ROOT/duplicate-decisions.md"
+printf '%s\n' \
+    '### D-Q-911 — duplicate contextual fixture one' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: `status|Blood → 嗜血`' \
+    '### D-Q-912 — duplicate contextual fixture two' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `STATUS\|BLOOD` | 血甲 |' \
+    '- **Rejected**: `STATUS|BLOOD → 嗜血`' \
+    > "$DUPLICATE_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DUPLICATE_DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+duplicate_context_status=$?
+set -e
+assert_status "validate-terms: duplicate normalized contextual rule fails closed" \
+    2 "$duplicate_context_status"
+assert_contains "validate-terms: duplicate contextual diagnostic is explicit" \
+    "duplicate contextual rules for normalized key" \
+    /tmp/actual_validate_terms.txt
+
+CONFLICT_DECISIONS="$TERMS_ROOT/conflict-decisions.md"
+printf '%s\n' \
+    '### D-Q-913 — conflicting contextual fixture one' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: `status|Blood → 嗜血`' \
+    '### D-Q-914 — conflicting contextual fixture two' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `STATUS\|BLOOD` | 鲜血 |' \
+    '- **Rejected**: `STATUS|BLOOD → 血欲`' \
+    > "$CONFLICT_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$CONFLICT_DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+conflict_context_status=$?
+set -e
+assert_status "validate-terms: conflicting normalized contextual rule fails closed" \
+    2 "$conflict_context_status"
+assert_contains "validate-terms: conflicting contextual diagnostic is explicit" \
+    "conflicting contextual rules for normalized key" \
+    /tmp/actual_validate_terms.txt
+
+printf '%s\n' \
+    '%%%%' 'status|Blood' '血甲' \
+    '%%%%' 'bloodlust flavour' '嗜血' \
+    > "$TERMS_SOURCE"
 printf '%s\n%s\n%s\n' '%%%%' 'descript fixture' '残留魔窟。' \
     > "$TERMS_DESCRIPT"
 printf '%s\n%s\n%s\n' '%%%%' 'database fixture' '合法文本。' \
@@ -492,10 +651,17 @@ import sys
 spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-files, errors = module._collect_zh_textdb_files(sys.argv[2], sys.argv[3:])
+files, errors, sourcedb = module._collect_zh_textdb_files(
+    sys.argv[2], sys.argv[3:]
+)
 assert not errors
-assert len(files) == 3
+assert len(files) == 4
 assert files.count(os.path.abspath(sys.argv[2])) == 1
+assert sourcedb == [
+    os.path.abspath(sys.argv[2]),
+    os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])),
+                 "a-override.txt"),
+]
 PY
 assert_status "validate-terms: source.txt is deduplicated across explicit roots" \
     0 "$?"
@@ -566,7 +732,7 @@ assert_status "validate-terms: unreadable ZH TextDB fails closed" \
     2 "$unreadable_zh_status"
 assert_contains "validate-terms: unreadable TextDB diagnostic is explicit" \
     "cannot parse required TextDB file" /tmp/actual_validate_terms.txt
-rm -f "$TERMS_FIXTURE" /tmp/actual_validate_terms.txt
+rm -f /tmp/actual_validate_terms.txt
 rm -rf "$TERMS_ROOT"
 
 # ── check-gaps ──

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import hashlib
 import importlib.util
 import json
 import subprocess
@@ -19,6 +20,19 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+from i18n_shared import AuditInput
+
+
+def review_input(path):
+    data = path.read_bytes()
+    return AuditInput(
+        audit_commit=None,
+        logical_path="fixtures/review.md",
+        relative_path="fixtures/review.md",
+        bytes=data,
+        text=data.decode("utf-8", errors="strict"),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
@@ -443,20 +457,20 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                 "attribute:STAT_STR": "adjust",
             }
             path.write_text(
-                MODULE.strict_review_block(payload, conclusions) + "\n",
+                MODULE.render_review_results(payload, conclusions),
                 encoding="utf-8",
             )
-            clean = MODULE.review_coverage(payload, path)
+            clean = MODULE.review_coverage(payload, review_input(path))
             self.assertTrue(clean["coverage_equal"])
 
             conclusions["mutation:MUT_TEST"] = "pending"
-            text = MODULE.strict_review_block(payload, conclusions)
+            text = MODULE.render_review_results(payload, conclusions)
             text = "\n".join(
                 line for line in text.splitlines()
                 if '"identity":"attribute:STAT_STR"' not in line
             )
             path.write_text(text + "\n", encoding="utf-8")
-            broken = MODULE.review_coverage(payload, path)
+            broken = MODULE.review_coverage(payload, review_input(path))
         self.assertFalse(broken["coverage_equal"])
         self.assertEqual(
             ["attribute:STAT_STR"], broken["missing_evidence_cards"]
@@ -475,7 +489,7 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                 {"identity": "status:STATUS_TWO", "fact": "two"},
             ],
         }
-        clean_text = MODULE.strict_review_block(
+        clean_text = MODULE.render_review_results(
             payload,
             {
                 "status:STATUS_ONE": "keep",
@@ -485,17 +499,18 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
 
         def mutate_metadata(text, field, value):
             lines = text.splitlines()
-            metadata = json.loads(lines[1])
+            marker = lines.index(MODULE.STRICT_REVIEW_BEGIN)
+            metadata = json.loads(lines[marker + 1])
             metadata[field] = value
-            lines[1] = json.dumps(
+            lines[marker + 1] = json.dumps(
                 metadata, sort_keys=True, separators=(",", ":")
             )
             return "\n".join(lines)
 
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
-            path.write_text(clean_text + "\n", encoding="utf-8")
-            self.assertTrue(MODULE.review_coverage(payload, path)[
+            path.write_text(clean_text, encoding="utf-8")
+            self.assertTrue(MODULE.review_coverage(payload, review_input(path))[
                 "coverage_equal"
             ])
             for field, value in (
@@ -509,49 +524,108 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                         mutate_metadata(clean_text, field, value) + "\n",
                         encoding="utf-8",
                     )
-                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                    self.assertFalse(MODULE.review_coverage(
+                        payload, review_input(path)
+                    )[
                         "coverage_equal"
                     ])
 
+            summary_lines = clean_text.splitlines()
+            summary_index = summary_lines.index(
+                MODULE.REVIEW_ARTIFACT_BEGIN
+            ) + 1
+            clean_summary = json.loads(summary_lines[summary_index])
+            for field in clean_summary:
+                with self.subTest(summary_field=field):
+                    mutated_summary = dict(clean_summary)
+                    mutated_summary[field] = "mutated"
+                    changed = list(summary_lines)
+                    changed[summary_index] = json.dumps(
+                        mutated_summary,
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    )
+                    path.write_text(
+                        "\n".join(changed) + "\n",
+                        encoding="utf-8",
+                    )
+                    result = MODULE.review_coverage(
+                        payload, review_input(path)
+                    )
+                    self.assertFalse(result["artifact_exact"])
+                    self.assertFalse(result["coverage_equal"])
+
             lines = clean_text.splitlines()
-            first = json.loads(lines[3])
-            second = json.loads(lines[4])
+            marker = lines.index(MODULE.STRICT_REVIEW_BEGIN)
+            first_index = marker + 3
+            second_index = marker + 4
+            first = json.loads(lines[first_index])
+            second = json.loads(lines[second_index])
             mutations = {
                 "fact": [
-                    *lines[:3],
+                    *lines[:first_index],
                     json.dumps(
                         dict(first, fact_sha256="0" * 64),
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
-                    *lines[4:],
+                    *lines[first_index + 1:],
                 ],
                 "pending": [
-                    *lines[:3],
+                    *lines[:first_index],
                     json.dumps(
                         dict(first, terminal_conclusion="pending"),
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
-                    *lines[4:],
+                    *lines[first_index + 1:],
                 ],
-                "duplicate": [*lines[:4], lines[3], *lines[4:]],
-                "missing": [*lines[:3], *lines[4:]],
+                "duplicate": [
+                    *lines[:second_index],
+                    lines[first_index],
+                    *lines[second_index:],
+                ],
+                "missing": [
+                    *lines[:first_index],
+                    *lines[first_index + 1:],
+                ],
                 "extra": [
-                    *lines[:5],
+                    *lines[:second_index + 1],
                     json.dumps(
                         dict(second, identity="status:STATUS_EXTRA"),
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
-                    *lines[5:],
+                    *lines[second_index + 1:],
                 ],
-                "reordered": [*lines[:3], lines[4], lines[3], *lines[5:]],
+                "reordered": [
+                    *lines[:first_index],
+                    lines[second_index],
+                    lines[first_index],
+                    *lines[second_index + 1:],
+                ],
+                "external-prose": [
+                    *lines,
+                    "unbound current/final assertion",
+                ],
+                "missing-artifact-marker": [
+                    line for line in lines
+                    if line != MODULE.REVIEW_ARTIFACT_BEGIN
+                ],
+                "duplicate-artifact-marker": [
+                    *lines[:lines.index(MODULE.REVIEW_ARTIFACT_BEGIN)],
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    *lines[lines.index(MODULE.REVIEW_ARTIFACT_BEGIN) + 1:],
+                ],
             }
             for name, mutated in mutations.items():
                 with self.subTest(mutation=name):
                     path.write_text("\n".join(mutated) + "\n", encoding="utf-8")
-                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                    self.assertFalse(MODULE.review_coverage(
+                        payload, review_input(path)
+                    )[
                         "coverage_equal"
                     ])
 

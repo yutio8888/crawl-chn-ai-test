@@ -26,6 +26,8 @@ SPEC = importlib.util.spec_from_file_location("review_bundle", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader
 SPEC.loader.exec_module(MODULE)
+import i18n_shared as SHARED  # noqa: E402
+import monster_name_ssot as MONSTER  # noqa: E402
 GLOSSARY_SOURCE = SCRIPT.parents[2] / "docs/glossary.md"
 GLOSSARY_SHA256 = hashlib.sha256(GLOSSARY_SOURCE.read_bytes()).hexdigest()
 CLASSIFIER_SOURCE = """#!/usr/bin/env python3
@@ -41,6 +43,7 @@ parser.add_argument('--head', required=True)
 args = parser.parse_args()
 if os.environ.get('FAKE_CLASSIFIER_REQUIRE_CLEAN_ENV'):
     unsafe = ('PYTHONPATH', 'LD_PRELOAD', 'BASH_ENV', 'GIT_DIR',
+              'GIT_ATTR_SOURCE', 'GIT_NAMESPACE', 'GIT_SHALLOW_FILE',
               'ZH_VERIFY_RUNTIME_COMMAND')
     expected = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     if any(os.environ.get(name) for name in unsafe) or os.environ.get('PATH') != expected:
@@ -59,6 +62,34 @@ result = {
     'source': {'type': 'git', 'base': args.base, 'head': args.head},
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
+"""
+REPLACE_AWARE_CLASSIFIER_SOURCE = """#!/usr/bin/env python3
+import argparse
+import json
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--repo', required=True)
+parser.add_argument('--base', required=True)
+parser.add_argument('--head', required=True)
+args = parser.parse_args()
+files = sorted(set(filter(None, subprocess.check_output([
+    'git', '-C', args.repo, 'diff', '--name-only', '--no-renames',
+    f'{args.base}..{args.head}', '--',
+], text=True).splitlines())))
+classified = [{
+    'path': path,
+    'category': 'code',
+    'reason': 'replace-aware fixture code',
+} for path in files]
+print(json.dumps({
+    'schema_version': 2,
+    'classification': 'code' if files else 'none',
+    'reviewers': ['zh-code-reviewer'] if files else [],
+    'files': files,
+    'classified_files': classified,
+    'source': {'type': 'git', 'base': args.base, 'head': args.head},
+}, ensure_ascii=False, sort_keys=True))
 """
 
 
@@ -131,6 +162,18 @@ def production_review_execution_closure(
 
 
 class ProductionControlPlaneClosureTests(unittest.TestCase):
+    REQUIRED_REVIEW_CORE = {
+        ".claude/scripts/i18n_shared.py",
+        ".claude/scripts/review_bundle.py",
+        ".claude/scripts/verify_zh.sh",
+        ".claude/scripts/audit_character_mechanics_inventory.py",
+        ".claude/scripts/audit_god_inventory.py",
+        ".claude/scripts/audit_item_name_inventory.py",
+        ".claude/scripts/monster_name_ssot.py",
+        ".claude/scripts/audit_species_background_inventory.py",
+        ".claude/scripts/audit_world_inventory.py",
+    }
+
     def setUp(self) -> None:
         self.contract_path = (
             SCRIPT.parent / "data/review_verification_contract_v5.json"
@@ -149,6 +192,11 @@ class ProductionControlPlaneClosureTests(unittest.TestCase):
 
     def test_real_review_entry_closure_matches_contract_exactly(self) -> None:
         self.assert_closure_matches(self.contract)
+        self.assertTrue(
+            self.REQUIRED_REVIEW_CORE.issubset(
+                self.contract["control_plane_files"]
+            )
+        )
         verifier = (SCRIPT.parent / "verify_zh.sh").read_text(encoding="utf-8")
         smoke = (SCRIPT.parent / "smoke_test.sh").read_text(encoding="utf-8")
         runtime = (SCRIPT.parent / "post_zh_runtime.sh").read_text(
@@ -157,6 +205,18 @@ class ProductionControlPlaneClosureTests(unittest.TestCase):
         self.assertIn('$SCRIPT_DIR/check_default_utf8.py', verifier)
         self.assertIn('$SCRIPT_DIR/run_with_timeout.py', smoke)
         self.assertIn('$SCRIPT_DIR/run_with_timeout.py', runtime)
+
+    def test_each_required_review_core_deletion_breaks_closure(self) -> None:
+        for required in sorted(self.REQUIRED_REVIEW_CORE):
+            with self.subTest(required=required):
+                missing = dict(self.contract)
+                missing["control_plane_files"] = [
+                    path
+                    for path in self.contract["control_plane_files"]
+                    if path != required
+                ]
+                with self.assertRaises(AssertionError):
+                    self.assert_closure_matches(missing)
 
     def test_missing_and_unknown_contract_entries_are_rejected(self) -> None:
         missing = dict(self.contract)
@@ -187,6 +247,295 @@ class ProductionControlPlaneClosureTests(unittest.TestCase):
                     ".claude/scripts/tests/evil.py": "",
                 },
             )
+
+
+class ImmutableAuditInputTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.repo = Path(self.tempdir.name) / "repo"
+        subprocess.run(["git", "init", "-q", str(self.repo)], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.repo), "config", "user.email",
+             "test@example.invalid"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.repo), "config", "user.name", "Test"],
+            check=True,
+        )
+        self.ledger = self.repo / "docs/review.md"
+        self.ledger.parent.mkdir(parents=True)
+        self.ledger.write_text("GOOD\n", encoding="utf-8")
+        self.good = self.commit_all("good")
+
+    def tearDown(self) -> None:
+        self.tempdir.cleanup()
+
+    def git(self, *args: str) -> str:
+        return subprocess.check_output(
+            ["git", "-C", str(self.repo), *args],
+            text=True,
+        ).strip()
+
+    def commit_all(self, message: str) -> str:
+        subprocess.run(
+            ["git", "-C", str(self.repo), "add", "-A"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.repo), "commit", "-qm", message],
+            check=True,
+        )
+        return self.git("rev-parse", "HEAD")
+
+    def audit_input(self, text: str) -> SHARED.AuditInput:
+        data = text.encode("utf-8")
+        return SHARED.AuditInput(
+            audit_commit=self.good,
+            logical_path="docs/review.md",
+            relative_path="docs/review.md",
+            bytes=data,
+            text=text,
+            sha256=hashlib.sha256(data).hexdigest(),
+        )
+
+    def test_regular_git_blob_is_non_head_replace_safe_and_single_read(
+        self,
+    ) -> None:
+        self.ledger.write_text("NEW HEAD\n", encoding="utf-8")
+        head = self.commit_all("new head")
+        self.assertNotEqual(self.good, head)
+        with mock.patch.object(
+            SHARED, "_run_git_bytes", wraps=SHARED._run_git_bytes
+        ) as run_git:
+            mode, data = SHARED.read_regular_git_blob(
+                self.repo, self.good, "docs/review.md", with_mode=True
+            )
+        self.assertEqual("100644", mode)
+        self.assertEqual(b"GOOD\n", data)
+        self.assertEqual(
+            1,
+            sum(
+                call.args[1:3] == ("cat-file", "blob")
+                for call in run_git.call_args_list
+            ),
+        )
+
+        subprocess.run(
+            ["git", "-C", str(self.repo), "replace", self.good, head],
+            check=True,
+        )
+        self.assertEqual(
+            b"NEW HEAD\n",
+            subprocess.check_output(
+                ["git", "-C", str(self.repo), "show",
+                 f"{self.good}:docs/review.md"]
+            ),
+        )
+        self.assertEqual(
+            b"GOOD\n",
+            SHARED.read_regular_git_blob(
+                self.repo, self.good, "docs/review.md"
+            ),
+        )
+        subprocess.run(
+            ["git", "-C", str(self.repo), "replace", "-d", self.good],
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+
+        self.ledger.chmod(0o755)
+        executable = self.commit_all("executable")
+        mode, data = SHARED.read_regular_git_blob(
+            self.repo, executable, "docs/review.md", with_mode=True
+        )
+        self.assertEqual(("100755", b"NEW HEAD\n"), (mode, data))
+
+    def test_git_blob_rejects_oid_object_path_and_non_utf8_matrix(
+        self,
+    ) -> None:
+        link = self.repo / "docs/link.md"
+        link.symlink_to("review.md")
+        binary = self.repo / "docs/binary.md"
+        binary.write_bytes(b"\xff\n")
+        unsafe = self.commit_all("unsafe blobs")
+        subprocess.run(
+            [
+                "git", "-C", str(self.repo), "update-index",
+                "--add", "--cacheinfo",
+                f"160000,{self.good},docs/gitlink",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(self.repo), "commit", "-qm", "gitlink"],
+            check=True,
+        )
+        commit = self.git("rev-parse", "HEAD")
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        blob = self.git("rev-parse", "HEAD:docs/review.md")
+
+        for invalid in (
+            commit[:12], "HEAD", commit.upper(), "0" * 40, "0" * 64,
+            tree, blob,
+        ):
+            with self.subTest(invalid_oid=invalid):
+                with self.assertRaises(SHARED.AuditInputError):
+                    SHARED.read_regular_git_blob(
+                        self.repo, invalid, "docs/review.md"
+                    )
+        for invalid in (
+            "../docs/review.md", "/docs/review.md",
+            "docs//review.md", r"docs\review.md",
+        ):
+            with self.subTest(invalid_path=invalid):
+                with self.assertRaisesRegex(
+                    SHARED.AuditInputError, "normalized relative path"
+                ):
+                    SHARED.read_regular_git_blob(
+                        self.repo, commit, invalid
+                    )
+        with self.assertRaisesRegex(
+            SHARED.AuditInputError, "missing or ambiguous"
+        ):
+            SHARED.read_regular_git_blob(
+                self.repo, commit, "docs/missing.md"
+            )
+        for path in ("docs", "docs/link.md", "docs/gitlink"):
+            with self.subTest(non_regular=path):
+                with self.assertRaisesRegex(
+                    SHARED.AuditInputError, "not a regular file"
+                ):
+                    SHARED.read_regular_git_blob(
+                        self.repo, commit, path
+                    )
+        with mock.patch.dict(
+            os.environ, {"ZH_VERIFY_AUDIT_COMMIT": commit}, clear=False
+        ):
+            with self.assertRaisesRegex(
+                SHARED.AuditInputError, "not strict UTF-8"
+            ):
+                SHARED.load_review_input(
+                    self.repo, "docs/binary.md"
+                )
+            with self.assertRaisesRegex(
+                SHARED.AuditInputError, "does not equal audit root HEAD"
+            ):
+                os.environ["ZH_VERIFY_AUDIT_COMMIT"] = unsafe
+                SHARED.load_review_input(
+                    self.repo, "docs/review.md"
+                )
+
+    def test_unbound_input_rejects_unsafe_files_and_freezes_one_read(
+        self,
+    ) -> None:
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("ZH_VERIFY_AUDIT_COMMIT", None)
+            loaded = SHARED.load_review_input(
+                self.repo, "docs/review.md"
+            )
+            self.ledger.write_text("BAD REPLACEMENT\n", encoding="utf-8")
+            self.assertEqual("GOOD\n", loaded.text)
+            self.assertEqual(
+                hashlib.sha256(b"GOOD\n").hexdigest(),
+                loaded.sha256,
+            )
+            self.assertEqual(
+                loaded.sha256,
+                SHARED.review_input_metadata(loaded)["input_sha256"],
+            )
+
+            self.ledger.unlink()
+            self.ledger.symlink_to(self.repo / "outside.md")
+            with self.assertRaisesRegex(
+                SHARED.AuditInputError, "not a regular file"
+            ):
+                SHARED.load_review_input(
+                    self.repo, "docs/review.md"
+                )
+            self.ledger.unlink()
+            self.ledger.write_text("GOOD\n", encoding="utf-8")
+
+            real_docs = self.repo / "docs-real"
+            (self.repo / "docs").rename(real_docs)
+            (self.repo / "docs").symlink_to(
+                real_docs, target_is_directory=True
+            )
+            try:
+                with self.assertRaisesRegex(
+                    SHARED.AuditInputError,
+                    "parent is not a real directory",
+                ):
+                    SHARED.load_review_input(
+                        self.repo, "docs/review.md"
+                    )
+            finally:
+                (self.repo / "docs").unlink()
+                real_docs.rename(self.repo / "docs")
+
+            with self.assertRaisesRegex(
+                SHARED.AuditInputError, "cannot be inspected"
+            ):
+                SHARED.load_review_input(
+                    self.repo, "docs/missing.md"
+                )
+            fifo = self.repo / "docs/review.fifo"
+            os.mkfifo(fifo)
+            with self.assertRaisesRegex(
+                SHARED.AuditInputError, "not a regular file"
+            ):
+                SHARED.load_review_input(
+                    self.repo, "docs/review.fifo"
+                )
+
+            replacement = self.repo / "docs/replacement.md"
+            replacement.write_text("REPLACEMENT\n", encoding="utf-8")
+            inspected = self.repo / "docs/inspected.md"
+            real_open = SHARED.os.open
+
+            def swap_before_open(path, flags):
+                self.ledger.replace(inspected)
+                replacement.replace(self.ledger)
+                return real_open(path, flags)
+
+            with mock.patch.object(
+                SHARED.os, "open", side_effect=swap_before_open
+            ):
+                with self.assertRaisesRegex(
+                    SHARED.AuditInputError,
+                    "changed between inspection and open",
+                ):
+                    SHARED.load_review_input(
+                        self.repo, "docs/review.md"
+                    )
+
+    def test_monster_consumer_requires_exact_loaded_whole_document(
+        self,
+    ) -> None:
+        baseline = "a" * 40
+        text = f"- 基线：`{baseline}`\n"
+        payload = {"rows": []}
+        with (
+            mock.patch.object(
+                MONSTER, "_resolve_commit", return_value=baseline
+            ),
+            mock.patch.object(
+                MONSTER, "render_review_results", return_value=text
+            ),
+        ):
+            clean = MONSTER.review_coverage(
+                payload, self.audit_input(text), baseline
+            )
+            changed = MONSTER.review_coverage(
+                payload,
+                self.audit_input(text + "unbound current assertion\n"),
+                baseline,
+            )
+        self.assertTrue(clean["coverage_equal"])
+        self.assertTrue(clean["artifact_exact"])
+        self.assertEqual(self.good, clean["audit_commit"])
+        self.assertFalse(changed["coverage_equal"])
+        self.assertFalse(changed["artifact_exact"])
 
 
 class ReviewBundleTests(unittest.TestCase):
@@ -372,6 +721,10 @@ raise SystemExit(7 if mode == 'fail' else 0)
         self.verifier.chmod(0o755)
         shell_scripts = self.repo / ".claude/scripts"
         shutil.copy2(SCRIPT, shell_scripts / "review_bundle.py")
+        shutil.copy2(
+            SCRIPT.parent / "i18n_shared.py",
+            shell_scripts / "i18n_shared.py",
+        )
         shutil.copy2(SCRIPT.parent / "review_final_gate.sh", shell_scripts / "review_final_gate.sh")
         shell_verifier = shell_scripts / "verify_zh.sh"
         shutil.copy2(self.verifier, shell_verifier)
@@ -381,6 +734,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         shell_contract["control_plane_files"] = sorted([
             MODULE.TRUSTED_CLASSIFIER_PATH,
             ".claude/scripts/data/review_verification_contract_v5.json",
+            ".claude/scripts/i18n_shared.py",
             ".claude/scripts/review_bundle.py",
             ".claude/scripts/review_final_gate.sh",
             ".claude/scripts/verify_zh.sh",
@@ -538,6 +892,177 @@ raise SystemExit(7 if mode == 'fail' else 0)
             bundle_path.name,
             hashlib.sha256(MODULE.canonical_json_bytes(identity)).hexdigest(),
         )
+
+    def test_replace_refs_cannot_change_bound_diff_blob_or_routing(self) -> None:
+        classifier = self.temp / "replace-aware-classifier.py"
+        classifier.write_text(
+            REPLACE_AWARE_CLASSIFIER_SOURCE,
+            encoding="utf-8",
+        )
+        classifier.chmod(0o755)
+        expected_diff = MODULE.diff_bytes(
+            self.candidate, self.base, self.head
+        )
+        expected_routing = MODULE.generate_routing(
+            self.candidate,
+            classifier,
+            self.base,
+            self.head,
+        )
+        self.assertEqual(["tracked.txt"], expected_routing["files"])
+
+        (self.repo / "other.txt").write_text(
+            "replacement-only\n",
+            encoding="utf-8",
+        )
+        self.run_cmd(
+            "git", "add", "other.txt", cwd=self.repo, check=True
+        )
+        self.run_cmd(
+            "git", "commit", "-qm", "replacement object",
+            cwd=self.repo,
+            check=True,
+        )
+        replacement = self.git("rev-parse", "HEAD", cwd=self.repo)
+        self.run_cmd(
+            "git", "replace", self.head, replacement,
+            cwd=self.repo,
+            check=True,
+        )
+
+        raw_environment = os.environ.copy()
+        raw_environment.pop("GIT_NO_REPLACE_OBJECTS", None)
+        raw_diff = subprocess.check_output(
+            [
+                "git", "diff", "--no-ext-diff", "--no-textconv",
+                "--binary", "--full-index",
+                f"{self.base}..{self.head}", "--",
+            ],
+            cwd=self.candidate,
+            env=raw_environment,
+        )
+        self.assertNotEqual(expected_diff, raw_diff)
+        raw_routing = json.loads(subprocess.check_output(
+            [
+                sys.executable, str(classifier),
+                "--repo", str(self.candidate),
+                "--base", self.base,
+                "--head", self.head,
+            ],
+            cwd=self.candidate,
+            env=raw_environment,
+            text=True,
+        ))
+        self.assertEqual(["other.txt"], raw_routing["files"])
+        self.assertEqual(
+            b"base\n",
+            subprocess.check_output(
+                [
+                    "git", "show",
+                    f"{self.head}:tracked.txt",
+                ],
+                cwd=self.candidate,
+                env=raw_environment,
+            ),
+        )
+
+        self.assertEqual(
+            expected_diff,
+            MODULE.diff_bytes(self.candidate, self.base, self.head),
+        )
+        self.assertEqual(
+            expected_routing,
+            MODULE.generate_routing(
+                self.candidate,
+                classifier,
+                self.base,
+                self.head,
+            ),
+        )
+        mode, blob = MODULE._git_blob(
+            self.candidate,
+            self.head,
+            "tracked.txt",
+        )
+        self.assertEqual("100644", mode)
+        self.assertEqual("候选内容\n".encode(), blob)
+
+    def test_all_inherited_git_environment_is_scrubbed_from_git_operations(
+        self,
+    ) -> None:
+        expected_diff = MODULE.diff_bytes(
+            self.candidate, self.base, self.head
+        )
+        (self.repo / ".gitattributes").write_text(
+            "tracked.txt binary\n",
+            encoding="utf-8",
+        )
+        self.run_cmd(
+            "git", "add", ".gitattributes", cwd=self.repo, check=True
+        )
+        self.run_cmd(
+            "git", "commit", "-qm", "hostile attribute source",
+            cwd=self.repo,
+            check=True,
+        )
+        attribute_source = self.git("rev-parse", "HEAD", cwd=self.repo)
+        attribute_environment = os.environ.copy()
+        attribute_environment.pop("GIT_NO_REPLACE_OBJECTS", None)
+        attribute_environment["GIT_ATTR_SOURCE"] = attribute_source
+        raw_attribute_diff = subprocess.check_output(
+            [
+                MODULE.GIT_BINARY,
+                "diff", "--no-ext-diff", "--no-textconv",
+                "--binary", "--full-index",
+                f"{self.base}..{self.head}", "--",
+            ],
+            cwd=self.candidate,
+            env=attribute_environment,
+        )
+        self.assertNotEqual(expected_diff, raw_attribute_diff)
+
+        shallow_file = self.temp / "hostile-shallow"
+        shallow_file.write_text(self.head + "\n", encoding="ascii")
+        shallow_environment = os.environ.copy()
+        shallow_environment.pop("GIT_NO_REPLACE_OBJECTS", None)
+        shallow_environment["GIT_SHALLOW_FILE"] = str(shallow_file)
+        raw_ancestor = subprocess.run(
+            [
+                MODULE.GIT_BINARY,
+                "merge-base", "--is-ancestor",
+                self.base, self.head,
+            ],
+            cwd=self.candidate,
+            env=shallow_environment,
+            check=False,
+        )
+        self.assertEqual(1, raw_ancestor.returncode)
+
+        with self.fake_environment(
+            GIT_ATTR_SOURCE=attribute_source,
+            GIT_NAMESPACE="hostile-namespace",
+            GIT_SHALLOW_FILE=str(shallow_file),
+        ):
+            trusted_environment = MODULE._trusted_child_environment()
+            self.assertEqual(
+                "1", trusted_environment["GIT_NO_REPLACE_OBJECTS"]
+            )
+            self.assertEqual(
+                {"GIT_NO_REPLACE_OBJECTS"},
+                {
+                    name for name in trusted_environment
+                    if name.startswith("GIT_")
+                },
+            )
+            self.assertEqual(
+                expected_diff,
+                MODULE.diff_bytes(
+                    self.candidate, self.base, self.head
+                ),
+            )
+            MODULE._assert_ancestor(
+                self.candidate, self.base, self.head
+            )
 
     def test_checkout_root_alias_is_safe_but_descendant_symlink_is_rejected(
         self,
@@ -704,12 +1229,17 @@ raise SystemExit(7 if mode == 'fail' else 0)
                     self.fail("routing-v1 bundle authorized a final action")
 
     def test_trusted_classifier_scrubs_loader_and_override_environment(self) -> None:
+        shallow_file = self.temp / "classifier-hostile-shallow"
+        shallow_file.write_text(self.head + "\n", encoding="ascii")
         with self.fake_environment(
             FAKE_CLASSIFIER_REQUIRE_CLEAN_ENV="1",
             PYTHONPATH="/tmp/unsafe-python-path",
             LD_PRELOAD="/tmp/unsafe-preload.so",
             BASH_ENV="/tmp/unsafe-bash-env",
             GIT_DIR="/tmp/not-the-repository",
+            GIT_ATTR_SOURCE=self.base,
+            GIT_NAMESPACE="hostile-namespace",
+            GIT_SHALLOW_FILE=str(shallow_file),
             ZH_VERIFY_RUNTIME_COMMAND="true",
             PATH="/tmp/unsafe-path",
         ):
@@ -1016,6 +1546,35 @@ raise SystemExit(7 if mode == 'fail' else 0)
                 "reviewer": "zh-code-reviewer",
                 "sha256": result["readiness_sha256"]["zh-code-reviewer"],
             }],
+        )
+
+    def test_control_plane_reads_non_head_target_blob_not_worktree_bytes(self) -> None:
+        target_path = self.candidate / ".trusted/fake_verify.py"
+        target_bytes = subprocess.check_output(
+            [
+                "git", "-C", str(self.candidate), "show",
+                f"{self.base}:.trusted/fake_verify.py",
+            ]
+        )
+        self.assertNotEqual(self.base, self.head)
+        original = target_path.read_bytes()
+        try:
+            target_path.write_bytes(b"BAD WORKTREE BYTES\n")
+            control = MODULE._control_plane_from_commit(
+                self.candidate,
+                self.base,
+                ".trusted/final_contract.json",
+                ".trusted/fake_verify.py",
+            )
+        finally:
+            target_path.write_bytes(original)
+        record = next(
+            item for item in control["control_plane"]["files"]
+            if item["path"] == ".trusted/fake_verify.py"
+        )
+        self.assertEqual(record["sha256"], MODULE.sha256_bytes(target_bytes))
+        self.assertNotEqual(
+            record["sha256"], MODULE.sha256_bytes(b"BAD WORKTREE BYTES\n")
         )
 
     def test_wrong_contract_is_rejected_before_verifier_start(self) -> None:

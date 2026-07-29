@@ -2,6 +2,7 @@
 
 import contextlib
 import copy
+import hashlib
 import importlib.util
 import io
 import json
@@ -22,6 +23,19 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+from i18n_shared import AuditInput
+
+
+def review_input(path):
+    data = path.read_bytes()
+    return AuditInput(
+        audit_commit=None,
+        logical_path="fixtures/review.md",
+        relative_path="fixtures/review.md",
+        bytes=data,
+        text=data.decode("utf-8", errors="strict"),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
@@ -580,7 +594,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(["a"], violations["mismatched_evidence_cards"])
 
     def test_issue29_cli_review_results_has_exact_bidirectional_coverage(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory(dir=MODULE.ROOT / ".claude") as directory:
             root = Path(directory)
             inventory = root / "inventory.json"
             results = root / "results.md"
@@ -603,7 +617,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             )
             payload = json.loads(inventory.read_text(encoding="utf-8"))
             result_text = results.read_text(encoding="utf-8")
-            parsed_results = MODULE.parse_review_results(results)
+            parsed_results = MODULE.parse_review_results(review_input(results))
         self.assertEqual(0, validated.returncode, validated.stderr)
         self.assertFalse(any(payload["review_violations"].values()))
         self.assertEqual(
@@ -636,7 +650,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
 
             write(inventory)
             clean = MODULE.review_violations(
-                [], [], inventory, MODULE.parse_review_header(path)
+                [], [], inventory, MODULE.parse_review_header(review_input(path))
             )
             self.assertFalse(clean["header_mismatches"])
             for field, value in (
@@ -649,10 +663,77 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     changed = dict(inventory, **{field: value})
                     write(changed)
                     violations = MODULE.review_violations(
-                        [], [], inventory, MODULE.parse_review_header(path)
+                        [], [], inventory,
+                        MODULE.parse_review_header(review_input(path))
                     )
                     self.assertEqual(
                         [field], violations["header_mismatches"]
+                    )
+
+    def test_issue29_full_artifact_rejects_summary_marker_and_prose_mutations(self):
+        inventory = {
+            "inventory_sha256": "1" * 64,
+            "glossary_sha256": "2" * 64,
+            "baseline": "3" * 40,
+            "count": 0,
+            "scope": {
+                "randart_component_metrics": {
+                    "totals": {
+                        "physical_variant_identities": 1,
+                        "raw_nonempty_grammar_lines": 2,
+                        "explicit_weight_marker_lines": 0,
+                        "continuation_lines": 1,
+                        "weight_mass": 10,
+                    },
+                },
+            },
+        }
+        clean = MODULE.render_review_results(inventory, [])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+
+            def violations(text):
+                path.write_text(text, encoding="utf-8")
+                loaded = review_input(path)
+                return MODULE.review_violations(
+                    [],
+                    MODULE.parse_review_results(loaded),
+                    inventory,
+                    MODULE.parse_review_header(loaded),
+                    loaded,
+                )
+
+            self.assertFalse(any(violations(clean).values()))
+            lines = clean.splitlines()
+            summary_index = lines.index(MODULE.REVIEW_ARTIFACT_BEGIN) + 1
+            summary = json.loads(lines[summary_index])
+            mutations = {
+                "external-prose": clean + "unbound final assertion\n",
+                "missing-marker": clean.replace(
+                    MODULE.REVIEW_ARTIFACT_BEGIN, "", 1
+                ),
+                "duplicate-marker": clean.replace(
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    MODULE.REVIEW_ARTIFACT_BEGIN + "\n"
+                    + MODULE.REVIEW_ARTIFACT_BEGIN,
+                    1,
+                ),
+            }
+            for field in summary:
+                changed = list(lines)
+                mutated = dict(summary)
+                mutated[field] = "mutated"
+                changed[summary_index] = json.dumps(
+                    mutated,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                mutations[f"summary-{field}"] = "\n".join(changed) + "\n"
+            for name, text in mutations.items():
+                with self.subTest(mutation=name):
+                    self.assertTrue(
+                        violations(text)["artifact_mismatch"]
                     )
 
 

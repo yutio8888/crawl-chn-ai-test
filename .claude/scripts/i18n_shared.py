@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Shared utilities for i18n tools — unified source.txt parser and helpers."""
 
+from __future__ import annotations
+
 import ctypes
 import ctypes.util
 import hashlib
 import os
+import posixpath
 import re
+import shutil
+import stat
 import subprocess
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -28,12 +33,72 @@ class AuditRootError(RuntimeError):
     """The bound candidate-data root is missing, unsafe, or inconsistent."""
 
 
+class AuditInputError(RuntimeError):
+    """A review input is not an immutable regular UTF-8 Git blob."""
+
+
+FULL_GIT_OID_RE = re.compile(r"^[0-9a-f]{40,64}$")
+TRUSTED_SYSTEM_PATH = (
+    "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+)
+GIT_BINARY = shutil.which("git", path=TRUSTED_SYSTEM_PATH) or "/usr/bin/git"
+UNSAFE_GIT_ENV = frozenset({
+    "BASH_ENV",
+    "ENV",
+    "CDPATH",
+    "GIT_EXEC_PATH",
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY",
+    "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_COMMON_DIR",
+    "GIT_CEILING_DIRECTORIES",
+    "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+    "GIT_EXTERNAL_DIFF",
+    "GIT_DIFF_OPTS",
+    "LD_PRELOAD",
+    "LD_LIBRARY_PATH",
+    "PYTHONHOME",
+    "PYTHONPATH",
+})
+
+
+@dataclass(frozen=True)
+class AuditInput:
+    """One immutable, single-read review input."""
+
+    audit_commit: Optional[str]
+    logical_path: str
+    relative_path: str
+    bytes: bytes
+    text: str
+    sha256: str
+
+
+def trusted_git_environment() -> dict[str, str]:
+    """Return a deterministic environment for repository object reads."""
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if key not in UNSAFE_GIT_ENV and not key.startswith("GIT_")
+    }
+    env.update({
+        "PATH": TRUSTED_SYSTEM_PATH,
+        "LC_ALL": "C",
+        "LANG": "C",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+    })
+    return env
+
+
 def _git_toplevel(path: Path, label: str) -> Path:
     try:
         output = subprocess.check_output(
-            ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+            [GIT_BINARY, "-C", str(path), "rev-parse", "--show-toplevel"],
             text=True,
             stderr=subprocess.PIPE,
+            env=trusted_git_environment(),
         ).strip()
     except (OSError, subprocess.SubprocessError) as error:
         raise AuditRootError(
@@ -75,6 +140,234 @@ def resolve_audit_root(default_root: Path) -> Path:
             f"Git top-level: {candidate} != {cwd_top}"
         )
     return candidate
+
+
+def _normalized_git_path(value: str) -> str:
+    if (
+        not isinstance(value, str)
+        or not value
+        or "\x00" in value
+        or "\\" in value
+        or value.startswith("/")
+    ):
+        raise AuditInputError("Git blob path must be a normalized relative path")
+    normalized = posixpath.normpath(value)
+    if (
+        normalized != value
+        or normalized in ("", ".")
+        or any(part in ("", ".", "..") for part in normalized.split("/"))
+    ):
+        raise AuditInputError("Git blob path must be a normalized relative path")
+    return normalized
+
+
+def _run_git_bytes(repo: Path, *args: str) -> bytes:
+    try:
+        return subprocess.check_output(
+            [GIT_BINARY, "-C", str(repo), *args],
+            stderr=subprocess.PIPE,
+            env=trusted_git_environment(),
+        )
+    except (OSError, subprocess.CalledProcessError) as error:
+        message = ""
+        if isinstance(error, subprocess.CalledProcessError):
+            message = error.stderr.decode("utf-8", errors="replace").strip()
+        raise AuditInputError(message or f"git {' '.join(args)} failed") from error
+
+
+def read_regular_git_blob(
+    repo: os.PathLike[str] | str,
+    full_oid: str,
+    normalized_path: str,
+    *,
+    with_mode: bool = False,
+) -> bytes | tuple[str, bytes]:
+    """Read one exact regular-file blob from an immutable commit.
+
+    The checkout may be at a different commit.  Tree metadata is inspected
+    without following worktree paths, and the blob object named by that tree
+    entry is read exactly once.
+    """
+    if not isinstance(full_oid, str) or not FULL_GIT_OID_RE.fullmatch(full_oid):
+        raise AuditInputError("Git commit must be a full lowercase object ID")
+    relative_path = _normalized_git_path(normalized_path)
+    repo_path = Path(repo)
+    resolved = _run_git_bytes(
+        repo_path, "rev-parse", "--verify", f"{full_oid}^{{commit}}"
+    ).decode("ascii", errors="strict").strip()
+    if resolved != full_oid:
+        raise AuditInputError("Git commit must be its complete object ID")
+    raw = _run_git_bytes(
+        repo_path,
+        "ls-tree",
+        "-z",
+        full_oid,
+        "--",
+        relative_path,
+    )
+    records = [record for record in raw.split(b"\0") if record]
+    if len(records) != 1:
+        raise AuditInputError(
+            f"Git blob is missing or ambiguous: {full_oid}:{relative_path}"
+        )
+    try:
+        header, listed_path = records[0].split(b"\t", 1)
+        mode, entry_type, object_id = header.decode("ascii").split(" ")
+        listed = listed_path.decode("utf-8", errors="strict")
+    except (UnicodeDecodeError, ValueError) as error:
+        raise AuditInputError("invalid Git tree metadata") from error
+    if listed != relative_path:
+        raise AuditInputError(
+            f"Git tree path mismatch: {listed!r} != {relative_path!r}"
+        )
+    if entry_type != "blob" or mode not in ("100644", "100755"):
+        raise AuditInputError(
+            f"Git entry is not a regular file: {full_oid}:{relative_path}"
+        )
+    data = _run_git_bytes(repo_path, "cat-file", "blob", object_id)
+    return (mode, data) if with_mode else data
+
+
+def _review_relative_path(
+    audit_root: Path,
+    logical_path: os.PathLike[str] | str,
+) -> tuple[str, Path]:
+    root = Path(os.path.abspath(os.fspath(audit_root)))
+    supplied = Path(logical_path)
+    absolute = (
+        Path(os.path.abspath(os.fspath(supplied)))
+        if supplied.is_absolute()
+        else root / supplied
+    )
+    try:
+        relative = absolute.relative_to(root).as_posix()
+    except ValueError as error:
+        raise AuditInputError(
+            f"review input is outside audit root: {logical_path}"
+        ) from error
+    relative = _normalized_git_path(relative)
+    return relative, absolute
+
+
+def _read_regular_worktree_file(path: Path, audit_root: Path) -> bytes:
+    current = audit_root
+    try:
+        relative_parts = path.relative_to(audit_root).parts
+    except ValueError as error:
+        raise AuditInputError(f"review input is outside audit root: {path}") from error
+    for component in relative_parts[:-1]:
+        current = current / component
+        try:
+            parent_info = os.lstat(current)
+        except OSError as error:
+            raise AuditInputError(
+                f"review input parent cannot be inspected: {current}"
+            ) from error
+        if stat.S_ISLNK(parent_info.st_mode) or not stat.S_ISDIR(
+            parent_info.st_mode
+        ):
+            raise AuditInputError(
+                f"review input parent is not a real directory: {current}"
+            )
+    try:
+        info = os.lstat(path)
+    except OSError as error:
+        raise AuditInputError(f"review input cannot be inspected: {path}") from error
+    if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode):
+        raise AuditInputError(f"review input is not a regular file: {path}")
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+    )
+    try:
+        fd = os.open(path, flags)
+    except OSError as error:
+        raise AuditInputError(f"review input cannot be opened: {path}") from error
+    try:
+        opened = os.fstat(fd)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino)
+        ):
+            raise AuditInputError(
+                f"review input changed between inspection and open: {path}"
+            )
+        chunks = []
+        while True:
+            chunk = os.read(fd, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        return b"".join(chunks)
+    finally:
+        os.close(fd)
+
+
+def load_review_input(
+    audit_root: os.PathLike[str] | str,
+    logical_path: os.PathLike[str] | str,
+) -> AuditInput:
+    """Load one ledger from its bound Git blob or by one safe development read."""
+    root = Path(os.path.abspath(os.fspath(audit_root)))
+    if _git_toplevel(root, "audit root") != root.resolve():
+        raise AuditInputError(f"audit root is not its Git top-level: {root}")
+    relative_path, worktree_path = _review_relative_path(root, logical_path)
+    audit_commit = os.environ.get("ZH_VERIFY_AUDIT_COMMIT")
+    if audit_commit is not None:
+        if not FULL_GIT_OID_RE.fullmatch(audit_commit):
+            raise AuditInputError(
+                "ZH_VERIFY_AUDIT_COMMIT must be a full lowercase object ID"
+            )
+        try:
+            head = subprocess.check_output(
+                [
+                    GIT_BINARY,
+                    "-C",
+                    str(root),
+                    "rev-parse",
+                    "--verify",
+                    "HEAD^{commit}",
+                ],
+                text=True,
+                stderr=subprocess.PIPE,
+                env=trusted_git_environment(),
+            ).strip()
+        except (OSError, subprocess.CalledProcessError) as error:
+            raise AuditInputError("audit root HEAD cannot be resolved") from error
+        if audit_commit != head:
+            raise AuditInputError(
+                "ZH_VERIFY_AUDIT_COMMIT does not equal audit root HEAD: "
+                f"{audit_commit} != {head}"
+            )
+        data = read_regular_git_blob(root, audit_commit, relative_path)
+    else:
+        data = _read_regular_worktree_file(worktree_path, root)
+    if not isinstance(data, bytes):
+        raise AuditInputError("internal Git blob read returned invalid data")
+    try:
+        text = data.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as error:
+        raise AuditInputError(
+            f"review input is not strict UTF-8: {relative_path}"
+        ) from error
+    return AuditInput(
+        audit_commit=audit_commit,
+        logical_path=relative_path,
+        relative_path=relative_path,
+        bytes=data,
+        text=text,
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
+
+
+def review_input_metadata(value: AuditInput) -> dict:
+    """Return stable inventory metadata for one already-loaded review input."""
+    return {
+        "audit_commit": value.audit_commit,
+        "logical_path": value.logical_path,
+        "input_sha256": value.sha256,
+    }
 
 
 @dataclass

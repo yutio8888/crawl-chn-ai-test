@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import copy
+import hashlib
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +17,19 @@ SPEC = importlib.util.spec_from_file_location("audit_god_inventory", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+from i18n_shared import AuditInput
+
+
+def review_input(path):
+    data = path.read_bytes()
+    return AuditInput(
+        audit_commit=None,
+        logical_path="fixtures/review.md",
+        relative_path="fixtures/review.md",
+        bytes=data,
+        text=data.decode("utf-8", errors="strict"),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 def clean_fixture():
@@ -269,19 +285,23 @@ class GodInventoryAuditTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             path.write_text(
-                MODULE.strict_review_block(
+                MODULE.render_review_results(
                     payload, {"GOD_TEST": "keep", "GOD_OTHER": "adjust"}
-                ) + "\n",
+                ),
                 encoding="utf-8",
             )
-            self.assertTrue(MODULE.review_coverage(payload, path)[
+            self.assertTrue(MODULE.review_coverage(payload, review_input(path))[
                 "coverage_equal"
             ])
             lines = path.read_text(encoding="utf-8").splitlines()
+            marker = lines.index(MODULE.STRICT_REVIEW_BEGIN)
+            first = marker + 3
+            second = marker + 4
             path.write_text("\n".join([
-                *lines[:3], lines[4], lines[4], *lines[5:]
+                *lines[:first], lines[second], lines[second],
+                *lines[second + 1:]
             ]) + "\n", encoding="utf-8")
-            coverage = MODULE.review_coverage(payload, path)
+            coverage = MODULE.review_coverage(payload, review_input(path))
             self.assertFalse(coverage["coverage_equal"])
             self.assertEqual(["GOD_TEST"], coverage[
                 "duplicate_evidence_cards"
@@ -300,16 +320,20 @@ class GodInventoryAuditTest(unittest.TestCase):
                 {"identity": "GOD_TEST", "fact": "test"},
             ],
         }
-        clean = MODULE.strict_review_block(
+        clean = MODULE.render_review_results(
             payload, {"GOD_OTHER": "keep", "GOD_TEST": "adjust"}
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
-            path.write_text(clean + "\n", encoding="utf-8")
-            self.assertTrue(MODULE.review_coverage(payload, path)[
+            path.write_text(clean, encoding="utf-8")
+            self.assertTrue(MODULE.review_coverage(payload, review_input(path))[
                 "coverage_equal"
             ])
             lines = clean.splitlines()
+            marker = lines.index(MODULE.STRICT_REVIEW_BEGIN)
+            metadata_index = marker + 1
+            first_index = marker + 3
+            second_index = marker + 4
             mutations = {}
             for field, value in (
                 ("baseline", "0" * 40),
@@ -318,49 +342,125 @@ class GodInventoryAuditTest(unittest.TestCase):
                 ("identity_count", 3),
             ):
                 changed = list(lines)
-                metadata = json.loads(changed[1])
+                metadata = json.loads(changed[metadata_index])
                 metadata[field] = value
-                changed[1] = json.dumps(
+                changed[metadata_index] = json.dumps(
                     metadata, sort_keys=True, separators=(",", ":")
                 )
                 mutations[field] = changed
-            first = json.loads(lines[3])
+            first = json.loads(lines[first_index])
             mutations.update({
                 "fact": [
-                    *lines[:3],
+                    *lines[:first_index],
                     json.dumps(
                         dict(first, fact_sha256="0" * 64),
                         sort_keys=True, separators=(",", ":"),
                     ),
-                    *lines[4:],
+                    *lines[first_index + 1:],
                 ],
                 "pending": [
-                    *lines[:3],
+                    *lines[:first_index],
                     json.dumps(
                         dict(first, terminal_conclusion="pending"),
                         sort_keys=True, separators=(",", ":"),
                     ),
-                    *lines[4:],
+                    *lines[first_index + 1:],
                 ],
-                "missing": [*lines[:3], *lines[4:]],
+                "missing": [
+                    *lines[:first_index],
+                    *lines[first_index + 1:],
+                ],
                 "extra": [
-                    *lines[:5],
+                    *lines[:second_index + 1],
                     json.dumps(
                         dict(first, identity="GOD_EXTRA"),
                         sort_keys=True, separators=(",", ":"),
                     ),
-                    *lines[5:],
+                    *lines[second_index + 1:],
                 ],
-                "reordered": [*lines[:3], lines[4], lines[3], *lines[5:]],
+                "reordered": [
+                    *lines[:first_index],
+                    lines[second_index],
+                    lines[first_index],
+                    *lines[second_index + 1:],
+                ],
+                "restored-old-six-section": [
+                    *lines,
+                    "## 旧六项吐息",
+                    "结论：保留旧 owner/re-entry 条件",
+                ],
+                "missing-artifact-marker": [
+                    line for line in lines
+                    if line != MODULE.REVIEW_ARTIFACT_BEGIN
+                ],
+                "duplicate-artifact-marker": [
+                    *lines[:lines.index(MODULE.REVIEW_ARTIFACT_BEGIN)],
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    *lines[lines.index(MODULE.REVIEW_ARTIFACT_BEGIN) + 1:],
+                ],
             })
+            summary_index = lines.index(MODULE.REVIEW_ARTIFACT_BEGIN) + 1
+            summary = json.loads(lines[summary_index])
+            for field in summary:
+                changed = list(lines)
+                mutated = dict(summary)
+                mutated[field] = "mutated"
+                changed[summary_index] = json.dumps(
+                    mutated,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                mutations[f"summary-{field}"] = changed
             for name, changed in mutations.items():
                 with self.subTest(mutation=name):
                     path.write_text(
                         "\n".join(changed) + "\n", encoding="utf-8"
                     )
-                    self.assertFalse(MODULE.review_coverage(payload, path)[
+                    self.assertFalse(MODULE.review_coverage(
+                        payload, review_input(path)
+                    )[
                         "coverage_equal"
                     ])
+
+    def test_cli_accepts_exact_artifact_and_rejects_external_prose(self):
+        payload = MODULE.build_inventory()
+        conclusions = {
+            row["identity"]: "keep" for row in payload["parents"]
+        }
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            path = Path(directory) / "god-review.md"
+            path.write_text(
+                MODULE.render_review_results(payload, conclusions),
+                encoding="utf-8",
+            )
+
+            def validate():
+                return subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "--review-results",
+                        str(path),
+                    ],
+                    cwd=MODULE.ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+
+            clean = validate()
+            self.assertEqual(0, clean.returncode, clean.stderr)
+            path.write_text(
+                path.read_text(encoding="utf-8")
+                + "\n## restored old six breath conclusions\n",
+                encoding="utf-8",
+            )
+            broken = validate()
+            self.assertEqual(1, broken.returncode, broken.stderr)
 
 
 if __name__ == "__main__":

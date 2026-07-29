@@ -41,8 +41,10 @@ from audit_item_name_inventory import (  # noqa: E402
 from i18n_extract import _lua_tokens, cpp_unescape  # noqa: E402
 from i18n_shared import (  # noqa: E402
     i18n_escape_key,
+    load_review_input,
     lowercase_string,
     parse_entries_physical,
+    review_input_metadata,
     runtime_normalize_value,
 )
 
@@ -183,6 +185,16 @@ TERMINAL_CONCLUSION_PATTERNS = (
     ("retranslate", re.compile(r"^(?:retranslate|重译)\b", re.I)),
 )
 VISIBLE_TERMINAL_SUMMARY_HEADING = "最终结论与实现证据"
+REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN WORLD REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_END = "<!-- END WORLD REVIEW ARTIFACT v1 -->"
+REVIEW_EVIDENCE_BEGIN = "<!-- BEGIN WORLD INVENTORY EVIDENCE -->"
+REVIEW_EVIDENCE_END = "<!-- END WORLD INVENTORY EVIDENCE -->"
+REVIEW_STRUCTURE_MARKERS = (
+    REVIEW_ARTIFACT_BEGIN,
+    REVIEW_ARTIFACT_END,
+    REVIEW_EVIDENCE_BEGIN,
+    REVIEW_EVIDENCE_END,
+)
 
 
 def relative(path):
@@ -1740,12 +1752,188 @@ def visible_terminal_summary_coverage(text, conclusion_counts):
     return result
 
 
-def review_coverage(payload, path):
-    """Prove exactly one terminal conclusion per frozen inventory identity."""
-    text = path.read_text(encoding="utf-8")
+def _review_table_rows(text):
+    """Parse one exact-column evidence table without interpreting decisions."""
+    table_lines = [
+        line for line in text.splitlines()
+        if line.lstrip().startswith("|")
+    ]
+    header = []
+    if table_lines:
+        header = [
+            cell.strip().lower()
+            for cell in table_lines[0].strip().strip("|").split("|")
+        ]
+    rows = []
+    if header == REVIEW_COLUMNS:
+        for line in table_lines[2:]:
+            cells = [
+                cell.strip() for cell in line.strip().strip("|").split("|")
+            ]
+            if len(cells) == len(REVIEW_COLUMNS):
+                card = dict(zip(REVIEW_COLUMNS, cells))
+                rows.append((card["identity"].strip("`"), card))
+    return header, rows
+
+
+def review_structure_marker_counts(text):
+    return {
+        marker: text.count(marker)
+        for marker in REVIEW_STRUCTURE_MARKERS
+    }
+
+
+def review_structure_markers_exact(text):
+    return all(
+        count == 1
+        for count in review_structure_marker_counts(text).values()
+    )
+
+
+def review_decisions_from_text(text):
+    marker_counts = review_structure_marker_counts(text)
+    marker_shape = tuple(
+        marker_counts[marker] for marker in REVIEW_STRUCTURE_MARKERS
+    )
+    if marker_shape == (0, 0, 0, 0):
+        return {}
+    if marker_shape not in (
+            (0, 0, 1, 1),
+            (1, 1, 1, 1)):
+        raise ValueError(
+            "world review structural markers are partial or duplicated"
+        )
     managed_match = re.search(
-        r"<!-- BEGIN WORLD INVENTORY EVIDENCE -->(.*?)"
-        r"<!-- END WORLD INVENTORY EVIDENCE -->",
+        re.escape(REVIEW_EVIDENCE_BEGIN) + r"(.*?)"
+        + re.escape(REVIEW_EVIDENCE_END),
+        text,
+        re.S,
+    )
+    review_text = managed_match.group(1) if managed_match else text
+    _header, rows = _review_table_rows(review_text)
+    return {
+        identity: {
+            **{
+                field: card[field]
+                for field in REVIEW_DECISION_FIELDS
+            },
+            "conclusion": card["conclusion"],
+        }
+        for identity, card in rows
+    }
+
+
+def _pending_world_decision():
+    return {
+        "proposed_translation": PENDING_REVIEW,
+        "adopted_translation": PENDING_REVIEW,
+        "rejected_alternatives": PENDING_REVIEW,
+        "confidence": PENDING_REVIEW,
+        "deferred_follow_up": PENDING_REVIEW,
+        "re_entry_conditions": PENDING_REVIEW,
+        "conclusion": "insufficient evidence",
+    }
+
+
+def review_artifact_summary(payload, decisions):
+    conclusion_counts = Counter(
+        kind for kind in (
+            terminal_conclusion_kind(decision.get("conclusion", ""))
+            for decision in decisions.values()
+        )
+        if kind is not None
+    )
+    violations = payload.get("violations", {})
+    return {
+        "category_counts": payload.get("category_counts", {}),
+        "glossary_sha256": payload.get("glossary_sha256", "not supplied"),
+        "inventory_sha256": payload["inventory_sha256"],
+        "lifecycle_counts": payload.get("lifecycle_counts", {}),
+        "terminal_conclusion_counts": {
+            kind: conclusion_counts.get(kind, 0)
+            for kind in TERMINAL_CONCLUSION_KINDS
+        },
+        "violations": violations,
+        "violations_zero": not any(violations.values()),
+    }
+
+
+def render_review_results(payload, decisions):
+    rows = sorted(payload["rows"], key=lambda row: row["identity"])
+    canonical_decisions = {
+        row["identity"]: decisions.get(
+            row["identity"], _pending_world_decision()
+        )
+        for row in rows
+    }
+    summary = json.dumps(
+        review_artifact_summary(payload, canonical_decisions),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    counts = Counter(
+        kind for kind in (
+            terminal_conclusion_kind(
+                canonical_decisions[row["identity"]]["conclusion"]
+            )
+            for row in rows
+        )
+        if kind is not None
+    )
+    lines = [
+        "# World translation review",
+        "",
+        REVIEW_ARTIFACT_BEGIN,
+        summary,
+        REVIEW_ARTIFACT_END,
+        "",
+        f"## {VISIBLE_TERMINAL_SUMMARY_HEADING}",
+        "",
+        *(
+            f"- `{kind}`：{counts.get(kind, 0)}"
+            for kind in TERMINAL_CONCLUSION_KINDS
+        ),
+        "",
+        REVIEW_EVIDENCE_BEGIN,
+        f"Inventory-SHA256: {payload['inventory_sha256']}",
+        "",
+        "| " + " | ".join(REVIEW_COLUMNS) + " |",
+        "|" + "|".join("---" for _ in REVIEW_COLUMNS) + "|",
+    ]
+    for row in rows:
+        facts, _expected_adopted = review_expected_fact_cells(payload, row)
+        decision = canonical_decisions[row["identity"]]
+        card = {
+            "identity": f"`{row['identity']}`",
+            **facts,
+            **decision,
+        }
+        lines.append("| " + " | ".join(
+            card[column] for column in REVIEW_COLUMNS
+        ) + " |")
+    lines.extend([
+        REVIEW_EVIDENCE_END,
+        "",
+    ])
+    rendered = "\n".join(lines)
+    if not review_structure_markers_exact(rendered):
+        raise ValueError(
+            "world review content contains a reserved structural marker"
+        )
+    return rendered
+
+
+def review_coverage(payload, review_input):
+    """Prove exactly one terminal conclusion per frozen inventory identity."""
+    text = review_input.text
+    marker_counts = review_structure_marker_counts(text)
+    structure_markers_exact = all(
+        count == 1 for count in marker_counts.values()
+    )
+    managed_match = re.search(
+        re.escape(REVIEW_EVIDENCE_BEGIN) + r"(.*?)"
+        + re.escape(REVIEW_EVIDENCE_END),
         text,
         re.S,
     )
@@ -1756,24 +1944,10 @@ def review_coverage(payload, path):
         review_text,
     )
     required_columns = REVIEW_COLUMNS
-    table_lines = [
-        line for line in review_text.splitlines()
-        if line.lstrip().startswith("|")
-    ]
-    header = []
-    if table_lines:
-        header = [
-            cell.strip().lower()
-            for cell in table_lines[0].strip().strip("|").split("|")
-        ]
+    header, parsed_rows = _review_table_rows(review_text)
     rows = []
     missing_fields = {}
-    for line in table_lines[2:]:
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if header != required_columns or len(cells) != len(required_columns):
-            continue
-        card = dict(zip(required_columns, cells))
-        identity = card["identity"].strip("`")
+    for identity, card in parsed_rows:
         if identity in known or identity.startswith(
                 ("branch:", "feature:", "portal_family:", "des_display:")):
             rows.append((identity, card))
@@ -1874,9 +2048,29 @@ def review_coverage(payload, path):
         if terminal_conclusion_kind(card["conclusion"]) is not None
         and not confidence_pattern.match(card["confidence"].strip())
     )
+    decisions = {
+        identity: {
+            **{
+                field: card[field]
+                for field in REVIEW_DECISION_FIELDS
+            },
+            "conclusion": card["conclusion"],
+        }
+        for identity, card in rows
+    }
+    try:
+        expected_artifact = render_review_results(payload, decisions)
+    except ValueError:
+        expected_artifact = None
+    artifact_exact = (
+        structure_markers_exact
+        and expected_artifact is not None
+        and review_input.text == expected_artifact
+    )
     return {
-        "review_results": relative(path),
-        "review_results_sha256": sha(path),
+        **review_input_metadata(review_input),
+        "review_results": review_input.logical_path,
+        "review_results_sha256": review_input.sha256,
         "inventory_sha256_binding": (
             digest_match.group(1) if digest_match else None
         ),
@@ -1904,6 +2098,9 @@ def review_coverage(payload, path):
             adopted_translation_mismatches
         ),
         "composite_adoption_mismatches": composite_adoption_mismatches,
+        "structure_marker_counts": marker_counts,
+        "structure_markers_exact": structure_markers_exact,
+        "artifact_exact": artifact_exact,
         "coverage_equal": (
             len(identities) == len(known)
             and actual == known
@@ -1919,51 +2116,21 @@ def review_coverage(payload, path):
             and header == required_columns
             and bool(digest_match)
             and digest_match.group(1) == payload["inventory_sha256"]
+            and structure_markers_exact
+            and artifact_exact
         ),
     }
 
 
 def complete_review_results(payload, path):
-    """Write/replace the script-owned strict evidence-card table."""
-    columns = REVIEW_COLUMNS
-
-    lines = [
-        "<!-- BEGIN WORLD INVENTORY EVIDENCE -->",
-        f"Inventory-SHA256: {payload['inventory_sha256']}",
-        "",
-        "| " + " | ".join(columns) + " |",
-        "|" + "|".join("---" for _ in columns) + "|",
-    ]
-    for row in payload["rows"]:
-        facts, _expected_adopted = review_expected_fact_cells(payload, row)
-        card = {
-            "identity": f"`{row['identity']}`",
-            **facts,
-            # These are reviewer decisions. Never infer them from current
-            # assets or prefill them with a fabricated terminal answer.
-            "proposed_translation": PENDING_REVIEW,
-            "adopted_translation": PENDING_REVIEW,
-            "rejected_alternatives": PENDING_REVIEW,
-            "confidence": PENDING_REVIEW,
-            "deferred_follow_up": PENDING_REVIEW,
-            "re_entry_conditions": PENDING_REVIEW,
-            "conclusion": "insufficient evidence",
-        }
-        cells = [card[column] for column in columns]
-        lines.append("| " + " | ".join(cells) + " |")
-    lines.append("<!-- END WORLD INVENTORY EVIDENCE -->")
-    managed = "\n".join(lines) + "\n"
+    """Rewrite the complete artifact, preserving only reviewer decisions."""
     old = path.read_text(encoding="utf-8") if path.exists() else ""
-    pattern = re.compile(
-        r"<!-- BEGIN WORLD INVENTORY EVIDENCE -->.*?"
-        r"<!-- END WORLD INVENTORY EVIDENCE -->\n?",
-        re.S,
-    )
-    updated = pattern.sub(managed, old) if pattern.search(old) else (
-        old.rstrip() + ("\n\n" if old.strip() else "") + managed
-    )
+    decisions = review_decisions_from_text(old)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(updated, encoding="utf-8")
+    path.write_text(
+        render_review_results(payload, decisions),
+        encoding="utf-8",
+    )
 
 
 def build_inventory():
@@ -2058,8 +2225,10 @@ def main(argv=None):
         if args.complete_review_results:
             complete_review_results(payload, args.complete_review_results)
         if args.review_results:
+            review_input = load_review_input(ROOT, args.review_results)
+            payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
-                payload, args.review_results
+                payload, review_input
             )
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError,
             json.JSONDecodeError) as error:

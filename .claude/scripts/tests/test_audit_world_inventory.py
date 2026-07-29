@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import hashlib
 import importlib.util
 import json
 import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -17,6 +19,19 @@ SPEC = importlib.util.spec_from_file_location("audit_world_inventory", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+from i18n_shared import AuditInput
+
+
+def review_input(path):
+    data = path.read_bytes()
+    return AuditInput(
+        audit_commit=None,
+        logical_path="fixtures/review.md",
+        relative_path="fixtures/review.md",
+        bytes=data,
+        text=data.decode("utf-8", errors="strict"),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 def review_header():
@@ -37,7 +52,7 @@ def review_summary(counts):
     )
 
 
-def review_card(payload, row, conclusion="keep", overrides=None):
+def review_card_values(payload, row, conclusion="keep", overrides=None):
     facts, expected_adopted = MODULE.review_expected_fact_cells(payload, row)
     composite = MODULE.review_expected_composite_adoption(row)
     proposed = (
@@ -61,9 +76,28 @@ def review_card(payload, row, conclusion="keep", overrides=None):
         "conclusion": conclusion,
     }
     card.update(overrides or {})
+    return card
+
+
+def review_card(payload, row, conclusion="keep", overrides=None):
+    card = review_card_values(payload, row, conclusion, overrides)
     return "| " + " | ".join(
         card[column] for column in MODULE.REVIEW_COLUMNS
     ) + " |\n"
+
+
+def review_document(payload, specifications):
+    decisions = {}
+    for row, conclusion, overrides in specifications:
+        card = review_card_values(payload, row, conclusion, overrides)
+        decisions[row["identity"]] = {
+            **{
+                field: card[field]
+                for field in MODULE.REVIEW_DECISION_FIELDS
+            },
+            "conclusion": card["conclusion"],
+        }
+    return MODULE.render_review_results(payload, decisions)
 
 
 class WorldInventoryUnitTest(unittest.TestCase):
@@ -80,36 +114,145 @@ class WorldInventoryUnitTest(unittest.TestCase):
             "monster_name_ssot.py",
             "audit_world_inventory.py",
         ]
-        with tempfile.TemporaryDirectory() as outside:
-            for configured, expected in (
-                ("relative-candidate", "must be an absolute path"),
+        with tempfile.TemporaryDirectory(
+            prefix="world-root-topology-"
+        ) as sandbox_raw:
+            sandbox = Path(sandbox_raw)
+            main = sandbox / "main"
+            nested = main / "nested"
+            outside = sandbox / "outside"
+            ordinary_tmp = sandbox / "ordinary-tmp"
+            other = sandbox / "other"
+            other_tmp = other / "tmp"
+            for path in (
+                main, nested, outside, ordinary_tmp, other, other_tmp
+            ):
+                path.mkdir(parents=True, exist_ok=True)
+            # An intentionally invalid repository sentinel makes the
+            # outside-Git case independent of any repository above the
+            # system temporary directory.
+            (outside / ".git").mkdir()
+
+            def git(cwd, *args):
+                return subprocess.run(
+                    ["git", *args],
+                    cwd=cwd,
+                    text=True,
+                    capture_output=True,
+                    check=True,
+                )
+
+            git(main, "init", "-q")
+            git(main, "config", "user.name", "World Root Fixture")
+            git(main, "config", "user.email", "world-root@example.invalid")
+            git(main, "commit", "--allow-empty", "-qm", "fixture")
+            linked = main / ".worktrees" / "linked"
+            git(main, "worktree", "add", "--detach", str(linked), "HEAD")
+
+            git(other, "init", "-q")
+            git(other, "config", "user.name", "Other Fixture")
+            git(other, "config", "user.email", "other@example.invalid")
+            git(other, "commit", "--allow-empty", "-qm", "fixture")
+
+            yaml_python = None
+            seen_interpreters = set()
+            for candidate in (
+                sys.executable,
+                "/usr/bin/python3",
+                shutil.which("python3"),
+                shutil.which("python"),
+            ):
+                if not candidate:
+                    continue
+                resolved = os.path.realpath(candidate)
+                if resolved in seen_interpreters:
+                    continue
+                seen_interpreters.add(resolved)
+                dependency_check = subprocess.run(
+                    [resolved, "-c", "import yaml"],
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                if dependency_check.returncode == 0:
+                    yaml_python = resolved
+                    break
+            self.assertIsNotNone(
+                yaml_python,
+                "fixture needs a Python interpreter that can import PyYAML",
+            )
+
+            def invoke(name, configured, cwd, tmpdir):
+                env = os.environ.copy()
+                env["ZH_VERIFY_AUDIT_ROOT"] = configured
+                env["TMPDIR"] = str(tmpdir)
+                # Also exercise the caller-facing ceiling input even though
+                # trusted production Git calls scrub inherited GIT_* values.
+                env["GIT_CEILING_DIRECTORIES"] = str(sandbox.parent)
+                return subprocess.run(
+                    [
+                        yaml_python,
+                        str(MODULE.SCRIPT_DIR / name),
+                        "--help",
+                    ],
+                    cwd=cwd,
+                    env=env,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+
+            invalid = (
                 (
-                    str(MODULE.ROOT / "crawl-ref"),
+                    "relative-candidate",
+                    main,
+                    ordinary_tmp,
+                    "must be an absolute path",
+                ),
+                (
+                    str(nested),
+                    nested,
+                    ordinary_tmp,
                     "must equal its real Git top-level",
                 ),
                 (
+                    str(outside),
                     outside,
+                    ordinary_tmp,
                     "is not inside a readable Git worktree",
                 ),
-            ):
+            )
+            for configured, cwd, tmpdir, expected in invalid:
                 for name in scripts:
                     with self.subTest(root=configured, script=name):
-                        env = os.environ.copy()
-                        env["ZH_VERIFY_AUDIT_ROOT"] = configured
-                        proc = subprocess.run(
-                            [
-                                shutil.which("python3") or "python3",
-                                str(MODULE.SCRIPT_DIR / name),
-                                "--help",
-                            ],
-                            cwd=MODULE.ROOT,
-                            env=env,
-                            text=True,
-                            capture_output=True,
-                            check=False,
-                        )
+                        proc = invoke(name, configured, cwd, tmpdir)
                         self.assertEqual(2, proc.returncode, proc.stderr)
                         self.assertIn(expected, proc.stderr)
+
+            for name in scripts:
+                with self.subTest(valid_root="main", script=name):
+                    main_proc = invoke(
+                        name, str(main), main, ordinary_tmp
+                    )
+                    self.assertEqual(0, main_proc.returncode, main_proc.stderr)
+                with self.subTest(valid_root="tmpdir-in-other-git", script=name):
+                    other_tmp_proc = invoke(
+                        name, str(main), main, other_tmp
+                    )
+                    self.assertEqual(
+                        (main_proc.returncode, main_proc.stdout),
+                        (other_tmp_proc.returncode, other_tmp_proc.stdout),
+                        other_tmp_proc.stderr,
+                    )
+                with self.subTest(valid_root="linked-worktree", script=name):
+                    linked_proc = invoke(
+                        name, str(linked), linked, ordinary_tmp
+                    )
+                    self.assertEqual(
+                        (main_proc.returncode, main_proc.stdout),
+                        (linked_proc.returncode, linked_proc.stdout),
+                        linked_proc.stderr,
+                    )
 
     def write_des(self, text):
         directory = tempfile.TemporaryDirectory()
@@ -771,12 +914,103 @@ epilogue {{
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"
             path.write_text(
-                f"Inventory-SHA256: {'a' * 64}\n\n"
-                + header + card_a + card_b,
+                review_document(fixture, [
+                    (branch_row, "保留：正确", None),
+                    (feature_row, "adjust wording", None),
+                ]),
                 encoding="utf-8",
             )
-            coverage = MODULE.review_coverage(fixture, path)
+            coverage = MODULE.review_coverage(fixture, review_input(path))
             self.assertTrue(coverage["coverage_equal"])
+            self.assertTrue(coverage["artifact_exact"])
+
+            canonical = path.read_text(encoding="utf-8")
+            canonical_lines = canonical.splitlines()
+            summary_index = canonical_lines.index(
+                MODULE.REVIEW_ARTIFACT_BEGIN
+            ) + 1
+            summary = json.loads(canonical_lines[summary_index])
+            artifact_mutations = {
+                "external-old-history": (
+                    canonical
+                    + "## Historical totals\n\n- old current/final: 789\n"
+                ),
+                "missing-marker": canonical.replace(
+                    MODULE.REVIEW_ARTIFACT_BEGIN, "", 1
+                ),
+                "duplicate-marker": canonical.replace(
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    MODULE.REVIEW_ARTIFACT_BEGIN + "\n"
+                    + MODULE.REVIEW_ARTIFACT_BEGIN,
+                    1,
+                ),
+            }
+            for field in summary:
+                changed = list(canonical_lines)
+                mutated_summary = dict(summary)
+                mutated_summary[field] = "mutated"
+                changed[summary_index] = json.dumps(
+                    mutated_summary,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                artifact_mutations[f"summary-{field}"] = (
+                    "\n".join(changed) + "\n"
+                )
+            for name, text in artifact_mutations.items():
+                with self.subTest(artifact_mutation=name):
+                    path.write_text(text, encoding="utf-8")
+                    result = MODULE.review_coverage(
+                        fixture, review_input(path)
+                    )
+                    self.assertFalse(result["artifact_exact"])
+                    self.assertFalse(result["coverage_equal"])
+
+            marker_sentinel = "reserved-marker-injection-sentinel"
+            marker_safe = review_document(fixture, [
+                (
+                    branch_row,
+                    "保留：正确",
+                    {"rejected_alternatives": marker_sentinel},
+                ),
+                (feature_row, "adjust wording", None),
+            ])
+            injected_decisions = MODULE.review_decisions_from_text(
+                marker_safe
+            )
+            injected_decisions[branch_row["identity"]][
+                "rejected_alternatives"
+            ] = MODULE.REVIEW_ARTIFACT_BEGIN
+            with self.assertRaisesRegex(
+                ValueError, "reserved structural marker"
+            ):
+                MODULE.render_review_results(
+                    fixture, injected_decisions
+                )
+            path.write_text(
+                marker_safe.replace(
+                    marker_sentinel,
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            marker_injection = MODULE.review_coverage(
+                fixture, review_input(path)
+            )
+            self.assertEqual(
+                2,
+                marker_injection["structure_marker_counts"][
+                    MODULE.REVIEW_ARTIFACT_BEGIN
+                ],
+            )
+            self.assertFalse(
+                marker_injection["structure_markers_exact"]
+            )
+            self.assertFalse(marker_injection["artifact_exact"])
+            self.assertFalse(marker_injection["coverage_equal"])
+
             for field, mutation in {
                 "mechanics_behavior": '{"mechanics": "incorrect"}',
                 "format_entity_markup_structure_tokens":
@@ -794,7 +1028,9 @@ epilogue {{
                     + card_b,
                     encoding="utf-8",
                 )
-                mutated = MODULE.review_coverage(fixture, path)
+                mutated = MODULE.review_coverage(
+                    fixture, review_input(path)
+                )
                 self.assertFalse(mutated["coverage_equal"], msg=field)
                 self.assertIn(
                     field,
@@ -811,7 +1047,9 @@ epilogue {{
                 + card_b,
                 encoding="utf-8",
             )
-            wrong_adopted = MODULE.review_coverage(fixture, path)
+            wrong_adopted = MODULE.review_coverage(
+                fixture, review_input(path)
+            )
             self.assertFalse(wrong_adopted["coverage_equal"])
             self.assertIn(
                 branch_row["identity"],
@@ -874,7 +1112,9 @@ epilogue {{
                     + review_card(fixture, other),
                     encoding="utf-8",
                 )
-                mutated = MODULE.review_coverage(fixture, path)
+                mutated = MODULE.review_coverage(
+                    fixture, review_input(path)
+                )
                 self.assertFalse(mutated["coverage_equal"])
                 self.assertIn(
                     row["identity"],
@@ -896,7 +1136,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            pending = MODULE.review_coverage(fixture, path)
+            pending = MODULE.review_coverage(fixture, review_input(path))
             self.assertFalse(pending["coverage_equal"])
             self.assertEqual(
                 [feature_row["identity"]],
@@ -911,7 +1151,9 @@ epilogue {{
                     + header + broken_card + card_b,
                     encoding="utf-8",
                 )
-                broken_field = MODULE.review_coverage(fixture, path)
+                broken_field = MODULE.review_coverage(
+                    fixture, review_input(path)
+                )
                 self.assertFalse(
                     broken_field["coverage_equal"], msg=column
                 )
@@ -930,7 +1172,9 @@ epilogue {{
                     + header + pending_card + card_b,
                     encoding="utf-8",
                 )
-                pending_field = MODULE.review_coverage(fixture, path)
+                pending_field = MODULE.review_coverage(
+                    fixture, review_input(path)
+                )
                 self.assertFalse(pending_field["coverage_equal"], msg=column)
                 self.assertIn(
                     column,
@@ -948,7 +1192,9 @@ epilogue {{
                 + card_b,
                 encoding="utf-8",
             )
-            invalid_confidence = MODULE.review_coverage(fixture, path)
+            invalid_confidence = MODULE.review_coverage(
+                fixture, review_input(path)
+            )
             self.assertFalse(invalid_confidence["coverage_equal"])
             self.assertEqual(
                 [branch_row["identity"]],
@@ -959,7 +1205,7 @@ epilogue {{
                 + header + card_a + card_a,
                 encoding="utf-8",
             )
-            broken = MODULE.review_coverage(fixture, path)
+            broken = MODULE.review_coverage(fixture, review_input(path))
             self.assertFalse(broken["inventory_digest_matches"])
             self.assertEqual([branch_row["identity"]],
                              broken["duplicate_evidence_cards"])
@@ -1015,7 +1261,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            coverage = MODULE.review_coverage(fixture, path)
+            coverage = MODULE.review_coverage(fixture, review_input(path))
             self.assertFalse(coverage["coverage_equal"])
             mismatch = coverage["composite_adoption_mismatches"][
                 row["identity"]
@@ -1038,18 +1284,17 @@ epilogue {{
             "inventory_sha256": "d" * 64,
             "rows": [range_row],
         }
-        prefix = (
-            f"Inventory-SHA256: {'d' * 64}\n\n"
-            + review_summary({"keep": 1})
-            + review_header()
-        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"
             path.write_text(
-                prefix + review_card(fixture, range_row),
+                review_document(
+                    fixture, [(range_row, "keep", None)]
+                ),
                 encoding="utf-8",
             )
-            representable = MODULE.review_coverage(fixture, path)
+            representable = MODULE.review_coverage(
+                fixture, review_input(path)
+            )
             self.assertTrue(representable["coverage_equal"])
             expected, _ = MODULE.review_expected_fact_cells(
                 fixture, range_row
@@ -1058,12 +1303,17 @@ epilogue {{
 
             for mismatch in ("fai nt", "faint noise"):
                 path.write_text(
-                    prefix + review_card(
+                    f"Inventory-SHA256: {'d' * 64}\n\n"
+                    + review_summary({"keep": 1})
+                    + review_header()
+                    + review_card(
                         fixture, range_row, overrides={"en": mismatch}
                     ),
                     encoding="utf-8",
                 )
-                rejected = MODULE.review_coverage(fixture, path)
+                rejected = MODULE.review_coverage(
+                    fixture, review_input(path)
+                )
                 self.assertFalse(rejected["coverage_equal"], msg=mismatch)
                 self.assertIn(
                     "en",
@@ -1093,9 +1343,92 @@ epilogue {{
             first = path.read_text(encoding="utf-8")
             MODULE.complete_review_results(fixture, path)
             second = path.read_text(encoding="utf-8")
-            coverage = MODULE.review_coverage(fixture, path)
+            coverage = MODULE.review_coverage(fixture, review_input(path))
+
+            branch_row = next(
+                row for row in self.payload["rows"]
+                if row["category"] == "branch"
+            )
+            feature_row = next(
+                row for row in self.payload["rows"]
+                if row["category"] == "feature"
+                and row["lifecycle"] == "current"
+                and row.get("current_chinese_name")
+            )
+            legacy_fixture = {
+                **self.payload,
+                "inventory_sha256": "f" * 64,
+                "rows": [branch_row, feature_row],
+            }
+            legacy_path = Path(directory) / "legacy-review.md"
+            legacy_path.write_text(
+                MODULE.REVIEW_EVIDENCE_BEGIN + "\n"
+                + f"Inventory-SHA256: {'f' * 64}\n\n"
+                + review_header()
+                + review_card(
+                    legacy_fixture,
+                    branch_row,
+                    "keep",
+                    {
+                        "rejected_alternatives":
+                            "legacy branch alternative rejected",
+                    },
+                )
+                + review_card(
+                    legacy_fixture,
+                    feature_row,
+                    "adjust",
+                    {
+                        "deferred_follow_up":
+                            "legacy feature follow-up retained",
+                    },
+                )
+                + MODULE.REVIEW_EVIDENCE_END + "\n",
+                encoding="utf-8",
+            )
+            MODULE.complete_review_results(legacy_fixture, legacy_path)
+            legacy_rendered = legacy_path.read_text(encoding="utf-8")
+            legacy_decisions = MODULE.review_decisions_from_text(
+                legacy_rendered
+            )
+            legacy_coverage = MODULE.review_coverage(
+                legacy_fixture, review_input(legacy_path)
+            )
+            malformed_marker_documents = {
+                "partial": (
+                    MODULE.REVIEW_EVIDENCE_BEGIN
+                    + "\nInventory-SHA256: "
+                    + "f" * 64
+                    + "\n"
+                ),
+                "duplicate": (
+                    MODULE.REVIEW_EVIDENCE_BEGIN + "\n"
+                    + MODULE.REVIEW_EVIDENCE_BEGIN + "\n"
+                    + MODULE.REVIEW_EVIDENCE_END + "\n"
+                ),
+            }
+            for name, malformed in malformed_marker_documents.items():
+                with self.subTest(malformed_writer_marker=name):
+                    malformed_path = (
+                        Path(directory) / f"{name}-review.md"
+                    )
+                    malformed_path.write_text(
+                        malformed,
+                        encoding="utf-8",
+                    )
+                    with self.assertRaisesRegex(
+                        ValueError, "partial or duplicated"
+                    ):
+                        MODULE.complete_review_results(
+                            legacy_fixture, malformed_path
+                        )
+                    self.assertEqual(
+                        malformed,
+                        malformed_path.read_text(encoding="utf-8"),
+                    )
         self.assertEqual(first, second)
-        self.assertIn("preserve me", second)
+        self.assertNotIn("preserve me", second)
+        self.assertNotIn("| unrelated | table |", second)
         self.assertIn("insufficient evidence", second)
         for column in (
             "lifecycle",
@@ -1119,6 +1452,30 @@ epilogue {{
         self.assertFalse(coverage["coverage_equal"])
         self.assertTrue(coverage["inventory_digest_matches"])
         self.assertFalse(coverage["missing_required_fields"])
+        self.assertEqual(
+            "keep",
+            legacy_decisions[branch_row["identity"]]["conclusion"],
+        )
+        self.assertEqual(
+            "legacy branch alternative rejected",
+            legacy_decisions[branch_row["identity"]][
+                "rejected_alternatives"
+            ],
+        )
+        self.assertEqual(
+            "adjust",
+            legacy_decisions[feature_row["identity"]]["conclusion"],
+        )
+        self.assertEqual(
+            "legacy feature follow-up retained",
+            legacy_decisions[feature_row["identity"]][
+                "deferred_follow_up"
+            ],
+        )
+        self.assertEqual(1, legacy_rendered.count(
+            MODULE.REVIEW_ARTIFACT_BEGIN
+        ))
+        self.assertTrue(legacy_coverage["coverage_equal"])
 
 
 if __name__ == "__main__":

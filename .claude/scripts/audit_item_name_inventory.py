@@ -82,7 +82,12 @@ DEVELOPMENT_REPORTS = [
     },
 ]
 
-from i18n_shared import parse_entries_physical, runtime_normalize_value
+from i18n_shared import (
+    load_review_input,
+    parse_entries_physical,
+    review_input_metadata,
+    runtime_normalize_value,
+)
 
 
 def sha(path):
@@ -1911,14 +1916,16 @@ REQUIRED_CARD_FIELDS = {
     "consumer", "metadata", "input", "source_files",
     "terminal_conclusion", "semantic_reason", "reentry_trigger",
 }
+REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v1 -->"
 
 
-def parse_review_results(path):
+def parse_review_results(review_input):
     rows = []
     in_cards = False
     saw_cards = False
     for line_number, line in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), start=1
+        review_input.text.splitlines(), start=1
     ):
         if line == "```jsonl":
             if in_cards or saw_cards:
@@ -1953,8 +1960,8 @@ def parse_review_results(path):
     return rows
 
 
-def parse_review_header(path):
-    text = path.read_text(encoding="utf-8")
+def parse_review_header(review_input):
+    text = review_input.text
     patterns = {
         "inventory_sha256": r"^- Inventory SHA-256: `([0-9a-f]{64})`$",
         "glossary_sha256": r"^- Glossary SHA-256: `([0-9a-f]{64})`$",
@@ -1971,7 +1978,13 @@ def parse_review_header(path):
     return result
 
 
-def review_violations(inventory_rows, review_rows, inventory=None, header=None):
+def review_violations(
+    inventory_rows,
+    review_rows,
+    inventory=None,
+    header=None,
+    review_input=None,
+):
     inventory_ids = [
         row.get("identity", "<missing>") for row in inventory_rows
     ]
@@ -2036,73 +2049,67 @@ def review_violations(inventory_rows, review_rows, inventory=None, header=None):
             if header.get(field) != expected
             or header.get(field + "_header_count") != 1
         )
+        if review_input is not None:
+            violations["artifact_mismatch"] = (
+                []
+                if review_input.text == render_review_results(
+                    inventory, review_rows
+                )
+                else ["review artifact is not the exact canonical rendering"]
+            )
     return violations
 
 
-def write_review_results(path, inventory, rows):
+def review_artifact_summary(inventory, rows):
     counts = Counter(row["terminal_conclusion"] for row in rows)
     metrics = inventory["scope"]["randart_component_metrics"]["totals"]
+    return {
+        "baseline": inventory["baseline"],
+        "glossary_sha256": inventory["glossary_sha256"],
+        "inventory_count": inventory["count"],
+        "inventory_sha256": inventory["inventory_sha256"],
+        "randart_production_boundary": metrics,
+        "terminal_conclusion_counts": dict(sorted(counts.items())),
+    }
+
+
+def render_review_results(inventory, rows):
+    summary = json.dumps(
+        review_artifact_summary(inventory, rows),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     lines = [
-        "# Issue #29 扩展物品翻译复审结果",
+        "# Item translation review",
         "",
-        "本文件由 `audit_item_name_inventory.py --scope issue29-v2` "
-        "按冻结 inventory identity 机械生成。",
+        REVIEW_ARTIFACT_BEGIN,
+        summary,
+        REVIEW_ARTIFACT_END,
         "",
         f"- Inventory SHA-256: `{inventory['inventory_sha256']}`",
         f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
         f"- Review base: `{inventory['baseline']}`",
         f"- Inventory rows: `{inventory['count']}`",
-        "- Terminal conclusions: "
-        + ", ".join(f"`{key}={counts[key]}`" for key in sorted(counts)),
-        "- Randart production boundary: "
-        f"`{metrics['physical_variant_identities']} physical variant "
-        "identities`; "
-        f"`{metrics['raw_nonempty_grammar_lines']} raw non-empty grammar "
-        "lines` (including "
-        f"`{metrics['explicit_weight_marker_lines']} w:N markers` and "
-        f"`{metrics['continuation_lines']} continuation line`).",
-        "",
-        "## Producer / consumer implementation evidence",
-        "",
-        "- Fixed artefact descriptions and quotes now query TextDB with "
-        "`get_unrand_name_en()`; localized true names remain display-only.",
-        "- Gizmos persist canonical English `ARTEFACT_NAME_KEY` plus a "
-        "finite recursive physical-ordinal recipe. Current-locale rendering "
-        "uses zero RNG; old saves without a recipe retain their old opaque "
-        "display string as a safe fallback.",
-        "- Randart `ARTEFACT_NAME_KEY` and `ARTEFACT_APPEAR_KEY` are opaque "
-        "display caches. Their consumers do not reverse-map them to gameplay "
-        "identity; base/subtype and artefact properties remain authoritative.",
-        "",
-        "## Raw development reports",
-        "",
-    ]
-    for report in inventory["development_reports"]:
-        lines.append(
-            f"- `{report['path']}` — profile={report['profile']}; "
-            f"status={report['status']}; "
-            f"blocking_failures={report['blocking_failures']}; "
-            f"{report['note']}."
-        )
-    lines.extend([
-        "",
-        "所有失败与告警均保留在上述原始报告中；失败的开发运行未被后续通过"
-        "记录覆盖或删除。",
         "",
         "## Evidence cards",
         "",
-        "以下 JSONL 是规范化、逐字段绑定的完整证据卡；验证器将每张卡与当前"
-        "工作树按固定 review base 重建的期望值做精确比较。",
-        "",
         "```jsonl",
-    ])
+    ]
     for row in rows:
         lines.append(json.dumps(
             row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ))
     lines.append("```")
+    return "\n".join(lines) + "\n"
+
+
+def write_review_results(path, inventory, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    path.write_text(
+        render_review_results(inventory, rows),
+        encoding="utf-8",
+    )
 
 
 def main(argv=None):
@@ -2147,10 +2154,16 @@ def main(argv=None):
                     args.write_review_results, payload, internal_rows
                 )
             if args.review_results:
-                review = parse_review_results(args.review_results)
-                review_header = parse_review_header(args.review_results)
+                review_input = load_review_input(ROOT, args.review_results)
+                payload["review_input"] = review_input_metadata(review_input)
+                review = parse_review_results(review_input)
+                review_header = parse_review_header(review_input)
                 payload["review_violations"] = review_violations(
-                    payload["rows"], review, payload, review_header
+                    payload["rows"],
+                    review,
+                    payload,
+                    review_header,
+                    review_input,
                 )
         else:
             if (

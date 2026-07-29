@@ -29,6 +29,14 @@ from pathlib import Path
 from typing import Any, Iterator
 
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+sys.path.insert(0, os.fspath(SCRIPT_DIRECTORY))
+from i18n_shared import (  # noqa: E402
+    AuditInputError,
+    read_regular_git_blob,
+)
+
+
 TRUSTED_SYSTEM_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 GIT_BINARY = shutil.which("git", path=TRUSTED_SYSTEM_PATH) or "/usr/bin/git"
 TRUSTED_CLASSIFIER_PATH = ".claude/scripts/classify_reviewers.py"
@@ -189,11 +197,12 @@ def _trusted_child_environment() -> dict[str, str]:
     environment = os.environ.copy()
     for name in list(environment):
         if name in UNSAFE_CHILD_ENV_EXACT or name.startswith(
-            ("GIT_CONFIG_", "ZH_VERIFY_", "ZH_RUNTIME_")
+            ("GIT_", "ZH_VERIFY_", "ZH_RUNTIME_")
         ):
             environment.pop(name, None)
     environment["PATH"] = TRUSTED_SYSTEM_PATH
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    environment["GIT_NO_REPLACE_OBJECTS"] = "1"
     return environment
 
 
@@ -318,23 +327,25 @@ def _git_blob(
     repo: os.PathLike[str] | str, commit: str, relative_path: str
 ) -> tuple[str, bytes]:
     relative_path = _safe_relative_path(relative_path, "control-plane path")
-    raw = _run_git(repo, "ls-tree", "-z", commit, "--", relative_path)
-    records = [record for record in raw.split(b"\0") if record]
-    if len(records) != 1:
-        raise ReviewBundleError(
-            f"control-plane file is absent from target commit: {relative_path}"
-        )
     try:
-        header, listed_path = records[0].split(b"\t", 1)
-        mode, object_type, object_id = header.decode("ascii").split(" ")
-        listed = listed_path.decode("utf-8", errors="strict")
-    except (ValueError, UnicodeDecodeError) as exc:
-        raise ReviewBundleError("invalid git tree metadata for control-plane file") from exc
-    if listed != relative_path or object_type != "blob" or mode not in ("100644", "100755"):
-        raise UnsafeObjectError(
-            f"control-plane entry is not a regular target-head file: {relative_path}"
+        result = read_regular_git_blob(
+            repo,
+            commit,
+            relative_path,
+            with_mode=True,
         )
-    return mode, _run_git(repo, "cat-file", "blob", object_id)
+    except AuditInputError as exc:
+        if "not a regular file" in str(exc):
+            raise UnsafeObjectError(
+                "control-plane entry is not a regular target-head file: "
+                f"{relative_path}"
+            ) from exc
+        raise ReviewBundleError(
+            f"cannot read target control-plane blob {relative_path}: {exc}"
+        ) from exc
+    if not isinstance(result, tuple):
+        raise ReviewBundleError("shared Git blob reader omitted file mode")
+    return result
 
 
 def _path_under_checkout(

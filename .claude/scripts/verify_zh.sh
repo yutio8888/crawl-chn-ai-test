@@ -21,7 +21,8 @@
 #   2 — invalid arguments or an invalid commit range
 
 set -euo pipefail
-unset ZH_VERIFY_AUDIT_ROOT
+export GIT_NO_REPLACE_OBJECTS=1
+unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROFILE=""
@@ -171,11 +172,15 @@ if [[ -n "$BASE" ]]; then
     if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
         argument_error "bound verification requires a clean worktree"
     fi
+    if ! git merge-base --is-ancestor "$BASE_SHA" "$HEAD_SHA"; then
+        argument_error "--base must be an ancestor of --head"
+    fi
     DIFF_HASH=$(git diff --binary "$BASE_SHA..$HEAD_SHA" | git hash-object --stdin)
     DIFF_SHA256=$(git diff --no-ext-diff --no-textconv --binary --full-index \
         "$BASE_SHA..$HEAD_SHA" -- | sha256sum | awk '{print $1}')
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
     export ZH_VERIFY_AUDIT_ROOT="$WORKTREE"
+    export ZH_VERIFY_AUDIT_COMMIT="$HEAD_SHA"
 fi
 
 for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do

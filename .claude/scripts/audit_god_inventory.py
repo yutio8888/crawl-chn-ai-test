@@ -19,7 +19,12 @@ from pathlib import Path
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
-from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+from i18n_shared import (  # noqa: E402
+    AuditRootError,
+    load_review_input,
+    resolve_audit_root,
+    review_input_metadata,
+)
 
 try:
     ROOT = resolve_audit_root(SCRIPT_ROOT)
@@ -66,6 +71,8 @@ ZH_SOURCE_DIR = SRC / "dat/i18n/zh"
 GOD_REVIEW_BASE = "7b0224b32c0bd4b7b79119776762ee623857adc9"
 STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->"
 STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v1 -->"
+REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN GOD REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_END = "<!-- END GOD REVIEW ARTIFACT v1 -->"
 TERMINAL_CONCLUSIONS = {
     "keep", "adjust", "retranslate",
     "defer terminology", "defer implementation",
@@ -777,7 +784,7 @@ def has_violations(payload):
         "schema", "baseline", "glossary_sha256", "input_sha256", "scope",
         "count", "lifecycle_counts", "textdb_counts", "child_counts",
         "review_findings", "children", "parents", "inventory_sha256",
-        "review_coverage",
+        "review_coverage", "review_input",
     }
     return any(value for key, value in payload.items() if key not in ignored)
 
@@ -840,20 +847,24 @@ def strict_review_block(payload, conclusions):
 
 def write_strict_review_evidence(payload, path):
     text = path.read_text(encoding="utf-8")
-    block = strict_review_block(payload, legacy_review_conclusions(text))
-    if STRICT_REVIEW_BEGIN in text:
-        prefix, remainder = text.split(STRICT_REVIEW_BEGIN, 1)
-        if STRICT_REVIEW_END not in remainder:
-            raise RuntimeError("unterminated existing strict review evidence")
-        suffix = remainder.split(STRICT_REVIEW_END, 1)[1]
-        text = prefix.rstrip() + "\n\n" + block + suffix
+    if STRICT_REVIEW_BEGIN in text or STRICT_REVIEW_END in text:
+        _metadata, cards = _parse_strict_review_text(text)
+        conclusions = {
+            card["identity"]: card["terminal_conclusion"] for card in cards
+        }
     else:
-        text = text.rstrip() + "\n\n" + block + "\n"
-    path.write_text(text, encoding="utf-8")
+        conclusions = legacy_review_conclusions(text)
+    path.write_text(
+        render_review_results(payload, conclusions),
+        encoding="utf-8",
+    )
 
 
-def parse_strict_review_evidence(path):
-    text = path.read_text(encoding="utf-8")
+def parse_strict_review_evidence(review_input):
+    return _parse_strict_review_text(review_input.text)
+
+
+def _parse_strict_review_text(text):
     if text.count(STRICT_REVIEW_BEGIN) != 1 or text.count(STRICT_REVIEW_END) != 1:
         raise RuntimeError("strict review evidence block is missing or duplicated")
     lines = text.split(STRICT_REVIEW_BEGIN, 1)[1].split(
@@ -881,9 +892,9 @@ def parse_strict_review_evidence(path):
     return metadata, cards
 
 
-def review_coverage(payload, path):
+def review_coverage(payload, review_input):
     """Prove exact metadata, facts, order, and conclusions for every god."""
-    metadata, cards = parse_strict_review_evidence(path)
+    metadata, cards = parse_strict_review_evidence(review_input)
     expected_rows = sorted(payload["parents"], key=lambda row: row["identity"])
     expected_ids = [row["identity"] for row in expected_rows]
     identities = [card["identity"] for card in cards]
@@ -917,9 +928,16 @@ def review_coverage(payload, path):
         card["identity"] for card in cards
         if card["terminal_conclusion"] not in TERMINAL_CONCLUSIONS
     )
+    conclusions = {
+        card["identity"]: card["terminal_conclusion"] for card in cards
+    }
+    artifact_exact = (
+        review_input.text == render_review_results(payload, conclusions)
+    )
     return {
-        "review_results": relative(path),
-        "review_results_sha256": sha(path),
+        **review_input_metadata(review_input),
+        "review_results": review_input.logical_path,
+        "review_results_sha256": review_input.sha256,
         "evidence_card_count": len(identities),
         "binding_matches": bindings,
         "duplicate_evidence_cards": duplicate,
@@ -928,14 +946,62 @@ def review_coverage(payload, path):
         "canonical_card_order": identities == expected_ids,
         "mismatched_fact_sha256": mismatched,
         "invalid_terminal_conclusions": invalid,
+        "artifact_exact": artifact_exact,
         "coverage_equal": (
             all(bindings.values())
             and len(identities) == len(expected_ids)
             and not duplicate and not missing and not unexpected
             and identities == expected_ids
-            and not mismatched and not invalid
+            and not mismatched and not invalid and artifact_exact
         ),
     }
+
+
+def review_artifact_summary(payload, conclusions):
+    ignored = {
+        "schema", "baseline", "glossary_sha256", "input_sha256", "scope",
+        "count", "lifecycle_counts", "textdb_counts", "child_counts",
+        "review_findings", "children", "parents", "inventory_sha256",
+        "review_coverage", "review_input",
+    }
+    violations = {
+        key: value for key, value in payload.items() if key not in ignored
+    }
+    findings = payload.get("review_findings", {})
+    topology = findings.get("godspeak_topology_drift", [])
+    return {
+        "child_counts": payload.get("child_counts", {}),
+        "glossary_sha256": payload["glossary_sha256"],
+        "godspeak_topology_drift": topology,
+        "identity_count": payload["count"],
+        "lifecycle_counts": payload.get("lifecycle_counts", {}),
+        "review_finding_counts": {
+            key: len(value) for key, value in findings.items()
+        },
+        "terminal_conclusion_counts": dict(sorted(
+            Counter(conclusions.values()).items()
+        )),
+        "textdb_counts": payload.get("textdb_counts", {}),
+        "violations": violations,
+        "violations_zero": not any(violations.values()),
+        "zh_only_ability_keys": findings.get("zh_only_ability_keys", []),
+    }
+
+
+def render_review_results(payload, conclusions):
+    summary = json.dumps(
+        review_artifact_summary(payload, conclusions),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return (
+        "# God translation review\n\n"
+        f"{REVIEW_ARTIFACT_BEGIN}\n"
+        f"{summary}\n"
+        f"{REVIEW_ARTIFACT_END}\n\n"
+        f"{strict_review_block(payload, conclusions)}\n"
+    )
 
 
 def main(argv=None):
@@ -949,8 +1015,10 @@ def main(argv=None):
         if args.write_review_results:
             write_strict_review_evidence(payload, args.write_review_results)
         if args.review_results:
+            review_input = load_review_input(ROOT, args.review_results)
+            payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
-                payload, args.review_results
+                payload, review_input
             )
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
         print(f"ERROR: god inventory could not be built: {error}",

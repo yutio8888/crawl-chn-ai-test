@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import sys
 import subprocess
@@ -17,6 +18,19 @@ SCRIPT_DIR = REPO_ROOT / ".claude" / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
 import monster_name_ssot as audit
+from i18n_shared import AuditInput
+
+
+def review_input(path: Path) -> AuditInput:
+    data = path.read_bytes()
+    return AuditInput(
+        audit_commit=None,
+        logical_path="fixtures/review.md",
+        relative_path="fixtures/review.md",
+        bytes=data,
+        text=data.decode("utf-8", errors="strict"),
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 def _write_textdb(path: Path, entries: dict[str, str]) -> None:
@@ -173,7 +187,7 @@ class MonsterNameSsotTests(unittest.TestCase):
             text=True,
         ).strip()
         rendered = audit.render_review_results(payload, baseline)
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory(dir=REPO_ROOT / ".claude") as tmp:
             path = Path(tmp) / "results.md"
             inventory = Path(tmp) / "inventory.json"
 
@@ -189,7 +203,9 @@ class MonsterNameSsotTests(unittest.TestCase):
                     ])
 
             path.write_text(rendered, encoding="utf-8")
-            result = audit.review_coverage(payload, path, baseline)
+            result = audit.review_coverage(
+                payload, review_input(path), baseline
+            )
             self.assertTrue(result["coverage_equal"])
             self.assertTrue(result["artifact_exact"])
             self.assertEqual(0, cli_result())
@@ -202,7 +218,9 @@ class MonsterNameSsotTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path, baseline)
+            result = audit.review_coverage(
+                payload, review_input(path), baseline
+            )
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
@@ -216,7 +234,9 @@ class MonsterNameSsotTests(unittest.TestCase):
                 audit.render_review_results(payload, forged_baseline),
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path, baseline)
+            result = audit.review_coverage(
+                payload, review_input(path), baseline
+            )
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
@@ -229,7 +249,9 @@ class MonsterNameSsotTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path, baseline)
+            result = audit.review_coverage(
+                payload, review_input(path), baseline
+            )
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
@@ -239,7 +261,9 @@ class MonsterNameSsotTests(unittest.TestCase):
                 + "| `monster:NOT_A_VALID_ENUM` | forged | keep |\n",
                 encoding="utf-8",
             )
-            result = audit.review_coverage(payload, path, baseline)
+            result = audit.review_coverage(
+                payload, review_input(path), baseline
+            )
             self.assertFalse(result["coverage_equal"])
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())

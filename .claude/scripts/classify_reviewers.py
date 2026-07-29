@@ -38,6 +38,7 @@ POLICY_PREFIXES = (
     ".codex/",
     ".github/",
     ".opencode/",
+    ".pi/",
 )
 POLICY_FILES = {
     "AGENTS.md",
@@ -45,6 +46,7 @@ POLICY_FILES = {
     "CODEX.md",
     "docs/build-workflow.md",
     "docs/dual-agent-workflow.md",
+    "docs/zh-testing.md",
 }
 CODE_SUFFIXES = {
     ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx",
