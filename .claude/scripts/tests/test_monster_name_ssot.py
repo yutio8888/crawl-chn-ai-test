@@ -6,11 +6,13 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import os
 import sys
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -192,15 +194,19 @@ class MonsterNameSsotTests(unittest.TestCase):
             inventory = Path(tmp) / "inventory.json"
 
             def cli_result() -> int:
-                with (
-                    contextlib.redirect_stdout(io.StringIO()),
-                    contextlib.redirect_stderr(io.StringIO()),
-                ):
-                    return audit.main([
-                        "--inventory-output", str(inventory),
-                        "--review-results", str(path),
-                        "--baseline-ref", baseline,
-                    ])
+                # This self-generated, uncommitted mutation fixture exercises
+                # the explicit unbound development-mode path.
+                with mock.patch.dict(os.environ, {}, clear=False):
+                    os.environ.pop("ZH_VERIFY_AUDIT_COMMIT", None)
+                    with (
+                        contextlib.redirect_stdout(io.StringIO()),
+                        contextlib.redirect_stderr(io.StringIO()),
+                    ):
+                        return audit.main([
+                            "--inventory-output", str(inventory),
+                            "--review-results", str(path),
+                            "--baseline-ref", baseline,
+                        ])
 
             path.write_text(rendered, encoding="utf-8")
             result = audit.review_coverage(
