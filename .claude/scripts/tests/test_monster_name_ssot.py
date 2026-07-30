@@ -189,7 +189,7 @@ class MonsterNameSsotTests(unittest.TestCase):
             text=True,
         ).strip()
         rendered = audit.render_review_results(payload, baseline)
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / ".claude") as tmp:
+        with tempfile.TemporaryDirectory(dir=audit.ROOT / ".claude") as tmp:
             path = Path(tmp) / "results.md"
             inventory = Path(tmp) / "inventory.json"
 
