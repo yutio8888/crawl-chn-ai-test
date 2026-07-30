@@ -846,7 +846,7 @@ _trout_species_rare_
 
 一条禁用的
 
-一条令人沉思的
+一条棘手的
 
 一条美味的
 
@@ -1135,7 +1135,7 @@ Xom feature stone arch
 
 @The_feature@ 的另一侧短暂地显示出奇怪的 @glowing_adj@ 身影。
 
-@The_feature@ 的另一侧短暂地显示出奇异 @glowing_adj@ 的建筑。
+@The_feature@ 的另一侧短暂地显示出奇异的 @glowing_adj@ 建筑。
 
 @The_feature@ 的另一侧短暂地显示出一面被 @any_colour_pattern@ 覆盖的半透明墙壁。
 

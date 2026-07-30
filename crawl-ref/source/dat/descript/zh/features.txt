@@ -179,7 +179,7 @@ An unnaturally hard rock wall
 %%%%
 A wall of the weird stuff which makes up Pandemonium
 
-这面墙由构筑魔窟的奇特材料制成。在其他大多数方面，似乎都和岩石一样。
+这面墙由构筑万魔殿的奇特材料制成。在其他大多数方面，它似乎都和岩石一样。
 %%%%
 A crystal wall
 
@@ -356,11 +356,11 @@ A gate leading out of Pandemonium
 %%%%
 A gate leading to another region of Pandemonium
 
-一个通往另一个魔窟的大门。魔窟是无穷无尽的。
+一个通往万魔殿另一片区域的大门。万魔殿无穷无尽。
 %%%%
 A one-way gate leading to the halls of Pandemonium
 
-一个通往魔窟的无尽大厅的大门。
+一个通往万魔殿无尽厅堂的单向大门。
 %%%%
 A staircase to the Depths
 
@@ -826,10 +826,10 @@ The pulsating floor
 
 地面。它以未知的节奏搏动着。
 %%%%
-# 巫师实验室：宗古多克
+# 巫师实验室：宗古德洛克
 Zonguldrok's gravestone
 
-宗古多克家的一块墓碑，上面还滴着微咸的灵液。
+宗古德洛克家族的一块墓碑，上面还滴着微咸的灵液。
 %%%%
 A gravestone
 
@@ -975,7 +975,7 @@ A bedevilled crystal wall
 虽然它的组成成分既能抵抗破坏，又能反射火和寒，
 但它内部的异界力量似乎完全无害……至少是就这一端而言。
 %%%%
-# 神圣魔窟。
+# 神圣万魔殿。
 A silver wall
 
 这面墙由纯银制成。
@@ -1048,7 +1048,7 @@ An elephant-shaped statue
 
 这座有些磨损的花岗岩雕塑刻画着一头大象在放哨。
 %%%%
-# 魔窟_迪斯科_大厅（魔窟）
+# 万魔殿_迪斯科_大厅（万魔殿）
 A weirdly glowing ball
 
 这个悬在半空中的球体散发着微光。

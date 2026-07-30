@@ -2239,13 +2239,228 @@ def cmd_lang_args(args):
 # Subcommand: validate-terms
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _decision_field(block: str, name: str):
-    match = re.search(
-        rf"(?ms)^-\s+\*\*{re.escape(name)}\*\*:\s*(.*?)"
-        r"(?=^\s*-\s+\*\*[A-Za-z][^*]*\*\*:\s*|^---\s*$|^###\s|\Z)",
-        block,
-    )
-    return match.group(1).strip() if match else None
+_DECISION_METADATA_FIELD_RE = re.compile(
+    r"(?m)^-[ \t]+\*\*([A-Za-z][^*\n]*)\*\*:[ \t]*"
+)
+_DECISION_METADATA_TERMINATOR_RE = re.compile(
+    r"(?m)^---[ \t]*$|^###\s"
+)
+_DECISION_FIELD_CONTAINER_RE = re.compile(
+    r"(?:"
+    r">[ \t]*"
+    r"|(?:[-+]|[0-9]+[.)])[ \t]*"
+    r"|\*[ \t]+"
+    r"|\[[ xX]\][ \t]+"
+    r")"
+)
+_DECISION_FIELD_COLON_RE = re.compile(r"[:：]")
+_DECISION_RAW_RESERVED_RE = re.compile(
+    r"(?i)(?P<name>Status|Choice|Rejected)"
+)
+_DECISION_WRAPPER_CHARS = frozenset("*_`")
+_DECISION_CANONICAL_RESERVED_FIELD_RE = re.compile(
+    r"-[ \t]+\*\*(?P<name>Status|Choice|Rejected)\*\*:"
+    r"(?P<value>.*)"
+)
+_DECISION_RESERVED_FIELDS = {
+    "status": "Status",
+    "choice": "Choice",
+    "rejected": "Rejected",
+}
+
+
+def _decision_metadata_bounds(block: str) -> tuple[int, int]:
+    """Return the decision metadata body before its logical terminator."""
+    heading_end = block.find("\n")
+    if heading_end < 0:
+        return len(block), len(block)
+    start = heading_end + 1
+    terminator = _DECISION_METADATA_TERMINATOR_RE.search(block, start)
+    end = terminator.start() if terminator else len(block)
+    return start, end
+
+
+def _decision_decorated_reserved_token(line: str, position: int):
+    """Return a wrapper-delimited reserved token at one exact offset."""
+    name_start = position
+    opening_wrapper = False
+    while (
+        name_start < len(line)
+        and (
+            line[name_start] in _DECISION_WRAPPER_CHARS
+            or line[name_start] in " \t"
+        )
+    ):
+        opening_wrapper |= line[name_start] in _DECISION_WRAPPER_CHARS
+        name_start += 1
+    decorated_name = _DECISION_RAW_RESERVED_RE.match(line, name_start)
+    if opening_wrapper and decorated_name:
+        scan_end = decorated_name.end()
+        token_end = scan_end
+        closing_wrapper = False
+        while (
+            scan_end < len(line)
+            and (
+                line[scan_end] in _DECISION_WRAPPER_CHARS
+                or line[scan_end] in " \t"
+            )
+        ):
+            if line[scan_end] in _DECISION_WRAPPER_CHARS:
+                closing_wrapper = True
+                token_end = scan_end + 1
+            scan_end += 1
+    else:
+        closing_wrapper = False
+    if opening_wrapper and decorated_name and closing_wrapper:
+        canonical_name = _DECISION_RESERVED_FIELDS[
+            decorated_name.group("name").casefold()
+        ]
+        return canonical_name, position, token_end
+    return None
+
+
+def _decision_reserved_token(line: str):
+    """Return one reserved token and its exact consumed span, if present."""
+    position = len(line) - len(line.lstrip(" \t"))
+    while True:
+        decorated = _decision_decorated_reserved_token(line, position)
+        if decorated is not None:
+            return decorated
+        container = _DECISION_FIELD_CONTAINER_RE.match(line, position)
+        if not container:
+            break
+        position = container.end()
+
+    raw = _DECISION_RAW_RESERVED_RE.match(line, position)
+    if raw and re.match(r"[ \t]*[:：]", line[raw.end():]):
+        canonical_name = _DECISION_RESERVED_FIELDS[
+            raw.group("name").casefold()
+        ]
+        return canonical_name, position, raw.end()
+
+    candidate = line[position:]
+    colon = _DECISION_FIELD_COLON_RE.search(candidate)
+    if not colon:
+        return None
+    label = candidate[:colon.start()]
+    previous = None
+    while label != previous:
+        previous = label
+        label = label.strip()
+        label = label.strip("*_`")
+    if not label:
+        return None
+    canonical_name = _DECISION_RESERVED_FIELDS.get(label.casefold())
+    if canonical_name is None:
+        return None
+    return canonical_name, position, position + colon.start()
+
+
+def _decision_canonical_reserved_field(
+    line: str,
+    expected_name: str,
+) -> bool:
+    """Accept only one exact separator and a non-nested field value."""
+    canonical = _DECISION_CANONICAL_RESERVED_FIELD_RE.fullmatch(line)
+    if not canonical or canonical.group("name") != expected_name:
+        return False
+    value = canonical.group("value")
+    first = value.lstrip(" \t")
+    if first.startswith((':', '：')):
+        return False
+    return _decision_reserved_token(value) is None
+
+
+def _decision_reserved_declarations(
+    block: str,
+) -> list[tuple[str, str, bool]]:
+    """Return every reserved-name collision and its canonicality."""
+    start, end = _decision_metadata_bounds(block)
+    declarations = []
+    for line in block[start:end].splitlines():
+        token = _decision_reserved_token(line)
+        if token is None:
+            continue
+        canonical_name, _token_start, _token_end = token
+        declarations.append(
+            (
+                canonical_name,
+                line,
+                _decision_canonical_reserved_field(line, canonical_name),
+            )
+        )
+    return declarations
+
+
+def _decision_reserved_field_errors(
+    decision_id: str,
+    block: str,
+) -> list[str]:
+    """Reject non-canonical declarations colliding with reserved fields."""
+    errors = []
+    for _name, line, is_canonical in _decision_reserved_declarations(block):
+        if is_canonical:
+            continue
+        errors.append(
+            f"{decision_id}: malformed reserved metadata declaration: "
+            f"{line!r}"
+        )
+    return errors
+
+
+def _decision_metadata_fields(block: str) -> dict[str, list[str]]:
+    """Return every top-level Markdown metadata field without collapsing."""
+    start, end = _decision_metadata_bounds(block)
+    matches = list(_DECISION_METADATA_FIELD_RE.finditer(block, start, end))
+    fields = {}
+    for index, match in enumerate(matches):
+        name = match.group(1)
+        value_end = (
+            matches[index + 1].start()
+            if index + 1 < len(matches)
+            else end
+        )
+        if name == "Status":
+            newline = block.find("\n", match.end(), value_end)
+            if newline >= 0:
+                value_end = newline
+        fields.setdefault(name, []).append(
+            block[match.end():value_end].strip()
+        )
+    return fields
+
+
+def _validate_decision_metadata(decision_id: str, fields):
+    """Validate decision lifecycle and unique parser-owned fields."""
+    errors = []
+    status_values = fields.get("Status", [])
+    status = None
+    if not status_values:
+        errors.append(f"{decision_id}: missing Status field")
+    elif len(status_values) > 1:
+        kind = (
+            "duplicate"
+            if len(set(status_values)) == 1
+            else "conflicting"
+        )
+        errors.append(f"{decision_id}: {kind} Status fields")
+    else:
+        status = status_values[0]
+        if not (
+            status in ("active", "reversed")
+            or re.fullmatch(
+                r"superseded → D-[A-Z]-[0-9]+", status
+            )
+        ):
+            errors.append(
+                f"{decision_id}: invalid Status value: {status!r}"
+            )
+            status = None
+
+    for name in ("Choice", "Rejected"):
+        if len(fields.get(name, [])) > 1:
+            errors.append(f"{decision_id}: duplicate {name} fields")
+    return status, errors
 
 
 def _strip_parenthetical_explanations(value: str) -> str:
@@ -2256,21 +2471,88 @@ def _strip_parenthetical_explanations(value: str) -> str:
     return value.strip()
 
 
+_DECISION_LIST_MARKER = r"(?:[-*+]|\d+[.)])"
+_DECISION_LEADING_LIST_MARKER_RE = re.compile(
+    rf"^[ \t]*{_DECISION_LIST_MARKER}[ \t]+"
+)
+_DECISION_FOLLOWING_LIST_MARKER_RE = re.compile(
+    rf"[ \t]*{_DECISION_LIST_MARKER}[ \t]+"
+)
+
+
+def _strip_decision_list_marker(value: str) -> str:
+    """Strip one supported top-level Markdown list marker."""
+    return _DECISION_LEADING_LIST_MARKER_RE.sub("", value, count=1)
+
+
+def _has_decision_explanation_prefix(value: str) -> bool:
+    """Recognize established prose prefixes that cannot name a term."""
+    return bool(re.match(
+        r"^(?:保留|保持|混合|仅|将|珠宝|英文|调用|翻译|原始|部分|"
+        r"当前|使用)",
+        value,
+    ))
+
+
 def _split_decision_term_tokens(value: str) -> list[str]:
-    value = re.sub(r"\n\s*-\s+", "、", value)
     tokens = []
     current = []
-    depth = 0
-    for char in value:
-        if char in "(（":
-            depth += 1
-        elif char in ")）" and depth:
-            depth -= 1
-        if depth == 0 and char in ",，、;；":
+    parentheses = []
+    quote_closer = None
+    in_code = False
+    index = 0
+    quote_pairs = {
+        '"': '"',
+        "“": "”",
+        "‘": "’",
+        "「": "」",
+        "『": "』",
+    }
+    parenthesis_pairs = {"(": ")", "（": "）"}
+
+    while index < len(value):
+        char = value[index]
+        if char == "`" and quote_closer is None:
+            in_code = not in_code
+            current.append(char)
+            index += 1
+            continue
+        if not in_code:
+            if quote_closer is not None:
+                if char == quote_closer:
+                    quote_closer = None
+                current.append(char)
+                index += 1
+                continue
+            if char in quote_pairs:
+                quote_closer = quote_pairs[char]
+                current.append(char)
+                index += 1
+                continue
+            if char in parenthesis_pairs:
+                parentheses.append(parenthesis_pairs[char])
+            elif parentheses and char == parentheses[-1]:
+                parentheses.pop()
+
+        at_top_level = (
+            not in_code and quote_closer is None and not parentheses
+        )
+        if at_top_level and char in ",，、;；":
             tokens.append("".join(current))
             current = []
-        else:
-            current.append(char)
+            index += 1
+            continue
+        if at_top_level and char == "\n":
+            marker = _DECISION_FOLLOWING_LIST_MARKER_RE.match(
+                value, index + 1
+            )
+            if marker:
+                tokens.append("".join(current))
+                current = []
+                index = marker.end()
+                continue
+        current.append(char)
+        index += 1
     tokens.append("".join(current))
     return tokens
 
@@ -2292,7 +2574,7 @@ def _searchable_decision_terms(value: str) -> list[str]:
         ):
             continue
         raw = _strip_parenthetical_explanations(raw)
-        term = re.sub(r"^\s*-\s+", "", raw).strip()
+        term = _strip_decision_list_marker(raw).strip()
         term = term.strip(" `*\"'“”")
         if not term or re.match(r"^[（(]?\s*none\b", term, re.I):
             continue
@@ -2305,11 +2587,7 @@ def _searchable_decision_terms(value: str) -> list[str]:
             or re.search(r"[。！？:：]", term)
             or re.search(r"\s", term)
             or "`" in term
-            or re.match(
-                r"^(?:保留|混合|仅|将|珠宝|英文|调用|翻译|原始|部分|"
-                r"当前|使用)",
-                term,
-            )
+            or _has_decision_explanation_prefix(term)
             or len(term) < 2
             or not re.fullmatch(
                 r"[\u3400-\u9fffA-Za-z0-9·・'’\-]+", term
@@ -2323,7 +2601,7 @@ def _searchable_decision_terms(value: str) -> list[str]:
 def _decision_choices(value: str) -> list[str]:
     choices = []
     for line in value.splitlines():
-        line = re.sub(r"^\s*-\s+", "", line).strip()
+        line = _strip_decision_list_marker(line).strip()
         if not line:
             continue
         stripped = line.strip(" `*")
@@ -2365,105 +2643,989 @@ def _markdown_table_cells(line: str) -> list[str]:
     return cells
 
 
+def _context_table_index(block: str):
+    """Return canonical exact-key rows from explicit ``Context | ZH`` tables.
+
+    SourceDB identity uses ``compute_canonical_key()`` without trimming.  Keep
+    the exact table spelling for diagnostics and downstream SourceDB lookup,
+    while rejecting table rows that collapse onto the same production key.
+    """
+    values = {}
+    errors = []
+    table_found = False
+    lines = block.splitlines()
+    index = 0
+    while index < len(lines):
+        cells = _markdown_table_cells(lines[index])
+        if not (
+            len(cells) >= 2
+            and cells[0].casefold() == "context"
+            and cells[1].casefold() == "zh"
+        ):
+            index += 1
+            continue
+
+        table_found = True
+        if index + 1 >= len(lines):
+            errors.append("Context table is missing its separator row")
+            break
+        separator = _markdown_table_cells(lines[index + 1])
+        if (
+            len(separator) < 2
+            or not all(
+                re.fullmatch(r":?-{3,}:?", cell)
+                for cell in separator[:2]
+            )
+        ):
+            errors.append("Context table has an invalid separator row")
+            index += 1
+            continue
+
+        index += 2
+        row_count = 0
+        while index < len(lines):
+            row = _markdown_table_cells(lines[index])
+            if not row:
+                break
+            if len(row) < 2:
+                errors.append("Context table row has fewer than two cells")
+                index += 1
+                continue
+
+            context_cell = row[0]
+            exact_code = re.fullmatch(r"`([^`\n]+)`", context_cell)
+            if exact_code:
+                keys = [exact_code.group(1)]
+            else:
+                # A descriptive Context cell can contain an internal identity
+                # and a pipe-qualified SourceDB key.  Only the qualified code
+                # span is an exact key; unrelated code spans remain prose.
+                keys = [
+                    token
+                    for token in re.findall(r"`([^`\n]+)`", context_cell)
+                    if "|" in token
+                ]
+                if not keys:
+                    keys = [context_cell.strip(" `")]
+            keys = [key.replace(r"\|", "|") for key in keys]
+            value = row[1].strip(" `")
+            if not all(key.strip() for key in keys) or not value:
+                errors.append("Context table row has an empty key or ZH value")
+            else:
+                for key in keys:
+                    canonical_key = compute_canonical_key(key)
+                    previous = values.get(canonical_key)
+                    if previous is not None:
+                        kind = (
+                            "duplicate"
+                            if previous["value"] == value
+                            else "conflicting"
+                        )
+                        errors.append(
+                            f"{kind} Context table rows for normalized key "
+                            f"{canonical_key!r}: {previous['key']!r} and "
+                            f"{key!r}"
+                        )
+                    else:
+                        values[canonical_key] = {
+                            "key": key,
+                            "value": value,
+                        }
+            row_count += 1
+            index += 1
+        if not row_count:
+            errors.append("Context table has no data rows")
+    return values, table_found, errors
+
+
+def _decision_code_spans(value: str):
+    """Return Markdown code spans with their exact token offsets."""
+    spans = []
+    opening = None
+    for index, char in enumerate(value):
+        if char != "`":
+            continue
+        if opening is None:
+            opening = index
+        else:
+            spans.append({
+                "text": value[opening + 1:index],
+                "start": opening,
+                "end": index + 1,
+            })
+            opening = None
+    if opening is not None:
+        return [], "unclosed Markdown code span"
+    return spans, None
+
+
+def _decision_delimiters_balanced(value: str) -> bool:
+    """Validate code, parenthesis, and ordinary-quote boundaries."""
+    parentheses = []
+    quote_closer = None
+    in_code = False
+    quote_pairs = {
+        '"': '"',
+        "“": "”",
+        "‘": "’",
+        "「": "」",
+        "『": "』",
+    }
+    quote_closers = set(quote_pairs.values()) - {'"'}
+    parenthesis_pairs = {"(": ")", "（": "）"}
+    parenthesis_closers = set(parenthesis_pairs.values())
+
+    for char in value:
+        if char == "`" and quote_closer is None:
+            in_code = not in_code
+            continue
+        if in_code:
+            continue
+        if quote_closer is not None:
+            if char == quote_closer:
+                quote_closer = None
+            continue
+        if char in quote_pairs:
+            quote_closer = quote_pairs[char]
+            continue
+        if char in quote_closers:
+            return False
+        if char in parenthesis_pairs:
+            parentheses.append(parenthesis_pairs[char])
+        elif char in parenthesis_closers:
+            if not parentheses or char != parentheses[-1]:
+                return False
+            parentheses.pop()
+    return not in_code and quote_closer is None and not parentheses
+
+
+def _is_parenthetical_sequence(value: str) -> bool:
+    """Return whether all substantive text is parenthesized explanation."""
+    value = value.strip()
+    if not value:
+        return False
+    pairs = {"(": ")", "（": "）"}
+    index = 0
+    while index < len(value):
+        while index < len(value) and value[index].isspace():
+            index += 1
+        if index == len(value):
+            return True
+        opener = value[index]
+        if opener not in pairs:
+            return False
+        expected = []
+        quote_closer = None
+        in_code = False
+        start = index
+        while index < len(value):
+            char = value[index]
+            if char == "`" and quote_closer is None:
+                in_code = not in_code
+            elif not in_code:
+                if quote_closer is not None:
+                    if char == quote_closer:
+                        quote_closer = None
+                elif char == '"':
+                    quote_closer = '"'
+                elif char == "“":
+                    quote_closer = "”"
+                elif char == "‘":
+                    quote_closer = "’"
+                elif char == "「":
+                    quote_closer = "」"
+                elif char == "『":
+                    quote_closer = "』"
+                elif char in pairs:
+                    expected.append(pairs[char])
+                elif char in pairs.values():
+                    if not expected or char != expected[-1]:
+                        return False
+                    expected.pop()
+                    if not expected:
+                        index += 1
+                        break
+            index += 1
+        if index == start or expected or in_code or quote_closer is not None:
+            return False
+    return True
+
+
+def _has_parenthetical_explanation(value: str) -> bool:
+    """Return whether a token contains a balanced explanatory aside."""
+    for index, char in enumerate(value):
+        if char not in "(（":
+            continue
+        if _is_parenthetical_sequence(value[index:]):
+            return True
+    return False
+
+
+def _is_entire_quoted(value: str) -> bool:
+    value = value.strip()
+    pairs = {
+        '"': '"',
+        "“": "”",
+        "‘": "’",
+        "「": "」",
+        "『": "』",
+    }
+    return (
+        len(value) >= 2
+        and value[0] in pairs
+        and value[-1] == pairs[value[0]]
+    )
+
+
+def _is_explicit_explanation_suffix(value: str) -> bool:
+    """Accept only a fully delimited explanation after a mapping."""
+    return (
+        _is_parenthetical_sequence(value)
+        or _is_entire_quoted(value)
+    )
+
+
+def _is_embedded_arrow_explanation(
+    token: str, prefix: str, suffix: str
+) -> bool:
+    """Recognize a code-arrow embedded in an explicit prose explanation."""
+    if _is_entire_quoted(token) or _is_parenthetical_sequence(token):
+        return True
+    return bool(
+        re.search(r"[:：]", prefix)
+        and re.search(r"[。！？]\s*$", suffix)
+    )
+
+
+def _arrows_are_delimited_explanations(value: str) -> bool:
+    """Require every non-code arrow to be inside quotes or parentheses."""
+    parentheses = []
+    quote_closer = None
+    in_code = False
+    found = False
+    pairs = {"(": ")", "（": "）"}
+    quote_pairs = {
+        '"': '"',
+        "“": "”",
+        "‘": "’",
+        "「": "」",
+        "『": "』",
+    }
+    index = 0
+    while index < len(value):
+        char = value[index]
+        if char == "`" and quote_closer is None:
+            in_code = not in_code
+            index += 1
+            continue
+        if not in_code:
+            is_arrow = char == "→" or value.startswith("->", index)
+            if is_arrow:
+                found = True
+                if quote_closer is None and not parentheses:
+                    return False
+                index += 2 if value.startswith("->", index) else 1
+                continue
+            if quote_closer is not None:
+                if char == quote_closer:
+                    quote_closer = None
+            elif char in quote_pairs:
+                quote_closer = quote_pairs[char]
+            elif char in pairs:
+                parentheses.append(pairs[char])
+            elif parentheses and char == parentheses[-1]:
+                parentheses.pop()
+        index += 1
+    return found
+
+
+def _delimited_arrow_explanation_spans(value: str):
+    """Return every top-level quoted/parenthesized non-code arrow span."""
+    parenthesis_pairs = {"(": ")", "（": "）"}
+    quote_pairs = {
+        '"': '"',
+        "“": "”",
+        "‘": "’",
+        "「": "」",
+        "『": "』",
+    }
+    parenthesis_closers = set(parenthesis_pairs.values())
+    parentheses = []
+    quote_closer = None
+    span_start = None
+    spans = []
+
+    for index, char in enumerate(value):
+        if quote_closer is not None:
+            if char == quote_closer:
+                quote_closer = None
+                if not parentheses:
+                    span_end = index + 1
+                    if re.search(
+                        r"(?:→|->)", value[span_start:span_end]
+                    ):
+                        spans.append((span_start, span_end))
+                    span_start = None
+            continue
+        if char in quote_pairs:
+            quote_closer = quote_pairs[char]
+            if not parentheses:
+                span_start = index
+            continue
+        if char in parenthesis_pairs:
+            if not parentheses:
+                span_start = index
+            parentheses.append(parenthesis_pairs[char])
+            continue
+        if char in parenthesis_closers:
+            parentheses.pop()
+            if not parentheses:
+                span_end = index + 1
+                if re.search(r"(?:→|->)", value[span_start:span_end]):
+                    spans.append((span_start, span_end))
+                span_start = None
+    return spans
+
+
+def _outside_arrow_residuals(token: str, outside_code: str):
+    """Remove exact arrow-explanation spans and return all residual text."""
+    spans = _delimited_arrow_explanation_spans(outside_code)
+    masked = list(outside_code)
+    residuals = []
+    previous_end = 0
+    for start, end in spans:
+        residual = token[previous_end:start].strip()
+        if residual:
+            residuals.append(residual)
+        masked[start:end] = " " * (end - start)
+        previous_end = end
+    residual = token[previous_end:].strip()
+    if residual:
+        residuals.append(residual)
+    if re.search(r"(?:→|->)", "".join(masked)):
+        return None
+    return residuals
+
+
+def _is_explicit_arrow_residual_explanation(value: str) -> bool:
+    """Recognize a whole residual as prose, never a hidden global term."""
+    value = value.strip()
+    if not re.search(r"[\u3400-\u9fff]", value):
+        return True
+    if re.fullmatch(
+        r"(?i)(?:历史(?:说明|记录)?|旧译|原译|historical(?: "
+        r"(?:explanation|note|record))?|legacy(?: "
+        r"(?:explanation|note|record))?|explanatory(?: note)?|example)"
+        r"[ \t:：]*",
+        value,
+    ):
+        return True
+    return _has_decision_explanation_prefix(value)
+
+
+def _has_explicit_historical_marker(value: str) -> bool:
+    return bool(re.search(
+        r"(?i)历史(?:说明|记录)?|旧译|原译|"
+        r"historical|legacy|explanatory|example",
+        value,
+    ))
+
+
+def _is_context_identity_boundary(char: str) -> bool:
+    """Return whether a character delimits a Context identity."""
+    return not (char.isalnum() or char in "_|")
+
+
+def _outside_arrow_matches_context(value: str, context_values) -> bool:
+    """Return whether an unbackticked arrow names an exact Context key."""
+    start = 0
+    for arrow in re.finditer(r"(?:→|->)", value):
+        lhs = value[start:arrow.start()].replace(r"\|", "|")
+        # Match the contextual parser's conventional single separator space.
+        if lhs.endswith(" "):
+            lhs = lhs[:-1]
+        canonical_lhs = compute_canonical_key(lhs)
+        for canonical_key in context_values:
+            if not canonical_lhs.endswith(canonical_key):
+                continue
+            prefix_length = len(canonical_lhs) - len(canonical_key)
+            if (
+                prefix_length == 0
+                or _is_context_identity_boundary(
+                    canonical_lhs[prefix_length - 1]
+                )
+            ):
+                return True
+        start = arrow.end()
+    return False
+
+
+def _text_mentions_context_identity(value: str, context_values) -> bool:
+    """Return whether prose contains a boundary-delimited Context key."""
+    canonical_value = compute_canonical_key(value.replace(r"\|", "|"))
+
+    for canonical_key in context_values:
+        start = 0
+        while True:
+            start = canonical_value.find(canonical_key, start)
+            if start < 0:
+                break
+            end = start + len(canonical_key)
+            left_ok = (
+                start == 0
+                or _is_context_identity_boundary(
+                    canonical_value[start - 1]
+                )
+            )
+            right_ok = (
+                end == len(canonical_value)
+                or _is_context_identity_boundary(canonical_value[end])
+            )
+            if left_ok and right_ok:
+                return True
+            start += 1
+    return False
+
+
+def _has_pipe_qualified_arrow(value: str) -> bool:
+    """Detect a pipe-qualified arrow without discarding its delimiters."""
+    chunks = re.split(r"(?:→|->)", value.replace(r"\|", "|"))
+    return any("|" in chunk for chunk in chunks[:-1])
+
+
+def _mask_decision_code_spans(value: str, spans) -> str:
+    masked = list(value)
+    for span in spans:
+        masked[span["start"]:span["end"]] = (
+            " " * (span["end"] - span["start"])
+        )
+    return "".join(masked)
+
+
+def _is_explicit_non_arrow_explanation(value: str) -> bool:
+    """Recognize prose/explanation shapes that cannot be global terms."""
+    value = value.strip()
+    if not value:
+        return True
+    if re.match(r"^[（(]?\s*none\b", value, re.I):
+        return True
+    if _has_parenthetical_explanation(value):
+        return True
+    if (
+        re.search(r'["“”‘’「」『』]', value)
+        and not _is_entire_quoted(value)
+    ):
+        return True
+    if not re.search(r"[\u3400-\u9fff]", value):
+        return True
+    stripped = value.strip(" `*\"'“”‘’「」『』")
+    if (
+        len(stripped) < 2
+        or len(stripped) > 24
+        or re.search(r"[。！？:：\s]", stripped)
+        or _has_decision_explanation_prefix(stripped)
+    ):
+        return True
+    return False
+
+
+def _invalid_rejected_token(index: int, raw: str, error: str):
+    return {
+        "kind": "invalid",
+        "index": index,
+        "raw": raw,
+        "error": error,
+    }
+
+
+def _classify_rejected_token(
+    decision_id: str,
+    index: int,
+    raw_token: str,
+    context_values,
+    context_table_found: bool,
+):
+    """Classify one complete top-level Rejected token exactly once."""
+    token = _strip_decision_list_marker(raw_token).strip()
+    if not token:
+        return {"kind": "explanation", "index": index, "raw": token}
+    if not _decision_delimiters_balanced(token):
+        return _invalid_rejected_token(
+            index,
+            token,
+            f"{decision_id}: unbalanced delimiters in Rejected token: "
+            f"{token!r}",
+        )
+
+    code_spans, code_error = _decision_code_spans(token)
+    if code_error:
+        return _invalid_rejected_token(
+            index,
+            token,
+            f"{decision_id}: {code_error} in Rejected token: {token!r}",
+        )
+    mapping_spans = [
+        span for span in code_spans
+        if re.search(r"(?:→|->)", span["text"])
+    ]
+    outside_code = _mask_decision_code_spans(token, code_spans)
+    if re.search(r"(?:→|->)", outside_code):
+        if _has_pipe_qualified_arrow(outside_code):
+            if (
+                _is_entire_quoted(token)
+                or _has_parenthetical_explanation(token)
+            ):
+                detail = (
+                    "pipe-qualified contextual mapping must use backticks"
+                )
+            else:
+                detail = (
+                    "contextual Rejected mapping must be enclosed in "
+                    "backticks"
+                )
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: {detail}: {token!r}",
+            )
+        if not _arrows_are_delimited_explanations(outside_code):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: contextual Rejected mapping must be "
+                f"enclosed in backticks: {token!r}",
+            )
+        if (
+            context_table_found
+            and _outside_arrow_matches_context(
+                outside_code, context_values
+            )
+        ):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: contextual Rejected arrow matches an "
+                f"exact Context table key and must be enclosed in "
+                f"backticks: {token!r}",
+            )
+        if (
+            context_table_found
+            and not _has_explicit_historical_marker(outside_code)
+        ):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: contextual Rejected mapping must be "
+                f"enclosed in backticks unless it has an explicit "
+                f"historical marker: {token!r}",
+            )
+        residuals = _outside_arrow_residuals(token, outside_code)
+        if residuals is None:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed arrow in Rejected token: "
+                f"{token!r}",
+            )
+        if not residuals:
+            return {
+                "kind": "explanation",
+                "index": index,
+                "raw": token,
+            }
+        if len(residuals) != 1:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed Rejected text around arrow "
+                f"explanation: {residuals!r}",
+            )
+        residual = residuals[0]
+        if residual.endswith((':', '：')):
+            if _is_explicit_arrow_residual_explanation(residual):
+                return {
+                    "kind": "explanation",
+                    "index": index,
+                    "raw": token,
+                }
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed Rejected token prefix: "
+                f"{residual!r}",
+            )
+        classification = _classify_rejected_token(
+            decision_id,
+            index,
+            residual,
+            context_values,
+            context_table_found,
+        )
+        if (
+            classification["kind"] == "explanation"
+            and not _is_explicit_arrow_residual_explanation(residual)
+        ):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed Rejected text around arrow "
+                f"explanation: {residual!r}",
+            )
+        classification["raw"] = token
+        return classification
+
+    if mapping_spans:
+        qualified_spans = []
+        for span in mapping_spans:
+            lhs = re.split(
+                r"(?:→|->)", span["text"].replace(r"\|", "|"), maxsplit=1
+            )[0]
+            if "|" in lhs:
+                qualified_spans.append(span)
+
+        if len(mapping_spans) != 1:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: Rejected token must contain exactly one "
+                f"contextual mapping: {token!r}",
+            )
+
+        mapping = mapping_spans[0]
+        prefix = token[:mapping["start"]].strip()
+        suffix = token[mapping["end"]:].strip()
+        # An unqualified code-arrow without a table is historical prose, not
+        # a SourceDB rule.  Consume the whole token before granting that
+        # exemption: a plain prefix or suffix cannot hide a global term.
+        if not context_table_found and not qualified_spans:
+            if prefix and not _is_embedded_arrow_explanation(
+                token, prefix, suffix
+            ):
+                return _invalid_rejected_token(
+                    index,
+                    token,
+                    f"{decision_id}: unconsumed Rejected token prefix: "
+                    f"{prefix!r}",
+                )
+            if (
+                suffix
+                and not _is_explicit_explanation_suffix(suffix)
+                and not _is_embedded_arrow_explanation(
+                    token, prefix, suffix
+                )
+            ):
+                return _invalid_rejected_token(
+                    index,
+                    token,
+                    f"{decision_id}: unconsumed Rejected token suffix: "
+                    f"{suffix!r}",
+                )
+            return {
+                "kind": "explanation",
+                "index": index,
+                "raw": token,
+            }
+
+        if (
+            prefix
+            or (
+                suffix
+                and not _is_explicit_explanation_suffix(suffix)
+            )
+        ):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed contextual Rejected text: "
+                f"{(prefix or suffix)!r}",
+            )
+
+        unescaped = mapping["text"].replace(r"\|", "|")
+        match = re.fullmatch(r"(.+?)(?:→|->)(.+)", unescaped)
+        if not match:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: invalid contextual Rejected mapping: "
+                f"`{mapping['text']}`",
+            )
+        key = match.group(1)
+        rejected = match.group(2)
+        # Remove only the conventional one-space arrow separators.
+        # Leading/trailing spaces inside a SourceDB key are identity.
+        if key.endswith(" "):
+            key = key[:-1]
+        if rejected.startswith(" "):
+            rejected = rejected[1:]
+        context_qualified = "|" in key
+        rejected_terms = _searchable_decision_terms(rejected)
+        if (
+            (
+                context_qualified
+                and (
+                    key.count("|") != 1
+                    or not re.fullmatch(r"[^|\n]+\|[^|\n]+", key)
+                )
+            )
+            or (
+                not context_qualified
+                and not re.fullmatch(r"[^|\n]+", key)
+            )
+            or len(rejected_terms) != 1
+        ):
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: invalid contextual Rejected mapping: "
+                f"`{mapping['text']}`",
+            )
+        table_row = context_values.get(compute_canonical_key(key))
+        if table_row is None:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: contextual key {key!r} does not match "
+                "an exact non-empty Context table key",
+            )
+        return {
+            "kind": "contextual",
+            "index": index,
+            "raw": token,
+            "decision": decision_id,
+            "key": table_row["key"],
+            "rejected": rejected_terms[0],
+            "correct": table_row["value"],
+        }
+
+    if re.search(r"(?:→|->)", outside_code):
+        return {"kind": "explanation", "index": index, "raw": token}
+
+    if code_spans and (
+        context_table_found
+        or any("|" in span["text"].replace(r"\|", "|")
+                for span in code_spans)
+    ):
+        exact_code_token = (
+            len(code_spans) == 1
+            and not token[:code_spans[0]["start"]].strip()
+            and not token[code_spans[0]["end"]:].strip()
+        )
+        if exact_code_token:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: contextual Rejected mapping is missing "
+                f"an arrow: `{code_spans[0]['text']}`",
+            )
+
+    if (
+        context_table_found
+        and _text_mentions_context_identity(token, context_values)
+    ):
+        return _invalid_rejected_token(
+            index,
+            token,
+            f"{decision_id}: contextual Rejected text matches an exact "
+            f"Context table key and must use a backticked arrow mapping: "
+            f"{token!r}",
+        )
+
+    if "|" in token.replace(r"\|", "|"):
+        return _invalid_rejected_token(
+            index,
+            token,
+            f"{decision_id}: pipe-qualified Rejected identity must use a "
+            f"backticked arrow mapping: {token!r}",
+        )
+
+    if _is_explicit_non_arrow_explanation(token):
+        return {"kind": "explanation", "index": index, "raw": token}
+
+    rejected_terms = _searchable_decision_terms(token)
+    if len(rejected_terms) == 1:
+        if context_table_found:
+            return _invalid_rejected_token(
+                index,
+                token,
+                f"{decision_id}: unconsumed contextual Rejected text: "
+                f"{token!r}",
+            )
+        return {
+            "kind": "global",
+            "index": index,
+            "raw": token,
+            "rejected": rejected_terms[0],
+        }
+    return _invalid_rejected_token(
+        index,
+        token,
+        f"{decision_id}: unconsumed Rejected token: {token!r}",
+    )
+
+
+_DECISION_REJECTED_UNSET = object()
+
+
+def _classify_decision_rejections(
+    decision_id: str,
+    block: str,
+    rejected_raw=_DECISION_REJECTED_UNSET,
+):
+    """Consume every top-level Rejected token through one classifier."""
+    if rejected_raw is _DECISION_REJECTED_UNSET:
+        rejected_values = _decision_metadata_fields(block).get(
+            "Rejected", []
+        )
+        if len(rejected_values) > 1:
+            return [], [f"{decision_id}: duplicate Rejected fields"]
+        rejected_raw = rejected_values[0] if rejected_values else ""
+    context_values, context_table_found, table_errors = (
+        _context_table_index(block)
+    )
+    classifications = []
+    errors = [
+        f"{decision_id}: {error}" for error in table_errors
+    ]
+    if not rejected_raw:
+        return classifications, errors
+    for index, token in enumerate(
+        _split_decision_term_tokens(rejected_raw)
+    ):
+        classification = _classify_rejected_token(
+            decision_id,
+            index,
+            token,
+            context_values,
+            context_table_found,
+        )
+        classifications.append(classification)
+        if classification["kind"] == "invalid":
+            errors.append(classification["error"])
+    return classifications, errors
+
+
+def _parse_decision_content(content: str) -> dict:
+    """Classify one immutable decisions snapshot and derive every registry."""
+    rejected_map = {}
+    contextual_rules = []
+    all_classifications = []
+    parsed_blocks = []
+    metadata_errors = []
+    for decision_id, block in _iter_decision_blocks(content):
+        fields = _decision_metadata_fields(block)
+        metadata_errors.extend(
+            _decision_reserved_field_errors(decision_id, block)
+        )
+        status, decision_errors = _validate_decision_metadata(
+            decision_id, fields
+        )
+        metadata_errors.extend(decision_errors)
+        parsed_blocks.append((decision_id, block, fields, status))
+
+    if metadata_errors:
+        raise ValueError("; ".join(metadata_errors))
+
+    errors = []
+    for decision_id, block, fields, status in parsed_blocks:
+        if status != "active":
+            continue
+        rejected_values = fields.get("Rejected", [])
+        rejected_raw = rejected_values[0] if rejected_values else ""
+        classifications, decision_errors = (
+            _classify_decision_rejections(
+                decision_id, block, rejected_raw
+            )
+        )
+        all_classifications.extend(classifications)
+        errors.extend(decision_errors)
+        contextual_rules.extend(
+            {
+                "decision": classification["decision"],
+                "key": classification["key"],
+                "rejected": classification["rejected"],
+                "correct": classification["correct"],
+            }
+            for classification in classifications
+            if classification["kind"] == "contextual"
+        )
+
+        global_classifications = [
+            classification
+            for classification in classifications
+            if classification["kind"] == "global"
+        ]
+        if not global_classifications:
+            continue
+
+        choice_values = fields.get("Choice", [])
+        choice_raw = choice_values[0] if choice_values else ""
+        if not choice_raw:
+            errors.append(
+                f"{decision_id}: global Rejected terms require a "
+                "non-empty Choice"
+            )
+            continue
+        choices = _decision_choices(choice_raw)
+        if not choices:
+            errors.append(
+                f"{decision_id}: cannot determine a Choice mapping for "
+                "global Rejected terms"
+            )
+            continue
+        if len(choices) == 1:
+            mapped_choices = choices * len(global_classifications)
+        elif len(choices) == len(global_classifications):
+            mapped_choices = choices
+        else:
+            errors.append(
+                f"{decision_id}: Choice count {len(choices)} cannot map "
+                f"deterministically to {len(global_classifications)} "
+                "global Rejected terms"
+            )
+            continue
+
+        for classification, choice in zip(
+            global_classifications, mapped_choices
+        ):
+            rejected = classification["rejected"]
+            if rejected in rejected_map:
+                errors.append(
+                    f"{decision_id}: duplicate global Rejected term "
+                    f"{rejected!r} cannot be mapped uniquely"
+                )
+                continue
+            rejected_map[rejected] = choice
+
+    if errors:
+        raise ValueError("; ".join(errors))
+    return {
+        "rejected_map": rejected_map,
+        "contextual_rules": contextual_rules,
+        "classifications": all_classifications,
+    }
+
+
+def parse_decision_registry(filepath: str) -> dict:
+    """Read and classify one decisions file snapshot exactly once."""
+    if not os.path.exists(filepath):
+        return {
+            "rejected_map": {},
+            "contextual_rules": [],
+            "classifications": [],
+        }
+    with open(filepath, "r", encoding="utf-8") as stream:
+        content = stream.read()
+    return _parse_decision_content(content)
+
+
 def parse_decisions(filepath: str) -> dict:
     """Return searchable global rejected terms from every active decision."""
-    rejected_map = {}
-    if not os.path.exists(filepath):
-        return rejected_map
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    for _decision_id, block in _iter_decision_blocks(content):
-        if not re.search(
-            r"(?mi)^-\s+\*\*Status\*\*:\s*active\b", block
-        ):
-            continue
-        choice_raw = _decision_field(block, "Choice")
-        rejected_raw = _decision_field(block, "Rejected")
-        if not choice_raw or not rejected_raw:
-            continue
-        # Context-qualified mappings are checked only at their exact key/value
-        # sink and must never become global substring bans.
-        if re.search(r"`[^`]+(?:→|->)[^`]+`", rejected_raw):
-            continue
-        # A parenthetical qualifier makes the rejection contextual or
-        # explanatory rather than a globally safe substring ban.  Only plain,
-        # independently searchable term tokens enter the global map.
-        if re.search(r"[()（）]", rejected_raw):
-            continue
-        rejected = _searchable_decision_terms(rejected_raw)
-        choices = _decision_choices(choice_raw)
-        if not rejected or not choices:
-            continue
-        for index, term in enumerate(rejected):
-            rejected_map[term] = choices[min(index, len(choices) - 1)]
-    return rejected_map
+    return parse_decision_registry(filepath)["rejected_map"]
 
 
 def parse_contextual_decisions(filepath: str) -> list[dict]:
     """Return exact key/value rejected mappings from active decisions."""
-    if not os.path.exists(filepath):
-        return []
-    with open(filepath, "r", encoding="utf-8") as stream:
-        content = stream.read()
-    rules = []
-    errors = []
-    for decision_id, block in _iter_decision_blocks(content):
-        if not re.search(
-            r"(?mi)^-\s+\*\*Status\*\*:\s*active\b", block
-        ):
-            continue
-        rejected_raw = _decision_field(block, "Rejected") or ""
-        for token in re.findall(r"`([^`\n]+)`", rejected_raw):
-            unescaped = token.replace(r"\|", "|")
-            if "|" not in unescaped:
-                continue
-            match = re.fullmatch(
-                r"(.+?)\s*(?:→|->)\s*(.+)", unescaped
-            )
-            if not match:
-                errors.append(
-                    f"{decision_id}: contextual Rejected mapping is missing "
-                    f"an arrow: `{token}`"
-                )
-                continue
-            key = match.group(1).strip()
-            rejected = match.group(2).strip()
-            if (
-                key.count("|") != 1
-                or not re.fullmatch(r"[^|\n]+\|[^|\n]+", key)
-                or len(_searchable_decision_terms(rejected)) != 1
-            ):
-                errors.append(
-                    f"{decision_id}: invalid contextual Rejected mapping: "
-                    f"`{token}`"
-                )
-                continue
-            correct = None
-            for line in block.splitlines():
-                cells = _markdown_table_cells(line)
-                if (
-                    len(cells) >= 2
-                    and cells[0].replace(r"\|", "|").strip(" `") == key
-                ):
-                    correct = cells[1].strip(" `")
-                    break
-            if not correct:
-                errors.append(
-                    f"{decision_id}: contextual key {key!r} is missing an "
-                    "exact non-empty table value"
-                )
-                continue
-            rules.append({
-                "decision": decision_id,
-                "key": key,
-                "rejected": rejected,
-                "correct": correct,
-            })
-    if errors:
-        raise ValueError("; ".join(errors))
-    return rules
+    return parse_decision_registry(filepath)["contextual_rules"]
 
 
 def _validate_contextual_decisions(rules):
@@ -2518,14 +3680,16 @@ def _collect_effective_sourcedb_files(source_txt):
 
     candidates = []
     for name in names:
-        if not name.endswith(".txt"):
+        # Match get_dir_files_ext(directory, "txt") exactly: the C++
+        # extension argument is a raw filename suffix, not ".txt".
+        if not name.endswith("txt"):
             continue
         candidate = os.path.join(directory, name)
         if os.path.isfile(candidate):
             candidates.append(os.path.abspath(candidate))
         else:
             errors.append(
-                f"required SourceDB *.txt path is not a file: {candidate}"
+                f"required SourceDB *txt path is not a file: {candidate}"
             )
 
     source_identity = os.path.normcase(source_path)
@@ -2551,6 +3715,10 @@ def _collect_zh_textdb_files(source_txt, zh_dirs):
     directory is missing, unreadable, or contains no ``*.txt`` files.
     """
     sourcedb_files, errors = _collect_effective_sourcedb_files(source_txt)
+    sourcedb_identities = {
+        os.path.normcase(os.path.abspath(path))
+        for path in sourcedb_files
+    }
     requested = list(sourcedb_files)
     requested.extend(zh_dirs or [])
 
@@ -2560,7 +3728,11 @@ def _collect_zh_textdb_files(source_txt, zh_dirs):
         path = os.path.abspath(raw_path)
         candidates = []
         if os.path.isfile(path):
-            if not path.endswith(".txt"):
+            identity = os.path.normcase(path)
+            if (
+                identity not in sourcedb_identities
+                and not path.endswith(".txt")
+            ):
                 errors.append(f"required TextDB file is not *.txt: {path}")
                 continue
             candidates.append(path)
@@ -2608,8 +3780,9 @@ def cmd_validate_terms(args):
         )
         return 2
     try:
-        rejected_map = parse_decisions(args.glossary)
-        contextual_rules = parse_contextual_decisions(args.glossary)
+        registry = parse_decision_registry(args.glossary)
+        rejected_map = registry["rejected_map"]
+        contextual_rules = registry["contextual_rules"]
     except (OSError, UnicodeError, ValueError) as error:
         print(f"ERROR: cannot parse required decisions file: {error}",
               file=sys.stderr)

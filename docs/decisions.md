@@ -142,9 +142,14 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-05
 - **Source**: Monster name terminology batch
 - **Choice**: 龙人
-- **Rejected**: 龙裔 (over-specifies bloodline)
+- **Rejected**: `It inflicts extra damage against dragons and draconians. → 龙裔`
+  (over-specifies bloodline)
 - **Rationale**: 龙人 captures the half-dragon, half-humanoid nature. Color prefixes follow simple modifier pattern (黑龙人, 绿龙人). Standard convention for dragonborn-style races in Chinese fantasy.
 - **Examples**: black draconian → 黑龙人, draconian annihilator → 龙人湮灭者, draconian stormcaller → 龙人风暴召唤者
+
+| Context | ZH |
+|---|---|
+| `It inflicts extra damage against dragons and draconians.` | 对龙和龙人造成额外伤害。 |
 
 ---
 
@@ -263,7 +268,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-05
 - **Source**: Monster name terminology batch
 - **Choice**: 幼龙
-- **Rejected**: 小龙 (too informal/ambiguous — was previously used in "Summon Drakes → 召唤小龙", now unified to 幼龙), 龙兽 (reads as "dragon-beast"), 雏龙 (avian, hatchling-specific)
+- **Rejected**: 小龙 (too informal/ambiguous — "Summon Drakes" previously used 召唤小龙 and is now unified to 幼龙), 龙兽 (reads as "dragon-beast"), 雏龙 (avian, hatchling-specific)
 - **Rationale**: 幼龙 distinguishes smaller/younger drakes from adult dragons (龙). This is the key structural distinction: the Chinese dragon taxonomy uses 幼龙 vs 龙. **Pre-existing inconsistency fixed**: "Summon Drakes" changed from 召唤小龙 to 召唤幼龙.
 - **Examples**: drake → 幼龙, rime drake → 霜幼龙, death drake → 死亡幼龙, wind drake → 风幼龙
 
@@ -432,7 +437,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-05
 - **Source**: Terminology consistency audit
 - **Choice**: 果冻怪 (azure jelly→天蓝果冻怪, star jelly→星之果冻, Royal Jelly→果冻王)
-- **Rejected**: 史莱姆 (collision with slime creature→史莱姆 — jelly and slime are distinct DCSS monster types)
+- **Rejected**: 史莱姆 (collision with slime creature, whose established translation is 史莱姆 — jelly and slime are distinct DCSS monster types)
 - **Rationale**: DCSS has four distinct amorphous monster families: jelly (果冻怪/果冻), slime (史莱姆/黏液), ooze (软泥), blob (凝胶团/酸液团). Translating jelly as 史莱姆 would lose the gameplay distinction between jelly-type and slime-type monsters. Royal Jelly→果冻王 keeps the boss in the 果冻 family while conveying its status as the jelly king.
 - **Examples**: jelly → 果冻怪, azure jelly → 天蓝果冻怪, star jelly → 星之果冻
 
@@ -445,7 +450,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-05
 - **Source**: Terminology consistency audit
 - **Choice**: 地精 (goblin), 大地精 (hobgoblin)
-- **Rejected**: 大哥布林 (hobgoblin — previously in source.txt, inconsistent with goblin→地精)
+- **Rejected**: 大哥布林 (hobgoblin — previously in source.txt, inconsistent with the established goblin translation 地精)
 - **Rationale**: 地精 is the standard D&D/Pathfinder convention. hobgoblin→大地精 follows the 大+base pattern for "greater" variants. Unified hobgoblin from 大哥布林 to 大地精.
 - **Examples**: goblin → 地精, hobgoblin → 大地精
 
@@ -3055,6 +3060,26 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-D-005 — Blood 状态标签翻译消歧
+
+- **Type**: D — Context-sensitive resolution
+- **Status**: active
+- **Date**: 2026-07-27
+- **EN term**: Blood
+
+| Context | ZH |
+|---------|----|
+| Normal usage | 血 |
+| Emphatic/literary usage | 鲜血 |
+| `status\|Blood` | 血甲 |
+
+- **Rejected**: `status|Blood → 嗜血`（错误暗示攻击性或血欲）
+- **Rationale**: 该状态由流出的血液贴附身体并提供防护；短标签“血甲”与
+  长状态“血甲护体”及防御机制一致。此裁定不改变普通或文学语境中的
+  `blood → 血／鲜血`。
+
+---
+
 ### D-A-039 — Felid → 猫 (玩家种族名)
 
 - **Type**: A — Entity ruling
@@ -3133,7 +3158,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   4. **Pair of** / **复数**：中文跳过，直接用单数基础名
   5. **品牌/附魔名**：统一二字或四字格式（烈焰、寒霜、神圣惩戒、火焰抗性）
 - **Rejected**: 
-  - 英文直译如"pair of boots→靴子的一对"（不符合中文习惯）
+  - 英文直译会将 `pair of boots` 译为“靴子的一对”（不符合中文习惯）
   - 混合使用"的"和"之"（统一用"之"）
 - **Rationale**: 中文命名应简洁自然，符合游戏内物品显示区域的长度限制。二字品牌名利于在有限空间显示。龙鳞甲统一命名帮助玩家快速识别护甲类型
 - **Scope**: `item-name.cc` 中所有 `T_()` 基础名字典条目
@@ -3495,6 +3520,120 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-046 — Pandemonium → 万魔殿
+
+- **Type**: A — Entity and world terminology ruling
+- **Status**: active
+- **Date**: 2026-07-27
+- **Choice**:
+  - `Pandemonium → 万魔殿`
+  - `Pandemonium lord → 万魔殿领主`
+- **Rejected**:
+  - `You pass into a different region of Pandemonium. → 潘德蒙尼姆`
+  - `You %1$svisited Pandemonium %2$d time → 潘德莫尼恩`
+  - ` the pandemonium lord → 潘德莫尼姆`
+  - `One of the many lords of Pandemonium,  → 潘神之域`
+  - `One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s. → 潘神之域`
+  - `One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s. → 潘神之域`
+  - `You've emptied out Pandemonium! Nothing left here but demons. → 魔窟`
+  - `A powerful Pandemonium lord resides here. → 魔窟领主`
+- **Rationale**: “万魔殿”是当前分支、世界显示和实体名称采用的专名；
+  “魔窟”只是泛称，无法稳定绑定该世界身份。英文 branch、feature、DES、
+  lookup、Lua 比较值和持久化身份保持不变。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `crawl-ref/source/dat/descript/zh/monsters.txt`
+  - `crawl-ref/source/dat/descript/zh/unrand.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `crawl-ref/source/dat/database/zh/montitle.txt`
+  - `crawl-ref/source/dat/database/zh/wpnnoise.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+| Context | ZH |
+|---|---|
+| `You pass into a different region of Pandemonium.` | 万魔殿 |
+| `You %1$svisited Pandemonium %2$d time` | 万魔殿 |
+| ` the pandemonium lord` | 万魔殿领主 |
+| `One of the many lords of Pandemonium, ` | 万魔殿领主 |
+| `One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s.` | 万魔殿领主 |
+| `One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s.` | 万魔殿领主 |
+| `You've emptied out Pandemonium! Nothing left here but demons.` | 万魔殿 |
+| `A powerful Pandemonium lord resides here.` | 万魔殿领主 |
+
+---
+
+### D-A-047 — Repel Missiles → 排斥飞弹
+
+- **Type**: A — Spell and status terminology ruling
+- **Status**: active
+- **Date**: 2026-07-27
+- **Choice**: 排斥飞弹
+- **Rejected**: 弹飞弹、弹开飞弹
+- **Rationale**: “排斥飞弹”自然表达环绕施术者的排斥场令来袭飞弹偏转的
+  防护效果，并能在法术名、状态短标签和紧凑说明中保持一致。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
+### D-A-048 — Erebora / Ereborans → 埃雷博拉／埃雷博拉人
+
+- **Type**: A — Lore proper-name ruling
+- **Status**: active
+- **Date**: 2026-07-27
+- **Choice**:
+  - `Erebora → 埃雷博拉`
+  - `Ereborans → 埃雷博拉人`
+- **Rejected**: 埃瑞博拉、埃瑞博拉人
+- **Rationale**: 世界里程碑与固定神器传说描述的是同一古代地域及其居民；
+  统一音译可避免同一传说实体跨资产分裂。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/unrand.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
+### D-A-049 — Zonguldrok → 宗古德洛克
+
+- **Type**: A — Lore proper-name ruling
+- **Status**: active
+- **Date**: 2026-07-27
+- **Choice**: 宗古德洛克
+- **Rejected**: 宗古多克、宗古尔德罗克
+- **Rationale**: 巫师实验室、墓碑、武器噪声和随机书名均指向同一专名；
+  统一为现有骷髅与宝剑显示资产采用的“宗古德洛克”。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `crawl-ref/source/dat/database/zh/wpnnoise.txt`
+  - `crawl-ref/source/dat/database/zh/randbook.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
+### D-A-050 — lajatang → 双头杖
+
+- **Type**: A — Item base-name ruling
+- **Status**: active
+- **Date**: 2026-07-27
+- **Choice**: 双头杖
+- **Rejected**: 月牙铲
+- **Rationale**: lajatang 是两端带刃的杖类武器；“双头杖”与当前固定神器
+  `lajatang of Order → 秩序双头杖` 的显示名一致，不误指月牙铲这一不同兵器。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/unrand.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
 ### D-C-093 — Issue #28 地牢世界显示文本全量审阅
 
 - **Type**: C — Finite inventory translation review
@@ -3615,6 +3754,12 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-043 | Mesmerise | 迷魂 | active ✅ |
 | D-A-044 | Arena | 竞技场 | active ✅ |
 | D-A-045 | Gauntlet | 试炼场 | active ✅ |
+| D-A-046 | Pandemonium / Pandemonium lord | 万魔殿 / 万魔殿领主 | active ✅ |
+| D-A-047 | Repel Missiles | 排斥飞弹 | active ✅ |
+| D-A-048 | Erebora / Ereborans | 埃雷博拉 / 埃雷博拉人 | active ✅ |
+| D-A-049 | Zonguldrok | 宗古德洛克 | active ✅ |
+| D-A-050 | lajatang | 双头杖 | active ✅ |
+| D-D-005 | defensive status Blood | 血甲 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
 | D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |

@@ -1265,7 +1265,7 @@ Summon Cactus Giant spell
 %%%%
 Summon Demon spell
 
-打开一扇通往魔窟领域的大门，引出其中一位居民为施法者效劳一段时间。
+打开一扇通往万魔殿领域的大门，引出其中一位居民为施法者效劳一段时间。
 %%%%
 Summon Dragon spell
 
@@ -1305,7 +1305,7 @@ Summon Forest spell
 %%%%
 Summon Greater Demon spell
 
-召唤一名魔窟的高等恶魔为施法者效劳。
+召唤一名万魔殿的高等恶魔为施法者效劳。
 %%%%
 Forge Blazeheart Golem spell
 

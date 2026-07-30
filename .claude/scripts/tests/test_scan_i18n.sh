@@ -407,12 +407,16 @@ printf '%s\n' \
     '- **Status**: active' \
     '- **Choice**: 宗古德洛克' \
     '- **Rejected**: 宗古多克、宗古尔德罗克' \
+    '### D-Z-906 — per-token explanatory exemption fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词、说明词（context-specific exemption）' \
     '### D-Q-905 — contextual fixture' \
     '- **Type**: Q — arbitrary contextual fixture type' \
     '- **Status**: active' \
     '| Context | ZH |' \
     '|---------|----|' \
-    '| `status\|Blood` | 血甲 |' \
+    '| `DUR_SANGUINE_ARMOUR` / `status\|Blood` defensive status | 血甲 |' \
     '- **Rejected**: `status|Blood → 嗜血`（fixture）' \
     > "$DECISIONS"
 python3 - "$SCAN_I18N" "$DECISIONS" <<'PY'
@@ -425,13 +429,14 @@ spec.loader.exec_module(module)
 rejected = module.parse_decisions(sys.argv[2])
 expected = {
     "魔窟", "弹飞弹", "弹开飞弹", "埃瑞博拉",
-    "宗古多克", "宗古尔德罗克",
+    "宗古多克", "宗古尔德罗克", "遗留词",
 }
 assert expected.issubset(rejected)
 assert "嗜血" not in rejected
 assert {
     "鱼人（与现行名称", "保留原译", "保留两对重名",
     '混合使用"的"和"之', "仅否定该法术名", "死", "亡", "魔", "驱散",
+    "说明词",
 }.isdisjoint(rejected)
 contextual = module.parse_contextual_decisions(sys.argv[2])
 assert {
@@ -441,6 +446,1932 @@ assert {
 PY
 assert_status "validate-terms: active multiline/arbitrary-type decisions parse" \
     0 "$?"
+
+python3 - "$SCAN_I18N" "$REPO_ROOT/docs/decisions.md" <<'PY'
+import collections
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+registry = module.parse_decision_registry(sys.argv[2])
+counts = collections.Counter(
+    classification["kind"]
+    for classification in registry["classifications"]
+)
+assert counts["global"] == 10, counts
+assert counts["contextual"] == 10, counts
+assert len(registry["rejected_map"]) == counts["global"], registry
+assert {
+    "弹飞弹": "排斥飞弹",
+    "弹开飞弹": "排斥飞弹",
+    "埃瑞博拉": "埃雷博拉",
+    "埃瑞博拉人": "埃雷博拉人",
+    "宗古多克": "宗古德洛克",
+    "宗古尔德罗克": "宗古德洛克",
+    "月牙铲": "双头杖",
+}.items() <= registry["rejected_map"].items(), registry
+contextual_by_decision = collections.Counter(
+    rule["decision"] for rule in registry["contextual_rules"]
+)
+assert contextual_by_decision == {
+    "D-A-007": 1,
+    "D-D-005": 1,
+    "D-A-046": 8,
+}, contextual_by_decision
+PY
+assert_status "validate-terms: production globals all have Choice mappings" \
+    0 "$?"
+
+VALID_DECISION_STATUSES="$TERMS_ROOT/valid-decision-statuses.md"
+printf '%s\n' \
+    '### D-Z-980 — exact reversed status fixture' \
+    '- **Status**: reversed' \
+    '- **Rejected**: other|Key' \
+    '### D-Z-981 — active decision without Rejected fixture' \
+    '- **Status**: active' \
+    '### D-Z-982 — exact superseded status fixture' \
+    '- **Status**: superseded → D-Z-981' \
+    '- **Rejected**: other|Key' \
+    > "$VALID_DECISION_STATUSES"
+
+INVALID_DECISION_METADATA="$TERMS_ROOT/invalid-decision-metadata.md"
+printf '%s\n' \
+    '### D-Z-960 — active duplicate Rejected fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词' \
+    '- **Rejected**: 旧译词' \
+    '### D-Z-961 — reversed duplicate Rejected fixture' \
+    '- **Status**: reversed' \
+    '- **Rejected**: 遗留词' \
+    '- **Rejected**: 旧译词' \
+    '### D-Z-962 — superseded duplicate Rejected fixture' \
+    '- **Status**: superseded → D-Z-981' \
+    '- **Rejected**: 遗留词' \
+    '- **Rejected**: 旧译词' \
+    '### D-Z-963 — active duplicate Choice fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Choice**: 正确译名' \
+    '- **Rejected**: 遗留词' \
+    '### D-Z-964 — reversed duplicate Choice fixture' \
+    '- **Status**: reversed' \
+    '- **Choice**: 正确词' \
+    '- **Choice**: 正确译名' \
+    '### D-Z-965 — superseded duplicate Choice fixture' \
+    '- **Status**: superseded → D-Z-981' \
+    '- **Choice**: 正确词' \
+    '- **Choice**: 正确译名' \
+    '### D-Z-966 — duplicate Status fixture' \
+    '- **Status**: active' \
+    '- **Status**: active' \
+    '### D-Z-967 — conflicting Status fixture' \
+    '- **Status**: active' \
+    '- **Status**: reversed' \
+    '### D-Z-968 — misspelled Status fixture' \
+    '- **Status**: actve' \
+    '### D-Z-969 — missing Status fixture' \
+    '- **Choice**: 正确词' \
+    '### D-Z-970 — unknown Status fixture' \
+    '- **Status**: draft' \
+    '### D-Z-971 — active prefix Status fixture' \
+    '- **Status**: active-ish' \
+    '### D-Z-972 — decorated active Status fixture' \
+    '- **Status**: active (draft)' \
+    '### D-Z-973 — case-drift Status fixture' \
+    '- **Status**: Active' \
+    '### D-Z-974 — ASCII superseded arrow fixture' \
+    '- **Status**: superseded -> D-Z-981' \
+    > "$INVALID_DECISION_METADATA"
+
+python3 - "$SCAN_I18N" "$VALID_DECISION_STATUSES" \
+    "$INVALID_DECISION_METADATA" "$REPO_ROOT/docs/decisions.md" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+real_classify = module._classify_decision_rejections
+valid_classify_calls = []
+def counting_valid(decision_id, block, *args):
+    valid_classify_calls.append(decision_id)
+    return real_classify(decision_id, block, *args)
+module._classify_decision_rejections = counting_valid
+try:
+    valid = module.parse_decision_registry(sys.argv[2])
+finally:
+    module._classify_decision_rejections = real_classify
+assert valid["rejected_map"] == {}, valid
+assert valid["contextual_rules"] == [], valid
+assert valid["classifications"] == [], valid
+assert valid_classify_calls == ["D-Z-981"], valid_classify_calls
+
+invalid_classify_calls = []
+def counting_invalid(decision_id, block, *args):
+    invalid_classify_calls.append(decision_id)
+    return real_classify(decision_id, block, *args)
+module._classify_decision_rejections = counting_invalid
+try:
+    module.parse_decision_registry(sys.argv[3])
+except ValueError as error:
+    message = str(error)
+    expected = {
+        "D-Z-960": "duplicate Rejected fields",
+        "D-Z-961": "duplicate Rejected fields",
+        "D-Z-962": "duplicate Rejected fields",
+        "D-Z-963": "duplicate Choice fields",
+        "D-Z-964": "duplicate Choice fields",
+        "D-Z-965": "duplicate Choice fields",
+        "D-Z-966": "duplicate Status fields",
+        "D-Z-967": "conflicting Status fields",
+        "D-Z-968": "invalid Status value: 'actve'",
+        "D-Z-969": "missing Status field",
+        "D-Z-970": "invalid Status value: 'draft'",
+        "D-Z-971": "invalid Status value: 'active-ish'",
+        "D-Z-972": "invalid Status value: 'active (draft)'",
+        "D-Z-973": "invalid Status value: 'Active'",
+        "D-Z-974": "invalid Status value: 'superseded -> D-Z-981'",
+    }
+    for decision, diagnostic in expected.items():
+        assert f"{decision}: {diagnostic}" in message, message
+else:
+    raise AssertionError("invalid decision metadata was accepted")
+finally:
+    module._classify_decision_rejections = real_classify
+assert invalid_classify_calls == [], invalid_classify_calls
+
+with open(sys.argv[4], "r", encoding="utf-8") as stream:
+    production_content = stream.read()
+production_blocks = list(module._iter_decision_blocks(production_content))
+assert len(production_blocks) == 168, len(production_blocks)
+for decision_id, block in production_blocks:
+    fields = module._decision_metadata_fields(block)
+    assert fields.get("Status") == ["active"], (decision_id, fields)
+    assert len(fields.get("Choice", [])) <= 1, (decision_id, fields)
+    assert len(fields.get("Rejected", [])) <= 1, (decision_id, fields)
+PY
+assert_status "validate-terms: structured decision metadata is fail-closed" \
+    0 "$?"
+
+METADATA_SOURCE="$TERMS_ROOT/metadata/i18n/zh/source.txt"
+mkdir -p "$(dirname "$METADATA_SOURCE")"
+printf '%s\n' '%%%%' 'metadata fixture' '合法文本。' \
+    > "$METADATA_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$INVALID_DECISION_METADATA" \
+    --source-txt "$METADATA_SOURCE" \
+    > /tmp/actual_validate_metadata.txt 2>&1
+invalid_metadata_status=$?
+set -e
+assert_status "validate-terms: malformed decision metadata blocks CLI" \
+    2 "$invalid_metadata_status"
+for diagnostic in \
+    "D-Z-960: duplicate Rejected fields" \
+    "D-Z-961: duplicate Rejected fields" \
+    "D-Z-962: duplicate Rejected fields" \
+    "D-Z-963: duplicate Choice fields" \
+    "D-Z-964: duplicate Choice fields" \
+    "D-Z-965: duplicate Choice fields" \
+    "D-Z-966: duplicate Status fields" \
+    "D-Z-967: conflicting Status fields" \
+    "D-Z-968: invalid Status value: 'actve'" \
+    "D-Z-969: missing Status field" \
+    "D-Z-970: invalid Status value: 'draft'" \
+    "D-Z-971: invalid Status value: 'active-ish'" \
+    "D-Z-972: invalid Status value: 'active (draft)'" \
+    "D-Z-973: invalid Status value: 'Active'" \
+    "D-Z-974: invalid Status value: 'superseded -> D-Z-981'"
+do
+    assert_contains "validate-terms metadata: $diagnostic" \
+        "$diagnostic" /tmp/actual_validate_metadata.txt
+done
+
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$VALID_DECISION_STATUSES" \
+    --source-txt "$METADATA_SOURCE" \
+    > /tmp/actual_validate_metadata.txt 2>&1
+assert_status "validate-terms: exact inactive statuses stay inactive" \
+    0 "$?"
+
+CANONICAL_RESERVED_FIELDS="$TERMS_ROOT/canonical-reserved-fields.md"
+printf '%b\n' \
+    '### D-Z-989 — canonical reserved field whitespace fixture' \
+    '-   **Status**: active' \
+    '-\t\t**Choice**:\t正确词' \
+    '- \t **Rejected**:\t遗留词' \
+    '- **Rejected (old)**: distinct unknown field control' \
+    '### D-Z-988 — lexical boundary negative controls' \
+    '- **Status**: reversed' \
+    'Rejected (old): raw distinct unknown field control' \
+    'Ordinary prose mentions Rejected: without declaring it.' \
+    'Rejected reason: historical spelling note' \
+    'Choice of words: phrasing note' \
+    '- **Rejected reason**: decorated historical spelling note' \
+    '- **Choice of words**: decorated phrasing note' \
+    > "$CANONICAL_RESERVED_FIELDS"
+
+MALFORMED_RESERVED_FIELDS="$TERMS_ROOT/malformed-reserved-fields.md"
+printf '%b\n' \
+    '### D-Z-990 — missing marker reserved declaration fixture' \
+    '- **Status**: active' \
+    '**Rejected**: 遗留词' \
+    '### D-Z-991 — one-space indented reserved declaration fixture' \
+    '- **Status**: reversed' \
+    ' - **Rejected**: 遗留词' \
+    '### D-Z-992 — three-space indented reserved declaration fixture' \
+    '- **Status**: superseded → D-Z-990' \
+    '   - **Rejected**: 遗留词' \
+    '### D-Z-993 — tab-indented reserved declaration fixture' \
+    '- **Status**: active' \
+    '\t- **Rejected**: 遗留词' \
+    '### D-Z-994 — star marker reserved declaration fixture' \
+    '- **Status**: reversed' \
+    '* **Rejected**: 遗留词' \
+    '### D-Z-995 — plus marker reserved declaration fixture' \
+    '- **Status**: superseded → D-Z-990' \
+    '+ **Rejected**: 遗留词' \
+    '### D-Z-996 — numbered-dot marker reserved declaration fixture' \
+    '- **Status**: active' \
+    '1. **Rejected**: 遗留词' \
+    '### D-Z-997 — numbered-paren marker reserved declaration fixture' \
+    '- **Status**: reversed' \
+    '1) **Rejected**: 遗留词' \
+    '### D-Z-998 — lowercase reserved label fixture' \
+    '- **Status**: superseded → D-Z-990' \
+    '- **rejected**: 遗留词' \
+    '### D-Z-999 — uppercase reserved label fixture' \
+    '- **Status**: active' \
+    '- **REJECTED**: 遗留词' \
+    '### D-Z-1000 — leading label whitespace fixture' \
+    '- **Status**: reversed' \
+    '- ** Rejected**: 遗留词' \
+    '### D-Z-1001 — trailing label whitespace fixture' \
+    '- **Status**: superseded → D-Z-990' \
+    '- **Rejected **: 遗留词' \
+    '### D-Z-1002 — triple-bold reserved label fixture' \
+    '- **Status**: active' \
+    '- ***Rejected***: 遗留词' \
+    '### D-Z-1003 — colon-inside-bold reserved label fixture' \
+    '- **Status**: reversed' \
+    '- **Rejected:** 遗留词' \
+    '### D-Z-1004 — whitespace-before-colon reserved label fixture' \
+    '- **Status**: superseded → D-Z-990' \
+    '- **Rejected** : 遗留词' \
+    '### D-Z-1005 — malformed Choice reserved label fixture' \
+    '- **Status**: active' \
+    '- **choice**: 正确词' \
+    '### D-Z-1006 — malformed Status reserved label fixture' \
+    '- **Status**: reversed' \
+    '- ***Status***: active' \
+    '### D-Z-1007 — underscore emphasis fixture' \
+    '- **Status**: active' \
+    '- __Rejected__: 遗留词' \
+    '### D-Z-1008 — triple underscore emphasis fixture' \
+    '- **Status**: reversed' \
+    '- ___Rejected___: 遗留词' \
+    '### D-Z-1009 — mixed emphasis fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- **_Rejected_**: 遗留词' \
+    '### D-Z-1010 — raw reserved label fixture' \
+    '- **Status**: active' \
+    '- Rejected: 遗留词' \
+    '### D-Z-1011 — blockquote container fixture' \
+    '- **Status**: reversed' \
+    '> - **Rejected**: 遗留词' \
+    '### D-Z-1012 — nested unordered container fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- - **Rejected**: 遗留词' \
+    '### D-Z-1013 — nested ordered container fixture' \
+    '- **Status**: active' \
+    '1. 1. **Rejected**: 遗留词' \
+    '### D-Z-1014 — task-list container fixture' \
+    '- **Status**: reversed' \
+    '- [ ] **Rejected**: 遗留词' \
+    '### D-Z-1015 — backtick wrapper fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- `Rejected`: 遗留词' \
+    '### D-Z-1016 — fullwidth colon fixture' \
+    '- **Status**: active' \
+    '- **Rejected**：遗留词' \
+    '### D-Z-1017 — disguised Choice fixture' \
+    '- **Status**: reversed' \
+    '> - __Choice__：正确词' \
+    '### D-Z-1018 — disguised Status fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- [ ] `Status`：active' \
+    '### D-Z-1019 — zero-separator marker fixture' \
+    '- **Status**: active' \
+    '-**Rejected**: 遗留词' \
+    '### D-Z-1020 — doubled delimiter fixture' \
+    '- **Status**: reversed' \
+    '- **Rejected**:: 遗留词' \
+    '### D-Z-1021 — mixed doubled delimiter fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- **Rejected**:：遗留词' \
+    '### D-Z-1022 — decorated missing delimiter fixture' \
+    '- **Status**: active' \
+    '- **Rejected** 遗留词' \
+    '### D-Z-1023 — wrapper tail fixture' \
+    '- **Status**: reversed' \
+    '- **Rejected**x: 遗留词' \
+    '### D-Z-1024 — nested value-start fixture' \
+    '- **Status**: superseded → D-Z-989' \
+    '- **Rejected**: - **Choice**: 正确词' \
+    > "$MALFORMED_RESERVED_FIELDS"
+
+python3 - "$SCAN_I18N" "$CANONICAL_RESERVED_FIELDS" \
+    "$MALFORMED_RESERVED_FIELDS" "$REPO_ROOT/docs/decisions.md" \
+    "$METADATA_SOURCE" <<'PY'
+import collections
+import importlib.util
+import itertools
+import os
+import subprocess
+import sys
+import tempfile
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+canonical = module.parse_decision_registry(sys.argv[2])
+assert canonical["rejected_map"] == {"遗留词": "正确词"}, canonical
+with open(sys.argv[2], "r", encoding="utf-8") as stream:
+    canonical_blocks = list(module._iter_decision_blocks(stream.read()))
+canonical_block = canonical_blocks[0][1]
+fields = module._decision_metadata_fields(canonical_block)
+assert fields["Status"] == ["active"], fields
+assert fields["Choice"] == ["正确词"], fields
+assert fields["Rejected"] == ["遗留词"], fields
+assert fields["Rejected (old)"] == [
+    "distinct unknown field control",
+], fields
+
+real_classify = module._classify_decision_rejections
+classify_calls = []
+def counting_classify(decision_id, block, *args):
+    classify_calls.append(decision_id)
+    return real_classify(decision_id, block, *args)
+module._classify_decision_rejections = counting_classify
+
+def assert_malformed(content, expected_decisions):
+    blocks = list(module._iter_decision_blocks(content))
+    assert [decision for decision, _block in blocks] == expected_decisions
+    try:
+        module._parse_decision_content(content)
+    except ValueError as error:
+        message = str(error)
+        for decision in expected_decisions:
+            assert decision in message, (decision, message)
+            assert (
+                f"{decision}: malformed reserved metadata declaration"
+                in message
+            ), message
+    else:
+        raise AssertionError("malformed reserved declarations were accepted")
+    for decision, block in blocks:
+        declarations = module._decision_reserved_declarations(block)
+        assert len(declarations) == 2, (decision, declarations)
+        assert sum(item[2] for item in declarations) == 1, (
+            decision,
+            declarations,
+        )
+
+try:
+    with open(sys.argv[3], "r", encoding="utf-8") as stream:
+        assert_malformed(
+            stream.read(),
+            [f"D-Z-{number}" for number in range(990, 1025)],
+        )
+
+    c8_malformed_declarations = [
+        "**Rejected**: 遗留词",
+        " - **Rejected**: 遗留词",
+        "   - **Rejected**: 遗留词",
+        "\t- **Rejected**: 遗留词",
+        "* **Rejected**: 遗留词",
+        "+ **Rejected**: 遗留词",
+        "1. **Rejected**: 遗留词",
+        "1) **Rejected**: 遗留词",
+        "- **rejected**: 遗留词",
+        "- **REJECTED**: 遗留词",
+        "- ** Rejected**: 遗留词",
+        "- **Rejected **: 遗留词",
+        "- ***Rejected***: 遗留词",
+        "- **Rejected:** 遗留词",
+        "- **Rejected** : 遗留词",
+        "- **choice**: 正确词",
+        "- ***Status***: active",
+    ]
+    values = {
+        "Status": "active",
+        "Choice": "正确词",
+        "Rejected": "遗留词",
+    }
+    reviewer_templates = [
+        "- __{name}__: {value}",
+        "- ___{name}___: {value}",
+        "- **_{name}_**: {value}",
+        "{name}: {value}",
+        "- {name}: {value}",
+        "> - **{name}**: {value}",
+        "- - **{name}**: {value}",
+        "1. 1. **{name}**: {value}",
+        "- [ ] **{name}**: {value}",
+        "- `{name}`: {value}",
+        "- **{name}**：{value}",
+    ]
+    reviewer_malformed_declarations = [
+        template.format(name=name, value=values[name])
+        for template in reviewer_templates
+        for name in ("Status", "Choice", "Rejected")
+    ]
+    names = ("Status", "Choice", "Rejected")
+    zero_separator_declarations = [
+        f"{marker}**{name}**: {values[name]}"
+        for marker in ("-", "+", "1.", "1)")
+        for name in names
+    ]
+    delimiter_declarations = []
+    for name in names:
+        for count in range(5):
+            for delimiters in itertools.product(":：", repeat=count):
+                delimiter = "".join(delimiters)
+                if delimiter == ":":
+                    continue
+                delimiter_declarations.append(
+                    f"- **{name}**{delimiter} {values[name]}"
+                )
+        for whitespace in (" ", "\t"):
+            for delimiter in (":", "："):
+                delimiter_declarations.append(
+                    f"- **{name}**{whitespace}{delimiter} "
+                    f"{values[name]}"
+                )
+    wrapper_tail_templates = [
+        "- **{name}**x: {value}",
+        "- **{name}** x: {value}",
+        "- **{name}**\tx: {value}",
+        "- __{name}__x: {value}",
+        "- `{name}`x: {value}",
+        "- ** _{name}_ **x: {value}",
+        "- * {name}*x: {value}",
+        "- *\t{name}*\tx: {value}",
+    ]
+    wrapper_tail_declarations = [
+        template.format(name=name, value=values[name])
+        for template in wrapper_tail_templates
+        for name in names
+    ]
+    nested_value_templates = [
+        "- **{outer}**: - **{inner}**: {value}",
+        "- **{outer}**: {inner}: {value}",
+        "- **{outer}**: > - __{inner}__：{value}",
+    ]
+    nested_value_declarations = [
+        template.format(
+            outer=outer,
+            inner=inner,
+            value=values[inner],
+        )
+        for template in nested_value_templates
+        for outer in names
+        for inner in names
+    ]
+    repeated_container_templates = [
+        "> > - [ ] 1. **{name}**: {value}",
+        "- -**{name}**: {value}",
+        "1. > +**{name}**: {value}",
+        ">1)**{name}**: {value}",
+    ]
+    repeated_container_declarations = [
+        template.format(name=name, value=values[name])
+        for template in repeated_container_templates
+        for name in names
+    ]
+    assert len(c8_malformed_declarations) == 17
+    assert len(reviewer_malformed_declarations) == 33
+    assert len(zero_separator_declarations) == 12
+    assert len(delimiter_declarations) == 102
+    assert len(wrapper_tail_declarations) == 24
+    assert len(nested_value_declarations) == 27
+    assert len(repeated_container_declarations) == 12
+    lifecycle_statuses = [
+        "active",
+        "reversed",
+        "superseded → D-Z-989",
+    ]
+    matrix_blocks = []
+    matrix_decisions = []
+    next_number = 1100
+    for declaration in (
+        c8_malformed_declarations
+        + reviewer_malformed_declarations
+        + zero_separator_declarations
+        + delimiter_declarations
+        + wrapper_tail_declarations
+        + nested_value_declarations
+        + repeated_container_declarations
+    ):
+        for status in lifecycle_statuses:
+            decision = f"D-Z-{next_number}"
+            matrix_decisions.append(decision)
+            matrix_blocks.extend([
+                f"### {decision} — lifecycle matrix fixture",
+                f"- **Status**: {status}",
+                declaration,
+            ])
+            next_number += 1
+    assert len(matrix_decisions) == 681, len(matrix_decisions)
+    matrix_content = "\n".join(matrix_blocks)
+    assert_malformed(matrix_content, matrix_decisions)
+
+    with tempfile.TemporaryDirectory() as temp_root:
+        matrix_path = os.path.join(temp_root, "decisions.md")
+        with open(matrix_path, "w", encoding="utf-8") as stream:
+            stream.write(matrix_content)
+        result = subprocess.run(
+            [
+                sys.executable,
+                sys.argv[1],
+                "validate-terms",
+                "--glossary",
+                matrix_path,
+                "--source-txt",
+                sys.argv[5],
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 2, (
+            result.returncode,
+            result.stdout,
+            result.stderr,
+        )
+        diagnostic = result.stdout + result.stderr
+        for decision in matrix_decisions:
+            assert (
+                f"{decision}: malformed reserved metadata declaration"
+                in diagnostic
+            ), (decision, diagnostic)
+
+    for name in names:
+        for line in (
+            f"- **{name}**: {values[name]}",
+            f"-\t**{name}**:\t{values[name]}",
+            f"- **{name}**: term: explanation",
+            f"- **{name}**: Rejected (old): explanation",
+        ):
+            token = module._decision_reserved_token(line)
+            assert token is not None and token[0] == name, (line, token)
+            assert module._decision_canonical_reserved_field(
+                line, name
+            ), line
+
+    span_line = "> > - [ ] 1. **Rejected**: 遗留词"
+    span_token = module._decision_reserved_token(span_line)
+    assert span_token is not None, span_line
+    span_name, span_start, span_end = span_token
+    assert span_name == "Rejected", span_token
+    assert span_line[span_start:span_end] == "**Rejected**", (
+        span_line,
+        span_token,
+    )
+    for line in (
+        "Rejected (old): raw distinct unknown field control",
+        "Rejected reason: historical spelling note",
+        "Choice of words: phrasing note",
+        "- **Rejected (old)**: decorated historical spelling note",
+        "- **Rejected reason**: decorated historical spelling note",
+        "- **Choice of words**: decorated phrasing note",
+        "Ordinary prose mentions Rejected: without declaring it.",
+    ):
+        assert module._decision_reserved_token(line) is None, line
+
+    canonical_declarations = [
+        (decision, *declaration)
+        for decision, block in canonical_blocks
+        for declaration in module._decision_reserved_declarations(block)
+    ]
+    assert [
+        (decision, name, is_canonical)
+        for decision, name, _line, is_canonical
+        in canonical_declarations
+    ] == [
+        ("D-Z-989", "Status", True),
+        ("D-Z-989", "Choice", True),
+        ("D-Z-989", "Rejected", True),
+        ("D-Z-988", "Status", True),
+    ], canonical_declarations
+    assert all(
+        not module._decision_reserved_field_errors(decision, block)
+        for decision, block in canonical_blocks
+    )
+
+    with open(sys.argv[4], "r", encoding="utf-8") as stream:
+        production_blocks = list(
+            module._iter_decision_blocks(stream.read())
+        )
+    production_declarations = [
+        (decision, *declaration)
+        for decision, block in production_blocks
+        for declaration in module._decision_reserved_declarations(block)
+    ]
+    expected_identities = collections.Counter(
+        (decision, name)
+        for decision, block in production_blocks
+        for name, values in module._decision_metadata_fields(block).items()
+        if name in ("Status", "Choice", "Rejected")
+        for _value in values
+    )
+    actual_identities = collections.Counter(
+        (decision, name)
+        for decision, name, _line, _is_canonical
+        in production_declarations
+    )
+    assert actual_identities == expected_identities, (
+        actual_identities,
+        expected_identities,
+    )
+    assert len(production_declarations) == 413, len(
+        production_declarations
+    )
+    assert all(
+        is_canonical
+        for _decision, _name, _line, is_canonical
+        in production_declarations
+    ), production_declarations
+finally:
+    module._classify_decision_rejections = real_classify
+assert classify_calls == [], classify_calls
+PY
+assert_status "validate-terms: reserved field syntax is exact" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$MALFORMED_RESERVED_FIELDS" \
+    --source-txt "$METADATA_SOURCE" \
+    > /tmp/actual_reserved_metadata.txt 2>&1
+malformed_reserved_status=$?
+set -e
+assert_status "validate-terms: malformed reserved fields block CLI" \
+    2 "$malformed_reserved_status"
+for number in \
+    990 991 992 993 994 995 996 997 998 \
+    999 1000 1001 1002 1003 1004 1005 1006 \
+    1007 1008 1009 1010 1011 1012 1013 1014 \
+    1015 1016 1017 1018 1019 1020 1021 1022 \
+    1023 1024
+do
+    assert_contains "validate-terms reserved declaration: D-Z-$number" \
+        "D-Z-$number: malformed reserved metadata declaration" \
+        /tmp/actual_reserved_metadata.txt
+done
+
+CANONICAL_RESERVED_SOURCE="$TERMS_ROOT/canonical-reserved/i18n/zh/source.txt"
+mkdir -p "$(dirname "$CANONICAL_RESERVED_SOURCE")"
+printf '%s\n' '%%%%' 'canonical reserved fixture' '仍有遗留词。' \
+    > "$CANONICAL_RESERVED_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$CANONICAL_RESERVED_FIELDS" \
+    --source-txt "$CANONICAL_RESERVED_SOURCE" \
+    > /tmp/actual_reserved_metadata.txt 2>&1
+canonical_reserved_status=$?
+set -e
+assert_status "validate-terms: canonical horizontal whitespace stays valid" \
+    1 "$canonical_reserved_status"
+assert_contains "validate-terms: canonical reserved field reaches scan" \
+    "Rejected: '遗留词'" /tmp/actual_reserved_metadata.txt
+
+CANONICAL_DECISIONS="$TERMS_ROOT/canonical-decisions.md"
+CANONICAL_KEY='It inflicts extra damage against dragons and draconians.'
+printf '%s\n' \
+    '### D-A-007 — canonical unqualified contextual fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    "| \`$CANONICAL_KEY\` | 对龙和龙人造成额外伤害。 |" \
+    '- **Rejected**: `IT INFLICTS EXTRA DAMAGE AGAINST DRAGONS AND DRACONIANS. → 龙裔`' \
+    > "$CANONICAL_DECISIONS"
+python3 - "$SCAN_I18N" "$CANONICAL_DECISIONS" "$CANONICAL_KEY" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+assert module.parse_contextual_decisions(sys.argv[2]) == [{
+    "decision": "D-A-007",
+    "key": sys.argv[3],
+    "rejected": "龙裔",
+    "correct": "对龙和龙人造成额外伤害。",
+}]
+PY
+assert_status "validate-terms: uppercase unqualified arrow binds canonical key" \
+    0 "$?"
+
+CANONICAL_SOURCE="$TERMS_ROOT/canonical/i18n/zh/source.txt"
+mkdir -p "$(dirname "$CANONICAL_SOURCE")"
+printf '%s\n' \
+    '%%%%' 'IT INFLICTS EXTRA DAMAGE AGAINST DRAGONS AND DRACONIANS.' \
+    '前缀龙裔后缀' \
+    > "$CANONICAL_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$CANONICAL_DECISIONS" \
+    --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+canonical_case_status=$?
+set -e
+assert_status "validate-terms: uppercase unqualified scope reaches SourceDB" \
+    1 "$canonical_case_status"
+assert_contains "validate-terms: uppercase unqualified scope checks rejection" \
+    "Rejected: '龙裔'" /tmp/actual_validate_terms.txt
+
+TYPO_DECISIONS="$TERMS_ROOT/typo-decisions.md"
+printf '%s\n' \
+    '### D-A-007 — typo contextual fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    "| \`$CANONICAL_KEY\` | 对龙和龙人造成额外伤害。 |" \
+    '- **Rejected**: `IT INFLICTS EXTRA DAMAGE AGAINST DRAGONS AND DRACONIAN. → 龙裔`' \
+    > "$TYPO_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$TYPO_DECISIONS" --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+typo_context_status=$?
+set -e
+assert_status "validate-terms: table-bound typo arrow fails closed" \
+    2 "$typo_context_status"
+assert_contains "validate-terms: typo diagnostic names Context mismatch" \
+    "does not match an exact non-empty Context table key" \
+    /tmp/actual_validate_terms.txt
+
+MISSING_ARROW_DECISIONS="$TERMS_ROOT/missing-arrow-decisions.md"
+printf '%s\n' \
+    '### D-A-007 — missing-arrow contextual fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    "| \`$CANONICAL_KEY\` | 对龙和龙人造成额外伤害。 |" \
+    '- **Rejected**: `IT INFLICTS EXTRA DAMAGE AGAINST DRAGONS AND DRACONIANS.`' \
+    > "$MISSING_ARROW_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$MISSING_ARROW_DECISIONS" \
+    --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_arrow_status=$?
+set -e
+assert_status "validate-terms: uppercase table token without arrow fails closed" \
+    2 "$missing_arrow_status"
+assert_contains "validate-terms: missing-arrow diagnostic is explicit" \
+    "contextual Rejected mapping is missing an arrow" \
+    /tmp/actual_validate_terms.txt
+
+QUALIFIED_CASE_DECISIONS="$TERMS_ROOT/qualified-case-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — qualified canonical association fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `DUR_SANGUINE_ARMOUR` / `status\|Blood` defensive status | 血甲 |' \
+    '- **Rejected**: `STATUS|BLOOD → 嗜血`' \
+    > "$QUALIFIED_CASE_DECISIONS"
+python3 - "$SCAN_I18N" "$QUALIFIED_CASE_DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+assert module.parse_contextual_decisions(sys.argv[2]) == [{
+    "decision": "D-D-005",
+    "key": "status|Blood",
+    "rejected": "嗜血",
+    "correct": "血甲",
+}]
+PY
+assert_status "validate-terms: qualified case resolves exact raw table key" \
+    0 "$?"
+
+UNBACKTICKED_DECISIONS="$TERMS_ROOT/unbackticked-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — unbackticked contextual mapping fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: status|Blood → 嗜血' \
+    > "$UNBACKTICKED_DECISIONS"
+
+MIXED_REJECTED_DECISIONS="$TERMS_ROOT/mixed-rejected-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — mixed rejected-field fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 万魔殿' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: 魔窟、`status|Blood → 嗜血`' \
+    > "$MIXED_REJECTED_DECISIONS"
+
+GLOBAL_WITH_EXPLANATION="$TERMS_ROOT/global-with-explanation.md"
+printf '%s\n' \
+    '### D-Z-922 — global plus ordinary arrow explanation fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词、`source → target`（历史说明，不是 SourceDB key）' \
+    > "$GLOBAL_WITH_EXPLANATION"
+
+FUSED_PAREN_ARROW_EXPLANATION="$TERMS_ROOT/fused-paren-arrow.md"
+printf '%s\n' \
+    '### D-Z-952 — global plus fused parenthetical arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词（历史说明："legacy → 旧译"）' \
+    > "$FUSED_PAREN_ARROW_EXPLANATION"
+
+FUSED_QUOTED_ARROW_EXPLANATION="$TERMS_ROOT/fused-quoted-arrow.md"
+printf '%s\n' \
+    '### D-Z-953 — global plus fused quoted arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词 "legacy → 旧译"' \
+    > "$FUSED_QUOTED_ARROW_EXPLANATION"
+
+MIDDLE_ARROW_BOTH_SIDES="$TERMS_ROOT/middle-arrow-both-sides.md"
+printf '%s\n' \
+    '### D-Z-954 — arrow explanation with two residuals fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留前（历史说明："legacy → 旧译"）遗留后' \
+    > "$MIDDLE_ARROW_BOTH_SIDES"
+
+FUSED_ARROW_WITH_SUFFIX="$TERMS_ROOT/fused-arrow-with-suffix.md"
+printf '%s\n' \
+    '### D-Z-955 — fused arrow plus unconsumed suffix fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词（历史说明："legacy → 旧译"）尾词' \
+    > "$FUSED_ARROW_WITH_SUFFIX"
+
+LEADING_ARROW_GLOBAL="$TERMS_ROOT/leading-arrow-global.md"
+printf '%s\n' \
+    '### D-Z-956 — leading arrow explanation plus global fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: （历史说明："legacy → 旧译"）遗留词' \
+    > "$LEADING_ARROW_GLOBAL"
+
+MULTI_ARROW_GLOBAL="$TERMS_ROOT/multi-arrow-global.md"
+printf '%s\n' \
+    '### D-Z-957 — multiple arrow explanations plus global fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: （历史说明："legacy → 旧译"）（历史说明："old → 旧"）遗留词' \
+    > "$MULTI_ARROW_GLOBAL"
+
+PURE_ARROW_EXPLANATIONS="$TERMS_ROOT/pure-arrow-explanations.md"
+printf '%s\n' \
+    '### D-Z-958 — fully quoted arrow explanation fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: "legacy → 旧译"' \
+    '### D-Z-959 — fully parenthesized arrow explanation fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: （历史说明："legacy → 旧译"）' \
+    '### D-Z-960 — explicitly prefixed arrow explanation fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: 历史说明："legacy → 旧译"' \
+    > "$PURE_ARROW_EXPLANATIONS"
+
+CONTEXT_WITH_EXPLANATION="$TERMS_ROOT/context-with-explanation.md"
+printf '%s\n' \
+    '### D-D-005 — contextual mapping plus historical arrow fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: `status|Blood → 嗜血`、（历史说明："legacy → 旧译"）' \
+    > "$CONTEXT_WITH_EXPLANATION"
+
+TABLE_QUOTED_UNQUALIFIED="$TERMS_ROOT/table-quoted-unqualified.md"
+printf '%s\n' \
+    '### D-A-007 — quoted unqualified mapping with Context table fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `EXACT KEY` | 正确词 |' \
+    '- **Rejected**: "EXACT KEY → 遗留词"' \
+    > "$TABLE_QUOTED_UNQUALIFIED"
+
+TABLE_MARKED_MATCHING_ARROW="$TERMS_ROOT/table-marked-matching-arrow.md"
+printf '%s\n' \
+    '### D-A-007 — marked arrow matching Context identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `EXACT KEY` | 正确词 |' \
+    '- **Rejected**: "exact key → 遗留词（历史说明）"' \
+    > "$TABLE_MARKED_MATCHING_ARROW"
+
+CONTEXT_BOUNDARY_PUNCTUATION="$TERMS_ROOT/context-boundary-punctuation.md"
+CONTEXT_BOUNDARY_CHARS=(
+    ',' '，' ';' '；' '.' '。' '!' '！' '?' '？' '/' '、'
+)
+CONTEXT_BOUNDARY_WRAPPERS=('quoted' 'parenthesized')
+CONTEXT_BOUNDARY_DECISION_IDS=()
+: > "$CONTEXT_BOUNDARY_PUNCTUATION"
+context_boundary_id=1100
+for context_boundary_char in "${CONTEXT_BOUNDARY_CHARS[@]}"; do
+    for context_boundary_wrapper in "${CONTEXT_BOUNDARY_WRAPPERS[@]}"; do
+        context_boundary_decision="D-Z-$context_boundary_id"
+        CONTEXT_BOUNDARY_DECISION_IDS+=("$context_boundary_decision")
+        if [ "$context_boundary_wrapper" = "quoted" ]; then
+            context_boundary_rejected="\"历史说明${context_boundary_char}EXACT KEY → 遗留词\""
+        else
+            context_boundary_rejected="（历史说明${context_boundary_char}EXACT KEY → 遗留词）"
+        fi
+        printf '%s\n' \
+            "### $context_boundary_decision — punctuation boundary fixture" \
+            '- **Status**: active' \
+            '| Context | ZH |' \
+            '|---------|----|' \
+            '| `EXACT KEY` | 正确词 |' \
+            "- **Rejected**: $context_boundary_rejected" \
+            >> "$CONTEXT_BOUNDARY_PUNCTUATION"
+        context_boundary_id=$((context_boundary_id + 1))
+    done
+done
+unset context_boundary_char context_boundary_wrapper
+unset context_boundary_decision context_boundary_rejected context_boundary_id
+
+QUOTED_QUALIFIED_DECISIONS="$TERMS_ROOT/quoted-qualified-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — quoted qualified mapping fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 血甲' \
+    '- **Rejected**: "status|Blood → 嗜血"' \
+    > "$QUOTED_QUALIFIED_DECISIONS"
+
+PAREN_QUALIFIED_DECISIONS="$TERMS_ROOT/paren-qualified-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — parenthesized qualified mapping fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 血甲' \
+    '- **Rejected**: （status|Blood → 嗜血）' \
+    > "$PAREN_QUALIFIED_DECISIONS"
+
+QUALIFIED_NO_TABLE_DECISIONS="$TERMS_ROOT/qualified-no-table-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — qualified mapping without Context table fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 血甲' \
+    '- **Rejected**: `status|Blood → 嗜血`' \
+    > "$QUALIFIED_NO_TABLE_DECISIONS"
+
+PREFIXED_ORDINARY_ARROW_DECISIONS="$TERMS_ROOT/prefixed-ordinary-arrow.md"
+printf '%s\n' \
+    '### D-Z-926 — unconsumed prefix before ordinary arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词 `source → target`' \
+    > "$PREFIXED_ORDINARY_ARROW_DECISIONS"
+
+PAREN_PREFIXED_ORDINARY_ARROW="$TERMS_ROOT/paren-prefixed-ordinary-arrow.md"
+printf '%s\n' \
+    '### D-Z-928 — parenthetical suffix cannot hide prefix fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词 `source → target`（历史说明，不是 SourceDB key）' \
+    > "$PAREN_PREFIXED_ORDINARY_ARROW"
+
+PAREN_SUFFIXED_ORDINARY_ARROW="$TERMS_ROOT/paren-suffixed-ordinary-arrow.md"
+printf '%s\n' \
+    '### D-Z-929 — parenthetical suffix cannot absorb plain suffix fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: `source → target` 遗留词（历史说明）' \
+    > "$PAREN_SUFFIXED_ORDINARY_ARROW"
+
+NO_ARROW_CONTEXT_DECISIONS="$TERMS_ROOT/no-arrow-context-decisions.md"
+printf '%s\n' \
+    '### D-D-930 — bare Context identity without arrow fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: status|Blood' \
+    '### D-D-931 — quoted Context identity without arrow fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: "status|Blood"' \
+    '### D-D-932 — parenthesized Context identity without arrow fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: （status|Blood）' \
+    '### D-D-933 — mixed historical Context identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: 历史说明："status|Blood"' \
+    '### D-D-941 — bare nonmatching pipe identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: other|Key' \
+    '### D-D-942 — quoted nonmatching pipe identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: "other|Key"' \
+    '### D-D-943 — parenthesized nonmatching pipe identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: （other|Key）' \
+    '### D-D-944 — mixed historical nonmatching pipe identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: 历史说明："other|Key"' \
+    '### D-D-945 — escaped nonmatching pipe identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: other\|Key' \
+    > "$NO_ARROW_CONTEXT_DECISIONS"
+
+NO_CONTEXT_PIPE_DECISIONS="$TERMS_ROOT/no-context-pipe-decisions.md"
+printf '%s\n' \
+    '### D-Z-946 — bare pipe identity without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: other|Key' \
+    '### D-Z-947 — quoted pipe identity without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: "other|Key"' \
+    '### D-Z-948 — parenthesized pipe identity without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: （other|Key）' \
+    '### D-Z-949 — mixed historical pipe identity without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: 历史说明："other|Key"' \
+    '### D-Z-950 — escaped pipe identity without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: other\|Key' \
+    > "$NO_CONTEXT_PIPE_DECISIONS"
+
+NO_CONTEXT_HISTORICAL_DECISIONS="$TERMS_ROOT/no-context-historical.md"
+printf '%s\n' \
+    '### D-Z-951 — narrow historical explanation without Context fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: 历史说明："legacy identity"' \
+    > "$NO_CONTEXT_HISTORICAL_DECISIONS"
+
+HISTORICAL_NON_CONTEXT_DECISIONS="$TERMS_ROOT/historical-non-context.md"
+printf '%s\n' \
+    '### D-D-934 — nonmatching historical explanation fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '- **Rejected**: （历史说明："legacy status identity"）' \
+    > "$HISTORICAL_NON_CONTEXT_DECISIONS"
+
+LIST_MARKER_DECISIONS="$TERMS_ROOT/list-marker-decisions.md"
+printf '%s\n' \
+    '### D-Z-935 — every supported Markdown list marker fixture' \
+    '- **Status**: active' \
+    '- **Choice**:' \
+    '  - `One → 正一`' \
+    '  * `Two → 正二`' \
+    '  + `Three → 正三`' \
+    '  1. `Four → 正四`' \
+    '  2) `Five → 正五`' \
+    '- **Rejected**:' \
+    '  - 旧一' \
+    '  * 旧二' \
+    '  + 旧三' \
+    '  1. 旧四' \
+    '  2) 旧五' \
+    > "$LIST_MARKER_DECISIONS"
+
+GLOBAL_ORDINAL_DECISIONS="$TERMS_ROOT/global-ordinal-decisions.md"
+printf '%s\n' \
+    '### D-Z-936 — explanations do not shift Choice pairing fixture' \
+    '- **Status**: active' \
+    '- **Choice**:' \
+    '  - `One → 正甲`' \
+    '  - `Two → 正乙`' \
+    '  - `Three → 正丙`' \
+    '- **Rejected**:' \
+    '  - （前置历史说明）' \
+    '  - 旧甲' \
+    '  - （中间历史说明）' \
+    '  - 旧乙' \
+    '  - 旧丙' \
+    '  - （尾部历史说明）' \
+    > "$GLOBAL_ORDINAL_DECISIONS"
+
+MISSING_CHOICE_DECISIONS="$TERMS_ROOT/missing-choice-decisions.md"
+printf '%s\n' \
+    '### D-Z-937 — global rejection without Choice fixture' \
+    '- **Status**: active' \
+    '- **Rejected**: 遗留词' \
+    > "$MISSING_CHOICE_DECISIONS"
+
+UNPARSEABLE_CHOICE_DECISIONS="$TERMS_ROOT/unparseable-choice-decisions.md"
+printf '%s\n' \
+    '### D-Z-938 — global rejection with prose Choice fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 以下为完整对照表：' \
+    '- **Rejected**: 遗留词' \
+    > "$UNPARSEABLE_CHOICE_DECISIONS"
+
+AMBIGUOUS_CHOICE_DECISIONS="$TERMS_ROOT/ambiguous-choice-decisions.md"
+printf '%s\n' \
+    '### D-Z-939 — ambiguous Choice cardinality fixture' \
+    '- **Status**: active' \
+    '- **Choice**:' \
+    '  - `One → 正一`' \
+    '  - `Two → 正二`' \
+    '- **Rejected**: 旧一、旧二、旧三' \
+    > "$AMBIGUOUS_CHOICE_DECISIONS"
+
+python3 - "$SCAN_I18N" "$NO_ARROW_CONTEXT_DECISIONS" \
+    "$HISTORICAL_NON_CONTEXT_DECISIONS" "$LIST_MARKER_DECISIONS" \
+    "$GLOBAL_ORDINAL_DECISIONS" "$MISSING_CHOICE_DECISIONS" \
+    "$UNPARSEABLE_CHOICE_DECISIONS" "$AMBIGUOUS_CHOICE_DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+try:
+    module.parse_contextual_decisions(sys.argv[2])
+except ValueError as error:
+    message = str(error)
+    for decision in ("D-D-930", "D-D-931", "D-D-932", "D-D-933"):
+        assert decision in message, message
+    assert message.count("matches an exact Context table key") == 4, message
+    for decision in (
+        "D-D-941", "D-D-942", "D-D-943", "D-D-944", "D-D-945",
+    ):
+        assert decision in message, message
+    assert message.count(
+        "pipe-qualified Rejected identity must use a backticked arrow mapping"
+    ) == 5, message
+else:
+    raise AssertionError("no-arrow pipe identities were accepted")
+
+historical = module.parse_decision_registry(sys.argv[3])
+assert [
+    item["kind"] for item in historical["classifications"]
+] == ["explanation"], historical
+
+markers = module.parse_decision_registry(sys.argv[4])
+assert markers["rejected_map"] == {
+    "旧一": "正一",
+    "旧二": "正二",
+    "旧三": "正三",
+    "旧四": "正四",
+    "旧五": "正五",
+}, markers
+assert [
+    item["kind"] for item in markers["classifications"]
+] == ["global"] * 5, markers
+
+ordinals = module.parse_decision_registry(sys.argv[5])
+assert ordinals["rejected_map"] == {
+    "旧甲": "正甲",
+    "旧乙": "正乙",
+    "旧丙": "正丙",
+}, ordinals
+assert [
+    item["kind"] for item in ordinals["classifications"]
+] == [
+    "explanation", "global", "explanation", "global", "global",
+    "explanation",
+], ordinals
+
+expected_errors = (
+    "global Rejected terms require a non-empty Choice",
+    "cannot determine a Choice mapping for global Rejected terms",
+    "Choice count 2 cannot map deterministically to 3 global Rejected terms",
+)
+for path, diagnostic in zip(sys.argv[6:], expected_errors):
+    try:
+        module.parse_decision_registry(path)
+    except ValueError as error:
+        assert diagnostic in str(error), str(error)
+    else:
+        raise AssertionError(f"unmapped global rejection accepted: {path}")
+PY
+assert_status "validate-terms: Context, Choice, list, and ordinal invariants" \
+    0 "$?"
+
+python3 - "$SCAN_I18N" "$NO_CONTEXT_PIPE_DECISIONS" \
+    "$NO_CONTEXT_HISTORICAL_DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+try:
+    module.parse_decision_registry(sys.argv[2])
+except ValueError as error:
+    message = str(error)
+    for decision in (
+        "D-Z-946", "D-Z-947", "D-Z-948", "D-Z-949", "D-Z-950",
+    ):
+        assert decision in message, message
+    assert message.count(
+        "pipe-qualified Rejected identity must use a backticked arrow mapping"
+    ) == 5, message
+else:
+    raise AssertionError("no-Context pipe identities were accepted")
+
+historical = module.parse_decision_registry(sys.argv[3])
+assert [
+    item["kind"] for item in historical["classifications"]
+] == ["explanation"], historical
+PY
+assert_status "validate-terms: pipe syntax fails closed without Context" \
+    0 "$?"
+
+UNBALANCED_DECISIONS="$TERMS_ROOT/unbalanced-decisions.md"
+printf '%s\n' \
+    '### D-Z-923 — unclosed code span fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: `遗留词' \
+    '### D-Z-924 — unclosed quote fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: "遗留词' \
+    '### D-Z-925 — unclosed parenthesis fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: （遗留词' \
+    > "$UNBALANCED_DECISIONS"
+
+python3 - "$SCAN_I18N" "$UNBACKTICKED_DECISIONS" \
+    "$MIXED_REJECTED_DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+try:
+    module.parse_decisions(sys.argv[3])
+except ValueError as error:
+    assert "unconsumed contextual Rejected text" in str(error), str(error)
+else:
+    raise AssertionError("global parser skipped the mixed Rejected field")
+expected = (
+    "must be enclosed in backticks",
+    "unconsumed contextual Rejected text",
+)
+for path, diagnostic in zip(sys.argv[2:], expected):
+    try:
+        module.parse_contextual_decisions(path)
+    except ValueError as error:
+        assert diagnostic in str(error), str(error)
+    else:
+        raise AssertionError(f"malformed contextual field accepted: {path}")
+PY
+assert_status "validate-terms: contextual parser rejects unconsumed fields" \
+    0 "$?"
+
+MALFORMED_CONTEXT_SOURCE="$TERMS_ROOT/malformed/i18n/zh/source.txt"
+mkdir -p "$(dirname "$MALFORMED_CONTEXT_SOURCE")"
+printf '%s\n' \
+    '%%%%' 'status|Blood' '血甲' \
+    '%%%%' 'ordinary key' '仍有魔窟。' \
+    '%%%%' 'global key' '仍有遗留词。' \
+    > "$MALFORMED_CONTEXT_SOURCE"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$NO_ARROW_CONTEXT_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+no_arrow_context_status=$?
+set -e
+assert_status "validate-terms: every no-arrow Context identity fails closed" \
+    2 "$no_arrow_context_status"
+assert_contains "validate-terms: bare Context identity diagnostic is explicit" \
+    "D-D-930: contextual Rejected text matches an exact Context table key" \
+    /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: mixed Context identity diagnostic is explicit" \
+    "D-D-933: contextual Rejected text matches an exact Context table key" \
+    /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: nonmatching pipe identity fails explicitly" \
+    "D-D-941: pipe-qualified Rejected identity must use a backticked arrow" \
+    /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: historical pipe identity cannot bypass syntax" \
+    "D-D-944: pipe-qualified Rejected identity must use a backticked arrow" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$NO_CONTEXT_PIPE_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+no_context_pipe_status=$?
+set -e
+assert_status "validate-terms: no-Context pipe identities fail closed" \
+    2 "$no_context_pipe_status"
+assert_contains "validate-terms: no-Context pipe diagnostic is explicit" \
+    "D-Z-946: pipe-qualified Rejected identity must use a backticked arrow" \
+    /tmp/actual_validate_terms.txt
+
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$NO_CONTEXT_HISTORICAL_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: genuine no-pipe history remains explanation" \
+    0 "$?"
+
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$HISTORICAL_NON_CONTEXT_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: nonmatching historical explanation stays narrow" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$MISSING_CHOICE_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+missing_choice_status=$?
+set -e
+assert_status "validate-terms: a global rejection without Choice fails closed" \
+    2 "$missing_choice_status"
+assert_contains "validate-terms: missing Choice diagnostic is explicit" \
+    "global Rejected terms require a non-empty Choice" \
+    /tmp/actual_validate_terms.txt
+
+SINGLE_READ_DECISIONS="$TERMS_ROOT/single-read-decisions.md"
+printf '%s\n' \
+    '### D-Z-940 — single-read CLI fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: 遗留词' \
+    > "$SINGLE_READ_DECISIONS"
+SINGLE_READ_SOURCE="$TERMS_ROOT/single-read/i18n/zh/source.txt"
+mkdir -p "$(dirname "$SINGLE_READ_SOURCE")"
+printf '%s\n' '%%%%' 'single-read key' '这里使用正确词。' \
+    > "$SINGLE_READ_SOURCE"
+python3 - "$SCAN_I18N" "$SINGLE_READ_DECISIONS" \
+    "$SINGLE_READ_SOURCE" <<'PY'
+import builtins
+import importlib.util
+import io
+import os
+import types
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+glossary = os.path.abspath(sys.argv[2])
+first_snapshot = """\
+### D-Z-940 — first snapshot
+- **Status**: active
+- **Choice**: 正确词
+- **Rejected**: 遗留词
+"""
+second_snapshot = """\
+### D-Z-940 — second snapshot must never be observed
+- **Status**: active
+- **Rejected**: 遗留词
+"""
+real_open = builtins.open
+reads = []
+classifications = []
+real_classify = module._classify_decision_rejections
+metadata_reads = []
+real_metadata = module._decision_metadata_fields
+
+def alternating_open(path, *args, **kwargs):
+    if os.path.abspath(os.fspath(path)) == glossary:
+        reads.append(path)
+        snapshot = first_snapshot if len(reads) == 1 else second_snapshot
+        return io.StringIO(snapshot)
+    return real_open(path, *args, **kwargs)
+
+def counting_classify(decision_id, block, *args):
+    classifications.append((decision_id, block))
+    return real_classify(decision_id, block, *args)
+
+def counting_metadata(block):
+    metadata_reads.append(block)
+    return real_metadata(block)
+
+builtins.open = alternating_open
+module._classify_decision_rejections = counting_classify
+module._decision_metadata_fields = counting_metadata
+try:
+    status = module.cmd_validate_terms(types.SimpleNamespace(
+        glossary=sys.argv[2],
+        source_txt=sys.argv[3],
+        zh_dirs=[],
+        source_dir=None,
+    ))
+finally:
+    builtins.open = real_open
+    module._classify_decision_rejections = real_classify
+    module._decision_metadata_fields = real_metadata
+assert status == 0, status
+assert len(reads) == 1, reads
+assert metadata_reads == [first_snapshot], metadata_reads
+assert [item[0] for item in classifications] == ["D-Z-940"], classifications
+assert classifications[0][1] == first_snapshot, classifications
+PY
+assert_status "validate-terms: CLI reads and classifies one snapshot once" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$UNBACKTICKED_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+unbackticked_context_status=$?
+set -e
+assert_status "validate-terms: unbackticked contextual mapping fails closed" \
+    2 "$unbackticked_context_status"
+assert_contains "validate-terms: unbackticked mapping diagnostic is explicit" \
+    "contextual Rejected mapping must be enclosed in backticks" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$MIXED_REJECTED_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+mixed_rejected_status=$?
+set -e
+assert_status "validate-terms: mixed contextual/global field fails closed" \
+    2 "$mixed_rejected_status"
+assert_contains "validate-terms: mixed-field residual is explicit" \
+    "unconsumed contextual Rejected text: '魔窟'" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$GLOBAL_WITH_EXPLANATION" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+global_with_explanation_status=$?
+set -e
+assert_status "validate-terms: global survives ordinary arrow explanation" \
+    1 "$global_with_explanation_status"
+assert_contains "validate-terms: independent global term is still scanned" \
+    "Rejected: '遗留词'" /tmp/actual_validate_terms.txt
+
+for fused_arrow_decisions in \
+    "$FUSED_PAREN_ARROW_EXPLANATION" \
+    "$FUSED_QUOTED_ARROW_EXPLANATION"
+do
+    python3 - "$SCAN_I18N" "$fused_arrow_decisions" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+registry = module.parse_decision_registry(sys.argv[2])
+assert registry["rejected_map"] == {"遗留词": "正确词"}, registry
+assert [
+    item["kind"] for item in registry["classifications"]
+] == ["global"], registry
+PY
+    fused_registry_status=$?
+    assert_status \
+        "validate-terms: fused arrow suffix preserves global registry" \
+        0 "$fused_registry_status"
+
+    set +e
+    python3 "$SCAN_I18N" validate-terms \
+        --glossary "$fused_arrow_decisions" \
+        --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+        > /tmp/actual_validate_terms.txt 2>&1
+    fused_arrow_status=$?
+    set -e
+    assert_status \
+        "validate-terms: fused arrow suffix cannot hide global term" \
+        1 "$fused_arrow_status"
+    assert_contains \
+        "validate-terms: fused arrow global reaches SourceDB scan" \
+        "Rejected: '遗留词'" /tmp/actual_validate_terms.txt
+done
+
+for invalid_arrow_residuals in \
+    "$MIDDLE_ARROW_BOTH_SIDES" \
+    "$FUSED_ARROW_WITH_SUFFIX"
+do
+    set +e
+    python3 "$SCAN_I18N" validate-terms \
+        --glossary "$invalid_arrow_residuals" \
+        --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+        > /tmp/actual_validate_terms.txt 2>&1
+    invalid_arrow_residual_status=$?
+    set -e
+    assert_status \
+        "validate-terms: arrow span cannot hide multiple residuals" \
+        2 "$invalid_arrow_residual_status"
+    assert_contains \
+        "validate-terms: ambiguous arrow residuals fail explicitly" \
+        "unconsumed Rejected text around arrow explanation" \
+        /tmp/actual_validate_terms.txt
+done
+
+for leading_arrow_decisions in \
+    "$LEADING_ARROW_GLOBAL" \
+    "$MULTI_ARROW_GLOBAL"
+do
+    python3 - "$SCAN_I18N" "$leading_arrow_decisions" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+registry = module.parse_decision_registry(sys.argv[2])
+assert registry["rejected_map"] == {"遗留词": "正确词"}, registry
+assert [
+    item["kind"] for item in registry["classifications"]
+] == ["global"], registry
+PY
+    leading_arrow_registry_status=$?
+    assert_status \
+        "validate-terms: leading arrow spans preserve one global" \
+        0 "$leading_arrow_registry_status"
+
+    set +e
+    python3 "$SCAN_I18N" validate-terms \
+        --glossary "$leading_arrow_decisions" \
+        --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+        > /tmp/actual_validate_terms.txt 2>&1
+    leading_arrow_status=$?
+    set -e
+    assert_status \
+        "validate-terms: leading arrow spans cannot hide global term" \
+        1 "$leading_arrow_status"
+    assert_contains \
+        "validate-terms: leading-arrow global reaches SourceDB scan" \
+        "Rejected: '遗留词'" /tmp/actual_validate_terms.txt
+done
+
+python3 - "$SCAN_I18N" "$PURE_ARROW_EXPLANATIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+registry = module.parse_decision_registry(sys.argv[2])
+assert registry["rejected_map"] == {}, registry
+assert [
+    item["kind"] for item in registry["classifications"]
+] == ["explanation", "explanation", "explanation"], registry
+PY
+assert_status \
+    "validate-terms: fully delimited historical arrows remain explanations" \
+    0 "$?"
+
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$CONTEXT_WITH_EXPLANATION" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: contextual rule allows historical explanation" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$TABLE_QUOTED_UNQUALIFIED" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+table_quoted_unqualified_status=$?
+set -e
+assert_status "validate-terms: table-bound quoted arrow needs marker" \
+    2 "$table_quoted_unqualified_status"
+assert_contains "validate-terms: quoted arrow cannot bypass table binding" \
+    "matches an exact Context table key and must be enclosed in backticks" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$TABLE_MARKED_MATCHING_ARROW" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+table_marked_matching_status=$?
+set -e
+assert_status "validate-terms: marker cannot exempt matching Context key" \
+    2 "$table_marked_matching_status"
+assert_contains "validate-terms: matching historical arrow still needs code" \
+    "matches an exact Context table key and must be enclosed in backticks" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$CONTEXT_BOUNDARY_PUNCTUATION" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_context_boundary_punctuation.txt 2>&1
+context_boundary_punctuation_status=$?
+set -e
+assert_status "validate-terms: punctuation-delimited Context arrows fail closed" \
+    2 "$context_boundary_punctuation_status"
+for context_boundary_decision in "${CONTEXT_BOUNDARY_DECISION_IDS[@]}"; do
+    assert_contains \
+        "validate-terms: $context_boundary_decision needs a backticked arrow" \
+        "$context_boundary_decision: contextual Rejected arrow matches an exact Context table key and must be enclosed in backticks" \
+        /tmp/actual_context_boundary_punctuation.txt
+done
+if grep -Fq -- "OK: No active rejected-name decisions found" \
+    /tmp/actual_context_boundary_punctuation.txt; then
+    echo "  FAIL: punctuation-delimited Context arrows produced an empty-registry success"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: punctuation-delimited Context arrows cannot produce an empty-registry success"
+    PASS=$((PASS + 1))
+fi
+
+python3 - "$SCAN_I18N" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+context_values = {
+    module.compute_canonical_key("EXACT KEY"): {
+        "key": "EXACT KEY",
+        "value": "正确词",
+    },
+}
+for prefix in ("A", "7", "_", "|"):
+    assert not module._is_context_identity_boundary(prefix), prefix
+    for token in (
+        f'"历史说明{prefix}EXACT KEY → 遗留词"',
+        f"（历史说明{prefix}EXACT KEY → 遗留词）",
+    ):
+        assert not module._outside_arrow_matches_context(
+            token, context_values
+        ), token
+        assert not module._text_mentions_context_identity(
+            token, context_values
+        ), token
+PY
+assert_status \
+    "validate-terms: identity substrings keep alnum/underscore/pipe controls" \
+    0 "$?"
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$QUOTED_QUALIFIED_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+quoted_qualified_status=$?
+set -e
+assert_status "validate-terms: quoted qualified mapping fails closed" \
+    2 "$quoted_qualified_status"
+assert_contains "validate-terms: quoted qualified diagnostic is explicit" \
+    "pipe-qualified contextual mapping must use backticks" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$PAREN_QUALIFIED_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+paren_qualified_status=$?
+set -e
+assert_status "validate-terms: parenthesized qualified mapping fails closed" \
+    2 "$paren_qualified_status"
+assert_contains "validate-terms: parentheses cannot exempt qualified mapping" \
+    "pipe-qualified contextual mapping must use backticks" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$QUALIFIED_NO_TABLE_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+qualified_no_table_status=$?
+set -e
+assert_status "validate-terms: qualified mapping requires Context table" \
+    2 "$qualified_no_table_status"
+assert_contains "validate-terms: missing exact Context table is explicit" \
+    "does not match an exact non-empty Context table key" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$PREFIXED_ORDINARY_ARROW_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+prefixed_ordinary_arrow_status=$?
+set -e
+assert_status "validate-terms: ordinary arrow cannot hide global prefix" \
+    2 "$prefixed_ordinary_arrow_status"
+assert_contains "validate-terms: ordinary arrow prefix is unconsumed" \
+    "unconsumed Rejected token prefix: '遗留词'" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$PAREN_PREFIXED_ORDINARY_ARROW" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+paren_prefixed_arrow_status=$?
+set -e
+assert_status "validate-terms: parenthesis cannot exempt arrow prefix" \
+    2 "$paren_prefixed_arrow_status"
+assert_contains "validate-terms: parenthetical prefix bypass is explicit" \
+    "unconsumed Rejected token prefix: '遗留词'" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$PAREN_SUFFIXED_ORDINARY_ARROW" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+paren_suffixed_arrow_status=$?
+set -e
+assert_status "validate-terms: parenthesis cannot absorb arrow suffix" \
+    2 "$paren_suffixed_arrow_status"
+assert_contains "validate-terms: parenthetical suffix bypass is explicit" \
+    "unconsumed Rejected token suffix: '遗留词（历史说明）'" \
+    /tmp/actual_validate_terms.txt
+
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$UNBALANCED_DECISIONS" \
+    --source-txt "$MALFORMED_CONTEXT_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+unbalanced_status=$?
+set -e
+assert_status "validate-terms: unbalanced token delimiters fail closed" \
+    2 "$unbalanced_status"
+assert_contains "validate-terms: unclosed code span is explicit" \
+    "D-Z-923: unbalanced delimiters" /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: unclosed quote is explicit" \
+    "D-Z-924: unbalanced delimiters" /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: unclosed parenthesis is explicit" \
+    "D-Z-925: unbalanced delimiters" /tmp/actual_validate_terms.txt
+
+WHITESPACE_DECISIONS="$TERMS_ROOT/whitespace-decisions.md"
+printf '%s\n' \
+    '### D-A-046 — SourceDB whitespace identity fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| ` the pandemonium lord` | 万魔殿领主 |' \
+    '| `One of the many lords of Pandemonium, ` | 万魔殿领主 |' \
+    '- **Rejected**:' \
+    '  - ` THE PANDEMONIUM LORD → 潘德莫尼姆`' \
+    '  - `ONE OF THE MANY LORDS OF PANDEMONIUM,  → 潘神之域`' \
+    > "$WHITESPACE_DECISIONS"
+python3 - "$SCAN_I18N" "$WHITESPACE_DECISIONS" <<'PY'
+import importlib.util
+import sys
+
+spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+rules = module.parse_contextual_decisions(sys.argv[2])
+assert [rule["key"] for rule in rules] == [
+    " the pandemonium lord",
+    "One of the many lords of Pandemonium, ",
+]
+PY
+assert_status "validate-terms: canonical binding preserves key whitespace" \
+    0 "$?"
+
+WHITESPACE_SOURCE="$TERMS_ROOT/whitespace/i18n/zh/source.txt"
+mkdir -p "$(dirname "$WHITESPACE_SOURCE")"
+printf '%s\n' \
+    '%%%%' ' THE PANDEMONIUM LORD' '万魔殿领主' \
+    '%%%%' 'ONE OF THE MANY LORDS OF PANDEMONIUM, ' '万魔殿领主' \
+    > "$WHITESPACE_SOURCE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$WHITESPACE_DECISIONS" \
+    --source-txt "$WHITESPACE_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: whitespace identities use production lowercase" \
+    0 "$?"
+
+printf '%s\n' \
+    '%%%%' 'THE PANDEMONIUM LORD' '万魔殿领主' \
+    '%%%%' 'ONE OF THE MANY LORDS OF PANDEMONIUM,' '万魔殿领主' \
+    > "$WHITESPACE_SOURCE"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$WHITESPACE_DECISIONS" \
+    --source-txt "$WHITESPACE_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+stripped_whitespace_status=$?
+set -e
+assert_status "validate-terms: stripped SourceDB whitespace fails closed" \
+    2 "$stripped_whitespace_status"
+assert_contains "validate-terms: stripped whitespace key is missing" \
+    "is missing from the effective SourceDB" /tmp/actual_validate_terms.txt
+
+TABLE_DUPLICATE_DECISIONS="$TERMS_ROOT/table-duplicate-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — canonical duplicate Context rows fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '| `STATUS\|BLOOD` | 血甲 |' \
+    '- **Rejected**: `status|blood → 嗜血`' \
+    > "$TABLE_DUPLICATE_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$TABLE_DUPLICATE_DECISIONS" \
+    --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+table_duplicate_status=$?
+set -e
+assert_status "validate-terms: canonical duplicate Context rows fail closed" \
+    2 "$table_duplicate_status"
+assert_contains "validate-terms: canonical table duplicate is explicit" \
+    "duplicate Context table rows for normalized key 'status|blood'" \
+    /tmp/actual_validate_terms.txt
+
+TABLE_CONFLICT_DECISIONS="$TERMS_ROOT/table-conflict-decisions.md"
+printf '%s\n' \
+    '### D-D-005 — canonical conflicting Context rows fixture' \
+    '- **Status**: active' \
+    '| Context | ZH |' \
+    '|---------|----|' \
+    '| `status\|Blood` | 血甲 |' \
+    '| `STATUS\|BLOOD` | 鲜血 |' \
+    '- **Rejected**: `status|blood → 嗜血`' \
+    > "$TABLE_CONFLICT_DECISIONS"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$TABLE_CONFLICT_DECISIONS" \
+    --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+table_conflict_status=$?
+set -e
+assert_status "validate-terms: canonical conflicting Context rows fail closed" \
+    2 "$table_conflict_status"
+assert_contains "validate-terms: canonical table conflict is explicit" \
+    "conflicting Context table rows for normalized key 'status|blood'" \
+    /tmp/actual_validate_terms.txt
+
+ORDINARY_ARROW_DECISIONS="$TERMS_ROOT/ordinary-arrow-decisions.md"
+printf '%s\n' \
+    '### D-B-015 — ordinary backticked arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 恶魔' \
+    '- **Rejected**: `demon→魔`（普通术语说明，不是 SourceDB key）' \
+    '### D-A-016 — ordinary explanatory arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 幼龙' \
+    '- **Rejected**: 小龙（历史说明："Summon Drakes → 召唤小龙"）' \
+    '### D-Z-927 — ordinary quoted arrow fixture' \
+    '- **Status**: active' \
+    '- **Choice**: 正确词' \
+    '- **Rejected**: "legacy → 旧译"' \
+    > "$ORDINARY_ARROW_DECISIONS"
+printf '%s\n' '%%%%' 'ordinary key' '普通语境中的魔合法。' \
+    > "$CANONICAL_SOURCE"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$ORDINARY_ARROW_DECISIONS" \
+    --source-txt "$CANONICAL_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: no-table ordinary arrow remains allowed" 0 "$?"
 
 TERMS_SOURCE="$TERMS_ROOT/i18n/zh/source.txt"
 TERMS_DESCRIPT="$TERMS_ROOT/descript/zh/fixture.txt"
@@ -515,6 +2446,47 @@ set -e
 assert_status "validate-terms: final sorted definition wins" \
     1 "$last_definition_status"
 rm -f "$TERMS_LAST"
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '血甲' > "$TERMS_SOURCE"
+TERMS_NODOT_EARLY="$TERMS_ROOT/i18n/zh/b-overridetxt"
+TERMS_NODOT_LAST="$TERMS_ROOT/i18n/zh/z-overridetxt"
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '早期嗜血覆盖' \
+    > "$TERMS_NODOT_EARLY"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+nodot_early_status=$?
+set -e
+assert_status "validate-terms: production *txt suffix files are discovered" \
+    1 "$nodot_early_status"
+assert_contains "validate-terms: no-dot override reports its source file" \
+    "b-overridetxt" /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: no-dot override reports rejected term" \
+    "Rejected: '嗜血'" /tmp/actual_validate_terms.txt
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '血甲' \
+    > "$TERMS_NODOT_LAST"
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+assert_status "validate-terms: sorted no-dot last definition wins" 0 "$?"
+
+printf '%s\n%s\n%s\n' '%%%%' 'status|Blood' '后期嗜血覆盖' \
+    > "$TERMS_NODOT_LAST"
+set +e
+python3 "$SCAN_I18N" validate-terms \
+    --glossary "$DECISIONS" --source-txt "$TERMS_SOURCE" \
+    > /tmp/actual_validate_terms.txt 2>&1
+nodot_last_status=$?
+set -e
+assert_status "validate-terms: rejected no-dot last definition blocks" \
+    1 "$nodot_last_status"
+assert_contains "validate-terms: effective no-dot file is deterministic" \
+    "z-overridetxt" /tmp/actual_validate_terms.txt
+assert_contains "validate-terms: effective no-dot term is reported" \
+    "Rejected: '嗜血'" /tmp/actual_validate_terms.txt
+rm -f "$TERMS_NODOT_EARLY" "$TERMS_NODOT_LAST"
 
 rm -f "$TERMS_SOURCE"
 set +e
