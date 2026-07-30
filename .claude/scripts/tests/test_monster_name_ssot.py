@@ -6,6 +6,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import json
 import os
 import sys
 import subprocess
@@ -21,6 +22,16 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 import monster_name_ssot as audit
 from i18n_shared import AuditInput
+
+AUDIT_ROOT = audit.ROOT
+
+
+@contextlib.contextmanager
+def unbound_fixture_inputs():
+    """Keep temporary unit fixtures outside a surrounding bound audit."""
+    with mock.patch.dict(os.environ, {}, clear=False):
+        os.environ.pop("ZH_VERIFY_AUDIT_COMMIT", None)
+        yield
 
 
 def review_input(path: Path) -> AuditInput:
@@ -89,14 +100,17 @@ class Fixture:
 
     def audit(self, *, quote_exceptions=None, reverse_exceptions=None):
         self.flush()
-        return audit.audit_repository(
-            str(self.source_dir),
-            str(self.source_txt),
-            quote_exceptions={} if quote_exceptions is None else quote_exceptions,
-            reverse_dup_exceptions=(
-                {} if reverse_exceptions is None else reverse_exceptions
-            ),
-        )
+        with unbound_fixture_inputs():
+            return audit.audit_repository(
+                str(self.source_dir),
+                str(self.source_txt),
+                quote_exceptions=(
+                    {} if quote_exceptions is None else quote_exceptions
+                ),
+                reverse_dup_exceptions=(
+                    {} if reverse_exceptions is None else reverse_exceptions
+                ),
+            )
 
 
 class MonsterNameSsotTests(unittest.TestCase):
@@ -112,7 +126,8 @@ class MonsterNameSsotTests(unittest.TestCase):
                 "second line\n",
                 encoding="utf-8",
             )
-            entries = audit._parse_required_textdb(str(path))
+            with unbound_fixture_inputs():
+                entries = audit._parse_required_textdb(str(path))
         self.assertEqual(
             {"mixed case key": "first line\nsecond line\n\n"}, entries
         )
@@ -120,18 +135,24 @@ class MonsterNameSsotTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "source.txt"
             path.write_text("%%%% source\n  Untrimmed Key  \nvalue\n", encoding="utf-8")
-            entries = audit._parse_required_textdb(str(path), trim_keys=False)
+            with unbound_fixture_inputs():
+                entries = audit._parse_required_textdb(
+                    str(path), trim_keys=False
+                )
         self.assertIn("  untrimmed key  ", entries)
 
     def test_empty_required_textdb_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "empty.txt"
             path.write_text("# comments and whitespace only\n\n", encoding="utf-8")
-            with self.assertRaises(audit.AuditInputError):
+            with (
+                unbound_fixture_inputs(),
+                self.assertRaises(audit.AuditInputError),
+            ):
                 audit._parse_required_textdb(str(path))
 
     def test_real_repository_passes_complete_inventory(self) -> None:
-        source_dir = REPO_ROOT / "crawl-ref" / "source"
+        source_dir = AUDIT_ROOT / "crawl-ref" / "source"
         result = audit.audit_repository(
             str(source_dir),
             str(source_dir / "dat" / "i18n" / "zh" / "source.txt"),
@@ -178,35 +199,37 @@ class MonsterNameSsotTests(unittest.TestCase):
                 "};\n",
                 encoding="utf-8",
             )
-            identities = audit._active_monster_enum_identities(path)
+            with unbound_fixture_inputs():
+                identities = audit._active_monster_enum_identities(path)
         self.assertEqual(["MONS_ALPHA", "MONS_BETA"], identities)
 
     def test_review_coverage_fails_closed_on_any_artifact_mutation(self) -> None:
         payload = audit.build_inventory()
         baseline = subprocess.check_output(
             ["git", "rev-parse", "HEAD^"],
-            cwd=REPO_ROOT,
+            cwd=AUDIT_ROOT,
             text=True,
         ).strip()
         rendered = audit.render_review_results(payload, baseline)
-        with tempfile.TemporaryDirectory(dir=audit.ROOT / ".claude") as tmp:
+        with tempfile.TemporaryDirectory(dir=AUDIT_ROOT / ".claude") as tmp:
             path = Path(tmp) / "results.md"
             inventory = Path(tmp) / "inventory.json"
 
             def cli_result() -> int:
-                # This self-generated, uncommitted mutation fixture exercises
-                # the explicit unbound development-mode path.
-                with mock.patch.dict(os.environ, {}, clear=False):
+                with (
+                    mock.patch.dict(os.environ, {}, clear=False),
+                    contextlib.redirect_stdout(io.StringIO()),
+                    contextlib.redirect_stderr(io.StringIO()),
+                ):
+                    # This unit fixture intentionally audits an uncommitted
+                    # temporary ledger. A surrounding bound verification must
+                    # not turn the fixture path into a candidate-blob lookup.
                     os.environ.pop("ZH_VERIFY_AUDIT_COMMIT", None)
-                    with (
-                        contextlib.redirect_stdout(io.StringIO()),
-                        contextlib.redirect_stderr(io.StringIO()),
-                    ):
-                        return audit.main([
-                            "--inventory-output", str(inventory),
-                            "--review-results", str(path),
-                            "--baseline-ref", baseline,
-                        ])
+                    return audit.main([
+                        "--inventory-output", str(inventory),
+                        "--review-results", str(path),
+                        "--baseline-ref", baseline,
+                    ])
 
             path.write_text(rendered, encoding="utf-8")
             result = audit.review_coverage(
@@ -215,6 +238,34 @@ class MonsterNameSsotTests(unittest.TestCase):
             self.assertTrue(result["coverage_equal"])
             self.assertTrue(result["artifact_exact"])
             self.assertEqual(0, cli_result())
+            cli_payload = json.loads(
+                inventory.read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                baseline,
+                cli_payload["review_baseline_snapshot"]["audit_commit"],
+            )
+            self.assertEqual(
+                {
+                    "crawl-ref/source/dat/i18n/zh/source.txt",
+                    "crawl-ref/source/dat/descript/zh/monsters.txt",
+                },
+                {
+                    item["path"]
+                    for item in cli_payload[
+                        "review_baseline_snapshot"
+                    ]["input_manifest"]["inputs"]
+                },
+            )
+            self.assertIn(
+                cli_payload["review_input"]["logical_path"],
+                {
+                    item["path"]
+                    for item in cli_payload[
+                        "audit_snapshot"
+                    ]["input_manifest"]["inputs"]
+                },
+            )
 
             path.write_text(
                 rendered.replace(
@@ -233,7 +284,7 @@ class MonsterNameSsotTests(unittest.TestCase):
 
             forged_baseline = subprocess.check_output(
                 ["git", "rev-parse", "HEAD"],
-                cwd=REPO_ROOT,
+                cwd=AUDIT_ROOT,
                 text=True,
             ).strip()
             path.write_text(
@@ -383,7 +434,10 @@ class MonsterNameSsotTests(unittest.TestCase):
                 mons_dir = source_dir / "dat" / "mons"
                 mons_dir.mkdir(parents=True)
                 (mons_dir / "bad.yaml").write_text(content, encoding="utf-8")
-                with self.assertRaises(audit.AuditInputError):
+                with (
+                    unbound_fixture_inputs(),
+                    self.assertRaises(audit.AuditInputError),
+                ):
                     audit._load_monster_definitions(str(source_dir))
 
 

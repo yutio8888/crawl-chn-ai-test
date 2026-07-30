@@ -11,15 +11,24 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+from i18n_shared import (  # noqa: E402
+    AuditInputError,
+    AuditRootError,
+    AuditSnapshot,
+    audit_snapshot_invocation,
+    get_audit_snapshot,
+    resolve_audit_root,
+    trusted_git_environment,
+)
 
 try:
     ROOT = resolve_audit_root(SCRIPT_ROOT)
@@ -111,8 +120,14 @@ from i18n_shared import (
 )
 
 
-def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def audit_snapshot():
+    return get_audit_snapshot(ROOT)
+
+
+def sha(path, snapshot=None):
+    return (snapshot or audit_snapshot()).sha256(
+        path, allow_external_unbound=True
+    )
 
 
 def sha_bytes(data):
@@ -124,11 +139,33 @@ def resolve_commit(revision, root=ROOT):
         raise RuntimeError("review base is required")
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "--verify", f"{revision}^{{commit}}"],
-            cwd=root, text=True, stderr=subprocess.PIPE,
+            [
+                "git", "-C", str(root), "rev-parse", "--verify",
+                f"{revision}^{{commit}}",
+            ],
+            text=True,
+            stderr=subprocess.PIPE,
+            env=trusted_git_environment(),
         ).strip()
     except subprocess.CalledProcessError as error:
         raise RuntimeError(f"invalid review base: {revision}") from error
+
+
+_REVISION_SNAPSHOTS = {}
+
+
+def revision_snapshot(revision, root=ROOT):
+    """Return one cached immutable snapshot for an exact historical commit."""
+    resolved = resolve_commit(revision, root)
+    repository = Path(root).resolve()
+    key = (os.fspath(repository), resolved)
+    snapshot = _REVISION_SNAPSHOTS.get(key)
+    if snapshot is None:
+        snapshot = AuditSnapshot(
+            repository, resolved, require_head=False
+        )
+        _REVISION_SNAPSHOTS[key] = snapshot
+    return snapshot
 
 
 def git_revision_bytes(path, revision, root=ROOT):
@@ -137,11 +174,8 @@ def git_revision_bytes(path, revision, root=ROOT):
     except ValueError as error:
         raise RuntimeError(f"path is outside review repository: {path}") from error
     try:
-        return subprocess.check_output(
-            ["git", "show", f"{revision}:{relative}"],
-            cwd=root, stderr=subprocess.PIPE,
-        )
-    except subprocess.CalledProcessError as error:
+        return revision_snapshot(revision, root).bytes(relative)
+    except (AuditInputError, RuntimeError, ValueError) as error:
         raise RuntimeError(
             f"required review-base input is missing: {revision}:{relative}"
         ) from error
@@ -149,35 +183,55 @@ def git_revision_bytes(path, revision, root=ROOT):
 
 def git_revision_text(path, revision, root=ROOT):
     try:
-        return git_revision_bytes(path, revision, root).decode("utf-8")
+        return git_revision_bytes(path, revision, root).decode(
+            "utf-8", errors="strict"
+        )
     except UnicodeDecodeError as error:
         raise RuntimeError(
             f"review-base input is not UTF-8: {revision}:{path}"
         ) from error
 
 
-def source_files(directory):
+def source_files(directory, snapshot=None):
     """Return localized SourceDB inputs in the production load order."""
-    source = directory / "source.txt"
-    if not source.is_file():
+    active = snapshot or audit_snapshot()
+    source = Path(os.path.abspath(os.fspath(directory))) / "source.txt"
+    files = list(active.glob(
+        directory,
+        "*.txt",
+        allow_external_unbound=True,
+    ))
+    source_file = next(
+        (path for path in files if path.name == "source.txt"),
+        None,
+    )
+    if source_file is None:
         raise FileNotFoundError(f"required SourceDB input is missing: {source}")
-    files = sorted(directory.glob("*.txt"), key=lambda path: path.name)
-    return [source, *(path for path in files if path != source)]
+    files.sort(key=lambda path: path.name)
+    return [
+        source_file,
+        *(path for path in files if path != source_file),
+    ]
 
 
-def source_entries(directory):
+def source_entries(directory, snapshot=None):
     # Localized SourceDB loads source.txt first, then every other sorted .txt
     # file with trim_keys=false. DBM_REPLACE makes the final exact canonical
     # key definition authoritative.
+    active = snapshot or audit_snapshot()
     result = {}
-    for path in source_files(directory):
-        for entry in parse_entries_physical(str(path)):
+    for path in source_files(directory, active):
+        for entry in parse_entries_physical(active.read(
+            path, allow_external_unbound=True
+        )):
             result[entry.canonical_key] = runtime_normalize_value(entry.value)
     return result
 
 
-def tag_major_version():
-    text = (SRC / "tag-version.h").read_text(encoding="utf-8")
+def tag_major_version(snapshot=None):
+    text = (snapshot or audit_snapshot()).text(
+        SRC / "tag-version.h", allow_external_unbound=True
+    )
     match = re.search(r"^\s*#define\s+TAG_MAJOR_VERSION\s+(\d+)\s*$",
                       text, re.MULTILINE)
     if not match:
@@ -208,7 +262,7 @@ def _tag_condition(expression, version):
     }[operator]
 
 
-def active_source(path):
+def active_source(path, snapshot=None):
     """Select TAG_MAJOR_VERSION branches without preprocessing full Crawl.
 
     Full C++ preprocessing depends on generated build headers such as
@@ -216,11 +270,14 @@ def active_source(path):
     name producers only need their TAG_MAJOR_VERSION branches selected; other
     preprocessor conditions are left inclusive for the literal parser.
     """
-    version = tag_major_version()
+    active_snapshot = snapshot or audit_snapshot()
+    version = tag_major_version(active_snapshot)
     output = []
     stack = []
     active = True
-    for line in path.read_text(encoding="utf-8").splitlines(keepends=True):
+    for line in active_snapshot.text(
+        path, allow_external_unbound=True
+    ).splitlines(keepends=True):
         directive = re.match(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)",
                              line)
         if not directive:
@@ -399,13 +456,41 @@ def contextual_book_names(text):
     return rows
 
 
-def enum_constants(headers, enum_names):
+def enum_constants(headers, enum_names, snapshot=None):
+    active = snapshot or audit_snapshot()
     source = "\n".join(f'#include "{header}"' for header in headers)
     with tempfile.TemporaryDirectory(prefix="dcss-item-audit-") as directory:
+        include_root = Path(directory) / "include"
+        include_root.mkdir()
+        pending = list(dict.fromkeys([*headers, "tag-version.h"]))
+        copied = set()
+        while pending:
+            header = pending.pop(0)
+            if header in copied:
+                continue
+            if (
+                Path(header).is_absolute()
+                or ".." in Path(header).parts
+            ):
+                raise RuntimeError(
+                    f"unsafe quoted include in enum probe: {header}"
+                )
+            payload = active.read(SRC / header)
+            destination = include_root / header
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(payload.bytes)
+            copied.add(header)
+            for dependency in re.findall(
+                r'(?m)^\s*#\s*include\s+"([^"]+)"',
+                payload.text,
+            ):
+                pending.append(
+                    (PurePosixPath(header).parent / dependency).as_posix()
+                )
         probe = Path(directory) / "enums.cc"
         probe.write_text(source, encoding="utf-8")
         raw = subprocess.run(
-            ["clang++", "-std=c++17", "-I", str(SRC),
+            ["clang++", "-std=c++17", "-I", str(include_root),
              "-Xclang", "-ast-dump=json", "-fsyntax-only", str(probe)],
             cwd=ROOT, check=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, text=True,
@@ -576,7 +661,9 @@ def expected_identities(enums, removed_pairs):
     return expected
 
 
+@audit_snapshot_invocation(ROOT)
 def build_inventory():
+    snapshot = audit_snapshot()
     db = source_entries(ZH_SOURCE_DIR)
     item_prop = active_source(SRC / "item-prop.cc")
     item_name = active_source(SRC / "item-name.cc")
@@ -856,9 +943,7 @@ def build_inventory():
     )
     payload = {
         "schema": "dcss-item-name-review-inventory-v1",
-        "baseline": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip(),
+        "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "glossary_sha256": sha(ROOT / "docs/glossary.md"),
         "input_sha256": {
             str(p.relative_to(ROOT)): sha(p)
@@ -893,6 +978,7 @@ def build_inventory():
         },
         **violations,
         "rows": rows,
+        "audit_snapshot": snapshot.metadata(),
     }
     encoded_rows = json.dumps(rows, ensure_ascii=False, sort_keys=True,
                               separators=(",", ":")).encode()
@@ -900,8 +986,11 @@ def build_inventory():
     return payload
 
 
-def textdb_rows(path):
-    entries = parse_entries_physical(str(path))
+def textdb_rows(path, snapshot=None):
+    active = snapshot or audit_snapshot()
+    entries = parse_entries_physical(active.read(
+        path, allow_external_unbound=True
+    ))
     keys = [entry.canonical_key for entry in entries]
     duplicates = sorted(
         key for key, count in Counter(keys).items() if count > 1
@@ -1038,15 +1127,16 @@ def validate_randart_metrics(filename, en_entries, zh_entries):
     return expected
 
 
-def physical_entries_from_text(text):
-    with tempfile.TemporaryDirectory(prefix="dcss-item-v2-textdb-") as tmp:
-        path = Path(tmp) / "input.txt"
-        path.write_text(text, encoding="utf-8")
-        return parse_entries_physical(str(path))
-
-
 def revision_textdb_rows(path, revision):
-    return physical_entries_from_text(git_revision_text(path, revision))
+    try:
+        relative = path.relative_to(ROOT).as_posix()
+    except ValueError as error:
+        raise RuntimeError(
+            f"path is outside review repository: {path}"
+        ) from error
+    return parse_entries_physical(
+        revision_snapshot(revision).read(relative)
+    )
 
 
 def source_entries_at_revision(directory, revision):
@@ -1056,29 +1146,21 @@ def source_entries_at_revision(directory, revision):
         raise RuntimeError(
             f"SourceDB directory is outside review repository: {directory}"
         ) from error
-    try:
-        listing = subprocess.check_output(
-            ["git", "ls-tree", "-r", "--name-only", revision, "--", relative],
-            cwd=ROOT, text=True, stderr=subprocess.PIPE,
-        ).splitlines()
-    except subprocess.CalledProcessError as error:
-        raise RuntimeError(
-            f"cannot enumerate review-base SourceDB: {revision}:{relative}"
-        ) from error
+    historical = revision_snapshot(revision)
     paths = sorted(
-        (ROOT / line for line in listing if line.endswith(".txt")),
+        historical.glob(relative, "*.txt"),
         key=lambda path: path.name,
     )
-    source = directory / "source.txt"
+    source = historical.root / relative / "source.txt"
     if source not in paths:
         raise RuntimeError(
             f"required review-base SourceDB input is missing: "
-            f"{revision}:{source.relative_to(ROOT)}"
+            f"{revision}:{relative}/source.txt"
         )
     paths = [source, *(path for path in paths if path != source)]
     result = {}
     for path in paths:
-        for entry in revision_textdb_rows(path, revision):
+        for entry in parse_entries_physical(historical.read(path)):
             result[entry.canonical_key] = runtime_normalize_value(entry.value)
     return result
 
@@ -1389,6 +1471,7 @@ def _pre_review_variant_value(current, ordinal, base_values):
     return None
 
 
+@audit_snapshot_invocation(ROOT)
 def paired_component_rows(
     en_path, zh_path, category, review_base=None, changed_keys=None
 ):
@@ -1577,16 +1660,18 @@ def build_source_evidence(rows, review_base):
     result = {}
     for relative in relative_paths:
         path = ROOT / relative
-        if not path.is_file():
+        try:
+            current_sha = sha(path)
+        except AuditInputError as error:
             raise RuntimeError(
                 f"required candidate evidence input is missing: {relative}"
-            )
+            ) from error
         result[relative] = {
             "path": relative,
             "review_base_sha256": sha_bytes(
                 git_revision_bytes(path, review_base)
             ),
-            "current_sha256": sha(path),
+            "current_sha256": current_sha,
         }
     return result
 
@@ -1622,9 +1707,12 @@ def evidence_card(row, source_evidence):
     }
 
 
+@audit_snapshot_invocation(ROOT)
 def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE):
+    snapshot = audit_snapshot()
     review_base = resolve_commit(review_base)
-    candidate_head = resolve_commit("HEAD")
+    historical = revision_snapshot(review_base)
+    candidate_head = snapshot.audit_commit or resolve_commit("HEAD")
     ordinary = build_inventory()
     source_db = source_entries(ZH_SOURCE_DIR)
     base_source_db = source_entries_at_revision(
@@ -1923,6 +2011,8 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE):
         "inventory_sha256": digest,
         "development_reports": DEVELOPMENT_REPORTS,
         "rows": public_rows,
+        "audit_snapshot": snapshot.metadata(),
+        "review_base_snapshot": historical.metadata(),
     }
     return payload, public_rows
 
@@ -2161,6 +2251,7 @@ def write_review_results(path, inventory, rows):
     )
 
 
+@audit_snapshot_invocation(ROOT)
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -2203,7 +2294,11 @@ def main(argv=None):
                     args.write_review_results, payload, internal_rows
                 )
             if args.review_results:
-                review_input = load_review_input(ROOT, args.review_results)
+                review_input = load_review_input(
+                    ROOT,
+                    args.review_results,
+                    snapshot=audit_snapshot(),
+                )
                 payload["review_input"] = review_input_metadata(review_input)
                 review = parse_review_results(review_input)
                 review_header = parse_review_header(review_input)
@@ -2235,6 +2330,7 @@ def main(argv=None):
               file=sys.stderr)
         return 2
 
+    payload["audit_snapshot"] = audit_snapshot().metadata()
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

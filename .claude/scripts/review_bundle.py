@@ -701,27 +701,51 @@ def bundle_lock(
     *,
     exclusive: bool = True,
     blocking: bool = True,
+    create: bool = False,
 ) -> Iterator[int]:
-    """Hold the bundle-level advisory flock used by writers and final gates."""
+    """Hold the bundle-level advisory flock used by writers and readers.
+
+    Initial bundle publication may create the lock explicitly. Later writers
+    require the already-published lock and a read/write descriptor. Readers
+    open that existing lock read-only: status and merge-time validation are
+    not allowed to create or modify any evidence object.
+    """
     directory = Path(bundle_directory)
     _require_directory(directory, "bundle directory")
     lock_path = directory / LOCK_NAME
-    create_flags = (
-        os.O_RDWR
-        | os.O_CREAT
-        | os.O_EXCL
-        | getattr(os, "O_CLOEXEC", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
-    )
+    if create and not exclusive:
+        raise ReviewBundleError("a shared bundle lock cannot be created")
     created = False
-    try:
-        fd = os.open(lock_path, create_flags, 0o600)
-        created = True
-    except FileExistsError:
+    if create:
+        create_flags = (
+            os.O_RDWR
+            | os.O_CREAT
+            | os.O_EXCL
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+        )
+        try:
+            fd = os.open(lock_path, create_flags, 0o600)
+            created = True
+        except FileExistsError:
+            before = _require_regular_file(lock_path, "bundle lock")
+            fd = os.open(
+                lock_path,
+                os.O_RDWR
+                | getattr(os, "O_CLOEXEC", 0)
+                | getattr(os, "O_NOFOLLOW", 0),
+            )
+            opened = os.fstat(fd)
+            if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+                os.close(fd)
+                raise UnsafeObjectError("bundle lock changed while opening")
+    else:
         before = _require_regular_file(lock_path, "bundle lock")
         fd = os.open(
             lock_path,
-            os.O_RDWR | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            (os.O_RDWR if exclusive else os.O_RDONLY)
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0),
         )
         opened = os.fstat(fd)
         if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
@@ -1077,7 +1101,7 @@ def create_bundle(
     )
     root = evidence_root(repo, create=True)
     bundle_path = _ensure_child_directory(root, description["bundle_id"])
-    with bundle_lock(bundle_path):
+    with bundle_lock(bundle_path, create=True):
         _reject_unsafe_objects(bundle_path)
         _reject_unknown_top_level(bundle_path)
         routing_created = atomic_write_once(
@@ -2119,6 +2143,53 @@ def _validate_bundle_locked(
     }
 
 
+def _validate_lockless_legacy(
+    repo: os.PathLike[str] | str,
+    path: Path,
+    *,
+    check_clean: bool,
+) -> dict[str, Any] | None:
+    """Inspect only a lockless, non-authorizing historical bundle.
+
+    Schema-v3 evidence predates ``.bundle.lock``. It remains inspectable
+    without mutating that historical directory, but can never enter a writer
+    or merge authorization path. A schema-v4 bundle with a missing lock is
+    invalid rather than silently repaired.
+    """
+    lock_path = path / LOCK_NAME
+    if _lstat(lock_path) is not None:
+        return None
+    status = _validate_bundle_locked(repo, path, check_clean=check_clean)
+    if not status.get("legacy_read_only"):
+        return None
+    if _lstat(lock_path) is not None:
+        raise StaleEvidenceError(
+            "bundle lock appeared during historical read-only validation"
+        )
+    return status
+
+
+def _validate_bundle_read_only(
+    repo: os.PathLike[str] | str,
+    path: Path,
+    *,
+    check_clean: bool,
+    blocking: bool = True,
+) -> dict[str, Any]:
+    try:
+        with bundle_lock(path, exclusive=False, blocking=blocking):
+            return _validate_bundle_locked(
+                repo, path, check_clean=check_clean
+            )
+    except ReviewBundleError as lock_error:
+        legacy = _validate_lockless_legacy(
+            repo, path, check_clean=check_clean
+        )
+        if legacy is None:
+            raise lock_error
+        return legacy
+
+
 def validate_bundle(
     repo: os.PathLike[str] | str,
     bundle: os.PathLike[str] | str,
@@ -2126,8 +2197,9 @@ def validate_bundle(
     check_clean: bool = True,
 ) -> dict[str, Any]:
     path = _resolve_bundle_path(repo, bundle)
-    with bundle_lock(path, exclusive=False):
-        return _validate_bundle_locked(repo, path, check_clean=check_clean)
+    return _validate_bundle_read_only(
+        repo, path, check_clean=check_clean
+    )
 
 
 def status_bundle(
@@ -2137,8 +2209,9 @@ def status_bundle(
     try:
         path = _resolve_bundle_path(repo, bundle)
         try:
-            with bundle_lock(path, exclusive=False, blocking=False):
-                return _validate_bundle_locked(repo, path, check_clean=True)
+            return _validate_bundle_read_only(
+                repo, path, check_clean=True, blocking=False
+            )
         except BlockingIOError:
             marker = _load_running_marker(path, path.name)
             if marker is not None:
@@ -2200,6 +2273,12 @@ def record_readiness(
     findings_json: os.PathLike[str] | str,
 ) -> dict[str, Any]:
     path = _resolve_bundle_path(repo, bundle)
+    if _validate_lockless_legacy(
+        repo, path, check_clean=True
+    ) is not None:
+        raise ReviewBundleError(
+            "legacy bundles are historical read-only evidence"
+        )
     with bundle_lock(path):
         status = _validate_bundle_locked(repo, path, check_clean=True)
         if status.get("legacy_read_only"):
@@ -2618,6 +2697,12 @@ def run_final(
 ) -> dict[str, Any]:
     """Run or reuse the one trusted final verification and seal its approval."""
     bundle_path = _resolve_bundle_path(repo, bundle)
+    if _validate_lockless_legacy(
+        repo, bundle_path, check_clean=True
+    ) is not None:
+        raise ReviewBundleError(
+            "legacy bundles cannot create new merge authorization"
+        )
     with bundle_lock(bundle_path, exclusive=True):
         try:
             status = _validate_bundle_locked(repo, bundle_path, check_clean=True)
@@ -2736,6 +2821,12 @@ def final_gate(
 ) -> Iterator[dict[str, Any]]:
     """Hold an exclusive bundle lock across final validation and caller action."""
     path = _resolve_bundle_path(repo, bundle)
+    if _validate_lockless_legacy(
+        repo, path, check_clean=True
+    ) is not None:
+        raise ReviewBundleError(
+            "legacy bundles cannot authorize final actions"
+        )
     with bundle_lock(path, exclusive=True):
         status = _validate_bundle_locked(repo, path, check_clean=True)
         if status.get("legacy_read_only"):

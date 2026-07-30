@@ -26,7 +26,11 @@ from typing import Mapping
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import (  # noqa: E402
+    AuditInputError as SharedAuditInputError,
     AuditRootError,
+    AuditSnapshot,
+    audit_snapshot_invocation,
+    get_audit_snapshot,
     load_review_input,
     resolve_audit_root,
     review_input_metadata,
@@ -47,7 +51,10 @@ ZH_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "zh" / "monsters.txt"
 ZH_MONSTER_TITLES = SRC / "dat" / "database" / "zh" / "montitle.txt"
 GLOSSARY = ROOT / "docs" / "glossary.md"
 
-from audit_item_name_inventory import active_source  # noqa: E402
+from audit_item_name_inventory import (  # noqa: E402
+    active_source,
+    resolve_commit,
+)
 
 
 # These quotation entries deliberately use a literary, historical, religious,
@@ -94,7 +101,7 @@ EN_NAME_IRREGULAR_FORMS: dict[str, tuple[str, ...]] = {
 }
 
 
-class AuditInputError(ValueError):
+class AuditInputError(SharedAuditInputError, ValueError):
     """A required production input cannot be completely evaluated."""
 
 
@@ -123,8 +130,14 @@ class AuditResult:
     findings: tuple[str, ...]
 
 
+def audit_snapshot():
+    return get_audit_snapshot(ROOT)
+
+
 def _sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return audit_snapshot().sha256(
+        path, allow_external_unbound=True
+    )
 
 
 def _relative(path: str | Path) -> str:
@@ -137,9 +150,10 @@ def _relative(path: str | Path) -> str:
 
 def _read(path: str) -> str:
     try:
-        with open(path, "r", encoding="utf-8", errors="strict") as stream:
-            return stream.read()
-    except (OSError, UnicodeError) as exc:
+        return audit_snapshot().text(
+            path, allow_external_unbound=True
+        )
+    except (OSError, UnicodeError, SharedAuditInputError) as exc:
         raise AuditInputError(f"cannot read required input '{path}': {exc}") from exc
 
 
@@ -287,22 +301,25 @@ def _default_enum(name: str) -> str:
     return "MONS_" + name.upper().replace(" ", "_")
 
 
+@audit_snapshot_invocation(ROOT)
 def _load_monster_definitions(source_dir: str) -> list[MonsterDefinition]:
-    mons_dir = os.path.join(source_dir, "dat", "mons")
+    mons_dir = Path(source_dir) / "dat" / "mons"
     try:
-        filenames = sorted(
-            name for name in os.listdir(mons_dir) if name.endswith(".yaml")
+        paths = audit_snapshot().glob(
+            mons_dir,
+            "*.yaml",
+            allow_external_unbound=True,
         )
-    except OSError as exc:
+    except (OSError, SharedAuditInputError) as exc:
         raise AuditInputError(
             f"cannot enumerate monster YAML directory '{mons_dir}': {exc}"
         ) from exc
-    if not filenames:
+    if not paths:
         raise AuditInputError(f"monster YAML inventory is empty: '{mons_dir}'")
 
     definitions: list[MonsterDefinition] = []
-    for filename in filenames:
-        path = os.path.join(mons_dir, filename)
+    for path_obj in paths:
+        path = os.fspath(path_obj)
         content = _read(path)
         fields = _parse_yaml_top_level(path, content)
         name = _quoted_scalar(fields, "name", path)
@@ -572,6 +589,7 @@ def _check_quote_exceptions(
     return valid
 
 
+@audit_snapshot_invocation(ROOT)
 def audit_repository(
     source_dir: str,
     source_txt: str,
@@ -814,10 +832,13 @@ def _inventory_violations(
     }
 
 
+@audit_snapshot_invocation(ROOT)
 def build_inventory(
     source_dir: Path = SRC,
     source_txt: Path = ZH_SOURCE,
+    baseline_ref: str | None = None,
 ) -> dict[str, object]:
+    snapshot = audit_snapshot()
     definitions = _load_monster_definitions(str(source_dir))
     enum_identities = _active_monster_enum_identities(
         source_dir / "monster-type.h"
@@ -850,7 +871,11 @@ def build_inventory(
         source_dir / "monster-type.h",
         source_dir / "util/mon-gen.py",
         source_dir / "dat/mons/README.md",
-        *sorted((source_dir / "dat/mons").glob("*.yaml")),
+        *snapshot.glob(
+            source_dir / "dat/mons",
+            "*.yaml",
+            allow_external_unbound=True,
+        ),
         source_txt,
         source_dir / "dat/database/zh/montitle.txt",
         source_dir / "dat/descript/monsters.txt",
@@ -864,9 +889,7 @@ def build_inventory(
     ).encode()
     payload: dict[str, object] = {
         "schema": "dcss-monster-review-inventory-v1",
-        "baseline": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip(),
+        "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "glossary_sha256": _sha(GLOSSARY),
         "input_sha256": {
             _relative(path): _sha(path) for path in input_paths
@@ -904,7 +927,13 @@ def build_inventory(
         },
         **violations,
         "rows": rows,
+        "audit_snapshot": snapshot.metadata(),
     }
+    if baseline_ref is not None:
+        historical = _revision_snapshot(baseline_ref)
+        historical.read(_relative(ZH_SOURCE))
+        historical.read(_relative(ZH_MONSTER_DESCRIPTIONS))
+        payload["review_baseline_snapshot"] = historical.metadata()
     return payload
 
 
@@ -919,15 +948,26 @@ TERMINAL_CONCLUSIONS = {
 
 def _resolve_commit(ref: str) -> str:
     try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "--verify", f"{ref}^{{commit}}"],
-            cwd=ROOT,
-            text=True,
-        ).strip()
-    except subprocess.CalledProcessError as error:
+        return resolve_commit(ref)
+    except RuntimeError as error:
         raise AuditInputError(
             f"review baseline does not name a commit: {ref!r}"
         ) from error
+
+
+_REVISION_SNAPSHOTS: dict[str, AuditSnapshot] = {}
+
+
+def _revision_snapshot(ref: str) -> AuditSnapshot:
+    """Return one cached immutable snapshot for a full baseline OID."""
+    resolved = _resolve_commit(ref)
+    snapshot = _REVISION_SNAPSHOTS.get(resolved)
+    if snapshot is None:
+        snapshot = AuditSnapshot(
+            ROOT, resolved, require_head=False
+        )
+        _REVISION_SNAPSHOTS[resolved] = snapshot
+    return snapshot
 
 
 def review_coverage(
@@ -995,14 +1035,8 @@ def review_coverage(
 def _git_text(ref: str, path: Path) -> str:
     relative = _relative(path)
     try:
-        return subprocess.check_output(
-            ["git", "show", f"{ref}:{relative}"],
-            cwd=ROOT,
-            text=True,
-            encoding="utf-8",
-            errors="strict",
-        )
-    except subprocess.CalledProcessError as error:
+        return _revision_snapshot(ref).text(relative)
+    except (SharedAuditInputError, UnicodeError) as error:
         raise AuditInputError(
             f"cannot read baseline input {relative!r} at {ref!r}"
         ) from error
@@ -1147,6 +1181,7 @@ def _run_ssot(source_txt: str) -> int:
     return 0
 
 
+@audit_snapshot_invocation(ROOT)
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -1185,13 +1220,17 @@ def main(argv=None) -> int:
         )
 
     try:
-        payload = build_inventory()
+        payload = build_inventory(baseline_ref=args.baseline_ref)
         if args.write_review_results:
             write_review_results(
                 payload, args.write_review_results, args.baseline_ref
             )
         if args.review_results:
-            review_input = load_review_input(ROOT, args.review_results)
+            review_input = load_review_input(
+                ROOT,
+                args.review_results,
+                snapshot=audit_snapshot(),
+            )
             payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
                 payload, review_input, args.baseline_ref
@@ -1207,6 +1246,7 @@ def main(argv=None) -> int:
               file=sys.stderr)
         return 2
 
+    payload["audit_snapshot"] = audit_snapshot().metadata()
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     args.inventory_output.parent.mkdir(parents=True, exist_ok=True)
     args.inventory_output.write_text(encoded, encoding="utf-8")

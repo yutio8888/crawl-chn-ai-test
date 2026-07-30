@@ -10,6 +10,7 @@ import os
 import posixpath
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -1970,6 +1971,56 @@ raise SystemExit(7 if mode == 'fail' else 0)
         self.assertEqual(first["exit_code"], MODULE.FINAL_GATE_REQUIRED)
         self.assertTrue(first["ready"])
         self.assertEqual(before, after)
+
+    def test_shared_validation_uses_existing_read_only_lock_and_never_creates_it(self) -> None:
+        created = self.ready()
+        bundle_path = Path(created["bundle_path"])
+        lock_path = bundle_path / MODULE.LOCK_NAME
+        objects = [bundle_path, *bundle_path.rglob("*")]
+        original_modes = {
+            path: stat.S_IMODE(path.lstat().st_mode)
+            for path in objects
+        }
+        before = self.evidence_snapshot(bundle_path)
+        opened_lock_modes: list[int] = []
+        real_open = MODULE.os.open
+
+        def recording_open(path, flags, *args):
+            if Path(path) == lock_path:
+                opened_lock_modes.append(flags & os.O_ACCMODE)
+            return real_open(path, flags, *args)
+
+        try:
+            for path in objects:
+                path.chmod(0o555 if path.is_dir() else 0o444)
+            with mock.patch.object(MODULE.os, "open", side_effect=recording_open):
+                status = MODULE.status_bundle(
+                    self.candidate, created["bundle_id"]
+                )
+                validated = MODULE.validate_bundle(
+                    self.candidate, created["bundle_id"]
+                )
+            self.assertTrue(status["valid"])
+            self.assertTrue(validated["valid"])
+            self.assertEqual(
+                [os.O_RDONLY, os.O_RDONLY],
+                opened_lock_modes,
+            )
+            self.assertEqual(before, self.evidence_snapshot(bundle_path))
+        finally:
+            for path, mode in original_modes.items():
+                path.chmod(mode)
+
+        lock_path.unlink()
+        missing = MODULE.status_bundle(self.candidate, created["bundle_id"])
+        self.assertEqual(MODULE.INVALID_EVIDENCE, missing["exit_code"])
+        self.assertIn("bundle lock does not exist", missing["error"])
+        self.assertFalse(lock_path.exists())
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "bundle lock does not exist"
+        ):
+            MODULE.validate_bundle(self.candidate, created["bundle_id"])
+        self.assertFalse(lock_path.exists())
 
     def test_passing_attempt_without_approval_is_reused_without_rerun(self) -> None:
         created = self.ready()

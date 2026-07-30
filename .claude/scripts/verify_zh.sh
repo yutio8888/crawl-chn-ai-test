@@ -23,6 +23,7 @@
 set -euo pipefail
 export GIT_NO_REPLACE_OBJECTS=1
 unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
+unset ZH_VERIFY_CONTROL_ROOT ZH_VERIFY_CONTROL_COMMIT
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROFILE=""
@@ -181,6 +182,26 @@ if [[ -n "$BASE" ]]; then
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
     export ZH_VERIFY_AUDIT_ROOT="$WORKTREE"
     export ZH_VERIFY_AUDIT_COMMIT="$HEAD_SHA"
+    CONTROL_ROOT=$(git -C "$SCRIPT_DIR/../.." rev-parse --show-toplevel \
+        2>/dev/null) \
+        || argument_error "trusted control scripts are not inside a Git worktree"
+    [[ "$CONTROL_ROOT" = /* ]] \
+        || argument_error "trusted control Git top-level must be absolute"
+    CONTROL_ROOT=$(cd "$CONTROL_ROOT" && pwd -P) \
+        || argument_error "trusted control Git top-level cannot be resolved"
+    CONTROL_HEAD=$(git -C "$CONTROL_ROOT" rev-parse --verify HEAD \
+        2>/dev/null) \
+        || argument_error "trusted control worktree has no valid HEAD"
+    if [[ "$CONTROL_HEAD" != "$BASE_SHA" && "$CONTROL_HEAD" != "$HEAD_SHA" ]]; then
+        argument_error \
+            "trusted control HEAD must equal bound base or head: $CONTROL_HEAD"
+    fi
+    if [[ -n "$(git -C "$CONTROL_ROOT" status --porcelain \
+        --untracked-files=all)" ]]; then
+        argument_error "bound verification requires a clean trusted control worktree"
+    fi
+    export ZH_VERIFY_CONTROL_ROOT="$CONTROL_ROOT"
+    export ZH_VERIFY_CONTROL_COMMIT="$CONTROL_HEAD"
 fi
 
 for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do
@@ -686,8 +707,10 @@ PY
     echo "=== verify_zh.sh complete ==="
 } > "$REPORT_FILE" 2>&1
 
-# A bound review is only immutable if the checkout and terminology source stay
-# unchanged for the entire run, not merely at startup.
+# A bound review is only immutable if the checkout stays at the exact clean
+# candidate for the entire run. Strict ledger consumers read their candidate
+# Git blobs once; this terminal check also rejects any non-glossary worktree
+# drift left by another process or by a verification phase.
 EVIDENCE_DRIFT=0
 FINAL_HEAD=$(git rev-parse --verify HEAD 2>/dev/null || true)
 FINAL_GLOSSARY_SHA256=$(sha256sum "$GLOSSARY_FILE" 2>/dev/null | awk '{print $1}')
@@ -700,6 +723,15 @@ if [[ "$FINAL_GLOSSARY_SHA256" != "$GLOSSARY_SHA256" ]]; then
     printf 'ERROR: glossary changed during verification: %s -> %s\n' \
         "$GLOSSARY_SHA256" "${FINAL_GLOSSARY_SHA256:-<missing>}" >> "$REPORT_FILE"
     EVIDENCE_DRIFT=1
+fi
+if [[ -n "$HEAD_SHA" ]]; then
+    FINAL_WORKTREE_STATUS=$(git status --porcelain=v1 \
+        --untracked-files=all 2>/dev/null || printf '%s' '<git-status-failed>')
+    if [[ -n "$FINAL_WORKTREE_STATUS" ]]; then
+        printf 'ERROR: candidate worktree changed during verification.\n' \
+            >> "$REPORT_FILE"
+        EVIDENCE_DRIFT=1
+    fi
 fi
 if [[ "$EVIDENCE_DRIFT" -ne 0 ]]; then
     RESULTS=$((RESULTS + 1))

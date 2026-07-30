@@ -10,6 +10,7 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -19,7 +20,14 @@ from pathlib import Path
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
-from i18n_shared import AuditRootError, resolve_audit_root  # noqa: E402
+from i18n_shared import (  # noqa: E402
+    AuditInputError,
+    AuditRootError,
+    AuditSnapshot,
+    audit_snapshot_invocation,
+    get_audit_snapshot,
+    resolve_audit_root,
+)
 
 try:
     ROOT = resolve_audit_root(SCRIPT_ROOT)
@@ -33,6 +41,7 @@ from audit_god_inventory import ordered_initializer_rows  # noqa: E402
 from audit_item_name_inventory import (  # noqa: E402
     active_source,
     function_body,
+    resolve_commit,
     sha,
     source_entries,
     source_files,
@@ -606,11 +615,70 @@ def relative(path):
     try:
         return str(path.relative_to(ROOT))
     except ValueError:
-        return str(path)
+        try:
+            return (
+                "trusted-control/"
+                + path.relative_to(SCRIPT_ROOT).as_posix()
+            )
+        except ValueError:
+            return str(path)
+
+
+def audit_snapshot():
+    return get_audit_snapshot(ROOT)
+
+
+_CONTROL_SNAPSHOT = None
+
+
+def control_snapshot():
+    global _CONTROL_SNAPSHOT
+    if _CONTROL_SNAPSHOT is None:
+        configured_root = os.environ.get("ZH_VERIFY_CONTROL_ROOT")
+        configured_commit = os.environ.get("ZH_VERIFY_CONTROL_COMMIT")
+        if (configured_root is None) != (configured_commit is None):
+            raise AuditInputError(
+                "ZH_VERIFY_CONTROL_ROOT and ZH_VERIFY_CONTROL_COMMIT "
+                "must be provided together"
+            )
+        if configured_root is None:
+            _CONTROL_SNAPSHOT = AuditSnapshot(SCRIPT_ROOT, None)
+        else:
+            control_root = Path(configured_root)
+            if not control_root.is_absolute():
+                raise AuditInputError(
+                    "ZH_VERIFY_CONTROL_ROOT must be an absolute path"
+                )
+            try:
+                control_root = control_root.resolve(strict=True)
+            except OSError as error:
+                raise AuditInputError(
+                    "ZH_VERIFY_CONTROL_ROOT cannot be resolved"
+                ) from error
+            if control_root != SCRIPT_ROOT.resolve():
+                raise AuditInputError(
+                    "ZH_VERIFY_CONTROL_ROOT does not equal the trusted "
+                    "auditor checkout"
+                )
+            _CONTROL_SNAPSHOT = AuditSnapshot(
+                control_root, configured_commit
+            )
+    return _CONTROL_SNAPSHOT
+
+
+def input_sha256(path):
+    resolved = Path(path).resolve()
+    try:
+        resolved.relative_to(ROOT)
+    except ValueError:
+        return control_snapshot().sha256(resolved)
+    return audit_snapshot().sha256(resolved)
 
 
 def physical_db(path):
-    entries = parse_entries_physical(str(path))
+    entries = parse_entries_physical(audit_snapshot().read(
+        path, allow_external_unbound=True
+    ))
     counts = Counter(entry.canonical_key for entry in entries)
     effective = {}
     raw = {}
@@ -1200,7 +1268,9 @@ def _des_lua_view(text):
 
 def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
     """Extract player-facing slots from one .des using the shared Lua lexer."""
-    text = path.read_text(encoding="utf-8")
+    text = audit_snapshot().text(
+        path, allow_external_unbound=True
+    )
     tokens = list(_lua_tokens(_des_lua_view(text)))
     candidates = []
     exclusions = exclusions if exclusions is not None else []
@@ -1635,7 +1705,9 @@ def des_producer_universe(files):
                 )
             crawl_classification[method] = classification
     for path in files:
-        text = path.read_text(encoding="utf-8")
+        text = audit_snapshot().text(
+            path, allow_external_unbound=True
+        )
         tokens = list(_lua_tokens(_des_lua_view(text)))
         for index in range(len(tokens) - 3):
             name = None
@@ -1686,10 +1758,11 @@ def des_producer_universe(files):
 
 
 def des_rows():
-    files = sorted(DES_ROOT.rglob("*.des"), key=lambda path: relative(path))
+    snapshot = audit_snapshot()
+    files = list(snapshot.glob(DES_ROOT, "*.des", recursive=True))
     source_exact = {}
     for path in source_files(ZH_SOURCE_DIR):
-        for entry in parse_entries_physical(str(path)):
+        for entry in parse_entries_physical(snapshot.read(path)):
             source_exact[entry.canonical_key] = runtime_normalize_value(
                 entry.value
             )
@@ -1714,9 +1787,7 @@ def des_rows():
                 "file": rel,
                 "reason": "no supported player-display producer",
             })
-    portal_files = sorted(
-        (DES_ROOT / "portals").glob("*.des"), key=lambda path: path.name
-    )
+    portal_files = list(snapshot.glob(DES_ROOT / "portals", "*.des"))
     family_rows = []
     child_counts = Counter(
         Path(row["evidence"]["file"]).stem
@@ -2661,7 +2732,14 @@ def complete_review_results(
     payload, path, allow_test_fixture_subset=False
 ):
     """Rewrite the complete artifact, preserving only reviewer decisions."""
-    old = path.read_text(encoding="utf-8") if path.exists() else ""
+    try:
+        old = audit_snapshot().text(
+            path, allow_external_unbound=True
+        )
+    except AuditInputError:
+        if audit_snapshot().bound:
+            raise
+        old = ""
     decisions = review_decisions_from_text(old)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -2674,7 +2752,9 @@ def complete_review_results(
     )
 
 
+@audit_snapshot_invocation(ROOT)
 def build_inventory():
+    snapshot = audit_snapshot()
     branches, branch_proof, en_branches, zh_branches = branch_rows()
     features, feature_proof, en_features, zh_features = feature_rows()
     (des, des_files, excluded_files, excluded_slots,
@@ -2704,15 +2784,14 @@ def build_inventory():
     lifecycle_counts = Counter(row["lifecycle"] for row in rows)
     payload = {
         "schema": "dcss-world-review-inventory-v1",
-        "baseline": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip(),
+        "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "tag_major_version": tag_major_version(),
         "glossary_sha256": sha(GLOSSARY),
         "input_sha256": {
-            relative(path): hashlib.sha256(path.read_bytes()).hexdigest()
+            relative(path): input_sha256(path)
             for path in sorted(set(inputs), key=relative)
         },
+        "control_snapshot": control_snapshot().metadata(),
         "scope": {
             "included": [
                 "active branch enum and branches[] display producers",
@@ -2742,6 +2821,7 @@ def build_inventory():
         "category_counts": dict(sorted(category_counts.items())),
         "lifecycle_counts": dict(sorted(lifecycle_counts.items())),
         "rows": rows,
+        "audit_snapshot": snapshot.metadata(),
         "violations": violations,
     }
     encoded = json.dumps(
@@ -2755,6 +2835,7 @@ def has_violations(payload):
     return any(payload["violations"].values())
 
 
+@audit_snapshot_invocation(ROOT)
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
@@ -2766,7 +2847,11 @@ def main(argv=None):
         if args.complete_review_results:
             complete_review_results(payload, args.complete_review_results)
         if args.review_results:
-            review_input = load_review_input(ROOT, args.review_results)
+            review_input = load_review_input(
+                ROOT,
+                args.review_results,
+                snapshot=audit_snapshot(),
+            )
             payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
                 payload, review_input
@@ -2776,6 +2861,7 @@ def main(argv=None):
         print(f"ERROR: world inventory could not be built: {error}",
               file=sys.stderr)
         return 2
+    payload["audit_snapshot"] = audit_snapshot().metadata()
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

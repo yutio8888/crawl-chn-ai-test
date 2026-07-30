@@ -21,6 +21,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 from i18n_shared import (  # noqa: E402
     AuditRootError,
+    audit_snapshot_invocation,
+    get_audit_snapshot,
     load_review_input,
     resolve_audit_root,
     review_input_metadata,
@@ -37,6 +39,7 @@ SRC = ROOT / "crawl-ref/source"
 from audit_item_name_inventory import (  # noqa: E402
     active_source,
     function_body,
+    resolve_commit,
     sha,
     source_entries,
     source_files,
@@ -100,8 +103,14 @@ def relative(path):
         return str(path)
 
 
+def audit_snapshot():
+    return get_audit_snapshot(ROOT)
+
+
 def physical_entries(path):
-    entries = parse_entries_physical(str(path))
+    entries = parse_entries_physical(audit_snapshot().read(
+        path, allow_external_unbound=True
+    ))
     counts = Counter(entry.canonical_key for entry in entries)
     effective = {}
     for entry in entries:
@@ -558,7 +567,9 @@ def inventory_violations(
     }
 
 
+@audit_snapshot_invocation(ROOT)
 def build_inventory():
+    snapshot = audit_snapshot()
     enum_ids = god_enum_identities()
     religion_text = active_source(RELIGION)
     name_en = switch_literals(religion_text, "_god_name_en")
@@ -738,12 +749,10 @@ def build_inventory():
     ]
     payload = {
         "schema": "dcss-god-review-inventory-v1",
-        "baseline": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip(),
+        "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "glossary_sha256": sha(ROOT / "docs/glossary.md"),
         "input_sha256": {
-            relative(path): hashlib.sha256(path.read_bytes()).hexdigest()
+            relative(path): snapshot.sha256(path)
             for path in inputs
         },
         "scope": {
@@ -781,6 +790,7 @@ def build_inventory():
         **violations,
         "children": children,
         "parents": parents,
+        "audit_snapshot": snapshot.metadata(),
     }
     encoded = json.dumps(
         {"parents": parents, "children": children},
@@ -797,7 +807,7 @@ def has_violations(payload):
         "schema", "baseline", "glossary_sha256", "input_sha256", "scope",
         "count", "lifecycle_counts", "textdb_counts", "child_counts",
         "review_findings", "children", "parents", "inventory_sha256",
-        "review_coverage", "review_input",
+        "review_coverage", "review_input", "audit_snapshot",
     }
     return any(value for key, value in payload.items() if key not in ignored)
 
@@ -1012,7 +1022,9 @@ def _strict_review_decisions(cards):
 
 
 def write_strict_review_evidence(payload, path):
-    text = path.read_text(encoding="utf-8")
+    text = audit_snapshot().text(
+        path, allow_external_unbound=True
+    )
     if STRICT_REVIEW_BEGIN in text or STRICT_REVIEW_END in text:
         _metadata, cards = _parse_strict_review_text(text)
         decisions = _strict_review_decisions(cards)
@@ -1144,7 +1156,7 @@ def review_artifact_summary(payload, conclusions):
         "schema", "baseline", "glossary_sha256", "input_sha256", "scope",
         "count", "lifecycle_counts", "textdb_counts", "child_counts",
         "review_findings", "children", "parents", "inventory_sha256",
-        "review_coverage", "review_input",
+        "review_coverage", "review_input", "audit_snapshot",
     }
     violations = {
         key: value for key, value in payload.items() if key not in ignored
@@ -1221,6 +1233,7 @@ def render_review_results(payload, decisions):
     )
 
 
+@audit_snapshot_invocation(ROOT)
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
@@ -1232,7 +1245,11 @@ def main(argv=None):
         if args.write_review_results:
             write_strict_review_evidence(payload, args.write_review_results)
         if args.review_results:
-            review_input = load_review_input(ROOT, args.review_results)
+            review_input = load_review_input(
+                ROOT,
+                args.review_results,
+                snapshot=audit_snapshot(),
+            )
             payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
                 payload, review_input
@@ -1241,6 +1258,7 @@ def main(argv=None):
         print(f"ERROR: god inventory could not be built: {error}",
               file=sys.stderr)
         return 2
+    payload["audit_snapshot"] = audit_snapshot().metadata()
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

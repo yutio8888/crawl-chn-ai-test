@@ -11,6 +11,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 TEST_DIR = Path(__file__).resolve().parent
@@ -118,6 +119,71 @@ class WorldInventoryUnitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_trusted_control_input_labels_never_embed_clone_path(self):
+        with mock.patch.object(
+            MODULE, "ROOT", Path("/candidate-data-root")
+        ):
+            label = MODULE.relative(
+                MODULE.SCRIPT_DIR / "i18n_shared.py"
+            )
+        self.assertEqual(
+            "trusted-control/.claude/scripts/i18n_shared.py",
+            label,
+        )
+        self.assertNotIn(str(MODULE.SCRIPT_ROOT), label)
+
+    def test_control_snapshot_binds_exact_control_commit_and_rejects_root_mismatch(self):
+        head = subprocess.check_output(
+            ["git", "-C", str(MODULE.SCRIPT_ROOT), "rev-parse", "HEAD"],
+            text=True,
+        ).strip()
+        previous = MODULE._CONTROL_SNAPSHOT
+        try:
+            MODULE._CONTROL_SNAPSHOT = None
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "ZH_VERIFY_CONTROL_ROOT": str(MODULE.SCRIPT_ROOT),
+                    "ZH_VERIFY_CONTROL_COMMIT": head,
+                },
+                clear=False,
+            ):
+                snapshot = MODULE.control_snapshot()
+                self.assertEqual(head, snapshot.audit_commit)
+                snapshot.sha256(
+                    MODULE.SCRIPT_DIR / "i18n_shared.py"
+                )
+                self.assertIn(
+                    ".claude/scripts/i18n_shared.py",
+                    {
+                        item["path"]
+                        for item in snapshot.metadata()[
+                            "input_manifest"
+                        ]["inputs"]
+                    },
+                )
+
+            MODULE._CONTROL_SNAPSHOT = None
+            with (
+                mock.patch.dict(
+                    os.environ,
+                    {
+                        "ZH_VERIFY_CONTROL_ROOT": str(
+                            MODULE.SCRIPT_ROOT / "crawl-ref"
+                        ),
+                        "ZH_VERIFY_CONTROL_COMMIT": head,
+                    },
+                    clear=False,
+                ),
+                self.assertRaisesRegex(
+                    MODULE.AuditInputError,
+                    "does not equal the trusted auditor checkout",
+                ),
+            ):
+                MODULE.control_snapshot()
+        finally:
+            MODULE._CONTROL_SNAPSHOT = previous
 
     def test_all_ledger_auditors_reject_unsafe_bound_roots(self):
         scripts = [

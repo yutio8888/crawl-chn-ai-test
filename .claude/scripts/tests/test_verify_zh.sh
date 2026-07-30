@@ -50,7 +50,8 @@ latest_run_dir() {
 REPO="$TMP_ROOT/repo"
 mkdir -p "$REPO/.claude/scripts" "$REPO/docs"
 printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' \
-    '.risk-runs' '__pycache__/' '.observed-*' '.ledger-auditor-started' \
+    '.risk-runs' '.worktrees/' '__pycache__/' '.observed-*' \
+    '.ledger-auditor-started' \
     > "$REPO/.gitignore"
 cp "$VERIFY_SOURCE" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
@@ -74,6 +75,12 @@ printf '%s\n' \
     'commits = Path(".observed-audit-commits")' \
     'commit = "item:" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
     'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
+    'control_roots = Path(".observed-control-roots")' \
+    'control_root = "item:" + os.environ.get("ZH_VERIFY_CONTROL_ROOT", "<unset>") + "\n"' \
+    'control_roots.write_text(control_roots.read_text() + control_root if control_roots.exists() else control_root)' \
+    'control_commits = Path(".observed-control-commits")' \
+    'control_commit = "item:" + os.environ.get("ZH_VERIFY_CONTROL_COMMIT", "<unset>") + "\n"' \
+    'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
     'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -96,10 +103,18 @@ do
         'commits = Path(".observed-audit-commits")' \
         'commit = name + ":" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
         'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
+        'control_roots = Path(".observed-control-roots")' \
+        'control_root = name + ":" + os.environ.get("ZH_VERIFY_CONTROL_ROOT", "<unset>") + "\n"' \
+        'control_roots.write_text(control_roots.read_text() + control_root if control_roots.exists() else control_root)' \
+        'control_commits = Path(".observed-control-commits")' \
+        'control_commit = name + ":" + os.environ.get("ZH_VERIFY_CONTROL_COMMIT", "<unset>") + "\n"' \
+        'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
         'if "--review-results" in sys.argv:' \
         '    Path(".ledger-auditor-started").write_text("started\n")' \
         'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
         'output.write_text("{}\n")' \
+        'if name == "audit_world_inventory" and "MUTATED_CARD" in Path("docs/world-review-results.md").read_text():' \
+        '    raise SystemExit(7)' \
         'raise SystemExit(0)' \
         > "$REPO/.claude/scripts/$auditor"
     chmod +x "$REPO/.claude/scripts/$auditor"
@@ -114,6 +129,12 @@ printf '%s\n' \
     'commits = Path(".observed-audit-commits")' \
     'commit = "monster:" + os.environ.get("ZH_VERIFY_AUDIT_COMMIT", "<unset>") + "\n"' \
     'commits.write_text(commits.read_text() + commit if commits.exists() else commit)' \
+    'control_roots = Path(".observed-control-roots")' \
+    'control_root = "monster:" + os.environ.get("ZH_VERIFY_CONTROL_ROOT", "<unset>") + "\n"' \
+    'control_roots.write_text(control_roots.read_text() + control_root if control_roots.exists() else control_root)' \
+    'control_commits = Path(".observed-control-commits")' \
+    'control_commit = "monster:" + os.environ.get("ZH_VERIFY_CONTROL_COMMIT", "<unset>") + "\n"' \
+    'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
     'output = Path(sys.argv[sys.argv.index("--inventory-output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -140,6 +161,9 @@ printf '%s\n' \
     'if [[ "${TEST_INTERRUPT:-0}" = 1 ]]; then' \
     '    kill -TERM "$PPID"' \
     '    exit 0' \
+    'fi' \
+    'if [[ "${TEST_MUTATE_NON_GLOSSARY:-0}" = 1 ]]; then' \
+    '    printf "%s\n" drift >> candidate.txt' \
     'fi' \
     'exit "$(cat .phase-rc 2>/dev/null || echo 0)"' \
     > "$REPO/.claude/scripts/post-reviewer.sh"
@@ -319,6 +343,16 @@ if grep -Fv ":$HEAD_SHA" "$REPO/.observed-audit-commits" | grep -q .; then
 else
     pass "bound verifier gives all six ledger auditors the same candidate HEAD"
 fi
+if grep -Fv ":$EXPECTED_AUDIT_ROOT" "$REPO/.observed-control-roots" | grep -q .; then
+    fail "bound verifier did not give every ledger auditor the trusted control root"
+else
+    pass "bound verifier gives all six ledger auditors the trusted control root"
+fi
+if grep -Fv ":$HEAD_SHA" "$REPO/.observed-control-commits" | grep -q .; then
+    fail "bound verifier did not give every ledger auditor the trusted control commit"
+else
+    pass "bound verifier gives all six ledger auditors the trusted control commit"
+fi
 if [[ -f "$RUN_DIR/item-name-inventory.json" ]]; then
     pass "source-db-static preserves item inventory evidence"
 else
@@ -340,6 +374,23 @@ if find "$RUN_DIR" -maxdepth 1 -name '.*.tmp.*' | grep -q .; then
 else
     pass "metadata updates leave no temporary file"
 fi
+
+echo "--- terminal non-glossary worktree drift ---"
+set +e
+(
+    cd "$REPO"
+    TEST_MUTATE_NON_GLOSSARY=1 \
+        bash .claude/scripts/verify_zh.sh --profile review \
+            --base "$BASE" --head "$HEAD_SHA"
+) > "$TMP_ROOT/non-glossary-drift.out" 2>&1
+RC=$?
+set -e
+assert_status "bound verifier rejects terminal non-glossary drift" 1 "$RC"
+DRIFT_RUN_DIR=$(latest_run_dir)
+assert_contains "non-glossary drift diagnostic is explicit" \
+    "candidate worktree changed during verification" \
+    "$DRIFT_RUN_DIR/verify.log"
+git -C "$REPO" restore -- candidate.txt
 
 echo "--- repository replace refs cannot alter bound evidence ---"
 git -C "$REPO" replace "$HEAD_SHA" "$BASE"
@@ -438,10 +489,10 @@ assert_status "interruption is distinct from ordinary failure" 0 "$?"
 
 RUN_COUNT=$(find "$REPO/.claude/metrics/verify" -mindepth 1 -maxdepth 1 \
     -type d | wc -l)
-if [[ "$RUN_COUNT" -eq 4 ]]; then
+if [[ "$RUN_COUNT" -eq 5 ]]; then
     pass "each started invocation creates a unique run directory"
 else
-    fail "expected 4 unique run directories, found $RUN_COUNT"
+    fail "expected 5 unique run directories, found $RUN_COUNT"
 fi
 
 echo "--- ZH Catch2 risk routing ---"
@@ -548,23 +599,10 @@ assert_contains "rename changed set preserves new ignored endpoint" \
 HEAD_SHA="$RENAME_HEAD"
 
 echo "--- target-code candidate-data ledger isolation ---"
-TRUSTED_SCRIPTS="$TMP_ROOT/trusted-scripts"
-cp -R "$REPO/.claude/scripts" "$TRUSTED_SCRIPTS"
-cp "$VERIFY_SOURCE" "$TRUSTED_SCRIPTS/verify_zh.sh"
-printf '%s\n' \
-    '#!/usr/bin/env python3' \
-    'import os, sys' \
-    'from pathlib import Path' \
-    'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
-    'output.write_text("{}\n")' \
-    'root = os.environ.get("ZH_VERIFY_AUDIT_ROOT")' \
-    'if root != str(Path.cwd().resolve()):' \
-    '    raise SystemExit(9)' \
-    'if "MUTATED_CARD" in Path("docs/world-review-results.md").read_text():' \
-    '    raise SystemExit(7)' \
-    'raise SystemExit(0)' \
-    > "$TRUSTED_SCRIPTS/audit_world_inventory.py"
-chmod +x "$TRUSTED_SCRIPTS/audit_world_inventory.py"
+git -C "$REPO" worktree add -q --detach \
+    .worktrees/trusted-target "$HEAD_SHA"
+TRUSTED_TARGET="$REPO/.worktrees/trusted-target"
+TRUSTED_SCRIPTS="$TRUSTED_TARGET/.claude/scripts"
 printf '%s\n' \
     '#!/usr/bin/env python3' \
     'from pathlib import Path' \

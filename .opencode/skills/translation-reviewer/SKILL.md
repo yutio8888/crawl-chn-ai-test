@@ -127,8 +127,14 @@ Use the same prefix with `--retry-failed` after correcting this environment.
 
 The final gate uses the target checkout's trusted control-plane, holds a
 bundle-specific lock, and creates a new attempt only when no valid pass exists.
-Failed, interrupted, abandoned, incomplete, or tampered attempts never approve
-a merge. A valid pass is reused and never rerun for the same bundle.
+Initial schema-v4 bundle creation publishes `.bundle.lock`. Later writers must
+open that existing lock read/write; status, validation, final-check and
+merge-time readers must open it read-only with a shared lock. They must not
+create or repair it. A missing or replaced schema-v4 lock is invalid evidence.
+Lockless schema-v3 records may be inspected only as historical,
+non-authorizing evidence and must remain byte-for-byte untouched. Failed,
+interrupted, abandoned, incomplete, or tampered attempts never approve a
+merge. A valid pass is reused and never rerun for the same bundle.
 
 The review profile always runs the independent required `review-ledgers`
 phase. Trusted auditor code comes from the target checkout while the validated
@@ -137,6 +143,18 @@ candidate root supplies the read-only data. All six strict inventories
 of the changed-file set. Verification-v5 metadata binds each inventory
 artifact individually; missing ledger input, incomplete parsing, stale facts,
 or an unknown state fails closed.
+
+For an exact-bound review, those auditors must share one snapshot of the full
+candidate commit. Input discovery comes from that exact Git tree, each unique
+regular-file blob is read at most once, and the inventory artifact binds the
+normalized input/discovery manifest. Any target-side control files included as
+inventory provenance must use a separate snapshot bound to the exact trusted
+control commit. Mutable worktree paths are not production inventory input.
+Unbound development reads must use no-follow descriptors and verify the opened
+inode matches the inspected inode. Directed tests must prove that a transient
+bound-worktree substitution is not accepted and that a concurrent unbound path
+swap is rejected even when the original pathname is restored before the caller
+resumes.
 
 The final evidence approver inspects the published verification artifacts and
 records a final Go bound to the verification digest, routing digest, and every
@@ -156,7 +174,11 @@ never upgraded, appended to, copied, or converted into a new Go.
 **Exception ID:** `DCSS-ZH-BOOTSTRAP-2026-07-29`
 **Authority:** repository owner and sole project-policy administrator
 **Effective date:** 2026-07-29
-**Status:** active only until the approved control candidate C is merged
+**Installed S:** `a49c41fdcba16acc34023ae29ac81e3b3a62f14f`
+**Installed C:** `8aae77c60a5e537e76c7b252c6a311fade4264c2`
+**Status:** expired permanently when the exact installed C above was
+fast-forwarded into the dedicated recovery target; no further edge is
+authorized
 
 This section is a narrow administrative exception to the legacy read-only
 restriction above. It exists only to bootstrap a new continuously authorized
@@ -249,8 +271,9 @@ does not authorize a non-fast-forward replacement of
 
 ### Expiration
 
-This exception expires immediately and permanently when the approved full OID
-of C is merged into the dedicated recovery target.
+This exception expired immediately and permanently when the exact installed C
+OID `8aae77c60a5e537e76c7b252c6a311fade4264c2` was fast-forwarded into the
+dedicated recovery target.
 
 After expiration:
 
@@ -270,10 +293,12 @@ After expiration:
 **Authority:** repository owner and sole project-policy administrator
 **Base C:** `8aae77c60a5e537e76c7b252c6a311fade4264c2`
 **Installed P:** `0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0`
+**Installed P2:** `99b887d5c7462874c2b10937333e9f475a9343d4`
+**Installed F2:** `c7768fde48ea4f08e2363a67f211702d2ba27ca7`
 **Failed F:** `8363639529e650b0c3444614b6978e4d196be7ea`
-**Status:** No-Go and inactive until corrective policy candidate P2 is
-installed by a separate owner governance action; after installation, active
-only for the exact `P2 → F2` edge
+**Status:** expired permanently when the exact installed F2 above was
+fast-forwarded into the dedicated recovery target; the former `P2 → F2`
+authorization cannot be retried or reused
 
 This exception repairs one target-trusted regression test which writes its
 mutable fixture beneath the target checkout while its auditor is correctly
@@ -709,29 +734,34 @@ required inventory artifacts were never produced. The invalid final-gate run
 did not publish a formal attempt. C2 readiness, bundle objects, logs and any
 other evidence must not be copied, migrated or reused.
 
-After F2 lands, the contextual parser change must be rebuilt on F2 together with
-all approved R content changes and every required strict review ledger as one
-new committed candidate. It requires a new bundle, mechanically routed code
-and translation review, new readiness and a complete normal verification-v5
-final gate. No C2, F, or pre-F2 identity or evidence may be carried forward.
+After F2 landed, the contextual parser change was rebuilt on F2 together with
+the approved R content changes and every required strict review ledger as a new
+committed candidate. That successor used a new bundle, mechanically routed
+code and translation review, new readiness and a complete normal
+verification-v5 final gate. No C2, F, or pre-F2 identity or evidence was
+carried forward.
 
 ### Expiration
 
-This corrected exception activates only after the separately authorized
-installation of the exact P2 OID and expires immediately and permanently when
-the exact approved F2 OID is fast-forwarded into the dedicated recovery target.
-It cannot authorize F, an amended F2, a retry for another edge, or any content
-change. Every successor of F2 must return to routing-v2, findings-v2,
-readiness-v3, verification-v5, the normal final gate, and the normal merge-time
-validator.
+This corrected exception activated only after the separately authorized
+installation of exact P2
+`99b887d5c7462874c2b10937333e9f475a9343d4` and expired immediately and
+permanently when exact F2
+`c7768fde48ea4f08e2363a67f211702d2ba27ca7` was fast-forwarded into the
+dedicated recovery target. It cannot authorize F, an amended F2, a retry for
+another edge, or any content change. Every successor of F2 must use
+routing-v2, findings-v2, readiness-v3, verification-v5, the normal final gate,
+and the normal merge-time validator.
 
 ## Temporary owner-authorized whole-document ledger seed
 
 **Exception ID:** `DCSS-ZH-LEDGER-SEED-2026-07-30`
 **Authority:** repository owner and sole project-policy administrator
 **Installed F2:** `c7768fde48ea4f08e2363a67f211702d2ba27ca7`
-**Status:** No-Go and inactive until one exact P3 is installed by a separate
-external owner permit; permanently consumed by that exact installation
+**Installed P3:** `2e43e04884348b54879944b77d0af8ebf7636dc0`
+**Status:** consumed permanently by installation of the exact P3 above under
+its separate external owner permit; no retry, descendant or other target is
+authorized
 
 This exception exists because the F2-trusted character-mechanics, god and
 species/background auditors require a strict evidence block but their
@@ -835,11 +865,12 @@ record or automation run is not the owner permit.
 
 ### Consumption and successor boundary
 
-After the exact permitted P3 is installed, this exception is consumed
-immediately and permanently. It cannot be reused for an amended P3, another
-target ref, a retry, a ledger rewrite or any later candidate. The expired
-bootstrap and rootfix exceptions remain expired and cannot provide an
-alternative F2 migration entry.
+The exact permitted P3
+`2e43e04884348b54879944b77d0af8ebf7636dc0` consumed this exception
+immediately and permanently when it was installed. The exception cannot be
+reused for an amended P3, another target ref, a retry, a ledger rewrite or any
+later candidate. The expired bootstrap and rootfix exceptions remain expired
+and cannot provide an alternative F2 migration entry.
 
 P3 only makes its control plane available as trusted target-side code. It does
 not prove that code against a production ledger candidate. The first successor

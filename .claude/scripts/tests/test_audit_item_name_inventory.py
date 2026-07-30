@@ -23,6 +23,7 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+import i18n_shared as SHARED
 from i18n_shared import AuditInput
 
 
@@ -484,10 +485,27 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             self.assertFalse(subprocess.check_output(
                 ["git", "status", "--porcelain"], cwd=root, text=True
             ))
-            self.assertEqual(
-                "before\n",
-                MODULE.git_revision_text(tracked, base, root),
-            )
+            MODULE._REVISION_SNAPSHOTS.clear()
+            cat_file_calls = []
+            original_git = SHARED._run_git_bytes
+
+            def recording_git(repo, *args):
+                if args[:2] == ("cat-file", "blob"):
+                    cat_file_calls.append(args[2])
+                return original_git(repo, *args)
+
+            with mock.patch.object(
+                SHARED, "_run_git_bytes", side_effect=recording_git
+            ):
+                self.assertEqual(
+                    "before\n",
+                    MODULE.git_revision_text(tracked, base, root),
+                )
+                self.assertEqual(
+                    "before\n",
+                    MODULE.git_revision_text(tracked, base, root),
+                )
+            self.assertEqual(1, len(cat_file_calls))
             self.assertEqual("after\n", tracked.read_text(encoding="utf-8"))
             with self.assertRaisesRegex(RuntimeError, "invalid review base"):
                 MODULE.resolve_commit("missing-review-base", root)
@@ -620,6 +638,30 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             parsed_results = MODULE.parse_review_results(review_input(results))
         self.assertEqual(0, validated.returncode, validated.stderr)
         self.assertFalse(any(payload["review_violations"].values()))
+        self.assertEqual(
+            payload["baseline"],
+            payload["review_base_snapshot"]["audit_commit"],
+        )
+        self.assertTrue(
+            payload["review_base_snapshot"]["input_manifest"]["inputs"]
+        )
+        self.assertIn(
+            payload["review_input"]["logical_path"],
+            {
+                item["path"]
+                for item in payload[
+                    "audit_snapshot"
+                ]["input_manifest"]["inputs"]
+            },
+        )
+        self.assertNotIn(
+            str(MODULE.ROOT),
+            json.dumps(
+                payload["review_base_snapshot"],
+                ensure_ascii=False,
+                sort_keys=True,
+            ),
+        )
         self.assertEqual(
             payload["rows"], parsed_results
         )

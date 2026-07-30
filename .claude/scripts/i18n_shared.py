@@ -5,16 +5,23 @@ from __future__ import annotations
 
 import ctypes
 import ctypes.util
+import contextvars
+import fnmatch
+import functools
 import hashlib
+import json
 import os
 import posixpath
 import re
 import shutil
 import stat
 import subprocess
+import sys
+import tempfile
 from collections import OrderedDict
+from contextlib import contextmanager
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Optional, List, Tuple
 
 
@@ -74,6 +81,15 @@ class AuditInput:
     bytes: bytes
     text: str
     sha256: str
+    git_mode: Optional[str] = None
+    git_blob_oid: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class _GitTreeEntry:
+    mode: str
+    object_type: str
+    object_id: str
 
 
 def trusted_git_environment() -> dict[str, str]:
@@ -249,7 +265,12 @@ def _review_relative_path(
     return relative, absolute
 
 
-def _read_regular_worktree_file(path: Path, audit_root: Path) -> bytes:
+def _read_regular_worktree_file(
+    path: Path,
+    audit_root: Path,
+    *,
+    with_mode: bool = False,
+) -> bytes | tuple[str, bytes]:
     current = audit_root
     try:
         relative_parts = path.relative_to(audit_root).parts
@@ -299,66 +320,685 @@ def _read_regular_worktree_file(path: Path, audit_root: Path) -> bytes:
             if not chunk:
                 break
             chunks.append(chunk)
-        return b"".join(chunks)
+        data = b"".join(chunks)
+        mode = "100755" if opened.st_mode & 0o111 else "100644"
+        return (mode, data) if with_mode else data
     finally:
         os.close(fd)
+
+
+_AUDIT_COMMIT_FROM_ENV = object()
+
+
+def _known_system_temp_alias(path: Path) -> Path:
+    """Normalize only macOS's fixed system temp aliases."""
+    if sys.platform != "darwin":
+        return path
+    for alias, target in (
+        (Path("/tmp"), Path("/private/tmp")),
+        (Path("/var"), Path("/private/var")),
+    ):
+        try:
+            relative = path.relative_to(alias)
+            link_target = os.readlink(alias)
+        except (ValueError, OSError):
+            continue
+        expected = os.fspath(target).lstrip("/")
+        if link_target in (expected, os.fspath(target)):
+            return target / relative
+    return path
+
+
+def _external_development_root(path: Path) -> Path:
+    """Choose a lexical trusted anchor without resolving the input path."""
+    candidates = [
+        _known_system_temp_alias(
+            Path(os.path.abspath(tempfile.gettempdir()))
+        ),
+        _known_system_temp_alias(
+            Path(os.path.abspath(os.fspath(Path.cwd())))
+        ),
+    ]
+    containing = []
+    for candidate in candidates:
+        try:
+            path.relative_to(candidate)
+        except ValueError:
+            continue
+        containing.append(candidate)
+    # Outside the two explicit development anchors, start at the filesystem
+    # anchor so every parent component is checked rather than trusting an
+    # already-traversed arbitrary parent path.
+    root = max(
+        containing,
+        key=lambda value: len(value.parts),
+        default=Path(path.anchor),
+    )
+    try:
+        info = os.lstat(root)
+    except OSError as error:
+        raise AuditInputError(
+            f"external development root cannot be inspected: {root}"
+        ) from error
+    if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+        raise AuditInputError(
+            f"external development root is not a real directory: {root}"
+        )
+    return root
+
+
+class AuditSnapshot:
+    """Frozen, cached production inputs for one audit invocation.
+
+    Bound verification discovers paths from the exact candidate Git tree and
+    reads every unique blob object at most once. Development mode discovers
+    real worktree directories without following symlinks and reads every file
+    through one checked descriptor. Both modes cache discovery and content so
+    later backing-path changes cannot alter an already observed input.
+    """
+
+    def __init__(
+        self,
+        audit_root: os.PathLike[str] | str,
+        audit_commit: object | Optional[str] = _AUDIT_COMMIT_FROM_ENV,
+        *,
+        require_head: bool = True,
+    ) -> None:
+        root = Path(os.path.abspath(os.fspath(audit_root)))
+        try:
+            resolved_root = root.resolve(strict=True)
+        except OSError as error:
+            raise AuditInputError(
+                f"audit root cannot be resolved: {root}"
+            ) from error
+        if not resolved_root.is_dir():
+            raise AuditInputError(f"audit root is not a directory: {root}")
+        if _git_toplevel(resolved_root, "audit root") != resolved_root:
+            raise AuditInputError(
+                f"audit root is not its Git top-level: {resolved_root}"
+            )
+        self.root = resolved_root
+        if audit_commit is _AUDIT_COMMIT_FROM_ENV:
+            audit_commit = os.environ.get("ZH_VERIFY_AUDIT_COMMIT")
+        if audit_commit is not None and not isinstance(audit_commit, str):
+            raise AuditInputError("audit commit must be a string or None")
+        self.audit_commit = audit_commit
+        self._tree_entries: dict[str, _GitTreeEntry] = {}
+        self._inputs: dict[str, AuditInput] = {}
+        self._blob_cache: dict[str, bytes] = {}
+        self._external_inputs: dict[str, AuditInput] = {}
+        self._discoveries: dict[
+            tuple[str, tuple[str, ...], bool], tuple[str, ...]
+        ] = {}
+        self._external_discoveries: dict[
+            tuple[str, tuple[str, ...], bool], tuple[Path, ...]
+        ] = {}
+
+        if self.audit_commit is not None:
+            if not FULL_GIT_OID_RE.fullmatch(self.audit_commit):
+                raise AuditInputError(
+                    "ZH_VERIFY_AUDIT_COMMIT must be a full lowercase object ID"
+                )
+            resolved = _run_git_bytes(
+                self.root,
+                "rev-parse",
+                "--verify",
+                f"{self.audit_commit}^{{commit}}",
+            ).decode("ascii", errors="strict").strip()
+            if resolved != self.audit_commit:
+                raise AuditInputError(
+                    "ZH_VERIFY_AUDIT_COMMIT must be its complete object ID"
+                )
+            if require_head:
+                head = _run_git_bytes(
+                    self.root,
+                    "rev-parse",
+                    "--verify",
+                    "HEAD^{commit}",
+                ).decode("ascii", errors="strict").strip()
+                if self.audit_commit != head:
+                    raise AuditInputError(
+                        "ZH_VERIFY_AUDIT_COMMIT does not equal audit root HEAD: "
+                        f"{self.audit_commit} != {head}"
+                    )
+            self._load_git_tree()
+
+    @property
+    def bound(self) -> bool:
+        return self.audit_commit is not None
+
+    def _load_git_tree(self) -> None:
+        assert self.audit_commit is not None
+        raw = _run_git_bytes(
+            self.root,
+            "ls-tree",
+            "-r",
+            "-t",
+            "-z",
+            "--full-tree",
+            self.audit_commit,
+        )
+        entries: dict[str, _GitTreeEntry] = {}
+        for record in (value for value in raw.split(b"\0") if value):
+            try:
+                header, raw_path = record.split(b"\t", 1)
+                mode, object_type, object_id = (
+                    header.decode("ascii", errors="strict").split(" ")
+                )
+                relative = raw_path.decode("utf-8", errors="strict")
+            except (UnicodeDecodeError, ValueError) as error:
+                raise AuditInputError("invalid Git tree metadata") from error
+            relative = _normalized_git_path(relative)
+            if relative in entries:
+                raise AuditInputError(
+                    f"duplicate path in Git tree: {relative}"
+                )
+            if not FULL_GIT_OID_RE.fullmatch(object_id):
+                raise AuditInputError(
+                    f"Git tree contains a non-full object ID: {relative}"
+                )
+            entries[relative] = _GitTreeEntry(
+                mode=mode,
+                object_type=object_type,
+                object_id=object_id,
+            )
+        self._tree_entries = entries
+
+    def _relative(self, logical_path: os.PathLike[str] | str) -> tuple[str, Path]:
+        return _review_relative_path(self.root, logical_path)
+
+    @staticmethod
+    def _decode_input(
+        *,
+        audit_commit: Optional[str],
+        relative: str,
+        data: bytes,
+        mode: Optional[str],
+        blob_oid: Optional[str],
+        logical: Optional[str] = None,
+    ) -> AuditInput:
+        try:
+            text = data.decode("utf-8", errors="strict")
+        except UnicodeDecodeError as error:
+            raise AuditInputError(
+                f"review input is not strict UTF-8: {relative}"
+            ) from error
+        return AuditInput(
+            audit_commit=audit_commit,
+            logical_path=logical or relative,
+            relative_path=relative,
+            bytes=data,
+            text=text,
+            sha256=hashlib.sha256(data).hexdigest(),
+            git_mode=mode,
+            git_blob_oid=blob_oid,
+        )
+
+    def read(
+        self,
+        logical_path: os.PathLike[str] | str,
+        *,
+        allow_external_unbound: bool = False,
+    ) -> AuditInput:
+        """Return one cached regular UTF-8 input from this snapshot."""
+        try:
+            relative, worktree_path = self._relative(logical_path)
+        except AuditInputError:
+            if self.bound or not allow_external_unbound:
+                raise
+            diagnostic_path = os.path.normpath(
+                os.path.abspath(os.fspath(logical_path))
+            )
+            worktree_path = _known_system_temp_alias(
+                Path(diagnostic_path)
+            )
+            identity = os.path.normcase(os.fspath(worktree_path))
+            cached_external = self._external_inputs.get(identity)
+            if cached_external is not None:
+                return cached_external
+            mode, data = _read_regular_worktree_file(
+                worktree_path,
+                _external_development_root(worktree_path),
+                with_mode=True,
+            )
+            loaded_external = self._decode_input(
+                audit_commit=None,
+                relative=os.path.normcase(os.fspath(worktree_path)),
+                data=data,
+                mode=mode,
+                blob_oid=None,
+                logical=diagnostic_path,
+            )
+            self._external_inputs[identity] = loaded_external
+            return loaded_external
+        cached = self._inputs.get(relative)
+        if cached is not None:
+            return cached
+
+        if self.bound:
+            entry = self._tree_entries.get(relative)
+            if entry is None:
+                raise AuditInputError(
+                    f"Git blob is missing: {self.audit_commit}:{relative}"
+                )
+            if (
+                entry.object_type != "blob"
+                or entry.mode not in ("100644", "100755")
+            ):
+                raise AuditInputError(
+                    "Git entry is not a regular file: "
+                    f"{self.audit_commit}:{relative}"
+                )
+            data = self._blob_cache.get(entry.object_id)
+            if data is None:
+                data = _run_git_bytes(
+                    self.root, "cat-file", "blob", entry.object_id
+                )
+                self._blob_cache[entry.object_id] = data
+            loaded = self._decode_input(
+                audit_commit=self.audit_commit,
+                relative=relative,
+                data=data,
+                mode=entry.mode,
+                blob_oid=entry.object_id,
+            )
+        else:
+            mode, data = _read_regular_worktree_file(
+                worktree_path, self.root, with_mode=True
+            )
+            loaded = self._decode_input(
+                audit_commit=None,
+                relative=relative,
+                data=data,
+                mode=mode,
+                blob_oid=None,
+            )
+        self._inputs[relative] = loaded
+        return loaded
+
+    def text(
+        self,
+        logical_path: os.PathLike[str] | str,
+        *,
+        allow_external_unbound: bool = False,
+    ) -> str:
+        return self.read(
+            logical_path,
+            allow_external_unbound=allow_external_unbound,
+        ).text
+
+    def bytes(
+        self,
+        logical_path: os.PathLike[str] | str,
+        *,
+        allow_external_unbound: bool = False,
+    ) -> bytes:
+        return self.read(
+            logical_path,
+            allow_external_unbound=allow_external_unbound,
+        ).bytes
+
+    def sha256(
+        self,
+        logical_path: os.PathLike[str] | str,
+        *,
+        allow_external_unbound: bool = False,
+    ) -> str:
+        return self.read(
+            logical_path,
+            allow_external_unbound=allow_external_unbound,
+        ).sha256
+
+    def _bound_directory_exists(self, relative_directory: str) -> bool:
+        if relative_directory == ".":
+            return True
+        entry = self._tree_entries.get(relative_directory)
+        return bool(
+            entry
+            and entry.object_type == "tree"
+            and entry.mode == "040000"
+        )
+
+    def _development_directory(self, directory: Path) -> None:
+        current = self.root
+        try:
+            parts = directory.relative_to(self.root).parts
+        except ValueError as error:
+            raise AuditInputError(
+                f"review directory is outside audit root: {directory}"
+            ) from error
+        for part in parts:
+            current = current / part
+            try:
+                info = os.lstat(current)
+            except OSError as error:
+                raise AuditInputError(
+                    f"review directory cannot be inspected: {current}"
+                ) from error
+            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+                raise AuditInputError(
+                    f"review directory is not a real directory: {current}"
+                )
+
+    @staticmethod
+    def _matches(
+        relative_to_directory: str,
+        patterns: tuple[str, ...],
+        recursive: bool,
+    ) -> bool:
+        if not recursive and "/" in relative_to_directory:
+            return False
+        return any(
+            fnmatch.fnmatchcase(
+                PurePosixPath(relative_to_directory).name,
+                pattern,
+            )
+            for pattern in patterns
+        )
+
+    def glob(
+        self,
+        directory: os.PathLike[str] | str,
+        pattern: str | tuple[str, ...] | list[str],
+        *,
+        recursive: bool = False,
+        allow_external_unbound: bool = False,
+    ) -> tuple[Path, ...]:
+        """Discover and preload matching regular files deterministically."""
+        patterns = (
+            (pattern,) if isinstance(pattern, str) else tuple(pattern)
+        )
+        if (
+            not patterns
+            or any(not value for value in patterns)
+            or len(patterns) != len(set(patterns))
+        ):
+            raise AuditInputError(
+                "review discovery patterns must be non-empty and unique"
+            )
+        try:
+            relative_directory, worktree_directory = self._relative(directory)
+        except AuditInputError:
+            if self.bound or not allow_external_unbound:
+                raise
+            worktree_directory = _known_system_temp_alias(Path(os.path.normpath(
+                os.path.abspath(os.fspath(directory))
+            )))
+            external_key = (
+                os.path.normcase(os.fspath(worktree_directory)),
+                patterns,
+                recursive,
+            )
+            cached_external = self._external_discoveries.get(external_key)
+            if cached_external is not None:
+                return cached_external
+            try:
+                info = os.lstat(worktree_directory)
+            except OSError as error:
+                raise AuditInputError(
+                    "external development directory cannot be inspected: "
+                    f"{worktree_directory}"
+                ) from error
+            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+                raise AuditInputError(
+                    "external development directory is not real: "
+                    f"{worktree_directory}"
+                )
+            pending = [worktree_directory]
+            external_selected: list[Path] = []
+            while pending:
+                current = pending.pop()
+                try:
+                    entries = sorted(
+                        os.scandir(current), key=lambda item: item.name
+                    )
+                except OSError as error:
+                    raise AuditInputError(
+                        f"external directory cannot be enumerated: {current}"
+                    ) from error
+                for entry in entries:
+                    path = Path(entry.path)
+                    try:
+                        info = entry.stat(follow_symlinks=False)
+                    except OSError as error:
+                        raise AuditInputError(
+                            "external directory entry cannot be inspected: "
+                            f"{path}"
+                        ) from error
+                    child = path.relative_to(worktree_directory).as_posix()
+                    if stat.S_ISLNK(info.st_mode):
+                        raise AuditInputError(
+                            f"external directory contains a symlink: {path}"
+                        )
+                    if stat.S_ISDIR(info.st_mode):
+                        if recursive:
+                            pending.append(path)
+                        continue
+                    if not self._matches(child, patterns, recursive):
+                        continue
+                    if not stat.S_ISREG(info.st_mode):
+                        raise AuditInputError(
+                            "matching external input is not regular: "
+                            f"{path}"
+                        )
+                    external_selected.append(path)
+            external_selected.sort()
+            for path in external_selected:
+                self.read(
+                    path,
+                    allow_external_unbound=True,
+                )
+            frozen_external = tuple(external_selected)
+            self._external_discoveries[external_key] = frozen_external
+            return frozen_external
+        key = (relative_directory, patterns, recursive)
+        cached = self._discoveries.get(key)
+        if cached is not None:
+            return tuple(self.root / relative for relative in cached)
+
+        prefix = "" if relative_directory == "." else (
+            relative_directory + "/"
+        )
+        selected: list[str] = []
+        if self.bound:
+            if not self._bound_directory_exists(relative_directory):
+                raise AuditInputError(
+                    "Git directory is missing or non-directory: "
+                    f"{self.audit_commit}:{relative_directory}"
+                )
+            for relative, entry in sorted(self._tree_entries.items()):
+                if not relative.startswith(prefix):
+                    continue
+                child = relative[len(prefix):]
+                if not child:
+                    continue
+                if not recursive and "/" in child:
+                    continue
+                if (
+                    entry.object_type == "tree"
+                    and entry.mode == "040000"
+                ):
+                    continue
+                if (
+                    entry.object_type != "blob"
+                    or entry.mode not in ("100644", "100755")
+                ):
+                    raise AuditInputError(
+                        "Git discovery contains a non-regular entry: "
+                        f"{self.audit_commit}:{relative}"
+                    )
+                if self._matches(child, patterns, recursive):
+                    selected.append(relative)
+        else:
+            self._development_directory(worktree_directory)
+            pending = [worktree_directory]
+            while pending:
+                current = pending.pop()
+                try:
+                    entries = sorted(
+                        os.scandir(current), key=lambda item: item.name
+                    )
+                except OSError as error:
+                    raise AuditInputError(
+                        f"review directory cannot be enumerated: {current}"
+                    ) from error
+                for entry in entries:
+                    path = Path(entry.path)
+                    try:
+                        info = entry.stat(follow_symlinks=False)
+                    except OSError as error:
+                        raise AuditInputError(
+                            f"review directory entry cannot be inspected: {path}"
+                        ) from error
+                    child = path.relative_to(worktree_directory).as_posix()
+                    if stat.S_ISLNK(info.st_mode):
+                        raise AuditInputError(
+                            f"review directory contains a symlink: {path}"
+                        )
+                    if stat.S_ISDIR(info.st_mode):
+                        if recursive:
+                            pending.append(path)
+                        continue
+                    if not self._matches(child, patterns, recursive):
+                        continue
+                    if not stat.S_ISREG(info.st_mode):
+                        raise AuditInputError(
+                            "matching review input is not a regular file: "
+                            f"{path}"
+                        )
+                    selected.append(path.relative_to(self.root).as_posix())
+            selected.sort()
+
+        frozen = tuple(selected)
+        for relative in frozen:
+            self.read(relative)
+        self._discoveries[key] = frozen
+        return tuple(self.root / relative for relative in frozen)
+
+    def input_manifest(self) -> dict:
+        """Return path-normalized content metadata without clone-local paths."""
+        return {
+            "schema": "dcss-zh-audit-input-manifest-v1",
+            "inputs": [
+                {
+                    "path": relative,
+                    "mode": value.git_mode,
+                    "sha256": value.sha256,
+                }
+                for relative, value in sorted(self._inputs.items())
+            ],
+            "discoveries": [
+                {
+                    "directory": directory,
+                    "patterns": list(patterns),
+                    "recursive": recursive,
+                    "paths": list(paths),
+                }
+                for (directory, patterns, recursive), paths
+                in sorted(self._discoveries.items())
+            ],
+        }
+
+    def input_manifest_sha256(self) -> str:
+        encoded = json.dumps(
+            self.input_manifest(),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def metadata(self) -> dict:
+        return {
+            "audit_commit": self.audit_commit,
+            "input_manifest_sha256": self.input_manifest_sha256(),
+            "input_manifest": self.input_manifest(),
+        }
+
+
+_BOUND_AUDIT_SNAPSHOTS: dict[tuple[str, str], AuditSnapshot] = {}
+_ACTIVE_AUDIT_SNAPSHOT: contextvars.ContextVar[Optional[AuditSnapshot]] = (
+    contextvars.ContextVar("active_audit_snapshot", default=None)
+)
+
+
+def get_audit_snapshot(
+    audit_root: os.PathLike[str] | str,
+) -> AuditSnapshot:
+    """Return the active invocation snapshot or an exact bound singleton.
+
+    Bound snapshots are immutable per candidate commit and may be shared for
+    the process lifetime. Unbound snapshots are deliberately fresh outside an
+    invocation scope so one development invocation cannot inherit another
+    invocation's cached backing files.
+    """
+    root = Path(audit_root).resolve()
+    commit = os.environ.get("ZH_VERIFY_AUDIT_COMMIT")
+    active = _ACTIVE_AUDIT_SNAPSHOT.get()
+    if active is not None:
+        if active.root != root or active.audit_commit != commit:
+            raise AuditInputError(
+                "active audit snapshot does not match requested root/commit"
+            )
+        return active
+    if commit is None:
+        return AuditSnapshot(root, None)
+    key = (os.fspath(root), commit)
+    bound = _BOUND_AUDIT_SNAPSHOTS.get(key)
+    if bound is None:
+        bound = AuditSnapshot(root, commit)
+        _BOUND_AUDIT_SNAPSHOTS[key] = bound
+    return bound
+
+
+@contextmanager
+def audit_snapshot_scope(
+    audit_root: os.PathLike[str] | str,
+):
+    """Share one frozen snapshot across a top-level audit invocation."""
+    root = Path(audit_root).resolve()
+    commit = os.environ.get("ZH_VERIFY_AUDIT_COMMIT")
+    active = _ACTIVE_AUDIT_SNAPSHOT.get()
+    if active is not None:
+        if active.root != root or active.audit_commit != commit:
+            raise AuditInputError(
+                "nested audit snapshot scope changed root or commit"
+            )
+        yield active
+        return
+    snapshot = get_audit_snapshot(root)
+    token = _ACTIVE_AUDIT_SNAPSHOT.set(snapshot)
+    try:
+        yield snapshot
+    finally:
+        _ACTIVE_AUDIT_SNAPSHOT.reset(token)
+
+
+def audit_snapshot_invocation(audit_root):
+    """Decorate one top-level audit entry point with a frozen input scope."""
+    def decorate(function):
+        @functools.wraps(function)
+        def scoped(*args, **kwargs):
+            with audit_snapshot_scope(audit_root):
+                return function(*args, **kwargs)
+        return scoped
+    return decorate
 
 
 def load_review_input(
     audit_root: os.PathLike[str] | str,
     logical_path: os.PathLike[str] | str,
+    *,
+    snapshot: Optional[AuditSnapshot] = None,
 ) -> AuditInput:
-    """Load one ledger from its bound Git blob or by one safe development read."""
-    root = Path(os.path.abspath(os.fspath(audit_root)))
-    if _git_toplevel(root, "audit root") != root.resolve():
-        raise AuditInputError(f"audit root is not its Git top-level: {root}")
-    relative_path, worktree_path = _review_relative_path(root, logical_path)
-    audit_commit = os.environ.get("ZH_VERIFY_AUDIT_COMMIT")
-    if audit_commit is not None:
-        if not FULL_GIT_OID_RE.fullmatch(audit_commit):
-            raise AuditInputError(
-                "ZH_VERIFY_AUDIT_COMMIT must be a full lowercase object ID"
-            )
-        try:
-            head = subprocess.check_output(
-                [
-                    GIT_BINARY,
-                    "-C",
-                    str(root),
-                    "rev-parse",
-                    "--verify",
-                    "HEAD^{commit}",
-                ],
-                text=True,
-                stderr=subprocess.PIPE,
-                env=trusted_git_environment(),
-            ).strip()
-        except (OSError, subprocess.CalledProcessError) as error:
-            raise AuditInputError("audit root HEAD cannot be resolved") from error
-        if audit_commit != head:
-            raise AuditInputError(
-                "ZH_VERIFY_AUDIT_COMMIT does not equal audit root HEAD: "
-                f"{audit_commit} != {head}"
-            )
-        data = read_regular_git_blob(root, audit_commit, relative_path)
-    else:
-        data = _read_regular_worktree_file(worktree_path, root)
-    if not isinstance(data, bytes):
-        raise AuditInputError("internal Git blob read returned invalid data")
-    try:
-        text = data.decode("utf-8", errors="strict")
-    except UnicodeDecodeError as error:
+    """Load one ledger from a frozen candidate/development snapshot."""
+    active = snapshot or get_audit_snapshot(audit_root)
+    requested_root = Path(audit_root).resolve()
+    if active.root != requested_root:
         raise AuditInputError(
-            f"review input is not strict UTF-8: {relative_path}"
-        ) from error
-    return AuditInput(
-        audit_commit=audit_commit,
-        logical_path=relative_path,
-        relative_path=relative_path,
-        bytes=data,
-        text=text,
-        sha256=hashlib.sha256(data).hexdigest(),
-    )
+            "review input snapshot root does not match requested audit root"
+        )
+    return active.read(logical_path)
 
 
 def review_input_metadata(value: AuditInput) -> dict:
@@ -496,6 +1136,18 @@ def _unescape_hash(s: str) -> str:
     return s
 
 
+def _text_input_lines(
+    source: os.PathLike[str] | str | AuditInput,
+) -> tuple[list[str], Path]:
+    if isinstance(source, AuditInput):
+        return source.text.splitlines(keepends=True), Path(source.logical_path)
+    filepath = os.fspath(source)
+    if not os.path.exists(filepath):
+        return [], Path(filepath)
+    with open(filepath, "r", encoding="utf-8", errors="strict") as stream:
+        return stream.readlines(), Path(filepath)
+
+
 def parse_entries(filepath, lowercase_keys=True, unescape_hash=True,
                   require_zh=True) -> list:
     """Parse a %%%%-separated text database file into Entry objects.
@@ -518,19 +1170,15 @@ def parse_entries(filepath, lowercase_keys=True, unescape_hash=True,
         List of Entry objects in file order.
     """
     entries = []
-    if not os.path.exists(filepath):
+    lines, source_path = _text_input_lines(filepath)
+    if not lines:
         return entries
-
-    with open(filepath, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
 
     key = None
     key_line = 0
     value_line = 0
     value_lines = []
     in_entry = False
-    source_path = Path(filepath)
-
     for line_num, line in enumerate(lines, start=1):
         stripped = line.rstrip('\n').rstrip('\r')
 
@@ -647,7 +1295,9 @@ class PhysicalEntry:
         return not self.value.strip()
 
 
-def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
+def parse_entries_physical(
+    filepath: os.PathLike[str] | str | AuditInput,
+) -> List[PhysicalEntry]:
     """Parse source.txt preserving raw physical keys.
 
     Canonical key rules (Issue 66 Section 2.1):
@@ -660,11 +1310,9 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
         List of PhysicalEntry in file order.
     """
     entries = []
-    if not os.path.exists(filepath):
+    lines, source_path = _text_input_lines(filepath)
+    if not lines:
         return entries
-
-    with open(filepath, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
 
     raw_key = None
     key_line = 0
@@ -672,8 +1320,6 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
     value_lines = []
     in_entry = False
     order = 0
-    source_path = Path(filepath)
-
     for line_num, line in enumerate(lines, start=1):
         # Remove line ending for processing, but preserve leading whitespace
         processed = line.rstrip('\n').rstrip('\r')

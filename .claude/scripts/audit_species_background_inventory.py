@@ -20,6 +20,8 @@ SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import (  # noqa: E402
     AuditRootError,
+    audit_snapshot_invocation,
+    get_audit_snapshot,
     load_review_input,
     resolve_audit_root,
     review_input_metadata,
@@ -72,6 +74,7 @@ STRICT_CARD_FIELDS = {
 from audit_item_name_inventory import (  # noqa: E402
     active_source,
     function_body,
+    resolve_commit,
     sha,
     source_entries,
     source_files,
@@ -91,10 +94,21 @@ def relative(path):
         return str(path)
 
 
+def audit_snapshot():
+    return get_audit_snapshot(ROOT)
+
+
 def load_yaml_rows(directory, prefix):
+    snapshot = audit_snapshot()
     rows = []
-    for path in sorted(directory.glob("*.yaml"), key=lambda item: item.name):
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    for path in snapshot.glob(
+        directory,
+        "*.yaml",
+        allow_external_unbound=True,
+    ):
+        data = yaml.safe_load(snapshot.text(
+            path, allow_external_unbound=True
+        ))
         if not isinstance(data, dict):
             raise ValueError(f"expected one YAML mapping in {relative(path)}")
         identity = data.get("enum")
@@ -141,7 +155,9 @@ def deprecated_job_rows(path=DEPRECATED_JOBS):
 
 
 def description_entries(path):
-    entries = parse_entries_physical(str(path))
+    entries = parse_entries_physical(audit_snapshot().read(
+        path, allow_external_unbound=True
+    ))
     duplicates = sorted(
         key for key, count in Counter(
             entry.canonical_key for entry in entries
@@ -325,7 +341,9 @@ def inventory_violations(
     }
 
 
+@audit_snapshot_invocation(ROOT)
 def build_inventory():
+    snapshot = audit_snapshot()
     db = source_entries(ZH_SOURCE_DIR)
     en_species, dup_en_species = description_entries(
         EN_SPECIES_DESCRIPTIONS
@@ -362,8 +380,8 @@ def build_inventory():
     )
     inputs = [
         *source_files(ZH_SOURCE_DIR),
-        *sorted(SPECIES_DIR.glob("*.yaml")),
-        *sorted(JOBS_DIR.glob("*.yaml")),
+        *snapshot.glob(SPECIES_DIR, "*.yaml"),
+        *snapshot.glob(JOBS_DIR, "*.yaml"),
         SPECIES_ENUMS,
         JOB_ENUMS,
         DEPRECATED_JOBS,
@@ -376,12 +394,10 @@ def build_inventory():
     ]
     payload = {
         "schema": "dcss-species-background-review-inventory-v1",
-        "baseline": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip(),
+        "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "glossary_sha256": sha(ROOT / "docs/glossary.md"),
         "input_sha256": {
-            relative(path): hashlib.sha256(path.read_bytes()).hexdigest()
+            relative(path): snapshot.sha256(path)
             for path in inputs
         },
         "scope": {
@@ -412,6 +428,7 @@ def build_inventory():
         },
         **violations,
         "rows": rows,
+        "audit_snapshot": snapshot.metadata(),
     }
     encoded = json.dumps(
         rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -646,7 +663,9 @@ def _strict_review_decisions(cards):
 
 
 def write_strict_review_evidence(payload, path):
-    text = path.read_text(encoding="utf-8")
+    text = audit_snapshot().text(
+        path, allow_external_unbound=True
+    )
     if STRICT_REVIEW_BEGIN in text or STRICT_REVIEW_END in text:
         _metadata, cards = _parse_strict_review_text(text)
         decisions = _strict_review_decisions(cards)
@@ -846,6 +865,7 @@ def render_review_results(payload, decisions):
     )
 
 
+@audit_snapshot_invocation(ROOT)
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -887,7 +907,11 @@ def main(argv=None):
         return 2
     if args.review_results:
         try:
-            review_input = load_review_input(ROOT, args.review_results)
+            review_input = load_review_input(
+                ROOT,
+                args.review_results,
+                snapshot=audit_snapshot(),
+            )
             payload["review_input"] = review_input_metadata(review_input)
             payload["review_coverage"] = review_coverage(
                 payload, review_input
@@ -898,6 +922,7 @@ def main(argv=None):
                 file=sys.stderr,
             )
             return 2
+    payload["audit_snapshot"] = audit_snapshot().metadata()
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

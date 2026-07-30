@@ -104,25 +104,18 @@ findings-v2, readiness-v3, and verification-v5. Routing-v1/readiness-v2
 objects in the v4 directory and schema-v3 bundles are historical read-only
 evidence and never authorize merge.
 
-The sole temporary exception is
-`DCSS-ZH-BOOTSTRAP-2026-07-29`, defined in the review contract. It permits new
-target-era routing-v1, findings-v1, readiness-v2, and verification-v4 evidence
-only for the consecutive recovery edges:
-
-1. `fa0144cb3729e2fdae70e070946fe89f0b6cec15 → S`
-2. the exact approved full OID of S `→ C`
-
-Both edges must satisfy the exception's exact path boundary, complete
-reviewer-scope declaration, tree-equivalence, glossary, clean-worktree,
-full-OID, new-evidence, final-gate, and merge-time conditions. The tools must
-come from each edge's trusted target checkout; a newer candidate or unrelated
-checkout must not authorize itself.
-
-The exception expires permanently when the approved C full OID is merged into
-the dedicated recovery target. `C → R` and every later edge must use the normal
-routing-v2, findings-v2, readiness-v3, and verification-v5 workflow. The
-exception does not authorize reuse of old evidence, replacement of
-`chn-0.34.1-base`, pushing, releasing, or deployment.
+The review contract retains three historical recovery exceptions so their
+boundaries remain auditable, but none is active. The bootstrap exception
+expired when exact S
+`a49c41fdcba16acc34023ae29ac81e3b3a62f14f` and exact C
+`8aae77c60a5e537e76c7b252c6a311fade4264c2` were installed. The rootfix
+exception expired when exact F2
+`c7768fde48ea4f08e2363a67f211702d2ba27ca7` was installed over exact P2
+`99b887d5c7462874c2b10937333e9f475a9343d4`. The ledger-seed exception was
+consumed when exact P3
+`2e43e04884348b54879944b77d0af8ebf7636dc0` was installed. None authorizes a
+retry, descendant or different target. All later edges use the normal
+routing-v2, findings-v2, readiness-v3, and verification-v5 workflow.
 
 The separately owner-governed `DCSS-ZH-ROOTFIX-2026-07-29` exception addresses
 one later candidate-root regression in the trusted monster-name test. The
@@ -138,20 +131,20 @@ that attempt did not execute the intended suite. F and all of its formal
 evidence remain immutable No-Go forensic records and cannot be retried,
 migrated or reused.
 
-Corrective policy candidate P2 must be one commit whose parent is exactly P.
-Both Base-C-to-P and P-to-P2 must have the same exact 16-path manifest, and
-Base-C-to-P2 may contain no additional path. P2 normalizes `sys.argv`, installs
+Corrective policy candidate P2 was one commit whose parent was exactly P.
+Both Base-C-to-P and P-to-P2 had the same exact 16-path manifest, and
+Base-C-to-P2 contained no additional path. P2 normalizes `sys.argv`, installs
 a real candidate `__main__` module before executing the retained blob, and adds
-an end-to-end subprocess regression. P2 is not self-authorizing: the target
-must not move until the owner separately approves its exact committed OID,
-manifest, independent review, focused gate and bundle regressions, and
-exact-bound P-to-P2 code profile, then explicitly installs that exact OID.
-The external owner record binds its issuer/format, protected ref and current P,
+an end-to-end subprocess regression. P2 was not self-authorizing: the owner
+separately approved its exact committed OID, manifest, independent review,
+focused gate and bundle regressions, and exact-bound P-to-P2 code profile
+before explicitly installing that exact OID. The external owner record binds
+its issuer/format, protected ref and current P,
 exact P2, exception/protocol version, manifest and binary-diff hashes, glossary,
 reviewer result and test/profile results, and authorizes P-to-P2 only rather
 than any descendant.
-After installation, the exception permits only a new one-commit `P2 → F2` edge
-whose sole changed path is
+After installation, the exception permitted only the one-commit `P2 → F2`
+edge whose sole changed path was
 `.claude/scripts/tests/test_monster_name_ssot.py`.
 
 The target-P2 classifier, schema-v4 bundle, findings-v2 and readiness-v3 remain
@@ -162,8 +155,8 @@ runs the focused cross-root regression and one
 exact-bound full-scope code profile, then writes canonical digest-bound
 write-once evidence under `zh-review-evidence/rootfix-v1/`. Its `check`
 subcommand is the read-only merge-time validator. Only
-`ROOTFIX_MERGEABLE` authorizes the exact fast-forward; P2 and F2 otherwise
-remain No-Go.
+`ROOTFIX_MERGEABLE` authorized that exact fast-forward; the exception is now
+expired and cannot authorize another edge.
 
 P2 and F2 must be distinct linked worktrees from the same physical Git common
 directory, and F2 must appear with its exact HEAD in P2's own worktree inventory.
@@ -323,28 +316,27 @@ by a cached absence.
 
 The abandoned C2 bundle has no reusable formal attempt: three ledgers lack
 strict evidence blocks and their three required inventory artifacts were never
-produced. C2 readiness and bundle objects must not migrate. After F2 lands, the
-contextual parser, all approved R content and every required strict ledger must
-be rebuilt as one new candidate with new mixed review and a complete normal
-verification-v5 final gate. The rootfix exception expires permanently when F2
-lands.
+produced. C2 readiness and bundle objects did not migrate. After F2 landed, the
+contextual parser, approved R content and required strict ledgers were rebuilt
+as a new candidate with new mixed review and a complete normal
+verification-v5 final gate. The rootfix exception is permanently expired.
 
 F2 cannot safely authorize that ledger rebuild directly: its
 character-mechanics, god and species/background renderers replace the visible
 review cards with hash-only strict evidence, while its item and world
 renderers omit required development and migration history. The separate
-`DCSS-ZH-LEDGER-SEED-2026-07-30` exception permits only one exact, externally
-owner-authorized F2-to-P3 policy installation. P3 changes the five
+`DCSS-ZH-LEDGER-SEED-2026-07-30` exception permitted only one exact,
+externally owner-authorized F2-to-P3 policy installation. P3 changes the five
 target-side auditors, their focused tests, the canonical review contract and
 its synchronized reviewer copies; it does not change any ledger, translation
 asset, glossary, decision file or normal review gate.
 
-Before P3 is installed, the external canonical owner permit must bind the
+Before P3 was installed, the external canonical owner permit bound the
 protected ref and exact F2/P3 OIDs, protocol and semantic scope, complete
 24-path manifest and digest, binary diff digest, glossary, F2-trusted routing
 digest and reviewer set, focused and exact-bound verification results, and an
 independent zero-finding review. It authorizes only that exact fast-forward,
-never a descendant. P3 becomes useful only as the trusted target for the next
+never a descendant. P3 became useful only as the trusted target for the next
 normal routing-v2 candidate, whose fully rendered ledgers must then pass the
 P3 whole-document assertions and the complete ordinary v5 evidence chain.
 
@@ -354,6 +346,29 @@ species/background, and world auditors against the validated candidate root.
 Each resulting inventory JSON is an individually required verification-v5
 artifact. The phase is unconditional: dependency or glossary drift must fail
 even when the corresponding ledger is absent from the prepared diff.
+
+For an exact-bound review, all six auditors share one `AuditSnapshot` identified
+by `ZH_VERIFY_AUDIT_ROOT` and the full `ZH_VERIFY_AUDIT_COMMIT`. The snapshot
+loads the exact Git tree once, performs discovery from that tree, and reads
+each unique regular-file blob at most once. Production inventory content and
+membership therefore do not come from mutable worktree paths. Unbound
+development fixtures use no-follow descriptor reads with inode identity checks
+and reject a path substituted between inspection and open. Focused tests cover
+both transient worktree substitution during a bound blob read and a concurrent
+swap restored before the unbound caller resumes. The verifier also requires
+the exact clean candidate at the end of a bound run. World-inventory
+provenance that refers to target-side scripts uses a second snapshot bound by
+`ZH_VERIFY_CONTROL_ROOT` and `ZH_VERIFY_CONTROL_COMMIT`, so those hashes also
+come from the exact trusted control commit rather than its mutable checkout.
+
+Every schema-v4 bundle publishes `.bundle.lock` during initial creation.
+Later exclusive writers must open that existing lock read/write; they do not
+repair a missing lock. Status, validation and merge-time readers open it with
+`O_RDONLY` and `LOCK_SH`; they never create it, and a missing or replaced lock
+is invalid evidence. This allows the complete evidence tree to be mounted
+read-only without weakening writer serialization. Lockless schema-v3 bundles
+may be inspected only as historical, non-authorizing evidence and remain
+byte-for-byte untouched.
 
 ## CI
 
