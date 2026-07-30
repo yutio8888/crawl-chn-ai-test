@@ -723,6 +723,131 @@ It cannot authorize F, an amended F2, a retry for another edge, or any content
 change. Every successor of F2 must return to routing-v2, findings-v2,
 readiness-v3, verification-v5, the normal final gate, and the normal merge-time
 validator.
+
+## Temporary owner-authorized whole-document ledger seed
+
+**Exception ID:** `DCSS-ZH-LEDGER-SEED-2026-07-30`
+**Authority:** repository owner and sole project-policy administrator
+**Installed F2:** `c7768fde48ea4f08e2363a67f211702d2ba27ca7`
+**Status:** No-Go and inactive until one exact P3 is installed by a separate
+external owner permit; permanently consumed by that exact installation
+
+This exception exists because the F2-trusted character-mechanics, god and
+species/background auditors require a strict evidence block but their
+canonical renderers replace the complete human-readable review cards with
+hash-only triples. The F2-trusted item and world renderers likewise omit
+required development and inventory-migration history. A normal F2 final gate
+therefore cannot both preserve those reviewed statements and accept a
+candidate that installs their target-side whole-document validation.
+
+The exception authorizes only the policy installation described below. It does
+not authorize a content candidate, a review ledger, a translation change, a
+normal final-gate approval, or any descendant of P3.
+
+### Exact P3 topology and path boundary
+
+P3 must be one clean commit with exactly one parent:
+
+`P3^ == c7768fde48ea4f08e2363a67f211702d2ba27ca7`
+
+Its complete changed-path set, computed with rename detection disabled, must be
+exactly:
+
+- `.agents/policies/review-contract.md`
+- `.claude/agents/translation-reviewer.md`
+- `.claude/agents/zh-code-reviewer.md`
+- `.claude/scripts/audit_character_mechanics_inventory.py`
+- `.claude/scripts/audit_god_inventory.py`
+- `.claude/scripts/audit_item_name_inventory.py`
+- `.claude/scripts/audit_species_background_inventory.py`
+- `.claude/scripts/audit_world_inventory.py`
+- `.claude/scripts/tests/test_audit_character_mechanics_inventory.py`
+- `.claude/scripts/tests/test_audit_god_inventory.py`
+- `.claude/scripts/tests/test_audit_item_name_inventory.py`
+- `.claude/scripts/tests/test_audit_species_background_inventory.py`
+- `.claude/scripts/tests/test_audit_world_inventory.py`
+- `.claude/skills/translation-reviewer.md`
+- `.claude/skills/zh-code-reviewer.md`
+- `.codex/agents/translation-reviewer.toml`
+- `.codex/agents/zh-code-reviewer.toml`
+- `.opencode/agents/translation-reviewer.md`
+- `.opencode/agents/zh-code-reviewer.md`
+- `.opencode/skills/translation-reviewer/SKILL.md`
+- `.opencode/skills/zh-code-reviewer/SKILL.md`
+- `.pi/agents/translation-reviewer.md`
+- `.pi/agents/zh-code-reviewer.md`
+- `docs/zh-testing.md`
+
+Existing file modes must be preserved. Every path outside this manifest must
+have identical path existence, mode, object type and object OID in F2 and P3.
+The generated reviewer Agent and Skill copies may change only through
+`sync_agent_policies.py` from this canonical policy.
+
+P3 may install only deterministic whole-document rendering and validation for
+the five affected ledgers, focused negative-mutation regressions, this
+canonical exception, its synchronized generated copies and the matching
+testing documentation. It must preserve complete visible identity, English and
+Chinese, production-fact, reviewer-decision and rationale evidence. It must
+also preserve the item producer/consumer evidence, all four exact development
+report paths and statuses, their failure/pass reruns and non-overwrite
+statement. The world inventory history, complete 20-member old-only proof,
+761-to-788-to-789 membership proof and deferral history must likewise be
+canonical rendered sections. A missing, altered, duplicated, reordered or
+extra managed section must fail closed.
+
+P3 must not modify any review ledger, translation asset, glossary, decision
+file, classifier, bundle schema, final gate, merge validator, verifier or
+inventory source. It must not silently assign a terminal conclusion to a new
+identity. Its migration writer may carry forward a complete, parseable
+reviewer decision and rationale from an existing ledger, but cannot invent one
+when the source evidence is absent or ambiguous.
+
+### Separate external owner permit
+
+Nothing committed in P3 authorizes or retrospectively validates its own
+installation. Before the protected target moves, the repository owner must
+issue one external permit in canonical
+`dcss-zh-owner-permit-v1` key-value form. The permit must bind:
+
+- issuer identity and permit format version;
+- this exception ID and `review-contract-v5`;
+- the protected ref identity and its current exact F2 OID;
+- the exact P3 OID and the explicit semantic scope
+  `target-side-whole-document-ledger-seed-v1`;
+- the exact 24-path count, normalized sorted manifest SHA-256 and binary diff
+  SHA-256;
+- the candidate glossary SHA-256;
+- target-F2 routing schema, routing digest, classification and the complete
+  reviewer set;
+- focused auditor-test, policy-sync and exact-bound code-profile results;
+- an independent review of the complete frozen scope with zero Blocker and
+  zero Needs Fix.
+
+Every bound value must be recomputed with F2-trusted Git and routing controls
+before installation. The permit must state that it authorizes only an
+`ff-only` update of the named protected ref from exact F2 to exact P3 and does
+not authorize a P3 descendant. A changed OID, path, mode, object type, manifest
+hash, diff, glossary, routing result, reviewer result, test result or protected
+ref state invalidates the permit and requires a newly built P3 and a new
+external permit. A candidate file, local branch name, ordinary readiness
+record or automation run is not the owner permit.
+
+### Consumption and successor boundary
+
+After the exact permitted P3 is installed, this exception is consumed
+immediately and permanently. It cannot be reused for an amended P3, another
+target ref, a retry, a ledger rewrite or any later candidate. The expired
+bootstrap and rootfix exceptions remain expired and cannot provide an
+alternative F2 migration entry.
+
+P3 only makes its control plane available as trusted target-side code. It does
+not prove that code against a production ledger candidate. The first successor
+must be a newly committed normal routing-v2 candidate reviewed under the
+complete mechanically routed reviewer set. Its ledgers must be generated by
+the P3 renderers and pass P3-trusted whole-document audits, readiness-v3,
+verification-v5, the normal final gate and the normal merge-time validator.
+No C2, C11 or pre-P3 bundle, readiness, attempt, approval or merge
+authorization may be copied, converted or reused.
 <!-- END GENERATED: review-contract -->
 
 <!-- BEGIN GENERATED: i18n-safety -->

@@ -32,6 +32,13 @@ def review_input(path):
     )
 
 
+def decision(conclusion, rationale):
+    return {
+        "terminal_conclusion": conclusion,
+        "reviewer_rationale": rationale,
+    }
+
+
 def clean_fixture():
     parents = [{
         "identity": "GOD_TEST",
@@ -67,6 +74,33 @@ class GodInventoryAuditTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_language_snapshot_handles_non_string_nested_keys(self):
+        row = {
+            "forms": {
+                0: {
+                    "english_value": "Full English",
+                    "chinese_value": "完整中文",
+                },
+            },
+        }
+        self.assertEqual(
+            {"forms.0.english_value": "Full English"},
+            MODULE.language_snapshot(row, "english"),
+        )
+        self.assertEqual(
+            {"forms.0.chinese_value": "完整中文"},
+            MODULE.language_snapshot(row, "chinese"),
+        )
+        normalized = MODULE.canonical_json_value({
+            "forms": {10: "ten", 2: "two"},
+        })
+        encoded = json.dumps(
+            normalized, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        self.assertEqual(normalized, json.loads(encoded))
+        with self.assertRaisesRegex(RuntimeError, "colliding JSON object keys"):
+            MODULE.canonical_json_value({1: "numeric", "1": "string"})
 
     def test_production_parent_inventory_is_complete_unique_and_includes_pakellas(self):
         identities = [row["identity"] for row in self.payload["parents"]]
@@ -278,15 +312,31 @@ class GodInventoryAuditTest(unittest.TestCase):
             "inventory_sha256": "b" * 64,
             "count": 2,
             "parents": [
-                {"identity": "GOD_TEST"},
-                {"identity": "GOD_OTHER"},
+                {
+                    "identity": "GOD_TEST",
+                    "lifecycle": "current",
+                    "english_name": "Test",
+                    "current_chinese_name": "测试神",
+                },
+                {
+                    "identity": "GOD_OTHER",
+                    "lifecycle": "current",
+                    "english_name": "Other",
+                    "current_chinese_name": "另一神",
+                },
             ]
         }
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             path.write_text(
                 MODULE.render_review_results(
-                    payload, {"GOD_TEST": "keep", "GOD_OTHER": "adjust"}
+                    payload,
+                    {
+                        "GOD_TEST": decision("keep", "complete rationale"),
+                        "GOD_OTHER": decision(
+                            "adjust", "other complete rationale"
+                        ),
+                    },
                 ),
                 encoding="utf-8",
             )
@@ -316,13 +366,36 @@ class GodInventoryAuditTest(unittest.TestCase):
             "inventory_sha256": "b" * 64,
             "count": 2,
             "parents": [
-                {"identity": "GOD_OTHER", "fact": "other"},
-                {"identity": "GOD_TEST", "fact": "test"},
+                {
+                    "identity": "GOD_OTHER",
+                    "lifecycle": "current",
+                    "english_name": "Other\nwith | pipe",
+                    "current_chinese_name": "另一神\n含 | 管道",
+                    "fact": "o" * 200,
+                },
+                {
+                    "identity": "GOD_TEST",
+                    "lifecycle": "current",
+                    "english_name": "Test",
+                    "current_chinese_name": "测试神",
+                    "fact": "test",
+                },
             ],
         }
         clean = MODULE.render_review_results(
-            payload, {"GOD_OTHER": "keep", "GOD_TEST": "adjust"}
+            payload,
+            {
+                "GOD_OTHER": decision(
+                    "keep", "full rationale\nwith | pipe and " + "r" * 200
+                ),
+                "GOD_TEST": decision("adjust", "test rationale"),
+            },
         )
+        self.assertNotIn("…", clean)
+        self.assertIn(r"Other\nwith ", clean)
+        self.assertIn("&#124; pipe", clean)
+        self.assertIn("o" * 200, clean)
+        self.assertIn("r" * 200, clean)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             path.write_text(clean, encoding="utf-8")
@@ -354,6 +427,7 @@ class GodInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, fact_sha256="0" * 64),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
                     ),
                     *lines[first_index + 1:],
@@ -362,7 +436,32 @@ class GodInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, terminal_conclusion="pending"),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "empty-rationale": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(first, reviewer_rationale=""),
+                        ensure_ascii=False,
+                        sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "production-facts": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(
+                            first,
+                            production_facts=dict(
+                                first["production_facts"], fact="tampered"
+                            ),
+                        ),
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
                     ),
                     *lines[first_index + 1:],
                 ],
@@ -374,6 +473,7 @@ class GodInventoryAuditTest(unittest.TestCase):
                     *lines[:second_index + 1],
                     json.dumps(
                         dict(first, identity="GOD_EXTRA"),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
                     ),
                     *lines[second_index + 1:],
@@ -423,11 +523,26 @@ class GodInventoryAuditTest(unittest.TestCase):
                     )[
                         "coverage_equal"
                     ])
+            old_v1 = (
+                clean
+                .replace("STRICT REVIEW EVIDENCE v2",
+                         "STRICT REVIEW EVIDENCE v1")
+                .replace("GOD REVIEW ARTIFACT v2",
+                         "GOD REVIEW ARTIFACT v1")
+            )
+            path.write_text(old_v1, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "strict review evidence block is missing"
+            ):
+                MODULE.review_coverage(payload, review_input(path))
 
     def test_cli_accepts_exact_artifact_and_rejects_external_prose(self):
         payload = MODULE.build_inventory()
         conclusions = {
-            row["identity"]: "keep" for row in payload["parents"]
+            row["identity"]: decision(
+                "keep", f"explicit reviewer rationale for {row['identity']}"
+            )
+            for row in payload["parents"]
         }
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
@@ -461,6 +576,103 @@ class GodInventoryAuditTest(unittest.TestCase):
             )
             broken = validate()
             self.assertEqual(1, broken.returncode, broken.stderr)
+
+    def test_write_strict_review_rejects_duplicate_v2_cards_without_writing(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 1,
+            "parents": [{
+                "identity": "GOD_TEST",
+                "lifecycle": "current",
+                "english_name": "Test",
+                "current_chinese_name": "测试神",
+            }],
+        }
+        lines = MODULE.render_review_results(
+            payload,
+            {
+                "GOD_TEST": decision(
+                    "keep", "complete god rationale"
+                ),
+            },
+        ).splitlines()
+        strict_end = lines.index(MODULE.STRICT_REVIEW_END)
+        lines.insert(strict_end - 1, lines[strict_end - 2])
+        original = ("\n".join(lines) + "\n").encode("utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_bytes(original)
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "duplicate strict review evidence-card identities: GOD_TEST",
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(original, path.read_bytes())
+
+    def test_legacy_migration_preserves_full_rationale_and_fails_missing(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
+            "parents": [
+                {
+                    "identity": "GOD_TEST",
+                    "lifecycle": "current",
+                    "english_name": "Test",
+                    "current_chinese_name": "测试神",
+                },
+                {
+                    "identity": "GOD_NEW",
+                    "lifecycle": "current",
+                    "english_name": "New",
+                    "current_chinese_name": "新神",
+                },
+            ],
+        }
+        legacy = (
+            "| 父身份 | 生命周期 | 英→中短名/长名 | 子身份与资产证据 | "
+            "唯一终态结论 |\n"
+            "|---|---|---|---|---|\n"
+            "| `GOD_TEST` | 现役 | Test→测试神 | full facts | "
+            "修订：reviewer-authored full rationale。 |\n"
+        )
+        decisions = MODULE.legacy_review_decisions(legacy)
+        self.assertEqual(
+            decision("adjust", "reviewer-authored full rationale。"),
+            decisions["GOD_TEST"],
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_text(legacy, encoding="utf-8")
+            before = path.read_text(encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "GOD_NEW"):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(before, path.read_text(encoding="utf-8"))
+            old_hash_only = (
+                "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->\n"
+                "{}\n```jsonl\n"
+                '{"fact_sha256":"'
+                + "0" * 64
+                + '","identity":"GOD_TEST",'
+                '"terminal_conclusion":"keep"}\n'
+                "```\n<!-- END STRICT REVIEW EVIDENCE v1 -->\n"
+            )
+            path.write_text(old_hash_only, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "missing explicit reviewer decisions"
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(
+                old_hash_only, path.read_text(encoding="utf-8")
+            )
+
+        decisions["GOD_NEW"] = decision(
+            "keep", "explicit reviewer decision for new god"
+        )
+        rendered = MODULE.render_review_results(payload, decisions)
+        self.assertIn("reviewer-authored full rationale", rendered)
+        self.assertIn("explicit reviewer decision for new god", rendered)
 
 
 if __name__ == "__main__":

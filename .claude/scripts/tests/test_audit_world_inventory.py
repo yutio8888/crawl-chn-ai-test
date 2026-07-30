@@ -97,7 +97,21 @@ def review_document(payload, specifications):
             },
             "conclusion": card["conclusion"],
         }
-    return MODULE.render_review_results(payload, decisions)
+    return MODULE.render_review_results(
+        payload, decisions, allow_test_fixture_subset=True
+    )
+
+
+def fixture_review_coverage(payload, loaded):
+    return MODULE.review_coverage(
+        payload, loaded, allow_test_fixture_subset=True
+    )
+
+
+def fixture_complete_review_results(payload, path):
+    return MODULE.complete_review_results(
+        payload, path, allow_test_fixture_subset=True
+    )
 
 
 class WorldInventoryUnitTest(unittest.TestCase):
@@ -893,6 +907,139 @@ epilogue {{
         self.assertFalse(missing_heading["counts_match"])
         self.assertEqual(0, missing_heading["heading_count"])
 
+    def test_canonical_history_is_complete_exact_and_fail_closed(self):
+        deferred_ids = [
+            identity
+            for _heading, identities in MODULE.WORLD_DEFER_GROUPS
+            for identity in identities
+        ]
+        self.assertEqual(20, (
+            len(MODULE.WORLD_INITMSG_OLD_ONLY)
+            + len(MODULE.WORLD_DIAGNOSTIC_OLD_ONLY)
+        ))
+        self.assertEqual(27, len(MODULE.WORLD_READINESS_ADDITIONS))
+        self.assertEqual(22, len(deferred_ids))
+        self.assertEqual(len(deferred_ids), len(set(deferred_ids)))
+
+        rows = [
+            {
+                "identity": identity,
+                "category": "portal_family",
+                "lifecycle": "current",
+                "file": f"fixture/{index}.des",
+                "evidence": {"file": f"fixture/{index}.des"},
+            }
+            for index, identity in enumerate(deferred_ids)
+        ]
+        fixture = {
+            "inventory_sha256": "9" * 64,
+            "glossary_sha256": "8" * 64,
+            "rows": rows,
+            "violations": {},
+        }
+        decisions = {}
+        for index, row in enumerate(rows):
+            conclusion = (
+                "defer implementation: frozen implementation boundary"
+                if index < 17
+                else "defer terminology: frozen terminology boundary"
+            )
+            card = review_card_values(fixture, row, conclusion)
+            decisions[row["identity"]] = {
+                **{
+                    field: card[field]
+                    for field in MODULE.REVIEW_DECISION_FIELDS
+                },
+                "conclusion": card["conclusion"],
+            }
+        rendered = MODULE.render_review_results(fixture, decisions)
+
+        for entry in MODULE.WORLD_INVENTORY_HISTORY:
+            self.assertIn(f"- {entry}", rendered)
+        for old, survivor in MODULE.WORLD_INITMSG_OLD_ONLY:
+            self.assertIn(f"- `{old}` → `{survivor}`", rendered)
+        for identity, reason in MODULE.WORLD_DIAGNOSTIC_OLD_ONLY:
+            self.assertIn(f"- `{identity}` — {reason}", rendered)
+        for identity, english, chinese in MODULE.WORLD_READINESS_ADDITIONS:
+            self.assertIn(
+                f"- `{identity}` — `{english}` → `{chinese}`", rendered
+            )
+        self.assertIn("788→789 本地化笔记身份迁移", rendered)
+        self.assertIn("old-only 0、new-only 1", rendered)
+        for identity in deferred_ids:
+            self.assertIn(f"- `{identity}`", rendered)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.md"
+            path.write_text(rendered, encoding="utf-8")
+            clean = MODULE.review_coverage(fixture, review_input(path))
+            self.assertTrue(clean["coverage_equal"])
+            old, survivor = MODULE.WORLD_INITMSG_OLD_ONLY[0]
+            ready_identity, ready_en, ready_zh = (
+                MODULE.WORLD_READINESS_ADDITIONS[0]
+            )
+            mutations = {
+                "inventory-history-delete": rendered.replace(
+                    f"- {MODULE.WORLD_INVENTORY_HISTORY[0]}\n", "", 1
+                ),
+                "old-only-delete": rendered.replace(
+                    f"- `{old}` → `{survivor}`\n", "", 1
+                ),
+                "old-only-tamper": rendered.replace(
+                    f"- `{old}` → `{survivor}`",
+                    f"- `{old}` → `tampered-survivor`",
+                    1,
+                ),
+                "membership-delete": rendered.replace(
+                    f"- `{ready_identity}` — `{ready_en}` → `{ready_zh}`\n",
+                    "",
+                    1,
+                ),
+                "note-membership-tamper": rendered.replace(
+                    "old-only 0、new-only 1",
+                    "old-only 0、new-only 0",
+                    1,
+                ),
+                "defer-history-delete": rendered.replace(
+                    f"- `{deferred_ids[0]}`\n", "", 1
+                ),
+                "profile-history-tamper": rendered.replace(
+                    "20260726T223908120479000+0800-70564-01dc9911ec99",
+                    "tampered-profile",
+                    1,
+                ),
+            }
+            for name, text in mutations.items():
+                with self.subTest(history_mutation=name):
+                    path.write_text(text, encoding="utf-8")
+                    broken = MODULE.review_coverage(
+                        fixture, review_input(path)
+                    )
+                    self.assertFalse(broken["artifact_exact"])
+                    self.assertFalse(broken["coverage_equal"])
+
+        missing_fixture = {
+            **fixture,
+            "rows": rows[:-1],
+        }
+        missing_decisions = {
+            identity: decision
+            for identity, decision in decisions.items()
+            if identity != rows[-1]["identity"]
+        }
+        with self.assertRaisesRegex(
+            ValueError, "missing frozen defer-history identities"
+        ):
+            MODULE.render_review_results(
+                missing_fixture, missing_decisions
+            )
+        subset = MODULE.render_review_results(
+            missing_fixture,
+            missing_decisions,
+            allow_test_fixture_subset=True,
+        )
+        self.assertIn("测试或迁移子集", subset)
+
     def test_review_coverage_requires_bijection_and_terminal_conclusion(self):
         branch_row = next(
             row for row in self.payload["rows"] if row["category"] == "branch"
@@ -920,7 +1067,7 @@ epilogue {{
                 ]),
                 encoding="utf-8",
             )
-            coverage = MODULE.review_coverage(fixture, review_input(path))
+            coverage = fixture_review_coverage(fixture, review_input(path))
             self.assertTrue(coverage["coverage_equal"])
             self.assertTrue(coverage["artifact_exact"])
 
@@ -961,7 +1108,7 @@ epilogue {{
             for name, text in artifact_mutations.items():
                 with self.subTest(artifact_mutation=name):
                     path.write_text(text, encoding="utf-8")
-                    result = MODULE.review_coverage(
+                    result = fixture_review_coverage(
                         fixture, review_input(path)
                     )
                     self.assertFalse(result["artifact_exact"])
@@ -986,7 +1133,9 @@ epilogue {{
                 ValueError, "reserved structural marker"
             ):
                 MODULE.render_review_results(
-                    fixture, injected_decisions
+                    fixture,
+                    injected_decisions,
+                    allow_test_fixture_subset=True,
                 )
             path.write_text(
                 marker_safe.replace(
@@ -996,7 +1145,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            marker_injection = MODULE.review_coverage(
+            marker_injection = fixture_review_coverage(
                 fixture, review_input(path)
             )
             self.assertEqual(
@@ -1028,7 +1177,7 @@ epilogue {{
                     + card_b,
                     encoding="utf-8",
                 )
-                mutated = MODULE.review_coverage(
+                mutated = fixture_review_coverage(
                     fixture, review_input(path)
                 )
                 self.assertFalse(mutated["coverage_equal"], msg=field)
@@ -1047,7 +1196,7 @@ epilogue {{
                 + card_b,
                 encoding="utf-8",
             )
-            wrong_adopted = MODULE.review_coverage(
+            wrong_adopted = fixture_review_coverage(
                 fixture, review_input(path)
             )
             self.assertFalse(wrong_adopted["coverage_equal"])
@@ -1112,7 +1261,7 @@ epilogue {{
                     + review_card(fixture, other),
                     encoding="utf-8",
                 )
-                mutated = MODULE.review_coverage(
+                mutated = fixture_review_coverage(
                     fixture, review_input(path)
                 )
                 self.assertFalse(mutated["coverage_equal"])
@@ -1136,7 +1285,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            pending = MODULE.review_coverage(fixture, review_input(path))
+            pending = fixture_review_coverage(fixture, review_input(path))
             self.assertFalse(pending["coverage_equal"])
             self.assertEqual(
                 [feature_row["identity"]],
@@ -1151,7 +1300,7 @@ epilogue {{
                     + header + broken_card + card_b,
                     encoding="utf-8",
                 )
-                broken_field = MODULE.review_coverage(
+                broken_field = fixture_review_coverage(
                     fixture, review_input(path)
                 )
                 self.assertFalse(
@@ -1172,7 +1321,7 @@ epilogue {{
                     + header + pending_card + card_b,
                     encoding="utf-8",
                 )
-                pending_field = MODULE.review_coverage(
+                pending_field = fixture_review_coverage(
                     fixture, review_input(path)
                 )
                 self.assertFalse(pending_field["coverage_equal"], msg=column)
@@ -1192,7 +1341,7 @@ epilogue {{
                 + card_b,
                 encoding="utf-8",
             )
-            invalid_confidence = MODULE.review_coverage(
+            invalid_confidence = fixture_review_coverage(
                 fixture, review_input(path)
             )
             self.assertFalse(invalid_confidence["coverage_equal"])
@@ -1205,7 +1354,7 @@ epilogue {{
                 + header + card_a + card_a,
                 encoding="utf-8",
             )
-            broken = MODULE.review_coverage(fixture, review_input(path))
+            broken = fixture_review_coverage(fixture, review_input(path))
             self.assertFalse(broken["inventory_digest_matches"])
             self.assertEqual([branch_row["identity"]],
                              broken["duplicate_evidence_cards"])
@@ -1261,7 +1410,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            coverage = MODULE.review_coverage(fixture, review_input(path))
+            coverage = fixture_review_coverage(fixture, review_input(path))
             self.assertFalse(coverage["coverage_equal"])
             mismatch = coverage["composite_adoption_mismatches"][
                 row["identity"]
@@ -1292,7 +1441,7 @@ epilogue {{
                 ),
                 encoding="utf-8",
             )
-            representable = MODULE.review_coverage(
+            representable = fixture_review_coverage(
                 fixture, review_input(path)
             )
             self.assertTrue(representable["coverage_equal"])
@@ -1311,7 +1460,7 @@ epilogue {{
                     ),
                     encoding="utf-8",
                 )
-                rejected = MODULE.review_coverage(
+                rejected = fixture_review_coverage(
                     fixture, review_input(path)
                 )
                 self.assertFalse(rejected["coverage_equal"], msg=mismatch)
@@ -1339,11 +1488,11 @@ epilogue {{
                 "| value | value |\n",
                 encoding="utf-8",
             )
-            MODULE.complete_review_results(fixture, path)
+            fixture_complete_review_results(fixture, path)
             first = path.read_text(encoding="utf-8")
-            MODULE.complete_review_results(fixture, path)
+            fixture_complete_review_results(fixture, path)
             second = path.read_text(encoding="utf-8")
-            coverage = MODULE.review_coverage(fixture, review_input(path))
+            coverage = fixture_review_coverage(fixture, review_input(path))
 
             branch_row = next(
                 row for row in self.payload["rows"]
@@ -1386,12 +1535,12 @@ epilogue {{
                 + MODULE.REVIEW_EVIDENCE_END + "\n",
                 encoding="utf-8",
             )
-            MODULE.complete_review_results(legacy_fixture, legacy_path)
+            fixture_complete_review_results(legacy_fixture, legacy_path)
             legacy_rendered = legacy_path.read_text(encoding="utf-8")
             legacy_decisions = MODULE.review_decisions_from_text(
                 legacy_rendered
             )
-            legacy_coverage = MODULE.review_coverage(
+            legacy_coverage = fixture_review_coverage(
                 legacy_fixture, review_input(legacy_path)
             )
             malformed_marker_documents = {
@@ -1419,7 +1568,7 @@ epilogue {{
                     with self.assertRaisesRegex(
                         ValueError, "partial or duplicated"
                     ):
-                        MODULE.complete_review_results(
+                        fixture_complete_review_results(
                             legacy_fixture, malformed_path
                         )
                     self.assertEqual(

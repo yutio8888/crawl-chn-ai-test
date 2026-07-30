@@ -329,6 +329,25 @@ be rebuilt as one new candidate with new mixed review and a complete normal
 verification-v5 final gate. The rootfix exception expires permanently when F2
 lands.
 
+F2 cannot safely authorize that ledger rebuild directly: its
+character-mechanics, god and species/background renderers replace the visible
+review cards with hash-only strict evidence, while its item and world
+renderers omit required development and migration history. The separate
+`DCSS-ZH-LEDGER-SEED-2026-07-30` exception permits only one exact, externally
+owner-authorized F2-to-P3 policy installation. P3 changes the five
+target-side auditors, their focused tests, the canonical review contract and
+its synchronized reviewer copies; it does not change any ledger, translation
+asset, glossary, decision file or normal review gate.
+
+Before P3 is installed, the external canonical owner permit must bind the
+protected ref and exact F2/P3 OIDs, protocol and semantic scope, complete
+24-path manifest and digest, binary diff digest, glossary, F2-trusted routing
+digest and reviewer set, focused and exact-bound verification results, and an
+independent zero-finding review. It authorizes only that exact fast-forward,
+never a descendant. P3 becomes useful only as the trusted target for the next
+normal routing-v2 candidate, whose fully rendered ledgers must then pass the
+P3 whole-document assertions and the complete ordinary v5 evidence chain.
+
 The review profile includes a required, independent `review-ledgers` phase.
 It executes the target checkout's trusted character, god, item, monster,
 species/background, and world auditors against the validated candidate root.

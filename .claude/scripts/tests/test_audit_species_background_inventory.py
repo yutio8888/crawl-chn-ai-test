@@ -35,6 +35,13 @@ def review_input(path):
     )
 
 
+def decision(conclusion, rationale):
+    return {
+        "terminal_conclusion": conclusion,
+        "reviewer_rationale": rationale,
+    }
+
+
 def valid_rows():
     return [
         {
@@ -212,14 +219,53 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
             sum(payload["category_counts"].values()),
         )
 
+    def test_language_snapshot_handles_non_string_nested_keys(self):
+        row = {
+            "forms": {
+                0: {
+                    "english_value": "Full English",
+                    "chinese_value": "完整中文",
+                },
+            },
+        }
+        self.assertEqual(
+            {"forms.0.english_value": "Full English"},
+            MODULE.language_snapshot(row, "english"),
+        )
+        self.assertEqual(
+            {"forms.0.chinese_value": "完整中文"},
+            MODULE.language_snapshot(row, "chinese"),
+        )
+        normalized = MODULE.canonical_json_value({
+            "forms": {10: "ten", 2: "two"},
+        })
+        encoded = json.dumps(
+            normalized, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        self.assertEqual(normalized, json.loads(encoded))
+        with self.assertRaisesRegex(RuntimeError, "colliding JSON object keys"):
+            MODULE.canonical_json_value({1: "numeric", "1": "string"})
+
     def test_review_coverage_requires_one_terminal_row_per_identity(self):
         payload = {
             "glossary_sha256": "a" * 64,
             "inventory_sha256": "b" * 64,
             "count": 2,
             "rows": [
-                {"identity": "species:SP_TEST"},
-                {"identity": "background:JOB_TEST"},
+                {
+                    "identity": "species:SP_TEST",
+                    "category": "species",
+                    "lifecycle": "current_playable",
+                    "english_name": "Test Species",
+                    "current_chinese_name": "测试种族",
+                },
+                {
+                    "identity": "background:JOB_TEST",
+                    "category": "background",
+                    "lifecycle": "current_playable",
+                    "english_name": "Test Background",
+                    "current_chinese_name": "测试背景",
+                },
             ]
         }
         with tempfile.TemporaryDirectory() as directory:
@@ -228,8 +274,12 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                 MODULE.render_review_results(
                     payload,
                     {
-                        "species:SP_TEST": "keep",
-                        "background:JOB_TEST": "adjust",
+                        "species:SP_TEST": decision(
+                            "keep", "complete species rationale"
+                        ),
+                        "background:JOB_TEST": decision(
+                            "adjust", "complete background rationale"
+                        ),
                     },
                 ),
                 encoding="utf-8",
@@ -260,17 +310,40 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
             "inventory_sha256": "b" * 64,
             "count": 2,
             "rows": [
-                {"identity": "background:JOB_TEST", "fact": "background"},
-                {"identity": "species:SP_TEST", "fact": "species"},
+                {
+                    "identity": "background:JOB_TEST",
+                    "category": "background",
+                    "lifecycle": "current_playable",
+                    "english_name": "Background\nwith | pipe",
+                    "current_chinese_name": "背景\n含 | 管道",
+                    "fact": "b" * 200,
+                },
+                {
+                    "identity": "species:SP_TEST",
+                    "category": "species",
+                    "lifecycle": "current_playable",
+                    "english_name": "Species",
+                    "current_chinese_name": "种族",
+                    "fact": "species",
+                },
             ],
         }
         clean = MODULE.render_review_results(
             payload,
             {
-                "background:JOB_TEST": "keep",
-                "species:SP_TEST": "adjust",
+                "background:JOB_TEST": decision(
+                    "keep", "full rationale\nwith | pipe and " + "r" * 200
+                ),
+                "species:SP_TEST": decision(
+                    "adjust", "complete species rationale"
+                ),
             },
         )
+        self.assertNotIn("…", clean)
+        self.assertIn(r"Background\nwith ", clean)
+        self.assertIn("&#124; pipe", clean)
+        self.assertIn("b" * 200, clean)
+        self.assertIn("r" * 200, clean)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             path.write_text(clean, encoding="utf-8")
@@ -302,6 +375,7 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, fact_sha256="0" * 64),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
                     ),
                     *lines[first_index + 1:],
@@ -310,7 +384,32 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, terminal_conclusion="pending"),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "empty-rationale": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(first, reviewer_rationale=""),
+                        ensure_ascii=False,
+                        sort_keys=True, separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "production-facts": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(
+                            first,
+                            production_facts=dict(
+                                first["production_facts"], fact="tampered"
+                            ),
+                        ),
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
                     ),
                     *lines[first_index + 1:],
                 ],
@@ -322,6 +421,7 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                     *lines[:second_index + 1],
                     json.dumps(
                         dict(first, identity="species:SP_EXTRA"),
+                        ensure_ascii=False,
                         sort_keys=True, separators=(",", ":"),
                     ),
                     *lines[second_index + 1:],
@@ -367,6 +467,120 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                     )[
                         "coverage_equal"
                     ])
+            old_v1 = (
+                clean
+                .replace("STRICT REVIEW EVIDENCE v2",
+                         "STRICT REVIEW EVIDENCE v1")
+                .replace("SPECIES BACKGROUND REVIEW ARTIFACT v2",
+                         "SPECIES BACKGROUND REVIEW ARTIFACT v1")
+            )
+            path.write_text(old_v1, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "strict review evidence block is missing"
+            ):
+                MODULE.review_coverage(payload, review_input(path))
+
+    def test_write_strict_review_rejects_duplicate_v2_cards_without_writing(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 1,
+            "rows": [{
+                "identity": "species:SP_TEST",
+                "category": "species",
+                "lifecycle": "current_playable",
+                "english_name": "Test Species",
+                "current_chinese_name": "测试种族",
+            }],
+        }
+        lines = MODULE.render_review_results(
+            payload,
+            {
+                "species:SP_TEST": decision(
+                    "keep", "complete species rationale"
+                ),
+            },
+        ).splitlines()
+        strict_end = lines.index(MODULE.STRICT_REVIEW_END)
+        lines.insert(strict_end - 1, lines[strict_end - 2])
+        original = ("\n".join(lines) + "\n").encode("utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_bytes(original)
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "duplicate strict review evidence-card identities: "
+                "species:SP_TEST",
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(original, path.read_bytes())
+
+    def test_legacy_migration_preserves_full_rationale_and_fails_missing(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
+            "rows": [
+                {
+                    "identity": "species:SP_TEST",
+                    "category": "species",
+                    "lifecycle": "current_playable",
+                    "english_name": "Test Species",
+                    "current_chinese_name": "测试种族",
+                },
+                {
+                    "identity": "background:JOB_NEW",
+                    "category": "background",
+                    "lifecycle": "current_playable",
+                    "english_name": "New Background",
+                    "current_chinese_name": "新增背景",
+                },
+            ],
+        }
+        legacy = (
+            "| 身份 | 生命周期 | 当前显示 | 生产事实 | 唯一终态结论 |\n"
+            "|---|---|---|---|---|\n"
+            "| `species:SP_TEST` | current | Test Species → 测试种族 | "
+            "full facts | 重译：reviewer-authored full rationale |\n"
+        )
+        decisions = MODULE.legacy_review_decisions(legacy)
+        self.assertEqual(
+            decision("retranslate", "reviewer-authored full rationale"),
+            decisions["species:SP_TEST"],
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_text(legacy, encoding="utf-8")
+            before = path.read_text(encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "background:JOB_NEW"):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(before, path.read_text(encoding="utf-8"))
+            old_hash_only = (
+                "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->\n"
+                "{}\n```jsonl\n"
+                '{"fact_sha256":"'
+                + "0" * 64
+                + '","identity":"species:SP_TEST",'
+                '"terminal_conclusion":"keep"}\n'
+                "```\n<!-- END STRICT REVIEW EVIDENCE v1 -->\n"
+            )
+            path.write_text(old_hash_only, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "missing explicit reviewer decisions"
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(
+                old_hash_only, path.read_text(encoding="utf-8")
+            )
+
+        decisions["background:JOB_NEW"] = decision(
+            "keep", "explicit reviewer decision for new background"
+        )
+        rendered = MODULE.render_review_results(payload, decisions)
+        self.assertIn("reviewer-authored full rationale", rendered)
+        self.assertIn(
+            "explicit reviewer decision for new background", rendered
+        )
 
     def test_cli_writes_inventory_even_when_findings_exist(self):
         with tempfile.TemporaryDirectory() as directory:

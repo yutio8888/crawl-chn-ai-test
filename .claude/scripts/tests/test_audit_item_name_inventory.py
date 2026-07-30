@@ -625,6 +625,19 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         )
         self.assertIn(payload["baseline"], result_text)
         self.assertNotIn(payload["candidate_head"], result_text)
+        for report in MODULE.DEVELOPMENT_REPORTS:
+            self.assertIn(report["path"], result_text)
+            self.assertIn(f"status={report['status']}", result_text)
+            self.assertIn(
+                f"blocking_failures={report['blocking_failures']}",
+                result_text,
+            )
+            self.assertIn(report["note"], result_text)
+        self.assertIn(
+            MODULE.DEVELOPMENT_NON_OVERWRITE_STATEMENT, result_text
+        )
+        for evidence in MODULE.ITEM_PRODUCER_CONSUMER_EVIDENCE:
+            self.assertIn(evidence, result_text)
 
     def test_issue29_review_header_rejects_each_minimal_mutation(self):
         inventory = {
@@ -676,6 +689,9 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             "glossary_sha256": "2" * 64,
             "baseline": "3" * 40,
             "count": 0,
+            "development_reports": copy.deepcopy(
+                MODULE.DEVELOPMENT_REPORTS
+            ),
             "scope": {
                 "randart_component_metrics": {
                     "totals": {
@@ -718,6 +734,33 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     + MODULE.REVIEW_ARTIFACT_BEGIN,
                     1,
                 ),
+                "old-v1-marker": clean.replace(
+                    "ITEM REVIEW ARTIFACT v2",
+                    "ITEM REVIEW ARTIFACT v1",
+                ),
+                "missing-producer-consumer": clean.replace(
+                    f"- {MODULE.ITEM_PRODUCER_CONSUMER_EVIDENCE[0]}\n",
+                    "",
+                    1,
+                ),
+                "missing-development-report": clean.replace(
+                    next(
+                        line + "\n" for line in clean.splitlines()
+                        if MODULE.DEVELOPMENT_REPORTS[0]["path"] in line
+                    ),
+                    "",
+                    1,
+                ),
+                "tampered-development-status": clean.replace(
+                    "status=fail; blocking_failures=1",
+                    "status=pass; blocking_failures=0",
+                    1,
+                ),
+                "missing-non-overwrite-statement": clean.replace(
+                    MODULE.DEVELOPMENT_NON_OVERWRITE_STATEMENT + "\n",
+                    "",
+                    1,
+                ),
             }
             for field in summary:
                 changed = list(lines)
@@ -735,6 +778,26 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     self.assertTrue(
                         violations(text)["artifact_mismatch"]
                     )
+
+        for name, reports in {
+            "missing": MODULE.DEVELOPMENT_REPORTS[:-1],
+            "tampered": [
+                dict(MODULE.DEVELOPMENT_REPORTS[0], status="pass"),
+                *MODULE.DEVELOPMENT_REPORTS[1:],
+            ],
+            "reordered": [
+                MODULE.DEVELOPMENT_REPORTS[1],
+                MODULE.DEVELOPMENT_REPORTS[0],
+                *MODULE.DEVELOPMENT_REPORTS[2:],
+            ],
+        }.items():
+            with self.subTest(inventory_history=name):
+                changed = copy.deepcopy(inventory)
+                changed["development_reports"] = copy.deepcopy(reports)
+                with self.assertRaisesRegex(
+                    RuntimeError, "four-report history"
+                ):
+                    MODULE.render_review_results(changed, [])
 
 
 if __name__ == "__main__":

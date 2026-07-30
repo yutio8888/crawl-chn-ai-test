@@ -81,6 +81,27 @@ DEVELOPMENT_REPORTS = [
         "note": "full code development rerun; all phases passed",
     },
 ]
+ITEM_PRODUCER_CONSUMER_EVIDENCE = (
+    (
+        "Fixed artefact descriptions and quotes query TextDB with "
+        "`get_unrand_name_en()`; localized true names remain display-only."
+    ),
+    (
+        "Gizmos persist canonical English `ARTEFACT_NAME_KEY` plus a finite "
+        "recursive physical-ordinal recipe. Current-locale rendering uses "
+        "zero RNG; old saves without a recipe retain their old opaque display "
+        "string as a safe fallback."
+    ),
+    (
+        "Randart `ARTEFACT_NAME_KEY` and `ARTEFACT_APPEAR_KEY` are opaque "
+        "display caches. Their consumers do not reverse-map them to gameplay "
+        "identity; base/subtype and artefact properties remain authoritative."
+    ),
+)
+DEVELOPMENT_NON_OVERWRITE_STATEMENT = (
+    "所有失败与告警均保留在上述原始报告中；"
+    "失败的开发运行未被后续通过记录覆盖或删除。"
+)
 
 from i18n_shared import (
     load_review_input,
@@ -1916,8 +1937,8 @@ REQUIRED_CARD_FIELDS = {
     "consumer", "metadata", "input", "source_files",
     "terminal_conclusion", "semantic_reason", "reentry_trigger",
 }
-REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v1 -->"
-REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v2 -->"
+REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v2 -->"
 
 
 def parse_review_results(review_input):
@@ -2065,12 +2086,39 @@ def review_artifact_summary(inventory, rows):
     metrics = inventory["scope"]["randart_component_metrics"]["totals"]
     return {
         "baseline": inventory["baseline"],
+        "development_reports": inventory["development_reports"],
         "glossary_sha256": inventory["glossary_sha256"],
         "inventory_count": inventory["count"],
         "inventory_sha256": inventory["inventory_sha256"],
         "randart_production_boundary": metrics,
         "terminal_conclusion_counts": dict(sorted(counts.items())),
     }
+
+
+def development_history_lines(inventory):
+    reports = inventory.get("development_reports")
+    if reports != DEVELOPMENT_REPORTS:
+        raise RuntimeError(
+            "item development report provenance differs from the canonical "
+            "four-report history"
+        )
+    lines = [
+        "## Producer / consumer implementation evidence",
+        "",
+        *(f"- {evidence}" for evidence in ITEM_PRODUCER_CONSUMER_EVIDENCE),
+        "",
+        "## Raw development reports",
+        "",
+    ]
+    for report in reports:
+        lines.append(
+            f"- `{report['path']}` — profile={report['profile']}; "
+            f"status={report['status']}; "
+            f"blocking_failures={report['blocking_failures']}; "
+            f"{report['note']}."
+        )
+    lines.extend(["", DEVELOPMENT_NON_OVERWRITE_STATEMENT, ""])
+    return lines
 
 
 def render_review_results(inventory, rows):
@@ -2092,6 +2140,7 @@ def render_review_results(inventory, rows):
         f"- Review base: `{inventory['baseline']}`",
         f"- Inventory rows: `{inventory['count']}`",
         "",
+        *development_history_lines(inventory),
         "## Evidence cards",
         "",
         "```jsonl",

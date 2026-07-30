@@ -195,6 +195,410 @@ REVIEW_STRUCTURE_MARKERS = (
     REVIEW_EVIDENCE_BEGIN,
     REVIEW_EVIDENCE_END,
 )
+WORLD_INVENTORY_HISTORY = (
+    (
+        "最初发现清单：781 个 identity，Inventory-SHA256 "
+        "`05dcadd34933fae5b5f62d892e3dbd29acbe5fdf0bac9647d6303809c911d96b`。"
+    ),
+    (
+        "翻译资产落地后的旧成员清单：781 个 identity，Inventory-SHA256 "
+        "`100cadf8d9c6fd0b970a0816dbef44b4cb2f2580a05dfa5aefc2a793a444b4af`。"
+    ),
+    (
+        "显示槽纠错后的 761 成员清单：Inventory-SHA256 "
+        "`7a56e520767dce0a1d57a3af82a4fd14705f2c3b304e8b218865fea33892b2be`；"
+        "同一成员集合在 scanner 生产事实加固后重冻结为 "
+        "`940e4b0d41ee1b6a3dc4f3ebcfd677950d75c1e391544dc644acb52e140e4dac`。"
+    ),
+    (
+        "readiness 候选清单：788 个 identity，Inventory-SHA256 "
+        "`34d8c6bbf8cdb440253fe49435ac7d719921ccad72aec91e506456d5e14d937c`。"
+    ),
+    (
+        "完整 composite adoption facts 候选清单：788 个 identity，"
+        "Inventory-SHA256 "
+        "`3b49625119479dddeaa9aee96790bf2cc056e834fb781bca21b0daf774cd15d8`；"
+        "该候选因错误采用首个分隔符前的非生产 TextDB prefix 语义而被 "
+        "code review 拒绝。"
+    ),
+    (
+        "绑定生产 TextDB prefix 语义的上一清单：788 个 identity，"
+        "Inventory-SHA256 "
+        "`98bf113173ab65ba614b960d827553aae31a5bc52c55e993706f686468ab1cb4`；"
+        "40 branch + 211 feature + 14 portal_family + 523 des_display。"
+    ),
+    (
+        "本地化笔记快照落地后的最终清单：789 个 identity，Inventory-SHA256 "
+        "`fae158ab3d86729924978f2124d79c05ea3f598d93d6e925171b911cdeb3d335`；"
+        "40 branch + 211 feature + 14 portal_family + 524 des_display。"
+    ),
+    (
+        "生命周期：781 current + 4 compatibility_unfinished + "
+        "1 dummy_redefinition + 2 internal_overlay + 1 internal_sentinel。"
+    ),
+    (
+        "最终 inventory 的 17 类 violations 均为 0；前述清单只作为 "
+        "superseded 审计历史，不计入最终覆盖数。"
+    ),
+)
+WORLD_INITMSG_OLD_ONLY = (
+    (
+        "des_display:crawl-ref/source/dat/des/portals/bailey.des:"
+        "function:bailey_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/bailey.des:"
+        "function:bailey_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/bazaar.des:"
+        "function:bazaar_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/bazaar.des:"
+        "function:bazaar_portal:initmsg:1",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/bazaar.des:"
+        "function:bazaar_portal:initmsg:4",
+        "des_display:crawl-ref/source/dat/des/portals/bazaar.des:"
+        "function:bazaar_portal:initmsg:1",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/desolation.des:"
+        "function:desolation_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/desolation.des:"
+        "function:desolation_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/gauntlet.des:"
+        "function:gauntlet_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/gauntlet.des:"
+        "function:gauntlet_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/icecave.des:"
+        "function:ice_cave_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/icecave.des:"
+        "function:ice_cave_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/necropolis.des:"
+        "function:necropolis_portal_entry:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/necropolis.des:"
+        "function:necropolis_portal_entry:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/ossuary.des:"
+        "function:ossuary_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/ossuary.des:"
+        "function:ossuary_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/sewer.des:"
+        "function:sewer_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/sewer.des:"
+        "function:sewer_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/volcano.des:"
+        "function:volcano_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/volcano.des:"
+        "function:volcano_portal:initmsg:2",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "function:wizlab_portal:initmsg:3",
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "function:wizlab_portal:initmsg:1",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "function:wizlab_portal:initmsg:4",
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "function:wizlab_portal:initmsg:1",
+    ),
+)
+WORLD_DIAGNOSTIC_OLD_ONLY = (
+    (
+        "des_display:crawl-ref/source/dat/des/arrival/twisted.des:"
+        "NAME:dpeg_arrival_water_fire:crawl.mpr:1",
+        "map-generation coordinate diagnostic",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:1",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:2",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:3",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:4",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:5",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/builder/"
+        "layout_geoelf_castle.des:NAME:layout_geoelf_castle:crawl.mpr:6",
+        "map-generation diagnostic output",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/variable/compat.des:"
+        "function:get_replica:crawl.mpr:3",
+        "replica coordinate diagnostic output",
+    ),
+)
+WORLD_READINESS_ADDITIONS = (
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:index_due_trove_eringya:trove_milestone_title:1",
+        "Eringya's Secret Bog",
+        "埃林吉亚的秘密毒沼",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:nicolae_index_trove_orange_crystal:trove_milestone_title:1",
+        "an orange crystal hatchery",
+        "橙晶孵化场",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:nicolae_trove_octopus_king:trove_milestone_title:1",
+        "The Octopus King's Forgotten Garden",
+        "章鱼王的遗忘花园",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:pf_index_trove_rutra:trove_milestone_title:1",
+        "Rutra's Hidden Sanctum",
+        "鲁特拉的隐秘圣所",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_dread_knight:trove_milestone_title:1",
+        "The Dread Knight's Derelict Chapel",
+        "恐惧骑士的废弃礼拜堂",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_erebora:trove_milestone_title:1",
+        "The Lost Hoard of Erebora",
+        "埃雷博拉失落的宝藏",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_justicar:trove_milestone_title:1",
+        "The First Justicar's Armoury",
+        "初代执法官的军械库",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_leda:trove_milestone_title:1",
+        "Leda's Sunken Stockpile",
+        "勒达的沉没储藏室",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_nameless_infernalists:"
+        "trove_milestone_title:1",
+        "The Name-Rending Infernalists' Reservoir",
+        "裂名炼狱术士的秘库",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_ozocubu:trove_milestone_title:1",
+        "Ozocubu's Refrigerator",
+        "奥佐库布的冷藏库",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_rift:trove_milestone_title:1",
+        "a devouring Rift",
+        "吞噬万物的裂隙",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/trove.des:"
+        "NAME:regret_index_trove_storm_queen:trove_milestone_title:1",
+        "The Storm Queen's Palace Crash-Site",
+        "风暴女王宫殿坠毁地",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_alistair:wizlab_milestone_title:1",
+        "Alistair's Party Mansion",
+        "阿利斯泰尔的宴会庄园",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_borgnjor:wizlab_milestone_title:1",
+        "Borgnjor's Mausoleum",
+        "博格尼尔的陵墓",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_cigotuvi:wizlab_milestone_title:1",
+        "Cigotuvi's Fleshworks",
+        "西格图维的血肉工坊",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_cloud:wizlab_milestone_title:1",
+        "The Chambers of the Cloud Mage",
+        "云中法师的密室",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_demon:wizlab_milestone_title:1",
+        "The Hall of the Hellbinder",
+        "地狱缚者的大厅",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_doroklohe:wizlab_milestone_title:1",
+        "Doroklohe's Tomb",
+        "多洛克洛之墓",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_eringya:wizlab_milestone_title:1",
+        "Eringya's Formal Garden",
+        "埃林吉亚的规整花园",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_golubria:wizlab_milestone_title:1",
+        "The Roulette of Golubria",
+        "戈卢布里亚的轮盘赌",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_iskenderun:wizlab_milestone_title:1",
+        "Iskenderun's Mystic Tower",
+        "伊斯肯德伦的神秘高塔",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_lehudib:wizlab_milestone_title:1",
+        "Lehudib's Moon Base",
+        "勒胡迪布的月球基地",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_maxwell:wizlab_milestone_title:1",
+        "Maxwell's Workshop",
+        "麦克斯韦的工坊",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_tukima:wizlab_milestone_title:1",
+        "Tukima's Studio",
+        "图基玛的工作室",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_wucad:wizlab_milestone_title:1",
+        "Wucad Mu's Monastery",
+        "吴卡德·穆的修道院",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_yara:wizlab_milestone_title:1",
+        "Yara's Duelist Academy",
+        "亚拉的决斗学院",
+    ),
+    (
+        "des_display:crawl-ref/source/dat/des/portals/wizlab.des:"
+        "NAME:wizlab_zonguldrok:wizlab_milestone_title:1",
+        "Zonguldrok's Shrine",
+        "宗古德洛克的神殿",
+    ),
+)
+WORLD_IMPLEMENTATION_EVIDENCE = (
+    (
+        "每个 identity 恰有一张 terminal evidence card；全部生产事实单元由 "
+        "scanner 的 `review_expected_fact_cells()` 从当前生产源重新导出，"
+        "人工结论不充当 producer/consumer、机制、token 或 sink 事实来源。"
+    ),
+    (
+        "静态与动态显示路径均在最终显示 sink 翻译；Trove/Wizlab 玩家显示 "
+        "title 参数使用有限 SourceDB 标题翻译。note 保存语言锁定的完整显示"
+        "快照，缺键时整条英文回退；milestone 保持 canonical English。"
+    ),
+    (
+        "readiness 修正覆盖 `sewer drain`、Trove/Wizlab title、portal 名称、"
+        "格律翁／万魔殿领主专名及 transporter；English lookup/protocol/"
+        "storage key 均未翻译。"
+    ),
+    "Code profile PASS：`20260726T223908120479000+0800-70564-01dc9911ec99`。",
+    (
+        "Translation profile PASS："
+        "`20260726T224439361358000+0800-73377-01dc9911ec99`。"
+    ),
+    (
+        "DLua prefix 定向测试、protocol negative scanner，以及 portal "
+        "EN↔ZH/display-title/storage 定向测试均 PASS。"
+    ),
+)
+WORLD_DEFER_GROUPS = (
+    (
+        "compatibility_unfinished lifecycle",
+        (
+            "branch:BRANCH_DWARF",
+            "branch:BRANCH_BLADE",
+            "branch:BRANCH_FOREST",
+            "branch:BRANCH_LABYRINTH",
+        ),
+    ),
+    (
+        "dummy_redefinition lifecycle",
+        ("feature:DNGN_DECORATIVE_FLOOR",),
+    ),
+    (
+        "internal_overlay lifecycle",
+        (
+            "feature:DNGN_EXPLORE_HORIZON",
+            "feature:DNGN_TRAVEL_TRAIL",
+        ),
+    ),
+    (
+        "internal_sentinel lifecycle",
+        ("feature:DNGN_UNSEEN",),
+    ),
+    (
+        "other explicitly owned deferral",
+        (
+            "des_display:crawl-ref/source/dat/des/variable/compat.des:"
+            "function:get_replica:crawl.mpr:1",
+        ),
+    ),
+    (
+        "protocol-only or non-display feature identity",
+        (
+            "feature:DNGN_BADLY_SEALED_DOOR",
+            "feature:DNGN_EXIT_LABYRINTH",
+            "feature:DNGN_ENTER_LABYRINTH",
+            "feature:DNGN_ENTER_DWARF",
+            "feature:DNGN_ENTER_FOREST",
+            "feature:DNGN_ENTER_BLADE",
+            "feature:DNGN_EXIT_DWARF",
+            "feature:DNGN_EXIT_FOREST",
+            "feature:DNGN_EXIT_BLADE",
+            "feature:DNGN_ALTAR_PAKELLAS",
+            "feature:DNGN_DRY_FOUNTAIN_BLUE",
+            "feature:DNGN_DRY_FOUNTAIN_SPARKLING",
+            "feature:DNGN_DRY_FOUNTAIN_BLOOD",
+        ),
+    ),
+)
 
 
 def relative(path):
@@ -1858,7 +2262,126 @@ def review_artifact_summary(payload, decisions):
     }
 
 
-def render_review_results(payload, decisions):
+def world_history_lines():
+    """Render the frozen superseded-boundary and membership evidence."""
+    lines = [
+        "## Inventory 审计历史与最终边界",
+        "",
+        *(f"- {entry}" for entry in WORLD_INVENTORY_HISTORY),
+        "",
+        "## Identity migration 机械证明",
+        "",
+        (
+            "旧 516 个 DES identity 纠正为 496 个；old-only 20、new-only 0。"
+            "其中 12 个是相邻 `initmsg` 片段合并／重编号，8 个是地图生成"
+            "诊断输出。显示 wrapper 的独立前后集合均为 504，双向差集均为 0。"
+        ),
+        "",
+        "### 12 个 initmsg old-only identity 与存活 identity",
+        "",
+        *(
+            f"- `{old}` → `{survivor}`"
+            for old, survivor in WORLD_INITMSG_OLD_ONLY
+        ),
+        "",
+        "### 8 个诊断排除 identity",
+        "",
+        *(
+            f"- `{identity}` — {reason}"
+            for identity, reason in WORLD_DIAGNOSTIC_OLD_ONLY
+        ),
+        "",
+        (
+            "上述 20 项完整解释了 old-only 集合；new-only 为空。合并后的"
+            "存活卡记录完整 English runtime key、当前中文、late sink、"
+            "所有旧片段证据及被拒方案。"
+        ),
+        "",
+        "## 761→788 readiness membership migration",
+        "",
+        (
+            "成员迁移为 761→788，新增 27、移除 0。新增项严格限于生产代码"
+            "实际消费的 Trove/Wizlab 有限标题；该历史阶段的 note/milestone "
+            "持久化载荷仍保持 canonical English，后续笔记快照语义见下节。"
+        ),
+        "",
+        *(
+            f"- `{identity}` — `{english}` → `{chinese}`"
+            for identity, english, chinese in WORLD_READINESS_ADDITIONS
+        ),
+        "",
+        "## 788→789 本地化笔记身份迁移",
+        "",
+        (
+            "Ashenzari 的单分支与双分支笔记使用两个不同的完整运行时模板，"
+            "因此原有一个拼接式 identity 被两个可独立验证的模板 identity "
+            "取代；old-only 0、new-only 1。其余 8 个 `crawl.take_note` "
+            "identity 成员保持不变。9 个笔记 identity 均保存创建时语言的"
+            "完整显示快照；模板或任一字符串参数缺键时整条回退英文，"
+            "milestone 与其他协议值保持 canonical English。"
+        ),
+        "",
+    ]
+    return lines
+
+
+def implementation_and_defer_history_lines(
+    payload, decisions, allow_test_fixture_subset=False
+):
+    """Bind the visible retained-defer history to terminal evidence cards."""
+    inventory_ids = {row["identity"] for row in payload["rows"]}
+    expected_deferred = {
+        identity
+        for _heading, identities in WORLD_DEFER_GROUPS
+        for identity in identities
+    }
+    missing_inventory_defer_ids = sorted(expected_deferred - inventory_ids)
+    if missing_inventory_defer_ids and not allow_test_fixture_subset:
+        raise ValueError(
+            "world inventory is missing frozen defer-history identities: "
+            + ", ".join(missing_inventory_defer_ids)
+        )
+    use_frozen_defer_history = not missing_inventory_defer_ids
+    if use_frozen_defer_history:
+        actual_deferred = {
+            identity for identity, decision in decisions.items()
+            if terminal_conclusion_kind(decision.get("conclusion", ""))
+            in {"defer implementation", "defer terminology"}
+        }
+        if actual_deferred != expected_deferred:
+            missing = sorted(expected_deferred - actual_deferred)
+            unexpected = sorted(actual_deferred - expected_deferred)
+            raise ValueError(
+                "world defer history differs from terminal decisions: "
+                f"missing={missing}, unexpected={unexpected}"
+            )
+
+    lines = [
+        *(f"- {evidence}" for evidence in WORLD_IMPLEMENTATION_EVIDENCE),
+        "",
+        "## 仍保留的 defer（按权威边界分组）",
+        "",
+    ]
+    if use_frozen_defer_history:
+        for heading, identities in WORLD_DEFER_GROUPS:
+            lines.extend([
+                f"### {heading}（{len(identities)}）",
+                "",
+                *(f"- `{identity}`" for identity in identities),
+                "",
+            ])
+    else:
+        lines.extend([
+            "该测试或迁移子集不覆盖冻结的 789-member defer 边界；"
+            "完整生产 artifact 必须恢复全部分组。",
+            "",
+        ])
+    return lines
+
+
+def render_review_results(
+    payload, decisions, allow_test_fixture_subset=False
+):
     rows = sorted(payload["rows"], key=lambda row: row["identity"])
     canonical_decisions = {
         row["identity"]: decisions.get(
@@ -1888,6 +2411,7 @@ def render_review_results(payload, decisions):
         summary,
         REVIEW_ARTIFACT_END,
         "",
+        *world_history_lines(),
         f"## {VISIBLE_TERMINAL_SUMMARY_HEADING}",
         "",
         *(
@@ -1895,6 +2419,11 @@ def render_review_results(payload, decisions):
             for kind in TERMINAL_CONCLUSION_KINDS
         ),
         "",
+        *implementation_and_defer_history_lines(
+            payload,
+            canonical_decisions,
+            allow_test_fixture_subset=allow_test_fixture_subset,
+        ),
         REVIEW_EVIDENCE_BEGIN,
         f"Inventory-SHA256: {payload['inventory_sha256']}",
         "",
@@ -1924,7 +2453,9 @@ def render_review_results(payload, decisions):
     return rendered
 
 
-def review_coverage(payload, review_input):
+def review_coverage(
+    payload, review_input, allow_test_fixture_subset=False
+):
     """Prove exactly one terminal conclusion per frozen inventory identity."""
     text = review_input.text
     marker_counts = review_structure_marker_counts(text)
@@ -2059,7 +2590,11 @@ def review_coverage(payload, review_input):
         for identity, card in rows
     }
     try:
-        expected_artifact = render_review_results(payload, decisions)
+        expected_artifact = render_review_results(
+            payload,
+            decisions,
+            allow_test_fixture_subset=allow_test_fixture_subset,
+        )
     except ValueError:
         expected_artifact = None
     artifact_exact = (
@@ -2122,13 +2657,19 @@ def review_coverage(payload, review_input):
     }
 
 
-def complete_review_results(payload, path):
+def complete_review_results(
+    payload, path, allow_test_fixture_subset=False
+):
     """Rewrite the complete artifact, preserving only reviewer decisions."""
     old = path.read_text(encoding="utf-8") if path.exists() else ""
     decisions = review_decisions_from_text(old)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        render_review_results(payload, decisions),
+        render_review_results(
+            payload,
+            decisions,
+            allow_test_fixture_subset=allow_test_fixture_subset,
+        ),
         encoding="utf-8",
     )
 

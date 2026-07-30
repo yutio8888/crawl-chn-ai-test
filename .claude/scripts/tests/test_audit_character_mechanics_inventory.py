@@ -35,10 +35,44 @@ def review_input(path):
     )
 
 
+def decision(conclusion, rationale):
+    return {
+        "terminal_conclusion": conclusion,
+        "reviewer_rationale": rationale,
+    }
+
+
 class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_language_snapshot_handles_non_string_nested_keys(self):
+        row = {
+            "forms": {
+                0: {
+                    "english_value": "Full English",
+                    "chinese_value": "完整中文",
+                },
+            },
+        }
+        self.assertEqual(
+            {"forms.0.english_value": "Full English"},
+            MODULE.language_snapshot(row, "english"),
+        )
+        self.assertEqual(
+            {"forms.0.chinese_value": "完整中文"},
+            MODULE.language_snapshot(row, "chinese"),
+        )
+        normalized = MODULE.canonical_json_value({
+            "forms": {10: "ten", 2: "two"},
+        })
+        encoded = json.dumps(
+            normalized, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        self.assertEqual(normalized, json.loads(encoded))
+        with self.assertRaisesRegex(RuntimeError, "colliding JSON object keys"):
+            MODULE.canonical_json_value({1: "numeric", "1": "string"})
 
     def test_cpp_string_and_initializer_parsers_preserve_structure(self):
         row = (
@@ -446,15 +480,31 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             "inventory_sha256": "b" * 64,
             "count": 2,
             "rows": [
-                {"identity": "mutation:MUT_TEST"},
-                {"identity": "attribute:STAT_STR"},
+                {
+                    "identity": "mutation:MUT_TEST",
+                    "category": "mutation",
+                    "lifecycle": "current",
+                    "english_source_name": "Test mutation",
+                    "current_chinese_name": "测试变异",
+                },
+                {
+                    "identity": "attribute:STAT_STR",
+                    "category": "attribute",
+                    "lifecycle": "current",
+                    "english_source_name": "strength",
+                    "current_chinese_name": "力量",
+                },
             ]
         }
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "results.md"
             conclusions = {
-                "mutation:MUT_TEST": "keep",
-                "attribute:STAT_STR": "adjust",
+                "mutation:MUT_TEST": decision(
+                    "keep", "完整 reviewer 理由"
+                ),
+                "attribute:STAT_STR": decision(
+                    "adjust", "explicit attribute rationale"
+                ),
             }
             path.write_text(
                 MODULE.render_review_results(payload, conclusions),
@@ -463,7 +513,6 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             clean = MODULE.review_coverage(payload, review_input(path))
             self.assertTrue(clean["coverage_equal"])
 
-            conclusions["mutation:MUT_TEST"] = "pending"
             text = MODULE.render_review_results(payload, conclusions)
             text = "\n".join(
                 line for line in text.splitlines()
@@ -476,7 +525,7 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             ["attribute:STAT_STR"], broken["missing_evidence_cards"]
         )
         self.assertEqual(
-            ["mutation:MUT_TEST"], broken["invalid_terminal_conclusions"]
+            [], broken["invalid_terminal_conclusions"]
         )
 
     def test_strict_review_rejects_stale_bindings_fact_and_card_mutations(self):
@@ -485,17 +534,40 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             "inventory_sha256": "b" * 64,
             "count": 2,
             "rows": [
-                {"identity": "status:STATUS_ONE", "fact": "one"},
-                {"identity": "status:STATUS_TWO", "fact": "two"},
+                {
+                    "identity": "status:STATUS_ONE",
+                    "category": "status",
+                    "lifecycle": "current",
+                    "english_source_name": "one\nwith | pipe",
+                    "current_chinese_name": "一\n含 | 管道",
+                    "fact": "x" * 200,
+                },
+                {
+                    "identity": "status:STATUS_TWO",
+                    "category": "status",
+                    "lifecycle": "current",
+                    "english_source_name": "two",
+                    "current_chinese_name": "二",
+                    "fact": "two",
+                },
             ],
         }
         clean_text = MODULE.render_review_results(
             payload,
             {
-                "status:STATUS_ONE": "keep",
-                "status:STATUS_TWO": "adjust",
+                "status:STATUS_ONE": decision(
+                    "keep", "full rationale\nwith | pipe and " + "r" * 200
+                ),
+                "status:STATUS_TWO": decision(
+                    "adjust", "second complete rationale"
+                ),
             },
         )
+        self.assertNotIn("…", clean_text)
+        self.assertIn(r"one\nwith ", clean_text)
+        self.assertIn("&#124; pipe", clean_text)
+        self.assertIn("x" * 200, clean_text)
+        self.assertIn("r" * 200, clean_text)
 
         def mutate_metadata(text, field, value):
             lines = text.splitlines()
@@ -567,6 +639,7 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, fact_sha256="0" * 64),
+                        ensure_ascii=False,
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
@@ -576,6 +649,32 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                     *lines[:first_index],
                     json.dumps(
                         dict(first, terminal_conclusion="pending"),
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "empty-rationale": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(first, reviewer_rationale=""),
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ),
+                    *lines[first_index + 1:],
+                ],
+                "production-facts": [
+                    *lines[:first_index],
+                    json.dumps(
+                        dict(
+                            first,
+                            production_facts=dict(
+                                first["production_facts"], fact="tampered"
+                            ),
+                        ),
+                        ensure_ascii=False,
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
@@ -594,6 +693,7 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                     *lines[:second_index + 1],
                     json.dumps(
                         dict(second, identity="status:STATUS_EXTRA"),
+                        ensure_ascii=False,
                         sort_keys=True,
                         separators=(",", ":"),
                     ),
@@ -628,6 +728,122 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                     )[
                         "coverage_equal"
                     ])
+            old_v1 = (
+                clean_text
+                .replace("STRICT REVIEW EVIDENCE v2",
+                         "STRICT REVIEW EVIDENCE v1")
+                .replace("CHARACTER REVIEW ARTIFACT v2",
+                         "CHARACTER REVIEW ARTIFACT v1")
+            )
+            path.write_text(old_v1, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "strict review evidence block is missing"
+            ):
+                MODULE.review_coverage(payload, review_input(path))
+
+    def test_write_strict_review_rejects_duplicate_v2_cards_without_writing(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 1,
+            "rows": [{
+                "identity": "status:STATUS_TEST",
+                "category": "status",
+                "lifecycle": "current",
+                "english_source_name": "Test",
+                "current_chinese_name": "测试",
+            }],
+        }
+        lines = MODULE.render_review_results(
+            payload,
+            {
+                "status:STATUS_TEST": decision(
+                    "keep", "complete status rationale"
+                ),
+            },
+        ).splitlines()
+        strict_end = lines.index(MODULE.STRICT_REVIEW_END)
+        lines.insert(strict_end - 1, lines[strict_end - 2])
+        original = ("\n".join(lines) + "\n").encode("utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_bytes(original)
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "duplicate strict review evidence-card identities: "
+                "status:STATUS_TEST",
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(original, path.read_bytes())
+
+    def test_legacy_migration_preserves_rationale_and_refuses_missing_identity(self):
+        payload = {
+            "glossary_sha256": "a" * 64,
+            "inventory_sha256": "b" * 64,
+            "count": 2,
+            "rows": [
+                {
+                    "identity": "status:STATUS_EXISTING",
+                    "category": "status",
+                    "lifecycle": "current",
+                    "english_source_name": "Existing",
+                    "current_chinese_name": "现有",
+                },
+                {
+                    "identity": "status:STATUS_NEW",
+                    "category": "status",
+                    "lifecycle": "current",
+                    "english_source_name": "New",
+                    "current_chinese_name": "新增",
+                },
+            ],
+        }
+        legacy = (
+            "| 身份 | 生命周期 | 名称 | 生产事实 | 终态结论 |\n"
+            "|---|---|---|---|---|\n"
+            "| `status:STATUS_EXISTING` | current | Existing → 现有 | "
+            "full fact | 修订：reviewer-authored complete rationale |\n"
+        )
+        decisions = MODULE.legacy_review_decisions(legacy)
+        self.assertEqual(
+            decision("adjust", "reviewer-authored complete rationale"),
+            decisions["status:STATUS_EXISTING"],
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.md"
+            path.write_text(legacy, encoding="utf-8")
+            before = path.read_text(encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "status:STATUS_NEW"
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(before, path.read_text(encoding="utf-8"))
+            old_hash_only = (
+                "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->\n"
+                "{}\n```jsonl\n"
+                '{"fact_sha256":"'
+                + "0" * 64
+                + '","identity":"status:STATUS_EXISTING",'
+                '"terminal_conclusion":"keep"}\n'
+                "```\n<!-- END STRICT REVIEW EVIDENCE v1 -->\n"
+            )
+            path.write_text(old_hash_only, encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError, "missing explicit reviewer decisions"
+            ):
+                MODULE.write_strict_review_evidence(payload, path)
+            self.assertEqual(
+                old_hash_only, path.read_text(encoding="utf-8")
+            )
+
+        decisions["status:STATUS_NEW"] = decision(
+            "keep", "explicit reviewer decision for the new identity"
+        )
+        rendered = MODULE.render_review_results(payload, decisions)
+        self.assertIn("reviewer-authored complete rationale", rendered)
+        self.assertIn(
+            "explicit reviewer decision for the new identity", rendered
+        )
 
     def test_cli_persists_inventory_when_findings_exist(self):
         with tempfile.TemporaryDirectory() as directory:

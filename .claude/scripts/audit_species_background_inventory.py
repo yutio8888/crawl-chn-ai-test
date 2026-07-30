@@ -45,15 +45,28 @@ ZH_SPECIES_DESCRIPTIONS = SRC / "dat/descript/zh/species.txt"
 EN_BACKGROUND_DESCRIPTIONS = SRC / "dat/descript/backgrounds.txt"
 ZH_BACKGROUND_DESCRIPTIONS = SRC / "dat/descript/zh/backgrounds.txt"
 SPECIES_BACKGROUND_REVIEW_BASE = "05c1f1ff519450a8d1b29ec1df74a476042f4a23"
-STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v1 -->"
-STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v1 -->"
+STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v2 -->"
+STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v2 -->"
 REVIEW_ARTIFACT_BEGIN = (
-    "<!-- BEGIN SPECIES BACKGROUND REVIEW ARTIFACT v1 -->"
+    "<!-- BEGIN SPECIES BACKGROUND REVIEW ARTIFACT v2 -->"
 )
-REVIEW_ARTIFACT_END = "<!-- END SPECIES BACKGROUND REVIEW ARTIFACT v1 -->"
+REVIEW_ARTIFACT_END = "<!-- END SPECIES BACKGROUND REVIEW ARTIFACT v2 -->"
 TERMINAL_CONCLUSIONS = {
     "keep", "adjust", "retranslate",
     "defer terminology", "defer implementation",
+}
+REVIEW_DECISION_FIELDS = {
+    "reviewer_rationale", "terminal_conclusion",
+}
+STRICT_CARD_FIELDS = {
+    "current_chinese",
+    "current_english",
+    "fact_sha256",
+    "identity",
+    "lifecycle",
+    "production_facts",
+    "reviewer_rationale",
+    "terminal_conclusion",
 }
 
 from audit_item_name_inventory import (  # noqa: E402
@@ -429,13 +442,10 @@ def fact_sha256(row):
     return hashlib.sha256(encoded).hexdigest()
 
 
-def legacy_review_conclusions(text):
-    rows = re.findall(
-        r"^\|\s*`((?:species:SP|background:JOB)_[A-Z0-9_]+)`"
-        r"\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
-        text,
-        re.MULTILINE,
-    )
+def _split_legacy_decision(value):
+    state, separator, rationale = value.strip().partition("：")
+    if not separator:
+        state, separator, rationale = value.strip().partition(":")
     mapping = {
         "保留": "keep",
         "修订": "adjust",
@@ -444,15 +454,157 @@ def legacy_review_conclusions(text):
         "暂缓实现": "defer implementation",
     }
     return {
-        identity: mapping.get(
-            conclusion.strip().split("：", 1)[0].strip(),
-            conclusion.strip().split("：", 1)[0].strip(),
-        )
-        for identity, conclusion in rows
+        "terminal_conclusion": mapping.get(state.strip(), state.strip()),
+        "reviewer_rationale": rationale.strip() if separator else "",
     }
 
 
-def strict_review_block(payload, conclusions):
+def legacy_review_decisions(text):
+    rows = re.findall(
+        r"^\|\s*`((?:species:SP|background:JOB)_[A-Z0-9_]+)`"
+        r"\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
+        text,
+        re.MULTILINE,
+    )
+    duplicates = sorted(
+        identity for identity, count in Counter(
+            identity for identity, _value in rows
+        ).items()
+        if count > 1
+    )
+    if duplicates:
+        raise RuntimeError(
+            "duplicate legacy reviewer decisions: " + ", ".join(duplicates)
+        )
+    return {
+        identity: _split_legacy_decision(value)
+        for identity, value in rows
+    }
+
+
+def legacy_review_conclusions(text):
+    """Compatibility view for callers that only need the terminal state."""
+    return {
+        identity: decision["terminal_conclusion"]
+        for identity, decision in legacy_review_decisions(text).items()
+    }
+
+
+def _canonical_json_key(key):
+    if isinstance(key, str):
+        return key
+    if key is None:
+        return "null"
+    if key is True:
+        return "true"
+    if key is False:
+        return "false"
+    if isinstance(key, (int, float)):
+        return str(key)
+    raise RuntimeError(f"unsupported JSON object key: {key!r}")
+
+
+def canonical_json_value(value, path="$"):
+    """Normalize object keys exactly once and reject lossy JSON collisions."""
+    if isinstance(value, dict):
+        normalized = {}
+        for key, child_value in value.items():
+            key_text = _canonical_json_key(key)
+            if key_text in normalized:
+                raise RuntimeError(
+                    f"colliding JSON object keys at {path}: {key_text!r}"
+                )
+            normalized[key_text] = canonical_json_value(
+                child_value, f"{path}.{key_text}"
+            )
+        return normalized
+    if isinstance(value, list):
+        return [
+            canonical_json_value(item, f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    raise RuntimeError(f"unsupported JSON value at {path}: {value!r}")
+
+
+def language_snapshot(row, language):
+    """Return every language-labelled field without truncating nested values."""
+    snapshot = {}
+
+    def collect(value, path):
+        if isinstance(value, dict):
+            for key in sorted(value, key=_canonical_json_key):
+                key_text = _canonical_json_key(key)
+                child = f"{path}.{key_text}" if path else key_text
+                if language in key_text.lower():
+                    snapshot[child] = canonical_json_value(
+                        value[key], f"$.{child}"
+                    )
+                if isinstance(value[key], (dict, list)):
+                    collect(value[key], child)
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                if isinstance(item, (dict, list)):
+                    collect(item, f"{path}[{index}]")
+
+    collect(row, "")
+    return snapshot
+
+
+def _validated_decisions(payload, decisions):
+    expected = {row["identity"] for row in payload["rows"]}
+    actual = set(decisions)
+    missing = sorted(expected - actual)
+    unexpected = sorted(actual - expected)
+    if missing or unexpected:
+        details = []
+        if missing:
+            details.append("missing explicit reviewer decisions: " + ", ".join(missing))
+        if unexpected:
+            details.append(
+                "unexpected reviewer decisions: " + ", ".join(unexpected)
+            )
+        raise RuntimeError("; ".join(details))
+    validated = {}
+    for identity in sorted(expected):
+        decision = decisions[identity]
+        if not isinstance(decision, dict) or set(decision) != REVIEW_DECISION_FIELDS:
+            raise RuntimeError(
+                f"reviewer decision fields are invalid for {identity}"
+            )
+        conclusion = decision["terminal_conclusion"]
+        rationale = decision["reviewer_rationale"]
+        if conclusion not in TERMINAL_CONCLUSIONS:
+            raise RuntimeError(
+                f"non-terminal reviewer conclusion for {identity}: {conclusion!r}"
+            )
+        if not isinstance(rationale, str) or not rationale.strip():
+            raise RuntimeError(f"empty reviewer rationale for {identity}")
+        validated[identity] = {
+            "terminal_conclusion": conclusion,
+            "reviewer_rationale": rationale.strip(),
+        }
+    return validated
+
+
+def review_cards(payload, decisions):
+    decisions = _validated_decisions(payload, decisions)
+    cards = []
+    for row in sorted(payload["rows"], key=lambda item: item["identity"]):
+        cards.append({
+            "current_chinese": language_snapshot(row, "chinese"),
+            "current_english": language_snapshot(row, "english"),
+            "fact_sha256": fact_sha256(row),
+            "identity": row["identity"],
+            "lifecycle": row.get("lifecycle"),
+            "production_facts": canonical_json_value(row),
+            **decisions[row["identity"]],
+        })
+    return cards
+
+
+def strict_review_block(payload, cards):
     metadata = {
         "baseline": SPECIES_BACKGROUND_REVIEW_BASE,
         "glossary_sha256": payload["glossary_sha256"],
@@ -466,12 +618,7 @@ def strict_review_block(payload, conclusions):
         ),
         "```jsonl",
     ]
-    for row in sorted(payload["rows"], key=lambda item: item["identity"]):
-        card = {
-            "fact_sha256": fact_sha256(row),
-            "identity": row["identity"],
-            "terminal_conclusion": conclusions.get(row["identity"], "pending"),
-        }
+    for card in cards:
         lines.append(json.dumps(
             card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ))
@@ -479,19 +626,34 @@ def strict_review_block(payload, conclusions):
     return "\n".join(lines)
 
 
+def _strict_review_decisions(cards):
+    identities = [card["identity"] for card in cards]
+    duplicates = sorted(
+        identity for identity, count in Counter(identities).items()
+        if count > 1
+    )
+    if duplicates:
+        raise RuntimeError(
+            "duplicate strict review evidence-card identities: "
+            + ", ".join(duplicates)
+        )
+    return {
+        card["identity"]: {
+            field: card[field] for field in REVIEW_DECISION_FIELDS
+        }
+        for card in cards
+    }
+
+
 def write_strict_review_evidence(payload, path):
     text = path.read_text(encoding="utf-8")
     if STRICT_REVIEW_BEGIN in text or STRICT_REVIEW_END in text:
         _metadata, cards = _parse_strict_review_text(text)
-        conclusions = {
-            card["identity"]: card["terminal_conclusion"] for card in cards
-        }
+        decisions = _strict_review_decisions(cards)
     else:
-        conclusions = legacy_review_conclusions(text)
-    path.write_text(
-        render_review_results(payload, conclusions),
-        encoding="utf-8",
-    )
+        decisions = legacy_review_decisions(text)
+    rendered = render_review_results(payload, decisions)
+    path.write_text(rendered, encoding="utf-8")
 
 
 def parse_strict_review_evidence(review_input):
@@ -516,9 +678,7 @@ def _parse_strict_review_text(text):
     cards = []
     for line in lines[2:-1]:
         card = json.loads(line)
-        if set(card) != {
-            "fact_sha256", "identity", "terminal_conclusion",
-        } or line != json.dumps(
+        if set(card) != STRICT_CARD_FIELDS or line != json.dumps(
             card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ):
             raise RuntimeError("strict review evidence card is invalid")
@@ -554,20 +714,40 @@ def review_coverage(payload, review_input):
     mismatched = sorted(
         card["identity"] for card in cards
         if card["identity"] in expected_by_id
-        and card["fact_sha256"] != fact_sha256(
-            expected_by_id[card["identity"]]
+        and (
+            card["fact_sha256"] != fact_sha256(
+                expected_by_id[card["identity"]]
+            )
+            or card["production_facts"]
+            != canonical_json_value(expected_by_id[card["identity"]])
+            or card["lifecycle"]
+            != expected_by_id[card["identity"]].get("lifecycle")
+            or card["current_english"]
+            != language_snapshot(expected_by_id[card["identity"]], "english")
+            or card["current_chinese"]
+            != language_snapshot(expected_by_id[card["identity"]], "chinese")
         )
     )
     invalid = sorted(
         card["identity"] for card in cards
         if card["terminal_conclusion"] not in TERMINAL_CONCLUSIONS
     )
-    conclusions = {
-        card["identity"]: card["terminal_conclusion"] for card in cards
-    }
-    artifact_exact = (
-        review_input.text == render_review_results(payload, conclusions)
+    empty_rationales = sorted(
+        card["identity"] for card in cards
+        if not isinstance(card["reviewer_rationale"], str)
+        or not card["reviewer_rationale"].strip()
     )
+    decisions = {
+        card["identity"]: {
+            field: card[field] for field in REVIEW_DECISION_FIELDS
+        }
+        for card in cards
+    }
+    try:
+        expected_artifact = render_review_results(payload, decisions)
+    except RuntimeError:
+        expected_artifact = None
+    artifact_exact = review_input.text == expected_artifact
     return {
         **review_input_metadata(review_input),
         "review_results": review_input.logical_path,
@@ -580,13 +760,15 @@ def review_coverage(payload, review_input):
         "canonical_card_order": identities == expected_ids,
         "mismatched_fact_sha256": mismatched,
         "invalid_terminal_conclusions": invalid,
+        "empty_reviewer_rationales": empty_rationales,
         "artifact_exact": artifact_exact,
         "coverage_equal": (
             all(bindings.values())
             and len(identities) == len(expected_ids)
             and not duplicate and not missing and not unexpected
             and identities == expected_ids
-            and not mismatched and not invalid and artifact_exact
+            and not mismatched and not invalid and not empty_rationales
+            and artifact_exact
         ),
     }
 
@@ -616,7 +798,38 @@ def review_artifact_summary(payload):
     }
 
 
-def render_review_results(payload, conclusions):
+def table_json(value):
+    return json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).replace("|", "&#124;")
+
+
+def visible_review_table(cards):
+    lines = [
+        "## Human-visible complete evidence",
+        "",
+        "Every row is rendered from the same complete card as the strict "
+        "JSONL evidence. Values are losslessly JSON-encoded; Markdown "
+        "delimiter pipes use HTML entities, and values are never truncated.",
+        "",
+        "| 身份 | 生命周期 | 完整当前英文 | 完整当前中文 | 完整生产事实 | "
+        "终态结论 | Reviewer rationale |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for card in cards:
+        lines.append(
+            f"| `{card['identity']}` | {table_json(card['lifecycle'])} | "
+            f"{table_json(card['current_english'])} | "
+            f"{table_json(card['current_chinese'])} | "
+            f"{table_json(card['production_facts'])} | "
+            f"`{card['terminal_conclusion']}` | "
+            f"{table_json(card['reviewer_rationale'])} |"
+        )
+    return "\n".join(lines)
+
+
+def render_review_results(payload, decisions):
+    cards = review_cards(payload, decisions)
     summary = json.dumps(
         review_artifact_summary(payload),
         ensure_ascii=False,
@@ -628,7 +841,8 @@ def render_review_results(payload, conclusions):
         f"{REVIEW_ARTIFACT_BEGIN}\n"
         f"{summary}\n"
         f"{REVIEW_ARTIFACT_END}\n\n"
-        f"{strict_review_block(payload, conclusions)}\n"
+        f"{visible_review_table(cards)}\n\n"
+        f"{strict_review_block(payload, cards)}\n"
     )
 
 
