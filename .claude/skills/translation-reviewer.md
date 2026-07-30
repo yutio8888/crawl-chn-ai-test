@@ -270,9 +270,11 @@ After expiration:
 **Exception ID:** `DCSS-ZH-ROOTFIX-2026-07-29`
 **Authority:** repository owner and sole project-policy administrator
 **Base C:** `8aae77c60a5e537e76c7b252c6a311fade4264c2`
-**Status:** No-Go and inactive until policy candidate P is installed by a
-separate owner governance action; after installation, active only for the
-exact `P → F` edge
+**Installed P:** `0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0`
+**Failed F:** `8363639529e650b0c3444614b6978e4d196be7ea`
+**Status:** No-Go and inactive until corrective policy candidate P2 is
+installed by a separate owner governance action; after installation, active
+only for the exact `P2 → F2` edge
 
 This exception repairs one target-trusted regression test which writes its
 mutable fixture beneath the target checkout while its auditor is correctly
@@ -280,20 +282,37 @@ bound to the candidate checkout. The resulting cross-root rejection prevents
 every normal verification-v5 successor of C from authorizing the repair that
 would make the test candidate-root safe.
 
-P is not Go merely because it contains this exception. F remains No-Go until
-the dedicated bootstrap gate below has produced and revalidated its complete
-immutable approval. The dedicated recovery target must not move while either
-condition remains unmet.
+P was separately owner-authorized and installed. Its first repair candidate F
+was formally attempted under bundle
+`e3b2347a71dc716c4c664543449d42197dc3960f00e297e65485515d321649c3`,
+producing immutable failed attempt
+`attempt-1785368942683452000-38040-767b84d22f70`. The committed candidate
+test was invoked with the gate wrapper's own absolute path argument still in
+`sys.argv` and with candidate code detached from the interpreter's real
+`sys.modules["__main__"]`. The failed attempt is retained for forensic history.
+It did not run the intended test suite and cannot authorize F.
 
-### Policy candidate P is not self-authorizing
+P is not Go evidence for F merely because it contains the exception. F remains
+No-Go permanently, and its bundle, readiness, logs, failed attempt and retired
+marker must not be deleted, rewritten, migrated, retried, or reused for F2.
+The dedicated recovery target must not move again until P2 has been separately
+authorized and installed and the dedicated gate has produced and revalidated
+a complete immutable approval for a newly committed F2.
 
-P is the unique policy-and-gate commit prepared for this exception. It must be
-one commit with exactly one parent:
+### Installed P and corrective policy candidate P2
+
+The installed P remains the exact one-commit policy boundary whose parent is
+Base C:
 
 `P^ == 8aae77c60a5e537e76c7b252c6a311fade4264c2`
 
-Its complete changed-path set, computed with rename detection disabled, must be
-exactly:
+P2 is a new, unique, one-commit correction whose exact parent must be the
+installed P:
+
+`P2^ == 0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0`
+
+Both the historical Base-C-to-P edge and the corrective P-to-P2 edge must have
+the same complete changed-path set, computed with rename detection disabled:
 
 - `.agents/policies/review-contract.md`
 - `.claude/agents/translation-reviewer.md`
@@ -313,25 +332,37 @@ exactly:
 - `docs/zh-testing.md`
 
 Every path outside this manifest must have identical path existence, mode,
-object type, and object OID in Base C and P. P must contain only the dedicated
-gate and its focused tests, this canonical policy section, its synchronized
-generated copies, and the matching `docs/zh-testing.md` description.
+object type, and object OID in Base C, P and P2. P2 must contain only the
+candidate-wrapper correction, its end-to-end subprocess and lineage
+regressions, this canonical policy update, its synchronized generated copies,
+and the matching `docs/zh-testing.md` update. The wrapper must normalize
+`sys.argv` to the candidate test path and install a real candidate
+`sys.modules["__main__"]` module before executing the committed blob.
 
-Nothing written in P authorizes, ratifies, or retrospectively validates its own
-installation. Before the dedicated recovery target moves from Base C to P, the
-repository owner must separately record the exact full OID of P, approve the
-complete manifest above, verify clean Base C and P checkouts plus Base C
-ancestry, require the focused rootfix-gate tests and existing review-bundle
-regressions to pass, and require one clean exact-bound code profile for
-Base C to P. The owner must then explicitly authorize that exact fast-forward
-policy installation. An ordinary candidate, reviewer, or automation run cannot
-perform that governance action.
+Nothing written in P2 authorizes, ratifies, or retrospectively validates its
+own installation. Before the dedicated recovery target moves from P to P2,
+the repository owner must separately record the exact full OID of P2, approve
+the complete manifest above, verify clean P and P2 checkouts plus the exact
+Base-C-to-P-to-P2 ancestry, require the focused rootfix-gate tests and existing
+review-bundle regressions to pass, require one clean exact-bound code profile
+for P to P2, and require independent `zh-code-reviewer` findings of zero
+Blocker and zero Needs Fix. The external owner record must identify its permit
+format and issuer, bind the protected ref and its current exact P OID, the exact
+P2 OID, exception/protocol version, 16-path count and manifest SHA-256, binary
+diff SHA-256, glossary SHA-256, reviewer set and result, and focused,
+review-bundle and code-profile results. It must authorize only the exact
+fast-forward from P to P2, never a P2 descendant. The owner must then explicitly
+authorize only that exact policy installation. An ordinary candidate,
+reviewer, branch name, prose file inside the candidate, or automation run
+cannot perform that governance action. Any protected-ref state or P2 content
+change invalidates its OID, hashes, review and owner authorization.
 
-### Repair candidate F boundary
+### Repair candidate F2 boundary
 
-After P has been installed, F must be one clean commit with exactly one parent:
+After P2 has been installed, F2 must be one clean commit with exactly one
+parent:
 
-`F^ == <approved-full-P-OID>`
+`F2^ == <approved-full-P2-OID>`
 
 Its complete changed-path set, computed with rename detection disabled, must be
 exactly:
@@ -340,19 +371,19 @@ exactly:
 
 The existing file mode must be preserved. Every path outside this one-file
 manifest must have identical path existence, mode, object type, and object OID
-in P and F.
+in P2 and F2.
 
-The only semantic change permitted in F is to create the mutable review
+The only semantic change permitted in F2 is to create the mutable review
 fixture beneath the auditor's resolved candidate root, replacing
 `REPO_ROOT / ".claude"` with `audit.ROOT / ".claude"` as the explicit
-`TemporaryDirectory` parent. F must not change production auditors, verifier
+`TemporaryDirectory` parent. F2 must not change production auditors, verifier
 code, review schemas, policies, translation assets, glossaries, decisions, or
 review ledgers.
 
-### Dedicated mechanically verified P to F gate
+### Dedicated mechanically verified P2 to F2 gate
 
-The normal target-P `review_prepare.sh` must first create a new schema-v4 bundle
-for the exact P and F OIDs. Its routing-v2 scope must be the single F path and
+The normal target-P2 `review_prepare.sh` must first create a new schema-v4 bundle
+for the exact P2 and F2 OIDs. Its routing-v2 scope must be the single F2 path and
 its reviewer set must be exactly one `zh-code-reviewer`. That reviewer must
 review the complete frozen path and return findings-v2 with zero Blocker and
 zero Needs Fix before readiness-v3 is recorded.
@@ -360,18 +391,19 @@ zero Needs Fix before readiness-v3 is recorded.
 No normal verification-v5 attempt or final approval may exist in this bundle.
 The rootfix gate rejects legacy evidence, incomplete readiness, a different
 scope or reviewer, any normal attempt, or any normal approval. It recomputes
-the exact parent topology, the complete Base-C-to-P 16-path manifest, the
-complete P-to-F one-path manifest, both file modes and both test blobs.
-The clean F checkout must be a linked worktree listed by the clean P target's
+the exact parent topology, both complete Base-C-to-P and P-to-P2 16-path
+manifests, their cumulative no-extra-path boundary, and the complete
+P2-to-F2 one-path manifest, both file modes and both test blobs.
+The clean F2 checkout must be a linked worktree listed by the clean P2 target's
 own `git worktree list --porcelain -z` inventory, and both checkouts must
 resolve to the same physical Git common directory. An independent clone,
 unlisted checkout, mismatched worktree HEAD, or external evidence namespace is
 rejected.
 The executable gate, `review_bundle.py`, `i18n_shared.py`, verification
-contract and `verify_zh.sh` must themselves be regular files in the clean P
-target and byte-equal their P Git blobs. Before loading repository code, the
+contract and `verify_zh.sh` must themselves be regular files in the clean P2
+target and byte-equal their P2 Git blobs. Before loading repository code, the
 gate uses a sanitized Git environment with replacement objects disabled to
-read the exact P blobs from the checkout containing the installed gate for
+read the exact P2 blobs from the checkout containing the installed gate for
 `review_bundle.py`, `i18n_shared.py`, the verification contract and
 `verify_zh.sh`; a caller-supplied target path cannot select pre-validation
 code. It compiles both Python modules from those bytes in isolated module
@@ -381,7 +413,7 @@ profile metadata, artifact files and every other
 path-sensitive evidence read use no-follow, inode-identity-checked,
 single-read file descriptors and require link count one; an object replacement
 or hard link during open or read fails closed. The focused committed input is
-read from the exact F Git blob, retained once, and supplied to the child
+read from the exact F2 Git blob, retained once, and supplied to the child
 through an anonymous input file; its attempt-local copy must have the same
 SHA-256.
 The gate retains descriptors for the evidence root and its `attempts/`
@@ -398,24 +430,26 @@ prohibition. Ignored checkout `__pycache__` objects and modified working-copy
 Python sources therefore cannot supply the gate's trusted imports or either
 verification phase.
 
-The sole candidate-sourced control input is the committed F blob at
+The sole candidate-sourced control input is the committed F2 blob at
 `.claude/scripts/tests/test_monster_name_ssot.py`. The gate proves that blob is
-exactly the P blob with one replacement of `REPO_ROOT / ".claude"` by
-`audit.ROOT / ".claude"`, then executes that F entry point with audit root and
-audit commit bound to F. Every imported auditor, helper, verifier, classifier,
-policy, production input and other tree object remains P-trusted: the one-path
-tree proof mechanically establishes byte-for-byte P/F identity outside the
-test blob.
+exactly the P2 blob with one replacement of `REPO_ROOT / ".claude"` by
+`audit.ROOT / ".claude"`, then executes that F2 entry point with audit root and
+audit commit bound to F2. The wrapper supplies only the test path in
+`sys.argv`, creates and registers a real candidate `__main__` module, and
+executes the retained blob in that module. Every imported auditor, helper,
+verifier, classifier, policy, production input and other tree object remains
+P2-trusted: the one-path tree proof mechanically establishes byte-for-byte
+P2/F2 identity outside the test blob.
 
-After the focused cross-root test passes, the gate runs the retained P
+After the focused cross-root test passes, the gate runs the retained P2
 `verify_zh.sh` source exactly once as
-`--profile code --base P --head F --scope full` with F as its clean worktree.
+`--profile code --base P2 --head F2 --scope full` with F2 as its clean worktree.
 The verifier pathname cannot replace the source being executed, and every
 dependency except the approved test blob has already been proven identical to
-P. Metadata must be schema-v3, status `pass`, with zero failures and exact P,
-F, Git diff-hash, diff SHA-256 and glossary bindings. Boolean and integer
+P2. Metadata must be schema-v3, status `pass`, with zero failures and exact P2,
+F2, Git diff-hash, diff SHA-256 and glossary bindings. Boolean and integer
 fields require their exact JSON types; Python's bool/int subtype relationship
-cannot satisfy them. The gate also requires the retained P
+cannot satisfy them. The gate also requires the retained P2
 verification-contract version, `profile=code`,
 `scope=full`, the run-directory ID and candidate worktree, all risk and runtime
 fields, the exact required phase sequence and successful phase records, and
@@ -426,11 +460,11 @@ attempt's `profile-output/` directory and file sets are exact, including the
 wrapper log, and its candidate input, both raw phase logs and both process
 records are mandatory.
 
-Run the installed P gate from the clean P target checkout:
+Run the installed P2 gate from the clean P2 target checkout:
 
 ```text
 python3 .claude/scripts/review_rootfix_gate.py run \
-  --repo <clean-F-worktree> --target-repo <clean-P-target> \
+  --repo <clean-F2-worktree> --target-repo <clean-P2-target> \
   --bundle <exact-schema-v4-bundle-id>
 ```
 
@@ -500,14 +534,15 @@ has no durable external digest authority and remains No-Go.
 The gate preserves every failed run under the Git common directory at
 `zh-review-evidence/rootfix-v1/<bundle-id>/attempts/`. A successful run writes
 one canonical, write-once `approval.json` beside that directory. The approval
-schema binds the exception ID, Base C, P and F OIDs, bundle/diff/glossary/
+schema binds the exception ID, Base C, P2 and F2 OIDs, bundle/diff/glossary/
 routing digests, readiness-v3 digest, frozen policy-manifest digest, both test
 blob digests, the complete failed-and-passing attempt inventory, and the
-passing attempt digest. The gate emits the approval SHA-256; unknown objects,
-non-canonical JSON, digest drift, an unsafe path or a changed attempt fail
-closed. Exact JSON types are part of the binding: canonical-byte comparison
-prevents a Boolean from satisfying an expected integer through language-level
-container equality.
+passing attempt digest. The gate's compiled-in P OID and lineage proof bind
+the intervening exact Base-C-to-P-to-P2 chain. The gate emits the approval
+SHA-256; unknown objects, non-canonical JSON, digest drift, an unsafe path or a
+changed attempt fail closed. Exact JSON types are part of the binding:
+canonical-byte comparison prevents a Boolean from satisfying an expected
+integer through language-level container equality.
 
 Every published attempt, including failed and interrupted attempts, contains a
 canonical inventory of every relative directory and regular file. Its digest
@@ -650,13 +685,13 @@ Immediately before landing, run the read-only check:
 
 ```text
 python3 .claude/scripts/review_rootfix_gate.py check \
-  --repo <clean-F-worktree> --target-repo <clean-P-target> \
+  --repo <clean-F2-worktree> --target-repo <clean-P2-target> \
   --bundle <exact-schema-v4-bundle-id>
 ```
 
 Only `ROOTFIX_MERGEABLE` with exit code zero authorizes the repository owner to
-fast-forward the dedicated recovery target from the exact P OID to the exact F
-OID printed by the checker. The check does not create or repair evidence.
+fast-forward the dedicated recovery target from the exact P2 OID to the exact
+F2 OID printed by the checker. The check does not create or repair evidence.
 Normal final-attempt, final-approval and merge-authorization JSON must not be
 fabricated.
 
@@ -675,20 +710,21 @@ required inventory artifacts were never produced. The invalid final-gate run
 did not publish a formal attempt. C2 readiness, bundle objects, logs and any
 other evidence must not be copied, migrated or reused.
 
-After F lands, the contextual parser change must be rebuilt on F together with
+After F2 lands, the contextual parser change must be rebuilt on F2 together with
 all approved R content changes and every required strict review ledger as one
 new committed candidate. It requires a new bundle, mechanically routed code
 and translation review, new readiness and a complete normal verification-v5
-final gate. No C2 or pre-F identity or evidence may be carried forward.
+final gate. No C2, F, or pre-F2 identity or evidence may be carried forward.
 
 ### Expiration
 
-This exception activates only after the separately authorized installation of
-the exact P OID and expires immediately and permanently when the exact approved
-F OID is fast-forwarded into the dedicated recovery target. It cannot authorize
-an amended F, a retry for another edge, or any content change. Every successor
-of F must return to routing-v2, findings-v2, readiness-v3, verification-v5, the
-normal final gate, and the normal merge-time validator.
+This corrected exception activates only after the separately authorized
+installation of the exact P2 OID and expires immediately and permanently when
+the exact approved F2 OID is fast-forwarded into the dedicated recovery target.
+It cannot authorize F, an amended F2, a retry for another edge, or any content
+change. Every successor of F2 must return to routing-v2, findings-v2,
+readiness-v3, verification-v5, the normal final gate, and the normal merge-time
+validator.
 <!-- END GENERATED: review-contract -->
 
 Resolve current terminology, compare the exact committed EN/ZH diff in context,

@@ -125,42 +125,59 @@ exception does not authorize reuse of old evidence, replacement of
 `chn-0.34.1-base`, pushing, releasing, or deployment.
 
 The separately owner-governed `DCSS-ZH-ROOTFIX-2026-07-29` exception addresses
-one later candidate-root regression in the trusted monster-name test. Its
-policy candidate P is not self-authorizing: a separate repository-owner action
-must approve and install the exact policy-and-gate edge from Base C
-`8aae77c60a5e537e76c7b252c6a311fade4264c2` to P before the exception becomes
-active.
+one later candidate-root regression in the trusted monster-name test. The
+repository owner separately installed P
+`0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0` over Base C
+`8aae77c60a5e537e76c7b252c6a311fade4264c2`. The first repair F
+`8363639529e650b0c3444614b6978e4d196be7ea` then produced immutable failed
+attempt `attempt-1785368942683452000-38040-767b84d22f70` in bundle
+`e3b2347a71dc716c4c664543449d42197dc3960f00e297e65485515d321649c3`.
+The wrapper exposed its absolute-path argument to `unittest.main()` and did not
+install candidate code as the interpreter's real `sys.modules["__main__"]`, so
+that attempt did not execute the intended suite. F and all of its formal
+evidence remain immutable No-Go forensic records and cannot be retried,
+migrated or reused.
 
-P must be one commit whose parent is exactly Base C. P is not Go merely because
-it contains the exception; the target must not move until the owner separately
-approves its exact 16-path manifest, focused gate and bundle regressions, and
-exact-bound code profile, then installs its exact OID. Once installed, the
-exception permits only a one-commit `P → F` edge whose sole changed path is
+Corrective policy candidate P2 must be one commit whose parent is exactly P.
+Both Base-C-to-P and P-to-P2 must have the same exact 16-path manifest, and
+Base-C-to-P2 may contain no additional path. P2 normalizes `sys.argv`, installs
+a real candidate `__main__` module before executing the retained blob, and adds
+an end-to-end subprocess regression. P2 is not self-authorizing: the target
+must not move until the owner separately approves its exact committed OID,
+manifest, independent review, focused gate and bundle regressions, and
+exact-bound P-to-P2 code profile, then explicitly installs that exact OID.
+The external owner record binds its issuer/format, protected ref and current P,
+exact P2, exception/protocol version, manifest and binary-diff hashes, glossary,
+reviewer result and test/profile results, and authorizes P-to-P2 only rather
+than any descendant.
+After installation, the exception permits only a new one-commit `P2 → F2` edge
+whose sole changed path is
 `.claude/scripts/tests/test_monster_name_ssot.py`.
 
-The target-P classifier, schema-v4 bundle, findings-v2 and readiness-v3 remain
-mandatory. The dedicated `review_rootfix_gate.py` proves the 16-path P boundary
-and one-path F boundary, reads only the committed test blob from F, proves all
-other F objects identical to P, runs the focused cross-root regression and one
+The target-P2 classifier, schema-v4 bundle, findings-v2 and readiness-v3 remain
+mandatory. The dedicated `review_rootfix_gate.py` proves both 16-path policy
+edges, their cumulative path boundary and the one-path F2 boundary, reads only
+the committed test blob from F2, proves all other F2 objects identical to P2,
+runs the focused cross-root regression and one
 exact-bound full-scope code profile, then writes canonical digest-bound
 write-once evidence under `zh-review-evidence/rootfix-v1/`. Its `check`
 subcommand is the read-only merge-time validator. Only
-`ROOTFIX_MERGEABLE` authorizes the exact fast-forward; P and F otherwise remain
-No-Go.
+`ROOTFIX_MERGEABLE` authorizes the exact fast-forward; P2 and F2 otherwise
+remain No-Go.
 
-P and F must be distinct linked worktrees from the same physical Git common
-directory, and F must appear with its exact HEAD in P's own worktree inventory.
+P2 and F2 must be distinct linked worktrees from the same physical Git common
+directory, and F2 must appear with its exact HEAD in P2's own worktree inventory.
 The gate, `review_bundle.py`, `i18n_shared.py`, verification contract and
-verifier must be byte-equal to their P Git blobs. With replacement objects
-disabled, the gate loads and compiles both Python helpers from the exact P Git
+verifier must be byte-equal to their P2 Git blobs. With replacement objects
+disabled, the gate loads and compiles both Python helpers from the exact P2 Git
 blobs in the checkout containing the installed gate; `--target-repo` cannot
-select code before validation. It retains the P contract bytes and executes
-the retained P verifier source rather than reopening its pathname. All gate,
+select code before validation. It retains the P2 contract bytes and executes
+the retained P2 verifier source rather than reopening its pathname. All gate,
 metadata, artifact,
 marker and approval reads are no-follow, single-link, inode-bound single
 reads which also compare size, mtime and ctime before/open/after so same-inode,
 same-size mutation during a multi-chunk read fails closed; the focused input
-is read once from the exact F Git blob, copied into
+is read once from the exact F2 Git blob, copied into
 the attempt, SHA-256 checked and supplied through an anonymous child input.
 One held evidence-root/attempts-directory descriptor pair and the first
 inventory bind both directory identities plus the presence and inode of
@@ -202,7 +219,7 @@ An object injected after `scandir` or an in-place post-read rewrite therefore
 fails closed.
 
 The full code profile metadata validator binds schema and the retained
-contract, `profile=code`, `scope=full`, P/F/Git-diff/diff-SHA-256/glossary,
+contract, `profile=code`, `scope=full`, P2/F2/Git-diff/diff-SHA-256/glossary,
 run ID and worktree, exact JSON integer and Boolean types, risk and runtime
 fields, every required phase and the exact artifact sizes and SHA-256s. It
 validates metadata, phases and artifacts from the same attempt snapshot;
@@ -306,10 +323,10 @@ by a cached absence.
 
 The abandoned C2 bundle has no reusable formal attempt: three ledgers lack
 strict evidence blocks and their three required inventory artifacts were never
-produced. C2 readiness and bundle objects must not migrate. After F lands, the
+produced. C2 readiness and bundle objects must not migrate. After F2 lands, the
 contextual parser, all approved R content and every required strict ledger must
 be rebuilt as one new candidate with new mixed review and a complete normal
-verification-v5 final gate. The rootfix exception expires permanently when F
+verification-v5 final gate. The rootfix exception expires permanently when F2
 lands.
 
 The review profile includes a required, independent `review-ledgers` phase.

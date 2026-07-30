@@ -2,10 +2,10 @@
 """Run the one-edge candidate-root regression-test bootstrap gate.
 
 This gate is deliberately narrower than the normal final gate.  It is valid
-only for DCSS-ZH-ROOTFIX-2026-07-29 and only after the policy commit P has been
-installed by the repository owner.  Normal schema-v4 routing and readiness are
-reused.  The sole candidate-sourced control blob is
-tests/test_monster_name_ssot.py; every other F tree object must equal P.
+only for DCSS-ZH-ROOTFIX-2026-07-29 and only after the corrected policy commit
+P2 has been installed by the repository owner.  Normal schema-v4 routing and
+readiness are reused.  The sole candidate-sourced control blob is
+tests/test_monster_name_ssot.py; every other F2 tree object must equal P2.
 """
 
 from __future__ import annotations
@@ -54,6 +54,7 @@ _TRUSTED_SOURCE_BLOBS: dict[str, bytes] = {}
 
 EXCEPTION_ID = "DCSS-ZH-ROOTFIX-2026-07-29"
 BASE_C = "8aae77c60a5e537e76c7b252c6a311fade4264c2"
+POLICY_P = "0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0"
 APPROVAL_SCHEMA = "dcss-zh-rootfix-approval-v1"
 COMPLETION_SCHEMA = "dcss-zh-rootfix-attempt-v2"
 ARTIFACT_SCHEMA = "dcss-zh-rootfix-artifacts-v2"
@@ -1144,21 +1145,41 @@ def _validate_policy_modes(repo: Path, policy_head: str) -> None:
         base_entry = _tree_entry(repo, BASE_C, path)
         policy_entry = _tree_entry(repo, policy_head, path)
         if policy_entry is None:
-            raise RootfixError(f"P is missing frozen manifest path: {path}")
+            raise RootfixError(f"P2 is missing frozen manifest path: {path}")
         policy_mode, policy_kind, _ = policy_entry
         if policy_kind != "blob" or policy_mode not in ("100644", "100755"):
-            raise RootfixError(f"P manifest path is not a regular file: {path}")
+            raise RootfixError(f"P2 manifest path is not a regular file: {path}")
         if path in NEW_POLICY_PATHS:
             if base_entry is not None or policy_mode != "100644":
                 raise RootfixError(
-                    f"new P gate path has an invalid base entry or mode: {path}"
+                    f"new rootfix gate path has an invalid base entry or mode: {path}"
                 )
         elif (
             base_entry is None
             or base_entry[0] != policy_mode
             or base_entry[1] != policy_kind
         ):
-            raise RootfixError(f"P changed the existing file mode or type: {path}")
+            raise RootfixError(f"P2 changed the existing file mode or type: {path}")
+
+
+def _validate_policy_lineage(repo: Path, policy_head: str) -> None:
+    if _single_parent(repo, POLICY_P, "P") != BASE_C:
+        raise RootfixError(f"installed P^ must equal Base C {BASE_C}")
+    if _single_parent(repo, policy_head, "P2") != POLICY_P:
+        raise RootfixError(f"P2^ must equal installed P {POLICY_P}")
+    if _changed_paths(repo, BASE_C, POLICY_P) != POLICY_MANIFEST:
+        raise RootfixError(
+            "Base C..P does not equal the frozen 16-path manifest"
+        )
+    if _changed_paths(repo, POLICY_P, policy_head) != POLICY_MANIFEST:
+        raise RootfixError(
+            "P..P2 does not equal the frozen 16-path correction manifest"
+        )
+    if _changed_paths(repo, BASE_C, policy_head) != POLICY_MANIFEST:
+        raise RootfixError(
+            "Base C..P2 contains a path outside the frozen manifest"
+        )
+    _validate_policy_modes(repo, policy_head)
 
 
 def _require_clean_checkout(repo: Path, commit: str, label: str) -> Path:
@@ -1181,16 +1202,20 @@ def _candidate_test_record(
     except (OSError, rb.AuditInputError) as error:
         raise RootfixError(str(error)) from error
     if policy_mode != candidate_mode:
-        raise RootfixError("F changed the candidate-test file mode")
+        raise RootfixError("F2 changed the candidate-test file mode")
     if policy_blob.count(OLD_FIXTURE_PARENT) != 1:
-        raise RootfixError("P test does not contain exactly one approved fixture parent")
+        raise RootfixError(
+            "P2 test does not contain exactly one approved fixture parent"
+        )
     if NEW_FIXTURE_PARENT in policy_blob:
-        raise RootfixError("P test already contains the candidate-root fixture parent")
+        raise RootfixError("P2 test already contains the candidate-root fixture parent")
     expected = policy_blob.replace(
         OLD_FIXTURE_PARENT, NEW_FIXTURE_PARENT, 1
     )
     if candidate_blob != expected:
-        raise RootfixError("F test blob is not the exact approved one-line replacement")
+        raise RootfixError(
+            "F2 test blob is not the exact approved one-line replacement"
+        )
     return (
         {
             "path": TEST_PATH,
@@ -1211,7 +1236,7 @@ def _validate_trusted_gate(
         or not _TRUSTED_SOURCE_BLOBS
     ):
         raise RootfixError(
-            "repository helpers were not loaded from the exact P commit"
+            "repository helpers were not loaded from the exact P2 commit"
         )
     expected_gate = target_top / GATE_PATH
     expected_bundle = target_top / BUNDLE_PATH
@@ -1230,7 +1255,7 @@ def _validate_trusted_gate(
         or actual_shared != expected_shared
     ):
         raise RootfixError(
-            "rootfix gate and repository helpers must execute from P target"
+            "rootfix gate and repository helpers must execute from P2 target"
         )
     for working_path, relative, label in (
         (actual_gate, GATE_PATH, "rootfix gate"),
@@ -1255,11 +1280,11 @@ def _validate_trusted_gate(
         except (OSError, rb.AuditInputError, rb.ReviewBundleError) as error:
             raise RootfixError(str(error)) from error
         if mode not in ("100644", "100755") or working_bytes != committed:
-            raise RootfixError(f"{label} differs from the P Git blob")
+            raise RootfixError(f"{label} differs from the P2 Git blob")
         loaded = _TRUSTED_SOURCE_BLOBS.get(relative)
         if loaded is not None and loaded != committed:
             raise RootfixError(
-                f"{label} loaded bytes differ from the P Git blob"
+                f"{label} loaded bytes differ from the P2 Git blob"
             )
 
 
@@ -1299,7 +1324,7 @@ def _validate_linked_worktree(
         or Path(os.path.realpath(target_top))
         == Path(os.path.realpath(candidate_top))
     ):
-        raise RootfixError("P target and F candidate must be distinct worktrees")
+        raise RootfixError("P2 target and F2 candidate must be distinct worktrees")
     try:
         target_common = rb.git_common_dir(target_top)
         candidate_common = rb.git_common_dir(candidate_top)
@@ -1313,7 +1338,9 @@ def _validate_linked_worktree(
         or (target_info.st_dev, target_info.st_ino)
         != (candidate_info.st_dev, candidate_info.st_ino)
     ):
-        raise RootfixError("P target and F candidate do not share one Git common directory")
+        raise RootfixError(
+            "P2 target and F2 candidate do not share one Git common directory"
+        )
 
     candidate_physical = Path(os.path.realpath(candidate_top))
     matches = []
@@ -1325,10 +1352,10 @@ def _validate_linked_worktree(
             matches.append(record)
     if len(matches) != 1:
         raise RootfixError(
-            "F candidate is not uniquely listed by the P target worktree inventory"
+            "F2 candidate is not uniquely listed by the P2 target worktree inventory"
         )
     if matches[0]["HEAD"] != candidate_head:
-        raise RootfixError("P target worktree inventory binds F to a different HEAD")
+        raise RootfixError("P2 target worktree inventory binds F2 to a different HEAD")
 
 
 def _validate_topology(
@@ -1338,21 +1365,17 @@ def _validate_topology(
 ) -> tuple[Path, Path, dict[str, Any], bytes]:
     policy_head = status["target_head"]
     candidate_head = status["candidate_head"]
-    target_top = _require_clean_checkout(target_repo, policy_head, "P target")
+    target_top = _require_clean_checkout(target_repo, policy_head, "P2 target")
     candidate_top = _require_clean_checkout(
-        candidate_repo, candidate_head, "F candidate"
+        candidate_repo, candidate_head, "F2 candidate"
     )
     _validate_linked_worktree(target_top, candidate_top, candidate_head)
     _validate_trusted_gate(target_top, target_top, policy_head)
-    if _single_parent(candidate_top, policy_head, "P") != BASE_C:
-        raise RootfixError(f"P^ must equal Base C {BASE_C}")
-    if _single_parent(candidate_top, candidate_head, "F") != policy_head:
-        raise RootfixError("F^ must equal the exact approved P OID")
-    if _changed_paths(candidate_top, BASE_C, policy_head) != POLICY_MANIFEST:
-        raise RootfixError("Base C..P does not equal the frozen 16-path manifest")
-    _validate_policy_modes(candidate_top, policy_head)
+    _validate_policy_lineage(candidate_top, policy_head)
+    if _single_parent(candidate_top, candidate_head, "F2") != policy_head:
+        raise RootfixError("F2^ must equal the exact approved P2 OID")
     if _changed_paths(candidate_top, policy_head, candidate_head) != (TEST_PATH,):
-        raise RootfixError("P..F does not equal the frozen one-path manifest")
+        raise RootfixError("P2..F2 does not equal the frozen one-path manifest")
     candidate_test, candidate_blob = _candidate_test_record(
         candidate_top, policy_head, candidate_head
     )
@@ -1363,7 +1386,7 @@ def _validate_bundle_status(status: dict[str, Any]) -> None:
     if status.get("legacy_read_only"):
         raise RootfixError("legacy review evidence is not accepted")
     if status.get("routing_files") != [TEST_PATH]:
-        raise RootfixError("bundle routing scope is not the exact F test path")
+        raise RootfixError("bundle routing scope is not the exact F2 test path")
     if status.get("required_reviewers") != [REVIEWER]:
         raise RootfixError("bundle must route exactly one zh-code-reviewer")
     if status.get("ready_reviewers") != [REVIEWER] or not status.get("ready"):
@@ -3060,14 +3083,18 @@ def _candidate_test_wrapper() -> str:
     return (
         "import signal\n"
         "import sys\n"
+        "import types\n"
         "def _rootfix_interrupt(_signum, _frame):\n"
         "    raise KeyboardInterrupt\n"
         "for _rootfix_signal in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):\n"
         "    signal.signal(_rootfix_signal, _rootfix_interrupt)\n"
         "p = sys.argv[1]\n"
+        "sys.argv = [p]\n"
         "source = sys.stdin.buffer.read()\n"
-        "scope = {'__name__': '__main__', '__file__': p}\n"
-        "exec(compile(source, p, 'exec'), scope)\n"
+        "module = types.ModuleType('__main__')\n"
+        "module.__file__ = p\n"
+        "sys.modules['__main__'] = module\n"
+        "exec(compile(source, p, 'exec'), module.__dict__)\n"
     )
 
 
@@ -3379,7 +3406,7 @@ def _validate_attempt(
             != candidate_blob_sha256
         ):
             raise RootfixError(
-                "rootfix candidate-test.py differs from the committed F blob"
+                "rootfix candidate-test.py differs from the committed F2 blob"
             )
     expected_process_phases = set(commands)
     actual_process_phases: set[str] = set()
@@ -6173,7 +6200,7 @@ def run_gate(
                     or post_candidate_blob != candidate_test_blob
                 ):
                     raise RootfixError(
-                        "P, F, bundle or committed test changed during the gate"
+                        "P2, F2, bundle or committed test changed during the gate"
                     )
                 _validate_evidence_context(context)
                 archive_path, _ = validate_current_recovery_archive()

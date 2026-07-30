@@ -182,7 +182,108 @@ class RootfixGateTests(unittest.TestCase):
                 with self.assertRaises(GATE.RootfixError):
                     GATE._single_parent(Path("."), "a" * 40, "P")
 
-    def test_trusted_gate_must_execute_from_target_p_blobs(self) -> None:
+    def test_policy_lineage_binds_base_p_and_p2_edges(self) -> None:
+        policy_head = "c" * 40
+
+        def parent(_repo, commit, _label):
+            return {
+                GATE.POLICY_P: GATE.BASE_C,
+                policy_head: GATE.POLICY_P,
+            }[commit]
+
+        def changed(_repo, base, head):
+            if (base, head) in {
+                (GATE.BASE_C, GATE.POLICY_P),
+                (GATE.POLICY_P, policy_head),
+                (GATE.BASE_C, policy_head),
+            }:
+                return GATE.POLICY_MANIFEST
+            self.fail(f"unexpected lineage edge: {base}..{head}")
+
+        with mock.patch.object(
+            GATE, "_single_parent", side_effect=parent
+        ), mock.patch.object(
+            GATE, "_changed_paths", side_effect=changed
+        ), mock.patch.object(
+            GATE, "_validate_policy_modes"
+        ) as modes:
+            GATE._validate_policy_lineage(Path("."), policy_head)
+        modes.assert_called_once_with(Path("."), policy_head)
+
+        with mock.patch.object(
+            GATE,
+            "_single_parent",
+            side_effect=lambda _repo, commit, _label: (
+                "d" * 40
+                if commit == GATE.POLICY_P
+                else GATE.POLICY_P
+            ),
+        ), mock.patch.object(
+            GATE, "_changed_paths", return_value=GATE.POLICY_MANIFEST
+        ), mock.patch.object(
+            GATE, "_validate_policy_modes"
+        ):
+            with self.assertRaisesRegex(GATE.RootfixError, r"installed P\^"):
+                GATE._validate_policy_lineage(Path("."), policy_head)
+
+        with mock.patch.object(
+            GATE,
+            "_single_parent",
+            side_effect=lambda _repo, commit, _label: (
+                GATE.BASE_C if commit == GATE.POLICY_P else "d" * 40
+            ),
+        ):
+            with self.assertRaisesRegex(GATE.RootfixError, r"P2\^"):
+                GATE._validate_policy_lineage(Path("."), policy_head)
+
+        with mock.patch.object(
+            GATE, "_single_parent", side_effect=parent
+        ), mock.patch.object(
+            GATE,
+            "_changed_paths",
+            side_effect=[
+                GATE.POLICY_MANIFEST + ("unexpected",),
+                GATE.POLICY_MANIFEST,
+                GATE.POLICY_MANIFEST,
+            ],
+        ), mock.patch.object(
+            GATE, "_validate_policy_modes"
+        ):
+            with self.assertRaisesRegex(GATE.RootfixError, r"Base C\.\.P "):
+                GATE._validate_policy_lineage(Path("."), policy_head)
+
+        with mock.patch.object(
+            GATE, "_single_parent", side_effect=parent
+        ), mock.patch.object(
+            GATE,
+            "_changed_paths",
+            side_effect=[
+                GATE.POLICY_MANIFEST,
+                GATE.POLICY_MANIFEST + ("unexpected",),
+            ],
+        ):
+            with self.assertRaisesRegex(GATE.RootfixError, r"P\.\.P2"):
+                GATE._validate_policy_lineage(Path("."), policy_head)
+
+        with mock.patch.object(
+            GATE, "_single_parent", side_effect=parent
+        ), mock.patch.object(
+            GATE,
+            "_changed_paths",
+            side_effect=[
+                GATE.POLICY_MANIFEST,
+                GATE.POLICY_MANIFEST,
+                GATE.POLICY_MANIFEST + ("unexpected",),
+            ],
+        ), mock.patch.object(
+            GATE, "_validate_policy_modes"
+        ):
+            with self.assertRaisesRegex(
+                GATE.RootfixError, r"Base C\.\.P2"
+            ):
+                GATE._validate_policy_lineage(Path("."), policy_head)
+
+    def test_trusted_gate_must_execute_from_target_p2_blobs(self) -> None:
         target = SCRIPT.parents[2]
         gate_bytes = SCRIPT.read_bytes()
         bundle_bytes = (SCRIPT.parent / "review_bundle.py").read_bytes()
@@ -1747,6 +1848,39 @@ class RootfixGateTests(unittest.TestCase):
                 process.stderr.close()
             self.assertNotEqual(0, process.returncode, stderr.decode())
             self.assertFalse(fixture.exists())
+
+    def test_candidate_wrapper_resets_argv_for_real_unittest_main(
+        self,
+    ) -> None:
+        candidate_blob = (
+            b"import sys\n"
+            b"import unittest\n"
+            b"class CandidateArgvTests(unittest.TestCase):\n"
+            b"    def test_exact_program_argv(self):\n"
+            b"        self.assertEqual([__file__], sys.argv)\n"
+            b"if __name__ == '__main__':\n"
+            b"    unittest.main(verbosity=2)\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate = Path(tmp) / "candidate"
+            test_path = candidate / GATE.TEST_PATH
+            test_path.parent.mkdir(parents=True)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    GATE._candidate_test_wrapper(),
+                    str(test_path),
+                ],
+                cwd=candidate,
+                input=candidate_blob,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+        self.assertEqual(0, result.returncode, result.stderr.decode())
+        self.assertIn(b"Ran 1 test", result.stderr)
+        self.assertIn(b"OK", result.stderr)
 
     def test_run_process_forwards_signal_to_child_process_group(self) -> None:
         helper = "\n".join(
@@ -3990,7 +4124,7 @@ class RootfixGateTests(unittest.TestCase):
                 )
             )
             with self.assertRaisesRegex(
-                GATE.RootfixError, "committed F blob"
+                GATE.RootfixError, "committed F2 blob"
             ):
                 GATE._validate_attempt(
                     stage,
@@ -5462,22 +5596,33 @@ class RootfixGateTests(unittest.TestCase):
             [], GATE._validate_recovery_archive(None, status)
         )
 
-    def test_policy_text_keeps_p_and_f_no_go_and_records_c2_state(self) -> None:
+    def test_policy_text_records_failed_f_and_p2_f2_no_go_state(self) -> None:
         policy = (
             SCRIPT.parents[2] / ".agents/policies/review-contract.md"
         ).read_text(encoding="utf-8")
         for fragment in (
             "P^ == 8aae77c60a5e537e76c7b252c6a311fade4264c2",
-            "F^ == <approved-full-P-OID>",
+            "P2^ == 0abfe2b3d60d18d6dc3bca7f8079a44bb4a002e0",
+            "F2^ == <approved-full-P2-OID>",
+            "8363639529e650b0c3444614b6978e4d196be7ea",
+            "e3b2347a71dc716c4c664543449d42197dc3960f00e297e65485515d321649c3",
+            "attempt-1785368942683452000-38040-767b84d22f70",
             "P is not Go",
-            "F remains No-Go",
+            "F remains",
+            "No-Go permanently",
+            "must not be deleted, rewritten, migrated, retried, or reused",
+            "`sys.argv`",
+            '`sys.modules["__main__"]`',
+            "Base-C-to-P-to-P2 ancestry",
+            "protected ref and its current exact P OID",
+            "never a P2 descendant",
             "did not publish a formal attempt",
             "C2 readiness, bundle objects, logs and any",
             "The sole candidate-sourced control input",
             "ROOTFIX_MERGEABLE",
             "same physical Git common directory",
             "single-read file descriptors",
-            "read the exact P blobs",
+            "read the exact P2 blobs",
             "`i18n_shared.py`",
             "executes the retained",
             "Ignored checkout `__pycache__` objects",
