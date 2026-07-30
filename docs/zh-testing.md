@@ -356,10 +356,13 @@ development fixtures use no-follow descriptor reads with inode identity checks
 and reject a path substituted between inspection and open. Focused tests cover
 both transient worktree substitution during a bound blob read and a concurrent
 swap restored before the unbound caller resumes. The verifier also requires
-the exact clean candidate at the end of a bound run. World-inventory
-provenance that refers to target-side scripts uses a second snapshot bound by
-`ZH_VERIFY_CONTROL_ROOT` and `ZH_VERIFY_CONTROL_COMMIT`, so those hashes also
-come from the exact trusted control commit rather than its mutable checkout.
+the exact clean candidate at the end of a bound run. Monster-ledger historical
+inputs derive their Git paths lexically below the validated candidate root and
+require the exact declared baseline manifest, so a mutable leaf cannot select
+another blob from the same commit. World-inventory provenance that refers to
+target-side scripts uses a second snapshot bound by `ZH_VERIFY_CONTROL_ROOT`
+and `ZH_VERIFY_CONTROL_COMMIT`, so those hashes also come from the exact trusted
+control commit rather than its mutable checkout.
 Candidate-versus-control routing uses normalized lexical paths below the
 already validated roots; it never resolves a mutable input leaf to choose the
 snapshot. The world artifact also requires its observed control manifest to

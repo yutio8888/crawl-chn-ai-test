@@ -50,6 +50,10 @@ EN_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "monsters.txt"
 ZH_MONSTER_DESCRIPTIONS = SRC / "dat" / "descript" / "zh" / "monsters.txt"
 ZH_MONSTER_TITLES = SRC / "dat" / "database" / "zh" / "montitle.txt"
 GLOSSARY = ROOT / "docs" / "glossary.md"
+HISTORICAL_REVIEW_INPUTS = (
+    ZH_SOURCE,
+    ZH_MONSTER_DESCRIPTIONS,
+)
 
 from audit_item_name_inventory import (  # noqa: E402
     active_source,
@@ -141,11 +145,11 @@ def _sha(path: Path) -> str:
 
 
 def _relative(path: str | Path) -> str:
-    resolved = Path(path).resolve()
+    lexical = Path(os.path.abspath(os.fspath(path)))
     try:
-        return str(resolved.relative_to(ROOT))
+        return lexical.relative_to(ROOT).as_posix()
     except ValueError:
-        return str(resolved)
+        return os.fspath(lexical)
 
 
 def _read(path: str) -> str:
@@ -931,9 +935,23 @@ def build_inventory(
     }
     if baseline_ref is not None:
         historical = _revision_snapshot(baseline_ref)
-        historical.read(_relative(ZH_SOURCE))
-        historical.read(_relative(ZH_MONSTER_DESCRIPTIONS))
-        payload["review_baseline_snapshot"] = historical.metadata()
+        expected_historical_inputs = sorted(
+            _relative(path) for path in HISTORICAL_REVIEW_INPUTS
+        )
+        for relative in expected_historical_inputs:
+            historical.read(relative)
+        historical_metadata = historical.metadata()
+        observed_historical_inputs = [
+            item["path"]
+            for item in historical_metadata["input_manifest"]["inputs"]
+        ]
+        if observed_historical_inputs != expected_historical_inputs:
+            raise AuditInputError(
+                "monster review baseline manifest is incomplete or unexpected: "
+                f"{observed_historical_inputs!r} != "
+                f"{expected_historical_inputs!r}"
+            )
+        payload["review_baseline_snapshot"] = historical_metadata
     return payload
 
 

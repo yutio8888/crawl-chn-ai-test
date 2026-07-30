@@ -11,6 +11,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -203,6 +204,115 @@ class MonsterNameSsotTests(unittest.TestCase):
                 identities = audit._active_monster_enum_identities(path)
         self.assertEqual(["MONS_ALPHA", "MONS_BETA"], identities)
 
+    def test_historical_path_identity_survives_transient_leaf_substitution(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(
+            prefix="monster-historical-path-"
+        ) as sandbox_raw:
+            root = Path(sandbox_raw).resolve()
+            inputs = root / "inputs"
+            inputs.mkdir()
+            expected = inputs / "expected.txt"
+            other = inputs / "other.txt"
+            expected.write_text("EXPECTED\n", encoding="utf-8")
+            other.write_text("OTHER\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(
+                ["git", "-C", str(root), "config",
+                 "user.email", "test@example.invalid"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.name", "Test"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "add", "inputs"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "commit", "-qm", "fixture"],
+                check=True,
+            )
+            head = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
+                text=True,
+            ).strip()
+            snapshot = audit.AuditSnapshot(root, head)
+            backup = inputs / "expected.txt.original"
+            swapped = threading.Event()
+            selected = threading.Event()
+            restored = threading.Event()
+            selected_paths = []
+            attacker_errors = []
+
+            class RestoringSnapshot:
+                def text(self, relative):
+                    selected_paths.append(relative)
+                    selected.set()
+                    if not restored.wait(5):
+                        raise AssertionError(
+                            "attacker did not restore the historical pathname"
+                        )
+                    return snapshot.text(relative)
+
+            def transient_substitution():
+                try:
+                    os.replace(expected, backup)
+                    expected.symlink_to(other)
+                    swapped.set()
+                    if not selected.wait(5):
+                        raise AssertionError(
+                            "auditor did not select a historical path"
+                        )
+                except BaseException as error:
+                    attacker_errors.append(error)
+                finally:
+                    try:
+                        if expected.is_symlink():
+                            expected.unlink()
+                        if backup.exists():
+                            os.replace(backup, expected)
+                    finally:
+                        restored.set()
+
+            attacker = threading.Thread(target=transient_substitution)
+            attacker.start()
+            self.assertTrue(swapped.wait(5), "attacker did not replace pathname")
+            try:
+                with (
+                    mock.patch.object(audit, "ROOT", root),
+                    mock.patch.object(
+                        audit,
+                        "_revision_snapshot",
+                        return_value=RestoringSnapshot(),
+                    ),
+                ):
+                    observed = audit._git_text(head, expected)
+            finally:
+                selected.set()
+                attacker.join(timeout=5)
+            self.assertFalse(attacker.is_alive())
+            if attacker_errors:
+                raise attacker_errors[0]
+            self.assertEqual(["inputs/expected.txt"], selected_paths)
+            self.assertEqual("EXPECTED\n", observed)
+            self.assertEqual(
+                "EXPECTED\n",
+                expected.read_text(encoding="utf-8"),
+            )
+            self.assertEqual(
+                "",
+                subprocess.check_output(
+                    [
+                        "git", "-C", str(root), "status",
+                        "--porcelain=v1", "--untracked-files=all",
+                    ],
+                    text=True,
+                ),
+            )
+
     def test_review_coverage_fails_closed_on_any_artifact_mutation(self) -> None:
         payload = audit.build_inventory()
         baseline = subprocess.check_output(
@@ -246,16 +356,16 @@ class MonsterNameSsotTests(unittest.TestCase):
                 cli_payload["review_baseline_snapshot"]["audit_commit"],
             )
             self.assertEqual(
-                {
-                    "crawl-ref/source/dat/i18n/zh/source.txt",
+                [
                     "crawl-ref/source/dat/descript/zh/monsters.txt",
-                },
-                {
+                    "crawl-ref/source/dat/i18n/zh/source.txt",
+                ],
+                [
                     item["path"]
                     for item in cli_payload[
                         "review_baseline_snapshot"
                     ]["input_manifest"]["inputs"]
-                },
+                ],
             )
             self.assertIn(
                 cli_payload["review_input"]["logical_path"],
