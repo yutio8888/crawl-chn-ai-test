@@ -45,6 +45,21 @@ only when required by the task/release contract and against the final reviewed
 candidate. A requested fix creates a new targeted development loop instead of
 rerunning all expensive evidence on a rejected candidate.
 
+A newly created linked worktree has empty directories for recorded contrib
+submodules. Before preparing an immutable candidate for final review, initialize
+its exact gitlinks and confirm that the superproject remains clean:
+
+```bash
+git submodule update --init --recursive
+git status --porcelain=v1 --untracked-files=all
+```
+
+Submodule initialization is environment preparation, not candidate content. If
+an immutable final attempt fails only because a recorded build dependency was
+not initialized, retain that failed attempt, initialize the exact gitlinks,
+reconfirm the candidate OID and clean state, and use the documented
+`--retry-failed` path.
+
 ## Review Evidence
 
 Review readiness and final verification are separate:
