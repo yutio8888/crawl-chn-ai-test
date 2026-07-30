@@ -439,22 +439,29 @@ def _fsync_directory(path: Path) -> None:
         os.close(fd)
 
 
-def _ensure_child_directory(parent: Path, name: str) -> Path:
+def _ensure_child_directory(
+    parent: Path,
+    name: str,
+    *,
+    report_created: bool = False,
+) -> Path | tuple[Path, bool]:
     if not name or name in (".", "..") or "/" in name or os.sep in name:
         raise ReviewBundleError(f"invalid evidence directory name: {name!r}")
     _require_directory(parent)
     child = parent / name
     info = _lstat(child)
+    created = False
     if info is None:
         try:
             os.mkdir(child, 0o700)
             _fsync_directory(parent)
+            created = True
         except FileExistsError:
             pass
         info = _lstat(child)
     if info is None or stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
         raise UnsafeObjectError(f"evidence directory is unsafe: {child}")
-    return child
+    return (child, created) if report_created else child
 
 
 def evidence_root(
@@ -727,18 +734,10 @@ def bundle_lock(
         try:
             fd = os.open(lock_path, create_flags, 0o600)
             created = True
-        except FileExistsError:
-            before = _require_regular_file(lock_path, "bundle lock")
-            fd = os.open(
-                lock_path,
-                os.O_RDWR
-                | getattr(os, "O_CLOEXEC", 0)
-                | getattr(os, "O_NOFOLLOW", 0),
-            )
-            opened = os.fstat(fd)
-            if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
-                os.close(fd)
-                raise UnsafeObjectError("bundle lock changed while opening")
+        except FileExistsError as error:
+            raise ContentConflictError(
+                "new bundle directory already contains a lock"
+            ) from error
     else:
         before = _require_regular_file(lock_path, "bundle lock")
         fd = os.open(
@@ -1100,8 +1099,12 @@ def create_bundle(
         check_clean=True,
     )
     root = evidence_root(repo, create=True)
-    bundle_path = _ensure_child_directory(root, description["bundle_id"])
-    with bundle_lock(bundle_path, create=True):
+    bundle_path, directory_created = _ensure_child_directory(
+        root,
+        description["bundle_id"],
+        report_created=True,
+    )
+    with bundle_lock(bundle_path, create=directory_created):
         _reject_unsafe_objects(bundle_path)
         _reject_unknown_top_level(bundle_path)
         routing_created = atomic_write_once(

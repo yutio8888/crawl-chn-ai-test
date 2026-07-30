@@ -360,15 +360,21 @@ the exact clean candidate at the end of a bound run. World-inventory
 provenance that refers to target-side scripts uses a second snapshot bound by
 `ZH_VERIFY_CONTROL_ROOT` and `ZH_VERIFY_CONTROL_COMMIT`, so those hashes also
 come from the exact trusted control commit rather than its mutable checkout.
+Candidate-versus-control routing uses normalized lexical paths below the
+already validated roots; it never resolves a mutable input leaf to choose the
+snapshot. The world artifact also requires its observed control manifest to
+equal the declared target-side control input set exactly.
 
 Every schema-v4 bundle publishes `.bundle.lock` during initial creation.
-Later exclusive writers must open that existing lock read/write; they do not
-repair a missing lock. Status, validation and merge-time readers open it with
-`O_RDONLY` and `LOCK_SH`; they never create it, and a missing or replaced lock
-is invalid evidence. This allows the complete evidence tree to be mounted
-read-only without weakening writer serialization. Lockless schema-v3 bundles
-may be inspected only as historical, non-authorizing evidence and remain
-byte-for-byte untouched.
+Only the invocation that atomically creates the new bundle directory may
+create that lock, using exclusive creation. A prepare rerun and every later
+exclusive writer must open the existing lock read/write; they do not repair a
+missing lock. Status, validation and merge-time readers open it with `O_RDONLY`
+and `LOCK_SH`; they never create it, and a missing or replaced lock is invalid
+evidence. This allows the complete evidence tree to be mounted read-only
+without weakening writer serialization. Lockless schema-v3 bundles may be
+inspected only as historical, non-authorizing evidence and remain byte-for-byte
+untouched.
 
 ## CI
 

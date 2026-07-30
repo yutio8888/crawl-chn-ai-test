@@ -70,6 +70,12 @@ ZH_FEATURES = SRC / "dat/descript/zh/features.txt"
 DES_ROOT = SRC / "dat/des"
 ZH_SOURCE_DIR = SRC / "dat/i18n/zh"
 GLOSSARY = ROOT / "docs/glossary.md"
+TRUSTED_CONTROL_INPUTS = (
+    SCRIPT_DIR / "audit_god_inventory.py",
+    SCRIPT_DIR / "audit_item_name_inventory.py",
+    SCRIPT_DIR / "i18n_extract.py",
+    SCRIPT_DIR / "i18n_shared.py",
+)
 
 DIRECT_SINKS = {"mpr", "formatted_mpr", "yesno", "take_note", "god_speaks"}
 FINITE_TITLE_PRODUCERS = {
@@ -610,18 +616,36 @@ WORLD_DEFER_GROUPS = (
 )
 
 
-def relative(path):
-    path = Path(path).resolve()
+def _lexical_input_path(path, *, allow_external=False):
+    """Return the immutable namespace and lexical absolute input path."""
+    lexical = Path(os.path.abspath(os.fspath(path)))
+    if lexical in TRUSTED_CONTROL_INPUTS:
+        return "control", lexical
     try:
-        return str(path.relative_to(ROOT))
+        lexical.relative_to(ROOT)
     except ValueError:
         try:
-            return (
-                "trusted-control/"
-                + path.relative_to(SCRIPT_ROOT).as_posix()
-            )
-        except ValueError:
-            return str(path)
+            lexical.relative_to(SCRIPT_ROOT)
+        except ValueError as error:
+            if allow_external:
+                return "external", lexical
+            raise AuditInputError(
+                f"world inventory input is outside candidate/control roots: {path}"
+            ) from error
+        return "control", lexical
+    return "candidate", lexical
+
+
+def relative(path):
+    namespace, lexical = _lexical_input_path(path, allow_external=True)
+    if namespace == "candidate":
+        return lexical.relative_to(ROOT).as_posix()
+    if namespace == "control":
+        return (
+            "trusted-control/"
+            + lexical.relative_to(SCRIPT_ROOT).as_posix()
+        )
+    return os.fspath(lexical)
 
 
 def audit_snapshot():
@@ -667,12 +691,10 @@ def control_snapshot():
 
 
 def input_sha256(path):
-    resolved = Path(path).resolve()
-    try:
-        resolved.relative_to(ROOT)
-    except ValueError:
-        return control_snapshot().sha256(resolved)
-    return audit_snapshot().sha256(resolved)
+    namespace, lexical = _lexical_input_path(path)
+    if namespace == "control":
+        return control_snapshot().sha256(lexical)
+    return audit_snapshot().sha256(lexical)
 
 
 def physical_db(path):
@@ -2769,12 +2791,28 @@ def build_inventory():
         SRC / "lookup-help.cc", SRC / "stairs.cc", SRC / "database.cc",
         SRC / "dat/dlua/lm_tmsg.lua", SRC / "dat/dlua/lm_timed.lua",
         SRC / "dat/dlua/lm_pdesc.lua", SRC / "dat/dlua/lm_trove.lua",
-        SCRIPT_DIR / "audit_item_name_inventory.py",
-        SCRIPT_DIR / "audit_god_inventory.py",
-        SCRIPT_DIR / "i18n_extract.py", SCRIPT_DIR / "i18n_shared.py",
+        *TRUSTED_CONTROL_INPUTS,
         ROOT / "docs/decisions.md",
         *source_files(ZH_SOURCE_DIR), *des_files,
     ]
+    input_hashes = {
+        relative(path): input_sha256(path)
+        for path in sorted(set(inputs), key=relative)
+    }
+    control_metadata = control_snapshot().metadata()
+    expected_control_inputs = sorted(
+        path.relative_to(SCRIPT_ROOT).as_posix()
+        for path in TRUSTED_CONTROL_INPUTS
+    )
+    observed_control_inputs = [
+        item["path"]
+        for item in control_metadata["input_manifest"]["inputs"]
+    ]
+    if observed_control_inputs != expected_control_inputs:
+        raise AuditInputError(
+            "trusted-control input manifest is incomplete or unexpected: "
+            f"{observed_control_inputs!r} != {expected_control_inputs!r}"
+        )
     violations = inventory_violations(
         rows, branch_proof, feature_proof,
         (en_branches, zh_branches), (en_features, zh_features),
@@ -2787,11 +2825,8 @@ def build_inventory():
         "baseline": snapshot.audit_commit or resolve_commit("HEAD"),
         "tag_major_version": tag_major_version(),
         "glossary_sha256": sha(GLOSSARY),
-        "input_sha256": {
-            relative(path): input_sha256(path)
-            for path in sorted(set(inputs), key=relative)
-        },
-        "control_snapshot": control_snapshot().metadata(),
+        "input_sha256": input_hashes,
+        "control_snapshot": control_metadata,
         "scope": {
             "included": [
                 "active branch enum and branches[] display producers",

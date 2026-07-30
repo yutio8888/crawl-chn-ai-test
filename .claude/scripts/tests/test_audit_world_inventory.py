@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -184,6 +185,158 @@ class WorldInventoryUnitTest(unittest.TestCase):
                 MODULE.control_snapshot()
         finally:
             MODULE._CONTROL_SNAPSHOT = previous
+
+    def test_transient_control_path_substitution_uses_exact_control_snapshot(self):
+        with tempfile.TemporaryDirectory(
+            prefix="world-control-substitution-",
+        ) as sandbox_raw:
+            sandbox = Path(sandbox_raw).resolve()
+            control_root = sandbox / "control"
+            candidate_root = sandbox / "candidate"
+
+            def committed_snapshot(root, content):
+                root.mkdir()
+                subprocess.run(
+                    ["git", "init", "-q", str(root)],
+                    check=True,
+                )
+                subprocess.run(
+                    ["git", "-C", str(root), "config",
+                     "user.email", "test@example.invalid"],
+                    check=True,
+                )
+                subprocess.run(
+                    ["git", "-C", str(root), "config",
+                     "user.name", "Test"],
+                    check=True,
+                )
+                (root / "helper.py").write_text(content, encoding="utf-8")
+                subprocess.run(
+                    ["git", "-C", str(root), "add", "helper.py"],
+                    check=True,
+                )
+                subprocess.run(
+                    ["git", "-C", str(root), "commit", "-qm", "fixture"],
+                    check=True,
+                )
+                head = subprocess.check_output(
+                    ["git", "-C", str(root), "rev-parse", "HEAD"],
+                    text=True,
+                ).strip()
+                return MODULE.AuditSnapshot(root, head)
+
+            control = committed_snapshot(control_root, "CONTROL\n")
+            candidate = committed_snapshot(candidate_root, "CANDIDATE\n")
+            control_path = control_root / "helper.py"
+            candidate_path = candidate_root / "helper.py"
+            backup = control_root / "helper.py.original"
+            swapped = threading.Event()
+            selected = threading.Event()
+            restored = threading.Event()
+            selected_names = []
+            attacker_errors = []
+
+            class RoutingSnapshot:
+                def __init__(self, name, snapshot):
+                    self.name = name
+                    self.snapshot = snapshot
+
+                def sha256(self, path):
+                    selected_names.append(self.name)
+                    selected.set()
+                    if not restored.wait(5):
+                        raise AssertionError(
+                            "attacker did not restore the control pathname"
+                        )
+                    return self.snapshot.sha256(path)
+
+            def transient_substitution():
+                try:
+                    os.replace(control_path, backup)
+                    control_path.symlink_to(candidate_path)
+                    swapped.set()
+                    if not selected.wait(5):
+                        raise AssertionError(
+                            "auditor did not select an input snapshot"
+                        )
+                except BaseException as error:
+                    attacker_errors.append(error)
+                finally:
+                    try:
+                        if control_path.is_symlink():
+                            control_path.unlink()
+                        if backup.exists():
+                            os.replace(backup, control_path)
+                    finally:
+                        restored.set()
+
+            attacker = threading.Thread(target=transient_substitution)
+            attacker.start()
+            self.assertTrue(swapped.wait(5), "attacker did not replace pathname")
+            try:
+                with (
+                    mock.patch.object(MODULE, "ROOT", candidate_root),
+                    mock.patch.object(MODULE, "SCRIPT_ROOT", control_root),
+                    mock.patch.object(
+                        MODULE,
+                        "audit_snapshot",
+                        return_value=RoutingSnapshot("candidate", candidate),
+                    ),
+                    mock.patch.object(
+                        MODULE,
+                        "control_snapshot",
+                        return_value=RoutingSnapshot("control", control),
+                    ),
+                ):
+                    label = MODULE.relative(control_path)
+                    digest = MODULE.input_sha256(control_path)
+            finally:
+                selected.set()
+                attacker.join(timeout=5)
+            self.assertFalse(attacker.is_alive())
+            if attacker_errors:
+                raise attacker_errors[0]
+            self.assertEqual(["control"], selected_names)
+            self.assertEqual("trusted-control/helper.py", label)
+            self.assertEqual(
+                hashlib.sha256(b"CONTROL\n").hexdigest(),
+                digest,
+            )
+            self.assertEqual("CONTROL\n", control_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                ["helper.py"],
+                [
+                    item["path"]
+                    for item in control.metadata()["input_manifest"]["inputs"]
+                ],
+            )
+            self.assertEqual(
+                [],
+                candidate.metadata()["input_manifest"]["inputs"],
+            )
+
+    def test_control_snapshot_manifest_is_exact(self):
+        expected = [
+            ".claude/scripts/audit_god_inventory.py",
+            ".claude/scripts/audit_item_name_inventory.py",
+            ".claude/scripts/i18n_extract.py",
+            ".claude/scripts/i18n_shared.py",
+        ]
+        observed = [
+            item["path"]
+            for item in self.payload["control_snapshot"][
+                "input_manifest"
+            ]["inputs"]
+        ]
+        self.assertEqual(expected, observed)
+        self.assertEqual(
+            [f"trusted-control/{path}" for path in expected],
+            sorted(
+                path
+                for path in self.payload["input_sha256"]
+                if path.startswith("trusted-control/")
+            ),
+        )
 
     def test_all_ledger_auditors_reject_unsafe_bound_roots(self):
         scripts = [

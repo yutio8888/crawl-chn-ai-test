@@ -1490,6 +1490,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         root = MODULE.evidence_root(self.candidate, create=True)
         bundle_path = root / described["bundle_id"]
         bundle_path.mkdir()
+        (bundle_path / MODULE.LOCK_NAME).write_bytes(b"")
         outside = self.temp / "outside.json"
         outside.write_text("{}", encoding="utf-8")
         (bundle_path / "bundle.json").symlink_to(outside)
@@ -2021,6 +2022,49 @@ raise SystemExit(7 if mode == 'fail' else 0)
         ):
             MODULE.validate_bundle(self.candidate, created["bundle_id"])
         self.assertFalse(lock_path.exists())
+
+        findings = self.findings_file(created, [])
+        missing_snapshot = self.evidence_snapshot(bundle_path)
+        mutation_attempts = {
+            "repeated prepare/create": self.create,
+            "record-readiness": lambda: MODULE.record_readiness(
+                self.candidate,
+                created["bundle_id"],
+                "zh-code-reviewer",
+                findings,
+            ),
+            "run-final": lambda: self.run_final(created),
+        }
+        for label, operation in mutation_attempts.items():
+            with self.subTest(entrypoint=label):
+                with self.assertRaisesRegex(
+                    MODULE.ReviewBundleError,
+                    "bundle lock does not exist",
+                ):
+                    operation()
+                self.assertFalse(
+                    lock_path.exists(),
+                    f"{label} recreated the missing schema-v4 lock",
+                )
+                self.assertEqual(
+                    missing_snapshot,
+                    self.evidence_snapshot(bundle_path),
+                    f"{label} changed invalid schema-v4 evidence",
+                )
+
+        repeated_status = MODULE.status_bundle(
+            self.candidate, created["bundle_id"]
+        )
+        self.assertEqual(MODULE.INVALID_EVIDENCE, repeated_status["exit_code"])
+        self.assertFalse(lock_path.exists())
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "bundle lock does not exist"
+        ):
+            MODULE.validate_bundle(self.candidate, created["bundle_id"])
+        self.assertEqual(
+            missing_snapshot,
+            self.evidence_snapshot(bundle_path),
+        )
 
     def test_passing_attempt_without_approval_is_reused_without_rerun(self) -> None:
         created = self.ready()
