@@ -235,7 +235,8 @@ class AgentDocumentationTests(unittest.TestCase):
             "id is invalid or duplicated",
             "file is not a normalized relative path",
             "glossary SHA-256 does not match the bundle",
-            "validateReviewFindings(kind, result, reviewBoundary.glossary_sha256)",
+            "const findings = validateReviewFindings(",
+            "kind, result, reviewBoundary.glossary_sha256, REVIEW_ROUTING.files)",
         )
         for name in (
             "translation-fix-pipeline.js",

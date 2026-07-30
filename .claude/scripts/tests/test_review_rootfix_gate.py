@@ -2217,8 +2217,9 @@ class RootfixGateTests(unittest.TestCase):
                         and not replaced
                     ):
                         replaced = True
-                        marker_path.unlink()
-                        marker_path.write_bytes(data)
+                        replacement = root / ".replacement-running.json"
+                        replacement.write_bytes(data)
+                        os.replace(replacement, marker_path)
                     return loaded
 
                 with mock.patch.object(

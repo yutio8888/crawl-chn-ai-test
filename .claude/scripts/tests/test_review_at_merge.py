@@ -20,6 +20,7 @@ SOURCE_ROOT = Path(__file__).resolve().parents[3]
 SCRIPT_NAMES = (
     "review_at_merge.sh",
     "review_bundle.py",
+    "i18n_shared.py",
     "review_prepare.sh",
     "classify_reviewers.py",
 )

@@ -27,6 +27,8 @@ mkdir -p "$REPO/.claude/scripts" "$REPO/docs" "$REPO/crawl-ref/source"
 cp "$SCRIPT_DIR/../verify_zh.sh" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../advisory_baseline.py" "$REPO/.claude/scripts/advisory_baseline.py"
 cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
+cp "$SCRIPT_DIR/../review_bundle.py" "$REPO/.claude/scripts/review_bundle.py"
+cp "$SCRIPT_DIR/../i18n_shared.py" "$REPO/.claude/scripts/i18n_shared.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
 mkdir -p "$REPO/crawl-ref/source/dat/defaults"
 printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
@@ -69,6 +71,34 @@ printf '%s\n' \
     'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/audit_item_name_inventory.py"
 chmod +x "$REPO/.claude/scripts/audit_item_name_inventory.py"
+for auditor in \
+    audit_character_mechanics_inventory.py \
+    audit_god_inventory.py \
+    audit_species_background_inventory.py \
+    audit_world_inventory.py
+do
+    cp "$REPO/.claude/scripts/audit_item_name_inventory.py" \
+        "$REPO/.claude/scripts/$auditor"
+done
+printf '%s\n' \
+    '#!/usr/bin/env python3' \
+    'import sys' \
+    'from pathlib import Path' \
+    'output = Path(sys.argv[sys.argv.index("--inventory-output") + 1])' \
+    'output.write_text("{}\n")' \
+    'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/monster_name_ssot.py"
+chmod +x "$REPO/.claude/scripts/monster_name_ssot.py"
+for ledger in \
+    character-mechanics-review-results.md \
+    god-review-results.md \
+    item-extended-review-results.md \
+    monster-review-results.md \
+    species-background-review-results.md \
+    world-review-results.md
+do
+    printf '%s\n' '# test ledger' > "$REPO/docs/$ledger"
+done
 export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 
 (
