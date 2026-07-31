@@ -2160,11 +2160,11 @@ Ignis Donald
 w:50
 @_generic_Donald_@
 
-@The_monster@ 说："曳焰给我一把火焰剑。我恨我的袖子着火了。"
+@The_monster@ 说："伊格尼斯给我一把火焰剑。我恨我的袖子着火了。"
 
 @The_monster@ 说："不要用火焰剑指着自己。这是我学到的一个教训。"
 
-@The_monster@ 说："我要求永生。曳焰给了我一个打火石。"
+@The_monster@ 说："我要求永生。伊格尼斯给了我一个打火石。"
 %%%%
 Xom Donald
 

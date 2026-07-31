@@ -4418,7 +4418,7 @@ If you tried to rewind gears in your present state, you'd only break them.
 以你现在的状态试图重绕齿轮的话，你只会把它们弄坏。
 %%%%
 Ignis
-曳焰
+伊格尼斯
 %%%%
  illusion
 的幻象
@@ -22023,7 +22023,7 @@ cache of meat
 肉类储藏
 %%%%
 candlelit altar of Ignis
-曳焰的烛光祭坛
+伊格尼斯的烛光祭坛
 %%%%
 closed translucent door
 关闭的半透明门

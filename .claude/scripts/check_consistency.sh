@@ -247,7 +247,7 @@ do_gods() {
     check_english_residual "Pakellas"       "Pakellas"       "帕克拉斯"
     check_english_residual "Uskayaw"        "Uskayaw"        "乌斯卡亚"
     check_english_residual "Hepliaklqana"   "Hepliaklqana"   "惠普利亚卡纳"
-    check_english_residual "Ignis"          "Ignis"          "曳焰"
+    check_english_residual "Ignis"          "Ignis"          "伊格尼斯"
     check_english_residual "Wu Jian"        "Wu Jian"        "无间门派"
     check_english_residual "Zot"            "Zot"            "佐特"
 

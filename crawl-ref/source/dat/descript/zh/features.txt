@@ -53,7 +53,7 @@ A hazy altar of Hepliaklqana
 %%%%
 A candlelit altar of Ignis
 
-曳焰——将熄之火的祭坛。祭坛完全被形状、大小各异的蜡烛覆盖，但只有一根仍在燃烧；它纤细的火焰在最轻微的风中摇曳。
+伊格尼斯——将熄之火的祭坛。祭坛完全被形状、大小各异的蜡烛覆盖，但只有一根仍在燃烧；它纤细的火焰在最轻微的风中摇曳。
 %%%%
 A viscous altar of Jiyva
 

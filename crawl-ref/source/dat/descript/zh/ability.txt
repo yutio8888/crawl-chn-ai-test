@@ -603,7 +603,7 @@ Foxfire Swarm ability
 %%%%
 Rising Flame ability
 
-你会向上飘浮，在曳焰短暂延迟以收集足够的能量后，
+你会向上飘浮，在伊格尼斯短暂延迟以收集足够的能量后，
 会炸穿天花板，将你轰入上层。此能力只能使用一次。
 %%%%
 Hop ability

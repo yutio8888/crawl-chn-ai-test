@@ -507,7 +507,7 @@ Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅；冰块撞击后爆炸�
 icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 identify	鉴定	domain=items; source=EN/ZH
 Ignacio	伊格纳西奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Ignis	曳焰	domain=gods; source=EN/ZH; 类型=意译
+Ignis	伊格尼斯	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-051]
 Ignite Poison	点燃毒素	domain=spells; source=EN/ZH; 备注=✅
 Ignition	点火	domain=spells; source=EN/ZH; 备注=✅
 Ijyb	艾吉布	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

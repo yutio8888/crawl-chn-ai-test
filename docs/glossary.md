@@ -33,7 +33,7 @@
 | Pakellas | 帕克拉斯 | 音译 | — |
 | Uskayaw | 乌斯卡亚 | 音译 | — |
 | Hepliaklqana | 惠普利亚卡纳 | 音译 | — |
-| Ignis | 曳焰 | 意译 | — |
+| Ignis | 伊格尼斯 | 音译 | [D-A-051] |
 | Wu Jian | 无间 | 运行时短名 | — |
 | the Wu Jian Council | 无间门派 | 实体／派别长名（门派=sect） | — |
 | Xom | 佐姆 | 音译 | — |
@@ -57,7 +57,7 @@
 | -者 后缀 | 堕落者（Lugonu）、被缚者（Ashenzari）、发明者（Pakellas） |
 | -之主 后缀 | 战争之主（Okawaru）、学识之主（Sif Muna）、混沌之主（Xom） |
 | -之神 后缀 | 复仇之神 |
-| 自由形式 | 曳焰（Ignis）、无间门派（Wu Jian） |
+| 自由形式 | 伊格尼斯（Ignis）、无间门派（Wu Jian） |
 
 ---
 

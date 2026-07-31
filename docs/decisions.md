@@ -3634,6 +3634,32 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-051 — Ignis → 伊格尼斯
+
+- **Type**: A — God name ruling
+- **Status**: active
+- **Date**: 2026-07-31
+- **Source**: 用户裁决：与其他神祇本名保持音译统一
+- **Choice**: 伊格尼斯
+- **Rejected**: 曳焰；曳焰伊格尼斯
+- **Rationale**: Ignis 在游戏中作为神祇专名使用；采用音译可与多数神祇本名保持一致。“曳焰伊格尼斯”混合意译头衔与音译本名，造成显示层级重复。`the Dying Flame` 保留为独立长名“垂死之火”。
+- **Affected files**:
+  - `.claude/scripts/check_consistency.sh`
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/database/zh/godname.txt`
+  - `crawl-ref/source/dat/database/zh/godspeak.txt`
+  - `crawl-ref/source/dat/database/zh/monspeak.txt`
+  - `crawl-ref/source/dat/descript/zh/ability.txt`
+  - `crawl-ref/source/dat/descript/zh/backgrounds.txt`
+  - `crawl-ref/source/dat/descript/zh/features.txt`
+  - `crawl-ref/source/dat/descript/zh/gods.txt`
+  - `crawl-ref/source/dat/descript/zh/monstatus.txt`
+  - `crawl-ref/source/dat/descript/zh/status.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
 ### D-C-093 — Issue #28 地牢世界显示文本全量审阅
 
 - **Type**: C — Finite inventory translation review
