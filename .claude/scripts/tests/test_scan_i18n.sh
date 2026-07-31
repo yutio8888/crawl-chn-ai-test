@@ -460,7 +460,7 @@ counts = collections.Counter(
     classification["kind"]
     for classification in registry["classifications"]
 )
-assert counts["global"] == 10, counts
+assert counts["global"] == 12, counts
 assert counts["contextual"] == 10, counts
 assert len(registry["rejected_map"]) == counts["global"], registry
 assert {
@@ -471,6 +471,8 @@ assert {
     "宗古多克": "宗古德洛克",
     "宗古尔德罗克": "宗古德洛克",
     "月牙铲": "双头杖",
+    "曳焰": "伊格尼斯",
+    "曳焰伊格尼斯": "伊格尼斯",
 }.items() <= registry["rejected_map"].items(), registry
 contextual_by_decision = collections.Counter(
     rule["decision"] for rule in registry["contextual_rules"]
@@ -607,7 +609,7 @@ assert invalid_classify_calls == [], invalid_classify_calls
 with open(sys.argv[4], "r", encoding="utf-8") as stream:
     production_content = stream.read()
 production_blocks = list(module._iter_decision_blocks(production_content))
-assert len(production_blocks) == 168, len(production_blocks)
+assert len(production_blocks) == 169, len(production_blocks)
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1099,7 +1101,7 @@ try:
         actual_identities,
         expected_identities,
     )
-    assert len(production_declarations) == 413, len(
+    assert len(production_declarations) == 416, len(
         production_declarations
     )
     assert all(
