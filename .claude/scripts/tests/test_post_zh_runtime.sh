@@ -205,6 +205,10 @@ FRAME_MARKER: trove_jewellery | jewellery ring of protection +3 防护戒指
 FRAME_MARKER: trove_demon_weapon | demon whip 恶魔武器
 FRAME_MARKER: trove_demon_alternative | demon blade
 FRAME_MARKER: portal_late_translation | You hear coins being counted. 你听到了数钱的声音。
+FRAME_MARKER: portal_distance_late_translation | You hear the brisk tolling of a distant bell.
+FRAME_MARKER: portal_close_grammar | You hear the brisk tolling of an alarm.
+FRAME_MARKER: sewer_late_translation | You hear the rusting of the distant sewer drain.
+FRAME_MARKER: portal_milestone_boundary | The Name-Rending Infernalists' Reservoir || The Chambers of the Cloud Mage || fallback: Issue 28 missing portal title
 FRAME_MARKER: item_trigger_identity | scroll of blinking legacy_zh=
 FRAME_MARKER: status_boundary | immotile=true mighty=true
 FRAME_MARKER: monster_boundary | orc priest
@@ -240,6 +244,15 @@ if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
     fail "Bot checker accepted reversed portal/item L2 markers"
 else
     pass "Bot checker rejects reversed portal/item L2 markers"
+fi
+
+sed 's/distant bell/distant chime/' "$L2_LOG" > "$L2_LOG.semantic-mutated"
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$L2_LOG.semantic-mutated" --bot-manifest issue68-l2 \
+    >/dev/null 2>&1; then
+    fail "Bot checker accepted an L2 marker missing required semantic content"
+else
+    pass "Bot checker rejects an L2 marker missing required semantic content"
 fi
 
 if grep -Fq -- '--mode bot --bot-stderr "$STDERR_L3"' "$POST_RUNTIME"; then
