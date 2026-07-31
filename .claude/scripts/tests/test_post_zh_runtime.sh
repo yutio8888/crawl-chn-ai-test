@@ -208,7 +208,7 @@ FRAME_MARKER: portal_late_translation | You hear coins being counted. 你听到�
 FRAME_MARKER: portal_distance_late_translation | You hear the brisk tolling of a distant bell.
 FRAME_MARKER: portal_close_grammar | You hear the brisk tolling of an alarm.
 FRAME_MARKER: sewer_late_translation | You hear the rusting of the distant sewer drain.
-FRAME_MARKER: portal_milestone_boundary | The Name-Rending Infernalists' Reservoir || The Chambers of the Cloud Mage || fallback: Issue 28 missing portal title
+FRAME_MARKER: portal_milestone_boundary | The Name-Rending Infernalists' Reservoir || The Chambers of the Cloud Mage || fallback: You've discovered Issue 28 missing portal title!
 FRAME_MARKER: item_trigger_identity | scroll of blinking legacy_zh=
 FRAME_MARKER: status_boundary | immotile=true mighty=true
 FRAME_MARKER: monster_boundary | orc priest

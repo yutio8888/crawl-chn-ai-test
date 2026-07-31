@@ -127,7 +127,8 @@ BOT_REQUIRED_CONTENT = {
     "portal_milestone_boundary": (
         "The Name-Rending Infernalists' Reservoir",
         "The Chambers of the Cloud Mage",
-        "fallback: Issue 28 missing portal title",
+        "fallback:",
+        "Issue 28 missing portal title",
     ),
     "status_boundary": ("immotile=true", "mighty=true"),
     "monster_boundary": ("orc priest",),
