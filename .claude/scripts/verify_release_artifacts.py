@@ -431,6 +431,10 @@ def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
             )
         attached = True
         _validate_mounted_tree(path.name, mount_root, rule, source_root)
+        for executable in rule.executable_files:
+            _validate_unsigned_executable(
+                path.name, mount_root / executable
+            )
     finally:
         cleanup_error: ReleaseArtifactError | None = None
         if attached or mount_root.exists():
@@ -462,6 +466,34 @@ def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
             )
         if cleanup_error is not None:
             raise cleanup_error
+
+
+def _validate_unsigned_executable(
+    archive_name: str, executable: Path
+) -> None:
+    try:
+        result = subprocess.run(
+            ["codesign", "--display", "--verbose=2", str(executable)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as error:
+        raise ReleaseArtifactError(
+            f"{archive_name}: codesign is required to validate the unsigned "
+            f"macOS executable: {error}"
+        ) from error
+    if result.returncode == 0:
+        raise ReleaseArtifactError(
+            f"{archive_name}: macOS executable unexpectedly has a code "
+            f"signature: {executable.name!r}"
+        )
+    detail = (result.stderr or result.stdout).strip()
+    if "code object is not signed at all" not in detail.lower():
+        raise ReleaseArtifactError(
+            f"{archive_name}: cannot establish that macOS executable is "
+            f"unsigned: {detail or 'codesign inspection failed'}"
+        )
 
 
 def _validate_required_files(

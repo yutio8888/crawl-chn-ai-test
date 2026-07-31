@@ -393,6 +393,30 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("gh release edit", workflow)
 
+        make_dry_run = subprocess.run(
+            [
+                "make",
+                "-n",
+                "-j1",
+                "-C",
+                str(ROOT / "crawl-ref/source/mac"),
+                "-f",
+                "Makefile.app-bundle",
+                "tiles-dmg",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        codesign_commands = "\n".join(
+            line
+            for line in make_dry_run.stdout.splitlines()
+            if "codesign" in line
+        )
+        self.assertIn("codesign --remove-signature", codesign_commands)
+        self.assertIn("Dungeon Crawl Stone Soup - Tiles.app", codesign_commands)
+        self.assertNotIn(r"Dungeon\ Crawl\ Stone\ Soup", codesign_commands)
+
     def test_zh_static_tooling_runs_on_linux_and_macos(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         tooling = workflow.split("  zh_tooling_tests:\n", 1)[1].split(

@@ -460,6 +460,10 @@ class ReleaseArtifactTest(unittest.TestCase):
 
         def fake_run(args, **kwargs):
             calls.append(args)
+            if args[0] == "codesign":
+                return subprocess.CompletedProcess(
+                    args, 1, "", "code object is not signed at all"
+                )
             if args[1] == "attach":
                 mount_root = Path(args[args.index("-mountpoint") + 1])
                 shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
@@ -475,11 +479,80 @@ class ReleaseArtifactTest(unittest.TestCase):
         with mock.patch.object(MODULE.subprocess, "run", side_effect=fake_run):
             self._validate(real_dmg=True)
 
-        self.assertEqual(2, len(calls))
+        self.assertEqual(3, len(calls))
         self.assertEqual(
             ["hdiutil", "attach", "-nobrowse", "-readonly"], calls[0][:4]
         )
-        self.assertEqual(["hdiutil", "detach", "-force"], calls[1][:3])
+        self.assertEqual(["codesign", "--display", "--verbose=2"], calls[1][:3])
+        mount_root = Path(calls[0][calls[0].index("-mountpoint") + 1])
+        self.assertEqual(
+            rule.executable_files[0],
+            Path(calls[1][-1]).relative_to(mount_root).as_posix(),
+        )
+        self.assertEqual(["hdiutil", "detach", "-force"], calls[2][:3])
+
+    def test_real_dmg_runner_rejects_signed_executable(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "dmg")
+        self._write_valid_set()
+        mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
+        calls = []
+
+        def signed_run(args, **kwargs):
+            calls.append(args)
+            if args[0] == "codesign":
+                return subprocess.CompletedProcess(args, 0, "", "Signature=adhoc")
+            if args[1] == "attach":
+                mount_root = Path(args[args.index("-mountpoint") + 1])
+                shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
+                return subprocess.CompletedProcess(args, 0, "", "")
+            mount_root = Path(args[-1])
+            for child in mount_root.iterdir():
+                if child.is_dir() and not child.is_symlink():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        with mock.patch.object(MODULE.subprocess, "run", side_effect=signed_run):
+            self.assert_rejected("unexpectedly has a code signature", real_dmg=True)
+
+        self.assertEqual("codesign", calls[1][0])
+        self.assertEqual("detach", calls[2][1])
+
+    def test_real_dmg_runner_rejects_unknown_codesign_failure(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "dmg")
+        self._write_valid_set()
+        mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
+        calls = []
+
+        def invalid_signature_run(args, **kwargs):
+            calls.append(args)
+            if args[0] == "codesign":
+                return subprocess.CompletedProcess(
+                    args, 1, "", "code has no resources but signature is invalid"
+                )
+            if args[1] == "attach":
+                mount_root = Path(args[args.index("-mountpoint") + 1])
+                shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
+                return subprocess.CompletedProcess(args, 0, "", "")
+            mount_root = Path(args[-1])
+            for child in mount_root.iterdir():
+                if child.is_dir() and not child.is_symlink():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        with mock.patch.object(
+            MODULE.subprocess, "run", side_effect=invalid_signature_run
+        ):
+            self.assert_rejected(
+                "cannot establish that macOS executable is unsigned",
+                real_dmg=True,
+            )
+
+        self.assertEqual("codesign", calls[1][0])
+        self.assertEqual("detach", calls[2][1])
 
     def test_real_dmg_runner_rejects_attach_and_cleanup_failures(self) -> None:
         rule = next(item for item in self.rules if item.archive_type == "dmg")
@@ -501,6 +574,10 @@ class ReleaseArtifactTest(unittest.TestCase):
 
         def detach_failure(args, **kwargs):
             calls.append(args)
+            if args[0] == "codesign":
+                return subprocess.CompletedProcess(
+                    args, 1, "", "code object is not signed at all"
+                )
             if args[1] == "attach":
                 mount_root = Path(args[args.index("-mountpoint") + 1])
                 mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
@@ -514,8 +591,8 @@ class ReleaseArtifactTest(unittest.TestCase):
             MODULE.subprocess, "run", side_effect=detach_failure
         ):
             self.assert_rejected("hdiutil detach failed", real_dmg=True)
-        self.assertEqual(2, len(calls))
-        self.assertEqual("detach", calls[1][1])
+        self.assertEqual(3, len(calls))
+        self.assertEqual("detach", calls[2][1])
 
     def test_corrupt_archives_are_rejected(self) -> None:
         zip_rule = self.rules[0]

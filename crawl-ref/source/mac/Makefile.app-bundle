@@ -37,6 +37,8 @@ STAGING_DIR := $(CRAWL_SRC)/build/app-bundle-stage
 ZIPPED_APP_DIR := $(CRAWL_SRC)/mac-app-zips
 BUNDLE_DIRNAME := $(STAGING_DIR)/$(BUNDLE_NAME).app
 RESOURCES := $(BUNDLE_DIRNAME)/Contents/Resources
+BUNDLE_NAME_PLAIN := $(subst \,,$(BUNDLE_NAME))
+BUNDLE_DIR_PLAIN := $(STAGING_DIR)/$(BUNDLE_NAME_PLAIN).app
 
 .PHONY: all tiles-dmg clean clean-stage stage-dir copy-executable \
 	copy-resources copy-tiledata assemble-app-bundle create-bundle-directory \
@@ -104,8 +106,8 @@ endif
 # application instead of reporting a damaged app.
 remove-existing-code-signature: copy-executable
 ifdef TILE_APP
-	if codesign -d --verbose=2 "$(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)" >/dev/null 2>&1; then \
-		codesign --remove-signature "$(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)"; \
+	if codesign -d --verbose=2 "$(BUNDLE_DIR_PLAIN)/Contents/MacOS/$(BUNDLE_NAME_PLAIN)" >/dev/null 2>&1; then \
+		codesign --remove-signature "$(BUNDLE_DIR_PLAIN)/Contents/MacOS/$(BUNDLE_NAME_PLAIN)"; \
 	fi
 endif
 
