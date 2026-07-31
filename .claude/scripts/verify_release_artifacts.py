@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import stat
+import subprocess
+import tempfile
 import zipfile
 from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
@@ -94,8 +97,8 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
             normalize_text_crlf=True,
         ),
         ArtifactRule(
-            filename=f"stone_soup-{tag}-tiles-macosx.zip",
-            archive_type="zip",
+            filename=f"stone_soup-{tag}-tiles-macosx.dmg",
+            archive_type="dmg",
             root=macos_root,
             required_files=(
                 macos_executable,
@@ -329,6 +332,119 @@ def _validate_zip(path: Path, rule: ArtifactRule, source_root: Path) -> None:
     _validate_content_sources(path.name, content, rule.content_sources, source_root)
 
 
+def _validate_mounted_tree(
+    archive_name: str,
+    mount_root: Path,
+    rule: ArtifactRule,
+    source_root: Path,
+) -> None:
+    root_path = mount_root / rule.root
+    if root_path.is_symlink() or not root_path.is_dir():
+        raise ReleaseArtifactError(
+            f"{archive_name}: expected mounted root is missing or unsafe: "
+            f"{rule.root!r}"
+        )
+
+    members: list[tuple[str, bool]] = []
+    permissions: dict[str, int] = {}
+    sizes: dict[str, int] = {}
+    content: dict[str, bytes] = {}
+    entries = list(mount_root.rglob("*"))
+    for entry in entries:
+        relative = entry.relative_to(mount_root).as_posix()
+        if entry.is_symlink():
+            raise ReleaseArtifactError(
+                f"{archive_name}: symbolic links are not allowed: "
+                f"{relative!r}"
+            )
+        try:
+            mode = entry.stat().st_mode
+        except OSError as error:
+            raise ReleaseArtifactError(
+                f"{archive_name}: cannot inspect mounted member "
+                f"{relative!r}: {error}"
+            ) from error
+        if entry.is_dir():
+            members.append((f"{relative}/", True))
+            continue
+        if not entry.is_file():
+            raise ReleaseArtifactError(
+                f"{archive_name}: special mounted member is not allowed: "
+                f"{relative!r}"
+            )
+        members.append((relative, False))
+        permissions[relative] = mode & 0o777
+        sizes[relative] = entry.stat().st_size
+
+    _validate_member_names(
+        [name for name, _ in members],
+        root=rule.root,
+        archive_name=archive_name,
+    )
+    _validate_zh_member_set(archive_name, members, rule)
+    for contract in rule.content_sources:
+        member_path = mount_root / contract.member
+        if not member_path.is_file() or member_path.is_symlink():
+            continue
+        try:
+            content[contract.member] = member_path.read_bytes()
+        except OSError as error:
+            raise ReleaseArtifactError(
+                f"{archive_name}: cannot read mounted member "
+                f"{contract.member!r}: {error}"
+            ) from error
+    _validate_required_files(archive_name, sizes, rule.required_files)
+    _validate_executables(archive_name, permissions, rule.executable_files)
+    _validate_content_sources(
+        archive_name, content, rule.content_sources, source_root
+    )
+
+
+def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
+    mount_root = Path(tempfile.mkdtemp(prefix="dcss-release-dmg-"))
+    attached = False
+    try:
+        try:
+            result = subprocess.run(
+                [
+                    "hdiutil",
+                    "attach",
+                    "-nobrowse",
+                    "-readonly",
+                    "-mountpoint",
+                    str(mount_root),
+                    str(path),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError as error:
+            raise ReleaseArtifactError(
+                f"{path.name}: hdiutil is required to validate DMG assets: "
+                f"{error}"
+            ) from error
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout).strip()
+            raise ReleaseArtifactError(
+                f"{path.name}: invalid DMG: {detail or 'hdiutil attach failed'}"
+            )
+        attached = True
+        _validate_mounted_tree(path.name, mount_root, rule, source_root)
+    finally:
+        if attached:
+            subprocess.run(
+                ["hdiutil", "detach", "-force", str(mount_root)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        try:
+            os.rmdir(mount_root)
+        except OSError:
+            pass
+
+
 def _validate_required_files(
     archive_name: str, sizes: dict[str, int], required_files: tuple[str, ...]
 ) -> None:
@@ -450,6 +566,8 @@ def validate_release(
         path = artifacts_dir / rule.filename
         if rule.archive_type == "zip":
             _validate_zip(path, rule, source_root)
+        elif rule.archive_type == "dmg":
+            _validate_dmg(path, rule, source_root)
         else:
             raise ReleaseArtifactError(
                 f"{rule.filename}: unknown archive type {rule.archive_type!r}"

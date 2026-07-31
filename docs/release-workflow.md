@@ -12,8 +12,9 @@
 - 下游正式版标签：`0.34.1-zhA-B-CCC`。`A` 是中文版主版本，`B` 是该主版本下的
   发布系列，两者均从 1 开始且不补零；`CCC` 是系列内候选/修订序号，范围为
   `001`–`999`，固定三位并单调递增。
-- 新规则的首个候选标签：`0.34.1-zh5-1-001`。旧规则下的 `0.34.1-zh1` 至
-  `0.34.1-zh4` 均作为历史标签保留，不得移动或复用。
+- 新规则的首个候选标签：`0.34.1-zh5-1-001`。该标签对应的现有草稿保留不变；本次
+  macOS DMG 修订必须使用下一个候选标签 `0.34.1-zh5-1-002`，不得移动或复用旧标签。
+  旧规则下的 `0.34.1-zh1` 至 `0.34.1-zh4` 均作为历史标签保留，不得移动或复用。
 - 正式桌面平台：Windows Tiles、macOS Tiles。
 - Linux 仍保留日常 CI 编译验证，Android 暂缓；只有平台发布资产及相应验收完成后，
   才可在后续版本加入正式版范围。
@@ -28,9 +29,10 @@
 推送匹配 `0.34.1-zh*-*-???` 的标签后，`.github/workflows/ci.yml` 会：
 
 1. 运行工具测试、静态 ZH CI、Catch2、帮助系统运行时测试和完整 L1+L2+L3 运行时；
-2. 构建 Windows Tiles 与 macOS Tiles 正式资产；Linux Console 继续作为独立 CI
-   质量信号，不阻塞草稿 Release；
-3. 验证 Windows 与 macOS 归档文件形成精确的封闭集合；
+2. 构建 Windows Tiles ZIP 与 macOS Tiles 未签名 DMG 正式资产；Linux Console 继续作为
+   独立 CI 质量信号，不阻塞草稿 Release；
+3. 验证 Windows ZIP 与 macOS DMG 形成精确的封闭集合；DMG 在 macOS runner 上挂载后
+   按同一封闭世界规则校验；
 4. 检查归档路径安全、成员唯一性、平台主程序、中文 TextDB、设置文件、许可证，以及
    Tiles 包中的 Maple 字体和 OFL 许可证；`i18n/zh`、
    `database/zh`、`descript/zh` 三棵运行时中文数据树会从标签 checkout 完整枚举，数据、
@@ -55,8 +57,8 @@
 4. 经发布负责人确认版本号后，创建 annotated tag：
 
    ```bash
-   git tag -a 0.34.1-zh5-1-001 -m "DCSS 中文版 0.34.1-zh5-1-001"
-   git push origin 0.34.1-zh5-1-001
+   git tag -a 0.34.1-zh5-1-002 -m "DCSS 中文版 0.34.1-zh5-1-002"
+   git push origin 0.34.1-zh5-1-002
    ```
 
 标签推送会启动自动门禁。不要在候选提交、审查记录或版本名尚未确认时执行这一步。
@@ -68,10 +70,12 @@
 - 用 `sha256sum -c SHA256SUMS`（或平台等价工具）复核 Windows 与 macOS 下载文件；
 - 在全新 Windows 环境解压并启动 Tiles，确认中文默认语言、中文字体和主菜单；
 - 完成新游戏、帮助、存档和读档 smoke，并记录 Windows 版本与 CPU 架构；
-- 在 macOS 环境解压并启动 Tiles，确认中文默认语言、中文字体和主菜单；
+- 在 macOS 环境校验 DMG 的 SHA-256、打开磁盘映像并启动 Tiles，确认中文默认语言、
+  中文字体和主菜单；由于没有 Apple Developer 签名/公证，按发布说明完成一次
+  Gatekeeper 的“打开/仍要打开”确认，并记录 macOS 版本与 CPU 架构；
 - 完成新游戏、帮助、存档和读档 smoke，并记录 macOS 版本与 CPU 架构；
 - 核对发布说明中的玩家可见变化、支持平台、已知问题、延期项目和准确提交 SHA；
-- 核对 Release 仍为 draft，且资产只有 Windows、macOS 归档、`SHA256SUMS` 和
+- 核对 Release 仍为 draft，且资产只有 Windows ZIP、macOS DMG、`SHA256SUMS` 和
   `RELEASE-MANIFEST.txt`，共四项。
 
 自动流程到草稿为止。只有上述人工验收全部有记录，且发布负责人明确批准后，才能在

@@ -324,15 +324,15 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build macOS tiles app
-        run: make -j4 TILES=y mac-app-tiles
+        run: make -j4 TILES=y mac-app-tiles-dmg
         working-directory: crawl-ref/source
       - name: Upload macOS tiles app
         uses: actions/upload-artifact@v4
         with:
           name: macos-tiles-app
           path: |
-            crawl-ref/source/mac-app-zips/*.zip
-            !crawl-ref/source/mac-app-zips/latest.zip
+            crawl-ref/source/mac-app-zips/*.dmg
+            !crawl-ref/source/mac-app-zips/latest.dmg
           if-no-files-found: error
 
   build_windows_tiles:
@@ -444,7 +444,7 @@ jobs:
       contents: write
 
     name: Create verified draft release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -490,7 +490,8 @@ jobs:
             echo "## 支持平台"
             echo
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
-            echo "- macOS Tiles：应用 ZIP，解压后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。"
+            echo "- macOS Tiles：未签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
+            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；这只是用户明确允许未签名应用，不代表 Apple 签名或公证。"
             echo
             echo "## 延期平台"
             echo
@@ -499,7 +500,7 @@ jobs:
             echo
             echo "## 下载校验"
             echo
-            echo "请使用 \`SHA256SUMS\` 校验 Windows 与 macOS ZIP；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
+            echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP 与 macOS DMG；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
             echo
             echo "本 Release 由自动流程创建为草稿；完成 Windows 与 macOS 环境解压、启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
           } > "$RUNNER_TEMP/release-notes.md"

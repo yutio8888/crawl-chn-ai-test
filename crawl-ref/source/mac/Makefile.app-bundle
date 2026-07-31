@@ -31,14 +31,16 @@ endif
 EXECUTABLE_PATH := $(CRAWL_SRC)/$(CRAWL_BIN)
 
 ZIP_NAME = stone_soup-$(SRC_VERSION)$(ZIP_QUALIFIER)-macosx$(ZIP_ARCH).zip
+DMG_NAME = stone_soup-$(SRC_VERSION)$(ZIP_QUALIFIER)-macosx$(ZIP_ARCH).dmg
 
 STAGING_DIR := $(CRAWL_SRC)/build/app-bundle-stage
 ZIPPED_APP_DIR := $(CRAWL_SRC)/mac-app-zips
 BUNDLE_DIRNAME := $(STAGING_DIR)/$(BUNDLE_NAME).app
 RESOURCES := $(BUNDLE_DIRNAME)/Contents/Resources
 
-.PHONY: all clean clean-stage stage-dir copy-executable copy-resources \
-	copy-tiledata assemble-app-bundle create-bundle-directory
+.PHONY: all tiles-dmg clean clean-stage stage-dir copy-executable \
+	copy-resources copy-tiledata assemble-app-bundle create-bundle-directory \
+	zip-app-bundle dmg-app-bundle remove-existing-code-signature
 
 all: $(STAGING_DIR) $(ZIPPED_APP_DIR) \
 	clean-stage assemble-app-bundle zip-app-bundle
@@ -47,6 +49,9 @@ clean:
 	rm -rf $(CRAWL_SRC)/build
 
 tiles: all
+
+tiles-dmg: $(STAGING_DIR) $(ZIPPED_APP_DIR) \
+	clean-stage assemble-app-bundle dmg-app-bundle
 
 $(STAGING_DIR):
 	mkdir -p $@
@@ -58,7 +63,7 @@ clean-stage:
 	rm -rf $(STAGING_DIR)/*
 
 assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
-		     copy-info-plist
+			     copy-info-plist remove-existing-code-signature
 
 zip-app-bundle:
 	rm -f $(ZIPPED_APP_DIR)/$(ZIP_NAME)
@@ -67,6 +72,14 @@ zip-app-bundle:
 	cd $(STAGING_DIR) && \
 		if which advzip >/dev/null;then advzip -z3 $(ZIPPED_APP_DIR)/$(ZIP_NAME);fi
 	ln -sf $(ZIPPED_APP_DIR)/$(ZIP_NAME) $(ZIPPED_APP_DIR)/latest.zip
+
+dmg-app-bundle:
+	rm -f $(ZIPPED_APP_DIR)/$(DMG_NAME)
+	hdiutil create -ov -format UDZO -fs HFS+ \
+		-volname "$(APP_NAME) Tiles" \
+		-srcfolder "$(STAGING_DIR)" \
+		"$(ZIPPED_APP_DIR)/$(DMG_NAME)"
+	ln -sf $(ZIPPED_APP_DIR)/$(DMG_NAME) $(ZIPPED_APP_DIR)/latest.dmg
 
 create-bundle-directory: $(BUNDLE_DIRNAME)
 
@@ -83,6 +96,17 @@ else
 	# normalize the binary name for universal vs non-universal builds
 	cp $(EXECUTABLE_PATH) $(RESOURCES)/crawl
 	cp ./crawl $(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)
+endif
+
+# This release profile is intentionally unsigned.  A locally reused binary
+# can carry an ad-hoc signature whose resource seal no longer matches the
+# assembled bundle; remove it so Gatekeeper sees the documented unsigned
+# application instead of reporting a damaged app.
+remove-existing-code-signature: copy-executable
+ifdef TILE_APP
+	if codesign -d --verbose=2 "$(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)" >/dev/null 2>&1; then \
+		codesign --remove-signature "$(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)"; \
+	fi
 endif
 
 copy-resources:

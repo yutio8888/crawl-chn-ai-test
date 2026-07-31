@@ -37,6 +37,10 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.artifacts.mkdir()
         self.source_root = self.root / "source"
         self.source_root.mkdir()
+        self.dmg_fixtures = self.root / "dmg-fixtures"
+        self.dmg_fixtures.mkdir()
+        self._original_validate_dmg = MODULE._validate_dmg
+        MODULE._validate_dmg = self._validate_dmg_fixture
         base_rules = MODULE.artifact_rules(TAG)
         for rule in base_rules:
             for contract in rule.content_sources:
@@ -55,6 +59,7 @@ class ReleaseArtifactTest(unittest.TestCase):
         self._write_valid_set()
 
     def tearDown(self) -> None:
+        MODULE._validate_dmg = self._original_validate_dmg
         self.temp.cleanup()
 
     def _payloads(self, rule) -> dict[str, bytes]:
@@ -98,6 +103,60 @@ class ReleaseArtifactTest(unittest.TestCase):
                     info.external_attr = mode << 16
                 archive.writestr(info, payload)
 
+    def _write_dmg_fixture(
+        self,
+        rule,
+        payloads: dict[str, bytes],
+        *,
+        extra: list[tuple[str, bytes, int | None]] | None = None,
+        mode_overrides: dict[str, int] | None = None,
+    ) -> None:
+        mounted = self.dmg_fixtures / f"{rule.filename}.mounted"
+        if mounted.exists() or mounted.is_symlink():
+            if mounted.is_dir() and not mounted.is_symlink():
+                shutil.rmtree(mounted)
+            else:
+                mounted.unlink()
+        mounted.mkdir()
+        (self.artifacts / rule.filename).write_bytes(b"DMG fixture")
+
+        entries = [
+            (name, payload, None) for name, payload in payloads.items()
+        ]
+        entries.extend(extra or [])
+        for name, payload, mode in entries:
+            relative = Path(*Path(name.rstrip("/")).parts)
+            target = mounted / relative
+            is_directory = (
+                name.endswith("/")
+                or mode is not None and stat.S_IFMT(mode) == stat.S_IFDIR
+            )
+            if is_directory:
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if mode is not None and stat.S_IFMT(mode) == stat.S_IFLNK:
+                target.symlink_to(payload.decode())
+                continue
+            if mode is not None and stat.S_IFMT(mode) == stat.S_IFIFO:
+                os.mkfifo(target)
+                continue
+            target.write_bytes(payload)
+            effective_mode = mode
+            if mode_overrides and name in mode_overrides:
+                effective_mode = mode_overrides[name]
+            if effective_mode is None:
+                effective_mode = (
+                    0o755 if name in rule.executable_files else 0o644
+                )
+            target.chmod(effective_mode & 0o777)
+
+    def _validate_dmg_fixture(self, path, rule, source_root) -> None:
+        if path.read_bytes() != b"DMG fixture":
+            raise MODULE.ReleaseArtifactError(f"{path.name}: invalid DMG")
+        mounted = self.dmg_fixtures / f"{rule.filename}.mounted"
+        MODULE._validate_mounted_tree(path.name, mounted, rule, source_root)
+
     def _rewrite(
         self,
         rule,
@@ -106,13 +165,22 @@ class ReleaseArtifactTest(unittest.TestCase):
         zip_extra=None,
         mode_overrides=None,
     ) -> None:
-        self.assertEqual("zip", rule.archive_type)
-        self._write_zip(
-            rule,
-            payloads,
-            extra=zip_extra,
-            mode_overrides=mode_overrides,
-        )
+        if rule.archive_type == "zip":
+            self._write_zip(
+                rule,
+                payloads,
+                extra=zip_extra,
+                mode_overrides=mode_overrides,
+            )
+        elif rule.archive_type == "dmg":
+            self._write_dmg_fixture(
+                rule,
+                payloads,
+                extra=zip_extra,
+                mode_overrides=mode_overrides,
+            )
+        else:
+            self.fail(f"unknown fixture archive type: {rule.archive_type}")
 
     def _write_valid_set(self) -> None:
         for rule in self.rules:
@@ -151,12 +219,12 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertEqual(
             {
                 f"stone_soup-{TAG}-tiles-win32.zip",
-                f"stone_soup-{TAG}-tiles-macosx.zip",
+                f"stone_soup-{TAG}-tiles-macosx.dmg",
             },
             {rule.filename for rule in self.rules},
         )
         macos = next(
-            rule for rule in self.rules if rule.filename.endswith("-macosx.zip")
+            rule for rule in self.rules if rule.filename.endswith("-macosx.dmg")
         )
         self.assertIn(
             "Dungeon Crawl Stone Soup - Tiles.app/Contents/Info.plist",
@@ -276,10 +344,12 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             payloads = self._payloads(rule)
             unknown = f"{rule.data_root}/database/zh/unexpected.txt"
-            self._write_zip(
+            self._rewrite(
                 rule,
                 payloads,
-                extra=[(unknown, b"unexpected\n", stat.S_IFREG | 0o644)],
+                zip_extra=[
+                    (unknown, b"unexpected\n", stat.S_IFREG | 0o644)
+                ],
             )
             with self.subTest(archive=rule.filename, kind="file"):
                 self.assert_rejected("unexpected ZH archive file")
@@ -348,6 +418,29 @@ class ReleaseArtifactTest(unittest.TestCase):
         self._write_zip(rule, payloads, extra=[(collision, b"again", None)])
         self.assert_rejected("case-insensitive member collision")
 
+    def test_dmg_mount_rejects_unsafe_members_and_outside_root(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "dmg")
+        payloads = self._payloads(rule)
+        mutations = (
+            (
+                "symbolic links",
+                [(f"{rule.root}/link", b"target", stat.S_IFLNK | 0o777)],
+            ),
+            (
+                "special mounted member",
+                [(f"{rule.root}/fifo", b"", stat.S_IFIFO | 0o644)],
+            ),
+            (
+                "outside expected root",
+                [("other-root/file", b"x", stat.S_IFREG | 0o644)],
+            ),
+        )
+        for pattern, extra in mutations:
+            with self.subTest(pattern=pattern):
+                self._rewrite(rule, payloads, zip_extra=extra)
+                self.assert_rejected(pattern)
+        self._rewrite(rule, payloads)
+
     def test_corrupt_archives_are_rejected(self) -> None:
         zip_rule = self.rules[0]
         zip_path = self.artifacts / zip_rule.filename
@@ -366,7 +459,9 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             with self.subTest(rule=rule.filename):
                 (self.artifacts / rule.filename).write_bytes(b"not an archive")
-                self.assert_rejected("invalid ZIP")
+                self.assert_rejected(
+                    "invalid ZIP" if rule.archive_type == "zip" else "invalid DMG"
+                )
                 self._rewrite(rule, self._payloads(rule))
 
     def test_downstream_version_is_reported_as_final(self) -> None:

@@ -357,7 +357,9 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("package-windows-tiles", workflow)
         self.assertIn("name: windows-tiles", workflow)
         self.assertIn("stone_soup-*-tiles-win32.zip", workflow)
-        self.assertIn("!crawl-ref/source/mac-app-zips/latest.zip", workflow)
+        self.assertIn("mac-app-tiles-dmg", workflow)
+        self.assertIn("crawl-ref/source/mac-app-zips/*.dmg", workflow)
+        self.assertIn("!crawl-ref/source/mac-app-zips/latest.dmg", workflow)
         self.assertIn("release_draft:", workflow)
         self.assertIn("Create verified draft release", workflow)
         self.assertIn("verify_release_artifacts.py", workflow)
@@ -369,7 +371,8 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("Download macOS package", workflow)
         self.assertIn("name: macos-tiles-app", workflow)
         self.assertIn("中文桌面正式版", workflow)
-        self.assertIn("macOS Tiles：应用 ZIP", workflow)
+        self.assertIn("macOS Tiles：未签名 DMG", workflow)
+        self.assertIn("xattr -dr com.apple.quarantine", workflow)
         self.assertEqual(7, workflow.count("name: Ensure version info"))
         self.assertEqual(
             7,
@@ -382,6 +385,7 @@ class AgentDocumentationTests(unittest.TestCase):
             workflow,
         )
         release_draft = workflow.split("  release_draft:\n", 1)[1]
+        self.assertIn("runs-on: macos-latest", release_draft)
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertNotIn("- build_linux_console", release_needs)
         self.assertIn("- build_macos_tiles", release_needs)

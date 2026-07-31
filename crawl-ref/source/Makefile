@@ -2206,6 +2206,9 @@ mac-app-console-universal: crawl-universal
 mac-app-tiles: all
 	+$(MAKE) -j1 -C mac -f Makefile.app-bundle tiles
 
+mac-app-tiles-dmg: all
+	+$(MAKE) -j1 -C mac -f Makefile.app-bundle tiles-dmg
+
 mac-app-console: all
 	+$(MAKE) -j1 -C mac -f Makefile.app-bundle
 
