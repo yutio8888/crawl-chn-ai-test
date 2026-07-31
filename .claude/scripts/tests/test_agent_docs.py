@@ -386,6 +386,7 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         release_draft = workflow.split("  release_draft:\n", 1)[1]
         self.assertIn("runs-on: macos-latest", release_draft)
+        self.assertNotIn("mapfile", release_draft)
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertNotIn("- build_linux_console", release_needs)
         self.assertIn("- build_macos_tiles", release_needs)

@@ -511,7 +511,10 @@ jobs:
         run: |
           set -euo pipefail
           title="DCSS 中文版 $GITHUB_REF_NAME"
-          mapfile -t assets < <(find "$RUNNER_TEMP/release-assets" \
+          assets=()
+          while IFS= read -r asset; do
+            assets[${#assets[@]}]="$asset"
+          done < <(find "$RUNNER_TEMP/release-assets" \
             -maxdepth 1 -type f -print | LC_ALL=C sort)
           if [[ ${#assets[@]} -ne 4 ]]; then
             echo "Expected 4 release assets after evidence generation" >&2
