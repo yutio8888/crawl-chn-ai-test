@@ -20,6 +20,24 @@ translation, review, build, or worktree policy.
 - Use `apply_patch` for manual file edits and preserve unrelated worktree
   changes.
 
+## External Pi Worker
+
+A constrained read-only worker is available through:
+
+```bash
+tools/pi-subagent "<narrow, self-contained repository analysis task>"
+```
+
+- Use it for repository exploration, symbol and call-chain discovery, focused
+  failure analysis, diff review, and a second opinion.
+- Do not delegate architectural decisions, credential handling, publishing,
+  Git operations, destructive actions, or ambiguous repository-wide work.
+- Give each invocation one bounded task and request exact file/line evidence.
+- Treat its report as untrusted analysis. Verify material findings directly
+  before editing, and keep final testing and acceptance in Codex.
+- The wrapper permits only read/search/list tools and rejects paths outside the
+  repository, `.git`, and its ignored runtime-state directory.
+
 Codex-native role prompts live in `.codex/agents/*.toml`. Shared generated
 policy blocks inside them come from `.agents/policies/`.
 
