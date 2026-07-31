@@ -40,7 +40,10 @@ cd crawl-ref/source
 make TILES=y mac-app-tiles-dmg -j4
 ```
 
-The build produces an unsigned Apple application DMG under `mac-app-zips/`.
+The build produces an ad-hoc-signed Apple application DMG under
+`mac-app-zips/`. The signature seals the final assembled bundle so macOS can
+launch it, but it is not an Apple Developer signature and does not provide
+notarization.
 GitHub Actions uploads the versioned DMG as the `macos-tiles-app` artifact and
 includes it in tagged draft Releases after closed-world artifact validation.
 Because this release profile has no Apple Developer signing or notarization,

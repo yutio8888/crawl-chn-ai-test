@@ -431,10 +431,7 @@ def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
             )
         attached = True
         _validate_mounted_tree(path.name, mount_root, rule, source_root)
-        for executable in rule.executable_files:
-            _validate_unsigned_executable(
-                path.name, mount_root / executable
-            )
+        _validate_ad_hoc_bundle(path.name, mount_root / rule.root)
     finally:
         cleanup_error: ReleaseArtifactError | None = None
         if attached or mount_root.exists():
@@ -468,31 +465,52 @@ def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
             raise cleanup_error
 
 
-def _validate_unsigned_executable(
-    archive_name: str, executable: Path
-) -> None:
+def _validate_ad_hoc_bundle(archive_name: str, bundle: Path) -> None:
     try:
-        result = subprocess.run(
-            ["codesign", "--display", "--verbose=2", str(executable)],
+        verification = subprocess.run(
+            [
+                "codesign",
+                "--verify",
+                "--deep",
+                "--strict",
+                "--verbose=4",
+                str(bundle),
+            ],
             check=False,
             capture_output=True,
             text=True,
         )
     except OSError as error:
         raise ReleaseArtifactError(
-            f"{archive_name}: codesign is required to validate the unsigned "
-            f"macOS executable: {error}"
+            f"{archive_name}: codesign is required to validate the ad-hoc "
+            f"macOS application signature: {error}"
         ) from error
-    if result.returncode == 0:
+    if verification.returncode != 0:
+        detail = (verification.stderr or verification.stdout).strip()
         raise ReleaseArtifactError(
-            f"{archive_name}: macOS executable unexpectedly has a code "
-            f"signature: {executable.name!r}"
+            f"{archive_name}: ad-hoc macOS application signature is invalid: "
+            f"{detail or 'codesign verification failed'}"
         )
-    detail = (result.stderr or result.stdout).strip()
-    if "code object is not signed at all" not in detail.lower():
+
+    try:
+        display = subprocess.run(
+            ["codesign", "--display", "--verbose=2", str(bundle)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as error:
         raise ReleaseArtifactError(
-            f"{archive_name}: cannot establish that macOS executable is "
-            f"unsigned: {detail or 'codesign inspection failed'}"
+            f"{archive_name}: codesign is required to inspect the ad-hoc "
+            f"macOS application signature: {error}"
+        ) from error
+    detail = (display.stderr or display.stdout).strip()
+    if display.returncode != 0 or not re.search(
+        r"(?m)^Signature=adhoc$", detail
+    ):
+        raise ReleaseArtifactError(
+            f"{archive_name}: macOS application does not have an ad-hoc "
+            f"code signature: {detail or 'codesign inspection failed'}"
         )
 
 

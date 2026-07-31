@@ -371,7 +371,7 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("Download macOS package", workflow)
         self.assertIn("name: macos-tiles-app", workflow)
         self.assertIn("中文桌面正式版", workflow)
-        self.assertIn("macOS Tiles：未签名 DMG", workflow)
+        self.assertIn("macOS Tiles：ad-hoc 签名 DMG", workflow)
         self.assertIn("xattr -dr com.apple.quarantine", workflow)
         self.assertEqual(7, workflow.count("name: Ensure version info"))
         self.assertEqual(
@@ -413,7 +413,10 @@ class AgentDocumentationTests(unittest.TestCase):
             for line in make_dry_run.stdout.splitlines()
             if "codesign" in line
         )
-        self.assertIn("codesign --remove-signature", codesign_commands)
+        self.assertIn(
+            "codesign --force --deep --sign - --timestamp=none",
+            codesign_commands,
+        )
         self.assertIn("Dungeon Crawl Stone Soup - Tiles.app", codesign_commands)
         self.assertNotIn(r"Dungeon\ Crawl\ Stone\ Soup", codesign_commands)
 

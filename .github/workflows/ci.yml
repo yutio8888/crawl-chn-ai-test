@@ -490,8 +490,8 @@ jobs:
             echo "## 支持平台"
             echo
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
-            echo "- macOS Tiles：未签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
-            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；这只是用户明确允许未签名应用，不代表 Apple 签名或公证。"
+            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
+            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
             echo
             echo "## 延期平台"
             echo

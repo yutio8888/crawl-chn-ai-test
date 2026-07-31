@@ -29,7 +29,7 @@
 推送匹配 `0.34.1-zh*-*-???` 的标签后，`.github/workflows/ci.yml` 会：
 
 1. 运行工具测试、静态 ZH CI、Catch2、帮助系统运行时测试和完整 L1+L2+L3 运行时；
-2. 构建 Windows Tiles ZIP 与 macOS Tiles 未签名 DMG 正式资产；Linux Console 继续作为
+2. 构建 Windows Tiles ZIP 与 macOS Tiles ad-hoc 签名 DMG 正式资产；Linux Console 继续作为
    独立 CI 质量信号，不阻塞草稿 Release；
 3. 验证 Windows ZIP 与 macOS DMG 形成精确的封闭集合；DMG 在 macOS runner 上挂载后
    按同一封闭世界规则校验；

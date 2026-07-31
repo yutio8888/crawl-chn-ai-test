@@ -461,8 +461,10 @@ class ReleaseArtifactTest(unittest.TestCase):
         def fake_run(args, **kwargs):
             calls.append(args)
             if args[0] == "codesign":
+                if args[1] == "--verify":
+                    return subprocess.CompletedProcess(args, 0, "", "")
                 return subprocess.CompletedProcess(
-                    args, 1, "", "code object is not signed at all"
+                    args, 0, "", "Signature=adhoc"
                 )
             if args[1] == "attach":
                 mount_root = Path(args[args.index("-mountpoint") + 1])
@@ -479,19 +481,23 @@ class ReleaseArtifactTest(unittest.TestCase):
         with mock.patch.object(MODULE.subprocess, "run", side_effect=fake_run):
             self._validate(real_dmg=True)
 
-        self.assertEqual(3, len(calls))
+        self.assertEqual(4, len(calls))
         self.assertEqual(
             ["hdiutil", "attach", "-nobrowse", "-readonly"], calls[0][:4]
         )
-        self.assertEqual(["codesign", "--display", "--verbose=2"], calls[1][:3])
+        self.assertEqual(
+            ["codesign", "--verify", "--deep", "--strict", "--verbose=4"],
+            calls[1][:5],
+        )
         mount_root = Path(calls[0][calls[0].index("-mountpoint") + 1])
         self.assertEqual(
-            rule.executable_files[0],
+            rule.root,
             Path(calls[1][-1]).relative_to(mount_root).as_posix(),
         )
-        self.assertEqual(["hdiutil", "detach", "-force"], calls[2][:3])
+        self.assertEqual(["codesign", "--display", "--verbose=2"], calls[2][:3])
+        self.assertEqual(["hdiutil", "detach", "-force"], calls[3][:3])
 
-    def test_real_dmg_runner_rejects_signed_executable(self) -> None:
+    def test_real_dmg_runner_rejects_non_ad_hoc_signature(self) -> None:
         rule = next(item for item in self.rules if item.archive_type == "dmg")
         self._write_valid_set()
         mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
@@ -500,7 +506,11 @@ class ReleaseArtifactTest(unittest.TestCase):
         def signed_run(args, **kwargs):
             calls.append(args)
             if args[0] == "codesign":
-                return subprocess.CompletedProcess(args, 0, "", "Signature=adhoc")
+                if args[1] == "--verify":
+                    return subprocess.CompletedProcess(args, 0, "", "")
+                return subprocess.CompletedProcess(
+                    args, 0, "", "Signature=Apple Development: test"
+                )
             if args[1] == "attach":
                 mount_root = Path(args[args.index("-mountpoint") + 1])
                 shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
@@ -514,10 +524,12 @@ class ReleaseArtifactTest(unittest.TestCase):
             return subprocess.CompletedProcess(args, 0, "", "")
 
         with mock.patch.object(MODULE.subprocess, "run", side_effect=signed_run):
-            self.assert_rejected("unexpectedly has a code signature", real_dmg=True)
+            self.assert_rejected(
+                "does not have an ad-hoc code signature", real_dmg=True
+            )
 
-        self.assertEqual("codesign", calls[1][0])
-        self.assertEqual("detach", calls[2][1])
+        self.assertEqual("codesign", calls[2][0])
+        self.assertEqual("detach", calls[3][1])
 
     def test_real_dmg_runner_rejects_unknown_codesign_failure(self) -> None:
         rule = next(item for item in self.rules if item.archive_type == "dmg")
@@ -547,7 +559,7 @@ class ReleaseArtifactTest(unittest.TestCase):
             MODULE.subprocess, "run", side_effect=invalid_signature_run
         ):
             self.assert_rejected(
-                "cannot establish that macOS executable is unsigned",
+                "ad-hoc macOS application signature is invalid",
                 real_dmg=True,
             )
 
