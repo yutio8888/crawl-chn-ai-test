@@ -182,6 +182,9 @@ do_rulings() {
     # D-A-003: Kikubaaqudgha
     check_entity "Kikubaaqudgha" "奇库巴库哈" "奇库巴库加"
 
+    # D-A-051: Ignis
+    check_entity "Ignis"         "伊格尼斯"     "曳焰" "曳焰伊格尼斯"
+
     # D-B-004: conj_verb must not be called on Chinese strings
     # Check for conj_verb called with Chinese string arguments (pattern: conj_verb("中...))
     echo "--- conj_verb with Chinese strings (should be none) ---"
