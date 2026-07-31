@@ -15,6 +15,7 @@ import unittest
 import warnings
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -39,8 +40,6 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.source_root.mkdir()
         self.dmg_fixtures = self.root / "dmg-fixtures"
         self.dmg_fixtures.mkdir()
-        self._original_validate_dmg = MODULE._validate_dmg
-        MODULE._validate_dmg = self._validate_dmg_fixture
         base_rules = MODULE.artifact_rules(TAG)
         for rule in base_rules:
             for contract in rule.content_sources:
@@ -59,7 +58,6 @@ class ReleaseArtifactTest(unittest.TestCase):
         self._write_valid_set()
 
     def tearDown(self) -> None:
-        MODULE._validate_dmg = self._original_validate_dmg
         self.temp.cleanup()
 
     def _payloads(self, rule) -> dict[str, bytes]:
@@ -186,15 +184,28 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             self._rewrite(rule, self._payloads(rule))
 
-    def _validate(self, *, tag=TAG, commit=COMMIT, source_root=None) -> None:
-        MODULE.validate_release(
-            self.artifacts,
-            source_root or self.source_root,
-            tag,
-            commit,
-            self.root / "SHA256SUMS",
-            self.root / "RELEASE-MANIFEST.txt",
-        )
+    def _validate(
+        self,
+        *,
+        tag=TAG,
+        commit=COMMIT,
+        source_root=None,
+        real_dmg=False,
+    ) -> None:
+        original_validate_dmg = MODULE._validate_dmg
+        if not real_dmg:
+            MODULE._validate_dmg = self._validate_dmg_fixture
+        try:
+            MODULE.validate_release(
+                self.artifacts,
+                source_root or self.source_root,
+                tag,
+                commit,
+                self.root / "SHA256SUMS",
+                self.root / "RELEASE-MANIFEST.txt",
+            )
+        finally:
+            MODULE._validate_dmg = original_validate_dmg
 
     def assert_rejected(self, pattern: str, **kwargs) -> None:
         with self.assertRaisesRegex(MODULE.ReleaseArtifactError, pattern):
@@ -440,6 +451,71 @@ class ReleaseArtifactTest(unittest.TestCase):
                 self._rewrite(rule, payloads, zip_extra=extra)
                 self.assert_rejected(pattern)
         self._rewrite(rule, payloads)
+
+    def test_real_dmg_runner_validates_and_detaches(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "dmg")
+        self._write_valid_set()
+        mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
+        calls = []
+
+        def fake_run(args, **kwargs):
+            calls.append(args)
+            if args[1] == "attach":
+                mount_root = Path(args[args.index("-mountpoint") + 1])
+                shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
+                return subprocess.CompletedProcess(args, 0, "", "")
+            mount_root = Path(args[-1])
+            for child in mount_root.iterdir():
+                if child.is_dir() and not child.is_symlink():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        with mock.patch.object(MODULE.subprocess, "run", side_effect=fake_run):
+            self._validate(real_dmg=True)
+
+        self.assertEqual(2, len(calls))
+        self.assertEqual(
+            ["hdiutil", "attach", "-nobrowse", "-readonly"], calls[0][:4]
+        )
+        self.assertEqual(["hdiutil", "detach", "-force"], calls[1][:3])
+
+    def test_real_dmg_runner_rejects_attach_and_cleanup_failures(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "dmg")
+        self._write_valid_set()
+        calls = []
+
+        def attach_failure(args, **kwargs):
+            calls.append(args)
+            return subprocess.CompletedProcess(args, 1, "", "bad image")
+
+        with mock.patch.object(
+            MODULE.subprocess, "run", side_effect=attach_failure
+        ):
+            self.assert_rejected("invalid DMG", real_dmg=True)
+        self.assertEqual(2, len(calls))
+        self.assertEqual("detach", calls[1][1])
+
+        calls.clear()
+
+        def detach_failure(args, **kwargs):
+            calls.append(args)
+            if args[1] == "attach":
+                mount_root = Path(args[args.index("-mountpoint") + 1])
+                mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
+                shutil.copytree(
+                    mounted_fixture, mount_root, dirs_exist_ok=True
+                )
+                return subprocess.CompletedProcess(args, 0, "", "")
+            return subprocess.CompletedProcess(args, 1, "", "busy")
+
+        with mock.patch.object(
+            MODULE.subprocess, "run", side_effect=detach_failure
+        ):
+            self.assert_rejected("hdiutil detach failed", real_dmg=True)
+        self.assertEqual(2, len(calls))
+        self.assertEqual("detach", calls[1][1])
 
     def test_corrupt_archives_are_rejected(self) -> None:
         zip_rule = self.rules[0]

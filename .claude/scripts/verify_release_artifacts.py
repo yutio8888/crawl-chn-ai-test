@@ -432,17 +432,36 @@ def _validate_dmg(path: Path, rule: ArtifactRule, source_root: Path) -> None:
         attached = True
         _validate_mounted_tree(path.name, mount_root, rule, source_root)
     finally:
-        if attached:
-            subprocess.run(
-                ["hdiutil", "detach", "-force", str(mount_root)],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
+        cleanup_error: ReleaseArtifactError | None = None
+        if attached or mount_root.exists():
+            try:
+                detach = subprocess.run(
+                    ["hdiutil", "detach", "-force", str(mount_root)],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
+            except OSError as error:
+                if attached:
+                    cleanup_error = ReleaseArtifactError(
+                        f"{path.name}: hdiutil detach failed: {error}"
+                    )
+            else:
+                if detach.returncode != 0 and attached:
+                    detail = (detach.stderr or detach.stdout).strip()
+                    cleanup_error = ReleaseArtifactError(
+                        f"{path.name}: hdiutil detach failed: "
+                        f"{detail or 'hdiutil detach failed'}"
+                    )
         try:
-            os.rmdir(mount_root)
-        except OSError:
-            pass
+            if mount_root.exists():
+                os.rmdir(mount_root)
+        except OSError as error:
+            cleanup_error = cleanup_error or ReleaseArtifactError(
+                f"{path.name}: DMG mount point cleanup failed: {error}"
+            )
+        if cleanup_error is not None:
+            raise cleanup_error
 
 
 def _validate_required_files(

@@ -108,7 +108,7 @@ MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
         build-windows package-windows-installer docs greet api api-dev android FORCE \
         monster catch2-tests plug-and-play-tests \
         crawl-universal crawl-arm64-apple-macos11 crawl-x86_64-apple-macos10.7 clean-mac \
-        ccache-config
+        ccache-config mac-app-tiles-dmg
 
 include Makefile.obj
 
