@@ -3404,8 +3404,10 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     string db_name   = feat == DNGN_ENTER_SHOP ? "a shop" : desc;
     strip_suffix(db_name, " (summoned)");
     if (Options.language == lang_t::ZH)
+    {
         db_name = feat == DNGN_ENTER_SHOP ? "a shop"
                                           : _feature_description_en(pos);
+    }
     strip_suffix(db_name, " (summoned)");
     string long_desc = getLongDescription(db_name);
 
