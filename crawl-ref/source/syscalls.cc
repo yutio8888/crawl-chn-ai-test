@@ -28,7 +28,7 @@
 #include "random.h"
 #include "unicode.h"
 
-#ifdef UNIX
+#if defined(UNIX) && !defined(__ANDROID__)
 bool ensure_utf8_ctype()
 {
     const char *const current_locale = setlocale(LC_CTYPE, nullptr);

@@ -14,7 +14,7 @@ bool unlock_file(int fd);
 
 bool read_urandom(char *buf, int len);
 
-#ifdef UNIX
+#if defined(UNIX) && !defined(__ANDROID__)
 bool ensure_utf8_ctype();
 #endif
 

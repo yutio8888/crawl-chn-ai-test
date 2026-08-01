@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 #else
     setlocale(LC_ALL, "");
 #endif
-#if defined(UNIX) && defined(USE_TILE_LOCAL)
+#if defined(UNIX) && defined(USE_TILE_LOCAL) && !defined(__ANDROID__)
     if (!ensure_utf8_ctype())
         fprintf(stderr, "Warning: no UTF-8 LC_CTYPE locale is available.\n");
 #endif
