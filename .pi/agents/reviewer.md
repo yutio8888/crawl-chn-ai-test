@@ -1,8 +1,7 @@
 ---
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
-model: openrouter/z-ai/glm-5.2
-fallbackModels: opencode-go/deepseek-v4-pro, deepseek/deepseek-v4-pro
+model: opencode-go/deepseek-v4-flash
 tools: read, grep, find, ls, bash, intercom
 thinking: high
 systemPromptMode: replace
