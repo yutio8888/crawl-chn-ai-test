@@ -5,8 +5,10 @@
 #   1. Missing binary → exit 2
 #   2. Binary present + normal output → exit 0
 #   3. Existing init backup → fail closed and preserve both files
-#   4. Binary present + crash → exit 1
-#   5. Empty output with 0 rc → depends on capture check
+#   4. Non-regular init state → exit 2 without mutation
+#   5. Signal interruption → cleanup and restore
+#   6. Binary present + crash → exit 1
+#   7. Empty output with 0 rc → depends on capture check
 
 set -euo pipefail
 
@@ -29,6 +31,13 @@ assert_rc() {
     else
         fail "$1 (expected exit $2, got $3)"
     fi
+}
+run_smoke() {
+    local label="$1"
+    set +e
+    (cd "$REPO" && bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/$label.out" 2>&1
+    LAST_RC=$?
+    set -e
 }
 
 # We'll run smoke_test.sh from a temporary git repo to provide the right
@@ -93,7 +102,136 @@ else
 fi
 rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak"
 
-# ── Test 4: Binary present + crash (sigsegv) → exit 1 ──
+# Check the same fail-closed rule for directory, symlink, and dangling
+# symlink backup artifacts.
+echo "--- Special init backup artifacts ---"
+mkdir "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+run_smoke "backup-directory"
+assert_rc "backup directory exits 2" 2 "$LAST_RC"
+if [ -d "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt"; then
+    pass "backup directory and original init are preserved"
+else
+    fail "backup directory and original init must be preserved"
+fi
+rm -rf "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+
+echo 'backup target' > "$REPO/crawl-ref/source/backup-target"
+ln -s backup-target "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+run_smoke "backup-symlink"
+assert_rc "backup symlink exits 2" 2 "$LAST_RC"
+if [ -L "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt"; then
+    pass "backup symlink and original init are preserved"
+else
+    fail "backup symlink and original init must be preserved"
+fi
+rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak" "$REPO/crawl-ref/source/backup-target"
+
+ln -s missing-backup-target "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+run_smoke "backup-dangling-symlink"
+assert_rc "dangling backup symlink exits 2" 2 "$LAST_RC"
+if [ -L "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt"; then
+    pass "dangling backup symlink and original init are preserved"
+else
+    fail "dangling backup symlink and original init must be preserved"
+fi
+rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+
+# ── Test 4: Non-regular init state → fail closed without mutation ──
+echo "--- Non-regular init state ---"
+mkdir "$REPO/crawl-ref/source/init.txt.directory"
+mv "$REPO/crawl-ref/source/init.txt" "$REPO/crawl-ref/source/init.txt.saved"
+mv "$REPO/crawl-ref/source/init.txt.directory" "$REPO/crawl-ref/source/init.txt"
+set +e
+(cd "$REPO" && bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/non-regular.out" 2>&1
+RC=$?
+set -e
+assert_rc "directory init exits 2" 2 "$RC"
+if [ -d "$REPO/crawl-ref/source/init.txt" ] \
+    && [ -f "$REPO/crawl-ref/source/init.txt.saved" ]; then
+    pass "directory init and original file are preserved"
+else
+    fail "directory init and original file must be preserved"
+fi
+rm -rf "$REPO/crawl-ref/source/init.txt"
+mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
+
+# Check both existing-target and dangling init symlinks, then a missing init
+# with a stale backup. All states must remain untouched.
+echo "--- Special init path states ---"
+mv "$REPO/crawl-ref/source/init.txt" "$REPO/crawl-ref/source/init.txt.saved"
+ln -s init.txt.saved "$REPO/crawl-ref/source/init.txt"
+run_smoke "init-symlink"
+assert_rc "init symlink exits 2" 2 "$LAST_RC"
+if [ -L "$REPO/crawl-ref/source/init.txt" ] \
+    && grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt.saved"; then
+    pass "init symlink and target are preserved"
+else
+    fail "init symlink and target must be preserved"
+fi
+rm -f "$REPO/crawl-ref/source/init.txt"
+mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
+
+mv "$REPO/crawl-ref/source/init.txt" "$REPO/crawl-ref/source/init.txt.saved"
+ln -s missing-init-target "$REPO/crawl-ref/source/init.txt"
+run_smoke "init-dangling-symlink"
+assert_rc "dangling init symlink exits 2" 2 "$LAST_RC"
+if [ -L "$REPO/crawl-ref/source/init.txt" ] \
+    && grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt.saved"; then
+    pass "dangling init symlink and saved original are preserved"
+else
+    fail "dangling init symlink and saved original must be preserved"
+fi
+rm -f "$REPO/crawl-ref/source/init.txt"
+mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
+
+mv "$REPO/crawl-ref/source/init.txt" "$REPO/crawl-ref/source/init.txt.saved"
+echo 'stale backup' > "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+run_smoke "missing-init-stale-backup"
+assert_rc "missing init with stale backup exits 2" 2 "$LAST_RC"
+if [ ! -e "$REPO/crawl-ref/source/init.txt" ] \
+    && grep -Fxq 'stale backup' "$REPO/crawl-ref/source/.init.txt.smoke-bak"; then
+    pass "missing init and stale backup remain untouched"
+else
+    fail "missing init and stale backup must remain untouched"
+fi
+rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
+
+# ── Test 5: Signal interruption → cleanup and restore ──
+echo "--- Signal interruption ---"
+cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
+#!/bin/bash
+sleep 3
+SCRIPT
+chmod +x "$REPO/crawl-ref/source/crawl"
+set +e
+(cd "$REPO" && exec bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/signal.out" 2>&1 &
+SMOKE_PID=$!
+set -e
+for _ in $(seq 1 100); do
+    if grep -Fxq 'language = zh' "$REPO/crawl-ref/source/init.txt" 2>/dev/null; then
+        break
+    fi
+    sleep 0.1
+done
+kill -TERM "$SMOKE_PID"
+set +e
+wait "$SMOKE_PID"
+RC=$?
+set -e
+assert_rc "TERM exits 143" 143 "$RC"
+if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+    && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && [ ! -e "/tmp/crawl_smoke_${SMOKE_PID}.txt" ]; then
+    pass "TERM restores init and removes smoke artifacts"
+else
+    fail "TERM must restore init and remove smoke artifacts"
+fi
+
+# ── Test 6: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
@@ -108,7 +246,7 @@ RC=$?
 set -e
 assert_rc "crash binary exits 1" 1 "$RC"
 
-# ── Test 5: Empty output with 0 rc ──
+# ── Test 7: Empty output with 0 rc ──
 echo "--- Empty output with 0 rc ---"
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash

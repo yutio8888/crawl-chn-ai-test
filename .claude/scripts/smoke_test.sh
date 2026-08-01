@@ -71,26 +71,66 @@ SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
 # restoring a backed-up original instead of deleting it.
 INIT_BAK=""
 INIT_TMP=""
-trap '
-    rm -rf "$SMOKE_CRAWL_DIR"
-    rm -f "$ZH_OUT"
-    if [ -n "$INIT_TMP" ]; then
-        rm -f "$SOURCE_DIR/init.txt"
-    fi
-    if [ -n "$INIT_BAK" ] && [ -f "$INIT_BAK" ]; then
-        mv "$INIT_BAK" "$SOURCE_DIR/init.txt"
-    fi
-    stty sane 2>/dev/null || true
-' EXIT
+INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
 
-if [ -f "$SOURCE_DIR/init.txt" ]; then
-    INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
-    # Fail closed if a previous interrupted run left any backup artifact.
-    # In particular, -L catches a dangling symlink that -e would miss.
-    if [ -e "$INIT_BAK_PATH" ] || [ -L "$INIT_BAK_PATH" ]; then
-        echo "Refusing to overwrite existing init backup at $INIT_BAK_PATH" >&2
-        exit 2
+cleanup() {
+    local rc="$1"
+
+    # Disable all handlers before cleanup so it is safe to call from a signal
+    # handler and from EXIT without recursion.
+    trap - EXIT INT TERM HUP
+
+    if [ -n "$INIT_TMP" ]; then
+        rm -f "$SOURCE_DIR/init.txt" || true
     fi
+    if [ -n "$INIT_BAK" ] && [ -f "$INIT_BAK" ] && [ ! -L "$INIT_BAK" ]; then
+        mv "$INIT_BAK" "$SOURCE_DIR/init.txt" || true
+    fi
+    rm -rf "$SMOKE_CRAWL_DIR" || true
+    rm -f "$ZH_OUT" || true
+    stty sane 2>/dev/null || true
+
+    return "$rc"
+}
+
+handle_signal() {
+    local signal="$1"
+    local rc=1
+    case "$signal" in
+        INT)  rc=130 ;;
+        TERM) rc=143 ;;
+        HUP)  rc=129 ;;
+    esac
+    cleanup "$rc"
+    exit "$rc"
+}
+
+trap 'cleanup "$?"' EXIT
+trap 'handle_signal INT' INT
+trap 'handle_signal TERM' TERM
+trap 'handle_signal HUP' HUP
+
+# Fail closed if a previous interrupted run left any backup artifact. In
+# particular, -L catches a dangling symlink that -e would miss. This check is
+# intentionally unconditional, even when init.txt itself is absent.
+if [ -e "$INIT_BAK_PATH" ] || [ -L "$INIT_BAK_PATH" ]; then
+    echo "Refusing to overwrite existing init backup at $INIT_BAK_PATH" >&2
+    exit 2
+fi
+
+# Only a missing path or an ordinary, non-symlink file is safe to replace.
+# Never follow a symlink or redirect shell output into a directory/special
+# file supplied at the repository-owned init path.
+if [ -L "$SOURCE_DIR/init.txt" ]; then
+    echo "Refusing to modify symlink at $SOURCE_DIR/init.txt" >&2
+    exit 2
+fi
+if [ -e "$SOURCE_DIR/init.txt" ] && [ ! -f "$SOURCE_DIR/init.txt" ]; then
+    echo "Refusing to modify non-regular file at $SOURCE_DIR/init.txt" >&2
+    exit 2
+fi
+
+if [ -e "$SOURCE_DIR/init.txt" ]; then
     INIT_BAK="$INIT_BAK_PATH"
     mv "$SOURCE_DIR/init.txt" "$INIT_BAK" || exit 2
 fi

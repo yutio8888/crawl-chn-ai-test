@@ -85,9 +85,9 @@
 
 `smoke_test.sh`：
 - 行 57-63：CRAWL_DIR 路径说明校正——无 `DATA_DIR_PATH` 构建中 crawl_dir 也参与 config/data 搜索（`find_crawlrc()` 先查 `<crawl_dir>/init.txt`，`initfile.cc:2201`；rawbases 首项 `SysEnv.crawl_dir`，`files.cc:433`），但空临时目录会回退到 crawl_base / 源 init.txt（`datafile_path`，`initfile.cc:2245-2247`）；已通过的运行逻辑未改变。
-- 行 66-84：cleanup trap 在 `mv init.txt` 之前注册；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此写入失败或中断时也会清理部分文件，trap 不再无条件 `rm -f init.txt`。
-- 行 86-95：`mv init.txt .init.txt.smoke-bak` 增加既有备份路径（包括符号链接）检测并 fail closed，再执行 `mv`；因此不会覆盖或误恢复上次中断遗留的备份。mv 失败时 trap 清理临时目录，且 `INIT_TMP` 未置位、备份文件不存在，原始 init.txt 保持不动。
-- 行 91-92：先设置 `INIT_TMP` 再写入临时 init.txt；成功路径恢复逻辑与旧行为一致，失败/中断时也会删除临时 init.txt（trap 随后 `mv` 回备份并 `rm -rf` CRAWL_DIR）。
+- 行 66-108：统一 cleanup 函数在 `mv init.txt` 之前注册，并同时处理 `EXIT`、`INT`、`TERM`、`HUP`；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此正常退出、显式失败和信号中断都会清理部分文件并恢复备份。
+- 行 86-95：`mv init.txt .init.txt.smoke-bak` 增加无条件的既有备份路径（包括符号链接）检测并 fail closed，再执行 `mv`；因此不会覆盖或误恢复上次中断遗留的备份。
+- 行 96-108：仅允许缺失的 init.txt 或普通非符号链接文件；目录、特殊文件和所有符号链接均拒绝，避免重定向跟随外部目标。mv 失败时原始 init.txt 保持不动。
 
 `traps-translation-handoff.md`：
 - A4 证据行更新为当前代码 `traps.cc:738,740`（完整句子键，`zh/source.txt:7299-7303`）。
