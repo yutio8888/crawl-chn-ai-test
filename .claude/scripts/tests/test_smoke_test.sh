@@ -204,12 +204,17 @@ mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
 echo "--- Signal interruption ---"
 CRAWL_PID_FILE="$REPO/crawl.pid"
 CRAWL_DIR_FILE="$REPO/crawl-dir.path"
-export CRAWL_PID_FILE CRAWL_DIR_FILE
+CRAWL_IGNORE_SIGNALS=0
+export CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_IGNORE_SIGNALS
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
 echo "$$" > "$CRAWL_PID_FILE"
 echo "$CRAWL_DIR" > "$CRAWL_DIR_FILE"
-trap 'rm -f "$CRAWL_PID_FILE"; exit 0' INT TERM HUP
+if [ "$CRAWL_IGNORE_SIGNALS" -eq 1 ]; then
+    trap '' INT TERM HUP
+else
+    trap 'rm -f "$CRAWL_PID_FILE"; exit 0' INT TERM HUP
+fi
 while :; do
     sleep 1
 done
@@ -219,12 +224,14 @@ chmod +x "$REPO/crawl-ref/source/crawl"
 run_signal_case() {
     local signal="$1"
     local expected_rc="$2"
+    local ignore_signals="$3"
     local label="signal-${signal}"
     local smoke_pid
     local crawl_pid
     local smoke_dir
     local ready=0
 
+    CRAWL_IGNORE_SIGNALS="$ignore_signals"
     rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
     set +e
     (cd "$REPO" && exec python3 -c 'import os, signal; [signal.signal(sig, signal.SIG_DFL) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)]; os.setsid(); os.execv("/bin/bash", ["bash", ".claude/scripts/smoke_test.sh"])') > "$TMP_ROOT/$label.out" 2>&1 &
@@ -269,10 +276,11 @@ run_signal_case() {
     rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
 }
 
-run_signal_case INT 130
-run_signal_case TERM 143
-run_signal_case HUP 129
-unset CRAWL_PID_FILE CRAWL_DIR_FILE
+run_signal_case INT 130 0
+run_signal_case TERM 143 0
+run_signal_case HUP 129 0
+run_signal_case TERM 143 1
+unset CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_IGNORE_SIGNALS
 
 # ── Test 6: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"

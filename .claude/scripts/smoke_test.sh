@@ -34,6 +34,7 @@ ZH_OUT="/tmp/crawl_smoke_zh_$$.txt"
 TIMEOUT_SEC=60
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TIMEOUT_RUNNER="$SCRIPT_DIR/run_with_timeout.py"
+SMOKE_CRAWL_DIR=""
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
@@ -61,8 +62,6 @@ fi
 # search base. This fresh temp dir is empty, so those lookups fall back to
 # crawl_base and to the source init.txt (via datafile_path,
 # initfile.cc:2245-2247); data loading is unchanged.
-SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
-
 # Temporary init state. INIT_BAK records the backup path when the original
 # init.txt is moved aside; INIT_TMP marks the path as test-owned before the
 # temporary 'language = zh' write begins. The cleanup trap is registered
@@ -73,24 +72,65 @@ INIT_BAK=""
 INIT_TMP=""
 INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
 TIMEOUT_PID=""
+START_SIGNAL=""
 
 cleanup() {
     local rc="$1"
+    local failed=0
 
     # Disable all handlers before cleanup so it is safe to call from a signal
     # handler and from EXIT without recursion.
     trap - EXIT INT TERM HUP
 
     if [ -n "$INIT_TMP" ]; then
-        rm -f "$SOURCE_DIR/init.txt" || true
+        if ! rm -f "$SOURCE_DIR/init.txt"; then
+            echo "Failed to remove temporary init at $SOURCE_DIR/init.txt" >&2
+            failed=1
+        fi
+        if [ -e "$SOURCE_DIR/init.txt" ] || [ -L "$SOURCE_DIR/init.txt" ]; then
+            echo "Temporary init remains at $SOURCE_DIR/init.txt" >&2
+            failed=1
+        fi
     fi
-    if [ -n "$INIT_BAK" ] && [ -f "$INIT_BAK" ] && [ ! -L "$INIT_BAK" ]; then
-        mv "$INIT_BAK" "$SOURCE_DIR/init.txt" || true
+    if [ -n "$INIT_BAK" ]; then
+        if [ -f "$INIT_BAK" ] && [ ! -L "$INIT_BAK" ]; then
+            if ! mv "$INIT_BAK" "$SOURCE_DIR/init.txt"; then
+                echo "Failed to restore original init from $INIT_BAK" >&2
+                failed=1
+            fi
+        fi
+        if [ -e "$INIT_BAK" ] || [ -L "$INIT_BAK" ]; then
+            echo "Original init backup remains at $INIT_BAK" >&2
+            failed=1
+        fi
+        if [ ! -f "$SOURCE_DIR/init.txt" ] || [ -L "$SOURCE_DIR/init.txt" ]; then
+            echo "Original init was not restored at $SOURCE_DIR/init.txt" >&2
+            failed=1
+        fi
     fi
-    rm -rf "$SMOKE_CRAWL_DIR" || true
-    rm -f "$ZH_OUT" || true
+    if [ -n "$SMOKE_CRAWL_DIR" ] && ! rm -rf "$SMOKE_CRAWL_DIR"; then
+        echo "Failed to remove temporary crawl directory $SMOKE_CRAWL_DIR" >&2
+        failed=1
+    fi
+    if ! rm -f "$ZH_OUT"; then
+        echo "Failed to remove smoke transcript $ZH_OUT" >&2
+        failed=1
+    fi
     stty sane 2>/dev/null || true
 
+    if [ "$failed" -ne 0 ]; then
+        return 1
+    fi
+    return "$rc"
+}
+
+on_exit() {
+    local rc="$1"
+    local cleanup_rc=0
+    cleanup "$rc" || cleanup_rc=$?
+    if [ "$cleanup_rc" -ne 0 ]; then
+        return "$cleanup_rc"
+    fi
     return "$rc"
 }
 
@@ -109,7 +149,7 @@ handle_signal() {
 
     if [ -n "$TIMEOUT_PID" ]; then
         kill -"$signal" "$TIMEOUT_PID" 2>/dev/null || true
-        while kill -0 "$TIMEOUT_PID" 2>/dev/null && [ "$waited" -lt 20 ]; do
+        while kill -0 "$TIMEOUT_PID" 2>/dev/null && [ "$waited" -lt 60 ]; do
             sleep 0.05
             waited=$((waited + 1))
         done
@@ -119,14 +159,26 @@ handle_signal() {
         wait "$TIMEOUT_PID" 2>/dev/null || true
         TIMEOUT_PID=""
     fi
-    cleanup "$rc"
+    local cleanup_rc=0
+    cleanup "$rc" || cleanup_rc=$?
+    if [ "$cleanup_rc" -ne 0 ]; then
+        exit "$cleanup_rc"
+    fi
     exit "$rc"
 }
 
-trap 'cleanup "$?"' EXIT
+defer_signal() {
+    START_SIGNAL="$1"
+}
+
+trap 'on_exit "$?"' EXIT
 trap 'handle_signal INT' INT
 trap 'handle_signal TERM' TERM
 trap 'handle_signal HUP' HUP
+
+# Create the writable user directory only after cleanup and signal handlers
+# are armed, so setup interruptions cannot leak it.
+SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
 
 # Fail closed if a previous interrupted run left any backup artifact. In
 # particular, -L catches a dangling symlink that -e would miss. This check is
@@ -166,11 +218,22 @@ echo 'language = zh' > "$SOURCE_DIR/init.txt"
 # Lua init errors, protocol strings in printf/fprintf-based messages.
 # Child exit preserved: 0 normal, 124 timeout (output still scanned).
 CHILD_RC=0
+trap 'defer_signal INT' INT
+trap 'defer_signal TERM' TERM
+trap 'defer_signal HUP' HUP
 LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm CRAWL_DIR="$SMOKE_CRAWL_DIR" \
     python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" \
     --pty-transcript "$ZH_OUT" -- \
     "$CRAWL" &
 TIMEOUT_PID=$!
+trap 'handle_signal INT' INT
+trap 'handle_signal TERM' TERM
+trap 'handle_signal HUP' HUP
+if [ -n "$START_SIGNAL" ]; then
+    pending_signal="$START_SIGNAL"
+    START_SIGNAL=""
+    handle_signal "$pending_signal"
+fi
 if wait "$TIMEOUT_PID"; then
     CHILD_RC=0
 else

@@ -85,10 +85,10 @@
 
 `smoke_test.sh`：
 - 行 57-63：CRAWL_DIR 路径说明校正——无 `DATA_DIR_PATH` 构建中 crawl_dir 也参与 config/data 搜索（`find_crawlrc()` 先查 `<crawl_dir>/init.txt`，`initfile.cc:2201`；rawbases 首项 `SysEnv.crawl_dir`，`files.cc:433`），但空临时目录会回退到 crawl_base / 源 init.txt（`datafile_path`，`initfile.cc:2245-2247`）；已通过的运行逻辑未改变。
-- 行 66-108：统一 cleanup 函数在 `mv init.txt` 之前注册，并同时处理 `EXIT`、`INT`、`TERM`、`HUP`；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此正常退出、显式失败和信号中断都会清理部分文件并恢复备份。
+- 初始化与 cleanup 段：统一 cleanup 函数在创建临时目录前注册，并同时处理 `EXIT`、`INT`、`TERM`、`HUP`；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此正常退出、显式失败和信号中断都会清理部分文件并恢复备份。
 - 行 86-95：`mv init.txt .init.txt.smoke-bak` 增加无条件的既有备份路径（包括符号链接）检测并 fail closed，再执行 `mv`；因此不会覆盖或误恢复上次中断遗留的备份。
 - 行 96-108：仅允许缺失的 init.txt 或普通非符号链接文件；目录、特殊文件和所有符号链接均拒绝，避免重定向跟随外部目标。mv 失败时原始 init.txt 保持不动。
-- 行 169-179：timeout runner 在后台运行并由 `TIMEOUT_PID` 跟踪；收到 `INT`、`TERM`、`HUP` 时先转发信号、限时回收并 reap runner，再执行 cleanup，保留 130/143/129 退出码，避免子进程和临时目录脱离控制。
+- timeout runner 在后台运行并由 `TIMEOUT_PID` 跟踪；启动窗口用挂起信号记录避免 PID arm race；收到 `INT`、`TERM`、`HUP` 时先转发信号、等待 helper 的进程组终止宽限并 reap runner，再执行 cleanup，保留 130/143/129 退出码，避免子进程和临时目录脱离控制。cleanup 对关键恢复/删除失败返回非零，不再静默吞错。
 
 `traps-translation-handoff.md`：
 - A4 证据行更新为当前代码 `traps.cc:738,740`（完整句子键，`zh/source.txt:7299-7303`）。
@@ -104,6 +104,12 @@ Pi 返回时未运行的验证：`bash -n .claude/scripts/smoke_test.sh`、直�
 验证状态：**历史开发验证已记录并绑定目标基线；当前候选的正式验证由 final gate 负责**。历史 `bash -n .claude/scripts/smoke_test.sh`、直接 smoke、translation profile 与 code profile 均通过，Failures: 0；Tree-sitter AST 两阶段已实际执行并通过。以上不构成当前候选的通过证据，也不等同于正式 final gate / immutable readiness / merge authorization。
 
 Pi 修改完成后必须列出实际变更行和未运行的验证；Codex 已完成 diff 审核、smoke、翻译 profile 和静态检查；以上均为开发期验证，不构成正式 final gate 或合并授权。
+
+## 后续合并前审查加固
+
+- `smoke_test.sh` 的初始化、信号转发、runner 回收、备份恢复和临时工件清理按同一状态机处理；`INT`、`TERM`、`HUP` 均覆盖，忽略信号的非终止 child 也由 timeout helper 的进程组终止流程回收。
+- `.claude/scripts/tests/test_smoke_test.sh` 增加特殊路径矩阵、缺失 init + 残留备份、三种信号、非终止 child、子进程终止、`init.txt` 恢复、transcript 和 `CRAWL_DIR` 删除断言；最新本地结果为 `32 passed, 0 failed`。
+- 以上为开发期与定向回归证据；当前候选仍须经过 immutable readiness、final gate 和 merge-time validation。
 
 ## 最终交付
 
