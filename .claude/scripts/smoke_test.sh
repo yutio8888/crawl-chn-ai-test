@@ -72,6 +72,7 @@ SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
 INIT_BAK=""
 INIT_TMP=""
 INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
+TIMEOUT_PID=""
 
 cleanup() {
     local rc="$1"
@@ -96,11 +97,28 @@ cleanup() {
 handle_signal() {
     local signal="$1"
     local rc=1
+    local waited=0
+
+    # Do not let a second signal interrupt the bounded child reaping below.
+    trap - INT TERM HUP
     case "$signal" in
         INT)  rc=130 ;;
         TERM) rc=143 ;;
         HUP)  rc=129 ;;
     esac
+
+    if [ -n "$TIMEOUT_PID" ]; then
+        kill -"$signal" "$TIMEOUT_PID" 2>/dev/null || true
+        while kill -0 "$TIMEOUT_PID" 2>/dev/null && [ "$waited" -lt 20 ]; do
+            sleep 0.05
+            waited=$((waited + 1))
+        done
+        if kill -0 "$TIMEOUT_PID" 2>/dev/null; then
+            kill -KILL "$TIMEOUT_PID" 2>/dev/null || true
+        fi
+        wait "$TIMEOUT_PID" 2>/dev/null || true
+        TIMEOUT_PID=""
+    fi
     cleanup "$rc"
     exit "$rc"
 }
@@ -151,7 +169,14 @@ CHILD_RC=0
 LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm CRAWL_DIR="$SMOKE_CRAWL_DIR" \
     python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" \
     --pty-transcript "$ZH_OUT" -- \
-    "$CRAWL" || CHILD_RC=$?
+    "$CRAWL" &
+TIMEOUT_PID=$!
+if wait "$TIMEOUT_PID"; then
+    CHILD_RC=0
+else
+    CHILD_RC=$?
+fi
+TIMEOUT_PID=""
 
 # Acceptable: 0 (normal exit) or 124 (timeout). Any other rc/signal → exit 1.
 if [ "$CHILD_RC" -ne 0 ] && [ "$CHILD_RC" -ne 124 ]; then

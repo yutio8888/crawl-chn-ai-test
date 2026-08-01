@@ -88,6 +88,7 @@
 - 行 66-108：统一 cleanup 函数在 `mv init.txt` 之前注册，并同时处理 `EXIT`、`INT`、`TERM`、`HUP`；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此正常退出、显式失败和信号中断都会清理部分文件并恢复备份。
 - 行 86-95：`mv init.txt .init.txt.smoke-bak` 增加无条件的既有备份路径（包括符号链接）检测并 fail closed，再执行 `mv`；因此不会覆盖或误恢复上次中断遗留的备份。
 - 行 96-108：仅允许缺失的 init.txt 或普通非符号链接文件；目录、特殊文件和所有符号链接均拒绝，避免重定向跟随外部目标。mv 失败时原始 init.txt 保持不动。
+- 行 169-179：timeout runner 在后台运行并由 `TIMEOUT_PID` 跟踪；收到 `INT`、`TERM`、`HUP` 时先转发信号、限时回收并 reap runner，再执行 cleanup，保留 130/143/129 退出码，避免子进程和临时目录脱离控制。
 
 `traps-translation-handoff.md`：
 - A4 证据行更新为当前代码 `traps.cc:738,740`（完整句子键，`zh/source.txt:7299-7303`）。

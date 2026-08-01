@@ -200,36 +200,79 @@ fi
 rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak"
 mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
 
-# ── Test 5: Signal interruption → cleanup and restore ──
+# ── Test 5: Signal interruption → child forwarding and cleanup ──
 echo "--- Signal interruption ---"
+CRAWL_PID_FILE="$REPO/crawl.pid"
+CRAWL_DIR_FILE="$REPO/crawl-dir.path"
+export CRAWL_PID_FILE CRAWL_DIR_FILE
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
-sleep 3
+echo "$$" > "$CRAWL_PID_FILE"
+echo "$CRAWL_DIR" > "$CRAWL_DIR_FILE"
+trap 'rm -f "$CRAWL_PID_FILE"; exit 0' INT TERM HUP
+while :; do
+    sleep 1
+done
 SCRIPT
 chmod +x "$REPO/crawl-ref/source/crawl"
-set +e
-(cd "$REPO" && exec bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/signal.out" 2>&1 &
-SMOKE_PID=$!
-set -e
-for _ in $(seq 1 100); do
-    if grep -Fxq 'language = zh' "$REPO/crawl-ref/source/init.txt" 2>/dev/null; then
-        break
+
+run_signal_case() {
+    local signal="$1"
+    local expected_rc="$2"
+    local label="signal-${signal}"
+    local smoke_pid
+    local crawl_pid
+    local smoke_dir
+    local ready=0
+
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
+    set +e
+    (cd "$REPO" && exec python3 -c 'import os, signal; [signal.signal(sig, signal.SIG_DFL) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)]; os.setsid(); os.execv("/bin/bash", ["bash", ".claude/scripts/smoke_test.sh"])') > "$TMP_ROOT/$label.out" 2>&1 &
+    smoke_pid=$!
+    set -e
+    for _ in $(seq 1 100); do
+        if grep -Fxq 'language = zh' "$REPO/crawl-ref/source/init.txt" 2>/dev/null \
+            && [ -s "$CRAWL_PID_FILE" ] && [ -s "$CRAWL_DIR_FILE" ]; then
+            ready=1
+            break
+        fi
+        sleep 0.1
+    done
+    if [ "$ready" -ne 1 ]; then
+        fail "$signal reaches a running crawl child"
+        kill -KILL "$smoke_pid" 2>/dev/null || true
+        wait "$smoke_pid" 2>/dev/null || true
+        return 0
     fi
-    sleep 0.1
-done
-kill -TERM "$SMOKE_PID"
-set +e
-wait "$SMOKE_PID"
-RC=$?
-set -e
-assert_rc "TERM exits 143" 143 "$RC"
-if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
-    && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
-    && [ ! -e "/tmp/crawl_smoke_${SMOKE_PID}.txt" ]; then
-    pass "TERM restores init and removes smoke artifacts"
-else
-    fail "TERM must restore init and remove smoke artifacts"
-fi
+    crawl_pid="$(cat "$CRAWL_PID_FILE")"
+    kill -"$signal" "$smoke_pid"
+    set +e
+    wait "$smoke_pid"
+    local rc=$?
+    set -e
+    assert_rc "$signal exits $expected_rc" "$expected_rc" "$rc"
+    smoke_dir="$(cat "$CRAWL_DIR_FILE")"
+    if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+        && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+        && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ] \
+        && [ ! -e "$smoke_dir" ]; then
+        pass "$signal restores init and removes smoke artifacts"
+    else
+        fail "$signal must restore init and remove smoke artifacts"
+    fi
+    if kill -0 "$crawl_pid" 2>/dev/null; then
+        fail "$signal terminates crawl child"
+        kill -KILL "$crawl_pid" 2>/dev/null || true
+    else
+        pass "$signal terminates crawl child"
+    fi
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
+}
+
+run_signal_case INT 130
+run_signal_case TERM 143
+run_signal_case HUP 129
+unset CRAWL_PID_FILE CRAWL_DIR_FILE
 
 # ── Test 6: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"
