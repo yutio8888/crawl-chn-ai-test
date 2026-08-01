@@ -6,11 +6,15 @@
 #include "describe.h"
 #include "directn.h"
 #include "dungeon-feature-type.h"
+#include "dungeon.h"
 #include "database.h"
+#include "env.h"
 #include "i18n.h"
 #include "item-status-flag-type.h"
+#include "map-cell.h"
 #include "mon-info.h"
 #include "monster-type.h"
+#include "player.h"
 #include "skill-type.h"
 
 #include "test_zh_fixture.h"
@@ -144,12 +148,32 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // a localized lookup key would produce a blank description.
     REQUIRE(getLongDescription("地面").empty());
 
-    const lang_t saved = Options.language;
-    Options.language = lang_t::EN;
-    const string en_floor = feature_description(DNGN_FLOOR, NUM_TRAPS, "",
-                                                DESC_A, NUM_BRANCHES);
-    Options.language = saved;
+    // Exercise the production consumer get_feature_desc() on a mapped floor.
+    // The test host has no generated level, so mark the cell as not part of
+    // any vault (level gen normally fills level_map_ids with INVALID_MAP_INDEX).
+    const coord_def pos(20, 22);
+    const coord_def old_pos = you.pos();
+    const dungeon_feature_type old_grid = env.grid(pos);
+    const map_cell old_knowledge = env.map_knowledge(pos);
+    const unsigned int old_map_id = env.level_map_ids(pos);
+    you.set_position(pos);
+    env.grid(pos) = DNGN_FLOOR;
+    env.map_knowledge(pos).set_feature(DNGN_FLOOR);
+    env.level_map_ids(pos) = INVALID_MAP_INDEX;
 
-    REQUIRE(en_floor == "the floor");
-    REQUIRE(getLongDescription(en_floor).find("地面") != string::npos);
+    describe_info inf;
+    get_feature_desc(pos, inf, false);
+
+    env.level_map_ids(pos) = old_map_id;
+    env.map_knowledge(pos) = old_knowledge;
+    env.grid(pos) = old_grid;
+    you.set_position(old_pos);
+
+    REQUIRE(inf.title.find("地板") != string::npos);
+    REQUIRE(inf.body.str().find("地面") != string::npos);
+
+    // describe_feature_type() key-building seam resolves through the zh layer.
+    const string en_key = feature_description_en(DNGN_FLOOR);
+    REQUIRE(en_key == "the floor");
+    REQUIRE(getLongDescription(en_key).find("地面") != string::npos);
 }

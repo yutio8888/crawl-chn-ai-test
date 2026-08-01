@@ -51,6 +51,7 @@
 #include "item-use.h"
 #include "jobs.h"
 #include "lang-fake.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "macro.h"
 #include "melee-attack.h" // describe_to_hit
@@ -3363,6 +3364,25 @@ static string _esc_cmd_to_str(command_type cmd)
         return s;
 }
 
+// TextDB keys for features are the English display phrases (i18n-safety);
+// the localized display name never matches the English-keyed zh
+// features.txt. Rebuild the lookup key from the English display phrase; the
+// RAII guard keeps the global language safe even if the description code
+// throws. Same pattern as the item description fallback below.
+static string _feature_description_en(const coord_def &pos)
+{
+    ScopedLangEn en;
+    return feature_description_at(pos, false, DESC_A);
+}
+
+// Public seam for the describe_feature_type() key-building path (see
+// get_feature_desc() for the pos-based variant).
+string feature_description_en(dungeon_feature_type feat)
+{
+    ScopedLangEn en;
+    return feature_description(feat, NUM_TRAPS, "", DESC_A, NUM_BRANCHES);
+}
+
 void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_extra)
 {
     dungeon_feature_type feat = env.map_knowledge(pos).feat();
@@ -3384,18 +3404,9 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     string db_name   = feat == DNGN_ENTER_SHOP ? "a shop" : desc;
     strip_suffix(db_name, " (summoned)");
     if (Options.language == lang_t::ZH)
-    {
-        // TextDB keys stay English (i18n-safety); the localized display name
-        // never matches the English-keyed zh features.txt, so rebuild the
-        // lookup key from the English display phrase (same pattern as the
-        // item description fallback below).
-        const lang_t saved = Options.language;
-        Options.language = lang_t::EN;
-        const string en_desc = feature_description_at(pos, false, DESC_A);
-        Options.language = saved;
-        db_name = feat == DNGN_ENTER_SHOP ? "a shop" : en_desc;
-        strip_suffix(db_name, " (summoned)");
-    }
+        db_name = feat == DNGN_ENTER_SHOP ? "a shop"
+                                          : _feature_description_en(pos);
+    strip_suffix(db_name, " (summoned)");
     string long_desc = getLongDescription(db_name);
 
     inf.title = uppercase_first(desc);
@@ -3782,19 +3793,10 @@ void describe_feature_type(dungeon_feature_type feat)
     if (!ends_with(title, ".") && !ends_with(title, "!") && !ends_with(title, "?"))
         title += ".";
     inf.title = title;
-    // DB lookup: TextDB keys are the English display phrases, so rebuild the
-    // key in EN mode; the zh layer's English-keyed entries then resolve too
-    // (the bare data name misses even in EN: no "floor"-style bare keys).
-    string db_key = name;
-    if (Options.language == lang_t::ZH)
-    {
-        const lang_t saved = Options.language;
-        Options.language = lang_t::EN;
-        db_key = feature_description(feat, NUM_TRAPS, "", DESC_A,
-                                     NUM_BRANCHES);
-        Options.language = saved;
-    }
-    inf.body << getLongDescription(db_key);
+    // DB lookup: TextDB keys are the English display phrases (i18n-safety);
+    // the bare data name misses even in EN (no "floor"-style bare keys), so
+    // look up the EN display phrase directly.
+    inf.body << getLongDescription(feature_description_en(feat));
 #ifdef USE_TILE
     const tileidx_t idx = tileidx_feature_base(feat);
     tile_def tile = tile_def(idx);

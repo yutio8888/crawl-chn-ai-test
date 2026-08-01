@@ -62,6 +62,9 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions=false);
 void describe_feature_type(dungeon_feature_type feat);
 string get_cloud_desc(cloud_type cloud, bool include_title = true);
 void get_feature_desc(const coord_def &gc, describe_info &inf, bool include_extra = true);
+// English display phrase for a feature type, used as the TextDB lookup key
+// (TextDB keys stay English per i18n-safety; see get_feature_desc()).
+string feature_description_en(dungeon_feature_type feat);
 
 command_type describe_item_popup(const item_def &item,
                                  function<void (string&)> fixup_desc = nullptr,
