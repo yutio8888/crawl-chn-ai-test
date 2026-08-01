@@ -1,4 +1,7 @@
 #include "catch_amalgamated.hpp"
+
+#include "AppHdr.h"
+
 #include <vector>
 #include <list>
 #include <functional>
@@ -7,10 +10,33 @@
 
 #include "random.h"
 #include "stringutil.h"
+#include "syscalls.h"
 #include "unicode.h"
 
 namespace
 {
+#ifdef UNIX
+class ctype_locale_guard
+{
+public:
+    ctype_locale_guard()
+    {
+        const char *const current = setlocale(LC_CTYPE, nullptr);
+        if (current)
+            saved_locale = current;
+    }
+
+    ~ctype_locale_guard()
+    {
+        if (!saved_locale.empty())
+            setlocale(LC_CTYPE, saved_locale.c_str());
+    }
+
+private:
+    string saved_locale;
+};
+#endif
+
 struct random_substring_run
 {
     string output;
@@ -239,17 +265,25 @@ TEST_CASE( "uppercase and lowercase", "[single-file]")
     }
 }
 
-TEST_CASE( "Unicode display width is independent of the process locale",
-           "[single-file][unicode]" )
+TEST_CASE( "Unix startup repairs a missing UTF-8 character locale",
+           "[single-file][unicode][locale]" )
 {
-    const char *old_locale = setlocale(LC_CTYPE, nullptr);
-    const string saved_locale = old_locale ? old_locale : "";
+#ifdef UNIX
+    const ctype_locale_guard locale_guard;
 
-    CHECK(setlocale(LC_CTYPE, "C") != nullptr);
-    CHECK(wcwidth(U'法') == 2);
+    REQUIRE(setlocale(LC_CTYPE, "C") != nullptr);
+    CHECK(::wcwidth(static_cast<wchar_t>(U'法')) == -1);
+    REQUIRE(ensure_utf8_ctype());
+    const string repaired_locale = setlocale(LC_CTYPE, nullptr);
+    CHECK(repaired_locale != "C");
+    CHECK(::wcwidth(static_cast<wchar_t>(U'法')) == 2);
+    CHECK(::wcwidth(static_cast<wchar_t>(U'😀')) == 2);
     CHECK(strwidth("法术") == 4);
     CHECK(chop_string("法术", 6) == "法术  ");
+    CHECK(ensure_utf8_ctype());
+    CHECK(string(setlocale(LC_CTYPE, nullptr)) == repaired_locale);
 
-    if (!saved_locale.empty())
-        CHECK(setlocale(LC_CTYPE, saved_locale.c_str()) != nullptr);
+#else
+    SUCCEED("Non-Unix builds use the bundled Unicode width implementation.");
+#endif
 }

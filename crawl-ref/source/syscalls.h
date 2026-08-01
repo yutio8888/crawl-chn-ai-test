@@ -14,6 +14,10 @@ bool unlock_file(int fd);
 
 bool read_urandom(char *buf, int len);
 
+#ifdef UNIX
+bool ensure_utf8_ctype();
+#endif
+
 #ifdef TARGET_OS_WINDOWS
 # ifndef UNIX
 void alarm(unsigned int seconds);

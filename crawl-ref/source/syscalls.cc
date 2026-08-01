@@ -17,6 +17,7 @@
 # include <io.h>
 #else
 # include <dirent.h>
+# include <langinfo.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/types.h>
@@ -26,6 +27,31 @@
 #include "files.h"
 #include "random.h"
 #include "unicode.h"
+
+#ifdef UNIX
+bool ensure_utf8_ctype()
+{
+    const char *const current_locale = setlocale(LC_CTYPE, nullptr);
+    if (!current_locale)
+        return false;
+    if (strcmp(current_locale, "C") && strcmp(current_locale, "POSIX"))
+        return true;
+
+    static const char *const utf8_locales[] =
+    {
+        "C.UTF-8", "UTF-8", "en_US.UTF-8"
+    };
+    for (const char *locale : utf8_locales)
+    {
+        if (setlocale(LC_CTYPE, locale)
+            && !strcasecmp(nl_langinfo(CODESET), "UTF-8"))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+#endif
 
 #ifdef __ANDROID__
 #include "player.h"

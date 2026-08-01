@@ -143,14 +143,13 @@
 #include "traps.h"
 #include "travel.h"
 #include "uncancel.h"
+#include "syscalls.h"
+#include "unicode.h"
 #include "version.h"
 #include "viewchar.h"
 #include "viewgeom.h"
 #include "view.h"
 #include "viewmap.h"
-#ifdef __ANDROID__
-#include "syscalls.h"
-#endif
 #include "wiz-you.h" // FREEZE_TIME_KEY
 #include "wizard.h" // handle_wizard_command() and enter_explore_mode()
 #include "xom.h" // XOM_CLOUD_TRAIL_TYPE_KEY
@@ -243,6 +242,10 @@ int main(int argc, char *argv[])
     setlocale(LC_CTYPE, "");
 #else
     setlocale(LC_ALL, "");
+#endif
+#if defined(UNIX) && defined(USE_TILE_LOCAL)
+    if (!ensure_utf8_ctype())
+        fprintf(stderr, "Warning: no UTF-8 LC_CTYPE locale is available.\n");
 #endif
 #ifdef USE_TILE_WEB
     if (strcasecmp(nl_langinfo(CODESET), "UTF-8"))

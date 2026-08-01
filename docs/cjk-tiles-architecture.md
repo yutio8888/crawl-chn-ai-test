@@ -2,12 +2,15 @@
 
 ## Grid Width
 
-`tilereg-text.cc:addstr_aux()` uses the project's locale-independent
-`wcwidth(char32_t)` overload to count terminal-style grid cells. A wide CJK
-character occupies two cells; the continuation cell uses a `0x200B` marker so
-cursor movement, selection, and layout remain aligned with the grid. All
-platforms use this implementation so Finder-launched macOS apps do not depend
-on `LANG` or `LC_CTYPE` for CJK layout.
+`tilereg-text.cc:addstr_aux()` uses `wcwidth()` to count terminal-style grid
+cells. A wide CJK character occupies two cells; the continuation cell uses a
+`0x200B` marker so cursor movement, selection, and layout remain aligned with
+the grid. Unix builds retain the platform's current Unicode width tables. At
+startup, local tiles launched with the `C` or `POSIX` character locale fall
+back to an installed UTF-8 `LC_CTYPE`, which keeps Finder-launched macOS apps
+aligned without replacing the platform's width data. Explicit non-UTF-8
+locales and non-tiles Unix builds are left unchanged. Non-Unix builds use the
+bundled width table.
 
 ## Rendering
 

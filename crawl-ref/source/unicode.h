@@ -42,11 +42,9 @@ static inline string mb_to_utf8(const string &s)
 
 int wclen(char32_t c);
 
+#ifndef UNIX
 int wcwidth(char32_t c);
-inline int wcwidth(int c)
-{
-    return wcwidth(static_cast<char32_t>(c));
-}
+#endif
 
 char *prev_glyph(char *s, char *start);
 char *next_glyph(char *s);
