@@ -26691,7 +26691,7 @@ Select a spell, or
 选择一个法术，或
 %%%%
         School%1$s: %2$s
-        学派%2$s
+        学派：%2$s
 %%%%
         Fail: %s
         失败率: %s
