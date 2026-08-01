@@ -73,6 +73,10 @@ INIT_TMP=""
 INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
 TIMEOUT_PID=""
 START_SIGNAL=""
+# Signals normally run cleanup immediately. Only the short runner launch
+# boundary clears this flag: the first signal is then retained until $! has
+# been assigned, so it can be forwarded to the exact timeout-runner PID.
+SIGNAL_FORWARD_READY=1
 
 cleanup() {
     local rc="$1"
@@ -168,16 +172,25 @@ handle_signal() {
     exit "$rc"
 }
 
-defer_signal() {
-    if [ -z "$START_SIGNAL" ]; then
-        START_SIGNAL="$1"
+route_signal() {
+    local signal="$1"
+
+    # First signal wins across the complete launch transition. In particular,
+    # a second signal delivered after the runner PID is armed but before the
+    # pending first signal is consumed must not replace or overtake it.
+    if [ -n "$START_SIGNAL" ]; then
+        return
+    fi
+    START_SIGNAL="$signal"
+    if [ "$SIGNAL_FORWARD_READY" -eq 1 ]; then
+        handle_signal "$START_SIGNAL"
     fi
 }
 
 trap 'on_exit "$?"' EXIT
-trap 'handle_signal INT' INT
-trap 'handle_signal TERM' TERM
-trap 'handle_signal HUP' HUP
+trap 'route_signal INT' INT
+trap 'route_signal TERM' TERM
+trap 'route_signal HUP' HUP
 
 # Create the writable user directory only after cleanup and signal handlers
 # are armed, so setup interruptions cannot leak it.
@@ -221,21 +234,15 @@ echo 'language = zh' > "$SOURCE_DIR/init.txt"
 # Lua init errors, protocol strings in printf/fprintf-based messages.
 # Child exit preserved: 0 normal, 124 timeout (output still scanned).
 CHILD_RC=0
-trap 'defer_signal INT' INT
-trap 'defer_signal TERM' TERM
-trap 'defer_signal HUP' HUP
+SIGNAL_FORWARD_READY=0
 LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm CRAWL_DIR="$SMOKE_CRAWL_DIR" \
     python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" \
     --pty-transcript "$ZH_OUT" -- \
     "$CRAWL" &
 TIMEOUT_PID=$!
-trap 'handle_signal INT' INT
-trap 'handle_signal TERM' TERM
-trap 'handle_signal HUP' HUP
+SIGNAL_FORWARD_READY=1
 if [ -n "$START_SIGNAL" ]; then
-    pending_signal="$START_SIGNAL"
-    START_SIGNAL=""
-    handle_signal "$pending_signal"
+    handle_signal "$START_SIGNAL"
 fi
 if wait "$TIMEOUT_PID"; then
     CHILD_RC=0

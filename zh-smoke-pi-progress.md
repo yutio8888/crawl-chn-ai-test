@@ -1,6 +1,6 @@
 # `zh smoke` Pi 分析进度
 
-状态：Pi 第三轮修复已审核；历史开发验证记录均绑定目标基线 `084f8138ab532d193de2ec4a3105da4dfbd61759`，不代表当前候选；当前候选的正式验证由 final gate 负责；immutable readiness / merge authorization 尚未执行
+状态：Codex 已完成第四轮启动信号竞态修复与定向回归；历史开发验证记录均绑定其各自候选边界，不代表正式通过；当前候选的正式验证仍由新 immutable bundle 的 readiness 与 final gate 负责
 任务：分析 `verify_zh.sh` 的 ZH smoke 失败，区分代码问题、验证脚本问题和运行环境问题。
 开始时间：2026-08-01 06:36:30 +08:00
 分析截止时间：2026-08-01 07:06:30 +08:00（已完成）
@@ -108,8 +108,33 @@ Pi 修改完成后必须列出实际变更行和未运行的验证；Codex 已�
 ## 后续合并前审查加固
 
 - `smoke_test.sh` 的初始化、信号转发、runner 回收、备份恢复和临时工件清理按同一状态机处理；`INT`、`TERM`、`HUP` 均覆盖，忽略信号的非终止 child 也由 timeout helper 的进程组终止流程回收。
-- `.claude/scripts/tests/test_smoke_test.sh` 增加特殊路径矩阵、缺失 init + 残留备份、三种信号、重复信号、非终止 child、子进程终止、具体信号转发、`init.txt` 恢复、transcript 和 `CRAWL_DIR` 删除断言；最新本地结果为 `35 passed, 0 failed`。
+- `.claude/scripts/tests/test_smoke_test.sh` 增加特殊路径矩阵、缺失 init + 残留备份、三种信号、重复信号、非终止 child、子进程终止、具体信号转发、`init.txt` 恢复、transcript 和 `CRAWL_DIR` 删除断言；`35 passed, 0 failed` 是上一候选的历史结果，已被下方第四轮证据取代。
 - 以上为开发期与定向回归证据；当前候选仍须经过 immutable readiness、final gate 和 merge-time validation。
+
+## 第四轮：启动边界 first-wins 修复与确定性回归（2026-08-01）
+
+适用术语上下文重新由当前候选解析，`docs/glossary.md` SHA-256 仍为
+`912d85c14b360357303835bce502a2e6661ab629ce350548879c85da8dc0d54e`；本轮未修改
+术语表、中文资产、C++、`run_with_timeout.py` 或任何身份／查找键。
+
+- `smoke_test.sh` 不再在 runner 启动边界切换两组 signal trap。`INT`、`TERM`、`HUP`
+  始终进入同一个路由 handler；首个信号一经记录，后续信号不能抢占。启动阶段仅用
+  状态位延迟转发，`TIMEOUT_PID=$!` 完成后在同一路由状态下消费首个 pending signal，
+  因而保持退出码、转发信号和清理动作的 first-wins 一致性。
+- mutation fixture 可让 fake crawl 已启动、已报告独立 `CRAWL_DIR`，但故意不发布
+  readiness；`INT`、`TERM`、`HUP` 三条路径分别验证 130／143／129、具体信号转发、
+  runner/child 回收、原始 `init.txt` 恢复，以及 backup、transcript、`CRAWL_DIR` 清理。
+- 确定性的 mixed-signal fixture 通过 Bash `DEBUG` 边界钩子停在后台 runner 已启动但
+  `TIMEOUT_PID=$!` 尚未赋值的位置，并等待 fake crawl 已进入可接收信号状态，再依次
+  注入 `INT`、`TERM`。结果证明 `INT` 保持首信号身份，退出码为 130，child 收到
+  `INT`，runner/child 和全部 smoke 临时工件均被清理；测试不依赖调度器碰巧命中竞态。
+- 开发期定向证据：`bash -n`（生产脚本与 mutation tests）、`git diff --check` 均通过；
+  `bash .claude/scripts/tests/test_smoke_test.sh` 首次及随后连续五次均为
+  `52 passed, 0 failed`；`make -j4` 编译并链接成功（退出码 0）；使用该候选二进制的
+  真实 PTY smoke 通过，协议泄漏、核心 UI 英文残留和崩溃三项均为零；开发
+  `verify_zh.sh --profile code` Run ID
+  `20260801T131648981918000+0800-37378-ff9d26790398` 为 `Failures: 0`。这些结果仍不
+  替代新 bundle 的正式 readiness 或 final gate。
 
 ## 最终交付
 

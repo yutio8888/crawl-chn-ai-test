@@ -203,14 +203,15 @@ mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
 # ── Test 5: Signal interruption → child forwarding and cleanup ──
 echo "--- Signal interruption ---"
 CRAWL_PID_FILE="$REPO/crawl.pid"
+CRAWL_STARTED_PID_FILE="$REPO/crawl-started.pid"
 CRAWL_DIR_FILE="$REPO/crawl-dir.path"
 CRAWL_SIGNAL_FILE="$REPO/crawl.signal"
 CRAWL_IGNORE_SIGNALS=0
-export CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE CRAWL_IGNORE_SIGNALS
+CRAWL_DELAY_READY=0
+export CRAWL_PID_FILE CRAWL_STARTED_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE
+export CRAWL_IGNORE_SIGNALS CRAWL_DELAY_READY
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
-echo "$$" > "$CRAWL_PID_FILE"
-echo "$CRAWL_DIR" > "$CRAWL_DIR_FILE"
 if [ "$CRAWL_IGNORE_SIGNALS" -eq 1 ]; then
     trap '' INT TERM HUP
 else
@@ -223,6 +224,14 @@ else
     trap 'handle_signal TERM' TERM
     trap 'handle_signal HUP' HUP
 fi
+echo "$$" > "$CRAWL_STARTED_PID_FILE"
+echo "$CRAWL_DIR" > "$CRAWL_DIR_FILE"
+if [ "$CRAWL_DELAY_READY" -eq 1 ]; then
+    while :; do
+        sleep 1
+    done
+fi
+echo "$$" > "$CRAWL_PID_FILE"
 while :; do
     sleep 1
 done
@@ -233,29 +242,47 @@ run_signal_case() {
     local signal="$1"
     local expected_rc="$2"
     local ignore_signals="$3"
+    local before_readiness="${4:-0}"
     local label="signal-${signal}"
+    local phase="running crawl"
     local smoke_pid
     local crawl_pid
     local smoke_dir
     local ready=0
 
+    if [ "$before_readiness" -eq 1 ]; then
+        label="signal-before-readiness-${signal}"
+        phase="crawl child before readiness"
+    fi
     CRAWL_IGNORE_SIGNALS="$ignore_signals"
-    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE" "$CRAWL_SIGNAL_FILE"
+    CRAWL_DELAY_READY="$before_readiness"
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_STARTED_PID_FILE" "$CRAWL_DIR_FILE" \
+        "$CRAWL_SIGNAL_FILE"
     set +e
     (cd "$REPO" && exec python3 -c 'import os, signal; [signal.signal(sig, signal.SIG_DFL) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)]; os.setsid(); os.execv("/bin/bash", ["bash", ".claude/scripts/smoke_test.sh"])') > "$TMP_ROOT/$label.out" 2>&1 &
     smoke_pid=$!
     set -e
     for _ in $(seq 1 100); do
         if grep -Fxq 'language = zh' "$REPO/crawl-ref/source/init.txt" 2>/dev/null \
-            && [ -s "$CRAWL_PID_FILE" ] && [ -s "$CRAWL_DIR_FILE" ]; then
-            ready=1
-            break
+            && [ -s "$CRAWL_STARTED_PID_FILE" ] && [ -s "$CRAWL_DIR_FILE" ]; then
+            if [ "$before_readiness" -eq 1 ] && [ ! -e "$CRAWL_PID_FILE" ]; then
+                ready=1
+                break
+            fi
+            if [ "$before_readiness" -eq 0 ] && [ -s "$CRAWL_PID_FILE" ]; then
+                ready=1
+                break
+            fi
         fi
         sleep 0.1
     done
     if [ "$ready" -ne 1 ]; then
-        fail "$signal reaches a running crawl child"
-        kill -TERM "$smoke_pid" 2>/dev/null || true
+        fail "$signal reaches $phase"
+        smoke_dir=""
+        if [ -s "$CRAWL_DIR_FILE" ]; then
+            smoke_dir="$(cat "$CRAWL_DIR_FILE")"
+        fi
+        kill -"$signal" "$smoke_pid" 2>/dev/null || true
         set +e
         wait "$smoke_pid"
         local setup_rc=$?
@@ -263,22 +290,25 @@ run_signal_case() {
         assert_rc "$signal setup interruption exits $expected_rc" "$expected_rc" "$setup_rc"
         if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
             && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
-            && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ]; then
-            pass "$signal setup interruption cleans init artifacts"
+            && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ] \
+            && { [ -z "$smoke_dir" ] || [ ! -e "$smoke_dir" ]; }; then
+            pass "$signal setup interruption cleans smoke artifacts"
         else
-            fail "$signal setup interruption must clean init artifacts"
+            fail "$signal setup interruption must clean smoke artifacts"
         fi
         return 0
     fi
-    crawl_pid="$(cat "$CRAWL_PID_FILE")"
+    crawl_pid="$(cat "$CRAWL_STARTED_PID_FILE")"
+    smoke_dir="$(cat "$CRAWL_DIR_FILE")"
     kill -"$signal" "$smoke_pid"
-    kill -"$signal" "$smoke_pid" 2>/dev/null || true
+    if [ "$before_readiness" -eq 0 ]; then
+        kill -"$signal" "$smoke_pid" 2>/dev/null || true
+    fi
     set +e
     wait "$smoke_pid"
     local rc=$?
     set -e
     assert_rc "$signal exits $expected_rc" "$expected_rc" "$rc"
-    smoke_dir="$(cat "$CRAWL_DIR_FILE")"
     if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
         && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
         && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ] \
@@ -300,14 +330,120 @@ run_signal_case() {
             fail "$signal must reach crawl child"
         fi
     fi
-    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE" "$CRAWL_SIGNAL_FILE"
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_STARTED_PID_FILE" "$CRAWL_DIR_FILE" \
+        "$CRAWL_SIGNAL_FILE"
 }
 
 run_signal_case INT 130 0
 run_signal_case TERM 143 0
 run_signal_case HUP 129 0
 run_signal_case TERM 143 1
-unset CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE CRAWL_IGNORE_SIGNALS
+run_signal_case INT 130 0 1
+run_signal_case TERM 143 0 1
+run_signal_case HUP 129 0 1
+
+# Deliver mixed signals at the exact parent-shell command boundary after the
+# timeout runner has been launched but before TIMEOUT_PID receives $!. The
+# DEBUG hook waits until the fake crawl child is ready, making this a stable
+# launch-window regression rather than a scheduler-dependent timing test.
+echo "--- Mixed signals in runner launch window ---"
+LAUNCH_HOOK="$REPO/launch-window-hook.sh"
+LAUNCH_RUNNER_PID_FILE="$REPO/launch-runner.pid"
+LAUNCH_CRAWL_PID_FILE="$REPO/launch-crawl.pid"
+LAUNCH_CRAWL_DIR_FILE="$REPO/launch-crawl-dir.path"
+LAUNCH_HOOK_STATUS_FILE="$REPO/launch-hook.status"
+export LAUNCH_RUNNER_PID_FILE LAUNCH_CRAWL_PID_FILE LAUNCH_CRAWL_DIR_FILE
+export LAUNCH_HOOK_STATUS_FILE
+cat > "$LAUNCH_HOOK" <<'SCRIPT'
+if [ "${SMOKE_LAUNCH_WINDOW_SIGNALS:-0}" -eq 1 ]; then
+    _smoke_launch_window_hook() {
+        local ready=0
+        local tries=0
+
+        if [ "${SMOKE_LAUNCH_WINDOW_ARMED:-1}" -ne 1 ] \
+            || [ "$BASH_COMMAND" != 'TIMEOUT_PID=$!' ]; then
+            return
+        fi
+        SMOKE_LAUNCH_WINDOW_ARMED=0
+        echo "$!" > "$LAUNCH_RUNNER_PID_FILE"
+        while [ "$tries" -lt 200 ]; do
+            if [ -s "$CRAWL_STARTED_PID_FILE" ] && [ -s "$CRAWL_DIR_FILE" ]; then
+                ready=1
+                break
+            fi
+            tries=$((tries + 1))
+            sleep 0.05
+        done
+        if [ "$ready" -ne 1 ]; then
+            echo 'child-not-ready' > "$LAUNCH_HOOK_STATUS_FILE"
+            kill -TERM "$$"
+            return
+        fi
+        cp "$CRAWL_STARTED_PID_FILE" "$LAUNCH_CRAWL_PID_FILE"
+        cp "$CRAWL_DIR_FILE" "$LAUNCH_CRAWL_DIR_FILE"
+        echo 'INT-then-TERM' > "$LAUNCH_HOOK_STATUS_FILE"
+        kill -INT "$$"
+        kill -TERM "$$"
+    }
+    trap _smoke_launch_window_hook DEBUG
+fi
+SCRIPT
+
+CRAWL_IGNORE_SIGNALS=0
+CRAWL_DELAY_READY=0
+rm -f "$CRAWL_PID_FILE" "$CRAWL_STARTED_PID_FILE" "$CRAWL_DIR_FILE" \
+    "$CRAWL_SIGNAL_FILE" "$LAUNCH_RUNNER_PID_FILE" "$LAUNCH_CRAWL_PID_FILE" \
+    "$LAUNCH_CRAWL_DIR_FILE" "$LAUNCH_HOOK_STATUS_FILE"
+set +e
+(cd "$REPO" && exec env BASH_ENV="$LAUNCH_HOOK" \
+    SMOKE_LAUNCH_WINDOW_SIGNALS=1 python3 -c 'import os, signal; [signal.signal(sig, signal.SIG_DFL) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)]; os.setsid(); os.execv("/bin/bash", ["bash", ".claude/scripts/smoke_test.sh"])') \
+    > "$TMP_ROOT/signal-launch-window.out" 2>&1 &
+smoke_pid=$!
+wait "$smoke_pid"
+RC=$?
+set -e
+assert_rc "first launch-window signal determines exit" 130 "$RC"
+
+if [ -s "$LAUNCH_RUNNER_PID_FILE" ] && [ -s "$LAUNCH_CRAWL_PID_FILE" ] \
+    && [ -s "$LAUNCH_CRAWL_DIR_FILE" ] \
+    && grep -Fxq 'INT-then-TERM' "$LAUNCH_HOOK_STATUS_FILE"; then
+    runner_pid="$(cat "$LAUNCH_RUNNER_PID_FILE")"
+    crawl_pid="$(cat "$LAUNCH_CRAWL_PID_FILE")"
+    smoke_dir="$(cat "$LAUNCH_CRAWL_DIR_FILE")"
+    pass "mixed-signal fixture reaches the launch window"
+else
+    runner_pid=""
+    crawl_pid=""
+    smoke_dir=""
+    fail "mixed-signal fixture must reach the launch window"
+fi
+if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+    && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ] \
+    && [ -n "$smoke_dir" ] && [ ! -e "$smoke_dir" ]; then
+    pass "mixed launch-window signals remove all smoke artifacts"
+else
+    fail "mixed launch-window signals must remove all smoke artifacts"
+fi
+if [ -n "$runner_pid" ] && ! kill -0 "$runner_pid" 2>/dev/null \
+    && [ -n "$crawl_pid" ] && ! kill -0 "$crawl_pid" 2>/dev/null; then
+    pass "mixed launch-window signals reap runner and crawl child"
+else
+    fail "mixed launch-window signals must reap runner and crawl child"
+    [ -z "$runner_pid" ] || kill -KILL "$runner_pid" 2>/dev/null || true
+    [ -z "$crawl_pid" ] || kill -KILL "$crawl_pid" 2>/dev/null || true
+fi
+if grep -Fxq 'INT' "$CRAWL_SIGNAL_FILE"; then
+    pass "first launch-window signal reaches crawl child"
+else
+    fail "first launch-window signal must reach crawl child"
+fi
+rm -f "$CRAWL_PID_FILE" "$CRAWL_STARTED_PID_FILE" "$CRAWL_DIR_FILE" \
+    "$CRAWL_SIGNAL_FILE" "$LAUNCH_RUNNER_PID_FILE" "$LAUNCH_CRAWL_PID_FILE" \
+    "$LAUNCH_CRAWL_DIR_FILE" "$LAUNCH_HOOK_STATUS_FILE"
+unset CRAWL_PID_FILE CRAWL_STARTED_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE
+unset CRAWL_IGNORE_SIGNALS CRAWL_DELAY_READY LAUNCH_RUNNER_PID_FILE
+unset LAUNCH_CRAWL_PID_FILE LAUNCH_CRAWL_DIR_FILE LAUNCH_HOOK_STATUS_FILE
 
 # ── Test 6: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"
