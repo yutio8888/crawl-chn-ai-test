@@ -25,6 +25,9 @@ Pi 是只读分析 worker：每次只处理一个编号，返回源码证据、�
 
 ## 2. 修订后的问题清单
 
+> A1–A10 的“证据”和“现象”默认记录目标基线上的修复前问题；凡已实施的项目，
+> 另列“当前候选”证据。这样不会把历史缺陷误读为当前候选仍存在的问题。
+
 ### A1：陷阱名的 `DESC_A` 重复
 
 - 证据：`crawl-ref/source/traps.cc:121` 的
@@ -112,13 +115,14 @@ Pi 是只读分析 worker：每次只处理一个编号，返回源码证据、�
 
 ### A9：神祇不满措辞不自然
 
-- 证据：`source.txt` 中 `You feel a twinge of divine disapproval.` 当前为
-  “你感到一丝神的反对。”。
+- 证据（修复前）：`source.txt` 中 `You feel a twinge of divine disapproval.` 曾为
+  “你感到一丝神的反对。”；当前候选 `source.txt:9551` 为“你感到神祇的一丝不满。”。
 - 方案：改为“你感到神祇的一丝不满。”，保留“轻微/一丝”的语义。
 
 ### A10：逃离捕网误译
 
-- 证据：`source.txt` 中 `You slip out of the net.` 当前为“你从网中滑过了”。
+- 证据（修复前）：`source.txt` 中 `You slip out of the net.` 曾为“你从网中滑过了”；
+  当前候选 `source.txt:23375` 为“你从网中滑脱了”。
 - 方案：改为“你从网中滑脱了。”；不要与另一个 `The net passes right through
   you.` 的“穿过身体”语义混淆。
 - 验收：两个相邻消息分别表达“逃脱捕网”和“捕网穿过身体”。

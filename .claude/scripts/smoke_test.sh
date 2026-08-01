@@ -80,7 +80,8 @@ cleanup() {
 
     # Disable all handlers before cleanup so it is safe to call from a signal
     # handler and from EXIT without recursion.
-    trap - EXIT INT TERM HUP
+    trap - EXIT
+    trap '' INT TERM HUP
 
     if [ -n "$INIT_TMP" ]; then
         if ! rm -f "$SOURCE_DIR/init.txt"; then
@@ -140,7 +141,7 @@ handle_signal() {
     local waited=0
 
     # Do not let a second signal interrupt the bounded child reaping below.
-    trap - INT TERM HUP
+    trap '' INT TERM HUP
     case "$signal" in
         INT)  rc=130 ;;
         TERM) rc=143 ;;
@@ -168,7 +169,9 @@ handle_signal() {
 }
 
 defer_signal() {
-    START_SIGNAL="$1"
+    if [ -z "$START_SIGNAL" ]; then
+        START_SIGNAL="$1"
+    fi
 }
 
 trap 'on_exit "$?"' EXIT

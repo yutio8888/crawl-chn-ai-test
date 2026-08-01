@@ -54,7 +54,7 @@
 
 ## Pi 最终证据文件
 
-- `.claude/scripts/smoke_test.sh:64-107`（第三轮后的临时目录、cleanup trap、init 状态处理和 PTY 启动路径）
+- `.claude/scripts/smoke_test.sh` 当前候选的 `cleanup()`、`handle_signal()`、`defer_signal()`、init 状态防护，以及后台 `TIMEOUT_PID` / `--pty-transcript` 启动段（第三轮后的实现证据；不使用历史行号范围）。
 - `.claude/scripts/verify_zh.sh:671-692`
 - `.claude/scripts/post_zh_runtime.sh:194-196,255-260`
 - `.claude/scripts/run_with_timeout.py:60-94,148-165`
@@ -65,18 +65,18 @@
 ## Pi 结论摘要（第二轮）
 
 - 锁文件错误是 Codex 沙盒对 `~/Library/Application Support/Dungeon Crawl Stone Soup` 的写限制（`EACCES`），不是 `traps.cc`、中文 TextDB 或 Crawl 运行时缺陷；存在可移植的脚本级修复（`CRAWL_DIR` 隔离），故不构成"放弃修复、仅记录阻塞"的情形。
-- 第二轮变更没有吞掉锁文件错误：锁文件仍在 TextDB 再生路径中被真实创建（`database.cc:382`），只是落到可写的隔离目录；真实非 0/124 子进程退出仍按 `smoke_test.sh:110-113`（第三轮更新后行号）失败；PTY 转录仍写 `ZH_OUT`；协议/英文残留/崩溃三段扫描逻辑未改动。
+- 第二轮变更没有吞掉锁文件错误：锁文件仍在 TextDB 再生路径中被真实创建（`database.cc:382`），只是落到可写的隔离目录；真实非 0/124 子进程退出仍由当前脚本的 `CHILD_RC` 检查失败；PTY 转录仍写 `ZH_OUT`；协议/英文残留/崩溃三段扫描逻辑未改动。
 - 第一轮 PTY 修复（`--pty-transcript`）保持有效；第二轮新增 `CRAWL_DIR` 隔离是叠加的、正交的最小修复。
 
 ## 实施记录（Pi 第二轮最小修复）
 
 范围：仅修改 `.claude/scripts/smoke_test.sh` 与本文档；未触碰 `traps.cc`、中文 TextDB/翻译资产、`verify_zh.sh`、`post_zh_runtime.sh`、`run_with_timeout.py`、构建文件或 Git 状态。
 
-第二轮实际变更（`.claude/scripts/smoke_test.sh`；行号为第三轮更新后的当前值）：
+第二轮实际变更（`.claude/scripts/smoke_test.sh`；以下行号是历史记录，不作为当前候选锚点）：
 - 行 34：`TIMEOUT_SEC` 10→60。冷缓存下 crawl 首次启动会在隔离目录中全量再生全部父 TextDB 及其 zh 子库（`database.cc:355-405`），Debug 二进制更慢；60 秒仍是有界超时，124 契约（终止子进程组、转录仍被扫描）不变。
-- 行 64：`mktemp -d /tmp/crawl_smoke_dir.XXXXXX` 创建隔离目录 `$SMOKE_CRAWL_DIR`；创建失败则退出码 2（与二进制/helper 缺失同约定）。
-- 行 74-84：trap 执行 `rm -rf "$SMOKE_CRAWL_DIR"`、`$ZH_OUT` 清理、init.txt 恢复（第三轮起 trap 先于 init.txt 修改注册，并受 INIT_BAK/INIT_TMP 状态约束）。
-- 行 104：启动命令增加 `CRAWL_DIR="$SMOKE_CRAWL_DIR"` 环境变量（文档化机制，`initfile.cc:4728`），仅作用于 crawl 子进程。
+- `mktemp -d /tmp/crawl_smoke_dir.XXXXXX` 创建隔离目录 `$SMOKE_CRAWL_DIR`；创建失败则退出码 2（与二进制/helper 缺失同约定）。
+- cleanup 执行 `rm -rf "$SMOKE_CRAWL_DIR"`、`$ZH_OUT` 清理、init.txt 恢复（后续实现已把 trap 提前到临时目录创建前，并受 INIT_BAK/INIT_TMP 状态约束）。
+- 启动命令增加 `CRAWL_DIR="$SMOKE_CRAWL_DIR"` 环境变量（文档化机制，`initfile.cc:4728`），仅作用于 crawl 子进程。
 - 未修改 `run_with_timeout.py`、PTY 转录目标 `$ZH_OUT`、退出码语义（0/124 可接受、其余失败）、三段扫描逻辑。
 
 ## 实施记录（第三轮：2026-08-01 08:01 合并前审查 Needs Fix）
@@ -86,8 +86,8 @@
 `smoke_test.sh`：
 - 行 57-63：CRAWL_DIR 路径说明校正——无 `DATA_DIR_PATH` 构建中 crawl_dir 也参与 config/data 搜索（`find_crawlrc()` 先查 `<crawl_dir>/init.txt`，`initfile.cc:2201`；rawbases 首项 `SysEnv.crawl_dir`，`files.cc:433`），但空临时目录会回退到 crawl_base / 源 init.txt（`datafile_path`，`initfile.cc:2245-2247`）；已通过的运行逻辑未改变。
 - 初始化与 cleanup 段：统一 cleanup 函数在创建临时目录前注册，并同时处理 `EXIT`、`INT`、`TERM`、`HUP`；新增 `INIT_TMP` 状态（在临时 `language = zh` init.txt 写入前置位），因此正常退出、显式失败和信号中断都会清理部分文件并恢复备份。
-- 行 86-95：`mv init.txt .init.txt.smoke-bak` 增加无条件的既有备份路径（包括符号链接）检测并 fail closed，再执行 `mv`；因此不会覆盖或误恢复上次中断遗留的备份。
-- 行 96-108：仅允许缺失的 init.txt 或普通非符号链接文件；目录、特殊文件和所有符号链接均拒绝，避免重定向跟随外部目标。mv 失败时原始 init.txt 保持不动。
+- 备份路径防护：`mv init.txt .init.txt.smoke-bak` 前无条件检查既有备份路径（包括符号链接）并 fail closed，因此不会覆盖或误恢复上次中断遗留的备份。
+- init 路径防护：仅允许缺失的 init.txt 或普通非符号链接文件；目录、特殊文件和所有符号链接均拒绝，避免重定向跟随外部目标。mv 失败时原始 init.txt 保持不动。
 - timeout runner 在后台运行并由 `TIMEOUT_PID` 跟踪；启动窗口用挂起信号记录避免 PID arm race；收到 `INT`、`TERM`、`HUP` 时先转发信号、等待 helper 的进程组终止宽限并 reap runner，再执行 cleanup，保留 130/143/129 退出码，避免子进程和临时目录脱离控制。cleanup 对关键恢复/删除失败返回非零，不再静默吞错。
 
 `traps-translation-handoff.md`：
@@ -108,7 +108,7 @@ Pi 修改完成后必须列出实际变更行和未运行的验证；Codex 已�
 ## 后续合并前审查加固
 
 - `smoke_test.sh` 的初始化、信号转发、runner 回收、备份恢复和临时工件清理按同一状态机处理；`INT`、`TERM`、`HUP` 均覆盖，忽略信号的非终止 child 也由 timeout helper 的进程组终止流程回收。
-- `.claude/scripts/tests/test_smoke_test.sh` 增加特殊路径矩阵、缺失 init + 残留备份、三种信号、非终止 child、子进程终止、`init.txt` 恢复、transcript 和 `CRAWL_DIR` 删除断言；最新本地结果为 `32 passed, 0 failed`。
+- `.claude/scripts/tests/test_smoke_test.sh` 增加特殊路径矩阵、缺失 init + 残留备份、三种信号、重复信号、非终止 child、子进程终止、具体信号转发、`init.txt` 恢复、transcript 和 `CRAWL_DIR` 删除断言；最新本地结果为 `35 passed, 0 failed`。
 - 以上为开发期与定向回归证据；当前候选仍须经过 immutable readiness、final gate 和 merge-time validation。
 
 ## 最终交付

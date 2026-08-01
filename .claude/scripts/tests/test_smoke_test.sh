@@ -204,8 +204,9 @@ mv "$REPO/crawl-ref/source/init.txt.saved" "$REPO/crawl-ref/source/init.txt"
 echo "--- Signal interruption ---"
 CRAWL_PID_FILE="$REPO/crawl.pid"
 CRAWL_DIR_FILE="$REPO/crawl-dir.path"
+CRAWL_SIGNAL_FILE="$REPO/crawl.signal"
 CRAWL_IGNORE_SIGNALS=0
-export CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_IGNORE_SIGNALS
+export CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE CRAWL_IGNORE_SIGNALS
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
 echo "$$" > "$CRAWL_PID_FILE"
@@ -213,7 +214,14 @@ echo "$CRAWL_DIR" > "$CRAWL_DIR_FILE"
 if [ "$CRAWL_IGNORE_SIGNALS" -eq 1 ]; then
     trap '' INT TERM HUP
 else
-    trap 'rm -f "$CRAWL_PID_FILE"; exit 0' INT TERM HUP
+    handle_signal() {
+        echo "$1" > "$CRAWL_SIGNAL_FILE"
+        rm -f "$CRAWL_PID_FILE"
+        exit 0
+    }
+    trap 'handle_signal INT' INT
+    trap 'handle_signal TERM' TERM
+    trap 'handle_signal HUP' HUP
 fi
 while :; do
     sleep 1
@@ -232,7 +240,7 @@ run_signal_case() {
     local ready=0
 
     CRAWL_IGNORE_SIGNALS="$ignore_signals"
-    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE" "$CRAWL_SIGNAL_FILE"
     set +e
     (cd "$REPO" && exec python3 -c 'import os, signal; [signal.signal(sig, signal.SIG_DFL) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)]; os.setsid(); os.execv("/bin/bash", ["bash", ".claude/scripts/smoke_test.sh"])') > "$TMP_ROOT/$label.out" 2>&1 &
     smoke_pid=$!
@@ -247,12 +255,24 @@ run_signal_case() {
     done
     if [ "$ready" -ne 1 ]; then
         fail "$signal reaches a running crawl child"
-        kill -KILL "$smoke_pid" 2>/dev/null || true
-        wait "$smoke_pid" 2>/dev/null || true
+        kill -TERM "$smoke_pid" 2>/dev/null || true
+        set +e
+        wait "$smoke_pid"
+        local setup_rc=$?
+        set -e
+        assert_rc "$signal setup interruption exits $expected_rc" "$expected_rc" "$setup_rc"
+        if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+            && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+            && [ ! -e "/tmp/crawl_smoke_${smoke_pid}.txt" ]; then
+            pass "$signal setup interruption cleans init artifacts"
+        else
+            fail "$signal setup interruption must clean init artifacts"
+        fi
         return 0
     fi
     crawl_pid="$(cat "$CRAWL_PID_FILE")"
     kill -"$signal" "$smoke_pid"
+    kill -"$signal" "$smoke_pid" 2>/dev/null || true
     set +e
     wait "$smoke_pid"
     local rc=$?
@@ -273,14 +293,21 @@ run_signal_case() {
     else
         pass "$signal terminates crawl child"
     fi
-    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE"
+    if [ "$ignore_signals" -eq 0 ]; then
+        if grep -Fxq "$signal" "$CRAWL_SIGNAL_FILE"; then
+            pass "$signal reaches crawl child"
+        else
+            fail "$signal must reach crawl child"
+        fi
+    fi
+    rm -f "$CRAWL_PID_FILE" "$CRAWL_DIR_FILE" "$CRAWL_SIGNAL_FILE"
 }
 
 run_signal_case INT 130 0
 run_signal_case TERM 143 0
 run_signal_case HUP 129 0
 run_signal_case TERM 143 1
-unset CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_IGNORE_SIGNALS
+unset CRAWL_PID_FILE CRAWL_DIR_FILE CRAWL_SIGNAL_FILE CRAWL_IGNORE_SIGNALS
 
 # ── Test 6: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"
