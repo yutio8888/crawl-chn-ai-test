@@ -4476,7 +4476,7 @@ static string _get_skill_defense_change(skill_type skill)
 
 string get_skill_description(skill_type skill, bool need_title)
 {
-    string lookup = skill_name(skill);
+    const string lookup = skill_name(skill);
     string result = "";
 
     if (need_title)
@@ -4485,7 +4485,10 @@ string get_skill_description(skill_type skill, bool need_title)
         result += "\n\n";
     }
 
-    result += getLongDescription(lookup);
+    // The description database is keyed by canonical English skill names;
+    // skill_name() is the localized display form, so query by the English
+    // identity (like spell descriptions do with spell_english_name()).
+    result += getLongDescription(skill_name_en(skill));
 
     if ((skill == SK_ARMOUR || skill == SK_DODGING || skill == SK_SHIELDS)
         && you.skills[skill] < MAX_SKILL_LEVEL && !is_useless_skill(skill))

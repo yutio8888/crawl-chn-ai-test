@@ -8,6 +8,7 @@
 #include "item-status-flag-type.h"
 #include "mon-info.h"
 #include "monster-type.h"
+#include "skill-type.h"
 
 #include "test_zh_fixture.h"
 
@@ -117,4 +118,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE_FALSE(any_line_contains(lines, T_("No target in view!")));
     REQUIRE_FALSE(any_line_contains(lines, T_("No target in range!")));
     REQUIRE_FALSE(any_line_contains(lines, T_("No targets found!")));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "skill descriptions resolve via canonical English TextDB keys",
+                 "[zh-translation][describe]")
+{
+    const string desc = get_skill_description(SK_AXES, true);
+
+    // Title is the localized display name (skill_name) while the body must
+    // come from the zh TextDB layer keyed by the canonical English skill
+    // name; a localized lookup key would produce a blank description.
+    REQUIRE(desc.find("斧类") != string::npos);
+    REQUIRE(desc.find("挥动斧类武器能同时劈砍周围一圈多个敌人") != string::npos);
 }
