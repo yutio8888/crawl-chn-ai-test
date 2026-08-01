@@ -133,10 +133,9 @@ on_exit() {
     local rc="$1"
     local cleanup_rc=0
     cleanup "$rc" || cleanup_rc=$?
-    if [ "$cleanup_rc" -ne 0 ]; then
-        return "$cleanup_rc"
-    fi
-    return "$rc"
+    # cleanup() has disabled the EXIT trap, so this explicit exit cannot
+    # recurse. Its success result is the original rc; a cleanup failure is 1.
+    exit "$cleanup_rc"
 }
 
 handle_signal() {

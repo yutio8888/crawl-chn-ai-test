@@ -9,6 +9,7 @@
 #   5. Signal interruption → cleanup and restore
 #   6. Binary present + crash → exit 1
 #   7. Empty output with 0 rc → depends on capture check
+#   8. Cleanup failure → overrides success and preserves recoverable state
 
 set -euo pipefail
 
@@ -473,6 +474,74 @@ RC=$?
 set -e
 # Empty output should not cause errors since there are no protocol leaks/residue/crashes
 assert_rc "empty output, no issues → exit 0" 0 "$RC"
+
+# ── Test 8: Cleanup failure overrides a successful smoke run ──
+# Wrap rm only for this invocation and reject exactly the generated transcript
+# removal. This deterministically exercises the real cleanup path without
+# relying on filesystem permissions or adding a production-only test hook.
+echo "--- Cleanup failure overrides success ---"
+RM_WRAPPER_DIR="$TMP_ROOT/rm-wrapper"
+CLEANUP_FAILURE_PATH_FILE="$TMP_ROOT/cleanup-failure.path"
+CLEANUP_CRAWL_DIR_FILE="$TMP_ROOT/cleanup-crawl-dir.path"
+SMOKE_REAL_RM="$(command -v rm)"
+mkdir -p "$RM_WRAPPER_DIR"
+cat > "$RM_WRAPPER_DIR/rm" <<'SCRIPT'
+#!/bin/bash
+for arg in "$@"; do
+    case "$arg" in
+        /tmp/crawl_smoke_zh_*.txt)
+            printf '%s\n' "$arg" > "$SMOKE_RM_FAILURE_PATH_FILE"
+            exit 1
+            ;;
+    esac
+done
+exec "$SMOKE_REAL_RM" "$@"
+SCRIPT
+chmod +x "$RM_WRAPPER_DIR/rm"
+cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
+#!/bin/bash
+echo "$CRAWL_DIR" > "$CLEANUP_CRAWL_DIR_FILE"
+echo "Crawl starting cleanly..."
+exit 0
+SCRIPT
+chmod +x "$REPO/crawl-ref/source/crawl"
+set +e
+(cd "$REPO" && env PATH="$RM_WRAPPER_DIR:$PATH" \
+    SMOKE_REAL_RM="$SMOKE_REAL_RM" \
+    SMOKE_RM_FAILURE_PATH_FILE="$CLEANUP_FAILURE_PATH_FILE" \
+    CLEANUP_CRAWL_DIR_FILE="$CLEANUP_CRAWL_DIR_FILE" \
+    bash .claude/scripts/smoke_test.sh) \
+    > "$TMP_ROOT/cleanup-failure.out" 2>&1
+RC=$?
+set -e
+assert_rc "cleanup failure overrides successful smoke" 1 "$RC"
+
+cleanup_smoke_dir=""
+if [ -s "$CLEANUP_CRAWL_DIR_FILE" ]; then
+    cleanup_smoke_dir="$(cat "$CLEANUP_CRAWL_DIR_FILE")"
+fi
+if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+    && [ ! -e "$REPO/crawl-ref/source/.init.txt.smoke-bak" ] \
+    && [ -n "$cleanup_smoke_dir" ] && [ ! -e "$cleanup_smoke_dir" ]; then
+    pass "cleanup failure still restores init and removes crawl directory"
+else
+    fail "cleanup failure must restore init and remove recoverable state"
+fi
+
+failed_transcript=""
+if [ -s "$CLEANUP_FAILURE_PATH_FILE" ]; then
+    failed_transcript="$(cat "$CLEANUP_FAILURE_PATH_FILE")"
+fi
+if [ -n "$failed_transcript" ] && [ -f "$failed_transcript" ] \
+    && grep -Fq "Failed to remove smoke transcript $failed_transcript" \
+        "$TMP_ROOT/cleanup-failure.out"; then
+    pass "cleanup failure preserves and reports the failed transcript"
+else
+    fail "cleanup failure must preserve and report the failed transcript"
+fi
+if [ -n "$failed_transcript" ]; then
+    "$SMOKE_REAL_RM" -f "$failed_transcript"
+fi
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

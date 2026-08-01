@@ -1,6 +1,6 @@
 # `zh smoke` Pi 分析进度
 
-状态：Codex 已完成第四轮启动信号竞态修复与定向回归；历史开发验证记录均绑定其各自候选边界，不代表正式通过；当前候选的正式验证仍由新 immutable bundle 的 readiness 与 final gate 负责
+状态：Codex 已完成第五轮 cleanup EXIT 状态传播修复与确定性回归；历史开发验证记录均绑定其各自候选边界，不代表正式通过；当前候选的正式验证仍由新 immutable bundle 的 readiness 与 final gate 负责
 任务：分析 `verify_zh.sh` 的 ZH smoke 失败，区分代码问题、验证脚本问题和运行环境问题。
 开始时间：2026-08-01 06:36:30 +08:00
 分析截止时间：2026-08-01 07:06:30 +08:00（已完成）
@@ -11,7 +11,7 @@
 ## 执行约束
 
 - Pi 仅在明确授权的路径内修改，不运行 Git、不访问凭据。
-- 本轮 Pi 仅拥有 `.claude/scripts/smoke_test.sh` 和本进度文档的写入范围；不得修改 `traps.cc`、中文资产、其他验证脚本或构建文件。
+- 历史 Pi 阶段仅拥有 `.claude/scripts/smoke_test.sh` 和本进度文档的写入范围；第五轮 Codex 另获授权修改 `.claude/scripts/tests/test_smoke_test.sh`，仍不得修改 `traps.cc`、中文资产、其他验证脚本或构建文件。
 - 分析范围：`.claude/scripts/smoke_test.sh`、`.claude/scripts/verify_zh.sh`、`.claude/scripts/post_zh_runtime.sh`、`crawl-ref/source/crawl` 的实际启动路径，以及相关验证日志。
 - 不重新打开或修改本次已完成的翻译修复。
 
@@ -54,7 +54,7 @@
 
 ## Pi 最终证据文件
 
-- `.claude/scripts/smoke_test.sh` 当前候选的 `cleanup()`、`handle_signal()`、`defer_signal()`、init 状态防护，以及后台 `TIMEOUT_PID` / `--pty-transcript` 启动段（第三轮后的实现证据；不使用历史行号范围）。
+- `.claude/scripts/smoke_test.sh` 当前候选的 `cleanup()`、`handle_signal()`、`route_signal()`、init 状态防护，以及后台 `TIMEOUT_PID` / `--pty-transcript` 启动段（第三轮后的实现证据；不使用历史行号范围）。
 - `.claude/scripts/verify_zh.sh:671-692`
 - `.claude/scripts/post_zh_runtime.sh:194-196,255-260`
 - `.claude/scripts/run_with_timeout.py:60-94,148-165`
@@ -136,6 +136,35 @@ Pi 修改完成后必须列出实际变更行和未运行的验证；Codex 已�
   `20260801T131648981918000+0800-37378-ff9d26790398` 为 `Failures: 0`。这些结果仍不
   替代新 bundle 的正式 readiness 或 final gate。
 
+## 第五轮：cleanup EXIT 状态传播修复与确定性回归（2026-08-01）
+
+适用术语上下文于 2026-08-01 13:37 +08:00 从当前候选重新解析，
+`docs/glossary.md` SHA-256 仍为
+`912d85c14b360357303835bce502a2e6661ab629ce350548879c85da8dc0d54e`；本轮仅修改
+`smoke_test.sh`、其 mutation test 与本文档，未修改术语表、中文资产、C++、
+`run_with_timeout.py` 或任何身份／查找键。
+
+- Blocker `SMOKE-CLEANUP-001` 的根因是 Bash `EXIT` trap 保留触发 trap 时的退出状态；
+  `on_exit()` 仅 `return cleanup_rc` 不能让成功 smoke 的 cleanup 失败覆盖原状态。
+  当前实现继续使用 `cleanup()` 的既有契约（成功时返回原始 rc、失败时返回 1），并在
+  `cleanup()` 已禁用 `EXIT` trap 后显式 `exit "$cleanup_rc"`。因此不会递归触发 trap，
+  cleanup 成功时仍精确保留 0／1／2 等原始状态，cleanup 失败则 fail closed 为 1；
+  signal handler 与 first-wins 路由未改动。
+- mutation fixture 仅为单次 smoke 调用在 `PATH` 前置一个 `rm` 包装器，精确拒绝删除
+  `/tmp/crawl_smoke_zh_*.txt` transcript，其余删除委托给真实 `rm`。该注入不依赖权限、
+  调度或生产测试开关；断言原本成功的 smoke 返回 1、原始 `init.txt` 已恢复、backup 与
+  独立 `CRAWL_DIR` 已删除，并确认失败 transcript 保留且输出明确诊断，随后由 fixture
+  使用真实 `rm` 回收该 transcript。
+- 文档证据名称已由不存在的 `defer_signal()` 校正为当前实现的 `route_signal()`。
+- 开发期定向证据：`bash -n .claude/scripts/smoke_test.sh .claude/scripts/tests/test_smoke_test.sh`
+  退出 0；
+  `bash .claude/scripts/tests/test_smoke_test.sh` 连续三次均为
+  `55 passed, 0 failed`；本文档同步后的 `git diff --check` 退出 0。使用候选二进制的真实
+  PTY smoke 通过，协议泄漏、核心 UI 英文残留和崩溃三项均为零；开发
+  `verify_zh.sh --profile code` Run ID
+  `20260801T134315528065000+0800-49007-ae7d00eaff82` 为 `Failures: 0`。这些开发期结果不替代
+  新 immutable bundle 的正式 readiness／final gate。
+
 ## 最终交付
 
-Pi 已返回逐项变更、根因对应关系和未运行的验证；Codex 已补写进度终点、审核结论和开发期验证结果。正式 final gate / immutable readiness / merge authorization 尚未执行。
+Pi 已返回历史各轮逐项变更；Codex 已完成第五轮 blocker 修复、mutation 回归与证据同步。正式 final gate / immutable readiness / merge authorization 尚未执行。
