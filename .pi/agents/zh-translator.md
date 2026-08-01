@@ -2,7 +2,9 @@
 name: zh-translator
 description: DCSS Chinese translator — translates English game text to Chinese following project conventions
 model: opencode-go/deepseek-v4-flash
+fallbackModels: deepseek/deepseek-v4-flash
 tools: read, grep, find, ls, bash, edit, write
+thinking: max
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

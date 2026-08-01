@@ -2,6 +2,7 @@
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
 model: opencode-go/deepseek-v4-flash
+fallbackModels: deepseek/deepseek-v4-flash
 tools: read, grep, find, ls, bash, intercom
 thinking: high
 systemPromptMode: replace
