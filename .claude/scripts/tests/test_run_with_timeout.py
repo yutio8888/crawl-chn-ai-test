@@ -98,6 +98,60 @@ class PortableTimeoutTests(unittest.TestCase):
         self.assertEqual(128 + signal.SIGTERM, process.returncode)
         self.assertLess(time.monotonic() - started, 2)
 
+    def test_pty_forwarded_hup_is_not_overwritten_by_term(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ready = root / "ready"
+            received = root / "received"
+            transcript = root / "session.typescript"
+            code = f"""
+import pathlib
+import signal
+import time
+
+ready = pathlib.Path({str(ready)!r})
+received = pathlib.Path({str(received)!r})
+
+def handle_hup(*_args):
+    received.write_text("HUP")
+    time.sleep(0.3)
+    raise SystemExit(0)
+
+def handle_term(*_args):
+    received.write_text("TERM")
+    raise SystemExit(0)
+
+signal.signal(signal.SIGHUP, handle_hup)
+signal.signal(signal.SIGTERM, handle_term)
+ready.write_text("ready")
+time.sleep(5)
+"""
+            process = subprocess.Popen(
+                [
+                    sys.executable,
+                    str(RUNNER),
+                    "--timeout",
+                    "5",
+                    "--pty-transcript",
+                    str(transcript),
+                    "--",
+                    sys.executable,
+                    "-c",
+                    code,
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            for _ in range(250):
+                if ready.exists():
+                    break
+                time.sleep(0.02)
+            self.assertTrue(ready.exists(), "child did not become ready")
+            process.send_signal(signal.SIGHUP)
+            _stdout, stderr = process.communicate(timeout=5)
+            self.assertEqual(128 + signal.SIGHUP, process.returncode, stderr)
+            self.assertEqual("HUP", received.read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

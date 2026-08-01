@@ -172,7 +172,9 @@ bool trap_def::is_safe(actor* act) const
     // Let players specify traps as safe via lua.
     if (clua.callbooleanfn(false, "c_trap_is_safe", "s",
                            trap_name_en(type).c_str()))
+    {
         return true;
+    }
 
     return false;
 }
