@@ -4,6 +4,9 @@
 
 #include "artefact.h"
 #include "describe.h"
+#include "directn.h"
+#include "dungeon-feature-type.h"
+#include "database.h"
 #include "i18n.h"
 #include "item-status-flag-type.h"
 #include "mon-info.h"
@@ -131,4 +134,22 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // name; a localized lookup key would produce a blank description.
     REQUIRE(desc.find("斧类") != string::npos);
     REQUIRE(desc.find("挥动斧类武器能同时劈砍周围一圈多个敌人") != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "feature descriptions resolve via English display-phrase keys",
+                 "[zh-translation][describe]")
+{
+    // zh features.txt is keyed by English display phrases ("The floor"), so
+    // a localized lookup key would produce a blank description.
+    REQUIRE(getLongDescription("地面").empty());
+
+    const lang_t saved = Options.language;
+    Options.language = lang_t::EN;
+    const string en_floor = feature_description(DNGN_FLOOR, NUM_TRAPS, "",
+                                                DESC_A, NUM_BRANCHES);
+    Options.language = saved;
+
+    REQUIRE(en_floor == "the floor");
+    REQUIRE(getLongDescription(en_floor).find("地面") != string::npos);
 }

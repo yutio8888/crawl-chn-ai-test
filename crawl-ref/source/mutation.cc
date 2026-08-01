@@ -577,7 +577,10 @@ void validate_mutations(bool debug_msg)
             if (removed.count(mut))
                 continue;
             const string name = mutation_name(mut);
-            string lookup = getLongDescription(name + " mutation");
+            // TextDB keys stay canonical English; mutation_name() is the
+            // localized display form.
+            const string key = _get_mutation_def(mut).short_desc;
+            string lookup = getLongDescription(key + " mutation");
             if (lookup.empty())
                 no_desc.push_back(name);
         }

@@ -3383,6 +3383,19 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
 
     string db_name   = feat == DNGN_ENTER_SHOP ? "a shop" : desc;
     strip_suffix(db_name, " (summoned)");
+    if (Options.language == lang_t::ZH)
+    {
+        // TextDB keys stay English (i18n-safety); the localized display name
+        // never matches the English-keyed zh features.txt, so rebuild the
+        // lookup key from the English display phrase (same pattern as the
+        // item description fallback below).
+        const lang_t saved = Options.language;
+        Options.language = lang_t::EN;
+        const string en_desc = feature_description_at(pos, false, DESC_A);
+        Options.language = saved;
+        db_name = feat == DNGN_ENTER_SHOP ? "a shop" : en_desc;
+        strip_suffix(db_name, " (summoned)");
+    }
     string long_desc = getLongDescription(db_name);
 
     inf.title = uppercase_first(desc);
@@ -3769,9 +3782,19 @@ void describe_feature_type(dungeon_feature_type feat)
     if (!ends_with(title, ".") && !ends_with(title, "!") && !ends_with(title, "?"))
         title += ".";
     inf.title = title;
-    // DB lookup: use raw English name so TextDB keys match (same pattern as
-    // card_name_en / cloud_type_name_en / Monster _mons_desc_key fix).
-    inf.body << getLongDescription(get_feature_def(feat).name);
+    // DB lookup: TextDB keys are the English display phrases, so rebuild the
+    // key in EN mode; the zh layer's English-keyed entries then resolve too
+    // (the bare data name misses even in EN: no "floor"-style bare keys).
+    string db_key = name;
+    if (Options.language == lang_t::ZH)
+    {
+        const lang_t saved = Options.language;
+        Options.language = lang_t::EN;
+        db_key = feature_description(feat, NUM_TRAPS, "", DESC_A,
+                                     NUM_BRANCHES);
+        Options.language = saved;
+    }
+    inf.body << getLongDescription(db_key);
 #ifdef USE_TILE
     const tileidx_t idx = tileidx_feature_base(feat);
     tile_def tile = tile_def(idx);
