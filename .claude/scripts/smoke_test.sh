@@ -84,7 +84,14 @@ trap '
 ' EXIT
 
 if [ -f "$SOURCE_DIR/init.txt" ]; then
-    INIT_BAK="$SOURCE_DIR/.init.txt.smoke-bak"
+    INIT_BAK_PATH="$SOURCE_DIR/.init.txt.smoke-bak"
+    # Fail closed if a previous interrupted run left any backup artifact.
+    # In particular, -L catches a dangling symlink that -e would miss.
+    if [ -e "$INIT_BAK_PATH" ] || [ -L "$INIT_BAK_PATH" ]; then
+        echo "Refusing to overwrite existing init backup at $INIT_BAK_PATH" >&2
+        exit 2
+    fi
+    INIT_BAK="$INIT_BAK_PATH"
     mv "$SOURCE_DIR/init.txt" "$INIT_BAK" || exit 2
 fi
 

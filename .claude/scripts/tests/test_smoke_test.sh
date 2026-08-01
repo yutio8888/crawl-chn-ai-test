@@ -4,8 +4,9 @@
 # Tests:
 #   1. Missing binary → exit 2
 #   2. Binary present + normal output → exit 0
-#   3. Binary present + crash → exit 1
-#   4. Empty output with 0 rc → depends on capture check
+#   3. Existing init backup → fail closed and preserve both files
+#   4. Binary present + crash → exit 1
+#   5. Empty output with 0 rc → depends on capture check
 
 set -euo pipefail
 
@@ -76,7 +77,23 @@ RC=$?
 set -e
 assert_rc "normal binary exits 0" 0 "$RC"
 
-# ── Test 3: Binary present + crash (sigsegv) → exit 1 ──
+# ── Test 3: Existing init backup → fail closed without mutation ──
+echo "--- Existing init backup collision ---"
+echo 'stale backup' > "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+set +e
+(cd "$REPO" && bash .claude/scripts/smoke_test.sh) > "$TMP_ROOT/backup-collision.out" 2>&1
+RC=$?
+set -e
+assert_rc "existing init backup exits 2" 2 "$RC"
+if grep -Fxq 'language = en' "$REPO/crawl-ref/source/init.txt" \
+    && grep -Fxq 'stale backup' "$REPO/crawl-ref/source/.init.txt.smoke-bak"; then
+    pass "existing init backup preserves original and stale files"
+else
+    fail "existing init backup must preserve original and stale files"
+fi
+rm -f "$REPO/crawl-ref/source/.init.txt.smoke-bak"
+
+# ── Test 4: Binary present + crash (sigsegv) → exit 1 ──
 echo "--- Binary present + crash ---"
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
@@ -91,7 +108,7 @@ RC=$?
 set -e
 assert_rc "crash binary exits 1" 1 "$RC"
 
-# ── Test 4: Empty output with 0 rc ──
+# ── Test 5: Empty output with 0 rc ──
 echo "--- Empty output with 0 rc ---"
 cat > "$REPO/crawl-ref/source/crawl" <<'SCRIPT'
 #!/bin/bash
