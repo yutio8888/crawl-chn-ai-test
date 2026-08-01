@@ -49,6 +49,15 @@ def _terminate_group(process: subprocess.Popen[bytes]) -> None:
         process.wait()
 
 
+def _reap_after_forwarded_signal(process: subprocess.Popen[bytes]) -> None:
+    """Let the forwarded signal run its handler before forcing termination."""
+    try:
+        process.wait(timeout=TERMINATE_GRACE_SECONDS)
+    except subprocess.TimeoutExpired:
+        _signal_group(process, signal.SIGKILL)
+        process.wait()
+
+
 def _deadline(timeout: float) -> float:
     return time.monotonic() + timeout
 
@@ -74,7 +83,7 @@ def _run_plain(command: list[str], timeout: float) -> int:
         deadline = _deadline(timeout)
         while process.poll() is None:
             if interrupted:
-                _terminate_group(process)
+                _reap_after_forwarded_signal(process)
                 return 128 + interrupted
             remaining = _remaining(deadline)
             if remaining == 0:
@@ -134,7 +143,7 @@ def _run_pty(command: list[str], timeout: float, transcript_path: Path) -> int:
             while selector.get_map():
                 if process.poll() is None:
                     if interrupted:
-                        _terminate_group(process)
+                        _reap_after_forwarded_signal(process)
                     elif _remaining(deadline) == 0:
                         timed_out = True
                         _terminate_group(process)
@@ -156,7 +165,7 @@ def _run_pty(command: list[str], timeout: float, transcript_path: Path) -> int:
                         selector.unregister(key.fd)
             if process.poll() is None:
                 if interrupted:
-                    _terminate_group(process)
+                    _reap_after_forwarded_signal(process)
                 elif _remaining(deadline) == 0:
                     timed_out = True
                     _terminate_group(process)
