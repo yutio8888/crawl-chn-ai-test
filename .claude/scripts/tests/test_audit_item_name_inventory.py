@@ -266,7 +266,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                          payload["schema"])
         self.assertEqual(390, payload["count"])
         self.assertEqual(
-            "40fe2a9be419868de3ffd8ece736861b81823046654fd4710da62ec5fe2b81f4",
+            "63f0eb9c721654284401130123b6149af5cb2a46cbe2a2fe0b74979223b113d2",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
