@@ -1,6 +1,6 @@
 # `zh smoke` Pi 分析进度
 
-状态：Pi 第三轮修复已审核；开发验证通过（bash -n、直接 smoke、profile code/translation 均通过）；正式 final gate / immutable readiness / merge authorization 尚未执行
+状态：Pi 第三轮修复已审核；历史开发验证记录均绑定目标基线 `084f8138ab532d193de2ec4a3105da4dfbd61759`，不代表当前候选；当前候选的正式验证由 final gate 负责；immutable readiness / merge authorization 尚未执行
 任务：分析 `verify_zh.sh` 的 ZH smoke 失败，区分代码问题、验证脚本问题和运行环境问题。
 开始时间：2026-08-01 06:36:30 +08:00
 分析截止时间：2026-08-01 07:06:30 +08:00（已完成）
@@ -31,11 +31,11 @@
 | 07:13:00 | 第二轮开始 | 复验失败证据明确：PTY 已接通、`language = zh` 已生效（锁文件名含 `.zh`），crawl 返回 1，转录为 `Unable to open lock file ".../saves/db/descriptions.zh.lk": Operation not permitted`。判定为运行目录隔离问题，非代码缺陷。 |
 | 07:13:00–07:36:20 | 第二轮分析 | 锁文件由 TextDB 再生创建：`database.cc:382` 以 "wb" 建 `<Options.save_dir>/db/descriptions.zh.lk`（`files.cc:4069-4074`）；`save_dir` 源自 `SysEnv.crawl_dir`（`initfile.cc:1535-1539`），macOS 默认值为 `~/Library/Application Support/Dungeon Crawl Stone Soup`（`initfile.cc:4728-4736`），Codex 沙盒不可写。`CRAWL_DIR` 是文档化环境变量（`initfile.cc:4728`），可整体重定向保存/缓存/锁/尸体/崩溃输出；数据目录由 `files.cc:428-435` 的 rawbases 解析：无 `DATA_DIR_PATH` 的构建中 `SysEnv.crawl_dir` 是首个候选基，`find_crawlrc()` 也先查 `<crawl_dir>/init.txt`（`initfile.cc:2201`）；但当前隔离目录为空，均回退到 `crawl_base`（`files.cc:434`）与 `crawl-ref/source/init.txt`（`datafile_path`，`initfile.cc:2245-2247`），故 `language = zh` 与数据加载不受影响。（按 2026-08-01 08:01 轮更正此路径说明。） |
 | ≤07:36:20 | 第二轮实施完成 | 最小隔离修复已写入 `smoke_test.sh`：`mktemp -d` 建临时目录并设置 `CRAWL_DIR`；trap 增加 `rm -rf`；`TIMEOUT_SEC` 10→60（覆盖冷缓存首次 TextDB 全量再生的耗时，124 语义不变）。未运行任何 shell/构建/运行时验证。 |
-| 07:24:54 | Codex 验证通过 | `bash -n`、直接 `bash .claude/scripts/smoke_test.sh` 和 `verify_zh.sh --profile translation` 全部通过；profile Run ID：`20260801T072041257346000+0800-55593-084f8138ab53`，Failures: 0。 |
-| 07:25:49 | Codex code profile 通过 | `verify_zh.sh --profile code` 通过，Failures: 0；Tree-sitter 两个 AST 阶段已实际执行，不再是依赖缺失。Run ID：`20260801T072549403964000+0800-59707-084f8138ab53`。 |
-| 08:01:00 | 本轮开始 | 按合并前审查 Needs Fix 处理（仅限 `smoke_test.sh`、`traps-translation-handoff.md`、本文件）：① trap 先于 `mv init.txt` 注册并初始化 INIT_BAK/INIT_TMP，mv 失败时清理临时目录但不删除原始 init.txt；② 校正 CRAWL_DIR 的 data/config 搜索路径说明；③ 更新 A4/A7 当前源码行号；④ 本文件历史内容标注；⑤ 两份文档验证状态改为“开发验证通过；正式 final gate 未执行”。两个非阻塞 Suggestion 不纳入本轮。 |
+| 07:24:54 | Codex 历史基线验证通过 | `bash -n`、直接 `bash .claude/scripts/smoke_test.sh` 和 `verify_zh.sh --profile translation` 全部通过；profile Run ID：`20260801T072041257346000+0800-55593-084f8138ab53`，Failures: 0；Run ID 绑定目标基线。 |
+| 07:25:49 | Codex 历史基线 code profile 通过 | `verify_zh.sh --profile code` 通过，Failures: 0；Tree-sitter 两个 AST 阶段已实际执行，不再是依赖缺失。Run ID：`20260801T072549403964000+0800-59707-084f8138ab53`，绑定目标基线。 |
+| 08:01:00 | 本轮开始 | 按合并前审查 Needs Fix 处理（仅限 `smoke_test.sh`、`traps-translation-handoff.md`、本文件）：① trap 先于 `mv init.txt` 注册并初始化 INIT_BAK/INIT_TMP，mv 失败时清理临时目录但不删除原始 init.txt；② 校正 CRAWL_DIR 的 data/config 搜索路径说明；③ 更新 A4/A7 当前源码行号；④ 本文件历史内容标注；⑤ 两份文档验证状态改为明确区分历史开发验证与当前候选。两个非阻塞 Suggestion 不纳入本轮。 |
 | ≤08:10:00（约） | 本轮变更完成 | Pi 返回时未运行 shell/构建/Git/验证脚本；变更明细见下方“实施记录（第三轮）”，随后由 Codex 执行验证。 |
-| 08:15:31 | Codex 验证通过 | `bash -n`、直接 smoke、`git diff --check` 和 `verify_zh.sh --profile translation` 均通过；translation Run ID：`20260801T080923685920000+0800-10085-084f8138ab53`，Failures: 0。正式 final gate / immutable readiness / merge authorization 仍未执行。 |
+| 08:15:31 | Codex 历史基线验证通过 | `bash -n`、直接 smoke、`git diff --check` 和 `verify_zh.sh --profile translation` 均通过；translation Run ID：`20260801T080923685920000+0800-10085-084f8138ab53`，Failures: 0；Run ID 绑定目标基线。正式 final gate / immutable readiness / merge authorization 仍未执行。 |
 
 ## 已知背景（历史分析——第一轮启动时的初始假设，已在后续轮次证实/推翻，保留作审计线索）
 
@@ -92,15 +92,15 @@
 `traps-translation-handoff.md`：
 - A4 证据行更新为当前代码 `traps.cc:738,740`（完整句子键，`zh/source.txt:7299-7303`）。
 - A7 证据行更新为当前代码 `traps.cc:1038-1040`（`zh/source.txt:40509-40510`，已无“处”）。
-- 状态行改为“开发验证通过；正式 final gate / immutable readiness / merge authorization 尚未执行”。
+- 状态行改为明确说明历史开发验证绑定目标基线，当前候选的正式验证由 final gate 负责。
 
 `zh-smoke-pi-progress.md`（本文件）：
-- 状态行与“验证状态”改为“开发验证通过；正式 final gate / immutable readiness / merge authorization 尚未执行”。
+- 状态行与“验证状态”改为明确区分历史开发验证与当前候选，避免把目标基线结果绑定到当前候选。
 - “已知背景 / Pi 结论摘要（第一轮）”标注为历史分析；CRAWL_DIR 数据搜索说明按 `files.cc:428-435` 更正。
 
-Pi 返回时未运行的验证：`bash -n .claude/scripts/smoke_test.sh`、直接 smoke、`verify_zh.sh --profile code|translation`、构建和 Git；随后 Codex 已执行 `bash -n`、直接 smoke、`git diff --check` 和 `verify_zh.sh --profile translation`，均通过。`profile code` 的前次开发验证也已通过；正式 final gate / immutable readiness / merge authorization 尚未执行。
+Pi 返回时未运行的验证：`bash -n .claude/scripts/smoke_test.sh`、直接 smoke、`verify_zh.sh --profile code|translation`、构建和 Git；随后 Codex 在目标基线上执行了 `bash -n`、直接 smoke、`git diff --check` 和 `verify_zh.sh --profile translation`，均通过；`profile code` 的前次开发验证也绑定目标基线。上述均为历史开发验证，不代表当前候选；正式 final gate / immutable readiness / merge authorization 尚未执行。
 
-验证状态：**开发验证通过；正式 final gate / immutable readiness / merge authorization 尚未执行**。`bash -n .claude/scripts/smoke_test.sh` 通过；直接 smoke 输出三段均通过（无 protocol leaks、无 English residue、无 crashes）；translation profile 与 code profile 均通过，Failures: 0；Tree-sitter AST 两阶段已实际执行并通过。以上为 Codex 的开发期验证记录，不等同于正式 final gate / immutable readiness / merge authorization。
+验证状态：**历史开发验证已记录并绑定目标基线；当前候选的正式验证由 final gate 负责**。历史 `bash -n .claude/scripts/smoke_test.sh`、直接 smoke、translation profile 与 code profile 均通过，Failures: 0；Tree-sitter AST 两阶段已实际执行并通过。以上不构成当前候选的通过证据，也不等同于正式 final gate / immutable readiness / merge authorization。
 
 Pi 修改完成后必须列出实际变更行和未运行的验证；Codex 已完成 diff 审核、smoke、翻译 profile 和静态检查；以上均为开发期验证，不构成正式 final gate 或合并授权。
 

@@ -334,7 +334,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 #if TAG_MAJOR_VERSION == 34
         {TRAP_SPEAR, "spear trap", "长矛陷阱"},
         {TRAP_BOLT, "bolt trap", "弩箭陷阱"},
-        {TRAP_GAS, "gas trap", "毒气陷阱"},
+        {TRAP_GAS, "gas trap", "气体陷阱"},
         {TRAP_SHADOW, "shadow trap", "暗影陷阱"},
         {TRAP_SHADOW_DORMANT, "dormant shadow trap", "休眠暗影陷阱"},
 #endif

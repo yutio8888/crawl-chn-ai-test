@@ -1,6 +1,6 @@
 # `traps.cc` 中文翻译问题交接文档
 
-状态：A1–A10 已实施并逐项审核；A11 已确认不修改；开发验证通过（profile code/translation 均 Failures: 0）；正式 final gate / immutable readiness / merge authorization 尚未执行
+状态：A1–A10 已实施并逐项审核；A11 已确认不修改；历史开发验证（profile code/translation 均 Failures: 0）绑定目标基线 `084f8138ab532d193de2ec4a3105da4dfbd61759`，不代表当前候选；当前候选的正式验证由 final gate 负责；immutable readiness / merge authorization 尚未执行
 范围：`traps.cc` 直接产生的用户可见文本、陷阱名称显示路径，以及对应的
 `zh/source.txt` / `miscname.txt` 翻译。
 术语表 SHA-256：`912d85c14b360357303835bce502a2e6661ab629ce350548879c85da8dc0d54e`
