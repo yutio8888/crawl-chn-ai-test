@@ -64,11 +64,11 @@ fi
 SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
 
 # Temporary init state. INIT_BAK records the backup path when the original
-# init.txt is moved aside; INIT_TMP records that the temporary
-# 'language = zh' init.txt was written. The cleanup trap is registered
+# init.txt is moved aside; INIT_TMP marks the path as test-owned before the
+# temporary 'language = zh' write begins. The cleanup trap is registered
 # BEFORE any init.txt modification, so if the mv/echo below fails the trap
-# still removes the temp CRAWL_DIR but never deletes an untouched original
-# init.txt (INIT_TMP empty and INIT_BAK not yet a real backup file).
+# still removes the temp CRAWL_DIR and any partial temporary init.txt, while
+# restoring a backed-up original instead of deleting it.
 INIT_BAK=""
 INIT_TMP=""
 trap '
@@ -88,8 +88,8 @@ if [ -f "$SOURCE_DIR/init.txt" ]; then
     mv "$SOURCE_DIR/init.txt" "$INIT_BAK" || exit 2
 fi
 
-echo 'language = zh' > "$SOURCE_DIR/init.txt"
 INIT_TMP="$SOURCE_DIR/init.txt"
+echo 'language = zh' > "$SOURCE_DIR/init.txt"
 
 # Run crawl inside a PTY via run_with_timeout.py --pty-transcript.
 # A bare non-PTY launch cannot satisfy ncurses (initscr()/tcgetattr(0))

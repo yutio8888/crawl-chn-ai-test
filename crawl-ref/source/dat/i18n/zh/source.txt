@@ -22106,7 +22106,7 @@ dispersal trap (recharging)
 空间驱离陷阱（重新充能中）
 %%%%
 gas trap
-毒气陷阱
+气体陷阱
 %%%%
 dormant shadow trap
 休眠暗影陷阱
