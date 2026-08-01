@@ -480,9 +480,7 @@ NORETURN static void _launch_game()
     _god_greeting_message(game_start);
 
     if (!crawl_state.game_is_tutorial())
-    {
         mpr(T_("Press <w>?</w> for a list of commands and other information."));
-    }
 
     _prep_input();
 
@@ -759,7 +757,9 @@ static void _god_greeting_message(bool game_start)
 
     if (!msg.empty()
         && !(result = getSpeakString(string(_god_name_en(you.religion)) + msg)).empty())
+    {
         god_speaks(you.religion, result.c_str());
+    }
     else if (!(result = getSpeakString(string(_god_name_en(you.religion))
                                        + " welcome")).empty())
         god_speaks(you.religion, result.c_str());
@@ -770,10 +770,12 @@ static void _take_starting_note()
     ostringstream notestr;
     // ZH uses different name format and punctuation
     if (Options.language == lang_t::ZH)
+    {
         notestr << you.your_name << "（"
                 << species::name(you.species) << " "
                 << get_job_name(you.char_class)
                 << "）开始了寻找宝珠的征程。";
+    }
     else
         notestr << you.your_name << " the "
                 << species::name(you.species) << " "
@@ -1774,9 +1776,7 @@ static void _experience_check()
     int perc = get_exp_progress();
 
     if (you.experience_level < you.get_max_xl())
-    {
         mprf_p(T_("You need %1$d%% to reach level %2$d."), perc, you.experience_level + 1);
-    }
     else
     {
         mprf(T_("Sorry, level %d is the maximum level."), you.get_max_xl());
@@ -2522,9 +2522,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     default:
         // The backslash in ?\? is there so it doesn't start a trigraph.
         if (crawl_state.game_is_hints())
-        {
             mpr(T_("Unknown command. (For a list of commands type <w>?\?</w>.)"));
-        }
         else // well, not examine, but...
             mprf(MSGCH_EXAMINE_FILTER, T_("Unknown command."));
 
