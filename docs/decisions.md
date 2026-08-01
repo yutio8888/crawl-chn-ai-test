@@ -1663,7 +1663,8 @@ file exists and should be consulted. This file stores the actual ruling content.
   `gravitas` 的重量感。两项无需改名。
 - **Description corrections**: Gavotte 法术描述与当前英文一致；
   Gravitas 没有独立法术描述，其效果由重力铃鼓物品描述承载。该描述把
-  `Evocations` 误译成“召唤术”，本批修正为术语表规定的“激活技能”。
+  `Evocations` 误译成“召唤术”，本批当时修正为“激活技能”；
+  该历史选择后由 D-A-052 统一为“魔力释放”。
 - **Affected files**:
   - `crawl-ref/source/dat/descript/zh/items.txt`
   - `docs/glossary.md`
@@ -3301,7 +3302,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   - 首饰效果 `magic regeneration → 法力再生`、
     `magical power → 法力强化`、`flight → 飞行`。
   - 书名域 `Necromancy → 死灵术`；药水域
-    `invisibility → 隐形`、`might → 强效`。
+    `invisibility → 隐形`；`might → 强效` 后由 D-B-022 修订为“力量”。
 - **Context isolation**: 名称域使用 `C_()` 上下文键隔离同形异义。
   保留法术标题 `Invisibility → 隐身术`、`Might → 强壮`、
   `Infusion → 灌注术`、`Flight → 飞行术`，并保留法杖名中的
@@ -3353,7 +3354,8 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     `Rutra → 鲁特拉`、`St. Lee → 圣李`；前两项纠正 Zephyr 与暗夜之袍
     旧译中遗漏或错误的人名，圣李沿用既有译名并明确“圣李修士会”的所属关系。
 - **Description choices**:
-  - `Shapeshifting → 变形术`、`Hexes → 诅咒系`、`Evocations → 激活技能`；
+  - `Shapeshifting → 变形术`、`Hexes → 诅咒系`；
+    `Evocations` 当时采用“激活技能”，后由 D-A-052 统一为“魔力释放”；
     删除与当前英文块不符的 Zephyr、盗贼斗篷与术士之镜旧文本，并恢复其余
     固定神器描述中遗漏或误写的条件、因果、专名和玩法后果。
   - `unident` 描述不得凭空加入“古老”“木制”等属性，也不得删去
@@ -3374,6 +3376,32 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   - `crawl-ref/source/dat/descript/zh/unident.txt`
   - `crawl-ref/source/dat/database/zh/gizmo.txt`
   - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+
+---
+
+### D-B-022 — Potion of Might → 力量药水
+
+- **Type**: B — Context-specific item naming correction
+- **Status**: active
+- **Date**: 2026-08-01
+- **Source**: release 回归测试；对照 `POT_MIGHT` 的显示名生产路径、物品说明与
+  `DUR_MIGHT` 实现
+- **Choice**: 药水名称上下文 `potion full name|might → 力量`，最终显示为
+  **“力量药水”**。它比“强效药水”更直接表达 `might` 的身体力量含义，也符合
+  中文角色扮演游戏的常见命名。
+- **Rejected**: “强效药水”没有说明增强对象；“勇力药水”较生僻；“蛮力药水”
+  带入原文没有的贬义；“近战强化药水”虽准确却是机制说明，不像自然物品名。
+- **Context isolation**: 仅修订药水名称上下文。状态 `Might → 强效` 和法术标题
+  `Might → 强壮` 保持不变；物品说明明确其效果只提升近战攻击威力，避免与
+  `strength → 力量` 属性混淆。
+- **Supersedes**: D-B-020 中 `potion full name|might → 强效` 的单项选择。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/items.txt`
+  - `crawl-ref/source/dat/descript/zh/backgrounds.txt`
+  - `crawl-ref/source/catch2-tests/test_zh_translation.cc`
   - `docs/glossary.md`
   - `docs/glossary.utf8`
 
@@ -3660,6 +3688,28 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-052 — Evocations 技能 → 魔力释放
+
+- **Type**: A — Skill terminology ruling
+- **Status**: active
+- **Date**: 2026-08-01
+- **Source**: release 回归测试；对照技能列表、固定神器词条、能力与物品说明
+- **Choice**: `Evocations → 魔力释放`；在句中明指技能时写作“魔力释放技能”。
+- **Rationale**: “魔力释放”已是技能列表的玩家可见名称，物品、能力和神器词条
+  应与之完全一致。“激活技能”与普通动词“激活”混淆，也不遵循技能名；
+  “唤术”和“召唤术”容易误指 `Summonings`。
+- **Context boundary**: `evoke/activate/activated` 的普通操作、状态或动作仍可译为
+  “激活”、“使用”或“释放”；`Summonings` 技能仍为“召唤系”。
+- **Supersedes**: D-B-021 和 D-C-037 中 `Evocations → 激活技能` 的历史选择。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/{ability,items,spells,unrand}.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-C-093 — Issue #28 地牢世界显示文本全量审阅
 
 - **Type**: C — Finite inventory translation review
@@ -3767,6 +3817,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-019 | Barding → 马铠 | 马铠 | active ✅ |
 | D-B-020 | Item and ego name review | 390 identities; current/internal fixes | active |
 | D-B-021 | Extended item/unrand/gizmo review | fixed identities, finite components and descriptions | active |
+| D-B-022 | Potion of Might | 力量药水（药水名称上下文） | active |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |
@@ -3785,6 +3836,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-048 | Erebora / Ereborans | 埃雷博拉 / 埃雷博拉人 | active ✅ |
 | D-A-049 | Zonguldrok | 宗古德洛克 | active ✅ |
 | D-A-050 | lajatang | 双头杖 | active ✅ |
+| D-A-052 | Evocations | 魔力释放（技能名） | active ✅ |
 | D-D-005 | defensive status Blood | 血甲 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |

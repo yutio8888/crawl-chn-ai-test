@@ -146,13 +146,13 @@
 | skill | 技能 | — |
 | experience / XP | 经验值 | — |
 | level | 等级 / 层 | 角色用"等级"，楼层用"层" |
-| Evocations | 激活技能 | **绝不**译为"召唤术"——那是 Summoning |
+| Evocations | 魔力释放 | 技能名；普通动词 evoke/activate 仍按语境译为“激活/使用”；decision=D-A-052 |
 
 ### 常用状态与效果
 
 | EN | ZH | 注意事项 |
 |----|----|---------|
-| Might | 强效 | +10% 伤害 |
+| Might | 强效 | 状态名；近战攻击额外增加 1–10 点伤害；药水名称见 D-B-022 |
 | Haste | 加速 | 行动速度 +50% |
 | Berserk | 狂暴 | 近战加成但结束后减速 |
 | Rampage | 冲锋 | 攻击时自动向敌人移动一步 |
@@ -233,7 +233,7 @@
 | old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
 | partisan | 阔头枪 | weapon; decision=D-B-018 |
 | `potion full name\|invisibility` | 隐形 | potion context key; decision=D-B-020 |
-| `potion full name\|might` | 强效 | potion context key; decision=D-B-020 |
+| `potion full name\|might` | 力量 | potion context key; melee-only effect; decision=D-B-022 |
 | quarterstaff | 长棍 | weapon; decision=D-B-017 |
 | quill talisman | 棘刺护符 | talisman; decision=D-B-020 |
 | rampaging | 冲锋 | armour ego; decision=D-B-020 |
@@ -447,7 +447,7 @@
 | Air Magic | 空气魔法 | skill; source=source.txt; decision=D-C-001 |
 | Earth Magic | 大地魔法 | skill; source=source.txt; decision=D-C-001 |
 | Invocations | 祈神 | skill; source=source.txt; decision=D-C-001 |
-| Evocations | 魔力释放 | skill; source=source.txt; decision=D-C-001 |
+| Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
 
 <!-- domain:status -->

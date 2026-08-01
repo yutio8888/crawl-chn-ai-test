@@ -22,6 +22,7 @@
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
+#include "macro.h"
 #include "mapdef.h"
 #include "mgen-data.h"
 #include "mon-util.h"
@@ -1132,7 +1133,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const item_def flight_ring =
         make_identified_item(OBJ_JEWELLERY, RING_FLIGHT);
     REQUIRE(invisibility_potion.name(DESC_PLAIN) == "隐形药水");
-    REQUIRE(might_potion.name(DESC_PLAIN) == "强效药水");
+    REQUIRE(might_potion.name(DESC_PLAIN) == "力量药水");
     REQUIRE(necromancy_book.name(DESC_PLAIN) == "死灵术之书");
     REQUIRE(flight_ring.name(DESC_PLAIN) == "飞行戒指");
 
@@ -1162,6 +1163,47 @@ TEST_CASE_METHOD(EnTranslationFixture,
     book.flags |= ISFLAG_IDENTIFIED;
 
     REQUIRE(book.name(DESC_PLAIN) == "book of Necromancy");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: mouse-only partial pickup tooltip has no unbound key slot",
+                 "[zh-translation][tiles][tooltip]")
+{
+    string partial_tip =
+        T_("\n[Ctrl + L-Click] Partial pick up (%)");
+    insert_commands(partial_tip, { CMD_PICKUP_QUANTITY });
+    REQUIRE(partial_tip == "\n[Ctrl + 左键] 部分拾取");
+    REQUIRE(partial_tip.find("NULL") == string::npos);
+    REQUIRE(partial_tip.find('%') == string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: artefact text uses canonical skill terminology",
+                 "[zh-translation][artefact][skill-name]")
+{
+    REQUIRE(std::string(T_("Evocations")) == "魔力释放");
+    REQUIRE(std::string(T_("You are briefly shielded after casting or "
+                           "invoking."))
+            == "你施法或使用祈神能力后会短暂获得护盾。");
+    REQUIRE(std::string(T_("Invo=14 Evo=0"))
+            == "祈神=14 魔力释放=0");
+    REQUIRE(std::string(T_("Invo=14")) == "祈神=14");
+    REQUIRE(std::string(T_("Evo=0")) == "魔力释放=0");
+    REQUIRE(std::string(T_("It sets your Invocations skill to 14."))
+            == "将你的祈神技能设为14。");
+    REQUIRE(std::string(T_("It sets your Evocations skill to 0."))
+            == "将你的魔力释放技能设为0。");
+    REQUIRE(std::string(T_("It can be activated via the 'a'bility menu to "
+                           "radiate toxic energy, with effectiveness "
+                           "depending on Evocations skill."))
+            == "可以通过能力菜单激活，释放毒素能量，其效果取决于"
+               "魔力释放技能。");
+    REQUIRE(std::string(T_("It occasionally summons a dragon when using "
+                           "Invocations with hostile monsters in sight. "
+                           "Chance is 10% + twice the piety cost of the "
+                           "ability used."))
+            == "视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。"
+               "触发几率为10% + 所使用能力的虔诚消耗的两倍。");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

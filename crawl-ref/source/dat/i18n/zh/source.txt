@@ -3416,7 +3416,7 @@ potion full name|invisibility
 隐形
 %%%%
 potion full name|might
-强效
+力量
 %%%%
 weapon brand adjective|draining
 汲取
@@ -27994,7 +27994,7 @@ You are beckoning forth a horde of dragons.
 你正在召唤一群巨龙。
 %%%%
 You are briefly shielded after casting or invoking.
-你施法或祈唤后会短暂获得护盾。
+你施法或使用祈神能力后会短暂获得护盾。
 %%%%
 You are disjoining your surroundings.
 你正在与周围环境隔离。
@@ -28276,7 +28276,7 @@ Inspire Amulet+
 激励 项链+
 %%%%
 Invo=14 Evo=0
-祈唤=14 唤术=0
+祈神=14 魔力释放=0
 %%%%
 MP+9
 魔力+9
@@ -29314,10 +29314,10 @@ Steadfast
 稳固
 %%%%
 Invo=14
-祈唤=14
+祈神=14
 %%%%
 Evo=0
-激活=0
+魔力释放=0
 %%%%
 Slick
 滑溜
@@ -29371,7 +29371,7 @@ It halves damage taken while paralysed, petrified or unconscious.
 其佩戴者在麻痹、石化或昏迷时受到的伤害减半。
 %%%%
 It can be activated via the 'a'bility menu to radiate toxic energy, with effectiveness depending on Evocations skill.
-可以通过能力菜单激活，释放毒素能量，其效果取决于激活技能。
+可以通过能力菜单激活，释放毒素能量，其效果取决于魔力释放技能。
 %%%%
 It enhances your alchemy magic.
 它增强你的炼金魔法。
@@ -29380,7 +29380,7 @@ It grants immunity to poison.
 它赋予毒素免疫。
 %%%%
 If the wielder is skilled in Evocations, they can envenom those struck by it, dealing poison damage which bypasses armour.
-若使用者精通激活技能，可以在攻击时为武器淬毒，造成无视护甲的毒素伤害。
+若使用者精通魔力释放技能，可以在攻击时为武器淬毒，造成无视护甲的毒素伤害。
 %%%%
 Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
 每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
@@ -29398,7 +29398,7 @@ It temporarily reduces the fire resistance of those it strikes.
 暂时降低被击中者的火焰抗性。
 %%%%
 It grants the ability to hurl damnation at the cost of health and magic, with strength depending on Evocations skill.
-赋予投掷天谴的能力，消耗生命与法力，威力取决于激活技能。
+赋予投掷天谴的能力，消耗生命与法力，威力取决于魔力释放技能。
 %%%%
 It may summon demons of flame and damnation when striking foes.
 攻击敌人时可能召唤火焰与天谴之恶魔。
@@ -29428,7 +29428,7 @@ It grants its wielder a halo, revealing invisible creatures and increasing accur
 赋予使用者光环，可以揭示隐形生物，并提升对光环内除使用者外所有生物的命中率。
 %%%%
 It enhances your fire, ice, earth and air magic. If skilled in Evocations, you can discharge powerful blasts of elemental energy when striking with it.
-增强你的火焰、寒冰、大地和空气魔法。若精通激活技能，在使用其攻击时可以释放强大的元素能量冲击。
+增强你的火焰、寒冰、大地和空气魔法。若精通魔力释放技能，在使用其攻击时可以释放强大的元素能量冲击。
 %%%%
 It never misses its target.
 它绝不会失手。
@@ -29482,7 +29482,7 @@ It reduces your willpower to zero.
 它将你的意志力降为零。
 %%%%
 It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.
-在视野内有敌对怪物时使用祈唤，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚消耗的两倍。
+视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚消耗的两倍。
 %%%%
 It shrouds the wearer in darkness, reducing the range at which they can see and be seen by others.
 将穿戴者笼罩于黑暗中，缩短其视野范围以及被他人看见的距离。
@@ -29608,10 +29608,10 @@ It uses either Axes or Polearms skill, whichever is higher.
 使用斧技或长柄技能中较高者。
 %%%%
 It sets your Invocations skill to 14.
-将你的祈唤技能设为14。
+将你的祈神技能设为14。
 %%%%
 It sets your Evocations skill to 0.
-将你的激活技能设为0。
+将你的魔力释放技能设为0。
 %%%%
 Its wearer cannot be constricted, netted, webbed, or stopped by binding sigils.
 其穿戴者无法被缠绕、被网住、被蜘蛛网困住或被束缚法印阻止。
@@ -41020,7 +41020,7 @@ Previous page\n[L-Click] Show previous page of items
 \n[左键] 拾取 (%)
 %%%%
 \n[Ctrl + L-Click] Partial pick up (%)
-\n[Ctrl + 左键] 部分拾取 (%)
+\n[Ctrl + 左键] 部分拾取
 %%%%
 \n[Shift + L-Click] Drop (%)
 \n[Shift + 左键] 丢弃 (%)

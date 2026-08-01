@@ -1256,7 +1256,8 @@ charge 错解成静态电学名词，与实际冲向敌人的核心动作不符�
 
 描述审阅发现 1 项关联 Needs Fix：Gavotte 中文完整对应当前英文；
 Gravitas 没有独立法术描述，但重力铃鼓的中文说明把效果范围和持续时间
-所依赖的 `Evocations` 错译成“召唤术”。本批修正为“激活技能”。
+所依赖的 `Evocations` 错译成“召唤术”。本批原修正为“激活技能”，
+现按 D-A-052 的技能名统一为“魔力释放”。
 
 证据：`spl-data.h:3025`—`3035`、`spl-data.h:3957`—`3964`、
 `dat/descript/spells.txt:860`—`875`、`dat/descript/items.txt:723`—`733`、

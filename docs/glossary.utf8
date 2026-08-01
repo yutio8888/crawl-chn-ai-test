@@ -366,8 +366,7 @@ Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
 Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Evaporate	蒸发术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 eveningstar	暮星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with morningstar; decision=D-B-017
-Evocations	激活技能	domain=core; source=EN/ZH; 注意事项=**绝不**译为"召唤术"——那是 Summoning
-Evocations	魔力释放	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Evocations	魔力释放	domain=core; source=EN/ZH; 注意事项=技能名；普通动词 evoke/activate 仍按语境译为“激活/使用”；decision=D-A-052 | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-A-052
 Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 experience	经验值	domain=core; source=EN/ZH
@@ -611,7 +610,7 @@ Metal Splinters	金属碎刺	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅
 Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Might	强壮	domain=spells; source=EN/ZH; 备注=✅；法术显示标题，区别于状态/机制域 `Might → 强效
-Might	强效	domain=core; source=EN/ZH; 注意事项=+10% 伤害 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Might	强效	domain=core; source=EN/ZH; 注意事项=状态名；近战攻击额外增加 1–10 点伤害；药水名称见 D-B-022 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Might Other	强壮他人	domain=spells; source=EN/ZH; 备注=✅；对附近友方施加同类近战伤害增益
 Mindburst	心智爆发	domain=spells; source=EN/ZH; 备注=✅
 Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的少量伤害
@@ -719,7 +718,7 @@ Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
 Portal Projectile	传送投射物	domain=spells; source=EN/ZH; 备注=✅
 potion	药水	domain=items; source=EN/ZH
 potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
-potion full name|might	强效	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
+potion full name|might	力量	domain=items; source=EN/ZH; Scope / comment=potion context key; melee-only effect; decision=D-B-022
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
