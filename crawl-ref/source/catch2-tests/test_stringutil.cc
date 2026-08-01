@@ -7,6 +7,7 @@
 
 #include "random.h"
 #include "stringutil.h"
+#include "unicode.h"
 
 namespace
 {
@@ -236,4 +237,19 @@ TEST_CASE( "uppercase and lowercase", "[single-file]")
         // Verify identity
         CHECK(&result2 == &s1);
     }
+}
+
+TEST_CASE( "Unicode display width is independent of the process locale",
+           "[single-file][unicode]" )
+{
+    const char *old_locale = setlocale(LC_CTYPE, nullptr);
+    const string saved_locale = old_locale ? old_locale : "";
+
+    CHECK(setlocale(LC_CTYPE, "C") != nullptr);
+    CHECK(wcwidth(U'法') == 2);
+    CHECK(strwidth("法术") == 4);
+    CHECK(chop_string("法术", 6) == "法术  ");
+
+    if (!saved_locale.empty())
+        CHECK(setlocale(LC_CTYPE, saved_locale.c_str()) != nullptr);
 }

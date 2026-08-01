@@ -2,10 +2,12 @@
 
 ## Grid Width
 
-`tilereg-text.cc:addstr_aux()` uses `wcwidth()` to count terminal-style grid
-cells. A wide CJK character occupies two cells; the continuation cell uses a
-`0x200B` marker so cursor movement, selection, and layout remain aligned with
-the grid.
+`tilereg-text.cc:addstr_aux()` uses the project's locale-independent
+`wcwidth(char32_t)` overload to count terminal-style grid cells. A wide CJK
+character occupies two cells; the continuation cell uses a `0x200B` marker so
+cursor movement, selection, and layout remain aligned with the grid. All
+platforms use this implementation so Finder-launched macOS apps do not depend
+on `LANG` or `LC_CTYPE` for CJK layout.
 
 ## Rendering
 

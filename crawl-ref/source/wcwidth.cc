@@ -61,7 +61,6 @@
 
 #include "AppHdr.h"
 
-#ifndef UNIX
 #include "unicode.h"
 
 struct interval
@@ -230,4 +229,3 @@ int wcwidth(char32_t ucs)
              (ucs >= 0x20000 && ucs <= 0x2fffd) ||
              (ucs >= 0x30000 && ucs <= 0x3fffd)));
 }
-#endif
