@@ -959,17 +959,50 @@ string trap_name_en(trap_type trap)
 
 string full_trap_name(trap_type trap)
 {
-    string basename = trap_name(trap);
     switch (trap)
     {
-    case TRAP_GOLUBRIA:
-        return basename + T_(" of Golubria");
-    case TRAP_PLATE:
-    case TRAP_WEB:
+    case TRAP_DISPERSAL:
+        return T_("dispersal trap");
+    case TRAP_TELEPORT:
+        return T_("teleport trap");
+    case TRAP_TELEPORT_PERMANENT:
+        return T_("permanent teleport trap");
+    case TRAP_TYRANT:
+        return T_("tyrant's trap");
+    case TRAP_ARCHMAGE:
+        return T_("archmage's trap");
+    case TRAP_HARLEQUIN:
+        return T_("harlequin's trap");
+    case TRAP_DEVOURER:
+        return T_("devourer's trap");
+    case TRAP_ALARM:
+        return T_("alarm trap");
+    case TRAP_NET:
+        return T_("net trap");
+    case TRAP_ZOT:
+        return T_("Zot trap");
     case TRAP_SHAFT:
-        return basename;
+        return T_("shaft");
+    case TRAP_GOLUBRIA:
+        return T_("passage of Golubria");
+    case TRAP_PLATE:
+        return T_("pressure plate");
+    case TRAP_WEB:
+        return T_("web");
+#if TAG_MAJOR_VERSION == 34
+    case TRAP_SPEAR:
+        return T_("spear trap");
+    case TRAP_BOLT:
+        return T_("bolt trap");
+    case TRAP_GAS:
+        return T_("gas trap");
+    case TRAP_SHADOW:
+        return T_("shadow trap");
+    case TRAP_SHADOW_DORMANT:
+        return T_("dormant shadow trap");
+#endif
     default:
-        return basename + T_(" trap");
+        return trap_name(trap) + T_(" trap");
     }
 }
 

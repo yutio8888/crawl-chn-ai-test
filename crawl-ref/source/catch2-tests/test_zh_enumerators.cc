@@ -6,6 +6,9 @@
 #include "test_zh_helpers.h"
 
 #include "i18n.h"            // T_()
+#include "describe.h"        // full_trap_name
+#include "trap-def.h"        // trap_def::name
+#include "trap-type.h"
 #include "database.h"        // getLongDescription, getMiscString
 #include "religion.h"        // _god_name_en, get_god_powers, god_power
 #include "god-type.h"
@@ -299,8 +302,59 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(true);
 }
 
+// Enumerator 9 — traps. Full names must use the same canonical display keys
+// as feature-data, and DESC_A must not duplicate an already article-free ZH
+// name (Issue 66 trap translation audit).
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: traps",
+                 "[zh-translation]")
+{
+    struct trap_row
+    {
+        trap_type type;
+        const char* key;
+        const char* chinese;
+    };
+
+    const trap_row rows[] = {
+        {TRAP_DISPERSAL, "dispersal trap", "空间驱离陷阱"},
+        {TRAP_TELEPORT, "teleport trap", "传送陷阱"},
+        {TRAP_TELEPORT_PERMANENT, "permanent teleport trap", "永久传送陷阱"},
+        {TRAP_TYRANT, "tyrant's trap", "暴君陷阱"},
+        {TRAP_ARCHMAGE, "archmage's trap", "大法师陷阱"},
+        {TRAP_HARLEQUIN, "harlequin's trap", "丑角陷阱"},
+        {TRAP_DEVOURER, "devourer's trap", "吞噬者陷阱"},
+        {TRAP_ALARM, "alarm trap", "警报陷阱"},
+        {TRAP_NET, "net trap", "网陷阱"},
+        {TRAP_ZOT, "Zot trap", "佐特陷阱"},
+        {TRAP_SHAFT, "shaft", "竖井"},
+        {TRAP_GOLUBRIA, "passage of Golubria", "戈卢布里亚之通道"},
+        {TRAP_PLATE, "pressure plate", "压力板"},
+        {TRAP_WEB, "web", "蜘蛛网"},
+#if TAG_MAJOR_VERSION == 34
+        {TRAP_SPEAR, "spear trap", "长矛陷阱"},
+        {TRAP_BOLT, "bolt trap", "弩箭陷阱"},
+        {TRAP_GAS, "gas trap", "毒气陷阱"},
+        {TRAP_SHADOW, "shadow trap", "暗影陷阱"},
+        {TRAP_SHADOW_DORMANT, "dormant shadow trap", "休眠暗影陷阱"},
+#endif
+    };
+
+    for (const trap_row& row : rows)
+    {
+        REQUIRE(std::string(T_(row.key)) == row.chinese);
+        REQUIRE(full_trap_name(row.type) == row.chinese);
+    }
+
+    trap_def teleport_trap{};
+    teleport_trap.type = TRAP_TELEPORT;
+    REQUIRE(teleport_trap.name(DESC_PLAIN) == "传送陷阱");
+    REQUIRE(teleport_trap.name(DESC_A) == "传送陷阱");
+    REQUIRE(teleport_trap.name(DESC_THE) == "传送陷阱");
+}
+
 // =============================================================================
-// Enumerator 9 — clouds. cloud_type_name(ct, false) returns the long-form
+// Cloud enumerator. cloud_type_name(ct, false) returns the long-form
 // lookup name; description is in dat/descript/zh/clouds.txt keyed by
 // "<Name> cloud". Plan v2 §2.4 (#9).
 // =============================================================================

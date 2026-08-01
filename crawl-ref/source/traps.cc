@@ -118,7 +118,7 @@ string trap_def::name(description_level_type desc) const
 
     string basename = full_trap_name(type);
     if (desc == DESC_A)
-        return article_a(basename) + basename;
+        return article_a(basename);
     else if (desc == DESC_THE)
         return Options.language == lang_t::ZH ? basename : string("the ") + basename;
     else                        // everything else
@@ -310,7 +310,7 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
     { [] { drain_mp(you.magic_points); canned_msg(MSG_MAGIC_DRAIN); }, 2 },
     { [] { you.petrify(nullptr); }, 1 },
     { [] { you.increase_duration(DUR_LOWERED_WL, 5 + random2(15), 20,
-                "Your willpower is stripped away!"); }, 4 },
+                T_("Your willpower is stripped away!")); }, 4 },
     { [] { mons_word_of_recall(nullptr, 2 + random2(3)); }, 3 },
     { [] {
               mgen_data mg = mgen_data::hostile_at(RANDOM_DEMON_GREATER,
@@ -439,9 +439,10 @@ void trap_def::trigger(actor& triggerer)
             mpr(T_("You enter a tyrant's trap."));
         else
         {
-            mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
-                 mons_intel(*m) >= I_HUMAN ? "invokes a tyrant's trap upon you" :
-                                             "sets off a tyrant's trap");
+            mprf(mons_intel(*m) >= I_HUMAN
+                     ? T_("%s invokes a tyrant's trap upon you!")
+                     : T_("%s sets off a tyrant's trap!"),
+                 triggerer.name(DESC_THE).c_str());
         }
 
         int debuff_time = 10 + random2(5);
@@ -474,9 +475,10 @@ void trap_def::trigger(actor& triggerer)
             mpr(T_("You enter an archmage's trap."));
         else
         {
-            mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
-                 mons_intel(*m) >= I_HUMAN ? "invokes an archmage's trap upon you" :
-                                             "sets off an archmage's trap");
+            mprf(mons_intel(*m) >= I_HUMAN
+                     ? T_("%s invokes an archmage's trap upon you!")
+                     : T_("%s sets off an archmage's trap!"),
+                 triggerer.name(DESC_THE).c_str());
         }
 
         int buff_time = 200 + random2(80);
@@ -520,9 +522,10 @@ void trap_def::trigger(actor& triggerer)
             // monsters walking on the trap unless it actually does something.
             if (!you_trigger)
             {
-                mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
-                 mons_intel(*m) >= I_HUMAN ? "invokes a harlequin's trap" :
-                                             "sets off a harlequin's trap");
+                mprf(mons_intel(*m) >= I_HUMAN
+                         ? T_("%s invokes a harlequin's trap!")
+                         : T_("%s sets off a harlequin's trap!"),
+                     triggerer.name(DESC_THE).c_str());
             }
 
             string m_list = describe_monsters_condensed(buffed_mons);
@@ -549,9 +552,10 @@ void trap_def::trigger(actor& triggerer)
         {
             if (!you_trigger)
             {
-                mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
-                mons_intel(*m) >= I_HUMAN ? "invokes an devourer's trap upon you" :
-                                            "sets off an devourer's trap");
+                mprf(mons_intel(*m) >= I_HUMAN
+                         ? T_("%s invokes a devourer's trap upon you!")
+                         : T_("%s sets off a devourer's trap!"),
+                     triggerer.name(DESC_THE).c_str());
             }
             flash_tile(you.pos(), YELLOW, 60, TILE_BOLT_DEFAULT_YELLOW);
             you.corrode(nullptr, "The trap's stomach acid", 6);
@@ -572,8 +576,9 @@ void trap_def::trigger(actor& triggerer)
         if (you_trigger)
             mpr(T_("You set off the alarm!"));
         else
-            mprf(T_("%s %s the alarm!"), triggerer.name(DESC_THE).c_str(),
-                 mons_intel(*m) >= I_HUMAN ? "pulls" : "sets off");
+            mprf(mons_intel(*m) >= I_HUMAN ? T_("%s pulls the alarm!")
+                                           : T_("%s sets off the alarm!"),
+                 triggerer.name(DESC_THE).c_str());
 
         if (silenced(pos))
         {
@@ -729,8 +734,10 @@ void trap_def::trigger(actor& triggerer)
         // after one use in down_stairs()
         if (!you_trigger)
         {
-            mprf(T_("%s shaft crumbles and collapses."),
-                 triggerer_seen ? "The" : "A");
+            if (triggerer_seen)
+                mpr(T_("The shaft crumbles and collapses."));
+            else
+                mpr(T_("A shaft crumbles and collapses."));
             know_trap_destroyed = true;
             trap_destroyed = true;
 

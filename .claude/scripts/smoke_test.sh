@@ -26,7 +26,12 @@ set -euo pipefail
 SOURCE_DIR="crawl-ref/source"
 CRAWL="$SOURCE_DIR/crawl"
 ZH_OUT="/tmp/crawl_smoke_zh_$$.txt"
-TIMEOUT_SEC=10
+# Long enough for first-run TextDB cache regeneration inside the isolated
+# CRAWL_DIR: with an empty cache, database.cc:355-405 regenerates all parent
+# DBs plus their zh children before the UI appears, and the Debug binary is
+# slower. The 124 contract is unchanged: a real hang still times out and the
+# transcript is still scanned.
+TIMEOUT_SEC=60
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TIMEOUT_RUNNER="$SCRIPT_DIR/run_with_timeout.py"
 
@@ -44,30 +49,62 @@ if [ ! -f "$TIMEOUT_RUNNER" ]; then
     exit 2
 fi
 
-# Back up and restore init.txt via trap (registered BEFORE modification)
+# Isolate crawl's writable user directory into a fresh temp dir. Without
+# this, macOS falls back to ~/Library/Application Support/Dungeon Crawl Stone
+# Soup (initfile.cc:4730-4736), which sandboxed runners cannot write, so
+# TextDB regeneration dies at file_lock creation (files.cc:4072-4073 via
+# database.cc:382) with "Unable to open lock file ...: Operation not
+# permitted". CRAWL_DIR redirects saves/cache/morgue/macro/crash output. In
+# builds without DATA_DIR_PATH it can also take part in config/data
+# discovery: find_crawlrc() checks <crawl_dir>/init.txt first
+# (initfile.cc:2201) and files.cc:433 lists crawl_dir as the first data
+# search base. This fresh temp dir is empty, so those lookups fall back to
+# crawl_base and to the source init.txt (via datafile_path,
+# initfile.cc:2245-2247); data loading is unchanged.
+SMOKE_CRAWL_DIR="$(mktemp -d /tmp/crawl_smoke_dir.XXXXXX)" || exit 2
+
+# Temporary init state. INIT_BAK records the backup path when the original
+# init.txt is moved aside; INIT_TMP records that the temporary
+# 'language = zh' init.txt was written. The cleanup trap is registered
+# BEFORE any init.txt modification, so if the mv/echo below fails the trap
+# still removes the temp CRAWL_DIR but never deletes an untouched original
+# init.txt (INIT_TMP empty and INIT_BAK not yet a real backup file).
 INIT_BAK=""
-if [ -f "$SOURCE_DIR/init.txt" ]; then
-    INIT_BAK="$SOURCE_DIR/.init.txt.smoke-bak"
-    mv "$SOURCE_DIR/init.txt" "$INIT_BAK"
-fi
+INIT_TMP=""
 trap '
-    rm -f "$SOURCE_DIR/init.txt" "$ZH_OUT"
+    rm -rf "$SMOKE_CRAWL_DIR"
+    rm -f "$ZH_OUT"
+    if [ -n "$INIT_TMP" ]; then
+        rm -f "$SOURCE_DIR/init.txt"
+    fi
     if [ -n "$INIT_BAK" ] && [ -f "$INIT_BAK" ]; then
         mv "$INIT_BAK" "$SOURCE_DIR/init.txt"
     fi
     stty sane 2>/dev/null || true
 ' EXIT
 
-echo 'language = zh' > "$SOURCE_DIR/init.txt"
+if [ -f "$SOURCE_DIR/init.txt" ]; then
+    INIT_BAK="$SOURCE_DIR/.init.txt.smoke-bak"
+    mv "$SOURCE_DIR/init.txt" "$INIT_BAK" || exit 2
+fi
 
-# Run crawl with timeout — startup output goes to stdout/stderr.
-# We don't try to drive in-game UI (ncurses reads /dev/tty).
-# The test catches: startup crashes, Lua init errors, protocol
-# strings in printf/fprintf-based messages.
-# Capturing both stdout and stderr; child exit preserved.
+echo 'language = zh' > "$SOURCE_DIR/init.txt"
+INIT_TMP="$SOURCE_DIR/init.txt"
+
+# Run crawl inside a PTY via run_with_timeout.py --pty-transcript.
+# A bare non-PTY launch cannot satisfy ncurses (initscr()/tcgetattr(0))
+# and exits 1 in non-interactive sessions (see libunix.cc:838-865).
+# The PTY transcript captures stdout+stderr+terminal output into $ZH_OUT;
+# the three scans below still read that file. TERM/LANG/LC_ALL mirror the
+# proven PTY bot path in post_zh_runtime.sh:256. We don't try to drive
+# in-game UI (ncurses reads /dev/tty). The test catches: startup crashes,
+# Lua init errors, protocol strings in printf/fprintf-based messages.
+# Child exit preserved: 0 normal, 124 timeout (output still scanned).
 CHILD_RC=0
-python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" -- \
-    "$CRAWL" > "$ZH_OUT" 2>&1 || CHILD_RC=$?
+LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm CRAWL_DIR="$SMOKE_CRAWL_DIR" \
+    python3 "$TIMEOUT_RUNNER" --timeout "$TIMEOUT_SEC" \
+    --pty-transcript "$ZH_OUT" -- \
+    "$CRAWL" || CHILD_RC=$?
 
 # Acceptable: 0 (normal exit) or 124 (timeout). Any other rc/signal → exit 1.
 if [ "$CHILD_RC" -ne 0 ] && [ "$CHILD_RC" -ne 124 ]; then

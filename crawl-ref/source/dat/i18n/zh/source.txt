@@ -1142,8 +1142,11 @@ mimic reveal plural|%s are mimics!
 %s %s pick up the pace!
 %s%s加快了步伐！
 %%%%
-%s %s the alarm!
-%s%s了警报！
+%s pulls the alarm!
+%s拉响了警报！
+%%%%
+%s sets off the alarm!
+%s触发了警报！
 %%%%
 %s %s yanked forward by the %s.
 %1$s被%3$s向前猛拉%2$.0s。
@@ -1371,7 +1374,7 @@ mimic reveal plural|%s are mimics!
 %s进入了一个吞噬者陷阱。
 %%%%
 %s enters a harlequin's trap.
-%s进入了一个小丑陷阱。
+%s进入了一个丑角陷阱。
 %%%%
 %s erupts in a glittering mayhem of colour.
 %s爆发出一片五彩缤纷的混乱光芒。
@@ -1752,9 +1755,6 @@ barrage of energy
 %%%%
 %s shadow slips away and your performance ends.
 %s的影子溜走了，你的表演结束了。
-%%%%
-%s shaft crumbles and collapses.
-%s竖井碎裂并坍塌了。
 %%%%
 %s shapes itself into a furious %s!
 %s将自己塑造成了一只狂怒的%s！
@@ -7299,6 +7299,9 @@ The shadowy forms in the deep grow still as others approach.
 The shaft crumbles and collapses.
 竖井碎裂坍塌了。
 %%%%
+A shaft crumbles and collapses.
+竖井碎裂坍塌了。
+%%%%
 The shaft vanishes in a puff of logic!
 竖井在一阵逻辑中消失了！
 %%%%
@@ -9401,7 +9404,7 @@ You enter a devourer's trap.
 你进入了一个吞噬者陷阱。
 %%%%
 You enter a harlequin's trap.
-你进入了一个小丑陷阱。
+你进入了一个丑角陷阱。
 %%%%
 You enter a tyrant's trap.
 你进入了一个暴君陷阱。
@@ -9545,7 +9548,7 @@ You feel a surge of self-confidence.
 你感到一阵自信。
 %%%%
 You feel a twinge of divine disapproval.
-你感到一丝神的反对。
+你感到神祇的一丝不满。
 %%%%
 You feel a twist of horror at the sight of this foe.
 看到这个敌人，你感到一阵恐惧。
@@ -12204,6 +12207,38 @@ chaotic
 %s %s!
 
 %s%s！
+%%%%
+%s invokes a tyrant's trap upon you!
+
+%s发动暴君陷阱攻击你！
+%%%%
+%s sets off a tyrant's trap!
+
+%s触发了暴君陷阱！
+%%%%
+%s invokes an archmage's trap upon you!
+
+%s发动大法师陷阱攻击你！
+%%%%
+%s sets off an archmage's trap!
+
+%s触发了大法师陷阱！
+%%%%
+%s invokes a harlequin's trap!
+
+%s发动丑角陷阱！
+%%%%
+%s sets off a harlequin's trap!
+
+%s触发了丑角陷阱！
+%%%%
+%s invokes a devourer's trap upon you!
+
+%s发动吞噬者陷阱攻击你！
+%%%%
+%s sets off a devourer's trap!
+
+%s触发了吞噬者陷阱！
 %%%%
 Delete which waypoint? (Enter to confirm, ? to list)
 
@@ -22070,6 +22105,9 @@ dispersal trap
 dispersal trap (recharging)
 空间驱离陷阱（重新充能中）
 %%%%
+gas trap
+毒气陷阱
+%%%%
 dormant shadow trap
 休眠暗影陷阱
 %%%%
@@ -23334,7 +23372,7 @@ Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces
 %s 入场费 %d 枚金币。
 %%%%
 You slip out of the net.
-你从网中滑过了。
+你从网中滑脱了。
 %%%%
 The net passes right through you.
 网直接穿过了你。
@@ -28975,7 +29013,7 @@ web
 蜘蛛网
 %%%%
 net
-捕网
+网
 %%%%
 suffering
 苦难
@@ -30743,7 +30781,7 @@ devourer's
 吞噬者
 %%%%
 harlequin's
-小丑
+丑角
 %%%%
  of Golubria
 格鲁布瑞亚
@@ -40469,7 +40507,7 @@ If you linger in this branch for another %d turns, the power of Zot will shatter
 如果你在此分支再逗留%d回合，佐特之力将粉碎你的%s宝石。\n
 %%%%
 %s and a teleportation trap spontaneously manifests!
-%s处突然出现了一个传送陷阱！
+%s随后，一个传送陷阱突然出现了！
 %%%%
 This entrance appears to skip some branches and may be quite dangerous. Continue anyway?
 这个入口似乎跳过了某些分支，可能相当危险。仍然继续吗？
