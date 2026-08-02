@@ -135,7 +135,15 @@ fi
 if [ ! -x gradlew ]; then
     gradle wrapper --gradle-version 8.13
 fi
-./gradlew --no-daemon ":app:assemble${VARIANT^}"
+case "$VARIANT" in
+    buildTest) GRADLE_TASK="assembleBuildTest" ;;
+    release)   GRADLE_TASK="assembleRelease" ;;
+    *)
+        echo "ERROR: unsupported Android build variant: $VARIANT" >&2
+        exit 1
+        ;;
+esac
+./gradlew --no-daemon ":app:$GRADLE_TASK"
 
 # 4. Locate and report APK
 shopt -s nullglob

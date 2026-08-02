@@ -12,7 +12,6 @@
 #include <deque>
 #include <fcntl.h>
 #include <functional>
-#include <fstream>
 #include <map>
 #include <memory>
 #include <sys/stat.h>
@@ -840,11 +839,20 @@ _normalize_textdb_source(string text)
 
 static string _read_normalized_textdb_source(const string &path)
 {
-    std::ifstream input(path, std::ios::binary);
+    FILE *input = fopen_u(path.c_str(), "rb");
     if (!input)
         end(1, true, "Unable to open input file: %s", path.c_str());
-    const string bytes((std::istreambuf_iterator<char>(input)),
-                       std::istreambuf_iterator<char>());
+
+    string bytes;
+    char buffer[8192];
+    size_t count;
+    while ((count = fread(buffer, 1, sizeof(buffer), input)) != 0)
+        bytes.append(buffer, count);
+    const bool read_failed = ferror(input);
+    fclose(input);
+    if (read_failed)
+        end(1, true, "Unable to read input file: %s", path.c_str());
+
     const textdb_phase0::source_normalization_result normalized =
         _normalize_textdb_source(bytes);
     if (!normalized.valid)
