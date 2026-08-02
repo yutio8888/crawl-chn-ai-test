@@ -32,7 +32,11 @@ AUTHORITIES = [
     ROOT / "docs/zh-testing.md",
 ]
 
-DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES + [ROOT / "README.md"]
+ARCHIVES = [
+    ROOT / "docs/review-recovery-history.md",
+]
+
+DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES + ARCHIVES + [ROOT / "README.md"]
 
 STALE_PATTERNS = {
     r"28 project tool scripts": "hard-coded obsolete script count",
@@ -49,9 +53,10 @@ MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 
 class AgentDocumentationTests(unittest.TestCase):
-    def test_authoritative_files_exist(self) -> None:
+    def test_documented_files_exist(self) -> None:
         missing = [path.relative_to(ROOT).as_posix()
-                   for path in ENTRY_POINTS + AUTHORITIES if not path.is_file()]
+                   for path in ENTRY_POINTS + AUTHORITIES + ARCHIVES
+                   if not path.is_file()]
         self.assertEqual([], missing)
 
     def test_entry_points_remain_thin(self) -> None:

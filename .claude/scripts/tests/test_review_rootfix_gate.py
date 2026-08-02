@@ -5597,9 +5597,9 @@ class RootfixGateTests(unittest.TestCase):
             [], GATE._validate_recovery_archive(None, status)
         )
 
-    def test_policy_text_records_failed_f_and_p2_f2_no_go_state(self) -> None:
-        policy = (
-            SCRIPT.parents[2] / ".agents/policies/review-contract.md"
+    def test_history_records_failed_f_and_p2_f2_no_go_state(self) -> None:
+        history = (
+            SCRIPT.parents[2] / "docs/review-recovery-history.md"
         ).read_text(encoding="utf-8")
         for fragment in (
             "P^ == 8aae77c60a5e537e76c7b252c6a311fade4264c2",
@@ -5671,10 +5671,10 @@ class RootfixGateTests(unittest.TestCase):
             "has no durable external digest authority",
         ):
             with self.subTest(fragment=fragment):
-                self.assertIn(fragment, policy)
+                self.assertIn(fragment, history)
         self.assertNotIn(
             "replace the impossible normal\nverification-v5 final approval",
-            policy,
+            history,
         )
 
     def test_main_fails_closed_with_canonical_no_go(self) -> None:

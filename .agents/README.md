@@ -54,6 +54,7 @@ Never edit generated blocks directly.
 | Cross-runtime handoff | `docs/dual-agent-workflow.md` |
 | Issue tracking | `docs/issue-tracking.md` |
 | Path portability | `.agents/policies/path-portability.md` |
+| Historical review recovery | `docs/review-recovery-history.md` (archival only) |
 
 ## Change Rules
 
