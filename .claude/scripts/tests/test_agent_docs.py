@@ -168,9 +168,19 @@ class AgentDocumentationTests(unittest.TestCase):
             ROOT / ".claude/agents",
             ROOT / ".claude/skills",
             ROOT / ".claude/workflows",
+            ROOT / "tools/pi-subagent",
+            ROOT / "tools/pi-subagent-guard.mjs",
         ):
             with self.subTest(path=path.relative_to(ROOT)):
                 self.assertFalse(path.exists())
+        self.assertNotIn("External Pi Worker", (ROOT / "CODEX.md").read_text())
+        active_config = "\n".join(
+            path.read_text()
+            for root in (ROOT / ".pi", ROOT / ".codex")
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix in {".md", ".toml", ".json"}
+        )
+        self.assertNotIn("opencode-go", active_config.lower())
 
     def test_legacy_issue_repository_is_not_a_live_dependency(self) -> None:
         paths = (

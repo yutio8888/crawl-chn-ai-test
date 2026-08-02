@@ -230,6 +230,11 @@ class ReviewerRoutingTests(unittest.TestCase):
         self.assertIn("`translation-reviewer`", output)
         self.assertIn("Ready for Final Gate", output)
         self.assertIn("review_final_gate.sh", output)
+        self.assertIn(
+            "TERM=xterm-256color bash .claude/scripts/review_final_gate.sh",
+            output,
+        )
+        self.assertIn("Only the orchestrator runs the final profile", output)
         self.assertIn("complete prepared diff", output)
         self.assertIn("Plan non-goals do not excuse defects", output)
         self.assertIn("theoretical risk outside the acceptance criteria is non-blocking", output)

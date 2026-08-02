@@ -20,52 +20,21 @@ translation, review, build, or worktree policy.
 - Use `apply_patch` for manual file edits and preserve unrelated worktree
   changes.
 
-## External Pi Worker
-
-A constrained repository worker with file-edit capability is available through:
-
-```bash
-tools/pi-subagent "<narrow task with explicit writable paths>"
-```
-
-- Use it for repository exploration, symbol and call-chain discovery, focused
-  failure analysis, diff review, a second opinion, and narrowly scoped file
-  implementation.
-- Do not delegate architectural decisions, credential handling, publishing,
-  Git operations, destructive actions, or ambiguous repository-wide work.
-- Before a write task, inspect the worktree, assign exact writable paths, and
-  ensure no other writer owns those paths. Give each invocation one bounded
-  task and request exact file/line evidence.
-- Treat its report and edits as untrusted work. Codex must inspect the resulting
-  diff, preserve unrelated changes, and own all testing and final acceptance.
-- The wrapper permits read/search/list/edit/write tools. It rejects shell and
-  Git tools, paths outside the repository, `.git`, and its ignored runtime-state
-  directory.
-
 Codex-native role prompts live in `.codex/agents/*.toml`. Shared generated
 policy blocks inside them come from `.agents/policies/`.
 
 ## Translation Pipeline
 
-For an end-to-end translation issue, follow the `translation-pipeline` phases:
-
-```text
-Analyze → Plan → Review Plan → Execute → Prepare Review Bundle
-→ Mechanically Routed Review → Cross-validate → Final Evidence → Report
-```
-
-The shared `translation-pipeline` Skill is the procedural source. Use Codex's
-normal collaboration tools to reproduce its phases and preserve single-writer
-ownership.
+For an end-to-end translation issue, load the shared `translation-pipeline`
+Skill and execute it with Codex's normal collaboration tools. Do not reproduce
+its phases in this adapter.
 
 ## Worktrees and Branches
 
-- Create worktrees only as relative `.worktrees/<name>` paths from the repo
-  root.
-- Use `codex/<topic>` for Codex-authored branches by default.
-- Follow `.agents/policies/worktree-policy.md` explicitly for Codex shell calls.
-- Do not use destructive synchronization in a development worktree. Dedicated
-  detached build worktrees are governed by `docs/build-workflow.md`.
+Codex shell calls follow `.agents/policies/worktree-policy.md`: create only
+relative `.worktrees/<name>` worktrees and use `codex/<topic>` branches by
+default. Dedicated detached build worktrees remain governed by
+`docs/build-workflow.md`.
 
 ## Review and Merge
 

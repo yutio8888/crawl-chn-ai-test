@@ -156,13 +156,7 @@ Branch names are an ownership signal: Pi uses `pi/<topic>` and Codex uses
 ## Configuration Maintenance
 
 Shared policy bodies live only in `.agents/policies/`. Generated copies inside
-Pi and Codex Agent files are maintained by:
-
-```bash
-python3 .claude/scripts/sync_agent_policies.py --check
-python3 .claude/scripts/sync_agent_policies.py --write
-```
-
-Do not edit generated blocks directly. Before changing or removing a
-compatibility tree, update the source map, synchronizer, tests, and every
-runtime reference in the same change.
+Pi and Codex Agent files follow the maintenance procedure in
+`.agents/README.md`. Do not edit generated blocks directly. Before changing or
+removing a compatibility tree, update the source map, synchronizer, tests, and
+every runtime reference in the same change.

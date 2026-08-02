@@ -123,15 +123,10 @@ After every required reviewer returns Ready, the orchestrator runs:
 
 `TERM=xterm-256color bash .claude/scripts/review_final_gate.sh <candidate> <target>`
 
-The explicit `TERM` assignment is required for headless or automated runs. A
-shell may expose a non-exported fallback such as `TERM=dumb` to interactive
-expansion while leaving `TERM` absent from `printenv` and therefore absent from
-the final gate's sanitized Python child environment. Ncurses then treats the
-terminal type as `unknown`, Crawl exits with code 1, and the `zh-smoke` phase
-fails even though the candidate is unrelated to terminal handling. Supplying a
-known installed terminal type is environment initialization, not a verification
-bypass; all final-gate phases still run and bind the same immutable candidate.
-Use the same prefix with `--retry-failed` after correcting this environment.
+The exported terminal type must be installed. After correcting a terminal-only
+failure, use the same prefix with `--retry-failed`; this initializes ncurses and
+does not bypass any final-gate phase. Environment diagnosis lives in
+`docs/zh-testing.md`.
 
 The final gate uses the target checkout's trusted control-plane, holds a
 bundle-specific lock, and creates a new attempt only when no valid pass exists.
@@ -176,7 +171,6 @@ cannot accept new readiness or final evidence and never authorize merge.
 New merge authorization is written exclusively as a schema-v4 bundle with
 routing-v2, findings-v2, readiness-v3, and verification-v5. Old records are
 never upgraded, appended to, copied, or converted into a new Go.
-
 
 ## Historical recovery records
 

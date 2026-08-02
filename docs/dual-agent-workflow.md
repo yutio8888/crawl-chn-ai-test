@@ -79,13 +79,3 @@ The implementer records the clean candidate branch and commit range. For
 translation-related changes, the target checkout runs `review_prepare.sh`; the
 prepared bundle's routing decides which reviewers are required. Informal
 cross-runtime review cannot replace schema-v4 readiness or final evidence.
-
-## Anti-Patterns
-
-- Routing by stale model names or old assumptions about runtime concurrency.
-- Handing off through private memory only.
-- Both runtimes editing the same translation asset concurrently.
-- Creating worktrees outside `.worktrees/`.
-- Claiming another runtime's commit identity.
-- Reintroducing runtime-specific pipeline copies instead of using the shared
-  Skill.

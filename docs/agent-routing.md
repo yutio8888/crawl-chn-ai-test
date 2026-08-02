@@ -47,39 +47,18 @@ Use `.agents/skills/batch-translation-review/SKILL.md` as the procedural
 authority for a complete category or series audit. Keep this route distinct
 from one wording judgment and from one reported translation bug.
 
-- Freeze a deterministic inventory before judging wording; do not claim full
-  coverage when the production identity set cannot be enumerated reliably.
-- Give every identity exactly one evidence-backed terminal conclusion and
-  prove the reviewed and inventory identity sets are equal in both directions.
-- Parallelize read-only evidence discovery, then let one `zh-translator`
-  update translation assets sequentially by complete dependency group.
-- Stop at the evidence report for review-only requests. Land changes, build an
-  inventory helper, or enter final review only when the user authorized those
-  actions.
-- Reuse the normal `review_prepare.sh`, mechanical reviewer routing, and
-  `review_final_gate.sh` boundaries after an accepted batch is committed.
-
-Completed audit plans and result files are task evidence. They do not replace
-the current glossary, decision log, shared policies, or this Skill.
+- Freeze a deterministic inventory and give every identity exactly one
+  evidence-backed terminal conclusion.
+- Stop at the evidence report for review-only requests; mutations require user
+  authority and the normal ownership and final-review boundaries.
+- Completed plans and results are task evidence, not replacements for current
+  glossary, decision, policy, or Skill authority.
 
 ## Full Pipeline
 
-The supported phases are:
-
-```text
-Analyze → Plan → Review Plan → Execute Translation Assets
-→ Execute Code → Commit/Clean Boundary → review_prepare.sh
-→ Mechanically Routed Review → Cross-validate
-→ Record Readiness → review_final_gate.sh → Report
-```
-
-Reviewer routing comes only from `classify_reviewers.py` for the exact prepared
-target/candidate boundary. Depending on the diff, zero, one, or both domain
-reviewers may be required. Do not hard-code a three-reviewer or always-two-
-reviewer pipeline.
-
-The orchestrator reproduces these phases with the active runtime's normal
-agent calls and the shared `translation-pipeline` Skill.
+Use the shared `translation-pipeline` Skill. Reviewer routing comes only from
+`classify_reviewers.py` for the exact prepared boundary; never hard-code a
+fixed reviewer count. The active runtime supplies invocation syntax only.
 
 ## Fallback
 

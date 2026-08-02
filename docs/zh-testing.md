@@ -117,16 +117,10 @@ security contract is `.agents/policies/review-contract.md`.
 
 ### Current evidence format and recovery history
 
-New merge authorization uses schema-v4 bundles with routing-v2, findings-v2,
-readiness-v3, and verification-v5. Older schemas remain read-only and cannot
-authorize a merge.
-
-The three one-time owner recovery exceptions are permanently expired. Their
-exact boundaries and the former detailed recovery notes are preserved in the
-[review recovery archive](review-recovery-history.md); they are historical
-records, not current procedures. Use the active
-`.agents/policies/review-contract.md` and current script `--help` output for
-new candidates.
+Current and legacy evidence semantics are authoritative in
+`.agents/policies/review-contract.md`. Expired one-time recovery records remain
+available in the non-authorizing
+[review recovery archive](review-recovery-history.md).
 
 ## CI
 

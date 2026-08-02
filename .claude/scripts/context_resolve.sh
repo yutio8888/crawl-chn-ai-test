@@ -1,9 +1,8 @@
 #!/bin/bash
 # context_resolve.sh — Dynamic context injection for agent dispatch.
 #
-# Given a task description and target files, outputs a minimal context
-# block containing only the relevant terminology, constraints, and rules.
-# This replaces the full agent prompt for focused tasks.
+# Given a task description and target files, supplements the active role prompt
+# with current-worktree terminology and a focused operational summary.
 #
 # Usage:
 #   bash .claude/scripts/context_resolve.sh "translate god descriptions" \
@@ -132,10 +131,10 @@ if [ "$TASK_TYPE" = "review" ]; then
     echo "- \`god_name()\` for DB key construction → needs \`_god_name_en()\`"
     echo "- DB query key mismatch: EN key vs ZH code"
     echo ""
-    echo "### Post-task: record immutable readiness for the supplied bundle; the orchestrator owns the single final review profile"
+    echo "### Post-task: record immutable readiness for the supplied bundle"
     echo ""
-    echo "After every mechanically routed reviewer is Ready, run:"
-    echo "\`bash .claude/scripts/review_final_gate.sh <candidate> <target>\`"
+    echo "Only the orchestrator runs the final profile after every routed reviewer is Ready:"
+    echo "\`TERM=xterm-256color bash .claude/scripts/review_final_gate.sh <candidate> <target>\`"
     echo ""
 fi
 

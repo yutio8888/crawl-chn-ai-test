@@ -22,6 +22,26 @@ assert CHECK_SPEC.loader is not None
 CHECK_SPEC.loader.exec_module(CHECK)
 
 
+def codex_role_body(role: str) -> str:
+    text = (ROOT / ".codex/agents" / f"{role}.toml").read_text()
+    match = re.search(r"developer_instructions = (?P<quote>'''|\"\"\")\n", text)
+    if match is None:
+        raise AssertionError(f"missing developer_instructions for {role}")
+    quote = match.group("quote")
+    suffix = f"\n{quote}\n"
+    if not text.endswith(suffix):
+        raise AssertionError(f"malformed developer_instructions for {role}")
+    return text[match.end():-len(suffix)].rstrip("\n")
+
+
+def pi_role_body(role: str) -> str:
+    text = (ROOT / ".pi/agents" / f"{role}.md").read_text()
+    separator = "\n---\n"
+    if not text.startswith("---\n") or separator not in text:
+        raise AssertionError(f"malformed Pi frontmatter for {role}")
+    return text.split(separator, 1)[1].lstrip("\n").rstrip("\n")
+
+
 class PolicySyncTests(unittest.TestCase):
     def test_active_runtime_agents_are_policy_targets(self) -> None:
         self.assertIn(".codex/agents/crawl-coder.toml", SYNC.TARGETS["i18n-safety"])
@@ -61,6 +81,12 @@ class PolicySyncTests(unittest.TestCase):
         relative_roots = {path.relative_to(ROOT).as_posix() for path in CHECK.CONFIG_ROOTS}
         self.assertEqual({".agents/skills", ".pi/agents", ".codex/agents"},
                          relative_roots)
+
+    def test_shared_project_role_bodies_match_across_runtimes(self) -> None:
+        for role in ("crawl-coder", "zh-translator", "translation-reviewer",
+                     "zh-code-reviewer"):
+            with self.subTest(role=role):
+                self.assertEqual(codex_role_body(role), pi_role_body(role))
 
     def test_replace_preserves_yaml_frontmatter(self) -> None:
         original = "---\nname: reviewer\n---\n\n# Title\n\n<!-- BEGIN GENERATED: p -->\nold\n<!-- END GENERATED: p -->\n"

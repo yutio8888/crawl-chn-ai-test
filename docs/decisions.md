@@ -12,8 +12,8 @@ resolves an outstanding ❌.
 - `superseded` → points to replacement decision ID
 - `reversed` — Explicitly abandoned (e.g., English source misunderstood)
 
-**Relationship to Memory**: The Claude memory system stores the fact that this
-file exists and should be consulted. This file stores the actual ruling content.
+Agent memory is not authoritative. Resolve current context from this file and
+`docs/glossary.md` in the active worktree.
 
 ---
 

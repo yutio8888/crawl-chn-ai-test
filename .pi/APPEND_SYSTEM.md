@@ -47,18 +47,14 @@ Pi discovers the shared skills under `.agents/skills/`. Load them on demand:
 For every applicable dispatch, run `context_resolve.sh` in the current
 worktree first and pass its complete output to the child.
 
-For an enumerable full-category translation audit, load
-`batch-translation-review` and follow its frozen inventory, evidence-card,
-dependency-group, and coverage-proof stages. Use `scout` for parallel
-read-only evidence discovery, `translation-reviewer` for wording judgments,
-one `zh-translator` for sequential translation-asset edits, and
-`crawl-coder` only for separately owned implementation support. Do not create
-a Pi-only copy of the shared Skill or bypass the existing final review.
+For an enumerable full-category audit, load `batch-translation-review`. Use
+`scout` only for read-only evidence discovery and keep one sequential
+`zh-translator` writer. Do not create a Pi-only copy of the shared Skill.
 
 ## Translation Pipeline
 
-Load the shared `translation-pipeline` Skill and reproduce its documented
-phases with `subagent` chains or ordinary role dispatches.
+Load the shared `translation-pipeline` Skill and execute it with ordinary Pi
+role dispatches; do not restate its phases in this adapter.
 
 ## Worktrees
 
