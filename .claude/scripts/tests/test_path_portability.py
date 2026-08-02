@@ -63,8 +63,8 @@ class PathPortabilityTests(unittest.TestCase):
                 ["git", "init", "-q", str(root)], check=True,
                 text=True, capture_output=True,
             )
-            (root / ".gitignore").write_text(".opencode/goals/\n", encoding="utf-8")
-            state = root / ".opencode/goals/state.json"
+            (root / ".gitignore").write_text(".pi-subagents/\n", encoding="utf-8")
+            state = root / ".pi-subagents/state.json"
             state.parent.mkdir(parents=True)
             state.write_text(
                 '{"checkout":"/home/example/projects/private"}\n', encoding="utf-8"

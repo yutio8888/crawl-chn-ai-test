@@ -416,7 +416,7 @@ Run `bash .claude/scripts/verify_zh.sh --profile code` only after ALL units are 
 ## Commit Conventions
 
 - Standalone commit: `Feat: <description>` or `Fix: <description>`
-- Do not claim OpenCode or Claude authorship; omit a co-author trailer unless Pi has a separately declared identity policy.
+- Omit a co-author trailer unless Pi has a separately declared identity policy.
 - **Compile must pass before commit** (`make -j4`)
 
 ---

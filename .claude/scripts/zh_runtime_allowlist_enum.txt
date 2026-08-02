@@ -69,7 +69,8 @@ Tartarus
 
 # ===== SKILL (skill_type) =====
 # All canonical skill titles (short names); the helpers' built-in list
-# already covers this and CLAUDE.md classifies them as Type II wrappers
+# already covers this and docs/translation-architecture.md classifies them as
+# Type II wrappers
 # leaving the English intact by policy (plan v2 §2.3 row 2).
 
 # ===== END (add species + jobs below as generator is implemented) =====

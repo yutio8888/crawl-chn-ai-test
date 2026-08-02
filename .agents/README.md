@@ -13,11 +13,9 @@ defined per concern; no one monolithic file is authoritative for everything.
 3. `.agents/skills/` contains shared repository-scoped skills discovered by
    Pi and Codex.
 4. `docs/` contains stable architecture and operational reference material.
-5. `.pi/APPEND_SYSTEM.md`, `CODEX.md`, `CLAUDE.md`, and
-   `.opencode/RUNTIME.md` are thin syntax adapters.
-6. `.pi/agents/`, `.codex/agents/`, `.opencode/agents/`, and `.claude/agents/`
-   contain runtime-specific role prompts. Shared policy blocks in those files
-   are generated copies.
+5. `.pi/APPEND_SYSTEM.md` and `CODEX.md` are thin syntax adapters.
+6. `.pi/agents/` and `.codex/agents/` contain runtime-specific role prompts.
+   Shared policy blocks in those files are generated copies.
 7. Scripts and runtime configuration are authoritative for command-line
    options, model selection, counts, current branches, and other volatile data.
 
@@ -30,7 +28,7 @@ defined per concern; no one monolithic file is authoritative for everything.
 | asset ownership | `.agents/policies/asset-ownership.md` | coder/translator prompts and runtime pipeline skills |
 | verification authoring | `.agents/policies/verification-authoring.md` | coder and code-reviewer prompts/skills |
 | translation integrity | `.agents/policies/translation-integrity.md` | translator prompts and translation-pipeline skills |
-| worktree policy | `.agents/policies/worktree-policy.md` | referenced by every runtime entry point; OpenCode and Pi add hard runtime guards |
+| worktree policy | `.agents/policies/worktree-policy.md` | referenced by every runtime entry point; Pi adds a hard runtime guard |
 | path portability | `.agents/policies/path-portability.md` | referenced by the shared entry point and enforced by a repository checker |
 
 Generated blocks use `<!-- BEGIN GENERATED: name -->` and
@@ -67,9 +65,7 @@ Never edit generated blocks directly.
   current `--help` output.
 - A compatibility tree may be removed only after its synchronizer targets,
   tests, loaders, and documentation references are removed in the same change.
-- Duplicated workflow DSL files must remain byte-identical until an explicit
-  hosted runner contract chooses one canonical location.
-- Documentation links and forbidden standalone workflow invocations are checked
-  by `.claude/scripts/tests/test_agent_docs.py`.
+- Documentation links and runtime-adapter boundaries are checked by
+  `.claude/scripts/tests/test_agent_docs.py`.
 - Machine-specific paths in maintained documentation, configuration, and
   project scripts are rejected by `.claude/scripts/check_path_portability.py`.

@@ -78,9 +78,8 @@ target/candidate boundary. Depending on the diff, zero, one, or both domain
 reviewers may be required. Do not hard-code a three-reviewer or always-two-
 reviewer pipeline.
 
-Workflow DSL files may automate these phases only in a compatible hosted
-runner. Without one, the orchestrator reproduces the same phases using normal
-runtime agent calls; it does not execute the DSL file with Node.js.
+The orchestrator reproduces these phases with the active runtime's normal
+agent calls and the shared `translation-pipeline` Skill.
 
 ## Fallback
 

@@ -11,9 +11,7 @@ ROOT = Path(__file__).resolve().parents[3]
 ENTRY_POINTS = [
     ROOT / "AGENTS.md",
     ROOT / "CODEX.md",
-    ROOT / "CLAUDE.md",
     ROOT / ".pi/APPEND_SYSTEM.md",
-    ROOT / ".opencode/RUNTIME.md",
 ]
 
 AUTHORITIES = [
@@ -42,8 +40,8 @@ STALE_PATTERNS = {
     r"worktree-cjk-tiles-fix": "obsolete branch inventory",
     r"KNOWN_ISSUES_ZH\.md": "missing historical status document",
     r"Review \(3-way parallel\)": "obsolete fixed reviewer count",
-    r"Run via `bash`[^\n]*OpenCode has no `Workflow`":
-        "workflow DSL described as a shell program",
+    r"\bOpenCode\b": "retired runtime adapter",
+    r"\bClaude Code\b": "retired runtime adapter",
     r"/home/yutio888": "clone-specific absolute path",
 }
 
@@ -60,9 +58,7 @@ class AgentDocumentationTests(unittest.TestCase):
         limits = {
             "AGENTS.md": 220,
             "CODEX.md": 100,
-            "CLAUDE.md": 100,
             ".pi/APPEND_SYSTEM.md": 100,
-            ".opencode/RUNTIME.md": 100,
         }
         for path in ENTRY_POINTS:
             with self.subTest(path=path.relative_to(ROOT)):
@@ -105,22 +101,6 @@ class AgentDocumentationTests(unittest.TestCase):
             {path.stem for path in (ROOT / ".pi/agents").glob("*.md")},
         )
 
-    def test_workflow_dsl_is_not_shown_as_an_executable_command(self) -> None:
-        command = re.compile(
-            r"(?m)^\s*(?:\$\s*)?(?:node|bash)\s+"
-            r"\.(?:opencode|claude)/workflows/"
-        )
-        for path in DOCS_TO_LINT:
-            with self.subTest(path=path.relative_to(ROOT)):
-                self.assertIsNone(command.search(path.read_text()))
-
-    def test_opencode_pipeline_uses_opencode_fallback_syntax(self) -> None:
-        path = ROOT / ".opencode/skills/translation-pipeline/SKILL.md"
-        text = path.read_text()
-        self.assertIn('task(subagent_type="general"', text)
-        self.assertNotIn('Agent(subagent_type="general"', text)
-        self.assertIn(".opencode/workflows/*.js", text)
-
     def test_codex_pipeline_skill_is_present_and_reference_driven(self) -> None:
         path = ROOT / ".agents/skills/translation-pipeline/SKILL.md"
         text = path.read_text()
@@ -133,7 +113,6 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("review_final_gate.sh", text)
         self.assertNotIn('Agent(subagent_type=', text)
         self.assertNotIn('task(subagent_type=', text)
-        self.assertNotIn("node .claude/workflows/", text)
 
     def test_batch_translation_review_skill_is_shared_with_pi(self) -> None:
         skill = ROOT / ".agents/skills/batch-translation-review/SKILL.md"
@@ -147,7 +126,7 @@ class AgentDocumentationTests(unittest.TestCase):
         adapter = (ROOT / ".pi/APPEND_SYSTEM.md").read_text()
         self.assertIn("/skill:batch-translation-review <task>", adapter)
         self.assertIn("Do not create", adapter)
-        self.assertIn("Pi-only copy of the shared workflow", adapter)
+        self.assertIn("Pi-only copy of the shared Skill", adapter)
 
         routing = (ROOT / "docs/agent-routing.md").read_text()
         self.assertIn("## Batch Translation Review", routing)
@@ -162,42 +141,31 @@ class AgentDocumentationTests(unittest.TestCase):
         )
 
     def test_plan_review_enforces_minimal_sufficient_design(self) -> None:
+        path = ROOT / ".agents/skills/translation-pipeline/SKILL.md"
+        text = path.read_text()
         required_fragments = (
-            "acceptanceCriteria",
-            "nonGoals",
+            "observable acceptance criteria",
+            "explicit non-goals",
+            "observed failure",
+            "existing mechanism is insufficient",
+            "simplest alternative is not viable",
             "design_induced",
-            "preferredAction",
-            "delete, reuse, and narrow",
-            "reviewer suggestions are not commands",
+            "delete, reuse, narrow, then add",
         )
-        for name in ("translation-fix-pipeline.js",
-                     "translation-batch-pipeline.js"):
-            text = (ROOT / ".claude/workflows" / name).read_text()
-            for fragment in required_fragments:
-                with self.subTest(workflow=name, fragment=fragment):
-                    self.assertIn(fragment, text)
-            self.assertNotIn("Address EVERY issue", text)
-            self.assertNotIn("Address ALL review issues", text)
-            self.assertNotIn("Were ALL previous issues addressed", text)
-            self.assertNotIn("scope_expansion_required", text)
-            self.assertNotIn("newMechanisms", text)
+        for fragment in required_fragments:
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, text)
 
+    def test_retired_runtime_adapters_are_absent(self) -> None:
         for path in (
-            ROOT / ".claude/skills/translation-pipeline.md",
-            ROOT / ".opencode/skills/translation-pipeline/SKILL.md",
+            ROOT / "CLAUDE.md",
+            ROOT / ".opencode",
+            ROOT / ".claude/agents",
+            ROOT / ".claude/skills",
+            ROOT / ".claude/workflows",
         ):
-            text = path.read_text()
-            with self.subTest(skill=path.relative_to(ROOT)):
-                self.assertIn("最小充分方案边界", text)
-                self.assertIn("验收标准和明确非目标", text)
-                self.assertIn("design_induced", text)
-                self.assertIn("删除、复用、缩小、新增", text)
-                self.assertIn("`rejected`", text)
-
-    def test_codex_does_not_claim_other_runtime_authorship(self) -> None:
-        text = (ROOT / "CODEX.md").read_text()
-        self.assertNotIn("Co-Authored-By: opencode", text)
-        self.assertNotIn("Co-Authored-By: Claude", text)
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertFalse(path.exists())
 
     def test_legacy_issue_repository_is_not_a_live_dependency(self) -> None:
         paths = (
@@ -206,12 +174,7 @@ class AgentDocumentationTests(unittest.TestCase):
             ROOT / "docs/known-issues-zh.md",
             ROOT / "docs/dual-agent-workflow.md",
             ROOT / ".claude/ORCHESTRATION_STATE.md",
-            ROOT / ".claude/skills/translation-pipeline.md",
-            ROOT / ".opencode/skills/translation-pipeline/SKILL.md",
-            ROOT / ".claude/workflows/translation-fix-pipeline.js",
-            ROOT / ".claude/workflows/translation-batch-pipeline.js",
-            ROOT / ".opencode/workflows/translation-fix-pipeline.js",
-            ROOT / ".opencode/workflows/translation-batch-pipeline.js",
+            ROOT / ".agents/skills/translation-pipeline/SKILL.md",
         )
         forbidden = ("DCSS_ISSUES_DIR", "issueFile", "../issues")
         for path in paths:
@@ -220,66 +183,11 @@ class AgentDocumentationTests(unittest.TestCase):
                 with self.subTest(path=path.relative_to(ROOT), fragment=fragment):
                     self.assertNotIn(fragment, text)
 
-    def test_workflow_compatibility_copies_are_identical(self) -> None:
-        for name in ("translation-fix-pipeline.js",
-                     "translation-batch-pipeline.js"):
-            with self.subTest(workflow=name):
-                opencode = (ROOT / ".opencode/workflows" / name).read_bytes()
-                claude = (ROOT / ".claude/workflows" / name).read_bytes()
-                self.assertEqual(opencode, claude)
-
-    def test_workflows_fail_closed_on_invalid_structured_findings(self) -> None:
-        required_fragments = (
-            "maxItems: 200",
-            "maximum: 10000000",
-            "id is invalid or duplicated",
-            "file is not a normalized relative path",
-            "glossary SHA-256 does not match the bundle",
-            "const findings = validateReviewFindings(",
-            "kind, result, reviewBoundary.glossary_sha256, REVIEW_ROUTING.files)",
-        )
-        for name in (
-            "translation-fix-pipeline.js",
-            "translation-batch-pipeline.js",
-        ):
-            text = (ROOT / ".claude/workflows" / name).read_text()
-            for fragment in required_fragments:
-                with self.subTest(workflow=name, fragment=fragment):
-                    self.assertIn(fragment, text)
-
-    def test_workflows_enforce_translation_first_and_profile_success(self) -> None:
-        for tree in (".claude", ".opencode"):
-            batch = (ROOT / tree / "workflows/translation-batch-pipeline.js").read_text()
-            execute = batch.split("phase('Execute Sequential')", 1)[1].split(
-                "phase('Prepare Review Bundle')", 1)[0]
-            with self.subTest(tree=tree):
-                translation_pass, code_pass = execute.split("// Pass 2:", 1)
-                self.assertIn("// Pass 1:", translation_pass)
-                self.assertNotIn("agentType: 'crawl-coder'", translation_pass)
-                self.assertNotIn("agentType: 'zh-translator'", code_pass)
-                self.assertLess(
-                    execute.index("agentType: 'zh-translator'"),
-                    execute.index("agentType: 'crawl-coder'"),
-                )
-                self.assertIn("translation_execution_failed", execute)
-                self.assertIn("code_execution_failed", execute)
-                self.assertIn("verificationStatus", batch)
-                self.assertNotIn("mprf_p for positional %s", batch)
-
-            single = (ROOT / tree / "workflows/translation-fix-pipeline.js").read_text()
-            self.assertIn("translation_execution_failed", single)
-            self.assertIn("code_execution_failed", single)
-            self.assertNotIn("mprf_p for positional %s", single)
-
     def test_translation_assets_use_full_repository_paths(self) -> None:
         paths = [
             ROOT / "AGENTS.md",
             ROOT / "docs/translation-architecture.md",
             ROOT / ".agents/policies/asset-ownership.md",
-            *ROOT.glob(".claude/agents/*.md"),
-            *ROOT.glob(".claude/skills/*.md"),
-            *ROOT.glob(".opencode/agents/*.md"),
-            *ROOT.glob(".opencode/skills/*/SKILL.md"),
             *ROOT.glob(".pi/agents/*.md"),
             *ROOT.glob(".codex/agents/*.toml"),
         ]
@@ -291,10 +199,6 @@ class AgentDocumentationTests(unittest.TestCase):
 
     def test_coder_templates_handoff_translation_assets(self) -> None:
         paths = [
-            ROOT / ".claude/agents/crawl-coder.md",
-            ROOT / ".claude/skills/crawl-coder.md",
-            ROOT / ".opencode/agents/crawl-coder.md",
-            ROOT / ".opencode/skills/crawl-coder/SKILL.md",
             ROOT / ".pi/agents/crawl-coder.md",
             ROOT / ".codex/agents/crawl-coder.toml",
         ]

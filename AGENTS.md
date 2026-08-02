@@ -2,7 +2,7 @@
 
 > Status: **canonical shared instructions**. This file is intentionally
 > runtime-neutral. Runtime-specific tool syntax belongs in
-> `.pi/APPEND_SYSTEM.md`, `CODEX.md`, `CLAUDE.md`, or `.opencode/RUNTIME.md`.
+> `.pi/APPEND_SYSTEM.md` or `CODEX.md`.
 
 This repository contains the DCSS Chinese translation, i18n tooling, and CJK
 tiles work. Read this file first in every agent runtime. For the source-of-truth
@@ -15,9 +15,7 @@ After this file, read only the adapter for the active runtime:
 | Runtime | Adapter |
 |---|---|
 | Pi | `.pi/APPEND_SYSTEM.md` |
-| OpenCode | `.opencode/RUNTIME.md` |
 | Codex | `CODEX.md` |
-| Claude Code | `CLAUDE.md` |
 
 Adapters translate tool syntax only. They must not weaken the shared policies
 in this file or `.agents/policies/`.
@@ -100,19 +98,6 @@ repair in a ZH data file only when it is the sole writer for that path. Mixed
 tasks execute translation-asset edits first and code edits second. See
 `.agents/policies/asset-ownership.md`.
 
-## Workflow Execution
-
-Files under `.opencode/workflows/` and `.claude/workflows/` use a hosted DSL
-with injected `args`, `agent()`, `parallel()`, `phase()`, and `log()` globals.
-They are not standalone shell or Node.js programs.
-
-- Use them only when the active runtime explicitly exposes a compatible hosted
-  workflow runner.
-- Never run them with `bash`, `node`, or another ordinary interpreter.
-- Without a runner, load `translation-pipeline` and reproduce its documented
-  phases with the runtime's normal agent tools.
-- Keep every ZH translation asset under one writer throughout the fallback.
-
 ## Worktrees and Branches
 
 All new worktrees must use a relative path inside the repository:
@@ -122,10 +107,9 @@ git worktree add .worktrees/<name> <branch>
 ```
 
 Never create a worktree under an absolute path, `~`, `../`, or the deprecated
-`.claude/worktrees/`. OpenCode and Pi additionally enforce this with
-`.opencode/plugin/enforce-worktree-path.js` and
-`.pi/extensions/enforce-worktree-path.ts`, respectively. Follow the complete shared policy
-in `.agents/policies/worktree-policy.md`.
+`.claude/worktrees/`. Pi additionally enforces this with
+`.pi/extensions/enforce-worktree-path.ts`. Follow the complete shared policy in
+`.agents/policies/worktree-policy.md`.
 
 Repository documentation and script defaults must not embed clone-specific
 home directories, drive letters, or mount points. Use repository-root-relative
@@ -162,32 +146,23 @@ Use at most eight build jobs. Agents compiling alongside other work should use
 
 ## Commit Attribution
 
-Authorship must match the runtime that actually produced the change:
+Authorship must match the runtime that actually produced the change. Follow the
+active runtime's declared identity policy; if no trailer is required, omit it
+rather than inventing or borrowing an identity.
 
-- OpenCode-authored commits use
-  `Co-Authored-By: opencode <noreply@opencode.ai>`.
-- Claude Code-authored commits use
-  `Co-Authored-By: Claude <noreply@anthropic.com>`.
-- Other runtimes must follow their own declared identity policy and must not
-  claim OpenCode or Claude authorship. If no trailer is required, omit it rather
-  than inventing or borrowing an identity.
-
-Branch names are an ownership signal: Pi uses `pi/<topic>`; Codex uses
-`codex/<topic>`; OpenCode uses `<topic>` or `consolidate-*` unless the user
-requests another name.
+Branch names are an ownership signal: Pi uses `pi/<topic>` and Codex uses
+`codex/<topic>` unless the user requests another name.
 
 ## Configuration Maintenance
 
 Shared policy bodies live only in `.agents/policies/`. Generated copies inside
-runtime Agent and Skill files are maintained by:
+Pi and Codex Agent files are maintained by:
 
 ```bash
 python3 .claude/scripts/sync_agent_policies.py --check
 python3 .claude/scripts/sync_agent_policies.py --write
 ```
 
-Do not edit generated blocks directly. Do not delete `.pi/agents/`,
-`.claude/agents/`, or `.claude/skills/` as “legacy” while they remain
-synchronization and test targets. Before changing or removing a compatibility
-tree, update the source map, synchronizer, tests, and every runtime reference
-in the same change.
+Do not edit generated blocks directly. Before changing or removing a
+compatibility tree, update the source map, synchronizer, tests, and every
+runtime reference in the same change.

@@ -53,14 +53,12 @@ dependency-group, and coverage-proof stages. Use `scout` for parallel
 read-only evidence discovery, `translation-reviewer` for wording judgments,
 one `zh-translator` for sequential translation-asset edits, and
 `crawl-coder` only for separately owned implementation support. Do not create
-a Pi-only copy of the shared workflow or bypass the existing final review.
+a Pi-only copy of the shared Skill or bypass the existing final review.
 
-## Workflow Fallback
+## Translation Pipeline
 
-Pi does not execute the hosted DSL files under `.opencode/workflows/` or
-`.claude/workflows/`. Load `translation-pipeline` and reproduce its documented
-phases with `subagent` chains or ordinary role dispatches. Never execute those
-DSL files with Node.js or a shell.
+Load the shared `translation-pipeline` Skill and reproduce its documented
+phases with `subagent` chains or ordinary role dispatches.
 
 ## Worktrees
 
@@ -85,8 +83,8 @@ agent-issued Git worktree lifecycle commands; use `project_worktree` instead.
 - `/goal <goal>` expands the project prompt template for end-to-end work.
 - Run `/reload` after changing project agents, skills, prompts, or extensions.
 
-## Compatibility Trees
+## Active Configuration
 
-`.opencode/`, `.claude/`, and `.codex/` remain supported synchronization and
-test targets. Pi configuration supplements them; migration does not authorize
-deleting another runtime's compatibility tree.
+Shared generated policies target `.pi/agents/` and `.codex/agents/`.
+`.claude/scripts/` remains the runtime-neutral project toolchain despite its
+historical directory name; it is not part of a runtime adapter.

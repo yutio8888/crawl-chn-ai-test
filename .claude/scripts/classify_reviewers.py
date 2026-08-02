@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Mechanically select reviewers for a DCSS change set.
 
-The classifier is the single source of truth for hosted workflows and their
-manual/task fallback.  It accepts either an immutable git range or an explicit
-file list and emits one JSON object on stdout.
+The classifier is the single source of truth for the shared review pipeline.
+It accepts either an immutable git range or an explicit file list and emits one
+JSON object on stdout.
 """
 
 from __future__ import annotations
@@ -37,12 +37,10 @@ POLICY_PREFIXES = (
     ".claude/",
     ".codex/",
     ".github/",
-    ".opencode/",
     ".pi/",
 )
 POLICY_FILES = {
     "AGENTS.md",
-    "CLAUDE.md",
     "CODEX.md",
     "docs/build-workflow.md",
     "docs/dual-agent-workflow.md",

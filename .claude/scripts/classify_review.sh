@@ -69,7 +69,7 @@ SUMMARY=""
 
 # Workflow policy, verification, build/deploy automation, and their governing
 # documents can change the safety gates themselves.  Treat them like code.
-WORKFLOW_FILES=$(echo "$FILES" | grep -E '^(AGENTS\.md|CLAUDE\.md|CODEX\.md|docs/(build-workflow|dual-agent-workflow)\.md|\.claude/(scripts|workflows)/|\.opencode/(agents|skills|workflows)/|crawl-ref/source/(Makefile|Makefile\.obj|util/build-(console|tiles)\.sh))' || true)
+WORKFLOW_FILES=$(echo "$FILES" | grep -E '^(AGENTS\.md|CODEX\.md|docs/(build-workflow|dual-agent-workflow)\.md|\.agents/|\.claude/scripts/|\.codex/|\.pi/|crawl-ref/source/(Makefile|Makefile\.obj|util/build-(console|tiles)\.sh))' || true)
 if [ -n "$WORKFLOW_FILES" ]; then
     LEVEL="RED"
     REASON="workflow-policy"

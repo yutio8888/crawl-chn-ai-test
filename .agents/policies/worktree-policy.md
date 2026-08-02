@@ -8,7 +8,6 @@ git worktree add .worktrees/<name> <branch>
 ```
 
 - Do not use absolute targets, `~`, `../`, or `.claude/worktrees/`.
-- Do not bypass `.opencode/plugin/enforce-worktree-path.js`.
 - A linked worktree owns its checked-out branch. Do not push, merge, update-ref,
   or otherwise move a different target branch from inside it.
 - Keep the repository's designated integration/base branch unowned by linked

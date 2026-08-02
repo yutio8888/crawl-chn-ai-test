@@ -17,16 +17,7 @@ tools/okapi/build/
 .claude/metrics/verify/
 .claude/metrics/review-verdicts/
 
-# opencode-goal-plugin persisted state
-.opencode/goals/
-
-
 # External tool configs
-# .opencode/agents/         — project-specific translator/coder/reviewer (track)
-# .opencode/skills/         — project-specific skills (track)
-# .opencode/workflows/      — project-specific workflows (track)
-# .claude/agents/learnings/ — project experience (track when content exists)
-# Transient/personal items handled by .opencode/.gitignore (node_modules, package*.json, etc.)
 .claude/settings.json
 .claude/settings.json.bak
 .mcp.json

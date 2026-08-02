@@ -140,4 +140,4 @@ if [ "$TASK_TYPE" = "review" ]; then
 fi
 
 echo "---"
-echo "Full documentation: CLAUDE.md, docs/glossary.md, docs/decisions.md, .claude/scripts/TOOLCHAIN.md"
+echo "Full documentation: AGENTS.md, docs/glossary.md, docs/decisions.md, .claude/scripts/TOOLCHAIN.md"

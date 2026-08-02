@@ -65,7 +65,7 @@ class ReviewerRoutingTests(unittest.TestCase):
 
     def test_policy_infrastructure_requires_code_review(self):
         self.assert_route(
-            [".opencode/workflows/translation-fix-pipeline.js"],
+            [".agents/skills/translation-pipeline/SKILL.md"],
             "code", ["zh-code-reviewer"],
         )
 
@@ -100,7 +100,7 @@ class ReviewerRoutingTests(unittest.TestCase):
                 self.assertNotEqual("mixed", category)
 
     def test_explicit_absolute_and_parent_paths_fail_closed(self):
-        for path in ("/tmp/source.txt", "../source.txt", "docs/../CLAUDE.md", "C:/repo/file.cc"):
+        for path in ("/tmp/source.txt", "../source.txt", "docs/../CODEX.md", "C:/repo/file.cc"):
             with self.subTest(path=path):
                 proc = subprocess.run(
                     ["python3", str(SCRIPT), "--files", path],
@@ -212,71 +212,12 @@ class ReviewerRoutingTests(unittest.TestCase):
                     self.assertEqual(classification, result["classification"])
                     self.assertEqual(reviewers, result["reviewers"])
 
-    def test_workflows_and_fallback_consume_shared_result(self):
-        workflow_dir = REPO / ".opencode/workflows"
-        legacy_workflow_dir = REPO / ".claude/workflows"
-        for name in ("translation-fix-pipeline.js", "translation-batch-pipeline.js"):
-            text = (workflow_dir / name).read_text(encoding="utf-8")
-            legacy_text = (legacy_workflow_dir / name).read_text(encoding="utf-8")
-            self.assertEqual(legacy_text, text, name + " workflow copies diverged")
-            self.assertNotIn("args?.reviewRouting", text, name)
-            self.assertIn("args?.targetRoot", text, name)
-            self.assertIn("args?.targetBranch", text, name)
-            self.assertIn("args?.candidateBranch", text, name)
-            self.assertIn("review_prepare.sh", text, name)
-            self.assertIn("review_boundary_arguments_required", text, name)
-            self.assertIn("const REVIEW_ROUTING = reviewBoundary.routing", text, name)
-            self.assertIn("REVIEW_ROUTING?.schema_version !== 2", text, name)
-            self.assertIn("JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)", text, name)
-            self.assertIn("routedReviewers.includes('zh-code-reviewer')", text, name)
-            self.assertIn("routedReviewers.includes('translation-reviewer')", text, name)
-            self.assertIn("reviewJobs.length ? await parallel(reviewJobs) : []", text, name)
-            self.assertIn("review-contract-v5", text, name)
-            self.assertIn("Ready for Final Gate", text, name)
-            self.assertIn("persist-review-readiness", text, name)
-            self.assertIn("run-single-final-gate", text, name)
-            self.assertIn("routedReviewers.length === 0", text, name)
-            self.assertIn("READINESS_NOT_REQUIRED", text, name)
-            self.assertIn("finalGate?.state !== 'MERGEABLE'", text, name)
-            self.assertIn("review_final_gate.sh", text, name)
-            self.assertNotIn("bash .claude/scripts/verify_zh.sh --profile review", text, name)
-            self.assertNotIn("Conditional Go", text, name)
-            self.assertNotIn("p0Issues", text, name)
-            self.assertNotIn("p1Issues", text, name)
-            self.assertNotIn("P0", text, name)
-            self.assertNotIn("P1", text, name)
-            self.assertNotIn("label: 'terminology'", text, name)
-            self.assertNotIn("termCheck", text, name)
-            self.assertIn("bash .claude/scripts/check_consistency.sh --rulings", text, name)
-            self.assertLess(text.index("commit only"), text.index("phase('Prepare Review Bundle')"), name)
-            self.assertLess(text.index("phase('Prepare Review Bundle')"), text.index("phase('Cross-validate')"), name)
-            self.assertLess(text.index("phase('Cross-validate')"), text.index("phase('Seal Final Evidence')"), name)
-
-        skill = (REPO / ".opencode/skills/translation-pipeline/SKILL.md").read_text(encoding="utf-8")
-        self.assertIn(".claude/scripts/classify_reviewers.py", skill)
-        self.assertIn("args.targetRoot", skill)
-        self.assertIn("review_prepare.sh", skill)
-        self.assertNotIn("args.reviewRouting", skill)
-        self.assertIn("只对\n`reviewers`", skill)
-
-    def test_forged_routing_payload_is_rejected_by_workflow_contract(self):
-        forged = {"schema_version": 2, "classification": "code", "reviewers": []}
-        expected = {
-            "none": [],
-            "code": ["zh-code-reviewer"],
-            "translation": ["translation-reviewer"],
-            "mixed": ["zh-code-reviewer", "translation-reviewer"],
-        }
-        self.assertNotEqual(forged["reviewers"], expected[forged["classification"]])
-        for name in ("translation-fix-pipeline.js", "translation-batch-pipeline.js"):
-            text = (REPO / ".opencode/workflows" / name).read_text(encoding="utf-8")
-            self.assertIn("JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)", text)
-
     def test_review_context_uses_v3_readiness_contract_and_ownership(self):
         proc = subprocess.run(
             [
                 "bash", ".claude/scripts/context_resolve.sh", "review routing",
-                "--task-type", "review", "--files", ".opencode/workflows/translation-fix-pipeline.js",
+                "--task-type", "review", "--files",
+                ".agents/skills/translation-pipeline/SKILL.md",
             ],
             cwd=REPO, text=True, capture_output=True, check=True,
         )

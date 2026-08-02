@@ -23,34 +23,27 @@ CHECK_SPEC.loader.exec_module(CHECK)
 
 
 class PolicySyncTests(unittest.TestCase):
-    def test_claude_agents_and_skills_are_policy_targets(self) -> None:
-        self.assertIn(".claude/agents/crawl-coder.md", SYNC.TARGETS["i18n-safety"])
-        self.assertIn(".claude/skills/zh-code-reviewer.md", SYNC.TARGETS["i18n-safety"])
-        self.assertIn(".claude/agents/translation-reviewer.md", SYNC.TARGETS["review-contract"])
-        self.assertIn(".claude/skills/translation-reviewer.md", SYNC.TARGETS["review-contract"])
-        self.assertIn(".claude/agents/zh-translator.md", SYNC.TARGETS["asset-ownership"])
+    def test_active_runtime_agents_are_policy_targets(self) -> None:
+        self.assertIn(".codex/agents/crawl-coder.toml", SYNC.TARGETS["i18n-safety"])
+        self.assertIn(".codex/agents/translation-reviewer.toml",
+                      SYNC.TARGETS["review-contract"])
         self.assertIn(".pi/agents/zh-translator.md", SYNC.TARGETS["asset-ownership"])
-        self.assertIn(".opencode/skills/translation-pipeline/SKILL.md",
-                      SYNC.TARGETS["asset-ownership"])
         context_skill = ".agents/skills/dcss-translation-context/SKILL.md"
         for policy in ("i18n-safety", "review-contract", "asset-ownership"):
             self.assertNotIn(context_skill, SYNC.TARGETS[policy])
+        for targets in SYNC.TARGETS.values():
+            self.assertFalse(any(path.startswith((".claude/agents/",
+                                                  ".claude/skills/",
+                                                  ".opencode/"))
+                                 for path in targets))
 
     def test_verification_authoring_has_exact_role_scope(self) -> None:
         self.assertEqual(
             {
                 ".codex/agents/crawl-coder.toml",
                 ".codex/agents/zh-code-reviewer.toml",
-                ".claude/agents/crawl-coder.md",
-                ".claude/agents/zh-code-reviewer.md",
-                ".claude/skills/crawl-coder.md",
-                ".claude/skills/zh-code-reviewer.md",
-                ".opencode/agents/crawl-coder.md",
-                ".opencode/agents/zh-code-reviewer.md",
                 ".pi/agents/crawl-coder.md",
                 ".pi/agents/zh-code-reviewer.md",
-                ".opencode/skills/crawl-coder/SKILL.md",
-                ".opencode/skills/zh-code-reviewer/SKILL.md",
             },
             set(SYNC.TARGETS["verification-authoring"]),
         )
@@ -59,21 +52,15 @@ class PolicySyncTests(unittest.TestCase):
         self.assertEqual(
             {
                 ".codex/agents/zh-translator.toml",
-                ".claude/agents/zh-translator.md",
-                ".claude/skills/translation-pipeline.md",
-                ".opencode/agents/zh-translator.md",
                 ".pi/agents/zh-translator.md",
-                ".opencode/skills/translation-pipeline/SKILL.md",
             },
             set(SYNC.TARGETS["translation-integrity"]),
         )
 
-    def test_claude_config_roots_are_scanned(self) -> None:
+    def test_active_config_roots_are_scanned(self) -> None:
         relative_roots = {path.relative_to(ROOT).as_posix() for path in CHECK.CONFIG_ROOTS}
-        self.assertIn(".agents/skills", relative_roots)
-        self.assertIn(".pi/agents", relative_roots)
-        self.assertIn(".claude/agents", relative_roots)
-        self.assertIn(".claude/skills", relative_roots)
+        self.assertEqual({".agents/skills", ".pi/agents", ".codex/agents"},
+                         relative_roots)
 
     def test_replace_preserves_yaml_frontmatter(self) -> None:
         original = "---\nname: reviewer\n---\n\n# Title\n\n<!-- BEGIN GENERATED: p -->\nold\n<!-- END GENERATED: p -->\n"

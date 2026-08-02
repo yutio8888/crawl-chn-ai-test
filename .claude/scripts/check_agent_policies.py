@@ -13,11 +13,7 @@ import sys
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_ROOTS = [SCRIPT_ROOT / ".agents" / "skills",
                 SCRIPT_ROOT / ".pi" / "agents",
-                SCRIPT_ROOT / ".codex" / "agents",
-                SCRIPT_ROOT / ".claude" / "agents",
-                SCRIPT_ROOT / ".claude" / "skills",
-                SCRIPT_ROOT / ".opencode" / "agents",
-                SCRIPT_ROOT / ".opencode" / "skills"]
+                SCRIPT_ROOT / ".codex" / "agents"]
 
 FORBIDDEN = {
     r"Double T_\(\) for Static Arrays": "obsolete persistent T_ pattern",
@@ -33,9 +29,7 @@ FORBIDDEN = {
 def config_files(root: Path) -> list[Path]:
     result: list[Path] = []
     config_roots = [root / ".agents" / "skills", root / ".pi" / "agents",
-                    root / ".codex" / "agents", root / ".claude" / "agents",
-                    root / ".claude" / "skills", root / ".opencode" / "agents",
-                    root / ".opencode" / "skills"]
+                    root / ".codex" / "agents"]
     for config_root in config_roots:
         result.extend(path for path in config_root.rglob("*") if path.is_file()
                       and path.suffix in {".md", ".toml"})

@@ -14,7 +14,7 @@ translation, review, build, or worktree policy.
 - For read-only exploration, prefer `rg`, `rg --files`, and `git grep` or a
   runtime-provided explorer.
 - If a configured role is unavailable, apply its contract inline; do not read
-  an OpenCode prompt and pretend an unavailable OpenCode tool exists.
+  another runtime's prompt and pretend an unavailable tool exists.
 - Use repository skills exposed by Codex. For translation/i18n work, load
   `dcss-translation-context` before editing or review.
 - Use `apply_patch` for manual file edits and preserve unrelated worktree
@@ -54,18 +54,16 @@ Analyze → Plan → Review Plan → Execute → Prepare Review Bundle
 → Mechanically Routed Review → Cross-validate → Final Evidence → Report
 ```
 
-The workflow JavaScript files are hosted DSL sources, not Node.js programs.
-Never invoke `node .opencode/workflows/...` or `node .claude/workflows/...`.
-When Codex has no compatible hosted runner, use its normal collaboration tools
-to reproduce the skill's phases and preserve single-writer ownership.
+The shared `translation-pipeline` Skill is the procedural source. Use Codex's
+normal collaboration tools to reproduce its phases and preserve single-writer
+ownership.
 
 ## Worktrees and Branches
 
 - Create worktrees only as relative `.worktrees/<name>` paths from the repo
   root.
 - Use `codex/<topic>` for Codex-authored branches by default.
-- The OpenCode path-enforcement plugin does not enforce Codex shell calls;
-  follow `.agents/policies/worktree-policy.md` explicitly.
+- Follow `.agents/policies/worktree-policy.md` explicitly for Codex shell calls.
 - Do not use destructive synchronization in a development worktree. Dedicated
   detached build worktrees are governed by `docs/build-workflow.md`.
 
@@ -76,7 +74,6 @@ For translation candidates, use the schema-v4 process in
 `.agents/policies/review-contract.md`; do not substitute an informal review for
 mechanical routing or final evidence.
 
-Codex must not add OpenCode or Claude attribution to Codex-authored changes.
 Use a Codex identity only when the active runtime or user has declared one;
 otherwise omit the co-author trailer. Cross-runtime handoff state belongs in
 `.claude/ORCHESTRATION_STATE.md` or the issue repository described by

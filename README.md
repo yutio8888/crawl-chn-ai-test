@@ -133,8 +133,7 @@ TextDB 缓存以确保文本更新生效。运行中的游戏应先关闭。完�
 
 ### 开始一个任务
 
-1. 先阅读 [AGENTS.md](AGENTS.md)；使用 Codex、Claude Code 或 OpenCode 时，再读取对应的
-   runtime adapter。
+1. 先阅读 [AGENTS.md](AGENTS.md)；使用 Codex 或 Pi 时，再读取对应的 runtime adapter。
 2. 从仓库当前默认/集成分支创建任务分支，不要依赖 README 中的静态“活跃分支”清单。
 3. 开工前查看对应 GitHub Issue，确认验收标准、任务状态、文件所有权和已有分析。
 4. 若使用 Git worktree，只能从仓库根目录创建在 `.worktrees/<name>` 下；不要让 linked
@@ -223,7 +222,7 @@ bash .claude/scripts/verify_zh.sh --profile ci
 - 不要修改兼作数据库、协议或存档键的英文 `.name` 字段；
 - 格式串的参数位置、类型和复数逻辑必须与英文源文本一致；
 - 运行时变量经 `T_()` 查找时，必须确保翻译数据库中存在对应键；
-- hosted workflow 文件不是普通 Bash/Node.js 脚本，不要直接执行；
+- `translation-pipeline` 是共享 Skill，应通过当前 runtime 的正常 Agent 工具执行；
 - 构建最多使用 8 个 job；多人或多任务同时编译时使用 4 个并避免并发编译风暴。
 
 翻译架构与安全边界的详细说明见
@@ -235,10 +234,10 @@ bash .claude/scripts/verify_zh.sh --profile ci
 ```text
 .
 ├── AGENTS.md                         # 跨 runtime 的协作入口
-├── CODEX.md / CLAUDE.md              # runtime adapter
+├── CODEX.md / .pi/APPEND_SYSTEM.md   # runtime adapter
 ├── .agents/                          # 共享 policy、角色路由与技能来源
 ├── .claude/scripts/                  # 验证、审查、部署和辅助脚本
-├── .codex/ / .opencode/              # 各 runtime 配置
+├── .codex/ / .pi/                    # 各 runtime 配置
 ├── .github/workflows/ci.yml          # 当前 CI 权威配置
 ├── docs/                             # 架构、术语、构建、测试与协作文档
 └── crawl-ref/

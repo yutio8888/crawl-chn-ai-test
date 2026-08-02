@@ -1,4 +1,4 @@
-# Cross-Runtime Collaboration — Pi, Codex, OpenCode, and Claude Code
+# Cross-Runtime Collaboration — Pi and Codex
 
 This document defines shared handoff and ownership. Runtime capabilities and
 model assignments change over time; read current runtime configuration instead
@@ -28,8 +28,6 @@ claims here.
 
 - Pi-authored branches use `pi/<topic>` by default.
 - Codex-authored branches use `codex/<topic>` by default.
-- OpenCode-authored branches use `<topic>` or `consolidate-*` by default.
-- Claude Code uses the branch explicitly assigned by the user or orchestrator.
 
 Branch naming does not replace commit review or attribution.
 
@@ -49,16 +47,14 @@ from these durable artifacts without relying on conversation memory.
 
 ### Worktrees are shared infrastructure
 
-Every runtime follows `.agents/policies/worktree-policy.md`. OpenCode and Pi
-have additional plugin/extension guards, while other runtimes must obey the
-same relative `.worktrees/<name>` rule through their shell behavior.
+Both runtimes follow `.agents/policies/worktree-policy.md`. Pi has an
+additional extension guard, while Codex obeys the same relative
+`.worktrees/<name>` rule through its shell behavior.
 
 ### Authorship is truthful
 
-- OpenCode uses its OpenCode trailer.
-- Claude Code uses its Claude trailer.
-- Pi, Codex, and other runtimes do not borrow either identity. They use a
-  declared runtime identity when required or omit the co-author trailer.
+- Pi and Codex use a declared runtime identity when required; otherwise they
+  omit the co-author trailer rather than borrowing another identity.
 
 ## Handoff Protocol
 
@@ -91,4 +87,5 @@ cross-runtime review cannot replace schema-v4 readiness or final evidence.
 - Both runtimes editing the same translation asset concurrently.
 - Creating worktrees outside `.worktrees/`.
 - Claiming another runtime's commit identity.
-- Running hosted workflow DSL files with an ordinary Node.js or shell process.
+- Reintroducing runtime-specific pipeline copies instead of using the shared
+  Skill.
