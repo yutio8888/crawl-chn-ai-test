@@ -1,7 +1,7 @@
 ---
 name: translation-reviewer
 description: DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice
-model: openai-codex/gpt-5.6-sol
+model: opencode-go/deepseek-v4-flash
 tools: read, grep, find, ls, bash
 systemPromptMode: replace
 inheritProjectContext: true
