@@ -159,6 +159,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Android shell help and touch menu are complete",
                  "[zh-translation][android-playtest][touch-menu]")
 {
+    const auto command_menu_text = [](const char *key) {
+        string text = getLongDescription(key);
+        trim_string_right(text);
+        return text;
+    };
+
     CHECK(std::string(T_("Menu")) == "菜单");
     CHECK(std::string(T_("Tap <w>Menu</w> in the top bar to open inventory "
                          "and character pages. Use <w>123</w> on the full "
@@ -182,16 +188,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
              "键盘图标用于切换\n"
              "虚拟键盘的显示状态。\n");
 
-    CHECK(trim_string_right(getLongDescription("android command menu|Auto-explore"))
+    CHECK(command_menu_text("android command menu|Auto-explore")
           == "自动探索");
-    CHECK(trim_string_right(getLongDescription("android command menu|Enter Shop"))
-          == "进入商店");
-    CHECK(trim_string_right(getLongDescription("android command menu|Go Downstairs"))
-          == "下楼");
-    CHECK(trim_string_right(getLongDescription("android command menu|Go Upstairs"))
-          == "上楼");
-    CHECK(trim_string_right(getLongDescription("android command menu|Pick Up"))
-          == "拾取");
+    CHECK(command_menu_text("android command menu|Enter Shop") == "进入商店");
+    CHECK(command_menu_text("android command menu|Go Downstairs") == "下楼");
+    CHECK(command_menu_text("android command menu|Go Upstairs") == "上楼");
+    CHECK(command_menu_text("android command menu|Pick Up") == "拾取");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
