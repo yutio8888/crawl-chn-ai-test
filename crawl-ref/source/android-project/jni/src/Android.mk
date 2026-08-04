@@ -272,6 +272,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/terrain.cc \
     $(CRAWL_PATH)/throw.cc \
     $(CRAWL_PATH)/timed-effects.cc \
+    $(CRAWL_PATH)/topbar-drawer.cc \
     $(CRAWL_PATH)/transform.cc \
     $(CRAWL_PATH)/traps.cc \
     $(CRAWL_PATH)/travel.cc \

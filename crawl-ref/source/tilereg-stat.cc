@@ -7,11 +7,14 @@
 #include "command.h"
 #include "database.h"
 #include "describe.h"
+#include "glwrapper.h"
 #include "libutil.h"
 #include "macro.h"
 #include "status.h"
 #include "stringutil.h"
 #include "tiles-build-specific.h"
+#include "tilefont.h"
+#include "topbar-drawer.h"
 
 // Per-frame hitbox registry populated by output.cc::_print_status_lights()
 // and consumed by StatRegion::update_tip_text().
@@ -36,6 +39,20 @@ StatRegion::StatRegion(FontWrapper *font_arg) : TextRegion(font_arg)
 {
 }
 
+bool StatRegion::_text_mouse_pos(int mouse_x, int mouse_y, int &cx, int &cy)
+{
+    int x = mouse_x - ox - sx;
+    int y = mouse_y - oy - sy;
+    if (x < 0 || y < 0)
+        return false;
+
+    const int cell_width = max(1U, font().char_width(false));
+    const int cell_height = max(1U, font().char_height(false));
+    cx = glmanager->logical_to_device(x) / cell_width;
+    cy = (glmanager->logical_to_device(y) + cell_height / 2) / cell_height;
+    return cx < mx && cy < my;
+}
+
 int StatRegion::handle_mouse(wm_mouse_event &event)
 {
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND)
@@ -51,13 +68,36 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
     if (event.event == wm_mouse_event::MOVE)
         return 0; // don't consume move events
 
-    if (event.event != wm_mouse_event::PRESS || event.button != wm_mouse_event::LEFT)
-        return 0;
-
 #ifdef __ANDROID__
     if (tiles.is_using_small_layout())
-        return command_to_key(CMD_TOGGLE_TAB_ICONS);
+    {
+        if (event.event != wm_mouse_event::PRESS
+            || event.button != wm_mouse_event::LEFT)
+        {
+            return 0;
+        }
+
+        int cx, cy;
+        if (!_text_mouse_pos(event.px, event.py, cx, cy))
+            return 0;
+
+        for (const auto &hitbox : _status_hitboxes)
+        {
+            if (cy == hitbox.y && cx >= hitbox.x1 && cx <= hitbox.x2)
+            {
+                show_topbar_status_drawer();
+                return CK_NO_KEY;
+            }
+        }
+        return 0;
+    }
 #endif
+
+    if (event.event != wm_mouse_event::PRESS
+        || event.button != wm_mouse_event::LEFT)
+    {
+        return 0;
+    }
 
     // clicking on stats should show all the stats
     return encode_command_as_key(CMD_RESISTS_SCREEN);
@@ -71,8 +111,19 @@ bool StatRegion::update_tip_text(string& tip)
 #ifdef __ANDROID__
     if (tiles.is_using_small_layout())
     {
-        tip = T_("[L-Click] Toggle tab icons");
-        return true;
+        int cx, cy;
+        if (!_text_mouse_pos(m_last_mouse_x, m_last_mouse_y, cx, cy))
+            return false;
+
+        for (const auto &hitbox : _status_hitboxes)
+        {
+            if (cy == hitbox.y && cx >= hitbox.x1 && cx <= hitbox.x2)
+            {
+                tip = T_("[L-Click] Show player information");
+                return true;
+            }
+        }
+        return false;
     }
 #endif
 

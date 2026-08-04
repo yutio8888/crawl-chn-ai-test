@@ -30,11 +30,20 @@
 #include "libutil.h"
 #include "options.h"
 #include "syscalls.h"
+#ifdef __ANDROID__
+# include "ui.h"
+#endif
 #include "unicode.h"
 #include "version.h"
 #include "windowmanager.h"
 
 WindowManager *wm = nullptr;
+
+#ifdef __ANDROID__
+static bool s_event_mouse_position_valid = false;
+static int s_event_mouse_x = 0;
+static int s_event_mouse_y = 0;
+#endif
 
 #define MIN_SDL_WINDOW_SIZE_X 800
 #define MIN_SDL_WINDOW_SIZE_Y 480
@@ -808,9 +817,21 @@ unsigned short SDLWrapper::get_mouse_state(int *x, int *y) const
 {
     Uint32 state = SDL_GetMouseState(x, y);
     if (x)
+    {
         *x = display_density.apply_game_scale(*x);
+#ifdef __ANDROID__
+        if (s_event_mouse_position_valid)
+            *x = s_event_mouse_x;
+#endif
+    }
     if (y)
+    {
         *y = display_density.apply_game_scale(*y);
+#ifdef __ANDROID__
+        if (s_event_mouse_position_valid)
+            *y = s_event_mouse_y;
+#endif
+    }
     unsigned short ret = 0;
     if (state & SDL_BUTTON(SDL_BUTTON_LEFT))
         ret |= wm_mouse_event::LEFT;
@@ -1029,6 +1050,17 @@ int SDLWrapper::wait_event(wm_event *event, int timeout)
         return 0;
     }
 
+#ifdef __ANDROID__
+    if (event->type == WME_MOUSEMOTION
+        || event->type == WME_MOUSEBUTTONDOWN
+        || event->type == WME_MOUSEBUTTONUP)
+    {
+        s_event_mouse_x = event->mouse_event.px;
+        s_event_mouse_y = event->mouse_event.py;
+        s_event_mouse_position_valid = true;
+    }
+#endif
+
     return 1;
 }
 
@@ -1071,6 +1103,12 @@ void SDLWrapper::delay(unsigned int ms)
 
 bool SDLWrapper::next_event_is(wm_event_type type)
 {
+#ifdef __ANDROID__
+    // Modal Android scrollers need every point in a single-finger swipe.
+    if (type == WME_MOUSEMOTION && ui::has_layout())
+        return false;
+#endif
+
     // check for enqueued characters from a multi-char textinput event
     // count is floored to 1 for consistency with other event types
     if (type == WME_KEYDOWN && m_textinput_queue.size() > 0)

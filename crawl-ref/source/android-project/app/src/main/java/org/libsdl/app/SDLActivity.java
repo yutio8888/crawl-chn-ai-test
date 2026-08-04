@@ -254,7 +254,8 @@ public class SDLActivity extends AppCompatActivity {
         // explicit access to inset values for Surface sizing and future portrait layout.
         if (Build.VERSION.SDK_INT >= 21) {
             mLayout.setOnApplyWindowInsetsListener((v, insets) -> {
-                mSystemTopInset = insets.getSystemWindowInsetTop();
+                int topInset = fullScreen ? 0 : insets.getSystemWindowInsetTop();
+                mSystemTopInset = topInset;
                 mSystemBottomInset = insets.getSystemWindowInsetBottom();
                 if (Build.VERSION.SDK_INT >= 30) {
                     mImeBottomInset = insets.getInsets(WindowInsets.Type.ime()).bottom;
@@ -264,7 +265,7 @@ public class SDLActivity extends AppCompatActivity {
                 updateSurfaceSize();
                 v.setPadding(
                     insets.getSystemWindowInsetLeft(),
-                    insets.getSystemWindowInsetTop(),
+                    topInset,
                     insets.getSystemWindowInsetRight(),
                     insets.getSystemWindowInsetBottom()
                 );
@@ -377,9 +378,16 @@ public class SDLActivity extends AppCompatActivity {
         // Once UI flags have been cleared (for example, by navigating away from the activity),
         // your app needs to reset them if you want to hide the bars again
         if (fullScreen) {
-            View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                WindowInsetsController controller = getWindow().getInsetsController();
+                if (controller != null) {
+                    controller.hide(WindowInsets.Type.statusBars());
+                }
+            } else {
+                View decorView = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                decorView.setSystemUiVisibility(uiOptions);
+            }
         }
 
         SDLActivity.mHasFocus = hasFocus;
@@ -1331,6 +1339,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     protected static long touchStart = 0L;
     protected static float touchStartX = 0;
     protected static float touchStartY = 0;
+    protected static boolean touchMoved = false;
 
     // Startup
     public SDLSurface(Context context) {
@@ -1607,6 +1616,14 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                     }
 
                     // CRAWL HACK: Long press as right click
+                    // Android may batch an entire swipe into one move event.
+                    // Preserve its origin so modal scrollers can calculate a
+                    // delta; the main game still coalesces consecutive moves.
+                    if (!touchMoved && touchStart != 0L) {
+                        SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY,
+                                action, touchStartX, touchStartY);
+                        touchMoved = true;
+                    }
                     SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, action, event.getX(0), event.getY(0));
                     break;
 
@@ -1621,6 +1638,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                     touchStart = System.currentTimeMillis();
                     touchStartX = event.getX();
                     touchStartY = event.getY();
+                    touchMoved = false;
                     break;
 
                 // CRAWL HACK: Long press as right click
@@ -1641,12 +1659,14 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                     }
                     scrolling = false;
                     touchStart = 0L;
+                    touchMoved = false;
                     break;
 
                 case MotionEvent.ACTION_CANCEL:
                     // CRAWL HACK: Stop actions
                     scrolling = false;
                     touchStart = 0L;
+                    touchMoved = false;
                     break;
 
                 default:

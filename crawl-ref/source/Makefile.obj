@@ -286,6 +286,7 @@ GLTILES_OBJECTS = \
 glwrapper.o \
 layout-policy.o \
 libgui.o \
+topbar-drawer.o \
 tilebuf.o \
 tiledgnbuf.o \
 tilefont.o \
