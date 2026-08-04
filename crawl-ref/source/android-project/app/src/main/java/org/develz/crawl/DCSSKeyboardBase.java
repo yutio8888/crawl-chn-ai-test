@@ -9,6 +9,8 @@ import android.view.inputmethod.InputConnection;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import org.libsdl.app.SDLActivity;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,16 +64,6 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
         actionKeys.add(KeyEvent.KEYCODE_F10);
         actionKeys.add(KeyEvent.KEYCODE_F11);
         actionKeys.add(KeyEvent.KEYCODE_F12);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_0);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_1);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_2);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_3);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_4);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_5);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_6);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_7);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_8);
-        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_9);
     }
 
     // Extra init settings
@@ -96,6 +88,13 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
         return (actionKeys.contains(event.getKeyCode()) ||
                 ((event.getMetaState() & KeyEvent.META_CTRL_ON) == KeyEvent.META_CTRL_ON) ||
                 event.getUnicodeChar() == 0);
+    }
+
+    // Numpad keys must bypass SDLInputConnection, which also commits their
+    // printable digit before forwarding the raw key event.
+    private boolean isNumpadEvent(KeyEvent event) {
+        return event.getKeyCode() >= KeyEvent.KEYCODE_NUMPAD_0 &&
+                event.getKeyCode() <= KeyEvent.KEYCODE_NUMPAD_9;
     }
 
     // Process software keyboard events
@@ -151,7 +150,13 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Log.v("KEY", "KeyEvent: " + event.toString());
-        if (isActionEvent(event)) {
+        if (isNumpadEvent(event)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                SDLActivity.onNativeKeyDown(event.getKeyCode());
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                SDLActivity.onNativeKeyUp(event.getKeyCode());
+            }
+        } else if (isActionEvent(event)) {
             inputConnection.sendKeyEvent(event);
         } else if (event.getAction() == KeyEvent.ACTION_DOWN) {
             inputConnection.commitText(String.valueOf((char) event.getUnicodeChar()), 1);
