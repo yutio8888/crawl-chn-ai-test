@@ -238,6 +238,10 @@ public class SDLActivity extends AppCompatActivity {
 
         // CRAWL HACK: Custom keyboard (START)
         Intent intent = getIntent();
+        long activityTime = SystemClock.elapsedRealtime();
+        long clickTime = intent.getLongExtra("startup_click_ms", activityTime);
+        Log.i("AndroidStartup", "sdl_activity_on_create elapsed_realtime_ms="
+                + activityTime + " since_click_ms=" + (activityTime - clickTime));
         keyboardOption = intent.getIntExtra("keyboard", 0);
         Log.i(TAG, "Keyboard option: " + keyboardOption);
         extraKeyboardOption = intent.getIntExtra("extra_keyboard", 0);
@@ -306,7 +310,7 @@ public class SDLActivity extends AppCompatActivity {
         }
         mKeyboardExtra.setLayoutParams(extraKeyLParams);
         keyboardsLayout.addView(mKeyboardExtra);
-        if (keyboardOption == 1 || keyboardOption == 2) {
+        if (keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4) {
             LinearLayout.LayoutParams mainKeyLParams = new LinearLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             mKeyboard.setLayoutParams(mainKeyLParams);
@@ -652,7 +656,8 @@ public class SDLActivity extends AppCompatActivity {
             {
                 Log.v(TAG, "command update keyboard visibility");
                 if (context instanceof Activity) {
-                    if (mScreenKeyboardShown && (keyboardOption == 1 || keyboardOption == 2)) {
+                    if (mScreenKeyboardShown && (keyboardOption == 1 || keyboardOption == 2
+                            || keyboardOption == 4)) {
                         mKeyboard.setVisibility(View.VISIBLE);
                     } else {
                         mKeyboard.setVisibility(View.GONE);
@@ -671,7 +676,7 @@ public class SDLActivity extends AppCompatActivity {
                     //   - On pre-API 30: falls back to keyboardsLayout manual measurement
                     // The post() runnable ensures a freshly-shown keyboard's measured
                     // height is available before we calculate the reserved area.
-                    if (keyboardOption == 1 || keyboardOption == 2) {
+                    if (keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4) {
                         if (mScreenKeyboardShown) {
                             keyboardsLayout.post(new Runnable() {
                                 @Override
@@ -1262,7 +1267,7 @@ public class SDLActivity extends AppCompatActivity {
     // on pre-API 30 we fall back to manual measurement of the keyboard layout.
     protected static void updateSurfaceSize() {
         boolean keyboardActive = mScreenKeyboardShown
-            && (keyboardOption == 1 || keyboardOption == 2);
+            && (keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4);
 
         if (keyboardActive) {
             int surfaceHeight;

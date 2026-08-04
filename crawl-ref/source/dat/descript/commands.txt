@@ -521,3 +521,51 @@ android command menu summary|Commands
 
 Commands
 %%%%
+android command menu|Auto-explore
+
+Auto-explore
+%%%%
+android command menu summary|Auto-explore
+
+Explore the current level automatically
+%%%%
+android command menu|Enter Shop
+
+Enter Shop
+%%%%
+android command menu summary|Enter Shop
+
+Enter the shop on your current square
+%%%%
+android command menu|Enter
+
+Enter
+%%%%
+android command menu summary|Enter
+
+Enter using the feature underfoot
+%%%%
+android command menu|Go Downstairs
+
+Go Downstairs
+%%%%
+android command menu summary|Go Downstairs
+
+Descend using the feature underfoot
+%%%%
+android command menu|Go Upstairs
+
+Go Upstairs
+%%%%
+android command menu summary|Go Upstairs
+
+Ascend using the feature underfoot
+%%%%
+android command menu|Pick Up
+
+Pick Up
+%%%%
+android command menu summary|Pick Up
+
+Pick up items from your current square
+%%%%

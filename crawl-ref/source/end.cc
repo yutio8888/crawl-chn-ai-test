@@ -359,6 +359,7 @@ NORETURN void end_game(scorefile_entry &se)
     title_hbox->set_margin_for_crt(0, 0, 1, 0);
 
     auto vbox = make_shared<Box>(Box::VERT);
+    vbox->set_cross_alignment(Widget::STRETCH);
     vbox->add_child(std::move(title_hbox));
 
     string goodbye_msg;
@@ -402,8 +403,24 @@ NORETURN void end_game(scorefile_entry &se)
     vbox->add_child(make_shared<Text>(formatted_string::parse_string(morgue_dir)));
 #endif
 
-    auto popup = make_shared<ui::Popup>(std::move(vbox));
     bool done = false;
+#ifdef __ANDROID__
+    auto continue_row = make_shared<Box>(Widget::HORZ);
+    continue_row->set_main_alignment(Widget::CENTER);
+    continue_row->add_child(make_shared<Text>(
+        formatted_string(T_("Continue"), WHITE)));
+    auto continue_button = make_shared<MenuButton>();
+    continue_button->min_size().height = 64;
+    continue_button->highlight_colour = BROWN;
+    continue_button->set_child(std::move(continue_row));
+    continue_button->on_activate_event([&](const ActivateEvent&) {
+        done = true;
+        return true;
+    });
+    vbox->add_child(std::move(continue_button));
+#endif
+
+    auto popup = make_shared<ui::Popup>(std::move(vbox));
     popup->on_keydown_event([&](const KeyEvent&) { return done = true; });
 
     if (!crawl_state.seen_hups && !crawl_state.disables[DIS_CONFIRMATIONS])

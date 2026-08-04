@@ -482,6 +482,14 @@ NORETURN static void _launch_game()
     if (!crawl_state.game_is_tutorial())
         mpr(T_("Press <w>?</w> for a list of commands and other information."));
 
+#ifdef __ANDROID__
+    if (game_start && !crawl_state.game_is_tutorial())
+    {
+        mpr(T_("Tap <w>Menu</w> in the top bar to open inventory and character "
+               "pages. Use <w>123</w> on the full keyboard for symbols."));
+    }
+#endif
+
     _prep_input();
 
     if (game_start)

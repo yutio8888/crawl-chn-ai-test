@@ -16,6 +16,8 @@
 
         <include layout="@layout/keyboard_numeric"/>
 
+        <include layout="@layout/keyboard_mobile"/>
+
     </RelativeLayout>
 
 </merge>

@@ -1503,6 +1503,16 @@ void display_inventory()
     menu.load_inv_items(Options.show_paged_inventory ? OSEL_GEAR : OSEL_ANY, -1);
     menu.set_type(menu_type::describe);
 
+#ifdef __ANDROID__
+    if (crawl_state.updating_scores)
+    {
+        const string continue_text = string("<bg:brown><white>")
+            + T_("Tap here or press Back to view the score summary.")
+            + "</white></bg:brown>";
+        menu.set_more(formatted_string::parse_string(continue_text));
+    }
+#endif
+
     // Jump to the first non-empty page.
     if ((flags & MF_PAGED_INVENTORY) && menu.item_count(false) == 0)
         menu.cycle_page(1);

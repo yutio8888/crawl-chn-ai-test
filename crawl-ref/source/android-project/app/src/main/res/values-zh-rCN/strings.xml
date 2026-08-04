@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dungeon Crawl Stone Soup</string>
+    <string name="start_game">开始游戏</string>
+    <string name="edit_rc">编辑初始设置</string>
+    <string name="morgue">角色档案</string>
+    <string name="mods">模组</string>
+    <string name="rc_hint">在此输入自定义设置。</string>
+    <string name="help">选项指南</string>
+    <string name="open_error">无法打开文件</string>
+    <string name="save">保存</string>
+    <string name="save_error">保存文件失败</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="sort_by">排序方式</string>
+    <string name="download">下载</string>
+    <string name="download_ok">下载完成</string>
+    <string name="download_error">下载失败</string>
+    <string name="upload">上传</string>
+    <string name="upload_confirm">要覆盖 %s 吗？</string>
+    <string name="upload_ok">上传完成</string>
+    <string name="upload_error">上传失败</string>
+    <string name="delete">删除</string>
+    <string name="delete_confirm">要删除 %s 吗？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="delete_ok">文件已删除</string>
+    <string name="delete_error">删除文件失败</string>
+    <string name="virtual_keyboard">虚拟键盘</string>
+    <string name="extra_keyboard">额外方向键</string>
+    <string name="keyboard_size">键盘大小</string>
+    <string name="full_screen">全屏</string>
+    <string name="keyboard_explore">探索</string>
+    <string name="keyboard_menu">菜单</string>
+    <string name="keyboard_inventory">背包</string>
+    <string name="keyboard_pickup">拾取</string>
+    <string name="keyboard_help">帮助</string>
+    <string name="keyboard_full">完整</string>
+    <string name="keyboard_compact">紧凑</string>
+    <string name="keyboard_rest">等待</string>
+    <string name="mods_hint">可在此覆盖游戏数据资源。
+        额外字体需要在初始设置中启用。</string>
+    <string name="tv_warning">警告\n\n游玩 Dungeon Crawl Stone Soup 需要键盘、鼠标或触摸屏。\n\n如果只有鼠标或触摸屏，建议在下一页启用虚拟键盘。</string>
+    <string-array name="sort_options">
+        <item>名称升序</item>
+        <item>名称降序</item>
+        <item>日期升序</item>
+        <item>日期降序</item>
+    </string-array>
+    <string-array name="keyboard_options">
+        <item>禁用</item>
+        <item>经典键盘</item>
+        <item>透明键盘</item>
+        <item>Android 键盘</item>
+        <item>移动端紧凑键盘</item>
+    </string-array>
+    <string-array name="extra_keyboard_options">
+        <item>禁用</item>
+        <item>左上</item>
+        <item>右上</item>
+        <item>左下</item>
+        <item>右下</item>
+    </string-array>
+</resources>

@@ -65,11 +65,26 @@
 #endif
 #include "ui.h"
 #ifdef __ANDROID__
+ #include <android/log.h>
+ #include <time.h>
  #include "syscalls.h"
 #endif
 #include "version.h"
 
 using namespace ui;
+
+#ifdef __ANDROID__
+static void _android_startup_marker(const char *phase)
+{
+    timespec now;
+    clock_gettime(CLOCK_BOOTTIME, &now);
+    const long long elapsed_ms = static_cast<long long>(now.tv_sec) * 1000
+                                 + now.tv_nsec / 1000000;
+    __android_log_print(ANDROID_LOG_INFO, "AndroidStartup",
+                        "phase=%s elapsed_realtime_ms=%lld", phase,
+                        elapsed_ms);
+}
+#endif
 
 static void _loading_message(string m)
 {
@@ -82,6 +97,9 @@ static void _loading_message(string m)
 // Initialise a whole lot of stuff...
 static void _initialize()
 {
+#ifdef __ANDROID__
+    _android_startup_marker("native_initialize_start");
+#endif
     Options.fixup_options();
 
     you.symbol = MONS_PLAYER;
@@ -137,7 +155,13 @@ static void _initialize()
 
     // Initialise internal databases.
     _loading_message("Loading databases...");
+#ifdef __ANDROID__
+    _android_startup_marker("databases_start");
+#endif
     databaseSystemInit();
+#ifdef __ANDROID__
+    _android_startup_marker("databases_complete");
+#endif
 
     _loading_message("Loading spells and features...");
     init_feat_desc_cache();
@@ -148,8 +172,14 @@ static void _initialize()
 
     // Read special levels and vaults.
     _loading_message("Loading maps...");
+#ifdef __ANDROID__
+    _android_startup_marker("maps_start");
+#endif
     read_maps();
     run_map_global_preludes();
+#ifdef __ANDROID__
+    _android_startup_marker("maps_complete");
+#endif
 
     if (crawl_state.build_db)
         end(0);
@@ -208,6 +238,9 @@ static void _initialize()
 
     mpr(opening_screen().tostring().c_str());
     mpr(options_read_status().tostring().c_str());
+#ifdef __ANDROID__
+    _android_startup_marker("native_initialize_complete");
+#endif
 }
 
 /** KILL_RESETs all monsters in LOS.
@@ -1081,6 +1114,9 @@ bool startup_step()
     else if (!can_bypass_menu && choice.type != GAME_TYPE_ARENA)
     {
         crawl_state.bypassed_startup_menu = false;
+#ifdef __ANDROID__
+        _android_startup_marker("startup_menu_ready");
+#endif
         _show_startup_menu(choice, defaults);
         // [ds] Must set game type here, or we won't be able to load
         // Sprint saves.

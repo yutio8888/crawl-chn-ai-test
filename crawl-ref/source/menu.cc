@@ -664,9 +664,33 @@ public:
 class UIMenuMore : public Text
 {
 public:
-    UIMenuMore() : using_template(false)
+    explicit UIMenuMore(Menu *menu) : using_template(false), m_menu(menu)
     {}
     virtual ~UIMenuMore() {}
+
+    bool on_event(const Event &event) override
+    {
+#ifdef __ANDROID__
+        if (crawl_state.updating_scores
+            && (event.type() == Event::Type::MouseDown
+                || event.type() == Event::Type::MouseUp))
+        {
+            const auto &mouse = static_cast<const MouseEvent&>(event);
+            if (mouse.button() == MouseEvent::Button::Left)
+            {
+                if (event.type() == Event::Type::MouseUp && m_menu->m_ui.popup)
+                {
+                    wm_keyboard_event wm_ev = {0};
+                    wm_ev.keysym.sym = CK_ESCAPE;
+                    KeyEvent key_event(Event::Type::KeyDown, wm_ev);
+                    m_menu->m_ui.popup->on_event(key_event);
+                }
+                return true;
+            }
+        }
+#endif
+        return Text::on_event(event);
+    }
 
     void set_text_immediately(const formatted_string &fs)
     {
@@ -740,6 +764,7 @@ public:
     bool using_template;
 
 private:
+    Menu *m_menu;
     string text_for_scrollable;
     string text_for_unscrollable;
 };
@@ -1188,7 +1213,7 @@ Menu::Menu(int _flags, const string& tagname, KeymapContext kmc)
     m_ui.menu = make_shared<UIMenu>(this);
     m_ui.scroller = make_shared<UIMenuScroller>();
     m_ui.title = make_shared<Text>();
-    m_ui.more = make_shared<UIMenuMore>();
+    m_ui.more = make_shared<UIMenuMore>(this);
     m_ui.more->set_visible(false);
     m_ui.vbox = make_shared<Box>(Widget::VERT);
     m_ui.vbox->set_cross_alignment(Widget::STRETCH);

@@ -818,35 +818,33 @@ static void _add_formatted_help_menu(column_composer &cols)
             T_("<w>:</w>: Browse character notes\n"
                "<w>#</w>: Browse character dump"), false);
     }
-    // NOTE: #ifdef inside T_() creates build-config-dependent keys.
-    // Restructure before adding source.txt entries.
     cols.add_formatted(0,
         T_("<w>~</w>: Macros help\n"
            "<w>&</w>: Options help\n"
            "<w>%</w>: Table of aptitudes\n"
            "<w>/</w>: Lookup description\n"
-           "<w>Q</w>: FAQ\n"
+           "<w>Q</w>: FAQ\n"),
+        false);
 #ifdef USE_TILE_LOCAL
-           "<w>T</w>: Tiles key help\n"
+    cols.add_formatted(0, T_("<w>T</w>: Tiles key help\n"), false);
 #endif
-           "<w>V</w>: Version information\n"
+    cols.add_formatted(0,
+        T_("<w>V</w>: Version information\n"
            "<w>!</w>: Display diagnostics\n"
-           "<w>Home</w>: This screen\n"
+           "<w>Home</w>: This screen"),
+        false);
 #ifdef __ANDROID__
-           // XX is this the bet place for this? It should at least be duplicated
-           // in `??`.
-           "\n"
-           "<h>Android Controls\n"
+    cols.add_formatted(0,
+        T_("\n<h>Android Controls\n"
            "\n"
            "<w>Back key</w>: Alias for escape\n"
            "<w>Volume keys</w>: Zoom dungeon & map\n"
            "Long press for right click.\n"
            "Touch with two fingers for scrolling.\n"
            "Toggle keyboard icon controls the\n"
-           "virtual keyboard visibility.\n"
-#endif
-        ),
+           "virtual keyboard visibility.\n"),
         false);
+#endif
 
     // TODO: generate this from the manual somehow
     cols.add_formatted(

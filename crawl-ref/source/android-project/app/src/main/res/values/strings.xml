@@ -31,6 +31,14 @@
     <string name="extra_keyboard">Extra directional pad</string>
     <string name="keyboard_size">Keyboard size</string>
     <string name="full_screen">Full screen</string>
+    <string name="keyboard_explore">Explore</string>
+    <string name="keyboard_menu">Menu</string>
+    <string name="keyboard_inventory">Inventory</string>
+    <string name="keyboard_pickup">Pick up</string>
+    <string name="keyboard_help">Help</string>
+    <string name="keyboard_full">Full</string>
+    <string name="keyboard_compact">Compact</string>
+    <string name="keyboard_rest">Wait</string>
     <string name="mods_hint">Here you can override game data resources.
         Extra fonts need to be enabled in the init file.</string>
     <string name="tv_warning">WARNING\n\nYou need a keyboard, a mouse or a touch screen in order
@@ -47,6 +55,7 @@
         <item>Classic keyboard</item>
         <item>Transparent keyboard</item>
         <item>Android keyboard</item>
+        <item>Mobile compact keyboard</item>
     </string-array>
     <string-array name="extra_keyboard_options">
         <item>Disabled</item>

@@ -305,6 +305,7 @@ class UIMenuMore;
 class Menu
 {
     friend class UIMenu;
+    friend class UIMenuMore;
     friend class UIMenuPopup;
 public:
     Menu(int flags = MF_MULTISELECT, const string& tagname = "", KeymapContext kmc = KMC_MENU);

@@ -5,9 +5,14 @@
 #include "topbar-drawer.h"
 
 #include "database.h"
+#include "env.h"
+#include "items.h"
 #include "libutil.h"
 #include "outer-menu.h"
+#include "player.h"
 #include "status.h"
+#include "terrain.h"
+#include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
 
@@ -37,7 +42,8 @@ static string _status_description(const status_info &info)
 static string _command_menu_text(const char *context, const char *text)
 {
     const string db_key = string(context) + "|" + text;
-    const string translated = getLongDescription(db_key);
+    string translated = getLongDescription(db_key);
+    trim_string_right(translated);
     return translated.empty() ? text : translated;
 }
 
@@ -410,7 +416,61 @@ command_type show_topbar_command_menu()
     main_title->set_margin_for_sdl(0, 0, 16, 0);
     main_page->add_child(std::move(main_title));
 
-    const auto inventory = add_command_button(
+    shared_ptr<MenuButton> primary_button;
+    const dungeon_feature_type feature = env.grid(you.pos());
+    const command_type stair_command = feat_stair_direction(feature);
+    if (stair_command != CMD_NO_CMD && !feat_is_altar(feature))
+    {
+        const char *label;
+        const char *summary;
+        if (feature == DNGN_ENTER_SHOP)
+        {
+            label = "Enter Shop";
+            summary = "Enter Shop";
+        }
+        else if (feat_is_gate(feature))
+        {
+            label = "Enter";
+            summary = "Enter";
+        }
+        else if (stair_command == CMD_GO_UPSTAIRS)
+        {
+            label = "Go Upstairs";
+            summary = "Go Upstairs";
+        }
+        else
+        {
+            label = "Go Downstairs";
+            summary = "Go Downstairs";
+        }
+
+        primary_button = add_command_button(
+            main_page,
+            _command_menu_text("android command menu", label),
+            _command_menu_text("android command menu summary", summary),
+            tileidx_feature(you.pos()), stair_command);
+    }
+
+    if (you.visible_igrd(you.pos()) != NON_ITEM)
+    {
+        const auto pickup = add_command_button(
+            main_page,
+            _command_menu_text("android command menu", "Pick Up"),
+            _command_menu_text("android command menu summary", "Pick Up"),
+            TILEG_TAB_ITEM, CMD_PICKUP);
+        if (!primary_button)
+            primary_button = pickup;
+    }
+
+    const auto explore = add_command_button(
+        main_page,
+        _command_menu_text("android command menu", "Auto-explore"),
+        _command_menu_text("android command menu summary", "Auto-explore"),
+        tileidx_command(CMD_EXPLORE), CMD_EXPLORE);
+    if (!primary_button)
+        primary_button = explore;
+
+    add_command_button(
         main_page,
         _command_menu_text("android command menu", "Inventory"),
         _command_menu_text("android command menu summary", "Inventory"),
@@ -511,7 +571,7 @@ command_type show_topbar_command_menu()
     back->on_activate_event([&](const ui::ActivateEvent&) {
         pages->current() = 0;
         scroller->set_scroll(0);
-        ui::set_focused_widget(inventory.get());
+        ui::set_focused_widget(primary_button.get());
         return true;
     });
 
@@ -530,7 +590,7 @@ command_type show_topbar_command_menu()
     }
 
     ui::push_layout(scrim);
-    ui::set_focused_widget(inventory.get());
+    ui::set_focused_widget(primary_button.get());
     while (!done && !scrim->close_requested() && !crawl_state.seen_hups)
         ui::pump_events();
     ui::pop_layout();

@@ -2000,6 +2000,13 @@ static void _render_top_bar()
         mode_text = "*EXP*";
 
     int right_edge = hud_width;
+    const string menu_text = "[" + string(T_("Menu")) + "]";
+    const int menu_x = max(1, right_edge - strwidth(menu_text) + 1);
+    CGOTOXY(menu_x, warning_row, GOTO_STAT);
+    textcolour(YELLOW);
+    CPRINTF("%s", menu_text.c_str());
+    right_edge = menu_x - field_gap;
+
     if (!mode_text.empty())
     {
         const int mode_x = max(1, right_edge - strwidth(mode_text) + 1);

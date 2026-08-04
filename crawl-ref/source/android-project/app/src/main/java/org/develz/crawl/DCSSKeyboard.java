@@ -17,6 +17,8 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     private final View keyboardUpper;
     private final View keyboardCtrl;
     private final View keyboardNumeric;
+    private final View keyboardMobile;
+    private final View compactToggle;
 
     // Constructors
     public DCSSKeyboard(Context context) {
@@ -38,6 +40,8 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         keyboardUpper = findViewById(R.id.keyboard_upper);
         keyboardCtrl = findViewById(R.id.keyboard_ctrl);
         keyboardNumeric = findViewById(R.id.keyboard_numeric);
+        keyboardMobile = findViewById(R.id.keyboard_mobile);
+        compactToggle = findViewById(R.id.key_compact_lower);
 
         // Initialize key buttons - lower keyboard
         initKey(R.id.key_q);
@@ -80,6 +84,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_minus);
         initKey(R.id.key_plus);
         initKey(R.id.key_enter);
+        initKey(R.id.key_compact_lower);
         initKey(R.id.key_123_lower);
 
         // Initialize buttons - upper keyboard
@@ -211,6 +216,23 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_num_quest);
         initKey(R.id.key_num_0);
         initKey(R.id.key_abc);
+
+        // Initialize buttons - mobile compact keyboard
+        initKey(R.id.key_mobile_7);
+        initKey(R.id.key_mobile_8);
+        initKey(R.id.key_mobile_9);
+        initKey(R.id.key_mobile_explore);
+        initKey(R.id.key_mobile_menu);
+        initKey(R.id.key_mobile_4);
+        initKey(R.id.key_mobile_5);
+        initKey(R.id.key_mobile_6);
+        initKey(R.id.key_mobile_inventory);
+        initKey(R.id.key_mobile_pickup);
+        initKey(R.id.key_mobile_1);
+        initKey(R.id.key_mobile_2);
+        initKey(R.id.key_mobile_3);
+        initKey(R.id.key_mobile_help);
+        initKey(R.id.key_mobile_expand);
     }
 
     // Extra init settings
@@ -219,23 +241,41 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         super.initKeyboard(keyboardOption, size);
         if (keyboardOption == 2) {
             transparentKeyboard();
+        } else if (keyboardOption == 4) {
+            keyboardLower.setVisibility(View.GONE);
+            keyboardUpper.setVisibility(View.GONE);
+            keyboardCtrl.setVisibility(View.GONE);
+            keyboardNumeric.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.VISIBLE);
+            compactToggle.setVisibility(View.VISIBLE);
         }
     }
 
     // Swap keyboards
     @Override
     protected void updateLayout(View v) {
-        if ((v.getId() == R.id.key_shift_lower) ||
+        if (v.getId() == R.id.key_mobile_expand) {
+            keyboardMobile.setVisibility(View.GONE);
+            keyboardLower.setVisibility(View.VISIBLE);
+        } else if (v.getId() == R.id.key_compact_lower) {
+            keyboardLower.setVisibility(View.GONE);
+            keyboardUpper.setVisibility(View.GONE);
+            keyboardCtrl.setVisibility(View.GONE);
+            keyboardNumeric.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.VISIBLE);
+        } else if ((v.getId() == R.id.key_shift_lower) ||
                 (v.getId() == R.id.key_shift_ctrl)) {
             keyboardLower.setVisibility(View.GONE);
             keyboardCtrl.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.GONE);
             keyboardUpper.setVisibility(View.VISIBLE);
         } else if (v.getId() == R.id.key_ctrl_lower ||
                 v.getId() == R.id.key_ctrl_upper) {
             keyboardLower.setVisibility(View.GONE);
             keyboardUpper.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.GONE);
             keyboardCtrl.setVisibility(View.VISIBLE);
         } else if ((v.getId() == R.id.key_123_lower) ||
                 (v.getId() == R.id.key_123_upper) ||
@@ -243,6 +283,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             keyboardLower.setVisibility(View.GONE);
             keyboardUpper.setVisibility(View.GONE);
             keyboardCtrl.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.VISIBLE);
         } else if ((v.getId() == R.id.key_abc) ||
                 (((LinearLayout)v.getParent().getParent()).getId() == R.id.keyboard_upper) ||
@@ -250,6 +291,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             keyboardUpper.setVisibility(View.GONE);
             keyboardCtrl.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.GONE);
+            keyboardMobile.setVisibility(View.GONE);
             keyboardLower.setVisibility(View.VISIBLE);
         }
     }

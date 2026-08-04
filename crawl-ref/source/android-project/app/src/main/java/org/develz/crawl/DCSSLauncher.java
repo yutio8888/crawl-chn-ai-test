@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -63,6 +64,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Log.i("AndroidStartup", "launcher_on_create elapsed_realtime_ms="
+                + SystemClock.elapsedRealtime());
         setContentView(R.layout.launcher);
 
         findViewById(R.id.startButton).setOnClickListener(this::startGame);
@@ -72,8 +75,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
         boolean isPC = getPackageManager().hasSystemFeature(PackageManager.FEATURE_PC);
         boolean isTV = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
-        int defaultKeyboard = 1;
-        int defaultExtraKeyboard = 4;
+        int defaultKeyboard = 4;
+        int defaultExtraKeyboard = 0;
         if (isPC || isTV) {
             defaultKeyboard = 0;
             defaultExtraKeyboard = 0;
@@ -140,7 +143,10 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
     // Start game
     private void startGame(View v) {
+        long clickTime = SystemClock.elapsedRealtime();
+        Log.i("AndroidStartup", "start_game_click elapsed_realtime_ms=" + clickTime);
         Intent intent = new Intent(getBaseContext(), DungeonCrawlStoneSoup.class);
+        intent.putExtra("startup_click_ms", clickTime);
         intent.putExtra("keyboard", keyboardOption);
         intent.putExtra("extra_keyboard", extraKeyboardOption);
         intent.putExtra("keyboard_size", Math.round(keyboardSizePx));

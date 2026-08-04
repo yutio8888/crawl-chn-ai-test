@@ -497,3 +497,51 @@ android command menu summary|Commands
 
 查看按键与命令列表
 %%%%
+android command menu|Auto-explore
+
+自动探索
+%%%%
+android command menu summary|Auto-explore
+
+自动探索当前楼层
+%%%%
+android command menu|Enter Shop
+
+进入商店
+%%%%
+android command menu summary|Enter Shop
+
+进入脚下的商店
+%%%%
+android command menu|Enter
+
+进入
+%%%%
+android command menu summary|Enter
+
+使用脚下的入口
+%%%%
+android command menu|Go Downstairs
+
+下楼
+%%%%
+android command menu summary|Go Downstairs
+
+使用脚下的下行通道
+%%%%
+android command menu|Go Upstairs
+
+上楼
+%%%%
+android command menu summary|Go Upstairs
+
+使用脚下的上行通道
+%%%%
+android command menu|Pick Up
+
+拾取
+%%%%
+android command menu summary|Pick Up
+
+拾取脚下的物品
+%%%%

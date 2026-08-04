@@ -156,6 +156,45 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Android shell help and touch menu are complete",
+                 "[zh-translation][android-playtest][touch-menu]")
+{
+    CHECK(std::string(T_("Menu")) == "菜单");
+    CHECK(std::string(T_("Tap <w>Menu</w> in the top bar to open inventory "
+                         "and character pages. Use <w>123</w> on the full "
+                         "keyboard for symbols."))
+          == "点按顶部栏中的<w>菜单</w>可打开背包和角色页面。"
+             "完整键盘中的符号位于<w>123</w>层。");
+    CHECK(std::string(T_("\n<h>Android Controls\n"
+                         "\n"
+                         "<w>Back key</w>: Alias for escape\n"
+                         "<w>Volume keys</w>: Zoom dungeon & map\n"
+                         "Long press for right click.\n"
+                         "Touch with two fingers for scrolling.\n"
+                         "Toggle keyboard icon controls the\n"
+                         "virtual keyboard visibility.\n"))
+          == "\n<h>Android 操作\n"
+             "\n"
+             "<w>返回键</w>：等同于 Esc\n"
+             "<w>音量键</w>：缩放地牢与地图\n"
+             "长按等同于右键单击。\n"
+             "双指触摸可以滚动。\n"
+             "键盘图标用于切换\n"
+             "虚拟键盘的显示状态。\n");
+
+    CHECK(trim_string_right(getLongDescription("android command menu|Auto-explore"))
+          == "自动探索");
+    CHECK(trim_string_right(getLongDescription("android command menu|Enter Shop"))
+          == "进入商店");
+    CHECK(trim_string_right(getLongDescription("android command menu|Go Downstairs"))
+          == "下楼");
+    CHECK(trim_string_right(getLongDescription("android command menu|Go Upstairs"))
+          == "上楼");
+    CHECK(trim_string_right(getLongDescription("android command menu|Pick Up"))
+          == "拾取");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: localized note snapshots survive save roundtrip",
                  "[zh-translation][notes][persistence]")
 {

@@ -40539,6 +40539,30 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <w>:</w>: Browse character notes\n<w>#</w>: Browse character dump
 <w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
 %%%%
+<w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
+<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：能力倾向表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
+%%%%
+<w>T</w>: Tiles key help\n
+<w>T</w>：图形界面按键帮助\n
+%%%%
+<w>V</w>: Version information\n<w>!</w>: Display diagnostics\n<w>Home</w>: This screen
+<w>V</w>：版本信息\n<w>!</w>：显示诊断信息\n<w>Home</w>：本页
+%%%%
+\n<h>Android Controls\n\n<w>Back key</w>: Alias for escape\n<w>Volume keys</w>: Zoom dungeon & map\nLong press for right click.\nTouch with two fingers for scrolling.\nToggle keyboard icon controls the\nvirtual keyboard visibility.\n
+\n<h>Android 操作\n\n<w>返回键</w>：等同于 Esc\n<w>音量键</w>：缩放地牢与地图\n长按等同于右键单击。\n双指触摸可以滚动。\n键盘图标用于切换\n虚拟键盘的显示状态。\n
+%%%%
+Tap <w>Menu</w> in the top bar to open inventory and character pages. Use <w>123</w> on the full keyboard for symbols.
+点按顶部栏中的<w>菜单</w>可打开背包和角色页面。完整键盘中的符号位于<w>123</w>层。
+%%%%
+Tap here or press Back to view the score summary.
+点按此处或按返回键查看战绩。
+%%%%
+Continue
+继续
+%%%%
+Menu
+菜单
+%%%%
 <h>Manual Contents\n\n<w>*</w>       Table of contents\n<w>A</w>.      Overview\n<w>B</w>.      Starting Screen\n<w>C</w>.      Attributes and Stats\n<w>D</w>.      Exploring the Dungeon\n<w>E</w>.      Experience and Skills\n<w>F</w>.      Monsters\n<w>G</w>.      Items\n<w>H</w>.      Spellcasting\n<w>I</w>.      Targeting\n<w>J</w>.      Religion\n<w>K</w>.      Mutations\n<w>L</w>.      Licence, Contact, History\n<w>M</w>.      Macros, Options, Performance\n<w>N</w>.      Philosophy\n<w>1</w>.      List of Character Species\n<w>2</w>.      List of Character Backgrounds\n<w>3</w>.      List of Skills\n<w>4</w>.      List of Keys and Commands\n<w>5</w>.      Inscriptions\n<w>6</w>.      Dungeon sprint modes\n
 <h>手册目录\n\n<w>*</w>       目录\n<w>A</w>.      概述\n<w>B</w>.      起始界面\n<w>C</w>.      属性与数值\n<w>D</w>.      探索地牢\n<w>E</w>.      经验与技能\n<w>F</w>.      怪物\n<w>G</w>.      物品\n<w>H</w>.      法术\n<w>I</w>.      瞄准\n<w>J</w>.      信仰\n<w>K</w>.      变异\n<w>L</w>.      许可、联系方式、历史\n<w>M</w>.      宏、选项、性能\n<w>N</w>.      理念\n<w>1</w>.      角色种族列表\n<w>2</w>.      角色背景列表\n<w>3</w>.      技能列表\n<w>4</w>.      按键与命令列表\n<w>5</w>.      铭文\n<w>6</w>.      地牢冲刺模式\n
 %%%%
