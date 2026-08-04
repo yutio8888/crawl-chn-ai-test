@@ -11,6 +11,7 @@
 #include "outer-menu.h"
 #include "player.h"
 #include "status.h"
+#include "stringutil.h"
 #include "terrain.h"
 #include "tilepick.h"
 #include "tiles-build-specific.h"
