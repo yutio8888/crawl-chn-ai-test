@@ -42049,13 +42049,13 @@ android command menu|Spells
 法术
 %%%%
 android command menu summary|Spells
-查看已学法术
+查看已记忆法术
 %%%%
 android command menu|Abilities
 能力
 %%%%
 android command menu summary|Abilities
-使用种族或神祇能力
+使用神赐的、先天的或激活的能力
 %%%%
 android command menu|Character
 角色
