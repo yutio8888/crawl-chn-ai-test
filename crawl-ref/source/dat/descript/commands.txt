@@ -404,3 +404,120 @@ Show game menu
 CMD_GAME_MENU verbose
 
 Show the game menu
+%%%%
+android command menu|Game menu
+
+Game menu
+%%%%
+android command menu|Inventory
+
+Inventory
+%%%%
+android command menu summary|Inventory
+
+Inventory
+%%%%
+android command menu|Spells
+
+Spells
+%%%%
+android command menu summary|Spells
+
+Spells
+%%%%
+android command menu|Abilities
+
+Abilities
+%%%%
+android command menu summary|Abilities
+
+Abilities
+%%%%
+android command menu|Character
+
+Character
+%%%%
+android command menu summary|Character
+
+Character
+%%%%
+android command menu|Skills
+
+Skills
+%%%%
+android command menu summary|Skills
+
+Skills
+%%%%
+android command menu|Religion
+
+Religion
+%%%%
+android command menu summary|Religion
+
+Religion
+%%%%
+android command menu|More
+
+More
+%%%%
+android command menu summary|More
+
+More
+%%%%
+android command menu|Back
+
+Back
+%%%%
+android command menu summary|Back
+
+Back
+%%%%
+android command menu|Memorise
+
+Memorise
+%%%%
+android command menu summary|Memorise
+
+Memorise
+%%%%
+android command menu|Map
+
+Map
+%%%%
+android command menu summary|Map
+
+Map
+%%%%
+android command menu|Known Objects
+
+Known Objects
+%%%%
+android command menu summary|Known Objects
+
+Known Objects
+%%%%
+android command menu|Full View
+
+Full View
+%%%%
+android command menu summary|Full View
+
+Full View
+%%%%
+android command menu|Mutations
+
+Mutations
+%%%%
+android command menu summary|Mutations
+
+Mutations
+%%%%
+android command menu|Commands
+
+Commands
+%%%%
+android command menu summary|Commands
+
+Commands
+%%%%

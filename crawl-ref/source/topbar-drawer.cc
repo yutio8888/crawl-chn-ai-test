@@ -34,6 +34,13 @@ static string _status_description(const status_info &info)
     return info.short_text;
 }
 
+static string _command_menu_text(const char *context, const char *text)
+{
+    const string db_key = string(context) + "|" + text;
+    const string translated = getLongDescription(db_key);
+    return translated.empty() ? text : translated;
+}
+
 static formatted_string _build_status_text()
 {
     formatted_string text(LIGHTGREY);
@@ -399,87 +406,89 @@ command_type show_topbar_command_menu()
     auto main_page = make_shared<ui::Box>(ui::Widget::VERT);
     main_page->set_cross_alignment(ui::Widget::STRETCH);
     auto main_title = make_shared<ui::Text>(formatted_string(
-        C_("android command menu", "Game menu"), YELLOW));
+        _command_menu_text("android command menu", "Game menu"), YELLOW));
     main_title->set_margin_for_sdl(0, 0, 16, 0);
     main_page->add_child(std::move(main_title));
 
     const auto inventory = add_command_button(
         main_page,
-        string(C_("android command menu", "Inventory")),
-        string(C_("android command menu summary", "Inventory")),
+        _command_menu_text("android command menu", "Inventory"),
+        _command_menu_text("android command menu summary", "Inventory"),
         TILEG_CMD_DISPLAY_INVENTORY, CMD_DISPLAY_INVENTORY);
     add_command_button(
         main_page,
-        string(C_("android command menu", "Spells")),
-        string(C_("android command menu summary", "Spells")),
+        _command_menu_text("android command menu", "Spells"),
+        _command_menu_text("android command menu summary", "Spells"),
         TILEG_CMD_CAST_SPELL, CMD_DISPLAY_SPELLS);
     add_command_button(
         main_page,
-        string(C_("android command menu", "Abilities")),
-        string(C_("android command menu summary", "Abilities")),
+        _command_menu_text("android command menu", "Abilities"),
+        _command_menu_text("android command menu summary", "Abilities"),
         TILEG_CMD_USE_ABILITY, CMD_USE_ABILITY);
     add_command_button(
         main_page,
-        string(C_("android command menu", "Character")),
-        string(C_("android command menu summary", "Character")),
+        _command_menu_text("android command menu", "Character"),
+        _command_menu_text("android command menu summary", "Character"),
         TILEG_CMD_RESISTS_SCREEN, CMD_RESISTS_SCREEN);
     add_command_button(
         main_page,
-        string(C_("android command menu", "Skills")),
-        string(C_("android command menu summary", "Skills")),
+        _command_menu_text("android command menu", "Skills"),
+        _command_menu_text("android command menu summary", "Skills"),
         TILEG_CMD_DISPLAY_SKILLS, CMD_DISPLAY_SKILLS);
     add_command_button(
         main_page,
-        string(C_("android command menu", "Religion")),
-        string(C_("android command menu summary", "Religion")),
+        _command_menu_text("android command menu", "Religion"),
+        _command_menu_text("android command menu summary", "Religion"),
         TILEG_CMD_DISPLAY_RELIGION, CMD_DISPLAY_RELIGION);
+    const string more_label =
+        _command_menu_text("android command menu", "More");
     const auto more = make_button(
-        string(C_("android command menu", "More")),
-        string(C_("android command menu summary", "More")),
+        more_label,
+        _command_menu_text("android command menu summary", "More"),
         TILEG_TAB_COMMAND2);
     main_page->add_child(more);
 
     auto more_page = make_shared<ui::Box>(ui::Widget::VERT);
     more_page->set_cross_alignment(ui::Widget::STRETCH);
-    auto more_title = make_shared<ui::Text>(formatted_string(
-        C_("android command menu", "More"), YELLOW));
+    auto more_title = make_shared<ui::Text>(
+        formatted_string(more_label, YELLOW));
     more_title->set_margin_for_sdl(0, 0, 16, 0);
     more_page->add_child(std::move(more_title));
 
     const auto back = make_button(
-        string(C_("android command menu", "Back")),
-        string(C_("android command menu summary", "Back")),
+        _command_menu_text("android command menu", "Back"),
+        _command_menu_text("android command menu summary", "Back"),
         TILEG_CMD_MAP_EXIT_MAP);
     more_page->add_child(back);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Memorise")),
-        string(C_("android command menu summary", "Memorise")),
+        _command_menu_text("android command menu", "Memorise"),
+        _command_menu_text("android command menu summary", "Memorise"),
         TILEG_CMD_MEMORISE_SPELL, CMD_MEMORISE_SPELL);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Map")),
-        string(C_("android command menu summary", "Map")),
+        _command_menu_text("android command menu", "Map"),
+        _command_menu_text("android command menu summary", "Map"),
         TILEG_CMD_DISPLAY_MAP, CMD_DISPLAY_MAP);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Known Objects")),
-        string(C_("android command menu summary", "Known Objects")),
+        _command_menu_text("android command menu", "Known Objects"),
+        _command_menu_text("android command menu summary", "Known Objects"),
         TILEG_CMD_KNOWN_ITEMS, CMD_DISPLAY_KNOWN_OBJECTS);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Full View")),
-        string(C_("android command menu summary", "Full View")),
+        _command_menu_text("android command menu", "Full View"),
+        _command_menu_text("android command menu summary", "Full View"),
         TILEG_TAB_MONSTER, CMD_FULL_VIEW);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Mutations")),
-        string(C_("android command menu summary", "Mutations")),
+        _command_menu_text("android command menu", "Mutations"),
+        _command_menu_text("android command menu summary", "Mutations"),
         TILEG_CMD_DISPLAY_MUTATIONS, CMD_DISPLAY_MUTATIONS);
     add_command_button(
         more_page,
-        string(C_("android command menu", "Commands")),
-        string(C_("android command menu summary", "Commands")),
+        _command_menu_text("android command menu", "Commands"),
+        _command_menu_text("android command menu summary", "Commands"),
         TILEG_CMD_DISPLAY_COMMANDS, CMD_DISPLAY_COMMANDS);
 
     auto pages = make_shared<ui::Switcher>();
