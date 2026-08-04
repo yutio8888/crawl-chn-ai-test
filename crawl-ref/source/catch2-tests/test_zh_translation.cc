@@ -166,6 +166,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     };
 
     CHECK(std::string(T_("Menu")) == "菜单");
+    CHECK(std::string(T_("--more-- Tap to continue."))
+          == "--更多-- 点按继续");
+    CHECK(std::string(T_("Tap here or press Back to view the score summary."))
+          == "点按此处或按返回键查看战绩。");
+    CHECK(std::string(T_("Continue")) == "继续");
+    CHECK(make_stringf(T_("Are you sure you want to leave %s?%s"),
+                       T_("the Dungeon"),
+                       T_(" This will make you lose the game!"))
+          == "确定要离开地牢吗？这会使你输掉游戏！");
     CHECK(std::string(T_("Tap <w>Menu</w> in the top bar to open inventory "
                          "and character pages. Use <w>123</w> on the full "
                          "keyboard for symbols."))

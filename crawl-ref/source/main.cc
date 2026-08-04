@@ -1610,10 +1610,11 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     // Escaping.
     if (!down && ygrd == DNGN_EXIT_DUNGEON && !player_has_orb())
     {
+        const char* leave_warning = crawl_state.game_is_tutorial() ? "" :
+            T_(" This will make you lose the game!");
         string prompt = make_stringf(T_("Are you sure you want to leave %s?%s"),
-                                     branches[root_branch].longname,
-                                     crawl_state.game_is_tutorial() ? "" :
-                                     " This will make you lose the game!");
+                                     T_(branches[root_branch].longname),
+                                     leave_warning);
         if (!yesno(prompt.c_str(), false, 'n'))
         {
             mpr(T_("Alright, then stay!"));

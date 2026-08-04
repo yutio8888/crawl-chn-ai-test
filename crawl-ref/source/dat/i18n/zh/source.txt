@@ -27804,6 +27804,9 @@ Really leave the Orb behind?
 Are you sure you want to leave %s?%s
 确定要离开%s吗？%s
 %%%%
+ This will make you lose the game!
+这会使你输掉游戏！
+%%%%
 A rune of Zot still resides in this realm, and once you leave you can never return. Are you sure you want to leave?
 此界仍留有一枚佐特符文，一旦离开便永远无法返回。确定要离开吗？
 %%%%
@@ -40556,6 +40559,9 @@ Tap <w>Menu</w> in the top bar to open inventory and character pages. Use <w>123
 %%%%
 Tap here or press Back to view the score summary.
 点按此处或按返回键查看战绩。
+%%%%
+--more-- Tap to continue.
+--更多-- 点按继续
 %%%%
 Continue
 继续

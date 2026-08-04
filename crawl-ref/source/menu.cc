@@ -672,19 +672,20 @@ public:
     {
 #ifdef __ANDROID__
         if (crawl_state.updating_scores
-            && (event.type() == Event::Type::MouseDown
-                || event.type() == Event::Type::MouseUp))
+            && event.type() == Event::Type::MouseDown)
         {
             const auto &mouse = static_cast<const MouseEvent&>(event);
             if (mouse.button() == MouseEvent::Button::Left)
             {
-                if (event.type() == Event::Type::MouseUp && m_menu->m_ui.popup)
+                if (m_menu->m_ui.popup)
                 {
                     wm_keyboard_event wm_ev = {0};
                     wm_ev.keysym.sym = CK_ESCAPE;
                     KeyEvent key_event(Event::Type::KeyDown, wm_ev);
                     m_menu->m_ui.popup->on_event(key_event);
                 }
+                // Transition on press so UIRoot's layout-change guard drops
+                // the matching release instead of activating the next page.
                 return true;
             }
         }
