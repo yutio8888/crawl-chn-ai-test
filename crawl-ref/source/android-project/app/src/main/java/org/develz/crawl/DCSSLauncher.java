@@ -73,13 +73,15 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         boolean isPC = getPackageManager().hasSystemFeature(PackageManager.FEATURE_PC);
         boolean isTV = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
         int defaultKeyboard = 1;
+        int defaultExtraKeyboard = 4;
         if (isPC || isTV) {
             defaultKeyboard = 0;
+            defaultExtraKeyboard = 0;
         }
 
         preferences = getPreferences(Context.MODE_PRIVATE);
         keyboardOption = preferences.getInt("keyboard", defaultKeyboard);
-        extraKeyboardOption = preferences.getInt("extra_keyboard", 0);
+        extraKeyboardOption = preferences.getInt("extra_keyboard", defaultExtraKeyboard);
         fullScreen = preferences.getBoolean("full_screen", true);
 
         // Density is the relationship between px and dp

@@ -2294,6 +2294,8 @@ public:
     AuxBite()
     : AuxAttackType(1, 40, "bite") { };
 
+    string get_name() const override { return T_("bite"); }
+
     int get_damage(bool random) const override
     {
         // duplicated in _describe_talisman_form

@@ -39,6 +39,7 @@
 #include "options.h"
 #include "player.h"
 #include "player-reacts.h"
+#include "positional_format.h"
 #include "random.h"
 #include "religion.h"
 #include "skills.h"
@@ -135,6 +136,23 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     Options.lang_name = "zh";
     databaseSystemInit();
     CHECK(std::string(T_("You hit %s.")) != "You hit %s.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: playtest combat and morgue formats are complete",
+                 "[zh-translation][combat][morgue][android-playtest]")
+{
+    CHECK(make_stringf(T_("%s blocks %s attack."), "你", "兽人的")
+          == "你格挡了兽人的攻击。");
+    CHECK(make_stringf_p(T_("%1$s attacks as %2$s pursue you!"), "它", "s")
+          == "在追击你时发动攻击！");
+
+    CHECK(std::string(T_("Vanquished Creatures")) == "已消灭的生物");
+    CHECK(make_stringf(T_("%d creature vanquished.\n"), 1)
+          == "已消灭1只生物。\n");
+    CHECK(make_stringf(T_("%d creatures vanquished.\n"), 2)
+          == "已消灭2只生物。\n");
+    CHECK(std::string(C_("morgue item inscription", "unknown")) == "未鉴定");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

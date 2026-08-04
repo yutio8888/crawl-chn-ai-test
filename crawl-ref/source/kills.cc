@@ -211,7 +211,7 @@ void KillMaster::add_kill_info(string &killtext,
         if (separator)
             killtext += "\n";
 
-        killtext += "Vanquished Creatures";
+        killtext += T_("Vanquished Creatures");
         if (category)
             killtext += string(" (") + category + ")";
 
@@ -220,8 +220,9 @@ void KillMaster::add_kill_info(string &killtext,
         for (const kill_exp &kill : kills)
             killtext += "  " + kill.desc + "\n";
 
-        killtext += make_stringf(T_("%d creature%s vanquished.\n"),
-                                 count, count == 1 ? "" : "s");
+        killtext += count == 1
+                    ? make_stringf(T_("%d creature vanquished.\n"), count)
+                    : make_stringf(T_("%d creatures vanquished.\n"), count);
     }
     lua_pop(clua, 1);
 }

@@ -1257,10 +1257,10 @@ mimic reveal plural|%s are mimics!
 %s开始渗出腐蚀性黏液！
 %%%%
 %s block %s attack.
-%s格挡了%s的攻击。
+%s格挡了%s攻击。
 %%%%
 %s blocks %s attack.
-%s格挡了%s的攻击。
+%s格挡了%s攻击。
 %%%%
 %s blocks %s with %s %s... and reflects it back!
 %s用%s%s挡住了%s……并将其反弹了回去！
@@ -13641,7 +13641,7 @@ A malevolent force fills %s...
 一股邪恶力量充满了%s……
 %%%%
 %1$s attacks as %2$s pursue you!
-%1$s%2$.0s在追击你时发动攻击！
+%1$.0s%2$.0s在追击你时发动攻击！
 %%%%
 %1$s feeds on the fading %2$s of %3$s!
 你从%1$s的衰减%2$s中汲取了力量。
@@ -34766,8 +34766,17 @@ weapon of %s
 %d (base %d)
 %d（基础%d）
 %%%%
-%d creature%s vanquished.\n
-已消灭%d只生物%s。\n
+%d creature vanquished.\n
+已消灭%d只生物。\n
+%%%%
+%d creatures vanquished.\n
+已消灭%d只生物。\n
+%%%%
+Vanquished Creatures
+已消灭的生物
+%%%%
+morgue item inscription|unknown
+未鉴定
 %%%%
 %d doors close
 %d扇门关闭

@@ -62,6 +62,16 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
         actionKeys.add(KeyEvent.KEYCODE_F10);
         actionKeys.add(KeyEvent.KEYCODE_F11);
         actionKeys.add(KeyEvent.KEYCODE_F12);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_0);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_1);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_2);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_3);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_4);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_5);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_6);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_7);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_8);
+        actionKeys.add(KeyEvent.KEYCODE_NUMPAD_9);
     }
 
     // Extra init settings

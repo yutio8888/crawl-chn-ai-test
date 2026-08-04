@@ -1,10 +1,12 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "melee-attack.h"
 #include "mutation.h"
 #include "player.h"
 
 #include "test_player_fixture.h"
+#include "test_zh_fixture.h"
 
 // Some of these a characterization tests which should be justifiably
 // removed if the behaviour ever changes. Left in for now because it
@@ -100,4 +102,16 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     mutate(MUT_PHYSICAL_VULNERABILITY, "testing");
 
     REQUIRE(you.base_ac(100) == -1500);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "zh: usable fangs expose a translated bite name",
+                 "[single-file][zh-translation][combat]")
+{
+    ZhTranslationFixture zh;
+    REQUIRE(mutate(MUT_FANGS, "testing"));
+
+    const vector<string> names = get_player_aux_names();
+    CHECK(std::find(names.begin(), names.end(), "咬") != names.end());
+    CHECK(std::find(names.begin(), names.end(), "bite") == names.end());
 }
