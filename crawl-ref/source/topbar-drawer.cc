@@ -89,6 +89,11 @@ public:
                && _handle_pointer_event(event);
     }
 
+    void cancel_drag()
+    {
+        m_dragging = false;
+    }
+
 private:
     bool _handle_pointer_event(const ui::Event &event)
     {
@@ -289,6 +294,8 @@ public:
                 && m_child
                 && !m_child->get_region().contains_point(mouse.x(), mouse.y()))
             {
+                if (m_scroller)
+                    m_scroller->cancel_drag();
                 m_outside_press = true;
             }
             return true;
