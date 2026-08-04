@@ -89,7 +89,11 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
                 return CK_NO_KEY;
             }
         }
-        return 0;
+
+        const command_type command = show_topbar_command_menu();
+        if (command == CMD_NO_CMD)
+            return 0;
+        return encode_command_as_key(command);
     }
 #endif
 

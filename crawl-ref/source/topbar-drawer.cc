@@ -6,6 +6,7 @@
 
 #include "database.h"
 #include "libutil.h"
+#include "outer-menu.h"
 #include "status.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
@@ -14,6 +15,9 @@ namespace
 {
 
 static const int DRAWER_PADDING = 24;
+static const int COMMAND_MENU_ITEM_HEIGHT = 72;
+static const int COMMAND_MENU_ITEM_PADDING = 12;
+static const int COMMAND_MENU_ICON_GAP = 16;
 
 static string _status_description(const status_info &info)
 {
@@ -215,7 +219,7 @@ class DrawerScrim final : public ui::Bin
 {
 public:
     DrawerScrim(shared_ptr<DrawerPanel> panel,
-                shared_ptr<DrawerScroller> scroller)
+                shared_ptr<DrawerScroller> scroller = nullptr)
         : m_scroller(std::move(scroller))
     {
         set_child(std::move(panel));
@@ -268,10 +272,11 @@ public:
             }
         }
 
-        if (m_scroller->continue_drag(event))
+        if (m_scroller && m_scroller->continue_drag(event))
             return true;
 
         if (event.type() == ui::Event::Type::KeyDown
+            && m_scroller
             && m_scroller->on_event(event))
         {
             return true;
@@ -333,6 +338,71 @@ void show_topbar_status_drawer()
         ui::pump_events();
     ui::pop_layout();
     tiles.set_need_redraw();
+}
+
+command_type show_topbar_command_menu()
+{
+    command_type selected_command = CMD_NO_CMD;
+    bool done = false;
+
+    auto contents = make_shared<ui::Box>(ui::Widget::VERT);
+    contents->set_cross_alignment(ui::Widget::STRETCH);
+
+    auto title = make_shared<ui::Text>(formatted_string(
+        C_("android command menu", "Game menu"), YELLOW));
+    title->set_margin_for_sdl(0, 0, 16, 0);
+    contents->add_child(std::move(title));
+
+    auto row = make_shared<ui::Box>(ui::Widget::HORZ);
+    row->set_cross_alignment(ui::Widget::CENTER);
+    row->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
+
+    auto icon = make_shared<ui::Image>(tile_def(
+        TILEG_CMD_DISPLAY_INVENTORY));
+    icon->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP, 0, 0);
+    row->add_child(std::move(icon));
+
+    auto labels = make_shared<ui::Box>(ui::Widget::VERT);
+    labels->expand_h = true;
+    labels->add_child(make_shared<ui::Text>(formatted_string(
+        C_("android command menu", "Inventory"), WHITE)));
+
+    auto summary = make_shared<ui::Text>(formatted_string(
+        C_("android command menu summary", "Inventory"), LIGHTGREY));
+    summary->set_wrap_text(true);
+    labels->add_child(std::move(summary));
+    row->add_child(std::move(labels));
+
+    auto inventory = make_shared<MenuButton>();
+    inventory->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+    inventory->highlight_colour = BROWN;
+    inventory->set_child(std::move(row));
+    inventory->on_activate_event([&](const ui::ActivateEvent&) {
+        selected_command = CMD_DISPLAY_INVENTORY;
+        done = true;
+        return true;
+    });
+    contents->add_child(inventory);
+
+    auto panel = make_shared<DrawerPanel>(std::move(contents));
+    auto scrim = make_shared<DrawerScrim>(panel);
+    const weak_ptr<DrawerScrim> weak_scrim = scrim;
+    inventory->on_keydown_event([weak_scrim](const ui::KeyEvent &event) {
+        if (!key_is_escape(event.key()))
+            return false;
+
+        const auto active_scrim = weak_scrim.lock();
+        return active_scrim && active_scrim->on_event(event);
+    });
+
+    ui::push_layout(scrim);
+    ui::set_focused_widget(inventory.get());
+    while (!done && !scrim->close_requested() && !crawl_state.seen_hups)
+        ui::pump_events();
+    ui::pop_layout();
+    tiles.set_need_redraw();
+
+    return selected_command;
 }
 
 #endif

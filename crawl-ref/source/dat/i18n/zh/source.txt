@@ -42035,3 +42035,12 @@ Alistair's Party Mansion
 %%%%
 sewer drain
 排水口
+%%%%
+android command menu|Game menu
+游戏菜单
+%%%%
+android command menu|Inventory
+背包
+%%%%
+android command menu summary|Inventory
+查看携带的物品
