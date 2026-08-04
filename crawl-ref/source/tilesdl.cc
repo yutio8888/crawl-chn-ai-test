@@ -303,9 +303,7 @@ void TilesFramework::calculate_default_options()
             ref_display_size >= _screen_sizes[auto_size][0] * adjust_scale;
 #endif
         if (screen_size_matches)
-        {
             break;
-        }
     }
     while (++auto_size < num_screen_sizes - 1);
 
@@ -876,10 +874,12 @@ void TilesFramework::do_layout()
     // if the screen estate is very small, or if the option is set, choose
     // a layout that is optimal for very small screens
     if (m_layout_policy)
+    {
         m_layout_policy->update(m_windowsz.x, m_windowsz.y,
                                 m_stat_font ? m_stat_font->char_width() : 0,
                                 m_msg_font ? m_msg_font->char_width() : 0,
                                 Options.tile_use_small_layout);
+    }
     const bool use_legacy_tabs = m_layout_policy
         && m_layout_policy->uses_legacy_tabbed_sidebar();
     m_region_tab->set_enabled(use_legacy_tabs);
@@ -1026,10 +1026,12 @@ void TilesFramework::do_layout()
         while (sidebar_pw < sidebar_min_pw)
             sidebar_pw += m_region_tab->grid_width_to_pixels(1);
         if (is_cjk_primary_font())
+        {
             sidebar_pw = max(sidebar_pw,
                              m_region_tab->grid_width_to_pixels(
                                  min_cjk_sidebar_cols + 1)
                                  + m_region_tab->ox);
+        }
 
         // Locations in pixels. stat_x_divider is the dividing vertical line
         // between dungeon view on the left and status area on the right.
