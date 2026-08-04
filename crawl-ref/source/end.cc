@@ -28,6 +28,9 @@
 #include "macro.h"
 #include "message.h"
 #include "misc.h"
+#ifdef __ANDROID__
+#include "outer-menu.h"
+#endif
 #include "prompt.h"
 #include "religion.h"
 #include "startup.h"
