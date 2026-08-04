@@ -238,7 +238,16 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     // Extra init settings
     @Override
     public void initKeyboard(int keyboardOption, int size) {
-        super.initKeyboard(keyboardOption, size);
+        // The touch-first layout is the primary Android control surface, so
+        // keep every target at least 48dp even when an older installation has
+        // a smaller keyboard-size preference saved.
+        int effectiveSize = size;
+        if (keyboardOption == 4) {
+            int minimumTouchTarget = Math.round(
+                    48 * getResources().getDisplayMetrics().density);
+            effectiveSize = Math.max(size, minimumTouchTarget);
+        }
+        super.initKeyboard(keyboardOption, effectiveSize);
         if (keyboardOption == 2) {
             transparentKeyboard();
         } else if (keyboardOption == 4) {
