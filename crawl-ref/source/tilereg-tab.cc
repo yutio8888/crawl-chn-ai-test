@@ -19,7 +19,10 @@ TabbedRegion::TabbedRegion(const TileRegionInit &init) :
     m_mouse_tab(-1),
     m_use_small_layout(false),
     m_is_deactivated(false),
-    m_buf_gui(&init.im->get_texture(TEX_GUI))
+    m_enabled(true),
+    m_buf_gui(&init.im->get_texture(TEX_GUI)),
+    _icon_width(0),
+    _show_tab_icons(false)
 {
 }
 
@@ -27,8 +30,42 @@ TabbedRegion::~TabbedRegion()
 {
 }
 
+void TabbedRegion::set_enabled(bool enabled)
+{
+    if (m_enabled == enabled)
+    {
+        if (!m_enabled)
+            ox = 0;
+        return;
+    }
+
+    m_enabled = enabled;
+    m_mouse_tab = -1;
+    m_dirty = true;
+
+    if (!m_enabled)
+    {
+        for (TabInfo &tab : m_tabs)
+            tab.reg->clear();
+        m_is_deactivated = true;
+        m_buf_gui.clear();
+        ox = 0;
+    }
+    else
+    {
+        m_is_deactivated = false;
+        ox = _show_tab_icons ? _icon_width : 0;
+        reset_icons(0);
+    }
+
+    tiles.set_need_redraw();
+}
+
 void TabbedRegion::set_icon_pos(int idx)
 {
+    if (!m_enabled)
+        return;
+
     if (!m_tabs[idx].enabled && !m_use_small_layout)
         return;
 
@@ -68,12 +105,12 @@ int TabbedRegion::push_tab_region(GridRegion *reg, tileidx_t tile_tab)
 
     const tile_info &tinf = tile_gui_info(tile_tab);
     _icon_width = max((int)tinf.width, ox);
-    ox = _icon_width;
 #ifndef __ANDROID__
     _show_tab_icons = true;
 #else
     _show_tab_icons = false;
 #endif
+    ox = m_enabled && _show_tab_icons ? _icon_width : 0;
 
     // All tabs should be the same size.
     for (int i = 1; i < TAB_OFS_MAX; ++i)
@@ -120,7 +157,7 @@ tileidx_t TabbedRegion::get_tab_tile(int idx)
 
 void TabbedRegion::activate_tab(int idx)
 {
-    if (invalid_index(idx))
+    if (!m_enabled || invalid_index(idx))
         return;
 
     if (!m_tabs[idx].enabled && !m_use_small_layout)
@@ -141,6 +178,9 @@ void TabbedRegion::activate_tab(int idx)
 
 void TabbedRegion::deactivate_tab()
 {
+    if (!m_enabled)
+        return;
+
     m_is_deactivated = true;
 
     m_dirty = true;
@@ -202,6 +242,8 @@ void TabbedRegion::disable_tab(int idx)
 
 bool TabbedRegion::active_is_valid() const
 {
+    if (!m_enabled)
+        return false;
     if (invalid_index(m_active))
         return false;
     if (!m_tabs[m_active].enabled && !m_use_small_layout)
@@ -212,7 +254,7 @@ bool TabbedRegion::active_is_valid() const
 
 void TabbedRegion::update()
 {
-    if (!active_is_valid())
+    if (!m_enabled || !active_is_valid())
         return;
     if (m_is_deactivated)
         return;
@@ -229,6 +271,8 @@ void TabbedRegion::clear()
 void TabbedRegion::pack_buffers()
 {
     m_buf_gui.clear();
+    if (!m_enabled)
+        return;
 
     for (int i = 0; i < (int)m_tabs.size(); ++i)
     {
@@ -250,6 +294,9 @@ void TabbedRegion::pack_buffers()
 
 void TabbedRegion::render()
 {
+    if (!m_enabled)
+        return;
+
     if (crawl_state.game_is_arena())
         return;
 
@@ -276,7 +323,7 @@ void TabbedRegion::render()
 
 void TabbedRegion::draw_tag()
 {
-    if (m_mouse_tab == -1)
+    if (!m_enabled || m_mouse_tab == -1)
         return;
 
     GridRegion *tab = m_tabs[m_mouse_tab].reg;
@@ -286,6 +333,9 @@ void TabbedRegion::draw_tag()
 
 int TabbedRegion::min_height_for_items() const
 {
+    if (!m_enabled)
+        return 0;
+
     for (int i = (int)m_tabs.size()-1; i >= 0; --i)
     {
         if (m_tabs[i].enabled || m_use_small_layout)
@@ -296,6 +346,12 @@ int TabbedRegion::min_height_for_items() const
 
 void TabbedRegion::on_resize()
 {
+    if (!m_enabled)
+    {
+        ox = 0;
+        return;
+    }
+
     int reg_sx = sx + ox;
     int reg_sy = sy;
 
@@ -321,6 +377,9 @@ void TabbedRegion::on_resize()
 
 int TabbedRegion::get_mouseover_tab(wm_mouse_event &event) const
 {
+    if (!m_enabled)
+        return -1;
+
     int x = event.px - sx;
     int y = event.py - sy;
 
@@ -346,6 +405,9 @@ int TabbedRegion::get_mouseover_tab(wm_mouse_event &event) const
 
 int TabbedRegion::handle_mouse(wm_mouse_event &event)
 {
+    if (!m_enabled)
+        return 0;
+
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND
         && !tiles.get_map_display())
     {
@@ -384,6 +446,9 @@ bool TabbedRegion::update_tab_tip_text(string &/*tip*/, bool /*active*/)
 
 bool TabbedRegion::update_tip_text(string &tip)
 {
+    if (!m_enabled)
+        return false;
+
     if (!active_is_valid())
         return false;
 
@@ -398,6 +463,9 @@ bool TabbedRegion::update_tip_text(string &tip)
 
 bool TabbedRegion::update_alt_text(string &alt)
 {
+    if (!m_enabled)
+        return false;
+
     if (!active_is_valid())
         return false;
 
@@ -449,6 +517,16 @@ int TabbedRegion::find_tab(string tab_name) const
 
 void TabbedRegion::set_small_layout(bool use_small_layout, const coord_def &windowsz)
 {
+    if (!m_enabled)
+    {
+        m_use_small_layout = use_small_layout;
+        ox = 0;
+        dx = Options.tile_sidebar_pixels;
+        dy = Options.tile_sidebar_pixels;
+        m_dirty = true;
+        return;
+    }
+
     if (m_use_small_layout != use_small_layout)
     {
         activate_tab(0);
@@ -484,6 +562,12 @@ void TabbedRegion::set_small_layout(bool use_small_layout, const coord_def &wind
 
 void TabbedRegion::toggle_tab_icons()
 {
+    if (!m_enabled)
+    {
+        ox = 0;
+        return;
+    }
+
     _show_tab_icons = !_show_tab_icons;
     if (_show_tab_icons)
       ox = _icon_width;

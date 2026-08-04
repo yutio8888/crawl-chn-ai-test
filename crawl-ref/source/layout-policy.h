@@ -28,6 +28,9 @@ public:
     /// Tabs support touch interaction mode
     virtual bool uses_touch_tabs() const = 0;
 
+    /// The legacy tabbed sidebar is active and may render or receive input.
+    virtual bool uses_legacy_tabbed_sidebar() const = 0;
+
     /// Messages region overlays the dungeon view
     virtual bool uses_overlay_messages() const = 0;
 
@@ -57,6 +60,7 @@ public:
     bool uses_overlay_sidebar() const override;
     bool uses_compact_stats() const override;
     bool uses_touch_tabs() const override;
+    bool uses_legacy_tabbed_sidebar() const override;
     bool uses_overlay_messages() const override;
 
     bool uses_top_hud() const override;
@@ -83,6 +87,7 @@ public:
     bool uses_overlay_sidebar() const override;
     bool uses_compact_stats() const override;
     bool uses_touch_tabs() const override;
+    bool uses_legacy_tabbed_sidebar() const override;
     bool uses_overlay_messages() const override;
 
     bool uses_top_hud() const override;

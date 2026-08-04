@@ -35,6 +35,7 @@ public:
     void disable_tab(int idx);
     int find_tab(string tab_name) const;
 
+    void set_enabled(bool enabled);
     void set_small_layout(bool use_small_layout, const coord_def &windowsz);
     void toggle_tab_icons();
 
@@ -65,6 +66,7 @@ protected:
     int m_mouse_tab;
     bool m_use_small_layout;
     bool m_is_deactivated;
+    bool m_enabled;
     TileBuffer m_buf_gui;
 
     struct TabInfo

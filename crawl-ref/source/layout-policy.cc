@@ -57,6 +57,11 @@ bool DesktopLayoutPolicy::uses_touch_tabs() const
     return active();
 }
 
+bool DesktopLayoutPolicy::uses_legacy_tabbed_sidebar() const
+{
+    return true;
+}
+
 bool DesktopLayoutPolicy::uses_overlay_messages() const
 {
     return active();
@@ -129,6 +134,11 @@ bool AndroidPortraitLayoutPolicy::uses_compact_stats() const
 bool AndroidPortraitLayoutPolicy::uses_touch_tabs() const
 {
     return true;
+}
+
+bool AndroidPortraitLayoutPolicy::uses_legacy_tabbed_sidebar() const
+{
+    return false;
 }
 
 bool AndroidPortraitLayoutPolicy::uses_overlay_messages() const

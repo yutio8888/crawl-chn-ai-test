@@ -152,7 +152,7 @@ static void _init_consoles()
 
     // The AttachConsole() function is XP/2003 Server and up, so we
     // need to do the GetModuleHandle()/GetProcAddress() dance.
-    typedef BOOL (WINAPI *ac_func)(DWORD);
+    using ac_func = BOOL (WINAPI *)(DWORD);
     ac_func attach_console = (ac_func)(void *)GetProcAddress(
         GetModuleHandle(TEXT("kernel32.dll")), "AttachConsole");
 
@@ -179,7 +179,7 @@ static void _init_consoles()
 static void _shutdown_console()
 {
 #ifdef TARGET_OS_WINDOWS
-    typedef BOOL (WINAPI *fc_func)();
+    using fc_func = BOOL (WINAPI *)();
     fc_func free_console = (fc_func)(void *)GetProcAddress(
         GetModuleHandle(TEXT("kernel32.dll")), "FreeConsole");
     if (free_console)
@@ -249,8 +249,12 @@ void TilesFramework::draw_doll_edit()
 void TilesFramework::set_map_display(const bool display)
 {
     m_map_mode_enabled = display;
-    if (!display && !tiles.is_using_small_layout() && m_region_tab)
+    if (!display && m_layout_policy
+        && m_layout_policy->uses_legacy_tabbed_sidebar()
+        && !tiles.is_using_small_layout() && m_region_tab)
+    {
         m_region_tab->activate_tab(TAB_ITEM);
+    }
     do_layout(); // recalculate the viewport setup for zoom levels
     redraw_screen(false);
     update_screen();
@@ -267,8 +271,11 @@ void TilesFramework::do_map_display()
     do_layout(); // recalculate the viewport setup for zoom levels
     redraw_screen(false);
     update_screen();
-    if (!tiles.is_using_small_layout() && m_region_tab)
+    if (m_layout_policy && m_layout_policy->uses_legacy_tabbed_sidebar()
+        && !tiles.is_using_small_layout() && m_region_tab)
+    {
         m_region_tab->activate_tab(TAB_NAVIGATION);
+    }
 }
 
 void TilesFramework::calculate_default_options()
@@ -280,8 +287,9 @@ void TilesFramework::calculate_default_options()
     do
     {
 #ifndef __ANDROID__
-        if (m_windowsz.x >= _screen_sizes[auto_size][0]
-            && m_windowsz.y >= _screen_sizes[auto_size][1])
+        const bool screen_size_matches =
+            m_windowsz.x >= _screen_sizes[auto_size][0]
+            && m_windowsz.y >= _screen_sizes[auto_size][1];
 #else
         // In android we define screen sizes from 480 to 800. Bigger screens
         // are adjusted with the game scale. E.g. A 1920x1080 device would use:
@@ -291,8 +299,10 @@ void TilesFramework::calculate_default_options()
         int ref_display_size = jni_ref_display_size();
         if (Options.game_scale == ref_display_size/960+1)
             adjust_scale = Options.game_scale;
-        if (ref_display_size >= (_screen_sizes[auto_size][0]*adjust_scale))
+        const bool screen_size_matches =
+            ref_display_size >= _screen_sizes[auto_size][0] * adjust_scale;
 #endif
+        if (screen_size_matches)
         {
             break;
         }
@@ -326,11 +336,12 @@ bool TilesFramework::initialise()
         return true;
     _init_consoles();
 
-    const char *icon_name =
 #ifdef DATA_DIR_PATH
-    DATA_DIR_PATH
+    const char *icon_name =
+        DATA_DIR_PATH "dat/tiles/stone_soup_icon-512x512.png";
+#else
+    const char *icon_name = "dat/tiles/stone_soup_icon-512x512.png";
 #endif
-    "dat/tiles/stone_soup_icon-512x512.png";
 
     string title = string(CRAWL " ") + Version::Long;
 
@@ -418,6 +429,8 @@ bool TilesFramework::initialise()
                                   TILEG_TAB_COMMAND2);
     TAB_NAVIGATION = m_region_tab->push_tab_region(m_region_cmd_map,
                                                    TILEG_TAB_NAVIGATION);
+    m_region_tab->set_enabled(
+        m_layout_policy && m_layout_policy->uses_legacy_tabbed_sidebar());
     m_region_tab->activate_tab(TAB_ITEM);
 
     m_region_msg  = new MessageRegion(m_msg_font);
@@ -867,6 +880,11 @@ void TilesFramework::do_layout()
                                 m_stat_font ? m_stat_font->char_width() : 0,
                                 m_msg_font ? m_msg_font->char_width() : 0,
                                 Options.tile_use_small_layout);
+    const bool use_legacy_tabs = m_layout_policy
+        && m_layout_policy->uses_legacy_tabbed_sidebar();
+    m_region_tab->set_enabled(use_legacy_tabs);
+    for (tab_iterator it = m_tabs.begin(); it != m_tabs.end(); ++it)
+        it->second->set_enabled(use_legacy_tabs);
     bool use_small_layout = is_using_small_layout();
     bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
     bool use_top_bar = use_small_layout && top_bar_policy;
@@ -1167,11 +1185,21 @@ void TilesFramework::zoom_dungeon(bool in)
 
 void TilesFramework::deactivate_tab()
 {
+    if (!m_layout_policy
+        || !m_layout_policy->uses_legacy_tabbed_sidebar())
+    {
+        return;
+    }
     m_region_tab->deactivate_tab();
 }
 
 void TilesFramework::toggle_tab_icons()
 {
+    if (!m_layout_policy
+        || !m_layout_policy->uses_legacy_tabbed_sidebar())
+    {
+        return;
+    }
     m_region_tab->toggle_tab_icons();
     resize();
     redraw_screen();
@@ -1295,6 +1323,9 @@ bool TilesFramework::place_tab(int idx)
         region_tab->push_tab_region(m_region_tab->get_tab_region(idx),
                                     m_region_tab->get_tab_tile(idx));
         m_tabs[idx] = region_tab;
+        region_tab->set_enabled(
+            m_layout_policy
+            && m_layout_policy->uses_legacy_tabbed_sidebar());
         region_tab->activate_tab(0);
         m_region_tab->disable_tab(idx);
         m_layers[LAYER_NORMAL].m_regions.push_back(region_tab);
@@ -1608,7 +1639,9 @@ void TilesFramework::update_minimap_bounds()
 
 void TilesFramework::update_tabs()
 {
-    if (Options.tile_show_items.empty() || crawl_state.game_is_arena()
+    if (!m_layout_policy
+        || !m_layout_policy->uses_legacy_tabbed_sidebar()
+        || Options.tile_show_items.empty() || crawl_state.game_is_arena()
         || in_headless_mode())
     {
         return;
@@ -1621,6 +1654,11 @@ void TilesFramework::update_tabs()
 
 void TilesFramework::toggle_inventory_display()
 {
+    if (!m_layout_policy
+        || !m_layout_policy->uses_legacy_tabbed_sidebar())
+    {
+        return;
+    }
     int idx = m_region_tab->active_tab();
     m_region_tab->activate_tab((idx + 1) % m_region_tab->num_tabs());
 }

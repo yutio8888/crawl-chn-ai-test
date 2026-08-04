@@ -345,55 +345,166 @@ command_type show_topbar_command_menu()
     command_type selected_command = CMD_NO_CMD;
     bool done = false;
 
-    auto contents = make_shared<ui::Box>(ui::Widget::VERT);
-    contents->set_cross_alignment(ui::Widget::STRETCH);
+    vector<shared_ptr<MenuButton>> buttons;
+    const auto make_button = [&buttons](string label, string summary,
+                                        tileidx_t tile) {
+        auto row = make_shared<ui::Box>(ui::Widget::HORZ);
+        row->set_cross_alignment(ui::Widget::CENTER);
+        row->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
 
-    auto title = make_shared<ui::Text>(formatted_string(
+        auto icon = make_shared<ui::Image>(tile_def(tile));
+        icon->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP, 0, 0);
+        row->add_child(std::move(icon));
+
+        auto labels = make_shared<ui::Box>(ui::Widget::VERT);
+        labels->expand_h = true;
+        labels->add_child(make_shared<ui::Text>(
+            formatted_string(std::move(label), WHITE)));
+
+        auto summary_text = make_shared<ui::Text>(
+            formatted_string(std::move(summary), LIGHTGREY));
+        summary_text->set_wrap_text(true);
+        labels->add_child(std::move(summary_text));
+        row->add_child(std::move(labels));
+
+        auto button = make_shared<MenuButton>();
+        button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+        button->highlight_colour = BROWN;
+        button->set_child(std::move(row));
+        buttons.push_back(button);
+        return button;
+    };
+
+    const auto add_command_button =
+        [&](const shared_ptr<ui::Box> &page, string label, string summary,
+            tileidx_t tile, command_type command) {
+            auto button = make_button(std::move(label), std::move(summary),
+                                      tile);
+            button->on_activate_event([&, command](const ui::ActivateEvent&) {
+                selected_command = command;
+                done = true;
+                return true;
+            });
+            page->add_child(button);
+            return button;
+        };
+
+    auto main_page = make_shared<ui::Box>(ui::Widget::VERT);
+    main_page->set_cross_alignment(ui::Widget::STRETCH);
+    auto main_title = make_shared<ui::Text>(formatted_string(
         C_("android command menu", "Game menu"), YELLOW));
-    title->set_margin_for_sdl(0, 0, 16, 0);
-    contents->add_child(std::move(title));
+    main_title->set_margin_for_sdl(0, 0, 16, 0);
+    main_page->add_child(std::move(main_title));
 
-    auto row = make_shared<ui::Box>(ui::Widget::HORZ);
-    row->set_cross_alignment(ui::Widget::CENTER);
-    row->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
+    const auto inventory = add_command_button(
+        main_page,
+        string(C_("android command menu", "Inventory")),
+        string(C_("android command menu summary", "Inventory")),
+        TILEG_CMD_DISPLAY_INVENTORY, CMD_DISPLAY_INVENTORY);
+    add_command_button(
+        main_page,
+        string(C_("android command menu", "Spells")),
+        string(C_("android command menu summary", "Spells")),
+        TILEG_CMD_CAST_SPELL, CMD_DISPLAY_SPELLS);
+    add_command_button(
+        main_page,
+        string(C_("android command menu", "Abilities")),
+        string(C_("android command menu summary", "Abilities")),
+        TILEG_CMD_USE_ABILITY, CMD_USE_ABILITY);
+    add_command_button(
+        main_page,
+        string(C_("android command menu", "Character")),
+        string(C_("android command menu summary", "Character")),
+        TILEG_CMD_RESISTS_SCREEN, CMD_RESISTS_SCREEN);
+    add_command_button(
+        main_page,
+        string(C_("android command menu", "Skills")),
+        string(C_("android command menu summary", "Skills")),
+        TILEG_CMD_DISPLAY_SKILLS, CMD_DISPLAY_SKILLS);
+    add_command_button(
+        main_page,
+        string(C_("android command menu", "Religion")),
+        string(C_("android command menu summary", "Religion")),
+        TILEG_CMD_DISPLAY_RELIGION, CMD_DISPLAY_RELIGION);
+    const auto more = make_button(
+        string(C_("android command menu", "More")),
+        string(C_("android command menu summary", "More")),
+        TILEG_TAB_COMMAND2);
+    main_page->add_child(more);
 
-    auto icon = make_shared<ui::Image>(tile_def(
-        TILEG_CMD_DISPLAY_INVENTORY));
-    icon->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP, 0, 0);
-    row->add_child(std::move(icon));
+    auto more_page = make_shared<ui::Box>(ui::Widget::VERT);
+    more_page->set_cross_alignment(ui::Widget::STRETCH);
+    auto more_title = make_shared<ui::Text>(formatted_string(
+        C_("android command menu", "More"), YELLOW));
+    more_title->set_margin_for_sdl(0, 0, 16, 0);
+    more_page->add_child(std::move(more_title));
 
-    auto labels = make_shared<ui::Box>(ui::Widget::VERT);
-    labels->expand_h = true;
-    labels->add_child(make_shared<ui::Text>(formatted_string(
-        C_("android command menu", "Inventory"), WHITE)));
+    const auto back = make_button(
+        string(C_("android command menu", "Back")),
+        string(C_("android command menu summary", "Back")),
+        TILEG_CMD_MAP_EXIT_MAP);
+    more_page->add_child(back);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Memorise")),
+        string(C_("android command menu summary", "Memorise")),
+        TILEG_CMD_MEMORISE_SPELL, CMD_MEMORISE_SPELL);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Map")),
+        string(C_("android command menu summary", "Map")),
+        TILEG_CMD_DISPLAY_MAP, CMD_DISPLAY_MAP);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Known Objects")),
+        string(C_("android command menu summary", "Known Objects")),
+        TILEG_CMD_KNOWN_ITEMS, CMD_DISPLAY_KNOWN_OBJECTS);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Full View")),
+        string(C_("android command menu summary", "Full View")),
+        TILEG_TAB_MONSTER, CMD_FULL_VIEW);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Mutations")),
+        string(C_("android command menu summary", "Mutations")),
+        TILEG_CMD_DISPLAY_MUTATIONS, CMD_DISPLAY_MUTATIONS);
+    add_command_button(
+        more_page,
+        string(C_("android command menu", "Commands")),
+        string(C_("android command menu summary", "Commands")),
+        TILEG_CMD_DISPLAY_COMMANDS, CMD_DISPLAY_COMMANDS);
 
-    auto summary = make_shared<ui::Text>(formatted_string(
-        C_("android command menu summary", "Inventory"), LIGHTGREY));
-    summary->set_wrap_text(true);
-    labels->add_child(std::move(summary));
-    row->add_child(std::move(labels));
+    auto pages = make_shared<ui::Switcher>();
+    pages->align_x = pages->align_y = ui::Widget::STRETCH;
+    pages->add_child(main_page);
+    pages->add_child(more_page);
+    pages->current() = 0;
 
-    auto inventory = make_shared<MenuButton>();
-    inventory->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
-    inventory->highlight_colour = BROWN;
-    inventory->set_child(std::move(row));
-    inventory->on_activate_event([&](const ui::ActivateEvent&) {
-        selected_command = CMD_DISPLAY_INVENTORY;
-        done = true;
+    more->on_activate_event([&](const ui::ActivateEvent&) {
+        pages->current() = 1;
+        ui::set_focused_widget(back.get());
         return true;
     });
-    contents->add_child(inventory);
+    back->on_activate_event([&](const ui::ActivateEvent&) {
+        pages->current() = 0;
+        ui::set_focused_widget(inventory.get());
+        return true;
+    });
 
-    auto panel = make_shared<DrawerPanel>(std::move(contents));
+    auto panel = make_shared<DrawerPanel>(pages);
     auto scrim = make_shared<DrawerScrim>(panel);
     const weak_ptr<DrawerScrim> weak_scrim = scrim;
-    inventory->on_keydown_event([weak_scrim](const ui::KeyEvent &event) {
-        if (!key_is_escape(event.key()))
-            return false;
+    for (const auto &button : buttons)
+    {
+        button->on_keydown_event([weak_scrim](const ui::KeyEvent &event) {
+            if (!key_is_escape(event.key()))
+                return false;
 
-        const auto active_scrim = weak_scrim.lock();
-        return active_scrim && active_scrim->on_event(event);
-    });
+            const auto active_scrim = weak_scrim.lock();
+            return active_scrim && active_scrim->on_event(event);
+        });
+    }
 
     ui::push_layout(scrim);
     ui::set_focused_widget(inventory.get());
