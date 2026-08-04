@@ -744,12 +744,12 @@ public:
         {
 #ifdef __ANDROID__
             cgotoxy(1, last_row, GOTO_MSG);
-            const string prompt = chop_string(
+            const string more_prompt = chop_string(
                 string(" ") + T_("--more-- Tap to continue.") + " ",
                 width(), false);
-            const int prompt_width = strwidth(prompt);
+            const int prompt_width = strwidth(more_prompt);
             const int left_pad = max(0, (width() - prompt_width) / 2);
-            const string bar = string(left_pad, ' ') + prompt
+            const string bar = string(left_pad, ' ') + more_prompt
                 + string(max(0, width() - left_pad - prompt_width), ' ');
             draw_colour colours(WHITE, BROWN);
             cprintf("%s", bar.c_str());
