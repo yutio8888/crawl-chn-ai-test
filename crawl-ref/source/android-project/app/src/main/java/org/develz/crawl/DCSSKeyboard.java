@@ -256,6 +256,10 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             keyboardCtrl.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.GONE);
             keyboardMobile.setVisibility(View.VISIBLE);
+            // RelativeLayout may keep the first inflated keyboard above later
+            // siblings for touch dispatch even though the compact keyboard is
+            // drawn last. Make the visible surface the actual hit-test front.
+            keyboardMobile.bringToFront();
             compactToggle.setVisibility(View.VISIBLE);
         }
     }
@@ -272,6 +276,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             keyboardCtrl.setVisibility(View.GONE);
             keyboardNumeric.setVisibility(View.GONE);
             keyboardMobile.setVisibility(View.VISIBLE);
+            keyboardMobile.bringToFront();
         } else if ((v.getId() == R.id.key_shift_lower) ||
                 (v.getId() == R.id.key_shift_ctrl)) {
             keyboardLower.setVisibility(View.GONE);
