@@ -481,19 +481,26 @@ command_type show_topbar_command_menu()
     pages->add_child(more_page);
     pages->current() = 0;
 
+    auto scroller = make_shared<DrawerScroller>();
+    scroller->set_child(pages);
+    scroller->set_scrollbar_visible(true);
+    scroller->expand_h = scroller->expand_v = true;
+
     more->on_activate_event([&](const ui::ActivateEvent&) {
         pages->current() = 1;
+        scroller->set_scroll(0);
         ui::set_focused_widget(back.get());
         return true;
     });
     back->on_activate_event([&](const ui::ActivateEvent&) {
         pages->current() = 0;
+        scroller->set_scroll(0);
         ui::set_focused_widget(inventory.get());
         return true;
     });
 
-    auto panel = make_shared<DrawerPanel>(pages);
-    auto scrim = make_shared<DrawerScrim>(panel);
+    auto panel = make_shared<DrawerPanel>(scroller);
+    auto scrim = make_shared<DrawerScrim>(panel, scroller);
     const weak_ptr<DrawerScrim> weak_scrim = scrim;
     for (const auto &button : buttons)
     {
