@@ -28,9 +28,11 @@ subagent({
 })
 ```
 
-`async: true` returns a log path; poll the log for completion. Pass `cwd`
-from `project_worktree` create for candidate-worktree dispatch. Agent
-frontmatter fields `model`, `tools`, `thinking`, `systemPromptMode`,
+`async: true` returns immediately, streams visible progress in the TUI, and
+returns a log path containing the complete JSON event and stderr streams (poll
+that log in non-TUI mode). Pass `cwd` from `project_worktree` create for
+candidate-worktree dispatch. Agent frontmatter fields `model`, `tools`,
+`thinking`, `systemPromptMode`,
 `inheritProjectContext`, and `inheritSkills` are honored by the extension.
 
 Use `zh-translator`, `crawl-coder`, `translation-reviewer`,
@@ -65,7 +67,8 @@ role dispatches; do not restate its phases in this adapter.
 ## Worktrees
 
 The project `subagent` tool has no `worktree` flag; worktree placement must
-not be delegated to the child process. Use the project tool instead:
+not be delegated to the child process. Do not use `pi-subagents` `worktree: true`.
+Use the project tool instead:
 
 1. Call `project_worktree` with `action: "create"`, a one-component `name`,
    and optionally a new `pi/<topic>` branch. Omit `branch` for detached HEAD.
