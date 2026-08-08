@@ -2,7 +2,8 @@
 
 - 基线：`9fb8e5dd22ef6607613d1c4381b7369f93a08a7e`（`chn-0.34.1-base` HEAD）
 - 术语表 SHA-256：`95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`
-- 清单 SHA-256：`af3b3bef4ea898a9c8c2e403ea754c1969918579b1e70a0309c47504b5152146`
+- 清单 SHA-256：`611eee819d584e8d02a0f4d9282e69c6d0db9b8e3be010e8dfae4cc8f8db516f`
+  （生产语义 SourceDB 模型版；修复轮 R2-CODE-001..003 后重生成，baseline 9fb8e5dd22）
 - 输入摘要：
   - `decks.h` `949b9fc43217…`
   - `decks.cc` `84002fd6e329…`
@@ -95,7 +96,11 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 ## 覆盖证明
 
 - 清单枚举（25）与证据卡（25）双向差集为空；每身份恰一张卡、一个终态结论。
-- 描述键 EN/ZH 双向差集为空；T_ 键缺口仅 `Wrath`（规范键空间被铭印键占用，已入批次 #1 语境键修复）。
+- 清单枚举（25）与证据卡（25）双向差集为空；每身份恰一张卡、一个终态结论。
+- 生产语义覆盖：baseline 时 `canonical collisions = [card:CARD_WRATH]`（`T_("Wrath")`
+  → 规范键 `wrath` 命中铭印键，卡名显示「狂怒」）；候选后 collisions 为空，
+  `C_('card name','Wrath')` → `card name|wrath` 命中「神怒」；`T_ unresolved`
+  两版本均为空（无英文回退显示）。
 - 消费者核对：`?/C`（排除 removed 21 键）、`_describe_cards`（`card_name_en + " card"`，
   附 `which_decks` 牌组归属）、`card_effect` 逐项行为、`name_to_card`（T_ 与 EN 双匹配，
   ZH 子串匹配兜底）。
