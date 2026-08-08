@@ -56,8 +56,38 @@ Second round (R2-CODE2-001..003):
     non-renamable /tmp root (root-owned, sticky); the renamable OS user
     temp dir and every nested/'.'/‘..'/relative/symlinked form are
     rejected, while a fresh direct basename is accepted.
+
+Third round (R2-CODE3-001..003):
+
+  R2-CODE3-001 (complete input sequence + DBM_REPLACE modeling): the
+    SourceDB and DescriptionDB input sequences are discovered from the
+    baseline Git tree exactly like database.cc (TextDB child
+    constructor: dat/i18n/zh/*.txt sorted with source.txt first;
+    dat/descript/zh/*.txt via the source.txt-present directory scan or
+    the parent's fixed list fallback; dat/descript/*.txt in the fixed
+    parent order). Every unique blob is read once and the payload binds
+    the discovery manifest, per-file digests and input sequences. A
+    later-loaded file's definition of a canonical key overrides an
+    earlier one (DBM_REPLACE) and every override is reported as an
+    override fact; a tree without source.txt fails instead of silently
+    producing an empty SourceDB.
+
+  R2-CODE3-002 (narrowed card_is_removed() grammar): only the exact
+    canonical shape is accepted -- single top-level `#if
+    TAG_MAJOR_VERSION == 34`, one pending case run, the single `return
+    true;` of that branch, `#endif`, then `default: return false;`
+    outside the block. A nested conditional (e.g. `return true;`
+    wrapped in `#if UNRELATED_BUILD_FLAG`, which the real preprocessor
+    would evaluate as false) is rejected at CLI level.
+
+  R2-CODE3-003 (no-replace git reads): every git subprocess runs under
+    the shared trusted git environment (GIT_NO_REPLACE_OBJECTS=1), so a
+    `git replace A B` ref cannot substitute B's blobs for the exact
+    baseline A: the payload baseline stays A and A's original blob is
+    read.
 """
 
+import hashlib
 import json
 import os
 import shutil
@@ -262,10 +292,29 @@ def fresh_output_path() -> Path:
         f"card-inventory-test-{os.getpid()}-{uuid.uuid4().hex}.json")
 
 
+# database.cc AllDBs[0] ("descriptions") fixed English input list: the
+# fixture tree must contain every mandatory EN file (production croaks
+# on a missing one), so make_repo writes all of them.
+EN_DESCRIPT_FILES = (
+    "features.txt", "items.txt", "unident.txt", "unrand.txt",
+    "monsters.txt", "spells.txt", "gods.txt", "branches.txt",
+    "skills.txt", "ability.txt", "cards.txt", "commands.txt",
+    "clouds.txt", "status.txt", "monstatus.txt", "mutations.txt",
+    "passives.txt",
+)
+
+
 def make_repo(root: Path, decks_h: str = DECKS_H, decks_cc: str = DECKS_CC,
-              source_txt: str = SOURCE_TXT) -> str:
+              source_txt: str = SOURCE_TXT,
+              extra_i18n: dict[str, str] | None = None,
+              extra_desc_zh: dict[str, str] | None = None) -> str:
     """Create a git fixture repo at `root` containing the tool inputs and
-    the tool itself, committed at HEAD. Returns the HEAD SHA."""
+    the tool itself, committed at HEAD. Returns the HEAD SHA.
+
+    `extra_i18n` maps an extra .txt basename to content written under
+    dat/i18n/zh/ (a domain file loaded after source.txt);
+    `extra_desc_zh` does the same under dat/descript/zh/.
+    """
     scripts = root / ".claude" / "scripts"
     scripts.mkdir(parents=True)
     shutil.copy(TOOL, scripts / "card_inventory.py")
@@ -278,10 +327,20 @@ def make_repo(root: Path, decks_h: str = DECKS_H, decks_cc: str = DECKS_CC,
     (root / "crawl-ref/source/decks.cc").write_text(decks_cc, encoding="utf-8")
     (root / "crawl-ref/source/dat/descript/cards.txt").write_text(
         CARDS_TXT, encoding="utf-8")
+    for name in EN_DESCRIPT_FILES:
+        if name != "cards.txt":
+            (root / "crawl-ref/source/dat/descript" / name).write_text(
+                "# placeholder\n", encoding="utf-8")
     (root / "crawl-ref/source/dat/descript/zh/cards.txt").write_text(
         ZH_CARDS_TXT, encoding="utf-8")
     (root / "crawl-ref/source/dat/i18n/zh/source.txt").write_text(
         source_txt, encoding="utf-8")
+    for name, content in (extra_i18n or {}).items():
+        (root / f"crawl-ref/source/dat/i18n/zh/{name}").write_text(
+            content, encoding="utf-8")
+    for name, content in (extra_desc_zh or {}).items():
+        (root / f"crawl-ref/source/dat/descript/zh/{name}").write_text(
+            content, encoding="utf-8")
     (root / "docs/glossary.md").write_text(GLOSSARY, encoding="utf-8")
     subprocess.run(["git", "init", "-q"], cwd=str(root), check=True)
     subprocess.run(["git", "config", "user.email", "test@example.invalid"],
@@ -750,6 +809,211 @@ class CardInventoryToolTest(unittest.TestCase):
             result = run_tool(root, Path("relative-out.json"))
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("relative path rejected", result.stderr)
+
+    # -- R2-CODE3-001: complete input sequence + DBM_REPLACE ------------
+
+    def test_extra_source_txt_overrides_effective_value(self):
+        """R2-CODE3-001 positive: a domain file loaded after source.txt
+        (directory discovery order, source.txt first) overrides a
+        canonical key with DBM_REPLACE semantics; the effective display
+        value is the overriding one, the override fact is reported
+        (never silent), and the extra file is part of the inputs
+        manifest with its own digest."""
+        zz = "%%%%\nVelocity\n速度覆盖\n%%%%\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, extra_i18n={"zz-cards.txt": zz})
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                self.assertEqual(payload["source_input_sequence"],
+                                 ["source.txt", "zz-cards.txt"])
+                self.assertIn(
+                    "crawl-ref/source/dat/i18n/zh/zz-cards.txt",
+                    {v["path"] for v in payload["inputs"].values()})
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertEqual(velocity["name_zh"], "速度覆盖")
+                self.assertFalse(velocity["name_display_fallback"])
+                self.assertEqual(
+                    velocity["resolution"],
+                    "T_('Velocity') -> canonical 'velocity' hit "
+                    "(physical key 'Velocity' in zz-cards.txt)")
+                self.assertEqual(payload["source_overrides"], [{
+                    "canonical_key": "velocity",
+                    "winner": {"file": "zz-cards.txt",
+                                "raw_key": "Velocity",
+                                "key_line": 2},
+                    "superseded": [{"file": "source.txt",
+                                     "raw_key": "Velocity",
+                                     "key_line": 2}],
+                }])
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_mutation_missing_source_txt_fails(self):
+        """R2-CODE3-001 rejection: an unenumerable/empty source
+        directory must not silently produce an empty SourceDB. A tree
+        without dat/i18n/zh/source.txt (production's check file for the
+        localized SourceDB dir scan and the tool's required input)
+        aborts the run."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root)
+            (root / "crawl-ref/source/dat/i18n/zh/source.txt").unlink()
+            subprocess.run(["git", "add", "-A"], cwd=str(root), check=True)
+            subprocess.run(["git", "commit", "-qm", "drop source"],
+                           cwd=str(root), check=True)
+            self._assert_rejected(root, "missing source.txt",
+                                  "contains no source.txt")
+
+    def test_desc_zh_dir_scan_when_source_present(self):
+        """R2-CODE3-001: the localized DescriptionDB discovery mirrors
+        database.cc's child-constructor conditional. When
+        dat/descript/zh/source.txt exists (production's check file), the
+        directory scan applies: every .txt is discovered with source.txt
+        first, and a later file overrides description keys (DBM_REPLACE)
+        with the override fact reported and the effective value used."""
+        zh_source = "%%%%\nsource marker\n值\n%%%%\n"
+        zz = "%%%%\nVelocity card\n描述覆盖\n%%%%\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, extra_desc_zh={
+                "source.txt": zh_source, "zz-cards.txt": zz})
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                seq = payload["desc_zh_input_sequence"]
+                self.assertEqual(seq[0], "source.txt")
+                self.assertIn("cards.txt", seq)
+                self.assertIn("zz-cards.txt", seq)
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertTrue(velocity["desc_zh"])
+                self.assertEqual(velocity["desc_zh_value"], "描述覆盖")
+                recs = [r for r in payload["desc_zh_overrides"]
+                        if r["canonical_key"] == "velocity card"]
+                self.assertEqual(len(recs), 1)
+                self.assertEqual(recs[0]["winner"]["file"], "zz-cards.txt")
+                self.assertEqual(
+                    recs[0]["superseded"][0]["file"], "cards.txt")
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_desc_zh_fixed_order_fallback_without_source(self):
+        """R2-CODE3-001: without dat/descript/zh/source.txt the
+        localized DescriptionDB inherits the parent's fixed input list
+        (database.cc child constructor); a file not in that list (e.g.
+        zz-cards.txt) is NOT part of the production sequence, and the
+        manifest shows exactly the effective sequence instead of
+        pretending to load it."""
+        zz = "%%%%\nVelocity card\n描述覆盖\n%%%%\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, extra_desc_zh={"zz-cards.txt": zz})
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                self.assertEqual(payload["desc_zh_input_sequence"],
+                                 ["cards.txt"])
+                paths = {v["path"] for v in payload["inputs"].values()}
+                self.assertNotIn(
+                    "crawl-ref/source/dat/descript/zh/zz-cards.txt", paths)
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertTrue(velocity["desc_zh"])
+                self.assertEqual(velocity["desc_zh_value"],
+                                 "速度卡牌描述。")
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    # -- R2-CODE3-002: narrowed card_is_removed() grammar ---------------
+
+    def test_mutation_nested_conditional_in_removed_switch_rejected(self):
+        """R2-CODE3-002: wrapping `return true;` in a nested
+        `#if UNRELATED_BUILD_FLAG` (which the real preprocessor would
+        evaluate as false, sending the case to `default: return false;`)
+        must be rejected: card_is_removed() accepts only the single
+        top-level `#if TAG_MAJOR_VERSION == 34` / `#endif` pair -- no
+        nested conditionals, extra branches or repeated #if/#else/#endif
+        forms."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = DECKS_CC.replace(
+                "    case CARD_SHAFT_REMOVED:\n        return true;\n#endif\n",
+                "    case CARD_SHAFT_REMOVED:\n#if UNRELATED_BUILD_FLAG\n"
+                "        return true;\n#endif\n#endif\n")
+            self.assertNotEqual(mutated, DECKS_CC)
+            make_repo(root, decks_cc=mutated)
+            self._assert_rejected(
+                root, "nested conditional in removed switch",
+                "the TAG-34 block is the only conditional")
+
+    # -- R2-CODE3-003: no-replace git reads -----------------------------
+
+    def test_git_replace_ref_ignored(self):
+        """R2-CODE3-003: a `git replace A B` ref must never substitute
+        B's blobs for the exact baseline A. The tool runs every git
+        subprocess under the trusted git environment
+        (GIT_NO_REPLACE_OBJECTS=1), so --baseline-ref A reads A's
+        original blobs (name_zh from A's source.txt, digest of A's
+        blob) and the payload baseline stays A."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            a = make_repo(root)
+            (root / "crawl-ref/source/dat/i18n/zh/source.txt").write_text(
+                SOURCE_TXT.replace("速度", "速度被替换"), encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(root), check=True)
+            subprocess.run(["git", "commit", "-qm", "replacement"],
+                           cwd=str(root), check=True)
+            b = subprocess.run(["git", "rev-parse", "HEAD"],
+                               cwd=str(root), capture_output=True, text=True,
+                               check=True).stdout.strip()
+            self.assertNotEqual(a, b)
+            subprocess.run(["git", "replace", a, b], cwd=str(root),
+                           check=True)
+            try:
+                out = fresh_output_path()
+                try:
+                    result = subprocess.run(
+                        [sys.executable,
+                         str(root / ".claude/scripts/card_inventory.py"),
+                         "--baseline-ref", a,
+                         "--inventory-output", str(out)],
+                        capture_output=True, text=True, cwd=str(root),
+                        timeout=60)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    payload = json.loads(out.read_text(encoding="utf-8"))
+                    self.assertEqual(payload["baseline"], a)
+                    by_identity = {e["identity"]: e
+                                   for e in payload["inventory"]}
+                    velocity = by_identity["card:CARD_VELOCITY"]
+                    self.assertEqual(velocity["name_zh"], "速度")
+                    src_digest = payload["inputs"]["i18n/source.txt"]["sha256"]
+                    self.assertEqual(
+                        src_digest,
+                        hashlib.sha256(SOURCE_TXT.encode("utf-8")).hexdigest())
+                finally:
+                    if out.exists():
+                        out.unlink()
+            finally:
+                # Remove the temporary replace ref (the temp repo is
+                # deleted afterwards; the explicit removal is per the
+                # R2-CODE3-003 test contract).
+                subprocess.run(["git", "replace", "-d", a],
+                               cwd=str(root), capture_output=True)
 
 
 if __name__ == "__main__":

@@ -65,10 +65,38 @@ run with exit code 1; a silently skipped syntax change can never pass.
 
 The payload records a `baseline` commit (the review anchor) so the
 inventory can be reproduced from any checkout: pass `--baseline-ref
-<commit-ish>` to pin it (default: HEAD). All five input files and the
-glossary are read from Git objects at that commit via `git show
-<ref>:<path>` -- never from the local worktree -- so the output is
-identical regardless of local checkout state or uncommitted edits.
+<commit-ish>` to pin it (default: HEAD). All inputs are read from Git
+objects at that commit via `git show <ref>:<path>` -- never from the
+local worktree -- so the output is identical regardless of local
+checkout state or uncommitted edits.
+
+Input discovery mirrors database.cc exactly (R2-CODE3-001). The
+localized SourceDB (dat/i18n/zh/) loads every `.txt` direct child of
+the directory in sorted (std::sort) order with `source.txt` forced
+first (TextDB child constructor, database.cc ~211-241); the localized
+DescriptionDB (dat/descript/zh/) uses that directory scan only when
+`dat/descript/zh/source.txt` exists (production's check file), and
+otherwise inherits the parent's fixed input list (database.cc AllDBs[0]
+"descriptions") filtered to the files that exist under the locale
+directory. The English description fallback is the parent's fixed list
+loaded from dat/descript/ in that exact order. The complete discovered
+sequence is bound into the payload manifest (`inputs`, `*_input_sequence`)
+together with every per-file SHA-256, so no input file can ever be
+silently missing or extra. Each unique blob is read from Git exactly
+once. Effective values model production DBM_REPLACE last-wins across
+the load sequence: a later file's definition of a canonical key
+overrides an earlier one, and every such override is recorded as an
+override fact (`source_overrides` / `desc_en_overrides` /
+`desc_zh_overrides`) instead of being silently dropped. Within one
+file, a duplicate canonical key remains a fail-closed error (an
+authoring collision that DBM_REPLACE would otherwise hide).
+
+All git subprocesses (rev-parse, show, ls-tree) run under the shared
+trusted git environment (i18n_shared.trusted_git_environment()), which
+forces GIT_NO_REPLACE_OBJECTS=1 and strips caller-controlled GIT_* and
+shell environment variables (R2-CODE3-003). A `git replace A B` ref
+can therefore never substitute another commit's blobs for the exact
+baseline OID the inventory claims to read.
 
 The output JSON write is fail-closed (R2-CODE2-003): the output path
 must be exactly one brand-new basename directly under the canonical
@@ -101,7 +129,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import (AuditInput, lowercase_string,  # noqa: E402
-                         parse_entries_physical, runtime_normalize_value)
+                         parse_entries_physical, runtime_normalize_value,
+                         trusted_git_environment)
 
 #: deck_archetype table name -> short deck membership value.
 KNOWN_DECKS = ("deck_of_escape", "deck_of_destruction",
@@ -112,13 +141,37 @@ DECK_SHORT = {"deck_of_escape": "escape",
               "deck_of_punishment": "punishment"}
 _TAG34_COND = "TAG_MAJOR_VERSION == 34"
 
+#: Git-tree paths of the audited TextDB directories (repo-root relative).
+I18N_ZH_DIR = "crawl-ref/source/dat/i18n/zh/"
+DESCRIPT_DIR = "crawl-ref/source/dat/descript/"
+DESCRIPT_ZH_DIR = "crawl-ref/source/dat/descript/zh/"
+
+#: database.cc AllDBs[0] ("descriptions"): the fixed English input list in
+#: load order. The parent loads every file in this exact order and stores
+#: with DBM_REPLACE, so a later file overrides an earlier one.
+EN_DESCRIPT_FILES = (
+    "features.txt", "items.txt", "unident.txt", "unrand.txt",
+    "monsters.txt", "spells.txt", "gods.txt", "branches.txt",
+    "skills.txt", "ability.txt", "cards.txt", "commands.txt",
+    "clouds.txt", "status.txt", "monstatus.txt", "mutations.txt",
+    "passives.txt",
+)
+
 
 def resolve_commit(ref: str) -> str:
-    """Resolve a git commit-ish to its full 40-hex SHA, fail-closed."""
+    """Resolve a git commit-ish to its full 40-hex SHA, fail-closed.
+
+    Runs under the shared trusted git environment
+    (i18n_shared.trusted_git_environment()), which forces
+    GIT_NO_REPLACE_OBJECTS=1 so a `git replace` ref can never resolve
+    the rev to another object (R2-CODE3-003); the environment also
+    strips caller-controlled GIT_* variables for determinism.
+    """
     r = subprocess.run(
         ["git", "rev-parse", "--verify", "--end-of-options",
          f"{ref}^{{commit}}"],
-        capture_output=True, text=True, cwd=ROOT)
+        capture_output=True, text=True, cwd=ROOT,
+        env=trusted_git_environment())
     oid = r.stdout.strip()
     if r.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", oid):
         print(
@@ -136,14 +189,17 @@ def git_show_blob(ref: str, rel_path: str) -> bytes:
 
     The content comes from `git show <ref>:<rel_path>` (with
     `--end-of-options` so the ref can never be parsed as an option), i.e.
-    from the Git object database, never from the worktree. Fail-closed:
-    a non-zero exit or empty output (missing path or object) aborts the
-    run with exit code 1.
+    from the Git object database, never from the worktree. The trusted
+    git environment forces GIT_NO_REPLACE_OBJECTS=1 (R2-CODE3-003), so a
+    `git replace <ref> <other>` ref cannot substitute another commit's
+    blob for the exact baseline OID. Fail-closed: a non-zero exit
+    (missing path or object) aborts the run with exit code 1. A
+    legitimate zero-byte blob (return code 0, empty output) is accepted.
     """
     r = subprocess.run(
         ["git", "show", "--end-of-options", f"{ref}:{rel_path}"],
-        capture_output=True, cwd=ROOT)
-    if r.returncode != 0 or not r.stdout:
+        capture_output=True, cwd=ROOT, env=trusted_git_environment())
+    if r.returncode != 0:
         print(
             f"error: cannot read {rel_path} at {ref} "
             f"(git show exit code {r.returncode})",
@@ -153,6 +209,127 @@ def git_show_blob(ref: str, rel_path: str) -> bytes:
                   file=sys.stderr)
         raise SystemExit(1)
     return r.stdout
+
+
+def git_ls_tree_blobs(ref: str, rel_dir: str) -> list[str]:
+    """Direct-children blob (file) names under `rel_dir` at `ref`.
+
+    Mirrors database.cc get_dir_files_ext(dir, "txt") with
+    recursion_depth 0: only regular files directly inside the directory
+    whose names end with `txt` are returned, in std::sort (byte
+    lexicographic) order; subdirectories are excluded. Names are
+    returned without the directory prefix, exactly like the C++
+    directory listing. Runs under the trusted git environment
+    (GIT_NO_REPLACE_OBJECTS=1, R2-CODE3-003). Fail-closed: a git error
+    (unreadable tree) aborts the run; an absent or empty directory
+    yields an empty list and the caller decides whether that is a
+    production-valid empty sequence or a missing mandatory input.
+    """
+    r = subprocess.run(
+        ["git", "ls-tree", "-z", ref, "--", rel_dir],
+        capture_output=True, cwd=ROOT, env=trusted_git_environment())
+    if r.returncode != 0:
+        print(
+            f"error: cannot enumerate {rel_dir} at {ref} "
+            f"(git ls-tree exit code {r.returncode})",
+            file=sys.stderr)
+        if r.stderr.strip():
+            print(r.stderr.decode("utf-8", "replace").strip(),
+                  file=sys.stderr)
+        raise SystemExit(1)
+    names: list[str] = []
+    prefix = rel_dir
+    for item in r.stdout.decode("utf-8", "replace").split("\0"):
+        if not item:
+            continue
+        meta, _, name = item.partition("\t")
+        fields = meta.split(" ")
+        if len(fields) != 3:
+            raise SystemExit(
+                f"unexpected git ls-tree entry {item[:80]!r} for "
+                f"{rel_dir} at {ref}")
+        _mode, obj_type, _oid = fields
+        if obj_type != "blob":
+            continue  # directories (and gitlinks) are not input files
+        if not name.startswith(prefix):
+            raise SystemExit(
+                f"unexpected git ls-tree name {name!r} outside "
+                f"{rel_dir} at {ref}")
+        base = name[len(prefix):]
+        if "/" in base or not base.endswith("txt"):
+            continue  # nested children and non-.txt names are excluded
+        names.append(base)
+    return sorted(names)
+
+
+def _order_source_first(files: list[str]) -> list[str]:
+    """Mirror the database.cc child TextDB constructor ordering: the
+    directory scan returns files sorted by std::sort, and `source.txt`
+    is forced to the front so domain-specific files loaded later can
+    override entries (DBM_REPLACE last-wins)."""
+    return ([f for f in files if f == "source.txt"]
+            + [f for f in files if f != "source.txt"])
+
+
+def discover_source_db_files(ref: str) -> list[str]:
+    """Complete production input sequence of the localized SourceDB.
+
+    database.cc TextDB child constructor (lines ~211-241): when
+    `dat/i18n/zh/source.txt` exists (it always does in the audited
+    trees), every `.txt` direct child is discovered and ordered with
+    source.txt first. Fail-closed (R2-CODE3-001): a tree without
+    source.txt (or an unenumerable/empty directory) aborts instead of
+    silently producing an empty SourceDB, because source.txt is the
+    required audit input.
+    """
+    files = git_ls_tree_blobs(ref, I18N_ZH_DIR)
+    if "source.txt" not in files:
+        print(
+            f"error: cannot discover the localized SourceDB inputs: "
+            f"{I18N_ZH_DIR} at {ref} contains no source.txt "
+            f"(found: {files or '<none>'})",
+            file=sys.stderr)
+        raise SystemExit(1)
+    return _order_source_first(files)
+
+
+def discover_desc_en_files(ref: str) -> list[str]:
+    """English DescriptionDB input sequence: the fixed parent list of
+    database.cc AllDBs[0] in load order. Production croaks on a missing
+    mandatory English file (datafile_path with croak_on_fail in
+    _regenerate_db), so a missing file here is fail-closed too."""
+    files = set(git_ls_tree_blobs(ref, DESCRIPT_DIR))
+    missing = [f for f in EN_DESCRIPT_FILES if f not in files]
+    if missing:
+        print(
+            f"error: mandatory English description files missing from "
+            f"the tree at {ref}: {missing} (production database.cc "
+            f"croaks on these)",
+            file=sys.stderr)
+        raise SystemExit(1)
+    return list(EN_DESCRIPT_FILES)
+
+
+def discover_desc_zh_files(ref: str) -> list[str]:
+    """Complete production input sequence of the localized
+    DescriptionDB, mirroring the database.cc child TextDB constructor
+    conditional exactly (lines ~211-241).
+
+    * When `dat/descript/zh/source.txt` exists (production's check
+      file), the child scans the locale directory: every `.txt` direct
+      child, sorted, source.txt first.
+    * Otherwise the child inherits the parent's fixed input list
+      (EN_DESCRIPT_FILES) and _regenerate_db loads only the files that
+      exist under the locale directory, in that fixed order.
+
+    The discovered sequence is always surfaced in the payload manifest
+    (`desc_zh_input_sequence`), so the effective branch is never
+    silent.
+    """
+    files = git_ls_tree_blobs(ref, DESCRIPT_ZH_DIR)
+    if "source.txt" in files:
+        return _order_source_first(files)
+    return [f for f in EN_DESCRIPT_FILES if f in files]
 
 
 def _matching_brace(text: str, open_idx: int) -> int:
@@ -550,41 +727,80 @@ def parse_card_switch(body: str, localized: bool
 
 
 def parse_removed_cases(text: str) -> list[str]:
-    """Strictly parse the card_is_removed() switch.
+    """Strictly parse the card_is_removed() switch (R2-CODE3-002).
 
-    The function body must be exactly `switch (card) { #if
-    TAG_MAJOR_VERSION == 34 case...: return true; #endif default: return
-    false; }`. Every case must sit inside an active TAG-34 frame and must
-    belong to the single pending run consumed by the TAG-34 `return
-    true;`: a case appearing after that return, a case without a return,
-    or a return without a preceding case aborts (R2-CODE2-002). The
-    returns must be the exact boolean literals `true` / `false`, and the
-    default: must sit outside the TAG-34 block. Any deviation (including
-    a duplicate case or a boolean expression instead of a literal)
-    aborts the run.
+    The accepted grammar is exactly the documented canonical shape, no
+    more and no less:
+
+        switch (card)
+        {
+        #if TAG_MAJOR_VERSION == 34
+        case CARD_...:
+        case CARD_...:
+            return true;
+        #endif
+        default:
+            return false;
+        }
+
+    Concretely, the switch body must be, in order: the single top-level
+    `#if TAG_MAJOR_VERSION == 34` directive; one or more consecutive
+    `case CARD_...:` labels (the single pending case run, unique); the
+    single `return true;` of that branch (which consumes the pending
+    run); the matching `#endif`; `default:`; and `return false;` as the
+    last token. The `default:` and `return false;` must sit outside the
+    TAG-34 block, after it.
+
+    Any deviation aborts: a nested conditional (`#if`/`#ifdef`/
+    `#ifndef` inside the TAG-34 block), an extra branch (`#else`,
+    `#elif`, a repeated `#if`), a repeated `#endif`, a case outside the
+    TAG-34 block, a case after the `return true;`, a case without a
+    return, a `return true;` without cases, more than one `return
+    true;`, more than one `default:`, a boolean expression instead of
+    the exact literal, or any content after `return false;` (including
+    a stray preprocessor directive). The boolean literals must be
+    exactly `true` / `false`.
     """
     switch_body, tail = _function_switch_regions(
         text, _SIG_RE["card_is_removed"], "card_is_removed")
     _require_no_tokens(tail, "card_is_removed body after switch")
     cases: list[str] = []
     pending: list[str] = []
-    frames = _PreprocessorFrames("card_is_removed switch")
-    saw_true = False
-    saw_default = False
-    saw_false = False
+    # Dedicated state machine: no generic frame tracking, so a nested
+    # conditional can never be mistaken for the canonical TAG-34 block.
+    # expect_if -> expect_cases -> expect_endif -> expect_default ->
+    # expect_false -> done.
+    state = "expect_if"
     for m in _strict_tokenize(switch_body, "card_is_removed switch"):
         kind = _token_kind(m)
         if kind == "directive":
-            frames.handle(m.group("directive"))
+            dir_kind, cond = _parse_directive(m.group("directive"))
+            if state == "expect_if":
+                if dir_kind != "if" or cond != _TAG34_COND:
+                    raise SystemExit(
+                        "card_is_removed switch must start with exactly "
+                        f"`#if {_TAG34_COND}` (got "
+                        f"{m.group('directive').strip()!r})")
+                state = "expect_cases"
+            elif state == "expect_endif":
+                if dir_kind != "endif":
+                    raise SystemExit(
+                        "card_is_removed: unexpected directive "
+                        f"{m.group('directive').strip()!r} after the "
+                        "TAG-34 `return true;`; only the matching "
+                        "`#endif` is allowed (nested conditionals, "
+                        "extra branches and repeated #if/#else/#elif/"
+                        "#endif forms are rejected)")
+                state = "expect_default"
+            else:
+                raise SystemExit(
+                    "card_is_removed: unexpected directive "
+                    f"{m.group('directive').strip()!r} (the TAG-34 "
+                    "block is the only conditional the switch may "
+                    "contain)")
             continue
         if kind == "case":
-            if not frames.in_tag34():
-                raise SystemExit(
-                    "card_is_removed case outside an active "
-                    "TAG_MAJOR_VERSION == 34 block")
-            if saw_default:
-                raise SystemExit("card_is_removed case after default:")
-            if saw_true:
+            if state != "expect_cases":
                 raise SystemExit(
                     "card_is_removed case after the TAG-34 "
                     "`return true;`")
@@ -596,55 +812,37 @@ def parse_removed_cases(text: str) -> list[str]:
             continue
         if kind == "bool_return":
             if m.group("bool_val") == "true":
-                if saw_true:
+                if state != "expect_cases":
                     raise SystemExit(
                         "card_is_removed has more than one `return true;`")
                 if not pending:
                     raise SystemExit(
                         "card_is_removed `return true;` without cases")
-                if not frames.in_tag34():
-                    raise SystemExit(
-                        "card_is_removed `return true;` outside the "
-                        "TAG-34 block")
                 cases.extend(pending)
                 pending = []
-                saw_true = True
+                state = "expect_endif"
             else:
-                if saw_false:
+                if state != "expect_false":
                     raise SystemExit(
-                        "card_is_removed has more than one `return false;`")
-                if not saw_default:
-                    raise SystemExit(
-                        "card_is_removed `return false;` without default:")
-                if frames.in_tag34():
-                    raise SystemExit(
-                        "card_is_removed `return false;` inside the "
-                        "TAG-34 block")
-                saw_false = True
+                        "card_is_removed `return false;` must follow "
+                        "`default:` after the TAG-34 block")
+                state = "done"
             continue
         if kind == "default":
-            if saw_default:
+            if state != "expect_default":
                 raise SystemExit(
-                    "card_is_removed has more than one default:")
-            if not saw_true:
-                raise SystemExit(
-                    "card_is_removed default: before the TAG-34 "
-                    "`return true;`")
-            if frames.in_tag34():
-                raise SystemExit(
-                    "card_is_removed default: inside the TAG-34 block")
-            saw_default = True
+                    "card_is_removed default: must sit alone outside "
+                    "the TAG-34 block, after `#endif`")
+            state = "expect_false"
             continue
         raise SystemExit(
             f"unexpected token ({kind}) in card_is_removed switch")
-    frames.require_closed()
-    if pending:
+    if state != "done":
         raise SystemExit(
-            f"card_is_removed case(s) without a return: {pending}")
-    if not saw_true or not saw_default or not saw_false:
-        raise SystemExit(
-            "card_is_removed switch must contain `return true;` for the "
-            "TAG-34 cases and `default: return false;`")
+            "card_is_removed switch must contain exactly the canonical "
+            "shape: `#if TAG_MAJOR_VERSION == 34` + cases + `return "
+            "true;` + `#endif` + `default:` + `return false;` "
+            f"(ended in state {state!r})")
     return cases
 
 
@@ -794,7 +992,7 @@ def _escape_key(raw: str) -> str:
 
 @dataclass
 class SourceEntry:
-    """One source.txt entry with production parse semantics.
+    """One source-database entry with production parse semantics.
 
     raw_key: physical key line as-is (trim_keys=false, no \\# decode,
     no unescape; whitespace belongs to the key).
@@ -803,16 +1001,19 @@ class SourceEntry:
     would return it: leading blank lines stripped (_trim_leading_newlines
     at the _parse_text_db flush), the loader's trailing newline artifact
     removed, and i18n escape sequences decoded (i18n_unescape_value).
+    source_file: basename of the input file this entry came from (the
+    localized SourceDB may be split across several .txt files).
     """
     raw_key: str
     canonical_key: str
     value: str
     key_line: int
     value_line: int
+    source_file: str
 
 
-def parse_source_physical(text: str) -> list[SourceEntry]:
-    """Parse source.txt with production SourceDB semantics.
+def parse_source_physical(text: str, source_file: str) -> list[SourceEntry]:
+    """Parse one source-database file with production SourceDB semantics.
 
     Mirrors database.cc `_parse_text_db(..., trim_keys=false)` as
     implemented by i18n_shared.parse_entries_physical():
@@ -836,13 +1037,14 @@ def parse_source_physical(text: str) -> list[SourceEntry]:
     player actually sees (`值\n尾` with a real newline).
 
     `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree).
+    baseline Git blob, never from the worktree); `source_file` is the
+    input-file basename recorded on every returned entry.
     """
     payload = text.encode("utf-8")
     source = AuditInput(
         audit_commit=None,
-        logical_path="dat/i18n/zh/source.txt",
-        relative_path="dat/i18n/zh/source.txt",
+        logical_path=f"dat/i18n/zh/{source_file}",
+        relative_path=f"dat/i18n/zh/{source_file}",
         bytes=payload,
         text=text,
         sha256=hashlib.sha256(payload).hexdigest(),
@@ -853,44 +1055,104 @@ def parse_source_physical(text: str) -> list[SourceEntry]:
         value=runtime_normalize_value(pe.value),
         key_line=pe.key_line,
         value_line=pe.value_line,
+        source_file=source_file,
     ) for pe in parse_entries_physical(source)]
 
 
 class SourceDB:
-    """Production-semantics SourceDB (dat/i18n/zh/source.txt) lookup model.
+    """Production-semantics SourceDB lookup model over the complete
+    input sequence (R2-CODE3-001).
 
-    Mirrors database.cc i18n_source_lookup():
+    The localized SourceDB is loaded from every discovered .txt file in
+    database.cc load order (source.txt first, the rest in directory
+    discovery order); each file is parsed with _parse_text_db
+    (trim_keys=false) and stored with DBM_REPLACE, so a later file's
+    definition of a canonical key overrides an earlier file's. This
+    class merges the sequence with exactly that last-wins semantics and
+    records every cross-file override as an override fact
+    (`self.overrides`) instead of dropping it silently.
+
+    Within one file, a duplicate canonical key is a fail-closed error:
+    production DBM_REPLACE would silently let the last line win, hiding
+    an authoring collision; the audit must never pass that silently.
+    Cross-file overrides are the production mechanism domain-specific
+    files use to move keys, so they are modeled and reported, not
+    rejected.
+
+    Lookup mirrors database.cc i18n_source_lookup():
       - T_(en): query canonical(i18n_escape_key(en)); an empty value is a
         miss and falls back to English.
       - C_(ctx, en): query canonical(i18n_escape_key("ctx|en")) first;
         only when that misses (or is empty), fall back to
         canonical(i18n_escape_key(en)); otherwise English.
-
-    Canonical-key duplicates are a fail-closed error: production DBM
-    stores last-wins (DBM_REPLACE), which would silently hide the audit
-    signal this tool exists to produce.
     """
 
-    def __init__(self, entries: list[SourceEntry]):
-        self.entries = entries
+    def __init__(self, files: list[tuple[str, list[SourceEntry]]]):
+        """files: [(input_file_basename, entries)] in production load
+        order (source.txt first, remaining files in directory discovery
+        order)."""
+        self.entries: list[SourceEntry] = []
+        self.overrides: list[dict[str, object]] = []
         self._by_canonical: dict[str, SourceEntry] = {}
-        for entry in entries:
-            prev = self._by_canonical.get(entry.canonical_key)
-            if prev is not None:
-                raise SystemExit(
-                    f"source.txt canonical key collision: "
-                    f"{entry.canonical_key!r} defined by both "
-                    f"{prev.raw_key!r} (line {prev.key_line}) and "
-                    f"{entry.raw_key!r} (line {entry.key_line})")
-            self._by_canonical[entry.canonical_key] = entry
-        self._by_raw = {entry.raw_key: entry for entry in entries}
+        self._by_raw: dict[str, SourceEntry] = {}
+        for source_file, file_entries in files:
+            seen_in_file: dict[str, SourceEntry] = {}
+            for entry in file_entries:
+                prev_in_file = seen_in_file.get(entry.canonical_key)
+                if prev_in_file is not None:
+                    raise SystemExit(
+                        f"{source_file} canonical key collision: "
+                        f"{entry.canonical_key!r} defined by both "
+                        f"{prev_in_file.raw_key!r} (line "
+                        f"{prev_in_file.key_line}) and "
+                        f"{entry.raw_key!r} (line {entry.key_line})")
+                seen_in_file[entry.canonical_key] = entry
+                prev_eff = self._by_canonical.get(entry.canonical_key)
+                if prev_eff is not None:
+                    self._record_override(entry, prev_eff)
+                self._by_canonical[entry.canonical_key] = entry
+                self._by_raw[entry.raw_key] = entry
+                self.entries.append(entry)
+
+    def _record_override(self, winner: SourceEntry,
+                         superseded: SourceEntry) -> None:
+        """Record one DBM_REPLACE override fact (later file wins)."""
+        canon = winner.canonical_key
+        rec = next((r for r in self.overrides
+                    if r["canonical_key"] == canon), None)
+        fact = {"file": superseded.source_file,
+                "raw_key": superseded.raw_key,
+                "key_line": superseded.key_line}
+        if rec is None:
+            self.overrides.append({
+                "canonical_key": canon,
+                "winner": {"file": winner.source_file,
+                            "raw_key": winner.raw_key,
+                            "key_line": winner.key_line},
+                "superseded": [fact],
+            })
+        else:
+            rec["superseded"].append(fact)  # type: ignore[union-attr]
+            rec["winner"] = {"file": winner.source_file,
+                              "raw_key": winner.raw_key,
+                              "key_line": winner.key_line}
 
     def exact_case_key_exists(self, key: str) -> bool:
-        """True when a physical source.txt key equals `key` exactly."""
+        """True when a physical key line equals `key` exactly in any
+        input file of the sequence."""
         return key in self._by_raw
 
     def canonical(self, en: str, ctx: str | None = None) -> str:
         return lowercase_string(_escape_key(f"{ctx}|{en}" if ctx else en))
+
+    def _physical(self, entry: SourceEntry) -> str:
+        """Human-readable physical-key provenance for resolution paths:
+        source.txt hits keep the historical compact form, hits from a
+        later override file name the file."""
+        if entry.source_file == "source.txt":
+            return f"(physical key {entry.raw_key!r})"
+        return (f"(physical key {entry.raw_key!r} in "
+                f"{entry.source_file})")
 
     def lookup(self, en: str, ctx: str | None = None
                ) -> tuple[str | None, SourceEntry | None, str]:
@@ -907,15 +1169,15 @@ class SourceDB:
                 entry, value = hit
                 return (value, entry,
                         f"C_({ctx!r}, {en!r}) -> canonical "
-                        f"{self.canonical(en, ctx)!r} hit (physical key "
-                        f"{entry.raw_key!r})")
+                        f"{self.canonical(en, ctx)!r} hit "
+                        f"{self._physical(entry)}")
             hit = self._fetch(en)
             if hit is not None:
                 entry, value = hit
                 return (value, entry,
                         f"C_({ctx!r}, {en!r}) -> context key miss; "
                         f"canonical {self.canonical(en)!r} fallback hit "
-                        f"(physical key {entry.raw_key!r})")
+                        f"{self._physical(entry)}")
             return (None, None,
                     f"C_({ctx!r}, {en!r}) -> context key "
                     f"{self.canonical(en, ctx)!r} and plain key "
@@ -925,7 +1187,7 @@ class SourceDB:
             entry, value = hit
             return (value, entry,
                     f"T_({en!r}) -> canonical {self.canonical(en)!r} hit "
-                    f"(physical key {entry.raw_key!r})")
+                    f"{self._physical(entry)}")
         return (None, None,
                 f"T_({en!r}) -> canonical {self.canonical(en)!r} miss "
                 f"-> English fallback")
@@ -937,42 +1199,94 @@ class SourceDB:
         return entry, entry.value
 
 
-def parse_db_keys(text: str) -> dict[str, str]:
+@dataclass
+class DescEntry:
+    """One TextDB (description) entry: raw physical key, value, the
+    1-indexed key line and the input file it came from."""
+    raw_key: str
+    value: str
+    key_line: int
+    source_file: str
+
+
+def parse_db_keys(text: str, source_file: str) -> list[DescEntry]:
     """Parse a TextDB file the way _parse_text_db() in database.cc does:
     `%%%%` block separators (a line whose first four characters are
     `%%%%`), lines starting with `#` skipped as comments everywhere, key =
-    first remaining line of each block, rest = value.
+    first remaining line of each block (trimmed; production also
+    lowercases it -- presence and diff comparisons in this tool lowercase
+    both sides), rest = value (each line right-trimmed, joined with \n).
 
     `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree). Keys are returned as
-    written; the production loader lowercases them, so presence and diff
-    comparisons in this tool lowercase both sides.
+    baseline Git blob, never from the worktree). `source_file` is the
+    input-file basename recorded on every returned entry.
     """
-    entries: dict[str, str] = {}
+    entries: list[DescEntry] = []
     key: str | None = None
+    key_line = 0
     value_lines: list[str] = []
-    for line in text.splitlines():
+    for lineno, line in enumerate(text.splitlines(), start=1):
         if not line or line[0] == '#':
             continue
         if line.startswith("%%%%"):
             if key is not None:
-                entries[key] = "\n".join(value_lines)
+                entries.append(DescEntry(
+                    raw_key=key, value="\n".join(value_lines),
+                    key_line=key_line, source_file=source_file))
             key = None
             value_lines = []
             continue
         if key is None:
             key = line.strip()
+            key_line = lineno
         else:
             value_lines.append(line.rstrip())
     if key is not None:
-        entries[key] = "\n".join(value_lines)
+        entries.append(DescEntry(
+            raw_key=key, value="\n".join(value_lines),
+            key_line=key_line, source_file=source_file))
     return entries
 
 
-def lower_key_map(entries: dict[str, str]) -> dict[str, str]:
-    """Map lowercase key -> as-written key (production lookups lowercase
-    TextDB keys, so presence/diff checks must too)."""
-    return {k.lower(): k for k in entries}
+def merge_desc_sequence(
+        entries: list[DescEntry]
+) -> tuple[dict[str, DescEntry], list[dict[str, object]]]:
+    """Merge a DescriptionDB input sequence with production DBM_REPLACE
+    last-wins semantics (R2-CODE3-001).
+
+    `entries` is the concatenation of every file's entries in production
+    load order. Production stores keys lowercased, so the effective key
+    space is lowercase(raw_key); a later definition (within or across
+    files) overrides an earlier one exactly like dbm_store(DBM_REPLACE).
+    Returns (effective: lowercase key -> winning entry, override facts),
+    where every override fact records the winner and the full superseded
+    chain in load order.
+    """
+    effective: dict[str, DescEntry] = {}
+    overrides: list[dict[str, object]] = []
+    for entry in entries:
+        canon = entry.raw_key.lower()
+        prev = effective.get(canon)
+        if prev is not None:
+            rec = next((r for r in overrides
+                        if r["canonical_key"] == canon), None)
+            fact = {"file": prev.source_file, "raw_key": prev.raw_key,
+                    "key_line": prev.key_line}
+            if rec is None:
+                overrides.append({
+                    "canonical_key": canon,
+                    "winner": {"file": entry.source_file,
+                                "raw_key": entry.raw_key,
+                                "key_line": entry.key_line},
+                    "superseded": [fact],
+                })
+            else:
+                rec["superseded"].append(fact)  # type: ignore[union-attr]
+                rec["winner"] = {"file": entry.source_file,
+                                  "raw_key": entry.raw_key,
+                                  "key_line": entry.key_line}
+        effective[canon] = entry
+    return effective, overrides
 
 
 def _canonical_temp_root() -> str:
@@ -1232,25 +1546,40 @@ def main() -> int:
         help="git commit-ish recorded as the payload 'baseline' (the review "
              "anchor for reproducible rebuilds); resolved with "
              "`git rev-parse <ref>` to a full 40-hex SHA, default HEAD; "
-             "all inputs (decks.h, decks.cc, source.txt, cards.txt, "
-             "zh/cards.txt) and the glossary are read from this commit's "
-             "Git objects via `git show`, so the inventory is independent "
-             "of local worktree state")
+             "all inputs -- decks.h, decks.cc, the complete discovered "
+             "SourceDB sequence (dat/i18n/zh/*.txt), the complete "
+             "DescriptionDB sequences (dat/descript/*.txt and "
+             "dat/descript/zh/*.txt per database.cc discovery) and the "
+             "glossary -- are read from this commit's Git objects via "
+             "`git show`/`git ls-tree` under the trusted git environment, "
+             "so the inventory is independent of local worktree state and "
+             "of git replace refs")
     args = ap.parse_args()
     baseline = resolve_commit(args.baseline_ref)
 
-    # All five inputs are read as Git blobs at the baseline commit (never
-    # from the worktree), so the inventory is reproducible from any
-    # checkout state; the digests below hash exactly those blob bytes.
-    input_blobs = {
+    # Complete production input sequence discovery (R2-CODE3-001): the
+    # SourceDB and DescriptionDB inputs are discovered from the baseline
+    # Git tree exactly like database.cc (TextDB child constructor +
+    # _regenerate_db), so a later-added domain file (e.g. zz-cards.txt)
+    # is part of the audited sequence and its DBM_REPLACE overrides are
+    # modeled, never silently ignored. Every unique blob is read once;
+    # the manifest binds the discovered sequences and per-file digests
+    # into the payload.
+    source_files = discover_source_db_files(baseline)
+    desc_en_files = discover_desc_en_files(baseline)
+    desc_zh_files = discover_desc_zh_files(baseline)
+    input_paths: dict[str, str] = {
         "decks.h": "crawl-ref/source/decks.h",
         "decks.cc": "crawl-ref/source/decks.cc",
-        "cards.txt": "crawl-ref/source/dat/descript/cards.txt",
-        "zh/cards.txt": "crawl-ref/source/dat/descript/zh/cards.txt",
-        "source.txt": "crawl-ref/source/dat/i18n/zh/source.txt",
     }
+    input_paths.update({f"i18n/{f}": I18N_ZH_DIR + f
+                        for f in source_files})
+    input_paths.update({f"desc_en/{f}": DESCRIPT_DIR + f
+                        for f in desc_en_files})
+    input_paths.update({f"desc_zh/{f}": DESCRIPT_ZH_DIR + f
+                        for f in desc_zh_files})
     blobs = {k: git_show_blob(baseline, rel)
-             for k, rel in input_blobs.items()}
+             for k, rel in input_paths.items()}
 
     enum = parse_card_enum(blobs["decks.h"].decode("utf-8"))
     members = [name for name, _flag in enum]
@@ -1317,12 +1646,21 @@ def main() -> int:
                 f"card {name} appears in multiple deck tables: {found}")
         membership[name] = DECK_SHORT[found[0]] if found else "none"
 
-    src = SourceDB(parse_source_physical(
-        blobs["source.txt"].decode("utf-8")))
-    db_en = parse_db_keys(blobs["cards.txt"].decode("utf-8"))
-    db_zh = parse_db_keys(blobs["zh/cards.txt"].decode("utf-8"))
-    en_lm = lower_key_map(db_en)
-    zh_lm = lower_key_map(db_zh)
+    src = SourceDB([
+        (f, parse_source_physical(blobs[f"i18n/{f}"].decode("utf-8"), f))
+        for f in source_files])
+    db_en_entries = [e for f in desc_en_files
+                     for e in parse_db_keys(
+                         blobs[f"desc_en/{f}"].decode("utf-8"), f)]
+    db_zh_entries = [e for f in desc_zh_files
+                     for e in parse_db_keys(
+                         blobs[f"desc_zh/{f}"].decode("utf-8"), f)]
+    # Effective description keyspaces with production DBM_REPLACE
+    # last-wins across the complete load sequence.
+    en_effective, desc_en_overrides = merge_desc_sequence(db_en_entries)
+    zh_effective, desc_zh_overrides = merge_desc_sequence(db_zh_entries)
+    en_lm = {k: e.raw_key for k, e in en_effective.items()}
+    zh_lm = {k: e.raw_key for k, e in zh_effective.items()}
 
     inventory = []
     for name in members:
@@ -1351,6 +1689,10 @@ def main() -> int:
             "desc_key": dk,
             "desc_en": dk.lower() in en_lm,
             "desc_zh": dk.lower() in zh_lm,
+            "desc_en_value": (en_effective.get(dk.lower()).value
+                               if dk.lower() in en_effective else None),
+            "desc_zh_value": (zh_effective.get(dk.lower()).value
+                               if dk.lower() in zh_effective else None),
         }
         if lifecycle == "removed":
             entry["removed_base_name"] = removed_base_name(name)
@@ -1376,6 +1718,12 @@ def main() -> int:
         "desc_key": ft_desc_key,
         "desc_en": ft_desc_key.lower() in en_lm,
         "desc_zh": ft_desc_key.lower() in zh_lm,
+        "desc_en_value": (en_effective.get(ft_desc_key.lower()).value
+                           if ft_desc_key.lower() in en_effective
+                           else None),
+        "desc_zh_value": (zh_effective.get(ft_desc_key.lower()).value
+                           if ft_desc_key.lower() in zh_effective
+                           else None),
     }
 
     # Production-semantics coverage record (replaces the old exact-case
@@ -1413,9 +1761,17 @@ def main() -> int:
         "baseline": baseline,
         "glossary_sha256": hashlib.sha256(
             git_show_blob(baseline, "docs/glossary.md")).hexdigest(),
-        "digests": {
-            k: hashlib.sha256(blobs[k]).hexdigest() for k in input_blobs
+        "inputs": {
+            k: {"path": input_paths[k],
+                "sha256": hashlib.sha256(blobs[k]).hexdigest()}
+            for k in input_paths
         },
+        "source_input_sequence": source_files,
+        "desc_en_input_sequence": desc_en_files,
+        "desc_zh_input_sequence": desc_zh_files,
+        "source_overrides": src.overrides,
+        "desc_en_overrides": desc_en_overrides,
+        "desc_zh_overrides": desc_zh_overrides,
         "enum_members": members,
         "removed_members": removed,
         "deck_tables": {DECK_SHORT[k]: tables[k] for k in KNOWN_DECKS},
@@ -1446,10 +1802,19 @@ def main() -> int:
           f"card_name={len(loc_labels)}, same case order")
     print("deck tables: " + " ".join(
         f"{DECK_SHORT[k]}={len(tables[k])}" for k in KNOWN_DECKS))
+    print(f"source DB input sequence ({len(source_files)}): "
+          + " ".join(source_files))
+    print(f"desc EN input sequence ({len(desc_en_files)}): "
+          + " ".join(desc_en_files))
+    print(f"desc ZH input sequence ({len(desc_zh_files)}): "
+          + " ".join(desc_zh_files))
+    print(f"source overrides: {src.overrides}")
+    print(f"desc overrides: EN={desc_en_overrides} ZH={desc_zh_overrides}")
     print(f"T_ unresolved (English fallback): {t_unresolved}")
     print(f"canonical collisions: {canonical_collisions}")
     print(f"extra name keys: {extra_name_keys}")
-    print(f"desc keys: EN={len(db_en)} ZH={len(db_zh)} "
+    print(f"desc keys (effective): EN={len(en_effective)} "
+          f"ZH={len(zh_effective)} "
           f"(EN-only={en_only_desc_keys}, ZH-only={zh_only_desc_keys})")
     print(f"wrote {out}")
     return 0
