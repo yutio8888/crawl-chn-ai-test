@@ -17,7 +17,11 @@ derived from code greps.
 
 The payload records a `baseline` commit (the review anchor) so the
 inventory can be reproduced from any checkout: pass `--baseline-ref
-<commit-ish>` to pin it (default: HEAD).
+<commit-ish>` to pin it (default: HEAD). All five input files (the two
+C++ sources and the three data files above) and the producer search are
+read from Git objects at that commit via `git show <ref>:<path>` and
+`git grep ... <ref>` -- never from the local worktree -- so the output
+is identical regardless of local checkout state or uncommitted edits.
 
 Usage:
   python3 .claude/scripts/cloud_inventory.py --baseline-ref <commit> --inventory-output /tmp/cloud-inventory.json
@@ -34,7 +38,6 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "crawl-ref" / "source"
 
 
 def sha256_file(path: Path) -> str:
@@ -59,12 +62,39 @@ def resolve_commit(ref: str) -> str:
     return oid
 
 
-def parse_enum(path: Path) -> list[str]:
-    """Return the CLOUD_* enum member names in declaration order."""
-    txt = path.read_text()
-    m = re.search(r"enum cloud_type\s*\{(.*?)\};", txt, re.S)
+def git_show_blob(ref: str, rel_path: str) -> bytes:
+    """Return the raw blob content of a tracked file at a git commit.
+
+    The content comes from `git show <ref>:<rel_path>` (with
+    `--end-of-options` so the ref can never be parsed as an option), i.e.
+    from the Git object database, never from the worktree. Fail-closed:
+    a non-zero exit or empty output (missing path or object) aborts the
+    run with exit code 1.
+    """
+    r = subprocess.run(
+        ["git", "show", "--end-of-options", f"{ref}:{rel_path}"],
+        capture_output=True, cwd=ROOT)
+    if r.returncode != 0 or not r.stdout:
+        print(
+            f"error: cannot read {rel_path} at {ref} "
+            f"(git show exit code {r.returncode})",
+            file=sys.stderr)
+        if r.stderr.strip():
+            print(r.stderr.decode("utf-8", "replace").strip(),
+                  file=sys.stderr)
+        raise SystemExit(1)
+    return r.stdout
+
+
+def parse_enum(text: str) -> list[str]:
+    """Return the CLOUD_* enum member names in declaration order.
+
+    `text` is the file content supplied by the caller (read from the
+    baseline Git blob, never from the worktree).
+    """
+    m = re.search(r"enum cloud_type\s*\{(.*?)\};", text, re.S)
     if not m:
-        raise SystemExit(f"cannot parse cloud_type enum in {path}")
+        raise SystemExit("cannot parse cloud_type enum in cloud-type.h blob")
     body = m.group(1)
     names = []
     for line in body.splitlines():
@@ -78,14 +108,17 @@ def parse_enum(path: Path) -> list[str]:
     return names
 
 
-def parse_cloud_data(path: Path) -> dict[str, dict]:
+def parse_cloud_data(text: str) -> dict[str, dict]:
     """Extract {enum: {terse, verbose}} from the clouds[] table by matching
-    each `// CLOUD_X,` comment with the following `{ "terse", "verbose" }`."""
-    txt = path.read_text()
+    each `// CLOUD_X,` comment with the following `{ "terse", "verbose" }`.
+
+    `text` is the file content supplied by the caller (read from the
+    baseline Git blob, never from the worktree).
+    """
     out: dict[str, dict] = {}
     marker_re = re.compile(r"//\s*(CLOUD_[A-Z0-9_]+)\s*,?")
     entry_re = re.compile(r"\{\s*\"([^\"]*)\"\s*(?:,\s*\"([^\"]*)\")?")
-    lines = txt.splitlines()
+    lines = text.splitlines()
     i = 0
     while i < len(lines):
         mm = marker_re.search(lines[i])
@@ -108,11 +141,14 @@ def parse_cloud_data(path: Path) -> dict[str, dict]:
     return out
 
 
-def parse_t_key(path: Path) -> dict[str, str]:
-    """Parse source.txt: plain keys (no context prefix) -> ZH value."""
-    txt = path.read_text()
+def parse_t_key(text: str) -> dict[str, str]:
+    """Parse source.txt: plain keys (no context prefix) -> ZH value.
+
+    `text` is the file content supplied by the caller (read from the
+    baseline Git blob, never from the worktree).
+    """
     entries: dict[str, str] = {}
-    blocks = re.split(r"%%%%", txt)
+    blocks = re.split(r"%%%%", text)
     for block in blocks:
         block = block.strip("\n")
         if not block:
@@ -127,11 +163,14 @@ def parse_t_key(path: Path) -> dict[str, str]:
     return entries
 
 
-def parse_db_keys(path: Path) -> dict[str, str]:
-    """Parse a TextDB file: `%%%%` blocks, key = first line, value = rest."""
-    txt = path.read_text()
+def parse_db_keys(text: str) -> dict[str, str]:
+    """Parse a TextDB file: `%%%%` blocks, key = first line, value = rest.
+
+    `text` is the file content supplied by the caller (read from the
+    baseline Git blob, never from the worktree).
+    """
     entries: dict[str, str] = {}
-    blocks = re.split(r"%%%%", txt)
+    blocks = re.split(r"%%%%", text)
     for block in blocks:
         block = block.strip("\n")
         if not block:
@@ -144,20 +183,37 @@ def parse_db_keys(path: Path) -> dict[str, str]:
     return entries
 
 
-def grep_producers(enum: str) -> list[str]:
-    """Find code locations that create this cloud type (read-only grep)."""
+def grep_producers(ref: str, enum: str) -> list[str]:
+    """Find code locations that create this cloud type at a git commit.
+
+    The search runs `git grep -n -E <pat> <ref> -- crawl-ref/source/` on
+    the baseline commit's Git objects (with `--end-of-options` so the ref
+    can never be parsed as an option), never on the worktree files, so
+    the result is independent of local checkout state. Definition-site
+    hits in cloud.cc / cloud-type.h are excluded, and the repo-root path
+    prefix is normalized to source-relative (the previous worktree-grep
+    format) to keep producer identities stable.
+    """
     pats = [rf"place_cloud\s*\(\s*{enum}", rf"big_cloud\s*\(\s*{enum}"]
     hits = []
     for pat in pats:
         r = subprocess.run(
-            ["grep", "-rn", "-E", pat, str(SRC)],
+            ["git", "grep", "-n", "-E", "-e", pat, "--end-of-options",
+             ref, "--", "crawl-ref/source/"],
             capture_output=True, text=True, cwd=ROOT)
+        if r.returncode not in (0, 1):  # 0 = matches, 1 = no matches
+            print(
+                f"error: git grep failed for {enum} ({pat!r}) at {ref}: "
+                f"{r.stderr.strip()}",
+                file=sys.stderr)
+            raise SystemExit(1)
         for line in r.stdout.splitlines():
+            if line.startswith(ref + ":"):
+                line = line[len(ref) + 1:]
             if "/cloud.cc:" in line or "/cloud-type.h:" in line:
                 continue
-            rel = line.replace(str(SRC) + "/", "")
-            hits.append(rel)
-    # Normalize the producer list: recursive grep traversal order is not
+            hits.append(line.replace("crawl-ref/source/", "", 1))
+    # Normalize the producer list: git grep traversal order is not
     # guaranteed, so sort and deduplicate to make the inventory (and its
     # inventory_sha256) reproducible for a given baseline.
     return sorted(set(hits))
@@ -339,21 +395,32 @@ def main() -> int:
         default="HEAD",
         help="git commit-ish recorded as the payload 'baseline' (the review "
              "anchor for reproducible rebuilds); resolved with "
-             "`git rev-parse <ref>` to a full 40-hex SHA, default HEAD")
+             "`git rev-parse <ref>` to a full 40-hex SHA, default HEAD; "
+             "all inputs (cloud-type.h, cloud.cc, source.txt, clouds.txt, "
+             "zh/clouds.txt) and the producer search are read from this "
+             "commit's Git objects via `git show` / `git grep`, so the "
+             "inventory is independent of local worktree state")
     args = ap.parse_args()
     baseline = resolve_commit(args.baseline_ref)
 
-    enum_path = SRC / "cloud-type.h"
-    data_path = SRC / "cloud.cc"
-    source_txt = SRC / "dat" / "i18n" / "zh" / "source.txt"
-    desc_en = SRC / "dat" / "descript" / "clouds.txt"
-    desc_zh = SRC / "dat" / "descript" / "zh" / "clouds.txt"
+    # All five inputs are read as Git blobs at the baseline commit (never
+    # from the worktree), so the inventory is reproducible from any
+    # checkout state; the digests below hash exactly those blob bytes.
+    input_blobs = {
+        "cloud-type.h": "crawl-ref/source/cloud-type.h",
+        "cloud.cc": "crawl-ref/source/cloud.cc",
+        "source.txt": "crawl-ref/source/dat/i18n/zh/source.txt",
+        "clouds.txt": "crawl-ref/source/dat/descript/clouds.txt",
+        "zh/clouds.txt": "crawl-ref/source/dat/descript/zh/clouds.txt",
+    }
+    blobs = {k: git_show_blob(baseline, rel)
+             for k, rel in input_blobs.items()}
 
-    enums = parse_enum(enum_path)
-    names = parse_cloud_data(data_path)
-    t = parse_t_key(source_txt)
-    db_en = parse_db_keys(desc_en)
-    db_zh = parse_db_keys(desc_zh)
+    enums = parse_enum(blobs["cloud-type.h"].decode("utf-8"))
+    names = parse_cloud_data(blobs["cloud.cc"].decode("utf-8"))
+    t = parse_t_key(blobs["source.txt"].decode("utf-8"))
+    db_en = parse_db_keys(blobs["clouds.txt"].decode("utf-8"))
+    db_zh = parse_db_keys(blobs["zh/clouds.txt"].decode("utf-8"))
 
     # enum members without a data-table entry
     missing_data = [e for e in enums if e not in names]
@@ -383,7 +450,7 @@ def main() -> int:
             "desc_key": desc_key,
             "desc_en": desc_key in db_en,
             "desc_zh": desc_key in db_zh,
-            "producers": grep_producers(enum),
+            "producers": grep_producers(baseline, enum),
             "missing_t_key": None if terse in t
                               or enum in ("CLOUD_NONE", "CLOUD_RANDOM_SMOKE",
                                           "CLOUD_RANDOM", "CLOUD_DEBUGGING")
@@ -407,11 +474,11 @@ def main() -> int:
         "baseline": baseline,
         "glossary_sha256": sha256_file(ROOT / "docs" / "glossary.md"),
         "digests": {
-            "cloud-type.h": sha256_file(enum_path),
-            "cloud.cc": sha256_file(data_path),
-            "source.txt": sha256_file(source_txt),
-            "clouds.txt": sha256_file(desc_en),
-            "zh/clouds.txt": sha256_file(desc_zh),
+            "cloud-type.h": hashlib.sha256(blobs["cloud-type.h"]).hexdigest(),
+            "cloud.cc": hashlib.sha256(blobs["cloud.cc"]).hexdigest(),
+            "source.txt": hashlib.sha256(blobs["source.txt"]).hexdigest(),
+            "clouds.txt": hashlib.sha256(blobs["clouds.txt"]).hexdigest(),
+            "zh/clouds.txt": hashlib.sha256(blobs["zh/clouds.txt"]).hexdigest(),
         },
         "enum_members": enums,
         "missing_data_entries": missing_data,
