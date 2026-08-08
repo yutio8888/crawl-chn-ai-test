@@ -73,7 +73,7 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 
 | # | 身份 | 文件 | 修改 |
 |---|---|---|---|
-| 1 | CARD_WRATH | `zh/source.txt` | 新增键 `Wrath` → `神怒`（修复英文泄漏） |
+| 1 | CARD_WRATH | `zh/source.txt` + `decks.cc` | 新增语境键 `card name|Wrath` → `神怒`，`decks.cc` 改用 `C_("card name", "Wrath")`（修复英文泄漏；不能用普通键 `Wrath`——与武器铭印键 `wrath` 在 SourceDB 规范键空间碰撞，Issue 66 检测确认） |
 | 2 | CARD_ORB | `zh/source.txt` | `the Orb` → `法球`（原“天球”） |
 | 3 | CARD_SWINE | `zh/source.txt` | `the Swine` → `猪`（原“猪群”） |
 | 4 | CARD_PAIN | `zh/cards.txt` | “抽出此牌会释放一个有着攻击性的死灵术。” → “抽出此牌会释放一个死灵系攻击法术。” |
@@ -84,6 +84,13 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 
 依赖组落地顺序：惩罚组（1、3）→ 毁灭组（2、4、6）→ 逃脱组（5）→ 召唤组（7、8）；
 每批运行 `verify_zh.sh --profile translation`。Suggestion 项不进入本批次。
+
+## 落地记录（2026-08-08，人工确认后）
+
+- zh 批次：提交 `6b85724d79`（source.txt 3 处值改动 + 语境键块 + zh/cards.txt 5 处描述；单一 zh-translator）
+- 代码侧：提交 `4a2233df4b`（decks.cc `card_name()` CARD_WRATH → `C_("card name", "Wrath")`；单一 crawl-coder）
+- 碰撞修复说明：首轮以普通键 `Wrath→神怒` 落地被 `verify_zh.sh` 静态完整性检查拦截（canonical `wrath` 双定义：铭印键 5061 `wrath→狂怒` + 新键 9382 `Wrath→神怒`）；运行时 SourceDB 键全小写规范化，二者同键。改用语境键后碰撞消除（`card name|wrath` 与 `wrath` 规范键不同），武器铭印 `wrath→狂怒` 不受影响。
+- 验证：`verify_zh.sh --profile translation` 0 blocking；`--profile code` 0 blocking（含 i18n 提取/键覆盖：`card name|Wrath` 被识别）。
 
 ## 覆盖证明
 
