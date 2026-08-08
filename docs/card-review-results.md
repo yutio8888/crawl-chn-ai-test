@@ -3,7 +3,8 @@
 - 基线：`9fb8e5dd22ef6607613d1c4381b7369f93a08a7e`（`chn-0.34.1-base` HEAD）
 - 术语表 SHA-256：`95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`
 - 清单 SHA-256：`611eee819d584e8d02a0f4d9282e69c6d0db9b8e3be010e8dfae4cc8f8db516f`
-  （生产语义 SourceDB 模型版；修复轮 R2-CODE-001..003 后重生成，baseline 9fb8e5dd22）
+  （生产语义 SourceDB 模型版；修复轮 R2-CODE-001..003 与 R2-CODE2-001..003 后重生成，
+  baseline 9fb8e5dd22；候选树摘要见下方「落地记录」）
 - 输入摘要：
   - `decks.h` `949b9fc43217…`
   - `decks.cc` `84002fd6e329…`
@@ -90,12 +91,12 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 
 - zh 批次：提交 `6b85724d79`（source.txt 3 处值改动 + 语境键块 + zh/cards.txt 5 处描述；单一 zh-translator）
 - 代码侧：提交 `4a2233df4b`（decks.cc `card_name()` CARD_WRATH → `C_("card name", "Wrath")`；单一 crawl-coder）
+- 机械路由修复：`6b40ac37b8`（R2-CODE-001..004）、`401fe7e83f`（R2-CODE2-001..003）——清单工具生产语义 SourceDB 模型、严格解析状态机、输出收窄至不可改名 /tmp 根直下、ZH 运行时断言测试；候选树 inventory SHA `3f6b5e96…`（OID 绑定见最终提交后重跑值）
 - 碰撞修复说明：首轮以普通键 `Wrath→神怒` 落地被 `verify_zh.sh` 静态完整性检查拦截（canonical `wrath` 双定义：铭印键 5061 `wrath→狂怒` + 新键 9382 `Wrath→神怒`）；运行时 SourceDB 键全小写规范化，二者同键。改用语境键后碰撞消除（`card name|wrath` 与 `wrath` 规范键不同），武器铭印 `wrath→狂怒` 不受影响。
 - 验证：`verify_zh.sh --profile translation` 0 blocking；`--profile code` 0 blocking（含 i18n 提取/键覆盖：`card name|Wrath` 被识别）。
 
 ## 覆盖证明
 
-- 清单枚举（25）与证据卡（25）双向差集为空；每身份恰一张卡、一个终态结论。
 - 清单枚举（25）与证据卡（25）双向差集为空；每身份恰一张卡、一个终态结论。
 - 生产语义覆盖：baseline 时 `canonical collisions = [card:CARD_WRATH]`（`T_("Wrath")`
   → 规范键 `wrath` 命中铭印键，卡名显示「狂怒」）；候选后 collisions 为空，
