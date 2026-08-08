@@ -42,7 +42,7 @@
 | # | 文件:行 | 修改 |
 |---|---|---|
 | 1 | zh/commands.txt:369-372 | 删除孤儿块 `CMD_SHOW_KEYBOARD verbose`（正确键 389-392 行保留） |
-| 2 | zh/commands.txt:115,117-123 | CMD_SHOW_CHARACTER_DUMP：terse→「导出并显示角色进度」；删除 122 行孤儿行「丢弃角色的进度」；「丢入到存档目录中的文件“ 玩家名.txt”」→「导出到 morgue 目录中的文件“玩家名.txt”」 |
+| 2 | zh/commands.txt:115,117-123 | CMD_SHOW_CHARACTER_DUMP：terse→「导出并显示角色进度」；verbose 值整段替换（删除 121-122 行孤儿空行/孤儿行「丢弃角色的进度」）→「将角色的详细信息导出到 morgue 目录中的文件“玩家名.txt”，并在游戏中显示该文件。它包含主要数据、装备、法术、技能、笔记等等。」（方案审核修正：魔法→法术 与批次 #3 姊妹命令统一） |
 | 3 | zh/commands.txt:126 | CMD_CHARACTER_DUMP verbose：「丢入到存档目录…“ 玩家名.txt”」→「导出到 morgue 目录…“玩家名.txt”」；魔法→法术（保持与 NF-06 一致） |
 | 4 | zh/commands.txt:8-9 | CMD_REST verbose →「恢复你的生命值和魔法值。一旦有敌对怪物出现，休息就会中断。如果生命值和魔法值都已满，休息将持续100回合。」 |
 | 5 | zh/commands.txt:66 | CMD_DISPLAY_RELIGION verbose →「显示你信仰的神祇的好恶、戒律，以及当前的虔诚度和神赐的能力。」 |
@@ -54,6 +54,13 @@
 
 依赖组落地顺序：键清理（1）→ 档案组（2、3）→ 移动/探索组（4、9、10）→ 信息组（5、6）→ 地图组（7、8）；
 每批运行 `verify_zh.sh --profile translation`。Suggestion 项不进入本批次。
+
+## 方案审核结论（2026-08-08，translation-reviewer，落地前一轮）
+
+- 总体：**approve with modifications**（10 项中 9 项逐字 approve；批次 #2 按修正文本 approve）。
+- 修正：批次 #2 verbose 整段替换（魔法→法术 与姊妹命令统一，见上表）。
+- 信息项（不阻塞）：EN 原句为 "main stats, equipment, spells, skills, notes, etc."（spells 非 magic，批次 #3 的 法术 正确）；NF-03 fix 原文已含 法术，编排者未新增改动；批次 #10 值替换在结构对称、无静默覆盖依赖、键行数对等三点成立；ZH verbose 回退「…视为空。。」与 EN "empty.." 均为回退机制固有标点重复，结构对等；长描述首两句可后续与 CMD_EXPLORE 对齐（suggestion）。
+- 完整性：10 批次与 R3-NF-01..10 一一对应无遗漏；落地后 ZH 唯一键 95 = EN 唯一键 95，双向差集为空；EN 双定义系上游既有，未引入新不对称。
 
 ## 覆盖证明
 
