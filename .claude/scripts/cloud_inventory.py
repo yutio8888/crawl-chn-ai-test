@@ -40,10 +40,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def sha256_file(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def resolve_commit(ref: str) -> str:
     """Resolve a git commit-ish to its full 40-hex SHA, fail-closed."""
     r = subprocess.run(
@@ -472,7 +468,8 @@ def main() -> int:
 
     payload = {
         "baseline": baseline,
-        "glossary_sha256": sha256_file(ROOT / "docs" / "glossary.md"),
+        "glossary_sha256": hashlib.sha256(
+            git_show_blob(baseline, "docs/glossary.md")).hexdigest(),
         "digests": {
             "cloud-type.h": hashlib.sha256(blobs["cloud-type.h"]).hexdigest(),
             "cloud.cc": hashlib.sha256(blobs["cloud.cc"]).hexdigest(),
