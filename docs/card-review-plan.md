@@ -86,6 +86,7 @@
 python3 .claude/scripts/card_inventory.py \
   --baseline-ref 9fb8e5dd22ef6607613d1c4381b7369f93a08a7e \
   --inventory-output /tmp/card-inventory-<新文件名>.json
-  （输出路径必须为 /tmp 或 OS 临时根下的单个全新 basename，拒绝嵌套组件、
-   `.`、`..`、已存在目标与符号链接；重复重建请更换文件名或先删除旧文件）
+  （输出路径仅允许 canonical `/tmp`（macOS realpath 为 `/private/tmp`）直下的单个
+   全新 basename：拒绝嵌套组件、`.`、`..`、已存在目标、符号链接与可改名的 OS 临时根；
+   重复重建请更换文件名或先删除旧文件）
 ```

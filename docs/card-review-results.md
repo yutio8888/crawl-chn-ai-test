@@ -105,4 +105,4 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 - 消费者核对：`?/C`（排除 removed 21 键）、`_describe_cards`（`card_name_en + " card"`，
   附 `which_decks` 牌组归属）、`card_effect` 逐项行为、`name_to_card`（T_ 与 EN 双匹配，
   ZH 子串匹配兜底）。
-- 重建命令：`python3 .claude/scripts/card_inventory.py --baseline-ref 9fb8e5dd22ef6607613d1c4381b7369f93a08a7e --inventory-output /tmp/card-inventory-<新文件名>.json`（输出路径必须为全新文件；重复重建请更换文件名或先删除旧文件）
+- 重建命令：`python3 .claude/scripts/card_inventory.py --baseline-ref 9fb8e5dd22ef6607613d1c4381b7369f93a08a7e --inventory-output /tmp/card-inventory-<新文件名>.json`（输出仅允许 canonical `/tmp` 直下全新 basename；重复重建请更换文件名或先删除旧文件）
