@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Tests for the R2 card inventory tool (card_inventory.py).
 
-Covers the three tool-side blockers of the R2 mechanical routing review:
+Covers the tool-side blockers of the two R2 mechanical routing review
+rounds.
+
+First round (R2-CODE-001..003):
 
   R2-CODE-001 (production SourceDB model): source.txt is parsed with the
     production semantics of database.cc (`_parse_text_db` with
@@ -28,6 +31,31 @@ Covers the three tool-side blockers of the R2 mechanical routing review:
     components, '.', '..', an existing target, a symlinked target and
     the temp root itself are all rejected, while a fresh direct
     basename is accepted.
+
+Second round (R2-CODE2-001..003):
+
+  R2-CODE2-001 (production value normalization): parsed source.txt
+    values are normalized exactly like database.cc `_parse_text_db` +
+    `i18n_source_lookup` (leading blank lines stripped, loader
+    trailing-newline artifact removed, i18n escapes decoded via
+    i18n_shared.runtime_normalize_value). Positive fixtures prove a
+    leading blank line plus a \\n escape in a value, an empty C_()
+    context string behaving like T_(), and the plain-key fallback when a
+    context key has an empty value; the negative fixture proves an empty
+    value is a miss that falls back to English.
+
+  R2-CODE2-002 (fail-closed parse state machines): duplicate case
+    labels are rejected even when both still sit in the pending run
+    before a shared return; in card_is_removed() a case after the
+    TAG-34 `return true;` is rejected (every removed case must belong
+    to the pending run consumed by that return); duplicate #else and
+    #elif after #else are rejected by the preprocessor frame tracker.
+
+  R2-CODE2-003 (non-renamable output root): --inventory-output must be
+    a single brand-new basename directly under the canonical
+    non-renamable /tmp root (root-owned, sticky); the renamable OS user
+    temp dir and every nested/'.'/‘..'/relative/symlinked form are
+    rejected, while a fresh direct basename is accepted.
 """
 
 import json
@@ -156,6 +184,35 @@ DECKS_CC_CTX = DECKS_CC.replace(
     '    case CARD_WRATH:           return T_("Wrath");\n',
     '    case CARD_WRATH:           return C_("card name", "Wrath");\n')
 
+# R2-CODE2-001 normalization fixture: the Velocity value has a leading
+# blank line and a literal \\n escape; production must display
+# `速度\n卡牌` (leading blank stripped, escape decoded), not the raw
+# physical parse `\n速度\\n卡牌`.
+SOURCE_TXT_NORM = SOURCE_TXT.replace(
+    "%%%%\nVelocity\n速度\n%%%%\n",
+    "%%%%\nVelocity\n\n速度\\n卡牌\n%%%%\n")
+
+# R2-CODE2-001 empty-context fixture: the context key `card name|Wrath`
+# exists but has an EMPTY value, so C_() must fall back to the plain
+# `wrath` key (production only accepts a non-empty fetched value).
+SOURCE_TXT_EMPTY_CTX = SOURCE_TXT.replace(
+    "%%%%\na very buggy card\n非常有 bug 的卡牌\n%%%%\n",
+    "%%%%\na very buggy card\n非常有 bug 的卡牌\n%%%%\n"
+    "%%%%\ncard name|Wrath\n%%%%\n")
+
+# R2-CODE2-001 negative fixture: the plain `wrath` key has an empty
+# value, so T_("Wrath") is a miss and falls back to English.
+SOURCE_TXT_EMPTY_PLAIN = SOURCE_TXT.replace(
+    "%%%%\nwrath\n狂怒\n",
+    "%%%%\nwrath\n%%%%\n")
+
+# R2-CODE2-001 empty-context-string fixture: C_("", "Wrath") must behave
+# exactly like T_("Wrath") (production treats `ctx && ctx[0]` as no
+# context).
+DECKS_CC_EMPTY_CTX = DECKS_CC.replace(
+    '    case CARD_WRATH:           return T_("Wrath");\n',
+    '    case CARD_WRATH:           return C_("", "Wrath");\n')
+
 CARDS_TXT = """\
 %%%%
 Velocity card
@@ -200,8 +257,8 @@ GLOSSARY = """\
 
 
 def fresh_output_path() -> Path:
-    """A brand-new basename directly under the real OS temp root."""
-    return Path(tempfile.gettempdir()) / (
+    """A brand-new basename directly under the canonical /tmp root."""
+    return Path("/tmp") / (
         f"card-inventory-test-{os.getpid()}-{uuid.uuid4().hex}.json")
 
 
@@ -336,6 +393,114 @@ class CardInventoryToolTest(unittest.TestCase):
             finally:
                 if out.exists():
                     out.unlink()
+
+    # -- R2-CODE2-001: production value normalization ---------------------
+
+    def test_fixture_value_normalization_leading_blank_and_escape(self):
+        """R2-CODE2-001: source.txt values are normalized exactly like
+        production `_parse_text_db` + `i18n_source_lookup`: leading blank
+        lines are stripped (the flush-time _trim_leading_newlines), the
+        loader's trailing-newline artifact is removed, and `\\n` escapes
+        become real newlines (i18n_unescape_value). The raw physical
+        parse would report '\\n速度\\n卡牌'; the display value is
+        '速度\n卡牌'."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, source_txt=SOURCE_TXT_NORM)
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertEqual(velocity["name_zh"], "速度\n卡牌")
+                self.assertFalse(velocity["name_display_fallback"])
+                self.assertTrue(velocity["exact_case_key"])
+                self.assertFalse(velocity["canonical_collision"])
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_fixture_empty_context_string_is_plain_lookup(self):
+        """R2-CODE2-001: an empty C_() context string behaves exactly
+        like T_() (production i18n_source_lookup treats `ctx && ctx[0]`
+        as no context), so `C_("", "Wrath")` resolves the plain
+        canonical key `wrath` -> 狂怒 with a canonical collision, exactly
+        like the baseline T_("Wrath") form."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, decks_cc=DECKS_CC_EMPTY_CTX)
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                wrath = by_identity["card:CARD_WRATH"]
+                self.assertEqual(wrath["name_zh"], "狂怒")
+                self.assertFalse(wrath["name_display_fallback"])
+                self.assertIsNone(wrath["context_key"])
+                self.assertTrue(wrath["canonical_collision"])
+                self.assertEqual(payload["t_unresolved_keys"], [])
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_fixture_context_key_empty_value_plain_fallback(self):
+        """R2-CODE2-001: a context key that exists with an EMPTY value
+        is a miss and falls back to the plain key (production
+        i18n_source_lookup only accepts a non-empty fetched value), so
+        `C_("card name", "Wrath")` displays the plain `wrath` value
+        狂怒 -- never an empty string."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, decks_cc=DECKS_CC_CTX,
+                      source_txt=SOURCE_TXT_EMPTY_CTX)
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                wrath = by_identity["card:CARD_WRATH"]
+                self.assertEqual(wrath["name_zh"], "狂怒")
+                self.assertFalse(wrath["name_display_fallback"])
+                self.assertTrue(wrath["context_key"])
+                self.assertTrue(wrath["canonical_collision"])
+                self.assertEqual(payload["t_unresolved_keys"], [])
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_fixture_empty_plain_value_is_miss_english_fallback(self):
+        """R2-CODE2-001 negative: a plain key with an empty value is a
+        miss after normalization (never an empty display), so production
+        falls back to the English key: name_zh is null,
+        name_display_fallback is true and the key is reported in
+        t_unresolved_keys."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, source_txt=SOURCE_TXT_EMPTY_PLAIN)
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                wrath = by_identity["card:CARD_WRATH"]
+                self.assertIsNone(wrath["name_zh"])
+                self.assertTrue(wrath["name_display_fallback"])
+                self.assertFalse(wrath["canonical_collision"])
+                self.assertEqual(payload["t_unresolved_keys"], ["Wrath"])
+            finally:
+                if out.exists():
+                    out.unlink()
+
     def test_mutation_unknown_return_form_rejected(self):
         """R2-CODE-002: an unknown return form in the localized switch
         (make_stringf instead of T_/C_) must abort."""
@@ -373,6 +538,63 @@ class CardInventoryToolTest(unittest.TestCase):
             make_repo(root, decks_cc=mutated)
             self._assert_rejected(root, "duplicate case",
                                   "duplicate case CARD_WRATH")
+
+    def test_mutation_consecutive_duplicate_case_rejected(self):
+        """R2-CODE2-002: two consecutive case labels for the same card
+        (both still in the pending run before the shared return) must
+        abort; the duplicate check covers pending labels, not only
+        already-committed values."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = DECKS_CC.replace(
+                '    case CARD_WRATH:           return T_("Wrath");\n',
+                '    case CARD_WRATH:\n'
+                '    case CARD_WRATH:           return T_("Wrath");\n')
+            self.assertNotEqual(mutated, DECKS_CC)
+            make_repo(root, decks_cc=mutated)
+            self._assert_rejected(root, "consecutive duplicate case",
+                                  "duplicate case CARD_WRATH")
+
+    def test_mutation_case_after_return_true_rejected(self):
+        """R2-CODE2-002: a removed case after the TAG-34 `return true;`
+        (outside the pending run consumed by that return) must abort."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = DECKS_CC.replace(
+                "    case CARD_SHAFT_REMOVED:\n        return true;\n",
+                "    case CARD_SHAFT_REMOVED:\n        return true;\n"
+                "    case CARD_VELOCITY:\n")
+            self.assertNotEqual(mutated, DECKS_CC)
+            make_repo(root, decks_cc=mutated)
+            self._assert_rejected(root, "case after return true",
+                                  "case after the TAG-34 `return true;`")
+
+    def test_mutation_duplicate_else_rejected(self):
+        """R2-CODE2-002: a second #else in one conditional block (a C
+        constraint violation) must abort."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = DECKS_H.replace(
+                "    CARD_SHAFT_REMOVED,\n#endif\n",
+                "    CARD_SHAFT_REMOVED,\n#else\n#else\n#endif\n")
+            self.assertNotEqual(mutated, DECKS_H)
+            make_repo(root, decks_h=mutated)
+            self._assert_rejected(root, "duplicate #else",
+                                  "duplicate #else")
+
+    def test_mutation_elif_after_else_rejected(self):
+        """R2-CODE2-002: an #elif after #else (a C constraint violation)
+        must abort."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = DECKS_H.replace(
+                "    CARD_SHAFT_REMOVED,\n#endif\n",
+                "    CARD_SHAFT_REMOVED,\n#else\n"
+                "#elif TAG_MAJOR_VERSION == 34\n#endif\n")
+            self.assertNotEqual(mutated, DECKS_H)
+            make_repo(root, decks_h=mutated)
+            self._assert_rejected(root, "#elif after #else",
+                                  "#elif after #else")
 
     def test_mutation_deck_table_unknown_member_rejected(self):
         """R2-CODE-002: a deck table referencing a card that is not a
@@ -412,7 +634,30 @@ class CardInventoryToolTest(unittest.TestCase):
             self._assert_rejected(root, "boolean expression return",
                                   "unconsumed token")
 
-    # -- R2-CODE-003: narrowed output writer --------------------------------
+    # -- R2-CODE2-003: narrowed output writer ------------------------------
+
+    def test_output_writer_rejects_renamable_temp_root(self):
+        """R2-CODE2-003 race fixture: a renamable root (the OS user
+        temp dir, e.g. /var/folders/... on macOS, user-owned 0700) must
+        be rejected up front, so a concurrent rename/replace of an
+        already opened root can never relocate the write out of the
+        trusted root. When the OS temp dir IS the canonical /tmp root
+        there is no renamable root to reject and the test is skipped."""
+        if os.path.realpath(tempfile.gettempdir()) == os.path.realpath("/tmp"):
+            self.skipTest("OS temp dir is the canonical /tmp root")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root)
+            out = Path(tempfile.gettempdir()) / (
+                f"card-inventory-test-{uuid.uuid4().hex}.json")
+            try:
+                result = run_tool(root, out)
+            finally:
+                if out.exists():
+                    out.unlink()
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("renamable roots such as the OS user temp dir",
+                          result.stderr)
 
     def test_output_writer_rejects_nested_components(self):
         """A nested path below the temp root (the old parent-chain walk)
@@ -421,7 +666,7 @@ class CardInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            nested = Path(tempfile.gettempdir()) / (
+            nested = Path("/tmp") / (
                 f"card-inventory-test-{uuid.uuid4().hex}") / "out.json"
             try:
                 result = run_tool(root, nested)
@@ -435,21 +680,23 @@ class CardInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            out = Path(tempfile.gettempdir()) / (
-                f"card-inventory-test-{uuid.uuid4().hex}") / "." / "out.json"
-            result = run_tool(root, out)
+            # Plain string: pathlib would collapse the '.' component.
+            raw = f"/tmp/card-inventory-test-{uuid.uuid4().hex}/./out.json"
+            result = run_tool(root, raw)
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("nested components are rejected", result.stderr)
+            self.assertIn("must not contain '.' or '..' path components",
+                          result.stderr)
 
     def test_output_writer_rejects_dotdot_component(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            out = Path(tempfile.gettempdir()) / (
+            out = Path("/tmp") / (
                 f"card-inventory-test-{uuid.uuid4().hex}") / ".." / "out.json"
             result = run_tool(root, out)
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("nested components are rejected", result.stderr)
+            self.assertIn("must not contain '.' or '..' path components",
+                          result.stderr)
 
     def test_output_writer_rejects_existing_target(self):
         """O_EXCL: an existing target (even a hardlink to a shared inode)
@@ -492,7 +739,7 @@ class CardInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            result = run_tool(root, Path(tempfile.gettempdir()))
+            result = run_tool(root, Path("/tmp"))
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("refusing to write to it", result.stderr)
 

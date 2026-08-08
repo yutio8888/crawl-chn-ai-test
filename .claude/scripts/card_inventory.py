@@ -70,19 +70,21 @@ glossary are read from Git objects at that commit via `git show
 <ref>:<path>` -- never from the local worktree -- so the output is
 identical regardless of local checkout state or uncommitted edits.
 
-The output JSON write is fail-closed (R2-CODE-003): the output path must
-be exactly one brand-new basename directly under the OS temp dir or /tmp
-(nested components, `.` and `..` are rejected); the trusted root is
-opened once and the target is created with O_EXCL|O_NOFOLLOW (see
-write_inventory_output()).
+The output JSON write is fail-closed (R2-CODE2-003): the output path
+must be exactly one brand-new basename directly under the canonical
+non-renamable temp root /tmp (root-owned, sticky; on macOS realpath
+/private/tmp). Nested components, `.` and `..` components, relative
+paths, renamable roots such as the OS user temp dir, and symlink
+escapes are rejected; the trusted root is opened once and the target is
+created with O_EXCL|O_NOFOLLOW (see write_inventory_output()).
 
 Usage:
   python3 .claude/scripts/card_inventory.py --baseline-ref <commit> \
       --inventory-output /tmp/card-inventory-<new-file>.json
 
   --inventory-output must be a single brand-new basename directly under
-  the OS temp dir (tempfile.gettempdir()) or /tmp; the target must not
-  already exist.
+  /tmp (the canonical root-owned sticky temp root; realpath /private/tmp
+  on macOS); the target must not already exist.
 """
 import argparse
 import errno
@@ -90,16 +92,16 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import (AuditInput, lowercase_string,  # noqa: E402
-                         parse_entries_physical)
+                         parse_entries_physical, runtime_normalize_value)
 
 #: deck_archetype table name -> short deck membership value.
 KNOWN_DECKS = ("deck_of_escape", "deck_of_destruction",
@@ -307,35 +309,69 @@ def _parse_directive(directive_text: str) -> tuple[str, str | None]:
         f"unknown preprocessor directive {directive_text.strip()!r}")
 
 
+class _PreprocessorFrame:
+    """One #if/#ifdef/#ifndef frame: condition, branch state and
+    #else/#elif bookkeeping (R2-CODE2-002).
+
+    active is True for the branch whose code the audit treats as live:
+    the first branch is active, every later #elif/#else branch is active
+    only when no earlier branch of the same frame was. ever_active
+    records that, so a three-branch chain `#if A #elif B #elif C` has
+    exactly one active branch (A), matching C preprocessor exclusivity
+    instead of blindly flipping. saw_else records that the #else branch
+    was taken, which makes a later #else (duplicate) or a later #elif
+    (after #else) a C constraint violation that must abort.
+    """
+
+    __slots__ = ("cond", "active", "ever_active", "saw_else")
+
+    def __init__(self, cond: str):
+        self.cond = cond
+        self.active = True
+        self.ever_active = True
+        self.saw_else = False
+
+
 class _PreprocessorFrames:
     """Preprocessor frame tracker for the audited regions.
 
     Validates #if/#ifdef/#ifndef/#elif/#else/#endif pairing and closure
     (every TAG_MAJOR_VERSION == 34 block must open and close inside the
-    region) and reports whether the current point is inside an *active*
-    TAG-34 frame.
+    region), rejects a duplicate #else and an #elif after #else, and
+    reports whether the current point is inside an *active* TAG-34
+    frame.
     """
 
     def __init__(self, region: str):
         self.region = region
-        self.frames: list[tuple[str, bool]] = []  # (condition, active)
+        self.frames: list[_PreprocessorFrame] = []
 
     def handle(self, directive_text: str) -> None:
         kind, cond = _parse_directive(directive_text)
         if kind in ("if", "ifdef", "ifndef"):
-            self.frames.append((cond, True))
+            self.frames.append(_PreprocessorFrame(cond))
         elif kind == "elif":
             if not self.frames:
                 raise SystemExit(
                     f"#elif without matching #if in {self.region}")
-            _old_cond, active = self.frames[-1]
-            self.frames[-1] = (cond, not active)
+            frame = self.frames[-1]
+            if frame.saw_else:
+                raise SystemExit(
+                    f"#elif after #else in {self.region}")
+            frame.cond = cond
+            frame.active = not frame.ever_active
+            frame.ever_active = frame.ever_active or frame.active
         elif kind == "else":
             if not self.frames:
                 raise SystemExit(
                     f"#else without matching #if in {self.region}")
-            old_cond, active = self.frames[-1]
-            self.frames[-1] = (old_cond, not active)
+            frame = self.frames[-1]
+            if frame.saw_else:
+                raise SystemExit(
+                    f"duplicate #else in {self.region}")
+            frame.active = not frame.ever_active
+            frame.ever_active = frame.ever_active or frame.active
+            frame.saw_else = True
         else:  # endif
             if not self.frames:
                 raise SystemExit(
@@ -346,11 +382,11 @@ class _PreprocessorFrames:
         if self.frames:
             raise SystemExit(
                 f"unclosed #if block in {self.region}: "
-                f"{[cond for cond, _active in self.frames]!r}")
+                f"{[frame.cond for frame in self.frames]!r}")
 
     def in_tag34(self) -> bool:
-        return any(cond == _TAG34_COND and active
-                   for cond, active in self.frames)
+        return any(frame.cond == _TAG34_COND and frame.active
+                   for frame in self.frames)
 
 
 # ---------------------------------------------------------------------------
@@ -459,9 +495,11 @@ def parse_card_switch(body: str, localized: bool
     Grammar: a balanced sequence of preprocessor directives and
     case/return runs; consecutive case labels (the TAG-34 removed members
     and NUM_CARDS) share the following return, mirroring C fallthrough.
-    Duplicate cases, a return without a preceding case, a case without a
-    return, mixed or unknown return forms (including boolean returns and
-    default:) and any stray token abort the run.
+    Duplicate cases (including two consecutive occurrences of the same
+    label, both still in the pending run before the shared return), a
+    return without a preceding case, a case without a return, mixed or
+    unknown return forms (including boolean returns and default:) and
+    any stray token abort the run.
     """
     values: dict[str, object] = {}
     labels: list[str] = []
@@ -474,7 +512,7 @@ def parse_card_switch(body: str, localized: bool
             continue
         if kind == "case":
             label = m.group("case_label")
-            if label in values:
+            if label in values or label in pending:
                 raise SystemExit(f"duplicate case {label} in card switch")
             pending.append(label)
             labels.append(label)
@@ -516,7 +554,10 @@ def parse_removed_cases(text: str) -> list[str]:
 
     The function body must be exactly `switch (card) { #if
     TAG_MAJOR_VERSION == 34 case...: return true; #endif default: return
-    false; }`. Every case must sit inside an active TAG-34 frame, the
+    false; }`. Every case must sit inside an active TAG-34 frame and must
+    belong to the single pending run consumed by the TAG-34 `return
+    true;`: a case appearing after that return, a case without a return,
+    or a return without a preceding case aborts (R2-CODE2-002). The
     returns must be the exact boolean literals `true` / `false`, and the
     default: must sit outside the TAG-34 block. Any deviation (including
     a duplicate case or a boolean expression instead of a literal)
@@ -526,6 +567,7 @@ def parse_removed_cases(text: str) -> list[str]:
         text, _SIG_RE["card_is_removed"], "card_is_removed")
     _require_no_tokens(tail, "card_is_removed body after switch")
     cases: list[str] = []
+    pending: list[str] = []
     frames = _PreprocessorFrames("card_is_removed switch")
     saw_true = False
     saw_default = False
@@ -542,24 +584,30 @@ def parse_removed_cases(text: str) -> list[str]:
                     "TAG_MAJOR_VERSION == 34 block")
             if saw_default:
                 raise SystemExit("card_is_removed case after default:")
+            if saw_true:
+                raise SystemExit(
+                    "card_is_removed case after the TAG-34 "
+                    "`return true;`")
             label = m.group("case_label")
-            if label in cases:
+            if label in cases or label in pending:
                 raise SystemExit(
                     f"duplicate case {label} in card_is_removed switch")
-            cases.append(label)
+            pending.append(label)
             continue
         if kind == "bool_return":
             if m.group("bool_val") == "true":
                 if saw_true:
                     raise SystemExit(
                         "card_is_removed has more than one `return true;`")
-                if not cases:
+                if not pending:
                     raise SystemExit(
                         "card_is_removed `return true;` without cases")
                 if not frames.in_tag34():
                     raise SystemExit(
                         "card_is_removed `return true;` outside the "
                         "TAG-34 block")
+                cases.extend(pending)
+                pending = []
                 saw_true = True
             else:
                 if saw_false:
@@ -590,6 +638,9 @@ def parse_removed_cases(text: str) -> list[str]:
         raise SystemExit(
             f"unexpected token ({kind}) in card_is_removed switch")
     frames.require_closed()
+    if pending:
+        raise SystemExit(
+            f"card_is_removed case(s) without a return: {pending}")
     if not saw_true or not saw_default or not saw_false:
         raise SystemExit(
             "card_is_removed switch must contain `return true;` for the "
@@ -748,7 +799,10 @@ class SourceEntry:
     raw_key: physical key line as-is (trim_keys=false, no \\# decode,
     no unescape; whitespace belongs to the key).
     canonical_key: lowercase(raw_key) -- the SourceDB lookup key space.
-    value: ZH value with production line trimming and \\n joining.
+    value: ZH display value exactly as production i18n_source_lookup()
+    would return it: leading blank lines stripped (_trim_leading_newlines
+    at the _parse_text_db flush), the loader's trailing newline artifact
+    removed, and i18n escape sequences decoded (i18n_unescape_value).
     """
     raw_key: str
     canonical_key: str
@@ -770,6 +824,17 @@ def parse_source_physical(text: str) -> list[SourceEntry]:
       - the canonical key is lowercase(raw_key) (C++ lowercase());
       - value lines are right-trimmed of " \\t\\n\\r" and joined with \\n.
 
+    The joined value is then normalized with the shared
+    production-equivalent runtime_normalize_value() (trim_string_right +
+    trim_leading_newlines + trailing \\r\\n strip + i18n_unescape_value),
+    which reproduces the database.cc display pipeline exactly: the
+    _parse_text_db flush applies _trim_leading_newlines to the
+    accumulated value, i18n_source_lookup strips the trailing \\n loader
+    artifact and then decodes i18n escapes. The raw physical parse would
+    keep a leading blank line (e.g. `Key\n\n值\\n尾` -> '\\n值\\n尾')
+    and literal escape text; the normalized value is the string the
+    player actually sees (`值\n尾` with a real newline).
+
     `text` is the file content supplied by the caller (read from the
     baseline Git blob, never from the worktree).
     """
@@ -785,7 +850,7 @@ def parse_source_physical(text: str) -> list[SourceEntry]:
     return [SourceEntry(
         raw_key=pe.raw_key,
         canonical_key=pe.canonical_key,
-        value=pe.value,
+        value=runtime_normalize_value(pe.value),
         key_line=pe.key_line,
         value_line=pe.value_line,
     ) for pe in parse_entries_physical(source)]
@@ -910,39 +975,73 @@ def lower_key_map(entries: dict[str, str]) -> dict[str, str]:
     return {k.lower(): k for k in entries}
 
 
-def _allowed_temp_roots() -> list[str]:
-    """Realpath-normalized roots under which output is permitted: the OS
-    temp dir (tempfile.gettempdir()) plus the canonical /tmp, deduplicated
-    (they differ on macOS when TMPDIR is set)."""
-    roots = [os.path.realpath(tempfile.gettempdir())]
+def _canonical_temp_root() -> str:
+    """Canonical non-renamable temp root: realpath(/tmp), verified
+    root-owned with the sticky bit.
+
+    A root that an unprivileged process can rename (the OS user temp
+    dir, e.g. /var/folders/... on macOS, is user-owned 0700) makes the
+    R2-CODE2-003 race real: POSIX allows renaming an already-open
+    directory, so a concurrent rename can relocate openat(dir_fd) writes
+    out of the trusted root. /tmp is owned by uid 0 and carries the
+    sticky bit, so no ordinary user can rename or replace it while its
+    descriptor is open; the opened root fd is therefore pinned for the
+    whole write. Any other root -- including the renamable OS temp dir
+    -- is rejected up front (fail-closed); there is no renamable-root
+    option at all.
+    """
     tmp = os.path.realpath("/tmp")
-    if tmp not in roots:
-        roots.append(tmp)
-    return roots
+    try:
+        st = os.stat(tmp)
+    except OSError as exc:
+        print(
+            f"error: cannot stat the canonical temp root {tmp!r}: {exc}",
+            file=sys.stderr)
+        raise SystemExit(1)
+    if st.st_uid != 0 or not (st.st_mode & stat.S_ISVTX):
+        print(
+            f"error: canonical temp root {tmp!r} is not a root-owned "
+            f"sticky directory (uid={st.st_uid}, "
+            f"mode={oct(st.st_mode)}); refusing to write (R2-CODE2-003: "
+            f"only the non-renamable /tmp root is permitted)",
+            file=sys.stderr)
+        raise SystemExit(1)
+    return tmp
 
 
 def write_inventory_output(raw: str, content: str) -> Path:
     """Fail-closed write of the inventory JSON: a single brand-new
-    basename directly under an already-open trusted temp root.
+    basename directly under the canonical non-renamable temp root.
 
-    The output path must be absolute and must resolve inside the OS temp
-    dir (tempfile.gettempdir()) or /tmp, and it must consist of exactly
-    one path component below that root: nested components, `.` and `..`
-    components are rejected outright. This is the fix for R2 blocker
-    R2-CODE-003: the previous implementation walked a parent-directory
-    chain with O_NOFOLLOW, but an already-opened parent fd can be renamed
-    out of the temp root concurrently (POSIX allows renaming an open
-    directory), so the "inside the temp root" guarantee did not survive
-    to the final write. With a single basename under the root there is no
-    parent chain at all: the trusted root fd is opened once with
-    O_RDONLY|O_DIRECTORY|O_NOFOLLOW and the final element is created with
-    os.open(base, O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, dir_fd=root_fd).
+    The output path must be absolute and must be exactly one path
+    component below /tmp (or its canonical realpath form, e.g.
+    /private/tmp on macOS): nested components, `.` and `..` components,
+    relative paths, the root itself, and any path that realpath-resolves
+    outside the root are rejected outright. This is the fix for the
+    second R2 mechanical routing blocker (R2-CODE2-003): the previous
+    implementation also trusted the OS user temp dir
+    (tempfile.gettempdir()), which on macOS is a user-owned 0700
+    directory that a concurrent process can rename while its descriptor
+    is open -- POSIX allows renaming an open directory, so the
+    "inside the temp root" guarantee did not survive to the final
+    openat(dir_fd) write. Only the non-renamable /tmp root (root-owned,
+    sticky) is accepted, so there is no parent chain and no open-root
+    rename that could relocate the write; if /tmp itself were ever not
+    root-owned sticky, the run fails closed instead of falling back to a
+    renamable root.
+
+    The trusted root is opened once with O_RDONLY|O_DIRECTORY|O_NOFOLLOW
+    on its canonical realpath (never through a symlink) and the final
+    element is created with os.open(base, O_WRONLY|O_CREAT|O_EXCL|
+    O_NOFOLLOW, dir_fd=root_fd).
 
     * The target must not already exist (O_EXCL rejects an existing file
       -- including a hardlink to a shared inode -- with EEXIST, so the
       output is never truncated or overwritten).
-    * An existing symlink at the target fails with ELOOP and the output
-      is never written through it.
+    * An existing symlink at the target fails with ELOOP (or EEXIST) and
+      the output is never written through it; a symlinked target that
+      resolves outside the root also fails the realpath containment
+      check.
     * Directories are never auto-created and no component is followed as
       a symlink.
 
@@ -955,62 +1054,80 @@ def write_inventory_output(raw: str, content: str) -> Path:
     p = Path(raw)
     if not p.is_absolute():
         print(
-            f"error: --inventory-output must be an absolute path inside "
-            f"{tempfile.gettempdir()!r} or /tmp; got {raw!r} "
-            f"(relative path rejected)",
+            f"error: --inventory-output must be an absolute path directly "
+            f"under /tmp; got {raw!r} (relative path rejected)",
             file=sys.stderr)
         raise SystemExit(1)
-    resolved = os.path.realpath(str(p))
-    roots = _allowed_temp_roots()
-    root = next((r for r in roots
-                 if resolved == r or resolved.startswith(r + os.sep)),
-                None)
-    if root is None:
+    root = _canonical_temp_root()
+
+    # Analyze the raw spelling, not a normalized form: '.' and '..'
+    # components must be rejected even when they are lexically neutral.
+    components = [part for part in raw.split(os.sep) if part]
+    if any(part in (".", "..") for part in components):
         print(
-            f"error: --inventory-output must be inside the OS temp dir "
-            f"({tempfile.gettempdir()!r}) or /tmp; {raw!r} resolves to "
-            f"{resolved}",
+            f"error: --inventory-output must not contain '.' or '..' "
+            f"path components; got {raw!r}",
             file=sys.stderr)
         raise SystemExit(1)
 
-    # Locate the raw prefix (typically the temp-dir name itself, e.g.
-    # /tmp) whose realpath is the permitted root. Exactly one component
-    # may follow that prefix: the brand-new basename. Nested components,
-    # '.' and '..' are rejected (there is no parent chain to walk, so a
-    # concurrent rename of an opened parent can never relocate the final
-    # write out of the trusted root).
-    parts = p.parts
+    # Locate the raw prefix (e.g. /tmp, or the canonical /private/tmp)
+    # whose realpath is the trusted root. Exactly one component may
+    # follow that prefix: the brand-new basename. Nested components are
+    # rejected (there is no parent chain to walk, so a concurrent rename
+    # of an opened parent can never relocate the final write out of the
+    # trusted root).
     prefix_end = None
-    for i in range(1, len(parts) + 1):
-        if os.path.realpath(os.sep.join(parts[:i])) == root:
+    for i in range(1, len(components) + 1):
+        if os.path.realpath(os.sep + os.sep.join(components[:i])) == root:
             prefix_end = i
             break
     if prefix_end is None:
         print(
-            f"error: cannot locate temp root {root!r} inside output path "
-            f"{raw!r}",
+            f"error: --inventory-output must be a single brand-new "
+            f"basename directly under the canonical non-renamable temp "
+            f"root {root!r}; {raw!r} is not under it (renamable roots "
+            f"such as the OS user temp dir are rejected, R2-CODE2-003)",
             file=sys.stderr)
         raise SystemExit(1)
-    if len(parts) == prefix_end:
+    raw_prefix = os.sep + os.sep.join(components[:prefix_end])
+    canonical = os.sep + os.sep.join(root.split(os.sep)[1:])
+    if raw_prefix not in ("/tmp", canonical):
+        print(
+            f"error: --inventory-output prefix {raw_prefix!r} is not "
+            f"/tmp or its canonical form {canonical!r}; refusing to "
+            f"write (R2-CODE2-003)",
+            file=sys.stderr)
+        raise SystemExit(1)
+    if len(components) == prefix_end:
         print(
             f"error: --inventory-output {raw!r} resolves to the temp root "
             f"itself; refusing to write to it",
             file=sys.stderr)
         raise SystemExit(1)
-    components = parts[prefix_end:]
-    if len(components) != 1:
+    remaining = components[prefix_end:]
+    if len(remaining) != 1:
         print(
             f"error: --inventory-output must be a single brand-new "
             f"basename directly under the temp root {root!r}; nested "
-            f"components are rejected ({raw!r} has {len(components)} "
+            f"components are rejected ({raw!r} has {len(remaining)} "
             f"component(s) below the root)",
             file=sys.stderr)
         raise SystemExit(1)
-    basename = components[0]
+    basename = remaining[0]
     if basename in (".", ".."):
         print(
             f"error: --inventory-output basename must not be '.' or '..'; "
             f"got {basename!r}",
+            file=sys.stderr)
+        raise SystemExit(1)
+
+    # A symlink anywhere in the path would resolve outside the root.
+    resolved = os.path.realpath(str(p))
+    if not (resolved == root or resolved.startswith(root + os.sep)):
+        print(
+            f"error: --inventory-output {raw!r} resolves to {resolved}, "
+            f"outside the canonical temp root {root!r}; symlinked "
+            f"targets are rejected",
             file=sys.stderr)
         raise SystemExit(1)
 
@@ -1098,15 +1215,17 @@ def main() -> int:
         "--inventory-output",
         default="/tmp/card-inventory.json",
         help="output JSON path; must be an absolute path that is exactly "
-             "one brand-new basename directly under the OS temp dir "
-             "(tempfile.gettempdir()) or /tmp -- nested components, '.', "
-             "'..', relative paths and other locations are rejected; the "
-             "trusted root is opened once with O_NOFOLLOW and the target "
-             "is created with O_EXCL|O_NOFOLLOW (dir_fd-style), so an "
-             "existing target, a symlinked target and every other unsafe "
-             "form are rejected, directories are never auto-created, and "
-             "no parent chain exists that could be renamed away; every "
-             "rebuild needs a fresh filename or a deleted old file")
+             "one brand-new basename directly under /tmp (the canonical "
+             "root-owned sticky temp root; realpath /private/tmp on "
+             "macOS) -- nested components, '.', '..', relative paths, "
+             "renamable roots such as the OS user temp dir and every "
+             "other location are rejected; the trusted root is opened "
+             "once with O_NOFOLLOW and the target is created with "
+             "O_EXCL|O_NOFOLLOW (dir_fd-style), so an existing target, a "
+             "symlinked target and every other unsafe form are rejected, "
+             "directories are never auto-created, and no parent chain "
+             "exists that could be renamed away; every rebuild needs a "
+             "fresh filename or a deleted old file")
     ap.add_argument(
         "--baseline-ref",
         default="HEAD",
