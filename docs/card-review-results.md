@@ -7,7 +7,9 @@
   R2-CODE3-001..003 / R2-CODE4-001 后重生成，baseline 9fb8e5dd22；候选树摘要见下方
   「落地记录」）
 - 输入序列：source DB 1 文件（source.txt）+ 描述 DB 17 文件（EN/ZH 各，含 cards.txt）；
-  逐文件摘要绑定于 inventory payload 的 digests 字段（重建即可复现）
+  payload 的 `inputs` 字段逐文件绑定 path/sha256，加载顺序见
+  `source_input_sequence` / `desc_en_input_sequence` / `desc_zh_input_sequence`
+  （重建即可复现）
 - 输入摘要：
   - `decks.h` `949b9fc43217…`
   - `decks.cc` `84002fd6e329…`
@@ -17,8 +19,9 @@
 - 身份总数：25（现行 21；TAG 34 移除 3：SHAFT/STAIRS/FAMINE；哨兵 1：`NUM_CARDS`）
 - 生命周期：现行 21；移除 3（`card_is_removed()`=true、`?/C` 排除、`card_effect` 落入
   buggy 分支）；哨兵 1（兜底名 `a buggy card` + `a very buggy card`）
-- 描述键：EN 24 = ZH 24，双向差集为空（EN-only 无、ZH-only 无）；Famine/Stairs
-  无描述键（EN/ZH 均无），Shaft 描述键存在（dead key）
+- 描述键：卡牌描述键范围 EN 24 = ZH 24，双向差集为空（EN-only 无、ZH-only 无）；
+  Famine/Stairs 无描述键（EN/ZH 均无），Shaft 描述键存在（dead key）；
+  全描述库另有既有 ZH-only 键（非卡牌族、基线即存在，不在 R2 范围）
 - T_ 键缺口：`Wrath` 无卡牌专属键；生产 SourceDB 键全小写规范化，`T_("Wrath")` 命中武器铭印键 `wrath→狂怒`（item-name.cc SPARM_RAGE），**基线时卡名实际显示「狂怒」而非英文**（SourceDB 小写规范键空间，非缺失回退）
 
 ## 独立审核进程结论（2026-08-08，translation-reviewer）
