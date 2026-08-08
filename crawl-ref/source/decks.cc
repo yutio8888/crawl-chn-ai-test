@@ -201,7 +201,7 @@ const char* card_name(card_type card)
     case CARD_STORM:           return T_("the Storm");
     case CARD_PAIN:            return T_("Pain");
     case CARD_TORMENT:         return T_("Torment");
-    case CARD_WRATH:           return T_("Wrath");
+    case CARD_WRATH:           return C_("card name", "Wrath");
     case CARD_WRAITH:          return T_("the Wraith");
     case CARD_SWINE:           return T_("the Swine");
     case CARD_ORB:             return T_("the Orb");
