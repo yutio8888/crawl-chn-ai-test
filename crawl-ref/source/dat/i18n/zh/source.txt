@@ -7192,7 +7192,7 @@ The now-empty wand crumbles to dust.
 现在空了的魔杖碎成了灰烬。
 %%%%
 the Orb
-天球
+法球
 %%%%
 The orb fizzles.
 球体嘶嘶地熄灭了。
@@ -7348,7 +7348,7 @@ the Swarm
 虫群
 %%%%
 the Swine
-猪群
+猪
 %%%%
 The sword of Cerebov burns away %s fire resistance.
 塞雷博夫之剑烧毁了%s的火焰抗性。
@@ -28526,6 +28526,9 @@ Throatcutter
 %%%%
 Vampire's Tooth
 吸血鬼之牙
+%%%%
+card name|Wrath
+神怒
 %%%%
 Wrath of Trog
 特洛格之怒
