@@ -13,12 +13,26 @@ crawl-ref/source/decks.cc (same case order). Every current member returns
 its own string; the three TAG-34 removed members and NUM_CARDS share the
 `a buggy card` return, and the function tail returns `a very buggy card`
 (the switch fallthrough). card_name() uses T_("...") for every member
-except CARD_WILD_MAGIC, which uses C_("card name", "Wild Magic").
+except CARD_WILD_MAGIC and CARD_WRATH, which use C_("card name", "...").
 
-Display names are looked up in dat/i18n/zh/source.txt: plain keys match
-directly, the C_ context key matches `card name|Wild Magic`. The known
-gap (Wrath has no T_ key) is reproduced mechanically, together with full
-coverage checks for every other referenced key.
+Display names are resolved with the PRODUCTION SourceDB semantics of
+database.cc (`_parse_text_db` with trim_keys=false for the source
+database, plus `i18n_source_lookup`): source.txt keys are lowercased into
+a canonical key space, T_("en") queries canonical(en), and C_(ctx, en)
+queries canonical(ctx|en) first and falls back to canonical(en); an empty
+value is treated as a miss that falls back to English. The physical key
+line is preserved verbatim (trim_keys=false: whitespace belongs to the
+key; no \\# decode, no unescape), and a duplicate canonical key is a
+fail-closed error (production DBM_REPLACE would silently let the last
+definition win; for audit purposes that must never pass silently).
+
+Each card record therefore reports the *actual production display value*
+(name_zh), whether the exact-case physical key exists (exact_case_key),
+whether the canonical lookup hit a key authored under a different
+physical key -- a cross-domain collision (canonical_collision, e.g. the
+baseline T_("Wrath") resolving to the weapon-inscription key
+`wrath` -> 狂怒), whether the C_ context key exists (context_key), and a
+human-readable T_/C_ resolution path (resolution).
 
 Long descriptions are looked up by `<name> card` in
 dat/descript/cards.txt (EN) and dat/descript/zh/cards.txt (ZH); each file
@@ -39,6 +53,16 @@ decks.cc (deck_of_escape / deck_of_destruction / deck_of_summoning /
 deck_of_punishment), and lifecycle is cross-checked against the
 card_is_removed() switch.
 
+All parsers are fail-closed (R2-CODE-002): every region -- the card_type
+enum, the card_name_en()/card_name()/card_is_removed() switches, the
+fallthrough tail and the deck tables -- has a strict grammar, `#if`/
+`#else`/`#endif` preprocessing frames must balance and close inside their
+region, case->return forms and boolean literals must be exact, enum
+members and cases must be unique, deck-table members must be enum
+members, and every enum member must have exactly one lifecycle
+(current/removed/sentinel). Any unconsumed non-comment token aborts the
+run with exit code 1; a silently skipped syntax change can never pass.
+
 The payload records a `baseline` commit (the review anchor) so the
 inventory can be reproduced from any checkout: pass `--baseline-ref
 <commit-ish>` to pin it (default: HEAD). All five input files and the
@@ -46,13 +70,19 @@ glossary are read from Git objects at that commit via `git show
 <ref>:<path>` -- never from the local worktree -- so the output is
 identical regardless of local checkout state or uncommitted edits.
 
-The output JSON write is fail-closed (absolute path inside the OS temp
-dir or /tmp, parent chain and target opened with O_NOFOLLOW / O_EXCL;
-see write_inventory_output()).
+The output JSON write is fail-closed (R2-CODE-003): the output path must
+be exactly one brand-new basename directly under the OS temp dir or /tmp
+(nested components, `.` and `..` are rejected); the trusted root is
+opened once and the target is created with O_EXCL|O_NOFOLLOW (see
+write_inventory_output()).
 
 Usage:
   python3 .claude/scripts/card_inventory.py --baseline-ref <commit> \
-      --inventory-output /tmp/card-inventory.json
+      --inventory-output /tmp/card-inventory-<new-file>.json
+
+  --inventory-output must be a single brand-new basename directly under
+  the OS temp dir (tempfile.gettempdir()) or /tmp; the target must not
+  already exist.
 """
 import argparse
 import errno
@@ -63,9 +93,13 @@ import re
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_shared import (AuditInput, lowercase_string,  # noqa: E402
+                         parse_entries_physical)
 
 #: deck_archetype table name -> short deck membership value.
 KNOWN_DECKS = ("deck_of_escape", "deck_of_destruction",
@@ -138,6 +172,191 @@ def _matching_brace(text: str, open_idx: int) -> int:
     raise SystemExit("unbalanced braces in baseline blob")
 
 
+# ---------------------------------------------------------------------------
+# Strict tokenizer (R2-CODE-002)
+# ---------------------------------------------------------------------------
+
+# Every token the audited regions may contain. A strict cursor loop
+# consumes the whole region token by token; anything that matches no
+# alternative aborts the run, so unknown syntax can never be skipped.
+_SKIP_RE = re.compile(r"\s+|//[^\n]*")
+_TOKEN_RE = re.compile(
+    r"case\s+(?P<case_label>CARD_[A-Z0-9_]+|NUM_CARDS)\s*:"
+    r"|return\s+C_\(\s*\"(?P<c_ctx>(?:[^\"\\]|\\.)*)\"\s*,\s*"
+    r"\"(?P<c_key>(?:[^\"\\]|\\.)*)\"\s*\)\s*;"
+    r"|return\s+T_\(\s*\"(?P<t_key>(?:[^\"\\]|\\.)*)\"\s*\)\s*;"
+    r"|return\s+\"(?P<plain>(?:[^\"\\]|\\.)*)\"\s*;"
+    r"|return\s+(?P<bool_val>true|false)\s*;"
+    r"|(?P<default>default\s*:)"
+    r"|(?P<directive>\#[^\n]*)"
+    r"|(?P<lbrace>\{)"
+    r"|(?P<rbrace>\})"
+    r"|(?P<ident>CARD_[A-Z0-9_]+)"
+    r"|(?P<integer>\d+)"
+    r"|(?P<comma>,)")
+
+
+def _token_kind(m: re.Match) -> str:
+    """Name of the token alternative a strict-tokenizer match belongs to."""
+    if m.group("case_label") is not None:
+        return "case"
+    if m.group("c_key") is not None:
+        return "c_return"
+    if m.group("t_key") is not None:
+        return "t_return"
+    if m.group("plain") is not None:
+        return "plain_return"
+    if m.group("bool_val") is not None:
+        return "bool_return"
+    if m.group("default") is not None:
+        return "default"
+    if m.group("directive") is not None:
+        return "directive"
+    if m.group("lbrace") is not None:
+        return "lbrace"
+    if m.group("rbrace") is not None:
+        return "rbrace"
+    if m.group("ident") is not None:
+        return "ident"
+    if m.group("integer") is not None:
+        return "integer"
+    if m.group("comma") is not None:
+        return "comma"
+    raise SystemExit("unrecognized token in strict parse")
+
+
+def _strict_tokenize(text: str, region: str):
+    """Yield every token in `text`, aborting on any unconsumed content.
+
+    Whitespace and `//` comments are skipped between tokens. A position
+    that matches no allowed token form (for example an unknown return
+    statement, a stray identifier, or malformed punctuation) aborts the
+    run, so a silently ignored syntax change can never slip through the
+    audit.
+    """
+    pos = 0
+    while pos < len(text):
+        m = _SKIP_RE.match(text, pos)
+        if m:
+            pos = m.end()
+            continue
+        m = _TOKEN_RE.match(text, pos)
+        if not m:
+            raise SystemExit(
+                f"unconsumed token in {region}: {text[pos:pos + 60]!r}")
+        yield m
+        pos = m.end()
+
+
+def _require_no_tokens(text: str, region: str) -> None:
+    """Fail if `text` contains any token (only whitespace/comments)."""
+    for _m in _strict_tokenize(text, region):
+        raise SystemExit(f"unexpected content in {region}")
+
+
+def _norm_cond(cond: str) -> str:
+    return re.sub(r"\s+", " ", cond).strip()
+
+
+_COND_RE = re.compile(
+    r"^[A-Za-z_][A-Za-z0-9_]*(?:\s*(?:==|!=|<=|>=|<|>)\s*"
+    r"(?:[A-Za-z_][A-Za-z0-9_]*|\d+))?$")
+_DEFINED_RE = re.compile(r"^!?defined\s+[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _parse_directive(directive_text: str) -> tuple[str, str | None]:
+    """Parse one preprocessor directive line into (kind, condition).
+
+    kind is one of 'if'/'ifdef'/'ifndef'/'elif'/'else'/'endif'. The
+    condition (if any) must be a single identifier comparison or a
+    `[!]defined NAME` form; unknown directives and trailing tokens abort
+    the run.
+    """
+    text = directive_text.strip()
+    if "//" in text:
+        text = text.split("//", 1)[0].rstrip()
+    if text.startswith("#ifdef "):
+        cond = text[7:].strip()
+        if not _DEFINED_RE.fullmatch(cond):
+            raise SystemExit(f"unexpected #ifdef condition {cond!r}")
+        return ("ifdef", _norm_cond(cond))
+    if text.startswith("#ifndef "):
+        cond = text[8:].strip()
+        if not _DEFINED_RE.fullmatch(cond):
+            raise SystemExit(f"unexpected #ifndef condition {cond!r}")
+        return ("ifndef", _norm_cond(cond))
+    if text.startswith("#if "):
+        cond = text[4:].strip()
+        if not _COND_RE.fullmatch(cond):
+            raise SystemExit(f"unexpected #if condition {cond!r}")
+        return ("if", _norm_cond(cond))
+    if text.startswith("#elif"):
+        cond = text[5:].strip()
+        if not _COND_RE.fullmatch(cond):
+            raise SystemExit(f"unexpected #elif condition {cond!r}")
+        return ("elif", _norm_cond(cond))
+    if text.startswith("#else"):
+        if text[5:].strip():
+            raise SystemExit("unexpected trailing content after #else")
+        return ("else", None)
+    if text.startswith("#endif"):
+        if text[6:].strip():
+            raise SystemExit("unexpected trailing content after #endif")
+        return ("endif", None)
+    raise SystemExit(
+        f"unknown preprocessor directive {directive_text.strip()!r}")
+
+
+class _PreprocessorFrames:
+    """Preprocessor frame tracker for the audited regions.
+
+    Validates #if/#ifdef/#ifndef/#elif/#else/#endif pairing and closure
+    (every TAG_MAJOR_VERSION == 34 block must open and close inside the
+    region) and reports whether the current point is inside an *active*
+    TAG-34 frame.
+    """
+
+    def __init__(self, region: str):
+        self.region = region
+        self.frames: list[tuple[str, bool]] = []  # (condition, active)
+
+    def handle(self, directive_text: str) -> None:
+        kind, cond = _parse_directive(directive_text)
+        if kind in ("if", "ifdef", "ifndef"):
+            self.frames.append((cond, True))
+        elif kind == "elif":
+            if not self.frames:
+                raise SystemExit(
+                    f"#elif without matching #if in {self.region}")
+            _old_cond, active = self.frames[-1]
+            self.frames[-1] = (cond, not active)
+        elif kind == "else":
+            if not self.frames:
+                raise SystemExit(
+                    f"#else without matching #if in {self.region}")
+            old_cond, active = self.frames[-1]
+            self.frames[-1] = (old_cond, not active)
+        else:  # endif
+            if not self.frames:
+                raise SystemExit(
+                    f"unmatched #endif in {self.region}")
+            self.frames.pop()
+
+    def require_closed(self) -> None:
+        if self.frames:
+            raise SystemExit(
+                f"unclosed #if block in {self.region}: "
+                f"{[cond for cond, _active in self.frames]!r}")
+
+    def in_tag34(self) -> bool:
+        return any(cond == _TAG34_COND and active
+                   for cond, active in self.frames)
+
+
+# ---------------------------------------------------------------------------
+# Card source parsers (strict, R2-CODE-002)
+# ---------------------------------------------------------------------------
+
 def parse_card_enum(text: str) -> list[tuple[str, bool]]:
     """Return [(member, in_tag34), ...] from the card_type enum in
     declaration order.
@@ -145,9 +364,12 @@ def parse_card_enum(text: str) -> list[tuple[str, bool]]:
     `text` is the file content supplied by the caller (read from the
     baseline Git blob, never from the worktree). `in_tag34` records
     whether the member sits inside a `#if TAG_MAJOR_VERSION == 34`
-    conditional block, which is the removed-card lifetime marker. A
-    minimal preprocessor frame tracker follows #if/#ifdef/#ifndef/
-    #elif/#else/#endif inside the enum body; unknown tokens abort.
+    conditional block, which is the removed-card lifetime marker.
+
+    Strict grammar: every non-comment line is either a preprocessor
+    directive (balanced and closed) or a comma-separated list of
+    CARD_[A-Z0-9_]+ / NUM_CARDS members, optionally with `= <integer>`.
+    Duplicate members and unknown tokens abort the run.
     """
     m = re.search(r"enum\s+card_type\s*\{", text)
     if not m:
@@ -156,48 +378,35 @@ def parse_card_enum(text: str) -> list[tuple[str, bool]]:
     close_idx = _matching_brace(text, open_idx)
     body = text[open_idx + 1:close_idx]
 
-    frames: list[tuple[str, bool]] = []  # (normalized condition, active)
+    frames = _PreprocessorFrames("card_type enum (decks.h)")
     members: list[tuple[str, bool]] = []
+    seen: set[str] = set()
     for raw in body.splitlines():
         line = raw.split("//", 1)[0].strip()
         if not line:
             continue
         if line.startswith("#"):
-            if line.startswith("#if "):
-                frames.append((_norm_cond(line[4:]), True))
-            elif line.startswith("#ifdef "):
-                frames.append(("defined " + line[7:].strip(), True))
-            elif line.startswith("#ifndef "):
-                frames.append(("!defined " + line[8:].strip(), True))
-            elif line.startswith("#elif"):
-                if frames:
-                    cond, active = frames[-1]
-                    frames[-1] = (_norm_cond(line[5:].strip()), not active)
-            elif line.startswith("#else"):
-                if frames:
-                    cond, active = frames[-1]
-                    frames[-1] = (cond, not active)
-            elif line.startswith("#endif"):
-                if frames:
-                    frames.pop()
-            # other directives (#pragma etc.) do not occur inside the enum
+            frames.handle(line)
             continue
-        in_tag34 = any(cond == _TAG34_COND and active
-                       for cond, active in frames)
-        for tok in line.rstrip(",").split(","):
-            tok = tok.strip().split("=")[0].strip()
-            if not tok:
+        for part in line.split(","):
+            part = part.strip()
+            if not part:
                 continue
-            if not re.fullmatch(r"(?:CARD_[A-Z0-9_]+|NUM_CARDS)", tok):
+            mm = re.fullmatch(
+                r"(CARD_[A-Z0-9_]+|NUM_CARDS)(\s*=\s*\d+)?", part)
+            if not mm:
                 raise SystemExit(
-                    f"unexpected token {tok!r} in card_type enum "
+                    f"unexpected token {part!r} in card_type enum "
                     f"(decks.h blob)")
-            members.append((tok, in_tag34))
+            tok = mm.group(1)
+            if tok in seen:
+                raise SystemExit(
+                    f"duplicate member {tok} in card_type enum "
+                    f"(decks.h blob)")
+            seen.add(tok)
+            members.append((tok, frames.in_tag34()))
+    frames.require_closed()
     return members
-
-
-def _norm_cond(cond: str) -> str:
-    return re.sub(r"\s+", " ", cond).strip()
 
 
 def _function_body(text: str, sig_re: re.Pattern) -> str:
@@ -209,78 +418,87 @@ def _function_body(text: str, sig_re: re.Pattern) -> str:
     if open_idx < 0:
         raise SystemExit("card function has no body brace in decks.cc blob")
     close_idx = _matching_brace(text, open_idx)
-    return text[m.start():close_idx]
+    # Include the closing brace so callers can walk the region again.
+    return text[m.start():close_idx + 1]
 
 
-def _switch_body(body: str) -> str:
-    """Text inside `switch (card) { ... }` within a function body."""
-    m = re.search(r"switch\s*\(\s*card\s*\)\s*\{", body)
-    if not m:
-        raise SystemExit("cannot find switch (card) in card function body")
-    open_idx = body.find("{", m.start())
-    close_idx = _matching_brace(body, open_idx)
-    return body[open_idx + 1:close_idx]
+def _function_switch_regions(text: str, sig_re: re.Pattern, fn_name: str
+                             ) -> tuple[str, str]:
+    """Return (switch_body, tail) of a card function.
 
-
-def _switch_region_tail(text: str, sig_re: re.Pattern) -> str:
-    """Text of a card function after its `switch (card)` body closes
-    (the region holding the fallthrough return)."""
+    The function body must start with exactly `switch (card) { ... }`;
+    anything before the switch aborts the run. The tail is the text after
+    the switch's closing brace up to the function's closing brace.
+    """
     body = _function_body(text, sig_re)
-    m = re.search(r"switch\s*\(\s*card\s*\)\s*\{", body)
-    if not m:
-        raise SystemExit("cannot find switch (card) in card function body")
-    open_idx = body.find("{", m.start())
+    sig_end = body.find("{")
+    if sig_end < 0:
+        raise SystemExit(f"{fn_name} has no body brace in decks.cc blob")
+    open_idx = body.find("{", sig_end)
     close_idx = _matching_brace(body, open_idx)
-    return body[close_idx + 1:]
-
-
-_CASE_RE = re.compile(r"case\s+(CARD_[A-Z0-9_]+|NUM_CARDS)\s*:")
-# Groups: 1 = C_ context, 2 = C_ key, 3 = T_ key, 4 = plain string.
-_RETURN_RE = re.compile(
-    r"return\s+C_\(\s*\"([^\"]*)\"\s*,\s*\"([^\"]*)\"\s*\)\s*;"
-    r"|return\s+T_\(\s*\"([^\"]*)\"\s*\)\s*;"
-    r"|return\s+\"([^\"]*)\"\s*;")
-# Groups: 1 = case label, 2 = C_ context, 3 = C_ key, 4 = T_ key,
-# 5 = plain string.
-_TOK_RE = re.compile(
-    r"case\s+(CARD_[A-Z0-9_]+|NUM_CARDS)\s*:"
-    r"|return\s+C_\(\s*\"([^\"]*)\"\s*,\s*\"([^\"]*)\"\s*\)\s*;"
-    r"|return\s+T_\(\s*\"([^\"]*)\"\s*\)\s*;"
-    r"|return\s+\"([^\"]*)\"\s*;")
+    interior = body[open_idx + 1:close_idx]
+    m = re.search(r"switch\s*\(\s*card\s*\)\s*\{", interior)
+    if not m:
+        raise SystemExit(f"cannot find switch (card) in {fn_name} body")
+    switch_open = interior.find("{", m.start())
+    switch_close = _matching_brace(interior, switch_open)
+    _require_no_tokens(interior[:m.start()],
+                       f"{fn_name} body before switch")
+    return (interior[switch_open + 1:switch_close],
+            interior[switch_close + 1:])
 
 
 def parse_card_switch(body: str, localized: bool
                       ) -> tuple[dict[str, object], list[str]]:
-    """Parse one card switch body.
+    """Parse one card switch body (strict).
 
     Returns ({case label: value}, ordered case labels). For the EN switch
     (localized=False) the value is the plain name string; for the
-    localized switch it is (t_key, context_or_None). Consecutive case
-    labels (the TAG-34 removed members and NUM_CARDS) share the following
-    return, mirroring C fallthrough. Mixed or unknown return forms and
-    cases without a return abort the run.
+    localized switch it is (t_key, context_or_None).
+
+    Grammar: a balanced sequence of preprocessor directives and
+    case/return runs; consecutive case labels (the TAG-34 removed members
+    and NUM_CARDS) share the following return, mirroring C fallthrough.
+    Duplicate cases, a return without a preceding case, a case without a
+    return, mixed or unknown return forms (including boolean returns and
+    default:) and any stray token abort the run.
     """
     values: dict[str, object] = {}
     labels: list[str] = []
     pending: list[str] = []
-    for m in _TOK_RE.finditer(body):
-        if m.group(1) is not None:
-            pending.append(m.group(1))
-            labels.append(m.group(1))
+    frames = _PreprocessorFrames("card switch")
+    for m in _strict_tokenize(body, "card switch"):
+        kind = _token_kind(m)
+        if kind == "directive":
+            frames.handle(m.group("directive"))
             continue
-        if m.group(2) is not None:      # C_("context", "key")
-            value: object = (m.group(3), m.group(2))
-            form = "context"
-        elif m.group(4) is not None:    # T_("key")
-            value = (m.group(4), None)
-            form = "t"
-        else:                           # plain "name"
-            value = m.group(5)
-            form = "plain"
-        if ((localized and form == "plain")
-                or (not localized and form != "plain")):
+        if kind == "case":
+            label = m.group("case_label")
+            if label in values:
+                raise SystemExit(f"duplicate case {label} in card switch")
+            pending.append(label)
+            labels.append(label)
+            continue
+        if kind == "c_return":
+            if not localized:
+                raise SystemExit("unexpected C_() return in EN card switch")
+            value: object = (m.group("c_key"), m.group("c_ctx"))
+        elif kind == "t_return":
+            if not localized:
+                raise SystemExit("unexpected T_() return in EN card switch")
+            value = (m.group("t_key"), None)
+        elif kind == "plain_return":
+            if localized:
+                raise SystemExit(
+                    "unexpected plain return in localized card switch")
+            value = m.group("plain")
+        elif kind == "bool_return":
+            raise SystemExit("unexpected boolean return in card switch")
+        elif kind == "default":
+            raise SystemExit("unexpected default: in card switch")
+        else:
             raise SystemExit(
-                f"mixed or unexpected return form ({form}) in card switch")
+                f"unexpected token ({kind}) in card switch")
         if not pending:
             raise SystemExit("return without preceding case in card switch")
         for label in pending:
@@ -289,24 +507,126 @@ def parse_card_switch(body: str, localized: bool
     if pending:
         raise SystemExit(
             f"card switch case(s) without a return: {pending}")
+    frames.require_closed()
     return values, labels
+
+
+def parse_removed_cases(text: str) -> list[str]:
+    """Strictly parse the card_is_removed() switch.
+
+    The function body must be exactly `switch (card) { #if
+    TAG_MAJOR_VERSION == 34 case...: return true; #endif default: return
+    false; }`. Every case must sit inside an active TAG-34 frame, the
+    returns must be the exact boolean literals `true` / `false`, and the
+    default: must sit outside the TAG-34 block. Any deviation (including
+    a duplicate case or a boolean expression instead of a literal)
+    aborts the run.
+    """
+    switch_body, tail = _function_switch_regions(
+        text, _SIG_RE["card_is_removed"], "card_is_removed")
+    _require_no_tokens(tail, "card_is_removed body after switch")
+    cases: list[str] = []
+    frames = _PreprocessorFrames("card_is_removed switch")
+    saw_true = False
+    saw_default = False
+    saw_false = False
+    for m in _strict_tokenize(switch_body, "card_is_removed switch"):
+        kind = _token_kind(m)
+        if kind == "directive":
+            frames.handle(m.group("directive"))
+            continue
+        if kind == "case":
+            if not frames.in_tag34():
+                raise SystemExit(
+                    "card_is_removed case outside an active "
+                    "TAG_MAJOR_VERSION == 34 block")
+            if saw_default:
+                raise SystemExit("card_is_removed case after default:")
+            label = m.group("case_label")
+            if label in cases:
+                raise SystemExit(
+                    f"duplicate case {label} in card_is_removed switch")
+            cases.append(label)
+            continue
+        if kind == "bool_return":
+            if m.group("bool_val") == "true":
+                if saw_true:
+                    raise SystemExit(
+                        "card_is_removed has more than one `return true;`")
+                if not cases:
+                    raise SystemExit(
+                        "card_is_removed `return true;` without cases")
+                if not frames.in_tag34():
+                    raise SystemExit(
+                        "card_is_removed `return true;` outside the "
+                        "TAG-34 block")
+                saw_true = True
+            else:
+                if saw_false:
+                    raise SystemExit(
+                        "card_is_removed has more than one `return false;`")
+                if not saw_default:
+                    raise SystemExit(
+                        "card_is_removed `return false;` without default:")
+                if frames.in_tag34():
+                    raise SystemExit(
+                        "card_is_removed `return false;` inside the "
+                        "TAG-34 block")
+                saw_false = True
+            continue
+        if kind == "default":
+            if saw_default:
+                raise SystemExit(
+                    "card_is_removed has more than one default:")
+            if not saw_true:
+                raise SystemExit(
+                    "card_is_removed default: before the TAG-34 "
+                    "`return true;`")
+            if frames.in_tag34():
+                raise SystemExit(
+                    "card_is_removed default: inside the TAG-34 block")
+            saw_default = True
+            continue
+        raise SystemExit(
+            f"unexpected token ({kind}) in card_is_removed switch")
+    frames.require_closed()
+    if not saw_true or not saw_default or not saw_false:
+        raise SystemExit(
+            "card_is_removed switch must contain `return true;` for the "
+            "TAG-34 cases and `default: return false;`")
+    return cases
 
 
 def parse_fallthrough(region: str, localized: bool) -> object:
     """Value of the trailing `return` after the switch (the fallthrough
-    name, e.g. `a very buggy card`), which no case label reaches."""
-    m = _RETURN_RE.search(region)
-    if not m:
-        raise SystemExit("cannot find fallthrough return in card function")
-    if localized:
-        if m.group(2) is not None:      # C_("context", "key")
-            return (m.group(2), m.group(1))
-        if m.group(3) is not None:      # T_("key")
-            return (m.group(3), None)
-        raise SystemExit("unexpected fallthrough return form in card_name")
-    if m.group(4) is None:
-        raise SystemExit("unexpected fallthrough return form in card_name_en")
-    return m.group(4)
+    name, e.g. `a very buggy card`), which no case label reaches.
+
+    The region must contain exactly one return token (strict): for the EN
+    function a plain string, for the localized function T_("...") or
+    C_("...", "...").
+    """
+    tokens = list(_strict_tokenize(region, "card function tail"))
+    if len(tokens) != 1:
+        raise SystemExit(
+            "card function tail must contain exactly one return "
+            f"(got {len(tokens)} token(s))")
+    m = tokens[0]
+    if m.group("c_key") is not None:
+        if not localized:
+            raise SystemExit(
+                "unexpected C_() fallthrough return in card_name_en")
+        return (m.group("c_key"), m.group("c_ctx"))
+    if m.group("t_key") is not None:
+        if not localized:
+            raise SystemExit(
+                "unexpected T_() fallthrough return in card_name_en")
+        return (m.group("t_key"), None)
+    if m.group("plain") is not None:
+        if localized:
+            raise SystemExit(
+                "unexpected plain fallthrough return in card_name")
+        return m.group("plain")
+    raise SystemExit("unexpected fallthrough return form in card function")
 
 
 _SIG_RE = {
@@ -318,27 +638,22 @@ _SIG_RE = {
 }
 
 
-def parse_removed_cases(text: str) -> list[str]:
-    """Case labels of the card_is_removed() switch (the removed members).
-
-    `text` is the decks.cc content supplied by the caller (read from the
-    baseline Git blob, never from the worktree).
-    """
-    body = _function_body(text, _SIG_RE["card_is_removed"])
-    return [m.group(1) for m in _CASE_RE.finditer(_switch_body(body))]
-
-
 _DECK_TABLE_RE = re.compile(
     r"deck_archetype\s+(deck_of_[a-z_]+)\s*=\s*\{(.*?)\};", re.S)
 
 
-def parse_deck_tables(text: str) -> dict[str, list[str]]:
+def parse_deck_tables(text: str, enum_members: list[str]
+                      ) -> dict[str, list[str]]:
     """Return {deck_of_<name>: [CARD_X in source order]} for the four
-    deck_archetype tables in decks.cc.
+    deck_archetype tables in decks.cc (strict).
 
     `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree). An unknown table name or
-    a missing known table aborts the run (schema-level fail-closed).
+    baseline Git blob, never from the worktree). Each table body must be
+    a sequence of `{ CARD_X, <integer> },` entries (an empty body is
+    allowed); any other token aborts the run. An unknown or duplicate
+    table name and a missing known table abort; every referenced card
+    must be a card_type enum member and may appear at most once per
+    table.
     """
     tables: dict[str, list[str]] = {}
     for m in _DECK_TABLE_RE.finditer(text):
@@ -346,11 +661,55 @@ def parse_deck_tables(text: str) -> dict[str, list[str]]:
         if name not in KNOWN_DECKS:
             raise SystemExit(
                 f"unexpected deck_archetype table {name!r} in decks.cc blob")
-        tables[name] = re.findall(r"CARD_[A-Z0-9_]+", body)
+        if name in tables:
+            raise SystemExit(
+                f"duplicate deck_archetype table {name!r} in decks.cc blob")
+        tokens = list(_strict_tokenize(body, f"deck table {name}"))
+        entries: list[str] = []
+        i = 0
+        while i < len(tokens):
+            if _token_kind(tokens[i]) != "lbrace":
+                raise SystemExit(
+                    f"expected '{{' at start of an entry in deck table "
+                    f"{name}")
+            if (i + 1 >= len(tokens)
+                    or _token_kind(tokens[i + 1]) != "ident"):
+                raise SystemExit(
+                    f"expected a card identifier in deck table {name}")
+            if (i + 2 >= len(tokens)
+                    or _token_kind(tokens[i + 2]) != "comma"):
+                raise SystemExit(
+                    f"expected ',' after the card in deck table {name}")
+            if (i + 3 >= len(tokens)
+                    or _token_kind(tokens[i + 3]) != "integer"):
+                raise SystemExit(
+                    f"expected an integer weight in deck table {name}")
+            if (i + 4 >= len(tokens)
+                    or _token_kind(tokens[i + 4]) != "rbrace"):
+                raise SystemExit(
+                    f"expected '}}' after the weight in deck table {name}")
+            entries.append(tokens[i + 1].group("ident"))
+            i += 5
+            if i < len(tokens):
+                if _token_kind(tokens[i]) != "comma":
+                    raise SystemExit(
+                        f"expected ',' between entries in deck table {name}")
+                i += 1
+        tables[name] = entries
     missing = [k for k in KNOWN_DECKS if k not in tables]
     if missing:
         raise SystemExit(
             f"missing deck_archetype tables in decks.cc blob: {missing}")
+    member_set = set(enum_members)
+    for name, entries in tables.items():
+        for card in entries:
+            if card not in member_set:
+                raise SystemExit(
+                    f"deck table {name} references {card} which is not a "
+                    f"card_type enum member (decks.cc blob)")
+        if len(set(entries)) != len(entries):
+            raise SystemExit(
+                f"deck table {name} lists a card more than once")
     return tables
 
 
@@ -366,31 +725,151 @@ def removed_base_name(member: str) -> str:
     return " ".join(word.capitalize() for word in base.split("_"))
 
 
-def parse_source_keys(text: str) -> tuple[dict[str, str], dict[str, str]]:
-    """Parse source.txt into (plain key -> ZH, "context|key" -> ZH).
+# ---------------------------------------------------------------------------
+# Production SourceDB model (R2-CODE-001)
+# ---------------------------------------------------------------------------
+
+def _escape_key(raw: str) -> str:
+    """Python mirror of database.cc i18n_escape_key(): normalize a C++
+    runtime string to source.txt key format (backslash first, then \\r,
+    \\n, \\t). Card keys are plain ASCII, but the mirror keeps the model
+    exact for any key form."""
+    s = raw.replace("\\", "\\\\")
+    s = s.replace("\r", "\\r")
+    s = s.replace("\n", "\\n")
+    s = s.replace("\t", "\\t")
+    return s
+
+
+@dataclass
+class SourceEntry:
+    """One source.txt entry with production parse semantics.
+
+    raw_key: physical key line as-is (trim_keys=false, no \\# decode,
+    no unescape; whitespace belongs to the key).
+    canonical_key: lowercase(raw_key) -- the SourceDB lookup key space.
+    value: ZH value with production line trimming and \\n joining.
+    """
+    raw_key: str
+    canonical_key: str
+    value: str
+    key_line: int
+    value_line: int
+
+
+def parse_source_physical(text: str) -> list[SourceEntry]:
+    """Parse source.txt with production SourceDB semantics.
+
+    Mirrors database.cc `_parse_text_db(..., trim_keys=false)` as
+    implemented by i18n_shared.parse_entries_physical():
+      - lines starting with '#' are comment lines, skipped everywhere;
+      - '%%%%' block separators (starts-with match);
+      - the key is the first non-empty line after a separator, preserved
+        VERBATIM (trim_keys=false: whitespace belongs to the key; no
+        \\# decode, no unescape);
+      - the canonical key is lowercase(raw_key) (C++ lowercase());
+      - value lines are right-trimmed of " \\t\\n\\r" and joined with \\n.
 
     `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree). Keys containing '|' are
-    C_ context keys and are kept verbatim in the second dict.
+    baseline Git blob, never from the worktree).
     """
-    plain: dict[str, str] = {}
-    ctx: dict[str, str] = {}
-    blocks = re.split(r"%%%%", text)
-    for block in blocks:
-        block = block.strip("\n")
-        if not block:
-            continue
-        first, _, rest = block.partition("\n")
-        key = first.strip()
-        if not key:
-            continue
-        value = "\n".join(line for line in rest.splitlines()
-                          if line.strip()) if rest else ""
-        if "|" in key:
-            ctx[key] = value
-        else:
-            plain[key] = value
-    return plain, ctx
+    payload = text.encode("utf-8")
+    source = AuditInput(
+        audit_commit=None,
+        logical_path="dat/i18n/zh/source.txt",
+        relative_path="dat/i18n/zh/source.txt",
+        bytes=payload,
+        text=text,
+        sha256=hashlib.sha256(payload).hexdigest(),
+    )
+    return [SourceEntry(
+        raw_key=pe.raw_key,
+        canonical_key=pe.canonical_key,
+        value=pe.value,
+        key_line=pe.key_line,
+        value_line=pe.value_line,
+    ) for pe in parse_entries_physical(source)]
+
+
+class SourceDB:
+    """Production-semantics SourceDB (dat/i18n/zh/source.txt) lookup model.
+
+    Mirrors database.cc i18n_source_lookup():
+      - T_(en): query canonical(i18n_escape_key(en)); an empty value is a
+        miss and falls back to English.
+      - C_(ctx, en): query canonical(i18n_escape_key("ctx|en")) first;
+        only when that misses (or is empty), fall back to
+        canonical(i18n_escape_key(en)); otherwise English.
+
+    Canonical-key duplicates are a fail-closed error: production DBM
+    stores last-wins (DBM_REPLACE), which would silently hide the audit
+    signal this tool exists to produce.
+    """
+
+    def __init__(self, entries: list[SourceEntry]):
+        self.entries = entries
+        self._by_canonical: dict[str, SourceEntry] = {}
+        for entry in entries:
+            prev = self._by_canonical.get(entry.canonical_key)
+            if prev is not None:
+                raise SystemExit(
+                    f"source.txt canonical key collision: "
+                    f"{entry.canonical_key!r} defined by both "
+                    f"{prev.raw_key!r} (line {prev.key_line}) and "
+                    f"{entry.raw_key!r} (line {entry.key_line})")
+            self._by_canonical[entry.canonical_key] = entry
+        self._by_raw = {entry.raw_key: entry for entry in entries}
+
+    def exact_case_key_exists(self, key: str) -> bool:
+        """True when a physical source.txt key equals `key` exactly."""
+        return key in self._by_raw
+
+    def canonical(self, en: str, ctx: str | None = None) -> str:
+        return lowercase_string(_escape_key(f"{ctx}|{en}" if ctx else en))
+
+    def lookup(self, en: str, ctx: str | None = None
+               ) -> tuple[str | None, SourceEntry | None, str]:
+        """Production lookup; returns (value, supplying_entry, path).
+
+        value is None when production would display the English key
+        (canonical miss or explicitly empty value). path is a
+        human-readable T_/C_ resolution description.
+        """
+        if ctx:
+            qualified = f"{ctx}|{en}"
+            hit = self._fetch(qualified)
+            if hit is not None:
+                entry, value = hit
+                return (value, entry,
+                        f"C_({ctx!r}, {en!r}) -> canonical "
+                        f"{self.canonical(en, ctx)!r} hit (physical key "
+                        f"{entry.raw_key!r})")
+            hit = self._fetch(en)
+            if hit is not None:
+                entry, value = hit
+                return (value, entry,
+                        f"C_({ctx!r}, {en!r}) -> context key miss; "
+                        f"canonical {self.canonical(en)!r} fallback hit "
+                        f"(physical key {entry.raw_key!r})")
+            return (None, None,
+                    f"C_({ctx!r}, {en!r}) -> context key "
+                    f"{self.canonical(en, ctx)!r} and plain key "
+                    f"{self.canonical(en)!r} both miss -> English fallback")
+        hit = self._fetch(en)
+        if hit is not None:
+            entry, value = hit
+            return (value, entry,
+                    f"T_({en!r}) -> canonical {self.canonical(en)!r} hit "
+                    f"(physical key {entry.raw_key!r})")
+        return (None, None,
+                f"T_({en!r}) -> canonical {self.canonical(en)!r} miss "
+                f"-> English fallback")
+
+    def _fetch(self, en: str) -> tuple[SourceEntry, str] | None:
+        entry = self._by_canonical.get(self.canonical(en))
+        if entry is None or entry.value == "":
+            return None
+        return entry, entry.value
 
 
 def parse_db_keys(text: str) -> dict[str, str]:
@@ -443,34 +922,35 @@ def _allowed_temp_roots() -> list[str]:
 
 
 def write_inventory_output(raw: str, content: str) -> Path:
-    """Fail-closed, race-free write of the inventory JSON.
+    """Fail-closed write of the inventory JSON: a single brand-new
+    basename directly under an already-open trusted temp root.
 
-    Pre-validation (kept from the previous implementation): the path
-    must be absolute and its realpath must lie inside the OS temp dir
-    (tempfile.gettempdir()) or /tmp.
+    The output path must be absolute and must resolve inside the OS temp
+    dir (tempfile.gettempdir()) or /tmp, and it must consist of exactly
+    one path component below that root: nested components, `.` and `..`
+    components are rejected outright. This is the fix for R2 blocker
+    R2-CODE-003: the previous implementation walked a parent-directory
+    chain with O_NOFOLLOW, but an already-opened parent fd can be renamed
+    out of the temp root concurrently (POSIX allows renaming an open
+    directory), so the "inside the temp root" guarantee did not survive
+    to the final write. With a single basename under the root there is no
+    parent chain at all: the trusted root fd is opened once with
+    O_RDONLY|O_DIRECTORY|O_NOFOLLOW and the final element is created with
+    os.open(base, O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, dir_fd=root_fd).
 
-    The write itself is openat-style and never follows a symlink:
+    * The target must not already exist (O_EXCL rejects an existing file
+      -- including a hardlink to a shared inode -- with EEXIST, so the
+      output is never truncated or overwritten).
+    * An existing symlink at the target fails with ELOOP and the output
+      is never written through it.
+    * Directories are never auto-created and no component is followed as
+      a symlink.
 
-    * The parent directory chain is opened level by level, starting
-      from an fd of the canonical temp root: every component is opened
-      with os.open(comp, O_RDONLY|O_DIRECTORY|O_NOFOLLOW,
-      dir_fd=parent_fd). A symlink component fails with ELOOP, a
-      missing component fails with ENOENT (directories are never
-      auto-created), and a non-directory fails with ENOTDIR.
-    * The final element is opened with os.open(base,
-      O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0o644, dir_fd=parent_fd):
-      the target must not already exist (O_EXCL rejects it with EEXIST,
-      so an existing regular file -- including a hardlink to a shared
-      inode -- is never truncated or overwritten), and an existing
-      symlink at the target fails with ELOOP and the output is never
-      written through it. Callers must therefore pick a fresh path for
-      every rebuild, or delete the old file first.
-
-    There is no lstat-then-mkdir/write TOCTOU window: every step is a
-    single atomic open that refuses to follow symlinks, and all opened
-    directory fds are closed on every path. Any failure prints a clear
-    error to stderr and exits 1; there is no fallback to a plain
-    open/write.
+    Callers must therefore pick a fresh basename for every rebuild, or
+    delete the old file first. There is no lstat-then-create TOCTOU
+    window: every step is a single atomic open that refuses to follow
+    symlinks. Any failure prints a clear error to stderr and exits 1;
+    there is no fallback to a plain open/write.
     """
     p = Path(raw)
     if not p.is_absolute():
@@ -494,11 +974,11 @@ def write_inventory_output(raw: str, content: str) -> Path:
         raise SystemExit(1)
 
     # Locate the raw prefix (typically the temp-dir name itself, e.g.
-    # /tmp) whose realpath is the permitted root; only components below
-    # that prefix are walked with O_NOFOLLOW. This keeps the walk on the
-    # path the user actually wrote, so an attacker-retargeted component
-    # fails with ELOOP even if realpath() had resolved it to a temp-dir
-    # location.
+    # /tmp) whose realpath is the permitted root. Exactly one component
+    # may follow that prefix: the brand-new basename. Nested components,
+    # '.' and '..' are rejected (there is no parent chain to walk, so a
+    # concurrent rename of an opened parent can never relocate the final
+    # write out of the trusted root).
     parts = p.parts
     prefix_end = None
     for i in range(1, len(parts) + 1):
@@ -517,33 +997,38 @@ def write_inventory_output(raw: str, content: str) -> Path:
             f"itself; refusing to write to it",
             file=sys.stderr)
         raise SystemExit(1)
+    components = parts[prefix_end:]
+    if len(components) != 1:
+        print(
+            f"error: --inventory-output must be a single brand-new "
+            f"basename directly under the temp root {root!r}; nested "
+            f"components are rejected ({raw!r} has {len(components)} "
+            f"component(s) below the root)",
+            file=sys.stderr)
+        raise SystemExit(1)
+    basename = components[0]
+    if basename in (".", ".."):
+        print(
+            f"error: --inventory-output basename must not be '.' or '..'; "
+            f"got {basename!r}",
+            file=sys.stderr)
+        raise SystemExit(1)
 
-    dir_components = parts[prefix_end:-1]
-    basename = parts[-1]
-    dir_fds: list[int] = []
     try:
-        parent_fd = os.open(
+        root_fd = os.open(
             root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-        dir_fds.append(parent_fd)
-        for comp in dir_components:
-            try:
-                parent_fd = os.open(
-                    comp, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                    dir_fd=parent_fd)
-            except OSError as exc:
-                print(
-                    f"error: --inventory-output parent directory component "
-                    f"{comp!r} of {raw!r} cannot be opened as a real "
-                    f"directory without following a symlink: {exc}",
-                    file=sys.stderr)
-                raise SystemExit(1)
-            dir_fds.append(parent_fd)
+    except OSError as exc:
+        print(
+            f"error: cannot open temp root {root!r}: {exc}",
+            file=sys.stderr)
+        raise SystemExit(1)
+    try:
         try:
             final_fd = os.open(
                 basename,
                 os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
                 0o644,
-                dir_fd=parent_fd)
+                dir_fd=root_fd)
         except OSError as exc:
             if exc.errno == errno.EEXIST:
                 print(
@@ -554,9 +1039,9 @@ def write_inventory_output(raw: str, content: str) -> Path:
                     file=sys.stderr)
             else:
                 print(
-                    f"error: --inventory-output target {basename!r} of {raw!r} "
-                    f"cannot be created or opened for writing without following "
-                    f"a symlink: {exc}",
+                    f"error: --inventory-output target {basename!r} of "
+                    f"{raw!r} cannot be created or opened for writing "
+                    f"without following a symlink: {exc}",
                     file=sys.stderr)
             raise SystemExit(1)
         try:
@@ -580,11 +1065,7 @@ def write_inventory_output(raw: str, content: str) -> Path:
                 file=sys.stderr)
             raise SystemExit(1)
     finally:
-        for fd in dir_fds:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
+        os.close(root_fd)
     return p
 
 
@@ -616,15 +1097,16 @@ def main() -> int:
     ap.add_argument(
         "--inventory-output",
         default="/tmp/card-inventory.json",
-        help="output JSON path; must be an absolute path inside the OS "
-             "temp dir or /tmp whose parent directory already exists; "
-             "the parent chain and the target are opened with O_NOFOLLOW "
-             "(dir_fd-style), so symlinked components, a symlinked target, "
-             "and missing parent directories are all rejected, and "
-             "directories are never auto-created; relative and other "
-             "paths are rejected; the target itself must NOT already "
-             "exist (O_EXCL): every rebuild needs a fresh filename or a "
-             "deleted old file")
+        help="output JSON path; must be an absolute path that is exactly "
+             "one brand-new basename directly under the OS temp dir "
+             "(tempfile.gettempdir()) or /tmp -- nested components, '.', "
+             "'..', relative paths and other locations are rejected; the "
+             "trusted root is opened once with O_NOFOLLOW and the target "
+             "is created with O_EXCL|O_NOFOLLOW (dir_fd-style), so an "
+             "existing target, a symlinked target and every other unsafe "
+             "form are rejected, directories are never auto-created, and "
+             "no parent chain exists that could be renamed away; every "
+             "rebuild needs a fresh filename or a deleted old file")
     ap.add_argument(
         "--baseline-ref",
         default="HEAD",
@@ -656,12 +1138,31 @@ def main() -> int:
     tag34 = {name for name, flag in enum if flag}
     decks_cc = blobs["decks.cc"].decode("utf-8")
 
+    # Lifecycle conservation: every enum member has exactly one lifecycle
+    # (current / removed / sentinel).
+    if "NUM_CARDS" in tag34:
+        raise SystemExit(
+            "NUM_CARDS must not sit inside a TAG_MAJOR_VERSION == 34 "
+            "block (decks.h blob)")
+    sentinel = [n for n in members if n == "NUM_CARDS"]
+    if len(sentinel) != 1:
+        raise SystemExit(
+            "NUM_CARDS sentinel missing from card_type enum (decks.h blob)")
+    removed = sorted(tag34)
+    current = [n for n in members if n not in tag34 and n != "NUM_CARDS"]
+    if len(current) + len(removed) + len(sentinel) != len(members):
+        raise SystemExit(
+            "lifecycle conservation violated: an enum member has no "
+            "single lifecycle (decks.h blob)")
+
     # card_name_en() and card_name() switches (same case order).
     en_switch, en_labels = parse_card_switch(
-        _switch_body(_function_body(decks_cc, _SIG_RE["card_name_en"])),
+        _function_switch_regions(
+            decks_cc, _SIG_RE["card_name_en"], "card_name_en")[0],
         localized=False)
     loc_switch, loc_labels = parse_card_switch(
-        _switch_body(_function_body(decks_cc, _SIG_RE["card_name"])),
+        _function_switch_regions(
+            decks_cc, _SIG_RE["card_name"], "card_name")[0],
         localized=True)
 
     if set(en_switch) != set(members) or set(loc_switch) != set(members):
@@ -680,13 +1181,15 @@ def main() -> int:
             "TAG_MAJOR_VERSION == 34 block (decks.cc blob)")
 
     en_fall = parse_fallthrough(
-        _switch_region_tail(decks_cc, _SIG_RE["card_name_en"]),
+        _function_switch_regions(
+            decks_cc, _SIG_RE["card_name_en"], "card_name_en")[1],
         localized=False)
     loc_fall = parse_fallthrough(
-        _switch_region_tail(decks_cc, _SIG_RE["card_name"]),
+        _function_switch_regions(
+            decks_cc, _SIG_RE["card_name"], "card_name")[1],
         localized=True)
 
-    tables = parse_deck_tables(decks_cc)
+    tables = parse_deck_tables(decks_cc, members)
     membership: dict[str, str] = {}
     for name in members:
         found = [t for t in KNOWN_DECKS if name in tables[t]]
@@ -695,36 +1198,36 @@ def main() -> int:
                 f"card {name} appears in multiple deck tables: {found}")
         membership[name] = DECK_SHORT[found[0]] if found else "none"
 
-    plain_t, ctx_t = parse_source_keys(blobs["source.txt"].decode("utf-8"))
+    src = SourceDB(parse_source_physical(
+        blobs["source.txt"].decode("utf-8")))
     db_en = parse_db_keys(blobs["cards.txt"].decode("utf-8"))
     db_zh = parse_db_keys(blobs["zh/cards.txt"].decode("utf-8"))
     en_lm = lower_key_map(db_en)
     zh_lm = lower_key_map(db_zh)
 
-    def zh_lookup(t_key: str, context: str | None) -> str | None:
-        if context is not None:
-            return ctx_t.get(f"{context}|{t_key}")
-        return plain_t.get(t_key)
-
-    missing_key_set: set[str] = set()
     inventory = []
     for name in members:
         lifecycle = ("removed" if name in tag34
                      else "sentinel" if name == "NUM_CARDS" else "current")
         name_en = en_switch[name]
         t_key, context = loc_switch[name]  # type: ignore[misc]
-        zh = zh_lookup(t_key, context)
-        if zh is None:
-            missing_key_set.add(t_key)
+        lookup_key = f"{context}|{t_key}" if context else t_key
+        zh, hit_entry, path = src.lookup(t_key, context)
         dk = desc_key_for(name, name_en, tag34, en_lm)
         entry = {
             "identity": f"card:{name}",
             "lifecycle": lifecycle,
             "name_en": name_en,
             "t_key": t_key,
-            "context_key": context,
+            "context": context,
+            "context_key": (src.exact_case_key_exists(lookup_key)
+                            if context else None),
             "name_zh": zh,
-            "missing_t_key": None if zh is not None else t_key,
+            "name_display_fallback": zh is None,
+            "exact_case_key": src.exact_case_key_exists(lookup_key),
+            "canonical_collision": (hit_entry is not None
+                                    and hit_entry.raw_key != lookup_key),
+            "resolution": path,
             "deck_membership": membership[name],
             "desc_key": dk,
             "desc_en": dk.lower() in en_lm,
@@ -735,34 +1238,51 @@ def main() -> int:
         inventory.append(entry)
 
     ft_key, ft_ctx = loc_fall  # type: ignore[misc]
-    ft_zh = zh_lookup(ft_key, ft_ctx)
-    if ft_zh is None:
-        missing_key_set.add(ft_key)
+    ft_lookup_key = f"{ft_ctx}|{ft_key}" if ft_ctx else ft_key
+    ft_zh, ft_entry, ft_path = src.lookup(ft_key, ft_ctx)
     ft_desc_key = (ft_key if ft_key.endswith(" card")
                    else ft_key + " card")
     fallthrough_entry = {
         "name_en": en_fall,
         "t_key": ft_key,
-        "context_key": ft_ctx,
+        "context": ft_ctx,
+        "context_key": (src.exact_case_key_exists(ft_lookup_key)
+                        if ft_ctx else None),
         "name_zh": ft_zh,
+        "name_display_fallback": ft_zh is None,
+        "exact_case_key": src.exact_case_key_exists(ft_lookup_key),
+        "canonical_collision": (ft_entry is not None
+                                and ft_entry.raw_key != ft_lookup_key),
+        "resolution": ft_path,
         "desc_key": ft_desc_key,
         "desc_en": ft_desc_key.lower() in en_lm,
         "desc_zh": ft_desc_key.lower() in zh_lm,
     }
 
-    missing_t_keys = sorted(missing_key_set)
+    # Production-semantics coverage record (replaces the old exact-case
+    # missing_t_keys list): keys whose production display falls back to
+    # English, and cards whose canonical lookup hit a different physical
+    # key (cross-domain canonical collision).
+    t_unresolved = sorted({
+        (f"{e['context']}|{e['t_key']}" if e["context"] else e["t_key"])
+        for e in inventory if e["name_display_fallback"]
+    } | ({ft_lookup_key} if fallthrough_entry["name_display_fallback"]
+         else set()))
+    canonical_collisions = [e["identity"] for e in inventory
+                            if e["canonical_collision"]]
     # Suspicious translated keys: plain source.txt keys that equal a card
     # EN name but are not referenced as a plain T_ key by any card (e.g. a
     # plain key for a name that is only used via a C_ context). Such keys
     # may belong to another domain (Torment is also a damage type), so
     # this list is reported only, never judged.
+    plain_raw = {e.raw_key for e in src.entries if "|" not in e.raw_key}
     name_en_values = {e["name_en"] for e in inventory} | {en_fall}
     referenced_plain = {e["t_key"] for e in inventory
-                        if e["context_key"] is None}
+                        if e["context"] is None}
     if ft_ctx is None:
         referenced_plain.add(ft_key)
     extra_name_keys = sorted(
-        k for k in plain_t
+        k for k in plain_raw
         if k in name_en_values and k not in referenced_plain)
 
     en_only_desc_keys = sorted(
@@ -778,10 +1298,11 @@ def main() -> int:
             k: hashlib.sha256(blobs[k]).hexdigest() for k in input_blobs
         },
         "enum_members": members,
-        "removed_members": [name for name, flag in enum if flag],
+        "removed_members": removed,
         "deck_tables": {DECK_SHORT[k]: tables[k] for k in KNOWN_DECKS},
         "switch_fallthrough": fallthrough_entry,
-        "missing_t_keys": missing_t_keys,
+        "t_unresolved_keys": t_unresolved,
+        "canonical_collisions": canonical_collisions,
         "extra_name_keys": extra_name_keys,
         "en_only_desc_keys": en_only_desc_keys,
         "zh_only_desc_keys": zh_only_desc_keys,
@@ -806,7 +1327,8 @@ def main() -> int:
           f"card_name={len(loc_labels)}, same case order")
     print("deck tables: " + " ".join(
         f"{DECK_SHORT[k]}={len(tables[k])}" for k in KNOWN_DECKS))
-    print(f"missing T_ keys: {missing_t_keys}")
+    print(f"T_ unresolved (English fallback): {t_unresolved}")
+    print(f"canonical collisions: {canonical_collisions}")
     print(f"extra name keys: {extra_name_keys}")
     print(f"desc keys: EN={len(db_en)} ZH={len(db_zh)} "
           f"(EN-only={en_only_desc_keys}, ZH-only={zh_only_desc_keys})")

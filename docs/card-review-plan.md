@@ -63,7 +63,11 @@
 - 新增 `.claude/scripts/card_inventory.py`（只读、确定性、可重建），解析
   枚举、名称 switch、生命周期、牌组表、T_ 键（含语境键）与中英描述键，
   输出 JSON inventory 与覆盖报告；复刻 R1 `cloud_inventory.py` 的安全基线
-  （baseline blob 绑定 + openat/O_NOFOLLOW/O_EXCL fail-closed 输出）。
+  （baseline blob 绑定 + fail-closed 输出）。解析器为严格语法（任何未消费
+  的非注释 token、未配对预处理帧、重复 case/枚举成员、牌组表引用未知成员
+  均报错退出）；source.txt 采用生产语义 SourceDB 模型（物理键原样保留、
+  规范键小写化、T_/C_ 生产查找，基线时 `T_("Wrath")` 如实报告为命中武器
+  铭印键 `wrath→狂怒` 的 canonical 碰撞）。
 
 ## 顺序
 
@@ -82,5 +86,6 @@
 python3 .claude/scripts/card_inventory.py \
   --baseline-ref 9fb8e5dd22ef6607613d1c4381b7369f93a08a7e \
   --inventory-output /tmp/card-inventory-<新文件名>.json
-  （输出路径必须为全新文件；重复重建请更换文件名或先删除旧文件）
+  （输出路径必须为 /tmp 或 OS 临时根下的单个全新 basename，拒绝嵌套组件、
+   `.`、`..`、已存在目标与符号链接；重复重建请更换文件名或先删除旧文件）
 ```

@@ -14,7 +14,7 @@
   buggy 分支）；哨兵 1（兜底名 `a buggy card` + `a very buggy card`）
 - 描述键：EN 24 = ZH 24，双向差集为空（EN-only 无、ZH-only 无）；Famine/Stairs
   无描述键（EN/ZH 均无），Shaft 描述键存在（dead key）
-- T_ 键缺口：`Wrath`（`T_("Wrath")` 无独立键 → 游戏内卡名显示英文 "Wrath"）
+- T_ 键缺口：`Wrath` 无卡牌专属键；生产 SourceDB 键全小写规范化，`T_("Wrath")` 命中武器铭印键 `wrath→狂怒`（item-name.cc SPARM_RAGE），**基线时卡名实际显示「狂怒」而非英文**（SourceDB 小写规范键空间，非缺失回退）
 
 ## 独立审核进程结论（2026-08-08，translation-reviewer）
 
@@ -49,7 +49,7 @@
 | `card:CARD_SUMMON_WEAPON` | the Dance | 舞蹈 | 名称 keep；描述“飞舞的武器/印记/卡牌力量”与怪物名“舞动武器”、glossary brand→铭印、“卡牌威力”不一致 | **adjust（描述）** |
 | `card:CARD_SUMMON_BEE` | the Swarm | 虫群 | 现行；召唤蜂群（蜜蜂/蜂后/墨利埃） | keep |
 | `card:CARD_WILD_MAGIC` | Wild Magic | 狂野魔法 | 现行；`C_("card name", …)` 语境键存在；效果=狂野魔法作用于敌人并回蓝 | keep |
-| `card:CARD_WRATH` | Wrath | （无） | **T_ 键缺失 → 游戏内显示英文 "Wrath"**；神怒家族一致（god UI Wrath→神怒、Godly wrath is upon you!→神怒降临于你！、本卡描述“神怒”） | **defer implementation（补键：神怒）** |
+| `card:CARD_WRATH` | Wrath | 狂怒（铭印键误用） | **无卡牌专属键**：生产 SourceDB 小写规范键命中武器铭印键 `wrath→狂怒`（卡名误用铭印译文）；神怒家族一致（god UI Wrath→神怒、Godly wrath is upon you!→神怒降临于你！、本卡描述“神怒”） | **defer implementation（语境键补全：神怒）** |
 | `card:CARD_WRAITH` | the Wraith | 幽魂 | 现行；`drain_player` 汲取经验值；描述“衰竭”与汲取族一致 | keep |
 | `card:CARD_SWINE` | the Swine | 猪群 | 名称失实：EN 单数集合名词，效果=使用者变成一头猪（不可取消），且怪物名 hog→猪、holy swine→圣猪 先例 | **adjust（名称）→猪** |
 | `card:CARD_ILLUSION` | the Illusion | 幻象 | 现行；召唤使用者幻象，威力随自身 | keep |
@@ -73,7 +73,7 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 
 | # | 身份 | 文件 | 修改 |
 |---|---|---|---|
-| 1 | CARD_WRATH | `zh/source.txt` + `decks.cc` | 新增语境键 `card name|Wrath` → `神怒`，`decks.cc` 改用 `C_("card name", "Wrath")`（修复英文泄漏；不能用普通键 `Wrath`——与武器铭印键 `wrath` 在 SourceDB 规范键空间碰撞，Issue 66 检测确认） |
+| 1 | CARD_WRATH | `zh/source.txt` + `decks.cc` | 新增语境键 `card name|Wrath` → `神怒`，`decks.cc` 改用 `C_("card name", "Wrath")`（修复卡名误用铭印译文「狂怒」；不能用普通键 `Wrath`——与武器铭印键 `wrath` 在 SourceDB 规范键空间碰撞，Issue 66 检测确认） |
 | 2 | CARD_ORB | `zh/source.txt` | `the Orb` → `法球`（原“天球”） |
 | 3 | CARD_SWINE | `zh/source.txt` | `the Swine` → `猪`（原“猪群”） |
 | 4 | CARD_PAIN | `zh/cards.txt` | “抽出此牌会释放一个有着攻击性的死灵术。” → “抽出此牌会释放一个死灵系攻击法术。” |
@@ -95,7 +95,7 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
 ## 覆盖证明
 
 - 清单枚举（25）与证据卡（25）双向差集为空；每身份恰一张卡、一个终态结论。
-- 描述键 EN/ZH 双向差集为空；T_ 键缺口仅 `Wrath`（已入批次 #1）。
+- 描述键 EN/ZH 双向差集为空；T_ 键缺口仅 `Wrath`（规范键空间被铭印键占用，已入批次 #1 语境键修复）。
 - 消费者核对：`?/C`（排除 removed 21 键）、`_describe_cards`（`card_name_en + " card"`，
   附 `which_decks` 牌组归属）、`card_effect` 逐项行为、`name_to_card`（T_ 与 EN 双匹配，
   ZH 子串匹配兜底）。

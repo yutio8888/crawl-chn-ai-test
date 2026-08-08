@@ -60,6 +60,7 @@
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
 
+#include <cstring>
 #include <fstream>
 #include <iterator>
 #include <stdexcept>
@@ -330,6 +331,34 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         INFO("branch round-trip: " << sn);
         CHECK(branch_by_shortname(sn) == b);
     }
+}
+
+// =============================================================================
+// [zh-help][card-wrath] — R2 blocker R2-CODE-004 regression: the card name
+// context key and the weapon-brand plain key must stay distinct in the
+// SourceDB lowercase-canonical key space.
+//
+// decks.cc card_name() uses C_("card name", "Wrath") for CARD_WRATH and
+// source.txt defines `card name|Wrath` -> 神怒, while the weapon-inscription
+// plain key `wrath` -> 狂怒 (item-name.cc SPARM_RAGE) must remain untouched.
+// Before the fix, card_name() used T_("Wrath") whose canonical lookup key
+// `wrath` collided with the brand key, so the card was displayed as 狂怒.
+// Mutation check (documented in the R2 fix commit): reverting decks.cc to
+// T_("Wrath") makes this test fail (card_name returns 狂怒), proving the
+// context-key resolution is what is under test.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: card Wrath context key vs wrath brand key",
+                 "[zh-help][zh-translation][card-wrath]")
+{
+    REQUIRE(Options.language == lang_t::ZH);
+
+    // C_("card name", "Wrath"): the context key must be in effect.
+    CHECK(strcmp(card_name(CARD_WRATH), "神怒") == 0);
+
+    // The weapon-brand plain key `wrath` is unaffected by the card
+    // context key and still resolves to 狂怒.
+    CHECK(strcmp(T_("wrath"), "狂怒") == 0);
 }
 
 // =============================================================================
