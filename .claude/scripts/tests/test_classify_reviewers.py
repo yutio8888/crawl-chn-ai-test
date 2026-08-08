@@ -80,8 +80,19 @@ class ReviewerRoutingTests(unittest.TestCase):
                 )
 
     def test_root_review_result_ledgers_route_both_reviewers_only(self):
+        expected = {
+            "card-review-results.md",
+            "character-mechanics-review-results.md",
+            "cloud-review-results.md",
+            "god-review-results.md",
+            "item-extended-review-results.md",
+            "monster-review-results.md",
+            "species-background-review-results.md",
+            "spell-name-review-results.md",
+            "world-review-results.md",
+        }
         ledgers = sorted(REPO.glob("docs/*-review-results.md"))
-        self.assertEqual(7, len(ledgers))
+        self.assertEqual(expected, {path.name for path in ledgers})
         for path in ledgers:
             with self.subTest(path=path.name):
                 self.assert_route(
