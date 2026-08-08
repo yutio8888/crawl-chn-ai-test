@@ -1,12 +1,14 @@
 # Issue #40 R1 云雾名称与描述全量校对结果
 
-- 基线：`532d80d193`（`chn-0.34.1-base`）
+- 基线：`eaecb7122c2db8633693e51b692c14425b6b654d`（`pi/r1-clouds` HEAD，合并 `chn-0.34.1-base`）
 - 术语表 SHA-256：`95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`
-- 清单 SHA-256：`3992b67fac930ba3b0be22fee3aa31ab1e6c7a7f0ca3aaf64d41d62049c7fbf8`
+- 清单 SHA-256：`8311ef20031c3a7fd2194d1b47f99dccdd59e45ab098b98899ad1f6c6e0f4c9d`
 - 输入摘要：
   - `cloud-type.h` `05a1d119e698869fa7e40931268a7510d6d30175914da36db31ae21ea624a503`
   - `cloud.cc` `8a78b967800187701f7e898b83f404aae2cd6b5dadbffe72996edea2f20806e6`
-  - `source.txt`、`clouds.txt`、`zh/clouds.txt` 摘要见 inventory JSON
+  - `source.txt` `2f2fc9d90c366ab294bc6e654378ea0bcace0b3c0da649bb9e2ddfbbd1809f5e`
+  - `clouds.txt` `dd9e9b4280cee1006d624fe00c7915793984f0c5899f82671d68d8f122a3d8e0`
+  - `zh/clouds.txt` `87e22ad885482da63d3fffc0bb90e1c0ba541cf8f3072b21755b175393f28edd`
 - 身份总数：44（数据表条目 41；特殊值 3：`CLOUD_RANDOM_SMOKE`、
   `CLOUD_RANDOM`、`CLOUD_DEBUGGING`，无数据条目、不可显示，均 `keep`）
 - 生命周期：现行 39；TAG 34 兼容（removed，无 producer、被 `?/L` 排除）
@@ -26,7 +28,7 @@
   “大大抵消”；calcifying dust“呆任何时长”；spectral mist“聚集→凝聚成形”；
   freezing vapour“冰气云”；seething chaos“翻腾/沸腾”用字。
 - 格式保护检查通过：`%%%%`、`<_smoke_cloud_>`、`#` 注释、DB 键均不变。
-- 重建命令：`python3 .claude/scripts/cloud_inventory.py --inventory-output /tmp/cloud-inventory.json`
+- 重建命令：`python3 .claude/scripts/cloud_inventory.py --baseline-ref eaecb7122c2db8633693e51b692c14425b6b654d --inventory-output /tmp/cloud-inventory.json`
 - 覆盖证明：`?/L` 运行时枚举器（`lookup-help.cc`）与清单枚举一致；中英
   描述键双向差集：EN-only 无、ZH-only `degeneration cloud` 唯一孤儿键；
   T_ 键缺口：`gloom`（兼容条目 terse，不显示）、`?`（哨兵，不显示）。

@@ -2,7 +2,7 @@
 
 ## 冻结边界
 
-- 基线提交：`532d80d193`（`chn-0.34.1-base`）
+- 基线提交：`eaecb7122c2db8633693e51b692c14425b6b654d`（`pi/r1-clouds` HEAD，合并 `chn-0.34.1-base`）
 - 上游总览：Issue #40 R1；无独立子 Issue 编号时以本计划为执行入口。
 - 生产身份源：`crawl-ref/source/cloud-type.h` 的 `cloud_type` 枚举
   （`NUM_CLOUD_TYPES` 之前的全部成员；含 `CLOUD_RANDOM_SMOKE`、
@@ -65,5 +65,6 @@
 
 ```bash
 python3 .claude/scripts/cloud_inventory.py \
+  --baseline-ref eaecb7122c2db8633693e51b692c14425b6b654d \
   --inventory-output /tmp/cloud-inventory.json
 ```

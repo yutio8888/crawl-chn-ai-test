@@ -15,15 +15,21 @@ report proving: every enum member has a name entry, every name has a T_ key
 versa, so language-side orphans are detected), and a producer/consumer map
 derived from code greps.
 
+The payload records a `baseline` commit (the review anchor) so the
+inventory can be reproduced from any checkout: pass `--baseline-ref
+<commit-ish>` to pin it (default: HEAD).
+
 Usage:
-  python3 .claude/scripts/cloud_inventory.py --inventory-output /tmp/cloud-inventory.json
+  python3 .claude/scripts/cloud_inventory.py --baseline-ref <commit> --inventory-output /tmp/cloud-inventory.json
 """
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +38,23 @@ SRC = ROOT / "crawl-ref" / "source"
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def resolve_commit(ref: str) -> str:
+    """Resolve a git commit-ish to its full 40-hex SHA, fail-closed."""
+    r = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{ref}^{{commit}}"],
+        capture_output=True, text=True, cwd=ROOT)
+    oid = r.stdout.strip()
+    if r.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", oid):
+        print(
+            f"error: --baseline-ref {ref!r} does not resolve to a commit "
+            f"in {ROOT}",
+            file=sys.stderr)
+        if r.stderr.strip():
+            print(r.stderr.strip(), file=sys.stderr)
+        raise SystemExit(1)
+    return oid
 
 
 def parse_enum(path: Path) -> list[str]:
@@ -135,10 +158,60 @@ def grep_producers(enum: str) -> list[str]:
     return hits
 
 
+def _allowed_temp_roots() -> list[str]:
+    """Realpath-normalized roots under which output is permitted: the OS
+    temp dir (tempfile.gettempdir()) plus the canonical /tmp, deduplicated
+    (they differ on macOS when TMPDIR is set)."""
+    roots = [os.path.realpath(tempfile.gettempdir())]
+    tmp = os.path.realpath("/tmp")
+    if tmp not in roots:
+        roots.append(tmp)
+    return roots
+
+
+def validate_output_path(raw: str) -> Path:
+    """Fail-closed validation for --inventory-output.
+
+    Only an absolute path that resolves (realpath, following symlinks)
+    inside the OS temp dir (tempfile.gettempdir()) or /tmp is accepted.
+    Relative repository paths and non-temp absolute paths are rejected
+    before any mkdir/write.
+    """
+    p = Path(raw)
+    if not p.is_absolute():
+        print(
+            f"error: --inventory-output must be an absolute path inside "
+            f"{tempfile.gettempdir()!r} or /tmp; got {raw!r} "
+            f"(relative path rejected)",
+            file=sys.stderr)
+        raise SystemExit(1)
+    resolved = os.path.realpath(str(p))
+    for root in _allowed_temp_roots():
+        if resolved == root or resolved.startswith(root + os.sep):
+            return p
+    print(
+        f"error: --inventory-output must be inside the OS temp dir "
+        f"({tempfile.gettempdir()!r}) or /tmp; {raw!r} resolves to "
+        f"{resolved}",
+        file=sys.stderr)
+    raise SystemExit(1)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--inventory-output", default="/tmp/cloud-inventory.json")
+    ap.add_argument(
+        "--inventory-output",
+        default="/tmp/cloud-inventory.json",
+        help="output JSON path; must be an absolute path inside the OS "
+             "temp dir or /tmp; relative and other paths are rejected")
+    ap.add_argument(
+        "--baseline-ref",
+        default="HEAD",
+        help="git commit-ish recorded as the payload 'baseline' (the review "
+             "anchor for reproducible rebuilds); resolved with "
+             "`git rev-parse <ref>` to a full 40-hex SHA, default HEAD")
     args = ap.parse_args()
+    baseline = resolve_commit(args.baseline_ref)
 
     enum_path = SRC / "cloud-type.h"
     data_path = SRC / "cloud.cc"
@@ -201,9 +274,7 @@ def main() -> int:
     missing_names = sorted(k for k in name_keys if k not in t)
 
     payload = {
-        "baseline": subprocess.run(
-            ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
-            cwd=ROOT).stdout.strip(),
+        "baseline": baseline,
         "glossary_sha256": sha256_file(ROOT / "docs" / "glossary.md"),
         "digests": {
             "cloud-type.h": sha256_file(enum_path),
@@ -224,7 +295,7 @@ def main() -> int:
         payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     payload["inventory_sha256"] = digest
 
-    out = Path(args.inventory_output)
+    out = validate_output_path(args.inventory_output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
 
