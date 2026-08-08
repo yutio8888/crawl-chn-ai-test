@@ -24,10 +24,10 @@
 - 双向差集：EN-only 无；**ZH-only `cmd_show_keyboard verbose` 1 键**
   （规范键小写后 = `cmd_show_keyboard verbose`，无对应枚举成员，
   `name_to_command` → CMD_NO_CMD，**孤儿键**）。
-- **键名缺陷**：ZH 侧 `CMD_SHOW_KEYBOARD verbose` 应为
-  `CMD_TOGGLE_KEYBOARD verbose`（EN 键名为 CMD_TOGGLE_KEYBOARD，语义
-  「切换屏幕键盘可见性」）。运行时该描述键缺失 → tiles UI 回退 terse
-  「切换键盘」；孤儿键永不查询。此键同时缺失 `CMD_TOGGLE_KEYBOARD verbose`。
+- **键名缺陷**：ZH 侧 `CMD_SHOW_KEYBOARD verbose`（369-372 行）为孤儿键——
+  应为 `CMD_TOGGLE_KEYBOARD verbose`，但**正确键已存在于 389-392 行**（值
+  「切换屏幕键盘的可见性。」与 EN 对等，运行时正常命中）；孤儿键永不查询
+  （`name_to_command` → CMD_NO_CMD），清理即可。
 - EN 侧 `CMD_EXPLORE_NO_REST` 重复定义（22/26 行，26 行生效）——上游既有，
   两定义语义一致，如实记录不修改。
 - 描述键覆盖：51 命令有 terse 键、44 有 verbose 键；255 枚举成员无描述键
