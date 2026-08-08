@@ -85,6 +85,24 @@ Third round (R2-CODE3-001..003):
     `git replace A B` ref cannot substitute B's blobs for the exact
     baseline A: the payload baseline stays A and A's original blob is
     read.
+
+Fourth round (R2-CODE4-001):
+
+  R2-CODE4-001 (production DescriptionDB parse): parse_db_keys mirrors
+    database.cc `_parse_text_db` with trim_keys=true exactly. Entries
+    begin only after the first `%%%%` separator (a file-header prelude
+    before it never becomes an entry); comment lines (first char '#') are
+    the only skipped lines; blank lines inside a value are preserved;
+    value lines are right-trimmed per C++ rules (" \t\n\r" only, blank
+    lines stay blank); at flush only leading newlines are trimmed, so the
+    loader's trailing-newline artifact and internal blank lines are
+    retained in the reported production DB values; and the canonical key
+    space is the production lowercase (lowercase_string) of the
+    C++-trimmed key line. Positive fixture: a two-paragraph description
+    keeps its internal blank line (with C++ right-trim and flush-time
+    leading-newline trimming locked by exact value equality). Difference
+    fixture: a bare line before the first `%%%%` must not surface as a
+    description key.
 """
 
 import hashlib
@@ -280,6 +298,25 @@ the Shaft card
 the Shaft card 描述。
 %%%%
 """
+
+# R2-CODE4-001 positive fixture: the ZH Velocity card description has a
+# leading blank line after the key (stripped at flush -- only leading
+# newlines), a blank line between two paragraphs (PRESERVED), and trailing
+# spaces/tab on the first paragraph line (right-trimmed per C++ rules,
+# " \t\n\r" only). Production value: "第一段。\n\n第二段。\n" with the
+# loader's trailing-newline artifact retained.
+ZH_CARDS_TXT_PARAGRAPHS = ZH_CARDS_TXT.replace(
+    "%%%%\nVelocity card\n速度卡牌描述。\n%%%%\n",
+    "%%%%\nVelocity card\n\n速度卡牌描述。第一段。  \t\n"
+    "\n速度卡牌描述。第二段。\n%%%%\n")
+
+# R2-CODE4-001 difference fixture: a file-header comment and a bare line
+# before the first `%%%%`. Production `_parse_text_db` keeps in_entry
+# false until the first separator, so the bare line must NEVER become an
+# entry; the old parser (no in_entry gate) made it a description key.
+CARDS_TXT_PRELUDE = ("# 文件头注释\n"
+                     "文件头正文不得成为条目。\n"
+                     + CARDS_TXT)
 
 GLOSSARY = """\
 # Fixture glossary for the card inventory tests.
@@ -897,7 +934,7 @@ class CardInventoryToolTest(unittest.TestCase):
                                for e in payload["inventory"]}
                 velocity = by_identity["card:CARD_VELOCITY"]
                 self.assertTrue(velocity["desc_zh"])
-                self.assertEqual(velocity["desc_zh_value"], "描述覆盖")
+                self.assertEqual(velocity["desc_zh_value"], "描述覆盖\n")
                 recs = [r for r in payload["desc_zh_overrides"]
                         if r["canonical_key"] == "velocity card"]
                 self.assertEqual(len(recs), 1)
@@ -934,7 +971,69 @@ class CardInventoryToolTest(unittest.TestCase):
                 velocity = by_identity["card:CARD_VELOCITY"]
                 self.assertTrue(velocity["desc_zh"])
                 self.assertEqual(velocity["desc_zh_value"],
-                                 "速度卡牌描述。")
+                                 "速度卡牌描述。\n")
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    # -- R2-CODE4-001: production DescriptionDB parse -----------------
+
+    def test_fixture_desc_paragraph_blank_lines_preserved(self):
+        """R2-CODE4-001 positive: parse_db_keys mirrors database.cc
+        `_parse_text_db` (trim_keys=true) exactly. A blank line between
+        two paragraphs of a description is PRESERVED in the reported
+        value; trailing spaces/tab on a value line are right-trimmed per
+        C++ rules (" \t\n\r" only); the leading blank line after the
+        key is stripped at flush (only leading newlines are trimmed); and
+        the loader's trailing-newline artifact is retained -- desc values
+        are the exact production DB values, not display-normalized."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, extra_desc_zh={
+                "cards.txt": ZH_CARDS_TXT_PARAGRAPHS})
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertTrue(velocity["desc_zh"])
+                self.assertEqual(
+                    velocity["desc_zh_value"],
+                    "速度卡牌描述。第一段。\n\n速度卡牌描述。第二段。\n")
+            finally:
+                if out.exists():
+                    out.unlink()
+
+    def test_fixture_desc_prelude_before_first_separator_ignored(self):
+        """R2-CODE4-001 difference fixture: content before the first
+        `%%%%` (a file-header comment and a bare line) must never become
+        an entry. Production `_parse_text_db` keeps in_entry=false until
+        the first separator, so the bare line is skipped entirely; the
+        old parser made it a key that surfaced in the desc-only key
+        lists. The real keys still resolve with production values."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, extra_desc_zh={
+                "cards.txt": CARDS_TXT_PRELUDE})
+            out = fresh_output_path()
+            try:
+                result = run_tool(root, out)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(out.read_text(encoding="utf-8"))
+                self.assertNotIn("文件头正文不得成为条目。",
+                                 payload["en_only_desc_keys"])
+                self.assertNotIn("文件头正文不得成为条目。",
+                                 payload["zh_only_desc_keys"])
+                by_identity = {e["identity"]: e
+                               for e in payload["inventory"]}
+                velocity = by_identity["card:CARD_VELOCITY"]
+                self.assertTrue(velocity["desc_en"])
+                self.assertTrue(velocity["desc_zh"])
+                self.assertEqual(velocity["desc_en_value"],
+                                 "Velocity card description.\n")
             finally:
                 if out.exists():
                     out.unlink()

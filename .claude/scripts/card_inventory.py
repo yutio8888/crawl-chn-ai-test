@@ -38,7 +38,14 @@ Long descriptions are looked up by `<name> card` in
 dat/descript/cards.txt (EN) and dat/descript/zh/cards.txt (ZH); each file
 carries 24 keys (21 current cards, the removed `the Shaft card`, and the
 `a buggy card` / `a very buggy card` sentinels; Famine/Stairs have no
-description key). The TAG-34 card_name_en() switch cannot produce the
+description key). Description files are parsed with the exact
+`_parse_text_db` semantics (trim_keys=true, the description DB path):
+entries begin only after the first `%%%%`, comment lines are the only
+skipped lines, blank lines inside a value are preserved, lines are
+right-trimmed per C++ rules (" \t\n\r" only), at flush only leading
+newlines are trimmed, and the canonical key space is the production
+lowercase (lowercase_string) of the C++-trimmed key line (R2-CODE4-001).
+The TAG-34 card_name_en() switch cannot produce the
 removed members' historical description keys (it returns the shared
 `a buggy card` for them), so for removed members the tool derives the
 base name from the enum identifier (CARD_SHAFT_REMOVED -> Shaft) and
@@ -130,7 +137,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from i18n_shared import (AuditInput, lowercase_string,  # noqa: E402
                          parse_entries_physical, runtime_normalize_value,
-                         trusted_git_environment)
+                         trim_leading_newlines, trim_string,
+                         trim_string_right, trusted_git_environment)
 
 #: deck_archetype table name -> short deck membership value.
 KNOWN_DECKS = ("deck_of_escape", "deck_of_destruction",
@@ -1201,8 +1209,22 @@ class SourceDB:
 
 @dataclass
 class DescEntry:
-    """One TextDB (description) entry: raw physical key, value, the
-    1-indexed key line and the input file it came from."""
+    """One TextDB (description) entry with production parse semantics.
+
+    raw_key: the physical key line after the production key trim
+        (trim_string: " \t\n\r" both ends); NOT lowercased -- the
+        canonical form is lowercase_string(raw_key), exactly the key
+        database.cc `_parse_text_db` stores (trim_string + lowercase).
+    value: the value exactly as database.cc stores it: every value line
+        right-trimmed per C++ rules (trim_string_right, " \t\n\r" only,
+        blank lines stay blank) and appended with '\n', then at flush
+        only leading newlines trimmed (_trim_leading_newlines). Internal
+        blank lines and the loader's trailing-newline artifact are
+        therefore preserved.
+    key_line: 1-indexed line of the physical key line (the first line
+        whose C++-trimmed form is non-empty).
+    source_file: basename of the input file this entry came from.
+    """
     raw_key: str
     value: str
     key_line: int
@@ -1210,40 +1232,78 @@ class DescEntry:
 
 
 def parse_db_keys(text: str, source_file: str) -> list[DescEntry]:
-    """Parse a TextDB file the way _parse_text_db() in database.cc does:
-    `%%%%` block separators (a line whose first four characters are
-    `%%%%`), lines starting with `#` skipped as comments everywhere, key =
-    first remaining line of each block (trimmed; production also
-    lowercases it -- presence and diff comparisons in this tool lowercase
-    both sides), rest = value (each line right-trimmed, joined with \n).
+    """Parse a TextDB file exactly like database.cc `_parse_text_db`
+    (trim_keys=true, the description DB path: `_store_text_db(...,
+    !is_source)` with UTF8FileLineInput).
+
+    The state machine mirrors the C++ line by line:
+      - lines are split on '\n' only (UTF8FileLineInput::get_line reads
+        with fgets and erases one trailing '\n'); a trailing "\r" stays
+        on the line and is removed by the C++-rule trims. The final
+        empty element of a '\n'-terminated file is the phantom empty
+        read LineInput performs before reporting EOF and IS processed
+        (e.g. as one extra blank value line); a file not ending in '\n'
+        has no such element. Python splitlines() is NOT used: it splits
+        on many more separators than production.
+      - comment lines (first char '#') are skipped everywhere, before
+        and after the first separator, and inside values;
+      - '%%%%' block separators (starts-with match) flush the current
+        entry and only then start entry mode;
+      - content before the first '%%%%' (a file header, a prelude, a
+        bare line) NEVER becomes an entry: `in_entry` stays false;
+      - the key is the first line whose C++-trimmed form (trim_string,
+        " \t\n\r" both ends) is non-empty; blank and whitespace-only
+        lines keep the key position open, exactly like the C++
+        key.empty() state;
+      - every other line is a value line: C++ right-trim only
+        (trim_string_right, " \t\n\r"), blank lines stay blank, and
+        each line is appended with '\n';
+      - at flush (next '%%%%' or EOF) only leading newlines are trimmed
+        (trim_leading_newlines, C++ _trim_leading_newlines), so internal
+        blank lines and the loader's trailing-newline artifact are
+        preserved exactly as stored in the DB.
+
+    The canonical key is lowercase_string(raw_key) (production applies
+    lowercase() after the key trim); callers must use that canonical key
+    space, not Python str.lower().
 
     `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree). `source_file` is the
+    baseline Git blob, never from the worktree); `source_file` is the
     input-file basename recorded on every returned entry.
     """
     entries: list[DescEntry] = []
     key: str | None = None
     key_line = 0
     value_lines: list[str] = []
-    for lineno, line in enumerate(text.splitlines(), start=1):
-        if not line or line[0] == '#':
+    in_entry = False
+    for lineno, line in enumerate(text.split("\n"), start=1):
+        if line and line[0] == '#':
             continue
         if line.startswith("%%%%"):
             if key is not None:
                 entries.append(DescEntry(
-                    raw_key=key, value="\n".join(value_lines),
+                    raw_key=key,
+                    value=trim_leading_newlines("".join(
+                        v + "\n" for v in value_lines)),
                     key_line=key_line, source_file=source_file))
             key = None
             value_lines = []
+            in_entry = True
+            continue
+        if not in_entry:
             continue
         if key is None:
-            key = line.strip()
-            key_line = lineno
+            trimmed = trim_string(line)
+            if trimmed:
+                key = trimmed
+                key_line = lineno
         else:
-            value_lines.append(line.rstrip())
+            value_lines.append(trim_string_right(line))
     if key is not None:
         entries.append(DescEntry(
-            raw_key=key, value="\n".join(value_lines),
+            raw_key=key,
+            value=trim_leading_newlines("".join(
+                v + "\n" for v in value_lines)),
             key_line=key_line, source_file=source_file))
     return entries
 
@@ -1255,17 +1315,19 @@ def merge_desc_sequence(
     last-wins semantics (R2-CODE3-001).
 
     `entries` is the concatenation of every file's entries in production
-    load order. Production stores keys lowercased, so the effective key
-    space is lowercase(raw_key); a later definition (within or across
+    load order. Production stores keys lowercased with the C++
+    lowercase_string() rules (database.cc `_parse_text_db` applies
+    lowercase() after the key trim), so the effective key space is
+    lowercase_string(raw_key); a later definition (within or across
     files) overrides an earlier one exactly like dbm_store(DBM_REPLACE).
-    Returns (effective: lowercase key -> winning entry, override facts),
+    Returns (effective: canonical key -> winning entry, override facts),
     where every override fact records the winner and the full superseded
     chain in load order.
     """
     effective: dict[str, DescEntry] = {}
     overrides: list[dict[str, object]] = []
     for entry in entries:
-        canon = entry.raw_key.lower()
+        canon = lowercase_string(entry.raw_key)
         prev = effective.get(canon)
         if prev is not None:
             rec = next((r for r in overrides
@@ -1508,14 +1570,15 @@ def desc_key_for(name: str, name_en: str, tag34: set[str],
     members cannot use the TAG-34 switch value (it is the shared `a buggy
     card`), so their historical key is derived from the enum identifier:
     prefer `the <Base> card` when the EN description database contains it
-    (keys compared lowercased, like the production loader), then
-    `<Base> card`, then the `the <Base> card` form itself (which then
-    simply reports desc_en/desc_zh false).
+    (keys compared via the production canonical key space,
+    lowercase_string, like the production loader), then `<Base> card`,
+    then the `the <Base> card` form itself (which then simply reports
+    desc_en/desc_zh false).
     """
     if name in tag34:
         base = removed_base_name(name)
         for cand in (f"the {base} card", f"{base} card"):
-            if cand.lower() in en_lm:
+            if lowercase_string(cand) in en_lm:
                 return cand
         return f"the {base} card"
     if name_en.endswith(" card"):
@@ -1687,12 +1750,14 @@ def main() -> int:
             "resolution": path,
             "deck_membership": membership[name],
             "desc_key": dk,
-            "desc_en": dk.lower() in en_lm,
-            "desc_zh": dk.lower() in zh_lm,
-            "desc_en_value": (en_effective.get(dk.lower()).value
-                               if dk.lower() in en_effective else None),
-            "desc_zh_value": (zh_effective.get(dk.lower()).value
-                               if dk.lower() in zh_effective else None),
+            "desc_en": lowercase_string(dk) in en_lm,
+            "desc_zh": lowercase_string(dk) in zh_lm,
+            "desc_en_value": (en_effective.get(lowercase_string(dk)).value
+                               if lowercase_string(dk) in en_effective
+                               else None),
+            "desc_zh_value": (zh_effective.get(lowercase_string(dk)).value
+                               if lowercase_string(dk) in zh_effective
+                               else None),
         }
         if lifecycle == "removed":
             entry["removed_base_name"] = removed_base_name(name)
@@ -1716,14 +1781,16 @@ def main() -> int:
                                 and ft_entry.raw_key != ft_lookup_key),
         "resolution": ft_path,
         "desc_key": ft_desc_key,
-        "desc_en": ft_desc_key.lower() in en_lm,
-        "desc_zh": ft_desc_key.lower() in zh_lm,
-        "desc_en_value": (en_effective.get(ft_desc_key.lower()).value
-                           if ft_desc_key.lower() in en_effective
-                           else None),
-        "desc_zh_value": (zh_effective.get(ft_desc_key.lower()).value
-                           if ft_desc_key.lower() in zh_effective
-                           else None),
+        "desc_en": lowercase_string(ft_desc_key) in en_lm,
+        "desc_zh": lowercase_string(ft_desc_key) in zh_lm,
+        "desc_en_value": (en_effective.get(
+            lowercase_string(ft_desc_key)).value
+            if lowercase_string(ft_desc_key) in en_effective
+            else None),
+        "desc_zh_value": (zh_effective.get(
+            lowercase_string(ft_desc_key)).value
+            if lowercase_string(ft_desc_key) in zh_effective
+            else None),
     }
 
     # Production-semantics coverage record (replaces the old exact-case

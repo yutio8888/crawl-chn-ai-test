@@ -1483,6 +1483,19 @@ def trim_string_right(s: str) -> str:
     return s
 
 
+def trim_string(s: str) -> str:
+    """C++ trim_string(): strip leading and trailing space, tab, newline, CR
+    only (stringutil.cc: erase leading run of " \t\n\r", then the trailing
+    run of the same set).
+
+    Mirrors the C++ edge cases exactly: an empty or all-whitespace string
+    becomes empty. The character set is explicit -- NOT str.strip(), which
+    would also remove Unicode whitespace.
+    """
+    s = s.lstrip(" \t\n\r")
+    return trim_string_right(s)
+
+
 def trim_leading_newlines(s: str) -> str:
     """C++ _trim_leading_newlines(): strip leading LF only."""
     return s.lstrip('\n')
