@@ -40,6 +40,22 @@ SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE = SRC / "dat/i18n/zh/source.txt"
 ZH_SOURCE_DIR = ZH_SOURCE.parent
 ISSUE29_REVIEW_BASE = "01dc9911ec9948aff661f6ec0b9b0a798fcf909d"
+QUALITY_M1_RUN_ID = "m1-item-description-v1"
+QUALITY_M1_SEED = "dcss-zh-quality-m0-item-description-v1"
+QUALITY_M1_REVIEW_BASE_ADJUST_COUNT = 6
+QUALITY_M1_ADOPTED_ADJUST_COUNT = 4
+QUALITY_M1_ADOPTED_KEEP_COUNT = 6
+QUALITY_M1_SHARD_SIZE = 4
+QUALITY_M1_OUTPUT_ROOT = ROOT / ".artifacts/i18n/quality"
+QUALITY_M1_FORBIDDEN_EVALUATOR_FIELDS = frozenset({
+    "adopted_chinese",
+    "expected_correction_chinese",
+    "historical_expected_severity",
+    "pre_review_chinese",
+    "revision_kind",
+    "semantic_reason",
+    "terminal_conclusion",
+})
 
 DEVELOPMENT_REPORTS = [
     {
@@ -2243,6 +2259,618 @@ def render_review_results(inventory, rows):
     return "\n".join(lines) + "\n"
 
 
+def quality_m1_canonical_json_bytes(value):
+    return (json.dumps(
+        value,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+    ) + "\n").encode("utf-8")
+
+
+def quality_m1_digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def quality_m1_read_input(path, label):
+    if path.is_symlink() or not path.is_file():
+        raise RuntimeError(f"{label} must be a regular, non-symlink file")
+    data = path.read_bytes()
+    if not data:
+        raise RuntimeError(f"{label} must not be empty")
+    try:
+        data.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as error:
+        raise RuntimeError(f"{label} must be valid UTF-8") from error
+    return data
+
+
+def quality_m1_require_relative_path(value, label):
+    if not isinstance(value, str) or not value:
+        raise RuntimeError(f"{label} must be a non-empty relative path")
+    path = PurePosixPath(value)
+    if (
+        path.is_absolute()
+        or ".." in path.parts
+        or path.as_posix() != value
+    ):
+        raise RuntimeError(f"{label} is not a canonical relative path")
+
+
+def quality_m1_population(inventory):
+    required = {
+        "baseline", "candidate_head", "category_counts",
+        "glossary_sha256", "inventory_sha256", "review_input",
+        "review_violations", "rows", "schema",
+    }
+    missing = sorted(required - set(inventory))
+    if missing:
+        raise RuntimeError(
+            f"quality M1 inventory is missing fields: {missing}"
+        )
+    violations = inventory["review_violations"]
+    if not isinstance(violations, dict) or any(violations.values()):
+        raise RuntimeError(
+            "quality M1 requires an exact, violation-free review artifact"
+        )
+    review_input = inventory["review_input"]
+    if not isinstance(review_input, dict):
+        raise RuntimeError("quality M1 review input metadata is invalid")
+    review_input_sha = review_input.get("input_sha256")
+    if not re.fullmatch(r"[0-9a-f]{64}", str(review_input_sha)):
+        raise RuntimeError("quality M1 review input digest is invalid")
+    rows = sorted(
+        (
+            row for row in inventory["rows"]
+            if row.get("metadata", {}).get("category")
+            == "item-description"
+        ),
+        key=lambda row: row["identity"],
+    )
+    expected_count = inventory["category_counts"].get("item-description")
+    if expected_count != len(rows):
+        raise RuntimeError(
+            "quality M1 item-description population count mismatch"
+        )
+    identities = [row["identity"] for row in rows]
+    if len(identities) != len(set(identities)):
+        raise RuntimeError(
+            "quality M1 item-description identities are not unique"
+        )
+    for row in rows:
+        if set(row) != REQUIRED_CARD_FIELDS:
+            missing_fields = sorted(REQUIRED_CARD_FIELDS - set(row))
+            unknown_fields = sorted(set(row) - REQUIRED_CARD_FIELDS)
+            raise RuntimeError(
+                f"quality M1 evidence-card fields differ for "
+                f"{row.get('identity')!r}: missing={missing_fields}, "
+                f"unknown={unknown_fields}"
+            )
+        key = row["metadata"].get("description_key")
+        if row["identity"] != f"item-description:{key}":
+            raise RuntimeError(
+                f"quality M1 description identity mismatch: "
+                f"{row['identity']}"
+            )
+        if row["lifecycle"] != "current":
+            raise RuntimeError(
+                f"quality M1 unsupported lifecycle: {row['identity']}"
+            )
+        if row["adopted_english"] != row["english_source"]:
+            raise RuntimeError(
+                f"quality M1 English revision drift: {row['identity']}"
+            )
+        if row["current_chinese"] != row["adopted_chinese"]:
+            raise RuntimeError(
+                f"quality M1 adopted/current drift: {row['identity']}"
+            )
+        conclusion = row["terminal_conclusion"]
+        changed = row["pre_review_chinese"] != row["adopted_chinese"]
+        if conclusion not in {"adjust", "keep"}:
+            raise RuntimeError(
+                f"quality M1 unsupported terminal conclusion: "
+                f"{row['identity']}={conclusion}"
+            )
+        if changed != (conclusion == "adjust"):
+            raise RuntimeError(
+                f"quality M1 conclusion/revision mismatch: "
+                f"{row['identity']}"
+            )
+        for index, source in enumerate(row["source_files"]):
+            quality_m1_require_relative_path(
+                source.get("path"),
+                f"{row['identity']} source_files[{index}].path",
+            )
+    identity_bytes = ("\n".join(identities) + "\n").encode("utf-8")
+    return {
+        "category": "item-description",
+        "contract": "dcss-zh-quality-m1-population-v1",
+        "identity_sha256": quality_m1_digest(identity_bytes),
+        "inventory_schema": inventory["schema"],
+        "inventory_sha256": inventory["inventory_sha256"],
+        "item_count": len(rows),
+        "items": rows,
+        "review_base": inventory["baseline"],
+        "review_input_sha256": review_input_sha,
+    }
+
+
+def quality_m1_rank(seed, pool, identity):
+    return quality_m1_digest(
+        f"{seed}|{pool}|{identity}".encode("utf-8")
+    )
+
+
+def quality_m1_selection(rows, seed=QUALITY_M1_SEED):
+    adjust = sorted(
+        (row for row in rows if row["terminal_conclusion"] == "adjust"),
+        key=lambda row: (
+            quality_m1_rank(seed, "adjust", row["identity"]),
+            row["identity"],
+        ),
+    )
+    keep = sorted(
+        (row for row in rows if row["terminal_conclusion"] == "keep"),
+        key=lambda row: (
+            quality_m1_rank(seed, "keep", row["identity"]),
+            row["identity"],
+        ),
+    )
+    adjust_required = (
+        QUALITY_M1_REVIEW_BASE_ADJUST_COUNT
+        + QUALITY_M1_ADOPTED_ADJUST_COUNT
+    )
+    if len(adjust) < adjust_required:
+        raise RuntimeError(
+            "quality M1 has too few changed adjust revisions"
+        )
+    if len(keep) < QUALITY_M1_ADOPTED_KEEP_COUNT:
+        raise RuntimeError("quality M1 has too few adopted keep revisions")
+    selected = [
+        (row, "review-base")
+        for row in adjust[:QUALITY_M1_REVIEW_BASE_ADJUST_COUNT]
+    ]
+    selected.extend(
+        (row, "adopted")
+        for row in adjust[
+            QUALITY_M1_REVIEW_BASE_ADJUST_COUNT:adjust_required
+        ]
+    )
+    selected.extend(
+        (row, "adopted")
+        for row in keep[:QUALITY_M1_ADOPTED_KEEP_COUNT]
+    )
+    selected.sort(key=lambda item: (
+        quality_m1_rank(
+            seed,
+            "order",
+            f"{item[0]['identity']}|{item[1]}",
+        ),
+        item[0]["identity"],
+    ))
+    identities = [row["identity"] for row, _revision in selected]
+    if len(identities) != len(set(identities)):
+        raise RuntimeError(
+            "quality M1 selected the same identity more than once"
+        )
+    return selected
+
+
+def quality_m1_forbidden_fields(value, location="$identity"):
+    found = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_location = f"{location}.{key}"
+            if key in QUALITY_M1_FORBIDDEN_EVALUATOR_FIELDS:
+                found.append(child_location)
+            found.extend(quality_m1_forbidden_fields(
+                child, child_location
+            ))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found.extend(quality_m1_forbidden_fields(
+                child, f"{location}[{index}]"
+            ))
+    return found
+
+
+def quality_m1_evaluator_bundle_digest(files, evaluator_files):
+    payload = bytearray(b"dcss-zh-quality-m1-evaluator-bundle-v1\0")
+    for name in evaluator_files:
+        payload.extend(name.encode("utf-8"))
+        payload.extend(b"\0")
+        payload.extend(files[name])
+        payload.extend(b"\0")
+    return quality_m1_digest(bytes(payload))
+
+
+def build_quality_m1_files(
+    inventory,
+    prompt_bytes,
+    context_bytes,
+    decisions_sha256,
+    seed=QUALITY_M1_SEED,
+):
+    for data, label in (
+        (prompt_bytes, "quality M1 prompt"),
+        (context_bytes, "quality M1 context"),
+    ):
+        if not data:
+            raise RuntimeError(f"{label} must not be empty")
+        try:
+            data.decode("utf-8", errors="strict")
+        except UnicodeDecodeError as error:
+            raise RuntimeError(f"{label} must be valid UTF-8") from error
+    if not re.fullmatch(r"[0-9a-f]{64}", str(decisions_sha256)):
+        raise RuntimeError("quality M1 decisions digest is invalid")
+    population = quality_m1_population(inventory)
+    population_bytes = quality_m1_canonical_json_bytes(population)
+    population_sha256 = quality_m1_digest(population_bytes)
+    selected = quality_m1_selection(population["items"], seed)
+    blind_items = []
+    truth_items = []
+    for ordinal, (row, revision_kind) in enumerate(selected, start=1):
+        case_id = f"M0-{ordinal:03d}"
+        chinese = (
+            row["pre_review_chinese"]
+            if revision_kind == "review-base"
+            else row["adopted_chinese"]
+        )
+        blind_item = {
+            "case_id": case_id,
+            "chinese": chinese,
+            "consumer": row["consumer"],
+            "english": row["adopted_english"],
+            "identity": row["identity"],
+            "lifecycle": row["lifecycle"],
+            "metadata": row["metadata"],
+            "producer": row["producer"],
+            "source_files": row["source_files"],
+        }
+        blind_items.append(blind_item)
+        truth_item = {
+            "case_id": case_id,
+            "evaluated_chinese_sha256": quality_m1_digest(
+                chinese.encode("utf-8")
+            ),
+            "historical_expected_severity": (
+                "needs_fix"
+                if revision_kind == "review-base"
+                else "unadjudicated"
+            ),
+            "identity": row["identity"],
+            "packet_item_sha256": quality_m1_digest(
+                quality_m1_canonical_json_bytes(blind_item)
+            ),
+            "revision_kind": revision_kind,
+            "semantic_reason": row["semantic_reason"],
+            "terminal_conclusion": row["terminal_conclusion"],
+        }
+        if revision_kind == "review-base":
+            truth_item["expected_correction_chinese"] = (
+                row["adopted_chinese"]
+            )
+        truth_items.append(truth_item)
+    prompt_sha256 = quality_m1_digest(prompt_bytes)
+    context_sha256 = quality_m1_digest(context_bytes)
+    blind_packet = {
+        "baseline_head": inventory["candidate_head"],
+        "context_sha256": context_sha256,
+        "decisions_sha256": decisions_sha256,
+        "glossary_sha256": inventory["glossary_sha256"],
+        "inventory_sha256": inventory["inventory_sha256"],
+        "items": blind_items,
+        "packet_contract": "dcss-zh-quality-m1-blind-packet-v1",
+        "population_identity_sha256": population["identity_sha256"],
+        "population_sha256": population_sha256,
+        "prompt_sha256": prompt_sha256,
+        "review_base": inventory["baseline"],
+        "run_id": QUALITY_M1_RUN_ID,
+        "scope": {
+            "case_count": len(blind_items),
+            "category": "item-description",
+        },
+    }
+    blind_bytes = quality_m1_canonical_json_bytes(blind_packet)
+    blind_sha256 = quality_m1_digest(blind_bytes)
+    truth = {
+        "blind_packet_sha256": blind_sha256,
+        "contract": "dcss-zh-quality-m1-truth-v1",
+        "items": truth_items,
+        "population_sha256": population_sha256,
+        "run_id": QUALITY_M1_RUN_ID,
+    }
+    truth_bytes = quality_m1_canonical_json_bytes(truth)
+    truth_sha256 = quality_m1_digest(truth_bytes)
+    files = {
+        "blind-packet.json": blind_bytes,
+        "context.txt": context_bytes,
+        "population.json": population_bytes,
+        "prompt.md": prompt_bytes,
+        "truth.json": truth_bytes,
+    }
+    shard_names = []
+    shard_count = (
+        len(blind_items) + QUALITY_M1_SHARD_SIZE - 1
+    ) // QUALITY_M1_SHARD_SIZE
+    for shard_offset in range(0, len(blind_items), QUALITY_M1_SHARD_SIZE):
+        shard_index = shard_offset // QUALITY_M1_SHARD_SIZE + 1
+        shard_items = blind_items[
+            shard_offset:shard_offset + QUALITY_M1_SHARD_SIZE
+        ]
+        name = f"blind-shard-{shard_index:02d}.json"
+        shard_names.append(name)
+        files[name] = quality_m1_canonical_json_bytes({
+            "item_count": len(shard_items),
+            "items": shard_items,
+            "packet_contract": "dcss-zh-quality-m1-blind-shard-v1",
+            "parent_packet_contract": blind_packet["packet_contract"],
+            "parent_packet_sha256": blind_sha256,
+            "shard_count": shard_count,
+            "shard_index": shard_index,
+        })
+    evaluator_files = ["prompt.md", "context.txt", *shard_names]
+    commitment = {
+        "blind_packet_sha256": blind_sha256,
+        "commitment_contract": "dcss-zh-quality-m1-commitment-v1",
+        "context_sha256": context_sha256,
+        "decisions_sha256": decisions_sha256,
+        "evaluator_bundle_sha256": quality_m1_evaluator_bundle_digest(
+            files, evaluator_files
+        ),
+        "glossary_sha256": inventory["glossary_sha256"],
+        "inventory_sha256": inventory["inventory_sha256"],
+        "population_identity_sha256": population["identity_sha256"],
+        "population_sha256": population_sha256,
+        "prompt_sha256": prompt_sha256,
+        "review_base": inventory["baseline"],
+        "run_id": QUALITY_M1_RUN_ID,
+        "selection": {
+            "adopted_adjust_count": QUALITY_M1_ADOPTED_ADJUST_COUNT,
+            "adopted_keep_count": QUALITY_M1_ADOPTED_KEEP_COUNT,
+            "algorithm": (
+                "sha256(seed|pool|identity), then "
+                "sha256(seed|order|identity|revision-kind)"
+            ),
+            "before_after_pair_in_same_run": False,
+            "case_count": len(blind_items),
+            "identity_unique": True,
+            "review_base_adjust_count": (
+                QUALITY_M1_REVIEW_BASE_ADJUST_COUNT
+            ),
+            "seed": seed,
+            "shard_size": QUALITY_M1_SHARD_SIZE,
+        },
+        "truth_bytes": len(truth_bytes),
+        "truth_sha256": truth_sha256,
+    }
+    files["commitment.json"] = quality_m1_canonical_json_bytes(commitment)
+    roles = {
+        "blind-packet.json": "audit",
+        "commitment.json": "audit",
+        "context.txt": "evaluator",
+        "population.json": "sealed",
+        "prompt.md": "evaluator",
+        "truth.json": "sealed",
+        **{name: "evaluator" for name in shard_names},
+    }
+    artifacts = []
+    for name in sorted(files):
+        artifacts.append({
+            "bytes": len(files[name]),
+            "path": name,
+            "role": roles[name],
+            "sha256": quality_m1_digest(files[name]),
+        })
+    manifest = {
+        "artifacts": artifacts,
+        "audit_files": ["blind-packet.json", "commitment.json"],
+        "contract": "dcss-zh-quality-m1-manifest-v1",
+        "evaluator_files": evaluator_files,
+        "run_id": QUALITY_M1_RUN_ID,
+        "sealed_files": ["population.json", "truth.json"],
+    }
+    files["manifest.json"] = quality_m1_canonical_json_bytes(manifest)
+    validate_quality_m1_files(files)
+    return files
+
+
+def quality_m1_load_canonical(files, name):
+    try:
+        value = json.loads(files[name].decode("utf-8", errors="strict"))
+    except (KeyError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"quality M1 {name} is not valid JSON") from error
+    if quality_m1_canonical_json_bytes(value) != files[name]:
+        raise RuntimeError(f"quality M1 {name} is not canonical JSON")
+    return value
+
+
+def validate_quality_m1_files(files):
+    manifest = quality_m1_load_canonical(files, "manifest.json")
+    artifact_names = {item["path"] for item in manifest["artifacts"]}
+    if artifact_names != set(files) - {"manifest.json"}:
+        raise RuntimeError("quality M1 manifest artifact membership mismatch")
+    for artifact in manifest["artifacts"]:
+        quality_m1_require_relative_path(
+            artifact["path"], "quality M1 artifact path"
+        )
+        data = files[artifact["path"]]
+        if artifact["bytes"] != len(data):
+            raise RuntimeError(
+                f"quality M1 artifact size mismatch: {artifact['path']}"
+            )
+        if artifact["sha256"] != quality_m1_digest(data):
+            raise RuntimeError(
+                f"quality M1 artifact digest mismatch: {artifact['path']}"
+            )
+    parent = quality_m1_load_canonical(files, "blind-packet.json")
+    population = quality_m1_load_canonical(files, "population.json")
+    truth = quality_m1_load_canonical(files, "truth.json")
+    commitment = quality_m1_load_canonical(files, "commitment.json")
+    shard_names = [
+        name for name in manifest["evaluator_files"]
+        if name.startswith("blind-shard-")
+    ]
+    if manifest["evaluator_files"] != [
+        "prompt.md", "context.txt", *shard_names
+    ]:
+        raise RuntimeError("quality M1 evaluator file order mismatch")
+    if set(manifest["sealed_files"]) != {"population.json", "truth.json"}:
+        raise RuntimeError("quality M1 sealed file classification mismatch")
+    evaluator_json = [parent]
+    merged_items = []
+    for expected_index, name in enumerate(shard_names, start=1):
+        shard = quality_m1_load_canonical(files, name)
+        evaluator_json.append(shard)
+        if shard["shard_index"] != expected_index:
+            raise RuntimeError("quality M1 shard index mismatch")
+        if shard["shard_count"] != len(shard_names):
+            raise RuntimeError("quality M1 shard count mismatch")
+        if shard["parent_packet_sha256"] != quality_m1_digest(
+            files["blind-packet.json"]
+        ):
+            raise RuntimeError("quality M1 shard parent digest mismatch")
+        if shard["item_count"] != len(shard["items"]):
+            raise RuntimeError("quality M1 shard item count mismatch")
+        if len(shard["items"]) > QUALITY_M1_SHARD_SIZE:
+            raise RuntimeError("quality M1 shard exceeds bounded size")
+        merged_items.extend(shard["items"])
+    if merged_items != parent["items"]:
+        raise RuntimeError("quality M1 shards do not reconstruct parent")
+    leaked = []
+    for index, value in enumerate(evaluator_json):
+        leaked.extend(quality_m1_forbidden_fields(
+            value, f"$evaluator[{index}]"
+        ))
+    if leaked:
+        raise RuntimeError(
+            f"quality M1 evaluator label leak: {sorted(leaked)}"
+        )
+    identities = [item["identity"] for item in parent["items"]]
+    if len(identities) != len(set(identities)):
+        raise RuntimeError("quality M1 parent identities are not unique")
+    expected_case_ids = [
+        f"M0-{index:03d}" for index in range(1, len(identities) + 1)
+    ]
+    if [item["case_id"] for item in parent["items"]] != expected_case_ids:
+        raise RuntimeError("quality M1 parent case order is invalid")
+    if parent["population_sha256"] != quality_m1_digest(
+        files["population.json"]
+    ):
+        raise RuntimeError("quality M1 population digest mismatch")
+    if parent["population_identity_sha256"] != population[
+        "identity_sha256"
+    ]:
+        raise RuntimeError("quality M1 population identity digest mismatch")
+    if parent["prompt_sha256"] != quality_m1_digest(files["prompt.md"]):
+        raise RuntimeError("quality M1 prompt digest mismatch")
+    if parent["context_sha256"] != quality_m1_digest(
+        files["context.txt"]
+    ):
+        raise RuntimeError("quality M1 context digest mismatch")
+    blind_sha256 = quality_m1_digest(files["blind-packet.json"])
+    truth_sha256 = quality_m1_digest(files["truth.json"])
+    if truth["blind_packet_sha256"] != blind_sha256:
+        raise RuntimeError("quality M1 truth/packet binding mismatch")
+    if commitment["blind_packet_sha256"] != blind_sha256:
+        raise RuntimeError("quality M1 commitment/packet binding mismatch")
+    if commitment["truth_sha256"] != truth_sha256:
+        raise RuntimeError("quality M1 truth commitment mismatch")
+    if commitment["truth_bytes"] != len(files["truth.json"]):
+        raise RuntimeError("quality M1 truth byte count mismatch")
+    if commitment["evaluator_bundle_sha256"] != (
+        quality_m1_evaluator_bundle_digest(
+            files, manifest["evaluator_files"]
+        )
+    ):
+        raise RuntimeError("quality M1 evaluator bundle digest mismatch")
+    if len(truth["items"]) != len(parent["items"]):
+        raise RuntimeError("quality M1 truth coverage mismatch")
+    for packet_item, truth_item in zip(parent["items"], truth["items"]):
+        if (
+            truth_item["case_id"] != packet_item["case_id"]
+            or truth_item["identity"] != packet_item["identity"]
+            or truth_item["packet_item_sha256"] != quality_m1_digest(
+                quality_m1_canonical_json_bytes(packet_item)
+            )
+        ):
+            raise RuntimeError("quality M1 truth item binding mismatch")
+        revision = truth_item["revision_kind"]
+        expected = truth_item["historical_expected_severity"]
+        if revision == "review-base":
+            if (
+                expected != "needs_fix"
+                or "expected_correction_chinese" not in truth_item
+            ):
+                raise RuntimeError(
+                    "quality M1 review-base truth is incomplete"
+                )
+        elif revision == "adopted":
+            if (
+                expected != "unadjudicated"
+                or "expected_correction_chinese" in truth_item
+            ):
+                raise RuntimeError(
+                    "quality M1 adopted candidate was mislabeled clean"
+                )
+        else:
+            raise RuntimeError("quality M1 truth revision kind is invalid")
+
+
+def quality_m1_output_directory(path):
+    candidate = path if path.is_absolute() else ROOT / path
+    candidate = candidate.resolve()
+    allowed = QUALITY_M1_OUTPUT_ROOT.resolve()
+    try:
+        relative = candidate.relative_to(allowed)
+    except ValueError as error:
+        raise RuntimeError(
+            "quality M1 output must be under .artifacts/i18n/quality"
+        ) from error
+    if not relative.parts:
+        raise RuntimeError("quality M1 output must name a run directory")
+    return candidate
+
+
+def write_quality_m1_bundle(path, files):
+    output = quality_m1_output_directory(path)
+    if output.exists() or output.is_symlink():
+        raise RuntimeError("quality M1 output directory already exists")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.mkdir()
+    for name in sorted(files):
+        quality_m1_require_relative_path(name, "quality M1 output filename")
+        (output / name).write_bytes(files[name])
+    return output
+
+
+def verify_quality_m1_bundle(path, expected_files):
+    output = quality_m1_output_directory(path)
+    if output.is_symlink() or not output.is_dir():
+        raise RuntimeError(
+            "quality M1 verification target must be a regular directory"
+        )
+    actual_files = {}
+    for child in output.iterdir():
+        if child.is_symlink() or not child.is_file():
+            raise RuntimeError(
+                f"quality M1 bundle contains a non-regular entry: "
+                f"{child.name}"
+            )
+        actual_files[child.name] = child.read_bytes()
+    if set(actual_files) != set(expected_files):
+        raise RuntimeError(
+            "quality M1 bundle file membership differs from expected"
+        )
+    for name in sorted(expected_files):
+        if actual_files[name] != expected_files[name]:
+            raise RuntimeError(
+                f"quality M1 bundle byte mismatch: {name}"
+            )
+    validate_quality_m1_files(actual_files)
+    return output
+
+
 def write_review_results(path, inventory, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -2282,7 +2910,61 @@ def main(argv=None):
         type=Path,
         help="mechanically write Issue 29 evidence cards",
     )
+    quality_action = parser.add_mutually_exclusive_group()
+    quality_action.add_argument(
+        "--quality-m1-output-dir",
+        type=Path,
+        help=(
+            "materialize the deterministic item-description M1 bundle "
+            "under .artifacts/i18n/quality"
+        ),
+    )
+    quality_action.add_argument(
+        "--verify-quality-m1",
+        type=Path,
+        help=(
+            "rebuild and byte-verify an existing deterministic M1 bundle "
+            "under .artifacts/i18n/quality"
+        ),
+    )
+    parser.add_argument(
+        "--quality-prompt",
+        type=Path,
+        help="exact UTF-8 evaluator prompt for a quality M1 bundle",
+    )
+    parser.add_argument(
+        "--quality-context",
+        type=Path,
+        help="exact UTF-8 terminology context for a quality M1 bundle",
+    )
+    parser.add_argument(
+        "--quality-seed",
+        default=QUALITY_M1_SEED,
+        help=(
+            "deterministic M1 selection seed "
+            f"(default: {QUALITY_M1_SEED})"
+        ),
+    )
     args = parser.parse_args(argv)
+    quality_requested = bool(
+        args.quality_m1_output_dir or args.verify_quality_m1
+    )
+    if quality_requested and (
+        args.scope != "issue29-v2"
+        or not args.review_results
+        or not args.quality_prompt
+        or not args.quality_context
+    ):
+        parser.error(
+            "quality M1 requires --scope issue29-v2, --review-results, "
+            "--quality-prompt, and --quality-context"
+        )
+    if not quality_requested and (
+        args.quality_prompt or args.quality_context
+    ):
+        parser.error(
+            "--quality-prompt/--quality-context require a quality M1 action"
+        )
 
     try:
         if args.scope == "issue29-v2":
@@ -2331,11 +3013,79 @@ def main(argv=None):
         return 2
 
     payload["audit_snapshot"] = audit_snapshot().metadata()
+    quality_summary = None
+    if quality_requested:
+        try:
+            prompt_bytes = quality_m1_read_input(
+                args.quality_prompt, "quality M1 prompt"
+            )
+            context_bytes = quality_m1_read_input(
+                args.quality_context, "quality M1 context"
+            )
+            files = build_quality_m1_files(
+                payload,
+                prompt_bytes,
+                context_bytes,
+                sha(ROOT / "docs/decisions.md"),
+                seed=args.quality_seed,
+            )
+            requested_dir = (
+                args.quality_m1_output_dir or args.verify_quality_m1
+            )
+            bundle_dir = quality_m1_output_directory(requested_dir)
+            if args.output:
+                inventory_output = (
+                    args.output
+                    if args.output.is_absolute()
+                    else ROOT / args.output
+                ).resolve()
+                if (
+                    inventory_output == bundle_dir
+                    or bundle_dir in inventory_output.parents
+                ):
+                    raise RuntimeError(
+                        "inventory --output must be outside the quality "
+                        "M1 bundle directory"
+                    )
+            if args.quality_m1_output_dir:
+                output_dir = write_quality_m1_bundle(
+                    args.quality_m1_output_dir, files
+                )
+                operation = "materialize"
+            else:
+                output_dir = verify_quality_m1_bundle(
+                    args.verify_quality_m1, files
+                )
+                operation = "verify"
+            commitment = json.loads(
+                files["commitment.json"].decode("utf-8")
+            )
+            quality_summary = {
+                "directory": output_dir.relative_to(ROOT).as_posix(),
+                "manifest_sha256": quality_m1_digest(
+                    files["manifest.json"]
+                ),
+                "operation": operation,
+                "truth_sha256": commitment["truth_sha256"],
+            }
+        except (
+            AttributeError,
+            OSError,
+            KeyError,
+            RuntimeError,
+            ValueError,
+        ) as error:
+            print(
+                f"ERROR: quality M1 bundle could not be built or verified: "
+                f"{error}",
+                file=sys.stderr,
+            )
+            return 2
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(encoded, encoding="utf-8")
-    else:
+    elif not quality_requested:
         sys.stdout.write(encoded)
 
     summary = {key: payload[key] for key in [
@@ -2346,6 +3096,8 @@ def main(argv=None):
     ] if key in payload}
     if "review_violations" in payload:
         summary["review_violations"] = payload["review_violations"]
+    if quality_summary:
+        summary["quality_m1"] = quality_summary
     print(json.dumps(summary, ensure_ascii=False, indent=2), file=sys.stderr)
     blocking_keys = (
         "duplicates", "missing_identities", "unexpected_identities",

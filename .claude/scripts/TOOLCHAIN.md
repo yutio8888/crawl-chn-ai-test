@@ -92,6 +92,33 @@ python3 .claude/scripts/audit_item_name_inventory.py \
     --output /tmp/item-name-inventory.json
 ```
 
+同一入口也负责 `item-description:*` 翻译质量 M1 实验的确定性 bundle。生成模式要求
+已经通过双向覆盖检查的 Issue 29 review artifact，以及冻结的 evaluator prompt 和术语
+context；输出只能位于 `.artifacts/i18n/quality/`。bundle 保留 canonical truth bytes，
+把 truth/population 标为 sealed，并将四个有界 blind shard 与 prompt/context 单独列为
+evaluator 文件。adopted revision 只标为 `unadjudicated`，不能从历史 `keep/adjust`
+自动推导为 clean。
+
+```bash
+python3 .claude/scripts/audit_item_name_inventory.py \
+    --scope issue29-v2 \
+    --review-results docs/item-extended-review-results.md \
+    --quality-m1-output-dir .artifacts/i18n/quality/m1-item-description-v1 \
+    --quality-prompt /tmp/quality-prompt.md \
+    --quality-context /tmp/quality-context.txt
+
+python3 .claude/scripts/audit_item_name_inventory.py \
+    --scope issue29-v2 \
+    --review-results docs/item-extended-review-results.md \
+    --verify-quality-m1 .artifacts/i18n/quality/m1-item-description-v1 \
+    --quality-prompt .artifacts/i18n/quality/m1-item-description-v1/prompt.md \
+    --quality-context .artifacts/i18n/quality/m1-item-description-v1/context.txt
+```
+
+验证模式从当前 inventory 和 bundle 内冻结的 prompt/context 重建全部文件，要求文件
+集合、每个字节、truth commitment、分片重组、identity 守恒和 evaluator 标签隔离全部
+一致；缺失、额外、非 canonical、符号链接或摘要漂移均失败关闭。
+
 ### glossary_query.py — 当前术语表上下文
 
 `docs/glossary.md` 是唯一术语数据源。Agent、Skill 和编排器在翻译、i18n

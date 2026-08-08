@@ -2,6 +2,7 @@
 
 import contextlib
 import copy
+from collections import Counter
 import hashlib
 import importlib.util
 import io
@@ -37,6 +38,26 @@ def review_input(path):
         text=data.decode("utf-8", errors="strict"),
         sha256=hashlib.sha256(data).hexdigest(),
     )
+
+
+_QUALITY_M1_FIXTURE = None
+
+
+def quality_m1_fixture():
+    global _QUALITY_M1_FIXTURE
+    if _QUALITY_M1_FIXTURE is None:
+        payload, _internal_rows = MODULE.build_extended_inventory()
+        payload["review_input"] = {"input_sha256": "a" * 64}
+        payload["review_violations"] = {}
+        files = MODULE.build_quality_m1_files(
+            payload,
+            b"fixture prompt\n",
+            b"fixture context\n",
+            "b" * 64,
+        )
+        _QUALITY_M1_FIXTURE = (payload, files)
+    payload, files = _QUALITY_M1_FIXTURE
+    return copy.deepcopy(payload), dict(files)
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
@@ -840,6 +861,202 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     RuntimeError, "four-report history"
                 ):
                     MODULE.render_review_results(changed, [])
+
+    def test_quality_m1_reproduces_m0_selection_and_is_byte_deterministic(self):
+        payload, files = quality_m1_fixture()
+        repeated = MODULE.build_quality_m1_files(
+            payload,
+            b"fixture prompt\n",
+            b"fixture context\n",
+            "b" * 64,
+        )
+        self.assertEqual(files, repeated)
+        packet = json.loads(files["blind-packet.json"])
+        self.assertEqual(
+            [
+                "item-description:staff of necromancy",
+                "item-description:sack of spiders",
+                "item-description:condenser vane",
+                "item-description:staff of air",
+                "item-description:whip",
+                "item-description:staff of alchemy",
+                "item-description:wand of mindburst",
+                "item-description:horn of geryon",
+                "item-description:gell's gravitambourine",
+                "item-description:book of winter",
+                "item-description:potion of haste",
+                "item-description:granite talisman",
+                "item-description:book of scorching",
+                "item-description:staff of fire",
+                "item-description:phantom mirror",
+                "item-description:book of unlife",
+            ],
+            [item["identity"] for item in packet["items"]],
+        )
+        self.assertEqual(
+            [f"M0-{index:03d}" for index in range(1, 17)],
+            [item["case_id"] for item in packet["items"]],
+        )
+        self.assertEqual(
+            16,
+            len({item["identity"] for item in packet["items"]}),
+        )
+        truth = json.loads(files["truth.json"])
+        counts = Counter(
+            item["historical_expected_severity"]
+            for item in truth["items"]
+        )
+        self.assertEqual(
+            {"needs_fix": 6, "unadjudicated": 10}, dict(counts)
+        )
+        self.assertEqual(
+            6,
+            sum(
+                "expected_correction_chinese" in item
+                for item in truth["items"]
+            ),
+        )
+        commitment = json.loads(files["commitment.json"])
+        self.assertEqual(
+            MODULE.quality_m1_digest(files["truth.json"]),
+            commitment["truth_sha256"],
+        )
+        manifest = json.loads(files["manifest.json"])
+        self.assertNotIn("truth.json", manifest["evaluator_files"])
+        self.assertNotIn("population.json", manifest["evaluator_files"])
+        self.assertFalse(MODULE.quality_m1_forbidden_fields(packet))
+        MODULE.validate_quality_m1_files(files)
+
+    def test_quality_m1_population_rejects_minimal_boundary_mutations(self):
+        payload, _files = quality_m1_fixture()
+        description = next(
+            row for row in payload["rows"]
+            if row["identity"].startswith("item-description:")
+        )
+        mutations = {}
+
+        duplicate = copy.deepcopy(payload)
+        duplicate["rows"].append(copy.deepcopy(description))
+        duplicate["category_counts"]["item-description"] += 1
+        mutations["identities are not unique"] = duplicate
+
+        changed_keep = copy.deepcopy(payload)
+        keep = next(
+            row for row in changed_keep["rows"]
+            if row["identity"].startswith("item-description:")
+            and row["terminal_conclusion"] == "keep"
+        )
+        keep["pre_review_chinese"] += "变更"
+        mutations["conclusion/revision mismatch"] = changed_keep
+
+        absolute_path = copy.deepcopy(payload)
+        row = next(
+            row for row in absolute_path["rows"]
+            if row["identity"].startswith("item-description:")
+        )
+        row["source_files"][0]["path"] = "/tmp/input.txt"
+        mutations["canonical relative path"] = absolute_path
+
+        violations = copy.deepcopy(payload)
+        violations["review_violations"] = {"review_duplicates": ["x"]}
+        mutations["violation-free review artifact"] = violations
+
+        for message, mutated in mutations.items():
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(RuntimeError, message):
+                    MODULE.quality_m1_population(mutated)
+
+    def test_quality_m1_validator_rejects_shard_truth_and_label_mutations(self):
+        _payload, original = quality_m1_fixture()
+
+        def refresh_manifest(files, name):
+            manifest = json.loads(files["manifest.json"])
+            artifact = next(
+                item for item in manifest["artifacts"]
+                if item["path"] == name
+            )
+            artifact["bytes"] = len(files[name])
+            artifact["sha256"] = MODULE.quality_m1_digest(files[name])
+            files["manifest.json"] = (
+                MODULE.quality_m1_canonical_json_bytes(manifest)
+            )
+
+        shard_files = dict(original)
+        shard = json.loads(shard_files["blind-shard-01.json"])
+        shard["items"][0]["chinese"] += "变更"
+        shard_files["blind-shard-01.json"] = (
+            MODULE.quality_m1_canonical_json_bytes(shard)
+        )
+        refresh_manifest(shard_files, "blind-shard-01.json")
+        with self.assertRaisesRegex(
+            RuntimeError, "shards do not reconstruct parent"
+        ):
+            MODULE.validate_quality_m1_files(shard_files)
+
+        truth_files = dict(original)
+        truth = json.loads(truth_files["truth.json"])
+        truth["items"][0]["semantic_reason"] += " changed"
+        truth_files["truth.json"] = (
+            MODULE.quality_m1_canonical_json_bytes(truth)
+        )
+        refresh_manifest(truth_files, "truth.json")
+        with self.assertRaisesRegex(RuntimeError, "truth commitment"):
+            MODULE.validate_quality_m1_files(truth_files)
+
+        noncanonical = {"truth.json": original["truth.json"] + b"\n"}
+        with self.assertRaisesRegex(RuntimeError, "not canonical JSON"):
+            MODULE.quality_m1_load_canonical(noncanonical, "truth.json")
+
+        leaked = {"items": [{"revision_kind": "adopted"}]}
+        self.assertEqual(
+            ["$fixture.items[0].revision_kind"],
+            MODULE.quality_m1_forbidden_fields(leaked, "$fixture"),
+        )
+
+    def test_quality_m1_input_change_propagates_to_bound_artifacts(self):
+        payload, original = quality_m1_fixture()
+        changed = MODULE.build_quality_m1_files(
+            payload,
+            b"changed fixture prompt\n",
+            b"fixture context\n",
+            "b" * 64,
+        )
+        self.assertNotEqual(
+            original["blind-packet.json"], changed["blind-packet.json"]
+        )
+        self.assertNotEqual(original["truth.json"], changed["truth.json"])
+        self.assertNotEqual(
+            original["commitment.json"], changed["commitment.json"]
+        )
+        self.assertNotEqual(
+            original["manifest.json"], changed["manifest.json"]
+        )
+
+    def test_quality_m1_filesystem_verifier_fails_closed(self):
+        _payload, files = quality_m1_fixture()
+        MODULE.QUALITY_M1_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.QUALITY_M1_OUTPUT_ROOT
+        ) as directory:
+            parent = Path(directory)
+            valid = parent / "valid"
+            MODULE.write_quality_m1_bundle(valid, files)
+            MODULE.verify_quality_m1_bundle(valid, files)
+            (valid / "prompt.md").write_bytes(b"mutated\n")
+            with self.assertRaisesRegex(RuntimeError, "byte mismatch"):
+                MODULE.verify_quality_m1_bundle(valid, files)
+
+            missing = parent / "missing"
+            MODULE.write_quality_m1_bundle(missing, files)
+            (missing / "blind-shard-04.json").unlink()
+            with self.assertRaisesRegex(RuntimeError, "membership"):
+                MODULE.verify_quality_m1_bundle(missing, files)
+
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(
+                RuntimeError, "must be under .artifacts"
+            ):
+                MODULE.quality_m1_output_directory(Path(directory))
 
 
 if __name__ == "__main__":

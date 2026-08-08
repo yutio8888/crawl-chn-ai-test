@@ -18,7 +18,6 @@ ROOT_DOCUMENTS = (
     "AGENTS.md",
     "CODEX.md",
     "README.md",
-    "PROGRESS.md",
 )
 
 SCOPED_GLOBS = (
