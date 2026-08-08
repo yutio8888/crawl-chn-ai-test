@@ -27,6 +27,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -169,13 +170,58 @@ def _allowed_temp_roots() -> list[str]:
     return roots
 
 
+def _reject_symlink_components(p: Path) -> None:
+    """Reject any *existing* component of the output path, from the root
+    down to (and including) the final path element, that is a symbolic
+    link. Non-existent components are skipped (mkdir creates them as
+    ordinary directories). The permitted temp roots themselves (for
+    example /tmp -> /private/tmp on macOS) are exempt: they are
+    OS-level directories, not attacker-controlled components inside the
+    permitted tree.
+
+    This closes the TOCTOU window left by the realpath check: realpath()
+    follows symlinks, so a symlink component that resolves inside the
+    temp dir would pass that check even though it could be retargeted
+    between validation and write. Fails closed (stderr + exit 1) before
+    any mkdir/write.
+    """
+    roots = _allowed_temp_roots()
+    cur = Path(p.anchor)
+    found_root = False
+    for part in p.parts[1:]:
+        cur = cur / part
+        # The shallowest prefix whose realpath is a permitted temp root
+        # is the permitted root itself; only components *below* it are
+        # attacker-controlled and must not be symlinks.
+        if not found_root and os.path.realpath(str(cur)) in roots:
+            found_root = True
+            continue
+        try:
+            st = cur.lstat()
+        except FileNotFoundError:
+            continue  # not yet created; mkdir will make an ordinary dir
+        except OSError as exc:
+            print(
+                f"error: cannot inspect output path component {cur}: {exc}",
+                file=sys.stderr)
+            raise SystemExit(1)
+        if stat.S_ISLNK(st.st_mode):
+            print(
+                f"error: --inventory-output path component {cur} is a "
+                f"symbolic link; refusing to write through it",
+                file=sys.stderr)
+            raise SystemExit(1)
+
+
 def validate_output_path(raw: str) -> Path:
     """Fail-closed validation for --inventory-output.
 
     Only an absolute path that resolves (realpath, following symlinks)
-    inside the OS temp dir (tempfile.gettempdir()) or /tmp is accepted.
-    Relative repository paths and non-temp absolute paths are rejected
-    before any mkdir/write.
+    inside the OS temp dir (tempfile.gettempdir()) or /tmp is accepted,
+    and no *existing* path component (from the root down to the final
+    path element) may be a symbolic link: writing through a symlinked
+    component is rejected before any mkdir/write. Relative repository
+    paths and non-temp absolute paths are rejected too.
     """
     p = Path(raw)
     if not p.is_absolute():
@@ -188,6 +234,7 @@ def validate_output_path(raw: str) -> Path:
     resolved = os.path.realpath(str(p))
     for root in _allowed_temp_roots():
         if resolved == root or resolved.startswith(root + os.sep):
+            _reject_symlink_components(p)
             return p
     print(
         f"error: --inventory-output must be inside the OS temp dir "
@@ -203,7 +250,10 @@ def main() -> int:
         "--inventory-output",
         default="/tmp/cloud-inventory.json",
         help="output JSON path; must be an absolute path inside the OS "
-             "temp dir or /tmp; relative and other paths are rejected")
+             "temp dir or /tmp with no symlink path component (existing "
+             "components are lstat-checked; only the temp roots "
+             "themselves are exempt); relative and other paths are "
+             "rejected")
     ap.add_argument(
         "--baseline-ref",
         default="HEAD",
