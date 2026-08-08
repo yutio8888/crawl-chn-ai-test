@@ -27,7 +27,6 @@ import hashlib
 import json
 import os
 import re
-import stat
 import subprocess
 import sys
 import tempfile
@@ -44,7 +43,8 @@ def sha256_file(path: Path) -> str:
 def resolve_commit(ref: str) -> str:
     """Resolve a git commit-ish to its full 40-hex SHA, fail-closed."""
     r = subprocess.run(
-        ["git", "rev-parse", "--verify", f"{ref}^{{commit}}"],
+        ["git", "rev-parse", "--verify", "--end-of-options",
+         f"{ref}^{{commit}}"],
         capture_output=True, text=True, cwd=ROOT)
     oid = r.stdout.strip()
     if r.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", oid):
@@ -170,58 +170,31 @@ def _allowed_temp_roots() -> list[str]:
     return roots
 
 
-def _reject_symlink_components(p: Path) -> None:
-    """Reject any *existing* component of the output path, from the root
-    down to (and including) the final path element, that is a symbolic
-    link. Non-existent components are skipped (mkdir creates them as
-    ordinary directories). The permitted temp roots themselves (for
-    example /tmp -> /private/tmp on macOS) are exempt: they are
-    OS-level directories, not attacker-controlled components inside the
-    permitted tree.
+def write_inventory_output(raw: str, content: str) -> Path:
+    """Fail-closed, race-free write of the inventory JSON.
 
-    This closes the TOCTOU window left by the realpath check: realpath()
-    follows symlinks, so a symlink component that resolves inside the
-    temp dir would pass that check even though it could be retargeted
-    between validation and write. Fails closed (stderr + exit 1) before
-    any mkdir/write.
-    """
-    roots = _allowed_temp_roots()
-    cur = Path(p.anchor)
-    found_root = False
-    for part in p.parts[1:]:
-        cur = cur / part
-        # The shallowest prefix whose realpath is a permitted temp root
-        # is the permitted root itself; only components *below* it are
-        # attacker-controlled and must not be symlinks.
-        if not found_root and os.path.realpath(str(cur)) in roots:
-            found_root = True
-            continue
-        try:
-            st = cur.lstat()
-        except FileNotFoundError:
-            continue  # not yet created; mkdir will make an ordinary dir
-        except OSError as exc:
-            print(
-                f"error: cannot inspect output path component {cur}: {exc}",
-                file=sys.stderr)
-            raise SystemExit(1)
-        if stat.S_ISLNK(st.st_mode):
-            print(
-                f"error: --inventory-output path component {cur} is a "
-                f"symbolic link; refusing to write through it",
-                file=sys.stderr)
-            raise SystemExit(1)
+    Pre-validation (kept from the previous implementation): the path
+    must be absolute and its realpath must lie inside the OS temp dir
+    (tempfile.gettempdir()) or /tmp.
 
+    The write itself is openat-style and never follows a symlink:
 
-def validate_output_path(raw: str) -> Path:
-    """Fail-closed validation for --inventory-output.
+    * The parent directory chain is opened level by level, starting
+      from an fd of the canonical temp root: every component is opened
+      with os.open(comp, O_RDONLY|O_DIRECTORY|O_NOFOLLOW,
+      dir_fd=parent_fd). A symlink component fails with ELOOP, a
+      missing component fails with ENOENT (directories are never
+      auto-created), and a non-directory fails with ENOTDIR.
+    * The final element is opened with os.open(base,
+      O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW, 0o644, dir_fd=parent_fd):
+      an existing symlink at the target fails with ELOOP and the output
+      is never written through it.
 
-    Only an absolute path that resolves (realpath, following symlinks)
-    inside the OS temp dir (tempfile.gettempdir()) or /tmp is accepted,
-    and no *existing* path component (from the root down to the final
-    path element) may be a symbolic link: writing through a symlinked
-    component is rejected before any mkdir/write. Relative repository
-    paths and non-temp absolute paths are rejected too.
+    There is no lstat-then-mkdir/write TOCTOU window: every step is a
+    single atomic open that refuses to follow symlinks, and all opened
+    directory fds are closed on every path. Any failure prints a clear
+    error to stderr and exits 1; there is no fallback to a plain
+    open/write.
     """
     p = Path(raw)
     if not p.is_absolute():
@@ -232,16 +205,103 @@ def validate_output_path(raw: str) -> Path:
             file=sys.stderr)
         raise SystemExit(1)
     resolved = os.path.realpath(str(p))
-    for root in _allowed_temp_roots():
-        if resolved == root or resolved.startswith(root + os.sep):
-            _reject_symlink_components(p)
-            return p
-    print(
-        f"error: --inventory-output must be inside the OS temp dir "
-        f"({tempfile.gettempdir()!r}) or /tmp; {raw!r} resolves to "
-        f"{resolved}",
-        file=sys.stderr)
-    raise SystemExit(1)
+    roots = _allowed_temp_roots()
+    root = next((r for r in roots
+                 if resolved == r or resolved.startswith(r + os.sep)),
+                None)
+    if root is None:
+        print(
+            f"error: --inventory-output must be inside the OS temp dir "
+            f"({tempfile.gettempdir()!r}) or /tmp; {raw!r} resolves to "
+            f"{resolved}",
+            file=sys.stderr)
+        raise SystemExit(1)
+
+    # Locate the raw prefix (typically the temp-dir name itself, e.g.
+    # /tmp) whose realpath is the permitted root; only components below
+    # that prefix are walked with O_NOFOLLOW. This keeps the walk on the
+    # path the user actually wrote, so an attacker-retargeted component
+    # fails with ELOOP even if realpath() had resolved it to a temp-dir
+    # location.
+    parts = p.parts
+    prefix_end = None
+    for i in range(1, len(parts) + 1):
+        if os.path.realpath(os.sep.join(parts[:i])) == root:
+            prefix_end = i
+            break
+    if prefix_end is None:
+        print(
+            f"error: cannot locate temp root {root!r} inside output path "
+            f"{raw!r}",
+            file=sys.stderr)
+        raise SystemExit(1)
+    if len(parts) == prefix_end:
+        print(
+            f"error: --inventory-output {raw!r} resolves to the temp root "
+            f"itself; refusing to write to it",
+            file=sys.stderr)
+        raise SystemExit(1)
+
+    dir_components = parts[prefix_end:-1]
+    basename = parts[-1]
+    dir_fds: list[int] = []
+    try:
+        parent_fd = os.open(
+            root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        dir_fds.append(parent_fd)
+        for comp in dir_components:
+            try:
+                parent_fd = os.open(
+                    comp, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=parent_fd)
+            except OSError as exc:
+                print(
+                    f"error: --inventory-output parent directory component "
+                    f"{comp!r} of {raw!r} cannot be opened as a real "
+                    f"directory without following a symlink: {exc}",
+                    file=sys.stderr)
+                raise SystemExit(1)
+            dir_fds.append(parent_fd)
+        try:
+            final_fd = os.open(
+                basename,
+                os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW,
+                0o644,
+                dir_fd=parent_fd)
+        except OSError as exc:
+            print(
+                f"error: --inventory-output target {basename!r} of {raw!r} "
+                f"cannot be created or opened for writing without following "
+                f"a symlink: {exc}",
+                file=sys.stderr)
+            raise SystemExit(1)
+        try:
+            fh = os.fdopen(final_fd, "w", encoding="utf-8")
+        except OSError as exc:
+            try:
+                os.close(final_fd)
+            except OSError:
+                pass
+            print(
+                f"error: cannot open inventory for writing at {raw!r}: "
+                f"{exc}",
+                file=sys.stderr)
+            raise SystemExit(1)
+        try:
+            with fh:
+                fh.write(content)
+        except OSError as exc:
+            print(
+                f"error: failed to write inventory to {raw!r}: {exc}",
+                file=sys.stderr)
+            raise SystemExit(1)
+    finally:
+        for fd in dir_fds:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+    return p
 
 
 def main() -> int:
@@ -250,10 +310,12 @@ def main() -> int:
         "--inventory-output",
         default="/tmp/cloud-inventory.json",
         help="output JSON path; must be an absolute path inside the OS "
-             "temp dir or /tmp with no symlink path component (existing "
-             "components are lstat-checked; only the temp roots "
-             "themselves are exempt); relative and other paths are "
-             "rejected")
+             "temp dir or /tmp whose parent directory already exists; "
+             "the parent chain and the target are opened with O_NOFOLLOW "
+             "(dir_fd-style), so symlinked components, a symlinked target, "
+             "and missing parent directories are all rejected, and "
+             "directories are never auto-created; relative and other "
+             "paths are rejected")
     ap.add_argument(
         "--baseline-ref",
         default="HEAD",
@@ -345,9 +407,8 @@ def main() -> int:
         payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     payload["inventory_sha256"] = digest
 
-    out = validate_output_path(args.inventory_output)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
+    out = write_inventory_output(
+        args.inventory_output, json.dumps(payload, ensure_ascii=False, indent=1))
 
     print(f"inventory sha256: {digest}")
     print(f"enum members: {len(enums)}")
