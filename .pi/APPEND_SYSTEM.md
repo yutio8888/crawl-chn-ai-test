@@ -8,8 +8,11 @@ elsewhere.
 
 ## Agents
 
-Project roles are native `pi-subagents` agents under `.pi/agents/`. Discover
-the live names before dispatch:
+Project roles are project-local agents under `.pi/agents/`, discovered and
+dispatched by the project's own `subagent` extension
+(`.pi/extensions/subagent/`, adapted from the official pi subagent example;
+no external `pi-subagents` package is required). Discover the live names
+before dispatch:
 
 ```typescript
 subagent({ action: "list" })
@@ -25,12 +28,15 @@ subagent({
 })
 ```
 
+`async: true` returns a log path; poll the log for completion. Pass `cwd`
+from `project_worktree` create for candidate-worktree dispatch. Agent
+frontmatter fields `model`, `tools`, `thinking`, `systemPromptMode`,
+`inheritProjectContext`, and `inheritSkills` are honored by the extension.
+
 Use `zh-translator`, `crawl-coder`, `translation-reviewer`,
 `zh-code-reviewer`, and `ocr` according to `docs/agent-routing.md`. Use the
 built-in `scout` for read-only exploration. Keep one writer for each owned
-path; parallelize analysis and review, not overlapping edits.
-
-`pi-subagents` must be installed in the user's Pi environment. Agent model and
+path; parallelize analysis and review, not overlapping edits. Agent model and
 tool assignments are authoritative in `.pi/agents/`; do not copy them into
 prose.
 
@@ -58,13 +64,12 @@ role dispatches; do not restate its phases in this adapter.
 
 ## Worktrees
 
-Do not use `pi-subagents` `worktree: true`; its native placement does not meet
-this repository's relative-path contract and the project extension blocks it.
-Use the project tool instead:
+The project `subagent` tool has no `worktree` flag; worktree placement must
+not be delegated to the child process. Use the project tool instead:
 
 1. Call `project_worktree` with `action: "create"`, a one-component `name`,
    and optionally a new `pi/<topic>` branch. Omit `branch` for detached HEAD.
-2. Pass the returned absolute `cwd` to `subagent(...)` without `worktree: true`.
+2. Pass the returned absolute `cwd` to `subagent(...)`.
 3. Commit or intentionally discard the child changes, then call
    `project_worktree` with `action: "remove"`. Removal refuses dirty or active
    worktrees and retains any task branch.
