@@ -2,7 +2,7 @@
 
 - 基线：`eaecb7122c2db8633693e51b692c14425b6b654d`（`pi/r1-clouds` HEAD，合并 `chn-0.34.1-base`）
 - 术语表 SHA-256：`95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`
-- 清单 SHA-256：`8311ef20031c3a7fd2194d1b47f99dccdd59e45ab098b98899ad1f6c6e0f4c9d`
+- 清单 SHA-256：`28d66b5a3f9c3743f80565768fbc6645a5bbca1d5fc5fe49ed5b5e7910f45173`
 - 输入摘要：
   - `cloud-type.h` `05a1d119e698869fa7e40931268a7510d6d30175914da36db31ae21ea624a503`
   - `cloud.cc` `8a78b967800187701f7e898b83f404aae2cd6b5dadbffe72996edea2f20806e6`
@@ -28,7 +28,7 @@
   “大大抵消”；calcifying dust“呆任何时长”；spectral mist“聚集→凝聚成形”；
   freezing vapour“冰气云”；seething chaos“翻腾/沸腾”用字。
 - 格式保护检查通过：`%%%%`、`<_smoke_cloud_>`、`#` 注释、DB 键均不变。
-- 重建命令：`python3 .claude/scripts/cloud_inventory.py --baseline-ref eaecb7122c2db8633693e51b692c14425b6b654d --inventory-output /tmp/cloud-inventory.json`
+- 重建命令：`python3 .claude/scripts/cloud_inventory.py --baseline-ref eaecb7122c2db8633693e51b692c14425b6b654d --inventory-output /tmp/cloud-inventory-<新文件名>.json`（输出路径必须为全新文件；重复重建请更换文件名或先删除旧文件）
 - 覆盖证明：`?/L` 运行时枚举器（`lookup-help.cc`）与清单枚举一致；中英
   描述键双向差集：EN-only 无、ZH-only `degeneration cloud` 唯一孤儿键；
   T_ 键缺口：`gloom`（兼容条目 terse，不显示）、`?`（哨兵，不显示）。

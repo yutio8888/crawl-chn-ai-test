@@ -23,6 +23,7 @@ Usage:
   python3 .claude/scripts/cloud_inventory.py --baseline-ref <commit> --inventory-output /tmp/cloud-inventory.json
 """
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -156,7 +157,10 @@ def grep_producers(enum: str) -> list[str]:
                 continue
             rel = line.replace(str(SRC) + "/", "")
             hits.append(rel)
-    return hits
+    # Normalize the producer list: recursive grep traversal order is not
+    # guaranteed, so sort and deduplicate to make the inventory (and its
+    # inventory_sha256) reproducible for a given baseline.
+    return sorted(set(hits))
 
 
 def _allowed_temp_roots() -> list[str]:
@@ -186,9 +190,13 @@ def write_inventory_output(raw: str, content: str) -> Path:
       missing component fails with ENOENT (directories are never
       auto-created), and a non-directory fails with ENOTDIR.
     * The final element is opened with os.open(base,
-      O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW, 0o644, dir_fd=parent_fd):
-      an existing symlink at the target fails with ELOOP and the output
-      is never written through it.
+      O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0o644, dir_fd=parent_fd):
+      the target must not already exist (O_EXCL rejects it with EEXIST,
+      so an existing regular file -- including a hardlink to a shared
+      inode -- is never truncated or overwritten), and an existing
+      symlink at the target fails with ELOOP and the output is never
+      written through it. Callers must therefore pick a fresh path for
+      every rebuild, or delete the old file first.
 
     There is no lstat-then-mkdir/write TOCTOU window: every step is a
     single atomic open that refuses to follow symlinks, and all opened
@@ -265,15 +273,23 @@ def write_inventory_output(raw: str, content: str) -> Path:
         try:
             final_fd = os.open(
                 basename,
-                os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
                 0o644,
                 dir_fd=parent_fd)
         except OSError as exc:
-            print(
-                f"error: --inventory-output target {basename!r} of {raw!r} "
-                f"cannot be created or opened for writing without following "
-                f"a symlink: {exc}",
-                file=sys.stderr)
+            if exc.errno == errno.EEXIST:
+                print(
+                    f"error: --inventory-output target {raw!r} already "
+                    f"exists; refusing to overwrite it (output path must be "
+                    f"a brand-new file -- pick a fresh filename or delete "
+                    f"the old file first)",
+                    file=sys.stderr)
+            else:
+                print(
+                    f"error: --inventory-output target {basename!r} of {raw!r} "
+                    f"cannot be created or opened for writing without following "
+                    f"a symlink: {exc}",
+                    file=sys.stderr)
             raise SystemExit(1)
         try:
             fh = os.fdopen(final_fd, "w", encoding="utf-8")
@@ -315,7 +331,9 @@ def main() -> int:
              "(dir_fd-style), so symlinked components, a symlinked target, "
              "and missing parent directories are all rejected, and "
              "directories are never auto-created; relative and other "
-             "paths are rejected")
+             "paths are rejected; the target itself must NOT already "
+             "exist (O_EXCL): every rebuild needs a fresh filename or a "
+             "deleted old file")
     ap.add_argument(
         "--baseline-ref",
         default="HEAD",

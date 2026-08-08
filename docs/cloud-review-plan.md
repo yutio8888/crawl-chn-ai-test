@@ -66,5 +66,6 @@
 ```bash
 python3 .claude/scripts/cloud_inventory.py \
   --baseline-ref eaecb7122c2db8633693e51b692c14425b6b654d \
-  --inventory-output /tmp/cloud-inventory.json
+  --inventory-output /tmp/cloud-inventory-<新文件名>.json
+  （输出路径必须为全新文件；重复重建请更换文件名或先删除旧文件）
 ```
