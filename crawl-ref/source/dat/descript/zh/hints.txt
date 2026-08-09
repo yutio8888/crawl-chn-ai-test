@@ -45,7 +45,7 @@ death random 0
 death random 1
 
 学会在你搞不定的时候及时脱身——这非常重要！跳过一些难度太大的楼层通常是明智之举。
-不过也不要过度使用这个方法，因为随着地城的深入怪物会越来越强。
+不过也不要过度使用这个方法，因为你越深入探索，遇到的怪物只会越来越强。
 %%%%
 death random 2
 
@@ -104,7 +104,7 @@ dissection reminder
 HINT_SEEN_FIRST_OBJECT
 
 那个<console>$1 </console>是物品。走到那里并按
-<input>$cmd[CMD_PICKUP]</input><localtiles>，或在物品栏中用<input>左键单击</input>它</localtiles>，即可拾取。<console>物品通常以 <w>%?!\"=()[</w> 之类的非字母符号显示。</console>有些物品<tiles>带有绿色边框，</tiles>会被自动拾取。
+<input>$cmd[CMD_PICKUP]</input><localtiles>，或在物品栏中用<input>左键单击</input>它</localtiles>，即可拾取。<console>物品通常以 <w>%?!"=()[</w> 之类的非字母符号显示。</console>有些物品<tiles>带有绿色边框，</tiles>会被自动拾取。
 
 物品进入物品栏后，<localtiles>用一次<input>Shift-左键单击</input>即可把它丢下。每当你用<input>右键单击</input>物品时</localtiles><console>按<input>$cmd[CMD_DROP]</input>即可把它丢下。每当你在物品栏（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中查看物品时</console>，都能阅读它的属性和描述。
 %%%%
@@ -596,7 +596,7 @@ HINT_SEEN_WEAPON
 %%%%
 HINT_SEEN_ZERO_EXP_MON
 
-那个<console> $1</console>是$2。严格来说，它属于怪物，但更像地牢里的摆设：既无害，也不会移动。如果挡路，你可以像攻击其他怪物一样杀死它，但不会因此获得任何经验。
+那个<console> $1</console>是$2。<w>严格来说</w>，它属于怪物，但更像地牢里的摆设：既无害，也不会移动。如果挡路，你可以像攻击其他怪物一样杀死它，但不会因此获得任何经验。
 %%%%
 HINT_SHIFT_RUN
 
@@ -645,7 +645,7 @@ HINT_YOU_POISON
 %%%%
 HINT_YOU_RESIST
 
-游戏中的大多数攻击由你的 AC 防御。火焰、吸取等攻击还可由对应抗性进一步减轻；减速、混乱等妖术效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
+游戏中的大多数攻击由你的 AC 防御。火焰、汲取等攻击还可由对应抗性进一步减轻；减速、混乱等诅咒系效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
 
 要查看当前全部抗性，<localtiles><w>右键点击</w>角色人偶，或</localtiles>按 <w>$cmd[CMD_RESISTS_SCREEN]</w>。
 %%%%
