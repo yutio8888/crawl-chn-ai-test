@@ -519,9 +519,13 @@ static size_t allowed_technical_literal_end(const std::string& text, size_t i)
     // command identifiers, literals, and paths. Match the complete ASCII
     // identifier/literal instead of allowlisting its component words: broad
     // entries such as "auto" or "status" would hide ordinary English leaks.
+    // Prefix-related literals must be longest-first so a valid longer value
+    // is considered before the shorter value applies its boundary check.
     static const std::vector<std::string> exact_allowed = {
+        "docs/",
         "docs",
         "auto_exclude",
+        "Shift-right-click",
         "shift-numpad-5",
         "http://crawl.develz.org/",
     };

@@ -27,11 +27,15 @@ explore_auto_rest
 false
 explore_auto_rest_status
 
-# Exact Hints technical literals. The scanner matches each complete value with
-# case-sensitive technical boundaries; `$item[...]` is parsed as protocol and
-# intentionally does not appear in this word/literal allowlist.
+# Exact Hints technical literals, longest prefix-related value first. The
+# scanner matches each complete value with case-sensitive technical boundaries;
+# `$item[...]` is parsed as protocol and intentionally does not appear in this
+# word/literal allowlist. `docs/` is an exact directory literal, not a broad
+# path prefix.
+docs/
 docs
 auto_exclude
+Shift-right-click
 shift-numpad-5
 http://crawl.develz.org/
 

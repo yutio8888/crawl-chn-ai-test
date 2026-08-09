@@ -35,7 +35,9 @@
 #include "species-type.h"     // species_type, NUM_SPECIES
 #include "jobs.h"            // get_job_name
 #include "job-type.h"        // job_type, NUM_JOBS
+#include "player.h"          // you
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
+#include "unwind.h"          // unwind_var
 
 // batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
 #include "item-def.h"         // item_def
@@ -759,31 +761,87 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // =============================================================================
 // Enumerator 14 — tutorial/hints/commands text. Each file lives in
 // dat/descript/zh/, uses %%%% separators, and stores Chinese values keyed by
-// English short prompts. We parse + scan the value side. Plan v2 §2.4 (#14).
+// English short prompts. Hints/tutorial entries are consumed through
+// getHintString(); command descriptions use getLongDescription(). Plan v2
+// §2.4 (#14).
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: tutorial/hints/commands text",
                  "[zh-translation]")
 {
-    std::vector<ZhIssue> issues;
-    const char* files[] = {
-        "dat/descript/zh/tutorial.txt",
-        "dat/descript/zh/hints.txt",
-        "dat/descript/zh/commands.txt",
-    };
-    for (const char* path : files)
+    struct description_source
     {
+        const char* path;
+        bool uses_hint_db;
+    };
+
+    std::vector<ZhIssue> issues;
+    const description_source files[] = {
+        { "dat/descript/zh/tutorial.txt", true },
+        { "dat/descript/zh/hints.txt",    true },
+        { "dat/descript/zh/commands.txt", false },
+    };
+
+    // `welcome` expands you.race()/you.class() in production, and other hints
+    // expand you.god(). Give those real consumer paths valid fixture state
+    // instead of accepting a Lua error or silently falling back to raw TextDB
+    // content.
+    unwind_var<species_type> restore_species(you.species);
+    unwind_var<job_type> restore_job(you.char_class);
+    unwind_var<god_type> restore_religion(you.religion);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_FIGHTER;
+    you.religion = GOD_ZIN;
+
+    bool saw_welcome = false;
+    for (const description_source& source : files)
+    {
+        const char* path = source.path;
         std::vector<std::pair<std::string, std::string>> blocks;
-        if (!parse_db_file(path, blocks))
-        {
-            WARN(path << " missing, skipping");
-            continue;
-        }
+        REQUIRE(parse_db_file(path, blocks));
+        REQUIRE_FALSE(blocks.empty());
         for (auto& kv : blocks)
         {
             const std::string& key = kv.first;
-            // The descript DB query path is getLongDescription(key).
-            const std::string val = getLongDescription(key);
+            const std::string& raw = kv.second;
+            if (source.uses_hint_db && key == "welcome")
+            {
+                REQUIRE_FALSE(saw_welcome);
+                saw_welcome = true;
+                const std::string welcome = getHintString("welcome");
+                REQUIRE_FALSE(welcome.empty());
+                REQUIRE(welcome.find("attempt to") == std::string::npos);
+                REQUIRE(welcome.find("<white>") == 0);
+                REQUIRE(welcome.find("docs/") != std::string::npos);
+
+                std::vector<ZhIssue> welcome_issues = scan_translation(
+                    welcome.c_str(), "welcome", path);
+                REQUIRE(std::none_of(
+                    welcome_issues.begin(), welcome_issues.end(),
+                    [](const ZhIssue& issue)
+                    {
+                        return issue.kind == ZhIssue::MIXED_CN_EN;
+                    }));
+                // Paragraph breaks are intentional in this formatted welcome
+                // screen. Preserve evidence from every other scanner rule.
+                for (auto& issue : welcome_issues)
+                    if (issue.kind != ZhIssue::WHITESPACE_ANOMALY)
+                        issues.push_back(std::move(issue));
+                continue;
+            }
+
+            const std::string val = source.uses_hint_db
+                ? getHintString(key) : getLongDescription(key);
+            // These existing raw markers identify deliberately preformatted
+            // diagrams and developer-only blocks. Execute the real accessor
+            // above, then retain the established scanner exclusion.
+            if (raw.find(":nowrap") == 0
+                || raw.find("# ") == 0
+                || raw.find("##") == 0
+                || key.find(" exit") != std::string::npos)
+            {
+                continue;
+            }
             if (!val.empty())
             {
                 if (val.find("attempt to") != std::string::npos)
@@ -792,23 +850,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             }
             else
             {
-                // Fall back to scanning the file's raw value side; skip
-                // entries whose getLongDescription failed due to Lua
-                // template evaluation errors in the catch2 sandbox.
-                const std::string& raw = kv.second;
+                // Fall back to scanning the file's raw value side when the
+                // matching production accessor has no value. Entries whose
+                // Lua templates need more game state retain the existing
+                // targeted exclusions below.
                 if (raw.find("crawl.hints_") != std::string::npos
                     || raw.find("you.god()") != std::string::npos
                     || raw.find("you.get_base_") != std::string::npos)
-                {
-                    continue;
-                }
-                // Skip entries that are formatting directives, dev comments,
-                // or have intentional whitespace (diagrams, markup tags).
-                if (raw.find(":nowrap") == 0
-                    || raw.find("# ") == 0
-                    || raw.find("##") == 0
-                    || key.find(" exit") != std::string::npos
-                    || raw.find("<white>") == 0)
                 {
                     continue;
                 }
@@ -816,6 +864,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             }
         }
     }
+    REQUIRE(saw_welcome);
     emit_issue_protocol("zh_translation", "tutorial_hints_commands", issues);
     WARN("zh enumerator summary: tutorial/hints/commands -> "
          << issues.size() << " issues");
