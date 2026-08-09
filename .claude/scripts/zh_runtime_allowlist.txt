@@ -2,10 +2,11 @@
 #
 # Format: one allowed value per line. Latin-script proper nouns and
 # abbreviations are matched case-insensitively; exact technical literals may
-# also contain underscores and are matched case-sensitively as a complete
-# ASCII identifier. Each value may appear embedded in Chinese translated text
-# without triggering the MIXED_CN_EN rule (plan v2 §2.3 row 2; rule
-# predicates live in catch2-tests/test_zh_helpers.cc:rule_mixed_cn_en).
+# also contain identifier, key, path, or URL punctuation and are matched
+# case-sensitively as complete values with technical boundaries. Each value may
+# appear embedded in Chinese translated text without triggering the MIXED_CN_EN
+# rule (plan v2 §2.3 row 2; rule predicates live in
+# catch2-tests/test_zh_helpers.cc:rule_mixed_cn_en).
 #
 # This is the manual portion. The auto-generated enum English-name portion
 # lives in zh_runtime_allowlist_enum.txt; at runtime the helpers' built-in
@@ -15,8 +16,8 @@
 #
 # Add new entries below when a false positive shows up in a Layer 1 run.
 # Each row has no surrounding whitespace. Standalone English tokens are
-# matched case-insensitively; compound technical identifiers are allowed only
-# as exact, case-sensitive whole values and never as word fragments.
+# matched case-insensitively; compound technical values are allowed only as
+# exact, case-sensitive whole values and never as word fragments.
 
 # Exact command technical literals. Keeping compound identifiers whole avoids
 # suppressing ordinary English words such as "auto" or "status" globally.
@@ -25,6 +26,14 @@ CMD_EXPLORE
 explore_auto_rest
 false
 explore_auto_rest_status
+
+# Exact Hints technical literals. The scanner matches each complete value with
+# case-sensitive technical boundaries; `$item[...]` is parsed as protocol and
+# intentionally does not appear in this word/literal allowlist.
+docs
+auto_exclude
+shift-numpad-5
+http://crawl.develz.org/
 
 # Resistance / stat abbreviations (auto-builtin covers these but the file
 # is kept for human-readable documentation).

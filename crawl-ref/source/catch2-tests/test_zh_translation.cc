@@ -1393,6 +1393,97 @@ TEST_CASE("MIXED_CN_EN command template chains are linear and fail closed",
     }
 }
 
+TEST_CASE("MIXED_CN_EN exact hint item templates and technical literals",
+          "[zh-translation][zh-helpers]")
+{
+    using Row = std::tuple<std::string, bool>;
+    auto row = GENERATE(table<std::string, bool>({
+        // Exact item templates are TextDB protocol, including multiword keys.
+        Row{"你捡到了 $item[gold]。",                  false},
+        Row{"你捡到了 $item[jewellery]。",            false},
+        Row{"你捡到了 $item[potion]。",               false},
+        Row{"你捡到了 $item[scroll]。",               false},
+        Row{"你捡到了 $item[magical staff]。",        false},
+        Row{"你捡到了 $item[wand]。",                 false},
+        Row{"你捡到了 $item[gold]$item[magical staff]。", false},
+        // Exact Hints literals are display-preserved technical values.
+        Row{"请查阅 <w>docs</w> 目录。",               false},
+        Row{"设置 <w>auto_exclude</w> 选项。",         false},
+        Row{"按 <w>shift-numpad-5</w> 休息。",         false},
+        Row{"请访问 http://crawl.develz.org/。",       false},
+
+        // Item protocol mutations fail closed.
+        Row{"你捡到了 $item[]。",                      true},
+        Row{"你捡到了 $Item[gold]。",                  true},
+        Row{"你捡到了 $item[Gold]。",                  true},
+        Row{"你捡到了 $item[gold。",                   true},
+        Row{"你捡到了 $item[gold]tail。",              true},
+        Row{"你捡到了 $items[gold]。",                 true},
+        Row{"你捡到了 item[gold]。",                   true},
+        Row{"你捡到了 $item [gold]。",                 true},
+        Row{"你捡到了 $$item[gold]。",                 true},
+        Row{"你捡到了 x$item[gold]。",                 true},
+        Row{"你捡到了 $item[ magical staff]。",       true},
+        Row{"你捡到了 $item[magical staff ]。",       true},
+        Row{"你捡到了 $item[magical  staff]。",       true},
+        Row{"你捡到了 $item[magical\tstaff]。",       true},
+        Row{"你捡到了 $item[magic_staff]。",           true},
+        Row{"你捡到了 $item[magic-staff]。",           true},
+        Row{"你捡到了 $item[wand2]。",                 true},
+        Row{"你捡到了 $item[gold]$。",                 true},
+        Row{"你捡到了 $item[gold]$item[wand。",       true},
+        Row{"你捡到了 $item[gold]$Item[wand]。",       true},
+
+        // Literal near-matches must not inherit the narrow exceptions.
+        Row{"请查阅 <w>Docs</w> 目录。",               true},
+        Row{"请查阅 <w>doc</w> 目录。",                true},
+        Row{"请查阅 <w>docs2</w> 目录。",              true},
+        Row{"请查阅 <w>docs_guide</w> 目录。",         true},
+        Row{"请查阅 <w>docs/guide</w> 目录。",         true},
+        Row{"设置 <w>Auto_exclude</w> 选项。",         true},
+        Row{"设置 <w>auto_excludes</w> 选项。",        true},
+        Row{"设置 <w>auto-exclude</w> 选项。",         true},
+        Row{"设置 <w>auto_exclude/path</w> 选项。",    true},
+        Row{"按 <w>Shift-numpad-5</w> 休息。",         true},
+        Row{"按 <w>shift-numpad-50</w> 休息。",        true},
+        Row{"按 <w>shift-numpad-5/path</w> 休息。",    true},
+        Row{"请访问 https://crawl.develz.org/。",      true},
+        Row{"请访问 http://crawl.develz.org。",        true},
+        Row{"请访问 http://crawl.develz.com/。",       true},
+        Row{"请访问 http://crawl.develz.org/docs。",   true},
+        Row{"请访问 http://crawl.develz.org/?lang=zh。", true},
+        Row{"请访问 xhttp://crawl.develz.org/。",      true},
+        // The new protocol and literals must not mask normal English leaks.
+        Row{"这是 ordinary English leak 示例。",       true},
+    }));
+    const std::string& text = std::get<0>(row);
+    const bool expect_issue = std::get<1>(row);
+    INFO("text=\"" << text << "\"");
+    REQUIRE(rule_mixed_cn_en(text) == expect_issue);
+}
+
+TEST_CASE("MIXED_CN_EN item template chains are linear and fail closed",
+          "[zh-translation][zh-helpers]")
+{
+    constexpr size_t chain_length = 256;
+    std::string chain = "你捡到了 ";
+    for (size_t i = 0; i < chain_length; ++i)
+        chain += "$item[magical staff]";
+
+    SECTION("complete long chain")
+    {
+        REQUIRE_FALSE(rule_mixed_cn_en(chain + "。"));
+    }
+    SECTION("isolated dollar after long chain")
+    {
+        REQUIRE(rule_mixed_cn_en(chain + "$。"));
+    }
+    SECTION("malformed template after long chain")
+    {
+        REQUIRE(rule_mixed_cn_en(chain + "$item[wand。"));
+    }
+}
+
 TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
           "[zh-translation][zh-helpers]")
 {

@@ -382,6 +382,36 @@ static bool command_template_like_at(const std::string& text, size_t i)
     return bracket < text.size() && text[bracket] == '[';
 }
 
+static bool item_template_like_at(const std::string& text, size_t i)
+{
+    size_t item = i;
+    if (text[item] == '$')
+    {
+        ++item;
+        return item + 4 <= text.size()
+            && ascii_case_equal(text[item], 'i')
+            && ascii_case_equal(text[item + 1], 't')
+            && ascii_case_equal(text[item + 2], 'e')
+            && ascii_case_equal(text[item + 3], 'm');
+    }
+    if (item + 4 > text.size()
+        || !ascii_case_equal(text[item], 'i')
+        || !ascii_case_equal(text[item + 1], 't')
+        || !ascii_case_equal(text[item + 2], 'e')
+        || !ascii_case_equal(text[item + 3], 'm'))
+    {
+        return false;
+    }
+
+    size_t bracket = item + 4;
+    while (bracket < text.size()
+           && (text[bracket] == ' ' || text[bracket] == '\t'))
+    {
+        ++bracket;
+    }
+    return bracket < text.size() && text[bracket] == '[';
+}
+
 static size_t command_template_end(const std::string& text, size_t i)
 {
     static const std::string prefix = "$cmd[";
@@ -423,12 +453,93 @@ static size_t command_template_end(const std::string& text, size_t i)
     }
 }
 
+static bool is_item_key_letter(char c)
+{
+    return c >= 'a' && c <= 'z';
+}
+
+static size_t item_template_end(const std::string& text, size_t i)
+{
+    static const std::string prefix = "$item[";
+    if (i > 0 && (is_ascii_identifier_char(text[i - 1])
+                  || text[i - 1] == '$'))
+    {
+        return std::string::npos;
+    }
+
+    size_t template_start = i;
+    while (true)
+    {
+        if (text.compare(template_start, prefix.size(), prefix) != 0)
+            return std::string::npos;
+
+        size_t end = template_start + prefix.size();
+        if (end >= text.size() || !is_item_key_letter(text[end]))
+            return std::string::npos;
+
+        bool previous_was_space = false;
+        while (end < text.size() && text[end] != ']')
+        {
+            if (is_item_key_letter(text[end]))
+                previous_was_space = false;
+            else if (text[end] == ' ' && !previous_was_space)
+                previous_was_space = true;
+            else
+                return std::string::npos;
+            ++end;
+        }
+        if (end >= text.size() || previous_was_space)
+            return std::string::npos;
+
+        ++end;
+        if (end == text.size())
+            return end;
+        if (text[end] == '$')
+        {
+            // As with command templates, validate an adjacent item-template
+            // chain as a unit so a malformed successor cannot be hidden.
+            template_start = end;
+            continue;
+        }
+        return !is_ascii_identifier_char(text[end])
+            ? end : std::string::npos;
+    }
+}
+
+static bool is_exact_technical_literal_joiner(char c)
+{
+    return is_ascii_identifier_char(c) || c == '$' || c == '-'
+        || c == '.' || c == '/' || c == ':' || c == '?'
+        || c == '#' || c == '%' || c == '=' || c == '&';
+}
+
 static size_t allowed_technical_literal_end(const std::string& text, size_t i)
 {
-    // Some translated command descriptions must preserve exact option names,
+    // Some translated descriptions must preserve exact option names,
     // command identifiers, literals, and paths. Match the complete ASCII
     // identifier/literal instead of allowlisting its component words: broad
     // entries such as "auto" or "status" would hide ordinary English leaks.
+    static const std::vector<std::string> exact_allowed = {
+        "docs",
+        "auto_exclude",
+        "shift-numpad-5",
+        "http://crawl.develz.org/",
+    };
+    for (const std::string& literal : exact_allowed)
+    {
+        if (text.compare(i, literal.size(), literal) != 0)
+            continue;
+
+        const size_t literal_end = i + literal.size();
+        if ((i > 0 && is_exact_technical_literal_joiner(text[i - 1]))
+            || (literal_end < text.size()
+                && is_exact_technical_literal_joiner(text[literal_end])))
+        {
+            return std::string::npos;
+        }
+        return literal_end;
+    }
+
     if (i > 0 && is_ascii_identifier_char(text[i - 1]))
         return std::string::npos;
 
@@ -531,10 +642,10 @@ static size_t mixed_cn_en_offender(const std::string& text)
     if (!has_cjk)
         return std::string::npos;
 
-    // Preserve valid $cmd[COMMAND_IDENTIFIER] templates explicitly. Outside
-    // templates, classify each maximal ASCII identifier as a whole; otherwise
-    // a near-match such as cmd_explore could fall back to separately
-    // allowlisted "cmd" and "explore" fragments.
+    // Preserve valid $cmd[COMMAND_IDENTIFIER] and $item[item class]
+    // templates explicitly. Outside templates, classify each maximal ASCII
+    // identifier as a whole; otherwise a near-match such as cmd_explore could
+    // fall back to separately allowlisted "cmd" and "explore" fragments.
     // The whitelist lives in catch2-tests/zh_runtime_allowlist_enum.txt plus
     // a hardcoded minimal set in source. We replicate a generous built-in
     // whitelist here so the helper is self-contained and testable in M1.
@@ -596,6 +707,15 @@ static size_t mixed_cn_en_offender(const std::string& text)
         if (command_template_like_at(text, i))
         {
             const size_t template_end = command_template_end(text, i);
+            if (template_end == std::string::npos)
+                return i;
+            i = template_end;
+            continue;
+        }
+
+        if (item_template_like_at(text, i))
+        {
+            const size_t template_end = item_template_end(text, i);
             if (template_end == std::string::npos)
                 return i;
             i = template_end;
