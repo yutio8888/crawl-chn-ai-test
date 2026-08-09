@@ -405,8 +405,17 @@ static size_t command_template_end(const std::string& text, size_t i)
         return std::string::npos;
 
     ++end;
-    return end == text.size()
-        || (!is_ascii_identifier_char(text[end]) && text[end] != '$')
+    if (end == text.size() || (!is_ascii_identifier_char(text[end])
+                               && text[end] != '$'))
+    {
+        return end;
+    }
+
+    // Adjacent command templates are valid production syntax. Only treat '$'
+    // as a boundary when it begins another complete template; this keeps a
+    // lone '$' or a malformed following template visible to the scanner.
+    return text[end] == '$'
+           && command_template_end(text, end) != std::string::npos
         ? end : std::string::npos;
 }
 
