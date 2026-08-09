@@ -339,19 +339,27 @@ static bool is_ascii_identifier_char(char c)
         || (c >= '0' && c <= '9') || c == '_';
 }
 
+static bool is_command_identifier_char(char c)
+{
+    return (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+        || c == '_';
+}
+
 static size_t command_template_end(const std::string& text, size_t i)
 {
     static const std::string prefix = "$cmd[";
     if (text.compare(i, prefix.size(), prefix) != 0)
         return std::string::npos;
 
-    size_t end = i + prefix.size();
-    const size_t identifier_start = end;
+    const size_t identifier_start = i + prefix.size();
     if (text.compare(identifier_start, 4, "CMD_") != 0)
         return std::string::npos;
-    while (end < text.size() && is_ascii_identifier_char(text[end]))
+
+    size_t end = identifier_start + 4;
+    const size_t command_start = end;
+    while (end < text.size() && is_command_identifier_char(text[end]))
         ++end;
-    return end > identifier_start + 4 && end < text.size() && text[end] == ']'
+    return end > command_start && end < text.size() && text[end] == ']'
         ? end + 1 : std::string::npos;
 }
 
@@ -397,7 +405,8 @@ static bool is_lua_member_call_identifier(const std::string& text,
                                           size_t identifier_end)
 {
     if (identifier_start == 0 || text[identifier_start - 1] != '.'
-        || identifier_end >= text.size() || text[identifier_end] != '(')
+        || identifier_end + 1 >= text.size()
+        || text[identifier_end] != '(' || text[identifier_end + 1] != ')')
     {
         return false;
     }
@@ -406,8 +415,12 @@ static bool is_lua_member_call_identifier(const std::string& text,
     if (open == std::string::npos)
         return false;
     const size_t close = text.rfind("}}", identifier_start);
-    return (close == std::string::npos || close < open)
-        && text.find("}}", identifier_end) != std::string::npos;
+    if (close != std::string::npos && close >= open)
+        return false;
+
+    const size_t template_end = text.find("}}", open + 2);
+    return template_end != std::string::npos
+        && identifier_end + 2 <= template_end;
 }
 
 static size_t mixed_cn_en_offender(const std::string& text)
