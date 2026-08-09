@@ -5,8 +5,7 @@ CMD_REST
 %%%%
 CMD_REST verbose
 
-恢复你的健康和魔力。一旦有敌对怪物出现，休息就会中断。
-如果生命值和魔法值都已满，此将休息100回合。
+休息时，你的生命值和法力会逐渐恢复。视野中一旦出现敌对怪物，休息就会中断。如果生命值和法力都已满，则会原地等待 100 回合。
 %%%%
 CMD_EXPLORE
 
@@ -27,7 +26,7 @@ CMD_INTERLEVEL_TRAVEL verbose
 %%%%
 CMD_USE_ABILITY
 
-使用神赐的、先天的或激活的能力
+使用神赐、先天或可激活的能力
 %%%%
 CMD_SEARCH_STASHES
 
@@ -63,7 +62,7 @@ CMD_DISPLAY_RELIGION
 %%%%
 CMD_DISPLAY_RELIGION verbose
 
-显示你信仰的神祗的好恶、行为，以及当前的信仰等级和神赐的能力。
+显示你信仰的神祇的好恶、戒律，以及当前的虔诚度和神赐的能力。
 %%%%
 CMD_DISPLAY_MUTATIONS
 
@@ -112,19 +111,15 @@ CMD_DISPLAY_COMMANDS verbose
 %%%%
 CMD_SHOW_CHARACTER_DUMP
 
-丢弃并显示角色的进度
+导出并显示角色进度
 %%%%
 CMD_SHOW_CHARACTER_DUMP verbose
 
-将角色的详细信息丢入到存档目录中的文件“ 玩家名.txt”，
-并在游戏中显示该文件。它包含主要数据、装备、魔法、技能、笔记等等。
-
-丢弃角色的进度
+将角色的详细信息导出到 morgue 目录中的文件“玩家名.txt”，并在游戏中显示该文件。它包含主要数据、装备、法术、技能、笔记等等。
 %%%%
 CMD_CHARACTER_DUMP verbose
 
-将角色的详细信息丢入到存档目录中的文件“ 玩家名.txt”，
-以便你在闲暇时仔细阅读。它包含主要数据、装备、魔法、技能、笔记等等。
+将角色的详细信息导出到 morgue 目录中的文件“玩家名.txt”，以便你在闲暇时仔细阅读。它包含主要数据、装备、法术、技能、笔记等等。
 %%%%
 CMD_AUTOFIGHT
 
@@ -188,7 +183,7 @@ CMD_LOOKUP_HELP
 %%%%
 CMD_LOOKUP_HELP verbose
 
-查看怪物、魔法、能力、物品等的描述。
+查看怪物、法术、能力、物品等的描述。
 %%%%
 CMD_DROP
 
@@ -224,7 +219,7 @@ CMD_MAP_EXPLORE
 %%%%
 CMD_MAP_EXPLORE verbose
 
-将光标移到下一个位置，然后将自动探索那里。
+将光标移到自动探索将要前往的下一个位置。
 %%%%
 CMD_MAP_ADD_WAYPOINT
 
@@ -300,11 +295,11 @@ CMD_MAP_FIND_YOU verbose
 %%%%
 CMD_MAP_FIND_PORTAL
 
-寻找商店和门户
+寻找商店和传送门
 %%%%
 CMD_MAP_FIND_PORTAL verbose
 
-循环显示本层的商店或门户。
+循环显示本层的商店和传送门。
 %%%%
 CMD_MAP_FIND_TRAP
 
@@ -320,7 +315,7 @@ CMD_MAP_FIND_ALTAR
 %%%%
 CMD_MAP_FIND_ALTAR verbose
 
-循环显示切换到本层的祭坛。
+循环显示本层的祭坛。
 %%%%
 CMD_MAP_FIND_EXCLUDED
 
@@ -366,10 +361,6 @@ CMD_TOGGLE_KEYBOARD
 
 切换键盘
 %%%%
-CMD_SHOW_KEYBOARD verbose
-
-切换屏幕键盘的可见性。
-%%%%
 CMD_GAME_MENU
 
 显示游戏菜单
@@ -384,7 +375,7 @@ CMD_CHARACTER_DUMP
 %%%%
 CMD_EXPLORE_NO_REST
 
-自动探索当前楼层，不先休息
+自动探索当前楼层，并沿途收集物品。一旦有敌对怪物出现，或是遇到新物品或新地标时，探索就会停止。与 CMD_EXPLORE 不同，此命令会将 explore_auto_rest 视为 false，将 explore_auto_rest_status 视为空。
 %%%%
 CMD_TOGGLE_KEYBOARD verbose
 
@@ -416,7 +407,7 @@ android command menu|Abilities
 %%%%
 android command menu summary|Abilities
 
-使用神赐的、先天的或激活的能力
+使用神赐、先天或可激活的能力
 %%%%
 android command menu|Character
 

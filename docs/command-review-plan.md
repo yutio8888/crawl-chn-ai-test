@@ -1,4 +1,4 @@
-# Issue #40 R3 命令名称与描述全量校对计划（子批次 1：commands）
+# Issue #43 R3 命令名称与描述全量校对计划（子批次 1：commands）
 
 ## 冻结边界
 
@@ -7,7 +7,10 @@
 - 上游总览：Issue #40 R3；执行入口子 Issue #43（子批次 1）。
 - 生产身份源：`crawl-ref/source/command-type.h` 的 `command_type` 枚举（306 成员，
   含 `CMD_NO_CMD` 与 `CMD_MAX_CMD` 哨兵）；名称映射 `crawl-ref/source/macro.cc`
-  `_cmds_to_names`（287 条目；19 个未映射成员 = 哨兵/合成命令，无显示路径）。
+  `_cmds_to_names`（286 个物理条目；20 个未映射成员含 `CMD_NO_CMD` fallback、
+  范围别名、合成命令与哨兵）。`util/cmd-name.pl` 消费但不输出首个
+  `CMD_NO_CMD`，末尾 `{CMD_NO_CMD, nullptr}` 仅为初始化停止哨兵；两方向查找
+  仍通过既有 fallback 收敛到 `CMD_NO_CMD`。
 - 描述数据源：`crawl-ref/source/dat/descript/commands.txt`（EN）与
   `crawl-ref/source/dat/descript/zh/commands.txt`（ZH），TextDB 键 =
   `CMD_X`（terse）与 `CMD_X verbose`（verbose）；EN 96 键行 / 95 唯一键
@@ -57,7 +60,8 @@
 
 ## 顺序
 
-1. 冻结清单并记录 digest（本计划；inventory SHA `9320c0b5…`，重建命令见下）。
+1. 冻结清单并记录 digest（本计划；修正生产 name-map 语义后的 inventory SHA
+   `e2d021ae6acaf6a85481c7528effbc7bf728be4345875e6bf959db30260bbc2c`，重建命令见下）。
 2. 按显示消费者分组审核：tiles 命令条常显组（terse）→ 详情组（verbose）→
    回退链影响组（仅 terse 无 verbose 的命令）→ 未映射/哨兵组。
 3. 逐个身份记录证据卡与终态结论（`docs/command-review-results.md`）。
@@ -70,6 +74,7 @@
 ```bash
 python3 .claude/scripts/command_inventory.py \
   --baseline-ref b56f853c4377bb5c07dfb1544fea5447a5c8ad15 \
-  --inventory-output /tmp/command-inventory-<新文件名>.json
+  --inventory-output /tmp/command-inventory-<新文件名>.json \
+  --review-results docs/command-review-results.md
   （输出仅允许 canonical /tmp 直下全新 basename；重复重建请更换文件名或先删除旧文件）
 ```

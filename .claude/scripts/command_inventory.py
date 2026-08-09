@@ -16,13 +16,16 @@ Name sources: macro.cc `_command_name_list` (populated from the generated
 `command_to_name()` / `name_to_command()`. `cmd-name.h` is generated at
 build time by util/cmd-name.pl from command-type.h and is NOT tracked in
 Git, so the tool reproduces the generator's deterministic transformation
-exactly from the baseline enum blob: starting at CMD_NO_CMD, every member
-up to (but excluding) CMD_DISABLE_MORE is mapped to its own identifier,
-CMD_MIN_*/CMD_MAX_* aliases are skipped, and the table ends with the
-{CMD_NO_CMD, nullptr} sentinel. The reverse map is the identity map over
-the same entries. `command_to_name()` returns "CMD_NO_CMD" for any command
-outside the table and `name_to_command()` returns CMD_NO_CMD for any
-unknown name -- the NO_CMD exception to the `CMD_[A-Z0-9_]+` name shape.
+exactly from the baseline enum blob: cmd-name.pl reads and discards the
+CMD_NO_CMD anchor line, then maps every later member up to (but excluding)
+CMD_DISABLE_MORE to its own identifier, skipping CMD_MIN_*/CMD_MAX_* aliases.
+The generated array ends with `{CMD_NO_CMD, nullptr}`, but macro.cc
+`init_keybindings()` stops before that sentinel and never inserts CMD_NO_CMD
+into either map. The reverse map is the identity map over the physical
+non-sentinel entries. `command_to_name()` returns "CMD_NO_CMD" for any
+command outside the table (including CMD_NO_CMD itself) and
+`name_to_command()` returns CMD_NO_CMD for any unknown name -- the NO_CMD
+fallback exception to the `CMD_[A-Z0-9_]+` name shape.
 The macro.cc audit regions (the include of cmd-name.h, the two map
 declarations, and the exact bodies of name_to_command()/command_to_name())
 are verified with exact fail-closed patterns, so a structural change to the
@@ -84,15 +87,22 @@ paths, renamable roots such as the OS user temp dir, and symlink escapes
 are rejected; the trusted root is opened once and the target is created
 with O_EXCL|O_NOFOLLOW (see write_inventory_output()).
 
+With `--review-results`, the tool additionally reads one strict canonical
+JSONL evidence-card block and proves exact, unique, identity-bound review
+coverage against the rebuilt baseline inventory. Review coverage is appended
+to the output payload only after the inventory digest is calculated.
+
 Usage:
   python3 .claude/scripts/command_inventory.py --baseline-ref <commit> \
-      --inventory-output /tmp/command-inventory-<new-file>.json
+      --inventory-output /tmp/command-inventory-<new-file>.json \
+      [--review-results docs/command-review-results.md]
 
   --inventory-output must be a single brand-new basename directly under
   /tmp (the canonical root-owned sticky temp root; realpath /private/tmp
   on macOS); the target must not already exist.
 """
 import argparse
+from collections import Counter
 import errno
 import hashlib
 import json
@@ -106,7 +116,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from i18n_shared import (AuditInput, lowercase_string,  # noqa: E402
+from i18n_shared import (AuditInput, load_review_input,  # noqa: E402
+                         lowercase_string, review_input_metadata,
                          parse_entries_physical, trim_leading_newlines,
                          trim_string, trim_string_right,
                          trusted_git_environment)
@@ -118,6 +129,45 @@ COMMANDS_EN = "crawl-ref/source/dat/descript/commands.txt"
 COMMANDS_ZH = "crawl-ref/source/dat/descript/zh/commands.txt"
 SOURCE_TXT = "crawl-ref/source/dat/i18n/zh/source.txt"
 GLOSSARY_MD = "docs/glossary.md"
+
+STRICT_REVIEW_BEGIN = "<!-- BEGIN STRICT REVIEW EVIDENCE v2 -->"
+STRICT_REVIEW_END = "<!-- END STRICT REVIEW EVIDENCE v2 -->"
+TERMINAL_CONCLUSIONS = {
+    "keep",
+    "adjust",
+    "retranslate",
+    "defer terminology",
+    "defer implementation",
+}
+CONFIDENCE_LEVELS = {"high", "medium", "low"}
+STRICT_CARD_FIELDS = {
+    "actual_behavior",
+    "confidence",
+    "consumer",
+    "current_chinese",
+    "current_english",
+    "dependency_group",
+    "display_context",
+    "evidence_locations",
+    "fact_sha256",
+    "glossary_authority",
+    "identity",
+    "lifecycle",
+    "lookup_name",
+    "missing_t",
+    "name_in_map",
+    "producer",
+    "production_facts",
+    "proposed_translation",
+    "reentry_trigger",
+    "rejected_alternatives",
+    "reviewer_rationale",
+    "terminal_conclusion",
+}
+_VAGUE_DEFERRAL_VALUES = {
+    "n/a", "none", "not applicable", "tbd", "todo", "unknown",
+    "不适用", "待定", "无",
+}
 
 #: command_type enum sentinels/anchors asserted by the strict parser.
 FIRST_MEMBER = "CMD_NO_CMD"
@@ -435,11 +485,14 @@ def generate_name_table(members: list[str]) -> dict[str, str]:
     """Reproduce the macro.cc `_cmds_to_names` table exactly as
     util/cmd-name.pl generates cmd-name.h from command-type.h.
 
-    Every member from CMD_NO_CMD (inclusive) up to the first
-    CMD_DISABLE_MORE (exclusive, the generator's `last if ...` stop) maps
-    to its own identifier string, skipping CMD_MIN_*/CMD_MAX_* aliases
-    (which are not commands). The reverse `_names_to_cmds` table is the
-    identity map over the same entries, so `name_to_command("CMD_X")`
+    cmd-name.pl's first loop consumes the CMD_NO_CMD anchor without
+    emitting it. Every later member up to the first CMD_DISABLE_MORE
+    (exclusive, the generator's `last if ...` stop) maps to its own
+    identifier string, skipping CMD_MIN_*/CMD_MAX_* aliases (which are
+    not commands). Its final `{CMD_NO_CMD, nullptr}` line is only the
+    generated-array sentinel: macro.cc stops before it, so neither map
+    contains CMD_NO_CMD. The reverse `_names_to_cmds` table is the
+    identity map over the physical entries, so `name_to_command("CMD_X")`
     resolves to the enum member of the same name and anything else falls
     back to CMD_NO_CMD.
 
@@ -447,8 +500,11 @@ def generate_name_table(members: list[str]) -> dict[str, str]:
     table has no duplicate names; every mapped member has exactly one
     name; every mapped name resolves back to its own member.
     """
+    if not members or members[0] != FIRST_MEMBER:
+        raise SystemExit(
+            f"name-table input must start with {FIRST_MEMBER}")
     table: dict[str, str] = {}
-    for member in members:
+    for member in members[1:]:
         if member == NAME_TABLE_STOP:
             break
         if member.startswith("CMD_MIN_") or member.startswith("CMD_MAX_"):
@@ -1056,6 +1112,284 @@ def build_inventory(members: list[str], name_table: dict[str, str],
     return inventory
 
 
+# ---------------------------------------------------------------------------
+# Strict review-ledger coverage (identity-bound canonical JSONL)
+# ---------------------------------------------------------------------------
+
+def fact_sha256(row: dict[str, object]) -> str:
+    """Digest one complete inventory row in canonical JSON form."""
+    encoded = json.dumps(
+        row,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def mechanical_card_fields(row: dict[str, object]) -> dict[str, object]:
+    """Rebuild every evidence-card field derived from production facts."""
+    return {
+        "current_chinese": {
+            field: row[field]
+            for field in (
+                "terse_zh",
+                "verbose_zh",
+                "terse_display_zh",
+                "verbose_display_zh",
+            )
+        },
+        "current_english": {
+            field: row[field]
+            for field in (
+                "terse_en",
+                "verbose_en",
+                "terse_display_en",
+                "verbose_display_en",
+            )
+        },
+        "fact_sha256": fact_sha256(row),
+        "identity": row["identity"],
+        "lifecycle": row["lifecycle"],
+        "lookup_name": row["lookup_name"],
+        "missing_t": row["missing_t"],
+        "name_in_map": row["name_in_map"],
+        "production_facts": row,
+    }
+
+
+def _load_strict_json(line: str, label: str) -> object:
+    def reject_constant(value: str) -> None:
+        raise ValueError(f"non-finite JSON value {value}")
+
+    try:
+        return json.loads(line, parse_constant=reject_constant)
+    except (json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError(f"invalid {label} JSON") from error
+
+
+def parse_strict_review_evidence(review_input: AuditInput
+                                 ) -> tuple[dict[str, object],
+                                            list[dict[str, object]]]:
+    """Parse the document's one marker-bound canonical JSONL card block."""
+    text = review_input.text
+    if (text.count(STRICT_REVIEW_BEGIN) != 1
+            or text.count(STRICT_REVIEW_END) != 1):
+        raise RuntimeError(
+            "strict review evidence block is missing or duplicated")
+    before, remainder = text.split(STRICT_REVIEW_BEGIN, 1)
+    block_text, after = remainder.split(STRICT_REVIEW_END, 1)
+    del before, after
+    if not block_text.startswith("\n") or not block_text.endswith("\n"):
+        raise RuntimeError("strict review evidence block framing is invalid")
+    lines = block_text[1:-1].splitlines()
+    if len(lines) < 4 or lines[1] != "```jsonl" or lines[-1] != "```":
+        raise RuntimeError("strict review evidence block structure is invalid")
+
+    metadata = _load_strict_json(lines[0], "strict review metadata")
+    metadata_fields = {
+        "baseline", "glossary_sha256", "identity_count", "inventory_sha256",
+    }
+    if not isinstance(metadata, dict) or set(metadata) != metadata_fields:
+        raise RuntimeError("strict review metadata fields are invalid")
+    if lines[0] != json.dumps(
+        metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ):
+        raise RuntimeError("strict review metadata is not canonical JSON")
+    if (not isinstance(metadata["baseline"], str)
+            or not re.fullmatch(r"[0-9a-f]{40}", metadata["baseline"])
+            or not isinstance(metadata["glossary_sha256"], str)
+            or not re.fullmatch(
+                r"[0-9a-f]{64}", metadata["glossary_sha256"])
+            or not isinstance(metadata["inventory_sha256"], str)
+            or not re.fullmatch(
+                r"[0-9a-f]{64}", metadata["inventory_sha256"])
+            or isinstance(metadata["identity_count"], bool)
+            or not isinstance(metadata["identity_count"], int)
+            or metadata["identity_count"] < 0):
+        raise RuntimeError("strict review metadata values are invalid")
+
+    cards: list[dict[str, object]] = []
+    for line_number, line in enumerate(lines[2:-1], start=3):
+        card = _load_strict_json(
+            line, f"strict review evidence card at block line {line_number}")
+        if not isinstance(card, dict) or set(card) != STRICT_CARD_FIELDS:
+            raise RuntimeError("strict review evidence-card fields are invalid")
+        if line != json.dumps(
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ):
+            raise RuntimeError(
+                "strict review evidence card is not canonical JSON")
+        if not isinstance(card["identity"], str) or not card["identity"]:
+            raise RuntimeError("strict review evidence-card identity is invalid")
+        cards.append(card)
+    return metadata, cards
+
+
+def _nonempty_string(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _vague_deferral_value(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and value.strip().lower().strip(".。;；") in _VAGUE_DEFERRAL_VALUES
+    )
+
+
+def review_coverage(payload: dict[str, object], review_input: AuditInput
+                    ) -> dict[str, object]:
+    """Prove metadata, identity, fact, decision, and evidence invariants."""
+    metadata, cards = parse_strict_review_evidence(review_input)
+    inventory = payload["inventory"]
+    if not isinstance(inventory, list):
+        raise RuntimeError("inventory rows are unavailable for review binding")
+    inventory_ids = [row["identity"] for row in inventory]
+    review_ids = [card["identity"] for card in cards]
+    conclusion_counts = dict(sorted(Counter(
+        card["terminal_conclusion"] for card in cards
+        if isinstance(card["terminal_conclusion"], str)
+    ).items()))
+    inventory_set = set(inventory_ids)
+    review_set = set(review_ids)
+    inventory_duplicates = sorted(
+        identity for identity, count in Counter(inventory_ids).items()
+        if count > 1
+    )
+    review_duplicates = sorted(
+        identity for identity, count in Counter(review_ids).items()
+        if count > 1
+    )
+    expected_by_id = {row["identity"]: row for row in inventory}
+
+    mismatched_mechanical_fields = sorted(
+        f"{card['identity']}:{field}"
+        for card in cards
+        if card["identity"] in expected_by_id
+        for field, expected in mechanical_card_fields(
+            expected_by_id[card["identity"]]
+        ).items()
+        if card[field] != expected
+    )
+    invalid_terminal = sorted(
+        card["identity"] for card in cards
+        if (not isinstance(card["terminal_conclusion"], str)
+            or card["terminal_conclusion"] not in TERMINAL_CONCLUSIONS)
+    )
+    empty_rationales = sorted(
+        card["identity"] for card in cards
+        if not _nonempty_string(card["reviewer_rationale"])
+    )
+    invalid_reentry = sorted(
+        card["identity"] for card in cards
+        if not _nonempty_string(card["reentry_trigger"])
+    )
+    invalid_deferrals = sorted(
+        card["identity"] for card in cards
+        if (isinstance(card["terminal_conclusion"], str)
+            and card["terminal_conclusion"].startswith("defer ")
+            and (
+                not _nonempty_string(card["reviewer_rationale"])
+                or _vague_deferral_value(card["reviewer_rationale"])
+                or not _nonempty_string(card["reentry_trigger"])
+                or _vague_deferral_value(card["reentry_trigger"])
+            ))
+    )
+    required_string_fields = (
+        "actual_behavior",
+        "consumer",
+        "dependency_group",
+        "display_context",
+        "glossary_authority",
+        "producer",
+    )
+    invalid_evidence_fields = sorted(
+        f"{card['identity']}:{field}"
+        for card in cards
+        for field in required_string_fields
+        if not _nonempty_string(card[field])
+    )
+    invalid_evidence_locations = sorted(
+        card["identity"] for card in cards
+        if (not isinstance(card["evidence_locations"], list)
+            or not card["evidence_locations"]
+            or any(not _nonempty_string(value)
+                   for value in card["evidence_locations"]))
+    )
+    invalid_confidence = sorted(
+        card["identity"] for card in cards
+        if (not isinstance(card["confidence"], str)
+            or card["confidence"] not in CONFIDENCE_LEVELS)
+    )
+    invalid_proposed_translation = sorted(
+        card["identity"] for card in cards
+        if (card["proposed_translation"] is not None
+            and not _nonempty_string(card["proposed_translation"]))
+    )
+    invalid_rejected_alternatives = sorted(
+        card["identity"] for card in cards
+        if (not isinstance(card["rejected_alternatives"], list)
+            or any(not _nonempty_string(value)
+                   for value in card["rejected_alternatives"]))
+    )
+    binding_matches = {
+        "baseline": metadata["baseline"] == payload["baseline"],
+        "glossary_sha256": (
+            metadata["glossary_sha256"] == payload["glossary_sha256"]
+        ),
+        "identity_count": metadata["identity_count"] == len(inventory),
+        "inventory_sha256": (
+            metadata["inventory_sha256"] == payload["inventory_sha256"]
+        ),
+    }
+    order_matches = review_ids == inventory_ids
+    inventory_minus_review = sorted(inventory_set - review_set)
+    review_minus_inventory = sorted(review_set - inventory_set)
+    coverage_equal = (
+        all(binding_matches.values())
+        and len(review_ids) == len(inventory_ids)
+        and not inventory_duplicates
+        and not review_duplicates
+        and not inventory_minus_review
+        and not review_minus_inventory
+        and order_matches
+        and not mismatched_mechanical_fields
+        and not invalid_terminal
+        and not empty_rationales
+        and not invalid_reentry
+        and not invalid_deferrals
+        and not invalid_evidence_fields
+        and not invalid_evidence_locations
+        and not invalid_confidence
+        and not invalid_proposed_translation
+        and not invalid_rejected_alternatives
+    )
+    return {
+        **review_input_metadata(review_input),
+        "review_results": review_input.logical_path,
+        "review_results_sha256": review_input.sha256,
+        "evidence_card_count": len(cards),
+        "terminal_conclusion_counts": conclusion_counts,
+        "binding_matches": binding_matches,
+        "inventory_duplicate_identities": inventory_duplicates,
+        "duplicate_evidence_cards": review_duplicates,
+        "inventory_minus_review": inventory_minus_review,
+        "review_minus_inventory": review_minus_inventory,
+        "canonical_card_order": order_matches,
+        "mismatched_mechanical_fields": mismatched_mechanical_fields,
+        "invalid_terminal_conclusions": invalid_terminal,
+        "empty_reviewer_rationales": empty_rationales,
+        "invalid_reentry_triggers": invalid_reentry,
+        "invalid_deferrals": invalid_deferrals,
+        "invalid_evidence_fields": invalid_evidence_fields,
+        "invalid_evidence_locations": invalid_evidence_locations,
+        "invalid_confidence": invalid_confidence,
+        "invalid_proposed_translation": invalid_proposed_translation,
+        "invalid_rejected_alternatives": invalid_rejected_alternatives,
+        "coverage_equal": coverage_equal,
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
@@ -1085,6 +1419,11 @@ def main() -> int:
              "commit's Git objects via `git show` under the trusted git "
              "environment, so the inventory is independent of local "
              "worktree state and of git replace refs")
+    ap.add_argument(
+        "--review-results",
+        type=Path,
+        help="also validate the unique canonical strict evidence-card "
+             "block in this review ledger against the rebuilt inventory")
     args = ap.parse_args()
     baseline = resolve_commit(args.baseline_ref)
 
@@ -1214,6 +1553,20 @@ def main() -> int:
         payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     payload["inventory_sha256"] = digest
 
+    if args.review_results:
+        try:
+            review_input = load_review_input(ROOT, args.review_results)
+            payload["review_input"] = review_input_metadata(review_input)
+            payload["review_coverage"] = review_coverage(
+                payload, review_input)
+        except (OSError, RuntimeError, ValueError) as error:
+            print(
+                f"ERROR: command review coverage could not be checked: "
+                f"{error}",
+                file=sys.stderr,
+            )
+            return 2
+
     out = write_inventory_output(
         args.inventory_output,
         json.dumps(payload, ensure_ascii=False, indent=1))
@@ -1243,7 +1596,17 @@ def main() -> int:
     print(f"source.txt: {len(source_entries)} entries; "
           f"CMD-shaped keys: {source_cmd_keys}")
     print(f"inventory entries: {len(inventory)} (= enum members)")
+    if "review_coverage" in payload:
+        print("review coverage: " + json.dumps(
+            payload["review_coverage"],
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ))
     print(f"wrote {out}")
+    if ("review_coverage" in payload
+            and not payload["review_coverage"]["coverage_equal"]):
+        return 1
     return 0
 
 

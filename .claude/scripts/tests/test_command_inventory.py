@@ -15,9 +15,11 @@ inventory (card_inventory.py):
     produced at build time by util/cmd-name.pl from command-type.h (the
     generated header is NOT tracked in Git). The tool reproduces that
     deterministic transformation exactly from the baseline enum blob:
-    every member from CMD_NO_CMD up to (excluding) CMD_DISABLE_MORE is
-    mapped to its own name, CMD_MIN_*/CMD_MAX_* aliases are skipped, and
-    every name must match the CMD_[A-Z0-9_]+ shape. The macro.cc
+    CMD_NO_CMD is consumed as an anchor but not emitted, every later member
+    up to (excluding) CMD_DISABLE_MORE is mapped to its own name, and
+    CMD_MIN_*/CMD_MAX_* aliases are skipped. The generated
+    `{CMD_NO_CMD, nullptr}` record is a stop sentinel, not a map entry, and
+    every physical name must match the CMD_[A-Z0-9_]+ shape. The macro.cc
     regions that consume the table (the include, the two map
     declarations, the exact name_to_command()/command_to_name() bodies
     with their CMD_NO_CMD fallbacks) are verified with exact fail-closed
@@ -61,6 +63,7 @@ inventory (card_inventory.py):
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -312,13 +315,19 @@ def make_repo(root: Path, command_type_h: str = COMMAND_TYPE_H,
                           ).stdout.strip()
 
 
-def run_tool(root: Path, output: Path) -> subprocess.CompletedProcess:
+def run_tool(root: Path, output: Path,
+             review_results: Path | None = None) -> subprocess.CompletedProcess:
     """Run the (copied) command_inventory.py inside the fixture repo."""
+    command = [
+        sys.executable,
+        str(root / ".claude/scripts/command_inventory.py"),
+        "--baseline-ref", "HEAD",
+        "--inventory-output", str(output),
+    ]
+    if review_results is not None:
+        command.extend(["--review-results", str(review_results)])
     return subprocess.run(
-        [sys.executable,
-         str(root / ".claude/scripts/command_inventory.py"),
-         "--baseline-ref", "HEAD",
-         "--inventory-output", str(output)],
+        command,
         capture_output=True, text=True, cwd=str(root), timeout=60)
 
 
@@ -328,6 +337,84 @@ def run_tool(root: Path, output: Path) -> subprocess.CompletedProcess:
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import command_inventory as ci  # noqa: E402
+
+
+def review_payload() -> dict:
+    """Minimal complete inventory payload for strict-ledger unit tests."""
+    members = ci.parse_command_enum(COMMAND_TYPE_H)
+    name_table = ci.generate_name_table(members)
+    en_entries = ci.parse_db_keys(COMMANDS_TXT, "commands.txt")
+    zh_entries = ci.parse_db_keys(ZH_COMMANDS_TXT, "commands.txt")
+    en_effective, _en_overrides = ci.merge_desc_sequence(en_entries)
+    zh_effective, _zh_overrides = ci.merge_desc_sequence(zh_entries)
+    return {
+        "baseline": "a" * 40,
+        "glossary_sha256": "b" * 64,
+        "inventory_sha256": "c" * 64,
+        "inventory": ci.build_inventory(
+            members, name_table, en_effective, zh_effective),
+    }
+
+
+def valid_review_card(row: dict) -> dict:
+    return {
+        **ci.mechanical_card_fields(row),
+        "actual_behavior": "Fixture behavior verified from production.",
+        "confidence": "high",
+        "consumer": "Fixture display consumer.",
+        "dependency_group": "fixture command descriptions",
+        "display_context": "Fixture command UI.",
+        "evidence_locations": ["fixture:command-type.h"],
+        "glossary_authority": "Fixture glossary has no conflicting term.",
+        "producer": "Fixture command producer.",
+        "proposed_translation": None,
+        "reentry_trigger": "Re-review when the bound production facts change.",
+        "rejected_alternatives": [],
+        "reviewer_rationale": "English and Chinese behavior remain aligned.",
+        "terminal_conclusion": "keep",
+    }
+
+
+def valid_review_cards(payload: dict) -> list[dict]:
+    return [valid_review_card(row) for row in payload["inventory"]]
+
+
+def render_review_ledger(payload: dict, cards: list[dict],
+                         metadata: dict | None = None) -> str:
+    if metadata is None:
+        metadata = {
+            "baseline": payload["baseline"],
+            "glossary_sha256": payload["glossary_sha256"],
+            "identity_count": len(payload["inventory"]),
+            "inventory_sha256": payload["inventory_sha256"],
+        }
+    lines = [
+        "# Fixture command review",
+        "",
+        ci.STRICT_REVIEW_BEGIN,
+        json.dumps(metadata, ensure_ascii=False, sort_keys=True,
+                   separators=(",", ":")),
+        "```jsonl",
+    ]
+    lines.extend(
+        json.dumps(card, ensure_ascii=False, sort_keys=True,
+                   separators=(",", ":"))
+        for card in cards
+    )
+    lines.extend(["```", ci.STRICT_REVIEW_END, ""])
+    return "\n".join(lines)
+
+
+def review_input(text: str) -> ci.AuditInput:
+    data = text.encode("utf-8")
+    return ci.AuditInput(
+        audit_commit=None,
+        logical_path="docs/command-review-results.md",
+        relative_path="docs/command-review-results.md",
+        bytes=data,
+        text=text,
+        sha256=hashlib.sha256(data).hexdigest(),
+    )
 
 
 class CommandEnumParserTest(unittest.TestCase):
@@ -342,22 +429,46 @@ class CommandEnumParserTest(unittest.TestCase):
         self.assertIn("CMD_DISABLE_MORE", members)
 
     def test_unit_name_table_generator_semantics(self):
-        """util/cmd-name.pl semantics: from CMD_NO_CMD up to (excluding)
-        CMD_DISABLE_MORE, skipping CMD_MIN_*/CMD_MAX_* aliases; every
-        name is the member's own identifier."""
+        """util/cmd-name.pl consumes (but does not emit) CMD_NO_CMD, then
+        maps members up to (excluding) CMD_DISABLE_MORE while skipping
+        CMD_MIN_*/CMD_MAX_* aliases."""
         members = ci.parse_command_enum(COMMAND_TYPE_H)
         table = ci.generate_name_table(members)
         self.assertEqual(
             list(table),
-            ["CMD_NO_CMD", "CMD_NO_CMD_DEFAULT", "CMD_REST",
+            ["CMD_NO_CMD_DEFAULT", "CMD_REST",
              "CMD_EXPLORE", "CMD_ZOOM_IN", "CMD_ZOOM_OUT"])
         for member, name in table.items():
             self.assertEqual(member, name)
         # The synthetic tail and the aliases are not mapped.
-        for unmapped in ("CMD_MIN_MENU", "CMD_MAX_MENU", "CMD_DISABLE_MORE",
+        for unmapped in ("CMD_NO_CMD", "CMD_MIN_MENU", "CMD_MAX_MENU",
+                         "CMD_DISABLE_MORE",
                          "CMD_ENABLE_MORE", "CMD_UNWIELD_WEAPON",
                          "CMD_NEXT_CMD", "CMD_MAX_CMD"):
             self.assertNotIn(unmapped, table)
+
+    def test_unit_name_table_matches_real_cmd_name_generator(self):
+        """The modeled physical map matches util/cmd-name.pl output; its
+        final CMD_NO_CMD/nullptr stop record is not a map entry."""
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory)
+            (fixture / "command-type.h").write_text(
+                COMMAND_TYPE_H, encoding="utf-8")
+            result = subprocess.run(
+                ["perl", str(ROOT / "crawl-ref/source/util/cmd-name.pl")],
+                cwd=str(fixture), capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            generated = (fixture / "cmd-name.h").read_text(encoding="utf-8")
+        physical = dict(re.findall(
+            r'^\{(CMD_[A-Z0-9_]+), "(CMD_[A-Z0-9_]+)"\},$',
+            generated,
+            re.MULTILINE,
+        ))
+        self.assertEqual(
+            physical,
+            ci.generate_name_table(ci.parse_command_enum(COMMAND_TYPE_H)))
+        self.assertRegex(generated, r"\{CMD_NO_CMD, nullptr\}\s*$")
+        self.assertNotIn("CMD_NO_CMD", physical)
 
     def test_unit_parse_db_keys_production_semantics(self):
         """_parse_text_db (trim_keys=true): entries begin after the first
@@ -385,6 +496,256 @@ class CommandEnumParserTest(unittest.TestCase):
         self.assertEqual(len(entries), 5)
 
 
+class CommandReviewLedgerTest(unittest.TestCase):
+    """Strict canonical review-card parsing and coverage invariants."""
+
+    def _coverage(self, payload=None, cards=None, metadata=None):
+        payload = payload or review_payload()
+        cards = cards or valid_review_cards(payload)
+        artifact = review_input(render_review_ledger(
+            payload, cards, metadata=metadata))
+        return ci.review_coverage(payload, artifact)
+
+    def test_passing_fixture_proves_all_review_invariants(self):
+        payload = review_payload()
+        coverage = self._coverage(payload)
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertEqual(coverage["evidence_card_count"],
+                         len(payload["inventory"]))
+        self.assertEqual(
+            coverage["terminal_conclusion_counts"],
+            {"keep": len(payload["inventory"])})
+        self.assertTrue(all(coverage["binding_matches"].values()))
+        for field in (
+            "inventory_duplicate_identities",
+            "duplicate_evidence_cards",
+            "inventory_minus_review",
+            "review_minus_inventory",
+            "mismatched_mechanical_fields",
+            "invalid_terminal_conclusions",
+            "empty_reviewer_rationales",
+            "invalid_reentry_triggers",
+            "invalid_deferrals",
+            "invalid_evidence_fields",
+            "invalid_evidence_locations",
+            "invalid_confidence",
+            "invalid_proposed_translation",
+            "invalid_rejected_alternatives",
+        ):
+            self.assertEqual(coverage[field], [], field)
+
+    def test_parser_requires_one_marker_bound_block(self):
+        payload = review_payload()
+        text = render_review_ledger(payload, valid_review_cards(payload))
+        for label, mutated in (
+            ("missing", text.replace(ci.STRICT_REVIEW_BEGIN, "")),
+            ("duplicate", text + text),
+        ):
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(
+                    RuntimeError, "missing or duplicated"):
+                    ci.parse_strict_review_evidence(review_input(mutated))
+
+    def test_parser_requires_canonical_metadata_and_card_json(self):
+        payload = review_payload()
+        cards = valid_review_cards(payload)
+        text = render_review_ledger(payload, cards)
+        canonical_metadata = json.dumps({
+            "baseline": payload["baseline"],
+            "glossary_sha256": payload["glossary_sha256"],
+            "identity_count": len(payload["inventory"]),
+            "inventory_sha256": payload["inventory_sha256"],
+        }, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        mutated_metadata = text.replace(
+            canonical_metadata, canonical_metadata.replace(":", ": ", 1), 1)
+        with self.assertRaisesRegex(RuntimeError, "not canonical JSON"):
+            ci.parse_strict_review_evidence(review_input(mutated_metadata))
+
+        canonical_card = json.dumps(
+            cards[0], ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        mutated_card = text.replace(
+            canonical_card, canonical_card.replace(":", ": ", 1), 1)
+        with self.assertRaisesRegex(RuntimeError, "not canonical JSON"):
+            ci.parse_strict_review_evidence(review_input(mutated_card))
+
+    def test_parser_rejects_every_missing_or_unknown_card_field(self):
+        payload = review_payload()
+        card = valid_review_cards(payload)[0]
+        for field in sorted(ci.STRICT_CARD_FIELDS):
+            with self.subTest(missing=field):
+                mutated = dict(card)
+                del mutated[field]
+                text = render_review_ledger(payload, [mutated])
+                with self.assertRaisesRegex(RuntimeError, "fields are invalid"):
+                    ci.parse_strict_review_evidence(review_input(text))
+        mutated = dict(card, unknown_schema_field=True)
+        with self.assertRaisesRegex(RuntimeError, "fields are invalid"):
+            ci.parse_strict_review_evidence(review_input(
+                render_review_ledger(payload, [mutated])))
+
+    def test_parser_rejects_duplicate_terminal_conclusion_key(self):
+        """A card cannot encode two terminal states via duplicate keys."""
+        payload = review_payload()
+        cards = valid_review_cards(payload)
+        text = render_review_ledger(payload, cards)
+        canonical = json.dumps(
+            cards[0], ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        duplicate = canonical[:-1] + ',"terminal_conclusion":"adjust"}'
+        self.assertNotEqual(duplicate, canonical)
+        with self.assertRaisesRegex(RuntimeError, "not canonical JSON"):
+            ci.parse_strict_review_evidence(
+                review_input(text.replace(canonical, duplicate, 1)))
+
+    def test_inventory_and_review_identities_must_each_be_unique(self):
+        payload = review_payload()
+        payload["inventory"][-1] = dict(payload["inventory"][0])
+        cards = valid_review_cards(payload)
+        coverage = self._coverage(payload, cards)
+        self.assertFalse(coverage["coverage_equal"])
+        self.assertEqual(
+            coverage["inventory_duplicate_identities"],
+            [payload["inventory"][0]["identity"]])
+        self.assertEqual(
+            coverage["duplicate_evidence_cards"],
+            [payload["inventory"][0]["identity"]])
+
+    def test_inventory_review_set_equality_is_bidirectional(self):
+        payload = review_payload()
+        cards = valid_review_cards(payload)
+        missing_identity = cards[-1]["identity"]
+        coverage = self._coverage(payload, cards[:-1])
+        self.assertFalse(coverage["coverage_equal"])
+        self.assertEqual(coverage["inventory_minus_review"],
+                         [missing_identity])
+        self.assertEqual(coverage["review_minus_inventory"], [])
+
+        unexpected = json.loads(json.dumps(cards))
+        unexpected[-1]["identity"] = "command:CMD_NOT_IN_INVENTORY"
+        coverage = self._coverage(payload, unexpected)
+        self.assertFalse(coverage["coverage_equal"])
+        self.assertEqual(coverage["inventory_minus_review"],
+                         [missing_identity])
+        self.assertEqual(coverage["review_minus_inventory"],
+                         ["command:CMD_NOT_IN_INVENTORY"])
+
+    def test_metadata_fields_each_bind_to_rebuilt_inventory(self):
+        payload = review_payload()
+        base = {
+            "baseline": payload["baseline"],
+            "glossary_sha256": payload["glossary_sha256"],
+            "identity_count": len(payload["inventory"]),
+            "inventory_sha256": payload["inventory_sha256"],
+        }
+        mutations = {
+            "baseline": "d" * 40,
+            "glossary_sha256": "d" * 64,
+            "identity_count": len(payload["inventory"]) + 1,
+            "inventory_sha256": "d" * 64,
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                metadata = dict(base, **{field: value})
+                coverage = self._coverage(payload, metadata=metadata)
+                self.assertFalse(coverage["coverage_equal"])
+                self.assertFalse(coverage["binding_matches"][field])
+                self.assertTrue(all(
+                    matched for key, matched
+                    in coverage["binding_matches"].items() if key != field))
+
+    def test_every_mechanical_card_field_binds_to_inventory_fact(self):
+        payload = review_payload()
+        base_cards = valid_review_cards(payload)
+        mutations = {
+            "current_chinese": {},
+            "current_english": {},
+            "fact_sha256": "d" * 64,
+            "lifecycle": "mutated",
+            "lookup_name": "CMD_MUTATED",
+            "missing_t": ["mutated"],
+            "name_in_map": not base_cards[0]["name_in_map"],
+            "production_facts": {},
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                cards = json.loads(json.dumps(base_cards))
+                cards[0][field] = value
+                coverage = self._coverage(payload, cards)
+                self.assertFalse(coverage["coverage_equal"])
+                self.assertIn(
+                    f"{cards[0]['identity']}:{field}",
+                    coverage["mismatched_mechanical_fields"])
+
+    def test_card_order_must_follow_inventory_declaration_order(self):
+        payload = review_payload()
+        cards = valid_review_cards(payload)
+        cards[0], cards[1] = cards[1], cards[0]
+        coverage = self._coverage(payload, cards)
+        self.assertFalse(coverage["coverage_equal"])
+        self.assertFalse(coverage["canonical_card_order"])
+        self.assertEqual(coverage["inventory_minus_review"], [])
+        self.assertEqual(coverage["review_minus_inventory"], [])
+
+    def test_terminal_rationale_and_reentry_values_are_required(self):
+        payload = review_payload()
+        base_cards = valid_review_cards(payload)
+        mutations = (
+            ("terminal_conclusion", "pending", "invalid_terminal_conclusions"),
+            ("reviewer_rationale", "", "empty_reviewer_rationales"),
+            ("reentry_trigger", "", "invalid_reentry_triggers"),
+        )
+        for field, value, violation in mutations:
+            with self.subTest(field=field):
+                cards = json.loads(json.dumps(base_cards))
+                cards[0][field] = value
+                coverage = self._coverage(payload, cards)
+                self.assertFalse(coverage["coverage_equal"])
+                self.assertEqual(coverage[violation], [cards[0]["identity"]])
+
+    def test_deferral_requires_specific_reason_and_reentry_trigger(self):
+        payload = review_payload()
+        base_cards = valid_review_cards(payload)
+        for field in ("reviewer_rationale", "reentry_trigger"):
+            with self.subTest(field=field):
+                cards = json.loads(json.dumps(base_cards))
+                cards[0]["terminal_conclusion"] = "defer implementation"
+                cards[0][field] = "Not applicable."
+                coverage = self._coverage(payload, cards)
+                self.assertFalse(coverage["coverage_equal"])
+                self.assertEqual(
+                    coverage["invalid_deferrals"], [cards[0]["identity"]])
+
+    def test_persistent_evidence_field_values_are_strict(self):
+        payload = review_payload()
+        base_cards = valid_review_cards(payload)
+        for field in (
+            "actual_behavior", "consumer", "dependency_group",
+            "display_context", "glossary_authority", "producer",
+        ):
+            with self.subTest(field=field):
+                cards = json.loads(json.dumps(base_cards))
+                cards[0][field] = ""
+                coverage = self._coverage(payload, cards)
+                self.assertIn(
+                    f"{cards[0]['identity']}:{field}",
+                    coverage["invalid_evidence_fields"])
+                self.assertFalse(coverage["coverage_equal"])
+
+        mutations = (
+            ("confidence", "certain", "invalid_confidence"),
+            ("evidence_locations", [], "invalid_evidence_locations"),
+            ("proposed_translation", "", "invalid_proposed_translation"),
+            ("rejected_alternatives", [""],
+             "invalid_rejected_alternatives"),
+        )
+        for field, value, violation in mutations:
+            with self.subTest(field=field):
+                cards = json.loads(json.dumps(base_cards))
+                cards[0][field] = value
+                coverage = self._coverage(payload, cards)
+                self.assertEqual(coverage[violation], [cards[0]["identity"]])
+                self.assertFalse(coverage["coverage_equal"])
+
+
 # ---------------------------------------------------------------------------
 # CLI-level tests against fixture repos (git-blob inputs).
 # ---------------------------------------------------------------------------
@@ -408,6 +769,53 @@ class CommandInventoryToolTest(unittest.TestCase):
 
     # -- Positive fixtures ------------------------------------------------
 
+    def test_review_results_cli_binds_cards_without_changing_digest(self):
+        """The real CLI reads the ledger once, preserves the inventory
+        digest, emits coverage through the existing JSON interface, and
+        returns non-zero for a minimal semantic mutation."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root)
+            inventory_out = fresh_output_path()
+            reviewed_out = fresh_output_path()
+            rejected_out = fresh_output_path()
+            try:
+                initial = run_tool(root, inventory_out)
+                self.assertEqual(initial.returncode, 0, initial.stderr)
+                payload = json.loads(
+                    inventory_out.read_text(encoding="utf-8"))
+                cards = valid_review_cards(payload)
+                ledger = root / "docs/command-review-results.md"
+                ledger.write_text(
+                    render_review_ledger(payload, cards), encoding="utf-8")
+
+                review_path = Path("docs/command-review-results.md")
+                reviewed = run_tool(root, reviewed_out, review_path)
+                self.assertEqual(reviewed.returncode, 0, reviewed.stderr)
+                checked = json.loads(reviewed_out.read_text(encoding="utf-8"))
+                self.assertEqual(checked["inventory_sha256"],
+                                 payload["inventory_sha256"])
+                self.assertTrue(checked["review_coverage"]["coverage_equal"])
+                self.assertEqual(
+                    checked["review_coverage"]["evidence_card_count"],
+                    len(payload["inventory"]))
+
+                cards[0]["terminal_conclusion"] = "pending"
+                ledger.write_text(
+                    render_review_ledger(payload, cards), encoding="utf-8")
+                rejected = run_tool(root, rejected_out, review_path)
+                self.assertEqual(rejected.returncode, 1, rejected.stderr)
+                failed = json.loads(
+                    rejected_out.read_text(encoding="utf-8"))
+                self.assertFalse(failed["review_coverage"]["coverage_equal"])
+                self.assertEqual(
+                    failed["review_coverage"]["invalid_terminal_conclusions"],
+                    [cards[0]["identity"]])
+            finally:
+                for output in (inventory_out, reviewed_out, rejected_out):
+                    if output.exists():
+                        output.unlink()
+
     def test_fixture_fallback_chain_and_lifecycle(self):
         """Positive fixture: the full get_command_description() chain is
         modeled per member. CMD_REST has terse+verbose in both languages;
@@ -417,7 +825,7 @@ class CommandInventoryToolTest(unittest.TestCase):
         verbose display in both languages; members without any
         commands.txt key are 'unused' and display the command_to_name()
         key-name fallback. The fixture counts mirror the tool contract:
-        enum 13, name map 6, unmapped 7, EN 5 key lines, ZH 4."""
+        enum 13, name map 5, unmapped 8, EN 5 key lines, ZH 4."""
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             head = make_repo(root)
@@ -429,8 +837,8 @@ class CommandInventoryToolTest(unittest.TestCase):
                 self.assertEqual(payload["baseline"], head)
                 self.assertEqual(len(payload["enum_members"]), 13)
                 self.assertEqual(payload["sentinel"], "CMD_MAX_CMD")
-                self.assertEqual(len(payload["name_map"]), 6)
-                self.assertEqual(len(payload["unmapped_members"]), 7)
+                self.assertEqual(len(payload["name_map"]), 5)
+                self.assertEqual(len(payload["unmapped_members"]), 8)
                 self.assertEqual(payload["commands_en"]["key_lines"], 5)
                 self.assertEqual(payload["commands_zh"]["key_lines"], 4)
                 self.assertEqual(payload["commands_en"]["terse"],
@@ -498,6 +906,15 @@ class CommandInventoryToolTest(unittest.TestCase):
                 self.assertEqual(unused["verbose_display_en"],
                                  "CMD_NO_CMD_DEFAULT")
                 self.assertEqual(unused["missing_t"], [])
+
+                # cmd-name.pl consumes CMD_NO_CMD before its emitting loop.
+                # The final {CMD_NO_CMD, nullptr} record stops
+                # init_keybindings(), so it is never inserted into either
+                # map; display/name lookup still uses CMD_NO_CMD as fallback.
+                no_cmd = by_id["command:CMD_NO_CMD"]
+                self.assertFalse(no_cmd["name_in_map"])
+                self.assertEqual(no_cmd["lookup_name"], "CMD_NO_CMD")
+                self.assertEqual(no_cmd["terse_display_en"], "CMD_NO_CMD")
 
                 # A member excluded from the name table (CMD_MIN_*/CMD_MAX_*
                 # alias) has command_to_name()'s NO_CMD fallback name.
