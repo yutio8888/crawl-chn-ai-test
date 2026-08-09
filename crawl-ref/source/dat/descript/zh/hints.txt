@@ -1,41 +1,33 @@
 %%%%
 welcome
 
-<white>欢迎你来到地牢爬行者的游戏世界！</white>
+<white>欢迎来到地牢爬行！</white>
 
-你的任务是扮演<w>{{ return crawl.t_(you.race()) .. " " .. crawl.t_(you.class()) }}</w>
-角色深入地城深处，找到传说中的佐特之球并带着它返回地面。不过，在刚开始玩的时候，
-你只要探索地城就好。尽你所能层层推进，不过要小心：死亡的危险无处不在。
+你的目标是带领你的<w>{{ return crawl.t_(you.race()) .. " " .. crawl.t_(you.class()) }}</w>角色安全深入地牢，取回传说中的佐特宝珠并把它带回地面。不过，刚开始时，应把探索发现作为主要目标。尽量深入，但要小心；死亡潜伏在每个角落。
 
-目前，你只需要记住以下按键的功能：
-  <white>$cmd[CMD_DISPLAY_COMMANDS]?</white> — 显示物品及命令
-  <white>$cmd[CMD_SAVE_GAME]</white>  — 保存游戏，以便以后继续目前的进度（注意：
-如果死了，就没法重来了）
-  <white>$cmd[CMD_LOOK_AROUND]</white>  — 调查附近的某个物体
+目前只需记住以下按键及其功能：
+  <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — 显示物品和命令
+  <input>$cmd[CMD_SAVE_GAME]</input>  — 保存游戏，稍后可以继续
+（但请注意，死亡是永久的）
+  <input>$cmd[CMD_LOOK_AROUND]</input>  — 查看附近的事物
 
-提示模式可以帮助你进行游戏而不用阅读游戏说明。如果你还没有玩过教程关卡，
-建议你先尝试通过教程关。当然，如果你想对这个游戏有深入的了解，你可以在文档
-目录
-中阅读以下文档以获取更加详细的游戏资料（所有这些资料在游戏内也能阅读）：
-  <lightblue>quickstart.txt</lightblue>     — 简短的游戏入门说明。
-  <lightblue>crawl_manual.txt</lightblue>   — 包括种族、魔法、
-技能等等的详细说明。
-  <lightblue>options_guide.txt</lightblue>  — 游戏设置详解。
-地牢爬行者的界面有很多地方是可以让玩家自由设置的。
+提示模式能让你无需阅读任何文档即可游玩 Crawl。如果还没试过教程，不妨先玩一玩。若想进一步了解游戏，docs/ 目录下有以下文件（也都可以在游戏内阅读）：
+  <lightblue>quickstart.txt</lightblue>     — 非常简短的 Crawl 入门指南。
+  <lightblue>crawl_manual.txt</lightblue>   — 包含种族、魔法、技能等方面的全部详情。
+  <lightblue>options_guide.txt</lightblue>  — Crawl 的界面高度可定制；本文档介绍全部选项。
 
 祝你游戏愉快！
 %%%%
 death
 
-真遗憾！你角色的英年早逝令人悲伤，不过这在本作中是常有的事。不管怎么说，
-失败是成功之母，你长久积累下来的游戏经验会帮助你以后的角色走得更远。
+请节哀！你的角色不幸早逝，令人难过，但这在 Crawl 中很常见。请相信，只要坚持不懈并不断积累游戏经验，你今后的角色就会活得更久。
 
-也许下面的一些建议可以帮助你提高游戏水平：
+也许下面的建议能改善你的玩法：
 %%%%
 death conjurer melee
 
 作为一个咒法师，你的主要武器应是攻击性魔法。施法多多益善！牢记一点：
-在魔力比较低的时候你需要休息来回复魔力。
+在法力比较低的时候你需要休息来回复法力。
 %%%%
 death berserker unberserked
 
@@ -44,7 +36,7 @@ death berserker unberserked
 %%%%
 death ranger melee
 
-你的弓与箭能非常有效地打击远处的敌人，所以应尽量搜集地城中有用的箭矢。
+你的弓箭在对付远处的怪物时极其强力。
 %%%%
 death random 0
 
@@ -57,17 +49,11 @@ death random 1
 %%%%
 death random 2
 
-在打完一场战斗后要记得休息，而且最好是在一片已经被清扫完毕的区域。
-游戏中搜索和休息是同时进行的。要搜索一回合，按下 <input>s</input>，
-<input>.</input>， <input>退格</input> 或 <input>小键盘5</input>。按下
-<input>5</input> 或 <input>Shift+小键盘5</input> <tiles>，或
-<input>点击属性区域</input></tiles> 会让你休息更长时间（你会停下来休息100回合，
-或是直到完全恢复为止）。
+如果可以，请在每场遭遇之间休息，最好选择已经探索过并清除了怪物的区域。按下 <input>$cmd[CMD_REST]</input><localtiles>，或<input>点击命令栏上的‘休息’按钮</input></localtiles>，会让你休息 100 回合，或直到完全恢复。
 %%%%
 death random 3
 
-记得使用你找到的卷轴、药水和魔杖。通常来说，你不能依赖卷轴来鉴定所有的东西。
-你必须学着应对这种情况；有时候你要通过亲自使用物品来鉴定它们。
+记得使用你找到的卷轴、药水或魔杖。学会随机应变：你需要通过实际使用来鉴定药水和卷轴。
 %%%%
 death random 5
 
@@ -76,59 +62,37 @@ death random 5
 %%%%
 finished
 
-恭喜！你成功通过了提示模式——试试别的模式吧。注意，
-现在命令与帮助界面（按<input>$cmd[CMD_DISPLAY_COMMANDS]?</input>呼出）
-界面从现在开始会变得和以前完全不同。这里有最后一条游戏提示：
+恭喜！你坚持到了提示模式结束——也一定要试试其他角色。请注意，从现在起，命令帮助界面（<input>$cmd[CMD_DISPLAY_COMMANDS]?</input>）看起来会大不一样。最后再送你一条游戏提示：
 %%%%
 finished explored
 
-你可以使用自动探索机能 (<input>$cmd[CMD_EXPLORE]</input>) 来非常方便地探索地城。
-游戏会将你自动移动至有物品的地方以便你拾取你感兴趣的东西。 <tiles>
+使用自动探索（<input>$cmd[CMD_EXPLORE]</input>）能更轻松地四处移动和探索楼层。Crawl 会让你自动移动到感兴趣的物品处并将其拾起。<localtiles>
 
-你也可以在小地图上按下<input>Ctrl键</input> + <input>鼠标左键</input> 来自动探索。
- </tiles>
+也可以在小地图上<input>按住 Ctrl 并单击鼠标左键</input>来启动自动探索。</localtiles>
 %%%%
 finished travel
 
-你可以很方便地在各个楼层间旅行：按下 <input>$cmd[CMD_INTERLEVEL_TRAVEL]</input>
-或 <input>G</input> 然后输入目的地便可。如果你的旅行被打断了，再按下
-<input>$cmd[CMD_INTERLEVEL_TRAVEL] 回车</input> 或 <input>G 回车</input>
-就可以继续。
+在相距较远的地牢楼层之间旅行有个方便的方法：按下 <input>$cmd[CMD_INTERLEVEL_TRAVEL]</input>，然后输入目的地。如果旅行被打断，再输入 <input>$cmd[CMD_INTERLEVEL_TRAVEL] 回车</input> 即可继续。
 %%%%
 finished stashes
 
-按下 <input>$cmd[CMD_SEARCH_STASHES]</input> 命令可以搜索地城中所有存在的物品。
-例如：搜索 <input>$cmd[CMD_SEARCH_STASHES] “小刀”</input> 会显示出所有的小刀。
-你可以选择其中的一个，然后自动移动至那里。你也可以搜索诸如 <w>“商店”</w> 或
-<w>“祭坛”</w> 这样的关键词。
+你可以用 <input>$cmd[CMD_SEARCH_STASHES]</input> 命令搜索地牢中现存的所有物品。例如，<input>$cmd[CMD_SEARCH_STASHES]</input> <w>‘匕首’</w> 会列出所有匕首，并让你前往它们所在的位置。你甚至可以搜索地牢设施，例如 <w>‘商店’</w> 或 <w>‘祭坛’</w>。
 %%%%
 finished random 0
 
-游戏自动会对你的当前角色进行冒险记录。按下
-<input>$cmd[CMD_DISPLAY_COMMANDS]:</input> 来查阅记录。你可以按下
-<input>$cmd[CMD_MAKE_NOTE]</input> 输入你想记录的信息。一旦你的角色死亡，在
-<w>存档/</w> 目录中会保留两个资料文档，其中那个文本
-格式的文件就是该角色的游戏记录。在游戏中你可以按下
-<input>$cmd[CMD_CHARACTER_DUMP]</input> 来输出一个缓存记录。
+游戏会自动为你的角色保存冒险日志。按下 <input>$cmd[CMD_DISPLAY_COMMANDS]:</input> 即可阅读。角色死亡后，<w>morgue/</w> 目录中会留下两个 morgue 文件，其中以 .txt 结尾的文件包含你的日志副本。游戏过程中，你可以用 <input>$cmd[CMD_CHARACTER_DUMP]</input> 创建角色转储文件。
 %%%%
 finished random 1
 
-本游戏还可以使用宏命令：按下 <input>~m</input> 首先设定一个触发快捷键（例如
-<input>F1</input>），然后输入一个命令序列，例如 <input>za+.</input>。
-此后按<input>F1</input> 键就会对最近的怪物施放 a 键位的法术。你可以输入
-<input>$cmd[CMD_DISPLAY_COMMANDS]~</input> 来查看有关宏命令的详细说明。
+Crawl 内置了宏功能：按下 <input>$cmd[CMD_MACRO_MENU]</input> 定义宏，先指定触发键（例如 <input>F1</input>），再指定命令序列，例如 <input>za.</input>。此后按下 <input>F1</input>，就会向最近的怪物施放 a 槽位中的法术。要了解宏的更多信息，请输入 <input>$cmd[CMD_DISPLAY_COMMANDS]~</input>。
 %%%%
 finished random 2
 
-游戏界面的很多元素都可以自由设定。 <w>文档</w> 目录下的
-<w>options_guide.txt</w> 文件介绍了详细的设定方法。你可以通过修改
-<w>init.txt</w> 或 <w>.crawlrc</w> 文件来更改设置。
-如果找不到这两个文件中的任何一个，游戏就会弹出提示。
+游戏界面可以高度自定义。所有选项都在 <w>docs</w> 目录下的 <w>options_guide.txt</w> 文件中说明。选项本身在 <w>init.txt</w> 或 <w>.crawlrc</w> 中设置。如果这两个文件都找不到，Crawl 会报错。
 %%%%
 finished random 3
 
-你可以通过IRC（因特网中继聊天）与其他地牢爬行者玩家进行交流：请移步Libera
-(<w>irc.libera.chat</w>) 上的<w>#crawl</w> 频道。
+你可以通过 http://crawl.develz.org/ 介绍的任何社区资源，向其他 Crawl 玩家寻求建议和帮助。
 %%%%
 dissection reminder
 
@@ -139,31 +103,21 @@ dissection reminder
 %%%%
 HINT_SEEN_FIRST_OBJECT
 
-那边<console>那个$1</console>是一个物品，你可以移动过去然后按下
-<input>g</input> 或 <input>,</input> 来拾取它。
-<console>通常物品会以非字母字符如 <w>%?!"=()[</w>来表示。 </console>
-<tiles>你也可以在站在物品上之后按下<input>鼠标左键</input>来拾取。 </tiles>另外，
-一些物品通常会自动被拾取。 <tiles>（图像模式中这类物品周围会有一个绿色的边框。）
-</tiles>
+那个<console>$1 </console>是物品。走到那里并按
+<input>$cmd[CMD_PICKUP]</input><localtiles>，或在物品栏中用<input>左键单击</input>它</localtiles>，即可拾取。<console>物品通常以 <w>%?!\"=()[</w> 之类的非字母符号显示。</console>有些物品<tiles>带有绿色边框，</tiles>会被自动拾取。
 
-当拾取进包包之后你可以再次用<tiles><input>Shift键</input> +
-<input>鼠标左键点击</w >组合键来丢弃这个物品。
-你还可以在一个物品上按<input>鼠标右键</input></tiles><console><input>d键
-</w>来丢弃这个物品。你还可以打开背包界面（<input>i</input>）
-并选择一个物品</console>来查看该物品的详细描述。
+物品进入物品栏后，<localtiles>用一次<input>Shift-左键单击</input>即可把它丢下。每当你用<input>右键单击</input>物品时</localtiles><console>按<input>$cmd[CMD_DROP]</input>即可把它丢下。每当你在物品栏（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中查看物品时</console>，都能阅读它的属性和描述。
 %%%%
 %%%%
 HINT_ABYSS
 
-哎呀，你掉进深渊了！深渊是一个特殊的地方，你无法记忆或绘制你曾经走过的地方；
-这里充满了危险的怪物，你大概要死了。
+哎呀，你落入深渊了！深渊是个特殊的地方：你无法记住或绘出走过的区域；这里到处都是危险的怪物，你很可能会死。
 
-为了提高你在找到出口<console>（一个闪烁的 <w>$1</w>）</console><tiles>前生存的机会，
-尽量避开敌人而不是战斗。</tiles>
+为了提高你在找到出口<console>（闪烁的 <w>$1</w>）</console>前活下来的机会，要一直移动，不要和任何怪物交战，也不要去追逐地上的物品。如果怪物正在逼近，试着使用物品和能力脱身。
 %%%%
 HINT_ADVISE_USE_WAND
 
-\n或者你可以 e<w>$cmd[CMD_EVOKE]</w> 使用魔杖来伤害或削弱你的敌人。
+\n或者，你也可以按 <w>$cmd[CMD_EVOKE]</w> 使用魔杖来伤害或削弱敌人。
 %%%%
 HINT_AUTOPICKUP_THROWN
 
@@ -171,41 +125,37 @@ HINT_AUTOPICKUP_THROWN
 %%%%
 HINT_AUTO_EXCLUSION
 
-为了防止自动旅行或自动探索带你进入危险区域，你可以通过进入地图视图
-（<w>$cmd[CMD_DISPLAY_MAP]</w>）然后在怪物位置上用 <w>e</w> 切换排除半径
-来设置旅行排除区域。为了简化操作，一些不移动的怪物会自动被排除。
+为防止自动旅行或自动探索把你带入危险区域，可以进入地图视图（<w>$cmd[CMD_DISPLAY_MAP]</w>），然后在怪物位置按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 切换排除半径。为了简化操作，<w>auto_exclude</w> 选项列出的一些无法移动的怪物（例如眼前这个）会被视为足够危险，系统会自动为它们设置禁区。杀死怪物后，该禁区会自动清除。你也可以按 <w>$cmd[CMD_DISPLAY_MAP]</w> 进入地图，再按两次 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 手动移除禁区；但除非把这种怪物从 <w>auto_exclude</w> 列表中移除，否则下一回合禁区还会重新出现。
 %%%%
 HINT_AUTO_EXPLORE
 
-完全探索一个楼层并捡起所有看起来有趣的物品可能很乏味。
-为了节省这种乏味，你可以按 <w>$cmd[CMD_EXPLORE]</w> 来自动探索，
-它将自动探索未映射的区域，自动捡起有趣的物品，并在有怪物出现时停下来。
+彻底探索一层并捡起所有看起来有趣的物品会很乏味。为了省去这些麻烦，你可以按 <w>$cmd[CMD_EXPLORE]</w> 启动自动探索。它会自动探索尚未绘入地图的区域、自动捡起有趣的物品，并在遇到怪物或有趣的地牢地形（楼梯、祭坛等）时停下。
 %%%%
 HINT_CAN_BERSERK
 
-面对特别难对付的敌人时，你应该使用你的狂暴
-<w>$cmd[CMD_USE_ABILITY]</w>能力。在狂暴期间击杀怪物会让它持续更久。
+面对特别难对付的敌人时，你应该按 <w>$cmd[CMD_USE_ABILITY]</w> 使用狂暴能力。狂暴期间击杀怪物会使狂暴持续得更久。
 %%%%
 HINT_CAUGHT_IN_NET
 
-当你被困在网中时，你无法四处移动或与怪物交战。
-相反，你进行的任何移动都算作是试图从网中挣脱的尝试。
+当你被困在网中时，你无法四处移动或与怪物交战。此时，你每次尝试移动都会被视为挣脱网的行动。
 {{
     if crawl.hints_type() == "magic" then
-        return "请注意，施法仍然是完全可能的，但也会受到妨碍。"
+        return "请注意，你仍然完全可以施法，也可以使用魔杖、卷轴和药水。"
+    else
+        return "请注意，你仍然完全可以使用魔杖、卷轴和药水。"
     end
 }}
 %%%%
 HINT_CHOOSE_STAT
 
-当你达到3、9、15等等级时，你可以选择一个属性来提升：
+当你升到3、9、15等等级时，你可以选择提升一项属性：
 力量、智力或敏捷。
 
-<w>力量</w> 使重型护甲变得不那么笨重，并略微提高大多数武器的伤害。
+<w>力量</w>能减轻重型护甲造成的负担，并略微提高大多数武器的伤害。
 
-<w>智力</w> 使你的法术更可靠、更强大。
+<w>智力</w>能让你的法术更可靠、更强大。
 
-<w>敏捷</w> 帮助你闪避攻击，使轻型护甲更有效，并略微提高大多数武器的伤害。
+<w>敏捷</w>能提高你的闪避和潜行能力，并略微提高刀剑和远程武器的伤害。
 %%%%
 HINT_CLOUD_WARNING
 
@@ -214,48 +164,38 @@ HINT_CLOUD_WARNING
 %%%%
 HINT_CONTAMINATION_MILD
 
-只要状态仅以灰色显示，就不会因此而实际发生任何事情，
-但随着你继续用魔法污染充斥自己，你最终会真正开始发光，
-这可能产生恶劣的影响，比如变异或造成直接伤害。如果发生这种情况，
-你需要通过获得经验值来等待它消退。
+只要该状态仍以灰色显示，它实际上就不会造成任何后果；但如果你继续让魔法污染在体内积聚，最终就会真正开始发光，可能引发变异、直接伤害等恶劣后果。此外，发光会使你显眼得多。
 %%%%
 HINT_CONTAMINATION_SEVERE
 
-这通常不是问题，因为污染会自行缓慢消退，但看起来你在短时间内
-积累了如此多的污染，以至于它可能产生恶劣的影响，比如变异或造成直接伤害。
-此外，发光会使你更难潜行并使你暴露于某些类型的敌人。
+通常这并不是问题，因为魔法污染会自行缓慢消退；但看来你在短时间内积累了太多魔法污染，可能引发变异、直接伤害等恶劣后果。此外，发光会使你显眼得多。
 %%%%
 HINT_CONVERT
 
-你刚刚皈依了 <w>{{ return crawl.t_(you.god()) }}</w>。你的虔诚值（神眷）
-会随着你做出取悦新神的事情而增加，并会随时间逐渐减少。
+你刚刚皈依了 <w>{{ return crawl.t_(you.god()) }}</w>。当你做出取悦新神祇的事情时，虔诚值（神眷）会增加，并会随时间逐渐降低。
 
-你可以查看你的神的喜好和厌恶，以及你当前的声望和神圣能力，
-通过 <w>$cmd[CMD_DISPLAY_RELIGION]</w> 宗教屏幕。
+要查看你的神祇所喜爱和厌恶的行为，以及你当前的宗教地位和神赐能力，请按
+<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>，或在你的头像上按
+<input>Shift-right-click</input></localtiles>。
 %%%%
 HINT_CONVERT Ashenzari
 
-你刚刚皈依了 <w>阿申扎里</w>。与其他神不同，阿申扎里只关心诅咒。
-当你探索地牢时，阿申扎里会提供诅咒，将一件物品锁定在你身上。
-你穿戴的诅咒物品越多，阿申扎里就会越多地增强你的技能和其他属性。
+你刚刚皈依了 <w>艾申扎利</w>。与其他神祇不同，艾申扎利只在意诅咒。
+当你探索地牢时，艾申扎利会提供诅咒，将一件物品锁定在你身上。
+你穿戴的受诅咒物品越多，艾申扎利就越能强化你的技能，并以其他方式帮助你。
 %%%%
 HINT_CONVERT Gozag
 
-你刚刚皈依了 <w>戈扎格</w>。与其他神不同，戈扎格只关心金币；
-每种神圣力量都需要金币，你的敌人死亡时会变成金币。
+你刚刚皈依了 <w>哥萨戈</w>。与其他神祇不同，哥萨戈只在意金币；
+每项神力都要耗费金币，而你的敌人死后会化为金币。
 %%%%
 HINT_CONVERT Ru
 
-你刚刚皈依了 <w>鲁</w>。与其他神不同，鲁以永久牺牲为交换给予虔诚值
-（神眷），比如失去训练某些技能的能力，或永久失去一只手。
-你的虔诚值越多，鲁就会给予越多能力，你的力量也会越强。
+你刚刚皈依了 <w>入</w>。与其他神祇不同，入以永久性的舍弃换取虔诚值（神眷），例如放弃训练某些技能的能力，或永久失去一只手。你的虔诚值越高，入赐予你的能力就越多，这些能力也越强大。当你探索地牢深处时，入会向你提出更多舍弃。
 %%%%
 HINT_CONVERT Uskayaw
 
-你刚刚皈依了 <w>乌斯卡约</w>。与其他神不同，乌斯卡约的神眷无法在
-你探索地牢或杀死怪物时逐渐获得。相反，乌斯卡约的虔诚值是在战斗中
-随着你造成伤害而迅速获得的。你在战斗中停留的时间越长，造成的伤害越多，
-虔诚值积累得就越快。
+你刚刚皈依了 <w>乌斯卡亚</w>。与其他神祇不同，乌斯卡亚的神眷无法在探索地牢或杀死怪物时逐渐获得。你需要在战斗中造成伤害，才能迅速获得乌斯卡亚的虔诚值。战斗持续得越久、你造成的伤害越多，获赐的力量就越强。战斗一结束，乌斯卡亚的神眷便会迅速消退，必须在下一场战斗中重新获取。
 %%%%
 HINT_CONVERT Xom
 
@@ -267,15 +207,12 @@ HINT_CONVERT Xom
 %%%%
 HINT_CONVERT Yredelemnul
 
-你刚刚皈依了 <w>伊雷德勒姆纳</w>。与其他神不同，伊雷德勒姆纳只关心灵魂。
-你的敌人死后可能会起来为你服务，你可以消耗它们来祈求伊雷德勒姆纳的援助。
+你刚刚皈依了 <w>伊莱德莱姆努尔</w>。与其他神祇不同，伊莱德莱姆努尔只在意灵魂。
+你的敌人死后可能会起来为你服务，你可以消耗它们来祈求伊莱德莱姆努尔的援助。
 %%%%
 HINT_DONE_EXPLORE
 
-嘿，你已经完成探索这个楼层的所有部分了！你可以从楼层地图
-（<w>$cmd[CMD_DISPLAY_MAP]</w>）按 <w>></w> 搜索楼梯。
-光标将跳转到最近的楼梯，按 <w>.</w> 或 <w>回车</w> 你的角色也可以移动到那里。
-每次进入新楼层，你都会看到新的地图部分。
+嘿，你已经探索完这一层的地牢了！在楼层地图（<w>$cmd[CMD_DISPLAY_MAP]</w>）中按 <w>></w> 可以搜索楼梯。光标会跳到最近的楼梯；再按 <w>.</w> 或 <w>回车</w>，角色也会自动走过去。Crawl 的每一层都有三处<console>白色的</console>上楼梯和三处<console>白色的</console>下楼梯。未探索的区域往往可以从另一层抵达。
 %%%%
 HINT_FLEEING_MONSTER
 
@@ -290,9 +227,8 @@ HINT_FOUND_UNKNOWN
 %%%%
 HINT_FULL_INVENTORY
 
-不幸的是，你的物品栏限制为52个物品，看来你的背包已经满了。
-不过，这很容易解决：只需 <w>$cmd[CMD_DROP]</w> 丢掉一些你当前不需要的东西。
-在丢弃菜单中，你可以通过按它们对应的字母键来舒适地选择要丢弃的物品。
+你最多可以用 52 个物品栏槽位存放装备，而这些槽位现在已经全部占满。
+消耗品使用另外的槽位，不受这个上限影响。能与现有堆叠合并的装备仍可捡起。要为其他装备腾出槽位，请按 <w>$cmd[CMD_DROP]</w>，把当前不需要的一件装备或整叠装备全部丢下。在丢弃菜单中，按物品栏中对应的字母选择物品<localtiles>，也可以单击它们</localtiles>。
 %%%%
 HINT_FUMBLING_SHALLOW_WATER
 
@@ -306,37 +242,30 @@ HINT_GAINED_MAGICAL_SKILL
 %%%%
 HINT_GAINED_MELEE_SKILL
 
-精通一种特定类型的武器将使你对该类型的所有武器造成略微更高的伤害
-并显著更快地攻击。专注于一种武器类型是个好主意，通常是从你初始使用的开始，
-尽管找到一件特别好的武器可能值得改变你的专精。
+精通某类武器能让你使用该类所有武器时造成略多伤害，并显著加快攻击速度。通常最好只专注训练一种武器类型，一般就是你起初使用的那一种；不过，如果找到格外出色的武器，改练另一种也可能值得。
 %%%%
 HINT_GAINED_RANGED_SKILL
 
-精通远程武器将使你对它们造成略微更高的伤害并显著更快地攻击。
-请记住，穿戴重型护甲会使你使用远程武器攻击变得较慢。
+精通远程武器能让你用它们造成略多伤害，并显著加快攻击速度。请记住，穿戴重型护甲会降低你使用远程武器的攻击速度。
 %%%%
 HINT_GAINED_SPELLCASTING
 
-随着你的施法技能提高，你将能够记忆更多法术，并拥有更多魔力。
-你也会在施放各种法术时变得稍微更好。
+随着你的施法能力提高，你将能记忆更多法术，并拥有略多一些的法力。你也会略微更擅长施放各种法术。
 
 按 <w>$cmd[CMD_DISPLAY_SKILLS]</w> <localtiles>（或点击命令面板中的
-<w>技能按钮</w>）</localtiles> 查看你技能的详细信息。
+<w>技能按钮</w>）</localtiles>查看你的技能并管理其训练。
 %%%%
 HINT_GLOWING
 
-你已经积累了如此多的魔法污染，以至于你在发光！你通常会因为使用一些
-强大的魔法（如隐身术）或施法失败而获得魔法污染。
+你积累了太多魔法污染，身体已经开始发光！魔法污染通常来自隐身术等强力魔法，或来自施法失误。
 %%%%
 HINT_GOD_DISPLEASED
 
-哎呀，$1 越来越不高兴了，因为你的虔诚值在降低。可能是因为你犯下了
-异端行为，因为 $1 觉得你的崇拜不足，或者两者的结合。如果你的虔诚值变为零，
-你将被逐出教会。最好赶紧通过做 $1 喜欢的事情来提高你的虔诚值！
+糟了，$1 因你的虔诚值太低而越来越不悦。这可能是因为你做了亵渎之举，也可能是因为 $1 认为你的崇拜不够虔诚，或两者兼有。如果虔诚值降到零，你就会被逐出教门。赶紧设法提高虔诚值，或停止惹怒你的神祇，必要时两者都做。不管怎样，你最好重新阅读宗教说明。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>你的头像</localtiles>即可查看。
 %%%%
 HINT_HEALING_POTIONS
 
-你的生命值降到了危险的低水平。撤退和/或喝一瓶治疗或治愈药水可能是个好主意。
+你的生命值已经降到危险水平。最好撤退，或饮用一瓶治疗创伤药水或治疗药水；也可以两者兼用。
 %%%%
 HINT_HEAP_BRAND
 
@@ -347,10 +276,7 @@ HINT_HEAP_BRAND
 %%%%
 HINT_INVISIBLE_DANGER
 
-与你无法看到的怪物战斗是困难的。如果你没有看见隐形的来源，
-你可以通过将隐形怪物引诱到浅水、不透明的云雾（来自迷雾卷轴）
-或走廊中来找到它们，在那里它们的移动将更容易预测。
-如果怪物足够弱小，你可能可以简单地承受它的攻击。
+与看不见的怪物战斗很困难。如果你没有能看见隐形生物的手段，可以把隐形怪物引到浅水、不透明的云雾（例如迷雾卷轴制造的云雾）或走廊中；在这些地方，它们的行动更容易判断。如果情况变糟，试着传送离开，或者干脆离开这一层！
 %%%%
 HINT_ITEM_FLIGHT
 
@@ -386,10 +312,9 @@ HINT_MALEVOLENCE
 %%%%
 HINT_MAP_VIEW
 
-在探索一个楼层时，定位可能会变得困难。按
-<w>$cmd[CMD_DISPLAY_MAP]</w> 来调出楼层地图。输入 <w>?</w> 显示
-楼层地图命令列表。最重要的是，将光标移动到一个点并按 <w>.</w>
-或 <w>回车</w> 让你的角色移动到那里。
+探索一层时，你可能会难以辨认方位。按 <w>$cmd[CMD_DISPLAY_MAP]</w> 打开楼层地图。输入 <w>?</w> 可显示楼层地图命令列表。最重要的是，把光标移到某个位置后按 <w>.</w> 或 <w>回车</w>，角色就会自动移动过去。
+
+<localtiles>此外，在右侧小地图上单击<w>鼠标右键</w>会放大显示相应的地牢区域；改用<w>鼠标左键</w>单击则会让角色移动过去。</localtiles>
 %%%%
 HINT_MISCAST_ARMOUR
 
@@ -399,10 +324,11 @@ HINT_MISCAST_ARMOUR
 %%%%
 HINT_MISCAST_CONTAMINATION_AND_MP
 
-如果施法成功率高（可以通过输入 <w>$cmd[CMD_CAST_SPELL]\?</w> 或
-<w>$cmd[CMD_DISPLAY_SPELLS]</w> 来检查），那么施法失败仅仅意味着
-法术不起作用，并伴有无害的副作用。
-然而，对于失败率高的法术，结果可能更严重。
+如果施法成功率很高（可通过按 <w>$cmd[CMD_CAST_SPELL]\?</w> 或
+<w>$cmd[CMD_DISPLAY_SPELLS]</w> 查看），那么施法失误只会使法术未能生效，并伴随一个无害的副作用。
+但失败率较高的法术在施法失误时，可能使你受到魔法能量污染，并可能额外产生一个有害副作用。通常这并不是问题，因为魔法污染会随时间消退；但如果你在短时间内反复受到污染，就会发生变异或遭受其他有害影响。
+
+请注意，施法失误仍会消耗与成功施放该法术时相同的全部法力。
 %%%%
 HINT_MONSTER_FRIENDLY
 
@@ -445,172 +371,196 @@ HINT_MULTI_PICKUP
 %%%%
 HINT_NEED_HEALING
 
-如果你的生命值或魔力不足，并且没有紧急移动的需要，你可以休息一会儿。
-理想情况下，你应该撤退到一个你已经探索并清理了怪物的区域再休息，
-因为在已探索地形边缘休息会增加休息被怪物打断的风险。
+如果你的生命值或法力不足，而且没有必须立刻移动的理由，可以休息片刻。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>$cmd[CMD_REST]</w> 或 <w>shift-numpad-5</w><localtiles>，也可以点击“休息”按钮</localtiles>来休息。
 %%%%
 HINT_NEED_HEALING_INVIS
 
-你最近注意到了一个隐形怪物，所以除非你杀死了它或离开了现场，
-休息可能不安全。如果你仍然需要补充生命值或魔力，你将不得不喝适当的药水。
-为了正常休息，你首先必须远离危险。
+你最近注意到了一个隐形怪物，所以除非你杀死了它或离开了现场，否则休息可能并不安全。如果你仍需补充生命值或法力，就得饮用合适的药水。要正常休息，必须先远离危险。
 %%%%
 HINT_NEED_POISON_HEALING
 
-你被致命地毒害了，所以现在是个好时机喝一瓶治疗药水，
-或者更好的是，喝一瓶治愈药水。如果你到目前为止都没见过这些药水，
-试试你物品栏中的未知药水。祝你好运！
+你中毒已深，足以致命，现在最好按 <w>$cmd[CMD_QUAFF]</w> 饮用一瓶治疗创伤药水；更好的选择是一瓶治疗药水。如果此前两者都没见过，就试试物品栏里的未知药水。祝你好运！
 %%%%
 HINT_NEW_ABILITY_GOD_ACTIVE
 
-你获得了一个新的神赐主动能力！要使用它，按
-<w>$cmd[CMD_USE_ABILITY]</w><localtiles> 或点击命令面板中的
-<w>能力按钮</w></localtiles>。
+你刚刚获得了一项神赐主动能力。按 <w>$cmd[CMD_USE_ABILITY]</w> 查看你的能力，或使用其中一项。
 %%%%
 HINT_NEW_ABILITY_GOD_PASSIVE
 
-你获得了一个来自你神的新被动能力！查看 <w>$cmd[CMD_DISPLAY_RELIGION]</w>
-屏幕了解详情。
+你刚刚获得了一项神赐被动能力。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w>
+<localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>玩家图块</localtiles>查看你的能力。
 %%%%
 HINT_NEW_ABILITY_ITEM
 
-你获得了来自一个物品的新能力！按 <w>$cmd[CMD_USE_ABILITY]</w>
-来查看它。
+你刚刚装备的物品赋予了你一项新能力。按
+<w>$cmd[CMD_USE_ABILITY]</w><localtiles>（或在<w>命令面板</w>中<w>点击</w>）</localtiles>查看你的能力，或使用其中一项。
 %%%%
 HINT_NEW_LEVEL
 
-欢迎来到第{{ return you.experience_level() }}级！随着你的角色升级，
-他们会获得更多的生命值和魔力。你可以按 <w>$cmd[CMD_DISPLAY_SKILLS]</w>
-来查看你的技能进展。
+做得好！提升经验等级总是件令人高兴的事。你的生命值和法力都会增加，力量、智力和敏捷属性偶尔也会提升。
+
+{{
+    if crawl.hints_type() == "magic" then
+        return "提升经验等级也能让你学习更难的法术。你可以按"
+               .. " <w>$cmd[CMD_MEMORISE_SPELL]</w> 记忆第二个法术<tiles>，也可以在"
+               .. "法术记忆标签页中<w>单击</w>该法术</tiles>。"
+    end
+}}
 %%%%
 HINT_ON_FIRE
 
-你着火了！火焰每回合都会造成伤害。移动会帮助火焰更快熄灭，
-踏入水中则会完全熄灭它。如果你不动，火焰也会自行熄灭，
-但那样你需要承受更多伤害。
+你身上沾满了黏着的液态火焰。不断移动可以让它更快熄灭；走进附近的水池则能将它彻底扑灭。不过，在你四处奔跑时，那个让你沾上液态火焰的东西可能会让火势进一步加重。
 %%%%
 HINT_OPPORTUNITY_ATTACK
 
-如果你在近战中脱离一个怪物，它会获得一次对你的免费借机攻击。
-尽量通过可控的方式使用传送或闪烁来脱离近战范围。
+当你远离敌人时，它有较小的（1/3）几率趁机发动一次免费攻击。调整站位或撤退通常仍是好选择，但要留意这些额外攻击。
 %%%%
 HINT_POSTBERSERK
 
-你的狂暴已经结束，你现在被减速了，短时间内无法再次狂暴。
-如果你仍然在战斗中，那么现在可能是使用消耗品或逃跑的好时机。
+狂暴会让人极度疲惫！狂暴结束后你会被减速，并且在疲惫消退前无法再次狂暴。
 %%%%
 HINT_RETREAT_CASTER
 
-有些怪物在远处比在近战中更危险。面对施法者时，
-考虑撤退到一个走廊中，让他们无法对你保持直接视线，
-从而必须来到你的近战范围。
+法力耗尽时，你无法施法。虽然仍可进行近战，但那并非你的强项，因此最好尽可能撤退。
 %%%%
 HINT_RUN_AWAY_1
 
-如果你发现自己在当前战斗中处于下风，你总是可以撤退！
-你可以使用 <w>$cmd[CMD_REST]</w> 休息来恢复生命值和魔力。
-不是每一场战斗都需要打到最后一口气——活着改天再战。
+当生命值很低、随时可能死亡时，要仔细审视自己的选择。撤退或使用某件物品，往往比继续战斗更可行。
 %%%%
 HINT_RUN_AWAY_2
 
-当战斗变得艰难时，记住总是有出口的！在开阔地带与怪物战斗
-意味着你面前总是有逃跑路线。在死胡同中战斗是危险的。
-通过从已经清理了怪物的区域撤回，你可以休息并补满生命值和魔力，
-然后以更有利的条件重新接战。
+如果要撤退到另一层，请记住：当你开始上楼或下楼时，紧挨着你的怪物可能会跟过来。即使你已经甩掉了它们，它们仍会留在那里等你回来，因此返回时或许应该改走另一处楼梯。
 %%%%
 HINT_SEEN_ALTAR
 
-你发现了一个祭坛！祭坛允许你向一位神献身，
-他们会以强大的神圣能力回报你的虔诚服务。不同的神有不同的喜好和厌恶。
+那个<console> $1</console>是一座祭坛。
+<localtiles>用鼠标<w>右键点击</w>它</localtiles>
+<nomouse>如果先用 <w>$cmd[CMD_LOOK_AROUND]</w> 瞄准祭坛，再按
+<w>$cmd[CMD_TARGET_DESCRIBE]</w></nomouse>，就能查看简短说明。
+
+站在祭坛所在格上时，按 <w>$cmd[CMD_GO_UPSTAIRS]</w> 或 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 可以加入该信仰，或阅读有关对应神祇的信息。在皈依对应信仰之前，游戏会要求你确认。
+
+{{
+    if you.god() == "No God" and crawl.hints_type() == "magic" then
+        return "对缺乏经验的咒法师而言，最容易上手的神祇可能是"
+               .. "维胡梅特，不过包括西芙·穆娜在内的其他许多神祇"
+               .. "也同样合适。"
+    end
+}}
 %%%%
 HINT_SEEN_ARMOUR
 
-刚发现了护甲！护甲可以给你额外的防护，但会降低你的闪避和施法成功率。
-记得总是试穿任何新护甲——你永远不知道它可能有什么魔法特性！
+这是你捡到的第一件护甲<console>（“<w>$item[armour]</w>”）</console>。<localtiles>单击它即可穿戴，再次单击即可卸下。<w>右键单击</w>可查看更多信息。
+</localtiles><nomouse>按 <w>$cmd[CMD_WEAR_ARMOUR]</w> 穿戴，按 <w>$cmd[CMD_REMOVE_ARMOUR]</w> 卸下。你可以在物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）中查看它的属性。
+</nomouse>
+
+{{
+    if you.get_base_mutation_level("horns") > 0 then
+        return "注意：由于你长着角，因此无法穿戴头盔。"
+               .. "（按 <w>$cmd[CMD_DISPLAY_MUTATIONS]</w> 查看你的突变"
+               .. "和先天能力列表。）"
+    end
+}}
 %%%%
 HINT_SEEN_BAZAAR_PORTAL
 
-一个通往集市的传送门！集市是购买各种有用物品的绝佳场所。
-一旦你离开，集市就会消失，所以在你还在那里时做出选择并消费吧。
+这<console>‘$1’</console>是一座通往跨维度集市的传送门，集市里满是商店。如果不尽快进入，传送门就会消失，所以赶快行动。
 %%%%
 HINT_SEEN_BRANCH
 
-你发现了一条通往地牢另一个分支的通道。分支有各种难度；
-当心，你可能会发现里面的怪物比你已经习惯的更危险。
+这个<console>“$1”</console>是通往地牢另一个分支的入口。每个分支都有不同的地形和怪物，有些分支还包含通往其他分支的入口。你可以检查这个入口来了解更多信息<localtiles>：将鼠标悬停在它所在的格子上</localtiles><nomouse>：
+按 <w>$cmd[CMD_LOOK_AROUND]</w>，再将光标移到入口上</nomouse>。
+
+有些分支会比你当前所在的分支安全得多，奖励也更丰厚。另一些则可能非常危险，最好等角色更强大后再前往。
 %%%%
 HINT_SEEN_DOOR
 
-你可以通过 <w>$cmd[CMD_OPEN_DOOR]</w> 或 <w>$cmd[CMD_CLOSE_DOOR]</w>
-来打开或关闭门。关闭你身后的门可能是一个很好的战术选择，
-以延迟或阻止怪物追你！
+那<console> $1</console>是一扇关着的门。走向它即可打开。有时把门关上会很有用。站在门旁时，<nomouse>按 <w>$cmd[CMD_CLOSE_DOOR]</w> 即可关门；如果旁边有好几扇门，系统会提示你选择方向。</nomouse><localtiles>单击门即可将它关上。</localtiles>
 %%%%
 HINT_SEEN_ESCAPE_HATCH
 
-一个逃生舱口！这些通往该分支中的其他楼层，但不能用来向上爬。
-它们是一种快速逃脱的方式，但你也可能最终落入更糟糕的境地……
+这<console>‘$1’</console>是逃生舱口。和楼梯类似，你可以分别用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 离开当前楼层<localtiles>（也可以<w>单击</w>舱口）</localtiles>；但与楼梯不同，逃生舱口只能单向通行，因此向下使用时要小心！
 %%%%
 HINT_SEEN_GOLD
 
-那些闪亮的硬币是金币！你可以用它们在商店购买物品。
-你的角色会自动捡起金币。
+你捡到了第一堆金币<console>（“<yellow>$item[gold]</yellow>”）</console>。按 <w>$cmd[CMD_LIST_GOLD]</w> 查看你有多少金币。金币可在探索途中发现的商店中使用。
 %%%%
 HINT_SEEN_JEWELLERY
 
-你发现了一些珠宝！戒指和项链可以提供各种各样的效果。
-将它们装备在戒指和项链槽位中，但要知道它们可能需要
-几回合才能完全激活。
+你捡到了一件珠宝，可能是戒指
+<console>（“<w>$item[jewellery]</w>”）</console>，也可能是项链<console>（“<w>$item[amulet]</w>”）</console>。
+<nomouse>按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 穿戴，按 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> 卸下。你可以在物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）中查看它的属性。</nomouse>
+<localtiles>单击它即可穿戴，再次单击即可卸下；<w>右键单击</w>可查看它的属性。</localtiles>
 %%%%
 HINT_SEEN_MISC
 
-那是一件有用的物品，可以 <w>$cmd[CMD_EVOKE]</w> 使用来产生效果。
-试试看！
+这确实是件奇特的物品。你可以<localtiles>单击它</localtiles><nomouse>按 <w>$cmd[CMD_EVOKE]</w></nomouse>来摆弄一下，看看它有什么作用。像往常一样，从物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）中选择它，或许能看到更多信息。
 %%%%
 HINT_SEEN_MISSILES
 
-弹射物！如石头、飞镖或箭矢等物品可以投掷或从远程武器射击，
-以在远处伤害或削弱敌人。
+这是你捡到的第一叠投掷物<console>（“<w>$item[missile]</w>”）</console>。回旋镖、投掷网等投掷物可以徒手投掷；投掷技能越高，它们就越有效。
+<localtiles><w>右键单击</w></localtiles><nomouse>选择</nomouse>物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）中的该物品，即可查看更多信息。
+
+{{
+    if crawl.hints_type() == "ranger" then
+        return "你已经训练了远程武器，因此并不真正需要"
+               .. "另一种远程攻击手段。"
+    elseif crawl.hints_type() == "magic" then
+        return "不过，作为施法者，你并不真正需要另一种"
+               .. "远程攻击手段。"
+    else
+        return ""
+    end
+}}
 %%%%
 HINT_SEEN_PORTAL
 
-你发现了一个传送门！传送门通往地牢的有限时间的分支区域。
-一旦你离开或计时结束，你将无法返回，所以趁你还能够时充分探索和掠夺吧。
+这<console>‘$1’</console>是一座通往可选楼层的传送门；多一份危险，也会多一份战利品。跳过它不会受到惩罚，但传送门会随着时间消失，所以你必须现在决定是否愿意冒险。
 %%%%
 HINT_SEEN_PORTAL_2
 
-看，一个通往临时分支的传送门！这些一次性的次元裂缝可能包含
-强大的敌人和同样强大的宝物。准备好再进去！
+传送门的用法和楼梯一样：站在上面，<localtiles><w>单击</w>，或</localtiles>按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 即可进入。要返回，需找到<tiles>一座外观相似的传送门。</tiles><console>另一个 $1——但绝不能用你出发时所在的那座远古石拱！</console>
 %%%%
 HINT_SEEN_POTION
 
-一瓶药水！你可以 <w>$cmd[CMD_QUAFF]</w> 饮用药水来产生魔法效果。
-药水的颜色取决于游戏，所以在你的游戏中每次蓝色药水都是相同的。
+你捡到了第一瓶药水<console>（“<w>$item[potion]</w>”）</console>。
+<localtiles>只需<w>左键单击</w>它，或按</localtiles>
+<nomouse>按</nomouse> <w>$cmd[CMD_QUAFF]</w> 饮用。
+
+药水一旦通过鉴定卷轴或饮用得到鉴定，你就会自动认出所有同类药水；因此，有时仅为鉴定而饮用药水也很有用。
 %%%%
 HINT_SEEN_RUNED_DOOR
 
-一扇符文门！这些特殊门保护着地牢中最危险（也最有价值）的区域。
-它们在解锁前会阻止你进入，通常需要你获得一个特定物品
-或击败特定的怪物。
+那<console> $1</console>是一扇符文门，门后很可能有格外危险的东西。怪物绝不会打开它。如果你打开，符文就会破碎，它也会变成普通的门。
 %%%%
 HINT_SEEN_SCROLL
 
-一张卷轴！你可以 <w>$cmd[CMD_READ]</w> 阅读卷轴来产生魔法效果。
-卷轴的标签取决于游戏，所以每次标有相同标签的卷轴在你的游戏中
-都是相同的。
+你捡到了第一张卷轴<console>（“<w>$item[scroll]</w>”）</console>。
+<localtiles>只需<w>左键单击</w>它，或按</localtiles>
+<nomouse>按</nomouse> <w>$cmd[CMD_READ]</w> 阅读。
+
+卷轴一旦通过鉴定卷轴或阅读得到鉴定，你就会自动认出所有同类卷轴；因此，有时仅为鉴定而阅读卷轴也很有用。
 %%%%
 HINT_SEEN_SHOP
 
-你发现了一个商店！你可以花费金币来购买有用的物品。
-按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 进入商店并进行消费。
+那个<console> $1</console>是商店。站在该格上，按
+<w>$cmd[CMD_GO_UPSTAIRS]</w> 或 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>
+<tiles>，或<w>左键单击</w>商店</tiles>，即可进入。
+
+如果有想买但暂时买不起的东西，可以按住 <w>Shift</w> 并按对应字母，把它加入购物清单。金币足够时，游戏会提醒你购买。
 %%%%
 HINT_SEEN_SPBOOK
 
-一本法术书！你可以通过阅读法术书来记忆新法术。按
-<w>$cmd[CMD_DISPLAY_SPELLS]</w> 查看和管理你记忆的法术。
+你捡到了一本法术书<console>（“<w>$item[book]</w>”）</console>。拾取时，其中的法术会立刻加入你的法术库。你可以用 <w>$cmd[CMD_MEMORISE_SPELL]</w> 从中记忆法术，并用 <w>$cmd[CMD_CAST_SPELL]</w> 施放。
+{{
+    if you.god() == "Trog" then
+        return "不过，当你记忆或研习魔法时，特洛格会很生气！"
+    end
+}}
 %%%%
 HINT_SEEN_STAFF
 
-一根法杖或魔杖！你可以 <w>$cmd[CMD_EVOKE]</w> 使用魔杖来产生魔法效果，
-类似卷轴或药水。法杖是强大的近战武器，可以增强某些学派的魔法。
+你捡到了一根法杖<console>（“<w>$item[magical staff]</w>”）</console>。必须先用 <w>$cmd[CMD_WIELD_WEAPON]</w> 持握才能发挥作用。施法者用法杖提高特定法术学派的威力；它也可以当作武器。<localtiles>可<w>左键单击</w>法杖来持握。</localtiles>
 %%%%
 HINT_SEEN_STAIRS
 
@@ -623,94 +573,87 @@ HINT_SEEN_STAIRS
 %%%%
 HINT_SEEN_TRAP
 
-一个陷阱！踩上去会触发它，通常会对附近的生物造成伤害或有害效果。
-你可以尝试通过搜索发现隐藏的陷阱。你的盟友会尽量避开你发现的陷阱。
+你刚刚发现了一个陷阱。你偶尔会遇到这种讨厌的机关。
 %%%%
 HINT_SEEN_WAND
 
-一根魔杖！你可以 <w>$cmd[CMD_EVOKE]</w> 使用魔杖进行定向攻击。
-使用前先鉴定它，否则你可能会浪费宝贵的充能。
+你捡到了第一根魔杖<console>（“<w>$item[wand]</w>”）</console>。
+<localtiles>只需<w>左键单击</w>它，或按</localtiles>
+<nomouse>按</nomouse> <w>$cmd[CMD_EVOKE]</w> 激活。
+
+找到更多同类魔杖时，它们会合并进这根魔杖并为其增加充能。
 %%%%
 HINT_SEEN_WEAPON
 
-一把武器！武器可以提高你的近战伤害。要查看武器的属性，
-检视它（<w>$cmd[CMD_LOOK_AROUND]</w>）或按
-<w>$cmd[CMD_DISPLAY_INVENTORY]</w> 在你的物品栏中选择它。
+这是你捡到的第一把武器<console>（“<w>$item[weapon]</w>”）</console>。用 <w>$cmd[CMD_WIELD_WEAPON]</w><localtiles>或<w>左键单击</w>它</localtiles>来持握；但要留意，它对应的武器技能可能和你当前训练的技能不同。你可以从物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）<localtiles>或通过<w>右键单击</w>它</localtiles>查看武器属性。
+
+{{
+    if crawl.hints_type() == "berserk" then
+        return "你最好继续使用斧类武器。不过，查看其他斧类武器的"
+               .. "附魔仍可能值得！"
+    end
+}}
 %%%%
 HINT_SEEN_ZERO_EXP_MON
 
-那个怪物不提供经验值，因为它太弱了，无法提供真正的挑战。
-并非所有战斗都值得打。
+那个<console> $1</console>是$2。严格来说，它属于怪物，但更像地牢里的摆设：既无害，也不会移动。如果挡路，你可以像攻击其他怪物一样杀死它，但不会因此获得任何经验。
 %%%%
 HINT_SHIFT_RUN
 
-按住 <w>Shift键</w> 并移动，可以向一个方向快速奔跑直到遇到有趣的东西！
-这对穿越长走廊或你想尽快穿过已清理区域时非常有用。
+按 <w>Shift键+方向键</w> 或 <w>/ 再按方向键</w>，走动时就能少按几次键。这样会让你沿一个方向奔跑，直到看见怪物或角色发现有趣的事物。
 %%%%
 HINT_SKILL_RAISE
 
-你的一个技能提高了！技能提高意味着你的角色变得更加强大。
-你可以通过按 <w>$cmd[CMD_DISPLAY_SKILLS]</w> 来查看你技能的详细信息。
+你的一项技能刚刚达到一个里程碑。每当你通过杀死怪物获得经验值时，正在使用的技能都会自动得到训练。默认情况下，经验值会分配给你正在主动使用的技能。要查看或管理技能，请按 <w>$cmd[CMD_DISPLAY_SKILLS]</w><localtiles>，或点击右下角的技能标签页</localtiles>。
 %%%%
 HINT_SPELL_MISCAST_EFFECTS
 
-施法失败有时不仅仅是浪费时间，也可能对你的角色造成有害效果。
-在战斗中施放你难以掌控的强大法术前要三思。
+施法失误可能造成恶劣后果，法术越难尤其如此。你的魔法技能越高，成功施放法术的概率就越大；一些物品也能提高这个概率。使用 <w>$cmd[CMD_DISPLAY_SPELLS]</w> 命令<localtiles>，或将鼠标悬停在法术图块上</localtiles>，即可查看当前的失败率。
 %%%%
 HINT_STAIR_BRAND
 
-楼梯可以被特殊的危险标记。当你移动到一个被标记的楼梯时，
-它们会显示额外的信息来警告你潜在的危险。
+<tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
+<console>如果有物品盖在楼梯或逃生舱口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
 %%%%
 HINT_TRAP_BRAND
 
-陷阱可以被特殊的危险标记，指示它们的位置。留意这些标记，
-因为它们警告你在不利条件下可能触发危险机制。
+<console>如果有物品盖在陷阱上，系统会把 <w>^</w> 符号高亮显示，而不会用物品图符遮住陷阱符号。</console>
 %%%%
 HINT_TEMPORARILY_FRIENDLY
 
-那个怪物被暂时变成了盟友！它将与你并肩作战一小段时间，
-所以在此期间不要攻击它。
+不过，它只是<w>暂时</w>对你友好；这种友好状态消失后，它会再次变得危险。
 %%%%
 HINT_WIELD_WEAPON
 
-你可以通过 <w>$cmd[CMD_WIELD_WEAPON]</w> 来装备武器。
-一些武器需要双手使用，所以你不能同时使用盾牌。
+按 <w>$cmd[CMD_WEAPON_SWAP]</w> 可以轻松切回 a 槽位中的武器。要更改物品槽位，先按 <w>$cmd[CMD_ADJUST_INVENTORY]</w>，再按 <w>i</w>，然后选择合适的槽位。
 %%%%
 HINT_YOU_ENCHANTED
 
-你被魔法增强了！这可能是好事也可能是坏事——各种增益和减益效果
-都可以通过法术、药水、神祇能力或其他来源施加。
-查看屏幕右侧的状态效果了解详情。
+各种状态效果都可能暂时作用于你。它们的简短说明会显示在属性区域底部。按 <w>$cmd[CMD_DISPLAY_CHARACTER_STATUS]</w> 可查看详情；按 <w>$cmd[CMD_DISPLAY_COMMANDS]/T</w> 可搜索完整的状态效果说明。
 %%%%
 HINT_YOU_MISCAST
 
-你的法术失败了！这可能发生在任何施法尝试中，但成功率越低，
-可能性越大。施法失败至少会浪费魔力，但也可能有更严重的后果。
+你刚刚发生了一次施法失误。
 %%%%
 HINT_YOU_MUTATED
 
-你变异了！变异可以是好的、坏的，或两者兼有。一些变异是暂时的，
-而另一些是永久的。使用 <w>$cmd[CMD_DISPLAY_CHARACTER]</w>
-然后按 <w>A</w> 来查看你当前的变异。
+变异有好有坏。变异药水是移除不良变异最常见的办法，但也可能带来新的变异。按 <w>$cmd[CMD_DISPLAY_MUTATIONS]</w> 查看你的变异。
 %%%%
 HINT_YOU_POISON
 
-你被毒害了！这意味着你将随时间失去生命值。喝一瓶治愈药水
-（<w>$cmd[CMD_QUAFF]</w>）通常是个好主意。注意，一些怪物可以
-造成更致命的毒害，你应该特别紧急地治疗。
+中毒会迅速削减你的生命值。你可以按 <w>$cmd[CMD_REST]</w> 休息，等待毒性自行消退；但如果你正在战斗或所中之毒足以致命，最好饮用一瓶治疗药水。
 %%%%
 HINT_YOU_RESIST
 
-你对某事物有抵抗力！这意味着你从该来源受到的伤害更少，
-或者完全不受其影响。按 <w>$cmd[CMD_RESISTS_SCREEN]</w> 查看你的完整抗性。
+游戏中的大多数攻击由你的 AC 防御。火焰、吸取等攻击还可由对应抗性进一步减轻；减速、混乱等妖术效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
+
+要查看当前全部抗性，<localtiles><w>右键点击</w>角色人偶，或</localtiles>按 <w>$cmd[CMD_RESISTS_SCREEN]</w>。
 %%%%
 HINT_YOU_SILENCE
 
-你被沉默了！这意味着你不能阅读卷轴、施法或祈求神祇能力，
-直到沉默效果结束。尽量远离沉默的来源！
+处于沉默状态时，你无法施法、阅读卷轴或祈求神力。作用半径内的怪物同样受到限制。沉默场可以通过<tiles>特殊样式的边框地块</tiles><console>颜色不同的地面格</console>辨认；它始终以你为中心并随你移动。其半径会逐渐缩小，最终只影响你一人，然后彻底消失。
 %%%%
 death random 4
 
-地牢里到处是致命的危险。不论你怎么被杀死，都请继续尝试——
-每一次死亡都是学习经验。
+如果某场遭遇让你觉得难以应付，别忘了尽早使用应急物品。传送卷轴或加速药水确实能救你一命。
+%%%%

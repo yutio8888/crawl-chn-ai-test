@@ -261,8 +261,7 @@ This is the first weapon<console> ('<w>$item[weapon]</w>')</console> you've
 picked up. Use <w>$cmd[CMD_WIELD_WEAPON]</w><localtiles> or
 <w>left-click</w> on it</localtiles> to wield it, but be aware that this
 weapon might train a different skill from your current one. You can view the
-weapon's properties from your
-<w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory<localtiles> or by
+weapon's properties from your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>)<localtiles> or by
 <w>right-clicking</w> on it</localtiles>.
 
 {{
@@ -278,7 +277,7 @@ This is the first stack of missiles<console> ('<w>$item[missile]</w>')</console>
 you've picked up. Missiles like boomerangs and throwing nets can be thrown by
 hand, and become more effective as you train the Throwing skill.
 <localtiles><w>Right-click</w> on</localtiles><nomouse>Select</nomouse>
-the item in your <w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory to see more
+the item in your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>) to see more
 information.
 
 {{
@@ -299,8 +298,8 @@ This is the first piece of armour<console> ('<w>$item[armour]</w>')</console>
 you've picked up. <localtiles>You can click on it to wear it, and click again
 to remove it. <w>Right-clicking</w> on it will give more information.
 </localtiles><nomouse>Use <w>$cmd[CMD_WEAR_ARMOUR]</w> to wear it and
-<w>$cmd[CMD_REMOVE_ARMOUR]</w> to take it off again. You can view its
-properties from your <w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory.
+<w>$cmd[CMD_REMOVE_ARMOUR]</w> to take it off again. You can view its properties
+from your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>).
 </nomouse>
 
 {{
@@ -318,21 +317,21 @@ You have picked up a piece of jewellery, either a ring
 amulet<console> ('<w>$item[amulet]</w>')</console>.
 <nomouse>Press <w>$cmd[CMD_WEAR_JEWELLERY]</w> to put it on and
 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> to remove it. You can view its properties
-from your <w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory.</nomouse>
+from your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>).</nomouse>
 <localtiles>You can click on it to put it on, and click again to remove it. By
 <w>right-clicking</w> on it, you can view its properties.</localtiles>
 %%%%
 HINT_SEEN_MISC
 
 This is a curious object indeed. You can play around with it to find out what
-it does by <localtiles>clicking on it to e<w>$cmd[CMD_EVOKE]</w>oke </localtiles>
-<nomouse>e<w>$cmd[CMD_EVOKE]</w>oking </nomouse>it. As usual, selecting it from
-your <w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory might give you more information.
+it does by <localtiles>clicking on it</localtiles><nomouse>pressing
+<w>$cmd[CMD_EVOKE]</w></nomouse>. As usual, selecting it from your inventory
+(<w>$cmd[CMD_DISPLAY_INVENTORY]</w>) might give you more information.
 %%%%
 HINT_SEEN_STAFF
 
 You have picked up a magic staff<console> ('<w>$item[magical staff]</w>')</console>.
-It must be <w>$cmd[CMD_WIELD_WEAPON]</w>ielded to be of use. Magicians use
+It must be wielded with <w>$cmd[CMD_WIELD_WEAPON]</w> to be of use. Magicians use
 staves to increase their power in certain spell schools. It can also be used as
 a weapon.<localtiles> You can wield a staff by <w>left-clicking</w>.</localtiles>
 %%%%
@@ -366,8 +365,8 @@ HINT_SEEN_BRANCH
 This<console> '$1'</console> is the entrance to a different branch of the
 dungeon. Each branch has different terrain and monsters, and some contain
 entrances to other branches. You can learn more by examining this
-entrance<localtiles> by hovering your mouse over its tile</localtiles><nomouse
-by pressing <w>$cmd[CMD_LOOK_AROUND]</w> and moving the cursor onto it."
+entrance<localtiles> by hovering your mouse over its tile</localtiles><nomouse>
+by pressing <w>$cmd[CMD_LOOK_AROUND]</w> and moving the cursor onto it</nomouse>.
 
 Some branches will be much safer and more rewarding than your current branch.
 Others can be very dangerous, better visited when your character is more
@@ -444,7 +443,7 @@ HINT_SEEN_SHOP
 
 That<console> $1</console> is a shop. You can enter it by typing
 <w>$cmd[CMD_GO_UPSTAIRS]</w> or <w>$cmd[CMD_GO_DOWNSTAIRS]</w>
-<tiles>, or by <w>left-clicking</w> on it<tiles>
+<tiles>, or by <w>left-clicking</w> on it</tiles>
 while standing on the square.
 
 If there's anything you want which you can't afford yet, you can hold
@@ -537,7 +536,7 @@ HINT_MALEVOLENCE
 As you explore the dungeon and reveal new tiles, the malevolent forces of the
 dungeon may randomly cause bad things to happen to you. When this happens,
 pause, think carefully, and be ready to use consumables or abilities. Fight to
-survive!"
+survive!
 %%%%
 HINT_OPPORTUNITY_ATTACK
 
@@ -567,10 +566,11 @@ selection with <w>Enter</w>.
 %%%%
 HINT_FULL_INVENTORY
 
-Sadly, your inventory is limited to 52 items, and it appears your knapsack is
-full. However, this is easy enough to rectify: simply <w>$cmd[CMD_DROP]</w>rop
-some of the stuff you don't need right now. In the drop menu you can then
-comfortably select which items to drop by pressing their inventory
+Your gear inventory is limited to 52 slots, and all of them are occupied.
+Consumables use separate slots and are not affected by this limit. Gear that
+merges with an existing stack can still be picked up. To make room for other
+gear, press <w>$cmd[CMD_DROP]</w> and completely drop a gear item or stack you
+don't need right now. In the drop menu, select items by pressing their inventory
 letter<localtiles>, or by clicking on them</localtiles>.
 %%%%
 HINT_SHIFT_RUN
@@ -611,13 +611,15 @@ HINT_AUTO_EXCLUSION
 
 To prevent autotravel or autoexplore taking you into dangerous territory, you
 can set travel exclusions by entering the map view (<w>$cmd[CMD_DISPLAY_MAP]</w>)
-and then toggling the exclusion radius on the monster position with <w>e</w>.
+and then toggling the exclusion radius on the monster position with
+<w>$cmd[CMD_MAP_EXCLUDE_AREA]</w>.
 To make this easier, some immobile monsters listed in the <w>auto_exclude</w>
 option (such as this one) are considered dangerous enough to warrant an
 automatic setting of an exclusion. It will be automatically cleared if you
-manage to kill the monster. You could also manually remove the exclusion with
-<w>$cmd[CMD_DISPLAY_MAP]ee</w> but unless you remove this monster from the
-auto_exclude list, the exclusion will be reset the next turn.
+manage to kill the monster. You could also manually remove the exclusion by
+entering the map with <w>$cmd[CMD_DISPLAY_MAP]</w> and pressing
+<w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> twice, but unless you remove this monster from
+the <w>auto_exclude</w> list, the exclusion will be reset the next turn.
 %%%%
 HINT_HEALING_POTIONS
 
@@ -635,9 +637,9 @@ monster. Press <w>$cmd[CMD_REST]</w> or <w>shift-numpad-5</w>
 %%%%
 HINT_NEED_POISON_HEALING
 
-You are lethally poisoned, so now would be a good time to
-<w>$cmd[CMD_QUAFF]</w>uaff a potion of heal wounds or, better yet, a potion of
-curing. If you have seen neither of these so far, try unknown potions in your
+You are lethally poisoned, so now would be a good time to press
+<w>$cmd[CMD_QUAFF]</w> and quaff a potion of heal wounds or, better yet, a potion
+of curing. If you have seen neither of these so far, try unknown potions in your
 inventory. Good luck!
 %%%%
 HINT_ON_FIRE
@@ -664,8 +666,8 @@ first have to get away from the danger.
 %%%%
 HINT_CAN_BERSERK
 
-Against particularly difficult foes, you should use your Berserk
-<w>$cmd[CMD_USE_ABILITY]</w>bility. Killing monsters while berserking makes it
+Against particularly difficult foes, you should use your Berserk ability
+(<w>$cmd[CMD_USE_ABILITY]</w>). Killing monsters while berserking makes it
 last longer.
 %%%%
 HINT_POSTBERSERK
@@ -703,7 +705,7 @@ be the better option.
 %%%%
 HINT_ADVISE_USE_WAND
 
-\nOr you could e<w>$cmd[CMD_EVOKE]</w>oke a wand to harm or weaken your foes.
+\nOr you could press <w>$cmd[CMD_EVOKE]</w> to evoke a wand and harm or weaken your foes.
 %%%%
 HINT_YOU_MUTATED
 
@@ -753,15 +755,15 @@ HINT_WIELD_WEAPON
 
 You can easily switch back to your weapon in slot a by
 pressing <w>$cmd[CMD_WEAPON_SWAP]</w>. To change the slot of an item, press
-<w>$cmd[CMD_ADJUST_INVENTORY]i</w> and choose the appropriate slots.
+<w>$cmd[CMD_ADJUST_INVENTORY]</w>, then <w>i</w>, and choose the appropriate slots.
 %%%%
 HINT_FLEEING_MONSTER
 
 Now that monster is scared of you! Note that you do not absolutely have to
 follow it. Rather, you can let it run away. Sometimes, though, it can be useful
 to attack a fleeing creature by throwing something after it. If you have any
-stones in your <w>$cmd[CMD_DISPLAY_INVENTORY]</w>nventory, you can look at one
-of them to read an explanation of how to do this.
+stones in your inventory, open it with <w>$cmd[CMD_DISPLAY_INVENTORY]</w> and
+look at one of them to read an explanation of how to do this.
 %%%%
 HINT_MONSTER_UNUSUAL
 
