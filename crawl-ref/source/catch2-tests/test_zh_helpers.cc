@@ -385,38 +385,42 @@ static bool command_template_like_at(const std::string& text, size_t i)
 static size_t command_template_end(const std::string& text, size_t i)
 {
     static const std::string prefix = "$cmd[";
-    if (text.compare(i, prefix.size(), prefix) != 0)
-        return std::string::npos;
     if (i > 0 && (is_ascii_identifier_char(text[i - 1])
                   || text[i - 1] == '$'))
     {
         return std::string::npos;
     }
 
-    const size_t identifier_start = i + prefix.size();
-    if (text.compare(identifier_start, 4, "CMD_") != 0)
-        return std::string::npos;
-
-    size_t end = identifier_start + 4;
-    const size_t command_start = end;
-    while (end < text.size() && is_command_identifier_char(text[end]))
-        ++end;
-    if (end == command_start || end >= text.size() || text[end] != ']')
-        return std::string::npos;
-
-    ++end;
-    if (end == text.size() || (!is_ascii_identifier_char(text[end])
-                               && text[end] != '$'))
+    size_t template_start = i;
+    while (true)
     {
-        return end;
-    }
+        if (text.compare(template_start, prefix.size(), prefix) != 0)
+            return std::string::npos;
 
-    // Adjacent command templates are valid production syntax. Only treat '$'
-    // as a boundary when it begins another complete template; this keeps a
-    // lone '$' or a malformed following template visible to the scanner.
-    return text[end] == '$'
-           && command_template_end(text, end) != std::string::npos
-        ? end : std::string::npos;
+        const size_t identifier_start = template_start + prefix.size();
+        if (text.compare(identifier_start, 4, "CMD_") != 0)
+            return std::string::npos;
+
+        size_t end = identifier_start + 4;
+        const size_t command_start = end;
+        while (end < text.size() && is_command_identifier_char(text[end]))
+            ++end;
+        if (end == command_start || end >= text.size() || text[end] != ']')
+            return std::string::npos;
+
+        ++end;
+        if (end == text.size())
+            return end;
+        if (text[end] == '$')
+        {
+            // Consume the entire adjacent chain in one pass. A lone '$' or a
+            // malformed successor makes the whole chain invalid.
+            template_start = end;
+            continue;
+        }
+        return !is_ascii_identifier_char(text[end])
+            ? end : std::string::npos;
+    }
 }
 
 static size_t allowed_technical_literal_end(const std::string& text, size_t i)

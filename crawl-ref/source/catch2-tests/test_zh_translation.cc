@@ -1371,6 +1371,28 @@ TEST_CASE("MIXED_CN_EN exact command technical literals",
     REQUIRE(rule_mixed_cn_en(text) == expect_issue);
 }
 
+TEST_CASE("MIXED_CN_EN command template chains are linear and fail closed",
+          "[zh-translation][zh-helpers]")
+{
+    constexpr size_t chain_length = 256;
+    std::string chain = "按 ";
+    for (size_t i = 0; i < chain_length; ++i)
+        chain += "$cmd[CMD_WAIT]";
+
+    SECTION("complete long chain")
+    {
+        REQUIRE_FALSE(rule_mixed_cn_en(chain + " 自动探索。"));
+    }
+    SECTION("isolated dollar after long chain")
+    {
+        REQUIRE(rule_mixed_cn_en(chain + "$ 自动探索。"));
+    }
+    SECTION("malformed template after long chain")
+    {
+        REQUIRE(rule_mixed_cn_en(chain + "$cmd[CMD_WAIT 自动探索。"));
+    }
+}
+
 TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
           "[zh-translation][zh-helpers]")
 {
