@@ -253,8 +253,11 @@ might also stumble upon artefacts which come in two varieties:
   generated. Most unrandarts are identified on sight, and some come with
   special effects or unique abilities that are not available elsewhere.
 
-Neither of these types can be enchanted or branded, either temporarily or
-permanently.
+Artefacts cannot be rebranded. They also normally cannot be enchanted, but
+the artefact enchanting mutation allows scrolls of enchant weapon and enchant
+armour to improve randart weapons and armour up to the normal enchantment
+limits for mundane items of the same type. Unrandarts cannot be enchanted even
+with this mutation.
 %%%%
 Q:interact
 

@@ -60,6 +60,7 @@
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
 
+#include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <iterator>
@@ -109,7 +110,8 @@ you = {
     flying = function() return false end,
     mutation = function() return 0 end,
     contam_max_damage = function() return 0 end,
-    god = function() return "No God" end
+    god = function() return "No God" end,
+    wizard = function() return false end
 }
 view = {
     feature_at = function() return "floor" end
@@ -166,6 +168,107 @@ private:
 };
 
 } // anonymous namespace
+
+// =============================================================================
+// [zh-help][issue-52] — load the complete frozen Help/FAQ inventory through
+// the production consumers. These exact key sets are the runtime counterpart
+// to docs/help-review-plan.md's baseline inventory: every identity must remain
+// present, translated, valid UTF-8, and free of embedded-Lua diagnostics.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: Issue 52 frozen Help and FAQ entries load",
+                 "[zh-help][issue-52]")
+{
+    ScopedHelpLuaGlobals lua_fixture;
+
+    const vector<string> help_keys = {
+        "annotate.prompt",
+        "console-keycodes",
+        "interlevel-travel.altar.prompt",
+        "interlevel-travel.branch.prompt",
+        "interlevel-travel.depth.prompt",
+        "known-menu",
+        "level-map",
+        "macro-menu",
+        "pick-up",
+        "skill-menu",
+        "spell-library",
+        "stash-search.prompt",
+        "wiz-monster",
+    };
+    for (const string& key : help_keys)
+    {
+        const string rendered = getHelpString(key);
+        const string missing = make_stringf(
+            T_("Error! The help for \"%s\" is missing!"), key.c_str());
+        INFO("Help key: " << key);
+        CHECK_FALSE(rendered.empty());
+        CHECK(rendered != missing);
+        CHECK(contains_cjk_text(rendered));
+        CHECK_FALSE(rule_garbled_utf8(rendered));
+        CHECK_FALSE(rule_embedded_lua_error(rendered));
+    }
+
+    const vector<string> faq_suffixes = {
+        "goal",
+        "userdir",
+        "roguelike difference",
+        "survival",
+        "downstairs",
+        "cheating",
+        "weapons",
+        "religion",
+        "ghosts",
+        "abyss",
+        "randart",
+        "interact",
+        "version",
+        "beta",
+        "bug",
+        "idea",
+        "help",
+        "changes",
+        "tiles lag",
+    };
+    vector<string> expected_question_keys;
+    expected_question_keys.reserve(faq_suffixes.size());
+    for (const string& suffix : faq_suffixes)
+        expected_question_keys.push_back("q:" + suffix);
+
+    vector<string> actual_question_keys = getAllFAQKeys();
+    std::sort(expected_question_keys.begin(), expected_question_keys.end());
+    std::sort(actual_question_keys.begin(), actual_question_keys.end());
+    CHECK(actual_question_keys == expected_question_keys);
+
+    const vector<string> bulleted_answers = {
+        "roguelike difference",
+        "abyss",
+        "randart",
+        "bug",
+        "help",
+    };
+    for (const string& suffix : faq_suffixes)
+    {
+        const string question_key = "q:" + suffix;
+        const string question = getFAQ_Question(question_key);
+        const string answer = getFAQ_Answer(question_key);
+        INFO("FAQ suffix: " << suffix);
+        CHECK_FALSE(question.empty());
+        CHECK_FALSE(answer.empty());
+        CHECK(contains_cjk_text(question));
+        CHECK(contains_cjk_text(answer));
+        CHECK_FALSE(rule_garbled_utf8(question));
+        CHECK_FALSE(rule_garbled_utf8(answer));
+        CHECK_FALSE(rule_embedded_lua_error(question));
+        CHECK_FALSE(rule_embedded_lua_error(answer));
+        CHECK(answer.find("\n\n*") == string::npos);
+        if (std::find(bulleted_answers.begin(), bulleted_answers.end(), suffix)
+            != bulleted_answers.end())
+        {
+            CHECK(answer.find("\n•") != string::npos);
+        }
+    }
+}
 
 // =============================================================================
 // [zh-help][bidirectional] — round-trip lookups under the ZH fixture.

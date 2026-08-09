@@ -381,7 +381,7 @@ name with <w>generate_awake</w>.
 
 <w>generate_awake boulder beetle</w>
 
-A prefix of <w>patrolling</w> prevents it from walking out of sight of the the place
+A prefix of <w>patrolling</w> prevents it from walking out of sight of the place
 where it was created.
 
 You can set the monster's god using the <w>god</w>: specifier as follows:
@@ -448,7 +448,7 @@ that "<cyan>the <<race></cyan>" will be appended to all names, which should be c
 when coming up with them.
 
 There are three different modifiers that can be used on a name:
-<w>name_adjective</w>, <w>name_suffix and </w>name_replace. <w>name_adjective</w> makes the
+<w>name_adjective</w>, <w>name_suffix</w> and <w>name_replace</w>. <w>name_adjective</w> makes the
 name act as an adjective. For example:
 
 <w>kobold name:ugly name_adjective</w>
@@ -488,9 +488,10 @@ monster, "<cyan>A goblin</cyan>".
 
 <w>kobold name:goblin name_replace name_descriptor</w>
 
-The <w>name_definite</w> flag ensures that it is never referred to as "<cyan>a</cyan>" or "<cyan>an</cyan>",
-but that the definite object is always used. Therefore, you will see "<cyan>The
-<cyan>goblin</cyan> <cyan>hits you</cyan>", as per above, but also "<cyan>The goblin</cyan>" in its description.
+The <w>name_definite</w> flag ensures that it is never referred to as
+"<cyan>a</cyan>" or "<cyan>an</cyan>", but that the definite article is always
+used. Therefore, you will see "<cyan>The goblin hits you</cyan>", as per above,
+but also "<cyan>The goblin</cyan>" in its description.
 Setting <w>name_definite</w> will automatically set the flag <w>name_descriptor</w>,
 therefore meaning that:
 
@@ -573,21 +574,25 @@ Spell names must exactly match the names in <cyan>spl-data.h</cyan>, with spaces
 by underscores. Spell frequencies are an (x in 200) chance that that spell
 will be cast. Spell flags include:
 
-* <w>natural</w>, <w>magical</w>, <w>demonic</w>, <w>wizard</w>, or <w>priest</w> - the manner in which this
-spell is being cast. Wizards and priests can be silenced and will trigger
-appropriate conducts (Trog will appreciate killing wizards, Beogh will
-appreciate killing priests). Magical, demonic, and wizard spells are subject
-to anti-magic effects. Natural spells do not generate noise.
+* <w>natural</w>, <w>magical</w>, <w>vocal</w>, <w>wizard</w>, or <w>priest</w> - the manner in which this
+spell is being cast. Wizard, priest, and vocal spells are affected by silence.
+Wizards and priests trigger appropriate conducts (Trog will appreciate killing
+wizards, Beogh will appreciate killing priests). Magical and wizard spells are
+subject to antimagic effects. Natural and magical spells do not generate noise
+unless marked <w>noisy</w>.
 * <w>emergency</w> - the monster will only cast the spell when low on health.
 * <w>breath</w> - the spell is a breath weapon, and using it triggers a breath
 timeout during which the spell cannot be cast again.
-* <w>no_silent</w> - the spell cannot be used while silent, even if it is an ability
-type normally not subject to silence.
 * <w>instant</w> - the spell does not expend the monster's energy; they may take
 another action on the same turn.
-* <w>noisy</w> - forces the spell to make noise even if it is a natural ability.
+* <w>noisy</w> - forces the spell to make noise even if it is a natural or magical
+ability.
+* <w>short_range</w> - the monster will only cast the spell when its target is at
+short range.
+* <w>long_range</w> - the monster will only cast the spell when its target is at
+long range.
 
-You may use <w>none</w> specify that a slot should be left empty. You can force a
+You may use <w>none</w> to specify that a slot should be left empty. You can force a
 spell-less monster with:
 
 <w>orc wizard spells:none</w>
@@ -652,9 +657,11 @@ enter a backslash.) For example, use <w>\{9}</w> to enter the keycode for the
 <w>tab</w> button. You can bind macros and keymaps by keycode by using <w>~~</w>
 at the macro edit menu.
 
-<w>Saving</w>: Bindings edited at this menu are saved in a .macro file in your
-save directory. They will be overridden by settings in your options file. See
-the `macro` command in options_guide.txt for more information.
+<w>Saving</w>: Bindings edited at this menu are saved in Crawl's configured
+macro file. Its name and location depend on the platform and build; in most
+local builds it is macro.txt in macro_dir. They will be overridden by settings
+in your options file. See the `macro` command in options_guide.txt for more
+information.
 
 %%%%
 console-keycodes
