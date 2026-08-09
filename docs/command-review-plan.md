@@ -2,7 +2,8 @@
 
 ## 冻结边界
 
-- 基线提交：`b80fc1a7497f3bf313930cb9f280e03c4867e8ef`（`chn-0.34.1-base` HEAD，R2 合并后）
+- 基线提交：`b56f853c4377bb5c07dfb1544fea5447a5c8ad15`（PR #44 精确候选；
+  fast-forward 合并后的 `chn-0.34.1-base` HEAD）
 - 上游总览：Issue #40 R3；执行入口子 Issue #43（子批次 1）。
 - 生产身份源：`crawl-ref/source/command-type.h` 的 `command_type` 枚举（306 成员，
   含 `CMD_NO_CMD` 与 `CMD_MAX_CMD` 哨兵）；名称映射 `crawl-ref/source/macro.cc`
@@ -56,7 +57,7 @@
 
 ## 顺序
 
-1. 冻结清单并记录 digest（本计划；inventory SHA `29a68718…`，重建命令见下）。
+1. 冻结清单并记录 digest（本计划；inventory SHA `9320c0b5…`，重建命令见下）。
 2. 按显示消费者分组审核：tiles 命令条常显组（terse）→ 详情组（verbose）→
    回退链影响组（仅 terse 无 verbose 的命令）→ 未映射/哨兵组。
 3. 逐个身份记录证据卡与终态结论（`docs/command-review-results.md`）。
@@ -68,7 +69,7 @@
 
 ```bash
 python3 .claude/scripts/command_inventory.py \
-  --baseline-ref b80fc1a7497f3bf313930cb9f280e03c4867e8ef \
+  --baseline-ref b56f853c4377bb5c07dfb1544fea5447a5c8ad15 \
   --inventory-output /tmp/command-inventory-<新文件名>.json
   （输出仅允许 canonical /tmp 直下全新 basename；重复重建请更换文件名或先删除旧文件）
 ```

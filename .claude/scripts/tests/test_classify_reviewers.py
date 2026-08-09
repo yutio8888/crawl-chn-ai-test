@@ -84,6 +84,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "card-review-results.md",
             "character-mechanics-review-results.md",
             "cloud-review-results.md",
+            "command-review-results.md",
             "god-review-results.md",
             "item-extended-review-results.md",
             "monster-review-results.md",
