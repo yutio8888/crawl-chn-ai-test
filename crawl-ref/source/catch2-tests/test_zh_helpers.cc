@@ -345,11 +345,47 @@ static bool is_command_identifier_char(char c)
         || c == '_';
 }
 
+static bool ascii_case_equal(char lhs, char rhs)
+{
+    if (lhs >= 'A' && lhs <= 'Z')
+        lhs += 'a' - 'A';
+    if (rhs >= 'A' && rhs <= 'Z')
+        rhs += 'a' - 'A';
+    return lhs == rhs;
+}
+
+static bool command_template_like_at(const std::string& text, size_t i)
+{
+    size_t cmd = i;
+    if (text[cmd] == '$')
+        ++cmd;
+    if (cmd + 3 > text.size()
+        || !ascii_case_equal(text[cmd], 'c')
+        || !ascii_case_equal(text[cmd + 1], 'm')
+        || !ascii_case_equal(text[cmd + 2], 'd'))
+    {
+        return false;
+    }
+
+    size_t bracket = cmd + 3;
+    while (bracket < text.size()
+           && (text[bracket] == ' ' || text[bracket] == '\t'))
+    {
+        ++bracket;
+    }
+    return bracket < text.size() && text[bracket] == '[';
+}
+
 static size_t command_template_end(const std::string& text, size_t i)
 {
     static const std::string prefix = "$cmd[";
     if (text.compare(i, prefix.size(), prefix) != 0)
         return std::string::npos;
+    if (i > 0 && (is_ascii_identifier_char(text[i - 1])
+                  || text[i - 1] == '$'))
+    {
+        return std::string::npos;
+    }
 
     const size_t identifier_start = i + prefix.size();
     if (text.compare(identifier_start, 4, "CMD_") != 0)
@@ -359,8 +395,13 @@ static size_t command_template_end(const std::string& text, size_t i)
     const size_t command_start = end;
     while (end < text.size() && is_command_identifier_char(text[end]))
         ++end;
-    return end > command_start && end < text.size() && text[end] == ']'
-        ? end + 1 : std::string::npos;
+    if (end == command_start || end >= text.size() || text[end] != ']')
+        return std::string::npos;
+
+    ++end;
+    return end == text.size()
+        || (!is_ascii_identifier_char(text[end]) && text[end] != '$')
+        ? end : std::string::npos;
 }
 
 static size_t allowed_technical_literal_end(const std::string& text, size_t i)
@@ -400,27 +441,52 @@ static size_t allowed_txt_filename_end(const std::string& text,
         ? end : std::string::npos;
 }
 
-static bool is_lua_member_call_identifier(const std::string& text,
-                                          size_t identifier_start,
-                                          size_t identifier_end)
+static size_t experience_level_call_end(const std::string& text, size_t i)
 {
-    if (identifier_start == 0 || text[identifier_start - 1] != '.'
-        || identifier_end + 1 >= text.size()
-        || text[identifier_end] != '(' || text[identifier_end + 1] != ')')
+    static const std::string call = "you.experience_level()";
+    if (text.compare(i, call.size(), call) != 0)
+        return std::string::npos;
+
+    const size_t call_end = i + call.size();
+    if ((i > 0 && (is_ascii_identifier_char(text[i - 1])
+                   || text[i - 1] == '.'))
+        || (call_end < text.size()
+            && (is_ascii_identifier_char(text[call_end])
+                || text[call_end] == '.')))
     {
-        return false;
+        return std::string::npos;
     }
 
-    const size_t open = text.rfind("{{", identifier_start);
-    if (open == std::string::npos)
-        return false;
-    const size_t close = text.rfind("}}", identifier_start);
-    if (close != std::string::npos && close >= open)
-        return false;
+    // Validate every template delimiter so an otherwise exact call cannot be
+    // assembled across islands or hidden inside nested/unbalanced markup.
+    bool in_template = false;
+    bool contains_call = false;
+    size_t template_start = std::string::npos;
+    for (size_t pos = 0; pos < text.size();)
+    {
+        if (text.compare(pos, 2, "{{") == 0)
+        {
+            if (in_template)
+                return std::string::npos;
+            in_template = true;
+            template_start = pos + 2;
+            pos += 2;
+            continue;
+        }
+        if (text.compare(pos, 2, "}}") == 0)
+        {
+            if (!in_template)
+                return std::string::npos;
+            if (template_start <= i && call_end <= pos)
+                contains_call = true;
+            in_template = false;
+            pos += 2;
+            continue;
+        }
+        ++pos;
+    }
 
-    const size_t template_end = text.find("}}", open + 2);
-    return template_end != std::string::npos
-        && identifier_end + 2 <= template_end;
+    return !in_template && contains_call ? call_end : std::string::npos;
 }
 
 static size_t mixed_cn_en_offender(const std::string& text)
@@ -508,12 +574,21 @@ static size_t mixed_cn_en_offender(const std::string& text)
     while (i < text.size())
     {
         char c = text[i];
-        if (c == '$' && text.compare(i, 5, "$cmd[") == 0)
+        if (command_template_like_at(text, i))
         {
             const size_t template_end = command_template_end(text, i);
             if (template_end == std::string::npos)
                 return i;
             i = template_end;
+            continue;
+        }
+
+        if (text.compare(i, 22, "you.experience_level()") == 0)
+        {
+            const size_t call_end = experience_level_call_end(text, i);
+            if (call_end == std::string::npos)
+                return i;
+            i = call_end;
             continue;
         }
 
@@ -534,12 +609,6 @@ static size_t mixed_cn_en_offender(const std::string& text)
             if (filename_end != std::string::npos)
             {
                 i = filename_end;
-                continue;
-            }
-
-            if (is_lua_member_call_identifier(text, i, j))
-            {
-                i = j;
                 continue;
             }
 
