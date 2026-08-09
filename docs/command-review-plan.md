@@ -7,8 +7,10 @@
 - 上游总览：Issue #40 R3；执行入口子 Issue #43（子批次 1）。
 - 生产身份源：`crawl-ref/source/command-type.h` 的 `command_type` 枚举（306 成员，
   含 `CMD_NO_CMD` 与 `CMD_MAX_CMD` 哨兵）；名称映射 `crawl-ref/source/macro.cc`
-  `_cmds_to_names`（286 个物理条目；20 个未映射成员含 `CMD_NO_CMD` fallback、
-  范围别名、合成命令与哨兵）。`util/cmd-name.pl` 消费但不输出首个
+  `_cmds_to_names`（286 个物理条目；20 个标识符未由生成器物理发射，包含
+  `CMD_NO_CMD` fallback、范围别名、合成命令与哨兵）。13 个范围别名虽未
+  物理发射，但会因共享枚举整数值而在 `map<int,string>` 中命中已映射的目标名；
+  仅 `CMD_MIN_SYNTHETIC` 所指的未发射值仍回退。`util/cmd-name.pl` 消费但不输出首个
   `CMD_NO_CMD`，末尾 `{CMD_NO_CMD, nullptr}` 仅为初始化停止哨兵；两方向查找
   仍通过既有 fallback 收敛到 `CMD_NO_CMD`。
 - 描述数据源：`crawl-ref/source/dat/descript/commands.txt`（EN）与
@@ -34,8 +36,9 @@
   （`name_to_command` → CMD_NO_CMD），清理即可。
 - EN 侧 `CMD_EXPLORE_NO_REST` 重复定义（22/26 行，26 行生效）——上游既有，
   两定义语义一致，如实记录不修改。
-- 描述键覆盖：51 命令有 terse 键、44 有 verbose 键；255 枚举成员无描述键
-  （unused，正常——大量命令无帮助文本）。
+- 描述键覆盖：51 个物理命令名有 terse 键、44 个有 verbose 键。按
+  `map<int,string>` 的生产别名语义，3 个范围别名身份会复用已映射目标的
+  描述；因此 54 个枚举身份至少有一项有效描述，252 个无描述（unused）。
 - source.txt 无 CMD 形态键（commands.txt 为 TextDB 资产，不经 source.txt）。
 - 无 T_ 缺口；无 EN/ZH 值缺失（missing_zh_keys 为空）。
 
@@ -61,7 +64,7 @@
 ## 顺序
 
 1. 冻结清单并记录 digest（本计划；修正生产 name-map 语义后的 inventory SHA
-   `e2d021ae6acaf6a85481c7528effbc7bf728be4345875e6bf959db30260bbc2c`，重建命令见下）。
+   `ad6ba57a62d49b14562385ada3dffb9c3b9c0230df379b2ac37fa592266c002e`，重建命令见下）。
 2. 按显示消费者分组审核：tiles 命令条常显组（terse）→ 详情组（verbose）→
    回退链影响组（仅 terse 无 verbose 的命令）→ 未映射/哨兵组。
 3. 逐个身份记录证据卡与终态结论（`docs/command-review-results.md`）。

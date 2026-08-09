@@ -12,20 +12,24 @@ sentinel is CMD_MAX_CMD -- so the tool asserts and records CMD_MAX_CMD.)
 
 Name sources: macro.cc `_command_name_list` (populated from the generated
 `#include "cmd-name.h"`) feeds the two maps `_cmds_to_names`
-(command -> "CMD_X" name) and `_names_to_cmds` (name -> command) used by
-`command_to_name()` / `name_to_command()`. `cmd-name.h` is generated at
-build time by util/cmd-name.pl from command-type.h and is NOT tracked in
-Git, so the tool reproduces the generator's deterministic transformation
-exactly from the baseline enum blob: cmd-name.pl reads and discards the
-CMD_NO_CMD anchor line, then maps every later member up to (but excluding)
-CMD_DISABLE_MORE to its own identifier, skipping CMD_MIN_*/CMD_MAX_* aliases.
-The generated array ends with `{CMD_NO_CMD, nullptr}`, but macro.cc
-`init_keybindings()` stops before that sentinel and never inserts CMD_NO_CMD
-into either map. The reverse map is the identity map over the physical
-non-sentinel entries. `command_to_name()` returns "CMD_NO_CMD" for any
-command outside the table (including CMD_NO_CMD itself) and
-`name_to_command()` returns CMD_NO_CMD for any unknown name -- the NO_CMD
-fallback exception to the `CMD_[A-Z0-9_]+` name shape.
+(command enum value -> "CMD_X" name) and `_names_to_cmds` (name -> command
+enum value) used by `command_to_name()` / `name_to_command()`. `cmd-name.h`
+is generated at build time by util/cmd-name.pl from command-type.h and is NOT
+tracked in Git, so the tool reproduces the generator's deterministic physical
+entries exactly from the baseline enum blob: cmd-name.pl reads and discards
+the CMD_NO_CMD anchor line, then emits every later member up to (but
+excluding) CMD_DISABLE_MORE under its own identifier, skipping
+CMD_MIN_*/CMD_MAX_* aliases. The generated array ends with
+`{CMD_NO_CMD, nullptr}`, but macro.cc `init_keybindings()` stops before that
+sentinel and never inserts CMD_NO_CMD into either map. Because the forward map
+is keyed by enum value rather than identifier spelling, a skipped range alias
+normally resolves to the physically emitted name that shares its value (for
+example CMD_MIN_MENU -> CMD_MENU_UP); CMD_MIN_SYNTHETIC aliases the un-emitted
+CMD_DISABLE_MORE value and still falls back to CMD_NO_CMD. The reverse map is
+the identity map over the physical non-sentinel entries. `command_to_name()`
+returns "CMD_NO_CMD" for any enum value outside the table (including
+CMD_NO_CMD itself) and `name_to_command()` returns CMD_NO_CMD for any unknown
+name -- the NO_CMD fallback exception to the `CMD_[A-Z0-9_]+` name shape.
 The macro.cc audit regions (the include of cmd-name.h, the two map
 declarations, and the exact bodies of name_to_command()/command_to_name())
 are verified with exact fail-closed patterns, so a structural change to the
@@ -178,9 +182,9 @@ NAME_TABLE_STOP = "CMD_DISABLE_MORE"
 
 #: Strict member shape: CMD_ + uppercase ASCII letters/digits/underscore,
 #: optionally `= <integer>` or `= CMD_X` (enum aliases like
-#: CMD_MIN_TILE = CMD_EDIT_PLAYER_TILE).
+#: CMD_MIN_TILE = CMD_EDIT_PLAYER_TILE). Group 2 captures the initializer.
 _ENUM_MEMBER_RE = re.compile(
-    r"(CMD_[A-Z0-9_]+)(?:\s*=\s*(?:\d+|CMD_[A-Z0-9_]+))?")
+    r"(CMD_[A-Z0-9_]+)(?:\s*=\s*(\d+|CMD_[A-Z0-9_]+))?")
 
 #: Description-key name shape (physical key line, production key trim
 #: already applied): CMD_[A-Z0-9_]+ optionally followed by ` verbose`.
@@ -397,8 +401,16 @@ class _PreprocessorFrames:
 # command_type enum parser (strict, fail-closed)
 # ---------------------------------------------------------------------------
 
-def parse_command_enum(text: str) -> list[str]:
-    """Return the command_type enum members in declaration order.
+@dataclass(frozen=True)
+class CommandEnum:
+    """Parsed command_type declarations and their C++ integer values."""
+
+    members: tuple[str, ...]
+    values: dict[str, int]
+
+
+def parse_command_enum(text: str) -> CommandEnum:
+    """Return the command_type enum members and values.
 
     `text` is the file content supplied by the caller (read from the
     baseline Git blob, never from the worktree).
@@ -407,10 +419,13 @@ def parse_command_enum(text: str) -> list[str]:
     either a preprocessor directive (balanced and closed) or a
     comma-separated list of CMD_[A-Z0-9_]+ members, optionally with
     `= <integer>` / `= CMD_X` aliases. Duplicate members, unknown
-    tokens, a missing trailing comma on any member line except the last,
-    an unbalanced brace and an unclosed directive block abort the run.
-    The first member must be CMD_NO_CMD and the last CMD_MAX_CMD (the
-    "Must always be last" enum sentinel).
+    tokens, an alias to an undeclared member, a missing trailing comma on
+    any member line except the last, an unbalanced brace and an unclosed
+    directive block abort the run. Values follow C++ enum semantics:
+    explicit integers are used directly, named initializers copy the
+    already-declared target's value, and uninitialized members increment
+    the preceding value. The first member must be CMD_NO_CMD and the last
+    CMD_MAX_CMD (the "Must always be last" enum sentinel).
     """
     m = re.search(r"enum\s+command_type\s*\{", text)
     if not m:
@@ -422,8 +437,9 @@ def parse_command_enum(text: str) -> list[str]:
 
     frames = _PreprocessorFrames("command_type enum (command-type.h)")
     members: list[str] = []
+    values: dict[str, int] = {}
     seen: set[str] = set()
-    member_lines: list[tuple[str, int]] = []
+    member_lines: list[tuple[str, int, bool]] = []
     # File-absolute line number of the enum body's first line (the body
     # text starts after the enum's opening brace).
     body_start_line = text[:open_idx + 1].count("\n") + 1
@@ -452,6 +468,19 @@ def parse_command_enum(text: str) -> list[str]:
                     f"(command-type.h blob)")
             seen.add(tok)
             members.append(tok)
+            initializer = mm.group(2)
+            if initializer is None:
+                value = values[members[-2]] + 1 if len(members) > 1 else 0
+            elif initializer.isdigit():
+                value = int(initializer)
+            else:
+                if initializer not in values:
+                    raise SystemExit(
+                        f"enum member {tok} aliases undeclared member "
+                        f"{initializer} (command-type.h blob, line "
+                        f"{lineno})")
+                value = values[initializer]
+            values[tok] = value
             member_lines.append((tok, lineno, comma_less))
     frames.require_closed()
 
@@ -478,28 +507,28 @@ def parse_command_enum(text: str) -> list[str]:
         raise SystemExit(
             f"command_type enum must contain {NAME_TABLE_STOP} "
             f"(the util/cmd-name.pl name-table stop marker)")
-    return members
+    return CommandEnum(tuple(members), values)
 
 
-def generate_name_table(members: list[str]) -> dict[str, str]:
-    """Reproduce the macro.cc `_cmds_to_names` table exactly as
-    util/cmd-name.pl generates cmd-name.h from command-type.h.
+def generate_name_table(command_enum: CommandEnum) -> dict[str, str]:
+    """Reproduce the physical rows util/cmd-name.pl emits.
 
     cmd-name.pl's first loop consumes the CMD_NO_CMD anchor without
     emitting it. Every later member up to the first CMD_DISABLE_MORE
     (exclusive, the generator's `last if ...` stop) maps to its own
     identifier string, skipping CMD_MIN_*/CMD_MAX_* aliases (which are
-    not commands). Its final `{CMD_NO_CMD, nullptr}` line is only the
-    generated-array sentinel: macro.cc stops before it, so neither map
-    contains CMD_NO_CMD. The reverse `_names_to_cmds` table is the
-    identity map over the physical entries, so `name_to_command("CMD_X")`
-    resolves to the enum member of the same name and anything else falls
-    back to CMD_NO_CMD.
+    not physical commands). Its final `{CMD_NO_CMD, nullptr}` line is
+    only the generated-array sentinel: macro.cc stops before it, so
+    neither map contains CMD_NO_CMD. This return value is keyed by the
+    physical identifier solely to preserve and expose generator parity;
+    `generate_value_name_table()` separately models the production
+    `_cmds_to_names` insertion keyed by integer enum value.
 
     Invariants (fail-closed): every name fullmatches CMD_[A-Z0-9_]+; the
     table has no duplicate names; every mapped member has exactly one
     name; every mapped name resolves back to its own member.
     """
+    members = command_enum.members
     if not members or members[0] != FIRST_MEMBER:
         raise SystemExit(
             f"name-table input must start with {FIRST_MEMBER}")
@@ -523,6 +552,28 @@ def generate_name_table(members: list[str]) -> dict[str, str]:
             raise SystemExit(
                 f"name table back-reference broken for {member!r} -> "
                 f"{name!r}")
+    return table
+
+
+def generate_value_name_table(command_enum: CommandEnum,
+                              name_table: dict[str, str]) -> dict[int, str]:
+    """Model production `_cmds_to_names` (integer enum value -> name).
+
+    `init_keybindings()` inserts only the physical cmd-name.h rows, but
+    indexes `_cmds_to_names` by `data.cmd`. Consequently a non-emitted
+    alias identifier can resolve through a physically emitted member
+    with the same integer value. Two physical names for one value would
+    trip production's `_cmds_to_names` uniqueness ASSERT and therefore
+    fail closed here too.
+    """
+    table: dict[int, str] = {}
+    for member, name in name_table.items():
+        value = command_enum.values[member]
+        if value in table:
+            raise SystemExit(
+                f"physical command names {table[value]!r} and {name!r} "
+                f"share enum value {value}")
+        table[value] = name
     return table
 
 
@@ -1029,14 +1080,17 @@ def split_cmd_keys(entries: list[DescEntry],
     return terse, verbose, duplicates
 
 
-def build_inventory(members: list[str], name_table: dict[str, str],
+def build_inventory(command_enum: CommandEnum,
+                    name_table: dict[str, str],
                     en_effective: dict[str, DescEntry],
                     zh_effective: dict[str, DescEntry]
                     ) -> list[dict[str, object]]:
     """One inventory record per enum member (declaration order).
 
-    identity: `command:<CMD_X>` for name-mapped members, `command:<ENUM>`
-    (the raw member identifier) for members without a name entry.
+    identity: `command:<CMD_X>` for every raw enum member identifier.
+    name_in_map records whether cmd-name.pl physically emitted that
+    identifier; lookup_name independently records the name resolved from
+    its integer enum value, or the production CMD_NO_CMD fallback.
     lifecycle: `current` when the member has at least one commands.txt
     key in either language (union of the EN/ZH key spaces), `unused`
     otherwise (no commands.txt key -- the member is never described).
@@ -1046,13 +1100,13 @@ def build_inventory(members: list[str], name_table: dict[str, str],
     command_to_name() key-name fallback); missing_t lists the ZH keys
     absent while the EN counterpart exists (the translation gap facts).
     """
-    reverse: dict[str, str] = {name: member
-                               for member, name in name_table.items()}
+    value_name_table = generate_value_name_table(command_enum, name_table)
     inventory: list[dict[str, object]] = []
-    for member in members:
-        name = name_table.get(member)
+    for member in command_enum.members:
+        physical_name = name_table.get(member)
+        name = value_name_table.get(command_enum.values[member])
         lookup_name = name if name is not None else "CMD_NO_CMD"
-        terse_canon = lowercase_string(f"{name}") if name else None
+        terse_canon = lowercase_string(name) if name else None
         verbose_canon = lowercase_string(f"{name} verbose") if name else None
         terse_en = (en_effective[terse_canon].value
                     if name and terse_canon in en_effective else None)
@@ -1096,7 +1150,7 @@ def build_inventory(members: list[str], name_table: dict[str, str],
         inventory.append({
             "identity": f"command:{member}",
             "member": member,
-            "name_in_map": name is not None,
+            "name_in_map": physical_name is not None,
             "lookup_name": lookup_name,
             "lifecycle": lifecycle,
             "terse_en": terse_en,
@@ -1438,8 +1492,10 @@ def main() -> int:
              for k, rel in input_paths.items()}
 
     # -- Identity source: the command_type enum (strict). ----------------
-    members = parse_command_enum(blobs["command-type.h"].decode("utf-8"))
-    name_table = generate_name_table(members)
+    command_enum = parse_command_enum(
+        blobs["command-type.h"].decode("utf-8"))
+    members = list(command_enum.members)
+    name_table = generate_name_table(command_enum)
     unmapped = [m for m in members if m not in name_table]
     if len(members) != len(set(members)):
         raise SystemExit("command_type enum contains a duplicate member")
@@ -1504,7 +1560,7 @@ def main() -> int:
         if re.fullmatch(r"cmd_[a-z0-9_]+", canon))
 
     # -- Inventory: one record per enum member. --------------------------
-    inventory = build_inventory(members, name_table, en_effective,
+    inventory = build_inventory(command_enum, name_table, en_effective,
                                 zh_effective)
     if len(inventory) != len(members):
         raise SystemExit(

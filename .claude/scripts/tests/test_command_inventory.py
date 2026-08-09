@@ -16,8 +16,12 @@ inventory (card_inventory.py):
     generated header is NOT tracked in Git). The tool reproduces that
     deterministic transformation exactly from the baseline enum blob:
     CMD_NO_CMD is consumed as an anchor but not emitted, every later member
-    up to (excluding) CMD_DISABLE_MORE is mapped to its own name, and
-    CMD_MIN_*/CMD_MAX_* aliases are skipped. The generated
+    up to (excluding) CMD_DISABLE_MORE is physically emitted under its own
+    name, and CMD_MIN_*/CMD_MAX_* aliases are skipped. Production
+    `_cmds_to_names` is keyed by enum integer value, so a skipped range alias
+    resolves to its emitted value-sharing command while name_in_map remains
+    false; lookup_name records that independent forward-resolution fact. The
+    generated
     `{CMD_NO_CMD, nullptr}` record is a stop sentinel, not a map entry, and
     every physical name must match the CMD_[A-Z0-9_]+ shape. The macro.cc
     regions that consume the table (the include, the two map
@@ -96,13 +100,16 @@ enum command_type
     CMD_NO_CMD_DEFAULT, // hack to allow assignment of keys to CMD_NO_CMD
     CMD_REST,
     CMD_EXPLORE,
-    CMD_MIN_MENU = CMD_REST,
-    CMD_MAX_MENU = CMD_EXPLORE,
+    CMD_MENU_UP,
+    CMD_MIN_MENU = CMD_MENU_UP,
+    CMD_MENU_EXIT,
+    CMD_MAX_MENU = CMD_MENU_EXIT,
 #ifdef USE_TILE
     CMD_ZOOM_IN,
     CMD_ZOOM_OUT,
 #endif
     CMD_DISABLE_MORE,
+    CMD_MIN_SYNTHETIC = CMD_DISABLE_MORE,
     CMD_ENABLE_MORE,
     CMD_UNWIELD_WEAPON,
     CMD_NEXT_CMD,
@@ -341,8 +348,8 @@ import command_inventory as ci  # noqa: E402
 
 def review_payload() -> dict:
     """Minimal complete inventory payload for strict-ledger unit tests."""
-    members = ci.parse_command_enum(COMMAND_TYPE_H)
-    name_table = ci.generate_name_table(members)
+    command_enum = ci.parse_command_enum(COMMAND_TYPE_H)
+    name_table = ci.generate_name_table(command_enum)
     en_entries = ci.parse_db_keys(COMMANDS_TXT, "commands.txt")
     zh_entries = ci.parse_db_keys(ZH_COMMANDS_TXT, "commands.txt")
     en_effective, _en_overrides = ci.merge_desc_sequence(en_entries)
@@ -352,7 +359,7 @@ def review_payload() -> dict:
         "glossary_sha256": "b" * 64,
         "inventory_sha256": "c" * 64,
         "inventory": ci.build_inventory(
-            members, name_table, en_effective, zh_effective),
+            command_enum, name_table, en_effective, zh_effective),
     }
 
 
@@ -420,13 +427,19 @@ def review_input(text: str) -> ci.AuditInput:
 class CommandEnumParserTest(unittest.TestCase):
     def test_unit_enum_members_order_and_anchors(self):
         members = ci.parse_command_enum(COMMAND_TYPE_H)
-        self.assertEqual(members[0], "CMD_NO_CMD")
-        self.assertEqual(members[-1], "CMD_MAX_CMD")
-        self.assertEqual(len(members), 13)
-        self.assertIn("CMD_NO_CMD_DEFAULT", members)
-        self.assertIn("CMD_MIN_MENU", members)
-        self.assertIn("CMD_ZOOM_IN", members)
-        self.assertIn("CMD_DISABLE_MORE", members)
+        self.assertEqual(members.members[0], "CMD_NO_CMD")
+        self.assertEqual(members.members[-1], "CMD_MAX_CMD")
+        self.assertEqual(len(members.members), 16)
+        self.assertIn("CMD_NO_CMD_DEFAULT", members.members)
+        self.assertIn("CMD_MIN_MENU", members.members)
+        self.assertIn("CMD_MIN_SYNTHETIC", members.members)
+        self.assertIn("CMD_ZOOM_IN", members.members)
+        self.assertIn("CMD_DISABLE_MORE", members.members)
+        self.assertEqual(members.values["CMD_NO_CMD"], 2000)
+        self.assertEqual(members.values["CMD_MIN_MENU"],
+                         members.values["CMD_MENU_UP"])
+        self.assertEqual(members.values["CMD_MIN_SYNTHETIC"],
+                         members.values["CMD_DISABLE_MORE"])
 
     def test_unit_name_table_generator_semantics(self):
         """util/cmd-name.pl consumes (but does not emit) CMD_NO_CMD, then
@@ -437,12 +450,13 @@ class CommandEnumParserTest(unittest.TestCase):
         self.assertEqual(
             list(table),
             ["CMD_NO_CMD_DEFAULT", "CMD_REST",
-             "CMD_EXPLORE", "CMD_ZOOM_IN", "CMD_ZOOM_OUT"])
+             "CMD_EXPLORE", "CMD_MENU_UP", "CMD_MENU_EXIT",
+             "CMD_ZOOM_IN", "CMD_ZOOM_OUT"])
         for member, name in table.items():
             self.assertEqual(member, name)
         # The synthetic tail and the aliases are not mapped.
         for unmapped in ("CMD_NO_CMD", "CMD_MIN_MENU", "CMD_MAX_MENU",
-                         "CMD_DISABLE_MORE",
+                         "CMD_DISABLE_MORE", "CMD_MIN_SYNTHETIC",
                          "CMD_ENABLE_MORE", "CMD_UNWIELD_WEAPON",
                          "CMD_NEXT_CMD", "CMD_MAX_CMD"):
             self.assertNotIn(unmapped, table)
@@ -825,7 +839,7 @@ class CommandInventoryToolTest(unittest.TestCase):
         verbose display in both languages; members without any
         commands.txt key are 'unused' and display the command_to_name()
         key-name fallback. The fixture counts mirror the tool contract:
-        enum 13, name map 5, unmapped 8, EN 5 key lines, ZH 4."""
+        enum 16, name map 7, unmapped 9, EN 5 key lines, ZH 4."""
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             head = make_repo(root)
@@ -835,10 +849,10 @@ class CommandInventoryToolTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 payload = json.loads(out.read_text(encoding="utf-8"))
                 self.assertEqual(payload["baseline"], head)
-                self.assertEqual(len(payload["enum_members"]), 13)
+                self.assertEqual(len(payload["enum_members"]), 16)
                 self.assertEqual(payload["sentinel"], "CMD_MAX_CMD")
-                self.assertEqual(len(payload["name_map"]), 5)
-                self.assertEqual(len(payload["unmapped_members"]), 8)
+                self.assertEqual(len(payload["name_map"]), 7)
+                self.assertEqual(len(payload["unmapped_members"]), 9)
                 self.assertEqual(payload["commands_en"]["key_lines"], 5)
                 self.assertEqual(payload["commands_zh"]["key_lines"], 4)
                 self.assertEqual(payload["commands_en"]["terse"],
@@ -916,14 +930,23 @@ class CommandInventoryToolTest(unittest.TestCase):
                 self.assertEqual(no_cmd["lookup_name"], "CMD_NO_CMD")
                 self.assertEqual(no_cmd["terse_display_en"], "CMD_NO_CMD")
 
-                # A member excluded from the name table (CMD_MIN_*/CMD_MAX_*
-                # alias) has command_to_name()'s NO_CMD fallback name.
+                # A range alias is not physically emitted, but its integer
+                # enum value resolves through the emitted command that owns
+                # that `_cmds_to_names` key.
                 alias = by_id["command:CMD_MIN_MENU"]
                 self.assertFalse(alias["name_in_map"])
-                self.assertEqual(alias["lookup_name"], "CMD_NO_CMD")
-                self.assertEqual(alias["terse_display_en"], "CMD_NO_CMD")
-                self.assertEqual(alias["verbose_display_en"], "CMD_NO_CMD")
+                self.assertEqual(alias["lookup_name"], "CMD_MENU_UP")
+                self.assertEqual(alias["terse_display_en"], "CMD_MENU_UP")
+                self.assertEqual(alias["verbose_display_en"], "CMD_MENU_UP")
                 self.assertEqual(alias["lifecycle"], "unused")
+
+                # CMD_MIN_SYNTHETIC shares CMD_DISABLE_MORE's value, but
+                # cmd-name.pl stops before emitting that target, so the
+                # production forward lookup still takes the NO_CMD fallback.
+                synthetic_alias = by_id["command:CMD_MIN_SYNTHETIC"]
+                self.assertFalse(synthetic_alias["name_in_map"])
+                self.assertEqual(synthetic_alias["lookup_name"],
+                                 "CMD_NO_CMD")
 
                 sentinel = by_id["command:CMD_MAX_CMD"]
                 self.assertFalse(sentinel["name_in_map"])
@@ -1075,6 +1098,33 @@ class CommandInventoryToolTest(unittest.TestCase):
             self._assert_rejected(root, "duplicate member",
                                   "duplicate member CMD_REST")
 
+    def test_mutation_undeclared_alias_target_rejected(self):
+        """A named enum initializer must resolve to an earlier member;
+        otherwise the integer value and forward name-map lookup cannot be
+        reconstructed and the inventory must fail closed."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = COMMAND_TYPE_H.replace(
+                "CMD_MIN_MENU = CMD_MENU_UP",
+                "CMD_MIN_MENU = CMD_NOT_DECLARED")
+            self.assertNotEqual(mutated, COMMAND_TYPE_H)
+            make_repo(root, command_type_h=mutated)
+            self._assert_rejected(root, "undeclared alias target",
+                                  "aliases undeclared member")
+
+    def test_mutation_duplicate_physical_enum_value_rejected(self):
+        """Two physically emitted names cannot own one `_cmds_to_names`
+        integer key; production init_keybindings() asserts the same
+        uniqueness and the inventory must fail closed."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = COMMAND_TYPE_H.replace(
+                "    CMD_EXPLORE,\n", "    CMD_EXPLORE = CMD_REST,\n")
+            self.assertNotEqual(mutated, COMMAND_TYPE_H)
+            make_repo(root, command_type_h=mutated)
+            self._assert_rejected(root, "duplicate physical enum value",
+                                  "share enum value")
+
     def test_mutation_bad_name_shape_rejected(self):
         """A member violating the CMD_[A-Z0-9_]+ shape (lowercase
         letters) must abort."""
@@ -1151,7 +1201,10 @@ class CommandInventoryToolTest(unittest.TestCase):
         EOF and the synthetic tail would leak into the name table)."""
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            mutated = COMMAND_TYPE_H.replace("    CMD_DISABLE_MORE,\n", "")
+            mutated = COMMAND_TYPE_H.replace(
+                "    CMD_DISABLE_MORE,\n"
+                "    CMD_MIN_SYNTHETIC = CMD_DISABLE_MORE,\n",
+                "")
             self.assertNotEqual(mutated, COMMAND_TYPE_H)
             make_repo(root, command_type_h=mutated)
             self._assert_rejected(root, "missing stop marker",
