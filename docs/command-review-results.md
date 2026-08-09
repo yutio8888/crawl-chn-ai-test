@@ -76,9 +76,9 @@ Android Abilities 同步作为同一确认批次的结构/依赖修改记录在�
 - `command_inventory.py` 现支持 `--review-results`，严格绑定 baseline、glossary、
   inventory digest、完整 production facts 与每卡 fact SHA；拒绝重复、遗漏、额外
   identity、顺序变化、未知/缺失字段、非终态和无重入条件的 defer。
-- name-map/枚举别名修正与 strict ledger 机制 targeted tests：49 tests，全部通过。
+- name-map/枚举别名修正与 strict ledger 机制 targeted tests：55 tests，全部通过。
 - `verify_zh.sh --profile code`：exit 0，blocking failures 0；原始报告：
-  `.claude/metrics/verify/20260808T193025436410000-0700-16295-7bdc47403dfe/verify.log`。
+  `.claude/metrics/verify/20260808T194727885019000-0700-24151-e689f0315056/verify.log`。
 - `verify_zh.sh --profile translation`：exit 0，blocking failures 0；原始报告：
   `.claude/metrics/verify/20260808T190457082663000-0700-2995-6e61f27e3240/verify.log`。
 - strict 306-card gate（精确 `--baseline-ref b56f853c…`）通过：

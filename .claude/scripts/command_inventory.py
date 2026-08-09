@@ -581,16 +581,40 @@ def generate_value_name_table(command_enum: CommandEnum,
 # macro.cc name-map machinery verification (strict, fail-closed)
 # ---------------------------------------------------------------------------
 
-#: The exact macro.cc regions the audit relies on: the generated-name
-#: table include, the two map declarations, and the exact bodies of
-#: name_to_command()/command_to_name() with their CMD_NO_CMD fallbacks.
-#: A structural change to any of them aborts the run.
+#: The exact macro.cc regions the audit relies on: map typedefs and key
+#: types, the generated-name table include, the two map declarations,
+#: the init_keybindings() name-map construction loop, and the exact
+#: bodies of name_to_command()/command_to_name() with their CMD_NO_CMD
+#: fallbacks. A structural change to any of them aborts the run.
+_MACRO_MAP_TYPES_RE = re.compile(
+    r"typedef\s+map\s*<\s*string\s*,\s*int\s*>\s*"
+    r"name_to_cmd_map\s*;\s*"
+    r"typedef\s+map\s*<\s*int\s*,\s*string\s*>\s*"
+    r"cmd_to_name_map\s*;")
 _MACRO_TABLE_RE = re.compile(
     r"static\s+command_name\s+_command_name_list\[\]\s*=\s*\{\s*"
     r"#include\s+\"cmd-name\.h\"\s*\};")
 _MACRO_MAPS_RE = re.compile(
     r"static\s+name_to_cmd_map\s+_names_to_cmds\s*;\s*"
     r"static\s+cmd_to_name_map\s+_cmds_to_names\s*;")
+_MACRO_INIT_NAME_MAP_RE = re.compile(
+    r"\bvoid\s+init_keybindings\s*\(\s*\)\s*\{\s*"
+    r"int\s+i\s*;\s*"
+    r"for\s*\(\s*i\s*=\s*0\s*;\s*"
+    r"_command_name_list\s*\[\s*i\s*\]\.cmd\s*!=\s*CMD_NO_CMD\s*"
+    r"&&\s*_command_name_list\s*\[\s*i\s*\]\.name\s*!=\s*nullptr\s*;\s*"
+    r"i\+\+\s*\)\s*\{\s*"
+    r"command_name\s*&\s*data\s*=\s*"
+    r"_command_name_list\s*\[\s*i\s*\]\s*;\s*"
+    r"ASSERT\s*\(\s*VALID_BIND_COMMAND\s*\(\s*data\.cmd\s*\)\s*\)\s*;\s*"
+    r"ASSERT\s*\(\s*!\s*_names_to_cmds\.count\s*"
+    r"\(\s*data\.name\s*\)\s*\)\s*;\s*"
+    r"ASSERT\s*\(\s*_cmds_to_names\.find\s*"
+    r"\(\s*data\.cmd\s*\)\s*==\s*_cmds_to_names\.end\s*"
+    r"\(\s*\)\s*\)\s*;\s*"
+    r"_names_to_cmds\s*\[\s*data\.name\s*\]\s*=\s*data\.cmd\s*;\s*"
+    r"_cmds_to_names\s*\[\s*data\.cmd\s*\]\s*=\s*data\.name\s*;\s*"
+    r"\}")
 _MACRO_NAME_TO_COMMAND_RE = re.compile(
     r"\bcommand_type\s+name_to_command\s*\(\s*string\s+name\s*\)\s*\{\s*"
     r"return\s+static_cast\s*<\s*command_type\s*>\s*\(\s*lookup\s*\(\s*"
@@ -606,17 +630,23 @@ def verify_macro_cc(text: str) -> None:
 
     `text` is the file content supplied by the caller (read from the
     baseline Git blob, never from the worktree). Each region must occur
-    exactly once and match its canonical form exactly (the command_name
-    list initializer with the `#include "cmd-name.h"` line, the two map
-    declarations, and the exact bodies of name_to_command() /
-    command_to_name() with the CMD_NO_CMD fallback). Missing, duplicated
+    exactly once and match its canonical form exactly: the two map
+    typedefs and key types; the command_name list initializer with the
+    `#include "cmd-name.h"` line; the two map declarations; the
+    init_keybindings() loop's dual null sentinel, uniqueness ASSERTs and
+    assignments; and the exact bodies of name_to_command() /
+    command_to_name() with the CMD_NO_CMD fallback. Missing, duplicated
     or mutated regions abort the run, so a change to the name-map
     machinery can never silently change what the inventory models.
     """
     checks = [
+        ("name_to_cmd_map / cmd_to_name_map typedefs and key types",
+         _MACRO_MAP_TYPES_RE),
         ("_command_name_list[] with #include \"cmd-name.h\"",
          _MACRO_TABLE_RE),
         ("_names_to_cmds / _cmds_to_names declarations", _MACRO_MAPS_RE),
+        ("init_keybindings() command-name map construction loop",
+         _MACRO_INIT_NAME_MAP_RE),
         ("name_to_command() body with CMD_NO_CMD fallback",
          _MACRO_NAME_TO_COMMAND_RE),
         ("command_to_name() body with \"CMD_NO_CMD\" fallback",
@@ -1291,6 +1321,15 @@ def _vague_deferral_value(value: object) -> bool:
     )
 
 
+def _typed_json_equal(left: object, right: object) -> bool:
+    """Compare JSON values canonically without Python bool/int coercion."""
+    return json.dumps(
+        left, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ) == json.dumps(
+        right, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
+
+
 def review_coverage(payload: dict[str, object], review_input: AuditInput
                     ) -> dict[str, object]:
     """Prove metadata, identity, fact, decision, and evidence invariants."""
@@ -1323,7 +1362,7 @@ def review_coverage(payload: dict[str, object], review_input: AuditInput
         for field, expected in mechanical_card_fields(
             expected_by_id[card["identity"]]
         ).items()
-        if card[field] != expected
+        if not _typed_json_equal(card[field], expected)
     )
     invalid_terminal = sorted(
         card["identity"] for card in cards

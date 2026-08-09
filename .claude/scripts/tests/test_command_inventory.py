@@ -121,6 +121,9 @@ enum command_type
 MACRO_CC = """\
 #include "macro.h"
 
+typedef map<string, int> name_to_cmd_map;
+typedef map<int, string> cmd_to_name_map;
+
 struct command_name
 {
     command_type cmd;
@@ -134,6 +137,26 @@ static command_name _command_name_list[] =
 
 static name_to_cmd_map _names_to_cmds;
 static cmd_to_name_map _cmds_to_names;
+
+void init_keybindings()
+{
+    int i;
+
+    for (i = 0; _command_name_list[i].cmd != CMD_NO_CMD
+                && _command_name_list[i].name != nullptr; i++)
+    {
+        command_name &data = _command_name_list[i];
+
+        ASSERT(VALID_BIND_COMMAND(data.cmd));
+        ASSERT(!_names_to_cmds.count(data.name));
+        ASSERT(_cmds_to_names.find(data.cmd)  == _cmds_to_names.end());
+
+        _names_to_cmds[data.name] = data.cmd;
+        _cmds_to_names[data.cmd]  = data.name;
+    }
+
+    ASSERT(i >= 130);
+}
 
 command_type name_to_command(string name)
 {
@@ -689,6 +712,37 @@ class CommandReviewLedgerTest(unittest.TestCase):
                     f"{cards[0]['identity']}:{field}",
                     coverage["mismatched_mechanical_fields"])
 
+    def test_boolean_mechanical_fields_reject_integer_lookalikes(self):
+        """Canonical JSON equality must not inherit Python's
+        False == 0 / True == 1 coercion, at either the top-level strict
+        field or the nested copy in production_facts."""
+        payload = review_payload()
+        base_cards = valid_review_cards(payload)
+        false_index = next(
+            i for i, card in enumerate(base_cards)
+            if card["name_in_map"] is False)
+        true_index = next(
+            i for i, card in enumerate(base_cards)
+            if card["name_in_map"] is True)
+        mutations = (
+            ("name_in_map", false_index, 0, "name_in_map"),
+            ("name_in_map", true_index, 1, "name_in_map"),
+            ("production_facts", false_index, 0, "production_facts"),
+            ("production_facts", true_index, 1, "production_facts"),
+        )
+        for target, index, integer, mismatch_field in mutations:
+            with self.subTest(target=target, integer=integer):
+                cards = json.loads(json.dumps(base_cards))
+                if target == "name_in_map":
+                    cards[index]["name_in_map"] = integer
+                else:
+                    cards[index]["production_facts"]["name_in_map"] = integer
+                coverage = self._coverage(payload, cards)
+                self.assertFalse(coverage["coverage_equal"])
+                self.assertIn(
+                    f"{cards[index]['identity']}:{mismatch_field}",
+                    coverage["mismatched_mechanical_fields"])
+
     def test_card_order_must_follow_inventory_declaration_order(self):
         payload = review_payload()
         cards = valid_review_cards(payload)
@@ -1233,6 +1287,95 @@ class CommandInventoryToolTest(unittest.TestCase):
             make_repo(root, macro_cc=mutated)
             self._assert_rejected(root, "missing cmd-name.h include",
                                   "exactly one _command_name_list[]")
+
+    def test_mutation_macro_cc_map_key_type_changed_rejected(self):
+        """Both map typedef directions and their real key types are part
+        of the production model and must fail closed when changed."""
+        mutations = (
+            ("typedef map<string, int> name_to_cmd_map;",
+             "typedef map<int, int> name_to_cmd_map;"),
+            ("typedef map<int, string> cmd_to_name_map;",
+             "typedef map<string, string> cmd_to_name_map;"),
+        )
+        for original, replacement in mutations:
+            with self.subTest(original=original):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    mutated = MACRO_CC.replace(original, replacement)
+                    self.assertNotEqual(mutated, MACRO_CC)
+                    make_repo(root, macro_cc=mutated)
+                    self._assert_rejected(
+                        root, "changed map key type",
+                        "exactly one name_to_cmd_map / cmd_to_name_map "
+                        "typedefs and key types")
+
+    def test_mutation_macro_cc_init_name_map_loop_removed_rejected(self):
+        """The inventory cannot infer integer-keyed forward semantics
+        unless the production init_keybindings() construction loop is
+        still present in its verified form."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            start = MACRO_CC.index("void init_keybindings()")
+            end = MACRO_CC.index("command_type name_to_command")
+            mutated = MACRO_CC[:start] + MACRO_CC[end:]
+            self.assertNotEqual(mutated, MACRO_CC)
+            make_repo(root, macro_cc=mutated)
+            self._assert_rejected(
+                root, "missing init_keybindings name-map loop",
+                "exactly one init_keybindings() command-name map "
+                "construction loop")
+
+    def test_mutation_macro_cc_forward_map_key_changed_rejected(self):
+        """The forward map must be keyed by data.cmd exactly; adding one
+        would reintroduce identifier/value divergence into the model."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = MACRO_CC.replace(
+                "_cmds_to_names[data.cmd]  = data.name;",
+                "_cmds_to_names[data.cmd + 1] = data.name;")
+            self.assertNotEqual(mutated, MACRO_CC)
+            make_repo(root, macro_cc=mutated)
+            self._assert_rejected(
+                root, "forward map key incremented",
+                "exactly one init_keybindings() command-name map "
+                "construction loop")
+
+    def test_mutation_macro_cc_reverse_assignment_changed_rejected(self):
+        """The reverse map must retain the exact name -> enum-value
+        assignment used by name_to_command()."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mutated = MACRO_CC.replace(
+                "_names_to_cmds[data.name] = data.cmd;",
+                "_names_to_cmds[data.name] = CMD_NO_CMD;")
+            self.assertNotEqual(mutated, MACRO_CC)
+            make_repo(root, macro_cc=mutated)
+            self._assert_rejected(
+                root, "reverse map value changed",
+                "exactly one init_keybindings() command-name map "
+                "construction loop")
+
+    def test_mutation_macro_cc_init_loop_guards_rejected(self):
+        """The dual null sentinel and both uniqueness ASSERTs are each
+        required production invariants of name-map construction."""
+        mutations = (
+            ("                && _command_name_list[i].name != nullptr; i++)\n",
+             "                ; i++)\n"),
+            ("        ASSERT(!_names_to_cmds.count(data.name));\n", ""),
+            ("        ASSERT(_cmds_to_names.find(data.cmd)  "
+             "== _cmds_to_names.end());\n", ""),
+        )
+        for original, replacement in mutations:
+            with self.subTest(original=original.strip()):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    mutated = MACRO_CC.replace(original, replacement)
+                    self.assertNotEqual(mutated, MACRO_CC)
+                    make_repo(root, macro_cc=mutated)
+                    self._assert_rejected(
+                        root, "changed init_keybindings loop guard",
+                        "exactly one init_keybindings() command-name map "
+                        "construction loop")
 
     def test_mutation_macro_cc_fallback_changed_rejected(self):
         """Changing the name_to_command() CMD_NO_CMD fallback must
