@@ -90,6 +90,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "monster-review-results.md",
             "species-background-review-results.md",
             "spell-name-review-results.md",
+            "tutorial-review-results.md",
             "world-review-results.md",
         }
         ledgers = sorted(REPO.glob("docs/*-review-results.md"))

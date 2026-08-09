@@ -69,7 +69,7 @@ tutorial1 autoexplore
 tutorial1 exclusion
 
 有些危险的地方会被标记为<w>禁区</w>。
-自动行进<localtiles>（包含 <input>鼠标击键</input>！） </localtiles>
+自动行进<localtiles>（包含 <input>鼠标点击</input>！） </localtiles>
 不会将你带往禁区。而是会自动停下来。
 
 自动探索能让你安全地绕过禁区：
@@ -128,7 +128,7 @@ tutorial1 exit
                  <w>1 2 3</w>                       <w>$cmd[CMD_MOVE_DOWN_LEFT] $cmd[CMD_MOVE_DOWN] $cmd[CMD_MOVE_DOWN_RIGHT]</w>
 
   <input>Shift键 + 方向键</input>让你在该方向上移动数个格子。<localtiles>
-  你也可以通过<input>点击</input><w>小地图</w>的某个地方进行移动。</localtiles>
+  你也可以通过<input>点击</input>视野内的某处或<w>小地图</w>来移动。</localtiles>
 
 <yellow>楼梯</yellow>
   <input>$cmd[CMD_GO_UPSTAIRS]</input> 回到上一层
@@ -148,8 +148,8 @@ tutorial1 exit
 ##############################################
 tutorial2 start
 
-这一课将会教你有关怪物和格斗的内容。
-首先，我们需要一把武器！过去捡起地上那把。
+这一课将会教你有关怪物和战斗的内容。
+首先，我们需要一把武器！走过去捡起地上那把。
 %%%%
 tutorial2 pickup_weapon
 
@@ -169,9 +169,9 @@ tutorial2 resting
 %%%%
 tutorial2 wait
 
-与其冲进房间然后被一群怪物围攻，不如退后几步，等待它们自己走过来。
-（按<input>$cmd[CMD_WAIT]</input><localtiles>
-或<input>点击</input>你的角色</localtiles>），他们就会走向你。
+与其冲进房间被一群怪物围攻，不如退后几步，
+按<input>$cmd[CMD_WAIT]</input><localtiles>
+或<input>点击</input>你的角色</localtiles>原地等待，让它们主动靠近。
 %%%%
 tutorial2 resting_reminder
 
@@ -213,15 +213,15 @@ tutorial2 throwing
 %%%%
 tutorial2 wield_bow
 
-通过按<input>$cmd[CMD_EQUIP]</input><localtiles>
-或<input>鼠标点击</input></localtiles>捡起这把短弓。
+捡起这把短弓，然后按<input>$cmd[CMD_EQUIP]</input><localtiles>
+或<input>鼠标点击</input></localtiles>持握它。
 %%%%
 tutorial2 firing
 
 # 修复：比较冗长，因为有选择目标的提示。
 用装备的短弓射箭的操作与投掷回旋镖的操作稍有不同。
-通过按<input>$cmd[CMD_PRIMARY_ATTACK]</input><localtiles>或<input>鼠标点击</input>
-</localtiles>。在瞄准时，你可以按<input>$cmd[CMD_TARGET_CYCLE_FORWARD]</input>选择其他目标。
+按<input>$cmd[CMD_PRIMARY_ATTACK]</input><localtiles>或<input>鼠标点击</input>
+</localtiles>发射箭矢。在瞄准时，你可以按<input>$cmd[CMD_TARGET_CYCLE_FORWARD]</input>选择其他目标。
 这只蠕虫在熔岩后面无法对你造成任何威胁，但是那个假人可以射击你，因此先搞定它。
 同样，按<input>$cmd[CMD_TARGET_SELECT]</input>或<input>回车</input>确定你选择的目标。
 %%%%
@@ -262,7 +262,7 @@ tutorial2 exit
 
 <yellow>休息</yellow>
   <input>$cmd[CMD_WAIT]</input>  等待并休息一回合
-  <input>$cmd[CMD_REST]</input>  等待并休息100回合
+  <input>$cmd[CMD_REST]</input>  等待并休息最多100回合
 %%%%
 #######################################
 # 教程地图3：物品                     #
@@ -311,7 +311,7 @@ tutorial3 inventory
 tutorial3 battle
 
 如果你成功使敌人中毒，有时最好后撤并让毒来完成剩下的工作。
-撤退时也别忘了治疗。
+必要时也别忘了后撤疗伤。
 %%%%
 tutorial3 downstairs
 
@@ -335,7 +335,7 @@ tutorial3 trap
 %%%%
 tutorial3 potion
 
-药水可以用来治疗或附加魔力，但有的效果则令人不快。
+药水可能提供关键的治疗或有益强化，但有些药水也会产生不太理想的效果。
 你可以按<input>$cmd[CMD_QUAFF]</input><localtiles>
 或<input>鼠标点击</input>来饮用药水，</localtiles>以发现它的作用。
 %%%%
@@ -343,11 +343,11 @@ tutorial3 artefact_armour
 
 # TODO：用真正的神器替换非随机神器。需要有一些防范措施，
 #       以规避能让教程偏离正轨的东西（脆弱、污染……）
-有<w>不寻常名字</w>的物品就是神器了。神器可能有各种特殊的属性。
-一些独特的神器（如这件披风）总是能被鉴别出来，
-并且可能有着其他地方见不到的特殊属性！
-其他一些神器则是随机组合一些属性生成的，并且只有在走上去后才能被鉴别出来。
-试着按<input>$cmd[CMD_EQUIP]<input><localtiles>
+有<w>不同寻常名称</w>的物品是神器。神器可能具有各种特殊属性。
+一些独一无二的神器（如这件披风）总是处于已鉴定状态，
+并且可能具有其他地方找不到的特殊属性！
+另一些神器的属性随机生成，且在你踏上其所在位置前不会被鉴定。
+试着按<input>$cmd[CMD_EQUIP]</input><localtiles>
 或在物品栏中<input>鼠标点击</input>它来装备这件披风</localtiles>。
 %%%%
 tutorial3 wand_fire
@@ -375,11 +375,11 @@ tutorial3 drop
 %%%%
 tutorial3 gold
 
-金币可以用于在商店中购买物品。它不占用库存空间，且无法丢弃。
+金币可以用于在商店中购买物品。它不占用物品栏空间，且无法丢弃。
 %%%%
 tutorial3 shop
 
-商店中有各种各样的物品，但你无法向他们出售任何东西。
+商店出售各种物品，但不会从任何人手中收购物品。
 %%%%
 tutorial3 enter_shop
 
@@ -408,7 +408,7 @@ tutorial3 optional_battle
 
 小心，前面有<lightred>一场恶斗</lightred>。
 你可以试试在战斗中使用你学到的知识，也可以尝试直奔那座岛上的出口。
-不管怎么说，如果你还没买过东西，最好先去一下。
+不管怎么说，如果你还没买过东西，最好先去商店一趟。
 %%%%
 tutorial3 tutorial_end
 
@@ -429,7 +429,7 @@ tutorial3 exit
   <input>$cmd[CMD_QUAFF]</input>  饮用药水
   <input>$cmd[CMD_EVOKE]</input> 使用魔杖
 
-  也可以在在物品栏菜单(<input>$cmd[CMD_DISPLAY_INVENTORY]<input>)中的物品描述界面中使用装备或卸下命令。<localtiles>
+  也可以在物品栏菜单（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中的物品描述界面使用装备或卸下命令。<localtiles>
   当然，你也可以用<input>鼠标点击</input>。</localtiles>
 
 <yellow>其他</yellow>
@@ -443,7 +443,7 @@ tutorial3 exit
 ##############################################
 tutorial4 start
 
-这一课中你将学习如何记忆以及释放法术。
+这一课中你将学习如何记忆和施放法术。
 %%%%
 tutorial4 spellbook
 
@@ -466,7 +466,7 @@ tutorial4 ring_power
 
 通过按<input>$cmd[CMD_EQUIP]</input><localtiles>
 或在物品栏中<input>点击</input>它，就能戴上这枚戒指</localtiles>，
-在休整后你将拥有全新的潜能。
+然后休息至法力恢复到新的上限。
 %%%%
 tutorial4 undead
 
@@ -478,17 +478,17 @@ tutorial4 undead
 %%%%
 tutorial4 spell_success
 
-要查看你的法术熟练度，按<input>$cmd[CMD_DISPLAY_SPELLS]</input>
-<localtiles>或<input>鼠标悬停</input>在你记住法术上面</localtiles>。
+要查看你的法术成功率，按<input>$cmd[CMD_DISPLAY_SPELLS]</input>
+<localtiles>或将鼠标<input>悬停</input>在已记忆的法术上</localtiles>。
 比较佩戴此戒指前后的法术失败率。
 %%%%
 tutorial4 mephitic_cloud
 
-臭云是个3级法术，因此你暂时无法记忆它。
+迷瘴云是个3级法术，因此你暂时无法记忆它。
 为了快速升级，这里有更多的训练假人，这次没有石头可扔。
 
-当经验等级到3时，你可以选择增强一个属性——通过<input>I</input>选择智力，
-这会对施法有帮助。
+当经验等级达到3级时，你可以选择增强一项属性——按<input>I</input>选择智力，
+能进一步帮助你施法。
 %%%%
 tutorial4 meph_reminder
 
@@ -498,13 +498,13 @@ tutorial4 meph_reminder
 %%%%
 tutorial4 aiming_clouds
 
-当释放臭云时，有毒气体会覆盖一片区域，当你瞄准时，你会看到受影响的区域。
+施放迷瘴云时，有毒气体会覆盖一片区域；瞄准时，你会看到它影响的范围。
 设法将多个敌人捕在一片云中，以更有效地利用你的魔法。
 %%%%
 tutorial4 forget_spell
 
-获得经验并提高你的施法技能可以获得法术槽位。
-你也可以通过阅读失忆卷轴<w>忘记一个记过的法术</w>来给新的腾出位置。
+提升经验等级和施法能力技能可以获得法术槽位。
+你也可以通过阅读失忆卷轴<w>忘记一个已记忆的法术</w>，为新法术腾出空间。
 阅读那张卷轴（通过<input>$cmd[CMD_READ]</input><localtiles>或<input>点击</input>它</localtiles>），
 然后选择要遗忘的法术。只要你有可用的法术槽，
 你稍后可以从你的法术库中重新学习被遗忘的法术。
@@ -523,10 +523,10 @@ tutorial4 displace_allies
 %%%%
 tutorial4 order_allies
 
-设法让你的友方进行击杀！如有必要，
-可以通过<input>$cmd[CMD_SHOUT]</input>命令他们。在进入大门前，
-你可能需要通过<input>$cmd[CMD_WAIT]</input>来等待他们，直到你的友方赶上你。
-你的召唤物只会停留一段时间，所以不要等待太久，或是在开始战斗前才进行召唤。
+尽量让盟友完成击杀！如有必要，
+可以通过<input>$cmd[CMD_SHOUT]</input>命令他们。打开这扇门前，
+你可能需要按<input>$cmd[CMD_WAIT]</input>等待盟友赶上来。
+召唤物只能停留一段时间，所以别等太久；也可以在开战前重新召唤一批。
 %%%%
 tutorial4 heavy_armour
 
@@ -540,12 +540,12 @@ tutorial4 heavy_armour
 %%%%
 tutorial4 resting_reminder
 
-确保你在进入新区域前健康和魔力值是满的。
-如有必要，通过<input>$cmd[CMD_REST]</input><localtiles>或在命令栏中<input>鼠标点击</input>它</localtiles>。
+确保进入新区域前生命值和法力都已回满。
+如有必要，按<input>$cmd[CMD_REST]</input><localtiles>或<input>点击</input>命令栏中的休息按钮</localtiles>。
 
-你一次只能用给定任何的法术召唤数量有限的盟友，所以尽量利用范围广的法术。
-例如，你召唤的小鬼是抗毒的，所以你与他们并肩作战时可以施放臭云，
-而不会伤害你的盟友。
+每种法术一次只能维持有限数量的盟友，所以请尽量搭配多种法术。
+例如，你召唤的小恶魔具有毒素抗性，因此可以在与它们并肩作战时施放迷瘴云，
+而不会伤害盟友。
 %%%%
 tutorial4 tutorial_end
 
@@ -559,13 +559,13 @@ tutorial4 exit
 
 <yellow>施法命令</yellow>
   <input>$cmd[CMD_MEMORISE_SPELL]</input>  学习新法术
-  <input>$cmd[CMD_DISPLAY_SPELLS]</input>  查看法术熟练度
+  <input>$cmd[CMD_DISPLAY_SPELLS]</input>  查看法术成功率
   <input>$cmd[CMD_CAST_SPELL]</input>  施法<localtiles>
   你也可以通过<w>记忆标签页</w>学习新的法术。
-  你可以通过<input>左键</input>记忆法术，通过<input>鼠标悬停</input>或<input>右键</input></localtiles>阅读描述和查看法术熟练度。
+  你可以通过<input>左击</input>施放已记忆的法术，并通过<input>鼠标悬停</input>或<input>右击</input>阅读说明和查看法术成功率。</localtiles>
   <input>$cmd[CMD_QUIVER_ITEM]</input> 调整你的弹药
 
-  <input>$cmd[CMD_REST]</input>  休息一百回合以回复健康和魔力
+  <input>$cmd[CMD_REST]</input>  最多休息100回合以恢复生命值和法力
   <input>$cmd[CMD_SHOUT]</input>  命令友军
   <input>$cmd[CMD_UNEQUIP]</input>  脱下装备
 %%%%
@@ -574,7 +574,7 @@ tutorial4 exit
 ##############################################
 tutorial5 start
 
-这一课中你将会学到有关神祗的知识，包括如何使用他们的力量。
+这一课将介绍神祇及其力量的使用方法。
 %%%%
 tutorial5 dungeon_overview
 
@@ -587,18 +587,18 @@ tutorial5 altar
 
 你可以在祭坛上用<input>$cmd[CMD_GO_DOWNSTAIRS]</input><localtiles>
 （或<input>左击</input>你的角色）</localtiles>来祈祷，
-这样你就可以知道这个神能给你什么好处，然后可以选择皈依它。
+这样你就可以了解该神祇赐予的力量，并选择是否皈依该神祇。
 如果你在信仰界面按<input>!</input><localtiles>
-或<input>右键</input></localtiles>你还可以看到更详细的描述。
+或<input>右击</input></localtiles>，还可以看到更详细的说明。
 
 输入大写的<input>J</input>或<input>回车</input>确认你的选择。
 %%%%
 tutorial5 religion
 
 通过<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>
-（或通过在命令栏中<w>信仰按钮</w>，或通过<input>Shift键+右击</input>玩家贴图）
+（或点击命令栏中的<w>信仰按钮</w>，或<input>Shift键+右击</input>玩家贴图）
 </localtiles>来查看你的信仰状态。和以前一样，按<input>!</input><localtiles>
-或<input>右击</input></localtiles>可以调出你的神的更详细的描述。
+或<input>右击</input></localtiles>可以调出所信奉神祇的详细说明。
 %%%%
 tutorial5 piety_on_kill
 
@@ -608,7 +608,7 @@ tutorial5 berserk
 
 面对特别强大的敌人时，
 你可能需要通过<input>$cmd[CMD_USE_ABILITY]</input><localtiles>
-或通过<w>命令栏</w>来使用特洛格赐予你的狂暴能力</w></localtiles>。
+或通过<w>命令栏</w>来使用特洛格赐予你的狂暴能力</localtiles>。
 %%%%
 tutorial5 exhaustion
 
@@ -630,7 +630,7 @@ tutorial5 exit
 
 # 一个囊括所有命令的界面。
 :nowrap
-<white>教程5：信仰</white>
+<white>教程5总结：信仰</white>
 
 <yellow>信仰命令</yellow>
   <input>$cmd[CMD_GO_DOWNSTAIRS]</input>  在祭坛上祈祷，以皈依一位神
@@ -640,11 +640,11 @@ tutorial5 exit
 
 <yellow>休息</yellow>
   <input>$cmd[CMD_WAIT]</input>  等待并休息一回合
-  <input>$cmd[CMD_REST]</input>  等待并休息100回合
+  <input>$cmd[CMD_REST]</input>  等待并休息最多100回合
 
 <yellow>其他命令</yellow>
   <input>$cmd[CMD_DISPLAY_OVERMAP]</input> 显示地牢概览
-  <input>$cmd[CMD_DISPLAY_COMMANDS]/</input>  搜索描述文字数据库
+  <input>$cmd[CMD_DISPLAY_COMMANDS]/</input>  搜索描述数据库
 %%%%
 %%%%
 tutorial4 spellquivering
