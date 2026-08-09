@@ -28,6 +28,11 @@ import i18n_shared as SHARED
 from i18n_shared import AuditInput
 
 
+QUALITY_M1_IMMUTABLE_BASELINE = (
+    "695d5fbcd5ced6f12d1b68c99c91266b6713a477"
+)
+
+
 def review_input(path):
     data = path.read_bytes()
     return AuditInput(
@@ -46,7 +51,15 @@ _QUALITY_M1_FIXTURE = None
 def quality_m1_fixture():
     global _QUALITY_M1_FIXTURE
     if _QUALITY_M1_FIXTURE is None:
-        payload, _internal_rows = MODULE.build_extended_inventory()
+        snapshot = SHARED.AuditSnapshot(
+            MODULE.ROOT,
+            QUALITY_M1_IMMUTABLE_BASELINE,
+            require_head=False,
+        )
+        with mock.patch.object(
+            MODULE, "audit_snapshot", return_value=snapshot
+        ):
+            payload, _internal_rows = MODULE.build_extended_inventory()
         payload["review_input"] = {"input_sha256": "a" * 64}
         payload["review_violations"] = {}
         files = MODULE.build_quality_m1_files(
@@ -872,6 +885,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         )
         self.assertEqual(files, repeated)
         packet = json.loads(files["blind-packet.json"])
+        self.assertEqual(
+            QUALITY_M1_IMMUTABLE_BASELINE,
+            packet["baseline_head"],
+        )
         self.assertEqual(
             [
                 "item-description:staff of necromancy",
