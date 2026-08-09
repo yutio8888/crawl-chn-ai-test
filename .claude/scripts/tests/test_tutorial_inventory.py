@@ -104,18 +104,14 @@ class TutorialInventoryTests(unittest.TestCase):
             self.assertEqual([], payload[field])
         self.assertEqual(len(payload["inventory"]), len({row["identity"] for row in payload["inventory"]}))
 
-    def test_current_structural_candidates_are_visible(self):
+    def test_current_structural_tokens_are_clean(self):
         candidates = {
             row["identity"] for row in self.payload["inventory"]
             if row["english_tokens"]["tag_errors"]
             or row["chinese_tokens"]["tag_errors"]
-            or not all(row["token_multiset_equal"].values())
+            or not all(row["token_contract_equal"].values())
         }
-        self.assertEqual({
-            "tutorial:tutorial3 artefact_armour",
-            "tutorial:tutorial3 exit",
-            "tutorial:tutorial5 berserk",
-        }, candidates)
+        self.assertEqual(set(), candidates)
 
     def test_missing_or_extra_textdb_key_is_reported_bidirectionally(self):
         blobs = dict(self.blobs)
@@ -165,6 +161,22 @@ class TutorialInventoryTests(unittest.TestCase):
     def test_tag_imbalance_is_recorded_per_identity(self):
         facts = MODULE._token_facts("<input>broken", {"CMD_NO_CMD"})
         self.assertEqual(["unclosed <input>"], facts["tag_errors"])
+
+    def test_equal_token_counts_do_not_hide_sequence_drift(self):
+        commands = {"CMD_FIRE", "CMD_WAIT"}
+        command_left = MODULE._token_facts(
+            "<localtiles>$cmd[CMD_FIRE]</localtiles>$cmd[CMD_WAIT]", commands
+        )
+        command_right = MODULE._token_facts(
+            "$cmd[CMD_WAIT]<localtiles>$cmd[CMD_FIRE]</localtiles>", commands
+        )
+        self.assertEqual(command_left["command_counts"], command_right["command_counts"])
+        self.assertNotEqual(command_left["command_sequence"], command_right["command_sequence"])
+
+        tag_left = MODULE._token_facts("<w><input>x</input></w>", commands)
+        tag_right = MODULE._token_facts("<input><w>x</w></input>", commands)
+        self.assertEqual(tag_left["tag_counts"], tag_right["tag_counts"])
+        self.assertNotEqual(tag_left["tag_sequence"], tag_right["tag_sequence"])
 
     def test_review_coverage_accepts_complete_canonical_ledger(self):
         result = MODULE.review_coverage(self.payload, audit_input(render_review(self.payload)))

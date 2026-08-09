@@ -13,7 +13,7 @@
 - 当前确定性 inventory：88 个唯一身份；生产者、EN 键与 ZH 键双向差集均为空。
   数量由精确 Git blob 重建，不作为工具内硬编码条件。
 - Inventory SHA-256：
-  `a7aa3dff6e17e723d70b0eb3b759ca8d1011401f89ec44c1d4c586a2c4cd3171`。
+  `e1537246d3937a5b5609a2a433e8d0a4852bc34645c400d6923556c6a47928f6`。
 
 ## 验收标准
 

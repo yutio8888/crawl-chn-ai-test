@@ -198,10 +198,16 @@ def _token_facts(value: str, command_names: set[str]) -> dict[str, object]:
         "command_counts": dict(sorted(Counter(commands).items())),
         "malformed_commands": malformed_commands,
         "unknown_commands": unknown_commands,
+        "command_sequence": commands,
         "tag_counts": dict(sorted(Counter(tag_tokens).items())),
+        "tag_sequence": tag_tokens,
         "tag_errors": tag_errors,
         "unknown_tag_syntax": unknown_tag_syntax,
         "nowrap_count": sum(1 for line in value.splitlines() if line == ":nowrap"),
+        "nowrap_lines": [
+            number for number, line in enumerate(value.splitlines(), start=1)
+            if line == ":nowrap"
+        ],
     }
 
 
@@ -321,10 +327,12 @@ def build_payload_from_blobs(
             "chinese_key_line": zh.key_line if zh else None,
             "english_tokens": en_tokens,
             "chinese_tokens": zh_tokens,
-            "token_multiset_equal": {
+            "token_contract_equal": {
                 "commands": en_tokens["command_counts"] == zh_tokens["command_counts"],
+                "command_sequence": en_tokens["command_sequence"] == zh_tokens["command_sequence"],
                 "tags": en_tokens["tag_counts"] == zh_tokens["tag_counts"],
-                "nowrap": en_tokens["nowrap_count"] == zh_tokens["nowrap_count"],
+                "tag_sequence": en_tokens["tag_sequence"] == zh_tokens["tag_sequence"],
+                "nowrap": en_tokens["nowrap_lines"] == zh_tokens["nowrap_lines"],
             },
             "dependency_group": _dependency_group(key),
         }
@@ -579,7 +587,7 @@ def main() -> int:
     structural = [row["identity"] for row in inventory if (
         row["english_tokens"]["tag_errors"]
         or row["chinese_tokens"]["tag_errors"]
-        or not all(row["token_multiset_equal"].values())
+        or not all(row["token_contract_equal"].values())
     )]
     print(f"structural review candidates: {structural}")
     if "review_coverage" in payload:
