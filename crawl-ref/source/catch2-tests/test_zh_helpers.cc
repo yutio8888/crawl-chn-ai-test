@@ -358,7 +358,13 @@ static bool command_template_like_at(const std::string& text, size_t i)
 {
     size_t cmd = i;
     if (text[cmd] == '$')
+    {
         ++cmd;
+        return cmd + 3 <= text.size()
+            && ascii_case_equal(text[cmd], 'c')
+            && ascii_case_equal(text[cmd + 1], 'm')
+            && ascii_case_equal(text[cmd + 2], 'd');
+    }
     if (cmd + 3 > text.size()
         || !ascii_case_equal(text[cmd], 'c')
         || !ascii_case_equal(text[cmd + 1], 'm')
