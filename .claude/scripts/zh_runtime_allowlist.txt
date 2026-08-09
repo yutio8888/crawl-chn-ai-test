@@ -1,10 +1,11 @@
 # zh_runtime_allowlist.txt — Manual maintenance whitelist for MIXED_CN_EN rule.
 #
-# Format: one English token per line (case-insensitive). Each token is a
-# Latin-script proper noun / abbreviation allowed to appear embedded in
-# Chinese translated text without triggering the
-# MIXED_CN_EN rule (plan v2 §2.3 row 2; rule predicates live in
-# catch2-tests/test_zh_helpers.cc:rule_mixed_cn_en).
+# Format: one allowed value per line. Latin-script proper nouns and
+# abbreviations are matched case-insensitively; exact technical literals may
+# also contain underscores and are matched case-sensitively as a complete
+# ASCII identifier. Each value may appear embedded in Chinese translated text
+# without triggering the MIXED_CN_EN rule (plan v2 §2.3 row 2; rule
+# predicates live in catch2-tests/test_zh_helpers.cc:rule_mixed_cn_en).
 #
 # This is the manual portion. The auto-generated enum English-name portion
 # lives in zh_runtime_allowlist_enum.txt; at runtime the helpers' built-in
@@ -16,6 +17,14 @@
 # Each row should be a single English run (no surrounding whitespace); any
 # token ≥3 chars long that legitimately appears mid-Chinese translation
 # ("你获得了 +1 Slay 增益") belongs here.
+
+# Exact command technical literals. Keeping compound identifiers whole avoids
+# suppressing ordinary English words such as "auto" or "status" globally.
+morgue
+CMD_EXPLORE
+explore_auto_rest
+false
+explore_auto_rest_status
 
 # Resistance / stat abbreviations (auto-builtin covers these but the file
 # is kept for human-readable documentation).

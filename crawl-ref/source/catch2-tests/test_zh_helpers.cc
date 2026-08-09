@@ -333,6 +333,37 @@ bool rule_untranslated(const std::string& text, const std::string& key)
     return has_letter;
 }
 
+static bool is_ascii_identifier_char(char c)
+{
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+        || (c >= '0' && c <= '9') || c == '_';
+}
+
+static size_t allowed_technical_literal_end(const std::string& text, size_t i)
+{
+    // Some translated command descriptions must preserve exact option names,
+    // command identifiers, literals, and paths. Match the complete ASCII
+    // identifier/literal instead of allowlisting its component words: broad
+    // entries such as "auto" or "status" would hide ordinary English leaks.
+    if (i > 0 && is_ascii_identifier_char(text[i - 1]))
+        return std::string::npos;
+
+    size_t end = i;
+    while (end < text.size() && is_ascii_identifier_char(text[end]))
+        ++end;
+
+    static const std::vector<std::string> allowed = {
+        "morgue",
+        "CMD_EXPLORE",
+        "explore_auto_rest",
+        "false",
+        "explore_auto_rest_status",
+    };
+    const std::string candidate = text.substr(i, end - i);
+    return std::find(allowed.begin(), allowed.end(), candidate) != allowed.end()
+        ? end : std::string::npos;
+}
+
 static size_t mixed_cn_en_offender(const std::string& text)
 {
     // Fire when text contains a CJK ideograph AND >=3 consecutive ASCII
@@ -417,6 +448,13 @@ static size_t mixed_cn_en_offender(const std::string& text)
         char c = text[i];
         if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
         {
+            const size_t technical_end = allowed_technical_literal_end(text, i);
+            if (technical_end != std::string::npos)
+            {
+                i = technical_end;
+                continue;
+            }
+
             // capture maximal ASCII-letter run
             size_t j = i + 1;
             while (j < text.size())

@@ -1272,6 +1272,30 @@ TEST_CASE("MIXED_CN_EN rule", "[zh-translation][zh-helpers]")
     REQUIRE(rule_mixed_cn_en(text) == expect_issue);
 }
 
+TEST_CASE("MIXED_CN_EN exact command technical literals",
+          "[zh-translation][zh-helpers]")
+{
+    using Row = std::tuple<std::string, bool>;
+    auto row = GENERATE(table<std::string, bool>({
+        // Exact technical literals required by command descriptions.
+        Row{"写入 morgue 目录。",                         false},
+        Row{"运行 CMD_EXPLORE 命令。",                   false},
+        Row{"将 explore_auto_rest 视为 false。",         false},
+        Row{"读取 explore_auto_rest_status 配置。",      false},
+        // Minimal mutations must not inherit the exception.
+        Row{"写入 morgues 目录。",                        true},
+        Row{"运行 CMD_EXPLORES 命令。",                  true},
+        Row{"将 explore_auto_resting 视为 false。",      true},
+        Row{"读取 explore_auto_rest_statuses 配置。",    true},
+        Row{"将 falsey 视为 false。",                    true},
+        Row{"将 true 视为 false。",                      true},
+    }));
+    const std::string& text = std::get<0>(row);
+    const bool expect_issue = std::get<1>(row);
+    INFO("text=\"" << text << "\"");
+    REQUIRE(rule_mixed_cn_en(text) == expect_issue);
+}
+
 TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
           "[zh-translation][zh-helpers]")
 {

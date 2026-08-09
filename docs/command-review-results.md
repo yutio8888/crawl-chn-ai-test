@@ -78,7 +78,11 @@ Android Abilities 同步作为同一确认批次的结构/依赖修改记录在�
   identity、顺序变化、未知/缺失字段、非终态和无重入条件的 defer。
 - name-map/枚举别名修正与 strict ledger 机制 targeted tests：55 tests，全部通过。
 - `verify_zh.sh --profile code`：exit 0，blocking failures 0；原始报告：
-  `.claude/metrics/verify/20260808T194727885019000-0700-24151-e689f0315056/verify.log`。
+  `.claude/metrics/verify/20260808T200653190144000-0700-48746-551458a54fa3/verify.log`。
+- 该 code profile 内的统一 Catch2 运行时：`[zh-translation]` 与
+  `[message-overlay]` 均 exit 0，`tutorial_hints_commands` issue count 0，
+  previous/current/regressions 均为 0；运行目录：
+  `.claude/metrics/verify/zh-runtime-20260809T030932Z-51558/`。
 - `verify_zh.sh --profile translation`：exit 0，blocking failures 0；原始报告：
   `.claude/metrics/verify/20260808T190457082663000-0700-2995-6e61f27e3240/verify.log`。
 - strict 306-card gate（精确 `--baseline-ref b56f853c…`）通过：
