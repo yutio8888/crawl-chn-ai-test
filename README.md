@@ -72,6 +72,10 @@ MSYS2 和 Android 的依赖说明以 [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md
 GNU `timeout`、`flock`、`grep -P` 或 GNU `script`。Windows、Android 和各
 Tiles 构建脚本仍按目标平台安装其专用依赖。
 
+仓库根目录的 `.python-version` 是 Python 版本的唯一来源：本地命令请通过支持
+该文件的版本管理器（如 `pyenv`、`uv`）运行，或用 `python3 --version` 核对
+版本一致；CI 的 setup-python 步骤读取同一文件。
+
 ### 2. 中文默认配置
 
 中文语言、Maple Mono NF CN 字体和本地 Tiles 窗口尺寸由 C++ 提供默认值，

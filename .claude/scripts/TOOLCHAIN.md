@@ -76,6 +76,10 @@ PyYAML。仓库内的 `run_with_timeout.py` 负责跨平台超时与 PTY transcr
 `grep -P` 或 GNU `script`。Windows、Android 与 Tiles 构建辅助脚本属于
 目标专用入口，其依赖以对应构建文档为准。
 
+Python 版本以仓库根目录 `.python-version` 为唯一来源：本地命令应通过支持
+该文件的版本管理器运行，或用 `python3 --version` 核对；CI 的 setup-python
+步骤读取同一文件。
+
 ## 脚本详解
 
 ### audit_item_name_inventory.py — 常规物品与 ego 名称清单

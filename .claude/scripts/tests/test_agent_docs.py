@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import subprocess
 import unittest
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -381,6 +382,72 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("help-baseline", result.stdout)
+
+    # ------------------------------------------------------------------
+    # Python version single source of truth (.python-version + ci.yml)
+    # ------------------------------------------------------------------
+    def test_python_version_single_source_of_truth(self) -> None:
+        self.assertEqual(
+            b"3.13.14\n", (ROOT / ".python-version").read_bytes()
+        )
+
+        workflow = yaml.safe_load(
+            (ROOT / ".github/workflows/ci.yml").read_text()
+        )
+
+        def mappings(node):
+            """Yield every mapping in the parsed workflow document."""
+            if isinstance(node, dict):
+                yield node
+                for value in node.values():
+                    yield from mappings(value)
+            elif isinstance(node, list):
+                for item in node:
+                    yield from mappings(item)
+
+        self.assertEqual(
+            [],
+            [m for m in mappings(workflow) if "python-version" in m],
+            "inline `python-version:` inputs are forbidden; "
+            "use python-version-file: .python-version",
+        )
+
+        python_command = re.compile(
+            r"^(?:sudo\s+)?(?:python3?|[\w./-]+\.py)\b"
+        )
+        for job_name, job in workflow["jobs"].items():
+            steps = job.get("steps") or []
+            commands = [
+                line.strip()
+                for step in steps
+                for line in (step.get("run") or "").splitlines()
+                if line.strip()
+            ]
+            setup = [
+                step for step in steps
+                if step.get("uses", "").startswith("actions/setup-python@")
+            ]
+            if any(python_command.match(line) for line in commands):
+                with self.subTest(job=job_name, contract="one setup-python step"):
+                    self.assertEqual(
+                        1,
+                        len(setup),
+                        f"job '{job_name}' directly invokes Python "
+                        f"({commands!r}) but has "
+                        f"{len(setup)} setup-python step(s)",
+                    )
+            for step in setup:
+                with self.subTest(
+                    job=job_name,
+                    step=step.get("name") or step.get("uses"),
+                    contract="version-file only, no inline version",
+                ):
+                    self.assertEqual(
+                        {"python-version-file": ".python-version"},
+                        step.get("with"),
+                        f"setup-python step in '{job_name}' must set exactly "
+                        "python-version-file: .python-version",
+                    )
 
 
 if __name__ == "__main__":

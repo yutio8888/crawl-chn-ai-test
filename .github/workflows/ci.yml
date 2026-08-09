@@ -34,10 +34,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
@@ -63,10 +63,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install static check dependencies
         run: |
           python -m pip install --upgrade pip
@@ -85,10 +85,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -122,10 +122,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -158,10 +158,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -194,6 +194,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set up Python from .python-version
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
       - name: Select changed source files
         id: lint_targets
         shell: bash
@@ -278,10 +282,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -313,10 +317,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -346,10 +350,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -391,10 +395,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Set up Python 3.13
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version-file: .python-version
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -449,6 +453,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set up Python from .python-version
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
       - name: Download Windows package
         uses: actions/download-artifact@v4
         with:

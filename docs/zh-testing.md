@@ -135,3 +135,8 @@ Python 3, Node.js, `tree-sitter`, `tree-sitter-cpp`, and PyYAML are installed
 explicitly in CI; GNU `timeout`, `flock`, `grep -P`, and GNU `script` are not
 generic-tooling prerequisites. Target-only Windows, Android, and Tiles helpers
 may retain dependencies documented by their target build workflow.
+
+The exact Python version is defined once by the root `.python-version` file.
+Local tooling commands should run through a version manager that honors it (or
+otherwise verify `python3 --version` matches it); CI's setup-python steps read
+the same file.
