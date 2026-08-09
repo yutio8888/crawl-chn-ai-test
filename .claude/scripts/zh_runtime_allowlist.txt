@@ -14,9 +14,9 @@
 # and tech prefixes (Tele, Rage, Highlight, ...).
 #
 # Add new entries below when a false positive shows up in a Layer 1 run.
-# Each row should be a single English run (no surrounding whitespace); any
-# token ≥3 chars long that legitimately appears mid-Chinese translation
-# ("你获得了 +1 Slay 增益") belongs here.
+# Each row has no surrounding whitespace. Standalone English tokens are
+# matched case-insensitively; compound technical identifiers are allowed only
+# as exact, case-sensitive whole values and never as word fragments.
 
 # Exact command technical literals. Keeping compound identifiers whole avoids
 # suppressing ordinary English words such as "auto" or "status" globally.

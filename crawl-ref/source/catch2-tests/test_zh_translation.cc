@@ -1282,6 +1282,11 @@ TEST_CASE("MIXED_CN_EN exact command technical literals",
         Row{"运行 CMD_EXPLORE 命令。",                   false},
         Row{"将 explore_auto_rest 视为 false。",         false},
         Row{"读取 explore_auto_rest_status 配置。",      false},
+        // Legal command templates are syntax, not display-language leaks.
+        Row{"按 $cmd[CMD_REPLAY_MESSAGES] 查看消息。",    false},
+        // File names and Lua member calls are non-display technical syntax.
+        Row{"请查阅 options_guide.txt 文件。",           false},
+        Row{"第{{ return you.experience_level() }}级。", false},
         // Minimal mutations must not inherit the exception.
         Row{"写入 morgues 目录。",                        true},
         Row{"运行 CMD_EXPLORES 命令。",                  true},
@@ -1289,6 +1294,19 @@ TEST_CASE("MIXED_CN_EN exact command technical literals",
         Row{"读取 explore_auto_rest_statuses 配置。",    true},
         Row{"将 falsey 视为 false。",                    true},
         Row{"将 true 视为 false。",                      true},
+        // Compound identifiers are classified whole and case-sensitively.
+        Row{"运行 cmd_explore 命令。",                   true},
+        Row{"运行 Cmd_Explore 命令。",                   true},
+        Row{"运行 X_CMD_EXPLORE 命令。",                 true},
+        Row{"运行 CMD_EXPLORE_X 命令。",                 true},
+        Row{"运行 _CMD_EXPLORE 命令。",                  true},
+        Row{"运行 CMD_EXPLORE_ 命令。",                  true},
+        Row{"运行 1CMD_EXPLORE 命令。",                  true},
+        Row{"运行 CMD_EXPLORE1 命令。",                  true},
+        Row{"按 $cmd[cmd_explore] 自动探索。",           true},
+        Row{"按 $cmd[CMD_REPLAY_MESSAGES 查看消息。",    true},
+        Row{"这是 options_guide 示例。",                 true},
+        Row{"这是 you.experience_level 示例。",          true},
     }));
     const std::string& text = std::get<0>(row);
     const bool expect_issue = std::get<1>(row);

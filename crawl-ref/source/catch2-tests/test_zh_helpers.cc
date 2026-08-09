@@ -339,6 +339,22 @@ static bool is_ascii_identifier_char(char c)
         || (c >= '0' && c <= '9') || c == '_';
 }
 
+static size_t command_template_end(const std::string& text, size_t i)
+{
+    static const std::string prefix = "$cmd[";
+    if (text.compare(i, prefix.size(), prefix) != 0)
+        return std::string::npos;
+
+    size_t end = i + prefix.size();
+    const size_t identifier_start = end;
+    if (text.compare(identifier_start, 4, "CMD_") != 0)
+        return std::string::npos;
+    while (end < text.size() && is_ascii_identifier_char(text[end]))
+        ++end;
+    return end > identifier_start + 4 && end < text.size() && text[end] == ']'
+        ? end + 1 : std::string::npos;
+}
+
 static size_t allowed_technical_literal_end(const std::string& text, size_t i)
 {
     // Some translated command descriptions must preserve exact option names,
@@ -364,6 +380,36 @@ static size_t allowed_technical_literal_end(const std::string& text, size_t i)
         ? end : std::string::npos;
 }
 
+static size_t allowed_txt_filename_end(const std::string& text,
+                                       size_t identifier_end)
+{
+    static const std::string extension = ".txt";
+    if (text.compare(identifier_end, extension.size(), extension) != 0)
+        return std::string::npos;
+
+    const size_t end = identifier_end + extension.size();
+    return end == text.size() || !is_ascii_identifier_char(text[end])
+        ? end : std::string::npos;
+}
+
+static bool is_lua_member_call_identifier(const std::string& text,
+                                          size_t identifier_start,
+                                          size_t identifier_end)
+{
+    if (identifier_start == 0 || text[identifier_start - 1] != '.'
+        || identifier_end >= text.size() || text[identifier_end] != '(')
+    {
+        return false;
+    }
+
+    const size_t open = text.rfind("{{", identifier_start);
+    if (open == std::string::npos)
+        return false;
+    const size_t close = text.rfind("}}", identifier_start);
+    return (close == std::string::npos || close < open)
+        && text.find("}}", identifier_end) != std::string::npos;
+}
+
 static size_t mixed_cn_en_offender(const std::string& text)
 {
     // Fire when text contains a CJK ideograph AND >=3 consecutive ASCII
@@ -387,7 +433,10 @@ static size_t mixed_cn_en_offender(const std::string& text)
     if (!has_cjk)
         return std::string::npos;
 
-    // For each maximal run of ASCII letters, check whether it's whitelisted.
+    // Preserve valid $cmd[COMMAND_IDENTIFIER] templates explicitly. Outside
+    // templates, classify each maximal ASCII identifier as a whole; otherwise
+    // a near-match such as cmd_explore could fall back to separately
+    // allowlisted "cmd" and "explore" fragments.
     // The whitelist lives in catch2-tests/zh_runtime_allowlist_enum.txt plus
     // a hardcoded minimal set in source. We replicate a generous built-in
     // whitelist here so the helper is self-contained and testable in M1.
@@ -410,14 +459,14 @@ static size_t mixed_cn_en_offender(const std::string& text)
          "CMD","EVOKE","READ","QUAFF","tiles","white","TODO","you","god",
          // ==============================================================
          // Markup / template tokens below — added to suppress false positives
-         // from DCSS markup tags, $cmd[...] identifiers, HTML-style tag names,
+         // from DCSS markup tags, HTML-style tag names,
          // and external proper names embedded in Chinese display text.
          // ==============================================================
          // HTML-style / DCSS markup tags
          "lightred","lightblue","lightgreen","lightgrey","lightgray",
          "darkgrey","darkgray","localtiles","localtile","console",
          "yellow","cyan","nomouse","nowrap","input",
-         // $cmd[...] command identifier fragments (CMD already whitelisted)
+         // Command words that also occur outside $cmd[...] templates
          "REPLAY","MESSAGES","CLOSE","DOWNSTAIRS","UPSTAIRS","EXPLORE",
          "EQUIP","PICKUP","WAIT","FIRE","MEMORISE","DISPLAY","QUIVER",
          "CAST","SPELL","WEAPON","WIELD","DROP","LOOK","AROUND","TARGET",
@@ -446,8 +495,21 @@ static size_t mixed_cn_en_offender(const std::string& text)
     while (i < text.size())
     {
         char c = text[i];
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        if (c == '$' && text.compare(i, 5, "$cmd[") == 0)
         {
+            const size_t template_end = command_template_end(text, i);
+            if (template_end == std::string::npos)
+                return i;
+            i = template_end;
+            continue;
+        }
+
+        if (is_ascii_identifier_char(c))
+        {
+            size_t j = i + 1;
+            while (j < text.size() && is_ascii_identifier_char(text[j]))
+                ++j;
+
             const size_t technical_end = allowed_technical_literal_end(text, i);
             if (technical_end != std::string::npos)
             {
@@ -455,19 +517,40 @@ static size_t mixed_cn_en_offender(const std::string& text)
                 continue;
             }
 
-            // capture maximal ASCII-letter run
-            size_t j = i + 1;
-            while (j < text.size())
+            const size_t filename_end = allowed_txt_filename_end(text, j);
+            if (filename_end != std::string::npos)
             {
-                char d = text[j];
-                if (!((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z')))
-                    break;
-                ++j;
+                i = filename_end;
+                continue;
             }
-            size_t run_len = j - i;
-            std::string token = text.substr(i, run_len);
+
+            if (is_lua_member_call_identifier(text, i, j))
+            {
+                i = j;
+                continue;
+            }
+
+            const std::string token = text.substr(i, j - i);
+            size_t letter_count = 0;
+            for (char d : token)
+            {
+                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z'))
+                    ++letter_count;
+            }
+            if (letter_count == 0)
+            {
+                i = j;
+                continue;
+            }
+
+            // Compound identifiers must either match one of the exact,
+            // case-sensitive technical literals above or fail closed. Never
+            // split them into independently allowlisted word fragments.
+            if (token.find('_') != std::string::npos)
+                return i;
+
             bool whitelisted = false;
-            if (run_len < 3)
+            if (letter_count < 3)
                 whitelisted = true;            // 1-2 letter tokens (rF, AC, ...)
             else
             {
