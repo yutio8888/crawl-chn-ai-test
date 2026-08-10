@@ -252,8 +252,10 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/data/message-overlay/*|\
             .claude/scripts/*message_overlay*|\
             .claude/scripts/audit_monspell_behavior.py|\
+            .claude/scripts/monflee_inventory.py|\
             .claude/scripts/tests/test_message_overlay.py|\
             .claude/scripts/tests/test_audit_monspell_behavior.py|\
+            .claude/scripts/tests/test_monflee_inventory.py|\
             docs/textdb-i18n-*|\
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
             crawl-ref/source/fork-message-overlay.*|\
@@ -284,7 +286,8 @@ if [[ -n "$CHANGED_FILES" ]]; then
         esac
         case "$changed_file" in
             crawl-ref/source/catch2-tests/test_zh_*.cc|\
-            crawl-ref/source/catch2-tests/test_zh_*.h)
+            crawl-ref/source/catch2-tests/test_zh_*.h|\
+            crawl-ref/source/catch2-tests/test_mon_cast_target.cc)
                 RISK_ZH_TEST_RUNTIME=1
                 ;;
         esac
@@ -619,6 +622,7 @@ PY
         fi
         python3 "$SCRIPT_DIR/tests/test_message_overlay.py" \
             && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
+            && python3 "$SCRIPT_DIR/tests/test_monflee_inventory.py" \
             && python3 "$SCRIPT_DIR/generate_message_overlay.py" \
                 --manifest .claude/data/message-overlay/monspell.json \
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \

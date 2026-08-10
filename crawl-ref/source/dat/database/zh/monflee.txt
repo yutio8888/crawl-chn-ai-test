@@ -8,13 +8,13 @@
 dream sheep flee
 
 w:30
-@The_monster@吓得大叫起来。
+@The_monster@惊恐地咩咩叫起来。
 
 VISUAL:@The_monster@被吓坏了！
 
 VISUAL:@The_monster@惊慌失措，转身逃跑。
 
-VISUAL:一个吓坏了的@monster@跳走了。
+VISUAL:受惊的@monster@一跃而去。
 
-VISUAL:@The_monster@仓皇而逃。
+VISUAL:@The_monster@撒蹄狂奔而去。
 %%%%

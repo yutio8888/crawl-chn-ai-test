@@ -1380,6 +1380,127 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "localized dream sheep flee variants preserve production routing",
+                 "[single-file][zh-translation][monflee][issue-54]")
+{
+    scoped_zh_database localized_database;
+    scoped_past_target_world world(MONS_DREAM_SHEEP);
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    check_registered_source_identity(source);
+
+    const textdb_phase0::canonical_speakdb_dump dump =
+        textdb_phase0::dump_localized_speakdb_typed("zh");
+    const auto entry = std::find_if(
+        dump.entries.begin(), dump.entries.end(),
+        [](const textdb_phase0::canonical_entry &candidate)
+        {
+            return candidate.canonical_key == "dream sheep flee";
+        });
+    REQUIRE(entry != dump.entries.end());
+    REQUIRE(entry->provenance.source_name == "database/zh/monflee.txt");
+    REQUIRE(entry->variants.size() == 5);
+
+    // Find one stable subgenerator seed for every production locator. This is
+    // an exhaustive deterministic search, not probabilistic test coverage;
+    // each subsequent assertion replays the exact seed it found.
+    vector<uint64_t> seeds(entry->variants.size(), 0);
+    for (uint64_t seed = 1;
+         seed <= 65536
+             && std::any_of(seeds.begin(), seeds.end(),
+                            [](uint64_t value) { return value == 0; });
+         ++seed)
+    {
+        rng::subgenerator scoped_rng(
+            seed, seed ^ 0x9e3779b97f4a7c15ULL);
+        const string selected = getSpeakString("dream sheep flee");
+        for (const textdb_phase0::canonical_variant &variant : entry->variants)
+        {
+            if (selected == variant.raw_pattern
+                && seeds[variant.locator.variant_ordinal] == 0)
+            {
+                seeds[variant.locator.variant_ordinal] = seed;
+            }
+        }
+    }
+    REQUIRE(std::none_of(seeds.begin(), seeds.end(),
+                         [](uint64_t value) { return value == 0; }));
+
+    int ordinary_channels = 0;
+    int visual_channels = 0;
+    for (size_t ordinal = 0; ordinal < seeds.size(); ++ordinal)
+    {
+        CAPTURE(ordinal, seeds[ordinal]);
+        vector<mon_speech_final_emission> emissions;
+        const mon_speech_emission_observer observer =
+            { observe_cast_emission, &emissions };
+        string selected;
+        {
+            rng::subgenerator scoped_rng(
+                seeds[ordinal],
+                seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
+            selected = getSpeakString("dream sheep flee");
+        }
+        REQUIRE(selected == entry->variants[ordinal].raw_pattern);
+        REQUIRE(mons_speaks_msg(
+            &source, selected, MSGCH_TALK, false, false, &observer));
+        REQUIRE(emissions.size() == 1);
+        CHECK(emissions[0].line.find('@') == string::npos);
+        CHECK(emissions[0].line.find("VISUAL:") == string::npos);
+        CHECK_FALSE(emissions[0].line.empty());
+        if (ordinal == 0)
+        {
+            CHECK(emissions[0].channel == MSGCH_TALK);
+            ++ordinary_channels;
+        }
+        else
+        {
+            CHECK(emissions[0].channel == MSGCH_TALK_VISUAL);
+            ++visual_channels;
+        }
+    }
+    CHECK(ordinary_channels == 1);
+    CHECK(visual_channels == 4);
+
+    REQUIRE(source.add_ench(
+        mon_enchant(ENCH_MUTE, &source, INFINITE_DURATION)));
+    for (const size_t ordinal : { size_t(0), size_t(1) })
+    {
+        vector<mon_speech_final_emission> emissions;
+        const mon_speech_emission_observer observer =
+            { observe_cast_emission, &emissions };
+        string selected;
+        {
+            rng::subgenerator scoped_rng(
+                seeds[ordinal],
+                seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
+            selected = getSpeakString("dream sheep flee");
+        }
+        REQUIRE(mons_speaks_msg(
+            &source, selected, MSGCH_TALK, false, false, &observer));
+        REQUIRE(emissions.size() == 1);
+        CHECK(emissions[0].effective_silence == (ordinal == 0));
+    }
+    source.del_ench(ENCH_MUTE);
+
+    REQUIRE(source.add_ench(
+        mon_enchant(ENCH_INVIS, &source, INFINITE_DURATION)));
+    CHECK_FALSE(you.can_see(source));
+    vector<mon_speech_final_emission> hidden_emissions;
+    const mon_speech_emission_observer hidden_observer =
+        { observe_cast_emission, &hidden_emissions };
+    string hidden_visual;
+    {
+        rng::subgenerator scoped_rng(
+            seeds[1], seeds[1] ^ 0x9e3779b97f4a7c15ULL);
+        hidden_visual = getSpeakString("dream sheep flee");
+    }
+    CHECK_FALSE(mons_speaks_msg(
+        &source, hidden_visual, MSGCH_TALK, false, false, &hidden_observer));
+    CHECK(hidden_emissions.empty());
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "Phase 2 gesture requirements preserve production target trace",
                  "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
 {
