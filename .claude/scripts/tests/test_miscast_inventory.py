@@ -205,6 +205,35 @@ class MiscastInventoryTests(unittest.TestCase):
                 with self.assertRaisesRegex(MODULE.InventoryError, message):
                     self.validate(records)
 
+    def test_earth_message_precedes_special_damage_and_uses_fixed_period(self):
+        earth_cards = [
+            card for card in self.records[1:]
+            if card["key"].startswith("earth miscast ")
+        ]
+        self.assertEqual(3, len(earth_cards))
+        for card in earth_cards:
+            self.assertIn("BEAM_NONE 令 _do_msg(..., 0)", card["actual_behavior"])
+            self.assertEqual(
+                MODULE.WEAK_PUNCTUATION,
+                card["production_facts"]["final_punctuation"],
+            )
+            self.assertEqual(
+                {MODULE.WEAK_PUNCTUATION},
+                {review["final_message_punctuation"]
+                 for review in card["variant_reviews"]},
+            )
+
+        records = copy.deepcopy(self.records)
+        earth = next(
+            card for card in records[1:]
+            if card["key"] == "earth miscast player"
+        )
+        earth["production_facts"]["final_punctuation"] = (
+            MODULE.DAMAGE_PUNCTUATION
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError, "production_facts"):
+            self.validate(records)
+
     def test_boolean_integer_fields_fail_closed(self):
         mutations = []
         records = copy.deepcopy(self.records)
@@ -214,15 +243,45 @@ class MiscastInventoryTests(unittest.TestCase):
         records[1]["production_facts"]["variant_count"] = True
         mutations.append(records)
         records = copy.deepcopy(self.records)
+        records[1]["production_facts"]["weights"][0] = True
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
         records[1]["production_facts"]["choice_site_counts"][
             "english"
         ] = False
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
+        records[1]["production_facts"]["source_history_length"][
+            "english"
+        ] = True
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
+        records[1]["production_facts"]["effective_provenance"]["english"][
+            "definition_ordinal"
+        ] = False
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
+        records[0]["terminal_conclusion_counts"]["keep"] = True
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
+        records[0]["grammar_exceptions"][0]["variant_ordinal"] = True
         mutations.append(records)
         records = copy.deepcopy(self.records)
         records[1]["variant_reviews"][0]["variant_ordinal"] = False
         mutations.append(records)
         records = copy.deepcopy(self.records)
         records[1]["variant_reviews"][0]["weight"] = True
+        mutations.append(records)
+        records = copy.deepcopy(self.records)
+        selection_review = next(
+            review
+            for card in records[1:]
+            for review in card["variant_reviews"]
+            if review["selection_sites"]["english"]
+        )
+        selection_review["selection_sites"]["english"][0][
+            "alternative_count"
+        ] = True
         mutations.append(records)
         for records in mutations:
             with self.assertRaisesRegex(MODULE.InventoryError, "integer"):

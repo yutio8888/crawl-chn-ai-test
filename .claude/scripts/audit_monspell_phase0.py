@@ -25,6 +25,17 @@ _LUA_RE = re.compile(r"\{\{(.*?)\}\}", re.DOTALL)
 _CONTROL_RE = re.compile(r"^([A-Z][A-Z0-9_]*):")
 MAX_RECURSION_DEPTH = 10
 MAX_REPLACEMENTS = 100
+ARTIFACT_FIELDS = {
+    "schema_version", "database_name", "source_directory", "sources", "entries",
+}
+SOURCE_FIELDS = {"source_name", "load_index", "normalized_utf8"}
+ENTRY_FIELDS = {
+    "canonical_key", "effective_provenance", "raw_body", "source_history",
+    "variants", "parse_error", "body_empty",
+}
+PROVENANCE_FIELDS = {"source_name", "load_index", "definition_ordinal"}
+VARIANT_FIELDS = {"locator", "provenance", "weight", "raw_pattern"}
+LOCATOR_FIELDS = {"canonical_key", "variant_ordinal"}
 
 
 class ArtifactError(ValueError):
@@ -72,12 +83,25 @@ def _is_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _require_exact_fields(
+    value: object, expected: set[str], context: str,
+) -> dict[str, Any]:
+    _require(isinstance(value, dict), f"{context} must be an object")
+    actual = set(value)
+    _require(
+        actual == expected,
+        f"{context} field set mismatch: missing {sorted(expected - actual)!r}, "
+        f"unknown {sorted(actual - expected)!r}",
+    )
+    return value
+
+
 def _validate_provenance(
     value: object,
     context: str,
     source_indexes: dict[str, int],
 ) -> dict[str, Any]:
-    _require(isinstance(value, dict), f"{context} must be an object")
+    value = _require_exact_fields(value, PROVENANCE_FIELDS, context)
     source_name = value.get("source_name")
     load_index = value.get("load_index")
     ordinal = value.get("definition_ordinal")
@@ -86,16 +110,22 @@ def _validate_provenance(
     _require(_is_int(load_index), f"{context}.load_index must be an integer")
     _require(load_index == source_indexes[source_name],
              f"{context}.load_index does not match source")
-    _require(_is_int(ordinal) and ordinal >= 0,
-             f"{context}.definition_ordinal must be a non-negative integer")
+    _require(_is_int(ordinal),
+             f"{context}.definition_ordinal must be an integer")
+    _require(ordinal >= 0,
+             f"{context}.definition_ordinal must be non-negative")
     return value
 
 
 def validate_artifact(
     artifact: object, label: str = "canonical dump",
 ) -> ArtifactKeySets:
-    _require(isinstance(artifact, dict), "canonical dump must be an object")
-    _require(artifact.get("schema_version") == ARTIFACT_SCHEMA_VERSION,
+    artifact = _require_exact_fields(
+        artifact, ARTIFACT_FIELDS, "canonical dump"
+    )
+    _require(_is_int(artifact["schema_version"]),
+             "artifact schema_version must be an integer")
+    _require(artifact["schema_version"] == ARTIFACT_SCHEMA_VERSION,
              f"unsupported artifact schema_version {artifact.get('schema_version')!r}")
     _require(artifact.get("database_name") == "speak",
              "artifact database_name must be 'speak'")
@@ -109,13 +139,14 @@ def validate_artifact(
     source_indexes: dict[str, int] = {}
     for expected_index, source in enumerate(sources):
         context = f"sources[{expected_index}]"
-        _require(isinstance(source, dict), f"{context} must be an object")
+        source = _require_exact_fields(source, SOURCE_FIELDS, context)
         name = source.get("source_name")
         load_index = source.get("load_index")
         normalised = source.get("normalized_utf8")
         _require(isinstance(name, str) and name,
                  f"{context}.source_name must be a non-empty string")
         _require(name not in source_indexes, f"duplicate source_name {name!r}")
+        _require(_is_int(load_index), f"{context}.load_index must be an integer")
         _require(load_index == expected_index,
                  f"{context}.load_index must be contiguous and ordered")
         _require(isinstance(normalised, str),
@@ -132,7 +163,7 @@ def validate_artifact(
     corrupt: set[str] = set()
     for entry_index, entry in enumerate(entries):
         context = f"entries[{entry_index}]"
-        _require(isinstance(entry, dict), f"{context} must be an object")
+        entry = _require_exact_fields(entry, ENTRY_FIELDS, context)
         key = entry.get("canonical_key")
         _require(isinstance(key, str) and key,
                  f"{context}.canonical_key must be a non-empty string")
@@ -176,11 +207,14 @@ def validate_artifact(
             _require(not variants, f"{context} errored/empty body must have no variants")
         for ordinal, variant in enumerate(variants):
             vcontext = f"{context}.variants[{ordinal}]"
-            _require(isinstance(variant, dict), f"{vcontext} must be an object")
-            locator = variant.get("locator")
-            _require(isinstance(locator, dict), f"{vcontext}.locator must be an object")
+            variant = _require_exact_fields(variant, VARIANT_FIELDS, vcontext)
+            locator = _require_exact_fields(
+                variant.get("locator"), LOCATOR_FIELDS, f"{vcontext}.locator"
+            )
             _require(locator.get("canonical_key") == key,
                      f"{vcontext}.locator canonical_key mismatch")
+            _require(_is_int(locator.get("variant_ordinal")),
+                     f"{vcontext}.locator variant_ordinal must be an integer")
             _require(locator.get("variant_ordinal") == ordinal,
                      f"{vcontext}.locator variant_ordinal must be contiguous")
             _require(variant.get("provenance") == effective,

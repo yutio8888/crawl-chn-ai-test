@@ -61,7 +61,7 @@ BODY_NEUTRAL_LOCATORS = {
     ("alchemy miscast monster", 6),
 }
 DAMAGING_SCHOOLS = {
-    "conjuration", "necromancy", "fire", "ice", "air", "earth",
+    "conjuration", "necromancy", "fire", "ice", "air",
 }
 WEAK_PUNCTUATION = "attack_strength_punctuation(0): '.'."
 DAMAGE_PUNCTUATION = (
@@ -115,7 +115,10 @@ SCHOOL_EFFECTS = {
     "fire": "BEAM_FIRE 火焰伤害；消息标点使用抗性调整后的伤害。",
     "ice": "BEAM_COLD 寒冷伤害；消息标点使用抗性调整后的伤害。",
     "air": "BEAM_ELECTRICITY 电击伤害；消息标点使用抗性调整后的伤害。",
-    "earth": "三倍 AC 检定后的 BEAM_FRAG 物理碎片伤害；标点使用最终伤害。",
+    "earth": (
+        "BEAM_NONE 令 _do_msg(..., 0) 固定追加句号；随后 special effect 经三倍 "
+        "AC 检定，以 BEAM_FRAG 结算物理碎片伤害。"
+    ),
     "alchemy": "无直接消息伤害；随后施加中毒，消息标点固定为句号。",
     "forgecraft": "无直接消息伤害；随后施加腐蚀，消息标点固定为句号。",
 }
@@ -598,6 +601,40 @@ def _expected_facts(
     }
 
 
+def _validate_ledger_provenance(value: object, context: str) -> None:
+    _require(isinstance(value, dict), f"{context} must be an object")
+    _require_exact_fields(
+        value, {"source_name", "load_index", "definition_ordinal"}, context
+    )
+    _require(_nonempty_string(value["source_name"]),
+             f"{context}.source_name must be a nonempty string")
+    for field in ("load_index", "definition_ordinal"):
+        _require(_is_int(value[field]),
+                 f"{context}.{field} must be an integer")
+
+
+def _validate_selection_site_array(value: object, context: str) -> None:
+    _require(isinstance(value, list), f"{context} must be an array")
+    for index, item in enumerate(value):
+        site_context = f"{context}[{index}]"
+        _require(isinstance(item, dict), f"{site_context} must be an object")
+        _require_exact_fields(
+            item, {"raw", "alternatives", "alternative_count"}, site_context
+        )
+        _require(isinstance(item["raw"], str),
+                 f"{site_context}.raw must be a string")
+        alternatives = item["alternatives"]
+        _require(
+            isinstance(alternatives, list)
+            and all(isinstance(alternative, str) for alternative in alternatives),
+            f"{site_context}.alternatives must be a string array",
+        )
+        _require(_is_int(item["alternative_count"]),
+                 f"{site_context}.alternative_count must be an integer")
+        _require(item["alternative_count"] == len(alternatives),
+                 f"{site_context}.alternative_count mismatch")
+
+
 def _validate_card(
     card: dict[str, Any], inventory: dict[str, Any], entry: dict[str, Any],
     candidate: dict[str, Any] | None,
@@ -683,6 +720,28 @@ def _validate_card(
     )
     for count in facts["choice_site_counts"].values():
         _require(_is_int(count), f"{identity} choice count must be integer")
+    provenance = facts["effective_provenance"]
+    _require(isinstance(provenance, dict),
+             f"{identity} effective_provenance must be an object")
+    _require_exact_fields(
+        provenance, {"chinese", "english"},
+        f"{identity} effective_provenance",
+    )
+    for language in ("chinese", "english"):
+        _validate_ledger_provenance(
+            provenance[language],
+            f"{identity} effective_provenance.{language}",
+        )
+    history_lengths = facts["source_history_length"]
+    _require(isinstance(history_lengths, dict),
+             f"{identity} source_history_length must be an object")
+    _require_exact_fields(
+        history_lengths, {"chinese", "english"},
+        f"{identity} source_history_length",
+    )
+    for language, length in history_lengths.items():
+        _require(_is_int(length),
+                 f"{identity} source_history_length.{language} must be an integer")
     expected_facts = _expected_facts(inventory, entry, proposed)
     _require(facts == expected_facts, f"{identity} production_facts mismatch")
 
@@ -708,6 +767,17 @@ def _validate_card(
         expected_tokens, expected_sites = _validate_proposed_variant(
             entry["key"], baseline, proposal
         )
+        selection_sites = review["selection_sites"]
+        _require(isinstance(selection_sites, dict),
+                 f"{context} selection_sites must be an object")
+        _require_exact_fields(
+            selection_sites, {"chinese_baseline", "chinese_candidate", "english"},
+            f"{context} selection_sites",
+        )
+        for language, sites in selection_sites.items():
+            _validate_selection_site_array(
+                sites, f"{context} selection_sites.{language}"
+            )
         grammar = None
         if identity == GRAMMAR_EXCEPTION["identity"] \
                 and ordinal == GRAMMAR_EXCEPTION["variant_ordinal"]:
@@ -781,10 +851,16 @@ def validate_results(
         _require(_is_int(metadata[field]),
                  f"review metadata {field} must be integer")
     counts = metadata["terminal_conclusion_counts"]
-    _require(isinstance(counts, dict)
-             and set(counts) == {"adjust", "defer", "keep", "retranslate"}
-             and all(_is_int(value) for value in counts.values()),
-             "review metadata terminal_conclusion_counts mismatch")
+    _require(isinstance(counts, dict),
+             "review metadata terminal_conclusion_counts must be an object")
+    _require_exact_fields(
+        counts, {"adjust", "defer", "keep", "retranslate"},
+        "review metadata terminal_conclusion_counts",
+    )
+    for conclusion, count in counts.items():
+        _require(_is_int(count),
+                 f"review metadata terminal_conclusion_counts.{conclusion} "
+                 "must be an integer")
     expected_metadata = {
         "baseline": inventory["baseline_ref"],
         "chinese_production_dump_sha256": (
@@ -799,6 +875,18 @@ def validate_results(
         "identity_count": EXPECTED_IDENTITY_COUNT,
         "variant_count": EXPECTED_VARIANT_COUNT,
     }
+    exceptions = metadata["grammar_exceptions"]
+    _require(isinstance(exceptions, list) and len(exceptions) == 1,
+             "review metadata grammar_exceptions must contain one object")
+    exception = exceptions[0]
+    _require(isinstance(exception, dict),
+             "review metadata grammar exception must be an object")
+    _require_exact_fields(
+        exception, {"english_only_token", "identity", "reason", "variant_ordinal"},
+        "review metadata grammar exception",
+    )
+    _require(_is_int(exception["variant_ordinal"]),
+             "review metadata grammar exception variant_ordinal must be an integer")
     for field, value in expected_metadata.items():
         _require(metadata[field] == value,
                  f"review metadata {field} mismatch")

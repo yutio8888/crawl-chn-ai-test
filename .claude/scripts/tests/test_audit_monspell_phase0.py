@@ -288,6 +288,49 @@ class ArtifactInventoryTest(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 self.assert_protocol_error(mutation)
 
+    def test_artifact_schema_is_exact_and_boolean_safe(self):
+        unknown_mutations = (
+            lambda d: d.update(unknown=None),
+            lambda d: d["sources"][0].update(unknown=None),
+            lambda d: d["entries"][0].update(unknown=None),
+            lambda d: d["entries"][0]["effective_provenance"].update(
+                unknown=None
+            ),
+            lambda d: d["entries"][0]["variants"][0].update(unknown=None),
+            lambda d: d["entries"][0]["variants"][0]["locator"].update(
+                unknown=None
+            ),
+        )
+        for mutation in unknown_mutations:
+            with self.subTest(kind="unknown", mutation=mutation), \
+                    self.assertRaisesRegex(MODULE.ArtifactError,
+                                           "unknown.*unknown"):
+                value = fixture()
+                mutation(value)
+                self.load_value(value)
+
+        integer_mutations = (
+            lambda d: d.update(schema_version=True),
+            lambda d: d["sources"][0].update(load_index=False),
+            lambda d: d["entries"][0]["effective_provenance"].update(
+                load_index=False
+            ),
+            lambda d: d["entries"][0]["effective_provenance"].update(
+                definition_ordinal=False
+            ),
+            lambda d: d["entries"][0]["variants"][0].update(weight=True),
+            lambda d: d["entries"][0]["variants"][0]["locator"].update(
+                variant_ordinal=False
+            ),
+        )
+        for mutation in integer_mutations:
+            with self.subTest(kind="boolean-integer", mutation=mutation), \
+                    self.assertRaisesRegex(MODULE.ArtifactError,
+                                           "must be an integer"):
+                value = fixture()
+                mutation(value)
+                self.load_value(value)
+
     def test_rejects_provenance_history_and_variant_protocol_errors(self):
         mutations = [
             lambda d: d["entries"][0]["effective_provenance"].update(definition_ordinal=9),

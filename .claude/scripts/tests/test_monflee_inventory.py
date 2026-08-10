@@ -259,6 +259,28 @@ class MonfleeInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "manifest/order/snapshots"):
             self.inventory(en=bad, derived_en=self.derived(artifact("en")))
 
+    def test_artifact_objects_reject_unknown_fields_and_boolean_integers(self):
+        cases = (
+            ("unknown", lambda value: value.__setitem__("unknown", None),
+             "unknown ['unknown']"),
+            ("schema boolean",
+             lambda value: value.__setitem__("schema_version", True),
+             "must be an integer"),
+            ("source index boolean",
+             lambda value: value["sources"][0].__setitem__("load_index", False),
+             "must be an integer"),
+            ("variant ordinal boolean",
+             lambda value: value["entries"][0]["variants"][0][
+                 "locator"
+             ].__setitem__("variant_ordinal", False),
+             "must be an integer"),
+        )
+        for name, mutate, message in cases:
+            bad = artifact("en")
+            mutate(bad)
+            with self.subTest(case=name):
+                self.assert_rejected(en=bad, contains=message)
+
     def test_exact_git_source_manifests_are_complete_ordered_and_fail_closed(self):
         database = b'''\
 TextDB("other", "database/", { "ignored.txt" }),

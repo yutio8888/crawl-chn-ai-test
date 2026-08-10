@@ -223,7 +223,7 @@ fire miscast player
 
 你被卷入一场烈焰爆炸
 
-火焰骤然猛烈爆炸
+骤然发生了一场猛烈的烈焰爆炸
 %%%%
 fire miscast monster
 
@@ -303,7 +303,7 @@ air miscast player
 
 你遭到气流轰击
 
-爆出一阵短促刺耳的火花
+迸出一阵短促而猛烈的火花
 
 狂风在你周围呼啸
 
@@ -355,7 +355,7 @@ earth miscast player
 
 你被飞来的岩石击中
 
-你遭到沙砾轰击
+你遭到沙粒轰击
 
 岩石凭空砸落在你身上
 
@@ -367,7 +367,7 @@ earth miscast monster
 
 @The_monster@被飞来的岩石击中
 
-@The_monster@遭到沙砾轰击
+@The_monster@遭到沙粒轰击
 
 岩石凭空砸落在@the_monster@身上
 

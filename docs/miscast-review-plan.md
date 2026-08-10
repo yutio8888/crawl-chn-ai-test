@@ -56,7 +56,9 @@ variants 也必须逐对象相等。缺文件、解析不完整、parse error、
   `@possessive@`）。非 monster 则由 `spl-miscast.cc:68-70` 仅完成方括号选择。
 - `spl-miscast.cc:72` 将 asset pattern 与
   `attack_strength_punctuation(dam)` 拼接后送入最终 `mpr`。asset 本身不得携带
-  末尾标点；无直接伤害的 school 固定传 0，伤害 school 使用最终伤害强度。
+  末尾标点。`BEAM_NONE` school 的 asset 消息固定传 0；其中 Earth 在该固定句号
+  消息之后才由 special effect 做三倍 AC 检定并以 `BEAM_FRAG` 结算伤害。
+  非 `BEAM_NONE` 的伤害 school 才把抗性调整后的最终伤害传给消息标点。
 - 本批不改变 lookup key、fallback、RNG、damage、channel 或最终 sink。
 
 ## Token 与随机选择协议
