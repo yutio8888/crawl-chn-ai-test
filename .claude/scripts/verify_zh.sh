@@ -626,6 +626,7 @@ PY
             && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
             && python3 "$SCRIPT_DIR/tests/test_miscast_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monflee_inventory.py" \
+            && python3 "$SCRIPT_DIR/tests/test_monspell_inventory.py" \
             && python3 "$SCRIPT_DIR/generate_message_overlay.py" \
                 --manifest .claude/data/message-overlay/monspell.json \
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
