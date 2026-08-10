@@ -37,7 +37,7 @@ from audit_monspell_phase0 import (
     build_inventory as build_phase0_inventory,
 )
 from command_inventory import parse_db_keys
-from generate_message_overlay import ManifestError, _normalise_manifest, load_manifest
+from generate_message_overlay import ManifestError, _normalise_manifest
 from i18n_shared import lowercase_string
 
 
@@ -1109,10 +1109,9 @@ def build_inventory(
     _require(phase0["summary"]["monspell_keys"] == EXPECTED_IDENTITY_COUNT,
              "phase0 inventory monspell_keys mismatch")
 
-    try:
-        manifest = load_manifest(manifest_path)
-    except ManifestError as exc:
-        raise InventoryError(f"cannot load manifest {manifest_path}: {exc}") from exc
+    manifest = _manifest_snapshot_at_oid(
+        baseline_ref, manifest_path, "baseline manifest"
+    )
     _require(manifest.get("domain") == DOMAIN,
              "manifest domain must be 'monspell'")
     _require(manifest.get("supported_languages") == ["en", "zh"],

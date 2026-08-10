@@ -6,6 +6,7 @@ import contextlib
 import copy
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,54 @@ CANDIDATE = subprocess.run(
     ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
     check=True, text=True, capture_output=True,
 ).stdout.strip()
+
+
+def _git_plumbing(arguments: list[str], input_text: str | None = None) -> str:
+    """Run a Git plumbing command in ROOT and return its trimmed stdout."""
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "monspell test",
+        "GIT_AUTHOR_EMAIL": "monspell-test@example.invalid",
+        "GIT_COMMITTER_NAME": "monspell test",
+        "GIT_COMMITTER_EMAIL": "monspell-test@example.invalid",
+    }
+    completed = subprocess.run(
+        ["git", "-C", str(ROOT), *arguments], input=input_text,
+        check=True, capture_output=True, text=True, env=env,
+    )
+    return completed.stdout.strip()
+
+
+def commit_manifest_dir(directory: Path) -> str:
+    """Create a dangling commit whose tree contains the manifest fixture.
+
+    The commit is created purely through plumbing (hash-object/mktree/
+    commit-tree), so the working tree, index, and refs are never touched.
+    The tree nests the fixture at ``directory``'s repository-relative path,
+    matching the exact-Git snapshot reads of ``_manifest_snapshot_at_oid``.
+    The returned OID is used as the synthetic baseline for build_inventory
+    so that the exact-Git manifest snapshot path is exercised for real.
+    """
+
+    def tree_for(prefix: Path) -> str:
+        entries = []
+        for child in sorted(prefix.iterdir(), key=lambda item: item.name):
+            if child.is_dir():
+                oid = tree_for(child)
+                kind, mode = "tree", "040000"
+            else:
+                oid = _git_plumbing(["hash-object", "-w", str(child)])
+                kind, mode = "blob", "100644"
+            entries.append(f"{mode} {kind} {oid}\t{child.name}\n")
+        return _git_plumbing(["mktree"], "".join(entries))
+
+    tree = tree_for(directory)
+    relative = directory.resolve().relative_to(ROOT.resolve())
+    for part in reversed(relative.parts):
+        tree = _git_plumbing(["mktree"], f"040000 tree {tree}\t{part}\n")
+    return _git_plumbing(
+        ["commit-tree", tree, "-m", "monspell fixture manifest"]
+    )
 
 KEYS = [
     "alpha strike cast",
@@ -371,8 +420,10 @@ class MonspellInventoryTests(unittest.TestCase):
         cls.zh_dump = make_dump("zh")
         cls.phase0 = fixture_phase0(cls.en_dump)
         header, fragments = fixture_manifest(cls.phase0["semantic_fingerprint"])
-        cls.manifest_dir = cls.root / "manifest"
-        cls.manifest_dir.mkdir()
+        cls.fixture_tmp = tempfile.TemporaryDirectory(
+            dir=ROOT / ".claude/scripts/tests"
+        )
+        cls.manifest_dir = Path(cls.fixture_tmp.name)
         (cls.manifest_dir / "monspell").mkdir()
         (cls.manifest_dir / "monspell.json").write_text(
             json.dumps(header, ensure_ascii=False), encoding="utf-8"
@@ -382,6 +433,7 @@ class MonspellInventoryTests(unittest.TestCase):
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8"
             )
         cls.manifest_path = cls.manifest_dir / "monspell.json"
+        cls.fixture_baseline = commit_manifest_dir(cls.manifest_dir)
         cls.report = fixture_report(
             cls.phase0["semantic_fingerprint"],
             MODULE.EXPECTED_CANDIDATE_ANCHOR_SHA256,
@@ -390,6 +442,7 @@ class MonspellInventoryTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.fixture_tmp.cleanup()
         cls.temp.cleanup()
 
     @contextlib.contextmanager
@@ -442,6 +495,13 @@ class MonspellInventoryTests(unittest.TestCase):
         path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
         return path
 
+    def make_manifest_dir(self, name: str) -> Path:
+        """Create a repository-internal manifest fixture directory."""
+        manifest_dir = Path(self.fixture_tmp.name) / name
+        manifest_dir.mkdir(exist_ok=True)
+        (manifest_dir / "monspell").mkdir(exist_ok=True)
+        return manifest_dir
+
     @staticmethod
     def derived(value: dict) -> dict:
         source = f"{value['source_directory']}monspell.txt"
@@ -455,7 +515,7 @@ class MonspellInventoryTests(unittest.TestCase):
         }
 
     def build(self, en=None, zh=None, phase0=None, report=None, anchor=None,
-               manifest_path=None):
+               manifest_path=None, baseline_ref=None):
         en_value = en or self.en_dump
         zh_value = zh or self.zh_dump
         en_path = self.write("en.json", en_value)
@@ -468,7 +528,8 @@ class MonspellInventoryTests(unittest.TestCase):
             side_effect=[self.derived(en_value), self.derived(zh_value)],
         ):
             return MODULE.build_inventory(
-                BASELINE, en_path, zh_path, phase0_path,
+                baseline_ref or self.fixture_baseline, en_path, zh_path,
+                phase0_path,
                 manifest_path or self.manifest_path,
                 report_path, anchor_path, self.glossary,
             )
@@ -646,11 +707,50 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assertEqual(sorted(UNREACHABLE),
                          first["behavior_report"]["unreachable_roots"])
 
+    def test_build_ignores_working_tree_manifest_mutation(self):
+        # The baseline catalog manifest must be derived from exact Git blobs
+        # at the baseline OID; a diverged working-tree copy at the same path
+        # must not leak into entries or inventory_sha256 (Refs #59).
+        manifest_dir = self.make_manifest_dir("manifest-git-regression")
+        header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
+        (manifest_dir / "monspell.json").write_text(
+            json.dumps(header, ensure_ascii=False), encoding="utf-8")
+        for name, fragment in fragments.items():
+            (manifest_dir / name).write_text(
+                json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
+        baseline = commit_manifest_dir(manifest_dir)
+        manifest_path = manifest_dir / "monspell.json"
+        pristine = self.build(baseline_ref=baseline, manifest_path=manifest_path)
+
+        # Diverging working-tree fragment: same path, different zh templates.
+        fragment_path = manifest_dir / "monspell" / "000-a.json"
+        mutated = copy.deepcopy(fragments["monspell/000-a.json"])
+        alpha = next(e for e in mutated["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        for variant in alpha["variants"]:
+            for metadata in variant["line_metadata"]:
+                for template in metadata["templates"]:
+                    if template["language"] == "zh":
+                        template["pattern"] = "${actor}工作区篡改。"
+        fragment_path.write_text(
+            json.dumps(mutated, ensure_ascii=False), encoding="utf-8")
+
+        rebuilt = self.build(baseline_ref=baseline, manifest_path=manifest_path)
+        self.assertEqual(pristine["inventory_sha256"],
+                         rebuilt["inventory_sha256"])
+        rebuilt_alpha = next(e for e in rebuilt["entries"]
+                             if e["key"] == "alpha strike cast")
+        self.assertTrue(rebuilt_alpha["structured_templates"])
+        for template in rebuilt_alpha["structured_templates"]:
+            self.assertNotEqual(template["pattern_zh"], "${actor}工作区篡改。")
+        clean_alpha = next(e for e in self.inventory["entries"]
+                           if e["key"] == "alpha strike cast")
+        self.assertEqual(clean_alpha["structured_templates"],
+                         rebuilt_alpha["structured_templates"])
+
     def test_consistency_assertions_fail_closed(self):
         # 1. catalog key set must equal phase0 keys
-        manifest_dir = self.root / "manifest-drift"
-        manifest_dir.mkdir(exist_ok=True)
-        (manifest_dir / "monspell").mkdir(exist_ok=True)
+        manifest_dir = self.make_manifest_dir("manifest-drift")
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
         fragments["monspell/000-a.json"]["entries"] = [
             entry for entry in fragments["monspell/000-a.json"]["entries"]
@@ -664,8 +764,10 @@ class MonspellInventoryTests(unittest.TestCase):
         for name, fragment in fragments.items():
             (manifest_dir / name).write_text(
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
+        drift_baseline = commit_manifest_dir(manifest_dir)
         self.assert_rejected("catalog key set mismatch",
-                             manifest_path=manifest_dir / "monspell.json")
+                             manifest_path=manifest_dir / "monspell.json",
+                             baseline_ref=drift_baseline)
 
         # 2. phase2 readiness
         report = copy.deepcopy(self.report)
@@ -687,9 +789,7 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assert_rejected("candidate_key_containment_proven", report=report)
 
         # 5. manifest fingerprint binding
-        manifest_dir = self.root / "manifest-fp"
-        manifest_dir.mkdir(exist_ok=True)
-        (manifest_dir / "monspell").mkdir(exist_ok=True)
+        manifest_dir = self.make_manifest_dir("manifest-fp")
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
         header["inventory_semantic_fingerprint"] = "0" * 64
         (manifest_dir / "monspell.json").write_text(
@@ -697,8 +797,10 @@ class MonspellInventoryTests(unittest.TestCase):
         for name, fragment in fragments.items():
             (manifest_dir / name).write_text(
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
+        fingerprint_baseline = commit_manifest_dir(manifest_dir)
         self.assert_rejected("inventory_semantic_fingerprint",
-                             manifest_path=manifest_dir / "monspell.json")
+                             manifest_path=manifest_dir / "monspell.json",
+                             baseline_ref=fingerprint_baseline)
 
         # 6. candidate anchor binding
         anchor = copy.deepcopy(self.anchor)
@@ -847,16 +949,14 @@ class MonspellInventoryTests(unittest.TestCase):
 
     def test_route_derivation_uses_snapshot_and_stable_id(self):
         def write_manifest(fragments):
-            manifest_dir = self.root / "manifest-suppress"
-            manifest_dir.mkdir(exist_ok=True)
-            (manifest_dir / "monspell").mkdir(exist_ok=True)
+            manifest_dir = self.make_manifest_dir("manifest-suppress")
             header, _ = fixture_manifest(self.phase0["semantic_fingerprint"])
             (manifest_dir / "monspell.json").write_text(
                 json.dumps(header, ensure_ascii=False), encoding="utf-8")
             for name, fragment in fragments.items():
                 (manifest_dir / name).write_text(
                     json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
-            return manifest_dir / "monspell.json"
+            return manifest_dir / "monspell.json", commit_manifest_dir(manifest_dir)
 
         # Remove both suppress signals: the key must no longer be SUPPRESSED
         # and the build must fail closed on the frozen suppressed set.
@@ -867,9 +967,10 @@ class MonspellInventoryTests(unittest.TestCase):
         )
         epsilon["variants"][0]["english_snapshot"] = "@The_monster@ chants."
         epsilon["variants"][0]["stable_id"] = "mon.cast.epsilon_chant.v1"
+        manifest_path, baseline = write_manifest(fragments)
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "suppressed key set mismatch"):
-            self.build(manifest_path=write_manifest(fragments))
+            self.build(manifest_path=manifest_path, baseline_ref=baseline)
 
         # The stable_id .suppress.v1 marker alone is sufficient even when the
         # english_snapshot is not __NONE.
@@ -879,16 +980,17 @@ class MonspellInventoryTests(unittest.TestCase):
             if entry["canonical_key"] == "epsilon chant cast"
         )
         epsilon["variants"][0]["english_snapshot"] = "@The_monster@ chants."
+        manifest_path, baseline = write_manifest(fragments)
         with self.patched(), mock.patch.object(
             MODULE.shared, "_derive_scoped_dump",
             side_effect=[self.derived(self.en_dump), self.derived(self.zh_dump)],
         ):
             inventory = MODULE.build_inventory(
-                BASELINE,
+                baseline,
                 self.write("en.json", self.en_dump),
                 self.write("zh.json", self.zh_dump),
                 self.write("phase0.json", self.phase0),
-                write_manifest(fragments),
+                manifest_path,
                 self.write("report.json", self.report),
                 self.write("anchor.json", self.anchor),
                 self.glossary,
@@ -900,9 +1002,7 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assertEqual("SUPPRESSED", epsilon_entry["route"])
 
     def test_structured_template_extraction_fail_closed(self):
-        manifest_dir = self.root / "manifest-parity"
-        manifest_dir.mkdir(exist_ok=True)
-        (manifest_dir / "monspell").mkdir(exist_ok=True)
+        manifest_dir = self.make_manifest_dir("manifest-parity")
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
         (manifest_dir / "monspell.json").write_text(
             json.dumps(header, ensure_ascii=False), encoding="utf-8")
@@ -919,8 +1019,10 @@ class MonspellInventoryTests(unittest.TestCase):
         for name, fragment in bad.items():
             (manifest_dir / name).write_text(
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
+        parity_baseline = commit_manifest_dir(manifest_dir)
         with self.assertRaisesRegex(MODULE.InventoryError, "relation parity"):
-            self.build(manifest_path=manifest_dir / "monspell.json")
+            self.build(manifest_path=manifest_dir / "monspell.json",
+                       baseline_ref=parity_baseline)
 
         # CASE_MAP variant without cases
         bad = copy.deepcopy(fragments)
@@ -930,8 +1032,10 @@ class MonspellInventoryTests(unittest.TestCase):
         for name, fragment in bad.items():
             (manifest_dir / name).write_text(
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
+        parity_baseline = commit_manifest_dir(manifest_dir)
         with self.assertRaisesRegex(MODULE.InventoryError, "no materialization_cases"):
-            self.build(manifest_path=manifest_dir / "monspell.json")
+            self.build(manifest_path=manifest_dir / "monspell.json",
+                       baseline_ref=parity_baseline)
 
     # ------------------------------------------------------------- ledger
 
@@ -1553,7 +1657,7 @@ class MonspellInventoryTests(unittest.TestCase):
         anchor_path = self.write("cli-anchor.json", self.anchor)
         output = Path("/tmp") / f"monspell-test-{id(self)}.json"
         arguments = [
-            "--baseline-ref", BASELINE,
+            "--baseline-ref", self.fixture_baseline,
             "--english-dump", str(en_path), "--localized-dump", str(zh_path),
             "--phase0-inventory", str(phase0_path),
             "--manifest", str(self.manifest_path),
@@ -1588,7 +1692,7 @@ class MonspellInventoryTests(unittest.TestCase):
         anchor_path = self.write("cli-anchor.json", self.anchor)
         output = Path("/tmp") / f"monspell-test-{id(self)}-full.json"
         arguments = [
-            "--baseline-ref", BASELINE,
+            "--baseline-ref", self.fixture_baseline,
             "--english-dump", str(en_path), "--localized-dump", str(zh_path),
             "--phase0-inventory", str(phase0_path),
             "--manifest", str(self.manifest_path),
