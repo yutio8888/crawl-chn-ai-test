@@ -9,71 +9,71 @@
 %%%%
 conjuration miscast player
 
-火星从你的@hands@飞溅而出
+火星从你的@hands@迸射而出
 
-一股奇怪的能量涌流从不知何处击中了你
+一股诡异的能量从不知何处袭向你
 
-一阵暴烈的能量波冲刷过你的身体
+一阵狂暴的能量浪潮席卷你的身体
 
-能量撕裂了你的身体
+能量撕扯着你的身体
 
-你被卷入了一场猛烈的爆炸
+你被卷入一场猛烈的爆炸
 
-你被魔法能量轰击了
+魔法能量轰击了你
 %%%%
 conjuration miscast monster
 
-火星从@the_monster_possessive@的@hands@飞溅而出
+火星从@the_monster_possessive@@hands@迸射而出
 
 @The_monster@发出一道闪光
 
 @The_monster@猛烈地踉跄了一下
 
-@The_monster@猛烈地抽搐了一下
+@The_monster@猛地抽动了一下
 
-@The_monster@被卷入了一场猛烈的爆炸
+@The_monster@被卷入一场猛烈的爆炸
 
-@The_monster@被魔法能量轰击了
+@The_monster@遭到魔法能量轰击
 %%%%
 conjuration miscast unseen
 
-一场猛烈的爆炸从虚空中发生
+凭空发生了一场猛烈的爆炸
 
-突然爆发出一阵魔法能量
+魔法能量骤然爆发
 %%%%
 hexes miscast player
 
-五彩斑斓的光芒在你眼前舞动
+五彩光芒在你眼前舞动
 
 你感到有些疲惫
 
-你周围的光线短暂地暗淡了
+你周围的光线短暂地暗淡下去
 
-你听到脑海中有一个模糊的不谐之音在低语
+你听见一阵模糊而不和谐的低语在脑海中响起
 
-你感到一股奇怪的能量涌流
+你感到一股诡异的能量涌动
 
-@any_colour@色的光波在你的身体上荡漾
+@any_colour@的光波在你身上荡漾
 
 你感到虚弱无力
 
-魔法从你的身体里涌出
+魔法能量从你体内喷涌而出
 %%%%
 hexes miscast monster
 
-五彩斑斓的光芒在@the_monster@周围舞动
+五彩光芒在@the_monster@周围舞动
 
-@The_monster@有一瞬间看起来困倦了
+@The_monster@一时显得昏昏欲睡
 
-@the_monster@周围的光线短暂地暗淡了
+@the_monster@周围的光线短暂地暗淡下去
 
-@The_monster@抽搐了一下
+@The_monster@抽动了一下
 
-@The_monster_possessive@的身体短暂地发光了
+@The_monster_possessive@周身短暂地泛起光芒
 
-@any_colour@色的光波在@the_monster_possessive@的身体上荡漾
+@any_colour@的光波在@the_monster_possessive@周身荡漾
 
-魔法从@the_monster@的身体里涌出
+魔法能量从@the_monster@身上涌出
 %%%%
 hexes miscast unseen
 
@@ -85,13 +85,13 @@ hexes miscast unseen
 %%%%
 summoning miscast player
 
-一把眼睛在你的视野中闪过
+一捧眼球从你眼前一闪而过
 
-遥远的声音在你的脑海中呼唤着
+遥远的声音在你脑海中响起
 
-有什么东西从虚空中形成了
+某种东西凭空成形
 
-一阵呻吟的合唱在你的脑海中呼喊着
+一阵齐声哀号在你脑海中响起
 
 绝望的手朝你抓来
 %%%%
@@ -101,59 +101,59 @@ summoning miscast monster
 %%%%
 summoning miscast unseen
 
-绝望的手随机抓向空中
+绝望的手胡乱地抓向四周
 %%%%
 necromancy miscast player
 
-你听到奇怪而遥远的声音
+你听见奇怪而遥远的声音
 
-你周围的世界似乎短暂地暗淡了
+你周围的世界似乎短暂地暗淡下去
 
-你感到仿佛有什么东西走过了你的坟墓
+你仿佛感到有什么东西踩过了自己的坟墓
 
-你感知到了一股恶毒的气息
+你感知到一股邪恶的气息
 
 你感到非常不适
 
-痛苦贯穿了你的身体
+一阵剧痛贯穿你的身体
 
-你感到极度昏睡
+你感到极度倦怠
 
-你的肉腐烂剥落了
+你的血肉正在腐烂
 
-闪烁的阴影包围了你
+闪烁的阴影将你包围
 
-你被负能量吞没了
+你被负能量吞没
 
-你无助地抽搐着，痛苦撕裂了你的身体
+剧痛撕扯着你的身体，令你无助地抽搐
 %%%%
 necromancy miscast monster
 
 @The_monster@猛烈地抽搐着
 
-@The_monster@停了下来，明显心烦意乱
+@The_monster@停顿下来，显得心烦意乱
 
-@The_monster@似乎短暂地暗淡了
+@The_monster@的身影短暂地暗淡下去
 
-@The_monster@看起来仿佛有什么东西走过了@possessive@的坟墓
+@The_monster@看起来仿佛有什么东西踩过了@possessive@坟墓
 
-@The_monster@短暂地染上了一层黑色
+@The_monster@身上一时泛起黑色
 
-@The_monster@做出了可怕的表情
+@The_monster@露出骇人的怒容
 
 @The_monster@痛苦地抽搐着
 
-@The_monster@看起来极其倦怠
+@The_monster@显得极其无精打采
 
-@The_monster@腐烂剥落了
+@The_monster@开始腐烂
 
 闪烁的阴影包围了@the_monster@
 
-@The_monster@被负能量吞没了
+@The_monster@被负能量吞没
 
-@The_monster@无助地痛苦抽搐着
+@The_monster@在痛苦中无助地抽搐
 
-@The_monster@似乎恐惧了一瞬间
+@The_monster@一时显得很害怕
 %%%%
 necromancy miscast unseen
 
@@ -163,129 +163,129 @@ necromancy miscast unseen
 %%%%
 translocation miscast player
 
-你瞥见了一眼自己后脑勺的样子
+你瞥见了自己的后脑勺
 
-你感到一阵被扭转的感觉
+你感到一阵撕扯般的异样
 
-你感到失去平衡了一瞬间
+你一时失去了平衡
 
 地板和天花板短暂地交换了位置
 
-你旋转了起来
+你原地打了个转
 
-世界看起来短暂地扭曲了
+眼前的世界一时扭曲起来
 
-你被一片空间扭曲场卷入了
+你陷入一片空间扭曲场
 
-空间自我折叠了起来
+空间朝自身扭曲折叠
 
-空间[弯曲了|扭曲了][疯狂地 |]在你周围
+你周围的空间呈现出[弯曲|扭曲]之势，[疯狂地|]翻涌着
 %%%%
 translocation miscast monster
 
-@The_monster@猛烈地抽搐了一瞬间
+@The_monster@猛地抽动了一下
 
-@The_monster@看起来失去平衡了一瞬间
+@The_monster@一时失去平衡
 
-@The_monster@旋转了起来
+@The_monster@原地打了个转
 
-@The_monster@看起来短暂地扭曲了
+@The_monster@的身影一时扭曲起来
 
-@The_monster_possessive@的五官暂时重新排列了一下
+@The_monster_possessive@五官暂时重新排列
 
-@The_monster@被一片空间扭曲场卷入了
+@The_monster@陷入一片空间扭曲场
 
-空间[弯曲了|扭曲了][疯狂地 |]在@the_monster@周围
+@the_monster@周围的空间呈现出[弯曲|扭曲]之势，[疯狂地|]翻涌着
 %%%%
 translocation miscast unseen
 
-某个东西周围的空间不可能地扭曲了
+某种东西周围的空间发生了不可思议的扭曲
 
-一片虚空扭曲和弯折了
+一块空无一物的空间扭曲变形
 
-一道裂缝短暂地在空间结构上打开了
+空间结构中短暂地裂开一道缝隙
 %%%%
 fire miscast player
 
-[火星|灰烬]从你的@hands@飞溅而出
+[余烬|灰烬]从你的@hands@飞散而出
 
-你周围的空气燃烧着能量
+你周围的空气迸发出灼热的能量
 
-热量流过你的身体
+热流贯穿你的身体
 
-你感到令人不适地热
+你热得难受
 
-火焰从你的@hands@中旋转而出
+火焰从你的@hands@中旋卷而出
 
-烈焰灼烧着你的皮肤
+火焰灼烧着你的血肉
 
-你被[灼热的 |][火焰|烈焰]轰击了
+你遭到[灼热的|][火焰|烈焰]轰击
 
-你被卷入了一场火焰爆炸
+你被卷入一场烈焰爆炸
 
-突然爆发出一阵猛烈的火焰
+火焰骤然猛烈爆炸
 %%%%
 fire miscast monster
 
-[火星|灰烬]从@the_monster_possessive@的@hands@飞溅而出
+[余烬|灰烬]从@the_monster_possessive@@hands@飞散而出
 
-@the_monster@周围的空气燃烧着能量
+@the_monster@周围的空气迸发出灼热的能量
 
-昏暗的火焰在@the_monster_possessive@的身体上荡漾
+昏暗的火焰掠过@the_monster_possessive@周身
 
-火焰从@the_monster_possessive@的@hands@旋转而出
+火焰从@the_monster_possessive@@hands@旋卷而出
 
-烈焰灼烧着@the_monster@
+火焰灼烧着@the_monster@
 
-@The_monster@被[灼热的 |][火焰|烈焰]轰击了
+@The_monster@遭到[灼热的|][火焰|烈焰]轰击
 
-@The_monster@被卷入了一场火焰爆炸
+@The_monster@被卷入一场烈焰爆炸
 %%%%
 fire miscast unseen
 
-火焰从虚空中旋转而出
+火焰凭空旋卷而出
 
-一团火焰短暂地在虚空中燃烧
+一团火焰在空中燃烧片刻
 
-火焰从虚空中爆炸而出
+火焰凭空爆裂而出
 
-一大团火焰短暂地在虚空中猛烈燃烧
+一大团火焰在空中炽烈地燃烧片刻
 %%%%
 ice miscast player
 
 你冷得发抖
 
-一股寒意穿过了你的身体
+一股寒意贯穿你的身体
 
 你的@hands@冻得麻木了
 
-你感到[有点|令人不适地|极度]冷
+你[觉得有点冷|冷得不太舒服|觉得冷到了极点]
 
-[冰|霜]覆盖了你的身体
+[冰|霜]覆满你的身体
 
-你被[冰|霜]包裹了
+你被封在[冰|霜]中
 
-你被一层薄薄的[冰|霜]覆盖了
+一层薄薄的[冰|霜]覆盖着你
 
-热量从你的身体中流失了
+你体内的热量被抽走
 
-你被卷入了一场冰与霜的爆炸
+你被卷入一场冰霜爆炸
 %%%%
 ice miscast monster
 
 @The_monster@冷得发抖
 
-霜覆盖了@the_monster_possessive@的身体
+寒霜覆上@the_monster_possessive@周身
 
 @The_monster@颤抖着
 
-@The_monster@被一层薄薄的[冰|霜]覆盖了
+一层薄薄的[冰|霜]覆盖着@The_monster@
 
-热量从@the_monster@的身体中流失了
+@the_monster@的热量被抽走
 
-@The_monster@被卷入了一场冰与霜的爆炸
+@The_monster@被卷入一场冰霜爆炸
 
-@The_monster@被[冰|霜]包裹了
+@The_monster@被封在[冰|霜]中
 %%%%
 ice miscast unseen
 
@@ -301,49 +301,49 @@ air miscast player
 
 你周围的空气因能量而噼啪作响
 
-你被空气轰击了
+你遭到气流轰击
 
-一阵短促而尖锐的火花雨落下了
+爆出一阵短促刺耳的火花
 
 狂风在你周围呼啸
 
-你感到一阵突然的电击
+你突然遭到电击
 
-电流穿过了你的身体
+电流涌遍你的全身
 
-你被卷入了一场放电爆炸
+你被卷入一场放电爆炸
 %%%%
 air miscast monster
 
-@The_monster@短暂地在空中漂浮着
+@The_monster@在空中上下浮动片刻
 
-电火花在@the_monster_possessive@的@hands@之间舞动
+电火花在@the_monster_possessive@@hands@之间舞动
 
 @the_monster@周围的空气因能量而噼啪作响
 
-@The_monster@被空气轰击了
+@The_monster@遭到气流轰击
 
-@The_monster@短暂地淋了一场火花雨
+@The_monster@身上一时火花四溅
 
 狂风在@the_monster@周围呼啸
 
-@The_monster@被电击了
+@The_monster@猛地震颤了一下
 
-@The_monster@被卷入了一场放电爆炸
+@The_monster@被卷入一场放电爆炸
 
-@The_monster@被扭曲的空气击中了
+@The_monster@被扭曲的气流击中
 %%%%
 air miscast unseen
 
-狂风从虚空中呼啸而起
+狂风凭空呼啸而起
 
-某个看不见的东西闪烁着电光
+某个隐形的东西闪烁着电光
 
 某个东西周围的空气因能量而噼啪作响
 
-放电从虚空中爆炸而出
+放电凭空爆发
 
-空气疯狂地围绕着一个点扭曲着
+一处地点周围的空气疯狂扭曲
 %%%%
 earth miscast player
 
@@ -351,117 +351,117 @@ earth miscast player
 
 你感到一股能量从大地涌来
 
-你脚下的地面[移动了|震颤了|震动了|隆响了]，令人惊慌
+你脚下的地面令人不安地[错动|震颤|震动|隆隆作响]
 
-你被飞来的岩石击中了
+你被飞来的岩石击中
 
-你被沙子轰击了
+你遭到沙砾轰击
 
-岩石从虚空中落到你身上
+岩石凭空砸落在你身上
 
-你被卷入了一场飞溅弹片的爆炸
+你被卷入一场碎片飞射的爆炸
 %%%%
 earth miscast monster
 
-[沙|砾石]从@the_monster_possessive@的@hands@倾泻而出
+[沙|砾石]从@the_monster_possessive@@hands@倾泻而出
 
-@The_monster@被飞来的岩石击中了
+@The_monster@被飞来的岩石击中
 
-@The_monster@被沙子轰击了
+@The_monster@遭到沙砾轰击
 
-岩石从虚空中落到@the_monster@身上
+岩石凭空砸落在@the_monster@身上
 
-@The_monster@被卷入了一场飞溅弹片的爆炸
+@The_monster@被卷入一场碎片飞射的爆炸
 %%%%
 earth miscast unseen
 
-飞来的岩石从虚空中出现
+飞石凭空出现
 
-一场小型的沙尘暴短暂地出现了
+一场微型沙尘暴短暂地出现
 
-岩石从虚空中落下
+岩石凭空落下
 
-飞溅的弹片从虚空中爆炸而出
+飞散的碎片凭空爆射而出
 %%%%
 alchemy miscast player
 
-你被有毒的烟雾吞没了
+你被有毒烟雾吞没
 
-一道朱红色的闪光
+朱砂色光芒一闪
 
-[汞|水银|愚人金|硝石|硫磺|液态金属]从你的@hands@流泻而出
+[汞|水银|黄铁矿|硝石|硫磺|液态金属]从你的@hands@涌出
 
-你身体的某些部位短暂地变成了[金色|银色|金属色|铅灰色|水晶色]
-
-w:4
-你被@any_colour@的烟云吞没了
+你身体的某些部位短暂地变得[金黄|银白|金属质|铅灰|晶体化]
 
 w:4
-你的嘴里短暂地尝起来像是@any_colour@的味道
+@any_colour@烟云将你吞没
+
+w:4
+你的嘴里一时尝到了@any_colour@的味道
 
 w:2
-你的皮肤变成了@any_colour_pattern@
+你的皮肤浮现出@any_colour_pattern@
 
 w:2
-你被@any_glowing_colour@的粉尘云包围了
+@any_glowing_colour@尘云环绕着你
 %%%%
 alchemy miscast monster
 
-@The_monster@被有毒的烟雾吞没了
+@The_monster@被有毒烟雾吞没
 
-@The_monster@被[朱砂|硫磺]粉尘[轰击了|覆盖了]
+@The_monster@被[朱砂|硫磺]粉尘[轰击|覆盖]
 
-@The_monster@被盐覆盖了
+@The_monster@被盐覆盖
 
-@The_monster@开始剧烈地咳嗽
+@The_monster@开始剧烈咳嗽
 
-@The_monster@看起来病得非常重
-
-w:5
-@The_monster@被@any_colour@的烟云吞没了
+@The_monster@看起来病得极重
 
 w:5
-@The_monster_possessive@的皮肤变成了@any_colour_pattern@
+@The_monster@被@any_colour@烟云吞没
 
 w:5
-@The_monster@被@any_glowing_colour@的粉尘云包围了
+@The_monster_possessive@外表浮现出@any_colour_pattern@
+
+w:5
+@The_monster@被@any_glowing_colour@尘云包围
 %%%%
 alchemy miscast unseen
 
-空气短暂地染上了一层绿色
+空气短暂地染上一层绿色
 
-硫磺般的热量从虚空中爆炸而出
+一股硫磺热浪凭空爆发
 
 一个看不见的身影被盐覆盖了
 %%%%
 forgecraft miscast player
 
-你失去了结构完整性
+你的结构完整性受损
 
-你感觉自己轻微地解体了
+你感觉自己略微解体
 
-一种[嗡鸣的|叮当的|嘎吱的|呼呼的]声音在你的脑海中回荡
+[嗡鸣|铿锵|吱嘎|呼呼转动]声在你的脑海中回荡
 
-金属零碎从虚空中落到你身上
+零碎金属件凭空砸落在你身上
 
-你被金属碎片覆盖了
+你浑身覆满金属碎片
 
-你被卷入了一场金属碎片的爆炸
+你被卷入一场金属残片的爆炸
 %%%%
 forgecraft miscast monster
 
-@The_monster@失去了结构完整性
+@The_monster@的结构完整性受损
 
-金属零碎从虚空中落到@the_monster@身上
+零碎金属件凭空砸落在@the_monster@身上
 
-@The_monster@被金属碎片覆盖了
+@The_monster@浑身覆满金属碎片
 
-@The_monster@被卷入了一场金属碎片的爆炸
+@The_monster@被卷入一场金属残片的爆炸
 %%%%
 forgecraft miscast unseen
 
-金属零碎从上方雨点般落下
+零碎金属件如雨般从上方落下
 
-一个看不见的身影被金属碎片覆盖了
+一个看不见的身影覆满金属碎片
 
-金属碎片从虚空中爆炸而出
+金属残片凭空爆炸

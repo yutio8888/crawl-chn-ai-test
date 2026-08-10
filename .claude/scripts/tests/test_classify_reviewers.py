@@ -89,6 +89,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "help-review-results.md",
             "hint-review-results.md",
             "item-extended-review-results.md",
+            "miscast-review-results.md",
             "monflee-review-results.md",
             "monster-review-results.md",
             "species-background-review-results.md",

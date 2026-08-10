@@ -288,12 +288,13 @@ def _parse_weighted_entry(
 
 def _derive_scoped_from_sources(
     sources: list[dict[str, Any]], directory: str, label: str,
+    source_basename: str | None = None,
 ) -> dict[str, Any]:
     parsed = []
     provenance_by_entry: dict[int, dict[str, Any]] = {}
     histories: dict[str, list[dict[str, Any]]] = {}
     scoped_keys: set[str] = set()
-    monflee_source = f"{directory}{SCOPE['source_basename']}"
+    scoped_source = f"{directory}{source_basename or SCOPE['source_basename']}"
     for load_index, source in enumerate(sources):
         try:
             definitions = parse_db_keys(
@@ -311,7 +312,7 @@ def _derive_scoped_from_sources(
             parsed.append(definition)
             provenance_by_entry[id(definition)] = provenance
             histories.setdefault(canonical_key, []).append(provenance)
-            if source["source_name"] == monflee_source:
+            if source["source_name"] == scoped_source:
                 scoped_keys.add(canonical_key)
     try:
         effective, _overrides = merge_desc_sequence(parsed)
@@ -336,7 +337,9 @@ def _derive_scoped_from_sources(
     return {"sources": sources, "entries": entries}
 
 
-def _derive_scoped_dump(oid: str, directory: str, label: str) -> dict[str, Any]:
+def _derive_scoped_dump(
+    oid: str, directory: str, label: str, source_basename: str | None = None,
+) -> dict[str, Any]:
     manifest = (
         _english_source_manifest(oid, label)
         if directory == "database/"
@@ -352,20 +355,26 @@ def _derive_scoped_dump(oid: str, directory: str, label: str) -> dict[str, Any]:
         }
         for load_index, source_name in enumerate(manifest)
     ]
-    return _derive_scoped_from_sources(sources, directory, label)
+    return _derive_scoped_from_sources(
+        sources, directory, label, source_basename=source_basename
+    )
 
 
 def _require_scoped_derivation(
     supplied: dict[str, Any], derived: dict[str, Any], label: str,
+    source_basename: str | None = None,
 ) -> None:
     _require(
         supplied["sources"] == derived["sources"],
         f"{label} source manifest/order/snapshots do not match exact Git inputs",
     )
-    monflee_source = f"{supplied['source_directory']}{SCOPE['source_basename']}"
+    scoped_source = (
+        f"{supplied['source_directory']}"
+        f"{source_basename or SCOPE['source_basename']}"
+    )
     touching = [
         entry for entry in supplied["entries"]
-        if any(item["source_name"] == monflee_source
+        if any(item["source_name"] == scoped_source
                for item in entry["source_history"])
     ]
     _require(
@@ -571,15 +580,19 @@ def build_inventory(
     return {**core, "inventory_sha256": _sha256(_canonical_json(core))}
 
 
-def _strict_block(path: Path) -> list[dict[str, Any]]:
+def _strict_block(
+    path: Path, begin_marker: str | None = None, end_marker: str | None = None,
+) -> list[dict[str, Any]]:
+    begin_marker = begin_marker or STRICT_BEGIN
+    end_marker = end_marker or STRICT_END
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
         raise InventoryError(f"cannot read review results {path}: {exc}") from exc
-    _require(text.count(STRICT_BEGIN) == 1, "review results require exactly one strict begin marker")
-    _require(text.count(STRICT_END) == 1, "review results require exactly one strict end marker")
-    begin = text.index(STRICT_BEGIN) + len(STRICT_BEGIN)
-    end = text.index(STRICT_END, begin)
+    _require(text.count(begin_marker) == 1, "review results require exactly one strict begin marker")
+    _require(text.count(end_marker) == 1, "review results require exactly one strict end marker")
+    begin = text.index(begin_marker) + len(begin_marker)
+    end = text.index(end_marker, begin)
     body = text[begin:end].strip()
     match = re.fullmatch(r"```jsonl\s*\n(.*?)\n```", body, re.DOTALL)
     _require(match is not None, "strict review evidence must be one fenced jsonl block")
@@ -818,23 +831,42 @@ def validate_results(
     return {"metadata": metadata, "cards": cards}
 
 
-def add_candidate(
-    inventory: dict[str, Any], candidate_ref: str, english_path: Path,
-    localized_path: Path,
-) -> list[dict[str, Any]]:
+def _require_candidate_commit(
+    baseline_ref: str, candidate_ref: str, *, exact_clean_checkout: bool = False,
+) -> None:
     _validate_oid(candidate_ref, "candidate")
-    _require(candidate_ref != inventory["baseline_ref"],
+    _require(candidate_ref != baseline_ref,
              "candidate ref must differ from baseline ref")
     repository = Path(__file__).resolve().parents[2]
     ancestry = subprocess.run(
         ["git", "-C", str(repository), "merge-base", "--is-ancestor",
-         inventory["baseline_ref"], candidate_ref],
+         baseline_ref, candidate_ref],
         text=True, capture_output=True, env=trusted_git_environment(),
     )
-    _require(
-        ancestry.returncode == 0,
-        "baseline ref must be an ancestor of candidate ref",
+    _require(ancestry.returncode == 0,
+             "baseline ref must be an ancestor of candidate ref")
+    if not exact_clean_checkout:
+        return
+    head = subprocess.run(
+        ["git", "-C", str(repository), "rev-parse", "HEAD"],
+        text=True, capture_output=True, env=trusted_git_environment(),
     )
+    _require(head.returncode == 0 and head.stdout.strip() == candidate_ref,
+             "candidate ref must be the exact checked-out HEAD OID")
+    status = subprocess.run(
+        ["git", "-C", str(repository), "status", "--porcelain=v1",
+         "--untracked-files=all"],
+        text=True, capture_output=True, env=trusted_git_environment(),
+    )
+    _require(status.returncode == 0 and status.stdout == "",
+             "candidate checkout must be clean, including untracked files")
+
+
+def add_candidate(
+    inventory: dict[str, Any], candidate_ref: str, english_path: Path,
+    localized_path: Path,
+) -> list[dict[str, Any]]:
+    _require_candidate_commit(inventory["baseline_ref"], candidate_ref)
     en_dump, en_raw = _load_dump(english_path, "candidate EN", "database/")
     zh_dump, zh_raw = _load_dump(
         localized_path, "candidate ZH", "database/zh/"

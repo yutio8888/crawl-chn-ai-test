@@ -802,7 +802,9 @@ assert contract["verification_contract"] == "dcss-zh-review-v5"
 assert ".claude/scripts/data/review_findings_v2.schema.json" in contract["control_plane_files"]
 assert ".claude/scripts/audit_item_name_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/check_default_utf8.py" in contract["control_plane_files"]
+assert ".claude/scripts/miscast_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/run_with_timeout.py" in contract["control_plane_files"]
+assert ".claude/scripts/tests/test_miscast_inventory.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
     "review-ledgers", "message-overlay-static", "cpp-build", "zh-smoke",
