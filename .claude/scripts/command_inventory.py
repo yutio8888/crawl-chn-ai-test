@@ -105,6 +105,8 @@ Usage:
   /tmp (the canonical root-owned sticky temp root; realpath /private/tmp
   on macOS); the target must not already exist.
 """
+from __future__ import annotations
+
 import argparse
 from collections import Counter
 import errno
