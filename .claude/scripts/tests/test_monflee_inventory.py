@@ -584,6 +584,50 @@ TextDB("speak", "database/",
         with self.assertRaisesRegex(MODULE.InventoryError, "inventory_sha256"):
             MODULE.validate_results(path, inventory, None)
 
+    def test_review_integer_fields_reject_booleans(self):
+        inventory = self.inventory()
+        metadata = metadata_for(inventory)
+        metadata["identity_count"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "identity_count"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card_for(inventory)], metadata),
+                inventory, None,
+            )
+
+        card = card_for(inventory)
+        card["variant_reviews"][0]["variant_ordinal"] = False
+        card["variant_reviews"][1]["variant_ordinal"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "ordinals must be integers"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card]), inventory, None
+            )
+
+        one_variant = copy.deepcopy(inventory)
+        one_variant["entries"][0]["variants"] = [
+            one_variant["entries"][0]["variants"][0]
+        ]
+        card = card_for(one_variant)
+        card["production_facts"]["variant_count"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "variant_count"):
+            MODULE.validate_results(
+                self.write_results(one_variant, [card]), one_variant, None
+            )
+
+        one_variant["entries"][0]["variants"][0]["weight"] = 1
+        card = card_for(one_variant)
+        card["production_facts"]["weights"][0] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "weights"):
+            MODULE.validate_results(
+                self.write_results(one_variant, [card]), one_variant, None
+            )
+
+        card = card_for(one_variant)
+        card["variant_reviews"][0]["weight"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "weight must be an integer"):
+            MODULE.validate_results(
+                self.write_results(one_variant, [card]), one_variant, None
+            )
+
     def test_review_requires_exact_production_behavior_evidence(self):
         inventory = self.inventory()
         for field in (

@@ -599,6 +599,10 @@ def _nonempty_string(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _is_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
 def _require_exact_fields(
     record: dict[str, Any], expected: set[str], context: str,
 ) -> None:
@@ -662,8 +666,19 @@ def _validate_production_evidence(
              f"{identity} producer evidence mismatch")
     _require(card.get("evidence_locations") == FROZEN_EVIDENCE_LOCATIONS,
              f"{identity} evidence_locations mismatch")
+    facts = card.get("production_facts")
     _require(
-        card.get("production_facts") == _expected_production_facts(inventory, entry),
+        isinstance(facts, dict) and _is_int(facts.get("variant_count")),
+        f"{identity} production_facts.variant_count must be an integer",
+    )
+    fact_weights = facts.get("weights")
+    _require(
+        isinstance(fact_weights, list)
+        and all(_is_int(weight) for weight in fact_weights),
+        f"{identity} production_facts.weights must be an integer array",
+    )
+    _require(
+        facts == _expected_production_facts(inventory, entry),
         f"{identity} production_facts mismatch",
     )
     _require(_nonempty_string(card.get("reentry_trigger")),
@@ -690,7 +705,8 @@ def validate_results(
              "review metadata baseline mismatch")
     _require(metadata.get("glossary_sha256") == inventory["glossary"]["sha256"],
              "review metadata glossary_sha256 mismatch")
-    _require(metadata.get("identity_count") == len(expected_entries),
+    identity_count = metadata.get("identity_count")
+    _require(_is_int(identity_count) and identity_count == len(expected_entries),
              "review metadata identity_count mismatch")
     _require(metadata.get("inventory_sha256") == inventory["inventory_sha256"],
              "review metadata inventory_sha256 mismatch")
@@ -737,6 +753,8 @@ def validate_results(
         ordinals = [review.get("variant_ordinal") for review in reviews
                     if isinstance(review, dict)]
         _require(len(ordinals) == len(reviews), f"{identity} variant review must be an object")
+        _require(all(_is_int(ordinal) for ordinal in ordinals),
+                 f"{identity} variant ordinals must be integers")
         _require(len(set(ordinals)) == len(ordinals), f"{identity} duplicate variant locator")
         _require(ordinals == list(range(len(baseline["variants"]))),
                  f"{identity} variant reviews must be locator sorted and complete")
@@ -753,6 +771,8 @@ def validate_results(
                 else VARIANT_FIELDS
             )
             _require_exact_fields(review, expected_fields, context)
+            _require(_is_int(review.get("weight")),
+                     f"{context} weight must be an integer")
             for field, expected in (
                 ("weight", variant["weight"]),
                 ("control_prefix", variant["control_prefix"]),
