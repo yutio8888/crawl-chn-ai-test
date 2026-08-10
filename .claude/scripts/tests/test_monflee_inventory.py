@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -107,6 +108,20 @@ def card_for(inventory: dict, conclusion: str = "keep") -> dict:
         "key": entry["key"],
         "lifecycle": "current-player-visible",
         "terminal_conclusion": conclusion,
+        "confidence": "high",
+        "dependency_group": f"{entry['key']} voice and visual motion",
+        "glossary_authority": (
+            f"{inventory['glossary']['path']}@{inventory['glossary']['sha256']}"
+        ),
+        "actual_behavior": MODULE.FROZEN_ACTUAL_BEHAVIOR,
+        "display_context": MODULE.FROZEN_DISPLAY_CONTEXT,
+        "consumer": copy.deepcopy(MODULE.FROZEN_CONSUMER),
+        "producers": copy.deepcopy(MODULE.FROZEN_PRODUCERS),
+        "evidence_locations": list(MODULE.FROZEN_EVIDENCE_LOCATIONS),
+        "production_facts": MODULE._expected_production_facts(inventory, entry),
+        "reentry_trigger": "源、结构或生产路由变化时重新审阅。",
+        "rejected_alternatives": ["不改变 lookup、权重或通道协议。"],
+        "reviewer_rationale": "已核对生产来源、消费者与所有变体。",
         "current_english": current_en,
         "current_chinese": current_zh,
         "proposed_translation": list(current_zh),
@@ -152,9 +167,28 @@ class MonfleeInventoryTests(unittest.TestCase):
         return path
 
     def inventory(self, en: dict | None = None, zh: dict | None = None) -> dict:
-        en_path = self.write_dump("en.json", en or artifact("en"))
-        zh_path = self.write_dump("zh.json", zh or artifact("zh"))
-        return MODULE.build_inventory(BASELINE, en_path, zh_path, self.glossary)
+        en_value = en or artifact("en")
+        zh_value = zh or artifact("zh")
+        en_path = self.write_dump("en.json", en_value)
+        zh_path = self.write_dump("zh.json", zh_value)
+        with mock.patch.object(
+            MODULE, "_trusted_artifacts_at_oid",
+            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+        ):
+            return MODULE.build_inventory(BASELINE, en_path, zh_path, self.glossary)
+
+    def add_candidate(
+        self, inventory: dict, en: dict, zh: dict, candidate_ref: str = CANDIDATE,
+    ) -> list[dict]:
+        en_path = self.write_dump("candidate-en.json", en)
+        zh_path = self.write_dump("candidate-zh.json", zh)
+        with mock.patch.object(
+            MODULE, "_trusted_artifacts_at_oid",
+            return_value=(copy.deepcopy(en), copy.deepcopy(zh)),
+        ):
+            return MODULE.add_candidate(
+                inventory, candidate_ref, en_path, zh_path
+            )
 
     def write_results(self, inventory: dict, cards: list[dict], metadata=None) -> Path:
         records = [metadata or metadata_for(inventory), *cards]
@@ -202,6 +236,66 @@ class MonfleeInventoryTests(unittest.TestCase):
         bad = artifact("en")
         bad["sources"][0]["normalized_utf8"] += "snapshot drift"
         self.assert_rejected(en=bad, contains="does not match OID")
+
+    def test_complete_production_derivation_rejects_omission_and_forgery(self):
+        def complete(language: str, source_count: int) -> dict:
+            value = artifact(language)
+            directory = value["source_directory"]
+            for index in range(1, source_count):
+                value["sources"].append({
+                    "source_name": f"{directory}fixture-{index}.txt",
+                    "load_index": index,
+                    "normalized_utf8": f"fixture {index}\n",
+                })
+            return value
+
+        trusted_en = complete("en", 10)
+        trusted_zh = complete("zh", 23)
+        MODULE._require_production_derivation(trusted_en, trusted_en, "baseline EN")
+        MODULE._require_production_derivation(trusted_zh, trusted_zh, "baseline ZH")
+
+        missing_source = copy.deepcopy(trusted_en)
+        missing_source["sources"].pop()
+        MODULE.validate_artifact(missing_source, "missing-source fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "source discovery/order"):
+            MODULE._require_production_derivation(
+                missing_source, trusted_en, "baseline EN"
+            )
+
+        forged_body = copy.deepcopy(trusted_en)
+        forged_body["entries"][0]["raw_body"] += "forged"
+        MODULE.validate_artifact(forged_body, "forged-body fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
+            MODULE._require_production_derivation(forged_body, trusted_en, "baseline EN")
+
+        forged_variant = copy.deepcopy(trusted_zh)
+        forged_variant["entries"][0]["variants"][0]["raw_pattern"] += "forged"
+        MODULE.validate_artifact(forged_variant, "forged-variant fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
+            MODULE._require_production_derivation(
+                forged_variant, trusted_zh, "candidate ZH"
+            )
+
+        trusted_override = copy.deepcopy(trusted_zh)
+        entry = trusted_override["entries"][0]
+        earlier = copy.deepcopy(entry["effective_provenance"])
+        effective = {
+            "source_name": trusted_override["sources"][1]["source_name"],
+            "load_index": 1,
+            "definition_ordinal": 0,
+        }
+        entry["effective_provenance"] = effective
+        entry["source_history"] = [earlier, effective]
+        for variant in entry["variants"]:
+            variant["provenance"] = effective
+        drifted_override = copy.deepcopy(trusted_override)
+        drifted_override["entries"][0]["source_history"] = [effective]
+        MODULE.validate_artifact(trusted_override, "trusted override fixture")
+        MODULE.validate_artifact(drifted_override, "drifted override fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
+            MODULE._require_production_derivation(
+                drifted_override, trusted_override, "candidate ZH"
+            )
 
     def test_english_and_chinese_artifacts_cannot_swap_slots(self):
         with self.assertRaisesRegex(
@@ -347,6 +441,89 @@ class MonfleeInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "inventory_sha256"):
             MODULE.validate_results(path, inventory, None)
 
+    def test_review_requires_exact_production_behavior_evidence(self):
+        inventory = self.inventory()
+        for field in (
+            "actual_behavior", "confidence", "consumer", "dependency_group",
+            "display_context", "evidence_locations", "glossary_authority",
+            "production_facts", "producers", "reentry_trigger",
+            "rejected_alternatives", "reviewer_rationale",
+        ):
+            with self.subTest(missing=field):
+                card = card_for(inventory)
+                del card[field]
+                with self.assertRaises(MODULE.InventoryError):
+                    MODULE.validate_results(
+                        self.write_results(inventory, [card]), inventory, None
+                    )
+
+        mutations = []
+        card = card_for(inventory)
+        card["actual_behavior"] += " drift"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["confidence"] = "certain"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["dependency_group"] += " drift"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["display_context"] += " drift"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["consumer"]["channel_routing"] = "wrong:1"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["production_facts"]["weights"][0] += 1
+        mutations.append(card)
+        card = card_for(inventory)
+        card["production_facts"]["control_prefixes"][0] = "VISUAL"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["production_facts"]["runtime_tokens"][0][0] = "@the_monster@"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["producers"][0]["mode"] = "wrong"
+        mutations.append(card)
+        card = card_for(inventory)
+        card["evidence_locations"].pop()
+        mutations.append(card)
+        card = card_for(inventory)
+        card["glossary_authority"] = "docs/glossary.md@" + "0" * 64
+        mutations.append(card)
+        for index, mutated in enumerate(mutations):
+            with self.subTest(drift=index):
+                with self.assertRaises(MODULE.InventoryError):
+                    MODULE.validate_results(
+                        self.write_results(inventory, [mutated]), inventory, None
+                    )
+
+    def test_review_evidence_fields_reject_wrong_types_and_empty_values(self):
+        inventory = self.inventory()
+        mutations = (
+            ("actual_behavior", ""),
+            ("confidence", ""),
+            ("consumer", []),
+            ("dependency_group", []),
+            ("display_context", ""),
+            ("evidence_locations", {}),
+            ("glossary_authority", None),
+            ("production_facts", []),
+            ("producers", {}),
+            ("reentry_trigger", "  "),
+            ("rejected_alternatives", []),
+            ("rejected_alternatives", ["valid", "  "]),
+            ("reviewer_rationale", 7),
+        )
+        for field, invalid in mutations:
+            with self.subTest(field=field, invalid=invalid):
+                card = card_for(inventory)
+                card[field] = invalid
+                with self.assertRaises(MODULE.InventoryError):
+                    MODULE.validate_results(
+                        self.write_results(inventory, [card]), inventory, None
+                    )
+
     def test_adjust_and_retranslate_require_changed_proposals(self):
         inventory = self.inventory()
         for conclusion in ("adjust", "retranslate"):
@@ -395,11 +572,9 @@ class MonfleeInventoryTests(unittest.TestCase):
         inventory = self.inventory()
         candidate_zh_patterns = list(ZH_PATTERNS)
         candidate_zh_patterns[0] = "@The_monster@新译。"
-        en_path = self.write_dump("candidate-en.json", artifact("en", oid=CANDIDATE))
-        zh_path = self.write_dump(
-            "candidate-zh.json", artifact("zh", candidate_zh_patterns, CANDIDATE)
-        )
-        candidate_entries = MODULE.add_candidate(inventory, CANDIDATE, en_path, zh_path)
+        candidate_en = artifact("en", oid=CANDIDATE)
+        candidate_zh = artifact("zh", candidate_zh_patterns, CANDIDATE)
+        candidate_entries = self.add_candidate(inventory, candidate_en, candidate_zh)
 
         card = card_for(inventory, "retranslate")
         card["proposed_translation"][0] = candidate_zh_patterns[0]
@@ -417,18 +592,15 @@ class MonfleeInventoryTests(unittest.TestCase):
 
         drift = artifact("zh", candidate_zh_patterns, CANDIDATE)
         drift["entries"][0]["variants"][0]["weight"] = 31
-        drift_path = self.write_dump("candidate-drift.json", drift)
         with self.assertRaisesRegex(MODULE.InventoryError, "topology"):
-            MODULE.add_candidate(self.inventory(), CANDIDATE, en_path, drift_path)
+            self.add_candidate(self.inventory(), candidate_en, drift)
 
     def test_candidate_english_drift_is_rejected(self):
         inventory = self.inventory()
         drift = artifact("en", oid=CANDIDATE)
         drift["entries"][0]["variants"][0]["raw_pattern"] += " changed"
-        en_path = self.write_dump("candidate-en-drift.json", drift)
-        zh_path = self.write_dump("candidate-zh.json", artifact("zh", oid=CANDIDATE))
         with self.assertRaisesRegex(MODULE.InventoryError, "English drift"):
-            MODULE.add_candidate(inventory, CANDIDATE, en_path, zh_path)
+            self.add_candidate(inventory, drift, artifact("zh", oid=CANDIDATE))
 
     def test_candidate_must_descend_from_baseline(self):
         inventory = self.inventory()
@@ -438,25 +610,32 @@ class MonfleeInventoryTests(unittest.TestCase):
             MODULE.add_candidate(inventory, NON_DESCENDANT, en_path, zh_path)
 
     def test_cli_exclusive_tmp_output(self):
-        en_path = self.write_dump("cli-en.json", artifact("en"))
-        zh_path = self.write_dump("cli-zh.json", artifact("zh"))
+        en_value = artifact("en")
+        zh_value = artifact("zh")
+        en_path = self.write_dump("cli-en.json", en_value)
+        zh_path = self.write_dump("cli-zh.json", zh_value)
         output = Path("/private/tmp") / f"monflee-test-{id(self)}.json"
-        command = [
-            "python3", str(SCRIPT), "--baseline-ref", BASELINE,
+        arguments = [
+            "--baseline-ref", BASELINE,
             "--english-dump", str(en_path), "--localized-dump", str(zh_path),
             "--glossary", str(self.glossary), "--inventory-output", str(output),
         ]
-        first = subprocess.run(command, text=True, capture_output=True)
-        self.assertEqual(0, first.returncode, first.stderr)
-        second = subprocess.run(command, text=True, capture_output=True)
-        self.assertEqual(2, second.returncode)
-        self.assertIn("exclusively create", second.stderr)
+        with mock.patch.object(
+            MODULE, "_trusted_artifacts_at_oid",
+            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+        ):
+            self.assertEqual(0, MODULE.main(arguments))
+            with self.assertRaisesRegex(MODULE.InventoryError, "exclusively create"):
+                MODULE.main(arguments)
         output.unlink()
 
-        outside = subprocess.run(command[:-1] + [str(self.root / "out.json")],
-                                 text=True, capture_output=True)
-        self.assertEqual(2, outside.returncode)
-        self.assertIn("/tmp", outside.stderr)
+        outside_arguments = arguments[:-1] + [str(self.root / "out.json")]
+        with mock.patch.object(
+            MODULE, "_trusted_artifacts_at_oid",
+            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+        ):
+            with self.assertRaisesRegex(MODULE.InventoryError, "/tmp"):
+                MODULE.main(outside_arguments)
 
 
 if __name__ == "__main__":

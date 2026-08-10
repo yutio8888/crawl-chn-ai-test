@@ -10,12 +10,16 @@ parsed variants.
 from __future__ import annotations
 
 import argparse
+from functools import lru_cache
 import hashlib
+import io
 import json
 import os
 import re
 import subprocess
 import sys
+import tarfile
+import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -30,6 +34,7 @@ CONTROL_RE = re.compile(r"^([A-Z][A-Z0-9_]*):")
 ALLOWED_CONTROLS = {None, "VISUAL"}
 DEFER_CONCLUSIONS = {"defer terminology", "defer implementation"}
 TERMINAL_CONCLUSIONS = {"keep", "adjust", "retranslate", *DEFER_CONCLUSIONS}
+CONFIDENCE_LEVELS = {"high", "medium", "low"}
 SCOPE = {
     "source_basename": "monflee.txt",
     "identities": [
@@ -40,6 +45,32 @@ SCOPE = {
         "crawl-ref/source/dat/des/altar/xom_sheep.des:44",
     ],
 }
+FROZEN_ACTUAL_BEHAVIOR = (
+    "梦羊在 ME_SCARE 中进入逃跑行为时，以稳定英文 DB name 查询该 key；"
+    "Xom 梦羊 vault 也直接查询同一 key。localized SpeakDB 使用生产权重选择正文，"
+    "随后展开怪物 token。普通正文走 MSGCH_TALK 并受沉默影响；VISUAL 正文走 "
+    "MSGCH_TALK_VISUAL，仅怪物可见时显示且不因沉默消失。"
+)
+FROZEN_DISPLAY_CONTEXT = "怪物首次受惊逃跑或 Xom 梦羊事件触发的玩家可见消息。"
+FROZEN_CONSUMER = {
+    "channel_routing": "crawl-ref/source/mon-speak.cc:851",
+    "localized_lookup": "crawl-ref/source/database.cc:2307",
+    "weighted_selection": "crawl-ref/source/database.cc:1238",
+}
+FROZEN_PRODUCERS = [
+    {"location": SCOPE["producer_sites"][0], "mode": "fear transition"},
+    {
+        "location": SCOPE["producer_sites"][1],
+        "mode": "Xom dream sheep event",
+    },
+]
+FROZEN_EVIDENCE_LOCATIONS = [
+    "crawl-ref/source/dat/database/monflee.txt:8",
+    "crawl-ref/source/dat/database/zh/monflee.txt:8",
+    "crawl-ref/source/mon-behv.cc:1287",
+    "crawl-ref/source/mon-speak.cc:851",
+    "crawl-ref/source/dat/des/altar/xom_sheep.des:44",
+]
 
 
 class InventoryError(ValueError):
@@ -94,6 +125,118 @@ def _source_snapshot_at_oid(oid: str, source_name: str, label: str) -> str:
         raise InventoryError(
             f"{label} source snapshot is not UTF-8 at {oid}:{git_path.as_posix()}"
         ) from exc
+
+
+def _extract_git_archive(archive: bytes, destination: Path, label: str) -> None:
+    try:
+        stream = tarfile.open(fileobj=io.BytesIO(archive), mode="r:")
+    except tarfile.TarError as exc:
+        raise InventoryError(f"cannot read {label} Git archive: {exc}") from exc
+    with stream:
+        for member in stream:
+            relative = PurePosixPath(member.name)
+            _require(
+                not relative.is_absolute()
+                and all(part not in {"", ".", ".."} for part in relative.parts),
+                f"{label} Git archive contains unsafe path {member.name!r}",
+            )
+            target = destination.joinpath(*relative.parts)
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            _require(member.isfile(),
+                     f"{label} Git archive contains unsupported object {member.name!r}")
+            source = stream.extractfile(member)
+            _require(source is not None,
+                     f"{label} Git archive cannot extract {member.name!r}")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read())
+
+
+def _run_production_dump(
+    executable: Path, source_root: Path, output: Path, language: str | None,
+) -> dict[str, Any]:
+    environment = os.environ.copy()
+    environment["TEXTDB_PHASE0_DUMP"] = str(output)
+    if language is None:
+        environment.pop("TEXTDB_PHASE0_LANGUAGE", None)
+    else:
+        environment["TEXTDB_PHASE0_LANGUAGE"] = language
+    completed = subprocess.run(
+        [str(executable), "[.textdb-phase0-dump]", "--reporter", "compact"],
+        cwd=source_root, env=environment, text=True, capture_output=True,
+    )
+    locale = language or "en"
+    _require(
+        completed.returncode == 0,
+        f"production {locale} dump replay failed: "
+        f"{(completed.stderr or completed.stdout)[-2000:]}",
+    )
+    artifact, _raw = _load_dump(
+        output, f"trusted {locale}",
+        "database/" if language is None else f"database/{language}/",
+    )
+    return artifact
+
+
+@lru_cache(maxsize=4)
+def _trusted_artifacts_at_oid(oid: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Replay production source discovery/parser against an exact Git tree."""
+    _validate_oid(oid, "production replay")
+    repository = Path(__file__).resolve().parents[2]
+    executable = repository / "crawl-ref/source/catch2-tests-executable"
+    _require(
+        executable.is_file() and not executable.is_symlink()
+        and os.access(executable, os.X_OK),
+        "production dump executable is missing; build "
+        "crawl-ref/source/catch2-tests-executable first",
+    )
+    archived = subprocess.run(
+        ["git", "-C", str(repository), "archive", oid, "--",
+         "crawl-ref/source/dat"],
+        capture_output=True,
+    )
+    _require(archived.returncode == 0,
+             "cannot archive exact-OID production data tree")
+    with tempfile.TemporaryDirectory(prefix="monflee-production-replay-") as temp:
+        temporary = Path(temp)
+        _extract_git_archive(archived.stdout, temporary, "production replay")
+        source_root = temporary / "crawl-ref/source"
+        generated_tags = repository / "crawl-ref/source/dat/dlua/tags.lua"
+        _require(generated_tags.is_file() and not generated_tags.is_symlink(),
+                 "generated dat/dlua/tags.lua required by production replay is missing")
+        # The Catch2 main loads this generated file while initializing clua.  The
+        # phase-0 dump entry point then calls dump_*_speakdb_typed(), which only
+        # discovers, normalizes, and parses the staged TextDB sources; unlike
+        # getSpeakString(), that path never executes embedded Lua.  tags.lua is
+        # therefore startup support, not an input to the replayed artifact.
+        replay_tags = source_root / "dat/dlua/tags.lua"
+        replay_tags.parent.mkdir(parents=True, exist_ok=True)
+        replay_tags.write_bytes(generated_tags.read_bytes())
+        english = _run_production_dump(
+            executable, source_root, temporary / "english.json", None
+        )
+        localized = _run_production_dump(
+            executable, source_root, temporary / "localized.json", "zh"
+        )
+    return english, localized
+
+
+def _require_production_derivation(
+    supplied: dict[str, Any], trusted: dict[str, Any], label: str,
+) -> None:
+    _require(
+        supplied["sources"] == trusted["sources"],
+        f"{label} source discovery/order does not match exact-OID production replay",
+    )
+    _require(
+        supplied["entries"] == trusted["entries"],
+        f"{label} entries/raw_body/variants do not match exact-OID production replay",
+    )
+    _require(
+        supplied == trusted,
+        f"{label} artifact metadata does not match exact-OID production replay",
+    )
 
 
 def _load_dump(
@@ -271,6 +414,9 @@ def build_inventory(
     zh_dump, zh_raw = _load_dump(
         localized_path, "baseline ZH", "database/zh/"
     )
+    trusted_en, trusted_zh = _trusted_artifacts_at_oid(baseline_ref)
+    _require_production_derivation(en_dump, trusted_en, "baseline EN")
+    _require_production_derivation(zh_dump, trusted_zh, "baseline ZH")
     en_binding, en_rows = _dump_binding(en_dump, en_raw, "baseline EN", baseline_ref)
     zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "baseline ZH", baseline_ref)
     entries = _paired_entries(en_rows, zh_rows, "baseline")
@@ -326,6 +472,62 @@ def _validate_deferral(record: dict[str, Any], context: str) -> None:
                      f"{context} deferred conclusion requires {field}")
 
 
+def _expected_production_facts(
+    inventory: dict[str, Any], entry: dict[str, Any],
+) -> dict[str, Any]:
+    variants = entry["variants"]
+    return {
+        "english_source": inventory["dumps"]["english"]["effective_monflee_source"],
+        "localized_source": inventory["dumps"]["localized"]["effective_monflee_source"],
+        "variant_count": len(variants),
+        "weights": [variant["weight"] for variant in variants],
+        "control_prefixes": [variant["control_prefix"] for variant in variants],
+        "runtime_tokens": [list(variant["runtime_tokens"]) for variant in variants],
+    }
+
+
+def _validate_production_evidence(
+    card: dict[str, Any], inventory: dict[str, Any], entry: dict[str, Any],
+    identity: str,
+) -> None:
+    _require(card.get("confidence") in CONFIDENCE_LEVELS,
+             f"{identity} confidence must be high, medium, or low")
+    _require(
+        card.get("dependency_group")
+        == f"{entry['key']} voice and visual motion",
+        f"{identity} dependency_group mismatch",
+    )
+    _require(
+        card.get("glossary_authority")
+        == f"{inventory['glossary']['path']}@{inventory['glossary']['sha256']}",
+        f"{identity} glossary_authority mismatch",
+    )
+    _require(card.get("actual_behavior") == FROZEN_ACTUAL_BEHAVIOR,
+             f"{identity} actual_behavior does not match frozen runtime behavior")
+    _require(card.get("display_context") == FROZEN_DISPLAY_CONTEXT,
+             f"{identity} display_context does not match frozen display scope")
+    _require(card.get("consumer") == FROZEN_CONSUMER,
+             f"{identity} consumer evidence mismatch")
+    _require(card.get("producers") == FROZEN_PRODUCERS,
+             f"{identity} producer evidence mismatch")
+    _require(card.get("evidence_locations") == FROZEN_EVIDENCE_LOCATIONS,
+             f"{identity} evidence_locations mismatch")
+    _require(
+        card.get("production_facts") == _expected_production_facts(inventory, entry),
+        f"{identity} production_facts mismatch",
+    )
+    _require(_nonempty_string(card.get("reentry_trigger")),
+             f"{identity} requires a nonempty reentry_trigger")
+    alternatives = card.get("rejected_alternatives")
+    _require(
+        isinstance(alternatives, list) and bool(alternatives)
+        and all(_nonempty_string(alternative) for alternative in alternatives),
+        f"{identity} rejected_alternatives must be a nonempty string array",
+    )
+    _require(_nonempty_string(card.get("reviewer_rationale")),
+             f"{identity} requires a nonempty reviewer_rationale")
+
+
 def validate_results(
     path: Path, inventory: dict[str, Any], candidate_entries: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
@@ -363,6 +565,7 @@ def validate_results(
         _require(conclusion in TERMINAL_CONCLUSIONS,
                  f"{identity} has nonterminal conclusion {conclusion!r}")
         _require(card.get("key") == baseline["key"], f"{identity} key mismatch")
+        _validate_production_evidence(card, inventory, baseline, identity)
         baseline_en = [variant["english"] for variant in baseline["variants"]]
         baseline_zh = [variant["chinese"] for variant in baseline["variants"]]
         _require(card.get("current_english") == baseline_en,
@@ -458,6 +661,9 @@ def add_candidate(
     zh_dump, zh_raw = _load_dump(
         localized_path, "candidate ZH", "database/zh/"
     )
+    trusted_en, trusted_zh = _trusted_artifacts_at_oid(candidate_ref)
+    _require_production_derivation(en_dump, trusted_en, "candidate EN")
+    _require_production_derivation(zh_dump, trusted_zh, "candidate ZH")
     en_binding, en_rows = _dump_binding(en_dump, en_raw, "candidate EN", candidate_ref)
     zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "candidate ZH", candidate_ref)
     entries = _paired_entries(en_rows, zh_rows, "candidate")
