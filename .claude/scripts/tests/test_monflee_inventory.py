@@ -70,6 +70,7 @@ def artifact(
         "load_index": 0,
         "definition_ordinal": 0,
     }
+    raw_body = "w:30\n" + "\n\n".join(patterns) + "\n"
     return {
         "schema_version": 1,
         "database_name": "speak",
@@ -82,7 +83,7 @@ def artifact(
         "entries": [{
             "canonical_key": KEY,
             "effective_provenance": provenance,
-            "raw_body": "opaque production parser body",
+            "raw_body": raw_body,
             "source_history": [provenance],
             "variants": [
                 {
@@ -108,6 +109,8 @@ def card_for(inventory: dict, conclusion: str = "keep") -> dict:
         "key": entry["key"],
         "lifecycle": "current-player-visible",
         "terminal_conclusion": conclusion,
+        "deferral_owner": None,
+        "deferral_reason": None,
         "confidence": "high",
         "dependency_group": f"{entry['key']} voice and visual motion",
         "glossary_authority": (
@@ -166,14 +169,32 @@ class MonfleeInventoryTests(unittest.TestCase):
         path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
         return path
 
-    def inventory(self, en: dict | None = None, zh: dict | None = None) -> dict:
+    @staticmethod
+    def derived(value: dict) -> dict:
+        source = f"{value['source_directory']}monflee.txt"
+        return {
+            "sources": copy.deepcopy(value["sources"]),
+            "entries": [
+                copy.deepcopy(entry) for entry in value["entries"]
+                if any(item["source_name"] == source
+                       for item in entry["source_history"])
+            ],
+        }
+
+    def inventory(
+        self, en: dict | None = None, zh: dict | None = None,
+        derived_en: dict | None = None, derived_zh: dict | None = None,
+    ) -> dict:
         en_value = en or artifact("en")
         zh_value = zh or artifact("zh")
         en_path = self.write_dump("en.json", en_value)
         zh_path = self.write_dump("zh.json", zh_value)
         with mock.patch.object(
-            MODULE, "_trusted_artifacts_at_oid",
-            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+            MODULE, "_derive_scoped_dump",
+            side_effect=[
+                copy.deepcopy(derived_en or self.derived(en_value)),
+                copy.deepcopy(derived_zh or self.derived(zh_value)),
+            ],
         ):
             return MODULE.build_inventory(BASELINE, en_path, zh_path, self.glossary)
 
@@ -183,8 +204,8 @@ class MonfleeInventoryTests(unittest.TestCase):
         en_path = self.write_dump("candidate-en.json", en)
         zh_path = self.write_dump("candidate-zh.json", zh)
         with mock.patch.object(
-            MODULE, "_trusted_artifacts_at_oid",
-            return_value=(copy.deepcopy(en), copy.deepcopy(zh)),
+            MODULE, "_derive_scoped_dump",
+            side_effect=[self.derived(en), self.derived(zh)],
         ):
             return MODULE.add_candidate(
                 inventory, candidate_ref, en_path, zh_path
@@ -235,66 +256,147 @@ class MonfleeInventoryTests(unittest.TestCase):
         self.assert_rejected(en=bad, contains="normalized_utf8")
         bad = artifact("en")
         bad["sources"][0]["normalized_utf8"] += "snapshot drift"
-        self.assert_rejected(en=bad, contains="does not match OID")
+        with self.assertRaisesRegex(MODULE.InventoryError, "manifest/order/snapshots"):
+            self.inventory(en=bad, derived_en=self.derived(artifact("en")))
 
-    def test_complete_production_derivation_rejects_omission_and_forgery(self):
-        def complete(language: str, source_count: int) -> dict:
-            value = artifact(language)
-            directory = value["source_directory"]
-            for index in range(1, source_count):
-                value["sources"].append({
-                    "source_name": f"{directory}fixture-{index}.txt",
-                    "load_index": index,
-                    "normalized_utf8": f"fixture {index}\n",
-                })
-            return value
+    def test_exact_git_source_manifests_are_complete_ordered_and_fail_closed(self):
+        database = b'''\
+TextDB("other", "database/", { "ignored.txt" }),
+TextDB("speak", "database/",
+       { "monspeak.txt", // speech
+         "monflee.txt",
+         "miscast.txt", }),
+'''
+        with mock.patch.object(MODULE, "_git_blob_at_oid", return_value=database):
+            self.assertEqual(
+                ["database/monspeak.txt", "database/monflee.txt",
+                 "database/miscast.txt"],
+                MODULE._english_source_manifest(BASELINE, "EN fixture"),
+            )
+        duplicate = database + database
+        with mock.patch.object(MODULE, "_git_blob_at_oid", return_value=duplicate):
+            with self.assertRaisesRegex(MODULE.InventoryError, "one literal"):
+                MODULE._english_source_manifest(BASELINE, "EN fixture")
 
-        trusted_en = complete("en", 10)
-        trusted_zh = complete("zh", 23)
-        MODULE._require_production_derivation(trusted_en, trusted_en, "baseline EN")
-        MODULE._require_production_derivation(trusted_zh, trusted_zh, "baseline ZH")
+        def tree_record(mode: bytes, kind: bytes, name: bytes) -> bytes:
+            return mode + b" " + kind + b" " + b"1" * 40 + b"\t" + name + b"\0"
 
-        missing_source = copy.deepcopy(trusted_en)
+        tree = b"".join([
+            tree_record(b"100644", b"blob", b"z.txt"),
+            tree_record(b"100644", b"blob", b"source.txt"),
+            tree_record(b"100644", b"blob", b"A.txt"),
+            tree_record(b"100644", b"blob", b"ignored.md"),
+        ])
+        with mock.patch.object(MODULE, "_git_output", return_value=tree):
+            self.assertEqual(
+                ["database/zh/source.txt", "database/zh/A.txt",
+                 "database/zh/z.txt"],
+                MODULE._localized_source_manifest(BASELINE, "ZH fixture"),
+            )
+        for invalid in (
+            tree_record(b"040000", b"tree", b"nested"),
+            tree_record(b"120000", b"blob", b"linked.txt"),
+        ):
+            with self.subTest(invalid=invalid):
+                with mock.patch.object(MODULE, "_git_output", return_value=invalid):
+                    with self.assertRaisesRegex(MODULE.InventoryError, "unsupported tree"):
+                        MODULE._localized_source_manifest(BASELINE, "ZH fixture")
+
+    def test_scoped_derivation_binds_manifest_body_variants_and_history(self):
+        def source(key: str, body: str) -> str:
+            return f"%%%%\n{key}\n\n{body}%%%%\n"
+
+        sources = [
+            {"source_name": "database/monflee.txt", "load_index": 0,
+             "normalized_utf8": source(KEY, "w:30\noriginal\n")},
+            {"source_name": "database/later.txt", "load_index": 1,
+             "normalized_utf8": source(KEY, "replacement\n")},
+            {"source_name": "database/unused.txt", "load_index": 2,
+             "normalized_utf8": source("unrelated key", "irrelevant\n")},
+        ]
+        derived = MODULE._derive_scoped_from_sources(
+            sources, "database/", "EN fixture"
+        )
+        entry = derived["entries"][0]
+        self.assertEqual([0, 1],
+                         [item["load_index"] for item in entry["source_history"]])
+        self.assertEqual("database/later.txt",
+                         entry["effective_provenance"]["source_name"])
+        self.assertEqual("replacement\n", entry["raw_body"])
+        self.assertEqual("replacement", entry["variants"][0]["raw_pattern"])
+
+        supplied = {
+            "schema_version": 1, "database_name": "speak",
+            "source_directory": "database/", **copy.deepcopy(derived),
+        }
+        MODULE.validate_artifact(supplied, "derived fixture")
+        MODULE._require_scoped_derivation(supplied, derived, "EN fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "overridden"):
+            MODULE._dump_binding(supplied, b"fixture", "EN fixture")
+
+        missing_history = copy.deepcopy(supplied)
+        effective = missing_history["entries"][0]["effective_provenance"]
+        missing_history["entries"][0]["source_history"] = [effective]
+        MODULE.validate_artifact(missing_history, "missing-history fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "scoped history"):
+            MODULE._require_scoped_derivation(
+                missing_history, derived, "EN fixture"
+            )
+
+        for field in ("raw_body", "variant"):
+            forged = copy.deepcopy(supplied)
+            if field == "raw_body":
+                forged["entries"][0]["raw_body"] += "forged"
+            else:
+                forged["entries"][0]["variants"][0]["raw_pattern"] += "forged"
+            MODULE.validate_artifact(forged, f"forged-{field} fixture")
+            with self.subTest(forged=field):
+                with self.assertRaisesRegex(MODULE.InventoryError, "scoped history"):
+                    MODULE._require_scoped_derivation(forged, derived, "EN fixture")
+
+        missing_source = copy.deepcopy(supplied)
         missing_source["sources"].pop()
         MODULE.validate_artifact(missing_source, "missing-source fixture")
-        with self.assertRaisesRegex(MODULE.InventoryError, "source discovery/order"):
-            MODULE._require_production_derivation(
-                missing_source, trusted_en, "baseline EN"
+        with self.assertRaisesRegex(MODULE.InventoryError, "manifest/order"):
+            MODULE._require_scoped_derivation(
+                missing_source, derived, "EN fixture"
             )
+        wrong_order = copy.deepcopy(supplied)
+        wrong_order["sources"][1], wrong_order["sources"][2] = (
+            wrong_order["sources"][2], wrong_order["sources"][1]
+        )
+        for index, item in enumerate(wrong_order["sources"]):
+            item["load_index"] = index
+        wrong_entry = wrong_order["entries"][0]
+        wrong_entry["effective_provenance"]["load_index"] = 2
+        wrong_entry["source_history"][1]["load_index"] = 2
+        for variant in wrong_entry["variants"]:
+            variant["provenance"]["load_index"] = 2
+        MODULE.validate_artifact(wrong_order, "wrong-order fixture")
+        with self.assertRaisesRegex(MODULE.InventoryError, "manifest/order"):
+            MODULE._require_scoped_derivation(wrong_order, derived, "EN fixture")
 
-        forged_body = copy.deepcopy(trusted_en)
-        forged_body["entries"][0]["raw_body"] += "forged"
-        MODULE.validate_artifact(forged_body, "forged-body fixture")
-        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
-            MODULE._require_production_derivation(forged_body, trusted_en, "baseline EN")
-
-        forged_variant = copy.deepcopy(trusted_zh)
-        forged_variant["entries"][0]["variants"][0]["raw_pattern"] += "forged"
-        MODULE.validate_artifact(forged_variant, "forged-variant fixture")
-        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
-            MODULE._require_production_derivation(
-                forged_variant, trusted_zh, "candidate ZH"
-            )
-
-        trusted_override = copy.deepcopy(trusted_zh)
-        entry = trusted_override["entries"][0]
-        earlier = copy.deepcopy(entry["effective_provenance"])
-        effective = {
-            "source_name": trusted_override["sources"][1]["source_name"],
-            "load_index": 1,
+    def test_weighted_parser_matches_sscanf_errors_and_int_range(self):
+        provenance = {
+            "source_name": "database/monflee.txt", "load_index": 0,
             "definition_ordinal": 0,
         }
-        entry["effective_provenance"] = effective
-        entry["source_history"] = [earlier, effective]
-        for variant in entry["variants"]:
-            variant["provenance"] = effective
-        drifted_override = copy.deepcopy(trusted_override)
-        drifted_override["entries"][0]["source_history"] = [effective]
-        MODULE.validate_artifact(trusted_override, "trusted override fixture")
-        MODULE.validate_artifact(drifted_override, "drifted override fixture")
-        with self.assertRaisesRegex(MODULE.InventoryError, "raw_body/variants"):
-            MODULE._require_production_derivation(
-                drifted_override, trusted_override, "candidate ZH"
+        variants, error = MODULE._parse_weighted_entry(
+            "w:  +7 trailing\nalpha\n\nbeta\n", provenance, KEY
+        )
+        self.assertIsNone(error)
+        self.assertEqual([7, 10], [item["weight"] for item in variants])
+        self.assertEqual(["alpha", "beta"],
+                         [item["raw_pattern"] for item in variants])
+
+        variants, error = MODULE._parse_weighted_entry(
+            "valid\n\nw:5", provenance, KEY
+        )
+        self.assertEqual(1, len(variants))
+        self.assertEqual("BUG, WEIGHT AT END OF ENTRY", error)
+        with self.assertRaisesRegex(MODULE.InventoryError, "int range"):
+            MODULE._parse_weighted_entry(
+                "w:2147483648\ninvalid\n", provenance, KEY
             )
 
     def test_english_and_chinese_artifacts_cannot_swap_slots(self):
@@ -428,6 +530,47 @@ class MonfleeInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "nonterminal"):
             MODULE.validate_results(path, inventory, None)
 
+    def test_review_rejects_unknown_fields_and_unexpected_deferral_fields(self):
+        inventory = self.inventory()
+        metadata = metadata_for(inventory)
+        metadata["unknown"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "unknown.*unknown"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card_for(inventory)], metadata),
+                inventory, None,
+            )
+
+        card = card_for(inventory)
+        card["unknown"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "unknown.*unknown"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card]), inventory, None
+            )
+
+        card = card_for(inventory)
+        card["variant_reviews"][0]["unknown"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "unknown.*unknown"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card]), inventory, None
+            )
+
+        card = card_for(inventory)
+        card["deferral_owner"] = "unexpected"
+        with self.assertRaisesRegex(MODULE.InventoryError, "forbids deferral_owner"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card]), inventory, None
+            )
+
+        card = card_for(inventory)
+        card["variant_reviews"][0].update({
+            "deferral_owner": "unexpected", "deferral_reason": "unexpected",
+            "reentry_trigger": "unexpected",
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError, "field set mismatch"):
+            MODULE.validate_results(
+                self.write_results(inventory, [card]), inventory, None
+            )
+
     def test_review_baseline_and_current_agreement_fail_closed(self):
         inventory = self.inventory()
         card = card_for(inventory)
@@ -445,8 +588,9 @@ class MonfleeInventoryTests(unittest.TestCase):
         inventory = self.inventory()
         for field in (
             "actual_behavior", "confidence", "consumer", "dependency_group",
-            "display_context", "evidence_locations", "glossary_authority",
-            "production_facts", "producers", "reentry_trigger",
+            "deferral_owner", "deferral_reason", "display_context",
+            "evidence_locations", "glossary_authority", "production_facts",
+            "producers", "reentry_trigger",
             "rejected_alternatives", "reviewer_rationale",
         ):
             with self.subTest(missing=field):
@@ -474,6 +618,9 @@ class MonfleeInventoryTests(unittest.TestCase):
         card["consumer"]["channel_routing"] = "wrong:1"
         mutations.append(card)
         card = card_for(inventory)
+        card["consumer"]["final_sink"] = "wrong:2"
+        mutations.append(card)
+        card = card_for(inventory)
         card["production_facts"]["weights"][0] += 1
         mutations.append(card)
         card = card_for(inventory)
@@ -487,6 +634,9 @@ class MonfleeInventoryTests(unittest.TestCase):
         mutations.append(card)
         card = card_for(inventory)
         card["evidence_locations"].pop()
+        mutations.append(card)
+        card = card_for(inventory)
+        card["evidence_locations"][4] = "wrong:3"
         mutations.append(card)
         card = card_for(inventory)
         card["glossary_authority"] = "docs/glossary.md@" + "0" * 64
@@ -620,9 +770,11 @@ class MonfleeInventoryTests(unittest.TestCase):
             "--english-dump", str(en_path), "--localized-dump", str(zh_path),
             "--glossary", str(self.glossary), "--inventory-output", str(output),
         ]
+        derive = lambda _oid, directory, _label: self.derived(  # noqa: E731
+            en_value if directory == "database/" else zh_value
+        )
         with mock.patch.object(
-            MODULE, "_trusted_artifacts_at_oid",
-            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+            MODULE, "_derive_scoped_dump", side_effect=derive,
         ):
             self.assertEqual(0, MODULE.main(arguments))
             with self.assertRaisesRegex(MODULE.InventoryError, "exclusively create"):
@@ -631,8 +783,7 @@ class MonfleeInventoryTests(unittest.TestCase):
 
         outside_arguments = arguments[:-1] + [str(self.root / "out.json")]
         with mock.patch.object(
-            MODULE, "_trusted_artifacts_at_oid",
-            return_value=(copy.deepcopy(en_value), copy.deepcopy(zh_value)),
+            MODULE, "_derive_scoped_dump", side_effect=derive,
         ):
             with self.assertRaisesRegex(MODULE.InventoryError, "/tmp"):
                 MODULE.main(outside_arguments)

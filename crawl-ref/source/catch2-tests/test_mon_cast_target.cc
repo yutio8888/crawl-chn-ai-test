@@ -1332,7 +1332,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
-                 "monster speech observer matches the final mprf boundary",
+                 "monster speech observer captures the pre-mprf boundary",
                  "[single-file][mon-speech][message-overlay][diagnostics]")
 {
     scoped_past_target_world world;
@@ -1466,9 +1466,12 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         mon_enchant(ENCH_MUTE, &source, INFINITE_DURATION)));
     for (const size_t ordinal : { size_t(0), size_t(1) })
     {
-        vector<mon_speech_final_emission> emissions;
-        const mon_speech_emission_observer observer =
-            { observe_cast_emission, &emissions };
+        // This observer is the pre-mprf seam: it proves production routing and
+        // effective_silence, not whether prepare_message emits at the final
+        // player-position-sensitive display sink.
+        vector<mon_speech_final_emission> pre_mprf_emissions;
+        const mon_speech_emission_observer pre_mprf_observer =
+            { observe_cast_emission, &pre_mprf_emissions };
         string selected;
         {
             rng::subgenerator scoped_rng(
@@ -1477,9 +1480,19 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             selected = getSpeakString("dream sheep flee");
         }
         REQUIRE(mons_speaks_msg(
-            &source, selected, MSGCH_TALK, false, false, &observer));
-        REQUIRE(emissions.size() == 1);
-        CHECK(emissions[0].effective_silence == (ordinal == 0));
+            &source, selected, MSGCH_TALK, false, false,
+            &pre_mprf_observer));
+        REQUIRE(pre_mprf_emissions.size() == 1);
+        if (ordinal == 0)
+        {
+            CHECK(pre_mprf_emissions[0].channel == MSGCH_TALK);
+            CHECK(pre_mprf_emissions[0].effective_silence);
+        }
+        else
+        {
+            CHECK(pre_mprf_emissions[0].channel == MSGCH_TALK_VISUAL);
+            CHECK_FALSE(pre_mprf_emissions[0].effective_silence);
+        }
     }
     source.del_ench(ENCH_MUTE);
 

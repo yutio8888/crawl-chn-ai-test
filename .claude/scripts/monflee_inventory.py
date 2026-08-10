@@ -1,29 +1,26 @@
 #!/usr/bin/env python3
 """Build and audit the Issue #54 monflee inventory from production dumps.
 
-This is deliberately a consumer of ``textdb-phase0-dump`` JSON.  The C++
-dump and :mod:`audit_monspell_phase0` remain the parser/schema authorities;
-this module only selects the effective monflee source and compares its already
-parsed variants.
+The supplied ``textdb-phase0-dump`` JSON remains the artifact under review.
+For this narrow scope, exact Git inputs independently rebuild every definition
+whose history touches ``monflee.txt`` and cross-check the artifact.
 """
 
 from __future__ import annotations
 
 import argparse
-from functools import lru_cache
 import hashlib
-import io
 import json
 import os
 import re
 import subprocess
 import sys
-import tarfile
-import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 
 from audit_monspell_phase0 import ArtifactError, textdb_marker_sites, validate_artifact
+from command_inventory import merge_desc_sequence, parse_db_keys
+from i18n_shared import lowercase_string, trim_string, trusted_git_environment
 
 
 SCHEMA_VERSION = 1
@@ -35,6 +32,26 @@ ALLOWED_CONTROLS = {None, "VISUAL"}
 DEFER_CONCLUSIONS = {"defer terminology", "defer implementation"}
 TERMINAL_CONCLUSIONS = {"keep", "adjust", "retranslate", *DEFER_CONCLUSIONS}
 CONFIDENCE_LEVELS = {"high", "medium", "low"}
+INT_MIN = -(2 ** 31)
+INT_MAX = 2 ** 31 - 1
+METADATA_FIELDS = {
+    "baseline", "glossary_sha256", "identity_count", "inventory_sha256",
+}
+CARD_FIELDS = {
+    "actual_behavior", "confidence", "consumer", "current_chinese",
+    "current_english", "deferral_owner", "deferral_reason",
+    "dependency_group", "display_context", "evidence_locations",
+    "glossary_authority", "identity", "key", "lifecycle", "producers",
+    "production_facts", "proposed_translation", "reentry_trigger",
+    "rejected_alternatives", "reviewer_rationale", "terminal_conclusion",
+    "variant_reviews",
+}
+VARIANT_FIELDS = {
+    "control_prefix", "current_chinese", "english", "proposed_translation",
+    "rationale", "runtime_tokens", "terminal_conclusion", "variant_ordinal",
+    "weight",
+}
+DEFERRAL_FIELDS = {"deferral_owner", "deferral_reason", "reentry_trigger"}
 SCOPE = {
     "source_basename": "monflee.txt",
     "identities": [
@@ -48,12 +65,16 @@ SCOPE = {
 FROZEN_ACTUAL_BEHAVIOR = (
     "梦羊在 ME_SCARE 中进入逃跑行为时，以稳定英文 DB name 查询该 key；"
     "Xom 梦羊 vault 也直接查询同一 key。localized SpeakDB 使用生产权重选择正文，"
-    "随后展开怪物 token。普通正文走 MSGCH_TALK 并受沉默影响；VISUAL 正文走 "
-    "MSGCH_TALK_VISUAL，仅怪物可见时显示且不因沉默消失。"
+    "随后展开怪物 token。无前缀 ordinal 0 在 pre-mprf seam 作为 MSGCH_TALK "
+    "emission 继续传递：源怪物 ENCH_MUTE 或源格沉默只将 effective_silence 置为 "
+    "true，不阻止它抵达 MSGCH_TALK；最终 mprf sink 仅在玩家所在格沉默时由 "
+    "prepare_message 抑制该 MSGCH_TALK。VISUAL 正文路由至 MSGCH_TALK_VISUAL、"
+    "清除 silence，仅怪物可见时产生 emission，且不受该 sink 抑制。"
 )
 FROZEN_DISPLAY_CONTEXT = "怪物首次受惊逃跑或 Xom 梦羊事件触发的玩家可见消息。"
 FROZEN_CONSUMER = {
     "channel_routing": "crawl-ref/source/mon-speak.cc:851",
+    "final_sink": "crawl-ref/source/message.cc:1845",
     "localized_lookup": "crawl-ref/source/database.cc:2307",
     "weighted_selection": "crawl-ref/source/database.cc:1238",
 }
@@ -69,6 +90,7 @@ FROZEN_EVIDENCE_LOCATIONS = [
     "crawl-ref/source/dat/database/zh/monflee.txt:8",
     "crawl-ref/source/mon-behv.cc:1287",
     "crawl-ref/source/mon-speak.cc:851",
+    "crawl-ref/source/message.cc:1845",
     "crawl-ref/source/dat/des/altar/xom_sheep.des:44",
 ]
 
@@ -98,144 +120,257 @@ def _validate_oid(value: str, label: str) -> None:
     repository = Path(__file__).resolve().parents[2]
     checked = subprocess.run(
         ["git", "-C", str(repository), "cat-file", "-e", f"{value}^{{commit}}"],
-        text=True, capture_output=True,
+        text=True, capture_output=True, env=trusted_git_environment(),
     )
     _require(checked.returncode == 0, f"{label} ref is not a commit in this repository")
 
 
-def _source_snapshot_at_oid(oid: str, source_name: str, label: str) -> str:
-    source_path = PurePosixPath(source_name)
-    _require(
-        not source_path.is_absolute()
-        and source_path.as_posix() == source_name
-        and all(part not in {"", ".", ".."} for part in source_path.parts),
-        f"{label} source snapshot has an unsafe source_name {source_name!r}",
-    )
+def _git_output(arguments: list[str], label: str) -> bytes:
     repository = Path(__file__).resolve().parents[2]
-    git_path = PurePosixPath("crawl-ref/source/dat") / source_path
-    fetched = subprocess.run(
-        ["git", "-C", str(repository), "show", f"{oid}:{git_path.as_posix()}"],
-        capture_output=True,
-    )
-    _require(fetched.returncode == 0,
-             f"{label} source snapshot is missing at {oid}:{git_path.as_posix()}")
-    try:
-        return fetched.stdout.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise InventoryError(
-            f"{label} source snapshot is not UTF-8 at {oid}:{git_path.as_posix()}"
-        ) from exc
-
-
-def _extract_git_archive(archive: bytes, destination: Path, label: str) -> None:
-    try:
-        stream = tarfile.open(fileobj=io.BytesIO(archive), mode="r:")
-    except tarfile.TarError as exc:
-        raise InventoryError(f"cannot read {label} Git archive: {exc}") from exc
-    with stream:
-        for member in stream:
-            relative = PurePosixPath(member.name)
-            _require(
-                not relative.is_absolute()
-                and all(part not in {"", ".", ".."} for part in relative.parts),
-                f"{label} Git archive contains unsafe path {member.name!r}",
-            )
-            target = destination.joinpath(*relative.parts)
-            if member.isdir():
-                target.mkdir(parents=True, exist_ok=True)
-                continue
-            _require(member.isfile(),
-                     f"{label} Git archive contains unsupported object {member.name!r}")
-            source = stream.extractfile(member)
-            _require(source is not None,
-                     f"{label} Git archive cannot extract {member.name!r}")
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(source.read())
-
-
-def _run_production_dump(
-    executable: Path, source_root: Path, output: Path, language: str | None,
-) -> dict[str, Any]:
-    environment = os.environ.copy()
-    environment["TEXTDB_PHASE0_DUMP"] = str(output)
-    if language is None:
-        environment.pop("TEXTDB_PHASE0_LANGUAGE", None)
-    else:
-        environment["TEXTDB_PHASE0_LANGUAGE"] = language
     completed = subprocess.run(
-        [str(executable), "[.textdb-phase0-dump]", "--reporter", "compact"],
-        cwd=source_root, env=environment, text=True, capture_output=True,
+        ["git", "-C", str(repository), *arguments], capture_output=True,
+        env=trusted_git_environment(),
     )
-    locale = language or "en"
+    _require(completed.returncode == 0, f"cannot read {label} from exact Git OID")
+    return completed.stdout
+
+
+def _git_blob_at_oid(oid: str, git_path: str, label: str) -> bytes:
+    path = PurePosixPath(git_path)
     _require(
-        completed.returncode == 0,
-        f"production {locale} dump replay failed: "
-        f"{(completed.stderr or completed.stdout)[-2000:]}",
+        not path.is_absolute() and path.as_posix() == git_path
+        and all(part not in {"", ".", ".."} for part in path.parts),
+        f"{label} has an unsafe Git path {git_path!r}",
     )
-    artifact, _raw = _load_dump(
-        output, f"trusted {locale}",
-        "database/" if language is None else f"database/{language}/",
-    )
-    return artifact
+    return _git_output(["show", f"{oid}:{git_path}"], label)
 
 
-@lru_cache(maxsize=4)
-def _trusted_artifacts_at_oid(oid: str) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Replay production source discovery/parser against an exact Git tree."""
-    _validate_oid(oid, "production replay")
-    repository = Path(__file__).resolve().parents[2]
-    executable = repository / "crawl-ref/source/catch2-tests-executable"
-    _require(
-        executable.is_file() and not executable.is_symlink()
-        and os.access(executable, os.X_OK),
-        "production dump executable is missing; build "
-        "crawl-ref/source/catch2-tests-executable first",
+def _decode_utf8(raw: bytes, label: str) -> str:
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise InventoryError(f"{label} is not valid UTF-8") from exc
+
+
+def _normalize_textdb_source(raw: bytes, label: str) -> str:
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    _require(b"\0" not in normalized, f"{label} contains an embedded NUL byte")
+    return _decode_utf8(normalized, label)
+
+
+def _source_snapshot_at_oid(oid: str, source_name: str, label: str) -> str:
+    path = PurePosixPath("crawl-ref/source/dat") / PurePosixPath(source_name)
+    return _normalize_textdb_source(
+        _git_blob_at_oid(oid, path.as_posix(), label), label
     )
-    archived = subprocess.run(
-        ["git", "-C", str(repository), "archive", oid, "--",
-         "crawl-ref/source/dat"],
-        capture_output=True,
+
+
+def _english_source_manifest(oid: str, label: str) -> list[str]:
+    database = _decode_utf8(
+        _git_blob_at_oid(oid, "crawl-ref/source/database.cc", label), label
     )
-    _require(archived.returncode == 0,
-             "cannot archive exact-OID production data tree")
-    with tempfile.TemporaryDirectory(prefix="monflee-production-replay-") as temp:
-        temporary = Path(temp)
-        _extract_git_archive(archived.stdout, temporary, "production replay")
-        source_root = temporary / "crawl-ref/source"
-        generated_tags = repository / "crawl-ref/source/dat/dlua/tags.lua"
-        _require(generated_tags.is_file() and not generated_tags.is_symlink(),
-                 "generated dat/dlua/tags.lua required by production replay is missing")
-        # The Catch2 main loads this generated file while initializing clua.  The
-        # phase-0 dump entry point then calls dump_*_speakdb_typed(), which only
-        # discovers, normalizes, and parses the staged TextDB sources; unlike
-        # getSpeakString(), that path never executes embedded Lua.  tags.lua is
-        # therefore startup support, not an input to the replayed artifact.
-        replay_tags = source_root / "dat/dlua/tags.lua"
-        replay_tags.parent.mkdir(parents=True, exist_ok=True)
-        replay_tags.write_bytes(generated_tags.read_bytes())
-        english = _run_production_dump(
-            executable, source_root, temporary / "english.json", None
+    matches = list(re.finditer(
+        r'\bTextDB\s*\(\s*"speak"\s*,\s*"database/"\s*,\s*\{(.*?)\}\s*\)',
+        database, re.DOTALL,
+    ))
+    _require(len(matches) == 1,
+             f"{label} database.cc must have one literal SpeakDB initializer")
+    body = matches[0].group(1)
+    files: list[str] = []
+    position = 0
+    expect_value = True
+    while True:
+        while position < len(body):
+            if body[position] in " \t\r\n\f\v":
+                position += 1
+            elif body.startswith("//", position):
+                newline = body.find("\n", position + 2)
+                position = len(body) if newline < 0 else newline + 1
+            else:
+                break
+        if position == len(body):
+            break
+        if expect_value:
+            _require(body[position] == '"',
+                     f"{label} SpeakDB initializer is not a literal list")
+            end = body.find('"', position + 1)
+            _require(end >= 0 and "\\" not in body[position + 1:end],
+                     f"{label} SpeakDB source literal is malformed")
+            filename = body[position + 1:end]
+            _require(bool(re.fullmatch(r"[A-Za-z0-9_]+\.txt", filename)),
+                     f"{label} has unsafe SpeakDB source {filename!r}")
+            _require(filename not in files,
+                     f"{label} has duplicate SpeakDB source {filename!r}")
+            files.append(filename)
+            position = end + 1
+            expect_value = False
+        else:
+            _require(body[position] == ',',
+                     f"{label} SpeakDB source literals must be comma separated")
+            position += 1
+            expect_value = True
+    _require(bool(files), f"{label} SpeakDB source manifest is empty")
+    return [f"database/{filename}" for filename in files]
+
+
+def _localized_source_manifest(oid: str, label: str) -> list[str]:
+    raw = _git_output([
+        "ls-tree", "-z", f"{oid}:crawl-ref/source/dat/database/zh",
+    ], label)
+    filenames: list[str] = []
+    for record in raw.split(b"\0"):
+        if not record:
+            continue
+        header, separator, encoded_name = record.partition(b"\t")
+        fields = header.split(b" ")
+        _require(separator == b"\t" and len(fields) == 3,
+                 f"{label} has malformed Git tree evidence")
+        mode, object_type, object_id = fields
+        _require(object_type == b"blob" and mode in {b"100644", b"100755"},
+                 f"{label} has unsupported tree object {record!r}")
+        _require(bool(re.fullmatch(rb"[0-9a-f]{40}", object_id)),
+                 f"{label} has malformed Git object id")
+        filename = _decode_utf8(encoded_name, label)
+        _require(filename not in {"", ".", ".."} and "/" not in filename,
+                 f"{label} has unsafe direct source name {filename!r}")
+        # get_dir_files_ext(..., "txt") uses a byte suffix, not a glob parser.
+        if filename.endswith("txt"):
+            filenames.append(filename)
+    _require(len(filenames) == len(set(filenames)),
+             f"{label} has duplicate localized source names")
+    filenames.sort(key=lambda value: value.encode("utf-8"))
+    if "source.txt" in filenames:
+        filenames.remove("source.txt")
+        filenames.insert(0, "source.txt")
+    _require(bool(filenames), f"{label} localized source manifest is empty")
+    return [f"database/zh/{filename}" for filename in filenames]
+
+
+def _parse_weighted_entry(
+    body: str, provenance: dict[str, Any], canonical_key: str,
+) -> tuple[list[dict[str, Any]], str | None]:
+    lines = body.split("\n")
+    variants: list[dict[str, Any]] = []
+    index = 0
+    while index < len(lines):
+        while index < len(lines) and lines[index] == "":
+            index += 1
+        if index == len(lines):
+            break
+        weight = 10
+        matched = re.match(r"w:[ \t\v\f\r]*([+-]?[0-9]+)", lines[index])
+        if matched:
+            weight = int(matched.group(1))
+            _require(INT_MIN <= weight <= INT_MAX,
+                     f"{canonical_key!r} weight is outside C++ int range")
+            index += 1
+            if index == len(lines):
+                return variants, "BUG, WEIGHT AT END OF ENTRY"
+        part: list[str] = []
+        while index < len(lines) and lines[index] != "":
+            part.append(lines[index])
+            index += 1
+        pattern = trim_string("\n".join(part) + ("\n" if part else ""))
+        ordinal = len(variants)
+        variants.append({
+            "locator": {
+                "canonical_key": canonical_key,
+                "variant_ordinal": ordinal,
+            },
+            "provenance": provenance,
+            "weight": weight,
+            "raw_pattern": pattern,
+        })
+    return (variants, None) if variants else ([], "BUG, EMPTY ENTRY")
+
+
+def _derive_scoped_from_sources(
+    sources: list[dict[str, Any]], directory: str, label: str,
+) -> dict[str, Any]:
+    parsed = []
+    provenance_by_entry: dict[int, dict[str, Any]] = {}
+    histories: dict[str, list[dict[str, Any]]] = {}
+    scoped_keys: set[str] = set()
+    monflee_source = f"{directory}{SCOPE['source_basename']}"
+    for load_index, source in enumerate(sources):
+        try:
+            definitions = parse_db_keys(
+                source["normalized_utf8"], source["source_name"]
+            )
+        except SystemExit as exc:
+            raise InventoryError(f"{label} TextDB parse failed: {exc}") from exc
+        for ordinal, definition in enumerate(definitions):
+            canonical_key = lowercase_string(definition.raw_key)
+            provenance = {
+                "source_name": source["source_name"],
+                "load_index": load_index,
+                "definition_ordinal": ordinal,
+            }
+            parsed.append(definition)
+            provenance_by_entry[id(definition)] = provenance
+            histories.setdefault(canonical_key, []).append(provenance)
+            if source["source_name"] == monflee_source:
+                scoped_keys.add(canonical_key)
+    try:
+        effective, _overrides = merge_desc_sequence(parsed)
+    except SystemExit as exc:
+        raise InventoryError(f"{label} TextDB merge failed: {exc}") from exc
+    entries = []
+    for canonical_key in sorted(scoped_keys):
+        winner = effective[canonical_key]
+        provenance = provenance_by_entry[id(winner)]
+        variants, parse_error = _parse_weighted_entry(
+            winner.value, provenance, canonical_key
         )
-        localized = _run_production_dump(
-            executable, source_root, temporary / "localized.json", "zh"
-        )
-    return english, localized
+        entries.append({
+            "canonical_key": canonical_key,
+            "effective_provenance": provenance,
+            "raw_body": winner.value,
+            "source_history": histories[canonical_key],
+            "variants": variants,
+            "parse_error": parse_error,
+            "body_empty": winner.value == "",
+        })
+    return {"sources": sources, "entries": entries}
 
 
-def _require_production_derivation(
-    supplied: dict[str, Any], trusted: dict[str, Any], label: str,
+def _derive_scoped_dump(oid: str, directory: str, label: str) -> dict[str, Any]:
+    manifest = (
+        _english_source_manifest(oid, label)
+        if directory == "database/"
+        else _localized_source_manifest(oid, label)
+    )
+    sources = [
+        {
+            "source_name": source_name,
+            "load_index": load_index,
+            "normalized_utf8": _source_snapshot_at_oid(
+                oid, source_name, f"{label} {source_name}"
+            ),
+        }
+        for load_index, source_name in enumerate(manifest)
+    ]
+    return _derive_scoped_from_sources(sources, directory, label)
+
+
+def _require_scoped_derivation(
+    supplied: dict[str, Any], derived: dict[str, Any], label: str,
 ) -> None:
     _require(
-        supplied["sources"] == trusted["sources"],
-        f"{label} source discovery/order does not match exact-OID production replay",
+        supplied["sources"] == derived["sources"],
+        f"{label} source manifest/order/snapshots do not match exact Git inputs",
     )
+    monflee_source = f"{supplied['source_directory']}{SCOPE['source_basename']}"
+    touching = [
+        entry for entry in supplied["entries"]
+        if any(item["source_name"] == monflee_source
+               for item in entry["source_history"])
+    ]
     _require(
-        supplied["entries"] == trusted["entries"],
-        f"{label} entries/raw_body/variants do not match exact-OID production replay",
-    )
-    _require(
-        supplied == trusted,
-        f"{label} artifact metadata does not match exact-OID production replay",
+        touching == derived["entries"],
+        f"{label} scoped history/raw_body/variants do not match exact Git derivation",
     )
 
 
@@ -270,7 +405,7 @@ def _runtime_tokens(pattern: str) -> list[str]:
 
 
 def _dump_binding(
-    artifact: dict[str, Any], raw: bytes, label: str, oid: str,
+    artifact: dict[str, Any], raw: bytes, label: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     directory = artifact["source_directory"]
     expected_source = f"{directory}{SCOPE['source_basename']}"
@@ -282,13 +417,6 @@ def _dump_binding(
         len(matching_sources) == 1,
         f"{label} dump must contain exactly one source snapshot {expected_source!r}",
     )
-    for source in artifact["sources"]:
-        committed = _source_snapshot_at_oid(oid, source["source_name"], label)
-        _require(
-            source["normalized_utf8"] == committed,
-            f"{label} source snapshot does not match OID for {source['source_name']!r}",
-        )
-
     touching = [
         entry for entry in artifact["entries"]
         if any(item["source_name"] == expected_source for item in entry["source_history"])
@@ -414,11 +542,18 @@ def build_inventory(
     zh_dump, zh_raw = _load_dump(
         localized_path, "baseline ZH", "database/zh/"
     )
-    trusted_en, trusted_zh = _trusted_artifacts_at_oid(baseline_ref)
-    _require_production_derivation(en_dump, trusted_en, "baseline EN")
-    _require_production_derivation(zh_dump, trusted_zh, "baseline ZH")
-    en_binding, en_rows = _dump_binding(en_dump, en_raw, "baseline EN", baseline_ref)
-    zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "baseline ZH", baseline_ref)
+    _require_scoped_derivation(
+        en_dump, _derive_scoped_dump(
+            baseline_ref, "database/", "baseline EN"
+        ), "baseline EN",
+    )
+    _require_scoped_derivation(
+        zh_dump, _derive_scoped_dump(
+            baseline_ref, "database/zh/", "baseline ZH"
+        ), "baseline ZH",
+    )
+    en_binding, en_rows = _dump_binding(en_dump, en_raw, "baseline EN")
+    zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "baseline ZH")
     entries = _paired_entries(en_rows, zh_rows, "baseline")
     try:
         glossary_sha256 = _sha256(glossary_path.read_bytes())
@@ -464,12 +599,27 @@ def _nonempty_string(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _require_exact_fields(
+    record: dict[str, Any], expected: set[str], context: str,
+) -> None:
+    actual = set(record)
+    _require(
+        actual == expected,
+        f"{context} field set mismatch: missing {sorted(expected - actual)!r}, "
+        f"unknown {sorted(actual - expected)!r}",
+    )
+
+
 def _validate_deferral(record: dict[str, Any], context: str) -> None:
     conclusion = record.get("terminal_conclusion")
     if conclusion in DEFER_CONCLUSIONS:
         for field in ("deferral_owner", "deferral_reason", "reentry_trigger"):
             _require(_nonempty_string(record.get(field)),
                      f"{context} deferred conclusion requires {field}")
+    else:
+        for field in ("deferral_owner", "deferral_reason"):
+            _require(record.get(field) is None,
+                     f"{context} non-deferred conclusion forbids {field}")
 
 
 def _expected_production_facts(
@@ -535,6 +685,7 @@ def validate_results(
     expected_entries = {entry["identity"]: entry for entry in inventory["entries"]}
     _require(len(records) >= 1, "review evidence is missing metadata")
     metadata, cards = records[0], records[1:]
+    _require_exact_fields(metadata, METADATA_FIELDS, "review metadata")
     _require(metadata.get("baseline") == inventory["baseline_ref"],
              "review metadata baseline mismatch")
     _require(metadata.get("glossary_sha256") == inventory["glossary"]["sha256"],
@@ -546,6 +697,7 @@ def validate_results(
 
     seen: dict[str, dict[str, Any]] = {}
     for card in cards:
+        _require_exact_fields(card, CARD_FIELDS, "review card")
         identity = card.get("identity")
         _require(isinstance(identity, str), "review card identity must be a string")
         _require(identity not in seen, f"duplicate review card {identity!r}")
@@ -564,6 +716,7 @@ def validate_results(
         conclusion = card.get("terminal_conclusion")
         _require(conclusion in TERMINAL_CONCLUSIONS,
                  f"{identity} has nonterminal conclusion {conclusion!r}")
+        _validate_deferral(card, identity)
         _require(card.get("key") == baseline["key"], f"{identity} key mismatch")
         _validate_production_evidence(card, inventory, baseline, identity)
         baseline_en = [variant["english"] for variant in baseline["variants"]]
@@ -591,6 +744,15 @@ def validate_results(
         for variant, review, proposed_pattern in zip(baseline["variants"], reviews, proposed):
             ordinal = variant["locator"]["variant_ordinal"]
             context = f"{identity} variant {ordinal}"
+            variant_conclusion = review.get("terminal_conclusion")
+            _require(variant_conclusion in TERMINAL_CONCLUSIONS,
+                     f"{context} has nonterminal conclusion {variant_conclusion!r}")
+            expected_fields = (
+                VARIANT_FIELDS | DEFERRAL_FIELDS
+                if variant_conclusion in DEFER_CONCLUSIONS
+                else VARIANT_FIELDS
+            )
+            _require_exact_fields(review, expected_fields, context)
             for field, expected in (
                 ("weight", variant["weight"]),
                 ("control_prefix", variant["control_prefix"]),
@@ -600,9 +762,6 @@ def validate_results(
                 ("proposed_translation", proposed_pattern),
             ):
                 _require(review.get(field) == expected, f"{context} {field} mismatch")
-            variant_conclusion = review.get("terminal_conclusion")
-            _require(variant_conclusion in TERMINAL_CONCLUSIONS,
-                     f"{context} has nonterminal conclusion {variant_conclusion!r}")
             _require(_nonempty_string(review.get("rationale")), f"{context} requires rationale")
             if variant_conclusion == "keep":
                 _require(proposed_pattern == variant["chinese"],
@@ -625,7 +784,6 @@ def validate_results(
             _require("retranslate" in variant_conclusions,
                      f"{identity} retranslate requires a retranslate variant")
         else:
-            _validate_deferral(card, identity)
             _require(conclusion in variant_conclusions,
                      f"{identity} deferred conclusion requires a matching deferred variant")
 
@@ -651,7 +809,7 @@ def add_candidate(
     ancestry = subprocess.run(
         ["git", "-C", str(repository), "merge-base", "--is-ancestor",
          inventory["baseline_ref"], candidate_ref],
-        text=True, capture_output=True,
+        text=True, capture_output=True, env=trusted_git_environment(),
     )
     _require(
         ancestry.returncode == 0,
@@ -661,11 +819,18 @@ def add_candidate(
     zh_dump, zh_raw = _load_dump(
         localized_path, "candidate ZH", "database/zh/"
     )
-    trusted_en, trusted_zh = _trusted_artifacts_at_oid(candidate_ref)
-    _require_production_derivation(en_dump, trusted_en, "candidate EN")
-    _require_production_derivation(zh_dump, trusted_zh, "candidate ZH")
-    en_binding, en_rows = _dump_binding(en_dump, en_raw, "candidate EN", candidate_ref)
-    zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "candidate ZH", candidate_ref)
+    _require_scoped_derivation(
+        en_dump, _derive_scoped_dump(
+            candidate_ref, "database/", "candidate EN"
+        ), "candidate EN",
+    )
+    _require_scoped_derivation(
+        zh_dump, _derive_scoped_dump(
+            candidate_ref, "database/zh/", "candidate ZH"
+        ), "candidate ZH",
+    )
+    en_binding, en_rows = _dump_binding(en_dump, en_raw, "candidate EN")
+    zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "candidate ZH")
     entries = _paired_entries(en_rows, zh_rows, "candidate")
     baseline_en = {
         entry["identity"]: [variant["english"] for variant in entry["variants"]]
