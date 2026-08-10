@@ -263,9 +263,9 @@
                 { "language": "en", "relation": "AT", "pattern": "${actor} gazes fiercely through ${target}!" },
                 { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gazes fiercely through ${target}!" },
                 { "language": "en", "relation": "PAST", "pattern": "${actor} gazes fiercely through ${target}!" },
-                { "language": "zh", "relation": "AT", "pattern": "${actor}以凶狠的目光直视${target}！" },
-                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}以凶狠的目光直视${target}！" },
-                { "language": "zh", "relation": "PAST", "pattern": "${actor}以凶狠的目光直视${target}！" }
+                { "language": "zh", "relation": "AT", "pattern": "${actor}以凶狠的目光穿透${target}！" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}以凶狠的目光穿透${target}！" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}以凶狠的目光穿透${target}！" }
               ]
             }
           ],

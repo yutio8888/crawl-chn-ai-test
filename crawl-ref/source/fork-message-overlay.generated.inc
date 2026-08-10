@@ -3583,7 +3583,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"} },
                         { "actor" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} cries, \"Suffer as I suffered!\""}, {"zh", "NONE", "${actor}喊道：“像我一样受苦吧！”"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} cries, \"Suffer as I suffered!\""}, {"zh", "NONE", "${actor}喊道：“承受我所受的！”"} } },
                     },
                         {},
                         {  },
@@ -3603,7 +3603,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"} },
                         { "actor" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} cries, \"Feel what I felt!\""}, {"zh", "NONE", "${actor}喊道：“感受我所感受的痛苦吧！”"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} cries, \"Feel what I felt!\""}, {"zh", "NONE", "${actor}喊道：“感受我感受的！”"} } },
                     },
                         {},
                         {  },
@@ -8743,7 +8743,7 @@ const catalog_source &generated_monspell_catalog()
                         {  },
                         {  },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "You hear a loud warning cry!"}, {"zh", "NONE", "你听到一声响亮的示警嚎叫！"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "You hear a loud warning cry!"}, {"zh", "NONE", "你听到一声响亮的示警喊叫！"} } },
                     },
                         {},
                         {  },
@@ -9212,7 +9212,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes fiercely through ${target}!"}, {"en", "NEXT_TO", "${actor} gazes fiercely through ${target}!"}, {"en", "PAST", "${actor} gazes fiercely through ${target}!"}, {"zh", "AT", "${actor}以凶狠的目光直视${target}！"}, {"zh", "NEXT_TO", "${actor}以凶狠的目光直视${target}！"}, {"zh", "PAST", "${actor}以凶狠的目光直视${target}！"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes fiercely through ${target}!"}, {"en", "NEXT_TO", "${actor} gazes fiercely through ${target}!"}, {"en", "PAST", "${actor} gazes fiercely through ${target}!"}, {"zh", "AT", "${actor}以凶狠的目光穿透${target}！"}, {"zh", "NEXT_TO", "${actor}以凶狠的目光穿透${target}！"}, {"zh", "PAST", "${actor}以凶狠的目光穿透${target}！"} } },
                     },
                         {},
                         {  },

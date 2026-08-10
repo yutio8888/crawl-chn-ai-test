@@ -83,7 +83,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "You hear a loud warning cry!" },
-            { "language": "zh", "relation": "NONE", "pattern": "你听到一声响亮的示警嚎叫！" }
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一声响亮的示警喊叫！" }
           ]
         }],
         "materialization_cases": [],
