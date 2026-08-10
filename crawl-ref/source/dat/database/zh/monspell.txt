@@ -88,11 +88,11 @@ branch summon cast prefix
 %%%%
 Cantrip cast
 
-@The_monster@施放了一个咒语，但什么也没发生。
+@The_monster@施放了一个小戏法，但什么也没发生。
 
-@The_monster@开始施放咒语，却忘了词！
+@The_monster@开始施展小戏法，却忘了咒文！
 
-@The_monster@的一个咒语施放失败。
+@The_monster@施展小戏法时发生了施法失误。
 
 有那么一会儿，@The_monster@看起来更勇敢了。
 
@@ -214,11 +214,11 @@ Throw Klown Pie cast
 %%%%
 Stunning Burst cast
 
-@The_monster@射出的一道电脉冲@at@ @target@。
+@The_monster@向@target@射出一道电脉冲。
 %%%%
 Conjure Living Spells cast
 
-@The_monster@喷出一团团活体魔法！
+@The_monster@迸出一团团活体法术！
 %%%%
 #################################################
 # 这些是特殊的硬编码消息。
@@ -318,7 +318,7 @@ Searing Breath cast
 %%%%%
 Electrical Bolt cast
 
-@The_monster@射出的一道@beam@@at@@target@！
+@The_monster@朝@target@射出一道@beam@！
 %%%%%
 Spit Lava cast
 
@@ -342,19 +342,19 @@ Petrifying Cloud cast
 %%%%
 Volley of Thorns cast
 
-@The_monster@射出的一束荆棘@at@ @target@。
+@The_monster@朝@target@射出一束荆棘。
 %%%%
 Warning Cry cast
 
-@The_monster@发出警戒叫号！
+@The_monster@发出一声警告的嚎叫！
 %%%%
 unseen Warning Cry cast
 
-你听到一声响亮的警戒叫号！
+你听到一声响亮的示警喊叫！
 %%%%
 Slug Dart cast
 
-@The_monster@射出的一枚飞镖@at@ @target@。
+@The_monster@向@target@射出一枚飞镖。
 %%%%
 Paralysis Gaze cast
 
@@ -452,7 +452,7 @@ Geryon cast
 %%%%
 unseen Geryon cast
 
-你听到一个奇怪而悲伤声音。
+你听到一个奇怪而悲伤的声音。
 %%%%
 # 罗克珊无法做手势或是指点。
 Roxanne cast
@@ -469,9 +469,9 @@ Berserker Rage Rupert cast
 %%%%
 Rupert cast targeted
 
-@The_monster@疯狂的咆哮@at@ @target@。
+@The_monster@朝@target@疯狂咆哮。
 
-@The_monster@的大声叫喊@at@ @target@。
+@The_monster@朝@target@大声喊叫。
 %%%%
 Ensnare Arachne cast
 
@@ -489,9 +489,9 @@ VISUAL:@The_monster@疯狂地做着手势。
 %%%%
 Paralyse Xtahua cast
 
-@The_monster@发出的势不可挡的咆哮@at@ @target@！
+@The_monster@朝@target@发出势不可挡的咆哮！
 
-@The_monster@发出的猛烈雷声@at@ @target@！
+@The_monster@朝@target@发出猛烈的雷声！
 %%%%
 Vv cast
 
@@ -541,7 +541,7 @@ silent flayed ghost cast
 
 @The_monster@痛苦地无声呻吟着。
 
-@The_monster@投射的带有痛苦的恶意凝视@at@ @foe@。
+@The_monster@带着痛苦的恶意凝视@foe@。
 %%%%
 flayed ghost cast
 
@@ -577,7 +577,7 @@ orb of fire cast
 %%%%
 obsidian statue cast
 
-@The_monster@'的眼睛短暂地闪动光芒。
+@The_monster@的眼睛短暂地闪动光芒。
 %%%%
 # 斯芬克斯无法做手势或是指点。
 
@@ -590,7 +590,7 @@ sphinx cast
 %%%%
 eidolon cast targeted
 
-@The_monster@投射的尖利凝视@at@ @target@。
+@The_monster@朝@target@投射出尖利的凝视。
 %%%%
 basilisk cast targeted
 
@@ -610,7 +610,7 @@ thrashing horror cast
 %%%%
 Airstrike wind drake cast
 
-@The_monster@拍击翅膀产生的气流@at@ @target@。
+@The_monster@朝@target@拍动@possessive@的翅膀。
 %%%%
 Wind Blast wind drake cast
 
@@ -646,19 +646,19 @@ Metal Splinters war gargoyle cast
 %%%%
 Splinterspray cast
 
-@The_monster@掷出的一小串@beam@@at@@target@。
+@The_monster@朝@target@掷出一蓬@beam@。
 %%%%
 Crystallising Shot crystal guardian cast
 
-@The_monster@射出的水晶箭@at@ @target@。
+@The_monster@朝@target@射出@reflexive@的一块碎片。
 %%%%
 Stone Arrow gargoyle cast
 
-@The_monster@掷出的一束@beam@@at@@target@。
+@The_monster@朝@target@掷出@beam@。
 %%%%
 Bolt of Magma molten gargoyle cast
 
-@The_monster@轰出的岩浆@at@ @target@！
+@The_monster@朝@target@轰出岩浆！
 %%%%
 Primal Wave elemental wellspring cast
 
@@ -736,7 +736,7 @@ unseen Warning Cry ushabti cast
 %%%%
 ushabti cast targeted
 
-@The_monster@做出的僵硬手势@at@ @target@。
+@The_monster@僵硬地朝@target@做出手势。
 %%%%
 Ghostly Fireball revenant cast
 
@@ -748,7 +748,7 @@ Spectral Cloud revenant cast
 %%%%
 Dispel Undead revenant cast
 
-@The_monster@做出的猛烈手势@at@ @target@。
+@The_monster@朝@target@猛烈地做出手势。
 %%%%
 Blink Away revenant cast
 
@@ -756,11 +756,11 @@ __NONE
 %%%%
 Warning Cry seraph cast
 
-@The_monster@向友方呼喊，发出警戒！
+@The_monster@向友方呼喊示警！
 %%%%
 unseen Warning Cry seraph cast
 
-你听到一声响亮的警戒叫号！
+你听到一声响亮的示警喊声！
 %%%%
 Throw Icicle shard shrike cast
 
@@ -776,7 +776,7 @@ unseen Warning Cry howler monkey cast
 %%%%
 Warning Cry howler monkey cast
 
-@The_monster@以惊人的力量嚎叫着，发出响声！
+@The_monster@以惊人的气势发出啼叫与嚎叫！
 %%%%
 unseen Warning Cry vault sentinel cast
 
@@ -800,11 +800,11 @@ formless jellyfish cast
 %%%%
 crystal echidna cast targeted
 
-@The_monster@轻甩出的棘刺@at@ @target@。
+@The_monster@朝@target@轻甩出棘刺。
 %%%%
 culicivora cast targeted
 
-@The_monster@发出的窸窣声音@at@ @target@。
+@The_monster@朝@target@发出窸窣声。
 %%%%
 kobold blastminer cast targeted
 
@@ -892,7 +892,7 @@ living spell cast
 %%%%
 bombardier beetle cast
 
-@The_monster@喷出的可燃液体@at@ @target@。
+@The_monster@朝@target@喷射燃烧液。
 %%%%
 sun moth cast
 
@@ -903,7 +903,7 @@ sun moth cast
 %%%%
 polymorphed wizard cast targeted
 
-@The_monster@施展的一个法术@at@ @target@。
+@The_monster@向@target@施展了一个法术。
 %%%%
 polymorphed wizard cast
 
@@ -962,13 +962,13 @@ unseen priest cast targeted
 %%%%
 unseen priest cast
 
-你听到一些奇怪的、含糊不清的对@a_God@祈祷。
+你听到一些向@a_God@祈祷的奇怪而含糊不清的话。
 %%%%
 non-humanoid wizard cast targeted
 
-@The_monster@在咕哝着一些奇怪的话时，投射的凝视@at@ @target@。
+@The_monster@凝视@target@，咕哝着一些奇怪的话。
 
-@The_monster@施展的一个法术@at@ @target@。
+@The_monster@向@target@施展了一个法术。
 %%%%
 non-humanoid wizard cast
 
@@ -982,11 +982,11 @@ unseen non-humanoid wizard cast
 %%%%
 wizard cast targeted
 
-@The_monster@在吟诵时，做出的手势@at@ @target@。
+@The_monster@一边吟诵，一边朝@target@做出手势。
 
 @The_monster@咕哝着奇怪的话，指向@target@。
 
-@The_monster@施展的一个法术@at@ @target@。
+@The_monster@朝@target@施展了一个法术。
 %%%%
 wizard cast
 
@@ -1013,7 +1013,7 @@ magical cast
 ######################################################
 beam catchall cast
 
-@The_monster@掷出的@beam@@at@@target@。
+@The_monster@朝@target@射出@beam@。
 %%%%
 Acid Ball nascent plasmodium cast
 
@@ -1021,11 +1021,11 @@ Acid Ball nascent plasmodium cast
 %%%%
 Airstrike blizzard demon cast
 
-@The_monster@以冰冷的强度猛烈攻击。
+@The_monster@以刺骨寒意猛烈出击。
 
-@The_monster@以冻结的闪电般的手势比划着。
+@The_monster@做出手势，释放出冰封闪电。
 
-@The_monster@以扭曲的圆圈挥舞着@possessive@的@arms@。
+@The_monster@挥动@possessive@的@arms@，令其盘旋扭动。
 %%%%
 Antimagic Gaze Norris cast
 
@@ -1060,7 +1060,7 @@ Call Lost Souls cast
 %%%%
 Divine Armament cast
 
-@The_monster@恳求@My_God@赐予他们一件武器。
+@The_monster@恳求@My_God@赐予自己一件武器。
 %%%%
 Dominate Undead vampire bloodprince cast
 
