@@ -20,7 +20,7 @@ SPEC = importlib.util.spec_from_file_location("miscast_inventory", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
-BASELINE = "a93bc9f9d181ebc7d043af4d397af052dfb7bc79"
+BASELINE = "aaafab60aff68e631df0fd2b6136075166045267"
 RESULTS = ROOT / "docs/miscast-review-results.md"
 
 

@@ -3,7 +3,7 @@
 ## 冻结边界
 
 - 上游总览：Issue #40 R4；执行入口：Issue #56。
-- 精确基线：`a93bc9f9d181ebc7d043af4d397af052dfb7bc79`。
+- 精确基线：`aaafab60aff68e631df0fd2b6136075166045267`。
 - Glossary SHA-256：
   `95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`。
 - 本批规范身份是生产 SpeakDB 中 history 触及 `database/miscast.txt` 或
@@ -154,7 +154,7 @@ EN/ZH candidate production artifacts 必须再次通过 exact-Git 派生。candi
 
 ```bash
 python3 .claude/scripts/miscast_inventory.py \
-  --baseline-ref a93bc9f9d181ebc7d043af4d397af052dfb7bc79 \
+  --baseline-ref aaafab60aff68e631df0fd2b6136075166045267 \
   --english-dump /private/tmp/miscast-baseline-en.json \
   --localized-dump /private/tmp/miscast-baseline-zh.json \
   --review-results docs/miscast-review-results.md \
