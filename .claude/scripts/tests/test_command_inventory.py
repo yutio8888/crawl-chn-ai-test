@@ -64,6 +64,8 @@ inventory (card_inventory.py):
     cannot substitute B's blobs for the exact baseline A.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import os
@@ -836,6 +838,20 @@ class CommandInventoryToolTest(unittest.TestCase):
             self.assertIn(needle, result.stderr + result.stdout)
 
     # -- Positive fixtures ------------------------------------------------
+
+    def test_system_python_can_load_cli_with_postponed_annotations(self):
+        source = TOOL.read_text(encoding="utf-8")
+        future = "from __future__ import annotations"
+        self.assertIn(future, source)
+        self.assertLess(source.index(future), source.index("str | None"))
+
+        system_python = Path("/usr/bin/python3")
+        if system_python.is_file():
+            result = subprocess.run(
+                [str(system_python), str(TOOL), "--help"],
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_review_results_cli_binds_cards_without_changing_digest(self):
         """The real CLI reads the ledger once, preserves the inventory
