@@ -24,6 +24,7 @@ not asserted (the plan's literal formulation does not hold on baseline data).
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -143,7 +144,7 @@ CARD_FIELDS = {
 PRODUCTION_FACT_FIELDS = {
     "control_prefixes", "legacy_variant_count", "materialization_policies",
     "runtime_tokens", "structured_relations", "structured_template_count",
-    "weights",
+    "weights", "zh_variant_count",
 }
 STRUCTURED_TEMPLATE_REVIEW_FIELDS = {
     "current_pattern_zh", "locator", "materialization_policy", "pattern_en",
@@ -465,36 +466,32 @@ def _paired_entries(
                 en_variant["control_prefix"] == zh_variant["control_prefix"],
                 f"{label} control prefix differs for {key!r} variant {ordinal}",
             )
+        # legacy_variants models the COMPLETE ZH variant list (variant_ordinal
+        # is the ZH file ordinal). Paired ordinals carry the EN raw pattern;
+        # ZH-only ordinals (ZH has no EN counterpart) carry english=None. This
+        # makes the ledger cover every ZH variant that production can emit.
         variants = []
-        for ordinal, en_variant in enumerate(en["variants"]):
-            zh_pattern = (
-                zh["variants"][ordinal]["raw_pattern"]
-                if ordinal < zh_count else None
-            )
+        for ordinal, zh_variant in enumerate(zh["variants"]):
+            en_variant = en["variants"][ordinal] if ordinal < en_count else None
             variants.append({
                 "locator": {"key": key, "variant_ordinal": ordinal},
-                "weight": en_variant["weight"],
-                "control_prefix": en_variant["control_prefix"],
-                "runtime_tokens": en_variant["runtime_tokens"],
-                "english": en_variant["raw_pattern"],
-                "chinese": zh_pattern,
+                "weight": zh_variant["weight"],
+                "control_prefix": zh_variant["control_prefix"],
+                "runtime_tokens": zh_variant["runtime_tokens"],
+                "english": en_variant["raw_pattern"]
+                if en_variant is not None else None,
+                "chinese": zh_variant["raw_pattern"],
             })
         entries.append({
             "identity": f"monspell:{key}",
             "key": key,
             "english_source_line": en["source_line"],
             "chinese_source_line": zh["source_line"],
+            # Per-key EN variant count (including EN-only ordinals without a
+            # ZH counterpart): production_facts keeps legacy_variant_count on
+            # this EN-side semantics (355 across the catalog).
+            "english_variant_count": en_count,
             "variants": variants,
-            "unpaired_zh_variants": [
-                {
-                    "locator": {"key": key, "variant_ordinal": ordinal},
-                    "weight": zh["variants"][ordinal]["weight"],
-                    "control_prefix": zh["variants"][ordinal]["control_prefix"],
-                    "runtime_tokens": zh["variants"][ordinal]["runtime_tokens"],
-                    "chinese": zh["variants"][ordinal]["raw_pattern"],
-                }
-                for ordinal in range(en_count, zh_count)
-            ] if zh_count > en_count else [],
         })
     return entries
 
@@ -640,7 +637,7 @@ def _identity_entry(
         "fallback_zh_source": "zh/monspell.txt" if route == "STRUCTURED" else None,
         "structured_templates": templates if route == "STRUCTURED" else [],
         "legacy_variants": legacy["variants"],
-        "unpaired_zh_variants": legacy["unpaired_zh_variants"],
+        "english_variant_count": legacy["english_variant_count"],
         "source_lines": {
             "english": legacy["english_source_line"],
             "chinese": legacy["chinese_source_line"],
@@ -683,19 +680,25 @@ def _expected_evidence_locations(entry: dict[str, Any]) -> list[str]:
 
 
 def _expected_production_facts(entry: dict[str, Any]) -> dict[str, Any]:
+    variants = entry["legacy_variants"]
     return {
         "structured_template_count": len(entry["structured_templates"]),
         "structured_relations": sorted({
             template["relation"]
             for template in entry["structured_templates"]
         }),
-        "legacy_variant_count": len(entry["legacy_variants"]),
-        "weights": [variant["weight"] for variant in entry["legacy_variants"]],
+        # legacy_variant_count keeps its frozen EN-side semantics (355 across
+        # the catalog): the per-key EN variant count, EN-only ordinals
+        # included. zh_variant_count is the complete ZH variant list, ZH-only
+        # ordinals included (357 across the catalog).
+        "legacy_variant_count": entry["english_variant_count"],
+        "zh_variant_count": len(variants),
+        "weights": [variant["weight"] for variant in variants],
         "control_prefixes": [
-            variant["control_prefix"] for variant in entry["legacy_variants"]
+            variant["control_prefix"] for variant in variants
         ],
         "runtime_tokens": [
-            variant["runtime_tokens"] for variant in entry["legacy_variants"]
+            variant["runtime_tokens"] for variant in variants
         ],
         "materialization_policies": entry["policies"],
     }
@@ -922,10 +925,12 @@ def _validate_card(
                  f"{context} fallback mismatch")
         _require(_nonempty_string(review["rationale"]),
                  f"{context} requires a rationale")
-        if variant["chinese"] is None:
-            _require(review_conclusion == "keep" and proposal is None,
-                     f"{context} unpaired EN variant must keep None")
-        elif review_conclusion == "keep":
+        # legacy_variants is the complete ZH variant list: paired ordinals
+        # carry english + chinese; ZH-only ordinals carry english=None and are
+        # still fully reviewed (english must be None, current_chinese is the
+        # actual ZH text, keep preserves it, adjust/retranslate audits a
+        # change, rationale is required).
+        if review_conclusion == "keep":
             _require(proposal == variant["chinese"],
                      f"{context} keep must preserve current Chinese")
         elif review_conclusion in {"adjust", "retranslate"}:
@@ -1109,7 +1114,7 @@ def build_inventory(
     _require(phase0["summary"]["monspell_keys"] == EXPECTED_IDENTITY_COUNT,
              "phase0 inventory monspell_keys mismatch")
 
-    manifest = _manifest_snapshot_at_oid(
+    manifest, _manifest_order = _manifest_snapshot_at_oid(
         baseline_ref, manifest_path, "baseline manifest"
     )
     _require(manifest.get("domain") == DOMAIN,
@@ -1425,15 +1430,139 @@ def _manifest_snapshot_at_oid(
         aggregate["entries"].extend(fragment["entries"])
         aggregate["tombstones"].extend(fragment["tombstones"])
     try:
-        return _normalise_manifest(aggregate, catalog_order)
+        return _normalise_manifest(aggregate, catalog_order), catalog_order
     except ManifestError as exc:
         raise InventoryError(f"{label} manifest normalization failed: {exc}") from exc
 
 
+def _manifest_zh_template_refs(
+    manifest: dict[str, Any],
+):
+    """Yield (structured locator, zh template dict) for every catalog template.
+
+    Locator tuples use the ledger's (key, variant_ordinal, case_id, relation)
+    shape so they can be matched against proposed_structured_zh entries.
+    case_id follows ``_template_records``: "root" for non-case policies and
+    the case_id for CASE_MAP/RECURSIVE_CASE_MAP materialization_cases.
+    """
+    for entry in manifest["entries"]:
+        key = entry["canonical_key"]
+        for variant in entry.get("variants", []):
+            ordinal = variant.get("variant_ordinal")
+            policy = variant.get("materialization_policy")
+            cases = variant.get("materialization_cases") or []
+            if policy in CASE_POLICIES:
+                metadata_items = [
+                    (str(case.get("case_id", "")), metadata)
+                    for case in cases
+                    for metadata in case.get("line_metadata", [])
+                ]
+            else:
+                metadata_items = [
+                    ("root", metadata)
+                    for metadata in variant.get("line_metadata", [])
+                ]
+            for case_id, metadata in metadata_items:
+                for template in metadata.get("templates", []):
+                    if template.get("language") == "zh":
+                        locator = (key, ordinal, case_id,
+                                   template.get("relation"))
+                        yield locator, template
+
+
+def _manifest_zh_patterns(
+    manifest: dict[str, Any],
+) -> dict[tuple[Any, ...], str]:
+    """Map every structured zh template locator to its pattern."""
+    return {
+        locator: template["pattern"]
+        for locator, template in _manifest_zh_template_refs(manifest)
+    }
+
+
+def _ledger_proposed_structured_zh(
+    path: Path,
+) -> dict[tuple[Any, ...], str]:
+    """Map every ledger proposed_structured_zh locator to its zh pattern."""
+    records = _strict_block(path)
+    proposed: dict[tuple[Any, ...], str] = {}
+    for record in records[1:]:
+        for item in record.get("proposed_structured_zh", []):
+            locator = item.get("locator")
+            pattern = item.get("pattern_zh")
+            if not isinstance(locator, dict) or not isinstance(pattern, str):
+                # validate_results fails closed on the full ledger schema;
+                # for redaction, a malformed entry audits nothing.
+                continue
+            try:
+                key = _locator_key(locator)
+            except (KeyError, TypeError):
+                continue
+            proposed[key] = pattern
+    return proposed
+
+
+def _redact_candidate_manifest(
+    candidate: dict[str, Any],
+    baseline_zh: dict[tuple[Any, ...], str],
+    ledger_proposed: dict[tuple[Any, ...], str],
+    label: str,
+) -> dict[str, Any]:
+    """Return the candidate manifest with audited zh changes reverted.
+
+    A candidate zh pattern may differ from the baseline only when the ledger's
+    proposed_structured_zh carries the exact candidate value for the same
+    locator (byte-exact audited change). Every other zh change fails closed.
+    """
+    redacted = copy.deepcopy(candidate)
+    for locator, template in _manifest_zh_template_refs(redacted):
+        baseline_pattern = baseline_zh.get(locator)
+        candidate_pattern = template["pattern"]
+        if candidate_pattern == baseline_pattern:
+            continue
+        _require(
+            candidate_pattern == ledger_proposed.get(locator),
+            f"{label} unaudited zh pattern change at {locator!r}",
+        )
+        template["pattern"] = baseline_pattern
+    return redacted
+
+
+def _first_drift_path(left: Any, right: Any, path: str = "") -> str | None:
+    """Return a human-readable path to the first structural difference."""
+    if left == right:
+        return None
+    prefix = f"{path}: " if path else ""
+    if isinstance(left, dict) and isinstance(right, dict):
+        for key in sorted(set(left) | set(right), key=str):
+            child = f"{path}.{key}" if path else str(key)
+            if key not in left:
+                return f"{child}: missing in baseline"
+            if key not in right:
+                return f"{child}: missing in candidate"
+            found = _first_drift_path(left[key], right[key], child)
+            if found is not None:
+                return found
+        return f"{prefix}dict content differs"
+    if isinstance(left, list) and isinstance(right, list):
+        if len(left) != len(right):
+            return f"{prefix}list length {len(left)} != {len(right)}"
+        for index, (a, b) in enumerate(zip(left, right)):
+            found = _first_drift_path(
+                a, b, f"{path}[{index}]" if path else f"[{index}]"
+            )
+            if found is not None:
+                return found
+        return f"{prefix}list content differs"
+    return f"{prefix}{left!r} != {right!r}"
+
+
 def add_candidate(
     inventory: dict[str, Any], candidate_ref: str, english_path: Path,
-    localized_path: Path, manifest_path: Path,
+    localized_path: Path, manifest_path: Path, review_results_path: Path,
 ) -> list[dict[str, Any]]:
+    _require(review_results_path is not None,
+             "candidate validation requires --review-results")
     shared._require_candidate_commit(
         inventory["baseline_ref"], candidate_ref, exact_clean_checkout=True
     )
@@ -1473,7 +1602,16 @@ def add_candidate(
             f"candidate English drift for {entry['identity']}",
         )
 
-    candidate_manifest = _manifest_snapshot_at_oid(
+    # Re-load the baseline manifest from its exact Git snapshot and compare it
+    # with the candidate manifest field by field. Only audited ZH pattern
+    # changes survive redaction; every other field (entry mode, stable ids,
+    # ordinals, weights, english snapshots, pattern_en, frame, applicability,
+    # binding, policies, slots, sensory, channel, behavior, cases, recursive
+    # metadata, catalog order, tombstones) must be byte-identical.
+    baseline_manifest, baseline_order = _manifest_snapshot_at_oid(
+        inventory["baseline_ref"], manifest_path, "baseline manifest"
+    )
+    candidate_manifest, candidate_order = _manifest_snapshot_at_oid(
         candidate_ref, manifest_path, "candidate manifest"
     )
     _require(candidate_manifest.get("domain") == DOMAIN,
@@ -1486,6 +1624,17 @@ def add_candidate(
     }
     _require(candidate_keys == set(expected_keys),
              "candidate manifest key set mismatch")
+    _require(candidate_order == baseline_order,
+             "candidate manifest catalog order drift")
+    redacted = _redact_candidate_manifest(
+        candidate_manifest,
+        _manifest_zh_patterns(baseline_manifest),
+        _ledger_proposed_structured_zh(review_results_path),
+        "candidate manifest",
+    )
+    drift = _first_drift_path(redacted, baseline_manifest)
+    _require(drift is None, f"candidate manifest drift: {drift}")
+
     candidate_by_key = {
         entry["canonical_key"]: entry for entry in candidate_manifest["entries"]
     }
@@ -1495,18 +1644,35 @@ def add_candidate(
         # The ledger models the structured side only for STRUCTURED (and
         # trivially empty SUPPRESSED) routes; CLOSURE_ONLY catalog templates
         # are facts, not production templates, so their locators are not
-        # compared against the modeled side.
-        if entry["route"] != "LEGACY":
-            _require(
-                [template["locator"] for template in candidate_templates]
-                == [template["locator"] for template in entry["structured_templates"]],
-                f"candidate structured locator drift for {entry['identity']}",
-            )
+        # projected. The manifest comparison above already proved the full
+        # candidate catalog equals the audited baseline outside zh patterns.
         structured_by_identity[entry["identity"]] = candidate_templates
 
     candidate_legacy_by_identity = {
         entry["identity"]: entry["variants"] for entry in entries
     }
+    # Candidate binding is per ZH variant (ZH-only ordinals included): the
+    # candidate runtime token sequence must equal the baseline token sequence
+    # token by token (count, order, duplicates) on every ZH variant, and the
+    # candidate chinese must equal the ledger proposal (checked by
+    # validate_results against the candidate projection).
+    for entry in inventory["entries"]:
+        baseline_variants = entry["legacy_variants"]
+        candidate_variants = candidate_legacy_by_identity[entry["identity"]]
+        _require(
+            len(candidate_variants) == len(baseline_variants),
+            f"candidate ZH variant count drift for {entry['identity']}",
+        )
+        for ordinal, (baseline_variant, candidate_variant) in enumerate(
+            zip(baseline_variants, candidate_variants)
+        ):
+            _require(
+                candidate_variant["runtime_tokens"]
+                == baseline_variant["runtime_tokens"],
+                f"candidate ZH token drift for {entry['identity']} "
+                f"variant {ordinal}",
+            )
+
     candidate = {
         "candidate_ref": candidate_ref,
         "dumps": {"english": en_binding, "localized": zh_binding},
@@ -1569,6 +1735,7 @@ def main(argv: list[str] | None = None) -> int:
         candidate_entries = add_candidate(
             inventory, args.candidate_ref, args.candidate_english_dump,
             args.candidate_localized_dump, args.manifest,
+            args.review_results,
         )
     if args.review_results is not None:
         inventory["review_evidence"] = validate_results(

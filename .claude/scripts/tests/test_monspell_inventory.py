@@ -534,8 +534,8 @@ class MonspellInventoryTests(unittest.TestCase):
                 report_path, anchor_path, self.glossary,
             )
 
-    def write_results(self, records: list[dict]) -> Path:
-        path = self.root / f"results-{self.id().split('.')[-1]}.md"
+    def write_results(self, records: list[dict], suffix: str = "") -> Path:
+        path = self.root / f"results-{self.id().split('.')[-1]}{suffix}.md"
         path.write_text(
             "fixture\n\n" + MODULE.STRICT_BEGIN + "\n```jsonl\n"
             + "\n".join(json.dumps(record, ensure_ascii=False, sort_keys=True)
@@ -690,16 +690,33 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assertEqual("none", by_key["epsilon chant cast"]["production_zh_source"])
         self.assertEqual(["CASE_MAP", "NONE"],
                          by_key["delta orb cast"]["policies"])
-        self.assertEqual(2, len(by_key["lambda shield cast"]["legacy_variants"]))
-        self.assertIsNone(by_key["lambda shield cast"]["legacy_variants"][1]["chinese"])
-        self.assertEqual(0, len(by_key["lambda shield cast"]["unpaired_zh_variants"]))
-        self.assertEqual(1, len(by_key["mu ward cast"]["unpaired_zh_variants"]))
+        # legacy_variants is the complete ZH variant list: lambda (EN 2/ZH 1)
+        # has one variant, mu (EN 1/ZH 2) has two with a ZH-only ordinal.
+        self.assertEqual(1, len(by_key["lambda shield cast"]["legacy_variants"]))
+        self.assertIsNotNone(
+            by_key["lambda shield cast"]["legacy_variants"][0]["chinese"]
+        )
+        self.assertEqual(2, len(by_key["mu ward cast"]["legacy_variants"]))
+        self.assertIsNone(by_key["mu ward cast"]["legacy_variants"][1]["english"])
+        self.assertEqual("@The_monster@警戒。",
+                         by_key["mu ward cast"]["legacy_variants"][1]["chinese"])
         self.assertEqual(2, len(by_key["alpha strike cast"]["structured_templates"]))
         self.assertEqual([], by_key["zeta summon cast"]["structured_templates"])
         self.assertEqual([], by_key["eta word cast"]["structured_templates"])
+        # production facts keep the frozen EN-side legacy_variant_count and
+        # add the complete ZH-side zh_variant_count.
+        mu_facts = MODULE._expected_production_facts(by_key["mu ward cast"])
+        self.assertEqual(1, mu_facts["legacy_variant_count"])
+        self.assertEqual(2, mu_facts["zh_variant_count"])
+        lambda_facts = MODULE._expected_production_facts(
+            by_key["lambda shield cast"]
+        )
+        self.assertEqual(2, lambda_facts["legacy_variant_count"])
+        self.assertEqual(1, lambda_facts["zh_variant_count"])
         self.assertEqual(
-            1, sum(len(entry["unpaired_zh_variants"])
-                   for entry in first["entries"])
+            1, sum(1 for entry in first["entries"]
+                   for variant in entry["legacy_variants"]
+                   if variant["english"] is None)
         )
         self.assertEqual("9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083",
                          first["candidate_anchor"]["artifact_sha256"])
@@ -1357,18 +1374,37 @@ class MonspellInventoryTests(unittest.TestCase):
                         in eta["reviewer_rationale"])
         self.validate(rows)
 
-    def test_unpaired_en_variant_must_keep_none(self):
+    def test_zh_only_variant_review_rules(self):
+        # mu ward cast is EN 1 / ZH 2: ordinal 1 is a ZH-only variant. Its
+        # review must carry english=None, the actual ZH text as
+        # current_chinese, and keep must preserve it (the symmetric
+        # counterpart of the old unpaired-EN keep-None rule).
         records = self.ledger()
         rows = copy.deepcopy(records)
-        lam = next(card for card in rows[1:] if card["key"] == "lambda shield cast")
-        unpaired = lam["legacy_variant_reviews"][1]
-        self.assertIsNone(unpaired["current_chinese"])
-        self.assertIsNone(unpaired["proposed_translation"])
-        unpaired["terminal_conclusion"] = "adjust"
-        unpaired["proposed_translation"] = "新译。"
-        lam["proposed_translation"][1] = "新译。"
-        with self.assertRaisesRegex(MODULE.InventoryError, "unpaired EN variant"):
+        mu = next(card for card in rows[1:] if card["key"] == "mu ward cast")
+        zh_only = mu["legacy_variant_reviews"][1]
+        self.assertIsNone(zh_only["english"])
+        self.assertEqual("@The_monster@警戒。", zh_only["current_chinese"])
+        self.assertEqual("@The_monster@警戒。", zh_only["proposed_translation"])
+        self.assertTrue(zh_only["rationale"])
+        self.validate(rows)
+
+        # keep must preserve the ZH-only variant's current text
+        rows = copy.deepcopy(records)
+        mu = next(card for card in rows[1:] if card["key"] == "mu ward cast")
+        mu["legacy_variant_reviews"][1]["proposed_translation"] = "@The_monster@警戒！"
+        mu["proposed_translation"][1] = "@The_monster@警戒！"
+        with self.assertRaisesRegex(MODULE.InventoryError, "keep must preserve"):
             self.validate(rows)
+
+        # an audited adjust on the ZH-only variant is allowed (STRUCTURED
+        # fallback reviews permit keep/adjust; aggregation stays keep)
+        rows = copy.deepcopy(records)
+        mu = next(card for card in rows[1:] if card["key"] == "mu ward cast")
+        mu["legacy_variant_reviews"][1]["terminal_conclusion"] = "adjust"
+        mu["legacy_variant_reviews"][1]["proposed_translation"] = "@The_monster@警戒！"
+        mu["proposed_translation"][1] = "@The_monster@警戒！"
+        self.validate(rows)
 
     def test_deferral_fields_are_required_and_forbidden(self):
         records = self.ledger()
@@ -1436,9 +1472,14 @@ class MonspellInventoryTests(unittest.TestCase):
         return manifest
 
     def add_candidate(self, en, zh, candidate_manifest=None,
-                      candidate_ref=CANDIDATE):
+                      candidate_ref=CANDIDATE, review_records=None,
+                      candidate_order=None):
         en_path = self.write("candidate-en.json", en)
         zh_path = self.write("candidate-zh.json", zh)
+        review_path = self.write_results(
+            review_records if review_records is not None else self.ledger(),
+            suffix="-candidate",
+        )
         with self.patched(), \
                 mock.patch.object(MODULE.shared, "_require_candidate_commit"), \
                 mock.patch.object(
@@ -1447,20 +1488,26 @@ class MonspellInventoryTests(unittest.TestCase):
                 ), \
                 mock.patch.object(
                     MODULE, "_manifest_snapshot_at_oid",
-                    return_value=candidate_manifest or self.candidate_manifest(),
+                    side_effect=[
+                        (self.candidate_manifest(alpha_zh=None), list(KEYS)),
+                        (candidate_manifest or self.candidate_manifest(),
+                         list(KEYS) if candidate_order is None
+                         else candidate_order),
+                    ],
                 ):
             return MODULE.add_candidate(
-                self.inventory, candidate_ref, en_path, zh_path, self.manifest_path
+                self.inventory, candidate_ref, en_path, zh_path,
+                self.manifest_path, review_path,
             )
 
     def test_candidate_binding_matches_proposals(self):
         candidate_en, candidate_zh = self.candidate_dumps(
             "@The_monster@阿尔法新译。"
         )
-        candidate_entries = self.add_candidate(candidate_en, candidate_zh)
-
-        records = self.ledger()
-        rows = copy.deepcopy(records)
+        # The ledger must already carry the audited proposals before the
+        # candidate binding runs: the manifest redaction accepts a candidate
+        # zh pattern only when the ledger proposes the exact same value.
+        rows = copy.deepcopy(self.ledger())
         alpha = next(card for card in rows[1:] if card["key"] == "alpha strike cast")
         alpha["terminal_conclusion"] = "adjust"
         review = alpha["structured_template_reviews"][0]
@@ -1472,10 +1519,13 @@ class MonspellInventoryTests(unittest.TestCase):
             "@The_monster@阿尔法新译。"
         )
         alpha["proposed_translation"][0] = "@The_monster@阿尔法新译。"
+        candidate_entries = self.add_candidate(
+            candidate_en, candidate_zh, review_records=rows
+        )
         self.validate(rows, candidate_entries)
 
         # a legacy proposal that does not match the candidate dump fails
-        rows = copy.deepcopy(records)
+        rows = copy.deepcopy(self.ledger())
         alpha = next(card for card in rows[1:] if card["key"] == "alpha strike cast")
         alpha["terminal_conclusion"] = "adjust"
         review = alpha["structured_template_reviews"][0]
@@ -1489,7 +1539,7 @@ class MonspellInventoryTests(unittest.TestCase):
             self.validate(rows, candidate_entries)
 
         # a structured proposal that does not match the candidate manifest fails
-        rows = copy.deepcopy(records)
+        rows = copy.deepcopy(self.ledger())
         alpha = next(card for card in rows[1:] if card["key"] == "alpha strike cast")
         alpha["terminal_conclusion"] = "adjust"
         review = alpha["structured_template_reviews"][0]
@@ -1521,6 +1571,7 @@ class MonspellInventoryTests(unittest.TestCase):
                                copy.deepcopy(self.zh_dump),
                                candidate_manifest=manifest)
 
+        # a template addition is an unaudited zh pattern change (new locator)
         manifest = self.candidate_manifest()
         entry = next(e for e in manifest["entries"]
                      if e["canonical_key"] == "beta beam cast")
@@ -1530,10 +1581,88 @@ class MonspellInventoryTests(unittest.TestCase):
             {"language": "zh", "relation": "NONE",
              "pattern": "${actor}额外模板。"},
         ])
-        with self.assertRaisesRegex(MODULE.InventoryError, "locator drift"):
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "unaudited zh pattern change"):
             self.add_candidate(copy.deepcopy(self.en_dump),
                                copy.deepcopy(self.zh_dump),
                                candidate_manifest=manifest)
+
+        # a zh pattern change the ledger never proposed is unaudited
+        manifest = self.candidate_manifest(alpha_zh="未审译。")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "unaudited zh pattern change"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+    def test_candidate_manifest_mode_drift_is_rejected(self):
+        # CODE-001: flipping a CANDIDATE entry to CLOSURE_ONLY changes the
+        # STRUCTURED/LEGACY routing in C++ load_monspell_overlay and must fail
+        # closed even though domain/fingerprint/keys/locators are unchanged.
+        manifest = self.candidate_manifest(alpha_zh=None)
+        alpha = next(e for e in manifest["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        alpha["mode"] = "CLOSURE_ONLY"
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "candidate manifest drift"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+    def test_candidate_manifest_pattern_en_drift_is_rejected(self):
+        # CODE-001: an un-audited English structured template change must fail
+        # closed even though the zh pattern and every locator stay identical.
+        manifest = self.candidate_manifest(alpha_zh=None)
+        alpha = next(e for e in manifest["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        templates = alpha["variants"][0]["line_metadata"][0]["templates"]
+        for item in templates:
+            if item["language"] == "en":
+                item["pattern"] = "${actor} alpha strike!"
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "candidate manifest drift"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+    def test_candidate_manifest_catalog_order_drift_is_rejected(self):
+        manifest = self.candidate_manifest()
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "catalog order drift"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest,
+                               candidate_order=list(reversed(KEYS)))
+
+    def test_unpaired_zh_variant_content_drift_is_rejected(self):
+        # CODE-002: changing a ZH-only variant's text in the candidate dump
+        # must fail closed when the ledger did not review that exact text.
+        candidate_en, candidate_zh = self.candidate_dumps()
+        mu = next(e for e in candidate_zh["entries"]
+                  if e["canonical_key"] == "mu ward cast")
+        mu["raw_body"] = "@The_monster@防护。\n\n@The_monster@警戒！\n"
+        mu["variants"][1]["raw_pattern"] = "@The_monster@警戒！"
+        candidate_entries = self.add_candidate(
+            candidate_en, candidate_zh,
+            candidate_manifest=self.candidate_manifest(alpha_zh=None),
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError, "candidate ZH dump"):
+            self.validate(self.ledger(), candidate_entries)
+
+    def test_candidate_zh_token_reorder_is_rejected(self):
+        # CODE-002: the candidate ZH runtime token sequence must equal the
+        # baseline sequence token by token (count, order, duplicates) on every
+        # ZH variant, ZH-only ordinals included.
+        candidate_en, candidate_zh = self.candidate_dumps()
+        beta = next(e for e in candidate_zh["entries"]
+                    if e["canonical_key"] == "beta beam cast")
+        beta["raw_body"] = "@beam@朝@target@发射@The_monster@。\n"
+        beta["variants"][0]["raw_pattern"] = "@beam@朝@target@发射@The_monster@。"
+        with self.assertRaisesRegex(MODULE.InventoryError, "token drift"):
+            self.add_candidate(
+                candidate_en, candidate_zh,
+                candidate_manifest=self.candidate_manifest(alpha_zh=None),
+            )
 
     def test_manifest_snapshot_at_oid_reads_exact_git_blobs(self):
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
@@ -1556,13 +1685,14 @@ class MonspellInventoryTests(unittest.TestCase):
                                side_effect=blob), \
                 mock.patch.object(MODULE.shared, "_git_output",
                                   return_value=tree):
-            loaded = MODULE._manifest_snapshot_at_oid(
+            loaded, catalog_order = MODULE._manifest_snapshot_at_oid(
                 CANDIDATE,
                 ROOT / ".claude/data/message-overlay/monspell.json",
                 "fixture",
             )
         self.assertEqual(12, len(loaded["entries"]))
         self.assertEqual("monspell", loaded["domain"])
+        self.assertEqual(list(KEYS), catalog_order)
 
         with mock.patch.object(MODULE.shared, "_git_blob_at_oid",
                                side_effect=blob), \
