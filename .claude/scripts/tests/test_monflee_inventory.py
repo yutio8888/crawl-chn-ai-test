@@ -808,7 +808,7 @@ TextDB("speak", "database/",
         zh_value = artifact("zh")
         en_path = self.write_dump("cli-en.json", en_value)
         zh_path = self.write_dump("cli-zh.json", zh_value)
-        output = Path("/private/tmp") / f"monflee-test-{id(self)}.json"
+        output = Path("/tmp") / f"monflee-test-{id(self)}.json"
         arguments = [
             "--baseline-ref", BASELINE,
             "--english-dump", str(en_path), "--localized-dump", str(zh_path),
