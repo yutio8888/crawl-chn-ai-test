@@ -434,7 +434,7 @@ Gastronok cast targeted
 
 @The_monster@在咕哝着一些奇怪的话时，投射的目光@at@ @target@。
 
-@The_monster@施展的一个法术@at@ @target@。
+@The_monster@@at@@target@施展了一个法术。
 %%%%
 Gastronok cast
 
@@ -545,7 +545,7 @@ silent flayed ghost cast
 %%%%
 flayed ghost cast
 
-@The_monster@投射的带有痛苦的恶意凝视@at@ @foe@。
+@The_monster@@at@@foe@投射出带有痛苦的恶意凝视。
 
 @The_monster@喊道：“承受我承受的！”
 
@@ -1318,9 +1318,9 @@ scrub nettle cast targeted
 %%%%
 silent blizzard demon cast
 
-@The_monster@以冰冷的强度猛烈攻击。
+@The_monster@以刺骨寒意猛烈出击。
 
-@The_monster@以冻结的闪电般的手势比划着。
+@The_monster@做出手势，释放出冰封闪电。
 %%%%
 undertaker cast targeted
 
