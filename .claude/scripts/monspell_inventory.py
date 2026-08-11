@@ -850,7 +850,10 @@ def _validate_card(
         _require_exact_fields(review, expected_fields, context)
         _require(review_conclusion in TERMINAL_CONCLUSIONS,
                  f"{context} has nonterminal conclusion {review_conclusion!r}")
-        for field in ("locator", "pattern_en", "relation", "sensory",
+        _require(_locator_key(review["locator"])
+                 == _locator_key(template["locator"]),
+                 f"{context} locator mismatch")
+        for field in ("pattern_en", "relation", "sensory",
                       "materialization_policy"):
             _require(review[field] == template[field],
                      f"{context} {field} mismatch")
@@ -859,8 +862,10 @@ def _validate_card(
         if review["materialization_policy"] in CASE_POLICIES:
             _require(review["locator"]["case_id"] != "root",
                      f"{context} case-map review must carry a case_id")
+        _require(_locator_key(proposal.get("locator"))
+                 == _locator_key(template["locator"]),
+                 f"{context} proposed locator mismatch")
         for field, expected in (
-            ("locator", template["locator"]),
             ("pattern_en", template["pattern_en"]),
             ("relation", template["relation"]),
             ("materialization_policy", template["materialization_policy"]),
@@ -992,10 +997,13 @@ def _validate_card(
                         for variant in candidate["legacy_variants"]]
         _require(proposed == candidate_zh,
                  f"{identity} proposal does not match candidate ZH dump")
-        candidate_structured = {
-            _locator_key(item["locator"]): item["pattern_zh"]
-            for item in candidate["structured_zh"]
-        }
+        candidate_structured: dict[tuple[Any, ...], str] = {}
+        for item in candidate["structured_zh"]:
+            locator = _locator_key(item["locator"])
+            _require(locator not in candidate_structured,
+                     f"{identity} duplicate candidate structured locator "
+                     f"{locator!r}")
+            candidate_structured[locator] = item["pattern_zh"]
         for item in proposed_structured:
             _require(
                 item["pattern_zh"]
@@ -1006,10 +1014,35 @@ def _validate_card(
 
 
 def _locator_key(locator: dict[str, Any]) -> tuple[Any, ...]:
-    return (
-        locator["key"], locator["variant_ordinal"],
-        locator["case_id"], locator["relation"],
+    """Validate a structured locator and return its type-strict tuple key.
+
+    Locators are protocol identities: the exact field set is key,
+    variant_ordinal, case_id, relation; key/case_id/relation must be
+    non-empty strings and variant_ordinal a non-bool integer.  Type
+    confusion (``true==1``, ``false==0``, ``1==1.0``) must never make a
+    ledger proposal or a candidate template match a different manifest
+    locator, so every use of a locator as an identity key validates it.
+    """
+    _require(isinstance(locator, dict),
+             "structured locator must be an object")
+    _require_exact_fields(
+        locator,
+        {"key", "variant_ordinal", "case_id", "relation"},
+        "structured locator",
     )
+    key = locator["key"]
+    case_id = locator["case_id"]
+    relation = locator["relation"]
+    ordinal = locator["variant_ordinal"]
+    _require(isinstance(key, str) and bool(key),
+             "structured locator key must be a non-empty string")
+    _require(isinstance(case_id, str) and bool(case_id),
+             "structured locator case_id must be a non-empty string")
+    _require(isinstance(relation, str) and bool(relation),
+             "structured locator relation must be a non-empty string")
+    _require(_is_int(ordinal),
+             "structured locator variant_ordinal must be a non-bool integer")
+    return (key, ordinal, case_id, relation)
 
 
 def _strict_block(path: Path) -> list[dict[str, Any]]:
@@ -1114,7 +1147,7 @@ def build_inventory(
     _require(phase0["summary"]["monspell_keys"] == EXPECTED_IDENTITY_COUNT,
              "phase0 inventory monspell_keys mismatch")
 
-    manifest, _manifest_order = _manifest_snapshot_at_oid(
+    manifest, _manifest_order, _manifest_header = _manifest_snapshot_at_oid(
         baseline_ref, manifest_path, "baseline manifest"
     )
     _require(manifest.get("domain") == DOMAIN,
@@ -1367,8 +1400,15 @@ def _git_fragment_glob(
 
 def _manifest_snapshot_at_oid(
     oid: str, manifest_path: Path, label: str,
-) -> dict[str, Any]:
-    """Reload the catalog header plus fragments from exact Git blobs."""
+) -> tuple[dict[str, Any], list[str], dict[str, Any]]:
+    """Reload the catalog header plus fragments from exact Git blobs.
+
+    Returns the normalized aggregate, the catalog order, and the raw
+    header object (which carries the discovery record: ``fragments`` or
+    ``fragment_glob`` plus every other header field).  The raw header is
+    returned so candidate gates can compare the discovery record itself;
+    it is dropped from the normalized aggregate before fragment loading.
+    """
     repository = Path(__file__).resolve().parents[2]
     resolved = manifest_path.resolve()
     _require(resolved.is_relative_to(repository),
@@ -1430,7 +1470,7 @@ def _manifest_snapshot_at_oid(
         aggregate["entries"].extend(fragment["entries"])
         aggregate["tombstones"].extend(fragment["tombstones"])
     try:
-        return _normalise_manifest(aggregate, catalog_order), catalog_order
+        return _normalise_manifest(aggregate, catalog_order), catalog_order, header
     except ManifestError as exc:
         raise InventoryError(f"{label} manifest normalization failed: {exc}") from exc
 
@@ -1465,39 +1505,60 @@ def _manifest_zh_template_refs(
             for case_id, metadata in metadata_items:
                 for template in metadata.get("templates", []):
                     if template.get("language") == "zh":
-                        locator = (key, ordinal, case_id,
-                                   template.get("relation"))
+                        # The locator is validated strictly (exact field
+                        # set, non-empty string key/case_id/relation,
+                        # non-bool integer ordinal) so the redaction
+                        # backfill can only match audited locators.
+                        locator = _locator_key({
+                            "key": key,
+                            "variant_ordinal": ordinal,
+                            "case_id": case_id,
+                            "relation": template.get("relation"),
+                        })
                         yield locator, template
 
 
 def _manifest_zh_patterns(
     manifest: dict[str, Any],
 ) -> dict[tuple[Any, ...], str]:
-    """Map every structured zh template locator to its pattern."""
-    return {
-        locator: template["pattern"]
-        for locator, template in _manifest_zh_template_refs(manifest)
-    }
+    """Map every structured zh template locator to its pattern.
+
+    Locators are validated by ``_locator_key`` and must be unique so a
+    duplicate locator cannot silently shadow an audited change.
+    """
+    patterns: dict[tuple[Any, ...], str] = {}
+    for locator, template in _manifest_zh_template_refs(manifest):
+        _require(locator not in patterns,
+                 f"duplicate manifest structured locator {locator!r}")
+        patterns[locator] = template["pattern"]
+    return patterns
 
 
 def _ledger_proposed_structured_zh(
     path: Path,
 ) -> dict[tuple[Any, ...], str]:
-    """Map every ledger proposed_structured_zh locator to its zh pattern."""
+    """Map every ledger proposed_structured_zh locator to its zh pattern.
+
+    Locators are validated strictly and must be unique: a type-confused or
+    duplicated locator cannot audit a candidate change, so it fails closed
+    here instead of silently auditing nothing.
+    """
     records = _strict_block(path)
     proposed: dict[tuple[Any, ...], str] = {}
     for record in records[1:]:
-        for item in record.get("proposed_structured_zh", []):
-            locator = item.get("locator")
+        items = record.get("proposed_structured_zh", [])
+        _require(isinstance(items, list),
+                 "ledger proposed_structured_zh must be a list")
+        for item in items:
+            _require(isinstance(item, dict),
+                     "ledger proposed_structured_zh item must be an object")
             pattern = item.get("pattern_zh")
-            if not isinstance(locator, dict) or not isinstance(pattern, str):
-                # validate_results fails closed on the full ledger schema;
-                # for redaction, a malformed entry audits nothing.
-                continue
-            try:
-                key = _locator_key(locator)
-            except (KeyError, TypeError):
-                continue
+            _require(isinstance(pattern, str),
+                     "ledger proposed_structured_zh item must carry a "
+                     "string pattern_zh")
+            key = _locator_key(item.get("locator"))
+            _require(key not in proposed,
+                     f"duplicate ledger structured locator {key!r}")
             proposed[key] = pattern
     return proposed
 
@@ -1529,10 +1590,18 @@ def _redact_candidate_manifest(
 
 
 def _first_drift_path(left: Any, right: Any, path: str = "") -> str | None:
-    """Return a human-readable path to the first structural difference."""
-    if left == right:
-        return None
+    """Return a human-readable path to the first structural difference.
+
+    The comparison is type-strict: JSON bool/int/float must never be
+    conflated (``true != 1``, ``false != 0``, ``1 != 1.0``).  Python
+    equality is only applied to scalars after the type check; containers
+    are always descended recursively, because dict/list equality itself
+    conflates bool with int (``{"b": 1} == {"b": True}``).
+    """
     prefix = f"{path}: " if path else ""
+    if type(left) is not type(right):
+        return (f"{prefix}type {type(left).__name__} != "
+                f"{type(right).__name__} ({left!r} vs {right!r})")
     if isinstance(left, dict) and isinstance(right, dict):
         for key in sorted(set(left) | set(right), key=str):
             child = f"{path}.{key}" if path else str(key)
@@ -1543,7 +1612,7 @@ def _first_drift_path(left: Any, right: Any, path: str = "") -> str | None:
             found = _first_drift_path(left[key], right[key], child)
             if found is not None:
                 return found
-        return f"{prefix}dict content differs"
+        return None
     if isinstance(left, list) and isinstance(right, list):
         if len(left) != len(right):
             return f"{prefix}list length {len(left)} != {len(right)}"
@@ -1553,7 +1622,9 @@ def _first_drift_path(left: Any, right: Any, path: str = "") -> str | None:
             )
             if found is not None:
                 return found
-        return f"{prefix}list content differs"
+        return None
+    if left == right:
+        return None
     return f"{prefix}{left!r} != {right!r}"
 
 
@@ -1571,11 +1642,13 @@ def add_candidate(
     zh_dump, zh_raw = shared._load_dump(
         localized_path, "candidate ZH", "database/zh/"
     )
+    candidate_en_derived = shared._derive_scoped_dump(
+        candidate_ref, "database/", "candidate EN",
+        source_basename=SOURCE_BASENAME,
+    )
     shared._require_scoped_derivation(
-        en_dump, shared._derive_scoped_dump(
-            candidate_ref, "database/", "candidate EN",
-            source_basename=SOURCE_BASENAME,
-        ), "candidate EN", source_basename=SOURCE_BASENAME,
+        en_dump, candidate_en_derived, "candidate EN",
+        source_basename=SOURCE_BASENAME,
     )
     shared._require_scoped_derivation(
         zh_dump, shared._derive_scoped_dump(
@@ -1590,17 +1663,28 @@ def add_candidate(
         zh_dump, zh_raw, "candidate ZH", expected_keys
     )
     entries = _paired_entries(en_rows, zh_rows, "candidate")
-    baseline_en = {
-        entry["identity"]: [variant["english"]
-                            for variant in entry["legacy_variants"]]
-        for entry in inventory["entries"]
-    }
-    for entry in entries:
-        _require(
-            [variant["english"] for variant in entry["variants"]]
-            == baseline_en[entry["identity"]],
-            f"candidate English drift for {entry['identity']}",
-        )
+
+    # EN no-drift proof without ZH projection: the candidate EN side must
+    # equal the baseline EN side at the exact-Git level.  The complete EN
+    # variant list (EN-only ordinals included) is compared item by item
+    # through the derived scoped entries (weight, control prefix, raw
+    # pattern, provenance), and the normalized monspell.txt source
+    # snapshot must be byte-identical on both sides.  A ZH-projected
+    # comparison would never see EN-only ordinals (guardian serpent cast
+    # targeted is EN 3 / ZH 2, so EN ordinal 2 has no ZH counterpart).
+    baseline_en_derived = shared._derive_scoped_dump(
+        inventory["baseline_ref"], "database/", "baseline EN",
+        source_basename=SOURCE_BASENAME,
+    )
+    _require(
+        baseline_en_derived["sources"] == candidate_en_derived["sources"],
+        "candidate English source drift (monspell.txt snapshot differs "
+        "from baseline)",
+    )
+    _require(
+        baseline_en_derived["entries"] == candidate_en_derived["entries"],
+        "candidate English drift (EN variant list differs from baseline)",
+    )
 
     # Re-load the baseline manifest from its exact Git snapshot and compare it
     # with the candidate manifest field by field. Only audited ZH pattern
@@ -1608,10 +1692,10 @@ def add_candidate(
     # ordinals, weights, english snapshots, pattern_en, frame, applicability,
     # binding, policies, slots, sensory, channel, behavior, cases, recursive
     # metadata, catalog order, tombstones) must be byte-identical.
-    baseline_manifest, baseline_order = _manifest_snapshot_at_oid(
+    baseline_manifest, baseline_order, baseline_header = _manifest_snapshot_at_oid(
         inventory["baseline_ref"], manifest_path, "baseline manifest"
     )
-    candidate_manifest, candidate_order = _manifest_snapshot_at_oid(
+    candidate_manifest, candidate_order, candidate_header = _manifest_snapshot_at_oid(
         candidate_ref, manifest_path, "candidate manifest"
     )
     _require(candidate_manifest.get("domain") == DOMAIN,
@@ -1626,6 +1710,14 @@ def add_candidate(
              "candidate manifest key set mismatch")
     _require(candidate_order == baseline_order,
              "candidate manifest catalog order drift")
+    # The discovery header (fragments list or fragment_glob, schema
+    # version, domain, supported languages, fingerprint, catalog order) is
+    # compared field by field, type-strictly, between the raw baseline and
+    # candidate headers: the discovery record itself must not drift, e.g.
+    # swapping fragment_glob for an explicit fragments list is rejected.
+    header_drift = _first_drift_path(candidate_header, baseline_header)
+    _require(header_drift is None,
+             f"candidate manifest discovery header drift: {header_drift}")
     redacted = _redact_candidate_manifest(
         candidate_manifest,
         _manifest_zh_patterns(baseline_manifest),
@@ -1651,10 +1743,12 @@ def add_candidate(
     candidate_legacy_by_identity = {
         entry["identity"]: entry["variants"] for entry in entries
     }
-    # Candidate binding is per ZH variant (ZH-only ordinals included): the
-    # candidate runtime token sequence must equal the baseline token sequence
-    # token by token (count, order, duplicates) on every ZH variant, and the
-    # candidate chinese must equal the ledger proposal (checked by
+    # Candidate binding is per ZH variant (ZH-only ordinals included): every
+    # non-translation protocol fact of each candidate ZH variant is bound to
+    # the baseline - weight, control prefix, runtime token sequence (count,
+    # order, duplicates), and the paired EN pattern (ZH-only ordinals carry
+    # None on both sides).  Only the Chinese text may change, and only when
+    # the ledger reviewed the exact candidate value (checked by
     # validate_results against the candidate projection).
     for entry in inventory["entries"]:
         baseline_variants = entry["legacy_variants"]
@@ -1666,12 +1760,17 @@ def add_candidate(
         for ordinal, (baseline_variant, candidate_variant) in enumerate(
             zip(baseline_variants, candidate_variants)
         ):
-            _require(
-                candidate_variant["runtime_tokens"]
-                == baseline_variant["runtime_tokens"],
-                f"candidate ZH token drift for {entry['identity']} "
-                f"variant {ordinal}",
-            )
+            for field, label in (
+                ("weight", "weight"),
+                ("control_prefix", "control prefix"),
+                ("runtime_tokens", "token"),
+                ("english", "english"),
+            ):
+                _require(
+                    candidate_variant[field] == baseline_variant[field],
+                    f"candidate ZH {label} drift for "
+                    f"{entry['identity']} variant {ordinal}",
+                )
 
     candidate = {
         "candidate_ref": candidate_ref,

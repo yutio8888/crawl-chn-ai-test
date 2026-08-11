@@ -112,7 +112,9 @@ EN_PATTERNS = {
     "theta flee cast": ["@The_monster@ casts a spell."],
     "iota glyph cast": ["@The_monster@ inscribes."],
     "kappa rune cast": ["@The_monster@ carves a rune."],
-    "lambda shield cast": ["@The_monster@ raises a shield.", "@The_monster@ braces."],
+    "lambda shield cast": ["@The_monster@ raises a shield.",
+                            "@The_monster@ braces.",
+                            "@The_monster@ lunges."],
     "mu ward cast": ["@The_monster@ wards."],
 }
 ZH_PATTERNS = {
@@ -127,7 +129,7 @@ ZH_PATTERNS = {
     "theta flee cast": ["@The_monster@施法。"],
     "iota glyph cast": ["@The_monster@铭刻。"],
     "kappa rune cast": ["@The_monster@雕刻符文。"],
-    "lambda shield cast": ["@The_monster@架起盾牌。"],
+    "lambda shield cast": ["@The_monster@架起盾牌。", "@The_monster@稳住身形。"],
     "mu ward cast": ["@The_monster@防护。", "@The_monster@警戒。"],
 }
 
@@ -348,9 +350,8 @@ def fixture_catalog_entries() -> list[dict]:
     return entries
 
 
-def fixture_manifest(phase0_semantic: str) -> tuple[dict, dict[str, list[dict]]]:
-    entries = fixture_catalog_entries()
-    header = {
+def fixture_header(phase0_semantic: str) -> dict:
+    return {
         "schema_version": 1,
         "domain": "monspell",
         "supported_languages": ["en", "zh"],
@@ -358,6 +359,11 @@ def fixture_manifest(phase0_semantic: str) -> tuple[dict, dict[str, list[dict]]]
         "catalog_order": list(KEYS),
         "fragment_glob": "monspell/*.json",
     }
+
+
+def fixture_manifest(phase0_semantic: str) -> tuple[dict, dict[str, list[dict]]]:
+    entries = fixture_catalog_entries()
+    header = fixture_header(phase0_semantic)
     fragments = {
         "monspell/000-a.json": {"entries": entries[:5], "tombstones": []},
         "monspell/001-b.json": {"entries": entries[5:], "tombstones": []},
@@ -451,10 +457,10 @@ class MonspellInventoryTests(unittest.TestCase):
             "EXPECTED_IDENTITY_COUNT": len(KEYS),
             "EXPECTED_REACHABLE_COUNT": len(REACHABLE),
             "EXPECTED_UNREACHABLE_COUNT": len(UNREACHABLE),
-            "EXPECTED_EN_VARIANT_COUNT": 17,
-            "EXPECTED_ZH_VARIANT_COUNT": 17,
-            "EXPECTED_EN_TOKEN_SITES": 18,
-            "EXPECTED_ZH_TOKEN_SITES": 18,
+            "EXPECTED_EN_VARIANT_COUNT": 18,
+            "EXPECTED_ZH_VARIANT_COUNT": 18,
+            "EXPECTED_EN_TOKEN_SITES": 19,
+            "EXPECTED_ZH_TOKEN_SITES": 19,
             "EXPECTED_RANDOM_SUBSTRING_SITES": 2,
             "EXPECTED_LUA_SITES": 0,
             "EXPECTED_VISUAL_PREFIXES": 1,
@@ -482,7 +488,7 @@ class MonspellInventoryTests(unittest.TestCase):
             "EXPECTED_CASE_RELATION_COUNTS": {"NONE": 2},
             "EXPECTED_SENSORY_COUNTS": {"PLAIN": 14, "VISUAL": 1},
             "ASYMMETRIC_VARIANT_KEYS": {
-                "lambda shield cast": (2, 1), "mu ward cast": (1, 2),
+                "lambda shield cast": (3, 2), "mu ward cast": (1, 2),
             },
             "EXPECTED_SEMANTIC_FINGERPRINT": self.phase0["semantic_fingerprint"],
             "EXPECTED_SOURCE_FINGERPRINT": self.phase0["source_fingerprint"],
@@ -690,12 +696,15 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assertEqual("none", by_key["epsilon chant cast"]["production_zh_source"])
         self.assertEqual(["CASE_MAP", "NONE"],
                          by_key["delta orb cast"]["policies"])
-        # legacy_variants is the complete ZH variant list: lambda (EN 2/ZH 1)
-        # has one variant, mu (EN 1/ZH 2) has two with a ZH-only ordinal.
-        self.assertEqual(1, len(by_key["lambda shield cast"]["legacy_variants"]))
+        # legacy_variants is the complete ZH variant list: lambda (EN 3/ZH 2)
+        # has two variants (EN-only ordinal 2 has no ZH counterpart), mu
+        # (EN 1/ZH 2) has two with a ZH-only ordinal.
+        self.assertEqual(2, len(by_key["lambda shield cast"]["legacy_variants"]))
         self.assertIsNotNone(
             by_key["lambda shield cast"]["legacy_variants"][0]["chinese"]
         )
+        self.assertEqual("@The_monster@稳住身形。",
+                         by_key["lambda shield cast"]["legacy_variants"][1]["chinese"])
         self.assertEqual(2, len(by_key["mu ward cast"]["legacy_variants"]))
         self.assertIsNone(by_key["mu ward cast"]["legacy_variants"][1]["english"])
         self.assertEqual("@The_monster@警戒。",
@@ -711,8 +720,8 @@ class MonspellInventoryTests(unittest.TestCase):
         lambda_facts = MODULE._expected_production_facts(
             by_key["lambda shield cast"]
         )
-        self.assertEqual(2, lambda_facts["legacy_variant_count"])
-        self.assertEqual(1, lambda_facts["zh_variant_count"])
+        self.assertEqual(3, lambda_facts["legacy_variant_count"])
+        self.assertEqual(2, lambda_facts["zh_variant_count"])
         self.assertEqual(
             1, sum(1 for entry in first["entries"]
                    for variant in entry["legacy_variants"]
@@ -1473,7 +1482,7 @@ class MonspellInventoryTests(unittest.TestCase):
 
     def add_candidate(self, en, zh, candidate_manifest=None,
                       candidate_ref=CANDIDATE, review_records=None,
-                      candidate_order=None):
+                      candidate_order=None, candidate_header=None):
         en_path = self.write("candidate-en.json", en)
         zh_path = self.write("candidate-zh.json", zh)
         review_path = self.write_results(
@@ -1484,15 +1493,19 @@ class MonspellInventoryTests(unittest.TestCase):
                 mock.patch.object(MODULE.shared, "_require_candidate_commit"), \
                 mock.patch.object(
                     MODULE.shared, "_derive_scoped_dump",
-                    side_effect=[self.derived(en), self.derived(zh)],
+                    side_effect=[self.derived(en), self.derived(zh),
+                                 self.derived(self.en_dump)],
                 ), \
                 mock.patch.object(
                     MODULE, "_manifest_snapshot_at_oid",
                     side_effect=[
-                        (self.candidate_manifest(alpha_zh=None), list(KEYS)),
+                        (self.candidate_manifest(alpha_zh=None), list(KEYS),
+                         fixture_header(self.phase0["semantic_fingerprint"])),
                         (candidate_manifest or self.candidate_manifest(),
                          list(KEYS) if candidate_order is None
-                         else candidate_order),
+                         else candidate_order,
+                         candidate_header or fixture_header(
+                             self.phase0["semantic_fingerprint"])),
                     ],
                 ):
             return MODULE.add_candidate(
@@ -1664,6 +1677,122 @@ class MonspellInventoryTests(unittest.TestCase):
                 candidate_manifest=self.candidate_manifest(alpha_zh=None),
             )
 
+    def test_first_drift_path_is_type_strict(self):
+        # CODE-001: the drift walker must distinguish JSON bool/int/float
+        # (true != 1, false != 0, 1 != 1.0) before Python equality.
+        self.assertIsNone(MODULE._first_drift_path({"a": 1}, {"a": 1}))
+        self.assertIsNone(MODULE._first_drift_path({"a": [1, "x", None]},
+                                                   {"a": [1, "x", None]}))
+        for left, right in ((1, True), (0, False), (1, 1.0)):
+            drift = MODULE._first_drift_path({"a": {"b": left}},
+                                             {"a": {"b": right}})
+            self.assertIsNotNone(drift)
+            self.assertIn("a.b", drift)
+            self.assertIn("type ", drift)
+            self.assertIn(f"{left!r} vs {right!r}", drift)
+
+    def test_candidate_manifest_type_confusions_are_rejected(self):
+        # CODE-001: JSON bool/int/float must never conflate in the candidate
+        # manifest gate (true != 1, false != 0, 1 != 1.0).
+        manifest = self.candidate_manifest(alpha_zh=None)
+        alpha = next(e for e in manifest["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        alpha["variants"][0]["variant_ordinal"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "non-bool integer"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+        manifest = self.candidate_manifest(alpha_zh=None)
+        alpha = next(e for e in manifest["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        alpha["variants"][0]["variant_ordinal"] = 1.0
+        with self.assertRaisesRegex(MODULE.InventoryError, "non-bool integer"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+        manifest = self.candidate_manifest(alpha_zh=None)
+        alpha = next(e for e in manifest["entries"]
+                     if e["canonical_key"] == "alpha strike cast")
+        alpha["variants"][0]["binding"]["resolves_target"] = 0
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "candidate manifest drift"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=manifest)
+
+    def test_candidate_ledger_locator_type_confusion_is_rejected(self):
+        # CODE-001: a ledger proposal locator with a bool ordinal must never
+        # match the manifest int ordinal through Python equality (true == 1).
+        rows = copy.deepcopy(self.ledger())
+        alpha = next(card for card in rows[1:]
+                     if card["key"] == "alpha strike cast")
+        alpha["proposed_structured_zh"][0]["locator"]["variant_ordinal"] = True
+        with self.assertRaisesRegex(MODULE.InventoryError, "non-bool integer"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=self.candidate_manifest(
+                                   alpha_zh=None),
+                               review_records=rows)
+
+    def test_candidate_manifest_discovery_header_drift_is_rejected(self):
+        # CODE-001: the discovery header (fragments list vs fragment_glob) is
+        # compared between baseline and candidate; swapping fragment_glob for
+        # an explicit fragments list must fail closed even though the fragment
+        # content is identical.
+        header = fixture_header(self.phase0["semantic_fingerprint"])
+        del header["fragment_glob"]
+        header["fragments"] = ["monspell/000-a.json", "monspell/001-b.json"]
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "discovery header drift"):
+            self.add_candidate(copy.deepcopy(self.en_dump),
+                               copy.deepcopy(self.zh_dump),
+                               candidate_manifest=self.candidate_manifest(
+                                   alpha_zh=None),
+                               candidate_header=header)
+
+    def test_candidate_en_only_drift_is_rejected(self):
+        # CODE-003: guardian-serpent-shaped asymmetry (lambda is EN 3 / ZH 2,
+        # like the production guardian serpent cast targeted): an EN-only
+        # ordinal (2) has no ZH counterpart, so a ZH-projected comparison
+        # never sees it.  The EN no-drift proof compares the complete EN
+        # variant list item by item and the exact-Git source snapshot.
+        candidate_en = copy.deepcopy(self.en_dump)
+        entry = next(e for e in candidate_en["entries"]
+                     if e["canonical_key"] == "lambda shield cast")
+        entry["variants"][2]["raw_pattern"] = "@The_monster@ lunges hard!"
+        with self.assertRaisesRegex(MODULE.InventoryError, "English drift"):
+            self.add_candidate(candidate_en, copy.deepcopy(self.zh_dump))
+
+        candidate_en = copy.deepcopy(self.en_dump)
+        entry = next(e for e in candidate_en["entries"]
+                     if e["canonical_key"] == "lambda shield cast")
+        entry["variants"][2]["weight"] = 11
+        with self.assertRaisesRegex(MODULE.InventoryError, "English drift"):
+            self.add_candidate(candidate_en, copy.deepcopy(self.zh_dump))
+
+        # The exact-Git EN source snapshot itself must be byte-identical.
+        candidate_en = copy.deepcopy(self.en_dump)
+        candidate_en["sources"][0]["normalized_utf8"] = (
+            candidate_en["sources"][0]["normalized_utf8"].replace(
+                "alpha strike.", "alpha strike!", 1))
+        with self.assertRaisesRegex(MODULE.InventoryError, "source drift"):
+            self.add_candidate(candidate_en, copy.deepcopy(self.zh_dump))
+
+    def test_candidate_zh_only_weight_drift_is_rejected(self):
+        # CODE-003: a ZH-only ordinal (mu EN 1 / ZH 2 ordinal 1) has no EN
+        # counterpart; its weight must still be bound to the baseline.
+        candidate_en, candidate_zh = self.candidate_dumps()
+        mu = next(e for e in candidate_zh["entries"]
+                  if e["canonical_key"] == "mu ward cast")
+        mu["variants"][1]["weight"] = 11
+        with self.assertRaisesRegex(MODULE.InventoryError, "ZH weight drift"):
+            self.add_candidate(
+                candidate_en, candidate_zh,
+                candidate_manifest=self.candidate_manifest(alpha_zh=None),
+            )
+
     def test_manifest_snapshot_at_oid_reads_exact_git_blobs(self):
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
         header_bytes = json.dumps(header, ensure_ascii=False).encode("utf-8")
@@ -1685,7 +1814,7 @@ class MonspellInventoryTests(unittest.TestCase):
                                side_effect=blob), \
                 mock.patch.object(MODULE.shared, "_git_output",
                                   return_value=tree):
-            loaded, catalog_order = MODULE._manifest_snapshot_at_oid(
+            loaded, catalog_order, discovery = MODULE._manifest_snapshot_at_oid(
                 CANDIDATE,
                 ROOT / ".claude/data/message-overlay/monspell.json",
                 "fixture",
@@ -1693,6 +1822,8 @@ class MonspellInventoryTests(unittest.TestCase):
         self.assertEqual(12, len(loaded["entries"]))
         self.assertEqual("monspell", loaded["domain"])
         self.assertEqual(list(KEYS), catalog_order)
+        self.assertEqual(header, discovery)
+        self.assertEqual("monspell/*.json", discovery["fragment_glob"])
 
         with mock.patch.object(MODULE.shared, "_git_blob_at_oid",
                                side_effect=blob), \
