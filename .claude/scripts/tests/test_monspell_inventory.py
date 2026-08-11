@@ -1494,7 +1494,8 @@ class MonspellInventoryTests(unittest.TestCase):
                 mock.patch.object(
                     MODULE.shared, "_derive_scoped_dump",
                     side_effect=[self.derived(en), self.derived(zh),
-                                 self.derived(self.en_dump)],
+                                 self.derived(self.en_dump),
+                                 self.derived(self.zh_dump)],
                 ), \
                 mock.patch.object(
                     MODULE, "_manifest_snapshot_at_oid",
@@ -1792,6 +1793,113 @@ class MonspellInventoryTests(unittest.TestCase):
                 candidate_en, candidate_zh,
                 candidate_manifest=self.candidate_manifest(alpha_zh=None),
             )
+
+    def test_site_shape_projection_is_ordered_and_text_free(self):
+        # R4-MONSPELL-CODE-004-R3: the shape projection is per-variant,
+        # ordered per site, and binds only counts/structure (never the
+        # translatable alternative text itself).
+        rows = [{
+            "key": "gamma gaze cast",
+            "variants": [{
+                "locator": {"key": "gamma gaze cast",
+                             "variant_ordinal": 0},
+                "random_substring_sites": [
+                    {"start": 0, "end": 7, "raw": "明亮|暗淡"},
+                ],
+                "lua_sites": [],
+            }],
+        }]
+        shape = MODULE._site_shape_by_variant(rows)
+        self.assertEqual(
+            {"random_alternative_counts": [2], "lua_site_count": 0},
+            shape[("gamma gaze cast", 0)],
+        )
+        # A same-count text change must not alter the projected shape.
+        rows[0]["variants"][0]["random_substring_sites"][0]["raw"] = "明亮|幽暗"
+        self.assertEqual(shape, MODULE._site_shape_by_variant(rows))
+        # Order and per-site counts are preserved (3 then 2 alternatives).
+        rows[0]["variants"][0]["random_substring_sites"] = [
+            {"start": 0, "end": 7, "raw": "a|b|c"},
+            {"start": 8, "end": 13, "raw": "x|y"},
+        ]
+        self.assertEqual(
+            {"random_alternative_counts": [3, 2], "lua_site_count": 0},
+            MODULE._site_shape_by_variant(rows)[("gamma gaze cast", 0)],
+        )
+        # Lua sites project their count (frozen scope: always zero).
+        rows[0]["variants"][0]["lua_sites"] = [{"start": 0, "end": 4}]
+        self.assertEqual(
+            {"random_alternative_counts": [3, 2], "lua_site_count": 1},
+            MODULE._site_shape_by_variant(rows)[("gamma gaze cast", 0)],
+        )
+
+    def test_candidate_random_site_alternative_drift_is_rejected(self):
+        # R4-MONSPELL-CODE-004-R3: a legacy ZH fallback that adds one
+        # alternative to a random-substring site must be rejected even when
+        # the catalog-wide site count stays unchanged (2 sites in the
+        # fixture) and even when the ledger proposes the new text (the R3
+        # probe shape: source snapshot/raw body/proposal all updated).
+        candidate_en, candidate_zh = self.candidate_dumps()
+        gamma = next(e for e in candidate_zh["entries"]
+                     if e["canonical_key"] == "gamma gaze cast")
+        gamma["raw_body"] = (
+            "VISUAL:@The_monster@发出[明亮|暗淡|耀眼]的光芒。\n\n"
+            "@The_monster@挥了挥手。\n"
+        )
+        gamma["variants"][0]["raw_pattern"] = (
+            "VISUAL:@The_monster@发出[明亮|暗淡|耀眼]的光芒。"
+        )
+        rows = copy.deepcopy(self.ledger())
+        gamma_card = next(card for card in rows[1:]
+                          if card["key"] == "gamma gaze cast")
+        gamma_card["legacy_variant_reviews"][0][
+            "terminal_conclusion"] = "adjust"
+        gamma_card["legacy_variant_reviews"][0]["proposed_translation"] = (
+            "VISUAL:@The_monster@发出[明亮|暗淡|耀眼]的光芒。"
+        )
+        gamma_card["proposed_translation"][0] = (
+            "VISUAL:@The_monster@发出[明亮|暗淡|耀眼]的光芒。"
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "random-site shape drift"):
+            self.add_candidate(
+                candidate_en, candidate_zh,
+                candidate_manifest=self.candidate_manifest(alpha_zh=None),
+                review_records=rows,
+            )
+
+    def test_candidate_random_site_alternative_text_change_passes(self):
+        # R4-MONSPELL-CODE-004-R3: only the alternative COUNT/structure is
+        # bound.  A same-shape text change inside a site stays an ordinary
+        # audited ZH text change: it passes the shape binding and must be
+        # proposed in the ledger (requirement 5 of the blocker fix).
+        candidate_en, candidate_zh = self.candidate_dumps()
+        gamma = next(e for e in candidate_zh["entries"]
+                     if e["canonical_key"] == "gamma gaze cast")
+        gamma["raw_body"] = (
+            "VISUAL:@The_monster@发出[明亮|幽暗]的光芒。\n\n"
+            "@The_monster@挥了挥手。\n"
+        )
+        gamma["variants"][0]["raw_pattern"] = (
+            "VISUAL:@The_monster@发出[明亮|幽暗]的光芒。"
+        )
+        rows = copy.deepcopy(self.ledger())
+        gamma_card = next(card for card in rows[1:]
+                          if card["key"] == "gamma gaze cast")
+        gamma_card["legacy_variant_reviews"][0][
+            "terminal_conclusion"] = "adjust"
+        gamma_card["legacy_variant_reviews"][0]["proposed_translation"] = (
+            "VISUAL:@The_monster@发出[明亮|幽暗]的光芒。"
+        )
+        gamma_card["proposed_translation"][0] = (
+            "VISUAL:@The_monster@发出[明亮|幽暗]的光芒。"
+        )
+        candidate_entries = self.add_candidate(
+            candidate_en, candidate_zh,
+            candidate_manifest=self.candidate_manifest(alpha_zh=None),
+            review_records=rows,
+        )
+        self.validate(rows, candidate_entries)
 
     def test_manifest_snapshot_at_oid_reads_exact_git_blobs(self):
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])

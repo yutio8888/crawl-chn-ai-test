@@ -496,6 +496,32 @@ def _paired_entries(
     return entries
 
 
+def _site_shape_by_variant(
+    rows: list[dict[str, Any]],
+) -> dict[tuple[str, int], dict[str, Any]]:
+    """Project the ordered per-variant random/Lua site shape from dump rows.
+
+    Reuses the already-derived ``random_substring_sites`` / ``lua_sites``
+    data (no new parser): every ZH variant maps to its ordered per-site
+    alternative counts (the list length is the site count) plus its Lua
+    site count.  Only counts/structure are bound; the translatable
+    alternative text itself stays reviewable ZH content
+    (docs/monspell-review-plan.md:255-260, R4-MONSPELL-CODE-004-R3).
+    """
+    shape: dict[tuple[str, int], dict[str, Any]] = {}
+    for row in rows:
+        for variant in row["variants"]:
+            locator = variant["locator"]
+            shape[(locator["key"], locator["variant_ordinal"])] = {
+                "random_alternative_counts": [
+                    len(site["raw"].split("|"))
+                    for site in variant["random_substring_sites"]
+                ],
+                "lua_site_count": len(variant["lua_sites"]),
+            }
+    return shape
+
+
 def _template_records(
     key: str, variant: dict[str, Any], case_id: str,
     metadata: dict[str, Any], policy: str,
@@ -1686,6 +1712,25 @@ def add_candidate(
         "candidate English drift (EN variant list differs from baseline)",
     )
 
+    # R4-MONSPELL-CODE-004-R3: the ordered per-variant random-site shape
+    # (per-site alternative counts; Lua-site count) is bound to the baseline
+    # before the candidate projection.  The shape is projected from the
+    # already-derived _random_sites/_lua_sites rows on both sides; the
+    # baseline side is re-derived from exact Git so the shape stays an
+    # internal candidate-binding fact and is not frozen into the inventory
+    # or ledger artifacts.
+    baseline_zh_derived = shared._derive_scoped_dump(
+        inventory["baseline_ref"], "database/zh/", "baseline ZH",
+        source_basename=SOURCE_BASENAME,
+    )
+    _, baseline_zh_rows = _dump_binding(
+        {**baseline_zh_derived, "schema_version": 1,
+         "database_name": "speak", "source_directory": "database/zh/"},
+        b"", "baseline ZH", expected_keys,
+    )
+    baseline_zh_shape = _site_shape_by_variant(baseline_zh_rows)
+    candidate_zh_shape = _site_shape_by_variant(zh_rows)
+
     # Re-load the baseline manifest from its exact Git snapshot and compare it
     # with the candidate manifest field by field. Only audited ZH pattern
     # changes survive redaction; every other field (entry mode, stable ids,
@@ -1746,10 +1791,11 @@ def add_candidate(
     # Candidate binding is per ZH variant (ZH-only ordinals included): every
     # non-translation protocol fact of each candidate ZH variant is bound to
     # the baseline - weight, control prefix, runtime token sequence (count,
-    # order, duplicates), and the paired EN pattern (ZH-only ordinals carry
-    # None on both sides).  Only the Chinese text may change, and only when
-    # the ledger reviewed the exact candidate value (checked by
-    # validate_results against the candidate projection).
+    # order, duplicates), the paired EN pattern (ZH-only ordinals carry
+    # None on both sides), and the per-variant random-site shape (ordered
+    # per-site alternative counts plus Lua-site count).  Only the Chinese
+    # text may change, and only when the ledger reviewed the exact candidate
+    # value (checked by validate_results against the candidate projection).
     for entry in inventory["entries"]:
         baseline_variants = entry["legacy_variants"]
         candidate_variants = candidate_legacy_by_identity[entry["identity"]]
@@ -1771,6 +1817,12 @@ def add_candidate(
                     f"candidate ZH {label} drift for "
                     f"{entry['identity']} variant {ordinal}",
                 )
+            _require(
+                candidate_zh_shape[(entry["key"], ordinal)]
+                == baseline_zh_shape[(entry["key"], ordinal)],
+                f"candidate ZH random-site shape drift for "
+                f"{entry['identity']} variant {ordinal}",
+            )
 
     candidate = {
         "candidate_ref": candidate_ref,
