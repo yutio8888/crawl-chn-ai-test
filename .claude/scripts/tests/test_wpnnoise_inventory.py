@@ -36,8 +36,10 @@ CANDIDATE = "1de9250baabffad96f8c945caebde60c62e43000"
 # Reviewed one-sided structural actions (kind + ordinal only; the bound texts
 # are derived from the exact baseline/candidate artifacts by the fixtures):
 # EN-only missing variants approved for addition (incl. the two kazoo
-# positional realignments at ordinals 8/30) and the ZH-only deus-vult orphan
-# approved for removal at baseline ZH ordinal 1.
+# positional realignments at ordinals 8/30), the ZH-only deus-vult orphan
+# approved for removal at baseline ZH ordinal 1, and the single approved
+# matched-slot protocol transition at _singing_no_tension_ baseline ordinal 5
+# (random-site shape [2,2] -> [3,2] by restoring the EN empty random option).
 APPROVED_ACTIONS = {
     "_instrumental_noises_": [("add", 8)],
     "weapon_noise": [("add", 30)],
@@ -45,6 +47,7 @@ APPROVED_ACTIONS = {
     "_scream_": [("add", 70)],
     "fungus thoughts": [("add", ordinal) for ordinal in range(7, 14)],
     "_speaking_high_tension_": [("remove", 1)],
+    "_singing_no_tension_": [("protocol_transition", 5)],
 }
 
 
@@ -245,9 +248,14 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         # Fixture-bound digest: the docs-frozen digest 6b3e4d18... is bound to
         # the /tmp production dump bytes and rebuilds identically through the
         # CLI; the unit-test fixtures derive from exact Git with their own
-        # deterministic byte layout, so they pin their own digest here.
+        # deterministic byte layout, so they pin their own digest here.  The
+        # digest changed from 1ca4369d... when the R2 fixes added the
+        # complete ordered Lua-block fingerprint to every variant and the
+        # per-language reachability closure/witness evidence to the hashed
+        # inventory core (evidence-invalidating schema fact, reported with
+        # the exact new digest).
         self.assertEqual(
-            "1ca4369dedc83f3243d019daece034d3b892950c51cf5eeb5b630415462a263b",
+            "68c9ef8c7e3449f05b5799977c04a54c28798c0c251e65faa38ae2118c373514",
             first["inventory_sha256"],
         )
         self.assertEqual(MODULE.EXPECTED_IDENTITY_COUNT, len(first["entries"]))
@@ -337,6 +345,14 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         self.assertEqual([12], instrumental["en_only_variant_ordinals"])
 
     def test_recursive_closure_reachability_is_proven_not_assumed(self):
+        """Real-tree reachability pass: closure and deterministic witnesses.
+
+        The inventory traverses the directed recursive-token graph
+        independently for EN and ZH from every ROOT_KEYS member and requires
+        the complete non-root closure to equal the fragment set; every
+        fragment therefore carries a deterministic root-to-fragment witness
+        whose consecutive edges exist in that language's graph.
+        """
         for entry in self.inventory["entries"]:
             if entry["lifecycle"] == "recursive-internal-fragment":
                 sites = entry["referencing_sites"]
@@ -347,7 +363,130 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         root_keys = {entry["key"] for entry in self.inventory["entries"]
                      if entry["lifecycle"] == "direct-production-root"}
         self.assertEqual(28, len(root_keys))
-        self.assertEqual(37, 65 - 28)
+        fragments = {
+            entry["key"] for entry in self.inventory["entries"]
+            if entry["lifecycle"] == "recursive-internal-fragment"
+        }
+        self.assertEqual(37, len(fragments))
+        self.assertEqual(65, len(root_keys | fragments))
+        for language in ("english", "chinese"):
+            with self.subTest(language=language):
+                proof = self.inventory["reachability"][language]
+                self.assertEqual(sorted(fragments),
+                                 proof["non_root_closure"])
+                self.assertEqual(sorted(fragments),
+                                 sorted(proof["witnesses"]))
+                for fragment, path in proof["witnesses"].items():
+                    self.assertIn(path[0], root_keys)
+                    self.assertEqual(fragment, path[-1])
+                    for source, target in zip(path, path[1:]):
+                        self.assertIn(target, proof["edges"][source])
+
+    def test_reachability_rejects_disconnected_self_loop(self):
+        """A disconnected self-loop leaves its fragment unreachable.
+
+        The reviewer's exact fixture shape: all external references to
+        _rhyme_word_ are replaced with a caller token in both artifacts and
+        _rhyme_word_ gains a self-reference, so the union-of-destinations
+        check would pass while an independent traversal from ROOT_KEYS
+        proves the fragment unreachable.  The production build path is
+        exercised (dump binding + real traversal), not a reimplementation.
+        """
+        en = copy.deepcopy(self.en_artifact)
+        zh = copy.deepcopy(self.zh_artifact)
+        for artifact in (en, zh):
+            self.rewire_fragment(artifact, "_rhyme_word_",
+                                 external=("_common_speaking_no_tension_",
+                                           10))
+            # Disconnected self-loop: only _rhyme_word_ references itself.
+            self.add_token(artifact, "_rhyme_word_", 0, "@_rhyme_word_@")
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "unreachable from ROOT_KEYS.*_rhyme_word_"
+        ):
+            self.build_inventory_from(en, zh)
+
+    def test_reachability_rejects_disconnected_cycle(self):
+        """A disconnected cross-reference cycle fails the closure proof."""
+        en = copy.deepcopy(self.en_artifact)
+        zh = copy.deepcopy(self.zh_artifact)
+        for artifact in (en, zh):
+            self.rewire_fragment(
+                artifact, "_rhyme_word_",
+                external=("_common_speaking_no_tension_", 10))
+            self.rewire_fragment(
+                artifact, "_song_theme_",
+                external=("_singing_no-low_tension_", 43),
+                extra_external=("_singing_no-low_tension_", 44))
+            # _rhyme_word_ <-> _song_theme_ two-cycle with no external edge.
+            self.add_token(artifact, "_rhyme_word_", 0, "@_song_theme_@")
+            self.add_token(artifact, "_song_theme_", 0, "@_rhyme_word_@")
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "unreachable from ROOT_KEYS"
+        ):
+            self.build_inventory_from(en, zh)
+
+    def test_reachability_rejects_root_token_destination(self):
+        """A fragment referencing a root key breaks the topology proof."""
+        en = copy.deepcopy(self.en_artifact)
+        zh = copy.deepcopy(self.zh_artifact)
+        for artifact in (en, zh):
+            self.add_token(artifact, "_rhyme_word_", 0,
+                           "@noisy weapon@")
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "references root keys"
+        ):
+            self.build_inventory_from(en, zh)
+
+    def rewire_fragment(
+        self, artifact: dict, fragment: str,
+        external: tuple[str, int], extra_external: tuple[str, int] | None = None,
+    ) -> None:
+        """Replace external references to a fragment with a caller token."""
+        pairs = [external]
+        if extra_external is not None:
+            pairs.append(extra_external)
+        for key, ordinal in pairs:
+            entry = next(
+                entry for entry in artifact["entries"]
+                if entry["canonical_key"] == key
+            )
+            pattern = entry["variants"][ordinal]["raw_pattern"]
+            entry["variants"][ordinal]["raw_pattern"] = pattern.replace(
+                f"@{fragment}@", "@player_name@", 1)
+
+    @staticmethod
+    def add_token(artifact: dict, key: str, ordinal: int, token: str) -> None:
+        entry = next(
+            entry for entry in artifact["entries"]
+            if entry["canonical_key"] == key
+        )
+        entry["variants"][ordinal]["raw_pattern"] = (
+            entry["variants"][ordinal]["raw_pattern"] + token
+        )
+
+    def build_inventory_from(self, en: dict, zh: dict) -> dict:
+        """Run the real build_inventory path on mutated artifacts.
+
+        The exact-Git scoped derivation is faked with the mutated artifacts
+        (the same driver pattern the candidate gate tests use), so dump
+        binding, frozen-total checks and the reachability traversal all run
+        as production code on the mutation.
+        """
+        en_path = self.root / f"reach-en-{self.id().split('.')[-1]}.json"
+        zh_path = self.root / f"reach-zh-{self.id().split('.')[-1]}.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False), encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False), encoding="utf-8")
+
+        def fake_derive(oid, directory, label, source_basename=None):
+            artifact = en if directory == "database/" else zh
+            return derived_of(artifact)
+
+        with mock.patch.object(
+            MODULE.shared, "_derive_scoped_dump", side_effect=fake_derive
+        ):
+            return MODULE.build_inventory(
+                BASELINE, en_path, zh_path, ROOT / "docs/glossary.md"
+            )
 
     # ── malicious refs, paths, types ─────────────────────────────────────
 
@@ -729,8 +868,42 @@ class WpnnoiseInventoryTests(unittest.TestCase):
                     if ordinal < len(entry["variants"]):
                         # In-range add borrows the proposal slot.
                         overrides[ordinal] = ("adjust", text)
-                else:
+                elif kind == "remove":
                     text = entry["variants"][ordinal]["chinese"]
+                else:
+                    # protocol_transition: baseline protocol from the frozen
+                    # baseline variant, text and new protocol from the
+                    # candidate at the same ordinal (no add/remove on this
+                    # card, so candidate ordinal == baseline ordinal).
+                    baseline = entry["variants"][ordinal]
+                    text = candidate_texts[key][ordinal]
+                    actions.append({
+                        "kind": kind,
+                        "variant_ordinal": ordinal,
+                        "baseline_protocol": {
+                            "weight": baseline["weight"],
+                            "control_prefix": baseline["control_prefix"],
+                            "runtime_tokens": baseline["runtime_tokens"],
+                            "random_site_counts":
+                                baseline["random_site_counts"],
+                            "lua_blocks": baseline["lua_blocks"],
+                        },
+                        "text": text,
+                        "new_protocol": {
+                            "weight": baseline["weight"],
+                            "control_prefix": MODULE._derived_action_fact(
+                                text, "control_prefix"),
+                            "runtime_tokens": MODULE._derived_action_fact(
+                                text, "runtime_tokens"),
+                            "random_site_counts":
+                                MODULE._derived_action_fact(
+                                    text, "random_site_counts"),
+                            "lua_blocks": MODULE._derived_action_fact(
+                                text, "lua_blocks"),
+                        },
+                        "rationale": "已按严格台账核对的单边动作。",
+                    })
+                    continue
                 actions.append({
                     "kind": kind,
                     "variant_ordinal": ordinal,
@@ -849,12 +1022,16 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         """Candidate and ledger jointly changing a protocol field fails.
 
         Every fixture mutates a matched slot of the approved candidate AND
-the review records are rebuilt from the mutated candidate, so the ledger
-proposal agrees with the candidate text and the rejection must come from
-the protocol binding itself, never from a text-drift mismatch.  Each
-protocol field is covered: control VISUAL->SOUND, token reorder/duplicate/
-remove (ordered, with multiplicity), random alternative count and site
-order, Lua site count and Lua comparison strings, and weight.
+        the review records are rebuilt from the mutated candidate, so the
+        ledger proposal agrees with the candidate text and the rejection must
+        come from the protocol binding itself, never from a text-drift
+        mismatch.  Each protocol field is covered: control VISUAL->SOUND,
+        token reorder/duplicate/remove (ordered, with multiplicity), random
+        alternative count and site order, Lua operator drift (== -> ~=), Lua
+        block multiplicity, Lua comparison strings, and weight.  Lua is bound
+        as the complete ordered block bodies, so operator/statement/literal/
+        multiplicity/order changes fail even when site counts and comparison
+        strings stay identical.
         """
 
         def swap_first_two_tokens(variant):
@@ -942,23 +1119,34 @@ order, Lua site count and Lua comparison strings, and weight.
                  "_common_speaking_no_tension_", 3,
                  swap_bracket_groups),
              "random_site_counts", "protocol drift.*random_site_counts"),
-            ("lua site count",
+            # Lua operator drift: site count and comparison strings stay
+            # identical, only the executable operator changes.
+            ("lua operator drift (== to ~=)",
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: text.replace(
+                         'you.god() == "No God"',
+                         'you.god() ~= "No God"'))),
+             "lua_blocks", "protocol drift.*lua_blocks"),
+            ("lua block multiplicity",
              lambda: mutate_candidate(
                  "_speaking_high_tension_", 3,
                  lambda variant: set_pattern(
                      variant, lambda text: text + "{{ }}")),
-             "lua_site_count", "protocol drift.*lua_site_count"),
+             "lua_blocks", "protocol drift.*lua_blocks"),
             # The candidate gate rejects a comparison string outside the
             # frozen Lua identity set at dump binding (fail closed on the
             # protocol identity itself), while the ledger gate rejects the
-            # same joint change at the proposal protocol check.
+            # same joint change at the proposal protocol check (lua_blocks).
             ("lua comparison string",
              lambda: mutate_candidate(
                  "_speaking_high_tension_", 3,
                  lambda variant: set_pattern(
                      variant,
                      lambda text: text.replace('"No God"', '"Zin"'))),
-             "lua_comparison_strings", "unknown Lua comparison string"),
+             "lua_blocks", "unknown Lua comparison string"),
             ("weight",
              lambda: mutate_candidate(
                  "eel hand solo actions", 0,
@@ -985,9 +1173,234 @@ order, Lua site count and Lua comparison strings, and weight.
                 with self.assertRaisesRegex(
                     MODULE.InventoryError,
                     f"proposed text {field} does not match the baseline ZH "
-                    f"or EN pairing protocol",
+                    f"protocol",
                 ):
                     self.validate(records)
+
+    def test_candidate_rejects_en_envelope_lua_graft_after_remove(self):
+        """The reviewer's exact joint drift: EN-envelope side switch.
+
+        Candidate _speaking_high_tension_ ordinal 2 (mapped from baseline ZH
+        ordinal 3 after the remove@1 shift) is given the exact EN ordinal-3
+        Lua block.  The old gate accepted it because it compared the slot
+        against the EN tuple at the same baseline ordinal; matched slots now
+        compare only against the mapped baseline ZH variant, so both the
+        candidate gate and the ledger gate reject the graft even though the
+        ledger proposal agrees with the candidate text.
+        """
+        en_entry = next(
+            entry for entry in self.en_artifact["entries"]
+            if entry["canonical_key"] == "_speaking_high_tension_"
+        )
+        en_lua_pattern = en_entry["variants"][3]["raw_pattern"]
+        mutated = copy.deepcopy(self.candidate_zh_artifact)
+        self.zh_variant(mutated, "_speaking_high_tension_", 2)[
+            "raw_pattern"
+        ] = en_lua_pattern
+        records = self.review_records_for(mutated)
+        with self.subTest(gate="candidate"):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError, "protocol drift.*runtime_tokens"
+            ):
+                self.add_candidate(self.candidate_en_artifact, mutated,
+                                   records)
+        with self.subTest(gate="ledger"):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "proposed text runtime_tokens does not match the baseline "
+                "ZH protocol",
+            ):
+                self.validate(records)
+
+    def test_candidate_rejects_lua_operator_drift(self):
+        """Executable Lua ``==`` -> ``~=`` drift is bound by block bodies.
+
+        The matched Lua slot (candidate ordinal 3, baseline ordinal 4) keeps
+        its site count and comparison strings; only the operator changes.
+        The complete ordered Lua-block fingerprint must catch it in both the
+        candidate gate and the ledger gate.
+        """
+        mutated = copy.deepcopy(self.candidate_zh_artifact)
+        self.zh_variant(mutated, "_speaking_high_tension_", 3)[
+            "raw_pattern"
+        ] = self.zh_variant(
+            mutated, "_speaking_high_tension_", 3
+        )["raw_pattern"].replace(
+            'you.god() == "No God"', 'you.god() ~= "No God"'
+        )
+        records = self.review_records_for(mutated)
+        with self.subTest(gate="candidate"):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError, "protocol drift.*lua_blocks"
+            ):
+                self.add_candidate(self.candidate_en_artifact, mutated,
+                                   records)
+        with self.subTest(gate="ledger"):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "proposed text lua_blocks does not match the baseline ZH "
+                "protocol",
+            ):
+                self.validate(records)
+
+    def test_lua_block_fingerprint_binds_operators_statements_order(self):
+        block_a = (' if you.god() == "No God" then '
+                   'return "@_godless_sorter_@"; end ')
+        block_b = (' if you.god() == "No God" then '
+                   'return "@player_god@"; end ')
+        self.assertEqual([block_a, block_b],
+                         MODULE._lua_blocks("{{" + block_a + "}}{{"
+                                            + block_b + "}}"))
+        self.assertNotEqual(
+            MODULE._lua_blocks("{{" + block_a + "}}{{" + block_b + "}}"),
+            MODULE._lua_blocks("{{" + block_b + "}}{{" + block_a + "}}"),
+        )
+        self.assertEqual([block_a, block_a],
+                         MODULE._lua_blocks("{{" + block_a + "}}{{"
+                                            + block_a + "}}"))
+        self.assertNotEqual(
+            MODULE._lua_blocks(
+                '{{ if you.god() == "No God" then return "A"; end }}'),
+            MODULE._lua_blocks(
+                '{{ if you.god() ~= "No God" then return "A"; end }}'),
+        )
+
+    def test_protocol_transition_binds_exact_approved_landing(self):
+        """The one approved matched-slot protocol move binds exactly.
+
+        _singing_no_tension_ baseline ordinal 5 (random [2,2], weight 10)
+        moves to [3,2] by restoring the EN empty random option; the card
+        record carries the exact baseline protocol, the exact approved text
+        and the exact new protocol, and the exact approved candidate binds.
+        """
+        records = self.review_records_for()
+        candidate_entries = self.add_candidate(
+            self.candidate_en_artifact, self.candidate_zh_artifact, records
+        )
+        loaded = self.validate(records, candidate_entries)
+        card = next(
+            card for card in loaded["cards"]
+            if card["key"] == "_singing_no_tension_"
+        )
+        transition = next(
+            action for action in card["reviewed_actions"]
+            if action["kind"] == "protocol_transition"
+        )
+        self.assertEqual(5, transition["variant_ordinal"])
+        self.assertEqual([2, 2],
+                         transition["baseline_protocol"]["random_site_counts"])
+        self.assertEqual(10, transition["baseline_protocol"]["weight"])
+        self.assertEqual([3, 2],
+                         transition["new_protocol"]["random_site_counts"])
+        self.assertEqual(10, transition["new_protocol"]["weight"])
+        self.assertEqual("adjust", card["terminal_conclusion"])
+
+    def test_protocol_transition_schema_fails_closed(self):
+        records = self.review_records_for()
+
+        # A transition at an unapproved (key, ordinal) is rejected even when
+        # its protocol records are internally consistent.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0]["variant_ordinal"] = 6
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "not an approved protocol transition"
+        ):
+            self.validate(bad)
+
+        # An approved slot with drifted text is rejected before any protocol
+        # comparison.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0]["text"] += "？"
+        with self.assertRaisesRegex(MODULE.InventoryError, "approved text"):
+            self.validate(bad)
+
+        # baseline_protocol must equal the exact baseline ZH variant.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0]["baseline_protocol"][
+            "random_site_counts"] = [3, 3]
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "baseline_protocol does not match"
+        ):
+            self.validate(bad)
+
+        # new_protocol must be derived exactly from the approved text.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0]["new_protocol"][
+            "random_site_counts"] = [2, 2]
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "new_protocol random_site_counts"
+        ):
+            self.validate(bad)
+
+        # A transition may not change weight.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0]["new_protocol"]["weight"] = 20
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "must not change weight"
+        ):
+            self.validate(bad)
+
+        # A transition record with the add/remove field set is malformed.
+        bad = copy.deepcopy(records)
+        card = next(c for c in bad[1:] if c["key"] == "_singing_no_tension_")
+        card["reviewed_actions"][0] = {
+            "kind": "protocol_transition", "variant_ordinal": 5,
+            "text": "x", "rationale": "x",
+        }
+        with self.assertRaisesRegex(MODULE.InventoryError, "field set mismatch"):
+            self.validate(bad)
+
+        # A transition ordinal colliding with an add/remove action fails.
+        bad = copy.deepcopy(records)
+        card = next(
+            c for c in bad[1:] if c["key"] == "_speaking_high_tension_"
+        )
+        card["reviewed_actions"].append({
+            "kind": "protocol_transition", "variant_ordinal": 1,
+            "baseline_protocol": {
+                "weight": 10, "control_prefix": None, "runtime_tokens": [],
+                "random_site_counts": [], "lua_blocks": [],
+            },
+            "text": "x", "new_protocol": {
+                "weight": 10, "control_prefix": None, "runtime_tokens": [],
+                "random_site_counts": [], "lua_blocks": [],
+            },
+            "rationale": "碰撞测试。",
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError, "collides with"):
+            self.validate(bad)
+
+    def test_protocol_transition_slot_candidate_drift_is_rejected(self):
+        """The approved transition slot cannot drift at the candidate gate.
+
+        The review records stay bound to the approved text; a candidate that
+        moves the slot back to the baseline [2,2] shape or to [3,3] fails
+        against the approved new protocol even though the ledger agrees with
+        itself.
+        """
+        records = self.review_records_for()
+        for label, replacement in (
+            ("revert to baseline",
+             "@The_weapon@[几乎|很明显][奏出了|没奏出]音乐会音高。"),
+            ("over-add",
+             "@The_weapon@[几乎|很明显|][奏出了|没奏出|]音乐会音高。"),
+        ):
+            mutated = copy.deepcopy(self.candidate_zh_artifact)
+            self.zh_variant(mutated, "_singing_no_tension_", 5)[
+                "raw_pattern"
+            ] = replacement
+            with self.subTest(case=label):
+                with self.assertRaisesRegex(
+                    MODULE.InventoryError,
+                    "protocol drift.*random_site_counts",
+                ):
+                    self.add_candidate(self.candidate_en_artifact, mutated,
+                                       records)
 
     def test_candidate_variant_count_drift_is_rejected(self):
         records = self.review_records_for()

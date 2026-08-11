@@ -18,12 +18,23 @@ variants with those actions (add ordinals are candidate positions, remove
 ordinals are baseline positions) and proves: English is byte-identical to the
 baseline; every candidate ZH variant is either an approved add matching the
 baseline EN variant's protocol, or the reviewed proposal (or a kept shifted
-variant under an in-range add placeholder) with the baseline protocol
-(weight/control/ordered tokens/random sites/Lua) unchanged; any unreviewed
-key/weight/control/token/Lua/random-site drift or one-sided change fails
-closed.  Every proposed translation is also derived back to protocol facts
-during card validation, so a candidate and its review ledger cannot jointly
-reroute a channel or change token/Lua/random-site expansion.
+variant under an in-range add placeholder) with the mapped baseline ZH
+protocol (weight/control/ordered tokens/random sites/complete Lua blocks)
+unchanged; any unreviewed key/weight/control/token/Lua/random-site drift or
+one-sided change fails closed.  Matched slots are compared only against the
+mapped baseline ZH variant -- there is no generic same-ordinal EN envelope --
+except for exactly one approved, card-local ``protocol_transition`` record
+bound to key+ordinal, the exact baseline protocol, the exact
+candidate/proposed text and the exact new protocol.  Every proposed
+translation is also derived back to protocol facts during card validation,
+so a candidate and its review ledger cannot jointly reroute a channel or
+change token/Lua/random-site expansion.
+
+Reachability is proven, not assumed: the directed recursive-token graph is
+built independently for EN and ZH and traversed from every ROOT_KEYS member;
+the complete non-root closure must equal the fragment set (disconnected
+cycles and self-loops fail closed) and every fragment gets a deterministic
+root-to-fragment witness recorded in the inventory evidence/digest.
 
 Mutable artifacts (production dumps, review results, glossary) are read
 through the repository audited snapshot helper: one no-follow descriptor, a
@@ -53,6 +64,7 @@ import argparse
 import json
 import re
 import sys
+from collections import deque
 from pathlib import Path
 from typing import Any
 
@@ -389,15 +401,44 @@ CARD_FIELDS = {
 # (baseline EN ordinal, approved Chinese text, protocol copied from the EN
 # variant); kind "remove" binds a ZH-only orphan (baseline ZH ordinal, exact
 # current text being removed).  Add ordinals are candidate (final) positions;
-# remove ordinals are baseline positions.
+# remove ordinals are baseline positions.  Kind "protocol_transition" is the
+# narrow card-local exception for the single approved matched-slot protocol
+# move: it binds a baseline ordinal, the exact baseline protocol, the exact
+# candidate/proposed text and the exact new protocol.
 ACTION_FIELDS = {"kind", "variant_ordinal", "text", "rationale"}
-# Text-derived protocol fields whose complete tuple must stay inside the
-# frozen baseline pairing envelope (baseline ZH facts or the paired EN
-# facts) at every matched slot.  Weight is bound separately because it is
-# variant metadata, not text-derived.
+TRANSITION_ACTION_FIELDS = {
+    "kind", "variant_ordinal", "baseline_protocol", "text",
+    "new_protocol", "rationale",
+}
+# Text-derived protocol fields whose complete tuple must equal the mapped
+# baseline ZH variant at every matched slot.  Weight is bound separately
+# because it is variant metadata, not text-derived.  Lua is bound as the
+# complete ordered block bodies (operators, statements, literals,
+# multiplicity, order), never as site counts or comparison strings alone,
+# so ``==`` -> ``~=`` or block reorder/dedup changes the protocol tuple.
 PROTOCOL_FIELDS = ("control_prefix", "runtime_tokens",
-                   "random_site_counts", "lua_site_count",
-                   "lua_comparison_strings")
+                   "random_site_counts", "lua_blocks")
+# Weight plus every text-derived protocol field, compared as one ordered
+# tuple for matched slots and protocol_transition records.
+TRANSITION_PROTOCOL_FIELDS = {
+    "weight", "control_prefix", "runtime_tokens", "random_site_counts",
+    "lua_blocks",
+}
+TRANSITION_PROTOCOL_ORDER = ("weight", "control_prefix", "runtime_tokens",
+                             "random_site_counts", "lua_blocks")
+# The single matched-slot protocol transition approved for the Issue #60
+# landing (explicit acceptance criterion): _singing_no_tension_ baseline
+# ordinal 5 restores the EN empty random option, changing the ordered
+# per-site alternative shape [2,2] -> [3,2].  The enumeration binds
+# key+ordinal, the exact candidate/proposed text and the exact new
+# random-site shape; every other protocol_transition record is rejected even
+# when it is internally consistent.
+APPROVED_PROTOCOL_TRANSITIONS = {
+    ("_singing_no_tension_", 5): {
+        "text": "@The_weapon@[几乎|很明显|][奏出了|没奏出]音乐会音高。",
+        "new_random_site_counts": [3, 2],
+    },
+}
 PRODUCTION_FACT_FIELDS = {
     "caller_tokens", "chinese_definition_ordinal", "chinese_source_line",
     "control_prefixes", "en_only_variant_ordinals", "english_definition_ordinal",
@@ -474,6 +515,17 @@ def _lua_comparison_strings(pattern: str) -> list[str]:
     for match in _LUA_RE.finditer(pattern):
         strings.update(_LUA_COMPARE_RE.findall(match.group(1)))
     return sorted(strings)
+
+
+def _lua_blocks(pattern: str) -> list[str]:
+    """Ordered complete Lua block bodies (exact ``{{ }}`` inner text).
+
+    The ordered list binds operators, statements, literals, multiplicity and
+    order byte-exactly, so ``==`` -> ``~=``, block reorder or block
+    duplication change the fingerprint even when site counts and comparison
+    strings stay identical.
+    """
+    return [match.group(1) for match in _LUA_RE.finditer(pattern)]
 
 
 # ── audited input reads ────────────────────────────────────────────────
@@ -836,6 +888,7 @@ def _pair_entries(
                 "random_site_counts": zh_variant["random_site_counts"],
                 "lua_site_count": zh_variant["lua_site_count"],
                 "lua_comparison_strings": zh_variant["lua_comparison_strings"],
+                "lua_blocks": _lua_blocks(zh_variant["raw_pattern"]),
                 "english": en_variant["raw_pattern"]
                 if en_variant is not None else None,
                 "chinese": zh_variant["raw_pattern"],
@@ -856,6 +909,7 @@ def _pair_entries(
                 "random_site_counts": variant["random_site_counts"],
                 "lua_site_count": variant["lua_site_count"],
                 "lua_comparison_strings": variant["lua_comparison_strings"],
+                "lua_blocks": _lua_blocks(variant["raw_pattern"]),
                 "raw_pattern": variant["raw_pattern"],
             } for variant in en["variants"]],
             "english_source_line": en["source_line"],
@@ -917,6 +971,87 @@ def _referencing_sites(
     for key in sites:
         sites[key].sort(key=lambda item: (item["key"], item["variant_ordinal"]))
     return sites
+
+
+def _language_edges(
+    rows: list[dict[str, Any]], key_set: set[str],
+) -> dict[str, list[str]]:
+    """Directed recursive-token graph of one language.
+
+    An edge ``K -> T`` exists when any variant of key ``K`` contains the
+    runtime token ``@T@`` with ``T`` in the SpeakDB key set.  Caller tokens
+    (@player_name@, @CAPS@, @head@, ...) are replaced by consumers, never by
+    the DB, so they never participate in the recursive closure.
+    """
+    edges: dict[str, list[str]] = {}
+    for row in rows:
+        destinations = {
+            token[1:-1].lower()
+            for variant in row["variants"]
+            for token in variant["runtime_tokens"]
+            if token[1:-1].lower() in key_set
+        }
+        edges[row["key"]] = sorted(destinations)
+    return edges
+
+
+def _reachability_proof(
+    rows: list[dict[str, Any]], key_set: set[str], roots: set[str],
+    fragments: set[str],
+) -> dict[str, Any]:
+    """Traverse the directed recursive-token graph from every ROOT_KEYS member.
+
+    The traversal is independent per language and deterministic: BFS from the
+    roots in ROOT_KEYS order with sorted adjacency.  The complete non-root
+    closure must equal the fragment set, so disconnected cycles and
+    self-loops (whose members are unreachable from any root) fail closed, and
+    no root key may be a token destination.  Every fragment gets the first
+    discovered root-to-fragment path as a deterministic witness.
+    """
+    edges = _language_edges(rows, key_set)
+    destinations = {
+        target for targets in edges.values() for target in targets
+    }
+    unexpected_roots = sorted(destinations & roots)
+    _require(
+        not unexpected_roots,
+        f"wpnnoise recursive token graph references root keys "
+        f"{unexpected_roots!r}",
+    )
+    reached = set(roots)
+    witnesses: dict[str, list[str]] = {}
+    queue: deque[tuple[str, tuple[str, ...]]] = deque(
+        (root, (root,)) for root in ROOT_KEYS
+    )
+    while queue:
+        key, path = queue.popleft()
+        for target in edges.get(key, ()):
+            if target in reached:
+                continue
+            reached.add(target)
+            new_path = path + (target,)
+            if target in fragments:
+                witnesses[target] = list(new_path)
+            queue.append((target, new_path))
+    missing = sorted(fragments - (reached - roots))
+    _require(
+        not missing,
+        f"wpnnoise recursive closure leaves fragments unreachable from "
+        f"ROOT_KEYS: {missing!r}",
+    )
+    _require(
+        reached - roots == fragments,
+        "wpnnoise non-root closure does not equal the fragment set",
+    )
+    _require(
+        len(witnesses) == len(fragments),
+        "wpnnoise root-to-fragment witness coverage mismatch",
+    )
+    return {
+        "edges": edges,
+        "non_root_closure": sorted(reached - roots),
+        "witnesses": {key: witnesses[key] for key in sorted(witnesses)},
+    }
 
 
 def _expected_referencing_sites(
@@ -1084,29 +1219,24 @@ def build_inventory(
         entry["evidence_locations"] = _expected_evidence_locations(entry)
         entries.append(entry)
 
-    # Reachability proof: every non-root key must be referenced by at least
-    # one runtime token that resolves in SpeakDB (EN or ZH), and every such
-    # referenced key must be a fragment.  Caller tokens (@player_name@,
-    # @CAPS@, @head@, ...) are replaced by consumers, not by the DB, so they
-    # never participate in the recursive closure.  Nothing is assumed
-    # reachable; unproven keys fail closed.
+    # Reachability proof, independent per language: the directed recursive
+    # token graph is traversed from every ROOT_KEYS member; the complete
+    # non-root closure must equal the fragment set (disconnected cycles and
+    # self-loops fail closed), and every fragment gets a deterministic
+    # root-to-fragment witness recorded in the inventory evidence/digest.
+    # Nothing is assumed reachable; unproven keys fail closed.
     key_set = {entry["key"] for entry in entries}
-    referenced = {
-        token for token in (set(en_references) | set(zh_references))
-        if token in key_set
-    }
     fragments = {
         entry["key"] for entry in entries
         if entry["lifecycle"] == "recursive-internal-fragment"
     }
-    _require(
-        fragments == referenced,
-        "wpnnoise recursive closure mismatch: "
-        f"unreferenced fragments {sorted(fragments - referenced)!r}, "
-        f"unexpected referenced keys {sorted(referenced - fragments)!r}",
-    )
-    _require(len(fragments | set(ROOT_KEYS)) == EXPECTED_IDENTITY_COUNT,
+    roots = set(ROOT_KEYS)
+    _require(len(fragments | roots) == EXPECTED_IDENTITY_COUNT,
              "wpnnoise identity/lifecycle coverage mismatch")
+    reachability = {
+        "english": _reachability_proof(en_rows, key_set, roots, fragments),
+        "chinese": _reachability_proof(zh_rows, key_set, roots, fragments),
+    }
 
     comparisons = sorted({
         comparison
@@ -1158,6 +1288,7 @@ def build_inventory(
         "glossary": {"path": "docs/glossary.md", "sha256": glossary_sha256},
         "dumps": {"english": en_binding, "localized": zh_binding},
         "entries": entries,
+        "reachability": reachability,
     }
     return {**core, "inventory_sha256": _sha256(_canonical_json(core))}
 
@@ -1238,35 +1369,32 @@ def _derived_action_fact(text: str, field: str) -> Any:
         return len(_lua_sites(text))
     if field == "lua_comparison_strings":
         return _lua_comparison_strings(text)
+    if field == "lua_blocks":
+        return _lua_blocks(text)
     raise InventoryError(f"unknown action fact field {field!r}")
 
 
-def _protocol_facts(facts: dict[str, Any]) -> list[Any]:
-    return [facts[field] for field in PROTOCOL_FIELDS]
-
-
-def _protocol_drift_field(
-    candidate: dict[str, Any], baseline: dict[str, Any],
-    en: dict[str, Any] | None,
+def _first_protocol_drift(
+    candidate_facts: dict[str, Any], baseline_facts: dict[str, Any],
 ) -> str | None:
-    """First protocol field outside the frozen baseline pairing envelope.
+    """First text-derived protocol field differing from the mapped baseline.
 
-    A matched slot's protocol tuple must equal the baseline ZH facts or,
-    when the baseline pairing records a different frozen EN shape at the
-    same ordinal, that EN tuple.  Any other value is an unreviewed protocol
-    drift; the first field differing from both sides is reported (a tuple
-    mixing the two frozen sides reports "protocol").
+    Matched slots compare ONLY against the mapped baseline ZH variant (or an
+    approved protocol_transition's exact new protocol); there is no generic
+    same-ordinal EN envelope, so a shifted variant can never inherit the EN
+    protocol of an unrelated ordinal after add/remove remapping.
     """
-    candidate_tuple = _protocol_facts(candidate)
-    if candidate_tuple == _protocol_facts(baseline):
-        return None
-    if en is not None and candidate_tuple == _protocol_facts(en):
-        return None
     for field in PROTOCOL_FIELDS:
-        if (candidate[field] != baseline[field]
-                and (en is None or candidate[field] != en[field])):
+        if candidate_facts[field] != baseline_facts[field]:
             return field
-    return "protocol"
+    return None
+
+
+def _transition_actions(
+    actions: list[dict[str, Any]],
+) -> dict[int, dict[str, Any]]:
+    return {action["variant_ordinal"]: action for action in actions
+            if action["kind"] == "protocol_transition"}
 
 
 def _validate_actions(
@@ -1280,7 +1408,10 @@ def _validate_actions(
     ordinal inside the baseline ZH count must borrow the proposal slot
     (placeholder convention, used by the positional kazoo realignment).
     Remove actions bind a ZH-only orphan by its baseline ZH ordinal and the
-    exact current text being removed.
+    exact current text being removed.  Protocol_transition actions bind the
+    single approved matched-slot protocol move: baseline ordinal, exact
+    baseline protocol, exact candidate/proposed text and exact new protocol;
+    every other transition is rejected even when internally consistent.
     """
     _require(isinstance(actions, list),
              f"{context} reviewed_actions must be a list")
@@ -1290,11 +1421,15 @@ def _validate_actions(
     for action in actions:
         _require(isinstance(action, dict),
                  f"{context} reviewed action must be an object")
-        _require_exact_fields(action, ACTION_FIELDS,
-                              f"{context} reviewed action")
-        kind = action["kind"]
-        _require(kind in ("add", "remove"),
+        kind = action.get("kind")
+        _require(kind in ("add", "remove", "protocol_transition"),
                  f"{context} reviewed action kind mismatch")
+        _require_exact_fields(
+            action,
+            TRANSITION_ACTION_FIELDS if kind == "protocol_transition"
+            else ACTION_FIELDS,
+            f"{context} reviewed action",
+        )
         ordinal = action["variant_ordinal"]
         _require(_is_int(ordinal) and ordinal >= 0,
                  f"{context} reviewed action ordinal mismatch")
@@ -1305,15 +1440,16 @@ def _validate_actions(
         _require((kind, ordinal) not in seen,
                  f"{context} duplicate reviewed action {kind} {ordinal}")
         seen.add((kind, ordinal))
-        if kind == "add":
+        if kind == "protocol_transition":
+            _validate_protocol_transition(action, entry, actions, context)
+        elif kind == "add":
             _require(
                 ordinal < len(en_variants),
                 f"{context} add action ordinal {ordinal} exceeds EN variants",
             )
             en_variant = en_variants[ordinal]
             for field in ("control_prefix", "runtime_tokens",
-                          "random_site_counts", "lua_site_count",
-                          "lua_comparison_strings"):
+                          "random_site_counts", "lua_blocks"):
                 _require(
                     _derived_action_fact(action["text"], field)
                     == en_variant[field],
@@ -1337,6 +1473,92 @@ def _validate_actions(
                 f"{context} remove action text does not match the baseline "
                 f"ZH variant",
             )
+
+
+def _validate_protocol_transition(
+    action: dict[str, Any], entry: dict[str, Any],
+    actions: list[dict[str, Any]], context: str,
+) -> None:
+    """Bind one approved matched-slot protocol transition exactly.
+
+    The record must name an approved (key, ordinal), reproduce the exact
+    approved candidate/proposed text, reproduce the exact baseline protocol
+    of that baseline ZH variant, and carry a new protocol derived from the
+    approved text with weight unchanged.  A card-local transition ordinal
+    must not collide with an add/remove action of the same card.
+    """
+    ordinal = action["variant_ordinal"]
+    zh_variants = entry["variants"]
+    _require(
+        ordinal < len(zh_variants),
+        f"{context} protocol_transition ordinal {ordinal} exceeds ZH "
+        f"variants",
+    )
+    colliding = sorted({
+        f"{other['kind']}@{other['variant_ordinal']}"
+        for other in actions
+        if other is not action and other["kind"] in ("add", "remove")
+        and other["variant_ordinal"] == ordinal
+    })
+    _require(
+        not colliding,
+        f"{context} protocol_transition ordinal {ordinal} collides with "
+        f"{colliding!r}",
+    )
+    approved = APPROVED_PROTOCOL_TRANSITIONS.get((entry["key"], ordinal))
+    _require(
+        approved is not None,
+        f"{context} protocol_transition at {entry['key']!r} ordinal "
+        f"{ordinal} is not an approved protocol transition",
+    )
+    _require(
+        action["text"] == approved["text"],
+        f"{context} protocol_transition text must equal the approved text",
+    )
+    baseline = zh_variants[ordinal]
+    baseline_protocol = action["baseline_protocol"]
+    _require(isinstance(baseline_protocol, dict),
+             f"{context} protocol_transition baseline_protocol must be an "
+             f"object")
+    _require_exact_fields(
+        baseline_protocol, TRANSITION_PROTOCOL_FIELDS,
+        f"{context} protocol_transition baseline_protocol",
+    )
+    expected_baseline = {
+        "weight": baseline["weight"],
+        "control_prefix": baseline["control_prefix"],
+        "runtime_tokens": baseline["runtime_tokens"],
+        "random_site_counts": baseline["random_site_counts"],
+        "lua_blocks": baseline["lua_blocks"],
+    }
+    _require(
+        baseline_protocol == expected_baseline,
+        f"{context} protocol_transition baseline_protocol does not match "
+        f"the baseline ZH variant",
+    )
+    new_protocol = action["new_protocol"]
+    _require(isinstance(new_protocol, dict),
+             f"{context} protocol_transition new_protocol must be an object")
+    _require_exact_fields(
+        new_protocol, TRANSITION_PROTOCOL_FIELDS,
+        f"{context} protocol_transition new_protocol",
+    )
+    _require(
+        new_protocol["weight"] == baseline["weight"],
+        f"{context} protocol_transition must not change weight",
+    )
+    for field in PROTOCOL_FIELDS:
+        _require(
+            new_protocol[field] == _derived_action_fact(action["text"], field),
+            f"{context} protocol_transition new_protocol {field} does not "
+            f"match the approved text",
+        )
+    _require(
+        new_protocol["random_site_counts"]
+        == approved["new_random_site_counts"],
+        f"{context} protocol_transition random-site shape does not match "
+        f"the approved transition",
+    )
 
 
 def _action_slots(
@@ -1435,11 +1657,15 @@ def _review_bindings_from_block(
         for action in actions:
             _require(isinstance(action, dict),
                      f"{identity} reviewed action must be an object")
-            _require_exact_fields(action, ACTION_FIELDS,
-                                  f"{identity} reviewed action")
-            kind = action["kind"]
-            _require(kind in ("add", "remove"),
+            kind = action.get("kind")
+            _require(kind in ("add", "remove", "protocol_transition"),
                      f"{identity} reviewed action kind mismatch")
+            _require_exact_fields(
+                action,
+                TRANSITION_ACTION_FIELDS
+                if kind == "protocol_transition" else ACTION_FIELDS,
+                f"{identity} reviewed action",
+            )
             ordinal = action["variant_ordinal"]
             _require(_is_int(ordinal) and ordinal >= 0,
                      f"{identity} reviewed action ordinal mismatch")
@@ -1529,6 +1755,7 @@ def _validate_card(
     )
     actions = card["reviewed_actions"]
     _validate_actions(actions, entry, proposed, identity)
+    transitions = _transition_actions(actions)
     # In-range add ordinals borrow the proposal slot (placeholder): the
     # proposal there is the approved add text whose protocol is bound to the
     # baseline EN variant by _validate_actions, never to the shifted
@@ -1574,31 +1801,45 @@ def _validate_card(
             _require(review.get(field) == expected, f"{context} {field} mismatch")
         _require(_nonempty_string(review["rationale"]),
                  f"{context} requires a rationale")
-        # Every proposed translation must keep the frozen baseline pairing
-        # envelope: the complete protocol tuple (control prefix, ordered
+        # Every proposed translation must keep the mapped baseline ZH
+        # protocol: the complete protocol tuple (control prefix, ordered
         # runtime tokens with multiplicity, per-site random alternative
-        # shape, Lua site count, Lua comparison strings) must equal the
-        # baseline ZH facts or, where the baseline pairing records a
-        # different frozen EN shape at the same ordinal, that EN tuple.
-        # Weight is bound separately to the baseline ZH variant.  A
-        # candidate and its review ledger jointly agreeing on any other
-        # protocol fails closed here, before any candidate is consumed.
+        # shape, complete ordered Lua blocks) must equal the baseline ZH
+        # variant at that ordinal, or the exact new protocol of the approved
+        # card-local protocol_transition.  Weight is variant metadata, not
+        # text-derived, so it is bound by the candidate gate only.  There is
+        # no generic same-ordinal EN envelope: a candidate and its review
+        # ledger jointly agreeing on any other protocol fails closed here,
+        # before any candidate is consumed.
         if ordinal not in in_range_add_ordinals:
-            en_variant = (
-                entry["english_variants"][ordinal]
-                if ordinal < len(entry["english_variants"]) else None
-            )
+            transition = transitions.get(ordinal)
             proposal_facts = {
                 field: _derived_action_fact(proposal, field)
                 for field in PROTOCOL_FIELDS
             }
-            drift = _protocol_drift_field(
-                proposal_facts, variant, en_variant)
+            if transition is not None:
+                expected_facts = {
+                    field: transition["new_protocol"][field]
+                    for field in PROTOCOL_FIELDS
+                }
+                envelope = "approved protocol transition"
+            else:
+                expected_facts = {
+                    field: variant[field] for field in PROTOCOL_FIELDS
+                }
+                envelope = "baseline ZH protocol"
+            drift = _first_protocol_drift(proposal_facts, expected_facts)
             _require(
                 drift is None,
                 f"{context} proposed text {drift} does not match the "
-                f"baseline ZH or EN pairing protocol",
+                f"{envelope}",
             )
+            if transition is not None:
+                _require(
+                    proposal == transition["text"],
+                    f"{context} protocol_transition proposal must equal "
+                    f"the approved text",
+                )
         if review_conclusion == "keep":
             _require(proposal == variant["chinese"],
                      f"{context} keep must preserve current Chinese")
@@ -1748,6 +1989,7 @@ def _zh_protocol_shape(
             "random_site_counts": variant["random_site_counts"],
             "lua_site_count": variant["lua_site_count"],
             "lua_comparison_strings": variant["lua_comparison_strings"],
+            "lua_blocks": _lua_blocks(variant["raw_pattern"]),
         }
         for row in zh_rows
         for variant in row["variants"]
@@ -1763,16 +2005,17 @@ def add_candidate(
     The candidate gate proves, at the exact-Git level: (1) the candidate
     English side is byte-identical to the baseline; (2) the candidate ZH side
     differs from the baseline only by the reviewed actions (approved
-    additions bound to baseline EN locators and the approved orphan removal)
-    and the reviewed proposal texts, with every matched variant's full
-    protocol (weight, control prefix, ordered runtime tokens with
-    multiplicity, random-site per-site alternative shape, Lua site count and
-    comparison strings) equal to the baseline and every added variant's full
-    protocol equal to the EN source.  Any unreviewed
-    key/weight/control/token/Lua/random-site drift, extra insertion,
-    deletion, or reorder fails closed.  The exact-clean candidate boundary is
-    proven before any candidate data is consumed, and every candidate-tree
-    input is read as a regular-file blob.
+    additions bound to baseline EN locators, the approved orphan removal and
+    the single approved protocol_transition) and the reviewed proposal
+    texts, with every matched variant's full protocol (weight, control
+    prefix, ordered runtime tokens with multiplicity, random-site per-site
+    alternative shape, complete ordered Lua blocks) equal to the mapped
+    baseline ZH variant (or to the approved transition's exact new protocol)
+    and every added variant's full protocol equal to the EN source.  Any
+    unreviewed key/weight/control/token/Lua/random-site drift, extra
+    insertion, deletion, or reorder fails closed.  The exact-clean candidate
+    boundary is proven before any candidate data is consumed, and every
+    candidate-tree input is read as a regular-file blob.
     """
     _require(review_records is not None,
              "candidate validation requires review evidence records")
@@ -1846,8 +2089,10 @@ def add_candidate(
 
     # Reviewed-action ZH gate: every candidate ZH variant must be an approved
     # add (text + full protocol equal to the baseline EN variant at the EN
-    # locator) or a matched baseline variant (weight unchanged, text equal to
-    # the reviewed proposal, or the kept shifted variant under an in-range
+    # locator) or a matched baseline variant (weight and every text-derived
+    # protocol field equal to the mapped baseline ZH variant, or to the exact
+    # new protocol of the approved card-local protocol_transition; text equal
+    # to the reviewed proposal, or the kept shifted variant under an in-range
     # add placeholder).  The walk uses the action ordinals explicitly, so
     # approved insert/removal shifts never mask drift elsewhere.
     baseline_zh_shape = _zh_protocol_shape(
@@ -1880,6 +2125,7 @@ def add_candidate(
     for key, baseline_variants in baseline_zh.items():
         actions = actions_by_key.get(key, [])
         entry = entry_by_key[key]
+        transitions = _transition_actions(actions)
         slots = _action_slots(len(baseline_variants), actions)
         candidate_variants = candidate_zh[key]
         _require(
@@ -1895,8 +2141,7 @@ def add_candidate(
             if slot["kind"] == "add":
                 en_variant = en_facts[(key, slot["action"]["variant_ordinal"])]
                 for field in ("weight", "control_prefix", "runtime_tokens",
-                              "random_site_counts", "lua_site_count",
-                              "lua_comparison_strings"):
+                              "random_site_counts", "lua_blocks"):
                     _require(
                         candidate_facts[field] == en_variant[field],
                         f"candidate ZH protocol drift at {key!r} add "
@@ -1907,25 +2152,24 @@ def add_candidate(
                 baseline_facts = baseline_variants[
                     slot["variant_ordinal"]
                 ]
-                _require(
-                    candidate_facts["weight"] == baseline_facts["weight"],
-                    f"candidate ZH protocol drift at {key!r} ordinal "
-                    f"{slot['variant_ordinal']}: weight",
+                # Matched slots preserve only the mapped baseline ZH
+                # protocol (weight, control prefix, ordered runtime tokens
+                # with multiplicity, per-site random alternative shape,
+                # complete ordered Lua blocks), or the exact new protocol of
+                # the approved card-local protocol_transition.  There is no
+                # generic same-ordinal EN envelope, so a shifted variant can
+                # never inherit the EN protocol of an unrelated ordinal.
+                transition = transitions.get(slot["variant_ordinal"])
+                expected_facts = (
+                    transition["new_protocol"] if transition is not None
+                    else baseline_facts
                 )
-                # The remaining protocol fields must stay inside the frozen
-                # baseline pairing envelope (baseline ZH tuple or the EN
-                # tuple at the same baseline ordinal); the approved landing
-                # contains exactly one matched-slot protocol move, and it is
-                # the EN pairing shape of that ordinal.
-                drift = _protocol_drift_field(
-                    candidate_facts, baseline_facts,
-                    en_facts.get((key, slot["variant_ordinal"])),
-                )
-                _require(
-                    drift is None,
-                    f"candidate ZH protocol drift at {key!r} ordinal "
-                    f"{slot['variant_ordinal']}: {drift}",
-                )
+                for field in TRANSITION_PROTOCOL_ORDER:
+                    _require(
+                        candidate_facts[field] == expected_facts[field],
+                        f"candidate ZH protocol drift at {key!r} ordinal "
+                        f"{slot['variant_ordinal']}: {field}",
+                    )
             _require(
                 candidate_facts["chinese"]
                 == expected_texts[slot["candidate_ordinal"]],
