@@ -2,8 +2,13 @@
 
 > 本计划冻结 Issue #60 的验收边界、证据来源、身份集合、依赖顺序、不对称事实、
 > 代码侧延期记录与重入规则，并描述 `docs/wpnnoise-review-results.md` 严格台账的
-> 生成与验证方式。本阶段只产出证据报告，**不落地任何翻译改动**；全部
-> adjust/retranslate/defer 候选交人工确认。
+> 生成与验证方式。v1 阶段只产出证据报告、不落地翻译改动，全部
+> adjust/retranslate/defer 候选交人工确认；人工确认后翻译改动已随候选提交
+> `1de9250baabffad96f8c945caebde60c62e43000` 落地，工具门禁扩展至
+> `4fd31b9b90c0ba095bf982acc37a3f9f5933e551`（v2：reviewed_actions 卡级动作 +
+> 候选绑定）。本版文档将严格台账迁移至 v2，并把全部已批准动作绑定到该候选；
+> 下一步为 prepared candidate review（review_prepare.sh → 机械路由审阅员 →
+> review_final_gate.sh），本阶段不声称最终就绪、不运行最终 review profile。
 
 ## 1. 冻结边界与摘要
 
@@ -11,7 +16,11 @@
 |---|---|
 | 任务 | Issue #60（[翻译校对][R4][P2] 聒噪武器消息（wpnnoise）全量校对），子任务于 R4（Refs #40） |
 | 精确基线 OID | `7b56bccf9ce06646b65acf056b1445ad2999512d`（inventory `baseline_ref`） |
-| 工具冻结提交 | `8c3897bbe7b994f37f8c2fc949ee5efac0566660`（本 worktree HEAD；wpnnoise 相关生产文件与基线逐字节一致） |
+| 工具冻结提交（v1） | `8c3897bbe7b994f37f8c2fc949ee5efac0566660`（wpnnoise 相关生产文件与基线逐字节一致） |
+| 翻译落地提交（候选） | `1de9250baabffad96f8c945caebde60c62e43000`（48 处替换 + 12 处插入 + 1 处孤儿删除；候选 ZH 731 变体、EN 731 变体） |
+| 候选门禁提交（v2） | `4fd31b9b90c0ba095bf982acc37a3f9f5933e551`（v2 reviewed_actions 卡级动作与候选绑定；仅脚本/测试） |
+| 候选 EN dump artifact SHA-256 | `0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4`（`/tmp/wpnnoise-candidate-en.json`，与基线 EN 逐字节一致） |
+| 候选 ZH dump artifact SHA-256 | `4d5f9e2048f2c7a51811da63ad841182dc5d866c1f64b8337479ab9a07299eb3`（`/tmp/wpnnoise-candidate-zh.json`） |
 | Inventory SHA-256（canonical JSON digest，含于文件内 `inventory_sha256`） | `6b3e4d1810be0ffc1c239413a4b98d87ce48b6ce8a0c4b1ef6a485dc089de68e` |
 | Inventory 文件字节 SHA-256（格式化 dump） | `fc326a5f8156214860cd330521bd2dbc606f8a9d449baccab69375111d6ac65d`（**非不一致**：canonical digest 排除 `inventory_sha256` 自字段，与格式化文件字节哈希本就不等） |
 | Glossary SHA-256 | `95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`（`docs/glossary.md`，术语权威；resolver 输出 `/tmp/r4-wpnnoise-consolidate-context.txt`） |
@@ -118,7 +127,9 @@ referenced，无假设、无孤立碎片、无意外引用根）。
 
 其余 59 个 key EN/ZH 变体数相等。位置伪影与真缺失由原始文件逐行核对区分，
 不预设两语言拓扑逐字相同；每处错位在结果卡 rationale 中记录精确源映射
-（如 `_instrumental_noises_` ZH:288 ↔ EN:291）。
+（如 `_instrumental_noises_` ZH:288 ↔ EN:291）。上述六处不对称在候选
+`1de9250b` 中全部消解：候选 ZH 为 731/731（12 处批准插入 + 1 处孤儿删除），
+由 v2 候选门禁逐位置证明；基线侧冻结事实与 `ASYMMETRIC_VARIANT_KEYS` 不变。
 
 ## 7. 审核证据批次映射（只读）
 
@@ -147,32 +158,45 @@ referenced，无假设、无孤立碎片、无意外引用根）。
 
 ## 8. 台账 schema（docs/wpnnoise-review-results.md）
 
-严格块标记 `<!-- BEGIN STRICT WPNNOISE REVIEW EVIDENCE v1 -->` /
-`<!-- END STRICT WPNNOISE REVIEW EVIDENCE v1 -->`，内含唯一 fenced jsonl 块：
+严格块标记 `<!-- BEGIN STRICT WPNNOISE REVIEW EVIDENCE v2 -->` /
+`<!-- END STRICT WPNNOISE REVIEW EVIDENCE v2 -->`，内含唯一 fenced jsonl 块：
 第 1 行为 metadata（baseline、glossary_sha256、inventory_sha256、identity_count、
 双侧 dump artifact SHA、变体/随机站/Lua 站计数、`terminal_conclusion_counts`），
 随后按 inventory entry 顺序（key 字典序）每 identity 一行卡。卡字段、变体字段、
 production_facts 字段、聚合与 defer 校验均以 `wpnnoise_inventory.py` 的
 `validate_results` 为准（本计划不复制 schema）。
 
-## 9. 缺失变体与孤儿决策的表示（schema 合规）
+v2 在每张卡上新增必填字段 `reviewed_actions`（无动作卡为空列表）：动作记录字段
+`{kind, variant_ordinal, text, rationale}`。`kind=add` 绑定基线 EN-only 缺失变体
+（按基线 EN 序数），要求批准文本的协议（控制前缀/runtime token/随机子串站/
+Lua 站/比较串）与基线 EN 变体逐项一致；序数落在现行 ZH 变体数内的 add 必须借
+占位 proposal 槽（kazoo 卡即此约定）。`kind=remove` 绑定 ZH-only 孤儿（按基线
+ZH 序数），要求文本与基线 ZH 变体逐字节一致。add 序数是候选（最终）位置、
+remove 序数是基线位置，由双指针 walk 映射，不做其他序数配对假设。
 
-- schema 的 `proposed_translation` 长度必须等于现行 ZH 变体数、`variant_reviews`
+## 9. 缺失变体与孤儿决策的表示（v2 卡级动作）
+
+- v1 的 `proposed_translation` 长度必须等于现行 ZH 变体数、`variant_reviews`
   只覆盖现行 ZH 变体：**新增**（kazoo、fungus 7 条、`_real_song_no_tension_`
-  19/20、`_scream_` 70）与**删除**（`_speaking_high_tension_` 孤儿）均无法以
-  字符串提议表达，属变体数量变更。
-- schema 合规表示：缺失变体的提议文本与落地条件写入对应卡的
-  `reviewer_rationale` / `rejected_alternatives`（本计划 §6 亦汇总）；孤儿槽
-  （ZH ordinal 1）以 `defer terminology` 记录（owner=zh-translator、原因=删除
-  无法在冻结台账表达、reentry=人工确认 + inventory 重建后重配）。
+  19/20、`_scream_` 70）与**删除**（`_speaking_high_tension_` 孤儿）属变体数量
+  变更，v1 无法以字符串提议表达；v2 以卡级 `reviewed_actions` 表达并绑定候选。
+- v2 动作明细（六张动作卡，共 13 条动作）：`_instrumental_noises_` add@8、
+  `weapon_noise` add@30（kazoo 插入，占位约定：proposal[8]/proposal[30] 即插入
+  文本）；`_real_song_no_tension_` add@19/add@20；`_scream_` add@70；
+  `fungus thoughts` add@7-13；`_speaking_high_tension_` remove@1（基线 ZH
+  ordinal 1 的精确 deus-vult 文本；ordinal 1 的 defer terminology 变体审阅保留
+  v1 结论）。
 - 位置伪影（`_instrumental_noises_` [12]、`weapon_noise` [38]、
   `_speaking_high_tension_` zh_only [32]）保留为冻结 production_facts，并在
   rationale 中注明真实缺失位置与源映射。
-- 卡级结论按聚合规则：`fungus thoughts` 现行 7 变体全 keep ⇒ 卡级 keep，但
-  完整性缺陷（7 条缺失）作为 definite fix 在卡内明确记录；`_instrumental_noises_`
-  与 `weapon_noise` 以错位槽（ordinal 8/30）承载 kazoo 提议 ⇒ 卡级 adjust。
-- 若出现 schema 无法表达且验收必需的提议，本阶段将停止并报告 tooling blocker，
-  不以手写不可验证台账代替；当前核对未触发该情况。
+- 卡级结论按聚合规则不变：`fungus thoughts` 现行 7 变体全 keep ⇒ 卡级 keep，
+  完整性修复以 add@7-13 动作落地；`_instrumental_noises_` 与 `weapon_noise` 以
+  错位槽（ordinal 8/30）承载 kazoo 提议 ⇒ 卡级 adjust。
+- 落地与绑定：上述全部动作已按人工确认随候选 `1de9250b` 落地；候选门禁
+  `4fd31b9b90` 要求候选 EN 与基线逐字节一致、候选 key 集双向相等（全 key
+  EN==ZH，无残留单边变更），每候选变体为已批准 add（协议与 EN 定位器一致）或
+  匹配基线变体（权重不变、文本=审阅 proposal 或占位保留）；未审阅的
+  key/权重/控制/token/Lua/随机站漂移、多余插入/删除/重排全部失败关闭。
 
 ## 10. 代码侧发现与 defer implementation 记录
 
@@ -213,14 +237,20 @@ production_facts 字段、聚合与 defer 校验均以 `wpnnoise_inventory.py` �
 - 不新增第二套 final gate、全局质量分数或自动 Gold；不运行最终 review profile。
 - 不修改 C++/Lua/构建/glossary/decisions/脚本/测试。
 
-## 12. 人工确认停止点
+## 12. 人工确认停止点与落地状态
 
-本阶段在证据报告处停止：`docs/wpnnoise-review-results.md` 的 65 张卡与全部
-变体提议（含缺失变体建议文本、孤儿删除建议、代码侧 defer）提交人工确认。
-**不落地 `zh/wpnnoise.txt` 改动**。确认后按批次单一 `zh-translator` 顺序落地；
-涉及变体数量变更的项（kazoo 插入 ×2、fungus +7、`_real_song_no_tension_`
-+2、`_scream_` +1、孤儿删除）须先由 `crawl-coder` 重建 inventory 并更新
-`ASYMMETRIC_VARIANT_KEYS` 冻结，再按 Skill 失效规则只使受影响卡失效。
+v1 阶段在证据报告处停止：`docs/wpnnoise-review-results.md` 的 65 张卡与全部
+变体提议（含缺失变体建议文本、孤儿删除建议、代码侧 defer）提交人工确认，
+**不落地 `zh/wpnnoise.txt` 改动**。人工确认后，翻译改动已由单一 `zh-translator`
+按批次顺序随候选 `1de9250b` 落地（48 处替换 + 12 处插入 + 1 处孤儿删除，
+`zh/wpnnoise.txt`），工具门禁 `4fd31b9b90` 提供 v2 候选绑定证明。
+
+本阶段只做文档迁移：将严格台账升级到 v2（卡级 `reviewed_actions`），并把它
+与候选 `1de9250b` 精确绑定（验证命令见 §14）。不修改任何 ZH/EN 资产、脚本、
+测试、glossary、decisions。剩余下一步是 prepared candidate review：按
+review-contract 由 `review_prepare.sh` 准备不可变候选、机械路由审阅员、记录
+readiness，最后由 `review_final_gate.sh` 单次运行最终 profile；本阶段不运行
+最终 review profile、不声称最终就绪。
 
 ## 13. 重入规则
 
@@ -231,19 +261,33 @@ production_facts 字段、聚合与 defer 校验均以 `wpnnoise_inventory.py` �
 - 代码侧 defer：冠词泄漏与 `@head@` 泄漏在 `item_noise`/电鳗路径改为语言感知
   处理或引入集中式 token 替换层后重验显示；`[a|b]` 展开在电鳗路径接入
   `maybe_pick_random_substring` 后重验 solo v0。
-- 孤儿：人工确认 + 上游删除提交确认后重建 inventory（32 变体）重配 1-31 序数，
-  仅 `_speaking_high_tension_` 卡失效。
-- 缺失变体：确认并落地后重建 inventory（变体数与 `ASYMMETRIC_VARIANT_KEYS`
-  同步更新），重验对应卡的配对与聚合。
+- 孤儿：已以 v2 remove@1 动作表达并随 `1de9250b` 落地（候选 ZH 33→32），
+  候选门禁证明前移对齐；基线 inventory 保持冻结。若候选 ZH 拓扑再次变化（新增
+  EN-only 变体或新的 ZH-only 孤儿），更新 `_speaking_high_tension_` 卡的
+  reviewed_actions 并重跑候选门禁。
+- 缺失变体：已以 v2 add 动作表达并随 `1de9250b` 落地（kazoo ×2、`_real_song_`
+  no_tension 19/20、`_scream_` 70、fungus 7-13），候选门禁逐位置证明协议一致；
+  基线 `ASYMMETRIC_VARIANT_KEYS` 冻结保留。若 EN 源再次新增变体，更新相应卡的
+  动作并重跑候选门禁。
 
 ## 14. 验证
 
-- 严格台账：`bash .claude/scripts/wpnnoise_inventory.py --baseline-ref
+- 严格台账（v2）：`bash .claude/scripts/wpnnoise_inventory.py --baseline-ref
   7b56bccf9ce06646b65acf056b1445ad2999512d --english-dump
   /tmp/wpnnoise-baseline-en.json --localized-dump /tmp/wpnnoise-baseline-zh.json
-  --inventory-output /tmp/wpnnoise-inventory-rebuilt.json --review-results
+  --inventory-output /tmp/wpnnoise-inventory-v2.json --review-results
   docs/wpnnoise-review-results.md --glossary docs/glossary.md`，要求 exit 0、
-  inventory/reviewed 双向相等、每卡聚合一致、defer 三字段齐备、metadata
-  计数一致，且重建 inventory digest == `6b3e4d18…`。
+  inventory/reviewed 双向相等、每卡聚合一致、defer 三字段齐备、每卡
+  reviewed_actions 合规、metadata 计数一致，且重建 inventory digest ==
+  `6b3e4d18…`。
+- 候选绑定（精确）：同一命令追加 `--candidate-ref
+  1de9250baabffad96f8c945caebde60c62e43000 --candidate-english-dump
+  /tmp/wpnnoise-candidate-en.json --candidate-localized-dump
+  /tmp/wpnnoise-candidate-zh.json`（dumps 为 exact-Git 全量布局生成，SHA-256 见
+  §1），要求 exit 0、候选 EN 与基线逐字节一致（`0e539d83…`）、65 identity /
+  731 ZH 变体全部接受、candidate_sha256 == `315863293f32fbbaccff403d5e3acf7f0
+  7aa55c09d5a8a89c4a92cd83cd0f84f`。候选门禁要求候选为 exact clean HEAD；
+  本 worktree HEAD 为工具提交时，经 `/tmp/run_wpnnoise_docs_gate.py` 仅 mock
+  该守卫（4fd31b9b90 建立的驱动模式），其余全部为真实生产代码路径。
 - 本计划与结果文件不做其他 lint（仓库无 markdown linter）；结果文件由上述
   严格解析器同时充当结构校验。
