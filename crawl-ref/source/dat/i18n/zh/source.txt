@@ -15785,6 +15785,12 @@ at
 next to
 旁边
 %%%%
+body part|form
+形体
+%%%%
+body part|head
+头
+%%%%
 monster body part plural|arms
 手臂
 %%%%
