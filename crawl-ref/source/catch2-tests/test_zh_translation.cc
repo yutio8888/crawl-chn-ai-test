@@ -29,6 +29,7 @@
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "mutation.h"
+#include "nearby-danger.h"
 #include "notes.h"
 #include "options.h"
 #include "player.h"
@@ -2101,9 +2102,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // discards the channel and get_last_messages has no channel access) are
 // asserted for the exact text, the exact chosen alternative, the positive
 // localized head/form/skin values, exactly one emission, MSGCH_TALK, no
-// residual tokens/brackets, unchanged parent RNG, and a preserved message
-// tail. Player/world/message state is restored by unwind_var plus the
-// pre/post message-tail proof; the fixture restores language state.
+// residual tokens/brackets, and unchanged parent RNG. Before every replay
+// the production guard precondition is proven empty (no nearby dangerous
+// visible monster, fail closed). Every observed emission runs inside the
+// existing msgwin_temporary_mode with an RAII rollback
+// (msgwin_clear_temporary()) on the normal and REQUIRE-unwinding paths, so
+// the process-global message store is never contaminated: after the
+// rollback the complete retained history snapshot
+// (get_last_messages(NUM_STORED_MESSAGES, true)) is proven byte-identical
+// to the pre-call snapshot. Player state is restored by unwind_var; the
+// fixture restores language state. The tests mutate no env cells, so no
+// world snapshot/restore is needed.
 // =============================================================================
 
 namespace
@@ -2130,15 +2139,17 @@ struct channel_capturing_tee : msg::tee
     }
 };
 
-// Newest message of a get_last_messages(n, true) tail: single-line messages
-// are stored as "m1\nm2\n\n" (each line word-wrapped with a trailing
-// newline, plus one final clearance newline).
-string newest_stored_message(const string &tail)
+// RAII cleanup installed after msgwin_temporary_mode: rolls back the
+// temporary messages with msgwin_clear_temporary() on the normal path and
+// on REQUIRE unwinding, so an observed emission never survives into the
+// process-global message store.
+struct temporary_message_rollback
 {
-    const string body = tail.substr(0, tail.size() - 2);
-    const string::size_type nl = body.find_last_of('\n');
-    return nl == string::npos ? body : body.substr(nl + 1);
-}
+    ~temporary_message_rollback()
+    {
+        msgwin_clear_temporary();
+    }
+};
 
 // Switch the display language and reload the language-specific TextDB layer
 // (getSpeakString and the C_/species lookups both consult it).
@@ -2199,12 +2210,11 @@ uint64_t find_eel_final_seed(const char *key, const string &needle)
 // subgenerator, with player/world state set by the caller.
 struct eel_observation
 {
-    string pre_tail;  // get_last_messages(2, true) before the call
-    string store;     // get_last_messages(1, true) after the call
-    string post_tail; // get_last_messages(2, true) after the call
-    string tee_raw;   // raw msg::tee stream (colour tag + text + newline)
+    string store;             // get_last_messages(1, true) while active
+    string tee_raw;           // raw msg::tee stream (colour tag + text + newline)
     msg_channel_type channel = MSGCH_PLAIN;
     int appends = 0;
+    bool history_restored = false; // complete retained history == pre-call
     bool parent_rng_unchanged = false;
 };
 
@@ -2212,18 +2222,34 @@ eel_observation observe_eel_flavour(lang_t language, uint64_t seed)
 {
     set_eel_language(language);
 
+    // Fail closed: the production guard of do_eel_flavour_msg() must see no
+    // nearby dangerous visible monster, otherwise it silently returns and no
+    // emission happens (an empty observation would prove nothing).
+    REQUIRE_FALSE(there_are_monsters_nearby(true, true, false));
+
     eel_observation obs;
-    obs.pre_tail = get_last_messages(2, true);
+    const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
     const uint64_t parent_before = rng::peek_uint64();
     {
+        // Every observed emission runs inside the existing temporary mode;
+        // the rollback guard clears it on the normal path and on REQUIRE
+        // unwinding, so the emission never survives this scope.
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
         rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
         channel_capturing_tee tee(obs.tee_raw);
         do_eel_flavour_msg();
+        // Capture the exact emission while it is still active in the store,
+        // the tee and the channel, before the rollback at scope exit.
         obs.store = get_last_messages(1, true);
-        obs.post_tail = get_last_messages(2, true);
         obs.channel = tee.channel;
         obs.appends = tee.appends;
     }
+    // Rollback already ran at scope exit; prove the complete retained
+    // message history equals the pre-call snapshot (isolation from later
+    // cases and helper calls).
+    obs.history_restored =
+        get_last_messages(NUM_STORED_MESSAGES, true) == history_before;
     obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
     return obs;
 }
@@ -2248,13 +2274,10 @@ void check_eel_observation(const eel_observation &obs,
     CHECK(obs.appends == 1);
     // The replay drew only from the fixed subgenerator, never the parent RNG.
     CHECK(obs.parent_rng_unchanged);
-    // Exactly one new message: the pre-call tail is preserved and the newest
-    // post-call line is exactly the expected text.
-    if (obs.pre_tail.empty())
-        CHECK(obs.post_tail == expected_final + "\n\n");
-    else
-        CHECK(obs.post_tail == newest_stored_message(obs.pre_tail) + "\n"
-                              + expected_final + "\n\n");
+    // Full isolation: after the temporary-mode rollback, the complete
+    // retained message history is byte-identical to the pre-call snapshot,
+    // so no later case or helper call can see this emission.
+    CHECK(obs.history_restored);
 }
 
 // ZH final displays must not leak any English head/form/skin text.
