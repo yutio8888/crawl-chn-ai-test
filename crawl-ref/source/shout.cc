@@ -353,13 +353,21 @@ void item_noise(const item_def &item, actor &act, string msg, int loudness)
         msg = "You hear a strange noise.";
     }
 
-    // Replace weapon references. Can't use DESC_THE because that includes
-    // pluses etc. and we want just the basename.
-    msg = replace_all(msg, "@The_weapon@", "The @weapon@");
-    msg = replace_all(msg, "@the_weapon@", "the @weapon@");
-    msg = replace_all(msg, "@Your_weapon@", "Your @weapon@");
-    msg = replace_all(msg, "@your_weapon@", "your @weapon@");
-    msg = replace_all(msg, "@weapon@", item.name(DESC_BASENAME));
+    // Replace weapon references through the central grammar layer.
+    // DESC_BASENAME keeps the name as close to the bare display name as
+    // this API offers (pluses remain on identified artefacts); the
+    // definite/possessive prefix is delegated to apply_description so the
+    // language layer decides how to express it (EN keeps The/the/Your/your,
+    // ZH uses no articles and 你的 for the possessive).
+    const string weapon_name = item.name(DESC_BASENAME);
+    const string the_weapon = apply_description(DESC_THE, weapon_name);
+    const string your_weapon = apply_description(DESC_YOUR, weapon_name);
+
+    msg = replace_all(msg, "@The_weapon@", uppercase_first(the_weapon));
+    msg = replace_all(msg, "@the_weapon@", the_weapon);
+    msg = replace_all(msg, "@Your_weapon@", uppercase_first(your_weapon));
+    msg = replace_all(msg, "@your_weapon@", your_weapon);
+    msg = replace_all(msg, "@weapon@", weapon_name);
 
     // replace references to player name and god
     msg = replace_all(msg, "@player_name@", you.your_name);

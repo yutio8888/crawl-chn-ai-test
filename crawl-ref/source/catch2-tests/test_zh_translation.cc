@@ -24,6 +24,7 @@
 #include "jobs.h"
 #include "macro.h"
 #include "mapdef.h"
+#include "message.h"
 #include "mgen-data.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
@@ -1711,4 +1712,372 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     auto issues = scan_text(text, "key", "test");
     INFO("detected " << issues.size() << " issues:");
     REQUIRE(issues.size() >= 2);
+}
+
+// =============================================================================
+// Issue #61 — item_noise central grammar layer.
+//
+// item_noise()'s @The_weapon@/@the_weapon@/@Your_weapon@/@your_weapon@/@weapon@
+// tokens now run through apply_description() (the central grammar layer):
+//   EN: The/the/Your/your keep the byte-identical legacy prefixes.
+//   ZH: The/the render the bare localized basename; Your/your render
+//       你的 + basename. Unrands first map Your/your to The/the (existing
+//       behaviour), so they render the bare localized basename in ZH and
+//       "The/the" in EN.
+// Each test captures both the raw msg::tee stream (which observes before the
+// final capitalize()/filtering, with a leading colour tag) and the final
+// message-store buffer, so final-display claims are asserted against the real
+// store.
+// =============================================================================
+
+namespace
+{
+// msg::tee observes messages before final capitalization/filtering and with a
+// leading <colour> tag; strip that tag for semantic comparison.
+string strip_tee_colour_tag(const string &raw)
+{
+    if (!raw.empty() && raw[0] == '<')
+    {
+        const string::size_type gt = raw.find('>');
+        if (gt != string::npos)
+            return raw.substr(gt + 1);
+    }
+    return raw;
+}
+
+// Find a deterministic subgenerator seed for which the real SpeakDB root
+// expands to a message containing the intended item_noise token. When
+// require_no_random_sites is set, the selected fixture must also have no
+// [a|b] random-substring sites, so the final display is fully deterministic.
+// Returns 0 when no seed is found within the bound (fail closed).
+uint64_t find_speak_seed(const char *key, const char *intended_token,
+                         bool require_no_random_sites)
+{
+    for (uint64_t candidate = 1; candidate < 20000; ++candidate)
+    {
+        rng::subgenerator probe(candidate, 0x6100610061006100ULL);
+        const string text = getSpeakString(key);
+        if (text.find(intended_token) != string::npos
+            && (!require_no_random_sites || text.find('[') == string::npos))
+        {
+            return candidate;
+        }
+    }
+    return 0;
+}
+
+// RAII guard: restore the unique-item status of one unrand after a test.
+struct unique_item_status_guard
+{
+    int unrand;
+    unique_item_status_type saved;
+
+    unique_item_status_guard(int which_unrand)
+        : unrand(which_unrand), saved(get_unique_item_status(which_unrand))
+    {
+    }
+
+    ~unique_item_status_guard()
+    {
+        item_def item;
+        item.flags = ISFLAG_UNRANDART;
+        item.unrand_idx = unrand;
+        set_unique_item_status(item, saved);
+    }
+};
+
+struct item_noise_observation
+{
+    string basename; // item.name(DESC_BASENAME) in the observed language
+    string raw;      // message handed to item_noise (pre-token-expansion)
+    string tee;      // raw msg::tee stream, colour tag stripped
+    string store;    // final message-store buffer text
+};
+
+// Observe one item_noise() call with a fully synthetic message (no SpeakDB
+// selection, no RNG sites).
+item_noise_observation observe_synthetic_noise(lang_t language,
+                                               const item_def &item,
+                                               const string &msg, int loudness)
+{
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    // Reload the language-specific TextDB layer (item.name(DESC_BASENAME)
+    // consults it; getSpeakString needs it for the real-root variant).
+    databaseSystemInit();
+
+    item_noise_observation obs;
+    obs.basename = item.name(DESC_BASENAME);
+    obs.raw = msg;
+    {
+        msg::tee tee(obs.tee);
+        item_noise(item, you, msg, loudness);
+        obs.store = get_last_messages(1, true);
+    }
+    obs.tee = strip_tee_colour_tag(obs.tee);
+    return obs;
+}
+
+// Observe the real production sequence for one root: getSpeakString() under
+// the fixed subgenerator, then item_noise() under the same generator, so the
+// weighted picks and any [a|b] sites share one deterministic RNG stream.
+item_noise_observation observe_real_root(lang_t language, const item_def &item,
+                                         const char *key,
+                                         const char *intended_token,
+                                         int loudness, uint64_t seed)
+{
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    // Reload the language-specific TextDB layer so getSpeakString selects
+    // the fixture in the observed language.
+    databaseSystemInit();
+
+    item_noise_observation obs;
+    obs.basename = item.name(DESC_BASENAME);
+    {
+        rng::subgenerator scoped_rng(seed, 0x6100610061006100ULL);
+        obs.raw = getSpeakString(key);
+        REQUIRE_FALSE(obs.raw.empty());
+        // The selected real fixture must actually contain the intended token
+        // (guards against a fixture whose expansion drops the weapon token).
+        REQUIRE(obs.raw.find(intended_token) != string::npos);
+        msg::tee tee(obs.tee);
+        item_noise(item, you, obs.raw, loudness);
+        obs.store = get_last_messages(1, true);
+    }
+    obs.tee = strip_tee_colour_tag(obs.tee);
+    return obs;
+}
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 61 item_noise token matrix keeps EN articles and drops ZH articles",
+                 "[zh-translation][item-noise][issue-61]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.plus = 0;
+    item.flags = ISFLAG_IDENTIFIED;
+
+    // Four-token matrix: capital tokens at sentence start, lowercase tokens
+    // mid-sentence (so sentence-capitalization cannot mask the token layer),
+    // plus the bare @weapon@ token.
+    const string msg = "VISUAL:@the_weapon@ A @The_weapon@ B "
+                       "@your_weapon@ C @Your_weapon@ D @weapon@.";
+
+    const item_noise_observation en =
+        observe_synthetic_noise(lang_t::EN, item, msg, 0);
+    const item_noise_observation zh =
+        observe_synthetic_noise(lang_t::ZH, item, msg, 0);
+
+    // DESC_BASENAME keeps the actual (plus-bearing) basename; pin it so the
+    // exact expectations below cannot silently shift.
+    REQUIRE(en.basename == "+0 dagger");
+    REQUIRE(zh.basename == "+0 匕首");
+    REQUIRE(en.basename != zh.basename);
+
+    // EN: byte-identical legacy semantics (The/the/Your/your + basename).
+    const string en_expected =
+        "the " + en.basename + " A The " + en.basename + " B "
+        + "your " + en.basename + " C Your " + en.basename + " D "
+        + en.basename + ".";
+    // The final message store additionally applies capitalize().
+    const string en_store_expected =
+        "The " + en.basename + " A The " + en.basename + " B "
+        + "your " + en.basename + " C Your " + en.basename + " D "
+        + en.basename + ".";
+    CHECK(en.tee == en_expected + "\n");
+    CHECK(en.store == en_store_expected + "\n\n");
+    CHECK(en.store.find("@") == string::npos);
+    CHECK(en.store.find("Your " + en.basename) != string::npos);
+
+    // ZH: The/the -> bare localized basename, Your/your -> 你的 + basename.
+    const string zh_expected =
+        zh.basename + " A " + zh.basename + " B "
+        + "你的" + zh.basename + " C 你的" + zh.basename + " D "
+        + zh.basename + ".";
+    CHECK(zh.tee == zh_expected + "\n");
+    CHECK(zh.store == zh_expected + "\n\n");
+    CHECK(zh.store.find("@") == string::npos);
+    CHECK(zh.store.find("The ") == string::npos);
+    CHECK(zh.store.find("the ") == string::npos);
+    CHECK(zh.store.find("Your ") == string::npos);
+    CHECK(zh.store.find("your ") == string::npos);
+    CHECK(zh.store.find("你的" + zh.basename) != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 61 noisy randart renders the real noisy weapon root",
+                 "[zh-translation][item-noise][issue-61]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.plus = 3;
+    // Fixed display name; production randart property initialization gives the
+    // item a valid ARTEFACT_PROPS_KEY vector (item.name() asserts on it).
+    item.props[ARTEFACT_NAME_KEY].get_string() = "noise test blade";
+    REQUIRE(make_item_randart(item, true));
+    item.flags |= ISFLAG_IDENTIFIED;
+
+    const uint64_t seed =
+        find_speak_seed("noisy weapon", "@Your_weapon@", true);
+    REQUIRE(seed != 0);
+
+    // Non-visual root (TALK channel): item_noise still routes through noisy(),
+    // which asserts an in-bounds origin even at loudness 0; the player
+    // position was set above and is restored by unwind_var.
+    const item_noise_observation en = observe_real_root(
+        lang_t::EN, item, "noisy weapon", "@Your_weapon@", 0, seed);
+    const item_noise_observation zh = observe_real_root(
+        lang_t::ZH, item, "noisy weapon", "@Your_weapon@", 0, seed);
+
+    // The seed search ran under the ZH fixture; prove the same seed selects a
+    // fixture with the intended token and no random sites in both languages.
+    REQUIRE(en.raw.find('[') == string::npos);
+    REQUIRE(zh.raw.find('[') == string::npos);
+
+    // EN: Your -> "Your " + actual basename (unchanged semantics).
+    const string en_expected =
+        replace_all(en.raw, "@Your_weapon@", "Your " + en.basename);
+    CHECK(en.tee == en_expected + "\n");
+    CHECK(en.store == en_expected + "\n\n");
+    CHECK(en.store.find("@") == string::npos);
+
+    // ZH: Your -> 你的 + localized basename; no English articles leak.
+    const string zh_expected =
+        replace_all(zh.raw, "@Your_weapon@", "你的" + zh.basename);
+    CHECK(zh.tee == zh_expected + "\n");
+    CHECK(zh.store == zh_expected + "\n\n");
+    CHECK(zh.store.find("@") == string::npos);
+    CHECK(zh.store.find("Your ") == string::npos);
+    CHECK(zh.store.find("The ") == string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 61 singing sword silenced renders The through the grammar layer",
+                 "[zh-translation][item-noise][issue-61]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DOUBLE_SWORD;
+    item.quantity = 1;
+    item.plus = 11;
+    item.flags = ISFLAG_UNRANDART | ISFLAG_IDENTIFIED;
+    item.unrand_idx = UNRAND_SINGING_SWORD;
+
+    const uint64_t seed =
+        find_speak_seed("singing sword silenced", "@The_weapon@", true);
+    REQUIRE(seed != 0);
+
+    // All silenced-tier fixtures are VISUAL: roots (no noisy() call), but the
+    // position is still set uniformly.
+    const item_noise_observation en = observe_real_root(
+        lang_t::EN, item, "singing sword silenced", "@The_weapon@", 0, seed);
+    const item_noise_observation zh = observe_real_root(
+        lang_t::ZH, item, "singing sword silenced", "@The_weapon@", 0, seed);
+
+    REQUIRE(en.raw.find('[') == string::npos);
+    REQUIRE(zh.raw.find('[') == string::npos);
+    // The silenced tier is a VISUAL: root; item_noise strips the control
+    // prefix before display, so expectations use the post-prefix body.
+    REQUIRE(en.raw.find("VISUAL:") == 0);
+    REQUIRE(zh.raw.find("VISUAL:") == 0);
+    const string en_body = en.raw.substr(strlen("VISUAL:"));
+    const string zh_body = zh.raw.substr(strlen("VISUAL:"));
+
+    // EN: sentence-initial @The_weapon@ -> "The " + basename.
+    const string en_expected =
+        replace_all(en_body, "@The_weapon@", "The " + en.basename);
+    CHECK(en.tee == en_expected + "\n");
+    CHECK(en.store == en_expected + "\n\n");
+    CHECK(en.store.find("@") == string::npos);
+
+    // ZH: The -> bare localized basename (Singing Sword is an unrand, so the
+    // actual basename is the localized artefact name, not a base item).
+    const string zh_expected =
+        replace_all(zh_body, "@The_weapon@", zh.basename);
+    CHECK(zh.tee == zh_expected + "\n");
+    CHECK(zh.store == zh_expected + "\n\n");
+    CHECK(zh.store.find("@") == string::npos);
+    CHECK(zh.store.find("The ") == string::npos);
+    CHECK(zh.store.find("your ") == string::npos);
+    CHECK(zh.basename != en.basename);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 61 noisy unrand maps Your to The before the grammar layer",
+                 "[zh-translation][item-noise][issue-61]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    unique_item_status_guard restore_status(UNRAND_CONDEMNATION);
+
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_TRISHULA;
+    item.quantity = 1;
+    item.plus = 8;
+    item.flags = ISFLAG_UNRANDART | ISFLAG_IDENTIFIED;
+    item.unrand_idx = UNRAND_CONDEMNATION;
+
+    // The trishula fixture always contains [a|b] sites, so the seed search
+    // only requires the intended token here.
+    const uint64_t seed =
+        find_speak_seed("trishula \"Condemnation\"", "@Your_weapon@", false);
+    REQUIRE(seed != 0);
+
+    // Non-visual root (TALK channel); position was set above.
+    const item_noise_observation en = observe_real_root(
+        lang_t::EN, item, "trishula \"Condemnation\"", "@Your_weapon@", 0,
+        seed);
+    const item_noise_observation zh = observe_real_root(
+        lang_t::ZH, item, "trishula \"Condemnation\"", "@Your_weapon@", 0,
+        seed);
+
+    // Real trishula fixture: @Your_weapon@ was mapped to @The_weapon@ before
+    // the grammar layer, so EN renders "The " + basename and never "Your ".
+    CHECK(en.store.find("The " + en.basename) != string::npos);
+    CHECK(en.store.find("Your " + en.basename) == string::npos);
+    CHECK(en.store.find("@") == string::npos);
+    // ZH: Your -> The -> bare localized basename (no 你的, no articles).
+    CHECK(zh.store.find(zh.basename) != string::npos);
+    CHECK(zh.store.find("你的" + zh.basename) == string::npos);
+    CHECK(zh.store.find("Your ") == string::npos);
+    CHECK(zh.store.find("The ") == string::npos);
+    CHECK(zh.store.find("@") == string::npos);
+    CHECK(zh.basename != en.basename);
+
+    // Lowercase unrand variant: @your_weapon@ -> @the_weapon@ -> "the " +
+    // basename in EN, bare basename in ZH (exact and deterministic).
+    const item_noise_observation en_lower = observe_synthetic_noise(
+        lang_t::EN, item, "VISUAL:@your_weapon@ tail.", 0);
+    const item_noise_observation zh_lower = observe_synthetic_noise(
+        lang_t::ZH, item, "VISUAL:@your_weapon@ tail.", 0);
+    CHECK(en_lower.tee == "the " + en_lower.basename + " tail.\n");
+    CHECK(en_lower.store == "The " + en_lower.basename + " tail.\n\n");
+    CHECK(zh_lower.tee == zh_lower.basename + " tail.\n");
+    CHECK(zh_lower.store == zh_lower.basename + " tail.\n\n");
+    CHECK(en_lower.store.find("@") == string::npos);
+    CHECK(zh_lower.store.find("@") == string::npos);
 }
