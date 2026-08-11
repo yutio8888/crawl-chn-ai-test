@@ -6,7 +6,6 @@ import copy
 import importlib.util
 import json
 import re
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -22,16 +21,28 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
-# Issue #60 frozen baseline boundary.  The tool accepts --baseline-ref at
-# runtime; the tests pin the boundary the inventory freezes.  The candidate
-# ref must be a real commit that is never equal to the baseline (HEAD^^ is
-# the pre-baseline commit while HEAD is the baseline before the tooling
-# commit lands, and the tooling commit afterwards).
+# Issue #60 frozen baseline boundary (immutable exact-Git OIDs, independent of
+# branch depth).  The baseline is the pre-landing state (731 EN / 720 ZH with
+# six asymmetric keys); the candidate is the approved landing commit 1de9250b
+# (731/731) whose ZH differences are exactly the reviewed actions below plus
+# the 48 reviewed replacement proposals.  The tool accepts --baseline-ref at
+# runtime; the tests pin the boundary the inventory freezes.
 BASELINE = "7b56bccf9ce06646b65acf056b1445ad2999512d"
-CANDIDATE = subprocess.run(
-    ["git", "-C", str(ROOT), "rev-parse", "HEAD^^"],
-    check=True, text=True, capture_output=True,
-).stdout.strip()
+CANDIDATE = "1de9250baabffad96f8c945caebde60c62e43000"
+
+# Reviewed one-sided structural actions (kind + ordinal only; the bound texts
+# are derived from the exact baseline/candidate artifacts by the fixtures):
+# EN-only missing variants approved for addition (incl. the two kazoo
+# positional realignments at ordinals 8/30) and the ZH-only deus-vult orphan
+# approved for removal at baseline ZH ordinal 1.
+APPROVED_ACTIONS = {
+    "_instrumental_noises_": [("add", 8)],
+    "weapon_noise": [("add", 30)],
+    "_real_song_no_tension_": [("add", 19), ("add", 20)],
+    "_scream_": [("add", 70)],
+    "fungus thoughts": [("add", ordinal) for ordinal in range(7, 14)],
+    "_speaking_high_tension_": [("remove", 1)],
+}
 
 
 def exact_artifact(oid: str, directory: str) -> dict:
@@ -144,6 +155,7 @@ def card_for(
         "reentry_trigger": MODULE.REENTRY_TRIGGER,
         "rejected_alternatives": ["不改变 lookup、权重、控制、token 或拓扑协议。"],
         "reviewer_rationale": "已核对生产来源、消费者、变体与配对证据。",
+        "reviewed_actions": [],
         "current_english": current_en,
         "current_chinese": current_zh,
         "proposed_translation": proposed,
@@ -175,6 +187,11 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         cls.inventory = MODULE.build_inventory(
             BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
         )
+        # The exact approved candidate (pinned immutable OID): EN is
+        # byte-identical to the baseline; ZH is 731/731 with the reviewed
+        # actions and the 48 approved replacements applied.
+        cls.candidate_en_artifact = exact_artifact(CANDIDATE, "database/")
+        cls.candidate_zh_artifact = exact_artifact(CANDIDATE, "database/zh/")
 
     @classmethod
     def tearDownClass(cls):
@@ -195,7 +212,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
 
     def validate(self, records: list[dict], candidate=None):
         return MODULE.validate_results(
-            self.write_records(copy.deepcopy(records)), self.inventory, candidate
+            self.write_records(copy.deepcopy(records)), self.inventory,
+            candidate, records=records,
         )
 
     def all_cards(self) -> list[dict]:
@@ -221,6 +239,14 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             BASELINE, second_en, second_zh, ROOT / "docs/glossary.md"
         )
         self.assertEqual(first["inventory_sha256"], rebuilt["inventory_sha256"])
+        # Fixture-bound digest: the docs-frozen digest 6b3e4d18... is bound to
+        # the /tmp production dump bytes and rebuilds identically through the
+        # CLI; the unit-test fixtures derive from exact Git with their own
+        # deterministic byte layout, so they pin their own digest here.
+        self.assertEqual(
+            "1ca4369dedc83f3243d019daece034d3b892950c51cf5eeb5b630415462a263b",
+            first["inventory_sha256"],
+        )
         self.assertEqual(MODULE.EXPECTED_IDENTITY_COUNT, len(first["entries"]))
         self.assertEqual(
             MODULE.EXPECTED_EN_VARIANT_COUNT,
@@ -630,9 +656,9 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         self.assertIn("@_godless_sorter_@", high["recursive_tokens"])
         self.assertIn("@player_god@", high["caller_tokens"])
 
-    # ── candidate binding ────────────────────────────────────────────────
+    # ── candidate binding (pinned exact-Git candidate + reviewed actions) ──
 
-    def add_candidate(self, en: dict, zh: dict,
+    def add_candidate(self, en: dict, zh: dict, records: list[dict],
                       candidate_ref: str = CANDIDATE) -> list[dict]:
         en_path = self.root / f"candidate-en-{self.id().split('.')[-1]}.json"
         zh_path = self.root / f"candidate-zh-{self.id().split('.')[-1]}.json"
@@ -652,7 +678,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
                     MODULE.shared, "_derive_scoped_dump", side_effect=fake_derive,
                 ):
             return MODULE.add_candidate(self.inventory, candidate_ref,
-                                        en_path, zh_path)
+                                        en_path, zh_path, records)
 
     @staticmethod
     def zh_variant(artifact: dict, key: str, ordinal: int) -> dict:
@@ -667,6 +693,105 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         mutator(self.zh_variant(artifact, key, ordinal))
         return artifact
 
+    def review_records_for(
+        self, candidate_zh: dict | None = None,
+        actions_by_key: dict | None = None,
+    ) -> list[dict]:
+        """Synthetic strict review bound to a candidate ZH artifact.
+
+        Proposals, action texts and conclusions are derived from the supplied
+        candidate (default: the exact approved candidate) and the baseline
+        artifacts, never hard-coded: matched positions take the candidate's
+        text (adjust when it differs from the baseline, keep otherwise) and
+        action texts are bound to the candidate's inserted variants or the
+        baseline's removed orphan.  In-range add ordinals borrow the proposal
+        slot (placeholder convention) exactly like the approved kazoo cards.
+        """
+        candidate_zh = candidate_zh or self.candidate_zh_artifact
+        actions_by_key = actions_by_key or APPROVED_ACTIONS
+        candidate_texts = {
+            entry["canonical_key"]: [
+                variant["raw_pattern"] for variant in entry["variants"]
+            ]
+            for entry in candidate_zh["entries"]
+        }
+        cards = []
+        for entry in self.inventory["entries"]:
+            key = entry["key"]
+            actions = []
+            overrides = {}
+            for kind, ordinal in actions_by_key.get(key, []):
+                if kind == "add":
+                    text = candidate_texts[key][ordinal]
+                    if ordinal < len(entry["variants"]):
+                        # In-range add borrows the proposal slot.
+                        overrides[ordinal] = ("adjust", text)
+                else:
+                    text = entry["variants"][ordinal]["chinese"]
+                actions.append({
+                    "kind": kind,
+                    "variant_ordinal": ordinal,
+                    "text": text,
+                    "rationale": "已按严格台账核对的单边动作。",
+                })
+            slots = MODULE._action_slots(len(entry["variants"]), actions)
+            add_ordinals = {
+                action["variant_ordinal"] for action in actions
+                if action["kind"] == "add"
+            }
+            for slot in slots:
+                if slot["kind"] != "match":
+                    continue
+                if slot["variant_ordinal"] in add_ordinals:
+                    continue  # placeholder: the shifted variant stays current
+                expected = candidate_texts[key][slot["candidate_ordinal"]]
+                if expected != entry["variants"][
+                    slot["variant_ordinal"]]["chinese"]:
+                    overrides[slot["variant_ordinal"]] = ("adjust", expected)
+            conclusions = [
+                "adjust" if ordinal in overrides else "keep"
+                for ordinal in range(len(entry["variants"]))
+            ]
+            card = card_for(
+                self.inventory, entry,
+                conclusion=MODULE._aggregate(conclusions),
+                variant_override=overrides,
+            )
+            card["reviewed_actions"] = actions
+            cards.append(card)
+        counts: dict[str, int] = {}
+        for card in cards:
+            counts[card["terminal_conclusion"]] = (
+                counts.get(card["terminal_conclusion"], 0) + 1
+            )
+        return [metadata_for(self.inventory, counts), *cards]
+
+    def test_candidate_english_is_byte_identical_to_baseline(self):
+        self.assertEqual(derived_of(self.en_artifact),
+                         derived_of(self.candidate_en_artifact))
+
+    def test_candidate_binds_exact_approved_candidate(self):
+        # The exact approved landing: EN byte-identical to the baseline; ZH
+        # 731/731 with differences exactly equal to the 48 reviewed
+        # replacements + 12 reviewed additions + the reviewed orphan removal.
+        records = self.review_records_for()
+        candidate_entries = self.add_candidate(
+            self.candidate_en_artifact, self.candidate_zh_artifact, records
+        )
+        loaded = self.validate(records, candidate_entries)
+        self.assertEqual(65, len(loaded["cards"]))
+        candidate = self.inventory["candidate"]
+        self.assertEqual(CANDIDATE, candidate["candidate_ref"])
+        self.assertEqual(
+            731, sum(len(entry["variants"]) for entry in candidate["entries"])
+        )
+        by_key = {
+            entry["identity"].removeprefix("wpnnoise:"): entry
+            for entry in candidate["entries"]
+        }
+        for key in APPROVED_ACTIONS:
+            self.assertIn(key, by_key)
+
     def test_candidate_exact_zh_binding_and_english_no_drift(self):
         identity = "wpnnoise:_speaking_high_tension_"
         entry = next(
@@ -674,25 +799,22 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             if entry["identity"] == identity
         )
         new_text = entry["variants"][0]["chinese"] + "（候选改译）"
-        candidate_zh = self.mutated_zh(
-            "_speaking_high_tension_", 0,
-            lambda variant: variant.__setitem__("raw_pattern", new_text),
+        # Approved candidate shape (real candidate: actions applied, counts
+        # equal) plus one reviewed replacement at ordinal 0.
+        candidate_zh = copy.deepcopy(self.candidate_zh_artifact)
+        self.zh_variant(candidate_zh, "_speaking_high_tension_", 0)[
+            "raw_pattern"
+        ] = new_text
+        records = self.review_records_for(candidate_zh)
+        candidate_entries = self.add_candidate(
+            self.en_artifact, candidate_zh, records
         )
-        candidate_entries = self.add_candidate(self.en_artifact, candidate_zh)
         candidate = next(
             entry for entry in candidate_entries
             if entry["identity"] == identity
         )
         self.assertEqual(new_text, candidate["variants"][0]["chinese"])
-
-        cards = self.all_cards()
-        card = next(card for card in cards if card["identity"] == identity)
-        card["terminal_conclusion"] = "retranslate"
-        card["variant_reviews"][0]["terminal_conclusion"] = "retranslate"
-        card["variant_reviews"][0]["proposed_translation"] = new_text
-        card["proposed_translation"][0] = new_text
-        records = [metadata_for(self.inventory, {"keep": 64, "retranslate": 1}),
-                   *cards]
+        self.assertEqual(32, len(candidate["variants"]))
         loaded = self.validate(records, candidate_entries)
         loaded_card = next(
             card for card in loaded["cards"] if card["identity"] == identity
@@ -700,26 +822,25 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         self.assertEqual(new_text, loaded_card["proposed_translation"][0])
 
         # A proposal that disagrees with the exact candidate ZH fails.
-        bad_cards = copy.deepcopy(cards)
+        bad_records = copy.deepcopy(records)
         bad_card = next(
-            card for card in bad_cards if card["identity"] == identity
+            card for card in bad_records[1:] if card["identity"] == identity
         )
         bad_card["proposed_translation"][0] = new_text + "不一致"
         bad_card["variant_reviews"][0]["proposed_translation"] = (
             new_text + "不一致"
         )
         with self.assertRaisesRegex(MODULE.InventoryError, "candidate ZH dump"):
-            self.validate(
-                [metadata_for(self.inventory, {"keep": 64, "retranslate": 1}),
-                 *bad_cards],
-                candidate_entries,
-            )
+            self.validate(bad_records, candidate_entries)
 
     def test_candidate_english_drift_is_rejected(self):
         drift = copy.deepcopy(self.en_artifact)
         self.zh_variant(drift, "noisy weapon", 0)["raw_pattern"] += " drift"
+        records = self.review_records_for()
         with self.assertRaisesRegex(MODULE.InventoryError, "English drift"):
-            self.add_candidate(drift, copy.deepcopy(self.zh_artifact))
+            self.add_candidate(
+                drift, copy.deepcopy(self.candidate_zh_artifact), records
+            )
 
     def test_candidate_zh_protocol_drift_is_rejected(self):
         def swap_first_two_tokens(variant):
@@ -752,63 +873,268 @@ class WpnnoiseInventoryTests(unittest.TestCase):
                 + pattern[second[1]:]
             )
 
+        def mutate_candidate(key, ordinal, mutator):
+            artifact = copy.deepcopy(self.candidate_zh_artifact)
+            mutator(self.zh_variant(artifact, key, ordinal))
+            return artifact
+
+        @staticmethod
+        def renumber(entry: dict) -> dict:
+            for ordinal, variant in enumerate(entry["variants"]):
+                variant["locator"]["variant_ordinal"] = ordinal
+            return entry
+
         def lua_swap_artifact():
-            artifact = copy.deepcopy(self.zh_artifact)
+            artifact = copy.deepcopy(self.candidate_zh_artifact)
             entry = next(
                 entry for entry in artifact["entries"]
                 if entry["canonical_key"] == "_speaking_high_tension_"
             )
-            first, second = entry["variants"][1], entry["variants"][2]
+            first, second = entry["variants"][2], entry["variants"][3]
             first["raw_pattern"], second["raw_pattern"] = (
                 second["raw_pattern"], first["raw_pattern"]
             )
             return artifact
 
+        # All mutations sit at matched positions of the approved candidate
+        # (orphan already removed, counts equal), so each must fail the gate
+        # at the drift check itself, never at a count check.  The Lua-bearing
+        # matched variant is candidate ordinal 3.
         cases = (
             ("token reorder",
-             lambda: self.mutated_zh("_speaking_high_tension_", 1,
-                                     swap_first_two_tokens),
-             "protocol drift"),
+             lambda: mutate_candidate("_speaking_high_tension_", 3,
+                                      swap_first_two_tokens),
+             "text drift"),
             ("duplicate token",
-             lambda: self.mutated_zh(
-                 "_speaking_high_tension_", 1,
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
                  lambda variant: variant.__setitem__(
                      "raw_pattern",
                      variant["raw_pattern"].replace(
                          "@The_weapon@", "@The_weapon@@The_weapon@", 1))),
-             "protocol drift"),
+             "text drift"),
             ("weight drift",
-             lambda: self.mutated_zh(
+             lambda: mutate_candidate(
                  "eel hand solo actions", 0,
                  lambda variant: variant.__setitem__("weight", 30)),
              "protocol drift"),
             ("random-site shape drift",
-             lambda: self.mutated_zh("frozen axe \"frostbite\"", 0,
-                                     swap_bracket_groups),
-             "protocol drift"),
-            ("lua site removed", lua_swap_artifact, "protocol drift"),
+             lambda: mutate_candidate("frozen axe \"frostbite\"", 0,
+                                      swap_bracket_groups),
+             "text drift"),
+            ("lua site swap", lua_swap_artifact, "text drift"),
             ("lua comparison drift",
-             lambda: self.mutated_zh(
-                 "_speaking_high_tension_", 1,
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
                  lambda variant: variant.__setitem__(
                      "raw_pattern",
                      variant["raw_pattern"].replace('"No God"', '"Zin"'))),
              "unknown Lua comparison string"),
         )
+        records = self.review_records_for()
         for name, build, message in cases:
             with self.subTest(case=name):
                 with self.assertRaisesRegex(MODULE.InventoryError, message):
-                    self.add_candidate(self.en_artifact, build())
+                    self.add_candidate(self.candidate_en_artifact, build(),
+                                       records)
 
     def test_candidate_variant_count_drift_is_rejected(self):
-        trimmed = copy.deepcopy(self.zh_artifact)
+        records = self.review_records_for()
+        trimmed = copy.deepcopy(self.candidate_zh_artifact)
         entry = next(
             entry for entry in trimmed["entries"]
-            if entry["canonical_key"] == "_speaking_high_tension_"
+            if entry["canonical_key"] == "weapon_noises"
         )
         entry["variants"].pop()
+        for ordinal, variant in enumerate(entry["variants"]):
+            variant["locator"]["variant_ordinal"] = ordinal
         with self.assertRaisesRegex(MODULE.InventoryError, "variant count"):
-            self.add_candidate(self.en_artifact, trimmed)
+            self.add_candidate(self.candidate_en_artifact, trimmed, records)
+
+    def test_candidate_rejects_malicious_insertions_and_deletions(self):
+        records = self.review_records_for()
+
+        def renumber(entry):
+            for ordinal, variant in enumerate(entry["variants"]):
+                variant["locator"]["variant_ordinal"] = ordinal
+            return entry
+
+        # Unreviewed extra insertion in a no-action key.
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "weapon_noises"
+        )
+        entry["variants"].insert(3, copy.deepcopy(entry["variants"][2]))
+        renumber(entry)
+        with self.assertRaisesRegex(MODULE.InventoryError, "variant count"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+        # Unreviewed insertion inside an action key at a non-action position.
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "_scream_"
+        )
+        entry["variants"].insert(5, copy.deepcopy(entry["variants"][5]))
+        renumber(entry)
+        with self.assertRaisesRegex(MODULE.InventoryError, "variant count"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+        # Unreviewed deletion of a matched variant.
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "weapon_noises"
+        )
+        entry["variants"].pop(3)
+        renumber(entry)
+        with self.assertRaisesRegex(MODULE.InventoryError, "variant count"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+        # The approved removal not applied: the orphan is retained.
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "_speaking_high_tension_"
+        )
+        orphan = copy.deepcopy(
+            self.zh_variant(self.zh_artifact, "_speaking_high_tension_", 1)
+        )
+        entry["variants"].insert(1, orphan)
+        renumber(entry)
+        with self.assertRaisesRegex(MODULE.InventoryError, "variant count"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+    def test_candidate_rejects_reorder_and_add_text_drift(self):
+        records = self.review_records_for()
+
+        # Malicious reorder of two matched variants (patterns swapped,
+        # weights untouched so the text check is the one that fires).
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "weapon_noises"
+        )
+        entry["variants"][1]["raw_pattern"], entry["variants"][2]["raw_pattern"] = (
+            entry["variants"][2]["raw_pattern"], entry["variants"][1]["raw_pattern"]
+        )
+        for ordinal, variant in enumerate(entry["variants"]):
+            variant["locator"]["variant_ordinal"] = ordinal
+        with self.assertRaisesRegex(MODULE.InventoryError, "text drift"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+        # Approved add slot text changed (protocol preserved).
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "_instrumental_noises_"
+        )
+        entry["variants"][8]["raw_pattern"] = (
+            "@Your_weapon@发出像卡祖笛一样的嗡鸣声。"
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError, "text drift"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+    def test_candidate_remove_at_wrong_ordinal_is_rejected(self):
+        # The orphan removal applied at a different baseline position: counts
+        # stay equal, but the walk must fail at the shifted matched position.
+        records = self.review_records_for()
+        bad = copy.deepcopy(self.candidate_zh_artifact)
+        entry = next(
+            entry for entry in bad["entries"]
+            if entry["canonical_key"] == "_speaking_high_tension_"
+        )
+        orphan = copy.deepcopy(
+            self.zh_variant(self.zh_artifact, "_speaking_high_tension_", 1)
+        )
+        entry["variants"].insert(1, orphan)
+        entry["variants"].pop(2)
+        for ordinal, variant in enumerate(entry["variants"]):
+            variant["locator"]["variant_ordinal"] = ordinal
+        with self.assertRaisesRegex(MODULE.InventoryError, "text drift"):
+            self.add_candidate(self.candidate_en_artifact, bad, records)
+
+    def test_review_actions_schema_fails_closed(self):
+        # Missing field on a card.
+        bad = copy.deepcopy(self.review_records_for())
+        del bad[1]["reviewed_actions"]
+        with self.assertRaisesRegex(MODULE.InventoryError, "field set mismatch"):
+            self.validate(bad)
+
+        # Unknown kind.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_instrumental_noises_")
+        card["reviewed_actions"][0]["kind"] = "move"
+        with self.assertRaisesRegex(MODULE.InventoryError, "kind mismatch"):
+            self.validate(bad)
+
+        # Duplicate (kind, ordinal).
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_instrumental_noises_")
+        card["reviewed_actions"].append(
+            copy.deepcopy(card["reviewed_actions"][0])
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError, "duplicate reviewed action"):
+            self.validate(bad)
+
+        # Add ordinal beyond the EN variants.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "fungus thoughts")
+        card["reviewed_actions"][0]["variant_ordinal"] = 14
+        with self.assertRaisesRegex(MODULE.InventoryError, "exceeds EN variants"):
+            self.validate(bad)
+
+        # Remove ordinal beyond the ZH variants.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(
+            card for card in bad[1:] if card["key"] == "_speaking_high_tension_"
+        )
+        card["reviewed_actions"][0]["variant_ordinal"] = 33
+        with self.assertRaisesRegex(MODULE.InventoryError, "exceeds ZH variants"):
+            self.validate(bad)
+
+        # Remove text must equal the exact baseline orphan.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(
+            card for card in bad[1:] if card["key"] == "_speaking_high_tension_"
+        )
+        card["reviewed_actions"][0]["text"] = "错误文本。"
+        with self.assertRaisesRegex(MODULE.InventoryError, "remove action text"):
+            self.validate(bad)
+
+        # In-range add must borrow the proposal slot.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_instrumental_noises_")
+        card["proposed_translation"][8] = card["current_chinese"][8]
+        card["variant_reviews"][8]["proposed_translation"] = (
+            card["current_chinese"][8]
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError, "placeholder"):
+            self.validate(bad)
+
+        # Add text protocol must match the baseline EN variant.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_instrumental_noises_")
+        card["reviewed_actions"][0]["text"] = "BOGUS:发出声音。"
+        with self.assertRaisesRegex(MODULE.InventoryError, "does not match the EN variant"):
+            self.validate(bad)
+
+        # Empty rationale.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_scream_")
+        card["reviewed_actions"][0]["rationale"] = ""
+        with self.assertRaisesRegex(MODULE.InventoryError, "requires a rationale"):
+            self.validate(bad)
+
+        # A card with actions but an invalid action shape is rejected by the
+        # candidate gate before any candidate is consumed.
+        bad = copy.deepcopy(self.review_records_for())
+        card = next(card for card in bad[1:] if card["key"] == "_scream_")
+        card["reviewed_actions"][0]["variant_ordinal"] = -1
+        with self.assertRaisesRegex(MODULE.InventoryError, "ordinal mismatch"):
+            self.add_candidate(self.candidate_en_artifact,
+                               copy.deepcopy(self.candidate_zh_artifact), bad)
 
     # ── CLI safe output ──────────────────────────────────────────────────
 

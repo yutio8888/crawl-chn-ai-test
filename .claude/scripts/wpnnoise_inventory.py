@@ -7,6 +7,21 @@ source discovery, TextDB parsing, weighted-variant derivation, artifact
 validation, hashing, candidate binding, and safe output.  Only wpnnoise's
 consumer-specific invariants and strict review schema live here.
 
+The baseline inventory stays frozen at the pre-landing shape (731 EN / 720 ZH,
+including the six asymmetric keys and every one-sided ordinal fact).  The
+strict review card schema v2 adds ``reviewed_actions``: per-card action records
+bound to baseline source locators and exact proposed/removed text that
+represent reviewed one-sided structural changes (EN-only missing variants
+approved for addition, the ZH-only orphan approved for removal, positional
+kazoo realignment).  The candidate gate walks baseline and candidate ZH
+variants with those actions (add ordinals are candidate positions, remove
+ordinals are baseline positions) and proves: English is byte-identical to the
+baseline; every candidate ZH variant is either an approved add matching the
+baseline EN variant's protocol, or the reviewed proposal (or a kept shifted
+variant under an in-range add placeholder) with unchanged weight; any
+unreviewed key/weight/control/token/Lua/random-site drift or one-sided change
+fails closed.
+
 Production boundary (frozen at the Issue #60 baseline):
 
 - EN source: ``crawl-ref/source/dat/database/wpnnoise.txt``
@@ -33,10 +48,12 @@ import monflee_inventory as shared
 from command_inventory import parse_db_keys
 
 
+# The inventory schema is unchanged: the baseline inventory digest must stay
+# immutable.  Only the strict review evidence schema moved to v2.
 SCHEMA_VERSION = 1
 SOURCE_BASENAME = "wpnnoise.txt"
-STRICT_BEGIN = "<!-- BEGIN STRICT WPNNOISE REVIEW EVIDENCE v1 -->"
-STRICT_END = "<!-- END STRICT WPNNOISE REVIEW EVIDENCE v1 -->"
+STRICT_BEGIN = "<!-- BEGIN STRICT WPNNOISE REVIEW EVIDENCE v2 -->"
+STRICT_END = "<!-- END STRICT WPNNOISE REVIEW EVIDENCE v2 -->"
 
 # shout.cc item_noise routes these leading "X:" prefixes to channels; any
 # other leading "X:" stays literal text, so an unrecognized control fails
@@ -351,9 +368,15 @@ CARD_FIELDS = {
     "dependency_group", "display_context", "evidence_locations",
     "glossary_authority", "identity", "key", "lifecycle", "producers",
     "production_facts", "proposed_translation", "reentry_trigger",
-    "rejected_alternatives", "reviewer_rationale", "terminal_conclusion",
-    "variant_reviews",
+    "rejected_alternatives", "reviewed_actions", "reviewer_rationale",
+    "terminal_conclusion", "variant_reviews",
 }
+# Reviewed one-sided action: kind "add" binds an EN-only missing variant
+# (baseline EN ordinal, approved Chinese text, protocol copied from the EN
+# variant); kind "remove" binds a ZH-only orphan (baseline ZH ordinal, exact
+# current text being removed).  Add ordinals are candidate (final) positions;
+# remove ordinals are baseline positions.
+ACTION_FIELDS = {"kind", "variant_ordinal", "text", "rationale"}
 PRODUCTION_FACT_FIELDS = {
     "caller_tokens", "chinese_definition_ordinal", "chinese_source_line",
     "control_prefixes", "en_only_variant_ordinals", "english_definition_ordinal",
@@ -447,8 +470,10 @@ def _definition_lines(source: str, label: str) -> dict[str, int]:
 
 
 def _dump_binding(
-    artifact: dict[str, Any], raw: bytes, label: str,
+    artifact: dict[str, Any], raw: bytes, label: str, role: str = "baseline",
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    _require(role in ("baseline", "candidate"),
+             f"{label} unknown dump binding role {role!r}")
     directory = artifact["source_directory"]
     expected_source = f"{directory}{SOURCE_BASENAME}"
     matching_sources = [
@@ -533,39 +558,45 @@ def _dump_binding(
     is_english = directory == "database/"
     _require(len(rows) == EXPECTED_IDENTITY_COUNT,
              f"{label} wpnnoise identity count mismatch")
-    _require(
-        sum(len(row["variants"]) for row in rows)
-        == (EXPECTED_EN_VARIANT_COUNT if is_english
-            else EXPECTED_ZH_VARIANT_COUNT),
-        f"{label} wpnnoise variant count mismatch",
-    )
-    _require(
-        sum(len(variant["random_site_counts"])
-            for row in rows for variant in row["variants"])
-        == (EXPECTED_EN_RANDOM_SITES if is_english
-            else EXPECTED_ZH_RANDOM_SITES),
-        f"{label} wpnnoise random-site count mismatch",
-    )
-    _require(
-        sum(variant["lua_site_count"]
-            for row in rows for variant in row["variants"])
-        == (EXPECTED_EN_LUA_SITES if is_english else EXPECTED_ZH_LUA_SITES),
-        f"{label} wpnnoise Lua site count mismatch",
-    )
-    _require(
-        sum(variant["control_prefix"] == "VISUAL"
-            for row in rows for variant in row["variants"])
-        == (EXPECTED_EN_VISUAL_PREFIXES if is_english
-            else EXPECTED_ZH_VISUAL_PREFIXES),
-        f"{label} wpnnoise VISUAL control count mismatch",
-    )
-    _require(
-        sum(variant["control_prefix"] == "SOUND"
-            for row in rows for variant in row["variants"])
-        == (EXPECTED_EN_SOUND_PREFIXES if is_english
-            else EXPECTED_ZH_SOUND_PREFIXES),
-        f"{label} wpnnoise SOUND control count mismatch",
-    )
+    if is_english or role == "baseline":
+        _require(
+            sum(len(row["variants"]) for row in rows)
+            == (EXPECTED_EN_VARIANT_COUNT if is_english
+                else EXPECTED_ZH_VARIANT_COUNT),
+            f"{label} wpnnoise variant count mismatch",
+        )
+        _require(
+            sum(len(variant["random_site_counts"])
+                for row in rows for variant in row["variants"])
+            == (EXPECTED_EN_RANDOM_SITES if is_english
+                else EXPECTED_ZH_RANDOM_SITES),
+            f"{label} wpnnoise random-site count mismatch",
+        )
+        _require(
+            sum(variant["lua_site_count"]
+                for row in rows for variant in row["variants"])
+            == (EXPECTED_EN_LUA_SITES if is_english else EXPECTED_ZH_LUA_SITES),
+            f"{label} wpnnoise Lua site count mismatch",
+        )
+        _require(
+            sum(variant["control_prefix"] == "VISUAL"
+                for row in rows for variant in row["variants"])
+            == (EXPECTED_EN_VISUAL_PREFIXES if is_english
+                else EXPECTED_ZH_VISUAL_PREFIXES),
+            f"{label} wpnnoise VISUAL control count mismatch",
+        )
+        _require(
+            sum(variant["control_prefix"] == "SOUND"
+                for row in rows for variant in row["variants"])
+            == (EXPECTED_EN_SOUND_PREFIXES if is_english
+                else EXPECTED_ZH_SOUND_PREFIXES),
+            f"{label} wpnnoise SOUND control count mismatch",
+        )
+    # A candidate-role ZH dump is exempt from the frozen baseline totals: the
+    # reviewed-action gate proves every candidate variant position (count,
+    # weight, control, tokens, random sites, Lua) against the baseline or the
+    # EN source, so the aggregates are covered per position instead.
+    # Candidate EN keeps every frozen total because English is immutable.
     binding = {
         "artifact_sha256": _sha256(raw),
         "database_name": artifact["database_name"],
@@ -587,7 +618,10 @@ def _dump_binding(
 
 def _pair_entries(
     en_rows: list[dict[str, Any]], zh_rows: list[dict[str, Any]], label: str,
+    role: str = "baseline",
 ) -> list[dict[str, Any]]:
+    _require(role in ("baseline", "candidate"),
+             f"{label} unknown pairing role {role!r}")
     en_by_key = {row["key"]: row for row in en_rows}
     zh_by_key = {row["key"]: row for row in zh_rows}
     _require(en_by_key.keys() == zh_by_key.keys(), f"{label} EN/ZH key sets differ")
@@ -597,7 +631,15 @@ def _pair_entries(
         zh = zh_by_key[key]
         en_count = len(en["variants"])
         zh_count = len(zh["variants"])
-        if en_count != zh_count:
+        if role == "candidate":
+            # The approved one-sided actions restore full EN coverage: every
+            # candidate key must have equal EN/ZH counts.  Any remaining
+            # asymmetry is an unreviewed one-sided change and fails closed.
+            _require(en_count == zh_count,
+                     f"{label} variant count differs for {key!r}: EN "
+                     f"{en_count} vs ZH {zh_count} (unreviewed one-sided "
+                     f"change)")
+        elif en_count != zh_count:
             frozen = ASYMMETRIC_VARIANT_KEYS.get(key)
             _require(
                 frozen == (en_count, zh_count),
@@ -980,6 +1022,213 @@ def _aggregate(conclusions: list[str]) -> str:
     return "keep"
 
 
+def _derived_action_fact(text: str, field: str) -> Any:
+    """Derive one protocol fact from an approved action's text."""
+    if field == "control_prefix":
+        return shared._control_prefix(text)
+    if field == "runtime_tokens":
+        return _runtime_tokens(text)
+    if field == "random_site_counts":
+        return _random_site_counts(text)
+    if field == "lua_site_count":
+        return len(_lua_sites(text))
+    if field == "lua_comparison_strings":
+        return _lua_comparison_strings(text)
+    raise InventoryError(f"unknown action fact field {field!r}")
+
+
+def _validate_actions(
+    actions: Any, entry: dict[str, Any], proposed: list[str] | None,
+    context: str,
+) -> None:
+    """Strict schema for reviewed one-sided actions bound to the baseline.
+
+    Add actions bind an EN-only missing variant by its baseline EN ordinal and
+    require the approved text to reproduce the EN variant's protocol.  An add
+    ordinal inside the baseline ZH count must borrow the proposal slot
+    (placeholder convention, used by the positional kazoo realignment).
+    Remove actions bind a ZH-only orphan by its baseline ZH ordinal and the
+    exact current text being removed.
+    """
+    _require(isinstance(actions, list),
+             f"{context} reviewed_actions must be a list")
+    en_variants = entry["english_variants"]
+    zh_variants = entry["variants"]
+    seen: set[tuple[str, int]] = set()
+    for action in actions:
+        _require(isinstance(action, dict),
+                 f"{context} reviewed action must be an object")
+        _require_exact_fields(action, ACTION_FIELDS,
+                              f"{context} reviewed action")
+        kind = action["kind"]
+        _require(kind in ("add", "remove"),
+                 f"{context} reviewed action kind mismatch")
+        ordinal = action["variant_ordinal"]
+        _require(_is_int(ordinal) and ordinal >= 0,
+                 f"{context} reviewed action ordinal mismatch")
+        _require(_nonempty_string(action["text"]),
+                 f"{context} reviewed action requires text")
+        _require(_nonempty_string(action["rationale"]),
+                 f"{context} reviewed action requires a rationale")
+        _require((kind, ordinal) not in seen,
+                 f"{context} duplicate reviewed action {kind} {ordinal}")
+        seen.add((kind, ordinal))
+        if kind == "add":
+            _require(
+                ordinal < len(en_variants),
+                f"{context} add action ordinal {ordinal} exceeds EN variants",
+            )
+            en_variant = en_variants[ordinal]
+            for field in ("control_prefix", "runtime_tokens",
+                          "random_site_counts", "lua_site_count",
+                          "lua_comparison_strings"):
+                _require(
+                    _derived_action_fact(action["text"], field)
+                    == en_variant[field],
+                    f"{context} add action {ordinal} {field} does not match "
+                    f"the EN variant",
+                )
+            if ordinal < len(zh_variants) and proposed is not None:
+                _require(
+                    proposed[ordinal] == action["text"],
+                    f"{context} in-range add ordinal {ordinal} must borrow "
+                    f"the proposal slot (placeholder)",
+                )
+        else:
+            _require(
+                ordinal < len(zh_variants),
+                f"{context} remove action ordinal {ordinal} exceeds ZH "
+                f"variants",
+            )
+            _require(
+                action["text"] == zh_variants[ordinal]["chinese"],
+                f"{context} remove action text does not match the baseline "
+                f"ZH variant",
+            )
+
+
+def _action_slots(
+    baseline_count: int, actions: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Map baseline ordinals to candidate ordinals through reviewed actions.
+
+    Add ordinals are candidate (final) positions and remove ordinals are
+    baseline positions.  The walk consumes both lists without assuming any
+    other ordinal pairing, so approved insert/removal shifts never mask drift
+    in the remaining variants.
+    """
+    adds = sorted((a for a in actions if a["kind"] == "add"),
+                  key=lambda a: a["variant_ordinal"])
+    removes = {a["variant_ordinal"] for a in actions if a["kind"] == "remove"}
+    add_by_ord = {a["variant_ordinal"]: a for a in adds}
+    expected = baseline_count + len(adds) - len(removes)
+    _require(expected >= 0,
+             "reviewed actions exceed the baseline variant count")
+    slots: list[dict[str, Any]] = []
+    baseline_index = 0
+    candidate_index = 0
+    while baseline_index < baseline_count or candidate_index < expected:
+        if candidate_index in add_by_ord:
+            slots.append({
+                "kind": "add",
+                "variant_ordinal": candidate_index,
+                "candidate_ordinal": candidate_index,
+                "action": add_by_ord[candidate_index],
+            })
+            candidate_index += 1
+        elif baseline_index in removes:
+            baseline_index += 1
+        else:
+            _require(baseline_index < baseline_count
+                     and candidate_index < expected,
+                     "reviewed actions are inconsistent")
+            slots.append({
+                "kind": "match",
+                "variant_ordinal": baseline_index,
+                "candidate_ordinal": candidate_index,
+            })
+            baseline_index += 1
+            candidate_index += 1
+    _require(baseline_index == baseline_count
+             and candidate_index == expected,
+             "reviewed actions are inconsistent")
+    return slots
+
+
+def _expected_candidate_texts(
+    entry: dict[str, Any], actions: list[dict[str, Any]],
+    proposed: list[str],
+) -> list[str]:
+    """Expected candidate ZH texts per candidate ordinal."""
+    zh_variants = entry["variants"]
+    add_ordinals = {a["variant_ordinal"] for a in actions
+                    if a["kind"] == "add"}
+    expected: list[str] = []
+    for slot in _action_slots(len(zh_variants), actions):
+        if slot["kind"] == "add":
+            expected.append(slot["action"]["text"])
+        elif slot["variant_ordinal"] in add_ordinals:
+            # In-range add placeholder: the shifted baseline variant is kept.
+            expected.append(zh_variants[slot["variant_ordinal"]]["chinese"])
+        else:
+            expected.append(proposed[slot["variant_ordinal"]])
+    return expected
+
+
+def _review_bindings_from_block(
+    records: list[dict[str, Any]],
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, list[str]]]:
+    """Extract per-key reviewed actions and proposals from the strict block.
+
+    Shape validation runs here so the candidate gate fails closed before it
+    consumes any malformed review data; the full card semantics (including
+    action-vs-entry binding) are validated by ``_validate_card``.
+    """
+    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
+             "review evidence metadata/card coverage mismatch")
+    actions_by_key: dict[str, list[dict[str, Any]]] = {}
+    proposals_by_key: dict[str, list[str]] = {}
+    for record in records[1:]:
+        _require(isinstance(record, dict), "review card must be an object")
+        identity = record.get("identity")
+        key = record.get("key")
+        _require(isinstance(identity, str) and isinstance(key, str),
+                 "review card identity/key mismatch")
+        actions = record.get("reviewed_actions")
+        _require(actions is not None,
+                 f"{identity} review card requires reviewed_actions")
+        _require(isinstance(actions, list),
+                 f"{identity} reviewed_actions must be a list")
+        seen: set[tuple[str, int]] = set()
+        for action in actions:
+            _require(isinstance(action, dict),
+                     f"{identity} reviewed action must be an object")
+            _require_exact_fields(action, ACTION_FIELDS,
+                                  f"{identity} reviewed action")
+            kind = action["kind"]
+            _require(kind in ("add", "remove"),
+                     f"{identity} reviewed action kind mismatch")
+            ordinal = action["variant_ordinal"]
+            _require(_is_int(ordinal) and ordinal >= 0,
+                     f"{identity} reviewed action ordinal mismatch")
+            _require(_nonempty_string(action["text"]),
+                     f"{identity} reviewed action requires text")
+            _require(_nonempty_string(action["rationale"]),
+                     f"{identity} reviewed action requires a rationale")
+            _require((kind, ordinal) not in seen,
+                     f"{identity} duplicate reviewed action")
+            seen.add((kind, ordinal))
+        proposed = record.get("proposed_translation")
+        _require(
+            isinstance(proposed, list)
+            and all(isinstance(item, str) for item in proposed),
+            f"{identity} proposed_translation must be a string list",
+        )
+        actions_by_key[key] = actions
+        proposals_by_key[key] = proposed
+    return actions_by_key, proposals_by_key
+
+
 def _validate_card(
     card: dict[str, Any], inventory: dict[str, Any], entry: dict[str, Any],
     candidate: dict[str, Any] | None,
@@ -1046,6 +1295,8 @@ def _validate_card(
         and all(isinstance(item, str) for item in proposed),
         f"{identity} proposed_translation coverage mismatch",
     )
+    actions = card["reviewed_actions"]
+    _validate_actions(actions, entry, proposed, identity)
     reviews = card["variant_reviews"]
     _require(
         isinstance(reviews, list) and len(reviews) == len(entry["variants"]),
@@ -1108,18 +1359,19 @@ def _validate_card(
 
     if candidate is not None:
         candidate_zh = [variant["chinese"] for variant in candidate["variants"]]
-        _require(proposed == candidate_zh,
-                 f"{identity} proposal does not match candidate ZH dump")
-        for review, pattern in zip(reviews, candidate_zh):
-            _require(review["proposed_translation"] == pattern,
-                     f"{identity} variant proposal does not match candidate dump")
+        expected_texts = _expected_candidate_texts(entry, actions, proposed)
+        _require(expected_texts == candidate_zh,
+                 f"{identity} proposal/action list does not match candidate "
+                 f"ZH dump")
 
 
 def validate_results(
     path: Path, inventory: dict[str, Any],
     candidate_entries: list[dict[str, Any]] | None,
+    records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    records = _strict_block(path)
+    if records is None:
+        records = _strict_block(path)
     _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
              "review evidence metadata/card coverage mismatch")
     metadata, cards = records[0], records[1:]
@@ -1188,7 +1440,7 @@ def validate_results(
 
 
 def _zh_protocol_shape(
-    ref: str, dump_path: Path | None, label: str,
+    ref: str, dump_path: Path | None, label: str, role: str = "baseline",
 ) -> dict[tuple[str, int], dict[str, Any]]:
     """Project the per-ZH-variant protocol facts from a production dump.
 
@@ -1208,7 +1460,8 @@ def _zh_protocol_shape(
         shared._require_scoped_derivation(
             zh_dump, derived, f"{label} ZH", source_basename=SOURCE_BASENAME
         )
-        _zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, f"{label} ZH")
+        _zh_binding, zh_rows = _dump_binding(
+            zh_dump, zh_raw, f"{label} ZH", role=role)
     else:
         derived = shared._derive_scoped_dump(
             ref, "database/zh/", f"{label} ZH",
@@ -1218,9 +1471,11 @@ def _zh_protocol_shape(
             **derived, "schema_version": 1, "database_name": "speak",
             "source_directory": "database/zh/",
         }
-        _zh_binding, zh_rows = _dump_binding(artifact, b"", f"{label} ZH")
+        _zh_binding, zh_rows = _dump_binding(
+            artifact, b"", f"{label} ZH", role=role)
     return {
         (row["key"], variant["locator"]["variant_ordinal"]): {
+            "chinese": variant["raw_pattern"],
             "weight": variant["weight"],
             "control_prefix": variant["control_prefix"],
             "runtime_tokens": variant["runtime_tokens"],
@@ -1235,12 +1490,41 @@ def _zh_protocol_shape(
 
 def add_candidate(
     inventory: dict[str, Any], candidate_ref: str, english_path: Path,
-    localized_path: Path,
+    localized_path: Path, review_records: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
+    """Bind the candidate to the approved review and prove its differences.
+
+    The candidate gate proves, at the exact-Git level: (1) the candidate
+    English side is byte-identical to the baseline; (2) the candidate ZH side
+    differs from the baseline only by the reviewed actions (approved
+    additions bound to baseline EN locators and the approved orphan removal)
+    and the reviewed proposal texts, with every matched variant's weight and
+    every added variant's full protocol equal to the baseline or the EN
+    source.  Any unreviewed key/weight/control/token/Lua/random-site drift,
+    extra insertion, deletion, or reorder fails closed.
+    """
+    _require(review_records is not None,
+             "candidate validation requires review evidence records")
+    actions_by_key, proposals_by_key = _review_bindings_from_block(
+        review_records
+    )
+    entry_by_key = {entry["key"]: entry for entry in inventory["entries"]}
+    _require(
+        set(actions_by_key) <= set(entry_by_key),
+        f"reviewed action keys outside the inventory: "
+        f"{sorted(set(actions_by_key) - set(entry_by_key))!r}",
+    )
+    for key, actions in actions_by_key.items():
+        entry = entry_by_key[key]
+        _validate_actions(actions, entry, None, entry["identity"])
+        _require(
+            len(proposals_by_key[key]) == len(entry["variants"]),
+            f"{entry['identity']} proposed_translation coverage mismatch",
+        )
+
     shared._require_candidate_commit(
         inventory["baseline_ref"], candidate_ref, exact_clean_checkout=True
     )
-    expected_keys = {entry["key"] for entry in inventory["entries"]}
     en_dump, en_raw = shared._load_dump(english_path, "candidate EN", "database/")
     zh_dump, zh_raw = shared._load_dump(
         localized_path, "candidate ZH", "database/zh/"
@@ -1259,9 +1543,13 @@ def add_candidate(
             source_basename=SOURCE_BASENAME,
         ), "candidate ZH", source_basename=SOURCE_BASENAME,
     )
-    _en_binding, en_rows = _dump_binding(en_dump, en_raw, "candidate EN")
-    _zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "candidate ZH")
-    entries = _pair_entries(en_rows, zh_rows, "candidate")
+    _en_binding, en_rows = _dump_binding(
+        en_dump, en_raw, "candidate EN", role="candidate"
+    )
+    _zh_binding, zh_rows = _dump_binding(
+        zh_dump, zh_raw, "candidate ZH", role="candidate"
+    )
+    entries = _pair_entries(en_rows, zh_rows, "candidate", role="candidate")
 
     # EN no-drift proof without ZH projection: the candidate EN side must
     # equal the baseline EN side at the exact-Git level (source snapshots and
@@ -1280,33 +1568,80 @@ def add_candidate(
         "candidate English drift (EN variant list differs from baseline)",
     )
 
-    # Candidate ZH protocol binding: every non-translation protocol fact of
-    # every candidate ZH variant (weight, control prefix, runtime token
-    # sequence with count/order/duplicates, per-site random alternative
-    # counts, Lua site count and comparison strings) must equal the baseline
-    # ZH variant at the same ordinal.  Only the Chinese text may change.
+    # Reviewed-action ZH gate: every candidate ZH variant must be an approved
+    # add (text + full protocol equal to the baseline EN variant at the EN
+    # locator) or a matched baseline variant (weight unchanged, text equal to
+    # the reviewed proposal, or the kept shifted variant under an in-range
+    # add placeholder).  The walk uses the action ordinals explicitly, so
+    # approved insert/removal shifts never mask drift elsewhere.
     baseline_zh_shape = _zh_protocol_shape(
         inventory["baseline_ref"], None, "baseline"
     )
     candidate_zh_shape = _zh_protocol_shape(
-        candidate_ref, localized_path, "candidate"
+        candidate_ref, localized_path, "candidate", role="candidate"
     )
-    _require(candidate_zh_shape.keys() == baseline_zh_shape.keys(),
-             "candidate ZH variant locator set drift")
-    for locator, baseline_facts in baseline_zh_shape.items():
-        candidate_facts = candidate_zh_shape[locator]
-        drift_field = next(
-            (field for field in (
-                "weight", "control_prefix", "runtime_tokens",
-                "random_site_counts", "lua_site_count",
-                "lua_comparison_strings",
-            ) if candidate_facts[field] != baseline_facts[field]),
-            None,
-        )
+    _require(
+        {key for key, _ordinal in candidate_zh_shape}
+        == {key for key, _ordinal in baseline_zh_shape},
+        "candidate ZH key set drift",
+    )
+
+    def _group_by_key(
+        shape: dict[tuple[str, int], dict[str, Any]],
+    ) -> dict[str, list[dict[str, Any]]]:
+        by_key: dict[str, list[dict[str, Any]]] = {}
+        for (key, _ordinal), facts in shape.items():
+            by_key.setdefault(key, []).append(facts)
+        return by_key
+
+    baseline_zh = _group_by_key(baseline_zh_shape)
+    candidate_zh = _group_by_key(candidate_zh_shape)
+    en_facts: dict[tuple[str, int], dict[str, Any]] = {}
+    for entry in inventory["entries"]:
+        for variant in entry["english_variants"]:
+            en_facts[(entry["key"],
+                      variant["locator"]["variant_ordinal"])] = variant
+    for key, baseline_variants in baseline_zh.items():
+        actions = actions_by_key.get(key, [])
+        entry = entry_by_key[key]
+        slots = _action_slots(len(baseline_variants), actions)
+        candidate_variants = candidate_zh[key]
         _require(
-            drift_field is None,
-            f"candidate ZH protocol drift at {locator!r}: {drift_field}",
+            len(slots) == len(candidate_variants),
+            f"candidate ZH variant count drift at key {key!r}: expected "
+            f"{len(slots)} variants, got {len(candidate_variants)}",
         )
+        expected_texts = _expected_candidate_texts(
+            entry, actions, proposals_by_key[key]
+        )
+        for slot in slots:
+            candidate_facts = candidate_variants[slot["candidate_ordinal"]]
+            if slot["kind"] == "add":
+                en_variant = en_facts[(key, slot["action"]["variant_ordinal"])]
+                for field in ("weight", "control_prefix", "runtime_tokens",
+                              "random_site_counts", "lua_site_count",
+                              "lua_comparison_strings"):
+                    _require(
+                        candidate_facts[field] == en_variant[field],
+                        f"candidate ZH protocol drift at {key!r} add "
+                        f"ordinal {slot['action']['variant_ordinal']}: "
+                        f"{field}",
+                    )
+            else:
+                baseline_facts = baseline_variants[
+                    slot["variant_ordinal"]
+                ]
+                _require(
+                    candidate_facts["weight"] == baseline_facts["weight"],
+                    f"candidate ZH protocol drift at {key!r} ordinal "
+                    f"{slot['variant_ordinal']}: weight",
+                )
+            _require(
+                candidate_facts["chinese"]
+                == expected_texts[slot["candidate_ordinal"]],
+                f"candidate ZH text drift at {key!r} ordinal "
+                f"{slot['variant_ordinal']}",
+            )
 
     candidate = {
         "candidate_ref": candidate_ref,
@@ -1353,15 +1688,21 @@ def main(argv: list[str] | None = None) -> int:
     inventory = build_inventory(
         args.baseline_ref, args.english_dump, args.localized_dump, args.glossary
     )
+    records = None
+    if args.review_results is not None:
+        records = shared._strict_block(
+            args.review_results, STRICT_BEGIN, STRICT_END
+        )
     candidate_entries = None
     if args.candidate_ref is not None:
         candidate_entries = add_candidate(
             inventory, args.candidate_ref,
             args.candidate_english_dump, args.candidate_localized_dump,
+            records,
         )
     if args.review_results is not None:
         inventory["review_evidence"] = validate_results(
-            args.review_results, inventory, candidate_entries
+            args.review_results, inventory, candidate_entries, records=records
         )
     shared._safe_output(args.inventory_output, inventory)
     return 0
