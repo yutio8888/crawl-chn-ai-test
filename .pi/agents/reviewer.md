@@ -1,10 +1,10 @@
 ---
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
-model: opencode-go/deepseek-v4-flash
+model: openai-codex/gpt-5.6-sol
 fallbackModels: deepseek/deepseek-v4-flash
 tools: read, grep, find, ls, bash, intercom
-thinking: high
+thinking: xhigh
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
