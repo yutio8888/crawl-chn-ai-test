@@ -32,6 +32,7 @@
 #include "notes.h"
 #include "options.h"
 #include "player.h"
+#include "player-reacts.h"
 #include "random.h"
 #include "religion.h"
 #include "skills.h"
@@ -2080,4 +2081,385 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(zh_lower.store == zh_lower.basename + " tail.\n\n");
     CHECK(en_lower.store.find("@") == string::npos);
     CHECK(zh_lower.store.find("@") == string::npos);
+}
+
+// =============================================================================
+// Issue #62 — eel-hand flavour message boundary.
+//
+// do_eel_flavour_msg() (player-reacts.cc) drives the real SpeakDB roots
+// "eel hand actions" / "eel hand solo actions":
+//   - @head@ is replaced with the contextual C_("body part", ...) value
+//     (EN "head"/"form", ZH 头/形体), copied into an owned string;
+//   - @skin@ keeps the localized species::skin_name() path;
+//   - exactly one maybe_pick_random_substring() expansion runs after the
+//     runtime token replacements and immediately before the MSGCH_TALK sink.
+// Each test finds a deterministic seed with a bounded probe that replays the
+// production RNG sequence (SpeakDB weighted pick + single random-substring
+// expansion) under a two-argument rng::subgenerator(seed, fixed_sequence),
+// then replays the real production function under the same generator. The
+// final message store and a file-local msg::tee subclass (the base tee
+// discards the channel and get_last_messages has no channel access) are
+// asserted for the exact text, the exact chosen alternative, the positive
+// localized head/form/skin values, exactly one emission, MSGCH_TALK, no
+// residual tokens/brackets, unchanged parent RNG, and a preserved message
+// tail. Player/world/message state is restored by unwind_var plus the
+// pre/post message-tail proof; the fixture restores language state.
+// =============================================================================
+
+namespace
+{
+// Fixed sequence discriminator for every probe and replay; the two-argument
+// subgenerator constructor fully determines the stream without touching the
+// parent RNG.
+constexpr uint64_t EEL_RNG_SEQUENCE = 0x6100610061006100ULL;
+
+// File-local msg::tee subclass capturing the append channel and count; no
+// production observer is added.
+struct channel_capturing_tee : msg::tee
+{
+    msg_channel_type channel = MSGCH_PLAIN;
+    int appends = 0;
+
+    channel_capturing_tee(string &target) : msg::tee(target) {}
+
+    void append(const string &s, msg_channel_type ch) override
+    {
+        ++appends;
+        channel = ch;
+        msg::tee::append(s, ch);
+    }
+};
+
+// Newest message of a get_last_messages(n, true) tail: single-line messages
+// are stored as "m1\nm2\n\n" (each line word-wrapped with a trailing
+// newline, plus one final clearance newline).
+string newest_stored_message(const string &tail)
+{
+    const string body = tail.substr(0, tail.size() - 2);
+    const string::size_type nl = body.find_last_of('\n');
+    return nl == string::npos ? body : body.substr(nl + 1);
+}
+
+// Switch the display language and reload the language-specific TextDB layer
+// (getSpeakString and the C_/species lookups both consult it).
+void set_eel_language(lang_t language)
+{
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    databaseSystemInit();
+}
+
+// Probe the exact RNG-consuming sequence of do_eel_flavour_msg() under a
+// fixed two-argument subgenerator, without touching the message sink: the
+// SpeakDB weighted pick, the runtime token replacements, then the single
+// random-substring expansion. Used only to find deterministic seeds and to
+// compute the exact expected final text for the real-function replay.
+struct eel_probe_result
+{
+    string raw;   // SpeakDB root text before token replacement
+    string final; // after @head@/@skin@ replacement and one random pick
+};
+
+eel_probe_result probe_eel_flavour(const char *key, uint64_t seed)
+{
+    eel_probe_result out;
+    rng::subgenerator probe(seed, EEL_RNG_SEQUENCE);
+    string msg = getSpeakString(key);
+    out.raw = msg;
+    msg = replace_all(msg, "@head@",
+                      you.has_mutation(MUT_FORMLESS) ? C_("body part", "form")
+                                                     : C_("body part", "head"));
+    msg = replace_all(msg, "@skin@", species::skin_name(you.species));
+    out.final = maybe_pick_random_substring(msg);
+    return out;
+}
+
+// Bounded deterministic seed search over the real SpeakDB root; the probe's
+// raw root text must contain `needle`. Returns 0 when no seed is found within
+// the bound (fail closed).
+uint64_t find_eel_raw_seed(const char *key, const string &needle)
+{
+    for (uint64_t candidate = 1; candidate < 20000; ++candidate)
+        if (probe_eel_flavour(key, candidate).raw.find(needle) != string::npos)
+            return candidate;
+    return 0;
+}
+
+// Bounded deterministic seed search over the real SpeakDB root; the probe's
+// expanded final text must contain `needle` (e.g. one random alternative).
+uint64_t find_eel_final_seed(const char *key, const string &needle)
+{
+    for (uint64_t candidate = 1; candidate < 20000; ++candidate)
+        if (probe_eel_flavour(key, candidate).final.find(needle) != string::npos)
+            return candidate;
+    return 0;
+}
+
+// One replay of the real do_eel_flavour_msg() under a fixed two-argument
+// subgenerator, with player/world state set by the caller.
+struct eel_observation
+{
+    string pre_tail;  // get_last_messages(2, true) before the call
+    string store;     // get_last_messages(1, true) after the call
+    string post_tail; // get_last_messages(2, true) after the call
+    string tee_raw;   // raw msg::tee stream (colour tag + text + newline)
+    msg_channel_type channel = MSGCH_PLAIN;
+    int appends = 0;
+    bool parent_rng_unchanged = false;
+};
+
+eel_observation observe_eel_flavour(lang_t language, uint64_t seed)
+{
+    set_eel_language(language);
+
+    eel_observation obs;
+    obs.pre_tail = get_last_messages(2, true);
+    const uint64_t parent_before = rng::peek_uint64();
+    {
+        rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
+        channel_capturing_tee tee(obs.tee_raw);
+        do_eel_flavour_msg();
+        obs.store = get_last_messages(1, true);
+        obs.post_tail = get_last_messages(2, true);
+        obs.channel = tee.channel;
+        obs.appends = tee.appends;
+    }
+    obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
+    return obs;
+}
+
+// Shared final-display assertions for one observation of the real production
+// function under a fixed subgenerator.
+void check_eel_observation(const eel_observation &obs,
+                           const string &expected_final)
+{
+    // Exact final message-store text (proves exactly one emitted message
+    // with exactly the expected content).
+    CHECK(obs.store == expected_final + "\n\n");
+    // msg::tee observes before final capitalization/filtering: colour tag
+    // stripped, text plus the single appended newline.
+    CHECK(strip_tee_colour_tag(obs.tee_raw) == expected_final + "\n");
+    // No residual tokens or brackets in the final display.
+    CHECK(obs.store.find("@") == string::npos);
+    CHECK(obs.store.find("[") == string::npos);
+    CHECK(obs.store.find("]") == string::npos);
+    // Channel and single-emission proof via the file-local tee.
+    CHECK(obs.channel == MSGCH_TALK);
+    CHECK(obs.appends == 1);
+    // The replay drew only from the fixed subgenerator, never the parent RNG.
+    CHECK(obs.parent_rng_unchanged);
+    // Exactly one new message: the pre-call tail is preserved and the newest
+    // post-call line is exactly the expected text.
+    if (obs.pre_tail.empty())
+        CHECK(obs.post_tail == expected_final + "\n\n");
+    else
+        CHECK(obs.post_tail == newest_stored_message(obs.pre_tail) + "\n"
+                              + expected_final + "\n\n");
+}
+
+// ZH final displays must not leak any English head/form/skin text.
+void check_zh_no_english_leak(const string &store)
+{
+    CHECK(store.find("head") == string::npos);
+    CHECK(store.find("form") == string::npos);
+    CHECK(store.find("skin") == string::npos);
+}
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 62 eel normal head renders the localized body-part value",
+                 "[zh-translation][eel-flavour][issue-62]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.species = SP_HUMAN;
+    you.form = transformation::eel_hands;
+
+    // Bounded deterministic seed search over the real SpeakDB root; the
+    // selected fixture must contain the @head@ token.
+    set_eel_language(lang_t::EN);
+    const uint64_t seed = find_eel_raw_seed("eel hand actions", "@head@");
+    REQUIRE(seed != 0);
+
+    set_eel_language(lang_t::EN);
+    const eel_probe_result en_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(en_expected.raw.find("@head@") != string::npos);
+    set_eel_language(lang_t::ZH);
+    const eel_probe_result zh_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(zh_expected.raw.find("@head@") != string::npos);
+
+    // Positive owned C_ head values in each language (EN fallback exact, ZH
+    // the translator-approved value).
+    set_eel_language(lang_t::EN);
+    const string en_head = C_("body part", "head");
+    set_eel_language(lang_t::ZH);
+    const string zh_head = C_("body part", "head");
+    CHECK(en_head == "head");
+    CHECK(zh_head == "头");
+
+    const eel_observation en = observe_eel_flavour(lang_t::EN, seed);
+    check_eel_observation(en, en_expected.final);
+    CHECK(en.store.find(en_head) != string::npos);
+
+    const eel_observation zh = observe_eel_flavour(lang_t::ZH, seed);
+    check_eel_observation(zh, zh_expected.final);
+    CHECK(zh.store.find(zh_head) != string::npos);
+    check_zh_no_english_leak(zh.store);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 62 eel FORMLESS head renders the localized form value",
+                 "[zh-translation][eel-flavour][issue-62]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.species = SP_HUMAN;
+    you.form = transformation::eel_hands;
+    // FORMLESS may be unreachable together with eel_hands today, but the
+    // directly preserved helper branch must still display the localized
+    // body-part form value.
+    you.mutation[MUT_FORMLESS] = 1;
+
+    set_eel_language(lang_t::EN);
+    const uint64_t seed = find_eel_raw_seed("eel hand actions", "@head@");
+    REQUIRE(seed != 0);
+
+    set_eel_language(lang_t::EN);
+    const eel_probe_result en_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(en_expected.raw.find("@head@") != string::npos);
+    set_eel_language(lang_t::ZH);
+    const eel_probe_result zh_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(zh_expected.raw.find("@head@") != string::npos);
+
+    set_eel_language(lang_t::EN);
+    const string en_form = C_("body part", "form");
+    set_eel_language(lang_t::ZH);
+    const string zh_form = C_("body part", "form");
+    CHECK(en_form == "form");
+    CHECK(zh_form == "形体");
+
+    const eel_observation en = observe_eel_flavour(lang_t::EN, seed);
+    check_eel_observation(en, en_expected.final);
+    CHECK(en.store.find(en_form) != string::npos);
+
+    const eel_observation zh = observe_eel_flavour(lang_t::ZH, seed);
+    check_eel_observation(zh, zh_expected.final);
+    CHECK(zh.store.find(zh_form) != string::npos);
+    check_zh_no_english_leak(zh.store);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 62 eel @skin@ variant keeps the localized skin name",
+                 "[zh-translation][eel-flavour][issue-62]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.species = SP_HUMAN;
+    you.form = transformation::eel_hands;
+
+    set_eel_language(lang_t::EN);
+    const uint64_t seed = find_eel_raw_seed("eel hand actions", "@skin@");
+    REQUIRE(seed != 0);
+
+    set_eel_language(lang_t::EN);
+    const eel_probe_result en_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(en_expected.raw.find("@skin@") != string::npos);
+    set_eel_language(lang_t::ZH);
+    const eel_probe_result zh_expected =
+        probe_eel_flavour("eel hand actions", seed);
+    REQUIRE(zh_expected.raw.find("@skin@") != string::npos);
+
+    set_eel_language(lang_t::EN);
+    const string en_skin = species::skin_name(you.species);
+    set_eel_language(lang_t::ZH);
+    const string zh_skin = species::skin_name(you.species);
+    CHECK(en_skin == "skin");
+    CHECK(zh_skin == "皮肤");
+
+    const eel_observation en = observe_eel_flavour(lang_t::EN, seed);
+    check_eel_observation(en, en_expected.final);
+    CHECK(en.store.find(en_skin) != string::npos);
+
+    const eel_observation zh = observe_eel_flavour(lang_t::ZH, seed);
+    check_eel_observation(zh, zh_expected.final);
+    CHECK(zh.store.find(zh_skin) != string::npos);
+    check_zh_no_english_leak(zh.store);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 62 eel solo expands exactly one random alternative",
+                 "[zh-translation][eel-flavour][issue-62]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.species = SP_HUMAN;
+    you.form = transformation::eel_hands;
+    // One arm selects the "eel hand solo actions" root (arm_count()==1).
+    you.mutation[MUT_MISSING_HAND] = 1;
+
+    // Bounded deterministic search: one seed per alternative of the
+    // ordinal-0 random site, driven by the real SpeakDB root.
+    set_eel_language(lang_t::EN);
+    const uint64_t seed_a =
+        find_eel_final_seed("eel hand solo actions", "frantically");
+    const uint64_t seed_b =
+        find_eel_final_seed("eel hand solo actions", "wistfully");
+    REQUIRE(seed_a != 0);
+    REQUIRE(seed_b != 0);
+    REQUIRE(seed_a != seed_b);
+
+    // Same weights in the ZH layer: the same seeds must select the same
+    // ordinal-0 variant and the Chinese alternatives.
+    set_eel_language(lang_t::ZH);
+    const eel_probe_result zh_probe_a =
+        probe_eel_flavour("eel hand solo actions", seed_a);
+    const eel_probe_result zh_probe_b =
+        probe_eel_flavour("eel hand solo actions", seed_b);
+    REQUIRE(zh_probe_a.raw.find("[") != string::npos);
+    REQUIRE(zh_probe_b.raw.find("[") != string::npos);
+    REQUIRE(zh_probe_a.final.find("疯狂地") != string::npos);
+    REQUIRE(zh_probe_b.final.find("惆怅地") != string::npos);
+
+    // Alternative A: frantically / 疯狂地.
+    set_eel_language(lang_t::EN);
+    const eel_probe_result en_expected_a =
+        probe_eel_flavour("eel hand solo actions", seed_a);
+    const eel_observation en_a = observe_eel_flavour(lang_t::EN, seed_a);
+    check_eel_observation(en_a, en_expected_a.final);
+    CHECK(en_a.store.find("frantically") != string::npos);
+    CHECK(en_a.store.find("wistfully") == string::npos);
+
+    const eel_observation zh_a = observe_eel_flavour(lang_t::ZH, seed_a);
+    check_eel_observation(zh_a, zh_probe_a.final);
+    CHECK(zh_a.store.find("疯狂地") != string::npos);
+    CHECK(zh_a.store.find("惆怅地") == string::npos);
+    check_zh_no_english_leak(zh_a.store);
+
+    // Alternative B: wistfully / 惆怅地.
+    set_eel_language(lang_t::EN);
+    const eel_probe_result en_expected_b =
+        probe_eel_flavour("eel hand solo actions", seed_b);
+    const eel_observation en_b = observe_eel_flavour(lang_t::EN, seed_b);
+    check_eel_observation(en_b, en_expected_b.final);
+    CHECK(en_b.store.find("wistfully") != string::npos);
+    CHECK(en_b.store.find("frantically") == string::npos);
+
+    const eel_observation zh_b = observe_eel_flavour(lang_t::ZH, seed_b);
+    check_eel_observation(zh_b, zh_probe_b.final);
+    CHECK(zh_b.store.find("惆怅地") != string::npos);
+    CHECK(zh_b.store.find("疯狂地") == string::npos);
+    check_zh_no_english_leak(zh_b.store);
 }

@@ -1269,7 +1269,7 @@ static void _handle_fugue(int delay)
     }
 }
 
-static void _do_eel_flavour_msg()
+void do_eel_flavour_msg()
 {
     // No time for play while there's enemies to zap!
     if (there_are_monsters_nearby(true, true, false))
@@ -1283,10 +1283,19 @@ static void _do_eel_flavour_msg()
 
     // XXX: Apologies for the ad hoc string replacement. We really need a
     //      centralised place to do this...
-    msg = replace_all(msg, "@head@",
-                        you.has_mutation(MUT_FORMLESS) ? "form" : "head");
+    // Copy the borrowed C_() result into an owned string immediately, then
+    // perform the runtime token replacements (@skin@ keeps the localized
+    // species::skin_name() path). Exactly one random-substring expansion
+    // happens after the runtime token replacements and immediately before
+    // the MSGCH_TALK sink.
+    const string head_name = you.has_mutation(MUT_FORMLESS)
+                             ? C_("body part", "form")
+                             : C_("body part", "head");
+    msg = replace_all(msg, "@head@", head_name);
 
     msg = replace_all(msg, "@skin@", species::skin_name(you.species).c_str());
+
+    msg = maybe_pick_random_substring(msg);
 
     mprf(MSGCH_TALK, "%s", msg.c_str());
 }
@@ -1304,7 +1313,7 @@ void player_reacts()
     unrand_reacts();
 
     if (you.form == transformation::eel_hands && one_chance_in(500))
-        _do_eel_flavour_msg();
+        do_eel_flavour_msg();
 
     _handle_fugue(you.time_taken);
     if (you.has_mutation(MUT_WARMUP_STRIKES))
