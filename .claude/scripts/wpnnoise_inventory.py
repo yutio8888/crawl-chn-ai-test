@@ -18,9 +18,20 @@ variants with those actions (add ordinals are candidate positions, remove
 ordinals are baseline positions) and proves: English is byte-identical to the
 baseline; every candidate ZH variant is either an approved add matching the
 baseline EN variant's protocol, or the reviewed proposal (or a kept shifted
-variant under an in-range add placeholder) with unchanged weight; any
-unreviewed key/weight/control/token/Lua/random-site drift or one-sided change
-fails closed.
+variant under an in-range add placeholder) with the baseline protocol
+(weight/control/ordered tokens/random sites/Lua) unchanged; any unreviewed
+key/weight/control/token/Lua/random-site drift or one-sided change fails
+closed.  Every proposed translation is also derived back to protocol facts
+during card validation, so a candidate and its review ledger cannot jointly
+reroute a channel or change token/Lua/random-site expansion.
+
+Mutable artifacts (production dumps, review results, glossary) are read
+through the repository audited snapshot helper: one no-follow descriptor, a
+regular-file requirement, and opened-inode identity verification, never a
+reopened pathname.  In the candidate flow the review ledger and glossary are
+read directly from the exact candidate commit tree as regular-file blobs, and
+the exact-clean candidate boundary is proven before any candidate data is
+consumed.
 
 Production boundary (frozen at the Issue #60 baseline):
 
@@ -39,12 +50,15 @@ Production boundary (frozen at the Issue #60 baseline):
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
+import i18n_shared as audit_inputs
 import monflee_inventory as shared
+from audit_monspell_phase0 import ArtifactError, validate_artifact
 from command_inventory import parse_db_keys
 
 
@@ -377,6 +391,13 @@ CARD_FIELDS = {
 # current text being removed).  Add ordinals are candidate (final) positions;
 # remove ordinals are baseline positions.
 ACTION_FIELDS = {"kind", "variant_ordinal", "text", "rationale"}
+# Text-derived protocol fields whose complete tuple must stay inside the
+# frozen baseline pairing envelope (baseline ZH facts or the paired EN
+# facts) at every matched slot.  Weight is bound separately because it is
+# variant metadata, not text-derived.
+PROTOCOL_FIELDS = ("control_prefix", "runtime_tokens",
+                   "random_site_counts", "lua_site_count",
+                   "lua_comparison_strings")
 PRODUCTION_FACT_FIELDS = {
     "caller_tokens", "chinese_definition_ordinal", "chinese_source_line",
     "control_prefixes", "en_only_variant_ordinals", "english_definition_ordinal",
@@ -453,6 +474,142 @@ def _lua_comparison_strings(pattern: str) -> list[str]:
     for match in _LUA_RE.finditer(pattern):
         strings.update(_LUA_COMPARE_RE.findall(match.group(1)))
     return sorted(strings)
+
+
+# ── audited input reads ────────────────────────────────────────────────
+#
+# Mutable external artifacts (production dumps, review results, glossary)
+# are read through the repository audited snapshot helper: every parent
+# component is lstat-checked, the target must be a regular file (never a
+# symlink/FIFO/device), it is opened with O_NOFOLLOW, the opened inode must
+# equal the inspected inode, and the complete content is read from that one
+# descriptor (never a reopened pathname), so a concurrent swap cannot
+# substitute different bytes.  Exact-Git inputs additionally require a
+# regular-file tree mode in the bound commit.
+
+
+def _repository_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _read_artifact_bytes(path: Path, label: str) -> bytes:
+    """Read one mutable artifact through a checked no-follow descriptor.
+
+    A fresh development-mode snapshot is used per read so no pathname is
+    ever re-read from a cache: every read is independently bound to the
+    inode it inspected.
+    """
+    snapshot = audit_inputs.AuditSnapshot(_repository_root(), None)
+    try:
+        return snapshot.read(path, allow_external_unbound=True).bytes
+    except audit_inputs.AuditInputError as exc:
+        raise InventoryError(f"cannot read {label} {path}: {exc}") from exc
+
+
+def _load_dump_safe(
+    path: Path, label: str, expected_directory: str,
+) -> tuple[dict[str, Any], bytes]:
+    """Parse a production dump whose bytes were read through one checked
+    no-follow descriptor with inode identity verification."""
+    raw = _read_artifact_bytes(path, f"{label} production dump")
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise InventoryError(
+            f"cannot parse {label} production dump {path}: {exc}") from exc
+    try:
+        validate_artifact(value, f"{label} production dump")
+    except ArtifactError as exc:
+        raise InventoryError(str(exc)) from exc
+    _require(
+        value["source_directory"] == expected_directory,
+        f"{label} source_directory must be exactly {expected_directory!r}",
+    )
+    return value, raw
+
+
+def _candidate_regular_blob(ref: str, git_path: str, label: str) -> bytes:
+    """Read one candidate-tree input bound to the exact candidate commit.
+
+    The tree entry must be a regular-file blob (100644/100755); symlink,
+    gitlink, subtree and device entries are rejected before any content is
+    consumed, so the bytes always carry checkout-identical semantics.
+    """
+    try:
+        mode, data = audit_inputs.read_regular_git_blob(
+            _repository_root(), ref, git_path, with_mode=True
+        )
+    except audit_inputs.AuditInputError as exc:
+        raise InventoryError(
+            f"cannot read {label} {git_path}@{ref[:12]} from exact Git: {exc}",
+        ) from exc
+    _require(
+        mode in ("100644", "100755"),
+        f"{label} {git_path}@{ref[:12]} is not a regular blob",
+    )
+    return data
+
+
+def _repo_relative_git_path(path: Path, label: str) -> str:
+    """Map a CLI path to a lexical repository-relative Git path."""
+    repository = _repository_root()
+    supplied = path if path.is_absolute() else repository / path
+    try:
+        relative = supplied.relative_to(repository)
+    except ValueError as exc:
+        raise InventoryError(
+            f"{label} must be inside the repository when a candidate is "
+            f"bound: {path}",
+        ) from exc
+    git_path = relative.as_posix()
+    _require(
+        all(part not in {"", ".", ".."} for part in git_path.split("/")),
+        f"{label} has an unsafe repository path {path!r}",
+    )
+    return git_path
+
+
+def _require_regular_git_blobs(
+    ref: str, git_paths: list[str], label: str,
+) -> None:
+    """Every exact-Git input must be a regular-file blob in the commit tree."""
+    for git_path in git_paths:
+        try:
+            mode, _data = audit_inputs.read_regular_git_blob(
+                _repository_root(), ref, git_path, with_mode=True
+            )
+        except audit_inputs.AuditInputError as exc:
+            raise InventoryError(
+                f"{label} exact-Git input {git_path}@{ref[:12]} is not a "
+                f"regular blob: {exc}",
+            ) from exc
+        _require(
+            mode in ("100644", "100755"),
+            f"{label} exact-Git input {git_path}@{ref[:12]} has unsupported "
+            f"mode {mode!r}",
+        )
+
+
+def _require_regular_git_sources(
+    ref: str, directory: str, label: str,
+) -> None:
+    """Bind the SpeakDB derivation inputs to regular blobs at the exact OID.
+
+    The shared derivation reads database.cc and every SpeakDB source from
+    exact Git; this pre-flight proves each one of those tree entries is a
+    regular file so an unsupported English Git object type can never be
+    parsed with semantics different from the production checkout.
+    """
+    if directory == "database/":
+        manifest = shared._english_source_manifest(ref, label)
+    else:
+        manifest = shared._localized_source_manifest(ref, label)
+    _require_regular_git_blobs(
+        ref,
+        ["crawl-ref/source/database.cc"]
+        + [f"crawl-ref/source/dat/{name}" for name in manifest],
+        label,
+    )
 
 
 def _definition_lines(source: str, label: str) -> dict[str, int]:
@@ -891,13 +1048,14 @@ def _expected_production_facts(
 
 def build_inventory(
     baseline_ref: str, english_path: Path, localized_path: Path,
-    glossary_path: Path,
+    glossary_path: Path, glossary_ref: str | None = None,
 ) -> dict[str, Any]:
     shared._validate_oid(baseline_ref, "baseline")
-    en_dump, en_raw = shared._load_dump(
-        english_path, "baseline EN", "database/"
-    )
-    zh_dump, zh_raw = shared._load_dump(
+    _require_regular_git_sources(baseline_ref, "database/", "baseline EN")
+    _require_regular_git_sources(
+        baseline_ref, "database/zh/", "baseline ZH")
+    en_dump, en_raw = _load_dump_safe(english_path, "baseline EN", "database/")
+    zh_dump, zh_raw = _load_dump_safe(
         localized_path, "baseline ZH", "database/zh/"
     )
     shared._require_scoped_derivation(
@@ -964,10 +1122,19 @@ def build_inventory(
     _require(comparisons == sorted(LUA_COMPARISON_STRINGS),
              f"wpnnoise Lua comparison string set mismatch: {comparisons!r}")
 
-    try:
-        glossary_sha256 = _sha256(glossary_path.read_bytes())
-    except OSError as exc:
-        raise InventoryError(f"cannot read glossary {glossary_path}: {exc}") from exc
+    # The glossary is a mutable worktree artifact in the baseline-only flow
+    # (checked no-follow descriptor); in the candidate flow it is read
+    # directly from the exact candidate commit tree as a regular-file blob,
+    # so a transient worktree substitution cannot rebind its SHA-256.
+    if glossary_ref is not None:
+        glossary_sha256 = _sha256(_candidate_regular_blob(
+            glossary_ref,
+            _repo_relative_git_path(glossary_path, "glossary"),
+            "glossary",
+        ))
+    else:
+        glossary_sha256 = _sha256(
+            _read_artifact_bytes(glossary_path, "glossary"))
     scope = {
         "source_basename": SOURCE_BASENAME,
         "expected_identity_count": EXPECTED_IDENTITY_COUNT,
@@ -997,6 +1164,43 @@ def build_inventory(
 
 def _strict_block(path: Path) -> list[dict[str, Any]]:
     return shared._strict_block(path, STRICT_BEGIN, STRICT_END)
+
+
+def _strict_block_from_text(text: str, path: Path) -> list[dict[str, Any]]:
+    """Parse the fenced strict evidence block from already-read text."""
+    _require(text.count(STRICT_BEGIN) == 1,
+             "review results require exactly one strict begin marker")
+    _require(text.count(STRICT_END) == 1,
+             "review results require exactly one strict end marker")
+    begin = text.index(STRICT_BEGIN) + len(STRICT_BEGIN)
+    end = text.index(STRICT_END, begin)
+    body = text[begin:end].strip()
+    match = re.fullmatch(r"```jsonl\s*\n(.*?)\n```", body, re.DOTALL)
+    _require(match is not None,
+             "strict review evidence must be one fenced jsonl block")
+    lines = [line for line in match.group(1).splitlines() if line.strip()]
+    records = []
+    for line_number, line in enumerate(lines, 1):
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise InventoryError(
+                f"invalid review JSONL line {line_number}: {exc}") from exc
+        _require(isinstance(value, dict),
+                 f"review JSONL line {line_number} must be an object")
+        records.append(value)
+    return records
+
+
+def _strict_block_safe(path: Path) -> list[dict[str, Any]]:
+    """Read review results through one checked no-follow descriptor."""
+    raw = _read_artifact_bytes(path, "review results")
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise InventoryError(
+            f"cannot decode review results {path}: {exc}") from exc
+    return _strict_block_from_text(text, path)
 
 
 def _validate_deferral(record: dict[str, Any], context: str) -> None:
@@ -1035,6 +1239,34 @@ def _derived_action_fact(text: str, field: str) -> Any:
     if field == "lua_comparison_strings":
         return _lua_comparison_strings(text)
     raise InventoryError(f"unknown action fact field {field!r}")
+
+
+def _protocol_facts(facts: dict[str, Any]) -> list[Any]:
+    return [facts[field] for field in PROTOCOL_FIELDS]
+
+
+def _protocol_drift_field(
+    candidate: dict[str, Any], baseline: dict[str, Any],
+    en: dict[str, Any] | None,
+) -> str | None:
+    """First protocol field outside the frozen baseline pairing envelope.
+
+    A matched slot's protocol tuple must equal the baseline ZH facts or,
+    when the baseline pairing records a different frozen EN shape at the
+    same ordinal, that EN tuple.  Any other value is an unreviewed protocol
+    drift; the first field differing from both sides is reported (a tuple
+    mixing the two frozen sides reports "protocol").
+    """
+    candidate_tuple = _protocol_facts(candidate)
+    if candidate_tuple == _protocol_facts(baseline):
+        return None
+    if en is not None and candidate_tuple == _protocol_facts(en):
+        return None
+    for field in PROTOCOL_FIELDS:
+        if (candidate[field] != baseline[field]
+                and (en is None or candidate[field] != en[field])):
+            return field
+    return "protocol"
 
 
 def _validate_actions(
@@ -1297,6 +1529,15 @@ def _validate_card(
     )
     actions = card["reviewed_actions"]
     _validate_actions(actions, entry, proposed, identity)
+    # In-range add ordinals borrow the proposal slot (placeholder): the
+    # proposal there is the approved add text whose protocol is bound to the
+    # baseline EN variant by _validate_actions, never to the shifted
+    # baseline ZH variant.
+    in_range_add_ordinals = {
+        action["variant_ordinal"] for action in actions
+        if action["kind"] == "add"
+        and action["variant_ordinal"] < len(entry["variants"])
+    }
     reviews = card["variant_reviews"]
     _require(
         isinstance(reviews, list) and len(reviews) == len(entry["variants"]),
@@ -1333,6 +1574,31 @@ def _validate_card(
             _require(review.get(field) == expected, f"{context} {field} mismatch")
         _require(_nonempty_string(review["rationale"]),
                  f"{context} requires a rationale")
+        # Every proposed translation must keep the frozen baseline pairing
+        # envelope: the complete protocol tuple (control prefix, ordered
+        # runtime tokens with multiplicity, per-site random alternative
+        # shape, Lua site count, Lua comparison strings) must equal the
+        # baseline ZH facts or, where the baseline pairing records a
+        # different frozen EN shape at the same ordinal, that EN tuple.
+        # Weight is bound separately to the baseline ZH variant.  A
+        # candidate and its review ledger jointly agreeing on any other
+        # protocol fails closed here, before any candidate is consumed.
+        if ordinal not in in_range_add_ordinals:
+            en_variant = (
+                entry["english_variants"][ordinal]
+                if ordinal < len(entry["english_variants"]) else None
+            )
+            proposal_facts = {
+                field: _derived_action_fact(proposal, field)
+                for field in PROTOCOL_FIELDS
+            }
+            drift = _protocol_drift_field(
+                proposal_facts, variant, en_variant)
+            _require(
+                drift is None,
+                f"{context} proposed text {drift} does not match the "
+                f"baseline ZH or EN pairing protocol",
+            )
         if review_conclusion == "keep":
             _require(proposal == variant["chinese"],
                      f"{context} keep must preserve current Chinese")
@@ -1450,7 +1716,7 @@ def _zh_protocol_shape(
     binding so the comparison cannot see different parsers.
     """
     if dump_path is not None:
-        zh_dump, zh_raw = shared._load_dump(
+        zh_dump, zh_raw = _load_dump_safe(
             dump_path, f"{label} ZH", "database/zh/"
         )
         derived = shared._derive_scoped_dump(
@@ -1498,10 +1764,15 @@ def add_candidate(
     English side is byte-identical to the baseline; (2) the candidate ZH side
     differs from the baseline only by the reviewed actions (approved
     additions bound to baseline EN locators and the approved orphan removal)
-    and the reviewed proposal texts, with every matched variant's weight and
-    every added variant's full protocol equal to the baseline or the EN
-    source.  Any unreviewed key/weight/control/token/Lua/random-site drift,
-    extra insertion, deletion, or reorder fails closed.
+    and the reviewed proposal texts, with every matched variant's full
+    protocol (weight, control prefix, ordered runtime tokens with
+    multiplicity, random-site per-site alternative shape, Lua site count and
+    comparison strings) equal to the baseline and every added variant's full
+    protocol equal to the EN source.  Any unreviewed
+    key/weight/control/token/Lua/random-site drift, extra insertion,
+    deletion, or reorder fails closed.  The exact-clean candidate boundary is
+    proven before any candidate data is consumed, and every candidate-tree
+    input is read as a regular-file blob.
     """
     _require(review_records is not None,
              "candidate validation requires review evidence records")
@@ -1525,8 +1796,13 @@ def add_candidate(
     shared._require_candidate_commit(
         inventory["baseline_ref"], candidate_ref, exact_clean_checkout=True
     )
-    en_dump, en_raw = shared._load_dump(english_path, "candidate EN", "database/")
-    zh_dump, zh_raw = shared._load_dump(
+    _require_regular_git_sources(
+        candidate_ref, "database/", "candidate EN")
+    _require_regular_git_sources(
+        candidate_ref, "database/zh/", "candidate ZH")
+    en_dump, en_raw = _load_dump_safe(
+        english_path, "candidate EN", "database/")
+    zh_dump, zh_raw = _load_dump_safe(
         localized_path, "candidate ZH", "database/zh/"
     )
     candidate_en_derived = shared._derive_scoped_dump(
@@ -1636,6 +1912,20 @@ def add_candidate(
                     f"candidate ZH protocol drift at {key!r} ordinal "
                     f"{slot['variant_ordinal']}: weight",
                 )
+                # The remaining protocol fields must stay inside the frozen
+                # baseline pairing envelope (baseline ZH tuple or the EN
+                # tuple at the same baseline ordinal); the approved landing
+                # contains exactly one matched-slot protocol move, and it is
+                # the EN pairing shape of that ordinal.
+                drift = _protocol_drift_field(
+                    candidate_facts, baseline_facts,
+                    en_facts.get((key, slot["variant_ordinal"])),
+                )
+                _require(
+                    drift is None,
+                    f"candidate ZH protocol drift at {key!r} ordinal "
+                    f"{slot['variant_ordinal']}: {drift}",
+                )
             _require(
                 candidate_facts["chinese"]
                 == expected_texts[slot["candidate_ordinal"]],
@@ -1685,14 +1975,34 @@ def main(argv: list[str] | None = None) -> int:
                  "candidate ref and both candidate dumps must be supplied together")
         _require(args.review_results is not None,
                  "candidate validation requires --review-results")
-    inventory = build_inventory(
-        args.baseline_ref, args.english_dump, args.localized_dump, args.glossary
-    )
+    # The exact-clean candidate boundary is proven before any candidate data
+    # is consumed, and the review ledger is read directly from the exact
+    # candidate commit tree as a regular-file blob, so a transient worktree
+    # substitution can never rebind the emitted candidate evidence.
     records = None
-    if args.review_results is not None:
-        records = shared._strict_block(
-            args.review_results, STRICT_BEGIN, STRICT_END
+    if args.review_results is not None and args.candidate_ref is not None:
+        shared._require_candidate_commit(
+            args.baseline_ref, args.candidate_ref, exact_clean_checkout=True
         )
+        ledger_bytes = _candidate_regular_blob(
+            args.candidate_ref,
+            _repo_relative_git_path(args.review_results, "review results"),
+            "review results",
+        )
+        try:
+            ledger_text = ledger_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise InventoryError(
+                "cannot decode review results from the candidate tree"
+            ) from exc
+        records = _strict_block_from_text(ledger_text, args.review_results)
+    inventory = build_inventory(
+        args.baseline_ref, args.english_dump, args.localized_dump,
+        args.glossary,
+        glossary_ref=args.candidate_ref if args.candidate_ref else None,
+    )
+    if args.review_results is not None and records is None:
+        records = _strict_block_safe(args.review_results)
     candidate_entries = None
     if args.candidate_ref is not None:
         candidate_entries = add_candidate(

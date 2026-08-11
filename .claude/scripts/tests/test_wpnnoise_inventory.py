@@ -5,7 +5,10 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
 import re
+import socket
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -843,6 +846,17 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             )
 
     def test_candidate_zh_protocol_drift_is_rejected(self):
+        """Candidate and ledger jointly changing a protocol field fails.
+
+        Every fixture mutates a matched slot of the approved candidate AND
+the review records are rebuilt from the mutated candidate, so the ledger
+proposal agrees with the candidate text and the rejection must come from
+the protocol binding itself, never from a text-drift mismatch.  Each
+protocol field is covered: control VISUAL->SOUND, token reorder/duplicate/
+remove (ordered, with multiplicity), random alternative count and site
+order, Lua site count and Lua comparison strings, and weight.
+        """
+
         def swap_first_two_tokens(variant):
             pattern = variant["raw_pattern"]
             tokens = re.findall(r"@[^@]+@", pattern)
@@ -873,70 +887,107 @@ class WpnnoiseInventoryTests(unittest.TestCase):
                 + pattern[second[1]:]
             )
 
+        def set_pattern(variant, replacement):
+            variant["raw_pattern"] = replacement(variant["raw_pattern"])
+
         def mutate_candidate(key, ordinal, mutator):
             artifact = copy.deepcopy(self.candidate_zh_artifact)
             mutator(self.zh_variant(artifact, key, ordinal))
             return artifact
 
-        @staticmethod
-        def renumber(entry: dict) -> dict:
-            for ordinal, variant in enumerate(entry["variants"]):
-                variant["locator"]["variant_ordinal"] = ordinal
-            return entry
-
-        def lua_swap_artifact():
-            artifact = copy.deepcopy(self.candidate_zh_artifact)
-            entry = next(
-                entry for entry in artifact["entries"]
-                if entry["canonical_key"] == "_speaking_high_tension_"
-            )
-            first, second = entry["variants"][2], entry["variants"][3]
-            first["raw_pattern"], second["raw_pattern"] = (
-                second["raw_pattern"], first["raw_pattern"]
-            )
-            return artifact
-
         # All mutations sit at matched positions of the approved candidate
         # (orphan already removed, counts equal), so each must fail the gate
-        # at the drift check itself, never at a count check.  The Lua-bearing
-        # matched variant is candidate ordinal 3.
+        # at the protocol binding itself, never at a count check.  The
+        # Lua-bearing matched variant is candidate ordinal 3 of
+        # _speaking_high_tension_ (= baseline ordinal 4); its frozen pairing
+        # envelope is ZH (tokens 3, lua 1, cmp No God) / EN (tokens 1,
+        # lua 0), so every mutation below leaves that envelope.
         cases = (
+            ("control VISUAL to SOUND",
+             lambda: mutate_candidate(
+                 "singing sword silenced", 0,
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: re.sub(r"^VISUAL:", "SOUND:", text))),
+             "control_prefix", "protocol drift.*control_prefix"),
             ("token reorder",
              lambda: mutate_candidate("_speaking_high_tension_", 3,
                                       swap_first_two_tokens),
-             "text drift"),
-            ("duplicate token",
+             "runtime_tokens", "protocol drift.*runtime_tokens"),
+            ("token duplicate",
              lambda: mutate_candidate(
                  "_speaking_high_tension_", 3,
-                 lambda variant: variant.__setitem__(
-                     "raw_pattern",
-                     variant["raw_pattern"].replace(
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: text.replace(
                          "@The_weapon@", "@The_weapon@@The_weapon@", 1))),
-             "text drift"),
-            ("weight drift",
+             "runtime_tokens", "protocol drift.*runtime_tokens"),
+            ("token remove",
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: text.replace("@_godless_sorter_@", "", 1))),
+             "runtime_tokens", "protocol drift.*runtime_tokens"),
+            ("random alternative count",
+             lambda: mutate_candidate(
+                 "eel hand solo actions", 0,
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: text.replace(
+                         "[疯狂地|惆怅地]", "[疯狂地|惆怅地|焦虑地]"))),
+             "random_site_counts", "protocol drift.*random_site_counts"),
+            ("random site order",
+             lambda: mutate_candidate(
+                 "_common_speaking_no_tension_", 3,
+                 swap_bracket_groups),
+             "random_site_counts", "protocol drift.*random_site_counts"),
+            ("lua site count",
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
+                 lambda variant: set_pattern(
+                     variant, lambda text: text + "{{ }}")),
+             "lua_site_count", "protocol drift.*lua_site_count"),
+            # The candidate gate rejects a comparison string outside the
+            # frozen Lua identity set at dump binding (fail closed on the
+            # protocol identity itself), while the ledger gate rejects the
+            # same joint change at the proposal protocol check.
+            ("lua comparison string",
+             lambda: mutate_candidate(
+                 "_speaking_high_tension_", 3,
+                 lambda variant: set_pattern(
+                     variant,
+                     lambda text: text.replace('"No God"', '"Zin"'))),
+             "lua_comparison_strings", "unknown Lua comparison string"),
+            ("weight",
              lambda: mutate_candidate(
                  "eel hand solo actions", 0,
                  lambda variant: variant.__setitem__("weight", 30)),
-             "protocol drift"),
-            ("random-site shape drift",
-             lambda: mutate_candidate("frozen axe \"frostbite\"", 0,
-                                      swap_bracket_groups),
-             "text drift"),
-            ("lua site swap", lua_swap_artifact, "text drift"),
-            ("lua comparison drift",
-             lambda: mutate_candidate(
-                 "_speaking_high_tension_", 3,
-                 lambda variant: variant.__setitem__(
-                     "raw_pattern",
-                     variant["raw_pattern"].replace('"No God"', '"Zin"'))),
-             "unknown Lua comparison string"),
+             "weight", "protocol drift.*weight"),
         )
-        records = self.review_records_for()
-        for name, build, message in cases:
-            with self.subTest(case=name):
-                with self.assertRaisesRegex(MODULE.InventoryError, message):
-                    self.add_candidate(self.candidate_en_artifact, build(),
+        for name, build, field, candidate_message in cases:
+            mutated = build()
+            records = self.review_records_for(mutated)
+            with self.subTest(case=name, gate="candidate"):
+                with self.assertRaisesRegex(
+                    MODULE.InventoryError, candidate_message
+                ):
+                    self.add_candidate(self.candidate_en_artifact, mutated,
                                        records)
+            if field == "weight":
+                # Weight is variant metadata, not text-derived: the ledger
+                # records the baseline weight and the candidate gate binds
+                # the candidate weight to it.  The ledger text check has no
+                # weight to derive, so validation alone stays clean.
+                self.validate(records)
+                continue
+            with self.subTest(case=name, gate="ledger"):
+                with self.assertRaisesRegex(
+                    MODULE.InventoryError,
+                    f"proposed text {field} does not match the baseline ZH "
+                    f"or EN pairing protocol",
+                ):
+                    self.validate(records)
 
     def test_candidate_variant_count_drift_is_rejected(self):
         records = self.review_records_for()
@@ -1009,8 +1060,10 @@ class WpnnoiseInventoryTests(unittest.TestCase):
     def test_candidate_rejects_reorder_and_add_text_drift(self):
         records = self.review_records_for()
 
-        # Malicious reorder of two matched variants (patterns swapped,
-        # weights untouched so the text check is the one that fires).
+        # Malicious reorder of two matched variants (patterns swapped).  The
+        # swapped patterns carry each other's protocol tuples, so the gate
+        # rejects the reorder at the protocol binding (random-site shape at
+        # the first swapped ordinal) before any text comparison.
         bad = copy.deepcopy(self.candidate_zh_artifact)
         entry = next(
             entry for entry in bad["entries"]
@@ -1021,7 +1074,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         )
         for ordinal, variant in enumerate(entry["variants"]):
             variant["locator"]["variant_ordinal"] = ordinal
-        with self.assertRaisesRegex(MODULE.InventoryError, "text drift"):
+        with self.assertRaisesRegex(MODULE.InventoryError, "protocol drift"):
             self.add_candidate(self.candidate_en_artifact, bad, records)
 
         # Approved add slot text changed (protocol preserved).
@@ -1038,7 +1091,9 @@ class WpnnoiseInventoryTests(unittest.TestCase):
 
     def test_candidate_remove_at_wrong_ordinal_is_rejected(self):
         # The orphan removal applied at a different baseline position: counts
-        # stay equal, but the walk must fail at the shifted matched position.
+        # stay equal, but the walk must fail at the shifted matched position
+        # (the orphan text carries a protocol tuple outside the frozen
+        # pairing envelope of the slot it now occupies).
         records = self.review_records_for()
         bad = copy.deepcopy(self.candidate_zh_artifact)
         entry = next(
@@ -1052,7 +1107,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         entry["variants"].pop(2)
         for ordinal, variant in enumerate(entry["variants"]):
             variant["locator"]["variant_ordinal"] = ordinal
-        with self.assertRaisesRegex(MODULE.InventoryError, "text drift"):
+        with self.assertRaisesRegex(MODULE.InventoryError, "protocol drift"):
             self.add_candidate(self.candidate_en_artifact, bad, records)
 
     def test_review_actions_schema_fails_closed(self):
@@ -1135,6 +1190,254 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "ordinal mismatch"):
             self.add_candidate(self.candidate_en_artifact,
                                copy.deepcopy(self.candidate_zh_artifact), bad)
+
+    # ── audited input reads: no-follow descriptors, inode identity ──────
+
+    def test_external_reads_reject_symlink_fifo_directory_and_socket(self):
+        dump = self.root / "dump.json"
+        dump.write_text("{}", encoding="utf-8")
+        link = self.root / "dump-link.json"
+        link.symlink_to(dump)
+        with self.assertRaisesRegex(MODULE.InventoryError, "not a regular file"):
+            MODULE._read_artifact_bytes(link, "fixture dump")
+
+        fifo = self.root / "dump.fifo"
+        os.mkfifo(fifo)
+        # Rejected at inspection before any open, so a FIFO can never block
+        # the read (an O_RDONLY open would hang forever).
+        with self.assertRaisesRegex(MODULE.InventoryError, "not a regular file"):
+            MODULE._read_artifact_bytes(fifo, "fixture dump")
+
+        directory = self.root / "dump-dir"
+        directory.mkdir()
+        with self.assertRaisesRegex(MODULE.InventoryError, "not a regular file"):
+            MODULE._read_artifact_bytes(directory, "fixture dump")
+
+        sock = self.root / "dump.sock"
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as server:
+            server.bind(str(sock))
+            with self.assertRaisesRegex(
+                MODULE.InventoryError, "not a regular file"
+            ):
+                MODULE._read_artifact_bytes(sock, "fixture dump")
+
+    def test_external_read_rejects_transient_substitution_before_open(self):
+        path = self.root / "sub.json"
+        replacement = self.root / "replacement.json"
+        path.write_text("ORIGINAL\n", encoding="utf-8")
+        replacement.write_text("REPLACEMENT\n", encoding="utf-8")
+        real_open = os.open
+
+        def swap_before_open(target, flags):
+            if os.fspath(target) == os.fspath(path):
+                path.unlink()
+                replacement.replace(path)
+            return real_open(target, flags)
+
+        with mock.patch.object(os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "changed between inspection and open",
+            ):
+                MODULE._read_artifact_bytes(path, "substitution fixture")
+
+    def test_external_read_rejects_concurrent_swap_and_restore(self):
+        path = self.root / "swap.json"
+        original = self.root / "original.json"
+        replacement = self.root / "replacement.json"
+        path.write_text("ORIGINAL\n", encoding="utf-8")
+        replacement.write_text("REPLACEMENT\n", encoding="utf-8")
+        real_open = os.open
+
+        def swap_before_open_and_restore(target, flags):
+            if os.fspath(target) != os.fspath(path):
+                return real_open(target, flags)
+            path.replace(original)
+            replacement.replace(path)
+            try:
+                return real_open(target, flags)
+            finally:
+                # Restore the original pathname before the caller resumes:
+                # the read must already have been rejected on inode identity,
+                # so a later clean-check cannot be evaded by a restored path.
+                original.replace(path)
+
+        with mock.patch.object(
+            os, "open", side_effect=swap_before_open_and_restore
+        ):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "changed between inspection and open",
+            ):
+                MODULE._read_artifact_bytes(path, "swap fixture")
+        self.assertEqual("ORIGINAL\n", path.read_text(encoding="utf-8"))
+
+    def test_candidate_tree_blob_reads_require_regular_files(self):
+        ledger_bytes = MODULE._candidate_regular_blob(
+            CANDIDATE, "docs/wpnnoise-review-results.md", "ledger fixture"
+        )
+        raw = subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             f"{CANDIDATE}:docs/wpnnoise-review-results.md"],
+        )
+        self.assertEqual(raw, ledger_bytes)
+        # A real tree entry is not a regular blob: rejected before any
+        # content is consumed, so an unsupported Git object type can never
+        # be parsed with checkout semantics.
+        with self.assertRaisesRegex(MODULE.InventoryError, "not a regular file"):
+            MODULE._candidate_regular_blob(
+                CANDIDATE, "crawl-ref/source/dat/database", "ledger fixture"
+            )
+
+    def test_english_tree_mode_is_required(self):
+        # The real frozen baseline passes the regular-file pre-flight for
+        # both the English manifest chain and the localized tree.
+        MODULE._require_regular_git_sources(BASELINE, "database/", "fixture EN")
+        MODULE._require_regular_git_sources(
+            BASELINE, "database/zh/", "fixture ZH")
+
+        real_blob = MODULE.audit_inputs.read_regular_git_blob
+
+        def symlink_manifest_entry(repo, ref, git_path, *, with_mode=False):
+            if git_path == "crawl-ref/source/database.cc":
+                raise MODULE.audit_inputs.AuditInputError(
+                    f"Git entry is not a regular file: {ref}:{git_path}"
+                )
+            return real_blob(repo, ref, git_path, with_mode=with_mode)
+
+        with mock.patch.object(
+            MODULE.audit_inputs, "read_regular_git_blob",
+            side_effect=symlink_manifest_entry,
+        ):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError, "not a regular blob"
+            ):
+                MODULE._require_regular_git_sources(
+                    BASELINE, "database/", "fixture EN"
+                )
+
+        with self.assertRaisesRegex(MODULE.InventoryError, "not a regular blob"):
+            MODULE._require_regular_git_blobs(
+                BASELINE, ["crawl-ref/source/dat/database"], "fixture"
+            )
+
+    def test_repo_relative_git_path_rejects_escapes(self):
+        self.assertEqual(
+            "docs/wpnnoise-review-results.md",
+            MODULE._repo_relative_git_path(
+                ROOT / "docs/wpnnoise-review-results.md", "review results"
+            ),
+        )
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "inside the repository"
+        ):
+            MODULE._repo_relative_git_path(
+                Path("/tmp/outside.md"), "review results"
+            )
+        with self.assertRaisesRegex(
+            MODULE.InventoryError, "unsafe repository path"
+        ):
+            MODULE._repo_relative_git_path(
+                ROOT / "docs" / ".." / "evil.md", "review results"
+            )
+
+    def test_exact_clean_check_precedes_candidate_ledger_read(self):
+        calls: list[str] = []
+        output = Path("/tmp") / f"wpnnoise-order-{id(self)}.json"
+        arguments = [
+            "--baseline-ref", BASELINE,
+            "--english-dump", str(self.en_path),
+            "--localized-dump", str(self.zh_path),
+            "--glossary", str(ROOT / "docs/glossary.md"),
+            "--review-results", str(ROOT / "docs/wpnnoise-review-results.md"),
+            "--candidate-ref", CANDIDATE,
+            "--candidate-english-dump", str(self.en_path),
+            "--candidate-localized-dump", str(self.zh_path),
+            "--inventory-output", str(output),
+        ]
+
+        def fake_clean(*_args, **_kwargs):
+            calls.append("clean")
+
+        def fake_blob(_ref, git_path, _label):
+            calls.append(f"ledger:{git_path}")
+            return b""
+
+        with mock.patch.object(
+            MODULE.shared, "_require_candidate_commit", side_effect=fake_clean
+        ), mock.patch.object(
+            MODULE, "_candidate_regular_blob", side_effect=fake_blob
+        ):
+            with self.assertRaisesRegex(MODULE.InventoryError, "strict begin"):
+                MODULE.main(arguments)
+        self.assertEqual(
+            ["clean", "ledger:docs/wpnnoise-review-results.md"], calls
+        )
+
+    def test_cli_candidate_flow_reads_ledger_from_candidate_tree(self):
+        # The candidate-flow inventory binds the glossary to the exact
+        # candidate commit tree; the frozen worktree glossary is identical.
+        cli_inventory = MODULE.build_inventory(
+            BASELINE, self.en_path, self.zh_path,
+            ROOT / "docs/glossary.md", glossary_ref=CANDIDATE,
+        )
+        self.assertEqual(self.inventory["inventory_sha256"],
+                         cli_inventory["inventory_sha256"])
+        self.assertEqual(self.inventory["glossary"]["sha256"],
+                         cli_inventory["glossary"]["sha256"])
+
+        records = self.review_records_for()
+        ledger_text = (
+            MODULE.STRICT_BEGIN + "\n```jsonl\n"
+            + "\n".join(
+                json.dumps(record, ensure_ascii=False, sort_keys=True)
+                for record in records
+            )
+            + "\n```\n" + MODULE.STRICT_END + "\n"
+        )
+        ledger_bytes = ledger_text.encode("utf-8")
+        en_path = self.root / f"cli-en-{id(self)}.json"
+        zh_path = self.root / f"cli-zh-{id(self)}.json"
+        en_path.write_text(
+            json.dumps(self.candidate_en_artifact, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        zh_path.write_text(
+            json.dumps(self.candidate_zh_artifact, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        output = Path("/tmp") / f"wpnnoise-cli-{id(self)}.json"
+        output.unlink(missing_ok=True)
+        arguments = [
+            "--baseline-ref", BASELINE,
+            "--english-dump", str(self.en_path),
+            "--localized-dump", str(self.zh_path),
+            "--glossary", str(ROOT / "docs/glossary.md"),
+            "--review-results", str(ROOT / "docs/wpnnoise-review-results.md"),
+            "--candidate-ref", CANDIDATE,
+            "--candidate-english-dump", str(en_path),
+            "--candidate-localized-dump", str(zh_path),
+            "--inventory-output", str(output),
+        ]
+        captured = {}
+        real_blob = MODULE._candidate_regular_blob
+
+        def fake_blob(ref, git_path, label):
+            if git_path == "docs/wpnnoise-review-results.md":
+                captured["ledger_git_path"] = git_path
+                return ledger_bytes
+            return real_blob(ref, git_path, label)
+
+        with mock.patch.object(
+            MODULE.shared, "_require_candidate_commit"
+        ), mock.patch.object(
+            MODULE, "_candidate_regular_blob", side_effect=fake_blob
+        ):
+            self.assertEqual(0, MODULE.main(arguments))
+        self.assertEqual("docs/wpnnoise-review-results.md",
+                         captured["ledger_git_path"])
+        self.assertTrue(output.exists())
+        output.unlink()
 
     # ── CLI safe output ──────────────────────────────────────────────────
 
