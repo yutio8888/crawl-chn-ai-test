@@ -91,11 +91,13 @@ class ReviewerRoutingTests(unittest.TestCase):
             "item-extended-review-results.md",
             "miscast-review-results.md",
             "monflee-review-results.md",
+            "monspell-review-results.md",
             "monster-review-results.md",
             "species-background-review-results.md",
             "spell-name-review-results.md",
             "tutorial-review-results.md",
             "world-review-results.md",
+            "wpnnoise-review-results.md",
         }
         ledgers = sorted(REPO.glob("docs/*-review-results.md"))
         self.assertEqual(expected, {path.name for path in ledgers})
