@@ -175,6 +175,21 @@ def card_for(
     return card
 
 
+def _open_target(path: Path) -> str:
+    """The exact lexical path AuditSnapshot.read passes to os.open.
+
+    Production rewrites macOS's fixed /var -> /private/var (and
+    /tmp -> /private/tmp) aliases through ``_known_system_temp_alias``
+    before opening an external input, so an adversarial os.open hook must
+    compare against this normalized form, never the raw supplied path.
+    On non-Darwin platforms the helper is the identity and the open target
+    equals the supplied path, exactly like production.
+    """
+    return os.fspath(MODULE.audit_inputs._known_system_temp_alias(
+        Path(os.path.normpath(os.path.abspath(os.fspath(path))))
+    ))
+
+
 class WpnnoiseInventoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1642,7 +1657,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         real_open = os.open
 
         def swap_before_open(target, flags):
-            if os.fspath(target) == os.fspath(path):
+            if os.fspath(target) == _open_target(path):
                 path.unlink()
                 replacement.replace(path)
             return real_open(target, flags)
@@ -1663,7 +1678,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         real_open = os.open
 
         def swap_before_open_and_restore(target, flags):
-            if os.fspath(target) != os.fspath(path):
+            if os.fspath(target) != _open_target(path):
                 return real_open(target, flags)
             path.replace(original)
             replacement.replace(path)
@@ -1684,6 +1699,57 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             ):
                 MODULE._read_artifact_bytes(path, "swap fixture")
         self.assertEqual("ORIGINAL\n", path.read_text(encoding="utf-8"))
+
+    def test_external_read_swap_hook_tracks_alias_normalized_target(self):
+        """Darwin /var alias simulation: the hook matches the open target.
+
+        AuditSnapshot.read rewrites macOS's fixed /var -> /private/var
+        (and /tmp -> /private/tmp) aliases before os.open, so the
+        adversarial swap hook must compare against the normalized form,
+        never the raw supplied path.  Linux CI has no /var alias, so this
+        regression reproduces the Darwin rewrite with a real symlink alias
+        tree under the temp root plus a fake _known_system_temp_alias that
+        rewrites exactly like Darwin, and proves the whole external-read
+        path still rejects the substitution end-to-end.
+        """
+        alias_root = self.root / "alias-tree"
+        private_root = alias_root / "private" / "var"
+        var_link = alias_root / "var"
+        private_root.mkdir(parents=True)
+        var_link.symlink_to(private_root, target_is_directory=True)
+
+        path = var_link / "sub.json"
+        replacement = private_root / "replacement.json"
+        path.write_text("ORIGINAL\n", encoding="utf-8")
+        replacement.write_text("REPLACEMENT\n", encoding="utf-8")
+        real_open = os.open
+        real_alias = MODULE.audit_inputs._known_system_temp_alias
+        alias_prefix = os.fspath(var_link) + os.sep
+        private_prefix = os.fspath(private_root) + os.sep
+
+        def darwin_style_alias(value):
+            text = os.fspath(value)
+            if text.startswith(alias_prefix):
+                value = Path(private_prefix + text[len(alias_prefix):])
+            # Keep the real platform normalization for the temp prefix
+            # (a no-op on Linux, the /var -> /private/var rewrite on macOS).
+            return real_alias(value)
+
+        def swap_before_open(target, flags):
+            if os.fspath(target) == _open_target(path):
+                path.unlink()
+                replacement.replace(path)
+            return real_open(target, flags)
+
+        with mock.patch.object(
+            MODULE.audit_inputs, "_known_system_temp_alias",
+            side_effect=darwin_style_alias,
+        ), mock.patch.object(os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "changed between inspection and open",
+            ):
+                MODULE._read_artifact_bytes(path, "darwin alias fixture")
 
     def test_candidate_tree_blob_reads_require_regular_files(self):
         ledger_bytes = MODULE._candidate_regular_blob(
