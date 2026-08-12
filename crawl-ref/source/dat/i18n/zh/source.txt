@@ -36732,6 +36732,336 @@ hand|eel hand
 hand|eel hands
 鳗鱼手
 %%%%
+hand|eel paw
+鳗鱼爪
+%%%%
+hand|eel paws
+鳗鱼爪
+%%%%
+hand|eel claw
+鳗鱼利爪
+%%%%
+hand|eel claws
+鳗鱼利爪
+%%%%
+hand|eel tentacle
+鳗鱼触手
+%%%%
+hand|eel tentacles
+鳗鱼触手
+%%%%
+hand|eel grasper
+鳗鱼钳手
+%%%%
+hand|eel graspers
+鳗鱼钳手
+%%%%
+hand|eel tendril
+鳗鱼触须
+%%%%
+hand|eel tendrils
+鳗鱼触须
+%%%%
+hand|foreclaw
+前爪
+%%%%
+hand|foreclaws
+前爪
+%%%%
+hand|front leg
+前腿
+%%%%
+hand|front legs
+前腿
+%%%%
+hand|pincers
+螯钳
+%%%%
+hand|hypha
+菌丝
+%%%%
+hand|hyphae
+菌丝
+%%%%
+hand|pseudopod
+伪足
+%%%%
+hand|pseudopods
+伪足
+%%%%
+hand|front trotter
+前蹄
+%%%%
+hand|front trotters
+前蹄
+%%%%
+hand|front hooves
+前蹄
+%%%%
+hand|coils
+盘曲的身躯
+%%%%
+hand|forepaw
+前爪
+%%%%
+hand|forepaws
+前爪
+%%%%
+hand|front pincers
+前螯
+%%%%
+hand|mandibles
+大颚
+%%%%
+hand|branch
+枝条
+%%%%
+hand|branches
+枝条
+%%%%
+hand|parchment
+羊皮纸
+%%%%
+hand|parchments
+羊皮纸
+%%%%
+hand|misty tendril
+雾气触须
+%%%%
+hand|misty tendrils
+雾气触须
+%%%%
+foot|hoof
+蹄
+%%%%
+foot|hooves
+蹄
+%%%%
+foot|talon
+利爪
+%%%%
+foot|talons
+利爪
+%%%%
+foot|tentacles
+触手
+%%%%
+foot|underbelly
+腹部
+%%%%
+foot|paw
+爪
+%%%%
+foot|paws
+爪
+%%%%
+foot|tail
+尾巴
+%%%%
+foot|foot
+脚
+%%%%
+foot|feet
+脚
+%%%%
+foot|strand
+雾缕
+%%%%
+foot|strands
+雾缕
+%%%%
+foot|pseudopod
+伪足
+%%%%
+foot|pseudopods
+伪足
+%%%%
+foot|root
+根部
+%%%%
+foot|roots
+根部
+%%%%
+foot|trotter
+蹄
+%%%%
+foot|trotters
+蹄
+%%%%
+arm|arm
+手臂
+%%%%
+arm|arms
+手臂
+%%%%
+arm|leg
+腿
+%%%%
+arm|legs
+腿
+%%%%
+arm|tendril
+触须
+%%%%
+arm|tendrils
+触须
+%%%%
+arm|tentacle
+触手
+%%%%
+arm|tentacles
+触手
+%%%%
+arm|scaled arm
+鳞片覆盖的手臂
+%%%%
+arm|scaled arms
+鳞片覆盖的手臂
+%%%%
+arm|feathered arm
+覆羽的手臂
+%%%%
+arm|feathered arms
+覆羽的手臂
+%%%%
+arm|furry leg
+毛茸茸的腿
+%%%%
+arm|furry legs
+毛茸茸的腿
+%%%%
+arm|bandage-wrapped arm
+绷带包裹的手臂
+%%%%
+arm|bandage-wrapped arms
+绷带包裹的手臂
+%%%%
+arm|stony arm
+石质手臂
+%%%%
+arm|stony arms
+石质手臂
+%%%%
+arm|ectoplasmic tendril
+灵质触须
+%%%%
+arm|ectoplasmic tendrils
+灵质触须
+%%%%
+arm|bony arm
+骨质手臂
+%%%%
+arm|bony arms
+骨质手臂
+%%%%
+arm|fossilised arm
+化石般的手臂
+%%%%
+arm|fossilised arms
+化石般的手臂
+%%%%
+arm|fossilised leg
+化石般的腿
+%%%%
+arm|fossilised legs
+化石般的腿
+%%%%
+arm|fossilised tendril
+化石般的触须
+%%%%
+arm|fossilised tendrils
+化石般的触须
+%%%%
+arm|fossilised tentacle
+化石般的触手
+%%%%
+arm|fossilised tentacles
+化石般的触手
+%%%%
+body part|soul
+灵魂
+%%%%
+body part|sinews
+筋腱
+%%%%
+body part|blood
+鲜血
+%%%%
+body part|bones
+骨骼
+%%%%
+body part|tail
+尾巴
+%%%%
+body part|ears
+耳朵
+%%%%
+body part|eye
+眼睛
+%%%%
+body part|eyes
+眼睛
+%%%%
+body part|mouth
+嘴
+%%%%
+body part|hair
+毛发
+%%%%
+body part|flesh
+血肉
+%%%%
+body part|fossilised flesh
+化石般的血肉
+%%%%
+body part|shadow
+阴影
+%%%%
+body part|shell
+外壳
+%%%%
+body part|jelly
+胶质
+%%%%
+body part|icy fur
+冰冷的毛皮
+%%%%
+body part|stone
+石头
+%%%%
+body part|air
+空气
+%%%%
+body part|carapace
+甲壳
+%%%%
+body part|wood
+木质躯体
+%%%%
+body part|parchment
+羊皮纸
+%%%%
+body part|vapour
+蒸气
+%%%%
+body part|scales
+鳞片
+%%%%
+body part|feathers
+羽毛
+%%%%
+body part|fur
+毛皮
+%%%%
+body part|bandages
+绷带
+%%%%
+body part|ectoplasm
+灵质
+%%%%
+body part|skin
+皮肤
+%%%%
 hand transform parts|front %1$s
 前%1$s
 %%%%
