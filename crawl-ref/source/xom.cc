@@ -208,7 +208,7 @@ static string _get_xom_speech(const string &key)
     string result = getSpeakString("Xom " + key);
 
     if (result.empty())
-        result = getSpeakString("Xom " XOM_SPEECH("general effect"));
+        result = getSpeakString("Xom " + string(XOM_SPEECH("general effect")));
 
     if (result.empty())
         return T_("Xom makes something happen.");
@@ -753,7 +753,7 @@ static bool _choose_chaos_upgrade(const monster& mon)
 
         if (midx == NON_ITEM)
             continue;
-        const item_def &item(env.item[midx]);
+        const item_def &item = env.item[midx];
 
         // The monster already has a chaos weapon. Give the upgrade to
         // a different monster.
@@ -5406,10 +5406,11 @@ static void _xom_bad_teleport(int /*sever*/)
     // Take a note.
     const string note = make_stringf(T_("%d-stop teleportation journey%s"), count,
 #ifdef NOTE_DEBUG_XOM
-             badness == 3 ? " (dangerous)" : "");
+             badness == 3 ? " (dangerous)" : ""
 #else
-    "");
+    ""
 #endif
+    );
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 }
 

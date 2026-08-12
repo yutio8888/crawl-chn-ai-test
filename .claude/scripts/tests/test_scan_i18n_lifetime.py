@@ -29,7 +29,8 @@ class LifetimeScannerTests(unittest.TestCase):
             "branch-data.h", "unmatched } at offset 12640"))
         for path, error in (
                 ("branch-data.h", "unmatched } at offset 12641"),
-                ("new-file.cc", "unmatched } at offset 12640")):
+                ("new-file.cc", "unmatched } at offset 12640"),
+                ("xom.cc", "unmatched ) at offset 177033")):
             with self.subTest(path=path, error=error):
                 with self.assertRaisesRegex(ValueError, "unrecognized"):
                     MODULE._production_lexical_prerequisite(path, error)

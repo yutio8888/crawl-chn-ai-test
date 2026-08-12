@@ -50,7 +50,6 @@ KNOWN_PRODUCTION_LEXICAL_DEBT = {
     ("end.cc", "unmatched } at offset 12112"),
     ("macros.h", "unmatched ) at offset 1874"),
     ("threads.h", "unclosed ( at offset 1016"),
-    ("xom.cc", "unmatched ) at offset 177033"),
 }
 
 
