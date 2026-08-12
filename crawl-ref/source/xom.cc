@@ -3073,6 +3073,30 @@ static item_def* _xom_get_random_worn_slot_item(equipment_slot item_slot)
     return worn_slot_item[random2(worn_slot_item.size())];
 }
 
+string xom_body_armour_speech_key(const item_def &item)
+{
+    ASSERT(item.base_type == OBJ_ARMOUR);
+    const armour_type type = static_cast<armour_type>(item.sub_type);
+
+    // monster_for_hide() asserts for non-hide armour, so preserve this
+    // short-circuit. The monster genus is stable identity; item.name() is a
+    // localized display value and must not select Xom behaviour.
+    if (armour_type_is_hide(type)
+        && mons_genus(monster_for_hide(type)) == MONS_DRAGON)
+    {
+        return "dragon armour";
+    }
+    if (type == ARM_ANIMAL_SKIN)
+        return "animal skin";
+    if (type == ARM_LEATHER_ARMOUR)
+        return "leather armour";
+    if (type == ARM_ROBE)
+        return "robe";
+    if (type >= ARM_RING_MAIL && type <= ARM_PLATE_ARMOUR)
+        return "metal armour";
+    return "";
+}
+
 string xom_bind_worn_item_message(const string &speech,
                                   const string &item_name,
                                   bool supports_head)
@@ -3430,24 +3454,11 @@ static void _xom_pseudo_miscast(int /*sever*/)
     if (item_def* item = you.body_armour())
     {
         const string name = item->name(DESC_BASENAME, false, false, false);
-        string str;
+        const string key = xom_body_armour_speech_key(*item);
 
-        if (name.find("dragon") != string::npos)
-            str = _get_xom_speech("dragon armour");
-        else if (item->sub_type == ARM_ANIMAL_SKIN)
-            str = _get_xom_speech("animal skin");
-        else if (item->sub_type == ARM_LEATHER_ARMOUR)
-            str = _get_xom_speech("leather armour");
-        else if (item->sub_type == ARM_ROBE)
-            str = _get_xom_speech("robe");
-        else if (item->sub_type >= ARM_RING_MAIL
-                 && item->sub_type <= ARM_PLATE_ARMOUR)
+        if (!key.empty())
         {
-            str = _get_xom_speech("metal armour");
-        }
-
-        if (!str.empty())
-        {
+            string str = _get_xom_speech(key);
             str = xom_bind_worn_item_message(str, name, false);
 
             messages.push_back(str);

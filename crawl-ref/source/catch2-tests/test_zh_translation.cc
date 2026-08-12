@@ -3332,3 +3332,182 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
     }
 }
+
+// =============================================================================
+// Issue #65 — Xom dragon-armour classification must use canonical identity.
+// =============================================================================
+
+namespace
+{
+struct xom_dragon_armour_case
+{
+    armour_type type;
+    const char *english;
+    const char *chinese;
+};
+
+const xom_dragon_armour_case xom_dragon_armours[] = {
+    { ARM_FIRE_DRAGON_ARMOUR,        "+0 fire dragon scales",       "+0 火龙鳞甲" },
+    { ARM_ICE_DRAGON_ARMOUR,         "+0 ice dragon scales",        "+0 冰龙鳞甲" },
+    { ARM_STEAM_DRAGON_ARMOUR,       "+0 steam dragon scales",      "+0 蒸汽龙鳞甲" },
+    { ARM_ACID_DRAGON_ARMOUR,        "+0 acid dragon scales",       "+0 酸龙鳞甲" },
+    { ARM_STORM_DRAGON_ARMOUR,       "+0 storm dragon scales",      "+0 风暴龙鳞甲" },
+    { ARM_GOLDEN_DRAGON_ARMOUR,      "+0 golden dragon scales",     "+0 金龙鳞甲" },
+    { ARM_SWAMP_DRAGON_ARMOUR,       "+0 swamp dragon scales",      "+0 沼泽龙鳞甲" },
+    { ARM_PEARL_DRAGON_ARMOUR,       "+0 pearl dragon scales",      "+0 珍珠龙鳞甲" },
+    { ARM_SHADOW_DRAGON_ARMOUR,      "+0 shadow dragon scales",     "+0 暗影龙鳞甲" },
+    { ARM_QUICKSILVER_DRAGON_ARMOUR, "quicksilver dragon scales", "水银龙鳞甲" },
+};
+
+struct xom_armour_candidate_observation
+{
+    string key;
+    string item_name;
+    string raw;
+    string bound;
+    size_t candidate_count;
+    uint64_t state;
+    uint64_t count;
+    bool classifier_rng_unchanged;
+    bool parent_rng_unchanged;
+};
+
+xom_armour_candidate_observation observe_xom_armour_candidate(
+    lang_t language, const item_def &item, uint64_t seed)
+{
+    set_xom_language(language);
+
+    xom_armour_candidate_observation obs;
+    obs.item_name = item.name(DESC_BASENAME, false, false, false);
+    obs.candidate_count = 0;
+
+    const uint64_t parent_before = rng::peek_uint64();
+    {
+        rng::subgenerator scoped_rng(seed, XOM_RNG_SEQUENCE);
+        const uint64_t classifier_state = rng::current_generator().get_state();
+        const uint64_t classifier_count = rng::current_generator().get_count();
+
+        obs.key = xom_body_armour_speech_key(item);
+        obs.classifier_rng_unchanged =
+            rng::current_generator().get_state() == classifier_state
+            && rng::current_generator().get_count() == classifier_count;
+
+        if (!obs.key.empty())
+        {
+            ++obs.candidate_count;
+            obs.raw = getSpeakString("Xom " + obs.key);
+            REQUIRE_FALSE(obs.raw.empty());
+            obs.bound = xom_bind_worn_item_message(obs.raw, obs.item_name,
+                                                   false);
+        }
+        obs.state = rng::current_generator().get_state();
+        obs.count = rng::current_generator().get_count();
+    }
+    obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
+    return obs;
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 65 body armour keys cover current compat and non-dragon subtypes",
+                 "[zh-translation][xom][issue-65]")
+{
+    init_monsters();
+    init_properties();
+
+    for (const xom_dragon_armour_case &test : xom_dragon_armours)
+    {
+        INFO("current dragon armour subtype=" << static_cast<int>(test.type));
+        const item_def item = make_xom_armour(test.type);
+        CHECK_FALSE(item_type_removed(OBJ_ARMOUR, test.type));
+        REQUIRE(armour_type_is_hide(test.type));
+        CHECK(mons_genus(monster_for_hide(test.type)) == MONS_DRAGON);
+        CHECK(xom_body_armour_speech_key(item) == "dragon armour");
+    }
+
+#if TAG_MAJOR_VERSION == 34
+    const armour_type removed_dragon_hides[] = {
+        ARM_FIRE_DRAGON_HIDE,
+        ARM_ICE_DRAGON_HIDE,
+        ARM_STEAM_DRAGON_HIDE,
+        ARM_ACID_DRAGON_HIDE,
+        ARM_STORM_DRAGON_HIDE,
+        ARM_GOLDEN_DRAGON_HIDE,
+        ARM_SWAMP_DRAGON_HIDE,
+        ARM_PEARL_DRAGON_HIDE,
+        ARM_SHADOW_DRAGON_HIDE,
+        ARM_QUICKSILVER_DRAGON_HIDE,
+    };
+    for (const armour_type type : removed_dragon_hides)
+    {
+        INFO("removed dragon hide subtype=" << static_cast<int>(type));
+        const item_def item = make_xom_armour(type);
+        CHECK(item_type_removed(OBJ_ARMOUR, type));
+        CHECK_FALSE(armour_type_is_hide(type));
+        CHECK(xom_body_armour_speech_key(item).empty());
+    }
+#endif
+
+    const struct
+    {
+        armour_type type;
+        const char *key;
+    } non_dragon_cases[] = {
+        { ARM_ANIMAL_SKIN,          "animal skin" },
+        { ARM_LEATHER_ARMOUR,       "leather armour" },
+        { ARM_ROBE,                 "robe" },
+        { ARM_RING_MAIL,            "metal armour" },
+        { ARM_SCALE_MAIL,           "metal armour" },
+        { ARM_CHAIN_MAIL,           "metal armour" },
+        { ARM_PLATE_ARMOUR,         "metal armour" },
+        { ARM_TROLL_LEATHER_ARMOUR, "" },
+        { ARM_CRYSTAL_PLATE_ARMOUR, "" },
+    };
+    for (const auto &test : non_dragon_cases)
+    {
+        INFO("non-dragon armour subtype=" << static_cast<int>(test.type));
+        const item_def item = make_xom_armour(test.type);
+        CHECK(xom_body_armour_speech_key(item) == test.key);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 65 dragon candidates keep EN ZH names and RNG topology aligned",
+                 "[zh-translation][xom][issue-65]")
+{
+    init_monsters();
+    init_properties();
+    constexpr uint64_t seed = 0x6500650065006500ULL;
+
+    for (const xom_dragon_armour_case &test : xom_dragon_armours)
+    {
+        INFO("dragon armour subtype=" << static_cast<int>(test.type));
+        const item_def item = make_xom_armour(test.type);
+        const xom_armour_candidate_observation en =
+            observe_xom_armour_candidate(lang_t::EN, item, seed);
+        const xom_armour_candidate_observation zh =
+            observe_xom_armour_candidate(lang_t::ZH, item, seed);
+
+        CHECK(en.key == "dragon armour");
+        CHECK(zh.key == en.key);
+        CHECK(en.candidate_count == 1);
+        CHECK(zh.candidate_count == en.candidate_count);
+        CHECK(en.item_name == test.english);
+        CHECK(zh.item_name == test.chinese);
+        CHECK(en.raw == "The scales on @your_item@ wiggle briefly.");
+        CHECK(zh.raw == "@your_item@ 上的鳞片短暂地扭动了一下。");
+        CHECK(en.bound == "The scales on your " + string(test.english)
+                          + " wiggle briefly.");
+        CHECK(zh.bound == "你的" + string(test.chinese)
+                          + " 上的鳞片短暂地扭动了一下。");
+        CHECK(en.bound.find('@') == string::npos);
+        CHECK(zh.bound.find('@') == string::npos);
+        CHECK(en.classifier_rng_unchanged);
+        CHECK(zh.classifier_rng_unchanged);
+        CHECK(en.state == zh.state);
+        CHECK(en.count == zh.count);
+        CHECK(en.count > 0);
+        CHECK(en.parent_rng_unchanged);
+        CHECK(zh.parent_rng_unchanged);
+    }
+}

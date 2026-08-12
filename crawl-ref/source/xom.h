@@ -119,6 +119,12 @@ void xom_new_level_noise_or_stealth();
 
 string xom_effect_to_name(xom_event_type effect);
 
+// Return the canonical SpeakDB suffix for an equipped body armour item.
+// Classification uses only stable item/monster identity and consumes no RNG;
+// an empty result means that this armour contributes no pseudo-miscast
+// candidate.
+string xom_body_armour_speech_key(const item_def &item);
+
 // Bind an already selected worn-item SpeakDB candidate to its item and body
 // part. `item_name` is the already materialized basename/qualname of the
 // equipped item; `supports_head` is true only for the cloak/helmet/amulet
