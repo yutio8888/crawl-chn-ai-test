@@ -865,10 +865,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const size_t root_ordinal = static_cast<size_t>(stoul(
             recipe.locator.substr(prefix.size(), comma - prefix.size())));
         REQUIRE(root_ordinal < seen.size());
-        if (seen[root_ordinal])
-            continue;
-        seen[root_ordinal] = true;
-        ++seen_count;
+        if (!seen[root_ordinal])
+        {
+            seen[root_ordinal] = true;
+            ++seen_count;
+        }
 
         string en_display;
         string zh_display;

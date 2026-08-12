@@ -243,9 +243,9 @@ _graffiti_type_with_signature_maybe_orc_
 %%%%
 _graffiti_advertisement_
 
-在为@_graffiti_mass_meeting_ordinary_@的聚会做宣传
+在宣传这样一场聚会：@_graffiti_mass_meeting_ordinary_@
 
-在为@_graffiti_mass_meeting_religious_@的聚会做宣传
+在宣传这样一场聚会：@_graffiti_mass_meeting_religious_@
 
 在宣传地牢中一家出售[廉价|独家|昂贵|优质|稀有|实用]商品的商店
 
@@ -292,11 +292,11 @@ _graffiti_changed_or_compared_religions_
 
 @_graffiti_author_any_@暗中崇拜辛
 
-@_graffiti_author_any_@不崇拜辛，而是暗中崇拜@random_god_chaotic@
+@_graffiti_author_any_@暗中崇拜辛，而不是@random_god_chaotic@
 
 @_graffiti_author_any_@暗中崇拜@random_god_chaotic@
 
-@_graffiti_author_any_@不崇拜@random_god_chaotic@，而是暗中崇拜辛
+@_graffiti_author_any_@暗中崇拜@random_god_chaotic@，而不是辛
 
 @_graffiti_author_any_@暗中崇拜@random_god_good@
 
@@ -692,7 +692,7 @@ _graffiti_relative_or_quality_
 
 配偶们
 
-父母
+一位家长
 
 双亲
 
@@ -869,7 +869,7 @@ _graffiti_unique_comment_
 
 在说卡珊德拉不该如此消极
 
-在说疯狂的伊夫不该再说得这么[不知所云|煞有介事]
+在说疯狂的尤夫不该再说得这么[没道理|有道理]
 
 在说唐纳德该闭嘴，别再抱怨
 
@@ -881,11 +881,11 @@ _graffiti_unique_comment_
 
 在琢磨罗宾究竟怎么能扔得那么狠
 
-在琢磨泰伦斯为何想在地牢中度过退休生活
+在琢磨特伦斯为何想在地牢中度过退休生活
 
-在琢磨多万和多维莎是否其实是三胞胎，还有一位没露面的手足
+在琢磨多万和杜维莎是否其实是三胞胎，还有一位没露面的手足
 
-在琢磨伊杰布除了魔杖还能造出什么
+在琢磨艾吉布除了魔杖还能造出什么
 
 在揣测耶利米之主的真实本质
 %%%%

@@ -94,10 +94,10 @@ CARD_FIELDS = {
 VARIANT_FIELDS = {"text", "weight"}
 
 CHANGE_RATIONALES = {
-    "_graffiti_advertisement_": "恢复七个广告语义分支的 canonical 顺序与 10/10/10/2/1/1/1 权重，移除英文不存在的可选署名，恢复 unrestricted author，并修正 Dungeon 与商品修饰关系。",
+    "_graffiti_advertisement_": "恢复七个广告语义分支的 canonical 顺序与 10/10/10/2/1/1/1 权重，移除英文不存在的可选署名，恢复 unrestricted author，并修正 Dungeon、商品修饰关系和完整聚会分句的引出语法。",
     "_graffiti_author_orc_": "将英语姓名后置结构改为自然的“兽人+姓名”，避免“那兽人”错义与裸空格。",
     "_graffiti_changed_names_": "恢复普通、兽人、稀有名与佐姆改名四分支的 author pool 以及 10/2/2/1 权重。",
-    "_graffiti_changed_or_compared_religions_": "恢复 unrestricted author pool，并修正改信、神祇身份与比较句语法；保留全部 god postprocess token。",
+    "_graffiti_changed_or_compared_religions_": "恢复 unrestricted author pool，并修正改信、神祇身份、instead-of 崇拜对象与比较句语法；保留全部 god postprocess token。",
     "_graffiti_class_any_": "按英文语义顺序恢复补习课默认权重与大师课 w:2。",
     "_graffiti_class_master_": "恢复匿名艺术课 w:1，并按现行术语修正 ogre、oni 与 felid。",
     "_graffiti_class_remedial_": "恢复五个专门技能补习分支的 w:2，不改变技能 token 或教授组合。",
@@ -113,11 +113,12 @@ CHANGE_RATIONALES = {
     "_graffiti_religion_non-orc_": "恢复纯宗教内容片段；non-orc 署名资格由 any_graffiti 根唯一施加。",
     "_graffiti_religion_not_non-orc_or_orc_": "恢复纯宗教内容片段，润色 Nemelex 等不自然句式；神祇身份与 random_god token 保持不变。",
     "_graffiti_religion_orc_": "恢复纯兽人宗教内容片段；orc 署名资格由 any_graffiti 根唯一施加。",
+    "_graffiti_relative_or_quality_": "区分 the parent 与 the parents，将单数中性 parent 译为“一位家长”，同时保留下一项复数“双亲”。",
     "_graffiti_rumour_": "恢复纯传闻片段，修正 unlife 与地牢语境，并由根统一提供可选署名。",
     "_graffiti_short_saying_": "恢复 unrestricted author、changed-names w:2 与 canonical 无署名组合；修复货物品质双“的”，由根统一加引号。",
     "_graffiti_species_": "恢复纯物种评论片段，并按现行权威修正 wield、oni 与一般时态。",
     "_graffiti_type_": "恢复“书写样式+涂鸦”的 canonical 角色，避免把 writing noun 重复嵌入类型。",
-    "_graffiti_unique_comment_": "恢复纯评论片段并修正多处生硬语序、Dungeon 术语，由根统一提供可选署名。",
+    "_graffiti_unique_comment_": "恢复纯评论片段，修正多处生硬语序、Dungeon 术语、四个 unique 权威名称及 Crazy Yiuf 的 little/much sense 反转笑点，由根统一提供可选署名。",
     "_graffiti_unreadable_": "恢复四个完整不可读片段、10/10/1/1 权重与 unrestricted author，并消除冗余“署名的签名”。",
     "_graffiti_vengeance_": "修复英文悬空 @graffiti_author_any@，并恢复五个兽人复仇目标的 unrestricted author pool。",
     "_graffiti_vengeance_reason_": "恢复五个具名复仇原因的 unrestricted author pool，不改变其十个语义分支。",
