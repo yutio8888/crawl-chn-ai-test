@@ -77,6 +77,13 @@
 #include "unicode.h"
 #include "unwind.h"
 
+namespace species
+{
+    string skin_name_en(species_type species, bool adj = false);
+}
+
+string bind_random_body_part_message(string msg, bool plural);
+
 static FixedVector < int, NUM_MONSTERS > mon_entry;
 
 struct mon_display
@@ -4107,25 +4114,30 @@ static string _random_class_of_skill_name(bool (*class_of_skill)(skill_type skil
 string random_body_part_name(bool plural, int part_class)
 {
     vector<bool> plural_parts;
+    vector<bool> localize_parts;
     vector<string> body_parts;
 
     if (part_class & BPART_INTERNAL)
     {
         plural_parts.push_back(false);
+        localize_parts.push_back(true);
         body_parts.push_back("soul");
 
         plural_parts.push_back(true);
+        localize_parts.push_back(true);
         body_parts.push_back("sinews");
 
         if (you.has_blood())
         {
             plural_parts.push_back(false);
+            localize_parts.push_back(true);
             body_parts.push_back("blood");
         }
 
         if (you.has_bones())
         {
             plural_parts.push_back(true);
+            localize_parts.push_back(true);
             body_parts.push_back("bones");
         }
     }
@@ -4135,6 +4147,7 @@ string random_body_part_name(bool plural, int part_class)
         if (!you.get_mutation_level(MUT_FORMLESS))
         {
             plural_parts.push_back(false);
+            localize_parts.push_back(true);
             body_parts.push_back("head");
         }
 
@@ -4149,28 +4162,33 @@ string random_body_part_name(bool plural, int part_class)
             hands = you.hand_name(true);
             plural_parts.push_back(true);
         }
+        localize_parts.push_back(false);
         body_parts.push_back(hands);
 
         string arms = you.arm_name(true);
         plural_parts.push_back(true);
+        localize_parts.push_back(false);
         body_parts.push_back(arms);
 
         if (player_has_feet())
         {
             string feet = you.foot_name(true);
             plural_parts.push_back(true);
+            localize_parts.push_back(false);
             body_parts.push_back(feet);
         }
 
         if (you.has_tail())
         {
             plural_parts.push_back(false);
+            localize_parts.push_back(true);
             body_parts.push_back("tail");
         }
 
         if (player_has_ears())
         {
             plural_parts.push_back(true);
+            localize_parts.push_back(true);
             body_parts.push_back("ears");
         }
 
@@ -4178,21 +4196,25 @@ string random_body_part_name(bool plural, int part_class)
         if (you.get_mutation_level(MUT_MISSING_EYE))
         {
             plural_parts.push_back(false);
+            localize_parts.push_back(true);
             eyes = "eye";
         }
         else
         {
             plural_parts.push_back(true);
+            localize_parts.push_back(true);
             eyes = "eyes";
         }
         body_parts.push_back(eyes);
 
         plural_parts.push_back(false);
+        localize_parts.push_back(true);
         body_parts.push_back("mouth");
 
         if (player_has_hair())
         {
             plural_parts.push_back(false);
+            localize_parts.push_back(true);
             body_parts.push_back("hair");
         }
 
@@ -4209,11 +4231,13 @@ string random_body_part_name(bool plural, int part_class)
         }
         else
         {
-            string skin = species::skin_name(you.species);
-            // Check plurality as the species::skin_name() comment suggests.
+            string skin = species::skin_name_en(you.species);
+            // Plurality is canonical English metadata, independent of the
+            // display language selected below.
             plural_parts.push_back(ends_with(skin, "s"));
             flesh = skin;
         }
+        localize_parts.push_back(true);
         body_parts.push_back(flesh);
     }
 
@@ -4225,7 +4249,27 @@ string random_body_part_name(bool plural, int part_class)
     }
     while (plural_parts[which_part] != plural);
 
-    return body_parts[which_part];
+    const string &part = body_parts[which_part];
+    return localize_parts[which_part] ? C_("body part", part.c_str()) : part;
+}
+
+string bind_random_body_part_message(string msg, bool plural)
+{
+    const char *any_tag = plural ? "@random_body_part_any_plural@"
+                                 : "@random_body_part_any_singular@";
+    const char *internal_tag =
+        plural ? "@random_body_part_internal_plural@"
+               : "@random_body_part_internal_singular@";
+    const char *external_tag =
+        plural ? "@random_body_part_external_plural@"
+               : "@random_body_part_external_singular@";
+    msg = replace_all(msg, any_tag,
+                      random_body_part_name(plural, BPART_ANY));
+    msg = replace_all(msg, internal_tag,
+                      random_body_part_name(plural, BPART_INTERNAL));
+    msg = replace_all(msg, external_tag,
+                      random_body_part_name(plural, BPART_EXTERNAL));
+    return msg;
 }
 
 static string _get_species_insult(const string &species, const string &type)
@@ -4632,18 +4676,8 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
 
     if (msg.find("@random_body_part") != string::npos)
     {
-        msg = replace_all(msg, "@random_body_part_any_singular@",
-                          random_body_part_name(false, BPART_ANY));
-        msg = replace_all(msg, "@random_body_part_internal_singular@",
-                          random_body_part_name(false, BPART_INTERNAL));
-        msg = replace_all(msg, "@random_body_part_external_singular@",
-                          random_body_part_name(false, BPART_EXTERNAL));
-        msg = replace_all(msg, "@random_body_part_any_plural@",
-                          random_body_part_name(true, BPART_ANY));
-        msg = replace_all(msg, "@random_body_part_internal_plural@",
-                          random_body_part_name(true, BPART_INTERNAL));
-        msg = replace_all(msg, "@random_body_part_external_plural@",
-                          random_body_part_name(true, BPART_EXTERNAL));
+        msg = bind_random_body_part_message(msg, false);
+        msg = bind_random_body_part_message(msg, true);
     }
 
     // Replace with species specific insults.

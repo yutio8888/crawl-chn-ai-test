@@ -41,6 +41,11 @@
 #include "viewgeom.h"
 #include "database.h"
 
+namespace species
+{
+    string skin_name_en(species_type species, bool adj = false);
+}
+
 int player::mindex() const
 {
     return MHITYOU;
@@ -546,10 +551,11 @@ string player::foot_name(bool plural, bool *can_plural) const
     *can_plural = true;
 
     const string singular = _foot_name_singular(can_plural);
+    string canonical = singular;
     if (plural && *can_plural)
-        return pluralise(singular);
+        canonical = pluralise_en(singular);
 
-    return singular;
+    return C_("foot", canonical.c_str());
 }
 
 string player::arm_name(bool plural, bool *can_plural) const
@@ -560,21 +566,21 @@ string player::arm_name(bool plural, bool *can_plural) const
     if (can_plural != nullptr)
         *can_plural = true;
 
-    string str = species::arm_name(species);
+    string canonical = species::arm_name(species);
 
     string adj;
     if (form == transformation::death)
         adj = "fossilised";
     else
-        adj = species::skin_name(species, true);
+        adj = species::skin_name_en(species, true);
 
-    if (adj != "fleshy" && adj != "皮肤的")
-        str = adj + " " + str;
+    if (adj != "fleshy")
+        canonical = adj + " " + canonical;
 
     if (plural)
-        str = pluralise(str);
+        canonical = pluralise_en(canonical);
 
-    return str;
+    return C_("arm", canonical.c_str());
 }
 
 /**

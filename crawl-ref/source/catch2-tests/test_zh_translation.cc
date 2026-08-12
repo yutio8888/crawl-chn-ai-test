@@ -62,6 +62,8 @@
 #include <unistd.h>
 #endif
 
+string bind_random_body_part_message(string msg, bool plural);
+
 namespace
 {
 #ifdef UNIX
@@ -2944,5 +2946,377 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
         CHECK(obs.rng_isolated);
         CHECK(obs.parent_rng_unchanged);
+    }
+}
+
+// =============================================================================
+// Issue #64 — Xom pseudo-miscast fallback and random body-part display.
+// =============================================================================
+
+namespace
+{
+constexpr uint64_t XOM_BODY_RNG_SEQUENCE = 0x6400640064006400ULL;
+
+bool contains_ascii_alpha(const string &text)
+{
+    return text.find_first_of(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != string::npos;
+}
+
+void reset_xom_body_player(species_type species, transformation form
+                                                = transformation::none)
+{
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.species = species;
+    you.form = form;
+}
+
+struct body_rng_observation
+{
+    vector<string> parts;
+    uint64_t state;
+    uint64_t count;
+};
+
+body_rng_observation observe_body_rng(lang_t language, species_type species,
+                                      int part_class, uint64_t seed)
+{
+    set_xom_language(language);
+    reset_xom_body_player(species);
+
+    body_rng_observation obs;
+    rng::subgenerator scoped_rng(seed, XOM_BODY_RNG_SEQUENCE);
+    // Exercise the same plural/singular alternation repeatedly so rejection
+    // sampling, rather than a single lucky draw, determines the final state.
+    for (int repeat = 0; repeat < 4; ++repeat)
+    {
+        obs.parts.push_back(random_body_part_name(true, part_class));
+        obs.parts.push_back(random_body_part_name(false, part_class));
+    }
+    obs.state = rng::current_generator().get_state();
+    obs.count = rng::current_generator().get_count();
+    return obs;
+}
+
+uint64_t find_body_part_seed(species_type species, transformation form,
+                             bool plural, int part_class,
+                             const string &expected)
+{
+    set_xom_language(lang_t::EN);
+    reset_xom_body_player(species, form);
+    for (uint64_t seed = 1; seed < 20000; ++seed)
+    {
+        rng::subgenerator probe(seed, XOM_BODY_RNG_SEQUENCE);
+        if (random_body_part_name(plural, part_class) == expected)
+            return seed;
+    }
+    return 0;
+}
+
+struct binding_observation
+{
+    string result;
+    uint64_t state;
+    uint64_t count;
+};
+
+template <typename Binder>
+binding_observation observe_binding(lang_t language, species_type species,
+                                    uint64_t seed, Binder binder)
+{
+    set_xom_language(language);
+    reset_xom_body_player(species);
+    binding_observation obs;
+    rng::subgenerator scoped_rng(seed, XOM_BODY_RNG_SEQUENCE);
+    obs.result = binder();
+    obs.state = rng::current_generator().get_state();
+    obs.count = rng::current_generator().get_count();
+    return obs;
+}
+
+const char * const all_body_tokens =
+    "@random_body_part_any_singular@/"
+    "@random_body_part_internal_singular@/"
+    "@random_body_part_external_singular@/"
+    "@random_body_part_any_plural@/"
+    "@random_body_part_internal_plural@/"
+    "@random_body_part_external_plural@";
+
+string legacy_bind_body_parts(string msg, bool plural)
+{
+    const char *suffix = plural ? "plural" : "singular";
+    msg = replace_all(msg,
+        "@random_body_part_any_" + string(suffix) + "@",
+        random_body_part_name(plural, BPART_ANY));
+    msg = replace_all(msg,
+        "@random_body_part_internal_" + string(suffix) + "@",
+        random_body_part_name(plural, BPART_INTERNAL));
+    msg = replace_all(msg,
+        "@random_body_part_external_" + string(suffix) + "@",
+        random_body_part_name(plural, BPART_EXTERNAL));
+    return msg;
+}
+
+monster make_xom_body_monster()
+{
+    monster mons;
+    // Exact fake-monster shape constructed by god_speaks(), the production
+    // entry used by Xom's send-in-the-clones speech path.
+    mons.type = MONS_PROGRAM_BUG;
+    mons.mid = MID_NOBODY;
+    mons.hit_points = 1;
+    mons.god = GOD_XOM;
+    mons.foe = MHITYOU;
+    mons.mname = "FAKE GOD MONSTER";
+    mons.set_position(you.pos());
+    return mons;
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 64 fallback foot and arm preserve EN and localize ZH",
+                 "[zh-translation][xom][issue-64]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+
+    set_xom_language(lang_t::EN);
+    reset_xom_body_player(SP_NAGA);
+    CHECK(string(T_("Nothing appears to happen... Ominous!"))
+          == "Nothing appears to happen... Ominous!");
+    CHECK(you.foot_name(false) == "underbelly");
+    CHECK(you.arm_name(false) == "scaled arm");
+    CHECK(you.arm_name(true) == "scaled arms");
+    you.species = SP_HUMAN;
+    you.form = transformation::death;
+    CHECK(you.arm_name(false) == "fossilised arm");
+    CHECK(you.arm_name(true) == "fossilised arms");
+
+    set_xom_language(lang_t::ZH);
+    reset_xom_body_player(SP_NAGA);
+    CHECK(string(T_("Nothing appears to happen... Ominous!"))
+          == "似乎什么都没有发生……不祥之兆！");
+    CHECK(you.foot_name(false) == "腹部");
+    CHECK(you.arm_name(false) == "鳞片覆盖的手臂");
+    CHECK(you.arm_name(true) == "鳞片覆盖的手臂");
+    you.species = SP_HUMAN;
+    you.form = transformation::death;
+    CHECK(you.arm_name(false) == "化石般的手臂");
+    CHECK(you.arm_name(true) == "化石般的手臂");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 64 body RNG topology is language invariant for all classes and plural skins",
+                 "[zh-translation][xom][issue-64]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+
+    const species_type skin_species[] = {
+        SP_NAGA, SP_TENGU, SP_MUMMY, SP_REVENANT
+    };
+    const int part_classes[] = {
+        BPART_INTERNAL, BPART_EXTERNAL, BPART_ANY
+    };
+
+    for (const species_type species : skin_species)
+    {
+        for (const int part_class : part_classes)
+        {
+            INFO("species=" << static_cast<int>(species)
+                 << ", class=" << part_class);
+            const body_rng_observation en = observe_body_rng(
+                lang_t::EN, species, part_class, 0x64b0d1ULL);
+            const body_rng_observation zh = observe_body_rng(
+                lang_t::ZH, species, part_class, 0x64b0d1ULL);
+            REQUIRE(en.parts.size() == zh.parts.size());
+            CHECK(en.state == zh.state);
+            CHECK(en.count == zh.count);
+            for (const string &part : zh.parts)
+            {
+                CHECK_FALSE(part.empty());
+                CHECK_FALSE(contains_ascii_alpha(part));
+                CHECK(part.find('@') == string::npos);
+            }
+        }
+    }
+
+    const struct
+    {
+        species_type species;
+        const char *english;
+        const char *chinese;
+    } skin_cases[] = {
+        { SP_NAGA, "scales", "鳞片" },
+        { SP_TENGU, "feathers", "羽毛" },
+        { SP_MUMMY, "bandages", "绷带" },
+        { SP_REVENANT, "bones", "骨骼" },
+    };
+
+    for (const auto &skin : skin_cases)
+    {
+        INFO("skin species=" << static_cast<int>(skin.species));
+        const uint64_t seed = find_body_part_seed(
+            skin.species, transformation::none, true, BPART_EXTERNAL,
+            skin.english);
+        REQUIRE(seed != 0);
+        const body_rng_observation en = observe_body_rng(
+            lang_t::EN, skin.species, BPART_EXTERNAL, seed);
+        const body_rng_observation zh = observe_body_rng(
+            lang_t::ZH, skin.species, BPART_EXTERNAL, seed);
+        // The first draw is the specifically selected plural skin candidate;
+        // all subsequent rejection draws must still leave identical topology.
+        CHECK(en.parts.front() == skin.english);
+        CHECK(zh.parts.front() == skin.chinese);
+        CHECK(en.state == zh.state);
+        CHECK(en.count == zh.count);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 64 fixed form and skin candidates localize at the body-part sink",
+                 "[zh-translation][xom][issue-64]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+
+    const struct
+    {
+        species_type species;
+        transformation form;
+        bool plural;
+        int part_class;
+        const char *english;
+        const char *chinese;
+    } cases[] = {
+        { SP_HUMAN, transformation::none, false, BPART_INTERNAL,
+          "soul", "灵魂" },
+        { SP_HUMAN, transformation::jelly, false, BPART_EXTERNAL,
+          "jelly", "胶质" },
+        { SP_NAGA, transformation::none, true, BPART_EXTERNAL,
+          "scales", "鳞片" },
+    };
+
+    for (const auto &test : cases)
+    {
+        INFO("candidate=" << test.english);
+        const uint64_t seed = find_body_part_seed(
+            test.species, test.form, test.plural, test.part_class,
+            test.english);
+        REQUIRE(seed != 0);
+
+        set_xom_language(lang_t::EN);
+        reset_xom_body_player(test.species, test.form);
+        string en;
+        uint64_t en_state;
+        uint64_t en_count;
+        {
+            rng::subgenerator scoped_rng(seed, XOM_BODY_RNG_SEQUENCE);
+            en = random_body_part_name(test.plural, test.part_class);
+            en_state = rng::current_generator().get_state();
+            en_count = rng::current_generator().get_count();
+        }
+
+        set_xom_language(lang_t::ZH);
+        reset_xom_body_player(test.species, test.form);
+        string zh;
+        uint64_t zh_state;
+        uint64_t zh_count;
+        {
+            rng::subgenerator scoped_rng(seed, XOM_BODY_RNG_SEQUENCE);
+            zh = random_body_part_name(test.plural, test.part_class);
+            zh_state = rng::current_generator().get_state();
+            zh_count = rng::current_generator().get_count();
+        }
+
+        CHECK(en == test.english);
+        CHECK(zh == test.chinese);
+        CHECK(en_state == zh_state);
+        CHECK(en_count == zh_count);
+        CHECK_FALSE(contains_ascii_alpha(zh));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 64 pseudo brain and monster replacement paths preserve binding order",
+                 "[zh-translation][xom][issue-64]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    const uint64_t seed = 0x64b1adULL;
+
+    for (const lang_t language : { lang_t::EN, lang_t::ZH })
+    {
+        INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
+
+        const binding_observation pseudo = observe_binding(
+            language, SP_NAGA, seed, [] {
+                string result = xom_bind_pseudo_body_parts(
+                    all_body_tokens, false);
+                return xom_bind_pseudo_body_parts(result, true);
+            });
+        const binding_observation pseudo_control = observe_binding(
+            language, SP_NAGA, seed, [] {
+                string result = legacy_bind_body_parts(all_body_tokens, false);
+                return legacy_bind_body_parts(result, true);
+            });
+        CHECK(pseudo.result == pseudo_control.result);
+        CHECK(pseudo.state == pseudo_control.state);
+        CHECK(pseudo.count == pseudo_control.count);
+        CHECK(pseudo.result.find("@random_body_part") == string::npos);
+
+        const string branch = language == lang_t::ZH ? " [左|右]"
+                                                     : " [left|right]";
+        const string brain_input = string(all_body_tokens) + branch;
+        const binding_observation brain = observe_binding(
+            language, SP_NAGA, seed, [&brain_input] {
+                return xom_bind_brain_drain_body_parts(brain_input);
+            });
+        const binding_observation brain_control = observe_binding(
+            language, SP_NAGA, seed, [&brain_input] {
+                string result = legacy_bind_body_parts(brain_input, false);
+                result = legacy_bind_body_parts(result, true);
+                return maybe_pick_random_substring(result);
+            });
+        CHECK(brain.result == brain_control.result);
+        CHECK(brain.state == brain_control.state);
+        CHECK(brain.count == brain_control.count);
+        CHECK(brain.result.find("@random_body_part") == string::npos);
+        CHECK(brain.result.find('[') == string::npos);
+
+        const monster mons = make_xom_body_monster();
+        const binding_observation mon = observe_binding(
+            language, SP_NAGA, seed, [&brain_input, &mons] {
+                return do_mon_str_replacements(brain_input, mons, S_SILENT);
+            });
+        const binding_observation mon_control = observe_binding(
+            language, SP_NAGA, seed, [&brain_input] {
+                string result = maybe_pick_random_substring(brain_input);
+                result = legacy_bind_body_parts(result, false);
+                return legacy_bind_body_parts(result, true);
+            });
+        CHECK(mon.result == mon_control.result);
+        CHECK(mon.state == mon_control.state);
+        CHECK(mon.count == mon_control.count);
+        CHECK(mon.result.find("@random_body_part") == string::npos);
+        CHECK(mon.result.find('[') == string::npos);
+
+        const binding_observation no_token = observe_binding(
+            language, SP_NAGA, seed, [&mons] {
+                return do_mon_str_replacements("plain body text", mons,
+                                               S_SILENT);
+            });
+        CHECK(no_token.result == "plain body text");
+        CHECK(no_token.count == 0);
+
+        if (language == lang_t::ZH)
+        {
+            CHECK_FALSE(contains_ascii_alpha(pseudo.result));
+            CHECK_FALSE(contains_ascii_alpha(brain.result));
+            CHECK_FALSE(contains_ascii_alpha(mon.result));
+            CHECK(brain.result.find('@') == string::npos);
+            CHECK(mon.result.find('@') == string::npos);
+        }
     }
 }

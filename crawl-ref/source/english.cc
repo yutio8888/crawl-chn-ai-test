@@ -35,6 +35,12 @@ string pluralise(const string &name, const char * const qualifiers[],
     if (Options.language == lang_t::ZH)
         return name;
 
+    return pluralise_en(name, qualifiers, no_qualifier);
+}
+
+string pluralise_en(const string &name, const char * const qualifiers[],
+                    const char * const no_qualifier[])
+{
     string::size_type pos;
 
     if (qualifiers)
@@ -43,20 +49,20 @@ string pluralise(const string &name, const char * const qualifiers[],
             if ((pos = name.find(qualifiers[i])) != string::npos
                 && !ends_with(name, no_qualifier))
             {
-                return pluralise(name.substr(0, pos)) + name.substr(pos);
+                return pluralise_en(name.substr(0, pos)) + name.substr(pos);
             }
     }
 
     if (!name.empty() && name[name.length() - 1] == ')'
         && (pos = name.rfind(" (")) != string::npos)
     {
-        return pluralise(name.substr(0, pos)) + name.substr(pos);
+        return pluralise_en(name.substr(0, pos)) + name.substr(pos);
     }
 
     if (!name.empty() && name[name.length() - 1] == ']'
         && (pos = name.rfind(" [")) != string::npos)
     {
-        return pluralise(name.substr(0, pos)) + name.substr(pos);
+        return pluralise_en(name.substr(0, pos)) + name.substr(pos);
     }
 
     const string lowname = lowercase_string(name);

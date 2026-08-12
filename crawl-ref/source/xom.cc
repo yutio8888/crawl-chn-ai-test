@@ -80,6 +80,8 @@
 #include "viewchar.h"
 #include "view.h"
 
+string bind_random_body_part_message(string msg, bool plural);
+
 #ifdef DEBUG_XOM
 #    define DEBUG_RELIGION
 #    define NOTE_DEBUG_XOM
@@ -3096,6 +3098,18 @@ string xom_bind_worn_item_message(const string &speech,
     return msg;
 }
 
+string xom_bind_pseudo_body_parts(string speech, bool plural)
+{
+    return bind_random_body_part_message(speech, plural);
+}
+
+string xom_bind_brain_drain_body_parts(string speech)
+{
+    speech = bind_random_body_part_message(speech, false);
+    speech = bind_random_body_part_message(speech, true);
+    return maybe_pick_random_substring(speech);
+}
+
 static void _xom_pseudo_miscast(int /*sever*/)
 {
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, "silly message"), true);
@@ -3112,7 +3126,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
     }
 
     // Assure that the messages vector has at least one element.
-    messages.emplace_back("Nothing appears to happen... Ominous!");
+    messages.emplace_back(T_("Nothing appears to happen... Ominous!"));
 
     ///////////////////////////////////
     // Dungeon feature dependent stuff.
@@ -3294,12 +3308,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
     {
         string str = _get_xom_speech("random body part singular");
 
-        str = replace_all(str, "@random_body_part_any_singular@",
-                          random_body_part_name(false, BPART_ANY));
-        str = replace_all(str, "@random_body_part_internal_singular@",
-                          random_body_part_name(false, BPART_INTERNAL));
-        str = replace_all(str, "@random_body_part_external_singular@",
-                          random_body_part_name(false, BPART_EXTERNAL));
+        str = xom_bind_pseudo_body_parts(str, false);
 
         messages.push_back(str);
     }
@@ -3307,12 +3316,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
     {
         string str = _get_xom_speech("random body part plural");
 
-        str = replace_all(str, "@random_body_part_any_plural@",
-                          random_body_part_name(true, BPART_ANY));
-        str = replace_all(str, "@random_body_part_internal_plural@",
-                          random_body_part_name(true, BPART_INTERNAL));
-        str = replace_all(str, "@random_body_part_external_plural@",
-                          random_body_part_name(true, BPART_EXTERNAL));
+        str = xom_bind_pseudo_body_parts(str, true);
 
         messages.push_back(str);
     }
@@ -4103,20 +4107,7 @@ static void _xom_brain_drain(int sever)
         {
             string react = _get_xom_speech("drained brain");
 
-            react = replace_all(react, "@random_body_part_any_singular@",
-                                random_body_part_name(false, BPART_ANY));
-            react = replace_all(react, "@random_body_part_internal_singular@",
-                                random_body_part_name(false, BPART_INTERNAL));
-            react = replace_all(react, "@random_body_part_external_singular@",
-                                random_body_part_name(false, BPART_EXTERNAL));
-            react = replace_all(react, "@random_body_part_any_plural@",
-                                random_body_part_name(true, BPART_ANY));
-            react = replace_all(react, "@random_body_part_internal_plural@",
-                                random_body_part_name(true, BPART_INTERNAL));
-            react = replace_all(react, "@random_body_part_external_plural@",
-                                random_body_part_name(true, BPART_EXTERNAL));
-
-            react = maybe_pick_random_substring(react);
+            react = xom_bind_brain_drain_body_parts(react);
 
             const string note = make_stringf(T_("drained mp, created monsters"));
             mprf(MSGCH_WARN, "%s", react.c_str());

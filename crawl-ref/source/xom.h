@@ -131,6 +131,12 @@ string xom_bind_worn_item_message(const string &speech,
                                   const string &item_name,
                                   bool supports_head);
 
+// Deterministic token-binding seams used by the pseudo-miscast and brain
+// drain production paths. Body-part selection remains in mon-util and keeps
+// its legacy RNG order; only final display values are localized there.
+string xom_bind_pseudo_body_parts(string speech, bool plural);
+string xom_bind_brain_drain_body_parts(string speech);
+
 #ifdef WIZARD
 void debug_xom_effects();
 #endif
