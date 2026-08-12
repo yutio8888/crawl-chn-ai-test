@@ -5926,8 +5926,10 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
         && target->wont_attack())
     {
         if (announce_mundane && you.can_see(*target))
+        {
             simple_god_message(T_(" protects your slime from harm."), false,
                                GOD_JIYVA);
+        }
         return false;
     }
 
