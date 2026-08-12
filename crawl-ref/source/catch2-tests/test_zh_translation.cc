@@ -3082,9 +3082,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     unwind_var<player> restore_player(you);
 
     set_xom_language(lang_t::EN);
-    reset_xom_body_player(SP_NAGA);
+    reset_xom_body_player(SP_HUMAN);
     CHECK(string(T_("Nothing appears to happen... Ominous!"))
           == "Nothing appears to happen... Ominous!");
+    CHECK(you.foot_name(false) == "foot");
+    CHECK(you.foot_name(true) == "feet");
+    you.mutation[MUT_HOOVES] = 3;
+    CHECK(you.foot_name(false) == "hoof");
+    CHECK(you.foot_name(true) == "hooves");
+    reset_xom_body_player(SP_NAGA);
     CHECK(you.foot_name(false) == "underbelly");
     CHECK(you.arm_name(false) == "scaled arm");
     CHECK(you.arm_name(true) == "scaled arms");
@@ -3094,9 +3100,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(you.arm_name(true) == "fossilised arms");
 
     set_xom_language(lang_t::ZH);
-    reset_xom_body_player(SP_NAGA);
+    reset_xom_body_player(SP_HUMAN);
     CHECK(string(T_("Nothing appears to happen... Ominous!"))
           == "似乎什么都没有发生……不祥之兆！");
+    CHECK(you.foot_name(false) == "脚");
+    CHECK(you.foot_name(true) == "脚");
+    you.mutation[MUT_HOOVES] = 3;
+    CHECK(you.foot_name(false) == "蹄");
+    CHECK(you.foot_name(true) == "蹄");
+    reset_xom_body_player(SP_NAGA);
     CHECK(you.foot_name(false) == "腹部");
     CHECK(you.arm_name(false) == "鳞片覆盖的手臂");
     CHECK(you.arm_name(true) == "鳞片覆盖的手臂");

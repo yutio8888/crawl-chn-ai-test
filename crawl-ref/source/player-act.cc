@@ -536,6 +536,20 @@ static string _foot_name_singular(bool *can_plural)
     return "foot";
 }
 
+// This is the closed set of canonical English player body-part names used by
+// foot_name() and arm_name(), not a general morphology helper. If form data
+// adds a new value, update the matching translation assets and tests together.
+static string _plural_player_body_part(const string &canonical)
+{
+    if (canonical == "foot")
+        return "feet";
+    if (canonical == "hoof")
+        return "hooves";
+    if (!canonical.empty() && canonical.back() == 's')
+        return canonical;
+    return canonical + "s";
+}
+
 /**
  * What's the the name for the player's feet?
  *
@@ -553,7 +567,7 @@ string player::foot_name(bool plural, bool *can_plural) const
     const string singular = _foot_name_singular(can_plural);
     string canonical = singular;
     if (plural && *can_plural)
-        canonical = pluralise_en(singular);
+        canonical = _plural_player_body_part(singular);
 
     return C_("foot", canonical.c_str());
 }
@@ -578,7 +592,7 @@ string player::arm_name(bool plural, bool *can_plural) const
         canonical = adj + " " + canonical;
 
     if (plural)
-        canonical = pluralise_en(canonical);
+        canonical = _plural_player_body_part(canonical);
 
     return C_("arm", canonical.c_str());
 }
