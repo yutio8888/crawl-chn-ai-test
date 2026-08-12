@@ -3071,6 +3071,31 @@ static item_def* _xom_get_random_worn_slot_item(equipment_slot item_slot)
     return worn_slot_item[random2(worn_slot_item.size())];
 }
 
+string xom_bind_worn_item_message(const string &speech,
+                                  const string &item_name,
+                                  bool supports_head)
+{
+    // Central ownership grammar: apply_description(DESC_YOUR, ...) keeps the
+    // legacy "your " prefix in EN and produces the localized 你的 prefix in
+    // ZH; uppercase_first() preserves the existing EN sentence case and is
+    // the identity for CJK.
+    const string owned_item = apply_description(DESC_YOUR, item_name);
+    string msg = replace_all(speech, "@your_item@", owned_item);
+    msg = replace_all(msg, "@Your_item@", uppercase_first(owned_item));
+
+    if (supports_head)
+    {
+        // XXX: The formless mutation doesn't technically mean you don't have
+        // a form; it means you don't have a head. Copy the borrowed C_()
+        // result into an owned string immediately.
+        const string head_name = you.has_mutation(MUT_FORMLESS)
+                                 ? C_("body part", "form")
+                                 : C_("body part", "head");
+        msg = replace_all(msg, "@head@", head_name);
+    }
+    return msg;
+}
+
 static void _xom_pseudo_miscast(int /*sever*/)
 {
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, "silly message"), true);
@@ -3310,92 +3335,70 @@ static void _xom_pseudo_miscast(int /*sever*/)
 
     if (item_def* item = you.equipment.get_first_slot_item(SLOT_OFFHAND))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("offhand slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
+        str = xom_bind_worn_item_message(str, name, false);
 
         messages.push_back(str);
     }
 
     if (item_def* item = _xom_get_random_worn_slot_item(SLOT_CLOAK))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("cloak slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
-
-        // XXX: The formless mutation doesn't technically mean you don't have a
-        // form; it means you don't have a head.
-        str = replace_all(str, "@head@",
-                          you.has_mutation(MUT_FORMLESS) ? "form" : "head");
+        str = xom_bind_worn_item_message(str, name, true);
 
         messages.push_back(str);
     }
 
     if (item_def* item = _xom_get_random_worn_slot_item(SLOT_HELMET))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("helmet slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
-
-        // XXX: The formless mutation doesn't technically mean you don't have a
-        // form; it means you don't have a head.
-        str = replace_all(str, "@head@",
-                          you.has_mutation(MUT_FORMLESS) ? "form" : "head");
+        str = xom_bind_worn_item_message(str, name, true);
 
         messages.push_back(str);
     }
 
     if (item_def* item = _xom_get_random_worn_slot_item(SLOT_GLOVES))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("gloves slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
+        str = xom_bind_worn_item_message(str, name, false);
 
         messages.push_back(str);
     }
 
     if (item_def* item = _xom_get_random_worn_slot_item(SLOT_LOWER_BODY))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("boots slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
+        str = xom_bind_worn_item_message(str, name, false);
 
         messages.push_back(str);
     }
 
     if (item_def* item = you.equipment.get_first_slot_item(SLOT_AMULET))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("amulet slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
-
-        // XXX: The formless mutation doesn't technically mean you don't have a
-        // form; it means you don't have a head.
-        str = replace_all(str, "@head@",
-                          you.has_mutation(MUT_FORMLESS) ? "form" : "head");
+        str = xom_bind_worn_item_message(str, name, true);
 
         messages.push_back(str);
     }
 
     if (item_def* item = you.equipment.get_first_slot_item(SLOT_GIZMO))
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str = _get_xom_speech("gizmo slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
+        str = xom_bind_worn_item_message(str, name, false);
 
         messages.push_back(str);
     }
@@ -3403,11 +3406,10 @@ static void _xom_pseudo_miscast(int /*sever*/)
     if (item_def* item = _xom_get_random_worn_slot_item(SLOT_RING))
     {
         // Don't just say "your ring" here. We want to know which one.
-        string name = "your " + item->name(DESC_QUALNAME, false, false, false);
+        const string name = item->name(DESC_QUALNAME, false, false, false);
         string str = _get_xom_speech("ring slot");
 
-        str = replace_all(str, "@your_item@", name);
-        str = replace_all(str, "@Your_item@", uppercase_first(name));
+        str = xom_bind_worn_item_message(str, name, false);
 
         string ring_holder_singular;
         string ring_holder_plural;
@@ -3423,7 +3425,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
 
     if (item_def* item = you.body_armour())
     {
-        string name = "your " + item->name(DESC_BASENAME, false, false, false);
+        const string name = item->name(DESC_BASENAME, false, false, false);
         string str;
 
         if (name.find("dragon") != string::npos)
@@ -3442,8 +3444,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
 
         if (!str.empty())
         {
-            str = replace_all(str, "@your_item@", name);
-            str = replace_all(str, "@Your_item@", uppercase_first(name));
+            str = xom_bind_worn_item_message(str, name, false);
 
             messages.push_back(str);
         }

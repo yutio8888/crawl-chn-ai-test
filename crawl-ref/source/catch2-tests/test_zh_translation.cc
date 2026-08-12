@@ -51,6 +51,7 @@
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
 #include "unwind.h"
+#include "xom.h"
 
 #include <cstring>
 #include <array>
@@ -2485,4 +2486,463 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(zh_b.store.find("惆怅地") != string::npos);
     CHECK(zh_b.store.find("疯狂地") == string::npos);
     check_zh_no_english_leak(zh_b.store);
+}
+
+// =============================================================================
+// Issue #63 — Xom pseudo-miscast worn-item ownership/body-part boundary.
+//
+// _xom_pseudo_miscast() (xom.cc) builds nine worn-item SpeakDB candidates
+// ("offhand slot", "cloak slot", "helmet slot", "gloves slot", "boots slot",
+// "amulet slot", "gizmo slot", "ring slot", plus the five body-armour roots
+// "dragon armour"/"animal skin"/"leather armour"/"robe"/"metal armour") by
+// routing the already selected candidate and the already materialized item
+// basename/qualname through the single deterministic seam
+// xom_bind_worn_item_message(). The seam applies the central DESC_YOUR
+// grammar layer (apply_description), replaces @your_item@/@Your_item@ and,
+// for the three head roots (cloak/helmet/amulet), copies the C_("body part",
+// ...) value into an owned string and replaces @head@. EN output stays
+// byte-equivalent to the legacy "your "/"Your " + item name and "head"/"form";
+// ZH renders 你的<localized item> and 头/形体 with no English owner or body
+// part leaking into the final display.
+//
+// The seam consumes no RNG (SpeakDB selection and final display stay at the
+// call sites), so every replay runs under an identical two-argument
+// rng::subgenerator with a control replay (SpeakDB selection only) capturing
+// the exact consumed state/count, and the parent RNG is proven untouched.
+// The seam emits no message, so the process-global message store is never
+// touched. All 13 affected roots have no [a|b] random-substring sites in
+// either language, so the final display is fully deterministic once the
+// candidate is selected; the tests fail closed (seed == 0) when the expected
+// token or topology is unavailable. Player state is restored by unwind_var
+// and the fixture restores language/TextDB state. Seeds are searched per
+// language and never assume the same ordinal in both languages.
+// =============================================================================
+
+namespace
+{
+constexpr uint64_t XOM_RNG_SEQUENCE = 0x6100610061006100ULL;
+
+void set_xom_language(lang_t language)
+{
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    databaseSystemInit();
+}
+
+struct xom_root_spec
+{
+    const char *key;      // SpeakDB root after "Xom "
+    const char *token;    // item token the selected fixture must contain
+    bool supports_head;   // cloak/helmet/amulet roots carry @head@
+};
+
+// All nine worn-item producer sites / 13 real roots. Lowercase and uppercase
+// item tokens both occur in the real variants (dragon armour/animal
+// skin/robe use @your_item@; the rest use @Your_item@).
+const xom_root_spec xom_worn_item_roots[] = {
+    { "offhand slot",   "@Your_item@", false },
+    { "cloak slot",     "@Your_item@", true  },
+    { "helmet slot",    "@Your_item@", true  },
+    { "gloves slot",    "@Your_item@", false },
+    { "boots slot",     "@Your_item@", false },
+    { "amulet slot",    "@Your_item@", true  },
+    { "gizmo slot",     "@Your_item@", false },
+    { "ring slot",      "@Your_item@", false },
+    { "dragon armour",  "@your_item@", false },
+    { "animal skin",    "@your_item@", false },
+    { "leather armour", "@Your_item@", false },
+    { "robe",           "@your_item@", false },
+    { "metal armour",   "@Your_item@", false },
+};
+
+const size_t NUM_XOM_WORN_ITEM_ROOTS = ARRAYSZ(xom_worn_item_roots);
+
+item_def make_xom_armour(armour_type sub)
+{
+    item_def item;
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = sub;
+    item.quantity = 1;
+    item.plus = 0;
+    item.flags = ISFLAG_IDENTIFIED;
+    return item;
+}
+
+item_def make_xom_ring()
+{
+    item_def item;
+    item.base_type = OBJ_JEWELLERY;
+    item.sub_type = RING_PROTECTION;
+    item.quantity = 1;
+    item.plus = 3;
+    item.flags = ISFLAG_IDENTIFIED;
+    return item;
+}
+
+item_def make_xom_amulet()
+{
+    item_def item;
+    item.base_type = OBJ_JEWELLERY;
+    item.sub_type = AMU_ACROBAT;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    return item;
+}
+
+item_def make_xom_gizmo()
+{
+    // Established recipe-name fixture (same construction as the gizmo tests
+    // above): a fixed two-argument subgenerator isolates the recipe picks.
+    rng::subgenerator recipe_rng(0x63c063c063c063c0ULL, XOM_RNG_SEQUENCE);
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    REQUIRE_FALSE(noun.locator.empty());
+    REQUIRE_FALSE(modifier.locator.empty());
+
+    item_def item;
+    item.base_type = OBJ_GIZMOS;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.props[ARTEFACT_NAME_KEY].get_string() =
+        modifier.english + noun.english + " Mk.1";
+    item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+        "v1|0|" + noun.locator + "|" + modifier.locator + "|-|Mk.1";
+    return item;
+}
+
+// One actual identified item fixture per producer site, mirroring the slot
+// the production block reads (the ring keeps DESC_QUALNAME below).
+item_def xom_fixture_for_root(const xom_root_spec &root)
+{
+    if (string(root.key) == "offhand slot")
+        return make_xom_armour(ARM_BUCKLER);
+    if (string(root.key) == "cloak slot")
+        return make_xom_armour(ARM_CLOAK);
+    if (string(root.key) == "helmet slot")
+        return make_xom_armour(ARM_HELMET);
+    if (string(root.key) == "gloves slot")
+        return make_xom_armour(ARM_GLOVES);
+    if (string(root.key) == "boots slot")
+        return make_xom_armour(ARM_BOOTS);
+    if (string(root.key) == "amulet slot")
+        return make_xom_amulet();
+    if (string(root.key) == "gizmo slot")
+        return make_xom_gizmo();
+    if (string(root.key) == "ring slot")
+        return make_xom_ring();
+    if (string(root.key) == "dragon armour")
+        return make_xom_armour(ARM_FIRE_DRAGON_ARMOUR);
+    if (string(root.key) == "animal skin")
+        return make_xom_armour(ARM_ANIMAL_SKIN);
+    if (string(root.key) == "leather armour")
+        return make_xom_armour(ARM_LEATHER_ARMOUR);
+    if (string(root.key) == "robe")
+        return make_xom_armour(ARM_ROBE);
+    if (string(root.key) == "metal armour")
+        return make_xom_armour(ARM_PLATE_ARMOUR);
+    FAIL("unknown issue-63 root");
+    return item_def();
+}
+
+// Head roots must select a fixture carrying both the item token and @head@.
+vector<string> xom_required_tokens(const xom_root_spec &root)
+{
+    vector<string> tokens = { root.token };
+    if (root.supports_head)
+        tokens.push_back("@head@");
+    return tokens;
+}
+
+// Bounded deterministic seed search over the real SpeakDB root in the
+// current language; the selected fixture must contain every required token
+// and no [a|b] random-substring site (all 13 affected roots have none).
+// Returns 0 when no seed is found within the bound (fail closed).
+uint64_t find_xom_root_seed(const char *key, const vector<string> &tokens)
+{
+    for (uint64_t candidate = 1; candidate < 20000; ++candidate)
+    {
+        rng::subgenerator probe(candidate, XOM_RNG_SEQUENCE);
+        const string text = getSpeakString("Xom " + string(key));
+        bool all_found = true;
+        for (const string &token : tokens)
+            if (text.find(token) == string::npos)
+                all_found = false;
+        if (all_found && text.find('[') == string::npos)
+            return candidate;
+    }
+    return 0;
+}
+
+// One binder replay under a fixed two-argument subgenerator: SpeakDB
+// selection, then xom_bind_worn_item_message() with exactly the arguments
+// the production site passes. A control replay with an identical subgenerator
+// performs the SpeakDB selection only and captures the exact RNG state/count
+// it consumes; equality proves the seam consumes zero RNG.
+struct xom_binder_observation
+{
+    string item_name;  // name(DESC_BASENAME/QUALNAME) in the observed language
+    string raw;        // SpeakDB candidate before binding
+    string control_raw;// control replay candidate (must equal raw)
+    string bound;      // xom_bind_worn_item_message() output
+    bool rng_isolated; // binder replay consumed exactly the control RNG
+    bool parent_rng_unchanged;
+};
+
+xom_binder_observation observe_xom_binder(lang_t language, const char *key,
+                                          const item_def &item,
+                                          bool supports_head,
+                                          bool desc_qualname,
+                                          bool formless,
+                                          uint64_t seed)
+{
+    set_xom_language(language);
+    you.mutation[MUT_FORMLESS] = formless ? 1 : 0;
+
+    xom_binder_observation obs;
+    obs.item_name = item.name(desc_qualname ? DESC_QUALNAME : DESC_BASENAME,
+                              false, false, false);
+    REQUIRE_FALSE(obs.item_name.empty());
+
+    uint64_t control_state = 0;
+    uint64_t control_count = 0;
+    {
+        rng::subgenerator control(seed, XOM_RNG_SEQUENCE);
+        obs.control_raw = getSpeakString("Xom " + string(key));
+        control_state = rng::current_generator().get_state();
+        control_count = rng::current_generator().get_count();
+    }
+
+    const uint64_t parent_before = rng::peek_uint64();
+    {
+        rng::subgenerator probe(seed, XOM_RNG_SEQUENCE);
+        obs.raw = getSpeakString("Xom " + string(key));
+        obs.bound = xom_bind_worn_item_message(obs.raw, obs.item_name,
+                                               supports_head);
+        REQUIRE_FALSE(obs.bound.empty());
+        obs.rng_isolated =
+            rng::current_generator().get_state() == control_state
+            && rng::current_generator().get_count() == control_count;
+    }
+    obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
+    return obs;
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 63 EN binder byte-equals legacy replacements across all 13 roots",
+                 "[zh-translation][xom][issue-63]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    for (const xom_root_spec &root : xom_worn_item_roots)
+    {
+        INFO("EN root: " << root.key);
+        set_xom_language(lang_t::EN);
+        const item_def item = xom_fixture_for_root(root);
+        const uint64_t seed =
+            find_xom_root_seed(root.key, xom_required_tokens(root));
+        REQUIRE(seed != 0);
+
+        const xom_binder_observation obs = observe_xom_binder(
+            lang_t::EN, root.key, item, root.supports_head, false, false,
+            seed);
+        REQUIRE(obs.raw == obs.control_raw);
+
+        // Legacy replacements: "your " + item name, "Your " +
+        // uppercase_first, English "head" for the three head roots (normal
+        // state). The binder must be byte-identical to them.
+        string legacy = replace_all(obs.raw, "@your_item@",
+                                    "your " + obs.item_name);
+        legacy = replace_all(legacy, "@Your_item@",
+                             "Your " + obs.item_name);
+        if (root.supports_head)
+            legacy = replace_all(legacy, "@head@", "head");
+        CHECK(obs.bound == legacy);
+        CHECK(obs.bound.find("@") == string::npos);
+        CHECK(obs.bound.find("[") == string::npos);
+        CHECK(obs.bound.find("]") == string::npos);
+        CHECK(obs.rng_isolated);
+        CHECK(obs.parent_rng_unchanged);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 63 ZH binder localizes all 13 worn-item roots",
+                 "[zh-translation][xom][issue-63]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    for (const xom_root_spec &root : xom_worn_item_roots)
+    {
+        INFO("ZH root: " << root.key);
+        set_xom_language(lang_t::ZH);
+        const item_def item = xom_fixture_for_root(root);
+        const uint64_t seed =
+            find_xom_root_seed(root.key, xom_required_tokens(root));
+        REQUIRE(seed != 0);
+
+        const xom_binder_observation obs = observe_xom_binder(
+            lang_t::ZH, root.key, item, root.supports_head, false, false,
+            seed);
+        REQUIRE(obs.raw == obs.control_raw);
+
+        // apply_description(DESC_YOUR) must produce the documented 你的
+        // prefix in ZH and the binder must use exactly it.
+        const string zh_owned = "你的" + obs.item_name;
+        CHECK(apply_description(DESC_YOUR, obs.item_name) == zh_owned);
+
+        string expected = replace_all(obs.raw, "@your_item@", zh_owned);
+        expected = replace_all(expected, "@Your_item@", zh_owned);
+        if (root.supports_head)
+            expected = replace_all(expected, "@head@", "头");
+        CHECK(obs.bound == expected);
+        CHECK(obs.bound.find("@") == string::npos);
+        CHECK(obs.bound.find("[") == string::npos);
+        CHECK(obs.bound.find("]") == string::npos);
+        CHECK(obs.bound.find("your ") == string::npos);
+        CHECK(obs.bound.find("Your ") == string::npos);
+        CHECK(obs.bound.find("head") == string::npos);
+        CHECK(obs.bound.find("form") == string::npos);
+        CHECK(obs.rng_isolated);
+        CHECK(obs.parent_rng_unchanged);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 63 head roots render localized head/form in normal and FORMLESS states",
+                 "[zh-translation][xom][issue-63]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    for (const xom_root_spec &root : xom_worn_item_roots)
+    {
+        if (!root.supports_head)
+            continue;
+        for (const lang_t language : { lang_t::EN, lang_t::ZH })
+        {
+            INFO("head root: " << root.key << ", language: "
+                 << (language == lang_t::ZH ? "zh" : "en"));
+            set_xom_language(language);
+            const item_def item = xom_fixture_for_root(root);
+            const uint64_t seed =
+                find_xom_root_seed(root.key, xom_required_tokens(root));
+            REQUIRE(seed != 0);
+
+            for (const bool formless : { false, true })
+            {
+                INFO("formless: " << (formless ? "yes" : "no"));
+                const xom_binder_observation obs = observe_xom_binder(
+                    language, root.key, item, true, false, formless, seed);
+                REQUIRE(obs.raw == obs.control_raw);
+
+                if (language == lang_t::EN)
+                {
+                    const string en_head = C_("body part", "head");
+                    const string en_form = C_("body part", "form");
+                    CHECK(en_head == "head");
+                    CHECK(en_form == "form");
+
+                    string expected = replace_all(
+                        obs.raw, "@your_item@", "your " + obs.item_name);
+                    expected = replace_all(expected, "@Your_item@",
+                                           "Your " + obs.item_name);
+                    expected = replace_all(expected, "@head@",
+                                           formless ? "form" : "head");
+                    CHECK(obs.bound == expected);
+                    CHECK(obs.bound.find("@") == string::npos);
+                }
+                else
+                {
+                    const string zh_head = C_("body part", "head");
+                    const string zh_form = C_("body part", "form");
+                    CHECK(zh_head == "头");
+                    CHECK(zh_form == "形体");
+
+                    const string zh_owned = "你的" + obs.item_name;
+                    string expected = replace_all(obs.raw, "@your_item@",
+                                                  zh_owned);
+                    expected = replace_all(expected, "@Your_item@",
+                                           zh_owned);
+                    expected = replace_all(expected, "@head@",
+                                           formless ? zh_form : zh_head);
+                    CHECK(obs.bound == expected);
+                    CHECK(obs.bound.find("@") == string::npos);
+                    CHECK(obs.bound.find("your ") == string::npos);
+                    CHECK(obs.bound.find("Your ") == string::npos);
+                    CHECK(obs.bound.find("head") == string::npos);
+                    CHECK(obs.bound.find("form") == string::npos);
+                }
+                CHECK(obs.rng_isolated);
+                CHECK(obs.parent_rng_unchanged);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 63 ring root supplies DESC_QUALNAME not the basename",
+                 "[zh-translation][xom][issue-63]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    const item_def ring = make_xom_ring();
+
+    for (const lang_t language : { lang_t::EN, lang_t::ZH })
+    {
+        INFO("ring language: " << (language == lang_t::ZH ? "zh" : "en"));
+        set_xom_language(language);
+        const string basename = ring.name(DESC_BASENAME, false, false, false);
+        const string qualname = ring.name(DESC_QUALNAME, false, false, false);
+        REQUIRE_FALSE(qualname.empty());
+        REQUIRE(qualname != basename);
+
+        const uint64_t seed = find_xom_root_seed("ring slot",
+                                                 { "@Your_item@" });
+        REQUIRE(seed != 0);
+
+        const xom_binder_observation obs = observe_xom_binder(
+            language, "ring slot", ring, false, true, false, seed);
+        REQUIRE(obs.raw == obs.control_raw);
+        // The binder must have received the DESC_QUALNAME string.
+        REQUIRE(obs.item_name == qualname);
+
+        if (language == lang_t::EN)
+        {
+            const string expected = replace_all(
+                replace_all(obs.raw, "@your_item@", "your " + qualname),
+                "@Your_item@", "Your " + qualname);
+            CHECK(obs.bound == expected);
+            // The qualname-based owner text is present; the bare-basename
+            // owner text cannot appear (EN "Your ring" never occurs).
+            CHECK(obs.bound.find("Your " + qualname) != string::npos);
+            CHECK(obs.bound.find("Your " + basename) == string::npos);
+        }
+        else
+        {
+            const string zh_owned = "你的" + qualname;
+            const string expected = replace_all(
+                replace_all(obs.raw, "@your_item@", zh_owned),
+                "@Your_item@", zh_owned);
+            CHECK(obs.bound == expected);
+            CHECK(obs.bound.find(zh_owned) != string::npos);
+            CHECK(obs.bound.find("your ") == string::npos);
+            CHECK(obs.bound.find("Your ") == string::npos);
+            CHECK(obs.bound.find("@") == string::npos);
+        }
+        CHECK(obs.rng_isolated);
+        CHECK(obs.parent_rng_unchanged);
+    }
 }

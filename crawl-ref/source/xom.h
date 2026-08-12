@@ -119,6 +119,18 @@ void xom_new_level_noise_or_stealth();
 
 string xom_effect_to_name(xom_event_type effect);
 
+// Bind an already selected worn-item SpeakDB candidate to its item and body
+// part. `item_name` is the already materialized basename/qualname of the
+// equipped item; `supports_head` is true only for the cloak/helmet/amulet
+// roots whose candidates can carry @head@ (the formless mutation means the
+// player has no head). Applies the central DESC_YOUR grammar layer, then
+// replaces @your_item@/@Your_item@ and, for head roots, @head@ with the
+// localized body-part value. Consumes no RNG; SpeakDB selection and final
+// display stay at the call sites.
+string xom_bind_worn_item_message(const string &speech,
+                                  const string &item_name,
+                                  bool supports_head);
+
 #ifdef WIZARD
 void debug_xom_effects();
 #endif
