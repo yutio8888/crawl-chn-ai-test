@@ -995,7 +995,7 @@ _graffiti_vengeance_
 
 @_graffiti_author_any_@ has avenged @_graffiti_author_any_@
 
-@_graffiti_author_any_@ has avenged @graffiti_author_any@ for @_graffiti_vengeance_reason_@
+@_graffiti_author_any_@ has avenged @_graffiti_author_any_@ for @_graffiti_vengeance_reason_@
 
 @_graffiti_author_any_@ swears vengeance on @_graffiti_author_any_@
 

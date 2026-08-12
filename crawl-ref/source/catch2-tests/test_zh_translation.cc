@@ -840,6 +840,75 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: graffiti production preserves every root and display RNG",
+                 "[zh-translation][graffiti][issue-66][rng]")
+{
+    array<bool, 15> seen{};
+    size_t seen_count = 0;
+    for (int attempt = 0; attempt < 4096; ++attempt)
+    {
+        const uint64_t state_seed = 0x6601000000000000ULL
+                                    + static_cast<uint64_t>(attempt);
+        const uint64_t sequence_seed = 0x6602000000000000ULL;
+        misc_string_recipe recipe;
+        {
+            rng::subgenerator recipe_rng(state_seed, sequence_seed);
+            recipe = selectMiscStringRecipe("any_graffiti");
+        }
+        REQUIRE_FALSE(recipe.locator.empty());
+        REQUIRE_FALSE(recipe.english.empty());
+        INFO("locator=" << recipe.locator);
+
+        const string prefix = "v1:any_graffiti:";
+        REQUIRE(starts_with(recipe.locator, prefix));
+        const size_t comma = recipe.locator.find(',', prefix.size());
+        const size_t root_ordinal = static_cast<size_t>(stoul(
+            recipe.locator.substr(prefix.size(), comma - prefix.size())));
+        REQUIRE(root_ordinal < seen.size());
+        if (seen[root_ordinal])
+            continue;
+        seen[root_ordinal] = true;
+        ++seen_count;
+
+        string en_display;
+        string zh_display;
+        uint64_t en_state;
+        uint64_t en_count;
+        uint64_t zh_state;
+        uint64_t zh_count;
+        {
+            rng::subgenerator display_rng(state_seed, sequence_seed);
+            Options.language = lang_t::EN;
+            Options.lang_name = nullptr;
+            en_display = do_mon_name_replacements(
+                maybe_pick_random_substring(getMiscString("any_graffiti")));
+            en_state = rng::current_generator().get_state();
+            en_count = rng::current_generator().get_count();
+        }
+        {
+            rng::subgenerator display_rng(state_seed, sequence_seed);
+            Options.language = lang_t::ZH;
+            Options.lang_name = "zh";
+            zh_display = do_mon_name_replacements(
+                maybe_pick_random_substring(getMiscString("any_graffiti")));
+            zh_state = rng::current_generator().get_state();
+            zh_count = rng::current_generator().get_count();
+        }
+        INFO("english=" << en_display);
+        INFO("chinese=" << zh_display);
+        REQUIRE_FALSE(en_display.empty());
+        REQUIRE_FALSE(zh_display.empty());
+        REQUIRE(en_state == zh_state);
+        REQUIRE(en_count == zh_count);
+        REQUIRE(en_display.find('@') == string::npos);
+        REQUIRE(zh_display.find('@') == string::npos);
+        REQUIRE(en_display.find('[') == string::npos);
+        REQUIRE(zh_display.find('[') == string::npos);
+    }
+    REQUIRE(seen_count == seen.size());
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: gizmo recipe survives save and old saves fail safely",
                  "[zh-translation][gizmo][tags][compat]")
 {
