@@ -1122,6 +1122,42 @@ def _require_pinned_chain(
             os.close(fd)
 
 
+def _rollback_created_file(
+    file_fd: int, parent_fd: int, basename: str,
+) -> None:
+    """Roll back an exclusively created file in the canonical order.
+
+    Every failure path after a successful O_EXCL create must remove the
+    created file in exactly this order:
+
+    1. close the file descriptor, so the inode is unlinked cleanly and no
+       descriptor outlives the failed transaction;
+    2. unlink the exact basename through the pinned parent descriptor, so a
+       renamed or replaced parent can never trap the file outside the
+       approved location;
+    3. fsync the pinned parent descriptor after the unlink, so the removal
+       is durable and a crash cannot resurrect a stale partial ledger.
+
+    Each step is best-effort: an OSError is swallowed and the remaining
+    steps still run.  The caller always re-raises the original error and
+    must not close ``file_fd`` again after this helper returns (the caller
+    should invalidate it, e.g. reset it to -1, before the outer finally
+    runs).
+    """
+    try:
+        os.close(file_fd)
+    except OSError:
+        pass
+    try:
+        os.unlink(basename, dir_fd=parent_fd)
+    except OSError:
+        pass
+    try:
+        os.fsync(parent_fd)
+    except OSError:
+        pass
+
+
 def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
     """Exclusively create one regular file through a fully pinned openat
     chain and return ``(file_fd, parent_dir_fd, basename)``.
@@ -1145,9 +1181,11 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
     or ENOTDIR depending on platform/component type), a missing component
     fails with ENOENT (directories are never auto-created), and a
     non-directory fails with ENOTDIR.  If the post-create verification
-    fails, the created file is unlinked through the pinned parent and the
-    operation fails closed, so a renamed or replaced parent can never trap
-    the ledger outside the approved location.
+    fails, the created file is rolled back with the same canonical cleanup
+    order as a publish failure (close file, unlink through the pinned
+    parent, fsync the parent; see _rollback_created_file) and the operation
+    fails closed, so a renamed or replaced parent can never trap the ledger
+    outside the approved location.
 
     The caller owns both returned descriptors and must fsync the file
     content and then the containing directory before closing them.  The
@@ -1204,10 +1242,14 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
         try:
             _require_pinned_chain(absolute, components, pinned)
         except InventoryError:
-            try:
-                os.unlink(components[-1], dir_fd=parent_fd)
-            except OSError:
-                pass
+            # Post-create identity verification failed: the file was already
+            # created through the pinned parent, so it must be rolled back
+            # with the exact same cleanup order as a publish failure in
+            # scaffold_results (close file, unlink through the pinned
+            # parent, fsync the parent).  The helper closes file_fd; reset
+            # it so the outer finally cannot close it twice.
+            _rollback_created_file(file_fd, parent_fd, components[-1])
+            file_fd = -1
             raise
         retained_file = True
         retained_parent = True
@@ -1259,20 +1301,11 @@ def scaffold_results(
         # Publish transaction: any failure after the O_EXCL create (fdopen,
         # write, flush, file fsync or directory fsync) must roll back the
         # already-created ledger, or a retry fails with EEXIST on a stale
-        # partial file.  Cleanup is best-effort through the pinned parent
-        # descriptor; the original exception is always re-raised.
-        try:
-            os.close(fd)
-        except OSError:
-            pass
-        try:
-            os.unlink(basename, dir_fd=parent_fd)
-        except OSError:
-            pass
-        try:
-            os.fsync(parent_fd)
-        except OSError:
-            pass
+        # partial file.  The canonical cleanup order (close file, unlink
+        # through the pinned parent, fsync the parent) is shared with the
+        # post-create verification failure inside _openat_exclusive_create;
+        # cleanup is best-effort and the original exception is re-raised.
+        _rollback_created_file(fd, parent_fd, basename)
         raise
     finally:
         os.close(parent_fd)

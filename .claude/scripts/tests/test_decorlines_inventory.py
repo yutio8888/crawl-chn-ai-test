@@ -333,10 +333,81 @@ class DecorlinesInventoryTests(unittest.TestCase):
         finally:
             MODULE.RESULTS_PATH = original
 
+    def _scaffold_with_parent_swap(
+        self, scaffold_path: Path, swap_after_create: bool,
+        swap_action, error_regex: str,
+    ) -> tuple[list[tuple], int, int]:
+        """Run scaffold_results while the parent directory is swapped away
+        exactly when the O_EXCL create is in flight, recording the rollback
+        cleanup syscalls.
+
+        ``swap_action`` renames/replaces the approved parent directory and
+        runs either right before or right after the O_EXCL open returns
+        (``swap_after_create``); either way the created file lands in the
+        pinned, now relocated parent and the post-create chain verification
+        must fail with ``error_regex``.
+
+        Returns ``(events, file_fd, parent_fd)`` where ``events`` records
+        every rollback cleanup call in call order as ``("close", fd)``,
+        ``("unlink", name, dir_fd)`` and ``("fsync", fd)`` tuples; the
+        created file and pinned parent descriptors are captured from the
+        open hook so the assertions do not depend on fd reuse."""
+        real_open = MODULE.os.open
+        real_close = MODULE.os.close
+        real_unlink = MODULE.os.unlink
+        real_fsync = MODULE.os.fsync
+        events: list[tuple] = []
+        captured: dict[str, int] = {}
+
+        def swapped_open(path, flags, *args, **kwargs):
+            if flags & os.O_CREAT and "file_fd" not in captured:
+                if not swap_after_create:
+                    swap_action()
+                fd = real_open(path, flags, *args, **kwargs)
+                captured["file_fd"] = fd
+                if swap_after_create:
+                    swap_action()
+                return fd
+            if (flags & os.O_DIRECTORY and path == "parent"
+                    and "parent_fd" not in captured):
+                # First O_DIRECTORY open of the parent component is the
+                # pinned ancestor; the later verification probe must not
+                # overwrite the captured descriptor.
+                fd = real_open(path, flags, *args, **kwargs)
+                captured["parent_fd"] = fd
+                return fd
+            return real_open(path, flags, *args, **kwargs)
+
+        def recording_close(fd):
+            if fd == captured.get("file_fd"):
+                events.append(("close", fd))
+            return real_close(fd)
+
+        def recording_unlink(name, **kwargs):
+            events.append(("unlink", name, kwargs.get("dir_fd")))
+            return real_unlink(name, **kwargs)
+
+        def recording_fsync(fd):
+            events.append(("fsync", fd))
+            return real_fsync(fd)
+
+        with mock.patch.object(MODULE.os, "open", new=swapped_open), \
+                mock.patch.object(MODULE.os, "close",
+                                  new=recording_close), \
+                mock.patch.object(MODULE.os, "unlink",
+                                  new=recording_unlink), \
+                mock.patch.object(MODULE.os, "fsync",
+                                  new=recording_fsync):
+            with self.assertRaisesRegex(MODULE.InventoryError, error_regex):
+                MODULE.scaffold_results(scaffold_path, self.inventory)
+        return events, captured["file_fd"], captured["parent_fd"]
+
     def test_scaffold_rejects_parent_renamed_between_verify_and_create(self):
         # Swap the parent away between the pre-create chain verification and
         # the exclusive create: the helper must fail closed and the ledger
-        # must never survive in the relocated directory.
+        # must never survive in the relocated directory.  The rollback must
+        # run in the canonical order: close the created file, unlink the
+        # exact basename through the pinned parent and fsync that parent.
         original = MODULE.RESULTS_PATH
         real_dir = self.root / "rename-away"
         real_dir.mkdir()
@@ -345,21 +416,20 @@ class DecorlinesInventoryTests(unittest.TestCase):
         moved = real_dir / "moved-parent"
         scaffold_path = parent / "decorlines-review-results.md"
         MODULE.RESULTS_PATH = scaffold_path
-        real_open = MODULE.os.open
-        swapped = False
-        def swapped_open(path, flags, *args, **kwargs):
-            nonlocal swapped
-            if flags & os.O_CREAT and not swapped:
-                swapped = True
-                os.rename(parent, moved)
-            return real_open(path, flags, *args, **kwargs)
         try:
-            with mock.patch.object(MODULE.os, "open",
-                                   side_effect=swapped_open):
-                with self.assertRaisesRegex(MODULE.InventoryError,
-                                            "re-opened"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-            self.assertFalse((moved / "decorlines-review-results.md").exists())
+            events, file_fd, parent_fd = self._scaffold_with_parent_swap(
+                scaffold_path,
+                swap_after_create=False,
+                swap_action=lambda: os.rename(parent, moved),
+                error_regex="re-opened",
+            )
+            self.assertEqual(
+                [("close", file_fd),
+                 ("unlink", scaffold_path.name, parent_fd),
+                 ("fsync", parent_fd)],
+                events,
+            )
+            self.assertFalse((moved / scaffold_path.name).exists())
             self.assertFalse(scaffold_path.exists())
         finally:
             MODULE.RESULTS_PATH = original
@@ -367,8 +437,10 @@ class DecorlinesInventoryTests(unittest.TestCase):
     def test_scaffold_rejects_parent_replaced_between_verify_and_create(self):
         # Replace the parent with a fresh directory at the approved pathname
         # between the pre-create chain verification and the exclusive create:
-        # identity re-verification must detect the swap and remove the file
-        # created through the pinned (relocated) parent.
+        # identity re-verification must detect the swap, remove the file
+        # created through the pinned (relocated) parent and fsync that parent
+        # after the unlink, leaving neither the relocated nor the fresh
+        # directory with a residual ledger.
         original = MODULE.RESULTS_PATH
         real_dir = self.root / "replace-dir"
         real_dir.mkdir()
@@ -377,30 +449,35 @@ class DecorlinesInventoryTests(unittest.TestCase):
         moved = real_dir / "moved-parent"
         scaffold_path = parent / "decorlines-review-results.md"
         MODULE.RESULTS_PATH = scaffold_path
-        real_open = MODULE.os.open
-        swapped = False
-        def swapped_open(path, flags, *args, **kwargs):
-            nonlocal swapped
-            if flags & os.O_CREAT and not swapped:
-                swapped = True
-                os.rename(parent, moved)
-                parent.mkdir()
-            return real_open(path, flags, *args, **kwargs)
+
+        def replace_parent():
+            os.rename(parent, moved)
+            parent.mkdir()
+
         try:
-            with mock.patch.object(MODULE.os, "open",
-                                   side_effect=swapped_open):
-                with self.assertRaisesRegex(MODULE.InventoryError,
-                                            "changed identity"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-            self.assertFalse((moved / "decorlines-review-results.md").exists())
-            self.assertFalse((parent / "decorlines-review-results.md").exists())
+            events, file_fd, parent_fd = self._scaffold_with_parent_swap(
+                scaffold_path,
+                swap_after_create=False,
+                swap_action=replace_parent,
+                error_regex="changed identity",
+            )
+            self.assertEqual(
+                [("close", file_fd),
+                 ("unlink", scaffold_path.name, parent_fd),
+                 ("fsync", parent_fd)],
+                events,
+            )
+            self.assertFalse((moved / scaffold_path.name).exists())
+            self.assertFalse((parent / scaffold_path.name).exists())
         finally:
             MODULE.RESULTS_PATH = original
 
     def test_scaffold_rejects_parent_renamed_after_create(self):
         # A parent swap that happens after the exclusive create but before
         # the post-create chain verification must also fail closed and must
-        # unlink the file already created through the pinned parent.
+        # unlink the file already created through the pinned parent, closing
+        # the file descriptor first and fsyncing the pinned parent after the
+        # unlink (canonical rollback order).
         original = MODULE.RESULTS_PATH
         real_dir = self.root / "rename-after"
         real_dir.mkdir()
@@ -409,23 +486,20 @@ class DecorlinesInventoryTests(unittest.TestCase):
         moved = real_dir / "moved-parent"
         scaffold_path = parent / "decorlines-review-results.md"
         MODULE.RESULTS_PATH = scaffold_path
-        real_open = MODULE.os.open
-        swapped = False
-        def swapped_open(path, flags, *args, **kwargs):
-            nonlocal swapped
-            if flags & os.O_CREAT and not swapped:
-                swapped = True
-                fd = real_open(path, flags, *args, **kwargs)
-                os.rename(parent, moved)
-                return fd
-            return real_open(path, flags, *args, **kwargs)
         try:
-            with mock.patch.object(MODULE.os, "open",
-                                   side_effect=swapped_open):
-                with self.assertRaisesRegex(MODULE.InventoryError,
-                                            "re-opened"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-            self.assertFalse((moved / "decorlines-review-results.md").exists())
+            events, file_fd, parent_fd = self._scaffold_with_parent_swap(
+                scaffold_path,
+                swap_after_create=True,
+                swap_action=lambda: os.rename(parent, moved),
+                error_regex="re-opened",
+            )
+            self.assertEqual(
+                [("close", file_fd),
+                 ("unlink", scaffold_path.name, parent_fd),
+                 ("fsync", parent_fd)],
+                events,
+            )
+            self.assertFalse((moved / scaffold_path.name).exists())
             self.assertFalse(scaffold_path.exists())
         finally:
             MODULE.RESULTS_PATH = original
