@@ -3062,7 +3062,10 @@ void _walk_on_decor(dungeon_feature_type new_grid)
             decorLine = getMiscString(get_form(you.form)->wiz_name + " " + messageLookup);
 
             if (decorLine == "")
-                decorLine = getMiscString(species::name(you.species) + " " + messageLookup);
+                decorLine = getMiscString(species::name(you.species,
+                                                        species::SPNAME_PLAIN,
+                                                        true)
+                                          + " " + messageLookup);
 
             if (decorLine == "")
                 decorLine = getMiscString(messageLookup);

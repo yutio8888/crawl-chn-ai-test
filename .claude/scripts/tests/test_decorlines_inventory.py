@@ -185,6 +185,116 @@ class DecorlinesInventoryTests(unittest.TestCase):
                     for site in self.inventory["dumps"]["english"]["token_facts"]["fragment_sites"]}),
         )
 
+    def test_root_keys_derive_from_exact_git_producers(self):
+        facts = MODULE._derivable_facts(BASELINE, "fixture")
+        self.assertEqual(47, len(facts["species"]))
+        self.assertEqual(27, len(facts["gods"]))
+        self.assertEqual(35, len(facts["forms"]))
+        self.assertEqual(sorted(MODULE.EXPECTED_FOUNTAIN_LOOKUPS),
+                         facts["fountains"])
+        self.assertEqual(sorted(MODULE.EXPECTED_CACHE_LOOKUPS),
+                         facts["caches"])
+        self.assertEqual(531, len(facts["keys"]))
+        # The derivable root set covers exactly the 117 direct roots.
+        roots = set(self.inventory["scope"]["root_keys"])
+        self.assertTrue(roots <= facts["keys"])
+
+    def test_inventory_output_schema_stays_byte_stable(self):
+        # The frozen review ledger binds inventory_sha256 to the historical
+        # output schema; the production-derived classification must not
+        # change the hashed inventory shape.
+        legacy_keys = {"artifact_sha256", "lua_site_count",
+                       "random_site_count", "reachability",
+                       "root_key_count", "source_name", "source_sha256",
+                       "token_facts", "variant_count"}
+        self.assertEqual(legacy_keys, set(self.inventory["dumps"]["english"]))
+        self.assertEqual(legacy_keys, set(self.inventory["dumps"]["localized"]))
+        # Byte-identical hash to the pre-derivation inventory on the same
+        # fixture inputs (verified against the historical module); the
+        # production ledger-bound hash is re-checked by the CLI candidate
+        # audit against docs/decorlines-review-results.md.
+        self.assertEqual(
+            "12e45ca20d3ca45960186041be4325b699439f72ed517637a44704751c0bff09",
+            self.inventory["inventory_sha256"],
+        )
+
+    def test_producer_derivation_uses_raw_english_identities(self):
+        facts = MODULE._derivable_facts(BASELINE, "fixture")
+        self.assertIn("spriggan", facts["species"])
+        self.assertIn("felid", facts["species"])
+        self.assertIn("kobold", facts["species"])
+        self.assertIn("maw", facts["forms"])
+        self.assertIn("bat swarm", facts["forms"])
+        self.assertIn("zin", facts["gods"])
+        self.assertIn("the shining one", facts["gods"])
+        # Raw English names only: a localized display name is never a
+        # valid lookup prefix producer (I67-CODE-006).
+        self.assertNotIn("小精灵", facts["species"])
+        self.assertNotIn("小精灵 fruit cache", facts["keys"])
+        self.assertIn("spriggan fruit cache", facts["keys"])
+
+    def test_localized_species_producers_fail_closed(self):
+        # Regression guard for I67-CODE-006: if the species prefix were
+        # localized (species::name() without raw=true returns the ZH display
+        # name under lang_t::ZH), the canonical English species cache keys
+        # would stop being derivable and the classification must reject the
+        # file instead of silently reclassifying them.
+        derivable = MODULE._derivable_facts(BASELINE, "negative localize")
+        mutated = dict(derivable)
+        keys = set(derivable["keys"])
+        keys -= {f"spriggan {cache}" for cache in derivable["caches"]}
+        keys |= {f"小精灵 {cache}" for cache in derivable["caches"]}
+        mutated["keys"] = frozenset(keys)
+        scoped = {entry["canonical_key"].lower()
+                  for entry in self.en["entries"]}
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "neither derivable"):
+            MODULE._classify_root_keys(scoped, mutated, "negative")
+
+    def test_misspelled_derived_key_fails_closed(self):
+        # A derived key that stops being derivable (misspelled prefix in the
+        # file, renamed producer, ...) must fail closed: it is neither a
+        # production root nor one of the frozen recursive aliases.
+        derivable = MODULE._derivable_facts(BASELINE, "negative misspell")
+        mutated = dict(derivable)
+        keys = set(derivable["keys"])
+        keys.discard("spriggan fruit cache")
+        mutated["keys"] = frozenset(keys)
+        scoped = {entry["canonical_key"].lower()
+                  for entry in self.en["entries"]}
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "neither derivable"):
+            MODULE._classify_root_keys(scoped, mutated, "negative")
+
+    def test_misspelled_key_in_file_fails_closed(self):
+        # End-to-end: a misspelled derived key inside the decorlines source
+        # itself must be rejected by the full dataset pipeline.
+        mutated = copy.deepcopy(self.en)
+        for entry in mutated["entries"]:
+            if entry["canonical_key"] == "spriggan fruit cache":
+                entry["canonical_key"] = "spriggan fruit cche"
+        raw = json.dumps(mutated, ensure_ascii=False).encode("utf-8")
+        derivable = MODULE._derivable_facts(BASELINE, "negative file")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "neither derivable"):
+            MODULE._dataset(mutated, raw, "database/", "negative EN",
+                            "candidate", derivable)
+
+    def test_deleted_derived_key_fails_closed(self):
+        # Removing one derived key from the file breaks the frozen identity
+        # count before classification can even run.
+        mutated = copy.deepcopy(self.en)
+        mutated["entries"] = [
+            entry for entry in mutated["entries"]
+            if entry["canonical_key"] != "spriggan fruit cache"
+        ]
+        raw = json.dumps(mutated, ensure_ascii=False).encode("utf-8")
+        derivable = MODULE._derivable_facts(BASELINE, "negative delete")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "identity count mismatch"):
+            MODULE._dataset(mutated, raw, "database/", "negative EN",
+                            "candidate", derivable)
+
     def test_complete_keep_ledger_passes(self):
         evidence = self.validate(self.records())
         self.assertEqual(132, len(evidence["cards"]))

@@ -3581,3 +3581,110 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(zh.parent_rng_unchanged);
     }
 }
+
+// =============================================================================
+// Issue #67 — decorlines species prefix lookup identity (I67-CODE-006).
+//
+// directn.cc::_walk_on_decor queries food-cache keys with a form wiz_name
+// prefix, then a species raw-name prefix, then the bare key.  The species
+// prefix must stay the English raw name in ZH mode too: the canonical
+// TextDB keys (EN and ZH decorlines.txt) are English, so a localized
+// prefix (e.g. "小精灵 fruit cache") can never match and all 29 species
+// cache keys would silently fall back to the generic line.
+// =============================================================================
+
+namespace
+{
+bool contains_non_ascii(const string &text)
+{
+    for (unsigned char c : text)
+        if (c >= 0x80)
+            return true;
+    return false;
+}
+
+// Mirror of the directn.cc::_walk_on_decor cache branch: form wiz_name
+// prefix first, then the species raw name, then the generic bare key.
+string decor_cache_line(species_type species, transformation form,
+                        const string &lookup)
+{
+    string line = getMiscString(get_form(form)->wiz_name + " " + lookup);
+    if (line == "")
+        line = getMiscString(
+            species::name(species, species::SPNAME_PLAIN, true)
+            + " " + lookup);
+    if (line == "")
+        line = getMiscString(lookup);
+    return line;
+}
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: decorlines species prefixes keep English lookup identity",
+                 "[zh-translation][decorlines][issue-67]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    struct species_cache_case
+    {
+        species_type species;
+        const char *english_raw_name;
+        const char *lookup;
+        const char *localized_prefix_key;
+    };
+    const array<species_cache_case, 3> cases = {{
+        { SP_SPRIGGAN, "Spriggan", "fruit cache", "小精灵 fruit cache" },
+        { SP_FELID,    "Felid",    "meat cache",  "猫 meat cache" },
+        { SP_KOBOLD,   "Kobold",   "fruit cache", "狗头人 fruit cache" },
+    }};
+
+    for (const species_cache_case &test : cases)
+    {
+        INFO("species=" << test.english_raw_name
+             << " lookup=" << test.lookup);
+        you.species = test.species;
+        you.form = transformation::none;
+
+        // The raw plain name is the English lookup identity even under ZH.
+        REQUIRE(species::name(you.species, species::SPNAME_PLAIN, true)
+                == test.english_raw_name);
+
+        // Real consumption chain: the "none" form prefix misses, the raw
+        // species prefix hits the canonical English key, and the expanded
+        // result carries Chinese bytes.
+        string line;
+        {
+            rng::subgenerator scoped_rng(
+                0x6701000000000000ULL + static_cast<uint64_t>(test.species),
+                0x6702000000000000ULL);
+            line = decor_cache_line(you.species, you.form, test.lookup);
+        }
+        INFO("chain line=" << line);
+        REQUIRE_FALSE(line.empty());
+        REQUIRE(contains_non_ascii(line));
+
+        // The bare generic key is the documented final fallback and must
+        // exist in ZH as well.
+        string generic;
+        {
+            rng::subgenerator scoped_rng(
+                0x6703000000000000ULL + static_cast<uint64_t>(test.species),
+                0x6704000000000000ULL);
+            generic = getMiscString(test.lookup);
+        }
+        INFO("generic=" << generic);
+        REQUIRE_FALSE(generic.empty());
+
+        // Anti-regression: the localized species prefix key (what
+        // raw=false produces under ZH) must not match any TextDB key, so
+        // reverting the consumer to species::name(you.species) fails here.
+        const string localized_key =
+            string(species::name(test.species)) + " " + test.lookup;
+        INFO("localized key=" << localized_key);
+        REQUIRE(getMiscString(localized_key) == "");
+        REQUIRE(getMiscString(test.localized_prefix_key) == "");
+    }
+}
