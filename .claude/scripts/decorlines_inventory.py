@@ -52,6 +52,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import sys
 from collections import Counter, deque
 from pathlib import Path
@@ -1122,78 +1123,46 @@ def _require_pinned_chain(
             os.close(fd)
 
 
-def _rollback_created_file(
-    file_fd: int, parent_fd: int, basename: str,
-) -> None:
-    """Roll back an exclusively created file in the canonical order.
+def _scaffold_write_transaction(path: Path, text: str) -> None:
+    """Exclusively create ``path`` and durably publish ``text`` in one
+    transaction that owns every descriptor from pinning until publish or
+    rollback.
 
-    Every failure path after a successful O_EXCL create must remove the
-    created file in exactly this order:
+    The transaction runs five phases sharing one fd lifecycle:
 
-    1. close the file descriptor, so the inode is unlinked cleanly and no
-       descriptor outlives the failed transaction;
-    2. unlink the exact basename through the pinned parent descriptor, so a
-       renamed or replaced parent can never trap the file outside the
-       approved location;
-    3. fsync the pinned parent descriptor after the unlink, so the removal
-       is durable and a crash cannot resurrect a stale partial ledger.
+    1. create - the approved pathname is decomposed lexically
+       (``os.path.abspath`` normalizes ``.``/``..`` without resolving
+       symlinks) and every ancestor component is pinned with
+       ``O_RDONLY|O_DIRECTORY|O_NOFOLLOW`` relative to the previously
+       pinned descriptor from the filesystem root; the whole chain is
+       re-verified against the approved pathname, and only then is the
+       final basename created with ``O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW``
+       through the pinned parent (an existing ledger - regular file,
+       hardlink or symlink - is rejected with EEXIST/ELOOP and never
+       followed, truncated or overwritten);
+    2. verify - immediately after the exclusive create the created entry
+       is checked with ``os.fstat`` (it must be a regular file) and the
+       whole chain is re-verified, so a concurrently renamed or replaced
+       parent is detected before any content is published;
+    3. write - the UTF-8 payload is written with ``os.write`` in a
+       partial-write loop and fsynced on the file descriptor;
+    4. publish - the containing directory is fsynced and every descriptor
+       is closed;
+    5. rollback - any failure from phase 2 on closes the created file,
+       unlinks the exact basename through the pinned parent, fsyncs that
+       parent and closes the pinned chain before the original exception
+       is re-raised, so a retry never trips EEXIST on a stale partial
+       ledger.
 
-    Each step is best-effort: an OSError is swallowed and the remaining
-    steps still run.  The caller always re-raises the original error and
-    must not close ``file_fd`` again after this helper returns (the caller
-    should invalidate it, e.g. reset it to -1, before the outer finally
-    runs).
+    The file descriptor is owned by this transaction for its whole
+    lifetime: no wrapper object (such as ``os.fdopen``) ever takes
+    ownership and closes it early, so no failure path can leave a
+    closed-but-still-referenced descriptor.  The rollback path catches
+    the ``Exception`` base class (not just ``InventoryError``/
+    ``OSError``), so any exception type raised by the syscalls or
+    identity checks triggers the same cleanup and the failure fails
+    closed.
     """
-    try:
-        os.close(file_fd)
-    except OSError:
-        pass
-    try:
-        os.unlink(basename, dir_fd=parent_fd)
-    except OSError:
-        pass
-    try:
-        os.fsync(parent_fd)
-    except OSError:
-        pass
-
-
-def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
-    """Exclusively create one regular file through a fully pinned openat
-    chain and return ``(file_fd, parent_dir_fd, basename)``.
-
-    The supplied pathname is decomposed lexically (``os.path.abspath``
-    normalizes ``.``/``..`` without resolving symlinks) and every ancestor
-    component is opened with ``O_RDONLY|O_DIRECTORY|O_NOFOLLOW`` relative
-    to the previously pinned descriptor, starting from the filesystem
-    root.  All ancestor descriptors stay open for the whole operation, so
-    a concurrent path replacement cannot redirect the write: the final
-    element is created with ``O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW`` against
-    the pinned parent descriptor, which means an existing ledger (regular
-    file, hardlink or symlink) is rejected with EEXIST/ELOOP and never
-    followed, truncated or overwritten.
-
-    Identity is verified twice against the approved pathname, immediately
-    before the exclusive create and immediately after it: the pathname is
-    re-walked from the pinned root without following symlinks and every
-    component must resolve to the same ``(st_dev, st_ino)`` identity as the
-    pinned descriptor.  A symlink anywhere in the chain fails closed (ELOOP
-    or ENOTDIR depending on platform/component type), a missing component
-    fails with ENOENT (directories are never auto-created), and a
-    non-directory fails with ENOTDIR.  If the post-create verification
-    fails, the created file is rolled back with the same canonical cleanup
-    order as a publish failure (close file, unlink through the pinned
-    parent, fsync the parent; see _rollback_created_file) and the operation
-    fails closed, so a renamed or replaced parent can never trap the ledger
-    outside the approved location.
-
-    The caller owns both returned descriptors and must fsync the file
-    content and then the containing directory before closing them.  The
-    returned basename is the exact final pathname component created
-    through the pinned parent; if publishing fails after the exclusive
-    create, the caller must remove it with
-    ``os.unlink(basename, dir_fd=parent_dir_fd)`` and fsync the parent
-    again, so a retry never trips EEXIST on a stale partial file."""
     absolute = os.path.abspath(os.fspath(path))
     if not absolute.startswith(os.sep):
         raise InventoryError(
@@ -1203,9 +1172,10 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
                   if component not in ("", ".")]
     pinned: list[int] = []
     file_fd = -1
-    retained_file = False
-    retained_parent = False
+    created = False
     try:
+        # Phase 1: pin the ancestor chain, re-verify it against the
+        # approved pathname, then exclusively create the final basename.
         try:
             pinned.append(os.open(
                 os.sep, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
@@ -1239,30 +1209,65 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
             raise InventoryError(
                 f"cannot exclusively create scaffold {absolute}: {exc}"
             ) from exc
-        try:
-            _require_pinned_chain(absolute, components, pinned)
-        except InventoryError:
-            # Post-create identity verification failed: the file was already
-            # created through the pinned parent, so it must be rolled back
-            # with the exact same cleanup order as a publish failure in
-            # scaffold_results (close file, unlink through the pinned
-            # parent, fsync the parent).  The helper closes file_fd; reset
-            # it so the outer finally cannot close it twice.
-            _rollback_created_file(file_fd, parent_fd, components[-1])
+        created = True
+        # Phase 2: post-create identity verification.  Any exception type
+        # here (an InventoryError from a chain mismatch, a native OSError
+        # from os.fstat, ...) falls into the shared rollback path below.
+        info = os.fstat(file_fd)
+        _require(stat.S_ISREG(info.st_mode),
+                 f"scaffold entry {absolute} is not a regular file")
+        _require_pinned_chain(absolute, components, pinned)
+        # Phase 3: write the payload with a partial-write loop and fsync
+        # the file content.
+        payload = text.encode("utf-8")
+        view = memoryview(payload)
+        while view:
+            written = os.write(file_fd, view)
+            if written <= 0:
+                raise OSError(
+                    f"scaffold write made no progress for {absolute}"
+                )
+            view = view[written:]
+        os.fsync(file_fd)
+        # Phase 4: publish - fsync the containing directory, then close
+        # every descriptor (file first, then the pinned chain).
+        os.fsync(parent_fd)
+        os.close(file_fd)
+        file_fd = -1
+        for fd in reversed(pinned):
+            os.close(fd)
+        pinned.clear()
+    except Exception:
+        # Phase 5: unified rollback.  When the exclusive create
+        # succeeded, remove the created file in the canonical order -
+        # close the file descriptor, unlink the exact basename through
+        # the pinned parent, fsync that parent - then close the pinned
+        # chain.  When the create itself failed, nothing was created and
+        # only the pinned chain is closed (a pre-existing ledger must
+        # never be unlinked).  Every cleanup step is best-effort; the
+        # original exception is re-raised whatever its type.
+        if file_fd >= 0:
+            try:
+                os.close(file_fd)
+            except OSError:
+                pass
             file_fd = -1
-            raise
-        retained_file = True
-        retained_parent = True
-        return file_fd, parent_fd, components[-1]
-    finally:
-        if file_fd >= 0 and not retained_file:
-            os.close(file_fd)
-        if retained_parent:
-            for fd in pinned[:-1]:
+        if created and pinned:
+            try:
+                os.unlink(components[-1], dir_fd=pinned[-1])
+            except OSError:
+                pass
+            try:
+                os.fsync(pinned[-1])
+            except OSError:
+                pass
+        for fd in reversed(pinned):
+            try:
                 os.close(fd)
-        else:
-            for fd in pinned:
-                os.close(fd)
+            except OSError:
+                pass
+        pinned.clear()
+        raise
 
 
 def scaffold_results(
@@ -1270,10 +1275,13 @@ def scaffold_results(
 ) -> list[dict[str, Any]]:
     """Generate the initial empty strict JSONL ledger (exclusive create).
 
-    Fails closed when the ledger already exists, so an existing review ledger
-    can never be overwritten or reopened, and when any pathname component
-    (parent directories included) is a symlink, so a path replacement cannot
-    redirect the write outside the pinned ledger location."""
+    Fails closed when the ledger already exists, so an existing review
+    ledger can never be overwritten or reopened, and when any pathname
+    component (parent directories included) is a symlink, so a path
+    replacement cannot redirect the write outside the pinned ledger
+    location.  The whole create-verify-write-publish lifecycle, including
+    rollback of any partial write, is owned by
+    _scaffold_write_transaction."""
     cards = [_skeleton_card(inventory, entry)
              for entry in inventory["entries"]]
     records = [_expected_metadata(inventory, cards), *cards]
@@ -1290,25 +1298,7 @@ def scaffold_results(
     resolved = path.resolve(strict=False)
     _require(resolved == RESULTS_PATH.resolve(strict=False),
              f"scaffold output must be {RESULTS_PATH}")
-    fd, parent_fd, basename = _openat_exclusive_create(path)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
-            stream.write(text)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.fsync(parent_fd)
-    except BaseException:
-        # Publish transaction: any failure after the O_EXCL create (fdopen,
-        # write, flush, file fsync or directory fsync) must roll back the
-        # already-created ledger, or a retry fails with EEXIST on a stale
-        # partial file.  The canonical cleanup order (close file, unlink
-        # through the pinned parent, fsync the parent) is shared with the
-        # post-create verification failure inside _openat_exclusive_create;
-        # cleanup is best-effort and the original exception is re-raised.
-        _rollback_created_file(fd, parent_fd, basename)
-        raise
-    finally:
-        os.close(parent_fd)
+    _scaffold_write_transaction(path, text)
     return records
 
 

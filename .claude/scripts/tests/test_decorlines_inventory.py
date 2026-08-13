@@ -504,21 +504,160 @@ class DecorlinesInventoryTests(unittest.TestCase):
         finally:
             MODULE.RESULTS_PATH = original
 
-    def test_scaffold_rolls_back_partial_file_when_fdopen_fails(self):
-        # If os.fdopen fails right after the O_EXCL create, the created file
-        # must be unlinked through the pinned parent and the directory fsynced,
-        # so a retry does not trip EEXIST on a stale partial ledger.
+    def _scaffold_with_injected_failure(
+        self, scaffold_path: Path, *,
+        fstat_hook=None, write_hook=None, fsync_hook=None,
+        error_regex: str,
+    ) -> tuple[list[tuple], int, int]:
+        """Run scaffold_results while a post-create syscall hook sabotages
+        one transaction step, recording the rollback cleanup syscalls.
+
+        Exactly one of ``fstat_hook``/``write_hook``/``fsync_hook`` fires
+        on its step (os.fstat on the created file, os.write, os.fsync on
+        the file or the directory) and raises an OSError matched by
+        ``error_regex``.  Hooks receive the affected descriptor and the
+        captured-fd dict ``(fd, captured)`` (``write_hook`` additionally
+        receives the payload as ``(fd, data, captured)``), where
+        ``captured["file_fd"]`` is the descriptor created by the O_EXCL
+        open; every other call must fall back to the real syscall.
+
+        Returns ``(events, file_fd, parent_fd)`` like
+        _scaffold_with_parent_swap: events records every rollback cleanup
+        call in call order as ``("close", fd)``, ``("unlink", name,
+        dir_fd)`` and ``("fsync", fd)`` tuples; ``parent_fd`` is captured
+        from the pinned ancestor open when the scaffold path has a parent
+        component and is -1 otherwise (the unlink event then carries the
+        authoritative pinned parent descriptor)."""
+        real_open = MODULE.os.open
+        real_close = MODULE.os.close
+        real_unlink = MODULE.os.unlink
+        real_fsync = MODULE.os.fsync
+        real_fstat = MODULE.os.fstat
+        real_write = MODULE.os.write
+        events: list[tuple] = []
+        captured: dict[str, int] = {}
+
+        def capturing_open(path, flags, *args, **kwargs):
+            fd = real_open(path, flags, *args, **kwargs)
+            if flags & os.O_CREAT and "file_fd" not in captured:
+                captured["file_fd"] = fd
+            if (flags & os.O_DIRECTORY and path == "parent"
+                    and "parent_fd" not in captured):
+                # First O_DIRECTORY open of the parent component is the
+                # pinned ancestor; verification probes must not overwrite
+                # the captured descriptor.
+                captured["parent_fd"] = fd
+            return fd
+
+        def recording_close(fd):
+            if fd == captured.get("file_fd"):
+                events.append(("close", fd))
+            return real_close(fd)
+
+        def recording_unlink(name, **kwargs):
+            events.append(("unlink", name, kwargs.get("dir_fd")))
+            return real_unlink(name, **kwargs)
+
+        def recording_fsync(fd):
+            events.append(("fsync", fd))
+            if fsync_hook is not None:
+                return fsync_hook(fd, captured)
+            return real_fsync(fd)
+
+        def recording_fstat(fd):
+            if fstat_hook is not None:
+                return fstat_hook(fd, captured)
+            return real_fstat(fd)
+
+        def recording_write(fd, data):
+            if write_hook is not None:
+                return write_hook(fd, data, captured)
+            return real_write(fd, data)
+
+        with mock.patch.object(MODULE.os, "open", new=capturing_open), \
+                mock.patch.object(MODULE.os, "close",
+                                  new=recording_close), \
+                mock.patch.object(MODULE.os, "unlink",
+                                  new=recording_unlink), \
+                mock.patch.object(MODULE.os, "fsync",
+                                  new=recording_fsync), \
+                mock.patch.object(MODULE.os, "fstat",
+                                  new=recording_fstat), \
+                mock.patch.object(MODULE.os, "write",
+                                  new=recording_write):
+            with self.assertRaisesRegex(OSError, error_regex):
+                MODULE.scaffold_results(scaffold_path, self.inventory)
+        return events, captured.get("file_fd", -1), \
+            captured.get("parent_fd", -1)
+
+    def _assert_canonical_rollback(
+        self, events: list[tuple], file_fd: int, basename: str,
+    ) -> int:
+        """Assert the recorded cleanup events contain the canonical
+        rollback sequence close(file) -> unlink(basename, dir_fd) ->
+        fsync(dir_fd) with nothing interleaved; the unlink and the
+        trailing fsync must share the pinned parent descriptor.  Returns
+        that parent descriptor."""
+        unlink_events = [event for event in events
+                         if event[0] == "unlink" and event[1] == basename]
+        self.assertEqual(
+            1, len(unlink_events),
+            f"expected exactly one unlink of {basename!r}, got {events}",
+        )
+        parent_fd = unlink_events[0][2]
+        index = events.index(unlink_events[0])
+        self.assertGreaterEqual(
+            index, 1,
+            f"close must precede the unlink, got {events}",
+        )
+        self.assertLess(
+            index + 1, len(events),
+            f"fsync must follow the unlink, got {events}",
+        )
+        self.assertEqual(
+            ("close", file_fd), events[index - 1],
+            f"unlink was not preceded by close({file_fd}): {events}",
+        )
+        self.assertEqual(
+            ("fsync", parent_fd), events[index + 1],
+            f"unlink was not followed by fsync({parent_fd}): {events}",
+        )
+        return parent_fd
+
+    def _assert_no_ledger_survives(self, scaffold_path: Path):
+        """Assert the ledger exists nowhere: neither at the approved path
+        nor relocated anywhere else under the temporary root."""
+        self.assertFalse(scaffold_path.exists())
+        self.assertEqual(
+            [], [path for path in self.root.rglob(scaffold_path.name)],
+            f"ledger {scaffold_path.name!r} survived outside the approved "
+            f"path",
+        )
+
+    def test_scaffold_rolls_back_when_post_create_fstat_fails(self):
+        # Blocker A (I67-CODE-004): a native OSError from os.fstat during
+        # the post-create identity check must trigger the canonical
+        # rollback exactly like an InventoryError chain mismatch, so no
+        # exception type can leave a stale partial ledger that makes a
+        # retry trip EEXIST.
         original = MODULE.RESULTS_PATH
-        scaffold_path = self.root / "fdopen-fail.md"
+        scaffold_path = self.root / "post-create-fstat-fail.md"
         MODULE.RESULTS_PATH = scaffold_path
+        real_fstat = MODULE.os.fstat
+
+        def fstat_hook(fd, captured):
+            if fd == captured.get("file_fd"):
+                raise OSError("injected post-create fstat failure")
+            return real_fstat(fd)
+
         try:
-            with mock.patch.object(
-                    MODULE.os, "fdopen",
-                    side_effect=OSError("injected fdopen failure")):
-                with self.assertRaisesRegex(OSError,
-                                            "injected fdopen failure"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-                self.assertFalse(scaffold_path.exists())
+            events, file_fd, _parent_fd = self._scaffold_with_injected_failure(
+                scaffold_path, fstat_hook=fstat_hook,
+                error_regex="injected post-create fstat failure",
+            )
+            self._assert_canonical_rollback(
+                events, file_fd, scaffold_path.name)
+            self._assert_no_ledger_survives(scaffold_path)
             records = MODULE.scaffold_results(scaffold_path, self.inventory)
             self.assertEqual(133, len(records))
             self.assertTrue(scaffold_path.exists())
@@ -526,58 +665,34 @@ class DecorlinesInventoryTests(unittest.TestCase):
             MODULE.RESULTS_PATH = original
 
     def test_scaffold_rolls_back_partial_file_when_write_fails(self):
+        # The payload is written with os.write in a partial-write loop; an
+        # injected short write followed by an OSError on the retry must
+        # roll back the partial file in the canonical order and the retry
+        # must succeed without EEXIST.
         original = MODULE.RESULTS_PATH
         scaffold_path = self.root / "write-fail.md"
         MODULE.RESULTS_PATH = scaffold_path
-        failing = []
-        def failing_stream(fd, *args, **kwargs):
-            class FailingStream:
-                def __enter__(self):
-                    return self
-                def __exit__(self, exc_type, exc, tb):
-                    return False
-                def write(self, text):
-                    raise OSError("injected write failure")
-                def flush(self):
-                    pass
-                def fileno(self):
-                    return fd
-            failing.append(1)
-            return FailingStream()
-        try:
-            with mock.patch.object(MODULE.os, "fdopen", new=failing_stream):
-                with self.assertRaisesRegex(OSError, "injected write failure"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-                self.assertFalse(scaffold_path.exists())
-                self.assertEqual([1], failing)
-            records = MODULE.scaffold_results(scaffold_path, self.inventory)
-            self.assertEqual(133, len(records))
-            self.assertTrue(scaffold_path.exists())
-        finally:
-            MODULE.RESULTS_PATH = original
+        real_write = MODULE.os.write
+        calls = []
 
-    def test_scaffold_rolls_back_partial_file_when_flush_fails(self):
-        original = MODULE.RESULTS_PATH
-        scaffold_path = self.root / "flush-fail.md"
-        MODULE.RESULTS_PATH = scaffold_path
-        def failing_stream(fd, *args, **kwargs):
-            class FailingStream:
-                def __enter__(self):
-                    return self
-                def __exit__(self, exc_type, exc, tb):
-                    return False
-                def write(self, text):
-                    pass
-                def flush(self):
-                    raise OSError("injected flush failure")
-                def fileno(self):
-                    return fd
-            return FailingStream()
+        def write_hook(fd, data, captured):
+            calls.append(fd)
+            if len(calls) == 1:
+                # Consume half the payload as a partial write, then fail
+                # on the retry with a native OSError.
+                half = len(data) // 2
+                real_write(fd, data[:half])
+                return half
+            raise OSError("injected write failure")
+
         try:
-            with mock.patch.object(MODULE.os, "fdopen", new=failing_stream):
-                with self.assertRaisesRegex(OSError, "injected flush failure"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-                self.assertFalse(scaffold_path.exists())
+            events, file_fd, _parent_fd = self._scaffold_with_injected_failure(
+                scaffold_path, write_hook=write_hook,
+                error_regex="injected write failure",
+            )
+            self._assert_canonical_rollback(
+                events, file_fd, scaffold_path.name)
+            self._assert_no_ledger_survives(scaffold_path)
             records = MODULE.scaffold_results(scaffold_path, self.inventory)
             self.assertEqual(133, len(records))
             self.assertTrue(scaffold_path.exists())
@@ -585,25 +700,29 @@ class DecorlinesInventoryTests(unittest.TestCase):
             MODULE.RESULTS_PATH = original
 
     def test_scaffold_rolls_back_partial_file_when_file_fsync_fails(self):
-        # The file fsync (first call) fails; cleanup must unlink the partial
-        # ledger and still fsync the containing directory through the real
-        # os.fsync, and the retry must succeed without EEXIST.
+        # The file fsync (first fsync call) fails; cleanup must unlink the
+        # partial ledger in the canonical order (close -> unlink -> fsync
+        # dir) and the retry must succeed without EEXIST.
         original = MODULE.RESULTS_PATH
         scaffold_path = self.root / "file-fsync-fail.md"
         MODULE.RESULTS_PATH = scaffold_path
         real_fsync = MODULE.os.fsync
         calls = []
-        def injected_fsync(fd):
+
+        def fsync_hook(fd, captured):
             calls.append(fd)
             if len(calls) == 1:
                 raise OSError("injected file fsync failure")
             return real_fsync(fd)
+
         try:
-            with mock.patch.object(MODULE.os, "fsync", new=injected_fsync):
-                with self.assertRaisesRegex(OSError,
-                                            "injected file fsync failure"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-                self.assertFalse(scaffold_path.exists())
+            events, file_fd, _parent_fd = self._scaffold_with_injected_failure(
+                scaffold_path, fsync_hook=fsync_hook,
+                error_regex="injected file fsync failure",
+            )
+            self._assert_canonical_rollback(
+                events, file_fd, scaffold_path.name)
+            self._assert_no_ledger_survives(scaffold_path)
             records = MODULE.scaffold_results(scaffold_path, self.inventory)
             self.assertEqual(133, len(records))
             self.assertTrue(scaffold_path.exists())
@@ -611,25 +730,30 @@ class DecorlinesInventoryTests(unittest.TestCase):
             MODULE.RESULTS_PATH = original
 
     def test_scaffold_rolls_back_partial_file_when_directory_fsync_fails(self):
-        # The directory fsync (second call) fails after the file content was
-        # fully written and fsynced; the ledger entry must still be removed
-        # and the directory fsynced again before the error propagates.
+        # The directory fsync (second fsync call) fails after the file
+        # content was fully written and fsynced; the ledger entry must
+        # still be removed in the canonical order and the directory
+        # fsynced again before the error propagates.
         original = MODULE.RESULTS_PATH
         scaffold_path = self.root / "dir-fsync-fail.md"
         MODULE.RESULTS_PATH = scaffold_path
         real_fsync = MODULE.os.fsync
         calls = []
-        def injected_fsync(fd):
+
+        def fsync_hook(fd, captured):
             calls.append(fd)
             if len(calls) == 2:
                 raise OSError("injected directory fsync failure")
             return real_fsync(fd)
+
         try:
-            with mock.patch.object(MODULE.os, "fsync", new=injected_fsync):
-                with self.assertRaisesRegex(
-                        OSError, "injected directory fsync failure"):
-                    MODULE.scaffold_results(scaffold_path, self.inventory)
-                self.assertFalse(scaffold_path.exists())
+            events, file_fd, _parent_fd = self._scaffold_with_injected_failure(
+                scaffold_path, fsync_hook=fsync_hook,
+                error_regex="injected directory fsync failure",
+            )
+            self._assert_canonical_rollback(
+                events, file_fd, scaffold_path.name)
+            self._assert_no_ledger_survives(scaffold_path)
             records = MODULE.scaffold_results(scaffold_path, self.inventory)
             self.assertEqual(133, len(records))
             self.assertTrue(scaffold_path.exists())
