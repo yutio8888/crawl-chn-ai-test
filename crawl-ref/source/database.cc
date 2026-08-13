@@ -332,7 +332,10 @@ bool TextDB::_needs_update(bool &has_input_files) const
             if (exists)
                 no_files = false;
             char buf[20];
-            snprintf(buf, sizeof(buf), ":%" PRId64, (int64_t)mtime);
+            // Render the mtime decimal digits directly; the output is
+            // byte-identical to ":%" PRId64 and avoids the string-literal
+            // macro adjacency that tree-sitter cannot parse.
+            snprintf(buf, sizeof(buf), ":%s", to_string(mtime).c_str());
             ts += buf;
         }
     }
@@ -395,7 +398,9 @@ void TextDB::_regenerate_db()
         if (file_exists(full_input_path)
             || !_parent) // english is mandatory
         {
-            snprintf(buf, sizeof(buf), ":%" PRId64, (int64_t)mtime);
+            // Same rendering as ":%" PRId64 without the macro adjacency
+            // that breaks the tree-sitter based varargs scanner.
+            snprintf(buf, sizeof(buf), ":%s", to_string(mtime).c_str());
             ts += buf;
             bool is_source = (string(_db_name) == "source");
             _store_text_db(full_input_path, _db, !is_source);
