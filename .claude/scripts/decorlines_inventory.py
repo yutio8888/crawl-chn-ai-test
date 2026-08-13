@@ -1122,9 +1122,9 @@ def _require_pinned_chain(
             os.close(fd)
 
 
-def _openat_exclusive_create(path: Path) -> tuple[int, int]:
+def _openat_exclusive_create(path: Path) -> tuple[int, int, str]:
     """Exclusively create one regular file through a fully pinned openat
-    chain and return ``(file_fd, parent_dir_fd)``.
+    chain and return ``(file_fd, parent_dir_fd, basename)``.
 
     The supplied pathname is decomposed lexically (``os.path.abspath``
     normalizes ``.``/``..`` without resolving symlinks) and every ancestor
@@ -1150,7 +1150,12 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int]:
     the ledger outside the approved location.
 
     The caller owns both returned descriptors and must fsync the file
-    content and then the containing directory before closing them."""
+    content and then the containing directory before closing them.  The
+    returned basename is the exact final pathname component created
+    through the pinned parent; if publishing fails after the exclusive
+    create, the caller must remove it with
+    ``os.unlink(basename, dir_fd=parent_dir_fd)`` and fsync the parent
+    again, so a retry never trips EEXIST on a stale partial file."""
     absolute = os.path.abspath(os.fspath(path))
     if not absolute.startswith(os.sep):
         raise InventoryError(
@@ -1206,7 +1211,7 @@ def _openat_exclusive_create(path: Path) -> tuple[int, int]:
             raise
         retained_file = True
         retained_parent = True
-        return file_fd, parent_fd
+        return file_fd, parent_fd, components[-1]
     finally:
         if file_fd >= 0 and not retained_file:
             os.close(file_fd)
@@ -1243,13 +1248,32 @@ def scaffold_results(
     resolved = path.resolve(strict=False)
     _require(resolved == RESULTS_PATH.resolve(strict=False),
              f"scaffold output must be {RESULTS_PATH}")
-    fd, parent_fd = _openat_exclusive_create(path)
+    fd, parent_fd, basename = _openat_exclusive_create(path)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
+        os.fsync(parent_fd)
+    except BaseException:
+        # Publish transaction: any failure after the O_EXCL create (fdopen,
+        # write, flush, file fsync or directory fsync) must roll back the
+        # already-created ledger, or a retry fails with EEXIST on a stale
+        # partial file.  Cleanup is best-effort through the pinned parent
+        # descriptor; the original exception is always re-raised.
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        try:
+            os.unlink(basename, dir_fd=parent_fd)
+        except OSError:
+            pass
+        try:
             os.fsync(parent_fd)
+        except OSError:
+            pass
+        raise
     finally:
         os.close(parent_fd)
     return records
