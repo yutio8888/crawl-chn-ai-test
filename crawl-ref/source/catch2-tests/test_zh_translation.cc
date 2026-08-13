@@ -12,6 +12,7 @@
 #include "decks.h"
 #include "describe.h"
 #include "describe-god.h"
+#include "directn.h"
 #include "dungeon.h"
 #include "duration-type.h"
 #include "env.h"
@@ -3602,25 +3603,10 @@ bool contains_non_ascii(const string &text)
             return true;
     return false;
 }
-
-// Mirror of the directn.cc::_walk_on_decor cache branch: form wiz_name
-// prefix first, then the species raw name, then the generic bare key.
-string decor_cache_line(species_type species, transformation form,
-                        const string &lookup)
-{
-    string line = getMiscString(get_form(form)->wiz_name + " " + lookup);
-    if (line == "")
-        line = getMiscString(
-            species::name(species, species::SPNAME_PLAIN, true)
-            + " " + lookup);
-    if (line == "")
-        line = getMiscString(lookup);
-    return line;
-}
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh: decorlines species prefixes keep English lookup identity",
+                 "zh: decorlines cache lookup resolves through the production chain",
                  "[zh-translation][decorlines][issue-67]")
 {
     init_properties();
@@ -3628,41 +3614,60 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you = player();
     you.set_position(coord_def(20, 20));
 
-    struct species_cache_case
+    struct decor_cache_case
     {
         species_type species;
+        transformation form;
         const char *english_raw_name;
         const char *lookup;
-        const char *localized_prefix_key;
+        decor_cache_hit expected_hit;
     };
-    const array<species_cache_case, 3> cases = {{
-        { SP_SPRIGGAN, "Spriggan", "fruit cache", "小精灵 fruit cache" },
-        { SP_FELID,    "Felid",    "meat cache",  "猫 meat cache" },
-        { SP_KOBOLD,   "Kobold",   "fruit cache", "狗头人 fruit cache" },
+    const array<decor_cache_case, 3> cases = {{
+        // form-hit: the serpent form wiz_name "amphisbaena" prefixes the
+        // canonical key before any species prefix is tried.
+        { SP_SPRIGGAN, transformation::serpent, "Spriggan", "fruit cache",
+          decor_cache_hit::form },
+        // species-hit: the "none" form misses, then the raw English
+        // species name hits the canonical key.
+        { SP_SPRIGGAN, transformation::none, "Spriggan", "fruit cache",
+          decor_cache_hit::species },
+        // generic-fallback: Armataur has no cache key, so the bare
+        // generic key resolves the line.
+        { SP_ARMATAUR, transformation::none, "Armataur", "fruit cache",
+          decor_cache_hit::generic },
     }};
 
-    for (const species_cache_case &test : cases)
+    for (const decor_cache_case &test : cases)
     {
         INFO("species=" << test.english_raw_name
+             << " form=" << static_cast<int>(test.form)
              << " lookup=" << test.lookup);
         you.species = test.species;
-        you.form = transformation::none;
+        you.form = test.form;
 
         // The raw plain name is the English lookup identity even under ZH.
         REQUIRE(species::name(you.species, species::SPNAME_PLAIN, true)
                 == test.english_raw_name);
 
-        // Real consumption chain: the "none" form prefix misses, the raw
-        // species prefix hits the canonical English key, and the expanded
-        // result carries Chinese bytes.
+        // Real production chain: decor_cache_lookup() is the exact helper
+        // directn.cc::_walk_on_decor calls, and the hit proves which
+        // branch resolved the key.  If the species prefix were reverted
+        // to raw=false, the localized key would miss and the chain would
+        // silently fall back to the generic line - the hit assertion
+        // below then fails even though a Chinese line is returned.
         string line;
+        decor_cache_hit hit = decor_cache_hit::none;
         {
             rng::subgenerator scoped_rng(
                 0x6701000000000000ULL + static_cast<uint64_t>(test.species),
                 0x6702000000000000ULL);
-            line = decor_cache_line(you.species, you.form, test.lookup);
+            const decor_cache_result result =
+                decor_cache_lookup(test.lookup);
+            line = result.line;
+            hit = result.hit;
         }
-        INFO("chain line=" << line);
+        INFO("hit=" << static_cast<int>(hit) << " line=" << line);
+        REQUIRE(hit == test.expected_hit);
         REQUIRE_FALSE(line.empty());
         REQUIRE(contains_non_ascii(line));
 
@@ -3685,6 +3690,5 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             string(species::name(test.species)) + " " + test.lookup;
         INFO("localized key=" << localized_key);
         REQUIRE(getMiscString(localized_key) == "");
-        REQUIRE(getMiscString(test.localized_prefix_key) == "");
     }
 }

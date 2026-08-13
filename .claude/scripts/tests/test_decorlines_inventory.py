@@ -6,6 +6,7 @@ import copy
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -22,6 +23,79 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 BASELINE = "306d9099ae08a94a64f051d487dfed0a9675e178"
+PRE_FIX = "4859eb33f1d2a4dc597273c7e11daa0c310b3602"
+FIXED = "a65287716072a3c73874c44b08a276ff6b39b4da"
+
+
+def _git_plumbing(arguments: list, input_text: str | None = None) -> str:
+    """Run a git plumbing command in the repository without touching the
+    worktree, index or refs (mirrors the monspell fixture helper)."""
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "decorlines test",
+        "GIT_AUTHOR_EMAIL": "decorlines-test@example.invalid",
+        "GIT_COMMITTER_NAME": "decorlines test",
+        "GIT_COMMITTER_EMAIL": "decorlines-test@example.invalid",
+    }
+    completed = subprocess.run(
+        ["git", "-C", str(ROOT), *arguments], input=input_text,
+        check=True, capture_output=True, text=True, env=env,
+    )
+    return completed.stdout.strip()
+
+
+def fixture_commit_with_directn(directn_source: str) -> str:
+    """Dangling commit whose tree mirrors the FIXED commit's producer
+    sources with ``crawl-ref/source/directn.cc`` replaced by
+    ``directn_source``.
+
+    Created purely through plumbing (hash-object/mktree/commit-tree), so
+    the working tree, index and refs are never touched.  This is the
+    exact-source negative fixture for I67-CODE-008: the derivation reads
+    the mutated consumer expression from the same kind of exact Git OID
+    the candidate audit uses."""
+
+    def listing(git_path: str) -> dict:
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-tree", "-r", FIXED, "--",
+             git_path],
+            check=True, capture_output=True, text=True,
+        ).stdout
+        entries = {}
+        for line in out.splitlines():
+            meta, name = line.split("\t", 1)
+            mode, kind, oid = meta.split(" ")
+            entries[Path(name).name] = (mode, kind, oid)
+        return entries
+
+    def mktree(entries: dict) -> str:
+        text = "".join(
+            f"{mode} {kind} {oid}\t{name}\n"
+            for name, (mode, kind, oid) in sorted(entries.items())
+        )
+        return _git_plumbing(["mktree"], input_text=text)
+
+    directn_blob = _git_plumbing(
+        ["hash-object", "-w", "--stdin"], input_text=directn_source)
+    species_tree = mktree(listing("crawl-ref/source/dat/species"))
+    forms_tree = mktree(listing("crawl-ref/source/dat/forms"))
+    source_entries = {
+        "dat": ("040000", "tree", mktree({
+            "species": ("040000", "tree", species_tree),
+            "forms": ("040000", "tree", forms_tree),
+        })),
+        "directn.cc": ("100644", "blob", directn_blob),
+    }
+    for name in ("religion.cc", "terrain.cc", "feature-data.h",
+                 "tag-version.h"):
+        source_entries[name] = listing(f"crawl-ref/source/{name}")[name]
+    source_tree = mktree(source_entries)
+    crawl_ref_tree = mktree({"source": ("040000", "tree", source_tree)})
+    root_tree = mktree({"crawl-ref": ("040000", "tree", crawl_ref_tree)})
+    return _git_plumbing(
+        ["commit-tree", root_tree, "-m",
+         "decorlines exact-source negative fixture"]
+    )
 
 
 def exact_artifact(oid: str, directory: str) -> dict:
@@ -186,7 +260,7 @@ class DecorlinesInventoryTests(unittest.TestCase):
         )
 
     def test_root_keys_derive_from_exact_git_producers(self):
-        facts = MODULE._derivable_facts(BASELINE, "fixture")
+        facts = MODULE._derivable_facts(BASELINE, "fixture", role="baseline")
         self.assertEqual(47, len(facts["species"]))
         self.assertEqual(27, len(facts["gods"]))
         self.assertEqual(35, len(facts["forms"]))
@@ -219,7 +293,7 @@ class DecorlinesInventoryTests(unittest.TestCase):
         )
 
     def test_producer_derivation_uses_raw_english_identities(self):
-        facts = MODULE._derivable_facts(BASELINE, "fixture")
+        facts = MODULE._derivable_facts(BASELINE, "fixture", role="baseline")
         self.assertIn("spriggan", facts["species"])
         self.assertIn("felid", facts["species"])
         self.assertIn("kobold", facts["species"])
@@ -239,7 +313,8 @@ class DecorlinesInventoryTests(unittest.TestCase):
         # name under lang_t::ZH), the canonical English species cache keys
         # would stop being derivable and the classification must reject the
         # file instead of silently reclassifying them.
-        derivable = MODULE._derivable_facts(BASELINE, "negative localize")
+        derivable = MODULE._derivable_facts(
+            BASELINE, "negative localize", role="baseline")
         mutated = dict(derivable)
         keys = set(derivable["keys"])
         keys -= {f"spriggan {cache}" for cache in derivable["caches"]}
@@ -255,7 +330,8 @@ class DecorlinesInventoryTests(unittest.TestCase):
         # A derived key that stops being derivable (misspelled prefix in the
         # file, renamed producer, ...) must fail closed: it is neither a
         # production root nor one of the frozen recursive aliases.
-        derivable = MODULE._derivable_facts(BASELINE, "negative misspell")
+        derivable = MODULE._derivable_facts(
+            BASELINE, "negative misspell", role="baseline")
         mutated = dict(derivable)
         keys = set(derivable["keys"])
         keys.discard("spriggan fruit cache")
@@ -274,7 +350,8 @@ class DecorlinesInventoryTests(unittest.TestCase):
             if entry["canonical_key"] == "spriggan fruit cache":
                 entry["canonical_key"] = "spriggan fruit cche"
         raw = json.dumps(mutated, ensure_ascii=False).encode("utf-8")
-        derivable = MODULE._derivable_facts(BASELINE, "negative file")
+        derivable = MODULE._derivable_facts(
+            BASELINE, "negative file", role="baseline")
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "neither derivable"):
             MODULE._dataset(mutated, raw, "database/", "negative EN",
@@ -289,11 +366,104 @@ class DecorlinesInventoryTests(unittest.TestCase):
             if entry["canonical_key"] != "spriggan fruit cache"
         ]
         raw = json.dumps(mutated, ensure_ascii=False).encode("utf-8")
-        derivable = MODULE._derivable_facts(BASELINE, "negative delete")
+        derivable = MODULE._derivable_facts(
+            BASELINE, "negative delete", role="baseline")
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "identity count mismatch"):
             MODULE._dataset(mutated, raw, "database/", "negative EN",
                             "candidate", derivable)
+
+    def _fixed_directn_source(self) -> str:
+        return MODULE.hardened.shared._decode_utf8(
+            MODULE.hardened.shared._git_blob_at_oid(
+                FIXED, "crawl-ref/source/directn.cc", "fixture"),
+            "fixture",
+        )
+
+    def test_walk_on_decor_shape_rejects_localized_species_call(self):
+        # I67-CODE-008 exact-source negative (source variant): mutating the
+        # fixed consumer's raw=true to raw=false - or dropping the raw
+        # argument entirely - localizes the species prefix under ZH and
+        # must be rejected by the same parser the full derivation uses,
+        # before any key is derived.
+        source = self._fixed_directn_source()
+        self.assertIn("species::SPNAME_PLAIN,", source)
+        raw_false = re.sub(
+            r"species::name\(you\.species,\s*species::SPNAME_PLAIN,"
+            r"\s*true\)",
+            "species::name(you.species, species::SPNAME_PLAIN, false)",
+            source,
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "species cache prefix"):
+            MODULE._walk_on_decor_shape(raw_false, "negative raw=false")
+        localized = re.sub(
+            r"species::name\(you\.species,\s*species::SPNAME_PLAIN,"
+            r"\s*true\)",
+            "species::name(you.species)",
+            source,
+        )
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "species cache prefix"):
+            MODULE._walk_on_decor_shape(localized, "negative localized")
+
+    def test_pre_fix_commit_localized_species_call_fails_derivation(self):
+        # I67-CODE-008: the pre-fix parent commit (4859eb33f1) constructs
+        # the species prefix with the localized species::name(you.species)
+        # call.  The full exact-source derivation must reject it - the
+        # round-7 blocker was that this commit still passed with 117 roots
+        # / 15 aliases because the derivation never read the expression.
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "species cache prefix"):
+            MODULE._derivable_facts(
+                PRE_FIX, "negative pre-fix commit", role="candidate")
+
+    def test_fixture_commit_with_localized_species_call_fails_derivation(self):
+        # I67-CODE-008 exact-source negative (fixture commit): build a
+        # dangling commit whose tree is the FIXED producer tree with
+        # directn.cc's raw=true reverted to the localized call; the full
+        # derivation path (exact-Git blob -> shape parser -> key
+        # construction) must reject it.  This is not a post-derived set
+        # mutation: the fixture is a real Git OID the derivation reads.
+        source = self._fixed_directn_source()
+        mutated = re.sub(
+            r"species::name\(you\.species,\s*species::SPNAME_PLAIN,"
+            r"\s*true\)",
+            "species::name(you.species)",
+            source,
+        )
+        fixture = fixture_commit_with_directn(mutated)
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "species cache prefix"):
+            MODULE._derivable_facts(
+                fixture, "negative fixture", role="candidate")
+
+    def test_baseline_role_records_pre_fix_species_shape(self):
+        # The frozen data baseline OID predates the consumer fix and
+        # carries the abbreviated pre-fix call; the baseline derivation
+        # records that shape as evidence and still derives the frozen
+        # model's raw English prefixes (the exact prefixes the fix
+        # restores for ZH).
+        facts = MODULE._derivable_facts(
+            BASELINE, "fixture", role="baseline")
+        self.assertEqual("pre-fix-abbreviated", facts["species_shape"])
+        self.assertIn("spriggan fruit cache", facts["keys"])
+
+    def test_fixed_commit_passes_strict_species_shape(self):
+        facts = MODULE._derivable_facts(FIXED, "fixture")
+        self.assertEqual("raw-plain-fixed", facts["species_shape"])
+        self.assertIn("spriggan fruit cache", facts["keys"])
+
+    def test_worktree_head_passes_strict_species_shape(self):
+        # The current production structure resolves the food chain through
+        # the decor_cache_lookup() helper shared with the catch2 tests;
+        # the strict derivation must accept it and record the fixed shape.
+        head = MODULE.hardened.shared._git_output(
+            ["rev-parse", "HEAD"], "worktree HEAD"
+        ).decode("ascii").strip()
+        facts = MODULE._derivable_facts(head, "fixture")
+        self.assertEqual("raw-plain-fixed", facts["species_shape"])
+        self.assertIn("spriggan fruit cache", facts["keys"])
 
     def test_complete_keep_ledger_passes(self):
         evidence = self.validate(self.records())
@@ -425,6 +595,75 @@ class DecorlinesInventoryTests(unittest.TestCase):
                 self.en_path, "fixture EN", "database/",
                 expected_database="speak",
             )
+
+    def _external_key_mutated_load(
+        self, mutate, error_regex: str,
+    ):
+        """Run the full baseline load path on a dump whose external
+        TextDB dependency key was mutated by ``mutate``; the exact-Git
+        closure check must reject it."""
+        mutated = copy.deepcopy(self.en)
+        mutate(mutated)
+        path = self.root / f"{self.id().split('.')[-1]}.json"
+        path.write_text(json.dumps(mutated, ensure_ascii=False),
+                        encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError, error_regex):
+            MODULE._load_dataset(BASELINE, path, "database/",
+                                 "negative EN", "baseline")
+
+    def test_external_key_closure_binds_exact_git_entries(self):
+        # I67-CODE-009 positive: the three external MiscDB dependency keys
+        # (any_colour/any_colour_pattern/any_graffiti) are derived from
+        # the exact-Git sources and must be selectable, parse-clean,
+        # non-empty and verbatim-equal to the dump entries.
+        derived = MODULE._derive_scoped_misc_dump(
+            BASELINE, "database/", "fixture EN")
+        external = MODULE._derive_external_entries(derived, "fixture EN")
+        self.assertEqual(set(MODULE.EXTERNAL_TEXTDB_KEYS), set(external))
+        for key, entry in external.items():
+            self.assertIsNone(entry["parse_error"], key)
+            self.assertFalse(entry["body_empty"], key)
+            self.assertTrue(entry["variants"], key)
+        MODULE._require_external_key_closure(self.en, derived, "fixture EN")
+
+    def test_external_key_remove_fails_closed(self):
+        # I67-CODE-009 mutation 1: removing an external dependency key from
+        # the dump must fail the full load path.
+        def mutate(artifact):
+            artifact["entries"] = [
+                entry for entry in artifact["entries"]
+                if entry["canonical_key"] != "any_graffiti"
+            ]
+        self._external_key_mutated_load(
+            mutate, "missing external TextDB key")
+
+    def test_external_key_empty_fails_closed(self):
+        # I67-CODE-009 mutation 2: emptying an external dependency key
+        # (empty body, no variants) must fail the full load path.
+        def mutate(artifact):
+            for entry in artifact["entries"]:
+                if entry["canonical_key"] == "any_colour":
+                    entry["raw_body"] = ""
+                    entry["body_empty"] = True
+                    entry["variants"] = []
+        self._external_key_mutated_load(
+            mutate, "does not match the exact Git derivation")
+
+    def test_external_key_forged_fails_closed(self):
+        # I67-CODE-009 mutation 3: a forged external dependency key (body
+        # and variant text replaced with valid-looking content) must fail
+        # the full load path: the forged entry passes artifact validation
+        # but differs from the exact-Git derivation.
+        def mutate(artifact):
+            for entry in artifact["entries"]:
+                if entry["canonical_key"] == "any_colour_pattern":
+                    entry["raw_body"] = "forged replacement body"
+                    entry["variants"] = [
+                        dict(entry["variants"][0],
+                             raw_pattern="forged replacement text")
+                    ]
+        self._external_key_mutated_load(
+            mutate, "does not match the exact Git derivation")
 
     def test_scaffold_rejects_symlinked_path_components(self):
         original = MODULE.RESULTS_PATH
@@ -617,15 +856,17 @@ class DecorlinesInventoryTests(unittest.TestCase):
     def _scaffold_with_injected_failure(
         self, scaffold_path: Path, *,
         fstat_hook=None, write_hook=None, fsync_hook=None,
-        error_regex: str,
+        error_regex: str, error_type=OSError,
     ) -> tuple[list[tuple], int, int]:
         """Run scaffold_results while a post-create syscall hook sabotages
         one transaction step, recording the rollback cleanup syscalls.
 
         Exactly one of ``fstat_hook``/``write_hook``/``fsync_hook`` fires
         on its step (os.fstat on the created file, os.write, os.fsync on
-        the file or the directory) and raises an OSError matched by
-        ``error_regex``.  Hooks receive the affected descriptor and the
+        the file or the directory) and raises an exception matched by
+        ``error_type``/``error_regex`` (OSError by default; pass
+        ``error_type=KeyboardInterrupt`` for BaseException-injection
+        tests).  Hooks receive the affected descriptor and the
         captured-fd dict ``(fd, captured)`` (``write_hook`` additionally
         receives the payload as ``(fd, data, captured)``), where
         ``captured["file_fd"]`` is the descriptor created by the O_EXCL
@@ -695,7 +936,7 @@ class DecorlinesInventoryTests(unittest.TestCase):
                                   new=recording_fstat), \
                 mock.patch.object(MODULE.os, "write",
                                   new=recording_write):
-            with self.assertRaisesRegex(OSError, error_regex):
+            with self.assertRaisesRegex(error_type, error_regex):
                 MODULE.scaffold_results(scaffold_path, self.inventory)
         return events, captured.get("file_fd", -1), \
             captured.get("parent_fd", -1)
@@ -869,6 +1110,99 @@ class DecorlinesInventoryTests(unittest.TestCase):
             self.assertTrue(scaffold_path.exists())
         finally:
             MODULE.RESULTS_PATH = original
+
+    def test_scaffold_rolls_back_zero_byte_ledger_on_keyboard_interrupt(self):
+        # I67-CODE-010: KeyboardInterrupt is a BaseException, not an
+        # Exception.  An injected KeyboardInterrupt from os.write must
+        # follow the same rollback path as any OSError: the zero-byte
+        # ledger is unlinked in the canonical order and a retry succeeds
+        # without EEXIST.
+        original = MODULE.RESULTS_PATH
+        scaffold_path = self.root / "keyboard-interrupt.md"
+        MODULE.RESULTS_PATH = scaffold_path
+
+        def write_hook(fd, data, captured):
+            raise KeyboardInterrupt("injected KeyboardInterrupt")
+
+        try:
+            events, file_fd, _parent_fd = self._scaffold_with_injected_failure(
+                scaffold_path, write_hook=write_hook,
+                error_regex="injected KeyboardInterrupt",
+                error_type=KeyboardInterrupt,
+            )
+            self._assert_canonical_rollback(
+                events, file_fd, scaffold_path.name)
+            self._assert_no_ledger_survives(scaffold_path)
+            records = MODULE.scaffold_results(scaffold_path, self.inventory)
+            self.assertEqual(133, len(records))
+            self.assertTrue(scaffold_path.exists())
+        finally:
+            MODULE.RESULTS_PATH = original
+
+    def test_scaffold_ignores_post_publish_ancestor_close_error(self):
+        # I67-CODE-010: phase 4 closes the file first, then the pinned
+        # chain in reverse (parent first, then ancestors).  A close error
+        # on an ancestor after the parent already closed must not turn the
+        # published ledger into a failure: the descriptor cleanup after
+        # the publish fsync is best-effort, so the call succeeds, the
+        # ledger keeps its complete payload and the committed state is
+        # durable (a retry fails closed with EEXIST instead of a partial
+        # residue).
+        original = MODULE.RESULTS_PATH
+        real_dir = self.root / "ancestor-close-dir"
+        real_dir.mkdir()
+        parent = real_dir / "parent"
+        parent.mkdir()
+        scaffold_path = parent / "ancestor-close-fail.md"
+        MODULE.RESULTS_PATH = scaffold_path
+        real_open = MODULE.os.open
+        real_close = MODULE.os.close
+        real_fsync = MODULE.os.fsync
+        captured: dict = {}
+        state = {"armed": False, "failed": False}
+
+        def capturing_open(path, flags, *args, **kwargs):
+            fd = real_open(path, flags, *args, **kwargs)
+            if flags & os.O_CREAT and "file_fd" not in captured:
+                captured["file_fd"] = fd
+            if (flags & os.O_DIRECTORY and path == "parent"
+                    and "parent_fd" not in captured):
+                captured["parent_fd"] = fd
+            return fd
+
+        def arming_fsync(fd):
+            if fd == captured.get("parent_fd"):
+                state["armed"] = True
+            return real_fsync(fd)
+
+        def sabotaging_close(fd):
+            # After the publish fsync, the first close of a pinned
+            # ancestor (i.e. not the created file, not the parent itself)
+            # fails with a native OSError; the transaction must swallow it
+            # as best-effort cleanup of the committed ledger.
+            if (state["armed"] and not state["failed"]
+                    and fd != captured.get("file_fd")
+                    and fd != captured.get("parent_fd")):
+                state["failed"] = True
+                raise OSError(
+                    "injected post-publish ancestor close failure")
+            return real_close(fd)
+
+        with mock.patch.object(MODULE.os, "open", new=capturing_open), \
+                mock.patch.object(MODULE.os, "fsync", new=arming_fsync), \
+                mock.patch.object(MODULE.os, "close",
+                                  new=sabotaging_close):
+            records = MODULE.scaffold_results(scaffold_path, self.inventory)
+        self.assertTrue(state["failed"],
+                        "the ancestor close error was not injected")
+        self.assertEqual(133, len(records))
+        self.assertEqual(records, MODULE._strict_block(scaffold_path))
+        # The published ledger is durable and complete: a retry fails
+        # closed on the existing file rather than tripping over a partial
+        # residue or overwriting the committed result.
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "exclusively create"):
+            MODULE.scaffold_results(scaffold_path, self.inventory)
 
     def test_cli_rejects_speak_dump_on_decorlines_path(self):
         # The real decorlines CLI must fail closed when a speak-family dump

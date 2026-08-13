@@ -3004,6 +3004,29 @@ void describe_floor()
         _walk_on_decor(grid);
 }
 
+decor_cache_result decor_cache_lookup(const string &messageLookup)
+{
+    string line = getMiscString(get_form(you.form)->wiz_name + " " + messageLookup);
+    if (!line.empty())
+        return {line, decor_cache_hit::form};
+
+    // The species prefix must stay the English raw plain name: the
+    // canonical decorlines keys (EN and ZH) are English, so a localized
+    // display name (what raw=false returns under ZH) can never match and
+    // every species cache key would silently fall back to the generic
+    // line below.
+    line = getMiscString(species::name(you.species,
+                                       species::SPNAME_PLAIN,
+                                       true)
+                         + " " + messageLookup);
+    if (!line.empty())
+        return {line, decor_cache_hit::species};
+
+    line = getMiscString(messageLookup);
+    return {line, line.empty() ? decor_cache_hit::none
+                               : decor_cache_hit::generic};
+}
+
 void _walk_on_decor(dungeon_feature_type new_grid)
 {
     string messageLookup = "";
@@ -3059,16 +3082,9 @@ void _walk_on_decor(dungeon_feature_type new_grid)
         }
         else
         {
-            decorLine = getMiscString(get_form(you.form)->wiz_name + " " + messageLookup);
-
-            if (decorLine == "")
-                decorLine = getMiscString(species::name(you.species,
-                                                        species::SPNAME_PLAIN,
-                                                        true)
-                                          + " " + messageLookup);
-
-            if (decorLine == "")
-                decorLine = getMiscString(messageLookup);
+            const decor_cache_result result =
+                decor_cache_lookup(messageLookup);
+            decorLine = result.line;
         }
 
         // Needed for in-line randomization.

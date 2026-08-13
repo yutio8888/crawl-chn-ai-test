@@ -33,8 +33,15 @@ reach; every key must be exactly one of the two classes and the
 reachability proof requires every non-root key to be reached from the root
 set.  ``@any_colour@``/``@any_colour_pattern@``/``@any_graffiti@`` are
 external MiscDB lookups resolved in the already-loaded colourname/graffiti
-sources; ``@your_weapon@``/``@your_hands@`` are replaced by the consumer
-after expansion.
+sources; their complete effective entries are re-derived from the exact
+Git MiscDB sources and must match the dump verbatim, so a removed,
+emptied or forged external key fails the load.  ``@your_weapon@``/
+``@your_hands@`` are replaced by the consumer after expansion.  The
+producer enumeration is bound to the exact-Git consumer expressions of
+directn.cc::_walk_on_decor (species raw-name call with ``raw=true``,
+form wiz_name access, ``_god_name_en``, ``dungeon_feature_name`` and
+both fallback chains), so a consumer regression to a localized species
+prefix is rejected instead of silently reclassifying the roots.
 
 The strict JSONL review ledger (one metadata record plus 132 cards) is the
 issue #67 audit trail.  ``--scaffold-output`` generates the initial empty
@@ -369,6 +376,110 @@ def _derive_scoped_misc_dump(
     )
 
 
+def _derive_external_entries(
+    derived: dict[str, Any], label: str,
+) -> dict[str, dict[str, Any]]:
+    """Re-derive the effective entries of the external TextDB dependency
+    tokens from the exact-Git MiscDB sources.
+
+    ``derived`` carries the full source manifest/order/snapshots of the
+    scoped derivation; only its ``entries`` are restricted to decorlines.
+    This function re-runs the production parse/merge over the same exact
+    sources for the external keys (``any_colour``/``any_colour_pattern``/
+    ``any_graffiti``) so their effective provenance, body, history and
+    variants are bound to exact Git instead of trusting the mutable
+    dump's all-keys closure.  Every external key must be selectable in
+    the merged map, parse-clean and non-empty; anything else fails
+    closed."""
+    parsed = []
+    provenance_by_entry: dict[int, dict[str, Any]] = {}
+    histories: dict[str, list[dict[str, Any]]] = {}
+    for source in derived["sources"]:
+        try:
+            definitions = hardened.shared.parse_db_keys(
+                source["normalized_utf8"], source["source_name"]
+            )
+        except SystemExit as exc:
+            raise InventoryError(
+                f"{label} TextDB parse failed: {exc}") from exc
+        for ordinal, definition in enumerate(definitions):
+            provenance = {
+                "source_name": source["source_name"],
+                "load_index": source["load_index"],
+                "definition_ordinal": ordinal,
+            }
+            parsed.append(definition)
+            provenance_by_entry[id(definition)] = provenance
+            histories.setdefault(
+                hardened.shared.lowercase_string(definition.raw_key), []
+            ).append(provenance)
+    try:
+        effective, _overrides = hardened.shared.merge_desc_sequence(parsed)
+    except SystemExit as exc:
+        raise InventoryError(
+            f"{label} TextDB merge failed: {exc}") from exc
+    entries: dict[str, dict[str, Any]] = {}
+    for key in sorted(EXTERNAL_TEXTDB_KEYS):
+        _require(
+            key in effective,
+            f"{label} external TextDB key {key!r} is not selectable from "
+            f"the exact Git MiscDB sources",
+        )
+        winner = effective[key]
+        variants, parse_error = hardened.shared._parse_weighted_entry(
+            winner.value, provenance_by_entry[id(winner)], key
+        )
+        entry = {
+            "canonical_key": key,
+            "effective_provenance": provenance_by_entry[id(winner)],
+            "raw_body": winner.value,
+            "source_history": histories[key],
+            "variants": variants,
+            "parse_error": parse_error,
+            "body_empty": winner.value == "",
+        }
+        _require(
+            entry["parse_error"] is None,
+            f"{label} external TextDB key {key!r} has a parse error in "
+            f"the exact Git sources",
+        )
+        _require(
+            not entry["body_empty"],
+            f"{label} external TextDB key {key!r} has an empty body in "
+            f"the exact Git sources",
+        )
+        entries[key] = entry
+    return entries
+
+
+def _require_external_key_closure(
+    artifact: dict[str, Any], derived: dict[str, Any], label: str,
+) -> None:
+    """Bind the external TextDB dependency tokens to the exact-Git
+    derivation.
+
+    The scoped derivation only compares entries that touch decorlines.txt,
+    so a tampered external key (removed, emptied or forged) could satisfy
+    the scoped comparison.  This check derives the three external keys'
+    complete effective entries from the same exact-Git sources and requires
+    the dump's entries to be selectable, parse-clean, non-empty and
+    verbatim identical (provenance, raw body, source history and parsed
+    variants)."""
+    expected = _derive_external_entries(derived, label)
+    by_key = {entry["canonical_key"]: entry for entry in artifact["entries"]}
+    for key, expected_entry in sorted(expected.items()):
+        actual = by_key.get(key)
+        _require(
+            actual is not None,
+            f"{label} dump is missing external TextDB key {key!r}",
+        )
+        _require(
+            actual == expected_entry,
+            f"{label} external TextDB key {key!r} does not match the "
+            f"exact Git derivation",
+        )
+
+
 def _require_regular_misc_git_sources(
     ref: str, directory: str, label: str,
 ) -> None:
@@ -605,14 +716,39 @@ def _fountain_lookups(oid: str, label: str) -> set[str]:
     return set(names)
 
 
-def _cache_lookups(oid: str, label: str) -> set[str]:
-    """The messageLookup literals of directn.cc::_walk_on_decor."""
-    source = hardened.shared._decode_utf8(
-        hardened.shared._git_blob_at_oid(
-            oid, "crawl-ref/source/directn.cc", label
-        ),
-        label,
-    )
+def _walk_on_decor_shape(
+    source: str, label: str, role: str = "candidate",
+) -> dict[str, Any]:
+    """Parse the exact lookup-construction expressions of
+    directn.cc::_walk_on_decor and fail closed on any deviation.
+
+    The producer enumeration is bound to the actual production
+    expressions, not to an assumed mirror: every expression the consumer
+    uses to build its query keys must appear in the exact-Git source.  The
+    fountain branch appends ``dungeon_feature_name(new_grid)``, the food
+    branch appends the three cache literals, and both fallback chains
+    (form -> species raw-name -> generic; god -> default -> generic) must
+    keep their exact shape.  The food chain is recognized both inline in
+    ``_walk_on_decor`` (pre-helper commits) and inside the production
+    helper ``decor_cache_lookup`` (the current structure, shared with the
+    issue-67 catch2 tests); when the helper exists the food branch must
+    resolve through it.
+
+    ``role`` decides how strict the species prefix check is:
+
+    - ``candidate`` (audits of review/candidate/proposal commits and the
+      worktree HEAD) requires the fixed raw-name call
+      ``species::name(you.species, species::SPNAME_PLAIN, true)``: the
+      abbreviated pre-fix call and any raw=false variant localize the
+      prefix under ZH and silently disable every species cache key, so
+      they are rejected before any key is derived;
+    - ``baseline`` (the frozen data baseline OID, which predates the
+      consumer fix) additionally recognizes the documented historical
+      abbreviated call ``species::name(you.species)`` and records it as
+      evidence.  The baseline data audit still derives the frozen-model
+      prefixes (raw English names - exactly the prefixes the fix restores
+      for ZH), but the historical shape is reported instead of silently
+      assumed."""
     match = re.search(
         r"void _walk_on_decor\(dungeon_feature_type new_grid\)\s*"
         r"\{(.*?)\n\}",
@@ -620,28 +756,190 @@ def _cache_lookups(oid: str, label: str) -> set[str]:
     )
     _require(match is not None,
              f"{label} cannot find _walk_on_decor() in directn.cc")
-    literals = re.findall(
-        r'messageLookup\s*\+=\s*"([^"]+)";', match.group(1)
+    body = match.group(1)
+    # The food-cache chain lives in the production helper
+    # decor_cache_lookup() (shared with the issue-67 catch2 tests) since
+    # the I67-CODE-007 refactor; older commits carry the same chain
+    # inline in _walk_on_decor.  Both structures are recognized.
+    helper_match = re.search(
+        r"decor_cache_result decor_cache_lookup\("
+        r"const string &messageLookup\)\s*\{(.*?)\n\}",
+        source, re.DOTALL,
     )
-    _require(bool(literals),
+    helper = helper_match.group(1) if helper_match else None
+    chain_text = helper if helper is not None else body
+    consumer_text = (helper + "\n" + body) if helper is not None else body
+
+    cache_literals = re.findall(
+        r'messageLookup\s*\+=\s*"([^"]+)";', body)
+    _require(bool(cache_literals),
              f"{label} _walk_on_decor() has no cache lookup literals")
-    return set(literals)
+    _require(
+        re.search(
+            r"messageLookup\s*\+=\s*dungeon_feature_name\(new_grid\);",
+            body) is not None,
+        f"{label} fountain messageLookup must be built with "
+        f"dungeon_feature_name(new_grid)",
+    )
+
+    def _exact_call(pattern: str, description: str) -> str:
+        call = re.search(pattern, consumer_text, re.DOTALL)
+        _require(call is not None,
+                 f"{label} {description} is missing from the decorlines "
+                 f"consumer")
+        return re.sub(r"\s+", " ", call.group(1)).strip()
+
+    species_call = _exact_call(
+        r"species::name\(([^;]*?)\)", "species cache prefix call")
+    if species_call == "you.species, species::SPNAME_PLAIN, true":
+        species_shape = "raw-plain-fixed"
+    elif role == "baseline" and species_call == "you.species":
+        species_shape = "pre-fix-abbreviated"
+    else:
+        expected = (
+            "species::name(you.species, species::SPNAME_PLAIN, true)"
+            if role != "baseline"
+            else "species::name(you.species, species::SPNAME_PLAIN, "
+                 "true) or the documented pre-fix "
+                 "species::name(you.species)"
+        )
+        _require(
+            False,
+            f"{label} species cache prefix must be the raw plain English "
+            f"name {expected}, got species::name({species_call})",
+        )
+    form_call = _exact_call(
+        r"get_form\(([^;]*?)\)->wiz_name",
+        "form cache prefix expression")
+    _require(form_call == "you.form",
+             f"{label} form cache prefix must be "
+             f"get_form(you.form)->wiz_name, got "
+             f"get_form({form_call})->wiz_name")
+    god_call = _exact_call(
+        r"_god_name_en\(([^;]*?)\)", "god prefix expression")
+    _require(god_call == "you.religion",
+             f"{label} god prefix must be _god_name_en(you.religion), "
+             f"got _god_name_en({god_call})")
+
+    # The food chain must try the form prefix, then the species prefix of
+    # the recognized shape, then the bare generic key, with a result
+    # guard between every step.  In the helper structure the guards are
+    # ``if (!line.empty()) return ...`` on the local ``line``; in the
+    # inline structure they are ``if (decorLine == "")`` guards.  When
+    # the helper exists, _walk_on_decor must resolve the food branch
+    # through it, so the tested branch selection is the production
+    # consumer path.  The fountain chain must try <god> peaceful, <god>,
+    # default peaceful and default, with the plain default slot gated to
+    # non-dry fountains (the consumer constant below).
+    species_chain_call = (
+        r"species::name\(you\.species,\s*species::SPNAME_PLAIN,"
+        r"\s*true\)"
+        if species_shape == "raw-plain-fixed"
+        else r"species::name\(you\.species\)"
+    )
+    if helper is not None:
+        _require(
+            re.search(r"decor_cache_lookup\(messageLookup\)", body)
+            is not None,
+            f"{label} _walk_on_decor() food branch must resolve through "
+            f"decor_cache_lookup(messageLookup)",
+        )
+        food_chain_pattern = (
+            r"string line\s*=\s*getMiscString\(get_form\(you\.form\)"
+            r"->wiz_name\s*\+\s*\" \"\s*\+\s*messageLookup\);"
+            r".*?if \(!line\.empty\(\)\)"
+            r".*?line\s*=\s*getMiscString\("
+            + species_chain_call
+            + r"\s*\+\s*\" \"\s*\+\s*messageLookup\);"
+            r".*?if \(!line\.empty\(\)\)"
+            r".*?line\s*=\s*getMiscString\(messageLookup\);"
+        )
+    else:
+        food_chain_pattern = (
+            r"decorLine\s*=\s*getMiscString\(get_form\(you\.form\)"
+            r"->wiz_name\s*\+\s*\" \"\s*\+\s*messageLookup\);"
+            r".*?if \(decorLine == \"\"\)"
+            r".*?decorLine\s*=\s*getMiscString\("
+            + species_chain_call
+            + r"\s*\+\s*\" \"\s*\+\s*messageLookup\);"
+            r".*?if \(decorLine == \"\"\)"
+            r".*?decorLine\s*=\s*getMiscString\(messageLookup\);"
+        )
+    _require(
+        re.search(food_chain_pattern, chain_text, re.DOTALL) is not None,
+        f"{label} food fallback chain must be form -> species -> generic",
+    )
+    _require(
+        re.search(
+            r"decorLine\s*=\s*getMiscString\(string\(_god_name_en\("
+            r"you\.religion\)\)\s*\+\s*\" peaceful \""
+            r"\s*\+\s*messageLookup\);"
+            r".*?if \(decorLine == \"\" && x_chance_in_y\(3, 4\)\)"
+            r".*?decorLine\s*=\s*getMiscString\(string\(_god_name_en\("
+            r"you\.religion\)\)\s*\+\s*\" \""
+            r"\s*\+\s*messageLookup\);"
+            r".*?if \(decorLine == \"\" && peaceful\)"
+            r".*?decorLine\s*=\s*getMiscString\(\"default peaceful \""
+            r"\s*\+\s*messageLookup\);"
+            r".*?if \(decorLine == \"\" && !\(new_grid == "
+            r"DNGN_DRY_FOUNTAIN\)\)"
+            r".*?decorLine\s*=\s*getMiscString\(\"default \""
+            r"\s*\+\s*messageLookup\);",
+            body, re.DOTALL) is not None,
+        f"{label} fountain fallback chain must be god peaceful -> god "
+        f"-> default peaceful -> default with the dry-fountain gate",
+    )
+    return {
+        "cache_lookups": frozenset(cache_literals),
+        "uses_dungeon_feature_name": True,
+        "species_prefix": "species::name(" + species_call + ")",
+        "species_shape": species_shape,
+        "form_prefix": form_call,
+        "god_prefix": god_call,
+        "food_chain": ("form", "species", "generic"),
+        "fountain_chain": ("god peaceful", "god",
+                            "default peaceful", "default"),
+        "dry_fountain_gate": True,
+    }
 
 
-def _derivable_facts(oid: str, label: str) -> dict[str, Any]:
+def _derivable_facts(
+    oid: str, label: str, role: str = "candidate",
+) -> dict[str, Any]:
     """Every decorlines key the production consumer can query, derived from
-    the exact-Git producers.
+    the exact-Git producers and the exact-Git consumer expressions.
 
-    Combination rules mirror directn.cc::_walk_on_decor exactly: gods and
+    The consumer shape is parsed from the same commit's directn.cc and
+    every producer value comes from the same commit tree (species raw
+    names from the species YAML inputs that generate the species_def
+    table, form wiz_names from the form YAML inputs that generate
+    form-data.h, gods from the religion.cc::_god_name_en switch, fountain
+    vaultnames from feature-data.h through feat_is_fountain).  The
+    combination rules mirror the parsed fallback chains exactly: gods and
     ``default`` prefix fountain lookups (``<god> peaceful <fountain>``,
     ``<god> <fountain>``, ``default peaceful <fountain>``, ``default
     <fountain>``), forms and species prefix cache lookups (``<form>
-    <cache>``, ``<species> <cache>``), and every bare lookup key is generic."""
+    <cache>``, ``<species> <cache>``), and every bare lookup key is
+    generic.
+
+    ``role`` is forwarded to :func:`_walk_on_decor_shape`: ``baseline``
+    accepts the frozen data baseline's historical pre-fix species call
+    (recording it as evidence), every other role requires the fixed raw
+    plain-name call, so a candidate whose consumer regressed to a
+    localized species prefix fails the whole derivation instead of
+    silently reclassifying the roots."""
+    source = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/directn.cc", label
+        ),
+        label,
+    )
+    shape = _walk_on_decor_shape(source, label, role=role)
     species = [name.lower() for name in _species_producers(oid, label)]
     gods = [name.lower() for name in _god_producers(oid, label)]
     forms = [wiz.lower() for wiz in _form_producers(oid, label)]
     fountains = _fountain_lookups(oid, label)
-    caches = _cache_lookups(oid, label)
+    caches = shape["cache_lookups"]
     _require(
         fountains == EXPECTED_FOUNTAIN_LOOKUPS,
         f"{label} derived fountain lookups differ from the consumer: "
@@ -651,6 +949,15 @@ def _derivable_facts(oid: str, label: str) -> dict[str, Any]:
         caches == EXPECTED_CACHE_LOOKUPS,
         f"{label} derived cache lookups differ from the consumer: "
         f"{sorted(caches)!r}",
+    )
+    _require(
+        shape["food_chain"] == ("form", "species", "generic")
+        and shape["fountain_chain"]
+        == ("god peaceful", "god", "default peaceful", "default")
+        and shape["dry_fountain_gate"]
+        and shape["uses_dungeon_feature_name"],
+        f"{label} consumer lookup shape deviates from the frozen decorlines "
+        f"consumer model",
     )
     # Anchors: a parser regression that silently empties or garbles a
     # producer set must fail here with a precise message instead of only
@@ -681,6 +988,7 @@ def _derivable_facts(oid: str, label: str) -> dict[str, Any]:
         "forms": forms,
         "fountains": sorted(fountains),
         "caches": sorted(caches),
+        "species_shape": shape["species_shape"],
         "keys": frozenset(keys),
     }
 
@@ -954,6 +1262,7 @@ def _dataset(
             "form_count": len(derivable["forms"]),
             "fountain_lookups": derivable["fountains"],
             "cache_lookups": derivable["caches"],
+            "species_lookup_shape": derivable["species_shape"],
             "derivable_key_count": len(derivable["keys"]),
         },
     }
@@ -984,7 +1293,8 @@ def _load_dataset(
     hardened.shared._require_scoped_derivation(
         artifact, derived, label, source_basename=SOURCE_BASENAME
     )
-    derivable = _derivable_facts(ref, label)
+    _require_external_key_closure(artifact, derived, label)
+    derivable = _derivable_facts(ref, label, role=role)
     return _dataset(artifact, raw, directory, label, role, derivable)
 
 
@@ -1389,7 +1699,7 @@ def _proposal_dataset(
         ["rev-parse", "HEAD"], "worktree HEAD"
     ).decode("ascii").strip()
     hardened.shared._validate_oid(head, "worktree HEAD")
-    derivable = _derivable_facts(head, label)
+    derivable = _derivable_facts(head, label, role="candidate")
     dataset = _dataset(artifact, raw, directory, label, "candidate",
                        derivable)
     _require(not dataset["token_facts"]["unresolved"],
@@ -1529,22 +1839,29 @@ def _scaffold_write_transaction(path: Path, text: str) -> None:
        parent is detected before any content is published;
     3. write - the UTF-8 payload is written with ``os.write`` in a
        partial-write loop and fsynced on the file descriptor;
-    4. publish - the containing directory is fsynced and every descriptor
-       is closed;
-    5. rollback - any failure from phase 2 on closes the created file,
-       unlinks the exact basename through the pinned parent, fsyncs that
-       parent and closes the pinned chain before the original exception
-       is re-raised, so a retry never trips EEXIST on a stale partial
-       ledger.
+    4. publish - ``os.fsync`` on the containing directory is the commit
+       point: after it returns, the ledger entry is durable and every
+       remaining descriptor close is best-effort, so a close error can
+       never turn a published result into a failure or a partial
+       residue.  Until that fsync returns, the pinned parent stays live
+       because rollback may still need it for the unlink;
+    5. rollback - any failure before the publish fsync (including
+       ``BaseException`` types such as ``KeyboardInterrupt``, not just
+       ``InventoryError``/``OSError``) closes the created file, unlinks
+       the exact basename through the still-live pinned parent, fsyncs
+       that parent and closes the pinned chain before the original
+       exception is re-raised, so a retry never trips EEXIST on a stale
+       partial ledger.  Failures after the publish fsync never roll
+       back: the ledger is committed and only the exception (if any)
+       propagates.
 
     The file descriptor is owned by this transaction for its whole
     lifetime: no wrapper object (such as ``os.fdopen``) ever takes
     ownership and closes it early, so no failure path can leave a
-    closed-but-still-referenced descriptor.  The rollback path catches
-    the ``Exception`` base class (not just ``InventoryError``/
-    ``OSError``), so any exception type raised by the syscalls or
-    identity checks triggers the same cleanup and the failure fails
-    closed.
+    closed-but-still-referenced descriptor.  Cleanup is triggered by
+    ``except BaseException``, so an injected ``KeyboardInterrupt`` from
+    any syscall follows exactly the same rollback path as an
+    ``OSError``.
     """
     absolute = os.path.abspath(os.fspath(path))
     if not absolute.startswith(os.sep):
@@ -1556,6 +1873,7 @@ def _scaffold_write_transaction(path: Path, text: str) -> None:
     pinned: list[int] = []
     file_fd = -1
     created = False
+    published = False
     try:
         # Phase 1: pin the ancestor chain, re-verify it against the
         # approved pathname, then exclusively create the final basename.
@@ -1612,44 +1930,58 @@ def _scaffold_write_transaction(path: Path, text: str) -> None:
                 )
             view = view[written:]
         os.fsync(file_fd)
-        # Phase 4: publish - fsync the containing directory, then close
-        # every descriptor (file first, then the pinned chain).
+        # Phase 4: publish.  The directory fsync is the commit point;
+        # the ledger is durable from here on.  Descriptor cleanup after
+        # it is best-effort: a close error must not turn the committed
+        # result into a failure or leave a partial ledger behind, so the
+        # pinned chain is never handed to rollback after this point.
         os.fsync(parent_fd)
-        os.close(file_fd)
+        published = True
+        try:
+            os.close(file_fd)
+        except OSError:
+            pass
         file_fd = -1
-        for fd in reversed(pinned):
-            os.close(fd)
-        pinned.clear()
-    except Exception:
-        # Phase 5: unified rollback.  When the exclusive create
-        # succeeded, remove the created file in the canonical order -
-        # close the file descriptor, unlink the exact basename through
-        # the pinned parent, fsync that parent - then close the pinned
-        # chain.  When the create itself failed, nothing was created and
-        # only the pinned chain is closed (a pre-existing ledger must
-        # never be unlinked).  Every cleanup step is best-effort; the
-        # original exception is re-raised whatever its type.
-        if file_fd >= 0:
-            try:
-                os.close(file_fd)
-            except OSError:
-                pass
-            file_fd = -1
-        if created and pinned:
-            try:
-                os.unlink(components[-1], dir_fd=pinned[-1])
-            except OSError:
-                pass
-            try:
-                os.fsync(pinned[-1])
-            except OSError:
-                pass
         for fd in reversed(pinned):
             try:
                 os.close(fd)
             except OSError:
                 pass
         pinned.clear()
+    except BaseException:
+        # Phase 5: unified rollback, only reachable before the publish
+        # fsync returned.  When the exclusive create succeeded, remove
+        # the created file in the canonical order - close the file
+        # descriptor, unlink the exact basename through the still-live
+        # pinned parent, fsync that parent - then close the pinned
+        # chain.  When the create itself failed, nothing was created and
+        # only the pinned chain is closed (a pre-existing ledger must
+        # never be unlinked).  Every cleanup step is best-effort; the
+        # original exception is re-raised whatever its type.  A failure
+        # after the publish fsync never reaches this branch: the ledger
+        # is committed and must not be unlinked.
+        if not published:
+            if file_fd >= 0:
+                try:
+                    os.close(file_fd)
+                except OSError:
+                    pass
+                file_fd = -1
+            if created and pinned:
+                try:
+                    os.unlink(components[-1], dir_fd=pinned[-1])
+                except OSError:
+                    pass
+                try:
+                    os.fsync(pinned[-1])
+                except OSError:
+                    pass
+            for fd in reversed(pinned):
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+            pinned.clear()
         raise
 
 

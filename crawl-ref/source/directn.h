@@ -354,6 +354,31 @@ vector<string> get_monster_status_descriptors(const monster_info& mi);
 
 void describe_floor();
 void _walk_on_decor(dungeon_feature_type new_grid);
+
+// Which branch of the decorlines food-cache fallback chain resolved a
+// lookup.  The hit is production evidence: a reverted (localized) species
+// prefix silently falls back to the generic line, which only a hit check
+// can distinguish from a real species match.
+enum class decor_cache_hit
+{
+    none = 0,   // no branch matched (the bare generic key is missing too)
+    form,       // "<form wiz_name> <lookup>" matched
+    species,    // "<species raw name> <lookup>" matched
+    generic,    // bare "<lookup>" matched
+};
+
+struct decor_cache_result
+{
+    string line;
+    decor_cache_hit hit;
+};
+
+// Resolve one decorlines food-cache lookup through the production chain:
+// form wiz_name prefix, then species raw English plain-name prefix, then
+// the bare generic key.  _walk_on_decor() uses this exact helper and the
+// issue-67 catch2 tests call it, so the tested branch selection is the
+// production consumer path.
+decor_cache_result decor_cache_lookup(const string &message_lookup);
 string get_monster_equipment_desc(const monster_info& mi,
                                   //bool full_desc = true,
                                   mons_equip_desc_level_type level = DESC_FULL,
