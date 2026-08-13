@@ -33,7 +33,7 @@ w:1
 %%%%
 default fountain_blue
 
-喷泉因你接近的存在而短暂地泛起了涟漪。
+你走近时，喷泉短暂地泛起了涟漪。
 
 w:1
 你在喷泉上看到了@any_graffiti@。
@@ -55,6 +55,7 @@ default peaceful fountain_sparkling
     return "你从喷泉中喝了一小口。@sparkling_message@"
   end
 }}
+
 w:1
 你在喷泉上看到了@any_graffiti@。
 %%%%
@@ -86,7 +87,8 @@ default fountain_blood
      return "你确保不再把血沾到身上。"
    end
 }}
-微小的蚊子醉血地蜂拥在喷泉表面。
+
+微小的蚊子醉醺醺地蜂拥在喷泉表面。
 
 w:3
 你在血泉中的倒影以沉默的[审判|恐怖]回望着你。
@@ -118,11 +120,11 @@ w:1
 %%%%
 Ashenzari peaceful fountain_blue
 
-你试图通过喷泉进行占卜，但副本的魔法排斥了你。
+你试图透过喷泉进行占卜，但地牢的魔法排斥了你。
 %%%%
 Ashenzari fountain_blue
 
-你在喷泉的倒影中捕捉到了副本过去的短暂景象。
+你在喷泉的倒影中捕捉到了地牢过往的短暂景象。
 %%%%
 Beogh fountain_blue
 
@@ -134,7 +136,7 @@ Beogh fountain_sparkling
 %%%%
 Cheibriados fountain_sparkling
 
-你短暂地对喷泉那神秘般不规则的流动表示了不满。
+你短暂地不满于喷泉那神秘而失律的流动。
 %%%%
 Cheibriados peaceful dry_fountain
 
@@ -226,7 +228,10 @@ end
 %%%%
 Wu Jian peaceful fountain_blue
 
-你欣赏着喷泉那宁静而自律的流动。
+你短暂地沉思着像水流过这座喷泉那样流动的必要。
+
+w:5
+喷泉很平静。水轻轻地流淌着。在这里可以寻得安宁。
 %%%%
 Jiyva fountain_eyes
 
@@ -411,7 +416,7 @@ _baked_good_and_reaction_
 # 大多数是为了保持爬行世界风味而调整的老偏好，
 # 平均可以追溯到几百年前。
 w:24
-一些精灵[面包|果馅饼|岩石面包|司康饼|饼干|硬面饼]。美味。
+一些小精灵[面包|果馅饼|岩石面包|司康饼|饼干|硬面饼]。美味。
 
 # 高度普及的选择，匹配多样化的兽人背景。
 w:14
@@ -422,7 +427,7 @@ w:14
 
 一些人鱼[果仁蜜饼|复活节面包]。奢侈。
 
-一个填充娜迦饼。非凡。
+一个填充纳迦饼。非凡。
 
 # 如果能找到长面包的更早法语名称就好了……
 一根龙族法棍。暖心暖胃。
@@ -437,7 +442,7 @@ w:2
 一些[巨魔|巨人|巨人][维滕堡面包|粗粮面包]。咸香。
 
 w:2
-一些鸟人豆沙面包。可口。
+一些天狗豆沙面包。可口。
 
 w:2
 一些食尸鬼酸面包。一种奇怪的味道。
@@ -489,7 +494,7 @@ _fruit_and_reaction_
 %%%%
 _meat_and_reaction_
 
-# 尽量保持在副本动物的范围内。
+# 尽量保持在地牢动物的范围内。
 
 一条熏鳗鱼。咸香可口！
 
@@ -497,7 +502,7 @@ _meat_and_reaction_
 
 一只腌制火腿肘。咸味。
 
-一些毒蛇肉干。美味。
+一些蝰蛇肉干。美味。
 
 一片魔法保鲜的意大利辣香肠披萨。美味。
 
@@ -514,7 +519,7 @@ w:6
 一些腌制的梦境羊肉。转瞬即逝。
 
 w:6
-一片魔法保鲜的深渊披萨。令人愉悦。
+一片魔法保鲜的万魔殿披萨。令人愉悦。
 
 w:2
 一只糖衣蝎子。酥脆。
@@ -534,23 +539,17 @@ w:2
 %%%%
 amphisbaena baked goods cache
 
-你低头嗅了嗅烘焙食品堆，但什么也没吃。
-
-You distend one of your jaws to swallow @_baked_good_and_reaction_@
+你张开一只下颌，吞下@_baked_good_and_reaction_@
 
 %%%%
 amphisbaena fruit cache
 
-你低头嗅了嗅水果堆，但什么也没吃。
-
-You distend one of your jaws to swallow @_fruit_and_reaction_@
+你张开一只下颌，吞下@_fruit_and_reaction_@
 
 %%%%
 amphisbaena meat cache
 
-你低头嗅了嗅肉堆，但什么也没吃。
-
-You distend one of your jaws to swallow @_meat_and_reaction_@
+你张开一只下颌，吞下@_meat_and_reaction_@
 
 %%%%
 baked goods cache
@@ -560,41 +559,33 @@ baked goods cache
 %%%%
 bat baked goods cache
 
-你倒挂着，从烘焙食品中啄了些碎屑。
-
-You swoop down and nibble at @_baked_good_and_reaction_@
+你俯冲下来，啄食着@_baked_good_and_reaction_@
 
 %%%%
 bat fruit cache
 
-你倒挂着，从水果堆中啜饮了一些果汁。
-
-You slurp up @_fruit_and_reaction_@
+你吸溜起@_fruit_and_reaction_@
 
 %%%%
 blade fruit cache
 
-你心不在焉地把玩着水果。至少切得很好。
-
-You try to grab some fruit with your blades, but fail!
+你试图用刀刃夹起一些水果，但失败了！
 
 w:4
-You use your hands like chopsticks to delicately eat @_fruit_and_reaction_@
+你像用筷子一样，用双手优雅地吃起@_fruit_and_reaction_@
 
 %%%%
 blade meat cache
 
-你心不在焉地切着肉。至少切得很好。
+你试图用刀刃夹起一些肉，但失败了！
 
-You try to grab some meat with your blades, but fail!
-
-You skewer and sample @_meat_and_reaction_@
+你串起并品尝@_meat_and_reaction_@
 
 %%%%
 carnivore baked goods cache
 
 # 当然，狗头人当然会做蛋糕三明治。
-你浏览了一下那堆东西，用@_baked_good_and_reaction_@做了一个肉三明治
+你浏览了一下那堆东西，用@_baked_good_and_reaction_@做了一个肉三明治。
 
 %%%%
 carnivore fruit cache
@@ -604,69 +595,53 @@ carnivore fruit cache
 %%%%
 death baked goods cache
 
-你从烘焙食品上方飘过。它没有回应。
-
 @inediate baked goods cache@
 
 %%%%
 death fruit cache
-
-你从水果上方飘过。它没有回应。
 
 @inediate fruit cache@
 
 %%%%
 death meat cache
 
-你从肉上方飘过。它没有回应。
-
 @inediate meat cache@
 
 %%%%
 draconian fruit cache
 
-你用火焰尝了尝水果。味道……有意思。
-
-You reach down and sample @_fruit_and_reaction_@
+你弯下腰，品尝了@_fruit_and_reaction_@
 
 w:1
-You reach down and sample a dragonfruit. You feel vaguely uncomfortable.
+你弯下腰，品尝了一颗火龙果。你隐约感到有些不适。
 
 %%%%
 dragon fruit cache
 
-你低头凝视着水果。太小了，不值得费心。
-
-You devour @_fruit_and_reaction_@
+你大口吞食着@_fruit_and_reaction_@
 
 w:1
-You devour a dragonfruit. You feel vaguely uncomfortable.
+你吞下一颗火龙果。你隐约感到有些不适。
 
 %%%%
 felid baked goods cache
 
-你挑剔地嗅了嗅烘焙食品，然后叼走了一块。
-
-You nibble upon @_baked_good_and_reaction_@
+你轻咬着@_baked_good_and_reaction_@
 
 %%%%
 felid fruit cache
 
-你挑剔地嗅了嗅水果，然后叼走了一块。
+# 猫尝不出甜味，只能安全地吃少数几种水果。
+你切碎一个苹果，轻咬着。淡而无味。
 
-# Cats can't taste sweets and can only eat a few fruits safely.
-You dice up an apple and nibble upon it. Bland.
+你切碎一根香蕉，轻咬着。淡而无味。
 
-You dice up a banana and nibble upon it. Bland.
-
-You pick out some berries and nibble upon them. Bland.
+你挑出一些浆果，轻咬着。淡而无味。
 
 %%%%
 felid meat cache
 
-你叼走了一些肉。
-
-You nibble upon @_meat_and_reaction_@
+你轻咬着@_meat_and_reaction_@
 
 %%%%
 fruit cache
@@ -676,89 +651,64 @@ fruit cache
 %%%%
 gargoyle baked goods cache
 
-你盯着烘焙食品，没有任何吃的欲望。
-
 @stone baked goods cache@
 
 %%%%
 gargoyle fruit cache
-
-你盯着水果，没有任何吃的欲望。
 
 @stone fruit cache@
 
 %%%%
 gargoyle meat cache
 
-你盯着肉。碎片粘在了你的石头皮肤上。
-
 @stone meat cache@
 
 %%%%
 inediate baked goods cache
 
-你不需要烘焙食品。
-
-You briefly stare at the breadstuffs pile and sigh.
+你短暂地凝视着面包堆，叹了口气。
 ########################## Species diets ######################################
 
 %%%%
 inediate fruit cache
 
-你不需要水果。你把玩了一下，然后把它放下。
-
-You briefly stare at the fruit pile and sigh.
+你短暂地凝视着水果堆，叹了口气。
 
 %%%%
 inediate meat cache
 
-你不需要肉。
-
-You briefly stare at the meat pile and sigh.
+你短暂地凝视着肉堆，叹了口气。
 
 %%%%
 kobold baked goods cache
-
-你抢走了一些烘焙食品，还做了个三明治。谢谢啦！
 
 @carnivore baked goods cache@
 
 %%%%
 kobold fruit cache
 
-你抢走了一些水果。谢谢啦！
-
 @carnivore fruit cache@
 
 %%%%
 kobold meat cache
-
-你抢走了一些肉。谢谢啦！
 
 @short meat cache@
 
 %%%%
 maw baked goods cache
 
-你一口吞下了一些烘焙食品。
-
-You devour half the baked goods pile! It's not enough.
+你吞掉了半个烘焙食品堆！还不够。
 
 %%%%
 maw fruit cache
 
-你一口吞下了一些水果。
-
-# Zeno's dichotomy is probably fine, unless we decide to make food reliably
-# disappear after a few messages...
-You devour half the fruit pile! It's not enough.
+# 芝诺悖论大概无妨，除非我们决定让食物在几条消息后可靠地消失……
+你吞掉了半个水果堆！还不够。
 
 %%%%
 maw meat cache
 
-你一口吞下了一些肉。
-
-You devour half the meat pile! It's not enough.
+你吞掉了半个肉堆！还不够。
 
 %%%%
 meat cache
@@ -768,228 +718,168 @@ meat cache
 %%%%
 mummy baked goods cache
 
-你不在意烘焙食品。但你还是拿了一些。
-
 @inediate baked goods cache@
 
 %%%%
 mummy fruit cache
-
-你不在意水果。但你还是拿了一些。
 
 @inediate fruit cache@
 
 %%%%
 mummy meat cache
 
-你不在意肉。但你还是拿了一些。
-
 @inediate meat cache@
 
 %%%%
 oni baked goods cache
 
-你大口吃了些烘焙食品。好吃！
-
-You reach down and grab @_baked_good_and_reaction_@ You go for seconds.
+你弯下腰，抓起@_baked_good_and_reaction_@，吃完又拿了一份。
 
 %%%%
 oni fruit cache
 
-你大口吃了些水果。好吃！
-
-You reach down and grab @_fruit_and_reaction_@ You go for seconds.
+你弯下腰，抓起@_fruit_and_reaction_@，吃完又拿了一份。
 
 %%%%
 pig baked goods cache
-
-你开心地哼哼着吃了些烘焙食品。
 
 @short baked goods cache@
 
 %%%%
 pig fruit cache
 
-你开心地哼哼着吃了些水果。
-
 @short fruit cache@
 
 %%%%
 pig meat cache
-
-你开心地哼哼着吃了些肉。
 
 @short meat cache@
 
 %%%%
 poltergeist baked goods cache
 
-你把玩着烘焙食品，让它短暂地浮起。
-
 @inediate baked goods cache@
 
 %%%%
 poltergeist fruit cache
-
-你把玩着水果，让它短暂地浮起。
 
 @inediate fruit cache@
 
 %%%%
 poltergeist meat cache
 
-你把玩着肉，让它短暂地浮起。
-
 @inediate meat cache@
 
 %%%%
 revenant baked goods cache
-
-你不需要食物。你放下了烘焙食品。
 
 @inediate baked goods cache@
 
 %%%%
 revenant fruit cache
 
-你不需要食物。你放下了水果。
-
 @inediate fruit cache@
 
 %%%%
 revenant meat cache
-
-你不需要食物。你放下了肉。
 
 @inediate meat cache@
 
 %%%%
 short baked goods cache
 
-@baked goods cache@
+你翻找了一番，品尝了@_baked_good_and_reaction_@
 
 %%%%
 short fruit cache
 
-@fruit cache@
+你翻找了一番，品尝了@_fruit_and_reaction_@
 
 %%%%
 short meat cache
 
-@meat cache@
+你翻找了一番，品尝了@_meat_and_reaction_@
 
 %%%%
 spriggan baked goods cache
 
-你细细品味着烘焙食品的味道。精致。
-
-You root around and eagerly enjoy @_baked_good_and_reaction_@
+你翻找了一番，津津有味地享用起@_baked_good_and_reaction_@
 
 %%%%
 spriggan fruit cache
-
-你细细品味着水果的味道。精致。
 
 @short fruit cache@
 
 %%%%
 spriggan meat cache
 
-你只拿了一小口肉。
-
-You root around, looking for pizza, but fail to find any.
+你翻找了一番，想找披萨，却一无所获。
 
 w:4
-You find a slice of magically-preserved pizza, and pick the meat off. Delicious!
+你找到一片魔法保鲜的披萨，把肉挑了出来。美味！
 
 %%%%
 statue baked goods cache
-
-你盯着烘焙食品。不需要吃。
 
 @stone baked goods cache@
 
 %%%%
 statue fruit cache
 
-你盯着水果。不需要吃。
-
 @stone fruit cache@
 
 %%%%
 statue meat cache
-
-你盯着肉。不需要吃。
 
 @stone meat cache@
 
 %%%%
 stone baked goods cache
 
-你不需要食物。你把烘焙食品放回去了。
-
-You mill down and swallow @_baked_good_and_reaction_@
+你碾碎并咽下@_baked_good_and_reaction_@
 
 %%%%
 stone fruit cache
 
-你不需要食物。你把水果放回去了。
-
-You pestle and swallow @_fruit_and_reaction_@
+你捣碎并咽下@_fruit_and_reaction_@
 
 %%%%
 stone meat cache
 
-你不需要食物。你把肉放回去了。
-
-You pestle and swallow @_meat_and_reaction_@
+你捣碎并咽下@_meat_and_reaction_@
 
 %%%%
 storm fruit cache
 
-你从水果上方呼啸而过。它被电焦了。
-
-You reach down and electrolyse @_fruit_and_reaction_@
+你弯下腰，电解了@_fruit_and_reaction_@
 
 %%%%
 storm meat cache
 
-你从肉上方呼啸而过。它被烤熟了。
-
-You reach down and electrolyse @_meat_and_reaction_@
+你弯下腰，电解了@_meat_and_reaction_@
 
 %%%%
 tengu baked goods cache
 
-你优雅地啄食着烘焙食品。
-
-You reach down and peck at @_baked_good_and_reaction_@
+你弯下腰，啄食着@_baked_good_and_reaction_@
 
 %%%%
 tree baked goods cache
-
-你不需要烘焙食品。你把它用作堆肥。
 
 @short baked goods cache@
 
 %%%%
 tree fruit cache
 
-你把水果埋了，希望它能长成新的果树。
-
 @short fruit cache@
 
 %%%%
 tree meat cache
 
-你不需要肉。你把它用作肥料。
-
 @short meat cache@
 
 %%%%
 troll baked goods cache
-
-你大口吃了些烘焙食品。真希望它是肉。
 
 @oni baked goods cache@
 ########################## Form diets ######################################
@@ -998,23 +888,17 @@ troll baked goods cache
 %%%%
 troll fruit cache
 
-你大口吃了些水果。真希望它是肉。
-
 @oni fruit cache@
 
 %%%%
 vampire baked goods cache
 
-你不需要烘焙食品。你优雅地走开了。
-
-You reach down and sample @_baked_good_and_reaction_@ Not filling, though, alas.
+你弯下腰，品尝了@_baked_good_and_reaction_@，可惜不顶饱。
 
 %%%%
 vampire fruit cache
 
-你不需要水果。你优雅地走开了。
-
-You root around, looking for a blood orange, but fail to find any.
+你翻找了一番，想找一颗血橙，却一无所获。
 
 w:4
-You reach down and find a blood orange. Delicious.
+你弯下腰，找到一颗血橙。美味。
