@@ -1068,22 +1068,89 @@ def _skeleton_card(
     }
 
 
-def _openat_exclusive_create(path: Path) -> int:
-    """Exclusively create one regular file through a pinned openat chain.
+def _same_directory_identity(fd_a: int, fd_b: int) -> bool:
+    """True when both descriptors refer to the same directory inode."""
+    info_a = os.fstat(fd_a)
+    info_b = os.fstat(fd_b)
+    return (info_a.st_dev, info_a.st_ino) == (info_b.st_dev, info_b.st_ino)
+
+
+def _require_pinned_chain(
+    absolute: str, components: list[str], pinned: list[int],
+) -> None:
+    """Require the approved absolute pathname to still resolve to the pinned
+    descriptor chain, re-walking from the filesystem root with O_NOFOLLOW.
+
+    Every component must open without following a symlink and must match the
+    pinned descriptor's (st_dev, st_ino) identity.  A symlink, a missing
+    component, a non-directory or a renamed/replaced directory raises
+    InventoryError, so a concurrent path replacement is detected both before
+    and after the exclusive create."""
+    probe: list[int] = []
+    try:
+        try:
+            probe.append(os.open(
+                os.sep, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+            ))
+        except OSError as exc:
+            raise InventoryError(
+                f"scaffold chain verification cannot pin the filesystem root "
+                f"for {absolute}: {exc}"
+            ) from exc
+        _require(_same_directory_identity(probe[0], pinned[0]),
+                 f"scaffold filesystem root of {absolute} changed identity "
+                 f"during creation; refusing to write")
+        for index, component in enumerate(components[:-1]):
+            try:
+                probe.append(os.open(
+                    component,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=probe[-1],
+                ))
+            except OSError as exc:
+                raise InventoryError(
+                    f"scaffold parent component {component!r} of {absolute} "
+                    f"cannot be re-opened without following a symlink: {exc}"
+                ) from exc
+            _require(
+                _same_directory_identity(probe[-1], pinned[index + 1]),
+                f"scaffold parent component {component!r} of {absolute} "
+                f"changed identity during creation; refusing to write",
+            )
+    finally:
+        for fd in probe:
+            os.close(fd)
+
+
+def _openat_exclusive_create(path: Path) -> tuple[int, int]:
+    """Exclusively create one regular file through a fully pinned openat
+    chain and return ``(file_fd, parent_dir_fd)``.
 
     The supplied pathname is decomposed lexically (``os.path.abspath``
-    normalizes ``.``/``..`` without resolving symlinks) and every parent
+    normalizes ``.``/``..`` without resolving symlinks) and every ancestor
     component is opened with ``O_RDONLY|O_DIRECTORY|O_NOFOLLOW`` relative
     to the previously pinned descriptor, starting from the filesystem
-    root.  A symlink anywhere in the chain fails closed (ELOOP or
-    ENOTDIR depending on platform/component type), a missing component
+    root.  All ancestor descriptors stay open for the whole operation, so
+    a concurrent path replacement cannot redirect the write: the final
+    element is created with ``O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW`` against
+    the pinned parent descriptor, which means an existing ledger (regular
+    file, hardlink or symlink) is rejected with EEXIST/ELOOP and never
+    followed, truncated or overwritten.
+
+    Identity is verified twice against the approved pathname, immediately
+    before the exclusive create and immediately after it: the pathname is
+    re-walked from the pinned root without following symlinks and every
+    component must resolve to the same ``(st_dev, st_ino)`` identity as the
+    pinned descriptor.  A symlink anywhere in the chain fails closed (ELOOP
+    or ENOTDIR depending on platform/component type), a missing component
     fails with ENOENT (directories are never auto-created), and a
-    non-directory fails with ENOTDIR, so a concurrent path replacement
-    cannot redirect the write: the final element is created with
-    ``O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW`` against the pinned parent
-    descriptor, which means an existing ledger (regular file, hardlink or
-    symlink) is rejected with EEXIST/ELOOP and never followed, truncated
-    or overwritten.  The caller owns the returned descriptor."""
+    non-directory fails with ENOTDIR.  If the post-create verification
+    fails, the created file is unlinked through the pinned parent and the
+    operation fails closed, so a renamed or replaced parent can never trap
+    the ledger outside the approved location.
+
+    The caller owns both returned descriptors and must fsync the file
+    content and then the containing directory before closing them."""
     absolute = os.path.abspath(os.fspath(path))
     if not absolute.startswith(os.sep):
         raise InventoryError(
@@ -1091,42 +1158,64 @@ def _openat_exclusive_create(path: Path) -> int:
         )
     components = [component for component in absolute.split(os.sep)
                   if component not in ("", ".")]
+    pinned: list[int] = []
+    file_fd = -1
+    retained_file = False
+    retained_parent = False
     try:
-        parent = os.open(
-            os.sep, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-        )
-    except OSError as exc:
-        raise InventoryError(
-            f"cannot pin the filesystem root for scaffold {absolute}: {exc}"
-        ) from exc
-    try:
+        try:
+            pinned.append(os.open(
+                os.sep, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+            ))
+        except OSError as exc:
+            raise InventoryError(
+                f"cannot pin the filesystem root for scaffold {absolute}: {exc}"
+            ) from exc
         for component in components[:-1]:
             try:
-                child = os.open(
+                pinned.append(os.open(
                     component,
                     os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                    dir_fd=parent,
-                )
+                    dir_fd=pinned[-1],
+                ))
             except OSError as exc:
                 raise InventoryError(
                     f"scaffold parent component {component!r} of {absolute} "
                     f"cannot be opened without following a symlink: {exc}"
                 ) from exc
-            os.close(parent)
-            parent = child
+        parent_fd = pinned[-1]
+        _require_pinned_chain(absolute, components, pinned)
         try:
-            return os.open(
+            file_fd = os.open(
                 components[-1],
                 os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
                 0o600,
-                dir_fd=parent,
+                dir_fd=parent_fd,
             )
         except OSError as exc:
             raise InventoryError(
                 f"cannot exclusively create scaffold {absolute}: {exc}"
             ) from exc
+        try:
+            _require_pinned_chain(absolute, components, pinned)
+        except InventoryError:
+            try:
+                os.unlink(components[-1], dir_fd=parent_fd)
+            except OSError:
+                pass
+            raise
+        retained_file = True
+        retained_parent = True
+        return file_fd, parent_fd
     finally:
-        os.close(parent)
+        if file_fd >= 0 and not retained_file:
+            os.close(file_fd)
+        if retained_parent:
+            for fd in pinned[:-1]:
+                os.close(fd)
+        else:
+            for fd in pinned:
+                os.close(fd)
 
 
 def scaffold_results(
@@ -1154,11 +1243,15 @@ def scaffold_results(
     resolved = path.resolve(strict=False)
     _require(resolved == RESULTS_PATH.resolve(strict=False),
              f"scaffold output must be {RESULTS_PATH}")
-    fd = _openat_exclusive_create(path)
-    with os.fdopen(fd, "w", encoding="utf-8") as stream:
-        stream.write(text)
-        stream.flush()
-        os.fsync(stream.fileno())
+    fd, parent_fd = _openat_exclusive_create(path)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+            os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
     return records
 
 

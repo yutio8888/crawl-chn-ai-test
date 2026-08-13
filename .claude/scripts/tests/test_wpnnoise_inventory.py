@@ -250,6 +250,23 @@ class WpnnoiseInventoryTests(unittest.TestCase):
 
     # ── exact-Git inventory shape ─────────────────────────────────────────
 
+    def test_load_dump_safe_default_family_rejects_misc(self):
+        # The hardened speak base must fail closed on a misc dump even when
+        # expected_database is omitted (the default contract is 'speak'),
+        # and must keep accepting a speak dump on the same default path.
+        misc = copy.deepcopy(self.en_artifact)
+        misc["database_name"] = "misc"
+        path = self.root / f"misc-{self.id().split('.')[-1]}.json"
+        path.write_text(json.dumps(misc, ensure_ascii=False), encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "database_name must be 'speak'"):
+            MODULE._load_dump_safe(path, "fixture EN", "database/")
+        dump, raw = MODULE._load_dump_safe(
+            self.en_path, "fixture EN", "database/"
+        )
+        self.assertEqual("speak", dump["database_name"])
+        self.assertTrue(raw)
+
     def test_exact_git_inventory_binds_frozen_shape_and_is_deterministic(self):
         first = self.inventory
         second_en = self.root / "en2.json"

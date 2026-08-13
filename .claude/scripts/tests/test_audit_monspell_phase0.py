@@ -356,6 +356,29 @@ class ArtifactInventoryTest(unittest.TestCase):
                                     "database_name must be 'speak'"):
             MODULE.validate_artifact(misc, "fixture", expected_database="speak")
 
+    def test_default_expected_database_is_speak(self):
+        # The default family contract is 'speak': speak-family callers that
+        # omit expected_database (load_artifact, build_inventory, the real
+        # monspell CLI) must fail closed on a misc dump instead of accepting
+        # any family.
+        misc = copy.deepcopy(fixture())
+        misc["database_name"] = "misc"
+        with self.assertRaisesRegex(MODULE.ArtifactError,
+                                    "database_name must be 'speak'"):
+            MODULE.validate_artifact(misc, "fixture")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "misc.json"
+            path.write_text(json.dumps(misc), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.ArtifactError,
+                                        "database_name must be 'speak'"):
+                MODULE.load_artifact(path)
+            result = subprocess.run(
+                [sys.executable, str(AUDIT), "--dump", str(path)],
+                text=True, capture_output=True, check=False,
+            )
+        self.assertEqual(2, result.returncode)
+        self.assertIn("database_name must be 'speak'", result.stderr)
+
     def test_validates_raw_body_body_empty_and_parse_error(self):
         self.assert_protocol_error(
             lambda d: d["entries"][0].update(raw_body=7)

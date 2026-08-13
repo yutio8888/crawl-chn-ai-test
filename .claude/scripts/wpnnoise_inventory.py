@@ -560,15 +560,16 @@ def _read_artifact_bytes(path: Path, label: str) -> bytes:
 
 def _load_dump_safe(
     path: Path, label: str, expected_directory: str,
-    expected_database: str | None = None,
+    expected_database: str = "speak",
 ) -> tuple[dict[str, Any], bytes]:
     """Parse a production dump whose bytes were read through one checked
     no-follow descriptor with inode identity verification.
 
-    ``expected_database`` is optional: when supplied, the artifact family
-    (``speak``/``misc``) must match it exactly, so a speak dump can never
-    be consumed on a misc path (or vice versa).  Speak-family callers
-    omit it and keep the historical accept-either behaviour."""
+    ``expected_database`` defaults to ``'speak'``: the hardened speak-family
+    callers (graffiti, wpnnoise and the monspell CLI path) reject a misc
+    dump, and only the misc-family decorlines caller passes ``'misc'``
+    explicitly, so a speak dump can never be consumed on a misc path (or
+    vice versa)."""
     raw = _read_artifact_bytes(path, f"{label} production dump")
     try:
         value = json.loads(raw.decode("utf-8"))

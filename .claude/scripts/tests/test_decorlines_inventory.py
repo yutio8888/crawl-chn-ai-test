@@ -5,10 +5,13 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -329,6 +332,123 @@ class DecorlinesInventoryTests(unittest.TestCase):
                              .exists())
         finally:
             MODULE.RESULTS_PATH = original
+
+    def test_scaffold_rejects_parent_renamed_between_verify_and_create(self):
+        # Swap the parent away between the pre-create chain verification and
+        # the exclusive create: the helper must fail closed and the ledger
+        # must never survive in the relocated directory.
+        original = MODULE.RESULTS_PATH
+        real_dir = self.root / "rename-away"
+        real_dir.mkdir()
+        parent = real_dir / "parent"
+        parent.mkdir()
+        moved = real_dir / "moved-parent"
+        scaffold_path = parent / "decorlines-review-results.md"
+        MODULE.RESULTS_PATH = scaffold_path
+        real_open = MODULE.os.open
+        swapped = False
+        def swapped_open(path, flags, *args, **kwargs):
+            nonlocal swapped
+            if flags & os.O_CREAT and not swapped:
+                swapped = True
+                os.rename(parent, moved)
+            return real_open(path, flags, *args, **kwargs)
+        try:
+            with mock.patch.object(MODULE.os, "open",
+                                   side_effect=swapped_open):
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "re-opened"):
+                    MODULE.scaffold_results(scaffold_path, self.inventory)
+            self.assertFalse((moved / "decorlines-review-results.md").exists())
+            self.assertFalse(scaffold_path.exists())
+        finally:
+            MODULE.RESULTS_PATH = original
+
+    def test_scaffold_rejects_parent_replaced_between_verify_and_create(self):
+        # Replace the parent with a fresh directory at the approved pathname
+        # between the pre-create chain verification and the exclusive create:
+        # identity re-verification must detect the swap and remove the file
+        # created through the pinned (relocated) parent.
+        original = MODULE.RESULTS_PATH
+        real_dir = self.root / "replace-dir"
+        real_dir.mkdir()
+        parent = real_dir / "parent"
+        parent.mkdir()
+        moved = real_dir / "moved-parent"
+        scaffold_path = parent / "decorlines-review-results.md"
+        MODULE.RESULTS_PATH = scaffold_path
+        real_open = MODULE.os.open
+        swapped = False
+        def swapped_open(path, flags, *args, **kwargs):
+            nonlocal swapped
+            if flags & os.O_CREAT and not swapped:
+                swapped = True
+                os.rename(parent, moved)
+                parent.mkdir()
+            return real_open(path, flags, *args, **kwargs)
+        try:
+            with mock.patch.object(MODULE.os, "open",
+                                   side_effect=swapped_open):
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "changed identity"):
+                    MODULE.scaffold_results(scaffold_path, self.inventory)
+            self.assertFalse((moved / "decorlines-review-results.md").exists())
+            self.assertFalse((parent / "decorlines-review-results.md").exists())
+        finally:
+            MODULE.RESULTS_PATH = original
+
+    def test_scaffold_rejects_parent_renamed_after_create(self):
+        # A parent swap that happens after the exclusive create but before
+        # the post-create chain verification must also fail closed and must
+        # unlink the file already created through the pinned parent.
+        original = MODULE.RESULTS_PATH
+        real_dir = self.root / "rename-after"
+        real_dir.mkdir()
+        parent = real_dir / "parent"
+        parent.mkdir()
+        moved = real_dir / "moved-parent"
+        scaffold_path = parent / "decorlines-review-results.md"
+        MODULE.RESULTS_PATH = scaffold_path
+        real_open = MODULE.os.open
+        swapped = False
+        def swapped_open(path, flags, *args, **kwargs):
+            nonlocal swapped
+            if flags & os.O_CREAT and not swapped:
+                swapped = True
+                fd = real_open(path, flags, *args, **kwargs)
+                os.rename(parent, moved)
+                return fd
+            return real_open(path, flags, *args, **kwargs)
+        try:
+            with mock.patch.object(MODULE.os, "open",
+                                   side_effect=swapped_open):
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "re-opened"):
+                    MODULE.scaffold_results(scaffold_path, self.inventory)
+            self.assertFalse((moved / "decorlines-review-results.md").exists())
+            self.assertFalse(scaffold_path.exists())
+        finally:
+            MODULE.RESULTS_PATH = original
+
+    def test_cli_rejects_speak_dump_on_decorlines_path(self):
+        # The real decorlines CLI must fail closed when a speak-family dump
+        # is supplied on a misc load path.
+        speak = copy.deepcopy(self.en)
+        speak["database_name"] = "speak"
+        speak_path = self.root / "cli-speak-en.json"
+        speak_path.write_text(json.dumps(speak, ensure_ascii=False),
+                              encoding="utf-8")
+        output = self.root / "cli-out.json"
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--baseline-ref", BASELINE,
+             "--english-dump", str(speak_path),
+             "--localized-dump", str(self.zh_path),
+             "--inventory-output", str(output)],
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(2, result.returncode)
+        self.assertIn("database_name must be 'misc'", result.stderr)
+        self.assertFalse(output.exists())
 
     def test_scaffold_generates_empty_ledger_and_refuses_overwrite(self):
         original = MODULE.RESULTS_PATH
