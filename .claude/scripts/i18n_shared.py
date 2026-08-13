@@ -1051,24 +1051,114 @@ def read_utf8(path: str) -> str:
         return stream.read()
 
 
+# Frozen baseline of pre-existing tree-sitter-cpp false positives caused by
+# preprocessor conditionals splitting C++ constructs (if/else chains, class
+# inheritance lists, ...). Each entry is the exact stripped source line that
+# tree-sitter mis-parses. A node is exempt only when its line matches one of
+# these exact texts AND sits at a preprocessor switch point (inside a
+# conditional body or within _PREPROC_SWITCH_WINDOW lines after its #endif);
+# every other parse error still fails closed.
+_PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES = frozenset({
+    # directn.cc: #ifdef USE_TILE_LOCAL / #else / #endif splits the class
+    # inheritance list, so the constructor lines right after #endif are
+    # mis-parsed as a labeled statement and a missing ';'.
+    "UIDirectionChooserView(direction_chooser& dc) :",
+    "m_dc(dc), old_target(dc.target())",
+    # directn.cc: *env.level_vaults[map_index] (unique_ptr dereference)
+    # inside #ifdef DEBUG_DIAGNOSTICS is mis-parsed as a declarator.
+    "const vault_placement &vp(*env.level_vaults[map_index]);",
+    # directn.cc: #ifndef USE_TILE_LOCAL splits the else clause from its if,
+    # so the else body is mis-parsed (missing '}' before the else body and
+    # an orphan '}' closing the block).
+    'str = "         " + fss[j].tostring();',
+    "}",
+    # directn.cc: #ifdef DEBUG_DIAGNOSTICS splits a dangling else from its
+    # if, leaving an orphan 'else' ERROR node at the switch point.
+    "else",
+})
+
+# Window (in lines) after an #endif within which a matching frozen baseline
+# line is still considered a preprocessor switch-point false positive.
+_PREPROC_SWITCH_WINDOW = 4
+
+
+def _preprocessor_switch_lines(source: bytes):
+    """Line numbers at preprocessor conditional switch points.
+
+    Returns a frozenset of 1-indexed line numbers that are either inside a
+    preprocessor conditional body (between #if/#ifdef/#ifndef and the
+    matching #endif, including #elif/#else boundary lines) or within
+    _PREPROC_SWITCH_WINDOW lines after the #endif. Bodies of dead '#if 0'
+    blocks are excluded: errors there are expected and must fail closed.
+    Returns None when the directives cannot be paired (unmatched #if or
+    #endif), in which case callers must fail closed.
+    """
+    stack = []
+    spans = []
+    for line_no, line in enumerate(source.split(b"\n"), start=1):
+        stripped = line.lstrip()
+        if not stripped.startswith(b"#"):
+            continue
+        tokens = stripped.split()
+        if not tokens:
+            continue
+        directive = tokens[0].lower()
+        if directive in (b"#if", b"#ifdef", b"#ifndef"):
+            stack.append((line_no, tokens[1:2] == [b"0"]))
+        elif directive in (b"#elif", b"#else"):
+            if not stack:
+                return None
+        elif directive == b"#endif":
+            if not stack:
+                return None
+            spans.append((stack.pop(), line_no))
+    if stack:
+        return None
+    switch = set()
+    for (start, dead), end in spans:
+        if dead:
+            continue
+        switch.update(range(start + 1, end))
+        switch.update(range(end + 1, end + 1 + _PREPROC_SWITCH_WINDOW))
+    return frozenset(switch)
+
+
 def has_relevant_parse_error(root, source: bytes) -> bool:
-    """Ignore only recoverable standalone preprocessor directive errors."""
+    """Ignore only recoverable preprocessor/member-pointer false positives."""
+    switch_lines = _preprocessor_switch_lines(source)
     stack = [root]
     while stack:
         node = stack.pop()
-        if node.is_missing:
-            return True
-        if node.type == "ERROR":
-            fragment = source[node.start_byte:node.end_byte].lstrip()
+        if node.is_missing or node.type == "ERROR":
             line_start = source.rfind(b"\n", 0, node.start_byte) + 1
             line_end = source.find(b"\n", node.end_byte)
             if line_end < 0:
                 line_end = len(source)
-            line = source[line_start:line_end].lstrip()
+            line = source[line_start:line_end]
+
+            # Known pre-existing false positives caused by a preprocessor
+            # conditional splitting a C++ construct (if/else chain, class
+            # inheritance list, ...). Exempt only the exact frozen baseline
+            # line at a preprocessor switch point; real errors elsewhere
+            # (including on the same text outside a switch point) still fail
+            # closed. This is the only exemption that applies to missing
+            # nodes, which otherwise always fail closed.
+            if (switch_lines is not None
+                    and line.strip().decode("utf-8", "replace")
+                    in _PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES
+                    and source.count(b"\n", 0, node.start_byte) + 1
+                    in switch_lines):
+                stack.extend(node.children)
+                continue
+
+            if node.is_missing:
+                return True
+
+            fragment = source[node.start_byte:node.end_byte].lstrip()
 
             # tree-sitter-cpp can split one preprocessor directive into
             # multiple ERROR nodes (for example '#if TAG == 34' and '34').
-            if fragment.startswith(b"#") or line.startswith(b"#"):
+            if fragment.startswith(b"#") or line.lstrip().startswith(b"#"):
                 stack.extend(node.children)
                 continue
 

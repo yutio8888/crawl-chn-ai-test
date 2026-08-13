@@ -2,6 +2,7 @@
 """Cross-scanner regressions for Issue #12 discovery and dataflow gaps."""
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,6 +12,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPTS = ROOT / ".claude/scripts"
+
+
+def _coverage(data):
+    return (data["coverage"] if "coverage" in data
+            else data["meta"]["coverage"])
 
 
 class ScannerCompletenessTests(unittest.TestCase):
@@ -85,12 +91,140 @@ class ScannerCompletenessTests(unittest.TestCase):
                                             "--require-parser")
                     self.assertEqual(0, proc.returncode, proc.stderr)
                     data = json.loads(proc.stdout)
-                    coverage = (data["coverage"] if "coverage" in data
-                                else data["meta"]["coverage"])
+                    coverage = _coverage(data)
                     self.assertEqual(coverage,
                                      {"discovered": 1,
                                       "scanned": 1,
                                       "failed": []})
+
+    def test_directn_preprocessor_split_false_positives_pass_changed_scope(self):
+        # Issue #40 W1: changed-scope --files validation used to fail closed
+        # on directn.cc's pre-existing preprocessor-conditional tree-sitter
+        # false positives while the full-root entry skipped validation.
+        # Both entries must now scan the real file without a parse failure.
+        directn = ROOT / "crawl-ref" / "source" / "directn.cc"
+        self.assertTrue(directn.is_file(), directn)
+        for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+            with self.subTest(scanner=scanner, entry="files"):
+                proc = self.run_scanner(scanner, "--files", directn,
+                                        "--format", "json",
+                                        "--require-parser")
+                self.assertNotEqual(2, proc.returncode, proc.stderr)
+                coverage = _coverage(json.loads(proc.stdout))
+                self.assertEqual(coverage["scanned"], 1)
+                self.assertEqual(coverage["failed"], [])
+
+    def test_directn_preprocessor_split_false_positives_pass_directory_entry(self):
+        # Issue #40 W1: the directory-root entry (parse validation enabled
+        # for non-production roots) must agree with the --files entry on the
+        # real directn.cc: same file, same scan, no parse failure.
+        directn = ROOT / "crawl-ref" / "source" / "directn.cc"
+        with tempfile.TemporaryDirectory() as td:
+            shutil.copy2(directn, Path(td) / "directn.cc")
+            for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+                with self.subTest(scanner=scanner, entry="dir"):
+                    proc = self.run_scanner(scanner, td, "--format", "json",
+                                            "--require-parser")
+                    self.assertNotEqual(2, proc.returncode, proc.stderr)
+                    coverage = _coverage(json.loads(proc.stdout))
+                    self.assertEqual(coverage["scanned"], 1)
+                    self.assertEqual(coverage["failed"], [])
+
+    def test_real_parse_error_fails_closed_in_directory_entry(self):
+        # Real syntax errors must fail closed from the directory entry too,
+        # not just from --files (Issue #40 W1 acceptance criterion 2).
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "broken.cc"
+            source.write_text('void f( { auto x = "broken";\n',
+                              encoding="utf-8")
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                with self.subTest(scanner=scanner, entry="dir"):
+                    proc = self.run_scanner(scanner, td, "--format", "json",
+                                            "--require-parser")
+                    self.assertEqual(2, proc.returncode, proc.stderr)
+                    coverage = _coverage(json.loads(proc.stdout))
+                    self.assertEqual(coverage["scanned"], 0)
+                    self.assertEqual(len(coverage["failed"]), 1)
+
+    def test_real_error_in_directn_copy_still_fails_closed(self):
+        # The narrow exemption must not mask a real syntax error even inside
+        # the exact file it was built for: inject a genuine break at line 1
+        # (outside any preprocessor switch point) and both entries must fail.
+        directn = ROOT / "crawl-ref" / "source" / "directn.cc"
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "directn.cc"
+            source.write_bytes(b"int x = ;\n" + directn.read_bytes())
+            for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+                for entry, args in (("files", ("--files", source)),
+                                    ("dir", (td,))):
+                    with self.subTest(scanner=scanner, entry=entry):
+                        proc = self.run_scanner(scanner, *args,
+                                                "--format", "json",
+                                                "--require-parser")
+                        self.assertEqual(2, proc.returncode, proc.stderr)
+                        coverage = _coverage(json.loads(proc.stdout))
+                        self.assertEqual(coverage["scanned"], 0)
+                        self.assertEqual(len(coverage["failed"]), 1)
+
+    def test_preprocessor_switch_context_required_for_baseline_exemption(self):
+        # The frozen-baseline exemption must fire only at a preprocessor
+        # switch point: the same line text outside a conditional, inside a
+        # dead #if 0 body, or a genuine error on other text must fail closed.
+        try:
+            import tree_sitter_cpp as _tscpp
+            from tree_sitter import Language as _Language
+            from tree_sitter import Parser as _Parser
+        except ImportError as exc:
+            self.skipTest(f"tree-sitter not installed: {exc}")
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import has_relevant_parse_error
+
+        lang = _Language(_tscpp.language())
+        parser = _Parser(lang)
+        baseline = ('const vault_placement '
+                    '&vp(*env.level_vaults[map_index]);')
+        cases = [
+            ("baseline inside #ifdef is exempt",
+             f'''void f() {{
+#ifdef DEBUG_DIAGNOSTICS
+    {baseline}
+#endif
+}}
+''',
+             False),
+            ("same baseline text without any conditional fails closed",
+             f'''void f() {{
+    {baseline}
+}}
+''',
+             True),
+            ("baseline inside dead #if 0 body fails closed",
+             f'''void f() {{
+#if 0
+    {baseline}
+#endif
+}}
+''',
+             True),
+            ("real error inside a live conditional fails closed",
+             '''void f() {
+#ifdef FOO
+    int x = ;
+#endif
+}
+''',
+             True),
+        ]
+        for name, source, expected in cases:
+            with self.subTest(case=name):
+                tree = parser.parse(source.encode("utf-8"))
+                self.assertEqual(
+                    expected,
+                    has_relevant_parse_error(tree.root_node,
+                                             source.encode("utf-8")),
+                    name)
+
 
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:
