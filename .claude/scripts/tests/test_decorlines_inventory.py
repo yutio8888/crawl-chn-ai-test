@@ -272,6 +272,64 @@ class DecorlinesInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "random-site"):
             MODULE._pair_candidate(en, zh)
 
+    def test_dump_family_misc_is_enforced_on_all_load_paths(self):
+        # A speak-family dump must never be accepted on a decorlines (misc)
+        # path: baseline/candidate loads and the proposal/scaffold load all
+        # fail closed with the family mismatch.
+        speak_en = copy.deepcopy(self.en)
+        speak_en["database_name"] = "speak"
+        speak_path = self.root / "speak-en.json"
+        speak_path.write_text(json.dumps(speak_en, ensure_ascii=False),
+                              encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "database_name must be 'misc'"):
+            MODULE._load_dataset(BASELINE, speak_path, "database/",
+                                 "baseline EN", "baseline")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "database_name must be 'misc'"):
+            MODULE._proposal_dataset(speak_path, "database/", "proposal EN")
+        speak_zh = copy.deepcopy(self.zh)
+        speak_zh["database_name"] = "speak"
+        speak_zh_path = self.root / "speak-zh.json"
+        speak_zh_path.write_text(json.dumps(speak_zh, ensure_ascii=False),
+                                 encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "database_name must be 'misc'"):
+            MODULE._load_dataset(BASELINE, speak_zh_path, "database/zh/",
+                                 "baseline ZH", "baseline")
+
+    def test_misc_dump_is_rejected_when_speak_family_is_expected(self):
+        # The shared validator refuses a misc dump wherever a speak family
+        # is expected, so a misc artifact can never satisfy a speak caller.
+        with self.assertRaisesRegex(MODULE.hardened.ArtifactError,
+                                    "database_name must be 'speak'"):
+            MODULE.hardened.validate_artifact(
+                self.en, "fixture EN", expected_database="speak"
+            )
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "database_name must be 'speak'"):
+            MODULE.hardened._load_dump_safe(
+                self.en_path, "fixture EN", "database/",
+                expected_database="speak",
+            )
+
+    def test_scaffold_rejects_symlinked_path_components(self):
+        original = MODULE.RESULTS_PATH
+        real_dir = self.root / "real-dir"
+        real_dir.mkdir()
+        link_dir = self.root / "link-dir"
+        link_dir.symlink_to(real_dir, target_is_directory=True)
+        scaffold_path = link_dir / "decorlines-review-results.md"
+        MODULE.RESULTS_PATH = real_dir / "decorlines-review-results.md"
+        try:
+            with self.assertRaisesRegex(MODULE.InventoryError,
+                                        "without following a symlink"):
+                MODULE.scaffold_results(scaffold_path, self.inventory)
+            self.assertFalse((real_dir / "decorlines-review-results.md")
+                             .exists())
+        finally:
+            MODULE.RESULTS_PATH = original
+
     def test_scaffold_generates_empty_ledger_and_refuses_overwrite(self):
         original = MODULE.RESULTS_PATH
         scaffold_path = self.root / "decorlines-review-results.md"

@@ -560,9 +560,15 @@ def _read_artifact_bytes(path: Path, label: str) -> bytes:
 
 def _load_dump_safe(
     path: Path, label: str, expected_directory: str,
+    expected_database: str | None = None,
 ) -> tuple[dict[str, Any], bytes]:
     """Parse a production dump whose bytes were read through one checked
-    no-follow descriptor with inode identity verification."""
+    no-follow descriptor with inode identity verification.
+
+    ``expected_database`` is optional: when supplied, the artifact family
+    (``speak``/``misc``) must match it exactly, so a speak dump can never
+    be consumed on a misc path (or vice versa).  Speak-family callers
+    omit it and keep the historical accept-either behaviour."""
     raw = _read_artifact_bytes(path, f"{label} production dump")
     try:
         value = json.loads(raw.decode("utf-8"))
@@ -570,7 +576,10 @@ def _load_dump_safe(
         raise InventoryError(
             f"cannot parse {label} production dump {path}: {exc}") from exc
     try:
-        validate_artifact(value, f"{label} production dump")
+        validate_artifact(
+            value, f"{label} production dump",
+            expected_database=expected_database,
+        )
     except ArtifactError as exc:
         raise InventoryError(str(exc)) from exc
     _require(

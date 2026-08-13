@@ -119,6 +119,7 @@ def _validate_provenance(
 
 def validate_artifact(
     artifact: object, label: str = "canonical dump",
+    expected_database: str | None = None,
 ) -> ArtifactKeySets:
     artifact = _require_exact_fields(
         artifact, ARTIFACT_FIELDS, "canonical dump"
@@ -129,6 +130,10 @@ def validate_artifact(
              f"unsupported artifact schema_version {artifact.get('schema_version')!r}")
     _require(artifact.get("database_name") in ("speak", "misc"),
              "artifact database_name must be 'speak' or 'misc'")
+    if expected_database is not None:
+        _require(artifact["database_name"] == expected_database,
+                 f"artifact database_name must be {expected_database!r}, "
+                 f"got {artifact['database_name']!r}")
     directory = artifact.get("source_directory")
     _require(isinstance(directory, str) and directory,
              "artifact source_directory must be a non-empty string")

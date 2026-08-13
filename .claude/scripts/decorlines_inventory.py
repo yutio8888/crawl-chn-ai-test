@@ -596,7 +596,9 @@ def _load_dataset(
 ) -> dict[str, Any]:
     hardened.shared._validate_oid(ref, label)
     _require_regular_misc_git_sources(ref, directory, label)
-    artifact, raw = hardened._load_dump_safe(path, label, directory)
+    artifact, raw = hardened._load_dump_safe(
+        path, label, directory, expected_database="misc"
+    )
     derived = _derive_scoped_misc_dump(ref, directory, label)
     hardened.shared._require_scoped_derivation(
         artifact, derived, label, source_basename=SOURCE_BASENAME
@@ -986,7 +988,9 @@ def _proposal_dataset(
     worktree source byte-for-byte after newline normalization; the exact
     candidate audit later re-derives the same data from the committed Git
     object and rejects any mismatch."""
-    artifact, raw = hardened._load_dump_safe(path, label, directory)
+    artifact, raw = hardened._load_dump_safe(
+        path, label, directory, expected_database="misc"
+    )
     source_name = f"{directory}{SOURCE_BASENAME}"
     snapshot = next(
         source for source in artifact["sources"]
@@ -1064,13 +1068,76 @@ def _skeleton_card(
     }
 
 
+def _openat_exclusive_create(path: Path) -> int:
+    """Exclusively create one regular file through a pinned openat chain.
+
+    The supplied pathname is decomposed lexically (``os.path.abspath``
+    normalizes ``.``/``..`` without resolving symlinks) and every parent
+    component is opened with ``O_RDONLY|O_DIRECTORY|O_NOFOLLOW`` relative
+    to the previously pinned descriptor, starting from the filesystem
+    root.  A symlink anywhere in the chain fails closed (ELOOP or
+    ENOTDIR depending on platform/component type), a missing component
+    fails with ENOENT (directories are never auto-created), and a
+    non-directory fails with ENOTDIR, so a concurrent path replacement
+    cannot redirect the write: the final element is created with
+    ``O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW`` against the pinned parent
+    descriptor, which means an existing ledger (regular file, hardlink or
+    symlink) is rejected with EEXIST/ELOOP and never followed, truncated
+    or overwritten.  The caller owns the returned descriptor."""
+    absolute = os.path.abspath(os.fspath(path))
+    if not absolute.startswith(os.sep):
+        raise InventoryError(
+            f"scaffold path must be an absolute POSIX pathname: {path}"
+        )
+    components = [component for component in absolute.split(os.sep)
+                  if component not in ("", ".")]
+    try:
+        parent = os.open(
+            os.sep, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+        )
+    except OSError as exc:
+        raise InventoryError(
+            f"cannot pin the filesystem root for scaffold {absolute}: {exc}"
+        ) from exc
+    try:
+        for component in components[:-1]:
+            try:
+                child = os.open(
+                    component,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=parent,
+                )
+            except OSError as exc:
+                raise InventoryError(
+                    f"scaffold parent component {component!r} of {absolute} "
+                    f"cannot be opened without following a symlink: {exc}"
+                ) from exc
+            os.close(parent)
+            parent = child
+        try:
+            return os.open(
+                components[-1],
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o600,
+                dir_fd=parent,
+            )
+        except OSError as exc:
+            raise InventoryError(
+                f"cannot exclusively create scaffold {absolute}: {exc}"
+            ) from exc
+    finally:
+        os.close(parent)
+
+
 def scaffold_results(
     path: Path, inventory: dict[str, Any],
 ) -> list[dict[str, Any]]:
     """Generate the initial empty strict JSONL ledger (exclusive create).
 
     Fails closed when the ledger already exists, so an existing review ledger
-    can never be overwritten or reopened."""
+    can never be overwritten or reopened, and when any pathname component
+    (parent directories included) is a symlink, so a path replacement cannot
+    redirect the write outside the pinned ledger location."""
     cards = [_skeleton_card(inventory, entry)
              for entry in inventory["entries"]]
     records = [_expected_metadata(inventory, cards), *cards]
@@ -1087,14 +1154,7 @@ def scaffold_results(
     resolved = path.resolve(strict=False)
     _require(resolved == RESULTS_PATH.resolve(strict=False),
              f"scaffold output must be {RESULTS_PATH}")
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    if hasattr(os, "O_NOFOLLOW"):
-        flags |= os.O_NOFOLLOW
-    try:
-        fd = os.open(resolved, flags, 0o600)
-    except OSError as exc:
-        raise InventoryError(
-            f"cannot exclusively create scaffold {resolved}: {exc}") from exc
+    fd = _openat_exclusive_create(path)
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
         stream.write(text)
         stream.flush()

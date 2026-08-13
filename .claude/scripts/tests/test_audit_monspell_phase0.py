@@ -343,6 +343,19 @@ class ArtifactInventoryTest(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 self.assert_protocol_error(mutation)
 
+    def test_optional_expected_database_family_is_enforced(self):
+        value = fixture()
+        MODULE.validate_artifact(value, "fixture", expected_database="speak")
+        with self.assertRaisesRegex(MODULE.ArtifactError,
+                                    "database_name must be 'misc'"):
+            MODULE.validate_artifact(value, "fixture", expected_database="misc")
+        misc = copy.deepcopy(value)
+        misc["database_name"] = "misc"
+        MODULE.validate_artifact(misc, "fixture", expected_database="misc")
+        with self.assertRaisesRegex(MODULE.ArtifactError,
+                                    "database_name must be 'speak'"):
+            MODULE.validate_artifact(misc, "fixture", expected_database="speak")
+
     def test_validates_raw_body_body_empty_and_parse_error(self):
         self.assert_protocol_error(
             lambda d: d["entries"][0].update(raw_body=7)
