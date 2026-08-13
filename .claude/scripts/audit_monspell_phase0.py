@@ -127,8 +127,8 @@ def validate_artifact(
              "artifact schema_version must be an integer")
     _require(artifact["schema_version"] == ARTIFACT_SCHEMA_VERSION,
              f"unsupported artifact schema_version {artifact.get('schema_version')!r}")
-    _require(artifact.get("database_name") == "speak",
-             "artifact database_name must be 'speak'")
+    _require(artifact.get("database_name") in ("speak", "misc"),
+             "artifact database_name must be 'speak' or 'misc'")
     directory = artifact.get("source_directory")
     _require(isinstance(directory, str) and directory,
              "artifact source_directory must be a non-empty string")

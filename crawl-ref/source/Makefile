@@ -1805,6 +1805,7 @@ textdb-phase0-dump: catch2-tests-executable
 	  { echo "TEXTDB_PHASE0_DUMP must name an output file" >&2; exit 2; }
 	TEXTDB_PHASE0_DUMP="$(TEXTDB_PHASE0_DUMP)" \
 	TEXTDB_PHASE0_LANGUAGE="$(TEXTDB_PHASE0_LANGUAGE)" \
+	TEXTDB_PHASE0_DB="$(TEXTDB_PHASE0_DB)" \
 	  ./catch2-tests-executable "[.textdb-phase0-dump]" --reporter compact
 
 .PHONY: textdb-monspell-candidate-dump

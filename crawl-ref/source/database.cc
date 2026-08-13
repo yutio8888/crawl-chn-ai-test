@@ -896,6 +896,80 @@ _materialize_canonical_entries(const effective_textdb_entries &effective)
     }
     return result;
 }
+
+// Parameterized phase-0 dump core shared by the SpeakDB and MiscDB typed
+// wrappers below.  Provenance cannot be recovered from DBM, so the canonical
+// dump re-reads the production input sequence of the given TextDB.  The speak
+// wrappers keep their exact public signatures and byte-identical output; only
+// database_name and the input family differ for misc.
+textdb_phase0::canonical_speakdb_dump _dump_canonical_english_typed(
+    const TextDB &db, const string &database_name)
+{
+    textdb_phase0::canonical_speakdb_dump dump;
+    dump.schema_version = 1;
+    dump.database_name = database_name;
+    dump.source_directory = db.phase0_directory();
+    effective_textdb_entries effective;
+    const vector<string> &files = db.phase0_input_files();
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        const string relative = db.phase0_directory() + files[i];
+        const string path = datafile_path(relative, true);
+        textdb_phase0::source_snapshot snapshot;
+        snapshot.source_name = relative;
+        snapshot.load_index = i;
+        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
+        dump.sources.push_back(snapshot);
+        UTF8FileLineInput input(path.c_str());
+        if (input.error())
+            end(1, true, "Unable to open input file: %s", path.c_str());
+        _record_canonical_entries(input, relative, i, effective, true);
+    }
+    dump.entries = _materialize_canonical_entries(effective);
+    return dump;
+}
+
+textdb_phase0::canonical_speakdb_dump _dump_localized_typed(
+    const TextDB &db, const string &database_name, const string &language)
+{
+    if (!textdb_phase0::is_valid_textdb_locale(language))
+    {
+        end(1, false, "Invalid TextDB locale identifier: '%s'",
+            language.c_str());
+    }
+
+    textdb_phase0::canonical_speakdb_dump dump;
+    dump.schema_version = 1;
+    dump.database_name = database_name;
+    dump.source_directory = db.phase0_directory() + language + "/";
+    const string physical_directory = datafile_path(
+        dump.source_directory, false, true, dir_exists);
+    if (physical_directory.empty())
+    {
+        end(1, false, "Cannot find localized TextDB directory '%s'",
+            dump.source_directory.c_str());
+    }
+
+    const vector<string> files = textdb_phase0::order_localized_speakdb_sources(
+        get_dir_files_ext(physical_directory, "txt"));
+    effective_textdb_entries effective;
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        const string relative = dump.source_directory + files[i];
+        const string path = datafile_path(relative, false);
+        textdb_phase0::source_snapshot snapshot;
+        snapshot.source_name = relative;
+        snapshot.load_index = i;
+        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
+        dump.sources.push_back(snapshot);
+        UTF8FileLineInput input(path.c_str());
+        if (input.error())
+            end(1, true, "Unable to open input file: %s", path.c_str());
+        _record_canonical_entries(input, relative, i, effective, true);
+    }
+    dump.entries = _materialize_canonical_entries(effective);
+    return dump;
+}
 }
 
 vector<textdb_phase0::canonical_entry>
@@ -944,28 +1018,7 @@ textdb_phase0::canonicalise_source_dump(const vector<source> &sources,
 textdb_phase0::canonical_speakdb_dump
 textdb_phase0::dump_canonical_english_speakdb_typed()
 {
-    canonical_speakdb_dump dump;
-    dump.schema_version = 1;
-    dump.database_name = "speak";
-    dump.source_directory = SpeakDB.phase0_directory();
-    effective_textdb_entries effective;
-    const vector<string> &files = SpeakDB.phase0_input_files();
-    for (size_t i = 0; i < files.size(); ++i)
-    {
-        const string relative = SpeakDB.phase0_directory() + files[i];
-        const string path = datafile_path(relative, true);
-        source_snapshot snapshot;
-        snapshot.source_name = relative;
-        snapshot.load_index = i;
-        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
-        dump.sources.push_back(snapshot);
-        UTF8FileLineInput input(path.c_str());
-        if (input.error())
-            end(1, true, "Unable to open input file: %s", path.c_str());
-        _record_canonical_entries(input, relative, i, effective, true);
-    }
-    dump.entries = _materialize_canonical_entries(effective);
-    return dump;
+    return _dump_canonical_english_typed(SpeakDB, "speak");
 }
 
 vector<textdb_phase0::canonical_entry>
@@ -1017,43 +1070,19 @@ vector<string> textdb_phase0::order_localized_speakdb_sources(
 textdb_phase0::canonical_speakdb_dump
 textdb_phase0::dump_localized_speakdb_typed(const string &language)
 {
-    if (!is_valid_textdb_locale(language))
-    {
-        end(1, false, "Invalid TextDB locale identifier: '%s'",
-            language.c_str());
-    }
+    return _dump_localized_typed(SpeakDB, "speak", language);
+}
 
-    canonical_speakdb_dump dump;
-    dump.schema_version = 1;
-    dump.database_name = "speak";
-    dump.source_directory = SpeakDB.phase0_directory() + language + "/";
-    const string physical_directory = datafile_path(
-        dump.source_directory, false, true, dir_exists);
-    if (physical_directory.empty())
-    {
-        end(1, false, "Cannot find localized TextDB directory '%s'",
-            dump.source_directory.c_str());
-    }
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_canonical_english_miscdb_typed()
+{
+    return _dump_canonical_english_typed(MiscDB, "misc");
+}
 
-    const vector<string> files = order_localized_speakdb_sources(
-        get_dir_files_ext(physical_directory, "txt"));
-    effective_textdb_entries effective;
-    for (size_t i = 0; i < files.size(); ++i)
-    {
-        const string relative = dump.source_directory + files[i];
-        const string path = datafile_path(relative, false);
-        source_snapshot snapshot;
-        snapshot.source_name = relative;
-        snapshot.load_index = i;
-        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
-        dump.sources.push_back(snapshot);
-        UTF8FileLineInput input(path.c_str());
-        if (input.error())
-            end(1, true, "Unable to open input file: %s", path.c_str());
-        _record_canonical_entries(input, relative, i, effective, true);
-    }
-    dump.entries = _materialize_canonical_entries(effective);
-    return dump;
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_localized_miscdb_typed(const string &language)
+{
+    return _dump_localized_typed(MiscDB, "misc", language);
 }
 
 namespace

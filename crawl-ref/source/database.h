@@ -507,6 +507,13 @@ bool is_valid_textdb_locale(const string &language);
 vector<string> order_localized_speakdb_sources(vector<string> files);
 canonical_speakdb_dump dump_localized_speakdb_typed(const string &language);
 
+// MiscDB phase-0 dumps: the same production-parser re-read applied to the
+// "misc" TextDB family (miscname/godname/montitle/decorlines/monname/
+// colourname/graffiti/gizmo).  The dump schema is shared with the SpeakDB
+// dump; only database_name and source_directory differ.
+canonical_speakdb_dump dump_canonical_english_miscdb_typed();
+canonical_speakdb_dump dump_localized_miscdb_typed(const string &language);
+
 // Select and recursively expand a key from a canonical dump using the same
 // weighted chooser, replacement walk, and embedded-Lua stage as the legacy
 // TextDB path.

@@ -2204,39 +2204,79 @@ TEST_CASE("write production TextDB Phase 0 artifact",
     REQUIRE(output_path != nullptr);
     REQUIRE(*output_path != '\0');
     ensure_test_data_root();
+    const char *database_env = std::getenv("TEXTDB_PHASE0_DB");
+    const string database_name = (database_env && *database_env)
+                                 ? database_env : "speak";
+    REQUIRE((database_name == "speak" || database_name == "misc"));
     const char *language = std::getenv("TEXTDB_PHASE0_LANGUAGE");
     const bool localized = language != nullptr && *language != '\0';
     const textdb_phase0::canonical_speakdb_dump dump =
         localized
-            ? textdb_phase0::dump_localized_speakdb_typed(language)
-            : textdb_phase0::dump_canonical_english_speakdb_typed();
-
-    const string monspell_source = localized
-        ? "database/" + string(language) + "/monspell.txt"
-        : "database/monspell.txt";
-    set<string> monspell_keys;
-    size_t monspell_variants = 0;
-    for (const textdb_phase0::canonical_entry &entry : dump.entries)
+            ? (database_name == "misc"
+                   ? textdb_phase0::dump_localized_miscdb_typed(language)
+                   : textdb_phase0::dump_localized_speakdb_typed(language))
+            : (database_name == "misc"
+                   ? textdb_phase0::dump_canonical_english_miscdb_typed()
+                   : textdb_phase0::dump_canonical_english_speakdb_typed());
+    CHECK(dump.database_name == database_name);
+    if (database_name == "misc")
     {
-        if (has_source_history(entry, monspell_source))
+        const string decorlines_source = localized
+            ? "database/" + string(language) + "/decorlines.txt"
+            : "database/decorlines.txt";
+        set<string> decorlines_keys;
+        size_t decorlines_variants = 0;
+        for (const textdb_phase0::canonical_entry &entry : dump.entries)
         {
-            monspell_keys.insert(entry.canonical_key);
-            monspell_variants += entry.variants.size();
+            if (has_source_history(entry, decorlines_source))
+            {
+                decorlines_keys.insert(entry.canonical_key);
+                decorlines_variants += entry.variants.size();
+            }
         }
-    }
-    if (!localized)
-    {
-        CHECK(monspell_keys.size() == 262);
-        CHECK(monspell_variants == 355);
-        CHECK(key_set_fingerprint(monspell_keys)
-              == 0xc87868127106d293ULL);
+        if (!localized)
+        {
+            CHECK(decorlines_keys.size() == 132);
+            CHECK(decorlines_variants == 209);
+            CHECK(key_set_fingerprint(decorlines_keys) == 0x40d7ff2f876d3a10ULL);
+        }
+        else
+        {
+            CHECK(dump.source_directory
+                  == "database/" + string(language) + "/");
+            CHECK_FALSE(dump.sources.empty());
+            CHECK_FALSE(dump.entries.empty());
+        }
     }
     else
     {
-        CHECK(dump.source_directory
-              == "database/" + string(language) + "/");
-        CHECK_FALSE(dump.sources.empty());
-        CHECK_FALSE(dump.entries.empty());
+        const string monspell_source = localized
+            ? "database/" + string(language) + "/monspell.txt"
+            : "database/monspell.txt";
+        set<string> monspell_keys;
+        size_t monspell_variants = 0;
+        for (const textdb_phase0::canonical_entry &entry : dump.entries)
+        {
+            if (has_source_history(entry, monspell_source))
+            {
+                monspell_keys.insert(entry.canonical_key);
+                monspell_variants += entry.variants.size();
+            }
+        }
+        if (!localized)
+        {
+            CHECK(monspell_keys.size() == 262);
+            CHECK(monspell_variants == 355);
+            CHECK(key_set_fingerprint(monspell_keys)
+                  == 0xc87868127106d293ULL);
+        }
+        else
+        {
+            CHECK(dump.source_directory
+                  == "database/" + string(language) + "/");
+            CHECK_FALSE(dump.sources.empty());
+            CHECK_FALSE(dump.entries.empty());
+        }
     }
 
     string error;
