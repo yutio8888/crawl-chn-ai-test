@@ -934,6 +934,270 @@ line */ 0
                 self.assertIsNotNone(switch, name)
                 self.assertEqual(expected, switch, name)
 
+    def test_directive_tail_honors_literal_state(self):
+        # R5-CODE-001: the directive-line tail scan must track literal
+        # state. '//' and '/*' inside string, char and raw-string
+        # literals are literal text, not comments, so a legal '#define S
+        # "/*"' ends at its own newline and the conditionals after it are
+        # still discovered. The old bare-byte search truncated the
+        # '#define' line at the literal '/*' and swallowed the rest of
+        # the file, so the following '#ifdef'/'#endif' pair vanished and
+        # the frozen-line scenario failed closed on a file g++ accepts
+        # and tree-sitter has no error on.
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import (_directive_events,
+                                 _preprocessor_switch_lines)
+
+        cases = [
+            ("block-comment opener inside a string literal",
+             b'#define S "/*"\n#ifdef REAL\n    int x = 1;\n#endif\n',
+             [(b"ifdef", 2, False), (b"endif", 4, False)]),
+            ("line-comment opener inside a string literal",
+             b'#define S "//"\n#ifdef REAL\n    int x = 1;\n#endif\n',
+             [(b"ifdef", 2, False), (b"endif", 4, False)]),
+            ("comment opener inside a char literal",
+             b"#define C '/*'\n#ifdef REAL\n    int x = 1;\n#endif\n",
+             [(b"ifdef", 2, False), (b"endif", 4, False)]),
+            ("comment openers inside a raw string",
+             b'#define R R"(/* // )"\n#ifdef REAL\n    int x = 1;\n#endif\n',
+             [(b"ifdef", 2, False), (b"endif", 4, False)]),
+            ("real comment after a literal still truncates",
+             b'#define S "x" /* tail */\n#ifdef REAL\n    int x = 1;\n'
+             b'#endif\n',
+             [(b"ifdef", 2, False), (b"endif", 4, False)]),
+        ]
+        for name, source, expected in cases:
+            with self.subTest(case=name):
+                self.assertEqual(expected, list(_directive_events(source)))
+
+        # CLI-level clean companion: g++ accepts and tree-sitter reports
+        # no error; the scanners must not fail closed because the lexer
+        # truncated the '#define' line at the literal '/*' and orphaned
+        # the '#endif' (old behavior: exit 2 on both entries).
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "mutation.cc"
+            source.write_bytes(b'''#define S "/*"
+#ifdef A
+/* real comment */
+#endif
+int main() { return 0; }
+''')
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                for entry, args in (("files", ("--files", source)),
+                                    ("dir", (td,))):
+                    with self.subTest(scanner=scanner, entry=entry,
+                                      case="clean"):
+                        proc = self.run_scanner(scanner, *args,
+                                                "--format", "json",
+                                                "--require-parser")
+                        self.assertEqual(0, proc.returncode, proc.stderr)
+                        coverage = _coverage(json.loads(proc.stdout))
+                        self.assertEqual(coverage["scanned"], 1)
+                        self.assertEqual(coverage["failed"], [])
+
+        # Frozen-line scenario: '#define S "/*"' before a live conditional
+        # containing the frozen baseline construct. The lexer must still
+        # see the conditional (the baseline line is a switch point); the
+        # scanners fail closed on the real, un-exempted tree-sitter ERROR
+        # of the baseline construct, not because of a lexer misjudgment.
+        baseline = ('const vault_placement '
+                    '&vp(*env.level_vaults[map_index]);')
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "mutation.cc"
+            source.write_text(
+                f'#define S "/*"\n#ifdef REAL\n    {baseline}\n#endif\n',
+                encoding="utf-8")
+            switch = _preprocessor_switch_lines(source.read_bytes())
+            self.assertIsNotNone(switch)
+            self.assertIn(3, switch)
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                for entry, args in (("files", ("--files", source)),
+                                    ("dir", (td,))):
+                    with self.subTest(scanner=scanner, entry=entry,
+                                      case="frozen"):
+                        proc = self.run_scanner(scanner, *args,
+                                                "--format", "json",
+                                                "--require-parser")
+                        self.assertEqual(2, proc.returncode, proc.stderr)
+                        coverage = _coverage(json.loads(proc.stdout))
+                        self.assertEqual(coverage["scanned"], 0)
+                        self.assertEqual(len(coverage["failed"]), 1)
+                        self.assertIn(str(source),
+                                      coverage["failed"][0])
+
+    def test_directive_leading_trivia_and_name_comments(self):
+        # R5-CODE-002: directive-line recognition applies phase-3 comment
+        # replacement. A leading comment before '#' is trivia, so
+        # '/* leading */ #if 1' is a directive (the old code dropped
+        # at_line_start after a closed block comment and missed it), and
+        # comments between '#' and the name (or inside it) are replaced by
+        # one space, so '#/**/if 1' and '# /* c */ if 1' are '#if 1' (the
+        # old code read an empty keyword and missed them). A mid-line '#'
+        # after real code is still not a directive even when a comment
+        # precedes it.
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import _directive_events, _preprocessor_switch_lines
+
+        cases = [
+            ("leading block comment before '#'",
+             b'''/* leading trivia */ #if 1
+    int x = 1;
+#endif
+''',
+             frozenset({2, 4, 5, 6, 7})),
+            ("multi-line leading comment before '#'",
+             b'''/* leading
+trivia */ #if 1
+    int x = 1;
+#endif
+''',
+             frozenset({3, 5, 6, 7, 8})),
+            ("comment inside the directive name",
+             b'''#/**/if 1
+    int x = 1;
+#endif
+''',
+             frozenset({2, 4, 5, 6, 7})),
+            ("trivia and comment between '#' and the name",
+             b'''# /* c */ if 1
+    int x = 1;
+#endif
+''',
+             frozenset({2, 4, 5, 6, 7})),
+            ("dead condition recognized through the name comment",
+             b'''#/**/if 0
+    int dead = 1;
+#endif
+''',
+             frozenset()),
+        ]
+        for name, source, expected in cases:
+            with self.subTest(case=name):
+                self.assertEqual(expected,
+                                 _preprocessor_switch_lines(source))
+
+        # A '#' after real code on the same line is not a directive, even
+        # when a block comment sits between the code and the '#': phase-3
+        # trivia does not make it the first token of the line.
+        self.assertEqual(
+            [(b"endif", 2, False)],
+            list(_directive_events(b'int x = 1; /* c */ #if 1\n#endif\n')))
+
+        # CLI-level: g++ accepts both sources and they scan clean through
+        # the real scanners (old behavior: exit 2 on the orphaned
+        # '#endif' because the '#if' was never recognized).
+        clean_sources = [
+            b'''/* leading trivia */ #if 1
+    int ok = 1;
+#endif
+int main() { return 0; }
+''',
+            b'''#/**/if 1
+    int ok = 1;
+#endif
+int main() { return 0; }
+''',
+        ]
+        for source in clean_sources:
+            with tempfile.TemporaryDirectory() as td:
+                source_path = Path(td) / "mutation.cc"
+                source_path.write_bytes(source)
+                for scanner in ("scan_string_concat.py",
+                                "scan_varargs_string.py"):
+                    with self.subTest(scanner=scanner, entry="files"):
+                        proc = self.run_scanner(
+                            scanner, "--files", source_path,
+                            "--format", "json", "--require-parser")
+                        self.assertEqual(0, proc.returncode, proc.stderr)
+                        coverage = _coverage(json.loads(proc.stdout))
+                        self.assertEqual(coverage["scanned"], 1)
+                        self.assertEqual(coverage["failed"], [])
+
+    def test_line_ending_normalization_equivalence(self):
+        # R5-CODE-003: the lexer and tree-sitter must share one line
+        # mapping for every line-ending style. The lexer normalizes
+        # CR/CRLF to LF in _phase2_splice(); tree-sitter consumes the
+        # same normalized bytes (the exemption binding hashes the
+        # normalized content, and node line numbers are resolved with the
+        # same EOL-agnostic mapping), so a directn.cc copy stored with
+        # CRLF or bare-CR endings behaves exactly like the LF original:
+        # varargs exit 0, concat exit 1 with the six known findings.
+        # tree-sitter itself cannot consume bare-CR bytes (its grammar
+        # treats a bare CR as content, not an end of line), so the bare-CR
+        # equivalence is asserted on the normalized input while the
+        # end-to-end CLI equivalence runs on the CRLF variant.
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import (_normalize_eol, _preprocessor_switch_lines,
+                                 has_relevant_parse_error)
+        try:
+            import tree_sitter_cpp as _tscpp
+            from tree_sitter import Language as _Language
+            from tree_sitter import Parser as _Parser
+        except ImportError as exc:
+            self.skipTest(f"tree-sitter not installed: {exc}")
+
+        directn = ROOT / "crawl-ref" / "source" / "directn.cc"
+        lf = directn.read_bytes()
+        crlf = lf.replace(b"\n", b"\r\n")
+        cr = lf.replace(b"\n", b"\r")
+
+        # Phase-1 normalization is line-ending-style independent: the
+        # three forms of the same file normalize to identical bytes.
+        self.assertEqual(lf, _normalize_eol(lf))
+        self.assertEqual(lf, _normalize_eol(crlf))
+        self.assertEqual(lf, _normalize_eol(cr))
+
+        # The lexer sees the same conditional events and switch lines for
+        # every style (the frozen baseline lines stay switch points).
+        switch_lf = _preprocessor_switch_lines(lf)
+        self.assertIsNotNone(switch_lf)
+        self.assertEqual(switch_lf, _preprocessor_switch_lines(crlf))
+        self.assertEqual(switch_lf, _preprocessor_switch_lines(cr))
+        self.assertIn(622, switch_lf)
+        self.assertIn(3721, switch_lf)
+
+        # tree-sitter agrees with the lexer on the same normalized input:
+        # parsing _normalize_eol(cr) is byte-identical to parsing the LF
+        # baseline, so the exemption outcome is the same and the frozen
+        # baseline stays fully exempt regardless of the stored style.
+        lang = _Language(_tscpp.language())
+        parser = _Parser(lang)
+        tree_lf = parser.parse(lf)
+        tree_norm = parser.parse(_normalize_eol(cr))
+        self.assertFalse(has_relevant_parse_error(tree_lf.root_node, lf))
+        self.assertEqual(
+            has_relevant_parse_error(tree_lf.root_node, lf),
+            has_relevant_parse_error(tree_norm.root_node,
+                                     _normalize_eol(cr)))
+
+        # End-to-end through the real scanner CLIs: the CRLF-converted
+        # copy of directn.cc must produce the same exit codes, coverage
+        # and the same six known findings as the LF original (the
+        # exemption binding is line-ending-agnostic, so the copy is not a
+        # parse failure; old behavior: exit 2 on both scanners).
+        expected = {
+            "scan_string_concat.py": (1, self.DIRECTN_CONCAT_FINDINGS),
+            "scan_varargs_string.py": (0, []),
+        }
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "directn.cc"
+            source.write_bytes(crlf)
+            for scanner, (exit_code, findings) in expected.items():
+                with self.subTest(scanner=scanner, entry="files"):
+                    proc = self.run_scanner(scanner, "--files", source,
+                                            "--format", "json",
+                                            "--require-parser")
+                    self.assertEqual(exit_code, proc.returncode,
+                                     proc.stderr)
+                    data = json.loads(proc.stdout)
+                    coverage = _coverage(data)
+                    self.assertEqual(coverage["scanned"], 1)
+                    self.assertEqual(coverage["failed"], [])
+                    self.assertEqual(findings,
+                                     self._normalized_findings(data))
+
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / "sample.cc"

@@ -1079,12 +1079,15 @@ def read_utf8(path: str) -> str:
 #                        inside #ifdef DEBUG_DIAGNOSTICS is mis-parsed as a
 #                        declarator
 #
-# File identity is bound by the baseline content SHA-256: the scanner entry
-# points do not thread the file path into has_relevant_parse_error(), so the
-# only sound file binding available there is the exact baseline bytes. This
-# is strictly stronger than a path match: a path-identical but modified
-# directn.cc is never exempted, while a byte-identical copy (the directory
-# entry scenario) is, which is exactly the identity the frozen pairs belong
+# File identity is bound by the SHA-256 of the phase-1 normalized
+# baseline bytes (LF, CRLF and bare-CR forms of the same content
+# normalize identically via _normalize_eol): the scanner entry
+# points do not thread the file path into has_relevant_parse_error(),
+# so the only sound file binding available there is the normalized
+# baseline bytes. This is strictly stronger than a path match: a
+# path-identical but modified directn.cc is never exempted, while a
+# byte-identical copy in any line-ending style (the directory entry
+# scenario) is, which is exactly the identity the frozen pairs belong
 # to. Generic text such as '}' or 'else' at a switch point in any other
 # content therefore still fails closed.
 #
@@ -1192,6 +1195,167 @@ def _phase2_splice(source: bytes):
     return bytes(out), line_of
 
 
+def _normalize_eol(source: bytes) -> bytes:
+    """Normalize CRLF and bare CR to LF (phase-1 end-of-line normalization).
+
+    Line-count preserving: every end-of-line indicator (LF, CRLF, bare
+    CR) becomes exactly one '\n', so a byte's physical line number is the
+    same in the raw and the normalized bytes. The lexer (_phase2_splice)
+    applies the same normalization while splicing; this helper exposes
+    the identical mapping so the tree-sitter input and the frozen
+    baseline binding use the same bytes the lexer sees (CODE-003).
+    """
+    out = bytearray()
+    i = 0
+    n = len(source)
+    while i < n:
+        if source[i] == 0x0D:
+            out.append(0x0A)
+            i += 2 if (i + 1 < n and source[i + 1] == 0x0A) else 1
+            continue
+        out.append(source[i])
+        i += 1
+    return bytes(out)
+
+
+def _line_of_byte(source: bytes, byte_offset: int) -> int:
+    """1-indexed physical line containing ``source[byte_offset]``.
+
+    Counts LF, CRLF and bare CR each as exactly one end-of-line indicator
+    -- the same phase-1 mapping _phase2_splice() applies -- so tree-sitter
+    byte offsets into a CRLF or bare-CR file resolve to the same physical
+    lines the lexer reports for its directives. The lexer and tree-sitter
+    therefore share one line mapping for every line-ending style
+    (CODE-003).
+    """
+    line = 1
+    i = 0
+    limit = min(byte_offset, len(source))
+    while i < limit:
+        if source[i] == 0x0A:
+            line += 1
+        elif source[i] == 0x0D:
+            line += 1
+            if i + 1 < limit and source[i + 1] == 0x0A:
+                i += 1
+        i += 1
+    return line
+
+
+def _line_span(source: bytes, start_byte: int, end_byte: int):
+    """(start, end) byte span of the physical line(s) containing the node.
+
+    EOL-agnostic counterpart of the \n-based line extraction: LF, CRLF
+    and bare CR are all end-of-line indicators, so the span boundaries
+    match the physical lines _line_of_byte() reports (CODE-003).
+    """
+    n = len(source)
+    start = 0
+    i = 0
+    while i < start_byte and i < n:
+        if source[i] == 0x0A:
+            start = i + 1
+        elif source[i] == 0x0D:
+            start = i + 1
+            if i + 1 < n and source[i + 1] == 0x0A:
+                i += 1
+        i += 1
+    end = n
+    i = end_byte
+    while i < n:
+        if source[i] in (0x0A, 0x0D):
+            end = i
+            break
+        i += 1
+    return start, end
+
+
+def _skip_block_comment(logical: bytes, pos: int, n: int) -> int:
+    """Skip a '/* ... */' comment; ``pos`` points at '/*'.
+
+    Returns the position just after the closing '*/', or `n` when the
+    comment is unterminated. The comment's interior newlines are comment
+    text, so a block comment is consumed across physical lines.
+    """
+    pos += 2
+    while pos < n:
+        if (logical[pos] == 0x2A and pos + 1 < n
+                and logical[pos + 1] == 0x2F):
+            return pos + 2
+        pos += 1
+    return n
+
+
+def _skip_line_comment(logical: bytes, pos: int, n: int) -> int:
+    """Skip a '//' comment; ``pos`` points at '//'.
+
+    Returns the position of the terminating '\n' (exclusive), or `n`
+    when the comment runs to the end of the logical text.
+    """
+    end = logical.find(b"\n", pos + 2)
+    return n if end < 0 else end
+
+
+def _raw_prefix_here(logical: bytes, pos: int, n: int) -> bool:
+    """True when a raw-string prefix ends at ``pos`` (the opening quote).
+
+    Recognizes R\", u8R\", uR\", UR\", LR\" and requires that the prefix
+    is not itself part of a longer identifier.
+    """
+    for prefix in _RAW_STRING_PREFIXES:
+        if pos + 1 >= len(prefix) and logical[
+                pos + 1 - len(prefix):pos + 1] == prefix:
+            prefix_start = pos + 1 - len(prefix)
+            if (prefix_start == 0
+                    or not _is_identifier_byte(logical[prefix_start - 1])):
+                return True
+    return False
+
+
+def _skip_raw_string(logical: bytes, pos: int, n: int) -> int:
+    """Skip an R\"delim( ... )delim\" literal; ``pos`` is the opening quote.
+
+    Returns the position just after the closing delimiter, or `n` when
+    the literal is unterminated. The interior (including any newlines) is
+    opaque literal text.
+    """
+    q = pos + 1
+    while q < n and logical[q] != 0x28:  # '('
+        q += 1
+    delim = logical[pos + 1:q]
+    if len(delim) > _RAW_STRING_DELIMITER_MAX:
+        delim = b""  # not a valid raw string: recover
+    r = q + 1
+    terminator = delim + b'"'
+    while r < n:
+        if logical[r] == 0x29:  # ')'
+            if logical[r + 1:r + 1 + len(terminator)] == terminator:
+                return r + 1 + len(terminator)
+        r += 1
+    return n
+
+
+def _skip_quoted(logical: bytes, pos: int, n: int) -> int:
+    """Skip a "..." string or '...' char literal; ``pos`` is the quote.
+
+    Handles backslash escapes; returns the position just after the
+    closing quote, or the position of the terminating '\n' / `n` when the
+    literal is unterminated (recovery at the raw newline).
+    """
+    quote = logical[pos]
+    pos += 1
+    while pos < n:
+        if logical[pos] == 0x5C:
+            pos += 2
+        elif logical[pos] == quote:
+            return pos + 1
+        elif logical[pos] == 0x0A:
+            return pos
+        else:
+            pos += 1
+    return n
+
+
 def _skip_comment_trivia(logical: bytes, pos: int, n: int) -> int:
     """Advance past spaces and comments (phase-3 comment replacement).
 
@@ -1209,12 +1373,10 @@ def _skip_comment_trivia(logical: bytes, pos: int, n: int) -> int:
             pos += 1
             continue
         if logical[pos:pos + 2] == b"/*":
-            end = logical.find(b"*/", pos + 2)
-            pos = n if end < 0 else end + 2
+            pos = _skip_block_comment(logical, pos, n)
             continue
         if logical[pos:pos + 2] == b"//":
-            end = logical.find(b"\n", pos + 2)
-            return n if end < 0 else end
+            return _skip_line_comment(logical, pos, n)
         break
     return pos
 
@@ -1230,9 +1392,17 @@ def _directive_events(source: bytes):
     opaque regions on the assembled logical line. Block/line comments plus
     "..." string and '...' char literals are tracked on the logical text.
     A '#' at the start of a physical line is a directive only when the line
-    really starts a fresh logical line outside every such region. Directive
+    really starts a fresh logical line outside every such region; leading
+    comments are phase-3 trivia, so '/* c */ #if 1' is a directive (the
+    comment is replaced by one space and the '#' stays the first token),
+    and comments between '#' and the directive name (or inside it) are
+    replaced the same way, so '#/**/if 1' is '#if 1' (CODE-002). Directive
     names are case-sensitive: '#IF'/'#ENDIF' are not directives. 'dead' is
-    True only for a literal '#if 0' / '#elif 0' condition.
+    True only for a literal '#if 0' / '#elif 0' condition. The rest of a
+    directive line is consumed with full literal state: '//' and '/*' are
+    recognized only outside string, char and raw-string literals, so a
+    legal '#define S "/*"' never truncates the line at literal text
+    (CODE-001).
     """
     logical, line_of = _phase2_splice(source)
     n = len(logical)
@@ -1245,9 +1415,23 @@ def _directive_events(source: bytes):
             continue
         if at_line_start and ch == 0x23:  # '#'
             directive_line = line_of[pos]
+            # The directive name is read after phase-3 comment
+            # replacement: trivia and comments between '#' and the name
+            # are one space, so '#/**/if' and '# /* c */ if' are '#if'.
+            # A '//' comment runs to the end of the logical line, so no
+            # name follows it (the directive is a null directive).
             k = pos + 1
-            while k < n and logical[k] in b" \t\f\v\r":
-                k += 1
+            while k < n:
+                if logical[k] in b" \t\f\v\r":
+                    k += 1
+                    continue
+                if logical[k:k + 2] == b"/*":
+                    k = _skip_block_comment(logical, k, n)
+                    continue
+                if logical[k:k + 2] == b"//":
+                    k = _skip_line_comment(logical, k, n)
+                    break
+                break
             m = k
             while m < n and _is_identifier_byte(logical[m]):
                 m += 1
@@ -1270,18 +1454,31 @@ def _directive_events(source: bytes):
             # continuation can never start a new directive, and block
             # comments spanning physical lines are skipped wholesale so
             # their interior lines cannot forge directives (CODE-003).
+            # The scan tracks literal state: '//' and '/*' inside string,
+            # char and raw-string literals are literal text, not
+            # comments, so '#define S "/*"' ends at its own newline and
+            # later directives are still discovered (CODE-001).
             p = m
             while p < n:
-                if logical[p:p + 2] == b"//":
-                    end = logical.find(b"\n", p + 2)
-                    p = n if end < 0 else end
-                    break
-                if logical[p:p + 2] == b"/*":
-                    end = logical.find(b"*/", p + 2)
-                    p = n if end < 0 else end + 2
-                    continue
                 if logical[p] == 0x0A:
                     break
+                if (logical[p] == 0x2F
+                        and logical[p + 1:p + 2] in (b"*", b"/")):
+                    if logical[p + 1] == 0x2A:
+                        p = _skip_block_comment(logical, p, n)
+                    else:
+                        p = _skip_line_comment(logical, p, n)
+                        break
+                    continue
+                if logical[p] == 0x22:
+                    if _raw_prefix_here(logical, p, n):
+                        p = _skip_raw_string(logical, p, n)
+                    else:
+                        p = _skip_quoted(logical, p, n)
+                    continue
+                if logical[p] == 0x27:
+                    p = _skip_quoted(logical, p, n)
+                    continue
                 p += 1
             if p < n:
                 p += 1
@@ -1293,104 +1490,33 @@ def _directive_events(source: bytes):
             pos = p
             continue
         if ch == 0x2F and pos + 1 < n and logical[pos + 1] == 0x2A:
-            # /* block comment */ (splices inside were already removed)
-            pos += 2
-            closed = False
-            while pos < n:
-                if (logical[pos] == 0x2A and pos + 1 < n
-                        and logical[pos + 1] == 0x2F):
-                    pos += 2
-                    closed = True
-                    break
-                pos += 1
-            at_line_start = not closed
+            # /* block comment */ (splices inside were already removed).
+            # Phase 3 replaces the whole comment with one space, so it
+            # neither starts nor ends a token run: 'at_line_start' is
+            # preserved, keeping a '#' after a leading comment the first
+            # token of the logical line while a mid-line '#' stays a
+            # non-directive (CODE-002).
+            pos = _skip_block_comment(logical, pos, n)
         elif ch == 0x2F and pos + 1 < n and logical[pos + 1] == 0x2F:
             # // line comment: a splice keeps it open, so it already runs
             # to the logical end of line
-            pos += 2
-            closed = False
-            while pos < n:
-                if logical[pos] == 0x0A:
-                    pos += 1
-                    at_line_start = True
-                    closed = True
-                    break
+            pos = _skip_line_comment(logical, pos, n)
+            if pos < n:
                 pos += 1
-            if not closed:
+                at_line_start = True
+            else:
                 at_line_start = False
         elif ch == 0x22:  # '"'
-            raw = False
-            for prefix in _RAW_STRING_PREFIXES:
-                if pos + 1 >= len(prefix) and logical[
-                        pos + 1 - len(prefix):pos + 1] == prefix:
-                    prefix_start = pos + 1 - len(prefix)
-                    if (prefix_start == 0
-                            or not _is_identifier_byte(
-                                logical[prefix_start - 1])):
-                        raw = True
-                        break
-            if raw:
+            if _raw_prefix_here(logical, pos, n):
                 # R"delim( ... )delim" on the spliced logical text
-                q = pos + 1
-                while q < n and logical[q] != 0x28:  # '('
-                    q += 1
-                delim = logical[pos + 1:q]
-                if len(delim) > _RAW_STRING_DELIMITER_MAX:
-                    delim = b""  # not a valid raw string: recover
-                r = q + 1
-                terminator = delim + b'"'
-                while r < n:
-                    if logical[r] == 0x29:  # ')'
-                        if logical[r + 1:r + 1 + len(terminator)] == terminator:
-                            break
-                    r += 1
-                if r < n:
-                    pos = r + 1 + len(terminator)
-                else:
-                    pos = n
-                at_line_start = False
+                pos = _skip_raw_string(logical, pos, n)
             else:
                 # "..." string literal (escapes; splices already removed)
-                pos += 1
-                closed = False
-                while pos < n:
-                    if logical[pos] == 0x5C:
-                        pos += 2
-                    elif logical[pos] == 0x22:
-                        pos += 1
-                        at_line_start = False
-                        closed = True
-                        break
-                    elif logical[pos] == 0x0A:
-                        # Unterminated across a raw newline: recover.
-                        pos += 1
-                        at_line_start = True
-                        closed = True
-                        break
-                    else:
-                        pos += 1
-                if not closed:
-                    at_line_start = False
+                pos = _skip_quoted(logical, pos, n)
+            at_line_start = False
         elif ch == 0x27:  # "'"
-            pos += 1
-            closed = False
-            while pos < n:
-                if logical[pos] == 0x5C:
-                    pos += 2
-                elif logical[pos] == 0x27:
-                    pos += 1
-                    at_line_start = False
-                    closed = True
-                    break
-                elif logical[pos] == 0x0A:
-                    pos += 1
-                    at_line_start = True
-                    closed = True
-                    break
-                else:
-                    pos += 1
-            if not closed:
-                at_line_start = False
+            pos = _skip_quoted(logical, pos, n)
+            at_line_start = False
         elif ch == 0x0A:
             pos += 1
             at_line_start = True
@@ -1520,9 +1646,11 @@ def _matches_frozen_baseline_node(node, source: bytes, baseline: dict) -> bool:
     for missing nodes the node text is empty, so the anchor is the missing
     token (node.type), the only text a missing node carries. Line numbers
     are physical 1-indexed lines, exactly as recorded when the baseline
-    was probed.
+    was probed, resolved with the EOL-agnostic mapping (_line_of_byte) so
+    CRLF/CR variants of the same file match the same frozen lines
+    (CODE-003).
     """
-    line_no = source.count(b"\n", 0, node.start_byte) + 1
+    line_no = _line_of_byte(source, node.start_byte)
     if node.is_missing:
         return (line_no, "missing", node.type.encode("ascii")) \
             in baseline["nodes"]
@@ -1546,17 +1674,24 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
         # file as successfully scanned.
         return True
     baseline = _PREPROCESSOR_BASELINE_DIRECTN
+    # The binding hashes the phase-1 normalized bytes, so the identical
+    # file in LF, CRLF, or bare-CR form binds to the same frozen baseline
+    # and the exemption judgment is line-ending-style independent
+    # (CODE-003). Any other byte difference (a single flip, insertion,
+    # splice change, ...) still changes the normalized hash and fails
+    # closed. Positions and text anchors below use the raw `source`
+    # (tree-sitter parsed those bytes); only line numbers and the hash
+    # are normalized.
     baseline_content = (
-        hashlib.sha256(source).hexdigest() == baseline["sha256"]
+        hashlib.sha256(_normalize_eol(source)).hexdigest()
+        == baseline["sha256"]
     )
     stack = [root]
     while stack:
         node = stack.pop()
         if node.is_missing or node.type == "ERROR":
-            line_start = source.rfind(b"\n", 0, node.start_byte) + 1
-            line_end = source.find(b"\n", node.end_byte)
-            if line_end < 0:
-                line_end = len(source)
+            line_start, line_end = _line_span(source, node.start_byte,
+                                              node.end_byte)
             line = source[line_start:line_end]
 
             # Known pre-existing false positives caused by a preprocessor
@@ -1571,7 +1706,7 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
             # applies to missing nodes, which otherwise always fail
             # closed.
             if (baseline_content
-                    and source.count(b"\n", 0, node.start_byte) + 1
+                    and _line_of_byte(source, node.start_byte)
                     in switch_lines
                     and _matches_frozen_baseline_node(node, source,
                                                       baseline)):
