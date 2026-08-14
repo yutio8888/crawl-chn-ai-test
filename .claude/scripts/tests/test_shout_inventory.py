@@ -227,6 +227,36 @@ def review_variant(variant: dict) -> dict:
     return {"weight": variant["weight"], "text": variant["text"]}
 
 
+def aligned_zh_source(zh_text: str, en_text: str) -> str:
+    """The ZH TextDB source with every identity body replaced by the EN
+    body (so per-key variant counts, weights, tokens and parse shape equal
+    EN exactly), except the __BUGGY sentinel block, which keeps the ZH
+    body byte-identical to the baseline derivation because the sentinel
+    audit is role-independent and content-frozen.  insult.txt has no
+    sentinel, so its aligned form is the EN file verbatim."""
+    if "__BUGGY" not in zh_text:
+        return en_text
+    start = zh_text.index("__BUGGY")
+    end = zh_text.index("%%%%", start) + len("%%%%")
+    sentinel = zh_text[start:end]
+    en_start = en_text.index("__BUGGY")
+    en_end = en_text.index("%%%%", en_start) + len("%%%%")
+    return en_text[:en_start] + sentinel + en_text[en_end:]
+
+
+def aligned_candidate_artifacts(en_shout, en_insult, zh_shout, zh_insult):
+    """Fixture commit whose ZH shout/insult sources are EN-shaped (the
+    __BUGGY sentinel preserved from ZH) plus the derived EN/ZH dumps."""
+    fixture = fixture_commit_with_replaced_blobs({
+        "crawl-ref/source/dat/database/zh/shout.txt":
+            aligned_zh_source(zh_shout, en_shout),
+        "crawl-ref/source/dat/database/zh/insult.txt":
+            aligned_zh_source(zh_insult, en_insult),
+    })
+    return (fixture, exact_artifact(fixture, "database/"),
+            exact_artifact(fixture, "database/zh/"))
+
+
 def card_for(entry: dict) -> dict:
     current_en = [review_variant(variant)
                   for variant in entry["english_variants"]]
@@ -238,7 +268,8 @@ def card_for(entry: dict) -> dict:
         "lifecycle": entry["lifecycle"],
         "dependency_group": entry["dependency_group"],
         "display_context": "由 shout.cc::monster_shout / transform.cc 消费的喊叫消息。",
-        "producer_consumer": dict(MODULE.FROZEN_PRODUCER_CONSUMER),
+        "producer_consumer": MODULE._card_producer_consumer(
+            entry, MODULE.FROZEN_PRODUCER_CONSUMER),
         "evidence_locations": MODULE._evidence_locations(entry),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
@@ -337,7 +368,7 @@ class ShoutInventoryTests(unittest.TestCase):
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["localized"]))
         self.assertEqual(
-            "8aee2337d19ae2913d03b5b6842001c15f534e523de0fabf643d546835e4a38b",
+            "77a2ba65ca7b45a9b5f69301f3524f18cedd0258427abe2320b18aa94d56895d",
             self.inventory["inventory_sha256"],
         )
 
@@ -692,7 +723,10 @@ class ShoutInventoryTests(unittest.TestCase):
 
     def test_sentinel_and_runtime_values_classification(self):
         # __buggy is the only in-file sentinel; the runtime fallback values
-        # must never be ShoutDB keys.
+        # must never be ShoutDB keys.  The guard compares in the canonical
+        # lowercase key space (scoped_keys is lowercase_string), so each of
+        # __DEFAULT/__NEXT/__NONE is rejected by the classifier and the
+        # isdisjoint probe is not vacuous.
         shared = MODULE.hardened.shared
         snapshot = MODULE._derive_scoped_shout_dump(
             BASELINE, "database/", "fixture EN")
@@ -703,6 +737,72 @@ class ShoutInventoryTests(unittest.TestCase):
         raw_keys = {shared.lowercase_string(d.raw_key) for d in definitions}
         self.assertIn("__buggy", raw_keys)
         self.assertTrue(raw_keys.isdisjoint(MODULE.RUNTIME_SENTINEL_VALUES))
+        family = {"database/shout.txt", "database/insult.txt"}
+        scoped_keys = {
+            entry["canonical_key"].lower() for entry in self.en["entries"]
+            if any(item["source_name"] in family
+                   for item in entry["source_history"])
+        }
+        self.assertEqual(126, len(scoped_keys))
+        rows, _per_file = MODULE._source_rows(self.en, "database/",
+                                              "fixture EN")
+        shout_rows = [row for row in rows
+                      if any(item["source_name"] == "database/shout.txt"
+                             for item in row["source_history"])]
+        insult_rows = [row for row in rows
+                       if any(item["source_name"] == "database/insult.txt"
+                              for item in row["source_history"])]
+        derivable = MODULE._derivable_root_facts(BASELINE, "fixture")
+        for key in ("__default", "__next", "__none"):
+            with self.subTest(key=key):
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "runtime sentinel values"):
+                    MODULE._classify_keys(
+                        scoped_keys | {key}, shout_rows, insult_rows,
+                        derivable, "negative EN")
+
+    def test_candidate_runtime_sentinel_key_mutation_rejected(self):
+        # I69-R2-CODE-003: a reviewed commit adding any runtime fallback
+        # value as a ShoutDB key must be rejected by the runtime-sentinel
+        # guard in the candidate audit (checked in the canonical lowercase
+        # key space before the identity-count gate).
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/shout.txt")
+        for key in ("__DEFAULT", "__NEXT", "__NONE"):
+            with self.subTest(key=key):
+                mutated = source + f"\n{key}\n\nSOUND:x\n%%%%\n"
+                fixture = fixture_commit_with_replaced_blobs({
+                    "crawl-ref/source/dat/database/shout.txt": mutated,
+                })
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "runtime sentinel values"):
+                    self.add_candidate_mocked(
+                        copy.deepcopy(self.inventory), fixture,
+                        exact_artifact(fixture, "database/"),
+                        exact_artifact(fixture, "database/zh/"),
+                    )
+
+    def test_candidate_sentinel_two_variant_mutation_rejected(self):
+        # I69-R2-CODE-003: the sentinel must keep exactly one variant per
+        # language; a candidate doubling the __buggy value line must be
+        # rejected by the sentinel-count check (role-independent).
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/shout.txt")
+        start = source.index("__BUGGY")
+        separator = source.index("%%%%", start)
+        mutated = (source[:separator]
+                   + "\nSOUND:You hear doubly buggy behaviour!\n"
+                   + source[separator:])
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/shout.txt": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "sentinel variant count mismatch"):
+            self.add_candidate_mocked(
+                copy.deepcopy(self.inventory), fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"),
+            )
 
     def add_candidate_mocked(self, inventory, candidate_ref, en, zh):
         en_path = self.root / f"{self.id().split('.')[-1]}-en.json"
@@ -718,29 +818,93 @@ class ShoutInventoryTests(unittest.TestCase):
                                         en_path, zh_path)
 
     def test_candidate_sentinel_unchanged_passes(self):
-        # Positive control: a candidate whose __buggy entry is
-        # byte-identical to the baseline derivation passes the sentinel
-        # audit (the full add_candidate gate additionally requires the
-        # reviewed ZH drift alignment, which is out of scope here).
-        fixture = fixture_commit_with_replaced_blobs({})
+        # Sentinel positive control with the approved aligned shape: a
+        # candidate whose __buggy entry is byte-identical to the baseline
+        # ZH derivation and whose identity data is aligned to EN (insult
+        # dump total 557) passes the candidate _load_dataset gate,
+        # including the role-aware dump totals and the sentinel audit.
+        # The full add_candidate + validate_results gate is covered by
+        # test_candidate_aligned_dump_audit_passes.
+        fixture, en, zh = aligned_candidate_artifacts(
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/shout.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/insult.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/zh/shout.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/zh/insult.txt"),
+        )
         en_path = self.root / f"{self.id().split('.')[-1]}-en.json"
         zh_path = self.root / f"{self.id().split('.')[-1]}-zh.json"
-        en_path.write_text(json.dumps(exact_artifact(fixture, "database/"),
-                                      ensure_ascii=False),
+        en_path.write_text(json.dumps(en, ensure_ascii=False),
                            encoding="utf-8")
-        zh_path.write_text(json.dumps(exact_artifact(fixture, "database/zh/"),
-                                      ensure_ascii=False),
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False),
                            encoding="utf-8")
+        approved = {"shout.txt": 119, "insult.txt": 557}
         MODULE._load_dataset(fixture, en_path, "database/",
                              "candidate EN", "candidate",
                              sentinel_baseline=MODULE._derived_sentinel_entry(
                                  BASELINE, "database/",
-                                 "baseline sentinel EN"))
+                                 "baseline sentinel EN"),
+                             expected_dump_variants=approved)
         MODULE._load_dataset(fixture, zh_path, "database/zh/",
                              "candidate ZH", "candidate",
                              sentinel_baseline=MODULE._derived_sentinel_entry(
                                  BASELINE, "database/zh/",
-                                 "baseline sentinel ZH"))
+                                 "baseline sentinel ZH"),
+                             expected_dump_variants=approved)
+
+    def test_candidate_aligned_dump_audit_passes(self):
+        # I69-R2-CODE-001 positive control: a candidate whose ZH dump
+        # aligns every identity key to the EN shape (insult.txt dump total
+        # 557 = the approved aligned total, no token drift, no unresolved
+        # tokens) passes the complete candidate gate: add_candidate with
+        # role-aware dump totals plus validate_results against a ledger
+        # whose proposals match the aligned dump verbatim.  The baseline
+        # path keeps the frozen 532 total (test_exact_git_inventory_...
+        # and the baseline build cover it); the candidate path requires
+        # the approved 557.
+        fixture, en, zh = aligned_candidate_artifacts(
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/shout.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/insult.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/zh/shout.txt"),
+            committed_source(BASELINE,
+                             "crawl-ref/source/dat/database/zh/insult.txt"),
+        )
+        candidate = self.add_candidate_mocked(
+            copy.deepcopy(self.inventory), fixture, en, zh)
+        aligned_by_key = {
+            entry["canonical_key"]: [
+                {"weight": variant["weight"],
+                 "text": variant["raw_pattern"]}
+                for variant in entry["variants"]
+            ]
+            for entry in zh["entries"]
+            if entry["canonical_key"] not in MODULE.SENTINEL_KEYS
+            and entry["canonical_key"] not in MODULE.TITLE_BLOCK_ARTIFACTS
+        }
+        cards = []
+        for entry in self.inventory["entries"]:
+            card = card_for(entry)
+            aligned = aligned_by_key[entry["key"]]
+            card["proposed_chinese_variants"] = aligned
+            card["terminal_conclusion"] = (
+                "adjust" if aligned != card["current_chinese_variants"]
+                else "keep")
+            cards.append(card)
+        cards.sort(key=lambda card: card["identity"])
+        records = [MODULE._expected_metadata(self.inventory, cards), *cards]
+        evidence = MODULE.validate_results(
+            self.write_records(records), self.inventory, candidate=candidate)
+        self.assertEqual(124, len(evidence["cards"]))
+        self.assertEqual(
+            {"shout.txt": 119, "insult.txt": 557},
+            MODULE._proposal_dump_totals(records),
+        )
 
     def test_candidate_sentinel_content_mutation_rejected(self):
         # I69-CODE-001: the sentinel is outside the 124-card ledger and the
@@ -784,15 +948,111 @@ class ShoutInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/zh/"),
             )
 
+    def test_producer_consumer_facts_derived_from_exact_git(self):
+        # I69-R2-CODE-002: the five anchors are derived with snippet checks
+        # from the exact baseline Git sources and equal the frozen facts:
+        # the ShoutDB initializer at database.cc:134, the actual
+        # getShoutString(key, suffix) lookup at shout.cc:176, the Sphinx
+        # riddle call at transform.cc:2541, _get_species_insult at
+        # mon-util.cc:4275 and the SpeakDB insult.txt literal at
+        # database.cc:125 (none of them a default_msg_keys line or a
+        # neighbouring DB initializer).
+        facts = MODULE._producer_consumer_facts(BASELINE, "fixture")
+        self.assertEqual(MODULE.FROZEN_PRODUCER_CONSUMER, facts)
+        self.assertEqual("crawl-ref/source/database.cc:134",
+                         facts["loader"])
+        self.assertEqual("crawl-ref/source/shout.cc:176",
+                         facts["shout_consumer"])
+        self.assertEqual(facts, self.inventory["scope"]["producer_consumer"])
+        by_identity = {entry["identity"]: entry
+                       for entry in self.inventory["entries"]}
+        sphinx = next(entry for entry in self.inventory["entries"]
+                      if entry["key"] in MODULE.SPHINX_RIDDLE_KEYS)
+        self.assertEqual(
+            {"loader": facts["loader"],
+             "riddle_consumer": facts["riddle_consumer"]},
+            MODULE._card_producer_consumer(sphinx, facts),
+        )
+        legacy = next(entry for entry in self.inventory["entries"]
+                      if entry["lifecycle"] == "legacy-axed-monster")
+        self.assertEqual({"loader": facts["loader"]},
+                         MODULE._card_producer_consumer(legacy, facts))
+        species = next(entry for entry in self.inventory["entries"]
+                       if entry["lifecycle"]
+                       == "speakdb-postprocessing-insult")
+        self.assertEqual(
+            {"insult_postprocessing": facts["insult_postprocessing"],
+             "loader": facts["loader"],
+             "speakdb_double_load": facts["speakdb_double_load"]},
+            MODULE._card_producer_consumer(species, facts),
+        )
+
+    def test_producer_consumer_source_anchor_mutation_rejected(self):
+        # I69-R2-CODE-002: moving the ShoutDB initializer in a real Git
+        # fixture commit shifts the derived loader anchor and must fail
+        # closed instead of re-anchoring the ledger evidence.
+        source = committed_source(BASELINE, "crawl-ref/source/database.cc")
+        mutated = source.replace(
+            '    TextDB("shout", "database/",',
+            '\n    TextDB("shout", "database/",', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/database.cc": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "anchors drifted"):
+            MODULE._producer_consumer_facts(fixture, "negative fixture")
+
+    def test_candidate_producer_consumer_source_mutation_rejected(self):
+        # I69-R2-CODE-002: a reviewed commit that moves the shout.cc
+        # consumer lookup must be rejected by the candidate audit (the
+        # candidate anchors are derived from the exact candidate Git
+        # sources and must equal the frozen baseline facts).
+        source = committed_source(BASELINE, "crawl-ref/source/shout.cc")
+        mutated = source.replace(
+            "    string message = getShoutString(key, suffix);",
+            "\n    string message = getShoutString(key, suffix);", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/shout.cc": mutated,
+            "crawl-ref/source/dat/database/zh/shout.txt": aligned_zh_source(
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/zh/shout.txt"),
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/shout.txt")),
+            "crawl-ref/source/dat/database/zh/insult.txt": aligned_zh_source(
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/zh/insult.txt"),
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/insult.txt")),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "anchors drifted"):
+            self.add_candidate_mocked(
+                copy.deepcopy(self.inventory), fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"),
+            )
+
     def test_forged_producer_consumer_is_rejected(self):
         # I69-CODE-002: the producer/consumer evidence of every card must
-        # equal the mechanically derived frozen value, not merely be a
+        # equal the mechanically derived per-card value, not merely be a
         # non-empty dict.
         records = self.records()
         records[1]["producer_consumer"] = {
             "loader": "crawl-ref/source/database.cc:1",
             "shout_consumer": "crawl-ref/source/shout.cc:1",
         }
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "producer/consumer evidence mismatch"):
+            self.validate(records)
+
+    def test_producer_consumer_anchor_value_mutation_rejected(self):
+        # I69-R2-CODE-002: changing one derived anchor value in a ledger
+        # card must be rejected against the derived per-card facts.
+        records = self.records()
+        records[1]["producer_consumer"] = dict(
+            records[1]["producer_consumer"])
+        records[1]["producer_consumer"]["loader"] = \
+            "crawl-ref/source/database.cc:999"
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "producer/consumer evidence mismatch"):
             self.validate(records)

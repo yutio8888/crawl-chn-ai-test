@@ -141,8 +141,11 @@ EXPECTED_GLYPH_KEYS = frozenset({"'&'", "'cap-g'", "'cap-j'"})
 # The only in-file sentinel key: monster_shout falls back to the
 # lookup(default_msg_keys, s_type, "__BUGGY") value.  __DEFAULT/__NEXT/
 # __NONE are runtime-only fallback values and must never be ShoutDB keys.
+# Runtime sentinel values live in the same canonical key space as
+# scoped_keys (lowercase_string), so the intersection in _classify_keys
+# and _dataset is effective instead of vacuous.
 SENTINEL_KEYS = frozenset({"__buggy"})
-RUNTIME_SENTINEL_VALUES = frozenset({"__DEFAULT", "__NEXT", "__NONE"})
+RUNTIME_SENTINEL_VALUES = frozenset({"__default", "__next", "__none"})
 
 # The "#### Player sphinx riddle lines" title block artifact: the title
 # line is parsed as a zero-body key by the production parser (comment lines
@@ -664,6 +667,156 @@ def _glyph_consumer_shape(oid: str, label: str) -> None:
     )
 
 
+def _line_of(match: re.Match[str], source: str) -> int:
+    """1-based line number of a regex match in the exact-Git source."""
+    return source.count("\n", 0, match.start()) + 1
+
+
+def _source_anchor(
+    source: str, label: str, name: str,
+    pattern: re.Pattern[str], snippet: str,
+) -> int:
+    """Locate one production anchor in exact Git source and prove it is the
+    intended site: the snippet must start at the match position (no other
+    occurrence with the same shape can substitute for the anchored fact)."""
+    match = pattern.search(source)
+    _require(match is not None,
+             f"{label} cannot find {name} in exact Git source")
+    _require(source.startswith(snippet, match.start()),
+             f"{label} {name} snippet shape changed")
+    return _line_of(match, source)
+
+
+def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
+    """Mechanically derive the five producer/consumer evidence anchors from
+    the exact Git sources and require them to equal the frozen values:
+
+    - loader: the ``TextDB("shout", "database/", ...)`` initializer line
+      in database.cc (the ShoutDB producer);
+    - shout_consumer: the first ``getShoutString(key, suffix)`` lookup of
+      shout.cc::monster_shout (the _shout_key query);
+    - riddle_consumer: the transform.cc Sphinx riddle call site;
+    - insult_postprocessing: the mon-util.cc::_get_species_insult
+      definition;
+    - speakdb_double_load: the ``"insult.txt"`` literal inside the
+      database.cc ``TextDB("speak", ...)`` initializer (SpeakDB index 4).
+
+    Every anchor is line-derived and snippet-checked, so a moved or forged
+    site cannot satisfy the ledger comparison."""
+    database = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/database.cc", label),
+        label,
+    )
+    shout = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/shout.cc", label),
+        label,
+    )
+    transform = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/transform.cc", label),
+        label,
+    )
+    monutil = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/mon-util.cc", label),
+        label,
+    )
+    loader_match = re.search(
+        r'TextDB\s*\(\s*"shout"\s*,\s*"database/"', database)
+    _require(loader_match is not None,
+             f"{label} cannot find the ShoutDB initializer")
+    loader_line = _line_of(loader_match, database)
+    _require(
+        database.startswith('TextDB("shout", "database/",',
+                            loader_match.start()),
+        f"{label} ShoutDB initializer snippet shape changed",
+    )
+    _require(
+        _shoutdb_source_manifest(oid, label)[:1] == ["database/shout.txt"],
+        f"{label} ShoutDB initializer must load shout.txt first",
+    )
+    shout_consumer = _source_anchor(
+        shout, label, "shout.cc::monster_shout getShoutString lookup",
+        re.compile(r'getShoutString\(key,\s*suffix\)'),
+        "getShoutString(key, suffix)",
+    )
+    riddle_consumer = _source_anchor(
+        transform, label, "transform.cc Sphinx riddle call",
+        re.compile(r'getShoutString\("Sphinx riddle success"\)'),
+        'getShoutString("Sphinx riddle success")',
+    )
+    insult_postprocessing = _source_anchor(
+        monutil, label, "mon-util.cc _get_species_insult definition",
+        re.compile(r'static\s+string\s+_get_species_insult\s*\('),
+        "static string _get_species_insult(",
+    )
+    speakdb = re.search(r'TextDB\s*\(\s*"speak"\s*,\s*"database/"',
+                        database)
+    _require(speakdb is not None,
+             f"{label} cannot find the SpeakDB initializer")
+    _require(
+        database.startswith('TextDB("speak", "database/",',
+                            speakdb.start()),
+        f"{label} SpeakDB initializer snippet shape changed",
+    )
+    tail = database[speakdb.end():]
+    following = re.search(r'TextDB\s*\(', tail)
+    block_end = speakdb.end() + following.start() if following \
+        else len(database)
+    block = database[speakdb.start():block_end]
+    insult_literal = re.search(r'"insult\.txt"', block)
+    _require(insult_literal is not None,
+             f"{label} SpeakDB initializer must load insult.txt")
+    insult_abs = speakdb.start() + insult_literal.start()
+    speakdb_double_load = database.count("\n", 0, insult_abs) + 1
+    facts = {
+        "loader": f"crawl-ref/source/database.cc:{loader_line}",
+        "shout_consumer": f"crawl-ref/source/shout.cc:{shout_consumer}",
+        "riddle_consumer":
+            f"crawl-ref/source/transform.cc:{riddle_consumer}",
+        "insult_postprocessing":
+            f"crawl-ref/source/mon-util.cc:{insult_postprocessing}",
+        "speakdb_double_load":
+            f"crawl-ref/source/database.cc:{speakdb_double_load}",
+    }
+    _require(
+        facts == FROZEN_PRODUCER_CONSUMER,
+        f"{label} producer/consumer anchors drifted from the frozen "
+        f"facts: {facts!r}",
+    )
+    return facts
+
+
+def _card_producer_consumer(
+    entry: dict[str, Any], facts: dict[str, str],
+) -> dict[str, str]:
+    """The applicable producer/consumer evidence for one card, per
+    lifecycle: sphinx-driven keys cite the transform.cc riddle consumer,
+    monster_shout-driven keys cite the shout.cc lookup, SpeakDB-only keys
+    cite the species-insult post-processing path, and the legacy AXED_MON
+    key has no runtime consumer (only the ShoutDB loader fact applies).
+    Every card keeps the ShoutDB loader producer fact."""
+    lifecycle = entry["lifecycle"]
+    if lifecycle == "direct-production-root":
+        anchors = (("riddle_consumer",)
+                   if entry["key"] in SPHINX_RIDDLE_KEYS
+                   else ("shout_consumer",))
+    elif lifecycle == "recursive-shoutdb-fragment":
+        anchors = (("riddle_consumer",)
+                   if entry["key"] in FRAGMENT_KEYS - {"imp"}
+                   else ("shout_consumer",))
+    elif lifecycle == "legacy-axed-monster":
+        anchors = ()
+    elif lifecycle == "recursive-shoutdb-insult":
+        anchors = ("shout_consumer", "speakdb_double_load")
+    else:  # speakdb-postprocessing-insult
+        anchors = ("insult_postprocessing", "speakdb_double_load")
+    return {"loader": facts["loader"],
+            **{anchor: facts[anchor] for anchor in anchors}}
+
+
 def _axed_monster_names(oid: str, label: str) -> list[str]:
     """DB names of AXED_MON entries in the exact-Git mon-gen header.
 
@@ -1067,6 +1220,7 @@ def _dataset(
     artifact: dict[str, Any], raw: bytes, directory: str, label: str,
     role: str, derivable: dict[str, Any],
     sentinel_baseline: dict[str, Any] | None = None,
+    expected_dump_variants: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     # Sentinel integrity is role-independent: _source_rows deliberately
     # removes the __buggy sentinel from the identity rows and the 124-card
@@ -1106,7 +1260,6 @@ def _dataset(
             == sentinel_baseline["variants"],
             f"{label} sentinel content differs from the baseline derivation",
         )
-    rows, per_file = _source_rows(artifact, directory, label)
     family_sources = {f"{directory}{basename}"
                       for basename in SOURCE_BASENAMES}
     scoped_keys = {
@@ -1114,6 +1267,15 @@ def _dataset(
         if any(item["source_name"] in family_sources
                for item in entry["source_history"])
     }
+    # Runtime sentinel values are checked in the canonical (lowercase) key
+    # space before the identity-count gate: an added __DEFAULT/__NEXT/__NONE
+    # key must fail this guard specifically, not be swallowed by the frozen
+    # identity count.
+    _require(
+        not (scoped_keys & RUNTIME_SENTINEL_VALUES),
+        f"{label} runtime sentinel values must never be ShoutDB keys",
+    )
+    rows, per_file = _source_rows(artifact, directory, label)
     shout_rows = [row for row in rows
                   if any(item["source_name"] == f"{directory}shout.txt"
                          for item in row["source_history"])]
@@ -1229,11 +1391,14 @@ def _dataset(
         )
         for basename in SOURCE_BASENAMES
     }
-    # Dump-level totals include the __buggy sentinel variant and must stay
-    # at the frozen 119/119 shout.txt shape for every role (the zero-body
-    # title artifact contributes nothing).  The sentinel is not part of the
-    # identity rows or the review ledger, so the candidate audit must keep
-    # the same frozen totals.
+    # Dump-level totals include the __buggy sentinel variant (the zero-body
+    # title artifact contributes nothing) and are role-aware: the baseline
+    # keeps the frozen 119/119 shout.txt and 557/532 insult.txt shape, while
+    # the candidate audit requires the approved aligned totals (mechanically
+    # derived from the review ledger proposals / the baseline EN facts), so
+    # the completed reviewed candidate is not rejected against the stale
+    # baseline ZH count.  The one-variant sentinel comparison above stays
+    # independent of role.
     dump_variants = {
         basename: sum(
             len(entry["variants"]) for entry in artifact["entries"]
@@ -1242,15 +1407,26 @@ def _dataset(
         )
         for basename in SOURCE_BASENAMES
     }
-    expected_dump_variants = {
-        "shout.txt": (EXPECTED_DUMP_SHOUT_EN_VARIANTS
-                      if directory == "database/"
-                      else EXPECTED_DUMP_SHOUT_ZH_VARIANTS),
-        "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
-                       if directory == "database/"
-                       else EXPECTED_INSULT_ZH_VARIANTS),
-    }
-    _require(dump_variants == expected_dump_variants,
+    if role == "candidate":
+        _require(
+            expected_dump_variants is not None,
+            f"{label} candidate audit requires the approved dump totals",
+        )
+        _require(
+            set(expected_dump_variants) == {"shout.txt", "insult.txt"},
+            f"{label} approved dump totals must cover both source files",
+        )
+        expected = dict(expected_dump_variants)
+    else:
+        expected = {
+            "shout.txt": (EXPECTED_DUMP_SHOUT_EN_VARIANTS
+                          if directory == "database/"
+                          else EXPECTED_DUMP_SHOUT_ZH_VARIANTS),
+            "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
+                           if directory == "database/"
+                           else EXPECTED_INSULT_ZH_VARIANTS),
+        }
+    _require(dump_variants == expected,
              f"{label} dump-level variant totals differ: "
              f"{dump_variants!r}")
     if role == "baseline":
@@ -1354,6 +1530,7 @@ def _derived_sentinel_entry(
 def _load_dataset(
     ref: str, path: Path, directory: str, label: str, role: str,
     sentinel_baseline: dict[str, Any] | None = None,
+    expected_dump_variants: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     hardened.shared._validate_oid(ref, label)
     _require_regular_shout_git_sources(ref, directory, label)
@@ -1366,7 +1543,8 @@ def _load_dataset(
         _require_speakdb_insult_parity(artifact, ref, label)
     derivable = _derivable_root_facts(ref, label)
     return _dataset(artifact, raw, directory, label, role, derivable,
-                    sentinel_baseline=sentinel_baseline)
+                    sentinel_baseline=sentinel_baseline,
+                    expected_dump_variants=expected_dump_variants)
 
 
 def _pair_entries(
@@ -1511,6 +1689,8 @@ def build_inventory(
                     baseline_ref, "baseline provenance"),
             },
         },
+        "producer_consumer": _producer_consumer_facts(
+            baseline_ref, "baseline producer/consumer"),
         "postprocess_tokens": sorted(POSTPROCESS_TOKENS),
         "baseline_variant_counts": {
             "english": en["per_file_variant_counts"],
@@ -1719,7 +1899,8 @@ def validate_results(
                  and card["producer_consumer"],
                  f"review card {identity} requires producer/consumer evidence")
         _require(card["producer_consumer"]
-                 == dict(FROZEN_PRODUCER_CONSUMER),
+                 == _card_producer_consumer(
+                     entry, inventory["scope"]["producer_consumer"]),
                  f"review card {identity} producer/consumer evidence mismatch")
         if conclusion in DEFER_CONCLUSIONS:
             _require(isinstance(card["deferral_owner"], str)
@@ -1794,19 +1975,46 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
     return entries
 
 
+def _proposal_dump_totals(records: list[dict[str, Any]]) -> dict[str, int]:
+    """The approved candidate dump totals, mechanically derived from the
+    review ledger: per-file proposed ZH variant totals plus the one
+    __buggy sentinel variant of shout.txt (the sentinel is outside the
+    ledger but part of the production dump totals)."""
+    totals = {"shout.txt": 0, "insult.txt": 0}
+    for card in records[1:]:
+        basename = ("shout.txt" if card["identity"].startswith("shout:")
+                    else "insult.txt")
+        totals[basename] += len(card["proposed_chinese_variants"])
+    totals["shout.txt"] += EXPECTED_SENTINEL_VARIANTS["chinese"]
+    return totals
+
+
 def add_candidate(
     inventory: dict[str, Any], baseline_ref: str, candidate_ref: str,
     english_path: Path, localized_path: Path,
+    expected_dump_variants: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     hardened.shared._require_candidate_commit(
         baseline_ref, candidate_ref, exact_clean_checkout=True
     )
+    if expected_dump_variants is None:
+        # Mechanical default from the baseline EN facts (the approved
+        # aligned shape: this batch keeps every EN key at the baseline
+        # count and aligns ZH to it, so the candidate insult total is the
+        # baseline EN insult total and shout.txt adds the sentinel).
+        en_counts = inventory["dumps"]["english"]["per_file_variant_counts"]
+        expected_dump_variants = {
+            "shout.txt": (en_counts["shout.txt"]
+                           + EXPECTED_SENTINEL_VARIANTS["english"]),
+            "insult.txt": en_counts["insult.txt"],
+        }
     en = _load_dataset(
         candidate_ref, english_path, "database/",
         "candidate EN", "candidate",
         sentinel_baseline=_derived_sentinel_entry(
             baseline_ref, "database/", "baseline sentinel EN"
         ),
+        expected_dump_variants=expected_dump_variants,
     )
     zh = _load_dataset(
         candidate_ref, localized_path, "database/zh/",
@@ -1814,6 +2022,15 @@ def add_candidate(
         sentinel_baseline=_derived_sentinel_entry(
             baseline_ref, "database/zh/", "baseline sentinel ZH"
         ),
+        expected_dump_variants=expected_dump_variants,
+    )
+    # The reviewed commit must not move the producer/consumer anchors that
+    # the ledger evidence is bound to; the candidate anchors are derived
+    # and snippet-checked from the exact candidate Git sources.
+    _require(
+        _producer_consumer_facts(candidate_ref, "candidate producer/consumer")
+        == inventory["scope"]["producer_consumer"],
+        "candidate producer/consumer anchors differ from the baseline facts",
     )
     _require(not en["token_facts"]["unresolved"],
              "candidate EN contains unresolved token")
@@ -1875,7 +2092,8 @@ def _skeleton_card(
         "lifecycle": lifecycle,
         "dependency_group": entry["dependency_group"],
         "display_context": display_context,
-        "producer_consumer": dict(FROZEN_PRODUCER_CONSUMER),
+        "producer_consumer": _card_producer_consumer(
+            entry, inventory["scope"]["producer_consumer"]),
         "evidence_locations": _evidence_locations(entry),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
@@ -1976,6 +2194,7 @@ def main(argv: list[str] | None = None) -> int:
         candidate = add_candidate(
             inventory, args.baseline_ref, args.candidate_ref,
             args.candidate_english_dump, args.candidate_localized_dump,
+            expected_dump_variants=_proposal_dump_totals(records),
         )
     if args.review_results is not None:
         inventory["review_evidence"] = validate_results(
@@ -2006,11 +2225,16 @@ CARD_FIELDS = {
 }
 VARIANT_FIELDS = {"text", "weight"}
 
-# Frozen consumer/producer evidence for the shout.cc::monster_shout path,
-# the transform.cc Sphinx riddle path and the mon-util.cc insult path.
+# Frozen consumer/producer evidence anchors for the ShoutDB loader, the
+# shout.cc::monster_shout lookup, the transform.cc Sphinx riddle path and
+# the mon-util.cc insult path.  The values are the exact-Git anchor lines
+# at the baseline OID; _producer_consumer_facts re-derives every anchor
+# from the exact Git sources with snippet checks and must reproduce this
+# object verbatim, so a moved initializer/call site fails closed instead
+# of silently re-anchoring the ledger evidence.
 FROZEN_PRODUCER_CONSUMER = {
-    "loader": "crawl-ref/source/database.cc:147",
-    "shout_consumer": "crawl-ref/source/shout.cc:50",
+    "loader": "crawl-ref/source/database.cc:134",
+    "shout_consumer": "crawl-ref/source/shout.cc:176",
     "riddle_consumer": "crawl-ref/source/transform.cc:2541",
     "insult_postprocessing": "crawl-ref/source/mon-util.cc:4275",
     "speakdb_double_load": "crawl-ref/source/database.cc:125",

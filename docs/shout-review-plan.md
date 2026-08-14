@@ -141,4 +141,9 @@ python3 .claude/scripts/shout_inventory.py \
 `--review-results`、`--candidate-ref <新提交>` 与两份 candidate
 dump，重新证明 candidate agreement（候选必须逐字等于账本 proposal、
 124/124 键、双语变体数逐键一致、无未解析 token、闭包完整）。
-验证使用 `bash .claude/scripts/verify_zh.sh --profile translation`。
+翻译资产编辑阶段可按需使用 `bash .claude/scripts/verify_zh.sh
+--profile translation`；本候选是混合改动（Python 验证代码、database.cc/
+database.h、Catch2 测试与 ZH 资产），合并前的静态预检只执行一次
+`bash .claude/scripts/verify_zh.sh --profile ci`（ci 是 translation ∪
+code 的 union，覆盖 i18n 生命周期/varargs 等代码侧检查），不对同一
+不可变候选串行重复跑多个 profile。
