@@ -104,11 +104,11 @@ SOUND:@The_monster@在愤怒地嗡嗡叫。
 %%%%
 __MOAN unseen
 
-SOUND:你听到一声凄凉的呻吟。
+SOUND:你听到一声令人毛骨悚然的呻吟。
 %%%%
 __MOAN seen
 
-SOUND:@The_monster@发出凄凉的呻吟。
+SOUND:@The_monster@发出令人毛骨悚然的呻吟。
 %%%%
 __GURGLE unseen
 
@@ -152,7 +152,7 @@ SOUND:你听到窜行的声音。
 %%%%
 __SKITTER seen
 
-SOUND:@The_monster@的多条腿在窜行。
+SOUND:@The_monster_possessive@多条腿在窜行。
 %%%%
 __FAINT_SKITTER unseen
 
@@ -160,7 +160,7 @@ SOUND:你听到微弱的窜行声音。
 %%%%
 __FAINT_SKITTER seen
 
-SOUND:@The_monster@的多条腿在微微窜行。
+SOUND:@The_monster_possessive@多条腿在微微窜行。
 %%%%
 __SQUEAL unseen
 
@@ -176,13 +176,13 @@ __DEMON_TAUNT
 %%%%
 __CHERUB seen
 
-SOUND:@The_monster@的鹰头在尖叫！
+SOUND:@The_monster_possessive@鹰头在尖叫！
 
-SOUND:@The_monster@的狮头在咆哮！
+SOUND:@The_monster_possessive@狮头在咆哮！
 
-SOUND:@The_monster@的牛头在哞叫！
+SOUND:@The_monster_possessive@牛头在哞叫！
 
-SOUND:@The_monster@的人头在喊叫！
+SOUND:@The_monster_possessive@人头在喊叫！
 %%%%
 __CHERUB unseen
 
@@ -208,7 +208,7 @@ SOUND:你听到响亮的沙沙声。
 %%%%
 __RUSTLE seen
 
-SOUND:@The_monster@的书页发出响亮的沙沙声。
+SOUND:@The_monster_possessive@书页发出响亮的沙沙声。
 %%%%
 __SQUEAK unseen
 
@@ -228,7 +228,7 @@ SOUND:@The_monster@发出响亮的吱吱声。
 %%%%
 player ghost
 
-VISUAL:@The_monster@恶毒地凝视着你。
+VISUAL:@The_monster@将@possessive@恶毒的目光转向你。
 %%%%
 Fighter player ghost
 
@@ -319,7 +319,7 @@ Wanderer player ghost
 %%%%
 'cap-G'
 
-VISUAL:@The_monster@凝视着你。
+VISUAL:@The_monster@将@possessive@目光转向你。
 %%%%
 'cap-J'
 
@@ -330,18 +330,18 @@ VISUAL:@The_monster@颤抖着。
 %%%%
 giant slug
 
-VISUAL:@The_monster@将眼柄转向你。
+VISUAL:@The_monster@将@possessive@眼柄转向你。
 ########################################
 # 某些怪物的喊叫
 ########################################
 %%%%
 ballistomycete spore
 
-VISUAL:@The_monster@摆动着根茎。
+VISUAL:@The_monster@摆动着@possessive@根茎。
 %%%%
 glowing orange brain
 
-VISUAL:@The_monster@将注意力转向你。
+VISUAL:@The_monster@将@possessive@注意力转向你。
 %%%%
 # 钢铁小恶魔、暗影小恶魔和白色小恶魔都复制于小恶魔。
 imp
@@ -353,7 +353,7 @@ SOUND:@The_monster@ @says@：“@imp_taunt@”
 %%%%
 moth of wrath
 
-VISUAL:@The_monster@一注意到你，就愤怒地竖起了毛。
+VISUAL:@The_monster_possessive@毛发因愤怒而竖起，当它注意到你时。
 %%%%
 iron imp
 
@@ -373,7 +373,7 @@ white imp
 Polyphemus
 
 # 这也适用于其他被友方包围的怪物。
-SOUND:@The_monster@喊道：”进攻，我的宠物！进攻！”
+SOUND:@The_monster@喊道：“进攻，我的宠物！进攻！”
 %%%%
 __CAW seen
 

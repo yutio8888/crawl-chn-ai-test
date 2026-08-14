@@ -36,7 +36,7 @@ demon_taunt_special
 
 @give_up@，你这美味的@meal@！
 
-@run_away@@whilst_thou_can@！
+@run_away@，@whilst_thou_can@！
 
 我@will_or_shall@@feast_or_devour@你的@body_or_spiritual_part@！
 %%%%
@@ -57,8 +57,6 @@ run_away
 
 撤退
 
-跑啊
-
 逃命
 
 飞走吧
@@ -66,8 +64,6 @@ run_away
 快闪
 
 滚远点
-
-滚回去
 
 放弃吧
 
@@ -91,21 +87,11 @@ run_away
 
 狼狈回家
 
-快滚
-
 溜走
 
 溜回家
 
 带着你的脸滚蛋
-
-快逃
-
-荡开
-
-滚
-
-闪开
 
 快遁
 
@@ -116,7 +102,7 @@ give_up
 
 放弃希望
 
-接受毁灭
+接受沉沦
 
 接受失败
 
@@ -124,7 +110,7 @@ give_up
 
 求饶吧
 
-崩溃吧
+沮丧吧
 
 跪下
 
@@ -136,7 +122,7 @@ give_up
 
 拥抱你的灭亡
 
-拥抱你的毁灭
+拥抱顺服
 
 拥抱你的失败
 
@@ -145,8 +131,6 @@ give_up
 面对你的终曲
 
 面对你的挽歌
-
-低头
 
 乞求宽恕
 
@@ -162,15 +146,19 @@ give_up
 
 投降
 
-跪地
+拥抱你的投降
 
-屈服吧
+挣扎吧
 
-肝脑涂地
+畏缩吧
 
-认栽
+罢手吧
 
-磕头吧
+屈从吧
+
+顺服吧
+
+忏悔吧
 %%%%
 whilst_thou_can
 
@@ -452,6 +440,18 @@ insult general adj1
 朽木不可雕的
 
 禽兽不如的
+
+谄媚的
+
+无礼的
+
+泪眼汪汪的
+
+精神错乱的
+
+大腹便便的
+
+口无遮拦的
 %%%%
 insult elf adj1
 
@@ -659,6 +659,16 @@ insult general adj2
 烂泥一般的
 
 德行败坏的
+
+没教养的
+
+无礼放肆的
+
+出身卑贱的
+
+醉醺醺的
+
+大腹便便的
 %%%%
 insult dwarf adj2
 
@@ -740,6 +750,8 @@ insult mummy adj2
 
 脱水的
 
+发霉的
+
 易燃的
 
 一点就着的
@@ -792,8 +804,6 @@ insult vampire adj2
 没有一滴血的
 
 血液枯竭的
-
-脸色惨白的
 
 w:20
 @insult undead adj2@
@@ -986,6 +996,44 @@ insult general noun
 人渣
 
 败类
+
+虚张声势者
+
+吹牛大王
+
+粗坯
+
+吓人精
+
+烂疮花
+
+饶舌货
+
+榆木脑袋
+
+浪荡子
+
+纨绔子弟
+
+坏脾气佬
+
+死脑筋
+
+死亡标记
+
+小蜥蜴
+
+窝囊兵
+
+邋遢婆娘
+
+轻浮丫头
+
+呆头鱼
+
+憔悴鬼
+
+恶妇
 %%%%
 small_food
 
@@ -1051,6 +1099,9 @@ insult felid noun
 %%%%
 insult spriggan noun
 
+w:100
+@small_food@
+
 骑鼠的
 
 四分之一品脱
@@ -1082,9 +1133,6 @@ insult spriggan noun
 胆小如鼠的
 
 蹑手蹑脚的
-
-w:100
-@small_food@
 %%%%
 insult minotaur noun
 
@@ -1151,3 +1199,5 @@ insult mummy noun
 柴火堆
 
 火绒
+
+小木乃伊
