@@ -1081,116 +1081,341 @@ _PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES = frozenset({
 # line is still considered a preprocessor switch-point false positive.
 _PREPROC_SWITCH_WINDOW = 4
 
+# tree-sitter-cpp cannot be the directive source here: in the exact regions
+# this exemption exists for (a conditional splitting a class inheritance
+# list, an if/else chain, ...), the parser's ERROR recovery swallows the
+# directive lines and emits no preproc node. Probing the bundled grammar on
+# crawl-ref/source/directn.cc found only 42 preproc_if/preproc_ifdef/
+# preproc_ifndef nodes for 87 actual conditional directives, including no
+# node for the #ifdef USE_TILE_LOCAL at line 2439 whose post-#endif window
+# covers the frozen baseline lines 2446/2447. Directive discovery therefore
+# uses a complete phase-2 lexer (backslash-newline splicing, raw-string
+# prefixes/delimiters/terminators, continuation-aware comments, string and
+# char literals) instead of tree-sitter nodes.
+_PREPROCESSOR_CONDITIONAL_KEYWORDS = frozenset({
+    b"if", b"ifdef", b"ifndef", b"elif", b"else", b"endif",
+})
+_RAW_STRING_PREFIXES = (b"R\"", b"u8R\"", b"uR\"", b"UR\"", b"LR\"")
+_RAW_STRING_DELIMITER_MAX = 16
 
-def _scan_cpp_lexical_state(line: bytes, in_block_comment: bool,
-                            in_string: bool) -> tuple[bool, bool]:
-    """Advance block-comment/string-literal state across one source line.
 
-    Tracks the C++ lexical context so a '#' at the start of a later line is
-    only treated as a preprocessor directive when that line really starts
-    outside a block comment and outside a string literal. Handles /* */ that
-    start or end mid-line and may span lines, // line comments, "..." string
-    literals with backslash escapes and backslash-newline continuation, and
-    '...' char literals (so a quote inside one cannot open a string).
+def _is_identifier_byte(ch: int) -> bool:
+    """ASCII identifier character: _ [0-9] [A-Z] [a-z]."""
+    return (ch == 0x5F
+            or 0x30 <= ch <= 0x39
+            or 0x41 <= ch <= 0x5A
+            or 0x61 <= ch <= 0x7A)
+
+
+def _directive_events(source: bytes):
+    """Yield (keyword, line_no, dead) for real conditional directives.
+
+    Implements C++ phase-2 translation: backslash-newline splicing is
+    honored everywhere (so a '//' comment or a string literal continues
+    across the splice), raw string literals (R"...", u8R"...", uR"...",
+    UR"...", LR"..." with optional delimiters) are recognized as opaque
+    regions, and block/line comments plus "..." string and '...' char
+    literals are tracked. A '#' at the start of a physical line is a
+    directive only when the line really starts a fresh logical line outside
+    every such region. 'dead' is True only for a literal '#if 0' condition.
     """
-    i = 0
-    n = len(line)
-    while i < n:
-        ch = line[i]
-        if in_block_comment:
-            if ch == ord('*') and i + 1 < n and line[i + 1] == ord('/'):
-                in_block_comment = False
-                i += 2
-            else:
-                i += 1
+    n = len(source)
+    pos = 0
+    line_no = 1
+    at_line_start = True
+    while pos < n:
+        ch = source[pos]
+        if at_line_start and ch in b" \t\f\v\r":
+            pos += 1
             continue
-        if in_string:
-            if ch == ord('\\'):
-                i += 2  # escaped char; a trailing backslash continues the line
-                continue
-            if ch == ord('"'):
-                in_string = False
-            i += 1
-            continue
-        if ch == ord('/') and i + 1 < n and line[i + 1] == ord('/'):
-            break  # line comment: the rest of the line is inert
-        if ch == ord('/') and i + 1 < n and line[i + 1] == ord('*'):
-            in_block_comment = True
-            i += 2
-            continue
-        if ch == ord('"'):
-            in_string = True
-        elif ch == ord("'"):
-            i += 1  # char literal: skip to its closing quote
-            while i < n:
-                if line[i] == ord('\\'):
-                    i += 2
+        if at_line_start and ch == 0x23:  # '#'
+            directive_line = line_no
+            k = pos + 1
+            while k < n and source[k] in b" \t\f\v\r":
+                k += 1
+            m = k
+            while m < n and _is_identifier_byte(source[m]):
+                m += 1
+            keyword = source[k:m].lower()
+            dead = False
+            if keyword == b"if":
+                # The first token of the condition decides '#if 0';
+                # splices may join the continuation into the token stream.
+                q = m
+                while q < n:
+                    if source[q] in b" \t\f\v\r":
+                        q += 1
+                    elif (source[q] == 0x5C and q + 1 < n
+                          and source[q + 1] == 0x0A):
+                        q += 2
+                    else:
+                        break
+                t = q
+                while t < n and source[t] not in b" \t\f\v\r\n":
+                    if (source[t] == 0x5C and t + 1 < n
+                            and source[t + 1] == 0x0A):
+                        break
+                    t += 1
+                dead = source[q:t] == b"0"
+            # Consume the rest of the logical directive line: splices join
+            # continuation lines into this directive, and no continuation
+            # can start a new directive.
+            p = m
+            while p < n:
+                if (source[p] == 0x5C and p + 1 < n
+                        and source[p + 1] == 0x0A):
+                    p += 2
+                    line_no += 1
                     continue
-                if line[i] == ord("'"):
+                if source[p] == 0x0A:
+                    p += 1
+                    line_no += 1
+                    at_line_start = True
                     break
-                i += 1
-            i += 1
+                p += 1
+            else:
+                at_line_start = False
+            if keyword in _PREPROCESSOR_CONDITIONAL_KEYWORDS:
+                yield keyword, directive_line, dead
+            pos = p
             continue
-        i += 1
-    return in_block_comment, in_string
+        if ch == 0x2F and pos + 1 < n and source[pos + 1] == 0x2A:
+            # /* block comment */ (splices inside are inert)
+            pos += 2
+            closed = False
+            while pos < n:
+                if (source[pos] == 0x2A and pos + 1 < n
+                        and source[pos + 1] == 0x2F):
+                    pos += 2
+                    closed = True
+                    break
+                if source[pos] == 0x0A:
+                    line_no += 1
+                pos += 1
+            at_line_start = not closed
+        elif ch == 0x2F and pos + 1 < n and source[pos + 1] == 0x2F:
+            # // line comment: backslash-newline keeps it open
+            pos += 2
+            closed = False
+            while pos < n:
+                if (source[pos] == 0x5C and pos + 1 < n
+                        and source[pos + 1] == 0x0A):
+                    pos += 2
+                    line_no += 1
+                    continue
+                if source[pos] == 0x0A:
+                    pos += 1
+                    line_no += 1
+                    at_line_start = True
+                    closed = True
+                    break
+                pos += 1
+            if not closed:
+                at_line_start = False
+        elif ch == 0x22:  # '"'
+            raw = False
+            for prefix in _RAW_STRING_PREFIXES:
+                if pos + 1 >= len(prefix) and source[
+                        pos + 1 - len(prefix):pos + 1] == prefix:
+                    prefix_start = pos + 1 - len(prefix)
+                    if (prefix_start == 0
+                            or not _is_identifier_byte(
+                                source[prefix_start - 1])):
+                        raw = True
+                        break
+            if raw:
+                # R"delim( ... )delim"
+                q = pos + 1
+                while q < n and source[q] != 0x28:  # '('
+                    if (source[q] == 0x5C and q + 1 < n
+                            and source[q + 1] == 0x0A):
+                        q += 2
+                        line_no += 1
+                        continue
+                    q += 1
+                delim = source[pos + 1:q]
+                if len(delim) > _RAW_STRING_DELIMITER_MAX:
+                    delim = b""  # not a valid raw string: recover
+                r = q + 1
+                terminator = delim + b'"'
+                while r < n:
+                    if source[r] == 0x29:  # ')'
+                        if source[r + 1:r + 1 + len(terminator)] == terminator:
+                            break
+                    if (source[r] == 0x5C and r + 1 < n
+                            and source[r + 1] == 0x0A):
+                        r += 2
+                        line_no += 1
+                        continue
+                    if source[r] == 0x0A:
+                        line_no += 1
+                    r += 1
+                if r < n:
+                    pos = r + 1 + len(terminator)
+                else:
+                    pos = n
+                at_line_start = False
+            else:
+                # "..." string literal (escapes and splices)
+                pos += 1
+                closed = False
+                while pos < n:
+                    if source[pos] == 0x5C:
+                        if pos + 1 < n and source[pos + 1] == 0x0A:
+                            pos += 2
+                            line_no += 1
+                        else:
+                            pos += 2
+                    elif source[pos] == 0x22:
+                        pos += 1
+                        at_line_start = False
+                        closed = True
+                        break
+                    elif source[pos] == 0x0A:
+                        # Unterminated across a raw newline: recover.
+                        pos += 1
+                        line_no += 1
+                        at_line_start = True
+                        closed = True
+                        break
+                    else:
+                        pos += 1
+                if not closed:
+                    at_line_start = False
+        elif ch == 0x27:  # "'"
+            pos += 1
+            closed = False
+            while pos < n:
+                if source[pos] == 0x5C:
+                    if pos + 1 < n and source[pos + 1] == 0x0A:
+                        pos += 2
+                        line_no += 1
+                    else:
+                        pos += 2
+                elif source[pos] == 0x27:
+                    pos += 1
+                    at_line_start = False
+                    closed = True
+                    break
+                elif source[pos] == 0x0A:
+                    pos += 1
+                    line_no += 1
+                    at_line_start = True
+                    closed = True
+                    break
+                else:
+                    pos += 1
+            if not closed:
+                at_line_start = False
+        elif ch == 0x5C and pos + 1 < n and source[pos + 1] == 0x0A:
+            # Backslash-newline splice: the logical line continues.
+            pos += 2
+            line_no += 1
+        elif ch == 0x0A:
+            pos += 1
+            line_no += 1
+            at_line_start = True
+        else:
+            pos += 1
+            at_line_start = False
 
 
 def _preprocessor_switch_lines(source: bytes):
     """Line numbers at preprocessor conditional switch points.
 
-    Returns a frozenset of 1-indexed line numbers that are either inside a
-    preprocessor conditional body (between #if/#ifdef/#ifndef and the
-    matching #endif, including #elif/#else boundary lines) or within
-    _PREPROC_SWITCH_WINDOW lines after the #endif. Bodies of dead '#if 0'
-    blocks are excluded: errors there are expected and must fail closed.
-    A line whose leading '#' sits inside a block comment or a string literal
-    is not a directive, and dead '#if 0' interiors are subtracted from the
-    final set even when an enclosing live span, a nested live span, a
-    preceding post-#endif window, or the dead block's own lines added them.
-    Returns None when the directives cannot be paired (unmatched #if or
+    Conditional directives come from _directive_events(), a complete C++
+    phase-2 lexer that honors backslash-newline splicing, raw-string
+    prefixes/delimiters/terminators, continuation-aware comments, and
+    string/char literals, so raw-string contents or line-spliced comments
+    cannot forge directives. (tree-sitter nodes are not used: probing the
+    bundled grammar showed the conditional that this exemption exists for —
+    a #ifdef splitting a class inheritance list — is swallowed into ERROR
+    nodes and emits no preproc node at all.)
+
+    Returns a frozenset of 1-indexed line numbers that are either inside an
+    active conditional body (between #if/#ifdef/#ifndef and the matching
+    #endif, excluding directive lines themselves) or within
+    _PREPROC_SWITCH_WINDOW lines after the #endif of a live conditional, or
+    None when the directives cannot be paired (unmatched #if/#else/#elif/
     #endif), in which case callers must fail closed.
+
+    Dead '#if 0' branches dominate: lines inside an inactive branch are
+    subtracted even when an enclosing live span, a nested live span, or a
+    preceding post-#endif window also covered them, and a conditional nested
+    inside an inactive branch contributes neither body nor post-#endif
+    window. #else/#elif transitions reactivate the branch, so only the
+    inactive '#if 0' body itself is excluded.
     """
+    inactive_depth = 0
     stack = []
     spans = []
-    in_block_comment = False
-    in_string = False
-    for line_no, line in enumerate(source.split(b"\n"), start=1):
-        stripped = line.lstrip()
-        if (not in_block_comment and not in_string
-                and stripped.startswith(b"#")):
-            tokens = stripped.split()
-            if tokens:
-                directive = tokens[0].lower()
-                if directive in (b"#if", b"#ifdef", b"#ifndef"):
-                    stack.append((line_no, tokens[1:2] == [b"0"]))
-                elif directive in (b"#elif", b"#else"):
-                    if not stack:
-                        return None
-                elif directive == b"#endif":
-                    if not stack:
-                        return None
-                    spans.append((stack.pop(), line_no))
-        in_block_comment, in_string = _scan_cpp_lexical_state(
-            line, in_block_comment, in_string)
+    for keyword, directive_line, dead in _directive_events(source):
+        if keyword in (b"if", b"ifdef", b"ifndef"):
+            stack.append({
+                "start": directive_line,
+                "dead_if": dead,
+                "branch_active": not dead,
+                "in_inactive_context": inactive_depth > 0,
+                "cur_start": directive_line,
+                "active": [],
+                "inactive": [],
+            })
+            if dead:
+                inactive_depth += 1
+        elif keyword in (b"elif", b"else"):
+            if not stack:
+                return None
+            frame = stack[-1]
+            # Close the branch that just ended.
+            (frame["active"] if frame["branch_active"]
+             else frame["inactive"]).append(
+                (frame["cur_start"] + 1, directive_line))
+            # #else/#elif branches are always active.
+            if frame["dead_if"] and not frame["branch_active"]:
+                inactive_depth -= 1
+            frame["branch_active"] = True
+            frame["cur_start"] = directive_line
+        else:  # endif
+            if not stack:
+                return None
+            frame = stack.pop()
+            (frame["active"] if frame["branch_active"]
+             else frame["inactive"]).append(
+                (frame["cur_start"] + 1, directive_line))
+            if frame["dead_if"] and not frame["branch_active"]:
+                inactive_depth -= 1
+            spans.append((frame, directive_line))
     if stack:
         return None
-    switch = set()
-    for (start, dead), end in spans:
-        if dead:
+    add_lines = set()
+    subtract_lines = set()
+    for frame, endif_line in spans:
+        if frame["in_inactive_context"]:
             continue
-        switch.update(range(start + 1, end))
-        switch.update(range(end + 1, end + 1 + _PREPROC_SWITCH_WINDOW))
-    # Dead '#if 0' interiors must never count as switch points. Subtract them
-    # from whatever span or window previously added those lines.
-    for (start, dead), end in spans:
-        if dead:
-            switch.difference_update(range(start + 1, end))
-    return frozenset(switch)
+        if frame["dead_if"]:
+            for start, end in frame["active"]:
+                add_lines.update(range(start, end))
+            for start, end in frame["inactive"]:
+                subtract_lines.update(range(start, end))
+        else:
+            for start, end in frame["active"]:
+                add_lines.update(range(start, end))
+            for start, end in frame["inactive"]:
+                add_lines.update(range(start, end))
+            add_lines.update(range(
+                endif_line + 1, endif_line + 1 + _PREPROC_SWITCH_WINDOW))
+    return frozenset(add_lines.difference(subtract_lines))
 
 
 def has_relevant_parse_error(root, source: bytes) -> bool:
     """Ignore only recoverable preprocessor/member-pointer false positives."""
     switch_lines = _preprocessor_switch_lines(source)
+    if switch_lines is None:
+        # Unmatched #if/#else/#elif/#endif: no switch point is trustworthy.
+        # Fail closed immediately — an extra #endif alone produces no
+        # tree-sitter ERROR/missing node, so continuing the walk would
+        # certify the file as successfully scanned.
+        return True
     stack = [root]
     while stack:
         node = stack.pop()
@@ -1208,8 +1433,7 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
             # (including on the same text outside a switch point) still fail
             # closed. This is the only exemption that applies to missing
             # nodes, which otherwise always fail closed.
-            if (switch_lines is not None
-                    and line.strip().decode("utf-8", "replace")
+            if (line.strip().decode("utf-8", "replace")
                     in _PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES
                     and source.count(b"\n", 0, node.start_byte) + 1
                     in switch_lines):

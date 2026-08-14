@@ -2,13 +2,11 @@
 """Cross-scanner regressions for Issue #12 discovery and dataflow gaps."""
 
 import json
-import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
-import uuid
 from pathlib import Path
 
 
@@ -142,28 +140,36 @@ class ScannerCompletenessTests(unittest.TestCase):
                 self.assertEqual(findings, self._normalized_findings(data))
 
     def test_directn_preprocessor_split_false_positives_pass_directory_entry(self):
-        # Issue #40 W1: the directory-root entry (parse validation enabled
-        # for non-production roots) must agree with the --files entry on the
-        # real directn.cc. The fixture lives in a unique directory directly
-        # under /tmp, the repository convention used by inventory tests.
+        # Issue #40 W1: the production-root directory entry (a one-file
+        # temporary .../crawl-ref/source root whose basename is 'source'
+        # with parent 'crawl-ref' sets production_root=true and skips parse
+        # validation) must agree with the --files entry (validation on) on
+        # exact exit code, coverage, and every normalized finding
+        # (TEST-003: the fixture must live under a temporary crawl-ref/
+        # source path, not an arbitrary directory).
         directn = ROOT / "crawl-ref" / "source" / "directn.cc"
         self.assertTrue(directn.is_file(), directn)
-        td = Path("/tmp") / (
-            f"scanner-directn-test-{os.getpid()}-{uuid.uuid4().hex}")
-        td.mkdir()
-        try:
-            shutil.copy2(directn, td / "directn.cc")
-            for scanner in ("scan_string_concat.py",
-                            "scan_varargs_string.py"):
+        expected = {
+            "scan_string_concat.py": (1, self.DIRECTN_CONCAT_FINDINGS),
+            "scan_varargs_string.py": (0, []),
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            root.mkdir(parents=True)
+            shutil.copy2(directn, root / "directn.cc")
+            for scanner, (exit_code, findings) in expected.items():
                 with self.subTest(scanner=scanner, entry="dir"):
-                    proc = self.run_scanner(scanner, td, "--format", "json",
+                    proc = self.run_scanner(scanner, root, "--format", "json",
                                             "--require-parser")
+                    self.assertEqual(exit_code, proc.returncode, proc.stderr)
                     data = json.loads(proc.stdout)
                     coverage = _coverage(data)
-                    self.assertEqual(coverage["scanned"], 1)
-                    self.assertEqual(coverage["failed"], [])
-                    # Directory entry must agree with the --files entry on
-                    # exit code, coverage, and every finding.
+                    self.assertEqual(
+                        coverage, {"discovered": 1, "scanned": 1,
+                                   "failed": []})
+                    self.assertEqual(findings,
+                                     self._normalized_findings(data))
+                    # Exact parity with the --files entry.
                     proc_files = self.run_scanner(
                         scanner, "--files", directn, "--format", "json",
                         "--require-parser")
@@ -175,8 +181,6 @@ class ScannerCompletenessTests(unittest.TestCase):
                         self._normalized_findings(data),
                         self._normalized_findings(
                             json.loads(proc_files.stdout)))
-        finally:
-            shutil.rmtree(td, ignore_errors=True)
 
     def test_real_parse_error_fails_closed_in_directory_entry(self):
         # Real syntax errors must fail closed from the directory entry too,
@@ -214,6 +218,74 @@ class ScannerCompletenessTests(unittest.TestCase):
                         coverage = _coverage(json.loads(proc.stdout))
                         self.assertEqual(coverage["scanned"], 0)
                         self.assertEqual(len(coverage["failed"]), 1)
+
+    def test_preprocessor_mutations_fail_closed_both_entries(self):
+        # Issue #40 W1 round-2 blockers, end to end: fake #ifdef/#endif
+        # inside raw strings or line-spliced comments must not forge switch
+        # eligibility (CODE-002), a live conditional nested inside #if 0
+        # must not leak a post-#endif window over the frozen baseline
+        # (CODE-001), and unmatched openers / extra #endif must fail closed
+        # (CODE-003). Every mutation runs through both real scanner CLIs
+        # and both validating entries with exact exit/coverage assertions.
+        baseline = ('const vault_placement '
+                    '&vp(*env.level_vaults[map_index]);')
+        mutations = {
+            "raw-string-pseudo-directives": f'''void f() {{
+    const char* s = R"(
+some "quoted text
+#ifdef FAKE
+#endif
+)";
+    {baseline}
+    (void)s;
+}}
+''',
+            "line-spliced-comment-pseudo-directives": f'''void f() {{
+    int x = 1; // \\
+#ifdef FAKE
+    // \\
+#endif
+    {baseline}
+    (void)x;
+}}
+''',
+            "nested-dead-window-over-baseline": f'''void f() {{
+#if 0
+#ifdef INNER
+#endif
+#endif
+    {baseline}
+}}
+''',
+            "unmatched-opener": '''void f() {
+#ifdef REAL
+    int x = 1;
+}
+''',
+            "extra-endif": '''void f() {
+    int x = 1;
+#endif
+}
+''',
+        }
+        for name, content in mutations.items():
+            for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+                with tempfile.TemporaryDirectory() as td:
+                    source = Path(td) / "mutation.cc"
+                    source.write_text(content, encoding="utf-8")
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (td,))):
+                        with self.subTest(mutation=name, scanner=scanner,
+                                          entry=entry):
+                            proc = self.run_scanner(
+                                scanner, *args, "--format", "json",
+                                "--require-parser")
+                            self.assertEqual(2, proc.returncode, proc.stderr)
+                            coverage = _coverage(json.loads(proc.stdout))
+                            self.assertEqual(coverage["scanned"], 0)
+                            self.assertEqual(len(coverage["failed"]), 1)
+                            self.assertIn(str(source),
+                                          coverage["failed"][0])
 
     def test_preprocessor_switch_context_required_for_baseline_exemption(self):
         # The frozen-baseline exemption must fire only at a preprocessor
@@ -304,10 +376,13 @@ void f() {{
                     name)
 
     def test_dead_preprocessor_blocks_are_subtracted_from_switch_points(self):
-        # Issue #40 W1 blocker A: dead #if 0 interiors must be subtracted
+        # Issue #40 W1 blockers: dead #if 0 interiors must be subtracted
         # from the final switch-point set even when an enclosing live span,
         # a nested live span, or a preceding post-#endif window also covers
-        # them; standalone dead blocks contribute no lines at all.
+        # them; standalone dead blocks contribute no lines at all; a live
+        # conditional nested inside a dead branch leaks neither body nor
+        # post-#endif window (CODE-001); and #else reactivates the branch.
+        # Exact expected sets, no vacuous subset checks (TEST-003).
         sys.path.insert(0, str(SCRIPTS))
         from i18n_shared import _preprocessor_switch_lines
 
@@ -323,7 +398,7 @@ void f() {{
 #endif
 }
 ''',
-             {3, 7}),  # live bodies only
+             {3, 4, 6, 7, 9, 10, 11, 12}),  # dead interior line 5 subtracted
             ("live conditional nested inside a dead block",
              b'''void f() {
 #if 0
@@ -334,6 +409,15 @@ void f() {{
 }
 ''',
              set()),
+            ("nested live conditional inside #if 0 leaks no window",
+             b'''void f() {
+#if 0
+#ifdef INNER
+#endif
+#endif
+}
+''',
+             set()),  # CODE-001: inner body and post-#endif window suppressed
             ("dead block inside the post-#endif window of a live span",
              b'''void f() {
 #ifdef FOO
@@ -343,7 +427,7 @@ void f() {{
 #endif
 }
 ''',
-             set()),
+             {4, 6, 7}),  # live window minus the dead interior
             ("standalone dead block contributes no lines",
              b'''void f() {
 #if 0
@@ -352,12 +436,22 @@ void f() {{
 }
 ''',
              set()),
+            ("else branch of a dead #if 0 stays active",
+             b'''void f() {
+#if 0
+    int dead = 1;
+#else
+    int live = 2;
+#endif
+}
+''',
+             {5}),  # only the reactivated else-branch body
         ]
-        for name, source, required in cases:
+        for name, source, expected in cases:
             with self.subTest(case=name):
                 switch = _preprocessor_switch_lines(source)
                 self.assertIsNotNone(switch, name)
-                self.assertTrue(required.issubset(switch), switch)
+                self.assertEqual(expected, switch, name)
                 # No line inside any dead body may survive subtraction.
                 dead_body = {line_no for line_no, text in enumerate(
                     source.split(b"\n"), start=1)
@@ -436,6 +530,42 @@ void f() {
             b'''void f() {
 #ifdef REAL
     int ok = 1;
+}
+'''))
+
+        # Fake #ifdef/#endif inside a raw string literal whose content
+        # includes a standalone quote must not forge directives (CODE-002):
+        # no conditional exists, so no line can be a switch point.
+        switch = _preprocessor_switch_lines(
+            b'''void f() {
+    const char* s = R"(
+some "quoted text
+#ifdef FAKE
+#endif
+)";
+    int ok = 1;
+}
+''')
+        self.assertEqual(frozenset(), switch)
+
+        # Fake directives kept inside line comments by backslash-newline
+        # splicing must not forge directives either (CODE-002).
+        switch = _preprocessor_switch_lines(
+            b'''void f() {
+    int x = 1; // \\
+#ifdef FAKE
+    // \\
+#endif
+    int ok = 1;
+}
+''')
+        self.assertEqual(frozenset(), switch)
+
+        # An extra #endif with no matching opener is unpairable (CODE-003).
+        self.assertIsNone(_preprocessor_switch_lines(
+            b'''void f() {
+    int x = 1;
+#endif
 }
 '''))
 
