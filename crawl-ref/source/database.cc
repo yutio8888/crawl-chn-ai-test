@@ -902,11 +902,11 @@ _materialize_canonical_entries(const effective_textdb_entries &effective)
     return result;
 }
 
-// Parameterized phase-0 dump core shared by the SpeakDB and MiscDB typed
-// wrappers below.  Provenance cannot be recovered from DBM, so the canonical
-// dump re-reads the production input sequence of the given TextDB.  The speak
-// wrappers keep their exact public signatures and byte-identical output; only
-// database_name and the input family differ for misc.
+// Parameterized phase-0 dump core shared by the SpeakDB, MiscDB and ShoutDB
+// typed wrappers below.  Provenance cannot be recovered from DBM, so the
+// canonical dump re-reads the production input sequence of the given TextDB.
+// The speak wrappers keep their exact public signatures and byte-identical
+// output; only database_name and the input family differ for misc/shout.
 textdb_phase0::canonical_speakdb_dump _dump_canonical_english_typed(
     const TextDB &db, const string &database_name)
 {
@@ -1088,6 +1088,18 @@ textdb_phase0::canonical_speakdb_dump
 textdb_phase0::dump_localized_miscdb_typed(const string &language)
 {
     return _dump_localized_typed(MiscDB, "misc", language);
+}
+
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_canonical_english_shoutdb_typed()
+{
+    return _dump_canonical_english_typed(ShoutDB, "shout");
+}
+
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_localized_shoutdb_typed(const string &language)
+{
+    return _dump_localized_typed(ShoutDB, "shout", language);
 }
 
 namespace

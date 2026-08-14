@@ -514,6 +514,13 @@ canonical_speakdb_dump dump_localized_speakdb_typed(const string &language);
 canonical_speakdb_dump dump_canonical_english_miscdb_typed();
 canonical_speakdb_dump dump_localized_miscdb_typed(const string &language);
 
+// ShoutDB phase-0 dumps: the same production-parser re-read applied to the
+// "shout" TextDB family (shout.txt/insult.txt).  The dump schema is shared
+// with the SpeakDB/MiscDB dumps; only database_name and source_directory
+// differ.
+canonical_speakdb_dump dump_canonical_english_shoutdb_typed();
+canonical_speakdb_dump dump_localized_shoutdb_typed(const string &language);
+
 // Select and recursively expand a key from a canonical dump using the same
 // weighted chooser, replacement walk, and embedded-Lua stage as the legacy
 // TextDB path.

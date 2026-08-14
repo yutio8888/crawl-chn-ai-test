@@ -2207,17 +2207,28 @@ TEST_CASE("write production TextDB Phase 0 artifact",
     const char *database_env = std::getenv("TEXTDB_PHASE0_DB");
     const string database_name = (database_env && *database_env)
                                  ? database_env : "speak";
-    REQUIRE((database_name == "speak" || database_name == "misc"));
+    REQUIRE((database_name == "speak" || database_name == "misc"
+             || database_name == "shout"));
     const char *language = std::getenv("TEXTDB_PHASE0_LANGUAGE");
     const bool localized = language != nullptr && *language != '\0';
+    const auto dump_english = [database_name]()
+    {
+        if (database_name == "misc")
+            return textdb_phase0::dump_canonical_english_miscdb_typed();
+        if (database_name == "shout")
+            return textdb_phase0::dump_canonical_english_shoutdb_typed();
+        return textdb_phase0::dump_canonical_english_speakdb_typed();
+    };
+    const auto dump_localized = [database_name](const string &db_language)
+    {
+        if (database_name == "misc")
+            return textdb_phase0::dump_localized_miscdb_typed(db_language);
+        if (database_name == "shout")
+            return textdb_phase0::dump_localized_shoutdb_typed(db_language);
+        return textdb_phase0::dump_localized_speakdb_typed(db_language);
+    };
     const textdb_phase0::canonical_speakdb_dump dump =
-        localized
-            ? (database_name == "misc"
-                   ? textdb_phase0::dump_localized_miscdb_typed(language)
-                   : textdb_phase0::dump_localized_speakdb_typed(language))
-            : (database_name == "misc"
-                   ? textdb_phase0::dump_canonical_english_miscdb_typed()
-                   : textdb_phase0::dump_canonical_english_speakdb_typed());
+        localized ? dump_localized(language) : dump_english();
     CHECK(dump.database_name == database_name);
     if (database_name == "misc")
     {
@@ -2239,6 +2250,61 @@ TEST_CASE("write production TextDB Phase 0 artifact",
             CHECK(decorlines_keys.size() == 132);
             CHECK(decorlines_variants == 209);
             CHECK(key_set_fingerprint(decorlines_keys) == 0x40d7ff2f876d3a10ULL);
+        }
+        else
+        {
+            CHECK(dump.source_directory
+                  == "database/" + string(language) + "/");
+            CHECK_FALSE(dump.sources.empty());
+            CHECK_FALSE(dump.entries.empty());
+        }
+    }
+    else if (database_name == "shout")
+    {
+        const string shout_source = localized
+            ? "database/" + string(language) + "/shout.txt"
+            : "database/shout.txt";
+        set<string> shout_keys;
+        size_t shout_variants = 0;
+        for (const textdb_phase0::canonical_entry &entry : dump.entries)
+        {
+            if (has_source_history(entry, shout_source))
+            {
+                shout_keys.insert(entry.canonical_key);
+                shout_variants += entry.variants.size();
+            }
+        }
+        if (!localized)
+        {
+            // 93 dump entries: 92 real keys plus the zero-body artifact
+            // "player sphinx riddle lines" (see below); 119 variants.
+            CHECK(shout_keys.size() == 93);
+            CHECK(shout_variants == 119);
+            CHECK(key_set_fingerprint(shout_keys)
+                  == 0x0dd1652a6c5f381fULL);
+            // The "#### Player sphinx riddle lines" comment title block is
+            // a production-parser artifact: comment lines starting with '#'
+            // are skipped, but the title line itself is not, so it becomes a
+            // zero-body key that can never be selected.  Freeze the artifact
+            // shape explicitly so the shout inventory's identity filtering
+            // stays consistent with this dump.
+            const textdb_phase0::canonical_entry *artifact =
+                find_canonical_entry(dump.entries,
+                                     "player sphinx riddle lines");
+            REQUIRE(artifact != nullptr);
+            CHECK(artifact->body_empty);
+            CHECK(artifact->parse_error == "BUG, EMPTY ENTRY");
+            CHECK(artifact->variants.empty());
+            size_t empty_count = 0;
+            for (const textdb_phase0::canonical_entry &entry : dump.entries)
+            {
+                if (has_source_history(entry, shout_source)
+                    && entry.body_empty)
+                {
+                    ++empty_count;
+                }
+            }
+            CHECK(empty_count == 1);
         }
         else
         {

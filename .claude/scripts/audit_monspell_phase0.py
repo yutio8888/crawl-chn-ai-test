@@ -128,8 +128,8 @@ def validate_artifact(
              "artifact schema_version must be an integer")
     _require(artifact["schema_version"] == ARTIFACT_SCHEMA_VERSION,
              f"unsupported artifact schema_version {artifact.get('schema_version')!r}")
-    _require(artifact.get("database_name") in ("speak", "misc"),
-             "artifact database_name must be 'speak' or 'misc'")
+    _require(artifact.get("database_name") in ("speak", "misc", "shout"),
+             "artifact database_name must be 'speak', 'misc' or 'shout'")
     _require(artifact["database_name"] == expected_database,
              f"artifact database_name must be {expected_database!r}, "
              f"got {artifact['database_name']!r}")
