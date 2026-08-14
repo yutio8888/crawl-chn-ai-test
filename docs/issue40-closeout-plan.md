@@ -13,7 +13,7 @@ review 结论：当前基线功能/翻译/集成测试健康，无运行时或�
 
 | ID | 优先级 | 项目 | 验收标准 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| W1 | P1 | 增量 AST scanner changed/full 一致性修复（`scan_varargs_string.py` / `scan_string_concat.py` 对 `directn.cc:626` 预处理分支的 pre-existing parse 错误） | changed-scope 与 full-root 对 directn.cc 结果一致；窄化识别 + 回归测试；code profile 全绿 | 无 | 进行中 |
+| W1 | P1 | 增量 AST scanner changed/full 一致性修复（`scan_varargs_string.py` / `scan_string_concat.py` 对 `directn.cc:626` 预处理分支的 pre-existing parse 错误） | changed-scope 与 full-root 对 directn.cc 结果一致；窄化识别 + 回归测试；code profile 全绿 | 无 | ✅ 完成（2026-08-14，合并 `51987f8d58`；8 轮评审收敛，bundle `d41fa74c…` verdict=go，25+19 单测全绿） |
 | W2 | P1 | Issue 关闭记录更正：#64（approved bundle candidate=`2038fabd`，style 提交 `2132cd99` 为后续）、#67（`306d9099..028f4993` 实际 12 commits 非 8）、#54/#56（补 PR #55/#58 证据链接） | 各 Issue 有更正评论，记录精确边界；不制造追溯性 Go | 无 | ✅ 完成（2026-08-13，评论 5287523273/5287524354/5287525276/5287526285） |
 | W3 | P2 | monspell symbolic-state defer 单独建单跟踪（`vanquished vanguard nergalle cast`，分析器上限） | 建 Issue，含 reentry trigger；台账引用该 Issue | 无 | 待办 |
 | W4 | P2 | R4 `shout`/`insult` 家族全量校对（共享 ShoutDB provenance 边界） | 子 Issue + inventory + 逐身份审核 + 机械路由 + schema-v4 Final Gate | 先冻结 ShoutDB 共享加载边界 | 待办 |
