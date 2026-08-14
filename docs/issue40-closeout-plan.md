@@ -18,7 +18,7 @@ review 结论：当前基线功能/翻译/集成测试健康，无运行时或�
 | W3 | P2 | monspell symbolic-state defer 单独建单跟踪（`vanquished vanguard nergalle cast`，分析器上限） | 建 Issue，含 reentry trigger；台账引用该 Issue | 无 | 待办 |
 | W4 | P2 | R4 `shout`/`insult` 家族全量校对（共享 ShoutDB provenance 边界） | 子 Issue + inventory + 逐身份审核 + 机械路由 + schema-v4 Final Gate | 先冻结 ShoutDB 共享加载边界 | 待办 |
 | W5 | P2 | R4 `monspeak` 家族全量校对（最大语料） | 同上 | W4 的 provenance 模式可复用 | 待办 |
-| W6 | P2 | R0 覆盖映射（全部 TextDB 家族唯一审核归属、排除项、重入条件） | 文档化映射；每个家族有归属或明确排除依据 | 无 | 待办 |
+| W6 | P2 | R0 覆盖映射（全部 TextDB 家族唯一审核归属、排除项、重入条件） | 文档化映射；每个家族有归属或明确排除依据 | 无 | ✅ 完成（2026-08-14，docs/textdb-coverage-map.md；13 分组/40 文件分类，3 项待建子批、2 项部分覆盖有依据、montitle 归属待裁决） |
 | W7 | P2 | R5 `quotes` 引文全量校对 | 子 Issue + 复用 #3 与怪物/法术专名证据 | W6 | 待办 |
 | W8 | P2 | R6 增量维护入口实际使用并记录证据 | 一次真实 inventory 重生成/失效复核记录 | W4-W7 完成后 | 待办 |
 | W9 | P2 | #40 关闭（R0 完成 + R1-R5 子 Issue 全关 + R6 已用） | 满足 #40 完成条件；关闭评论记录全部证据 | W1-W8 | 待办 |
