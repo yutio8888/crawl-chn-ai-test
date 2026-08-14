@@ -270,7 +270,8 @@ def card_for(entry: dict) -> dict:
         "display_context": "由 shout.cc::monster_shout / transform.cc 消费的喊叫消息。",
         "producer_consumer": MODULE._card_producer_consumer(
             entry, MODULE.FROZEN_PRODUCER_CONSUMER),
-        "evidence_locations": MODULE._evidence_locations(entry),
+        "evidence_locations": MODULE._evidence_locations(
+            entry, MODULE.FROZEN_PRODUCER_CONSUMER),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
         "proposed_english_variants": copy.deepcopy(current_en),
@@ -367,8 +368,12 @@ class ShoutInventoryTests(unittest.TestCase):
                        "variant_count"}
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["localized"]))
+        # The frozen ledger binds inventory_sha256 to the output schema; the
+        # I69-R3-CODE-001 database-role-aware consumers changed the scope's
+        # producer_consumer facts and SpeakDB graph keys, so the hash is
+        # mechanically updated together with the regenerated ledger.
         self.assertEqual(
-            "77a2ba65ca7b45a9b5f69301f3524f18cedd0258427abe2320b18aa94d56895d",
+            "2dcec4bc250d2b6fd7318039580a9bdba93bb38ab5eb6166aafaab22c693ae33",
             self.inventory["inventory_sha256"],
         )
 
@@ -987,6 +992,137 @@ class ShoutInventoryTests(unittest.TestCase):
             MODULE._card_producer_consumer(species, facts),
         )
 
+    def test_speakdb_monspeak_closure_reaches_all_dual_keys(self):
+        # I69-R3-CODE-001: the SpeakDB-side consumption of the
+        # ShoutDB-recursion insult chain is derived from the complete
+        # exact-Git SpeakDB graph: the three monspeak seeds reference
+        # @demon_taunt@ / @imp_taunt@ and their token closure reaches
+        # exactly the 20 recursive-shoutdb-insult keys (dual-DB
+        # reachability).  The monspeak seed sites and the secondary
+        # SpeakDB / localized override definition lines equal the frozen
+        # facts.
+        speakdb = MODULE._speakdb_monspeak_facts(BASELINE, "fixture")
+        self.assertEqual(
+            MODULE.FROZEN_PRODUCER_CONSUMER["speakdb_monspeak_consumer"],
+            speakdb["monspeak_consumer_sites"],
+        )
+        self.assertEqual(
+            MODULE.FROZEN_PRODUCER_CONSUMER["speakdb_secondary_definition"],
+            speakdb["secondary_definition_sites"],
+        )
+        self.assertEqual(
+            MODULE.FROZEN_PRODUCER_CONSUMER["localized_override_source"],
+            speakdb["localized_override_sites"],
+        )
+        dual = [entry["key"] for entry in self.inventory["entries"]
+                if entry["lifecycle"] == "recursive-shoutdb-insult"]
+        self.assertEqual(20, len(dual))
+        self.assertEqual(sorted(MODULE.SPEAKDB_MONSPEAK_CLOSURE_KEYS),
+                         sorted(dual))
+
+    def test_general_fallback_and_dual_db_consumers_on_cards(self):
+        # I69-R3-CODE-001: every recursive-shoutdb-insult card records the
+        # SpeakDB consumption path (monspeak seeds) next to the ShoutDB
+        # lookup; the three insult general keys additionally record the
+        # _get_species_insult SpeakDB fallback consumer; the seven
+        # cross-DB override keys record their secondary EN SpeakDB
+        # definition and the localized zh/monspeak.txt override source in
+        # producer_consumer and evidence_locations.
+        facts = MODULE.FROZEN_PRODUCER_CONSUMER
+        by_key = {entry["key"]: entry
+                  for entry in self.inventory["entries"]}
+        for key in sorted(MODULE.SPEAKDB_MONSPEAK_CLOSURE_KEYS):
+            card = MODULE._card_producer_consumer(by_key[key], facts)
+            self.assertEqual(facts["speakdb_monspeak_consumer"],
+                             card["speakdb_monspeak_consumer"])
+            self.assertEqual(facts["shout_consumer"],
+                             card["shout_consumer"])
+            self.assertEqual(facts["speakdb_double_load"],
+                             card["speakdb_double_load"])
+            evidence = MODULE._evidence_locations(by_key[key], facts)
+            for site in facts["speakdb_monspeak_consumer"]:
+                self.assertIn(f"speakdb-monspeak:{site}", evidence)
+        for key in sorted(MODULE.INSULT_GENERAL_FALLBACK_KEYS):
+            card = MODULE._card_producer_consumer(by_key[key], facts)
+            self.assertEqual(facts["insult_postprocessing"],
+                             card["insult_postprocessing"])
+            self.assertEqual(facts["species_insult_fallback"],
+                             card["species_insult_fallback"])
+            self.assertIn(
+                f"speakdb-fallback:{facts['species_insult_fallback']}",
+                MODULE._evidence_locations(by_key[key], facts))
+        for key in sorted(MODULE.CROSS_DB_OVERRIDE_KEYS):
+            card = MODULE._card_producer_consumer(by_key[key], facts)
+            self.assertEqual(
+                facts["speakdb_secondary_definition"][key],
+                card["speakdb_secondary_definition"])
+            self.assertEqual(
+                facts["localized_override_source"][key],
+                card["localized_override_source"])
+            evidence = MODULE._evidence_locations(by_key[key], facts)
+            self.assertIn(
+                f"speakdb-override:"
+                f"{facts['speakdb_secondary_definition'][key]}",
+                evidence)
+            self.assertIn(
+                f"localized-override:"
+                f"{facts['localized_override_source'][key]}",
+                evidence)
+
+    def test_speakdb_monspeak_edge_mutation_rejected(self):
+        # I69-R3-CODE-001: removing the @demon_taunt@ edge from the
+        # _demon_taunt_ seed must fail closed instead of silently
+        # dropping the SpeakDB consumption path of the 20 dual keys.
+        source = committed_source(BASELINE,
+                                  "crawl-ref/source/dat/database/"
+                                  "monspeak.txt")
+        mutated = source.replace(
+            '_demon_taunt_\n\n@The_monster@ @says@ @to_foe@, '
+            '"@demon_taunt@"',
+            '_demon_taunt_\n\n@The_monster@ @says@ @to_foe@, '
+            '"@give_up@"', 1)
+        self.assertNotEqual(source, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "monspeak seed .* edge differs"):
+            MODULE._speakdb_monspeak_facts(fixture, "negative fixture")
+
+    def test_species_insult_fallback_mutation_rejected(self):
+        # I69-R3-CODE-001: moving the _get_species_insult SpeakDB fallback
+        # query (mon-util.cc "insult general " + type) shifts the derived
+        # anchor and must fail closed.
+        source = committed_source(BASELINE, "crawl-ref/source/mon-util.cc")
+        mutated = source.replace(
+            "    if (insult.empty()) // Species too specific?",
+            "\n    if (insult.empty()) // Species too specific?", 1)
+        self.assertNotEqual(source, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/mon-util.cc": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "anchors drifted"):
+            MODULE._producer_consumer_facts(fixture, "negative fixture")
+
+    def test_cross_db_override_binding_mutation_rejected(self):
+        # I69-R3-CODE-001: deleting a secondary SpeakDB definition (the
+        # Polyphemus key of EN monspeak.txt) must fail closed instead of
+        # leaving the cross-DB override cards unbound.
+        source = committed_source(BASELINE,
+                                  "crawl-ref/source/dat/database/"
+                                  "monspeak.txt")
+        mutated = source.replace(
+            "Polyphemus\n\n@_Polyphemus_common_@",
+            "PolyphemusX\n\n@_Polyphemus_common_@", 1)
+        self.assertNotEqual(source, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "misses SpeakDB definitions"):
+            MODULE._speakdb_monspeak_facts(fixture, "negative fixture")
+
     def test_producer_consumer_source_anchor_mutation_rejected(self):
         # I69-R2-CODE-002: moving the ShoutDB initializer in a real Git
         # fixture commit shifts the derived loader anchor and must fail
@@ -1026,6 +1162,41 @@ class ShoutInventoryTests(unittest.TestCase):
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "anchors drifted"):
+            self.add_candidate_mocked(
+                copy.deepcopy(self.inventory), fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"),
+            )
+
+    def test_candidate_speakdb_edge_mutation_rejected(self):
+        # I69-R3-CODE-001: a reviewed commit that drops the
+        # _demon_taunt_ -> demon_taunt SpeakDB edge must be rejected by
+        # the candidate audit (the candidate SpeakDB graph is derived
+        # from the exact candidate Git sources and must reproduce the
+        # frozen SpeakDB consumption facts).
+        source = committed_source(BASELINE,
+                                  "crawl-ref/source/dat/database/"
+                                  "monspeak.txt")
+        mutated = source.replace(
+            '_demon_taunt_\n\n@The_monster@ @says@ @to_foe@, '
+            '"@demon_taunt@"',
+            '_demon_taunt_\n\n@The_monster@ @says@ @to_foe@, '
+            '"@give_up@"', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated,
+            "crawl-ref/source/dat/database/zh/shout.txt": aligned_zh_source(
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/zh/shout.txt"),
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/shout.txt")),
+            "crawl-ref/source/dat/database/zh/insult.txt": aligned_zh_source(
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/zh/insult.txt"),
+                committed_source(
+                    BASELINE, "crawl-ref/source/dat/database/insult.txt")),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "monspeak seed .* edge differs"):
             self.add_candidate_mocked(
                 copy.deepcopy(self.inventory), fixture,
                 exact_artifact(fixture, "database/"),

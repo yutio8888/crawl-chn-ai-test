@@ -23,7 +23,18 @@ post-processing path ``mon-util.cc::_get_species_insult``
 (``@species_insult_*@``) which resolves them through SpeakDB - insult.txt
 is double-loaded by SpeakDB (index 4) and ShoutDB (index 1), so the
 double-load provenance is checked per DB and the SpeakDB effective
-entries must match the ShoutDB dump verbatim.  The root set is not
+entries must match the ShoutDB dump verbatim.  The twenty
+ShoutDB-recursion insult keys are additionally dual-DB reachable: the
+three monspeak.txt seeds ``_demon_taunt_``/``_hell_lord_taunt_``/
+``_says_imp_taunt_`` reference ``@demon_taunt@``/``@imp_taunt@`` inside
+the SpeakDB graph, and their exact token closure over the complete
+SpeakDB graph equals the same twenty keys, so every dual-recursion card
+records both DB consumption paths; ``insult general adj1/adj2/noun`` are
+also queried by the ``_get_species_insult`` SpeakDB fallback
+(mon-util.cc), and the seven shout-family keys with secondary
+monspeak.txt definitions (EN SpeakDB plus the localized
+zh/monspeak.txt collision) bind their cross-DB override sources.  The
+root set is not
 ``everything minus a hand list``: default keys are parsed from the
 exact-Git ``default_msg_keys`` map, sphinx roots from the exact-Git
 ``transform.cc`` literals, the glyph shape from the exact-Git
@@ -208,6 +219,66 @@ POSTPROCESS_TOKENS = frozenset({
     "species_insult_adj1",
     "species_insult_adj2",
     "species_insult_noun",
+})
+
+# SpeakDB-side consumption of the ShoutDB-recursion insult chain: the
+# three monspeak.txt seed keys (loaded by SpeakDB) reference
+# @demon_taunt@ / @imp_taunt@ through the exact token edges below, and
+# the closure of the seeds over the complete SpeakDB graph (all ten
+# SpeakDB sources, production merge order) reaches exactly the twenty
+# ShoutDB-recursion insult keys in SPEAKDB_MONSPEAK_CLOSURE_KEYS.  The
+# same twenty keys are therefore dual-DB reachable: ShoutDB via the
+# shout.txt @demon_taunt@ chain and SpeakDB via the monspeak references.
+SPEAKDB_MONSPEAK_SEEDS: dict[str, str] = {
+    "_demon_taunt_": "demon_taunt",
+    "_hell_lord_taunt_": "demon_taunt",
+    "_says_imp_taunt_": "imp_taunt",
+}
+
+# The exact SpeakDB closure of the three monspeak seeds (seeds excluded);
+# derived from the full exact-Git SpeakDB graph and required to equal the
+# ShoutDB-recursion insult classification below (dual-DB reachability).
+SPEAKDB_MONSPEAK_CLOSURE_KEYS = frozenset({
+    "body_or_spiritual_part",
+    "demon_taunt",
+    "demon_taunt_special",
+    "feast_or_devour",
+    "generic_insult",
+    "give_up",
+    "imp_taunt",
+    "important_body_part",
+    "important_spiritual_part",
+    "insult general adj1",
+    "insult general adj2",
+    "insult general noun",
+    "insult_adjective1",
+    "insult_adjective2",
+    "insult_noun",
+    "meal",
+    "run_away",
+    "run_or_give_up",
+    "whilst_thou_can",
+    "will_or_shall",
+})
+
+# insult.txt keys also queried by mon-util.cc::_get_species_insult
+# through the SpeakDB fallback (``lookup = "insult general " + type``)
+# when no species-specific key resolves.  The three general keys are
+# ShoutDB-recursion keys AND SpeakDB fallback consumers.
+INSULT_GENERAL_FALLBACK_KEYS = frozenset({
+    "insult general adj1",
+    "insult general adj2",
+    "insult general noun",
+})
+
+# The seven shout-family keys with secondary SpeakDB definitions: EN
+# monspeak.txt defines each of them in SpeakDB (a distinct monspeak value
+# while the EN ShoutDB dump holds the shout.txt value), and the localized
+# zh/monspeak.txt + zh/shout.txt collision is effective in both localized
+# dumps (shout.txt wins).  Must equal EXPECTED_OVERRIDDEN_KEYS["chinese"].
+CROSS_DB_OVERRIDE_KEYS = frozenset({
+    "'&'", "iron imp", "moth of wrath", "player ghost",
+    "polyphemus", "shadow imp", "white imp",
 })
 
 # Closure seeds: the 26 default_msg_keys + 3 sphinx riddle roots + 3 glyph
@@ -479,7 +550,10 @@ def _require_regular_shout_git_sources(
     reads the consumer C++ sources and the monster/job YAML inputs from the
     same commit tree; this pre-flight proves every one of those tree
     entries is a regular file so no unsupported Git object type can be
-    parsed with semantics different from the production checkout."""
+    parsed with semantics different from the production checkout.  The
+    SpeakDB sources (including monspeak.txt) and the localized
+    zh/monspeak.txt feed the SpeakDB-graph consumer derivation and are
+    pre-flighted for every language directory."""
     if directory == "database/":
         manifest = _shoutdb_source_manifest(ref, label)
     else:
@@ -488,6 +562,9 @@ def _require_regular_shout_git_sources(
         ref,
         ["crawl-ref/source/database.cc"]
         + [f"crawl-ref/source/dat/{name}" for name in manifest]
+        + [f"crawl-ref/source/dat/{name}"
+           for name in shared._english_source_manifest(ref, label)]
+        + ["crawl-ref/source/dat/database/zh/monspeak.txt"]
         + PRODUCER_GIT_FILES
         + _git_tree_yamls(ref, "crawl-ref/source/dat/mons", label)
         + _git_tree_yamls(ref, "crawl-ref/source/dat/jobs", label),
@@ -687,8 +764,114 @@ def _source_anchor(
     return _line_of(match, source)
 
 
+def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
+    """Derive the SpeakDB-side consumption anchors from the exact-Git
+    SpeakDB graph.
+
+    The production SpeakDB dump loads ten sources (monspeak.txt first);
+    the three monspeak seed keys reference @demon_taunt@ / @imp_taunt@
+    (insult.txt SpeakDB keys) through the frozen SPEAKDB_MONSPEAK_SEEDS
+    edges, and the closure of the seeds over the complete SpeakDB token
+    graph (production merge order) reaches exactly the twenty
+    ShoutDB-recursion insult keys (dual-DB reachability).  The seven
+    shout-family keys with secondary monspeak definitions are located per
+    language: EN monspeak.txt (SpeakDB) and zh/monspeak.txt (effective in
+    both localized dumps), with the shout.txt definitions winning in both
+    databases."""
+    manifest = shared._english_source_manifest(oid, label)
+    parsed: list[Any] = []
+    for load_index, source_name in enumerate(manifest):
+        snapshot = shared._source_snapshot_at_oid(
+            oid, source_name, f"{label} {source_name}")
+        try:
+            definitions = shared.parse_db_keys(snapshot, source_name)
+        except SystemExit as exc:
+            raise InventoryError(
+                f"{label} SpeakDB parse failed: {exc}") from exc
+        parsed.extend(definitions)
+    try:
+        effective, _overrides = shared.merge_desc_sequence(parsed)
+    except SystemExit as exc:
+        raise InventoryError(
+            f"{label} SpeakDB merge failed: {exc}") from exc
+    edges: dict[str, set[str]] = {key: set() for key in effective}
+    for key, winner in effective.items():
+        for token in re.finditer(r"@([^@]+)@", winner.value):
+            canonical = token.group(1).lower()
+            if canonical in effective:
+                edges[key].add(canonical)
+    for seed, target in SPEAKDB_MONSPEAK_SEEDS.items():
+        _require(
+            edges[seed] == {target},
+            f"{label} SpeakDB monspeak seed {seed!r} edge differs: "
+            f"{sorted(edges[seed])!r}",
+        )
+    reached = set(SPEAKDB_MONSPEAK_SEEDS)
+    queue: deque[str] = deque(sorted(reached))
+    while queue:
+        source = queue.popleft()
+        for target in sorted(edges[source]):
+            if target not in reached:
+                reached.add(target)
+                queue.append(target)
+    closure_keys = reached - set(SPEAKDB_MONSPEAK_SEEDS)
+    _require(
+        closure_keys == SPEAKDB_MONSPEAK_CLOSURE_KEYS,
+        f"{label} SpeakDB monspeak closure differs: "
+        f"{sorted(closure_keys ^ SPEAKDB_MONSPEAK_CLOSURE_KEYS)!r}",
+    )
+    _require(
+        CROSS_DB_OVERRIDE_KEYS == EXPECTED_OVERRIDDEN_KEYS["chinese"],
+        "the frozen cross-DB override keys must equal the localized "
+        "overridden keys",
+    )
+
+    def monspeak_lines(
+        git_path: str, keys: set[str],
+    ) -> dict[str, int]:
+        source = hardened.shared._decode_utf8(
+            hardened.shared._git_blob_at_oid(oid, git_path, label),
+            label,
+        )
+        try:
+            definitions = shared.parse_db_keys(source, git_path)
+        except SystemExit as exc:
+            raise InventoryError(
+                f"{label} {git_path} parse failed: {exc}") from exc
+        lines = {shared.lowercase_string(definition.raw_key):
+                 definition.key_line for definition in definitions}
+        _require(
+            keys <= set(lines),
+            f"{label} {git_path} misses SpeakDB definitions: "
+            f"{sorted(keys - set(lines))!r}",
+        )
+        return {key: lines[key] for key in sorted(keys)}
+
+    en_lines = monspeak_lines(
+        "crawl-ref/source/dat/database/monspeak.txt",
+        set(CROSS_DB_OVERRIDE_KEYS) | set(SPEAKDB_MONSPEAK_SEEDS))
+    zh_lines = monspeak_lines(
+        "crawl-ref/source/dat/database/zh/monspeak.txt",
+        set(CROSS_DB_OVERRIDE_KEYS))
+    return {
+        "monspeak_consumer_sites": [
+            f"crawl-ref/source/dat/database/monspeak.txt:{en_lines[seed]}"
+            for seed in sorted(SPEAKDB_MONSPEAK_SEEDS)
+        ],
+        "secondary_definition_sites": {
+            key: f"crawl-ref/source/dat/database/monspeak.txt:{en_lines[key]}"
+            for key in sorted(CROSS_DB_OVERRIDE_KEYS)
+        },
+        "localized_override_sites": {
+            key: f"crawl-ref/source/dat/database/zh/monspeak.txt:"
+                 f"{zh_lines[key]}"
+            for key in sorted(CROSS_DB_OVERRIDE_KEYS)
+        },
+    }
+
+
 def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
-    """Mechanically derive the five producer/consumer evidence anchors from
+    """Mechanically derive the producer/consumer evidence anchors from
     the exact Git sources and require them to equal the frozen values:
 
     - loader: the ``TextDB("shout", "database/", ...)`` initializer line
@@ -699,7 +882,13 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
     - insult_postprocessing: the mon-util.cc::_get_species_insult
       definition;
     - speakdb_double_load: the ``"insult.txt"`` literal inside the
-      database.cc ``TextDB("speak", ...)`` initializer (SpeakDB index 4).
+      database.cc ``TextDB("speak", ...)`` initializer (SpeakDB index 4);
+    - species_insult_fallback: the mon-util.cc ``_get_species_insult``
+      SpeakDB fallback query (``insult general `` + type);
+    - speakdb_monspeak_consumer / speakdb_secondary_definition /
+      localized_override_source: the SpeakDB-graph anchors derived by
+      _speakdb_monspeak_facts (monspeak seeds, secondary EN SpeakDB
+      definitions and the localized zh/monspeak.txt collisions).
 
     Every anchor is line-derived and snippet-checked, so a moved or forged
     site cannot satisfy the ledger comparison."""
@@ -771,6 +960,12 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
              f"{label} SpeakDB initializer must load insult.txt")
     insult_abs = speakdb.start() + insult_literal.start()
     speakdb_double_load = database.count("\n", 0, insult_abs) + 1
+    species_fallback = _source_anchor(
+        monutil, label, "mon-util.cc _get_species_insult SpeakDB fallback",
+        re.compile(r'if \(insult\.empty\(\)\) // Species too specific\?'),
+        "if (insult.empty()) // Species too specific?",
+    )
+    speakdb_facts = _speakdb_monspeak_facts(oid, label)
     facts = {
         "loader": f"crawl-ref/source/database.cc:{loader_line}",
         "shout_consumer": f"crawl-ref/source/shout.cc:{shout_consumer}",
@@ -780,6 +975,14 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
             f"crawl-ref/source/mon-util.cc:{insult_postprocessing}",
         "speakdb_double_load":
             f"crawl-ref/source/database.cc:{speakdb_double_load}",
+        "species_insult_fallback":
+            f"crawl-ref/source/mon-util.cc:{species_fallback}",
+        "speakdb_monspeak_consumer":
+            speakdb_facts["monspeak_consumer_sites"],
+        "speakdb_secondary_definition":
+            speakdb_facts["secondary_definition_sites"],
+        "localized_override_source":
+            speakdb_facts["localized_override_sites"],
     }
     _require(
         facts == FROZEN_PRODUCER_CONSUMER,
@@ -790,14 +993,23 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
 
 
 def _card_producer_consumer(
-    entry: dict[str, Any], facts: dict[str, str],
+    entry: dict[str, Any], facts: dict[str, Any],
 ) -> dict[str, str]:
     """The applicable producer/consumer evidence for one card, per
     lifecycle: sphinx-driven keys cite the transform.cc riddle consumer,
     monster_shout-driven keys cite the shout.cc lookup, SpeakDB-only keys
     cite the species-insult post-processing path, and the legacy AXED_MON
     key has no runtime consumer (only the ShoutDB loader fact applies).
-    Every card keeps the ShoutDB loader producer fact."""
+    Every card keeps the ShoutDB loader producer fact.
+
+    The database-role-aware consumers are added on top of the lifecycle
+    base: the twenty dual-recursion insult keys record the SpeakDB
+    consumption path (the three monspeak seeds of _speakdb_monspeak_facts)
+    next to the ShoutDB lookup; the three ``insult general adj1/adj2/noun``
+    keys additionally record the _get_species_insult SpeakDB fallback
+    consumer; and the seven cross-DB override keys record their secondary
+    EN SpeakDB definition plus the localized zh/monspeak.txt override
+    source."""
     lifecycle = entry["lifecycle"]
     if lifecycle == "direct-production-root":
         anchors = (("riddle_consumer",)
@@ -810,11 +1022,21 @@ def _card_producer_consumer(
     elif lifecycle == "legacy-axed-monster":
         anchors = ()
     elif lifecycle == "recursive-shoutdb-insult":
-        anchors = ("shout_consumer", "speakdb_double_load")
+        anchors = ("shout_consumer", "speakdb_double_load",
+                   "speakdb_monspeak_consumer")
     else:  # speakdb-postprocessing-insult
         anchors = ("insult_postprocessing", "speakdb_double_load")
-    return {"loader": facts["loader"],
-            **{anchor: facts[anchor] for anchor in anchors}}
+    result = {"loader": facts["loader"],
+              **{anchor: facts[anchor] for anchor in anchors}}
+    if entry["key"] in INSULT_GENERAL_FALLBACK_KEYS:
+        result["insult_postprocessing"] = facts["insult_postprocessing"]
+        result["species_insult_fallback"] = facts["species_insult_fallback"]
+    if entry["key"] in CROSS_DB_OVERRIDE_KEYS:
+        result["speakdb_secondary_definition"] = \
+            facts["speakdb_secondary_definition"][entry["key"]]
+        result["localized_override_source"] = \
+            facts["localized_override_source"][entry["key"]]
+    return result
 
 
 def _axed_monster_names(oid: str, label: str) -> list[str]:
@@ -1157,6 +1379,12 @@ def _classify_keys(
         len(shout_recursion_insult) == 20,
         f"{label} ShoutDB-recursion insult key count mismatch: "
         f"{len(shout_recursion_insult)}",
+    )
+    _require(
+        shout_recursion_insult == SPEAKDB_MONSPEAK_CLOSURE_KEYS,
+        f"{label} ShoutDB-recursion insult keys must equal the frozen "
+        f"SpeakDB monspeak closure keys: "
+        f"{sorted(shout_recursion_insult ^ SPEAKDB_MONSPEAK_CLOSURE_KEYS)!r}",
     )
     speakdb_only = insult_keys & SPEAKDB_POSTPROCESS_KEYS
     _require(
@@ -1669,6 +1897,10 @@ def build_inventory(
         "legacy_keys": en["legacy_keys"],
         "shoutdb_recursion_insult_keys": en["shout_recursion_insult_keys"],
         "speakdb_postprocess_keys": en["speakdb_postprocess_keys"],
+        "speakdb_monspeak_seeds": sorted(SPEAKDB_MONSPEAK_SEEDS),
+        "speakdb_monspeak_closure_keys": sorted(SPEAKDB_MONSPEAK_CLOSURE_KEYS),
+        "general_fallback_keys": sorted(INSULT_GENERAL_FALLBACK_KEYS),
+        "cross_db_override_keys": sorted(CROSS_DB_OVERRIDE_KEYS),
         "sentinel_keys": en["sentinel_keys"],
         "runtime_sentinel_values": sorted(RUNTIME_SENTINEL_VALUES),
         "title_block_artifacts": {
@@ -1819,13 +2051,18 @@ def _expected_metadata(
     }
 
 
-def _evidence_locations(entry: dict[str, Any]) -> list[str]:
+def _evidence_locations(entry: dict[str, Any], facts: dict[str, Any]) -> list[str]:
     """Mechanically derived per-card evidence locations: the EN/ZH
     definition sites plus every recursive reference site from the frozen
-    baseline token classification.  The scaffold and the strict validation
-    share this derivation, so a forged or incomplete evidence list in the
-    ledger cannot pass without matching the derived value verbatim."""
-    return [
+    baseline token classification, extended with the database-role-aware
+    SpeakDB sites (monspeak seeds for the dual-recursion insult keys, the
+    _get_species_insult SpeakDB fallback site for the three general keys,
+    and the secondary EN SpeakDB / localized zh/monspeak.txt definition
+    sites for the seven cross-DB override keys).  The scaffold and the
+    strict validation share this derivation, so a forged or incomplete
+    evidence list in the ledger cannot pass without matching the derived
+    value verbatim."""
+    sites = [
         f"crawl-ref/source/dat/database/{entry['source_basename']}:"
         f"{entry['english_source_line']}",
         f"crawl-ref/source/dat/database/zh/{entry['source_basename']}:"
@@ -1835,6 +2072,17 @@ def _evidence_locations(entry: dict[str, Any]) -> list[str]:
         *(f"recursive-ref-zh:{site['key']}:{site['variant_ordinal']}"
           for site in entry["chinese_referencing_sites"]),
     ]
+    if entry["lifecycle"] == "recursive-shoutdb-insult":
+        sites.extend(f"speakdb-monspeak:{site}"
+                     for site in facts["speakdb_monspeak_consumer"])
+    if entry["key"] in INSULT_GENERAL_FALLBACK_KEYS:
+        sites.append(f"speakdb-fallback:{facts['species_insult_fallback']}")
+    if entry["key"] in CROSS_DB_OVERRIDE_KEYS:
+        sites.append(f"speakdb-override:"
+                     f"{facts['speakdb_secondary_definition'][entry['key']]}")
+        sites.append(f"localized-override:"
+                     f"{facts['localized_override_source'][entry['key']]}")
+    return sites
 
 
 def validate_results(
@@ -1890,7 +2138,8 @@ def validate_results(
                  and card["evidence_locations"],
                  f"review card {identity} requires evidence locations")
         _require(card["evidence_locations"]
-                 == _evidence_locations(entry),
+                 == _evidence_locations(
+                     entry, inventory["scope"]["producer_consumer"]),
                  f"review card {identity} evidence locations mismatch")
         _require(isinstance(card["rejected_alternatives"], list)
                  and card["rejected_alternatives"],
@@ -2094,7 +2343,8 @@ def _skeleton_card(
         "display_context": display_context,
         "producer_consumer": _card_producer_consumer(
             entry, inventory["scope"]["producer_consumer"]),
-        "evidence_locations": _evidence_locations(entry),
+        "evidence_locations": _evidence_locations(
+            entry, inventory["scope"]["producer_consumer"]),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
         "proposed_english_variants": None,
@@ -2226,18 +2476,45 @@ CARD_FIELDS = {
 VARIANT_FIELDS = {"text", "weight"}
 
 # Frozen consumer/producer evidence anchors for the ShoutDB loader, the
-# shout.cc::monster_shout lookup, the transform.cc Sphinx riddle path and
-# the mon-util.cc insult path.  The values are the exact-Git anchor lines
-# at the baseline OID; _producer_consumer_facts re-derives every anchor
-# from the exact Git sources with snippet checks and must reproduce this
-# object verbatim, so a moved initializer/call site fails closed instead
-# of silently re-anchoring the ledger evidence.
+# shout.cc::monster_shout lookup, the transform.cc Sphinx riddle path,
+# the mon-util.cc insult path (definition plus SpeakDB fallback query) and
+# the SpeakDB-graph consumption sites (monspeak seeds, secondary EN
+# SpeakDB definitions and localized zh/monspeak.txt override sources).
+# The values are the exact-Git anchor lines at the baseline OID;
+# _producer_consumer_facts re-derives every anchor from the exact Git
+# sources with snippet checks and must reproduce this object verbatim, so
+# a moved initializer/call site or a missing SpeakDB edge fails closed
+# instead of silently re-anchoring the ledger evidence.
 FROZEN_PRODUCER_CONSUMER = {
     "loader": "crawl-ref/source/database.cc:134",
     "shout_consumer": "crawl-ref/source/shout.cc:176",
     "riddle_consumer": "crawl-ref/source/transform.cc:2541",
     "insult_postprocessing": "crawl-ref/source/mon-util.cc:4275",
     "speakdb_double_load": "crawl-ref/source/database.cc:125",
+    "species_insult_fallback": "crawl-ref/source/mon-util.cc:4291",
+    "speakdb_monspeak_consumer": [
+        "crawl-ref/source/dat/database/monspeak.txt:427",
+        "crawl-ref/source/dat/database/monspeak.txt:423",
+        "crawl-ref/source/dat/database/monspeak.txt:431",
+    ],
+    "speakdb_secondary_definition": {
+        "'&'": "crawl-ref/source/dat/database/monspeak.txt:970",
+        "iron imp": "crawl-ref/source/dat/database/monspeak.txt:7796",
+        "moth of wrath": "crawl-ref/source/dat/database/monspeak.txt:7926",
+        "player ghost": "crawl-ref/source/dat/database/monspeak.txt:1601",
+        "polyphemus": "crawl-ref/source/dat/database/monspeak.txt:6572",
+        "shadow imp": "crawl-ref/source/dat/database/monspeak.txt:7804",
+        "white imp": "crawl-ref/source/dat/database/monspeak.txt:7812",
+    },
+    "localized_override_source": {
+        "'&'": "crawl-ref/source/dat/database/zh/monspeak.txt:9385",
+        "iron imp": "crawl-ref/source/dat/database/zh/monspeak.txt:2973",
+        "moth of wrath": "crawl-ref/source/dat/database/zh/monspeak.txt:8273",
+        "player ghost": "crawl-ref/source/dat/database/zh/monspeak.txt:11013",
+        "polyphemus": "crawl-ref/source/dat/database/zh/monspeak.txt:7563",
+        "shadow imp": "crawl-ref/source/dat/database/zh/monspeak.txt:2981",
+        "white imp": "crawl-ref/source/dat/database/zh/monspeak.txt:2989",
+    },
 }
 
 # Frozen baseline token-multiset drift (EN vs ZH at the baseline OID): the
