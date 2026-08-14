@@ -292,6 +292,53 @@ some "quoted text
                 b"void f() {\r\n    const char* s = R\\\r\n\"(\r\n"
                 b"#ifdef FAKE\r\n#endif\r\n)\";\r\n"
                 + baseline.encode() + b"\r\n    (void)s;\r\n}\r\n"),
+            # R4-CODE-001: a branch after the chain was already taken
+            # (#elif 0 after #if 1) is dead; its lines must never become
+            # switch points, so the frozen baseline inside the nested
+            # #ifdef in the dead elif branch fails closed. (The old code
+            # kept lines 4-6 in the switch set and wrongly certified this
+            # file clean.)
+            "chain-dead-elif-baseline": (
+                f"void f() {{\n#if 1\n#elif 0\n#ifdef INNER\n    "
+                f"{baseline}\n#endif\n#endif\n    (void)0;\n}}\n"),
+            # R4-CODE-002: a duplicate #else and a #elif after #else are
+            # rejected by g++; the directive chain is unpairable and must
+            # fail closed instead of computing switch points.
+            "duplicate-else": (
+                "void f() {\n#if 1\n#else\n#else\n    int x = 1;\n"
+                "#endif\n}\n"),
+            "elif-after-else": (
+                "void f() {\n#if 1\n#else\n#elif 0\n    int x = 1;\n"
+                "#endif\n}\n"),
+            # R4-CODE-003: comments are replaced before the first condition
+            # token is read, so '#if /* comment */ 0' is a dead branch and
+            # the frozen baseline inside it fails closed. (The old code
+            # read '/*' as the first token, treated the branch as live and
+            # wrongly exempted the baseline.)
+            "if-comment-zero-baseline": (
+                f"void f() {{\n#if /* comment */ 0\n    {baseline}"
+                f"\n#endif\n}}\n"),
+            # R4-CODE-003: a multi-line block comment inside a directive
+            # line is comment text; its interior lines cannot forge
+            # directives.
+            "if-comment-multiline-directives": (
+                f"void f() {{\n#if 0 /* comment\n#ifdef FAKE\n#endif\n*/\n"
+                f"    {baseline}\n#endif\n}}\n"),
+            # R4-CODE-004: generic '}' / 'else' ERROR nodes at a switch
+            # point are not the frozen baseline nodes (file content, line
+            # and node text all differ), so they fail closed. (The old
+            # line-text exemption wrongly certified both files clean.)
+            "generic-brace-at-switch-point": (
+                "void f() {\n#ifdef FOO\n}\n#endif\n}\n"),
+            "generic-else-at-switch-point": (
+                "void f() {\n#ifdef FOO\n    else\n#endif\n}\n"),
+            # R4-CODE-005: bare CR is a phase-1 end-of-line indicator, so
+            # directives are discovered with real physical line numbers;
+            # the frozen baseline inside a live conditional of a bare-CR
+            # file still fails closed (the file is not the frozen content).
+            "bare-cr-live-conditional": (
+                b"void f() {\x0d#ifdef REAL\x0d    " + baseline.encode()
+                + b"\x0d#endif\x0d}\x0d"),
         }
         for name, content in mutations.items():
             for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
@@ -315,10 +362,13 @@ some "quoted text
                             self.assertIn(str(source),
                                           coverage["failed"][0])
 
-    def test_preprocessor_switch_context_required_for_baseline_exemption(self):
-        # The frozen-baseline exemption must fire only at a preprocessor
-        # switch point: the same line text outside a conditional, inside a
-        # dead #if 0 body, or a genuine error on other text must fail closed.
+    def test_baseline_exemption_binds_frozen_directn_nodes(self):
+        # R4-CODE-004: the frozen exemption is bound to the real
+        # ERROR/missing nodes of the baseline directn.cc content. Only the
+        # byte-identical baseline content parses as exempt; a generic '}'
+        # / 'else' ERROR node at a switch point, the same line text at a
+        # switch point in another file, and every mutation of the baseline
+        # content (single-byte flip, line shift, truncation) fail closed.
         try:
             import tree_sitter_cpp as _tscpp
             from tree_sitter import Language as _Language
@@ -330,77 +380,51 @@ some "quoted text
 
         lang = _Language(_tscpp.language())
         parser = _Parser(lang)
-        baseline = ('const vault_placement '
-                    '&vp(*env.level_vaults[map_index]);')
+        baseline_bytes = (ROOT / "crawl-ref" / "source" / "directn.cc")\
+            .read_bytes()
+        baseline_line = ('const vault_placement '
+                         '&vp(*env.level_vaults[map_index]);')
         cases = [
-            ("baseline inside #ifdef is exempt",
-             f'''void f() {{
-#ifdef DEBUG_DIAGNOSTICS
-    {baseline}
-#endif
-}}
-''',
-             False),
-            ("same baseline text without any conditional fails closed",
-             f'''void f() {{
-    {baseline}
-}}
-''',
-             True),
-            ("baseline inside dead #if 0 body fails closed",
-             f'''void f() {{
-#if 0
-    {baseline}
-#endif
-}}
-''',
-             True),
-            ("baseline inside #if 0 nested in a live conditional fails closed",
-             f'''void f() {{
+            ("the exact frozen baseline content is fully exempt",
+             baseline_bytes, False),
+            ("generic '}' ERROR node at a switch point fails closed",
+             b'''void f() {
 #ifdef FOO
-    {baseline}
-#if 0
-    {baseline}
-#endif
-    {baseline}
-#endif
-}}
-''',
-             True),
-            ("real error inside #if 0 fails closed",
-             '''void f() {
-#if 0
-    int x = ;
+}
 #endif
 }
 ''',
              True),
-            ("fake comment directives do not create a switch point",
-             f'''/* comment block
-#ifdef FAKE
-#endif
-*/
-void f() {{
-    {baseline}
-}}
-''',
-             True),
-            ("real error inside a live conditional fails closed",
-             '''void f() {
+            ("generic 'else' ERROR node at a switch point fails closed",
+             b'''void f() {
 #ifdef FOO
-    int x = ;
+    else
 #endif
 }
 ''',
              True),
+            ("frozen line text at a switch point in another file fails closed",
+             f'''void f() {{
+#ifdef FOO
+    {baseline_line}
+#endif
+}}
+'''.encode("utf-8"),
+             True),
+            ("single-byte mutation of the baseline fails closed",
+             baseline_bytes[:50000] + b"X" + baseline_bytes[50001:],
+             True),
+            ("line-shifted copy of the baseline fails closed",
+             b"int x = 1;\n" + baseline_bytes, True),
+            ("truncated baseline fails closed",
+             baseline_bytes[:3000], True),
         ]
         for name, source, expected in cases:
             with self.subTest(case=name):
-                tree = parser.parse(source.encode("utf-8"))
+                tree = parser.parse(source)
                 self.assertEqual(
                     expected,
-                    has_relevant_parse_error(tree.root_node,
-                                             source.encode("utf-8")),
+                    has_relevant_parse_error(tree.root_node, source),
                     name)
 
     def test_dead_preprocessor_blocks_are_subtracted_from_switch_points(self):
@@ -491,8 +515,12 @@ void f() {{
         # is tracked. A #elif or #else after a branch already taken is dead
         # (even with a true #elif condition), '#elif 0' is dead, #else takes
         # the inverse of the chain, and a conditional nested inside a dead
-        # branch contributes neither body nor post-#endif window. Exact
-        # expected sets, no vacuous subset checks (TEST-003).
+        # branch contributes neither body nor post-#endif window. R4-CODE-001:
+        # lines of branches dead because the chain was already taken are
+        # subtracted from the switch set even when an enclosing live span
+        # covers them. R4-CODE-002: a duplicate #else and a #elif after
+        # #else are rejected (None), matching g++. Exact expected sets, no
+        # vacuous subset checks (TEST-003).
         sys.path.insert(0, str(SCRIPTS))
         from i18n_shared import _preprocessor_switch_lines
 
@@ -520,7 +548,9 @@ void f() {{
     int ok = 1;
 }
 ''',
-             {4, 5, 6, 8, 9, 10, 11}),
+             # Chain-dead elif body (4-6) subtracted, not just un-added:
+             # the switch set is only the post-#endif window (CODE-001).
+             {8, 9, 10, 11}),
             ("#if 1 -> #else -> nested: else dead, nested suppressed",
              b'''void f() {
 #if 1
@@ -532,7 +562,7 @@ void f() {{
     int ok = 1;
 }
 ''',
-             {4, 5, 6, 8, 9, 10, 11}),
+             {8, 9, 10, 11}),
             ("#if 1 -> #elif 1 -> nested: taken #if kills the #elif",
              b'''void f() {
 #if 1
@@ -544,7 +574,7 @@ void f() {{
     int ok = 1;
 }
 ''',
-             {4, 5, 6, 8, 9, 10, 11}),
+             {8, 9, 10, 11}),
             ("#if 0 -> #elif 1 -> nested stays live",
              b'''void f() {
 #if 0
@@ -595,6 +625,51 @@ void f() {{
                 # branch adds nothing beyond the enclosing frame's branch
                 # ranges.
 
+        # R4-CODE-002: malformed chains are rejected by g++ and fail
+        # closed (None) instead of computing switch points.
+        for name, source in (
+            ("duplicate #else",
+             b'''void f() {
+#if 1
+#else
+#else
+    int x = 1;
+#endif
+}
+'''),
+            ("#elif after #else",
+             b'''void f() {
+#if 1
+#else
+#elif 0
+    int x = 1;
+#endif
+}
+'''),
+            ("duplicate #else in a nested chain",
+             b'''void f() {
+#if 1
+#ifdef A
+#else
+#else
+#endif
+#endif
+}
+'''),
+            ("#elif after #else in a nested chain",
+             b'''void f() {
+#if 1
+#ifdef A
+#else
+#elif 0
+#endif
+#endif
+}
+'''),
+        ):
+            with self.subTest(fail_closed=name):
+                self.assertIsNone(_preprocessor_switch_lines(source), name)
+
     def test_crlf_splices_and_case_sensitive_directives(self):
         # Issue #40 W1 R3-CODE-001/003: line splicing must accept CRLF and
         # bare-CR new-lines and raw-string prefix/delimiter recognition must
@@ -632,12 +707,15 @@ void f() {{
         self.assertEqual(frozenset(), switch)
 
         # Bare-CR splice in a line comment: '\\<CR>' is a splice too, so the
-        # fake directives stay inside the comment (bare-CR files are one
-        # logical line, and the comment runs to its end).
+        # fake #ifdef stays inside the comment. Bare CR is also a phase-1
+        # end-of-line indicator (R4-CODE-005), so the file is no longer one
+        # logical line: the '#endif' on its own physical line is a real
+        # directive with no opener, and the chain fails closed (None)
+        # instead of silently producing no switch points.
         switch = _preprocessor_switch_lines(
             b"void f() {\x0d    int x = 1; // " + BS + b"\x0d"
             + b"#ifdef FAKE\x0d#endif\x0d    int ok = 1;\x0d}\x0d")
-        self.assertEqual(frozenset(), switch)
+        self.assertIsNone(switch)
 
         # Uppercase '#IF 1'/'#ENDIF' are not directives (R3-CODE-003): the
         # real lowercase conditional still yields exactly its own body plus
@@ -715,7 +793,9 @@ void f() {
 ''')
         self.assertEqual(frozenset({6, 8, 9, 10, 11}), switch)
 
-        # Normal directives outside comments still pair correctly.
+        # Normal directives outside comments still pair correctly; the
+        # chain-dead #else body of the inner '#if defined(B)' is subtracted
+        # from the switch set (R4-CODE-001).
         switch = _preprocessor_switch_lines(
             b'''void f() {
 #ifdef A
@@ -728,7 +808,7 @@ void f() {
 }
 ''')
         self.assertEqual(
-            frozenset({3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), switch)
+            frozenset({3, 4, 5, 7, 8, 9, 10, 11, 12}), switch)
 
         # Unmatched directives still fail closed.
         self.assertIsNone(_preprocessor_switch_lines(
@@ -773,6 +853,86 @@ some "quoted text
 #endif
 }
 '''))
+
+    def test_if_condition_comments_are_comment_replaced(self):
+        # Issue #40 W1 R4-CODE-003: the first token of a #if/#elif
+        # condition is read after phase-3 comment replacement, so
+        # '#if /* comment */ 0' (and '#if/**/0', '#if 0 // comment') are
+        # dead branches, and a multi-line block comment inside a directive
+        # line is consumed wholesale — its interior newlines are comment
+        # text and cannot forge directives. Exact expected sets.
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import _preprocessor_switch_lines
+
+        cases = [
+            ("comment before the zero token is dead",
+             b'''void f() {
+#if /* comment */ 0
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("adjacent comment without spaces is dead",
+             b'''void f() {
+#if/**/0
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("zero before a trailing line comment is dead",
+             b'''void f() {
+#if 0 // trailing
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("comment before the zero token spanning lines is dead",
+             b'''void f() {
+#if /* multi
+line */ 0
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("non-zero after a comment stays live",
+             b'''void f() {
+#if /* comment */ 1
+    int live = 1;
+#endif
+}
+''',
+             frozenset({3, 5, 6, 7, 8})),
+            ("multi-line block comment cannot forge directives",
+             b'''void f() {
+#if 0 /* comment
+#ifdef FAKE
+#endif
+*/
+    int dead = 1;
+#endif
+    int ok = 1;
+}
+''',
+             frozenset()),
+            ("elif zero after a comment is dead too",
+             b'''void f() {
+#if 1
+#elif /* comment */ 0
+    int dead = 1;
+#endif
+}
+''',
+             frozenset({6, 7, 8, 9})),
+        ]
+        for name, source, expected in cases:
+            with self.subTest(case=name):
+                switch = _preprocessor_switch_lines(source)
+                self.assertIsNotNone(switch, name)
+                self.assertEqual(expected, switch, name)
 
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:

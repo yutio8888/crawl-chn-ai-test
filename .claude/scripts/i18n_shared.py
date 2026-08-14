@@ -1051,34 +1051,67 @@ def read_utf8(path: str) -> str:
         return stream.read()
 
 
-# Frozen baseline of pre-existing tree-sitter-cpp false positives caused by
-# preprocessor conditionals splitting C++ constructs (if/else chains, class
-# inheritance lists, ...). Each entry is the exact stripped source line that
-# tree-sitter mis-parses. A node is exempt only when its line matches one of
-# these exact texts AND sits at a preprocessor switch point (inside a
-# conditional body or within _PREPROC_SWITCH_WINDOW lines after its #endif);
-# every other parse error still fails closed.
-_PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES = frozenset({
-    # directn.cc: #ifdef USE_TILE_LOCAL / #else / #endif splits the class
-    # inheritance list, so the constructor lines right after #endif are
-    # mis-parsed as a labeled statement and a missing ';'.
-    "UIDirectionChooserView(direction_chooser& dc) :",
-    "m_dc(dc), old_target(dc.target())",
-    # directn.cc: *env.level_vaults[map_index] (unique_ptr dereference)
-    # inside #ifdef DEBUG_DIAGNOSTICS is mis-parsed as a declarator.
-    "const vault_placement &vp(*env.level_vaults[map_index]);",
-    # directn.cc: #ifndef USE_TILE_LOCAL splits the else clause from its if,
-    # so the else body is mis-parsed (missing '}' before the else body and
-    # an orphan '}' closing the block).
-    'str = "         " + fss[j].tostring();',
-    "}",
-    # directn.cc: #ifdef DEBUG_DIAGNOSTICS splits a dangling else from its
-    # if, leaving an orphan 'else' ERROR node at the switch point.
-    "else",
-})
+# Frozen baseline of the pre-existing tree-sitter-cpp false positives in
+# crawl-ref/source/directn.cc, caused by preprocessor conditionals splitting
+# C++ constructs (if/else chains, class inheritance lists, ...).
+#
+# The exemption is bound to the real ERROR/missing nodes parsed from the
+# baseline file itself: every entry is (physical line, node kind, text
+# anchor). For ERROR nodes the anchor is the node's own text (matched as a
+# prefix, since a later grammar may absorb more text into the node); for
+# missing nodes the node text is empty, so the anchor is the missing token
+# (node.type), the only text a missing node carries. The list below was
+# probed from the baseline directn.cc (10 ERROR/missing nodes total; the
+# three directive-fragment ERROR nodes at lines 2439/2441/2443 are exempted
+# by the separate '#'-directive rule below, not by this list):
+#
+#   622  missing '}'   - #ifndef USE_TILE_LOCAL splits the else clause from
+#                        its if; the '}' before the else body is reported
+#                        missing on the 'str = "         " + fss[j]...' line
+#   626  ERROR '}'     - orphan '}' closing the else body
+#   1941 ERROR 'else'  - #ifdef DEBUG_DIAGNOSTICS splits a dangling else
+#                        from its if, leaving an orphan 'else' node
+#   2446 ERROR 'UIDir..' - #ifdef USE_TILE_LOCAL splits the class
+#                        inheritance list; the constructor line right after
+#                        #endif is mis-parsed as a labeled statement
+#   2447 missing ';'   - the following member-init line then lacks a ';'
+#   3721 ERROR '*' / '.' - unique_ptr dereference *env.level_vaults[...]
+#                        inside #ifdef DEBUG_DIAGNOSTICS is mis-parsed as a
+#                        declarator
+#
+# File identity is bound by the baseline content SHA-256: the scanner entry
+# points do not thread the file path into has_relevant_parse_error(), so the
+# only sound file binding available there is the exact baseline bytes. This
+# is strictly stronger than a path match: a path-identical but modified
+# directn.cc is never exempted, while a byte-identical copy (the directory
+# entry scenario) is, which is exactly the identity the frozen pairs belong
+# to. Generic text such as '}' or 'else' at a switch point in any other
+# content therefore still fails closed.
+#
+# A node is exempt only when all of the following hold:
+#   1. sha256(source) == the frozen baseline sha256 (the node's file is the
+#      frozen baseline file);
+#   2. the node's (line, kind, text anchor) matches a frozen pair exactly;
+#   3. the node's line is a preprocessor switch point (inside a conditional
+#      body or within _PREPROC_SWITCH_WINDOW lines after its #endif), the
+#      retained window mechanism.
+# Every other parse error still fails closed.
+_PREPROCESSOR_BASELINE_DIRECTN = {
+    "sha256": "85881f8e4ef82f7e92647655ab87390ab793b4066ee3f9b5e069c9d192361f5b",
+    "nodes": frozenset({
+        (622, "missing", b"}"),
+        (626, "ERROR", b"}"),
+        (1941, "ERROR", b"else"),
+        (2446, "ERROR",
+         b"UIDirectionChooserView(direction_chooser& dc) :"),
+        (2447, "missing", b";"),
+        (3721, "ERROR", b"*"),
+        (3721, "ERROR", b"."),
+    }),
+}
 
 # Window (in lines) after an #endif within which a matching frozen baseline
-# line is still considered a preprocessor switch-point false positive.
+# node is still considered a preprocessor switch-point false positive.
 _PREPROC_SWITCH_WINDOW = 4
 
 # tree-sitter-cpp cannot be the directive source here: in the exact regions
@@ -1108,16 +1141,25 @@ def _is_identifier_byte(ch: int) -> bool:
 
 
 def _phase2_splice(source: bytes):
-    """Delete backslash-newline splices (C++ translation phase 2).
+    """Delete backslash-newline splices (C++ translation phases 1 and 2).
 
-    Returns (logical, line_of) where `logical` is the spliced translation
-    unit and ``line_of[i]`` is the 1-indexed physical line number of
-    ``logical[i]`` in the original file. A splice is a backslash byte
-    immediately followed by a new-line; LF (\\n), CRLF (\\r\\n), and bare
-    CR (\\r) terminators are all recognized. Splices may occur anywhere —
-    inside comments, string literals, or raw-string prefixes, delimiters,
-    and terminators — exactly as the standard's phase-2 deletion requires,
-    so every later lexical check runs on the assembled logical line.
+    Returns (logical, line_of) where `logical` is the spliced, normalized
+    translation unit and ``line_of[i]`` is the 1-indexed physical line
+    number of ``logical[i]`` in the original file. A splice is a backslash
+    byte immediately followed by a new-line; LF (\\n), CRLF (\\r\\n), and
+    bare CR (\\r) terminators are all recognized. Splices may occur
+    anywhere — inside comments, string literals, or raw-string prefixes,
+    delimiters, and terminators — exactly as the standard's phase-2
+    deletion requires, so every later lexical check runs on the assembled
+    logical line.
+
+    Phase-1 end-of-line normalization is applied at the same time: LF,
+    CRLF, and bare CR are all end-of-line indicators (C++ [lex.phases] p1
+    introduces new-line characters for end-of-line indicators), so every
+    EOL sequence becomes a single '\\n' in the output and increments the
+    physical line counter exactly once. Bare-CR files therefore get
+    correct physical line numbers and real directive discovery instead of
+    collapsing into one unterminated logical line.
     """
     out = bytearray()
     line_of = []
@@ -1134,12 +1176,47 @@ def _phase2_splice(source: bytes):
             i = newline_end
             line_no += 1
             continue
+        if source[i] == 0x0D:
+            # End-of-line indicator: normalize CRLF (and bare CR) to a
+            # single '\n' and count exactly one physical line (CODE-005).
+            out.append(0x0A)
+            line_of.append(line_no)
+            line_no += 1
+            i += 2 if (i + 1 < n and source[i + 1] == 0x0A) else 1
+            continue
         out.append(source[i])
         line_of.append(line_no)
         if source[i] == 0x0A:
             line_no += 1
         i += 1
     return bytes(out), line_of
+
+
+def _skip_comment_trivia(logical: bytes, pos: int, n: int) -> int:
+    """Advance past spaces and comments (phase-3 comment replacement).
+
+    Returns the position of the first byte that is neither whitespace nor
+    part of a comment, or `n`/the end-of-line position when everything
+    after `pos` is trivia. A '/* ... */' comment is consumed across
+    physical lines (the comment's interior newlines are comment text); a
+    '//' comment runs to the end of the logical line and is consumed up
+    to but not including its terminating '\\n'. Used only for directive
+    condition scanning, where the standard replaces comments with one
+    space before the first condition token is read (CODE-003).
+    """
+    while pos < n:
+        if logical[pos] in b" \t\f\v\r":
+            pos += 1
+            continue
+        if logical[pos:pos + 2] == b"/*":
+            end = logical.find(b"*/", pos + 2)
+            pos = n if end < 0 else end + 2
+            continue
+        if logical[pos:pos + 2] == b"//":
+            end = logical.find(b"\n", pos + 2)
+            return n if end < 0 else end
+        break
+    return pos
 
 
 def _directive_events(source: bytes):
@@ -1179,18 +1256,32 @@ def _directive_events(source: bytes):
             if keyword in (b"if", b"elif"):
                 # The first token of the condition decides '#if 0' /
                 # '#elif 0'; splicing already joined any continuation
-                # into the logical token stream.
-                q = m
-                while q < n and logical[q] in b" \t\f\v\r":
-                    q += 1
+                # into the logical token stream, and comments are
+                # replaced first (phase 3), so '#if /* c */ 0' is dead
+                # and a multi-line block comment is consumed wholesale
+                # (its interior newlines are comment text, not directive
+                # terminators).
+                q = _skip_comment_trivia(logical, m, n)
                 t = q
                 while t < n and logical[t] not in b" \t\f\v\r\n":
                     t += 1
                 dead = logical[q:t] == b"0"
             # Consume the rest of the logical directive line; a spliced
-            # continuation can never start a new directive.
+            # continuation can never start a new directive, and block
+            # comments spanning physical lines are skipped wholesale so
+            # their interior lines cannot forge directives (CODE-003).
             p = m
-            while p < n and logical[p] != 0x0A:
+            while p < n:
+                if logical[p:p + 2] == b"//":
+                    end = logical.find(b"\n", p + 2)
+                    p = n if end < 0 else end
+                    break
+                if logical[p:p + 2] == b"/*":
+                    end = logical.find(b"*/", p + 2)
+                    p = n if end < 0 else end + 2
+                    continue
+                if logical[p] == 0x0A:
+                    break
                 p += 1
             if p < n:
                 p += 1
@@ -1330,11 +1421,12 @@ def _preprocessor_switch_lines(source: bytes):
     The whole #if/#elif/#else/#endif chain is tracked: a #elif or #else
     that follows a branch already taken is dead, '#elif 0' is dead, and
     #else takes the inverse of the chain (dead when any earlier branch was
-    taken). Dead branches dominate: lines inside an inactive branch are
+    taken). Dead branches dominate: lines inside a dead branch are
     subtracted even when an enclosing live span, a nested live span, or a
     preceding post-#endif window also covered them, and a conditional
-    nested inside an inactive branch contributes neither body nor
-    post-#endif window.
+    nested inside a dead branch contributes neither body nor post-#endif
+    window. A second #else or a #elif after #else is rejected (None),
+    matching g++, so the directive chain always fails closed (CODE-002).
     """
     inactive_depth = 0
     stack = []
@@ -1347,6 +1439,7 @@ def _preprocessor_switch_lines(source: bytes):
                 "dead_if": dead,
                 "branch_active": branch_active,
                 "chain_taken": branch_active,
+                "seen_else": False,
                 "in_inactive_context": inactive_depth > 0,
                 "cur_start": directive_line,
                 "active": [],
@@ -1358,6 +1451,10 @@ def _preprocessor_switch_lines(source: bytes):
             if not stack:
                 return None
             frame = stack[-1]
+            if frame["seen_else"]:
+                # A duplicate #else or a #elif after #else is rejected by
+                # g++; no branch of such a chain is trustworthy (CODE-002).
+                return None
             # Close the branch that just ended.
             (frame["active"] if frame["branch_active"]
              else frame["inactive"]).append(
@@ -1369,6 +1466,7 @@ def _preprocessor_switch_lines(source: bytes):
             if keyword == b"else":
                 branch_active = not frame["chain_taken"]
                 frame["chain_taken"] = True
+                frame["seen_else"] = True
             else:
                 branch_active = (not frame["chain_taken"]) and (not dead)
                 frame["chain_taken"] = (frame["chain_taken"]
@@ -1403,21 +1501,54 @@ def _preprocessor_switch_lines(source: bytes):
             for start, end in frame["active"]:
                 add_lines.update(range(start, end))
             for start, end in frame["inactive"]:
-                add_lines.update(range(start, end))
+                # A live frame's only inactive branches are the ones after
+                # the chain was already taken: their lines must never
+                # become switch points, even when an enclosing live span
+                # also covers them (CODE-001).
+                subtract_lines.update(range(start, end))
             add_lines.update(range(
                 endif_line + 1, endif_line + 1 + _PREPROC_SWITCH_WINDOW))
     return frozenset(add_lines.difference(subtract_lines))
+
+
+def _matches_frozen_baseline_node(node, source: bytes, baseline: dict) -> bool:
+    """True when this ERROR/missing node is one of the frozen baseline nodes.
+
+    The frozen list stores (physical line, node kind, text anchor). For
+    ERROR nodes the anchor is the node's own text and is matched as a
+    prefix (a later grammar version may absorb more text into the node);
+    for missing nodes the node text is empty, so the anchor is the missing
+    token (node.type), the only text a missing node carries. Line numbers
+    are physical 1-indexed lines, exactly as recorded when the baseline
+    was probed.
+    """
+    line_no = source.count(b"\n", 0, node.start_byte) + 1
+    if node.is_missing:
+        return (line_no, "missing", node.type.encode("ascii")) \
+            in baseline["nodes"]
+    fragment = source[node.start_byte:node.end_byte].lstrip()
+    return any(
+        line_no == frozen_line
+        and fragment.startswith(frozen_anchor)
+        for frozen_line, frozen_kind, frozen_anchor in baseline["nodes"]
+        if frozen_kind == "ERROR"
+    )
 
 
 def has_relevant_parse_error(root, source: bytes) -> bool:
     """Ignore only recoverable preprocessor/member-pointer false positives."""
     switch_lines = _preprocessor_switch_lines(source)
     if switch_lines is None:
-        # Unmatched #if/#else/#elif/#endif: no switch point is trustworthy.
-        # Fail closed immediately — an extra #endif alone produces no
-        # tree-sitter ERROR/missing node, so continuing the walk would
-        # certify the file as successfully scanned.
+        # Unmatched #if/#else/#elif/#endif (including duplicate #else and
+        # #elif-after-#else): no switch point is trustworthy. Fail closed
+        # immediately — an extra #endif alone produces no tree-sitter
+        # ERROR/missing node, so continuing the walk would certify the
+        # file as successfully scanned.
         return True
+    baseline = _PREPROCESSOR_BASELINE_DIRECTN
+    baseline_content = (
+        hashlib.sha256(source).hexdigest() == baseline["sha256"]
+    )
     stack = [root]
     while stack:
         node = stack.pop()
@@ -1430,15 +1561,20 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
 
             # Known pre-existing false positives caused by a preprocessor
             # conditional splitting a C++ construct (if/else chain, class
-            # inheritance list, ...). Exempt only the exact frozen baseline
-            # line at a preprocessor switch point; real errors elsewhere
-            # (including on the same text outside a switch point) still fail
-            # closed. This is the only exemption that applies to missing
-            # nodes, which otherwise always fail closed.
-            if (line.strip().decode("utf-8", "replace")
-                    in _PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES
+            # inheritance list, ...). Exempt only the real frozen baseline
+            # nodes: the node must belong to the exact frozen baseline
+            # content, its (line, kind, text anchor) must match a frozen
+            # pair, and its line must be a preprocessor switch point. A
+            # generic '}' / 'else' line or the same line text in any other
+            # file, at any other line, or with any other node text still
+            # fails closed (CODE-004). This is the only exemption that
+            # applies to missing nodes, which otherwise always fail
+            # closed.
+            if (baseline_content
                     and source.count(b"\n", 0, node.start_byte) + 1
-                    in switch_lines):
+                    in switch_lines
+                    and _matches_frozen_baseline_node(node, source,
+                                                      baseline)):
                 stack.extend(node.children)
                 continue
 
