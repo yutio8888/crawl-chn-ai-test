@@ -1271,13 +1271,74 @@ def _phase2_splice(source: bytes):
             continue
         if state in (3, 4):
             quote = 0x22 if state == 3 else 0x27
-            if ch == 0x5C and i + 1 < n:
-                # Escape: copy the backslash and the escaped byte.
-                out.append(source[i])
+            if ch == 0x5C:
+                # Complete backslash-run handling: phase 2 deletes only
+                # the LAST backslash of a run of consecutive backslashes
+                # when it is immediately followed by a new-line (only the
+                # last backslash on a physical source line is eligible
+                # for a splice), and that deletion happens before string
+                # parsing. g++/clang++ therefore accept
+                #   const char *s = "\\<LF>#ifdef FAKE";
+                # as the single logical line "\#ifdef FAKE" (the trailing
+                # backslash+LF splice vanishes first, then the surviving
+                # backslash escapes '#'). The old escape-pair branch
+                # consumed '\\' as a pair and kept the LF, forging an
+                # unmatched '#ifdef' directive on a file g++ accepts
+                # (CODE-001).
+                run_end = i + 1
+                while run_end < n and source[run_end] == 0x5C:
+                    run_end += 1
+                if run_end < n and source[run_end] in (0x0A, 0x0D):
+                    # Phase-2 splice of the trailing backslash + new-line
+                    # (LF, CRLF or bare CR).
+                    newline_end = run_end + 1
+                    if (source[run_end] == 0x0D and newline_end < n
+                            and source[newline_end] == 0x0A):
+                        newline_end += 1  # CRLF splice consumes both
+                    surviving = run_end - 1 - i
+                    # The surviving backslashes form escape pairs; an
+                    # even survivor leaves the byte after the spliced
+                    # new-line unescaped (it may close the literal).
+                    if surviving:
+                        out.extend(b"\\\\" * (surviving // 2))
+                        line_of.extend([line_no]
+                                       * (2 * (surviving // 2)))
+                    i = newline_end
+                    line_no += 1
+                    if surviving % 2 == 1:
+                        # The lone survivor escapes the next byte that
+                        # survives phase 2: skip any immediately
+                        # following backslash-newline splices, then
+                        # consume the escaped byte (which may be the
+                        # closing quote, in which case the literal stays
+                        # open, exactly as g++ parses the spliced text).
+                        out.append(0x5C)
+                        line_of.append(line_no)
+                        while (i < n and source[i] == 0x5C
+                               and i + 1 < n
+                               and source[i + 1] in (0x0A, 0x0D)):
+                            i += 2
+                            if (source[i - 1] == 0x0D and i < n
+                                    and source[i] == 0x0A):
+                                i += 1  # CRLF splice
+                            line_no += 1
+                        if i < n:
+                            out.append(source[i])
+                            line_of.append(line_no)
+                            i += 1
+                    continue
+                if i + 1 < n:
+                    # Escape: copy the backslash and the escaped byte.
+                    out.append(source[i])
+                    line_of.append(line_no)
+                    out.append(source[i + 1])
+                    line_of.append(line_no)
+                    i += 2
+                    continue
+                # Lone trailing backslash at end of input.
+                out.append(ch)
                 line_of.append(line_no)
-                out.append(source[i + 1])
-                line_of.append(line_no)
-                i += 2
+                i += 1
                 continue
             out.append(ch)
             line_of.append(line_no)

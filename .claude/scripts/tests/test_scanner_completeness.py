@@ -339,6 +339,22 @@ some "quoted text
             "bare-cr-live-conditional": (
                 b"void f() {\x0d#ifdef REAL\x0d    " + baseline.encode()
                 + b"\x0d#endif\x0d}\x0d"),
+            # R6-TEST-002: a backslash-newline inside a raw-string body
+            # is literal text (no phase-2 splice), so the fake directives
+            # on the continuation line cannot forge switch points for the
+            # frozen baseline.
+            "raw-body-backslash-eol-pseudo-directives": (
+                b"void f() {\n    auto s = R\"_x(\n\\\n"
+                b"#ifdef FAKE\n#endif\n)_x\";\n"
+                + baseline.encode() + b"\n    (void)s;\n}\n"),
+            # R6-TEST-002: an adjacent trailing comment is phase-3
+            # comment replacement, so '#if 0/**/' and '#if 0//comment'
+            # are dead branches (g++ accepts both); the frozen baseline
+            # inside them fails closed.
+            "if-adjacent-trailing-block-comment-zero-baseline": (
+                f"void f() {{\n#if 0/**/\n    {baseline}\n#endif\n}}\n"),
+            "if-adjacent-trailing-line-comment-zero-baseline": (
+                f"void f() {{\n#if 0//comment\n    {baseline}\n#endif\n}}\n"),
         }
         for name, content in mutations.items():
             for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
@@ -435,6 +451,240 @@ some "quoted text
         self.assertEqual(b"a\nb\nc\nd", logical)
         self.assertEqual([1, 1, 2, 2, 3, 3, 4], line_of)
         self.assertEqual(len(logical), len(line_of))
+
+    def test_backslash_run_splice_precedes_escape_pairs(self):
+        # I40-W1-R7-CODE-001: phase 2 makes only the LAST backslash of a
+        # run of consecutive backslashes eligible for a splice when it is
+        # immediately followed by a new-line, and the splice is deleted
+        # before string parsing. g++/clang++ -fsyntax-only accept
+        #   const char *s = "\\<LF>#ifdef FAKE";
+        # as the single logical line "\#ifdef FAKE" (g++ -E -P output):
+        # the trailing backslash+LF splice vanishes first, then the
+        # surviving backslash escapes '#', so no '#ifdef' directive
+        # exists. The old escape-pair branch consumed '\\' as a pair and
+        # kept the LF, forging an unmatched '#ifdef' event and failing
+        # both scanners on a file the compilers accept. Every expected
+        # output below was compiler verified (g++ -E -P / -fsyntax-only
+        # and clang++ -fsyntax-only, see
+        # test_compiler_verified_fixtures_are_accepted).
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import (_directive_events, _phase2_splice,
+                                 _preprocessor_switch_lines)
+
+        BS = b"\\"
+        cases = [
+            # Even backslash run + LF: the splice deletes the trailing
+            # backslash + LF and the single survivor escapes '#'.
+            ("even run + LF splices then escapes",
+             b'const char *s = "' + BS + BS + b'\n#ifdef FAKE";',
+             b'const char *s = "\\#ifdef FAKE";', []),
+            # Odd run + LF: the whole run is spliced and the string
+            # absorbs the directive text.
+            ("odd run + LF splices entirely",
+             b'const char *s = "' + BS + b'\n#ifdef FAKE";',
+             b'const char *s = "#ifdef FAKE";', []),
+            # Bare escape pair without EOL: no splice; the string closes
+            # on its own line and the following directives are real.
+            ("bare escape pair does not splice",
+             b'const char *s = "' + BS + BS + b'";\n#ifdef FAKE\n#endif\n',
+             b'const char *s = "\\\\";\n#ifdef FAKE\n#endif\n',
+             [(b"ifdef", 2, False), (b"endif", 3, False)]),
+            # Even run + LF + closing quote: the survivor escapes the
+            # quote, so the literal stays open (g++: missing terminating
+            # '"' character).
+            ("even run + LF escapes the closing quote",
+             b'const char *s = "' + BS + BS + b'\n";',
+             b'const char *s = "\\";', []),
+            # Odd run + LF + closing quote: an even survivor is a plain
+            # escape pair and the quote closes.
+            ("triple run + LF leaves an escape pair",
+             b'const char *s = "' + BS + BS + BS + b'\n";',
+             b'const char *s = "\\\\";', []),
+            # Cascaded splices: the survivor escapes the byte after the
+            # second splice (phase 2 deletes every backslash-newline
+            # pair on each physical line before string parsing).
+            ("cascaded splices still escape the quote",
+             b'const char *s = "' + BS + BS + b'\n' + BS + b'\n";',
+             b'const char *s = "\\";', []),
+            # CRLF and bare-CR splices behave identically.
+            ("even run + CRLF splices",
+             b'const char *s = "' + BS + BS + b'\r\n#ifdef FAKE";',
+             b'const char *s = "\\#ifdef FAKE";', []),
+            ("even run + bare CR splices",
+             b'const char *s = "' + BS + BS + b'\r#ifdef FAKE";',
+             b'const char *s = "\\#ifdef FAKE";', []),
+        ]
+        for name, source, expected_logical, expected_events in cases:
+            with self.subTest(case=name):
+                logical, line_of = _phase2_splice(source)
+                self.assertEqual(expected_logical, logical, name)
+                self.assertEqual(len(logical), len(line_of), name)
+                self.assertEqual(expected_events,
+                                 list(_directive_events(source)), name)
+        # The even-run fixture must not forge a switch set.
+        self.assertEqual(
+            frozenset(),
+            _preprocessor_switch_lines(
+                b'void f() {\n    const char *s = "' + BS + BS
+                + b'\n#ifdef FAKE";\n    (void)s;\n}\n'))
+
+        # CLI end-to-end through both entries: varargs must exit 0 (no
+        # parse failure, no findings); concat must exit 1 driven by the
+        # real COMPOUND_ASSIGN finding, never by the false directive
+        # (old behavior: exit 2 parse failure on both scanners). The odd
+        # and bare fixtures scan clean on both scanners.
+        even_cli = (b"void f() {\n    const char *s = \"" + BS + BS
+                    + b"\n#ifdef FAKE\";\n    std::string msg = "
+                    b"\"even-bs\";\n    msg += \" tail\";\n"
+                    b"    (void)s;\n    (void)msg;\n}\n")
+        odd_cli = (b"void f() {\n    const char *s = \"" + BS
+                   + b"\n#ifdef FAKE\";\n    int ok = 1;\n"
+                   b"    (void)s;\n    (void)ok;\n}\n")
+        bare_cli = (b'void f() {\n    const char *s = "' + BS + BS
+                    + b'";\n#ifdef FAKE\n#endif\n    int ok = 1;\n'
+                    b"    (void)s;\n    (void)ok;\n}\n")
+        expected = {
+            "scan_string_concat.py": {
+                "even": (1, [("fixture.cc", 5, "COMPOUND_ASSIGN",
+                              " tail")]),
+                "odd": (0, []),
+                "bare": (0, []),
+            },
+            "scan_varargs_string.py": {
+                "even": (0, []),
+                "odd": (0, []),
+                "bare": (0, []),
+            },
+        }
+        for name, content in (("even", even_cli), ("odd", odd_cli),
+                              ("bare", bare_cli)):
+            with tempfile.TemporaryDirectory() as td:
+                root = Path(td) / "crawl-ref" / "source"
+                root.mkdir(parents=True)
+                source = root / "fixture.cc"
+                source.write_bytes(content)
+                for scanner, expectations in expected.items():
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (root,))):
+                        with self.subTest(fixture=name, scanner=scanner,
+                                          entry=entry):
+                            proc = self.run_scanner(
+                                scanner, *args, "--format", "json",
+                                "--require-parser")
+                            exit_code, findings = expectations[name]
+                            self.assertEqual(exit_code, proc.returncode,
+                                             proc.stderr)
+                            data = json.loads(proc.stdout)
+                            coverage = _coverage(data)
+                            self.assertEqual(coverage["scanned"], 1)
+                            self.assertEqual(coverage["failed"], [])
+                            self.assertEqual(
+                                findings, self._normalized_findings(data))
+
+    def test_raw_string_body_backslash_eol_is_literal(self):
+        # I40-W1-R7-TEST-002: phase 2 does not splice inside a raw-string
+        # body; g++ keeps a backslash-newline there as literal text, so
+        # the fake '#ifdef'/'#endif' on the following line stay raw
+        # content and no directive is forged for any prefix (R/u8R/uR/
+        # UR/LR) with a custom delimiter. Each fixture is compiler
+        # verified (g++/clang++ -fsyntax-only exit 0, see
+        # test_compiler_verified_fixtures_are_accepted); a splice inside
+        # the body would turn '#ifdef FAKE' into an unmatched directive
+        # and fail both scanners.
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import (_directive_events, _phase2_splice,
+                                 _preprocessor_switch_lines)
+
+        fixtures = {}
+        for prefix in (b"R", b"u8R", b"uR", b"UR", b"LR"):
+            src = (b"void f() {\n    auto s = " + prefix
+                   + b'"_x(\n\\\n#ifdef FAKE\n#endif\n)_x";\n'
+                   + b"    int ok = 1;\n    (void)s;\n    (void)ok;\n}\n")
+            fixtures[prefix.decode()] = src
+
+        for prefix, src in fixtures.items():
+            with self.subTest(prefix=prefix, level="helper"):
+                logical, line_of = _phase2_splice(src)
+                # The backslash + new-line inside the body survives as
+                # literal text (the new-line is only normalized).
+                self.assertIn(b"(\n\\\n#ifdef FAKE\n#endif\n", logical)
+                self.assertEqual(len(logical), len(line_of))
+                self.assertEqual([], list(_directive_events(src)))
+                self.assertEqual(frozenset(),
+                                 _preprocessor_switch_lines(src))
+
+        for prefix, src in fixtures.items():
+            with tempfile.TemporaryDirectory() as td:
+                root = Path(td) / "crawl-ref" / "source"
+                root.mkdir(parents=True)
+                source = root / "raw_fixture.cc"
+                source.write_bytes(src)
+                for scanner in ("scan_string_concat.py",
+                                "scan_varargs_string.py"):
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (root,))):
+                        with self.subTest(prefix=prefix, scanner=scanner,
+                                          entry=entry):
+                            proc = self.run_scanner(
+                                scanner, *args, "--format", "json",
+                                "--require-parser")
+                            self.assertEqual(0, proc.returncode,
+                                             proc.stderr)
+                            data = json.loads(proc.stdout)
+                            coverage = _coverage(data)
+                            self.assertEqual(coverage["scanned"], 1)
+                            self.assertEqual(coverage["failed"], [])
+                            self.assertEqual(
+                                [], self._normalized_findings(data))
+
+    def test_compiler_verified_fixtures_are_accepted(self):
+        # I40-W1-R7-TEST-002: every new fixture in this module is
+        # compiler verified. When g++ (or clang++ as fallback) is
+        # installed, the fixtures below must pass -fsyntax-only exactly
+        # as recorded in the review (g++ and clang++ both exit 0 for the
+        # even/odd/bare backslash fixtures, the raw-body fixtures with
+        # custom delimiters, and the adjacent trailing-comment forms);
+        # without a compiler this assertion is skipped and the scanner
+        # and helper assertions above still run.
+        compiler = shutil.which("g++") or shutil.which("clang++")
+        if compiler is None:
+            self.skipTest("no C++ compiler (g++/clang++) available")
+        BS = b"\\"
+        fixtures = {
+            "even backslash run + EOL": (
+                b'const char *s = "' + BS + BS
+                + b'\n#ifdef FAKE";\nint main() { return 0; }\n'),
+            "odd backslash + EOL": (
+                b'const char *s = "' + BS
+                + b'\n#ifdef FAKE";\nint main() { return 0; }\n'),
+            "bare backslash pair": (
+                b'const char *s = "' + BS + BS
+                + b'";\n#ifdef FAKE\n#endif\nint main() { return 0; }\n'),
+            "raw body backslash-EOL": (
+                b'void f() { auto s = R"_x(\n\\\n#ifdef FAKE\n#endif\n)_x"; }'
+                b'\nint main() { return 0; }\n'),
+            "#if 0/**/": (
+                b"#if 0/**/\nint x = 1;\n#endif\n"
+                b"int main() { return 0; }\n"),
+            "#if 0//comment": (
+                b"#if 0//comment\nint x = 1;\n#endif\n"
+                b"int main() { return 0; }\n"),
+            "#elif 0/**/": (
+                b"#if 0\n#elif 0/**/\nint x = 1;\n#endif\n"
+                b"int main() { return 0; }\n"),
+            "#elif 0//comment": (
+                b"#if 0\n#elif 0//comment\nint x = 1;\n#endif\n"
+                b"int main() { return 0; }\n"),
+        }
+        for name, source in fixtures.items():
+            with self.subTest(fixture=name):
+                proc = subprocess.run(
+                    [compiler, "-fsyntax-only", "-x", "c++", "-"],
+                    input=source, capture_output=True)
+                self.assertEqual(
+                    0, proc.returncode,
+                    f"{compiler} rejected {name}: "
+                    f"{proc.stderr.decode(errors='replace')}")
 
     def test_dead_preprocessor_blocks_are_subtracted_from_switch_points(self):
         # Issue #40 W1 blockers: dead #if 0 interiors must be subtracted
@@ -898,6 +1148,46 @@ some "quoted text
 }
 ''',
              frozenset()),
+            # I40-W1-R7-TEST-002: a comment adjacent to the token ends
+            # it (phase 3 replaces the comment with one space), so
+            # '#if 0/**/' and '#if 0//comment' read '0' and are dead
+            # (g++ accepts both); the same holds for '#elif 0/**/' and
+            # '#elif 0//comment' in a dead-#if chain (the elif is dead
+            # because of the zero, not just because the chain was taken).
+            ("adjacent trailing block comment after zero is dead",
+             b'''void f() {
+#if 0/**/
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("adjacent trailing line comment after zero is dead",
+             b'''void f() {
+#if 0//comment
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("adjacent trailing block comment after elif zero is dead",
+             b'''void f() {
+#if 0
+#elif 0/**/
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
+            ("adjacent trailing line comment after elif zero is dead",
+             b'''void f() {
+#if 0
+#elif 0//comment
+    int dead = 1;
+#endif
+}
+''',
+             frozenset()),
             ("comment before the zero token spanning lines is dead",
              b'''void f() {
 #if /* multi
@@ -942,6 +1232,49 @@ line */ 0
                 switch = _preprocessor_switch_lines(source)
                 self.assertIsNotNone(switch, name)
                 self.assertEqual(expected, switch, name)
+
+        # I40-W1-R7-TEST-002: CLI end-to-end through both entries. g++
+        # accepts all four adjacent-comment forms (compiler verified in
+        # test_compiler_verified_fixtures_are_accepted) and the real
+        # scanners scan them clean; a misread dead branch would leave a
+        # mis-paired directive chain and fail closed.
+        clean = b'''void f() {
+#if 0/**/
+    int dead1 = 1;
+#endif
+#if 0//comment
+    int dead2 = 2;
+#endif
+#if 0
+#elif 0/**/
+    int dead3 = 3;
+#endif
+#if 0
+#elif 0//comment
+    int dead4 = 4;
+#endif
+    int ok = 1;
+}
+'''
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            root.mkdir(parents=True)
+            source = root / "comment_fixture.cc"
+            source.write_bytes(clean)
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                for entry, args in (("files", ("--files", source)),
+                                    ("dir", (root,))):
+                    with self.subTest(scanner=scanner, entry=entry,
+                                      case="adjacent-trailing-comments"):
+                        proc = self.run_scanner(
+                            scanner, *args, "--format", "json",
+                            "--require-parser")
+                        self.assertEqual(0, proc.returncode, proc.stderr)
+                        data = json.loads(proc.stdout)
+                        coverage = _coverage(data)
+                        self.assertEqual(coverage["scanned"], 1)
+                        self.assertEqual(coverage["failed"], [])
 
     def test_directive_tail_honors_literal_state(self):
         # R5-CODE-001: the directive-line tail scan must track literal
@@ -1135,8 +1468,11 @@ int main() { return 0; }
         # varargs exit 0, concat exit 1 with the six known findings.
         # tree-sitter itself cannot consume bare-CR bytes (its grammar
         # treats a bare CR as content, not an end of line), so the bare-CR
-        # equivalence is asserted on the normalized input while the
-        # end-to-end CLI equivalence runs on the CRLF variant.
+        # equivalence is asserted on the normalized input here. The
+        # scanner entry points normalize before parsing, so the end-to-end
+        # CLI equivalence for LF, CRLF AND bare-CR runs in
+        # test_directn_line_endings_end_to_end_matrix (I40-W1-R7-TEST-002
+        # closed the bare-CR CLI gap this comment used to document).
         sys.path.insert(0, str(SCRIPTS))
         from i18n_shared import (_normalize_eol, _preprocessor_switch_lines,
                                  has_relevant_parse_error)
@@ -1206,6 +1542,50 @@ int main() { return 0; }
                     self.assertEqual(coverage["failed"], [])
                     self.assertEqual(findings,
                                      self._normalized_findings(data))
+
+    def test_directn_line_endings_end_to_end_matrix(self):
+        # I40-W1-R7-TEST-002: the directn.cc end-to-end equivalence runs
+        # for every line-ending style (LF, CRLF, bare CR) through both
+        # entry points (--files with parse validation and the
+        # production-form crawl-ref/source directory entry). The scanners
+        # apply phase-1 normalization before tree-sitter parses, so the
+        # bare-CR copy behaves exactly like the LF original: varargs
+        # exits 0 with zero findings, concat exits 1 driven by the six
+        # known findings (never by a parse failure), with exact coverage
+        # and normalized findings on every combination.
+        directn = ROOT / "crawl-ref" / "source" / "directn.cc"
+        lf = directn.read_bytes()
+        variants = {
+            "LF": lf,
+            "CRLF": lf.replace(b"\n", b"\r\n"),
+            "bare-CR": lf.replace(b"\n", b"\r"),
+        }
+        expected = {
+            "scan_string_concat.py": (1, self.DIRECTN_CONCAT_FINDINGS),
+            "scan_varargs_string.py": (0, []),
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            root.mkdir(parents=True)
+            for style, content in variants.items():
+                source = root / "directn.cc"
+                source.write_bytes(content)
+                for scanner, (exit_code, findings) in expected.items():
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (root,))):
+                        with self.subTest(style=style, scanner=scanner,
+                                          entry=entry):
+                            proc = self.run_scanner(
+                                scanner, *args, "--format", "json",
+                                "--require-parser")
+                            self.assertEqual(exit_code, proc.returncode,
+                                             proc.stderr)
+                            data = json.loads(proc.stdout)
+                            coverage = _coverage(data)
+                            self.assertEqual(coverage["scanned"], 1)
+                            self.assertEqual(coverage["failed"], [])
+                            self.assertEqual(
+                                findings, self._normalized_findings(data))
 
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:
