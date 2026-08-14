@@ -427,6 +427,15 @@ some "quoted text
                     has_relevant_parse_error(tree.root_node, source),
                     name)
 
+    def test_phase2_splice_advances_across_all_line_endings(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import _phase2_splice
+
+        logical, line_of = _phase2_splice(b"a\nb\r\nc\rd")
+        self.assertEqual(b"a\nb\nc\nd", logical)
+        self.assertEqual([1, 1, 2, 2, 3, 3, 4], line_of)
+        self.assertEqual(len(logical), len(line_of))
+
     def test_dead_preprocessor_blocks_are_subtracted_from_switch_points(self):
         # Issue #40 W1 blockers: dead #if 0 interiors must be subtracted
         # from the final switch-point set even when an enclosing live span,

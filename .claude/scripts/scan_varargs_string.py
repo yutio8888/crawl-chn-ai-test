@@ -47,7 +47,8 @@ from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
-                         discover_source_files, has_relevant_parse_error)
+                         discover_source_files, has_relevant_parse_error,
+                         _normalize_eol)
 
 TREE_SITTER_AVAILABLE = False
 _tscpp = None
@@ -592,7 +593,13 @@ def _walk(node, src, findings, type_bindings):
 
 def scan_file(filepath, parser, validate_parse=False):
     with open(filepath, "rb") as f:
-        src = f.read()
+        raw = f.read()
+    # Phase-1 end-of-line normalization: tree-sitter and the directive
+    # lexer must consume the same bytes (CODE-003), so a CRLF or bare-CR
+    # file parses exactly like its LF form. The mapping is line-count
+    # preserving, so reported line numbers are identical to the original
+    # file's physical lines.
+    src = _normalize_eol(raw)
     tree = parser.parse(src)
     if validate_parse and has_relevant_parse_error(tree.root_node, src):
         raise ValueError(f"tree-sitter parse error in {filepath}")

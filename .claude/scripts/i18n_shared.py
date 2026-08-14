@@ -1143,35 +1143,80 @@ def _is_identifier_byte(ch: int) -> bool:
             or 0x61 <= ch <= 0x7A)
 
 
+def _raw_prefix_at_output(out: bytearray) -> bool:
+    """True when the accumulated spliced text ends with a raw prefix.
+
+    The opening quote of a raw string literal is not in ``out`` yet, so
+    the check matches the prefix stem (R, u8R, uR, UR, LR) at the end of
+    the emitted text and requires that the stem is not itself part of a
+    longer identifier, mirroring _raw_prefix_here() on the assembled
+    logical line (CODE-001).
+    """
+    for prefix in _RAW_STRING_PREFIXES:
+        stem = prefix[:-1]
+        if len(out) >= len(stem) and bytes(out[-len(stem):]) == stem:
+            prefix_start = len(out) - len(stem)
+            if (prefix_start == 0
+                    or not _is_identifier_byte(out[prefix_start - 1])):
+                return True
+    return False
+
+
 def _phase2_splice(source: bytes):
     """Delete backslash-newline splices (C++ translation phases 1 and 2).
 
     Returns (logical, line_of) where `logical` is the spliced, normalized
     translation unit and ``line_of[i]`` is the 1-indexed physical line
     number of ``logical[i]`` in the original file. A splice is a backslash
-    byte immediately followed by a new-line; LF (\\n), CRLF (\\r\\n), and
-    bare CR (\\r) terminators are all recognized. Splices may occur
-    anywhere — inside comments, string literals, or raw-string prefixes,
-    delimiters, and terminators — exactly as the standard's phase-2
-    deletion requires, so every later lexical check runs on the assembled
-    logical line.
+    byte immediately followed by a new-line; LF (\n), CRLF (\r\n), and
+    bare CR (\r) terminators are all recognized. Splices may occur
+    anywhere outside raw-string literals — inside comments, ordinary
+    string/char literals, and raw-string prefixes — exactly as the
+    standard's phase-2 deletion requires, so every later lexical check
+    runs on the assembled logical line.
 
-    Phase-1 end-of-line normalization is applied at the same time: LF,
-    CRLF, and bare CR are all end-of-line indicators (C++ [lex.phases] p1
-    introduces new-line characters for end-of-line indicators), so every
-    EOL sequence becomes a single '\\n' in the output and increments the
-    physical line counter exactly once. Bare-CR files therefore get
-    correct physical line numbers and real directive discovery instead of
-    collapsing into one unterminated logical line.
+    Raw-string literals (R"...", u8R"...", uR"...", UR"...", LR"..." with
+    an optional d-char-sequence) are the one region where phase-2
+    deletion does not apply: g++ keeps a backslash-newline inside a
+    raw-string body — and inside the opening/closing delimiter pair — as
+    literal text, so the literal's ')d-seq"' terminator is matched on the
+    raw characters (a splice there would invent a terminator g++ never
+    sees; for example R"x(\n)x\\<newline>" is an unterminated raw string
+    to g++, not a legal terminated literal). The splice scan therefore
+    tracks raw-string literal state (prefix + delimiter pair + body) and
+    resumes ordinary splicing only after the closing delimiter. Comments
+    and ordinary literals are tracked so a quote inside them cannot open
+    a raw string, and a raw-string prefix itself still splices before
+    its opening quote (R\\<newline>"(...)" is a legal raw string).
+
+    Phase-1 end-of-line normalization is applied at the same time in
+    every state, including raw-string bodies: LF, CRLF, and bare CR are
+    all end-of-line indicators (C++ [lex.phases] p1 introduces new-line
+    characters for end-of-line indicators), so every EOL sequence becomes
+    a single '\n' in the output and increments the physical line counter
+    exactly once — exactly the single '\n' g++ stores for a CRLF inside a
+    raw string. Bare-CR files therefore get correct physical line numbers
+    and real directive discovery instead of collapsing into one
+    unterminated logical line.
     """
     out = bytearray()
     line_of = []
     line_no = 1
     i = 0
     n = len(source)
+    # Lexical state: 0 normal, 1 line comment, 2 block comment,
+    # 3 string literal, 4 char literal, 5 raw-string opening delimiter
+    # (between the opening quote and '('), 6 raw-string body.
+    state = 0
+    raw_delim = b""
     while i < n:
-        if (source[i] == 0x5C and i + 1 < n
-                and source[i + 1] in (0x0A, 0x0D)):
+        ch = source[i]
+        # Phase-2 splice: a backslash immediately followed by a new-line
+        # is deleted everywhere except inside raw-string literals (body
+        # and delimiter pair), where it is literal text (CODE-001).
+        if (ch == 0x5C and i + 1 < n
+                and source[i + 1] in (0x0A, 0x0D)
+                and state != 5 and state != 6):
             newline_end = i + 2
             if (source[i + 1] == 0x0D and newline_end < n
                     and source[newline_end] == 0x0A):
@@ -1179,18 +1224,158 @@ def _phase2_splice(source: bytes):
             i = newline_end
             line_no += 1
             continue
-        if source[i] == 0x0D:
-            # End-of-line indicator: normalize CRLF (and bare CR) to a
-            # single '\n' and count exactly one physical line (CODE-005).
+        if ch == 0x0D:
+            # Phase-1 end-of-line normalization applies in every state,
+            # including raw-string bodies: CRLF (and bare CR) becomes a
+            # single '\n' and counts exactly one physical line (CODE-005).
             out.append(0x0A)
             line_of.append(line_no)
             line_no += 1
+            if state == 5 and len(raw_delim) <= _RAW_STRING_DELIMITER_MAX:
+                raw_delim += b"\n"
             i += 2 if (i + 1 < n and source[i + 1] == 0x0A) else 1
+            if state == 1:
+                state = 0
             continue
-        out.append(source[i])
-        line_of.append(line_no)
-        if source[i] == 0x0A:
+        if ch == 0x0A:
+            out.append(ch)
+            line_of.append(line_no)
             line_no += 1
+            i += 1
+            if state == 5 and len(raw_delim) <= _RAW_STRING_DELIMITER_MAX:
+                raw_delim += b"\n"
+            if state == 1:
+                state = 0  # a // comment ends at the new-line
+            elif state in (3, 4):
+                # Unterminated ordinary literal: recover at the raw
+                # new-line, the same recovery _skip_quoted() applies.
+                state = 0
+            continue
+        if state == 1:
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            continue
+        if state == 2:
+            if ch == 0x2A and i + 1 < n and source[i + 1] == 0x2F:
+                out.append(source[i])
+                line_of.append(line_no)
+                out.append(source[i + 1])
+                line_of.append(line_no)
+                i += 2
+                state = 0
+                continue
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            continue
+        if state in (3, 4):
+            quote = 0x22 if state == 3 else 0x27
+            if ch == 0x5C and i + 1 < n:
+                # Escape: copy the backslash and the escaped byte.
+                out.append(source[i])
+                line_of.append(line_no)
+                out.append(source[i + 1])
+                line_of.append(line_no)
+                i += 2
+                continue
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            if ch == quote:
+                state = 0
+            continue
+        if state == 5:
+            # Raw-string opening delimiter region: backslash-EOL is
+            # literal text here too (g++ rejects a backslash inside the
+            # delimiter), so only phase-1 EOL normalization applies.
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            if ch == 0x28:  # '('
+                if len(raw_delim) > _RAW_STRING_DELIMITER_MAX:
+                    # Over-long d-char-sequence: recover the same way
+                    # _skip_raw_string() does (search for ')"').
+                    raw_delim = b""
+                state = 6
+            elif len(raw_delim) <= _RAW_STRING_DELIMITER_MAX:
+                raw_delim += bytes((ch,))
+            continue
+        if state == 6:
+            # Raw-string body: fully literal, no phase-2 splicing; the
+            # terminator ')d-seq"' is matched on the raw characters.
+            terminator = b")" + raw_delim + b'"'
+            if (ch == 0x29 and i + len(terminator) <= n
+                    and source[i:i + len(terminator)] == terminator):
+                # Closing delimiter found: copy it (phase-1 EOL
+                # normalization still applies inside it) and resume
+                # ordinary splicing after it (CODE-001).
+                j = 0
+                while j < len(terminator):
+                    byte = source[i + j]
+                    if byte == 0x0D:
+                        out.append(0x0A)
+                        line_of.append(line_no)
+                        line_no += 1
+                        j += 2 if (j + 1 < len(terminator)
+                                   and source[i + j + 1] == 0x0A) else 1
+                    elif byte == 0x0A:
+                        out.append(byte)
+                        line_of.append(line_no)
+                        line_no += 1
+                        j += 1
+                    else:
+                        out.append(byte)
+                        line_of.append(line_no)
+                        j += 1
+                i += len(terminator)
+                state = 0
+                continue
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            continue
+        # state 0 (normal): enter comment/literal states and splice.
+        if ch == 0x2F and i + 1 < n and source[i + 1] == 0x2F:
+            out.append(source[i])
+            line_of.append(line_no)
+            out.append(source[i + 1])
+            line_of.append(line_no)
+            i += 2
+            state = 1
+            continue
+        if ch == 0x2F and i + 1 < n and source[i + 1] == 0x2A:
+            out.append(source[i])
+            line_of.append(line_no)
+            out.append(source[i + 1])
+            line_of.append(line_no)
+            i += 2
+            state = 2
+            continue
+        if ch == 0x22:
+            if _raw_prefix_at_output(out):
+                # R"...", u8R"...", uR"...", UR"...", LR"...": the whole
+                # literal (delimiter pair and body) is tracked so its
+                # backslash-EOL bytes stay literal (CODE-001).
+                out.append(ch)
+                line_of.append(line_no)
+                i += 1
+                raw_delim = b""
+                state = 5
+                continue
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            state = 3
+            continue
+        if ch == 0x27:
+            out.append(ch)
+            line_of.append(line_no)
+            i += 1
+            state = 4
+            continue
+        out.append(ch)
+        line_of.append(line_no)
         i += 1
     return bytes(out), line_of
 
@@ -1444,10 +1629,15 @@ def _directive_events(source: bytes):
                 # replaced first (phase 3), so '#if /* c */ 0' is dead
                 # and a multi-line block comment is consumed wholesale
                 # (its interior newlines are comment text, not directive
-                # terminators).
+                # terminators). A comment adjacent to the token also
+                # ends it: '#if 0/**/' and '#if 0//comment' (both
+                # accepted by g++ with a dead body) read '0' because the
+                # phase-3 comment becomes one space (CODE-002).
                 q = _skip_comment_trivia(logical, m, n)
                 t = q
                 while t < n and logical[t] not in b" \t\f\v\r\n":
+                    if logical[t:t + 2] in (b"/*", b"//"):
+                        break
                     t += 1
                 dead = logical[q:t] == b"0"
             # Consume the rest of the logical directive line; a spliced
