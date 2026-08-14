@@ -493,17 +493,32 @@ def _require_regular_shout_git_sources(
 
 
 def _git_tree_yamls(oid: str, directory: str, label: str) -> list[str]:
-    """List the committed ``*.yaml`` inputs of one data directory at the
-    exact OID (mirrors mon-gen.py/job-gen.py, which iterate the directory
-    in sorted order and skip non-YAML files)."""
+    """List the committed top-level ``*.yaml`` inputs of one data directory
+    at the exact OID.
+
+    Mirrors mon-gen.py/job-gen.py exactly: both iterate
+    ``sorted(os.listdir(datadir))`` and open every ``*.yaml`` name directly,
+    never descending into nested directories, so a recursive ``ls-tree -r``
+    would overcount YAML files living in subdirectories that production
+    never reads.  The non-recursive listing still emits tree entries for
+    subdirectories; only blob entries named ``*.yaml`` count, and a
+    directory named ``*.yaml`` would make the production open fail, so it
+    fails closed here instead."""
     listing = hardened.shared._git_output(
-        ["ls-tree", "-r", "--name-only", oid, "--", directory],
+        ["ls-tree", oid, "--", f"{directory}/"],
         f"{label} {directory}",
     )
-    paths = [
-        line.decode("utf-8") for line in listing.splitlines()
-        if line.endswith(b".yaml")
-    ]
+    paths: list[str] = []
+    for line in listing.splitlines():
+        meta, name = line.split(b"\t", 1)
+        kind = meta.split(b" ")[1]
+        if name.endswith(b".yaml"):
+            _require(
+                kind == b"blob",
+                f"{label} {directory} has a non-file *.yaml entry "
+                f"{name.decode('utf-8')!r} that production could not read",
+            )
+            paths.append(name.decode("utf-8"))
     _require(bool(paths), f"{label} {directory} contains no YAML inputs")
     return paths
 
@@ -1051,7 +1066,46 @@ def _classify_keys(
 def _dataset(
     artifact: dict[str, Any], raw: bytes, directory: str, label: str,
     role: str, derivable: dict[str, Any],
+    sentinel_baseline: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    # Sentinel integrity is role-independent: _source_rows deliberately
+    # removes the __buggy sentinel from the identity rows and the 124-card
+    # review ledger never covers it, so the candidate audit must verify the
+    # sentinel entry directly against the dump.  The baseline derivation is
+    # the only authority for its content: no reviewed commit may change it.
+    sentinel_entries = [
+        entry for entry in artifact["entries"]
+        if entry["canonical_key"] in SENTINEL_KEYS
+    ]
+    _require(
+        len(sentinel_entries) == 1,
+        f"{label} dump must contain exactly one sentinel entry",
+    )
+    sentinel_entry = sentinel_entries[0]
+    _require(
+        not sentinel_entry["body_empty"]
+        and sentinel_entry["parse_error"] is None,
+        f"{label} sentinel entry must have a valid body",
+    )
+    expected_sentinel = (EXPECTED_SENTINEL_VARIANTS["english"]
+                         if directory == "database/"
+                         else EXPECTED_SENTINEL_VARIANTS["chinese"])
+    _require(
+        len(sentinel_entry["variants"]) == expected_sentinel,
+        f"{label} sentinel variant count mismatch: "
+        f"{len(sentinel_entry['variants'])}",
+    )
+    if role == "candidate":
+        _require(
+            sentinel_baseline is not None,
+            f"{label} candidate audit requires the baseline sentinel entry",
+        )
+        _require(
+            sentinel_entry["raw_body"] == sentinel_baseline["raw_body"]
+            and sentinel_entry["variants"]
+            == sentinel_baseline["variants"],
+            f"{label} sentinel content differs from the baseline derivation",
+        )
     rows, per_file = _source_rows(artifact, directory, label)
     family_sources = {f"{directory}{basename}"
                       for basename in SOURCE_BASENAMES}
@@ -1175,6 +1229,30 @@ def _dataset(
         )
         for basename in SOURCE_BASENAMES
     }
+    # Dump-level totals include the __buggy sentinel variant and must stay
+    # at the frozen 119/119 shout.txt shape for every role (the zero-body
+    # title artifact contributes nothing).  The sentinel is not part of the
+    # identity rows or the review ledger, so the candidate audit must keep
+    # the same frozen totals.
+    dump_variants = {
+        basename: sum(
+            len(entry["variants"]) for entry in artifact["entries"]
+            if any(item["source_name"] == f"{directory}{basename}"
+                   for item in entry["source_history"])
+        )
+        for basename in SOURCE_BASENAMES
+    }
+    expected_dump_variants = {
+        "shout.txt": (EXPECTED_DUMP_SHOUT_EN_VARIANTS
+                      if directory == "database/"
+                      else EXPECTED_DUMP_SHOUT_ZH_VARIANTS),
+        "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
+                       if directory == "database/"
+                       else EXPECTED_INSULT_ZH_VARIANTS),
+    }
+    _require(dump_variants == expected_dump_variants,
+             f"{label} dump-level variant totals differ: "
+             f"{dump_variants!r}")
     if role == "baseline":
         expected_variants = {
             "shout.txt": (EXPECTED_SHOUT_EN_VARIANTS
@@ -1187,38 +1265,6 @@ def _dataset(
         _require(per_file_variants == expected_variants,
                  f"{label} baseline variant count mismatch: "
                  f"{per_file_variants!r}")
-        # Dump-level totals include the __buggy sentinel variant and must
-        # stay at the frozen 119/119 shout.txt shape (the zero-body title
-        # artifact contributes nothing).
-        dump_variants = {
-            basename: sum(
-                len(entry["variants"]) for entry in artifact["entries"]
-                if any(item["source_name"] == f"{directory}{basename}"
-                       for item in entry["source_history"])
-            )
-            for basename in SOURCE_BASENAMES
-        }
-        expected_dump_variants = {
-            "shout.txt": (EXPECTED_DUMP_SHOUT_EN_VARIANTS
-                          if directory == "database/"
-                          else EXPECTED_DUMP_SHOUT_ZH_VARIANTS),
-            "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
-                           if directory == "database/"
-                           else EXPECTED_INSULT_ZH_VARIANTS),
-        }
-        _require(dump_variants == expected_dump_variants,
-                 f"{label} dump-level variant totals differ: "
-                 f"{dump_variants!r}")
-        sentinel_variants = sum(
-            len(entry["variants"]) for entry in artifact["entries"]
-            if entry["canonical_key"] in SENTINEL_KEYS
-        )
-        expected_sentinel = (EXPECTED_SENTINEL_VARIANTS["english"]
-                             if directory == "database/"
-                             else EXPECTED_SENTINEL_VARIANTS["chinese"])
-        _require(sentinel_variants == expected_sentinel,
-                 f"{label} sentinel variant count mismatch: "
-                 f"{sentinel_variants}")
         expected_random = (EXPECTED_EN_RANDOM_SITES
                            if directory == "database/"
                            else EXPECTED_ZH_RANDOM_SITES)
@@ -1285,8 +1331,29 @@ def _hashed_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
                            "title_block_artifacts", "producer_facts"}}
 
 
+def _derived_sentinel_entry(
+    oid: str, directory: str, label: str,
+) -> dict[str, Any]:
+    """The exact-Git derived ``__buggy`` entry of one language directory.
+
+    The review ledger never covers the sentinel, so every reviewed commit
+    must keep it byte-identical to the baseline derivation; the candidate
+    audit compares the candidate dump entry against this value."""
+    derived = _derive_scoped_shout_dump(oid, directory, label)
+    sentinel = [
+        entry for entry in derived["entries"]
+        if entry["canonical_key"] in SENTINEL_KEYS
+    ]
+    _require(
+        len(sentinel) == 1,
+        f"{label} derivation must contain exactly one sentinel entry",
+    )
+    return sentinel[0]
+
+
 def _load_dataset(
     ref: str, path: Path, directory: str, label: str, role: str,
+    sentinel_baseline: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     hardened.shared._validate_oid(ref, label)
     _require_regular_shout_git_sources(ref, directory, label)
@@ -1298,7 +1365,8 @@ def _load_dataset(
     if directory == "database/":
         _require_speakdb_insult_parity(artifact, ref, label)
     derivable = _derivable_root_facts(ref, label)
-    return _dataset(artifact, raw, directory, label, role, derivable)
+    return _dataset(artifact, raw, directory, label, role, derivable,
+                    sentinel_baseline=sentinel_baseline)
 
 
 def _pair_entries(
@@ -1571,6 +1639,24 @@ def _expected_metadata(
     }
 
 
+def _evidence_locations(entry: dict[str, Any]) -> list[str]:
+    """Mechanically derived per-card evidence locations: the EN/ZH
+    definition sites plus every recursive reference site from the frozen
+    baseline token classification.  The scaffold and the strict validation
+    share this derivation, so a forged or incomplete evidence list in the
+    ledger cannot pass without matching the derived value verbatim."""
+    return [
+        f"crawl-ref/source/dat/database/{entry['source_basename']}:"
+        f"{entry['english_source_line']}",
+        f"crawl-ref/source/dat/database/zh/{entry['source_basename']}:"
+        f"{entry['chinese_source_line']}",
+        *(f"recursive-ref:{site['key']}:{site['variant_ordinal']}"
+          for site in entry["english_referencing_sites"]),
+        *(f"recursive-ref-zh:{site['key']}:{site['variant_ordinal']}"
+          for site in entry["chinese_referencing_sites"]),
+    ]
+
+
 def validate_results(
     path: Path, inventory: dict[str, Any],
     candidate: dict[str, Any] | None = None,
@@ -1623,12 +1709,18 @@ def validate_results(
         _require(isinstance(card["evidence_locations"], list)
                  and card["evidence_locations"],
                  f"review card {identity} requires evidence locations")
+        _require(card["evidence_locations"]
+                 == _evidence_locations(entry),
+                 f"review card {identity} evidence locations mismatch")
         _require(isinstance(card["rejected_alternatives"], list)
                  and card["rejected_alternatives"],
                  f"review card {identity} requires rejected alternatives")
         _require(isinstance(card["producer_consumer"], dict)
                  and card["producer_consumer"],
                  f"review card {identity} requires producer/consumer evidence")
+        _require(card["producer_consumer"]
+                 == dict(FROZEN_PRODUCER_CONSUMER),
+                 f"review card {identity} producer/consumer evidence mismatch")
         if conclusion in DEFER_CONCLUSIONS:
             _require(isinstance(card["deferral_owner"], str)
                      and card["deferral_owner"].strip(),
@@ -1709,10 +1801,20 @@ def add_candidate(
     hardened.shared._require_candidate_commit(
         baseline_ref, candidate_ref, exact_clean_checkout=True
     )
-    en = _load_dataset(candidate_ref, english_path, "database/",
-                       "candidate EN", "candidate")
-    zh = _load_dataset(candidate_ref, localized_path, "database/zh/",
-                       "candidate ZH", "candidate")
+    en = _load_dataset(
+        candidate_ref, english_path, "database/",
+        "candidate EN", "candidate",
+        sentinel_baseline=_derived_sentinel_entry(
+            baseline_ref, "database/", "baseline sentinel EN"
+        ),
+    )
+    zh = _load_dataset(
+        candidate_ref, localized_path, "database/zh/",
+        "candidate ZH", "candidate",
+        sentinel_baseline=_derived_sentinel_entry(
+            baseline_ref, "database/zh/", "baseline sentinel ZH"
+        ),
+    )
     _require(not en["token_facts"]["unresolved"],
              "candidate EN contains unresolved token")
     _require(not zh["token_facts"]["unresolved"],
@@ -1774,16 +1876,7 @@ def _skeleton_card(
         "dependency_group": entry["dependency_group"],
         "display_context": display_context,
         "producer_consumer": dict(FROZEN_PRODUCER_CONSUMER),
-        "evidence_locations": [
-            f"crawl-ref/source/dat/database/{entry['source_basename']}:"
-            f"{entry['english_source_line']}",
-            f"crawl-ref/source/dat/database/zh/{entry['source_basename']}:"
-            f"{entry['chinese_source_line']}",
-            *(f"recursive-ref:{site['key']}:{site['variant_ordinal']}"
-              for site in entry["english_referencing_sites"]),
-            *(f"recursive-ref-zh:{site['key']}:{site['variant_ordinal']}"
-              for site in entry["chinese_referencing_sites"]),
-        ],
+        "evidence_locations": _evidence_locations(entry),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
         "proposed_english_variants": None,

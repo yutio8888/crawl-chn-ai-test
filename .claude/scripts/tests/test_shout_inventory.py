@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -94,6 +95,76 @@ def fixture_commit_with_shoutcc(shoutcc_source: str) -> str:
     )
 
 
+def committed_source(oid: str, git_path: str) -> str:
+    """UTF-8 text of one committed file at the exact OID."""
+    return MODULE.hardened.shared._decode_utf8(
+        MODULE.hardened.shared._git_blob_at_oid(oid, git_path, "fixture"),
+        "fixture",
+    )
+
+
+def fixture_commit_with_replaced_blobs(replacements: dict[str, str]) -> str:
+    """Dangling commit whose tree mirrors the baseline
+    ``crawl-ref/source`` tree with the given repo-relative paths replaced
+    by new blob content.  Created purely through plumbing, so the working
+    tree, index and refs are never touched."""
+    listing = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-tree", "-r", BASELINE, "--",
+         "crawl-ref/source"],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    nodes: dict = {}
+    for line in listing.splitlines():
+        meta, relpath = line.split("\t", 1)
+        parts = relpath.split("/")
+        node = nodes
+        for part in parts[2:-1]:
+            node = node.setdefault(part, {})
+        node[parts[-1]] = tuple(meta.split(" "))
+    for relpath, content in replacements.items():
+        prefix = "crawl-ref/source/"
+        if not relpath.startswith(prefix):
+            raise AssertionError(
+                f"fixture replacement outside source tree: {relpath}")
+        parts = relpath[len(prefix):].split("/")
+        node = nodes
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+        node[parts[-1]] = (
+            "100644", "blob",
+            _git_plumbing(["hash-object", "-w", "--stdin"],
+                          input_text=content),
+        )
+
+    def build_tree(children: dict) -> str:
+        text = "".join(
+            f"{mode} {kind} {oid}\t{name}\n"
+            for name, (mode, kind, oid) in sorted(children.items())
+        )
+        return _git_plumbing(["mktree"], input_text=text)
+
+    def build_recursive(children: dict) -> str:
+        entries = {}
+        for name, value in children.items():
+            if isinstance(value, dict):
+                entries[name] = ("040000", "tree", build_recursive(value))
+            else:
+                entries[name] = value
+        return build_tree(entries)
+
+    source_tree = build_recursive(nodes)
+    root_tree = build_tree({
+        "crawl-ref": (
+            "040000", "tree",
+            build_tree({"source": ("040000", "tree", source_tree)}),
+        ),
+    })
+    return _git_plumbing(
+        ["commit-tree", root_tree, "-m",
+         "shout exact-source negative fixture"]
+    )
+
+
 def exact_artifact(oid: str, directory: str) -> dict:
     """Rebuild the full shout TextDB dump from exact Git inputs with the
     production load order, DBM_REPLACE merge and weighted-variant parse."""
@@ -168,12 +239,7 @@ def card_for(entry: dict) -> dict:
         "dependency_group": entry["dependency_group"],
         "display_context": "由 shout.cc::monster_shout / transform.cc 消费的喊叫消息。",
         "producer_consumer": dict(MODULE.FROZEN_PRODUCER_CONSUMER),
-        "evidence_locations": [
-            f"crawl-ref/source/dat/database/{entry['source_basename']}:"
-            f"{entry['english_source_line']}",
-            f"crawl-ref/source/dat/database/zh/{entry['source_basename']}:"
-            f"{entry['chinese_source_line']}",
-        ],
+        "evidence_locations": MODULE._evidence_locations(entry),
         "current_english_variants": current_en,
         "current_chinese_variants": current_zh,
         "proposed_english_variants": copy.deepcopy(current_en),
@@ -637,6 +703,128 @@ class ShoutInventoryTests(unittest.TestCase):
         raw_keys = {shared.lowercase_string(d.raw_key) for d in definitions}
         self.assertIn("__buggy", raw_keys)
         self.assertTrue(raw_keys.isdisjoint(MODULE.RUNTIME_SENTINEL_VALUES))
+
+    def add_candidate_mocked(self, inventory, candidate_ref, en, zh):
+        en_path = self.root / f"{self.id().split('.')[-1]}-en.json"
+        zh_path = self.root / f"{self.id().split('.')[-1]}-zh.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False),
+                           encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False),
+                           encoding="utf-8")
+        with mock.patch.object(MODULE.hardened.shared,
+                               "_require_candidate_commit",
+                               return_value=None):
+            return MODULE.add_candidate(inventory, BASELINE, candidate_ref,
+                                        en_path, zh_path)
+
+    def test_candidate_sentinel_unchanged_passes(self):
+        # Positive control: a candidate whose __buggy entry is
+        # byte-identical to the baseline derivation passes the sentinel
+        # audit (the full add_candidate gate additionally requires the
+        # reviewed ZH drift alignment, which is out of scope here).
+        fixture = fixture_commit_with_replaced_blobs({})
+        en_path = self.root / f"{self.id().split('.')[-1]}-en.json"
+        zh_path = self.root / f"{self.id().split('.')[-1]}-zh.json"
+        en_path.write_text(json.dumps(exact_artifact(fixture, "database/"),
+                                      ensure_ascii=False),
+                           encoding="utf-8")
+        zh_path.write_text(json.dumps(exact_artifact(fixture, "database/zh/"),
+                                      ensure_ascii=False),
+                           encoding="utf-8")
+        MODULE._load_dataset(fixture, en_path, "database/",
+                             "candidate EN", "candidate",
+                             sentinel_baseline=MODULE._derived_sentinel_entry(
+                                 BASELINE, "database/",
+                                 "baseline sentinel EN"))
+        MODULE._load_dataset(fixture, zh_path, "database/zh/",
+                             "candidate ZH", "candidate",
+                             sentinel_baseline=MODULE._derived_sentinel_entry(
+                                 BASELINE, "database/zh/",
+                                 "baseline sentinel ZH"))
+
+    def test_candidate_sentinel_content_mutation_rejected(self):
+        # I69-CODE-001: the sentinel is outside the 124-card ledger and the
+        # identity rows, so a candidate commit that rewrites the __buggy
+        # body (same variant count, frozen dump totals still hold) must be
+        # rejected against the baseline derivation.
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/shout.txt")
+        mutated = source.replace(
+            "SOUND:You hear doubly buggy behaviour!",
+            "SOUND:You hear triply buggy behaviour!",
+        )
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/shout.txt": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "sentinel content differs"):
+            self.add_candidate_mocked(
+                copy.deepcopy(self.inventory), fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"),
+            )
+
+    def test_candidate_sentinel_deletion_rejected(self):
+        # I69-CODE-001: deleting the __buggy key from the candidate commit
+        # must fail the candidate audit (sentinel presence is role-
+        # independent).
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/shout.txt")
+        start = source.index("__BUGGY")
+        end = source.index("%%%%", start) + len("%%%%")
+        mutated = source[:start] + source[end:]
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/shout.txt": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "exactly one sentinel entry"):
+            self.add_candidate_mocked(
+                copy.deepcopy(self.inventory), fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"),
+            )
+
+    def test_forged_producer_consumer_is_rejected(self):
+        # I69-CODE-002: the producer/consumer evidence of every card must
+        # equal the mechanically derived frozen value, not merely be a
+        # non-empty dict.
+        records = self.records()
+        records[1]["producer_consumer"] = {
+            "loader": "crawl-ref/source/database.cc:1",
+            "shout_consumer": "crawl-ref/source/shout.cc:1",
+        }
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "producer/consumer evidence mismatch"):
+            self.validate(records)
+
+    def test_forged_evidence_locations_are_rejected(self):
+        # I69-CODE-002: evidence_locations must equal the mechanically
+        # derived list (definition sites plus recursive reference sites)
+        # verbatim; a plausible-looking partial list is rejected.
+        records = self.records()
+        records[1]["evidence_locations"] = [
+            "crawl-ref/source/dat/database/insult.txt:186",
+        ]
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "evidence locations mismatch"):
+            self.validate(records)
+
+    def test_git_tree_yamls_ignores_nested_directories(self):
+        # I69-CODE-003: mon-gen.py/job-gen.py iterate
+        # sorted(os.listdir(datadir)) and never descend, so a nested
+        # dat/mons/*.yaml must not enter the exact-Git derivation (a
+        # recursive ls-tree would miscount it).
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/mons/nested/extra.yaml":
+                "name: 'nested monster'\n",
+        })
+        baseline_yamls = MODULE._git_tree_yamls(
+            BASELINE, "crawl-ref/source/dat/mons", "fixture")
+        fixture_yamls = MODULE._git_tree_yamls(
+            fixture, "crawl-ref/source/dat/mons", "fixture")
+        self.assertEqual(baseline_yamls, fixture_yamls)
+        self.assertNotIn("crawl-ref/source/dat/mons/nested/extra.yaml",
+                         fixture_yamls)
 
 
 if __name__ == "__main__":
