@@ -256,6 +256,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/graffiti_inventory.py|\
             .claude/scripts/miscast_inventory.py|\
             .claude/scripts/monflee_inventory.py|\
+            .claude/scripts/monspeak_inventory.py|\
             .claude/scripts/shout_inventory.py|\
             .claude/scripts/tests/test_message_overlay.py|\
             .claude/scripts/tests/test_audit_monspell_behavior.py|\
@@ -263,6 +264,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/tests/test_graffiti_inventory.py|\
             .claude/scripts/tests/test_miscast_inventory.py|\
             .claude/scripts/tests/test_monflee_inventory.py|\
+            .claude/scripts/tests/test_monspeak_inventory.py|\
             .claude/scripts/tests/test_shout_inventory.py|\
             docs/textdb-i18n-*|\
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
@@ -635,6 +637,7 @@ PY
             && python3 "$SCRIPT_DIR/tests/test_miscast_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monflee_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monspell_inventory.py" \
+            && python3 "$SCRIPT_DIR/tests/test_monspeak_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_shout_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_wpnnoise_inventory.py" \
             && python3 "$SCRIPT_DIR/generate_message_overlay.py" \

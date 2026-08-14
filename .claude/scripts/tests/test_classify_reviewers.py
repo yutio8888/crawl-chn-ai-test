@@ -93,6 +93,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "item-extended-review-results.md",
             "miscast-review-results.md",
             "monflee-review-results.md",
+            "monspeak-review-results.md",
             "monspell-review-results.md",
             "monster-review-results.md",
             "shout-review-results.md",
