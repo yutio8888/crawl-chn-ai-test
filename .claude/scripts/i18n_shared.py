@@ -1082,6 +1082,59 @@ _PREPROCESSOR_SPLIT_FALSE_POSITIVE_LINES = frozenset({
 _PREPROC_SWITCH_WINDOW = 4
 
 
+def _scan_cpp_lexical_state(line: bytes, in_block_comment: bool,
+                            in_string: bool) -> tuple[bool, bool]:
+    """Advance block-comment/string-literal state across one source line.
+
+    Tracks the C++ lexical context so a '#' at the start of a later line is
+    only treated as a preprocessor directive when that line really starts
+    outside a block comment and outside a string literal. Handles /* */ that
+    start or end mid-line and may span lines, // line comments, "..." string
+    literals with backslash escapes and backslash-newline continuation, and
+    '...' char literals (so a quote inside one cannot open a string).
+    """
+    i = 0
+    n = len(line)
+    while i < n:
+        ch = line[i]
+        if in_block_comment:
+            if ch == ord('*') and i + 1 < n and line[i + 1] == ord('/'):
+                in_block_comment = False
+                i += 2
+            else:
+                i += 1
+            continue
+        if in_string:
+            if ch == ord('\\'):
+                i += 2  # escaped char; a trailing backslash continues the line
+                continue
+            if ch == ord('"'):
+                in_string = False
+            i += 1
+            continue
+        if ch == ord('/') and i + 1 < n and line[i + 1] == ord('/'):
+            break  # line comment: the rest of the line is inert
+        if ch == ord('/') and i + 1 < n and line[i + 1] == ord('*'):
+            in_block_comment = True
+            i += 2
+            continue
+        if ch == ord('"'):
+            in_string = True
+        elif ch == ord("'"):
+            i += 1  # char literal: skip to its closing quote
+            while i < n:
+                if line[i] == ord('\\'):
+                    i += 2
+                    continue
+                if line[i] == ord("'"):
+                    break
+                i += 1
+            i += 1
+            continue
+        i += 1
+    return in_block_comment, in_string
+
+
 def _preprocessor_switch_lines(source: bytes):
     """Line numbers at preprocessor conditional switch points.
 
@@ -1090,28 +1143,35 @@ def _preprocessor_switch_lines(source: bytes):
     matching #endif, including #elif/#else boundary lines) or within
     _PREPROC_SWITCH_WINDOW lines after the #endif. Bodies of dead '#if 0'
     blocks are excluded: errors there are expected and must fail closed.
+    A line whose leading '#' sits inside a block comment or a string literal
+    is not a directive, and dead '#if 0' interiors are subtracted from the
+    final set even when an enclosing live span, a nested live span, a
+    preceding post-#endif window, or the dead block's own lines added them.
     Returns None when the directives cannot be paired (unmatched #if or
     #endif), in which case callers must fail closed.
     """
     stack = []
     spans = []
+    in_block_comment = False
+    in_string = False
     for line_no, line in enumerate(source.split(b"\n"), start=1):
         stripped = line.lstrip()
-        if not stripped.startswith(b"#"):
-            continue
-        tokens = stripped.split()
-        if not tokens:
-            continue
-        directive = tokens[0].lower()
-        if directive in (b"#if", b"#ifdef", b"#ifndef"):
-            stack.append((line_no, tokens[1:2] == [b"0"]))
-        elif directive in (b"#elif", b"#else"):
-            if not stack:
-                return None
-        elif directive == b"#endif":
-            if not stack:
-                return None
-            spans.append((stack.pop(), line_no))
+        if (not in_block_comment and not in_string
+                and stripped.startswith(b"#")):
+            tokens = stripped.split()
+            if tokens:
+                directive = tokens[0].lower()
+                if directive in (b"#if", b"#ifdef", b"#ifndef"):
+                    stack.append((line_no, tokens[1:2] == [b"0"]))
+                elif directive in (b"#elif", b"#else"):
+                    if not stack:
+                        return None
+                elif directive == b"#endif":
+                    if not stack:
+                        return None
+                    spans.append((stack.pop(), line_no))
+        in_block_comment, in_string = _scan_cpp_lexical_state(
+            line, in_block_comment, in_string)
     if stack:
         return None
     switch = set()
@@ -1120,6 +1180,11 @@ def _preprocessor_switch_lines(source: bytes):
             continue
         switch.update(range(start + 1, end))
         switch.update(range(end + 1, end + 1 + _PREPROC_SWITCH_WINDOW))
+    # Dead '#if 0' interiors must never count as switch points. Subtract them
+    # from whatever span or window previously added those lines.
+    for (start, dead), end in spans:
+        if dead:
+            switch.difference_update(range(start + 1, end))
     return frozenset(switch)
 
 
