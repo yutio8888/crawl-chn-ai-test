@@ -700,7 +700,7 @@ bool mons_speaks(monster* mons)
         && mons_genus(mons->type) != mons->type)
     {
         msg = _get_speak_string(prefixes,
-                       mons_type_name(mons_genus(mons->type), DESC_DBNAME),
+                       mons_type_name_en(mons_genus(mons->type), DESC_DBNAME),
                        mons, no_player, no_foe, no_foe_name, no_god,
                        unseen);
     }

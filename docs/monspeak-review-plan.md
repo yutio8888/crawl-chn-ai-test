@@ -84,8 +84,14 @@ mapdef.cc 的 `dbname:`/`name:` 标签；展开经
    保留（审计强制），裁决为 keep 并记录依据。
 4. 候选 EN 逐字等于账本 proposal（本批 EN 保持基线逐字不变，无 EN
    文件改动）；候选 ZH 逐字等于账本 proposal。
-5. 不修改消费者逻辑、工具与其它资产（insult/godspeak/monname/
-   colourname 与既有账本）。
+5. 除 I70-R4-CODE-001 的 canonical-English 消费者修复外，不修改
+   消费者逻辑与其它资产（insult/godspeak/monname/colourname 与既有
+   账本）。该修复仅把 mon-speak.cc::mons_speaks 的属类回退查询身份
+   从本地化访问器改为 `mons_type_name_en(mons_genus(mons->type),
+   DESC_DBNAME)`（与 #69 的 I69-R4-CODE-001 同一模式：中文侧
+   本地化名字永远匹配不上英文 monspeak 键，会静默回退到字形/形状
+   语音）；不触碰随机选择算法、RNG 调用拓扑或回退链结构，工具与
+   基线账本逐字不变。
 
 ## 213 个不对称 key 裁决规则
 
