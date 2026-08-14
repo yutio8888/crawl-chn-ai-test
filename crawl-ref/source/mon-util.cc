@@ -4368,12 +4368,18 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
                 pluralise(species::name(you.species, species::SPNAME_GENUS)));
 
     string foe_genus;
+    // Canonical English genus used only for the SpeakDB species-insult
+    // lookup identity (_get_species_insult); the localized foe_genus above
+    // remains the display token source for @foe_genus@ and friends.
+    string foe_genus_en;
 
     if (foe == nullptr)
         ;
     else if (foe->is_player())
     {
         foe_genus = species::name(you.species, species::SPNAME_GENUS);
+        foe_genus_en =
+            species::name(you.species, species::SPNAME_GENUS, true);
 
         msg = _replace_speech_tag(msg, " @to_foe@", "");
         msg = _replace_speech_tag(msg, " @at_foe@", "");
@@ -4438,6 +4444,8 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@foe_species@", species);
 
         foe_genus = mons_type_name(mons_genus(m_foe->type), DESC_PLAIN);
+        foe_genus_en =
+            mons_type_name_en(mons_genus(m_foe->type), DESC_PLAIN);
 
         msg = replace_all(msg, "@foe_genus@", foe_genus);
         msg = replace_all(msg, "@Foe_genus@", uppercase_first(foe_genus));
@@ -4680,15 +4688,18 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = bind_random_body_part_message(msg, true);
     }
 
-    // Replace with species specific insults.
+    // Replace with species specific insults.  The canonical English genus
+    // is the SpeakDB lookup identity: insult.txt keys are English, so a
+    // localized genus (zh_monster_name / T_ genus) would miss and silently
+    // fall back to the generic insults.
     if (msg.find("@species_insult_") != string::npos)
     {
         msg = replace_all(msg, "@species_insult_adj1@",
-                               _get_species_insult(foe_genus, "adj1"));
+                               _get_species_insult(foe_genus_en, "adj1"));
         msg = replace_all(msg, "@species_insult_adj2@",
-                               _get_species_insult(foe_genus, "adj2"));
+                               _get_species_insult(foe_genus_en, "adj2"));
         msg = replace_all(msg, "@species_insult_noun@",
-                               _get_species_insult(foe_genus, "noun"));
+                               _get_species_insult(foe_genus_en, "noun"));
     }
 
     static const char * sound_list[] =

@@ -96,9 +96,9 @@ static string _shout_key(const monster &mons)
         return ghost_job + " player ghost";
     }
 
-    // Everything else should use the DB lookup name, not the translated
-    // display name, so shout.txt continues to resolve stable English keys.
-    return mons_type_name(mons.type, DESC_DBNAME);
+    // Everything else should use the canonical English DB lookup name, not
+    // the translated display name, so shout.txt keeps stable English keys.
+    return mons_type_name_en(mons.type, DESC_DBNAME);
 }
 
 /**

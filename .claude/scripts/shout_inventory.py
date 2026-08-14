@@ -11,7 +11,8 @@ the zero random-site/Lua-site counts, the complete token classification and
 a reachability proof from the consumed production root keys.
 
 Consumer model (frozen): ``shout.cc::monster_shout`` queries ``_shout_key``
-(``mons_type_name(DESC_DBNAME)`` monster DB names, ``pandemonium lord``, and
+(``mons_type_name_en(DESC_DBNAME)`` English monster DB names,
+``pandemonium lord``, and
 ``transform.cc`` queries ``Sphinx riddle success``/``failure``/
 ``failure acknowledged``.  The suffix variants, monster keys, ghost keys,
 glyph keys and sphinx roots are direct query roots; every other identity
@@ -634,8 +635,10 @@ def _yaml_name_fields(oid: str, directory: str, label: str) -> list[str]:
 
 def _monster_producers(oid: str, label: str) -> list[str]:
     """English DB names of every monster (dat/mons/*.yaml name fields);
-    these are the ``mons_type_name(mc, DESC_DBNAME)`` prefixes shout.cc
-    queries through _shout_key."""
+    these are the ``mons_type_name_en(mc, DESC_DBNAME)`` values
+    shout.cc::_shout_key returns for the ShoutDB query (the identity
+    shape is bound by _shout_key_identity_shape, so the display-mode
+    mons_type_name() can never replace the English accessor)."""
     names = _yaml_name_fields(oid, "crawl-ref/source/dat/mons", label)
     for anchor in _MONSTER_ANCHORS:
         _require(anchor in names,
@@ -645,7 +648,9 @@ def _monster_producers(oid: str, label: str) -> list[str]:
 
 def _job_producers(oid: str, label: str) -> list[str]:
     """Lowercased job names (dat/jobs/*.yaml name fields); the player-ghost
-    shout keys are ``<job> player ghost`` built by shout.cc::_shout_key."""
+    shout keys are ``<job> player ghost`` built by shout.cc::_shout_key
+    from the English job accessor get_job_name_en(ghost.job) (bound by
+    _shout_key_identity_shape)."""
     names = _yaml_name_fields(oid, "crawl-ref/source/dat/jobs", label)
     for anchor in _JOB_ANCHORS:
         _require(anchor in names,
@@ -744,6 +749,149 @@ def _glyph_consumer_shape(oid: str, label: str) -> None:
     )
 
 
+def _shout_key_identity_shape(oid: str, label: str, role: str) -> None:
+    """Bind the _shout_key() lookup identities to the English accessors
+    (decorlines-style shape check).
+
+    _shout_key() is the ShoutDB producer of the monster-name and
+    player-ghost keys: the ghost branch must build the key from
+    get_job_name_en(ghost.job) and the monster branch must return the
+    canonical English DB name.  mons_type_name() localizes under ZH
+    (zh_monster_name), so the display-mode call turns every monster
+    shout key into a Chinese string that can never match the English
+    shout.txt keys.
+
+    ``role`` decides how strict the monster-branch check is:
+
+    - ``candidate`` (audits of review/candidate commits and the worktree
+      HEAD) requires the fixed English call
+      ``return mons_type_name_en(mons.type, DESC_DBNAME);`` and rejects
+      the localized ``mons_type_name(mons.type, DESC_DBNAME)`` outright;
+    - ``baseline`` (the frozen data baseline OID, which predates the
+      consumer fix) additionally accepts the documented historical
+      localized call and records it as evidence: the baseline data audit
+      still derives the frozen-model English prefixes, but the historical
+      shape is reported instead of silently assumed."""
+    source = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/shout.cc", label),
+        label,
+    )
+    match = re.search(
+        r"static\s+string\s+_shout_key\(const\s+monster\s+&mons\)\s*"
+        r"\{(.*?)\n\}",
+        source, re.DOTALL,
+    )
+    _require(match is not None,
+             f"{label} cannot find _shout_key() in shout.cc")
+    body = match.group(1)
+    _require(
+        re.search(r"get_job_name_en\(ghost\.job\)", body) is not None,
+        f"{label} _shout_key() player-ghost branch must use "
+        f"get_job_name_en(ghost.job)",
+    )
+    fixed = re.search(
+        r"return\s+mons_type_name_en\(mons\.type,\s*DESC_DBNAME\);",
+        body,
+    )
+    historical = re.search(
+        r"return\s+mons_type_name\(mons\.type,\s*DESC_DBNAME\);",
+        body,
+    )
+    if role == "baseline":
+        _require(
+            fixed is not None or historical is not None,
+            f"{label} _shout_key() monster branch must return either "
+            f"mons_type_name_en(mons.type, DESC_DBNAME) or the "
+            f"documented pre-fix mons_type_name(mons.type, DESC_DBNAME)",
+        )
+        return
+    _require(
+        fixed is not None,
+        f"{label} _shout_key() monster branch must return "
+        f"mons_type_name_en(mons.type, DESC_DBNAME)",
+    )
+    _require(
+        re.search(r"mons_type_name\(mons\.type,\s*DESC_DBNAME\)", body)
+        is None,
+        f"{label} _shout_key() must not use the localized "
+        f"mons_type_name(mons.type, DESC_DBNAME)",
+    )
+
+
+def _species_insult_identity_shape(oid: str, label: str, role: str) -> None:
+    """Bind the SpeakDB species-insult lookup identities of
+    mon-util.cc::do_mon_str_replacements to the English accessors.
+
+    _get_species_insult() must be fed the canonical English genus:
+    species::name(you.species, SPNAME_GENUS, true) for player foes and
+    mons_type_name_en(mons_genus(m_foe->type), DESC_PLAIN) for monster
+    foes.  A revert to the localized accessors (raw=false /
+    mons_type_name) turns the SpeakDB key into a Chinese string that can
+    never match the English insult.txt keys, silently falling back to
+    the generic insults.
+
+    ``role`` decides how strict the check is: ``candidate`` requires the
+    fixed canonical-English feeds and rejects the localized foe_genus
+    feed outright; ``baseline`` (which predates the fix) additionally
+    accepts the historical localized feed and records it as evidence."""
+    source = hardened.shared._decode_utf8(
+        hardened.shared._git_blob_at_oid(
+            oid, "crawl-ref/source/mon-util.cc", label),
+        label,
+    )
+    fixed_player = re.search(
+        r"foe_genus_en\s*=\s*species::name\(you\.species,\s*"
+        r"species::SPNAME_GENUS,\s*true\);",
+        source,
+    )
+    fixed_monster = re.search(
+        r"foe_genus_en\s*=\s*mons_type_name_en\("
+        r"mons_genus\(m_foe->type\),\s*DESC_PLAIN\);",
+        source,
+    )
+    localized_feed = re.search(
+        r"_get_species_insult\(\s*foe_genus\s*,", source)
+    if role == "baseline":
+        # The frozen data baseline predates the fix: it feeds the
+        # localized foe_genus to _get_species_insult.  Accept that
+        # historical shape (and the fixed shape, should the baseline
+        # already carry it) instead of assuming one of them.
+        _require(
+            (fixed_player is not None and fixed_monster is not None)
+            or localized_feed is not None,
+            f"{label} do_mon_str_replacements() must either feed "
+            f"_get_species_insult() the canonical English foe_genus_en "
+            f"(fixed shape) or the documented pre-fix localized "
+            f"foe_genus (baseline shape)",
+        )
+        return
+    _require(
+        fixed_player is not None,
+        f"{label} do_mon_str_replacements() player genus must be "
+        f"species::name(you.species, species::SPNAME_GENUS, true)",
+    )
+    _require(
+        fixed_monster is not None,
+        f"{label} do_mon_str_replacements() monster genus must be "
+        f"mons_type_name_en(mons_genus(m_foe->type), DESC_PLAIN)",
+    )
+    _require(
+        localized_feed is None,
+        f"{label} _get_species_insult() must never be fed the localized "
+        f"foe_genus",
+    )
+    for insult_type in ("adj1", "adj2", "noun"):
+        _require(
+            re.search(
+                rf'_get_species_insult\(foe_genus_en,\s*"{insult_type}"\)',
+                source,
+            ) is not None,
+            f"{label} _get_species_insult() must be fed the canonical "
+            f"foe_genus_en for {insult_type}",
+        )
+
+
 def _line_of(match: re.Match[str], source: str) -> int:
     """1-based line number of a regex match in the exact-Git source."""
     return source.count("\n", 0, match.start()) + 1
@@ -764,20 +912,10 @@ def _source_anchor(
     return _line_of(match, source)
 
 
-def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
-    """Derive the SpeakDB-side consumption anchors from the exact-Git
-    SpeakDB graph.
-
-    The production SpeakDB dump loads ten sources (monspeak.txt first);
-    the three monspeak seed keys reference @demon_taunt@ / @imp_taunt@
-    (insult.txt SpeakDB keys) through the frozen SPEAKDB_MONSPEAK_SEEDS
-    edges, and the closure of the seeds over the complete SpeakDB token
-    graph (production merge order) reaches exactly the twenty
-    ShoutDB-recursion insult keys (dual-DB reachability).  The seven
-    shout-family keys with secondary monspeak definitions are located per
-    language: EN monspeak.txt (SpeakDB) and zh/monspeak.txt (effective in
-    both localized dumps), with the shout.txt definitions winning in both
-    databases."""
+def _speakdb_token_edges(oid: str, label: str) -> dict[str, set[str]]:
+    """The complete exact-Git SpeakDB @token@ edge graph: every key of
+    the effective SpeakDB merge (all ten sources, production merge order)
+    maps to the in-graph tokens of its effective body."""
     manifest = shared._english_source_manifest(oid, label)
     parsed: list[Any] = []
     for load_index, source_name in enumerate(manifest):
@@ -800,6 +938,24 @@ def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
             canonical = token.group(1).lower()
             if canonical in effective:
                 edges[key].add(canonical)
+    return edges
+
+
+def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
+    """Derive the SpeakDB-side consumption anchors from the exact-Git
+    SpeakDB graph.
+
+    The production SpeakDB dump loads ten sources (monspeak.txt first);
+    the three monspeak seed keys reference @demon_taunt@ / @imp_taunt@
+    (insult.txt SpeakDB keys) through the frozen SPEAKDB_MONSPEAK_SEEDS
+    edges, and the closure of the seeds over the complete SpeakDB token
+    graph (production merge order) reaches exactly the twenty
+    ShoutDB-recursion insult keys (dual-DB reachability).  The seven
+    shout-family keys with secondary monspeak definitions are located per
+    language: EN monspeak.txt (SpeakDB) and zh/monspeak.txt (effective in
+    both localized dumps), with the shout.txt definitions winning in both
+    databases."""
+    edges = _speakdb_token_edges(oid, label)
     for seed, target in SPEAKDB_MONSPEAK_SEEDS.items():
         _require(
             edges[seed] == {target},
@@ -868,6 +1024,94 @@ def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
             for key in sorted(CROSS_DB_OVERRIDE_KEYS)
         },
     }
+
+
+def _species_genus_producers(oid: str, label: str) -> list[str]:
+    """Raw English genus names of every species YAML input: the ``genus``
+    field, falling back to the plain ``name`` field, exactly as
+    species::name(speci, SPNAME_GENUS, true) resolves them (SPNAME_GENUS
+    without a genus_name returns the raw plain name)."""
+    producers: list[str] = []
+    for git_path in _git_tree_yamls(
+        oid, "crawl-ref/source/dat/species", label
+    ):
+        source = hardened.shared._decode_utf8(
+            hardened.shared._git_blob_at_oid(
+                oid, git_path, f"{label} {git_path}"),
+            label,
+        )
+        try:
+            data = yaml.safe_load(source)
+        except yaml.YAMLError as exc:
+            raise InventoryError(
+                f"{label} {git_path} is not valid YAML: {exc}"
+            ) from exc
+        _require(isinstance(data, dict),
+                 f"{label} {git_path} must be a YAML mapping")
+        name = data.get("name")
+        _require(isinstance(name, str) and len(name) >= 2,
+                 f"{label} {git_path} needs a valid name field")
+        genus = data.get("genus") or name
+        _require(isinstance(genus, str) and len(genus) >= 2,
+                 f"{label} {git_path} needs a valid genus field")
+        producers.append(genus)
+    _require(bool(producers),
+             f"{label} species derivation produced no genus names")
+    return sorted(producers)
+
+
+def _speakdb_postprocess_consumed(oid: str, label: str) -> set[str]:
+    """Derive the SpeakDB-post-processing consumed insult keys from the
+    exact-Git producers and the exact SpeakDB graph.
+
+    _get_species_insult() can only build keys of the form
+    ``insult <genus> <type>`` where <genus> is the canonical English
+    genus of the foe: every monster YAML name (each monster type is its
+    own genus unless overridden, and overrides resolve to other monster
+    YAML names) plus every species raw genus name.  The direct roots are
+    those derived keys that exist in the exact-Git insult.txt scope; the
+    SpeakDB graph closure (production merge order, restricted to the
+    insult scope) adds the keys reachable only through @token@ references
+    from the roots (``insult undead adj2`` via the mummy/vampire adj2
+    bodies, ``small_food`` via the spriggan noun body).  The derived
+    consumed set must equal the frozen SPEAKDB_POSTPROCESS_KEYS, so a
+    genus producer change, a new species-specific key or a moved SpeakDB
+    reference fails closed instead of reclassifying the keys."""
+    monster_names = set(
+        _yaml_name_fields(oid, "crawl-ref/source/dat/mons", label)
+    )
+    species_genera = {
+        genus.lower() for genus in _species_genus_producers(oid, label)
+    }
+    genera = monster_names | species_genera
+    direct = {
+        f"insult {genus} {insult_type}"
+        for genus in genera
+        for insult_type in ("adj1", "adj2", "noun")
+    }
+    scoped = {
+        entry["canonical_key"]
+        for entry in hardened.shared._derive_scoped_dump(
+            oid, "database/", label, source_basename="insult.txt"
+        )["entries"]
+    }
+    roots = direct & scoped
+    edges = _speakdb_token_edges(oid, label)
+    reached = set(roots)
+    queue: deque[str] = deque(sorted(reached))
+    while queue:
+        key = queue.popleft()
+        for target in sorted(edges.get(key, ())):
+            if target not in reached:
+                reached.add(target)
+                queue.append(target)
+    consumed = reached & scoped
+    _require(
+        consumed == SPEAKDB_POSTPROCESS_KEYS,
+        f"{label} derived SpeakDB post-processing consumed keys differ: "
+        f"{sorted(consumed ^ SPEAKDB_POSTPROCESS_KEYS)!r}",
+    )
+    return consumed
 
 
 def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
@@ -1061,7 +1305,7 @@ def _axed_monster_names(oid: str, label: str) -> list[str]:
 
 
 def _derivable_root_facts(
-    oid: str, label: str,
+    oid: str, label: str, role: str = "candidate",
 ) -> dict[str, Any]:
     """Every shout.txt key the production consumer can query directly,
     derived from the exact-Git producers.
@@ -1072,7 +1316,23 @@ def _derivable_root_facts(
     ghost keys are ``<job> player ghost`` for every job YAML name plus the
     ``player ghost`` monster DB name; monster keys are the mons YAML names
     in the file; glyph keys match the consumer's ``'x'``/``'cap-X'`` shape;
-    the sphinx roots are the transform.cc literals."""
+    the sphinx roots are the transform.cc literals.  The producer
+    identity shapes are bound first: _shout_key() must return the English
+    mons_type_name_en(DESC_DBNAME) / get_job_name_en(ghost.job) keys and
+    do_mon_str_replacements() must feed _get_species_insult() the
+    canonical English foe genus, so a localized producer fails the whole
+    derivation before any key is classified.  The SpeakDB post-processing
+    consumed set is derived from the exact-Git genus producers and the
+    exact SpeakDB graph and must equal the frozen 13 keys.
+
+    ``role`` forwards to the identity shape checks: ``baseline`` accepts
+    the documented historical localized accessors (recording them as
+    evidence), every other role requires the fixed English accessors, so
+    a candidate whose consumer regressed to a localized producer fails
+    the whole derivation instead of silently reclassifying the roots."""
+    _shout_key_identity_shape(oid, label, role)
+    _species_insult_identity_shape(oid, label, role)
+    speakdb_postprocess = _speakdb_postprocess_consumed(oid, label)
     default_keys = _shoutcc_default_keys(oid, label)
     _transformcc_sphinx_roots(oid, label)
     _glyph_consumer_shape(oid, label)
@@ -1084,6 +1344,7 @@ def _derivable_root_facts(
         "monsters": monsters,
         "jobs": jobs,
         "axed": axed,
+        "speakdb_postprocess": speakdb_postprocess,
     }
 
 
@@ -1312,14 +1573,19 @@ def _classify_keys(
       materializations, ghost keys, monster keys, glyph keys, sphinx roots),
     - a recursive fragment (the four _riddle_* keys),
     - a ShoutDB-recursion insult key (reached by the @token@ walk),
-    - a SpeakDB-post-processing insult key (the 16 species keys),
+    - a SpeakDB-post-processing insult key (the 13 keys derived by
+      _speakdb_postprocess_consumed from the exact-Git genus producers
+      and the SpeakDB graph),
     - or the sentinel/artifact keys already excluded from the identity set.
 
     The default-region set is derived from the 26 exact-Git default keys
     and the production suffix mechanism; ghost/monster roots from the
-    exact-Git YAML producers; glyph roots from the file keys matching the
-    consumer glyph shape; sphinx roots from the exact-Git transform.cc
-    literals.  Anything else fails closed."""
+    exact-Git YAML producers (whose identity shapes are bound by
+    _shout_key_identity_shape / _species_insult_identity_shape); glyph
+    roots from the file keys matching the consumer glyph shape; sphinx
+    roots from the exact-Git transform.cc literals; the SpeakDB
+    post-processing consumed set from the exact-Git genus producers and
+    the SpeakDB graph.  Anything else fails closed."""
     default_keys = [key.lower() for key in derivable["default_keys"]]
     monsters = set(derivable["monsters"])
     jobs = set(derivable["jobs"])
@@ -1374,7 +1640,13 @@ def _classify_keys(
         f"{label} legacy AXED_MON keys differ: {sorted(legacy_keys)!r}",
     )
     insult_keys = {row["canonical_key"].lower() for row in insult_rows}
-    shout_recursion_insult = insult_keys - SPEAKDB_POSTPROCESS_KEYS
+    speakdb_only = set(derivable["speakdb_postprocess"])
+    _require(
+        speakdb_only == SPEAKDB_POSTPROCESS_KEYS,
+        f"{label} SpeakDB post-processing consumed keys differ: "
+        f"{sorted(speakdb_only ^ SPEAKDB_POSTPROCESS_KEYS)!r}",
+    )
+    shout_recursion_insult = insult_keys - speakdb_only
     _require(
         len(shout_recursion_insult) == 20,
         f"{label} ShoutDB-recursion insult key count mismatch: "
@@ -1386,13 +1658,6 @@ def _classify_keys(
         f"SpeakDB monspeak closure keys: "
         f"{sorted(shout_recursion_insult ^ SPEAKDB_MONSPEAK_CLOSURE_KEYS)!r}",
     )
-    speakdb_only = insult_keys & SPEAKDB_POSTPROCESS_KEYS
-    _require(
-        speakdb_only == SPEAKDB_POSTPROCESS_KEYS,
-        f"{label} SpeakDB post-processing insult keys differ: "
-        f"{sorted(speakdb_only ^ SPEAKDB_POSTPROCESS_KEYS)!r}",
-    )
-
     classified = (roots | fragments | legacy_keys
                   | shout_recursion_insult | speakdb_only)
     _require(
@@ -1769,7 +2034,7 @@ def _load_dataset(
     _require_scoped_derivation(artifact, derived, label)
     if directory == "database/":
         _require_speakdb_insult_parity(artifact, ref, label)
-    derivable = _derivable_root_facts(ref, label)
+    derivable = _derivable_root_facts(ref, label, role=role)
     return _dataset(artifact, raw, directory, label, role, derivable,
                     sentinel_baseline=sentinel_baseline,
                     expected_dump_variants=expected_dump_variants)

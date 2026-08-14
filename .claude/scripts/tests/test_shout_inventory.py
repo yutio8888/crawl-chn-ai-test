@@ -42,23 +42,10 @@ def _git_plumbing(arguments: list, input_text: str | None = None) -> str:
 
 
 def fixture_commit_with_shoutcc(shoutcc_source: str) -> str:
-    """Dangling commit whose tree mirrors the baseline's shout producer
-    sources with ``crawl-ref/source/shout.cc`` replaced by
-    ``shoutcc_source``.  Created purely through plumbing, so the working
-    tree, index and refs are never touched."""
-
-    def listing(git_path: str) -> dict:
-        out = subprocess.run(
-            ["git", "-C", str(ROOT), "ls-tree", "-r", BASELINE, "--",
-             git_path],
-            check=True, capture_output=True, text=True,
-        ).stdout
-        entries = {}
-        for line in out.splitlines():
-            meta, name = line.split("\t", 1)
-            mode, kind, oid = meta.split(" ")
-            entries[Path(name).name] = (mode, kind, oid)
-        return entries
+    """Dangling commit whose tree mirrors the baseline's
+    ``crawl-ref/source`` tree with ``crawl-ref/source/shout.cc`` replaced
+    by ``shoutcc_source``.  Created purely through plumbing, so the
+    working tree, index and refs are never touched."""
 
     def mktree(entries: dict) -> str:
         text = "".join(
@@ -69,26 +56,37 @@ def fixture_commit_with_shoutcc(shoutcc_source: str) -> str:
 
     shoutcc_blob = _git_plumbing(
         ["hash-object", "-w", "--stdin"], input_text=shoutcc_source)
-    mons_tree = mktree(listing("crawl-ref/source/dat/mons"))
-    jobs_tree = mktree(listing("crawl-ref/source/dat/jobs"))
-    source_entries = {
-        "dat": ("040000", "tree", mktree({
-            "mons": ("040000", "tree", mons_tree),
-            "jobs": ("040000", "tree", jobs_tree),
-        })),
-        "shout.cc": ("100644", "blob", shoutcc_blob),
-    }
-    for name in ("transform.cc", "database.cc", "mon-util.cc"):
-        source_entries[name] = listing(f"crawl-ref/source/{name}")[name]
-    source_entries["util"] = ("040000", "tree", mktree({
-        "mon-gen": ("040000", "tree", mktree({
-            "header.txt": listing(
-                "crawl-ref/source/util/mon-gen")["header.txt"],
-        })),
-    }))
-    source_tree = mktree(source_entries)
-    crawl_ref_tree = mktree({"source": ("040000", "tree", source_tree)})
-    root_tree = mktree({"crawl-ref": ("040000", "tree", crawl_ref_tree)})
+    nodes: dict = {}
+    listing = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-tree", "-r", BASELINE, "--",
+         "crawl-ref/source"],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    for line in listing.splitlines():
+        meta, relpath = line.split("\t", 1)
+        parts = relpath.split("/")
+        node = nodes
+        for part in parts[2:-1]:
+            node = node.setdefault(part, {})
+        node[parts[-1]] = tuple(meta.split(" "))
+    nodes["shout.cc"] = ("100644", "blob", shoutcc_blob)
+
+    def build_recursive(children: dict) -> str:
+        entries = {}
+        for name, value in children.items():
+            if isinstance(value, dict):
+                entries[name] = ("040000", "tree", build_recursive(value))
+            else:
+                entries[name] = value
+        return mktree(entries)
+
+    source_tree = build_recursive(nodes)
+    root_tree = mktree({
+        "crawl-ref": (
+            "040000", "tree",
+            mktree({"source": ("040000", "tree", source_tree)}),
+        ),
+    })
     return _git_plumbing(
         ["commit-tree", root_tree, "-m",
          "shout exact-source negative fixture"]
@@ -246,15 +244,40 @@ def aligned_zh_source(zh_text: str, en_text: str) -> str:
 
 def aligned_candidate_artifacts(en_shout, en_insult, zh_shout, zh_insult):
     """Fixture commit whose ZH shout/insult sources are EN-shaped (the
-    __BUGGY sentinel preserved from ZH) plus the derived EN/ZH dumps."""
+    __BUGGY sentinel preserved from ZH) plus the derived EN/ZH dumps.
+
+    The fixture also carries the fixed C++ consumers (shout.cc
+    _shout_key via mons_type_name_en and mon-util.cc species-insult via
+    the canonical foe_genus_en): a real reviewed commit implements
+    I69-R4-CODE-001 on top of the baseline data, so the candidate-role
+    identity shape gate must see the fixed accessors."""
     fixture = fixture_commit_with_replaced_blobs({
         "crawl-ref/source/dat/database/zh/shout.txt":
             aligned_zh_source(zh_shout, en_shout),
         "crawl-ref/source/dat/database/zh/insult.txt":
             aligned_zh_source(zh_insult, en_insult),
+        **fixed_candidate_sources(),
     })
     return (fixture, exact_artifact(fixture, "database/"),
             exact_artifact(fixture, "database/zh/"))
+
+
+def fixed_candidate_sources() -> dict[str, str]:
+    """The worktree-fixed C++ consumers as fixture replacement blobs.
+
+    The baseline OID predates the I69-R4-CODE-001 consumer fix, so every
+    candidate fixture must explicitly carry the fixed shout.cc and
+    mon-util.cc: the candidate-role identity shape checks reject the
+    baseline's localized accessors, mirroring the real review gate for
+    commits that regress to a localized ShoutDB producer."""
+    return {
+        "crawl-ref/source/shout.cc": (
+            ROOT / "crawl-ref/source/shout.cc").read_text(
+                encoding="utf-8"),
+        "crawl-ref/source/mon-util.cc": (
+            ROOT / "crawl-ref/source/mon-util.cc").read_text(
+                encoding="utf-8"),
+    }
 
 
 def card_for(entry: dict) -> dict:
@@ -465,7 +488,12 @@ class ShoutInventoryTests(unittest.TestCase):
                                                   "negative EN")
 
     def test_root_derivation_binds_exact_git_producers(self):
-        facts = MODULE._derivable_root_facts(BASELINE, "fixture")
+        # The frozen baseline predates the consumer identity fix, so the
+        # derivation runs in the role that accepts the documented
+        # historical localized accessors and still derives the
+        # frozen-model English producer sets.
+        facts = MODULE._derivable_root_facts(BASELINE, "fixture",
+                                             role="baseline")
         self.assertEqual(26, len(facts["default_keys"]))
         self.assertEqual(tuple(facts["default_keys"]),
                          MODULE.DEFAULT_MSG_KEYS)
@@ -477,6 +505,8 @@ class ShoutInventoryTests(unittest.TestCase):
         self.assertEqual(26, len(facts["jobs"]))
         self.assertIn("fighter", facts["jobs"])
         self.assertIn("wanderer", facts["jobs"])
+        self.assertEqual(MODULE.SPEAKDB_POSTPROCESS_KEYS,
+                         set(facts["speakdb_postprocess"]))
 
     def test_mutated_default_msg_keys_fail_closed(self):
         # I69-CODE-004 exact-source negative: dropping one entry from the
@@ -491,7 +521,146 @@ class ShoutInventoryTests(unittest.TestCase):
         fixture = fixture_commit_with_shoutcc(mutated)
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "default_msg_keys differ"):
+            MODULE._derivable_root_facts(fixture, "negative fixture",
+                                         role="baseline")
+
+    def test_fixed_consumers_pass_candidate_identity_shape(self):
+        # I69-R4-CODE-001: the fixed worktree consumers (shout.cc
+        # _shout_key via mons_type_name_en, mon-util.cc species-insult
+        # via the canonical foe_genus_en) must satisfy the full
+        # candidate-role derivation in a real fixture commit: the
+        # identity gate accepts the fixed English accessors and the
+        # SpeakDB post-processing consumed set still derives to the
+        # frozen 13 keys.
+        fixed_shout = (ROOT / "crawl-ref/source/shout.cc").read_text(
+            encoding="utf-8")
+        fixed_monutil = (ROOT / "crawl-ref/source/mon-util.cc").read_text(
+            encoding="utf-8")
+        self.assertIn("mons_type_name_en(mons.type, DESC_DBNAME)",
+                      fixed_shout)
+        self.assertIn("mons_type_name_en(mons_genus(m_foe->type), "
+                      "DESC_PLAIN)", fixed_monutil)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/shout.cc": fixed_shout,
+            "crawl-ref/source/mon-util.cc": fixed_monutil,
+        })
+        facts = MODULE._derivable_root_facts(fixture, "fixed fixture")
+        self.assertEqual(MODULE.SPEAKDB_POSTPROCESS_KEYS,
+                         set(facts["speakdb_postprocess"]))
+
+    def test_shout_key_localized_producer_rejected(self):
+        # I69-R4-CODE-001 negative: a candidate whose _shout_key()
+        # monster branch regressed to the display-mode
+        # mons_type_name(mons.type, DESC_DBNAME) (what the pre-fix
+        # baseline carries, and what localizes under ZH) must fail the
+        # candidate-role derivation instead of reclassifying the roots.
+        source = committed_source(BASELINE, "crawl-ref/source/shout.cc")
+        self.assertIn("return mons_type_name(mons.type, DESC_DBNAME);",
+                      source)
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "must return mons_type_name_en"):
+            MODULE._shout_key_identity_shape(
+                BASELINE, "negative fixture", "candidate")
+        fixture = fixture_commit_with_shoutcc(source)
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "must return mons_type_name_en"):
             MODULE._derivable_root_facts(fixture, "negative fixture")
+
+    def test_species_insult_localized_genus_rejected(self):
+        # I69-R4-CODE-001 negative: a candidate whose
+        # do_mon_str_replacements() feeds the localized foe_genus to
+        # _get_species_insult() (the pre-fix shape: zh_monster_name /
+        # T_ genus under ZH) must fail the candidate-role derivation.
+        source = committed_source(BASELINE, "crawl-ref/source/mon-util.cc")
+        self.assertIn("_get_species_insult(foe_genus, \"adj1\")", source)
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "player genus must be"):
+            MODULE._species_insult_identity_shape(
+                BASELINE, "negative fixture", "candidate")
+        fixture = fixture_commit_with_replaced_blobs({
+            **fixed_candidate_sources(),
+            "crawl-ref/source/mon-util.cc": source,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "player genus must be"):
+            MODULE._derivable_root_facts(fixture, "negative fixture")
+
+    def test_species_insult_partial_fix_rejected(self):
+        # I69-R4-CODE-001 negative: a candidate that fixes only the
+        # player feed but still feeds the localized foe_genus for one
+        # token must be rejected outright (a mixed shape is never
+        # silently accepted).
+        fixed_monutil = fixed_candidate_sources()[
+            "crawl-ref/source/mon-util.cc"]
+        mutated = fixed_monutil.replace(
+            '_get_species_insult(foe_genus_en, "adj2")',
+            '_get_species_insult(foe_genus, "adj2")', 1)
+        self.assertNotEqual(fixed_monutil, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            **fixed_candidate_sources(),
+            "crawl-ref/source/mon-util.cc": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "must never be fed the localized "
+                                    "foe_genus"):
+            MODULE._derivable_root_facts(fixture, "negative fixture")
+
+    def test_speakdb_postprocess_consumed_derives_frozen_set(self):
+        # I69-R4-CODE-001: the SpeakDB post-processing consumed set is
+        # derived from the exact-Git producers (monster YAML names and
+        # species raw genera) and the exact SpeakDB graph, not assumed:
+        # the eleven direct genus roots are derived and the two
+        # closure-only keys (insult undead adj2, small_food) are reached
+        # through the frozen SpeakDB edges of the mummy/vampire adj2 and
+        # spriggan noun bodies.
+        consumed = MODULE._speakdb_postprocess_consumed(
+            BASELINE, "fixture")
+        self.assertEqual(MODULE.SPEAKDB_POSTPROCESS_KEYS, consumed)
+        self.assertIn("insult mummy adj2", consumed)
+        self.assertIn("insult elf adj1", consumed)
+        self.assertIn("insult spriggan noun", consumed)
+        self.assertIn("insult undead adj2", consumed)
+        self.assertIn("small_food", consumed)
+        edges = MODULE._speakdb_token_edges(BASELINE, "fixture")
+        self.assertEqual({"insult undead adj2"},
+                         edges["insult mummy adj2"])
+        self.assertEqual({"insult undead adj2"},
+                         edges["insult vampire adj2"])
+        self.assertEqual({"small_food"}, edges["insult spriggan noun"])
+
+    def test_speakdb_postprocess_edge_mutation_rejected(self):
+        # I69-R4-CODE-001 negative: dropping the @insult undead adj2@
+        # edge from the mummy adj2 body must fail the derived consumed
+        # set instead of silently reclassifying the key.
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/insult.txt")
+        mutated = source.replace("@insult undead adj2@",
+                                 "@insult general adj2@", 1)
+        self.assertNotEqual(source, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/insult.txt": mutated,
+        })
+        with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "derived SpeakDB post-processing consumed keys differ"):
+            MODULE._speakdb_postprocess_consumed(fixture, "negative fixture")
+
+    def test_speakdb_postprocess_key_mutation_rejected(self):
+        # I69-R4-CODE-001 negative: renaming one direct genus root key in
+        # insult.txt must fail the derived consumed set (the renamed key
+        # no longer matches any derived genus lookup).
+        source = committed_source(
+            BASELINE, "crawl-ref/source/dat/database/insult.txt")
+        mutated = source.replace("insult mummy adj2\n",
+                                 "insult mummyX adj2\n", 1)
+        self.assertNotEqual(source, mutated)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/insult.txt": mutated,
+        })
+        with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "derived SpeakDB post-processing consumed keys differ"):
+            MODULE._speakdb_postprocess_consumed(fixture, "negative fixture")
 
     def test_classification_is_exactly_one_of_five_classes(self):
         by_key = {entry["key"]: entry for entry in self.inventory["entries"]}
@@ -757,7 +926,8 @@ class ShoutInventoryTests(unittest.TestCase):
         insult_rows = [row for row in rows
                        if any(item["source_name"] == "database/insult.txt"
                               for item in row["source_history"])]
-        derivable = MODULE._derivable_root_facts(BASELINE, "fixture")
+        derivable = MODULE._derivable_root_facts(BASELINE, "fixture",
+                                                 role="baseline")
         for key in ("__default", "__next", "__none"):
             with self.subTest(key=key):
                 with self.assertRaisesRegex(MODULE.InventoryError,
@@ -778,6 +948,7 @@ class ShoutInventoryTests(unittest.TestCase):
                 mutated = source + f"\n{key}\n\nSOUND:x\n%%%%\n"
                 fixture = fixture_commit_with_replaced_blobs({
                     "crawl-ref/source/dat/database/shout.txt": mutated,
+                    **fixed_candidate_sources(),
                 })
                 with self.assertRaisesRegex(MODULE.InventoryError,
                                             "runtime sentinel values"):
@@ -800,6 +971,7 @@ class ShoutInventoryTests(unittest.TestCase):
                    + source[separator:])
         fixture = fixture_commit_with_replaced_blobs({
             "crawl-ref/source/dat/database/shout.txt": mutated,
+            **fixed_candidate_sources(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "sentinel variant count mismatch"):
@@ -924,6 +1096,7 @@ class ShoutInventoryTests(unittest.TestCase):
         )
         fixture = fixture_commit_with_replaced_blobs({
             "crawl-ref/source/dat/database/shout.txt": mutated,
+            **fixed_candidate_sources(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "sentinel content differs"):
@@ -944,6 +1117,7 @@ class ShoutInventoryTests(unittest.TestCase):
         mutated = source[:start] + source[end:]
         fixture = fixture_commit_with_replaced_blobs({
             "crawl-ref/source/dat/database/shout.txt": mutated,
+            **fixed_candidate_sources(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "exactly one sentinel entry"):
@@ -1143,12 +1317,16 @@ class ShoutInventoryTests(unittest.TestCase):
         # consumer lookup must be rejected by the candidate audit (the
         # candidate anchors are derived from the exact candidate Git
         # sources and must equal the frozen baseline facts).
-        source = committed_source(BASELINE, "crawl-ref/source/shout.cc")
+        source = fixed_candidate_sources()[
+            "crawl-ref/source/shout.cc"]
         mutated = source.replace(
             "    string message = getShoutString(key, suffix);",
             "\n    string message = getShoutString(key, suffix);", 1)
+        self.assertNotEqual(source, mutated)
         fixture = fixture_commit_with_replaced_blobs({
             "crawl-ref/source/shout.cc": mutated,
+            "crawl-ref/source/mon-util.cc": fixed_candidate_sources()[
+                "crawl-ref/source/mon-util.cc"],
             "crawl-ref/source/dat/database/zh/shout.txt": aligned_zh_source(
                 committed_source(
                     BASELINE, "crawl-ref/source/dat/database/zh/shout.txt"),
@@ -1194,6 +1372,7 @@ class ShoutInventoryTests(unittest.TestCase):
                     BASELINE, "crawl-ref/source/dat/database/zh/insult.txt"),
                 committed_source(
                     BASELINE, "crawl-ref/source/dat/database/insult.txt")),
+            **fixed_candidate_sources(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "monspeak seed .* edge differs"):
