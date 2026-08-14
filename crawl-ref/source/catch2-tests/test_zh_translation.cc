@@ -27,6 +27,7 @@
 #include "mapdef.h"
 #include "message.h"
 #include "mgen-data.h"
+#include "mon-place.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "mutation.h"
@@ -3694,7 +3695,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 // =============================================================================
-// Issue #69 — ShoutDB lookup identity (I69-R4-CODE-001).
+// Issue #69 — ShoutDB lookup identity (I69-R4-CODE-001 / I69-R5-CODE-001).
 //
 // shout.cc::_shout_key builds the monster shout key from
 // mons_type_name(mc, DESC_DBNAME), which under ZH returns the localized
@@ -3709,11 +3710,23 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // every species-specific insult silently falls back to the generic ones.
 // The canonical genus (raw=true / mons_type_name_en) is the lookup
 // identity; the localized genus stays a display token.
+//
+// I69-R5-CODE-001: the tests drive the real production seams with real
+// actor state instead of rebuilding the keys by hand: _shout_key() is the
+// exact function monster_shout() calls, and do_mon_str_replacements() is
+// exercised with a real player foe (hostile monster with foe == MHITYOU,
+// the monster constructor default) and with real monster foes placed in
+// env.mons slots through the production allocator.  A revert of any
+// production accessor to the localized one changes the DB keys under ZH
+// and fails the assertions below even though every resolved line still
+// contains Chinese text.
 // =============================================================================
 
-TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh: ShoutDB monster keys resolve through English DB names",
-                 "[zh-translation][shout][issue-69]")
+namespace
+{
+// I69-R5-CODE-001 shared body for the ShoutDB seam; runs under both
+// display languages.  `zh` selects the language-specific expectations.
+void check_shout_key_production_chain(bool zh)
 {
     init_monsters();
     init_mon_name_cache();
@@ -3722,144 +3735,417 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         monster_type type;
         const char *english_db_name;
+        bool resolves_in_db; // the key resolves a shout.txt entry
     };
-    const array<shout_key_case, 3> cases = {{
+    const array<shout_key_case, 4> cases = {{
         // A simple VISUAL-only entry.
-        { MONS_MOTH_OF_WRATH, "moth of wrath" },
+        { MONS_MOTH_OF_WRATH, "moth of wrath", true },
         // Another plain entry, from a different creature family.
-        { MONS_BALLISTOMYCETE_SPORE, "ballistomycete spore" },
+        { MONS_BALLISTOMYCETE_SPORE, "ballistomycete spore", true },
         // The imp chain: the English key drives the @imp@ recursion.
-        { MONS_IRON_IMP, "iron imp" },
+        { MONS_IRON_IMP, "iron imp", true },
+        // Special branch: pandemonium lords use the fixed key, never the
+        // monster DB name.  shout.txt has no "pandemonium lord" entry, so
+        // monster_shout() resolves it through the glyph/default fallback;
+        // only the seam key is pinned here.
+        { MONS_PANDEMONIUM_LORD, "pandemonium lord", false },
     }};
 
     for (const shout_key_case &test : cases)
     {
         INFO("monster=" << test.english_db_name);
 
-        // The DB lookup name must stay the English identity under ZH:
-        // mons_type_name_en() is exactly what _shout_key() must query.
-        const string db_name_en =
-            mons_type_name_en(test.type, DESC_DBNAME);
-        REQUIRE(db_name_en == test.english_db_name);
-        REQUIRE_FALSE(contains_non_ascii(db_name_en));
+        // Real producer: monster_shout() calls _shout_key(mons); the
+        // monster object drives the seam exactly as the production
+        // consumer does.
+        monster mons;
+        mons.type = test.type;
+        const string key = _shout_key(mons);
+        REQUIRE(key == test.english_db_name);
+        REQUIRE_FALSE(contains_non_ascii(key));
 
-        // The display-mode DESC_DBNAME name is localized under ZH; if
-        // _shout_key() were reverted to mons_type_name(), the query key
-        // would be this Chinese string.
-        const string localized_db_name =
-            mons_type_name(test.type, DESC_DBNAME);
-        INFO("localized db name=" << localized_db_name);
-        REQUIRE(contains_non_ascii(localized_db_name));
+        if (!test.resolves_in_db)
+            continue;
 
-        // Real production chain: _shout_key() returns exactly db_name_en
-        // and monster_shout() queries getShoutString(key, suffix); the
-        // English key must resolve the ZH shout line (the ZH shout.txt
-        // keeps English keys with Chinese bodies).
+        // The DB lookup with the seam-selected key must resolve the line
+        // in the current display language (the ZH shout.txt keeps
+        // English keys with Chinese bodies).
         string line;
         {
             rng::subgenerator scoped_rng(
                 0x6901000000000000ULL + static_cast<uint64_t>(test.type),
                 0x6902000000000000ULL);
-            line = getShoutString(db_name_en, " seen");
+            line = getShoutString(key, " seen");
         }
         INFO("shout line=" << line);
         REQUIRE_FALSE(line.empty());
-        REQUIRE(contains_non_ascii(line));
+        if (zh)
+            REQUIRE(contains_non_ascii(line));
 
-        // Anti-regression: the localized key (what mons_type_name()
-        // produces under ZH) must miss the ShoutDB, so a revert to the
-        // display-mode accessor silently breaks every monster shout.
-        string localized_lookup;
+        // The display-mode DESC_DBNAME name is localized under ZH; a
+        // revert of _shout_key() to mons_type_name() would query this
+        // Chinese string and silently fall back to the default region.
+        const string localized_db_name =
+            mons_type_name(test.type, DESC_DBNAME);
+        if (zh)
         {
-            rng::subgenerator scoped_rng(
-                0x6903000000000000ULL + static_cast<uint64_t>(test.type),
-                0x6904000000000000ULL);
-            localized_lookup =
-                getShoutString(localized_db_name, " seen");
+            INFO("localized db name=" << localized_db_name);
+            REQUIRE(contains_non_ascii(localized_db_name));
+            string localized_lookup;
+            {
+                rng::subgenerator scoped_rng(
+                    0x6903000000000000ULL + static_cast<uint64_t>(test.type),
+                    0x6904000000000000ULL);
+                localized_lookup =
+                    getShoutString(localized_db_name, " seen");
+            }
+            INFO("localized lookup=" << localized_lookup);
+            REQUIRE(localized_lookup.empty());
         }
-        INFO("localized lookup=" << localized_lookup);
-        REQUIRE(localized_lookup.empty());
+        else
+            REQUIRE(localized_db_name == test.english_db_name);
     }
 }
 
-TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh: species-insult SpeakDB keys resolve through English genus names",
-                 "[zh-translation][shout][issue-69]")
+// RAII holder for one real monster placed in an env.mons slot through the
+// production allocator, restoring the affected env/player state on exit.
+struct scoped_env_monster_slot
+{
+    const coord_def pos;
+    const unsigned short old_mgrid;
+    const int old_max_mon_index;
+    const uint32_t old_last_mid;
+    map<uint32_t, unsigned short> old_mid_cache;
+    monster *placed;
+
+    explicit scoped_env_monster_slot(const coord_def &p)
+        : pos(p), old_mgrid(env.mgrid(p)),
+          old_max_mon_index(env.max_mon_index),
+          old_last_mid(you.last_mid),
+          old_mid_cache(env.mid_cache), placed(nullptr)
+    {
+    }
+
+    ~scoped_env_monster_slot()
+    {
+        if (placed)
+        {
+            env.mid_cache.erase(placed->mid);
+            placed->reset();
+        }
+        env.mgrid(pos) = old_mgrid;
+        env.max_mon_index = old_max_mon_index;
+        you.last_mid = old_last_mid;
+        env.mid_cache = old_mid_cache;
+    }
+
+    monster *place(monster_type type)
+    {
+        placed = get_free_monster();
+        if (!placed)
+            return nullptr;
+        placed->type = type;
+        placed->set_hit_dice(1);
+        placed->hit_points = placed->max_hit_points = 5;
+        placed->speed = 10;
+        placed->attitude = ATT_HOSTILE;
+        placed->behaviour = BEH_SEEK;
+        placed->set_position(pos);
+        placed->set_new_monster_id();
+        env.mgrid(pos) = placed->mindex();
+        return placed;
+    }
+};
+
+// Mirrors mon-util.cc::_get_species_insult's RNG consumption for one
+// feed: the species-specific SpeakDB entry when present, otherwise the
+// generic fallback entry.  The production chain evaluates all three
+// feeds (adj1, adj2, noun) eagerly as replace_all() arguments, so tests
+// that assert on the adj2/noun feed must replay the earlier draws first.
+string species_insult_at_consumed_position(const string &species,
+                                           const string &type)
+{
+    string lookup = "insult " + species + " " + type;
+    string line = getSpeakString(lowercase(lookup));
+    if (line.empty())
+        line = getSpeakString("insult general " + type);
+    return line;
+}
+
+// I69-R5-CODE-001 shared body for the SpeakDB species-insult seam; runs
+// under both display languages.
+void check_species_insult_production_chain(bool zh)
 {
     init_monsters();
     init_properties();
 
-    // Monster-foe path: do_mon_str_replacements() feeds
-    // _get_species_insult() with
-    // mons_type_name_en(mons_genus(m_foe->type), DESC_PLAIN).  Under ZH
-    // the display-mode genus of MONS_MUMMY is the Chinese name, so the
-    // canonical English key is what must resolve "insult mummy adj2".
-    REQUIRE(mons_type_name_en(mons_genus(MONS_MUMMY), DESC_PLAIN)
-            == "mummy");
-    const string localized_genus =
-        mons_type_name(mons_genus(MONS_MUMMY), DESC_PLAIN);
-    INFO("localized genus=" << localized_genus);
-    REQUIRE(contains_non_ascii(localized_genus));
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
 
-    // Real production chain: _get_species_insult() builds
-    // lowercase("insult " + genus + " " + type) and queries SpeakDB;
-    // the canonical English key hits the ZH species-specific entry.
-    string insult;
+    // --- Player-foe path: for a hostile monster with foe == MHITYOU (the
+    // monster constructor default) do_mon_str_replacements() resolves the
+    // foe to the player and feeds the canonical English genus
+    // species::name(SP_DEEP_ELF, SPNAME_GENUS, true) == "Elf" to
+    // _get_species_insult(), which must select the species-specific
+    // "insult elf adj1" SpeakDB entry.
+    REQUIRE(species::name(SP_DEEP_ELF, species::SPNAME_GENUS, true)
+            == "Elf");
+    you.species = SP_DEEP_ELF;
+
+    monster speaker;
+    speaker.type = MONS_ORC;
+
+    string player_result;
     {
-        string lookup = "insult "
-            + mons_type_name_en(mons_genus(MONS_MUMMY), DESC_PLAIN)
-            + " adj2";
-        rng::subgenerator scoped_rng(0x6905000000000000ULL,
-                                     0x6906000000000000ULL);
-        insult = getSpeakString(lowercase(lookup));
+        rng::subgenerator scoped_rng(0x690b000000000000ULL,
+                                     0x690c000000000000ULL);
+        player_result = do_mon_str_replacements("@species_insult_adj1@",
+                                                speaker, S_SHOUT);
     }
-    INFO("insult=" << insult);
-    REQUIRE_FALSE(insult.empty());
-    REQUIRE(contains_non_ascii(insult));
+    INFO("player-foe species insult=" << player_result);
+    REQUIRE_FALSE(player_result.empty());
+    if (zh)
+        REQUIRE(contains_non_ascii(player_result));
 
-    // Anti-regression: the localized genus key (what mons_type_name()
-    // produces under ZH) must miss SpeakDB, so a revert silently falls
-    // back to the generic insults instead of the mummy-specific ones.
+    // Same RNG state, same key: the production result must be exactly
+    // the elf-specific entry (the adj1 feed is the first draw of the
+    // eager adj1/adj2/noun sequence), and that entry must differ from
+    // the generic fallback line, so a revert to the localized or
+    // raw=false genus (or a missing canonical feed) would select the
+    // generic line and fail the equality below.
+    string elf_insult;
+    string generic_adj1;
     {
-        string localized_lookup = "insult "
-            + mons_type_name(mons_genus(MONS_MUMMY), DESC_PLAIN)
-            + " adj2";
-        rng::subgenerator scoped_rng(0x6907000000000000ULL,
-                                     0x6908000000000000ULL);
-        const string miss =
-            getSpeakString(lowercase(localized_lookup));
-        INFO("localized lookup=" << localized_lookup);
-        REQUIRE(miss.empty());
+        rng::subgenerator scoped_rng(0x690b000000000000ULL,
+                                     0x690c000000000000ULL);
+        elf_insult = species_insult_at_consumed_position("Elf", "adj1");
     }
+    {
+        rng::subgenerator scoped_rng(0x690b000000000000ULL,
+                                     0x690c000000000000ULL);
+        generic_adj1 = getSpeakString("insult general adj1");
+    }
+    INFO("elf insult=" << elf_insult);
+    INFO("generic adj1=" << generic_adj1);
+    REQUIRE_FALSE(elf_insult.empty());
+    REQUIRE_FALSE(generic_adj1.empty());
+    REQUIRE(elf_insult != generic_adj1);
+    REQUIRE(player_result == elf_insult);
 
-    // Player path: species::name(..., SPNAME_GENUS, true) is the
-    // canonical genus identity even when the display genus is localized
-    // (felid genus Cat -> 猫).  A raw=false revert therefore changes the
-    // SpeakDB key under ZH.
-    REQUIRE(species::name(SP_FELID, species::SPNAME_GENUS, true)
-            == "Cat");
+    // Species-genus display split: the felid genus display is localized
+    // under ZH (T_("Cat") == 猫) while the raw identity stays "Cat"; the
+    // localized genus is a display token and must never become a SpeakDB
+    // key.
+    REQUIRE(species::name(SP_FELID, species::SPNAME_GENUS, true) == "Cat");
     const string localized_player_genus =
         species::name(SP_FELID, species::SPNAME_GENUS);
     INFO("localized player genus=" << localized_player_genus);
-    REQUIRE(contains_non_ascii(localized_player_genus));
-    REQUIRE(localized_player_genus
-            != species::name(SP_FELID, species::SPNAME_GENUS, true));
-    string felid_lookup = "insult "
-        + string(species::name(SP_FELID, species::SPNAME_GENUS, true))
-        + " adj1";
-    REQUIRE(lowercase(felid_lookup) == "insult cat adj1");
-
-    // The canonical deep-elf genus key really hits SpeakDB under ZH
-    // (the elf species-specific insult line).
-    string elf_insult;
+    if (zh)
     {
-        string lookup = "insult "
-            + species::name(SP_DEEP_ELF, species::SPNAME_GENUS, true)
-            + " adj1";
-        rng::subgenerator scoped_rng(0x6909000000000000ULL,
-                                     0x690a000000000000ULL);
-        elf_insult = getSpeakString(lowercase(lookup));
+        REQUIRE(contains_non_ascii(localized_player_genus));
+        REQUIRE(localized_player_genus
+                != species::name(SP_FELID, species::SPNAME_GENUS, true));
+        string felid_miss;
+        {
+            rng::subgenerator scoped_rng(0x690d000000000000ULL,
+                                         0x690e000000000000ULL);
+            string felid_lookup = "insult "
+                + localized_player_genus + " adj1";
+            felid_miss = getSpeakString(lowercase(felid_lookup));
+        }
+        INFO("felid localized key lookup=" << felid_miss);
+        REQUIRE(felid_miss.empty());
     }
-    INFO("elf insult=" << elf_insult);
-    REQUIRE_FALSE(elf_insult.empty());
+
+    // --- Monster-foe path: a real mummy in an env.mons slot is the
+    // speaker's foe; production feeds
+    // mons_type_name_en(mons_genus(MONS_MUMMY), DESC_PLAIN) == "mummy"
+    // and must select "insult mummy adj2".
+    REQUIRE(mons_type_name_en(mons_genus(MONS_MUMMY), DESC_PLAIN)
+            == "mummy");
+    {
+        scoped_env_monster_slot slot(coord_def(20, 21));
+        monster *foe_mons = slot.place(MONS_MUMMY);
+        REQUIRE(foe_mons != nullptr);
+
+        monster speaker_mummy;
+        speaker_mummy.type = MONS_ORC_WARRIOR;
+        speaker_mummy.foe = foe_mons->mindex();
+
+        string monster_result;
+        {
+            rng::subgenerator scoped_rng(0x690f000000000000ULL,
+                                         0x6910000000000000ULL);
+            monster_result = do_mon_str_replacements(
+                "@species_insult_adj2@", speaker_mummy, S_SHOUT);
+        }
+        INFO("monster-foe species insult=" << monster_result);
+        REQUIRE_FALSE(monster_result.empty());
+        if (zh)
+            REQUIRE(contains_non_ascii(monster_result));
+
+        // The species-specific SpeakDB entry exists and differs from the
+        // generic line, so the equality below really pins the
+        // species-specific selection.
+        string mummy_insult;
+        string generic_adj2;
+        {
+            rng::subgenerator scoped_rng(0x690f000000000000ULL,
+                                         0x6910000000000000ULL);
+            mummy_insult = species_insult_at_consumed_position(
+                "mummy", "adj2");
+        }
+        {
+            rng::subgenerator scoped_rng(0x690f000000000000ULL,
+                                         0x6910000000000000ULL);
+            generic_adj2 = getSpeakString("insult general adj2");
+        }
+        INFO("mummy insult=" << mummy_insult);
+        INFO("generic adj2=" << generic_adj2);
+        REQUIRE_FALSE(mummy_insult.empty());
+        REQUIRE_FALSE(generic_adj2.empty());
+        REQUIRE(mummy_insult != generic_adj2);
+
+        // The adj2 feed is the second eager draw (the adj1 feed misses
+        // and falls back to "insult general adj1" first), so replay the
+        // preceding draw before comparing.
+        string expected_mummy;
+        {
+            rng::subgenerator scoped_rng(0x690f000000000000ULL,
+                                         0x6910000000000000ULL);
+            (void)species_insult_at_consumed_position("mummy", "adj1");
+            expected_mummy = species_insult_at_consumed_position(
+                "mummy", "adj2");
+        }
+        REQUIRE(monster_result == expected_mummy);
+
+        // Anti-regression under ZH: the display-mode genus of the mummy
+        // is the localized name; the localized key must miss SpeakDB.
+        const string localized_mummy_genus =
+            mons_type_name(mons_genus(MONS_MUMMY), DESC_PLAIN);
+        if (zh)
+        {
+            INFO("localized mummy genus=" << localized_mummy_genus);
+            REQUIRE(contains_non_ascii(localized_mummy_genus));
+            string localized_miss;
+            {
+                rng::subgenerator scoped_rng(0x6911000000000000ULL,
+                                             0x6912000000000000ULL);
+                string mummy_lookup = "insult "
+                    + localized_mummy_genus + " adj2";
+                localized_miss =
+                    getSpeakString(lowercase(mummy_lookup));
+            }
+            INFO("localized mummy key lookup=" << localized_miss);
+            REQUIRE(localized_miss.empty());
+        }
+        else
+            REQUIRE(localized_mummy_genus == "mummy");
+    }
+
+    // --- Generic fallback: the orc genus has no species-specific SpeakDB
+    // entry ("insult orc noun" misses), so _get_species_insult() falls
+    // back to the real "insult general noun" entry.
+    REQUIRE(mons_type_name_en(mons_genus(MONS_ORC_WARRIOR), DESC_PLAIN)
+            == "orc");
+    {
+        scoped_env_monster_slot slot(coord_def(20, 22));
+        monster *orc_foe = slot.place(MONS_ORC_WARRIOR);
+        REQUIRE(orc_foe != nullptr);
+
+        monster speaker_orc;
+        speaker_orc.type = MONS_ORC_WARRIOR;
+        speaker_orc.foe = orc_foe->mindex();
+
+        // The species-specific key genuinely misses SpeakDB in both
+        // display languages, which is what forces the fallback.
+        string orc_species_miss;
+        {
+            rng::subgenerator scoped_rng(0x6913000000000000ULL,
+                                         0x6914000000000000ULL);
+            orc_species_miss = getSpeakString("insult orc noun");
+        }
+        INFO("orc species key lookup=" << orc_species_miss);
+        REQUIRE(orc_species_miss.empty());
+
+        string fallback_result;
+        {
+            rng::subgenerator scoped_rng(0x6915000000000000ULL,
+                                         0x6916000000000000ULL);
+            fallback_result = do_mon_str_replacements(
+                "@species_insult_noun@", speaker_orc, S_SHOUT);
+        }
+        INFO("generic-fallback species insult=" << fallback_result);
+        REQUIRE_FALSE(fallback_result.empty());
+        if (zh)
+            REQUIRE(contains_non_ascii(fallback_result));
+
+        // All three feeds miss for the orc genus, so the noun feed is
+        // the third eager draw (after the two generic fallback draws);
+        // replay the full consumption and compare the last draw.
+        string expected_fallback;
+        {
+            rng::subgenerator scoped_rng(0x6915000000000000ULL,
+                                         0x6916000000000000ULL);
+            (void)species_insult_at_consumed_position("orc", "adj1");
+            (void)species_insult_at_consumed_position("orc", "adj2");
+            expected_fallback =
+                species_insult_at_consumed_position("orc", "noun");
+        }
+        INFO("expected fallback=" << expected_fallback);
+        REQUIRE_FALSE(expected_fallback.empty());
+        REQUIRE(fallback_result == expected_fallback);
+
+        // Anti-regression under ZH: the localized orc genus key misses.
+        const string localized_orc_genus =
+            mons_type_name(mons_genus(MONS_ORC_WARRIOR), DESC_PLAIN);
+        if (zh)
+        {
+            INFO("localized orc genus=" << localized_orc_genus);
+            REQUIRE(contains_non_ascii(localized_orc_genus));
+            string localized_miss;
+            {
+                rng::subgenerator scoped_rng(0x6917000000000000ULL,
+                                             0x6918000000000000ULL);
+                string orc_lookup = "insult "
+                    + localized_orc_genus + " noun";
+                localized_miss =
+                    getSpeakString(lowercase(orc_lookup));
+            }
+            INFO("localized orc key lookup=" << localized_miss);
+            REQUIRE(localized_miss.empty());
+        }
+        else
+            REQUIRE(localized_orc_genus == "orc");
+    }
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: ShoutDB monster keys resolve through the production seam",
+                 "[zh-translation][shout][issue-69]")
+{
+    check_shout_key_production_chain(true);
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: ShoutDB monster keys resolve through the production seam",
+                 "[zh-translation][shout][issue-69]")
+{
+    check_shout_key_production_chain(false);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: species-insult SpeakDB keys resolve through the production seam",
+                 "[zh-translation][shout][issue-69]")
+{
+    check_species_insult_production_chain(true);
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: species-insult SpeakDB keys resolve through the production seam",
+                 "[zh-translation][shout][issue-69]")
+{
+    check_species_insult_production_chain(false);
 }

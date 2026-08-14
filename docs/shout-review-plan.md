@@ -72,13 +72,19 @@ SpeakDB 后处理路径解析 12 个 `insult <species>` 键与 `small_food`。
    变体和拟议 EN/ZH 变体、权重、证据与结论。
 2. 双语各 124 个 key；逐键变体数与权重序列一致；双语加权变体总数
    相等（675/675）。
-3. 双语从消费根键可达全部 124 个键；无悬空 token、解析错误、空 body；
-   `__BUGGY` 保持每语言恰好 1 个变体；`#### Player sphinx riddle
-   lines` 标题块永不成为 identity。
+3. 123 个 live/递归身份双语从消费根键可达；1 个 AXED_MON legacy 身份
+   （`giant slug`）无 live producer/入边引用，分类为
+   legacy-axed-monster 并显式豁免可达性；无悬空 token、解析错误、空
+   body；`__BUGGY` 保持每语言恰好 1 个变体；`#### Player sphinx
+   riddle lines` 标题块永不成为 identity。
 4. 仅允许严格账本明确批准的文本、权重、顺序与 token 变化；英文与
    中文候选必须逐字等于账本 proposal。
-5. 不修改消费者逻辑、随机选择算法、RNG 调用拓扑或 SpeakDB 双载
-   语义；英文源保持基线逐字不变（本批无恢复 EN 的裁决）。
+5. 除 I69-R4-CODE-001 的 canonical-English 消费者修复外，不修改消费者
+   逻辑：该修复仅把 shout.cc::_shout_key 与 mon-util.cc::
+   do_mon_str_replacements 的 ShoutDB/SpeakDB 查询身份改用英文访问器
+   （mons_type_name_en / species::name raw=true），不触碰随机选择
+   算法、RNG 调用拓扑或 SpeakDB 双载语义；英文源保持基线逐字不变
+   （本批无恢复 EN 的裁决）。
 
 ## 8 个不对称 key 裁决规则
 

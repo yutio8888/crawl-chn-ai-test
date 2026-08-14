@@ -778,7 +778,7 @@ def _shout_key_identity_shape(oid: str, label: str, role: str) -> None:
         label,
     )
     match = re.search(
-        r"static\s+string\s+_shout_key\(const\s+monster\s+&mons\)\s*"
+        r"(?:static\s+)?string\s+_shout_key\(const\s+monster\s+&mons\)\s*"
         r"\{(.*?)\n\}",
         source, re.DOTALL,
     )

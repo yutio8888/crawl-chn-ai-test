@@ -82,7 +82,7 @@ static const map<shout_type, string> default_msg_keys = {
  * @return          A name for the monster; e.g. "orc", "Kirke", "pandemonium
  *                  lord", "Fire Elementalist player ghost".
  */
-static string _shout_key(const monster &mons)
+string _shout_key(const monster &mons)
 {
     // Pandemonium demons have random names, so use "pandemonium lord"
     if (mons.type == MONS_PANDEMONIUM_LORD)
