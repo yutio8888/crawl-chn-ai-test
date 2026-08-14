@@ -400,7 +400,7 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'localized': 'ghost_skill = skill_name(',
         },
         {
-            'file': 'shout.cc', 'start': r'static\s+string\s+_shout_key\s*\(',
+            'file': 'shout.cc', 'start': r'(?:static\s+)?string\s+_shout_key\s*\(',
             'end': r'void\s+monster_consider_shouting\s*\(',
             'required': ((r'get_job_name_en\s*\(', 1),),
             'forbidden': (r'get_job_name\s*\(',),
