@@ -267,12 +267,40 @@ some "quoted text
 #endif
 }
 ''',
+            # R3-CODE-003: '#IF'/'#ENDIF' are not directives (directive
+            # names are case-sensitive); with no conditional recognized the
+            # frozen baseline right after them must fail closed.
+            "uppercase-directives": (
+                f"void f() {{\n#IF 1\n    {baseline}\n#ENDIF\n}}\n"),
+            # R3-CODE-002: '#elif 0' after '#if 0' is dead, so a nested
+            # conditional inside it must not forge a switch point over the
+            # frozen baseline.
+            "elif-zero-dead-if-nested": (
+                f"void f() {{\n#if 0\n#elif 0\n#ifdef INNER\n    {baseline}"
+                f"\n#endif\n#endif\n    (void)0;\n}}\n"),
+            # R3-CODE-001: a CRLF-spliced line comment stays open across
+            # the splice, so fake directives on the continuation lines are
+            # comment text and cannot forge a switch point.
+            "crlf-spliced-comment-pseudo-directives": (
+                b"void f() {\r\n    int x = 1; // \\\r\n"
+                b"#ifdef FAKE\r\n    // \\\r\n#endif\r\n"
+                + baseline.encode() + b"\r\n    (void)x;\r\n}\r\n"),
+            # R3-CODE-001: a CRLF splice inside a raw-string prefix must be
+            # assembled before prefix recognition, so '#ifdef FAKE'/'#endif'
+            # inside the raw string stay opaque content.
+            "crlf-spliced-raw-string-prefix": (
+                b"void f() {\r\n    const char* s = R\\\r\n\"(\r\n"
+                b"#ifdef FAKE\r\n#endif\r\n)\";\r\n"
+                + baseline.encode() + b"\r\n    (void)s;\r\n}\r\n"),
         }
         for name, content in mutations.items():
             for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
                 with tempfile.TemporaryDirectory() as td:
                     source = Path(td) / "mutation.cc"
-                    source.write_text(content, encoding="utf-8")
+                    if isinstance(content, bytes):
+                        source.write_bytes(content)
+                    else:
+                        source.write_text(content, encoding="utf-8")
                     for entry, args in (("files", ("--files", source)),
                                         ("dir", (td,))):
                         with self.subTest(mutation=name, scanner=scanner,
@@ -457,6 +485,183 @@ void f() {{
                     source.split(b"\n"), start=1)
                     if b"int dead" in text}
                 self.assertTrue(dead_body.isdisjoint(switch), switch)
+
+    def test_elif_chains_track_dead_branches_exactly(self):
+        # Issue #40 W1 R3-CODE-002: the whole #if/#elif/#else/#endif chain
+        # is tracked. A #elif or #else after a branch already taken is dead
+        # (even with a true #elif condition), '#elif 0' is dead, #else takes
+        # the inverse of the chain, and a conditional nested inside a dead
+        # branch contributes neither body nor post-#endif window. Exact
+        # expected sets, no vacuous subset checks (TEST-003).
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import _preprocessor_switch_lines
+
+        cases = [
+            ("#if 0 -> #elif 0 -> nested is all dead",
+             b'''void f() {
+#if 0
+#elif 0
+#ifdef INNER
+    int x = 1;
+#endif
+#endif
+    int ok = 1;
+}
+''',
+             set()),
+            ("#if 1 -> #elif 0 -> nested: elif dead, nested suppressed",
+             b'''void f() {
+#if 1
+#elif 0
+#ifdef INNER
+    int x = 1;
+#endif
+#endif
+    int ok = 1;
+}
+''',
+             {4, 5, 6, 8, 9, 10, 11}),
+            ("#if 1 -> #else -> nested: else dead, nested suppressed",
+             b'''void f() {
+#if 1
+#else
+#ifdef INNER
+    int x = 1;
+#endif
+#endif
+    int ok = 1;
+}
+''',
+             {4, 5, 6, 8, 9, 10, 11}),
+            ("#if 1 -> #elif 1 -> nested: taken #if kills the #elif",
+             b'''void f() {
+#if 1
+#elif 1
+#ifdef INNER
+    int x = 1;
+#endif
+#endif
+    int ok = 1;
+}
+''',
+             {4, 5, 6, 8, 9, 10, 11}),
+            ("#if 0 -> #elif 1 -> nested stays live",
+             b'''void f() {
+#if 0
+#elif 1
+#ifdef INNER
+    int x = 1;
+#endif
+    int live = 1;
+#endif
+    int ok = 1;
+}
+''',
+             {4, 5, 6, 7, 8, 9, 10}),  # dead_if chain adds no outer window
+            ("#if 0 -> #else -> nested: else is the chain inverse, live",
+             b'''void f() {
+#if 0
+#else
+#ifdef INNER
+    int x = 1;
+#endif
+    int live = 1;
+#endif
+    int ok = 1;
+}
+''',
+             {4, 5, 6, 7, 8, 9, 10}),
+            ("#if 0 -> #elif 1 -> #else -> nested: else dead after taken elif",
+             b'''void f() {
+#if 0
+#elif 1
+#else
+#ifdef INNER
+    int x = 1;
+#endif
+#endif
+    int ok = 1;
+}
+''',
+             set()),
+        ]
+        for name, source, expected in cases:
+            with self.subTest(case=name):
+                switch = _preprocessor_switch_lines(source)
+                self.assertIsNotNone(switch, name)
+                self.assertEqual(expected, switch, name)
+                # Suppression is encoded precisely by the exact-set
+                # assertions above: a nested conditional inside a dead
+                # branch adds nothing beyond the enclosing frame's branch
+                # ranges.
+
+    def test_crlf_splices_and_case_sensitive_directives(self):
+        # Issue #40 W1 R3-CODE-001/003: line splicing must accept CRLF and
+        # bare-CR new-lines and raw-string prefix/delimiter recognition must
+        # run on the assembled logical line, so CRLF-spliced comments or raw
+        # strings cannot forge directives and line numbers stay physical.
+        # Directive names are case-sensitive: '#IF'/'#ENDIF' are not
+        # directives. Exact expected sets (TEST-003).
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import _preprocessor_switch_lines
+
+        CRLF = b"\r\n"
+        BS = b"\\"
+
+        # Fake #ifdef/#endif kept inside line comments by CRLF splices.
+        switch = _preprocessor_switch_lines(
+            b"void f() {" + CRLF + b"    int x = 1; // " + BS + CRLF
+            + b"#ifdef FAKE" + CRLF + b"    // " + BS + CRLF
+            + b"#endif" + CRLF + b"    int ok = 1;" + CRLF + b"}" + CRLF)
+        self.assertEqual(frozenset(), switch)
+
+        # Fake #ifdef/#endif inside a raw string whose prefix is split by a
+        # CRLF splice: the prefix is assembled before recognition.
+        switch = _preprocessor_switch_lines(
+            b"void f() {" + CRLF + b'    const char* s = R' + BS + CRLF
+            + b'"(' + CRLF + b"#ifdef FAKE" + CRLF + b"#endif" + CRLF
+            + b')";' + CRLF + b"    int ok = 1;" + CRLF + b"}" + CRLF)
+        self.assertEqual(frozenset(), switch)
+
+        # Fake #ifdef/#endif inside a raw string whose delimiter is split
+        # by a CRLF splice: R"foo\<CRLF>( ... )foo" assembles to R"foo(...".
+        switch = _preprocessor_switch_lines(
+            b"void f() {" + CRLF + b'    const char* s = R"foo' + BS
+            + CRLF + b'(' + CRLF + b"#ifdef FAKE" + CRLF + b"#endif" + CRLF
+            + b')foo";' + CRLF + b"    int ok = 1;" + CRLF + b"}" + CRLF)
+        self.assertEqual(frozenset(), switch)
+
+        # Bare-CR splice in a line comment: '\\<CR>' is a splice too, so the
+        # fake directives stay inside the comment (bare-CR files are one
+        # logical line, and the comment runs to its end).
+        switch = _preprocessor_switch_lines(
+            b"void f() {\x0d    int x = 1; // " + BS + b"\x0d"
+            + b"#ifdef FAKE\x0d#endif\x0d    int ok = 1;\x0d}\x0d")
+        self.assertEqual(frozenset(), switch)
+
+        # Uppercase '#IF 1'/'#ENDIF' are not directives (R3-CODE-003): the
+        # real lowercase conditional still yields exactly its own body plus
+        # its post-#endif window.
+        switch = _preprocessor_switch_lines(
+            b'''void f() {
+#IF 1
+    int x = 1;
+#ENDIF
+#ifdef REAL
+    int y = 1;
+#endif
+    int ok = 1;
+}
+''')
+        self.assertEqual(frozenset({6, 8, 9, 10, 11}), switch)
+
+        # Real directives in a CRLF file still pair with physical line
+        # numbers (the line_of mapping): body line 3 plus window 5-8.
+        switch = _preprocessor_switch_lines(
+            b"void f() {" + CRLF + b"#ifdef REAL" + CRLF + b"    int y = 1;"
+            + CRLF + b"#endif" + CRLF + b"    int ok = 1;" + CRLF + b"}"
+            + CRLF)
+        self.assertEqual(frozenset({3, 5, 6, 7, 8}), switch)
 
     def test_comment_and_string_hash_lines_are_not_directives(self):
         # Issue #40 W1 blocker B: directive discovery must honor the C++

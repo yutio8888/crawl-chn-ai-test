@@ -1107,105 +1107,120 @@ def _is_identifier_byte(ch: int) -> bool:
             or 0x61 <= ch <= 0x7A)
 
 
+def _phase2_splice(source: bytes):
+    """Delete backslash-newline splices (C++ translation phase 2).
+
+    Returns (logical, line_of) where `logical` is the spliced translation
+    unit and ``line_of[i]`` is the 1-indexed physical line number of
+    ``logical[i]`` in the original file. A splice is a backslash byte
+    immediately followed by a new-line; LF (\\n), CRLF (\\r\\n), and bare
+    CR (\\r) terminators are all recognized. Splices may occur anywhere —
+    inside comments, string literals, or raw-string prefixes, delimiters,
+    and terminators — exactly as the standard's phase-2 deletion requires,
+    so every later lexical check runs on the assembled logical line.
+    """
+    out = bytearray()
+    line_of = []
+    line_no = 1
+    i = 0
+    n = len(source)
+    while i < n:
+        if (source[i] == 0x5C and i + 1 < n
+                and source[i + 1] in (0x0A, 0x0D)):
+            newline_end = i + 2
+            if (source[i + 1] == 0x0D and newline_end < n
+                    and source[newline_end] == 0x0A):
+                newline_end += 1  # CRLF splice consumes both CR and LF
+            i = newline_end
+            line_no += 1
+            continue
+        out.append(source[i])
+        line_of.append(line_no)
+        if source[i] == 0x0A:
+            line_no += 1
+        i += 1
+    return bytes(out), line_of
+
+
 def _directive_events(source: bytes):
     """Yield (keyword, line_no, dead) for real conditional directives.
 
-    Implements C++ phase-2 translation: backslash-newline splicing is
-    honored everywhere (so a '//' comment or a string literal continues
-    across the splice), raw string literals (R"...", u8R"...", uR"...",
-    UR"...", LR"..." with optional delimiters) are recognized as opaque
-    regions, and block/line comments plus "..." string and '...' char
-    literals are tracked. A '#' at the start of a physical line is a
-    directive only when the line really starts a fresh logical line outside
-    every such region. 'dead' is True only for a literal '#if 0' condition.
+    Implements C++ phase-2 translation: the source is line-spliced first
+    (backslash-newline, including CRLF and bare-CR variants), so a '//'
+    comment, a string literal, or a raw-string prefix/delimiter/terminator
+    continues across the splice, and raw string literals (R"...", u8R"...",
+    uR"...", UR"...", LR"..." with optional delimiters) are recognized as
+    opaque regions on the assembled logical line. Block/line comments plus
+    "..." string and '...' char literals are tracked on the logical text.
+    A '#' at the start of a physical line is a directive only when the line
+    really starts a fresh logical line outside every such region. Directive
+    names are case-sensitive: '#IF'/'#ENDIF' are not directives. 'dead' is
+    True only for a literal '#if 0' / '#elif 0' condition.
     """
-    n = len(source)
+    logical, line_of = _phase2_splice(source)
+    n = len(logical)
     pos = 0
-    line_no = 1
     at_line_start = True
     while pos < n:
-        ch = source[pos]
+        ch = logical[pos]
         if at_line_start and ch in b" \t\f\v\r":
             pos += 1
             continue
         if at_line_start and ch == 0x23:  # '#'
-            directive_line = line_no
+            directive_line = line_of[pos]
             k = pos + 1
-            while k < n and source[k] in b" \t\f\v\r":
+            while k < n and logical[k] in b" \t\f\v\r":
                 k += 1
             m = k
-            while m < n and _is_identifier_byte(source[m]):
+            while m < n and _is_identifier_byte(logical[m]):
                 m += 1
-            keyword = source[k:m].lower()
+            keyword = logical[k:m]
             dead = False
-            if keyword == b"if":
-                # The first token of the condition decides '#if 0';
-                # splices may join the continuation into the token stream.
+            if keyword in (b"if", b"elif"):
+                # The first token of the condition decides '#if 0' /
+                # '#elif 0'; splicing already joined any continuation
+                # into the logical token stream.
                 q = m
-                while q < n:
-                    if source[q] in b" \t\f\v\r":
-                        q += 1
-                    elif (source[q] == 0x5C and q + 1 < n
-                          and source[q + 1] == 0x0A):
-                        q += 2
-                    else:
-                        break
+                while q < n and logical[q] in b" \t\f\v\r":
+                    q += 1
                 t = q
-                while t < n and source[t] not in b" \t\f\v\r\n":
-                    if (source[t] == 0x5C and t + 1 < n
-                            and source[t + 1] == 0x0A):
-                        break
+                while t < n and logical[t] not in b" \t\f\v\r\n":
                     t += 1
-                dead = source[q:t] == b"0"
-            # Consume the rest of the logical directive line: splices join
-            # continuation lines into this directive, and no continuation
-            # can start a new directive.
+                dead = logical[q:t] == b"0"
+            # Consume the rest of the logical directive line; a spliced
+            # continuation can never start a new directive.
             p = m
-            while p < n:
-                if (source[p] == 0x5C and p + 1 < n
-                        and source[p + 1] == 0x0A):
-                    p += 2
-                    line_no += 1
-                    continue
-                if source[p] == 0x0A:
-                    p += 1
-                    line_no += 1
-                    at_line_start = True
-                    break
+            while p < n and logical[p] != 0x0A:
                 p += 1
+            if p < n:
+                p += 1
+                at_line_start = True
             else:
                 at_line_start = False
             if keyword in _PREPROCESSOR_CONDITIONAL_KEYWORDS:
                 yield keyword, directive_line, dead
             pos = p
             continue
-        if ch == 0x2F and pos + 1 < n and source[pos + 1] == 0x2A:
-            # /* block comment */ (splices inside are inert)
+        if ch == 0x2F and pos + 1 < n and logical[pos + 1] == 0x2A:
+            # /* block comment */ (splices inside were already removed)
             pos += 2
             closed = False
             while pos < n:
-                if (source[pos] == 0x2A and pos + 1 < n
-                        and source[pos + 1] == 0x2F):
+                if (logical[pos] == 0x2A and pos + 1 < n
+                        and logical[pos + 1] == 0x2F):
                     pos += 2
                     closed = True
                     break
-                if source[pos] == 0x0A:
-                    line_no += 1
                 pos += 1
             at_line_start = not closed
-        elif ch == 0x2F and pos + 1 < n and source[pos + 1] == 0x2F:
-            # // line comment: backslash-newline keeps it open
+        elif ch == 0x2F and pos + 1 < n and logical[pos + 1] == 0x2F:
+            # // line comment: a splice keeps it open, so it already runs
+            # to the logical end of line
             pos += 2
             closed = False
             while pos < n:
-                if (source[pos] == 0x5C and pos + 1 < n
-                        and source[pos + 1] == 0x0A):
-                    pos += 2
-                    line_no += 1
-                    continue
-                if source[pos] == 0x0A:
+                if logical[pos] == 0x0A:
                     pos += 1
-                    line_no += 1
                     at_line_start = True
                     closed = True
                     break
@@ -1215,40 +1230,28 @@ def _directive_events(source: bytes):
         elif ch == 0x22:  # '"'
             raw = False
             for prefix in _RAW_STRING_PREFIXES:
-                if pos + 1 >= len(prefix) and source[
+                if pos + 1 >= len(prefix) and logical[
                         pos + 1 - len(prefix):pos + 1] == prefix:
                     prefix_start = pos + 1 - len(prefix)
                     if (prefix_start == 0
                             or not _is_identifier_byte(
-                                source[prefix_start - 1])):
+                                logical[prefix_start - 1])):
                         raw = True
                         break
             if raw:
-                # R"delim( ... )delim"
+                # R"delim( ... )delim" on the spliced logical text
                 q = pos + 1
-                while q < n and source[q] != 0x28:  # '('
-                    if (source[q] == 0x5C and q + 1 < n
-                            and source[q + 1] == 0x0A):
-                        q += 2
-                        line_no += 1
-                        continue
+                while q < n and logical[q] != 0x28:  # '('
                     q += 1
-                delim = source[pos + 1:q]
+                delim = logical[pos + 1:q]
                 if len(delim) > _RAW_STRING_DELIMITER_MAX:
                     delim = b""  # not a valid raw string: recover
                 r = q + 1
                 terminator = delim + b'"'
                 while r < n:
-                    if source[r] == 0x29:  # ')'
-                        if source[r + 1:r + 1 + len(terminator)] == terminator:
+                    if logical[r] == 0x29:  # ')'
+                        if logical[r + 1:r + 1 + len(terminator)] == terminator:
                             break
-                    if (source[r] == 0x5C and r + 1 < n
-                            and source[r + 1] == 0x0A):
-                        r += 2
-                        line_no += 1
-                        continue
-                    if source[r] == 0x0A:
-                        line_no += 1
                     r += 1
                 if r < n:
                     pos = r + 1 + len(terminator)
@@ -1256,25 +1259,20 @@ def _directive_events(source: bytes):
                     pos = n
                 at_line_start = False
             else:
-                # "..." string literal (escapes and splices)
+                # "..." string literal (escapes; splices already removed)
                 pos += 1
                 closed = False
                 while pos < n:
-                    if source[pos] == 0x5C:
-                        if pos + 1 < n and source[pos + 1] == 0x0A:
-                            pos += 2
-                            line_no += 1
-                        else:
-                            pos += 2
-                    elif source[pos] == 0x22:
+                    if logical[pos] == 0x5C:
+                        pos += 2
+                    elif logical[pos] == 0x22:
                         pos += 1
                         at_line_start = False
                         closed = True
                         break
-                    elif source[pos] == 0x0A:
+                    elif logical[pos] == 0x0A:
                         # Unterminated across a raw newline: recover.
                         pos += 1
-                        line_no += 1
                         at_line_start = True
                         closed = True
                         break
@@ -1286,20 +1284,15 @@ def _directive_events(source: bytes):
             pos += 1
             closed = False
             while pos < n:
-                if source[pos] == 0x5C:
-                    if pos + 1 < n and source[pos + 1] == 0x0A:
-                        pos += 2
-                        line_no += 1
-                    else:
-                        pos += 2
-                elif source[pos] == 0x27:
+                if logical[pos] == 0x5C:
+                    pos += 2
+                elif logical[pos] == 0x27:
                     pos += 1
                     at_line_start = False
                     closed = True
                     break
-                elif source[pos] == 0x0A:
+                elif logical[pos] == 0x0A:
                     pos += 1
-                    line_no += 1
                     at_line_start = True
                     closed = True
                     break
@@ -1307,13 +1300,8 @@ def _directive_events(source: bytes):
                     pos += 1
             if not closed:
                 at_line_start = False
-        elif ch == 0x5C and pos + 1 < n and source[pos + 1] == 0x0A:
-            # Backslash-newline splice: the logical line continues.
-            pos += 2
-            line_no += 1
         elif ch == 0x0A:
             pos += 1
-            line_no += 1
             at_line_start = True
         else:
             pos += 1
@@ -1324,13 +1312,13 @@ def _preprocessor_switch_lines(source: bytes):
     """Line numbers at preprocessor conditional switch points.
 
     Conditional directives come from _directive_events(), a complete C++
-    phase-2 lexer that honors backslash-newline splicing, raw-string
-    prefixes/delimiters/terminators, continuation-aware comments, and
-    string/char literals, so raw-string contents or line-spliced comments
-    cannot forge directives. (tree-sitter nodes are not used: probing the
-    bundled grammar showed the conditional that this exemption exists for —
-    a #ifdef splitting a class inheritance list — is swallowed into ERROR
-    nodes and emits no preproc node at all.)
+    phase-2 lexer that honors backslash-newline splicing (LF, CRLF and
+    bare-CR variants), raw-string prefixes/delimiters/terminators,
+    continuation-aware comments, and string/char literals, so raw-string
+    contents or line-spliced comments cannot forge directives. (tree-sitter
+    nodes are not used: probing the bundled grammar showed the conditional
+    that this exemption exists for — a #ifdef splitting a class inheritance
+    list — is swallowed into ERROR nodes and emits no preproc node at all.)
 
     Returns a frozenset of 1-indexed line numbers that are either inside an
     active conditional body (between #if/#ifdef/#ifndef and the matching
@@ -1339,28 +1327,32 @@ def _preprocessor_switch_lines(source: bytes):
     None when the directives cannot be paired (unmatched #if/#else/#elif/
     #endif), in which case callers must fail closed.
 
-    Dead '#if 0' branches dominate: lines inside an inactive branch are
+    The whole #if/#elif/#else/#endif chain is tracked: a #elif or #else
+    that follows a branch already taken is dead, '#elif 0' is dead, and
+    #else takes the inverse of the chain (dead when any earlier branch was
+    taken). Dead branches dominate: lines inside an inactive branch are
     subtracted even when an enclosing live span, a nested live span, or a
-    preceding post-#endif window also covered them, and a conditional nested
-    inside an inactive branch contributes neither body nor post-#endif
-    window. #else/#elif transitions reactivate the branch, so only the
-    inactive '#if 0' body itself is excluded.
+    preceding post-#endif window also covered them, and a conditional
+    nested inside an inactive branch contributes neither body nor
+    post-#endif window.
     """
     inactive_depth = 0
     stack = []
     spans = []
     for keyword, directive_line, dead in _directive_events(source):
         if keyword in (b"if", b"ifdef", b"ifndef"):
+            branch_active = not dead
             stack.append({
                 "start": directive_line,
                 "dead_if": dead,
-                "branch_active": not dead,
+                "branch_active": branch_active,
+                "chain_taken": branch_active,
                 "in_inactive_context": inactive_depth > 0,
                 "cur_start": directive_line,
                 "active": [],
                 "inactive": [],
             })
-            if dead:
+            if not branch_active:
                 inactive_depth += 1
         elif keyword in (b"elif", b"else"):
             if not stack:
@@ -1370,11 +1362,21 @@ def _preprocessor_switch_lines(source: bytes):
             (frame["active"] if frame["branch_active"]
              else frame["inactive"]).append(
                 (frame["cur_start"] + 1, directive_line))
-            # #else/#elif branches are always active.
-            if frame["dead_if"] and not frame["branch_active"]:
+            if not frame["branch_active"]:
                 inactive_depth -= 1
-            frame["branch_active"] = True
+            # A branch after the chain was already taken is dead; '#elif 0'
+            # is dead; #else takes the inverse of the chain.
+            if keyword == b"else":
+                branch_active = not frame["chain_taken"]
+                frame["chain_taken"] = True
+            else:
+                branch_active = (not frame["chain_taken"]) and (not dead)
+                frame["chain_taken"] = (frame["chain_taken"]
+                                        or branch_active)
+            frame["branch_active"] = branch_active
             frame["cur_start"] = directive_line
+            if not branch_active:
+                inactive_depth += 1
         else:  # endif
             if not stack:
                 return None
@@ -1382,7 +1384,7 @@ def _preprocessor_switch_lines(source: bytes):
             (frame["active"] if frame["branch_active"]
              else frame["inactive"]).append(
                 (frame["cur_start"] + 1, directive_line))
-            if frame["dead_if"] and not frame["branch_active"]:
+            if not frame["branch_active"]:
                 inactive_depth -= 1
             spans.append((frame, directive_line))
     if stack:
