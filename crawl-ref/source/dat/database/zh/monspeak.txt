@@ -68,7 +68,7 @@ VISUAL:@The_monster_possessive@ 的双手开始疯狂地闪烁。
 VISUAL:@The_monster@ 突然被苍白的 @_spell_colour_@ 光芒所笼罩。
 %%%%
 _Sigmund_rare_
-@The_monster@ 问@foe,@「你喜欢我吗？」
+@The_monster@ 问 @foe,@「你喜欢我吗？」
 
 @The_monster@ @at_foe@尖叫道："你永远也不会……永远！！！"
 
@@ -98,7 +98,7 @@ VISUAL:@The_monster@ 用 @possessive@ 的链枷朝 @at_foe@ 比划了一下。
 
 @The_monster@ 说："你不会相信我花了多少钱买这把链枷。"
 
-@The_monster@ 问@foe,@「你见过我那了不起的哥哥吗？」
+@The_monster@ 问 @foe,@「你见过我那了不起的哥哥吗？」
 
 @The_monster@ @to_foe@说："我虽然不擅长魔法，但我还是能杀了你！"
 
@@ -374,7 +374,7 @@ VISUAL:@The_monster@ 看起来很烦躁。
 @The_monster@ @at_foe@尖叫道："我想一个人待着！"
 %%%%
 _Terence_rare_
-@The_monster@ @at_foe@尖叫道："你那{{{
+@The_monster@ @at_foe@尖叫道："你那{{
 if you.race() == "Armataur" then
     return "坚韧的厚皮"
 else
@@ -382,7 +382,7 @@ else
 end
 }}救不了你！" @player_only@
 
-@The_monster@ @at_foe@尖叫道："你的{{{
+@The_monster@ @at_foe@尖叫道："你的{{
 if you.race() == "Armataur" then
     return "大象"
 else
@@ -1134,7 +1134,7 @@ VISUAL:@The_monster_possessive@ 的眼睛看起来燃烧着火焰。
 VISUAL:@The_monster@ 短暂地被一团火焰遮蔽了。
 %%%%
 _Azrael_rare_
-@The_monster@ 咧嘴笑着问@foe,@「你[易燃吗|不易燃吗|感到热吗]？」
+@The_monster@ 咧嘴笑着问 @foe,@「你[易燃吗|不易燃吗|感到热吗]？」
 
 @The_monster@ @to_foe@说："今晚我们有美味的 @foe_genus@ 烤肉串吃了！"
 
@@ -1569,7 +1569,7 @@ VISUAL:@The_monster@ 笨拙地跳来跳去。
 VISUAL:@The_monster@ 用@possessive@的舌头抓住了一只@_frog_food_@。
 %%%%
 _Prince_Ribbit_rare_
-@The_monster@ 问@foe,@「就亲一下？」
+@The_monster@ 问 @foe,@「就亲一下？」
 
 @The_monster@ @at_foe@叹了口气："当绿皮可不容易！"
 
@@ -3660,7 +3660,7 @@ _friendly_beogh_speech_rare_
 
 @The_monster@ @_says_or_shouts_@："我们倒下的兄弟不会被遗忘。"
 
-VISUAL:@The_monster@ 紧张地看了看@at_foe/around@四周。
+VISUAL:@The_monster@ 紧张地看了看 @at_foe/around@。
 
 @The_monster@ @at_foe@看着说："我实在不想为你效劳而死，@player_name@。"
 
@@ -3964,7 +3964,7 @@ _Ignacio_rare_
 @The_monster@ @to_foe@说："绞架不在手边，那就斩首吧。"
 %%%%
 _Ilsuiw_common_
-@The_monster@ 问@foe,@「你不来和我一起游泳吗？」
+@The_monster@ 问 @foe,@「你不来和我一起游泳吗？」
 
 @The_monster@ @to_foe@低语道："来吧，水里很舒服。"
 
@@ -3979,7 +3979,7 @@ VISUAL:@The_monster@[催眠般地|诱惑地]凝视着@foe@。
 
 @The_monster@ @to_foe@说："波光之下美极了——你会看到的！"
 
-@The_monster@ 问@foe,@「你敢行走在这片沙滩上吗？」
+@The_monster@ 问 @foe,@「你敢行走在这片沙滩上吗？」
 
 @The_monster@ @to_foe@说："抓住我，触碰我，爱我，喂我！"
 
@@ -4240,9 +4240,9 @@ VISUAL:@The_monster@四处张望，想找点重的东西砸向@foe@。
 @The_monster@ @to_foe@说："@Foe_genus@肉当晚餐？听起来美味！"
 %%%%
 _Roxanne_medium_
-@The_monster@ 问@foe,@「亲爱的，能帮我把这个护符捡起来吗？」
+@The_monster@ 问 @foe,@「亲爱的，能帮我把这个护符捡起来吗？」
 
-@The_monster@ 问@foe,@「喂，能帮我挠挠背吗？」
+@The_monster@ 问 @foe,@「喂，能帮我挠挠背吗？」
 
 @The_monster@ 叹了口气，说："要不是那些鸟粪，倒也不算太糟。"
 %%%%
@@ -4740,9 +4740,9 @@ VISUAL:@The_monster@ 浑身颤抖。
 
 VISUAL:@The_monster@ 突然对地牢显露出极大的愤怒。
 
-@The_monster@ 问@foe,@「你是谁？」
+@The_monster@ 问 @foe,@「你是谁？」
 
-@The_monster@ 问@foe,@「我们到底在这儿干什么？嗯，我明白了……」
+@The_monster@ 问 @foe,@「我们到底在这儿干什么？嗯，我明白了……」
 
 @The_monster@ 哭喊道："我的头！我的头！！！"
 
@@ -9741,7 +9741,7 @@ VISUAL:@The_monster@ 毫无规律地绕圈乱飞。
 
 VISUAL:@The_monster@ 疯狂地挥舞着 @possessive@ 的触角。
 
-VISUAL:@The_monster@ 摇摇晃晃地@possessive@飞行着。
+VISUAL:@The_monster@ 在@possessive@飞行中摇摇晃晃。
 %%%%
 default electric golem
 
