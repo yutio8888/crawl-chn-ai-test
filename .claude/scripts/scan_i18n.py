@@ -32,6 +32,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (parse_entries, parse_source_txt,
                          parse_entries_physical, compute_canonical_key,
                          compute_group_fingerprint)
+# CR-023: the monspeak VISUAL channel contract reuses the strict Lua
+# return extraction of the Issue-70 inventory (monspeak_inventory
+# ``_lua_block_protocol``) so the per-branch runtime line/channel
+# topology of Lua ``return "VISUAL:..."`` emissions is bound exactly like
+# the production order (getSpeakString evaluates the block first, then
+# the sink splits the returned string).  The channel classifier is the
+# shared one too, so the scan checker and the inventory candidate gate
+# resolve line channels identically.
+from monspeak_inventory import (InventoryError, _lua_return_branch_lines,
+                                _monspeak_line_channel)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -5722,521 +5732,537 @@ def _protocol_boundary_scope(source, artifact):
     return source[starts[0].end():end], None
 
 
-# Issue-16 monspeak VISUAL channel contract (CR-004/CR-008/CR-019): the
-# complete sorted-unique (canonical key, variant ordinal, line ordinal)
-# identity set of the EN monspeak lines that resolve to the VISUAL channel
-# at the baseline OID (b3ad4425053c2175284d32441d67218df97035b0).  The
-# identity is pinned at the production sink granularity: mons_speaks_msg
+# Issue-16 monspeak VISUAL channel contract
+# (CR-004/CR-008/CR-019/CR-023): the complete sorted-unique (canonical
+# key, variant ordinal, Lua return branch ordinal, line ordinal) identity
+# set of the EN monspeak lines that resolve to the VISUAL channel at the
+# baseline OID (b3ad4425053c2175284d32441d67218df97035b0).  The identity
+# is pinned at the production sink granularity: mons_speaks_msg
 # (mon-speak.cc) splits every selected pattern by ``\n`` and resolves each
 # line through resolve_mon_speech_line_channel, so a VISUAL line that is
 # not the first line of its pattern (e.g. ``_holy_being_`` #0) or a second
 # VISUAL line inside one pattern (e.g. ``_margery_common_`` #2) is part of
-# the contract.  The set is fail-closed against EN drift: a removed,
-# reworded or moved EN VISUAL line, or a newline position change (even one
-# jointly mirrored in ZH so the per-line channel check still passes),
-# alters this set and trips the freeze before the per-line ZH check runs.
-# The count is derived from the set, never a separate constant.
+# the contract.  The branch ordinal (CR-023) is the Lua return branch
+# index: getSpeakString evaluates every ``{{...}}`` block before the sink,
+# so each literal ``return "VISUAL:..."`` emission is a possible runtime
+# line and participates in the frozen set (e.g. ``friendly shoals hound``
+# #2 emits two VISUAL branches, ``nekomata`` #1 emits two of three).
+# Patterns without Lua blocks have exactly one branch (ordinal 0).  The
+# set is fail-closed against EN drift: a removed, reworded or moved EN
+# VISUAL line, a newline position change, a changed VISUAL prefix inside a
+# Lua return or a deleted Lua return branch (even one jointly mirrored in
+# ZH so the per-line channel check still passes) alters this set and trips
+# the freeze before the per-branch ZH check runs.  The count is derived
+# from the set, never a separate constant.
 MONSPEAK_EN_VISUAL_LINES = (
-    ("'r'", 0, 0),
-    ('_agnes_common_', 0, 0),
-    ('_aizul_common_', 0, 0),
-    ('_aizul_common_', 3, 0),
-    ('_aizul_rare_', 2, 0),
-    ('_aizul_rare_', 8, 0),
-    ('_amaemon_common_', 1, 0),
-    ('_amaemon_common_', 2, 0),
-    ('_amaemon_common_', 3, 0),
-    ('_asterion_common_', 0, 0),
-    ('_asterion_common_', 1, 0),
-    ('_azrael_common_', 3, 0),
-    ('_azrael_common_', 4, 0),
-    ('_azrael_common_', 5, 0),
-    ('_azrael_rare_', 3, 0),
-    ('_bai_suzhen_common_', 4, 0),
-    ('_bai_suzhen_rare_', 5, 0),
-    ('_bennu_death_', 0, 0),
-    ('_blorkula_common_', 1, 0),
-    ('_blorkula_common_', 2, 0),
-    ('_blorkula_common_', 3, 0),
-    ('_blorkula_rare_', 5, 0),
-    ('_boris_common_', 0, 0),
-    ('_chuck_generic_', 6, 0),
-    ('_chuck_rare_', 1, 0),
-    ('_confused_humanoid_common_', 0, 0),
-    ('_confused_humanoid_common_', 2, 0),
-    ('_confused_humanoid_common_', 4, 0),
-    ('_confused_humanoid_common_', 5, 0),
-    ('_confused_humanoid_common_', 6, 0),
-    ('_confused_humanoid_common_', 7, 0),
-    ('_confused_humanoid_medium_', 0, 0),
-    ('_confused_humanoid_rare_', 4, 0),
-    ('_confused_humanoid_rare_', 5, 0),
-    ('_crazy_yiuf_speech_', 1, 0),
-    ('_crazy_yiuf_speech_', 3, 0),
-    ('_crazy_yiuf_speech_', 4, 0),
-    ('_crazy_yiuf_speech_', 5, 0),
-    ('_dissolution_common_', 3, 0),
-    ('_dissolution_common_', 4, 0),
-    ('_dowan_common_', 0, 0),
-    ('_dowan_rare_', 0, 0),
-    ('_dowan_rare_', 1, 0),
-    ('_dowan_rare_', 2, 0),
-    ('_dowan_rare_', 3, 0),
-    ('_duvessa_common_', 0, 0),
-    ('_edmund_common_', 0, 0),
-    ('_edmund_rare_', 0, 0),
-    ('_edmund_rare_', 1, 0),
-    ('_erica_common_', 0, 0),
-    ('_erolcha_common_', 2, 0),
-    ('_eustachio_rare_', 1, 0),
-    ('_fake_spell_effect_', 0, 0),
-    ('_fake_spell_effect_', 1, 0),
-    ('_fake_spell_effect_', 2, 0),
-    ('_fake_spell_effect_', 3, 0),
-    ('_fake_spell_effect_', 4, 0),
-    ('_fannar_common_', 0, 0),
-    ('_fannar_common_', 1, 0),
-    ('_fannar_common_', 2, 0),
-    ('_fleeing_humanoid_common_', 0, 0),
-    ('_fleeing_humanoid_common_', 2, 0),
-    ('_fleeing_humanoid_rare_', 5, 0),
-    ('_fleeing_humanoid_rare_', 7, 0),
-    ('_fleeing_humanoid_rare_', 9, 0),
-    ('_fleeing_humanoid_rare_', 11, 0),
-    ('_fleeing_silenced_common_', 0, 0),
-    ('_fleeing_silenced_common_', 1, 0),
-    ('_fleeing_silenced_rare_', 0, 0),
-    ('_fleeing_silenced_rare_', 1, 0),
-    ('_fleeing_silenced_rare_', 2, 0),
-    ('_frances_common_', 0, 0),
-    ('_frances_common_', 1, 0),
-    ('_frances_rare_', 0, 0),
-    ('_frederick_common_', 0, 0),
-    ('_frederick_common_', 1, 0),
-    ('_frederick_rare_', 0, 0),
-    ('_frederick_rare_', 1, 0),
-    ('_frederick_rare_', 2, 0),
-    ('_friendly_beogh_speech_rare_', 5, 0),
-    ('_friendly_confused_common_', 4, 0),
-    ('_friendly_confused_common_', 5, 0),
-    ('_friendly_confused_medium_', 4, 0),
-    ('_friendly_confused_medium_', 5, 0),
-    ('_friendly_confused_medium_', 6, 0),
-    ('_friendly_confused_rare_', 5, 0),
-    ('_friendly_fleeing_common_', 0, 0),
-    ('_friendly_humanoid_common_', 2, 0),
-    ('_friendly_humanoid_common_', 3, 0),
-    ('_friendly_humanoid_common_', 5, 0),
-    ('_friendly_humanoid_medium_', 4, 0),
-    ('_friendly_humanoid_rare_', 0, 0),
-    ('_friendly_imp_common_', 0, 0),
-    ('_friendly_imp_common_', 1, 0),
-    ('_friendly_imp_common_', 2, 0),
-    ('_friendly_imp_common_', 3, 0),
-    ('_friendly_silenced_common_', 0, 0),
-    ('_friendly_silenced_common_', 1, 0),
-    ('_friendly_silenced_rare_', 0, 0),
-    ('_friendly_silenced_rare_', 1, 0),
-    ('_friendly_silenced_rare_', 2, 0),
-    ('_friendly_silenced_rare_', 3, 0),
-    ('_friendly_silenced_rare_', 4, 0),
-    ('_gastronok_common_', 0, 0),
-    ('_gastronok_rare_', 0, 0),
-    ('_gastronok_rare_', 1, 0),
-    ('_gastronok_rare_', 2, 0),
-    ('_generic_donald_', 25, 0),
-    ('_generic_donald_', 26, 0),
-    ('_generic_donald_', 27, 0),
-    ('_grinder_common_', 0, 0),
-    ('_grinder_rare_', 5, 0),
-    ('_grum_common_', 0, 0),
-    ('_grum_common_', 4, 0),
-    ('_grum_rare_', 0, 0),
-    ('_grunn_rare_', 0, 0),
-    ('_grunn_rare_', 1, 0),
-    ('_harold_common_', 0, 0),
-    ('_harold_rare_', 0, 0),
-    ('_high_priest_medium_', 0, 0),
-    ('_holy_being_', 0, 1),
-    ('_hostile_imp_common_', 1, 0),
-    ('_hostile_imp_common_', 2, 0),
-    ('_hostile_imp_common_', 3, 0),
-    ('_hostile_imp_common_', 4, 0),
-    ('_hostile_imp_rare_', 0, 0),
-    ('_hostile_imp_rare_', 1, 0),
-    ('_hostile_imp_rare_', 3, 0),
-    ('_hostile_imp_rare_', 4, 0),
-    ('_hostile_orc_beogh_believer_speech_common_', 10, 0),
-    ('_hostile_orc_beogh_believer_speech_rare_', 5, 0),
-    ('_hostile_orc_beogh_believer_speech_rare_', 6, 0),
-    ('_ignacio_common_', 0, 0),
-    ('_ignacio_common_', 1, 0),
-    ('_ijyb_common_', 0, 0),
-    ('_ijyb_common_', 1, 0),
-    ('_ilsuiw_common_', 3, 0),
-    ('_ilsuiw_rare_', 0, 0),
-    ('_jeremiah_common_', 6, 0),
-    ('_jeremiah_common_', 7, 0),
-    ('_jeremiah_common_', 8, 0),
-    ('_jeremiah_common_', 9, 0),
-    ('_jeremiah_common_', 10, 0),
-    ('_jeremiah_common_', 11, 0),
-    ('_jeremiah_rare_', 12, 0),
-    ('_jessica_common_', 0, 0),
-    ('_jessica_common_', 1, 0),
-    ('_jessica_common_', 3, 0),
-    ('_jory_silent_', 0, 0),
-    ('_jory_silent_', 1, 0),
-    ('_jory_silent_', 2, 0),
-    ('_jory_silent_', 3, 0),
-    ('_jory_silent_', 4, 0),
-    ('_jory_silent_', 5, 0),
-    ('_jory_silent_', 6, 0),
-    ('_jory_silent_', 7, 0),
-    ('_jory_silent_', 8, 0),
-    ('_jory_silent_', 9, 0),
-    ('_jory_silent_', 10, 0),
-    ('_joseph_common_', 1, 0),
-    ('_joseph_common_', 2, 0),
-    ('_josephina_common_', 0, 0),
-    ('_josephina_common_', 1, 0),
-    ('_josephina_common_', 4, 0),
-    ('_josephina_rare_', 0, 0),
-    ('_josephina_rare_', 1, 0),
-    ('_killer_klown_common_', 2, 0),
-    ('_killer_klown_common_', 3, 0),
-    ('_killer_klown_common_', 4, 0),
-    ('_killer_klown_common_', 5, 0),
-    ('_killer_klown_common_', 6, 0),
-    ('_killer_klown_common_', 7, 0),
-    ('_killer_klown_common_', 8, 0),
-    ('_killer_klown_rare_', 1, 0),
-    ('_killer_klown_rare_', 2, 0),
-    ('_killer_klown_rare_', 3, 0),
-    ('_killer_klown_rare_', 4, 0),
-    ('_lodul_common_', 1, 0),
-    ('_lodul_common_', 4, 0),
-    ('_lodul_rare_', 2, 0),
-    ('_maggie_common_', 0, 0),
-    ('_maggie_common_', 1, 0),
-    ('_maggie_common_', 4, 0),
-    ('_mara_common_', 0, 0),
-    ('_mara_common_', 6, 0),
-    ('_mara_common_', 7, 0),
-    ('_mara_common_', 8, 0),
-    ('_margery_common_', 0, 0),
-    ('_margery_common_', 1, 0),
-    ('_margery_common_', 2, 0),
-    ('_margery_common_', 2, 1),
-    ('_margery_common_', 3, 0),
-    ('_margery_rare_', 1, 0),
-    ('_margery_spell_results_', 0, 0),
-    ('_margery_spell_results_', 1, 0),
-    ('_margery_spell_results_', 2, 0),
-    ('_maurice_common_', 0, 0),
-    ('_maurice_common_', 1, 0),
-    ('_maurice_medium_', 0, 0),
-    ('_menkaure_common_', 0, 0),
-    ('_menkaure_common_', 5, 0),
-    ('_menkaure_common_', 6, 0),
-    ('_menkaure_common_', 8, 0),
-    ('_menkaure_common_', 10, 0),
-    ('_menkaure_rare_', 1, 0),
-    ('_menkaure_rare_', 2, 0),
-    ('_menkaure_rare_', 7, 0),
-    ('_mercenary_guard_common_', 0, 0),
-    ('_mercenary_guard_common_', 1, 0),
-    ('_murray_common_', 0, 0),
-    ('_murray_common_', 1, 0),
-    ('_murray_common_', 2, 0),
-    ('_murray_common_', 3, 0),
-    ('_natasha_rare_', 3, 0),
-    ('_nellie_common_', 5, 0),
-    ('_nellie_common_', 6, 0),
-    ('_nellie_common_', 7, 0),
-    ('_norris_common_', 1, 0),
-    ('_norris_common_', 2, 0),
-    ('_norris_common_', 3, 0),
-    ('_norris_rare_', 0, 0),
-    ('_parghit_common_', 1, 0),
-    ('_parghit_rare_', 0, 0),
-    ('_parghit_rare_', 1, 0),
-    ('_pargi_common_', 1, 0),
-    ('_pargi_rare_', 0, 0),
-    ('_pargi_rare_', 1, 0),
-    ('_pargi_rare_', 4, 0),
-    ('_pikel_common_', 4, 0),
-    ('_pikel_rare_', 4, 0),
-    ('_pikel_rare_', 11, 0),
-    ('_player_ghost_common_', 0, 0),
-    ('_player_ghost_common_', 4, 0),
-    ('_player_ghost_medium_', 1, 0),
-    ('_polyphemus_common_', 0, 0),
-    ('_polyphemus_common_', 1, 0),
-    ('_polyphemus_rare_', 0, 0),
-    ('_polyphemus_rare_', 1, 0),
-    ('_polyphemus_rare_', 2, 0),
-    ('_prince_ribbit_common_', 2, 0),
-    ('_prince_ribbit_common_', 3, 0),
-    ('_prince_ribbit_rare_', 3, 0),
-    ('_robin_common_', 5, 0),
-    ('_robin_common_', 6, 0),
-    ('_robin_common_', 7, 0),
-    ('_rupert_common_', 0, 0),
-    ('_rupert_common_', 1, 0),
-    ('_rupert_common_', 2, 0),
-    ('_rupert_rare_', 0, 0),
-    ('_sigmund_common_', 1, 0),
-    ('_sigmund_common_', 12, 0),
-    ('_sigmund_common_', 13, 1),
-    ('_sigmund_common_', 14, 0),
-    ('_sigmund_rare_', 5, 0),
-    ('_silenced_humanoid_common_', 0, 0),
-    ('_silenced_humanoid_common_', 1, 0),
-    ('_silenced_humanoid_rare_', 0, 0),
-    ('_silenced_humanoid_rare_', 1, 0),
-    ('_silenced_humanoid_rare_', 2, 0),
-    ('_silenced_humanoid_rare_', 3, 0),
-    ('_snorg_common_', 0, 0),
-    ('_snorg_common_', 1, 0),
-    ('_snorg_common_', 2, 0),
-    ('_snorg_common_', 3, 0),
-    ('_snorg_common_', 4, 0),
-    ('_sojobo_common_', 0, 0),
-    ('_sojobo_common_', 2, 0),
-    ('_sojobo_common_', 4, 0),
-    ('_sonja_common_', 2, 0),
-    ('_sonja_common_', 3, 0),
-    ('_sonja_common_', 4, 0),
-    ('_spectator_speech_', 4, 0),
-    ('_spectator_speech_', 5, 0),
-    ('_spectator_speech_', 6, 0),
-    ('_spectator_speech_', 7, 0),
-    ('_spectator_speech_', 8, 0),
-    ('_terence_common_', 0, 0),
-    ('_terence_common_', 1, 0),
-    ('_terence_common_', 2, 0),
-    ('_tormentor_common_', 1, 0),
-    ('_tormentor_common_', 2, 0),
-    ('_tormentor_common_', 3, 0),
-    ('_urug_common_', 1, 0),
-    ('_urug_common_', 2, 0),
-    ('_urug_common_', 3, 0),
-    ('_urug_rare_', 0, 0),
-    ('_vashnia_common_', 0, 0),
-    ('_vashnia_common_', 1, 0),
-    ('_vashnia_common_', 2, 0),
-    ('_vashnia_common_', 3, 0),
-    ('_vashnia_common_', 4, 0),
-    ('_wiglaf_common_', 6, 0),
-    ('_wizard_medium_', 0, 0),
-    ('_wizard_medium_', 1, 0),
-    ('_xtahua_common_', 1, 0),
-    ('_zenata_common_', 0, 0),
-    ('_zenata_common_', 2, 0),
-    ('air magic player ghost', 0, 0),
-    ('alderking', 0, 0),
-    ('alderking', 1, 0),
-    ('bennu', 0, 0),
-    ('bennu', 1, 0),
-    ('bennu permanently killed', 0, 0),
-    ('brain worm', 0, 0),
-    ('brain worm', 1, 0),
-    ('brain worm', 2, 0),
-    ('catoblepas', 2, 0),
-    ('catoblepas', 3, 0),
-    ('centipede', 0, 0),
-    ('chaos spawn', 0, 0),
-    ('chaos spawn', 1, 0),
-    ('chaos spawn', 2, 0),
-    ('cognitogaunt', 0, 0),
-    ('confused crazy yiuf', 2, 0),
-    ('confused crazy yiuf', 8, 0),
-    ('confused ijyb', 7, 0),
-    ('confused zin angel', 3, 0),
-    ('conjurations player ghost', 0, 0),
-    ('conjurations player ghost', 3, 0),
-    ('conjurations player ghost', 4, 0),
-    ('crossbows player ghost', 1, 0),
-    ('crystal guardian', 0, 0),
-    ('crystal guardian', 1, 0),
-    ("default 'cap-g'", 0, 0),
-    ("default 'cap-j'", 0, 0),
-    ("default confused 'b'", 0, 0),
-    ("default confused 'r'", 0, 0),
-    ('default confused arachnid', 0, 0),
-    ('default confused centipede', 0, 0),
-    ('default confused centipede', 1, 0),
-    ('default confused insect', 0, 0),
-    ('default confused insect', 1, 0),
-    ('default confused winged insect', 0, 0),
-    ('default confused winged insect', 1, 0),
-    ('default confused winged insect', 2, 0),
-    ('default hoarfrost cannon', 0, 0),
-    ('default hoarfrost cannon', 1, 0),
-    ('default hostile confused donald', 9, 0),
-    ('default hostile confused donald', 10, 0),
-    ('default hostile confused donald', 11, 0),
-    ('default hostile confused donald', 12, 0),
-    ('default ice statue', 0, 0),
-    ('default insect', 0, 0),
-    ('default mennas', 0, 0),
-    ('default mennas', 1, 0),
-    ('default mennas', 2, 0),
-    ('default mennas', 3, 0),
-    ('default obsidian statue', 0, 0),
-    ('default orange crystal statue', 0, 0),
-    ("default silenced confused 'y'", 0, 0),
-    ('default silenced confused humanoid', 0, 0),
-    ('default silenced confused humanoid', 1, 0),
-    ('default silenced confused humanoid', 2, 0),
-    ('default silenced confused humanoid', 3, 0),
-    ('default silenced confused humanoid', 4, 0),
-    ('default silenced confused humanoid', 5, 0),
-    ('deformed humanoid', 0, 0),
-    ('deformed humanoid', 1, 0),
-    ('deformed humanoid', 2, 0),
-    ('deformed humanoid', 3, 0),
-    ('deformed humanoid', 5, 0),
-    ('deformed humanoid', 7, 0),
-    ('deformed humanoid', 8, 0),
-    ('deformed humanoid', 9, 0),
-    ('deformed humanoid', 12, 0),
-    ('deformed humanoid', 15, 0),
-    ('deformed humanoid', 19, 0),
-    ('deformed humanoid', 20, 0),
-    ('deformed humanoid', 21, 0),
-    ('deformed humanoid', 22, 0),
-    ('deformed humanoid', 23, 0),
-    ('deformed humanoid', 24, 0),
-    ('deformed humanoid', 25, 0),
-    ('deformed humanoid', 26, 0),
-    ('deformed humanoid', 28, 0),
-    ('dowan_duvessa_dies', 1, 0),
-    ('duvessa_dowan_dies', 2, 0),
-    ('earth magic player ghost', 2, 0),
-    ('elephant slug', 0, 0),
-    ('erythrospite', 0, 0),
-    ('eustachio triumphant', 0, 0),
-    ('fighting player ghost', 1, 0),
-    ('fleeing dowan', 0, 0),
-    ('friendly hound', 0, 0),
-    ('friendly hound', 1, 0),
-    ('friendly hound', 2, 0),
-    ('friendly hound', 3, 0),
-    ('friendly hound', 4, 0),
-    ('friendly hound', 5, 0),
-    ('friendly hound', 6, 0),
-    ('friendly hound', 7, 0),
-    ('friendly shoals hound', 1, 0),
-    ('friendly shoals hound', 3, 0),
-    ('goblin sharper', 0, 0),
-    ('goblin sharper', 1, 0),
-    ('goblin sharper', 2, 0),
-    ('goblin sharper', 3, 0),
-    ('gozag player ghost', 0, 0),
-    ('holy_being_pacification', 0, 0),
-    ('holy_being_pacification_humanoid', 1, 0),
-    ('holy_being_pacification_humanoid', 2, 0),
-    ('hound', 0, 0),
-    ('ice magic player ghost', 0, 0),
-    ('ignis player ghost', 1, 0),
-    ('invocations player ghost', 5, 0),
-    ('josephine', 0, 0),
-    ('josephine', 1, 0),
-    ('josephine', 2, 0),
-    ('killer klown triumphant', 0, 0),
-    ('killer klown triumphant', 2, 0),
-    ('kirke', 0, 0),
-    ('kirke', 1, 0),
-    ('kobold blastminer', 0, 0),
-    ('kobold blastminer', 1, 0),
-    ('long blades player ghost', 0, 0),
-    ('maces & flails player ghost', 1, 0),
-    ('moth of wrath', 0, 0),
-    ('natasha triumphant', 0, 0),
-    ('natasha triumphant', 1, 0),
-    ('nergalle', 2, 0),
-    ('nergalle', 3, 0),
-    ('obsidian bat', 0, 0),
-    ('orc donald', 7, 0),
-    ('orc_apostle_unbanished', 0, 0),
-    ('orc_apostle_unbanished', 7, 0),
-    ('protean progenitor', 0, 0),
-    ('protean progenitor', 1, 0),
-    ('protean progenitor', 2, 0),
-    ('protean progenitor', 3, 0),
-    ('ranged weapons player ghost', 2, 0),
-    ('ranged weapons player ghost', 3, 0),
-    ('reaper', 1, 0),
-    ('reaper', 2, 0),
-    ('reaper', 6, 0),
-    ('sewer brain worm', 1, 0),
-    ('shapeshifting player ghost', 1, 0),
-    ('shapeshifting player ghost', 2, 0),
-    ('short blades player ghost', 2, 0),
-    ('sigmund triumphant', 0, 0),
-    ('silenced cognitogaunt', 0, 0),
-    ('silenced murray', 0, 0),
-    ('silenced murray', 1, 0),
-    ('silenced murray', 2, 0),
-    ('silenced murray', 3, 0),
-    ('silenced murray', 4, 0),
-    ('silenced murray', 5, 0),
-    ('silenced player ghost', 0, 0),
-    ('silenced player ghost', 1, 0),
-    ('silenced player ghost', 2, 0),
-    ('silenced silent spectre', 0, 0),
-    ('silenced silent spectre', 1, 0),
-    ('silenced silent spectre', 2, 0),
-    ('silenced silent spectre', 3, 0),
-    ('silenced silent spectre', 4, 0),
-    ('silenced silent spectre', 5, 0),
-    ('silenced zin angel', 0, 0),
-    ('silenced zin angel', 1, 0),
-    ('silenced zin angel', 2, 0),
-    ('silenced zin angel', 3, 0),
-    ('silent jory killed', 0, 0),
-    ('slings player ghost', 1, 0),
-    ('sonja triumphant', 0, 0),
-    ('sonja triumphant', 1, 0),
-    ('spellcasting player ghost', 4, 0),
-    ('spellcasting player ghost', 5, 0),
-    ('staves player ghost', 1, 0),
-    ('stealth player ghost', 0, 0),
-    ('stealth player ghost', 1, 0),
-    ('stealth player ghost', 2, 0),
-    ('stealth player ghost', 3, 0),
-    ('stealth player ghost', 5, 0),
-    ('summonings player ghost', 1, 0),
-    ('thermic dynamo', 0, 0),
-    ('thermic dynamo', 1, 0),
-    ('throwing player ghost', 0, 0),
-    ('translocations player ghost', 0, 0),
-    ('translocations player ghost', 1, 0),
-    ('translocations player ghost', 2, 0),
-    ('twin_banished dowan', 0, 0),
-    ('twin_banished duvessa', 0, 0),
-    ('twin_banished duvessa', 1, 0),
-    ('twin_died dowan', 0, 0),
-    ('twin_died duvessa', 0, 0),
-    ('twin_died duvessa', 1, 0),
-    ('twin_died duvessa', 6, 0),
-    ('twin_ikilled dowan', 0, 0),
-    ('twin_ikilled duvessa', 0, 0),
-    ('twin_slimified dowan', 0, 0),
-    ('unarmed combat player ghost', 1, 0),
-    ('unarmed combat player ghost', 2, 0),
-    ('unarmed combat player ghost', 4, 0),
-    ('unarmed combat player ghost', 5, 0),
-    ("xak'krixis", 4, 0),
-    ("xak'krixis", 5, 0),
-    ('xom crazy yiuf', 11, 0),
-    ('xom crazy yiuf', 12, 0),
-    ('xom crazy yiuf', 13, 0),
-    ('xom crazy yiuf', 14, 0),
-    ('xtahua triumphant', 1, 0),
+    ("'r'", 0, 0, 0),
+    ('_agnes_common_', 0, 0, 0),
+    ('_aizul_common_', 0, 0, 0),
+    ('_aizul_common_', 3, 0, 0),
+    ('_aizul_rare_', 2, 0, 0),
+    ('_aizul_rare_', 8, 0, 0),
+    ('_amaemon_common_', 1, 0, 0),
+    ('_amaemon_common_', 2, 0, 0),
+    ('_amaemon_common_', 3, 0, 0),
+    ('_asterion_common_', 0, 0, 0),
+    ('_asterion_common_', 1, 0, 0),
+    ('_azrael_common_', 3, 0, 0),
+    ('_azrael_common_', 4, 0, 0),
+    ('_azrael_common_', 5, 0, 0),
+    ('_azrael_rare_', 3, 0, 0),
+    ('_bai_suzhen_common_', 4, 0, 0),
+    ('_bai_suzhen_rare_', 5, 0, 0),
+    ('_bennu_death_', 0, 0, 0),
+    ('_blorkula_common_', 1, 0, 0),
+    ('_blorkula_common_', 2, 0, 0),
+    ('_blorkula_common_', 3, 0, 0),
+    ('_blorkula_rare_', 5, 0, 0),
+    ('_boris_common_', 0, 0, 0),
+    ('_chuck_generic_', 6, 0, 0),
+    ('_chuck_rare_', 1, 0, 0),
+    ('_confused_humanoid_common_', 0, 0, 0),
+    ('_confused_humanoid_common_', 2, 0, 0),
+    ('_confused_humanoid_common_', 4, 0, 0),
+    ('_confused_humanoid_common_', 5, 0, 0),
+    ('_confused_humanoid_common_', 6, 0, 0),
+    ('_confused_humanoid_common_', 7, 0, 0),
+    ('_confused_humanoid_medium_', 0, 0, 0),
+    ('_confused_humanoid_rare_', 4, 0, 0),
+    ('_confused_humanoid_rare_', 5, 0, 0),
+    ('_crazy_yiuf_speech_', 1, 0, 0),
+    ('_crazy_yiuf_speech_', 3, 0, 0),
+    ('_crazy_yiuf_speech_', 4, 0, 0),
+    ('_crazy_yiuf_speech_', 5, 0, 0),
+    ('_dissolution_common_', 3, 0, 0),
+    ('_dissolution_common_', 4, 0, 0),
+    ('_dowan_common_', 0, 0, 0),
+    ('_dowan_rare_', 0, 0, 0),
+    ('_dowan_rare_', 1, 0, 0),
+    ('_dowan_rare_', 2, 0, 0),
+    ('_dowan_rare_', 3, 0, 0),
+    ('_duvessa_common_', 0, 0, 0),
+    ('_edmund_common_', 0, 0, 0),
+    ('_edmund_rare_', 0, 0, 0),
+    ('_edmund_rare_', 1, 0, 0),
+    ('_erica_common_', 0, 0, 0),
+    ('_erolcha_common_', 2, 0, 0),
+    ('_eustachio_rare_', 1, 0, 0),
+    ('_fake_spell_effect_', 0, 0, 0),
+    ('_fake_spell_effect_', 1, 0, 0),
+    ('_fake_spell_effect_', 2, 0, 0),
+    ('_fake_spell_effect_', 3, 0, 0),
+    ('_fake_spell_effect_', 4, 0, 0),
+    ('_fannar_common_', 0, 0, 0),
+    ('_fannar_common_', 1, 0, 0),
+    ('_fannar_common_', 2, 0, 0),
+    ('_fleeing_humanoid_common_', 0, 0, 0),
+    ('_fleeing_humanoid_common_', 2, 0, 0),
+    ('_fleeing_humanoid_rare_', 5, 0, 0),
+    ('_fleeing_humanoid_rare_', 7, 0, 0),
+    ('_fleeing_humanoid_rare_', 9, 0, 0),
+    ('_fleeing_humanoid_rare_', 11, 0, 0),
+    ('_fleeing_silenced_common_', 0, 0, 0),
+    ('_fleeing_silenced_common_', 1, 0, 0),
+    ('_fleeing_silenced_rare_', 0, 0, 0),
+    ('_fleeing_silenced_rare_', 1, 0, 0),
+    ('_fleeing_silenced_rare_', 2, 0, 0),
+    ('_frances_common_', 0, 0, 0),
+    ('_frances_common_', 1, 0, 0),
+    ('_frances_rare_', 0, 0, 0),
+    ('_frederick_common_', 0, 0, 0),
+    ('_frederick_common_', 1, 0, 0),
+    ('_frederick_rare_', 0, 0, 0),
+    ('_frederick_rare_', 1, 0, 0),
+    ('_frederick_rare_', 2, 0, 0),
+    ('_friendly_beogh_speech_rare_', 5, 0, 0),
+    ('_friendly_confused_common_', 4, 0, 0),
+    ('_friendly_confused_common_', 5, 0, 0),
+    ('_friendly_confused_medium_', 4, 0, 0),
+    ('_friendly_confused_medium_', 5, 0, 0),
+    ('_friendly_confused_medium_', 6, 0, 0),
+    ('_friendly_confused_rare_', 5, 0, 0),
+    ('_friendly_fleeing_common_', 0, 0, 0),
+    ('_friendly_humanoid_common_', 2, 0, 0),
+    ('_friendly_humanoid_common_', 3, 0, 0),
+    ('_friendly_humanoid_common_', 5, 0, 0),
+    ('_friendly_humanoid_medium_', 4, 0, 0),
+    ('_friendly_humanoid_rare_', 0, 0, 0),
+    ('_friendly_imp_common_', 0, 0, 0),
+    ('_friendly_imp_common_', 1, 0, 0),
+    ('_friendly_imp_common_', 2, 0, 0),
+    ('_friendly_imp_common_', 3, 0, 0),
+    ('_friendly_silenced_common_', 0, 0, 0),
+    ('_friendly_silenced_common_', 1, 0, 0),
+    ('_friendly_silenced_rare_', 0, 0, 0),
+    ('_friendly_silenced_rare_', 1, 0, 0),
+    ('_friendly_silenced_rare_', 2, 0, 0),
+    ('_friendly_silenced_rare_', 3, 0, 0),
+    ('_friendly_silenced_rare_', 4, 0, 0),
+    ('_gastronok_common_', 0, 0, 0),
+    ('_gastronok_rare_', 0, 0, 0),
+    ('_gastronok_rare_', 1, 0, 0),
+    ('_gastronok_rare_', 2, 0, 0),
+    ('_generic_donald_', 25, 0, 0),
+    ('_generic_donald_', 26, 0, 0),
+    ('_generic_donald_', 27, 0, 0),
+    ('_grinder_common_', 0, 0, 0),
+    ('_grinder_rare_', 5, 0, 0),
+    ('_grum_common_', 0, 0, 0),
+    ('_grum_common_', 4, 0, 0),
+    ('_grum_rare_', 0, 0, 0),
+    ('_grunn_rare_', 0, 0, 0),
+    ('_grunn_rare_', 1, 0, 0),
+    ('_harold_common_', 0, 0, 0),
+    ('_harold_rare_', 0, 0, 0),
+    ('_high_priest_medium_', 0, 0, 0),
+    ('_holy_being_', 0, 0, 1),
+    ('_hostile_imp_common_', 1, 0, 0),
+    ('_hostile_imp_common_', 2, 0, 0),
+    ('_hostile_imp_common_', 3, 0, 0),
+    ('_hostile_imp_common_', 4, 0, 0),
+    ('_hostile_imp_rare_', 0, 0, 0),
+    ('_hostile_imp_rare_', 1, 0, 0),
+    ('_hostile_imp_rare_', 3, 0, 0),
+    ('_hostile_imp_rare_', 4, 0, 0),
+    ('_hostile_orc_beogh_believer_speech_common_', 10, 0, 0),
+    ('_hostile_orc_beogh_believer_speech_rare_', 5, 0, 0),
+    ('_hostile_orc_beogh_believer_speech_rare_', 6, 0, 0),
+    ('_ignacio_common_', 0, 0, 0),
+    ('_ignacio_common_', 1, 0, 0),
+    ('_ijyb_common_', 0, 0, 0),
+    ('_ijyb_common_', 1, 0, 0),
+    ('_ilsuiw_common_', 3, 0, 0),
+    ('_ilsuiw_rare_', 0, 0, 0),
+    ('_jeremiah_common_', 6, 0, 0),
+    ('_jeremiah_common_', 7, 0, 0),
+    ('_jeremiah_common_', 8, 0, 0),
+    ('_jeremiah_common_', 9, 0, 0),
+    ('_jeremiah_common_', 10, 0, 0),
+    ('_jeremiah_common_', 11, 0, 0),
+    ('_jeremiah_rare_', 12, 0, 0),
+    ('_jessica_common_', 0, 0, 0),
+    ('_jessica_common_', 1, 0, 0),
+    ('_jessica_common_', 3, 0, 0),
+    ('_jory_silent_', 0, 0, 0),
+    ('_jory_silent_', 1, 0, 0),
+    ('_jory_silent_', 2, 0, 0),
+    ('_jory_silent_', 3, 0, 0),
+    ('_jory_silent_', 4, 0, 0),
+    ('_jory_silent_', 5, 0, 0),
+    ('_jory_silent_', 6, 0, 0),
+    ('_jory_silent_', 7, 0, 0),
+    ('_jory_silent_', 8, 0, 0),
+    ('_jory_silent_', 9, 0, 0),
+    ('_jory_silent_', 10, 0, 0),
+    ('_joseph_common_', 1, 0, 0),
+    ('_joseph_common_', 2, 0, 0),
+    ('_josephina_common_', 0, 0, 0),
+    ('_josephina_common_', 1, 0, 0),
+    ('_josephina_common_', 4, 0, 0),
+    ('_josephina_rare_', 0, 0, 0),
+    ('_josephina_rare_', 1, 0, 0),
+    ('_killer_klown_common_', 2, 0, 0),
+    ('_killer_klown_common_', 3, 0, 0),
+    ('_killer_klown_common_', 4, 0, 0),
+    ('_killer_klown_common_', 5, 0, 0),
+    ('_killer_klown_common_', 6, 0, 0),
+    ('_killer_klown_common_', 7, 0, 0),
+    ('_killer_klown_common_', 8, 0, 0),
+    ('_killer_klown_rare_', 1, 0, 0),
+    ('_killer_klown_rare_', 2, 0, 0),
+    ('_killer_klown_rare_', 3, 0, 0),
+    ('_killer_klown_rare_', 4, 0, 0),
+    ('_lodul_common_', 1, 0, 0),
+    ('_lodul_common_', 4, 0, 0),
+    ('_lodul_rare_', 2, 0, 0),
+    ('_maggie_common_', 0, 0, 0),
+    ('_maggie_common_', 1, 0, 0),
+    ('_maggie_common_', 4, 0, 0),
+    ('_mara_common_', 0, 0, 0),
+    ('_mara_common_', 6, 0, 0),
+    ('_mara_common_', 7, 0, 0),
+    ('_mara_common_', 8, 0, 0),
+    ('_margery_common_', 0, 0, 0),
+    ('_margery_common_', 1, 0, 0),
+    ('_margery_common_', 2, 0, 0),
+    ('_margery_common_', 2, 0, 1),
+    ('_margery_common_', 3, 0, 0),
+    ('_margery_rare_', 1, 0, 0),
+    ('_margery_spell_results_', 0, 0, 0),
+    ('_margery_spell_results_', 1, 0, 0),
+    ('_margery_spell_results_', 2, 0, 0),
+    ('_maurice_common_', 0, 0, 0),
+    ('_maurice_common_', 1, 0, 0),
+    ('_maurice_medium_', 0, 0, 0),
+    ('_menkaure_common_', 0, 0, 0),
+    ('_menkaure_common_', 5, 0, 0),
+    ('_menkaure_common_', 6, 0, 0),
+    ('_menkaure_common_', 8, 0, 0),
+    ('_menkaure_common_', 10, 0, 0),
+    ('_menkaure_rare_', 1, 0, 0),
+    ('_menkaure_rare_', 2, 0, 0),
+    ('_menkaure_rare_', 7, 0, 0),
+    ('_mercenary_guard_common_', 0, 0, 0),
+    ('_mercenary_guard_common_', 1, 0, 0),
+    ('_murray_common_', 0, 0, 0),
+    ('_murray_common_', 1, 0, 0),
+    ('_murray_common_', 2, 0, 0),
+    ('_murray_common_', 3, 0, 0),
+    ('_natasha_rare_', 3, 0, 0),
+    ('_nellie_common_', 5, 0, 0),
+    ('_nellie_common_', 6, 0, 0),
+    ('_nellie_common_', 7, 0, 0),
+    ('_norris_common_', 1, 0, 0),
+    ('_norris_common_', 2, 0, 0),
+    ('_norris_common_', 3, 0, 0),
+    ('_norris_rare_', 0, 0, 0),
+    ('_parghit_common_', 1, 0, 0),
+    ('_parghit_rare_', 0, 0, 0),
+    ('_parghit_rare_', 1, 0, 0),
+    ('_pargi_common_', 1, 0, 0),
+    ('_pargi_rare_', 0, 0, 0),
+    ('_pargi_rare_', 1, 0, 0),
+    ('_pargi_rare_', 4, 0, 0),
+    ('_pikel_common_', 4, 0, 0),
+    ('_pikel_rare_', 4, 0, 0),
+    ('_pikel_rare_', 11, 0, 0),
+    ('_player_ghost_common_', 0, 0, 0),
+    ('_player_ghost_common_', 4, 0, 0),
+    ('_player_ghost_medium_', 1, 0, 0),
+    ('_polyphemus_common_', 0, 0, 0),
+    ('_polyphemus_common_', 1, 0, 0),
+    ('_polyphemus_rare_', 0, 0, 0),
+    ('_polyphemus_rare_', 1, 0, 0),
+    ('_polyphemus_rare_', 2, 0, 0),
+    ('_prince_ribbit_common_', 2, 0, 0),
+    ('_prince_ribbit_common_', 3, 0, 0),
+    ('_prince_ribbit_rare_', 3, 0, 0),
+    ('_robin_common_', 5, 0, 0),
+    ('_robin_common_', 6, 0, 0),
+    ('_robin_common_', 7, 0, 0),
+    ('_rupert_common_', 0, 0, 0),
+    ('_rupert_common_', 1, 0, 0),
+    ('_rupert_common_', 2, 0, 0),
+    ('_rupert_rare_', 0, 0, 0),
+    ('_sigmund_common_', 1, 0, 0),
+    ('_sigmund_common_', 12, 0, 0),
+    ('_sigmund_common_', 13, 0, 1),
+    ('_sigmund_common_', 14, 0, 0),
+    ('_sigmund_rare_', 5, 0, 0),
+    ('_silenced_humanoid_common_', 0, 0, 0),
+    ('_silenced_humanoid_common_', 1, 0, 0),
+    ('_silenced_humanoid_rare_', 0, 0, 0),
+    ('_silenced_humanoid_rare_', 1, 0, 0),
+    ('_silenced_humanoid_rare_', 2, 0, 0),
+    ('_silenced_humanoid_rare_', 3, 0, 0),
+    ('_snorg_common_', 0, 0, 0),
+    ('_snorg_common_', 1, 0, 0),
+    ('_snorg_common_', 2, 0, 0),
+    ('_snorg_common_', 3, 0, 0),
+    ('_snorg_common_', 4, 0, 0),
+    ('_sojobo_common_', 0, 0, 0),
+    ('_sojobo_common_', 2, 0, 0),
+    ('_sojobo_common_', 4, 0, 0),
+    ('_sonja_common_', 2, 0, 0),
+    ('_sonja_common_', 3, 0, 0),
+    ('_sonja_common_', 4, 0, 0),
+    ('_spectator_speech_', 4, 0, 0),
+    ('_spectator_speech_', 5, 0, 0),
+    ('_spectator_speech_', 6, 0, 0),
+    ('_spectator_speech_', 7, 0, 0),
+    ('_spectator_speech_', 8, 0, 0),
+    ('_terence_common_', 0, 0, 0),
+    ('_terence_common_', 1, 0, 0),
+    ('_terence_common_', 2, 0, 0),
+    ('_tormentor_common_', 1, 0, 0),
+    ('_tormentor_common_', 2, 0, 0),
+    ('_tormentor_common_', 3, 0, 0),
+    ('_urug_common_', 1, 0, 0),
+    ('_urug_common_', 2, 0, 0),
+    ('_urug_common_', 3, 0, 0),
+    ('_urug_rare_', 0, 0, 0),
+    ('_vashnia_common_', 0, 0, 0),
+    ('_vashnia_common_', 1, 0, 0),
+    ('_vashnia_common_', 2, 0, 0),
+    ('_vashnia_common_', 3, 0, 0),
+    ('_vashnia_common_', 4, 0, 0),
+    ('_wiglaf_common_', 6, 0, 0),
+    ('_wizard_medium_', 0, 0, 0),
+    ('_wizard_medium_', 1, 0, 0),
+    ('_xtahua_common_', 1, 0, 0),
+    ('_zenata_common_', 0, 0, 0),
+    ('_zenata_common_', 2, 0, 0),
+    ('air magic player ghost', 0, 0, 0),
+    ('alderking', 0, 0, 0),
+    ('alderking', 1, 0, 0),
+    ('bennu', 0, 0, 0),
+    ('bennu', 1, 0, 0),
+    ('bennu permanently killed', 0, 0, 0),
+    ('brain worm', 0, 0, 0),
+    ('brain worm', 1, 0, 0),
+    ('brain worm', 2, 0, 0),
+    ('catoblepas', 2, 0, 0),
+    ('catoblepas', 3, 0, 0),
+    ('centipede', 0, 0, 0),
+    ('chaos spawn', 0, 0, 0),
+    ('chaos spawn', 1, 0, 0),
+    ('chaos spawn', 2, 0, 0),
+    ('cognitogaunt', 0, 0, 0),
+    ('confused crazy yiuf', 2, 0, 0),
+    ('confused crazy yiuf', 8, 0, 0),
+    ('confused ijyb', 7, 0, 0),
+    ('confused zin angel', 3, 0, 0),
+    ('conjurations player ghost', 0, 0, 0),
+    ('conjurations player ghost', 3, 0, 0),
+    ('conjurations player ghost', 4, 0, 0),
+    ('crossbows player ghost', 1, 0, 0),
+    ('crystal guardian', 0, 0, 0),
+    ('crystal guardian', 1, 0, 0),
+    ("default 'cap-g'", 0, 0, 0),
+    ("default 'cap-j'", 0, 0, 0),
+    ("default confused 'b'", 0, 0, 0),
+    ("default confused 'r'", 0, 0, 0),
+    ('default confused arachnid', 0, 0, 0),
+    ('default confused centipede', 0, 0, 0),
+    ('default confused centipede', 1, 0, 0),
+    ('default confused insect', 0, 0, 0),
+    ('default confused insect', 1, 0, 0),
+    ('default confused winged insect', 0, 0, 0),
+    ('default confused winged insect', 1, 0, 0),
+    ('default confused winged insect', 2, 0, 0),
+    ('default hoarfrost cannon', 0, 0, 0),
+    ('default hoarfrost cannon', 1, 0, 0),
+    ('default hostile confused donald', 9, 0, 0),
+    ('default hostile confused donald', 10, 0, 0),
+    ('default hostile confused donald', 11, 0, 0),
+    ('default hostile confused donald', 12, 0, 0),
+    ('default ice statue', 0, 0, 0),
+    ('default insect', 0, 0, 0),
+    ('default mennas', 0, 0, 0),
+    ('default mennas', 1, 0, 0),
+    ('default mennas', 2, 0, 0),
+    ('default mennas', 3, 0, 0),
+    ('default obsidian statue', 0, 0, 0),
+    ('default orange crystal statue', 0, 0, 0),
+    ("default silenced confused 'y'", 0, 0, 0),
+    ('default silenced confused humanoid', 0, 0, 0),
+    ('default silenced confused humanoid', 1, 0, 0),
+    ('default silenced confused humanoid', 2, 0, 0),
+    ('default silenced confused humanoid', 3, 0, 0),
+    ('default silenced confused humanoid', 4, 0, 0),
+    ('default silenced confused humanoid', 5, 0, 0),
+    ('deformed humanoid', 0, 0, 0),
+    ('deformed humanoid', 1, 0, 0),
+    ('deformed humanoid', 2, 0, 0),
+    ('deformed humanoid', 3, 0, 0),
+    ('deformed humanoid', 5, 0, 0),
+    ('deformed humanoid', 7, 0, 0),
+    ('deformed humanoid', 8, 0, 0),
+    ('deformed humanoid', 9, 0, 0),
+    ('deformed humanoid', 12, 0, 0),
+    ('deformed humanoid', 15, 0, 0),
+    ('deformed humanoid', 19, 0, 0),
+    ('deformed humanoid', 20, 0, 0),
+    ('deformed humanoid', 21, 0, 0),
+    ('deformed humanoid', 22, 0, 0),
+    ('deformed humanoid', 23, 0, 0),
+    ('deformed humanoid', 24, 0, 0),
+    ('deformed humanoid', 25, 0, 0),
+    ('deformed humanoid', 26, 0, 0),
+    ('deformed humanoid', 28, 0, 0),
+    ('dowan_duvessa_dies', 1, 0, 0),
+    ('duvessa_dowan_dies', 2, 0, 0),
+    ('earth magic player ghost', 2, 0, 0),
+    ('elephant slug', 0, 0, 0),
+    ('erythrospite', 0, 0, 0),
+    ('eustachio triumphant', 0, 0, 0),
+    ('fighting player ghost', 1, 0, 0),
+    ('fleeing dowan', 0, 0, 0),
+    ('friendly hound', 0, 0, 0),
+    ('friendly hound', 1, 0, 0),
+    ('friendly hound', 2, 0, 0),
+    ('friendly hound', 3, 0, 0),
+    ('friendly hound', 3, 1, 0),
+    ('friendly hound', 4, 0, 0),
+    ('friendly hound', 5, 0, 0),
+    ('friendly hound', 6, 0, 0),
+    ('friendly hound', 7, 0, 0),
+    ('friendly shoals hound', 1, 0, 0),
+    ('friendly shoals hound', 2, 0, 0),
+    ('friendly shoals hound', 2, 1, 0),
+    ('friendly shoals hound', 3, 0, 0),
+    ('goblin sharper', 0, 0, 0),
+    ('goblin sharper', 1, 0, 0),
+    ('goblin sharper', 2, 0, 0),
+    ('goblin sharper', 3, 0, 0),
+    ('gozag player ghost', 0, 0, 0),
+    ('holy_being_pacification', 0, 0, 0),
+    ('holy_being_pacification_humanoid', 1, 0, 0),
+    ('holy_being_pacification_humanoid', 2, 0, 0),
+    ('hound', 0, 0, 0),
+    ('ice magic player ghost', 0, 0, 0),
+    ('ignis player ghost', 1, 0, 0),
+    ('invocations player ghost', 5, 0, 0),
+    ('josephine', 0, 0, 0),
+    ('josephine', 1, 0, 0),
+    ('josephine', 2, 0, 0),
+    ('killer klown triumphant', 0, 0, 0),
+    ('killer klown triumphant', 2, 0, 0),
+    ('kirke', 0, 0, 0),
+    ('kirke', 1, 0, 0),
+    ('kobold blastminer', 0, 0, 0),
+    ('kobold blastminer', 1, 0, 0),
+    ('long blades player ghost', 0, 0, 0),
+    ('maces & flails player ghost', 1, 0, 0),
+    ('moth of wrath', 0, 0, 0),
+    ('natasha triumphant', 0, 0, 0),
+    ('natasha triumphant', 1, 0, 0),
+    ('nekomata', 0, 1, 0),
+    ('nekomata', 1, 1, 0),
+    ('nekomata', 1, 2, 0),
+    ('nekomata', 2, 1, 0),
+    ('nergalle', 2, 0, 0),
+    ('nergalle', 3, 0, 0),
+    ('obsidian bat', 0, 0, 0),
+    ('orc donald', 7, 0, 0),
+    ('orc_apostle_unbanished', 0, 0, 0),
+    ('orc_apostle_unbanished', 7, 0, 0),
+    ('protean progenitor', 0, 0, 0),
+    ('protean progenitor', 1, 0, 0),
+    ('protean progenitor', 2, 0, 0),
+    ('protean progenitor', 3, 0, 0),
+    ('ranged weapons player ghost', 2, 0, 0),
+    ('ranged weapons player ghost', 3, 0, 0),
+    ('reaper', 1, 0, 0),
+    ('reaper', 2, 0, 0),
+    ('reaper', 6, 0, 0),
+    ('sewer brain worm', 1, 0, 0),
+    ('shapeshifting player ghost', 1, 0, 0),
+    ('shapeshifting player ghost', 2, 0, 0),
+    ('short blades player ghost', 2, 0, 0),
+    ('sigmund triumphant', 0, 0, 0),
+    ('silenced cognitogaunt', 0, 0, 0),
+    ('silenced murray', 0, 0, 0),
+    ('silenced murray', 1, 0, 0),
+    ('silenced murray', 2, 0, 0),
+    ('silenced murray', 3, 0, 0),
+    ('silenced murray', 4, 0, 0),
+    ('silenced murray', 5, 0, 0),
+    ('silenced player ghost', 0, 0, 0),
+    ('silenced player ghost', 1, 0, 0),
+    ('silenced player ghost', 2, 0, 0),
+    ('silenced silent spectre', 0, 0, 0),
+    ('silenced silent spectre', 1, 0, 0),
+    ('silenced silent spectre', 2, 0, 0),
+    ('silenced silent spectre', 3, 0, 0),
+    ('silenced silent spectre', 4, 0, 0),
+    ('silenced silent spectre', 5, 0, 0),
+    ('silenced zin angel', 0, 0, 0),
+    ('silenced zin angel', 1, 0, 0),
+    ('silenced zin angel', 2, 0, 0),
+    ('silenced zin angel', 3, 0, 0),
+    ('silent jory killed', 0, 0, 0),
+    ('slings player ghost', 1, 0, 0),
+    ('sonja triumphant', 0, 0, 0),
+    ('sonja triumphant', 1, 0, 0),
+    ('spellcasting player ghost', 4, 0, 0),
+    ('spellcasting player ghost', 5, 0, 0),
+    ('staves player ghost', 1, 0, 0),
+    ('stealth player ghost', 0, 0, 0),
+    ('stealth player ghost', 1, 0, 0),
+    ('stealth player ghost', 2, 0, 0),
+    ('stealth player ghost', 3, 0, 0),
+    ('stealth player ghost', 5, 0, 0),
+    ('summonings player ghost', 1, 0, 0),
+    ('thermic dynamo', 0, 0, 0),
+    ('thermic dynamo', 1, 0, 0),
+    ('throwing player ghost', 0, 0, 0),
+    ('translocations player ghost', 0, 0, 0),
+    ('translocations player ghost', 1, 0, 0),
+    ('translocations player ghost', 2, 0, 0),
+    ('twin_banished dowan', 0, 0, 0),
+    ('twin_banished duvessa', 0, 0, 0),
+    ('twin_banished duvessa', 1, 0, 0),
+    ('twin_died dowan', 0, 0, 0),
+    ('twin_died duvessa', 0, 0, 0),
+    ('twin_died duvessa', 1, 0, 0),
+    ('twin_died duvessa', 6, 0, 0),
+    ('twin_ikilled dowan', 0, 0, 0),
+    ('twin_ikilled duvessa', 0, 0, 0),
+    ('twin_slimified dowan', 0, 0, 0),
+    ('unarmed combat player ghost', 1, 0, 0),
+    ('unarmed combat player ghost', 2, 0, 0),
+    ('unarmed combat player ghost', 4, 0, 0),
+    ('unarmed combat player ghost', 5, 0, 0),
+    ("xak'krixis", 4, 0, 0),
+    ("xak'krixis", 5, 0, 0),
+    ('xom crazy yiuf', 11, 0, 0),
+    ('xom crazy yiuf', 12, 0, 0),
+    ('xom crazy yiuf', 13, 0, 0),
+    ('xom crazy yiuf', 14, 0, 0),
+    ('xtahua triumphant', 1, 0, 0),
 )
+
 
 MONSPEAK_EN_VISUAL_LINE_COUNT = len(MONSPEAK_EN_VISUAL_LINES)
 
@@ -6269,88 +6295,55 @@ def _monspeak_textdb_positions(source_dir, rel_path, label):
     return positions, None
 
 
-# The channel names accepted by strip_channel_prefix's fallback
-# str_to_channel() lookup (initfile.cc message_channel_names), normalized
-# to the lowercase underscore form.
-MONSPEAK_CHANNEL_NAMES = frozenset({
-    "plain", "friend_action", "prompt", "god", "duration", "danger",
-    "warning", "recovery", "sound", "talk", "talk_visual", "intrinsic_gain",
-    "mutation", "monster_spell", "monster_enchant", "friend_spell",
-    "friend_enchant", "monster_damage", "monster_target", "banishment",
-    "equipment", "floor", "multiturn", "examine", "examine_filter",
-    "diagnostic", "error", "tutorial", "orb", "timed_portal", "hell_effect",
-    "monster_warning", "dgl_message", "decor_flavour", "monster_timeout",
-})
-
-MONSPEAK_LUA_BLOCK_RE = re.compile(r"\{\{.*?\}\}", re.DOTALL)
+# The channel identity classifier (``_monspeak_line_channel``) and the
+# per-branch Lua runtime line expansion (``_lua_return_branch_lines``)
+# are imported from monspeak_inventory (CR-023); this checker only owns
+# the contract wiring: the frozen EN identity set, the EN drift freeze
+# and the EN/ZH per-branch line/channel correspondence.
 
 
-def _monspeak_runtime_lines(pattern):
-    """The lines mons_speaks_msg (mon-speak.cc) resolves for one pattern.
+def _monspeak_runtime_branches(pattern):
+    """Per-branch runtime line layouts of one monspeak pattern (CR-023).
 
-    Production splits the message with ``split_string("\\n", msg)``
-    (trim_segments=true, accept_empty_segments=false), so every segment is
-    trimmed of ASCII whitespace and empty segments never become lines.
-    Embedded Lua blocks (``{{...}}``) are evaluated by getSpeakString
-    before the sink and therefore never contribute their source newlines
-    to the split; they are neutralized to a colon-free, newline-free
-    placeholder so the surrounding line layout survives without needing a
-    Lua interpreter.  The neutralized identity set is identical to the
-    raw-split set for the frozen baseline (no ``{{`` precedes the first
-    ``:`` of any line); the neutralization only stops phantom Lua-internal
-    lines from participating in the channel comparison."""
-    neutralized = MONSPEAK_LUA_BLOCK_RE.sub("{{LUA}}", pattern)
-    lines = []
-    for segment in neutralized.split("\n"):
-        line = segment.strip(" \t\n\r")
-        if line:
-            lines.append(line)
-    return lines
-
-
-def _monspeak_line_channel(line):
-    """The msg_channel_type identity one line resolves to through
-    resolve_mon_speech_line_channel (mon-speak.cc:845) /
-    strip_channel_prefix (message.cc:1463), with the mons_speaks_msg
-    default MSGCH_TALK fallback (mon-speak.cc:851).  Returns the
-    channel_to_str name for equality; only identity is needed."""
-    pos = line.find(":")
-    if pos < 0:
-        return "talk"
-    param = line[:pos]
-    if param == "WARN" or param == "VISUAL WARN":
-        return "warning"
-    if param == "SOUND":
-        return "sound"
-    if param == "VISUAL":
-        return "talk_visual"
-    if param == "SPELL" or param == "VISUAL SPELL":
-        return "monster_spell"
-    if param == "ENCHANT" or param == "VISUAL ENCHANT":
-        return "monster_enchant"
-    normalized = param.replace(" ", "_").lower()
-    if normalized == "visual":
-        return "talk_visual"
-    if normalized == "spell":
-        return "monster_spell"
-    if normalized in MONSPEAK_CHANNEL_NAMES:
-        return normalized
-    return "talk"
+    Production order: ``getSpeakString`` evaluates every ``{{...}}`` Lua
+    block before the sink and splices the returned string into the
+    message; ``mons_speaks_msg`` then splits with
+    ``split_string("\\n", msg)`` (trim_segments=true,
+    accept_empty_segments=false).  Every literal return branch of every
+    block is therefore a possible runtime message; this wrapper expands
+    each block per return branch (strict extraction from
+    monspeak_inventory._lua_block_protocol) and returns one line layout
+    per branch combination.  Blocks without literal returns (the
+    you.race()/you.genus() display mappings) keep the colon-free,
+    newline-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
+    neutralization, so their surrounding layout survives without a Lua
+    interpreter.  A pattern without Lua blocks has exactly one branch.
+    Raises ``InventoryError`` when a block's return topology cannot be
+    bound (malformed block / unsupported literal escape): the checker
+    reports that as a fail-closed finding instead of guessing."""
+    return _lua_return_branch_lines(pattern)
 
 
 def _monspeak_visual_channel_findings(source_dir):
-    """Issue-16 monspeak VISUAL channel routing (CR-004/CR-008/CR-019).
+    """Issue-16 monspeak VISUAL channel routing (CR-004/CR-008/CR-019/
+    CR-023).
 
-    The complete sorted-unique EN (canonical key, variant ordinal, line
-    ordinal) set of lines that resolve to the VISUAL channel is frozen
-    from the baseline dump and compared exactly, so an EN edit that swaps
-    two lines inside a pattern (even when jointly mirrored in ZH, keeping
-    the total at 499 and the per-line ZH check satisfied) still fails.
-    Every pattern pinned by the frozen set is then checked line by line
-    against ZH with the production sink semantics: the same runtime
-    newline split and the same per-line channel resolution, so every
-    corresponding line -- including non-VISUAL lines and lines that strip
-    to empty -- must resolve to the same channel as the EN line."""
+    The complete sorted-unique EN (canonical key, variant ordinal, Lua
+    return branch ordinal, line ordinal) set of lines that resolve to
+    the VISUAL channel is frozen from the baseline dump and compared
+    exactly, so an EN edit that swaps two lines inside a pattern (even
+    when jointly mirrored in ZH, keeping the total and the per-line ZH
+    check satisfied) still fails.  The branch ordinal is the Lua return
+    branch index (CR-023): getSpeakString evaluates each ``{{...}}``
+    block before the sink and every literal ``return "VISUAL:..."``
+    emission is a possible runtime line, so the frozen set pins the
+    per-branch channel topology of Lua blocks instead of erasing it with
+    a placeholder.  Every pattern pinned by the frozen set is then
+    checked branch by branch against ZH with the production sink
+    semantics: the same branch count, the same runtime newline split and
+    the same per-line channel resolution, so every corresponding line --
+    including non-VISUAL lines and lines that strip to empty -- must
+    resolve to the same channel as the EN line."""
     contract_id = 'issue16-monspeak-channels'
     findings = []
     en, error = _monspeak_textdb_positions(
@@ -6363,14 +6356,24 @@ def _monspeak_visual_channel_findings(source_dir):
         return [(contract_id, 'dat/database/zh/monspeak.txt', error)]
     # The frozen identity set is derived from the EN file alone: a key that
     # is missing from ZH must never shrink the set the drift check sees.
-    visual_lines = sorted(
-        (key, ordinal, line)
-        for key in sorted(en)
-        for ordinal in range(len(en[key]))
-        for line, raw_line in enumerate(
-            _monspeak_runtime_lines(en[key][ordinal]))
-        if _monspeak_line_channel(raw_line) == "talk_visual"
-    )
+    visual_lines = []
+    en_branches = {}
+    for key in sorted(en):
+        for ordinal in range(len(en[key])):
+            try:
+                branches = _monspeak_runtime_branches(en[key][ordinal])
+            except InventoryError as exc:
+                findings.append((contract_id,
+                                 f"dat/database/monspeak.txt {key!r} "
+                                 f"#{ordinal}",
+                                 f"Lua return topology not bindable: {exc}"))
+                continue
+            en_branches[(key, ordinal)] = branches
+            for branch, branch_lines in enumerate(branches):
+                for line, raw_line in enumerate(branch_lines):
+                    if _monspeak_line_channel(raw_line) == "talk_visual":
+                        visual_lines.append((key, ordinal, branch, line))
+    visual_lines = sorted(visual_lines)
     if visual_lines != list(MONSPEAK_EN_VISUAL_LINES):
         frozen = set(MONSPEAK_EN_VISUAL_LINES)
         current = set(visual_lines)
@@ -6391,7 +6394,7 @@ def _monspeak_visual_channel_findings(source_dir):
     # deleted from ZH (the key's ZH variant list ends early) must fail
     # exactly like a line loss instead of being skipped by a min-range
     # loop.
-    for key, ordinal, _line in visual_lines:
+    for key, ordinal, _branch, _line in visual_lines:
         zh_variants = zh.get(key)
         if zh_variants is None:
             continue  # already reported by the key-missing check above
@@ -6401,43 +6404,69 @@ def _monspeak_visual_channel_findings(source_dir):
                 f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
                 "VISUAL channel line missing from zh/monspeak.txt "
                 "(EN-aligned ordinal absent)"))
-    # CR-019: every pattern pinned by the frozen set must preserve the
-    # whole line/channel layout of the production sink, not only its
-    # VISUAL lines: the ZH pattern must split into the same lines and
-    # every corresponding line (including non-VISUAL lines) must resolve
-    # to the same channel.  A line shift inside a pattern or a newline
-    # position change breaks the correspondence and fails here even when
-    # the frozen EN identity set is untouched.
+    # CR-019/CR-023: every pattern pinned by the frozen set must preserve
+    # the whole line/channel layout of the production sink, not only its
+    # VISUAL lines: the ZH pattern must split into the same branches (for
+    # Lua literal-return blocks: the same return branch count) and every
+    # corresponding line (including non-VISUAL lines) must resolve to the
+    # same channel.  A line shift inside a pattern, a newline position
+    # change, a deleted Lua return branch or a changed VISUAL prefix in a
+    # Lua return breaks the correspondence and fails here even when the
+    # frozen EN identity set is untouched.
     pinned_patterns = sorted({(key, ordinal)
-                              for key, ordinal, _line in visual_lines})
+                              for key, ordinal, _branch, _line
+                              in visual_lines})
     for key, ordinal in pinned_patterns:
         zh_variants = zh.get(key)
         if zh_variants is None or ordinal >= len(zh_variants):
             continue  # already reported above
-        en_lines = _monspeak_runtime_lines(en[key][ordinal])
-        zh_lines = _monspeak_runtime_lines(zh_variants[ordinal])
-        if len(zh_lines) != len(en_lines):
+        try:
+            en_lines_by_branch = en_branches[(key, ordinal)]
+            zh_lines_by_branch = _monspeak_runtime_branches(
+                zh_variants[ordinal])
+        except InventoryError as exc:
             findings.append((
                 contract_id,
                 f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
-                f"runtime line count differs from EN: EN has "
-                f"{len(en_lines)} line(s), ZH has {len(zh_lines)}"))
+                f"Lua return topology not bindable: {exc}"))
             continue
-        for line, en_raw in enumerate(en_lines):
-            en_channel = _monspeak_line_channel(en_raw)
-            zh_channel = _monspeak_line_channel(zh_lines[line])
-            if zh_channel == en_channel:
-                continue
-            if en_channel == "talk_visual":
-                detail = "VISUAL channel prefix lost at an EN-aligned line"
-            else:
-                detail = (f"line channel differs from EN: EN "
-                          f"{en_channel}, ZH {zh_channel}")
+        if len(zh_lines_by_branch) != len(en_lines_by_branch):
             findings.append((
                 contract_id,
-                f"dat/database/zh/monspeak.txt {key!r} #{ordinal} "
-                f"line {line}",
-                detail))
+                f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                f"Lua return branch count differs from EN: EN has "
+                f"{len(en_lines_by_branch)} branch(es), ZH has "
+                f"{len(zh_lines_by_branch)}"))
+            continue
+        for branch, (en_lines, zh_lines) in enumerate(
+            zip(en_lines_by_branch, zh_lines_by_branch)
+        ):
+            if len(zh_lines) != len(en_lines):
+                suffix = (f" (Lua branch {branch})"
+                          if len(en_lines_by_branch) > 1 else "")
+                findings.append((
+                    contract_id,
+                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                    f"runtime line count differs from EN: EN has "
+                    f"{len(en_lines)} line(s), ZH has {len(zh_lines)}"
+                    f"{suffix}"))
+                continue
+            for line, en_raw in enumerate(en_lines):
+                en_channel = _monspeak_line_channel(en_raw)
+                zh_channel = _monspeak_line_channel(zh_lines[line])
+                if zh_channel == en_channel:
+                    continue
+                if en_channel == "talk_visual":
+                    detail = "VISUAL channel prefix lost at an " \
+                        "EN-aligned line"
+                else:
+                    detail = (f"line channel differs from EN: EN "
+                              f"{en_channel}, ZH {zh_channel}")
+                findings.append((
+                    contract_id,
+                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal} "
+                    f"line {line}",
+                    detail))
     return findings
 
 

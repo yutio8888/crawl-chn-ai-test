@@ -908,549 +908,750 @@ TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
     }
 }
 
-// CR-008/CR-019: the complete sorted-unique EN monspeak VISUAL
-// (canonical key, variant ordinal, line ordinal) identity set, frozen
-// from the baseline EN dump (b3ad4425053c2175284d32441d67218df97035b0).
-// The Issue-16 contract compares the full set at the production sink
-// granularity: mons_speaks_msg (mon-speak.cc) splits every selected
-// pattern by '\n' and resolves each line through
-// resolve_mon_speech_line_channel, so a VISUAL line that is not the
-// first line of its pattern (e.g. ``_holy_being_`` #0) or a second
-// VISUAL line inside one pattern (e.g. ``_margery_common_`` #2) is part
-// of the contract.  An EN edit that moves a VISUAL line to another
-// ordinal or line (even one jointly mirrored in ZH so the per-line ZH
-// check still passes) changes this set and fails.
+// CR-008/CR-019/CR-023: the complete sorted-unique EN monspeak VISUAL
+// (canonical key, variant ordinal, Lua return branch ordinal, line
+// ordinal) identity set, frozen from the baseline EN dump
+// (b3ad4425053c2175284d32441d67218df97035b0).  The Issue-16 contract
+// compares the full set at the production sink granularity:
+// mons_speaks_msg (mon-speak.cc) splits every selected pattern by '\n'
+// and resolves each line through resolve_mon_speech_line_channel, so a
+// VISUAL line that is not the first line of its pattern (e.g.
+// ``_holy_being_`` #0) or a second VISUAL line inside one pattern (e.g.
+// ``_margery_common_`` #2) is part of the contract.  The branch ordinal
+// (CR-023) is the Lua return branch index: getSpeakString evaluates
+// every ``{{...}}`` block before the sink, so each literal
+// ``return "VISUAL:..."`` emission is a possible runtime line and
+// participates in the frozen set (e.g. ``friendly shoals hound`` #2
+// emits two VISUAL branches, ``nekomata`` #1 emits two of three).
+// Patterns without Lua blocks have exactly one branch (ordinal 0).  An
+// EN edit that moves a VISUAL line to another ordinal or line, changes a
+// VISUAL prefix inside a Lua return or deletes a Lua return branch (even
+// one jointly mirrored in ZH so the per-line ZH check still passes)
+// changes this set and fails.
 struct frozen_monspeak_visual_line
 {
     const char *key;
     size_t ordinal;
+    size_t branch;
     size_t line;
 };
 
 static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
-    {"'r'", 0, 0},
-    {"_agnes_common_", 0, 0},
-    {"_aizul_common_", 0, 0},
-    {"_aizul_common_", 3, 0},
-    {"_aizul_rare_", 2, 0},
-    {"_aizul_rare_", 8, 0},
-    {"_amaemon_common_", 1, 0},
-    {"_amaemon_common_", 2, 0},
-    {"_amaemon_common_", 3, 0},
-    {"_asterion_common_", 0, 0},
-    {"_asterion_common_", 1, 0},
-    {"_azrael_common_", 3, 0},
-    {"_azrael_common_", 4, 0},
-    {"_azrael_common_", 5, 0},
-    {"_azrael_rare_", 3, 0},
-    {"_bai_suzhen_common_", 4, 0},
-    {"_bai_suzhen_rare_", 5, 0},
-    {"_bennu_death_", 0, 0},
-    {"_blorkula_common_", 1, 0},
-    {"_blorkula_common_", 2, 0},
-    {"_blorkula_common_", 3, 0},
-    {"_blorkula_rare_", 5, 0},
-    {"_boris_common_", 0, 0},
-    {"_chuck_generic_", 6, 0},
-    {"_chuck_rare_", 1, 0},
-    {"_confused_humanoid_common_", 0, 0},
-    {"_confused_humanoid_common_", 2, 0},
-    {"_confused_humanoid_common_", 4, 0},
-    {"_confused_humanoid_common_", 5, 0},
-    {"_confused_humanoid_common_", 6, 0},
-    {"_confused_humanoid_common_", 7, 0},
-    {"_confused_humanoid_medium_", 0, 0},
-    {"_confused_humanoid_rare_", 4, 0},
-    {"_confused_humanoid_rare_", 5, 0},
-    {"_crazy_yiuf_speech_", 1, 0},
-    {"_crazy_yiuf_speech_", 3, 0},
-    {"_crazy_yiuf_speech_", 4, 0},
-    {"_crazy_yiuf_speech_", 5, 0},
-    {"_dissolution_common_", 3, 0},
-    {"_dissolution_common_", 4, 0},
-    {"_dowan_common_", 0, 0},
-    {"_dowan_rare_", 0, 0},
-    {"_dowan_rare_", 1, 0},
-    {"_dowan_rare_", 2, 0},
-    {"_dowan_rare_", 3, 0},
-    {"_duvessa_common_", 0, 0},
-    {"_edmund_common_", 0, 0},
-    {"_edmund_rare_", 0, 0},
-    {"_edmund_rare_", 1, 0},
-    {"_erica_common_", 0, 0},
-    {"_erolcha_common_", 2, 0},
-    {"_eustachio_rare_", 1, 0},
-    {"_fake_spell_effect_", 0, 0},
-    {"_fake_spell_effect_", 1, 0},
-    {"_fake_spell_effect_", 2, 0},
-    {"_fake_spell_effect_", 3, 0},
-    {"_fake_spell_effect_", 4, 0},
-    {"_fannar_common_", 0, 0},
-    {"_fannar_common_", 1, 0},
-    {"_fannar_common_", 2, 0},
-    {"_fleeing_humanoid_common_", 0, 0},
-    {"_fleeing_humanoid_common_", 2, 0},
-    {"_fleeing_humanoid_rare_", 5, 0},
-    {"_fleeing_humanoid_rare_", 7, 0},
-    {"_fleeing_humanoid_rare_", 9, 0},
-    {"_fleeing_humanoid_rare_", 11, 0},
-    {"_fleeing_silenced_common_", 0, 0},
-    {"_fleeing_silenced_common_", 1, 0},
-    {"_fleeing_silenced_rare_", 0, 0},
-    {"_fleeing_silenced_rare_", 1, 0},
-    {"_fleeing_silenced_rare_", 2, 0},
-    {"_frances_common_", 0, 0},
-    {"_frances_common_", 1, 0},
-    {"_frances_rare_", 0, 0},
-    {"_frederick_common_", 0, 0},
-    {"_frederick_common_", 1, 0},
-    {"_frederick_rare_", 0, 0},
-    {"_frederick_rare_", 1, 0},
-    {"_frederick_rare_", 2, 0},
-    {"_friendly_beogh_speech_rare_", 5, 0},
-    {"_friendly_confused_common_", 4, 0},
-    {"_friendly_confused_common_", 5, 0},
-    {"_friendly_confused_medium_", 4, 0},
-    {"_friendly_confused_medium_", 5, 0},
-    {"_friendly_confused_medium_", 6, 0},
-    {"_friendly_confused_rare_", 5, 0},
-    {"_friendly_fleeing_common_", 0, 0},
-    {"_friendly_humanoid_common_", 2, 0},
-    {"_friendly_humanoid_common_", 3, 0},
-    {"_friendly_humanoid_common_", 5, 0},
-    {"_friendly_humanoid_medium_", 4, 0},
-    {"_friendly_humanoid_rare_", 0, 0},
-    {"_friendly_imp_common_", 0, 0},
-    {"_friendly_imp_common_", 1, 0},
-    {"_friendly_imp_common_", 2, 0},
-    {"_friendly_imp_common_", 3, 0},
-    {"_friendly_silenced_common_", 0, 0},
-    {"_friendly_silenced_common_", 1, 0},
-    {"_friendly_silenced_rare_", 0, 0},
-    {"_friendly_silenced_rare_", 1, 0},
-    {"_friendly_silenced_rare_", 2, 0},
-    {"_friendly_silenced_rare_", 3, 0},
-    {"_friendly_silenced_rare_", 4, 0},
-    {"_gastronok_common_", 0, 0},
-    {"_gastronok_rare_", 0, 0},
-    {"_gastronok_rare_", 1, 0},
-    {"_gastronok_rare_", 2, 0},
-    {"_generic_donald_", 25, 0},
-    {"_generic_donald_", 26, 0},
-    {"_generic_donald_", 27, 0},
-    {"_grinder_common_", 0, 0},
-    {"_grinder_rare_", 5, 0},
-    {"_grum_common_", 0, 0},
-    {"_grum_common_", 4, 0},
-    {"_grum_rare_", 0, 0},
-    {"_grunn_rare_", 0, 0},
-    {"_grunn_rare_", 1, 0},
-    {"_harold_common_", 0, 0},
-    {"_harold_rare_", 0, 0},
-    {"_high_priest_medium_", 0, 0},
-    {"_holy_being_", 0, 1},
-    {"_hostile_imp_common_", 1, 0},
-    {"_hostile_imp_common_", 2, 0},
-    {"_hostile_imp_common_", 3, 0},
-    {"_hostile_imp_common_", 4, 0},
-    {"_hostile_imp_rare_", 0, 0},
-    {"_hostile_imp_rare_", 1, 0},
-    {"_hostile_imp_rare_", 3, 0},
-    {"_hostile_imp_rare_", 4, 0},
-    {"_hostile_orc_beogh_believer_speech_common_", 10, 0},
-    {"_hostile_orc_beogh_believer_speech_rare_", 5, 0},
-    {"_hostile_orc_beogh_believer_speech_rare_", 6, 0},
-    {"_ignacio_common_", 0, 0},
-    {"_ignacio_common_", 1, 0},
-    {"_ijyb_common_", 0, 0},
-    {"_ijyb_common_", 1, 0},
-    {"_ilsuiw_common_", 3, 0},
-    {"_ilsuiw_rare_", 0, 0},
-    {"_jeremiah_common_", 6, 0},
-    {"_jeremiah_common_", 7, 0},
-    {"_jeremiah_common_", 8, 0},
-    {"_jeremiah_common_", 9, 0},
-    {"_jeremiah_common_", 10, 0},
-    {"_jeremiah_common_", 11, 0},
-    {"_jeremiah_rare_", 12, 0},
-    {"_jessica_common_", 0, 0},
-    {"_jessica_common_", 1, 0},
-    {"_jessica_common_", 3, 0},
-    {"_jory_silent_", 0, 0},
-    {"_jory_silent_", 1, 0},
-    {"_jory_silent_", 2, 0},
-    {"_jory_silent_", 3, 0},
-    {"_jory_silent_", 4, 0},
-    {"_jory_silent_", 5, 0},
-    {"_jory_silent_", 6, 0},
-    {"_jory_silent_", 7, 0},
-    {"_jory_silent_", 8, 0},
-    {"_jory_silent_", 9, 0},
-    {"_jory_silent_", 10, 0},
-    {"_joseph_common_", 1, 0},
-    {"_joseph_common_", 2, 0},
-    {"_josephina_common_", 0, 0},
-    {"_josephina_common_", 1, 0},
-    {"_josephina_common_", 4, 0},
-    {"_josephina_rare_", 0, 0},
-    {"_josephina_rare_", 1, 0},
-    {"_killer_klown_common_", 2, 0},
-    {"_killer_klown_common_", 3, 0},
-    {"_killer_klown_common_", 4, 0},
-    {"_killer_klown_common_", 5, 0},
-    {"_killer_klown_common_", 6, 0},
-    {"_killer_klown_common_", 7, 0},
-    {"_killer_klown_common_", 8, 0},
-    {"_killer_klown_rare_", 1, 0},
-    {"_killer_klown_rare_", 2, 0},
-    {"_killer_klown_rare_", 3, 0},
-    {"_killer_klown_rare_", 4, 0},
-    {"_lodul_common_", 1, 0},
-    {"_lodul_common_", 4, 0},
-    {"_lodul_rare_", 2, 0},
-    {"_maggie_common_", 0, 0},
-    {"_maggie_common_", 1, 0},
-    {"_maggie_common_", 4, 0},
-    {"_mara_common_", 0, 0},
-    {"_mara_common_", 6, 0},
-    {"_mara_common_", 7, 0},
-    {"_mara_common_", 8, 0},
-    {"_margery_common_", 0, 0},
-    {"_margery_common_", 1, 0},
-    {"_margery_common_", 2, 0},
-    {"_margery_common_", 2, 1},
-    {"_margery_common_", 3, 0},
-    {"_margery_rare_", 1, 0},
-    {"_margery_spell_results_", 0, 0},
-    {"_margery_spell_results_", 1, 0},
-    {"_margery_spell_results_", 2, 0},
-    {"_maurice_common_", 0, 0},
-    {"_maurice_common_", 1, 0},
-    {"_maurice_medium_", 0, 0},
-    {"_menkaure_common_", 0, 0},
-    {"_menkaure_common_", 5, 0},
-    {"_menkaure_common_", 6, 0},
-    {"_menkaure_common_", 8, 0},
-    {"_menkaure_common_", 10, 0},
-    {"_menkaure_rare_", 1, 0},
-    {"_menkaure_rare_", 2, 0},
-    {"_menkaure_rare_", 7, 0},
-    {"_mercenary_guard_common_", 0, 0},
-    {"_mercenary_guard_common_", 1, 0},
-    {"_murray_common_", 0, 0},
-    {"_murray_common_", 1, 0},
-    {"_murray_common_", 2, 0},
-    {"_murray_common_", 3, 0},
-    {"_natasha_rare_", 3, 0},
-    {"_nellie_common_", 5, 0},
-    {"_nellie_common_", 6, 0},
-    {"_nellie_common_", 7, 0},
-    {"_norris_common_", 1, 0},
-    {"_norris_common_", 2, 0},
-    {"_norris_common_", 3, 0},
-    {"_norris_rare_", 0, 0},
-    {"_parghit_common_", 1, 0},
-    {"_parghit_rare_", 0, 0},
-    {"_parghit_rare_", 1, 0},
-    {"_pargi_common_", 1, 0},
-    {"_pargi_rare_", 0, 0},
-    {"_pargi_rare_", 1, 0},
-    {"_pargi_rare_", 4, 0},
-    {"_pikel_common_", 4, 0},
-    {"_pikel_rare_", 4, 0},
-    {"_pikel_rare_", 11, 0},
-    {"_player_ghost_common_", 0, 0},
-    {"_player_ghost_common_", 4, 0},
-    {"_player_ghost_medium_", 1, 0},
-    {"_polyphemus_common_", 0, 0},
-    {"_polyphemus_common_", 1, 0},
-    {"_polyphemus_rare_", 0, 0},
-    {"_polyphemus_rare_", 1, 0},
-    {"_polyphemus_rare_", 2, 0},
-    {"_prince_ribbit_common_", 2, 0},
-    {"_prince_ribbit_common_", 3, 0},
-    {"_prince_ribbit_rare_", 3, 0},
-    {"_robin_common_", 5, 0},
-    {"_robin_common_", 6, 0},
-    {"_robin_common_", 7, 0},
-    {"_rupert_common_", 0, 0},
-    {"_rupert_common_", 1, 0},
-    {"_rupert_common_", 2, 0},
-    {"_rupert_rare_", 0, 0},
-    {"_sigmund_common_", 1, 0},
-    {"_sigmund_common_", 12, 0},
-    {"_sigmund_common_", 13, 1},
-    {"_sigmund_common_", 14, 0},
-    {"_sigmund_rare_", 5, 0},
-    {"_silenced_humanoid_common_", 0, 0},
-    {"_silenced_humanoid_common_", 1, 0},
-    {"_silenced_humanoid_rare_", 0, 0},
-    {"_silenced_humanoid_rare_", 1, 0},
-    {"_silenced_humanoid_rare_", 2, 0},
-    {"_silenced_humanoid_rare_", 3, 0},
-    {"_snorg_common_", 0, 0},
-    {"_snorg_common_", 1, 0},
-    {"_snorg_common_", 2, 0},
-    {"_snorg_common_", 3, 0},
-    {"_snorg_common_", 4, 0},
-    {"_sojobo_common_", 0, 0},
-    {"_sojobo_common_", 2, 0},
-    {"_sojobo_common_", 4, 0},
-    {"_sonja_common_", 2, 0},
-    {"_sonja_common_", 3, 0},
-    {"_sonja_common_", 4, 0},
-    {"_spectator_speech_", 4, 0},
-    {"_spectator_speech_", 5, 0},
-    {"_spectator_speech_", 6, 0},
-    {"_spectator_speech_", 7, 0},
-    {"_spectator_speech_", 8, 0},
-    {"_terence_common_", 0, 0},
-    {"_terence_common_", 1, 0},
-    {"_terence_common_", 2, 0},
-    {"_tormentor_common_", 1, 0},
-    {"_tormentor_common_", 2, 0},
-    {"_tormentor_common_", 3, 0},
-    {"_urug_common_", 1, 0},
-    {"_urug_common_", 2, 0},
-    {"_urug_common_", 3, 0},
-    {"_urug_rare_", 0, 0},
-    {"_vashnia_common_", 0, 0},
-    {"_vashnia_common_", 1, 0},
-    {"_vashnia_common_", 2, 0},
-    {"_vashnia_common_", 3, 0},
-    {"_vashnia_common_", 4, 0},
-    {"_wiglaf_common_", 6, 0},
-    {"_wizard_medium_", 0, 0},
-    {"_wizard_medium_", 1, 0},
-    {"_xtahua_common_", 1, 0},
-    {"_zenata_common_", 0, 0},
-    {"_zenata_common_", 2, 0},
-    {"air magic player ghost", 0, 0},
-    {"alderking", 0, 0},
-    {"alderking", 1, 0},
-    {"bennu", 0, 0},
-    {"bennu", 1, 0},
-    {"bennu permanently killed", 0, 0},
-    {"brain worm", 0, 0},
-    {"brain worm", 1, 0},
-    {"brain worm", 2, 0},
-    {"catoblepas", 2, 0},
-    {"catoblepas", 3, 0},
-    {"centipede", 0, 0},
-    {"chaos spawn", 0, 0},
-    {"chaos spawn", 1, 0},
-    {"chaos spawn", 2, 0},
-    {"cognitogaunt", 0, 0},
-    {"confused crazy yiuf", 2, 0},
-    {"confused crazy yiuf", 8, 0},
-    {"confused ijyb", 7, 0},
-    {"confused zin angel", 3, 0},
-    {"conjurations player ghost", 0, 0},
-    {"conjurations player ghost", 3, 0},
-    {"conjurations player ghost", 4, 0},
-    {"crossbows player ghost", 1, 0},
-    {"crystal guardian", 0, 0},
-    {"crystal guardian", 1, 0},
-    {"default 'cap-g'", 0, 0},
-    {"default 'cap-j'", 0, 0},
-    {"default confused 'b'", 0, 0},
-    {"default confused 'r'", 0, 0},
-    {"default confused arachnid", 0, 0},
-    {"default confused centipede", 0, 0},
-    {"default confused centipede", 1, 0},
-    {"default confused insect", 0, 0},
-    {"default confused insect", 1, 0},
-    {"default confused winged insect", 0, 0},
-    {"default confused winged insect", 1, 0},
-    {"default confused winged insect", 2, 0},
-    {"default hoarfrost cannon", 0, 0},
-    {"default hoarfrost cannon", 1, 0},
-    {"default hostile confused donald", 9, 0},
-    {"default hostile confused donald", 10, 0},
-    {"default hostile confused donald", 11, 0},
-    {"default hostile confused donald", 12, 0},
-    {"default ice statue", 0, 0},
-    {"default insect", 0, 0},
-    {"default mennas", 0, 0},
-    {"default mennas", 1, 0},
-    {"default mennas", 2, 0},
-    {"default mennas", 3, 0},
-    {"default obsidian statue", 0, 0},
-    {"default orange crystal statue", 0, 0},
-    {"default silenced confused 'y'", 0, 0},
-    {"default silenced confused humanoid", 0, 0},
-    {"default silenced confused humanoid", 1, 0},
-    {"default silenced confused humanoid", 2, 0},
-    {"default silenced confused humanoid", 3, 0},
-    {"default silenced confused humanoid", 4, 0},
-    {"default silenced confused humanoid", 5, 0},
-    {"deformed humanoid", 0, 0},
-    {"deformed humanoid", 1, 0},
-    {"deformed humanoid", 2, 0},
-    {"deformed humanoid", 3, 0},
-    {"deformed humanoid", 5, 0},
-    {"deformed humanoid", 7, 0},
-    {"deformed humanoid", 8, 0},
-    {"deformed humanoid", 9, 0},
-    {"deformed humanoid", 12, 0},
-    {"deformed humanoid", 15, 0},
-    {"deformed humanoid", 19, 0},
-    {"deformed humanoid", 20, 0},
-    {"deformed humanoid", 21, 0},
-    {"deformed humanoid", 22, 0},
-    {"deformed humanoid", 23, 0},
-    {"deformed humanoid", 24, 0},
-    {"deformed humanoid", 25, 0},
-    {"deformed humanoid", 26, 0},
-    {"deformed humanoid", 28, 0},
-    {"dowan_duvessa_dies", 1, 0},
-    {"duvessa_dowan_dies", 2, 0},
-    {"earth magic player ghost", 2, 0},
-    {"elephant slug", 0, 0},
-    {"erythrospite", 0, 0},
-    {"eustachio triumphant", 0, 0},
-    {"fighting player ghost", 1, 0},
-    {"fleeing dowan", 0, 0},
-    {"friendly hound", 0, 0},
-    {"friendly hound", 1, 0},
-    {"friendly hound", 2, 0},
-    {"friendly hound", 3, 0},
-    {"friendly hound", 4, 0},
-    {"friendly hound", 5, 0},
-    {"friendly hound", 6, 0},
-    {"friendly hound", 7, 0},
-    {"friendly shoals hound", 1, 0},
-    {"friendly shoals hound", 3, 0},
-    {"goblin sharper", 0, 0},
-    {"goblin sharper", 1, 0},
-    {"goblin sharper", 2, 0},
-    {"goblin sharper", 3, 0},
-    {"gozag player ghost", 0, 0},
-    {"holy_being_pacification", 0, 0},
-    {"holy_being_pacification_humanoid", 1, 0},
-    {"holy_being_pacification_humanoid", 2, 0},
-    {"hound", 0, 0},
-    {"ice magic player ghost", 0, 0},
-    {"ignis player ghost", 1, 0},
-    {"invocations player ghost", 5, 0},
-    {"josephine", 0, 0},
-    {"josephine", 1, 0},
-    {"josephine", 2, 0},
-    {"killer klown triumphant", 0, 0},
-    {"killer klown triumphant", 2, 0},
-    {"kirke", 0, 0},
-    {"kirke", 1, 0},
-    {"kobold blastminer", 0, 0},
-    {"kobold blastminer", 1, 0},
-    {"long blades player ghost", 0, 0},
-    {"maces & flails player ghost", 1, 0},
-    {"moth of wrath", 0, 0},
-    {"natasha triumphant", 0, 0},
-    {"natasha triumphant", 1, 0},
-    {"nergalle", 2, 0},
-    {"nergalle", 3, 0},
-    {"obsidian bat", 0, 0},
-    {"orc donald", 7, 0},
-    {"orc_apostle_unbanished", 0, 0},
-    {"orc_apostle_unbanished", 7, 0},
-    {"protean progenitor", 0, 0},
-    {"protean progenitor", 1, 0},
-    {"protean progenitor", 2, 0},
-    {"protean progenitor", 3, 0},
-    {"ranged weapons player ghost", 2, 0},
-    {"ranged weapons player ghost", 3, 0},
-    {"reaper", 1, 0},
-    {"reaper", 2, 0},
-    {"reaper", 6, 0},
-    {"sewer brain worm", 1, 0},
-    {"shapeshifting player ghost", 1, 0},
-    {"shapeshifting player ghost", 2, 0},
-    {"short blades player ghost", 2, 0},
-    {"sigmund triumphant", 0, 0},
-    {"silenced cognitogaunt", 0, 0},
-    {"silenced murray", 0, 0},
-    {"silenced murray", 1, 0},
-    {"silenced murray", 2, 0},
-    {"silenced murray", 3, 0},
-    {"silenced murray", 4, 0},
-    {"silenced murray", 5, 0},
-    {"silenced player ghost", 0, 0},
-    {"silenced player ghost", 1, 0},
-    {"silenced player ghost", 2, 0},
-    {"silenced silent spectre", 0, 0},
-    {"silenced silent spectre", 1, 0},
-    {"silenced silent spectre", 2, 0},
-    {"silenced silent spectre", 3, 0},
-    {"silenced silent spectre", 4, 0},
-    {"silenced silent spectre", 5, 0},
-    {"silenced zin angel", 0, 0},
-    {"silenced zin angel", 1, 0},
-    {"silenced zin angel", 2, 0},
-    {"silenced zin angel", 3, 0},
-    {"silent jory killed", 0, 0},
-    {"slings player ghost", 1, 0},
-    {"sonja triumphant", 0, 0},
-    {"sonja triumphant", 1, 0},
-    {"spellcasting player ghost", 4, 0},
-    {"spellcasting player ghost", 5, 0},
-    {"staves player ghost", 1, 0},
-    {"stealth player ghost", 0, 0},
-    {"stealth player ghost", 1, 0},
-    {"stealth player ghost", 2, 0},
-    {"stealth player ghost", 3, 0},
-    {"stealth player ghost", 5, 0},
-    {"summonings player ghost", 1, 0},
-    {"thermic dynamo", 0, 0},
-    {"thermic dynamo", 1, 0},
-    {"throwing player ghost", 0, 0},
-    {"translocations player ghost", 0, 0},
-    {"translocations player ghost", 1, 0},
-    {"translocations player ghost", 2, 0},
-    {"twin_banished dowan", 0, 0},
-    {"twin_banished duvessa", 0, 0},
-    {"twin_banished duvessa", 1, 0},
-    {"twin_died dowan", 0, 0},
-    {"twin_died duvessa", 0, 0},
-    {"twin_died duvessa", 1, 0},
-    {"twin_died duvessa", 6, 0},
-    {"twin_ikilled dowan", 0, 0},
-    {"twin_ikilled duvessa", 0, 0},
-    {"twin_slimified dowan", 0, 0},
-    {"unarmed combat player ghost", 1, 0},
-    {"unarmed combat player ghost", 2, 0},
-    {"unarmed combat player ghost", 4, 0},
-    {"unarmed combat player ghost", 5, 0},
-    {"xak'krixis", 4, 0},
-    {"xak'krixis", 5, 0},
-    {"xom crazy yiuf", 11, 0},
-    {"xom crazy yiuf", 12, 0},
-    {"xom crazy yiuf", 13, 0},
-    {"xom crazy yiuf", 14, 0},
-    {"xtahua triumphant", 1, 0},
+    {"'r'", 0, 0, 0},
+    {"_agnes_common_", 0, 0, 0},
+    {"_aizul_common_", 0, 0, 0},
+    {"_aizul_common_", 3, 0, 0},
+    {"_aizul_rare_", 2, 0, 0},
+    {"_aizul_rare_", 8, 0, 0},
+    {"_amaemon_common_", 1, 0, 0},
+    {"_amaemon_common_", 2, 0, 0},
+    {"_amaemon_common_", 3, 0, 0},
+    {"_asterion_common_", 0, 0, 0},
+    {"_asterion_common_", 1, 0, 0},
+    {"_azrael_common_", 3, 0, 0},
+    {"_azrael_common_", 4, 0, 0},
+    {"_azrael_common_", 5, 0, 0},
+    {"_azrael_rare_", 3, 0, 0},
+    {"_bai_suzhen_common_", 4, 0, 0},
+    {"_bai_suzhen_rare_", 5, 0, 0},
+    {"_bennu_death_", 0, 0, 0},
+    {"_blorkula_common_", 1, 0, 0},
+    {"_blorkula_common_", 2, 0, 0},
+    {"_blorkula_common_", 3, 0, 0},
+    {"_blorkula_rare_", 5, 0, 0},
+    {"_boris_common_", 0, 0, 0},
+    {"_chuck_generic_", 6, 0, 0},
+    {"_chuck_rare_", 1, 0, 0},
+    {"_confused_humanoid_common_", 0, 0, 0},
+    {"_confused_humanoid_common_", 2, 0, 0},
+    {"_confused_humanoid_common_", 4, 0, 0},
+    {"_confused_humanoid_common_", 5, 0, 0},
+    {"_confused_humanoid_common_", 6, 0, 0},
+    {"_confused_humanoid_common_", 7, 0, 0},
+    {"_confused_humanoid_medium_", 0, 0, 0},
+    {"_confused_humanoid_rare_", 4, 0, 0},
+    {"_confused_humanoid_rare_", 5, 0, 0},
+    {"_crazy_yiuf_speech_", 1, 0, 0},
+    {"_crazy_yiuf_speech_", 3, 0, 0},
+    {"_crazy_yiuf_speech_", 4, 0, 0},
+    {"_crazy_yiuf_speech_", 5, 0, 0},
+    {"_dissolution_common_", 3, 0, 0},
+    {"_dissolution_common_", 4, 0, 0},
+    {"_dowan_common_", 0, 0, 0},
+    {"_dowan_rare_", 0, 0, 0},
+    {"_dowan_rare_", 1, 0, 0},
+    {"_dowan_rare_", 2, 0, 0},
+    {"_dowan_rare_", 3, 0, 0},
+    {"_duvessa_common_", 0, 0, 0},
+    {"_edmund_common_", 0, 0, 0},
+    {"_edmund_rare_", 0, 0, 0},
+    {"_edmund_rare_", 1, 0, 0},
+    {"_erica_common_", 0, 0, 0},
+    {"_erolcha_common_", 2, 0, 0},
+    {"_eustachio_rare_", 1, 0, 0},
+    {"_fake_spell_effect_", 0, 0, 0},
+    {"_fake_spell_effect_", 1, 0, 0},
+    {"_fake_spell_effect_", 2, 0, 0},
+    {"_fake_spell_effect_", 3, 0, 0},
+    {"_fake_spell_effect_", 4, 0, 0},
+    {"_fannar_common_", 0, 0, 0},
+    {"_fannar_common_", 1, 0, 0},
+    {"_fannar_common_", 2, 0, 0},
+    {"_fleeing_humanoid_common_", 0, 0, 0},
+    {"_fleeing_humanoid_common_", 2, 0, 0},
+    {"_fleeing_humanoid_rare_", 5, 0, 0},
+    {"_fleeing_humanoid_rare_", 7, 0, 0},
+    {"_fleeing_humanoid_rare_", 9, 0, 0},
+    {"_fleeing_humanoid_rare_", 11, 0, 0},
+    {"_fleeing_silenced_common_", 0, 0, 0},
+    {"_fleeing_silenced_common_", 1, 0, 0},
+    {"_fleeing_silenced_rare_", 0, 0, 0},
+    {"_fleeing_silenced_rare_", 1, 0, 0},
+    {"_fleeing_silenced_rare_", 2, 0, 0},
+    {"_frances_common_", 0, 0, 0},
+    {"_frances_common_", 1, 0, 0},
+    {"_frances_rare_", 0, 0, 0},
+    {"_frederick_common_", 0, 0, 0},
+    {"_frederick_common_", 1, 0, 0},
+    {"_frederick_rare_", 0, 0, 0},
+    {"_frederick_rare_", 1, 0, 0},
+    {"_frederick_rare_", 2, 0, 0},
+    {"_friendly_beogh_speech_rare_", 5, 0, 0},
+    {"_friendly_confused_common_", 4, 0, 0},
+    {"_friendly_confused_common_", 5, 0, 0},
+    {"_friendly_confused_medium_", 4, 0, 0},
+    {"_friendly_confused_medium_", 5, 0, 0},
+    {"_friendly_confused_medium_", 6, 0, 0},
+    {"_friendly_confused_rare_", 5, 0, 0},
+    {"_friendly_fleeing_common_", 0, 0, 0},
+    {"_friendly_humanoid_common_", 2, 0, 0},
+    {"_friendly_humanoid_common_", 3, 0, 0},
+    {"_friendly_humanoid_common_", 5, 0, 0},
+    {"_friendly_humanoid_medium_", 4, 0, 0},
+    {"_friendly_humanoid_rare_", 0, 0, 0},
+    {"_friendly_imp_common_", 0, 0, 0},
+    {"_friendly_imp_common_", 1, 0, 0},
+    {"_friendly_imp_common_", 2, 0, 0},
+    {"_friendly_imp_common_", 3, 0, 0},
+    {"_friendly_silenced_common_", 0, 0, 0},
+    {"_friendly_silenced_common_", 1, 0, 0},
+    {"_friendly_silenced_rare_", 0, 0, 0},
+    {"_friendly_silenced_rare_", 1, 0, 0},
+    {"_friendly_silenced_rare_", 2, 0, 0},
+    {"_friendly_silenced_rare_", 3, 0, 0},
+    {"_friendly_silenced_rare_", 4, 0, 0},
+    {"_gastronok_common_", 0, 0, 0},
+    {"_gastronok_rare_", 0, 0, 0},
+    {"_gastronok_rare_", 1, 0, 0},
+    {"_gastronok_rare_", 2, 0, 0},
+    {"_generic_donald_", 25, 0, 0},
+    {"_generic_donald_", 26, 0, 0},
+    {"_generic_donald_", 27, 0, 0},
+    {"_grinder_common_", 0, 0, 0},
+    {"_grinder_rare_", 5, 0, 0},
+    {"_grum_common_", 0, 0, 0},
+    {"_grum_common_", 4, 0, 0},
+    {"_grum_rare_", 0, 0, 0},
+    {"_grunn_rare_", 0, 0, 0},
+    {"_grunn_rare_", 1, 0, 0},
+    {"_harold_common_", 0, 0, 0},
+    {"_harold_rare_", 0, 0, 0},
+    {"_high_priest_medium_", 0, 0, 0},
+    {"_holy_being_", 0, 0, 1},
+    {"_hostile_imp_common_", 1, 0, 0},
+    {"_hostile_imp_common_", 2, 0, 0},
+    {"_hostile_imp_common_", 3, 0, 0},
+    {"_hostile_imp_common_", 4, 0, 0},
+    {"_hostile_imp_rare_", 0, 0, 0},
+    {"_hostile_imp_rare_", 1, 0, 0},
+    {"_hostile_imp_rare_", 3, 0, 0},
+    {"_hostile_imp_rare_", 4, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_common_", 10, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_rare_", 5, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_rare_", 6, 0, 0},
+    {"_ignacio_common_", 0, 0, 0},
+    {"_ignacio_common_", 1, 0, 0},
+    {"_ijyb_common_", 0, 0, 0},
+    {"_ijyb_common_", 1, 0, 0},
+    {"_ilsuiw_common_", 3, 0, 0},
+    {"_ilsuiw_rare_", 0, 0, 0},
+    {"_jeremiah_common_", 6, 0, 0},
+    {"_jeremiah_common_", 7, 0, 0},
+    {"_jeremiah_common_", 8, 0, 0},
+    {"_jeremiah_common_", 9, 0, 0},
+    {"_jeremiah_common_", 10, 0, 0},
+    {"_jeremiah_common_", 11, 0, 0},
+    {"_jeremiah_rare_", 12, 0, 0},
+    {"_jessica_common_", 0, 0, 0},
+    {"_jessica_common_", 1, 0, 0},
+    {"_jessica_common_", 3, 0, 0},
+    {"_jory_silent_", 0, 0, 0},
+    {"_jory_silent_", 1, 0, 0},
+    {"_jory_silent_", 2, 0, 0},
+    {"_jory_silent_", 3, 0, 0},
+    {"_jory_silent_", 4, 0, 0},
+    {"_jory_silent_", 5, 0, 0},
+    {"_jory_silent_", 6, 0, 0},
+    {"_jory_silent_", 7, 0, 0},
+    {"_jory_silent_", 8, 0, 0},
+    {"_jory_silent_", 9, 0, 0},
+    {"_jory_silent_", 10, 0, 0},
+    {"_joseph_common_", 1, 0, 0},
+    {"_joseph_common_", 2, 0, 0},
+    {"_josephina_common_", 0, 0, 0},
+    {"_josephina_common_", 1, 0, 0},
+    {"_josephina_common_", 4, 0, 0},
+    {"_josephina_rare_", 0, 0, 0},
+    {"_josephina_rare_", 1, 0, 0},
+    {"_killer_klown_common_", 2, 0, 0},
+    {"_killer_klown_common_", 3, 0, 0},
+    {"_killer_klown_common_", 4, 0, 0},
+    {"_killer_klown_common_", 5, 0, 0},
+    {"_killer_klown_common_", 6, 0, 0},
+    {"_killer_klown_common_", 7, 0, 0},
+    {"_killer_klown_common_", 8, 0, 0},
+    {"_killer_klown_rare_", 1, 0, 0},
+    {"_killer_klown_rare_", 2, 0, 0},
+    {"_killer_klown_rare_", 3, 0, 0},
+    {"_killer_klown_rare_", 4, 0, 0},
+    {"_lodul_common_", 1, 0, 0},
+    {"_lodul_common_", 4, 0, 0},
+    {"_lodul_rare_", 2, 0, 0},
+    {"_maggie_common_", 0, 0, 0},
+    {"_maggie_common_", 1, 0, 0},
+    {"_maggie_common_", 4, 0, 0},
+    {"_mara_common_", 0, 0, 0},
+    {"_mara_common_", 6, 0, 0},
+    {"_mara_common_", 7, 0, 0},
+    {"_mara_common_", 8, 0, 0},
+    {"_margery_common_", 0, 0, 0},
+    {"_margery_common_", 1, 0, 0},
+    {"_margery_common_", 2, 0, 0},
+    {"_margery_common_", 2, 0, 1},
+    {"_margery_common_", 3, 0, 0},
+    {"_margery_rare_", 1, 0, 0},
+    {"_margery_spell_results_", 0, 0, 0},
+    {"_margery_spell_results_", 1, 0, 0},
+    {"_margery_spell_results_", 2, 0, 0},
+    {"_maurice_common_", 0, 0, 0},
+    {"_maurice_common_", 1, 0, 0},
+    {"_maurice_medium_", 0, 0, 0},
+    {"_menkaure_common_", 0, 0, 0},
+    {"_menkaure_common_", 5, 0, 0},
+    {"_menkaure_common_", 6, 0, 0},
+    {"_menkaure_common_", 8, 0, 0},
+    {"_menkaure_common_", 10, 0, 0},
+    {"_menkaure_rare_", 1, 0, 0},
+    {"_menkaure_rare_", 2, 0, 0},
+    {"_menkaure_rare_", 7, 0, 0},
+    {"_mercenary_guard_common_", 0, 0, 0},
+    {"_mercenary_guard_common_", 1, 0, 0},
+    {"_murray_common_", 0, 0, 0},
+    {"_murray_common_", 1, 0, 0},
+    {"_murray_common_", 2, 0, 0},
+    {"_murray_common_", 3, 0, 0},
+    {"_natasha_rare_", 3, 0, 0},
+    {"_nellie_common_", 5, 0, 0},
+    {"_nellie_common_", 6, 0, 0},
+    {"_nellie_common_", 7, 0, 0},
+    {"_norris_common_", 1, 0, 0},
+    {"_norris_common_", 2, 0, 0},
+    {"_norris_common_", 3, 0, 0},
+    {"_norris_rare_", 0, 0, 0},
+    {"_parghit_common_", 1, 0, 0},
+    {"_parghit_rare_", 0, 0, 0},
+    {"_parghit_rare_", 1, 0, 0},
+    {"_pargi_common_", 1, 0, 0},
+    {"_pargi_rare_", 0, 0, 0},
+    {"_pargi_rare_", 1, 0, 0},
+    {"_pargi_rare_", 4, 0, 0},
+    {"_pikel_common_", 4, 0, 0},
+    {"_pikel_rare_", 4, 0, 0},
+    {"_pikel_rare_", 11, 0, 0},
+    {"_player_ghost_common_", 0, 0, 0},
+    {"_player_ghost_common_", 4, 0, 0},
+    {"_player_ghost_medium_", 1, 0, 0},
+    {"_polyphemus_common_", 0, 0, 0},
+    {"_polyphemus_common_", 1, 0, 0},
+    {"_polyphemus_rare_", 0, 0, 0},
+    {"_polyphemus_rare_", 1, 0, 0},
+    {"_polyphemus_rare_", 2, 0, 0},
+    {"_prince_ribbit_common_", 2, 0, 0},
+    {"_prince_ribbit_common_", 3, 0, 0},
+    {"_prince_ribbit_rare_", 3, 0, 0},
+    {"_robin_common_", 5, 0, 0},
+    {"_robin_common_", 6, 0, 0},
+    {"_robin_common_", 7, 0, 0},
+    {"_rupert_common_", 0, 0, 0},
+    {"_rupert_common_", 1, 0, 0},
+    {"_rupert_common_", 2, 0, 0},
+    {"_rupert_rare_", 0, 0, 0},
+    {"_sigmund_common_", 1, 0, 0},
+    {"_sigmund_common_", 12, 0, 0},
+    {"_sigmund_common_", 13, 0, 1},
+    {"_sigmund_common_", 14, 0, 0},
+    {"_sigmund_rare_", 5, 0, 0},
+    {"_silenced_humanoid_common_", 0, 0, 0},
+    {"_silenced_humanoid_common_", 1, 0, 0},
+    {"_silenced_humanoid_rare_", 0, 0, 0},
+    {"_silenced_humanoid_rare_", 1, 0, 0},
+    {"_silenced_humanoid_rare_", 2, 0, 0},
+    {"_silenced_humanoid_rare_", 3, 0, 0},
+    {"_snorg_common_", 0, 0, 0},
+    {"_snorg_common_", 1, 0, 0},
+    {"_snorg_common_", 2, 0, 0},
+    {"_snorg_common_", 3, 0, 0},
+    {"_snorg_common_", 4, 0, 0},
+    {"_sojobo_common_", 0, 0, 0},
+    {"_sojobo_common_", 2, 0, 0},
+    {"_sojobo_common_", 4, 0, 0},
+    {"_sonja_common_", 2, 0, 0},
+    {"_sonja_common_", 3, 0, 0},
+    {"_sonja_common_", 4, 0, 0},
+    {"_spectator_speech_", 4, 0, 0},
+    {"_spectator_speech_", 5, 0, 0},
+    {"_spectator_speech_", 6, 0, 0},
+    {"_spectator_speech_", 7, 0, 0},
+    {"_spectator_speech_", 8, 0, 0},
+    {"_terence_common_", 0, 0, 0},
+    {"_terence_common_", 1, 0, 0},
+    {"_terence_common_", 2, 0, 0},
+    {"_tormentor_common_", 1, 0, 0},
+    {"_tormentor_common_", 2, 0, 0},
+    {"_tormentor_common_", 3, 0, 0},
+    {"_urug_common_", 1, 0, 0},
+    {"_urug_common_", 2, 0, 0},
+    {"_urug_common_", 3, 0, 0},
+    {"_urug_rare_", 0, 0, 0},
+    {"_vashnia_common_", 0, 0, 0},
+    {"_vashnia_common_", 1, 0, 0},
+    {"_vashnia_common_", 2, 0, 0},
+    {"_vashnia_common_", 3, 0, 0},
+    {"_vashnia_common_", 4, 0, 0},
+    {"_wiglaf_common_", 6, 0, 0},
+    {"_wizard_medium_", 0, 0, 0},
+    {"_wizard_medium_", 1, 0, 0},
+    {"_xtahua_common_", 1, 0, 0},
+    {"_zenata_common_", 0, 0, 0},
+    {"_zenata_common_", 2, 0, 0},
+    {"air magic player ghost", 0, 0, 0},
+    {"alderking", 0, 0, 0},
+    {"alderking", 1, 0, 0},
+    {"bennu", 0, 0, 0},
+    {"bennu", 1, 0, 0},
+    {"bennu permanently killed", 0, 0, 0},
+    {"brain worm", 0, 0, 0},
+    {"brain worm", 1, 0, 0},
+    {"brain worm", 2, 0, 0},
+    {"catoblepas", 2, 0, 0},
+    {"catoblepas", 3, 0, 0},
+    {"centipede", 0, 0, 0},
+    {"chaos spawn", 0, 0, 0},
+    {"chaos spawn", 1, 0, 0},
+    {"chaos spawn", 2, 0, 0},
+    {"cognitogaunt", 0, 0, 0},
+    {"confused crazy yiuf", 2, 0, 0},
+    {"confused crazy yiuf", 8, 0, 0},
+    {"confused ijyb", 7, 0, 0},
+    {"confused zin angel", 3, 0, 0},
+    {"conjurations player ghost", 0, 0, 0},
+    {"conjurations player ghost", 3, 0, 0},
+    {"conjurations player ghost", 4, 0, 0},
+    {"crossbows player ghost", 1, 0, 0},
+    {"crystal guardian", 0, 0, 0},
+    {"crystal guardian", 1, 0, 0},
+    {"default 'cap-g'", 0, 0, 0},
+    {"default 'cap-j'", 0, 0, 0},
+    {"default confused 'b'", 0, 0, 0},
+    {"default confused 'r'", 0, 0, 0},
+    {"default confused arachnid", 0, 0, 0},
+    {"default confused centipede", 0, 0, 0},
+    {"default confused centipede", 1, 0, 0},
+    {"default confused insect", 0, 0, 0},
+    {"default confused insect", 1, 0, 0},
+    {"default confused winged insect", 0, 0, 0},
+    {"default confused winged insect", 1, 0, 0},
+    {"default confused winged insect", 2, 0, 0},
+    {"default hoarfrost cannon", 0, 0, 0},
+    {"default hoarfrost cannon", 1, 0, 0},
+    {"default hostile confused donald", 9, 0, 0},
+    {"default hostile confused donald", 10, 0, 0},
+    {"default hostile confused donald", 11, 0, 0},
+    {"default hostile confused donald", 12, 0, 0},
+    {"default ice statue", 0, 0, 0},
+    {"default insect", 0, 0, 0},
+    {"default mennas", 0, 0, 0},
+    {"default mennas", 1, 0, 0},
+    {"default mennas", 2, 0, 0},
+    {"default mennas", 3, 0, 0},
+    {"default obsidian statue", 0, 0, 0},
+    {"default orange crystal statue", 0, 0, 0},
+    {"default silenced confused 'y'", 0, 0, 0},
+    {"default silenced confused humanoid", 0, 0, 0},
+    {"default silenced confused humanoid", 1, 0, 0},
+    {"default silenced confused humanoid", 2, 0, 0},
+    {"default silenced confused humanoid", 3, 0, 0},
+    {"default silenced confused humanoid", 4, 0, 0},
+    {"default silenced confused humanoid", 5, 0, 0},
+    {"deformed humanoid", 0, 0, 0},
+    {"deformed humanoid", 1, 0, 0},
+    {"deformed humanoid", 2, 0, 0},
+    {"deformed humanoid", 3, 0, 0},
+    {"deformed humanoid", 5, 0, 0},
+    {"deformed humanoid", 7, 0, 0},
+    {"deformed humanoid", 8, 0, 0},
+    {"deformed humanoid", 9, 0, 0},
+    {"deformed humanoid", 12, 0, 0},
+    {"deformed humanoid", 15, 0, 0},
+    {"deformed humanoid", 19, 0, 0},
+    {"deformed humanoid", 20, 0, 0},
+    {"deformed humanoid", 21, 0, 0},
+    {"deformed humanoid", 22, 0, 0},
+    {"deformed humanoid", 23, 0, 0},
+    {"deformed humanoid", 24, 0, 0},
+    {"deformed humanoid", 25, 0, 0},
+    {"deformed humanoid", 26, 0, 0},
+    {"deformed humanoid", 28, 0, 0},
+    {"dowan_duvessa_dies", 1, 0, 0},
+    {"duvessa_dowan_dies", 2, 0, 0},
+    {"earth magic player ghost", 2, 0, 0},
+    {"elephant slug", 0, 0, 0},
+    {"erythrospite", 0, 0, 0},
+    {"eustachio triumphant", 0, 0, 0},
+    {"fighting player ghost", 1, 0, 0},
+    {"fleeing dowan", 0, 0, 0},
+    {"friendly hound", 0, 0, 0},
+    {"friendly hound", 1, 0, 0},
+    {"friendly hound", 2, 0, 0},
+    {"friendly hound", 3, 0, 0},
+    {"friendly hound", 3, 1, 0},
+    {"friendly hound", 4, 0, 0},
+    {"friendly hound", 5, 0, 0},
+    {"friendly hound", 6, 0, 0},
+    {"friendly hound", 7, 0, 0},
+    {"friendly shoals hound", 1, 0, 0},
+    {"friendly shoals hound", 2, 0, 0},
+    {"friendly shoals hound", 2, 1, 0},
+    {"friendly shoals hound", 3, 0, 0},
+    {"goblin sharper", 0, 0, 0},
+    {"goblin sharper", 1, 0, 0},
+    {"goblin sharper", 2, 0, 0},
+    {"goblin sharper", 3, 0, 0},
+    {"gozag player ghost", 0, 0, 0},
+    {"holy_being_pacification", 0, 0, 0},
+    {"holy_being_pacification_humanoid", 1, 0, 0},
+    {"holy_being_pacification_humanoid", 2, 0, 0},
+    {"hound", 0, 0, 0},
+    {"ice magic player ghost", 0, 0, 0},
+    {"ignis player ghost", 1, 0, 0},
+    {"invocations player ghost", 5, 0, 0},
+    {"josephine", 0, 0, 0},
+    {"josephine", 1, 0, 0},
+    {"josephine", 2, 0, 0},
+    {"killer klown triumphant", 0, 0, 0},
+    {"killer klown triumphant", 2, 0, 0},
+    {"kirke", 0, 0, 0},
+    {"kirke", 1, 0, 0},
+    {"kobold blastminer", 0, 0, 0},
+    {"kobold blastminer", 1, 0, 0},
+    {"long blades player ghost", 0, 0, 0},
+    {"maces & flails player ghost", 1, 0, 0},
+    {"moth of wrath", 0, 0, 0},
+    {"natasha triumphant", 0, 0, 0},
+    {"natasha triumphant", 1, 0, 0},
+    {"nekomata", 0, 1, 0},
+    {"nekomata", 1, 1, 0},
+    {"nekomata", 1, 2, 0},
+    {"nekomata", 2, 1, 0},
+    {"nergalle", 2, 0, 0},
+    {"nergalle", 3, 0, 0},
+    {"obsidian bat", 0, 0, 0},
+    {"orc donald", 7, 0, 0},
+    {"orc_apostle_unbanished", 0, 0, 0},
+    {"orc_apostle_unbanished", 7, 0, 0},
+    {"protean progenitor", 0, 0, 0},
+    {"protean progenitor", 1, 0, 0},
+    {"protean progenitor", 2, 0, 0},
+    {"protean progenitor", 3, 0, 0},
+    {"ranged weapons player ghost", 2, 0, 0},
+    {"ranged weapons player ghost", 3, 0, 0},
+    {"reaper", 1, 0, 0},
+    {"reaper", 2, 0, 0},
+    {"reaper", 6, 0, 0},
+    {"sewer brain worm", 1, 0, 0},
+    {"shapeshifting player ghost", 1, 0, 0},
+    {"shapeshifting player ghost", 2, 0, 0},
+    {"short blades player ghost", 2, 0, 0},
+    {"sigmund triumphant", 0, 0, 0},
+    {"silenced cognitogaunt", 0, 0, 0},
+    {"silenced murray", 0, 0, 0},
+    {"silenced murray", 1, 0, 0},
+    {"silenced murray", 2, 0, 0},
+    {"silenced murray", 3, 0, 0},
+    {"silenced murray", 4, 0, 0},
+    {"silenced murray", 5, 0, 0},
+    {"silenced player ghost", 0, 0, 0},
+    {"silenced player ghost", 1, 0, 0},
+    {"silenced player ghost", 2, 0, 0},
+    {"silenced silent spectre", 0, 0, 0},
+    {"silenced silent spectre", 1, 0, 0},
+    {"silenced silent spectre", 2, 0, 0},
+    {"silenced silent spectre", 3, 0, 0},
+    {"silenced silent spectre", 4, 0, 0},
+    {"silenced silent spectre", 5, 0, 0},
+    {"silenced zin angel", 0, 0, 0},
+    {"silenced zin angel", 1, 0, 0},
+    {"silenced zin angel", 2, 0, 0},
+    {"silenced zin angel", 3, 0, 0},
+    {"silent jory killed", 0, 0, 0},
+    {"slings player ghost", 1, 0, 0},
+    {"sonja triumphant", 0, 0, 0},
+    {"sonja triumphant", 1, 0, 0},
+    {"spellcasting player ghost", 4, 0, 0},
+    {"spellcasting player ghost", 5, 0, 0},
+    {"staves player ghost", 1, 0, 0},
+    {"stealth player ghost", 0, 0, 0},
+    {"stealth player ghost", 1, 0, 0},
+    {"stealth player ghost", 2, 0, 0},
+    {"stealth player ghost", 3, 0, 0},
+    {"stealth player ghost", 5, 0, 0},
+    {"summonings player ghost", 1, 0, 0},
+    {"thermic dynamo", 0, 0, 0},
+    {"thermic dynamo", 1, 0, 0},
+    {"throwing player ghost", 0, 0, 0},
+    {"translocations player ghost", 0, 0, 0},
+    {"translocations player ghost", 1, 0, 0},
+    {"translocations player ghost", 2, 0, 0},
+    {"twin_banished dowan", 0, 0, 0},
+    {"twin_banished duvessa", 0, 0, 0},
+    {"twin_banished duvessa", 1, 0, 0},
+    {"twin_died dowan", 0, 0, 0},
+    {"twin_died duvessa", 0, 0, 0},
+    {"twin_died duvessa", 1, 0, 0},
+    {"twin_died duvessa", 6, 0, 0},
+    {"twin_ikilled dowan", 0, 0, 0},
+    {"twin_ikilled duvessa", 0, 0, 0},
+    {"twin_slimified dowan", 0, 0, 0},
+    {"unarmed combat player ghost", 1, 0, 0},
+    {"unarmed combat player ghost", 2, 0, 0},
+    {"unarmed combat player ghost", 4, 0, 0},
+    {"unarmed combat player ghost", 5, 0, 0},
+    {"xak'krixis", 4, 0, 0},
+    {"xak'krixis", 5, 0, 0},
+    {"xom crazy yiuf", 11, 0, 0},
+    {"xom crazy yiuf", 12, 0, 0},
+    {"xom crazy yiuf", 13, 0, 0},
+    {"xom crazy yiuf", 14, 0, 0},
+    {"xtahua triumphant", 1, 0, 0},
 };
 
-// CR-019: getSpeakString evaluates embedded Lua blocks before the sink,
-// so their source newlines never become lines at runtime.  Neutralize
-// each ``{{...}}`` block to a colon-free, newline-free placeholder
-// (identical to the scan_i18n.py checker) so the surrounding line layout
-// survives without a Lua interpreter.
-static string neutralize_monspeak_lua(const string &pattern)
+// CR-019/CR-023: getSpeakString evaluates embedded Lua blocks before the
+// sink and splices the returned string into the message, so each literal
+// ``return "..."`` branch of a ``{{...}}`` block is a possible runtime
+// message.  These helpers expand every block per return branch (the
+// strict extraction mirrors monspeak_inventory._lua_block_protocol) so
+// VISUAL channel topology inside Lua returns participates in the frozen
+// identity set; blocks without literal returns (the you.race()/
+// you.genus() display mappings) keep the colon-free, newline-free
+// ``{{LUA}}`` placeholder, identical to the pre-CR-023 neutralization.
+// Unsupported escapes fail the literal evaluation (REQUIRE at the call
+// site) so the runtime text is never guessed.
+static bool monspeak_unescape_lua_literal(const string &body, string &out)
 {
-    string result = pattern;
-    string::size_type pos = 0;
-    while ((pos = result.find("{{", pos)) != string::npos)
+    out.clear();
+    for (size_t i = 0; i < body.size(); ++i)
     {
-        const string::size_type end = result.find("}}", pos + 2);
-        if (end == string::npos)
+        if (body[i] != '\\')
+        {
+            out.push_back(body[i]);
+            continue;
+        }
+        if (++i >= body.size())
+            return false;
+        switch (body[i])
+        {
+        case 'a': out.push_back('\a'); break;
+        case 'b': out.push_back('\b'); break;
+        case 'f': out.push_back('\f'); break;
+        case 'n': out.push_back('\n'); break;
+        case 'r': out.push_back('\r'); break;
+        case 't': out.push_back('\t'); break;
+        case 'v': out.push_back('\v'); break;
+        case '\\': out.push_back('\\'); break;
+        case '\'': out.push_back('\''); break;
+        case '"': out.push_back('"'); break;
+        case 'x':
+        {
+            if (i + 2 >= body.size())
+                return false;
+            auto hex = [](char c) -> int {
+                if (c >= '0' && c <= '9') return c - '0';
+                if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+                if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+                return -1;
+            };
+            const int hi = hex(body[i + 1]);
+            const int lo = hex(body[i + 2]);
+            if (hi < 0 || lo < 0)
+                return false;
+            out.push_back(static_cast<char>(hi * 16 + lo));
+            i += 2;
             break;
-        result.replace(pos, end - pos + 2, "{{LUA}}");
-        pos += strlen("{{LUA}}");
+        }
+        case 'z':
+            while (i + 1 < body.size()
+                   && (body[i + 1] == ' ' || body[i + 1] == '\t'
+                       || body[i + 1] == '\n' || body[i + 1] == '\r'
+                       || body[i + 1] == '\f' || body[i + 1] == '\v'))
+                ++i;
+            break;
+        default:
+            if (body[i] >= '0' && body[i] <= '9')
+            {
+                int value = 0;
+                size_t digits = 0;
+                while (digits < 3 && i + digits < body.size()
+                       && body[i + digits] >= '0'
+                       && body[i + digits] <= '9')
+                {
+                    value = value * 10 + (body[i + digits] - '0');
+                    ++digits;
+                }
+                if (value > 255)
+                    return false;
+                out.push_back(static_cast<char>(value));
+                i += digits - 1;
+                break;
+            }
+            return false;
+        }
     }
-    return result;
+    return true;
+}
+
+// The runtime string value of one Lua return expression: a ``[[ ]]``
+// long string (no escape processing) or a quoted literal (escape
+// processing); anything else (the declared display mappings) has no
+// statically known text and yields false.
+static bool monspeak_lua_literal_value(const string &expression,
+                                       string &out)
+{
+    const string::size_type begin = expression.find_first_not_of(" \t");
+    const string::size_type end = expression.find_last_not_of(" \t");
+    if (begin == string::npos)
+        return false;
+    const string expr = expression.substr(begin, end - begin + 1);
+    if (expr.size() >= 4 && expr.compare(0, 2, "[[") == 0)
+    {
+        if (expr.compare(expr.size() - 2, 2, "]]") != 0)
+            return false;
+        out = expr.substr(2, expr.size() - 4);
+        return true;
+    }
+    if (expr.size() >= 2 && (expr[0] == '"' || expr[0] == '\'')
+        && expr[expr.size() - 1] == expr[0])
+    {
+        return monspeak_unescape_lua_literal(
+            expr.substr(1, expr.size() - 2), out);
+    }
+    return false;
+}
+
+// Runtime texts of the literal return branches of one ``{{...}}`` block,
+// in source order (split_string trims every line, so the ``return``
+// statement is detected on the trimmed line).  A multi-line ``[[ ]]``
+// long string consumes its continuation lines.  Non-literal returns keep
+// the ``{{LUA}}`` placeholder branch so branch counts stay aligned.
+static vector<string> monspeak_lua_return_branch_texts(const string &block)
+{
+    vector<string> texts;
+    const vector<string> lines = split_string("\n", block);
+    size_t index = 0;
+    while (index < lines.size())
+    {
+        if (!starts_with(lines[index], "return "))
+        {
+            ++index;
+            continue;
+        }
+        string expression = lines[index].substr(strlen("return "));
+        ++index;
+        if (starts_with(expression, "[[")
+            && expression.find("]]") == string::npos)
+        {
+            while (index < lines.size()
+                   && lines[index].find("]]") == string::npos)
+            {
+                expression += "\n" + lines[index];
+                ++index;
+            }
+            if (index < lines.size())
+            {
+                expression += "\n" + lines[index];
+                ++index;
+            }
+        }
+        string value;
+        if (monspeak_lua_literal_value(expression, value))
+            texts.push_back(value);
+        else
+            texts.push_back("{{LUA}}");
+    }
+    return texts;
+}
+
+// Per-branch runtime messages of one pattern: the cross product of the
+// per-block branch texts with the surrounding literal segments, in the
+// same order as the Python checker's itertools.product (the last block
+// varies fastest).  An unbalanced ``{{`` site (a split-Lua fragment in
+// isolation) keeps the placeholder branch.
+static void monspeak_lua_branch_messages_rec(
+    const vector<vector<string>> &candidates, size_t index,
+    string &current, vector<string> &out)
+{
+    if (index == candidates.size())
+    {
+        out.push_back(current);
+        return;
+    }
+    const size_t base = current.size();
+    for (const string &text : candidates[index])
+    {
+        current += text;
+        monspeak_lua_branch_messages_rec(candidates, index + 1,
+                                         current, out);
+        current.resize(base);
+    }
+}
+
+static vector<string> monspeak_lua_branch_messages(const string &pattern)
+{
+    vector<vector<string>> candidates;
+    string::size_type pos = 0;
+    string::size_type site;
+    while ((site = pattern.find("{{", pos)) != string::npos)
+    {
+        candidates.push_back({pattern.substr(pos, site - pos)});
+        const string::size_type end = pattern.find("}}", site + 2);
+        if (end == string::npos)
+        {
+            candidates.push_back({"{{LUA}}"});
+            pos = pattern.size();
+            break;
+        }
+        candidates.push_back(monspeak_lua_return_branch_texts(
+            pattern.substr(site + 2, end - site - 2)));
+        pos = end + 2;
+    }
+    candidates.push_back({pattern.substr(pos)});
+    vector<string> messages;
+    string current;
+    monspeak_lua_branch_messages_rec(candidates, 0, current, messages);
+    return messages;
 }
 
 TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned lines",
-          "[single-file][textdb][phase0][issue-16][monspeak]")
+          "[single-file][textdb][phase0][issue-16][issue-70][monspeak]")
 {
     ensure_test_data_root();
     databaseSystemInit();
@@ -1459,25 +1660,31 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
     const vector<textdb_phase0::canonical_entry> localized =
         textdb_phase0::dump_localized_speakdb_typed("zh").entries;
 
-    // CR-004/CR-008/CR-019: the Issue-16 monspeak VISUAL contract is
-    // validated at the production sink granularity.  mons_speaks_msg
+    // CR-004/CR-008/CR-019/CR-023: the Issue-16 monspeak VISUAL contract
+    // is validated at the production sink granularity.  mons_speaks_msg
     // splits every selected pattern by '\n' (split_string with trimming
     // and empty-segment dropping) and resolves each line through
     // resolve_mon_speech_line_channel with the MSGCH_TALK default; the
-    // frozen identity is the (canonical key, variant ordinal, line
-    // ordinal) set of the EN lines that resolve to the VISUAL channel.
-    // The aligned ZH dump must reproduce the same runtime line layout and
-    // resolve every corresponding line -- including non-VISUAL lines --
-    // to the same channel.
+    // frozen identity is the (canonical key, variant ordinal, Lua return
+    // branch ordinal, line ordinal) set of the EN lines that resolve to
+    // the VISUAL channel.  The branch ordinal (CR-023) expands every
+    // literal ``return "VISUAL:..."`` emission of a ``{{...}}`` block:
+    // getSpeakString evaluates the block before the sink, so each branch
+    // is a possible runtime line and participates in the frozen set.
+    // The aligned ZH dump must reproduce the same branch count and the
+    // same per-branch runtime line layout, and resolve every
+    // corresponding line -- including non-VISUAL lines -- to the same
+    // channel.
     set<string> frozen_visual;
     for (const frozen_monspeak_visual_line &position
              : FROZEN_MONSPEAK_EN_VISUAL)
     {
         frozen_visual.insert(string(position.key) + "\n"
                              + to_string(position.ordinal) + "\n"
+                             + to_string(position.branch) + "\n"
                              + to_string(position.line));
     }
-    REQUIRE(frozen_visual.size() == 499);
+    REQUIRE(frozen_visual.size() == 506);
 
     set<string> derived_visual;
     for (const textdb_phase0::canonical_entry &entry : english.entries)
@@ -1490,22 +1697,28 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
         for (size_t ordinal = 0; ordinal < entry.variants.size();
              ++ordinal)
         {
-            const vector<string> en_lines = split_string(
-                "\n", neutralize_monspeak_lua(
-                    entry.variants[ordinal].raw_pattern));
+            const vector<string> en_messages =
+                monspeak_lua_branch_messages(
+                    entry.variants[ordinal].raw_pattern);
             bool has_visual = false;
-            for (size_t line = 0; line < en_lines.size(); ++line)
+            for (size_t branch = 0; branch < en_messages.size(); ++branch)
             {
-                msg_channel_type channel = MSGCH_TALK;
-                string en_rendered = en_lines[line];
-                resolve_mon_speech_line_channel(en_rendered, channel,
-                                                false, false);
-                if (channel != MSGCH_TALK_VISUAL)
-                    continue;
-                has_visual = true;
-                derived_visual.insert(entry.canonical_key + "\n"
-                                      + to_string(ordinal) + "\n"
-                                      + to_string(line));
+                const vector<string> en_lines =
+                    split_string("\n", en_messages[branch]);
+                for (size_t line = 0; line < en_lines.size(); ++line)
+                {
+                    msg_channel_type channel = MSGCH_TALK;
+                    string en_rendered = en_lines[line];
+                    resolve_mon_speech_line_channel(en_rendered, channel,
+                                                    false, false);
+                    if (channel != MSGCH_TALK_VISUAL)
+                        continue;
+                    has_visual = true;
+                    derived_visual.insert(entry.canonical_key + "\n"
+                                          + to_string(ordinal) + "\n"
+                                          + to_string(branch) + "\n"
+                                          + to_string(line));
+                }
             }
             if (!has_visual)
                 continue;
@@ -1515,38 +1728,53 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
             // must fail here instead of being silently skipped by a
             // min-range loop.
             REQUIRE(ordinal < zh_entry->variants.size());
-            const vector<string> zh_lines = split_string(
-                "\n", neutralize_monspeak_lua(
-                    zh_entry->variants[ordinal].raw_pattern));
-            // CR-019: the runtime newline layout must match line for
-            // line, and every corresponding line (including non-VISUAL
-            // lines and lines that strip to empty) must resolve to the
-            // same channel as the EN line through the production
-            // resolver.  A line shift inside a pattern or a newline
-            // position change fails here even when the frozen EN set is
-            // untouched.
-            REQUIRE(zh_lines.size() == en_lines.size());
-            for (size_t line = 0; line < en_lines.size(); ++line)
+            const vector<string> zh_messages =
+                monspeak_lua_branch_messages(
+                    zh_entry->variants[ordinal].raw_pattern);
+            // CR-023: the Lua return branch count must match EN.  A
+            // deleted return branch (``friendly shoals hound`` #2)
+            // changes the runtime branch topology and fails here even
+            // when every remaining line is still VISUAL.
+            REQUIRE(zh_messages.size() == en_messages.size());
+            for (size_t branch = 0; branch < en_messages.size(); ++branch)
             {
-                INFO(entry.canonical_key << " #" << ordinal
-                     << " line " << line);
-                msg_channel_type en_channel = MSGCH_TALK;
-                string en_copy = en_lines[line];
-                resolve_mon_speech_line_channel(en_copy, en_channel,
-                                                false, false);
-                msg_channel_type zh_channel = MSGCH_TALK;
-                string zh_rendered = zh_lines[line];
-                resolve_mon_speech_line_channel(zh_rendered, zh_channel,
-                                                false, false);
-                CHECK(zh_channel == en_channel);
+                const vector<string> en_lines =
+                    split_string("\n", en_messages[branch]);
+                const vector<string> zh_lines =
+                    split_string("\n", zh_messages[branch]);
+                // CR-019: the runtime newline layout must match line for
+                // line, and every corresponding line (including
+                // non-VISUAL lines and lines that strip to empty) must
+                // resolve to the same channel as the EN line through the
+                // production resolver.  A line shift inside a pattern, a
+                // newline position change or a changed VISUAL prefix in a
+                // Lua return (CR-023) fails here even when the frozen EN
+                // set is untouched.
+                REQUIRE(zh_lines.size() == en_lines.size());
+                for (size_t line = 0; line < en_lines.size(); ++line)
+                {
+                    INFO(entry.canonical_key << " #" << ordinal
+                         << " branch " << branch << " line " << line);
+                    msg_channel_type en_channel = MSGCH_TALK;
+                    string en_copy = en_lines[line];
+                    resolve_mon_speech_line_channel(en_copy, en_channel,
+                                                    false, false);
+                    msg_channel_type zh_channel = MSGCH_TALK;
+                    string zh_rendered = zh_lines[line];
+                    resolve_mon_speech_line_channel(zh_rendered, zh_channel,
+                                                    false, false);
+                    CHECK(zh_channel == en_channel);
+                }
             }
         }
     }
-    // The complete EN VISUAL line set is frozen (CR-008/CR-019): a
-    // removed, reworded or moved EN VISUAL line must fail even when the
-    // total stays at 499 and the per-line ZH check is mirrored.  Both set
-    // directions are required so a missing line cannot be hidden by an
-    // extra one at another key/ordinal/line.
+    // The complete EN VISUAL line set is frozen (CR-008/CR-019/CR-023):
+    // a removed, reworded or moved EN VISUAL line, a changed VISUAL
+    // prefix inside a Lua return or a deleted Lua return branch must fail
+    // even when the total stays at 506 and the per-line ZH check is
+    // mirrored.  Both set directions are required so a missing line
+    // cannot be hidden by an extra one at another key/ordinal/branch/
+    // line.
     CHECK(derived_visual.size() == frozen_visual.size());
     for (const string &position : derived_visual)
     {

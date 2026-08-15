@@ -1508,6 +1508,240 @@ class MonspeakInventoryTests(unittest.TestCase):
             protocol["skeleton"].split("\n"))
         self.assertEqual(["[[a\nb]]", '"b"'], protocol["return_strings"])
 
+    def test_lua_unescape_literal_covers_lua54_escapes(self):
+        # CR-023: the return topology evaluates literal returns with the
+        # escape processing the embedded Lua 5.4.8 interpreter performs;
+        # unknown escapes fail closed because the runtime text would be
+        # ambiguous.
+        self.assertEqual("a\nb\tc\\d'e\"f",
+                         MODULE._lua_unescape_literal(r"a\nb\tc\\d\'e\"f"))
+        self.assertEqual("A\nz", MODULE._lua_unescape_literal(r"\x41\010z"))
+        self.assertEqual("AB", MODULE._lua_unescape_literal(r"\x41\x42"))
+        self.assertEqual("ab", MODULE._lua_unescape_literal(r"a\z   b"))
+        self.assertEqual("\a\b\f\r\v",
+                         MODULE._lua_unescape_literal(r"\a\b\f\r\v"))
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "unsupported Lua escape"):
+            MODULE._lua_unescape_literal(r"\q")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "out of range"):
+            MODULE._lua_unescape_literal(r"\256")
+        self.assertIsNone(MODULE._lua_literal_value("you.race()"))
+        self.assertEqual("a\nb", MODULE._lua_literal_value("[[a\nb]]"))
+
+    def test_lua_return_branch_texts_binds_visual_topology(self):
+        # CR-023: the reviewer probe block (``friendly shoals hound`` #2)
+        # has two literal return branches; both evaluate to VISUAL lines
+        # at runtime, and the per-site topology records one branch per
+        # return with the per-line channel identity.  A display-mapping
+        # block keeps the colon-free placeholder branch so branch counts
+        # stay aligned with the skeleton.
+        block = (
+            "if you.can_smell() then\n"
+            '    return "VISUAL:A distinct wet dog smell emanates from '
+            '@the_monster@."\n'
+            "else\n"
+            '    return "VISUAL:@The_monster@ motions as if to dry '
+            '@reflexive@ off on you."\n'
+            "end\n")
+        self.assertEqual(
+            ["VISUAL:A distinct wet dog smell emanates from @the_monster@.",
+             "VISUAL:@The_monster@ motions as if to dry @reflexive@ off on "
+             "you."],
+            MODULE._lua_return_branch_texts(block))
+        self.assertEqual(
+            [[["talk_visual"], ["talk_visual"]]],
+            MODULE._lua_return_topology("{{\n" + block + "}}"))
+        self.assertEqual(["{{LUA}}"],
+                         MODULE._lua_return_branch_texts(
+                             " return you.race() "))
+        self.assertEqual(
+            [[["talk"]]],
+            MODULE._lua_return_topology("{{ return you.race() }}"))
+        # The pattern-level expansion splices inline branch texts into the
+        # surrounding line and splits by the production sink semantics.
+        self.assertEqual(
+            [["VISUAL:@The_monster@ looks down at you expectantly."],
+             ["VISUAL:@The_monster@ looks up at you expectantly."]],
+            MODULE._lua_return_branch_lines(
+                "VISUAL:@The_monster@ looks {{"
+                "  if you.race() == \"Felid\" then\n"
+                '      return "down"\n'
+                "  else\n"
+                '     return "up"\n'
+                "  end\n"
+                "}} at you expectantly."))
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "no bindable return topology"):
+            MODULE._lua_return_branch_texts("return evil()")
+
+    def test_issue16_lua_return_visual_lines_in_frozen_set(self):
+        # CR-023 positive: the branch-expanded checker binds Lua return
+        # VISUAL emissions into the frozen EN identity set (each literal
+        # ``return "VISUAL:..."`` branch is a runtime line), and the
+        # passing fixture derives exactly that set with no findings.
+        self.assertIn(("friendly hound", 3, 1, 0),
+                      SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("friendly shoals hound", 2, 0, 0),
+                      SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("friendly shoals hound", 2, 1, 0),
+                      SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("nekomata", 0, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("nekomata", 1, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("nekomata", 1, 2, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertIn(("nekomata", 2, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
+        self.assertEqual(506, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            self.assertEqual(
+                [], SCAN.protocol_boundary_findings(
+                    str(root), "issue16-monspeak-channels"))
+
+    def test_issue16_lua_return_visual_prefix_change_rejected(self):
+        # CR-023: the reviewer probe -- changing the VISUAL prefix of one
+        # Lua return branch (``friendly shoals hound`` #2) in ZH -- keeps
+        # the masked skeleton, the token set and the whole-pattern line
+        # count identical, but the branch-expanded per-line channel check
+        # must fail closed on the lost VISUAL prefix.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated = zh_text.replace(
+            'return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+            'return "SOUND:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+            1)
+        self.assertNotEqual(mutated, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(mutated, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "VISUAL channel prefix lost at an EN-aligned line"
+                in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_issue16_lua_return_branch_deletion_rejected(self):
+        # CR-023: deleting one of the two return branches of the
+        # ``friendly shoals hound`` #2 Lua block in ZH changes the runtime
+        # branch count; the branch-expanded checker must fail closed even
+        # though every remaining line is still VISUAL.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated = zh_text.replace(
+            '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ '
+            '身上散发出来。"\n'
+            'else\n'
+            '    return "VISUAL:@The_monster@ 做出似乎要在你身上把'
+            '@reflexive@擦干的动作。"\n'
+            'end',
+            '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ '
+            '身上散发出来。"\n'
+            'end',
+            1)
+        self.assertNotEqual(mutated, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(mutated, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "Lua return branch count differs from EN" in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_candidate_lua_return_visual_prefix_change_rejected(self):
+        # CR-023: the candidate gate compares the per-branch channel
+        # topology in _pair_candidate; a ZH return whose VISUAL prefix
+        # changed (skeleton, tokens and site counts all stay identical)
+        # must fail the topology comparison.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            'return "VISUAL:A distinct wet dog smell emanates from '
+            '@the_monster@."',
+            'return "SOUND:A distinct wet dog smell emanates from '
+            '@the_monster@."',
+            1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "Lua return channel topology differs"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_branch_deletion_rejected(self):
+        # CR-023: deleting one return branch of a Lua block fails the
+        # candidate gate (the skeleton comparison already rejects the
+        # structure change; the topology comparison is a second net).
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            '    return "VISUAL:A distinct wet dog smell emanates from '
+            '@the_monster@."\n'
+            'else\n'
+            '    return "VISUAL:@The_monster@ motions as if to dry '
+            '@reflexive@ off on you."\n'
+            'end',
+            '    return "VISUAL:A distinct wet dog smell emanates from '
+            '@the_monster@."\n'
+            'end',
+            1)
+        self.assertNotEqual(aligned, aligned_zh_source(zh_zh, en_zh))
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(
+            MODULE.InventoryError,
+            "token multiset differs|control skeleton/operators differ|"
+            "Lua return channel topology differs",
+        ):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
     def test_candidate_translated_comparison_literal_rejected(self):
         # CR-002: the non-translatable Lua comparison literals ("Mummy" is
         # a lookup identity, not display text) must stay byte-identical to

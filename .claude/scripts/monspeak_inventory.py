@@ -88,6 +88,7 @@ scoped ledger scaffold.
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import os
 import re
@@ -1427,6 +1428,14 @@ def _variant(raw: dict[str, Any],
         variant["lua_comparison_literals"] = (
             lua_protocol["comparison_literals"])
         variant["lua_malformed"] = lua_protocol["malformed"]
+        # CR-023: the per-site/per-return runtime line channel topology
+        # (branch count, per-branch line count and per-line channel).  A
+        # malformed block cannot bind a topology; the candidate gate
+        # rejects malformed sites later in _dataset anyway, so the empty
+        # placeholder never reaches the EN/ZH comparison.
+        variant["lua_return_topology"] = (
+            _lua_return_topology(text)
+            if not lua_protocol["malformed"] else [])
     return variant
 
 
@@ -1741,6 +1750,232 @@ def _lua_structure_error(masked: str) -> str | None:
             continue
         return f"unexpected Lua statement {stripped!r}"
     return None
+
+
+# The exact ``{{...}}`` site regex of the production pattern layer (also
+# used by the scan_i18n.py checker); ``_lua_sites_strict`` validates the
+# exact boundaries, this regex only enumerates sites for the runtime
+# branch expansion (CR-023).
+_LUA_SITE_RE = re.compile(r"\{\{.*?\}\}", re.DOTALL)
+
+# CR-023 Lua-escape table: the escapes the embedded Lua 5.4.8
+# interpreter performs on quoted string literals (contrib/lua
+# lobject.c luaO_str2num / luaO_hexavalue handling).  Everything else
+# fails closed: the runtime text would be ambiguous and the topology
+# gate must never guess (the candidate luac -p gate already rejects
+# invalid escapes, so only valid escapes can reach this point).
+_LUA_ESCAPES = {
+    "a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r",
+    "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"',
+}
+
+
+# The channel names accepted by strip_channel_prefix's fallback
+# str_to_channel() lookup (initfile.cc message_channel_names),
+# normalized to the lowercase underscore form.  This mirrors the
+# production resolver exactly (message.cc:1463); the scan_i18n.py
+# checker imports this classifier so both gates share one identity.
+_MONSPEAK_CHANNEL_NAMES = frozenset({
+    "plain", "friend_action", "prompt", "god", "duration", "danger",
+    "warning", "recovery", "sound", "talk", "talk_visual",
+    "intrinsic_gain", "mutation", "monster_spell", "monster_enchant",
+    "friend_spell", "friend_enchant", "monster_damage",
+    "monster_target", "banishment", "equipment", "floor", "multiturn",
+    "examine", "examine_filter", "diagnostic", "error", "tutorial",
+    "orb", "timed_portal", "hell_effect", "monster_warning",
+    "dgl_message", "decor_flavour", "monster_timeout",
+})
+
+
+def _monspeak_line_channel(line: str) -> str:
+    """The msg_channel_type identity one line resolves to through
+    resolve_mon_speech_line_channel (mon-speak.cc) /
+    strip_channel_prefix (message.cc:1463), with the mons_speaks_msg
+    default MSGCH_TALK fallback.  Returns the channel_to_str name for
+    equality; only identity is needed (CR-023)."""
+    pos = line.find(":")
+    if pos < 0:
+        return "talk"
+    param = line[:pos]
+    if param == "WARN" or param == "VISUAL WARN":
+        return "warning"
+    if param == "SOUND":
+        return "sound"
+    if param == "VISUAL":
+        return "talk_visual"
+    if param == "SPELL" or param == "VISUAL SPELL":
+        return "monster_spell"
+    if param == "ENCHANT" or param == "VISUAL ENCHANT":
+        return "monster_enchant"
+    normalized = param.replace(" ", "_").lower()
+    if normalized == "visual":
+        return "talk_visual"
+    if normalized == "spell":
+        return "monster_spell"
+    if normalized in _MONSPEAK_CHANNEL_NAMES:
+        return normalized
+    return "talk"
+
+
+def _lua_unescape_literal(body: str) -> str:
+    """Runtime value of the body of one quoted Lua string literal: the
+    escape processing the embedded Lua 5.4.8 interpreter performs
+    (``\\n`` newline, ``\\t`` tab, ``\\r`` CR, ``\\\\`` backslash,
+    ``\\'``/``\\\"`` quotes, the ``\\a``/``\\b``/``\\f``/``\\v`` control
+    escapes, ``\\xHH`` hex, ``\\ddd`` decimal and ``\\z`` whitespace
+    skip).  Any other escape fails closed: the runtime text would be
+    ambiguous and the return topology gate must never guess (CR-023)."""
+    result: list[str] = []
+    index = 0
+    length = len(body)
+    while index < length:
+        char = body[index]
+        if char != "\\":
+            result.append(char)
+            index += 1
+            continue
+        index += 1
+        if index >= length:
+            raise InventoryError(
+                f"trailing backslash in Lua string literal {body!r}")
+        esc = body[index]
+        if esc in _LUA_ESCAPES:
+            result.append(_LUA_ESCAPES[esc])
+            index += 1
+            continue
+        if esc == "x":
+            hex_digits = body[index + 1:index + 3]
+            if len(hex_digits) != 2 or not re.fullmatch(
+                r"[0-9a-fA-F]{2}", hex_digits
+            ):
+                raise InventoryError(
+                    f"malformed \\x escape in Lua string literal "
+                    f"{body!r}")
+            result.append(chr(int(hex_digits, 16)))
+            index += 3
+            continue
+        if esc.isdigit():
+            match = re.match(r"[0-9]{1,3}", body[index:index + 3])
+            value = int(match.group(0))
+            if value > 255:
+                raise InventoryError(
+                    f"decimal escape out of range in Lua string literal "
+                    f"{body!r}")
+            result.append(chr(value))
+            index += match.end()
+            continue
+        if esc == "z":
+            index += 1
+            while index < length and body[index] in " \t\n\r\f\v":
+                index += 1
+            continue
+        raise InventoryError(
+            f"unsupported Lua escape \\{esc} in string literal {body!r}")
+    return "".join(result)
+
+
+def _lua_literal_value(expression: str) -> str | None:
+    """The runtime string value of one literal return expression, or
+    None when the expression is not a plain literal (the declared
+    display mappings like ``you.race()`` have no statically known
+    runtime text)."""
+    expression = expression.strip()
+    if expression.startswith("[["):
+        _require(expression.endswith("]]"),
+                 f"unbalanced [[ long string literal {expression!r}")
+        return expression[2:-2]
+    if len(expression) >= 2 and expression[0] in "\"'" \
+            and expression[-1] == expression[0]:
+        return _lua_unescape_literal(expression[1:-1])
+    return None
+
+
+def _lua_return_branch_texts(block: str) -> list[str]:
+    """Runtime texts of the literal return branches of one ``{{...}}``
+    block, in source order (CR-023).
+
+    Reuses ``_lua_block_protocol``'s strict return extraction (CR-002):
+    every ``return <string literal>`` display expression is one branch
+    and its literal is evaluated to the runtime text the Lua interpreter
+    would splice into the message (escape processing included); the
+    declared display mappings (``you.race()``/``you.genus()`` and their
+    ``crawl.t_()`` forms) have no statically known runtime text and keep
+    the colon-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
+    checker neutralization.  Raises ``InventoryError`` on a structurally
+    invalid block or an unsupported literal escape: the runtime
+    topology must never be guessed."""
+    protocol = _lua_block_protocol(block)
+    _require(protocol["error"] is None,
+             f"Lua block has no bindable return topology: "
+             f"{protocol['error']}")
+    texts: list[str] = []
+    for expression in protocol["return_strings"]:
+        value = _lua_literal_value(expression)
+        texts.append(value if value is not None else "{{LUA}}")
+    return texts
+
+
+def _runtime_lines_of(message: str) -> list[str]:
+    """The production sink line split of one resolved message:
+    mons_speaks_msg splits with ``split_string("\\n", msg)``
+    (trim_segments=true, accept_empty_segments=false), so every segment
+    is trimmed of ASCII whitespace and empty segments never become
+    lines."""
+    return [segment.strip(" \t\n\r") for segment in message.split("\n")
+            if segment.strip(" \t\n\r")]
+
+
+def _lua_return_branch_lines(pattern: str) -> list[list[str]]:
+    """Per-branch runtime line layouts of one monspeak variant pattern
+    (CR-023).
+
+    Production order: ``getSpeakString`` evaluates every ``{{...}}`` Lua
+    block before the sink and splices the returned string into the
+    message; ``mons_speaks_msg`` then splits by ``\\n`` and resolves
+    each line's channel.  Every literal return branch of every block is
+    therefore a possible runtime message; this helper expands each block
+    per return branch (strict extraction from ``_lua_block_protocol``)
+    and returns one line layout per branch combination (cross product
+    over the blocks, in source order).  Blocks without literal returns
+    keep the ``{{LUA}}`` placeholder so their surrounding layout
+    survives without a Lua interpreter.  A pattern without Lua blocks
+    has exactly one branch: its own lines.  Raises ``InventoryError``
+    when any block's return topology cannot be bound."""
+    segments: list[list[str]] = []
+    position = 0
+    for site in _LUA_SITE_RE.finditer(pattern):
+        segments.append([pattern[position:site.start()]])
+        segments.append(_lua_return_branch_texts(site.group(0)[2:-2]))
+        position = site.end()
+    segments.append([pattern[position:]])
+    branches: list[list[str]] = []
+    for combination in itertools.product(*segments):
+        branches.append(_runtime_lines_of("".join(combination)))
+    return branches
+
+
+def _lua_return_topology(pattern: str) -> list[list[list[str]]]:
+    """Per-site per-branch per-line channel identity of the literal
+    return branches of one variant (CR-023).
+
+    Site order follows the ``{{...}}`` sites of the pattern; every site
+    maps to one entry per return branch (source order), and each branch
+    maps to the channel identity of every runtime line its returned
+    string produces under the production sink split.  The declared
+    display mappings contribute one ``{{LUA}}`` placeholder branch so
+    branch counts stay aligned with the skeleton.  The EN/ZH comparison
+    in ``_pair_candidate`` requires these channel topologies to be
+    identical: branch count, per-branch line count and per-line channel
+    are all encoded in this shape."""
+    topology: list[list[list[str]]] = []
+    for site in _LUA_SITE_RE.finditer(pattern):
+        branches = _lua_return_branch_texts(site.group(0)[2:-2])
+        topology.append([
+            [_monspeak_line_channel(line)
+             for line in _runtime_lines_of(text)]
+            for text in branches
+        ])
+    return topology
 
 
 # Vendored Lua compiler artifact (CR-006B): the candidate
@@ -3066,6 +3301,18 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
                 _lua_skeletons_equal(en_variant["lua_skeletons"],
                                      zh_variant["lua_skeletons"]),
                 f"candidate Lua control skeleton/operators differ at "
+                f"{key!r} ordinal {ordinal}",
+            )
+            # CR-023: the Lua return channel topology (per-site branch
+            # count, per-branch runtime line layout and per-line channel
+            # identity) must be identical: a return whose VISUAL prefix
+            # changed, a return branch deleted or a per-branch line shift
+            # inside a Lua block fails here even though the masked
+            # skeletons stay byte-identical.
+            _require(
+                en_variant["lua_return_topology"]
+                == zh_variant["lua_return_topology"],
+                f"candidate Lua return channel topology differs at "
                 f"{key!r} ordinal {ordinal}",
             )
         entries.append({

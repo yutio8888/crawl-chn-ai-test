@@ -305,6 +305,25 @@ MONSPEAK_VISUAL_MUTATIONS = (
      'VISUAL:@The_monster@打出手势。'
      'VISUAL:你感到一阵[诅咒|厄运]降临。',
      "runtime line count differs from EN"),
+    # CR-023: Lua blocks are evaluated by getSpeakString before the sink,
+    # so a literal ``return "VISUAL:..."`` emission is a runtime line of
+    # its own.  The branch-expanded checker binds that topology: changing
+    # one return's VISUAL prefix (``friendly shoals hound`` #2, the
+    # reviewer probe) must fail the per-branch channel correspondence, and
+    # deleting a return branch must fail the branch count.
+    ("lua-return-visual-prefix",
+     'return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+     'return "SOUND:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    ("lua-return-delete",
+     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     'else\n'
+     '    return "VISUAL:@The_monster@ 做出似乎要在你身上把@reflexive@擦干的'
+     '动作。"\n'
+     'end',
+     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     'end',
+     "Lua return branch count differs from EN"),
 )
 
 
@@ -383,7 +402,8 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
                     f"checker {artifact['custom']!r} has no fixture "
                     f"dispatch")
                 continue
-            for kind in ("line-shift", "newline-merge"):
+            for kind in ("line-shift", "newline-merge",
+                         "lua-return-visual-prefix", "lua-return-delete"):
                 with tempfile.TemporaryDirectory() as root:
                     copy_contract(root, contract_id)
                     detail = mutate_monspeak_visual(root, kind)
@@ -428,7 +448,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 65 artifacts, 348 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 350 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──
