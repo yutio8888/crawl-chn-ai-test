@@ -21,6 +21,11 @@ SPEC = importlib.util.spec_from_file_location("monspeak_inventory", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+SCAN_SPEC = importlib.util.spec_from_file_location(
+    "scan_i18n", SCRIPT.parent / "scan_i18n.py")
+assert SCAN_SPEC and SCAN_SPEC.loader
+SCAN = importlib.util.module_from_spec(SCAN_SPEC)
+SCAN_SPEC.loader.exec_module(SCAN)
 BASELINE = "b3ad4425053c2175284d32441d67218df97035b0"
 
 
@@ -662,9 +667,11 @@ class MonspeakInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/zh/"))
 
     def test_candidate_triple_brace_lua_rejected(self):
-        # CR-002: a candidate ``{{{`` Lua site (stray brace inside the
-        # ``{{...}}`` boundary) must be rejected even though the ``{{``/``}}``
-        # substring counts balance and the site count matches EN.
+        # CR-002/CR-006: a candidate ``{{{`` Lua site (stray brace inside
+        # the ``{{...}}`` boundary) must be rejected even though the
+        # ``{{``/``}}`` substring counts balance and the site count matches
+        # EN.  The CR-006 boundary freeze catches it at the site level
+        # before the block protocol runs.
         en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
             .read_text(encoding="utf-8")
         zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
@@ -676,11 +683,208 @@ class MonspeakInventoryTests(unittest.TestCase):
             "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "stray brace outside"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_lua_sites_strict_rejects_stray_close_brace(self):
+        # CR-006: ``{{ ... }}}`` balances the ``{{``/``}}`` substring counts
+        # and the regex extraction never sees the third ``}`` outside the
+        # boundary; the exact boundary invariant must fail closed.
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "stray brace outside"):
+            MODULE._lua_sites_strict("{{ return evil() }}}")
+
+    def test_lua_block_protocol_rejects_arbitrary_return_expression(self):
+        # CR-006: ``return evil()`` is not translatable display text; it
+        # must stay byte-exact (protocol-bound) and fail closed instead of
+        # being normalized to the display marker.
+        protocol = MODULE._lua_block_protocol("return evil()")
+        self.assertIn("unsupported return expression", protocol["error"])
+        self.assertEqual("return evil()", protocol["skeleton"])
+        protocol = MODULE._lua_block_protocol(
+            'return "legitimate display text"')
+        self.assertIsNone(protocol["error"])
+        self.assertEqual("return " + MODULE._LUA_RETURN_MARKER,
+                         protocol["skeleton"])
+
+    def test_candidate_stray_close_brace_lua_rejected(self):
+        # CR-006: the reviewer probe ``{{ return evil() }}}`` (and any
+        # candidate with a stray ``}`` outside a ``{{...}}`` site) must be
+        # rejected even though the ``{{``/``}}`` counts and the variant
+        # total stay unchanged.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "{{ return you.race() }}", "{{ return you.race() }}}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "stray brace outside"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_arbitrary_return_expression_rejected(self):
+        # CR-006: an arbitrary/illegal return expression (``evil()``) must
+        # not be masked as translatable display text; the candidate gate
+        # fails closed on the malformed block.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "{{ return you.race() }}", "{{ return evil() }}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
                                     "malformed Lua sites"):
             self.add_candidate_mocked(
                 self.inventory, fixture,
                 exact_artifact(fixture, "database/"),
                 exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_gate_requires_luac(self):
+        # CR-006: the candidate executable-syntax gate fails closed when
+        # luac is unavailable; a missing compiler must never silently pass
+        # a candidate that contains Lua blocks.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
+        original_which = MODULE.shutil.which
+
+        def fake_which(cmd, *args, **kwargs):
+            if cmd == "luac":
+                return None
+            return original_which(cmd, *args, **kwargs)
+
+        with mock.patch.object(MODULE.shutil, "which",
+                               side_effect=fake_which):
+            with self.assertRaisesRegex(MODULE.InventoryError,
+                                        "luac not found"):
+                self.add_candidate_mocked(self.inventory, fixture,
+                                          en_art, zh_art)
+
+    def test_candidate_zh_only_empty_variant_rejected(self):
+        # CR-007: the dataset-level candidate invariants cover the ZH-only
+        # keys, not only the shared keys of the pair loop: `_jory_rare_`
+        # with a ``w:10``-followed-by-empty pattern keeps the frozen 3431
+        # variant total but must fail the no-empty-variant invariant.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "_jory_rare_\n\n@The_monster@ 说：\"我的妻子抛弃了我，"
+            "但我已经报了仇。\"",
+            "_jory_rare_\n\nw:10", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "empty variants"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_zh_only_split_lua_rejected(self):
+        # CR-007: `default 'j'` introducing an unbalanced ``{{`` (split-Lua
+        # fragment) keeps the frozen variant total but must fail the
+        # dataset-level no-split-Lua invariant.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "default 'j'\n\nVISUAL:@The_monster@ 颤动着。",
+            "default 'j'\n\nVISUAL:@The_monster@ 颤动着。 {{", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "split Lua fragments"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_issue16_joint_visual_swap_rejected(self):
+        # CR-008: swapping the `_Sigmund_common_` ordinal 0/1 lines in BOTH
+        # EN and ZH keeps the VISUAL total at 496 and satisfies the
+        # per-position ZH channel check (both files swap together), but the
+        # frozen complete (canonical key, variant ordinal) identity set must
+        # reject the EN drift.
+        def swap_sigmund_lines(text: str) -> str:
+            en_pair = ("w:20\n@The_monster@ laughs darkly.\n\n"
+                       "VISUAL:@The_monster@ looks at you with fury.")
+            zh_pair = ("w:20\n@The_monster@ 阴沉地笑着。\n\n"
+                       "VISUAL:@The_monster@ 愤怒地看着你。")
+            pair = zh_pair if text.count(zh_pair) else en_pair
+            swapped = "w:20\nVISUAL:@The_monster@ " + ("愤怒地看着你。"
+                        if pair == zh_pair else "looks at you with fury.") \
+                + "\n\n@The_monster@ " + ("阴沉地笑着。"
+                        if pair == zh_pair else "laughs darkly.")
+            mutated = text.replace(pair, swapped, 1)
+            if mutated == text:
+                raise AssertionError("swap target not found")
+            return mutated
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                swap_sigmund_lines(
+                    (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                    .read_text(encoding="utf-8")),
+                encoding="utf-8")
+            zh_path.write_text(
+                swap_sigmund_lines(
+                    (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt")
+                    .read_text(encoding="utf-8")),
+                encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and artifact == "dat/database/monspeak.txt"
+                and "VISUAL position set drifted" in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "VISUAL channel prefix lost" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_lua_block_protocol_multi_line_literal_stays_normalized(self):
+        # CR-006: a multi-line ``[[ ]]`` display literal normalizes to the
+        # marker (its continuation lines are consumed into the expression)
+        # while blank lines outside the literal keep the skeleton line
+        # structure, so EN/ZH skeletons stay comparable byte-for-byte.
+        block = ('return [[a\nb]]\n\n'
+                 'if x then\n    return "b"\nend')
+        protocol = MODULE._lua_block_protocol(block)
+        self.assertIsNone(protocol["error"])
+        self.assertEqual(
+            ["return " + MODULE._LUA_RETURN_MARKER, "", "if x then",
+             "return " + MODULE._LUA_RETURN_MARKER, "end"],
+            protocol["skeleton"].split("\n"))
+        self.assertEqual(["[[a\nb]]", '"b"'], protocol["return_strings"])
 
     def test_candidate_translated_comparison_literal_rejected(self):
         # CR-002: the non-translatable Lua comparison literals ("Mummy" is

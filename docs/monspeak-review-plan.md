@@ -77,8 +77,9 @@ mapdef.cc 的 `dbname:`/`name:` 标签；展开经
 1. 733 个身份各有且仅有一张严格审核卡；每张卡完整绑定当前与拟议
    EN/ZH 变体、权重、结论、理由与证据。
 2. 逐键 EN/ZH 变体数、权重序列、逐变体 token 多重集、随机站点拓扑、
-   Lua 站点数、split-Lua 拓扑完全一致；双语加权变体总数相等
-   （3429/3429）。
+   Lua 站点数、split-Lua 拓扑完全一致；共享 key 逐位对齐
+   3429/3429（语言侧加权变体总数 EN 3429 / ZH 3431：3429 共享 +
+   2 个单变体 ZH-only 键）。
 3. 无空变体、无未解析 token；ZH orphan 集不得超出基线（只允许通过
    恢复内联引用缩小）；ZH-only 键 `_jory_rare_`/`default 'j'` 必须
    保留（审计强制），裁决为 keep 并记录依据。
@@ -147,7 +148,8 @@ python3 .claude/scripts/monspeak_inventory.py \
 候选阶段：提交候选后使用新的 `/tmp` 文件名重新生成双语 dump，并在
 同一命令追加 `--review-results`、`--candidate-ref <新提交>` 与两份
 candidate dump，重新证明 candidate agreement（候选必须逐字等于账本
-proposal、733 卡、双语变体数逐键一致 3429/3429、无空变体、无未解析
+proposal、733 卡、共享 key 逐位对齐 3429/3429（语言侧总数 EN 3429 /
+ZH 3431，含 2 个单变体 ZH-only 键）、无空变体、无未解析
 token、无 split-Lua、orphan 不扩大、闭包完整）：
 
 ```bash

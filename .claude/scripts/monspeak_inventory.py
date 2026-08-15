@@ -1383,6 +1383,25 @@ def _monspeak_random_site_counts(pattern: str) -> list[int]:
     return counts
 
 
+def _lua_sites_strict(pattern: str) -> list[dict[str, Any]]:
+    """Exact non-overlapping ``{{...}}`` site boundaries of one variant
+    (CR-006).
+
+    ``hardened._lua_sites`` validates the ``{{``/``}}`` substring counts,
+    but a stray third brace outside the extraction boundary (``}}}`)
+    balances those counts while leaving a bare ``}`` behind the site; the
+    exact boundary invariant requires every ``{``/``}`` character of the
+    pattern to belong to one of the extracted sites."""
+    sites = hardened._lua_sites(pattern)
+    _require(
+        pattern.count("{") == 2 * len(sites)
+        and pattern.count("}") == 2 * len(sites),
+        f"stray brace outside a {{...}} Lua site boundary in "
+        f"pattern {pattern!r}",
+    )
+    return sites
+
+
 def _monspeak_lua_site_count(pattern: str) -> int:
     """Lua-site count of one variant.
 
@@ -1391,12 +1410,24 @@ def _monspeak_lua_site_count(pattern: str) -> int:
     split_lua fact list."""
     if pattern.count("{{") != pattern.count("}}"):
         return 0
-    return len(hardened._lua_sites(pattern))
+    return len(_lua_sites_strict(pattern))
 
 
 # Marker replacing every translatable ``return <display>`` expression in a
 # Lua block skeleton (CR-002).  All other block bytes stay exact.
 _LUA_RETURN_MARKER = "__RETURN_DISPLAY__"
+
+# The only non-literal return expressions allowed to be normalized as
+# translatable display text (CR-006): the EN consumer calls the raw Lua
+# helpers and the ZH side wraps the same calls in crawl.t_().  Every other
+# return expression (arbitrary function calls, arithmetic, booleans) is
+# not display text: it stays byte-exact in the skeleton and fails closed.
+_LUA_RETURN_DISPLAY_MAPPINGS = frozenset({
+    "you.race()",
+    "you.genus()",
+    "crawl.t_(you.race())",
+    "crawl.t_(you.genus())",
+})
 
 
 def _lua_string_spans(block: str) -> list[tuple[int, int]]:
@@ -1435,6 +1466,14 @@ def _lua_string_spans(block: str) -> list[tuple[int, int]]:
     return spans
 
 
+def _line_start_offsets(lines: list[str]) -> list[int]:
+    """Absolute block offsets of every line start (``\n``-separated)."""
+    offsets = [0]
+    for line in lines[:-1]:
+        offsets.append(offsets[-1] + len(line) + 1)
+    return offsets
+
+
 def _lua_block_protocol(block: str) -> dict[str, Any]:
     """Complete Lua protocol of one ``{{...}}`` block (CR-002).
 
@@ -1448,7 +1487,9 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
     must stay English.  ``return_strings`` records the display expressions
     (the only translatable part).  ``error`` is set when the block fails
     the structural validity check (stray braces, unbalanced strings,
-    unexpected statements, assignment, forbidden control flow)."""
+    unexpected statements, assignment, forbidden control flow) or when a
+    return expression is not a string literal / declared display mapping
+    (CR-006)."""
     spans = _lua_string_spans(block)
     masked_parts: list[str] = []
     cursor = 0
@@ -1469,20 +1510,74 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
 
     skeleton_lines: list[str] = []
     return_strings: list[str] = []
+    unsupported_returns: list[str] = []
     # Masking preserves the line structure (literal contents are replaced by
     # a marker plus their own newlines), so masked and original lines align
     # one-to-one; the masked line decides whether this is a return statement
-    # so text inside a multi-line [[ ]] string can never fake one.
-    for original_line, masked_line in zip(block.split("\n"),
-                                          masked.split("\n")):
+    # so text inside a multi-line [[ ]] string can never fake one.  Only
+    # single string literals (``return "..."``/``'...'``/``[[...]]``) and
+    # the declared display mappings (CR-006) are translatable display
+    # expressions and normalize to the marker; any other return expression
+    # (arbitrary function call, arithmetic, boolean, ...) is protocol-bound:
+    # it stays byte-exact in the skeleton and the block fails closed.
+    original_lines = block.split("\n")
+    masked_lines = masked.split("\n")
+    line_offsets = _line_start_offsets(original_lines)
+    index = 0
+    while index < len(original_lines):
+        original_line = original_lines[index]
+        masked_line = masked_lines[index]
         if re.fullmatch(r"return\b.*", masked_line.strip()):
-            return_strings.append(
-                original_line.strip()[len("return"):].strip())
-            skeleton_lines.append("return " + _LUA_RETURN_MARKER)
-        else:
+            stripped = original_line.strip()
+            original_tail = stripped[len("return"):].strip()
+            masked_tail = masked_line.strip()[len("return"):].strip()
+            if masked_tail == "\u00a7":
+                # The whole return tail is one string literal (possibly a
+                # multi-line [[ ]] long string).  The marker column in the
+                # masked line is the literal's exact start offset, so the
+                # span decides how many continuation lines belong to it and
+                # trailing blank lines outside the literal never join the
+                # expression.
+                literal_start = line_offsets[index] \
+                    + masked_line.index("\u00a7")
+                literal_span = next(
+                    ((start, end) for start, end in spans
+                     if start == literal_start),
+                    None,
+                )
+                if literal_span is None:
+                    unsupported_returns.append(original_tail)
+                    skeleton_lines.append(original_line)
+                    index += 1
+                    continue
+                end_line = block[:literal_span[1]].count("\n")
+                expression_lines = [original_tail]
+                expression_lines.extend(
+                    original_lines[index + 1:end_line + 1])
+                return_strings.append("\n".join(expression_lines).strip())
+                skeleton_lines.append("return " + _LUA_RETURN_MARKER)
+                index = end_line + 1
+                continue
+            if masked_tail in _LUA_RETURN_DISPLAY_MAPPINGS:
+                return_strings.append(original_tail)
+                skeleton_lines.append("return " + _LUA_RETURN_MARKER)
+                index += 1
+                continue
+            unsupported_returns.append(original_tail)
             skeleton_lines.append(original_line)
+            index += 1
+            continue
+        skeleton_lines.append(original_line)
+        index += 1
 
     error = _lua_structure_error(masked)
+    if error is None and unsupported_returns:
+        error = (
+            f"unsupported return expression {unsupported_returns[0]!r}: "
+            "only string literals and the declared display mappings "
+            "(you.race()/you.genus() and their crawl.t_() forms) may be "
+            "normalized as translatable display text"
+        )
     return {
         "skeleton": "\n".join(skeleton_lines),
         "comparison_literals": sorted(set(comparison_literals)),
@@ -1497,8 +1592,8 @@ def _lua_structure_error(masked: str) -> str | None:
     Runs on the string-masked code so quoted text can never fake a
     statement: stray braces (the ``{{{`` defect), assignment, forbidden
     control flow, unexpected statements and if/then/end imbalance all
-    fail closed.  An available ``luac`` is additionally consulted by the
-    candidate gate (see ``_lua_syntax_check``)."""
+    fail closed.  The candidate gate additionally requires ``luac -p``
+    (see ``_lua_syntax_check``)."""
     if "{" in masked or "}" in masked:
         return "stray brace inside Lua site boundary"
     if re.search(r"(?<![=<>~!])=(?!=)", masked):
@@ -1533,14 +1628,17 @@ def _lua_structure_error(masked: str) -> str | None:
 
 
 def _lua_syntax_check(blocks: list[str]) -> None:
-    """Optional executable-syntax gate: when a Lua compiler is available
-    every candidate Lua block must pass ``luac -p`` (one file per block so
-    a trailing ``return`` can never be followed by another chunk);
-    environments without lua/luac rely on the structured validation above
-    (CR-002)."""
+    """Executable-syntax gate: every candidate Lua block must pass
+    ``luac -p`` (one file per block so a trailing ``return`` can never be
+    followed by another chunk).  The candidate role fails closed when the
+    Lua compiler is unavailable: without it the tool cannot prove the
+    blocks are executable, so it refuses to accept the candidate (CR-006)."""
     luac = shutil.which("luac")
     if luac is None:
-        return
+        raise InventoryError(
+            "luac not found: the candidate Lua executable-syntax gate "
+            "cannot run; refusing to accept the candidate without it"
+        )
     for block in blocks:
         with tempfile.NamedTemporaryFile("w", suffix=".lua",
                                          encoding="utf-8") as handle:
@@ -1567,7 +1665,7 @@ def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
         return {"site_count": 0, "skeletons": [],
                 "comparison_literals": [], "return_strings": [],
                 "malformed": []}
-    sites = hardened._lua_sites(pattern)
+    sites = _lua_sites_strict(pattern)
     blocks = hardened._lua_blocks(pattern)
     protocols: list[dict[str, Any]] = []
     for block in blocks:
@@ -1978,6 +2076,23 @@ def _dataset(
             f"{label} candidate has malformed Lua sites "
             f"(stray braces / non-executable blocks): {malformed_lua!r}",
         )
+        # CR-007: the candidate protocol invariants are enforced on the
+        # complete EN/ZH dataset, not only on the shared keys the pair
+        # loop covers: the two ZH-only keys (`_jory_rare_`, `default 'j'`)
+        # must also be free of empty variants and split-Lua fragments, and
+        # the aligned candidate must reproduce the frozen EN random/Lua
+        # site totals exactly.
+        _require(empty_variants == 0,
+                 f"{label} candidate has empty variants: {empty_variants}")
+        _require(not split_lua,
+                 f"{label} candidate has split Lua fragments: "
+                 f"{split_lua!r}")
+        _require(random_sites == EXPECTED_EN_RANDOM_SITES,
+                 f"{label} candidate random-site count differs from the "
+                 f"frozen EN total: {random_sites}")
+        _require(lua_sites == EXPECTED_EN_LUA_SITES,
+                 f"{label} candidate Lua-site count differs from the "
+                 f"frozen EN total: {lua_sites}")
 
     source_snapshot = next(
         source for source in artifact["sources"]
