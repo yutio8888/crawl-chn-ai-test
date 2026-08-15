@@ -74,6 +74,7 @@ from typing import Any
 
 import yaml
 
+import i18n_shared as audit_inputs
 import wpnnoise_inventory as hardened
 
 
@@ -1863,7 +1864,9 @@ def _scaffold_write_transaction(path: Path, text: str) -> None:
     any syscall follows exactly the same rollback path as an
     ``OSError``.
     """
-    absolute = os.path.abspath(os.fspath(path))
+    absolute = os.fspath(audit_inputs._known_system_temp_alias(
+        Path(os.path.abspath(os.fspath(path)))
+    ))
     if not absolute.startswith(os.sep):
         raise InventoryError(
             f"scaffold path must be an absolute POSIX pathname: {path}"
