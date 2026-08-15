@@ -1408,7 +1408,9 @@ def _identity_rows(
 
 
 def _variant(raw: dict[str, Any],
-              lua_protocol: dict[str, Any] | None = None) -> dict[str, Any]:
+              lua_protocol: dict[str, Any] | None = None,
+              family_lookup: dict[str, list[str]] | None = None
+              ) -> dict[str, Any]:
     text = raw["raw_pattern"]
     variant = {
         "variant_ordinal": raw["locator"]["variant_ordinal"],
@@ -1428,13 +1430,18 @@ def _variant(raw: dict[str, Any],
         variant["lua_comparison_literals"] = (
             lua_protocol["comparison_literals"])
         variant["lua_malformed"] = lua_protocol["malformed"]
-        # CR-023: the per-site/per-return runtime line channel topology
-        # (branch count, per-branch line count and per-line channel).  A
-        # malformed block cannot bind a topology; the candidate gate
-        # rejects malformed sites later in _dataset anyway, so the empty
-        # placeholder never reaches the EN/ZH comparison.
+        # CR-023/CR-024: the per-site/per-return expanded channel topology
+        # (branch count, per-branch sorted-unique layout set and per-line
+        # channel).  Production order: getSpeakString expands every
+        # in-family @token@ marker of the pattern (including markers
+        # inside Lua return literals) before evaluating the Lua block, so
+        # the layout set enumerates every reachable variant of every
+        # referenced in-family fragment.  A malformed block cannot bind a
+        # topology; the candidate gate rejects malformed sites later in
+        # _dataset anyway, so the empty placeholder never reaches the
+        # EN/ZH comparison.
         variant["lua_return_topology"] = (
-            _lua_return_topology(text)
+            _lua_return_topology(text, family_lookup)
             if not lua_protocol["malformed"] else [])
     return variant
 
@@ -1890,6 +1897,82 @@ def _lua_literal_value(expression: str) -> str | None:
     return None
 
 
+# CR-024: the recursive-replacement limits and bail-out text of the
+# production SpeakDB path (database.cc _getRandomisedStr /
+# _call_recursive_replacement, MAX_RECURSION_DEPTH 10 /
+# MAX_REPLACEMENTS 100): the Lua return expansion must enumerate the
+# same outcome set the runtime can produce, so deep/cyclic chains stop
+# exactly where production stops.
+_MAX_RECURSION_DEPTH = 10
+_MAX_REPLACEMENTS = 100
+_TOO_MUCH_RECURSION_TEXT = "TOO MUCH RECURSION"
+
+
+# The recursion depth of a token inside a Lua return literal (CR-024):
+# getSpeakString expands the selected root pattern at depth 1 and every
+# marker it finds (including the Lua literal's in-family tokens) at
+# depth 2, so the literal's own expansion starts at depth 2.
+_LUA_RETURN_TOKEN_DEPTH = 2
+
+
+def _family_expansions(text: str, lookup: dict[str, list[str]],
+                       depth: int, replacements: int
+                       ) -> list[tuple[str, int]]:
+    """All fully expanded runtime texts of ``text`` under the production
+    recursive-replacement semantics (CR-024), each with its replacement
+    count.
+
+    Mirrors database.cc ``_call_recursive_replacement`` +
+    ``_getRandomisedStr`` exactly: every ``@marker@`` site increments the
+    replacement count and a site beyond ``_MAX_REPLACEMENTS`` stops the
+    scan (the remainder stays unexpanded); an unbalanced ``@`` stops the
+    scan (the remainder stays); a marker that is not an in-family key is
+    left alone and the scan continues after it; an in-family marker is
+    replaced by every reachable variant of its key, each variant fully
+    expanded at ``depth + 1`` (a site beyond ``_MAX_RECURSION_DEPTH``
+    yields the literal ``TOO MUCH RECURSION`` text), and the scan
+    resumes at the splice point so leftover markers inside a replacement
+    are seen again.  Every reachable variant is enumerated (the runtime
+    picks one weighted-randomly): the topology gate binds every possible
+    runtime outcome, never a guessed subset."""
+    if depth > _MAX_RECURSION_DEPTH:
+        return [(_TOO_MUCH_RECURSION_TEXT, replacements)]
+    pos = text.find("@")
+    if pos < 0:
+        return [(text, replacements)]
+    replacements += 1
+    if replacements > _MAX_REPLACEMENTS:
+        return [(text, replacements)]
+    end = text.find("@", pos + 1)
+    if end < 0:
+        return [(text, replacements)]
+    marker = text[pos + 1:end]
+    canonical = marker.lower()
+    marker_full = text[pos:end + 1]
+    prefix = text[:pos]
+    suffix = text[end + 1:]
+    outcomes: list[tuple[str, int]] = []
+    variants = lookup.get(canonical)
+    if variants is None:
+        # Missing from the SpeakDB: leave the marker alone and continue
+        # scanning after it (post-process tokens like @the_monster@).
+        for rest, used in _family_expansions(suffix, lookup, depth,
+                                             replacements):
+            outcomes.append((prefix + marker_full + rest, used))
+        return outcomes
+    for variant in variants:
+        for replacement, used in _family_expansions(
+            variant, lookup, depth + 1, replacements
+        ):
+            # Splice the fully expanded replacement and rescan from the
+            # insertion point, exactly like the production loop.
+            for rest, final_used in _family_expansions(
+                prefix + replacement + suffix, lookup, depth, used
+            ):
+                outcomes.append((rest, final_used))
+    return outcomes
+
+
 def _lua_return_branch_texts(block: str) -> list[str]:
     """Runtime texts of the literal return branches of one ``{{...}}``
     block, in source order (CR-023).
@@ -1901,18 +1984,58 @@ def _lua_return_branch_texts(block: str) -> list[str]:
     declared display mappings (``you.race()``/``you.genus()`` and their
     ``crawl.t_()`` forms) have no statically known runtime text and keep
     the colon-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
-    checker neutralization.  Raises ``InventoryError`` on a structurally
-    invalid block or an unsupported literal escape: the runtime
-    topology must never be guessed."""
+    checker neutralization.  No recursive token expansion is applied
+    here (``_lua_return_branch_expansions`` owns the CR-024 expansion);
+    this helper is the identity single-outcome view used by the
+    pre-CR-024 callers and tests.  Raises ``InventoryError`` on a
+    structurally invalid block or an unsupported literal escape: the
+    runtime topology must never be guessed."""
+    return [outcomes[0]
+            for outcomes in _lua_return_branch_expansions(block, None)]
+
+
+def _lua_return_branch_expansions(
+    block: str, family_lookup: dict[str, list[str]] | None
+) -> list[list[str]]:
+    """Per-return-branch fully expanded runtime texts of one ``{{...}}``
+    block, in source order (CR-024).
+
+    Production order (database.cc): ``getSpeakString`` recursively
+    expands every in-family ``@token@`` marker of the selected pattern
+    (``_call_recursive_replacement``) BEFORE evaluating the embedded Lua
+    block, so every literal return branch is a fully expanded runtime
+    text.  Reuses ``_lua_block_protocol``'s strict return extraction
+    (CR-002) and expands each literal with ``_family_expansions`` over
+    the same-language in-family lookup (the SpeakDB the production
+    expansion consults): each return branch maps to the sorted-unique
+    set of all reachable expanded texts (every variant of every
+    reachable token, bounded by the production depth/replacement
+    limits).  A branch whose literal contains no in-family token maps to
+    exactly one text (the literal itself); the declared display mappings
+    (``you.race()``/``you.genus()`` and their ``crawl.t_()`` forms) keep
+    the colon-free ``{{LUA}}`` placeholder branch, exactly like the
+    pre-CR-023 checker neutralization.  Raises ``InventoryError`` on a
+    structurally invalid block or an unsupported literal escape: the
+    runtime topology must never be guessed."""
     protocol = _lua_block_protocol(block)
     _require(protocol["error"] is None,
              f"Lua block has no bindable return topology: "
              f"{protocol['error']}")
-    texts: list[str] = []
+    expansions: list[list[str]] = []
     for expression in protocol["return_strings"]:
         value = _lua_literal_value(expression)
-        texts.append(value if value is not None else "{{LUA}}")
-    return texts
+        if value is None:
+            expansions.append(["{{LUA}}"])
+            continue
+        if not family_lookup:
+            expansions.append([value])
+            continue
+        outcomes = sorted({
+            text for text, _used in _family_expansions(
+                value, family_lookup, _LUA_RETURN_TOKEN_DEPTH, 0)
+        })
+        expansions.append(outcomes)
+    return expansions
 
 
 def _runtime_lines_of(message: str) -> list[str]:
@@ -1925,55 +2048,74 @@ def _runtime_lines_of(message: str) -> list[str]:
             if segment.strip(" \t\n\r")]
 
 
-def _lua_return_branch_lines(pattern: str) -> list[list[str]]:
-    """Per-branch runtime line layouts of one monspeak variant pattern
-    (CR-023).
+def _lua_return_branch_lines(
+    pattern: str, family_lookup: dict[str, list[str]] | None = None
+) -> list[list[list[str]]]:
+    """Per-branch runtime channel layouts of one monspeak variant pattern
+    (CR-023/CR-024).
 
-    Production order: ``getSpeakString`` evaluates every ``{{...}}`` Lua
-    block before the sink and splices the returned string into the
-    message; ``mons_speaks_msg`` then splits by ``\\n`` and resolves
-    each line's channel.  Every literal return branch of every block is
-    therefore a possible runtime message; this helper expands each block
-    per return branch (strict extraction from ``_lua_block_protocol``)
-    and returns one line layout per branch combination (cross product
-    over the blocks, in source order).  Blocks without literal returns
-    keep the ``{{LUA}}`` placeholder so their surrounding layout
-    survives without a Lua interpreter.  A pattern without Lua blocks
-    has exactly one branch: its own lines.  Raises ``InventoryError``
-    when any block's return topology cannot be bound."""
-    segments: list[list[str]] = []
+    Production order: ``getSpeakString`` recursively expands every
+    in-family ``@token@`` marker of the selected pattern before
+    evaluating its ``{{...}}`` Lua blocks, and ``mons_speaks_msg`` then
+    splits the spliced message by ``\\n`` and resolves each line's
+    channel.  Every literal return branch of every block is therefore a
+    possible fully expanded runtime message; this helper expands each
+    block per return branch (strict extraction from
+    ``_lua_block_protocol``) over the same-language in-family lookup and
+    returns one sorted-unique layout set per branch combination (cross
+    product over the blocks, in source order); each layout is the
+    per-line channel sequence of one fully expanded runtime message.
+    Blocks without literal returns keep the ``{{LUA}}`` placeholder
+    branch so their surrounding layout survives without a Lua
+    interpreter.  A pattern without Lua blocks has exactly one branch:
+    its own lines.  Raises ``InventoryError`` when any block's return
+    topology cannot be bound."""
+    segments: list[list[list[str]]] = []
     position = 0
     for site in _LUA_SITE_RE.finditer(pattern):
-        segments.append([pattern[position:site.start()]])
-        segments.append(_lua_return_branch_texts(site.group(0)[2:-2]))
+        segments.append([[pattern[position:site.start()]]])
+        segments.append(_lua_return_branch_expansions(
+            site.group(0)[2:-2], family_lookup))
         position = site.end()
-    segments.append([pattern[position:]])
-    branches: list[list[str]] = []
+    segments.append([[pattern[position:]]])
+    branches: list[list[list[str]]] = []
     for combination in itertools.product(*segments):
-        branches.append(_runtime_lines_of("".join(combination)))
+        layouts = sorted({
+            tuple(_monspeak_line_channel(line)
+                  for line in _runtime_lines_of("".join(joined)))
+            for joined in itertools.product(*combination)
+        })
+        branches.append([list(layout) for layout in layouts])
     return branches
 
 
-def _lua_return_topology(pattern: str) -> list[list[list[str]]]:
-    """Per-site per-branch per-line channel identity of the literal
-    return branches of one variant (CR-023).
+def _lua_return_topology(
+    pattern: str, family_lookup: dict[str, list[str]] | None = None
+) -> list[list[list[list[str]]]]:
+    """Per-site per-branch expanded channel topology of the literal
+    return branches of one variant (CR-023/CR-024).
 
     Site order follows the ``{{...}}`` sites of the pattern; every site
     maps to one entry per return branch (source order), and each branch
-    maps to the channel identity of every runtime line its returned
-    string produces under the production sink split.  The declared
-    display mappings contribute one ``{{LUA}}`` placeholder branch so
-    branch counts stay aligned with the skeleton.  The EN/ZH comparison
-    in ``_pair_candidate`` requires these channel topologies to be
-    identical: branch count, per-branch line count and per-line channel
-    are all encoded in this shape."""
-    topology: list[list[list[str]]] = []
+    maps to the sorted-unique set of per-line channel sequences its
+    fully expanded runtime texts produce under the production sink
+    split (``_family_expansions`` over the same-language in-family
+    lookup, production order: tokens expand before Lua runs).  The
+    declared display mappings contribute one ``{{LUA}}`` placeholder
+    branch so branch counts stay aligned with the skeleton.  The EN/ZH
+    comparison in ``_pair_candidate`` requires these channel topologies
+    to be identical: branch count, per-branch expanded layout set and
+    per-line channel are all encoded in this shape."""
+    topology: list[list[list[list[str]]]] = []
     for site in _LUA_SITE_RE.finditer(pattern):
-        branches = _lua_return_branch_texts(site.group(0)[2:-2])
+        branches = _lua_return_branch_expansions(
+            site.group(0)[2:-2], family_lookup)
         topology.append([
-            [_monspeak_line_channel(line)
-             for line in _runtime_lines_of(text)]
-            for text in branches
+            [list(layout) for layout in sorted({
+                tuple(_monspeak_line_channel(line)
+                      for line in _runtime_lines_of(text))
+                for text in outcomes})]
+            for outcomes in branches
         ])
     return topology
 
@@ -2401,6 +2543,16 @@ def _dataset(
     # the candidate audit closed instead of falling back to structural
     # validation.
     lua_syntax_facts: list[dict[str, Any]] = []
+    # CR-024: the same-language in-family SpeakDB lookup the recursive
+    # expansion of Lua return literals consults (canonical key -> variant
+    # raw patterns in ordinal order), mirroring the production SpeakDB
+    # the runtime expansion reads.
+    family_lookup = {
+        row["canonical_key"]: [
+            variant["raw_pattern"] for variant in row["variants"]
+        ]
+        for row in rows
+    }
     # Baseline-historical counts of the EN-only display tokens (frozen
     # fact, asserted for ZH only; the candidate may legitimately differ).
     en_only_display_counts: Counter = Counter()
@@ -2413,7 +2565,8 @@ def _dataset(
             if protocol["lua_syntax_check"] is not None:
                 lua_syntax_facts.append(protocol["lua_syntax_check"])
             if role == "candidate":
-                variants.append(_variant(raw_variant, protocol))
+                variants.append(_variant(raw_variant, protocol,
+                                         family_lookup))
             else:
                 variants.append(_variant(raw_variant))
             if protocol["malformed"]:
@@ -3303,17 +3456,21 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
                 f"candidate Lua control skeleton/operators differ at "
                 f"{key!r} ordinal {ordinal}",
             )
-            # CR-023: the Lua return channel topology (per-site branch
-            # count, per-branch runtime line layout and per-line channel
+            # CR-023/CR-024: the Lua return channel topology (per-site
+            # branch count, per-branch expanded layout set -- every
+            # reachable variant of every in-family token inside a return
+            # literal, expanded before Lua runs -- and per-line channel
             # identity) must be identical: a return whose VISUAL prefix
-            # changed, a return branch deleted or a per-branch line shift
-            # inside a Lua block fails here even though the masked
-            # skeletons stay byte-identical.
+            # changed, a return branch deleted, a per-branch line shift
+            # inside a Lua block or a VISUAL prefix added to a referenced
+            # recursive fragment (e.g. one ZH variant of `_Sprozz_common_`)
+            # fails here even though the masked skeletons stay
+            # byte-identical and the unexpanded literals are equal.
             _require(
                 en_variant["lua_return_topology"]
                 == zh_variant["lua_return_topology"],
-                f"candidate Lua return channel topology differs at "
-                f"{key!r} ordinal {ordinal}",
+                f"candidate Lua return expanded channel topology differs "
+                f"at {key!r} ordinal {ordinal}",
             )
         entries.append({
             "identity": f"monspeak:{key}",

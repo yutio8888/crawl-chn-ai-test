@@ -32,14 +32,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (parse_entries, parse_source_txt,
                          parse_entries_physical, compute_canonical_key,
                          compute_group_fingerprint)
-# CR-023: the monspeak VISUAL channel contract reuses the strict Lua
-# return extraction of the Issue-70 inventory (monspeak_inventory
+# CR-023/CR-024: the monspeak VISUAL channel contract reuses the strict
+# Lua return extraction of the Issue-70 inventory (monspeak_inventory
 # ``_lua_block_protocol``) so the per-branch runtime line/channel
 # topology of Lua ``return "VISUAL:..."`` emissions is bound exactly like
-# the production order (getSpeakString evaluates the block first, then
-# the sink splits the returned string).  The channel classifier is the
-# shared one too, so the scan checker and the inventory candidate gate
-# resolve line channels identically.
+# the production order (getSpeakString recursively expands in-family
+# @token@ markers -- including markers inside Lua return literals --
+# before evaluating the block, then the sink splits the returned string).
+# The channel classifier is the shared one too, so the scan checker and
+# the inventory candidate gate resolve line channels identically.
 from monspeak_inventory import (InventoryError, _lua_return_branch_lines,
                                 _monspeak_line_channel)
 
@@ -6296,24 +6297,29 @@ def _monspeak_textdb_positions(source_dir, rel_path, label):
 
 
 # The channel identity classifier (``_monspeak_line_channel``) and the
-# per-branch Lua runtime line expansion (``_lua_return_branch_lines``)
-# are imported from monspeak_inventory (CR-023); this checker only owns
+# per-branch Lua runtime expansion (``_lua_return_branch_lines``) are
+# imported from monspeak_inventory (CR-023/CR-024); this checker only owns
 # the contract wiring: the frozen EN identity set, the EN drift freeze
-# and the EN/ZH per-branch line/channel correspondence.
+# and the EN/ZH per-branch expanded layout correspondence.
 
 
-def _monspeak_runtime_branches(pattern):
-    """Per-branch runtime line layouts of one monspeak pattern (CR-023).
+def _monspeak_runtime_branches(pattern, family_lookup):
+    """Per-branch runtime channel layouts of one monspeak pattern
+    (CR-023/CR-024).
 
-    Production order: ``getSpeakString`` evaluates every ``{{...}}`` Lua
-    block before the sink and splices the returned string into the
-    message; ``mons_speaks_msg`` then splits with
-    ``split_string("\\n", msg)`` (trim_segments=true,
-    accept_empty_segments=false).  Every literal return branch of every
-    block is therefore a possible runtime message; this wrapper expands
-    each block per return branch (strict extraction from
-    monspeak_inventory._lua_block_protocol) and returns one line layout
-    per branch combination.  Blocks without literal returns (the
+    Production order: ``getSpeakString`` recursively expands every
+    in-family ``@token@`` marker of the selected pattern -- including
+    markers inside Lua return literals -- before evaluating the
+    ``{{...}}`` blocks; ``mons_speaks_msg`` then splits the spliced
+    message with ``split_string("\\n", msg)`` (trim_segments=true,
+    accept_empty_segments=false) and resolves each line's channel.
+    Every literal return branch of every block is therefore a possible
+    fully expanded runtime message; this wrapper expands each block per
+    return branch (strict extraction from
+    monspeak_inventory._lua_block_protocol) over the same-language
+    in-family lookup and returns one sorted-unique layout set per branch
+    combination; each layout is the per-line channel sequence of one
+    fully expanded runtime message.  Blocks without literal returns (the
     you.race()/you.genus() display mappings) keep the colon-free,
     newline-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
     neutralization, so their surrounding layout survives without a Lua
@@ -6321,12 +6327,12 @@ def _monspeak_runtime_branches(pattern):
     Raises ``InventoryError`` when a block's return topology cannot be
     bound (malformed block / unsupported literal escape): the checker
     reports that as a fail-closed finding instead of guessing."""
-    return _lua_return_branch_lines(pattern)
+    return _lua_return_branch_lines(pattern, family_lookup)
 
 
 def _monspeak_visual_channel_findings(source_dir):
     """Issue-16 monspeak VISUAL channel routing (CR-004/CR-008/CR-019/
-    CR-023).
+    CR-023/CR-024).
 
     The complete sorted-unique EN (canonical key, variant ordinal, Lua
     return branch ordinal, line ordinal) set of lines that resolve to
@@ -6338,12 +6344,19 @@ def _monspeak_visual_channel_findings(source_dir):
     block before the sink and every literal ``return "VISUAL:..."``
     emission is a possible runtime line, so the frozen set pins the
     per-branch channel topology of Lua blocks instead of erasing it with
-    a placeholder.  Every pattern pinned by the frozen set is then
-    checked branch by branch against ZH with the production sink
-    semantics: the same branch count, the same runtime newline split and
-    the same per-line channel resolution, so every corresponding line --
-    including non-VISUAL lines and lines that strip to empty -- must
-    resolve to the same channel as the EN line."""
+    a placeholder.  Every pattern pinned by the frozen set AND every
+    Lua-bearing pattern is then checked branch by branch against ZH with
+    the production semantics: the same branch count, the same per-branch
+    expanded layout set and -- for the single-layout branches -- the
+    same runtime newline split and the same per-line channel resolution,
+    so every corresponding line -- including non-VISUAL lines and lines
+    that strip to empty -- must resolve to the same channel as the EN
+    line.  CR-024: a literal return may reference in-family fragments
+    (``Sprozz`` returns ``@_Sprozz_thief_@``/``@_Sprozz_common_@``); the
+    production expansion runs BEFORE Lua, so the branch layout set
+    enumerates every reachable variant of every referenced fragment and
+    a VISUAL prefix added to one ZH variant of a fragment fails here
+    even though the unexpanded literals are identical on both sides."""
     contract_id = 'issue16-monspeak-channels'
     findings = []
     en, error = _monspeak_textdb_positions(
@@ -6354,6 +6367,10 @@ def _monspeak_visual_channel_findings(source_dir):
         source_dir, 'dat/database/zh/monspeak.txt', 'monspeak ZH')
     if error:
         return [(contract_id, 'dat/database/zh/monspeak.txt', error)]
+    # CR-024: each language's own key -> variant pattern map is the
+    # SpeakDB the recursive expansion of its Lua return literals consults.
+    en_lookup = en
+    zh_lookup = zh
     # The frozen identity set is derived from the EN file alone: a key that
     # is missing from ZH must never shrink the set the drift check sees.
     visual_lines = []
@@ -6361,7 +6378,8 @@ def _monspeak_visual_channel_findings(source_dir):
     for key in sorted(en):
         for ordinal in range(len(en[key])):
             try:
-                branches = _monspeak_runtime_branches(en[key][ordinal])
+                branches = _monspeak_runtime_branches(en[key][ordinal],
+                                                      en_lookup)
             except InventoryError as exc:
                 findings.append((contract_id,
                                  f"dat/database/monspeak.txt {key!r} "
@@ -6369,10 +6387,11 @@ def _monspeak_visual_channel_findings(source_dir):
                                  f"Lua return topology not bindable: {exc}"))
                 continue
             en_branches[(key, ordinal)] = branches
-            for branch, branch_lines in enumerate(branches):
-                for line, raw_line in enumerate(branch_lines):
-                    if _monspeak_line_channel(raw_line) == "talk_visual":
-                        visual_lines.append((key, ordinal, branch, line))
+            for branch, layouts in enumerate(branches):
+                for layout in layouts:
+                    for line, channel in enumerate(layout):
+                        if channel == "talk_visual":
+                            visual_lines.append((key, ordinal, branch, line))
     visual_lines = sorted(visual_lines)
     if visual_lines != list(MONSPEAK_EN_VISUAL_LINES):
         frozen = set(MONSPEAK_EN_VISUAL_LINES)
@@ -6404,69 +6423,107 @@ def _monspeak_visual_channel_findings(source_dir):
                 f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
                 "VISUAL channel line missing from zh/monspeak.txt "
                 "(EN-aligned ordinal absent)"))
-    # CR-019/CR-023: every pattern pinned by the frozen set must preserve
-    # the whole line/channel layout of the production sink, not only its
-    # VISUAL lines: the ZH pattern must split into the same branches (for
-    # Lua literal-return blocks: the same return branch count) and every
-    # corresponding line (including non-VISUAL lines) must resolve to the
-    # same channel.  A line shift inside a pattern, a newline position
-    # change, a deleted Lua return branch or a changed VISUAL prefix in a
-    # Lua return breaks the correspondence and fails here even when the
-    # frozen EN identity set is untouched.
+    # CR-019/CR-023/CR-024: every pattern pinned by the frozen set and
+    # every Lua-bearing pattern must preserve the whole expanded
+    # channel layout of the production sink, not only its VISUAL lines:
+    # the ZH pattern must split into the same branches (for Lua
+    # literal-return blocks: the same return branch count) and every
+    # corresponding branch must resolve to the same expanded layout set
+    # (for single-layout branches: the same per-line channel sequence).
+    # A line shift inside a pattern, a newline position change, a deleted
+    # Lua return branch, a changed VISUAL prefix in a Lua return or a
+    # VISUAL prefix added to a referenced recursive fragment breaks the
+    # correspondence and fails here even when the frozen EN identity set
+    # is untouched.
     pinned_patterns = sorted({(key, ordinal)
                               for key, ordinal, _branch, _line
                               in visual_lines})
-    for key, ordinal in pinned_patterns:
+    compared_patterns = set(pinned_patterns)
+    for key in sorted(en):
+        for ordinal in range(len(en[key])):
+            if "{{" in en[key][ordinal]:
+                compared_patterns.add((key, ordinal))
+    for key, ordinal in sorted(compared_patterns):
         zh_variants = zh.get(key)
         if zh_variants is None or ordinal >= len(zh_variants):
             continue  # already reported above
         try:
-            en_lines_by_branch = en_branches[(key, ordinal)]
-            zh_lines_by_branch = _monspeak_runtime_branches(
-                zh_variants[ordinal])
+            en_branch_layouts = en_branches[(key, ordinal)]
+            zh_branch_layouts = _monspeak_runtime_branches(
+                zh_variants[ordinal], zh_lookup)
         except InventoryError as exc:
             findings.append((
                 contract_id,
                 f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
                 f"Lua return topology not bindable: {exc}"))
             continue
-        if len(zh_lines_by_branch) != len(en_lines_by_branch):
+        if len(zh_branch_layouts) != len(en_branch_layouts):
             findings.append((
                 contract_id,
                 f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
                 f"Lua return branch count differs from EN: EN has "
-                f"{len(en_lines_by_branch)} branch(es), ZH has "
-                f"{len(zh_lines_by_branch)}"))
+                f"{len(en_branch_layouts)} branch(es), ZH has "
+                f"{len(zh_branch_layouts)}"))
             continue
-        for branch, (en_lines, zh_lines) in enumerate(
-            zip(en_lines_by_branch, zh_lines_by_branch)
+        for branch, (en_layouts, zh_layouts) in enumerate(
+            zip(en_branch_layouts, zh_branch_layouts)
         ):
-            if len(zh_lines) != len(en_lines):
-                suffix = (f" (Lua branch {branch})"
-                          if len(en_lines_by_branch) > 1 else "")
+            suffix = (f" (Lua branch {branch})"
+                      if len(en_branch_layouts) > 1 else "")
+            if len(en_layouts) == 1 and len(zh_layouts) == 1:
+                # Single-layout branches keep the detailed per-line
+                # correspondence (CR-019): the exact line count and the
+                # per-line channel of the production sink, so a line
+                # shift, a newline change or a changed VISUAL prefix
+                # reports the precise loss (and keeps the pre-CR-024
+                # findings for those probes).
+                en_channels = en_layouts[0]
+                zh_channels = zh_layouts[0]
+                if len(zh_channels) != len(en_channels):
+                    findings.append((
+                        contract_id,
+                        f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                        f"runtime line count differs from EN: EN has "
+                        f"{len(en_channels)} line(s), ZH has "
+                        f"{len(zh_channels)}{suffix}"))
+                    continue
+                for line, (en_channel, zh_channel) in enumerate(
+                    zip(en_channels, zh_channels)
+                ):
+                    if zh_channel == en_channel:
+                        continue
+                    if en_channel == "talk_visual":
+                        detail = "VISUAL channel prefix lost at an " \
+                            "EN-aligned line"
+                    else:
+                        detail = (f"line channel differs from EN: EN "
+                                  f"{en_channel}, ZH {zh_channel}")
+                    findings.append((
+                        contract_id,
+                        f"dat/database/zh/monspeak.txt {key!r} #{ordinal} "
+                        f"line {line}",
+                        detail))
+                continue
+            # CR-024: expanded branches (literal returns referencing
+            # in-family fragments) may legitimately differ in the number
+            # of reachable variant texts between languages, so the
+            # multi-layout comparison is the sorted-unique layout set:
+            # the same set of possible per-line channel sequences.
+            if len(zh_layouts) != len(en_layouts):
                 findings.append((
                     contract_id,
                     f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
-                    f"runtime line count differs from EN: EN has "
-                    f"{len(en_lines)} line(s), ZH has {len(zh_lines)}"
-                    f"{suffix}"))
+                    f"expanded Lua return channel topology differs from EN: "
+                    f"EN has {len(en_layouts)} layout(s), ZH has "
+                    f"{len(zh_layouts)}{suffix}"))
                 continue
-            for line, en_raw in enumerate(en_lines):
-                en_channel = _monspeak_line_channel(en_raw)
-                zh_channel = _monspeak_line_channel(zh_lines[line])
-                if zh_channel == en_channel:
-                    continue
-                if en_channel == "talk_visual":
-                    detail = "VISUAL channel prefix lost at an " \
-                        "EN-aligned line"
-                else:
-                    detail = (f"line channel differs from EN: EN "
-                              f"{en_channel}, ZH {zh_channel}")
+            if zh_layouts != en_layouts:
                 findings.append((
                     contract_id,
-                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal} "
-                    f"line {line}",
-                    detail))
+                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                    f"expanded Lua return channel topology differs from EN"
+                    f"{suffix}"))
+                continue
     return findings
 
 

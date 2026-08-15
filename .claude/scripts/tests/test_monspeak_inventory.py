@@ -1530,12 +1530,14 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertEqual("a\nb", MODULE._lua_literal_value("[[a\nb]]"))
 
     def test_lua_return_branch_texts_binds_visual_topology(self):
-        # CR-023: the reviewer probe block (``friendly shoals hound`` #2)
-        # has two literal return branches; both evaluate to VISUAL lines
-        # at runtime, and the per-site topology records one branch per
-        # return with the per-line channel identity.  A display-mapping
-        # block keeps the colon-free placeholder branch so branch counts
-        # stay aligned with the skeleton.
+        # CR-023/CR-024: the reviewer probe block (``friendly shoals
+        # hound`` #2) has two literal return branches; both evaluate to
+        # VISUAL lines at runtime, and the per-site topology records one
+        # branch per return with its sorted-unique layout set (per-line
+        # channel sequence; a literal without in-family tokens has
+        # exactly one layout).  A display-mapping block keeps the
+        # colon-free placeholder branch so branch counts stay aligned
+        # with the skeleton.
         block = (
             "if you.can_smell() then\n"
             '    return "VISUAL:A distinct wet dog smell emanates from '
@@ -1550,19 +1552,20 @@ class MonspeakInventoryTests(unittest.TestCase):
              "you."],
             MODULE._lua_return_branch_texts(block))
         self.assertEqual(
-            [[["talk_visual"], ["talk_visual"]]],
+            [[[["talk_visual"]], [["talk_visual"]]]],
             MODULE._lua_return_topology("{{\n" + block + "}}"))
         self.assertEqual(["{{LUA}}"],
                          MODULE._lua_return_branch_texts(
                              " return you.race() "))
         self.assertEqual(
-            [[["talk"]]],
+            [[[["talk"]]]],
             MODULE._lua_return_topology("{{ return you.race() }}"))
         # The pattern-level expansion splices inline branch texts into the
-        # surrounding line and splits by the production sink semantics.
+        # surrounding line and splits by the production sink semantics;
+        # each branch reports its sorted-unique layout set (per-line
+        # channel sequence).
         self.assertEqual(
-            [["VISUAL:@The_monster@ looks down at you expectantly."],
-             ["VISUAL:@The_monster@ looks up at you expectantly."]],
+            [[["talk_visual"]], [["talk_visual"]]],
             MODULE._lua_return_branch_lines(
                 "VISUAL:@The_monster@ looks {{"
                 "  if you.race() == \"Felid\" then\n"
@@ -1574,6 +1577,62 @@ class MonspeakInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "no bindable return topology"):
             MODULE._lua_return_branch_texts("return evil()")
+
+    def test_lua_return_branch_expansions_recursive_tokens(self):
+        # CR-024: production order -- getSpeakString expands every
+        # in-family @token@ marker of the selected pattern (including
+        # markers inside Lua return literals) before evaluating the Lua
+        # block -- so a literal return that references a recursive
+        # fragment (``Sprozz`` returns ``@_Sprozz_thief_@`` /
+        # ``@_Sprozz_common_@``) must enumerate every reachable variant
+        # of that fragment, recursively, with the production
+        # depth/replacement limits.
+        block = ('if spells.memorised("launch clockwork bee") then\n'
+                 "    return '@_Sprozz_thief_@'\n"
+                 'else\n'
+                 "    return '@_Sprozz_common_@'\n"
+                 'end')
+        lookup = {
+            "_sprozz_thief_": ['@The_monster@ shouts, "Thief!"',
+                               '@The_monster@ yells, "Mine!"'],
+            "_sprozz_common_": ['@The_monster@ says, "Bee!"',
+                                 'VISUAL:@The_monster@ shows a bee.',
+                                 '@The_monster@ says, "Honey!"'],
+            "_sprozz_nested_": ["@_sprozz_common_@"],
+        }
+        # Without a lookup the expansion is the identity single outcome
+        # (the pre-CR-024 view).
+        self.assertEqual([["@_Sprozz_thief_@"], ["@_Sprozz_common_@"]],
+                         MODULE._lua_return_branch_expansions(block, None))
+        self.assertEqual(
+            [["@The_monster@ shouts, \"Thief!\"",
+              "@The_monster@ yells, \"Mine!\""],
+             ["@The_monster@ says, \"Bee!\"",
+              "@The_monster@ says, \"Honey!\"",
+              "VISUAL:@The_monster@ shows a bee."]],
+            MODULE._lua_return_branch_expansions(block, lookup))
+        # A nested in-family token expands through the fragment.
+        self.assertEqual(
+            [["@The_monster@ says, \"Bee!\"",
+              "@The_monster@ says, \"Honey!\"",
+              "VISUAL:@The_monster@ shows a bee."]],
+            MODULE._lua_return_branch_expansions(
+                "return '@_sprozz_nested_@'", lookup))
+        # The per-branch layout sets: every reachable variant contributes
+        # its per-line channel sequence (sorted unique).
+        self.assertEqual(
+            [[[["talk"]], [["talk"], ["talk_visual"]]]],
+            MODULE._lua_return_topology("{{\n" + block + "}}", lookup))
+        self.assertEqual(
+            [[["talk"], ["talk_visual"]]],
+            MODULE._lua_return_branch_lines(
+                "{{ return '@_sprozz_nested_@' }}", lookup))
+        # Production limits: a cyclic fragment hits the recursion depth
+        # and the runtime splices the bail-out text.
+        cyclic = {"_loop_": ["@_loop_@"]}
+        outcomes = MODULE._lua_return_branch_expansions(
+            "return '@_loop_@'", cyclic)
+        self.assertEqual([[MODULE._TOO_MUCH_RECURSION_TEXT]], outcomes)
 
     def test_issue16_lua_return_visual_lines_in_frozen_set(self):
         # CR-023 positive: the branch-expanded checker binds Lua return
@@ -1682,6 +1741,48 @@ class MonspeakInventoryTests(unittest.TestCase):
                 "EN VISUAL line set drifted" in detail
                 for _contract, _artifact, detail in findings))
 
+    def test_issue70_lua_return_recursive_token_visual_mutation_rejected(self):
+        # CR-024: the reviewer probe -- adding a VISUAL prefix to one ZH
+        # variant of the recursive fragment ``_Sprozz_common_`` (the first
+        # reachable variant, zh:4354) -- must fail the registered scanner.
+        # ``Sprozz`` is not pinned by the frozen EN VISUAL set (every
+        # expanded EN line is talk), so only the complete expanded
+        # topology comparison over the Lua-bearing patterns can see the
+        # mutation: the return literal ``@_Sprozz_common_@`` is identical
+        # on both sides, but the expanded ZH branch gains a talk_visual
+        # layout (production order: getSpeakString expands the token
+        # before the Lua block runs).
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated = zh_text.replace(
+            '@The_monster@说："请容我展示未来的蜜蜂！"',
+            'VISUAL:@The_monster@说："请容我展示未来的蜜蜂！"', 1)
+        self.assertNotEqual(mutated, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(mutated, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "expanded Lua return channel topology differs from EN"
+                in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
+                for _contract, _artifact, detail in findings))
+            self.assertFalse(any(
+                "VISUAL channel prefix lost at an EN-aligned line" in detail
+                for _contract, _artifact, detail in findings))
+
     def test_candidate_lua_return_visual_prefix_change_rejected(self):
         # CR-023: the candidate gate compares the per-branch channel
         # topology in _pair_candidate; a ZH return whose VISUAL prefix
@@ -1702,7 +1803,39 @@ class MonspeakInventoryTests(unittest.TestCase):
             "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
-                                    "Lua return channel topology differs"):
+                                    "Lua return .*channel topology differs"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_recursive_token_visual_mutation_rejected(self):
+        # CR-024: the reviewer probe -- adding a VISUAL prefix to one ZH
+        # variant of the recursive fragment ``_Sprozz_common_`` (only
+        # reachable through the Lua return literal of ``Sprozz``) -- keeps
+        # every pre-CR-024 fact identical (the unexpanded return literal,
+        # the skeleton, the token sets and the per-key variant counts all
+        # stay equal) but changes the expanded channel topology of the
+        # ``Sprozz`` return branch; the candidate gate must fail closed.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            '@The_monster@ says, "Allow me to demonstrate the bee of the '
+            'future!"',
+            'VISUAL:@The_monster@ says, "Allow me to demonstrate the bee '
+            'of the future!"',
+            1)
+        self.assertNotEqual(aligned, aligned_zh_source(zh_zh, en_zh))
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(
+            MODULE.InventoryError,
+            "Lua return .*channel topology differs",
+        ):
             self.add_candidate_mocked(
                 self.inventory, fixture,
                 exact_artifact(fixture, "database/"),
