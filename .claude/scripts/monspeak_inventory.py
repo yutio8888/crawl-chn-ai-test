@@ -12,6 +12,19 @@ are shadowed by zh/shout.txt in the effective localized merge, the
 random-site/Lua-site counts, the complete token classification and a
 per-language reachability proof from the consumed production root keys.
 
+``@to_foe@``/``@at_foe@`` are EN-only display tokens: mon-util.cc's
+``do_mon_str_replacements()`` deletes the leading-space compound on the
+player-foe branch and splices it as `` to @foe@``/`` at @foe@`` on the
+monster-foe branch, so the localizable core is the ``@foe@`` reference and
+Chinese must not mirror the compounds mechanically.  The paired EN/ZH
+token comparison (candidate pair loop and the ledger proposals bound to a
+candidate) therefore exempts exactly those two tokens: EN keeps its
+baseline bytes (counts/positions stay validated by the EN byte binding),
+while ZH may mirror the compounds, render the localizable ``@foe@``
+structure, or restructure the sentence -- the compounds are never
+ZH-required tokens, ``@foe@`` stays bidirectionally required and every
+other token stays exactly aligned.
+
 Consumer model (frozen at the baseline OID): ``mon-speak.cc::mons_speaks``
 queries ``<prefix> <base> <suffix>`` keys through ``getSpeakString`` with the
 ``"default "`` fallback chain; the base keys are the English monster DB
@@ -470,6 +483,30 @@ POSTPROCESS_TOKENS = frozenset({
     "random_god_good", "reflexive", "says", "subjective", "surface",
     "the_monster", "the_monster_possessive", "to_foe",
 })
+
+# EN-only display tokens: mon-util.cc::do_mon_str_replacements() deletes the
+# leading-space ``@to_foe@``/``@at_foe@`` phrase entirely on the player-foe
+# branch and splices it as `` to @foe@``/`` at @foe@`` on the monster-foe
+# branch, so the compounds are English display syntax, not ZH-required
+# tokens: mechanically mirroring them in Chinese yields a dangling
+# preposition / missing object on the player side and a mixed-language
+# "to <name>" on the monster side.  The correct ZH structure is the
+# localizable ``@foe@`` (player "you" / monster name) or a sentence
+# rewrite.  The paired EN/ZH comparison exempts exactly these two tokens
+# (see ``_foe_protocol_equal``): EN keeps its exact baseline bytes (counts
+# and positions stay validated by the EN source/dump byte binding), while
+# ZH may carry the mirror tokens, render the ``@foe@`` structure, or omit
+# them.  ``@foe@`` itself stays bidirectionally required and every other
+# token stays exactly aligned; the exception is narrow -- only these two
+# exact lowercase tokens (``at_foe/around``, ``@Foe@`` and any case
+# variant are separate tokens and remain strictly required).
+EN_ONLY_DISPLAY_TOKENS = frozenset({"@to_foe@", "@at_foe@"})
+# Baseline ZH runtime-token counts of the EN-only display tokens.  Frozen
+# historical facts from the baseline dumps; the review never requires the
+# candidate to reproduce them -- that is the point of the exception.  The
+# baseline EN counts (295 x @to_foe@ / 222 x @at_foe@) are not frozen here
+# because the EN side is byte-bound to the baseline.
+EXPECTED_ZH_BASELINE_EN_ONLY_COUNTS = {"@to_foe@": 52, "@at_foe@": 12}
 
 # Tokens resolved through SpeakDB lookups in other SpeakDB source files
 # (insult.txt demon/imp taunts, colourname.txt colours, monname.txt orc
@@ -1999,6 +2036,9 @@ def _dataset(
     total_variants = 0
     random_sites = 0
     lua_sites = 0
+    # Baseline-historical counts of the EN-only display tokens (frozen
+    # fact, asserted for ZH only; the candidate may legitimately differ).
+    en_only_display_counts: Counter = Counter()
     for row in sorted(rows, key=lambda item: item["canonical_key"]):
         key = row["canonical_key"]
         variants = []
@@ -2014,6 +2054,9 @@ def _dataset(
                     [key, raw_variant["locator"]["variant_ordinal"]])
         total_variants += len(variants)
         for variant in variants:
+            en_only_display_counts.update(
+                token for token in variant["runtime_tokens"]
+                if token in EN_ONLY_DISPLAY_TOKENS)
             random_sites += len(variant["random_site_counts"])
             lua_sites += variant["lua_site_count"]
             if variant["split_lua"]:
@@ -2064,6 +2107,13 @@ def _dataset(
             malformed_lua == expected_malformed_lua,
             f"{label} malformed Lua sites differ: {malformed_lua!r}",
         )
+        if directory == "database/zh/":
+            _require(
+                dict(en_only_display_counts)
+                == EXPECTED_ZH_BASELINE_EN_ONLY_COUNTS,
+                f"{label} baseline ZH EN-only display token counts "
+                f"differ: {dict(en_only_display_counts)!r}",
+            )
     else:
         _require(expected_variant_count is not None,
                  f"{label} candidate audit requires the approved variant "
@@ -2689,6 +2739,12 @@ def validate_results(
             "chinese": card["proposed_chinese_variants"],
         }
     if candidate is not None:
+        # Ledger proposal validation uses the same rule as the candidate
+        # protocol gate: every proposal must equal the audited candidate
+        # verbatim (below), and the candidate passed the EN-only display
+        # token exception of _pair_candidate's _foe_protocol_equal, so the
+        # proposed ZH token multisets are validated by the same normalized
+        # comparison transitively.
         candidate_by_key = {entry["key"]: entry for entry in candidate["entries"]}
         _require(candidate_by_key.keys() == proposals.keys(),
                  "candidate key set differs from review ledger")
@@ -2701,6 +2757,63 @@ def validate_results(
                      == proposals[key]["chinese"],
                      f"candidate ZH drift at {key!r}")
     return {"metadata": metadata, "cards": cards}
+
+
+def _foe_family_counts(
+    tokens: list[str],
+) -> tuple[Counter, int, int]:
+    """Split one runtime-token list into the strict other-token multiset,
+    the bare ``@foe@`` count and the EN-only display compound count.
+
+    Only the exact lowercase tokens participate: ``@Foe@``/``@foe,@`` and
+    friends are ordinary strictly-aligned tokens, and ``at_foe/around`` is
+    a separate post-process token that stays strictly required."""
+    other: Counter = Counter()
+    foe = 0
+    compounds = 0
+    for token in tokens:
+        if token in EN_ONLY_DISPLAY_TOKENS:
+            compounds += 1
+        elif token == "@foe@":
+            foe += 1
+        else:
+            other[token] += 1
+    return other, foe, compounds
+
+
+def _foe_protocol_equal(
+    en_tokens: list[str], zh_tokens: list[str],
+) -> bool:
+    """Paired EN/ZH token alignment under the EN-only display-token
+    exception.
+
+    ``do_mon_str_replacements()`` expands ``@to_foe@``/``@at_foe@`` into
+    `` to @foe@``/`` at @foe@`` (monster-foe branch) or deletes the
+    leading-space compound (player-foe branch), so the localizable core of
+    either compound is the ``@foe@`` reference.  The comparison therefore
+    keeps every non-foe-family token exactly equal and applies two
+    bidirectional ``@foe@`` bounds to the foe family:
+
+    - ``zh_foe >= en_foe``: every bare ``@foe@`` of the EN variant must be
+      preserved as a bare ``@foe@`` in ZH (a compound cannot replace it,
+      because the player-foe branch deletes compounds entirely);
+    - ``zh_foe + zh_compounds <= en_foe + en_compounds``: ZH may convert
+      EN compounds into bare ``@foe@`` or drop them, but may never invent
+      a foe reference that EN does not have.
+
+    Together these accept the aligned mirror structure, the localizable
+    ``@foe@`` structure and sentence rewrites that omit the addressee,
+    while rejecting drift of every other token and invented ``@foe@``
+    references.  EN keeps its exact baseline bytes: the EN counts and
+    positions are validated by the EN source/dump byte binding, not by
+    this comparison."""
+    en_other, en_foe, en_compounds = _foe_family_counts(en_tokens)
+    zh_other, zh_foe, zh_compounds = _foe_family_counts(zh_tokens)
+    return (
+        en_other == zh_other
+        and zh_foe >= en_foe
+        and zh_foe + zh_compounds <= en_foe + en_compounds
+    )
 
 
 def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2720,8 +2833,8 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
             zip(en_entry["variants"], zh_entry["variants"])
         ):
             _require(
-                Counter(en_variant["runtime_tokens"])
-                == Counter(zh_variant["runtime_tokens"]),
+                _foe_protocol_equal(en_variant["runtime_tokens"],
+                                    zh_variant["runtime_tokens"]),
                 f"candidate recursive/postprocess token multiset differs at "
                 f"{key!r} ordinal {ordinal}",
             )

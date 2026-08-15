@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections import Counter
 from unittest import mock
 from pathlib import Path
 
@@ -311,6 +312,68 @@ class MonspeakInventoryTests(unittest.TestCase):
             return MODULE.add_candidate(
                 inventory, BASELINE, candidate_ref, en_path, zh_path)
 
+    def test_baseline_en_only_display_token_facts(self):
+        # I70-R3: @to_foe@/@at_foe@ are EN-only display tokens; the
+        # baseline ZH counts (52/12) are frozen historical facts that the
+        # review never requires a candidate to reproduce.  EN stays
+        # validated as usual against the baseline (byte-bound), so its
+        # counts (295/222) are recorded here as evidence only.
+        self.assertEqual({"@to_foe@", "@at_foe@"},
+                         MODULE.EN_ONLY_DISPLAY_TOKENS)
+        self.assertEqual(
+            {"@to_foe@": 52, "@at_foe@": 12},
+            MODULE.EXPECTED_ZH_BASELINE_EN_ONLY_COUNTS,
+        )
+        zh_counts: Counter = Counter()
+        en_counts: Counter = Counter()
+        for entry in self.inventory["entries"]:
+            for variant in entry["chinese_variants"]:
+                zh_counts.update(
+                    token for token in variant["runtime_tokens"]
+                    if token in MODULE.EN_ONLY_DISPLAY_TOKENS)
+            for variant in entry["english_variants"]:
+                en_counts.update(
+                    token for token in variant["runtime_tokens"]
+                    if token in MODULE.EN_ONLY_DISPLAY_TOKENS)
+        self.assertEqual(MODULE.EXPECTED_ZH_BASELINE_EN_ONLY_COUNTS,
+                         dict(zh_counts))
+        self.assertEqual({"@to_foe@": 295, "@at_foe@": 222},
+                         dict(en_counts))
+
+    def test_foe_protocol_equal_exception_matrix(self):
+        # The exception is narrow and bidirectional: the EN-only display
+        # compounds may be mirrored, replaced by the localizable @foe@, or
+        # omitted; @foe@ stays bidirectionally required (EN's bare @foe@
+        # must survive, ZH may never invent one), at_foe/around stays
+        # strictly required, and every other token stays exactly aligned.
+        equal = MODULE._foe_protocol_equal
+        self.assertTrue(equal(["@The_monster@", "@to_foe@"],
+                              ["@The_monster@", "@to_foe@"]))
+        self.assertTrue(equal(["@The_monster@", "@to_foe@"],
+                              ["@The_monster@", "@foe@"]))
+        self.assertTrue(equal(["@The_monster@", "@at_foe@"],
+                              ["@The_monster@", "@foe@"]))
+        self.assertTrue(equal(["@The_monster@", "@to_foe@"],
+                              ["@The_monster@"]))
+        self.assertTrue(equal(["@The_monster@", "@to_foe@", "@foe@"],
+                              ["@The_monster@", "@foe@"]))
+        self.assertFalse(equal(["@The_monster@"],
+                               ["@The_monster@", "@foe@"]))
+        self.assertFalse(equal(["@The_monster@", "@foe@"],
+                               ["@The_monster@"]))
+        self.assertFalse(equal(["@The_monster@", "@foe@"],
+                               ["@The_monster@", "@to_foe@"]))
+        self.assertFalse(equal(["@The_monster@", "@to_foe@"],
+                               ["@The_monster@", "@to_foe@", "@foe@"]))
+        self.assertFalse(equal(["@The_monster@", "@to_foe@"], []))
+        self.assertTrue(equal(["@The_monster@", "@at_foe/around@"],
+                              ["@The_monster@", "@at_foe/around@"]))
+        self.assertFalse(equal(["@The_monster@", "@at_foe/around@"],
+                               ["@The_monster@", "@foe@"]))
+        self.assertFalse(equal(["@The_monster@", "@to_foe@"],
+                               ["@The_monster@", "@to_foe@", "@Foe@"]))
+        self.assertTrue(equal([], []))
+
     def test_exact_git_inventory_freezes_complete_baseline(self):
         self.assertEqual(733, len(self.inventory["entries"]))
         self.assertEqual(
@@ -548,25 +611,11 @@ class MonspeakInventoryTests(unittest.TestCase):
         finally:
             MODULE.RESULTS_PATH = original
 
-    def test_candidate_aligned_audit_passes(self):
-        fixture, en_art, zh_art = aligned_candidate_artifacts(
-            (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
-            .read_text(encoding="utf-8"),
-            (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt")
-            .read_text(encoding="utf-8"),
-        )
-        en_path = self.root / "candidate-en.json"
-        zh_path = self.root / "candidate-zh.json"
-        en_path.write_text(json.dumps(en_art, ensure_ascii=False),
-                           encoding="utf-8")
-        zh_path.write_text(json.dumps(zh_art, ensure_ascii=False),
-                           encoding="utf-8")
-        # The ledger proposals must match the aligned candidate verbatim:
-        # every paired key proposes the aligned EN shape for both sides
-        # (the candidate ZH identity rows carry the EN bodies, including
-        # the seven override keys whose raw monspeak bodies are the review
-        # identities) and the ZH-only keys keep their single-sided ZH
-        # variants.
+    def aligned_cards(self) -> list[dict]:
+        """The full 733-card ledger whose ZH proposals mirror the aligned
+        EN shape (the candidate-aligned audit fixture): every paired key
+        proposes the aligned EN shape for both sides and the ZH-only keys
+        keep their single-sided ZH variants."""
         cards = []
         for entry in self.inventory["entries"]:
             card = {
@@ -607,6 +656,22 @@ class MonspeakInventoryTests(unittest.TestCase):
                     card["terminal_conclusion"] = "adjust"
             cards.append(card)
         cards.sort(key=lambda card: card["identity"])
+        return cards
+
+    def test_candidate_aligned_audit_passes(self):
+        fixture, en_art, zh_art = aligned_candidate_artifacts(
+            (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+            .read_text(encoding="utf-8"),
+            (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt")
+            .read_text(encoding="utf-8"),
+        )
+        en_path = self.root / "candidate-en.json"
+        zh_path = self.root / "candidate-zh.json"
+        en_path.write_text(json.dumps(en_art, ensure_ascii=False),
+                           encoding="utf-8")
+        zh_path.write_text(json.dumps(zh_art, ensure_ascii=False),
+                           encoding="utf-8")
+        cards = self.aligned_cards()
         records = [MODULE._expected_metadata(self.inventory, cards), *cards]
         candidate = self.add_candidate_mocked(
             self.inventory, fixture, en_art, zh_art)
@@ -615,6 +680,100 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.write_records(records), self.inventory, candidate,
             records=records)
         self.assertEqual(733, len(result["cards"]))
+
+    def test_candidate_zh_to_foe_replaced_by_foe_passes(self):
+        # I70-R3 (TRANS-102/103): @to_foe@/@at_foe@ are EN-only display
+        # tokens, so a ZH candidate that renders the localizable @foe@
+        # structure instead of mirroring the compounds must pass the
+        # candidate protocol, and the ledger proposals bound to that
+        # candidate are validated by the same rule.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh)
+        to_foe_variant = ('@The_monster@ says @to_foe@, "You can\'t '
+                          'imagine my power."')
+        at_foe_variant = ('@The_monster@ screams @at_foe@, "What are you '
+                          'like inside? I\'ll break you open and find '
+                          'out!"')
+        zh_to_foe = '@The_monster@ 对 @foe@ 说："你无法想象我的力量。"'
+        zh_at_foe = '@The_monster@ 朝 @foe@ 尖叫道："你内里是什么样的？' \
+            '我要把你撬开看看！"'
+        self.assertEqual(1, aligned.count(to_foe_variant))
+        self.assertEqual(1, aligned.count(at_foe_variant))
+        aligned = (aligned.replace(to_foe_variant, zh_to_foe, 1)
+                   .replace(at_foe_variant, zh_at_foe, 1))
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        en_art = exact_artifact(fixture, "database/")
+        zh_art = exact_artifact(fixture, "database/zh/")
+        candidate = self.add_candidate_mocked(
+            self.inventory, fixture, en_art, zh_art)
+        self.assertEqual(733, len(candidate["entries"]))
+        cards = self.aligned_cards()
+        for card in cards:
+            if card["key"] == "_boris_medium_":
+                for variant in card["proposed_chinese_variants"]:
+                    if variant["text"] == to_foe_variant:
+                        variant["text"] = zh_to_foe
+            elif card["key"] == "_blorkula_rare_":
+                for variant in card["proposed_chinese_variants"]:
+                    if variant["text"] == at_foe_variant:
+                        variant["text"] = zh_at_foe
+        records = [MODULE._expected_metadata(self.inventory, cards), *cards]
+        result = MODULE.validate_results(
+            self.write_records(records), self.inventory, candidate,
+            records=records)
+        self.assertEqual(733, len(result["cards"]))
+
+    def test_candidate_zh_other_token_deletion_rejected(self):
+        # The exception is narrow: deleting a non-exempt token (@The_monster@)
+        # while rendering the @foe@ structure still fails the candidate gate.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            '@The_monster@ says @to_foe@, "You can\'t imagine my power."',
+            '对 @foe@ 说："你无法想象我的力量。"', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "token multiset differs"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_en_to_foe_position_drift_rejected(self):
+        # The exception never weakens the EN side: moving @to_foe@ inside an
+        # EN variant keeps the token multiset identical, but the EN source is
+        # byte-bound to the baseline, so the position drift fails closed.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated_en = en_zh.replace(
+            '@The_monster@ says @to_foe@, "You can\'t imagine my power."',
+            '@The_monster@ @to_foe@ says, "You can\'t imagine my power."',
+            1)
+        aligned = aligned_zh_source(zh_zh, mutated_en)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated_en,
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "source snapshot must equal"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
 
     def test_candidate_pair_rejects_weight_or_count_drift(self):
         en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
