@@ -1281,11 +1281,11 @@ class MonspeakInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/zh/"))
 
     def test_issue16_joint_visual_swap_rejected(self):
-        # CR-008: swapping the `_Sigmund_common_` ordinal 0/1 lines in BOTH
-        # EN and ZH keeps the VISUAL total at 496 and satisfies the
-        # per-position ZH channel check (both files swap together), but the
-        # frozen complete (canonical key, variant ordinal) identity set must
-        # reject the EN drift.
+        # CR-008/CR-019: swapping the `_Sigmund_common_` ordinal 0/1 lines
+        # in BOTH EN and ZH keeps the VISUAL total at 499 and satisfies the
+        # per-line ZH channel check (both files swap together), but the
+        # frozen complete (canonical key, variant ordinal, line ordinal)
+        # identity set must reject the EN drift.
         def swap_sigmund_lines(text: str) -> str:
             en_pair = ("w:20\n@The_monster@ laughs darkly.\n\n"
                        "VISUAL:@The_monster@ looks at you with fury.")
@@ -1323,7 +1323,7 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.assertTrue(any(
                 contract == "issue16-monspeak-channels"
                 and artifact == "dat/database/monspeak.txt"
-                and "VISUAL position set drifted" in detail
+                and "VISUAL line set drifted" in detail
                 for contract, artifact, detail in findings))
             self.assertFalse(any(
                 "VISUAL channel prefix lost" in detail
@@ -1361,10 +1361,88 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.assertTrue(findings)
             self.assertTrue(any(
                 contract == "issue16-monspeak-channels"
-                and "VISUAL channel position missing" in detail
+                and "VISUAL channel line missing" in detail
                 for contract, artifact, detail in findings))
             self.assertFalse(any(
                 "VISUAL channel prefix lost" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_issue16_zh_line_shift_within_pattern_rejected(self):
+        # CR-019: the production sink (mons_speaks_msg) resolves every
+        # line of a pattern separately, so shifting a VISUAL line inside a
+        # ZH pattern (`_holy_being_` #0: the VISUAL line moves from line 1
+        # to line 0) must fail on the per-line channel check even though
+        # the frozen EN identity set and the whole-pattern VISUAL: prefix
+        # are untouched.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        shifted = zh_text.replace(
+            '@The_monster@吟诵了一篇祷词。\n'
+            'VISUAL:一阵宁静感笼罩了你。',
+            'VISUAL:一阵宁静感笼罩了你。\n'
+            '@The_monster@吟诵了一篇祷词。',
+            1)
+        self.assertNotEqual(shifted, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(shifted, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            # Line 1: EN talk_visual vs ZH talk must report the VISUAL
+            # prefix loss; line 0 must report the reversed channel drift.
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "VISUAL channel prefix lost at an EN-aligned line"
+                in detail
+                for contract, artifact, detail in findings))
+            self.assertTrue(any(
+                "line channel differs from EN" in detail
+                for _contract, _artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_issue16_zh_newline_position_change_rejected(self):
+        # CR-019: the runtime newline layout is part of the contract --
+        # merging the two lines of `_Margery_common_` #2 in ZH (both lines
+        # stay VISUAL, so a prefix-only check would pass) changes the
+        # number of lines the sink emits and must fail on the line count
+        # even though the frozen EN identity set is untouched.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        merged = zh_text.replace(
+            'VISUAL:@The_monster@打出手势。\n'
+            'VISUAL:你感到一阵[诅咒|厄运]降临。',
+            'VISUAL:@The_monster@打出手势。VISUAL:你感到一阵[诅咒|厄运]降临。',
+            1)
+        self.assertNotEqual(merged, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(merged, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "runtime line count differs from EN" in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
                 for _contract, _artifact, detail in findings))
 
     def test_lua_block_protocol_multi_line_literal_stays_normalized(self):
