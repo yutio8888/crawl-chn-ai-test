@@ -277,6 +277,53 @@ def copy_contract(root, contract_id):
         dst = os.path.join(root, artifact["file"])
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copyfile(src, dst)
+        # CR-021 compatibility: the monspeak visual-channel checker
+        # observes both TextDB sides through the production parse layer,
+        # so its custom artifact must also carry the EN reference file
+        # for the passing fixture and the ZH mutations below.
+        if artifact.get('custom') == 'monspeak-visual-channels':
+            en_src = os.path.join(source_root, 'dat/database/monspeak.txt')
+            en_dst = os.path.join(root, 'dat/database/monspeak.txt')
+            shutil.copyfile(en_src, en_dst)
+
+
+# CR-021: the monspeak custom artifact has no start/end/required producer
+# schema, so its negative fixtures are the checker's own minimal
+# mutations -- a line shift inside a ZH pattern and a newline-position
+# change.  Both break the EN/ZH line correspondence that
+# _monspeak_visual_channel_findings validates (the per-line channel
+# routing and the runtime line count) while leaving the frozen EN
+# identity set untouched.
+MONSPEAK_VISUAL_MUTATIONS = (
+    ("line-shift",
+     '@The_monster@吟诵了一篇祷词。\nVISUAL:一阵宁静感笼罩了你。',
+     'VISUAL:一阵宁静感笼罩了你。\n@The_monster@吟诵了一篇祷词。',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    ("newline-merge",
+     'VISUAL:@The_monster@打出手势。\n'
+     'VISUAL:你感到一阵[诅咒|厄运]降临。',
+     'VISUAL:@The_monster@打出手势。'
+     'VISUAL:你感到一阵[诅咒|厄运]降临。',
+     "runtime line count differs from EN"),
+)
+
+
+def mutate_monspeak_visual(root, kind):
+    path = os.path.join(root, 'dat/database/zh/monspeak.txt')
+    with open(path, 'r', encoding='utf-8') as f:
+        source = f.read()
+    for name, old, new, detail in MONSPEAK_VISUAL_MUTATIONS:
+        if name != kind:
+            continue
+        mutated = source.replace(old, new, 1)
+        if mutated == source:
+            raise AssertionError(
+                f"monspeak {kind} mutation target missing from ZH "
+                f"fixture")
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(mutated)
+        return detail
+    raise AssertionError(kind)
 
 
 def mutate(root, contract_id, artifact_index, required_index, kind):
@@ -323,6 +370,32 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
             failures.append(f"{contract_id}: passing fixture rejected")
     for artifact_index, artifact in enumerate(artifacts):
         artifact_label = f'{artifact["file"]}#{artifact_index + 1}'
+        if artifact.get('custom'):
+            # CR-021: custom checkers have no required-producer schema,
+            # so the generic localized/missing/duplicate/decoy matrix
+            # cannot index them.  Dispatch to checker-specific fixtures:
+            # the passing contract already ran above, and each minimal
+            # line-shift / newline mutation must independently fail
+            # closed through the monspeak checker.
+            if artifact['custom'] != 'monspeak-visual-channels':
+                failures.append(
+                    f"{contract_id}/{artifact_label}: unknown custom "
+                    f"checker {artifact['custom']!r} has no fixture "
+                    f"dispatch")
+                continue
+            for kind in ("line-shift", "newline-merge"):
+                with tempfile.TemporaryDirectory() as root:
+                    copy_contract(root, contract_id)
+                    detail = mutate_monspeak_visual(root, kind)
+                    fixture_count += 1
+                    findings = scan.protocol_boundary_findings(
+                        root, contract_id)
+                    if not any(detail in finding[2]
+                               for finding in findings):
+                        failures.append(
+                            f"{contract_id}/{artifact_label}/{kind}: "
+                            f"fixture accepted (expected {detail!r})")
+            continue
         # Each required invariant must independently fail closed.  The
         # localized producer replacement remains artifact-level metadata;
         # missing/duplicate/decoy mutations exercise every required pattern.
@@ -352,10 +425,10 @@ PY
 protocol_boundary_status=$?
 set -e
 cat /tmp/actual_protocol_boundaries.txt
-assert_status "protocol registry: passing/localized/missing/duplicate/decoy matrix" \
+assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 68 artifacts, 410 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 348 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──

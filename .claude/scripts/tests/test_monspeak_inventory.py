@@ -550,6 +550,54 @@ class MonspeakInventoryTests(unittest.TestCase):
                 site["key"] == "_friendly_imp_greeting"
                 for site in entry["english_referencing_sites"]))
 
+    def test_imp_greeting_closure_cards_keep_no_orphan_residue(self):
+        # CR-022: the call-imp greeting root and its eight leaf fragments
+        # are reachable -- the root through the spl-summoning.cc Call Imp
+        # chain, the fragments through the @token@ closure -- so none of
+        # the nine cards may keep the outdated orphan premise in any
+        # derived field (display_context, rationale or rejected
+        # alternatives).  The root card's rejected alternative must reason
+        # from the live chain instead: deleting the key would remove
+        # reachable summon-greeting behaviour and break the EN-aligned key
+        # set.
+        facts = MODULE._card_facts(self.inventory)
+        by_entry = {entry["key"]: entry
+                    for entry in self.inventory["entries"]}
+        records = MODULE._strict_block(MODULE.RESULTS_PATH)
+        by_key = {card["key"]: card for card in records[1:]}
+        closure = ("_friendly_imp_greeting", "_cause_or_spread_",
+                   "_mayhem_", "_truckle_", "_vassalage_",
+                   "_suck_up_address_", "_suck_up_adj1_",
+                   "_suck_up_adj2_", "_suck_up_noun_")
+        for key in closure:
+            card = by_key[key]
+            entry = by_entry[key]
+            # The card consumer evidence is the frozen lifecycle fact:
+            # the root binds the four spl-summoning.cc anchors, each
+            # fragment binds the recursive expansion consumer.
+            self.assertEqual(
+                MODULE._card_producer_consumer(entry, facts),
+                card["producer_consumer"],
+                f"{key} card consumer evidence drifted from the frozen "
+                f"anchors")
+            derived = " ".join((
+                card["display_context"], card["rationale"],
+                " ".join(card["rejected_alternatives"])))
+            self.assertNotIn("孤儿", derived,
+                             f"{key} card keeps orphan-residue phrasing")
+            self.assertNotIn("不可达", derived,
+                             f"{key} card keeps orphan-residue phrasing")
+        root = by_key["_friendly_imp_greeting"]
+        self.assertEqual("direct-production-root", root["lifecycle"])
+        self.assertIn("imp_greeting", root["producer_consumer"])
+        self.assertTrue(any(
+            "消费链" in alternative and "删除" in alternative
+            and "可达" in alternative
+            for alternative in root["rejected_alternatives"]),
+            "root card rejected alternative must reason from the live "
+            "Call Imp chain (deletion removes reachable summon-greeting "
+            "behaviour and breaks the EN-aligned key set)")
+
     def test_override_key_consumers_routed_by_real_consumer(self):
         # CR-015: the cross-DB override keys keep their zh/shout.txt
         # override provenance in evidence_locations only; the card
