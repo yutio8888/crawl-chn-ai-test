@@ -65,21 +65,26 @@ mapdef.cc 的 `dbname:`/`name:` 标签；展开经
    5 个陈旧/拼写键）；ZH 额外 24 个（EN 引用在 ZH 侧被内联展开，
    使碎片不可达）。
 5. 随机站/Lua 站不对称：EN 47/18 vs ZH 38/5。
-6. 其余逐变体漂移：`@to_foe@`/`@at_foe@` 被改写为 `@foe@`、
-   `@possessive@`/`@reflexive@`/`@subjective@` 省略、`@foe,@` 丢失
-   逗号、大小写漂移（`@the_monster@` vs `@The_monster@`）、无前导
-   空格的 `@at_foe@`/`@to_foe@` 运行时泄漏、权重序列错位、随机站
-   点被压平、`@_wails_@` 等递归引用被内联、哨兵 `__NONE`/`__NEXT`
-   缺失等。
+6. 其余逐变体漂移（EN-only 显示 token 例外之外）：`@possessive@`/
+   `@reflexive@`/`@subjective@` 省略、`@foe,@` 丢失逗号、大小写漂移
+   （`@the_monster@` vs `@The_monster@`）、无前导空格的 `@at_foe@`/
+   `@to_foe@` 运行时泄漏、权重序列错位、随机站点被压平、
+   `@_wails_@` 等递归引用被内联、哨兵 `__NONE`/`__NEXT` 缺失等。
+   基线 ZH 把 `@to_foe@`/`@at_foe@` 改写为 `@foe@`（52/12 处）属于
+   EN-only 显示 token 例外规则（I70-R3）下的合规基线状态，不是需要
+   候选修复的漂移。
 
 候选必须满足（`monspeak_inventory.py --candidate-ref` 逐项门禁）：
 
 1. 733 个身份各有且仅有一张严格审核卡；每张卡完整绑定当前与拟议
    EN/ZH 变体、权重、结论、理由与证据。
-2. 逐键 EN/ZH 变体数、权重序列、逐变体 token 多重集、随机站点拓扑、
-   Lua 站点数、split-Lua 拓扑完全一致；共享 key 逐位对齐
-   3429/3429（语言侧加权变体总数 EN 3429 / ZH 3431：3429 共享 +
-   2 个单变体 ZH-only 键）。
+2. 逐键 EN/ZH 变体数、权重序列、随机站点拓扑、Lua 站点数、split-Lua
+   拓扑完全一致；共享 token 除 EN-only 显示 token（`@to_foe@`/
+   `@at_foe@`，ZH 可用 `@foe@` 本地化或省略）外逐变体多重集一致；
+   共享 key 逐位对齐 3429/3429（语言侧加权变体总数 EN 3429 / ZH
+   3431：3429 共享 + 2 个单变体 ZH-only 键）。候选 ZH 的
+   `@to_foe@`/`@at_foe@` 计数（合规结果为 0）是例外规则下的合规
+   结果，不要求复现基线 ZH 的 52/12 历史计数。
 3. 无空变体、无未解析 token；ZH orphan 集不得超出基线（只允许通过
    恢复内联引用缩小）；ZH-only 键 `_jory_rare_`/`default 'j'` 必须
    保留（审计强制），裁决为 keep 并记录依据。

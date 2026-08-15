@@ -86,8 +86,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -1450,21 +1450,37 @@ def _monspeak_lua_site_count(pattern: str) -> int:
     return len(_lua_sites_strict(pattern))
 
 
-# Marker replacing every translatable ``return <display>`` expression in a
-# Lua block skeleton (CR-002).  All other block bytes stay exact.
+# Marker replacing every translatable ``return <string literal>``
+# expression in a Lua block skeleton (CR-002).  All other block bytes stay
+# exact.
 _LUA_RETURN_MARKER = "__RETURN_DISPLAY__"
 
-# The only non-literal return expressions allowed to be normalized as
-# translatable display text (CR-006): the EN consumer calls the raw Lua
-# helpers and the ZH side wraps the same calls in crawl.t_().  Every other
-# return expression (arbitrary function calls, arithmetic, booleans) is
-# not display text: it stays byte-exact in the skeleton and fails closed.
+# The only non-literal return expressions allowed as translatable display
+# text (CR-006): the EN consumer calls the raw Lua helpers and the ZH side
+# wraps the same calls in crawl.t_().  Every other return expression
+# (arbitrary function calls, arithmetic, booleans) is not display text: it
+# stays byte-exact in the skeleton and fails closed.
 _LUA_RETURN_DISPLAY_MAPPINGS = frozenset({
     "you.race()",
     "you.genus()",
     "crawl.t_(you.race())",
     "crawl.t_(you.genus())",
 })
+
+# CR-006A: the whitelist preserves the exact mapping identity instead of
+# folding all four forms into one skeleton marker.  Each declared mapping
+# stays byte-exact in the skeleton (``return you.race()`` vs
+# ``return crawl.t_(you.race())``), and the paired EN/ZH comparison maps
+# every form to its underlying Lua helper so the localizable
+# ``crawl.t_()`` wrapper of the same helper is the same display identity,
+# while a swapped underlying call (``you.genus()`` for ``you.race()``,
+# with or without the wrapper) can never pass.
+_LUA_RETURN_UNDERLYING_CALL = {
+    "you.race()": "you.race()",
+    "you.genus()": "you.genus()",
+    "crawl.t_(you.race())": "you.race()",
+    "crawl.t_(you.genus())": "you.genus()",
+}
 
 
 def _lua_string_spans(block: str) -> list[tuple[int, int]]:
@@ -1516,10 +1532,12 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
 
     ``skeleton`` keeps every non-translatable byte exact: operators,
     control-flow keywords, function calls, comparison literals ("Mummy",
-    "Zin", spell names) and whitespace; only the translatable
-    ``return <display>`` expressions are normalized to a fixed marker, so
-    EN and ZH skeletons must match byte-for-byte while translated display
-    strings may differ.  ``comparison_literals`` additionally extracts the
+    "Zin", spell names) and whitespace; translatable string-literal
+    ``return <display>`` expressions normalize to a fixed marker and the
+    declared display mappings keep their exact mapping bytes (CR-006A),
+    so EN and ZH skeletons must match byte-for-byte (up to the localizable
+    raw-helper/crawl.t_() pairing) while translated display strings may
+    differ.  ``comparison_literals`` additionally extracts the
     ``== "..."`` / ``~= "..."`` identity literals as a dedicated fact that
     must stay English.  ``return_strings`` records the display expressions
     (the only translatable part).  ``error`` is set when the block fails
@@ -1551,12 +1569,16 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
     # Masking preserves the line structure (literal contents are replaced by
     # a marker plus their own newlines), so masked and original lines align
     # one-to-one; the masked line decides whether this is a return statement
-    # so text inside a multi-line [[ ]] string can never fake one.  Only
-    # single string literals (``return "..."``/``'...'``/``[[...]]``) and
-    # the declared display mappings (CR-006) are translatable display
-    # expressions and normalize to the marker; any other return expression
-    # (arbitrary function call, arithmetic, boolean, ...) is protocol-bound:
-    # it stays byte-exact in the skeleton and the block fails closed.
+    # so text inside a multi-line [[ ]] string can never fake one.  Single
+    # string literals (``return "..."``/``'...'``/``[[...]]``) are
+    # translatable display text and normalize to the marker; the declared
+    # display mappings (CR-006) are translatable display expressions too but
+    # keep their exact mapping identity byte-for-byte in the skeleton
+    # (CR-006A), so EN ``you.race()`` and ZH ``crawl.t_(you.race())`` stay
+    # distinguishable from a swapped underlying call.  Any other return
+    # expression (arbitrary function call, arithmetic, boolean, ...) is
+    # protocol-bound: it stays byte-exact in the skeleton and the block
+    # fails closed.
     original_lines = block.split("\n")
     masked_lines = masked.split("\n")
     line_offsets = _line_start_offsets(original_lines)
@@ -1597,7 +1619,10 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
                 continue
             if masked_tail in _LUA_RETURN_DISPLAY_MAPPINGS:
                 return_strings.append(original_tail)
-                skeleton_lines.append("return " + _LUA_RETURN_MARKER)
+                # CR-006A: the exact mapping stays in the skeleton (raw
+                # helper vs crawl.t_() wrapper), so the paired EN/ZH
+                # comparison can pin the underlying call identity.
+                skeleton_lines.append(stripped)
                 index += 1
                 continue
             unsupported_returns.append(original_tail)
@@ -1613,7 +1638,7 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
             f"unsupported return expression {unsupported_returns[0]!r}: "
             "only string literals and the declared display mappings "
             "(you.race()/you.genus() and their crawl.t_() forms) may be "
-            "normalized as translatable display text"
+            "treated as translatable display text"
         )
     return {
         "skeleton": "\n".join(skeleton_lines),
@@ -1664,28 +1689,59 @@ def _lua_structure_error(masked: str) -> str | None:
     return None
 
 
-def _lua_syntax_check(blocks: list[str]) -> None:
+# Vendored Lua compiler artifact (CR-006B): the candidate
+# executable-syntax gate must use the same Lua the game embeds
+# (contrib/lua 5.4.8), never an arbitrary PATH luac -- a 5.1 compiler
+# accepts escapes like ``"\\q"`` that 5.4 rejects, so relying on it
+# would silently pass non-executable candidate blocks.
+_VENDORED_LUAC = (
+    Path(__file__).resolve().parents[2]
+    / "crawl-ref/source/contrib/lua/src/luac"
+)
+
+
+def _lua_syntax_check(blocks: list[str]) -> dict[str, str]:
     """Executable-syntax gate: every candidate Lua block must pass
     ``luac -p`` (one file per block so a trailing ``return`` can never be
-    followed by another chunk).  The candidate role fails closed when the
-    Lua compiler is unavailable: without it the tool cannot prove the
-    blocks are executable, so it refuses to accept the candidate (CR-006)."""
-    luac = shutil.which("luac")
-    if luac is None:
-        raise InventoryError(
-            "luac not found: the candidate Lua executable-syntax gate "
-            "cannot run; refusing to accept the candidate without it"
-        )
+    followed by another chunk).  The vendored contrib/lua 5.4.8 compiler
+    artifact is used (CR-006B); when it is not built, the gate falls back
+    to the structural validation that ``_lua_block_protocol`` already
+    performs and records the compiler fact explicitly -- an arbitrary
+    PATH luac is never consulted, because a 5.1 compiler accepts
+    ``"\\q"`` that 5.4 rejects.  Returns the explicit compiler fact
+    (``compiler``/``path``/``version``) that the candidate dataset
+    records as evidence."""
+    if not (_VENDORED_LUAC.is_file()
+            and os.access(_VENDORED_LUAC, os.X_OK)):
+        return {
+            "compiler": "structural-only",
+            "path": None,
+            "version": (
+                "unavailable: vendored contrib/lua luac not built at "
+                f"{_VENDORED_LUAC}"
+            ),
+        }
+    version_run = subprocess.run(
+        [str(_VENDORED_LUAC), "-v"], capture_output=True, text=True)
+    version = (version_run.stdout.strip()
+               or version_run.stderr.strip()
+               or "Lua (version unavailable)")
     for block in blocks:
         with tempfile.NamedTemporaryFile("w", suffix=".lua",
                                          encoding="utf-8") as handle:
             handle.write(block + "\n")
             handle.flush()
-            result = subprocess.run([luac, "-p", handle.name],
-                                    capture_output=True, text=True)
+            result = subprocess.run(
+                [str(_VENDORED_LUAC), "-p", handle.name],
+                capture_output=True, text=True)
             if result.returncode != 0:
                 raise InventoryError(
                     f"Lua block fails luac -p: {result.stderr.strip()}")
+    return {
+        "compiler": "vendored",
+        "path": str(_VENDORED_LUAC),
+        "version": version,
+    }
 
 
 def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
@@ -1697,11 +1753,14 @@ def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
     A split-Lua fragment (unbalanced braces in isolation) can never
     execute and contributes no protocol; it is recorded by the split_lua
     fact instead.  With ``syntax_check`` (candidate role) every block must
-    be structurally valid and, when luac exists, compile."""
+    be structurally valid and compile under the vendored contrib/lua
+    5.4.8 luac (CR-006B); when the vendored compiler is not built, the
+    gate falls back to the structural validation and records the compiler
+    fact in ``lua_syntax_check``."""
     if pattern.count("{{") != pattern.count("}}"):
         return {"site_count": 0, "skeletons": [],
                 "comparison_literals": [], "return_strings": [],
-                "malformed": []}
+                "malformed": [], "lua_syntax_check": None}
     sites = _lua_sites_strict(pattern)
     blocks = hardened._lua_blocks(pattern)
     protocols: list[dict[str, Any]] = []
@@ -1714,8 +1773,9 @@ def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
                               "return_strings": [], "error": str(exc)})
     malformed = [protocol["error"]
                  for protocol in protocols if protocol["error"] is not None]
+    syntax_fact = None
     if syntax_check and not malformed and blocks:
-        _lua_syntax_check(blocks)
+        syntax_fact = _lua_syntax_check(blocks)
     return {
         "site_count": len(sites),
         "skeletons": [protocol["skeleton"] for protocol in protocols],
@@ -1730,6 +1790,7 @@ def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
             for expression in protocol["return_strings"]
         ],
         "malformed": malformed,
+        "lua_syntax_check": syntax_fact,
     }
 
 
@@ -2036,6 +2097,10 @@ def _dataset(
     total_variants = 0
     random_sites = 0
     lua_sites = 0
+    # Candidate-role Lua compiler facts (CR-006B): every variant that
+    # reached the executable-syntax gate records the same vendored
+    # compiler fact (or the explicit structural-only fallback).
+    lua_syntax_facts: list[dict[str, Any]] = []
     # Baseline-historical counts of the EN-only display tokens (frozen
     # fact, asserted for ZH only; the candidate may legitimately differ).
     en_only_display_counts: Counter = Counter()
@@ -2045,6 +2110,8 @@ def _dataset(
         for raw_variant in row["variants"]:
             protocol = _lua_protocol(raw_variant["raw_pattern"],
                                      syntax_check=role == "candidate")
+            if protocol["lua_syntax_check"] is not None:
+                lua_syntax_facts.append(protocol["lua_syntax_check"])
             if role == "candidate":
                 variants.append(_variant(raw_variant, protocol))
             else:
@@ -2143,12 +2210,20 @@ def _dataset(
         _require(lua_sites == EXPECTED_EN_LUA_SITES,
                  f"{label} candidate Lua-site count differs from the "
                  f"frozen EN total: {lua_sites}")
+        # CR-006B: every Lua-bearing variant records the same compiler
+        # fact (the vendored contrib/lua 5.4.8 luac or the explicit
+        # structural-only fallback); the fact is recorded as candidate
+        # evidence so the exact compiler is visible in the output.
+        _require(lua_syntax_facts and all(
+            fact == lua_syntax_facts[0] for fact in lua_syntax_facts),
+            f"{label} candidate Lua syntax-check facts differ")
 
     source_snapshot = next(
         source for source in artifact["sources"]
         if source["source_name"] == f"{directory}{SOURCE_BASENAME}"
     )
-    return {
+    syntax_fact = (lua_syntax_facts[0] if lua_syntax_facts else None)
+    dataset = {
         "artifact_sha256": _sha256(raw),
         "source_name": f"{directory}{SOURCE_BASENAME}",
         "source_sha256": _sha256(
@@ -2184,6 +2259,11 @@ def _dataset(
             "vault_dbname_count": len(derivable["vault_dbnames"]),
         },
     }
+    # Candidate-role compiler evidence (CR-006B); the baseline inventory
+    # shape stays byte-stable without the key.
+    if role == "candidate":
+        dataset["lua_syntax_check"] = syntax_fact
+    return dataset
 
 
 def _monspeak_source_line(
@@ -2816,6 +2896,37 @@ def _foe_protocol_equal(
     )
 
 
+def _lua_skeletons_equal(
+    en_skeletons: list[str], zh_skeletons: list[str],
+) -> bool:
+    """Byte equality of one variant's EN/ZH Lua skeletons under the
+    display-mapping equivalence (CR-006A).
+
+    String-literal returns normalize to the fixed marker; the declared
+    display mappings stay byte-exact in the skeleton.  The paired
+    comparison treats the raw Lua helper and its localizable
+    ``crawl.t_()`` wrapper as the same display mapping (same underlying
+    call), so EN ``you.race()`` correctly pairs with ZH
+    ``crawl.t_(you.race())``.  A swapped underlying call (``you.genus()``
+    for ``you.race()``, with or without the wrapper), an added/removed
+    wrapper around a different call, and every other byte drift
+    (operators, comparison literals, whitespace inside the expression)
+    fail the comparison."""
+    if len(en_skeletons) != len(zh_skeletons):
+        return False
+    for en_line, zh_line in zip(en_skeletons, zh_skeletons):
+        if en_line == zh_line:
+            continue
+        en_call = _LUA_RETURN_UNDERLYING_CALL.get(
+            en_line.strip()[len("return "):])
+        zh_call = _LUA_RETURN_UNDERLYING_CALL.get(
+            zh_line.strip()[len("return "):])
+        if en_call is not None and en_call == zh_call:
+            continue
+        return False
+    return True
+
+
 def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]]:
     en_by_key = {entry["key"]: entry for entry in en["entries"]}
     zh_by_key = {entry["key"]: entry for entry in zh["entries"]}
@@ -2862,8 +2973,8 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
                 f"\"Zin\" must stay English)",
             )
             _require(
-                en_variant["lua_skeletons"]
-                == zh_variant["lua_skeletons"],
+                _lua_skeletons_equal(en_variant["lua_skeletons"],
+                                     zh_variant["lua_skeletons"]),
                 f"candidate Lua control skeleton/operators differ at "
                 f"{key!r} ordinal {ordinal}",
             )

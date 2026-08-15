@@ -912,28 +912,155 @@ class MonspeakInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/"),
                 exact_artifact(fixture, "database/zh/"))
 
-    def test_candidate_lua_gate_requires_luac(self):
-        # CR-006: the candidate executable-syntax gate fails closed when
-        # luac is unavailable; a missing compiler must never silently pass
-        # a candidate that contains Lua blocks.
+    def _fake_luac_54(self) -> Path:
+        """A minimal Lua 5.4-semantics luac used when the real vendored
+        contrib/lua compiler artifact is not built: it accepts ordinary
+        Lua chunks and rejects the 5.4-forbidden ``\"\\q\"`` escape that
+        5.1 accepts (CR-006B)."""
+        fake = self.root / f"{self.id().split('.')[-1]}-fake-luac"
+        fake.write_text(
+            '#!/usr/bin/env python3\n'
+            'import sys\n'
+            'for path in sys.argv[2:]:\n'
+            '    source = open(path, encoding="utf-8").read()\n'
+            '    if "\\\\q" in source:\n'
+            '        sys.stderr.write("invalid escape sequence\\n")\n'
+            '        sys.exit(1)\n'
+            'sys.exit(0)\n',
+            encoding="utf-8",
+        )
+        fake.chmod(0o755)
+        return fake
+
+    def _vendored_luac_for_test(self) -> Path:
+        """The real vendored 5.4.8 luac when it is built, otherwise the
+        minimal 5.4-semantics fake (both reject ``\"\\q\"``)."""
+        vendored = MODULE._VENDORED_LUAC
+        if vendored.is_file() and os.access(vendored, os.X_OK):
+            return vendored
+        return self._fake_luac_54()
+
+    def test_candidate_lua_gate_structural_fallback_recorded(self):
+        # CR-006B: when the vendored contrib/lua luac is not built, the
+        # candidate gate falls back to the structural validation and
+        # records the compiler fact explicitly; an arbitrary PATH luac is
+        # never consulted (a 5.1 compiler accepts ``\"\\q\"`` that 5.4
+        # rejects).
         en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
             .read_text(encoding="utf-8")
         zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
             .read_text(encoding="utf-8")
         fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
-        original_which = MODULE.shutil.which
+        missing = self.root / "missing-luac"
+        with mock.patch.object(MODULE, "_VENDORED_LUAC", missing):
+            candidate = self.add_candidate_mocked(
+                self.inventory, fixture, en_art, zh_art)
+        fact = candidate["dumps"]["localized"]["lua_syntax_check"]
+        self.assertEqual("structural-only", fact["compiler"])
+        self.assertIsNone(fact["path"])
+        self.assertIn(str(missing), fact["version"])
 
-        def fake_which(cmd, *args, **kwargs):
-            if cmd == "luac":
-                return None
-            return original_which(cmd, *args, **kwargs)
-
-        with mock.patch.object(MODULE.shutil, "which",
-                               side_effect=fake_which):
+    def test_candidate_lua_syntax_gate_rejects_54_only_escape(self):
+        # CR-006B: the executable-syntax gate runs the vendored
+        # contrib/lua 5.4.8 luac (never a PATH luac), so a block with the
+        # 5.4-rejected ``\"\\q\"`` escape (accepted by 5.1) must fail the
+        # candidate audit even though the structural check and the
+        # skeleton comparison both pass.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            'return "rosy-lipped"', 'return "\\q"', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        luac = self._vendored_luac_for_test()
+        with mock.patch.object(MODULE, "_VENDORED_LUAC", luac):
             with self.assertRaisesRegex(MODULE.InventoryError,
-                                        "luac not found"):
-                self.add_candidate_mocked(self.inventory, fixture,
-                                          en_art, zh_art)
+                                        "fails luac -p"):
+                self.add_candidate_mocked(
+                    self.inventory, fixture,
+                    exact_artifact(fixture, "database/"),
+                    exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_mapping_swap_rejected(self):
+        # CR-006A: swapping the underlying Lua helper inside a display
+        # mapping (``you.race()`` -> ``you.genus()``) keeps every count
+        # identical and previously folded into the same skeleton marker;
+        # the identity-preserving skeleton comparison must reject it.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "{{ return you.race() }}", "{{ return you.genus() }}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "control skeleton/operators differ"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_wrapped_swap_rejected(self):
+        # CR-006A (reviewer probe): swapping the underlying call inside
+        # the localizable wrapper (``crawl.t_(you.genus())`` for
+        # ``crawl.t_(you.race())``) keeps the exact ``crawl.t_()`` form
+        # and previously folded into the same skeleton marker; the
+        # mapping-identity comparison must reject it.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "{{ return you.race() }}",
+            "{{ return crawl.t_(you.genus()) }}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "control skeleton/operators differ"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_wrapper_drift_rejected_by_ledger(self):
+        # CR-006A: the localizable raw-helper/crawl.t_() pairing is
+        # legitimate for the same underlying call, so the paired EN/ZH
+        # comparison accepts it -- the exact mapping identity (wrapper
+        # added/removed) is pinned by the candidate/ledger comparison,
+        # which preserves the mapping byte-for-byte and must reject the
+        # drift.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh)
+        wrapped = aligned.replace(
+            "{{ return you.race() }}",
+            "{{ return crawl.t_(you.race()) }}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": wrapped,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        en_art = exact_artifact(fixture, "database/")
+        zh_art = exact_artifact(fixture, "database/zh/")
+        candidate = self.add_candidate_mocked(
+            self.inventory, fixture, en_art, zh_art)
+        cards = self.aligned_cards()
+        records = [MODULE._expected_metadata(self.inventory, cards), *cards]
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "candidate ZH drift"):
+            MODULE.validate_results(
+                self.write_records(records), self.inventory, candidate,
+                records=records)
 
     def test_candidate_zh_only_empty_variant_rejected(self):
         # CR-007: the dataset-level candidate invariants cover the ZH-only
