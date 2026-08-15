@@ -1200,6 +1200,18 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, Any]:
             "spl-summoning.cc _monster_greeting helper",
             re.compile(r'static void _monster_greeting\('),
             "static void _monster_greeting("),
+        "imp_greeting_query": anchor(
+            "crawl-ref/source/spl-summoning.cc",
+            "spl-summoning.cc helper getSpeakString query",
+            re.compile(r'string msg = getSpeakString\(key\);'),
+            "string msg = getSpeakString(key);"),
+        "imp_greeting_sink": anchor(
+            "crawl-ref/source/spl-summoning.cc",
+            "spl-summoning.cc helper mons_speaks_msg sink",
+            re.compile(r'mons_speaks_msg\(mons, msg, MSGCH_TALK, '
+                       r'silenced\(mons->pos\(\)\)\);'),
+            "mons_speaks_msg(mons, msg, MSGCH_TALK, "
+            "silenced(mons->pos()));"),
         "imp_greeting": anchor(
             "crawl-ref/source/spl-summoning.cc",
             "spl-summoning.cc call-imp greeting",
@@ -2406,7 +2418,13 @@ def _card_consumer_anchor(
     if lifecycle in ("legacy-orphaned", "legacy-axed-monster", "zh-only"):
         return ()
     if key == "_friendly_imp_greeting":
-        return (("imp_greeting",),)
+        # CR-017: the card binds the complete call-imp data flow -- the
+        # spl-summoning.cc call site plus the _monster_greeting helper's
+        # declaration, its exact getSpeakString(key) query and the
+        # mons_speaks_msg display sink -- so removing or reshaping any
+        # step fails the frozen anchor proof closed.
+        return (("imp_greeting", "imp_greeting_helper",
+                 "imp_greeting_query", "imp_greeting_sink"),)
     # CR-015: the seven cross-DB override keys keep their zh/shout.txt
     # override provenance in evidence_locations only; the card consumer
     # evidence names the real production lookup path per key (the glyph
@@ -3378,6 +3396,8 @@ FROZEN_PRODUCER_CONSUMER = {
     "holy_pacification": "crawl-ref/source/spl-goditem.cc:58",
     "recite_closure": "crawl-ref/source/player-reacts.cc:651",
     "imp_greeting_helper": "crawl-ref/source/spl-summoning.cc:81",
+    "imp_greeting_query": "crawl-ref/source/spl-summoning.cc:83",
+    "imp_greeting_sink": "crawl-ref/source/spl-summoning.cc:86",
     "imp_greeting": "crawl-ref/source/spl-summoning.cc:1108",
     "vault_dbname": "crawl-ref/source/mapdef.cc:4113",
     "vault_name": "crawl-ref/source/dat/des/altar/overflow.des:2590",

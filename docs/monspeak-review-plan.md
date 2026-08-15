@@ -27,7 +27,10 @@ Duvessa 双胞胎死亡键与 `twin_*` 前缀）、attitude-change.cc
 monster.cc（使徒、兽人祭司、Maurice、傀儡）、transform.cc
 （`<name> riddle`）、mon-cast.cc（`<name> blink_other[_close]`/
 `charge`/`branch summon cast prefix`）、spl-goditem.cc（圣化安抚）、
-player-reacts.cc（`recite_closure`）、mon-util.cc（`_laughs_`）与
+player-reacts.cc（`recite_closure`）、mon-util.cc（`_laughs_`）、
+spl-summoning.cc（Call Imp 问候：`_monster_greeting(imp,
+"_friendly_imp_greeting")` 经 helper 的 `getSpeakString(key)` 查询
+（:83）与 `mons_speaks_msg` 显示 sink（:86））与
 mapdef.cc 的 `dbname:`/`name:` 标签；展开经
 `mon-util.cc::do_mon_str_replacements` 处理（`@The_monster@`、
 `@possessive@`（ZH 渲染“它的”）、`@reflexive@`（“它自己”）、
@@ -61,9 +64,14 @@ mapdef.cc 的 `dbname:`/`name:` 标签；展开经
    孤立碎片，运行时永不执行）：`friendly shoals hound` 3/9、
    `nekomata` 0/6/7/15/16/22、`sprozz` 0/6、`sprozz triumphant`
    0/6、`xak'krixis` 6/11。
-4. **15 EN / 39 ZH orphan 键**：EN 15 个（imp-greeting 碎片链与
-   5 个陈旧/拼写键）；ZH 额外 24 个（EN 引用在 ZH 侧被内联展开，
-   使碎片不可达）。
+4. **6 EN / 30 ZH orphan 键**：EN 6 个陈旧/拼写键（`default '8'`、
+   `no god donald`、`nobody triumph` 等）；ZH 额外 24 个（EN 引用在
+   ZH 侧被内联展开，使碎片不可达）。imp-greeting 链不再是孤儿：
+   `_friendly_imp_greeting` 是 direct production root（spl-summoning.cc
+   Call Imp 消费），其 8 个子碎片（`_cause_or_spread_`、`_mayhem_`、
+   `_truckle_`、`_vassalage_`、`_suck_up_address_`、`_suck_up_adj1_`、
+   `_suck_up_adj2_`、`_suck_up_noun_`）为递归内部碎片（I70-R5-CR-014；
+   重生成范围：根键 460、递归碎片 265）。
 5. 随机站/Lua 站不对称：EN 47/18 vs ZH 38/5。
 6. 其余逐变体漂移（EN-only 显示 token 例外之外）：`@possessive@`/
    `@reflexive@`/`@subjective@` 省略、`@foe,@` 丢失逗号、大小写漂移
@@ -125,10 +133,12 @@ mapdef.cc 的 `dbname:`/`name:` 标签；展开经
 3. `beogh_converted_orc_*`、兽人祭司、Beogh 使徒与
    Dowan/Duvessa/twin 叙事族——统一 Beogh=比欧弗（基线误用
    “贝奥格”）与双胞胎人设声音；
-4. orphan 键裁决（15 EN / 39 ZH）：ZH-inlined 碎片恢复 `@token@`
+4. orphan 键裁决（6 EN / 30 ZH）：ZH-inlined 碎片恢复 `@token@`
    引用（`_begs_`、`_friendly_*`、`_silenced_*` 等 24 个），使 ZH
-   orphan 集缩小；无恢复目标的孤儿键（imp-greeting 链、
-   `no god donald` 等）保留并记录；213 不对称逐键裁决；
+   orphan 集缩小；无恢复目标的孤儿键（`no god donald` 等 6 个 EN
+   陈旧/拼写键）保留并记录；imp-greeting 链（`_friendly_imp_greeting`
+   direct root + 8 递归碎片）已移出孤儿裁决（I70-R5-CR-014）；
+   213 不对称逐键裁决；
 5. 剩余独立键（字形键、后缀键、斯芬克斯谜语、Gozag 贿赂、Nobody
    记忆等）与全量语义校对（含结构对齐但译文陈旧的 keep 键，如
    `asterion triumphant`/`boris riddle`/`pikel triumphant`）。
@@ -148,6 +158,21 @@ python3 .claude/scripts/monspeak_inventory.py \
   --english-dump /tmp/monspeak-en.json \
   --localized-dump /tmp/monspeak-zh.json \
   --inventory-output /tmp/monspeak-inventory.json
+```
+
+候选审计前置（CR-012）：候选审计对每个候选 Lua 块执行 `luac -p`
+（vendored contrib/lua 5.4.8，不回退到系统 PATH 的 luac），当
+`crawl-ref/source/contrib/lua/src/luac` 缺失、不可执行或 `-v` 不报告
+5.4.8 时门禁直接失败（fail closed）。候选命令前必须完成非安装构建与
+显式版本检查（新 worktree 的 contrib 子模块目录为空，需先初始化）：
+
+```bash
+# 前置：初始化 contrib/lua 子模块（仅环境准备，不产生候选内容）
+git submodule update --init crawl-ref/source/contrib/lua
+# 非安装构建 vendored lua/luac（产物在 contrib/lua/src/，不动系统 PATH）
+make -C crawl-ref/source/contrib/lua -j4
+# 显式验证编译器版本：必须报告 Lua 5.4.8
+crawl-ref/source/contrib/lua/src/luac -v
 ```
 
 候选阶段：提交候选后使用新的 `/tmp` 文件名重新生成双语 dump，并在

@@ -436,7 +436,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["localized"]))
         self.assertEqual(
-            "3de6e971f352f246a00039338af5839e9fd81b37dfaf1db6ab021a5442b3402c",
+            "dd4bdef40240005b942d4ae2387f4c6f3cfdf2e2ec1cfa838a407b4c6ce98579",
             self.inventory["inventory_sha256"],
         )
 
@@ -521,10 +521,19 @@ class MonspeakInventoryTests(unittest.TestCase):
                   for entry in self.inventory["entries"]}
         entry = by_key["_friendly_imp_greeting"]
         self.assertEqual("direct-production-root", entry["lifecycle"])
+        # CR-017: the card evidence binds the complete call-imp data flow
+        # -- the call site plus the helper declaration, its exact
+        # getSpeakString(key) query and the mons_speaks_msg display sink.
         self.assertEqual(
             {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
              "imp_greeting":
-                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting"]},
+                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting"],
+             "imp_greeting_helper":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting_helper"],
+             "imp_greeting_query":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting_query"],
+             "imp_greeting_sink":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting_sink"]},
             MODULE._card_producer_consumer(entry, facts))
         for key in ("_cause_or_spread_", "_mayhem_", "_truckle_",
                     "_vassalage_", "_suck_up_address_", "_suck_up_adj1_",
@@ -587,19 +596,38 @@ class MonspeakInventoryTests(unittest.TestCase):
                 MODULE._card_producer_consumer(entry, facts))
 
     def test_imp_greeting_anchor_mutation_rejected(self):
-        # CR-014 negative: removing the reachable call-imp greeting call
-        # site (or moving the helper) from spl-summoning.cc must fail the
+        # CR-014/CR-017 negative: removing the reachable call-imp greeting
+        # call site, the helper's exact getSpeakString(key) query or the
+        # mons_speaks_msg display sink from spl-summoning.cc must fail the
         # frozen producer/consumer anchor proof closed.
-        mutated = (ROOT / "crawl-ref/source/spl-summoning.cc").read_text(
-            encoding="utf-8").replace(
-            '        _monster_greeting(imp, "_friendly_imp_greeting");',
-            '        // call removed by the review probe', 1)
-        fixture = fixture_commit_with_replaced_blobs({
-            "crawl-ref/source/spl-summoning.cc": mutated,
-        })
-        with self.assertRaisesRegex(MODULE.InventoryError,
-                                    "cannot find|anchors drifted"):
-            MODULE._producer_consumer_facts(fixture, "negative anchors")
+        source = (ROOT / "crawl-ref/source/spl-summoning.cc").read_text(
+            encoding="utf-8")
+        mutations = {
+            "call site": (
+                '        _monster_greeting(imp, "_friendly_imp_greeting");',
+                '        // call removed by the review probe',
+            ),
+            "getSpeakString query": (
+                "    string msg = getSpeakString(key);",
+                "    // query removed by the review probe",
+            ),
+            "mons_speaks_msg sink": (
+                "    mons_speaks_msg(mons, msg, MSGCH_TALK, "
+                "silenced(mons->pos()));",
+                "    // sink removed by the review probe",
+            ),
+        }
+        for probe, (original, replacement) in mutations.items():
+            with self.subTest(probe=probe):
+                self.assertIn(original, source, probe)
+                mutated = source.replace(original, replacement, 1)
+                fixture = fixture_commit_with_replaced_blobs({
+                    "crawl-ref/source/spl-summoning.cc": mutated,
+                })
+                with self.assertRaisesRegex(MODULE.InventoryError,
+                                            "cannot find|anchors drifted"):
+                    MODULE._producer_consumer_facts(
+                        fixture, "negative anchors")
 
     def test_root_derivation_binds_exact_git_producers(self):
         # Removing a live prefix from the mon-speak.cc literal space must
