@@ -17,17 +17,20 @@
 #include "duration-type.h"
 #include "env.h"
 #include "english.h"
+#include "feature.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
+#include "losglobal.h"
 #include "macro.h"
 #include "mapdef.h"
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
+#include "mon-speak.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "mutation.h"
@@ -44,6 +47,7 @@
 #include "species-type.h"
 #include "spl-util.h"
 #include "spell-type.h"
+#include "state.h"
 #include "stringutil.h"
 #include "status.h"
 #include "tags.h"
@@ -4148,4 +4152,364 @@ TEST_CASE_METHOD(EnTranslationFixture,
                  "[zh-translation][shout][issue-69]")
 {
     check_species_insult_production_chain(false);
+}
+
+// Issue #70 — mons_speaks genus fallback (I70-R4-CODE-001 / CR-005).
+//
+// mon-speak.cc::mons_speaks resolves the genus fallback with
+// mons_type_name_en(mons_genus(mons->type), DESC_DBNAME).  Under ZH the old
+// localized accessor returned the Chinese genus name, which can never match
+// the English monspeak keys, so the orc genus speech silently fell through
+// to the (absent) glyph/shape keys and the monster stayed silent.  These
+// tests drive the real mons_speaks() production entry with real monsters
+// whose exact DB-name keys are absent while the genus key ("orc") or the
+// glyph key ("'l'") exists, and capture the final emission through the
+// production observer seam: canonical-English genus hit, localized key
+// miss, EN output unchanged (the emission equals the direct "orc"
+// production rendering replayed at the same RNG position), RNG state/count
+// topology identical between languages, and the glyph/shape fallback still
+// fires consistently when the genus genuinely misses.
+// =============================================================================
+
+namespace
+{
+// Final-emission capture through mon_speech_emission_observer plus the RNG
+// state/count after the production path (mirrors test_mon_cast_target).
+struct monspeak_capture
+{
+    vector<mon_speech_final_emission> emissions;
+    uint64_t state = 0;
+    uint64_t count = 0;
+
+    static void observe(const mon_speech_final_emission &emission,
+                        void *context)
+    {
+        static_cast<monspeak_capture *>(context)->emissions.push_back(
+            emission);
+    }
+};
+
+// Re-init the TextDB layers in the requested display language (mirrors
+// scoped_zh_database; scoped_test_language alone cannot swap the loaded
+// SpeakDB translation layer).
+struct scoped_monspeak_database
+{
+    lang_t saved_language = Options.language;
+    const char *saved_name = Options.lang_name;
+
+    explicit scoped_monspeak_database(lang_t language)
+    {
+        databaseSystemShutdown();
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        databaseSystemInit();
+        i18n_cache_clear();
+    }
+
+    ~scoped_monspeak_database()
+    {
+        databaseSystemShutdown();
+        Options.language = saved_language;
+        Options.lang_name = saved_name;
+        databaseSystemInit();
+        i18n_cache_clear();
+    }
+};
+
+// Minimal real world for mons_speaks: a lit floor around the player, wizard
+// vision (the lightweight player fixture has no populated LOS cache), and
+// one real monster in an env.mons slot through the production allocator.
+struct scoped_monspeak_world
+{
+    const coord_def player_pos;
+    const bool old_test;
+    const coord_def old_player_position;
+    const bool old_on_current_level;
+    const uint8_t old_current_vision;
+    const bool old_wizard_vision;
+    const mid_t old_last_mid;
+    const int old_max_mon_index;
+    const map<mid_t, unsigned short> old_mid_cache;
+    vector<tuple<coord_def, dungeon_feature_type, unsigned short,
+                 uint32_t>> cells;
+    monster *placed = nullptr;
+
+    explicit scoped_monspeak_world(coord_def p = coord_def(20, 20))
+        : player_pos(p), old_test(crawl_state.test),
+          old_player_position(you.pos()),
+          old_on_current_level(you.on_current_level),
+          old_current_vision(you.current_vision),
+          old_wizard_vision(you.wizard_vision),
+          old_last_mid(you.last_mid),
+          old_max_mon_index(env.max_mon_index),
+          old_mid_cache(env.mid_cache)
+    {
+        crawl_state.test = true;
+        you.on_current_level = true;
+        you.current_vision = LOS_DEFAULT_RANGE;
+        you.wizard_vision = true;
+        for (int x = 15; x <= 30; ++x)
+            for (int y = 15; y <= 30; ++y)
+            {
+                const coord_def position(x, y);
+                cells.emplace_back(position, env.grid(position),
+                                   env.mgrid(position),
+                                   env.level_map_ids(position));
+                env.grid(position) = DNGN_FLOOR;
+                env.mgrid(position) = NON_MONSTER;
+                env.level_map_ids(position) = INVALID_MAP_INDEX;
+            }
+        you.set_position(player_pos);
+        invalidate_los();
+    }
+
+    ~scoped_monspeak_world()
+    {
+        if (placed)
+        {
+            env.mid_cache.erase(placed->mid);
+            placed->reset();
+        }
+        for (const auto &cell : cells)
+        {
+            env.grid(get<0>(cell)) = get<1>(cell);
+            env.mgrid(get<0>(cell)) = get<2>(cell);
+            env.level_map_ids(get<0>(cell)) = get<3>(cell);
+        }
+        you.set_position(old_player_position);
+        you.on_current_level = old_on_current_level;
+        you.current_vision = old_current_vision;
+        you.wizard_vision = old_wizard_vision;
+        you.last_mid = old_last_mid;
+        env.max_mon_index = old_max_mon_index;
+        env.mid_cache = old_mid_cache;
+        crawl_state.test = old_test;
+        invalidate_los();
+    }
+
+    monster *place(monster_type type, coord_def position = coord_def(20, 21))
+    {
+        placed = get_free_monster();
+        if (!placed)
+            return nullptr;
+        placed->type = type;
+        placed->set_hit_dice(1);
+        placed->hit_points = placed->max_hit_points = 5;
+        placed->speed = 10;
+        placed->attitude = ATT_HOSTILE;
+        placed->behaviour = BEH_SEEK;
+        placed->foe = MHITYOU;
+        placed->set_position(position);
+        placed->set_new_monster_id();
+        env.mgrid(position) = placed->mindex();
+        return placed;
+    }
+};
+
+// One production mons_speaks run in one display language: the genus/glyph
+// scenario monster is placed in a fresh world and the final emission is
+// captured with the RNG state/count after the path.
+struct monspeak_run_result
+{
+    monspeak_capture capture;
+    string line;
+    bool spoke = false;
+};
+
+monspeak_run_result observe_mons_speaks(
+    lang_t language, monster_type type,
+    uint64_t seed, uint64_t sequence)
+{
+    scoped_monspeak_database database(language);
+    scoped_monspeak_world world;
+    monster *mons = world.place(type);
+    REQUIRE(mons != nullptr);
+
+    monspeak_run_result result;
+    const mon_speech_emission_observer observer = {
+        monspeak_capture::observe, &result.capture };
+    rng::subgenerator scoped_rng(seed, sequence);
+    result.spoke = mons_speaks(mons, &observer);
+    result.capture.state = rng::current_generator().get_state();
+    result.capture.count = rng::current_generator().get_count();
+    if (!result.capture.emissions.empty())
+        result.line = result.capture.emissions[0].line;
+    return result;
+}
+
+void check_mons_speaks_genus_fallback()
+{
+    init_monsters();
+    init_mon_name_cache();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 10;
+    // A real religion (not GOD_NO_GOD, whose _god_name_en() is the empty
+    // string and would insert a stray space prefix that breaks the skip-all
+    // fallback chain exactly like production for no-god players).  Makhleb
+    // is not a good god, so no extra coinflip is drawn while building the
+    // prefix list.
+    you.religion = GOD_MAKHLEB;
+
+    // Canonical-English genus identity: the exact DB name, glyph and shape
+    // keys of the orc warrior all miss monspeak, so the genus fallback is
+    // the only possible speech source.
+    REQUIRE(mons_type_name_en(mons_genus(MONS_ORC_WARRIOR), DESC_DBNAME)
+            == "orc");
+    REQUIRE(getSpeakString("orc warrior").empty());
+    REQUIRE(getSpeakString("'o'").empty());
+    REQUIRE(getSpeakString("humanoid").empty());
+
+    // Localized key miss: under ZH the display-mode genus is the Chinese
+    // name and must miss SpeakDB; under EN it equals the canonical key.
+    const string localized_genus =
+        mons_type_name(mons_genus(MONS_ORC_WARRIOR), DESC_DBNAME);
+    if (Options.language == lang_t::ZH)
+    {
+        INFO("localized orc genus=" << localized_genus);
+        REQUIRE(contains_non_ascii(localized_genus));
+        REQUIRE(getSpeakString(localized_genus).empty());
+    }
+    else
+        REQUIRE(localized_genus == "orc");
+
+    // The seed is chosen so that the third production draw (the "orc"
+    // weighted pick, random2(20) over the w:19 __NONE / w:1
+    // @_generic_orc_speech_@ variants) selects the w:1 speak variant; the
+    // replay below pins the exact draw position (verified against a PCG
+    // re-implementation: draws 1,1,19 for this seed/sequence pair).
+    constexpr uint64_t seed = 0x7000003aULL;
+    constexpr uint64_t sequence = 0x47554e55ULL;
+
+    const monspeak_run_result english =
+        observe_mons_speaks(lang_t::EN, MONS_ORC_WARRIOR, seed, sequence);
+    const monspeak_run_result chinese =
+        observe_mons_speaks(lang_t::ZH, MONS_ORC_WARRIOR, seed, sequence);
+
+    // Both languages reach the genus key and emit exactly one line; a
+    // reverted localized genus accessor under ZH would miss "orc" (and the
+    // glyph/shape keys), so mons_speaks would return false with no
+    // emission.
+    REQUIRE(english.spoke);
+    REQUIRE(chinese.spoke);
+    REQUIRE(english.capture.emissions.size() == 1);
+    REQUIRE(chinese.capture.emissions.size() == 1);
+    REQUIRE_FALSE(english.line.empty());
+    REQUIRE_FALSE(chinese.line.empty());
+    REQUIRE(english.line.find('@') == string::npos);
+    REQUIRE(chinese.line.find('@') == string::npos);
+    CHECK(english.capture.emissions[0].channel == MSGCH_TALK);
+    CHECK(chinese.capture.emissions[0].channel == MSGCH_TALK);
+    REQUIRE(contains_non_ascii(chinese.line));
+
+    // RNG state/count topology: both languages consume exactly the same
+    // draws through the production path (the exact-name miss, the genus
+    // fallback and the nested token expansions), so the generator state and
+    // count after the emission must be identical.
+    CHECK(english.capture.state == chinese.capture.state);
+    CHECK(english.capture.count == chinese.capture.count);
+
+    // EN output unchanged + canonical-English genus hit: replaying the two
+    // production coinflip draws before the "orc" lookup and rendering the
+    // direct getSpeakString("orc") result through the production
+    // replacement pipeline must reproduce the emission byte-for-byte in
+    // each display language.
+    for (const lang_t language : { lang_t::EN, lang_t::ZH })
+    {
+        scoped_monspeak_database database(language);
+        scoped_monspeak_world world;
+        monster *orc = world.place(MONS_ORC_WARRIOR);
+        REQUIRE(orc != nullptr);
+        rng::subgenerator scoped_rng(seed, sequence);
+        (void)random2(2);   // exact-name miss coinflip
+        (void)random2(2);   // genus __try_exact_string coinflip
+        const string expected =
+            do_mon_str_replacements(getSpeakString("orc"), *orc);
+        const string &emitted = language == lang_t::EN
+            ? english.line : chinese.line;
+        INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
+        CHECK(expected == emitted);
+    }
+}
+
+void check_mons_speaks_glyph_fallback()
+{
+    init_monsters();
+    init_mon_name_cache();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 10;
+    // Same real-religion setup as the genus scenario (see above).
+    you.religion = GOD_MAKHLEB;
+
+    // MONS_BASILISK: exact "basilisk" and genus "giant lizard" keys both
+    // miss monspeak in every language, so the glyph key "'l'" is the next
+    // fallback; the shape key "humanoid" also misses, so the glyph path is
+    // the only possible speech source.
+    REQUIRE(mons_type_name_en(MONS_BASILISK, DESC_DBNAME) == "basilisk");
+    REQUIRE(mons_type_name_en(mons_genus(MONS_BASILISK), DESC_DBNAME)
+            == "giant lizard");
+    REQUIRE(getSpeakString("basilisk").empty());
+    REQUIRE(getSpeakString("giant lizard").empty());
+    REQUIRE_FALSE(getSpeakString("'l'").empty());
+
+    constexpr uint64_t seed = 0x70474c59ULL;
+    constexpr uint64_t sequence = 0x5048454eULL;
+
+    const monspeak_run_result english =
+        observe_mons_speaks(lang_t::EN, MONS_BASILISK, seed, sequence);
+    const monspeak_run_result chinese =
+        observe_mons_speaks(lang_t::ZH, MONS_BASILISK, seed, sequence);
+
+    REQUIRE(english.spoke);
+    REQUIRE(chinese.spoke);
+    REQUIRE(english.capture.emissions.size() == 1);
+    REQUIRE(chinese.capture.emissions.size() == 1);
+    REQUIRE_FALSE(english.line.empty());
+    REQUIRE_FALSE(chinese.line.empty());
+    REQUIRE(english.line.find('@') == string::npos);
+    REQUIRE(chinese.line.find('@') == string::npos);
+    CHECK(english.capture.emissions[0].channel == MSGCH_TALK);
+    CHECK(chinese.capture.emissions[0].channel == MSGCH_TALK);
+    REQUIRE(contains_non_ascii(chinese.line));
+    CHECK(english.capture.state == chinese.capture.state);
+    CHECK(english.capture.count == chinese.capture.count);
+
+    // Glyph/shape fallback consistency: replaying the three production
+    // coinflip draws (exact miss, genus miss, glyph-path miss) before the
+    // "'l'" lookup must reproduce the emission in each display language.
+    for (const lang_t language : { lang_t::EN, lang_t::ZH })
+    {
+        scoped_monspeak_database database(language);
+        scoped_monspeak_world world;
+        monster *basilisk = world.place(MONS_BASILISK);
+        REQUIRE(basilisk != nullptr);
+        rng::subgenerator scoped_rng(seed, sequence);
+        (void)random2(2);   // exact-name miss coinflip
+        (void)random2(2);   // genus miss coinflip
+        (void)random2(2);   // glyph-path __try_exact_string coinflip
+        const string expected =
+            do_mon_str_replacements(getSpeakString("'l'"), *basilisk);
+        const string &emitted = language == lang_t::EN
+            ? english.line : chinese.line;
+        INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
+        CHECK(expected == emitted);
+    }
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: mons_speaks genus fallback resolves through the production seam",
+                 "[zh-translation][monspeak][issue-70]")
+{
+    check_mons_speaks_genus_fallback();
+    check_mons_speaks_glyph_fallback();
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: mons_speaks genus fallback resolves through the production seam",
+                 "[zh-translation][monspeak][issue-70]")
+{
+    check_mons_speaks_genus_fallback();
+    check_mons_speaks_glyph_fallback();
 }

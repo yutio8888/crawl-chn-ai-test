@@ -451,7 +451,7 @@ mon_speech_applicability resolve_mon_speech_applicability(
 }
 
 // Returns true if something is said.
-bool mons_speaks(monster* mons)
+bool mons_speaks(monster* mons, const mon_speech_emission_observer *observer)
 {
     ASSERT(mons); // XXX: change to monster &mons
     ASSERT(!invalid_monster_type(mons->type));
@@ -828,7 +828,7 @@ bool mons_speaks(monster* mons)
         return false;
     }
 
-    return mons_speaks_msg(mons, msg, MSGCH_TALK, silence);
+    return mons_speaks_msg(mons, msg, MSGCH_TALK, silence, false, observer);
 }
 
 bool invalid_msg(const monster &mon, string msg)

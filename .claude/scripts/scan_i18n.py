@@ -548,59 +548,20 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'localized': 'crawl.t_("entered ")',
         },
     )),
+
     ('issue16-monspeak-channels', (
         {
+            # CR-004: the contract validates VISUAL channel routing at the
+            # current EN-aligned (key, ordinal) positions instead of binding
+            # the Chinese sentence text that the Issue #70 review replaces.
+            # Every EN variant that starts with "VISUAL:" must keep the
+            # VISUAL: channel prefix in ZH at the same key and ordinal, so
+            # reworded/reordered translations cannot silently degrade the
+            # visual channel.  Dispatched to
+            # _monspeak_visual_channel_findings().
             'file': 'dat/database/zh/monspeak.txt',
-            'start': r'^_Mara_rare_$', 'end': r'^Snorg$',
-            'required': (
-                (r'^VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。$', 1),
-                (r'^VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。$', 1),
-                (r'^VISUAL:@The_monster@ 敲打着某种节奏。$', 1),
-                (r'^VISUAL:@The_monster@ 试图偷偷溜到你身后。$', 1),
-                (r'^VISUAL:@The_monster@ 快速环顾四周寻找出口。$', 1),
-                (r'^VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。$', 1),
-                (r'^VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。$', 1),
-                (r'^VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。$', 1),
-            ),
-            'forbidden': (r'^@The_monster@ 在空中书写着闪闪发光的幻影符号。$',),
-            'localized': '@The_monster@ 在空中书写着闪闪发光的幻影符号。',
-        },
-        {
-            'file': 'dat/database/zh/monspeak.txt',
-            'start': r'^_hostile_imp_rare_$', 'end': r'^_player_ghost_common_$',
-            'required': (
-                (r'^VISUAL:@The_monster@ 疯狂地比划着手势。$', 1),
-                (r'^VISUAL:@The_monster@ 说着什么，但你什么都听不到。$', 1),
-                (r'^VISUAL:@The_monster@ 看起来很困惑。$', 1),
-            ),
-            'forbidden': (r'^@The_monster@ 疯狂地比划着手势。$',),
-            'localized': '@The_monster@ 疯狂地比划着手势。',
-        },
-        {
-            'file': 'dat/database/zh/monspeak.txt',
-            'start': r'^default stupid friendly humanoid$',
-            'end': r'^# 剩余 Donald 变体$',
-            'required': (
-                (r'^VISUAL:@The_monster@ 挠了挠头。$', 1),
-                (r'^VISUAL:@The_monster@ 试图说话，但什么声音都没有。$', 1),
-                (r'^VISUAL:@The_monster@ 无声地惊恐尖叫着。$', 1),
-                (r'^VISUAL:@The_monster@ 友好地挥着手。$', 1),
-                (r'^VISUAL:@The_monster@ 无声地说着什么。$', 1),
-                (r'^VISUAL:@The_monster@ 友好但困惑地挥着手。$', 1),
-                (r'^VISUAL:@The_monster@ 开心地点着头。$', 1),
-            ),
-            'forbidden': (r'^@The_monster@ 挠了挠头。$',),
-            'localized': '@The_monster@ 挠了挠头。',
-        },
-        {
-            'file': 'dat/database/zh/monspeak.txt',
-            'start': r'^_Jory_common_$', 'end': r'^_Jory_silent_$',
-            'required': (
-                (r'^VISUAL:@The_monster@ 静静地打量着你。$', 1),
-                (r'^VISUAL:@The_monster@ 缓缓地拔出剑。$', 1),
-            ),
-            'forbidden': (r'^@The_monster@ 静静地打量着你。$',),
-            'localized': '@The_monster@ 静静地打量着你。',
+            'custom': 'monspeak-visual-channels',
+            'localized': 'VISUAL channel prefix at EN-aligned (key, ordinal)',
         },
     )),
     ('issue16-portal-persistence', (
@@ -5761,6 +5722,85 @@ def _protocol_boundary_scope(source, artifact):
     return source[starts[0].end():end], None
 
 
+# Issue-16 monspeak VISUAL channel contract (CR-004): the number of EN
+# monspeak variants that open the VISUAL: channel at the baseline OID.  The
+# contract is fail-closed against EN drift: a removed/reworded EN VISUAL
+# line shrinks the position set and trips this freeze even before the
+# per-position ZH check runs.
+MONSPEAK_EN_VISUAL_POSITION_COUNT = 496
+
+
+def _monspeak_textdb_positions(source_dir, rel_path, label):
+    """(canonical key, ordinal) -> raw variant pattern map of one monspeak
+    file through the production TextDB parse layer
+    (command_inventory.parse_db_keys + monflee_inventory's weighted
+    parser), so the contract observes exactly what the game loads."""
+    from command_inventory import parse_db_keys
+    from monflee_inventory import (_parse_weighted_entry, lowercase_string)
+    path = os.path.join(source_dir, rel_path)
+    if not os.path.isfile(path):
+        return None, f"required monspeak file missing: {rel_path}"
+    with open(path, 'r', encoding='utf-8', errors='replace') as handle:
+        source = handle.read()
+    try:
+        definitions = parse_db_keys(source, rel_path)
+    except SystemExit as exc:
+        return None, f"cannot parse {rel_path}: {exc}"
+    positions = {}
+    for definition in definitions:
+        key = lowercase_string(definition.raw_key)
+        variants, parse_error = _parse_weighted_entry(
+            definition.value,
+            {"source_name": rel_path, "load_index": 0,
+             "definition_ordinal": 0},
+            key)
+        positions[key] = [variant["raw_pattern"] for variant in variants]
+    return positions, None
+
+
+def _monspeak_visual_channel_findings(source_dir):
+    """Issue-16 monspeak VISUAL channel routing (CR-004).
+
+    For every EN monspeak variant whose raw pattern starts with
+    ``VISUAL:``, the ZH variant at the same canonical key and variant
+    ordinal must also start with ``VISUAL:``: the candidate ZH is aligned
+    per-key to EN, so this pins the channel routing without binding any
+    Chinese sentence text.  The EN position count is frozen so a shrunken
+    EN VISUAL set cannot silently weaken the contract."""
+    contract_id = 'issue16-monspeak-channels'
+    findings = []
+    en, error = _monspeak_textdb_positions(
+        source_dir, 'dat/database/monspeak.txt', 'monspeak EN')
+    if error:
+        return [(contract_id, 'dat/database/monspeak.txt', error)]
+    zh, error = _monspeak_textdb_positions(
+        source_dir, 'dat/database/zh/monspeak.txt', 'monspeak ZH')
+    if error:
+        return [(contract_id, 'dat/database/zh/monspeak.txt', error)]
+    visual_positions = []
+    for key in sorted(en):
+        zh_variants = zh.get(key)
+        if zh_variants is None:
+            findings.append((contract_id, f"key {key!r}",
+                             "missing from zh/monspeak.txt"))
+            continue
+        for ordinal in range(min(len(en[key]), len(zh_variants))):
+            if not en[key][ordinal].startswith("VISUAL:"):
+                continue
+            visual_positions.append((key, ordinal))
+            if not zh_variants[ordinal].startswith("VISUAL:"):
+                findings.append((
+                    contract_id,
+                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                    "VISUAL channel prefix lost at an EN-aligned position"))
+    if len(visual_positions) != MONSPEAK_EN_VISUAL_POSITION_COUNT:
+        findings.append((
+            contract_id, 'dat/database/monspeak.txt',
+            f"EN VISUAL position count drifted: {len(visual_positions)} "
+            f"!= {MONSPEAK_EN_VISUAL_POSITION_COUNT}"))
+    return findings
+
+
 def protocol_boundary_findings(source_dir, only=None):
     """Validate registered Issue 68 producer scopes and cardinality."""
     findings = []
@@ -5772,6 +5812,15 @@ def protocol_boundary_findings(source_dir, only=None):
                              'unknown registry contract'))
             continue
         for index, artifact in enumerate(artifacts, 1):
+            if artifact.get('custom'):
+                if artifact['custom'] == 'monspeak-visual-channels':
+                    findings.extend(
+                        _monspeak_visual_channel_findings(source_dir))
+                else:
+                    findings.append((contract_id, artifact['file'],
+                                     f"unknown custom checker "
+                                     f"{artifact['custom']!r}"))
+                continue
             path = os.path.join(source_dir, artifact['file'])
             label = f"{artifact['file']}#{index}"
             if not os.path.isfile(path):

@@ -293,8 +293,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         return MODULE.validate_results(self.write_records(records),
                                        self.inventory)
 
-    def add_candidate_mocked(self, inventory, candidate_ref, en, zh,
-                             expected_variant_counts=None):
+    def add_candidate_mocked(self, inventory, candidate_ref, en, zh):
         en_path = self.root / f"{self.id().split('.')[-1]}-en.json"
         zh_path = self.root / f"{self.id().split('.')[-1]}-zh.json"
         en_path.write_text(json.dumps(en, ensure_ascii=False),
@@ -305,8 +304,7 @@ class MonspeakInventoryTests(unittest.TestCase):
                                "_require_candidate_commit",
                                return_value=None):
             return MODULE.add_candidate(
-                inventory, BASELINE, candidate_ref, en_path, zh_path,
-                expected_variant_counts=expected_variant_counts)
+                inventory, BASELINE, candidate_ref, en_path, zh_path)
 
     def test_exact_git_inventory_freezes_complete_baseline(self):
         self.assertEqual(733, len(self.inventory["entries"]))
@@ -606,8 +604,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         cards.sort(key=lambda card: card["identity"])
         records = [MODULE._expected_metadata(self.inventory, cards), *cards]
         candidate = self.add_candidate_mocked(
-            self.inventory, fixture, en_art, zh_art,
-            expected_variant_counts=MODULE._proposal_variant_totals(records))
+            self.inventory, fixture, en_art, zh_art)
         self.assertEqual(733, len(candidate["entries"]))
         result = MODULE.validate_results(
             self.write_records(records), self.inventory, candidate,
@@ -637,13 +634,10 @@ class MonspeakInventoryTests(unittest.TestCase):
         })
         en_art = exact_artifact(fixture, "database/")
         zh_art = exact_artifact(fixture, "database/zh/")
-        records = self.records()
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "candidate variant count differs"):
             self.add_candidate_mocked(
-                self.inventory, fixture, en_art, zh_art,
-                expected_variant_counts=MODULE._proposal_variant_totals(
-                    records))
+                self.inventory, fixture, en_art, zh_art)
 
     def test_candidate_unresolved_token_rejected(self):
         en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
@@ -660,15 +654,151 @@ class MonspeakInventoryTests(unittest.TestCase):
             "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
             "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
         })
-        records = self.records()
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "unresolved token"):
             self.add_candidate_mocked(
                 self.inventory, fixture,
                 exact_artifact(fixture, "database/"),
-                exact_artifact(fixture, "database/zh/"),
-                expected_variant_counts=MODULE._proposal_variant_totals(
-                    records))
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_triple_brace_lua_rejected(self):
+        # CR-002: a candidate ``{{{`` Lua site (stray brace inside the
+        # ``{{...}}`` boundary) must be rejected even though the ``{{``/``}}``
+        # substring counts balance and the site count matches EN.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            "{{ return you.race() }}", "{{{ return you.race() }}}", 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "malformed Lua sites"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_translated_comparison_literal_rejected(self):
+        # CR-002: the non-translatable Lua comparison literals ("Mummy" is
+        # a lookup identity, not display text) must stay byte-identical to
+        # EN; translating one fails the protocol gate.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            'you.race() == "Mummy"', 'you.race() == "木乃伊"')
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "comparison literals differ"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_operator_drift_rejected(self):
+        # CR-002: control-flow/operator drift inside a Lua block (``>=``
+        # changed to ``>``) must fail the skeleton comparison even though
+        # site counts and comparison literals stay identical.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            'you.skill("Spellcasting") >= 5',
+            'you.skill("Spellcasting") > 5')
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "control skeleton/operators differ"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_frozen_totals_reject_joint_add_remove(self):
+        # CR-003: the candidate totals are frozen (EN 3429 / ZH 3431) and
+        # never derived from the editable ledger, so an EN+ZH+ledger joint
+        # variant addition (which the old proposal-derived totals accepted)
+        # must fail closed against the frozen counts.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated_en = en_zh.replace(
+            "@The_monster@ hisses menacingly.",
+            "@The_monster@ hisses menacingly.\n\n"
+            "@The_monster@ hisses again.", 1)
+        aligned = aligned_zh_source(zh_zh, mutated_en)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated_en,
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "candidate variant count differs"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_en_source_snapshot_hard_bound_to_baseline(self):
+        # CR-003: an EN edit that keeps every count identical (one glyph
+        # line reworded) must fail the source-snapshot/entries binding, so
+        # the candidate EN is byte-frozen to the baseline EN.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated_en = en_zh.replace(
+            "@The_monster@ hisses menacingly.",
+            "@The_monster@ hisses softly.", 1)
+        aligned = aligned_zh_source(zh_zh, mutated_en)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/monspeak.txt": mutated_en,
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "source snapshot must equal"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_frozen_candidate_totals_are_3429_and_3431(self):
+        # CR-003 positive: the frozen candidate totals are EN 3429 (baseline
+        # EN bytes) and ZH 3431 (3429 shared EN-aligned variants plus the
+        # two single-variant ZH-only keys).
+        self.assertEqual(3429, MODULE.EXPECTED_CANDIDATE_EN_VARIANT_COUNT)
+        self.assertEqual(3431, MODULE.EXPECTED_CANDIDATE_ZH_VARIANT_COUNT)
+        zh_only_variants = sum(
+            1 for entry in self.inventory["entries"]
+            if entry["lifecycle"] == "zh-only"
+            for _variant in entry["chinese_variants"])
+        self.assertEqual(2, zh_only_variants)
+        self.assertEqual(
+            3429 + zh_only_variants,
+            MODULE.EXPECTED_CANDIDATE_ZH_VARIANT_COUNT)
+
+    def test_review_card_proposed_en_must_equal_baseline_en(self):
+        # CR-003: every review card is bound to the baseline EN variants;
+        # editing an EN proposal (even with a matching candidate) fails.
+        records = self.records()
+        records[1]["proposed_english_variants"] = \
+            records[1]["proposed_english_variants"][:-1]
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "proposed EN must equal"):
+            self.validate(records)
 
     def test_producer_consumer_anchor_value_mutation_rejected(self):
         mutated = fixed_genus_source().replace(

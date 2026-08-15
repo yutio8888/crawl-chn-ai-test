@@ -74,7 +74,10 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from collections import Counter, deque
 from pathlib import Path
 from typing import Any
@@ -106,6 +109,18 @@ EXPECTED_EN_RANDOM_SITES = 47
 EXPECTED_ZH_RANDOM_SITES = 38
 EXPECTED_EN_LUA_SITES = 18
 EXPECTED_ZH_LUA_SITES = 5
+# Malformed Lua sites of the baseline dumps (CR-002): the baseline OID is
+# clean in both languages; the ``{{{`` stray-brace defect was introduced into
+# the review worktree file later and is CR-001's translator fix.  The
+# candidate role fails closed on any remaining malformed site (including a
+# reintroduced ``{{{``), and the baseline freeze keeps the fact visible.
+EXPECTED_ZH_MALFORMED_LUA_SITES: list[list[int | str]] = []
+# Frozen candidate-role variant totals: the candidate EN is byte-bound to the
+# baseline EN (3429) and the aligned ZH is the 3429 shared EN-aligned variants
+# plus the two single-variant ZH-only keys (3431).  Never derived from the
+# editable review ledger (CR-003).
+EXPECTED_CANDIDATE_EN_VARIANT_COUNT = EXPECTED_EN_VARIANT_COUNT
+EXPECTED_CANDIDATE_ZH_VARIANT_COUNT = 3431
 EXPECTED_EN_EMPTY_VARIANTS = 0
 EXPECTED_ZH_EMPTY_VARIANTS = 191
 EXPECTED_EN_DISTINCT_TOKENS = 326
@@ -1300,9 +1315,10 @@ def _identity_rows(
     return rows
 
 
-def _variant(raw: dict[str, Any]) -> dict[str, Any]:
+def _variant(raw: dict[str, Any],
+              lua_protocol: dict[str, Any] | None = None) -> dict[str, Any]:
     text = raw["raw_pattern"]
-    return {
+    variant = {
         "variant_ordinal": raw["locator"]["variant_ordinal"],
         "weight": raw["weight"],
         "text": text,
@@ -1312,6 +1328,15 @@ def _variant(raw: dict[str, Any]) -> dict[str, Any]:
         "lua_site_count": _monspeak_lua_site_count(text),
         "split_lua": text.count("{{") != text.count("}}"),
     }
+    # Candidate-role facts only: they participate in the candidate protocol
+    # gate but must not change the frozen baseline ledger shape (the
+    # baseline inventory_sha256 is contract-frozen in the ledger metadata).
+    if lua_protocol is not None:
+        variant["lua_skeletons"] = lua_protocol["skeletons"]
+        variant["lua_comparison_literals"] = (
+            lua_protocol["comparison_literals"])
+        variant["lua_malformed"] = lua_protocol["malformed"]
+    return variant
 
 
 def _monspeak_random_site_counts(pattern: str) -> list[int]:
@@ -1367,6 +1392,210 @@ def _monspeak_lua_site_count(pattern: str) -> int:
     if pattern.count("{{") != pattern.count("}}"):
         return 0
     return len(hardened._lua_sites(pattern))
+
+
+# Marker replacing every translatable ``return <display>`` expression in a
+# Lua block skeleton (CR-002).  All other block bytes stay exact.
+_LUA_RETURN_MARKER = "__RETURN_DISPLAY__"
+
+
+def _lua_string_spans(block: str) -> list[tuple[int, int]]:
+    """Exact spans of Lua string literals of one block: double-quoted,
+    single-quoted (both with backslash escapes) and ``[[ ]]`` long
+    brackets.  Fails closed on an unbalanced literal, which would make the
+    block non-executable."""
+    spans: list[tuple[int, int]] = []
+    index = 0
+    length = len(block)
+    while index < length:
+        if block.startswith("[[", index):
+            end = block.find("]]", index + 2)
+            if end < 0:
+                raise InventoryError(
+                    f"unbalanced [[ long string in Lua block {block!r}")
+            spans.append((index, end + 2))
+            index = end + 2
+        elif block[index] in "\"'":
+            quote = block[index]
+            cursor = index + 1
+            while cursor < length:
+                if block[cursor] == "\\":
+                    cursor += 2
+                    continue
+                if block[cursor] == quote:
+                    break
+                cursor += 1
+            if cursor >= length:
+                raise InventoryError(
+                    f"unbalanced {quote} string in Lua block {block!r}")
+            spans.append((index, cursor + 1))
+            index = cursor + 1
+        else:
+            index += 1
+    return spans
+
+
+def _lua_block_protocol(block: str) -> dict[str, Any]:
+    """Complete Lua protocol of one ``{{...}}`` block (CR-002).
+
+    ``skeleton`` keeps every non-translatable byte exact: operators,
+    control-flow keywords, function calls, comparison literals ("Mummy",
+    "Zin", spell names) and whitespace; only the translatable
+    ``return <display>`` expressions are normalized to a fixed marker, so
+    EN and ZH skeletons must match byte-for-byte while translated display
+    strings may differ.  ``comparison_literals`` additionally extracts the
+    ``== "..."`` / ``~= "..."`` identity literals as a dedicated fact that
+    must stay English.  ``return_strings`` records the display expressions
+    (the only translatable part).  ``error`` is set when the block fails
+    the structural validity check (stray braces, unbalanced strings,
+    unexpected statements, assignment, forbidden control flow)."""
+    spans = _lua_string_spans(block)
+    masked_parts: list[str] = []
+    cursor = 0
+    comparison_literals: list[str] = []
+    for start, end in spans:
+        code_before = block[cursor:start]
+        if re.search(r"(?:==|~=)\s*$", code_before):
+            literal = block[start:end]
+            if literal.startswith("[["):
+                comparison_literals.append(literal[2:-2])
+            else:
+                comparison_literals.append(literal[1:-1])
+        masked_parts.append(code_before)
+        masked_parts.append("\u00a7" + "\n" * block.count("\n", start, end))
+        cursor = end
+    masked_parts.append(block[cursor:])
+    masked = "".join(masked_parts)
+
+    skeleton_lines: list[str] = []
+    return_strings: list[str] = []
+    # Masking preserves the line structure (literal contents are replaced by
+    # a marker plus their own newlines), so masked and original lines align
+    # one-to-one; the masked line decides whether this is a return statement
+    # so text inside a multi-line [[ ]] string can never fake one.
+    for original_line, masked_line in zip(block.split("\n"),
+                                          masked.split("\n")):
+        if re.fullmatch(r"return\b.*", masked_line.strip()):
+            return_strings.append(
+                original_line.strip()[len("return"):].strip())
+            skeleton_lines.append("return " + _LUA_RETURN_MARKER)
+        else:
+            skeleton_lines.append(original_line)
+
+    error = _lua_structure_error(masked)
+    return {
+        "skeleton": "\n".join(skeleton_lines),
+        "comparison_literals": sorted(set(comparison_literals)),
+        "return_strings": return_strings,
+        "error": error,
+    }
+
+
+def _lua_structure_error(masked: str) -> str | None:
+    """Structural Lua validity verdict of one block (None == valid).
+
+    Runs on the string-masked code so quoted text can never fake a
+    statement: stray braces (the ``{{{`` defect), assignment, forbidden
+    control flow, unexpected statements and if/then/end imbalance all
+    fail closed.  An available ``luac`` is additionally consulted by the
+    candidate gate (see ``_lua_syntax_check``)."""
+    if "{" in masked or "}" in masked:
+        return "stray brace inside Lua site boundary"
+    if re.search(r"(?<![=<>~!])=(?!=)", masked):
+        return "assignment in Lua block"
+    for keyword in ("while", "for", "function", "repeat", "until",
+                    "do", "local", "goto"):
+        if re.search(rf"\b{keyword}\b", masked):
+            return f"forbidden Lua control {keyword!r}"
+    if_count = len(re.findall(r"^\s*if\b", masked, re.MULTILINE))
+    elseif_count = len(re.findall(r"^\s*elseif\b", masked, re.MULTILINE))
+    then_count = len(re.findall(r"\bthen\b", masked))
+    end_count = len(re.findall(r"^\s*end\s*$", masked, re.MULTILINE))
+    # One ``end`` closes a whole if/elseif/else chain; every ``if`` and
+    # every ``elseif`` carries its own ``then``.
+    if not (if_count == end_count
+            and then_count == if_count + elseif_count):
+        return (f"unbalanced Lua if/then/end "
+                f"(if {if_count}/elseif {elseif_count}/then "
+                f"{then_count}/end {end_count})")
+    for line in masked.split("\n"):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if re.fullmatch(r"(?:if|elseif)\b.*\bthen", stripped):
+            continue
+        if stripped in ("else", "end"):
+            continue
+        if re.fullmatch(r"return\b.*", stripped):
+            continue
+        return f"unexpected Lua statement {stripped!r}"
+    return None
+
+
+def _lua_syntax_check(blocks: list[str]) -> None:
+    """Optional executable-syntax gate: when a Lua compiler is available
+    every candidate Lua block must pass ``luac -p`` (one file per block so
+    a trailing ``return`` can never be followed by another chunk);
+    environments without lua/luac rely on the structured validation above
+    (CR-002)."""
+    luac = shutil.which("luac")
+    if luac is None:
+        return
+    for block in blocks:
+        with tempfile.NamedTemporaryFile("w", suffix=".lua",
+                                         encoding="utf-8") as handle:
+            handle.write(block + "\n")
+            handle.flush()
+            result = subprocess.run([luac, "-p", handle.name],
+                                    capture_output=True, text=True)
+            if result.returncode != 0:
+                raise InventoryError(
+                    f"Lua block fails luac -p: {result.stderr.strip()}")
+
+
+def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
+    """Complete Lua protocol facts of one variant (CR-002): the exact
+    ``{{...}}`` site boundaries, the per-site skeletons, the byte-exact
+    comparison literals, the translatable return display strings and the
+    structural error list.
+
+    A split-Lua fragment (unbalanced braces in isolation) can never
+    execute and contributes no protocol; it is recorded by the split_lua
+    fact instead.  With ``syntax_check`` (candidate role) every block must
+    be structurally valid and, when luac exists, compile."""
+    if pattern.count("{{") != pattern.count("}}"):
+        return {"site_count": 0, "skeletons": [],
+                "comparison_literals": [], "return_strings": [],
+                "malformed": []}
+    sites = hardened._lua_sites(pattern)
+    blocks = hardened._lua_blocks(pattern)
+    protocols: list[dict[str, Any]] = []
+    for block in blocks:
+        try:
+            protocols.append(_lua_block_protocol(block))
+        except InventoryError as exc:
+            protocols.append({"skeleton": block,
+                              "comparison_literals": [],
+                              "return_strings": [], "error": str(exc)})
+    malformed = [protocol["error"]
+                 for protocol in protocols if protocol["error"] is not None]
+    if syntax_check and not malformed and blocks:
+        _lua_syntax_check(blocks)
+    return {
+        "site_count": len(sites),
+        "skeletons": [protocol["skeleton"] for protocol in protocols],
+        "comparison_literals": sorted({
+            literal
+            for protocol in protocols
+            for literal in protocol["comparison_literals"]
+        }),
+        "return_strings": [
+            expression
+            for protocol in protocols
+            for expression in protocol["return_strings"]
+        ],
+        "malformed": malformed,
+    }
 
 
 def _is_root_key(
@@ -1667,13 +1896,24 @@ def _dataset(
 
     entries = []
     split_lua: list[list[int | str]] = []
+    malformed_lua: list[list[int | str]] = []
     empty_variants = 0
     total_variants = 0
     random_sites = 0
     lua_sites = 0
     for row in sorted(rows, key=lambda item: item["canonical_key"]):
         key = row["canonical_key"]
-        variants = [_variant(variant) for variant in row["variants"]]
+        variants = []
+        for raw_variant in row["variants"]:
+            protocol = _lua_protocol(raw_variant["raw_pattern"],
+                                     syntax_check=role == "candidate")
+            if role == "candidate":
+                variants.append(_variant(raw_variant, protocol))
+            else:
+                variants.append(_variant(raw_variant))
+            if protocol["malformed"]:
+                malformed_lua.append(
+                    [key, raw_variant["locator"]["variant_ordinal"]])
         total_variants += len(variants)
         for variant in variants:
             random_sites += len(variant["random_site_counts"])
@@ -1720,6 +1960,12 @@ def _dataset(
                         else EXPECTED_ZH_LUA_SITES)
         _require(lua_sites == expected_lua,
                  f"{label} baseline Lua-site count mismatch: {lua_sites}")
+        expected_malformed_lua = ([] if directory == "database/"
+                                  else EXPECTED_ZH_MALFORMED_LUA_SITES)
+        _require(
+            malformed_lua == expected_malformed_lua,
+            f"{label} malformed Lua sites differ: {malformed_lua!r}",
+        )
     else:
         _require(expected_variant_count is not None,
                  f"{label} candidate audit requires the approved variant "
@@ -1727,6 +1973,11 @@ def _dataset(
         _require(total_variants == expected_variant_count,
                  f"{label} candidate variant count differs from the "
                  f"approved total: {total_variants}")
+        _require(
+            not malformed_lua,
+            f"{label} candidate has malformed Lua sites "
+            f"(stray braces / non-executable blocks): {malformed_lua!r}",
+        )
 
     source_snapshot = next(
         source for source in artifact["sources"]
@@ -2270,6 +2521,11 @@ def validate_results(
                  f"review card {identity} current EN mismatch")
         _require(card["current_chinese_variants"] == current_zh,
                  f"review card {identity} current ZH mismatch")
+        # The EN source is frozen for this review: proposals may only
+        # change the ZH side, never the EN identities (CR-003).
+        _require(card["proposed_english_variants"] == current_en,
+                 f"review card {identity} proposed EN must equal the "
+                 f"baseline EN variants")
         _validate_variant_list(card["proposed_english_variants"],
                                f"review card {identity} proposed EN")
         _validate_variant_list(card["proposed_chinese_variants"],
@@ -2370,6 +2626,19 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
                 f"candidate split-Lua topology differs at {key!r} ordinal "
                 f"{ordinal}",
             )
+            _require(
+                en_variant["lua_comparison_literals"]
+                == zh_variant["lua_comparison_literals"],
+                f"candidate Lua comparison literals differ at {key!r} "
+                f"ordinal {ordinal} (identity literals like \"Mummy\"/"
+                f"\"Zin\" must stay English)",
+            )
+            _require(
+                en_variant["lua_skeletons"]
+                == zh_variant["lua_skeletons"],
+                f"candidate Lua control skeleton/operators differ at "
+                f"{key!r} ordinal {ordinal}",
+            )
         entries.append({
             "identity": f"monspeak:{key}",
             "key": key,
@@ -2389,8 +2658,9 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
 
 
 def _proposal_variant_totals(records: list[dict[str, Any]]) -> dict[str, int]:
-    """The approved candidate totals, mechanically derived from the review
-    ledger: per-side proposed variant totals (EN and ZH)."""
+    """Per-side proposed variant totals of the review ledger (evidence
+    only).  The candidate gate freezes 3429/3431 and never derives its
+    expectation from these editable proposals (CR-003)."""
     totals = {"english": 0, "chinese": 0}
     for card in records[1:]:
         totals["english"] += len(card["proposed_english_variants"])
@@ -2401,18 +2671,18 @@ def _proposal_variant_totals(records: list[dict[str, Any]]) -> dict[str, int]:
 def add_candidate(
     inventory: dict[str, Any], baseline_ref: str, candidate_ref: str,
     english_path: Path, localized_path: Path,
-    expected_variant_counts: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     hardened.shared._require_candidate_commit(
         baseline_ref, candidate_ref, exact_clean_checkout=True
     )
-    if expected_variant_counts is None:
-        # Mechanical default from the baseline EN facts (the approved
-        # aligned shape: every key aligned to the baseline EN counts).
-        expected_variant_counts = {
-            "english": inventory["dumps"]["english"]["variant_count"],
-            "chinese": inventory["dumps"]["english"]["variant_count"],
-        }
+    # Frozen candidate totals (CR-003): the candidate EN is byte-bound to
+    # the baseline EN (3429) and the aligned ZH is the 3429 shared
+    # EN-aligned variants plus the two single-variant ZH-only keys (3431).
+    # They are never derived from the editable review ledger.
+    expected_variant_counts = {
+        "english": EXPECTED_CANDIDATE_EN_VARIANT_COUNT,
+        "chinese": EXPECTED_CANDIDATE_ZH_VARIANT_COUNT,
+    }
     en = _load_dataset(
         candidate_ref, english_path, "database/",
         "candidate EN", "candidate",
@@ -2432,6 +2702,32 @@ def add_candidate(
              "candidate EN contains unresolved token")
     _require(not zh["token_facts"]["unresolved"],
              "candidate ZH contains unresolved token")
+    # The candidate EN source snapshot and the complete EN entries/variants
+    # are hard-bound to the baseline EN bytes: any EN edit (even one that
+    # keeps the variant totals) fails the candidate audit (CR-003).
+    _require(
+        en["source_sha256"]
+        == inventory["dumps"]["english"]["source_sha256"],
+        "candidate EN source snapshot must equal the baseline EN source",
+    )
+    _require(
+        en["artifact_sha256"]
+        == inventory["dumps"]["english"]["artifact_sha256"],
+        "candidate EN dump must equal the baseline EN dump",
+    )
+    ledger_en_by_key = {
+        entry["key"]: _variant_review_shape(entry["english_variants"])
+        for entry in inventory["entries"]
+    }
+    candidate_en_by_key = {entry["key"]: entry
+                           for entry in en["entries"]}
+    for key in sorted(candidate_en_by_key):
+        _require(
+            _variant_review_shape(candidate_en_by_key[key]["variants"])
+            == ledger_en_by_key[key],
+            f"candidate EN drift at {key!r}: the complete EN variants "
+            f"must equal the baseline EN variants",
+        )
     _require(
         set(en["orphan_keys"]) <= set(
             inventory["scope"]["orphan_keys"]["english"])
@@ -2596,7 +2892,6 @@ def main(argv: list[str] | None = None) -> int:
         candidate = add_candidate(
             inventory, args.baseline_ref, args.candidate_ref,
             args.candidate_english_dump, args.candidate_localized_dump,
-            expected_variant_counts=_proposal_variant_totals(records),
         )
     if args.review_results is not None:
         inventory["review_evidence"] = validate_results(

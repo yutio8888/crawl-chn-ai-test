@@ -907,60 +907,60 @@ TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
     }
 }
 
-TEST_CASE("Issue 16 restored Chinese VISUAL lines retain production channels",
+TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned positions",
           "[single-file][textdb][phase0][issue-16][monspeak]")
 {
     ensure_test_data_root();
     databaseSystemInit();
+    const textdb_phase0::canonical_speakdb_dump english =
+        textdb_phase0::dump_canonical_english_speakdb_typed();
     const vector<textdb_phase0::canonical_entry> localized =
         textdb_phase0::dump_localized_speakdb_typed("zh").entries;
 
-    using Row = pair<const char *, const char *>;
-    const vector<Row> restored =
+    // CR-004: the Issue-16 monspeak VISUAL contract is validated at the
+    // current EN-aligned (key, ordinal) positions instead of binding the
+    // Chinese sentence text that the Issue #70 review replaces.  Every EN
+    // monspeak variant that opens the VISUAL channel must keep the VISUAL:
+    // prefix in the ZH dump at the same canonical key and variant ordinal
+    // (the aligned ZH candidate has per-key EN counts, so the paired
+    // ordinal range covers every EN VISUAL line), and the stripped line
+    // must resolve to MSGCH_TALK_VISUAL through the production channel
+    // resolver.
+    size_t visual_positions = 0;
+    for (const textdb_phase0::canonical_entry &entry : english.entries)
     {
-        { "_mara_rare_", "VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。" },
-        { "nobody", "VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。" },
-        { "_pikel_common_", "VISUAL:@The_monster@ 敲打着某种节奏。" },
-        { "_eustachio_common_", "VISUAL:@The_monster@ 试图偷偷溜到你身后。" },
-        { "_eustachio_common_", "VISUAL:@The_monster@ 快速环顾四周寻找出口。" },
-        { "_roxanne_common_", "VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。" },
-        { "_roxanne_common_", "VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。" },
-        { "roxanne blink_other_closer", "VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 疯狂地比划着手势。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 说着什么，但你什么都听不到。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 看起来很困惑。" },
-        { "default stupid friendly humanoid", "VISUAL:@The_monster@ 挠了挠头。" },
-        { "default stupid silenced humanoid", "VISUAL:@The_monster@ 试图说话，但什么声音都没有。" },
-        { "default fleeing silenced humanoid", "VISUAL:@The_monster@ 无声地惊恐尖叫着。" },
-        { "default friendly silenced humanoid", "VISUAL:@The_monster@ 友好地挥着手。" },
-        { "default silenced humanoid", "VISUAL:@The_monster@ 无声地说着什么。" },
-        { "default friendly confused humanoid", "VISUAL:@The_monster@ 友好但困惑地挥着手。" },
-        { "default friendly humanoid", "VISUAL:@The_monster@ 开心地点着头。" },
-        { "_jory_common_", "VISUAL:@The_monster@ 静静地打量着你。" },
-        { "_jory_common_", "VISUAL:@The_monster@ 缓缓地拔出剑。" },
-    };
-
-    for (const Row &row : restored)
-    {
-        INFO(row.first << ": " << row.second);
-        const textdb_phase0::canonical_entry *entry =
-            find_canonical_entry(localized, row.first);
-        REQUIRE(entry != nullptr);
-        const auto variant = std::find_if(
-            entry->variants.begin(), entry->variants.end(),
-            [&row](const textdb_phase0::canonical_variant &candidate)
+        if (!has_source_history(entry, "database/monspeak.txt"))
+            continue;
+        const textdb_phase0::canonical_entry *zh_entry =
+            find_canonical_entry(localized, entry.canonical_key);
+        REQUIRE(zh_entry != nullptr);
+        for (size_t ordinal = 0;
+             ordinal < entry.variants.size()
+                 && ordinal < zh_entry->variants.size();
+             ++ordinal)
+        {
+            if (entry.variants[ordinal].raw_pattern.rfind("VISUAL:", 0)
+                != 0)
             {
-                return candidate.raw_pattern == row.second;
-            });
-        REQUIRE(variant != entry->variants.end());
+                continue;
+            }
+            ++visual_positions;
+            INFO(entry.canonical_key << " #" << ordinal);
+            const string &raw = zh_entry->variants[ordinal].raw_pattern;
+            REQUIRE(raw.rfind("VISUAL:", 0) == 0);
 
-        string rendered = variant->raw_pattern;
-        msg_channel_type channel = MSGCH_TALK;
-        REQUIRE(resolve_mon_speech_line_channel(rendered, channel,
-                                                false, false));
-        CHECK(channel == MSGCH_TALK_VISUAL);
-        CHECK(rendered == string(row.second).substr(strlen("VISUAL:")));
+            string rendered = raw;
+            msg_channel_type channel = MSGCH_TALK;
+            REQUIRE(resolve_mon_speech_line_channel(rendered, channel,
+                                                    false, false));
+            CHECK(channel == MSGCH_TALK_VISUAL);
+            CHECK(rendered == string(raw).substr(strlen("VISUAL:")));
+        }
     }
+    // The EN VISUAL position set is frozen (CR-004): a removed/reworded EN
+    // VISUAL line would silently shrink the checked set, so the count must
+    // hold exactly (derived from the baseline EN dump).
+    CHECK(visual_positions == 496);
 }
 
 TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
