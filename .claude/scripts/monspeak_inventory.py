@@ -46,14 +46,15 @@ death keys and the ``twin_*`` speech prefixes), attitude-change.cc
 (apostle, orc priest, Maurice, marionette), transform.cc (``<name> riddle``),
 mon-cast.cc (``<name> blink_other``/``blink_other_close``/``charge`` and
 ``branch summon cast prefix``), spl-goditem.cc (holy pacification),
-player-reacts.cc (``recite_closure``), mon-util.cc (``_laughs_``) and the
-vault ``dbname:``/``name:`` tags of dat/des (``deformed humanoid``,
-``zin angel``, ``goblin sharper``).  Every non-root identity must be reached
-by the ``@token@`` closure from the roots (recursive-internal-fragment);
-keys with no live producer path and no inbound reference are frozen
-legacy-orphaned identities (15 EN keys, including the imp-greeting fragment
-chain), and AXED_MON names are a legacy-axed-monster class that is empty at
-the baseline.
+player-reacts.cc (``recite_closure``), mon-util.cc (``_laughs_``),
+spl-summoning.cc (``_monster_greeting(imp, "_friendly_imp_greeting")
+`` call-imp greeting) and the vault ``dbname:``/``name:`` tags of
+dat/des (``deformed humanoid``, ``zin angel``, ``goblin sharper``).
+Every non-root identity must be reached by the ``@token@`` closure from
+the roots (recursive-internal-fragment); keys with no live producer path
+and no inbound reference are frozen legacy-orphaned identities (6 EN
+keys), and AXED_MON names are a legacy-axed-monster class that is empty
+at the baseline.
 
 The Chinese side adds two baseline facts that the review phase must
 adjudicate: 191 empty variants and 14 split Lua fragments (ZH Lua blocks
@@ -144,14 +145,14 @@ EXPECTED_EN_EXTERNAL_TOKENS = 32
 EXPECTED_ZH_DISTINCT_TOKENS = 299
 EXPECTED_ZH_INFILE_TOKENS = 270
 EXPECTED_ZH_EXTERNAL_TOKENS = 29
-EXPECTED_ROOT_COUNT = 459
-EXPECTED_FRAGMENT_COUNT = 257
+EXPECTED_ROOT_COUNT = 460
+EXPECTED_FRAGMENT_COUNT = 265
 # The ZH side adds the ``default 'j'`` glyph default root and keeps the
 # same key space minus the inlined fragments, so its counts differ.
-EXPECTED_ZH_ROOT_COUNT = 460
-EXPECTED_ZH_FRAGMENT_COUNT = 234
-EXPECTED_EN_ORPHAN_COUNT = 15
-EXPECTED_ZH_ORPHAN_COUNT = 39
+EXPECTED_ZH_ROOT_COUNT = 461
+EXPECTED_ZH_FRAGMENT_COUNT = 242
+EXPECTED_EN_ORPHAN_COUNT = 6
+EXPECTED_ZH_ORPHAN_COUNT = 30
 
 # The two ZH-only monspeak keys (EN has no counterpart); their disposition
 # is explicitly deferred to the translation phase.
@@ -167,21 +168,30 @@ CROSS_DB_OVERRIDE_KEYS = frozenset({
     "polyphemus", "shadow imp", "white imp",
 })
 
+# The production consumer of every cross-DB override key (CR-015).  The
+# override provenance (zh/shout.txt shadowing the zh/monspeak.txt body in
+# the effective localized merge) stays in ``evidence_locations`` only;
+# the card consumer evidence must name the real lookup path: the ``'&'``
+# glyph key is consumed by the mon-speak.cc glyph fallback
+# (``glyph_consumer``), while the named monsters and ``player ghost`` go
+# through the normal exact-key monspeak lookup (``monspeak_consumer``).
+CROSS_DB_OVERRIDE_CONSUMERS = {
+    "'&'": "glyph_consumer",
+    "iron imp": "monspeak_consumer",
+    "moth of wrath": "monspeak_consumer",
+    "player ghost": "monspeak_consumer",
+    "polyphemus": "monspeak_consumer",
+    "shadow imp": "monspeak_consumer",
+    "white imp": "monspeak_consumer",
+}
+
 # Keys with no live production consumer path and no inbound @token@
 # reference at the baseline: legacy-orphaned identities exempt from the
-# reachability proof (the imp-greeting fragment chain plus five
-# stale/typo'd keys).  Derived from the exact-Git consumer proof and
-# required to equal this set.
+# reachability proof (six stale/typo'd keys; the imp-greeting chain became
+# reachable in I70-R5-CR-014 through the spl-summoning.cc call-imp
+# greeting).  Derived from the exact-Git consumer proof and required to
+# equal this set.
 EXPECTED_EN_ORPHANS = frozenset({
-    "_cause_or_spread_",
-    "_friendly_imp_greeting",
-    "_mayhem_",
-    "_suck_up_address_",
-    "_suck_up_adj1_",
-    "_suck_up_adj2_",
-    "_suck_up_noun_",
-    "_truckle_",
-    "_vassalage_",
     "default '8'",
     "jivya frederick triumphant",
     "no god donald",
@@ -557,6 +567,7 @@ FIXED_CONSUMER_LITERALS = frozenset({
     "branch summon cast prefix", "holy_being_pacification",
     "holy_being_pacification_humanoid", "holy_being_pacification_speech",
     "recite_closure", "_laughs_", "goblin sharper",
+    "_friendly_imp_greeting",
 })
 
 # Dynamic monster-name suffix roots (<name> + literal) from the exact-Git
@@ -587,6 +598,7 @@ PRODUCER_GIT_FILES = [
     "crawl-ref/source/mon-cast.cc",
     "crawl-ref/source/mon-behv.cc",
     "crawl-ref/source/spl-goditem.cc",
+    "crawl-ref/source/spl-summoning.cc",
     "crawl-ref/source/player-reacts.cc",
     "crawl-ref/source/mapdef.cc",
     "crawl-ref/source/religion.cc",
@@ -1168,6 +1180,11 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, Any]:
             "mon-behv.cc orc_priest_preaching",
             re.compile(r'getSpeakString\("orc_priest_preaching"\)'),
             'getSpeakString("orc_priest_preaching")'),
+        "orc_priest_apostate": anchor(
+            "crawl-ref/source/god-abil.cc",
+            "god-abil.cc orc_priest_apostate",
+            re.compile(r'getSpeakString\("orc_priest_apostate"\)'),
+            'getSpeakString("orc_priest_apostate")'),
         "holy_pacification": anchor(
             "crawl-ref/source/spl-goditem.cc",
             "spl-goditem.cc holy pacification key",
@@ -1178,6 +1195,16 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, Any]:
             "player-reacts.cc recite_closure",
             re.compile(r'getSpeakString\("recite_closure"\)'),
             'getSpeakString("recite_closure")'),
+        "imp_greeting_helper": anchor(
+            "crawl-ref/source/spl-summoning.cc",
+            "spl-summoning.cc _monster_greeting helper",
+            re.compile(r'static void _monster_greeting\('),
+            "static void _monster_greeting("),
+        "imp_greeting": anchor(
+            "crawl-ref/source/spl-summoning.cc",
+            "spl-summoning.cc call-imp greeting",
+            re.compile(r'_monster_greeting\(imp, "_friendly_imp_greeting"\);'),
+            '_monster_greeting(imp, "_friendly_imp_greeting");'),
         "vault_dbname": anchor(
             "crawl-ref/source/mapdef.cc",
             "mapdef.cc dbname tag parsing",
@@ -1713,34 +1740,42 @@ _VENDORED_LUAC = (
     Path(__file__).resolve().parents[2]
     / "crawl-ref/source/contrib/lua/src/luac"
 )
+# The exact embedded contrib/lua version the vendored compiler must report
+# (CR-012): a stale build of another Lua release must fail the gate instead
+# of validating candidate blocks with different escape semantics.
+_VENDORED_LUA_VERSION = "5.4.8"
 
 
 def _lua_syntax_check(blocks: list[str]) -> dict[str, str]:
     """Executable-syntax gate: every candidate Lua block must pass
     ``luac -p`` (one file per block so a trailing ``return`` can never be
     followed by another chunk).  The vendored contrib/lua 5.4.8 compiler
-    artifact is used (CR-006B); when it is not built, the gate falls back
-    to the structural validation that ``_lua_block_protocol`` already
-    performs and records the compiler fact explicitly -- an arbitrary
-    PATH luac is never consulted, because a 5.1 compiler accepts
-    ``"\\q"`` that 5.4 rejects.  Returns the explicit compiler fact
-    (``compiler``/``path``/``version``) that the candidate dataset
+    artifact is used (CR-006B) and the gate fails closed (CR-012): a
+    missing or non-executable vendored compiler, or one whose ``-v``
+    output does not report the embedded 5.4.8 version, raises
+    ``InventoryError`` instead of falling back to structural validation
+    -- an arbitrary PATH luac is never consulted, because a 5.1 compiler
+    accepts ``"\\q"`` that 5.4 rejects, so relying on it would silently
+    pass non-executable candidate blocks.  Returns the explicit compiler
+    fact (``compiler``/``path``/``version``) that the candidate dataset
     records as evidence."""
     if not (_VENDORED_LUAC.is_file()
             and os.access(_VENDORED_LUAC, os.X_OK)):
-        return {
-            "compiler": "structural-only",
-            "path": None,
-            "version": (
-                "unavailable: vendored contrib/lua luac not built at "
-                f"{_VENDORED_LUAC}"
-            ),
-        }
+        raise InventoryError(
+            f"vendored contrib/lua {_VENDORED_LUA_VERSION} luac not built "
+            f"at {_VENDORED_LUAC}: the candidate Lua executable-syntax "
+            "gate fails closed (structural validation alone is not "
+            "sufficient, CR-012)")
     version_run = subprocess.run(
         [str(_VENDORED_LUAC), "-v"], capture_output=True, text=True)
     version = (version_run.stdout.strip()
                or version_run.stderr.strip()
-               or "Lua (version unavailable)")
+               or "")
+    if not re.search(rf"\b{re.escape(_VENDORED_LUA_VERSION)}\b", version):
+        raise InventoryError(
+            f"vendored luac version mismatch: {version!r} does not report "
+            f"the embedded contrib/lua {_VENDORED_LUA_VERSION} compiler "
+            "(CR-012)")
     for block in blocks:
         with tempfile.NamedTemporaryFile("w", suffix=".lua",
                                          encoding="utf-8") as handle:
@@ -1769,9 +1804,10 @@ def _lua_protocol(pattern: str, syntax_check: bool = False) -> dict[str, Any]:
     execute and contributes no protocol; it is recorded by the split_lua
     fact instead.  With ``syntax_check`` (candidate role) every block must
     be structurally valid and compile under the vendored contrib/lua
-    5.4.8 luac (CR-006B); when the vendored compiler is not built, the
-    gate falls back to the structural validation and records the compiler
-    fact in ``lua_syntax_check``."""
+    5.4.8 luac (CR-006B); the gate fails closed (CR-012) when the
+    vendored compiler is missing, not executable or does not report the
+    embedded 5.4.8 version, and records the compiler fact in
+    ``lua_syntax_check``."""
     if pattern.count("{{") != pattern.count("}}"):
         return {"site_count": 0, "skeletons": [],
                 "comparison_literals": [], "return_strings": [],
@@ -2112,9 +2148,11 @@ def _dataset(
     total_variants = 0
     random_sites = 0
     lua_sites = 0
-    # Candidate-role Lua compiler facts (CR-006B): every variant that
-    # reached the executable-syntax gate records the same vendored
-    # compiler fact (or the explicit structural-only fallback).
+    # Candidate-role Lua compiler facts (CR-006B/CR-012): every variant
+    # that reached the executable-syntax gate records the same vendored
+    # 5.4.8 compiler fact; a missing compiler or a version mismatch fails
+    # the candidate audit closed instead of falling back to structural
+    # validation.
     lua_syntax_facts: list[dict[str, Any]] = []
     # Baseline-historical counts of the EN-only display tokens (frozen
     # fact, asserted for ZH only; the candidate may legitimately differ).
@@ -2225,10 +2263,11 @@ def _dataset(
         _require(lua_sites == EXPECTED_EN_LUA_SITES,
                  f"{label} candidate Lua-site count differs from the "
                  f"frozen EN total: {lua_sites}")
-        # CR-006B: every Lua-bearing variant records the same compiler
-        # fact (the vendored contrib/lua 5.4.8 luac or the explicit
-        # structural-only fallback); the fact is recorded as candidate
-        # evidence so the exact compiler is visible in the output.
+        # CR-006B/CR-012: every Lua-bearing variant records the same
+        # vendored 5.4.8 compiler fact; the gate fails closed when the
+        # vendored compiler is missing or its version mismatches, so the
+        # fact is recorded as candidate evidence only after the exact
+        # compiler proved itself.
         _require(lua_syntax_facts and all(
             fact == lua_syntax_facts[0] for fact in lua_syntax_facts),
             f"{label} candidate Lua syntax-check facts differ")
@@ -2366,7 +2405,16 @@ def _card_consumer_anchor(
         return (("recursive_expansion",),)
     if lifecycle in ("legacy-orphaned", "legacy-axed-monster", "zh-only"):
         return ()
-    if key in CROSS_DB_OVERRIDE_KEYS or key in VAULT_DBNAME_KEYS:
+    if key == "_friendly_imp_greeting":
+        return (("imp_greeting",),)
+    # CR-015: the seven cross-DB override keys keep their zh/shout.txt
+    # override provenance in evidence_locations only; the card consumer
+    # evidence names the real production lookup path per key (the glyph
+    # fallback for ''&'', the exact-key monspeak lookup for the named
+    # monsters and player ghost) instead of the vault dbname parser.
+    if key in CROSS_DB_OVERRIDE_CONSUMERS:
+        return ((CROSS_DB_OVERRIDE_CONSUMERS[key],),)
+    if key in VAULT_DBNAME_KEYS:
         return (("vault_dbname",),)
     if key in VAULT_NAME_KEYS:
         return (("vault_name",),)
@@ -2378,8 +2426,10 @@ def _card_consumer_anchor(
         return (("recite_closure",),)
     if key.startswith("holy_being_pacification"):
         return (("holy_pacification",),)
-    if key in ("orc_priest_preaching", "orc_priest_apostate"):
+    if key == "orc_priest_preaching":
         return (("orc_priest_preaching",),)
+    if key == "orc_priest_apostate":
+        return (("orc_priest_apostate",),)
     if key in ("gozag bribe", "gozag permabribe"):
         return (("gozag_bribe",),)
     if key == "friendly bfb orc":
@@ -2662,6 +2712,8 @@ def _group_for(key: str, lifecycle: str) -> str:
         return "诵经键（player-reacts.cc）"
     if key == "_laughs_":
         return "笑声碎片键（mon-util.cc 直查）"
+    if key == "_friendly_imp_greeting":
+        return "召唤小恶魔问候键（spl-summoning.cc）"
     if key in VAULT_DBNAME_KEYS or key in VAULT_NAME_KEYS:
         return "地牢 dbname:/name: 标签键（mapdef.cc）"
     if key.startswith("default "):
@@ -3322,8 +3374,11 @@ FROZEN_PRODUCER_CONSUMER = {
     "charge": "crawl-ref/source/mon-cast.cc:6790",
     "branch_summon": "crawl-ref/source/mon-cast.cc:6558",
     "orc_priest_preaching": "crawl-ref/source/mon-behv.cc:1404",
+    "orc_priest_apostate": "crawl-ref/source/god-abil.cc:2507",
     "holy_pacification": "crawl-ref/source/spl-goditem.cc:58",
     "recite_closure": "crawl-ref/source/player-reacts.cc:651",
+    "imp_greeting_helper": "crawl-ref/source/spl-summoning.cc:81",
+    "imp_greeting": "crawl-ref/source/spl-summoning.cc:1108",
     "vault_dbname": "crawl-ref/source/mapdef.cc:4113",
     "vault_name": "crawl-ref/source/dat/des/altar/overflow.des:2590",
 }

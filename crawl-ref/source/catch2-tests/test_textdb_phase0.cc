@@ -1449,9 +1449,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned po
         const textdb_phase0::canonical_entry *zh_entry =
             find_canonical_entry(localized, entry.canonical_key);
         REQUIRE(zh_entry != nullptr);
-        for (size_t ordinal = 0;
-             ordinal < entry.variants.size()
-                 && ordinal < zh_entry->variants.size();
+        for (size_t ordinal = 0; ordinal < entry.variants.size();
              ++ordinal)
         {
             if (entry.variants[ordinal].raw_pattern.rfind("VISUAL:", 0)
@@ -1459,6 +1457,12 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned po
             {
                 continue;
             }
+            // CR-013: every EN VISUAL position must exist in ZH at the
+            // same canonical key and ordinal.  A trailing EN-aligned
+            // VISUAL ordinal deleted from ZH (the ZH variant list ends
+            // early) must fail here instead of being silently skipped by
+            // a min-range loop.
+            REQUIRE(ordinal < zh_entry->variants.size());
             derived_visual.insert(entry.canonical_key + "\n"
                                   + to_string(ordinal));
             INFO(entry.canonical_key << " #" << ordinal);

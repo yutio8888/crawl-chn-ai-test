@@ -413,9 +413,9 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.inventory["scope"]["split_lua_fragments"]))
         self.assertEqual(213, len(
             self.inventory["scope"]["baseline_asymmetry"]))
-        self.assertEqual(459, self.inventory["scope"]["root_key_count"])
-        self.assertEqual(257, self.inventory["scope"]["fragment_key_count"])
-        self.assertEqual({"english": 15, "chinese": 39},
+        self.assertEqual(460, self.inventory["scope"]["root_key_count"])
+        self.assertEqual(265, self.inventory["scope"]["fragment_key_count"])
+        self.assertEqual({"english": 6, "chinese": 30},
                          self.inventory["scope"]["orphan_key_count"])
         self.assertEqual(["_jory_rare_", "default 'j'"],
                          self.inventory["scope"]["zh_only_keys"])
@@ -436,7 +436,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["localized"]))
         self.assertEqual(
-            "aafc34844ef4544580871fdd613317885937d8c016a4b0ef622a26482cb397bc",
+            "3de6e971f352f246a00039338af5839e9fd81b37dfaf1db6ab021a5442b3402c",
             self.inventory["inventory_sha256"],
         )
 
@@ -494,10 +494,112 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.inventory["scope"]["orphan_keys"]["chinese"])
         orphan_entries = [entry for entry in self.inventory["entries"]
                           if entry["lifecycle"] == "legacy-orphaned"]
-        self.assertEqual(15, len(orphan_entries))
-        # The imp-greeting chain is orphaned end to end.
+        self.assertEqual(6, len(orphan_entries))
+        # CR-014: the imp-greeting chain is no longer orphaned -- the
+        # call-imp greeting is a direct production root (spl-summoning.cc
+        # ``_monster_greeting``) and its eight leaf fragments are reached
+        # through the @token@ closure.
+        self.assertNotIn("_friendly_imp_greeting",
+                         [entry["key"] for entry in orphan_entries])
         self.assertIn("_friendly_imp_greeting",
-                      [entry["key"] for entry in orphan_entries])
+                      self.inventory["scope"]["root_keys"])
+        for key in ("_cause_or_spread_", "_mayhem_", "_truckle_",
+                    "_vassalage_", "_suck_up_address_", "_suck_up_adj1_",
+                    "_suck_up_adj2_", "_suck_up_noun_"):
+            self.assertIn(key, self.inventory["scope"]["fragment_keys"])
+            self.assertNotIn(key,
+                             self.inventory["scope"]["orphan_keys"]["english"])
+            self.assertNotIn(key,
+                             self.inventory["scope"]["orphan_keys"]["chinese"])
+
+    def test_friendly_imp_greeting_card_evidence(self):
+        # CR-014: the call-imp greeting card carries the spl-summoning.cc
+        # call-site anchor and its fragment chain cards carry the
+        # recursive expansion consumer.
+        facts = MODULE._card_facts(self.inventory)
+        by_key = {entry["key"]: entry
+                  for entry in self.inventory["entries"]}
+        entry = by_key["_friendly_imp_greeting"]
+        self.assertEqual("direct-production-root", entry["lifecycle"])
+        self.assertEqual(
+            {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+             "imp_greeting":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["imp_greeting"]},
+            MODULE._card_producer_consumer(entry, facts))
+        for key in ("_cause_or_spread_", "_mayhem_", "_truckle_",
+                    "_vassalage_", "_suck_up_address_", "_suck_up_adj1_",
+                    "_suck_up_adj2_", "_suck_up_noun_"):
+            entry = by_key[key]
+            self.assertEqual("recursive-internal-fragment",
+                             entry["lifecycle"])
+            self.assertEqual(
+                {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+                 "recursive_expansion": MODULE.FROZEN_PRODUCER_CONSUMER[
+                     "recursive_expansion"]},
+                MODULE._card_producer_consumer(entry, facts))
+            self.assertTrue(any(
+                site["key"] == "_friendly_imp_greeting"
+                for site in entry["english_referencing_sites"]))
+
+    def test_override_key_consumers_routed_by_real_consumer(self):
+        # CR-015: the cross-DB override keys keep their zh/shout.txt
+        # override provenance in evidence_locations only; the card
+        # consumer evidence names the real production lookup path per key
+        # (glyph fallback for ''&'', exact-key monspeak lookup for the
+        # named monsters and player ghost), and orc_priest_apostate has
+        # its own god-abil.cc anchor instead of sharing the preaching one.
+        facts = MODULE._card_facts(self.inventory)
+        by_key = {entry["key"]: entry
+                  for entry in self.inventory["entries"]}
+        for key, anchor in MODULE.CROSS_DB_OVERRIDE_CONSUMERS.items():
+            entry = by_key[key]
+            expected = {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+                        anchor: MODULE.FROZEN_PRODUCER_CONSUMER[anchor]}
+            self.assertEqual(
+                expected, MODULE._card_producer_consumer(entry, facts),
+                f"consumer routing mismatch for {key!r}")
+            self.assertIn(
+                f"localized-override:database/zh/shout.txt:",
+                " ".join(MODULE._evidence_locations(entry, facts)))
+        from collections import Counter as _Counter
+        self.assertEqual(
+            {"glyph_consumer": 1, "monspeak_consumer": 6},
+            dict(_Counter(MODULE.CROSS_DB_OVERRIDE_CONSUMERS.values())),
+        )
+        entry = by_key["orc_priest_apostate"]
+        self.assertEqual(
+            {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+             "orc_priest_apostate":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["orc_priest_apostate"]},
+            MODULE._card_producer_consumer(entry, facts))
+        entry = by_key["orc_priest_preaching"]
+        self.assertEqual(
+            {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+             "orc_priest_preaching":
+                 MODULE.FROZEN_PRODUCER_CONSUMER["orc_priest_preaching"]},
+            MODULE._card_producer_consumer(entry, facts))
+        for key in MODULE.VAULT_DBNAME_KEYS:
+            entry = by_key[key]
+            self.assertEqual(
+                {"loader": MODULE.FROZEN_PRODUCER_CONSUMER["loader"],
+                 "vault_dbname":
+                     MODULE.FROZEN_PRODUCER_CONSUMER["vault_dbname"]},
+                MODULE._card_producer_consumer(entry, facts))
+
+    def test_imp_greeting_anchor_mutation_rejected(self):
+        # CR-014 negative: removing the reachable call-imp greeting call
+        # site (or moving the helper) from spl-summoning.cc must fail the
+        # frozen producer/consumer anchor proof closed.
+        mutated = (ROOT / "crawl-ref/source/spl-summoning.cc").read_text(
+            encoding="utf-8").replace(
+            '        _monster_greeting(imp, "_friendly_imp_greeting");',
+            '        // call removed by the review probe', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/spl-summoning.cc": mutated,
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "cannot find|anchors drifted"):
+            MODULE._producer_consumer_facts(fixture, "negative anchors")
 
     def test_root_derivation_binds_exact_git_producers(self):
         # Removing a live prefix from the mon-speak.cc literal space must
@@ -927,13 +1029,18 @@ class MonspeakInventoryTests(unittest.TestCase):
 
     def _fake_luac_54(self) -> Path:
         """A minimal Lua 5.4-semantics luac used when the real vendored
-        contrib/lua compiler artifact is not built: it accepts ordinary
-        Lua chunks and rejects the 5.4-forbidden ``\"\\q\"`` escape that
-        5.1 accepts (CR-006B)."""
+        contrib/lua compiler artifact is not built: it reports the embedded
+        5.4.8 version on ``-v`` (CR-012), accepts ordinary Lua chunks and
+        rejects the 5.4-forbidden ``\"\\q\"`` escape that 5.1 accepts
+        (CR-006B)."""
         fake = self.root / f"{self.id().split('.')[-1]}-fake-luac"
         fake.write_text(
             '#!/usr/bin/env python3\n'
             'import sys\n'
+            'if "-v" in sys.argv:\n'
+            '    sys.stdout.write("Lua 5.4.8  Copyright (C) 1994-2025 '
+            'Lua.org, PUC-Rio\\n")\n'
+            '    sys.exit(0)\n'
             'for path in sys.argv[2:]:\n'
             '    source = open(path, encoding="utf-8").read()\n'
             '    if "\\\\q" in source:\n'
@@ -953,12 +1060,11 @@ class MonspeakInventoryTests(unittest.TestCase):
             return vendored
         return self._fake_luac_54()
 
-    def test_candidate_lua_gate_structural_fallback_recorded(self):
-        # CR-006B: when the vendored contrib/lua luac is not built, the
-        # candidate gate falls back to the structural validation and
-        # records the compiler fact explicitly; an arbitrary PATH luac is
-        # never consulted (a 5.1 compiler accepts ``\"\\q\"`` that 5.4
-        # rejects).
+    def test_candidate_lua_gate_missing_vendored_compiler_fails_closed(self):
+        # CR-012: when the vendored contrib/lua luac is missing or not
+        # executable, the candidate gate fails closed instead of falling
+        # back to structural validation; an arbitrary PATH luac is never
+        # consulted (a 5.1 compiler accepts ``\"\\q\"`` that 5.4 rejects).
         en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
             .read_text(encoding="utf-8")
         zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
@@ -966,12 +1072,37 @@ class MonspeakInventoryTests(unittest.TestCase):
         fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
         missing = self.root / "missing-luac"
         with mock.patch.object(MODULE, "_VENDORED_LUAC", missing):
-            candidate = self.add_candidate_mocked(
-                self.inventory, fixture, en_art, zh_art)
-        fact = candidate["dumps"]["localized"]["lua_syntax_check"]
-        self.assertEqual("structural-only", fact["compiler"])
-        self.assertIsNone(fact["path"])
-        self.assertIn(str(missing), fact["version"])
+            with self.assertRaisesRegex(MODULE.InventoryError,
+                                        "fails closed"):
+                self.add_candidate_mocked(
+                    self.inventory, fixture, en_art, zh_art)
+
+    def test_candidate_lua_gate_version_mismatch_fails_closed(self):
+        # CR-012: a vendored luac that runs but does not report the
+        # embedded contrib/lua 5.4.8 version must fail the candidate gate
+        # closed (a stale 5.1 compiler accepts escapes that 5.4 rejects).
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
+        stale = self.root / f"{self.id().split('.')[-1]}-stale-luac"
+        stale.write_text(
+            '#!/usr/bin/env python3\n'
+            'import sys\n'
+            'if "-v" in sys.argv:\n'
+            '    sys.stdout.write("Lua 5.1.5  Copyright (C) 1994-2012 '
+            'Lua.org, PUC-Rio\\n")\n'
+            '    sys.exit(0)\n'
+            'sys.exit(0)\n',
+            encoding="utf-8",
+        )
+        stale.chmod(0o755)
+        with mock.patch.object(MODULE, "_VENDORED_LUAC", stale):
+            with self.assertRaisesRegex(MODULE.InventoryError,
+                                        "version mismatch"):
+                self.add_candidate_mocked(
+                    self.inventory, fixture, en_art, zh_art)
 
     def test_candidate_lua_syntax_gate_rejects_54_only_escape(self):
         # CR-006B: the executable-syntax gate runs the vendored
@@ -1165,6 +1296,44 @@ class MonspeakInventoryTests(unittest.TestCase):
                 contract == "issue16-monspeak-channels"
                 and artifact == "dat/database/monspeak.txt"
                 and "VISUAL position set drifted" in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "VISUAL channel prefix lost" in detail
+                for _contract, _artifact, detail in findings))
+
+    def test_issue16_trailing_visual_deletion_rejected(self):
+        # CR-013: deleting the trailing VISUAL ordinal of `_Aizul_rare_`
+        # (EN ordinal 8) from ZH keeps every remaining aligned position
+        # valid and was silently skipped by the old
+        # ``range(min(len(en), len(zh)))`` loop; the ZH check must iterate
+        # all EN visual positions and fail closed on the missing trailing
+        # ordinal.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        deleted = zh_text.replace(
+            '@The_monster@ 哀叹道："没有工作机会了！谁会雇嗜睡的艾祖尔看守他们'
+            '的宝藏？"\n\n'
+            'VISUAL:@The_monster@ 朝 @foe@ 眨了好几次眼。\n%%%%',
+            '@The_monster@ 哀叹道："没有工作机会了！谁会雇嗜睡的艾祖尔看守他们'
+            '的宝藏？"\n%%%%',
+            1)
+        self.assertNotEqual(deleted, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(deleted, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "VISUAL channel position missing" in detail
                 for contract, artifact, detail in findings))
             self.assertFalse(any(
                 "VISUAL channel prefix lost" in detail

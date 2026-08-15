@@ -6300,19 +6300,30 @@ def _monspeak_visual_channel_findings(source_dir):
             f"!= {MONSPEAK_EN_VISUAL_POSITION_COUNT} "
             f"(missing {missing[:3]!r}..., extra {extra[:3]!r}...)"))
     for key in sorted(en):
-        zh_variants = zh.get(key)
-        if zh_variants is None:
+        if zh.get(key) is None:
             findings.append((contract_id, f"key {key!r}",
                              "missing from zh/monspeak.txt"))
+    # CR-013: the ZH check iterates every EN visual position, not only the
+    # shared min-range ordinals.  A trailing EN-aligned VISUAL ordinal
+    # deleted from ZH (the key's ZH variant list ends early) must fail
+    # exactly like a prefix loss instead of being skipped by
+    # ``range(min(len(en), len(zh)))``.
+    for key, ordinal in visual_positions:
+        zh_variants = zh.get(key)
+        if zh_variants is None:
+            continue  # already reported by the key-missing check above
+        if ordinal >= len(zh_variants):
+            findings.append((
+                contract_id,
+                f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                "VISUAL channel position missing from zh/monspeak.txt "
+                "(EN-aligned ordinal absent)"))
             continue
-        for ordinal in range(min(len(en[key]), len(zh_variants))):
-            if not en[key][ordinal].startswith("VISUAL:"):
-                continue
-            if not zh_variants[ordinal].startswith("VISUAL:"):
-                findings.append((
-                    contract_id,
-                    f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
-                    "VISUAL channel prefix lost at an EN-aligned position"))
+        if not zh_variants[ordinal].startswith("VISUAL:"):
+            findings.append((
+                contract_id,
+                f"dat/database/zh/monspeak.txt {key!r} #{ordinal}",
+                "VISUAL channel prefix lost at an EN-aligned position"))
     return findings
 
 
