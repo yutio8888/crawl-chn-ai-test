@@ -342,10 +342,11 @@ class MonspeakInventoryTests(unittest.TestCase):
 
     def test_foe_protocol_equal_exception_matrix(self):
         # The exception is narrow and bidirectional: the EN-only display
-        # compounds may be mirrored, replaced by the localizable @foe@, or
-        # omitted; @foe@ stays bidirectionally required (EN's bare @foe@
-        # must survive, ZH may never invent one), at_foe/around stays
-        # strictly required, and every other token stays exactly aligned.
+        # compounds (including the @to_foe/<alt>@/@at_foe/<alt>@
+        # alternative forms, I70-R4-CR-009A) may be mirrored, replaced by
+        # the localizable @foe@, or omitted; @foe@ stays bidirectionally
+        # required (EN's bare @foe@ must survive, ZH may never invent
+        # one), and every other token stays exactly aligned.
         equal = MODULE._foe_protocol_equal
         self.assertTrue(equal(["@The_monster@", "@to_foe@"],
                               ["@The_monster@", "@to_foe@"]))
@@ -366,10 +367,22 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertFalse(equal(["@The_monster@", "@to_foe@"],
                                ["@The_monster@", "@to_foe@", "@foe@"]))
         self.assertFalse(equal(["@The_monster@", "@to_foe@"], []))
+        # I70-R4-CR-009A: the @at_foe/around@ alternative form is an
+        # EN-only display token like its exact @at_foe@ counterpart: it
+        # may be mirrored, replaced by the localizable @foe@, reduced to
+        # the exact form, or omitted -- never invented.
         self.assertTrue(equal(["@The_monster@", "@at_foe/around@"],
                               ["@The_monster@", "@at_foe/around@"]))
+        self.assertTrue(equal(["@The_monster@", "@at_foe/around@"],
+                              ["@The_monster@", "@foe@"]))
+        self.assertTrue(equal(["@The_monster@", "@at_foe/around@"],
+                              ["@The_monster@"]))
+        self.assertTrue(equal(["@The_monster@", "@at_foe/around@"],
+                              ["@The_monster@", "@at_foe@"]))
         self.assertFalse(equal(["@The_monster@", "@at_foe/around@"],
-                               ["@The_monster@", "@foe@"]))
+                               ["@The_monster@", "@Foe@"]))
+        self.assertFalse(equal(["@The_monster@", "@at_foe/around@"],
+                               ["@The_monster@", "@at_foe/around@", "@foe@"]))
         self.assertFalse(equal(["@The_monster@", "@to_foe@"],
                                ["@The_monster@", "@to_foe@", "@Foe@"]))
         self.assertTrue(equal([], []))

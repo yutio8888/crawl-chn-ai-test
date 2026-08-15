@@ -12,18 +12,20 @@ are shadowed by zh/shout.txt in the effective localized merge, the
 random-site/Lua-site counts, the complete token classification and a
 per-language reachability proof from the consumed production root keys.
 
-``@to_foe@``/``@at_foe@`` are EN-only display tokens: mon-util.cc's
-``do_mon_str_replacements()`` deletes the leading-space compound on the
-player-foe branch and splices it as `` to @foe@``/`` at @foe@`` on the
-monster-foe branch, so the localizable core is the ``@foe@`` reference and
+``@to_foe@``/``@at_foe@`` (and their ``@to_foe/<alt>@``/``@at_foe/<alt>@``
+alternative forms, I70-R4-CR-009A) are EN-only display tokens:
+mon-util.cc's ``do_mon_str_replacements()`` deletes the leading-space
+compound on the player-foe branch, splices it as `` to @foe@``/`` at @foe@``
+on the monster-foe branch, or expands the alternative literally (e.g.
+``around``), so the localizable core is the ``@foe@`` reference and
 Chinese must not mirror the compounds mechanically.  The paired EN/ZH
 token comparison (candidate pair loop and the ledger proposals bound to a
-candidate) therefore exempts exactly those two tokens: EN keeps its
-baseline bytes (counts/positions stay validated by the EN byte binding),
-while ZH may mirror the compounds, render the localizable ``@foe@``
-structure, or restructure the sentence -- the compounds are never
-ZH-required tokens, ``@foe@`` stays bidirectionally required and every
-other token stays exactly aligned.
+candidate) therefore exempts exactly those two tokens and their
+slash-alternative forms: EN keeps its baseline bytes (counts/positions
+stay validated by the EN byte binding), while ZH may mirror the
+compounds, render the localizable ``@foe@`` structure, or restructure the
+sentence -- the compounds are never ZH-required tokens, ``@foe@`` stays
+bidirectionally required and every other token stays exactly aligned.
 
 Consumer model (frozen at the baseline OID): ``mon-speak.cc::mons_speaks``
 queries ``<prefix> <base> <suffix>`` keys through ``getSpeakString`` with the
@@ -493,14 +495,27 @@ POSTPROCESS_TOKENS = frozenset({
 # "to <name>" on the monster side.  The correct ZH structure is the
 # localizable ``@foe@`` (player "you" / monster name) or a sentence
 # rewrite.  The paired EN/ZH comparison exempts exactly these two tokens
-# (see ``_foe_protocol_equal``): EN keeps its exact baseline bytes (counts
-# and positions stay validated by the EN source/dump byte binding), while
-# ZH may carry the mirror tokens, render the ``@foe@`` structure, or omit
-# them.  ``@foe@`` itself stays bidirectionally required and every other
-# token stays exactly aligned; the exception is narrow -- only these two
-# exact lowercase tokens (``at_foe/around``, ``@Foe@`` and any case
-# variant are separate tokens and remain strictly required).
+# and their ``@to_foe/<alt>@``/``@at_foe/<alt>@`` alternative forms (see
+# ``_foe_protocol_equal``): EN keeps its exact baseline bytes (counts and
+# positions stay validated by the EN source/dump byte binding), while ZH
+# may carry the mirror tokens, render the ``@foe@`` structure, or omit
+# them.  I70-R4-CR-009A: the alternative form ``@at_foe/around@`` expands
+# to the literal English alternative ("around") on the player-foe branch
+# and to " at @foe@" on the monster-foe branch, so it is equally English
+# display syntax and must be covered by the same data-side exception;
+# the ZH data drops/replaces it instead of leaking English.  ``@foe@``
+# itself stays bidirectionally required and every other token stays
+# exactly aligned; the exception is narrow -- only these two exact
+# lowercase tokens plus their slash-alternative forms (``@Foe@`` and any
+# case variant are separate tokens and remain strictly required).
 EN_ONLY_DISPLAY_TOKENS = frozenset({"@to_foe@", "@at_foe@"})
+
+_EN_ONLY_DISPLAY_TOKEN_RE = re.compile(r"^@(?:to|at)_foe(?:/[^@]*)?@$")
+
+
+def _is_en_only_display_token(token: str) -> bool:
+    """True for ``@to_foe@``/``@at_foe@`` and their ``/<alt>`` forms."""
+    return bool(_EN_ONLY_DISPLAY_TOKEN_RE.match(token))
 # Baseline ZH runtime-token counts of the EN-only display tokens.  Frozen
 # historical facts from the baseline dumps; the review never requires the
 # candidate to reproduce them -- that is the point of the exception.  The
@@ -2846,13 +2861,15 @@ def _foe_family_counts(
     the bare ``@foe@`` count and the EN-only display compound count.
 
     Only the exact lowercase tokens participate: ``@Foe@``/``@foe,@`` and
-    friends are ordinary strictly-aligned tokens, and ``at_foe/around`` is
-    a separate post-process token that stays strictly required."""
+    friends are ordinary strictly-aligned tokens, while the alternative
+    forms ``@to_foe/<alt>@``/``@at_foe/<alt>@`` (e.g. ``at_foe/around``)
+    are EN-only display compounds (I70-R4-CR-009A) exactly like their
+    exact ``@to_foe@``/``@at_foe@`` counterparts."""
     other: Counter = Counter()
     foe = 0
     compounds = 0
     for token in tokens:
-        if token in EN_ONLY_DISPLAY_TOKENS:
+        if _is_en_only_display_token(token):
             compounds += 1
         elif token == "@foe@":
             foe += 1
@@ -2867,12 +2884,15 @@ def _foe_protocol_equal(
     """Paired EN/ZH token alignment under the EN-only display-token
     exception.
 
-    ``do_mon_str_replacements()`` expands ``@to_foe@``/``@at_foe@`` into
-    `` to @foe@``/`` at @foe@`` (monster-foe branch) or deletes the
-    leading-space compound (player-foe branch), so the localizable core of
-    either compound is the ``@foe@`` reference.  The comparison therefore
-    keeps every non-foe-family token exactly equal and applies two
-    bidirectional ``@foe@`` bounds to the foe family:
+    ``do_mon_str_replacements()`` expands ``@to_foe@``/``@at_foe@`` and
+    their ``/<alt>`` forms into `` to @foe@``/`` at @foe@`` (monster-foe
+    branch), deletes the leading-space compound (player-foe branch) or
+    expands the alternative literally (e.g. ``around``) -- so the
+    localizable core of either compound is the ``@foe@`` reference and
+    the alternative forms are equally EN-only display syntax
+    (I70-R4-CR-009A).  The comparison therefore keeps every non-foe-family
+    token exactly equal and applies two bidirectional ``@foe@`` bounds to
+    the foe family:
 
     - ``zh_foe >= en_foe``: every bare ``@foe@`` of the EN variant must be
       preserved as a bare ``@foe@`` in ZH (a compound cannot replace it,

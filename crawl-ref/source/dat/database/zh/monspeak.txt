@@ -1388,7 +1388,7 @@ VISUAL:@The_monster@ 干巴巴地@_Menkaure_verb_@。
 VISUAL:@The_monster@ 咧嘴一笑。
 %%%%
 _Menkaure_rare_
-@The_monster_possessive@的脚踝释放出一缕尘烟，@subjective@坦白道："其实我不是真的木乃伊，你知道的。"
+@The_monster_possessive@脚踝释放出一缕尘烟，@subjective@坦白道："其实我不是真的木乃伊，你知道的。"
 
 VISUAL:@The_monster@ 忘记了如何说话，被岁月沉寂了。
 
@@ -3384,7 +3384,7 @@ VISUAL:@The_monster@ 朝 @foe@ 喷出水来。
 _Killer_Klown_rare_
 @The_monster@ 哔哔地按着喇叭。
 
-VISUAL:@The_monster@ 模仿着处决@foe_possessive@的样子。
+VISUAL:@The_monster@ 模仿着处决@foe_possessive@样子。
 
 VISUAL:@The_monster@ 吐出 @possessive@舌头。
 
@@ -3660,7 +3660,7 @@ _friendly_beogh_speech_rare_
 
 @The_monster@ @_says_or_shouts_@："我们倒下的兄弟不会被遗忘。"
 
-VISUAL:@The_monster@ 紧张地看了看 @at_foe/around@。
+VISUAL:@The_monster@ 紧张地看了看四周。
 
 @The_monster@ 看着 @foe@ 说："我实在不想为你效劳而死，@player_name@。"
 
@@ -3724,11 +3724,11 @@ VISUAL:@The_monster@ 摇摇晃晃地站着，但朝你竖了个大拇指。
 _Amaemon_common_
 @The_monster@发出嘶嘶声。
 
-VISUAL:@the_monster_possessive@的爪子上滴下污秽的液体。
+VISUAL:@the_monster_possessive@爪子上滴下污秽的液体。
 
 VISUAL:@The_monster_possessive@双眼发出红光。
 
-VISUAL:@The_monster_possessive@的尾巴抽动着。
+VISUAL:@The_monster_possessive@尾巴抽动着。
 
 @The_monster@ 对 @foe@ 喝道："你以为你比本座更高贵？"
 
@@ -3919,7 +3919,7 @@ _Grunn_common_
 @_Grum_common_@
 %%%%
 _Grunn_rare_
-VISUAL:@the_monster_possessive@的一只爪子脱落了。
+VISUAL:@the_monster_possessive@一只爪子脱落了。
 
 VISUAL:@The_monster@拍了拍一块缺毛的地方，叹了口气。
 
@@ -3942,7 +3942,7 @@ VISUAL:@The_monster@拍了拍一块缺毛的地方，叹了口气。
 @The_monster@呻吟道："好冷……太冷了。"
 %%%%
 _Ignacio_common_
-VISUAL:@The_monster@看了看@possessive@的斧子，又看了看@foe@，又看了看@possessive@的斧子，又看了看@foe@……
+VISUAL:@The_monster@看了看@possessive@斧子，又看了看@foe@，又看了看@possessive@斧子，又看了看@foe@……
 
 VISUAL:@The_monster@露出喜悦的狞笑。
 
@@ -4012,14 +4012,14 @@ VISUAL:@The_monster@摇了摇一只沉重的钱袋，眨了眨眼。
 
 @The_monster@ 对 @foe@ 说："我守着宝库，很好！你不许进！"
 
-VISUAL:@The_monster@跺了跺@possessive@的脚。
+VISUAL:@The_monster@跺了跺@possessive@脚。
 %%%%
 _Lodul_rare_
 @The_monster@ 对 @foe@ 说："给我干活？我出好价钱。"
 
 @The_monster@ 对 @foe@ 吼道："尝尝雷霆！"
 
-VISUAL:@The_monster@调整了一下@possessive@的装置。
+VISUAL:@The_monster@调整了一下@possessive@装置。
 
 @The_monster@吼道："电击！哈哈哈，吓了你一跳。"
 
@@ -4043,7 +4043,7 @@ _Margery_common_
 VISUAL:@The_monster@打出手势。
 @_Margery_spell_results_@
 
-VISUAL:@The_monster_possessive@的双眼开始发出@_spell_colour_@色的光芒。
+VISUAL:@The_monster_possessive@双眼开始发出@_spell_colour_@色的光芒。
 
 VISUAL:@The_monster@打出手势。
 VISUAL:你感到一阵[诅咒|厄运]降临。
@@ -4089,7 +4089,7 @@ VISUAL:@The_monster@瞬间变得透明。
 
 
 
-VISUAL:@The_monster_possessive@的双手开始发光。
+VISUAL:@The_monster_possessive@双手开始发光。
 %%%%
 _Maurice_medium_
 
@@ -4119,7 +4119,7 @@ VISUAL:@The_monster@露出邪恶的笑容。
 
 @The_monster@邪恶地大笑。
 
-@The_monster_possessive@的牙齿发出响亮的咔嗒声。
+@The_monster_possessive@牙齿发出响亮的咔嗒声。
 
 @The_monster@ 对 @foe@ 咯咯笑道："我将统治世界！"
 %%%%
@@ -4183,9 +4183,9 @@ VISUAL:@The_monster@小心地环顾四周。
 @The_monster@ 对 @foe@ 咆哮道："我的地牢！出去！"
 %%%%
 _Parghit_rare_
-VISUAL:@The_monster@咬紧了@possessive@的牙。
+VISUAL:@The_monster@咬紧了@possessive@牙。
 
-VISUAL:@The_monster@攥紧了@possessive@的爪子。
+VISUAL:@The_monster@攥紧了@possessive@爪子。
 
 @The_monster@ 对 @foe@ 发出嘶嘶声："我咬！"
 
@@ -4205,9 +4205,9 @@ VISUAL:@The_monster@紧张地环顾四周。
 @The_monster@ 对 @foe@ 咆哮道："我的家！出去！"
 %%%%
 _Pargi_rare_
-VISUAL:@The_monster@咬紧了@possessive@的牙。
+VISUAL:@The_monster@咬紧了@possessive@牙。
 
-VISUAL:@The_monster@攥紧了@possessive@的爪子。
+VISUAL:@The_monster@攥紧了@possessive@爪子。
 
 @The_monster@ 对 @foe@ 发出嘶嘶声："我咬！"
 
@@ -4218,7 +4218,7 @@ VISUAL:@The_monster@一瞬间显得非常悲伤。
 _Polyphemus_common_
 VISUAL:@The_monster@用@possessive@那只独眼瞪着@foe@。
 
-VISUAL:@The_monster@对@foe@疯狂地转动着@possessive@的眼睛。
+VISUAL:@The_monster@对@foe@疯狂地转动着@possessive@眼睛。
 
 @The_monster@ @_shouts_@，命令@possessive@宠物们出击！
 
@@ -4249,9 +4249,9 @@ _Roxanne_medium_
 _Rupert_common_
 VISUAL:@The_monster@鼓起肌肉。
 
-VISUAL:@The_monster@用@possessive@的拳头捶打@possessive@的胸膛。
+VISUAL:@The_monster@用@possessive@拳头捶打@possessive@胸膛。
 
-VISUAL:汗水从@the_monster_possessive@的胸膛滴落。
+VISUAL:汗水从@the_monster_possessive@胸膛滴落。
 
 @The_monster@说："力量统治这个世界！"
 
@@ -4330,13 +4330,13 @@ _Sojobo_advice_
 _Sojobo_common_
 VISUAL:@The_monster@摆出一个剑术架势。
 
-@The_monster@对@possessive@的下属发出命令。
+@The_monster@对@possessive@下属发出命令。
 
 VISUAL:@The_monster@露出恶魔般的笑容。
 
 @the_monster@周围的空气短暂地噼啪作响。
 
-VISUAL:@the_monster_possessive@的爪子上迸出短促的火花。
+VISUAL:@the_monster_possessive@爪子上迸出短促的火花。
 %%%%
 _Sojobo_rare_
 @The_monster@ 对 @foe@ 说："此战根本不值一提！"
@@ -4419,7 +4419,7 @@ VISUAL:@the_monster@周围的空间似乎诡异地扭曲。
 
 VISUAL:@The_monster@打量着@foe@，仿佛在筹划@possessive@下一次攻击。
 
-VISUAL:@The_monster@瞪了@possessive@的队伍一眼，示意安静。
+VISUAL:@The_monster@瞪了@possessive@队伍一眼，示意安静。
 %%%%
 _Vashnia_naga_
 @The_monster@ 对 @foe@ 说："你是我们种族的叛徒！"
@@ -4433,7 +4433,7 @@ _Vashnia_nonnaga_
 
 @The_monster@ 对 @foe@ 说："我们对闯入者可不友善！"
 
-@The_monster@对@possessive@的队伍说："别让那只@foe_genus@跑了！"
+@The_monster@对@possessive@队伍说："别让那只@foe_genus@跑了！"
 %%%%
 _Vashnia_rare_
 @The_monster@ 对 @foe@ 低语道："正中眉心……"
@@ -4546,7 +4546,7 @@ VISUAL:@The_monster@擦拭着一把刀刃。
 
 @the_monster@注视着@foe@，周遭的机械装置发出怪异的嗡嗡声。
 
-VISUAL:一把散落的刀刃划破了@the_monster_possessive@的皮肤。@Subjective@毫不在意。
+VISUAL:一把散落的刀刃划破了@the_monster_possessive@皮肤。@Subjective@毫不在意。
 
 @The_monster@ 对 @foe@ 嚎叫道："我要把你剥得一丝不剩！"
 
@@ -5515,7 +5515,7 @@ VISUAL:@The_monster@一瞬间发出明亮的光芒。
 
 
 
-VISUAL:@The_monster_possessive@的@hands@开始发光。
+VISUAL:@The_monster_possessive@@hands@开始发光。
 
 
 
@@ -5537,7 +5537,7 @@ VISUAL:@The_monster@似乎说了些什么。
 _fleeing_silenced_rare_
 
 
-VISUAL:@The_monster@张开@possessive@的嘴，仿佛在喊叫。
+VISUAL:@The_monster@张开@possessive@嘴，仿佛在喊叫。
 
 
 
@@ -6363,7 +6363,7 @@ w:5
 VISUAL:@The_monster@挥舞着一面三角旗，在为你的敌人加油！
 
 w:5
-VISUAL:@The_monster_possessive@的铠甲在火炬光下闪闪发亮。
+VISUAL:@The_monster_possessive@铠甲在火炬光下闪闪发亮。
 
 w:1
 VISUAL:@The_monster@，战争之主奥卡瓦鲁的选民，沐浴着恩惠的光辉。
@@ -6537,7 +6537,7 @@ _wizard_common_spell_
 _wizard_medium_
 VISUAL:@The_monster@身体一瞬间变大。
 
-VISUAL:@The_monster_possessive@的双眼开始发光。
+VISUAL:@The_monster_possessive@双眼开始发光。
 
 @The_monster@ 对 @foe@ 吼道："你承受不了我的力量！"
 
@@ -6727,7 +6727,7 @@ VISUAL:@The_monster@露出邪恶的笑容。
 
 VISUAL:@The_monster@露出恶毒的狞笑。
 
-VISUAL:@The_monster@咬紧@possessive@的牙齿。
+VISUAL:@The_monster@咬紧@possessive@牙齿。
 
 @The_monster@疯狂地大笑。
 
@@ -6884,7 +6884,7 @@ Xak'krixis
 
 VISUAL:@The_monster@用一只空闲的肢体疯狂地记录着笔记。
 
-VISUAL:@The_monster_possessive@的上颚若有所思地咔嗒作响。
+VISUAL:@The_monster_possessive@上颚若有所思地咔嗒作响。
 
 @The_monster@说："{{
     if you.skill("Alchemy") >= 10 then
@@ -6911,7 +6911,7 @@ w:5
 alderking
 VISUAL:@The_monster@在无形的风中摇曳招引。
 
-VISUAL:@The_monster_possessive@的枝叶泛起光芒与泡沫。
+VISUAL:@The_monster_possessive@枝叶泛起光芒与泡沫。
 
 @The_monster@说道："既然你不愿[共舞|行礼]，那我便送客了。" @player_only@
 
@@ -6931,7 +6931,7 @@ __NONE
 bennu
 
 
-VISUAL:@The_monster_possessive@的羽毛短暂地泛起异界之焰。
+VISUAL:@The_monster_possessive@羽毛短暂地泛起异界之焰。
 
 
 
@@ -6964,7 +6964,7 @@ bullfrog
 
 
 
-@The_monster@用@possessive@的舌头卷住了一只附近的@_frog_food_@。
+@The_monster@用@possessive@舌头卷住了一只附近的@_frog_food_@。
 %%%%
 catoblepas
 
@@ -6977,11 +6977,11 @@ catoblepas
 
 
 
-VISUAL:@The_monster@将@possessive@的脚猛地砸进@surface@。
+VISUAL:@The_monster@将@possessive@脚猛地砸进@surface@。
 
 
 
-VISUAL:@The_monster@用@possessive@的头重重地撞击着@surface@。
+VISUAL:@The_monster@用@possessive@头重重地撞击着@surface@。
 
 
 
@@ -6994,7 +6994,7 @@ VISUAL:@The_monster@用@possessive@的头重重地撞击着@surface@。
 centipede
 
 
-VISUAL:@The_monster@挥舞着@possessive@的触角。
+VISUAL:@The_monster@挥舞着@possessive@触角。
 %%%%
 chaos spawn
 
@@ -7020,9 +7020,9 @@ VISUAL:@The_monster@短暂地长出一张与你惊人相似的脸。
 cherub
 @The_monster@以四部和声咏唱赞美光辉之神。
 
-@The_monster_possessive@的狮首咆哮！
+@The_monster_possessive@狮首咆哮！
 
-@The_monster_possessive@的鹰首尖啸！
+@The_monster_possessive@鹰首尖啸！
 
 @The_monster@咏唱赞美辛。
 
@@ -7120,26 +7120,26 @@ w:1
 
 @The_monster@说道："我曾经也很美丽。看看现在的我。"
 
-VISUAL:@The_monster@扭动着@possessive@的触手。
+VISUAL:@The_monster@扭动着@possessive@触手。
 
-VISUAL:@the_monster_possessive@的胸口睁开了十几只眼睛。
+VISUAL:@the_monster_possessive@胸口睁开了十几只眼睛。
 
-VISUAL:@the_monster_possessive@的背上长出了奇怪的附肢。
+VISUAL:@the_monster_possessive@背上长出了奇怪的附肢。
 
-VISUAL:@The_monster@甩动着@possessive@的尾巴。
+VISUAL:@The_monster@甩动着@possessive@尾巴。
 
 VISUAL:@The_monster@突然长出两只巨大的角！
 
 w:3
-VISUAL:@The_monster_possessive@的皮肤分泌出浓稠的黏液。
+VISUAL:@The_monster_possessive@皮肤分泌出浓稠的黏液。
 
-VISUAL:@the_monster_possessive@的头上出现了空洞盲目的眼睛。
+VISUAL:@the_monster_possessive@头上出现了空洞盲目的眼睛。
 
-VISUAL:@the_monster_possessive@的眼睑下绽开了化脓的疮口。
+VISUAL:@the_monster_possessive@眼睑下绽开了化脓的疮口。
 
 @The_monster@恳求你杀了@objective@。
 
-VISUAL:@The_monster@看着@possessive@的身体，无泪而泣。
+VISUAL:@The_monster@看着@possessive@身体，无泪而泣。
 
 @The_monster@尖叫道："我只是一个病态、怪异、面目全非的造物。"
 %%%%
@@ -7163,13 +7163,13 @@ frilled lizard
 @The_monster@ 对 @foe@ 嘶嘶作响。
 %%%%
 goblin sharper
-VISUAL:@The_monster@摆弄着@possessive@的便携祭坛。
+VISUAL:@The_monster@摆弄着@possessive@便携祭坛。
 
-VISUAL:@The_monster@洗着@possessive@的一副牌。
+VISUAL:@The_monster@洗着@possessive@一副牌。
 
-VISUAL:@The_monster@从@possessive@的一副牌中摊开了几张。
+VISUAL:@The_monster@从@possessive@一副牌中摊开了几张。
 
-VISUAL:@The_monster_possessive@的牌组短暂地闪耀出诡异的七彩光芒。
+VISUAL:@The_monster_possessive@牌组短暂地闪耀出诡异的七彩光芒。
 
 @The_monster@吟唱道："知道何时该出手，知道何时该收手……"
 
@@ -7223,7 +7223,7 @@ hell lord
 kobold blastminer
 VISUAL:@The_monster@拍打着笼罩着@possessive@大炮的薄烟。
 
-VISUAL:@The_monster_possessive@的大炮颤动着，迸发出红色的光芒。
+VISUAL:@The_monster_possessive@大炮颤动着，迸发出红色的光芒。
 
 w:20
 __NONE
@@ -7254,7 +7254,7 @@ __NONE
 moth of wrath
 
 
-VISUAL:@The_monster@愤怒地挥舞着@possessive@的触角。
+VISUAL:@The_monster@愤怒地挥舞着@possessive@触角。
 %%%%
 nekomata
 {{
@@ -7323,7 +7323,7 @@ w:1
 @_generic_orc_speech_@
 %%%%
 protean progenitor
-VISUAL:@The_monster_possessive@的形态[|短暂地][波动|摇曳]着，透着深深的疲惫。
+VISUAL:@The_monster_possessive@形态[|短暂地][波动|摇曳]着，透着深深的疲惫。
 
 VISUAL:@The_monster_possessive@那[三重嵌套的|六颗尖牙的|九只冒烟的]眼睛缓缓眨动。
 
@@ -7354,7 +7354,7 @@ VISUAL:@The_monster@无唇而笑。
 
 @The_monster@ 对 @foe@ 说道："每个人终有一死，你的时辰到了。"
 
-VISUAL:@The_monster@用手指划过@possessive@的喉咙。
+VISUAL:@The_monster@用手指划过@possessive@喉咙。
 
 @The_monster@ 对 @foe@ 喊道："你必须马上死！"
 
@@ -7712,11 +7712,11 @@ beogh_converted_orc_reaction_battle
 
 
 
-@The_monster@以@possessive@的双膝跪倒在地。
+@The_monster@以@possessive@双膝跪倒在地。
 
 
 
-@The_monster@举起@possessive@的双手投降。
+@The_monster@举起@possessive@双手投降。
 %%%%
 beogh_converted_orc_reaction_battle_follower
 
@@ -7730,11 +7730,11 @@ beogh_converted_orc_reaction_sight
 
 
 
-@The_monster@放松了@possessive@的战斗姿态，对你微笑。
+@The_monster@放松了@possessive@战斗姿态，对你微笑。
 
 
 
-@The_monster@以@possessive@的双膝跪在你面前。
+@The_monster@以@possessive@双膝跪在你面前。
 %%%%
 beogh_converted_orc_resurrection
 
@@ -7814,7 +7814,7 @@ holy_being_pacification_humanoid
 w:5
 @holy_being_pacification@
 
-VISUAL:@The_monster@放松了@possessive@的战斗姿态。
+VISUAL:@The_monster@放松了@possessive@战斗姿态。
 
 VISUAL:@The_monster@向你行礼。
 %%%%
@@ -7998,7 +7998,7 @@ orc_apostle_yield
 
 
 
-@The_monster@以@possessive@的双膝跪倒在地，表示臣服。
+@The_monster@以@possessive@双膝跪倒在地，表示臣服。
 %%%%
 orc_priest_apostate
 祭司喊道："不忠的恶棍，从我眼前消失！"
@@ -8045,7 +8045,7 @@ VISUAL:@The_monster@在愤怒与悲痛的交织中颤抖。
 
 
 
-VISUAL:@The_monster@咬紧@possessive@的牙关，凝神专注。
+VISUAL:@The_monster@咬紧@possessive@牙关，凝神专注。
 
 
 
@@ -8079,7 +8079,7 @@ VISUAL:@The_monster@在愤怒与悲痛的交织中颤抖。
 
 
 
-VISUAL:@The_monster@咬紧@possessive@的牙关，凝神专注。
+VISUAL:@The_monster@咬紧@possessive@牙关，凝神专注。
 
 
 
@@ -8112,7 +8112,7 @@ VISUAL:@The_monster@惊恐地瞪大了眼睛。
 
 
 
-@The_monster@摇着@possessive@的头说道："不，不，不！"
+@The_monster@摇着@possessive@头说道："不，不，不！"
 
 
 
@@ -8192,7 +8192,7 @@ weeping skull triumphant
 'r'
 
 
-VISUAL:@The_monster@抽动着@possessive@的胡须。
+VISUAL:@The_monster@抽动着@possessive@胡须。
 %%%%
 _friendly_imp_greeting
 @The_monster@说道："我来了！"
