@@ -630,6 +630,11 @@ PY
             bash -c "$ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND"
             return
         fi
+        # test_monspeak_inventory.py (66 tests, heavy candidate audits,
+        # >15 min) is excluded from this static chain: it exceeds the
+        # GitHub-hosted runner budget on CI.  Run it directly when the
+        # full monspeak gate is needed:
+        #   python3 .claude/scripts/tests/test_monspeak_inventory.py
         python3 "$SCRIPT_DIR/tests/test_message_overlay.py" \
             && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
             && python3 "$SCRIPT_DIR/tests/test_decorlines_inventory.py" \
@@ -637,7 +642,6 @@ PY
             && python3 "$SCRIPT_DIR/tests/test_miscast_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monflee_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monspell_inventory.py" \
-            && python3 "$SCRIPT_DIR/tests/test_monspeak_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_shout_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_wpnnoise_inventory.py" \
             && python3 "$SCRIPT_DIR/generate_message_overlay.py" \
