@@ -2078,24 +2078,38 @@ def _runtime_lines_of(message: str) -> list[str]:
 
 
 
-def _closure_may_introduce_lua(
+def _closure_may_affect_layout(
     pattern: str, family_lookup: dict[str, list[str]] | None
 ) -> bool:
-    """Whether expanding the in-family tokens of ``pattern`` can make a
-    Lua site appear that the raw text does not already contain (CR-027):
-    any token variant (or its recursive closure) that contains ``{{``.
+    """Whether expanding the in-family tokens of ``pattern`` can change
+    the runtime line layout that the early return of
+    ``_lua_return_branch_lines``/``_lua_return_topology`` would report
+    for the unexpanded pattern (CR-031): "no Lua in the closure" does
+    not mean the recursive tokens cannot change the channels.  Any
+    reachable token variant (or its recursive closure) that contains
+    ``{{`` (a Lua site the raw text lacks), whose first line resolves
+    to a non-talk channel through the sink classifier (a line-start
+    channel prefix: ``VISUAL:``/``SOUND:``/``WARN:``/``VISUAL WARN:``
+    and every other named channel ``_monspeak_line_channel`` knows), or
+    that contains a newline (the ``\n`` sink split of
+    ``_runtime_lines_of``) can change the per-line channel sequence or
+    the runtime line count of some expansion outcome, so the full
+    expansion is required.
 
+    The pattern's own text is only scanned for its tokens: the pattern's
+    own layout is already exact in the early return, so its own
+    prefixes/newlines must not force the expansion (the ``w:N\n``
+    weight prefixes would otherwise expand every weighted pattern,
+    breaking the CR-026 boundedness this check exists to preserve).
     Bounded by the visited-text set: every distinct variant text is
     scanned once, so a cyclic fragment cannot loop.  Returns False when
-    no lookup is supplied (no expansion -> no new Lua)."""
+    no lookup is supplied (no expansion -> no new layout)."""
     if family_lookup is None:
         return False
     seen: set[str] = set()
     stack = [pattern]
     while stack:
         text = stack.pop()
-        if "{{" in text:
-            return True
         pos = text.find("@")
         while pos >= 0:
             end = text.find("@", pos + 1)
@@ -2104,11 +2118,140 @@ def _closure_may_introduce_lua(
             variants = family_lookup.get(text[pos + 1:end].lower())
             if variants:
                 for variant in variants:
+                    if variant in seen:
+                        continue
+                    seen.add(variant)
+                    first_line = variant.split("\n", 1)[0]
+                    if ("{{" in variant or "\n" in variant
+                            or _monspeak_line_channel(
+                                first_line.strip(" \t\n\r"))
+                            != "talk"):
+                        return True
+                    stack.append(variant)
+            pos = text.find("@", end + 1)
+    return False
+
+
+
+def _closure_has_lua(
+    pattern: str, family_lookup: dict[str, list[str]] | None
+) -> bool:
+    """Whether any reachable token variant (or its recursive closure)
+    contains a Lua site (``{{``): such a variant can change the Lua
+    branch topology of an expansion, so the per-line head-channel shortcut
+    below does not apply.  Bounded by the visited-text set."""
+    if family_lookup is None:
+        return False
+    seen: set[str] = set()
+    stack = [pattern]
+    while stack:
+        text = stack.pop()
+        pos = text.find("@")
+        while pos >= 0:
+            end = text.find("@", pos + 1)
+            if end < 0:
+                break
+            variants = family_lookup.get(text[pos + 1:end].lower())
+            if variants:
+                for variant in variants:
+                    if "{{" in variant:
+                        return True
                     if variant not in seen:
                         seen.add(variant)
                         stack.append(variant)
             pos = text.find("@", end + 1)
     return False
+
+
+def _closure_has_newline(
+    pattern: str, family_lookup: dict[str, list[str]] | None
+) -> bool:
+    """Whether any reachable token variant (or its recursive closure)
+    contains a raw newline: such a variant can change the runtime line
+    count of an expansion, so the per-line head-channel shortcut below
+    does not apply.  Bounded by the visited-text set."""
+    if family_lookup is None:
+        return False
+    seen: set[str] = set()
+    stack = [pattern]
+    while stack:
+        text = stack.pop()
+        pos = text.find("@")
+        while pos >= 0:
+            end = text.find("@", pos + 1)
+            if end < 0:
+                break
+            variants = family_lookup.get(text[pos + 1:end].lower())
+            if variants:
+                for variant in variants:
+                    if "\n" in variant:
+                        return True
+                    if variant not in seen:
+                        seen.add(variant)
+                        stack.append(variant)
+            pos = text.find("@", end + 1)
+    return False
+
+
+def _head_channel_set(
+    text: str, family_lookup: dict[str, list[str]] | None, depth: int
+) -> set[str]:
+    """The set of sink channel identities the head of ``text`` can
+    resolve to after the production recursive replacement of its leading
+    in-family tokens (CR-031/CR-033).
+
+    ``_monspeak_line_channel`` only inspects the text up to its first
+    colon: if a colon precedes the first marker the channel is fixed; if
+    a marker leads the line, the channel set is the union over the
+    marker's reachable variants of the variant-head channel set (the
+    rest of the line never changes the channel, and the no-newline
+    closure keeps the line count intact).  An unexpanded post-process
+    token (not in the SpeakDB lookup) keeps its literal bytes, so the
+    head param becomes non-channel text and resolves to talk.  Bounded
+    by the recursion depth; a cyclic fragment cannot loop."""
+    if depth > _MAX_RECURSION_DEPTH:
+        return {"talk"}
+    colon = text.find(":")
+    at = text.find("@")
+    if colon >= 0 and (at < 0 or colon < at):
+        return {_monspeak_line_channel(text[:colon + 1])}
+    if at < 0:
+        return {"talk"}
+    end = text.find("@", at + 1)
+    if end < 0:
+        return {"talk"}
+    marker = text[at + 1:end].lower()
+    variants = (family_lookup or {}).get(marker)
+    if not variants:
+        # Post-process token: literal bytes stay, the head param is not
+        # a known channel prefix -> talk.
+        return {"talk"}
+    out: set[str] = set()
+    for variant in variants:
+        out |= _head_channel_set(variant, family_lookup, depth + 1)
+    return out
+
+
+def _no_newline_closure_layouts(
+    pattern: str, family_lookup: dict[str, list[str]] | None
+) -> list[list[str]]:
+    """Per-line channel layout of every expansion of ``pattern`` when the
+    closure cannot introduce Lua or newlines: each runtime line keeps
+    its position and its channel is determined by its head (see
+    ``_head_channel_set``), so the layout set is the per-line head
+    channel sets' cross product -- exact, and O(variants) instead of the
+    full text enumeration (``crazy yiuf``: 7 x 3 x 72 x 85 wordlist
+    combinations collapse to the two head channels its speech variants
+    produce)."""
+    lines = _runtime_lines_of(pattern)
+    if not lines:
+        return []
+    per_line = [_head_channel_set(line, family_lookup, 0)
+                for line in lines]
+    layouts: list[list[str]] = []
+    for combination in itertools.product(*per_line):
+        layouts.append(list(combination))
+    return layouts
 
 
 def _lua_return_branch_lines(
@@ -2140,15 +2283,29 @@ def _lua_return_branch_lines(
     survives without a Lua interpreter.  Raises ``InventoryError`` when
     any expanded Lua source fails the vendored syntax gate or its
     return topology cannot be bound."""
-    if "{{" not in pattern and not _closure_may_introduce_lua(
+    if "{{" not in pattern and not _closure_may_affect_layout(
             pattern, family_lookup):
-        # No Lua sites and no reachable token variant can introduce one
-        # (CR-027): exactly one branch (the pattern's own lines),
-        # nothing to expand per-site.  This keeps the full-pattern
-        # expansion (CR-026) bounded: patterns whose closure cannot
-        # affect the layout never enter the expansion or the site loop.
+        # No Lua sites and no reachable token variant can change any
+        # line's channel or the runtime line count (CR-031): exactly one
+        # branch (the pattern's own lines), nothing to expand per-site.
+        # This keeps the full-pattern expansion (CR-026) bounded:
+        # patterns whose closure cannot affect the layout never enter
+        # the expansion or the site loop.
         return [[[_monspeak_line_channel(line)
                   for line in _runtime_lines_of(pattern)]]]
+    if "{{" not in pattern and not _closure_has_newline(
+            pattern, family_lookup) and not _closure_has_lua(
+            pattern, family_lookup):
+        # CR-033: the closure can change the channels (a variant with a
+        # VISUAL:/SOUND:/WARN: head, e.g. ``crazy yiuf`` whose speech
+        # variant waves a quarterstaff) but cannot introduce Lua or
+        # newlines, so every runtime line keeps its position and its
+        # channel is decided by its head: the exact layout set is the
+        # per-line head-channel cross product, computed without
+        # enumerating the huge text combination space.
+        return [[list(layout)]
+                for layout in _no_newline_closure_layouts(
+                    pattern, family_lookup)]
     expanded = ([(pattern, 0)]
                 if not family_lookup
                 else _family_expansions(pattern, family_lookup, 1, 0))
@@ -2206,11 +2363,12 @@ def _lua_return_topology(
     to be identical: branch count, per-branch expanded layout set and
     per-line channel are all encoded in this shape."""
     topology: list[list[list[list[str]]]] = []
-    if "{{" not in pattern and not _closure_may_introduce_lua(
+    if "{{" not in pattern and not _closure_may_affect_layout(
             pattern, family_lookup):
-        # No Lua sites and no reachable token variant can introduce one
-        # (CR-027): nothing to bind; avoids the full-pattern expansion
-        # on every non-Lua variant (CR-026 boundedness).
+        # No Lua sites and no reachable token variant can change any
+        # line's channel or the runtime line count (CR-031): nothing to
+        # bind; avoids the full-pattern expansion on every non-Lua
+        # variant (CR-026 boundedness).
         return topology
     expanded = ([(pattern, 0)]
                 if not family_lookup
