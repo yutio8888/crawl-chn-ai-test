@@ -1783,6 +1783,50 @@ class MonspeakInventoryTests(unittest.TestCase):
                 "VISUAL channel prefix lost at an EN-aligned line" in detail
                 for _contract, _artifact, detail in findings))
 
+    def test_issue70_lua_return_lua_escape_prefix_mutation_rejected(self):
+        # CR-025: the reviewer probe -- prefixing one ZH variant of the
+        # recursive fragment ``_Sprozz_common_`` (the first reachable
+        # variant, zh:4354) with the literal bytes ``\x56ISUAL:`` (the
+        # Lua escape ``\x56`` is the hex byte for 'V') -- must fail the
+        # registered scanner.  Production expands the pattern's tokens
+        # while it is still Lua source, so the fragment bytes enter the
+        # Lua escape interpretation of the return literal and the branch
+        # emits a VISUAL line (talk_visual) while every expanded EN line
+        # is talk.  A gate that expands the interpreted literal instead
+        # never feeds the fragment through the escape processing, keeps
+        # the raw ``\x56ISUAL:`` prefix (unknown channel prefix -> talk)
+        # and cannot see the mutation.
+        zh_text = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        mutated = zh_text.replace(
+            '@The_monster@说："请容我展示未来的蜜蜂！"',
+            '\\x56ISUAL:@The_monster@说："请容我展示未来的蜜蜂！"', 1)
+        self.assertNotEqual(mutated, zh_text)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "crawl-ref" / "source"
+            en_path = root / "dat" / "database" / "monspeak.txt"
+            zh_path = root / "dat" / "database" / "zh" / "monspeak.txt"
+            en_path.parent.mkdir(parents=True)
+            zh_path.parent.mkdir(parents=True)
+            en_path.write_text(
+                (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
+                .read_text(encoding="utf-8"), encoding="utf-8")
+            zh_path.write_text(mutated, encoding="utf-8")
+            findings = SCAN.protocol_boundary_findings(
+                str(root), "issue16-monspeak-channels")
+            self.assertTrue(findings)
+            self.assertTrue(any(
+                contract == "issue16-monspeak-channels"
+                and "expanded Lua return channel topology differs from EN"
+                in detail
+                for contract, artifact, detail in findings))
+            self.assertFalse(any(
+                "EN VISUAL line set drifted" in detail
+                for _contract, _artifact, detail in findings))
+            self.assertFalse(any(
+                "VISUAL channel prefix lost at an EN-aligned line" in detail
+                for _contract, _artifact, detail in findings))
+
     def test_candidate_lua_return_visual_prefix_change_rejected(self):
         # CR-023: the candidate gate compares the per-branch channel
         # topology in _pair_candidate; a ZH return whose VISUAL prefix
@@ -1826,6 +1870,44 @@ class MonspeakInventoryTests(unittest.TestCase):
             'future!"',
             'VISUAL:@The_monster@ says, "Allow me to demonstrate the bee '
             'of the future!"',
+            1)
+        self.assertNotEqual(aligned, aligned_zh_source(zh_zh, en_zh))
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(
+            MODULE.InventoryError,
+            "Lua return .*channel topology differs",
+        ):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
+    def test_candidate_lua_return_lua_escape_prefix_mutation_rejected(self):
+        # CR-025: the reviewer probe -- one ZH variant of the recursive
+        # fragment ``_Sprozz_common_`` (only reachable through the Lua
+        # return literal of ``Sprozz``) prefixed with the literal bytes
+        # ``\x56ISUAL:`` -- keeps every pre-CR-025 fact identical (the
+        # unexpanded return literal, the skeleton, the token sets and
+        # the per-key variant counts all stay equal) but changes the
+        # expanded channel topology of the ``Sprozz`` return branch:
+        # production splices the fragment into the still-Lua return
+        # literal and the Lua escape ``\x56`` becomes 'V', so the branch
+        # emits a VISUAL line.  A gate that expands the interpreted
+        # literal instead never feeds the fragment through the escape
+        # processing and cannot reject the mutation; the candidate gate
+        # must fail closed.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            '@The_monster@ says, "Allow me to demonstrate the bee of the '
+            'future!"',
+            '\\x56ISUAL:@The_monster@ says, "Allow me to demonstrate the '
+            'bee of the future!"',
             1)
         self.assertNotEqual(aligned, aligned_zh_source(zh_zh, en_zh))
         fixture = fixture_commit_with_replaced_blobs({

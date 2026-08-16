@@ -1713,27 +1713,41 @@ static void monspeak_family_expansions(
 }
 
 // Per-return-branch fully expanded runtime texts of one ``{{...}}``
-// block, in source order (CR-024): the strict branch extraction of
-// ``monspeak_lua_return_branch_texts``, then ``_family_expansions`` over
-// the same-language in-family lookup for every literal return.  Each
-// branch maps to its sorted-unique outcome text set (every reachable
-// variant of every referenced fragment); a literal without in-family
-// tokens maps to exactly one text; the declared display mappings keep
-// the ``{{LUA}}`` placeholder branch so branch counts stay aligned.
+// block, in source order (CR-024/CR-025): production expands every
+// in-family @token@ marker of the selected pattern while it is still
+// Lua source (database.cc _call_recursive_replacement) and only then
+// evaluates the block (_execute_embedded_lua), so the fragment bytes
+// spliced into a return literal participate in the Lua escape/quote
+// interpretation.  This helper therefore expands the RAW block with
+// ``monspeak_family_expansions`` (real root-pattern depth 1, one
+// global replacement count shared by every token of the block) and
+// runs the strict branch extraction of
+// ``monspeak_lua_return_branch_texts`` on EVERY expanded Lua source.
+// Each branch maps to its sorted-unique outcome text set (every
+// reachable variant of every referenced fragment, interpreted through
+// the Lua escape processing); a literal without in-family tokens maps
+// to exactly one text; the declared display mappings keep the
+// ``{{LUA}}`` placeholder branch so branch counts stay aligned.
 static vector<vector<string>> monspeak_lua_return_branch_expansions(
     const string &block, const monspeak_family_lookup &lookup)
 {
-    vector<vector<string>> expansions;
-    for (const string &text : monspeak_lua_return_branch_texts(block))
+    vector<pair<string, int>> expanded_blocks;
+    monspeak_family_expansions(block, lookup, 1, 0, expanded_blocks);
+    vector<set<string>> branch_sets;
+    for (const auto &item : expanded_blocks)
     {
-        set<string> outcomes;
-        vector<pair<string, int>> expanded;
-        monspeak_family_expansions(text, lookup, 2, 0, expanded);
-        for (const auto &item : expanded)
-            outcomes.insert(item.first);
+        const vector<string> texts =
+            monspeak_lua_return_branch_texts(item.first);
+        if (branch_sets.empty())
+            branch_sets.resize(texts.size());
+        REQUIRE(texts.size() == branch_sets.size());
+        for (size_t i = 0; i < texts.size(); ++i)
+            branch_sets[i].insert(texts[i]);
+    }
+    vector<vector<string>> expansions;
+    for (const set<string> &outcomes : branch_sets)
         expansions.push_back(vector<string>(outcomes.begin(),
                                             outcomes.end()));
-    }
     return expansions;
 }
 
@@ -2040,6 +2054,68 @@ TEST_CASE("Issue 70 recursive tokens inside Lua returns bind the expanded ZH top
     // channel line.  Without token expansion both branches' literals are
     // byte-identical, so this difference is exactly the CR-024 blind
     // spot the expanded topology closes.
+    REQUIRE(en_branches[1].size() == 1);
+    REQUIRE(en_branches[1].count(monspeak_layout(1, MSGCH_TALK)) == 1);
+    REQUIRE(zh_branches[1].size() == 2);
+    REQUIRE(zh_branches[1].count(monspeak_layout(1, MSGCH_TALK_VISUAL))
+            == 1);
+    CHECK(zh_branches[1] != en_branches[1]);
+}
+
+TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH topology",
+          "[single-file][textdb][phase0][issue-70][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+    const textdb_phase0::canonical_speakdb_dump english =
+        textdb_phase0::dump_canonical_english_speakdb_typed();
+    vector<textdb_phase0::canonical_entry> localized =
+        textdb_phase0::dump_localized_speakdb_typed("zh").entries;
+
+    // CR-025: the reviewer probe.  Production expands the selected
+    // pattern's @token@ markers while it is still Lua source, so a
+    // fragment spliced into a Lua return literal participates in the
+    // Lua escape interpretation: a ZH variant of _sprozz_common_ that
+    // starts with the literal bytes \x56ISUAL: (the Lua escape \x56 is
+    // the hex byte for 'V') must resolve to a VISUAL: line at runtime.
+    // A gate that expands the interpreted literal instead (the escape
+    // processing never sees the fragment) keeps the raw \x56ISUAL:
+    // prefix, which resolves to the talk channel, and cannot reject the
+    // mutation.
+    const monspeak_family_lookup en_lookup =
+        monspeak_build_lookup(english.entries);
+    textdb_phase0::canonical_entry *sprozz_common =
+        find_canonical_entry_mutable(localized, "_sprozz_common_");
+    REQUIRE(sprozz_common != nullptr);
+    REQUIRE(!sprozz_common->variants.empty());
+    sprozz_common->variants[0].raw_pattern =
+        "\\x56ISUAL:" + sprozz_common->variants[0].raw_pattern;
+    const monspeak_family_lookup zh_lookup =
+        monspeak_build_lookup(localized);
+
+    const textdb_phase0::canonical_entry *en_sprozz =
+        find_canonical_entry(english.entries, "sprozz");
+    const textdb_phase0::canonical_entry *zh_sprozz =
+        find_canonical_entry(localized, "sprozz");
+    REQUIRE(en_sprozz != nullptr);
+    REQUIRE(zh_sprozz != nullptr);
+    const vector<monspeak_layout_set> en_branches =
+        monspeak_lua_branch_layouts(en_sprozz->variants[0].raw_pattern,
+                                    en_lookup);
+    const vector<monspeak_layout_set> zh_branches =
+        monspeak_lua_branch_layouts(zh_sprozz->variants[0].raw_pattern,
+                                    zh_lookup);
+    REQUIRE(zh_branches.size() == en_branches.size());
+    // The @_Sprozz_thief_@ branch is untouched on both sides: every EN
+    // and ZH thief fragment resolves to a single talk layout.
+    CHECK(zh_branches[0] == en_branches[0]);
+    // The @_Sprozz_common_@ branch gains the talk_visual layout in ZH:
+    // production splices the mutated fragment into the still-Lua return
+    // literal, the Lua escape \x56 becomes 'V', and the return emits a
+    // VISUAL channel line.  Without the production expansion order the
+    // fragment bytes never reach the Lua escape interpretation, the raw
+    // \x56ISUAL: prefix resolves to talk, and the branch sets stay
+    // equal -- exactly the CR-025 blind spot this probe closes.
     REQUIRE(en_branches[1].size() == 1);
     REQUIRE(en_branches[1].count(monspeak_layout(1, MSGCH_TALK)) == 1);
     REQUIRE(zh_branches[1].size() == 2);

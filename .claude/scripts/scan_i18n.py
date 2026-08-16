@@ -6309,15 +6309,21 @@ def _monspeak_runtime_branches(pattern, family_lookup):
 
     Production order: ``getSpeakString`` recursively expands every
     in-family ``@token@`` marker of the selected pattern -- including
-    markers inside Lua return literals -- before evaluating the
-    ``{{...}}`` blocks; ``mons_speaks_msg`` then splits the spliced
-    message with ``split_string("\\n", msg)`` (trim_segments=true,
-    accept_empty_segments=false) and resolves each line's channel.
+    markers inside Lua return literals -- while it is still Lua source,
+    BEFORE evaluating the ``{{...}}`` blocks, so the fragment bytes
+    spliced into a return literal participate in the Lua
+    escape/quote interpretation; ``mons_speaks_msg`` then splits the
+    spliced message with ``split_string("\\n", msg)``
+    (trim_segments=true, accept_empty_segments=false) and resolves each
+    line's channel.
     Every literal return branch of every block is therefore a possible
-    fully expanded runtime message; this wrapper expands each block per
-    return branch (strict extraction from
-    monspeak_inventory._lua_block_protocol) over the same-language
-    in-family lookup and returns one sorted-unique layout set per branch
+    fully expanded runtime message; this wrapper expands each RAW block
+    (recursive ``_family_expansions`` over the same-language in-family
+    lookup, production depth/global replacement semantics) and then
+    extracts its literal returns per expanded Lua source (strict
+    extraction from monspeak_inventory._lua_block_protocol plus the
+    vendored 5.4.8 literal interpretation) and returns one
+    sorted-unique layout set per branch
     combination; each layout is the per-line channel sequence of one
     fully expanded runtime message.  Blocks without literal returns (the
     you.race()/you.genus() display mappings) keep the colon-free,

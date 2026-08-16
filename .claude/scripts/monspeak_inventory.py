@@ -1908,11 +1908,15 @@ _MAX_REPLACEMENTS = 100
 _TOO_MUCH_RECURSION_TEXT = "TOO MUCH RECURSION"
 
 
-# The recursion depth of a token inside a Lua return literal (CR-024):
-# getSpeakString expands the selected root pattern at depth 1 and every
-# marker it finds (including the Lua literal's in-family tokens) at
-# depth 2, so the literal's own expansion starts at depth 2.
-_LUA_RETURN_TOKEN_DEPTH = 2
+# The recursion depth at which a Lua block's own tokens are scanned
+# (CR-025): getSpeakString selects the root pattern at recursion_depth 1
+# and expands every marker it finds -- including the markers inside the
+# raw ``{{...}}`` Lua source -- while the pattern is still Lua code, so
+# the block's direct markers' variants are selected at depth 2.  The
+# block is a substring of that root pattern, so ``_family_expansions``
+# scans the RAW block at depth 1 (the root pattern's depth) with the
+# block's tokens sharing one global replacement count.
+_LUA_BLOCK_SCAN_DEPTH = 1
 
 
 def _family_expansions(text: str, lookup: dict[str, list[str]],
@@ -1985,9 +1989,9 @@ def _lua_return_branch_texts(block: str) -> list[str]:
     ``crawl.t_()`` forms) have no statically known runtime text and keep
     the colon-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
     checker neutralization.  No recursive token expansion is applied
-    here (``_lua_return_branch_expansions`` owns the CR-024 expansion);
-    this helper is the identity single-outcome view used by the
-    pre-CR-024 callers and tests.  Raises ``InventoryError`` on a
+    here (``_lua_return_branch_expansions`` owns the CR-024/CR-025
+    expansion); this helper is the identity single-outcome view used by
+    the pre-CR-024 callers and tests.  Raises ``InventoryError`` on a
     structurally invalid block or an unsupported literal escape: the
     runtime topology must never be guessed."""
     return [outcomes[0]
@@ -1998,44 +2002,59 @@ def _lua_return_branch_expansions(
     block: str, family_lookup: dict[str, list[str]] | None
 ) -> list[list[str]]:
     """Per-return-branch fully expanded runtime texts of one ``{{...}}``
-    block, in source order (CR-024).
+    block, in source order (CR-024/CR-025).
 
     Production order (database.cc): ``getSpeakString`` recursively
     expands every in-family ``@token@`` marker of the selected pattern
-    (``_call_recursive_replacement``) BEFORE evaluating the embedded Lua
-    block, so every literal return branch is a fully expanded runtime
-    text.  Reuses ``_lua_block_protocol``'s strict return extraction
-    (CR-002) and expands each literal with ``_family_expansions`` over
-    the same-language in-family lookup (the SpeakDB the production
-    expansion consults): each return branch maps to the sorted-unique
-    set of all reachable expanded texts (every variant of every
-    reachable token, bounded by the production depth/replacement
-    limits).  A branch whose literal contains no in-family token maps to
-    exactly one text (the literal itself); the declared display mappings
-    (``you.race()``/``you.genus()`` and their ``crawl.t_()`` forms) keep
-    the colon-free ``{{LUA}}`` placeholder branch, exactly like the
-    pre-CR-023 checker neutralization.  Raises ``InventoryError`` on a
-    structurally invalid block or an unsupported literal escape: the
-    runtime topology must never be guessed."""
-    protocol = _lua_block_protocol(block)
-    _require(protocol["error"] is None,
-             f"Lua block has no bindable return topology: "
-             f"{protocol['error']}")
-    expansions: list[list[str]] = []
-    for expression in protocol["return_strings"]:
-        value = _lua_literal_value(expression)
-        if value is None:
-            expansions.append(["{{LUA}}"])
-            continue
-        if not family_lookup:
-            expansions.append([value])
-            continue
-        outcomes = sorted({
-            text for text, _used in _family_expansions(
-                value, family_lookup, _LUA_RETURN_TOKEN_DEPTH, 0)
-        })
-        expansions.append(outcomes)
-    return expansions
+    (``_call_recursive_replacement``, database.cc:1414-1418) while it
+    is still Lua source and only then evaluates the ``{{...}}`` block
+    (``_execute_embedded_lua``, database.cc:2360-2361), so the fragment
+    bytes spliced into a return literal participate in the Lua
+    escape/quote interpretation.  This helper therefore expands the RAW
+    block with ``_family_expansions`` over the same-language in-family
+    lookup (the SpeakDB the production expansion consults), scanning at
+    the real root-pattern depth ``_LUA_BLOCK_SCAN_DEPTH`` with one
+    global replacement count shared by every token of the block, and
+    then runs ``_lua_block_protocol``'s strict return extraction
+    (CR-002) and the vendored 5.4.8 literal interpretation
+    (``_lua_literal_value``) on EVERY expanded Lua source.  Each return
+    branch maps to the sorted-unique set of all reachable expanded
+    runtime texts (every variant of every reachable token, bounded by
+    the production depth/replacement limits).  A branch whose literal
+    contains no in-family token maps to exactly one text; the declared
+    display mappings (``you.race()``/``you.genus()`` and their
+    ``crawl.t_()`` forms) keep the colon-free ``{{LUA}}`` placeholder
+    branch, exactly like the pre-CR-023 checker neutralization.  Raises
+    ``InventoryError`` on a structurally invalid expanded block, on an
+    expanded block whose return branch count diverges from the other
+    outcomes (the runtime topology must never be guessed) or on an
+    unsupported literal escape."""
+    if not family_lookup:
+        expanded_blocks = [(block, 0)]
+    else:
+        expanded_blocks = _family_expansions(
+            block, family_lookup, _LUA_BLOCK_SCAN_DEPTH, 0)
+    branches: list[set[str]] | None = None
+    for expanded_block, _used in expanded_blocks:
+        protocol = _lua_block_protocol(expanded_block)
+        _require(protocol["error"] is None,
+                 f"Lua block has no bindable return topology: "
+                 f"{protocol['error']}")
+        if branches is None:
+            branches = [set() for _ in protocol["return_strings"]]
+        else:
+            _require(
+                len(protocol["return_strings"]) == len(branches),
+                "expanded Lua block changed the return branch count: "
+                "the runtime topology must never be guessed")
+        for index, expression in enumerate(protocol["return_strings"]):
+            value = _lua_literal_value(expression)
+            if value is None:
+                branches[index].add("{{LUA}}")
+            else:
+                branches[index].add(value)
+    assert branches is not None
+    return [sorted(outcomes) for outcomes in branches]
 
 
 def _runtime_lines_of(message: str) -> list[str]:
@@ -2055,16 +2074,22 @@ def _lua_return_branch_lines(
     (CR-023/CR-024).
 
     Production order: ``getSpeakString`` recursively expands every
-    in-family ``@token@`` marker of the selected pattern before
-    evaluating its ``{{...}}`` Lua blocks, and ``mons_speaks_msg`` then
+    in-family ``@token@`` marker of the selected pattern while it is
+    still Lua source (``_call_recursive_replacement``) before
+    evaluating its ``{{...}}`` Lua blocks (``_execute_embedded_lua``),
+    so the fragment bytes spliced into a return literal participate in
+    the Lua escape/quote interpretation, and ``mons_speaks_msg`` then
     splits the spliced message by ``\\n`` and resolves each line's
     channel.  Every literal return branch of every block is therefore a
     possible fully expanded runtime message; this helper expands each
-    block per return branch (strict extraction from
-    ``_lua_block_protocol``) over the same-language in-family lookup and
-    returns one sorted-unique layout set per branch combination (cross
-    product over the blocks, in source order); each layout is the
-    per-line channel sequence of one fully expanded runtime message.
+    RAW block (``_family_expansions`` over the same-language in-family
+    lookup, production depth/global replacement semantics) and then
+    extracts its literal returns per expanded Lua source (strict
+    extraction from ``_lua_block_protocol`` plus the vendored 5.4.8
+    literal interpretation) and returns one sorted-unique layout set per
+    branch combination (cross product over the blocks, in source
+    order); each layout is the per-line channel sequence of one fully
+    expanded runtime message.
     Blocks without literal returns keep the ``{{LUA}}`` placeholder
     branch so their surrounding layout survives without a Lua
     interpreter.  A pattern without Lua blocks has exactly one branch:
@@ -2099,8 +2124,11 @@ def _lua_return_topology(
     maps to one entry per return branch (source order), and each branch
     maps to the sorted-unique set of per-line channel sequences its
     fully expanded runtime texts produce under the production sink
-    split (``_family_expansions`` over the same-language in-family
-    lookup, production order: tokens expand before Lua runs).  The
+    split.  Production order: tokens expand on the raw Lua source
+    before Lua runs (``_family_expansions`` over the same-language
+    in-family lookup), so the fragment bytes spliced into a return
+    literal go through the Lua escape/quote interpretation of every
+    expanded source.  The
     declared display mappings contribute one ``{{LUA}}`` placeholder
     branch so branch counts stay aligned with the skeleton.  The EN/ZH
     comparison in ``_pair_candidate`` requires these channel topologies
