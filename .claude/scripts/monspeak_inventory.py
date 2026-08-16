@@ -2067,6 +2067,40 @@ def _runtime_lines_of(message: str) -> list[str]:
             if segment.strip(" \t\n\r")]
 
 
+
+def _closure_may_introduce_lua(
+    pattern: str, family_lookup: dict[str, list[str]] | None
+) -> bool:
+    """Whether expanding the in-family tokens of ``pattern`` can make a
+    Lua site appear that the raw text does not already contain (CR-027):
+    any token variant (or its recursive closure) that contains ``{{``.
+
+    Bounded by the visited-text set: every distinct variant text is
+    scanned once, so a cyclic fragment cannot loop.  Returns False when
+    no lookup is supplied (no expansion -> no new Lua)."""
+    if family_lookup is None:
+        return False
+    seen: set[str] = set()
+    stack = [pattern]
+    while stack:
+        text = stack.pop()
+        if "{{" in text:
+            return True
+        pos = text.find("@")
+        while pos >= 0:
+            end = text.find("@", pos + 1)
+            if end < 0:
+                break
+            variants = family_lookup.get(text[pos + 1:end].lower())
+            if variants:
+                for variant in variants:
+                    if variant not in seen:
+                        seen.add(variant)
+                        stack.append(variant)
+            pos = text.find("@", end + 1)
+    return False
+
+
 def _lua_return_branch_lines(
     pattern: str, family_lookup: dict[str, list[str]] | None = None
 ) -> list[list[list[str]]]:
@@ -2096,11 +2130,13 @@ def _lua_return_branch_lines(
     survives without a Lua interpreter.  Raises ``InventoryError`` when
     any expanded Lua source fails the vendored syntax gate or its
     return topology cannot be bound."""
-    if "{{" not in pattern:
-        # No Lua sites: exactly one branch (the pattern's own lines),
+    if "{{" not in pattern and not _closure_may_introduce_lua(
+            pattern, family_lookup):
+        # No Lua sites and no reachable token variant can introduce one
+        # (CR-027): exactly one branch (the pattern's own lines),
         # nothing to expand per-site.  This keeps the full-pattern
-        # expansion (CR-026) bounded: patterns without Lua never enter
-        # the expansion or the site loop.
+        # expansion (CR-026) bounded: patterns whose closure cannot
+        # affect the layout never enter the expansion or the site loop.
         return [[[_monspeak_line_channel(line)
                   for line in _runtime_lines_of(pattern)]]]
     expanded = ([(pattern, 0)]
@@ -2160,9 +2196,11 @@ def _lua_return_topology(
     to be identical: branch count, per-branch expanded layout set and
     per-line channel are all encoded in this shape."""
     topology: list[list[list[list[str]]]] = []
-    if "{{" not in pattern:
-        # No Lua sites: nothing to bind; avoids the full-pattern
-        # expansion on every non-Lua variant (CR-026 boundedness).
+    if "{{" not in pattern and not _closure_may_introduce_lua(
+            pattern, family_lookup):
+        # No Lua sites and no reachable token variant can introduce one
+        # (CR-027): nothing to bind; avoids the full-pattern expansion
+        # on every non-Lua variant (CR-026 boundedness).
         return topology
     expanded = ([(pattern, 0)]
                 if not family_lookup

@@ -1077,6 +1077,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_hostile_imp_rare_", 1, 0, 0},
     {"_hostile_imp_rare_", 3, 0, 0},
     {"_hostile_imp_rare_", 4, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_", 0, 38, 0},
     {"_hostile_orc_beogh_believer_speech_common_", 10, 0, 0},
     {"_hostile_orc_beogh_believer_speech_rare_", 5, 0, 0},
     {"_hostile_orc_beogh_believer_speech_rare_", 6, 0, 0},
@@ -1248,6 +1249,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"air magic player ghost", 0, 0, 0},
     {"alderking", 0, 0, 0},
     {"alderking", 1, 0, 0},
+    {"azrael", 1, 3, 0},
     {"bennu", 0, 0, 0},
     {"bennu", 1, 0, 0},
     {"bennu permanently killed", 0, 0, 0},
@@ -1340,6 +1342,16 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"friendly hound", 5, 0, 0},
     {"friendly hound", 6, 0, 0},
     {"friendly hound", 7, 0, 0},
+    {"friendly shoals hound", 0, 0, 0},
+    {"friendly shoals hound", 0, 1, 0},
+    {"friendly shoals hound", 0, 2, 0},
+    {"friendly shoals hound", 0, 3, 0},
+    {"friendly shoals hound", 0, 4, 0},
+    {"friendly shoals hound", 0, 5, 0},
+    {"friendly shoals hound", 0, 6, 0},
+    {"friendly shoals hound", 0, 7, 0},
+    {"friendly shoals hound", 0, 8, 0},
+    {"friendly shoals hound", 0, 9, 0},
     {"friendly shoals hound", 1, 0, 0},
     {"friendly shoals hound", 2, 0, 0},
     {"friendly shoals hound", 2, 1, 0},
@@ -1355,6 +1367,8 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"hound", 0, 0, 0},
     {"ice magic player ghost", 0, 0, 0},
     {"ignis player ghost", 1, 0, 0},
+    {"ijyb", 0, 0, 0},
+    {"ijyb", 0, 1, 0},
     {"invocations player ghost", 5, 0, 0},
     {"josephine", 0, 0, 0},
     {"josephine", 1, 0, 0},
@@ -1389,6 +1403,22 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"reaper", 1, 0, 0},
     {"reaper", 2, 0, 0},
     {"reaper", 6, 0, 0},
+    {"related beogh blorkula the orcula", 1, 153, 0},
+    {"related beogh blorkula the orcula", 1, 170, 0},
+    {"related beogh blorkula the orcula", 1, 171, 0},
+    {"related beogh orc", 2, 38, 0},
+    {"related beogh orc", 2, 55, 0},
+    {"related beogh orc", 2, 56, 0},
+    {"related beogh orc high priest", 2, 153, 0},
+    {"related beogh orc high priest", 2, 170, 0},
+    {"related beogh orc high priest", 2, 171, 0},
+    {"related beogh orc sorcerer", 2, 153, 0},
+    {"related beogh orc sorcerer", 2, 170, 0},
+    {"related beogh orc sorcerer", 2, 171, 0},
+    {"related beogh saint roka", 1, 38, 0},
+    {"related beogh urug", 1, 153, 0},
+    {"related beogh urug", 1, 170, 0},
+    {"related beogh urug", 1, 171, 0},
     {"sewer brain worm", 1, 0, 0},
     {"shapeshifting player ghost", 1, 0, 0},
     {"shapeshifting player ghost", 2, 0, 0},
@@ -1820,6 +1850,72 @@ static void monspeak_branch_combinations_rec(
     }
 }
 
+
+
+// CR-028/CR-006B/CR-012: executable-syntax gate on the EXPANDED Lua
+// source using the vendored contrib/lua 5.4.8 compiler, never a PATH
+// luac (5.1 accepts escapes like "\q" that 5.4 rejects).
+static bool monspeak_vendored_lua_syntax_ok(const string &lua_source)
+{
+    const char *tmp = getenv("TMPDIR");
+    const string dir = tmp && *tmp ? tmp : "/tmp";
+    const string path = dir + "/monspeak-lua-gate-XXXXXX.lua";
+    vector<char> buf(path.begin(), path.end());
+    buf.push_back('\0');
+    const int fd = mkstemps(&buf[0], 4);
+    REQUIRE(fd >= 0);
+    const string chunk = lua_source + "\n";
+    REQUIRE(write(fd, chunk.data(), chunk.size())
+            == static_cast<ssize_t>(chunk.size()));
+    close(fd);
+    // Tests run from crawl-ref/source (the Catch2 data-root contract),
+    // so the vendored compiler is reachable relative to the cwd.
+    const string luac = "contrib/lua/src/luac";
+    const string cmd = luac + " -p '" + string(&buf[0]) + "' 2>/dev/null";
+    const int rc = system(cmd.c_str());
+    unlink(&buf[0]);
+    REQUIRE(WIFEXITED(rc));
+    return WEXITSTATUS(rc) == 0;
+}
+
+// CR-027: whether expanding the in-family tokens of ``pattern`` can make
+// a Lua site appear that the raw text does not already contain (any
+// token variant, or its recursive closure, that contains "{{").  Bounded
+// by the visited-text set so a cyclic fragment cannot loop; a pattern
+// whose closure cannot affect the layout skips the full expansion.
+static bool monspeak_closure_has_lua(const string &pattern,
+                                     const monspeak_family_lookup &lookup)
+{
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        if (text.find("{{") != string::npos)
+            return true;
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (seen.insert(variant).second)
+                        stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return false;
+}
+
 static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
     const string &pattern, const monspeak_family_lookup &lookup)
 {
@@ -1827,9 +1923,12 @@ static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
     // shared replacement counter before locating the {{...}} Lua sites,
     // so every expanded outcome re-locates its sites and interprets
     // each actual Lua source (the exact bytes production executes).
-    // Patterns without Lua never enter the expansion (bounded, CR-026).
+    // CR-027: the early return requires the token closure to be unable
+    // to introduce a Lua site; patterns whose closure cannot affect the
+    // layout skip the expansion (bounded).
     vector<monspeak_layout_set> out;
-    if (pattern.find("{{") == string::npos)
+    if (pattern.find("{{") == string::npos
+        && !monspeak_closure_has_lua(pattern, lookup))
     {
         out.push_back({monspeak_message_layout(pattern)});
         return out;
@@ -1852,8 +1951,19 @@ static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
                 pos = text.size();
                 break;
             }
+            // CR-028: the site source is already fully expanded by the
+            // shared-count pass above; re-expanding it with a fresh
+            // count would reset the production global replacement
+            // counter.  The empty lookup keeps the strict branch
+            // extraction on the exact bytes production executes, and
+            // the vendored 5.4.8 compiler validates the expanded source
+            // (the hand-rolled quote rules alone cannot reject e.g.
+            // unfinished-string escapes).
+            const string lua_source = text.substr(site + 2,
+                                                  end - site - 2);
+            REQUIRE(monspeak_vendored_lua_syntax_ok(lua_source));
             segments.push_back(monspeak_lua_return_branch_expansions(
-                text.substr(site + 2, end - site - 2), lookup));
+                lua_source, monspeak_family_lookup()));
             pos = end + 2;
         }
         segments.push_back({{text.substr(pos)}});
@@ -1903,7 +2013,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                              + to_string(position.branch) + "\n"
                              + to_string(position.line));
     }
-    REQUIRE(frozen_visual.size() == 506);
+    REQUIRE(frozen_visual.size() == 536);
 
     set<string> derived_visual;
     for (const textdb_phase0::canonical_entry &entry : english.entries)

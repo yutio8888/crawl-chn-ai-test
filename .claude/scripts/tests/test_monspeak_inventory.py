@@ -1096,8 +1096,10 @@ class MonspeakInventoryTests(unittest.TestCase):
             "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
             "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
         })
-        with self.assertRaisesRegex(MODULE.InventoryError,
-                                    "malformed Lua sites"):
+        with self.assertRaisesRegex(
+                MODULE.InventoryError,
+                "malformed Lua sites|Lua block has no bindable return "
+                "topology"):
             self.add_candidate_mocked(
                 self.inventory, fixture,
                 exact_artifact(fixture, "database/"),
@@ -1657,7 +1659,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertIn(("nekomata", 1, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 1, 2, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 2, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
-        self.assertEqual(506, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
+        self.assertEqual(536, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / "crawl-ref" / "source"
             en_path = root / "dat" / "database" / "monspeak.txt"
