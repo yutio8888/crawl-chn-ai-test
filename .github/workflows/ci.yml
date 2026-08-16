@@ -58,6 +58,11 @@ jobs:
              lvm.c lzio.c -lm -ldl
       - name: Run tooling tests
         run: /bin/bash .claude/scripts/tests/run_all.sh
+        env:
+          # GitHub-hosted runners have ~7 GB RAM; the monspeak inventory
+          # suite (66 tests) plus the other heavy inventory tests OOM at
+          # the default 4-way concurrency. 2-way fits within the budget.
+          ZH_TOOLING_TEST_JOBS: "2"
       - name: Upload verification evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
