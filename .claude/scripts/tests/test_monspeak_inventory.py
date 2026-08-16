@@ -872,6 +872,33 @@ class MonspeakInventoryTests(unittest.TestCase):
             records=records)
         self.assertEqual(733, len(result["cards"]))
 
+    def test_candidate_closure_lua_prefix_mutation_rejected(self):
+        # CR-029: the candidate gate binds the FULL message layout (not
+        # only the per-site return texts).  ``friendly Shoals hound``
+        # ordinal 0 is the token ``@friendly hound@`` whose closure has 9
+        # variants including one Lua block, so the runtime channels
+        # change when a plain prefix is added in front of the token
+        # (every expanded line drops from TALK_VISUAL to TALK); the
+        # per-site return topology stays equal, so a gate that only
+        # compares it cannot see the drift.
+        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
+            .read_text(encoding="utf-8")
+        aligned = aligned_zh_source(zh_zh, en_zh).replace(
+            'w:50\n@friendly hound@',
+            'w:50\n前缀@friendly hound@', 1)
+        fixture = fixture_commit_with_replaced_blobs({
+            "crawl-ref/source/dat/database/zh/monspeak.txt": aligned,
+            "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
+        })
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "Lua branch layouts differ"):
+            self.add_candidate_mocked(
+                self.inventory, fixture,
+                exact_artifact(fixture, "database/"),
+                exact_artifact(fixture, "database/zh/"))
+
     def test_candidate_zh_to_foe_replaced_by_foe_passes(self):
         # I70-R3 (TRANS-102/103): @to_foe@/@at_foe@ are EN-only display
         # tokens, so a ZH candidate that renders the localizable @foe@
@@ -1859,7 +1886,7 @@ class MonspeakInventoryTests(unittest.TestCase):
             "crawl-ref/source/mon-speak.cc": fixed_genus_source(),
         })
         with self.assertRaisesRegex(MODULE.InventoryError,
-                                    "Lua return .*channel topology differs"):
+                                    "Lua return .*channel topology differs|Lua branch layouts differ"):
             self.add_candidate_mocked(
                 self.inventory, fixture,
                 exact_artifact(fixture, "database/"),
@@ -1890,7 +1917,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         })
         with self.assertRaisesRegex(
             MODULE.InventoryError,
-            "Lua return .*channel topology differs",
+            "Lua return .*channel topology differs|Lua branch layouts differ",
         ):
             self.add_candidate_mocked(
                 self.inventory, fixture,
@@ -1928,7 +1955,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         })
         with self.assertRaisesRegex(
             MODULE.InventoryError,
-            "Lua return .*channel topology differs",
+            "Lua return .*channel topology differs|Lua branch layouts differ",
         ):
             self.add_candidate_mocked(
                 self.inventory, fixture,

@@ -324,6 +324,24 @@ MONSPEAK_VISUAL_MUTATIONS = (
      '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
      'end',
      "Lua return branch count differs from EN"),
+    # CR-027: a token whose closure introduces Lua (``@friendly hound@``,
+    # 9 variants, 1 with Lua) changes the runtime channels when a plain
+    # prefix is added in front of the token: every expanded line drops
+    # from TALK_VISUAL to TALK while the unexpanded literals and the
+    # per-site return texts stay identical.
+    ("closure-lua-prefix",
+     'w:50\n@friendly hound@',
+     'w:50\n前缀@friendly hound@',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    # CR-028: fragment bytes spliced into a Lua return literal take part
+    # in the Lua escape interpretation; a raw newline injected by a
+    # fragment (the _Sprozz_common_ variant reachable through Sprozz's
+    # Lua return) makes the expanded Lua source fail the vendored 5.4.8
+    # syntax gate.
+    ("fragment-raw-newline",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '@The_monster@说："请容我展示未来的蜜蜂！\n还是算了吧"',
+     "Lua return topology not bindable"),
 )
 
 
@@ -403,7 +421,8 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
                     f"dispatch")
                 continue
             for kind in ("line-shift", "newline-merge",
-                         "lua-return-visual-prefix", "lua-return-delete"):
+                         "lua-return-visual-prefix", "lua-return-delete",
+                         "closure-lua-prefix", "fragment-raw-newline"):
                 with tempfile.TemporaryDirectory() as root:
                     copy_contract(root, contract_id)
                     detail = mutate_monspeak_visual(root, kind)
@@ -448,7 +467,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 65 artifacts, 350 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 352 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──
