@@ -6859,6 +6859,11 @@ def _monspeak_visual_channel_findings(source_dir):
         zh_variants = zh.get(key)
         if zh_variants is None or ordinal >= len(zh_variants):
             continue  # already reported above
+        if (key, ordinal) not in en_branches:
+            # The EN pattern already failed binding in the first pass
+            # (reported above as "Lua return topology not bindable");
+            # there is nothing to compare against, so do not KeyError.
+            continue
         try:
             en_branch_layouts = en_branches[(key, ordinal)]
             zh_branch_layouts = _monspeak_runtime_branches(
