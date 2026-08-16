@@ -2071,46 +2071,71 @@ def _lua_return_branch_lines(
     pattern: str, family_lookup: dict[str, list[str]] | None = None
 ) -> list[list[list[str]]]:
     """Per-branch runtime channel layouts of one monspeak variant pattern
-    (CR-023/CR-024).
+    (CR-023/CR-024/CR-026).
 
     Production order: ``getSpeakString`` recursively expands every
-    in-family ``@token@`` marker of the selected pattern while it is
-    still Lua source (``_call_recursive_replacement``) before
-    evaluating its ``{{...}}`` Lua blocks (``_execute_embedded_lua``),
-    so the fragment bytes spliced into a return literal participate in
-    the Lua escape/quote interpretation, and ``mons_speaks_msg`` then
-    splits the spliced message by ``\\n`` and resolves each line's
-    channel.  Every literal return branch of every block is therefore a
-    possible fully expanded runtime message; this helper expands each
-    RAW block (``_family_expansions`` over the same-language in-family
-    lookup, production depth/global replacement semantics) and then
-    extracts its literal returns per expanded Lua source (strict
-    extraction from ``_lua_block_protocol`` plus the vendored 5.4.8
-    literal interpretation) and returns one sorted-unique layout set per
-    branch combination (cross product over the blocks, in source
-    order); each layout is the per-line channel sequence of one fully
-    expanded runtime message.
-    Blocks without literal returns keep the ``{{LUA}}`` placeholder
-    branch so their surrounding layout survives without a Lua
-    interpreter.  A pattern without Lua blocks has exactly one branch:
-    its own lines.  Raises ``InventoryError`` when any block's return
-    topology cannot be bound."""
-    segments: list[list[list[str]]] = []
-    position = 0
-    for site in _LUA_SITE_RE.finditer(pattern):
-        segments.append([[pattern[position:site.start()]]])
-        segments.append(_lua_return_branch_expansions(
-            site.group(0)[2:-2], family_lookup))
-        position = site.end()
-    segments.append([[pattern[position:]]])
+    in-family ``@token@`` marker of the **whole selected pattern** with
+    one global replacement counter (``_call_recursive_replacement``,
+    database.cc:1414-1418) while it is still Lua source, and only then
+    locates/evaluates its ``{{...}}`` Lua blocks
+    (``_execute_embedded_lua``, database.cc:2360-2361), so the fragment
+    bytes spliced into a return literal participate in the Lua
+    escape/quote interpretation.  This helper therefore expands the
+    FULL pattern first (``_family_expansions`` over the same-language
+    in-family lookup at root depth 1 with one shared replacement
+    count), re-locates the ``{{...}}`` sites on every expanded source
+    and interprets each actual Lua source with the strict
+    ``_lua_block_protocol`` extraction, the vendored 5.4.8 compiler
+    (``_lua_syntax_check``, CR-006B/CR-012) and the Lua literal
+    interpretation; ``mons_speaks_msg`` then splits the spliced message
+    by ``\\n`` and resolves each line's channel.  Every literal return
+    branch of every block is therefore a possible fully expanded
+    runtime message; each layout is the per-line channel sequence of
+    one fully expanded runtime message.  Blocks without literal returns
+    keep the ``{{LUA}}`` placeholder branch so their surrounding layout
+    survives without a Lua interpreter.  Raises ``InventoryError`` when
+    any expanded Lua source fails the vendored syntax gate or its
+    return topology cannot be bound."""
+    if "{{" not in pattern:
+        # No Lua sites: exactly one branch (the pattern's own lines),
+        # nothing to expand per-site.  This keeps the full-pattern
+        # expansion (CR-026) bounded: patterns without Lua never enter
+        # the expansion or the site loop.
+        return [[[_monspeak_line_channel(line)
+                  for line in _runtime_lines_of(pattern)]]]
+    expanded = ([(pattern, 0)]
+                if not family_lookup
+                else _family_expansions(pattern, family_lookup, 1, 0))
     branches: list[list[list[str]]] = []
-    for combination in itertools.product(*segments):
-        layouts = sorted({
-            tuple(_monspeak_line_channel(line)
-                  for line in _runtime_lines_of("".join(joined)))
-            for joined in itertools.product(*combination)
-        })
-        branches.append([list(layout) for layout in layouts])
+    for text, _used in expanded:
+        if "{{" not in text:
+            # No Lua site in this expansion: the production sink never
+            # executes Lua here, so there is exactly one branch (the
+            # pattern's own lines) and nothing to expand per-site.  This
+            # short-cut also keeps the full-pattern expansion (CR-026)
+            # bounded: patterns without Lua never enter the site loop.
+            branches.append([[_monspeak_line_channel(line)
+                              for line in _runtime_lines_of(text)]])
+            continue
+        segments: list[list[list[str]]] = []
+        position = 0
+        for site in _LUA_SITE_RE.finditer(text):
+            segments.append([[text[position:site.start()]]])
+            lua_source = site.group(0)[2:-2]
+            # CR-026: the vendored 5.4.8 executable gate runs on the
+            # EXPANDED Lua source (the exact bytes production executes),
+            # never on the pre-expansion block.
+            _lua_syntax_check([lua_source])
+            segments.append(_lua_return_branch_expansions(lua_source, None))
+            position = site.end()
+        segments.append([[text[position:]]])
+        for combination in itertools.product(*segments):
+            layouts = sorted({
+                tuple(_monspeak_line_channel(line)
+                      for line in _runtime_lines_of("".join(joined)))
+                for joined in itertools.product(*combination)
+            })
+            branches.append([list(layout) for layout in layouts])
     return branches
 
 
@@ -2135,16 +2160,25 @@ def _lua_return_topology(
     to be identical: branch count, per-branch expanded layout set and
     per-line channel are all encoded in this shape."""
     topology: list[list[list[list[str]]]] = []
-    for site in _LUA_SITE_RE.finditer(pattern):
-        branches = _lua_return_branch_expansions(
-            site.group(0)[2:-2], family_lookup)
-        topology.append([
-            [list(layout) for layout in sorted({
-                tuple(_monspeak_line_channel(line)
-                      for line in _runtime_lines_of(text))
-                for text in outcomes})]
-            for outcomes in branches
-        ])
+    if "{{" not in pattern:
+        # No Lua sites: nothing to bind; avoids the full-pattern
+        # expansion on every non-Lua variant (CR-026 boundedness).
+        return topology
+    expanded = ([(pattern, 0)]
+                if not family_lookup
+                else _family_expansions(pattern, family_lookup, 1, 0))
+    for text, _used in expanded:
+        for site in _LUA_SITE_RE.finditer(text):
+            lua_source = site.group(0)[2:-2]
+            _lua_syntax_check([lua_source])
+            branches = _lua_return_branch_expansions(lua_source, None)
+            topology.append([
+                [list(layout) for layout in sorted({
+                    tuple(_monspeak_line_channel(line)
+                          for line in _runtime_lines_of(expanded_text))
+                    for expanded_text in outcomes})]
+                for outcomes in branches
+            ])
     return topology
 
 

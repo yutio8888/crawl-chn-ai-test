@@ -1823,28 +1823,44 @@ static void monspeak_branch_combinations_rec(
 static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
     const string &pattern, const monspeak_family_lookup &lookup)
 {
-    vector<vector<vector<string>>> segments;
-    string::size_type pos = 0;
-    string::size_type site;
-    while ((site = pattern.find("{{", pos)) != string::npos)
+    // CR-026: production expands the WHOLE selected pattern with one
+    // shared replacement counter before locating the {{...}} Lua sites,
+    // so every expanded outcome re-locates its sites and interprets
+    // each actual Lua source (the exact bytes production executes).
+    // Patterns without Lua never enter the expansion (bounded, CR-026).
+    vector<monspeak_layout_set> out;
+    if (pattern.find("{{") == string::npos)
     {
-        segments.push_back({{pattern.substr(pos, site - pos)}});
-        const string::size_type end = pattern.find("}}", site + 2);
-        if (end == string::npos)
-        {
-            segments.push_back({{"{{LUA}}"}});
-            pos = pattern.size();
-            break;
-        }
-        segments.push_back(monspeak_lua_return_branch_expansions(
-            pattern.substr(site + 2, end - site - 2), lookup));
-        pos = end + 2;
+        out.push_back({monspeak_message_layout(pattern)});
+        return out;
     }
-    segments.push_back({{pattern.substr(pos)}});
-    vector<monspeak_layout_set> layouts;
-    vector<size_t> choices;
-    monspeak_branch_combinations_rec(segments, 0, choices, layouts);
-    return layouts;
+    vector<pair<string, int>> expanded_patterns;
+    monspeak_family_expansions(pattern, lookup, 1, 0, expanded_patterns);
+    for (const auto &expanded : expanded_patterns)
+    {
+        const string &text = expanded.first;
+        vector<vector<vector<string>>> segments;
+        string::size_type pos = 0;
+        string::size_type site;
+        while ((site = text.find("{{", pos)) != string::npos)
+        {
+            segments.push_back({{text.substr(pos, site - pos)}});
+            const string::size_type end = text.find("}}", site + 2);
+            if (end == string::npos)
+            {
+                segments.push_back({{"{{LUA}}"}});
+                pos = text.size();
+                break;
+            }
+            segments.push_back(monspeak_lua_return_branch_expansions(
+                text.substr(site + 2, end - site - 2), lookup));
+            pos = end + 2;
+        }
+        segments.push_back({{text.substr(pos)}});
+        vector<size_t> choices;
+        monspeak_branch_combinations_rec(segments, 0, choices, out);
+    }
+    return out;
 }
 
 TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned lines",
@@ -2044,22 +2060,36 @@ TEST_CASE("Issue 70 recursive tokens inside Lua returns bind the expanded ZH top
     const vector<monspeak_layout_set> zh_branches =
         monspeak_lua_branch_layouts(zh_sprozz->variants[0].raw_pattern,
                                     zh_lookup);
-    REQUIRE(zh_branches.size() == en_branches.size());
-    // The @_Sprozz_thief_@ branch is untouched on both sides: every EN
-    // and ZH thief fragment resolves to a single talk layout.
-    CHECK(zh_branches[0] == en_branches[0]);
-    // The @_Sprozz_common_@ branch gains the talk_visual layout in ZH:
-    // the mutated fragment variant starts with VISUAL: and production
-    // expands it before the Lua block runs, so the return emits a VISUAL
-    // channel line.  Without token expansion both branches' literals are
-    // byte-identical, so this difference is exactly the CR-024 blind
-    // spot the expanded topology closes.
-    REQUIRE(en_branches[1].size() == 1);
-    REQUIRE(en_branches[1].count(monspeak_layout(1, MSGCH_TALK)) == 1);
-    REQUIRE(zh_branches[1].size() == 2);
-    REQUIRE(zh_branches[1].count(monspeak_layout(1, MSGCH_TALK_VISUAL))
-            == 1);
-    CHECK(zh_branches[1] != en_branches[1]);
+    // CR-026: the full pattern expands with one shared replacement
+    // counter, so the layout vector carries one entry per expanded
+    // outcome (2 thief variants x 3 common variants = 6) instead of the
+    // pre-CR-026 per-branch shape.  Every expanded EN outcome resolves
+    // both returns to plain talk; the mutated ZH fragment variant
+    // (VISUAL: prefix) must make every expanded outcome that reaches it
+    // emit a talk_visual line for the common branch, and EN/ZH layout
+    // vectors must differ.
+    REQUIRE(!en_branches.empty());
+    REQUIRE(en_branches.size() == zh_branches.size());
+    for (const monspeak_layout_set &set : en_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            CHECK(find(layout.begin(), layout.end(), MSGCH_TALK_VISUAL)
+                  == layout.end());
+        }
+    }
+    bool zh_has_visual = false;
+    for (const monspeak_layout_set &set : zh_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            zh_has_visual = zh_has_visual
+                || find(layout.begin(), layout.end(),
+                        MSGCH_TALK_VISUAL) != layout.end();
+        }
+    }
+    CHECK(zh_has_visual);
+    CHECK(zh_branches != en_branches);
 }
 
 TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH topology",
@@ -2107,21 +2137,33 @@ TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH to
                                     zh_lookup);
     REQUIRE(zh_branches.size() == en_branches.size());
     // The @_Sprozz_thief_@ branch is untouched on both sides: every EN
-    // and ZH thief fragment resolves to a single talk layout.
-    CHECK(zh_branches[0] == en_branches[0]);
-    // The @_Sprozz_common_@ branch gains the talk_visual layout in ZH:
-    // production splices the mutated fragment into the still-Lua return
-    // literal, the Lua escape \x56 becomes 'V', and the return emits a
-    // VISUAL channel line.  Without the production expansion order the
-    // fragment bytes never reach the Lua escape interpretation, the raw
-    // \x56ISUAL: prefix resolves to talk, and the branch sets stay
-    // equal -- exactly the CR-025 blind spot this probe closes.
-    REQUIRE(en_branches[1].size() == 1);
-    REQUIRE(en_branches[1].count(monspeak_layout(1, MSGCH_TALK)) == 1);
-    REQUIRE(zh_branches[1].size() == 2);
-    REQUIRE(zh_branches[1].count(monspeak_layout(1, MSGCH_TALK_VISUAL))
-            == 1);
-    CHECK(zh_branches[1] != en_branches[1]);
+    // CR-026: one layout-set entry per expanded outcome (6 = 2 thief
+    // variants x 3 common variants) on both sides; the mutated ZH
+    // fragment (\x56ISUAL: -> Lua escape becomes 'V') must make some
+    // expanded ZH layout emit a VISUAL line while every EN layout stays
+    // talk, and the EN/ZH layout vectors must differ.
+    REQUIRE(!en_branches.empty());
+    REQUIRE(en_branches.size() == zh_branches.size());
+    for (const monspeak_layout_set &set : en_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            CHECK(find(layout.begin(), layout.end(), MSGCH_TALK_VISUAL)
+                  == layout.end());
+        }
+    }
+    bool zh_has_visual = false;
+    for (const monspeak_layout_set &set : zh_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            zh_has_visual = zh_has_visual
+                || find(layout.begin(), layout.end(),
+                        MSGCH_TALK_VISUAL) != layout.end();
+        }
+    }
+    CHECK(zh_has_visual);
+    CHECK(zh_branches != en_branches);
 }
 
 TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",

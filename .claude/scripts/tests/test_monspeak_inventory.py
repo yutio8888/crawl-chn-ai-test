@@ -1618,13 +1618,21 @@ class MonspeakInventoryTests(unittest.TestCase):
               "VISUAL:@The_monster@ shows a bee."]],
             MODULE._lua_return_branch_expansions(
                 "return '@_sprozz_nested_@'", lookup))
-        # The per-branch layout sets: every reachable variant contributes
-        # its per-line channel sequence (sorted unique).
+        # The per-branch layout sets: CR-026 expands the FULL pattern
+        # with one shared replacement counter and re-locates the Lua
+        # sites on every expanded source, so the topology carries one
+        # site entry per expanded outcome (2 thief variants x 3 common
+        # variants), each with the two return branches' channel layouts.
         self.assertEqual(
-            [[[["talk"]], [["talk"], ["talk_visual"]]]],
+            [[[["talk"]], [["talk"]]],
+             [[["talk"]], [["talk_visual"]]],
+             [[["talk"]], [["talk"]]],
+             [[["talk"]], [["talk"]]],
+             [[["talk"]], [["talk_visual"]]],
+             [[["talk"]], [["talk"]]]],
             MODULE._lua_return_topology("{{\n" + block + "}}", lookup))
         self.assertEqual(
-            [[["talk"], ["talk_visual"]]],
+            [[["talk"]], [["talk_visual"]], [["talk"]]],
             MODULE._lua_return_branch_lines(
                 "{{ return '@_sprozz_nested_@' }}", lookup))
         # Production limits: a cyclic fragment hits the recursion depth
@@ -1773,8 +1781,9 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.assertTrue(findings)
             self.assertTrue(any(
                 contract == "issue16-monspeak-channels"
-                and "expanded Lua return channel topology differs from EN"
-                in detail
+                and any(marker in detail for marker in (
+                    "expanded Lua return channel topology differs from EN",
+                    "line channel differs from EN"))
                 for contract, artifact, detail in findings))
             self.assertFalse(any(
                 "EN VISUAL line set drifted" in detail
@@ -1817,8 +1826,9 @@ class MonspeakInventoryTests(unittest.TestCase):
             self.assertTrue(findings)
             self.assertTrue(any(
                 contract == "issue16-monspeak-channels"
-                and "expanded Lua return channel topology differs from EN"
-                in detail
+                and any(marker in detail for marker in (
+                    "expanded Lua return channel topology differs from EN",
+                    "line channel differs from EN"))
                 for contract, artifact, detail in findings))
             self.assertFalse(any(
                 "EN VISUAL line set drifted" in detail
