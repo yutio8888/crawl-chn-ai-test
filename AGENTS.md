@@ -144,6 +144,27 @@ readiness, and let `review_final_gate.sh` own the single final run. See
 Use at most eight build jobs. Agents compiling alongside other work should use
 `-j4`, and concurrent agents must not start overlapping compile storms.
 
+## Resource Isolation
+
+Heavy Python tests, `unittest discover`, and `verify_zh.sh` profiles run
+inside the Paseo daemon cgroup by default and can exhaust its memory/CPU
+budget, severing the outer connection. Launch them through the isolation
+wrapper instead of a bare `python3` or `bash`:
+
+```bash
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_monspeak_inventory.py
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
+```
+
+The wrapper starts a transient service in `paseo-workers.slice` with
+`MemoryHigh`/`MemoryMax`/`CPUWeight`/`CPUQuota` limits when a user-level
+systemd session and the slice exist; otherwise it falls back to a direct
+`exec` so CI and non-systemd environments stay portable. `fork`/`nohup`/
+`setsid`/`start_new_session` cannot escape the parent cgroup and must not be
+used for this purpose. Per-command limits do not cap concurrent workers; for
+`run_all.sh`-style concurrency set an aggregate cap on the slice via a
+machine-local user drop-in. See `.claude/scripts/TOOLCHAIN.md` for overrides.
+
 ## Commit Attribution
 
 Authorship must match the runtime that actually produced the change. Follow the
