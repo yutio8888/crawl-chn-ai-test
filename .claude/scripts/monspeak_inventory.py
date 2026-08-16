@@ -1443,6 +1443,16 @@ def _variant(raw: dict[str, Any],
         variant["lua_return_topology"] = (
             _lua_return_topology(text, family_lookup)
             if not lua_protocol["malformed"] else [])
+        # CR-029: the candidate gate must bind the FULL message layout
+        # (Lua-site OUTSIDE prefix/suffix included), not only the
+        # per-site return texts: ``_lua_return_branch_lines`` expands
+        # the complete pattern with the shared replacement counter and
+        # re-locates the sites on every expanded outcome (CR-026/027),
+        # so a token whose closure introduces Lua (e.g. ``@friendly
+        # hound@``) contributes its real per-branch channel layouts.
+        variant["lua_branch_layouts"] = (
+            _lua_return_branch_lines(text, family_lookup)
+            if not lua_protocol["malformed"] else [])
     return variant
 
 
@@ -3571,6 +3581,20 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
                 == zh_variant["lua_return_topology"],
                 f"candidate Lua return expanded channel topology differs "
                 f"at {key!r} ordinal {ordinal}",
+            )
+            # CR-029: the FULL message layout (Lua-site outside
+            # prefix/suffix and the whole branch/layout set of the
+            # expanded pattern) must also be identical: a token whose
+            # closure introduces Lua -- e.g. ``@friendly hound@`` (9
+            # variants, 1 with Lua) -- changes the runtime channels when
+            # a plain prefix is added in front of the token, and that
+            # drift must fail here even though the per-site return texts
+            # stay equal.
+            _require(
+                en_variant["lua_branch_layouts"]
+                == zh_variant["lua_branch_layouts"],
+                f"candidate Lua branch layouts differ at {key!r} "
+                f"ordinal {ordinal}",
             )
         entries.append({
             "identity": f"monspeak:{key}",
