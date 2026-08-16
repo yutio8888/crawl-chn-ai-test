@@ -41,8 +41,10 @@ from i18n_shared import (parse_entries, parse_source_txt,
 # before evaluating the block, then the sink splits the returned string).
 # The channel classifier is the shared one too, so the scan checker and
 # the inventory candidate gate resolve line channels identically.
-from monspeak_inventory import (InventoryError, _lua_return_branch_lines,
-                                _monspeak_line_channel)
+# The import is deferred into the monspeak checker below so every other
+# scan_i18n command (validate-terms, source-txt-integrity, ...) runs
+# standalone without the monspeak inventory module (tests copy
+# scan_i18n.py into a minimal trusted directory).
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -6739,10 +6741,12 @@ def _monspeak_runtime_branches(pattern, family_lookup):
     Raises ``InventoryError`` when a block's return topology cannot be
     bound (malformed block / unsupported literal escape): the checker
     reports that as a fail-closed finding instead of guessing."""
+    from monspeak_inventory import _lua_return_branch_lines, InventoryError
     return _lua_return_branch_lines(pattern, family_lookup)
 
 
 def _monspeak_visual_channel_findings(source_dir):
+    from monspeak_inventory import InventoryError
     """Issue-16 monspeak VISUAL channel routing (CR-004/CR-008/CR-019/
     CR-023/CR-024).
 
