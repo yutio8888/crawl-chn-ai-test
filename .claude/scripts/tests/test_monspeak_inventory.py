@@ -1048,6 +1048,10 @@ class MonspeakInventoryTests(unittest.TestCase):
         # replacement counter and the expanded-source Lua interpretation
         # are candidate-gate contract facts, so they are pinned here
         # directly on _lua_return_branch_lines with a synthetic lookup.
+        # (CR-033 hardening, R4-CODE-001) the head-channel shortcut also
+        # pins the literal-prefix rule and the replacement-budget
+        # fallback; both are covered in
+        # test_head_channel_prefix_and_replacement_budget below.
         # (a) Replacement boundary: every @marker@ site increments the
         # one shared counter (database.cc MAX_REPLACEMENTS 100), so with
         # 99 block-external markers the in-Lua @frag@ is site 100 and
@@ -1096,6 +1100,51 @@ class MonspeakInventoryTests(unittest.TestCase):
                 MODULE._lua_return_branch_lines(
                     "{{ return '@frag@' }}",
                     {"frag": [r"\x56ISUAL:hello"]}))
+
+    def test_head_channel_prefix_and_replacement_budget(self):
+        # R4-CODE-001 persisted probes: the head-channel shortcut must
+        # not classify a marker that does not lead the line by its
+        # variant head, and must not apply when the closure can exceed
+        # the shared replacement budget.
+        # (a) A literal prefix before an in-family marker decides the
+        # line channel: 前缀@frag@ with frag = "VISUAL:hello" expands to
+        # 前缀VISUAL:hello, whose head is the prefix text -> talk.  A
+        # shortcut that treats any pre-colon marker as line-leading
+        # would report talk_visual and let runtime channel drift
+        # through the CR-030/032/033 gates.
+        lookup = {"frag": ["VISUAL:hello"]}
+        self.assertEqual(
+            [[["talk"]]],
+            MODULE._lua_return_branch_lines("前缀@frag@", lookup))
+        # A channel prefix in the literal prefix text still wins.
+        self.assertEqual(
+            [[["talk_visual"]]],
+            MODULE._lua_return_branch_lines("VISUAL: 前缀@frag@", lookup))
+        # (b) The shortcut has no shared replacement counter: when the
+        # reachable site count can exceed _MAX_REPLACEMENTS (100), it
+        # must fall back to the full production expansion, which stops
+        # the scan and leaves the over-budget marker unexpanded (talk
+        # tail).  With 100 expanded @outside@ markers the in-line
+        # @frag@ is site 101 and stays literal; with 99 it is site 100
+        # and expands to VISUAL.
+        budget_lookup = {"outside": ["x"], "frag": ["VISUAL:hello"]}
+        for preceding, expected_tail in ((99, "talk_visual"),
+                                         (100, "talk")):
+            pattern = ("@outside@\n" * preceding) + "@frag@"
+            layouts = MODULE._lua_return_branch_lines(pattern,
+                                                      budget_lookup)
+            with self.subTest(preceding=preceding):
+                self.assertEqual(1, len(layouts))
+                self.assertEqual(preceding + 1, len(layouts[0][0]))
+                self.assertEqual(expected_tail, layouts[0][0][-1])
+                # The fallback is the production expansion itself, so
+                # the expanded text agrees line by line.
+                expanded = MODULE._family_expansions(
+                    pattern, budget_lookup, 1, 0)[0][0]
+                self.assertEqual(
+                    [MODULE._monspeak_line_channel(line)
+                     for line in MODULE._runtime_lines_of(expanded)],
+                    layouts[0][0])
 
     def test_candidate_triple_brace_lua_rejected(self):
         # CR-002/CR-006: a candidate ``{{{`` Lua site (stray brace inside

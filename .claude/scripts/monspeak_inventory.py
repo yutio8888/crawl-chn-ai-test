@@ -2215,7 +2215,15 @@ def _head_channel_set(
     at = text.find("@")
     if colon >= 0 and (at < 0 or colon < at):
         return {_monspeak_line_channel(text[:colon + 1])}
-    if at < 0:
+    if at != 0:
+        # The marker does not lead the line: after the production
+        # replacement the head of the line is the literal prefix text,
+        # so the channel is decided by that prefix.  A channel prefix
+        # in the prefix text is already handled above (colon before
+        # the marker); without one the head resolves to talk, even if
+        # the marker's variants begin with ``VISUAL:``/``SOUND:`` etc.
+        # (``前缀@frag@`` with frag = ``VISUAL:hello`` expands to
+        # ``前缀VISUAL:hello`` -> talk, never talk_visual).
         return {"talk"}
     end = text.find("@", at + 1)
     if end < 0:
@@ -2259,6 +2267,48 @@ def _no_newline_closure_layouts(
                   for combination in itertools.product(*per_line))
 
 
+def _closure_replacement_budget_ok(
+    pattern: str, family_lookup: dict[str, list[str]] | None
+) -> bool:
+    """Whether the worst-case reachable replacement-site count stays
+    within the production budget (``_MAX_REPLACEMENTS`` 100).
+
+    Production increments the shared replacement counter for every
+    ``@marker@`` site -- including post-process tokens -- and stops the
+    scan once the budget is exceeded (the remainder stays unexpanded,
+    database.cc ``_call_recursive_replacement``).  The per-line
+    head-channel shortcut below has no counter, so a pattern whose
+    closure can exceed the budget must fall back to the full production
+    expansion, which models the counter exactly.
+
+    The total site count over every reachable text (the pattern and all
+    recursive variant closures, counted once per visited text) is an
+    upper bound on the count of any single expansion path, so
+    ``total <= _MAX_REPLACEMENTS`` guarantees no path truncates and
+    the shortcut stays exact; otherwise the shortcut is skipped."""
+    total = 0
+    seen: set[str] = set()
+    stack = [pattern]
+    while stack:
+        text = stack.pop()
+        pos = text.find("@")
+        while pos >= 0:
+            end = text.find("@", pos + 1)
+            if end < 0:
+                break
+            total += 1
+            if total > _MAX_REPLACEMENTS:
+                return False
+            variants = (family_lookup or {}).get(text[pos + 1:end].lower())
+            if variants:
+                for variant in variants:
+                    if variant not in seen:
+                        seen.add(variant)
+                        stack.append(variant)
+            pos = text.find("@", end + 1)
+    return True
+
+
 def _lua_return_branch_lines(
     pattern: str, family_lookup: dict[str, list[str]] | None = None
 ) -> list[list[list[str]]]:
@@ -2300,6 +2350,7 @@ def _lua_return_branch_lines(
                   for line in _runtime_lines_of(pattern)]]]
     if "{{" not in pattern and not _closure_has_newline(
             pattern, family_lookup) and not _closure_has_lua(
+            pattern, family_lookup) and _closure_replacement_budget_ok(
             pattern, family_lookup):
         # CR-033: the closure can change the channels (a variant with a
         # VISUAL:/SOUND:/WARN: head, e.g. ``crazy yiuf`` whose speech

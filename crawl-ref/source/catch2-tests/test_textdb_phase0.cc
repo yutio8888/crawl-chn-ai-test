@@ -2396,6 +2396,49 @@ static bool monspeak_closure_has_lua(
     return false;
 }
 
+// Mirror of the Python _closure_replacement_budget_ok: the total
+// @marker@ site count over every reachable text (the pattern and all
+// recursive variant closures, each text counted once) is an upper
+// bound on the count of any single production expansion path. When
+// the bound exceeds MONSPEAK_MAX_REPLACEMENTS the production scan
+// truncates (sites beyond the budget stay unexpanded), so the
+// head-channel shortcut -- which has no counter -- must not apply.
+static bool monspeak_closure_replacement_budget_ok(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    int total = 0;
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            ++total;
+            if (total > MONSPEAK_MAX_REPLACEMENTS)
+                return false;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (!seen.insert(variant).second)
+                        continue;
+                    stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return true;
+}
+
 static set<msg_channel_type> monspeak_head_channel_set(
     const string &text, const monspeak_family_lookup &lookup, int depth)
 {
@@ -2412,8 +2455,18 @@ static set<msg_channel_type> monspeak_head_channel_set(
         resolve_mon_speech_line_channel(tmp, ch, false, false);
         return {ch};
     }
-    if (at == string::npos)
+    if (at != 0)
+    {
+        // The marker does not lead the line: after the production
+        // replacement the head of the line is the literal prefix text,
+        // so the channel is decided by that prefix (mirror of the
+        // Python _head_channel_set). A channel prefix in the prefix
+        // text is handled above; without one the head resolves to
+        // talk even if the marker's variants begin with VISUAL:/SOUND:
+        // (prefix@frag@ with frag = VISUAL:hello expands to
+        // prefixVISUAL:hello -> talk).
         return {MSGCH_TALK};
+    }
     const size_t end = text.find("@", at + 1);
     if (end == string::npos)
         return {MSGCH_TALK};
@@ -2502,7 +2555,8 @@ static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
     }
     if (pattern.find("{{") == string::npos
         && !monspeak_closure_has_newline(pattern, lookup)
-        && !monspeak_closure_has_lua(pattern, lookup))
+        && !monspeak_closure_has_lua(pattern, lookup)
+        && monspeak_closure_replacement_budget_ok(pattern, lookup))
     {
         const vector<monspeak_layout_set> layouts =
             monspeak_no_newline_closure_layouts(pattern, lookup);
@@ -2956,6 +3010,54 @@ TEST_CASE("Issue 70 shared replacement counter and expanded Lua gate",
     const monspeak_layout &hex_layout = *hex_branches[0].begin();
     REQUIRE(hex_layout.size() == 1);
     CHECK(hex_layout[0] == MSGCH_TALK_VISUAL);
+
+    // (d) R4-CODE-001: the head-channel shortcut must not classify a
+    // marker that does not lead the line by its variant head, and must
+    // not apply when the closure can exceed the shared replacement
+    // budget. A literal prefix before an in-family marker decides the
+    // line channel: 前缀@frag@ with frag = "VISUAL:hello" expands to
+    // 前缀VISUAL:hello, whose head is the prefix text -> talk.
+    monspeak_family_lookup prefix_lookup;
+    prefix_lookup["frag"] = {"VISUAL:hello"};
+    const vector<monspeak_layout_set> prefix_branches =
+        monspeak_lua_branch_layouts("前缀@frag@", prefix_lookup);
+    REQUIRE(prefix_branches.size() == 1);
+    REQUIRE(prefix_branches[0].size() == 1);
+    CHECK(*prefix_branches[0].begin() ==
+          monspeak_layout({MSGCH_TALK}));
+    // A channel prefix in the literal prefix text still wins.
+    const vector<monspeak_layout_set> prefix_visual_branches =
+        monspeak_lua_branch_layouts("VISUAL: 前缀@frag@", prefix_lookup);
+    REQUIRE(prefix_visual_branches.size() == 1);
+    REQUIRE(prefix_visual_branches[0].size() == 1);
+    CHECK(*prefix_visual_branches[0].begin() ==
+          monspeak_layout({MSGCH_TALK_VISUAL}));
+    // The shortcut has no shared replacement counter: when the
+    // reachable site count can exceed MONSPEAK_MAX_REPLACEMENTS (100)
+    // it must fall back to the full production expansion, which stops
+    // the scan and leaves the over-budget marker unexpanded (talk
+    // tail). With 100 expanded @outside@ markers the in-line @frag@ is
+    // site 101 and stays literal; with 99 it is site 100 and expands.
+    monspeak_family_lookup budget_lookup;
+    budget_lookup["outside"] = {"x"};
+    budget_lookup["frag"] = {"VISUAL:hello"};
+    for (int preceding = 99; preceding <= 100; ++preceding)
+    {
+        string budget_pattern;
+        for (int i = 0; i < preceding; ++i)
+            budget_pattern += "@outside@\n";
+        budget_pattern += "@frag@";
+        const vector<monspeak_layout_set> budget_branches =
+            monspeak_lua_branch_layouts(budget_pattern, budget_lookup);
+        REQUIRE(budget_branches.size() == 1);
+        REQUIRE(budget_branches[0].size() == 1);
+        const monspeak_layout &budget_layout = *budget_branches[0].begin();
+        REQUIRE(budget_layout.size() == preceding + 1);
+        INFO("preceding=" << preceding);
+        CHECK(budget_layout.back() == (preceding == 99
+                                       ? MSGCH_TALK_VISUAL
+                                       : MSGCH_TALK));
+    }
 }
 
 TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
