@@ -342,6 +342,53 @@ MONSPEAK_VISUAL_MUTATIONS = (
      '@The_monster@说："请容我展示未来的蜜蜂！"',
      '@The_monster@说："请容我展示未来的蜜蜂！\n还是算了吧"',
      "Lua return topology not bindable"),
+    # CR-030/CR-032: the same splice path with an unescaped single quote
+    # terminates the Lua string literal early, so the expanded source
+    # fails the vendored 5.4.8 syntax gate exactly like the raw newline.
+    ("fragment-unescaped-quote",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '@The_monster@说："请容我展示未来的蜜蜂！\'"',
+     "Lua return topology not bindable"),
+    # CR-030/CR-032: the Lua hex escape \x56 becomes 'V' after the
+    # splice, so the branch emits a VISUAL: line (talk_visual) where
+    # every expanded EN line of the same branch stays talk.
+    ("fragment-hex-visual",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '\\x56ISUAL:@The_monster@说："请容我展示未来的蜜蜂！"',
+     "line channel differs from EN"),
+    # CR-030/CR-032: every @marker@ site increments the one shared
+    # replacement counter (MAX_REPLACEMENTS 100), including the
+    # block-external @player_only@ markers and the rescans production
+    # performs over their literal bytes.  With 96 external markers the
+    # in-Lua @_Sprozz_common_@ is still inside the budget: both returns
+    # expand on both sides (branch parity 88) and the mutated ZH body
+    # renders 97 runtime lines.  With 97 external markers the common
+    # marker is site 101 and stays literal, so the ZH expansion loses
+    # the common variants (8 branches vs EN's 88).  A gate that
+    # re-expands the site source with a fresh counter would restore
+    # branch parity for the 97-marker case and produce the line-count
+    # finding instead, so the pinned finding type proves the shared
+    # counter.
+    ("replacement-boundary-100",
+     'Sprozz\n{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     'Sprozz\n' + '@player_only@\n' * 96
+     + '{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     "runtime line count differs from EN: EN has 1 line(s), "
+     "ZH has 97 (Lua branch 0)"),
+    ("replacement-boundary-101",
+     'Sprozz\n{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     'Sprozz\n' + '@player_only@\n' * 97
+     + '{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     "Lua return branch count differs from EN: EN has 88 branch(es), "
+     "ZH has 8"),
 )
 
 
@@ -422,7 +469,10 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
                 continue
             for kind in ("line-shift", "newline-merge",
                          "lua-return-visual-prefix", "lua-return-delete",
-                         "closure-lua-prefix", "fragment-raw-newline"):
+                         "closure-lua-prefix", "fragment-raw-newline",
+                         "fragment-unescaped-quote", "fragment-hex-visual",
+                         "replacement-boundary-100",
+                         "replacement-boundary-101"):
                 with tempfile.TemporaryDirectory() as root:
                     copy_contract(root, contract_id)
                     detail = mutate_monspeak_visual(root, kind)
@@ -467,7 +517,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 65 artifacts, 352 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 356 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──

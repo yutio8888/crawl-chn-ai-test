@@ -2235,23 +2235,28 @@ def _head_channel_set(
 def _no_newline_closure_layouts(
     pattern: str, family_lookup: dict[str, list[str]] | None
 ) -> list[list[str]]:
-    """Per-line channel layout of every expansion of ``pattern`` when the
-    closure cannot introduce Lua or newlines: each runtime line keeps
-    its position and its channel is determined by its head (see
-    ``_head_channel_set``), so the layout set is the per-line head
-    channel sets' cross product -- exact, and O(variants) instead of the
-    full text enumeration (``crazy yiuf``: 7 x 3 x 72 x 85 wordlist
-    combinations collapse to the two head channels its speech variants
-    produce)."""
+    """Sorted-unique per-line channel layouts of every expansion of
+    ``pattern`` when the closure cannot introduce Lua or newlines: each
+    runtime line keeps its position and its channel is determined by
+    its head (see ``_head_channel_set``), so the layout set is the
+    per-line head-channel cross product -- exact, and O(variants)
+    instead of the full text enumeration (``crazy yiuf``: 7 x 3 x 72 x
+    85 wordlist combinations collapse to the two head channels its
+    speech variants produce).
+
+    One branch, many layouts (CR-033): unlike a Lua block there is no
+    return-branch topology to enumerate, so every expansion outcome is
+    a layout of the single runtime branch and the layouts are returned
+    sorted-unique -- deterministic across processes and identical to
+    the C++ mirror (std::set ordering), so the frozen branch ordinal
+    of a shortcut pattern is always 0."""
     lines = _runtime_lines_of(pattern)
     if not lines:
         return []
-    per_line = [_head_channel_set(line, family_lookup, 0)
+    per_line = [sorted(_head_channel_set(line, family_lookup, 0))
                 for line in lines]
-    layouts: list[list[str]] = []
-    for combination in itertools.product(*per_line):
-        layouts.append(list(combination))
-    return layouts
+    return sorted(list(combination)
+                  for combination in itertools.product(*per_line))
 
 
 def _lua_return_branch_lines(
@@ -2303,9 +2308,7 @@ def _lua_return_branch_lines(
         # channel is decided by its head: the exact layout set is the
         # per-line head-channel cross product, computed without
         # enumerating the huge text combination space.
-        return [[list(layout)]
-                for layout in _no_newline_closure_layouts(
-                    pattern, family_lookup)]
+        return [_no_newline_closure_layouts(pattern, family_lookup)]
     expanded = ([(pattern, 0)]
                 if not family_lookup
                 else _family_expansions(pattern, family_lookup, 1, 0))

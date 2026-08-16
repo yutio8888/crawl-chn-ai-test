@@ -1028,7 +1028,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_frederick_rare_", 0, 0, 0},
     {"_frederick_rare_", 1, 0, 0},
     {"_frederick_rare_", 2, 0, 0},
-    {"_friendly_beogh_speech_", 1, 1, 0},
+    {"_friendly_beogh_speech_", 1, 0, 0},
     {"_friendly_beogh_speech_rare_", 5, 0, 0},
     {"_friendly_confused_common_", 4, 0, 0},
     {"_friendly_confused_common_", 5, 0, 0},
@@ -1042,7 +1042,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_friendly_humanoid_common_", 5, 0, 0},
     {"_friendly_humanoid_medium_", 4, 0, 0},
     {"_friendly_humanoid_rare_", 0, 0, 0},
-    {"_friendly_imp_", 0, 1, 0},
+    {"_friendly_imp_", 0, 0, 0},
     {"_friendly_imp_common_", 0, 0, 0},
     {"_friendly_imp_common_", 1, 0, 0},
     {"_friendly_imp_common_", 2, 0, 0},
@@ -1066,16 +1066,16 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_grum_common_", 0, 0, 0},
     {"_grum_common_", 4, 0, 0},
     {"_grum_rare_", 0, 0, 0},
-    {"_grunn_common_", 0, 1, 0},
+    {"_grunn_common_", 0, 0, 0},
     {"_grunn_rare_", 0, 0, 0},
     {"_grunn_rare_", 1, 0, 0},
     {"_harold_common_", 0, 0, 0},
     {"_harold_rare_", 0, 0, 0},
-    {"_high_priest_", 1, 1, 0},
+    {"_high_priest_", 1, 0, 0},
     {"_high_priest_medium_", 0, 0, 0},
     {"_holy_being_", 0, 0, 1},
-    {"_hostile_imp_", 0, 1, 0},
-    {"_hostile_imp_", 1, 1, 0},
+    {"_hostile_imp_", 0, 0, 0},
+    {"_hostile_imp_", 1, 0, 0},
     {"_hostile_imp_common_", 1, 0, 0},
     {"_hostile_imp_common_", 2, 0, 0},
     {"_hostile_imp_common_", 3, 0, 0},
@@ -1085,7 +1085,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_hostile_imp_rare_", 3, 0, 0},
     {"_hostile_imp_rare_", 4, 0, 0},
     {"_hostile_orc_beogh_believer_speech_", 0, 38, 0},
-    {"_hostile_orc_beogh_believer_speech_", 1, 1, 0},
+    {"_hostile_orc_beogh_believer_speech_", 1, 0, 0},
     {"_hostile_orc_beogh_believer_speech_common_", 10, 0, 0},
     {"_hostile_orc_beogh_believer_speech_rare_", 5, 0, 0},
     {"_hostile_orc_beogh_believer_speech_rare_", 6, 0, 0},
@@ -1117,7 +1117,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_jory_silent_", 8, 0, 0},
     {"_jory_silent_", 9, 0, 0},
     {"_jory_silent_", 10, 0, 0},
-    {"_joseph_common_", 0, 1, 0},
+    {"_joseph_common_", 0, 0, 0},
     {"_joseph_common_", 1, 0, 0},
     {"_joseph_common_", 2, 0, 0},
     {"_josephina_common_", 0, 0, 0},
@@ -1168,7 +1168,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_menkaure_rare_", 1, 0, 0},
     {"_menkaure_rare_", 2, 0, 0},
     {"_menkaure_rare_", 7, 0, 0},
-    {"_mercenary_guard_", 0, 1, 0},
+    {"_mercenary_guard_", 0, 0, 0},
     {"_mercenary_guard_common_", 0, 0, 0},
     {"_mercenary_guard_common_", 1, 0, 0},
     {"_murray_common_", 0, 0, 0},
@@ -1242,7 +1242,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_terence_common_", 0, 0, 0},
     {"_terence_common_", 1, 0, 0},
     {"_terence_common_", 2, 0, 0},
-    {"_tormentor_", 0, 1, 0},
+    {"_tormentor_", 0, 0, 0},
     {"_tormentor_common_", 1, 0, 0},
     {"_tormentor_common_", 2, 0, 0},
     {"_tormentor_common_", 3, 0, 0},
@@ -1257,20 +1257,20 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"_vashnia_common_", 4, 0, 0},
     {"_wiglaf_common_", 6, 0, 0},
     {"_wizard_", 0, 0, 1},
-    {"_wizard_", 1, 1, 0},
+    {"_wizard_", 1, 0, 0},
     {"_wizard_medium_", 0, 0, 0},
     {"_wizard_medium_", 1, 0, 0},
     {"_xtahua_common_", 1, 0, 0},
     {"_zenata_common_", 0, 0, 0},
     {"_zenata_common_", 2, 0, 0},
-    {"abyss donald", 0, 1, 0},
-    {"agnes", 0, 1, 0},
+    {"abyss donald", 0, 0, 0},
+    {"agnes", 0, 0, 0},
     {"air magic player ghost", 0, 0, 0},
-    {"aizul", 0, 1, 0},
-    {"aizul", 1, 1, 0},
+    {"aizul", 0, 0, 0},
+    {"aizul", 1, 0, 0},
     {"alderking", 0, 0, 0},
     {"alderking", 1, 0, 0},
-    {"amaemon", 0, 1, 0},
+    {"amaemon", 0, 0, 0},
     {"arcanist", 0, 0, 1},
     {"arcanist", 0, 1, 1},
     {"arcanist", 0, 2, 1},
@@ -1288,22 +1288,22 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"arcanist", 0, 14, 1},
     {"arcanist", 0, 15, 0},
     {"arcanist", 0, 16, 0},
-    {"ashenzari donald", 0, 1, 0},
-    {"ashenzari frederick triumphant", 1, 1, 0},
-    {"asterion", 0, 1, 0},
-    {"azrael", 0, 1, 0},
+    {"ashenzari donald", 0, 0, 0},
+    {"ashenzari frederick triumphant", 1, 0, 0},
+    {"asterion", 0, 0, 0},
+    {"azrael", 0, 0, 0},
     {"azrael", 1, 3, 0},
-    {"bai suzhen", 0, 1, 0},
-    {"bai suzhen", 1, 1, 0},
+    {"bai suzhen", 0, 0, 0},
+    {"bai suzhen", 1, 0, 0},
     {"bennu", 0, 0, 0},
     {"bennu", 1, 0, 0},
     {"bennu killed", 0, 0, 0},
     {"bennu permanently killed", 0, 0, 0},
-    {"beogh donald", 0, 1, 0},
-    {"beogh frederick", 1, 1, 0},
-    {"beogh frederick triumphant", 1, 1, 0},
-    {"blorkula the orcula", 0, 1, 0},
-    {"blorkula the orcula", 1, 1, 0},
+    {"beogh donald", 0, 0, 0},
+    {"beogh frederick", 1, 0, 0},
+    {"beogh frederick triumphant", 1, 0, 0},
+    {"blorkula the orcula", 0, 0, 0},
+    {"blorkula the orcula", 1, 0, 0},
     {"boris", 0, 0, 0},
     {"boris", 0, 1, 1},
     {"boris", 0, 2, 1},
@@ -1329,10 +1329,10 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"chaos spawn", 0, 0, 0},
     {"chaos spawn", 1, 0, 0},
     {"chaos spawn", 2, 0, 0},
-    {"cheibriados donald", 0, 1, 0},
-    {"cheibriados frederick triumphant", 1, 1, 0},
-    {"chuck", 0, 1, 0},
-    {"chuck", 1, 1, 0},
+    {"cheibriados donald", 0, 0, 0},
+    {"cheibriados frederick triumphant", 1, 0, 0},
+    {"chuck", 0, 0, 0},
+    {"chuck", 1, 0, 0},
     {"cognitogaunt", 0, 0, 0},
     {"confused bennu killed", 0, 0, 0},
     {"confused bennu permanently killed", 0, 0, 0},
@@ -1343,13 +1343,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"conjurations player ghost", 0, 0, 0},
     {"conjurations player ghost", 3, 0, 0},
     {"conjurations player ghost", 4, 0, 0},
-    {"crazy yiuf", 0, 1, 0},
-    {"crimson imp", 1, 1, 0},
+    {"crazy yiuf", 0, 0, 0},
+    {"crimson imp", 1, 0, 0},
     {"crossbows player ghost", 1, 0, 0},
-    {"crypt donald", 0, 1, 0},
+    {"crypt donald", 0, 0, 0},
     {"crystal guardian", 0, 0, 0},
     {"crystal guardian", 1, 0, 0},
-    {"deep elf high priest", 0, 1, 0},
+    {"deep elf high priest", 0, 0, 0},
     {"deep elf sorcerer", 0, 0, 1},
     {"deep elf sorcerer", 0, 1, 1},
     {"deep elf sorcerer", 0, 2, 1},
@@ -1374,27 +1374,27 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"default confused arachnid", 0, 0, 0},
     {"default confused centipede", 0, 0, 0},
     {"default confused centipede", 1, 0, 0},
-    {"default confused humanoid", 0, 1, 0},
-    {"default confused humanoid", 1, 1, 0},
-    {"default confused humanoid", 2, 1, 0},
+    {"default confused humanoid", 0, 0, 0},
+    {"default confused humanoid", 1, 0, 0},
+    {"default confused humanoid", 2, 0, 0},
     {"default confused insect", 0, 0, 0},
     {"default confused insect", 1, 0, 0},
     {"default confused moth", 0, 0, 0},
     {"default confused winged insect", 0, 0, 0},
     {"default confused winged insect", 1, 0, 0},
     {"default confused winged insect", 2, 0, 0},
-    {"default fleeing humanoid", 0, 1, 0},
-    {"default fleeing humanoid", 1, 1, 0},
+    {"default fleeing humanoid", 0, 0, 0},
+    {"default fleeing humanoid", 1, 0, 0},
     {"default fleeing silenced humanoid", 0, 0, 0},
     {"default fleeing silenced humanoid", 1, 0, 0},
-    {"default friendly confused humanoid", 0, 1, 0},
-    {"default friendly confused humanoid", 1, 1, 0},
-    {"default friendly confused humanoid", 2, 1, 0},
-    {"default friendly fleeing humanoid", 0, 1, 0},
-    {"default friendly humanoid", 1, 1, 0},
-    {"default friendly humanoid", 2, 1, 0},
+    {"default friendly confused humanoid", 0, 0, 0},
+    {"default friendly confused humanoid", 1, 0, 0},
+    {"default friendly confused humanoid", 2, 0, 0},
+    {"default friendly fleeing humanoid", 0, 0, 0},
+    {"default friendly humanoid", 1, 0, 0},
+    {"default friendly humanoid", 2, 0, 0},
     {"default friendly humanoid", 3, 0, 0},
-    {"default friendly related humanoid", 1, 1, 0},
+    {"default friendly related humanoid", 1, 0, 0},
     {"default friendly silenced humanoid", 0, 0, 0},
     {"default friendly silenced humanoid", 1, 0, 0},
     {"default hoarfrost cannon", 0, 0, 0},
@@ -1439,38 +1439,38 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"deformed humanoid", 25, 0, 0},
     {"deformed humanoid", 26, 0, 0},
     {"deformed humanoid", 28, 0, 0},
-    {"dissolution", 0, 1, 0},
-    {"dithmenos donald", 0, 1, 0},
-    {"dithmenos frederick triumphant", 1, 1, 0},
-    {"dowan", 0, 1, 0},
-    {"dowan", 1, 1, 0},
+    {"dissolution", 0, 0, 0},
+    {"dithmenos donald", 0, 0, 0},
+    {"dithmenos frederick triumphant", 1, 0, 0},
+    {"dowan", 0, 0, 0},
+    {"dowan", 1, 0, 0},
     {"dowan_duvessa_dies", 1, 0, 0},
-    {"duvessa", 0, 1, 0},
+    {"duvessa", 0, 0, 0},
     {"duvessa_dowan_dies", 2, 0, 0},
     {"earth magic player ghost", 2, 0, 0},
-    {"edmund", 0, 1, 0},
-    {"edmund", 1, 1, 0},
+    {"edmund", 0, 0, 0},
+    {"edmund", 1, 0, 0},
     {"elephant slug", 0, 0, 0},
-    {"elf donald", 0, 1, 0},
-    {"elyvilon donald", 0, 1, 0},
-    {"elyvilon frederick triumphant", 1, 1, 0},
-    {"erica", 0, 1, 0},
-    {"erolcha", 0, 1, 0},
+    {"elf donald", 0, 0, 0},
+    {"elyvilon donald", 0, 0, 0},
+    {"elyvilon frederick triumphant", 1, 0, 0},
+    {"erica", 0, 0, 0},
+    {"erolcha", 0, 0, 0},
     {"erythrospite", 0, 0, 0},
-    {"eustachio", 1, 1, 0},
+    {"eustachio", 1, 0, 0},
     {"eustachio triumphant", 0, 0, 0},
-    {"fannar", 0, 1, 0},
-    {"fedhas donald", 0, 1, 0},
-    {"fedhas frederick triumphant", 1, 1, 0},
+    {"fannar", 0, 0, 0},
+    {"fedhas donald", 0, 0, 0},
+    {"fedhas frederick triumphant", 1, 0, 0},
     {"fighting player ghost", 1, 0, 0},
     {"fleeing dowan", 0, 0, 0},
-    {"frances", 0, 1, 0},
-    {"frances", 1, 1, 0},
-    {"frederick", 0, 1, 0},
-    {"frederick", 1, 1, 0},
-    {"friendly '5'", 1, 1, 0},
-    {"friendly cognitogaunt", 0, 1, 0},
-    {"friendly donald", 0, 1, 0},
+    {"frances", 0, 0, 0},
+    {"frances", 1, 0, 0},
+    {"frederick", 0, 0, 0},
+    {"frederick", 1, 0, 0},
+    {"friendly '5'", 1, 0, 0},
+    {"friendly cognitogaunt", 0, 0, 0},
+    {"friendly donald", 0, 0, 0},
     {"friendly good god 'cap-a'", 1, 0, 1},
     {"friendly hound", 0, 0, 0},
     {"friendly hound", 1, 0, 0},
@@ -1482,11 +1482,11 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"friendly hound", 6, 0, 0},
     {"friendly hound", 7, 0, 0},
     {"friendly hound", 8, 0, 0},
-    {"friendly orc", 0, 1, 0},
-    {"friendly protean progenitor", 0, 1, 0},
-    {"friendly related beogh orc", 1, 1, 0},
-    {"friendly related beogh orc", 3, 1, 0},
-    {"friendly related orc", 0, 1, 0},
+    {"friendly orc", 0, 0, 0},
+    {"friendly protean progenitor", 0, 0, 0},
+    {"friendly related beogh orc", 1, 0, 0},
+    {"friendly related beogh orc", 3, 0, 0},
+    {"friendly related orc", 0, 0, 0},
     {"friendly shoals hound", 0, 0, 0},
     {"friendly shoals hound", 0, 1, 0},
     {"friendly shoals hound", 0, 2, 0},
@@ -1501,57 +1501,57 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"friendly shoals hound", 2, 0, 0},
     {"friendly shoals hound", 2, 1, 0},
     {"friendly shoals hound", 3, 0, 0},
-    {"gastronok", 0, 1, 0},
-    {"gastronok", 1, 1, 0},
+    {"gastronok", 0, 0, 0},
+    {"gastronok", 1, 0, 0},
     {"goblin sharper", 0, 0, 0},
     {"goblin sharper", 1, 0, 0},
     {"goblin sharper", 2, 0, 0},
     {"goblin sharper", 3, 0, 0},
-    {"gozag donald", 0, 1, 0},
-    {"gozag frederick triumphant", 1, 1, 0},
+    {"gozag donald", 0, 0, 0},
+    {"gozag frederick triumphant", 1, 0, 0},
     {"gozag player ghost", 0, 0, 0},
-    {"grinder", 0, 1, 0},
-    {"grinder", 1, 1, 0},
-    {"grum", 0, 1, 0},
-    {"grum", 1, 1, 0},
-    {"grunn", 0, 1, 0},
-    {"grunn", 1, 1, 0},
-    {"harold", 0, 1, 0},
-    {"harold", 1, 1, 0},
-    {"hepliaklqana donald", 0, 1, 0},
-    {"hepliaklqana frederick triumphant", 1, 1, 0},
+    {"grinder", 0, 0, 0},
+    {"grinder", 1, 0, 0},
+    {"grum", 0, 0, 0},
+    {"grum", 1, 0, 0},
+    {"grunn", 0, 0, 0},
+    {"grunn", 1, 0, 0},
+    {"harold", 0, 0, 0},
+    {"harold", 1, 0, 0},
+    {"hepliaklqana donald", 0, 0, 0},
+    {"hepliaklqana frederick triumphant", 1, 0, 0},
     {"holy_being_pacification", 0, 0, 0},
     {"holy_being_pacification_humanoid", 0, 0, 0},
     {"holy_being_pacification_humanoid", 1, 0, 0},
     {"holy_being_pacification_humanoid", 2, 0, 0},
     {"hound", 0, 0, 0},
     {"ice magic player ghost", 0, 0, 0},
-    {"ignacio", 0, 1, 0},
-    {"ignis donald", 0, 1, 0},
-    {"ignis frederick triumphant", 1, 1, 0},
+    {"ignacio", 0, 0, 0},
+    {"ignis donald", 0, 0, 0},
+    {"ignis frederick triumphant", 1, 0, 0},
     {"ignis player ghost", 1, 0, 0},
     {"ijyb", 0, 0, 0},
     {"ijyb", 0, 1, 0},
-    {"ilsuiw", 0, 1, 0},
-    {"ilsuiw", 1, 1, 0},
+    {"ilsuiw", 0, 0, 0},
+    {"ilsuiw", 1, 0, 0},
     {"invocations player ghost", 5, 0, 0},
-    {"iron imp", 1, 1, 0},
-    {"jeremiah", 0, 1, 0},
-    {"jeremiah", 1, 1, 0},
-    {"jessica", 0, 1, 0},
-    {"jivya frederick triumphant", 1, 1, 0},
-    {"jiyva donald", 0, 1, 0},
-    {"jory", 0, 1, 0},
-    {"joseph", 0, 1, 0},
-    {"josephina", 0, 1, 0},
-    {"josephina", 1, 1, 0},
+    {"iron imp", 1, 0, 0},
+    {"jeremiah", 0, 0, 0},
+    {"jeremiah", 1, 0, 0},
+    {"jessica", 0, 0, 0},
+    {"jivya frederick triumphant", 1, 0, 0},
+    {"jiyva donald", 0, 0, 0},
+    {"jory", 0, 0, 0},
+    {"joseph", 0, 0, 0},
+    {"josephina", 0, 0, 0},
+    {"josephina", 1, 0, 0},
     {"josephine", 0, 0, 0},
     {"josephine", 1, 0, 0},
     {"josephine", 2, 0, 0},
-    {"kikubaaqudgha donald", 0, 1, 0},
-    {"kikubaaqudgha frederick triumphant", 1, 1, 0},
-    {"killer klown", 0, 1, 0},
-    {"killer klown", 1, 1, 0},
+    {"kikubaaqudgha donald", 0, 0, 0},
+    {"kikubaaqudgha frederick triumphant", 1, 0, 0},
+    {"killer klown", 0, 0, 0},
+    {"killer klown", 1, 0, 0},
     {"killer klown triumphant", 0, 0, 0},
     {"killer klown triumphant", 2, 0, 0},
     {"kirke", 0, 0, 0},
@@ -1559,8 +1559,8 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"kirke", 10, 0, 0},
     {"kobold blastminer", 0, 0, 0},
     {"kobold blastminer", 1, 0, 0},
-    {"lodul", 0, 1, 0},
-    {"lodul", 1, 1, 0},
+    {"lodul", 0, 0, 0},
+    {"lodul", 1, 0, 0},
     {"long blades player ghost", 0, 0, 0},
     {"louise", 0, 9, 1},
     {"louise", 0, 10, 1},
@@ -1577,13 +1577,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"louise", 0, 21, 1},
     {"louise", 0, 22, 1},
     {"louise", 0, 23, 1},
-    {"lugonu donald", 0, 1, 0},
-    {"lugonu frederick triumphant", 1, 1, 0},
+    {"lugonu donald", 0, 0, 0},
+    {"lugonu frederick triumphant", 1, 0, 0},
     {"maces & flails player ghost", 1, 0, 0},
-    {"maggie", 0, 1, 0},
-    {"makhleb donald", 0, 1, 0},
-    {"makhleb frederick triumphant", 1, 1, 0},
-    {"mara", 0, 1, 0},
+    {"maggie", 0, 0, 0},
+    {"makhleb donald", 0, 0, 0},
+    {"makhleb frederick triumphant", 1, 0, 0},
+    {"mara", 0, 0, 0},
     {"margery", 0, 0, 0},
     {"margery", 0, 0, 1},
     {"margery", 0, 1, 0},
@@ -1596,13 +1596,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"margery", 0, 6, 0},
     {"margery", 0, 6, 1},
     {"margery", 0, 7, 0},
-    {"margery", 1, 1, 0},
-    {"maurice", 0, 1, 0},
-    {"maurice", 1, 1, 0},
-    {"menkaure", 0, 1, 0},
-    {"menkaure", 1, 1, 0},
+    {"margery", 1, 0, 0},
+    {"maurice", 0, 0, 0},
+    {"maurice", 1, 0, 0},
+    {"menkaure", 0, 0, 0},
+    {"menkaure", 1, 0, 0},
     {"moth of wrath", 0, 0, 0},
-    {"murray", 0, 1, 0},
+    {"murray", 0, 0, 0},
     {"natasha", 0, 0, 1},
     {"natasha", 0, 1, 1},
     {"natasha", 0, 2, 1},
@@ -1618,22 +1618,22 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"natasha", 0, 12, 1},
     {"natasha", 0, 13, 1},
     {"natasha", 0, 14, 1},
-    {"natasha", 1, 1, 0},
+    {"natasha", 1, 0, 0},
     {"natasha triumphant", 0, 0, 0},
     {"natasha triumphant", 1, 0, 0},
     {"nekomata", 0, 1, 0},
     {"nekomata", 1, 1, 0},
     {"nekomata", 1, 2, 0},
     {"nekomata", 2, 1, 0},
-    {"nellie", 0, 1, 0},
-    {"nemelex xobeh donald", 0, 1, 0},
-    {"nemelex xobeh frederick triumphant", 1, 1, 0},
+    {"nellie", 0, 0, 0},
+    {"nemelex xobeh donald", 0, 0, 0},
+    {"nemelex xobeh frederick triumphant", 1, 0, 0},
     {"nergalle", 2, 0, 0},
     {"nergalle", 3, 0, 0},
     {"neutral good god 'cap-a'", 1, 0, 1},
-    {"no god donald", 0, 1, 0},
-    {"norris", 0, 1, 0},
-    {"norris", 1, 1, 0},
+    {"no god donald", 0, 0, 0},
+    {"norris", 0, 0, 0},
+    {"norris", 1, 0, 0},
     {"obsidian bat", 0, 0, 0},
     {"occultist", 0, 0, 1},
     {"occultist", 0, 1, 1},
@@ -1652,13 +1652,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"occultist", 0, 14, 1},
     {"occultist", 0, 15, 0},
     {"occultist", 0, 16, 0},
-    {"okawaru donald", 0, 1, 0},
-    {"okawaru frederick", 1, 1, 0},
-    {"okawaru frederick triumphant", 1, 1, 0},
-    {"orb donald", 0, 1, 0},
-    {"orc donald", 0, 1, 0},
+    {"okawaru donald", 0, 0, 0},
+    {"okawaru frederick", 1, 0, 0},
+    {"okawaru frederick triumphant", 1, 0, 0},
+    {"orb donald", 0, 0, 0},
+    {"orc donald", 0, 0, 0},
     {"orc donald", 7, 0, 0},
-    {"orc high priest", 0, 1, 0},
+    {"orc high priest", 0, 0, 0},
     {"orc sorcerer", 0, 0, 1},
     {"orc sorcerer", 0, 1, 1},
     {"orc sorcerer", 0, 2, 1},
@@ -1678,38 +1678,38 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"orc sorcerer", 0, 16, 0},
     {"orc_apostle_unbanished", 0, 0, 0},
     {"orc_apostle_unbanished", 7, 0, 0},
-    {"pakellas donald", 0, 1, 0},
-    {"parghit", 0, 1, 0},
-    {"parghit", 1, 1, 0},
-    {"pargi", 0, 1, 0},
-    {"pargi", 1, 1, 0},
-    {"pikel", 0, 1, 0},
-    {"pikel", 1, 1, 0},
-    {"player ghost", 0, 1, 0},
-    {"player ghost", 1, 1, 0},
-    {"polyphemus", 0, 1, 0},
-    {"polyphemus", 1, 1, 0},
-    {"prince ribbit", 0, 1, 0},
-    {"prince ribbit", 1, 1, 0},
+    {"pakellas donald", 0, 0, 0},
+    {"parghit", 0, 0, 0},
+    {"parghit", 1, 0, 0},
+    {"pargi", 0, 0, 0},
+    {"pargi", 1, 0, 0},
+    {"pikel", 0, 0, 0},
+    {"pikel", 1, 0, 0},
+    {"player ghost", 0, 0, 0},
+    {"player ghost", 1, 0, 0},
+    {"polyphemus", 0, 0, 0},
+    {"polyphemus", 1, 0, 0},
+    {"prince ribbit", 0, 0, 0},
+    {"prince ribbit", 1, 0, 0},
     {"protean progenitor", 0, 0, 0},
     {"protean progenitor", 1, 0, 0},
     {"protean progenitor", 2, 0, 0},
     {"protean progenitor", 3, 0, 0},
-    {"qazlal donald", 0, 1, 0},
-    {"qazlal frederick triumphant", 1, 1, 0},
+    {"qazlal donald", 0, 0, 0},
+    {"qazlal frederick triumphant", 1, 0, 0},
     {"ranged weapons player ghost", 2, 0, 0},
     {"ranged weapons player ghost", 3, 0, 0},
     {"reaper", 1, 0, 0},
     {"reaper", 2, 0, 0},
     {"reaper", 6, 0, 0},
-    {"related beogh blorkula the orcula", 0, 1, 0},
+    {"related beogh blorkula the orcula", 0, 0, 0},
     {"related beogh blorkula the orcula", 1, 153, 0},
     {"related beogh blorkula the orcula", 1, 170, 0},
     {"related beogh blorkula the orcula", 1, 171, 0},
     {"related beogh orc", 2, 38, 0},
     {"related beogh orc", 2, 55, 0},
     {"related beogh orc", 2, 56, 0},
-    {"related beogh orc high priest", 1, 1, 0},
+    {"related beogh orc high priest", 1, 0, 0},
     {"related beogh orc high priest", 2, 153, 0},
     {"related beogh orc high priest", 2, 170, 0},
     {"related beogh orc high priest", 2, 171, 0},
@@ -1734,34 +1734,34 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"related beogh orc sorcerer", 2, 170, 0},
     {"related beogh orc sorcerer", 2, 171, 0},
     {"related beogh saint roka", 1, 38, 0},
-    {"related beogh saint roka", 2, 1, 0},
-    {"related beogh urug", 0, 1, 0},
+    {"related beogh saint roka", 2, 0, 0},
+    {"related beogh urug", 0, 0, 0},
     {"related beogh urug", 1, 153, 0},
     {"related beogh urug", 1, 170, 0},
     {"related beogh urug", 1, 171, 0},
     {"related vashnia", 0, 0, 0},
-    {"related wiglaf", 0, 1, 0},
-    {"robin", 0, 1, 0},
-    {"ru donald", 0, 1, 0},
-    {"ru frederick triumphant", 1, 1, 0},
-    {"rupert", 0, 1, 0},
-    {"rupert", 1, 1, 0},
+    {"related wiglaf", 0, 0, 0},
+    {"robin", 0, 0, 0},
+    {"ru donald", 0, 0, 0},
+    {"ru frederick triumphant", 1, 0, 0},
+    {"rupert", 0, 0, 0},
+    {"rupert", 1, 0, 0},
     {"sewer brain worm", 0, 0, 0},
     {"sewer brain worm", 1, 0, 0},
-    {"shadow imp", 1, 1, 0},
+    {"shadow imp", 1, 0, 0},
     {"shapeshifting player ghost", 1, 0, 0},
     {"shapeshifting player ghost", 2, 0, 0},
-    {"shoals donald", 0, 1, 0},
+    {"shoals donald", 0, 0, 0},
     {"short blades player ghost", 2, 0, 0},
-    {"sif muna donald", 0, 1, 0},
-    {"sif muna frederick triumphant", 1, 1, 0},
+    {"sif muna donald", 0, 0, 0},
+    {"sif muna frederick triumphant", 1, 0, 0},
     {"sigmund", 0, 1, 0},
     {"sigmund", 0, 12, 0},
     {"sigmund", 0, 13, 1},
     {"sigmund", 0, 14, 0},
     {"sigmund", 0, 15, 0},
     {"sigmund", 0, 16, 0},
-    {"sigmund", 1, 1, 0},
+    {"sigmund", 1, 0, 0},
     {"sigmund triumphant", 0, 0, 0},
     {"silenced cognitogaunt", 0, 0, 0},
     {"silenced jory", 0, 0, 0},
@@ -1785,18 +1785,18 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"silenced zin angel", 2, 0, 0},
     {"silenced zin angel", 3, 0, 0},
     {"silent jory killed", 0, 0, 0},
-    {"slime donald", 0, 1, 0},
+    {"slime donald", 0, 0, 0},
     {"slings player ghost", 1, 0, 0},
-    {"snake donald", 0, 1, 0},
+    {"snake donald", 0, 0, 0},
     {"snorg", 0, 0, 0},
-    {"sojobo", 0, 1, 0},
-    {"sonja", 0, 1, 0},
+    {"sojobo", 0, 0, 0},
+    {"sonja", 0, 0, 0},
     {"sonja triumphant", 0, 0, 0},
     {"sonja triumphant", 1, 0, 0},
-    {"spectator", 0, 1, 0},
+    {"spectator", 0, 0, 0},
     {"spellcasting player ghost", 4, 0, 0},
     {"spellcasting player ghost", 5, 0, 0},
-    {"spider donald", 0, 1, 0},
+    {"spider donald", 0, 0, 0},
     {"staves player ghost", 1, 0, 0},
     {"stealth player ghost", 0, 0, 0},
     {"stealth player ghost", 1, 0, 0},
@@ -1804,20 +1804,20 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"stealth player ghost", 3, 0, 0},
     {"stealth player ghost", 5, 0, 0},
     {"summonings player ghost", 1, 0, 0},
-    {"swamp donald", 0, 1, 0},
-    {"temple donald", 0, 1, 0},
-    {"terence", 0, 1, 0},
-    {"the shining one donald", 0, 1, 0},
-    {"the shining one frederick triumphant", 1, 1, 0},
+    {"swamp donald", 0, 0, 0},
+    {"temple donald", 0, 0, 0},
+    {"terence", 0, 0, 0},
+    {"the shining one donald", 0, 0, 0},
+    {"the shining one frederick triumphant", 1, 0, 0},
     {"thermic dynamo", 0, 0, 0},
     {"thermic dynamo", 1, 0, 0},
     {"throwing player ghost", 0, 0, 0},
-    {"tormentor", 1, 1, 0},
+    {"tormentor", 1, 0, 0},
     {"translocations player ghost", 0, 0, 0},
     {"translocations player ghost", 1, 0, 0},
     {"translocations player ghost", 2, 0, 0},
-    {"trog donald", 0, 1, 0},
-    {"trog frederick triumphant", 1, 1, 0},
+    {"trog donald", 0, 0, 0},
+    {"trog frederick triumphant", 1, 0, 0},
     {"twin_banished dowan", 0, 0, 0},
     {"twin_banished duvessa", 0, 0, 0},
     {"twin_banished duvessa", 1, 0, 0},
@@ -1832,34 +1832,34 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"unarmed combat player ghost", 2, 0, 0},
     {"unarmed combat player ghost", 4, 0, 0},
     {"unarmed combat player ghost", 5, 0, 0},
-    {"urug", 0, 1, 0},
-    {"urug", 1, 1, 0},
-    {"uskayaw donald", 0, 1, 0},
-    {"uskayaw frederick triumphant", 1, 1, 0},
+    {"urug", 0, 0, 0},
+    {"urug", 1, 0, 0},
+    {"uskayaw donald", 0, 0, 0},
+    {"uskayaw frederick triumphant", 1, 0, 0},
     {"vashnia", 0, 0, 0},
-    {"vaults donald", 0, 1, 0},
-    {"vehumet donald", 0, 1, 0},
-    {"vehumet frederick triumphant", 1, 1, 0},
-    {"white imp", 1, 1, 0},
-    {"wiglaf", 0, 1, 0},
-    {"wu jian donald", 0, 1, 0},
-    {"wu jian frederick triumphant", 1, 1, 0},
+    {"vaults donald", 0, 0, 0},
+    {"vehumet donald", 0, 0, 0},
+    {"vehumet frederick triumphant", 1, 0, 0},
+    {"white imp", 1, 0, 0},
+    {"wiglaf", 0, 0, 0},
+    {"wu jian donald", 0, 0, 0},
+    {"wu jian frederick triumphant", 1, 0, 0},
     {"xak'krixis", 4, 0, 0},
     {"xak'krixis", 5, 0, 0},
     {"xom crazy yiuf", 11, 0, 0},
     {"xom crazy yiuf", 12, 0, 0},
     {"xom crazy yiuf", 13, 0, 0},
     {"xom crazy yiuf", 14, 0, 0},
-    {"xom donald", 0, 1, 0},
-    {"xom frederick triumphant", 1, 1, 0},
-    {"xtahua", 0, 1, 0},
+    {"xom donald", 0, 0, 0},
+    {"xom frederick triumphant", 1, 0, 0},
+    {"xtahua", 0, 0, 0},
     {"xtahua triumphant", 1, 0, 0},
-    {"yredelemnul donald", 0, 1, 0},
-    {"yredelemnul frederick triumphant", 1, 1, 0},
-    {"zenata", 0, 1, 0},
-    {"zin donald", 0, 1, 0},
-    {"zin frederick triumphant", 1, 1, 0},
-    {"zot donald", 0, 1, 0},
+    {"yredelemnul donald", 0, 0, 0},
+    {"yredelemnul frederick triumphant", 1, 0, 0},
+    {"zenata", 0, 0, 0},
+    {"zin donald", 0, 0, 0},
+    {"zin frederick triumphant", 1, 0, 0},
+    {"zot donald", 0, 0, 0},
 };
 
 // CR-019/CR-023/CR-024: getSpeakString recursively expands every
@@ -2445,14 +2445,18 @@ static vector<monspeak_layout_set> monspeak_no_newline_closure_layouts(
     per_line.reserve(lines.size());
     for (const string &line : lines)
         per_line.push_back(monspeak_head_channel_set(line, lookup, 0));
-    vector<monspeak_layout_set> out;
+    // One branch, many layouts (CR-033): there is no Lua return-branch
+    // topology to enumerate, so every expansion outcome is a layout of
+    // the single runtime branch and the layouts land in one sorted set
+    // -- deterministic, mirroring the Python shortcut whose frozen
+    // branch ordinal is therefore always 0.
+    monspeak_layout_set layouts;
     vector<msg_channel_type> cur;
     cur.reserve(lines.size());
     function<void(size_t)> dfs = [&](size_t idx) {
         if (idx == per_line.size())
         {
-            monspeak_layout layout(cur.begin(), cur.end());
-            out.push_back({layout});
+            layouts.insert(monspeak_layout(cur.begin(), cur.end()));
             return;
         }
         for (msg_channel_type ch : per_line[idx])
@@ -2463,7 +2467,9 @@ static vector<monspeak_layout_set> monspeak_no_newline_closure_layouts(
         }
     };
     dfs(0);
-    return out;
+    if (layouts.empty())
+        return {};
+    return {layouts};
 }
 
 static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
@@ -2575,7 +2581,6 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                              + to_string(position.line));
     }
     REQUIRE(frozen_visual.size() == 912);
-
     set<string> derived_visual;
     for (const textdb_phase0::canonical_entry &entry : english.entries)
     {
@@ -2617,7 +2622,20 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
             // canonical key and ordinal.  A trailing EN-aligned VISUAL
             // ordinal deleted from ZH (the ZH variant list ends early)
             // must fail here instead of being silently skipped by a
-            // min-range loop.
+            // min-range loop.  The seven shout-family override keys
+            // are the documented exception: their effective merged ZH
+            // body is the zh/shout.txt winner -- a different text with
+            // its own variant list and layout topology -- so neither
+            // the ordinal bound nor the branch comparison is
+            // meaningful against the merged dump.  The Python scanner
+            // validates those keys against the raw zh/monspeak.txt
+            // review identities, which is the binding protocol check.
+            static const set<string> zh_override_keys = {
+                "'&'", "iron imp", "moth of wrath", "player ghost",
+                "polyphemus", "shadow imp", "white imp",
+            };
+            if (zh_override_keys.count(entry.canonical_key))
+                continue;
             REQUIRE(ordinal < zh_entry->variants.size());
             const vector<monspeak_layout_set> zh_branches =
                 monspeak_lua_branch_layouts(
@@ -2835,6 +2853,99 @@ TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH to
     }
     CHECK(zh_has_visual);
     CHECK(zh_branches != en_branches);
+}
+
+TEST_CASE("Issue 70 shared replacement counter and expanded Lua gate",
+          "[single-file][textdb][phase0][issue-70][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+
+    // CR-028/CR-030/CR-032 persisted probes on a synthetic lookup,
+    // driven through monspeak_lua_branch_layouts (not only the
+    // production phase-0 expansion): (a) the shared replacement
+    // counter -- every @marker@ site (including block-external
+    // non-family markers) increments the one counter, so with 99
+    // external markers the in-Lua @frag@ is site 100 and expands to a
+    // VISUAL tail, while with 100 it is site 101 and stays literal
+    // (talk tail).  A mirror that re-expands the site source with a
+    // fresh count resets the boundary.
+    monspeak_family_lookup lookup;
+    lookup["frag"] = {"VISUAL:hello"};
+    for (int preceding = 99; preceding <= 100; ++preceding)
+    {
+        string pattern;
+        for (int i = 0; i < preceding; ++i)
+            pattern += "@outside@\n";
+        pattern += "{{ return '@frag@' }}";
+        vector<pair<string, int>> expanded;
+        monspeak_family_expansions(pattern, lookup, 1, 0, expanded);
+        REQUIRE(expanded.size() == 1);
+        REQUIRE(expanded[0].second == preceding + 1);
+        const string::size_type site = expanded[0].first.find("{{");
+        REQUIRE(site != string::npos);
+        const string::size_type site_end =
+            expanded[0].first.find("}}", site);
+        REQUIRE(site_end != string::npos);
+        const string lua_source = expanded[0].first.substr(
+            site + 2, site_end - site - 2);
+        INFO("preceding=" << preceding);
+        if (preceding == 99)
+        {
+            CHECK(lua_source.find("@frag@") == string::npos);
+            CHECK(lua_source.find("VISUAL:hello") != string::npos);
+        }
+        else
+            CHECK(lua_source.find("@frag@") != string::npos);
+        const vector<monspeak_layout_set> branches =
+            monspeak_lua_branch_layouts(pattern, lookup);
+        REQUIRE(branches.size() == 1);
+        REQUIRE(branches[0].size() == 1);
+        const monspeak_layout &layout = *branches[0].begin();
+        REQUIRE(layout.size() == preceding + 1);
+        for (size_t line = 0; line + 1 < layout.size(); ++line)
+            CHECK(layout[line] == MSGCH_TALK);
+        CHECK(layout.back() == (preceding == 99 ? MSGCH_TALK_VISUAL
+                                                : MSGCH_TALK));
+    }
+
+    // (b) Fragment bytes spliced into a Lua return literal are Lua
+    // source: a raw newline or an unescaped single quote injected by a
+    // fragment makes the EXPANDED source fail the vendored 5.4.8 gate
+    // (checked directly so the negative stays a negative instead of
+    // aborting monspeak_lua_branch_layouts' internal REQUIRE).
+    for (const string &fragment :
+         {string("hello\nworld"), string("hello'world")})
+    {
+        monspeak_family_lookup fragment_lookup;
+        fragment_lookup["frag"] = {fragment};
+        vector<pair<string, int>> expanded;
+        monspeak_family_expansions("{{ return '@frag@' }}",
+                                   fragment_lookup, 1, 0, expanded);
+        REQUIRE(expanded.size() == 1);
+        const string::size_type site = expanded[0].first.find("{{");
+        const string::size_type site_end =
+            expanded[0].first.find("}}", site);
+        REQUIRE(site != string::npos);
+        REQUIRE(site_end != string::npos);
+        INFO("fragment=" << fragment);
+        CHECK_FALSE(monspeak_vendored_lua_syntax_ok(
+            expanded[0].first.substr(site + 2, site_end - site - 2)));
+    }
+
+    // (c) The Lua hex escape \x56 becomes 'V' after the splice, so the
+    // branch emits a VISUAL line (the real-dump form is pinned by the
+    // "Lua escapes" case; this synthetic form pins the boundary pair
+    // in the same lookup as (a)).
+    monspeak_family_lookup hex_lookup;
+    hex_lookup["frag"] = {"\\x56ISUAL:hello"};
+    const vector<monspeak_layout_set> hex_branches =
+        monspeak_lua_branch_layouts("{{ return '@frag@' }}", hex_lookup);
+    REQUIRE(hex_branches.size() == 1);
+    REQUIRE(hex_branches[0].size() == 1);
+    const monspeak_layout &hex_layout = *hex_branches[0].begin();
+    REQUIRE(hex_layout.size() == 1);
+    CHECK(hex_layout[0] == MSGCH_TALK_VISUAL);
 }
 
 TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",

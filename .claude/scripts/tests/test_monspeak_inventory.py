@@ -1043,6 +1043,60 @@ class MonspeakInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/"),
                 exact_artifact(fixture, "database/zh/"))
 
+    def test_lua_replacement_boundary_and_expanded_source_escapes(self):
+        # CR-030/CR-032 persisted probes: the production shared
+        # replacement counter and the expanded-source Lua interpretation
+        # are candidate-gate contract facts, so they are pinned here
+        # directly on _lua_return_branch_lines with a synthetic lookup.
+        # (a) Replacement boundary: every @marker@ site increments the
+        # one shared counter (database.cc MAX_REPLACEMENTS 100), so with
+        # 99 block-external markers the in-Lua @frag@ is site 100 and
+        # expands (VISUAL tail, no @frag@ left in the expanded Lua
+        # source), while with 100 external markers it is site 101 and
+        # stays literal (talk tail).  A gate that re-expands the site
+        # source with a fresh count (the CR-028 C++ bug) resets the
+        # boundary and cannot distinguish the two.
+        boundary_lookup = {"frag": ["VISUAL:hello"]}
+        luac = self._vendored_luac_for_test()
+        with mock.patch.object(MODULE, "_VENDORED_LUAC", luac):
+            for preceding, expands in ((99, True), (100, False)):
+                pattern = ("@outside@\n" * preceding) \
+                    + "{{ return '@frag@' }}"
+                expanded = MODULE._family_expansions(
+                    pattern, boundary_lookup, 1, 0)[0]
+                site = next(MODULE._LUA_SITE_RE.finditer(expanded[0]))
+                lua_source = site.group(0)[2:-2]
+                layouts = MODULE._lua_return_branch_lines(
+                    pattern, boundary_lookup)
+                with self.subTest(preceding=preceding):
+                    self.assertEqual(preceding + 1, expanded[1])
+                    if expands:
+                        self.assertNotIn("@frag@", lua_source)
+                        self.assertEqual(
+                            "talk_visual", layouts[0][0][-1])
+                    else:
+                        self.assertIn("@frag@", lua_source)
+                        self.assertEqual("talk", layouts[0][0][-1])
+            # (b) Fragment bytes spliced into a Lua return literal are
+            # interpreted as Lua source: a raw newline or an unescaped
+            # single quote injected by a fragment makes the expanded
+            # source fail the vendored 5.4.8 gate (fail closed), while
+            # the hex escape \x56 becomes 'V' and the branch emits a
+            # VISUAL line.
+            for name, fragment in (("raw newline", "hello\nworld"),
+                                   ("unescaped quote", "hello'world")):
+                with self.subTest(escape=name):
+                    with self.assertRaisesRegex(
+                            MODULE.InventoryError, "fails luac -p"):
+                        MODULE._lua_return_branch_lines(
+                            "{{ return '@frag@' }}",
+                            {"frag": [fragment]})
+            self.assertEqual(
+                [[["talk_visual"]]],
+                MODULE._lua_return_branch_lines(
+                    "{{ return '@frag@' }}",
+                    {"frag": [r"\x56ISUAL:hello"]}))
+
     def test_candidate_triple_brace_lua_rejected(self):
         # CR-002/CR-006: a candidate ``{{{`` Lua site (stray brace inside
         # the ``{{...}}`` boundary) must be rejected even though the
@@ -1686,7 +1740,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertIn(("nekomata", 1, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 1, 2, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 2, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
-        self.assertEqual(536, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
+        self.assertEqual(912, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / "crawl-ref" / "source"
             en_path = root / "dat" / "database" / "monspeak.txt"
