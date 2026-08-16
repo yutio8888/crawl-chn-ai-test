@@ -922,19 +922,19 @@ TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
 // CR-008/CR-019/CR-023: the complete sorted-unique EN monspeak VISUAL
 // (canonical key, variant ordinal, Lua return branch ordinal, line
 // ordinal) identity set, frozen from the baseline EN dump
-// (b3ad4425053c2175284d32441d67218df97035b0).  The Issue-16 contract
+// (b3ad4425053c2175284d32441d67218df97035b0). The Issue-16 contract
 // compares the full set at the production sink granularity:
 // mons_speaks_msg (mon-speak.cc) splits every selected pattern by '\n'
 // and resolves each line through resolve_mon_speech_line_channel, so a
 // VISUAL line that is not the first line of its pattern (e.g.
 // ``_holy_being_`` #0) or a second VISUAL line inside one pattern (e.g.
-// ``_margery_common_`` #2) is part of the contract.  The branch ordinal
+// ``_margery_common_`` #2) is part of the contract. The branch ordinal
 // (CR-023) is the Lua return branch index: getSpeakString evaluates
 // every ``{{...}}`` block before the sink, so each literal
 // ``return "VISUAL:..."`` emission is a possible runtime line and
 // participates in the frozen set (e.g. ``friendly shoals hound`` #2
 // emits two VISUAL branches, ``nekomata`` #1 emits two of three).
-// Patterns without Lua blocks have exactly one branch (ordinal 0).  An
+// Patterns without Lua blocks have exactly one branch (ordinal 0). An
 // EN edit that moves a VISUAL line to another ordinal or line, changes a
 // VISUAL prefix inside a Lua return or deletes a Lua return branch (even
 // one jointly mirrored in ZH so the per-line ZH check still passes)
@@ -1867,17 +1867,17 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
 // markers inside Lua return literals -- before evaluating the embedded
 // Lua blocks and splicing the returned string into the message, so each
 // literal ``return "..."`` branch of a ``{{...}}`` block is a fully
-// expanded runtime message.  These helpers mirror
+// expanded runtime message. These helpers mirror
 // monspeak_inventory._lua_return_branch_lines exactly: per-block branch
 // extraction reuses the strict ``return`` scan of
 // _lua_block_protocol (CR-002), per-branch expansion enumerates every
 // reachable variant of every referenced in-family fragment with the
 // production recursive-replacement semantics and limits (database.cc
 // MAX_RECURSION_DEPTH 10 / MAX_REPLACEMENTS 100), and the sink layout
-// resolves each line's channel through the production resolver.  Blocks
+// resolves each line's channel through the production resolver. Blocks
 // without literal returns (the you.race()/you.genus() display mappings)
 // keep the colon-free, newline-free ``{{LUA}}`` placeholder, identical
-// to the pre-CR-023 neutralization.  Unsupported escapes fail the
+// to the pre-CR-023 neutralization. Unsupported escapes fail the
 // literal evaluation (REQUIRE at the call site) so the runtime text is
 // never guessed.
 static bool monspeak_unescape_lua_literal(const string &body, string &out)
@@ -1927,7 +1927,9 @@ static bool monspeak_unescape_lua_literal(const string &body, string &out)
                    && (body[i + 1] == ' ' || body[i + 1] == '\t'
                        || body[i + 1] == '\n' || body[i + 1] == '\r'
                        || body[i + 1] == '\f' || body[i + 1] == '\v'))
+            {
                 ++i;
+            }
             break;
         default:
             if (body[i] >= '0' && body[i] <= '9')
@@ -1983,8 +1985,8 @@ static bool monspeak_lua_literal_value(const string &expression,
 
 // Runtime texts of the literal return branches of one ``{{...}}`` block,
 // in source order (split_string trims every line, so the ``return``
-// statement is detected on the trimmed line).  A multi-line ``[[ ]]``
-// long string consumes its continuation lines.  Non-literal returns keep
+// statement is detected on the trimmed line). A multi-line ``[[ ]]``
+// long string consumes its continuation lines. Non-literal returns keep
 // the ``{{LUA}}`` placeholder branch so branch counts stay aligned.
 static vector<string> monspeak_lua_return_branch_texts(const string &block)
 {
@@ -2043,7 +2045,9 @@ static monspeak_family_lookup monspeak_build_lookup(
         vector<string> patterns;
         for (const textdb_phase0::canonical_variant &variant
              : entry.variants)
+        {
             patterns.push_back(variant.raw_pattern);
+        }
         lookup[entry.canonical_key] = move(patterns);
     }
     return lookup;
@@ -2057,7 +2061,7 @@ static monspeak_family_lookup monspeak_build_lookup(
 // scan continues after it; an in-family marker is replaced by every
 // reachable variant of its key (each fully expanded at depth + 1, with
 // the bail-out text past MAX_RECURSION_DEPTH) and the scan resumes at
-// the splice point.  Mirrors monspeak_inventory._family_expansions.
+// the splice point. Mirrors monspeak_inventory._family_expansions.
 static void monspeak_family_expansions(
     const string &text, const monspeak_family_lookup &lookup,
     int depth, int replacements, vector<pair<string, int>> &out)
@@ -2097,8 +2101,10 @@ static void monspeak_family_expansions(
         monspeak_family_expansions(suffix, lookup, depth, replacements,
                                    rest);
         for (const auto &item : rest)
+        {
             out.emplace_back(prefix + marker_full + item.first,
                              item.second);
+        }
         return;
     }
     for (const string &variant : found->second)
@@ -2124,7 +2130,7 @@ static void monspeak_family_expansions(
 // Lua source (database.cc _call_recursive_replacement) and only then
 // evaluates the block (_execute_embedded_lua), so the fragment bytes
 // spliced into a return literal participate in the Lua escape/quote
-// interpretation.  This helper therefore expands the RAW block with
+// interpretation. This helper therefore expands the RAW block with
 // ``monspeak_family_expansions`` (real root-pattern depth 1, one
 // global replacement count shared by every token of the block) and
 // runs the strict branch extraction of
@@ -2152,8 +2158,10 @@ static vector<vector<string>> monspeak_lua_return_branch_expansions(
     }
     vector<vector<string>> expansions;
     for (const set<string> &outcomes : branch_sets)
+    {
         expansions.push_back(vector<string>(outcomes.begin(),
                                             outcomes.end()));
+    }
     return expansions;
 }
 
@@ -2178,7 +2186,7 @@ static monspeak_layout monspeak_message_layout(const string &message)
 // (CR-023/CR-024): the branch combinations are the cross product over
 // the per-site return branches (the last site varies fastest, matching
 // the Python itertools.product), and each branch's layout set deduplicates
-// over the per-branch outcome cross product.  An unbalanced ``{{`` site
+// over the per-branch outcome cross product. An unbalanced ``{{`` site
 // (a split-Lua fragment in isolation) keeps the placeholder branch.
 using monspeak_layout_set = set<monspeak_layout>;
 
@@ -2257,14 +2265,14 @@ static bool monspeak_vendored_lua_syntax_ok(const string &lua_source)
 // CR-027/CR-031: whether expanding the in-family tokens of ``pattern``
 // can change the runtime line layout the sink would report for the
 // unexpanded pattern: "no Lua in the closure" does not mean the
-// recursive tokens cannot change the channels.  Any reachable token
+// recursive tokens cannot change the channels. Any reachable token
 // variant (or its recursive closure) that contains "{{" (a Lua site
 // the raw text lacks), whose first line resolves to a non-talk channel
 // through the production resolver (a line-start channel prefix like
 // VISUAL:/SOUND:/WARN:/VISUAL WARN:), or that contains a newline (the
 // sink's "\n" line split) can change the per-line channel sequence or
-// the runtime line count of some expansion outcome.  Bounded by the
-// visited-text set so a cyclic fragment cannot loop.  The pattern's own
+// the runtime line count of some expansion outcome. Bounded by the
+// visited-text set so a cyclic fragment cannot loop. The pattern's own
 // text is only scanned for its tokens: the pattern's own layout is
 // already exact in the early return, so its own prefixes/newlines must
 // not force the full expansion (the "w:N\n" weight prefixes would
@@ -2295,7 +2303,9 @@ static bool monspeak_closure_may_affect_layout(
                         continue;
                     if (variant.find("{{") != string::npos
                         || variant.find('\n') != string::npos)
+                    {
                         return true;
+                    }
                     string first_line = variant;
                     const string::size_type nl = first_line.find('\n');
                     if (nl != string::npos)
@@ -2521,7 +2531,7 @@ static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
             // CR-028: the site source is already fully expanded by the
             // shared-count pass above; re-expanding it with a fresh
             // count would reset the production global replacement
-            // counter.  The empty lookup keeps the strict branch
+            // counter. The empty lookup keeps the strict branch
             // extraction on the exact bytes production executes, and
             // the vendored 5.4.8 compiler validates the expanded source
             // (the hand-rolled quote rules alone cannot reject e.g.
@@ -2557,13 +2567,13 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
     // through resolve_mon_speech_line_channel with the MSGCH_TALK
     // default; the frozen identity is the (canonical key, variant
     // ordinal, Lua return branch ordinal, line ordinal) set of the EN
-    // lines that resolve to the VISUAL channel.  The branch ordinal
+    // lines that resolve to the VISUAL channel. The branch ordinal
     // (CR-023/CR-024) expands every literal ``return "VISUAL:..."``
     // emission of a ``{{...}}`` block: getSpeakString recursively
     // expands in-family @token@ markers -- including markers inside Lua
     // return literals -- before evaluating the block, so each fully
     // expanded branch is a possible runtime message and participates in
-    // the frozen set.  The aligned ZH dump must reproduce the same
+    // the frozen set. The aligned ZH dump must reproduce the same
     // branch count and the same per-branch expanded layout set, and
     // resolve every corresponding line -- including non-VISUAL lines --
     // to the same channel.
@@ -2619,15 +2629,15 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
             if (!has_visual && !lua_bearing)
                 continue;
             // CR-013: every EN VISUAL line must exist in ZH at the same
-            // canonical key and ordinal.  A trailing EN-aligned VISUAL
+            // canonical key and ordinal. A trailing EN-aligned VISUAL
             // ordinal deleted from ZH (the ZH variant list ends early)
             // must fail here instead of being silently skipped by a
-            // min-range loop.  The seven shout-family override keys
+            // min-range loop. The seven shout-family override keys
             // are the documented exception: their effective merged ZH
             // body is the zh/shout.txt winner -- a different text with
             // its own variant list and layout topology -- so neither
             // the ordinal bound nor the branch comparison is
-            // meaningful against the merged dump.  The Python scanner
+            // meaningful against the merged dump. The Python scanner
             // validates those keys against the raw zh/monspeak.txt
             // review identities, which is the binding protocol check.
             static const set<string> zh_override_keys = {
@@ -2640,7 +2650,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
             const vector<monspeak_layout_set> zh_branches =
                 monspeak_lua_branch_layouts(
                     zh_entry->variants[ordinal].raw_pattern, zh_lookup);
-            // CR-023/CR-024: the branch count must match EN.  A deleted
+            // CR-023/CR-024: the branch count must match EN. A deleted
             // return branch (``friendly shoals hound`` #2) changes the
             // runtime branch topology and fails here even when every
             // remaining line is still VISUAL.
@@ -2656,7 +2666,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                     // for line, and every corresponding line (including
                     // non-VISUAL lines and lines that strip to empty)
                     // must resolve to the same channel as the EN line
-                    // through the production resolver.  A line shift
+                    // through the production resolver. A line shift
                     // inside a pattern, a newline position change or a
                     // changed VISUAL prefix in a Lua return (CR-023)
                     // fails here even when the frozen EN set is
@@ -2678,7 +2688,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                 // in-family fragments) compare their complete sorted-
                 // unique layout sets: every reachable variant of every
                 // referenced fragment must resolve to the same set of
-                // per-line channel sequences as EN.  A VISUAL prefix
+                // per-line channel sequences as EN. A VISUAL prefix
                 // added to one ZH variant of a referenced fragment
                 // (``_Sprozz_common_``) fails here even though the
                 // unexpanded return literal is identical on both sides.
@@ -2690,7 +2700,7 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
     // a removed, reworded or moved EN VISUAL line, a changed VISUAL
     // prefix inside a Lua return or a deleted Lua return branch must fail
     // even when the total stays at 506 and the per-line ZH check is
-    // mirrored.  Both set directions are required so a missing line
+    // mirrored. Both set directions are required so a missing line
     // cannot be hidden by an extra one at another key/ordinal/branch/
     // line.
     CHECK(derived_visual.size() == frozen_visual.size());
@@ -2721,7 +2731,7 @@ TEST_CASE("Issue 70 recursive tokens inside Lua returns bind the expanded ZH top
     // production (database.cc) expands every @token@ marker of the
     // selected pattern BEFORE evaluating the Lua block, so each return
     // branch's runtime layout set enumerates every reachable fragment
-    // variant.  Adding a VISUAL prefix to one ZH variant of
+    // variant. Adding a VISUAL prefix to one ZH variant of
     // _sprozz_common_ must change the ZH layout set while the unexpanded
     // return literal (and every pre-CR-024 fact) stays identical, so a
     // gate that does not expand recursive tokens cannot reject the
@@ -2752,7 +2762,7 @@ TEST_CASE("Issue 70 recursive tokens inside Lua returns bind the expanded ZH top
     // CR-026: the full pattern expands with one shared replacement
     // counter, so the layout vector carries one entry per expanded
     // outcome (2 thief variants x 3 common variants = 6) instead of the
-    // pre-CR-026 per-branch shape.  Every expanded EN outcome resolves
+    // pre-CR-026 per-branch shape. Every expanded EN outcome resolves
     // both returns to plain talk; the mutated ZH fragment variant
     // (VISUAL: prefix) must make every expanded outcome that reaches it
     // emit a talk_visual line for the common branch, and EN/ZH layout
@@ -2791,7 +2801,7 @@ TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH to
     vector<textdb_phase0::canonical_entry> localized =
         textdb_phase0::dump_localized_speakdb_typed("zh").entries;
 
-    // CR-025: the reviewer probe.  Production expands the selected
+    // CR-025: the reviewer probe. Production expands the selected
     // pattern's @token@ markers while it is still Lua source, so a
     // fragment spliced into a Lua return literal participates in the
     // Lua escape interpretation: a ZH variant of _sprozz_common_ that
@@ -2868,7 +2878,7 @@ TEST_CASE("Issue 70 shared replacement counter and expanded Lua gate",
     // non-family markers) increments the one counter, so with 99
     // external markers the in-Lua @frag@ is site 100 and expands to a
     // VISUAL tail, while with 100 it is site 101 and stays literal
-    // (talk tail).  A mirror that re-expands the site source with a
+    // (talk tail). A mirror that re-expands the site source with a
     // fresh count resets the boundary.
     monspeak_family_lookup lookup;
     lookup["frag"] = {"VISUAL:hello"};
@@ -4270,7 +4280,7 @@ TEST_CASE("write production TextDB Phase 0 artifact",
             // The "#### Player sphinx riddle lines" comment title block is
             // a production-parser artifact: comment lines starting with '#'
             // are skipped, but the title line itself is not, so it becomes a
-            // zero-body key that can never be selected.  Freeze the artifact
+            // zero-body key that can never be selected. Freeze the artifact
             // shape explicitly so the shout inventory's identity filtering
             // stays consistent with this dump.
             const textdb_phase0::canonical_entry *artifact =
