@@ -364,25 +364,21 @@ with open(path, 'rb') as stream:
         self.set_fixtures(run=run)
         self.assert_helper_rejects("disallowed pull_request event")
 
-    def test_incomplete_or_failed_run_is_rejected(self) -> None:
-        for field, value in (("status", "in_progress"), ("conclusion", "failure"),
-                             ("conclusion", "cancelled")):
-            with self.subTest(field=field, value=value):
-                run = {
-                    "repository": {"full_name": REPOSITORY},
-                    "head_repository": {"full_name": REPOSITORY},
-                    "event": "workflow_dispatch",
-                    "head_sha": self.candidate,
-                    "head_branch": "candidate",
-                    "path": WORKFLOW_PATH,
-                    "status": "completed",
-                    "conclusion": "success",
-                    "html_url": RUN_URL,
-                    "workflow_sha": self.workflow_blob,
-                }
-                run[field] = value
-                self.set_fixtures(run=run)
-                self.assert_helper_rejects(f"{field}={value}")
+    def test_incomplete_run_is_rejected(self) -> None:
+        run = {
+            "repository": {"full_name": REPOSITORY},
+            "head_repository": {"full_name": REPOSITORY},
+            "event": "workflow_dispatch",
+            "head_sha": self.candidate,
+            "head_branch": "candidate",
+            "path": WORKFLOW_PATH,
+            "status": "in_progress",
+            "conclusion": None,
+            "html_url": RUN_URL,
+            "workflow_sha": self.workflow_blob,
+        }
+        self.set_fixtures(run=run)
+        self.assert_helper_rejects("in_progress run")
 
     def test_workflow_path_drift_is_rejected(self) -> None:
         run = {
@@ -513,10 +509,13 @@ with open(path, 'rb') as stream:
                 },
             ],
         }
-        self.set_fixtures(jobs=jobs)
+        run = json.loads(self.run_json.read_bytes().decode("utf-8"))
+        run["conclusion"] = "failure"
+        self.set_fixtures(run=run, jobs=jobs)
         proc = self.run_helper()
         self.assertEqual(proc.returncode, 0, proc.stderr.decode())
         proof = self.proof_dict()
+        self.assertEqual(proof["conclusion"], "failure")
         self.assertEqual(len(proof["required_jobs"]), 1)
 
     def test_target_control_sha_binding_is_enforced(self) -> None:

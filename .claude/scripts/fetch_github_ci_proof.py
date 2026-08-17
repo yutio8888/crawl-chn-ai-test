@@ -14,7 +14,8 @@ through ``gh`` at final-gate time, and it writes a canonical
 - the workflow blob at the candidate head equals the workflow blob at the
   target/base head (no workflow drift), and the recorded workflow blob SHA-1
   and SHA-256 identities are recomputed and re-verified;
-- the run is ``completed`` with ``conclusion == success``;
+- the run is ``completed``; the overall conclusion is recorded but only
+  contract-required jobs must be successful;
 - every contract-required job is present in the run's job list, binds the
   target-control SHA in its evaluated job name when configured, and is itself
   ``completed``/``success`` (optional or skipped jobs never become required).
@@ -366,10 +367,10 @@ def fetch_and_bind_proof(
         )
     status = run.get("status")
     conclusion = run.get("conclusion")
-    if status != "completed" or conclusion != "success":
+    if status != "completed" or not isinstance(conclusion, str) or not conclusion:
         raise ValueError(
-            f"run must be completed/success, got status={status!r} "
-            f"conclusion={conclusion!r}"
+            f"run must be completed with a recorded conclusion, got "
+            f"status={status!r} conclusion={conclusion!r}"
         )
     run_url = run.get("html_url")
     expected_url = f"https://github.com/{repository}/actions/runs/{run_id}"

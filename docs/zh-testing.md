@@ -153,7 +153,8 @@ The proof artifact `github-actions-proof.json` is fetched live through `gh`,
 bound to the contract repository, exact candidate HEAD, target-control SHA,
 allowed workflow event, workflow path and blob (no target/candidate drift),
 canonical API snapshots, and every required job's `completed`/`success`
-conclusion, then sealed inside the final attempt
+conclusion. The aggregate run conclusion is recorded but non-required job
+failures do not veto the proof. The proof is then sealed inside the final attempt
 and re-verified by the final approval and `review_at_merge.sh`. A caller can
 never supply the proof JSON or override the contract repository. Readiness,
 review ledgers, and the final approval are not bypassed; without

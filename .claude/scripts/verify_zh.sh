@@ -276,8 +276,10 @@ if not isinstance(proof["head_sha"], str) \
     raise SystemExit("proof head_sha is invalid")
 if proof["head_sha"] != head_sha:
     raise SystemExit("proof head_sha does not match the bound head")
-if proof["status"] != "completed" or proof["conclusion"] != "success":
-    raise SystemExit("proof run is not completed/success")
+if proof["status"] != "completed" \
+        or not isinstance(proof["conclusion"], str) \
+        or not proof["conclusion"]:
+    raise SystemExit("proof run is not completed with a recorded conclusion")
 if not isinstance(proof["required_jobs"], list) or not proof["required_jobs"]:
     raise SystemExit("proof required_jobs must be a non-empty list")
 if not isinstance(proof["repository"], str) or not proof["repository"]:

@@ -1629,9 +1629,11 @@ def _validate_github_proof(
         raise ReviewBundleError(
             "GitHub Actions proof target workflow digest is invalid"
         )
-    if proof.get("status") != "completed" or proof.get("conclusion") != "success":
+    if proof.get("status") != "completed" or not isinstance(
+        proof.get("conclusion"), str
+    ) or not proof.get("conclusion"):
         raise ReviewBundleError(
-            "GitHub Actions proof run is not completed/success"
+            "GitHub Actions proof run is not completed with a recorded conclusion"
         )
     jobs = proof.get("required_jobs")
     required = external["required_jobs"]
@@ -1693,7 +1695,7 @@ def _validate_github_proof(
         "head_branch": head_branch,
         "path": workflow_path,
         "status": "completed",
-        "conclusion": "success",
+        "conclusion": proof.get("conclusion"),
         "html_url": proof.get("run_url"),
     }
     for field, expected_value in snapshot_fields.items():

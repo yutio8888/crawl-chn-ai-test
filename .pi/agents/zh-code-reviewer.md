@@ -201,8 +201,9 @@ results are never accepted; only the contract's allowed workflow-dispatch
 control path is valid), the workflow path
 `.github/workflows/ci.yml`, the workflow blob identity at the candidate head
 with no drift against the target/base blob, the recorded workflow blob SHA-1
-and SHA-256 identities, the `completed`/`success` run state, and every
-contract-required job id with `completed`/`success` conclusion. Optional or
+and SHA-256 identities, a completed run (whose aggregate conclusion is
+recorded but need not be success), and every contract-required job id with
+`completed`/`success` conclusion. Optional or
 skipped jobs never become required. The canonical proof records the run URL/id,
 event, head branch/SHA, workflow blob identity, target-control SHA, API response digests, the
 required job list, and each job's id/conclusion, and is stored as the attempt artifact
