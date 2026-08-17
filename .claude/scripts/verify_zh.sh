@@ -846,8 +846,13 @@ PY
 
     if [[ "$RISK_CPP_I18N" -eq 1 && "$PROFILE" != ci ]]; then
         # ci profile is truly static — no make, no runtime
-        run_phase "cpp-build" 1 "Risk gate: incremental C++ build" run_incremental_build \
-            || RESULTS=$((RESULTS + 1))
+        if is_externalized_phase "cpp-build"; then
+            record_external_phase "cpp-build" 1 \
+                "Risk gate: incremental C++ build (external GitHub Actions evidence)"
+        else
+            run_phase "cpp-build" 1 "Risk gate: incremental C++ build" run_incremental_build \
+                || RESULTS=$((RESULTS + 1))
+        fi
         run_phase "zh-smoke" 1 "Risk gate: ZH smoke" run_zh_smoke \
             || RESULTS=$((RESULTS + 1))
     fi

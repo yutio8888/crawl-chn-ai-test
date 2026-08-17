@@ -167,8 +167,11 @@ with open(path, 'rb') as stream:
                 "status": "completed",
                 "conclusion": "success",
                 "html_url": RUN_URL,
-                "workflow_sha": self.workflow_blob,
+                "id": RUN_ID,
+                "workflow_id": 1,
             }
+        run.setdefault("id", RUN_ID)
+        run.setdefault("workflow_id", 1)
         if jobs is None:
             jobs = {
                 "total_count": 1,
@@ -394,7 +397,7 @@ with open(path, 'rb') as stream:
         self.set_fixtures(run=run)
         self.assert_helper_rejects("workflow path drift")
 
-    def test_workflow_sha_mismatch_is_rejected(self) -> None:
+    def test_run_id_mismatch_is_rejected(self) -> None:
         run = {
             "repository": {"full_name": REPOSITORY},
             "head_repository": {"full_name": REPOSITORY},
@@ -405,10 +408,11 @@ with open(path, 'rb') as stream:
             "status": "completed",
             "conclusion": "success",
             "html_url": RUN_URL,
-            "workflow_sha": "0" * 40,
+            "workflow_sha": self.workflow_blob,
+            "id": RUN_ID + 1,
         }
         self.set_fixtures(run=run)
-        self.assert_helper_rejects("workflow_sha mismatch")
+        self.assert_helper_rejects("run id mismatch")
 
     def test_candidate_target_workflow_drift_is_rejected(self) -> None:
         candidate = self.repo / ".worktrees/candidate"

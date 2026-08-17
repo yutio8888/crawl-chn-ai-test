@@ -75,6 +75,7 @@
       "policy-sync",
       "source-db-static",
       "message-overlay-static",
+      "cpp-build",
       "zh-runtime-catch2"
     ],
     "proof_artifact": "github-actions-proof.json",
@@ -82,8 +83,31 @@
     "repository": "yutio8888/crawl-chn-ai-test",
     "required_jobs": [
       {
-        "id": "zh_ci_gate",
-        "name_contains": "ZH CI Gate",
+        "id": "zh_tooling_tests_ubuntu",
+        "name_contains": "ZH Tooling Tests (ubuntu-latest)",
+        "phases": [
+          "message-overlay-static"
+        ]
+      },
+      {
+        "id": "zh_tooling_tests_macos",
+        "name_contains": "ZH Tooling Tests (macos-latest)",
+        "phases": [
+          "message-overlay-static"
+        ]
+      },
+      {
+        "id": "zh_ci_gate_ubuntu",
+        "name_contains": "ZH CI Gate (static + data, no make, ubuntu-latest)",
+        "phases": [
+          "policy-sync",
+          "source-db-static",
+          "message-overlay-static"
+        ]
+      },
+      {
+        "id": "zh_ci_gate_macos",
+        "name_contains": "ZH CI Gate (static + data, no make, macos-latest)",
         "phases": [
           "policy-sync",
           "source-db-static",
@@ -92,9 +116,51 @@
       },
       {
         "id": "zh_runtime_catch2",
-        "name_contains": "ZH Runtime Catch2",
+        "name_contains": "ZH Runtime Catch2 ([zh-translation] + [message-overlay])",
         "phases": [
           "zh-runtime-catch2"
+        ]
+      },
+      {
+        "id": "zh_help_runtime",
+        "name_contains": "ZH Help Runtime Tests (Issue 52)",
+        "phases": [
+          "zh-runtime-catch2"
+        ]
+      },
+      {
+        "id": "linting",
+        "name_contains": "Code Linting",
+        "phases": [
+          "policy-sync"
+        ]
+      },
+      {
+        "id": "build_linux_console",
+        "name_contains": "Linux Console (GCC)",
+        "phases": [
+          "cpp-build"
+        ]
+      },
+      {
+        "id": "build_macos_tiles",
+        "name_contains": "macOS Tiles App",
+        "phases": [
+          "cpp-build"
+        ]
+      },
+      {
+        "id": "build_windows_tiles",
+        "name_contains": "Windows Tiles (MinGW64 cross-compile)",
+        "phases": [
+          "cpp-build"
+        ]
+      },
+      {
+        "id": "build_android",
+        "name_contains": "Android (buildTest)",
+        "phases": [
+          "cpp-build"
         ]
       }
     ],

@@ -1586,8 +1586,8 @@ def _validate_github_proof(
         )
     if proof.get("workflow_sha") != candidate_blob:
         raise ReviewBundleError(
-            "GitHub Actions proof workflow_sha does not match the candidate "
-            "workflow blob"
+            "GitHub Actions proof workflow blob SHA-1 does not match the "
+            "candidate workflow blob"
         )
     candidate_data = _git_blob(repo, candidate_head, workflow_path)[1]
     target_data = _git_blob(repo, target_head, workflow_path)[1]

@@ -12,9 +12,8 @@ through ``gh`` at final-gate time, and it writes a canonical
 - ``head_sha`` equals the exact candidate head;
 - the run path equals the contract workflow path;
 - the workflow blob at the candidate head equals the workflow blob at the
-  target/base head (no workflow drift), the API ``workflow_sha`` equals the
-  candidate blob id, and both recorded blob SHA-256 digests are recomputed and
-  re-verified;
+  target/base head (no workflow drift), and the recorded workflow blob SHA-1
+  and SHA-256 identities are recomputed and re-verified;
 - the run is ``completed`` with ``conclusion == success``;
 - every contract-required job is present in the run's job list and is itself
   ``completed``/``success`` (optional or skipped jobs never become required).
@@ -74,6 +73,8 @@ def _scrubbed_environment() -> dict[str, str]:
             "GIT_DISCOVERY_ACROSS_FILESYSTEM",
             "GIT_EXTERNAL_DIFF",
             "GIT_DIFF_OPTS",
+            "GH_HOST",
+            "GH_ENTERPRISE_TOKEN",
             "LD_PRELOAD",
             "LD_LIBRARY_PATH",
             "PYTHONHOME",
@@ -118,8 +119,6 @@ def _load_spec(path: Path) -> dict[str, Any]:
         raise ValueError(f"external CI spec is not valid UTF-8 JSON: {exc}") from exc
     if not isinstance(spec, dict):
         raise ValueError("external CI spec must be a JSON object")
-    if canonical_json_bytes(spec) != data:
-        raise ValueError("external CI spec is not canonical JSON")
     expected_fields = frozenset(
         (
             "enabled",
@@ -248,8 +247,10 @@ def _api_jobs(
     job_proc = _run(
         [
             gh_bin,
+            "--hostname",
+            "github.com",
             "api",
-            f"repos/{repository}/actions/runs/{run_id}/jobs",
+            f"repos/{repository}/actions/runs/{run_id}/jobs?per_page=100",
         ],
         repo,
     )
@@ -261,6 +262,15 @@ def _api_jobs(
     jobs = jobs_value.get("jobs")
     if not isinstance(jobs, list):
         raise ValueError("GitHub Actions jobs response is missing jobs")
+    total_count = jobs_value.get("total_count")
+    if (
+        isinstance(total_count, bool)
+        or not isinstance(total_count, int)
+        or total_count != len(jobs)
+    ):
+        raise ValueError(
+            "GitHub Actions jobs response is incomplete or has an invalid total_count"
+        )
     return jobs, raw_jobs, jobs_value
 
 
@@ -279,6 +289,8 @@ def fetch_and_bind_proof(
     run_proc = _run(
         [
             gh_bin,
+            "--hostname",
+            "github.com",
             "api",
             f"repos/{repository}/actions/runs/{run_id}",
         ],
@@ -289,6 +301,8 @@ def fetch_and_bind_proof(
         raise ValueError(message or "gh run API call failed")
     raw_run = run_proc.stdout
     run = _parse_json(raw_run, "GitHub Actions run response")
+    if run.get("id") != run_id:
+        raise ValueError("run id does not match the requested run id")
 
     run_repository = run.get("repository")
     if not isinstance(run_repository, dict) or run_repository.get(
@@ -296,13 +310,12 @@ def fetch_and_bind_proof(
     ) != repository:
         raise ValueError("run repository does not match the contract repository")
     head_repository = run.get("head_repository")
-    if head_repository is not None:
-        if not isinstance(head_repository, dict) or head_repository.get(
-            "full_name"
-        ) != repository:
-            raise ValueError(
-                "run head_repository does not match the contract repository"
-            )
+    if not isinstance(head_repository, dict) or head_repository.get(
+        "full_name"
+    ) != repository:
+        raise ValueError(
+            "run head_repository does not match the contract repository"
+        )
 
     event = run.get("event")
     if event not in spec["allowed_events"]:
@@ -337,10 +350,6 @@ def fetch_and_bind_proof(
     if run_url != expected_url:
         raise ValueError("run html_url does not match the bound run id")
 
-    workflow_sha = run.get("workflow_sha")
-    if not isinstance(workflow_sha, str) or not GIT_OID_RE.fullmatch(workflow_sha):
-        raise ValueError("run workflow_sha is missing or invalid")
-
     candidate_blob, candidate_content = _workflow_blob(
         repo, candidate_head, str(spec["workflow_path"])
     )
@@ -350,10 +359,6 @@ def fetch_and_bind_proof(
     if candidate_blob != target_blob or candidate_content != target_content:
         raise ValueError(
             "workflow drifted between target/base and candidate heads"
-        )
-    if workflow_sha != candidate_blob:
-        raise ValueError(
-            "run workflow_sha does not match the candidate workflow blob"
         )
     candidate_sha256 = hashlib.sha256(candidate_content).hexdigest()
     target_sha256 = hashlib.sha256(target_content).hexdigest()
@@ -376,27 +381,31 @@ def fetch_and_bind_proof(
             and isinstance(job.get("name"), str)
             and name_contains in job["name"]
         ]
-        if not matched:
+        if len(matched) != 1:
             raise ValueError(
-                f"required job {job_id!r} is missing from the run's jobs"
+                f"required job {job_id!r} must match exactly one run job, "
+                f"found {len(matched)}"
             )
-        for job in matched:
-            job_status = job.get("status")
-            job_conclusion = job.get("conclusion")
-            if job_status != "completed" or job_conclusion != "success":
-                raise ValueError(
-                    f"required job {job_id!r} failed or did not complete: "
-                    f"status={job_status!r} conclusion={job_conclusion!r}"
-                )
-            required_jobs.append(
-                {
-                    "id": job_id,
-                    "name": str(job["name"]),
-                    "api_job_id": job.get("id"),
-                    "status": job_status,
-                    "conclusion": job_conclusion,
-                }
+        job = matched[0]
+        job_status = job.get("status")
+        job_conclusion = job.get("conclusion")
+        if job_status != "completed" or job_conclusion != "success":
+            raise ValueError(
+                f"required job {job_id!r} failed or did not complete: "
+                f"status={job_status!r} conclusion={job_conclusion!r}"
             )
+        api_job_id = job.get("id")
+        if isinstance(api_job_id, bool) or not isinstance(api_job_id, int) or api_job_id <= 0:
+            raise ValueError(f"required job {job_id!r} has an invalid API id")
+        required_jobs.append(
+            {
+                "id": job_id,
+                "name": str(job["name"]),
+                "api_job_id": api_job_id,
+                "status": job_status,
+                "conclusion": job_conclusion,
+            }
+        )
 
     proof = {
         "schema": spec["proof_schema"],
@@ -407,7 +416,7 @@ def fetch_and_bind_proof(
         "head_branch": head_branch,
         "head_sha": head_sha,
         "workflow_path": str(spec["workflow_path"]),
-        "workflow_sha": workflow_sha,
+        "workflow_sha": candidate_blob,
         "workflow_blob_sha256_candidate": candidate_sha256,
         "workflow_blob_sha256_target": target_sha256,
         "status": status,

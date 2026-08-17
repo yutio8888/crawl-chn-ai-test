@@ -202,12 +202,12 @@ mismatch: the contract repository (including the run's `repository` and
 results are never accepted; only the contract's allowed events such as
 `workflow_dispatch`/`push` are valid), the workflow path
 `.github/workflows/ci.yml`, the workflow blob identity at the candidate head
-with no drift against the target/base blob, the API `workflow_sha`, the
-`completed`/`success` run state, and every contract-required job id with
-`completed`/`success` conclusion. Optional or skipped jobs never become
-required. The canonical proof records the run URL/id, event, head branch/SHA,
-workflow SHA, API response digests, the required job list, and each job's
-id/conclusion, and is stored as the attempt artifact
+with no drift against the target/base blob, the recorded workflow blob SHA-1
+and SHA-256 identities, the `completed`/`success` run state, and every
+contract-required job id with `completed`/`success` conclusion. Optional or
+skipped jobs never become required. The canonical proof records the run URL/id,
+event, head branch/SHA, workflow blob identity, API response digests, the
+required job list, and each job's id/conclusion, and is stored as the attempt artifact
 `github-actions-proof.json`; the schema-v4/v5 metadata marks every replaced
 phase `source=github-actions` while every other phase still runs locally.
 Phases the contract does not list as externalizable may never carry that

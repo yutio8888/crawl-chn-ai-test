@@ -2581,6 +2581,8 @@ with open(path, 'rb') as stream:
                 ),
                 "workflow_sha": self.workflow_blob,
             }
+        run.setdefault("id", int(EXTERNAL_RUN_ID))
+        run.setdefault("workflow_id", 1)
         if jobs is None:
             jobs = {
                 "total_count": 1,
