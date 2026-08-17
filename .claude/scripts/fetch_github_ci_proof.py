@@ -83,6 +83,22 @@ def _scrubbed_environment() -> dict[str, str]:
             "GH_CONFIG_DIR",
             "GH_HOST",
             "GH_ENTERPRISE_TOKEN",
+            "GH_FORCE_TTY",
+            "GH_PAGER",
+            "GITHUB_PAGER",
+            "PAGER",
+            "GIT_PAGER",
+            "SYSTEMD_PAGER",
+            "MANPAGER",
+            "LESS",
+            "NO_COLOR",
+            "CLICOLOR",
+            "CLICOLOR_FORCE",
+            "GH_COLOR_LABELS",
+            "GH_ACCESSIBLE_COLORS",
+            "GH_PROMPT_DISABLED",
+            "TERM",
+            "COLORTERM",
             "HTTP_PROXY",
             "HTTPS_PROXY",
             "ALL_PROXY",
@@ -113,6 +129,7 @@ def _scrubbed_environment() -> dict[str, str]:
         } or name.startswith(("GIT_", "ZH_VERIFY_", "ZH_RUNTIME_")):
             environment.pop(name, None)
     environment["GIT_NO_REPLACE_OBJECTS"] = "1"
+    environment["GH_PROMPT_DISABLED"] = "1"
     return environment
 
 

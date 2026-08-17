@@ -129,6 +129,18 @@ class ExternalProofTests(unittest.TestCase):
 import os
 import sys
 
+for name in (
+    'GH_FORCE_TTY', 'GH_PAGER', 'GITHUB_PAGER', 'PAGER', 'GIT_PAGER',
+    'SYSTEMD_PAGER', 'MANPAGER', 'LESS', 'NO_COLOR', 'CLICOLOR',
+    'CLICOLOR_FORCE', 'GH_COLOR_LABELS', 'GH_ACCESSIBLE_COLORS',
+    'GH_PROMPT_DISABLED', 'TERM', 'COLORTERM',
+):
+    if name == 'GH_PROMPT_DISABLED' and os.environ.get(name) == '1':
+        continue
+    if os.environ.get(name):
+        print(f'unscrubbed hostile environment: {name}', file=sys.stderr)
+        raise SystemExit(17)
+
 if os.environ.get('FAKE_GH_FAIL'):
     print('fake gh failure', file=sys.stderr)
     raise SystemExit(9)
@@ -190,13 +202,17 @@ with open(path, 'rb') as stream:
         self.run_json.write_bytes(canonical(run))
         self.jobs_json.write_bytes(canonical(jobs))
 
-    def run_helper(self) -> subprocess.CompletedProcess[bytes]:
+    def run_helper(
+        self, extra_env: dict[str, str] | None = None
+    ) -> subprocess.CompletedProcess[bytes]:
         output = self.temp / "github-actions-proof.json"
         output.unlink(missing_ok=True)
         env = os.environ.copy()
         env["PATH"] = f"{self.temp}:{env.get('PATH', '')}"
         env["FAKE_GH_RUN_JSON"] = os.fspath(self.run_json)
         env["FAKE_GH_JOBS_JSON"] = os.fspath(self.jobs_json)
+        if extra_env:
+            env.update(extra_env)
         proc = subprocess.run(
             [
                 sys.executable,
@@ -290,6 +306,29 @@ with open(path, 'rb') as stream:
         )
         self.assertTrue(proof["fetched_at"])
         self.validate(proof)
+
+    def test_hostile_pager_tty_and_color_environment_is_scrubbed(self) -> None:
+        hostile = {
+            "GH_FORCE_TTY": "always",
+            "GH_PAGER": "/tmp/attacker-pager",
+            "GITHUB_PAGER": "/tmp/attacker-pager",
+            "PAGER": "/tmp/attacker-pager",
+            "GIT_PAGER": "/tmp/attacker-pager",
+            "SYSTEMD_PAGER": "/tmp/attacker-pager",
+            "MANPAGER": "/tmp/attacker-pager",
+            "LESS": "-R",
+            "NO_COLOR": "0",
+            "CLICOLOR": "1",
+            "CLICOLOR_FORCE": "1",
+            "GH_COLOR_LABELS": "1",
+            "GH_ACCESSIBLE_COLORS": "1",
+            "GH_PROMPT_DISABLED": "0",
+            "TERM": "xterm-256color",
+            "COLORTERM": "truecolor",
+        }
+        proc = self.run_helper(extra_env=hostile)
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode())
+        self.assertTrue(self.output.exists())
 
     def assert_helper_rejects(self, label: str) -> None:
         proc = self.run_helper()
