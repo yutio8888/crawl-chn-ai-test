@@ -346,12 +346,21 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertIn("runs-on: ${{ matrix.os }}", job)
             self.assertIn("uses: actions/setup-python@v4", job)
         self.assertIn("uses: actions/setup-node@v4", tooling)
+        self.assertIn("id: trusted_control", tooling)
+        self.assertIn("id: trusted_control", gate)
         self.assertIn(
-            "run: /bin/bash .claude/scripts/tests/run_all.sh", tooling
+            'steps.trusted_control.outputs.root', tooling
         )
         self.assertIn(
-            "run: /bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
+            'steps.trusted_control.outputs.root', gate
         )
+        self.assertIn(
+            "/bin/bash .claude/scripts/tests/run_all.sh", tooling
+        )
+        self.assertIn(
+            "/bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
+        )
+        self.assertIn("control_sha", workflow)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()

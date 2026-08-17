@@ -2360,7 +2360,7 @@ class ExternalContractParserTests(unittest.TestCase):
         contract["external_ci"] = dict(base["external_ci"])
         contract["external_ci"]["required_jobs"] = [
             {"id": "zh_ci_gate", "name_contains": "ZH CI Gate",
-             "phases": ["policy-sync", "source-db-static"]},
+             "phases": ["policy-sync"]},
             dict(job),
         ]
         with self.assertRaises(MODULE.ReviewBundleError):

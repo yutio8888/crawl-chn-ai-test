@@ -138,8 +138,8 @@ TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
 
 Only phases that the trusted contract's `external_ci` section lists as
 externalizable are replaced (currently the static policy/source/DB/message
-overlay gates and the ZH Catch2 runtime gate).
-`review-static`, `review-ledgers`, and the ZH smoke/build phases always run locally
+overlay gates only). `review-static`, `review-ledgers`, and all runtime,
+smoke, and build phases always run locally
 because the CI workflow does not claim to cover them. The external proof still
 requires every tooling, static, and runtime job listed by the contract; other
 platform build/lint jobs are not substituted by this proof. The CI workflow
