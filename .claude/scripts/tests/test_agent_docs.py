@@ -344,7 +344,12 @@ class AgentDocumentationTests(unittest.TestCase):
         for job in (tooling, gate):
             self.assertIn("os: [ubuntu-latest, macos-latest]", job)
             self.assertIn("runs-on: ${{ matrix.os }}", job)
+            self.assertIn("PYTHONSAFEPATH: \"1\"", job)
             self.assertIn("uses: actions/setup-python@v4", job)
+            self.assertLess(
+                job.index("Prepare trusted verification control checkout"),
+                job.index("Build trusted target luac"),
+            )
         self.assertIn("uses: actions/setup-node@v4", tooling)
         self.assertIn("id: trusted_control", tooling)
         self.assertIn("id: trusted_control", gate)
@@ -361,6 +366,15 @@ class AgentDocumentationTests(unittest.TestCase):
             "/bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
         )
         self.assertIn("control_sha", workflow)
+        self.assertIn("submodule update --init --recursive", tooling)
+        self.assertLess(
+            tooling.index("Build trusted target luac"),
+            tooling.index("Run tooling tests"),
+        )
+        self.assertLess(
+            gate.index("Build trusted target luac"),
+            gate.index("Run Chinese localization CI gate"),
+        )
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()

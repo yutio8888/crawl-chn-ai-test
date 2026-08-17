@@ -34,6 +34,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONSAFEPATH: "1"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -53,6 +55,23 @@ jobs:
           git worktree add --detach "$control" "$CONTROL_SHA"
           test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
           printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
+      - name: Build trusted target luac
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          root="${{ steps.trusted_control.outputs.root }}"
+          git -C "$root" submodule update --init --recursive
+          cd "$root/crawl-ref/source/contrib/lua/src"
+          luac_link_flags=(-lm)
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            luac_link_flags+=(-ldl)
+          fi
+          cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
+             lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
+             lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
+             lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
+             lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
+             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -66,6 +85,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
       - name: Build vendored luac (monspeak Lua syntax gate)
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           cd crawl-ref/source/contrib/lua/src
           luac_link_flags=(-lm)
@@ -108,6 +128,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONSAFEPATH: "1"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -127,6 +149,23 @@ jobs:
           git worktree add --detach "$control" "$CONTROL_SHA"
           test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
           printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
+      - name: Build trusted target luac
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          root="${{ steps.trusted_control.outputs.root }}"
+          git -C "$root" submodule update --init --recursive
+          cd "$root/crawl-ref/source/contrib/lua/src"
+          luac_link_flags=(-lm)
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            luac_link_flags+=(-ldl)
+          fi
+          cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
+             lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
+             lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
+             lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
+             lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
+             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -136,6 +175,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
       - name: Build vendored luac (monspeak Lua syntax gate)
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           cd crawl-ref/source/contrib/lua/src
           luac_link_flags=(-lm)
