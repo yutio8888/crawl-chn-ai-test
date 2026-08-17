@@ -2,7 +2,7 @@
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
 model: openai-codex/gpt-5.6-sol
-fallbackModels: deepseek/deepseek-v4-flash
+fallbackModels: command-code/muse-spark-1.2-contributor
 tools: read, grep, find, ls, bash, intercom
 thinking: xhigh
 systemPromptMode: replace

@@ -2,7 +2,7 @@
 name: worker
 description: General project implementation agent for explicitly assigned work without a specialized project writer
 model: openai-codex/gpt-5.6-sol
-fallbackModels: opencode-go/deepseek-v4-flash, deepseek/deepseek-v4-flash
+fallbackModels: command-code/muse-spark-1.2-contributor
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
