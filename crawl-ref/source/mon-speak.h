@@ -59,7 +59,7 @@ void maybe_mons_speaks(monster* mons);
 // fallback chain, weighted picks and final emission); the optional observer
 // captures the final emission exactly like ``mons_speaks_msg`` does, so the
 // zh translation tests drive the full production path instead of rebuilding
-// the lookup chain by hand.  Kept on a single declaration line so the
+// the lookup chain by hand. Kept on a single declaration line so the
 // baseline-frozen producer/consumer anchors of monspeak_inventory.py never
 // drift.
 bool mons_speaks(monster* mons,
