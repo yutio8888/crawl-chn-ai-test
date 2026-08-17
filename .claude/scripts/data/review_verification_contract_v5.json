@@ -73,8 +73,7 @@
     "enabled": true,
     "externalizable_phases": [
       "policy-sync",
-      "source-db-static",
-      "message-overlay-static"
+      "source-db-static"
     ],
     "proof_artifact": "github-actions-proof.json",
     "proof_schema": "dcss-zh-github-actions-proof-v1",
@@ -85,8 +84,7 @@
         "name_contains": "ZH CI Gate (static + data, no make, ubuntu-latest)",
         "phases": [
           "policy-sync",
-          "source-db-static",
-          "message-overlay-static"
+          "source-db-static"
         ]
       },
       {
@@ -94,8 +92,7 @@
         "name_contains": "ZH CI Gate (static + data, no make, macos-latest)",
         "phases": [
           "policy-sync",
-          "source-db-static",
-          "message-overlay-static"
+          "source-db-static"
         ]
       }
     ],

@@ -137,12 +137,12 @@ TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
 ```
 
 Only phases that the trusted contract's `external_ci` section lists as
-externalizable are replaced (currently the static policy/source/DB/message
-overlay gates only). `review-static`, `review-ledgers`, and all runtime,
-smoke, and build phases always run locally
-because the CI workflow does not claim to cover them. The external proof still
-requires every tooling, static, and runtime job listed by the contract; other
-platform build/lint jobs are not substituted by this proof. The CI workflow
+externalizable are replaced (currently only the static policy/source/DB gates).
+The message-overlay gate remains local because its target-control tests are not
+candidate-data bound yet. `review-static`, `review-ledgers`, and all runtime,
+smoke, and build phases always run locally because the CI workflow does not
+claim to cover them. The external proof requires every job listed by the
+contract; other platform build/lint jobs are not substituted by this proof. The CI workflow
 `.github/workflows/ci.yml` is
 authoritative for which jobs exist; optional jobs such as "ZH Runtime Full" or
 the release job are never treated as required. `gh` must be installed and
