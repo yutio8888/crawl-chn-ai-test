@@ -50,12 +50,16 @@ jobs:
       - name: Build vendored luac (monspeak Lua syntax gate)
         run: |
           cd crawl-ref/source/contrib/lua/src
+          luac_link_flags=(-lm)
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            luac_link_flags+=(-ldl)
+          fi
           cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
              lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
              lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
              lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
              lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
-             lvm.c lzio.c -lm -ldl
+             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run tooling tests
         run: /bin/bash .claude/scripts/tests/run_all.sh
         env:
@@ -97,12 +101,16 @@ jobs:
       - name: Build vendored luac (monspeak Lua syntax gate)
         run: |
           cd crawl-ref/source/contrib/lua/src
+          luac_link_flags=(-lm)
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            luac_link_flags+=(-ldl)
+          fi
           cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
              lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
              lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
              lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
              lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
-             lvm.c lzio.c -lm -ldl
+             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run Chinese localization CI gate (static only)
         run: /bin/bash .claude/scripts/verify_zh.sh --profile ci
       - name: Upload verification evidence

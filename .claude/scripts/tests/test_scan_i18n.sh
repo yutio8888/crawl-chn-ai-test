@@ -520,6 +520,41 @@ assert_contains "protocol registry: every artifact receives negative mutations" 
     "OK: 21 rows, 65 artifacts, 356 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
+# CR-034: a malformed weighted TextDB entry must fail closed at the custom
+# monspeak parser boundary instead of publishing a partial position map.
+echo "--- malformed monspeak weighted entry ---"
+set +e
+python3 - "$SCAN_I18N" <<'PY' > /tmp/actual_monspeak_parse_error.txt 2>&1
+import importlib.util
+import os
+import sys
+import tempfile
+
+scan_path = sys.argv[1]
+spec = importlib.util.spec_from_file_location("scan_i18n", scan_path)
+scan = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(scan)
+
+with tempfile.TemporaryDirectory() as root:
+    path = os.path.join(root, "dat/database/monspeak.txt")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write("%%%%\nmalformed fixture\n%%%%")
+    positions, error = scan._monspeak_textdb_positions(
+        root, "dat/database/monspeak.txt", "fixture")
+    if positions is not None or not error or "weighted-entry parse error" not in error:
+        raise AssertionError(
+            f"malformed weighted entry was accepted: positions={positions!r} "
+            f"error={error!r}")
+    print(error)
+PY
+monspeak_parse_status=$?
+set -e
+assert_status "monspeak parser: malformed weighted entry fails closed" \
+    0 "$monspeak_parse_status"
+assert_contains "monspeak parser: error identifies weighted parse" \
+    "weighted-entry parse error" /tmp/actual_monspeak_parse_error.txt
+
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \
     "$REPO_ROOT/crawl-ref/source" > /tmp/actual_i18n_extract.txt

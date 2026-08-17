@@ -17,6 +17,8 @@
 
 #include "test_player_fixture.h"
 
+#include <fcntl.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <utility>
 
@@ -2255,8 +2257,20 @@ static bool monspeak_vendored_lua_syntax_ok(const string &lua_source)
     // Tests run from crawl-ref/source (the Catch2 data-root contract),
     // so the vendored compiler is reachable relative to the cwd.
     const string luac = "contrib/lua/src/luac";
-    const string cmd = luac + " -p '" + string(&buf[0]) + "' 2>/dev/null";
-    const int rc = system(cmd.c_str());
+    const pid_t child = fork();
+    REQUIRE(child >= 0);
+    if (child == 0)
+    {
+        const int null_fd = open("/dev/null", O_WRONLY);
+        if (null_fd < 0 || dup2(null_fd, STDERR_FILENO) < 0)
+            _exit(127);
+        close(null_fd);
+        const char *argv[] = { luac.c_str(), "-p", &buf[0], nullptr };
+        execv(luac.c_str(), (char *const *) argv);
+        _exit(127);
+    }
+    int rc = 0;
+    REQUIRE(waitpid(child, &rc, 0) == child);
     unlink(&buf[0]);
     REQUIRE(WIFEXITED(rc));
     return WEXITSTATUS(rc) == 0;

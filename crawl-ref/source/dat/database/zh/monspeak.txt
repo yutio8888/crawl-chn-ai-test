@@ -450,7 +450,7 @@ Erolcha banished
 __NONE
 
 w:1
-@The_monster@ 尖叫道："等等！该被放逐的是伊罗查！"
+@The_monster@ 尖叫道："等等！该由伊罗查来做这件事！"
 %%%%
 ############ AIZUL ### 嗜睡的守护蛇
 Aizul
@@ -1927,7 +1927,7 @@ w:50
 
 @The_monster@ 说："至少这地方没有沼泽那么臭。"
 
-@The_monster@ 说："那些海妖开始刺到我的耳朵了。"
+@The_monster@ 说："那些海妖的声音开始震得我耳朵疼了。"
 
 @The_monster@ 说："海妖就那声音？我唱得都比那好！"
 
@@ -2190,7 +2190,7 @@ w:50
 
 @The_monster@ 说："哦，原来那些符文是干这个用的！"
 
-@The_monster@ 说："为什么每层墙壁都换颜色？他们老是刷完漆吗？"
+@The_monster@ 说："为什么每层墙壁都换颜色？他们老是把油漆用光吗？"
 
 @The_monster@ 说："是什么阻止守卫们自己偷走宝珠？"
 
@@ -2216,7 +2216,7 @@ w:50
 
 @The_monster@ 说："顶多只有三个信徒，我会腻的。"
 
-@The_monster@ 说："你怎么找到足够的灰烬和木炭给他们涂油？"
+@The_monster@ 说："你怎么找到足够的灰烬和木炭，用来给他们全都涂抹上？"
 
 @The_monster@ 说："想跟我打，光靠兽人可不够。"
 
@@ -3119,7 +3119,7 @@ VISUAL:@The_monster@ 用@possessive@独眼瞪着@foe@。
 @The_monster@ 对 @foe@ 尖叫道："老子要杀了你！现在！"
 %%%%
 _Urug_rare_
-VISUAL:@The_monster@ 朝 @foe@ 眨了眨眼……或者只是眨了眨。
+VISUAL:@The_monster@ 朝 @foe@ 使了个眼色……或者只是眨了眨眼。
 
 @The_monster@ 对 @foe@ 尖叫道："你那些该死的亲戚夺走了我唯一的好眼睛。现在你去死吧，鹰身女妖！"
 
@@ -3755,7 +3755,7 @@ _Boris_medium_
 
 @The_monster@说："你想得到宝珠？你永远得不到。" @player_only@
 
-@The_monster@以空洞的回声夸耀道："我的力量无边无际。"
+@The_monster@以哀号般的回声夸耀道："我的力量无边无际。"
 
 @The_monster@宣称："你们凡人，唯一的独特之处在于你们崩溃的方式。"
 
@@ -7403,7 +7403,7 @@ w:40
 
 @The_monster@吟诵着@_recite_what_@@_recite_subject_@
 
-@The_monster@布道关于@_recite_subject_@
+@The_monster@正在布道，谈论着@_recite_subject_@
 
 @The_monster@@_recites_start_@一场@_lecture_modifier_@的演讲，关于@_recite_subject_@
 

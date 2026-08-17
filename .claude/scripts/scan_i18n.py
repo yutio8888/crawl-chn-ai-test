@@ -6700,6 +6700,9 @@ def _monspeak_textdb_positions(source_dir, rel_path, label):
             {"source_name": rel_path, "load_index": 0,
              "definition_ordinal": 0},
             key)
+        if parse_error:
+            return None, (f"{label} key {key!r} has weighted-entry parse "
+                          f"error: {parse_error}")
         positions[key] = [variant["raw_pattern"] for variant in variants]
     return positions, None
 
