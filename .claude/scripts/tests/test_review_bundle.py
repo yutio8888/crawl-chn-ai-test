@@ -2359,7 +2359,7 @@ class ExternalContractParserTests(unittest.TestCase):
         contract = json.loads(json.dumps(base))
         contract["external_ci"] = dict(base["external_ci"])
         contract["external_ci"]["required_jobs"] = [
-            {"id": "zh_ci_gate", "name_contains": "ZH CI Gate",
+            {"id": "zh_ci_gate_ubuntu", "name_contains": "ZH CI Gate",
              "phases": ["policy-sync"]},
             dict(job),
         ]

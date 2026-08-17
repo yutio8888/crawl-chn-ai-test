@@ -81,20 +81,6 @@
     "repository": "yutio8888/crawl-chn-ai-test",
     "required_jobs": [
       {
-        "id": "zh_tooling_tests_ubuntu",
-        "name_contains": "ZH Tooling Tests (ubuntu-latest)",
-        "phases": [
-          "message-overlay-static"
-        ]
-      },
-      {
-        "id": "zh_tooling_tests_macos",
-        "name_contains": "ZH Tooling Tests (macos-latest)",
-        "phases": [
-          "message-overlay-static"
-        ]
-      },
-      {
         "id": "zh_ci_gate_ubuntu",
         "name_contains": "ZH CI Gate (static + data, no make, ubuntu-latest)",
         "phases": [

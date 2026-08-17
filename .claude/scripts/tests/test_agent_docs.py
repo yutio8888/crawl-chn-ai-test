@@ -376,6 +376,87 @@ class AgentDocumentationTests(unittest.TestCase):
             gate.index("Run Chinese localization CI gate"),
         )
 
+    def test_external_ci_control_path_is_structurally_bound(self) -> None:
+        workflow_path = ROOT / ".github/workflows/ci.yml"
+        workflow_text = workflow_path.read_text()
+
+        def assert_contract(text: str) -> None:
+            data = yaml.safe_load(text)
+            jobs = data["jobs"]
+            dispatch = data.get(True, data.get("on", {})).get(
+                "workflow_dispatch", {}
+            )
+            control_input = dispatch.get("inputs", {}).get("control_sha", {})
+            self.assertTrue(control_input.get("required"))
+            for job_name in ("zh_tooling_tests", "zh_ci_gate"):
+                job = jobs[job_name]
+                self.assertEqual(job.get("env", {}).get("PYTHONSAFEPATH"), "1")
+                steps = job["steps"]
+                names = [step.get("name") for step in steps]
+                prepare_index = names.index(
+                    "Prepare trusted verification control checkout"
+                )
+                luac_index = names.index("Build trusted target luac")
+                candidate_luac_index = names.index(
+                    "Build vendored luac (monspeak Lua syntax gate)"
+                )
+                prepare = steps[prepare_index]
+                luac = steps[luac_index]
+                candidate_luac = steps[candidate_luac_index]
+                self.assertEqual(
+                    prepare.get("if"),
+                    "${{ github.event_name == 'workflow_dispatch' }}",
+                )
+                self.assertIn(
+                    '[[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]',
+                    prepare.get("run", ""),
+                )
+                self.assertIn(
+                    'test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"',
+                    prepare.get("run", ""),
+                )
+                self.assertIn("printf 'sha=%s", prepare.get("run", ""))
+                self.assertEqual(
+                    luac.get("if"),
+                    "${{ github.event_name == 'workflow_dispatch' }}",
+                )
+                self.assertEqual(
+                    candidate_luac.get("if"),
+                    "${{ github.event_name != 'workflow_dispatch' }}",
+                )
+                self.assertIn(
+                    'git -C "$root" submodule update --init --recursive',
+                    luac.get("run", ""),
+                )
+                self.assertIn(
+                    'cd "$root/crawl-ref/source/contrib/lua/src"',
+                    luac.get("run", ""),
+                )
+            gate = jobs["zh_ci_gate"]
+            gate_run = next(
+                step["run"]
+                for step in gate["steps"]
+                if step.get("name")
+                == "Run Chinese localization CI gate (static only)"
+            )
+            self.assertIn(
+                '--base "${{ steps.trusted_control.outputs.sha }}"', gate_run
+            )
+            self.assertIn('--head "$GITHUB_SHA"', gate_run)
+            self.assertIn(
+                '"${{ steps.trusted_control.outputs.root }}/.claude/scripts/verify_zh.sh"',
+                gate_run,
+            )
+
+        assert_contract(workflow_text)
+        mutated = workflow_text.replace(
+            '[[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]',
+            'test -n "$CONTROL_SHA"',
+            1,
+        )
+        with self.assertRaises(AssertionError):
+            assert_contract(mutated)
+
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
         for pattern in (r"~30,", r"30,452", r"~93%", r"\*\*活跃开发分支\*\*"):

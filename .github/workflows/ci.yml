@@ -55,6 +55,7 @@ jobs:
           git worktree add --detach "$control" "$CONTROL_SHA"
           test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
           printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
+          printf 'sha=%s\n' "$CONTROL_SHA" >> "$GITHUB_OUTPUT"
       - name: Build trusted target luac
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
@@ -149,6 +150,7 @@ jobs:
           git worktree add --detach "$control" "$CONTROL_SHA"
           test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
           printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
+          printf 'sha=%s\n' "$CONTROL_SHA" >> "$GITHUB_OUTPUT"
       - name: Build trusted target luac
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
@@ -191,7 +193,9 @@ jobs:
       - name: Run Chinese localization CI gate (static only)
         run: |
           if [[ -n "${{ steps.trusted_control.outputs.root }}" ]]; then
-            /bin/bash "${{ steps.trusted_control.outputs.root }}/.claude/scripts/verify_zh.sh" --profile ci
+            /bin/bash "${{ steps.trusted_control.outputs.root }}/.claude/scripts/verify_zh.sh" \
+              --profile ci --base "${{ steps.trusted_control.outputs.sha }}" \
+              --head "$GITHUB_SHA"
           else
             /bin/bash .claude/scripts/verify_zh.sh --profile ci
           fi
