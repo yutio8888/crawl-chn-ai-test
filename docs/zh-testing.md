@@ -141,8 +141,9 @@ externalizable are replaced (currently the static policy/source/DB/message
 overlay gates and the ZH Catch2 runtime gate).
 `review-static`, `review-ledgers`, and the ZH smoke/build phases always run locally
 because the CI workflow does not claim to cover them. The external proof still
-requires every non-optional CI build, lint, tooling, static, and runtime job
-listed by the contract. The CI workflow `.github/workflows/ci.yml` is
+requires every tooling, static, and runtime job listed by the contract; other
+platform build/lint jobs are not substituted by this proof. The CI workflow
+`.github/workflows/ci.yml` is
 authoritative for which jobs exist; optional jobs such as "ZH Runtime Full" or
 the release job are never treated as required. `gh` must be installed and
 authenticated on the control plane; tests use fake `gh` fixtures and never

@@ -210,7 +210,9 @@ event, head branch/SHA, workflow blob identity, target-control SHA, API response
 required job list, and each job's id/conclusion, and is stored as the attempt artifact
 `github-actions-proof.json`. The workflow's externalized jobs must execute the
 verification scripts from a detached checkout of that target-control SHA, while
-reading the candidate checkout only as data. The schema-v4/v5 metadata marks every replaced
+reading the candidate checkout only as data; the evaluated required-job names
+must end with ` @ <target-head>` so the target binding is independently visible
+in the GitHub API snapshot. The schema-v4/v5 metadata marks every replaced
 phase `source=github-actions` while every other phase still runs locally.
 Phases the contract does not list as externalizable may never carry that
 source. The attempt digest, final approval, and `review_at_merge.sh` re-verify

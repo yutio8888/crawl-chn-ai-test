@@ -2528,6 +2528,7 @@ class ExternalCiFinalGateTests(unittest.TestCase):
         )
 
         self.fake_gh = self.temp / "fake-gh"
+        self.fake_gh_alias = self.temp / "gh"
         self.run_json = self.temp / "run.json"
         self.jobs_json = self.temp / "jobs.json"
         self.fake_gh.write_text(
@@ -2549,6 +2550,7 @@ with open(path, 'rb') as stream:
             encoding="utf-8",
         )
         self.fake_gh.chmod(0o755)
+        self.fake_gh_alias.symlink_to(self.fake_gh)
         self.set_gh_fixtures()
 
     def tearDown(self) -> None:
@@ -2637,16 +2639,27 @@ with open(path, 'rb') as stream:
         return path
 
     def run_external(self, created: dict, **kwargs: object) -> dict:
-        return MODULE.run_final(
-            self.candidate,
-            created["bundle_id"],
-            self.repo,
-            self.verifier,
-            self.contract_path,
-            github_actions_run=EXTERNAL_RUN_ID,
-            gh_bin=os.fspath(self.fake_gh),
-            **kwargs,
-        )
+        original_environment = MODULE._trusted_child_environment
+
+        def test_environment() -> dict[str, str]:
+            environment = original_environment()
+            environment["PATH"] = (
+                f"{self.temp}:{environment.get('PATH', '')}"
+            )
+            return environment
+
+        with mock.patch.object(
+            MODULE, "_trusted_child_environment", side_effect=test_environment
+        ):
+            return MODULE.run_final(
+                self.candidate,
+                created["bundle_id"],
+                self.repo,
+                self.verifier,
+                self.contract_path,
+                github_actions_run=EXTERNAL_RUN_ID,
+                **kwargs,
+            )
 
     def first_attempt_path(self, created: dict) -> Path:
         attempts = Path(created["bundle_path"]) / "attempts"

@@ -123,6 +123,7 @@ class ExternalProofTests(unittest.TestCase):
         self.run_json = self.temp / "run.json"
         self.jobs_json = self.temp / "jobs.json"
         self.fake_gh = self.temp / "fake-gh"
+        self.fake_gh_alias = self.temp / "gh"
         self.fake_gh.write_text(
             """#!/usr/bin/env python3
 import os
@@ -142,6 +143,7 @@ with open(path, 'rb') as stream:
             encoding="utf-8",
         )
         self.fake_gh.chmod(0o755)
+        self.fake_gh_alias.symlink_to(self.fake_gh)
         self.set_fixtures()
 
     def tearDown(self) -> None:
@@ -192,6 +194,7 @@ with open(path, 'rb') as stream:
         output = self.temp / "github-actions-proof.json"
         output.unlink(missing_ok=True)
         env = os.environ.copy()
+        env["PATH"] = f"{self.temp}:{env.get('PATH', '')}"
         env["FAKE_GH_RUN_JSON"] = os.fspath(self.run_json)
         env["FAKE_GH_JOBS_JSON"] = os.fspath(self.jobs_json)
         proc = subprocess.run(
@@ -210,8 +213,6 @@ with open(path, 'rb') as stream:
                 os.fspath(self.repo),
                 "--output",
                 os.fspath(output),
-                "--gh-bin",
-                os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,
@@ -459,13 +460,13 @@ with open(path, 'rb') as stream:
                 "--target-head", self.target,
                 "--repo", os.fspath(self.repo),
                 "--output", os.fspath(self.temp / "proof-drift.json"),
-                "--gh-bin", os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env={
                 **os.environ,
+                "PATH": f"{self.temp}:{os.environ.get('PATH', '')}",
                 "FAKE_GH_RUN_JSON": os.fspath(self.run_json),
                 "FAKE_GH_JOBS_JSON": os.fspath(self.jobs_json),
             },
@@ -522,9 +523,13 @@ with open(path, 'rb') as stream:
         spec = dict(FIXTURE_SPEC)
         spec["bind_target_sha"] = True
         self.spec_path.write_bytes(canonical(spec))
-        self.assert_helper_rejects("missing target control SHA in job name")
 
         jobs = json.loads(self.jobs_json.read_bytes().decode("utf-8"))
+        jobs["jobs"][0]["name"] += f" @ attacker-{self.target}-suffix"
+        self.set_fixtures(jobs=jobs)
+        self.assert_helper_rejects("forged target control SHA suffix")
+
+        jobs["jobs"][0]["name"] = jobs["jobs"][0]["name"].split(" @ ", 1)[0]
         jobs["jobs"][0]["name"] += f" @ {self.target}"
         self.set_fixtures(jobs=jobs)
         proc = self.run_helper()
@@ -534,6 +539,7 @@ with open(path, 'rb') as stream:
 
     def test_gh_api_failure_is_rejected(self) -> None:
         env = os.environ.copy()
+        env["PATH"] = f"{self.temp}:{env.get('PATH', '')}"
         env["FAKE_GH_RUN_JSON"] = os.fspath(self.run_json)
         env["FAKE_GH_JOBS_JSON"] = os.fspath(self.jobs_json)
         env["FAKE_GH_FAIL"] = "1"
@@ -547,7 +553,6 @@ with open(path, 'rb') as stream:
                 "--target-head", self.target,
                 "--repo", os.fspath(self.repo),
                 "--output", os.fspath(output),
-                "--gh-bin", os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,

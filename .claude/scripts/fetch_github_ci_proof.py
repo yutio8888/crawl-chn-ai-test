@@ -7,8 +7,8 @@ through ``gh`` at final-gate time, and it writes a canonical
 ``github-actions-proof.json`` artifact only after every binding check passes:
 
 - the run belongs to the contract-fixed repository;
-- the event is in the contract allow-list (workflow_dispatch / push; pull
-  request merge-ref results are rejected);
+- the event is in the contract allow-list (the current contract requires
+  workflow_dispatch; pull-request merge-ref results are rejected);
 - ``head_sha`` equals the exact candidate head;
 - the run path equals the contract workflow path;
 - the workflow blob at the candidate head equals the workflow blob at the
@@ -23,9 +23,9 @@ The proof also embeds canonical run/jobs API snapshots and their digests so
 merge-time validation can repeat the identity checks without trusting a mutable
 network response.
 
-API response digests are recorded over the exact raw bytes returned by ``gh``
-so a later read-only validator can confirm the recorded proof was generated
-from one fixed API snapshot.
+API response digests are recorded over the canonical JSON bytes of the
+embedded run/jobs snapshots, so a later read-only validator can recompute the
+same digests from one fixed API snapshot.
 """
 
 from __future__ import annotations
@@ -86,6 +86,12 @@ def _scrubbed_environment() -> dict[str, str]:
             "HTTPS_PROXY",
             "ALL_PROXY",
             "NO_PROXY",
+            "http_proxy",
+            "https_proxy",
+            "all_proxy",
+            "no_proxy",
+            "GH_HTTP_UNIX_SOCKET",
+            "XDG_CONFIG_HOME",
             "SSL_CERT_FILE",
             "SSL_CERT_DIR",
             "REQUESTS_CA_BUNDLE",
@@ -299,10 +305,12 @@ def fetch_and_bind_proof(
     target_head: str,
     repo: Path,
     output: Path,
-    gh_bin: str,
 ) -> dict[str, Any]:
     if isinstance(run_id, bool) or not isinstance(run_id, int) or run_id <= 0:
         raise ValueError("GitHub Actions run id must be a positive integer")
+    gh_bin = shutil.which("gh")
+    if not gh_bin:
+        raise ValueError("gh binary is unavailable on the trusted PATH")
     repository = str(spec["repository"])
     run_proc = _run(
         [
@@ -415,9 +423,11 @@ def fetch_and_bind_proof(
         api_job_id = job.get("id")
         if isinstance(api_job_id, bool) or not isinstance(api_job_id, int) or api_job_id <= 0:
             raise ValueError(f"required job {job_id!r} has an invalid API id")
-        if spec["bind_target_sha"] and target_head not in job["name"]:
+        if spec["bind_target_sha"] and not job["name"].endswith(
+            f" @ {target_head}"
+        ):
             raise ValueError(
-                f"required job {job_id!r} does not bind the target control SHA"
+                f"required job {job_id!r} does not bind the exact target control SHA"
             )
         required_jobs.append(
             {
@@ -476,7 +486,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--target-head", required=True)
     parser.add_argument("--repo", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--gh-bin", default=None)
     return parser.parse_args(argv)
 
 
@@ -489,10 +498,6 @@ def main(argv: list[str] | None = None) -> int:
         except ValueError:
             raise ValueError(f"GitHub Actions run id is not an integer: {run_id_raw}")
         spec = _load_spec(Path(args.external_ci_json))
-        gh_bin = args.gh_bin or "gh"
-        gh_path = shutil.which(gh_bin)
-        if not gh_path:
-            raise ValueError(f"gh binary is unavailable: {gh_bin}")
         proof_path = Path(args.output)
         proof_path.parent.mkdir(parents=True, exist_ok=True)
         proof = fetch_and_bind_proof(
@@ -502,7 +507,6 @@ def main(argv: list[str] | None = None) -> int:
             str(args.target_head),
             Path(args.repo),
             proof_path,
-            gh_path,
         )
         proof_bytes = canonical_json_bytes(proof)
         temporary = proof_path.with_name(

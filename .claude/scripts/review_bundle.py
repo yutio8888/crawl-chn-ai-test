@@ -1648,8 +1648,12 @@ def _validate_github_proof(
         job_name = record.get("name")
         if not isinstance(job_name, str) or planned["name_contains"] not in job_name:
             raise ReviewBundleError(f"{label} name is invalid")
-        if external.get("bind_target_sha") and target_head not in job_name:
-            raise ReviewBundleError(f"{label} does not bind the target control SHA")
+        if external.get("bind_target_sha") and not job_name.endswith(
+            f" @ {target_head}"
+        ):
+            raise ReviewBundleError(
+                f"{label} does not bind the exact target control SHA"
+            )
         api_job_id = record.get("api_job_id")
         if (
             isinstance(api_job_id, bool)
@@ -1748,10 +1752,12 @@ def _validate_github_proof(
             raise ReviewBundleError(
                 f"GitHub Actions proof API required job failed: {planned['id']}"
             )
-        if external.get("bind_target_sha") and target_head not in job["name"]:
+        if external.get("bind_target_sha") and not job["name"].endswith(
+            f" @ {target_head}"
+        ):
             raise ReviewBundleError(
                 f"GitHub Actions proof API required job {planned['id']} "
-                "does not bind the target control SHA"
+                "does not bind the exact target control SHA"
             )
         expected_jobs.append(
             {
@@ -3183,7 +3189,6 @@ def _fetch_github_ci_proof(
     external: dict[str, Any],
     run_id: str,
     stage: Path,
-    gh_bin: str | None = None,
 ) -> Path:
     """Fetch and bind one live GitHub Actions run through the trusted helper.
 
@@ -3216,11 +3221,6 @@ def _fetch_github_ci_proof(
         "--output",
         os.fspath(proof_path),
     ]
-    # The sanctioned shell entry point never supplies this test-only
-    # dependency injection.  It exists solely so unit tests can replace the
-    # network client without an environment-controlled executable.
-    if gh_bin is not None:
-        command.extend(("--gh-bin", gh_bin))
     proc = subprocess.run(
         command,
         cwd=os.fspath(trusted["target_top"]),
@@ -3260,7 +3260,6 @@ def run_final(
     recover_stale: bool = False,
     github_actions_run: str | None = None,
     github_repository: str | None = None,
-    gh_bin: str | None = None,
 ) -> dict[str, Any]:
     """Run or reuse the one trusted final verification and seal its approval.
 
@@ -3374,7 +3373,6 @@ def run_final(
                     external_run,
                     github_actions_run,
                     stage,
-                    gh_bin,
                 )
                 command.extend(
                     (
