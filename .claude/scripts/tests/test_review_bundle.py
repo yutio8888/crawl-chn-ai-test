@@ -727,6 +727,10 @@ raise SystemExit(7 if mode == 'fail' else 0)
             shell_scripts / "i18n_shared.py",
         )
         shutil.copy2(SCRIPT.parent / "review_final_gate.sh", shell_scripts / "review_final_gate.sh")
+        shutil.copy2(
+            SCRIPT.parent / "fetch_github_ci_proof.py",
+            shell_scripts / "fetch_github_ci_proof.py",
+        )
         shell_verifier = shell_scripts / "verify_zh.sh"
         shutil.copy2(self.verifier, shell_verifier)
         shell_contract_path = shell_scripts / "data/review_verification_contract_v5.json"
@@ -746,9 +750,15 @@ raise SystemExit(7 if mode == 'fail' else 0)
         (docs / "glossary.md").write_bytes(
             GLOSSARY_SOURCE.read_bytes()
         )
+        workflow = self.repo / ".github/workflows/ci.yml"
+        workflow.parent.mkdir(parents=True)
+        workflow.write_text(
+            "name: Build\non: workflow_dispatch\njobs: {}\n",
+            encoding="utf-8",
+        )
         (self.repo / ".gitignore").write_text("/.worktrees/\n", encoding="utf-8")
         (self.repo / "tracked.txt").write_text("base\n", encoding="utf-8")
-        self.run_cmd("git", "add", ".gitignore", ".claude", ".trusted", "docs/glossary.md", "tracked.txt",
+        self.run_cmd("git", "add", ".gitignore", ".claude", ".trusted", ".github", "docs/glossary.md", "tracked.txt",
                      cwd=self.repo, check=True)
         self.run_cmd("git", "commit", "-qm", "base", cwd=self.repo, check=True)
         self.run_cmd("git", "branch", "target", cwd=self.repo, check=True)
@@ -2116,6 +2126,671 @@ with module.bundle_lock(pathlib.Path(sys.argv[2])):
         stdout, stderr = proc.communicate(timeout=5)
         self.assertEqual(proc.returncode, 0, stdout + stderr)
         self.assertTrue(acquired.exists())
+
+    def test_shell_final_gate_rejects_missing_github_run_id_value(self) -> None:
+        self.ready()
+        environment = os.environ.copy()
+        environment.update(PYTHONDONTWRITEBYTECODE="1")
+        proc = subprocess.run(
+            ["bash", ".claude/scripts/review_final_gate.sh",
+             "candidate", "target", "--github-actions-run"],
+            cwd=self.repo,
+            text=True,
+            capture_output=True,
+            env=environment,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 20, proc.stdout + proc.stderr)
+        self.assertIn("--github-actions-run requires a run id", proc.stderr)
+
+    def test_shell_final_gate_rejects_unknown_external_option(self) -> None:
+        self.ready()
+        environment = os.environ.copy()
+        environment.update(PYTHONDONTWRITEBYTECODE="1")
+        proc = subprocess.run(
+            ["bash", ".claude/scripts/review_final_gate.sh",
+             "candidate", "target", "--github-evil"],
+            cwd=self.repo,
+            text=True,
+            capture_output=True,
+            env=environment,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 20, proc.stdout + proc.stderr)
+        self.assertIn("unknown option", proc.stderr)
+
+
+EXTERNAL_REPOSITORY = "fixture/crawl-zh"
+EXTERNAL_RUN_ID = "32029487274"
+EXTERNAL_REQUIRED_ARTIFACTS = [
+    "character-mechanics-inventory.json",
+    "god-inventory.json",
+    "item-name-inventory.json",
+    "monster-name-inventory.json",
+    "species-background-inventory.json",
+    "world-inventory.json",
+]
+
+EXTERNAL_VERIFIER_SOURCE = """#!/usr/bin/env python3
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--profile', required=True)
+parser.add_argument('--base', required=True)
+parser.add_argument('--head', required=True)
+parser.add_argument('--scope', required=True)
+parser.add_argument('--output-dir', required=True)
+parser.add_argument('--routing-sha256', required=True)
+parser.add_argument('--control-plane-sha256', required=True)
+parser.add_argument('--github-actions-proof', default=None)
+parser.add_argument('--github-actions-run', default=None)
+parser.add_argument('--github-proof-artifact', default=None)
+parser.add_argument('--github-externalized-phases', default=None)
+args = parser.parse_args()
+
+run_id = f'ext-{time.time_ns()}-{os.getpid()}'
+run_dir = Path(args.output_dir) / run_id
+run_dir.mkdir(parents=True)
+verify_log = run_dir / 'verify.log'
+verify_log.write_text('external fake verifier run ' + run_id + '\\n', encoding='utf-8')
+required_artifact_names = [
+    'character-mechanics-inventory.json',
+    'god-inventory.json',
+    'item-name-inventory.json',
+    'monster-name-inventory.json',
+    'species-background-inventory.json',
+    'world-inventory.json',
+]
+for artifact_name in required_artifact_names:
+    (run_dir / artifact_name).write_text(artifact_name + '\\n', encoding='utf-8')
+
+externalized = (
+    set(args.github_externalized_phases.split(','))
+    if args.github_externalized_phases else set())
+proof_artifact = args.github_proof_artifact
+if args.github_actions_proof and os.environ.get('EXTERNAL_VERIFIER_DROP_PROOF') != '1':
+    shutil.copy2(args.github_actions_proof, run_dir / proof_artifact)
+else:
+    proof_artifact = None
+
+phase_plan = [
+    ('policy-sync', True), ('review-static', True),
+    ('message-overlay-static', True), ('optional-advisory', False),
+    ('zh-runtime-catch2', True),
+]
+phases = []
+for phase_id, required in phase_plan:
+    record = {'id': phase_id, 'required': required,
+              'status': 'pass', 'exit_code': 0}
+    if phase_id in externalized:
+        record['source'] = 'github-actions'
+    phases.append(record)
+
+diff = subprocess.check_output([
+    'git', 'diff', '--no-ext-diff', '--no-textconv', '--binary', '--full-index',
+    f'{args.base}..{args.head}', '--',
+])
+glossary = Path('docs/glossary.md').read_bytes()
+artifacts = [{
+    'path': 'verify.log',
+    'size': verify_log.stat().st_size,
+    'sha256': hashlib.sha256(verify_log.read_bytes()).hexdigest(),
+}]
+for artifact_name in required_artifact_names:
+    data = (run_dir / artifact_name).read_bytes()
+    artifacts.append({
+        'path': artifact_name,
+        'size': len(data),
+        'sha256': hashlib.sha256(data).hexdigest(),
+    })
+if proof_artifact:
+    data = (run_dir / proof_artifact).read_bytes()
+    artifacts.append({
+        'path': proof_artifact,
+        'size': len(data),
+        'sha256': hashlib.sha256(data).hexdigest(),
+    })
+metadata = {
+    'schema_version': 3,
+    'verification_contract': 'dcss-zh-review-v5',
+    'run_id': run_id,
+    'status': 'pass',
+    'profile': args.profile,
+    'scope': args.scope,
+    'base': args.base,
+    'head': args.head,
+    'diff_sha256': hashlib.sha256(diff).hexdigest(),
+    'glossary_sha256': hashlib.sha256(glossary).hexdigest(),
+    'routing_sha256': args.routing_sha256,
+    'control_plane_sha256': args.control_plane_sha256,
+    'risk_cpp_i18n': False,
+    'risk_cjk_runtime': False,
+    'risk_message_overlay': False,
+    'runtime_mode': 'catch2',
+    'phases': phases,
+    'artifacts': artifacts,
+    'failures': 0,
+}
+(run_dir / 'metadata.json').write_text(json.dumps(metadata), encoding='utf-8')
+print(f'external fake run {run_id}')
+raise SystemExit(0)
+"""
+
+
+class ExternalContractParserTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.contract_path = (
+            SCRIPT.parent / "data/review_verification_contract_v5.json"
+        )
+        self.real = json.loads(self.contract_path.read_text(encoding="utf-8"))
+
+    def parse(self, contract: dict) -> dict:
+        return MODULE._parse_contract(MODULE.canonical_json_bytes(contract))
+
+    def test_extended_production_contract_parses(self) -> None:
+        parsed = self.parse(self.real)
+        self.assertEqual(
+            parsed["external_ci"]["repository"],
+            "yutio8888/crawl-chn-ai-test",
+        )
+        self.assertIn(
+            MODULE.TRUSTED_GITHUB_PROOF_HELPER_PATH,
+            parsed["control_plane_files"],
+        )
+
+    def test_legacy_contract_shapes_still_parse(self) -> None:
+        for original in (
+            MODULE._parse_contract(
+                (SCRIPT.parent / "data/review_verification_contract_v4.json")
+                .read_bytes()
+            ),
+        ):
+            self.assertIsNone(original.get("external_ci"))
+        minimal = {
+            "schema": MODULE.CONTRACT_SCHEMA,
+            "verification_contract": "dcss-zh-review-v4",
+            "control_plane_files": [
+                MODULE.TRUSTED_CLASSIFIER_PATH,
+                ".claude/scripts/review_bundle.py",
+                ".claude/scripts/verify_zh.sh",
+            ],
+            "phase_plan": [
+                {"id": "policy-sync", "required": True, "when": "always"},
+            ],
+        }
+        self.assertIsNone(self.parse(minimal).get("external_ci"))
+
+    def test_external_ci_rejects_malformed_sections(self) -> None:
+        base = dict(self.real)
+        malformed: list[tuple[str, object]] = [
+            ("enabled", False),
+            ("repository", "not-a-repo"),
+            ("repository", "owner/repo/extra"),
+            ("workflow_path", "src/ci.yml"),
+            ("workflow_path", "../escape.yml"),
+            ("allowed_events", []),
+            ("allowed_events", ["pull_request"]),
+            ("externalizable_phases", []),
+            ("externalizable_phases", ["policy-sync", "not-a-phase"]),
+            ("required_jobs", []),
+            ("proof_artifact", "other-proof.json"),
+            ("proof_schema", "dcss-zh-github-actions-proof-v0"),
+        ]
+        for field, value in malformed:
+            with self.subTest(field=field, value=value):
+                contract = json.loads(json.dumps(base))
+                contract["external_ci"] = dict(base["external_ci"])
+                contract["external_ci"][field] = value
+                with self.assertRaises(MODULE.ReviewBundleError):
+                    self.parse(contract)
+
+    def test_external_ci_rejects_bad_required_jobs(self) -> None:
+        base = json.loads(json.dumps(self.real))
+        job = dict(base["external_ci"]["required_jobs"][0])
+
+        contract = json.loads(json.dumps(base))
+        contract["external_ci"] = dict(base["external_ci"])
+        contract["external_ci"]["required_jobs"] = [
+            {"id": "zh_ci_gate", "name_contains": "ZH CI Gate",
+             "phases": ["policy-sync", "source-db-static"]},
+            dict(job),
+        ]
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+        contract = json.loads(json.dumps(base))
+        contract["external_ci"] = dict(base["external_ci"])
+        contract["external_ci"]["required_jobs"][0]["phases"] = [
+            "review-ledgers"
+        ]
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+        contract = json.loads(json.dumps(base))
+        contract["external_ci"] = dict(base["external_ci"])
+        contract["external_ci"]["required_jobs"][0]["name_contains"] = ""
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+        # A required job that does not cover a listed externalizable phase
+        # breaks the exact-cover invariant.
+        contract = json.loads(json.dumps(base))
+        contract["external_ci"] = dict(base["external_ci"])
+        contract["external_ci"]["required_jobs"] = [dict(job)]
+        contract["external_ci"]["externalizable_phases"] = [
+            "policy-sync", "source-db-static", "message-overlay-static",
+        ]
+        contract["external_ci"]["required_jobs"][0]["phases"] = [
+            "policy-sync", "source-db-static",
+        ]
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+        contract = json.loads(json.dumps(base))
+        contract["external_ci"] = dict(base["external_ci"])
+        contract["external_ci"]["required_jobs"][0]["phases"] = [
+            "never-covering"
+        ]
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+    def test_unknown_top_level_fields_still_fail_closed(self) -> None:
+        contract = json.loads(json.dumps(self.real))
+        contract["extra_field"] = True
+        with self.assertRaises(MODULE.ReviewBundleError):
+            self.parse(contract)
+
+
+class ExternalCiFinalGateTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.temp = Path(self.temporary.name)
+        self.repo = self.temp / "repo"
+        self.run_cmd("git", "init", "-q", str(self.repo), cwd=self.temp, check=True)
+        self.run_cmd(
+            "git", "config", "user.email", "external-gate@example.invalid",
+            cwd=self.repo, check=True,
+        )
+        self.run_cmd(
+            "git", "config", "user.name", "External Gate Test", cwd=self.repo,
+            check=True,
+        )
+        trusted = self.repo / ".trusted"
+        trusted.mkdir()
+        classifier = self.repo / MODULE.TRUSTED_CLASSIFIER_PATH
+        classifier.parent.mkdir(parents=True)
+        classifier.write_text(CLASSIFIER_SOURCE, encoding="utf-8")
+        classifier.chmod(0o755)
+        shell_scripts = self.repo / ".claude/scripts"
+        shutil.copy2(
+            SCRIPT.parent / "fetch_github_ci_proof.py",
+            shell_scripts / "fetch_github_ci_proof.py",
+        )
+        self.verifier = trusted / "external_fake_verify.py"
+        self.verifier.write_text(EXTERNAL_VERIFIER_SOURCE, encoding="utf-8")
+        self.verifier.chmod(0o755)
+        contract = {
+            "schema": MODULE.CONTRACT_SCHEMA,
+            "verification_contract": MODULE.VERIFICATION_CONTRACT,
+            "control_plane_files": sorted([
+                MODULE.TRUSTED_CLASSIFIER_PATH,
+                ".trusted/external_fake_verify.py",
+                ".trusted/external_contract.json",
+                MODULE.TRUSTED_GITHUB_PROOF_HELPER_PATH,
+            ]),
+            "required_artifacts": list(EXTERNAL_REQUIRED_ARTIFACTS),
+            "phase_plan": [
+                {"id": "policy-sync", "required": True, "when": "always"},
+                {"id": "review-static", "required": True, "when": "always"},
+                {"id": "message-overlay-static", "required": True,
+                 "when": "always"},
+                {"id": "optional-advisory", "required": False, "when": "always",
+                 "allow_skip": True},
+                {"id": "message-overlay-catch2", "required": True,
+                 "when": "risk_message_overlay"},
+                {"id": "cpp-build", "required": True, "when": "risk_cpp_i18n"},
+                {"id": "zh-smoke", "required": True, "when": "risk_cpp_i18n"},
+                {"id": "zh-runtime-catch2", "required": True,
+                 "when": "review_profile"},
+            ],
+            "external_ci": {
+                "enabled": True,
+                "repository": EXTERNAL_REPOSITORY,
+                "workflow_path": ".github/workflows/ci.yml",
+                "allowed_events": ["workflow_dispatch", "push"],
+                "externalizable_phases": [
+                    "policy-sync", "message-overlay-static",
+                ],
+                "required_jobs": [
+                    {
+                        "id": "zh_ci_gate",
+                        "name_contains": "ZH CI Gate",
+                        "phases": [
+                            "policy-sync", "message-overlay-static",
+                        ],
+                    },
+                ],
+                "proof_artifact": MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT,
+                "proof_schema": MODULE.GITHUB_ACTIONS_PROOF_SCHEMA,
+            },
+        }
+        self.contract_path = trusted / "external_contract.json"
+        self.contract_path.write_bytes(MODULE.canonical_json_bytes(contract))
+        self.contract = contract
+        self.plain_contract_path = trusted / "plain_contract.json"
+        plain_contract = json.loads(json.dumps(contract))
+        plain_contract.pop("external_ci")
+        plain_contract["control_plane_files"] = sorted(
+            path.replace(
+                ".trusted/external_contract.json",
+                ".trusted/plain_contract.json",
+            )
+            for path in plain_contract["control_plane_files"]
+        )
+        self.plain_contract_path.write_bytes(
+            MODULE.canonical_json_bytes(plain_contract)
+        )
+        workflow = self.repo / ".github/workflows/ci.yml"
+        workflow.parent.mkdir(parents=True)
+        workflow.write_text(
+            "name: Build\non: workflow_dispatch\njobs: {}\n",
+            encoding="utf-8",
+        )
+        docs = self.repo / "docs"
+        docs.mkdir()
+        (docs / "glossary.md").write_bytes(GLOSSARY_SOURCE.read_bytes())
+        (self.repo / ".gitignore").write_text("/.worktrees/\n", encoding="utf-8")
+        (self.repo / "tracked.txt").write_text("base\n", encoding="utf-8")
+        self.run_cmd("git", "add", ".claude", ".trusted", ".github", "docs", ".gitignore", "tracked.txt",
+                     cwd=self.repo, check=True)
+        self.run_cmd("git", "commit", "-qm", "base", cwd=self.repo, check=True)
+        self.run_cmd("git", "branch", "target", cwd=self.repo, check=True)
+        self.run_cmd("git", "branch", "candidate", cwd=self.repo, check=True)
+        self.run_cmd("git", "worktree", "add", "-q", ".worktrees/candidate", "candidate",
+                     cwd=self.repo, check=True)
+        self.candidate = self.repo / ".worktrees/candidate"
+        (self.candidate / "tracked.txt").write_text("候选内容\n", encoding="utf-8")
+        self.run_cmd("git", "add", "tracked.txt", cwd=self.candidate, check=True)
+        self.run_cmd("git", "commit", "-qm", "candidate", cwd=self.candidate, check=True)
+        self.base = self.git("rev-parse", "target", cwd=self.repo)
+        self.head = self.git("rev-parse", "candidate", cwd=self.repo)
+        self.workflow_blob = self.git(
+            "rev-parse", f"{self.head}:.github/workflows/ci.yml", cwd=self.repo
+        )
+
+        self.fake_gh = self.temp / "fake-gh"
+        self.run_json = self.temp / "run.json"
+        self.jobs_json = self.temp / "jobs.json"
+        self.fake_gh.write_text(
+            """#!/usr/bin/env python3
+import os
+import sys
+
+if os.environ.get('FAKE_GH_FAIL'):
+    print('fake gh failure', file=sys.stderr)
+    raise SystemExit(9)
+print(' '.join(sys.argv[1:]), file=sys.stderr)
+if 'jobs' in sys.argv[-1]:
+    path = os.environ['FAKE_GH_JOBS_JSON']
+else:
+    path = os.environ['FAKE_GH_RUN_JSON']
+with open(path, 'rb') as stream:
+    sys.stdout.buffer.write(stream.read())
+""",
+            encoding="utf-8",
+        )
+        self.fake_gh.chmod(0o755)
+        self.set_gh_fixtures()
+
+    def tearDown(self) -> None:
+        self.temporary.cleanup()
+
+    @staticmethod
+    def run_cmd(*args: str, cwd: Path, check: bool = False) -> subprocess.CompletedProcess[str]:
+        env = os.environ.copy()
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
+        return subprocess.run(
+            args, cwd=cwd, text=True, capture_output=True, check=check, env=env
+        )
+
+    def git(self, *args: str, cwd: Path) -> str:
+        return self.run_cmd("git", *args, cwd=cwd, check=True).stdout.strip()
+
+    def set_gh_fixtures(self, run: dict | None = None, jobs: dict | None = None) -> None:
+        if run is None:
+            run = {
+                "repository": {"full_name": EXTERNAL_REPOSITORY},
+                "head_repository": {"full_name": EXTERNAL_REPOSITORY},
+                "event": "workflow_dispatch",
+                "head_sha": self.head,
+                "head_branch": "candidate",
+                "path": ".github/workflows/ci.yml",
+                "status": "completed",
+                "conclusion": "success",
+                "html_url": (
+                    f"https://github.com/{EXTERNAL_REPOSITORY}/actions/runs/"
+                    f"{EXTERNAL_RUN_ID}"
+                ),
+                "workflow_sha": self.workflow_blob,
+            }
+        if jobs is None:
+            jobs = {
+                "total_count": 1,
+                "jobs": [
+                    {
+                        "id": 1001,
+                        "name": "ZH CI Gate (static, ubuntu-latest)",
+                        "status": "completed",
+                        "conclusion": "success",
+                    },
+                ],
+            }
+        self.run_json.write_bytes(MODULE.canonical_json_bytes(run))
+        self.jobs_json.write_bytes(MODULE.canonical_json_bytes(jobs))
+
+    def gh_environment(self) -> dict[str, str]:
+        environment = os.environ.copy()
+        environment.update(
+            PYTHONDONTWRITEBYTECODE="1",
+            GH_BIN=os.fspath(self.fake_gh),
+            FAKE_GH_RUN_JSON=os.fspath(self.run_json),
+            FAKE_GH_JOBS_JSON=os.fspath(self.jobs_json),
+        )
+        return environment
+
+    def create(self) -> dict:
+        return MODULE.create_bundle(
+            self.candidate, "target", "HEAD",
+            hashlib.sha256(GLOSSARY_SOURCE.read_bytes()).hexdigest(),
+            self.repo / MODULE.TRUSTED_CLASSIFIER_PATH,
+        )
+
+    def ready(self) -> dict:
+        created = self.create()
+        MODULE.record_readiness(
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, []),
+        )
+        return created
+
+    def findings_file(self, created: dict, findings: list[dict]) -> Path:
+        path = self.temp / f"findings-{time.time_ns()}.json"
+        path.write_bytes(MODULE.canonical_json_bytes({
+            "schema": MODULE.FINDINGS_INPUT_SCHEMA,
+            "bundle_id": created["bundle_id"],
+            "bundle_sha256": created["bundle_sha256"],
+            "routing_sha256": created["routing_sha256"],
+            "reviewer": "zh-code-reviewer",
+            "reviewed_scope": created["routing"]["files"],
+            "findings": findings,
+        }))
+        return path
+
+    def run_external(self, created: dict, **kwargs: object) -> dict:
+        return MODULE.run_final(
+            self.candidate,
+            created["bundle_id"],
+            self.repo,
+            self.verifier,
+            self.contract_path,
+            github_actions_run=EXTERNAL_RUN_ID,
+            **kwargs,
+        )
+
+    def first_attempt_path(self, created: dict) -> Path:
+        attempts = Path(created["bundle_path"]) / "attempts"
+        return next(path for path in attempts.iterdir() if not path.name.startswith("."))
+
+    def test_external_run_seals_approval_and_binds_proof(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            result = self.run_external(created)
+        self.assertEqual(result["state"], "MERGEABLE", result)
+        self.assertTrue(result["approved"])
+        attempt = self.first_attempt_path(created)
+        proof_path = attempt / MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT
+        self.assertTrue(proof_path.is_file())
+        proof = json.loads(proof_path.read_bytes())
+        self.assertEqual(proof["head_sha"], self.head)
+        self.assertEqual(proof["repository"], EXTERNAL_REPOSITORY)
+        metadata = json.loads((attempt / "metadata.json").read_bytes())
+        sources = {
+            phase["id"]: phase.get("source", "local")
+            for phase in metadata["phases"]
+        }
+        self.assertEqual(sources["policy-sync"], "github-actions")
+        self.assertEqual(sources["message-overlay-static"], "github-actions")
+        self.assertEqual(sources["review-static"], "local")
+        self.assertEqual(sources["zh-runtime-catch2"], "local")
+        self.assertIn(
+            MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT,
+            [artifact["path"] for artifact in metadata["artifacts"]],
+        )
+        # A second run reuses the sealed approval and never refetches.
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            reused = self.run_external(created)
+        self.assertEqual(reused["state"], "MERGEABLE")
+        attempts = list((Path(created["bundle_path"]) / "attempts").iterdir())
+        self.assertEqual(len(attempts), 1)
+        # read-only merge-time validation re-verifies the proof binding
+        status = MODULE.validate_bundle(self.candidate, created["bundle_id"])
+        self.assertEqual(status["state"], "MERGEABLE")
+
+    def test_local_mode_with_external_capable_contract_is_unchanged(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            result = MODULE.run_final(
+                self.candidate,
+                created["bundle_id"],
+                self.repo,
+                self.verifier,
+                self.contract_path,
+            )
+        self.assertEqual(result["state"], "MERGEABLE", result)
+        attempt = self.first_attempt_path(created)
+        metadata = json.loads((attempt / "metadata.json").read_bytes())
+        for phase in metadata["phases"]:
+            self.assertEqual(phase.get("source", "local"), "local")
+        self.assertFalse(
+            (attempt / MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT).exists()
+        )
+
+    def test_external_mode_rejects_missing_or_invalid_run_id(self) -> None:
+        created = self.ready()
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "--github-repository requires"
+        ):
+            MODULE.run_final(
+                self.candidate, created["bundle_id"], self.repo,
+                self.verifier, self.contract_path,
+                github_repository=EXTERNAL_REPOSITORY,
+            )
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "positive integer run id"
+        ):
+            MODULE.run_final(
+                self.candidate, created["bundle_id"], self.repo,
+                self.verifier, self.contract_path,
+                github_actions_run="not-an-id",
+            )
+
+    def test_external_mode_never_overrides_contract_repository(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError, "cannot override"
+            ):
+                self.run_external(created, github_repository="evil/repo")
+
+    def test_external_mode_requires_enabled_contract_section(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError, "not enabled"
+            ):
+                MODULE.run_final(
+                    self.candidate, created["bundle_id"], self.repo,
+                    self.verifier, self.plain_contract_path,
+                    github_actions_run=EXTERNAL_RUN_ID,
+                )
+
+    def test_wrong_head_sha_proof_never_publishes_attempt(self) -> None:
+        created = self.ready()
+        run = {
+            "repository": {"full_name": EXTERNAL_REPOSITORY},
+            "head_repository": {"full_name": EXTERNAL_REPOSITORY},
+            "event": "workflow_dispatch",
+            "head_sha": "0" * 40,
+            "head_branch": "candidate",
+            "path": ".github/workflows/ci.yml",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": (
+                f"https://github.com/{EXTERNAL_REPOSITORY}/actions/runs/"
+                f"{EXTERNAL_RUN_ID}"
+            ),
+            "workflow_sha": self.workflow_blob,
+        }
+        self.set_gh_fixtures(run=run)
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaises(MODULE.ReviewBundleError):
+                self.run_external(created)
+        attempts = Path(created["bundle_path"]) / "attempts"
+        self.assertFalse(attempts.exists() and list(attempts.iterdir()))
+        status = MODULE.status_bundle(self.candidate, created["bundle_id"])
+        self.assertEqual(status["state"], "FINAL_GATE_REQUIRED")
+
+    def test_attempt_requires_bound_proof_artifact(self) -> None:
+        created = self.ready()
+        environment = self.gh_environment()
+        environment.update(EXTERNAL_VERIFIER_DROP_PROOF="1")
+        with mock.patch.dict(os.environ, environment):
+            with self.assertRaises(MODULE.ReviewBundleError):
+                self.run_external(created)
+
+    def test_external_mode_rejects_run_without_required_jobs(self) -> None:
+        created = self.ready()
+        jobs = {"total_count": 0, "jobs": []}
+        self.set_gh_fixtures(jobs=jobs)
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaises(MODULE.ReviewBundleError):
+                self.run_external(created)
+
+    def test_github_repository_must_match_contract_even_when_identical(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            result = self.run_external(
+                created, github_repository=EXTERNAL_REPOSITORY
+            )
+        self.assertEqual(result["state"], "MERGEABLE", result)
 
 
 if __name__ == "__main__":

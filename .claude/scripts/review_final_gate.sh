@@ -4,9 +4,15 @@
 # Usage:
 #   bash .claude/scripts/review_final_gate.sh <candidate-branch> [target-branch]
 #       [--retry-failed] [--recover-stale]
+#       [--github-actions-run <run-id>] [--github-repository <owner/repo>]
 #
 # Run from the clean target checkout. The candidate must be checked out in a
 # clean linked worktree and already have a complete immutable readiness bundle.
+#
+# With --github-actions-run, the contract-listed externalizable final-gate
+# phases are proven by a live, bound GitHub Actions run fetched through gh; all
+# other phases, reviewer readiness, and review ledgers stay local. The
+# repository may not be overridden: it must equal the contract value.
 
 set -euo pipefail
 
@@ -47,12 +53,42 @@ fi
 }
 
 EXTRA_ARGS=()
-for arg in "$@"; do
-    case "$arg" in
-        --retry-failed|--recover-stale) EXTRA_ARGS+=("$arg") ;;
-        *) echo "ERROR: unknown option: $arg" >&2; exit 20 ;;
+GITHUB_ACTIONS_RUN=""
+GITHUB_REPOSITORY=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --retry-failed|--recover-stale)
+            EXTRA_ARGS+=("$1")
+            shift
+            ;;
+        --github-actions-run)
+            [[ $# -ge 2 && -n "$2" ]] || {
+                echo "ERROR: --github-actions-run requires a run id" >&2
+                exit 20
+            }
+            GITHUB_ACTIONS_RUN="$2"
+            shift 2
+            ;;
+        --github-repository)
+            [[ $# -ge 2 && -n "$2" ]] || {
+                echo "ERROR: --github-repository requires a repository" >&2
+                exit 20
+            }
+            GITHUB_REPOSITORY="$2"
+            shift 2
+            ;;
+        *)
+            echo "ERROR: unknown option: $1" >&2
+            exit 20
+            ;;
     esac
 done
+if [[ -n "$GITHUB_ACTIONS_RUN" ]]; then
+    EXTRA_ARGS+=(--github-actions-run "$GITHUB_ACTIONS_RUN")
+fi
+if [[ -n "$GITHUB_REPOSITORY" ]]; then
+    EXTRA_ARGS+=(--github-repository "$GITHUB_REPOSITORY")
+fi
 
 for required in "$BUNDLE_SCRIPT" "$CLASSIFIER" "$VERIFIER" "$CONTRACT"; do
     [[ -f "$required" && ! -L "$required" ]] || {
@@ -122,6 +158,12 @@ echo "=== Schema-v4 Final Review Gate ==="
 echo "Target:    $TARGET_BRANCH @ $TARGET_HEAD"
 echo "Candidate: $CANDIDATE_BRANCH @ $CANDIDATE_HEAD"
 echo "Bundle:    $BUNDLE_ID"
+if [[ -n "$GITHUB_ACTIONS_RUN" ]]; then
+    echo "External CI: GitHub Actions run $GITHUB_ACTIONS_RUN"
+    echo "External CI repository: ${GITHUB_REPOSITORY:-<contract default>}"
+    echo "External CI replaces only contract-externalizable phases; readiness,"
+    echo "review ledgers, and all other phases still run locally."
+fi
 
 set +e
 RESULT=$(python3 "$BUNDLE_SCRIPT" run-final \

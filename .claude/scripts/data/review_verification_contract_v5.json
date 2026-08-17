@@ -24,6 +24,7 @@
     ".claude/scripts/data/zh_issue_protocol_v1.schema.json",
     ".claude/scripts/decorlines_inventory.py",
     ".claude/scripts/export_omegat_glossary.py",
+    ".claude/scripts/fetch_github_ci_proof.py",
     ".claude/scripts/generate_message_overlay.py",
     ".claude/scripts/glossary_query.py",
     ".claude/scripts/graffiti_inventory.py",
@@ -64,15 +65,82 @@
     ".claude/scripts/zh_console_ui_bot.py",
     ".claude/scripts/zh_runtime_check.py"
   ],
+  "external_ci": {
+    "allowed_events": [
+      "workflow_dispatch",
+      "push"
+    ],
+    "enabled": true,
+    "externalizable_phases": [
+      "policy-sync",
+      "source-db-static",
+      "message-overlay-static",
+      "zh-runtime-catch2"
+    ],
+    "proof_artifact": "github-actions-proof.json",
+    "proof_schema": "dcss-zh-github-actions-proof-v1",
+    "repository": "yutio8888/crawl-chn-ai-test",
+    "required_jobs": [
+      {
+        "id": "zh_ci_gate",
+        "name_contains": "ZH CI Gate",
+        "phases": [
+          "policy-sync",
+          "source-db-static",
+          "message-overlay-static"
+        ]
+      },
+      {
+        "id": "zh_runtime_catch2",
+        "name_contains": "ZH Runtime Catch2",
+        "phases": [
+          "zh-runtime-catch2"
+        ]
+      }
+    ],
+    "workflow_path": ".github/workflows/ci.yml"
+  },
   "phase_plan": [
-    {"id": "policy-sync", "required": true, "when": "always"},
-    {"id": "source-db-static", "required": true, "when": "always"},
-    {"id": "review-static", "required": true, "when": "always"},
-    {"id": "review-ledgers", "required": true, "when": "review_profile"},
-    {"id": "message-overlay-static", "required": true, "when": "always"},
-    {"id": "cpp-build", "required": true, "when": "risk_cpp_i18n"},
-    {"id": "zh-smoke", "required": true, "when": "risk_cpp_i18n"},
-    {"id": "zh-runtime-catch2", "required": true, "when": "review_profile"}
+    {
+      "id": "policy-sync",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "source-db-static",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "review-static",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "review-ledgers",
+      "required": true,
+      "when": "review_profile"
+    },
+    {
+      "id": "message-overlay-static",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "cpp-build",
+      "required": true,
+      "when": "risk_cpp_i18n"
+    },
+    {
+      "id": "zh-smoke",
+      "required": true,
+      "when": "risk_cpp_i18n"
+    },
+    {
+      "id": "zh-runtime-catch2",
+      "required": true,
+      "when": "review_profile"
+    }
   ],
   "required_artifacts": [
     "character-mechanics-inventory.json",

@@ -141,6 +141,15 @@ readiness. Prepare the exact committed, clean boundary with
 readiness, and let `review_final_gate.sh` own the single final run. See
 `.agents/policies/review-contract.md`.
 
+On a resource-constrained control plane, the final gate may substitute a live,
+bound GitHub Actions run for the contract-listed externalizable phases with
+`review_final_gate.sh <candidate> <target> --github-actions-run <run-id>`.
+This replaces CI proof only; reviewer readiness, strict review ledgers, final
+approval, and the read-only merge gate remain local. The trusted contract owns
+the repository, workflow, required jobs, and externalizable phase set, and the
+proof is fetched live through `gh` — never caller-supplied. See
+`docs/zh-testing.md` and `.agents/policies/review-contract.md`.
+
 Use at most eight build jobs. Agents compiling alongside other work should use
 `-j4`, and concurrent agents must not start overlapping compile storms.
 

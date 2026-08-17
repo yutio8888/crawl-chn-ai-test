@@ -128,6 +128,13 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ROLE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 FINDING_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.+:-]{0,191}$")
+REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+GITHUB_RUN_ID_RE = re.compile(r"^[1-9][0-9]*$")
+GITHUB_ACTIONS_PROOF_SCHEMA = "dcss-zh-github-actions-proof-v1"
+GITHUB_ACTIONS_PROOF_ARTIFACT = "github-actions-proof.json"
+TRUSTED_GITHUB_PROOF_HELPER_PATH = (
+    ".claude/scripts/fetch_github_ci_proof.py"
+)
 LOCK_NAME = ".bundle.lock"
 RUNNING_NAME = "running.json"
 APPROVAL_NAME = "final-approval.json"
@@ -1288,9 +1295,11 @@ def _parse_contract(data: bytes, label: str = "final-gate contract") -> dict[str
         "phase_plan",
     }
     current_fields = legacy_fields | {"required_artifacts"}
+    extended_fields = current_fields | {"external_ci"}
     if not isinstance(contract, dict) or frozenset(contract) not in (
         frozenset(legacy_fields),
         frozenset(current_fields),
+        frozenset(extended_fields),
     ):
         raise ReviewBundleError(f"{label} fields do not match the trusted schema")
     if contract.get("schema") != CONTRACT_SCHEMA:
@@ -1352,7 +1361,295 @@ def _parse_contract(data: bytes, label: str = "final-gate contract") -> dict[str
             raise ReviewBundleError(f"phase allow_skip flag is invalid: {phase_id}")
         if phase.get("required") and phase.get("allow_skip"):
             raise ReviewBundleError(f"required phase may not allow skip: {phase_id}")
+    external_ci = contract.get("external_ci")
+    if external_ci is not None:
+        _validate_external_ci(external_ci, phases, seen, label)
     return contract
+
+
+def _validate_external_ci(
+    external_ci: Any,
+    phases: list[dict[str, Any]],
+    phase_ids: set[str],
+    label: str,
+) -> dict[str, Any]:
+    """Validate the optional schema-v5 external GitHub Actions section.
+
+    The section is optional so that contracts committed before this extension
+    remain legible and read-only compatible.  When present it must be
+    fail-closed: every field is fixed by the trusted contract and cannot be
+    overridden by a caller.
+    """
+    if not isinstance(external_ci, dict) or frozenset(external_ci) != frozenset(
+        (
+            "enabled",
+            "repository",
+            "workflow_path",
+            "allowed_events",
+            "externalizable_phases",
+            "required_jobs",
+            "proof_artifact",
+            "proof_schema",
+        )
+    ):
+        raise ReviewBundleError(f"{label} external_ci fields are invalid")
+    if external_ci.get("enabled") is not True:
+        raise ReviewBundleError(f"{label} external_ci is not enabled")
+    repository = external_ci.get("repository")
+    if not isinstance(repository, str) or not REPOSITORY_RE.fullmatch(repository):
+        raise ReviewBundleError(f"{label} external_ci.repository is invalid")
+    workflow_path = _safe_relative_path(
+        external_ci.get("workflow_path"), "external_ci.workflow_path"
+    )
+    if not workflow_path.startswith(".github/workflows/"):
+        raise ReviewBundleError(
+            f"{label} external_ci.workflow_path must live under .github/workflows/"
+        )
+    external_ci["workflow_path"] = workflow_path
+    events = external_ci.get("allowed_events")
+    if not isinstance(events, list) or not events:
+        raise ReviewBundleError(f"{label} external_ci.allowed_events is invalid")
+    if len(events) != len(set(events)) or not all(
+        isinstance(event, str) and event for event in events
+    ):
+        raise ReviewBundleError(f"{label} external_ci.allowed_events is invalid")
+    if not any(event in ("workflow_dispatch", "push") for event in events):
+        raise ReviewBundleError(
+            f"{label} external_ci.allowed_events must include workflow_dispatch or push"
+        )
+    externalizable = external_ci.get("externalizable_phases")
+    if (
+        not isinstance(externalizable, list)
+        or not externalizable
+        or len(externalizable) != len(set(externalizable))
+    ):
+        raise ReviewBundleError(
+            f"{label} external_ci.externalizable_phases is invalid"
+        )
+    for phase_id in externalizable:
+        if not isinstance(phase_id, str) or not ROLE_RE.fullmatch(phase_id):
+            raise ReviewBundleError(
+                f"{label} external_ci.externalizable phase id is invalid: {phase_id!r}"
+            )
+        if phase_id not in phase_ids:
+            raise ReviewBundleError(
+                f"{label} external_ci.externalizable_phases references an "
+                f"unknown phase: {phase_id}"
+            )
+    required_jobs = external_ci.get("required_jobs")
+    if not isinstance(required_jobs, list) or not required_jobs:
+        raise ReviewBundleError(f"{label} external_ci.required_jobs is invalid")
+    seen_jobs: set[str] = set()
+    covered: set[str] = set()
+    for index, job in enumerate(required_jobs):
+        if not isinstance(job, dict) or frozenset(job) != frozenset(
+            ("id", "name_contains", "phases")
+        ):
+            raise ReviewBundleError(
+                f"{label} external_ci.required_jobs[{index}] is invalid"
+            )
+        job_id = job.get("id")
+        if not isinstance(job_id, str) or not ROLE_RE.fullmatch(job_id):
+            raise ReviewBundleError(
+                f"{label} external_ci required_jobs id is invalid: {job_id!r}"
+            )
+        if job_id in seen_jobs:
+            raise ReviewBundleError(
+                f"{label} external_ci required_jobs contains duplicate id: {job_id}"
+            )
+        seen_jobs.add(job_id)
+        name_contains = job.get("name_contains")
+        if not isinstance(name_contains, str) or not name_contains:
+            raise ReviewBundleError(
+                f"{label} external_ci required_jobs {job_id} has no name matcher"
+            )
+        job_phases = job.get("phases")
+        if not isinstance(job_phases, list) or not job_phases:
+            raise ReviewBundleError(
+                f"{label} external_ci required_jobs {job_id} has no phases"
+            )
+        for phase_id in job_phases:
+            if phase_id not in externalizable:
+                raise ReviewBundleError(
+                    f"{label} external_ci required_jobs {job_id} references a "
+                    f"non-externalizable phase: {phase_id}"
+                )
+            covered.add(phase_id)
+    if covered != set(externalizable):
+        raise ReviewBundleError(
+            f"{label} external_ci required_jobs must cover exactly the "
+            "externalizable phase set"
+        )
+    if external_ci.get("proof_schema") != GITHUB_ACTIONS_PROOF_SCHEMA:
+        raise ReviewBundleError(f"{label} external_ci.proof_schema is invalid")
+    proof_artifact = external_ci.get("proof_artifact")
+    if (
+        not isinstance(proof_artifact, str)
+        or proof_artifact != GITHUB_ACTIONS_PROOF_ARTIFACT
+        or "/" in proof_artifact
+    ):
+        raise ReviewBundleError(
+            f"{label} external_ci.proof_artifact must be "
+            f"{GITHUB_ACTIONS_PROOF_ARTIFACT}"
+        )
+    return external_ci
+
+
+GITHUB_PROOF_FIELDS = frozenset(
+    (
+        "schema",
+        "repository",
+        "run_id",
+        "run_url",
+        "event",
+        "head_branch",
+        "head_sha",
+        "workflow_path",
+        "workflow_sha",
+        "workflow_blob_sha256_candidate",
+        "workflow_blob_sha256_target",
+        "status",
+        "conclusion",
+        "required_jobs",
+        "api_digests",
+        "fetched_at",
+    )
+)
+GITHUB_PROOF_JOB_FIELDS = frozenset(
+    ("id", "name", "api_job_id", "status", "conclusion")
+)
+
+
+def _validate_github_proof(
+    proof: Any,
+    contract: dict[str, Any],
+    manifest: dict[str, Any],
+    repo: os.PathLike[str] | str,
+) -> dict[str, Any]:
+    """Re-verify a canonical GitHub Actions proof against one immutable range.
+
+    This is the read-only validator used both immediately after the trusted
+    helper fetches the run and again whenever the attempt is validated (which
+    includes ``review_at_merge.sh`` via ``status``).  It never touches the
+    network; every claim is re-derived from the recorded proof and the local
+    immutable Git objects.
+    """
+    external = contract.get("external_ci")
+    if external is None or external.get("enabled") is not True:
+        raise ReviewBundleError(
+            "external CI proof requires an enabled contract section"
+        )
+    if not isinstance(proof, dict) or frozenset(proof) != GITHUB_PROOF_FIELDS:
+        raise ReviewBundleError("GitHub Actions proof fields are invalid")
+    if proof.get("schema") != external["proof_schema"]:
+        raise ReviewBundleError("GitHub Actions proof schema is invalid")
+    repository = proof.get("repository")
+    if repository != external["repository"]:
+        raise ReviewBundleError(
+            "GitHub Actions proof repository binding failed"
+        )
+    run_id = proof.get("run_id")
+    if isinstance(run_id, bool) or not isinstance(run_id, int) or run_id <= 0:
+        raise ReviewBundleError("GitHub Actions proof run_id is invalid")
+    expected_url = f"https://github.com/{repository}/actions/runs/{run_id}"
+    if proof.get("run_url") != expected_url:
+        raise ReviewBundleError("GitHub Actions proof run_url is invalid")
+    event = proof.get("event")
+    if event not in external["allowed_events"]:
+        raise ReviewBundleError(
+            "GitHub Actions proof event is not allowed by the contract"
+        )
+    head_branch = proof.get("head_branch")
+    if not isinstance(head_branch, str) or not head_branch:
+        raise ReviewBundleError("GitHub Actions proof head_branch is invalid")
+    head_sha = proof.get("head_sha")
+    candidate_head = manifest["candidate_head"]
+    if head_sha != candidate_head:
+        raise ReviewBundleError(
+            "GitHub Actions proof head_sha does not match the candidate"
+        )
+    workflow_path = proof.get("workflow_path")
+    if workflow_path != external["workflow_path"]:
+        raise ReviewBundleError(
+            "GitHub Actions proof workflow path does not match the contract"
+        )
+    target_head = manifest["target_head"]
+    candidate_blob = _git_text(
+        repo, "rev-parse", f"{candidate_head}:{workflow_path}"
+    )
+    target_blob = _git_text(
+        repo, "rev-parse", f"{target_head}:{workflow_path}"
+    )
+    if candidate_blob != target_blob:
+        raise ReviewBundleError(
+            "workflow drifted between target and candidate heads"
+        )
+    if proof.get("workflow_sha") != candidate_blob:
+        raise ReviewBundleError(
+            "GitHub Actions proof workflow_sha does not match the candidate "
+            "workflow blob"
+        )
+    candidate_data = _git_blob(repo, candidate_head, workflow_path)[1]
+    target_data = _git_blob(repo, target_head, workflow_path)[1]
+    candidate_sha256 = sha256_bytes(candidate_data)
+    target_sha256 = sha256_bytes(target_data)
+    if candidate_sha256 != target_sha256:
+        raise ReviewBundleError(
+            "workflow blob digest drifted between target and candidate"
+        )
+    if proof.get("workflow_blob_sha256_candidate") != candidate_sha256:
+        raise ReviewBundleError(
+            "GitHub Actions proof candidate workflow digest is invalid"
+        )
+    if proof.get("workflow_blob_sha256_target") != target_sha256:
+        raise ReviewBundleError(
+            "GitHub Actions proof target workflow digest is invalid"
+        )
+    if proof.get("status") != "completed" or proof.get("conclusion") != "success":
+        raise ReviewBundleError(
+            "GitHub Actions proof run is not completed/success"
+        )
+    jobs = proof.get("required_jobs")
+    required = external["required_jobs"]
+    if not isinstance(jobs, list) or len(jobs) != len(required):
+        raise ReviewBundleError(
+            "GitHub Actions proof required_jobs are incomplete"
+        )
+    for index, (record, planned) in enumerate(zip(jobs, required)):
+        label = f"GitHub Actions proof required_jobs[{index}]"
+        if not isinstance(record, dict) or frozenset(record) != GITHUB_PROOF_JOB_FIELDS:
+            raise ReviewBundleError(f"{label} fields are invalid")
+        if record.get("id") != planned["id"]:
+            raise ReviewBundleError(f"{label} id is invalid")
+        job_name = record.get("name")
+        if not isinstance(job_name, str) or planned["name_contains"] not in job_name:
+            raise ReviewBundleError(f"{label} name is invalid")
+        api_job_id = record.get("api_job_id")
+        if (
+            isinstance(api_job_id, bool)
+            or not isinstance(api_job_id, int)
+            or api_job_id <= 0
+        ):
+            raise ReviewBundleError(f"{label} api_job_id is invalid")
+        if record.get("status") != "completed" or record.get("conclusion") != "success":
+            raise ReviewBundleError(
+                f"GitHub Actions required job did not pass: {planned['id']}"
+            )
+    api_digests = proof.get("api_digests")
+    if not isinstance(api_digests, dict) or frozenset(api_digests) != frozenset(
+        ("run_response_sha256", "jobs_response_sha256")
+    ):
+        raise ReviewBundleError("GitHub Actions proof api_digests are invalid")
+    _validate_sha256(
+        api_digests.get("run_response_sha256"), "run_response_sha256"
+    )
+    _validate_sha256(
+        api_digests.get("jobs_response_sha256"), "jobs_response_sha256"
+    )
+    fetched_at = proof.get("fetched_at")
+    if not isinstance(fetched_at, str) or not fetched_at:
+        raise ReviewBundleError("GitHub Actions proof fetched_at is invalid")
+    return proof
 
 
 def _control_plane_from_commit(
@@ -1371,6 +1668,14 @@ def _control_plane_from_commit(
     ):
         raise ReviewBundleError(
             "control_plane_files must include the trusted contract, verifier, and classifier"
+        )
+    if (
+        contract.get("external_ci") is not None
+        and TRUSTED_GITHUB_PROOF_HELPER_PATH not in files
+    ):
+        raise ReviewBundleError(
+            "external CI contract must include the trusted proof helper in "
+            "control_plane_files"
         )
     records = []
     for relative_path in files:
@@ -1534,9 +1839,17 @@ def _validate_metadata(
     phases = metadata.get("phases")
     if not isinstance(phases, list) or len(phases) != len(expected_plan):
         raise ReviewBundleError("verification phase plan is incomplete")
+    external_ci = contract_info["contract"].get("external_ci")
+    externalizable = (
+        frozenset(external_ci["externalizable_phases"])
+        if external_ci is not None
+        else frozenset()
+    )
+    has_external_phase = False
     for actual, planned in zip(phases, expected_plan):
-        if not isinstance(actual, dict) or frozenset(actual) != frozenset(
-            ("id", "required", "status", "exit_code")
+        if not isinstance(actual, dict) or frozenset(actual) not in (
+            frozenset(("id", "required", "status", "exit_code")),
+            frozenset(("id", "required", "status", "exit_code", "source")),
         ):
             raise ReviewBundleError("verification phase fields are invalid")
         if actual.get("id") != planned["id"] or actual.get("required") is not planned["required"]:
@@ -1556,6 +1869,22 @@ def _validate_metadata(
                 raise ReviewBundleError(f"illegal verification phase skip: {planned['id']}")
         else:
             raise ReviewBundleError(f"invalid verification phase status: {planned['id']}")
+        source = actual.get("source", "local")
+        if source not in ("local", "github-actions"):
+            raise ReviewBundleError(
+                f"invalid verification phase source: {planned['id']}"
+            )
+        if source == "github-actions":
+            has_external_phase = True
+            if planned["id"] not in externalizable:
+                raise ReviewBundleError(
+                    f"phase sourced from GitHub Actions is not externalizable: "
+                    f"{planned['id']}"
+                )
+            if planned["required"] and (phase_status != "pass" or phase_exit != 0):
+                raise ReviewBundleError(
+                    f"GitHub Actions sourced phase must pass: {planned['id']}"
+                )
         if planned["required"] and phase_status != "pass" and status_value == "pass":
             raise ReviewBundleError(f"required phase did not pass: {planned['id']}")
     if status_value == "pass" and any(
@@ -1563,6 +1892,19 @@ def _validate_metadata(
     ):
         raise ReviewBundleError("pass metadata contains a failed phase")
     artifact_paths = _artifact_paths(metadata, attempt_path)
+    proof_artifact = (
+        external_ci["proof_artifact"] if external_ci is not None else None
+    )
+    if status_value == "pass":
+        if has_external_phase:
+            if proof_artifact is None or proof_artifact not in artifact_paths:
+                raise ReviewBundleError(
+                    "GitHub Actions sourced phases require the proof artifact"
+                )
+        elif proof_artifact is not None and proof_artifact in artifact_paths:
+            raise ReviewBundleError(
+                "proof artifact recorded without a GitHub Actions sourced phase"
+            )
     if status_value != "interrupted":
         missing_artifacts = sorted(
             set(contract_info["contract"]["required_artifacts"])
@@ -1573,6 +1915,7 @@ def _validate_metadata(
                 "verification metadata is missing required artifacts: "
                 + ", ".join(missing_artifacts)
             )
+    return artifact_paths
 
 
 def _attempt_digest(path: Path) -> str:
@@ -1826,7 +2169,24 @@ def _validate_attempt_directory(
     metadata, metadata_bytes = _load_canonical_object(attempt_path / "metadata.json")
     if completion.get("metadata_sha256") != sha256_bytes(metadata_bytes):
         raise ReviewBundleError(f"attempt metadata digest failed: {attempt_path.name}")
-    _validate_metadata(metadata, attempt_path, completion, manifest, contract_info)
+    artifact_paths = _validate_metadata(
+        metadata, attempt_path, completion, manifest, contract_info
+    )
+    external_ci = contract_info["contract"].get("external_ci")
+    proof_artifact = (
+        external_ci["proof_artifact"] if external_ci is not None else None
+    )
+    if proof_artifact is None:
+        if GITHUB_ACTIONS_PROOF_ARTIFACT in artifact_paths:
+            raise ReviewBundleError(
+                f"reserved proof artifact recorded without a contract section: "
+                f"{attempt_path.name}"
+            )
+    elif proof_artifact in artifact_paths:
+        proof, _ = _load_canonical_object(attempt_path / proof_artifact)
+        _validate_github_proof(
+            proof, contract_info["contract"], manifest, repo
+        )
     outcome = completion["outcome"]
     if outcome not in ("pass", "fail", "interrupted"):
         raise ReviewBundleError(f"attempt outcome is invalid: {attempt_path.name}")
@@ -2688,6 +3048,81 @@ def _publish_approval(
     )
 
 
+def _external_ci_config(contract: dict[str, Any]) -> dict[str, Any]:
+    external = contract.get("external_ci")
+    if external is None or external.get("enabled") is not True:
+        raise ReviewBundleError(
+            "external GitHub Actions CI is not enabled by the trusted contract"
+        )
+    return external
+
+
+def _fetch_github_ci_proof(
+    trusted: dict[str, Any],
+    status: dict[str, Any],
+    external: dict[str, Any],
+    run_id: str,
+    stage: Path,
+) -> Path:
+    """Fetch and bind one live GitHub Actions run through the trusted helper.
+
+    The run id is the only caller-supplied external input.  The proof JSON is
+    produced exclusively by the contract-listed control-plane helper using the
+    real ``gh`` API and is re-validated here before the verifier can consume it.
+    """
+    helper = trusted["target_top"] / TRUSTED_GITHUB_PROOF_HELPER_PATH
+    _require_regular_file(helper, "trusted GitHub proof helper")
+    if stat.S_ISLNK(_lstat(helper).st_mode):  # Kept explicit for audit readability.
+        raise UnsafeObjectError(
+            f"trusted GitHub proof helper may not be a symlink: {helper}"
+        )
+    spec_path = stage / "external-ci.json"
+    atomic_write_once(spec_path, canonical_json_bytes(external))
+    proof_path = stage / GITHUB_ACTIONS_PROOF_ARTIFACT
+    command = [
+        sys.executable,
+        os.fspath(helper),
+        "--run-id",
+        run_id,
+        "--external-ci-json",
+        os.fspath(spec_path),
+        "--candidate-head",
+        status["candidate_head"],
+        "--target-head",
+        status["target_head"],
+        "--repo",
+        os.fspath(trusted["target_top"]),
+        "--output",
+        os.fspath(proof_path),
+    ]
+    proc = subprocess.run(
+        command,
+        cwd=os.fspath(trusted["target_top"]),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+        env=_trusted_child_environment(),
+    )
+    if proc.returncode:
+        message = proc.stderr.decode("utf-8", errors="replace").strip()
+        if not message:
+            message = proc.stdout.decode("utf-8", errors="replace").strip()
+        raise ReviewBundleError(
+            f"GitHub Actions proof fetch failed: {message}"
+        )
+    proof, _ = _load_canonical_object(proof_path)
+    _validate_github_proof(
+        proof,
+        trusted["contract"],
+        {
+            "target_head": status["target_head"],
+            "candidate_head": status["candidate_head"],
+        },
+        trusted["target_top"],
+    )
+    return proof_path
+
+
 def run_final(
     repo: os.PathLike[str] | str,
     bundle: os.PathLike[str] | str,
@@ -2697,8 +3132,26 @@ def run_final(
     *,
     retry_failed: bool = False,
     recover_stale: bool = False,
+    github_actions_run: str | None = None,
+    github_repository: str | None = None,
 ) -> dict[str, Any]:
-    """Run or reuse the one trusted final verification and seal its approval."""
+    """Run or reuse the one trusted final verification and seal its approval.
+
+    Without ``github_actions_run`` the gate is unchanged: the trusted verifier
+    executes every contract phase locally.  With a run id the contract-listed
+    externalizable phases are replaced by a bound GitHub Actions proof fetched
+    live through ``gh``; all non-externalizable phases, reviewer readiness, and
+    strict review ledgers still run locally.
+    """
+    if github_repository is not None and github_actions_run is None:
+        raise ReviewBundleError(
+            "--github-repository requires --github-actions-run"
+        )
+    if github_actions_run is not None:
+        if not GITHUB_RUN_ID_RE.fullmatch(github_actions_run):
+            raise ReviewBundleError(
+                "--github-actions-run must be a positive integer run id"
+            )
     bundle_path = _resolve_bundle_path(repo, bundle)
     if _validate_lockless_legacy(
         repo, bundle_path, check_clean=True
@@ -2725,6 +3178,16 @@ def run_final(
         trusted = _check_final_inputs(
             repo, target_repo, status, verifier, contract
         )
+        external_run: dict[str, Any] | None = None
+        if github_actions_run is not None:
+            external_run = _external_ci_config(trusted["contract"])
+            if (
+                github_repository is not None
+                and github_repository != external_run["repository"]
+            ):
+                raise ReviewBundleError(
+                    "--github-repository cannot override the contract repository"
+                )
         if status["passing_attempt"] is not None:
             _publish_approval(bundle_path, status, status["passing_attempt"])
             return _validate_bundle_locked(repo, bundle_path, check_clean=True)
@@ -2776,6 +3239,27 @@ def run_final(
             )
         )
         try:
+            github_proof_path: Path | None = None
+            if external_run is not None:
+                github_proof_path = _fetch_github_ci_proof(
+                    trusted,
+                    status,
+                    external_run,
+                    github_actions_run,
+                    stage,
+                )
+                command.extend(
+                    (
+                        "--github-actions-proof",
+                        os.fspath(github_proof_path),
+                        "--github-actions-run",
+                        github_actions_run,
+                        "--github-proof-artifact",
+                        external_run["proof_artifact"],
+                        "--github-externalized-phases",
+                        ",".join(external_run["externalizable_phases"]),
+                    )
+                )
             exit_code, interrupted_signal = _run_verifier_process(
                 command, trusted["candidate_top"], process_log
             )
@@ -2882,6 +3366,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     run_final_parser.add_argument("--contract", required=True)
     run_final_parser.add_argument("--retry-failed", action="store_true")
     run_final_parser.add_argument("--recover-stale", action="store_true")
+    run_final_parser.add_argument("--github-actions-run", default=None)
+    run_final_parser.add_argument("--github-repository", default=None)
     return parser.parse_args(argv)
 
 
@@ -2928,6 +3414,8 @@ def main(argv: list[str] | None = None) -> int:
                 args.contract,
                 retry_failed=args.retry_failed,
                 recover_stale=args.recover_stale,
+                github_actions_run=args.github_actions_run,
+                github_repository=args.github_repository,
             )
         else:  # pragma: no cover - argparse enforces the command set.
             raise ReviewBundleError(f"unsupported command: {args.command}")

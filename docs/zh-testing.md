@@ -114,6 +114,37 @@ checks, compilation, runtime tests, readiness binding, or evidence sealing.
 Reviewers never run `verify_zh.sh --profile review` themselves. The complete
 security contract is `.agents/policies/review-contract.md`.
 
+### Resource-constrained external CI substitution
+
+When the local machine cannot complete the full final profile, the final gate
+may substitute a live, bound GitHub Actions run for the contract-listed
+phases. Run it from the clean target checkout with an exported terminal type
+and the exact run id that executed the candidate commit:
+
+```bash
+TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
+    <candidate> <target> --github-actions-run <run-id>
+```
+
+Only phases that the trusted contract's `external_ci` section lists as
+externalizable are replaced (currently the static policy/source/DB/message
+overlay gates and the ZH Catch2 runtime gate). `review-static` and
+`review-ledgers` always run locally because the CI workflow does not claim to
+cover them, and compiled/risk-gated phases stay local whenever the candidate
+diff activates them. The CI workflow `.github/workflows/ci.yml` is
+authoritative for which jobs exist; optional jobs such as "ZH Runtime Full" or
+the release job are never treated as required. `gh` must be installed and
+authenticated on the control plane; tests use fake `gh` fixtures and never
+contact GitHub.
+
+The proof artifact `github-actions-proof.json` is fetched live through `gh`,
+bound to the contract repository, exact candidate HEAD, allowed workflow
+event, workflow path and blob (no target/candidate drift), and every required
+job's `completed`/`success` conclusion, then sealed inside the final attempt
+and re-verified by the final approval and `review_at_merge.sh`. A caller can
+never supply the proof JSON or override the contract repository. Readiness,
+review ledgers, and the final approval are not bypassed; without
+`--github-actions-run` the gate is byte-for-byte the default fully local flow.
 
 ### Current evidence format and recovery history
 

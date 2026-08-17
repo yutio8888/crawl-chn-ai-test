@@ -154,6 +154,48 @@ New merge authorization is written exclusively as a schema-v4 bundle with
 routing-v2, findings-v2, readiness-v3, and verification-v5. Old records are
 never upgraded, appended to, copied, or converted into a new Go.
 
+## External CI substitution
+
+A resource-constrained control plane may substitute a bound GitHub Actions run
+for some final-gate phases, but only through an explicit, fail-closed option:
+
+`TERM=xterm-256color bash .claude/scripts/review_final_gate.sh <candidate> <target> --github-actions-run <run-id>`
+
+External CI replaces CI *proof* only. It never replaces reviewer readiness,
+strict review ledgers, the final approval decision, or the read-only merge
+gate: `review-ledgers` always runs locally, every routed reviewer must already
+be Ready, and the approval is still sealed from the same immutable attempt
+digest. The trusted contract section in
+`.claude/scripts/data/review_verification_contract_v5.json` is the single
+source of truth for the repository, workflow path, allowed events, required
+jobs, externalizable phases, and proof artifact name; it is protected by the
+control-plane hash. The caller may name an optional `--github-repository` only
+if it equals the contract value; the contract repository can never be
+overridden. A caller-supplied proof JSON is never accepted: the proof is
+generated at gate time by the contract-listed control-plane helper
+(`.claude/scripts/fetch_github_ci_proof.py`) through the real `gh` API for the
+exact run id.
+
+The proof is bound to every identity the gate controls and fails closed on any
+mismatch: the contract repository (including the run's `repository` and
+`head_repository`), the exact candidate `head_sha` (pull-request merge-ref
+results are never accepted; only the contract's allowed events such as
+`workflow_dispatch`/`push` are valid), the workflow path
+`.github/workflows/ci.yml`, the workflow blob identity at the candidate head
+with no drift against the target/base blob, the API `workflow_sha`, the
+`completed`/`success` run state, and every contract-required job id with
+`completed`/`success` conclusion. Optional or skipped jobs never become
+required. The canonical proof records the run URL/id, event, head branch/SHA,
+workflow SHA, API response digests, the required job list, and each job's
+id/conclusion, and is stored as the attempt artifact
+`github-actions-proof.json`; the schema-v4/v5 metadata marks every replaced
+phase `source=github-actions` while every other phase still runs locally.
+Phases the contract does not list as externalizable may never carry that
+source. The attempt digest, final approval, and `review_at_merge.sh` re-verify
+the proof exactly as the gate did; a missing, forged, drifted, or malformed
+proof never approves a merge. Local default behaviour is unchanged: without
+`--github-actions-run` the gate runs every contract phase itself.
+
 ## Historical recovery records
 
 Expired one-time recovery exceptions are not active policy and are not copied

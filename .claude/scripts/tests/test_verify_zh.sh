@@ -375,6 +375,210 @@ else
     pass "metadata updates leave no temporary file"
 fi
 
+# Use the frozen phase ids from the real contract (checked above) rather than a
+# duplicated list: the contract is the single source of truth.
+CONTRACT_EXT_JSON="data/review_verification_contract_v5.json"
+EXTERNALIZED_PHASES=$(python3 - "$SCRIPT_DIR/../$CONTRACT_EXT_JSON" <<'PY'
+import json
+import sys
+
+contract = json.load(open(sys.argv[1], encoding="utf-8"))
+external = contract["external_ci"]
+print(",".join(external["externalizable_phases"]))
+PY
+)
+
+cat > "$TMP_ROOT/proof.json" <<PY
+{
+  "schema": "dcss-zh-github-actions-proof-v1",
+  "repository": "fixture/fake-repo",
+  "run_id": 32029487274,
+  "run_url": "https://github.com/fixture/fake-repo/actions/runs/32029487274",
+  "event": "workflow_dispatch",
+  "head_branch": "candidate",
+  "head_sha": "$HEAD_SHA",
+  "workflow_path": ".github/workflows/ci.yml",
+  "workflow_sha": "0123456789abcdef0123456789abcdef01234567",
+  "workflow_blob_sha256_candidate": "$(printf 0%.0s {1..64})",
+  "workflow_blob_sha256_target": "$(printf 0%.0s {1..64})",
+  "status": "completed",
+  "conclusion": "success",
+  "required_jobs": [{"id": "zh_ci_gate", "name": "ZH CI Gate (static)", "api_job_id": 1001, "status": "completed", "conclusion": "success"}],
+  "api_digests": {"run_response_sha256": "$(printf 0%.0s {1..64})", "jobs_response_sha256": "$(printf 0%.0s {1..64})"},
+  "fetched_at": "2026-08-17T00:00:00Z"
+}
+PY
+
+# Make sure the proof file itself is canonical JSON so the bound artifact is
+# byte-for-byte the same file the fixture would inspect.
+python3 - "$TMP_ROOT/proof.json" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+value = json.load(open(path, encoding="utf-8"))
+canonical = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                       separators=(",", ":"))
+open(path, "w", encoding="utf-8").write(canonical)
+PY
+
+rm -f "$REPO/.observed-i18n-extract" "$REPO/.observed-item-inventory" \
+    "$REPO/.ledger-auditor-started"
+echo "--- external GitHub Actions proof substitution ---"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA" \
+        --github-actions-proof "$TMP_ROOT/proof.json" \
+        --github-actions-run 32029487274 \
+        --github-proof-artifact github-actions-proof.json \
+        --github-externalized-phases "$EXTERNALIZED_PHASES"
+) > "$TMP_ROOT/external-proof.out" 2>&1
+RC=$?
+set -e
+assert_status "external proof review run succeeds" 0 "$RC"
+EXTERNAL_RUN_DIR=$(latest_run_dir)
+python3 - "$EXTERNAL_RUN_DIR/metadata.json" \
+    "$EXTERNALIZED_PHASES" <<'PY'
+import json
+import sys
+
+path, externalized_csv = sys.argv[1:]
+with open(path, encoding="utf-8") as stream:
+    data = json.load(stream)
+assert data["status"] == "pass"
+assert data["profile"] == "review"
+externalized = set(externalized_csv.split(","))
+phase_ids = [phase["id"] for phase in data["phases"]]
+assert phase_ids == [
+    "policy-sync", "source-db-static", "review-static",
+    "review-ledgers", "message-overlay-static", "zh-runtime-catch2",
+], phase_ids
+for phase in data["phases"]:
+    source = phase.get("source", "local")
+    if phase["id"] in externalized:
+        assert source == "github-actions", phase
+        assert phase["status"] == "pass", phase
+    else:
+        assert source == "local", phase
+assert any(phase.get("source", "local") == "local"
+           and phase["id"] == "review-static"
+           for phase in data["phases"])
+assert any(phase.get("source", "local") == "local"
+           and phase["id"] == "review-ledgers"
+           for phase in data["phases"])
+artifact_paths = [artifact["path"] for artifact in data["artifacts"]]
+assert "github-actions-proof.json" in artifact_paths, artifact_paths
+assert data["external_ci"]["proof_artifact"] == "github-actions-proof.json"
+assert data["external_ci"]["repository"] == "fixture/fake-repo"
+assert data["external_ci"]["run_id"] == 32029487274
+PY
+assert_status "external proof metadata binds phases, artifact, and CI identity" 0 "$?"
+assert_contains "external proof run reports its source explicitly" \
+    "source=github-actions" "$EXTERNAL_RUN_DIR/verify.log"
+if [[ -e "$REPO/.ledger-auditor-started" ]]; then
+    pass "review-ledgers still runs locally under external proof mode"
+else
+    fail "review-ledgers did not run locally under external proof mode"
+fi
+if [[ -e "$REPO/.observed-i18n-extract" ]]; then
+    fail "externalized source-db-static still ran i18n_extract locally"
+else
+    pass "externalized source-db-static did not run locally"
+fi
+if [[ -f "$EXTERNAL_RUN_DIR/github-actions-proof.json" ]]; then
+    cmp -s "$TMP_ROOT/proof.json" "$EXTERNAL_RUN_DIR/github-actions-proof.json" \
+        && pass "proof artifact is byte-identical to the proven file" \
+        || fail "proof artifact differs from the proven file"
+else
+    fail "proof artifact missing from the run directory"
+fi
+
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA" \
+        --github-actions-proof "$TMP_ROOT/proof.json" \
+        --github-proof-artifact github-actions-proof.json \
+        --github-externalized-phases "$EXTERNALIZED_PHASES"
+) > "$TMP_ROOT/external-no-runid.out" 2>&1
+RC=$?
+set -e
+assert_status "--github-actions-run without --github-actions-proof is ambiguous" 2 "$RC"
+
+cat > "$TMP_ROOT/bad-proof.json" <<PY
+{
+  "schema": "dcss-zh-github-actions-proof-v1",
+  "repository": "fixture/fake-repo",
+  "run_id": 32029487274,
+  "run_url": "https://github.com/fixture/fake-repo/actions/runs/32029487274",
+  "event": "workflow_dispatch",
+  "head_branch": "candidate",
+  "head_sha": "$(printf 0%.0s {1..40})",
+  "status": "completed",
+  "conclusion": "success",
+  "required_jobs": [{"id": "zh_ci_gate", "name": "ZH CI Gate (static)", "api_job_id": 1001, "status": "completed", "conclusion": "success"}]
+}
+PY
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA" \
+        --github-actions-proof "$TMP_ROOT/bad-proof.json" \
+        --github-proof-artifact github-actions-proof.json \
+        --github-externalized-phases "$EXTERNALIZED_PHASES"
+) > "$TMP_ROOT/bad-proof.out" 2>&1
+RC=$?
+set -e
+assert_status "proof with wrong head_sha is rejected by the verifier too" 2 "$RC"
+assert_contains "wrong head_sha diagnostic is explicit" \
+    "does not match the bound head" "$TMP_ROOT/bad-proof.out"
+
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA" \
+        --github-actions-proof "$TMP_ROOT/proof.json"
+) > "$TMP_ROOT/missing-artifact-name.out" 2>&1
+RC=$?
+set -e
+assert_status "external mode requires the proof artifact name" 2 "$RC"
+
+# Default local mode still requires the original phases: the ordinary bound
+# evidence run above already proved all six phases run locally without the
+# proof flags. Re-check after the external runs that a plain run stays local.
+rm -f "$REPO/.ledger-auditor-started"
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA"
+) > "$TMP_ROOT/plain-local.out" 2>&1
+RC=$?
+assert_status "plain local review still runs the original phases" 0 "$RC"
+LOCAL_RUN_DIR=$(latest_run_dir)
+python3 - "$LOCAL_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as stream:
+    data = json.load(stream)
+for phase in data["phases"]:
+    assert phase.get("source", "local") == "local", phase
+assert "external_ci" not in data
+assert "github-actions-proof.json" not in [
+    artifact["path"] for artifact in data["artifacts"]]
+PY
+assert_status "plain local metadata contains no external proof fields" 0 "$?"
+if [[ -e "$REPO/.ledger-auditor-started" ]]; then
+    pass "plain local run still executes strict review-ledgers"
+else
+    fail "plain local run skipped strict review-ledgers"
+fi
+
 echo "--- terminal non-glossary worktree drift ---"
 set +e
 (
@@ -489,10 +693,13 @@ assert_status "interruption is distinct from ordinary failure" 0 "$?"
 
 RUN_COUNT=$(find "$REPO/.claude/metrics/verify" -mindepth 1 -maxdepth 1 \
     -type d | wc -l)
-if [[ "$RUN_COUNT" -eq 5 ]]; then
+# The external proof section above contributes two successful run dirs
+# (external proof run and the plain local control run); its argument-error
+# cases exit before any run directory is created.
+if [[ "$RUN_COUNT" -eq 7 ]]; then
     pass "each started invocation creates a unique run directory"
 else
-    fail "expected 5 unique run directories, found $RUN_COUNT"
+    fail "expected 7 unique run directories, found $RUN_COUNT"
 fi
 
 echo "--- ZH Catch2 risk routing ---"
