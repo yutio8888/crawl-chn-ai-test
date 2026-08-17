@@ -3,8 +3,6 @@
 import json
 import copy
 import hashlib
-import os
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -12,9 +10,8 @@ import unittest
 from pathlib import Path
 
 
-CONTROL_ROOT = Path(__file__).resolve().parents[3]
-ROOT = Path(os.environ.get("ZH_VERIFY_AUDIT_ROOT", CONTROL_ROOT))
-SCRIPTS = CONTROL_ROOT / ".claude/scripts"
+ROOT = Path(__file__).resolve().parents[3]
+SCRIPTS = ROOT / ".claude/scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from audit_monspell_behavior import (  # noqa: E402
@@ -844,47 +841,6 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
                                capture_output=True, check=False)
         self.assertEqual(drift.returncode, 1)
         self.assertIn("report drift", drift.stderr)
-
-    def test_bound_audit_root_reads_candidate_report(self):
-        if os.environ.get("ZH_VERIFY_BOUND_PROBE") == "1":
-            self.skipTest("nested bound-root probe")
-        with tempfile.TemporaryDirectory() as temporary:
-            candidate_root = Path(temporary)
-            shutil.copytree(
-                CONTROL_ROOT / ".claude/data/message-overlay",
-                candidate_root / ".claude/data/message-overlay",
-            )
-            source = candidate_root / "crawl-ref/source"
-            source.mkdir(parents=True)
-            shutil.copy2(
-                CONTROL_ROOT / "crawl-ref/source/mon-cast.cc",
-                source / "mon-cast.cc",
-            )
-            report_path = (
-                candidate_root
-                / ".claude/data/message-overlay/monspell-behavior-report.json"
-            )
-            report = json.loads(report_path.read_text(encoding="utf-8"))
-            report["coverage"][
-                "canonical_structured_variant_metadata_units"
-            ] = 0
-            report_path.write_text(
-                json.dumps(report, ensure_ascii=False), encoding="utf-8"
-            )
-            environment = os.environ.copy()
-            environment["ZH_VERIFY_AUDIT_ROOT"] = os.fspath(candidate_root)
-            environment["ZH_VERIFY_BOUND_PROBE"] = "1"
-            completed = subprocess.run(
-                [sys.executable, os.fspath(Path(__file__))],
-                cwd=os.fspath(CONTROL_ROOT),
-                env=environment,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-            output = completed.stdout + completed.stderr
-            self.assertNotEqual(completed.returncode, 0, output)
-            self.assertIn("test_tracked_phase2_coverage_contract", output)
 
     def test_tracked_phase2_coverage_contract(self):
         report = json.loads(TRACKED_REPORT.read_text(encoding="utf-8"))

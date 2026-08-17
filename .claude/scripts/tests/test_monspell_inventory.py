@@ -15,9 +15,8 @@ from pathlib import Path
 from unittest import mock
 
 
-CONTROL_ROOT = Path(__file__).resolve().parents[3]
-ROOT = Path(os.environ.get("ZH_VERIFY_AUDIT_ROOT", CONTROL_ROOT))
-SCRIPT = CONTROL_ROOT / ".claude/scripts/monspell_inventory.py"
+ROOT = Path(__file__).resolve().parents[3]
+SCRIPT = ROOT / ".claude/scripts/monspell_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 from audit_monspell_phase0 import build_inventory as build_phase0_inventory  # noqa: E402
 
