@@ -3592,7 +3592,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // Issue #67 — decorlines species prefix lookup identity (I67-CODE-006).
 //
 // directn.cc::_walk_on_decor queries food-cache keys with a form wiz_name
-// prefix, then a species raw-name prefix, then the bare key.  The species
+// prefix, then a species raw-name prefix, then the bare key. The species
 // prefix must stay the English raw name in ZH mode too: the canonical
 // TextDB keys (EN and ZH decorlines.txt) are English, so a localized
 // prefix (e.g. "小精灵 fruit cache") can never match and all 29 species
@@ -3656,7 +3656,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
         // Real production chain: decor_cache_lookup() is the exact helper
         // directn.cc::_walk_on_decor calls, and the hit proves which
-        // branch resolved the key.  If the species prefix were reverted
+        // branch resolved the key. If the species prefix were reverted
         // to raw=false, the localized key would miss and the chain would
         // silently fall back to the generic line - the hit assertion
         // below then fails even though a Chinese line is returned.
@@ -3705,8 +3705,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // mons_type_name(mc, DESC_DBNAME), which under ZH returns the localized
 // monster name (zh_monster_name); the shout.txt keys are English in every
 // language, so a localized key can never match and every monster shout
-// silently falls back to the default region.  The key must use the
-// canonical English accessor mons_type_name_en().  The same defect exists
+// silently falls back to the default region. The key must use the
+// canonical English accessor mons_type_name_en(). The same defect exists
 // on the SpeakDB species-insult path: do_mon_str_replacements() feeds
 // _get_species_insult() with the localized foe genus (species::name(...,
 // SPNAME_GENUS) for players, mons_type_name(mons_genus(...), DESC_PLAIN)
@@ -3720,7 +3720,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // exact function monster_shout() calls, and do_mon_str_replacements() is
 // exercised with a real player foe (hostile monster with foe == MHITYOU,
 // the monster constructor default) and with real monster foes placed in
-// env.mons slots through the production allocator.  A revert of any
+// env.mons slots through the production allocator. A revert of any
 // production accessor to the localized one changes the DB keys under ZH
 // and fails the assertions below even though every resolved line still
 // contains Chinese text.
@@ -3863,7 +3863,7 @@ struct scoped_env_monster_slot
 
 // Mirrors mon-util.cc::_get_species_insult's RNG consumption for one
 // feed: the species-specific SpeakDB entry when present, otherwise the
-// generic fallback entry.  The production chain evaluates all three
+// generic fallback entry. The production chain evaluates all three
 // feeds (adj1, adj2, noun) eagerly as replace_all() arguments, so tests
 // that assert on the adj2/noun feed must replay the earlier draws first.
 string species_insult_at_consumed_position(const string &species,
@@ -4157,10 +4157,10 @@ TEST_CASE_METHOD(EnTranslationFixture,
 // Issue #70 — mons_speaks genus fallback (I70-R4-CODE-001 / CR-005).
 //
 // mon-speak.cc::mons_speaks resolves the genus fallback with
-// mons_type_name_en(mons_genus(mons->type), DESC_DBNAME).  Under ZH the old
+// mons_type_name_en(mons_genus(mons->type), DESC_DBNAME). Under ZH the old
 // localized accessor returned the Chinese genus name, which can never match
 // the English monspeak keys, so the orc genus speech silently fell through
-// to the (absent) glyph/shape keys and the monster stayed silent.  These
+// to the (absent) glyph/shape keys and the monster stayed silent. These
 // tests drive the real mons_speaks() production entry with real monsters
 // whose exact DB-name keys are absent while the genus key ("orc") or the
 // glyph key ("'l'") exists, and capture the final emission through the
@@ -4346,7 +4346,7 @@ void check_mons_speaks_genus_fallback()
     you.hp = you.hp_max = 10;
     // A real religion (not GOD_NO_GOD, whose _god_name_en() is the empty
     // string and would insert a stray space prefix that breaks the skip-all
-    // fallback chain exactly like production for no-god players).  Makhleb
+    // fallback chain exactly like production for no-god players). Makhleb
     // is not a good god, so no extra coinflip is drawn while building the
     // prefix list.
     you.religion = GOD_MAKHLEB;

@@ -1868,6 +1868,18 @@ def _scaffold_write_transaction(path: Path, text: str) -> None:
         raise InventoryError(
             f"scaffold path must be an absolute POSIX pathname: {path}"
         )
+    # macOS exposes system directories as root-level symlinks
+    # (/var -> /private/var, /tmp -> /private/tmp, /etc -> /private/etc);
+    # the O_NOFOLLOW pin below cannot open them (ENOTDIR/ELOOP). Resolve
+    # only the root-level component first. Root-level symlinks are
+    # system-managed: creating or replacing one requires privileges, so
+    # following them cannot redirect a user-controlled path. Symlinks
+    # deeper in the tree remain pinned with O_NOFOLLOW and are still
+    # rejected.
+    root_component = absolute.split(os.sep, 2)[1]
+    if root_component and os.path.islink(os.sep + root_component):
+        resolved_root = os.path.realpath(os.sep + root_component)
+        absolute = resolved_root + absolute[len(os.sep + root_component):]
     components = [component for component in absolute.split(os.sep)
                   if component not in ("", ".")]
     pinned: list[int] = []
