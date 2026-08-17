@@ -2216,7 +2216,7 @@ w:50
 
 @The_monster@ 说："顶多只有三个信徒，我会腻的。"
 
-@The_monster@ 说："你怎么找到足够的灰烬和木炭，用来给他们全都涂抹上？"
+@The_monster@ 说："你是怎么找到足够的灰烬和木炭，给他们全都涂上的？"
 
 @The_monster@ 说："想跟我打，光靠兽人可不够。"
 
@@ -2254,7 +2254,7 @@ w:50
 
 @The_monster@ 说："你一定很爱痛苦。我讨厌它。"
 
-@The_monster@ 说："你是不是什么事都用死灵法术解决？"
+@The_monster@ 说："你是不是什么事都用死灵术解决？"
 
 @The_monster@ 说："为什么是'恶魔之神'？'丧尸之神'不是更贴切吗？"
 
@@ -4411,7 +4411,7 @@ _Sprozz_thief_
 @The_monster@吼道："谁在卖我的蓝图？告诉我！"
 %%%%
 _Vashnia_common_
-VISUAL:@The_monster@打出一串神秘的手势，然后朝 @foe@ 指向。
+VISUAL:@The_monster@打出一串神秘的手势，然后指向 @foe@。
 
 VISUAL:@The_monster@ 朝 @foe@ 瞄准。
 
@@ -6238,7 +6238,7 @@ w:80
 
 尊重智慧生命的正确饮食。
 
-死灵法术之邪恶。
+死灵术之邪恶。
 
 赌博之不法。
 
@@ -9179,7 +9179,7 @@ Summonings player ghost
 VISUAL:@The_monster@ 从 @possessive@帽子里拽出了一只短尾矮袋鼠。
 
 
-@The_monster@ 朝 @foe@ 指向，大喊道："攻击！"
+@The_monster@ 指着 @foe@ 大喊道："攻击！"
 
 
 @The_monster@ 说："有朋友真好。"
