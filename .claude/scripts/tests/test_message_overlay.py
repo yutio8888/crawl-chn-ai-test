@@ -3,13 +3,15 @@
 import copy
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / ".claude/scripts/generate_message_overlay.py"
+CONTROL_ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(os.environ.get("ZH_VERIFY_AUDIT_ROOT", CONTROL_ROOT))
+SCRIPT = CONTROL_ROOT / ".claude/scripts/generate_message_overlay.py"
 SPEC = importlib.util.spec_from_file_location("generate_message_overlay", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader

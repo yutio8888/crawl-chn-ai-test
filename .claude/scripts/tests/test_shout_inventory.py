@@ -14,8 +14,9 @@ from unittest import mock
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / ".claude/scripts/shout_inventory.py"
+CONTROL_ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(os.environ.get("ZH_VERIFY_AUDIT_ROOT", CONTROL_ROOT))
+SCRIPT = CONTROL_ROOT / ".claude/scripts/shout_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("shout_inventory", SCRIPT)
 assert SPEC and SPEC.loader

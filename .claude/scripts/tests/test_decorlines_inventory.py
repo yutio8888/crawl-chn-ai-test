@@ -15,8 +15,9 @@ from pathlib import Path
 from unittest import mock
 
 
-ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / ".claude/scripts/decorlines_inventory.py"
+CONTROL_ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(os.environ.get("ZH_VERIFY_AUDIT_ROOT", CONTROL_ROOT))
+SCRIPT = CONTROL_ROOT / ".claude/scripts/decorlines_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("decorlines_inventory", SCRIPT)
 assert SPEC and SPEC.loader
