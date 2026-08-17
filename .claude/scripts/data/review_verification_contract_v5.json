@@ -67,15 +67,14 @@
   ],
   "external_ci": {
     "allowed_events": [
-      "workflow_dispatch",
-      "push"
+      "workflow_dispatch"
     ],
+    "bind_target_sha": true,
     "enabled": true,
     "externalizable_phases": [
       "policy-sync",
       "source-db-static",
       "message-overlay-static",
-      "cpp-build",
       "zh-runtime-catch2"
     ],
     "proof_artifact": "github-actions-proof.json",
@@ -126,41 +125,6 @@
         "name_contains": "ZH Help Runtime Tests (Issue 52)",
         "phases": [
           "zh-runtime-catch2"
-        ]
-      },
-      {
-        "id": "linting",
-        "name_contains": "Code Linting",
-        "phases": [
-          "policy-sync"
-        ]
-      },
-      {
-        "id": "build_linux_console",
-        "name_contains": "Linux Console (GCC)",
-        "phases": [
-          "cpp-build"
-        ]
-      },
-      {
-        "id": "build_macos_tiles",
-        "name_contains": "macOS Tiles App",
-        "phases": [
-          "cpp-build"
-        ]
-      },
-      {
-        "id": "build_windows_tiles",
-        "name_contains": "Windows Tiles (MinGW64 cross-compile)",
-        "phases": [
-          "cpp-build"
-        ]
-      },
-      {
-        "id": "build_android",
-        "name_contains": "Android (buildTest)",
-        "phases": [
-          "cpp-build"
         ]
       }
     ],

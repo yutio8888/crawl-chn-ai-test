@@ -34,6 +34,7 @@ RUN_URL = f"https://github.com/{REPOSITORY}/actions/runs/{RUN_ID}"
 
 FIXTURE_SPEC = {
     "enabled": True,
+    "bind_target_sha": False,
     "repository": REPOSITORY,
     "workflow_path": WORKFLOW_PATH,
     "allowed_events": ["workflow_dispatch", "push"],
@@ -191,7 +192,6 @@ with open(path, 'rb') as stream:
         output = self.temp / "github-actions-proof.json"
         output.unlink(missing_ok=True)
         env = os.environ.copy()
-        env["GH_BIN"] = os.fspath(self.fake_gh)
         env["FAKE_GH_RUN_JSON"] = os.fspath(self.run_json)
         env["FAKE_GH_JOBS_JSON"] = os.fspath(self.jobs_json)
         proc = subprocess.run(
@@ -210,6 +210,8 @@ with open(path, 'rb') as stream:
                 os.fspath(self.repo),
                 "--output",
                 os.fspath(output),
+                "--gh-bin",
+                os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,
@@ -457,13 +459,13 @@ with open(path, 'rb') as stream:
                 "--target-head", self.target,
                 "--repo", os.fspath(self.repo),
                 "--output", os.fspath(self.temp / "proof-drift.json"),
+                "--gh-bin", os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env={
                 **os.environ,
-                "GH_BIN": os.fspath(self.fake_gh),
                 "FAKE_GH_RUN_JSON": os.fspath(self.run_json),
                 "FAKE_GH_JOBS_JSON": os.fspath(self.jobs_json),
             },
@@ -516,9 +518,22 @@ with open(path, 'rb') as stream:
         proof = self.proof_dict()
         self.assertEqual(len(proof["required_jobs"]), 1)
 
+    def test_target_control_sha_binding_is_enforced(self) -> None:
+        spec = dict(FIXTURE_SPEC)
+        spec["bind_target_sha"] = True
+        self.spec_path.write_bytes(canonical(spec))
+        self.assert_helper_rejects("missing target control SHA in job name")
+
+        jobs = json.loads(self.jobs_json.read_bytes().decode("utf-8"))
+        jobs["jobs"][0]["name"] += f" @ {self.target}"
+        self.set_fixtures(jobs=jobs)
+        proc = self.run_helper()
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode())
+        proof = self.proof_dict()
+        self.assertEqual(proof["control_sha"], self.target)
+
     def test_gh_api_failure_is_rejected(self) -> None:
         env = os.environ.copy()
-        env["GH_BIN"] = os.fspath(self.fake_gh)
         env["FAKE_GH_RUN_JSON"] = os.fspath(self.run_json)
         env["FAKE_GH_JOBS_JSON"] = os.fspath(self.jobs_json)
         env["FAKE_GH_FAIL"] = "1"
@@ -532,6 +547,7 @@ with open(path, 'rb') as stream:
                 "--target-head", self.target,
                 "--repo", os.fspath(self.repo),
                 "--output", os.fspath(output),
+                "--gh-bin", os.fspath(self.fake_gh),
             ],
             cwd=self.repo,
             stdout=subprocess.PIPE,
@@ -614,6 +630,10 @@ with open(path, 'rb') as stream:
         proof = self.build_valid_proof()
         proof["api_digests"]["run_response_sha256"] = "not-a-hash"
         self.assert_invalid_proof(proof, "malformed api digest")
+
+        proof = self.build_valid_proof()
+        proof["api_snapshot"]["run"]["head_sha"] = "0" * 40
+        self.assert_invalid_proof(proof, "forged API run snapshot")
 
         proof = self.build_valid_proof()
         proof["workflow_sha"] = "short"

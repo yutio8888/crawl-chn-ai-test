@@ -118,8 +118,18 @@ security contract is `.agents/policies/review-contract.md`.
 
 When the local machine cannot complete the full final profile, the final gate
 may substitute a live, bound GitHub Actions run for the contract-listed
-phases. Run it from the clean target checkout with an exported terminal type
-and the exact run id that executed the candidate commit:
+phases. First dispatch `.github/workflows/ci.yml` on the candidate ref with
+`control_sha` set to the exact final-gate target SHA; the workflow then runs
+its verification scripts from a detached target-control checkout and labels
+required jobs with that SHA. For example:
+
+```bash
+gh workflow run ci.yml --repo yutio8888/crawl-chn-ai-test \
+  --ref <candidate-ref> -f control_sha=<target-sha>
+```
+
+Run the final gate from the clean target checkout with an exported terminal
+type and the resulting exact run id:
 
 ```bash
 TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
@@ -128,8 +138,8 @@ TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
 
 Only phases that the trusted contract's `external_ci` section lists as
 externalizable are replaced (currently the static policy/source/DB/message
-overlay gates, the configured C++ build gate, and the ZH Catch2 runtime gate).
-`review-static`, `review-ledgers`, and the ZH smoke phase always run locally
+overlay gates and the ZH Catch2 runtime gate).
+`review-static`, `review-ledgers`, and the ZH smoke/build phases always run locally
 because the CI workflow does not claim to cover them. The external proof still
 requires every non-optional CI build, lint, tooling, static, and runtime job
 listed by the contract. The CI workflow `.github/workflows/ci.yml` is
@@ -139,9 +149,10 @@ authenticated on the control plane; tests use fake `gh` fixtures and never
 contact GitHub.
 
 The proof artifact `github-actions-proof.json` is fetched live through `gh`,
-bound to the contract repository, exact candidate HEAD, allowed workflow
-event, workflow path and blob (no target/candidate drift), and every required
-job's `completed`/`success` conclusion, then sealed inside the final attempt
+bound to the contract repository, exact candidate HEAD, target-control SHA,
+allowed workflow event, workflow path and blob (no target/candidate drift),
+canonical API snapshots, and every required job's `completed`/`success`
+conclusion, then sealed inside the final attempt
 and re-verified by the final approval and `review_at_merge.sh`. A caller can
 never supply the proof JSON or override the contract repository. Readiness,
 review ledgers, and the final approval are not bypassed; without

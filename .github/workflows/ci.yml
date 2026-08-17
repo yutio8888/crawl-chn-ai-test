@@ -17,6 +17,10 @@ on:
         description: 'Run full runtime tests (L1+L2+L3, slow)'
         type: boolean
         default: false
+      control_sha:
+        description: 'Trusted target commit whose verification controls must run'
+        type: string
+        required: true
 
 permissions: {}
 jobs:
@@ -24,7 +28,7 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH Tooling Tests (${{ matrix.os }})
+    name: ZH Tooling Tests (${{ matrix.os }}) @ ${{ inputs.control_sha || 'unbound' }}
     strategy:
       fail-fast: false
       matrix:
@@ -35,6 +39,18 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Prepare trusted verification control checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          CONTROL_SHA: ${{ inputs.control_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$CONTROL_SHA"
+          git fetch --no-tags origin "$CONTROL_SHA"
+          git cat-file -e "$CONTROL_SHA^{commit}"
+          control="$RUNNER_TEMP/dcss-control"
+          git worktree add --detach "$control" "$CONTROL_SHA"
+          printf 'DCSS_CONTROL_ROOT=%s\n' "$control" >> "$GITHUB_ENV"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -61,7 +77,12 @@ jobs:
              lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
              lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run tooling tests
-        run: /bin/bash .claude/scripts/tests/run_all.sh
+        run: |
+          if [[ -n "${DCSS_CONTROL_ROOT:-}" ]]; then
+            /bin/bash "$DCSS_CONTROL_ROOT/.claude/scripts/tests/run_all.sh"
+          else
+            /bin/bash .claude/scripts/tests/run_all.sh
+          fi
         env:
           # GitHub-hosted runners have ~7 GB RAM; the monspeak inventory
           # suite (66 tests) plus the other heavy inventory tests OOM at
@@ -79,7 +100,7 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH CI Gate (static + data, no make, ${{ matrix.os }})
+    name: ZH CI Gate (static + data, no make, ${{ matrix.os }}) @ ${{ inputs.control_sha || 'unbound' }}
     strategy:
       fail-fast: false
       matrix:
@@ -90,6 +111,18 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Prepare trusted verification control checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          CONTROL_SHA: ${{ inputs.control_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$CONTROL_SHA"
+          git fetch --no-tags origin "$CONTROL_SHA"
+          git cat-file -e "$CONTROL_SHA^{commit}"
+          control="$RUNNER_TEMP/dcss-control"
+          git worktree add --detach "$control" "$CONTROL_SHA"
+          printf 'DCSS_CONTROL_ROOT=%s\n' "$control" >> "$GITHUB_ENV"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -112,7 +145,12 @@ jobs:
              lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
              lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run Chinese localization CI gate (static only)
-        run: /bin/bash .claude/scripts/verify_zh.sh --profile ci
+        run: |
+          if [[ -n "${DCSS_CONTROL_ROOT:-}" ]]; then
+            /bin/bash "$DCSS_CONTROL_ROOT/.claude/scripts/verify_zh.sh" --profile ci
+          else
+            /bin/bash .claude/scripts/verify_zh.sh --profile ci
+          fi
       - name: Upload verification evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -125,13 +163,25 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH Runtime Catch2 ([zh-translation] + [message-overlay])
+    name: ZH Runtime Catch2 ([zh-translation] + [message-overlay]) @ ${{ inputs.control_sha || 'unbound' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: true
+      - name: Prepare trusted verification control checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          CONTROL_SHA: ${{ inputs.control_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$CONTROL_SHA"
+          git fetch --no-tags origin "$CONTROL_SHA"
+          git cat-file -e "$CONTROL_SHA^{commit}"
+          control="$RUNNER_TEMP/dcss-control"
+          git worktree add --detach "$control" "$CONTROL_SHA"
+          printf 'DCSS_CONTROL_ROOT=%s\n' "$control" >> "$GITHUB_ENV"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -153,7 +203,12 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build catch2-tests and run [zh-translation] + [message-overlay]
-        run: bash .claude/scripts/post_zh_runtime.sh catch2
+        run: |
+          if [[ -n "${DCSS_CONTROL_ROOT:-}" ]]; then
+            bash "$DCSS_CONTROL_ROOT/.claude/scripts/post_zh_runtime.sh" catch2
+          else
+            bash .claude/scripts/post_zh_runtime.sh catch2
+          fi
         env:
           TERM: dumb
 
@@ -198,13 +253,25 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH Help Runtime Tests (Issue 52)
+    name: ZH Help Runtime Tests (Issue 52) @ ${{ inputs.control_sha || 'unbound' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: true
+      - name: Prepare trusted verification control checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          CONTROL_SHA: ${{ inputs.control_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$CONTROL_SHA"
+          git fetch --no-tags origin "$CONTROL_SHA"
+          git cat-file -e "$CONTROL_SHA^{commit}"
+          control="$RUNNER_TEMP/dcss-control"
+          git worktree add --detach "$control" "$CONTROL_SHA"
+          printf 'DCSS_CONTROL_ROOT=%s\n' "$control" >> "$GITHUB_ENV"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -226,7 +293,12 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build and run help-system runtime tests
-        run: bash .claude/scripts/post_zh_runtime.sh help-full
+        run: |
+          if [[ -n "${DCSS_CONTROL_ROOT:-}" ]]; then
+            bash "$DCSS_CONTROL_ROOT/.claude/scripts/post_zh_runtime.sh" help-full
+          else
+            bash .claude/scripts/post_zh_runtime.sh help-full
+          fi
         env:
           TERM: dumb
 

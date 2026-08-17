@@ -15,8 +15,13 @@ through ``gh`` at final-gate time, and it writes a canonical
   target/base head (no workflow drift), and the recorded workflow blob SHA-1
   and SHA-256 identities are recomputed and re-verified;
 - the run is ``completed`` with ``conclusion == success``;
-- every contract-required job is present in the run's job list and is itself
+- every contract-required job is present in the run's job list, binds the
+  target-control SHA in its evaluated job name when configured, and is itself
   ``completed``/``success`` (optional or skipped jobs never become required).
+
+The proof also embeds canonical run/jobs API snapshots and their digests so
+merge-time validation can repeat the identity checks without trusting a mutable
+network response.
 
 API response digests are recorded over the exact raw bytes returned by ``gh``
 so a later read-only validator can confirm the recorded proof was generated
@@ -73,8 +78,18 @@ def _scrubbed_environment() -> dict[str, str]:
             "GIT_DISCOVERY_ACROSS_FILESYSTEM",
             "GIT_EXTERNAL_DIFF",
             "GIT_DIFF_OPTS",
+            "GH_BIN",
+            "GH_CONFIG_DIR",
             "GH_HOST",
             "GH_ENTERPRISE_TOKEN",
+            "HTTP_PROXY",
+            "HTTPS_PROXY",
+            "ALL_PROXY",
+            "NO_PROXY",
+            "SSL_CERT_FILE",
+            "SSL_CERT_DIR",
+            "REQUESTS_CA_BUNDLE",
+            "CURL_CA_BUNDLE",
             "LD_PRELOAD",
             "LD_LIBRARY_PATH",
             "PYTHONHOME",
@@ -122,6 +137,7 @@ def _load_spec(path: Path) -> dict[str, Any]:
     expected_fields = frozenset(
         (
             "enabled",
+            "bind_target_sha",
             "repository",
             "workflow_path",
             "allowed_events",
@@ -138,6 +154,8 @@ def _load_spec(path: Path) -> dict[str, Any]:
             raise ValueError(f"external CI spec is missing {key}")
     if spec.get("enabled") is not True:
         raise ValueError("external CI is not enabled")
+    if not isinstance(spec.get("bind_target_sha"), bool):
+        raise ValueError("external CI bind_target_sha is invalid")
     externalizable = spec.get("externalizable_phases")
     if not isinstance(externalizable, list) or not externalizable:
         raise ValueError("external CI externalizable_phases are invalid")
@@ -365,7 +383,7 @@ def fetch_and_bind_proof(
     if candidate_sha256 != target_sha256:
         raise ValueError("workflow blob digest drifted between target and candidate")
 
-    jobs, raw_jobs, _jobs_value = _api_jobs(spec, repository, run_id, gh_bin, repo)
+    jobs, _raw_jobs, jobs_value = _api_jobs(spec, repository, run_id, gh_bin, repo)
     required_jobs: list[dict[str, Any]] = []
     for planned in spec["required_jobs"]:
         job_id = planned.get("id")
@@ -397,6 +415,10 @@ def fetch_and_bind_proof(
         api_job_id = job.get("id")
         if isinstance(api_job_id, bool) or not isinstance(api_job_id, int) or api_job_id <= 0:
             raise ValueError(f"required job {job_id!r} has an invalid API id")
+        if spec["bind_target_sha"] and target_head not in job["name"]:
+            raise ValueError(
+                f"required job {job_id!r} does not bind the target control SHA"
+            )
         required_jobs.append(
             {
                 "id": job_id,
@@ -410,6 +432,9 @@ def fetch_and_bind_proof(
     proof = {
         "schema": spec["proof_schema"],
         "repository": repository,
+        "run_repository": run_repository["full_name"],
+        "head_repository": head_repository["full_name"],
+        "control_sha": target_head if spec["bind_target_sha"] else None,
         "run_id": run_id,
         "run_url": expected_url,
         "event": event,
@@ -422,9 +447,13 @@ def fetch_and_bind_proof(
         "status": status,
         "conclusion": conclusion,
         "required_jobs": required_jobs,
+        "api_snapshot": {
+            "run": run,
+            "jobs": jobs_value,
+        },
         "api_digests": {
-            "run_response_sha256": _api_digest(raw_run),
-            "jobs_response_sha256": _api_digest(raw_jobs),
+            "run_response_sha256": _api_digest(canonical_json_bytes(run)),
+            "jobs_response_sha256": _api_digest(canonical_json_bytes(jobs_value)),
         },
         "fetched_at": _utc_timestamp(),
     }
@@ -460,7 +489,7 @@ def main(argv: list[str] | None = None) -> int:
         except ValueError:
             raise ValueError(f"GitHub Actions run id is not an integer: {run_id_raw}")
         spec = _load_spec(Path(args.external_ci_json))
-        gh_bin = args.gh_bin or os.environ.get("GH_BIN") or "gh"
+        gh_bin = args.gh_bin or "gh"
         gh_path = shutil.which(gh_bin)
         if not gh_path:
             raise ValueError(f"gh binary is unavailable: {gh_bin}")

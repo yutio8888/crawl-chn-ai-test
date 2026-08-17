@@ -2463,6 +2463,7 @@ class ExternalCiFinalGateTests(unittest.TestCase):
             ],
             "external_ci": {
                 "enabled": True,
+                "bind_target_sha": False,
                 "repository": EXTERNAL_REPOSITORY,
                 "workflow_path": ".github/workflows/ci.yml",
                 "allowed_events": ["workflow_dispatch", "push"],
@@ -2602,7 +2603,6 @@ with open(path, 'rb') as stream:
         environment = os.environ.copy()
         environment.update(
             PYTHONDONTWRITEBYTECODE="1",
-            GH_BIN=os.fspath(self.fake_gh),
             FAKE_GH_RUN_JSON=os.fspath(self.run_json),
             FAKE_GH_JOBS_JSON=os.fspath(self.jobs_json),
         )
@@ -2644,6 +2644,7 @@ with open(path, 'rb') as stream:
             self.verifier,
             self.contract_path,
             github_actions_run=EXTERNAL_RUN_ID,
+            gh_bin=os.fspath(self.fake_gh),
             **kwargs,
         )
 

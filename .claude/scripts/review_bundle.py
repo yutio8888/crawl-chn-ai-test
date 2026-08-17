@@ -1383,6 +1383,7 @@ def _validate_external_ci(
     if not isinstance(external_ci, dict) or frozenset(external_ci) != frozenset(
         (
             "enabled",
+            "bind_target_sha",
             "repository",
             "workflow_path",
             "allowed_events",
@@ -1395,6 +1396,8 @@ def _validate_external_ci(
         raise ReviewBundleError(f"{label} external_ci fields are invalid")
     if external_ci.get("enabled") is not True:
         raise ReviewBundleError(f"{label} external_ci is not enabled")
+    if not isinstance(external_ci.get("bind_target_sha"), bool):
+        raise ReviewBundleError(f"{label} external_ci.bind_target_sha is invalid")
     repository = external_ci.get("repository")
     if not isinstance(repository, str) or not REPOSITORY_RE.fullmatch(repository):
         raise ReviewBundleError(f"{label} external_ci.repository is invalid")
@@ -1499,6 +1502,9 @@ GITHUB_PROOF_FIELDS = frozenset(
     (
         "schema",
         "repository",
+        "run_repository",
+        "head_repository",
+        "control_sha",
         "run_id",
         "run_url",
         "event",
@@ -1511,6 +1517,7 @@ GITHUB_PROOF_FIELDS = frozenset(
         "status",
         "conclusion",
         "required_jobs",
+        "api_snapshot",
         "api_digests",
         "fetched_at",
     )
@@ -1548,6 +1555,24 @@ def _validate_github_proof(
         raise ReviewBundleError(
             "GitHub Actions proof repository binding failed"
         )
+    if proof.get("run_repository") != repository:
+        raise ReviewBundleError(
+            "GitHub Actions proof run_repository binding failed"
+        )
+    if proof.get("head_repository") != repository:
+        raise ReviewBundleError(
+            "GitHub Actions proof head_repository binding failed"
+        )
+    target_head = manifest["target_head"]
+    if external.get("bind_target_sha"):
+        if proof.get("control_sha") != target_head:
+            raise ReviewBundleError(
+                "GitHub Actions proof control_sha does not match the target"
+            )
+    elif proof.get("control_sha") is not None:
+        raise ReviewBundleError(
+            "GitHub Actions proof has an unexpected control_sha"
+        )
     run_id = proof.get("run_id")
     if isinstance(run_id, bool) or not isinstance(run_id, int) or run_id <= 0:
         raise ReviewBundleError("GitHub Actions proof run_id is invalid")
@@ -1573,7 +1598,6 @@ def _validate_github_proof(
         raise ReviewBundleError(
             "GitHub Actions proof workflow path does not match the contract"
         )
-    target_head = manifest["target_head"]
     candidate_blob = _git_text(
         repo, "rev-parse", f"{candidate_head}:{workflow_path}"
     )
@@ -1624,6 +1648,8 @@ def _validate_github_proof(
         job_name = record.get("name")
         if not isinstance(job_name, str) or planned["name_contains"] not in job_name:
             raise ReviewBundleError(f"{label} name is invalid")
+        if external.get("bind_target_sha") and target_head not in job_name:
+            raise ReviewBundleError(f"{label} does not bind the target control SHA")
         api_job_id = record.get("api_job_id")
         if (
             isinstance(api_job_id, bool)
@@ -1635,17 +1661,111 @@ def _validate_github_proof(
             raise ReviewBundleError(
                 f"GitHub Actions required job did not pass: {planned['id']}"
             )
+    api_snapshot = proof.get("api_snapshot")
+    if not isinstance(api_snapshot, dict) or frozenset(api_snapshot) != frozenset(
+        ("run", "jobs")
+    ):
+        raise ReviewBundleError("GitHub Actions proof api_snapshot is invalid")
+    snapshot_run = api_snapshot.get("run")
+    snapshot_jobs = api_snapshot.get("jobs")
+    if not isinstance(snapshot_run, dict) or not isinstance(snapshot_jobs, dict):
+        raise ReviewBundleError("GitHub Actions proof API snapshots are invalid")
+    if snapshot_run.get("id") != run_id:
+        raise ReviewBundleError("GitHub Actions proof API run id binding failed")
+    snapshot_repository = snapshot_run.get("repository")
+    snapshot_head_repository = snapshot_run.get("head_repository")
+    if (
+        not isinstance(snapshot_repository, dict)
+        or snapshot_repository.get("full_name") != repository
+        or not isinstance(snapshot_head_repository, dict)
+        or snapshot_head_repository.get("full_name") != repository
+    ):
+        raise ReviewBundleError(
+            "GitHub Actions proof API repository binding failed"
+        )
+    snapshot_fields = {
+        "event": event,
+        "head_sha": head_sha,
+        "head_branch": head_branch,
+        "path": workflow_path,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": proof.get("run_url"),
+    }
+    for field, expected_value in snapshot_fields.items():
+        if snapshot_run.get(field) != expected_value:
+            raise ReviewBundleError(
+                f"GitHub Actions proof API run {field} binding failed"
+            )
+    api_jobs = snapshot_jobs.get("jobs")
+    total_count = snapshot_jobs.get("total_count")
+    if (
+        not isinstance(api_jobs, list)
+        or isinstance(total_count, bool)
+        or not isinstance(total_count, int)
+        or total_count != len(api_jobs)
+    ):
+        raise ReviewBundleError(
+            "GitHub Actions proof API jobs snapshot is incomplete"
+        )
     api_digests = proof.get("api_digests")
     if not isinstance(api_digests, dict) or frozenset(api_digests) != frozenset(
         ("run_response_sha256", "jobs_response_sha256")
     ):
         raise ReviewBundleError("GitHub Actions proof api_digests are invalid")
-    _validate_sha256(
+    if _validate_sha256(
         api_digests.get("run_response_sha256"), "run_response_sha256"
-    )
-    _validate_sha256(
+    ) != sha256_bytes(canonical_json_bytes(snapshot_run)):
+        raise ReviewBundleError("GitHub Actions proof run snapshot digest failed")
+    if _validate_sha256(
         api_digests.get("jobs_response_sha256"), "jobs_response_sha256"
-    )
+    ) != sha256_bytes(canonical_json_bytes(snapshot_jobs)):
+        raise ReviewBundleError("GitHub Actions proof jobs snapshot digest failed")
+    required = external["required_jobs"]
+    expected_jobs: list[dict[str, Any]] = []
+    for index, planned in enumerate(required):
+        matches = [
+            job
+            for job in api_jobs
+            if isinstance(job, dict)
+            and isinstance(job.get("name"), str)
+            and planned["name_contains"] in job["name"]
+        ]
+        if len(matches) != 1:
+            raise ReviewBundleError(
+                f"GitHub Actions proof API required job {planned['id']!r} "
+                f"matched {len(matches)} jobs"
+            )
+        job = matches[0]
+        api_job_id = job.get("id")
+        if (
+            isinstance(api_job_id, bool)
+            or not isinstance(api_job_id, int)
+            or api_job_id <= 0
+            or job.get("status") != "completed"
+            or job.get("conclusion") != "success"
+        ):
+            raise ReviewBundleError(
+                f"GitHub Actions proof API required job failed: {planned['id']}"
+            )
+        if external.get("bind_target_sha") and target_head not in job["name"]:
+            raise ReviewBundleError(
+                f"GitHub Actions proof API required job {planned['id']} "
+                "does not bind the target control SHA"
+            )
+        expected_jobs.append(
+            {
+                "id": planned["id"],
+                "name": job["name"],
+                "api_job_id": api_job_id,
+                "status": job["status"],
+                "conclusion": job["conclusion"],
+            }
+        )
+    if proof.get("required_jobs") != expected_jobs:
+        raise ReviewBundleError(
+            "GitHub Actions proof required job records do not match the API snapshot"
+        )
     fetched_at = proof.get("fetched_at")
     if not isinstance(fetched_at, str) or not fetched_at:
         raise ReviewBundleError("GitHub Actions proof fetched_at is invalid")
@@ -3063,6 +3183,7 @@ def _fetch_github_ci_proof(
     external: dict[str, Any],
     run_id: str,
     stage: Path,
+    gh_bin: str | None = None,
 ) -> Path:
     """Fetch and bind one live GitHub Actions run through the trusted helper.
 
@@ -3095,6 +3216,11 @@ def _fetch_github_ci_proof(
         "--output",
         os.fspath(proof_path),
     ]
+    # The sanctioned shell entry point never supplies this test-only
+    # dependency injection.  It exists solely so unit tests can replace the
+    # network client without an environment-controlled executable.
+    if gh_bin is not None:
+        command.extend(("--gh-bin", gh_bin))
     proc = subprocess.run(
         command,
         cwd=os.fspath(trusted["target_top"]),
@@ -3134,6 +3260,7 @@ def run_final(
     recover_stale: bool = False,
     github_actions_run: str | None = None,
     github_repository: str | None = None,
+    gh_bin: str | None = None,
 ) -> dict[str, Any]:
     """Run or reuse the one trusted final verification and seal its approval.
 
@@ -3247,6 +3374,7 @@ def run_final(
                     external_run,
                     github_actions_run,
                     stage,
+                    gh_bin,
                 )
                 command.extend(
                     (
