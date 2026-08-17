@@ -54,7 +54,16 @@ struct mon_speech_applicability
 };
 
 void maybe_mons_speaks(monster* mons);
-bool mons_speaks(monster* mons);
+// Production seam for the Issue #70 monspeak tests: ``mons_speaks`` is the
+// real production entry (prefix construction, exact/genus/glyph/shape
+// fallback chain, weighted picks and final emission); the optional observer
+// captures the final emission exactly like ``mons_speaks_msg`` does, so the
+// zh translation tests drive the full production path instead of rebuilding
+// the lookup chain by hand.  Kept on a single declaration line so the
+// baseline-frozen producer/consumer anchors of monspeak_inventory.py never
+// drift.
+bool mons_speaks(monster* mons,
+                 const mon_speech_emission_observer *observer = nullptr);
 bool resolve_mon_speech_line_channel(string &line, msg_channel_type &channel,
                                      bool silence, bool already_rendered);
 bool mons_speaks_msg(monster* mons, const string &msg,

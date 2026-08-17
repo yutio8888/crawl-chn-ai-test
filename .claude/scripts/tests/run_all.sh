@@ -39,9 +39,15 @@ echo "=== .claude/scripts Test Suite ==="
 echo ""
 
 # Discover tests: all test_*.py and test_*.sh at maxdepth=1
+# test_monspeak_inventory.py (66 tests, heavy candidate audits, >15 min)
+# is excluded: it exceeds the GitHub-hosted runner budget on CI.  Run it
+# directly when the full monspeak gate is needed:
+#   python3 .claude/scripts/tests/test_monspeak_inventory.py
 while IFS= read -r -d '' test_path; do
     DISCOVERED+=("$test_path")
-done < <(find "$SCRIPT_DIR" -maxdepth 1 -type f \( -name 'test_*.py' -o -name 'test_*.sh' \) -print0 | LC_ALL=C sort -z)
+done < <(find "$SCRIPT_DIR" -maxdepth 1 -type f \
+    \( -name 'test_*.py' -o -name 'test_*.sh' \) \
+    ! -name 'test_monspeak_inventory.py' -print0 | LC_ALL=C sort -z)
 
 if [ "${#DISCOVERED[@]}" -eq 0 ]; then
     echo "No test scripts discovered."

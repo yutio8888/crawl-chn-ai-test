@@ -66,6 +66,7 @@ Parser (统一):
 | **运行时冒烟测试** | `bash .claude/scripts/smoke_test.sh` |
 | **统一 Catch2 运行时** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
 | **运行工具测试** | `bash .claude/scripts/tests/run_all.sh` |
+| **隔离运行重 Python 测试/验证** | `bash .claude/scripts/run_isolated.sh python3 <test>` |
 
 ### 支持平台与依赖
 
@@ -75,6 +76,53 @@ PyYAML。仓库内的 `run_with_timeout.py` 负责跨平台超时与 PTY transcr
 审阅证据锁由 Python `fcntl` 实现，因此无需额外安装 GNU `timeout`、`flock`、
 `grep -P` 或 GNU `script`。Windows、Android 与 Tiles 构建辅助脚本属于
 目标专用入口，其依赖以对应构建文档为准。
+
+## 资源隔离（run_isolated.sh）
+
+重内存 Python 测试（如 `test_monspeak_inventory.py`、`test_monspell_inventory.py`）、
+`unittest discover` 以及整个 `verify_zh.sh` profile 默认运行在 Paseo daemon 的
+`paseo.service` cgroup 内，可能耗尽其内存/CPU 预算并断开外层连接。
+`fork`/`nohup`/`setsid`/`start_new_session=True` 只能脱离终端与会话，无法脱离
+父 cgroup；唯一有效方式是启动到不同的 cgroup。
+
+`.claude/scripts/run_isolated.sh` 在用户级 systemd 会话且 `paseo-workers.slice`
+存在时，通过 `systemd-run --user` 启动一个瞬态 service 落入该 slice，并施加
+`MemoryHigh`/`MemoryMax`/`CPUWeight`/`CPUQuota` 限制；否则回退为直接 `exec`，
+保证 CI 与无 systemd 环境可移植。
+
+```bash
+# 隔离运行单个重测试
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_monspeak_inventory.py
+
+# 隔离运行整个验证 profile（内部所有 python3 子进程共享同一 cgroup）
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
+```
+
+限制可通过环境变量覆盖：
+
+| 环境变量 | 默认 | 含义 |
+|---|---|---|
+| `ZH_ISOLATE_MEMORY_HIGH` | `2G` | 节流阈值（memcg.high） |
+| `ZH_ISOLATE_MEMORY_MAX` | `3G` | 硬杀阈值（memcg.max） |
+| `ZH_ISOLATE_CPU_WEIGHT` | `20` | 相对 daemon 的 CPU 权重 |
+| `ZH_ISOLATE_CPU_QUOTA` | `200%` | CPU 软上限（2 核） |
+
+`MemoryHigh=2G`/`MemoryMax=3G` 是单条瞬态 service 的上限，保护单个隔离命令。
+对于并发 worker（`run_all.sh` 最多 4 路并发），单 service 上限无法约束总占用，
+应在 slice 层叠加聚合上限，例如放置机器本地 drop-in
+`~/.config/systemd/user/paseo-workers.slice.d/limits.conf`：
+
+```ini
+[Slice]
+MemoryHigh=4G
+MemoryMax=6G
+CPUQuota=300%
+```
+
+该 drop-in 位于用户主目录、不入仓库，且其值应大于单 service 上限、小于
+`paseo.service` 的 `MemoryMax`（8G），为 daemon 保留余量。两层上限作用不同，
+不能互相替代。包装器会将 `python`/`python3` 首参数解析为绝对路径，避免瞬态
+service 继承不同的 `PATH`。
 
 Python 版本以仓库根目录 `.python-version` 为唯一来源：本地命令应通过支持
 该文件的版本管理器运行，或用 `python3 --version` 核对；CI 的 setup-python

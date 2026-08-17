@@ -277,6 +277,137 @@ def copy_contract(root, contract_id):
         dst = os.path.join(root, artifact["file"])
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copyfile(src, dst)
+        # CR-021 compatibility: the monspeak visual-channel checker
+        # observes both TextDB sides through the production parse layer,
+        # so its custom artifact must also carry the EN reference file
+        # for the passing fixture and the ZH mutations below.
+        if artifact.get('custom') == 'monspeak-visual-channels':
+            en_src = os.path.join(source_root, 'dat/database/monspeak.txt')
+            en_dst = os.path.join(root, 'dat/database/monspeak.txt')
+            shutil.copyfile(en_src, en_dst)
+
+
+# CR-021: the monspeak custom artifact has no start/end/required producer
+# schema, so its negative fixtures are the checker's own minimal
+# mutations -- a line shift inside a ZH pattern and a newline-position
+# change.  Both break the EN/ZH line correspondence that
+# _monspeak_visual_channel_findings validates (the per-line channel
+# routing and the runtime line count) while leaving the frozen EN
+# identity set untouched.
+MONSPEAK_VISUAL_MUTATIONS = (
+    ("line-shift",
+     '@The_monster@吟诵了一篇祷词。\nVISUAL:一阵宁静感笼罩了你。',
+     'VISUAL:一阵宁静感笼罩了你。\n@The_monster@吟诵了一篇祷词。',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    ("newline-merge",
+     'VISUAL:@The_monster@打出手势。\n'
+     'VISUAL:你感到一阵[诅咒|厄运]降临。',
+     'VISUAL:@The_monster@打出手势。'
+     'VISUAL:你感到一阵[诅咒|厄运]降临。',
+     "runtime line count differs from EN"),
+    # CR-023: Lua blocks are evaluated by getSpeakString before the sink,
+    # so a literal ``return "VISUAL:..."`` emission is a runtime line of
+    # its own.  The branch-expanded checker binds that topology: changing
+    # one return's VISUAL prefix (``friendly shoals hound`` #2, the
+    # reviewer probe) must fail the per-branch channel correspondence, and
+    # deleting a return branch must fail the branch count.
+    ("lua-return-visual-prefix",
+     'return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+     'return "SOUND:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    ("lua-return-delete",
+     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     'else\n'
+     '    return "VISUAL:@The_monster@ 做出似乎要在你身上把@reflexive@擦干的'
+     '动作。"\n'
+     'end',
+     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     'end',
+     "Lua return branch count differs from EN"),
+    # CR-027: a token whose closure introduces Lua (``@friendly hound@``,
+    # 9 variants, 1 with Lua) changes the runtime channels when a plain
+    # prefix is added in front of the token: every expanded line drops
+    # from TALK_VISUAL to TALK while the unexpanded literals and the
+    # per-site return texts stay identical.
+    ("closure-lua-prefix",
+     'w:50\n@friendly hound@',
+     'w:50\n前缀@friendly hound@',
+     "VISUAL channel prefix lost at an EN-aligned line"),
+    # CR-028: fragment bytes spliced into a Lua return literal take part
+    # in the Lua escape interpretation; a raw newline injected by a
+    # fragment (the _Sprozz_common_ variant reachable through Sprozz's
+    # Lua return) makes the expanded Lua source fail the vendored 5.4.8
+    # syntax gate.
+    ("fragment-raw-newline",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '@The_monster@说："请容我展示未来的蜜蜂！\n还是算了吧"',
+     "Lua return topology not bindable"),
+    # CR-030/CR-032: the same splice path with an unescaped single quote
+    # terminates the Lua string literal early, so the expanded source
+    # fails the vendored 5.4.8 syntax gate exactly like the raw newline.
+    ("fragment-unescaped-quote",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '@The_monster@说："请容我展示未来的蜜蜂！\'"',
+     "Lua return topology not bindable"),
+    # CR-030/CR-032: the Lua hex escape \x56 becomes 'V' after the
+    # splice, so the branch emits a VISUAL: line (talk_visual) where
+    # every expanded EN line of the same branch stays talk.
+    ("fragment-hex-visual",
+     '@The_monster@说："请容我展示未来的蜜蜂！"',
+     '\\x56ISUAL:@The_monster@说："请容我展示未来的蜜蜂！"',
+     "line channel differs from EN"),
+    # CR-030/CR-032: every @marker@ site increments the one shared
+    # replacement counter (MAX_REPLACEMENTS 100), including the
+    # block-external @player_only@ markers and the rescans production
+    # performs over their literal bytes.  With 96 external markers the
+    # in-Lua @_Sprozz_common_@ is still inside the budget: both returns
+    # expand on both sides (branch parity 88) and the mutated ZH body
+    # renders 97 runtime lines.  With 97 external markers the common
+    # marker is site 101 and stays literal, so the ZH expansion loses
+    # the common variants (8 branches vs EN's 88).  A gate that
+    # re-expands the site source with a fresh counter would restore
+    # branch parity for the 97-marker case and produce the line-count
+    # finding instead, so the pinned finding type proves the shared
+    # counter.
+    ("replacement-boundary-100",
+     'Sprozz\n{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     'Sprozz\n' + '@player_only@\n' * 96
+     + '{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     "runtime line count differs from EN: EN has 1 line(s), "
+     "ZH has 97 (Lua branch 0)"),
+    ("replacement-boundary-101",
+     'Sprozz\n{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     'Sprozz\n' + '@player_only@\n' * 97
+     + '{{\n  if spells.memorised("launch clockwork bee") '
+     'then\n    return \'@_Sprozz_thief_@\'\n  else\n    '
+     'return \'@_Sprozz_common_@\'\n  end\n}} @player_only@\n',
+     "Lua return branch count differs from EN: EN has 88 branch(es), "
+     "ZH has 8"),
+)
+
+
+def mutate_monspeak_visual(root, kind):
+    path = os.path.join(root, 'dat/database/zh/monspeak.txt')
+    with open(path, 'r', encoding='utf-8') as f:
+        source = f.read()
+    for name, old, new, detail in MONSPEAK_VISUAL_MUTATIONS:
+        if name != kind:
+            continue
+        mutated = source.replace(old, new, 1)
+        if mutated == source:
+            raise AssertionError(
+                f"monspeak {kind} mutation target missing from ZH "
+                f"fixture")
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(mutated)
+        return detail
+    raise AssertionError(kind)
 
 
 def mutate(root, contract_id, artifact_index, required_index, kind):
@@ -323,6 +454,37 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
             failures.append(f"{contract_id}: passing fixture rejected")
     for artifact_index, artifact in enumerate(artifacts):
         artifact_label = f'{artifact["file"]}#{artifact_index + 1}'
+        if artifact.get('custom'):
+            # CR-021: custom checkers have no required-producer schema,
+            # so the generic localized/missing/duplicate/decoy matrix
+            # cannot index them.  Dispatch to checker-specific fixtures:
+            # the passing contract already ran above, and each minimal
+            # line-shift / newline mutation must independently fail
+            # closed through the monspeak checker.
+            if artifact['custom'] != 'monspeak-visual-channels':
+                failures.append(
+                    f"{contract_id}/{artifact_label}: unknown custom "
+                    f"checker {artifact['custom']!r} has no fixture "
+                    f"dispatch")
+                continue
+            for kind in ("line-shift", "newline-merge",
+                         "lua-return-visual-prefix", "lua-return-delete",
+                         "closure-lua-prefix", "fragment-raw-newline",
+                         "fragment-unescaped-quote", "fragment-hex-visual",
+                         "replacement-boundary-100",
+                         "replacement-boundary-101"):
+                with tempfile.TemporaryDirectory() as root:
+                    copy_contract(root, contract_id)
+                    detail = mutate_monspeak_visual(root, kind)
+                    fixture_count += 1
+                    findings = scan.protocol_boundary_findings(
+                        root, contract_id)
+                    if not any(detail in finding[2]
+                               for finding in findings):
+                        failures.append(
+                            f"{contract_id}/{artifact_label}/{kind}: "
+                            f"fixture accepted (expected {detail!r})")
+            continue
         # Each required invariant must independently fail closed.  The
         # localized producer replacement remains artifact-level metadata;
         # missing/duplicate/decoy mutations exercise every required pattern.
@@ -352,11 +514,46 @@ PY
 protocol_boundary_status=$?
 set -e
 cat /tmp/actual_protocol_boundaries.txt
-assert_status "protocol registry: passing/localized/missing/duplicate/decoy matrix" \
+assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 68 artifacts, 410 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 356 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
+
+# CR-034: a malformed weighted TextDB entry must fail closed at the custom
+# monspeak parser boundary instead of publishing a partial position map.
+echo "--- malformed monspeak weighted entry ---"
+set +e
+python3 - "$SCAN_I18N" <<'PY' > /tmp/actual_monspeak_parse_error.txt 2>&1
+import importlib.util
+import os
+import sys
+import tempfile
+
+scan_path = sys.argv[1]
+spec = importlib.util.spec_from_file_location("scan_i18n", scan_path)
+scan = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(scan)
+
+with tempfile.TemporaryDirectory() as root:
+    path = os.path.join(root, "dat/database/monspeak.txt")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write("%%%%\nmalformed fixture\n%%%%")
+    positions, error = scan._monspeak_textdb_positions(
+        root, "dat/database/monspeak.txt", "fixture")
+    if positions is not None or not error or "weighted-entry parse error" not in error:
+        raise AssertionError(
+            f"malformed weighted entry was accepted: positions={positions!r} "
+            f"error={error!r}")
+    print(error)
+PY
+monspeak_parse_status=$?
+set -e
+assert_status "monspeak parser: malformed weighted entry fails closed" \
+    0 "$monspeak_parse_status"
+assert_contains "monspeak parser: error identifies weighted parse" \
+    "weighted-entry parse error" /tmp/actual_monspeak_parse_error.txt
 
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \

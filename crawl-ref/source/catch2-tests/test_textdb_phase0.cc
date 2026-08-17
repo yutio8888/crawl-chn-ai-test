@@ -17,7 +17,10 @@
 
 #include "test_player_fixture.h"
 
+#include <fcntl.h>
+#include <sys/wait.h>
 #include <unistd.h>
+#include <utility>
 
 namespace
 {
@@ -356,6 +359,17 @@ void record_selected_variants(
 
 const textdb_phase0::canonical_entry *find_canonical_entry(
     const vector<textdb_phase0::canonical_entry> &entries,
+    const string &key)
+{
+    const auto found = std::lower_bound(entries.begin(), entries.end(), key,
+        [](const textdb_phase0::canonical_entry &entry,
+           const string &candidate) { return entry.canonical_key < candidate; });
+    return found == entries.end() || found->canonical_key != key
+        ? nullptr : &*found;
+}
+
+textdb_phase0::canonical_entry *find_canonical_entry_mutable(
+    vector<textdb_phase0::canonical_entry> &entries,
     const string &key)
 {
     const auto found = std::lower_bound(entries.begin(), entries.end(), key,
@@ -907,59 +921,2156 @@ TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
     }
 }
 
-TEST_CASE("Issue 16 restored Chinese VISUAL lines retain production channels",
-          "[single-file][textdb][phase0][issue-16][monspeak]")
+// CR-008/CR-019/CR-023: the complete sorted-unique EN monspeak VISUAL
+// (canonical key, variant ordinal, Lua return branch ordinal, line
+// ordinal) identity set, frozen from the baseline EN dump
+// (b3ad4425053c2175284d32441d67218df97035b0). The Issue-16 contract
+// compares the full set at the production sink granularity:
+// mons_speaks_msg (mon-speak.cc) splits every selected pattern by '\n'
+// and resolves each line through resolve_mon_speech_line_channel, so a
+// VISUAL line that is not the first line of its pattern (e.g.
+// ``_holy_being_`` #0) or a second VISUAL line inside one pattern (e.g.
+// ``_margery_common_`` #2) is part of the contract. The branch ordinal
+// (CR-023) is the Lua return branch index: getSpeakString evaluates
+// every ``{{...}}`` block before the sink, so each literal
+// ``return "VISUAL:..."`` emission is a possible runtime line and
+// participates in the frozen set (e.g. ``friendly shoals hound`` #2
+// emits two VISUAL branches, ``nekomata`` #1 emits two of three).
+// Patterns without Lua blocks have exactly one branch (ordinal 0). An
+// EN edit that moves a VISUAL line to another ordinal or line, changes a
+// VISUAL prefix inside a Lua return or deletes a Lua return branch (even
+// one jointly mirrored in ZH so the per-line ZH check still passes)
+// changes this set and fails.
+struct frozen_monspeak_visual_line
+{
+    const char *key;
+    size_t ordinal;
+    size_t branch;
+    size_t line;
+};
+
+static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
+    {"'r'", 0, 0, 0},
+    {"_agnes_common_", 0, 0, 0},
+    {"_aizul_common_", 0, 0, 0},
+    {"_aizul_common_", 3, 0, 0},
+    {"_aizul_rare_", 2, 0, 0},
+    {"_aizul_rare_", 8, 0, 0},
+    {"_amaemon_common_", 1, 0, 0},
+    {"_amaemon_common_", 2, 0, 0},
+    {"_amaemon_common_", 3, 0, 0},
+    {"_asterion_common_", 0, 0, 0},
+    {"_asterion_common_", 1, 0, 0},
+    {"_azrael_common_", 3, 0, 0},
+    {"_azrael_common_", 4, 0, 0},
+    {"_azrael_common_", 5, 0, 0},
+    {"_azrael_rare_", 3, 0, 0},
+    {"_bai_suzhen_common_", 4, 0, 0},
+    {"_bai_suzhen_rare_", 5, 0, 0},
+    {"_bennu_death_", 0, 0, 0},
+    {"_blorkula_common_", 1, 0, 0},
+    {"_blorkula_common_", 2, 0, 0},
+    {"_blorkula_common_", 3, 0, 0},
+    {"_blorkula_rare_", 5, 0, 0},
+    {"_boris_common_", 0, 0, 0},
+    {"_boris_common_", 1, 0, 1},
+    {"_chuck_generic_", 6, 0, 0},
+    {"_chuck_rare_", 1, 0, 0},
+    {"_confused_humanoid_common_", 0, 0, 0},
+    {"_confused_humanoid_common_", 2, 0, 0},
+    {"_confused_humanoid_common_", 4, 0, 0},
+    {"_confused_humanoid_common_", 5, 0, 0},
+    {"_confused_humanoid_common_", 6, 0, 0},
+    {"_confused_humanoid_common_", 7, 0, 0},
+    {"_confused_humanoid_medium_", 0, 0, 0},
+    {"_confused_humanoid_rare_", 4, 0, 0},
+    {"_confused_humanoid_rare_", 5, 0, 0},
+    {"_crazy_yiuf_speech_", 1, 0, 0},
+    {"_crazy_yiuf_speech_", 3, 0, 0},
+    {"_crazy_yiuf_speech_", 4, 0, 0},
+    {"_crazy_yiuf_speech_", 5, 0, 0},
+    {"_dissolution_common_", 3, 0, 0},
+    {"_dissolution_common_", 4, 0, 0},
+    {"_dowan_common_", 0, 0, 0},
+    {"_dowan_rare_", 0, 0, 0},
+    {"_dowan_rare_", 1, 0, 0},
+    {"_dowan_rare_", 2, 0, 0},
+    {"_dowan_rare_", 3, 0, 0},
+    {"_duvessa_common_", 0, 0, 0},
+    {"_edmund_common_", 0, 0, 0},
+    {"_edmund_rare_", 0, 0, 0},
+    {"_edmund_rare_", 1, 0, 0},
+    {"_erica_common_", 0, 0, 0},
+    {"_erolcha_common_", 2, 0, 0},
+    {"_eustachio_rare_", 1, 0, 0},
+    {"_fake_spell_effect_", 0, 0, 0},
+    {"_fake_spell_effect_", 1, 0, 0},
+    {"_fake_spell_effect_", 2, 0, 0},
+    {"_fake_spell_effect_", 3, 0, 0},
+    {"_fake_spell_effect_", 4, 0, 0},
+    {"_fannar_common_", 0, 0, 0},
+    {"_fannar_common_", 1, 0, 0},
+    {"_fannar_common_", 2, 0, 0},
+    {"_fleeing_humanoid_common_", 0, 0, 0},
+    {"_fleeing_humanoid_common_", 2, 0, 0},
+    {"_fleeing_humanoid_rare_", 5, 0, 0},
+    {"_fleeing_humanoid_rare_", 7, 0, 0},
+    {"_fleeing_humanoid_rare_", 9, 0, 0},
+    {"_fleeing_humanoid_rare_", 11, 0, 0},
+    {"_fleeing_silenced_common_", 0, 0, 0},
+    {"_fleeing_silenced_common_", 1, 0, 0},
+    {"_fleeing_silenced_rare_", 0, 0, 0},
+    {"_fleeing_silenced_rare_", 1, 0, 0},
+    {"_fleeing_silenced_rare_", 2, 0, 0},
+    {"_frances_common_", 0, 0, 0},
+    {"_frances_common_", 1, 0, 0},
+    {"_frances_rare_", 0, 0, 0},
+    {"_frederick_common_", 0, 0, 0},
+    {"_frederick_common_", 1, 0, 0},
+    {"_frederick_rare_", 0, 0, 0},
+    {"_frederick_rare_", 1, 0, 0},
+    {"_frederick_rare_", 2, 0, 0},
+    {"_friendly_beogh_speech_", 1, 0, 0},
+    {"_friendly_beogh_speech_rare_", 5, 0, 0},
+    {"_friendly_confused_common_", 4, 0, 0},
+    {"_friendly_confused_common_", 5, 0, 0},
+    {"_friendly_confused_medium_", 4, 0, 0},
+    {"_friendly_confused_medium_", 5, 0, 0},
+    {"_friendly_confused_medium_", 6, 0, 0},
+    {"_friendly_confused_rare_", 5, 0, 0},
+    {"_friendly_fleeing_common_", 0, 0, 0},
+    {"_friendly_humanoid_common_", 2, 0, 0},
+    {"_friendly_humanoid_common_", 3, 0, 0},
+    {"_friendly_humanoid_common_", 5, 0, 0},
+    {"_friendly_humanoid_medium_", 4, 0, 0},
+    {"_friendly_humanoid_rare_", 0, 0, 0},
+    {"_friendly_imp_", 0, 0, 0},
+    {"_friendly_imp_common_", 0, 0, 0},
+    {"_friendly_imp_common_", 1, 0, 0},
+    {"_friendly_imp_common_", 2, 0, 0},
+    {"_friendly_imp_common_", 3, 0, 0},
+    {"_friendly_silenced_common_", 0, 0, 0},
+    {"_friendly_silenced_common_", 1, 0, 0},
+    {"_friendly_silenced_rare_", 0, 0, 0},
+    {"_friendly_silenced_rare_", 1, 0, 0},
+    {"_friendly_silenced_rare_", 2, 0, 0},
+    {"_friendly_silenced_rare_", 3, 0, 0},
+    {"_friendly_silenced_rare_", 4, 0, 0},
+    {"_gastronok_common_", 0, 0, 0},
+    {"_gastronok_rare_", 0, 0, 0},
+    {"_gastronok_rare_", 1, 0, 0},
+    {"_gastronok_rare_", 2, 0, 0},
+    {"_generic_donald_", 25, 0, 0},
+    {"_generic_donald_", 26, 0, 0},
+    {"_generic_donald_", 27, 0, 0},
+    {"_grinder_common_", 0, 0, 0},
+    {"_grinder_rare_", 5, 0, 0},
+    {"_grum_common_", 0, 0, 0},
+    {"_grum_common_", 4, 0, 0},
+    {"_grum_rare_", 0, 0, 0},
+    {"_grunn_common_", 0, 0, 0},
+    {"_grunn_rare_", 0, 0, 0},
+    {"_grunn_rare_", 1, 0, 0},
+    {"_harold_common_", 0, 0, 0},
+    {"_harold_rare_", 0, 0, 0},
+    {"_high_priest_", 1, 0, 0},
+    {"_high_priest_medium_", 0, 0, 0},
+    {"_holy_being_", 0, 0, 1},
+    {"_hostile_imp_", 0, 0, 0},
+    {"_hostile_imp_", 1, 0, 0},
+    {"_hostile_imp_common_", 1, 0, 0},
+    {"_hostile_imp_common_", 2, 0, 0},
+    {"_hostile_imp_common_", 3, 0, 0},
+    {"_hostile_imp_common_", 4, 0, 0},
+    {"_hostile_imp_rare_", 0, 0, 0},
+    {"_hostile_imp_rare_", 1, 0, 0},
+    {"_hostile_imp_rare_", 3, 0, 0},
+    {"_hostile_imp_rare_", 4, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_", 0, 38, 0},
+    {"_hostile_orc_beogh_believer_speech_", 1, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_common_", 10, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_rare_", 5, 0, 0},
+    {"_hostile_orc_beogh_believer_speech_rare_", 6, 0, 0},
+    {"_ignacio_common_", 0, 0, 0},
+    {"_ignacio_common_", 1, 0, 0},
+    {"_ijyb_common_", 0, 0, 0},
+    {"_ijyb_common_", 1, 0, 0},
+    {"_ilsuiw_common_", 3, 0, 0},
+    {"_ilsuiw_rare_", 0, 0, 0},
+    {"_jeremiah_common_", 6, 0, 0},
+    {"_jeremiah_common_", 7, 0, 0},
+    {"_jeremiah_common_", 8, 0, 0},
+    {"_jeremiah_common_", 9, 0, 0},
+    {"_jeremiah_common_", 10, 0, 0},
+    {"_jeremiah_common_", 11, 0, 0},
+    {"_jeremiah_rare_", 12, 0, 0},
+    {"_jessica_common_", 0, 0, 0},
+    {"_jessica_common_", 1, 0, 0},
+    {"_jessica_common_", 3, 0, 0},
+    {"_jory_common_", 0, 0, 0},
+    {"_jory_silent_", 0, 0, 0},
+    {"_jory_silent_", 1, 0, 0},
+    {"_jory_silent_", 2, 0, 0},
+    {"_jory_silent_", 3, 0, 0},
+    {"_jory_silent_", 4, 0, 0},
+    {"_jory_silent_", 5, 0, 0},
+    {"_jory_silent_", 6, 0, 0},
+    {"_jory_silent_", 7, 0, 0},
+    {"_jory_silent_", 8, 0, 0},
+    {"_jory_silent_", 9, 0, 0},
+    {"_jory_silent_", 10, 0, 0},
+    {"_joseph_common_", 0, 0, 0},
+    {"_joseph_common_", 1, 0, 0},
+    {"_joseph_common_", 2, 0, 0},
+    {"_josephina_common_", 0, 0, 0},
+    {"_josephina_common_", 1, 0, 0},
+    {"_josephina_common_", 4, 0, 0},
+    {"_josephina_rare_", 0, 0, 0},
+    {"_josephina_rare_", 1, 0, 0},
+    {"_killer_klown_common_", 2, 0, 0},
+    {"_killer_klown_common_", 3, 0, 0},
+    {"_killer_klown_common_", 4, 0, 0},
+    {"_killer_klown_common_", 5, 0, 0},
+    {"_killer_klown_common_", 6, 0, 0},
+    {"_killer_klown_common_", 7, 0, 0},
+    {"_killer_klown_common_", 8, 0, 0},
+    {"_killer_klown_rare_", 1, 0, 0},
+    {"_killer_klown_rare_", 2, 0, 0},
+    {"_killer_klown_rare_", 3, 0, 0},
+    {"_killer_klown_rare_", 4, 0, 0},
+    {"_lodul_common_", 1, 0, 0},
+    {"_lodul_common_", 4, 0, 0},
+    {"_lodul_rare_", 2, 0, 0},
+    {"_louise_common_", 9, 0, 1},
+    {"_maggie_common_", 0, 0, 0},
+    {"_maggie_common_", 1, 0, 0},
+    {"_maggie_common_", 4, 0, 0},
+    {"_mara_common_", 0, 0, 0},
+    {"_mara_common_", 6, 0, 0},
+    {"_mara_common_", 7, 0, 0},
+    {"_mara_common_", 8, 0, 0},
+    {"_margery_common_", 0, 0, 0},
+    {"_margery_common_", 0, 0, 1},
+    {"_margery_common_", 1, 0, 0},
+    {"_margery_common_", 2, 0, 0},
+    {"_margery_common_", 2, 0, 1},
+    {"_margery_common_", 3, 0, 0},
+    {"_margery_rare_", 1, 0, 0},
+    {"_margery_spell_results_", 0, 0, 0},
+    {"_margery_spell_results_", 1, 0, 0},
+    {"_margery_spell_results_", 2, 0, 0},
+    {"_maurice_common_", 0, 0, 0},
+    {"_maurice_common_", 1, 0, 0},
+    {"_maurice_medium_", 0, 0, 0},
+    {"_menkaure_common_", 0, 0, 0},
+    {"_menkaure_common_", 5, 0, 0},
+    {"_menkaure_common_", 6, 0, 0},
+    {"_menkaure_common_", 8, 0, 0},
+    {"_menkaure_common_", 10, 0, 0},
+    {"_menkaure_rare_", 1, 0, 0},
+    {"_menkaure_rare_", 2, 0, 0},
+    {"_menkaure_rare_", 7, 0, 0},
+    {"_mercenary_guard_", 0, 0, 0},
+    {"_mercenary_guard_common_", 0, 0, 0},
+    {"_mercenary_guard_common_", 1, 0, 0},
+    {"_murray_common_", 0, 0, 0},
+    {"_murray_common_", 1, 0, 0},
+    {"_murray_common_", 2, 0, 0},
+    {"_murray_common_", 3, 0, 0},
+    {"_natasha_common_", 0, 0, 1},
+    {"_natasha_rare_", 3, 0, 0},
+    {"_nellie_common_", 5, 0, 0},
+    {"_nellie_common_", 6, 0, 0},
+    {"_nellie_common_", 7, 0, 0},
+    {"_norris_common_", 1, 0, 0},
+    {"_norris_common_", 2, 0, 0},
+    {"_norris_common_", 3, 0, 0},
+    {"_norris_rare_", 0, 0, 0},
+    {"_parghit_common_", 1, 0, 0},
+    {"_parghit_rare_", 0, 0, 0},
+    {"_parghit_rare_", 1, 0, 0},
+    {"_pargi_common_", 1, 0, 0},
+    {"_pargi_rare_", 0, 0, 0},
+    {"_pargi_rare_", 1, 0, 0},
+    {"_pargi_rare_", 4, 0, 0},
+    {"_pikel_common_", 4, 0, 0},
+    {"_pikel_rare_", 4, 0, 0},
+    {"_pikel_rare_", 11, 0, 0},
+    {"_player_ghost_common_", 0, 0, 0},
+    {"_player_ghost_common_", 4, 0, 0},
+    {"_player_ghost_medium_", 1, 0, 0},
+    {"_polyphemus_common_", 0, 0, 0},
+    {"_polyphemus_common_", 1, 0, 0},
+    {"_polyphemus_rare_", 0, 0, 0},
+    {"_polyphemus_rare_", 1, 0, 0},
+    {"_polyphemus_rare_", 2, 0, 0},
+    {"_prince_ribbit_common_", 2, 0, 0},
+    {"_prince_ribbit_common_", 3, 0, 0},
+    {"_prince_ribbit_rare_", 3, 0, 0},
+    {"_robin_common_", 5, 0, 0},
+    {"_robin_common_", 6, 0, 0},
+    {"_robin_common_", 7, 0, 0},
+    {"_rupert_common_", 0, 0, 0},
+    {"_rupert_common_", 1, 0, 0},
+    {"_rupert_common_", 2, 0, 0},
+    {"_rupert_rare_", 0, 0, 0},
+    {"_sigmund_common_", 1, 0, 0},
+    {"_sigmund_common_", 12, 0, 0},
+    {"_sigmund_common_", 13, 0, 1},
+    {"_sigmund_common_", 14, 0, 0},
+    {"_sigmund_rare_", 5, 0, 0},
+    {"_silenced_humanoid_common_", 0, 0, 0},
+    {"_silenced_humanoid_common_", 1, 0, 0},
+    {"_silenced_humanoid_rare_", 0, 0, 0},
+    {"_silenced_humanoid_rare_", 1, 0, 0},
+    {"_silenced_humanoid_rare_", 2, 0, 0},
+    {"_silenced_humanoid_rare_", 3, 0, 0},
+    {"_snorg_common_", 0, 0, 0},
+    {"_snorg_common_", 1, 0, 0},
+    {"_snorg_common_", 2, 0, 0},
+    {"_snorg_common_", 3, 0, 0},
+    {"_snorg_common_", 4, 0, 0},
+    {"_sojobo_common_", 0, 0, 0},
+    {"_sojobo_common_", 2, 0, 0},
+    {"_sojobo_common_", 4, 0, 0},
+    {"_sonja_common_", 2, 0, 0},
+    {"_sonja_common_", 3, 0, 0},
+    {"_sonja_common_", 4, 0, 0},
+    {"_spectator_speech_", 4, 0, 0},
+    {"_spectator_speech_", 5, 0, 0},
+    {"_spectator_speech_", 6, 0, 0},
+    {"_spectator_speech_", 7, 0, 0},
+    {"_spectator_speech_", 8, 0, 0},
+    {"_terence_common_", 0, 0, 0},
+    {"_terence_common_", 1, 0, 0},
+    {"_terence_common_", 2, 0, 0},
+    {"_tormentor_", 0, 0, 0},
+    {"_tormentor_common_", 1, 0, 0},
+    {"_tormentor_common_", 2, 0, 0},
+    {"_tormentor_common_", 3, 0, 0},
+    {"_urug_common_", 1, 0, 0},
+    {"_urug_common_", 2, 0, 0},
+    {"_urug_common_", 3, 0, 0},
+    {"_urug_rare_", 0, 0, 0},
+    {"_vashnia_common_", 0, 0, 0},
+    {"_vashnia_common_", 1, 0, 0},
+    {"_vashnia_common_", 2, 0, 0},
+    {"_vashnia_common_", 3, 0, 0},
+    {"_vashnia_common_", 4, 0, 0},
+    {"_wiglaf_common_", 6, 0, 0},
+    {"_wizard_", 0, 0, 1},
+    {"_wizard_", 1, 0, 0},
+    {"_wizard_medium_", 0, 0, 0},
+    {"_wizard_medium_", 1, 0, 0},
+    {"_xtahua_common_", 1, 0, 0},
+    {"_zenata_common_", 0, 0, 0},
+    {"_zenata_common_", 2, 0, 0},
+    {"abyss donald", 0, 0, 0},
+    {"agnes", 0, 0, 0},
+    {"air magic player ghost", 0, 0, 0},
+    {"aizul", 0, 0, 0},
+    {"aizul", 1, 0, 0},
+    {"alderking", 0, 0, 0},
+    {"alderking", 1, 0, 0},
+    {"amaemon", 0, 0, 0},
+    {"arcanist", 0, 0, 1},
+    {"arcanist", 0, 1, 1},
+    {"arcanist", 0, 2, 1},
+    {"arcanist", 0, 3, 1},
+    {"arcanist", 0, 4, 1},
+    {"arcanist", 0, 5, 1},
+    {"arcanist", 0, 6, 1},
+    {"arcanist", 0, 7, 1},
+    {"arcanist", 0, 8, 1},
+    {"arcanist", 0, 9, 1},
+    {"arcanist", 0, 10, 1},
+    {"arcanist", 0, 11, 1},
+    {"arcanist", 0, 12, 1},
+    {"arcanist", 0, 13, 1},
+    {"arcanist", 0, 14, 1},
+    {"arcanist", 0, 15, 0},
+    {"arcanist", 0, 16, 0},
+    {"ashenzari donald", 0, 0, 0},
+    {"ashenzari frederick triumphant", 1, 0, 0},
+    {"asterion", 0, 0, 0},
+    {"azrael", 0, 0, 0},
+    {"azrael", 1, 3, 0},
+    {"bai suzhen", 0, 0, 0},
+    {"bai suzhen", 1, 0, 0},
+    {"bennu", 0, 0, 0},
+    {"bennu", 1, 0, 0},
+    {"bennu killed", 0, 0, 0},
+    {"bennu permanently killed", 0, 0, 0},
+    {"beogh donald", 0, 0, 0},
+    {"beogh frederick", 1, 0, 0},
+    {"beogh frederick triumphant", 1, 0, 0},
+    {"blorkula the orcula", 0, 0, 0},
+    {"blorkula the orcula", 1, 0, 0},
+    {"boris", 0, 0, 0},
+    {"boris", 0, 1, 1},
+    {"boris", 0, 2, 1},
+    {"boris", 0, 3, 1},
+    {"boris", 0, 4, 1},
+    {"boris", 0, 5, 1},
+    {"boris", 0, 6, 1},
+    {"boris", 0, 7, 1},
+    {"boris", 0, 8, 1},
+    {"boris", 0, 9, 1},
+    {"boris", 0, 10, 1},
+    {"boris", 0, 11, 1},
+    {"boris", 0, 12, 1},
+    {"boris", 0, 13, 1},
+    {"boris", 0, 14, 1},
+    {"boris", 0, 15, 1},
+    {"brain worm", 0, 0, 0},
+    {"brain worm", 1, 0, 0},
+    {"brain worm", 2, 0, 0},
+    {"catoblepas", 2, 0, 0},
+    {"catoblepas", 3, 0, 0},
+    {"centipede", 0, 0, 0},
+    {"chaos spawn", 0, 0, 0},
+    {"chaos spawn", 1, 0, 0},
+    {"chaos spawn", 2, 0, 0},
+    {"cheibriados donald", 0, 0, 0},
+    {"cheibriados frederick triumphant", 1, 0, 0},
+    {"chuck", 0, 0, 0},
+    {"chuck", 1, 0, 0},
+    {"cognitogaunt", 0, 0, 0},
+    {"confused bennu killed", 0, 0, 0},
+    {"confused bennu permanently killed", 0, 0, 0},
+    {"confused crazy yiuf", 2, 0, 0},
+    {"confused crazy yiuf", 8, 0, 0},
+    {"confused ijyb", 7, 0, 0},
+    {"confused zin angel", 3, 0, 0},
+    {"conjurations player ghost", 0, 0, 0},
+    {"conjurations player ghost", 3, 0, 0},
+    {"conjurations player ghost", 4, 0, 0},
+    {"crazy yiuf", 0, 0, 0},
+    {"crimson imp", 1, 0, 0},
+    {"crossbows player ghost", 1, 0, 0},
+    {"crypt donald", 0, 0, 0},
+    {"crystal guardian", 0, 0, 0},
+    {"crystal guardian", 1, 0, 0},
+    {"deep elf high priest", 0, 0, 0},
+    {"deep elf sorcerer", 0, 0, 1},
+    {"deep elf sorcerer", 0, 1, 1},
+    {"deep elf sorcerer", 0, 2, 1},
+    {"deep elf sorcerer", 0, 3, 1},
+    {"deep elf sorcerer", 0, 4, 1},
+    {"deep elf sorcerer", 0, 5, 1},
+    {"deep elf sorcerer", 0, 6, 1},
+    {"deep elf sorcerer", 0, 7, 1},
+    {"deep elf sorcerer", 0, 8, 1},
+    {"deep elf sorcerer", 0, 9, 1},
+    {"deep elf sorcerer", 0, 10, 1},
+    {"deep elf sorcerer", 0, 11, 1},
+    {"deep elf sorcerer", 0, 12, 1},
+    {"deep elf sorcerer", 0, 13, 1},
+    {"deep elf sorcerer", 0, 14, 1},
+    {"deep elf sorcerer", 0, 15, 0},
+    {"deep elf sorcerer", 0, 16, 0},
+    {"default 'cap-g'", 0, 0, 0},
+    {"default 'cap-j'", 0, 0, 0},
+    {"default confused 'b'", 0, 0, 0},
+    {"default confused 'r'", 0, 0, 0},
+    {"default confused arachnid", 0, 0, 0},
+    {"default confused centipede", 0, 0, 0},
+    {"default confused centipede", 1, 0, 0},
+    {"default confused humanoid", 0, 0, 0},
+    {"default confused humanoid", 1, 0, 0},
+    {"default confused humanoid", 2, 0, 0},
+    {"default confused insect", 0, 0, 0},
+    {"default confused insect", 1, 0, 0},
+    {"default confused moth", 0, 0, 0},
+    {"default confused winged insect", 0, 0, 0},
+    {"default confused winged insect", 1, 0, 0},
+    {"default confused winged insect", 2, 0, 0},
+    {"default fleeing humanoid", 0, 0, 0},
+    {"default fleeing humanoid", 1, 0, 0},
+    {"default fleeing silenced humanoid", 0, 0, 0},
+    {"default fleeing silenced humanoid", 1, 0, 0},
+    {"default friendly confused humanoid", 0, 0, 0},
+    {"default friendly confused humanoid", 1, 0, 0},
+    {"default friendly confused humanoid", 2, 0, 0},
+    {"default friendly fleeing humanoid", 0, 0, 0},
+    {"default friendly humanoid", 1, 0, 0},
+    {"default friendly humanoid", 2, 0, 0},
+    {"default friendly humanoid", 3, 0, 0},
+    {"default friendly related humanoid", 1, 0, 0},
+    {"default friendly silenced humanoid", 0, 0, 0},
+    {"default friendly silenced humanoid", 1, 0, 0},
+    {"default hoarfrost cannon", 0, 0, 0},
+    {"default hoarfrost cannon", 1, 0, 0},
+    {"default hostile confused donald", 9, 0, 0},
+    {"default hostile confused donald", 10, 0, 0},
+    {"default hostile confused donald", 11, 0, 0},
+    {"default hostile confused donald", 12, 0, 0},
+    {"default ice statue", 0, 0, 0},
+    {"default insect", 0, 0, 0},
+    {"default mennas", 0, 0, 0},
+    {"default mennas", 1, 0, 0},
+    {"default mennas", 2, 0, 0},
+    {"default mennas", 3, 0, 0},
+    {"default obsidian statue", 0, 0, 0},
+    {"default orange crystal statue", 0, 0, 0},
+    {"default silenced confused 'y'", 0, 0, 0},
+    {"default silenced confused humanoid", 0, 0, 0},
+    {"default silenced confused humanoid", 1, 0, 0},
+    {"default silenced confused humanoid", 2, 0, 0},
+    {"default silenced confused humanoid", 3, 0, 0},
+    {"default silenced confused humanoid", 4, 0, 0},
+    {"default silenced confused humanoid", 5, 0, 0},
+    {"default silenced humanoid", 0, 0, 0},
+    {"default silenced humanoid", 1, 0, 0},
+    {"deformed humanoid", 0, 0, 0},
+    {"deformed humanoid", 1, 0, 0},
+    {"deformed humanoid", 2, 0, 0},
+    {"deformed humanoid", 3, 0, 0},
+    {"deformed humanoid", 5, 0, 0},
+    {"deformed humanoid", 7, 0, 0},
+    {"deformed humanoid", 8, 0, 0},
+    {"deformed humanoid", 9, 0, 0},
+    {"deformed humanoid", 12, 0, 0},
+    {"deformed humanoid", 15, 0, 0},
+    {"deformed humanoid", 19, 0, 0},
+    {"deformed humanoid", 20, 0, 0},
+    {"deformed humanoid", 21, 0, 0},
+    {"deformed humanoid", 22, 0, 0},
+    {"deformed humanoid", 23, 0, 0},
+    {"deformed humanoid", 24, 0, 0},
+    {"deformed humanoid", 25, 0, 0},
+    {"deformed humanoid", 26, 0, 0},
+    {"deformed humanoid", 28, 0, 0},
+    {"dissolution", 0, 0, 0},
+    {"dithmenos donald", 0, 0, 0},
+    {"dithmenos frederick triumphant", 1, 0, 0},
+    {"dowan", 0, 0, 0},
+    {"dowan", 1, 0, 0},
+    {"dowan_duvessa_dies", 1, 0, 0},
+    {"duvessa", 0, 0, 0},
+    {"duvessa_dowan_dies", 2, 0, 0},
+    {"earth magic player ghost", 2, 0, 0},
+    {"edmund", 0, 0, 0},
+    {"edmund", 1, 0, 0},
+    {"elephant slug", 0, 0, 0},
+    {"elf donald", 0, 0, 0},
+    {"elyvilon donald", 0, 0, 0},
+    {"elyvilon frederick triumphant", 1, 0, 0},
+    {"erica", 0, 0, 0},
+    {"erolcha", 0, 0, 0},
+    {"erythrospite", 0, 0, 0},
+    {"eustachio", 1, 0, 0},
+    {"eustachio triumphant", 0, 0, 0},
+    {"fannar", 0, 0, 0},
+    {"fedhas donald", 0, 0, 0},
+    {"fedhas frederick triumphant", 1, 0, 0},
+    {"fighting player ghost", 1, 0, 0},
+    {"fleeing dowan", 0, 0, 0},
+    {"frances", 0, 0, 0},
+    {"frances", 1, 0, 0},
+    {"frederick", 0, 0, 0},
+    {"frederick", 1, 0, 0},
+    {"friendly '5'", 1, 0, 0},
+    {"friendly cognitogaunt", 0, 0, 0},
+    {"friendly donald", 0, 0, 0},
+    {"friendly good god 'cap-a'", 1, 0, 1},
+    {"friendly hound", 0, 0, 0},
+    {"friendly hound", 1, 0, 0},
+    {"friendly hound", 2, 0, 0},
+    {"friendly hound", 3, 0, 0},
+    {"friendly hound", 3, 1, 0},
+    {"friendly hound", 4, 0, 0},
+    {"friendly hound", 5, 0, 0},
+    {"friendly hound", 6, 0, 0},
+    {"friendly hound", 7, 0, 0},
+    {"friendly hound", 8, 0, 0},
+    {"friendly orc", 0, 0, 0},
+    {"friendly protean progenitor", 0, 0, 0},
+    {"friendly related beogh orc", 1, 0, 0},
+    {"friendly related beogh orc", 3, 0, 0},
+    {"friendly related orc", 0, 0, 0},
+    {"friendly shoals hound", 0, 0, 0},
+    {"friendly shoals hound", 0, 1, 0},
+    {"friendly shoals hound", 0, 2, 0},
+    {"friendly shoals hound", 0, 3, 0},
+    {"friendly shoals hound", 0, 4, 0},
+    {"friendly shoals hound", 0, 5, 0},
+    {"friendly shoals hound", 0, 6, 0},
+    {"friendly shoals hound", 0, 7, 0},
+    {"friendly shoals hound", 0, 8, 0},
+    {"friendly shoals hound", 0, 9, 0},
+    {"friendly shoals hound", 1, 0, 0},
+    {"friendly shoals hound", 2, 0, 0},
+    {"friendly shoals hound", 2, 1, 0},
+    {"friendly shoals hound", 3, 0, 0},
+    {"gastronok", 0, 0, 0},
+    {"gastronok", 1, 0, 0},
+    {"goblin sharper", 0, 0, 0},
+    {"goblin sharper", 1, 0, 0},
+    {"goblin sharper", 2, 0, 0},
+    {"goblin sharper", 3, 0, 0},
+    {"gozag donald", 0, 0, 0},
+    {"gozag frederick triumphant", 1, 0, 0},
+    {"gozag player ghost", 0, 0, 0},
+    {"grinder", 0, 0, 0},
+    {"grinder", 1, 0, 0},
+    {"grum", 0, 0, 0},
+    {"grum", 1, 0, 0},
+    {"grunn", 0, 0, 0},
+    {"grunn", 1, 0, 0},
+    {"harold", 0, 0, 0},
+    {"harold", 1, 0, 0},
+    {"hepliaklqana donald", 0, 0, 0},
+    {"hepliaklqana frederick triumphant", 1, 0, 0},
+    {"holy_being_pacification", 0, 0, 0},
+    {"holy_being_pacification_humanoid", 0, 0, 0},
+    {"holy_being_pacification_humanoid", 1, 0, 0},
+    {"holy_being_pacification_humanoid", 2, 0, 0},
+    {"hound", 0, 0, 0},
+    {"ice magic player ghost", 0, 0, 0},
+    {"ignacio", 0, 0, 0},
+    {"ignis donald", 0, 0, 0},
+    {"ignis frederick triumphant", 1, 0, 0},
+    {"ignis player ghost", 1, 0, 0},
+    {"ijyb", 0, 0, 0},
+    {"ijyb", 0, 1, 0},
+    {"ilsuiw", 0, 0, 0},
+    {"ilsuiw", 1, 0, 0},
+    {"invocations player ghost", 5, 0, 0},
+    {"iron imp", 1, 0, 0},
+    {"jeremiah", 0, 0, 0},
+    {"jeremiah", 1, 0, 0},
+    {"jessica", 0, 0, 0},
+    {"jivya frederick triumphant", 1, 0, 0},
+    {"jiyva donald", 0, 0, 0},
+    {"jory", 0, 0, 0},
+    {"joseph", 0, 0, 0},
+    {"josephina", 0, 0, 0},
+    {"josephina", 1, 0, 0},
+    {"josephine", 0, 0, 0},
+    {"josephine", 1, 0, 0},
+    {"josephine", 2, 0, 0},
+    {"kikubaaqudgha donald", 0, 0, 0},
+    {"kikubaaqudgha frederick triumphant", 1, 0, 0},
+    {"killer klown", 0, 0, 0},
+    {"killer klown", 1, 0, 0},
+    {"killer klown triumphant", 0, 0, 0},
+    {"killer klown triumphant", 2, 0, 0},
+    {"kirke", 0, 0, 0},
+    {"kirke", 1, 0, 0},
+    {"kirke", 10, 0, 0},
+    {"kobold blastminer", 0, 0, 0},
+    {"kobold blastminer", 1, 0, 0},
+    {"lodul", 0, 0, 0},
+    {"lodul", 1, 0, 0},
+    {"long blades player ghost", 0, 0, 0},
+    {"louise", 0, 9, 1},
+    {"louise", 0, 10, 1},
+    {"louise", 0, 11, 1},
+    {"louise", 0, 12, 1},
+    {"louise", 0, 13, 1},
+    {"louise", 0, 14, 1},
+    {"louise", 0, 15, 1},
+    {"louise", 0, 16, 1},
+    {"louise", 0, 17, 1},
+    {"louise", 0, 18, 1},
+    {"louise", 0, 19, 1},
+    {"louise", 0, 20, 1},
+    {"louise", 0, 21, 1},
+    {"louise", 0, 22, 1},
+    {"louise", 0, 23, 1},
+    {"lugonu donald", 0, 0, 0},
+    {"lugonu frederick triumphant", 1, 0, 0},
+    {"maces & flails player ghost", 1, 0, 0},
+    {"maggie", 0, 0, 0},
+    {"makhleb donald", 0, 0, 0},
+    {"makhleb frederick triumphant", 1, 0, 0},
+    {"mara", 0, 0, 0},
+    {"margery", 0, 0, 0},
+    {"margery", 0, 0, 1},
+    {"margery", 0, 1, 0},
+    {"margery", 0, 1, 1},
+    {"margery", 0, 2, 0},
+    {"margery", 0, 2, 1},
+    {"margery", 0, 3, 0},
+    {"margery", 0, 4, 0},
+    {"margery", 0, 5, 0},
+    {"margery", 0, 6, 0},
+    {"margery", 0, 6, 1},
+    {"margery", 0, 7, 0},
+    {"margery", 1, 0, 0},
+    {"maurice", 0, 0, 0},
+    {"maurice", 1, 0, 0},
+    {"menkaure", 0, 0, 0},
+    {"menkaure", 1, 0, 0},
+    {"moth of wrath", 0, 0, 0},
+    {"murray", 0, 0, 0},
+    {"natasha", 0, 0, 1},
+    {"natasha", 0, 1, 1},
+    {"natasha", 0, 2, 1},
+    {"natasha", 0, 3, 1},
+    {"natasha", 0, 4, 1},
+    {"natasha", 0, 5, 1},
+    {"natasha", 0, 6, 1},
+    {"natasha", 0, 7, 1},
+    {"natasha", 0, 8, 1},
+    {"natasha", 0, 9, 1},
+    {"natasha", 0, 10, 1},
+    {"natasha", 0, 11, 1},
+    {"natasha", 0, 12, 1},
+    {"natasha", 0, 13, 1},
+    {"natasha", 0, 14, 1},
+    {"natasha", 1, 0, 0},
+    {"natasha triumphant", 0, 0, 0},
+    {"natasha triumphant", 1, 0, 0},
+    {"nekomata", 0, 1, 0},
+    {"nekomata", 1, 1, 0},
+    {"nekomata", 1, 2, 0},
+    {"nekomata", 2, 1, 0},
+    {"nellie", 0, 0, 0},
+    {"nemelex xobeh donald", 0, 0, 0},
+    {"nemelex xobeh frederick triumphant", 1, 0, 0},
+    {"nergalle", 2, 0, 0},
+    {"nergalle", 3, 0, 0},
+    {"neutral good god 'cap-a'", 1, 0, 1},
+    {"no god donald", 0, 0, 0},
+    {"norris", 0, 0, 0},
+    {"norris", 1, 0, 0},
+    {"obsidian bat", 0, 0, 0},
+    {"occultist", 0, 0, 1},
+    {"occultist", 0, 1, 1},
+    {"occultist", 0, 2, 1},
+    {"occultist", 0, 3, 1},
+    {"occultist", 0, 4, 1},
+    {"occultist", 0, 5, 1},
+    {"occultist", 0, 6, 1},
+    {"occultist", 0, 7, 1},
+    {"occultist", 0, 8, 1},
+    {"occultist", 0, 9, 1},
+    {"occultist", 0, 10, 1},
+    {"occultist", 0, 11, 1},
+    {"occultist", 0, 12, 1},
+    {"occultist", 0, 13, 1},
+    {"occultist", 0, 14, 1},
+    {"occultist", 0, 15, 0},
+    {"occultist", 0, 16, 0},
+    {"okawaru donald", 0, 0, 0},
+    {"okawaru frederick", 1, 0, 0},
+    {"okawaru frederick triumphant", 1, 0, 0},
+    {"orb donald", 0, 0, 0},
+    {"orc donald", 0, 0, 0},
+    {"orc donald", 7, 0, 0},
+    {"orc high priest", 0, 0, 0},
+    {"orc sorcerer", 0, 0, 1},
+    {"orc sorcerer", 0, 1, 1},
+    {"orc sorcerer", 0, 2, 1},
+    {"orc sorcerer", 0, 3, 1},
+    {"orc sorcerer", 0, 4, 1},
+    {"orc sorcerer", 0, 5, 1},
+    {"orc sorcerer", 0, 6, 1},
+    {"orc sorcerer", 0, 7, 1},
+    {"orc sorcerer", 0, 8, 1},
+    {"orc sorcerer", 0, 9, 1},
+    {"orc sorcerer", 0, 10, 1},
+    {"orc sorcerer", 0, 11, 1},
+    {"orc sorcerer", 0, 12, 1},
+    {"orc sorcerer", 0, 13, 1},
+    {"orc sorcerer", 0, 14, 1},
+    {"orc sorcerer", 0, 15, 0},
+    {"orc sorcerer", 0, 16, 0},
+    {"orc_apostle_unbanished", 0, 0, 0},
+    {"orc_apostle_unbanished", 7, 0, 0},
+    {"pakellas donald", 0, 0, 0},
+    {"parghit", 0, 0, 0},
+    {"parghit", 1, 0, 0},
+    {"pargi", 0, 0, 0},
+    {"pargi", 1, 0, 0},
+    {"pikel", 0, 0, 0},
+    {"pikel", 1, 0, 0},
+    {"player ghost", 0, 0, 0},
+    {"player ghost", 1, 0, 0},
+    {"polyphemus", 0, 0, 0},
+    {"polyphemus", 1, 0, 0},
+    {"prince ribbit", 0, 0, 0},
+    {"prince ribbit", 1, 0, 0},
+    {"protean progenitor", 0, 0, 0},
+    {"protean progenitor", 1, 0, 0},
+    {"protean progenitor", 2, 0, 0},
+    {"protean progenitor", 3, 0, 0},
+    {"qazlal donald", 0, 0, 0},
+    {"qazlal frederick triumphant", 1, 0, 0},
+    {"ranged weapons player ghost", 2, 0, 0},
+    {"ranged weapons player ghost", 3, 0, 0},
+    {"reaper", 1, 0, 0},
+    {"reaper", 2, 0, 0},
+    {"reaper", 6, 0, 0},
+    {"related beogh blorkula the orcula", 0, 0, 0},
+    {"related beogh blorkula the orcula", 1, 153, 0},
+    {"related beogh blorkula the orcula", 1, 170, 0},
+    {"related beogh blorkula the orcula", 1, 171, 0},
+    {"related beogh orc", 2, 38, 0},
+    {"related beogh orc", 2, 55, 0},
+    {"related beogh orc", 2, 56, 0},
+    {"related beogh orc high priest", 1, 0, 0},
+    {"related beogh orc high priest", 2, 153, 0},
+    {"related beogh orc high priest", 2, 170, 0},
+    {"related beogh orc high priest", 2, 171, 0},
+    {"related beogh orc sorcerer", 1, 0, 1},
+    {"related beogh orc sorcerer", 1, 1, 1},
+    {"related beogh orc sorcerer", 1, 2, 1},
+    {"related beogh orc sorcerer", 1, 3, 1},
+    {"related beogh orc sorcerer", 1, 4, 1},
+    {"related beogh orc sorcerer", 1, 5, 1},
+    {"related beogh orc sorcerer", 1, 6, 1},
+    {"related beogh orc sorcerer", 1, 7, 1},
+    {"related beogh orc sorcerer", 1, 8, 1},
+    {"related beogh orc sorcerer", 1, 9, 1},
+    {"related beogh orc sorcerer", 1, 10, 1},
+    {"related beogh orc sorcerer", 1, 11, 1},
+    {"related beogh orc sorcerer", 1, 12, 1},
+    {"related beogh orc sorcerer", 1, 13, 1},
+    {"related beogh orc sorcerer", 1, 14, 1},
+    {"related beogh orc sorcerer", 1, 15, 0},
+    {"related beogh orc sorcerer", 1, 16, 0},
+    {"related beogh orc sorcerer", 2, 153, 0},
+    {"related beogh orc sorcerer", 2, 170, 0},
+    {"related beogh orc sorcerer", 2, 171, 0},
+    {"related beogh saint roka", 1, 38, 0},
+    {"related beogh saint roka", 2, 0, 0},
+    {"related beogh urug", 0, 0, 0},
+    {"related beogh urug", 1, 153, 0},
+    {"related beogh urug", 1, 170, 0},
+    {"related beogh urug", 1, 171, 0},
+    {"related vashnia", 0, 0, 0},
+    {"related wiglaf", 0, 0, 0},
+    {"robin", 0, 0, 0},
+    {"ru donald", 0, 0, 0},
+    {"ru frederick triumphant", 1, 0, 0},
+    {"rupert", 0, 0, 0},
+    {"rupert", 1, 0, 0},
+    {"sewer brain worm", 0, 0, 0},
+    {"sewer brain worm", 1, 0, 0},
+    {"shadow imp", 1, 0, 0},
+    {"shapeshifting player ghost", 1, 0, 0},
+    {"shapeshifting player ghost", 2, 0, 0},
+    {"shoals donald", 0, 0, 0},
+    {"short blades player ghost", 2, 0, 0},
+    {"sif muna donald", 0, 0, 0},
+    {"sif muna frederick triumphant", 1, 0, 0},
+    {"sigmund", 0, 1, 0},
+    {"sigmund", 0, 12, 0},
+    {"sigmund", 0, 13, 1},
+    {"sigmund", 0, 14, 0},
+    {"sigmund", 0, 15, 0},
+    {"sigmund", 0, 16, 0},
+    {"sigmund", 1, 0, 0},
+    {"sigmund triumphant", 0, 0, 0},
+    {"silenced cognitogaunt", 0, 0, 0},
+    {"silenced jory", 0, 0, 0},
+    {"silenced murray", 0, 0, 0},
+    {"silenced murray", 1, 0, 0},
+    {"silenced murray", 2, 0, 0},
+    {"silenced murray", 3, 0, 0},
+    {"silenced murray", 4, 0, 0},
+    {"silenced murray", 5, 0, 0},
+    {"silenced player ghost", 0, 0, 0},
+    {"silenced player ghost", 1, 0, 0},
+    {"silenced player ghost", 2, 0, 0},
+    {"silenced silent spectre", 0, 0, 0},
+    {"silenced silent spectre", 1, 0, 0},
+    {"silenced silent spectre", 2, 0, 0},
+    {"silenced silent spectre", 3, 0, 0},
+    {"silenced silent spectre", 4, 0, 0},
+    {"silenced silent spectre", 5, 0, 0},
+    {"silenced zin angel", 0, 0, 0},
+    {"silenced zin angel", 1, 0, 0},
+    {"silenced zin angel", 2, 0, 0},
+    {"silenced zin angel", 3, 0, 0},
+    {"silent jory killed", 0, 0, 0},
+    {"slime donald", 0, 0, 0},
+    {"slings player ghost", 1, 0, 0},
+    {"snake donald", 0, 0, 0},
+    {"snorg", 0, 0, 0},
+    {"sojobo", 0, 0, 0},
+    {"sonja", 0, 0, 0},
+    {"sonja triumphant", 0, 0, 0},
+    {"sonja triumphant", 1, 0, 0},
+    {"spectator", 0, 0, 0},
+    {"spellcasting player ghost", 4, 0, 0},
+    {"spellcasting player ghost", 5, 0, 0},
+    {"spider donald", 0, 0, 0},
+    {"staves player ghost", 1, 0, 0},
+    {"stealth player ghost", 0, 0, 0},
+    {"stealth player ghost", 1, 0, 0},
+    {"stealth player ghost", 2, 0, 0},
+    {"stealth player ghost", 3, 0, 0},
+    {"stealth player ghost", 5, 0, 0},
+    {"summonings player ghost", 1, 0, 0},
+    {"swamp donald", 0, 0, 0},
+    {"temple donald", 0, 0, 0},
+    {"terence", 0, 0, 0},
+    {"the shining one donald", 0, 0, 0},
+    {"the shining one frederick triumphant", 1, 0, 0},
+    {"thermic dynamo", 0, 0, 0},
+    {"thermic dynamo", 1, 0, 0},
+    {"throwing player ghost", 0, 0, 0},
+    {"tormentor", 1, 0, 0},
+    {"translocations player ghost", 0, 0, 0},
+    {"translocations player ghost", 1, 0, 0},
+    {"translocations player ghost", 2, 0, 0},
+    {"trog donald", 0, 0, 0},
+    {"trog frederick triumphant", 1, 0, 0},
+    {"twin_banished dowan", 0, 0, 0},
+    {"twin_banished duvessa", 0, 0, 0},
+    {"twin_banished duvessa", 1, 0, 0},
+    {"twin_died dowan", 0, 0, 0},
+    {"twin_died duvessa", 0, 0, 0},
+    {"twin_died duvessa", 1, 0, 0},
+    {"twin_died duvessa", 6, 0, 0},
+    {"twin_ikilled dowan", 0, 0, 0},
+    {"twin_ikilled duvessa", 0, 0, 0},
+    {"twin_slimified dowan", 0, 0, 0},
+    {"unarmed combat player ghost", 1, 0, 0},
+    {"unarmed combat player ghost", 2, 0, 0},
+    {"unarmed combat player ghost", 4, 0, 0},
+    {"unarmed combat player ghost", 5, 0, 0},
+    {"urug", 0, 0, 0},
+    {"urug", 1, 0, 0},
+    {"uskayaw donald", 0, 0, 0},
+    {"uskayaw frederick triumphant", 1, 0, 0},
+    {"vashnia", 0, 0, 0},
+    {"vaults donald", 0, 0, 0},
+    {"vehumet donald", 0, 0, 0},
+    {"vehumet frederick triumphant", 1, 0, 0},
+    {"white imp", 1, 0, 0},
+    {"wiglaf", 0, 0, 0},
+    {"wu jian donald", 0, 0, 0},
+    {"wu jian frederick triumphant", 1, 0, 0},
+    {"xak'krixis", 4, 0, 0},
+    {"xak'krixis", 5, 0, 0},
+    {"xom crazy yiuf", 11, 0, 0},
+    {"xom crazy yiuf", 12, 0, 0},
+    {"xom crazy yiuf", 13, 0, 0},
+    {"xom crazy yiuf", 14, 0, 0},
+    {"xom donald", 0, 0, 0},
+    {"xom frederick triumphant", 1, 0, 0},
+    {"xtahua", 0, 0, 0},
+    {"xtahua triumphant", 1, 0, 0},
+    {"yredelemnul donald", 0, 0, 0},
+    {"yredelemnul frederick triumphant", 1, 0, 0},
+    {"zenata", 0, 0, 0},
+    {"zin donald", 0, 0, 0},
+    {"zin frederick triumphant", 1, 0, 0},
+    {"zot donald", 0, 0, 0},
+};
+
+// CR-019/CR-023/CR-024: getSpeakString recursively expands every
+// in-family ``@token@`` marker of the selected pattern -- including
+// markers inside Lua return literals -- before evaluating the embedded
+// Lua blocks and splicing the returned string into the message, so each
+// literal ``return "..."`` branch of a ``{{...}}`` block is a fully
+// expanded runtime message. These helpers mirror
+// monspeak_inventory._lua_return_branch_lines exactly: per-block branch
+// extraction reuses the strict ``return`` scan of
+// _lua_block_protocol (CR-002), per-branch expansion enumerates every
+// reachable variant of every referenced in-family fragment with the
+// production recursive-replacement semantics and limits (database.cc
+// MAX_RECURSION_DEPTH 10 / MAX_REPLACEMENTS 100), and the sink layout
+// resolves each line's channel through the production resolver. Blocks
+// without literal returns (the you.race()/you.genus() display mappings)
+// keep the colon-free, newline-free ``{{LUA}}`` placeholder, identical
+// to the pre-CR-023 neutralization. Unsupported escapes fail the
+// literal evaluation (REQUIRE at the call site) so the runtime text is
+// never guessed.
+static bool monspeak_unescape_lua_literal(const string &body, string &out)
+{
+    out.clear();
+    for (size_t i = 0; i < body.size(); ++i)
+    {
+        if (body[i] != '\\')
+        {
+            out.push_back(body[i]);
+            continue;
+        }
+        if (++i >= body.size())
+            return false;
+        switch (body[i])
+        {
+        case 'a': out.push_back('\a'); break;
+        case 'b': out.push_back('\b'); break;
+        case 'f': out.push_back('\f'); break;
+        case 'n': out.push_back('\n'); break;
+        case 'r': out.push_back('\r'); break;
+        case 't': out.push_back('\t'); break;
+        case 'v': out.push_back('\v'); break;
+        case '\\': out.push_back('\\'); break;
+        case '\'': out.push_back('\''); break;
+        case '"': out.push_back('"'); break;
+        case 'x':
+        {
+            if (i + 2 >= body.size())
+                return false;
+            auto hex = [](char c) -> int {
+                if (c >= '0' && c <= '9') return c - '0';
+                if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+                if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+                return -1;
+            };
+            const int hi = hex(body[i + 1]);
+            const int lo = hex(body[i + 2]);
+            if (hi < 0 || lo < 0)
+                return false;
+            out.push_back(static_cast<char>(hi * 16 + lo));
+            i += 2;
+            break;
+        }
+        case 'z':
+            while (i + 1 < body.size()
+                   && (body[i + 1] == ' ' || body[i + 1] == '\t'
+                       || body[i + 1] == '\n' || body[i + 1] == '\r'
+                       || body[i + 1] == '\f' || body[i + 1] == '\v'))
+            {
+                ++i;
+            }
+            break;
+        default:
+            if (body[i] >= '0' && body[i] <= '9')
+            {
+                int value = 0;
+                size_t digits = 0;
+                while (digits < 3 && i + digits < body.size()
+                       && body[i + digits] >= '0'
+                       && body[i + digits] <= '9')
+                {
+                    value = value * 10 + (body[i + digits] - '0');
+                    ++digits;
+                }
+                if (value > 255)
+                    return false;
+                out.push_back(static_cast<char>(value));
+                i += digits - 1;
+                break;
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
+// The runtime string value of one Lua return expression: a ``[[ ]]``
+// long string (no escape processing) or a quoted literal (escape
+// processing); anything else (the declared display mappings) has no
+// statically known text and yields false.
+static bool monspeak_lua_literal_value(const string &expression,
+                                       string &out)
+{
+    const string::size_type begin = expression.find_first_not_of(" \t");
+    const string::size_type end = expression.find_last_not_of(" \t");
+    if (begin == string::npos)
+        return false;
+    const string expr = expression.substr(begin, end - begin + 1);
+    if (expr.size() >= 4 && expr.compare(0, 2, "[[") == 0)
+    {
+        if (expr.compare(expr.size() - 2, 2, "]]") != 0)
+            return false;
+        out = expr.substr(2, expr.size() - 4);
+        return true;
+    }
+    if (expr.size() >= 2 && (expr[0] == '"' || expr[0] == '\'')
+        && expr[expr.size() - 1] == expr[0])
+    {
+        return monspeak_unescape_lua_literal(
+            expr.substr(1, expr.size() - 2), out);
+    }
+    return false;
+}
+
+// Runtime texts of the literal return branches of one ``{{...}}`` block,
+// in source order (split_string trims every line, so the ``return``
+// statement is detected on the trimmed line). A multi-line ``[[ ]]``
+// long string consumes its continuation lines. Non-literal returns keep
+// the ``{{LUA}}`` placeholder branch so branch counts stay aligned.
+static vector<string> monspeak_lua_return_branch_texts(const string &block)
+{
+    vector<string> texts;
+    const vector<string> lines = split_string("\n", block);
+    size_t index = 0;
+    while (index < lines.size())
+    {
+        if (!starts_with(lines[index], "return "))
+        {
+            ++index;
+            continue;
+        }
+        string expression = lines[index].substr(strlen("return "));
+        ++index;
+        if (starts_with(expression, "[[")
+            && expression.find("]]") == string::npos)
+        {
+            while (index < lines.size()
+                   && lines[index].find("]]") == string::npos)
+            {
+                expression += "\n" + lines[index];
+                ++index;
+            }
+            if (index < lines.size())
+            {
+                expression += "\n" + lines[index];
+                ++index;
+            }
+        }
+        string value;
+        if (monspeak_lua_literal_value(expression, value))
+            texts.push_back(value);
+        else
+            texts.push_back("{{LUA}}");
+    }
+    return texts;
+}
+
+// The production recursive-replacement limits and bail-out text
+// (database.cc _getRandomisedStr / _call_recursive_replacement).
+static constexpr int MONSPEAK_MAX_RECURSION_DEPTH = 10;
+static constexpr int MONSPEAK_MAX_REPLACEMENTS = 100;
+static const string MONSPEAK_TOO_MUCH_RECURSION = "TOO MUCH RECURSION";
+
+// The same-language SpeakDB the production recursive expansion consults:
+// canonical (lowercased) key -> variant raw patterns in ordinal order.
+using monspeak_family_lookup = map<string, vector<string>>;
+
+static monspeak_family_lookup monspeak_build_lookup(
+    const vector<textdb_phase0::canonical_entry> &entries)
+{
+    monspeak_family_lookup lookup;
+    for (const textdb_phase0::canonical_entry &entry : entries)
+    {
+        vector<string> patterns;
+        for (const textdb_phase0::canonical_variant &variant
+             : entry.variants)
+        {
+            patterns.push_back(variant.raw_pattern);
+        }
+        lookup[entry.canonical_key] = move(patterns);
+    }
+    return lookup;
+}
+
+// All fully expanded runtime texts of ``text`` under the production
+// recursive-replacement semantics (CR-024), each with its replacement
+// count: every ``@marker@`` site increments the replacement count and a
+// site beyond MAX_REPLACEMENTS stops the scan; an unbalanced ``@`` stops
+// the scan; a marker that is not an in-family key is left alone and the
+// scan continues after it; an in-family marker is replaced by every
+// reachable variant of its key (each fully expanded at depth + 1, with
+// the bail-out text past MAX_RECURSION_DEPTH) and the scan resumes at
+// the splice point. Mirrors monspeak_inventory._family_expansions.
+static void monspeak_family_expansions(
+    const string &text, const monspeak_family_lookup &lookup,
+    int depth, int replacements, vector<pair<string, int>> &out)
+{
+    if (depth > MONSPEAK_MAX_RECURSION_DEPTH)
+    {
+        out.emplace_back(MONSPEAK_TOO_MUCH_RECURSION, replacements);
+        return;
+    }
+    const string::size_type pos = text.find("@");
+    if (pos == string::npos)
+    {
+        out.emplace_back(text, replacements);
+        return;
+    }
+    ++replacements;
+    if (replacements > MONSPEAK_MAX_REPLACEMENTS)
+    {
+        out.emplace_back(text, replacements);
+        return;
+    }
+    const string::size_type end = text.find("@", pos + 1);
+    if (end == string::npos)
+    {
+        out.emplace_back(text, replacements);
+        return;
+    }
+    const string marker = text.substr(pos + 1, end - pos - 1);
+    const string canonical = lowercase_string(marker);
+    const string marker_full = text.substr(pos, end - pos + 1);
+    const string prefix = text.substr(0, pos);
+    const string suffix = text.substr(end + 1);
+    const auto found = lookup.find(canonical);
+    if (found == lookup.end())
+    {
+        vector<pair<string, int>> rest;
+        monspeak_family_expansions(suffix, lookup, depth, replacements,
+                                   rest);
+        for (const auto &item : rest)
+        {
+            out.emplace_back(prefix + marker_full + item.first,
+                             item.second);
+        }
+        return;
+    }
+    for (const string &variant : found->second)
+    {
+        vector<pair<string, int>> children;
+        monspeak_family_expansions(variant, lookup, depth + 1,
+                                   replacements, children);
+        for (const auto &child : children)
+        {
+            vector<pair<string, int>> rescanned;
+            monspeak_family_expansions(prefix + child.first + suffix,
+                                       lookup, depth, child.second,
+                                       rescanned);
+            for (auto &item : rescanned)
+                out.push_back(move(item));
+        }
+    }
+}
+
+// Per-return-branch fully expanded runtime texts of one ``{{...}}``
+// block, in source order (CR-024/CR-025): production expands every
+// in-family @token@ marker of the selected pattern while it is still
+// Lua source (database.cc _call_recursive_replacement) and only then
+// evaluates the block (_execute_embedded_lua), so the fragment bytes
+// spliced into a return literal participate in the Lua escape/quote
+// interpretation. This helper therefore expands the RAW block with
+// ``monspeak_family_expansions`` (real root-pattern depth 1, one
+// global replacement count shared by every token of the block) and
+// runs the strict branch extraction of
+// ``monspeak_lua_return_branch_texts`` on EVERY expanded Lua source.
+// Each branch maps to its sorted-unique outcome text set (every
+// reachable variant of every referenced fragment, interpreted through
+// the Lua escape processing); a literal without in-family tokens maps
+// to exactly one text; the declared display mappings keep the
+// ``{{LUA}}`` placeholder branch so branch counts stay aligned.
+static vector<vector<string>> monspeak_lua_return_branch_expansions(
+    const string &block, const monspeak_family_lookup &lookup)
+{
+    vector<pair<string, int>> expanded_blocks;
+    monspeak_family_expansions(block, lookup, 1, 0, expanded_blocks);
+    vector<set<string>> branch_sets;
+    for (const auto &item : expanded_blocks)
+    {
+        const vector<string> texts =
+            monspeak_lua_return_branch_texts(item.first);
+        if (branch_sets.empty())
+            branch_sets.resize(texts.size());
+        REQUIRE(texts.size() == branch_sets.size());
+        for (size_t i = 0; i < texts.size(); ++i)
+            branch_sets[i].insert(texts[i]);
+    }
+    vector<vector<string>> expansions;
+    for (const set<string> &outcomes : branch_sets)
+    {
+        expansions.push_back(vector<string>(outcomes.begin(),
+                                            outcomes.end()));
+    }
+    return expansions;
+}
+
+// The per-line channel sequence of one fully expanded runtime message
+// under the production sink split and resolver.
+using monspeak_layout = vector<msg_channel_type>;
+
+static monspeak_layout monspeak_message_layout(const string &message)
+{
+    monspeak_layout layout;
+    for (const string &line : split_string("\n", message))
+    {
+        msg_channel_type channel = MSGCH_TALK;
+        string rendered = line;
+        resolve_mon_speech_line_channel(rendered, channel, false, false);
+        layout.push_back(channel);
+    }
+    return layout;
+}
+
+// Per-branch-combination sorted-unique layout sets of one pattern
+// (CR-023/CR-024): the branch combinations are the cross product over
+// the per-site return branches (the last site varies fastest, matching
+// the Python itertools.product), and each branch's layout set deduplicates
+// over the per-branch outcome cross product. An unbalanced ``{{`` site
+// (a split-Lua fragment in isolation) keeps the placeholder branch.
+using monspeak_layout_set = set<monspeak_layout>;
+
+static void monspeak_join_outcomes_rec(
+    const vector<vector<vector<string>>> &segments,
+    const vector<size_t> &branch_choices, size_t segment_index,
+    string &current, monspeak_layout_set &out)
+{
+    if (segment_index == segments.size())
+    {
+        out.insert(monspeak_message_layout(current));
+        return;
+    }
+    const vector<string> &outcomes =
+        segments[segment_index][branch_choices[segment_index]];
+    const size_t base = current.size();
+    for (const string &text : outcomes)
+    {
+        current += text;
+        monspeak_join_outcomes_rec(segments, branch_choices,
+                                   segment_index + 1, current, out);
+        current.resize(base);
+    }
+}
+
+static void monspeak_branch_combinations_rec(
+    const vector<vector<vector<string>>> &segments, size_t index,
+    vector<size_t> &choices, vector<monspeak_layout_set> &out)
+{
+    if (index == segments.size())
+    {
+        monspeak_layout_set layouts;
+        string current;
+        monspeak_join_outcomes_rec(segments, choices, 0, current,
+                                   layouts);
+        out.push_back(move(layouts));
+        return;
+    }
+    for (size_t branch = 0; branch < segments[index].size(); ++branch)
+    {
+        choices.push_back(branch);
+        monspeak_branch_combinations_rec(segments, index + 1, choices,
+                                         out);
+        choices.pop_back();
+    }
+}
+
+
+
+// CR-028/CR-006B/CR-012: executable-syntax gate on the EXPANDED Lua
+// source using the vendored contrib/lua 5.4.8 compiler, never a PATH
+// luac (5.1 accepts escapes like "\q" that 5.4 rejects).
+static bool monspeak_vendored_lua_syntax_ok(const string &lua_source)
+{
+    const char *tmp = getenv("TMPDIR");
+    const string dir = tmp && *tmp ? tmp : "/tmp";
+    const string path = dir + "/monspeak-lua-gate-XXXXXX.lua";
+    vector<char> buf(path.begin(), path.end());
+    buf.push_back('\0');
+    const int fd = mkstemps(&buf[0], 4);
+    REQUIRE(fd >= 0);
+    const string chunk = lua_source + "\n";
+    REQUIRE(write(fd, chunk.data(), chunk.size())
+            == static_cast<ssize_t>(chunk.size()));
+    close(fd);
+    // Tests run from crawl-ref/source (the Catch2 data-root contract),
+    // so the vendored compiler is reachable relative to the cwd.
+    const string luac = "contrib/lua/src/luac";
+    const pid_t child = fork();
+    REQUIRE(child >= 0);
+    if (child == 0)
+    {
+        const int null_fd = open("/dev/null", O_WRONLY);
+        if (null_fd < 0 || dup2(null_fd, STDERR_FILENO) < 0)
+            _exit(127);
+        close(null_fd);
+        const char *argv[] = { luac.c_str(), "-p", &buf[0], nullptr };
+        execv(luac.c_str(), (char *const *) argv);
+        _exit(127);
+    }
+    int rc = 0;
+    REQUIRE(waitpid(child, &rc, 0) == child);
+    unlink(&buf[0]);
+    REQUIRE(WIFEXITED(rc));
+    return WEXITSTATUS(rc) == 0;
+}
+
+// CR-027/CR-031: whether expanding the in-family tokens of ``pattern``
+// can change the runtime line layout the sink would report for the
+// unexpanded pattern: "no Lua in the closure" does not mean the
+// recursive tokens cannot change the channels. Any reachable token
+// variant (or its recursive closure) that contains "{{" (a Lua site
+// the raw text lacks), whose first line resolves to a non-talk channel
+// through the production resolver (a line-start channel prefix like
+// VISUAL:/SOUND:/WARN:/VISUAL WARN:), or that contains a newline (the
+// sink's "\n" line split) can change the per-line channel sequence or
+// the runtime line count of some expansion outcome. Bounded by the
+// visited-text set so a cyclic fragment cannot loop. The pattern's own
+// text is only scanned for its tokens: the pattern's own layout is
+// already exact in the early return, so its own prefixes/newlines must
+// not force the full expansion (the "w:N\n" weight prefixes would
+// otherwise expand every weighted pattern, breaking the CR-026
+// boundedness this check exists to preserve).
+static bool monspeak_closure_may_affect_layout(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (!seen.insert(variant).second)
+                        continue;
+                    if (variant.find("{{") != string::npos
+                        || variant.find('\n') != string::npos)
+                    {
+                        return true;
+                    }
+                    string first_line = variant;
+                    const string::size_type nl = first_line.find('\n');
+                    if (nl != string::npos)
+                        first_line.resize(nl);
+                    // The sink trims every segment before resolving the
+                    // channel (split_string trim_segments=true).
+                    msg_channel_type channel = MSGCH_TALK;
+                    string resolved = first_line;
+                    trim_string(resolved);
+                    resolve_mon_speech_line_channel(
+                        resolved, channel, false, false);
+                    if (channel != MSGCH_TALK)
+                        return true;
+                    stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return false;
+}
+
+static bool monspeak_closure_has_newline(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (variant.find('\n') != string::npos)
+                        return true;
+                    if (!seen.insert(variant).second)
+                        continue;
+                    stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return false;
+}
+
+static bool monspeak_closure_has_lua(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (variant.find("{{") != string::npos)
+                        return true;
+                    if (!seen.insert(variant).second)
+                        continue;
+                    stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return false;
+}
+
+// Mirror of the Python _closure_replacement_budget_ok: the total
+// @marker@ site count over every reachable text (the pattern and all
+// recursive variant closures, each text counted once) is an upper
+// bound on the count of any single production expansion path. When
+// the bound exceeds MONSPEAK_MAX_REPLACEMENTS the production scan
+// truncates (sites beyond the budget stay unexpanded), so the
+// head-channel shortcut -- which has no counter -- must not apply.
+static bool monspeak_closure_replacement_budget_ok(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    int total = 0;
+    set<string> seen;
+    vector<string> stack = {pattern};
+    while (!stack.empty())
+    {
+        const string text = stack.back();
+        stack.pop_back();
+        size_t pos = 0;
+        while ((pos = text.find("@", pos)) != string::npos)
+        {
+            const size_t end = text.find("@", pos + 1);
+            if (end == string::npos)
+                break;
+            ++total;
+            if (total > MONSPEAK_MAX_REPLACEMENTS)
+                return false;
+            const auto found = lookup.find(
+                lowercase_string(text.substr(pos + 1, end - pos - 1)));
+            if (found != lookup.end())
+            {
+                for (const string &variant : found->second)
+                {
+                    if (!seen.insert(variant).second)
+                        continue;
+                    stack.push_back(variant);
+                }
+            }
+            pos = end + 1;
+        }
+    }
+    return true;
+}
+
+static set<msg_channel_type> monspeak_head_channel_set(
+    const string &text, const monspeak_family_lookup &lookup, int depth)
+{
+    if (depth > MONSPEAK_MAX_RECURSION_DEPTH)
+        return {MSGCH_TALK};
+    const size_t colon = text.find(":");
+    const size_t at = text.find("@");
+    if (colon != string::npos && (at == string::npos || colon < at))
+    {
+        string prefix = text.substr(0, colon + 1);
+        trim_string(prefix);
+        msg_channel_type ch = MSGCH_TALK;
+        string tmp = prefix;
+        resolve_mon_speech_line_channel(tmp, ch, false, false);
+        return {ch};
+    }
+    if (at != 0)
+    {
+        // The marker does not lead the line: after the production
+        // replacement the head of the line is the literal prefix text,
+        // so the channel is decided by that prefix (mirror of the
+        // Python _head_channel_set). A channel prefix in the prefix
+        // text is handled above; without one the head resolves to
+        // talk even if the marker's variants begin with VISUAL:/SOUND:
+        // (prefix@frag@ with frag = VISUAL:hello expands to
+        // prefixVISUAL:hello -> talk).
+        return {MSGCH_TALK};
+    }
+    const size_t end = text.find("@", at + 1);
+    if (end == string::npos)
+        return {MSGCH_TALK};
+    const string marker =
+        lowercase_string(text.substr(at + 1, end - at - 1));
+    const auto found = lookup.find(marker);
+    if (found == lookup.end())
+        return {MSGCH_TALK};
+    set<msg_channel_type> out;
+    for (const string &variant : found->second)
+    {
+        const set<msg_channel_type> sub =
+            monspeak_head_channel_set(variant, lookup, depth + 1);
+        out.insert(sub.begin(), sub.end());
+    }
+    return out;
+}
+
+static vector<string> monspeak_runtime_lines_of(const string &message)
+{
+    vector<string> lines;
+    for (const string &line : split_string("\n", message))
+    {
+        string s = line;
+        trim_string(s);
+        if (!s.empty())
+            lines.push_back(s);
+    }
+    return lines;
+}
+
+static vector<monspeak_layout_set> monspeak_no_newline_closure_layouts(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    const vector<string> lines = monspeak_runtime_lines_of(pattern);
+    if (lines.empty())
+        return {};
+    vector<set<msg_channel_type>> per_line;
+    per_line.reserve(lines.size());
+    for (const string &line : lines)
+        per_line.push_back(monspeak_head_channel_set(line, lookup, 0));
+    // One branch, many layouts (CR-033): there is no Lua return-branch
+    // topology to enumerate, so every expansion outcome is a layout of
+    // the single runtime branch and the layouts land in one sorted set
+    // -- deterministic, mirroring the Python shortcut whose frozen
+    // branch ordinal is therefore always 0.
+    monspeak_layout_set layouts;
+    vector<msg_channel_type> cur;
+    cur.reserve(lines.size());
+    function<void(size_t)> dfs = [&](size_t idx) {
+        if (idx == per_line.size())
+        {
+            layouts.insert(monspeak_layout(cur.begin(), cur.end()));
+            return;
+        }
+        for (msg_channel_type ch : per_line[idx])
+        {
+            cur.push_back(ch);
+            dfs(idx + 1);
+            cur.pop_back();
+        }
+    };
+    dfs(0);
+    if (layouts.empty())
+        return {};
+    return {layouts};
+}
+
+static vector<monspeak_layout_set> monspeak_lua_branch_layouts(
+    const string &pattern, const monspeak_family_lookup &lookup)
+{
+    // CR-026: production expands the WHOLE selected pattern with one
+    // shared replacement counter before locating the {{...}} Lua sites,
+    // so every expanded outcome re-locates its sites and interprets
+    // each actual Lua source (the exact bytes production executes).
+    // CR-027/CR-031: the early return requires the token closure to be
+    // unable to change any line's channel or the runtime line count;
+    // patterns whose closure cannot affect the layout skip the
+    // expansion (bounded).
+    vector<monspeak_layout_set> out;
+    if (pattern.find("{{") == string::npos
+        && !monspeak_closure_may_affect_layout(pattern, lookup))
+    {
+        out.push_back({monspeak_message_layout(pattern)});
+        return out;
+    }
+    if (pattern.find("{{") == string::npos
+        && !monspeak_closure_has_newline(pattern, lookup)
+        && !monspeak_closure_has_lua(pattern, lookup)
+        && monspeak_closure_replacement_budget_ok(pattern, lookup))
+    {
+        const vector<monspeak_layout_set> layouts =
+            monspeak_no_newline_closure_layouts(pattern, lookup);
+        for (const monspeak_layout_set &layout : layouts)
+            out.push_back(layout);
+        return out;
+    }
+    vector<pair<string, int>> expanded_patterns;
+    monspeak_family_expansions(pattern, lookup, 1, 0, expanded_patterns);
+    for (const auto &expanded : expanded_patterns)
+    {
+        const string &text = expanded.first;
+        vector<vector<vector<string>>> segments;
+        string::size_type pos = 0;
+        string::size_type site;
+        while ((site = text.find("{{", pos)) != string::npos)
+        {
+            segments.push_back({{text.substr(pos, site - pos)}});
+            const string::size_type end = text.find("}}", site + 2);
+            if (end == string::npos)
+            {
+                segments.push_back({{"{{LUA}}"}});
+                pos = text.size();
+                break;
+            }
+            // CR-028: the site source is already fully expanded by the
+            // shared-count pass above; re-expanding it with a fresh
+            // count would reset the production global replacement
+            // counter. The empty lookup keeps the strict branch
+            // extraction on the exact bytes production executes, and
+            // the vendored 5.4.8 compiler validates the expanded source
+            // (the hand-rolled quote rules alone cannot reject e.g.
+            // unfinished-string escapes).
+            const string lua_source = text.substr(site + 2,
+                                                  end - site - 2);
+            REQUIRE(monspeak_vendored_lua_syntax_ok(lua_source));
+            segments.push_back(monspeak_lua_return_branch_expansions(
+                lua_source, monspeak_family_lookup()));
+            pos = end + 2;
+        }
+        segments.push_back({{text.substr(pos)}});
+        vector<size_t> choices;
+        monspeak_branch_combinations_rec(segments, 0, choices, out);
+    }
+    return out;
+}
+
+TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned lines",
+          "[single-file][textdb][phase0][issue-16][issue-70][monspeak]")
 {
     ensure_test_data_root();
     databaseSystemInit();
+    const textdb_phase0::canonical_speakdb_dump english =
+        textdb_phase0::dump_canonical_english_speakdb_typed();
     const vector<textdb_phase0::canonical_entry> localized =
         textdb_phase0::dump_localized_speakdb_typed("zh").entries;
 
-    using Row = pair<const char *, const char *>;
-    const vector<Row> restored =
+    // CR-004/CR-008/CR-019/CR-023/CR-024: the Issue-16 monspeak VISUAL
+    // contract is validated at the production sink granularity.
+    // mons_speaks_msg splits every selected pattern by '\n' (split_string
+    // with trimming and empty-segment dropping) and resolves each line
+    // through resolve_mon_speech_line_channel with the MSGCH_TALK
+    // default; the frozen identity is the (canonical key, variant
+    // ordinal, Lua return branch ordinal, line ordinal) set of the EN
+    // lines that resolve to the VISUAL channel. The branch ordinal
+    // (CR-023/CR-024) expands every literal ``return "VISUAL:..."``
+    // emission of a ``{{...}}`` block: getSpeakString recursively
+    // expands in-family @token@ markers -- including markers inside Lua
+    // return literals -- before evaluating the block, so each fully
+    // expanded branch is a possible runtime message and participates in
+    // the frozen set. The aligned ZH dump must reproduce the same
+    // branch count and the same per-branch expanded layout set, and
+    // resolve every corresponding line -- including non-VISUAL lines --
+    // to the same channel.
+    const monspeak_family_lookup en_lookup =
+        monspeak_build_lookup(english.entries);
+    const monspeak_family_lookup zh_lookup =
+        monspeak_build_lookup(localized);
+    set<string> frozen_visual;
+    for (const frozen_monspeak_visual_line &position
+             : FROZEN_MONSPEAK_EN_VISUAL)
     {
-        { "_mara_rare_", "VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。" },
-        { "nobody", "VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。" },
-        { "_pikel_common_", "VISUAL:@The_monster@ 敲打着某种节奏。" },
-        { "_eustachio_common_", "VISUAL:@The_monster@ 试图偷偷溜到你身后。" },
-        { "_eustachio_common_", "VISUAL:@The_monster@ 快速环顾四周寻找出口。" },
-        { "_roxanne_common_", "VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。" },
-        { "_roxanne_common_", "VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。" },
-        { "roxanne blink_other_closer", "VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 疯狂地比划着手势。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 说着什么，但你什么都听不到。" },
-        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 看起来很困惑。" },
-        { "default stupid friendly humanoid", "VISUAL:@The_monster@ 挠了挠头。" },
-        { "default stupid silenced humanoid", "VISUAL:@The_monster@ 试图说话，但什么声音都没有。" },
-        { "default fleeing silenced humanoid", "VISUAL:@The_monster@ 无声地惊恐尖叫着。" },
-        { "default friendly silenced humanoid", "VISUAL:@The_monster@ 友好地挥着手。" },
-        { "default silenced humanoid", "VISUAL:@The_monster@ 无声地说着什么。" },
-        { "default friendly confused humanoid", "VISUAL:@The_monster@ 友好但困惑地挥着手。" },
-        { "default friendly humanoid", "VISUAL:@The_monster@ 开心地点着头。" },
-        { "_jory_common_", "VISUAL:@The_monster@ 静静地打量着你。" },
-        { "_jory_common_", "VISUAL:@The_monster@ 缓缓地拔出剑。" },
-    };
-
-    for (const Row &row : restored)
+        frozen_visual.insert(string(position.key) + "\n"
+                             + to_string(position.ordinal) + "\n"
+                             + to_string(position.branch) + "\n"
+                             + to_string(position.line));
+    }
+    REQUIRE(frozen_visual.size() == 912);
+    set<string> derived_visual;
+    for (const textdb_phase0::canonical_entry &entry : english.entries)
     {
-        INFO(row.first << ": " << row.second);
-        const textdb_phase0::canonical_entry *entry =
-            find_canonical_entry(localized, row.first);
-        REQUIRE(entry != nullptr);
-        const auto variant = std::find_if(
-            entry->variants.begin(), entry->variants.end(),
-            [&row](const textdb_phase0::canonical_variant &candidate)
+        if (!has_source_history(entry, "database/monspeak.txt"))
+            continue;
+        const textdb_phase0::canonical_entry *zh_entry =
+            find_canonical_entry(localized, entry.canonical_key);
+        REQUIRE(zh_entry != nullptr);
+        for (size_t ordinal = 0; ordinal < entry.variants.size();
+             ++ordinal)
+        {
+            const vector<monspeak_layout_set> en_branches =
+                monspeak_lua_branch_layouts(
+                    entry.variants[ordinal].raw_pattern, en_lookup);
+            bool has_visual = false;
+            for (size_t branch = 0; branch < en_branches.size(); ++branch)
             {
-                return candidate.raw_pattern == row.second;
-            });
-        REQUIRE(variant != entry->variants.end());
+                for (const monspeak_layout &layout
+                     : en_branches[branch])
+                {
+                    for (size_t line = 0; line < layout.size(); ++line)
+                    {
+                        if (layout[line] != MSGCH_TALK_VISUAL)
+                            continue;
+                        has_visual = true;
+                        derived_visual.insert(entry.canonical_key + "\n"
+                                              + to_string(ordinal) + "\n"
+                                              + to_string(branch) + "\n"
+                                              + to_string(line));
+                    }
+                }
+            }
+            const bool lua_bearing =
+                entry.variants[ordinal].raw_pattern.find("{{")
+                != string::npos;
+            if (!has_visual && !lua_bearing)
+                continue;
+            // CR-013: every EN VISUAL line must exist in ZH at the same
+            // canonical key and ordinal. A trailing EN-aligned VISUAL
+            // ordinal deleted from ZH (the ZH variant list ends early)
+            // must fail here instead of being silently skipped by a
+            // min-range loop. The seven shout-family override keys
+            // are the documented exception: their effective merged ZH
+            // body is the zh/shout.txt winner -- a different text with
+            // its own variant list and layout topology -- so neither
+            // the ordinal bound nor the branch comparison is
+            // meaningful against the merged dump. The Python scanner
+            // validates those keys against the raw zh/monspeak.txt
+            // review identities, which is the binding protocol check.
+            static const set<string> zh_override_keys = {
+                "'&'", "iron imp", "moth of wrath", "player ghost",
+                "polyphemus", "shadow imp", "white imp",
+            };
+            if (zh_override_keys.count(entry.canonical_key))
+                continue;
+            REQUIRE(ordinal < zh_entry->variants.size());
+            const vector<monspeak_layout_set> zh_branches =
+                monspeak_lua_branch_layouts(
+                    zh_entry->variants[ordinal].raw_pattern, zh_lookup);
+            // CR-023/CR-024: the branch count must match EN. A deleted
+            // return branch (``friendly shoals hound`` #2) changes the
+            // runtime branch topology and fails here even when every
+            // remaining line is still VISUAL.
+            REQUIRE(zh_branches.size() == en_branches.size());
+            for (size_t branch = 0; branch < en_branches.size(); ++branch)
+            {
+                INFO(entry.canonical_key << " #" << ordinal
+                     << " branch " << branch);
+                if (en_branches[branch].size() == 1
+                    && zh_branches[branch].size() == 1)
+                {
+                    // CR-019: the runtime newline layout must match line
+                    // for line, and every corresponding line (including
+                    // non-VISUAL lines and lines that strip to empty)
+                    // must resolve to the same channel as the EN line
+                    // through the production resolver. A line shift
+                    // inside a pattern, a newline position change or a
+                    // changed VISUAL prefix in a Lua return (CR-023)
+                    // fails here even when the frozen EN set is
+                    // untouched.
+                    const monspeak_layout &en_layout =
+                        *en_branches[branch].begin();
+                    const monspeak_layout &zh_layout =
+                        *zh_branches[branch].begin();
+                    REQUIRE(zh_layout.size() == en_layout.size());
+                    for (size_t line = 0; line < en_layout.size(); ++line)
+                    {
+                        INFO(entry.canonical_key << " #" << ordinal
+                             << " branch " << branch << " line " << line);
+                        CHECK(zh_layout[line] == en_layout[line]);
+                    }
+                    continue;
+                }
+                // CR-024: expanded branches (literal returns referencing
+                // in-family fragments) compare their complete sorted-
+                // unique layout sets: every reachable variant of every
+                // referenced fragment must resolve to the same set of
+                // per-line channel sequences as EN. A VISUAL prefix
+                // added to one ZH variant of a referenced fragment
+                // (``_Sprozz_common_``) fails here even though the
+                // unexpanded return literal is identical on both sides.
+                CHECK(zh_branches[branch] == en_branches[branch]);
+            }
+        }
+    }
+    // The complete EN VISUAL line set is frozen (CR-008/CR-019/CR-023):
+    // a removed, reworded or moved EN VISUAL line, a changed VISUAL
+    // prefix inside a Lua return or a deleted Lua return branch must fail
+    // even when the total stays at 506 and the per-line ZH check is
+    // mirrored. Both set directions are required so a missing line
+    // cannot be hidden by an extra one at another key/ordinal/branch/
+    // line.
+    CHECK(derived_visual.size() == frozen_visual.size());
+    for (const string &position : derived_visual)
+    {
+        INFO(position);
+        CHECK(frozen_visual.count(position) == 1);
+    }
+    for (const string &position : frozen_visual)
+    {
+        INFO(position);
+        CHECK(derived_visual.count(position) == 1);
+    }
+}
 
-        string rendered = variant->raw_pattern;
-        msg_channel_type channel = MSGCH_TALK;
-        REQUIRE(resolve_mon_speech_line_channel(rendered, channel,
-                                                false, false));
-        CHECK(channel == MSGCH_TALK_VISUAL);
-        CHECK(rendered == string(row.second).substr(strlen("VISUAL:")));
+TEST_CASE("Issue 70 recursive tokens inside Lua returns bind the expanded ZH topology",
+          "[single-file][textdb][phase0][issue-70][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+    const textdb_phase0::canonical_speakdb_dump english =
+        textdb_phase0::dump_canonical_english_speakdb_typed();
+    vector<textdb_phase0::canonical_entry> localized =
+        textdb_phase0::dump_localized_speakdb_typed("zh").entries;
+
+    // CR-024: the reviewer probe.  ``Sprozz`` returns the in-family
+    // fragments @_Sprozz_thief_@ / @_Sprozz_common_@ from its Lua block;
+    // production (database.cc) expands every @token@ marker of the
+    // selected pattern BEFORE evaluating the Lua block, so each return
+    // branch's runtime layout set enumerates every reachable fragment
+    // variant. Adding a VISUAL prefix to one ZH variant of
+    // _sprozz_common_ must change the ZH layout set while the unexpanded
+    // return literal (and every pre-CR-024 fact) stays identical, so a
+    // gate that does not expand recursive tokens cannot reject the
+    // mutation.
+    const monspeak_family_lookup en_lookup =
+        monspeak_build_lookup(english.entries);
+    textdb_phase0::canonical_entry *sprozz_common =
+        find_canonical_entry_mutable(localized, "_sprozz_common_");
+    REQUIRE(sprozz_common != nullptr);
+    REQUIRE(!sprozz_common->variants.empty());
+    sprozz_common->variants[0].raw_pattern =
+        "VISUAL:" + sprozz_common->variants[0].raw_pattern;
+    const monspeak_family_lookup zh_lookup =
+        monspeak_build_lookup(localized);
+
+    const textdb_phase0::canonical_entry *en_sprozz =
+        find_canonical_entry(english.entries, "sprozz");
+    const textdb_phase0::canonical_entry *zh_sprozz =
+        find_canonical_entry(localized, "sprozz");
+    REQUIRE(en_sprozz != nullptr);
+    REQUIRE(zh_sprozz != nullptr);
+    const vector<monspeak_layout_set> en_branches =
+        monspeak_lua_branch_layouts(en_sprozz->variants[0].raw_pattern,
+                                    en_lookup);
+    const vector<monspeak_layout_set> zh_branches =
+        monspeak_lua_branch_layouts(zh_sprozz->variants[0].raw_pattern,
+                                    zh_lookup);
+    // CR-026: the full pattern expands with one shared replacement
+    // counter, so the layout vector carries one entry per expanded
+    // outcome (2 thief variants x 3 common variants = 6) instead of the
+    // pre-CR-026 per-branch shape. Every expanded EN outcome resolves
+    // both returns to plain talk; the mutated ZH fragment variant
+    // (VISUAL: prefix) must make every expanded outcome that reaches it
+    // emit a talk_visual line for the common branch, and EN/ZH layout
+    // vectors must differ.
+    REQUIRE(!en_branches.empty());
+    REQUIRE(en_branches.size() == zh_branches.size());
+    for (const monspeak_layout_set &set : en_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            CHECK(find(layout.begin(), layout.end(), MSGCH_TALK_VISUAL)
+                  == layout.end());
+        }
+    }
+    bool zh_has_visual = false;
+    for (const monspeak_layout_set &set : zh_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            zh_has_visual = zh_has_visual
+                || find(layout.begin(), layout.end(),
+                        MSGCH_TALK_VISUAL) != layout.end();
+        }
+    }
+    CHECK(zh_has_visual);
+    CHECK(zh_branches != en_branches);
+}
+
+TEST_CASE("Issue 70 Lua escapes from recursive fragments bind the expanded ZH topology",
+          "[single-file][textdb][phase0][issue-70][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+    const textdb_phase0::canonical_speakdb_dump english =
+        textdb_phase0::dump_canonical_english_speakdb_typed();
+    vector<textdb_phase0::canonical_entry> localized =
+        textdb_phase0::dump_localized_speakdb_typed("zh").entries;
+
+    // CR-025: the reviewer probe. Production expands the selected
+    // pattern's @token@ markers while it is still Lua source, so a
+    // fragment spliced into a Lua return literal participates in the
+    // Lua escape interpretation: a ZH variant of _sprozz_common_ that
+    // starts with the literal bytes \x56ISUAL: (the Lua escape \x56 is
+    // the hex byte for 'V') must resolve to a VISUAL: line at runtime.
+    // A gate that expands the interpreted literal instead (the escape
+    // processing never sees the fragment) keeps the raw \x56ISUAL:
+    // prefix, which resolves to the talk channel, and cannot reject the
+    // mutation.
+    const monspeak_family_lookup en_lookup =
+        monspeak_build_lookup(english.entries);
+    textdb_phase0::canonical_entry *sprozz_common =
+        find_canonical_entry_mutable(localized, "_sprozz_common_");
+    REQUIRE(sprozz_common != nullptr);
+    REQUIRE(!sprozz_common->variants.empty());
+    sprozz_common->variants[0].raw_pattern =
+        "\\x56ISUAL:" + sprozz_common->variants[0].raw_pattern;
+    const monspeak_family_lookup zh_lookup =
+        monspeak_build_lookup(localized);
+
+    const textdb_phase0::canonical_entry *en_sprozz =
+        find_canonical_entry(english.entries, "sprozz");
+    const textdb_phase0::canonical_entry *zh_sprozz =
+        find_canonical_entry(localized, "sprozz");
+    REQUIRE(en_sprozz != nullptr);
+    REQUIRE(zh_sprozz != nullptr);
+    const vector<monspeak_layout_set> en_branches =
+        monspeak_lua_branch_layouts(en_sprozz->variants[0].raw_pattern,
+                                    en_lookup);
+    const vector<monspeak_layout_set> zh_branches =
+        monspeak_lua_branch_layouts(zh_sprozz->variants[0].raw_pattern,
+                                    zh_lookup);
+    REQUIRE(zh_branches.size() == en_branches.size());
+    // The @_Sprozz_thief_@ branch is untouched on both sides: every EN
+    // CR-026: one layout-set entry per expanded outcome (6 = 2 thief
+    // variants x 3 common variants) on both sides; the mutated ZH
+    // fragment (\x56ISUAL: -> Lua escape becomes 'V') must make some
+    // expanded ZH layout emit a VISUAL line while every EN layout stays
+    // talk, and the EN/ZH layout vectors must differ.
+    REQUIRE(!en_branches.empty());
+    REQUIRE(en_branches.size() == zh_branches.size());
+    for (const monspeak_layout_set &set : en_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            CHECK(find(layout.begin(), layout.end(), MSGCH_TALK_VISUAL)
+                  == layout.end());
+        }
+    }
+    bool zh_has_visual = false;
+    for (const monspeak_layout_set &set : zh_branches)
+    {
+        for (const monspeak_layout &layout : set)
+        {
+            zh_has_visual = zh_has_visual
+                || find(layout.begin(), layout.end(),
+                        MSGCH_TALK_VISUAL) != layout.end();
+        }
+    }
+    CHECK(zh_has_visual);
+    CHECK(zh_branches != en_branches);
+}
+
+TEST_CASE("Issue 70 shared replacement counter and expanded Lua gate",
+          "[single-file][textdb][phase0][issue-70][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+
+    // CR-028/CR-030/CR-032 persisted probes on a synthetic lookup,
+    // driven through monspeak_lua_branch_layouts (not only the
+    // production phase-0 expansion): (a) the shared replacement
+    // counter -- every @marker@ site (including block-external
+    // non-family markers) increments the one counter, so with 99
+    // external markers the in-Lua @frag@ is site 100 and expands to a
+    // VISUAL tail, while with 100 it is site 101 and stays literal
+    // (talk tail). A mirror that re-expands the site source with a
+    // fresh count resets the boundary.
+    monspeak_family_lookup lookup;
+    lookup["frag"] = {"VISUAL:hello"};
+    for (int preceding = 99; preceding <= 100; ++preceding)
+    {
+        string pattern;
+        for (int i = 0; i < preceding; ++i)
+            pattern += "@outside@\n";
+        pattern += "{{ return '@frag@' }}";
+        vector<pair<string, int>> expanded;
+        monspeak_family_expansions(pattern, lookup, 1, 0, expanded);
+        REQUIRE(expanded.size() == 1);
+        REQUIRE(expanded[0].second == preceding + 1);
+        const string::size_type site = expanded[0].first.find("{{");
+        REQUIRE(site != string::npos);
+        const string::size_type site_end =
+            expanded[0].first.find("}}", site);
+        REQUIRE(site_end != string::npos);
+        const string lua_source = expanded[0].first.substr(
+            site + 2, site_end - site - 2);
+        INFO("preceding=" << preceding);
+        if (preceding == 99)
+        {
+            CHECK(lua_source.find("@frag@") == string::npos);
+            CHECK(lua_source.find("VISUAL:hello") != string::npos);
+        }
+        else
+            CHECK(lua_source.find("@frag@") != string::npos);
+        const vector<monspeak_layout_set> branches =
+            monspeak_lua_branch_layouts(pattern, lookup);
+        REQUIRE(branches.size() == 1);
+        REQUIRE(branches[0].size() == 1);
+        const monspeak_layout &layout = *branches[0].begin();
+        REQUIRE(layout.size() == preceding + 1);
+        for (size_t line = 0; line + 1 < layout.size(); ++line)
+            CHECK(layout[line] == MSGCH_TALK);
+        CHECK(layout.back() == (preceding == 99 ? MSGCH_TALK_VISUAL
+                                                : MSGCH_TALK));
+    }
+
+    // (b) Fragment bytes spliced into a Lua return literal are Lua
+    // source: a raw newline or an unescaped single quote injected by a
+    // fragment makes the EXPANDED source fail the vendored 5.4.8 gate
+    // (checked directly so the negative stays a negative instead of
+    // aborting monspeak_lua_branch_layouts' internal REQUIRE).
+    for (const string &fragment :
+         {string("hello\nworld"), string("hello'world")})
+    {
+        monspeak_family_lookup fragment_lookup;
+        fragment_lookup["frag"] = {fragment};
+        vector<pair<string, int>> expanded;
+        monspeak_family_expansions("{{ return '@frag@' }}",
+                                   fragment_lookup, 1, 0, expanded);
+        REQUIRE(expanded.size() == 1);
+        const string::size_type site = expanded[0].first.find("{{");
+        const string::size_type site_end =
+            expanded[0].first.find("}}", site);
+        REQUIRE(site != string::npos);
+        REQUIRE(site_end != string::npos);
+        INFO("fragment=" << fragment);
+        CHECK_FALSE(monspeak_vendored_lua_syntax_ok(
+            expanded[0].first.substr(site + 2, site_end - site - 2)));
+    }
+
+    // (c) The Lua hex escape \x56 becomes 'V' after the splice, so the
+    // branch emits a VISUAL line (the real-dump form is pinned by the
+    // "Lua escapes" case; this synthetic form pins the boundary pair
+    // in the same lookup as (a)).
+    monspeak_family_lookup hex_lookup;
+    hex_lookup["frag"] = {"\\x56ISUAL:hello"};
+    const vector<monspeak_layout_set> hex_branches =
+        monspeak_lua_branch_layouts("{{ return '@frag@' }}", hex_lookup);
+    REQUIRE(hex_branches.size() == 1);
+    REQUIRE(hex_branches[0].size() == 1);
+    const monspeak_layout &hex_layout = *hex_branches[0].begin();
+    REQUIRE(hex_layout.size() == 1);
+    CHECK(hex_layout[0] == MSGCH_TALK_VISUAL);
+
+    // (d) R4-CODE-001: the head-channel shortcut must not classify a
+    // marker that does not lead the line by its variant head, and must
+    // not apply when the closure can exceed the shared replacement
+    // budget. A literal prefix before an in-family marker decides the
+    // line channel: 前缀@frag@ with frag = "VISUAL:hello" expands to
+    // 前缀VISUAL:hello, whose head is the prefix text -> talk.
+    monspeak_family_lookup prefix_lookup;
+    prefix_lookup["frag"] = {"VISUAL:hello"};
+    const vector<monspeak_layout_set> prefix_branches =
+        monspeak_lua_branch_layouts("前缀@frag@", prefix_lookup);
+    REQUIRE(prefix_branches.size() == 1);
+    REQUIRE(prefix_branches[0].size() == 1);
+    CHECK(*prefix_branches[0].begin() ==
+          monspeak_layout({MSGCH_TALK}));
+    // A channel prefix in the literal prefix text still wins.
+    const vector<monspeak_layout_set> prefix_visual_branches =
+        monspeak_lua_branch_layouts("VISUAL: 前缀@frag@", prefix_lookup);
+    REQUIRE(prefix_visual_branches.size() == 1);
+    REQUIRE(prefix_visual_branches[0].size() == 1);
+    CHECK(*prefix_visual_branches[0].begin() ==
+          monspeak_layout({MSGCH_TALK_VISUAL}));
+    // The shortcut has no shared replacement counter: when the
+    // reachable site count can exceed MONSPEAK_MAX_REPLACEMENTS (100)
+    // it must fall back to the full production expansion, which stops
+    // the scan and leaves the over-budget marker unexpanded (talk
+    // tail). With 100 expanded @outside@ markers the in-line @frag@ is
+    // site 101 and stays literal; with 99 it is site 100 and expands.
+    monspeak_family_lookup budget_lookup;
+    budget_lookup["outside"] = {"x"};
+    budget_lookup["frag"] = {"VISUAL:hello"};
+    for (int preceding = 99; preceding <= 100; ++preceding)
+    {
+        string budget_pattern;
+        for (int i = 0; i < preceding; ++i)
+            budget_pattern += "@outside@\n";
+        budget_pattern += "@frag@";
+        const vector<monspeak_layout_set> budget_branches =
+            monspeak_lua_branch_layouts(budget_pattern, budget_lookup);
+        REQUIRE(budget_branches.size() == 1);
+        REQUIRE(budget_branches[0].size() == 1);
+        const monspeak_layout &budget_layout = *budget_branches[0].begin();
+        REQUIRE(budget_layout.size() == preceding + 1);
+        INFO("preceding=" << preceding);
+        CHECK(budget_layout.back() == (preceding == 99
+                                       ? MSGCH_TALK_VISUAL
+                                       : MSGCH_TALK));
     }
 }
 
@@ -2285,7 +4396,7 @@ TEST_CASE("write production TextDB Phase 0 artifact",
             // The "#### Player sphinx riddle lines" comment title block is
             // a production-parser artifact: comment lines starting with '#'
             // are skipped, but the title line itself is not, so it becomes a
-            // zero-body key that can never be selected.  Freeze the artifact
+            // zero-body key that can never be selected. Freeze the artifact
             // shape explicitly so the shout inventory's identity filtering
             // stays consistent with this dump.
             const textdb_phase0::canonical_entry *artifact =

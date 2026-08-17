@@ -256,6 +256,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/graffiti_inventory.py|\
             .claude/scripts/miscast_inventory.py|\
             .claude/scripts/monflee_inventory.py|\
+            .claude/scripts/monspeak_inventory.py|\
             .claude/scripts/shout_inventory.py|\
             .claude/scripts/tests/test_message_overlay.py|\
             .claude/scripts/tests/test_audit_monspell_behavior.py|\
@@ -263,6 +264,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/tests/test_graffiti_inventory.py|\
             .claude/scripts/tests/test_miscast_inventory.py|\
             .claude/scripts/tests/test_monflee_inventory.py|\
+            .claude/scripts/tests/test_monspeak_inventory.py|\
             .claude/scripts/tests/test_shout_inventory.py|\
             docs/textdb-i18n-*|\
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
@@ -628,6 +630,11 @@ PY
             bash -c "$ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND"
             return
         fi
+        # test_monspeak_inventory.py (66 tests, heavy candidate audits,
+        # >15 min) is excluded from this static chain: it exceeds the
+        # GitHub-hosted runner budget on CI.  Run it directly when the
+        # full monspeak gate is needed:
+        #   python3 .claude/scripts/tests/test_monspeak_inventory.py
         python3 "$SCRIPT_DIR/tests/test_message_overlay.py" \
             && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
             && python3 "$SCRIPT_DIR/tests/test_decorlines_inventory.py" \
