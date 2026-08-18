@@ -755,25 +755,96 @@
 | Zenata | 泽娜塔 | unique-monster; source=source.txt |
 
 <!-- domain:monster-titles -->
-## 二十、独特怪物称号（首批）
+## 二十、独特怪物称号（全部 86 项，Issue #71）
 
 | EN | ZH | Scope / comment |
 |----|----|----------------|
-| Agnes title | 漫游者艾格尼丝 | monster-title; source=database/zh/montitle.txt |
+| Agnes title | 流浪者艾格尼丝 | monster-title; source=database/zh/montitle.txt |
 | Aizul title | 疏忽的守卫艾祖尔 | monster-title; source=database/zh/montitle.txt |
 | Amaemon title | 恶魔投毒者亚麦蒙 | monster-title; source=database/zh/montitle.txt |
 | Antaeus title | 安泰俄斯，悲叹河的守卫 | monster-title; source=database/zh/montitle.txt |
-| Arachne title | 编织者阿拉克涅 | monster-title; source=database/zh/montitle.txt |
+| Arachne title | 被放逐的阿拉克涅 | monster-title; source=database/zh/montitle.txt |
 | Asmodeus title | 阿斯摩蒂斯，欣嫩谷的王子 | monster-title; source=database/zh/montitle.txt |
 | Asterion title | 堕落之王阿斯忒里翁 | monster-title; source=database/zh/montitle.txt |
 | Azrael title | 无边烈焰阿兹瑞尔 | monster-title; source=database/zh/montitle.txt |
 | Bai Suzhen title | 白素贞，白蛇夫人 | monster-title; source=database/zh/montitle.txt |
 | Boris title | 鲍里斯，生死大师 | monster-title; source=database/zh/montitle.txt |
+| Cassandra title | 注定毁灭的先知卡珊德拉 | monster-title; source=database/zh/montitle.txt |
 | Cerebov title | 塞雷波夫，火与钢之恶魔领主 | monster-title; source=database/zh/montitle.txt |
 | Chuck title | 收集者查克 | monster-title; source=database/zh/montitle.txt |
 | Crazy Yiuf title | 开悟者疯狂的尤夫 | monster-title; source=database/zh/montitle.txt |
 | Dispater title | 迪斯帕特，铁城领主 | monster-title; source=database/zh/montitle.txt |
 | Dissolution title | 分解者，吉瓦的高级祭司 | monster-title; source=database/zh/montitle.txt |
+| Donald title | 冒险者唐纳德 | monster-title; source=database/zh/montitle.txt |
+| Dowan title | 多万，杜维莎的哥哥 | monster-title; source=database/zh/montitle.txt |
+| Duvessa title | 杜维莎，多万的妹妹 | monster-title; source=database/zh/montitle.txt |
+| Edmund title | 年少者埃德蒙 | monster-title; source=database/zh/montitle.txt |
+| Ereshkigal title | 埃列什基伽勒，塔尔塔罗斯的女王 | monster-title; source=database/zh/montitle.txt |
+| Erica title | 暴躁的艾丽卡 | monster-title; source=database/zh/montitle.txt |
+| Erolcha title | 狡猾的伊罗查 | monster-title; source=database/zh/montitle.txt |
+| Eustachio title | 奇伟的尤斯塔奇奥 | monster-title; source=database/zh/montitle.txt |
+| Fannar title | 冷酷的凡纳尔 | monster-title; source=database/zh/montitle.txt |
+| Frances title | 弗朗西斯，万魔殿女公爵 | monster-title; source=database/zh/montitle.txt |
+| Frederick title | 完美的弗雷德里克 | monster-title; source=database/zh/montitle.txt |
+| Gastronok title | 沉重的加斯特罗诺克 | monster-title; source=database/zh/montitle.txt |
+| Geryon title | 格律翁，地狱的守门人 | monster-title; source=database/zh/montitle.txt |
+| Gloorx Vloq title | 格洛克斯·弗洛克，暗之恶魔领主 | monster-title; source=database/zh/montitle.txt |
+| Grum title | 猎人格拉姆 | monster-title; source=database/zh/montitle.txt |
+| Grunn title | 被惩罚的格伦 | monster-title; source=database/zh/montitle.txt |
+| Harold title | 饱经风霜的哈罗德 | monster-title; source=database/zh/montitle.txt |
+| Ignacio title | 伊格纳西奥，剧痛大师 | monster-title; source=database/zh/montitle.txt |
+| Ijyb title | 爱钻研的艾吉布 | monster-title; source=database/zh/montitle.txt |
+| Ilsuiw title | 伊尔苏伊，潮汐女巫 | monster-title; source=database/zh/montitle.txt |
+| Jeremiah title | 耶利米，蛙人神游者 | monster-title; source=database/zh/montitle.txt |
+| Jessica title | 见习女术师杰西卡 | monster-title; source=database/zh/montitle.txt |
+| Jorgrun title | 撼地者约格伦 | monster-title; source=database/zh/montitle.txt |
+| Jory title | 血腥伯爵乔里 | monster-title; source=database/zh/montitle.txt |
+| Joseph title | 约瑟夫，雇佣兵 | monster-title; source=database/zh/montitle.txt |
+| Josephina title | 冰巫妖约瑟菲娜 | monster-title; source=database/zh/montitle.txt |
+| Josephine title | 腐朽的死灵法师约瑟芬 | monster-title; source=database/zh/montitle.txt |
+| Khufu title | 不朽的法老胡夫 | monster-title; source=database/zh/montitle.txt |
+| Kirke title | 喀耳刻，神话编织者 | monster-title; source=database/zh/montitle.txt |
+| Lodul title | 雷霆洛杜尔 | monster-title; source=database/zh/montitle.txt |
+| Lom Lobon title | 洛姆·洛邦，禁忌知识之恶魔领主 | monster-title; source=database/zh/montitle.txt |
+| Louise title | 腐化的路易丝 | monster-title; source=database/zh/montitle.txt |
+| Maggie title | 自负的玛吉 | monster-title; source=database/zh/montitle.txt |
+| Mara title | 玛拉，幻象领主 | monster-title; source=database/zh/montitle.txt |
+| Margery title | 屠龙者玛杰丽 | monster-title; source=database/zh/montitle.txt |
+| Maurice title | 盗贼莫里斯 | monster-title; source=database/zh/montitle.txt |
+| Menkaure title | 门卡拉，尘土王子 | monster-title; source=database/zh/montitle.txt |
+| Mennas title | 门纳斯，辛的代言人 | monster-title; source=database/zh/montitle.txt |
+| Mlioglotl title | 姆利奥格洛特尔，无形的恐怖 | monster-title; source=database/zh/montitle.txt |
+| Mnoleg title | 姆诺雷格，混沌之恶魔领主 | monster-title; source=database/zh/montitle.txt |
+| Murray title | 会说话的恶魔头骨默里 | monster-title; source=database/zh/montitle.txt |
+| Natasha title | 娜塔莎，生死仆从 | monster-title; source=database/zh/montitle.txt |
+| Nellie title | 内莉，演出明星 | monster-title; source=database/zh/montitle.txt |
+| Nergalle title | 内尔加勒，亡者的传说守护者 | monster-title; source=database/zh/montitle.txt |
+| Nessos title | 半人马神射手涅索斯 | monster-title; source=database/zh/montitle.txt |
+| Nikola title | 疯狂的发明家尼古拉 | monster-title; source=database/zh/montitle.txt |
+| Nobody title | 无名氏，未被哀悼者的怨恨 | monster-title; source=database/zh/montitle.txt |
+| Norris title | 哲人诺里斯 | monster-title; source=database/zh/montitle.txt |
+| Parghit title | 强大的帕吉特 | monster-title; source=database/zh/montitle.txt |
+| Pargi title | 柔弱的帕尔吉 | monster-title; source=database/zh/montitle.txt |
+| Pikel title | 皮克尔，灵魂商人 | monster-title; source=database/zh/montitle.txt |
+| Polyphemus title | 警惕的牧羊人波吕斐摩斯 | monster-title; source=database/zh/montitle.txt |
+| Robin title | 强臂罗宾 | monster-title; source=database/zh/montitle.txt |
+| Roxanne title | 罗克珊，名誉堪舆师 | monster-title; source=database/zh/montitle.txt |
+| Rupert title | 野人鲁珀特 | monster-title; source=database/zh/montitle.txt |
+| Saint Roka title | 弥赛亚圣罗卡 | monster-title; source=database/zh/montitle.txt |
+| Sigmund title | 可怕的西格蒙德 | monster-title; source=database/zh/montitle.txt |
+| Snorg title | 饕餮的斯诺格 | monster-title; source=database/zh/montitle.txt |
+| Sojobo title | 索乔波，天狗女王 | monster-title; source=database/zh/montitle.txt |
+| Sonja title | 索尼娅，优雅的刺客 | monster-title; source=database/zh/montitle.txt |
+| Sprozz title | 创意养蜂人斯普罗兹 | monster-title; source=database/zh/montitle.txt |
+| Terence title | 老练的特伦斯 | monster-title; source=database/zh/montitle.txt |
+| Tiamat title | 提亚马特，龙神的化身 | monster-title; source=database/zh/montitle.txt |
+| Urug title | 兽人弩炮乌鲁格 | monster-title; source=database/zh/montitle.txt |
+| Vashnia title | 精英纳迦神射手瓦什妮亚 | monster-title; source=database/zh/montitle.txt |
+| Vv title | 流亡的芙芙 | monster-title; source=database/zh/montitle.txt |
+| Wiglaf title | 炮手矮人威格拉夫 | monster-title; source=database/zh/montitle.txt |
+| Xak'krixis title | 王家远征炼金师扎克里西斯 | monster-title; source=database/zh/montitle.txt |
+| Xtahua title | 古老的扎塔瓦 | monster-title; source=database/zh/montitle.txt |
+| Zenata title | 泽娜塔，西泽的追寻者 | monster-title; source=database/zh/montitle.txt |
 
 <!-- domain:spells -->
 ## 二十一、法术名全表

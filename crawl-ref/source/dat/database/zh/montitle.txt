@@ -21,7 +21,7 @@ Antaeus title
 %%%%
 Arachne title
 
-编织者阿拉克涅
+被放逐的阿拉克涅
 %%%%
 Asmodeus title
 
@@ -69,7 +69,7 @@ Donald title
 %%%%
 Dowan title
 
-多万，多维莎的哥哥
+多万，杜维莎的哥哥
 %%%%
 Duvessa title
 
@@ -109,7 +109,7 @@ Frederick title
 %%%%
 Gastronok title
 
-沉思的加斯特罗诺克
+沉重的加斯特罗诺克
 %%%%
 Geryon title
 
@@ -237,11 +237,11 @@ Nellie title
 %%%%
 Nergalle title
 
-缚魂者内尔加勒
+内尔加勒，亡者的传说守护者
 %%%%
 Nessos title
 
-精英半人马涅索斯
+半人马神射手涅索斯
 %%%%
 Nikola title
 
@@ -313,7 +313,7 @@ Urug title
 %%%%
 Vashnia title
 
-上层精英纳迦瓦什妮亚
+精英纳迦神射手瓦什妮亚
 %%%%
 Vv title
 

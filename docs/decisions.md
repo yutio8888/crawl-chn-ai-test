@@ -3781,6 +3781,56 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-094 — montitle 全量校对（#24 怪物实体域扩展，Issue #71）
+
+- **Type**: C — Finite inventory translation review
+- **Status**: active
+- **Date**: 2026-08-18
+- **Baseline**: `00764b7e06`；glossary SHA-256
+  `95eeacf9704e046c2010ef34859b750d2f8a1937ad87c4a86e8a404c98689407`；EN
+  `montitle.txt` SHA-256 `06b457700690fcd61d6f82e84da7dfcc61e903b9303394755ec0f48c3656fd2f`。
+- **Inventory**: `crawl-ref/source/dat/database/{,zh/}montitle.txt`，86 个
+  `<unique-monster dbname> title` 身份，EN/ZH 键 86/86 无不对称。Provenance
+  复用 #24（D-C-092）unique-monster identity 集合核对 81/86 专名音译；
+  Cassandra、Nobody、Sprozz、Wiglaf、Xak'krixis 5 项为 #24 之后新增的
+  unique monster，跨 `descript/zh/monsters.txt`、`graffiti.txt`、
+  `monspeak.txt`、`i18n/zh/source.txt` 核对音译一致性，全部通过。
+- **Choice**: 86 项中 80 项 `keep`；6 项 `adjust`：
+  - `Arachne title`：`编织者阿拉克涅` → `被放逐的阿拉克涅`（英文标题为
+    `the Outcast`，原译替换为她的编织者背景，与显示标题语义不符；编织者
+    身份保留在 `descript/monsters.txt` 长描述中，标题层面还原“遭放逐”）。
+  - `Dowan title`：`多万，多维莎的哥哥` → `多万，杜维莎的哥哥`（`Duvessa`
+    专名音译与 #24/自身条目 `Duvessa title` 不一致，修正为统一音译）。
+  - `Gastronok title`：`沉思的加斯特罗诺克` → `沉重的加斯特罗诺克`
+    （英文 `the Ponderous` 描述其巨型蛞蝓的笨重体型，`descript/monsters.txt`
+    称其“出奇聪明”而非以沉思/冥想为特征；2023-10-04 由 `沉重的` 误改为
+    `沉思的`，本次还原原意）。
+  - `Nergalle title`：`缚魂者内尔加勒` → `内尔加勒，亡者的传说守护者`
+    （英文 `Lorekeeper of the Fallen` 对应她终身记录半兽人亡者事迹的设定
+    `descript/monsters.txt`；原译改用其“缚魂”战斗机制，替换了标题实际
+    语义）。
+  - `Nessos title`：`精英半人马涅索斯` → `半人马神射手涅索斯`（英文
+    `Markscentaur` 指箭术半人马，`descript/monsters.txt` 强调弓术而非
+    “精英”；纳迦同构 `Marksnaga → 纳迦神射手` 已有 [D-A-012] 先例，半人马
+    侧同步统一）。
+  - `Vashnia title`：`上层精英纳迦瓦什妮亚` → `精英纳迦神射手瓦什妮亚`
+    （英文 `Elite Marksnaga`，`descript/monsters.txt` 确认她兼具精英与
+    神射手队长身份；原译发明“上层”并丢失神射手语义，按 [D-A-012] 纳迦
+    职业命名恢复）。
+- **Cross-domain note (non-binding)**: `Zenata title` 中 `Sheza → 西泽` 与
+  `branches.txt`/`monsters.txt` 中神灵 Sheza 音译一致，但法术
+  `Sheza's Dance → 谢扎之舞`（[D-C-045]）使用不同音译；两域各自内部一致，
+  跨域统一超出本 Issue 范围，留待法术命名域复审时处理，不在本次改动。
+- **Rejected alternatives**: 保留原创性主题化意译（如 `编织者`/`缚魂者`/
+  `精英半人马`）——均因替换而非补充英文标题的核心语义，不采纳。
+- **Affected files**:
+  - `crawl-ref/source/dat/database/zh/montitle.txt`
+  - `docs/glossary.md`
+  - `docs/decisions.md`
+- **Resolved**: 2026-08-18
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -3925,3 +3975,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-091 | Spell name review — 独立终批 B3 | 16 active + 2 internal + 2 dummy + 31 axed；1 rename + 13 description fixes | active |
 | D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |
 | D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |
+| D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
