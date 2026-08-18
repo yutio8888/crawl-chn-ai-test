@@ -51,8 +51,9 @@
 | misc/decorlines | ✅ | #67 | docs/decorlines-review-results.md |
 | speak/monspeak | ✅ | #70（怪物说话消息域） | docs/monspeak-review-results.md |
 | **shout/shout + speak|shout/insult（共享）** | 🔲 | #40 待建子批（W4，需先冻结 ShoutDB 共享 provenance） | — |
-| **misc/miscname/montitle/gizmo** | 🔲 | 待定：montitle 与 #24 怪物域、gizmo 与 #29 随机神器组件域重叠，需边界裁决 | — |
-| **quotes/quotes.txt** | 🔲 | #40 R5 待建子批（W7；#3 提供专名引用部分证据） | #3 |
+| misc/montitle | 🔲 | 已裁决：并入 #24 怪物实体域扩展子批（新 Issue #71），复用 #24 unique-monster identity provenance；86 keys、无 EN/ZH 键不对称 | #24/#71 |
+| misc/miscname/gizmo | ⚠️ | gizmo 与 #29 随机神器组件域重叠，按 #29 provenance 覆盖；miscname 待裁决 | #29 |
+| quotes/quotes.txt | 🔲 | #40 R5 待建子批（W7；已建 #72；#3 提供专名引用部分证据） | #3/#72 |
 | **randart/randname/randbook/rand_all/rand_arm/rand_wpn** | ⚠️ | #29 覆盖"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"；无独立 randart 账本 | #29 关闭评论 |
 | misc/godname | ✅ | #25（"神祇生产身份、显示名和称号：…godname.txt"） | #25 |
 | speak|misc/monname、speak|misc/colourname | ⚠️ | 依赖证据：被 #25（Beogh 使徒/祖先名）、#66/#67（graffiti/decorlines 作者与颜色 token）消费；无独立家族账本，作为依赖族记录 | #66/#67 账本中的 external-token 绑定 |
@@ -67,8 +68,12 @@
 - **graffiti 双载**：speak（index 8）与 misc（index 6）同源；#66 已在 speak 侧冻结闭包，misc 侧
   加载顺序由 decorlines 批次（#67）的 misc manifest 验证。
 - **decorlines→graffiti 依赖**：`any_graffiti` 为跨家族递归根；#67 冻结 misc 侧闭包证据。
-- **montitle 归属**：#24 只审怪物名与描述，未声明头衔文件；#29 未声明。当前无唯一归属，需在
-  W5/W7 前裁决（倾向并入 #24 重入域或独立小批）。
+- **montitle 归属（已裁决 2026-08-18）**：montitle.txt 86 keys 全部为 `<unique-monster dbname> title`，
+  消费链 `getMiscString(db_name() + " title")`（mon-info.cc:1055、describe.cc:7035、
+  player-notices.cc:330）即 #24 怪物显示链的同一实体集；#24 已审 unique 怪物名/描述/身份，
+  但明示范围未含 title 文件。裁决：作为 #24 怪物实体域的扩展子批（新 Issue #71），复用
+  #24 unique-monster identity inventory 作 provenance，只审 montitle.txt 本身；EN/ZH 键
+  86/86 无不对称。
 - **randart 归属**：#29 明示"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"，视为该域证据；
   若上游 randart 组件漂移，重入触发后回到 #29 或新子批。
 - **明确非玩家显示**：协议/lookup 键值（英文）、`__NONE`/`__DEFAULT` 哨兵、Lua 比较串不属于
@@ -90,6 +95,6 @@
 ## 关闭条件映射（#40）
 
 - 本映射完成"所有目标 TextDB 组均有唯一审核归属"（除 ⚠️ 两项有明确证据依据、🔲 三项待建子批）。
-- 关闭 #40 前还需：W7（quotes）子批完成并关闭；
-  montitle/gizmo/miscname 归属裁决；R6 增量复核入口实际使用一次并记录证据。
-  （W4 shout/insult #69、W5 monspeak #70 已完成并关闭。）
+- 关闭 #40 前还需：W7（quotes）子批完成并关闭；montitle 扩展子批 #71 完成并关闭；
+  gizmo/miscname 归属裁决；R6 增量复核入口实际使用一次并记录证据。
+  （W4 shout/insult #69、W5 monspeak #70 已完成并关闭；montitle 归属已裁决为 #71。）
