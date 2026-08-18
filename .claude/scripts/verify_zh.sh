@@ -34,6 +34,9 @@ unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
 unset ZH_VERIFY_CONTROL_ROOT ZH_VERIFY_CONTROL_COMMIT
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# CI sets PYTHONSAFEPATH=1 so Python will not prepend this script directory.
+# Child scanners import sibling modules (i18n_shared, etc.) from here.
+export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"
 PROFILE=""
 SCOPE=""
 EXPLICIT_FULL=0

@@ -7,6 +7,7 @@
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"
 SCRIPT_REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd -P)"
 AUDIT_ROOT=$(
     PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \

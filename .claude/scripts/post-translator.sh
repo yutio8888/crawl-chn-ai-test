@@ -7,6 +7,7 @@
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"
 TS=$(date -Iseconds | tr : -)
 OUT=".claude/metrics/verify/translator-${TS}.log"
 mkdir -p .claude/metrics/verify

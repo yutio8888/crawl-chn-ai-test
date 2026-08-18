@@ -12,6 +12,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# CI sets PYTHONSAFEPATH=1 so Python will not prepend a test file's directory.
+# Tests and the scripts they subprocess import siblings from .claude/scripts.
+export PYTHONPATH="${SCRIPTS_ROOT}${PYTHONPATH:+:$PYTHONPATH}"
 PASS=0
 FAIL=0
 DISCOVERED=()

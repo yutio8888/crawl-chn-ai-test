@@ -365,6 +365,10 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn(
             "/bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
         )
+        run_all = (ROOT / ".claude/scripts/tests/run_all.sh").read_text()
+        verify_zh = (ROOT / ".claude/scripts/verify_zh.sh").read_text()
+        self.assertIn('export PYTHONPATH="${SCRIPTS_ROOT}${PYTHONPATH:+:$PYTHONPATH}"', run_all)
+        self.assertIn('export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"', verify_zh)
         self.assertIn("control_sha", workflow)
         self.assertIn("submodule update --init --recursive", tooling)
         self.assertLess(
