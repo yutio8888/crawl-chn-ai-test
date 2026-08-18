@@ -1146,6 +1146,47 @@ class MonspeakInventoryTests(unittest.TestCase):
                      for line in MODULE._runtime_lines_of(expanded)],
                     layouts[0][0])
 
+    def test_lua_return_topology_skips_no_lua_visual_closure(self):
+        # Topology binds Lua return sites only.  A VISUAL-head closure
+        # (crazy yiuf) changes layouts via CR-033 but cannot create a
+        # {{...}} site, so the helper must return [] without enumerating
+        # the wordlist product.  2 verbs x 40 x 40 x 40 = 128000 texts
+        # if speech#0 were fully expanded.
+        lookup = {
+            "speech": [
+                '@The_monster@ @_verbs_@, "@_sentence_@"',
+                "VISUAL:@The_monster@ waves.",
+            ],
+            "_verbs_": ["says", "cries"],
+            "_sentence_": ["@_w1_@ @_w2_@ @_w2_@"],
+            "_w1_": [f"w1{i}" for i in range(40)],
+            "_w2_": [f"w2{i}" for i in range(40)],
+        }
+        with mock.patch.object(MODULE, "_family_expansions",
+                               wraps=MODULE._family_expansions) as expand:
+            self.assertEqual(
+                [], MODULE._lua_return_topology("@speech@", lookup))
+            expand.assert_not_called()
+        self.assertEqual(
+            [sorted([["talk"], ["talk_visual"]])],
+            [sorted(branch) for branch in
+             MODULE._lua_return_branch_lines("@speech@", lookup)])
+
+        lua_lookup = {
+            "speech": [
+                '@The_monster@ says, "hi"',
+                '{{ return "VISUAL:hi" }}',
+            ],
+        }
+        luac = self._vendored_luac_for_test()
+        with mock.patch.object(MODULE, "_VENDORED_LUAC", luac), \
+                mock.patch.object(MODULE, "_family_expansions",
+                                  wraps=MODULE._family_expansions) as expand:
+            self.assertEqual(
+                [[[["talk_visual"]]]],
+                MODULE._lua_return_topology("@speech@", lua_lookup))
+            expand.assert_called()
+
     def test_candidate_triple_brace_lua_rejected(self):
         # CR-002/CR-006: a candidate ``{{{`` Lua site (stray brace inside
         # the ``{{...}}`` boundary) must be rejected even though the

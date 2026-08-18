@@ -2083,9 +2083,11 @@ def _closure_may_affect_layout(
 ) -> bool:
     """Whether expanding the in-family tokens of ``pattern`` can change
     the runtime line layout that the early return of
-    ``_lua_return_branch_lines``/``_lua_return_topology`` would report
-    for the unexpanded pattern (CR-031): "no Lua in the closure" does
-    not mean the recursive tokens cannot change the channels.  Any
+    ``_lua_return_branch_lines`` would report for the unexpanded
+    pattern (CR-031): "no Lua in the closure" does not mean the
+    recursive tokens cannot change the channels.  ``_lua_return_topology``
+    does not use this predicate: VISUAL/SOUND heads and newlines change
+    layouts, not Lua return sites.  Any
     reachable token variant (or its recursive closure) that contains
     ``{{`` (a Lua site the raw text lacks), whose first line resolves
     to a non-talk channel through the sink classifier (a line-start
@@ -2415,14 +2417,20 @@ def _lua_return_topology(
     branch so branch counts stay aligned with the skeleton.  The EN/ZH
     comparison in ``_pair_candidate`` requires these channel topologies
     to be identical: branch count, per-branch expanded layout set and
-    per-line channel are all encoded in this shape."""
+    per-line channel are all encoded in this shape.
+
+    Topology binds Lua return sites only.  A VISUAL/SOUND head or a
+    newline in the token closure changes layouts (owned by
+    ``_lua_return_branch_lines`` / CR-033) but cannot create a ``{{``
+    site, so those closures must not force ``_family_expansions`` here
+    (``crazy yiuf`` is a 265M-way wordlist product with no Lua)."""
     topology: list[list[list[list[str]]]] = []
-    if "{{" not in pattern and not _closure_may_affect_layout(
+    if "{{" not in pattern and not _closure_has_lua(
             pattern, family_lookup):
-        # No Lua sites and no reachable token variant can change any
-        # line's channel or the runtime line count (CR-031): nothing to
-        # bind; avoids the full-pattern expansion on every non-Lua
-        # variant (CR-026 boundedness).
+        # No Lua sites in the pattern or any reachable token variant:
+        # the topology is empty.  Avoids the full-pattern expansion on
+        # every non-Lua variant, including VISUAL-head closures that
+        # only affect layouts (CR-026 boundedness).
         return topology
     expanded = ([(pattern, 0)]
                 if not family_lookup
