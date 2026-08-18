@@ -202,3 +202,26 @@ python3 .claude/scripts/monspeak_inventory.py \
 翻译资产编辑阶段按需使用 `bash .claude/scripts/verify_zh.sh --profile
 translation`；合并前的静态预检只执行一次 `bash .claude/scripts/
 verify_zh.sh --profile ci`，不对同一不可变候选串行重复跑多个 profile。
+
+## 门禁过程记录（2026-08-18）
+
+本节不改变冻结边界与候选必须满足的 5 项验收标准。
+
+### 已关闭：candidate topology 组合爆炸
+
+`--candidate-ref` 曾在隔离配额下连续超时（默认 / 6–8G / 10–12G，
+`EXIT 124`）。根因不是译文，而是 `_lua_return_topology` 误用
+`_closure_may_affect_layout`，对无 Lua 的 VISUAL 闭包（`crazy yiuf`
+约 2.66×10⁸ 文本）做全量 `_family_expansions` 后丢弃。
+
+`426984f5bf` 改为只在 pattern/闭包含 Lua 时展开。同一提交上
+`--candidate-ref` 通过，产物 `/tmp/monspeak-inventory-candidate.json`
+（733 卡）。schema-v4 终审 Go 后已快进进 `chn-0.34.1-base`。
+
+### 已关闭：unbound CI `PYTHONSAFEPATH` 导入失败
+
+`b12b38e0e1` 起 ZH Tooling / CI Gate 设 `PYTHONSAFEPATH=1`，裸跑
+`audit_move_i18n.py` 等脚本无法 `import i18n_shared`。`f0c3553525`
+让 `verify_zh.sh` / `run_all.sh` / `post-*.sh` 导出执行中的
+`.claude/scripts` 到 `PYTHONPATH`，不关闭 safepath。
+GitHub Actions `32149621520` 结论 **success**。
