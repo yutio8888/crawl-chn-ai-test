@@ -15,9 +15,9 @@ review 结论：当前基线功能/翻译/集成测试健康，无运行时或�
 |---|---|---|---|---|---|
 | W1 | P1 | 增量 AST scanner changed/full 一致性修复（`scan_varargs_string.py` / `scan_string_concat.py` 对 `directn.cc:626` 预处理分支的 pre-existing parse 错误） | changed-scope 与 full-root 对 directn.cc 结果一致；窄化识别 + 回归测试；code profile 全绿 | 无 | ✅ 完成（2026-08-14，合并 `51987f8d58`；8 轮评审收敛，bundle `d41fa74c…` verdict=go，25+19 单测全绿） |
 | W2 | P1 | Issue 关闭记录更正：#64（approved bundle candidate=`2038fabd`，style 提交 `2132cd99` 为后续）、#67（`306d9099..028f4993` 实际 12 commits 非 8）、#54/#56（补 PR #55/#58 证据链接） | 各 Issue 有更正评论，记录精确边界；不制造追溯性 Go | 无 | ✅ 完成（2026-08-13，评论 5287523273/5287524354/5287525276/5287526285） |
-| W3 | P2 | monspell symbolic-state defer 单独建单跟踪（`vanquished vanguard nergalle cast`，分析器上限） | 建 Issue，含 reentry trigger；台账引用该 Issue | 无 | 待办 |
+| W3 | P2 | monspell symbolic-state defer 单独建单跟踪（`vanquished vanguard nergalle cast`，分析器上限） | 建 Issue，含 reentry trigger；台账引用该 Issue | 无 | ✅ 完成（2026-08-14，建 Issue #68；`docs/monspell-review-results.md` 该卡 `deferral_owner` 已指向 crawl-coder 行为分析器修复，reentry trigger 已记录；#68 仍 OPEN 待 `crawl-coder` 修复后重审） |
 | W4 | P2 | R4 `shout`/`insult` 家族全量校对（共享 ShoutDB provenance 边界） | 子 Issue + inventory + 逐身份审核 + 机械路由 + schema-v4 Final Gate | 先冻结 ShoutDB 共享加载边界 | ✅ 完成（2026-08-14，合并 `b215ba6d`；124 卡 101 keep/23 adjust，7 轮评审收敛；期间修复 shout.cc/_get_species_insult 查找键本地化协议缺陷（I69-R4-CODE-001）并同步协议锚点注册至 base） |
-| W5 | P2 | R4 `monspeak` 家族全量校对（最大语料） | 同上 | W4 的 provenance 模式可复用 | 待办 |
+| W5 | P2 | R4 `monspeak` 家族全量校对（最大语料） | 同上 | W4 的 provenance 模式可复用 | ✅ 完成（2026-08-18，合并 `ab797d8d71`，范围 `b215ba6d..ab797d8d71` 共 45 提交；733 卡 = 320 adjust / 334 keep / 79 retranslate / 0 defer；schema-v4 终审 Go，GitHub Actions `32149621520` success；子 Issue #70 已关闭） |
 | W6 | P2 | R0 覆盖映射（全部 TextDB 家族唯一审核归属、排除项、重入条件） | 文档化映射；每个家族有归属或明确排除依据 | 无 | ✅ 完成（2026-08-14，docs/textdb-coverage-map.md；13 分组/40 文件分类，3 项待建子批、2 项部分覆盖有依据、montitle 归属待裁决） |
 | W7 | P2 | R5 `quotes` 引文全量校对 | 子 Issue + 复用 #3 与怪物/法术专名证据 | W6 | 待办 |
 | W8 | P2 | R6 增量维护入口实际使用并记录证据 | 一次真实 inventory 重生成/失效复核记录 | W4-W7 完成后 | 待办 |

@@ -49,7 +49,7 @@
 | speak/miscast | ✅ | #56 | docs/miscast-review-results.md |
 | speak/godspeak | ✅ | #25（神祇台词域） | god ledger + #25 关闭评论 |
 | misc/decorlines | ✅ | #67 | docs/decorlines-review-results.md |
-| **speak/monspeak** | 🔲 | #40 待建子批（W5） | — |
+| speak/monspeak | ✅ | #70（怪物说话消息域） | docs/monspeak-review-results.md |
 | **shout/shout + speak|shout/insult（共享）** | 🔲 | #40 待建子批（W4，需先冻结 ShoutDB 共享 provenance） | — |
 | **misc/miscname/montitle/gizmo** | 🔲 | 待定：montitle 与 #24 怪物域、gizmo 与 #29 随机神器组件域重叠，需边界裁决 | — |
 | **quotes/quotes.txt** | 🔲 | #40 R5 待建子批（W7；#3 提供专名引用部分证据） | #3 |
@@ -90,5 +90,6 @@
 ## 关闭条件映射（#40）
 
 - 本映射完成"所有目标 TextDB 组均有唯一审核归属"（除 ⚠️ 两项有明确证据依据、🔲 三项待建子批）。
-- 关闭 #40 前还需：W4（shout/insult）、W5（monspeak）、W7（quotes）子批完成并关闭；
+- 关闭 #40 前还需：W7（quotes）子批完成并关闭；
   montitle/gizmo/miscname 归属裁决；R6 增量复核入口实际使用一次并记录证据。
+  （W4 shout/insult #69、W5 monspeak #70 已完成并关闭。）
