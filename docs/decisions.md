@@ -3821,6 +3821,14 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   `branches.txt`/`monsters.txt` 中神灵 Sheza 音译一致，但法术
   `Sheza's Dance → 谢扎之舞`（[D-C-045]）使用不同音译；两域各自内部一致，
   跨域统一超出本 Issue 范围，留待法术命名域复审时处理，不在本次改动。
+- **Glossary bookkeeping note**: 本次 glossary monster-titles 表从"首批 15
+  项"扩为完整 86 项时，顺带修正了一处与本次 6 项 `adjust` 无关的历史遗留
+  不一致：`Agnes title` 的 glossary 快照行长期停留在 `47c2fefb0b`
+  （2026-07-13）写入的 `漫游者艾格尼丝`，但 `montitle.txt` 本身早在
+  `8c1b321ab1`（2026-07-14，job-name SSOT 统一）就已改为 `流浪者艾格尼丝`
+  并延续至今；glossary 快照此前未同步，与运行时文本不符。本次全表重建从
+  当前 `montitle.txt` 派生，一并修正为 `流浪者艾格尼丝`，与文件内容一致；
+  `montitle.txt` 本身在本次改动前后均为 `流浪者艾格尼丝`，无内容变化。
 - **Rejected alternatives**: 保留原创性主题化意译（如 `编织者`/`缚魂者`/
   `精英半人马`）——均因替换而非补充英文标题的核心语义，不采纳。
 - **Affected files**:
