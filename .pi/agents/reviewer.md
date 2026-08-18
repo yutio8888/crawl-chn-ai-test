@@ -1,10 +1,10 @@
 ---
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
-model: openai-codex/gpt-5.6-sol
-fallbackModels: command-code/muse-spark-1.2-contributor
+model: opencode-go/glm-5.2
+fallbackModels: opencode-go/glm-5.2
 tools: read, grep, find, ls, bash, intercom
-thinking: xhigh
+thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

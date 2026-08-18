@@ -1,10 +1,10 @@
 ---
 name: translation-reviewer
 description: DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice
-model: command-code/muse-spark-1.2-contributor
-fallbackModels: command-code/muse-spark-1.2-contributor
+model: command-code-goat/google/gemini-3.7-flash
+fallbackModels: command-code-goat/google/gemini-3.7-flash
 tools: read, grep, find, ls, bash
-thinking: max
+thinking: off
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

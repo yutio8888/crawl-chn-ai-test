@@ -1,8 +1,10 @@
 ---
 name: zh-code-reviewer
 description: DCSS Chinese i18n implementation reviewer — runtime safety, protocol/display separation, formats, TextDB integrity, compilation, and scanner triage
-model: openai-codex/gpt-5.6-sol
+model: opencode-go/glm-5.2
+fallbackModels: opencode-go/glm-5.2
 tools: read, grep, find, ls, bash
+thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
