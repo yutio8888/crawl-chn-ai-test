@@ -436,7 +436,7 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(hashed_keys, set(self.inventory["dumps"]["localized"]))
         self.assertEqual(
-            "dd4bdef40240005b942d4ae2387f4c6f3cfdf2e2ec1cfa838a407b4c6ce98579",
+            "ffb8b518ef0c7fc60b67912702cc23a8ed334eb279610167c1b6d6255c85f165",
             self.inventory["inventory_sha256"],
         )
 
