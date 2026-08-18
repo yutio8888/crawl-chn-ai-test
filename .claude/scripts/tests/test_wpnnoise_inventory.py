@@ -870,6 +870,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
     def review_records_for(
         self, candidate_zh: dict | None = None,
         actions_by_key: dict | None = None,
+        inventory: dict | None = None,
     ) -> list[dict]:
         """Synthetic strict review bound to a candidate ZH artifact.
 
@@ -880,7 +881,11 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         action texts are bound to the candidate's inserted variants or the
         baseline's removed orphan.  In-range add ordinals borrow the proposal
         slot (placeholder convention) exactly like the approved kazoo cards.
+        ``inventory`` defaults to the live-worktree baseline inventory;
+        candidate-tree fixtures must pass a glossary_ref-bound inventory
+        so glossary_sha256 / inventory_sha256 follow that tree (Issue #74).
         """
+        inventory = inventory or self.inventory
         candidate_zh = candidate_zh or self.candidate_zh_artifact
         actions_by_key = actions_by_key or APPROVED_ACTIONS
         candidate_texts = {
@@ -890,7 +895,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             for entry in candidate_zh["entries"]
         }
         cards = []
-        for entry in self.inventory["entries"]:
+        for entry in inventory["entries"]:
             key = entry["key"]
             actions = []
             overrides = {}
@@ -961,7 +966,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
                 for ordinal in range(len(entry["variants"]))
             ]
             card = card_for(
-                self.inventory, entry,
+                inventory, entry,
                 conclusion=MODULE._aggregate(conclusions),
                 variant_override=overrides,
             )
@@ -972,7 +977,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             counts[card["terminal_conclusion"]] = (
                 counts.get(card["terminal_conclusion"], 0) + 1
             )
-        return [metadata_for(self.inventory, counts), *cards]
+        return [metadata_for(inventory, counts), *cards]
 
     def test_candidate_english_is_byte_identical_to_baseline(self):
         self.assertEqual(derived_of(self.en_artifact),
@@ -1872,17 +1877,26 @@ class WpnnoiseInventoryTests(unittest.TestCase):
 
     def test_cli_candidate_flow_reads_ledger_from_candidate_tree(self):
         # The candidate-flow inventory binds the glossary to the exact
-        # candidate commit tree; the frozen worktree glossary is identical.
+        # candidate commit tree. Later batches may edit the live
+        # docs/glossary.md; that must not require the historical
+        # CANDIDATE tree bytes to match the worktree (Issue #74).
         cli_inventory = MODULE.build_inventory(
             BASELINE, self.en_path, self.zh_path,
             ROOT / "docs/glossary.md", glossary_ref=CANDIDATE,
         )
-        self.assertEqual(self.inventory["inventory_sha256"],
-                         cli_inventory["inventory_sha256"])
-        self.assertEqual(self.inventory["glossary"]["sha256"],
+        candidate_glossary_sha256 = MODULE._sha256(
+            MODULE._candidate_regular_blob(
+                CANDIDATE,
+                MODULE._repo_relative_git_path(
+                    ROOT / "docs/glossary.md", "glossary",
+                ),
+                "glossary",
+            )
+        )
+        self.assertEqual(candidate_glossary_sha256,
                          cli_inventory["glossary"]["sha256"])
 
-        records = self.review_records_for()
+        records = self.review_records_for(inventory=cli_inventory)
         ledger_text = (
             MODULE.STRICT_BEGIN + "\n```jsonl\n"
             + "\n".join(
