@@ -11,6 +11,12 @@ The script deliberately records language-structure differences without
 turning them into translation judgements.  Malformed/unknown tokens and
 unexplained producer or lifecycle gaps are emitted as blocking violations, so
 the baseline inventory remains inspectable while the CLI still fails closed.
+
+Consumer, producer, and evidence locators bind to stable source-text
+anchors (unique consumer fragments, TextDB keys, and call-site text with
+occurrence ordinals), so unrelated line-number shifts cannot drift a frozen
+ledger, while any real consumer-shape change still fails closed through the
+uniqueness checks.
 """
 
 from __future__ import annotations
@@ -175,17 +181,13 @@ def _line_number(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
 
-def _location(path: str, text: str, offset: int) -> str:
-    return f"{path}:{_line_number(text, offset)}"
-
-
-def _single_fragment(text: str, fragment: str, path: str) -> str:
-    """Return an exact source location, rejecting missing/ambiguous facts."""
+def _single_fragment(text: str, fragment: str, path: str) -> None:
+    """Reject missing or ambiguous consumer fragments."""
     if text.count(fragment) != 1:
         raise RuntimeError(
             f"{path}: expected exactly one consumer fragment {fragment!r}"
         )
-    return _location(path, text, text.index(fragment))
+    return None
 
 
 def _canonical_key(raw: str, path: str, line: int) -> str:
@@ -211,16 +213,27 @@ def extract_producers(
         match.start(): match for match in _LITERAL_HINT_CALL_RE.finditer(text)
     }
     facts: dict[str, list[dict[str, object]]] = {}
+    anchor_ordinals: dict[tuple[str, int], int] = {}
+    next_ordinal: Counter[str] = Counter()
 
-    def add(raw: str, function: str, offset: int, kind: str) -> None:
+    def producer_anchor(anchor_text: str, offset: int) -> str:
+        key = (anchor_text, offset)
+        if key not in anchor_ordinals:
+            next_ordinal[anchor_text] += 1
+            anchor_ordinals[key] = next_ordinal[anchor_text]
+        return f"{HINTS_CC}@{anchor_text}#{anchor_ordinals[key]}"
+
+    def add(
+        raw: str, function: str, offset: int, kind: str, anchor_text: str
+    ) -> None:
         canonical = _canonical_key(
             raw, HINTS_CC, _line_number(text, offset)
         )
         facts.setdefault(canonical, []).append({
+            "anchor": producer_anchor(anchor_text, offset),
             "function": function,
             "kind": kind,
             "lookup_key": raw,
-            "location": _location(HINTS_CC, text, offset),
         })
 
     definitions = {
@@ -246,7 +259,13 @@ def extract_producers(
 
     classified: set[int] = set()
     for start, match in literal_by_start.items():
-        add(match.group(2), match.group(1), start, "literal")
+        add(
+            match.group(2),
+            match.group(1),
+            start,
+            "literal",
+            f'{match.group(1)}("{match.group(2)}")',
+        )
         classified.add(start)
 
     for name, pattern in definitions.items():
@@ -296,11 +315,17 @@ def extract_producers(
                     f"{fragment!r}"
                 )
         for value in values:
-            add(template.format(value), "print_hint", match.start(), "finite-family")
+            add(
+                template.format(value),
+                "print_hint",
+                match.start(),
+                "finite-family",
+                match.group(0),
+            )
 
     calls = list(_ANY_HINT_CALL_RE.finditer(text))
     unresolved = [
-        _location(HINTS_CC, text, match.start())
+        f"{HINTS_CC}@{match.group(0)}"
         for match in calls if match.start() not in classified
     ]
     if unresolved:
@@ -329,8 +354,8 @@ def _parse_runtime_test_keys(text: str) -> tuple[list[str], str]:
         raise RuntimeError(
             f"{ZH_RUNTIME_LUA}: localized compatibility keys changed: {keys}"
         )
-    return [lowercase_string(key) for key in keys], _location(
-        ZH_RUNTIME_LUA, text, matches[0].start()
+    return [lowercase_string(key) for key in keys], (
+        f'{ZH_RUNTIME_LUA}@"dissection reminder", "HINT_CONVERT"'
     )
 
 
@@ -346,11 +371,11 @@ def _verify_lifecycle_sources(blobs: dict[str, bytes]) -> dict[str, object]:
             f"{HINTS_H}: TAG34 HINT_FLEEING_MONSTER lifecycle changed"
         )
     runtime_text = blobs[ZH_RUNTIME_LUA].decode("utf-8", errors="strict")
-    test_keys, test_location = _parse_runtime_test_keys(runtime_text)
+    test_keys, test_anchor = _parse_runtime_test_keys(runtime_text)
     return {
-        "fleeing_location": _location(HINTS_H, hints_h, matches[0].start()),
+        "fleeing_anchor": f"{HINTS_H}@HINT_FLEEING_MONSTER",
         "localized_test_keys": test_keys,
-        "localized_test_location": test_location,
+        "localized_test_anchor": test_anchor,
     }
 
 
@@ -390,9 +415,8 @@ def _verify_consumers(blobs: dict[str, bytes]) -> dict[str, str]:
     for path, fragments in required.items():
         text = blobs[path].decode("utf-8", errors="strict")
         for fragment in fragments:
-            locations[f"{path}:{fragment}"] = _single_fragment(
-                text, fragment, path
-            )
+            _single_fragment(text, fragment, path)
+            locations[f"{path}:{fragment}"] = f"{path}@{fragment}"
     return locations
 
 
@@ -906,13 +930,13 @@ def build_payload_from_blobs(
                 "detail": "TextDB identity has no accepted producer/lifecycle evidence",
             })
 
-        producer_locations = [
-            fact["location"] for fact in producer_facts.get(key, [])
+        producer_anchors = [
+            str(fact["anchor"]) for fact in producer_facts.get(key, [])
         ]
         if lifecycle_name == "tag34-enum-compatibility-unconsumed":
-            producer_locations = [str(lifecycle["fleeing_location"])]
+            producer_anchors = [str(lifecycle["fleeing_anchor"])]
         elif lifecycle_name == "localized-test-only-compatibility":
-            producer_locations = [str(lifecycle["localized_test_location"])]
+            producer_anchors = [str(lifecycle["localized_test_anchor"])]
 
         en_tokens = _token_facts(
             english or "", command_names, item_names, allowed_tags, platform_tags
@@ -957,7 +981,7 @@ def build_payload_from_blobs(
         ]
         if lifecycle_name == "tag34-enum-compatibility-unconsumed":
             consumer = {
-                "compatibility_enum": str(lifecycle["fleeing_location"]),
+                "compatibility_enum": str(lifecycle["fleeing_anchor"]),
                 "current_display": None,
             }
         elif lifecycle_name == "localized-test-only-compatibility":
@@ -1001,7 +1025,7 @@ def build_payload_from_blobs(
             "english_raw_key": en.raw_key if en else None,
             "chinese_raw_key": zh.raw_key if zh else None,
             "producer_calls": producer_facts.get(key, []),
-            "producer_locations": producer_locations,
+            "producer_anchors": producer_anchors,
             "consumer": consumer,
             "display_context": display_context,
             "dependency_group": _dependency_group(key),
@@ -1127,17 +1151,24 @@ def parse_review(
     return metadata, cards
 
 
-def _mechanical_fields(row: dict[str, object]) -> dict[str, object]:
-    evidence_locations = list(row["producer_locations"])
-    evidence_locations.extend([
-        f"{HINTS_EN}:{row['english_key_line']}" if row["english_key_line"] else HINTS_EN,
-        f"{HINTS_ZH}:{row['chinese_key_line']}" if row["chinese_key_line"] else HINTS_ZH,
-    ])
-    for value in row["consumer"].values():
+def _consumer_anchor_values(consumer: dict[str, object]) -> list[str]:
+    anchors: list[str] = []
+    for key in sorted(consumer):
+        value = consumer[key]
         if isinstance(value, list):
-            evidence_locations.extend(str(item) for item in value)
+            anchors.extend(str(item) for item in value)
         elif value is not None:
-            evidence_locations.append(str(value))
+            anchors.append(str(value))
+    return anchors
+
+
+def _mechanical_fields(row: dict[str, object]) -> dict[str, object]:
+    evidence_locations = list(row["producer_anchors"])
+    evidence_locations.extend([
+        f"{HINTS_EN}@{row['key']}" if row["english_key_line"] else HINTS_EN,
+        f"{HINTS_ZH}@{row['key']}" if row["chinese_key_line"] else HINTS_ZH,
+    ])
+    evidence_locations.extend(_consumer_anchor_values(row["consumer"]))
     return {
         "consumer": row["consumer"],
         "current_chinese": row["chinese"],
@@ -1148,7 +1179,7 @@ def _mechanical_fields(row: dict[str, object]) -> dict[str, object]:
         "fact_sha256": row["fact_sha256"],
         "identity": row["identity"],
         "lifecycle": row["lifecycle"],
-        "producer": row["producer_calls"] or row["producer_locations"],
+        "producer": row["producer_calls"] or row["producer_anchors"],
         "production_facts": row,
     }
 

@@ -12,6 +12,12 @@ bullet-display path.
 The tool records structural differences for human review but only treats
 malformed markup/Lua, Q/A corruption, missing consumers and incomplete key
 coverage as blockers.  It never judges translation quality.
+
+Consumer, producer, and evidence locators bind to stable source-text
+anchors (unique consumer fragments, TextDB keys, and call-site literals
+with occurrence ordinals), so unrelated line-number shifts cannot drift a
+frozen ledger, while any real consumer-shape change still fails closed
+through the uniqueness checks.
 """
 
 from __future__ import annotations
@@ -135,16 +141,12 @@ def _line_number(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
 
-def _location(path: str, text: str, offset: int) -> str:
-    return f"{path}:{_line_number(text, offset)}"
-
-
-def _single_fragment(text: str, fragment: str, path: str) -> str:
+def _single_fragment(text: str, fragment: str, path: str) -> None:
     if text.count(fragment) != 1:
         raise RuntimeError(
             f"{path}: expected exactly one consumer fragment {fragment!r}"
         )
-    return _location(path, text, text.index(fragment))
+    return None
 
 
 def _effective_entries(blobs: dict[str, bytes], path: str):
@@ -234,14 +236,16 @@ def _extract_help_consumers(
     for path in HELP_CONSUMER_PATHS:
         text = blobs[path].decode("utf-8", errors="strict")
         guards = dict(_preprocessor_guards(text))
+        literal_ordinals: Counter[str] = Counter()
         for match in _STRING_LITERAL_RE.finditer(text):
             literal = match.group(1)
+            literal_ordinals[literal] += 1
             if literal not in keys:
                 continue
             line = _line_number(text, match.start())
             facts[literal].append({
+                "anchor": f'{path}@"{literal}"#{literal_ordinals[literal]}',
                 "guards": list(guards[line]),
-                "location": f"{path}:{line}",
                 "path": path,
             })
     return facts
@@ -290,7 +294,8 @@ def _verify_consumers(blobs: dict[str, bytes]) -> dict[str, str]:
     for path, fragments in required.items():
         text = blobs[path].decode("utf-8", errors="strict")
         for fragment in fragments:
-            locations[f"{path}:{fragment}"] = _single_fragment(text, fragment, path)
+            _single_fragment(text, fragment, path)
+            locations[f"{path}:{fragment}"] = f"{path}@{fragment}"
     return locations
 
 
@@ -902,23 +907,43 @@ def parse_review(
     return metadata, cards
 
 
+def _consumer_anchor_values(consumer: dict[str, object]) -> list[str]:
+    anchors: list[str] = []
+    for key in sorted(consumer):
+        value = consumer[key]
+        if isinstance(value, list):
+            anchors.extend(str(item) for item in value)
+        elif value is not None:
+            anchors.append(str(value))
+    return anchors
+
+
 def _mechanical_fields(row: dict[str, object]) -> dict[str, object]:
-    evidence = []
+    evidence: list[str] = []
     if row["kind"] == "help":
-        evidence.extend(fact["location"] for fact in row["producer"])
-        if row["english_key_line"] is not None:
-            evidence.append(f"{HELP_EN}:{row['english_key_line']}")
-        if row["chinese_key_line"] is not None:
-            evidence.append(f"{HELP_ZH}:{row['chinese_key_line']}")
+        evidence.extend(str(fact["anchor"]) for fact in row["producer"])
+        evidence.append(
+            f"{HELP_EN}@{row['key']}"
+            if row["english_key_line"] is not None else HELP_EN
+        )
+        evidence.append(
+            f"{HELP_ZH}@{row['key']}"
+            if row["chinese_key_line"] is not None else HELP_ZH
+        )
     else:
-        for language, path, field in (
-            ("english", FAQ_EN, "english_key_lines"),
-            ("chinese", FAQ_ZH, "chinese_key_lines"),
+        suffix = row["key"]
+        for path, field in (
+            (FAQ_EN, "english_key_lines"),
+            (FAQ_ZH, "chinese_key_lines"),
         ):
-            del language
-            for line in row[field].values():
-                if line is not None:
-                    evidence.append(f"{path}:{line}")
+            lines = row[field]
+            present: list[str] = []
+            if lines["question"] is not None:
+                present.append(f"{path}@q:{suffix}")
+            if lines["answer"] is not None:
+                present.append(f"{path}@a:{suffix}")
+            evidence.extend(present or [path])
+    evidence.extend(_consumer_anchor_values(row["consumer"]))
     return {
         "consumer": row["consumer"],
         "current_chinese": row["chinese"],
