@@ -1298,7 +1298,7 @@ try:
         actual_identities,
         expected_identities,
     )
-    assert len(production_declarations) == 421, len(
+    assert len(production_declarations) == 423, len(
         production_declarations
     )
     assert all(
