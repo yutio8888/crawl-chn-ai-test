@@ -806,7 +806,7 @@ assert invalid_classify_calls == [], invalid_classify_calls
 with open(sys.argv[4], "r", encoding="utf-8") as stream:
     production_content = stream.read()
 production_blocks = list(module._iter_decision_blocks(production_content))
-assert len(production_blocks) == 171, len(production_blocks)
+assert len(production_blocks) == 172, len(production_blocks)
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)

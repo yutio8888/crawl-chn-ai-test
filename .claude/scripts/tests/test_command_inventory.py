@@ -303,9 +303,13 @@ GLOSSARY = """\
 """
 
 
+def _inventory_temp_root() -> Path:
+    return Path(os.environ.get("DCSS_INVENTORY_TEMP_ROOT", "/tmp"))
+
+
 def fresh_output_path() -> Path:
-    """A brand-new basename directly under the canonical /tmp root."""
-    return Path("/tmp") / (
+    """A brand-new basename directly under the configured temp root."""
+    return _inventory_temp_root() / (
         f"command-inventory-test-{os.getpid()}-{uuid.uuid4().hex}.json")
 
 
@@ -1453,7 +1457,7 @@ class CommandInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            nested = Path("/tmp") / (
+            nested = _inventory_temp_root() / (
                 f"command-inventory-test-{uuid.uuid4().hex}") / "out.json"
             try:
                 result = run_tool(root, nested)
@@ -1467,7 +1471,9 @@ class CommandInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            raw = f"/tmp/command-inventory-test-{uuid.uuid4().hex}/./out.json"
+            raw = (
+                f"{_inventory_temp_root()}/command-inventory-test-"
+                f"{uuid.uuid4().hex}/./out.json")
             result = run_tool(root, raw)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("must not contain '.' or '..' path components",
@@ -1477,7 +1483,7 @@ class CommandInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            out = Path("/tmp") / (
+            out = _inventory_temp_root() / (
                 f"command-inventory-test-{uuid.uuid4().hex}") / ".." / "out.json"
             result = run_tool(root, out)
             self.assertNotEqual(result.returncode, 0)
@@ -1519,7 +1525,7 @@ class CommandInventoryToolTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             make_repo(root)
-            result = run_tool(root, Path("/tmp"))
+            result = run_tool(root, _inventory_temp_root())
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("refusing to write to it", result.stderr)
 

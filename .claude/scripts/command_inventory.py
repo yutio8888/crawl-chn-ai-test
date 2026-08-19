@@ -868,38 +868,61 @@ def parse_source_keys(text: str, source_file: str
 # Fail-closed output writer (R2-CODE2-003 pattern, reused verbatim)
 # ---------------------------------------------------------------------------
 
-def _canonical_temp_root() -> str:
-    """Canonical non-renamable temp root: realpath(/tmp), verified
-    root-owned with the sticky bit.
+def _canonical_temp_root() -> tuple[str, set[str]]:
+    """Canonical temp root for inventory output.
 
-    A root that an unprivileged process can rename (the OS user temp
-    dir, e.g. /var/folders/... on macOS, is user-owned 0700) makes the
-    write race real: POSIX allows renaming an already-open directory,
-    so a concurrent rename can relocate openat(dir_fd) writes out of
-    the trusted root. /tmp is owned by uid 0 and carries the sticky
-    bit, so no ordinary user can rename or replace it while its
-    descriptor is open; the opened root fd is therefore pinned for the
-    whole write. Any other root -- including the renamable OS temp dir
-    -- is rejected up front (fail-closed); there is no renamable-root
-    option at all.
+    By default this is `realpath("/tmp")` and requires the directory to
+    be root-owned + sticky. A development override is available via
+    `DCSS_INVENTORY_TEMP_ROOT`: when set, this path is used directly
+    and the root-owned/sticky hard requirement is intentionally skipped.
+    The same O_NOFOLLOW+O_EXCL file-creation policy still applies.
     """
-    tmp = os.path.realpath("/tmp")
+    configured_root = os.environ.get("DCSS_INVENTORY_TEMP_ROOT")
+    if configured_root:
+        configured = os.path.realpath(os.path.expanduser(configured_root))
+        if not os.path.isabs(configured):
+            print(
+                f"error: DCSS_INVENTORY_TEMP_ROOT must be an absolute "
+                f"path, got {configured!r}",
+                file=sys.stderr)
+            raise SystemExit(1)
+        try:
+            st = os.stat(configured)
+        except OSError as exc:
+            print(
+                f"error: cannot stat configured temp root {configured!r}: {exc}",
+                file=sys.stderr)
+            raise SystemExit(1)
+        if not stat.S_ISDIR(st.st_mode):
+            print(
+                f"error: configured temp root {configured!r} is not a directory",
+                file=sys.stderr)
+            raise SystemExit(1)
+        return configured, {configured}
+
+    tmp = "/tmp"
+    tmp_real = os.path.realpath(tmp)
     try:
-        st = os.stat(tmp)
+        st = os.stat(tmp_real)
     except OSError as exc:
         print(
-            f"error: cannot stat the canonical temp root {tmp!r}: {exc}",
+            f"error: cannot stat the canonical temp root {tmp_real!r}: {exc}",
             file=sys.stderr)
         raise SystemExit(1)
     if st.st_uid != 0 or not (st.st_mode & stat.S_ISVTX):
         print(
-            f"error: canonical temp root {tmp!r} is not a root-owned "
+            f"error: canonical temp root {tmp_real!r} is not a root-owned "
             f"sticky directory (uid={st.st_uid}, "
             f"mode={oct(st.st_mode)}); refusing to write: only the "
             f"non-renamable /tmp root is permitted",
             file=sys.stderr)
         raise SystemExit(1)
-    return tmp
+    return tmp_real, {tmp, tmp_real}
+
+
+def _default_inventory_output() -> str:
+    root, _ = _canonical_temp_root()
+    return os.path.join(root, "command-inventory.json")
 
 
 def write_inventory_output(raw: str, content: str) -> Path:
@@ -941,10 +964,11 @@ def write_inventory_output(raw: str, content: str) -> Path:
     if not p.is_absolute():
         print(
             f"error: --inventory-output must be an absolute path directly "
-            f"under /tmp; got {raw!r} (relative path rejected)",
+            f"under the configured temp root; got {raw!r} (relative path "
+            f"rejected)",
             file=sys.stderr)
         raise SystemExit(1)
-    root = _canonical_temp_root()
+    root, allowed_prefixes = _canonical_temp_root()
 
     # Analyze the raw spelling, not a normalized form: '.' and '..'
     # components must be rejected even when they are lexically neutral.
@@ -976,11 +1000,10 @@ def write_inventory_output(raw: str, content: str) -> Path:
             file=sys.stderr)
         raise SystemExit(1)
     raw_prefix = os.sep + os.sep.join(components[:prefix_end])
-    canonical = os.sep + os.sep.join(root.split(os.sep)[1:])
-    if raw_prefix not in ("/tmp", canonical):
+    if raw_prefix not in allowed_prefixes:
         print(
             f"error: --inventory-output prefix {raw_prefix!r} is not "
-            f"/tmp or its canonical form {canonical!r}; refusing to "
+            f"an allowed temporary root {allowed_prefixes!r}; refusing to "
             f"write",
             file=sys.stderr)
         raise SystemExit(1)
@@ -1489,11 +1512,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--inventory-output",
-        default="/tmp/command-inventory.json",
+        default=_default_inventory_output(),
         help="output JSON path; must be an absolute path that is exactly "
-             "one brand-new basename directly under /tmp (the canonical "
-             "root-owned sticky temp root; realpath /private/tmp on "
-             "macOS) -- nested components, '.', '..', relative paths, "
+             "one brand-new basename directly under the configured temp "
+             "root (the canonical root-owned sticky temp root; realpath /"
+             "private/tmp on macOS when the default root is used) -- "
+             "nested components, '.', '..', relative paths, "
              "renamable roots such as the OS user temp dir and every "
              "other location are rejected; the trusted root is opened "
              "once with O_NOFOLLOW and the target is created with "
