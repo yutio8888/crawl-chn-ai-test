@@ -1,8 +1,8 @@
 ---
 name: translation-reviewer
 description: DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice
-model: command-code-goat/google/gemini-3.7-flash
-fallbackModels: command-code-goat/google/gemini-3.7-flash
+model: commandcode/google/gemini-3.7-flash
+fallbackModels: commandcode/google/gemini-3.7-flash
 tools: read, grep, find, ls, bash
 thinking: off
 systemPromptMode: replace
