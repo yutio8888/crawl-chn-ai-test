@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 import unittest
@@ -132,7 +133,7 @@ class HelpInventoryTests(unittest.TestCase):
         self.assertEqual("console-only", lifecycle["console-keycodes"])
         self.assertEqual("wizard-only", lifecycle["wiz-monster"])
         self.assertTrue(all(
-            row["consumer"]["lookup"].startswith(MODULE.DATABASE_CC + ":")
+            row["consumer"]["lookup"].startswith(MODULE.DATABASE_CC + "@")
             for row in rows
         ))
 
@@ -353,6 +354,80 @@ class HelpInventoryTests(unittest.TestCase):
             capture_output=True,
         )
         self.assertNotEqual(0, proc.returncode)
+
+    def test_unrelated_cpp_line_shift_keeps_locator_fields_stable(self):
+        probe = b"// unrelated line-shift probe\n"
+        shifted = dict(self.blobs)
+        cpp_paths = (
+            MODULE.DATABASE_CC,
+            MODULE.DATABASE_H,
+            MODULE.COMMAND_CC,
+            MODULE.MACRO_CC,
+            MODULE.MENU_CC,
+            MODULE.INVENT_CC,
+            MODULE.KNOWN_ITEMS_CC,
+            MODULE.WIZ_MON_CC,
+            MODULE.FORMAT_CC,
+            MODULE.COLOUR_CC,
+        )
+        for path in cpp_paths:
+            shifted[path] = probe + shifted[path]
+            self.assertNotEqual(self.blobs[path], shifted[path], path)
+        original = MODULE.build_payload_from_blobs(BASELINE, dict(self.blobs))
+        rebuilt = MODULE.build_payload_from_blobs(BASELINE, shifted)
+        self.assertEqual(
+            [row["identity"] for row in original["inventory"]],
+            [row["identity"] for row in rebuilt["inventory"]],
+        )
+        for left, right in zip(original["inventory"], rebuilt["inventory"]):
+            left_fields = MODULE._mechanical_fields(left)
+            right_fields = MODULE._mechanical_fields(right)
+            for field in ("consumer", "evidence_locations", "producer", "fact_sha256"):
+                self.assertEqual(
+                    left_fields[field],
+                    right_fields[field],
+                    f"{left['identity']}:{field}",
+                )
+
+    def test_locators_bind_to_anchors_not_line_numbers(self):
+        producer_anchor = re.compile(
+            r'^[^@]+@"[^"]+"#\d+$'
+        )
+
+        def collect(value):
+            if value is None:
+                return
+            if isinstance(value, str):
+                yield value
+                return
+            if isinstance(value, dict):
+                for item in value.values():
+                    yield from collect(item)
+                return
+            if isinstance(value, list):
+                for item in value:
+                    yield from collect(item)
+
+        for row in self.payload["inventory"]:
+            for value in collect(row["consumer"]):
+                self.assertIn("@", value, row["identity"])
+                self.assertIsNone(
+                    re.search(r":\d+$", value),
+                    f"{row['identity']}:consumer {value!r}",
+                )
+            for value in MODULE._mechanical_fields(row)["evidence_locations"]:
+                self.assertIn("@", value, row["identity"])
+                self.assertIsNone(
+                    re.search(r":\d+$", value),
+                    f"{row['identity']}:evidence {value!r}",
+                )
+            if row["kind"] == "help":
+                for fact in row["producer"]:
+                    self.assertRegex(
+                        fact["anchor"],
+                        producer_anchor,
+                        row["identity"],
+                    )
 
 
 if __name__ == "__main__":

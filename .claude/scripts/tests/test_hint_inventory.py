@@ -9,6 +9,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -23,7 +24,7 @@ SPEC.loader.exec_module(MODULE)
 
 BASELINE = "61b35104580fb56340e3cdac87ca5fffa36788bf"
 BASELINE_INVENTORY_SHA256 = (
-    "8a756e6447b258eb6e53742f10ae79cbd257ddb0e19ab13926928940096242fd"
+    "245d92458c8af11e807953f4643f17ad64388af4a21a0d75cbbe528bf08caf20"
 )
 
 TEST_PLATFORM_TAGS = set(MODULE._PLATFORM_UNTAG_ORDER)
@@ -681,6 +682,78 @@ class HintInventoryTests(unittest.TestCase):
         ) as nested:
             with self.assertRaises(SystemExit):
                 MODULE.write_inventory_output(str(Path(nested) / "new.json"), "{}")
+
+    def test_unrelated_cpp_line_shift_keeps_locator_fields_stable(self):
+        cpp_probe = b"// unrelated line-shift probe\n"
+        lua_probe = b"-- unrelated line-shift probe\n"
+        shifted = dict(self.blobs)
+        cpp_paths = (
+            MODULE.HINTS_CC,
+            MODULE.HINTS_H,
+            MODULE.COMMAND_TYPE_H,
+            MODULE.DATABASE_CC,
+            MODULE.L_CRAWL_CC,
+            MODULE.CTEST_CC,
+            MODULE.INVENT_CC,
+            MODULE.FORMAT_CC,
+            MODULE.COLOUR_CC,
+            MODULE.LIBUTIL_CC,
+        )
+        for path in cpp_paths:
+            shifted[path] = cpp_probe + shifted[path]
+            self.assertNotEqual(self.blobs[path], shifted[path], path)
+        shifted[MODULE.ZH_RUNTIME_LUA] = lua_probe + shifted[MODULE.ZH_RUNTIME_LUA]
+        self.assertNotEqual(
+            self.blobs[MODULE.ZH_RUNTIME_LUA], shifted[MODULE.ZH_RUNTIME_LUA]
+        )
+        original = MODULE.build_payload_from_blobs(BASELINE, dict(self.blobs))
+        rebuilt = MODULE.build_payload_from_blobs(BASELINE, shifted)
+        self.assertEqual(
+            [row["identity"] for row in original["inventory"]],
+            [row["identity"] for row in rebuilt["inventory"]],
+        )
+        for left, right in zip(original["inventory"], rebuilt["inventory"]):
+            left_fields = MODULE._mechanical_fields(left)
+            right_fields = MODULE._mechanical_fields(right)
+            for field in ("consumer", "evidence_locations", "producer", "fact_sha256"):
+                self.assertEqual(
+                    left_fields[field],
+                    right_fields[field],
+                    f"{left['identity']}:{field}",
+                )
+
+    def test_locators_bind_to_anchors_not_line_numbers(self):
+        def collect(value):
+            if value is None:
+                return
+            if isinstance(value, str):
+                yield value
+                return
+            if isinstance(value, dict):
+                for item in value.values():
+                    yield from collect(item)
+                return
+            if isinstance(value, list):
+                for item in value:
+                    yield from collect(item)
+
+        def assert_anchor(value: str, label: str) -> None:
+            if value not in {MODULE.HINTS_EN, MODULE.HINTS_ZH}:
+                self.assertIn("@", value, label)
+            self.assertIsNone(re.search(r":\d+$", value), label)
+
+        for row in self.payload["inventory"]:
+            for value in collect(row["consumer"]):
+                assert_anchor(value, f"{row['identity']}:consumer {value!r}")
+            for value in MODULE._mechanical_fields(row)["evidence_locations"]:
+                assert_anchor(value, f"{row['identity']}:evidence {value!r}")
+            for value in row["producer_anchors"]:
+                assert_anchor(value, f"{row['identity']}:producer_anchor {value!r}")
+            for fact in row["producer_calls"]:
+                assert_anchor(
+                    fact["anchor"],
+                    f"{row['identity']}:producer_fact {fact['anchor']!r}",
+                )
 
 
 if __name__ == "__main__":
