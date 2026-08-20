@@ -395,7 +395,13 @@ def build_payload(baseline: str) -> dict[str, object]:
         "chinese_minus_english": sorted(set(zh_order) - set(en_order)),
         "canonical_order_equal": en_order == zh_order,
         "section_assignments_equal": en_sections == zh_sections,
-        "alias_graph_equal": aliases == zh_aliases,
+        "alias_graph_equal": (
+            aliases == zh_aliases
+            and all(
+                row["alias_target"] == row["chinese_alias_target"]
+                for row in inventory
+            )
+        ),
         "identity_count": len(inventory),
         "direct_quote_count": sum(row["lifecycle"] == "direct-quote" for row in inventory),
         "alias_count": sum(row["lifecycle"] == "alias" for row in inventory),
@@ -607,6 +613,25 @@ def candidate_agreement(
     baseline_ids = [row["identity"] for row in inventory]
     candidate_ids = [row["identity"] for row in candidate_inventory]
     protected_input_drift = _protected_input_drift(payload, candidate_payload)
+    candidate_english_minus_chinese = candidate_payload["english_minus_chinese"]
+    candidate_chinese_minus_english = candidate_payload["chinese_minus_english"]
+    assert isinstance(candidate_english_minus_chinese, list)
+    assert isinstance(candidate_chinese_minus_english, list)
+    structural_drift.extend(
+        f"candidate:english_minus_chinese:{key}"
+        for key in candidate_english_minus_chinese
+    )
+    structural_drift.extend(
+        f"candidate:chinese_minus_english:{key}"
+        for key in candidate_chinese_minus_english
+    )
+    for field in (
+        "canonical_order_equal",
+        "section_assignments_equal",
+        "alias_graph_equal",
+    ):
+        if not candidate_payload[field]:
+            structural_drift.append(f"candidate:{field}")
     return {
         "candidate": candidate,
         "candidate_agrees": (
@@ -620,6 +645,13 @@ def candidate_agreement(
         "candidate_minus_baseline": sorted(set(candidate_ids) - set(baseline_ids)),
         "baseline_minus_candidate": sorted(set(baseline_ids) - set(candidate_ids)),
         "canonical_order_equal": baseline_ids == candidate_ids,
+        "candidate_alias_graph_equal": candidate_payload["alias_graph_equal"],
+        "candidate_canonical_order_equal": candidate_payload["canonical_order_equal"],
+        "candidate_chinese_minus_english": candidate_chinese_minus_english,
+        "candidate_english_minus_chinese": candidate_english_minus_chinese,
+        "candidate_section_assignments_equal": candidate_payload[
+            "section_assignments_equal"
+        ],
         "english_drift": sorted(english_drift),
         "protected_input_drift": protected_input_drift,
         "structural_drift": sorted(structural_drift),

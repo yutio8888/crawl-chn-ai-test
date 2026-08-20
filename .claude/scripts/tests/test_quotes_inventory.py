@@ -6,7 +6,10 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
+import subprocess
+import tempfile
 import unittest
 
 
@@ -88,6 +91,52 @@ BASELINE = quotes.resolve_commit("HEAD")
 PAYLOAD = quotes.build_payload(BASELINE)
 
 
+def _git_plumbing(arguments: list[str], input_text: str | None = None,
+                  extra_env: dict[str, str] | None = None) -> str:
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "quotes inventory test",
+        "GIT_AUTHOR_EMAIL": "quotes-inventory-test@example.invalid",
+        "GIT_COMMITTER_NAME": "quotes inventory test",
+        "GIT_COMMITTER_EMAIL": "quotes-inventory-test@example.invalid",
+        **(extra_env or {}),
+    }
+    completed = subprocess.run(
+        ["git", "-C", str(ROOT), *arguments],
+        input=input_text,
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    return completed.stdout.strip()
+
+
+def _candidate_commit_with_zh(zh_text: str) -> str:
+    """Create an exact-Git candidate without touching the worktree or refs."""
+    blob = _git_plumbing(["hash-object", "-w", "--stdin"], zh_text)
+    with tempfile.TemporaryDirectory(prefix="quotes-inventory-", dir="/tmp") as temp:
+        env = {"GIT_INDEX_FILE": str(Path(temp) / "index")}
+        _git_plumbing(["read-tree", BASELINE], extra_env=env)
+        _git_plumbing(
+            ["update-index", "--cacheinfo", "100644", blob, quotes.QUOTES_ZH],
+            extra_env=env,
+        )
+        tree = _git_plumbing(["write-tree"], extra_env=env)
+    return _git_plumbing(
+        ["commit-tree", tree, "-p", BASELINE, "-m", "quotes candidate fixture"]
+    )
+
+
+def _committed_zh() -> str:
+    return _git_plumbing(["show", f"{BASELINE}:{quotes.QUOTES_ZH}"])
+
+
+def _keep_review() -> object:
+    cards = [_card(row) for row in PAYLOAD["inventory"]]
+    return _audit_input(_review_text(PAYLOAD, cards))
+
+
 class QuotesInventoryTests(unittest.TestCase):
     def test_real_inventory_is_complete_unique_and_symmetric(self) -> None:
         inventory = PAYLOAD["inventory"]
@@ -120,6 +169,70 @@ class QuotesInventoryTests(unittest.TestCase):
         candidate = json.loads(json.dumps(PAYLOAD))
         candidate["inputs"][quotes.QUOTES_ZH]["sha256"] = "0" * 64
         self.assertEqual([], quotes._protected_input_drift(PAYLOAD, candidate))
+
+    def test_candidate_extra_zh_key_is_rejected(self) -> None:
+        mutated = _committed_zh() + "\n%%%%\nissue72 extra fixture\nfixture body\n"
+        result = quotes.candidate_agreement(
+            PAYLOAD, _keep_review(), _candidate_commit_with_zh(mutated)
+        )
+        self.assertFalse(result["candidate_agrees"])
+        self.assertEqual(
+            ["issue72 extra fixture"], result["candidate_chinese_minus_english"]
+        )
+        self.assertIn(
+            "candidate:chinese_minus_english:issue72 extra fixture",
+            result["structural_drift"],
+        )
+
+    def test_candidate_zh_reordering_is_rejected(self) -> None:
+        parts = _committed_zh().split("\n%%%%\n")
+        parts[1], parts[2] = parts[2], parts[1]
+        result = quotes.candidate_agreement(
+            PAYLOAD, _keep_review(), _candidate_commit_with_zh("\n%%%%\n".join(parts))
+        )
+        self.assertFalse(result["candidate_agrees"])
+        self.assertFalse(result["candidate_canonical_order_equal"])
+        self.assertIn("candidate:canonical_order_equal", result["structural_drift"])
+
+    def test_candidate_zh_section_move_is_rejected(self) -> None:
+        text = _committed_zh()
+        heading = (
+            "\n########################################\n"
+            "#\n# Dungeon branches\n#\n"
+            "########################################"
+        )
+        self.assertEqual(1, text.count(heading))
+        text = text.replace(heading, "", 1)
+        marker = "\n%%%%\nA tree\n"
+        self.assertEqual(1, text.count(marker))
+        text = text.replace(marker, heading + marker, 1)
+        result = quotes.candidate_agreement(
+            PAYLOAD, _keep_review(), _candidate_commit_with_zh(text)
+        )
+        self.assertFalse(result["candidate_agrees"])
+        self.assertFalse(result["candidate_section_assignments_equal"])
+        self.assertIn(
+            "candidate:section_assignments_equal", result["structural_drift"]
+        )
+
+    def test_candidate_zh_alias_topology_change_is_rejected(self) -> None:
+        text = _committed_zh()
+        self.assertEqual(1, text.count("<Desolation>"))
+        text = text.replace("<Desolation>", "<Abyss>", 1)
+        cards = [_card(row) for row in PAYLOAD["inventory"]]
+        card = next(
+            card for card in cards if card["identity"] == "quotes:a crumbling gateway"
+        )
+        card["terminal_conclusion"] = "adjust"
+        card["proposed_translation"] = "<Abyss>"
+        review = _audit_input(_review_text(PAYLOAD, cards))
+        result = quotes.candidate_agreement(
+            PAYLOAD, review, _candidate_commit_with_zh(text)
+        )
+        self.assertFalse(result["candidate_agrees"])
+        self.assertEqual([], result["translation_mismatches"])
+        self.assertFalse(result["candidate_alias_graph_equal"])
+        self.assertIn("candidate:alias_graph_equal", result["structural_drift"])
 
     def test_candidate_review_path_outside_repository_is_rejected(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "outside the repository"):
