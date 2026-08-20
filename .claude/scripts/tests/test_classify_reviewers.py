@@ -96,6 +96,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "monspeak-review-results.md",
             "monspell-review-results.md",
             "monster-review-results.md",
+            "quotes-review-results.md",
             "shout-review-results.md",
             "species-background-review-results.md",
             "spell-name-review-results.md",

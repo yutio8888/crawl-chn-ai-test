@@ -35,6 +35,37 @@ printf '%s\n' 'void f() { conj_verb("attack"); }' \
 ) > "$TMP_ROOT/english.out" 2>&1
 grep -q 'No conj_verb calls with Chinese strings detected' "$TMP_ROOT/english.out"
 
+SPELL_REPO="$TMP_ROOT/spells"
+SPELL_BIN="$TMP_ROOT/spell-bin"
+mkdir -p \
+    "$SPELL_REPO/.claude/scripts" \
+    "$SPELL_REPO/crawl-ref/source/dat/descript/zh" \
+    "$SPELL_BIN"
+cp "$SCRIPT_DIR/../check_consistency.sh" \
+    "$SPELL_REPO/.claude/scripts/check_consistency.sh"
+printf '%s\n' 'Alpha spell' 'Beta spell' \
+    > "$SPELL_REPO/crawl-ref/source/dat/descript/spells.txt"
+printf '%s\n' 'Alpha spell' 'Beta spell' \
+    > "$SPELL_REPO/crawl-ref/source/dat/descript/zh/spells.txt"
+for tool in sort comm; do
+    real_tool=$(command -v "$tool")
+    printf '%s\n' \
+        '#!/bin/bash' \
+        'if [[ "${LC_ALL:-}" != C ]]; then' \
+        '    echo "spell key comparison did not bind LC_ALL=C" >&2' \
+        '    exit 97' \
+        'fi' \
+        "exec $real_tool \"\$@\"" \
+        > "$SPELL_BIN/$tool"
+    chmod +x "$SPELL_BIN/$tool"
+done
+(
+    cd "$SPELL_REPO"
+    PATH="$SPELL_BIN:/usr/bin:/bin" LC_ALL=en_US.utf8 \
+        /bin/bash .claude/scripts/check_consistency.sh --spells --strict
+) > "$TMP_ROOT/spells.out" 2>&1
+grep -q 'Spell keys fully consistent with EN' "$TMP_ROOT/spells.out"
+
 TRUSTED_REPO="$TMP_ROOT/trusted"
 CANDIDATE_REPO="$TMP_ROOT/candidate"
 mkdir -p \

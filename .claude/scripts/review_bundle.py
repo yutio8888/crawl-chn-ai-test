@@ -132,6 +132,8 @@ REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 GITHUB_RUN_ID_RE = re.compile(r"^[1-9][0-9]*$")
 GITHUB_ACTIONS_PROOF_SCHEMA = "dcss-zh-github-actions-proof-v1"
 GITHUB_ACTIONS_PROOF_ARTIFACT = "github-actions-proof.json"
+GITHUB_PROOF_UNAVAILABLE_EXIT = 75
+GITHUB_LOCAL_FALLBACK_REASON = "github-actions-proof-unavailable"
 TRUSTED_GITHUB_PROOF_HELPER_PATH = (
     ".claude/scripts/fetch_github_ci_proof.py"
 )
@@ -179,6 +181,10 @@ class UnsafeObjectError(ReviewBundleError):
 
 class StaleEvidenceError(ReviewBundleError):
     """A dead running marker or abandoned staging object requires recovery."""
+
+
+class ExternalCiUnavailableError(ReviewBundleError):
+    """Live GitHub proof could not be fetched for an availability reason."""
 
 
 def canonical_json_bytes(value: Any) -> bytes:
@@ -1380,7 +1386,7 @@ def _validate_external_ci(
     fail-closed: every field is fixed by the trusted contract and cannot be
     overridden by a caller.
     """
-    if not isinstance(external_ci, dict) or frozenset(external_ci) != frozenset(
+    legacy_fields = frozenset(
         (
             "enabled",
             "bind_target_sha",
@@ -1392,10 +1398,24 @@ def _validate_external_ci(
             "proof_artifact",
             "proof_schema",
         )
+    )
+    current_fields = legacy_fields | {"allow_local_fallback"}
+    if not isinstance(external_ci, dict) or frozenset(external_ci) not in (
+        legacy_fields,
+        current_fields,
     ):
         raise ReviewBundleError(f"{label} external_ci fields are invalid")
+    # Preserve the historical mapping exactly.  Callers use .get(...), so an
+    # absent opt-in remains fail-closed without migrating sealed evidence.
     if external_ci.get("enabled") is not True:
         raise ReviewBundleError(f"{label} external_ci is not enabled")
+    if (
+        "allow_local_fallback" in external_ci
+        and not isinstance(external_ci["allow_local_fallback"], bool)
+    ):
+        raise ReviewBundleError(
+            f"{label} external_ci.allow_local_fallback is invalid"
+        )
     if not isinstance(external_ci.get("bind_target_sha"), bool):
         raise ReviewBundleError(f"{label} external_ci.bind_target_sha is invalid")
     repository = external_ci.get("repository")
@@ -2019,6 +2039,61 @@ def _validate_metadata(
         phase["status"] == "fail" for phase in phases
     ):
         raise ReviewBundleError("pass metadata contains a failed phase")
+    metadata_external_ci = metadata.get("external_ci")
+    if has_external_phase:
+        if not isinstance(metadata_external_ci, dict) or frozenset(
+            metadata_external_ci
+        ) != frozenset(
+            (
+                "schema",
+                "repository",
+                "run_id",
+                "proof_artifact",
+                "github_actions_run",
+            )
+        ):
+            raise ReviewBundleError(
+                "GitHub Actions sourced phases require bound external metadata"
+            )
+        if (
+            external_ci is None
+            or metadata_external_ci.get("schema") != external_ci["proof_schema"]
+            or metadata_external_ci.get("repository") != external_ci["repository"]
+            or metadata_external_ci.get("proof_artifact")
+            != external_ci["proof_artifact"]
+            or not isinstance(metadata_external_ci.get("run_id"), int)
+            or metadata_external_ci["run_id"] <= 0
+            or not isinstance(
+                metadata_external_ci.get("github_actions_run"), str
+            )
+            or not GITHUB_RUN_ID_RE.fullmatch(
+                metadata_external_ci["github_actions_run"]
+            )
+            or str(metadata_external_ci["run_id"])
+            != metadata_external_ci["github_actions_run"]
+        ):
+            raise ReviewBundleError("GitHub Actions external metadata is invalid")
+    elif metadata_external_ci is not None:
+        if not isinstance(metadata_external_ci, dict) or frozenset(
+            metadata_external_ci
+        ) != frozenset(
+            ("source", "fallback_reason", "github_actions_run")
+        ):
+            raise ReviewBundleError("local fallback metadata fields are invalid")
+        if (
+            external_ci is None
+            or external_ci.get("allow_local_fallback") is not True
+            or metadata_external_ci.get("source") != "local-fallback"
+            or metadata_external_ci.get("fallback_reason")
+            != GITHUB_LOCAL_FALLBACK_REASON
+            or not isinstance(
+                metadata_external_ci.get("github_actions_run"), str
+            )
+            or not GITHUB_RUN_ID_RE.fullmatch(
+                metadata_external_ci["github_actions_run"]
+            )
+        ):
+            raise ReviewBundleError("local fallback metadata is invalid")
     artifact_paths = _artifact_paths(metadata, attempt_path)
     proof_artifact = (
         external_ci["proof_artifact"] if external_ci is not None else None
@@ -3235,6 +3310,10 @@ def _fetch_github_ci_proof(
         message = proc.stderr.decode("utf-8", errors="replace").strip()
         if not message:
             message = proc.stdout.decode("utf-8", errors="replace").strip()
+        if proc.returncode == GITHUB_PROOF_UNAVAILABLE_EXIT:
+            raise ExternalCiUnavailableError(
+                f"GitHub Actions proof is unavailable: {message}"
+            )
         raise ReviewBundleError(
             f"GitHub Actions proof fetch failed: {message}"
         )
@@ -3262,18 +3341,23 @@ def run_final(
     recover_stale: bool = False,
     github_actions_run: str | None = None,
     github_repository: str | None = None,
+    github_actions_fallback_local: bool = False,
 ) -> dict[str, Any]:
     """Run or reuse the one trusted final verification and seal its approval.
 
-    Without ``github_actions_run`` the gate is unchanged: the trusted verifier
-    executes every contract phase locally.  With a run id the contract-listed
-    externalizable phases are replaced by a bound GitHub Actions proof fetched
-    live through ``gh``; all non-externalizable phases, reviewer readiness, and
-    strict review ledgers still run locally.
+    Without ``github_actions_run`` the trusted verifier executes every contract
+    phase locally.  With a run id the contract-listed externalizable phases are
+    replaced by a bound GitHub Actions proof fetched live through ``gh``.  An
+    explicit contract-authorized local fallback may use the same fully local
+    verifier only when the proof helper classifies GitHub as unavailable.
     """
     if github_repository is not None and github_actions_run is None:
         raise ReviewBundleError(
             "--github-repository requires --github-actions-run"
+        )
+    if github_actions_fallback_local and github_actions_run is None:
+        raise ReviewBundleError(
+            "--github-actions-fallback-local requires --github-actions-run"
         )
     if github_actions_run is not None:
         if not GITHUB_RUN_ID_RE.fullmatch(github_actions_run):
@@ -3309,6 +3393,13 @@ def run_final(
         external_run: dict[str, Any] | None = None
         if github_actions_run is not None:
             external_run = _external_ci_config(trusted["contract"])
+            if (
+                github_actions_fallback_local
+                and external_run.get("allow_local_fallback") is not True
+            ):
+                raise ReviewBundleError(
+                    "trusted contract does not allow local GitHub CI fallback"
+                )
             if (
                 github_repository is not None
                 and github_repository != external_run["repository"]
@@ -3369,25 +3460,38 @@ def run_final(
         try:
             github_proof_path: Path | None = None
             if external_run is not None:
-                github_proof_path = _fetch_github_ci_proof(
-                    trusted,
-                    status,
-                    external_run,
-                    github_actions_run,
-                    stage,
-                )
-                command.extend(
-                    (
-                        "--github-actions-proof",
-                        os.fspath(github_proof_path),
-                        "--github-actions-run",
+                try:
+                    github_proof_path = _fetch_github_ci_proof(
+                        trusted,
+                        status,
+                        external_run,
                         github_actions_run,
-                        "--github-proof-artifact",
-                        external_run["proof_artifact"],
-                        "--github-externalized-phases",
-                        ",".join(external_run["externalizable_phases"]),
+                        stage,
                     )
-                )
+                except ExternalCiUnavailableError:
+                    if not github_actions_fallback_local:
+                        raise
+                    command.extend(
+                        (
+                            "--github-actions-run",
+                            github_actions_run,
+                            "--github-actions-fallback-local",
+                            GITHUB_LOCAL_FALLBACK_REASON,
+                        )
+                    )
+                else:
+                    command.extend(
+                        (
+                            "--github-actions-proof",
+                            os.fspath(github_proof_path),
+                            "--github-actions-run",
+                            github_actions_run,
+                            "--github-proof-artifact",
+                            external_run["proof_artifact"],
+                            "--github-externalized-phases",
+                            ",".join(external_run["externalizable_phases"]),
+                        )
+                    )
             exit_code, interrupted_signal = _run_verifier_process(
                 command, trusted["candidate_top"], process_log
             )
@@ -3496,6 +3600,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     run_final_parser.add_argument("--recover-stale", action="store_true")
     run_final_parser.add_argument("--github-actions-run", default=None)
     run_final_parser.add_argument("--github-repository", default=None)
+    run_final_parser.add_argument(
+        "--github-actions-fallback-local", action="store_true"
+    )
     return parser.parse_args(argv)
 
 
@@ -3544,6 +3651,7 @@ def main(argv: list[str] | None = None) -> int:
                 recover_stale=args.recover_stale,
                 github_actions_run=args.github_actions_run,
                 github_repository=args.github_repository,
+                github_actions_fallback_local=args.github_actions_fallback_local,
             )
         else:  # pragma: no cover - argparse enforces the command set.
             raise ReviewBundleError(f"unsupported command: {args.command}")

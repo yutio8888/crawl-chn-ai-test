@@ -49,6 +49,7 @@
     ".claude/scripts/smoke_test.sh",
     ".claude/scripts/source_control_parity.py",
     ".claude/scripts/sync_agent_policies.py",
+    ".claude/scripts/tests/run_all.sh",
     ".claude/scripts/tests/test_audit_monspell_behavior.py",
     ".claude/scripts/tests/test_decorlines_inventory.py",
     ".claude/scripts/tests/test_graffiti_inventory.py",
@@ -66,6 +67,7 @@
     ".claude/scripts/zh_runtime_check.py"
   ],
   "external_ci": {
+    "allow_local_fallback": true,
     "allowed_events": [
       "workflow_dispatch"
     ],
@@ -116,6 +118,11 @@
     },
     {
       "id": "review-ledgers",
+      "required": true,
+      "when": "review_profile"
+    },
+    {
+      "id": "tooling-tests",
       "required": true,
       "when": "review_profile"
     },

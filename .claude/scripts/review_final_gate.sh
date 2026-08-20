@@ -5,6 +5,7 @@
 #   bash .claude/scripts/review_final_gate.sh <candidate-branch> [target-branch]
 #       [--retry-failed] [--recover-stale]
 #       [--github-actions-run <run-id>] [--github-repository <owner/repo>]
+#       [--github-actions-fallback-local]
 #
 # Run from the clean target checkout. The candidate must be checked out in a
 # clean linked worktree and already have a complete immutable readiness bundle.
@@ -13,6 +14,9 @@
 # phases are proven by a live, bound GitHub Actions run fetched through gh; all
 # other phases, reviewer readiness, and review ledgers stay local. The
 # repository may not be overridden: it must equal the contract value.
+# --github-actions-fallback-local permits one fully local run only when the
+# trusted proof helper reports GitHub transport/authentication unavailability;
+# a remote or malformed proof failure remains blocking.
 
 set -euo pipefail
 
@@ -55,6 +59,7 @@ fi
 EXTRA_ARGS=()
 GITHUB_ACTIONS_RUN=""
 GITHUB_REPOSITORY=""
+GITHUB_ACTIONS_FALLBACK_LOCAL=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --retry-failed|--recover-stale)
@@ -77,17 +82,29 @@ while [[ $# -gt 0 ]]; do
             GITHUB_REPOSITORY="$2"
             shift 2
             ;;
+        --github-actions-fallback-local)
+            GITHUB_ACTIONS_FALLBACK_LOCAL=1
+            shift
+            ;;
         *)
             echo "ERROR: unknown option: $1" >&2
             exit 20
             ;;
     esac
 done
+if [[ "$GITHUB_ACTIONS_FALLBACK_LOCAL" -eq 1 \
+      && -z "$GITHUB_ACTIONS_RUN" ]]; then
+    echo "ERROR: --github-actions-fallback-local requires --github-actions-run" >&2
+    exit 20
+fi
 if [[ -n "$GITHUB_ACTIONS_RUN" ]]; then
     EXTRA_ARGS+=(--github-actions-run "$GITHUB_ACTIONS_RUN")
 fi
 if [[ -n "$GITHUB_REPOSITORY" ]]; then
     EXTRA_ARGS+=(--github-repository "$GITHUB_REPOSITORY")
+fi
+if [[ "$GITHUB_ACTIONS_FALLBACK_LOCAL" -eq 1 ]]; then
+    EXTRA_ARGS+=(--github-actions-fallback-local)
 fi
 
 for required in "$BUNDLE_SCRIPT" "$CLASSIFIER" "$VERIFIER" "$CONTRACT"; do
@@ -163,6 +180,9 @@ if [[ -n "$GITHUB_ACTIONS_RUN" ]]; then
     echo "External CI repository: ${GITHUB_REPOSITORY:-<contract default>}"
     echo "External CI replaces only contract-externalizable phases; readiness,"
     echo "review ledgers, and all other phases still run locally."
+    if [[ "$GITHUB_ACTIONS_FALLBACK_LOCAL" -eq 1 ]]; then
+        echo "External CI fallback: local phases only if proof fetch is unavailable."
+    fi
 fi
 
 set +e

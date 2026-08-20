@@ -5680,6 +5680,7 @@ class RootfixGateTests(unittest.TestCase):
     def test_main_fails_closed_with_canonical_no_go(self) -> None:
         output = mock.Mock()
         output.buffer = io.BytesIO()
+        output.fileno.return_value = 1
         with mock.patch.object(
             GATE, "_load_trusted_repository_modules"
         ) as load, mock.patch.object(

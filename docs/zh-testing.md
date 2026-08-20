@@ -40,10 +40,12 @@ coverage from a parser-only check. Use `.claude/scripts/post_zh_runtime.sh --hel
 for current modes and artifact locations. Avoid
 hard-coded test/assertion/marker counts in prose because the suites evolve.
 
-Expensive suites such as full runtime, help-full, or the tooling test suite run
-only when required by the task/release contract and against the final reviewed
-candidate. A requested fix creates a new targeted development loop instead of
-rerunning all expensive evidence on a rejected candidate.
+The final gate runs the tooling test suite once, after reviewer readiness and
+against the exact reviewed candidate. Other expensive suites such as full
+runtime or help-full run only when required by the task/release contract and
+against that final candidate. A requested fix creates a new targeted
+development loop instead of rerunning all expensive evidence on a rejected
+candidate.
 
 A newly created linked worktree has empty directories for recorded contrib
 submodules. Before preparing an immutable candidate for final review, initialize
@@ -69,7 +71,8 @@ Review readiness and final verification are separate:
 3. dispatch only reviewers named by the prepared bundle routing;
 4. persist each reviewer's complete structured findings; the bundle tool derives
    severity counts and readiness;
-5. run `review_final_gate.sh <candidate> <target>` once;
+5. run `review_final_gate.sh <candidate> <target>` once; its review profile
+   includes the candidate `.claude/scripts/tests/run_all.sh` tooling suite;
 6. immediately before merge, run the read-only
    `review_at_merge.sh <candidate> <target>` and merge the approved OID.
 
@@ -136,13 +139,35 @@ TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
     <candidate> <target> --github-actions-run <run-id>
 ```
 
+If GitHub API, network, authentication, or `gh` availability is unreliable,
+the caller may explicitly permit the existing fully local final gate as the
+only fallback:
+
+```bash
+TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
+    <candidate> <target> --github-actions-run <run-id> \
+    --github-actions-fallback-local
+```
+
+The fallback is taken only for the proof helper's dedicated unavailable result
+and runs the complete local verifier once on the exact candidate. Its metadata
+records the local-fallback source, stable reason, and requested run id. Remote
+run/job failure or cancellation, incomplete or mismatched identity/inventory,
+malformed API data, proof tampering, and non-availability HTTP errors remain
+blocking and never trigger fallback; an unclassified `gh` command failure is
+also blocking rather than presumed to be a network outage. The flag is invalid without
+`--github-actions-run`; omitting it preserves strict external-proof failure.
+Frozen contracts created before `allow_local_fallback` remain readable without
+migration; absence of that field means fallback is disabled.
+
 Only phases that the trusted contract's `external_ci` section lists as
 externalizable are replaced (currently only the static policy/source/DB gates).
 The message-overlay gate remains local because its target-control tests are not
-candidate-data bound yet. `review-static`, `review-ledgers`, and all runtime,
-smoke, and build phases always run locally because the CI workflow does not
-claim to cover them. The external proof requires every job listed by the
-contract; other platform build/lint jobs are not substituted by this proof. The CI workflow
+candidate-data bound yet. `review-static`, `review-ledgers`, `tooling-tests`,
+and all runtime, smoke, and build phases always run locally because the CI
+workflow does not claim to replace them. The external proof requires every job
+listed by the contract; other platform build/lint jobs are not substituted by
+this proof. The CI workflow
 `.github/workflows/ci.yml` is
 authoritative for which jobs exist; optional jobs such as "ZH Runtime Full" or
 the release job are never treated as required. `gh` must be installed and
@@ -176,6 +201,11 @@ copying job inventories that drift.
 The tooling suite and combined static gate run on both Ubuntu and macOS. The
 macOS lane deliberately uses the system `/bin/bash` contract, so generic
 verification scripts must remain compatible with Bash 3.2 and BSD userland.
+The final gate reads the candidate `.claude/scripts/tests/run_all.sh` entry from
+the exact candidate commit's Git blob, while preserving its candidate-worktree
+path as `$0` so it discovers the candidate tests. It fixes
+`PYTHONSAFEPATH=1` and `ZH_TOOLING_TEST_JOBS=2`, and runs the suite locally once
+after reviewer readiness rather than treating it as a separate pre-gate step.
 Python 3, Node.js, `tree-sitter`, `tree-sitter-cpp`, and PyYAML are installed
 explicitly in CI; GNU `timeout`, `flock`, `grep -P`, and GNU `script` are not
 generic-tooling prerequisites. Target-only Windows, Android, and Tiles helpers

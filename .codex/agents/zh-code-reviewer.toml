@@ -22,12 +22,13 @@ same immutable mixed candidate: when one combined static preflight is useful,
 run `ci` once. These development profiles are not schema-v4 final evidence.
 
 Create the immutable bundle and complete routed domain review before running
-expensive independent suites such as `run_all.sh`, `help-full`, or
-`post_zh_runtime.sh full`. If the task or release contract requires those
-suites, run each once only after all reviewers report Ready, against the exact
-candidate OID that will enter the final gate. A reviewer-requested fix creates a
-new bundle and uses targeted checks during the next feedback loop; do not spend
-full-suite evidence on a candidate already known to need changes.
+expensive independent suites. The final gate owns the required `run_all.sh`
+tooling suite and runs it once after all reviewers report Ready, against the
+exact candidate OID. If the task or release contract requires additional suites
+such as `help-full` or `post_zh_runtime.sh full`, run each once only after all
+reviewers report Ready, against the same final candidate. A reviewer-requested
+fix creates a new bundle and uses targeted checks during the next feedback loop;
+do not spend full-suite evidence on a candidate already known to need changes.
 
 `review_prepare.sh`, routed readiness, `review_final_gate.sh`, and
 `review_at_merge.sh` remain separate security boundaries. Their repeated
@@ -138,6 +139,15 @@ of the changed-file set. Verification-v5 metadata binds each inventory
 artifact individually; missing ledger input, incomplete parsing, stale facts,
 or an unknown state fails closed.
 
+The review profile also always runs the required `tooling-tests` phase after
+`review-ledgers`, reading `.claude/scripts/tests/run_all.sh` from the exact
+candidate commit's Git blob and executing it with the candidate worktree path
+as `$0`, so it discovers the candidate test files. It fixes
+`PYTHONSAFEPATH=1` and `ZH_TOOLING_TEST_JOBS=2`. The corresponding worktree path
+must be a regular, non-symlink file; a missing or unsafe path, an unreadable Git
+blob, and any nonzero suite exit fail closed. This is the single final-gate
+tooling-suite run for that reviewed candidate.
+
 For an exact-bound review, those auditors must share one snapshot of the full
 candidate commit. Input discovery comes from that exact Git tree, each unique
 regular-file blob is read at most once, and the inventory artifact binds the
@@ -171,10 +181,10 @@ for some final-gate phases, but only through an explicit, fail-closed option:
 `TERM=xterm-256color bash .claude/scripts/review_final_gate.sh <candidate> <target> --github-actions-run <run-id>`
 
 External CI replaces CI *proof* only. It never replaces reviewer readiness,
-strict review ledgers, the final approval decision, or the read-only merge
-gate: `review-ledgers` always runs locally, every routed reviewer must already
-be Ready, and the approval is still sealed from the same immutable attempt
-digest. The trusted contract section in
+strict review ledgers, tooling tests, the final approval decision, or the
+read-only merge gate: `review-ledgers` and `tooling-tests` always run locally,
+every routed reviewer must already be Ready, and the approval is still sealed
+from the same immutable attempt digest. The trusted contract section in
 `.claude/scripts/data/review_verification_contract_v5.json` is the single
 source of truth for the repository, workflow path, allowed events, required
 jobs, externalizable phases, and proof artifact name; it is protected by the
@@ -184,6 +194,22 @@ overridden. A caller-supplied proof JSON is never accepted: the proof is
 generated at gate time by the contract-listed control-plane helper
 (`.claude/scripts/fetch_github_ci_proof.py`) through the real `gh` API for the
 exact run id.
+
+When the caller supplies both `--github-actions-run` and the explicit
+`--github-actions-fallback-local` opt-in, the gate may fall back to its existing
+fully local phase plan only if the trusted proof helper classifies GitHub API,
+network, authentication, or `gh` availability failure with its dedicated
+unavailable result. The verifier is then started once on the exact candidate;
+it does not rerun review ledgers or tooling tests, and verification metadata
+records `source=local-fallback`, the stable unavailable reason, and the
+requested run id. A remote run or required job that reports failure,
+cancellation, or incompleteness; any repository, commit, workflow, event, or
+job-inventory mismatch; malformed or tampered proof data; and non-availability
+HTTP errors or unclassified `gh` command failures never fall back. Without the
+explicit opt-in, unavailable GitHub proof remains a blocking error.
+Historical frozen contracts that predate the fallback field remain valid
+read-only evidence: an absent `allow_local_fallback` is interpreted as false,
+never added to or migrated into the sealed evidence.
 
 The proof is bound to every identity the gate controls and fails closed on any
 mismatch: the contract repository (including the run's `repository` and

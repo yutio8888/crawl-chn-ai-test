@@ -34,6 +34,7 @@ RUN_URL = f"https://github.com/{REPOSITORY}/actions/runs/{RUN_ID}"
 
 FIXTURE_SPEC = {
     "enabled": True,
+    "allow_local_fallback": True,
     "bind_target_sha": False,
     "repository": REPOSITORY,
     "workflow_path": WORKFLOW_PATH,
@@ -142,8 +143,14 @@ for name in (
         raise SystemExit(17)
 
 if os.environ.get('FAKE_GH_FAIL'):
-    print('fake gh failure', file=sys.stderr)
+    print('authentication required', file=sys.stderr)
+    raise SystemExit(4)
+if os.environ.get('FAKE_GH_GENERIC_FAIL'):
+    print('generic gh command failure', file=sys.stderr)
     raise SystemExit(9)
+if os.environ.get('FAKE_GH_HTTP_404'):
+    print('gh: Not Found (HTTP 404)', file=sys.stderr)
+    raise SystemExit(1)
 print(' '.join(sys.argv[1:]), file=sys.stderr)
 if 'jobs' in sys.argv[-1]:
     path = os.environ['FAKE_GH_JOBS_JSON']
@@ -598,8 +605,29 @@ with open(path, 'rb') as stream:
             env=env,
             check=False,
         )
-        self.assertNotEqual(proc.returncode, 0)
+        self.assertEqual(proc.returncode, 75)
         self.assertFalse(output.exists())
+
+    def test_historical_spec_without_fallback_field_remains_accepted(self) -> None:
+        historical = dict(FIXTURE_SPEC)
+        historical.pop("allow_local_fallback")
+        self.spec_path.write_bytes(canonical(historical))
+        proc = self.run_helper()
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode())
+        self.assertNotIn("allow_local_fallback", historical)
+        self.validate(self.proof_dict())
+
+    def test_gh_http_not_found_is_invalid_not_unavailable(self) -> None:
+        proc = self.run_helper(extra_env={"FAKE_GH_HTTP_404": "1"})
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("HTTP 404", proc.stderr.decode())
+        self.assertFalse(self.output.exists())
+
+    def test_generic_gh_failure_is_invalid_not_unavailable(self) -> None:
+        proc = self.run_helper(extra_env={"FAKE_GH_GENERIC_FAIL": "1"})
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("generic gh command failure", proc.stderr.decode())
+        self.assertFalse(self.output.exists())
 
     def build_valid_proof(self) -> dict:
         proc = self.run_helper()

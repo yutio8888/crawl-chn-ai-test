@@ -53,12 +53,25 @@ TRUSTED_PREFIXES = (
     ".github/workflows/",
 )
 GH_OK = 0
-GH_FAIL = 1
+GH_INVALID = 1
+GH_UNAVAILABLE = 75
+HTTP_STATUS_RE = re.compile(r"\bHTTP(?: status)?\s+([0-9]{3})\b", re.IGNORECASE)
+NETWORK_UNAVAILABLE_RE = re.compile(
+    r"(?:connection (?:refused|reset)|could not resolve host|no such host|"
+    r"network is unreachable|tls handshake timeout|i/o timeout|"
+    r"context deadline exceeded|failed to connect|"
+    r"error connecting to api\.github\.com|unable to connect to github\.com)",
+    re.IGNORECASE,
+)
 
 
-def fail(message: str) -> int:
+class GitHubUnavailableError(RuntimeError):
+    """The trusted GitHub transport or authentication path is unavailable."""
+
+
+def fail(message: str, code: int = GH_INVALID) -> int:
     print(f"ERROR: {message}", file=sys.stderr)
-    return GH_FAIL
+    return code
 
 
 def _scrubbed_environment() -> dict[str, str]:
@@ -144,6 +157,29 @@ def _run(command: list[str], cwd: Path) -> subprocess.CompletedProcess[bytes]:
     )
 
 
+def _run_gh(
+    command: list[str], cwd: Path, label: str
+) -> subprocess.CompletedProcess[bytes]:
+    try:
+        proc = _run(command, cwd)
+    except OSError as exc:
+        raise GitHubUnavailableError(f"{label} could not start: {exc}") from exc
+    if proc.returncode == 0:
+        return proc
+    stderr = proc.stderr.decode("utf-8", errors="replace").strip()
+    stdout = proc.stdout.decode("utf-8", errors="replace").strip()
+    message = stderr or stdout or f"{label} failed with exit {proc.returncode}"
+    statuses = [int(value) for value in HTTP_STATUS_RE.findall(message)]
+    unavailable_statuses = {401, 403, 408, 425, 429}
+    if (
+        proc.returncode == 4
+        or NETWORK_UNAVAILABLE_RE.search(message) is not None
+        or any(status in unavailable_statuses or status >= 500 for status in statuses)
+    ):
+        raise GitHubUnavailableError(message)
+    raise ValueError(message)
+
+
 def canonical_json_bytes(value: Any) -> bytes:
     return json.dumps(
         value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -158,7 +194,7 @@ def _load_spec(path: Path) -> dict[str, Any]:
         raise ValueError(f"external CI spec is not valid UTF-8 JSON: {exc}") from exc
     if not isinstance(spec, dict):
         raise ValueError("external CI spec must be a JSON object")
-    expected_fields = frozenset(
+    legacy_fields = frozenset(
         (
             "enabled",
             "bind_target_sha",
@@ -171,13 +207,20 @@ def _load_spec(path: Path) -> dict[str, Any]:
             "proof_schema",
         )
     )
-    if frozenset(spec) != expected_fields:
+    current_fields = legacy_fields | {"allow_local_fallback"}
+    if frozenset(spec) not in (legacy_fields, current_fields):
         raise ValueError("external CI spec top-level fields are invalid")
-    for key in sorted(expected_fields):
+    # The historical omission means false; do not normalize it to an opt-in.
+    for key in sorted(legacy_fields):
         if key not in spec:
             raise ValueError(f"external CI spec is missing {key}")
     if spec.get("enabled") is not True:
         raise ValueError("external CI is not enabled")
+    if (
+        "allow_local_fallback" in spec
+        and not isinstance(spec["allow_local_fallback"], bool)
+    ):
+        raise ValueError("external CI allow_local_fallback is invalid")
     if not isinstance(spec.get("bind_target_sha"), bool):
         raise ValueError("external CI bind_target_sha is invalid")
     externalizable = spec.get("externalizable_phases")
@@ -286,7 +329,7 @@ def _api_jobs(
     gh_bin: str,
     repo: Path,
 ) -> tuple[list[dict[str, Any]], bytes, dict[str, Any]]:
-    job_proc = _run(
+    job_proc = _run_gh(
         [
             gh_bin,
             "--hostname",
@@ -295,10 +338,8 @@ def _api_jobs(
             f"repos/{repository}/actions/runs/{run_id}/jobs?per_page=100",
         ],
         repo,
+        "gh jobs API call",
     )
-    if job_proc.returncode:
-        message = job_proc.stderr.decode("utf-8", errors="replace").strip()
-        raise ValueError(message or "gh jobs API call failed")
     raw_jobs = job_proc.stdout
     jobs_value = _parse_json(raw_jobs, "GitHub Actions jobs response")
     jobs = jobs_value.get("jobs")
@@ -328,9 +369,11 @@ def fetch_and_bind_proof(
         raise ValueError("GitHub Actions run id must be a positive integer")
     gh_bin = shutil.which("gh")
     if not gh_bin:
-        raise ValueError("gh binary is unavailable on the trusted PATH")
+        raise GitHubUnavailableError(
+            "gh binary is unavailable on the trusted PATH"
+        )
     repository = str(spec["repository"])
-    run_proc = _run(
+    run_proc = _run_gh(
         [
             gh_bin,
             "--hostname",
@@ -339,10 +382,8 @@ def fetch_and_bind_proof(
             f"repos/{repository}/actions/runs/{run_id}",
         ],
         repo,
+        "gh run API call",
     )
-    if run_proc.returncode:
-        message = run_proc.stderr.decode("utf-8", errors="replace").strip()
-        raise ValueError(message or "gh run API call failed")
     raw_run = run_proc.stdout
     run = _parse_json(raw_run, "GitHub Actions run response")
     if run.get("id") != run_id:
@@ -538,6 +579,8 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.buffer.write(proof_bytes)
         sys.stdout.buffer.write(b"\n")
         return GH_OK
+    except GitHubUnavailableError as exc:
+        return fail(f"unavailable: {exc}", GH_UNAVAILABLE)
     except (ValueError, OSError) as exc:
         return fail(str(exc))
 

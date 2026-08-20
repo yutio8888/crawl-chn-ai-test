@@ -48,7 +48,7 @@ Parser (统一):
 |------|------|
 | **翻译/数据改动验证** | `bash .claude/scripts/verify_zh.sh --profile translation` |
 | **C++/i18n 改动验证** | `bash .claude/scripts/verify_zh.sh --profile code` |
-| **合并前审查** | `bash .claude/scripts/verify_zh.sh --profile review` |
+| **合并前审查** | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
 | **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
 | **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
 | **冻结常规物品与 ego 名称清单** | `python3 .claude/scripts/audit_item_name_inventory.py --output /tmp/item-name-inventory.json` |
@@ -582,14 +582,30 @@ coverage；无论前置 phase 成败，`source-db-static` 的结果都已独立�
 风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
 font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2。review profile 仅由
 `review_final_gate.sh` 调用，并运行统一 Catch2；不要在 readiness 或本地 preflight
-手工重跑。`--full` 是显式的三层 runtime 开发/发布工具，不属于 reviewer
-readiness。`ci` 完全跳过编译和运行时。
+手工重跑。final gate 会在所有 reviewer Ready 后，对 exact candidate 以
+`PYTHONSAFEPATH=1`、`ZH_TOOLING_TEST_JOBS=2` 自动运行一次
+从 candidate commit Git blob 读取的 `.claude/scripts/tests/run_all.sh`（`$0`
+仍为 candidate worktree 路径，以发现 candidate tests）；不要把它作为 final gate
+前的独立手工步骤。
+`--full` 是显式的三层 runtime 开发/发布工具，不属于 reviewer readiness。
+`ci` 完全跳过编译和运行时。
+
+指定 `--github-actions-run` 时，只有同时显式给出
+`--github-actions-fallback-local`，且 trusted proof helper 将 GitHub
+API/网络/认证/`gh` 判定为 unavailable，final gate 才改用同一 fully-local
+phase plan，并在 metadata 记录 local-fallback source、reason 与 run id。
+远端 run/job failure 或 cancelled、identity/workflow/event/inventory 不匹配、
+malformed/tampered proof 和其他 HTTP 错误一律阻断，不得 fallback；本地 verifier
+仍只运行一次，因此不会重复 `review-ledgers` 或 `tooling-tests`。无法明确归类的
+`gh` 命令失败也按 invalid 阻断，不推定为网络不可用。
+旧 frozen contract 未包含 `allow_local_fallback` 时仍可只读验证，但该缺省值严格
+解释为 false；工具不会改写历史 evidence，也不会据此放宽 fallback。
 
 同一 immutable mixed candidate 不得串行运行 `translation`、`code`、`ci` 三个
 profile。开发期按当前改动选 domain profile；若需要一次组合静态 preflight，只跑
-`ci`。先完成 bundle reviewer，再在 reviewer-approved 最终 OID 上各运行一次任务或
-release 契约明确要求的 `run_all.sh`、`help-full`、runtime `full`，最后进入唯一
-`review_final_gate.sh`。
+`ci`。先完成 bundle reviewer；`run_all.sh` 由唯一的 `review_final_gate.sh`
+在 reviewer-approved 最终 OID 上运行一次。任务或 release 契约另行要求的
+`help-full`、runtime `full` 也只对该最终 OID 各运行一次。
 
 `post-coder.sh` 的 string-concat advisory 使用版本控制的
 `data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码

@@ -53,6 +53,7 @@ GITHUB_ACTIONS_PROOF=""
 GITHUB_ACTIONS_RUN=""
 GITHUB_PROOF_ARTIFACT=""
 GITHUB_EXTERNALIZED_PHASES=""
+GITHUB_LOCAL_FALLBACK_REASON=""
 VERIFICATION_CONTRACT="dcss-zh-review-v5"
 RUN_DIR=""
 RUN_ID=""
@@ -88,6 +89,7 @@ Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full
                     [--github-actions-run <run-id>]
                     [--github-proof-artifact <name>]
                     [--github-externalized-phases <csv>]
+                    [--github-actions-fallback-local <reason>]
 
 Profiles:
   translation   Translation / data-file changes
@@ -108,6 +110,8 @@ External CI (review profile only, invoked by review_bundle.py):
   --github-actions-run <run-id>       GitHub Actions run id (audit log only)
   --github-proof-artifact <name>      Proof artifact name inside the run dir
   --github-externalized-phases <csv>  Phases replaced by the bound proof
+  --github-actions-fallback-local <reason>
+                                      Audited local fallback reason
 EOF
     exit 2
 }
@@ -120,7 +124,7 @@ argument_error() {
 # ── Parse arguments ──
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --profile|--base|--head|--scope|--output-dir|--routing-sha256|--control-plane-sha256|--github-actions-proof|--github-actions-run|--github-proof-artifact|--github-externalized-phases)
+        --profile|--base|--head|--scope|--output-dir|--routing-sha256|--control-plane-sha256|--github-actions-proof|--github-actions-run|--github-proof-artifact|--github-externalized-phases|--github-actions-fallback-local)
             [[ $# -ge 2 && -n "${2:-}" ]] \
                 || argument_error "$1 requires a value"
             case "$1" in
@@ -135,6 +139,7 @@ while [[ $# -gt 0 ]]; do
                 --github-actions-run) GITHUB_ACTIONS_RUN="$2" ;;
                 --github-proof-artifact) GITHUB_PROOF_ARTIFACT="$2" ;;
                 --github-externalized-phases) GITHUB_EXTERNALIZED_PHASES="$2" ;;
+                --github-actions-fallback-local) GITHUB_LOCAL_FALLBACK_REASON="$2" ;;
             esac
             shift 2
             ;;
@@ -289,11 +294,28 @@ if not isinstance(proof["repository"], str) or not proof["repository"]:
     raise SystemExit("proof repository is invalid")
 PY
 fi
-if [[ -n "$GITHUB_ACTIONS_RUN" && -z "$GITHUB_ACTIONS_PROOF" ]]; then
-    argument_error "--github-actions-run requires --github-actions-proof"
-fi
 if [[ -n "$GITHUB_ACTIONS_PROOF" && -z "$GITHUB_ACTIONS_RUN" ]]; then
     argument_error "--github-actions-proof requires --github-actions-run"
+fi
+if [[ -n "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
+    [[ "$PROFILE" == review ]] \
+        || argument_error "--github-actions-fallback-local requires --profile review"
+    [[ -n "$BASE" && -n "$HEAD" ]] \
+        || argument_error "--github-actions-fallback-local requires a bound --base/--head review run"
+    [[ -n "$GITHUB_ACTIONS_RUN" ]] \
+        || argument_error "--github-actions-fallback-local requires --github-actions-run"
+    [[ -z "$GITHUB_ACTIONS_PROOF" ]] \
+        || argument_error "--github-actions-fallback-local cannot accompany a proof"
+    [[ "$GITHUB_LOCAL_FALLBACK_REASON" == "github-actions-proof-unavailable" ]] \
+        || argument_error "unknown GitHub Actions local fallback reason"
+fi
+if [[ -n "$GITHUB_ACTIONS_RUN" && -z "$GITHUB_ACTIONS_PROOF" \
+      && -z "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
+    argument_error "--github-actions-run requires proof or audited local fallback"
+fi
+if [[ -z "$GITHUB_ACTIONS_PROOF" \
+      && ( -n "$GITHUB_PROOF_ARTIFACT" || -n "$GITHUB_EXTERNALIZED_PHASES" ) ]]; then
+    argument_error "GitHub proof artifact/phases require --github-actions-proof"
 fi
 
 # The changed set is used only to narrow checks that accept explicit file
@@ -431,7 +453,8 @@ write_metadata() {
         "$ITEM_INVENTORY_FILE" "$CHARACTER_INVENTORY_FILE" \
         "$GOD_INVENTORY_FILE" "$SPECIES_BACKGROUND_INVENTORY_FILE" \
         "$MONSTER_INVENTORY_FILE" "$WORLD_INVENTORY_FILE" \
-        "$GITHUB_PROOF_ARTIFACT" "$GITHUB_ACTIONS_RUN" <<'PY'
+        "$GITHUB_PROOF_ARTIFACT" "$GITHUB_ACTIONS_RUN" \
+        "$GITHUB_LOCAL_FALLBACK_REASON" <<'PY'
 import hashlib
 import json
 import os
@@ -446,6 +469,7 @@ import sys
     item_inventory_path, character_inventory_path, god_inventory_path,
     species_background_inventory_path, monster_inventory_path,
     world_inventory_path, gha_proof_artifact, gha_run_id,
+    gha_local_fallback_reason,
 ) = sys.argv[1:]
 phases = []
 if os.path.isfile(phases_path):
@@ -540,6 +564,12 @@ if gha_proof_artifact:
             "proof_artifact": gha_proof_artifact,
             "github_actions_run": gha_run_id or None,
         }
+elif gha_local_fallback_reason:
+    payload["external_ci"] = {
+        "source": "local-fallback",
+        "fallback_reason": gha_local_fallback_reason,
+        "github_actions_run": gha_run_id,
+    }
 directory = os.path.dirname(path)
 temporary = os.path.join(directory, f".{os.path.basename(path)}.tmp.{os.getpid()}")
 with open(temporary, "w", encoding="utf-8") as stream:
@@ -648,6 +678,11 @@ record_external_phase() {
         echo "Diff SHA-256: $DIFF_SHA256"
     fi
     echo "Glossary SHA-256: $GLOSSARY_SHA256"
+    if [[ -n "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
+        echo "External CI source: local-fallback"
+        echo "External CI fallback reason: $GITHUB_LOCAL_FALLBACK_REASON"
+        echo "External CI requested run: $GITHUB_ACTIONS_RUN"
+    fi
     echo ""
 
     if is_externalized_phase "policy-sync"; then
@@ -748,6 +783,26 @@ PY
             }
             run_phase "review-ledgers" 1 "Strict review ledger audit" \
                 run_review_ledgers || RESULTS=$((RESULTS + 1))
+            run_tooling_tests() {
+                local candidate_commit runner_relative
+                runner_relative=".claude/scripts/tests/run_all.sh"
+                local runner="$WORKTREE/.claude/scripts/tests/run_all.sh"
+                if [[ ! -e "$runner" ]]; then
+                    echo "ERROR: candidate tooling test runner is missing: $runner" >&2
+                    return 1
+                fi
+                if [[ -L "$runner" || ! -f "$runner" ]]; then
+                    echo "ERROR: candidate tooling test runner is unsafe: $runner" >&2
+                    return 1
+                fi
+                candidate_commit="${HEAD_SHA:-$CURRENT_HEAD}"
+                git -C "$WORKTREE" cat-file blob \
+                    "${candidate_commit}:${runner_relative}" \
+                    | env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2 \
+                        /bin/bash -c 'source /dev/stdin' "$runner"
+            }
+            run_phase "tooling-tests" 1 "ZH tooling tests" \
+                run_tooling_tests || RESULTS=$((RESULTS + 1))
             ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.

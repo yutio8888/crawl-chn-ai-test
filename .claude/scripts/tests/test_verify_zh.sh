@@ -48,7 +48,7 @@ latest_run_dir() {
 }
 
 REPO="$TMP_ROOT/repo"
-mkdir -p "$REPO/.claude/scripts" "$REPO/docs"
+mkdir -p "$REPO/.claude/scripts/tests" "$REPO/docs"
 printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' \
     '.risk-runs' '.worktrees/' '__pycache__/' '.observed-*' \
     '.ledger-auditor-started' \
@@ -200,6 +200,12 @@ printf '%s\n' \
     'exit 0' \
     > "$REPO/.claude/scripts/post_zh_runtime.sh"
 chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'printf "%s|%s|%s\n" "$PWD" "${PYTHONSAFEPATH-}" "${ZH_TOOLING_TEST_JOBS-}" >> .observed-tooling-tests' \
+    'exit "${TEST_TOOLING_RC:-0}"' \
+    > "$REPO/.claude/scripts/tests/run_all.sh"
+chmod +x "$REPO/.claude/scripts/tests/run_all.sh"
 
 (
     cd "$REPO"
@@ -309,7 +315,8 @@ assert data["runtime_mode"] == "catch2"
 assert data["run_id"] == os.path.basename(os.path.dirname(path))
 assert [phase["id"] for phase in data["phases"]] == [
     "policy-sync", "source-db-static", "review-static",
-    "review-ledgers", "message-overlay-static", "zh-runtime-catch2",
+    "review-ledgers", "tooling-tests", "message-overlay-static",
+    "zh-runtime-catch2",
 ]
 assert all(phase["status"] == "pass" for phase in data["phases"])
 assert [artifact["path"] for artifact in data["artifacts"]] == [
@@ -324,6 +331,9 @@ assert [artifact["path"] for artifact in data["artifacts"]] == [
 assert all(artifact["size"] > 0 for artifact in data["artifacts"])
 PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
+EXPECTED_TOOLING_OBSERVATION="$REPO|1|2"
+assert_contains "review profile runs tooling tests in the candidate worktree" \
+    "$EXPECTED_TOOLING_OBSERVATION" "$REPO/.observed-tooling-tests"
 assert_contains "bound run exports glossary comparison base" \
     "$BASE" "$REPO/.observed-glossary-base"
 EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
@@ -453,7 +463,8 @@ externalized = set(externalized_csv.split(","))
 phase_ids = [phase["id"] for phase in data["phases"]]
 assert phase_ids == [
     "policy-sync", "source-db-static", "review-static",
-    "review-ledgers", "message-overlay-static", "zh-runtime-catch2",
+    "review-ledgers", "tooling-tests", "message-overlay-static",
+    "zh-runtime-catch2",
 ], phase_ids
 for phase in data["phases"]:
     source = phase.get("source", "local")
@@ -467,6 +478,9 @@ assert any(phase.get("source", "local") == "local"
            for phase in data["phases"])
 assert any(phase.get("source", "local") == "local"
            and phase["id"] == "review-ledgers"
+           for phase in data["phases"])
+assert any(phase.get("source", "local") == "local"
+           and phase["id"] == "tooling-tests"
            for phase in data["phases"])
 artifact_paths = [artifact["path"] for artifact in data["artifacts"]]
 assert "github-actions-proof.json" in artifact_paths, artifact_paths
@@ -482,6 +496,9 @@ if [[ -e "$REPO/.ledger-auditor-started" ]]; then
 else
     fail "review-ledgers did not run locally under external proof mode"
 fi
+TOOLING_RUN_COUNT=$(wc -l < "$REPO/.observed-tooling-tests")
+assert_status "external proof still runs tooling tests locally" 2 \
+    "$TOOLING_RUN_COUNT"
 if [[ -e "$REPO/.observed-i18n-extract" ]]; then
     fail "externalized source-db-static still ran i18n_extract locally"
 else
@@ -494,6 +511,39 @@ if [[ -f "$EXTERNAL_RUN_DIR/github-actions-proof.json" ]]; then
 else
     fail "proof artifact missing from the run directory"
 fi
+
+echo "--- audited local fallback after unavailable external proof ---"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review \
+        --base "$BASE" --head "$HEAD_SHA" \
+        --github-actions-run 32029487274 \
+        --github-actions-fallback-local github-actions-proof-unavailable
+) > "$TMP_ROOT/local-fallback.out" 2>&1
+RC=$?
+set -e
+assert_status "audited local fallback review run succeeds" 0 "$RC"
+FALLBACK_RUN_DIR=$(latest_run_dir)
+python3 - "$FALLBACK_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+assert data["external_ci"] == {
+    "source": "local-fallback",
+    "fallback_reason": "github-actions-proof-unavailable",
+    "github_actions_run": "32029487274",
+}
+assert all(phase.get("source", "local") == "local"
+           for phase in data["phases"]), data["phases"]
+assert [phase["id"] for phase in data["phases"]].count("tooling-tests") == 1
+assert "github-actions-proof.json" not in [
+    artifact["path"] for artifact in data["artifacts"]]
+PY
+assert_status "local fallback metadata binds reason and fully local source" 0 "$?"
+assert_contains "local fallback report records its source" \
+    "External CI source: local-fallback" "$FALLBACK_RUN_DIR/verify.log"
 
 set +e
 (
@@ -578,6 +628,126 @@ if [[ -e "$REPO/.ledger-auditor-started" ]]; then
 else
     fail "plain local run skipped strict review-ledgers"
 fi
+
+echo "--- tooling test phase failures and runner safety ---"
+TOOLING_RUNNER="$REPO/.claude/scripts/tests/run_all.sh"
+TOOLING_RUNNER_BACKUP="$TMP_ROOT/run_all.sh"
+cp "$TOOLING_RUNNER" "$TOOLING_RUNNER_BACKUP"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'touch .mutable-runner-executed' \
+    'exit 0' \
+    > "$TOOLING_RUNNER"
+set +e
+(
+    cd "$REPO"
+    TEST_TOOLING_RC=9 bash .claude/scripts/verify_zh.sh --profile review
+) > "$TMP_ROOT/tooling-failure.out" 2>&1
+RC=$?
+set -e
+assert_status "tooling test failure blocks the review profile" 1 "$RC"
+TOOLING_FAILURE_RUN_DIR=$(latest_run_dir)
+python3 - "$TOOLING_FAILURE_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+tooling = [phase for phase in data["phases"] if phase["id"] == "tooling-tests"]
+assert tooling == [{
+    "id": "tooling-tests", "required": True, "status": "fail", "exit_code": 9,
+}], tooling
+assert data["status"] == "fail"
+assert data["failures"] == 1
+PY
+assert_status "tooling failure is a required blocking metadata phase" 0 "$?"
+if [[ -e "$REPO/.mutable-runner-executed" ]]; then
+    fail "mutable candidate tooling runner content was executed"
+else
+    pass "tooling phase executes the committed runner blob, not mutable pathname content"
+fi
+cp "$TOOLING_RUNNER_BACKUP" "$TOOLING_RUNNER"
+chmod +x "$TOOLING_RUNNER"
+
+rm "$TOOLING_RUNNER"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review
+) > "$TMP_ROOT/missing-tooling-runner.out" 2>&1
+RC=$?
+set -e
+assert_status "missing candidate tooling runner fails closed" 1 "$RC"
+MISSING_TOOLING_RUN_DIR=$(latest_run_dir)
+assert_contains "missing candidate tooling runner diagnostic is explicit" \
+    "candidate tooling test runner is missing" \
+    "$MISSING_TOOLING_RUN_DIR/verify.log"
+
+ln -s "$TOOLING_RUNNER_BACKUP" "$TOOLING_RUNNER"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile review
+) > "$TMP_ROOT/symlink-tooling-runner.out" 2>&1
+RC=$?
+set -e
+assert_status "symlinked candidate tooling runner fails closed" 1 "$RC"
+SYMLINK_TOOLING_RUN_DIR=$(latest_run_dir)
+assert_contains "symlinked candidate tooling runner diagnostic is explicit" \
+    "candidate tooling test runner is unsafe" \
+    "$SYMLINK_TOOLING_RUN_DIR/verify.log"
+rm "$TOOLING_RUNNER"
+cp "$TOOLING_RUNNER_BACKUP" "$TOOLING_RUNNER"
+chmod +x "$TOOLING_RUNNER"
+
+NO_BLOB_WORKTREE="$TMP_ROOT/no-blob-worktree"
+git -C "$REPO" worktree add -q --detach "$NO_BLOB_WORKTREE" "$HEAD_SHA"
+git -C "$NO_BLOB_WORKTREE" rm -q .claude/scripts/tests/run_all.sh
+git -C "$NO_BLOB_WORKTREE" commit -qm "remove tooling runner blob"
+mkdir -p "$NO_BLOB_WORKTREE/.claude/scripts/tests"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'touch .missing-blob-runner-executed' \
+    'exit 0' \
+    > "$NO_BLOB_WORKTREE/.claude/scripts/tests/run_all.sh"
+set +e
+(
+    cd "$NO_BLOB_WORKTREE"
+    bash .claude/scripts/verify_zh.sh --profile review
+) > "$TMP_ROOT/missing-tooling-blob.out" 2>&1
+RC=$?
+set -e
+assert_status "missing candidate tooling runner Git blob fails closed" 1 "$RC"
+NO_BLOB_RUN_DIR=$(find "$NO_BLOB_WORKTREE/.claude/metrics/verify" \
+    -mindepth 1 -maxdepth 1 -type d -print | sort | tail -1)
+python3 - "$NO_BLOB_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+tooling = [phase for phase in data["phases"] if phase["id"] == "tooling-tests"]
+assert tooling == [{
+    "id": "tooling-tests", "required": True, "status": "fail", "exit_code": 128,
+}], tooling
+assert data["status"] == "fail"
+assert data["failures"] == 1
+PY
+assert_status "Git blob read failure keeps its blocking exit metadata" 0 "$?"
+if [[ -e "$NO_BLOB_WORKTREE/.missing-blob-runner-executed" ]]; then
+    fail "worktree runner executed when its candidate Git blob was missing"
+else
+    pass "missing Git blob cannot fall back to mutable worktree runner content"
+fi
+
+TOOLING_RUNS_BEFORE_CODE=$(wc -l < "$REPO/.observed-tooling-tests")
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile code
+) > "$TMP_ROOT/code-without-tooling.out" 2>&1
+RC=$?
+assert_status "code profile succeeds without the review-only tooling phase" 0 "$RC"
+TOOLING_RUNS_AFTER_CODE=$(wc -l < "$REPO/.observed-tooling-tests")
+assert_status "tooling phase is review-profile-only" \
+    "$TOOLING_RUNS_BEFORE_CODE" "$TOOLING_RUNS_AFTER_CODE"
 
 echo "--- terminal non-glossary worktree drift ---"
 set +e
@@ -693,13 +863,15 @@ assert_status "interruption is distinct from ordinary failure" 0 "$?"
 
 RUN_COUNT=$(find "$REPO/.claude/metrics/verify" -mindepth 1 -maxdepth 1 \
     -type d | wc -l)
-# The external proof section above contributes two successful run dirs
-# (external proof run and the plain local control run); its argument-error
-# cases exit before any run directory is created.
-if [[ "$RUN_COUNT" -eq 7 ]]; then
+# The external proof/fallback section contributes three successful run dirs,
+# and the
+# tooling phase section contributes failure, missing-runner, symlink-runner,
+# and code-profile control runs. Argument-error cases exit before creating a
+# run directory.
+if [[ "$RUN_COUNT" -eq 12 ]]; then
     pass "each started invocation creates a unique run directory"
 else
-    fail "expected 7 unique run directories, found $RUN_COUNT"
+    fail "expected 12 unique run directories, found $RUN_COUNT"
 fi
 
 echo "--- ZH Catch2 risk routing ---"
@@ -1012,12 +1184,13 @@ assert ".claude/scripts/check_default_utf8.py" in contract["control_plane_files"
 assert ".claude/scripts/graffiti_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/miscast_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/run_with_timeout.py" in contract["control_plane_files"]
+assert ".claude/scripts/tests/run_all.sh" in contract["control_plane_files"]
 assert ".claude/scripts/tests/test_miscast_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/tests/test_graffiti_inventory.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
-    "review-ledgers", "message-overlay-static", "cpp-build", "zh-smoke",
-    "zh-runtime-catch2",
+    "review-ledgers", "tooling-tests", "message-overlay-static", "cpp-build",
+    "zh-smoke", "zh-runtime-catch2",
 ]
 assert contract["required_artifacts"] == [
     "character-mechanics-inventory.json",

@@ -336,6 +336,12 @@ do_format() {
 # ============================================================
 
 do_spells() {
+    # sort and comm must use the same bytewise ordering.  Locale collation can
+    # treat distinct spell keys as equivalent, making independently sorted EN
+    # and ZH inputs fail comm's order check even when both files are valid.
+    local LC_ALL=C
+    export LC_ALL
+
     echo "=== Mode 4: Spell key consistency check ==="
     echo ""
 

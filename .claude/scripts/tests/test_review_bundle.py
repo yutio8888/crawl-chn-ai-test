@@ -577,6 +577,8 @@ class ReviewBundleTests(unittest.TestCase):
             "phase_plan": [
                 {"id": "policy-sync", "required": True, "when": "always"},
                 {"id": "review-static", "required": True, "when": "always"},
+                {"id": "tooling-tests", "required": True,
+                 "when": "review_profile"},
                 {"id": "message-overlay-static", "required": True, "when": "always"},
                 {"id": "optional-advisory", "required": False, "when": "always",
                  "allow_skip": True},
@@ -663,6 +665,7 @@ diff = subprocess.check_output([
 ])
 glossary = Path('docs/glossary.md').read_bytes()
 phase_plan = [('policy-sync', True), ('review-static', True),
+              ('tooling-tests', True),
               ('message-overlay-static', True), ('optional-advisory', False),
               ('zh-runtime-catch2', True)]
 phase_status = 'fail' if mode == 'fail' else 'pass'
@@ -1838,6 +1841,11 @@ raise SystemExit(7 if mode == 'fail' else 0)
             "scope": lambda value: value.__setitem__("scope", "changed"),
             "run_id": lambda value: value.__setitem__("run_id", "wrong-run"),
             "missing phase": lambda value: value["phases"].pop(),
+            "missing tooling phase": lambda value: value.__setitem__(
+                "phases",
+                [phase for phase in value["phases"]
+                 if phase["id"] != "tooling-tests"],
+            ),
             "illegal skip": lambda value: value["phases"][0].update(
                 status="skip", exit_code=0
             ),
@@ -2143,6 +2151,22 @@ with module.bundle_lock(pathlib.Path(sys.argv[2])):
         self.assertEqual(proc.returncode, 20, proc.stdout + proc.stderr)
         self.assertIn("--github-actions-run requires a run id", proc.stderr)
 
+    def test_shell_final_gate_rejects_local_fallback_without_run(self) -> None:
+        self.ready()
+        environment = os.environ.copy()
+        environment.update(PYTHONDONTWRITEBYTECODE="1")
+        proc = subprocess.run(
+            ["bash", ".claude/scripts/review_final_gate.sh",
+             "candidate", "target", "--github-actions-fallback-local"],
+            cwd=self.repo,
+            text=True,
+            capture_output=True,
+            env=environment,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 20, proc.stdout + proc.stderr)
+        self.assertIn("fallback-local requires --github-actions-run", proc.stderr)
+
     def test_shell_final_gate_rejects_unknown_external_option(self) -> None:
         self.ready()
         environment = os.environ.copy()
@@ -2194,6 +2218,7 @@ parser.add_argument('--github-actions-proof', default=None)
 parser.add_argument('--github-actions-run', default=None)
 parser.add_argument('--github-proof-artifact', default=None)
 parser.add_argument('--github-externalized-phases', default=None)
+parser.add_argument('--github-actions-fallback-local', default=None)
 args = parser.parse_args()
 
 run_id = f'ext-{time.time_ns()}-{os.getpid()}'
@@ -2223,6 +2248,7 @@ else:
 
 phase_plan = [
     ('policy-sync', True), ('review-static', True),
+    ('tooling-tests', True),
     ('message-overlay-static', True), ('optional-advisory', False),
     ('zh-runtime-catch2', True),
 ]
@@ -2279,6 +2305,21 @@ metadata = {
     'artifacts': artifacts,
     'failures': 0,
 }
+if proof_artifact:
+    proof = json.loads((run_dir / proof_artifact).read_bytes())
+    metadata['external_ci'] = {
+        'schema': proof['schema'],
+        'repository': proof['repository'],
+        'run_id': proof['run_id'],
+        'proof_artifact': proof_artifact,
+        'github_actions_run': args.github_actions_run,
+    }
+elif args.github_actions_fallback_local:
+    metadata['external_ci'] = {
+        'source': 'local-fallback',
+        'fallback_reason': args.github_actions_fallback_local,
+        'github_actions_run': args.github_actions_run,
+    }
 (run_dir / 'metadata.json').write_text(json.dumps(metadata), encoding='utf-8')
 print(f'external fake run {run_id}')
 raise SystemExit(0)
@@ -2304,6 +2345,24 @@ class ExternalContractParserTests(unittest.TestCase):
         self.assertIn(
             MODULE.TRUSTED_GITHUB_PROOF_HELPER_PATH,
             parsed["control_plane_files"],
+        )
+        self.assertIn(
+            {"id": "tooling-tests", "required": True,
+             "when": "review_profile"},
+            parsed["phase_plan"],
+        )
+        self.assertNotIn(
+            "tooling-tests", parsed["external_ci"]["externalizable_phases"]
+        )
+        self.assertIs(parsed["external_ci"]["allow_local_fallback"], True)
+
+    def test_historical_external_ci_shape_defaults_fallback_to_false(self) -> None:
+        historical = json.loads(json.dumps(self.real))
+        historical["external_ci"].pop("allow_local_fallback")
+        parsed = self.parse(historical)
+        self.assertNotIn("allow_local_fallback", parsed["external_ci"])
+        self.assertIs(
+            parsed["external_ci"].get("allow_local_fallback", False), False
         )
 
     def test_legacy_contract_shapes_still_parse(self) -> None:
@@ -2332,6 +2391,7 @@ class ExternalContractParserTests(unittest.TestCase):
         base = dict(self.real)
         malformed: list[tuple[str, object]] = [
             ("enabled", False),
+            ("allow_local_fallback", "yes"),
             ("repository", "not-a-repo"),
             ("repository", "owner/repo/extra"),
             ("workflow_path", "src/ci.yml"),
@@ -2430,9 +2490,18 @@ class ExternalCiFinalGateTests(unittest.TestCase):
         classifier.write_text(CLASSIFIER_SOURCE, encoding="utf-8")
         classifier.chmod(0o755)
         shell_scripts = self.repo / ".claude/scripts"
+        shutil.copy2(SCRIPT, shell_scripts / "review_bundle.py")
+        shutil.copy2(
+            SCRIPT.parent / "i18n_shared.py",
+            shell_scripts / "i18n_shared.py",
+        )
         shutil.copy2(
             SCRIPT.parent / "fetch_github_ci_proof.py",
             shell_scripts / "fetch_github_ci_proof.py",
+        )
+        shutil.copy2(
+            SCRIPT.parent / "review_at_merge.sh",
+            shell_scripts / "review_at_merge.sh",
         )
         self.verifier = trusted / "external_fake_verify.py"
         self.verifier.write_text(EXTERNAL_VERIFIER_SOURCE, encoding="utf-8")
@@ -2450,6 +2519,8 @@ class ExternalCiFinalGateTests(unittest.TestCase):
             "phase_plan": [
                 {"id": "policy-sync", "required": True, "when": "always"},
                 {"id": "review-static", "required": True, "when": "always"},
+                {"id": "tooling-tests", "required": True,
+                 "when": "review_profile"},
                 {"id": "message-overlay-static", "required": True,
                  "when": "always"},
                 {"id": "optional-advisory", "required": False, "when": "always",
@@ -2463,6 +2534,7 @@ class ExternalCiFinalGateTests(unittest.TestCase):
             ],
             "external_ci": {
                 "enabled": True,
+                "allow_local_fallback": True,
                 "bind_target_sha": False,
                 "repository": EXTERNAL_REPOSITORY,
                 "workflow_path": ".github/workflows/ci.yml",
@@ -2486,6 +2558,21 @@ class ExternalCiFinalGateTests(unittest.TestCase):
         self.contract_path = trusted / "external_contract.json"
         self.contract_path.write_bytes(MODULE.canonical_json_bytes(contract))
         self.contract = contract
+        self.historical_contract_path = (
+            trusted / "historical_external_contract.json"
+        )
+        historical_contract = json.loads(json.dumps(contract))
+        historical_contract["external_ci"].pop("allow_local_fallback")
+        historical_contract["control_plane_files"] = sorted(
+            path.replace(
+                ".trusted/external_contract.json",
+                ".trusted/historical_external_contract.json",
+            )
+            for path in historical_contract["control_plane_files"]
+        )
+        self.historical_contract_path.write_bytes(
+            MODULE.canonical_json_bytes(historical_contract)
+        )
         self.plain_contract_path = trusted / "plain_contract.json"
         plain_contract = json.loads(json.dumps(contract))
         plain_contract.pop("external_ci")
@@ -2537,8 +2624,8 @@ import os
 import sys
 
 if os.environ.get('FAKE_GH_FAIL'):
-    print('fake gh failure', file=sys.stderr)
-    raise SystemExit(9)
+    print('authentication required', file=sys.stderr)
+    raise SystemExit(4)
 print(' '.join(sys.argv[1:]), file=sys.stderr)
 if 'jobs' in sys.argv[-1]:
     path = os.environ['FAKE_GH_JOBS_JSON']
@@ -2638,7 +2725,13 @@ with open(path, 'rb') as stream:
         }))
         return path
 
-    def run_external(self, created: dict, **kwargs: object) -> dict:
+    def run_external(
+        self,
+        created: dict,
+        *,
+        contract_path: Path | None = None,
+        **kwargs: object,
+    ) -> dict:
         original_environment = MODULE._trusted_child_environment
 
         def test_environment() -> dict[str, str]:
@@ -2656,7 +2749,7 @@ with open(path, 'rb') as stream:
                 created["bundle_id"],
                 self.repo,
                 self.verifier,
-                self.contract_path,
+                contract_path or self.contract_path,
                 github_actions_run=EXTERNAL_RUN_ID,
                 **kwargs,
             )
@@ -2685,6 +2778,7 @@ with open(path, 'rb') as stream:
         self.assertEqual(sources["policy-sync"], "github-actions")
         self.assertEqual(sources["message-overlay-static"], "github-actions")
         self.assertEqual(sources["review-static"], "local")
+        self.assertEqual(sources["tooling-tests"], "local")
         self.assertEqual(sources["zh-runtime-catch2"], "local")
         self.assertIn(
             MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT,
@@ -2699,6 +2793,42 @@ with open(path, 'rb') as stream:
         # read-only merge-time validation re-verifies the proof binding
         status = MODULE.validate_bundle(self.candidate, created["bundle_id"])
         self.assertEqual(status["state"], "MERGEABLE")
+
+    def test_historical_sealed_external_contract_is_read_only_mergeable(self) -> None:
+        created = self.ready()
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError,
+                "does not allow local GitHub CI fallback",
+            ):
+                self.run_external(
+                    created,
+                    contract_path=self.historical_contract_path,
+                    github_actions_fallback_local=True,
+                )
+            result = self.run_external(
+                created, contract_path=self.historical_contract_path
+            )
+        self.assertEqual(result["state"], "MERGEABLE", result)
+        bundle_path = Path(created["bundle_path"])
+        sealed_digest = MODULE._attempt_digest(bundle_path)
+
+        validated = MODULE.validate_bundle(
+            self.candidate, created["bundle_id"]
+        )
+        self.assertEqual(validated["state"], "MERGEABLE", validated)
+        self.assertEqual(MODULE._attempt_digest(bundle_path), sealed_digest)
+
+        proc = self.run_cmd(
+            "bash",
+            ".claude/scripts/review_at_merge.sh",
+            "candidate",
+            "target",
+            cwd=self.repo,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn(f"Approved candidate OID: {self.head}", proc.stdout)
+        self.assertEqual(MODULE._attempt_digest(bundle_path), sealed_digest)
 
     def test_local_mode_with_external_capable_contract_is_unchanged(self) -> None:
         created = self.ready()
@@ -2719,6 +2849,119 @@ with open(path, 'rb') as stream:
             (attempt / MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT).exists()
         )
 
+    def test_unavailable_github_proof_explicitly_falls_back_once_locally(self) -> None:
+        created = self.ready()
+        environment = self.gh_environment()
+        environment["FAKE_GH_FAIL"] = "1"
+        with mock.patch.dict(os.environ, environment):
+            result = self.run_external(
+                created, github_actions_fallback_local=True
+            )
+        self.assertEqual(result["state"], "MERGEABLE", result)
+        attempt = self.first_attempt_path(created)
+        metadata = json.loads((attempt / "metadata.json").read_bytes())
+        self.assertEqual(
+            metadata["external_ci"],
+            {
+                "source": "local-fallback",
+                "fallback_reason": MODULE.GITHUB_LOCAL_FALLBACK_REASON,
+                "github_actions_run": EXTERNAL_RUN_ID,
+            },
+        )
+        self.assertEqual(
+            [phase["id"] for phase in metadata["phases"]].count("tooling-tests"),
+            1,
+        )
+        self.assertTrue(all(
+            phase.get("source", "local") == "local"
+            for phase in metadata["phases"]
+        ))
+        self.assertFalse(
+            (attempt / MODULE.GITHUB_ACTIONS_PROOF_ARTIFACT).exists()
+        )
+
+    def test_unavailable_github_proof_without_opt_in_remains_blocking(self) -> None:
+        created = self.ready()
+        environment = self.gh_environment()
+        environment["FAKE_GH_FAIL"] = "1"
+        with mock.patch.dict(os.environ, environment):
+            with self.assertRaises(MODULE.ExternalCiUnavailableError):
+                self.run_external(created)
+        attempts = Path(created["bundle_path"]) / "attempts"
+        self.assertFalse(attempts.exists() and list(attempts.iterdir()))
+
+    def test_local_fallback_metadata_tampering_is_rejected(self) -> None:
+        created = self.ready()
+        environment = self.gh_environment()
+        environment["FAKE_GH_FAIL"] = "1"
+        with mock.patch.dict(os.environ, environment):
+            result = self.run_external(
+                created, github_actions_fallback_local=True
+            )
+        self.assertEqual(result["state"], "MERGEABLE", result)
+        attempt = self.first_attempt_path(created)
+        metadata_path = attempt / "metadata.json"
+        completion_path = attempt / MODULE.COMPLETION_NAME
+        original_metadata = metadata_path.read_bytes()
+        original_completion = completion_path.read_bytes()
+        for field, value in (
+            ("source", "github-actions"),
+            ("fallback_reason", "caller-supplied-reason"),
+        ):
+            with self.subTest(field=field):
+                metadata = json.loads(original_metadata)
+                metadata["external_ci"][field] = value
+                metadata_bytes = MODULE.canonical_json_bytes(metadata)
+                completion = json.loads(original_completion)
+                completion["metadata_sha256"] = MODULE.sha256_bytes(
+                    metadata_bytes
+                )
+                metadata_path.write_bytes(metadata_bytes)
+                completion_path.write_bytes(
+                    MODULE.canonical_json_bytes(completion)
+                )
+                with self.assertRaisesRegex(
+                    MODULE.ReviewBundleError, "local fallback metadata is invalid"
+                ):
+                    MODULE.validate_bundle(
+                        self.candidate, created["bundle_id"]
+                    )
+                metadata_path.write_bytes(original_metadata)
+                completion_path.write_bytes(original_completion)
+
+    def test_remote_job_failure_never_uses_local_fallback(self) -> None:
+        created = self.ready()
+        jobs = {
+            "total_count": 1,
+            "jobs": [{
+                "id": 1001,
+                "name": "ZH CI Gate (static, ubuntu-latest)",
+                "status": "completed",
+                "conclusion": "cancelled",
+            }],
+        }
+        self.set_gh_fixtures(jobs=jobs)
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaises(MODULE.ReviewBundleError):
+                self.run_external(
+                    created, github_actions_fallback_local=True
+                )
+        attempts = Path(created["bundle_path"]) / "attempts"
+        self.assertFalse(attempts.exists() and list(attempts.iterdir()))
+
+    def test_invalid_remote_identity_never_uses_local_fallback(self) -> None:
+        created = self.ready()
+        run = json.loads(self.run_json.read_bytes())
+        run["head_sha"] = "0" * 40
+        self.set_gh_fixtures(run=run)
+        with mock.patch.dict(os.environ, self.gh_environment()):
+            with self.assertRaises(MODULE.ReviewBundleError):
+                self.run_external(
+                    created, github_actions_fallback_local=True
+                )
+        attempts = Path(created["bundle_path"]) / "attempts"
+        self.assertFalse(attempts.exists() and list(attempts.iterdir()))
+
     def test_external_mode_rejects_missing_or_invalid_run_id(self) -> None:
         created = self.ready()
         with self.assertRaisesRegex(
@@ -2736,6 +2979,14 @@ with open(path, 'rb') as stream:
                 self.candidate, created["bundle_id"], self.repo,
                 self.verifier, self.contract_path,
                 github_actions_run="not-an-id",
+            )
+        with self.assertRaisesRegex(
+            MODULE.ReviewBundleError, "fallback-local requires"
+        ):
+            MODULE.run_final(
+                self.candidate, created["bundle_id"], self.repo,
+                self.verifier, self.contract_path,
+                github_actions_fallback_local=True,
             )
 
     def test_external_mode_never_overrides_contract_repository(self) -> None:
