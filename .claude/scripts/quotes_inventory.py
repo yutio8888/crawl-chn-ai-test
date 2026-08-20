@@ -30,7 +30,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from command_inventory import (  # noqa: E402
     _desc_display,
-    git_show_blob,
     merge_desc_sequence,
     parse_db_keys,
     resolve_commit,
@@ -38,11 +37,12 @@ from command_inventory import (  # noqa: E402
 )
 from i18n_shared import (  # noqa: E402
     AuditInput,
+    AuditInputError,
     load_review_input,
     lowercase_string,
+    read_regular_git_blob,
     review_input_metadata,
 )
-from tutorial_inventory import load_git_review_input  # noqa: E402
 
 
 QUOTES_EN = "crawl-ref/source/dat/descript/quotes.txt"
@@ -273,8 +273,46 @@ def _fact_sha(row: dict[str, object]) -> str:
     return _sha(_canonical_json(row))
 
 
+def _regular_blob(commit: str, path: str) -> bytes:
+    try:
+        mode, data = read_regular_git_blob(ROOT, commit, path, with_mode=True)
+    except AuditInputError as error:
+        raise RuntimeError(
+            f"cannot read exact-Git input {path}@{commit[:12]}: {error}"
+        ) from error
+    if mode not in {"100644", "100755"}:
+        raise RuntimeError(
+            f"exact-Git input {path}@{commit[:12]} is not a regular blob: {mode}"
+        )
+    return data
+
+
 def _load_blobs(commit: str) -> dict[str, bytes]:
-    return {path: git_show_blob(commit, path) for path in INPUT_PATHS}
+    return {path: _regular_blob(commit, path) for path in INPUT_PATHS}
+
+
+def _load_git_review_input(commit: str, supplied: Path) -> AuditInput:
+    path = supplied if supplied.is_absolute() else ROOT / supplied
+    try:
+        relative = path.relative_to(ROOT)
+    except ValueError as error:
+        raise RuntimeError("review results path is outside the repository") from error
+    if not relative.parts or any(part in {"", ".", ".."} for part in relative.parts):
+        raise RuntimeError("review results path is not normalized")
+    logical = relative.as_posix()
+    data = _regular_blob(commit, logical)
+    try:
+        text = data.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as error:
+        raise RuntimeError("review results are not strict UTF-8") from error
+    return AuditInput(
+        audit_commit=commit,
+        logical_path=logical,
+        relative_path=logical,
+        bytes=data,
+        text=text,
+        sha256=_sha(data),
+    )
 
 
 def build_payload(baseline: str) -> dict[str, object]:
@@ -568,6 +606,7 @@ def candidate_agreement(
 
     baseline_ids = [row["identity"] for row in inventory]
     candidate_ids = [row["identity"] for row in candidate_inventory]
+    protected_input_drift = _protected_input_drift(payload, candidate_payload)
     return {
         "candidate": candidate,
         "candidate_agrees": (
@@ -575,15 +614,32 @@ def candidate_agreement(
             and not mismatches
             and not english_drift
             and not structural_drift
+            and not protected_input_drift
         ),
         "candidate_inventory_sha256": candidate_payload["inventory_sha256"],
         "candidate_minus_baseline": sorted(set(candidate_ids) - set(baseline_ids)),
         "baseline_minus_candidate": sorted(set(baseline_ids) - set(candidate_ids)),
         "canonical_order_equal": baseline_ids == candidate_ids,
         "english_drift": sorted(english_drift),
+        "protected_input_drift": protected_input_drift,
         "structural_drift": sorted(structural_drift),
         "translation_mismatches": sorted(mismatches),
     }
+
+
+def _protected_input_drift(
+    baseline_payload: dict[str, object], candidate_payload: dict[str, object]
+) -> list[str]:
+    baseline_inputs = baseline_payload["inputs"]
+    candidate_inputs = candidate_payload["inputs"]
+    assert isinstance(baseline_inputs, dict) and isinstance(candidate_inputs, dict)
+    return [
+        path
+        for path in INPUT_PATHS
+        if path != QUOTES_ZH
+        and _canonical_json(baseline_inputs.get(path))
+        != _canonical_json(candidate_inputs.get(path))
+    ]
 
 
 def main() -> int:
@@ -599,7 +655,7 @@ def main() -> int:
         candidate = resolve_commit(args.candidate_ref) if args.candidate_ref else None
         if args.review_results:
             review_input = (
-                load_git_review_input(candidate, args.review_results)
+                _load_git_review_input(candidate, args.review_results)
                 if candidate
                 else load_review_input(ROOT, args.review_results)
             )

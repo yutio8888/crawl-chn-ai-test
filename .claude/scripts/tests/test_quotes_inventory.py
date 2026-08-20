@@ -109,6 +109,22 @@ class QuotesInventoryTests(unittest.TestCase):
         self.assertEqual(PAYLOAD["inventory_sha256"], rerun["inventory_sha256"])
         self.assertEqual(PAYLOAD, rerun)
 
+    def test_candidate_protected_input_drift_is_rejected(self) -> None:
+        candidate = json.loads(json.dumps(PAYLOAD))
+        protected = quotes.GLOSSARY_MD
+        candidate["inputs"][protected]["sha256"] = "0" * 64
+        self.assertEqual(
+            [protected], quotes._protected_input_drift(PAYLOAD, candidate)
+        )
+
+        candidate = json.loads(json.dumps(PAYLOAD))
+        candidate["inputs"][quotes.QUOTES_ZH]["sha256"] = "0" * 64
+        self.assertEqual([], quotes._protected_input_drift(PAYLOAD, candidate))
+
+    def test_candidate_review_path_outside_repository_is_rejected(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "outside the repository"):
+            quotes._load_git_review_input(BASELINE, Path("/tmp/review.md"))
+
     def test_section_headings_are_comment_only_metadata(self) -> None:
         text = "\n".join(
             [
