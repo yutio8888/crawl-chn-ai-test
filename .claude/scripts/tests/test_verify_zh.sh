@@ -202,6 +202,12 @@ printf '%s\n' \
 chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
 printf '%s\n' \
     '#!/bin/bash' \
+    '[[ "$0" == */.claude/scripts/tests/run_all.sh ]] || exit 17' \
+    '[[ -z "${BASH_SOURCE[0]}" ]] || exit 18' \
+    '[[ -z "${GIT_NO_REPLACE_OBJECTS+x}${GLOSSARY_DIFF_BASE+x}" ]] || exit 19' \
+    '[[ -z "${ZH_VERIFY_AUDIT_ROOT+x}${ZH_VERIFY_AUDIT_COMMIT+x}" ]] || exit 20' \
+    '[[ -z "${ZH_VERIFY_CONTROL_ROOT+x}${ZH_VERIFY_CONTROL_COMMIT+x}" ]] || exit 21' \
+    '[[ -z "${PYTHONPATH-}" ]] || exit 22' \
     'printf "%s|%s|%s\n" "$PWD" "${PYTHONSAFEPATH-}" "${ZH_TOOLING_TEST_JOBS-}" >> .observed-tooling-tests' \
     'exit "${TEST_TOOLING_RC:-0}"' \
     > "$REPO/.claude/scripts/tests/run_all.sh"

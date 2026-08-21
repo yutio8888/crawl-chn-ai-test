@@ -796,10 +796,20 @@ PY
                     return 1
                 fi
                 candidate_commit="${HEAD_SHA:-$CURRENT_HEAD}"
+                # Bash 3.2 on macOS cannot reliably source a non-seekable
+                # /dev/stdin.  Read the exact Git blob into the child shell and
+                # evaluate it from memory instead: there is no mutable pathname
+                # between verification and execution, while $0 remains the
+                # candidate runner path used by run_all.sh for discovery.
                 git -C "$WORKTREE" cat-file blob \
                     "${candidate_commit}:${runner_relative}" \
-                    | env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2 \
-                        /bin/bash -c 'source /dev/stdin' "$runner"
+                    | env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2 PYTHONPATH= \
+                        /bin/bash -c \
+                            'unset GIT_NO_REPLACE_OBJECTS GLOSSARY_DIFF_BASE
+                             unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
+                             unset ZH_VERIFY_CONTROL_ROOT ZH_VERIFY_CONTROL_COMMIT
+                             runner_source=$(cat) && eval "$runner_source"' \
+                            "$runner"
             }
             run_phase "tooling-tests" 1 "ZH tooling tests" \
                 run_tooling_tests || RESULTS=$((RESULTS + 1))
