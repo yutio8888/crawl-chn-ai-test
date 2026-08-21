@@ -361,6 +361,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/decorlines_inventory.py|\
             .claude/scripts/graffiti_inventory.py|\
             .claude/scripts/miscast_inventory.py|\
+            .claude/scripts/miscname_inventory.py|\
             .claude/scripts/monflee_inventory.py|\
             .claude/scripts/monspeak_inventory.py|\
             .claude/scripts/shout_inventory.py|\
@@ -369,6 +370,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/tests/test_decorlines_inventory.py|\
             .claude/scripts/tests/test_graffiti_inventory.py|\
             .claude/scripts/tests/test_miscast_inventory.py|\
+            .claude/scripts/tests/test_miscname_inventory.py|\
             .claude/scripts/tests/test_monflee_inventory.py|\
             .claude/scripts/tests/test_monspeak_inventory.py|\
             .claude/scripts/tests/test_shout_inventory.py|\
@@ -840,6 +842,7 @@ PY
             && python3 "$SCRIPT_DIR/tests/test_decorlines_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_graffiti_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_miscast_inventory.py" \
+            && python3 "$SCRIPT_DIR/tests/test_miscname_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monflee_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_monspell_inventory.py" \
             && python3 "$SCRIPT_DIR/tests/test_shout_inventory.py" \

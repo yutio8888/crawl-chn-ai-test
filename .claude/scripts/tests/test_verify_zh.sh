@@ -1189,9 +1189,11 @@ assert ".claude/scripts/audit_item_name_inventory.py" in contract["control_plane
 assert ".claude/scripts/check_default_utf8.py" in contract["control_plane_files"]
 assert ".claude/scripts/graffiti_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/miscast_inventory.py" in contract["control_plane_files"]
+assert ".claude/scripts/miscname_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/run_with_timeout.py" in contract["control_plane_files"]
 assert ".claude/scripts/tests/run_all.sh" in contract["control_plane_files"]
 assert ".claude/scripts/tests/test_miscast_inventory.py" in contract["control_plane_files"]
+assert ".claude/scripts/tests/test_miscname_inventory.py" in contract["control_plane_files"]
 assert ".claude/scripts/tests/test_graffiti_inventory.py" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",

@@ -5,7 +5,9 @@
 排除依据；重叠与重入条件显式记录。不替代任何子 Issue 的冻结 inventory。
 
 身份/生命周期来源：`database.cc` 加载清单（load order）为唯一生产来源；各家族 inventory 工具
-（monflee/miscast/monspell/wpnnoise/graffiti/decorlines_inventory.py）从 exact-Git 派生并绑定。
+（`monflee_inventory.py`、`miscast_inventory.py`、`monspell_inventory.py`、
+`wpnnoise_inventory.py`、`graffiti_inventory.py`、`decorlines_inventory.py`、
+`miscname_inventory.py`）从 exact-Git 派生并绑定。
 
 ## 分组与文件清单
 
@@ -53,7 +55,7 @@
 | **shout/shout + speak|shout/insult（共享）** | ✅ | #69（同批冻结 ShoutDB/SpeakDB 双载 provenance） | docs/shout-review-results.md |
 | misc/montitle | ✅ | #71（#24 怪物实体域扩展；复用 unique-monster identity provenance） | #71 / #73，合并 `aa8e6275ce` |
 | misc/gizmo | ✅ | #29（539 个有限语法组件；最终程序化名称明确不可有限枚举） | docs/item-extended-review-results.md |
-| misc/miscname | 🔲 | #87（2026-08-21 收口复核确认其含独立玩家消息，既有账本未完整取得所有权） | EN/ZH 各 10 个物理预检 key；最终范围以 exact-Git production inventory 为准 |
+| misc/miscname | ✅ | #87 | docs/miscname-review-results.md；exact-Git MiscDB inventory，10 identities，152/150 baseline variants → 152/152 candidate variants |
 | quotes/quotes.txt | ✅ | #72（复用 #3 及怪物/法术专名证据） | 465 identities；386 keep / 79 adjust；远端 CI `32450858787` success |
 | **randart/randname/randbook/rand_all/rand_arm/rand_wpn** | ⚠️ | #29 覆盖"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"；无独立 randart 账本 | #29 关闭评论 |
 | misc/godname | ✅ | #25（"神祇生产身份、显示名和称号：…godname.txt"） | #25 |
@@ -77,11 +79,11 @@
   86/86 无不对称。
 - **randart 归属**：#29 明示"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"，视为该域证据；
   若上游 randart 组件漂移，重入触发后回到 #29 或新子批。
-- **miscname 归属（2026-08-21 收口复核）**：它是独立 MiscDB 玩家消息家族，不是协议或命名
-  依赖。消费者至少包括 `spl-summoning.cc`、`traps.cc`、`main.cc` 与 `stairs.cc`；物理预检
-  还发现 EN `summon_horrible_things` 与 ZH `SHT_int_loss` 的 key 风险。既有法术/世界/开局
-  账本没有冻结这一完整 TextDB 家族，故建立 #87 按 production inventory 逐身份审核；完成前
-  不得把该族标为覆盖。
+- **miscname 归属（#87，2026-08-21）**：它是独立 MiscDB 玩家消息家族，不是协议或命名
+  依赖。#87 从完整 production dump 和 `spl-summoning.cc`、`traps.cc`、`main.cc`、
+  `stairs.cc` 消费者冻结 10 个稳定 identity；修复不可达的 `SHT_int_loss` lookup、两处
+  缺失变体，并以 10 张严格卡绑定 5 adjust / 1 keep / 4 retranslate。`welcome_spam Hints`
+  没有专用定义的既有结果被显式记录为 missing lookup，不伪造为翻译身份。
 - **明确非玩家显示**：协议/lookup 键值（英文）、`__NONE`/`__DEFAULT` 哨兵、Lua 比较串不属于
   显示文本；各家族账本已按 i18n-safety 策略隔离。
 
@@ -104,4 +106,5 @@
   R4 各动态消息家族 #54/#56/#59/#60/#66/#67/#69/#70、montitle #71、R5 quotes #72。
 - R6 已真实使用：#77 在当前 production inventory 上只重审 10 个失效 command identity，复用
   296 个输入未变 identity，重冻结后 `coverage_equal=true`，合并 `a29423cdcc`。
-- 当前唯一 R0/R1-R5 收口缺口为 miscname #87。它完成并更新本映射后，#40 才满足关闭条件。
+- R0/R1-R5 家族覆盖已由 miscname #87 补齐；结合已完成的 R6 真实增量复核，#40 的
+  文档化关闭条件现已满足。
