@@ -33,6 +33,16 @@ NON_DESCENDANT = subprocess.run(
     ["git", "-C", str(ROOT), "rev-parse", "HEAD^^"],
     check=True, text=True, capture_output=True,
 ).stdout.strip()
+PRODUCTION_BASELINE = "5f168f7b1130f9d2ec9c264f27e4ddc9b64d64d6"
+PRODUCTION_EN_ARTIFACT_SHA256 = (
+    "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
+)
+PRODUCTION_ZH_ARTIFACT_SHA256 = (
+    "0e9f36cd94f72a77bff07f9d5e51ed5dceee6033a021febf185abd2c338c4f2d"
+)
+CURRENT_INVENTORY_SHA256 = (
+    "3deb4a79b3580c6bd00004db6a717774f9c89fc3a1122e6ae4a2a611bbfa0a67"
+)
 KEY = "dream sheep flee"
 EN_PATTERNS = [
     "@The_monster@ bleats in terror.",
@@ -97,6 +107,19 @@ def artifact(
             "parse_error": None,
             "body_empty": False,
         }],
+    }
+
+
+def exact_artifact(oid: str, language: str) -> dict:
+    directory = "database/" if language == "en" else "database/zh/"
+    derived = MODULE._derive_scoped_dump(
+        oid, directory, f"production {language}"
+    )
+    return {
+        "schema_version": 1,
+        "database_name": "speak",
+        "source_directory": directory,
+        **derived,
     }
 
 
@@ -243,6 +266,38 @@ class MonfleeInventoryTests(unittest.TestCase):
                          {entry["identity"] for entry in first["entries"]})
         self.assertEqual(WEIGHTS,
                          [v["weight"] for v in first["entries"][0]["variants"]])
+
+    def test_exact_git_inventory_and_checked_in_ledger_pass(self):
+        en_path = self.write_dump(
+            "production-en.json", exact_artifact(PRODUCTION_BASELINE, "en")
+        )
+        zh_path = self.write_dump(
+            "production-zh.json", exact_artifact(PRODUCTION_BASELINE, "zh")
+        )
+        inventory = MODULE.build_inventory(
+            PRODUCTION_BASELINE,
+            en_path,
+            zh_path,
+            ROOT / "docs/glossary.md",
+        )
+        inventory["dumps"]["english"]["artifact_sha256"] = (
+            PRODUCTION_EN_ARTIFACT_SHA256
+        )
+        inventory["dumps"]["localized"]["artifact_sha256"] = (
+            PRODUCTION_ZH_ARTIFACT_SHA256
+        )
+        core = {
+            key: value for key, value in inventory.items()
+            if key != "inventory_sha256"
+        }
+        inventory["inventory_sha256"] = MODULE._sha256(
+            MODULE._canonical_json(core)
+        )
+        self.assertEqual(CURRENT_INVENTORY_SHA256,
+                         inventory["inventory_sha256"])
+        MODULE.validate_results(
+            ROOT / "docs/monflee-review-results.md", inventory, None
+        )
 
     def test_schema_and_source_snapshot_binding_fail_closed(self):
         bad = artifact("en")

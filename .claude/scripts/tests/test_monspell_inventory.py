@@ -33,6 +33,16 @@ CANDIDATE = subprocess.run(
     ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
     check=True, text=True, capture_output=True,
 ).stdout.strip()
+PRODUCTION_BASELINE = "8e974d60549c1946403b3866efa56cb48db364b8"
+PRODUCTION_EN_ARTIFACT_SHA256 = (
+    "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
+)
+PRODUCTION_ZH_ARTIFACT_SHA256 = (
+    "1d6505e1923a3cb021dafd4457a14ae7dba6e825445bdf9e670232a4bdcb4eca"
+)
+CURRENT_INVENTORY_SHA256 = (
+    "01f2c9291b87631344e87b67c8b1c3c26a47f203d0dcbc6a93bcac2118636f01"
+)
 
 
 def _git_plumbing(arguments: list[str], input_text: str | None = None) -> str:
@@ -185,6 +195,38 @@ def make_dump(language: str) -> dict:
             "normalized_utf8": dump_source(language),
         }],
         "entries": entries,
+    }
+
+
+def exact_artifact(oid: str, language: str) -> dict:
+    directory = "database/" if language == "en" else "database/zh/"
+    derived = MODULE.shared._derive_scoped_dump(
+        oid,
+        directory,
+        f"production {language}",
+        source_basename=MODULE.SOURCE_BASENAME,
+    )
+    entries_by_key = {}
+    for source in derived["sources"]:
+        source_basename = source["source_name"].rsplit("/", 1)[-1]
+        scoped = MODULE.shared._derive_scoped_from_sources(
+            derived["sources"],
+            directory,
+            f"production {language}",
+            source_basename=source_basename,
+        )
+        for entry in scoped["entries"]:
+            previous = entries_by_key.setdefault(entry["canonical_key"], entry)
+            if previous != entry:
+                raise AssertionError(
+                    f"conflicting exact entry {entry['canonical_key']!r}"
+                )
+    return {
+        "schema_version": 1,
+        "database_name": "speak",
+        "source_directory": directory,
+        "sources": derived["sources"],
+        "entries": [entries_by_key[key] for key in sorted(entries_by_key)],
     }
 
 
@@ -539,6 +581,47 @@ class MonspellInventoryTests(unittest.TestCase):
                 manifest_path or self.manifest_path,
                 report_path, anchor_path, self.glossary,
             )
+
+    def test_exact_git_inventory_and_checked_in_ledger_pass(self):
+        en_path = self.write(
+            "production-en.json", exact_artifact(PRODUCTION_BASELINE, "en")
+        )
+        zh_path = self.write(
+            "production-zh.json", exact_artifact(PRODUCTION_BASELINE, "zh")
+        )
+
+        def build(glossary: Path) -> dict:
+            inventory = MODULE.build_inventory(
+                PRODUCTION_BASELINE,
+                en_path,
+                zh_path,
+                ROOT / ".claude/data/message-overlay/monspell-phase0-inventory.json",
+                ROOT / ".claude/data/message-overlay/monspell.json",
+                ROOT / ".claude/data/message-overlay/monspell-behavior-report.json",
+                ROOT / ".claude/data/message-overlay/monspell-candidate-anchor.json",
+                glossary,
+            )
+            inventory["dumps"]["english"]["artifact_sha256"] = (
+                PRODUCTION_EN_ARTIFACT_SHA256
+            )
+            inventory["dumps"]["localized"]["artifact_sha256"] = (
+                PRODUCTION_ZH_ARTIFACT_SHA256
+            )
+            core = {
+                key: value for key, value in inventory.items()
+                if key != "inventory_sha256"
+            }
+            inventory["inventory_sha256"] = MODULE._sha256(
+                MODULE._canonical_json(core)
+            )
+            return inventory
+
+        inventory = build(ROOT / "docs/glossary.md")
+        self.assertEqual(CURRENT_INVENTORY_SHA256,
+                         inventory["inventory_sha256"])
+        MODULE.validate_results(
+            ROOT / "docs/monspell-review-results.md", inventory, None
+        )
 
     def write_results(self, records: list[dict], suffix: str = "") -> Path:
         path = self.root / f"results-{self.id().split('.')[-1]}{suffix}.md"
