@@ -18,16 +18,18 @@ review 结论：当前基线功能/翻译/集成测试健康，无运行时或�
 | W3 | P2 | monspell symbolic-state defer 单独建单跟踪（`vanquished vanguard nergalle cast`，分析器上限） | 建 Issue，含 reentry trigger；台账引用该 Issue | 无 | ✅ 完成（2026-08-14，建 Issue #68；`docs/monspell-review-results.md` 该卡 `deferral_owner` 已指向 crawl-coder 行为分析器修复，reentry trigger 已记录；#68 仍 OPEN 待 `crawl-coder` 修复后重审） |
 | W4 | P2 | R4 `shout`/`insult` 家族全量校对（共享 ShoutDB provenance 边界） | 子 Issue + inventory + 逐身份审核 + 机械路由 + schema-v4 Final Gate | 先冻结 ShoutDB 共享加载边界 | ✅ 完成（2026-08-14，合并 `b215ba6d`；124 卡 101 keep/23 adjust，7 轮评审收敛；期间修复 shout.cc/_get_species_insult 查找键本地化协议缺陷（I69-R4-CODE-001）并同步协议锚点注册至 base） |
 | W5 | P2 | R4 `monspeak` 家族全量校对（最大语料） | 同上 | W4 的 provenance 模式可复用 | ✅ 完成（2026-08-18，合并 `ab797d8d71`，范围 `b215ba6d..ab797d8d71` 共 45 提交；733 卡 = 320 adjust / 334 keep / 79 retranslate / 0 defer；schema-v4 终审 Go，GitHub Actions `32149621520` success；子 Issue #70 已关闭） |
-| W6 | P2 | R0 覆盖映射（全部 TextDB 家族唯一审核归属、排除项、重入条件） | 文档化映射；每个家族有归属或明确排除依据 | 无 | ✅ 完成（2026-08-14，docs/textdb-coverage-map.md；13 分组/40 文件分类，3 项待建子批、2 项部分覆盖有依据、montitle 归属待裁决） |
-| W6b | P2 | montitle 归属裁决与扩展子批（#24 怪物实体域扩展） | 裁决落地覆盖映射；建子 Issue #71；复用 #24 unique-monster identity provenance 审 montitle.txt 86 keys | W6 | 进行中（2026-08-18 裁决：并入 #24 怪物域扩展；已建 #71） |
-| W7 | P2 | R5 `quotes` 引文全量校对 | 子 Issue + 复用 #3 与怪物/法术专名证据 | W6 | 待办（已建 #72） |
-| W8 | P2 | R6 增量维护入口实际使用并记录证据 | 一次真实 inventory 重生成/失效复核记录 | W4-W7、W6b 完成后 | 待办 |
-| W9 | P2 | #40 关闭（R0 完成 + R1-R5 子 Issue 全关 + montitle #71 关闭 + R6 已用） | 满足 #40 完成条件；关闭评论记录全部证据 | W1-W8、W6b | 待办 |
+| W6 | P2 | R0 覆盖映射（全部 TextDB 家族唯一审核归属、排除项、重入条件） | 文档化映射；每个家族有归属或明确排除依据 | 无 | ⚠️ 映射已建立（2026-08-14，docs/textdb-coverage-map.md），但 2026-08-21 收口复核确认 `misc/miscname` 仍无完整审核归属；已建 #87，完成前 R0 不得宣称闭合 |
+| W6b | P2 | montitle 归属裁决与扩展子批（#24 怪物实体域扩展） | 裁决落地覆盖映射；建子 Issue #71；复用 #24 unique-monster identity provenance 审 montitle.txt 86 keys | W6 | ✅ 完成（2026-08-19，#71 / #73，合并 `aa8e6275ce`） |
+| W6c | P2 | miscname 归属裁决与完整家族审核 | 独立子 Issue；冻结 MiscDB production inventory；逐 identity 终态；验证 lookup/递归/Lua/变体结构 | W6 | 🔲 待办（2026-08-21 复核确认玩家可见且无既有完整账本；已建 #87） |
+| W7 | P2 | R5 `quotes` 引文全量校对 | 子 Issue + 复用 #3 与怪物/法术专名证据 | W6 | ✅ 完成（2026-08-21，#72；范围 `23956ebfbd..c8dcee7b3c`，465 identities，386 keep / 79 adjust，远端 CI `32450858787` success） |
+| W8 | P2 | R6 增量维护入口实际使用并记录证据 | 一次真实 inventory 重生成/失效复核记录 | W4-W7、W6b 完成后 | ✅ 完成（2026-08-19，#77 / PR #83 / `a29423cdcc`：command inventory 在内容漂移后真实重冻结；10/306 identity 重审 keep，296 份未变证据按失效规则复用，`coverage_equal=true`） |
+| W9 | P2 | #40 关闭（R0 完成 + R1-R5 子 Issue 全关 + montitle #71 关闭 + R6 已用） | 满足 #40 完成条件；关闭评论记录全部证据 | W1-W8、W6b、W6c | ⛔ 阻塞于 #87；W6b/W7/W8 已完成，但 `miscname` 尚无逐身份完整证据，当前不得关闭 #40 |
 | W10 | P3 | 共享 primitive 抽取（exact-Git manifest / safe output / JSONL 绑定） | 仅抽取至少两家工具验证过的 primitive；不重写现有工具 | 新批开始时评估 | 可选 |
 
 ## 执行顺序说明
 
 - W2（纯记录更正，无代码）→ W1（scanner 修复，代码）→ W3（建单）→ W4/W5（完整批次，各含
-  tooling + 翻译 + 评审 + final gate）→ W6（R0 映射文档）→ W7（quotes 批次）→ W8 → W9。
+  tooling + 翻译 + 评审 + final gate）→ W6（R0 映射文档）→ W6b（montitle）/W7（quotes）→
+  W8（首次真实增量重审）→ W6c（miscname）→ W9。
 - 每项完成后在本表更新状态并记录证据位置；跨会话 handoff 写入对应 GitHub Issue 评论。
 - 本表不复制 GitHub Issue 的 Open/Closed 状态细节，只维护本计划内的执行进度。

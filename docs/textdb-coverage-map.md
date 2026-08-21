@@ -26,7 +26,7 @@
 
 ## 覆盖状态（每家族唯一归属）
 
-图例：✅ 已审核且可复用（证据在对应 issue/账本）；🔲 尚无全量证据（#40 内待建子批）；
+图例：✅ 已审核且可复用（证据在对应 issue/账本）；🔲 尚无全量证据（#40 子批待执行）；
 ⛔ 明确非玩家显示或协议边界；⚠️ 部分覆盖（有独立证据但非完整家族账本）。
 
 | 家族/文件 | 状态 | 审核归属 | 证据 |
@@ -50,10 +50,11 @@
 | speak/godspeak | ✅ | #25（神祇台词域） | god ledger + #25 关闭评论 |
 | misc/decorlines | ✅ | #67 | docs/decorlines-review-results.md |
 | speak/monspeak | ✅ | #70（怪物说话消息域） | docs/monspeak-review-results.md |
-| **shout/shout + speak|shout/insult（共享）** | 🔲 | #40 待建子批（W4，需先冻结 ShoutDB 共享 provenance） | — |
-| misc/montitle | 🔲 | 已裁决：并入 #24 怪物实体域扩展子批（新 Issue #71），复用 #24 unique-monster identity provenance；86 keys、无 EN/ZH 键不对称 | #24/#71 |
-| misc/miscname/gizmo | ⚠️ | gizmo 与 #29 随机神器组件域重叠，按 #29 provenance 覆盖；miscname 待裁决 | #29 |
-| quotes/quotes.txt | 🔲 | #40 R5 待建子批（W7；已建 #72；#3 提供专名引用部分证据） | #3/#72 |
+| **shout/shout + speak|shout/insult（共享）** | ✅ | #69（同批冻结 ShoutDB/SpeakDB 双载 provenance） | docs/shout-review-results.md |
+| misc/montitle | ✅ | #71（#24 怪物实体域扩展；复用 unique-monster identity provenance） | #71 / #73，合并 `aa8e6275ce` |
+| misc/gizmo | ✅ | #29（539 个有限语法组件；最终程序化名称明确不可有限枚举） | docs/item-extended-review-results.md |
+| misc/miscname | 🔲 | #87（2026-08-21 收口复核确认其含独立玩家消息，既有账本未完整取得所有权） | EN/ZH 各 10 个物理预检 key；最终范围以 exact-Git production inventory 为准 |
+| quotes/quotes.txt | ✅ | #72（复用 #3 及怪物/法术专名证据） | 465 identities；386 keep / 79 adjust；远端 CI `32450858787` success |
 | **randart/randname/randbook/rand_all/rand_arm/rand_wpn** | ⚠️ | #29 覆盖"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"；无独立 randart 账本 | #29 关闭评论 |
 | misc/godname | ✅ | #25（"神祇生产身份、显示名和称号：…godname.txt"） | #25 |
 | speak|misc/monname、speak|misc/colourname | ⚠️ | 依赖证据：被 #25（Beogh 使徒/祖先名）、#66/#67（graffiti/decorlines 作者与颜色 token）消费；无独立家族账本，作为依赖族记录 | #66/#67 账本中的 external-token 绑定 |
@@ -76,6 +77,11 @@
   86/86 无不对称。
 - **randart 归属**：#29 明示"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"，视为该域证据；
   若上游 randart 组件漂移，重入触发后回到 #29 或新子批。
+- **miscname 归属（2026-08-21 收口复核）**：它是独立 MiscDB 玩家消息家族，不是协议或命名
+  依赖。消费者至少包括 `spl-summoning.cc`、`traps.cc`、`main.cc` 与 `stairs.cc`；物理预检
+  还发现 EN `summon_horrible_things` 与 ZH `SHT_int_loss` 的 key 风险。既有法术/世界/开局
+  账本没有冻结这一完整 TextDB 家族，故建立 #87 按 production inventory 逐身份审核；完成前
+  不得把该族标为覆盖。
 - **明确非玩家显示**：协议/lookup 键值（英文）、`__NONE`/`__DEFAULT` 哨兵、Lua 比较串不属于
   显示文本；各家族账本已按 i18n-safety 策略隔离。
 
@@ -94,7 +100,8 @@
 
 ## 关闭条件映射（#40）
 
-- 本映射完成"所有目标 TextDB 组均有唯一审核归属"（除 ⚠️ 两项有明确证据依据、🔲 三项待建子批）。
-- 关闭 #40 前还需：W7（quotes）子批完成并关闭；montitle 扩展子批 #71 完成并关闭；
-  gizmo/miscname 归属裁决；R6 增量复核入口实际使用一次并记录证据。
-  （W4 shout/insult #69、W5 monspeak #70 已完成并关闭；montitle 归属已裁决为 #71。）
+- 已完成并关闭：R1 cloud #41、R2 card #42、R3 commands/tutorial/hints/help #43/#46/#50/#52、
+  R4 各动态消息家族 #54/#56/#59/#60/#66/#67/#69/#70、montitle #71、R5 quotes #72。
+- R6 已真实使用：#77 在当前 production inventory 上只重审 10 个失效 command identity，复用
+  296 个输入未变 identity，重冻结后 `coverage_equal=true`，合并 `a29423cdcc`。
+- 当前唯一 R0/R1-R5 收口缺口为 miscname #87。它完成并更新本映射后，#40 才满足关闭条件。
