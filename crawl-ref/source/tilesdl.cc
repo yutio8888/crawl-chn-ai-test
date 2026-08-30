@@ -828,6 +828,10 @@ static const int min_cjk_sidebar_cols = 14;
 /// Minimum/maximum text rows for the top stat bar in Android portrait mode.
 static const int min_top_bar_text_rows = 6;
 static const int max_top_bar_text_rows = 7;
+// Leave the first glyph row clear of the top edge. CJK fallback glyphs can
+// extend slightly above the primary font's ascender, which otherwise clips
+// their upper strokes when the Android top HUD starts at y = 0.
+static const int top_bar_top_padding = 2;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -895,7 +899,9 @@ void TilesFramework::do_layout()
     // negative tile sizes and pass them to round_up_to_multiple().
     if (use_top_bar)
     {
-        const int min_top_bar_h = m_region_stat->dy * min_top_bar_text_rows;
+        const int min_top_bar_h = top_bar_top_padding
+                                  + m_region_stat->dy
+                                    * min_top_bar_text_rows;
         const int msg_min_h =
             m_region_msg->grid_height_to_pixels(Options.msg_min_height);
         const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h;
@@ -912,8 +918,9 @@ void TilesFramework::do_layout()
         // dungeon view below (full width), messages overlay at bottom.
         const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
         int top_bar_text_rows = min_top_bar_text_rows;
-        const int expanded_top_bar_h = m_region_stat->dy
-                                       * max_top_bar_text_rows;
+        const int expanded_top_bar_h = top_bar_top_padding
+                                       + m_region_stat->dy
+                                         * max_top_bar_text_rows;
         const int expanded_tile_h = m_windowsz.y - expanded_top_bar_h
                                     - msg_min_h;
         // Add a seventh row only when it neither forces the dungeon cells to
@@ -924,7 +931,8 @@ void TilesFramework::do_layout()
         {
             top_bar_text_rows = max_top_bar_text_rows;
         }
-        const int top_bar_h = m_region_stat->dy * top_bar_text_rows;
+        const int top_bar_h = top_bar_top_padding
+                              + m_region_stat->dy * top_bar_text_rows;
 
         // Ensure dungeon view fits ENV_SHOW_DIAMETER.
         int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
@@ -935,8 +943,9 @@ void TilesFramework::do_layout()
         }
 
         // Stat bar at top, full width
-        m_region_stat->resize_to_fit(m_windowsz.x, top_bar_h);
-        m_region_stat->place(0, 0, 0);
+        m_region_stat->resize_to_fit(m_windowsz.x,
+                                     top_bar_h - top_bar_top_padding);
+        m_region_stat->place(0, top_bar_top_padding, 0);
 
         // Tile (dungeon) region below stat bar, full width
         const int tile_iw = m_windowsz.x;
