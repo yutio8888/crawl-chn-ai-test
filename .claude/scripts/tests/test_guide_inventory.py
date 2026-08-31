@@ -42,6 +42,35 @@ class GuideInventoryTest(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def _run_unrest(self, payload):
+        return subprocess.run(
+            ["perl", str(self.root / "crawl-ref/source/util/unrest.pl")],
+            input=payload, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def test_unrest_utf8_and_english_output_contract(self):
+        chinese_source = (
+            self.root / "crawl-ref/docs/zh/crawl_manual.rst").read_bytes()
+        chinese = self._run_unrest(chinese_source)
+        self.assertEqual(chinese.returncode, 0, chinese.stderr.decode(
+            "utf-8", errors="replace"))
+        normalized = "".join(chinese.stdout.decode("utf-8").split())
+        for phrase in ("此外，取得的经验用于训练技能",
+                       "角色学习技能的难易程度只取决于种族"):
+            self.assertTrue(phrase in normalized, phrase)
+
+        english_source = (
+            self.root / "crawl-ref/docs/crawl_manual.rst").read_bytes()
+        english = self._run_unrest(english_source)
+        self.assertEqual(english.returncode, 0, english.stderr.decode(
+            "utf-8", errors="replace"))
+        self.assertEqual(
+            english.stdout,
+            (ROOT / "crawl-ref/docs/crawl_manual.txt").read_bytes())
+
+    def test_unrest_rejects_invalid_utf8(self):
+        invalid = self._run_unrest(b"Valid heading\n\xff\n")
+        self.assertNotEqual(invalid.returncode, 0)
+
     def _write_review_docs(self, payload, rows=None):
         (self.root / "docs/guide-review-plan.md").write_text(
             MODULE.render_review_plan(payload), encoding="utf-8")

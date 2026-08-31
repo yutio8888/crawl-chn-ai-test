@@ -335,7 +335,7 @@ def run_help(bot: PtyBot) -> None:
     emitted = ['help:probe:ok']
     for case_id, hotkey, positive, negative in GUIDE_CASES:
         help_screen = bot.send(b'?')
-        if '查询说明' not in help_screen:
+        if 'Lookup description' not in help_screen:
             raise BotFailure(f'{case_id}: main help did not render')
         page = bot.send(hotkey)
         assert_screen(case_id, page, positive, negative)
@@ -344,7 +344,7 @@ def run_help(bot: PtyBot) -> None:
         exit_nested_help(bot)
     for name, shortcut, query, positive in HELP_CASES:
         help_screen = bot.send(b'?')
-        if '查询说明' not in help_screen:
+        if 'Lookup description' not in help_screen:
             raise BotFailure(f'help:{name}: main help did not render')
         lookup = bot.send(b'/')
         assert_screen(f'help:{name}:lookup', lookup, ('查询以下信息', '神祇'))

@@ -3,7 +3,7 @@
 ## Frozen boundary
 
 - Baseline: `30a4f03b6cf345f85c16ad4dcd06f0e7cb1a6725`
-- Inventory digest: `40651476e610d91a350708955dd9669024d3d3e1f66706d017731e1a3ea4b26d`
+- Inventory digest: `0599d8548bb2379282e085bd8aec38429a2f5b63ed19cac60803199678b3b075`
 - Glossary SHA-256: `366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`
 - Frozen identities: 79
 - Method: each frozen English section was manually compared with its Chinese authoritative-source section for clauses, conditions, exceptions, consequences and terminology. The inventory check separately proves identity/order and protected-token equality.

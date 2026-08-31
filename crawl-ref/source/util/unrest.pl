@@ -1,8 +1,12 @@
 #! /usr/bin/env perl
 use warnings;
+use Encode qw(decode FB_CROAK);
+
+binmode STDIN, ':raw';
+binmode STDOUT, ':encoding(UTF-8)';
 
 undef $/;
-$_=<>;
+$_=decode('UTF-8', <>, FB_CROAK);
 
 # Undo Windows newlines.
 s/\r\n/\n/sg;
