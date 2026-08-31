@@ -458,9 +458,7 @@ static help_file help_files[] =
     { "quickstart.txt",     '^', false },
     { "macros_guide.txt",  '~', false },
     { "options_guide.txt", '&', false },
-#ifdef USE_TILE_LOCAL
     { "tiles_help.txt",    't', false },
-#endif
     { nullptr, 0, false }
 };
 
@@ -1371,6 +1369,14 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
 {
     static map<int, int> hotkeys;
     static map<int, formatted_string> page_text;
+    static string cached_language;
+    const string language = Options.lang_name ? Options.lang_name : "";
+    if (cached_language != language)
+    {
+        hotkeys.clear();
+        page_text.clear();
+        cached_language = language;
+    }
     if (!page_text.size())
     {
         for (int i = 0; help_files[i].name != nullptr; ++i)
@@ -1428,6 +1434,18 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
             break;
     }
     return 0;
+}
+
+int help_section_for_test(int section, string& header, string& text)
+{
+    formatted_string formatted_header;
+    formatted_string formatted_text;
+    int scroll = 0;
+    const int page = _get_help_section(section, formatted_header,
+                                       formatted_text, scroll);
+    header = formatted_header.tostring();
+    text = formatted_text.tostring();
+    return page;
 }
 
 class help_popup : public formatted_scroller

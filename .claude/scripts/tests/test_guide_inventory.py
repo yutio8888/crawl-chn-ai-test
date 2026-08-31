@@ -91,6 +91,36 @@ class GuideInventoryTest(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError, "protected token mismatch"):
             MODULE.build_inventory(self.root)
 
+    def test_plain_option_declaration_damage_fails(self):
+        path = self.root / "crawl-ref/docs/zh/options_guide.txt"
+        text = path.read_text(encoding="utf-8").replace(
+            "name = Delilah", "nom = Delilah", 1)
+        path.write_text(text, encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "option_declaration_order"):
+            MODULE.build_inventory(self.root)
+
+    def test_named_key_damage_fails(self):
+        path = self.root / "crawl-ref/docs/zh/macros_guide.txt"
+        text = path.read_text(encoding="utf-8").replace("# Tab:", "# Tap:", 1)
+        path.write_text(text, encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "macro_key_declaration_order"):
+            MODULE.build_inventory(self.root)
+
+    def test_code_block_identifier_damage_fails(self):
+        english = self.root / "crawl-ref/docs/macros_guide.txt"
+        chinese = self.root / "crawl-ref/docs/zh/macros_guide.txt"
+        english.write_text(
+            english.read_text(encoding="utf-8") + "\n{{foo()}}\n",
+            encoding="utf-8")
+        chinese.write_text(
+            chinese.read_text(encoding="utf-8") + "\n{{bar()}}\n",
+            encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError,
+                                    "code_identifier_order"):
+            MODULE.build_inventory(self.root)
+
     def test_stale_generated_file_fails(self):
         path = self.root / "crawl-ref/docs/zh/quickstart.txt"
         path.write_text(path.read_text(encoding="utf-8") + "stale\n", encoding="utf-8")

@@ -40531,7 +40531,7 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
 %%%%
 <w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
-<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：适性表\n<w>/</w>：查询说明\n<w>Q</w>：常见问题\n
+<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：资质表\n<w>/</w>：查询说明\n<w>Q</w>：常见问题\n
 %%%%
 <w>T</w>: Tiles key help\n
 <w>T</w>：贴图版按键帮助\n
@@ -42388,7 +42388,7 @@ sewer drain
 排水口
 %%%%
 Aptitudes
-适性
+资质
 %%%%
 Quickstart
 快速入门

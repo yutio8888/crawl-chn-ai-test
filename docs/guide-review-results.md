@@ -3,7 +3,7 @@
 ## Frozen boundary
 
 - Baseline: `30a4f03b6cf345f85c16ad4dcd06f0e7cb1a6725`
-- Inventory digest: `fbf14ef4c8a8d9db80f2efbd3e632ccca0443985f2e9fcbb96ee82c197bb11a5`
+- Inventory digest: `40651476e610d91a350708955dd9669024d3d3e1f66706d017731e1a3ea4b26d`
 - Glossary SHA-256: `366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`
 - Frozen identities: 79
 - Method: each frozen English section was manually compared with its Chinese authoritative-source section for clauses, conditions, exceptions, consequences and terminology. The inventory check separately proves identity/order and protected-token equality.
@@ -12,8 +12,8 @@
 Canonical-pair SHA-256 (English / Chinese):
 
 - quickstart: `eb29701c283ceb11c81b9c49147f2489417e056e0109955540f8ba77a5164fd0` / `ff4ea00bfd4738526f9f9ab493a451ef8389e081c403150461331468e608d38b`
-- manual: `af1299dce9715e8f642672cc722ff8f0499a40ac1c9b0d17c376e40f89e93b47` / `6eae95d0a2746955d4c5c69001229a46a29c0a41724dd850109210ccba6b5191`
-- options: `987977bd8e38fa96e919a28def020570ba630726dcb5eb1dd041c7fdf9c05372` / `8bfe4566c07a0b2905ecea85ca433a3d48f2d183a11463f9c506db0b0bc604aa`
+- manual: `af1299dce9715e8f642672cc722ff8f0499a40ac1c9b0d17c376e40f89e93b47` / `2ad9e5962b6daec5c7257499148c95241ad823e62f6c4b157b4d841dae475825`
+- options: `987977bd8e38fa96e919a28def020570ba630726dcb5eb1dd041c7fdf9c05372` / `e0e75458ce0d07add5d65fb57b6473bd250a5fe8a60862b4db8db7f989c9c30d`
 - macros: `f6d8c7f7446139bc95027858c4f69f86cb7d077568b34787d05a6bb742dfc92c` / `b5564ea0caf075494a549ad263a5bd18d81eba2289fb15b8ae77ca73260baa62`
 - tiles: `3a58aa97d21334974388d7c3660e64ec7e543f349169a3e5722021c8db189f6a` / `d39f5d73390f7dda716cfa55c2df8387c81d504aee1ed675a8b2a3db4ffb56a4`
 
@@ -45,13 +45,13 @@ Each row is one terminal card. Paths are relative to `crawl-ref/docs/`; `N/A` me
 | `guide:manual:chapter-L` | `keep` | `crawl_manual.rst:1192-1269` L. Licence, contact, history | `zh/crawl_manual.rst:893-959` L. 许可证、联系信息与历史 | Licences, source/assets split, contacts, credits, history, people and years preserved; proper names contextual. | N/A | high |
 | `guide:manual:chapter-M` | `keep` | `crawl_manual.rst:1270-1303` M. Macros, options, performance | `zh/crawl_manual.rst:960-988` M. 宏、选项与性能 | Macro/keymap access, option files, paths and performance guidance complete; identifiers literal. | N/A | high |
 | `guide:manual:chapter-N` | `keep` | `crawl_manual.rst:1304-1488` N. Philosophy (pas de faq) | `zh/crawl_manual.rst:989-1144` N. 设计理念 (pas de faq) | All eight design topics retain arguments, examples and qualifications; `pas de faq` preserved. | N/A | high |
-| `guide:manual:appendix-1` | `keep` | `crawl_manual.rst:1489-2003` 1. List of character species | `zh/crawl_manual.rst:1145-1527` 1. 角色种族列表 | Every species/draconian type retains aptitudes, traits, levels and restrictions; names follow glossary/review. | N/A | high |
-| `guide:manual:appendix-2` | `keep` | `crawl_manual.rst:2004-2188` 2. List of character backgrounds | `zh/crawl_manual.rst:1528-1680` 2. 角色背景列表 | Every group retains starting attributes, equipment, spells and gods; background/spell names follow glossary/review. | N/A | high |
+| `guide:manual:appendix-1` | `adjust` | `crawl_manual.rst:1489-2003` 1. List of character species | `zh/crawl_manual.rst:1145-1527` 1. 角色种族列表 | Every species/draconian type retains aptitudes, traits, levels and restrictions; explicit school contexts now use 寒冰魔法、咒法系、召唤系、诅咒系 per glossary/reviewer. | Adjusted only explicit school-name contexts in species/draconian descriptions; ordinary hex/teleport effects remain contextual. Re-enter if school terminology or source text changes. | high |
+| `guide:manual:appendix-2` | `adjust` | `crawl_manual.rst:2004-2188` 2. List of character backgrounds | `zh/crawl_manual.rst:1528-1680` 2. 角色背景列表 | Every group retains starting attributes, equipment, spells and gods; explicit school contexts now use 寒冰魔法、咒法系、召唤系、诅咒系、传送系 per glossary/reviewer. | Adjusted school labels and naturally composed school-spell phrases; background names and ordinary summon/movement wording remain unchanged. Re-enter if school terminology or source text changes. | high |
 | `guide:manual:appendix-3` | `keep` | `crawl_manual.rst:2189-2330` 3. List of skills | `zh/crawl_manual.rst:1681-1793` 3. 技能列表 | All skill groups retain governing attributes and mechanics; names follow glossary, including Evocations→魔力释放. | N/A | high |
 | `guide:manual:appendix-4` | `keep` | `crawl_manual.rst:2331-2942` 4. List of keys and commands | `zh/crawl_manual.rst:1794-2372` 4. 按键与命令列表 | Every command group retains keys and mode-specific effects; control characters/ASCII literal. | N/A | high |
 | `guide:manual:appendix-5` | `keep` | `crawl_manual.rst:2943-3069` 5. Inscriptions | `zh/crawl_manual.rst:2373-2490` 5. 铭文 | Shortcut, safety and artefact syntax retain symbols, command scope, examples and exceptions; “铭文” consistent. | N/A | high |
-| `guide:manual:appendix-6` | `keep` | `crawl_manual.rst:3070-3132` 6. Dungeon sprint modes | `zh/crawl_manual.rst:2491-2542` 6. 地牢冲刺模式 | Selection, maps, command line, Lua hook, scoring and mode behavior complete; code/map IDs literal. | N/A | high |
-| `guide:options:preamble` | `keep` | `options_guide.txt:1-183` Preamble | `zh/options_guide.txt:1-182` Preamble | Scope, conventions, platform notes and contents agree; option/file/path literals preserved. | N/A | high |
+| `guide:manual:appendix-6` | `adjust` | `crawl_manual.rst:3070-3132` 6. Dungeon sprint modes | `zh/crawl_manual.rst:2491-2542` 6. 地牢冲刺模式 | Selection, maps, command line, Lua hook, scoring and mode behavior complete; Fedhas/Makhleb now use glossary names 费德哈/马科列布, while code/map IDs remain literal. | Corrected 费达斯→费德哈 and two 马赫列布→马科列布 occurrences. Re-enter if god-name rulings or source text changes. | high |
+| `guide:options:preamble` | `adjust` | `options_guide.txt:1-183` Preamble | `zh/options_guide.txt:1-182` Preamble | Scope, conventions, platform notes and contents agree; TOC 3-j now uses the established quiver term “发射栏”; option/file/path literals remain preserved. | Corrected TOC “快捷栏、发射与弹药”→“发射栏、发射与弹药”. Re-enter if quiver terminology or source TOC changes. | high |
 | `guide:options:section-0` | `keep` | `options_guide.txt:184-193` 0- Generalities on options. | `zh/options_guide.txt:183-190` 0- 选项通则。 | Init-file precedence and applicability complete; configuration identities literal. | N/A | high |
 | `guide:options:section-0-a` | `keep` | `options_guide.txt:194-239` Standard and additional option files. | `zh/options_guide.txt:191-230` 标准选项文件与附加选项文件。 | Files, include order, locations, environment and web behavior retain precedence/path rules. | N/A | high |
 | `guide:options:section-0-b` | `keep` | `options_guide.txt:240-253` Options on the command line. | `zh/options_guide.txt:231-242` 命令行选项。 | `-extra-opt-*` forms, ordering, repetition and wizard example complete; literals unchanged. | N/A | high |
@@ -68,7 +68,7 @@ Each row is one terminal card. Paths are relative to `crawl-ref/docs/`; `N/A` me
 | `guide:options:section-3-e` | `keep` | `options_guide.txt:779-862` Viewport Display Options. | `zh/options_guide.txt:674-736` 视口显示选项。 | Size, centering, LOS, animation and updates retain defaults/constraints/build distinctions. | N/A | high |
 | `guide:options:section-3-f` | `keep` | `options_guide.txt:863-1146` Travel and Exploration. | `zh/options_guide.txt:737-968` 自动移动与探索。 | Delays, stops, exclusions, routes and stairs preserve every condition/default; travel terminology and option IDs are consistent. | N/A | high |
 | `guide:options:section-3-g` | `adjust` | `options_guide.txt:1147-1588` Command Enhancements. | `zh/options_guide.txt:969-1328` 命令功能增强。 | Confirmation, targeting, sorting, equipment, animation and alerts complete; inscription terms normalized. | `非攻击刻文`→`非攻击铭文` and `!a 刻文`→`!a 铭文` at lines 975, 1245; re-enter if source/ruling changes. | high |
-| `guide:options:section-3-h` | `keep` | `options_guide.txt:1589-1968` Message and Display Enhancements. | `zh/options_guide.txt:1329-1635` 消息与显示功能增强。 | History, filters, lists, prompts, menus and display toggles preserve regex order/defaults/exceptions. | N/A | high |
+| `guide:options:section-3-h` | `adjust` | `options_guide.txt:1589-1968` Message and Display Enhancements. | `zh/options_guide.txt:1329-1635` 消息与显示功能增强。 | History, filters, lists, prompts, menus and display toggles preserve regex order/defaults/exceptions; MP warning now uses glossary “法力”. | Corrected LOW MAGIC WARNING text “低魔力警告”→“低法力警告”. Re-enter if MP terminology or source warning changes. | high |
 | `guide:options:section-3-i` | `keep` | `options_guide.txt:1969-2067` Colours | `zh/options_guide.txt:1636-1721` 颜色（消息与菜单） | Color mappings, channels, regexes, tags and precedence retain syntax/examples; IDs literal. | N/A | high |
 | `guide:options:section-3-j` | `adjust` | `options_guide.txt:2068-2132` Quivers, firing, and ammo. | `zh/options_guide.txt:1722-1774` 发射栏、发射与弹药。 | Quiver/fire/ammo selection and ordering complete; inscription references normalized. | `+f 刻文`/`刻文的更多信息`→`+f 铭文`/`铭文的更多信息`, lines 1738-1739; re-enter if source/ruling changes. | high |
 | `guide:options:section-3-k` | `keep` | `options_guide.txt:2133-2191` Message Channels. | `zh/options_guide.txt:1775-1830` 消息频道。 | Grammar, channel inventory, schemes and multicolor exceptions complete; IDs literal. | N/A | high |
@@ -105,7 +105,7 @@ Each row is one terminal card. Paths are relative to `crawl-ref/docs/`; `N/A` me
 
 ## Coverage and terminal summary
 
-- Conclusions: `keep` 76; `adjust` 3; `retranslate` 0; `defer terminology` 0; `defer implementation` 0; total 79.
+- Conclusions: `keep` 71; `adjust` 8; `retranslate` 0; `defer terminology` 0; `defer implementation` 0; total 79.
 - Deferrals: none.
 - Identity proof: inventory and result identities are both unique; both set differences are empty; guide and ordinal order is identical.
 - Terminal uniqueness: every identity has exactly one allowed conclusion; no structural-only placeholder remains.

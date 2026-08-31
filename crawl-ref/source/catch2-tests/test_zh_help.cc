@@ -171,35 +171,36 @@ private:
 } // anonymous namespace
 
 TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh-help: standalone guides resolve and contain Chinese",
+                 "zh-help: standalone guide hotkeys render localized pages",
                  "[zh-help][guides]")
 {
-    const vector<std::pair<string, string>> guides = {
-        {"crawl_manual.txt", "Dungeon Crawl Stone Soup 手册"},
-        {"quickstart.txt", "Crawl 快速入门指南"},
-        {"macros_guide.txt", "宏与按键映射"},
-        {"options_guide.txt", "Crawl 选项指南"},
-        {"tiles_help.txt", "贴图版专用命令"},
+    struct guide_expectation
+    {
+        int hotkey;
+        const char* header;
+        const char* marker;
+        const char* english_marker;
+    };
+    const vector<guide_expectation> guides = {
+        {'*', "手册", "Dungeon Crawl Stone Soup 手册",
+              "Dungeon Crawl Stone Soup manual"},
+        {'^', "快速入门", "Crawl 快速入门指南", "Crawl Quick-Start Guide"},
+        {'~', "宏", "宏与按键映射", "Macros and Keymaps"},
+        {'&', "选项", "Crawl 选项指南", "Guide to Crawl's options"},
+        {'t', "贴图版", "贴图版专用命令", "Tiles specific commands"},
     };
     for (const auto& guide : guides)
     {
-        const string path = help_file_path(guide.first);
-        INFO("Guide: " << guide.first << ", path: " << path);
-        CHECK(path.find("zh" + string(1, FILE_SEPARATOR) + guide.first)
-              != string::npos);
-        std::ifstream stream(path);
-        REQUIRE(stream.good());
-        const string text((std::istreambuf_iterator<char>(stream)),
-                          std::istreambuf_iterator<char>());
-        CHECK(text.find(guide.second) != string::npos);
+        string header;
+        string text;
+        INFO("Guide hotkey: " << static_cast<char>(guide.hotkey));
+        CHECK(help_section_for_test(guide.hotkey, header, text)
+              == guide.hotkey);
+        CHECK(header.find(guide.header) != string::npos);
+        CHECK(text.find(guide.marker) != string::npos);
+        CHECK(text.find(guide.english_marker) == string::npos);
         CHECK(contains_cjk_text(text));
     }
-
-    CHECK(help_header_suffix('*') == ": 手册");
-    CHECK(help_header_suffix('^') == ": 快速入门");
-    CHECK(help_header_suffix('~') == ": 宏");
-    CHECK(help_header_suffix('&') == ": 选项");
-    CHECK(help_header_suffix('t') == ": 贴图版");
 }
 
 TEST_CASE("zh-help: standalone guides fall back to English",

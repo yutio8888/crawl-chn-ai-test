@@ -36,6 +36,15 @@ TOKEN_PATTERNS = (
     ("number", re.compile(r"(?<![\w])\d+(?:\.\d+)*(?![\w])")),
     ("markup", re.compile(r"</?[a-z][^>\n]*>")),
 )
+OPTION_DECL_RE = re.compile(
+    r"^[ \t]*([a-z][a-z0-9_]*(?:[ \t]*,[ \t]*[a-z][a-z0-9_]*)*)"
+    r"[ \t]+(?:\+=|\^=|-=|:=|=)[ \t]*", re.MULTILINE)
+MACRO_KEY_DECL_RE = re.compile(
+    r"^#\s*((?:(?:Ctrl|Shift|Alt|Meta)-)*"
+    r"(?:Tab|Return|Enter|Esc(?:ape)?|Space|Del(?:ete)?|Backspace|Home|End|"
+    r"PgUp|PgDn|Ins(?:ert)?|F(?:[1-9]|1[0-2])|[A-Za-z0-9]))\s*:",
+    re.MULTILINE)
+CODE_IDENTIFIER_RE = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
 STRUCTURAL_LITERALS = ("{{", "}}", "%%%%", "```", "::")
 TERMINAL_CONCLUSIONS = {
     "keep", "adjust", "retranslate",
@@ -112,7 +121,7 @@ def sections(text: str, kind: str) -> list[tuple[str, str, int]]:
             for index, (title, line) in enumerate(_underlined(text))]
 
 
-def protected_tokens(text: str) -> dict[str, Counter[str]]:
+def protected_tokens(text: str, *, option_lua: bool = False) -> dict[str, Counter[str]]:
     # Reflowed source documentation may split identifiers after an underscore.
     text = re.sub(r"(?<=_)\s+(?=[A-Za-z0-9])", "", text)
     tokens = {name: Counter(pattern.findall(text))
@@ -121,7 +130,62 @@ def protected_tokens(text: str) -> dict[str, Counter[str]]:
                             for token in tokens["url"].elements())
     tokens["structural"] = Counter({literal: text.count(literal)
                                      for literal in STRUCTURAL_LITERALS})
+    option_declarations = []
+    for match in OPTION_DECL_RE.finditer(text):
+        option_declarations.extend(
+            item.strip() for item in match.group(1).split(","))
+    # Repeated examples may legitimately be paraphrased, but declaration
+    # identities and their first-occurrence order are configuration syntax.
+    tokens["option_declaration_order"] = _ordered_tokens(
+        dict.fromkeys(option_declarations))
+    tokens["macro_key_declaration_order"] = _ordered_tokens(
+        match.group(1) for match in MACRO_KEY_DECL_RE.finditer(text))
+    tokens["code_identifier_order"] = _ordered_tokens(
+        _code_identifiers(text, option_lua=option_lua))
     return tokens
+
+
+def _ordered_tokens(values) -> Counter[str]:
+    return Counter(f"{index:06d}:{value}"
+                   for index, value in enumerate(values))
+
+
+def _code_identifiers(text: str, *, option_lua: bool) -> list[str]:
+    """Return identifiers from standalone-guide Lua/code syntax in order."""
+    snippets = re.findall(r"\{\{(.*?)\}\}", text, re.DOTALL)
+    if not option_lua:
+        return [identifier for snippet in snippets
+                for identifier in CODE_IDENTIFIER_RE.findall(snippet)]
+
+    block = []
+    delimiter = None
+    for line in text.splitlines():
+        # Options-guide Lua blocks use delimiters in column zero. Indented
+        # braces elsewhere are examples/data and must not consume prose.
+        if delimiter is not None:
+            if line == delimiter:
+                snippets.append("\n".join(block))
+                block = []
+                delimiter = None
+            else:
+                block.append(line)
+            continue
+        if line in {"<", "{"}:
+            delimiter = ">" if line == "<" else "}"
+            continue
+        inline = re.match(r"^:\s*(\S.*)$", line)
+        if inline:
+            snippets.append(inline.group(1))
+    if delimiter is not None:
+        raise InventoryError("unterminated guide code block")
+
+    identifiers = []
+    for snippet in snippets:
+        code = re.sub(r"--[^\n]*", "", snippet)
+        code = re.sub(r'"(?:\\.|[^"\\])*"', '""', code)
+        code = re.sub(r"'(?:\\.|[^'\\])*'", "''", code)
+        identifiers.extend(CODE_IDENTIFIER_RE.findall(code))
+    return identifiers
 
 
 def _section_bodies(text: str, parsed: list[tuple[str, str, int]]) -> list[str]:
@@ -134,8 +198,11 @@ def _section_bodies(text: str, parsed: list[tuple[str, str, int]]) -> list[str]:
 
 
 def _compare_tokens(identity: str, english: str, chinese: str) -> dict:
-    en_tokens = protected_tokens(english)
-    zh_tokens = protected_tokens(chinese)
+    option_lua = identity in {
+        "guide:options:section-6-b", "guide:options:section-6-c",
+    }
+    en_tokens = protected_tokens(english, option_lua=option_lua)
+    zh_tokens = protected_tokens(chinese, option_lua=option_lua)
     mismatches = {}
     for kind in en_tokens:
         matches = en_tokens[kind] == zh_tokens[kind]
