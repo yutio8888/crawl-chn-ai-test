@@ -59,6 +59,7 @@
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
+#include "command.h"         // localized standalone guide resolution
 
 #include <algorithm>
 #include <cstring>
@@ -168,6 +169,54 @@ private:
 };
 
 } // anonymous namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: standalone guides resolve and contain Chinese",
+                 "[zh-help][guides]")
+{
+    const vector<std::pair<string, string>> guides = {
+        {"crawl_manual.txt", "Dungeon Crawl Stone Soup 手册"},
+        {"quickstart.txt", "Crawl 快速入门指南"},
+        {"macros_guide.txt", "宏与按键映射"},
+        {"options_guide.txt", "Crawl 选项指南"},
+        {"tiles_help.txt", "贴图版专用命令"},
+    };
+    for (const auto& guide : guides)
+    {
+        const string path = help_file_path(guide.first);
+        INFO("Guide: " << guide.first << ", path: " << path);
+        CHECK(path.find("zh" + string(1, FILE_SEPARATOR) + guide.first)
+              != string::npos);
+        std::ifstream stream(path);
+        REQUIRE(stream.good());
+        const string text((std::istreambuf_iterator<char>(stream)),
+                          std::istreambuf_iterator<char>());
+        CHECK(text.find(guide.second) != string::npos);
+        CHECK(contains_cjk_text(text));
+    }
+
+    CHECK(help_header_suffix('*') == ": 手册");
+    CHECK(help_header_suffix('^') == ": 快速入门");
+    CHECK(help_header_suffix('~') == ": 宏");
+    CHECK(help_header_suffix('&') == ": 选项");
+    CHECK(help_header_suffix('t') == ": 贴图版");
+}
+
+TEST_CASE("zh-help: standalone guides fall back to English",
+          "[zh-help][guides]")
+{
+    const char* saved = Options.lang_name;
+    Options.lang_name = "zz-missing-guide-language";
+    const string missing_language = help_file_path("options_guide.txt");
+    CHECK(missing_language.find("zz-missing-guide-language") == string::npos);
+    CHECK(missing_language.find("options_guide.txt") != string::npos);
+
+    Options.lang_name = nullptr;
+    const string english = help_file_path("quickstart.txt");
+    CHECK(english.find("zh" + string(1, FILE_SEPARATOR)) == string::npos);
+    CHECK(english.find("quickstart.txt") != string::npos);
+    Options.lang_name = saved;
+}
 
 // =============================================================================
 // [zh-help][issue-52] — load the complete frozen Help/FAQ inventory through

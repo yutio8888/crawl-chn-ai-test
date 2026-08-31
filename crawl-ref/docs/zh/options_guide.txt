@@ -1,0 +1,2890 @@
+Crawl 选项指南
+==============
+
+本文档说明最新版 Dungeon Crawl Stone Soup 的全部选项。如果遇到困难，或有些
+功能似乎无法正常工作，请通过 http://crawl.develz.org/ 所列的任一社区讨论渠道
+寻求帮助。
+
+本文内容如下：
+
+0-  通则。
+0-a     标准选项文件与附加选项文件。
+0-b     命令行选项。
+0-c     选项及其设置方法。
+0-d     列表选项。
+0-e     别名与变量。
+1-  开始画面。
+                name, type, remember_name, weapon, species, background, combo,
+                restart_after_game, restart_after_save, newgame_after_quit,
+                name_bypasses_menu, default_manual_training,
+                autopickup_starting_ammo, game_seed, pregen_dungeon,
+                suppress_startup_errors, map, fully_random, arena_teams
+2-  文件系统与声音。
+                crawl_dir, morgue_dir, save_dir, macro_dir, sound, hold_sound,
+                sound_file_path, one_SDL_sound_channel
+3-  界面。
+3-a     丢弃与拾取。
+                autopickup, autopickup_exceptions, default_autopickup,
+                pickup_thrown, assign_item_slot, pickup_menu_limit,
+                drop_filter, drop_disables_autopickup
+3-b     被动发现（探测到和记住的实体）。
+                detected_monster_colour, detected_item_colour,
+                remembered_monster_colour
+3-c     地牢视图中的物品与怪物高亮。
+                friend_highlight, neutral_highlight, unusual_highlight,
+                stab_highlight, may_stab_highlight, heap_highlight,
+                feature_item_highlight, trap_item_highlight
+3-d     楼层地图功能。
+                level_map_cursor_step
+3-e     视口显示选项。
+                view_max_width, view_max_height, view_lock_x,
+                view_lock_y, view_lock, centre_on_scroll,
+                symmetric_scroll, scroll_margin_x, scroll_margin_y,
+                scroll_margin, always_show_exclusions
+3-f     自动移动与探索。
+                travel_delay, explore_delay, rest_delay, travel_avoid_terrain,
+                explore_greedy, explore_greedy_visit, explore_item_greed,
+                explore_stop, explore_stop_pickup_ignore, explore_wall_bias,
+                travel_key_stop, travel_one_unsafe_move, tc_reachable,
+                tc_dangerous, tc_disconnected, tc_excluded, tc_exclude_circle,
+                tc_forbidden, runrest_ignore_message, runrest_stop_message,
+                interrupt_<delay>, delay_safe_poison, runrest_ignore_monster,
+                rest_wait_both, rest_wait_ancestor, rest_wait_percent,
+                explore_auto_rest, explore_auto_rest_status,
+                auto_exclude, travel_open_doors
+3-g     命令增强。
+                auto_switch, easy_unequip, equip_unequip, jewellery_prompt,
+                easy_confirm, simple_targeting, force_spell_targeter,
+                force_ability_targeter, force_scroll_targeter,
+                show_invis_targeter allow_self_target, ability_menu, spell_menu,
+                easy_floor_use, sort_menus, spell_slot, gear_slot,
+                consumable_shortcut, ability_slot, autofight_stop,
+                autofight_warning, autofight_fires, autofight_nomove_fires,
+                autofight_fire_stop, autofight_caught, autofight_wait,
+                autofight_prompt_range, automagic_enable, automagic_slot,
+                automagic_fight, automagic_stop, fail_severity_to_confirm,
+                easy_door, warn_hatches, enable_recast_spell, confirm_action,
+                regex_search, autopickup_search, bad_item_prompt,
+                auto_hide_spells, menu_arrow_control, single_column_item_menus,
+                show_paged_inventory
+3-h     消息与显示增强。
+                hp_warning, mp_warning, hp_colour, mp_colour, stat_colour,
+                status_caption_colour, enemy_hp_colour, clear_messages,
+                show_more, small_more, show_newturn_mark, show_game_time,
+                equip_bar, animate_equip_bar, item_stack_summary_minimum,
+                mlist_min_height, mlist_allow_alternative_layout,
+                monster_item_view_coordinates, monster_item_view_features,
+                msg_min_height, msg_max_height, msg_webtiles_height,
+                messages_at_top, msg_condense_repeats, msg_condense_short,
+                show_travel_trail, skill_focus, default_show_all_skills,
+                monster_list_colour, view_delay, reduce_animations,
+                use_animations, unusual_monster_items, darken_beyond_range,
+                show_blood, food_snacking_frequency, fountain_line_frequency,
+                force_more_message, flash_screen_message, monster_alert,
+                cloud_status, always_show_zot, always_show_gems, more_gem_info,
+                action_panel, action_panel_filter,
+                action_panel_show_unidentified, _panel_scale,
+                action_panel_orientation, action_panel_font_family,
+                action_panel_font_size, show_resist_percent
+3-i     颜色（消息与菜单）。
+                menu_colour, message_colour
+3-j     快捷栏、发射与弹药。
+                fire_items_start, fire_order, fire_order_spell,
+                fire_order_ability, fail_severity_to_quiver,
+                quiver_menu_focus
+3-k     消息频道。
+                plain, prompt, god, duration, danger, warning, recovery,
+                talk, talk_visual, timed_portal, sound, intrinsic_gain,
+                mutation, monster_spell, monster_enchant, monster_warning,
+                friend_spell, friend_enchant, friend_action, monster_damage,
+                monster_target, banishment, equipment, floor, multiturn,
+                examine, examine_filter, diagnostic, error, tutorial, orb,
+                hell_effect, dgl_message
+3-l     铭文。
+                autoinscribe, show_god_gift
+3-m     宏相关选项。
+                flush.failure, flush.command, flush.message,
+                additional_macro_file, bindkey
+3-n     贴图版选项。
+                tile_show_items, tile_skip_title, tile_menu_icons,
+                tile_player_col, tile_monster_col, tile_neutral_col,
+                tile_peaceful_col, tile_friendly_col, tile_plant_col,
+                tile_item_col, tile_unseen_col, tile_floor_col, tile_wall_col,
+                tile_mapped_floor_col, tile_mapped_wall_col,
+                tile_explore_horizon_col, tile_door_col, tile_downstairs_col,
+                tile_upstairs_col, tile_branchstairs_col, tile_portal_col,
+                tile_transporter_col, tile_transporter_landing_col,
+                tile_feature_col, tile_trap_col, tile_water_col,
+                tile_deep_water_col, tile_lava_col, tile_excluded_col,
+                tile_excl_centre_col, tile_window_col, tile_update_rate,
+                tile_runrest_rate, tile_key_repeat_delay, tile_tooltip_ms,
+                tile_tag_pref, tile_window_width, tile_window_height,
+                tile_window_ratio, tile_window_limit_size, game_scale,
+                tile_map_pixels, tile_viewport_scale, tile_map_scale,
+                tile_cell_pixels, tile_sidebar_pixels, tile_filter_scaling,
+                tile_force_overlay, tile_overlay_col,
+                tile_min_stat_width_characters, tile_overlay_alpha_percent,
+                tile_full_screen, tile_use_small_layout, tile_font_crt_file,
+                tile_font_stat_file, tile_font_msg_file, tile_font_tip_file,
+                tile_font_lbl_file, tile_font_crt_family,
+                tile_font_stat_family, tile_font_msg_family,
+                tile_font_lbl_family, tile_font_crt_size, tile_font_stat_size,
+                tile_font_msg_size, tile_font_tip_size, tile_font_lbl_size,
+                tile_font_ft_light, glyph_mode_font, glyph_mode_font_size,
+                tile_show_minihealthbar, tile_show_minimagicbar,
+                tile_show_demon_tier, tile_water_anim, tile_misc_anim,
+                tile_realtime_anim, tile_show_player_species,
+                tile_player_status_icons, tile_show_threat_levels,
+                tile_layout_priority, tile_display_mode,
+                tile_level_map_hide_messages, tile_level_map_hide_sidebar,
+                tile_player_tile, tile_weapon_offsets, tile_shield_offsets,
+                tile_grinch, tile_web_mouse_control,
+                tile_web_mobile_input_helper
+4-  角色记录。
+4-a     保存。
+                dump_on_save
+4-b     物品与击杀。
+                kill_map, dump_kill_places, dump_item_origins,
+                dump_item_origin_price, dump_message_count, dump_order,
+                dump_kill_breakdowns
+4-c     笔记。
+                user_note_prefix, note_items, note_monsters, note_hp_percent,
+                note_skill_levels, note_all_skill_levels, note_skill_max,
+                note_xom_effects, note_messages, note_chat_messages,
+                note_dgl_messages
+5-  其他。
+5-a     所有操作系统。
+                mouse_input, wiz_mode, explore_mode, char_set, colour,
+                display_char, feature, mon_glyph, item_glyph,
+                use_fake_player_cursor, show_player_species,
+                use_modifier_prefix_keys, language, fake_lang, messaging
+                read_persist_options
+
+5-b     Windows。
+                dos_use_background_intensity
+5-c     Unix。
+                blink_brightens_background, bold_brightens_foreground,
+                best_effort_brighten_background,
+                best_effort_brighten_foreground, allow_extended_colours,
+                background_colour, foreground_colour,
+                use_default_terminal_colours, use_fake_cursor
+
+6-  Lua。
+                lua_max_memory
+6-a     引入 Lua 文件。
+6-b     执行内嵌 Lua。
+6-c     条件选项。
+6-d     条件选项注意事项。
+
+7-  为盲人玩家推荐的选项。
+
+------------------------------------------------------------------------
+
+0-  选项通则。
+=============
+
+若要把选项从默认值调整为其他值，标准做法是在选项文件中手动设置；详见下文
+（0-a）与（0-c）。少数选项会通过相应的游戏内用户界面，自动保存其当前值；
+这些选项在文档中标有“（持久）”(persistent)，而选项文件中的手动设置可以
+覆盖保存值。
+
+0-a     标准选项文件与附加选项文件。
+------------------------------------
+
+在线游戏时，请在 WebTiles 游戏选择画面中选择“edit rc”，或通过 ssh 进入 rc
+文件编辑器。
+
+离线游戏时，Crawl 会依次检查下列文件，并使用找到的第一个文件作为选项文件：
+
+* settings/init.txt
+* init.txt（位于 Crawl 目录中）
+* .crawlrc（位于 Unix 主目录中）
+
+也可以使用命令行选项
+    -rc <file>
+让 Crawl 只使用该文件。
+
+如果 Crawl 使用了初始化文件，开始画面会显示具体使用的文件。Crawl 目录的位置
+因系统而异。
+
+可以在选项文件中使用
+    include = <file>
+引入其他文件。请注意，这些文件会被视为其内容逐字写在选项文件中。默认情况下，
+Crawl 会在 settings/ 目录中查找所有被引入的文件；也可以使用命令行选项
+    -rcdir <dir>
+指定专用目录。
+
+外部选项文件有多种用途：它们可以快速定制 Crawl 的整体外观（消息的着色或
+屏蔽，以及物品栏样式）。更复杂的选项技巧（通常包含 Lua）也可以方便地隐藏
+在这类文件中。最后，settings/ 目录还提供一些附加选项文件；它们可以把某些
+选项和怪物字形设为旧版本的默认值。详见默认 init.txt 的文件头。
+
+Crawl 自动附带下列文件，便于直接使用；无需任何其他设置即可引入：
+
+* advanced_optioneering.txt
+* dvorak_command_keys.txt
+* colemak_command_keys.txt
+* neo_command_keys.txt
+* no_vi_command_keys.txt
+* safe_move_shift.txt
+
+0-b     命令行选项。
+------------------
+
+若只想小幅修改选项，又不想切换选项文件，可以快速使用命令行选项
+-extra-opt-first 或 -extra-opt-last；其效果分别相当于把给定选项写在选项文件
+顶部或底部。例如：
+
+    -extra-opt-last wiz_mode=yes
+
+会使所有新游戏都以向导模式开始。同一条命令行可以多次使用 -extra-opt-first
+和 -extra-opt-last。
+
+0-c     选项及其设置方法。
+------------------------
+
+Crawl 的选项大致分为三类：true/false 值（布尔值）、任意值和值列表。本文档
+通常会同时给出选项的默认值（如果存在）；由此也应能看出它属于上述哪一类。
+每个选项都会附上通常用法的说明——但请记住，应使用哪些选项取决于你的游戏
+风格，有时也取决于操作系统。
+
+设置选项有两种写法。经典的 name=value 语法每行设置一个选项：
+    remember_name  = true
+    explore_greedy = false
+
+另一种是 NetHack 风格的组合选项行：
+    OPTION = remember_name, !explore_greedy
+
+第二种写法适合用少数几行指定简单选项，但不能用于接受复杂值列表的选项（例如
+autopickup_exceptions 选项）。
+
+有些选项需要路径作为参数；此时必须使用适合你的系统的文件系统路径。另一些
+选项接受正则表达式（regex）：此时可以直接使用普通字符串、按需修改建议的
+正则表达式，或在网上查找正则表达式语法。
+
+请注意，在教程和提示模式中，为了便于讲解，部分选项设置可能会被覆盖。受影响
+的选项及其在教程游戏中被强制使用的设置如下：
+   clear_messages      = true
+   weapon              = hand axe, for Berserkers in hints mode
+                         （即：提示模式中的狂战士使用 hand axe）
+
+0-d     列表选项。
+----------------
+
+有些选项可以包含值列表。其中大多数（但并非全部）允许在同一行设置多个值，各值
+以逗号分隔。可以重置此类选项，也可以向其中添加值或移除值。
+   在列表末尾添加值（append）：
+      drop_filter += useless, enchant
+   在列表开头添加值（prepend）：
+      drop_filter ^= forbidden
+   从列表中移除值（仅限完全匹配）：
+      drop_filter -= enchant
+   重置列表：
+      drop_filter = bad_item, dangerous_item
+   清空列表：
+      drop_filter =
+
+“listopt = value”语法会先清空列表，再添加值。在旧版 Crawl 中，它是 += 的
+同义写法，只有不带值的“listopt =”才会清空列表。
+
+对于 drop_filter 等许多选项，在末尾添加与在开头添加实际上没有区别。然而，
+message_colour 等其他选项会考虑条目顺序；其说明中会标为“有序列表选项”。
+多数情况下，较早的条目优先于较晚的条目，因此 += 会服从现有匹配（包括默认
+条目），而 ^= 会覆盖现有匹配。例如，依次使用下列选项：
+   message_colour  = cyan:hits
+   message_colour ^= red:crimson
+   message_colour += yellow:killer
+消息“The crimson imp hits you!”会以红色显示，而“The killer bee hits you!”
+会以青色显示。
+
+0-e     别名、变量与其他指令
+----------------------------
+
+对于很长的选项名，可以这样定义选项别名：
+    alias := long_option_name
+例如，可以使用：
+    ae := autopickup_exceptions
+之后即可用“ae”代替“autopickup_exceptions”：
+    ae += >uselessness, >inaccuracy
+
+可以为选项值定义快捷写法（变量）。例如：
+    $useless := darkgrey
+可以与下面的设置配合使用：
+    menu_colour += $useless:random uselessness
+
+要防止变量被更改，可以把它设为常量：
+    constant = useless
+
+如果不希望被引入的文件更改某个变量，这很有用。
+
+别名和变量的用法可参考 dat/defaults/standard_colours.txt。请注意，更改这些文件
+中定义的变量只会影响你自己的配置文件，因为默认选项在此之前已经加载。若要
+更改默认选项，必须直接覆盖相应选项本身。
+
+要把某个值重置为默认值，可以使用：
+    default = option_name
+
+这不适用于某些采用自定义解析方式的选项。
+
+1-  开始画面。
+=============
+
+下列选项便于你快速开始 Crawl 游戏，也可以从文件或命令行配置游戏的开始方式。
+
+name = Delilah
+        如果设置，所有 Crawl 角色都会使用这个名字。默认情况下，设置此项会
+        跳过主菜单；参见 `name_bypasses_menu`。
+
+type = normal
+        选择游戏类型。有效值为 "normal"、"seeded"、"tutorial"、"arena"、
+        "sprint"、"descent" 和 "hints"。如果明确设置（而非仅保留默认值），
+        此项会设置主菜单中的默认游戏类型。如果主菜单被跳过（例如设置了
+        `name`），可以用此选项决定游戏类型。"descent" 仅在 alpha（开发）
+        构建中有效。
+
+remember_name = true
+        Crawl 会记住你创建上一个角色时使用的选项（种族、背景等）。在开始
+        画面创建新角色时，可以再次使用这些选项。若此项设为 true，Crawl
+        还会记住上次使用的名字。
+
+        如果使用此选项，并想在选择种族与背景_之后_输入名字，就必须在最初的
+        名字提示处输入 .；当 remember_name 已设置时，在名字提示处按 Enter
+        只会再次使用旧名字。
+
+weapon += (short sword |...| unarmed | random | viable), <weapon>, ...
+        （列表选项）
+        指定 weapon 选项可以跳过武器选择画面。三叉戟、链枷、刺剑、长剑和
+        战斧仅限战士与角斗士选择，长棍则仅限角斗士。如果为所选背景指定了
+        不合法的选择，游戏会显示标准武器提示。"viable" 会从适合所选角色的
+        “优良”武器中随机选择。指定多个选项时，游戏会从给定列表中随机选择
+        一种武器。combo 选项会覆盖此选项（而此选项也会覆盖 combo）。
+
+species += (Human |...| Revenant | random | viable), <species>, ...
+        （列表选项）
+        可以使用常见缩写（Hu、MD 等）。如果先选择了背景，"viable" 会为该
+        背景选择合适的种族。指定多个种族时，会从中随机选择一个。combo
+        选项会覆盖此选项（而此选项也会覆盖 combo）。
+
+background += (Fighter |...| Wanderer | random | viable), <background>, ...
+        （列表选项）
+        同样可以使用缩写（Fi、HW、CA 等）。"viable" 也有同一项注意事项：
+        只有同时设置了 species 选项，它才真正有意义。指定多个背景时，会从
+        给定种族中随机选择一个。combo 选项会覆盖此选项（而此选项也会覆盖
+        combo）。
+
+combo += (HuFi . short sword | Human Monk | ...), <combo>, ...
+        （列表选项）
+        指定一套完整的种族、背景和武器（如适用）。如果某个组合需要选择武器
+        但未指定，游戏会给出提示。组合既可使用缩写，也可写出全称。如果指定
+        多个组合，游戏会从指定组合中随机选择一个。此选项会覆盖 weapon、
+        species 和 background 选项（而这些选项也会覆盖此选项）。
+
+restart_after_game = maybe/true
+        设为 true 时，游戏结束后 Crawl 会返回主菜单。设为 maybe 时，只有
+        开始选项不会跳过主菜单，Crawl 才会返回主菜单，否则会退出。设为
+        false 时，则一定退出。本地贴图版构建默认将此项设为 true，其他构建
+        默认设为 maybe。在线游戏会忽略此选项。
+
+restart_after_save = true
+        保存游戏后返回主菜单。仅当 restart_after_game 设为 maybe 或 true 时，
+        此选项才有效。在线游戏会忽略此选项。
+
+newgame_after_quit = false
+        设为 true 后，如果设置了名字或组合，退出时会快速重新开始。使用此
+        设置且 restart_after_game 不为 false 时，可能只有保存游戏才能退出
+        Crawl。
+
+name_bypasses_menu = true
+        设为 true 后，如果选项中设置了有效名字，就会跳过主菜单，直接进入
+        游戏或角色选择（没有存档时）。
+
+default_manual_training = false (persistent)
+        设为 true 后，新角色开始时会采用手动技能训练模式，而非自动模式。
+        技能菜单（m）中的 [!] 选项也会默认设为 "cost"，而不是 "training"。
+
+autopickup_starting_ammo = true
+        设置后，游戏开始时会为玩家的初始弹药类型强制启用自动拾取（与 \ 菜单
+        中的设置相同）。即使设置了此项，游戏开始后仍可在 \ 菜单中关闭这些
+        物品的自动拾取。
+
+game_seed = none
+        用来初始化随机数生成器的种子数值。在一定限制内，相同种子会确定性地
+        生成相同地牢。如果设为 "none" 或 0，则随机选择种子。也可以在命令行
+        中用 "-seed" 直接设置；它会覆盖 rc 文件中的任何设置。此值是无符号
+        64 位整数。
+
+pregen_dungeon = incremental
+        此设置决定新游戏的楼层生成模式，并会与随机种子发生相互作用（参见
+        手册中的“Seeded play”一节）。要根据种子生成稳定的地牢，各楼层必须
+        按一致顺序生成。建议使用 `incremental`：进入新楼层时按需生成楼层，
+        使游戏始终按照相同顺序生成各层；若跳过了标准顺序中的某些楼层，游戏
+        可能会补生成它们。
+
+        设为 `true` 或 `full` 时，游戏会在新角色开始时预先生成相互连通的整个
+        地牢。这样，相对于特定游戏种子，地牢生成具有确定性，而且进入楼层时
+        无需加载；代价是游戏启动较慢。部分服务器可能不允许在线游戏使用完整
+        预生成。
+
+        设为 `false` 或 `classic` 时，游戏会在进入楼层时生成所有楼层，与
+        0.23 之前的规则相同。使用此选项时，即使给定种子，地牢也不会保持稳定。
+
+suppress_startup_errors = false
+        若此项为 false，并且游戏刚启动时检测到错误（例如配置文件中有错误），
+        加载前会打开画面显示这些错误。
+
+        无论此项如何设置，主菜单都会显示错误警告；它也不会影响加载角色时
+        检测到错误后的处理方式。
+
+map = ""
+        可以用来选择冲刺模式地图。如果在 rc 文件中设置，此值会跳过冲刺地图
+        选择子菜单。有效选项为：
+        dungeon_sprint_1, the_violet_keep_of_menkaure, dungeon_sprint_mu,
+        dungeon_sprint_fedhas, sprint_v, arena_sprint, pitsprint, meatsprint,
+        and linesprint.
+
+fully_random = false
+        设为 true 可随机选择组合。如果 species 或 job 中任一项设为 `viable`，
+        游戏会从“推荐”角色中选择组合；否则会完全随机选择。设置此项后，
+        角色选择菜单会替换为一个提供组合的提示，你可以接受该组合或重新抽取。
+
+arena_teams = ""
+        设置后会预先选择竞技场模式的队伍。此项设置后，竞技场模式会直接进入
+        比赛。
+
+2-  文件系统。
+============
+
+在某些系统和构建中，下列目录选项可能会被忽略或覆盖。例如，在线游戏不能在
+rc 文件中设置这些选项。也可以通过命令行设置这些选项。
+
+crawl_dir = <path>
+        查找其他文件时，用作相对路径基准的路径。此项默认值取决于系统和构建
+        类型。也可以通过 `CRAWL_DIR` 环境变量设置此选项。设置后，如果下列
+        三个目录选项先前已有设置，此项会将其覆盖。
+
+save_dir = saves/
+        保存存档和骸骨文件的目录。相对路径会以 `crawl_dir` 的值为基准进行
+        解释。
+
+morgue_dir = morgues/
+        写入死亡记录文件（morgue*.txt 和 morgue*.lst）及角色记录文件的目录。
+        相对路径会以 `crawl_dir` 的值为基准进行解释。
+
+macro_dir = <path>
+        读取 macro.txt 的目录。
+        路径末尾应带路径分隔符。默认值取决于系统和构建类型。
+
+sounds_on = true
+        （需要“Sound support”；请检查版本信息）
+        设为 true 时，会在各种情形下播放音效。
+
+sound ^= <regex>:<path to sound file>, <regex>:<path>,
+        （有序列表选项）
+        如果消息中包含 regex，就播放相应声音文件。如果有多个 regex 匹配，
+        只播放最后一个 regex 对应的声音。regex 不应包含逗号或冒号。例如：
+             sound += LOW HITPOINT WARNING:sound\sounds2\danger3.wav
+        此外还有一些预定义 regex，可用来为无法通过 regex 字符串匹配的事件
+        触发声音。例如，把 FIRE_PROMPT_SOUND 用作 regex，会使 Crawl 每次打开
+        发射提示时播放声音。所有这类预定义 regex 字符串的完整列表见 sound.h。
+
+sound_file_path = <path>
+        播放声音时（使用上面的选项），此变量的内容会添加到路径开头。这样做
+        是为了便于在多个平台上使用同一份配置。下面两行与上面的示例等效：
+             sound_file_path = sound\sounds2\
+             sound += LOW HITPOINT WARNING:danger3.wav
+        只有最后出现的此选项会生效，而且不会追溯应用于之前出现的 sound
+        选项。
+
+one_SDL_sound_channel = false
+        设为 true 时，同一时间只能播放一个声音（如果使用 SDL）。默认值为
+        false，因为非 SDL 声音后端不支持这种控制。
+
+
+3-  界面。
+========
+
+3-a     拾取与丢弃。
+------------------
+
+autopickup = $?!+"/♦
+        上面是默认列表。有效符号如下：
+        )       武器
+        (       弹药
+        [       护甲
+        /       魔杖
+        ?       卷轴
+        " or =  首饰
+        !       药水
+        + or :  书籍
+        |       法杖
+        0       宝珠
+        %       护符
+        }       杂项物品
+        $       金币
+        ♦       宝石
+        •       小饰物
+        请注意，是否自动拾取物品由游戏内的 Ctrl-A 开关控制。另请注意，拾取
+        会耗费一回合，但无论拾取多少物品，都只耗费一回合。如果传送或闪烁到
+        放有值得关注物品的格子上，这些物品不会被拾取。
+
+autopickup_exceptions ^= <pickup-regex, >don't-pickup-regex, ...
+        （有序列表选项）
+        一组正则表达式：前缀为 < 时，强制拾取匹配的物品；前缀为 > 时，绝不
+        拾取匹配的物品。列表顺序会影响结果：对每件物品应用第一个匹配的规则。
+
+        示例：
+             autopickup_exceptions += <curare-tipped dart
+        即使 "autopickup" 选项没有设置弹药，也会强制自动拾取所有带箭毒的
+        飞镖。
+
+        <> 与匹配表达式之间的空白有意义，因此下面的写法无效：
+             autopickup_exceptions += <   box of beasts
+
+        autopickup_exceptions 取代了旧选项 ban_pickup。使用
+             autopickup_exceptions += >uselessness, >inaccuracy
+        等同于使用
+             ban_pickup += uselessness, inaccuracy
+
+        如果正则表达式没有 < 或 > 前缀，则默认采用 >；所以上述选项设置也可
+        写成：
+             autopickup_exceptions += uselessness, inaccuracy
+
+        可以使用多行 autopickup_exceptions。下面是一些示例：
+             autopickup_exceptions += inaccuracy, immolation
+             autopickup_exceptions += uselessness, noise, torment
+
+        除非清空例外列表，否则通常不必为药水设置自动拾取例外，极特殊情况
+        或许除外。
+
+default_autopickup = true
+        设为 false 时，游戏开始时会关闭自动拾取。仍可在游戏内用 Ctrl-A
+        切换自动拾取。
+
+pickup_thrown = true
+        pickup_thrown = true 会使自动拾取收集投掷过的弹药。请注意，自动拾取
+        会耗费一回合，不过视野内有敌对怪物时不会触发。
+
+assign_item_slot = (forward | backward)
+        拾取物品时，通常会把物品放入 a-zA-Z 中第一个空闲的物品栏栏位（这是
+        默认的 "forward" 行为）。把 assign_item_slot 设为 "backward" 后，
+        会改为分配最后一个已用栏位之后的第一个字母。
+        例如，如果栏位 'a' 和 'c' 中已有物品，那么：
+          assign_item_slot = forward, 下件物品会放入 'b'；
+          assign_item_slot = backward, 下件物品则会放入 'd'。
+        使用 "backward" 时，丢弃或发射后又捡回的物品更有可能恢复原栏位。
+
+pickup_menu_limit = 1
+        如果当前格子的物品数多于此值，拾取多件物品时会显示菜单，而不是逐件
+        询问。设为零时绝不使用菜单。设为负数时，改用
+        item_stack_summary_minimum - 1 的值。
+
+        请注意，无论此选项为何值，拾取总会耗费一回合。
+
+drop_filter += <regex>, <regex>, ...
+        （列表选项）
+        在批量丢弃菜单中使用全局选择或取消选择键（',' 或 '-'）时，此选项
+        可以让你只选择匹配搜索正则表达式的物品。
+
+        例如，要快速选择神祇禁止的物品，可以使用：
+             drop_filter += forbidden
+
+        drop_filter 会匹配 menu_colour 使用的同一组关键词，但不包含鉴定状态。
+        默认值为 useless_item。
+
+        设置 drop_filter 后，使用选择或取消选择键，会为匹配过滤表达式的物品
+        设置或清除选择状态。
+
+drop_disables_autopickup = false
+        drop_disables_autopickup = true 会自动从自动拾取中移除已丢弃的非弹药
+        物品。
+
+3-b     被动发现（探测到或记住的实体）。
+----------------------------------------
+
+detected_monster_colour = lightred
+        探测到的怪物会使用此颜色。
+
+detected_item_colour = green
+        探测到的物品会使用此颜色。
+
+remembered_monster_colour = darkgrey
+        曾经见过的怪物所使用的颜色。
+
+3-c     地牢视图中的物品与怪物高亮
+----------------------------------
+
+这些选项通过改变颜色或反转前景色与背景色，控制某些怪物和物品在控制台地牢
+视图中的显示方式。可选的高亮方式如下（它们并非在所有环境下都有效，具体取决
+于操作系统和终端）：
+   none             -- 禁用该类别的高亮
+   standout         -- 通常与 reverse 相同，也可能显示为下划线或暗色
+   bold             -- 供 colour curses 用来提亮前景色
+   blink            -- 供 colour curses 用来提亮背景色
+   reverse          -- 这个多半有效
+   dim              -- 多半没有效果
+   underline        -- 这个多半有效
+   highlight:colour -- 把高亮怪物的背景色设为 "colour"
+最后一种可以缩写为 hi:colour。
+dos_use_background_intensity 参见 Windows 部分（5-b）。
+
+这些选项以前名为 `..._brand`，旧名称仍可用于向后兼容。
+
+friend_highlight = hi:green
+        以某种方式高亮友方。这对召唤师非常有用。默认设置用绿色背景显示友方。
+        如果友方本身也是绿色，就会显示为绿色背景上的黑色。
+
+neutral_highlight = hi:lightgrey
+        以某种方式高亮中立怪物。这样既便于避开中立怪物的行进路线，也能避免
+        意外杀死它。默认设置用深灰色背景显示中立怪物。由于现在已经没有深
+        灰色怪物字形，这样显示没有问题。
+
+unusual_highlight = hi:magenta
+        高亮携带异常物品的敌对怪物。这样可以指出某个怪物是否因持有非常规
+        物品（例如魔杖或扭曲铭印武器）而需要谨慎对付。
+
+        此项与 unusual_monster_items 选项配合使用：
+        unusual_monster_items 决定哪些物品会使怪物被高亮。
+
+stab_highlight = hi:blue
+        此选项会高亮完全没有察觉玩家、因而不会攻击的怪物；如果玩家采用适当
+        方式攻击，这些怪物必定会受到偷袭伤害。
+
+may_stab_highlight = hi:brown
+        此选项会高亮难以注意玩家的怪物，例如陷入混乱或分心的怪物。能否偷袭
+        这些怪物取决于隐匿和武器技能等级及其他各种因素；至少，它们在当前
+        状态下难以攻击玩家。
+
+heap_highlight = reverse
+        高亮成堆的物品（超过一件物品或一叠）。
+
+feature_item_highlight = reverse
+        高亮原本会被物品遮住的地形设施（楼梯、商店、祭坛）。使用此选项时，
+        格子上的物品字形会被设施符号遮住。
+
+trap_item_highlight = reverse
+        高亮原本会被物品遮住的陷阱。使用此选项时，格子上的物品字形会被陷阱
+        符号（^）遮住。
+
+3-d     楼层地图功能。
+--------------------
+
+level_map_cursor_step = 7
+        在楼层地图中使用 Shift-方向键时，光标一次移动的格数。
+
+3-e     视口显示选项。
+--------------------
+
+视口是正常游戏期间显示的地图部分。视口默认为 33x17；如果使用更大的终端尺寸，
+可以设置这些选项，让游戏显示更大的视口。
+
+这些选项都不会影响游戏玩法。尤其是，角色的视野不会受这些选项影响。
+
+view_max_width = 33 (max 81)
+        设置视口的最大宽度（默认为 33）。增大此值后，Crawl 可以在较大的终端
+        上显示更宽的视口。贴图版会忽略此项；视口始终使用全部可用空间。
+
+view_max_height = 21 (max 71)
+        与 view_max_width 类似，但设置视口的最大高度。在贴图版中，此值用于
+        决定从何时开始把空间分配给消息区，而不是视口。当消息区达到
+        msg_max_height 后，剩余空间会分配给视口。如果出于性能原因需要较小的
+        视口，可以缩小窗口尺寸，或增大消息区。
+
+* 请注意，使用大视口可能会使游戏变慢。
+
+view_lock_x = true
+        让玩家角色始终在视口中水平居中，并持续滚动视口来配合角色移动。如果
+        未设置此项，玩家角色可以在视口内水平移动；只有角色视野到达左侧或
+        右侧边缘时，视口才会滚动。
+
+view_lock_y = true
+        让角色始终在视口中垂直居中。
+
+view_lock = true
+        同时设置 view_lock_x 与 view_lock_y 的别名选项。
+
+centre_on_scroll = false
+        设置后，每当视口滚动时，都会以玩家角色为中心（如果已设置 view_lock_x
+        和 view_lock_y，此选项没有意义）。
+
+symmetric_scroll = true
+        设置后，视口会采用与触发滚动的角色移动方向一致的方式滚动。
+
+        例如，假设玩家角色位于视口下缘，但接近水平方向的中央。现在角色向
+        右下方斜走，迫使视口向上滚动一行。如果设置了 symmetric_scroll，
+        视口还会向左滚动一列，以配合角色的斜向移动。如果没有设置
+        symmetric_scroll，视口只会向上滚动，不会水平滚动。与自由滚动相比，
+        symmetric_scroll 不太容易令人迷失方向。
+
+        如果设置了 view_lock 或 centre_on_scroll，此选项没有意义。
+
+scroll_margin_x = 2
+        距离左侧或右侧边缘多远时开始滚动。默认情况下，如果玩家角色视野中的
+        格子距离边缘不到两格，视口就会滚动。设为零时，只有视野圆周到达视口
+        边缘才会滚动。
+
+scroll_margin_y = 2
+        距离顶部或底部边缘多远时开始滚动。
+
+scroll_margin = 2
+        同时设置 scroll_margin_x 与 scroll_margin_y 的别名选项。
+
+always_show_exclusions = true
+        设为 true 时，在视口中显示自动移动排除区及其排除半径。无论此选项
+        为何值，楼层地图（按 X 打开）上始终会显示排除区；纯地形模式（按 |
+        打开）中也会显示排除区。此选项对贴图版构建无效；贴图版的视口和楼层
+        地图上始终会显示排除区。
+
+3-f     自动移动与探索。
+----------------------
+
+travel_delay = 20 (defaults to -1 for online servers)
+        自动移动每步之后等待的时间（毫秒）；如果没有设置 explore_delay，
+        这也是自动探索每步之后等待的时间。具体效果取决于平台。设为 -1 时会
+        直接跳到自动移动结束，看不到逐步移动过程。
+
+explore_delay = -1
+        自动探索每步之后等待的时间（毫秒）。具体效果取决于平台。特别是，
+        设置 travel_delay = -1 且 explore_delay = 20，意味着你能看到自动探索
+        的逐步移动过程，但看不到其他自动移动方式的逐步过程。设为 -1 时，
+        自动探索延迟与 travel_delay 相同。
+
+rest_delay = 0 (defaults to -1 for online servers)
+        休息每回合之后等待的时间（毫秒）。具体效果取决于平台。设置
+        rest_delay = -1 会阻止休息期间更新显示。
+
+travel_avoid_terrain = (shallow water | deep water)
+        防止自动移动路径经过浅水。默认不避开任何地形。对于水栖族和／或永久
+        飞行的角色，设置
+             travel_avoid_terrain = shallow water, deep water
+        会防止自动移动或探索经过任何水域。此选项支持列表语法。
+
+explore_greedy = true
+        贪婪探索除了探索楼层，还会前往符合自动拾取条件的物品；除此之外与
+        普通探索完全相同。自动拾取关闭（Ctrl-A）时，探索贪婪也会关闭。
+
+explore_greedy_visit = artefacts,glowing_items
+explore_greedy_visit += stacks
+        （列表选项）
+        贪婪探索会根据这些条件前往放有物品的格子。
+
+        stacks：使 explore_greedy 前往所有物品堆，即使其中不一定有自动拾取
+        的目标物品。
+
+        glowing_items：使 explore_greedy 前往 glowing_items，即使物品不在
+        一堆物品中。
+
+        artefacts：使 explore_greedy 前往神器，即使神器不在一堆物品中。
+
+explore_item_greed = 10
+        贪婪探索在判断应该前往有物品的格子，还是探索新格子时，会把物品视为
+        比实际近此数值的距离（若为负数，则视为更远）。
+
+explore_stop  = items,stairs,shops,altars,portals,branches,runed_doors
+explore_stop += greedy_pickup_smart,greedy_visited_item_stack
+        （列表选项）
+        探索会因其中任一条件停止。无论此项如何设置，任何会使自动移动停止的
+        情况也会使探索停止。
+
+        "branches" 条件会在分支入口处停止，但不会因其他楼梯或传送门停止。
+
+        注意：runrest_ignore_message 不影响 explore_stop。
+
+        使用非贪婪探索时，任何新物品进入视野都会使 items 条件停止探索。
+        使用贪婪探索时，各条件作用如下：
+
+        items：不符合自动拾取条件的物品进入视野时停止。
+
+        greedy_items：符合自动拾取条件的物品进入视野时停止。
+
+        greedy_pickup：自动拾取任何符合条件的物品后停止；不包括金币，但包括
+            玩家投掷或发射过的物品。可以用 explore_stop_pickup_ignore 选项
+            让特定物品*不*触发此条件。
+
+        greedy_pickup_gold：贪婪探索期间自动拾取金币时停止。
+
+        greedy_pickup_smart：与 greedy_pickup 类似，但会尝试作出智能判断，
+            即只因物品栏中没有相似物品的物品而停止。自动拾取玩家投掷或
+            发射过的物品时不会停止；如果希望因此停止，可以添加
+            "greedy_pickup_thrown"。
+
+        greedy_pickup_thrown：捡起任何自己投掷或发射过的物品后停止。
+            greedy_pickup 本就会这样做，greedy_pickup_smart 则不会。
+            explore_stop_pickup_ignore 不影响此条件。
+
+        greedy_visited_item_stack：前往玩家此前不知道的物品堆时停止，即使该
+            物品堆中没有任何符合自动拾取条件的物品。
+
+        glowing_items：与 items 类似，但仅限发光、刻有符文、绣花等物品。
+
+        artefacts：与 items 类似，但仅限神器。
+
+        runes：与 items 类似，但仅限符文。
+
+explore_stop_pickup_ignore += <regex>, <regex>, ...
+        （列表选项）
+        如果 explore_stop 设置了 greedy_pickup 或 greedy_pickup_smart，拾取
+        任何与列表中任一正则表达式匹配的物品时，*不会*停止自动探索。
+
+        此选项不影响玩家投掷过的物品。
+
+explore_wall_bias = 0
+        调整自动探索尝试发现房间边缘与角落的偏好程度。数值越高，自动探索
+        越偏好前往紧靠墙壁的格子；设为 0 时完全不偏好这些格子；设为负数时
+        则偏好远离墙壁。请注意，设为非 0 值通常会使完整探索楼层变慢。
+
+travel_key_stop = true
+        设为 true 时，按下任何键都会停止自动移动。
+
+travel_one_unsafe_move = false
+        设为 true 时，自动移动会先移动一步，再执行附近危险的安全检查。
+
+tc_reachable      = blue
+tc_dangerous      = cyan
+tc_disconnected   = darkgrey
+tc_excluded       = lightmagenta
+tc_exclude_circle = red
+tc_forbidden      = lightcyan
+        上面六项设定楼层地图（'X'）的颜色。分别为：
+          reachable：无需离开当前楼层即可安全抵达的所有格子
+          dangerous：只能通过陷阱等地形与当前位置连通的格子
+          disconnected：不离开当前楼层就无法抵达的格子
+          excluded：自动移动排除区中心（'e'）的颜色
+          excluded_circle：自动移动排除区中心以外部分的颜色
+          forbidden：不穿过已排除格子就无法抵达的格子
+
+runrest_ignore_message ^= <regex>, <regex>, ...
+runrest_stop_message ^= <regex>, <regex>, ...
+        （列表选项）
+        用这些选项强制消息中断或不中断自动移动和休息。匹配对象是完整消息
+        文本。要把子字符串匹配限制在某个消息频道，请在子字符串前加上频道名
+        和冒号（消息频道见下文 3-k）。例如，若希望遭受神罚击中时停止自动
+        移动，可以使用：
+             runrest_stop_message ^= god:wrath finds you
+
+        或者，要提醒自己续接即将消失的法术：
+             runrest_stop_message ^= Your transformation is almost over
+             runrest_stop_message ^= You are starting to lose your buoyancy
+
+        也可以明确忽略一些消息：
+             runrest_ignore_message ^= pleased with you,exalted
+
+        请注意，默认情况下，怪物说话和地牢噪声本来就不会中断跑动或休息。
+
+        可以使用多行设置。在忽略消息和停止消息中，最早的匹配会覆盖较后的行。
+        runrest_messages.txt 文件包含许多默认设置。这些选项接受 `^=` 在开头
+        添加条目，也接受 `+=` 添加条目；要覆盖默认值，必须使用前者，这包括
+        用 `stop` 匹配覆盖默认 `ignore` 匹配，或反向覆盖。
+
+        重置任一选项会同时重置两者。
+
+        另请注意，runrest_ignore_message 不影响 explore_stop 会因何种条件
+        停止。
+
+interrupt_<delay> += <activity_interrupt_type>, <activity_interrupt_type>, ...
+        （列表选项）
+        使用此选项，可以让某个触发事件不中断延时动作。例如，使用
+            interrupt_travel -= sense_monster
+        可在感知到但未看见怪物时不打断自动移动。
+
+        可用的延时类型为：equip_on, equip_off, ascending_stairs,
+        descending_stairs, imbue_servitor, imprint_weapon, macro,
+	macro_process_key, memorise, multidrop, passwall, rest, run,
+	shaft_self, transform, travel。（这些名称来自 delay.h 中的 `name()`
+	函数。）
+
+        可用的中断类型为：abyss_exit_spawned, ally_attacked,
+        ancestor_hp, force, full_hp, full_mp, hp_loss, hit_monster, keypress,
+        message, mimic, monster, monster_attack, sense_monster, teleport。
+        （这些名称来自 delay.cc 中的 `activity_interrupt_names` 数组。）
+
+
+delay_safe_poison = <% of hp>:<% of mhp>
+        如果定义了 delay_safe_poison = x:y，且预计毒素造成的伤害低于当前生命值
+        的 x%，同时也低于最大生命值的 y%，游戏就会忽略该毒素伤害。这适用于
+        所有延时动作。只会考虑一行 delay_safe_poison。请注意，要让此项对跑动
+        和休息有效，Crawl 除了忽略伤害，还必须知道要忽略 "You feel sick"
+        消息。例如，默认设置为：
+             runrest_ignore_message ^= You feel.*sick
+             delay_safe_poison = 80:100
+
+runrest_ignore_monster ^= <regex>:<distance>, <regex>:<distance>, ...
+        （有序列表选项）
+        与正则表达式匹配的怪物，只有在它与玩家的距离小于指定数值时才会中断
+        当前活动。例如：
+             runrest_ignore_monster ^= bat:3
+        只要距离至少为 3，蝙蝠、吸血蝙蝠、火蝙蝠和战斗法球在自动移动、探索
+        和休息时都会被视为安全。如果一个怪物匹配多个表达式，则以第一个匹配
+        的距离进行比较。
+
+rest_wait_both = false
+        如果把 rest_wait_both 设为 true，只有生命值与法力都完全恢复时，休息
+        才会停止，而不会在其中一项恢复时就停止。
+
+rest_wait_ancestor = false
+        如果把 rest_wait_ancestor 设为 true，那么除了玩家生命值或法力（如果
+        设置了 rest_wait_both，则是两者）之外，还必须等先祖的生命值完全恢复，
+        休息才会停止。
+
+rest_wait_percent = 100
+        休息时，如果生命值或法力低于此满值百分比，就会在相应数值恢复到最大
+        生命值或法力的此百分比时停止休息。此后继续休息仍可恢复到 100%。
+
+explore_auto_rest = true
+        设为 true 时，自动探索会等到生命值和法力都达到 rest_wait_percent，
+        然后才会移动。
+
+explore_auto_rest_status = <status name>, <cooldown name>, <duration name>...
+        （列表选项）
+        自动探索会等到列表中的所有状态、持续效果和冷却结束后再移动。对于
+        大多数基于持续时间的状态，列表既接受状态指示灯的名称，也接受 % 画面
+        中出现的措辞。
+
+        有几个特殊值：
+            "all_negative"   = 所有具有时限的负面状态（例如：Slow）
+            "all_cooldown"   = 所有具有时限的冷却（例如：-Blink）
+            "contam"         = 任意程度的魔法污染
+            "transformation" = 任意具有时限的负面形态（即：pig/wisp）。
+
+        要从 all_negative 或 all_cooldown 中排除某个状态，请加入名称开头带 *
+        的状态。例如：
+            explore_auto_rest_status += *-blink
+        会从要等待的冷却列表中移除 -blink。
+
+        默认值为 "all_negative"、"all_cooldown"、"contam"。
+
+auto_exclude += <monster name>, <monster name>, ...
+        （列表选项）
+        探索期间，每当遇到此列表中正在睡眠或不移动的怪物，游戏就会自动以该
+        怪物为中心设置自动移动排除区，使自动探索绝不会把你带入它的视野。
+        如果怪物在你视野内死亡或醒来，此排除区会自动移除。
+
+travel_open_doors = (avoid | approach | open)
+        配置自动探索／自动移动与门的互动方式。
+           avoid = 自动探索／自动移动把关着的门视为墙壁。如果探索或自动移动
+                   要继续就只能穿过一扇关着的门，它会停在门旁。
+        approach = 自动探索／自动移动不会开门，而会停在路径中任何门的前方。
+            open = 自动探索／自动移动会开门。（默认）
+        这不影响刻有符文的门；游戏始终会避开这类门。
+
+3-g     命令功能增强。
+---------------------
+
+auto_switch = false
+        此选项允许你在近战攻击时自动切换到合适的武器，但当前持用的武器与
+        要切换到的武器必须分别位于 'a' 或 'b' 栏位。“合适”的武器是指用于
+        近战、没有非攻击铭文（`!a`），且不受玩家所信奉神祇厌恶的武器。
+
+easy_unequip = true
+        允许在丢弃护甲或首饰时自动将其卸下。
+
+equip_unequip = true
+        设为 true 时，在 'w'、'W' 或 'P' 菜单（分别用于武器、护甲和首饰）
+        中选择已经装备的物品，会将该物品卸下。
+
+jewellery_prompt = false
+        设为 true 时，卸下首饰总会提示选择要卸下的物品；即使只装备了一件
+        首饰，也不会跳过提示。此外，如果装备首饰时所有栏位都已占用，即使
+        其中的首饰全都相同，也会提示选择要卸下哪一件。
+
+easy_confirm = (none | safe | all)
+        让确认问题更容易回答：
+           none = Y/N 问题和属性提升都强制使用大写字母
+           safe = 仅危险问题和属性提升强制使用大写字母（默认）
+            all = 从不强制使用大写字母
+        PUTTY 用户注意：如果 Putty 配置将数字键盘设为“NetHack mode”，
+        数字键盘上的 '7' 会映射为字母 'y'，可能导致你意外对问题回答 yes。
+
+simple_targeting = false
+        设为 true 时，爆炸和反弹箭类法术会禁用智能瞄准，自动瞄准射程内最近
+        的怪物，而不会尝试寻找既能影响多个怪物又能避开玩家的位置。此设置
+        既适用于使用魔杖时的目标选择，也适用于装入发射栏的法术自动选取目标。
+
+force_spell_targeter = hailstorm, starburst, frozen ramparts, ignition,
+                       eringya's noxious bog, anguish, cause fear, alistair's
+                       intoxication, discord, dispersal, metabolic englaciation,
+                       gloom, flame wave, plasma beam,
+                       maxwell's portable piledriver, diamond sawblades,
+                       fortress blast
+        正常施放列表中的法术时，即使法术本身无需指定目标，也强制显示瞄准器。
+        实际上，此设置只会影响默认值中这类目标位置固定的法术；对于瞄准范围
+        异常的法术尤其有用。如果选项列表中出现 "all"，列表中的其余内容
+        （无论如何构成）都会被忽略，并为每个法术显示瞄准器。
+
+force_ability_targeter = sanctuary, cleansing flame, word of chaos, recite,
+                         elemental force, oozemancy, galvanic breath,
+                         fathomless shackles, slouch, disaster area, apocalypse,
+                         corrupt, foxfire swarm, siphon essence, shadowslip,
+                         watery grave
+        正常启用列表中的能力时，即使能力本身无需指定目标，也强制显示瞄准器。
+        实际上，此设置只会影响默认值中这类目标位置固定的能力；对于瞄准范围
+        异常的能力尤其有用。如果选项列表中出现 "all"，列表中的其余内容
+        （无论如何构成）都会被忽略，并为每项能力显示瞄准器。
+
+force_scroll_targeter = fear, silence, vulnerability, immolation, torment
+        正常阅读列表中的卷轴时，强制显示瞄准器（这些卷轴本身无需瞄准，因此
+        此功能通常用于显示成功率或可能受影响的目标）。如果选项列表中出现
+        "all"，列表中的其余内容（无论如何构成）都会被忽略，并为每种具有
+        瞄准器的卷轴显示瞄准器。
+
+show_invis_targeter = true
+        进入隐形前显示瞄准器，指出视野中哪些怪物确实会看不见你（如果视线内
+        所有敌人都有 sInv，则会要求确认）。
+
+allow_self_target = prompt
+        允许用危险魔法瞄准自己（例如法术 Stone Arrow 或 paralysis 魔杖）。
+        可用值：(yes | no | prompt)。设为 'yes' 时，你是有效目标；设为 'no'
+        时，不能用这类法术瞄准自己；设为 'prompt'（默认值）时，瞄准自己需要
+        确认。此选项不影响 Mephitic Cloud 之类的范围效果法术；对这类法术而言，
+        你始终是有效目标。
+
+prompt_menu = true (tiles default), false (console default)
+        贴图版默认设为 true，终端版默认设为 false。只要可能，就总是以弹出
+        窗口显示提示菜单，而不显示在消息窗格中。目前此设置适用于 Y/N 提示和
+        `G`o 菜单。
+
+ability_menu = true
+        总是显示全屏 'a'bility 菜单。设为 false 时，按 'a' 会在消息区域中
+        提示，而按 '?' 或 '*' 可查看菜单。
+
+spell_menu = false
+        设为 true 时，使用 'z' 总会显示全屏法术选择菜单。设为 false 时，
+        按 'z' 会在消息区域中提示，而按 '?' 或 '*' 可查看菜单。
+
+easy_floor_use = true
+        设为 true 时，如果地上只有一件物品，在允许使用地上物品的物品交互
+        菜单中按 ',' 从背包物品切换到地上物品，会直接选择该物品，而不会
+        切换菜单。例如，地上只有一张卷轴时，按 'r,' 会阅读它。即使背包中
+        没有匹配的物品，此功能仍然有效。
+
+sort_menus = [menu:](true | false | auto:X)[:sort_order]
+        控制背包和拾取菜单中的物品是否排序，以及如何排序。
+
+        当 sort_menus = false（默认值）时，物品不排序，而是按背包字母排列
+        （地上的物品则按它们在物品堆中的顺序排列）。
+
+        当 sort_menus = true 时，物品按照指定的 sort_order 排序，默认值为：
+             equipped, basename, qualname, curse, qty
+
+        如果设为 sort_menus = auto:X，同一类别中至少有 X 件物品时才会排序。
+        例如：
+             sort_menus = auto:5
+        会对至少有 5 件物品的物品类别排序。比如，有 4 种药水时不会排序，
+        有 5 种时则会排序。
+
+        你可以在 sort_menus 选项中明确指定排序条件，例如：
+             sort_menus = true : art, basename, qualname, curse, qty
+
+        比较两件物品时，会使用第一个存在差异的排序条件。因此，按照上面的
+        sort_menus 设置，如果两件不同的物品中只有一件是已知神器，它会排在
+        前面；否则（两件都是或都不是神器），若 basename 不同，就按 basename
+        的字母顺序比较；若 basename 相同而 qualname 不同，就比较 qualname，
+        依此类推。
+
+        可用的排序条件如下：
+
+        * basename:
+          物品类型的名称。“一件 +0 长袍”、“一件绣花长袍”和“受诅咒的
+          +2 小马长袍”的 basename 都只是“长袍”。“一枚黄铜戒指”和
+          “一枚抗火戒指”的 basename 都是“戒指”。
+
+        * qualname:
+          去掉冠词（a/an/the）、数量、附魔数值和诅咒状态后的物品名称。上述
+          长袍的 qualname 分别为“长袍”、“绣花长袍”和“小马长袍”；上述
+          戒指的 qualname 分别为“黄铜戒指”和“抗火戒指”。
+
+        * fullname:
+          物品在菜单中显示的名称（包括数量、诅咒状态等）。
+
+        * dbname:
+          按物品唯一的内部名称排序；此名称与物品描述相联系。描述相同的物品
+          会归在一起。
+
+        * curse:
+          物品的诅咒状态（如果已知）。未受诅咒的物品排在前面。
+
+        * equipped:
+          已装备的物品排在前面。
+
+        * art:
+          已鉴定的神器排在前面。
+
+        * ego:
+          已鉴定的 ego 装备排在前面。
+
+        * glowing:
+          未鉴定且发光／闪亮／刻有符文等的物品排在前面。
+
+        * identified:
+          同一类型中，已鉴定的物品排在未鉴定的物品前面。知道物品的子类型
+          或 ego 后，该物品即视为已鉴定。
+
+        * qty:
+          可堆叠物品（例如卷轴、药水等）的数量。
+
+        * slot:
+          背包中物品的背包字母；对地上的物品无关紧要。
+
+        * charged:
+          让尚有充能的激发道具排在充能耗尽的激发道具前面；对所有其他物品
+          类型无关紧要。
+
+        * usefulness:
+          按消耗品当前的“实用性”依次排序：应急（例如 ?blinking、
+          !heal wounds）、有益（例如 ?acquirement）、普通、危险（例如
+          !lignification）、有害（例如信奉善神时的 ?torment），最后是永久
+          无用的物品。
+
+        在一个或多个排序条件前加 >，即可要求按降序排列，例如：
+             sort_menus = true : basename, >qty
+
+        还可以要求只对特定菜单排序：
+             sort_menus = pickup: true
+        或
+             sort_menus = inv: true
+        （菜单类型必须写成 name:，name 与冒号之间不能有空格。）
+
+        可用的菜单选择器如下：
+
+        pickup: 所有针对不在背包中之物品的拾取菜单、储藏处搜索菜单等。
+        drop:   物品丢弃菜单。
+        inv:    任意命令的背包列表（但不包括丢弃物品）。
+        any:    所有菜单；未指定时默认使用此选择器。
+
+        例如：
+             sort_menus = true : equipped, basename, qualname, curse, qty
+        所生成的背包和丢弃菜单与默认设置相同，唯一的区别是所有穿戴或持用中
+        的物品都会排在前面。如果你使用 '.' 命令来选择后续物品，这会很方便。
+        如果为两个或更多选择器分别定义了不同的 sort_menus，最后一个匹配项
+        总会优先；也就是说，把 "any" 放在最后一项会覆盖其余所有设置。
+
+        默认情况下，拾取菜单会排序，排序条件为：
+             "equipped, basename, qualname, curse, qty"。
+        inv 和 drop 菜单按 "equipped, charged, identified,
+             usefulness, slot" 排序。
+
+spell_slot ^= <regex>:<list of spell letters>
+        （有序列表选项，每行一个值）
+        记忆任何与正则表达式匹配的法术时，游戏会把它分配给列表中第一个可用
+        的字母。字母列表中的 + 会开启“覆盖模式”：直到下一个 "-" 为止的
+        所有字母，即使已经分配，也都视为可用；在这种情况下，原先分配到该
+        栏位的法术只要不匹配同一个 <regex>，就会被移走。
+
+        如果某个法术所匹配的每个正则表达式，其列表中的字母都已占用，就会
+        使用默认顺序 abc...xyzABC..XYZ。如果法术匹配多个正则表达式，只考虑
+        第一个。
+
+        示例：
+        * 如果希望 Apportation 放在 A：
+            spell_slot ^= Apportation:A
+        * 如果希望 Ozocubu's Armour 通常放在 r，而 r 不可用时放在 R：
+            spell_slot ^= Ozocubu's Armour:rR
+        * 如果希望第一个含 "Bolt" 的法术放在 a，即使 a 中已有不含 bolt 的
+          法术：
+            spell_slot ^= Bolt:+a
+        * 如果希望把默认法术栏位分配改为使用大写字母（请将此行放在所有其他
+          spell_slot 行之后）：
+            spell_slot += .*:ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+gear_slot ^= <regex>:<inventory letters>
+        （有序列表选项，每行一个值）
+        接口与 spell_slot 相同，但覆盖模式默认开启；在字母列表中加入 - 可以
+        关闭覆盖模式。
+
+consumable_shortcut += <item name>:<inventory letter>
+        （有序列表选项，每行一个值）
+        与 gear_slot 类似，但每个消耗品名称只接受一个字母，且不处理正则
+        表达式。
+
+        游戏会尽量把消耗品自动分配给此选项所映射的字母，除非该字母上已有
+        另一类别的已鉴定物品。（例如，'potion of curing:c' 会使其他药水
+        永远不会自动分配到 'c'；由于未鉴定卷轴与药水共用 ?id 菜单，它们也会
+        尽可能避开 'c'。）
+
+ability_slot ^= <regex>:<ability letters>
+        （有序列表选项，每行一个值）
+        接口与 spell_slot 相同，但应用于 'a' 菜单中的能力。
+
+autofight_stop = 50
+        如果当前生命值不高于最大生命值的此百分比，自动战斗就不会行动。设为
+        0 时禁用。此设置同时适用于自动战斗与自动射击。
+
+autofight_warning = 0
+        强制规定两次自动战斗命令之间的最短时间（毫秒）。如果你在这段时间内
+        连续发出两次自动战斗命令（例如按住 tab 键），后续命令会被忽略，并在
+        危险频道显示消息 "You should not fight recklessly!"。任何小于或等于
+        零的值都会禁用此项检查。
+
+autofight_fires = false
+        如果发射栏中装有能直接伤害敌人的可发射动作，普通的 CMD_AUTOFIGHT
+        （默认键位为 tab）会对近战范围外的敌人触发该动作。若未启用此选项，
+        CMD_AUTOFIGHT 只会触发当前持用的发射武器（弓、弩或投石索）。如果
+        发射栏中的动作能直接造成伤害但目标超出射程，你会向敌人移动。如果
+        发射栏中的动作不直接造成伤害，CMD_AUTOFIGHT 会完全忽略它。若要彻底
+        防止移动，请绑定 CMD_AUTOFIGHT_NOMOVE 而非 CMD_AUTOFIGHT。（旧名称：
+        `autofight_throw`。）
+
+autofight_nomove_fires = true
+        此选项对 CMD_AUTOFIGHT_NOMOVE（默认未绑定）的行为影响，类似于上面的
+        `autofight_fires` 对 CMD_AUTOFIGHT 的影响。（旧名称：
+        `autofight_throw_nomove`。）
+
+autofight_fire_stop = false
+        使用自动战斗发射弹射物或投掷物品时，若此选项为 true，射击会在目标处
+        停止（类似 "f."），而不会越过目标。请注意，此设置对贯穿弹射物可能
+        明显并非最佳选择。
+
+autofight_caught = false
+        设为 true 时，即使视野中没有敌人，自动战斗也会尝试挣脱困住你的蛛网
+        或网。
+
+autofight_wait = false
+        设为 true 时，如果使用 ===hit_closest_nomove 而不在敌人攻击范围内，
+        会等待一回合，而不是中止自动战斗。
+
+autofight_prompt_range = true
+        持用通常会在攻击时触发确认提示的武器（例如带有 !a 铭文，或受所信奉
+        神祇厌恶的武器）时，若此选项为 true，自动战斗试图向敌人移动时就会
+        显示提示，而不是只有真正尝试攻击时才显示。
+
+automagic_enable = false
+        启用旧版自动施法系统的选项；建议新玩家直接使用装入发射栏的法术。
+        设为 true 时，自动战斗（即默认键位中的 tab）会对目标施放指定栏位中
+        的法术。初始法术栏位为 a。（已弃用）
+
+automagic_slot = a
+        此设置会改变旧版自动施法系统的初始法术栏位。进行中的游戏里，可以
+        设置一个调用 ===am_set_spell 的宏来改变它。
+
+automagic_fight = false
+        启用旧版自动施法系统后，设为 true 会使系统在法力不足以施放法术，
+        或法力低于设定阈值时，退回普通自动战斗（例如近战）。设为 false 时，
+        游戏会显示一条消息，且不再采取行动。
+
+automagic_stop = 0
+        与 autofight_stop 类似；如果法力低于此数值（占法力总量的百分比），
+        就会阻止通过自动战斗／自动射击施法。设为 0 时禁用。
+
+fail_severity_to_confirm = 3
+        如果尝试施放的法术一旦施法失误会造成严重惩罚，则要求确认。当法术的
+        施法失误严重度（施法菜单中显示的颜色）大于或等于指定数字时提示：
+
+          5: 洋红（施法失误造成的伤害可能超过最大生命值）
+          4: 暗红（最多造成 70% 的伤害）
+          3: 亮红（最多造成 50% 的伤害）
+          2: 黄色（最多造成 30% 的伤害）
+          1: 白色（最多造成 10% 的伤害）
+
+        如果给出的值为 0 或 -1，则绝不对施法失误发出提示。
+
+easy_door = true
+        (O)pen 或 (C)lose 门时，如果相邻处只有一扇门，就不提示选择方向。
+        此选项不影响通过走向门来开门。
+
+warn_hatches = false
+        使用单向逃生口或竖井前要求确认。
+
+warn_contam_cost = true
+        施放具有污染代价的法术前，如果按你当前的魔法污染程度施放后可能达到
+        有害的污染程度，则要求确认。
+
+enable_recast_spell = true
+        启用后，可在施法提示处按 Enter 或 '.'，再次施放上一次施放的法术。
+
+confirm_action += <regex>, <regex>, ...
+        （列表选项）
+        施放名称与任一给定正则表达式匹配的法术或使用这种能力时，会在使用前
+        要求确认。
+
+regex_search = false
+        启用后，使用 ^F 搜索物品时默认采用正则表达式语法，而非子字符串搜索。
+        请注意，无论此设置为何，以 / 开头的查询都会作为正则表达式搜索，
+        以 = 开头的查询都会作为子字符串搜索。
+
+autopickup_search = false
+        启用后，使用 ^F 搜索时，自动拾取会捡起的物品会标有 {autopickup}。
+        也就是说，搜索 "autopickup" 会列出所有这类物品。请注意，如果你有
+        复杂的自定义自动拾取函数，此选项可能会使游戏变慢。
+
+bad_item_prompt = true
+        使用有害或危险的卷轴与药水前要求确认。
+
+auto_hide_spells = false
+        设为 true 时，新加入法术库的法术会自动隐藏。
+
+menu_arrow_control = true
+        设为 false 时，禁止使用方向键控制菜单选择。此设置不影响鼠标与菜单的
+        交互，而且只影响使用快捷键进行选择的菜单。（例如，本地游戏的主菜单
+        不受影响。）
+
+single_column_item_menus = true
+        设为 false 时，如果某些物品菜单过长，无法容纳在当前屏幕中，物品会
+        分两栏显示。设为 true 时，所有菜单在任何情况下都使用单栏。此选项
+        仅适用于本地贴图版和终端版；WebTiles 的所有菜单无论此选项为何值都
+        使用单栏。
+
+show_paged_inventory = true
+        设为 true 时，'i' 菜单会像 'd'rop 菜单一样，把玩家的物品分成多个
+        页面（装备、药水、卷轴和可激发物品）。
+
+3-h     消息与显示功能增强。
+---------------------------
+
+hp_warning = 10
+        玩家受到伤害，且生命值低于最大生命值的此百分比时，hp_warning 会在
+        危险频道显示 "* * * 低生命警告 * * *"（设为 0 可关闭这些
+        消息）。
+
+mp_warning = 0
+        玩家的法力低于最大法力的此百分比时，mp_warning 会在危险频道显示
+        "* * * 低魔力警告 * * *"（设为 0 可关闭这些消息）。
+
+hp_colour = 70:yellow, 40:red
+        （列表选项）
+        hp_colour 会在状态显示中用适当颜色显示生命值。在默认设置下，生命值
+        低于 25% 时显示为红色，低于 50% 时显示为黄色，否则使用默认颜色。
+
+mp_colour = 50:yellow, 25:red
+        （列表选项）
+        mp_colour 对法力所做的处理与 hp_colour 对生命值相同。
+
+stat_colour = 1:lightred, 3:red
+        （列表选项）
+        属性低于指定数值时，stat_colour 会按定义顺序为其着色。此项检查先于
+        强效或属性衰减等效果的检查。要使用普通的灰色，请设置：
+           stat_colour -= 3:red
+
+status_caption_colour = brown
+        设置状态区域中说明文字的颜色（例如 "生命：10/10" 中的“生命：”）。
+
+enemy_hp_colour = green green brown brown magenta red
+        在怪物窗格中以适当颜色显示敌人的生命值。各颜色依次对应生命值全满、
+        轻伤、中度受伤、重伤、严重受伤和濒死。除了颜色名称，此列表还可使用
+        "default"；省略的颜色栏位会设为默认颜色。
+
+clear_messages = false
+        设为 true 时，会在玩家每次行动之间清除消息（默认值 false 会等消息
+        区域填满后再清除）。
+
+show_more = false
+        设为 true 时，如果一次输出的消息超过一个窗口可容纳的数量，游戏会
+        显示提示。如果设置了 clear_messages，此选项无效。此外，它不会影响
+        force_more_message 是否触发。
+
+small_more = false
+        当 small_more = false（默认值）时，--more-- 提示会单独显示在消息窗口
+        底部的一行。设为 small_more = true 时，它只占据左下角的一个字符。
+        注意：如果设置了 clear_messages，这会覆盖最后一行消息的第一个字母。
+
+show_newturn_mark = true
+        设为 false 时，禁用每回合第一行前显示的下划线（_）。
+
+show_game_time = true
+        默认情况下，属性区域中的计数器显示已经过的游戏时间。大多数行动耗时
+        一个时间单位，但有些更快（戴上戒指、持用武器……），另一些更慢
+        （武器技能较低时挥动武器、更换护甲……）。
+        设为 false 时，计数器改为显示玩家回合数，即不考虑持续时间的行动
+        次数。计分采用的正是此回合数（而且 % 概览画面总会显示此回合数）。
+        上一次行动的持续时间会显示在时间／玩家回合数之后的括号中。
+
+equip_bar = false
+        设为 true 时，会以“装备栏”取代噪声条，显示当前所有已装备物品的
+        字符；可用但尚未装备物品的装备栏位会留空。
+
+animate_equip_bar = false
+        设为 true 时，装备栏中所有颜色会变化的物品都会显示动画效果。
+
+item_stack_summary_minimum = 4
+        如果你走到一堆数量不少于此数值的物品上，第一行描述会以如下格式汇总
+        物品堆中的所有物品（最多 50 件）：
+          此处物品：!! """ ( )))))) [[[
+        固定神器和激发道具显示为亮青色；随机神器显示为黄色；发光或刻有符文
+        的物品显示为白色，除非你已经知道它们不是 ego 装备。
+
+mlist_min_height = 4
+        如果消息区域和怪物列表还有额外空间，怪物列表会先扩展到此高度，再把
+        更多空间分给消息区域。
+        （请注意，怪物列表只在 ASCII 版中可用。）
+
+mlist_allow_alternative_layout = false
+        让 Crawl 在终端显示中任何可以找到空间的位置显示怪物列表（通常是
+        地图左侧），而不使用属性区域下方的固定位置。
+        贴图版不支持此选项。
+
+monster_item_view_coordinates = false
+        在 ^x 查看说明中显示以玩家为中心的坐标。
+
+monster_item_view_features += <regex>, <regex>
+        （列表选项）
+        在 ^x 查看说明中显示与 <regex> 匹配的地形特征。每个 <regex> 都是描述
+        地牢特征的正则表达式。此正则表达式应当匹配使用 'x' 命令时显示的说明。
+        如果正则表达式匹配多个说明，所有相应特征都会列出。
+
+        此处有两个特殊关键词：如果任一模式匹配字符串 "stair"，就会显示所有
+        能用楼梯命令互动的特征；如果任一模式匹配 "trap"，就会显示所有陷阱
+        特征（包括蛛网）。
+
+msg_min_height = 7
+        可以减小此值，为地图显示留出更多空间。最小值为 5。在终端版中，如果
+        此值大到无法容纳地图，Crawl 将不会启动。
+
+msg_max_height = 10
+        在终端版中，如果怪物列表扩展后仍有额外空间，消息区域会扩展到此高度，
+        剩余空间留给怪物列表。
+        在贴图版中，此选项控制消息区域的最大尺寸，剩余空间留给视口。
+
+msg_webtiles_height = -1
+        此选项只在 WebTiles 中设置消息窗格的高度，并相应缩放地图。小于
+        `msg_min_height` 的值不会产生影响；此时消息窗格的高度继承自终端版
+        （因此通常为 7）。根据其他设置，其中一行可能保留给 `more` 消息。
+
+messages_at_top = false
+        把消息窗口放在屏幕顶部。未使用 clear_messages=true 时，这会把最后
+        一条消息移到靠近视野中央的位置。
+
+msg_condense_repeats = true
+        如果同一条消息在同一回合重复多次，就会以压缩格式输出，并注明重复
+        次数。如果相同输出（包括计数器）连续数回合重复，“显示上一条消息”
+        命令（Ctrl-P）也会把它们压缩为一条。例如：
+            杀人蜂未击中你。x5
+
+msg_condense_short = true
+        如果设置，同一频道中的短消息不会各自另起一行。
+
+show_travel_trail = false (defaults to true for online servers)
+        在线服务器默认设为 true。设为 true 时，会高亮显示自动探索或自动移动
+        所经过的路径。可以使用 feature 选项覆盖 "travel trail" 特征，进一步
+        配置移动轨迹在终端版中的颜色和字符。如果当前正显示移动轨迹，“清除
+        地图”命令（Ctrl-C）会清除轨迹而非地图（再按一次则会像往常一样清除
+        地图）。
+
+skill_focus = true
+        设为 true 时，技能画面中的技能会在禁用、启用和专注三种状态间循环。
+        设为 false 时，只在启用和禁用间切换。把此选项设为 "toggle"，会在
+        技能画面中增加一个切换项，以便在游戏中改变此行为。
+
+default_show_all_skills = false
+        设为 true 时，技能 (m) 菜单默认显示所有技能，包括未训练和无法训练的
+        技能。与通常一样，'*' 可切换回可训练模式。此选项不影响提示和教程
+        游戏。
+
+monster_list_colour = friendly:green, neutral:brown, good_neutral:brown
+monster_list_colour += trivial:darkgrey, easy:lightgrey, tough:yellow,
+                       nasty:lightred, unusual:lightmagenta
+        （列表选项）
+        更改怪物列表中怪物名称的显示颜色。有效键及其初始颜色如下：
+
+           怪物态度：
+             friendly       - green
+             neutral        - brown（“不关心你”）
+             good_neutral   - brown（“和平”）
+
+           敌对怪物的威胁等级：
+             trivial        - darkgrey
+             easy           - lightgrey
+             tough          - yellow
+             nasty          - lightred
+             unusual        - lightmagenta
+
+        如果某个类别未设置或缺少颜色，其颜色默认为 lightgrey。使用 `-=` 移除
+        时，可以只写类别名称；这会清除该类别的所有映射（将其设为 lightgrey）。
+
+view_delay = 600
+        控制远程和魔法攻击、具有视觉效果的祈神能力等动画的播放速度。
+
+reduce_animations = false
+        设为 true 时，会简化某些动画，不绘制各个渐进步骤。例如，施放光束
+        法术或发射远程武器时，只显示最终的光束路径。WebTiles 游戏默认设为
+        `true`。
+
+use_animations = beam, range, hp, monster_in_sight, pickup, monster, player
+use_animations += branch_entry
+        控制是否播放特殊动画，例如遭到放逐时的动画。默认启用所有动画；以下
+        类别可以分别启用或禁用：
+
+          beam             - 施放光束法术或发射远程武器时的动画。
+          range            - 尝试施放法术时，如果法术射程内没有怪物，会用覆盖
+                             层闪烁画面，指出法术的实际射程。
+          hp               - 每当你受到伤害后生命值低于 hp_warning 选项指定的
+                             程度，就把画面闪成红色。
+          monster_in_sight - 视野内有危险怪物时尝试休息、跑动、自动移动或探索，
+                             会闪烁画面中没有怪物的部分，让怪物本身更加醒目。
+          pickup           - 拾取物品时出现的各种动画。目前只有符文和宝珠具有
+                             动画。
+          monster          - 怪物使用能力或施放法术时播放的动画。
+          player           - 玩家使用能力或施放法术时播放的动画。
+          branch_entry     - 进入新分支时播放的动画。目前只有深渊和佐特界具有
+                             动画。
+
+unusual_monster_items += <regex>, <regex>, ...
+        （列表选项）
+        如果怪物背包中的物品匹配此逗号分隔列表中的正则表达式，该怪物就会以
+        unusual 威胁等级显示。例如：
+            unusual_monster_items =  wand
+            unusual_monster_items += disto,chaos
+            unusual_monster_items += curare,atropa,datura,dispersal
+            unusual_monster_items += throwing net
+        用来匹配的物品说明，是使用 'xv' 查看怪物时通常显示的物品短名称。
+
+        此选项决定哪些怪物会被选项 tile_show_threat_levels（仅贴图版）、
+        monster_list_colour 和 unusual_highlight（仅终端版）视为 "unusual"。
+
+darken_beyond_range = true
+        设为 true 时，瞄准时射程外的一切都会显示为灰色。设为 false 还会禁用
+        use_animations 选项的 "range" 类别。
+
+show_blood = true
+        将此选项设为 false 会隐藏地面和墙壁上的血迹。在贴图版中，尸体会
+        显示为骸骨。
+
+food_snacking_frequency = 40
+        控制走在水果、肉类或烘焙食品堆上时风味消息的出现频率；数值对应百分比
+        概率。正如预期，100% 表示总是出现，0% 表示从不出现，而默认的 40%
+        表示五次中有两次。除非频率设为 100%，否则在大多数情况下，视野中有
+        敌对敌人时，出现概率会降至原来的四分之一。
+
+fountain_line_frequency = 40
+        控制走在任何类型的喷泉上时风味消息的出现频率；数值对应百分比概率。
+        与上一个选项一样，100% 表示总是出现，0% 表示从不出现，默认的 40%
+        表示五次中有两次；如果频率不是 100%，视野中有敌对敌人时概率会降低。
+
+force_more_message += <regex>, <regex>
+        （列表选项）
+        任何包含此处指定正则表达式的消息都会强制显示 --More-- 提示，因此可以
+        用来突出非常重要的事件。此选项会忽略 show_more 选项。默认情况下，
+        此选项不会中断自动移动延时；如需中断，请改用 runrest_stop_message。
+        其语法与 runrest_ignore_message（3-f）完全相同。
+
+flash_screen_message += <regex>, <regex>
+        （列表选项）
+        任何包含此处指定正则表达式的消息都会让画面闪成黄色，因此可以用来
+        突出真正非常重要的事件。
+        其语法与 force_more_message 完全相同。
+
+monster_alert += <monster name or symbol>
+        （列表选项）
+        此处按名称列出的任何怪物，玩家初次遇见时都会触发 --More-- 提示。还有
+        几个可用的特殊值，可匹配一组怪物：
+          -nasty, tough, easy, trivial  威胁等级至少与指定等级一样高的任何怪物。
+          -uniques                      所有独有怪物。
+          -unusual                     携带异常物品的任何怪物
+                                        （由 unusual_monster_items 定义）。
+
+cloud_status = true
+        是否显示 "Cloud"（云）状态指示灯；默认值为 true，但贴图版中可以直接
+        看见自己所在位置的云，因此默认值为 false。
+
+always_show_zot = false
+        是否始终显示 "Zot"（佐特）状态指示灯，即使你还剩下充足时间也显示。
+
+always_show_gems = false
+        是否显示 "Gem"（宝石）状态指示灯，指出当前分支的宝石还有多久碎裂
+        （如适用）。
+
+more_gem_info = false
+        是否显示已持有宝石的时限和碎裂音效。
+
+action_panel_show = true
+        是否显示或隐藏动作面板。此选项会在各局游戏之间自动保存，并且仅在
+        WebTiles 中可用。
+
+action_panel = /?!}
+        以上是动作面板中默认显示的物品列表。有效符号为：
+        ?       卷轴
+        !       药水
+        }       杂项物品
+        /       魔杖
+        如果设为空字符串，面板会完全隐藏。此选项中物品类型的顺序决定动作
+        面板中物品类型的顺序；同一类型内再按背包字母排序。此选项仅在
+        WebTiles 中可用。
+
+action_panel_filter += <regex>, <regex>, ...
+        （列表选项）
+        与过滤表达式匹配的任何物品都不会显示在动作面板中。此选项仅在
+        WebTiles 中可用。文件 dat/defaults/misc.txt 中含有默认设置。
+
+action_panel_show_unidentified = false
+        设为 true 时，动作面板会显示未鉴定的卷轴和药水。此选项仅在 WebTiles
+        中可用。
+
+action_panel_scale = 100 (persistent)
+        应用于动作面板的百分比缩放系数。此选项会在各局游戏之间自动保存，
+        并且仅在 WebTiles 中可用。
+
+action_panel_orientation = horizontal (persistent)
+        （可用值：horizontal | vertical）
+        设为 'horizontal' 时，动作面板会沿屏幕顶边放置。设为 'vertical' 时，
+        面板会沿左边缘放置。此选项会在各局游戏之间自动保存，并且仅在
+        WebTiles 中可用。
+
+action_panel_font_family = monospace (persistent)
+action_panel_font_size = 16 (persistent)
+        用于显示动作面板中物品数量的字体。字号选项会在各局游戏之间自动保存，
+        两个选项都仅在 WebTiles 中可用。
+
+action_panel_glyphs = false
+        设为 true 时，在动作面板中显示字符而非图块。此选项仅在 WebTiles 中
+        可用。
+
+show_resist_percent = true
+        设为 true 时，% 画面会根据玩家当前的抗性等级，显示玩家承受各元素
+        伤害的准确百分比。
+
+always_show_doom_contam = false
+        设为 true 时，即使玩家当前没有任何厄运或污染，也总在侧面板右上角
+        显示厄运与污染计量条。
+
+3-i     颜色（消息与菜单）
+-----------------
+
+menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
+        （有序列表选项）
+        对于显示物品的菜单及其他画面（以及少数其他情况；见下方列表），此选项
+        可通过正则表达式控制一行文字的显示颜色。例如，默认选项使用以下一行：
+            menu_colour += lightmagenta:.*orb.*Zot
+        在物品拾取菜单中以紫色突出显示佐特宝珠。对于物品，还会按照下文所述，
+        用正则表达式检查各种物品标注。例如，以下一行：
+            menu_colour += yellow:.*emergency_item.*
+        会让带有 `emergency_item` 标注的物品（例如传送卷轴）在背包及其他物品
+        菜单中以黄色突出显示。
+
+        一个列表中可以有多条语句，也可以有多行 menu_colour。使用多行
+        menu_colour 时，会采用第一个匹配的正则表达式所指定的颜色；此选项
+        支持 `^=`，便于覆盖默认设置，而不必从头构建列表。颜色列表见 5-a 中的
+        colour 选项。
+
+        `match` 部分指定着色会影响哪些列表。如果指定 'item'，或完全省略
+        <match>: 部分，模式就会应用于所有物品相关类别。match 可使用的物品
+        相关值如下：
+            inventory     （背包及拾取／丢弃菜单）
+            pickup        （拾取菜单和地上的物品）
+            equip         （[ 和 " 画面）
+            use_item      （装备、卸下、阅读、饮用等）
+            shop          （商店菜单）
+            stash         （Ctrl-F 的搜索结果）
+            description   （\ 画面）
+            stats         （主画面属性面板中持用／装入发射栏的物品）
+            resists       （% 画面中的物品）
+
+        可用的非物品相关值如下；这些值必须明确指定 `match`：
+            help          （手册）
+            notes         （?: 画面）
+
+        物品带有许多实用标签，可以更容易地控制颜色。物品会标注其基础类型
+        （armour、weapon、wand 等），还会标注表示实用性的特定标签：
+            forbidden       （使用此物品会招致你所信奉神祇的厌恶。）
+            emergency_item  （此物品在紧急情况下极其宝贵。）
+            good_item       （此物品通常是有益物品。）
+            dangerous_item  （使用此物品可能很危险。）
+            bad_item        （此物品通常是有害物品。）
+            useless_item    （此物品对你毫无用处。）
+
+        以及其他各种属性：
+            equipped        （已装备的物品。）
+            ego             （具有攻击性／防御性魔法铭印的物品。）
+            artefact        （神器，无论是否已鉴定。）
+            unrand          （固定神器。）
+            melee           （近战武器，包括魔法杖。）
+            ranged          （远程武器。）
+            evoker          （元素激发道具。）
+            identified      （物品已完全鉴定。）
+            known           （你已辨认物品的子类型。）
+            unidentified    （你尚未辨认物品的子类型。）
+            god gift        （神祇赠予你的物品。）
+            cursed          （受艾申扎利诅咒的物品。）
+
+        （当然，其中一些标签本来就只适用于部分菜单：只有携带的物品可能处于
+        已装备状态，只有未携带的物品可能尚未鉴定，等等。）
+
+        寻找 menu_colour 匹配项时，这些前缀会被视为添加在实际物品名称之前，
+        例如：
+            identified evil_item forbidden misc a piece from Xom's
+            chessboard (15/15)
+
+        同样的前缀也可用来突出显示与说明相匹配之物品的相关提示，或定义
+        autopickup_exceptions。
+
+        更多示例见 `dat/defaults/menu_colours.txt` 中的默认设置。
+
+        menu_colour 还可使用 `notes` 匹配项，为游戏内的战后记录笔记着色
+        （可用 `?:` 查看彩色内容）。例如，以下一行会以绿色显示升级记录：
+            menu_colour ^= notes:green:Reached XP level
+
+message_colour ^= <colour>:<channel>:<regex>, <colour>:<regex>, ...
+        （有序列表选项）
+        message_colour 可以覆盖单条消息的颜色。例如，如果你觉得低生命值警告
+        不够醒目，可以使用类似以下的设置：
+             message_colour += yellow:LOW HITPOINT WARNING
+        也可以把消息匹配范围缩小到特定频道：
+             message_colour += lightred:god:xom
+        如果完全不想看见某条消息，可以将其静音：
+             message_colour += mute:You start resting
+
+3-j     发射栏、发射与弹药。
+---------------------------
+
+fire_items_start = a
+        设置通过发射栏循环选择要发射的弹射物时，第一个纳入考虑的背包物品。
+        默认值为 a。
+
+fire_order  = launcher, throwing, inscribed, spell, evokable, ability
+        （有序列表选项）
+        控制循环切换发射栏时各种动作的顺序。类型应以逗号分隔，越靠前的项目
+        优先级越高。未列出的动作类型不会在循环切换发射栏时使用。此选项还会
+        影响游戏开始时的自动装入发射栏。
+
+        'launcher' 指发射当前持用的远程武器（即弩、弓、投石索）；'throwing'
+        指所有投掷弹药。可以按名称指定某种投掷弹药（'javelin'、'boomerang'、
+        'stone'、'rock'、'net'、'dart'），但这些名称的顺序只会影响投掷弹药
+        类型内部的顺序；还可以使用 'inscribed'，控制带有 "+f" 铭文之弹药的
+顺序。铭文的更多信息见 Crawl 手册的“Inscriptions”一节。弹药类型之间
+        可以用 "/" 分隔，表示应由背包顺序决定循环顺序。各类型内部的顺序由
+        相应子菜单中的字母顺序决定（例如投掷物使用背包中的字母顺序等）。
+
+fire_order_spell = all
+        （列表选项）
+        此选项允许按名称从发射顺序中排除或加入法术。法术内部的顺序由分配的
+        字母决定；此选项只控制列表中包含哪些法术。其值可以是用逗号分隔的
+        法术名称列表，并支持 += 和 -=。还可使用两个特殊值：'all' 代表所有
+        法术；'attack' 代表在自动战斗中视为伤害法术的法术列表。更多信息见
+        autofight_fires。
+
+fire_order_ability = all
+fire_order_ability -= berserk
+        （列表选项）
+        此选项允许按名称从发射顺序中排除或加入能力。能力内部的顺序由分配的
+        字母决定；此选项只控制列表中包含哪些能力。其值可以是用逗号分隔的
+        能力名称列表，并支持 += 和 -=。还可使用两个特殊值：'all' 代表所有
+        能力；'attack' 代表在自动战斗中视为伤害类的能力列表。更多信息见
+        autofight_fires。
+
+fail_severity_to_quiver = 2
+        从发射栏循环和自动装入发射栏中排除施法失误等级不低于此值的法术。
+        使用 -1 可以从自动装入发射栏中完全排除法术。各施法失误数值的说明见
+        fail_severity_to_confirm。
+
+launcher_autoquiver = true
+        设为 true 时，持用发射武器会把发射栏切换到该武器；设为 false 时，
+        持用发射武器不会改变发射栏。（仍可通过 tab 或 `v` 发射。）
+
+quiver_menu_focus = false (persistent)
+        设为 true 时，发射栏菜单会以“专注”模式打开；动作字母取自物品／法术／
+        能力的字母，并且一次只能选择其中一类。否则可以从菜单选择任何动作，
+        但此菜单中的字母并不固定。此选项会持久保存，因此发射栏菜单中的当前值
+        会跨局保存并自动重新载入，除非明确设置了该值。
+
+3-k     消息频道。
+-----------------
+
+Crawl 通过消息窗口与玩家交流。每条消息都属于一个所谓的频道。可以使用以下
+选项改变各频道的行为：
+
+     channel.CHANNEL_NAME = (COLOUR | mute | default | on | off | plain)
+
+CHANNEL_NAME 目前可以是以下值之一：
+   plain           = 普通文字（以及“未着色”的内容）
+   prompt          = 向玩家显示的输入提示
+   god             = 来自神祇的消息
+   duration        = 角色法术／效果消退的消息
+   danger          = 对角色生存构成严重威胁的消息
+   warning         = 其他各种警告
+   recovery        = 从疾病／属性损失／中毒状态中恢复
+   talk            = 怪物说话
+   talk_visual     = 怪物做出玩家能看见的动作
+   timed_portal    = 传送门超时消息
+   sound           = 其他声音
+   intrinsic_gain  = 等级／属性／种族力量提升
+   mutation        = 获得／失去变异
+   monster_spell   = 怪物做手势或施放法术的消息
+   monster_enchant = 怪物附魔相关消息
+   monster_warning = 怪物进入视野
+   friend_spell    = 与 monster_spell 相同，但仅用于友方怪物
+   friend_enchant  = 与 monster_enchant 相同，但仅用于友方怪物
+   friend_action   = 友方怪物的其他动作
+   monster_damage  = 说明怪物受伤程度的消息
+   monster_target  = 把怪物标记为目标的消息（未使用）
+   banishment      = 放逐他人及被放逐到深渊的消息
+   equipment       = 表示穿戴／持用装备的消息
+   floor           = 查看或走过地上物品时的消息
+   multiturn       = 表示长时间动作（穿戴护甲、解剖等）
+   examine         = 查看周围环境时的消息
+   examine_filter  = 查看周围环境时无关紧要的消息
+   diagnostic      = 调试消息
+   error           = 错误消息
+   tutorial        = 教程消息
+   orb             = 佐特宝珠相关消息
+   hell_effect     = 地狱环境效果相关消息
+   dgl_message     = 来自观战者的消息（仅限在线终端版游戏）
+
+频道选项的值如下：
+   mute        = 不显示此频道的任何消息（危险，请谨慎！）
+   default     = 开启频道并使用其默认方案
+   alternative = 开启频道并使用其另一套“多彩”方案
+   on          = 与 default 相同
+   plain       = 让频道使用与 "plain" 频道相同的颜色
+                 （即使 plain == mute，也不会做出把频道 "mute" 之类的怪事）
+   off         = 与 plain 相同
+
+COLOUR 可以是 5-a 节（colour 选项）中所述的任何颜色。
+
+目前只有 monster_damage 和 god 是多色频道。其他所有频道均默认设为 on。
+
+3-l     铭文。
+-------------
+
+铭文的更多信息见 Crawl 手册的“铭文”一节。
+
+autoinscribe += <regex>:<inscription>
+        （有序列表选项，每行一个值）
+        说明中包含该正则表达式的任何物品都会自动添加铭文（如果已开启自动
+        拾取）。
+
+        例如，可以用它避免意外消耗有潜在危险之魔杖的充能：
+             autoinscribe += wand of polymorph:!V
+
+        这里也可以使用菜单颜色前缀（forbidden 等）。例如：
+             autoinscribe += (bad|dangerous)_item.*scroll:!r
+        会防止意外阅读任何已经鉴定为有害或可能危险的卷轴。
+
+        与大多数有序列表选项不同，多个匹配项都会生效：顺序只决定各铭文的
+        排列顺序。
+
+show_god_gift = unident|yes|no
+        给原本是神祇赠礼的物品附加 {god gift}。如果设为 "unident"，物品的
+        属性完全得知后就会失去此标签。无论此设置为何，都可以在物品说明中
+        查看其来源。
+
+3-m     宏相关选项。
+-------------------
+macros += M \{9} za
+        此选项添加宏或键位映射。
+
+        每条定义都恰好由三个以空格分隔的参数组成。第一个参数说明这是宏还是
+        键位映射。键位映射通常最适合用于彻底改变按键，并且会先于宏处理。
+        如果不知道该用哪一种，你需要的很可能是宏。
+
+        "M" 宏（输入游戏命令时处理）
+
+        专用键位映射环境：
+        "K1" 楼层地图环境键位映射（仅在 `X` 视图中）
+        "K2" 瞄准环境键位映射（瞄准期间及 `x` 视图中）
+        "K3" 确认环境键位映射（回答 y/n 提示时）
+        "K4" 菜单环境键位映射（除技能菜单外的所有菜单）
+
+        默认键位映射环境：
+        "K" 默认环境键位映射（任何其他环境）
+
+        第二个参数说明触发键，由该键的字符或键码组成（例如 'a'、'A' 或
+        \{9}，分别表示 A、Shift-A 或 Tab 键）。第三个参数说明宏或键位映射
+        的动作，由与第二个参数关联的命令序列组成。（例如 "zap" 表示对上一
+        个目标使用 a 栏位的法术。）功能键、数字键盘按键和导航键可以通过文本
+        键码输入（例如：\{F2}、\{NP-}、\{PgUp}、\{Down} 等）。
+
+        如果 rc 文件中含有任何宏／键位映射，载入时会自动把它们保存到
+        macro.txt，并直接覆盖 macro.txt 中已经保存的所有宏／键位映射，且
+        不显示提示。
+
+        此语法以 macro.txt 文件所用的格式为基础，但并不完全相同。
+
+flush.failure = true
+flush.command = false
+flush.lua     = true
+        这些选项在使用宏时很有用。把其中一个子选项设为 true，会丢弃整个输入
+        缓冲区，从而有效停止宏。目前的子选项为：
+           failure -- 法术／能力发生施法失误时
+           command -- 每当游戏即将取得下一条命令时
+           lua     -- 每当从 lua 调用 crawl.flush_input() 时
+
+additional_macro_file = path/to/filename
+        添加一个在 macro.txt 之后载入的额外宏文件。可以设置多行
+        additional_macro_file。
+
+bindkey = [^D] CMD_CHARACTER_DUMP
+        在比宏更底层的运作层级，更改由哪个按键调用哪条命令。宏（目前）不能
+        彼此调用，但宏可以调用按键已更改的命令，因此此选项很有用。
+        语法始终相同：[key] command
+        首先在方括号中列出要使用的按键，其中 ^X 表示 Ctrl-X；然后写出要绑定
+        到该按键的命令。只要命令在游戏的不同区域生效，就可以把多条命令绑定
+        到同一个按键，例如一条瞄准命令和一条主游戏命令。同样，也可以把同一
+        条命令绑定到不同按键。可以使用宏绑定中的 \{} 语法书写键码；"F1"、
+        "NP+" 和 "Down" 等键码也可以直接写在 [] 中。
+        所有可用命令的完整列表见 keybind.txt。
+
+3-n     贴图版选项。
+-----------------
+在非贴图版游戏中，贴图选项会被忽略。
+
+tile_show_items = <glyphs>
+        此选项控制贴图版背包中的物品顺序。其默认值为：!?/=([)}:|
+        字符不在列表中的物品会显示在最后。
+
+tile_skip_title = false
+        设为 true 时，游戏载入完毕后，标题画面不会提示你按键，而会直接进入
+        开始菜单。
+
+tile_menu_icons = true
+        使背包菜单及少数其他菜单包含图块图标。为了弥补空间缩减，菜单最多会
+        分成两栏显示。如果偏好纯文字菜单，请把此选项设为 false。
+
+tile_player_col              = white
+tile_monster_col             = #660000
+tile_neutral_col             = #660000
+tile_peaceful_col            = #664400
+tile_friendly_col            = #664400
+tile_plant_col               = #446633
+tile_item_col                = #005544
+tile_unseen_col              = black
+tile_floor_col               = #333333
+tile_wall_col                = #666666
+tile_mapped_floor_col        = #222266
+tile_mapped_wall_col         = #444499
+tile_explore_horizon_col     = #6b301b
+tile_door_col                = #775544
+tile_downstairs_col          = #ff00ff
+tile_upstairs_col            = cyan
+tile_branchstairs_col        = #ff7788
+tile_portal_col              = #ffdd00
+tile_transporter_col         = #0000ff
+tile_transporter_landing_col = #5200aa
+tile_feature_col             = #997700
+tile_trap_col                = #aa6644
+tile_water_col               = #114455
+tile_deep_water_col          = #001122
+tile_lava_col                = #552211
+tile_excluded_col            = #552266
+tile_excl_centre_col         = #552266
+tile_window_col              = #558855
+
+这些选项用于配置地牢楼层小地图所用的颜色。也可以使用 RGB 十六进制代码，
+例如绿色可写为 #00ff00。
+   tile_player_col              - 玩家位置的颜色，也是楼层地图模式（'X'）中
+                                  地图中心的颜色
+   tile_monster_col             - 敌对怪物的颜色
+   tile_neutral_col             - 中立怪物的颜色
+   tile_peaceful_col            - 和平怪物的颜色
+   tile_friendly_col            - 友方怪物的颜色
+   tile_plant_col               - 不提供经验值之怪物的颜色（植物和真菌）
+   tile_item_col                - 已知或已探测物品的颜色
+   tile_unseen_col              - 未见区域的颜色（通常为岩石）
+   tile_floor_col               - 地面的颜色
+   tile_wall_col                - 任意类型墙壁的颜色
+   tile_mapped_floor_col        - 通过魔法测绘探测到之地面的颜色
+   tile_mapped_wall_col         - 通过魔法测绘探测到之墙壁的颜色
+   tile_explore_horizon_col     - 已探索区域边缘的颜色
+   tile_door_col                - 已知门的颜色，无论开关
+   tile_downstairs_col          - 下楼梯的颜色
+   tile_upstairs_col            - 上楼梯（包括分支出口）的颜色
+   tile_branchstairs_col        - 分支入口的颜色
+   tile_portal_col              - 任意传送门的颜色
+   tile_transporter_col         - 传送装置的颜色
+   tile_transporter_landing_col - 传送装置目的地的颜色
+   tile_feature_col             - 非楼梯、非传送门之任意特征的颜色
+                                  （祭坛、商店、喷泉……）
+   tile_trap_col                - 任意类型已知陷阱的颜色
+   tile_water_col               - 浅水的颜色
+   tile_deep_water_col          - 深水的颜色
+   tile_lava_col                - 岩浆的颜色
+   tile_excluded_col            - 自动移动排除方格的颜色
+                                  （只会覆盖 tile_floor_col 的颜色）
+   tile_excl_centre_col         - 排除区中心的颜色（仅覆盖 tile_floor_col 和
+                                  tile_item_col）
+   tile_window_col              - 矩形视野窗口的颜色
+
+custom_text_colours = lightmagenta:#fd59fa, blue:#005afa
+        重新映射 Crawl 界面使用的 16 种基本终端颜色；设置格式为颜色名称与 RGB
+        十六进制代码的配对。列表中未包含的颜色使用其默认值。
+
+tile_update_rate = 1000
+        没有任何输入时，经过多少毫秒重绘画面。如果游戏反应缓慢，可尝试增大
+        此值；反之，如果反应速度正常但重绘耗时太久，则设为较小的值。
+
+tile_runrest_rate = 17
+        跑动或休息时，经过多少毫秒重绘画面。如果 Crawl 在跑动或休息时缓慢，
+        请增大此值。
+
+tile_key_repeat_delay = 200
+        按住一个按键时，按键生效前会有一段延迟。此选项控制该延迟，单位为
+        毫秒。设为 0 时，按键永远不会重复。
+
+tile_tooltip_ms = 500
+        鼠标悬停在画面某处后，经过多少毫秒显示工具提示。设为 0 会完全停用
+        工具提示。
+
+tile_tag_pref = (none| named | enemy | tutorial )
+        此设置决定本地贴图版的地牢视图中，哪些怪物带有文字标签。
+            auto     - 根据游戏模式选择
+            none     - 关闭所有标签
+            all      - 显示所有敌人的标签
+            named    - 显示所有有名字之怪物的名称，无论敌友
+            enemy    - 显示有名字之敌对怪物的名称
+            tutorial - 显示本局游戏中尚未杀死的所有怪物，以及有名字之敌对
+                       怪物的名称
+        独有怪物和鬼魂都是“有名字的怪物”。在 auto 模式下，普通游戏使用
+        "enemy"，竞技场模式使用 "named"，教程／提示模式使用 "tutorial"。
+
+tile_window_width  = -90
+tile_window_height = -90
+        设置窗口宽度和高度的选项，单位为像素。为正值时直接设置窗口尺寸；
+        设为 0 时自动调整窗口尺寸；设为负数时，这些值会解释为屏幕分辨率减去
+        给定值。宽度可能被下方的 `tile_window_ratio` 覆盖；此时
+        `tile_window_width` 用作最大宽度。在某些窗口管理器上，操作系统界面
+        元素的位置可能迫使这些值变小。例如在 MacOS 上，窗口不会与程序坞或
+        菜单栏重叠。
+
+tile_window_ratio  = 1618
+        设为正值时，贴图版会用此值按窗口高度的比例决定窗口宽度，并以 1000
+        为缩放基数。具体公式为：w = h * tile_window_ratio / 1000。
+        如果设置此值，`tile_window_width` 会用作最大宽度。最小宽度由界面布局
+        决定。全屏模式会忽略此值。设为 <= 0 可禁用。
+
+tile_window_limit_size = true
+        限制窗口的最小尺寸。只应为测试而禁用此选项。
+
+game_scale = 1
+        取值 1 到 8 的整数缩放值，用于增大所有界面元素。可以在不直接支持
+        high-dpi 的高分辨率显示器上模拟 high-dpi 渲染，或为超大显示器调整
+        缩放。4k 显示器建议设为 3 或 4，2k 显示器通常设为 2 效果最佳。
+        仅限本地贴图版。
+
+tile_map_pixels = 0
+        小地图每个方格所占的最大像素数。如果分辨率较低，觉得背包太小，可以
+        尝试设为 1，为背包腾出更多空间；缺点是点击小地图自动移动会困难得多。
+        设为零时会自动调整小地图尺寸。
+
+tile_viewport_scale = 1.0
+        应用于地牢视图的缩放系数。最小值为 0.2，最大值由分辨率决定；缩放会
+        受到限制，确保至少总能看见你的视线范围。在本地贴图版游戏中，也可以
+        用 ctrl-'-' 和 ctrl-'='（部分键盘上为 ctrl-'+'）调整此值。
+
+tile_map_scale = 0.6
+        应用于地图模式（X）中地牢视图的缩放系数。在贴图版的地图模式中，也可
+        以用 '{' 和 '}' 调整；在本地贴图版中，还可用 ctrl-'-' 和 ctrl-'='
+        （部分键盘上为 ctrl-'+'）调整。
+
+tile_cell_pixels = 32
+        地牢视图中，缩放为 1.0 时图块的宽度和高度，单位为（逻辑）像素。这是
+        旧版选项，建议改用 tile_viewport_scale 调整缩放。
+
+tile_min_stat_width_characters = 42
+        属性侧栏以字符计的最小宽度。
+
+tile_sidebar_pixels = 32
+        本地贴图版侧栏视图中图块的宽度和高度，单位为（逻辑）像素。
+
+tile_filter_scaling = false
+        与 tile_cell_pixels 或 tile_sidebar_pixels 配合使用。设为 true 时会
+        对纹理进行过滤，使图像更平滑，但也更模糊。
+
+tile_force_overlay = false
+        设为 true 时，强制把消息窗口作为覆盖层显示在画面上方。使用此选项时，
+        减小 tile_font_msg_size 会在保持相同行数的同时缩小覆盖层。如果发现
+        屏幕上有未使用的空间，请增大 view_max_height 选项。
+
+tile_overlay_col = #646464
+        消息窗口覆盖层的背景颜色，例如 tile_force_overlay 设为 true 时的
+        背景颜色。与 tile_overlay_alpha_percent 配合使用。
+
+tile_overlay_alpha_percent = 40
+        消息窗口覆盖层背景的透明度，例如 tile_force_overlay 设为 true 时。
+        设为 0 会使消息窗口只显示文字，不显示任何背景；设为 100 会让消息
+        窗口使用不透明背景。
+
+tile_full_screen = auto
+        将此选项设为 true 或 false，会强制开启或关闭全屏模式。设为其他任何值
+        都会进入 auto 模式；此模式仅在屏幕分辨率宽度小于 1200 或高度小于
+        800 时启用全屏模式。
+
+tile_use_small_layout = auto
+        为窄屏设计的替代布局。如果设为 auto，可用的水平空间不足以舒适地显示
+        普通布局时，就会启用此布局。
+
+tile_font_crt_file  = VeraMono.ttf
+tile_font_stat_file = VeraMono.ttf
+tile_font_msg_file  = VeraMono.ttf
+tile_font_tip_file  = VeraMono.ttf
+tile_font_lbl_file  = Vera.ttf
+        本地贴图版画面各区域使用的字体。WebTiles 请改用 tile_font_*_family。
+        如果要使用其他字体，必须把相应的 *.ttf 文件放入 dat/tiles/ 文件夹。
+        各画面区域如下：
+            crt  - 非地图画面（菜单、消息记录等）
+            stat - 属性区域（生命值、AC 等）
+            msg  - 消息区域
+            tip  - 工具提示（鼠标悬停信息）
+            lbl  - 背包／主地图中的物品和怪物名称
+
+tile_font_crt_family  = monospace
+tile_font_stat_family = monospace
+tile_font_msg_family  = monospace
+tile_font_lbl_family  = monospace
+        WebTiles 画面各区域使用的字体。本地贴图版请改用 tile_font_*_file。
+
+tile_font_crt_size  = 15
+tile_font_stat_size = 16
+tile_font_msg_size  = 14
+tile_font_tip_size  = 15
+tile_font_lbl_size  = 14
+        上述画面区域的字号。如果设为零（默认值），字号会根据屏幕尺寸决定。
+
+tile_font_ft_light = false
+        选择 'light' 字体微调。
+
+glyph_mode_font = DejaVu Sans Mono
+        WebTiles 字符模式中用于绘制地牢的字体。如果设为 monospace，或该字体
+        不可用，就会使用浏览器的默认等宽字体。默认字体 "DejaVu Sans Mono"
+        可用作网页字体（与桌面版所用的字体相同）。此选项仅在 WebTiles 中
+        可用。
+
+glyph_mode_font_size = 24
+        WebTiles 字符模式地牢视图的字号（单位为点）。此选项仅在 WebTiles 中
+        可用。
+
+tile_show_minihealthbar = true
+tile_show_minimagicbar  = true
+        玩家受伤或消耗法力时，在玩家图块上方显示生命条和法力条。
+
+tile_show_demon_tier = false
+        在恶魔图块上覆盖一个图标，用来表示它在恶魔中的层级（或难度等级），
+        对应非贴图版所用的字符（&, 1, 2, 3, 4, 5）。
+
+tile_water_anim = true
+        禁用时，会抑制液体动画。WebTiles 上的默认值为 false。
+
+tile_misc_anim = true
+        禁用时，会抑制祭坛、火炬等杂项事物的动画。
+
+tile_realtime_anim = false
+        启用时，图块动画会实时运行，不再与玩家行动绑定。此选项仅在 WebTiles
+        中可用。
+
+tile_show_player_species = false
+        启用时，使用玩家种族的怪物图块显示玩家，而不使用普通纸娃娃及显示
+        装备。
+
+tile_show_threat_levels = nasty, unusual
+        此选项控制哪些怪物会突出显示其威胁等级。有效等级包括：trivial, easy,
+        tough, nasty, unusual。可以同时指定多个等级，也可以指定 'none'。
+
+        指定 'unusual' 时，由选项 unusual_monster_items 决定怪物携带哪些物品
+        会使其突出显示为 unusual。
+
+tile_player_status_icons = slow, constr
+        此选项控制玩家受到特定状态效果影响时，哪些图标会显示在玩家图块上方。
+        有效值包括：slow, fragile, petr, mark, will/2, haste, weak, corr, might,
+        brill, -move。
+
+tile_layout_priority = minimap, inventory, command, spell, monster
+        （有序列表选项）
+        此选项用于控制各元素在画面右侧、属性区域下方的放置顺序。分辨率较小
+        时，没有足够空间容纳所有元素，因此只放置靠前的项目。也可以移除不想
+        永久显示的项目。背包标签页总会放在底部，但初始尺寸为最小值（4 行）。
+        如果在选项行中把某个标签页放在它前面，该标签页仍会放在背包上方，但
+        优先级高于背包，因此背包可能无法扩展到最大尺寸（6 行）。小地图总是
+        放在属性区域与各标签页之间。也可以把记忆法术和技能标签页加入列表，
+        但默认不会加入。可用选项为：abilities, commands, inventory,
+        memorisation, minimap, monsters, navigation, skills, spells,
+        system commands
+
+tile_display_mode = (tiles | glyphs | hybrid)
+        控制地牢的绘制方式。可以使用普通图块（默认），也可以用 glyphs 使其
+        看起来像终端版。hybrid 会在字符视图上覆盖图标，并使用正方形的图块
+        宽高比。
+
+        此选项仅在本地贴图版和 WebTiles 中可用。
+
+tile_level_map_hide_messages = true
+tile_level_map_hide_sidebar = false
+        控制使用楼层地图时隐藏哪些画面元素。这些选项仅在 WebTiles 中可用。
+
+tile_player_tile = (normal | playermons | mons:<monster> | tile:<monster-tile>)
+        设为 playermons 时，使用玩家种族的怪物图块显示玩家，而不使用普通
+        纸娃娃。
+
+        如果设为 mons:<monster> 形式的值（其中 <monster> 是怪物名称），就用
+        <monster> 的基础图块作为玩家图块。例如，值 mons:ijyb 会使用艾吉布的
+        图块。怪物名称中的所有空格都应保留。例如，mons:the royal jelly 是
+        有效值。
+
+        如果设为 tile:<player-tile> 形式的值（其中 <player-tile> 是玩家图块表
+        中图块的名称），就用该图块作为玩家图块。此形式最适合用来指定具有
+        多个图块之怪物的特定变体图块，例如多头蛇和巨型畸形体；也适合使用
+        西格图维的怪物等特殊图块，或没有对应基础怪物的玩家变形图块。图块名称
+        必须是完整名称，例如 mons_slymdra_7。要使用有许多颗头的多头蛇图块，
+        可以设为 tile:mons_slymdra_7。图块名称位于源码树的 source/rltiles
+        文件夹中，记录在 dc-mon.txt、dc-demon.txt 和 dc-player.txt 文件内。
+        在这些文件中，每条记录的图块名称是图像文件名之后的第二个词；匹配时
+        忽略大小写。怪物图块名称通常采用 mons_<monster-name> 形式，但变形等
+        其他图块的命名方式不同，例如树木变形图块名为 tran_tree。
+
+tile_weapon_offsets = (<x>,<y> | reset)
+tile_shield_offsets = (<x>,<y> | reset)
+        通过 tile_player_tile 使用自定义图块时，这些选项设置在图块中绘制武器
+        或盾牌之位置的 x（水平）与 y（垂直）像素偏移。x 和 y 偏移必须是
+        -32 到 32（含两端）之间的整数。负 x 值会向左调整，负 y 值会向上调整。
+        武器在 0,0 时绘制于图块左侧，盾牌在 0,0 时绘制于图块右侧。因此，
+        例如把武器 x 偏移设为 10 到 20（取决于图块），同时把盾牌 x 偏移设为
+        -10 到 -20，就可以交换武器和盾牌的位置。
+
+        使用值 "reset" 会清除之前定义的所有偏移；这对于通过 lua 在游戏中
+        更改图块很有用。
+
+tile_grinch = false
+        设置后，禁用自定义节日图块（例如圣诞帽）。
+
+tile_web_mouse_control = true
+        是否为 WebTiles 的工具提示／光标互动启用鼠标控制。无论此设置为何值，
+        小地图都会响应鼠标控制。
+
+tile_web_mobile_input_helper = auto
+        此选项控制 WebTiles 界面中一个可选的辅助输入栏；聚焦该输入栏可在
+        移动设备上启用虚拟键盘。设为 true 或 false 时，手动启用或禁用该
+        输入栏。设为 auto 时，只在带有触摸屏的设备上显示。
+
+4-  角色记录。
+=============
+
+4-a     保存。
+-------------
+
+dump_on_save = true
+        设为 true 时，保存游戏会自动创建或更新角色记录。
+
+4-b     物品与击杀。
+-----------------
+
+角色记录或死亡记录文件的末尾，会列出角色活动期间死亡的所有怪物。默认情况
+下，死亡的怪物分成三组：
+   击败的生物    -- 角色杀死的怪物
+   连带击杀      -- 友方怪物造成的击杀
+   其他          -- 所有其他死者（例如陷阱、敌对怪物造成的击杀）
+
+kill_map = friend:you, other:you
+        会把友方击杀与其他击杀合并到主要的击败生物列表中。请注意，合并只
+        影响显示（游戏内部仍分别维护三个列表）；合并后的记录中，击杀地点
+        （见下文）的顺序可能有误。默认值为空列表。
+
+dump_kill_places = (none | all | single)
+        此选项控制击败生物列表中每次击杀地点的显示方式。使用 'none' 可完全
+        隐藏地点；使用 'all' 可显示所有已知击杀地点（最多 5 个）；使用
+        'single' 则采用默认方式，只为单次击杀显示击杀地点。
+
+dump_item_origins = artefacts
+        游戏会记住你在哪里找到物品。如果希望角色记录列出物品来源记忆，可用
+        此选项选择要标注哪些物品。可用的选择器为：
+                artefacts, ego_arm, ego_weap, jewellery, runes,
+                staves, books, all, none。
+        如果使用多行 dump_item_origins，只有最后一行生效；之前各行全部忽略。
+
+        如果不希望标注任何物品，请把 dump_item_origins 设为 none，并把
+        dump_item_origin_price 设为 -1。
+
+dump_item_origin_price = -1
+        物品价格大于或等于此数值时，会在记录中写入物品来源。设为 -1 可禁止
+        按价格选择。
+
+dump_message_count = 20
+        角色记录文件中显示的最后几条消息的数量。
+
+dump_order  = header,hiscore,stats,misc,apostles,inventory,skills,spells,
+dump_order += overview,mutations,messages,screenshot,monlist,kills,
+dump_order += notes,screenshots,vaults,skill_gains,action_counts
+        （有序列表选项）
+        控制记录中各节的顺序。
+
+        "turns_by_place" 和 "kills_by_place" 是两个可选的记录节，分别加入关于
+        回合耗费地点与怪物击杀地点的详细统计。可按如下方式将它们加入记录：
+             dump_order += turns_by_place, kills_by_place
+
+        Crawl 的主干构建（不包括发行版或预发布测试版）默认启用
+        "turns_by_place" 一节，并把它放在记录末尾。
+
+        为了让角色记录更美观，可以加入：
+            dump_order += -
+        在各节之间放置分隔线。
+
+        还可以编写 Lua 函数，并把函数名加入列表，以添加自己的记录节。之后会
+        把函数的返回值写入记录。它可以像普通 Lua 函数一样引用全局变量，但
+        函数名必须为小写，并且调用时不会提供任何参数。
+
+        示例：
+          {
+            myRace = you.race()
+            function mydumpfn()
+              return
+                "This will be printed to dump. Your species is " .. myRace
+            end
+          }
+          dump_order += mydumpfn
+
+
+4-c     笔记。
+-------------
+
+Crawl 可以在游戏期间自动记录特定事件。可以在角色记录或死亡记录文件中阅读
+这些内容。以下选项用于调整此行为。
+会记录以下事件：
+        - 获得或失去一个等级
+        - 初次进入某一地牢楼层
+        - 记忆比此前学过的所有法术等级都高的法术
+        - 开始信奉一位神祇
+        - 背弃一位神祇
+        - 受到惩戒及获得宽恕
+        - 收到神祇的赠礼（佐姆除外）
+        - 有名字的兽人盟友死亡（信奉比欧弗时）
+        - 首次能够祈求一项神力
+        - 首次拾取符文、佐特宝珠或神器
+        - 鉴定物品
+        - 杀死超出当前深度（OOD）的怪物或独有怪物（见下文）
+        - 生命值降至危险程度（见下文）
+        - 获得或失去变异
+        - 某项技能达到重要等级（见下文）
+        - 死亡
+可以使用命令 ':' 手动添加笔记。
+
+user_note_prefix = <string>
+        在手动添加的笔记前加上给定字符串，使其更容易找到。目前不能在此选项
+        或任何选项的末尾加入普通空格，但可以改用 Unicode 不换行空格字符
+        ' '。
+
+note_items += <regex>, <regex>, ...
+        （列表选项）
+        首次鉴定物品时，如果物品的短说明与某个正则表达式匹配，就会记入
+        笔记。例如：
+             note_items += book,acquirement
+        鉴定神器（固定、unrand 或随机神器）时，无论 note_items 如何设置，
+        都一定会记入笔记。
+
+        用来匹配的说明带有与 menu_colour 选项中所述相同的前缀（例如
+        "emergency_item"）。
+
+note_monsters += <regex>, <regex>, ...
+        （列表选项）
+        名称与此逗号分隔列表中某项匹配的怪物会视为值得关注。可以设置多行
+        note_monsters。例如：
+             note_monsters += Klown,orb of fire
+
+note_hp_percent = 5
+        如果生命值低于最大生命值的某个 note_hp_percentage 百分比，就会记下
+        笔记。程序会避免因同一事件而重复记录笔记。
+
+note_skill_levels = 1,5,10,15,27
+        设置哪些技能等级值得记录。此选项只占一行，但可以用 += 续加。
+
+note_all_skill_levels = false
+        这是 note_skill_levels = 1,2,..,27 的简写。设为 true 时，所有技能
+        等级都值得记录。
+
+note_skill_max = true
+        设置此选项后，每当技能等级达到新的最高值就会记下笔记。如果
+        note_skill_max 为 true，且 note_skill_levels 非空，满足其中任一条件
+        时都会记下笔记。
+
+note_xom_effects = true
+        每当佐姆有所行动时记下一条笔记。
+
+note_messages += <regex>, <regex>, ...
+        （列表选项）
+        与此逗号分隔列表中某项匹配的消息会视为值得关注。可以设置多行
+        note_messages。例如：
+             note_messages += Something interferes
+             note_messages += protects you from harm
+        如果希望记录所有被放逐到深渊的事件，请使用：
+             note_messages += [bB]anish.*Abyss
+        如果希望在龙人的鳞片变为 <colour> 时记下笔记，请使用：
+             note_messages += Your scales start
+
+note_chat_messages = false
+        设为 false 时，禁用其他玩家所发 WebTiles 聊天消息的记录。（此设置
+        仅适用于在线服务器。）
+
+note_dgl_messages = true
+        设为 false 时，禁用其他玩家所发 DGL 消息的记录。（此设置仅适用于
+        在线服务器。）
+
+
+5-  杂项。
+=========
+
+5-a     所有操作系统。
+-------------------
+
+mouse_input = false
+        启用后，mouse_input 选项允许游戏在特定平台（Windows 和 Unix）上使用
+        鼠标输入事件。请注意，各平台的鼠标支持程度差异很大，而且深受终端
+        设置影响。
+
+        在 Unix 系统上，鼠标很可能只有在 xterm 中配合 ncurses 才能使用
+        （具体而言，$TERM 很可能需要包含 "xterm"，ncurses 才会启用鼠标事件；
+        如果在 xterm 中通过 GNU screen 运行 Crawl，鼠标很可能无法使用）。
+
+        在 Windows 上，需要禁用终端的 QuickEdit Mode（快速编辑模式），Crawl
+        才能使用鼠标。QuickEdit 默认禁用，因此使用原装终端时应该无需更改。
+        要禁用 QuickEdit，可右键单击命令提示符的标题栏，选择 Properties
+        （属性），然后在 Options（选项）标签页中禁用 QuickEdit。
+
+wiz_mode = (no | never | yes)
+        巫师模式选项（仅在 WIZARD 构建中可用）：
+          yes   -- 开局即进入巫师模式（游戏不会计分）
+          no    -- 仍允许玩家在游戏开始后进入巫师模式
+          never -- 绝不允许使用巫师命令
+
+explore_mode = (no | never | yes)
+        探索模式选项（仅在 WIZARD 构建中可用）：
+          yes   -- 开局即进入探索模式（游戏不会计分）
+          no    -- 仍允许玩家在游戏开始后进入探索模式
+          never -- 绝不允许进入探索模式
+
+char_set = (default | ascii)
+        为游戏画面选择不同的预设字符集。与旧版 Crawl 不同，此选项不再选择
+        输入／输出编码。
+
+        还可以包含 ibm_glyphs.txt、dec_glyphs.txt 或 old_unicode_glyphs.txt，
+        恢复一些不再内置的旧字符集。
+
+        此选项在贴图版构建中几乎没有影响。
+
+colour.OLDCOLOUR = NEWCOLOUR
+        如果终端中的某些颜色难以辨认（且无法调整），此选项会很有用；也可用
+        于创建自定义配色方案，尤其是在非黑色背景的终端上与 background 选项
+        配合使用时。
+        格式为 colour.OLDCOLOUR = NEWCOLOUR；后面的规则优先，并且 NEWCOLOUR
+        始终按字面解释（即不会再次求值为另一种颜色）。
+        可用颜色为：
+                black, blue, green, cyan, red, magenta, brown, lightgrey,
+                darkgrey, lightblue, lightgreen, lightcyan, lightred,
+                lightmagenta, yellow, white
+        其中 lightgray = lightgrey，darkgray = darkgrey。示例：
+          colour.lightgrey = black
+          colour.lightcyan = cyan
+          colour.yellow    = brown
+
+display_char = <dungeon_character_name : symbol>
+        也可以使用由多个此类值组成的列表。
+
+        dungeon_character_name 可以使用以下项目：wall, permawall,
+           wall_magic, floor, floor_magic, door_open, door_closed, trap,
+           stairs_down, stairs_up, grate, altar, arch, fountain, wavy, statue,
+           invis_exposed, item_detected, item_orb, item_rune, item_weapon,
+           item_armour, item_wand, item_scroll, item_ring, item_potion,
+           item_missile, item_book, item_staff, item_rod, item_miscellany,
+           item_corpse, item_skeleton, item_gold, item_gem, item_amulet, cloud,
+           cloud_weak, cloud_fading, cloud_terminal, tree, transporter,
+           transporter_landing, space, fired_bolt, fired_zap, fired_burst,
+           fired_debug, fired_missile, fired_missile, explosion, frame_horiz,
+           frame_vert, frame_top_left, frame_top_right, frame_bottom_left,
+           frame_bottom_right, draw_horiz, draw_vert, draw_slash,
+           draw_backslash, draw_top_left, draw_top_right, draw_bottom_left,
+           draw_bottom_right, draw_down, draw_up, draw_right, draw_left
+
+        其中大多数项目不言自明。"arch" 用于商店和传送门；"floor_magic" 和
+        "wall_magic" 用于在楼层地图上显示魔法测绘到的方格；"invis_exposed"
+        是浅水中潜水生物或涉过浅水之隐形生物的字符；"wavy" 表示水和岩浆。
+        "cloud"、"cloud_weak"、"cloud_fading" 和 "cloud_terminal" 按剩余
+        时长区分云，从距离消散最久到最接近消散依次列出；视觉上不显示剩余
+        时长的云类型始终使用 "cloud" 字符。
+
+        符号可以用字符指定，也可以用其 ASCII/Unicode 代码指定：十进制数字，
+        或以 x 开头的十六进制数字。
+
+feature += <regex> { <symbol>, <magicmap symbol>, <view colour>,
+                    <levelmap_magic_colour>, <levelmap_seen_colour>,
+                    <emphasised_colour>, <levelmap_emphasised_colour> } ;
+           <regex> { ... }
+feature -= <regex> , <regex>
+        （类列表选项）
+        其中 <regex> 是描述地牢特征的正则表达式。此正则表达式应当匹配使用
+        'x' 命令时显示的说明。如果正则表达式匹配多个说明，所有相应特征都会
+        受到影响。要查看当前 Crawl 版本中所有可能的特征，可在特征查询菜单
+        （`?/f`）中搜索 `.*`。
+
+        {...} 中的列表指定地牢特征的外观，其含义应当不言自明。<symbol> 可以
+        覆盖上面的 display_char 选项，也可用于区分同一字符的不同子类型。
+
+        'magic' 指魔法测绘。因此，<magicmap symbol> 项决定通过魔法测绘探测到
+        的特征使用什么符号。目的地未知的石质楼梯和尚未到访的传送装置也会
+        使用 <magicmap symbol>。
+
+        'emphasised_colour' 指突出显示目的地未知之石质楼梯和传送装置所用的
+        颜色；对于非楼梯特征，设置强调颜色没有实际作用。
+
+        {...} 列表开头的参数可以留空，并以占位逗号省略。末尾参数则可直接
+        省略，无需占位逗号。
+
+        可以使用多行 feature 选项，也可在同一行中用分号连接多个特征说明。
+
+        可以只提供正则表达式（不提供外观），用 -= 清除特征覆盖。这会把说明
+        与正则表达式匹配的所有特征恢复为默认外观。
+
+        示例：
+         * 把岩壁设为红色：
+             feature += rock wall { , , red }
+         * 在所有字符集中用 # 表示金属墙：
+             feature += metal wall {#}
+         * 把上楼梯设为绿色、下楼梯设为红色：
+             feature += stone staircase leading up {,,,,green}
+             feature += stone staircase leading down {,,,,red}
+
+        符号可以像 display_char 一样指定：
+             feature += metal wall {#}
+             feature += metal wall {35}
+             feature += metal wall {x23}
+        以上三者效果相同。
+
+mon_glyph += <monster name or symbol> : (<colour> <glyph> | <monster name>) ,
+             <monster name or symbol> : <replacement>
+mon_glyph -= <monster name or symbol>
+        （列表选项）
+        mon_glyph 选项允许自定义显示怪物所用的字符和颜色。查看源码
+        （mon-data.h）是取得完整默认字符列表最可靠的方法，但也可在怪物查询
+        菜单（`?/m`）中查看字符信息和怪物列表。
+
+        可以根据怪物名称或怪物现有的字符来自定义字符。例如，如果希望精灵
+        使用 E，元素生物使用 e，可以这样设置：
+
+             mon_glyph += e : E
+             mon_glyph += E : e
+
+        可以指定不同的字符、颜色，或同时指定两者，顺序不限。更多示例：
+
+             mon_glyph += deep elf annihilator : E lightmagenta
+             mon_glyph += Xtahua : lightmagenta D
+             mon_glyph += ghoul : darkgrey
+             mon_glyph += cognitogaunt : x
+
+        （: 左侧区分大小写。）
+
+        还可以指定另一种怪物，复制该怪物的基础字符和颜色（这种复制不会传递）。
+        例如，如果觉得神圣战士的颜色正好弄反了：
+
+            mon_glyph += daeva : angel
+            mon_glyph += angel : daeva
+
+        可以按 "feature" 选项所示的语法，以代码点指定字符。也可以使用 Unicode
+        代码点：
+
+             mon_glyph += draconian scorcher : x6e9
+
+        单个 _ 会视为空格；如果需要真正的下划线，请像下面这样在前面加 \：
+
+             mon_glyph += player ghost : \_
+
+        还可以重新定义几种“伪”怪物，分别为：
+
+             player
+             sensed monster
+             {trivial,easy,tough,nasty,friendly} sensed monster
+
+        通常没有同名怪物的可玩种族也可以重新定义。此功能在使用 show_player_species = true 时生效。
+
+        可以用 -= 清除怪物字符覆盖，把指定名称的怪物（或使用指定字符的所有
+        怪物）恢复为默认外观。使用 -= 时只指定怪物名称或字符，不要指定要移除
+        的替代值。
+
+item_glyph ^= <regexp> : <colour> <glyph>
+item_glyph -= <regexp>
+        （有序列表选项）
+        自定义所有与 regexp 匹配之物品的字符和／或颜色。与 mon_glyph 不同，
+        这里采用名称部分匹配。
+
+        物品名称前会带有标签，包括储藏处追踪和菜单着色所用的标签。因此，
+        可以为 {artefact} 或 useless_item 着色。
+
+        多条规则可以修改同一件物品；如果希望分别改变颜色和字符，这会很有用：
+            item_glyph += dart : x2191
+            item_glyph += curare.*dart : red
+
+        规则按顺序应用，因此越靠后的规则优先级越高。
+
+        使用 -= 移除规则时，会移除使用所提供之完全相同 regexp 的所有规则；
+        此时不要指定颜色或字符。
+
+use_fake_player_cursor = true
+        让主视图不使用终端光标也能突出显示玩家。这样一来，绘制时关闭光标并
+        把它移到别处不会造成闪烁，而且可以默认关闭光标。此选项在贴图版构建
+        中无效。
+
+show_player_species = false
+        把角色显示为其种族成员。例如，如果你是丘陵兽人，就会显示为 'o' 而
+        不是 '@'。此选项在贴图版中无效。
+
+use_modifier_prefix_keys = true
+        设为 true 时，'*' 的行为类似 CTRL 按键，'/' 的行为类似 SHIFT。
+
+language = <two-letter language code>
+        使用给定语言显示部分文字。Dungeon Crawl 并非所有文字都在每种受支持
+        语言中有翻译，但志愿翻译者已经翻译了神祇和怪物说明等文字较多的内容。
+        没有已知译文的文字会以英语显示。某些语言可能需要更换字体。
+
+        部分支持的语言代码：
+        cs: 捷克语
+        da: 丹麦语
+        de: 德语
+        el: 希腊语
+        es: 西班牙语
+        fi: 芬兰语
+        fr: 法语
+        hu: 匈牙利语
+        it: 意大利语
+        ja: 日语
+        ko: 韩语
+        lt: 立陶宛语
+        lv: 拉脱维亚语
+        nl: 荷兰语
+        pl: 波兰语
+        pt: 葡萄牙语
+        ru: 俄语
+        sv: 瑞典语
+        zh: 中文
+
+fake_lang = <lang1>[,<lang2>[,...]]
+        设置一种或多种伪语言，按给出的顺序依次应用（顺序确实很重要！）。同一
+        种语言可以设置多次，不过最后的结果可能没有多大意义……一次最多可以
+        设置 3 种伪语言。
+
+        可用选项为：(dwarven|jagerkin|kraut|runes|wide|grunt|butt:<n>)
+        请自行试验，看看它们有什么效果！
+
+messaging = true
+        设为 true 时，可以接收其他玩家发送的 DGL 消息。（此设置仅适用于
+        在线服务器。）
+
+read_persist_options = false
+        设为 true 时，如果 lua 变量 c_persist.options 中含有字符串，游戏会
+        从中读取额外选项。除非在脚本中明确使用，否则此选项无效。此选项会
+        持久保存，因此技能菜单中设置的当前值会跨局保存并自动重新载入，除非
+        明确设置了该值。
+
+5-b     Windows。
+-----------------
+
+dos_use_background_intensity = false
+        在 Windows 上，如果使用的终端能够显示高强度背景色，把此选项设为
+        true 可以更好地突出显示友方。如果终端不适合此选项，部分友方怪物会
+        显示为闪烁字符（这种情况下建议把此选项设为 false，以免令人抓狂）。
+
+5-c     Unix。
+-------------
+allow_extended_colours = true
+        尝试用八种基本终端颜色之外的颜色显示 Crawl 的亮色。大多数现代终端
+        都应使用此设置。成功时，终端会进入 16 色模式。
+
+        如果启用此选项，且终端有足够多的可用颜色，就直接使用终端的扩展调色
+        板表示内部颜色。
+
+        对于有此能力的终端，必须设置合适的 TERM 环境变量，此选项才能按预期
+        工作。例如：
+          * XTerm、MacOS Terminal 或 iTerm：xterm-256color
+          * gnome-terminal：vte-256color
+          * PuTTY：putty-256color
+            （在 'Connection->Data->Terminal-type string' 中设置）
+
+        如果不满足这些条件，Crawl 会回退到 8 色模式，并用字符属性绘制亮色；
+        在黑色背景上绘制暗灰色时，使用暗蓝色作为“后备”颜色。在 8 色模式中，
+        以下某个选项可能更合适。
+
+bold_brightens_foreground = false
+        在 8 色模式中，假定粗体文字属性最终会使前景色变亮。如果设为 `force`
+        而非 `true`，即使在 16 色模式中，亮色也会显示为粗体。除此之外，通过
+        allow_extended_colours 运行于 16 色模式时会忽略此选项。
+
+        如果在 8 色模式中启用此项，但终端并不符合“粗体会改变颜色”的假定，
+        同一基础颜色的普通／明亮颜色组合会产生不可见的字符。例如，在地牢
+        显示中，如果视线外的方格显示为黑色，就不应把此选项设为 `true`。
+
+blink_brightens_background = false
+        在 8 色模式中，假定闪烁文字属性最终会使背景色变亮。
+
+        如果在不符合此假定的终端上启用，同一基础颜色的普通／明亮颜色组合会
+        产生不可见的字符。
+
+        通过 allow_extended_colours 运行于 16 色模式时会忽略此选项。
+
+best_effort_brighten_background = false
+        设为 true 时，即使不假定闪烁一定能成功，也尝试用闪烁使背景色变亮。
+
+        此选项只影响可以安全变亮的颜色。如果 blink_brightens_background 设为
+        true，实际上会忽略此选项。
+
+        通过 allow_extended_colours 运行于 16 色模式时会忽略此选项。
+
+best_effort_brighten_foreground = true
+        设为 true 时，即使不假定粗体一定能成功，也尝试用粗体使前景色变亮。
+
+        此选项只影响可以安全变亮的颜色。如果 bold_brightens_foreground 设为
+        true，实际上会忽略此选项。
+
+        通过 allow_extended_colours 运行于 16 色模式时会忽略此选项。
+
+background_colour = black
+        按名称设置默认背景色（默认为 BLACK）。如果所用终端的背景色不是黑色，
+        又希望保留 Crawl 的配色方案，此选项可能很有用。
+
+        在内部，black 会映射到传入的背景色，反之亦然。
+
+        此选项既要求终端库提供扩展支持，也要求终端本身支持。此外，除非存在
+        扩展颜色支持并通过 allow_extended_colours 明确启用，否则无法使用明亮
+        的默认颜色。如果完全不支持，或不支持所选颜色，此选项的实际值会是
+        black。
+
+        启用明亮默认颜色的更多信息见 allow_extended_colours 选项。请留意有
+        错误或会造成误导的 terminfo 文件。
+
+foreground_colour = lightgrey
+        按名称设置默认前景色（默认为 LIGHTGREY）。
+
+        在内部，lightgrey 会映射到传入的前景色，反之亦然。
+
+        此选项与 background_colour 选项有相同的限制。更多细节见后者的说明。
+
+use_terminal_default_colours = false
+        使用终端的默认前景色和背景色。可用此选项启用透明背景。
+
+use_fake_cursor = true
+        设为 true 时，Crawl 会在楼层地图和瞄准画面中明确绘制光标，而不依赖
+        终端绘制。若终端无法在 darkgrey/black 方格上显示光标，请使用此选项。
+        在非 Unix 构建中，此选项的默认值为 false；把它设为 true 可能产生
+        无法预测的结果。
+
+
+6-  Lua。
+========
+
+lua_max_memory = 16
+        用户 Lua 脚本允许使用的最大内存，单位为 MB。
+
+6-a  包含 lua 文件。
+-------------------
+
+Lua 文件是可以赋予现有命令新含义，或创建新命令（供宏使用）的脚本。要使用
+Lua 文件，编译 Crawl 时必须加入用户 Lua 脚本支持。可以在游戏中按 ?V，检查
+Crawl 是否支持 Lua。Crawl 显示的功能列表中应包含 "Lua user scripts"。
+
+使用 lua_file 选项包含 Lua 文件（每行一个文件）：
+
+lua_file = <path/name.lua>
+
+在游戏中，把宏动作设为 "==="，后接函数名称，即可用宏调用 Lua 函数。
+
+首次调用巫师模式 Lua 解释器（&^T）时，它会载入通过 terp_file 选项指定的
+所有文件：
+
+terp_file = <path/name.lua>
+
+这些文件中的 Lua 可以访问 Crawl 的所有 Lua 内部功能（即在 dlua 而非 clua
+环境中运行）。
+
+6-b     执行内联 lua。
+---------------------
+
+可以直接在 init.txt/.crawlrc 中使用 Lua 代码。使用以下语法执行 Lua 代码。
+
+: Single line of lua code
+
+< Possibly multi-line
+  Lua code >
+
+{ Possibly multi-line
+  Lua code }
+
+在第二和第三种情况下，限制是分隔字符必须分别出现在一行的开头和末尾。<> 与
+{} 的区别在于代码执行的时机。{} 中的代码会立即执行，其他 Lua 代码则要等到
+整个 init 文件读取完毕后才执行。
+
+示例：
+
+# Print a welcome message
+: crawl.mpr("Hello " .. you.name())
+
+<
+-- Another welcome message (lua code uses lua comments)
+crawl.mpr("Hi there")
+>
+
+{
+function ch_autopickup(it) [ ... body omitted ... ] end
+}
+
+6-c     条件选项。
+-----------------
+
+可以使用同样的语法，通过 Lua 有选择地包含 init.txt 的部分内容（例如根据
+角色类型选择）。
+
+示例：
+
+: if you.race() == "Mummy" then
+autopickup = $?+"/
+: else
+autopickup = $?+"/!
+: end
+
+Lua 可以通过 "options.option_name" 引用选项。例如：
+
+:if string.find(options.autopickup, "!") then
+# Do something here if potions are included in autopickup
+:end
+
+"options.option_name" 甚至可以用于 Crawl 本身无法识别的选项。可以将此功能
+与在命令行中设置选项相结合（见 0-b 节），通过命令行控制选项文件中各选项的
+条件化处理。例如，可以在命令行中用 "-extra-opt-first foobar=true" 设置选项
+"foobar"，然后这样写：
+
+:if options.foobar then
+# Do things here
+:end
+
+6-d     条件选项注意事项。
+-------------------------
+
+请注意，“开始画面”（第 1 节）下列出的选项都不能有条件地设置。这是因为选项
+文件实际上会读取两次：第一次在创建角色前读取，此时 Lua 关闭；第二次在创建
+角色后读取，此时 Lua 开启。如果尝试有条件地设置开始画面选项，无论设置了
+什么条件，都会采用选项文件中位置最靠后的值。
+
+以上注意事项同样适用于 "wiz_mode" 选项。可以不使用条件化的 wiz_mode，而在
+命令行中加入 "-extra-opt-last wiz_mode=yes"，使每局新游戏都以巫师模式开始。
+
+7-  为盲人玩家推荐的选项。
+=========================
+
+为便于在终端版中配合屏幕阅读器使用 Crawl，建议采用以下设置。
+
+禁用动画和视图延迟，使画面在每条命令后立即更新：
+    view_delay = 0
+    travel_delay = -1
+    rest_delay = -1
+    use_animations = 0
+
+把消息放在画面顶部，并禁用消息压缩，使屏幕阅读更容易：
+    messages_at_top = true
+    clear_messages = true
+    msg_condense_short = false
+
+为玩家设置自定义符号，使屏幕阅读器更容易追踪玩家光标：
+    use_fake_player_cursor = false
+    show_player_species = false
+    mon_glyph += player:x263A
+
+使用鼠标点击进行自动移动（终端的具体配置见 mouse_input 选项的说明）：
+    mouse_input = true
+
+即使有怪物在场，也允许自动移动／移动前进一步：
+    travel_one_unsafe_move = true
+
+在 ^x 显示中列出相对于玩家的坐标：
+    monster_item_view_coordinates = true
+
+^x 显示可以列出一组由正则表达式控制的自定义特征。例如，要在 ^x 中包含
+所有水域，请设置：
+    monster_item_view_features += water
+
+用特殊字符标记自动移动经过的路径和探索边界：
+    show_travel_trail = true
+    feature += travel trail {x25AA}
+    feature += explore horizon {x25AB}
+
+为尚未到访的楼梯和传送装置设置单独的字符：
+    feature += stone staircase leading up {<,x25C2}
+    feature += stone staircase leading down {>,x25B8}
+    feature += transporter {xA9, x25CE}
+
+探索时走到堆有物品的方格上，以显示所有新遇见的物品：
+    explore_greedy_visit += stacks
