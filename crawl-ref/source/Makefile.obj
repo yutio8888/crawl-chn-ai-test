@@ -324,6 +324,7 @@ catch2-tests/test_files.o \
 catch2-tests/test_fork_message_overlay.o \
 catch2-tests/test_items.o \
 catch2-tests/test_initfile_utf8.o \
+catch2-tests/test_layout_policy.o \
 catch2-tests/test_mon_cast_candidate_dump.o \
 catch2-tests/test_mon_cast_message_keys.o \
 catch2-tests/test_mon_cast_target.o \

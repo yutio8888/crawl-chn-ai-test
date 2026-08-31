@@ -112,13 +112,12 @@ bool AndroidPortraitLayoutPolicy::is_portrait() const
 
 bool AndroidPortraitLayoutPolicy::uses_compact_hud() const
 {
-    // Portrait: always compact HUD (short HP/MP lines).
-    // Landscape: fall back to width-threshold (same as desktop).
-    if (is_portrait())
-        return true;
-    if (m_stat_cw > 0 && m_msg_cw > 0)
-        return m_window_width < m_stat_cw * 45 + m_msg_cw * 55;
-    return false;
+    if (m_override != maybe_bool::maybe)
+        return bool(m_override);
+    // Android uses the touch-first top HUD in both orientations. Falling back
+    // to desktop formatting on a wide landscape surface also selects the
+    // legacy sidebar layout, leaving no usable dungeon viewport.
+    return true;
 }
 
 bool AndroidPortraitLayoutPolicy::uses_overlay_sidebar() const
@@ -150,12 +149,10 @@ bool AndroidPortraitLayoutPolicy::uses_top_hud() const
 {
     if (m_override != maybe_bool::maybe)
         return bool(m_override);
-    // On Android the stat region always works best as a top bar.
-    // Use a generous heuristic: if width < 1280 (all phones) or
-    // the aspect ratio is portrait-like, activate the top bar.
-    return m_window_width <= 0 || m_window_height <= 0
-        || m_window_width < 1280
-        || m_window_height >= m_window_width;
+    // Android's touch layout has no usable legacy sidebar: in landscape that
+    // path can consume the dungeon viewport without drawing the map. Keep the
+    // compact HUD above the dungeon in both orientations.
+    return true;
 }
 
 // -------------------------------------------------------------------

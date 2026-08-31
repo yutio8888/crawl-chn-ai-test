@@ -216,7 +216,14 @@ void DungeonRegion::render()
         m_dirty = false;
     }
     set_transform();
-    glmanager->set_scissor(0, 0, tile_iw, tile_ih);
+    // The dungeon region can be larger than its visible area so partial edge
+    // tiles remain centred. Its origin is therefore offset by half of that
+    // overflow, and top-HUD layouts also place it below the status bar.
+    // Clip to the resulting screen-space viewport rather than the historical
+    // assumption that every dungeon starts at the top-left corner.
+    const int clip_x = sx + (wx - tile_iw) / 2;
+    const int clip_y = sy + (wy - tile_ih) / 2;
+    glmanager->set_scissor(clip_x, clip_y, tile_iw, tile_ih);
     if (Options.tile_display_mode == "tiles")
         m_buf_dngn.draw_tiles();
     else

@@ -892,6 +892,16 @@ void TilesFramework::do_layout()
     bool use_small_layout = is_using_small_layout();
     bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
     bool use_top_bar = use_small_layout && top_bar_policy;
+    const auto top_bar_message_height = [this]()
+    {
+        const int preferred =
+            m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        const int one_row = m_region_msg->grid_height_to_pixels(1);
+        // A landscape phone with the touch keyboard visible has a very short
+        // SDL surface. Keep the message overlay useful without letting its
+        // desktop-oriented minimum force the dungeon out of the viewport.
+        return min(preferred, max(one_row, m_windowsz.y / 8));
+    };
 
     // Extremely short windows (Android split-screen or a visible soft
     // keyboard) cannot fit the top HUD, messages, and even one pixel per
@@ -902,8 +912,7 @@ void TilesFramework::do_layout()
         const int min_top_bar_h = top_bar_top_padding
                                   + m_region_stat->dy
                                     * min_top_bar_text_rows;
-        const int msg_min_h =
-            m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        const int msg_min_h = top_bar_message_height();
         const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h;
         if (m_region_tile->dx <= 0 || m_region_tile->dy <= 0
             || min_tile_h < ENV_SHOW_DIAMETER)
@@ -916,7 +925,7 @@ void TilesFramework::do_layout()
     {
         // Portrait top bar: stat region at top as compact horizontal bar,
         // dungeon view below (full width), messages overlay at bottom.
-        const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        const int msg_min_h = top_bar_message_height();
         int top_bar_text_rows = min_top_bar_text_rows;
         const int expanded_top_bar_h = top_bar_top_padding
                                        + m_region_stat->dy
@@ -947,13 +956,22 @@ void TilesFramework::do_layout()
                                      top_bar_h - top_bar_top_padding);
         m_region_stat->place(0, top_bar_top_padding, 0);
 
-        // Tile (dungeon) region below stat bar, full width
-        const int tile_iw = m_windowsz.x;
+        // Tile (dungeon) region below stat bar. In a very short landscape
+        // window the cells are scaled down to preserve the full LOS height.
+        // Letting that small cell size span the entire wide screen produces a
+        // viewport wider than the dungeon grid, so keep the useful viewport
+        // centred and leave the remaining width as margins.
+        const int max_visible_tile_cols =
+            min(Options.view_max_width, GXM - 2);
+        const int tile_iw = min(m_windowsz.x,
+                                max_visible_tile_cols * m_region_tile->dx);
         const int tile_ih = tile_avail_h;
         const int tile_ow = round_up_to_multiple(tile_iw, m_region_tile->dx*2) + m_region_tile->dx;
         const int tile_oh = round_up_to_multiple(tile_ih, m_region_tile->dy*2) + m_region_tile->dx;
         m_region_tile->resize_to_fit(tile_ow, tile_oh);
-        m_region_tile->place(-(tile_ow - tile_iw)/2, top_bar_h - (tile_oh - tile_ih)/2, 0);
+        m_region_tile->place((m_windowsz.x - tile_iw) / 2
+                             - (tile_ow - tile_iw) / 2,
+                             top_bar_h - (tile_oh - tile_ih) / 2, 0);
         m_region_tile->tile_iw = tile_iw;
         m_region_tile->tile_ih = tile_ih;
 
