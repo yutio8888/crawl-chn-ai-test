@@ -27,12 +27,10 @@ class LifetimeScannerTests(unittest.TestCase):
         expected = "branch-data.h: unmatched } at offset 12640"
         self.assertEqual(expected, MODULE._production_lexical_prerequisite(
             "branch-data.h", "unmatched } at offset 12640"))
-        expected_end = "end.cc: unmatched } at offset 12845"
-        self.assertEqual(expected_end, MODULE._production_lexical_prerequisite(
-            "end.cc", "unmatched } at offset 12845"))
         for path, error in (
                 ("branch-data.h", "unmatched } at offset 12641"),
                 ("end.cc", "unmatched } at offset 12112"),
+                ("end.cc", "unmatched } at offset 12845"),
                 ("new-file.cc", "unmatched } at offset 12640"),
                 ("xom.cc", "unmatched ) at offset 177033")):
             with self.subTest(path=path, error=error):
