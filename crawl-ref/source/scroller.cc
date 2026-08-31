@@ -25,14 +25,9 @@ void formatted_scroller::set_title(formatted_string title)
         m_title_text->set_text(m_title);
 #ifdef USE_TILE_WEB
     // Before show(), the initial layout push below carries the title. Once a
-    // scroller is active, page changes need an explicit protocol update.
+    // scroller is active, publish title and body as one durable slot snapshot.
     if (m_scroller)
-    {
-        tiles.json_open_object();
-        tiles.json_write_string("title",
-                                m_title.to_colour_string(LIGHTGRAY));
-        tiles.ui_state_change("formatted-scroller", 0);
-    }
+        m_contents_dirty = true;
 #endif
 }
 
@@ -142,6 +137,7 @@ int formatted_scroller::show()
             text->set_text(contents);
 #ifdef USE_TILE_WEB
             tiles.json_open_object();
+            tiles.json_write_string("title", m_title.to_colour_string(LIGHTGRAY));
             tiles.json_write_string("text", contents.to_colour_string(LIGHTGRAY));
             tiles.json_write_string("highlight", highlight);
             tiles.ui_state_change("formatted-scroller", 0);
