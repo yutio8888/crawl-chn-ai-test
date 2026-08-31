@@ -88,7 +88,7 @@ Crawl 选项指南
                 action_panel_font_size, show_resist_percent
 3-i     颜色（消息与菜单）。
                 menu_colour, message_colour
-3-j     快捷栏、发射与弹药。
+3-j     发射栏、发射与弹药。
                 fire_items_start, fire_order, fire_order_spell,
                 fire_order_ability, fail_severity_to_quiver,
                 quiver_menu_focus
@@ -1336,7 +1336,7 @@ hp_warning = 10
 
 mp_warning = 0
         玩家的法力低于最大法力的此百分比时，mp_warning 会在危险频道显示
-        "* * * 低魔力警告 * * *"（设为 0 可关闭这些消息）。
+        "* * * 低法力警告 * * *"（设为 0 可关闭这些消息）。
 
 hp_colour = 70:yellow, 40:red
         （列表选项）

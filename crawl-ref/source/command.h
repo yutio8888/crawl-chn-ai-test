@@ -34,6 +34,8 @@ void show_help(int section = CK_HOME, string highlight_string = "");
 // the English guide when no localized copy exists.
 string help_file_path(const string& filename);
 string help_header_suffix(int page);
+// Narrow verification seam over the production hotkey-to-rendered-page path.
+int help_section_for_test(int section, string& header, string& text);
 
 int show_keyhelp_menu(const vector<formatted_string> &lines);
 
