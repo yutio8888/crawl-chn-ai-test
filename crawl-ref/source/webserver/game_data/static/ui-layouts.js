@@ -805,6 +805,8 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             var ss = $popup.find(".body").eq(0).data("scroller");
             ss.recalculateImmediate();
         }
+        if (msg.title !== undefined)
+            $popup.children(".header").html(util.formatted_string_to_html(msg.title));
         if (msg.scroll !== undefined && (!msg.from_webtiles || client.is_watching()))
         {
             scroller_from_server = true;

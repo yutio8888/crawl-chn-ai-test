@@ -13,6 +13,29 @@ using namespace ui;
 static vector<formatted_scroller*> open_scrollers;
 static bool from_webtiles;
 
+void formatted_scroller::set_title()
+{
+    set_title(formatted_string());
+}
+
+void formatted_scroller::set_title(formatted_string title)
+{
+    m_title = std::move(title);
+    if (m_title_text)
+        m_title_text->set_text(m_title);
+#ifdef USE_TILE_WEB
+    // Before show(), the initial layout push below carries the title. Once a
+    // scroller is active, page changes need an explicit protocol update.
+    if (m_scroller)
+    {
+        tiles.json_open_object();
+        tiles.json_write_string("title",
+                                m_title.to_colour_string(LIGHTGRAY));
+        tiles.ui_state_change("formatted-scroller", 0);
+    }
+#endif
+}
+
 void formatted_scroller::add_formatted_string(const formatted_string& fs, bool new_line)
 {
     contents += fs;
@@ -66,15 +89,15 @@ int formatted_scroller::show()
 
     if (!m_title.empty())
     {
-        shared_ptr<Text> title = make_shared<Text>();
-        title->set_text(m_title);
-        title->set_margin_for_crt(0, 0, 1, 0);
-        title->set_margin_for_sdl(0, 0, 20, 0);
+        m_title_text = make_shared<Text>();
+        m_title_text->set_text(m_title);
+        m_title_text->set_margin_for_crt(0, 0, 1, 0);
+        m_title_text->set_margin_for_sdl(0, 0, 20, 0);
         auto title_hbox = make_shared<Box>(Widget::HORZ);
 #ifdef USE_TILE_LOCAL
         title_hbox->set_main_alignment(Widget::Align::CENTER);
 #endif
-        title_hbox->add_child(std::move(title));
+        title_hbox->add_child(m_title_text);
         vbox->add_child(std::move(title_hbox));
     }
 
@@ -168,6 +191,8 @@ int formatted_scroller::show()
 
     ui::run_layout(std::move(popup), done);
     open_scrollers.pop_back();
+    m_title_text.reset();
+    m_scroller.reset();
 
     return m_lastch;
 }
