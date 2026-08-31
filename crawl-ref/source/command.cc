@@ -453,17 +453,17 @@ struct help_file
 };
 
 static const help_file manual_help_file =
-    { "crawl_manual.txt", '*', true, N_("manual") };
+    { "crawl_manual.txt", '*', true, "Manual" };
 static const help_file aptitudes_help_file =
-    { "aptitudes.txt", '%', false, N_("Aptitudes") };
+    { "aptitudes.txt", '%', false, "Aptitudes" };
 static const help_file quickstart_help_file =
-    { "quickstart.txt", '^', false, N_("Quickstart") };
+    { "quickstart.txt", '^', false, "Quickstart" };
 static const help_file macros_help_file =
-    { "macros_guide.txt", '~', false, N_("Macros") };
+    { "macros_guide.txt", '~', false, "Macros" };
 static const help_file options_help_file =
-    { "options_guide.txt", '&', false, N_("Options") };
+    { "options_guide.txt", '&', false, "Options" };
 static const help_file tiles_help_file =
-    { "tiles_help.txt", 't', false, N_("Tiles") };
+    { "tiles_help.txt", 't', false, "Tiles" };
 
 // This is the production hotkey table. Keep platform-only guides out of
 // non-local-tiles builds, even though the shared loader is tested below.
@@ -536,13 +536,13 @@ static string _localized_help_file_title(const help_file& file)
 static string _help_file_title(const help_file& file)
 {
     const string localized = _localized_help_file_title(file);
-    return localized.empty() ? string(T_(file.title)) : localized;
+    return localized.empty() ? string(file.title) : localized;
 }
 
 string help_header_suffix(int page)
 {
     if (page == '?')
-        return ": " + string(T_(N_("Key help")));
+        return ": Key help";
     if (page == tiles_help_file.hotkey)
         return ": " + _help_file_title(tiles_help_file);
     for (int i = 0; help_files[i] != nullptr; ++i)
@@ -918,24 +918,24 @@ static void _add_formatted_help_menu(column_composer &cols)
             T_("<w>:</w>: Browse character notes\n"
                "<w>#</w>: Browse character dump"), false);
     }
+    // NOTE: #ifdef inside T_() creates build-config-dependent keys.
+    // Restructure before adding source.txt entries.
     cols.add_formatted(0,
         T_("<w>~</w>: Macros help\n"
            "<w>&</w>: Options help\n"
            "<w>%</w>: Table of aptitudes\n"
            "<w>/</w>: Lookup description\n"
-           "<w>Q</w>: FAQ\n"), false);
+           "<w>Q</w>: FAQ\n"
 #ifdef USE_TILE_LOCAL
-    cols.add_formatted(0, T_("<w>T</w>: Tiles key help\n"), false);
+           "<w>T</w>: Tiles key help\n"
 #endif
-    cols.add_formatted(0,
-        T_("<w>V</w>: Version information\n"
+           "<w>V</w>: Version information\n"
            "<w>!</w>: Display diagnostics\n"
-           "<w>Home</w>: This screen\n"), false);
+           "<w>Home</w>: This screen\n"
 #ifdef __ANDROID__
-    // XX is this the best place for this? It should at least be duplicated
-    // in `??`.
-    cols.add_formatted(0,
-        T_("\n"
+           // XX is this the bet place for this? It should at least be duplicated
+           // in `??`.
+           "\n"
            "<h>Android Controls\n"
            "\n"
            "<w>Back key</w>: Alias for escape\n"
@@ -943,8 +943,10 @@ static void _add_formatted_help_menu(column_composer &cols)
            "Long press for right click.\n"
            "Touch with two fingers for scrolling.\n"
            "Toggle keyboard icon controls the\n"
-           "virtual keyboard visibility.\n"), false);
+           "virtual keyboard visibility.\n"
 #endif
+        ),
+        false);
 
     // TODO: generate this from the manual somehow
     cols.add_formatted(
