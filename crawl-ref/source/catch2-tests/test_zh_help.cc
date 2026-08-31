@@ -177,18 +177,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     struct guide_expectation
     {
         int hotkey;
-        const char* header;
         const char* marker;
         const char* english_marker;
     };
     const vector<guide_expectation> popup_guides = {
-        {'*', "手册", "Dungeon Crawl Stone Soup 手册",
+        {'*', "Dungeon Crawl Stone Soup 手册",
               "Dungeon Crawl Stone Soup manual"},
-        {'^', "快速入门", "Crawl 快速入门指南", "Crawl Quick-Start Guide"},
-        {'~', "宏", "宏与按键映射", "Macros and Keymaps"},
-        {'&', "选项", "Crawl 选项指南", "Guide to Crawl's options"},
+        {'^', "Crawl 快速入门指南", "Crawl Quick-Start Guide"},
+        {'~', "宏与按键映射", "Macros and Keymaps"},
+        {'&', "Crawl 选项指南", "Guide to Crawl's options"},
 #ifdef USE_TILE_LOCAL
-        {'t', "贴图版", "贴图版专用命令", "Tiles specific commands"},
+        {'t', "贴图版专用命令", "Tiles specific commands"},
 #endif
     };
     for (const auto& guide : popup_guides)
@@ -199,7 +198,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(help_popup_state_for_test(guide.hotkey, 0, header, text)
               == guide.hotkey);
         CHECK(header.find("地下城 Crawl 帮助") != string::npos);
-        CHECK(header.find(guide.header) != string::npos);
+        CHECK(header.find(guide.marker) != string::npos);
         CHECK(header.find("Dungeon Crawl Help") == string::npos);
         CHECK(text.find(guide.marker) != string::npos);
         CHECK(text.find(guide.english_marker) == string::npos);
@@ -218,7 +217,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(help_popup_state_for_test('*', guide.hotkey, header, text)
               == guide.hotkey);
         CHECK(header.find("地下城 Crawl 帮助") != string::npos);
-        CHECK(header.find(guide.header) != string::npos);
+        CHECK(header.find(guide.marker) != string::npos);
         CHECK(header.find("Dungeon Crawl Help") == string::npos);
         CHECK(text.find(guide.marker) != string::npos);
         CHECK(text.find(guide.english_marker) == string::npos);
@@ -239,7 +238,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     CHECK(platform_help_section_for_test('t', header, text) == 't');
     CHECK(header.find("地下城 Crawl 帮助") != string::npos);
-    CHECK(header.find("贴图版") != string::npos);
+    CHECK(header.find("贴图版专用命令") != string::npos);
     CHECK(header.find("Dungeon Crawl Help") == string::npos);
     CHECK(text.find("贴图版专用命令") != string::npos);
     CHECK(text.find("Tiles specific commands") == string::npos);
@@ -262,11 +261,13 @@ TEST_CASE("zh-help: standalone guides fall back to English",
     const string missing_language = help_file_path("options_guide.txt");
     CHECK(missing_language.find("zz-missing-guide-language") == string::npos);
     CHECK(missing_language.find("options_guide.txt") != string::npos);
+    CHECK(help_header_suffix('&') == ": Options");
 
     Options.lang_name = nullptr;
     const string english = help_file_path("quickstart.txt");
     CHECK(english.find("zh" + string(1, FILE_SEPARATOR)) == string::npos);
     CHECK(english.find("quickstart.txt") != string::npos);
+    CHECK(help_header_suffix('^') == ": Quickstart");
     Options.lang_name = saved;
 }
 

@@ -88,6 +88,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "decorlines-review-results.md",
             "god-review-results.md",
             "graffiti-review-results.md",
+            "guide-review-results.md",
             "help-review-results.md",
             "hint-review-results.md",
             "item-extended-review-results.md",

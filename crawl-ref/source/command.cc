@@ -480,16 +480,63 @@ static const help_file* help_files[] =
     nullptr
 };
 
+static string _localized_help_file_path(const string& filename)
+{
+    if (!Options.lang_name || !*Options.lang_name)
+        return "";
+
+    return datafile_path(
+        Options.lang_name + string(1, FILE_SEPARATOR) + filename, false);
+}
+
 string help_file_path(const string& filename)
 {
-    if (Options.lang_name && *Options.lang_name)
-    {
-        const string localized = datafile_path(
-            Options.lang_name + string(1, FILE_SEPARATOR) + filename, false);
-        if (!localized.empty())
-            return localized;
-    }
+    const string localized = _localized_help_file_path(filename);
+    if (!localized.empty())
+        return localized;
     return datafile_path(filename, false);
+}
+
+static bool _is_help_title_decoration(const string& line)
+{
+    return line.size() >= 3
+           && strchr("=-+#*", line[0])
+           && line.find_first_not_of(line[0]) == string::npos;
+}
+
+static string _localized_help_file_title(const help_file& file)
+{
+    const string fname = canonicalise_file_separator(file.name);
+    const string localized = _localized_help_file_path(fname);
+    if (localized.empty())
+        return "";
+
+    FILE* fp = fopen_u(localized.c_str(), "r");
+    if (!fp)
+        return "";
+
+    string previous;
+    char buf[200];
+    while (fgets(buf, sizeof buf, fp))
+    {
+        string current(buf);
+        trim_string(current);
+        if (_is_help_title_decoration(current) && !previous.empty()
+            && !_is_help_title_decoration(previous))
+        {
+            fclose(fp);
+            return previous;
+        }
+        previous = current;
+    }
+    fclose(fp);
+    return "";
+}
+
+static string _help_file_title(const help_file& file)
+{
+    const string localized = _localized_help_file_title(file);
+    return localized.empty() ? string(T_(file.title)) : localized;
 }
 
 string help_header_suffix(int page)
@@ -497,11 +544,11 @@ string help_header_suffix(int page)
     if (page == '?')
         return ": " + string(T_(N_("Key help")));
     if (page == tiles_help_file.hotkey)
-        return ": " + string(T_(tiles_help_file.title));
+        return ": " + _help_file_title(tiles_help_file);
     for (int i = 0; help_files[i] != nullptr; ++i)
     {
         if (page == help_files[i]->hotkey)
-            return ": " + string(T_(help_files[i]->title));
+            return ": " + _help_file_title(*help_files[i]);
     }
     return "";
 }
