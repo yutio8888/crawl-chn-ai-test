@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -113,7 +114,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
         // Keyboard size input
         ksizeEditText = findViewById(R.id.keyboardSize);
-        ksizeEditText.setText(Integer.toString(keyboardSizeDp));
+        ksizeEditText.setText(String.format(Locale.getDefault(), "%d", keyboardSizeDp));
         ksizeEditText.addTextChangedListener(this);
 
         // Full screen switch
@@ -214,7 +215,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         } catch (NumberFormatException e) {
             Log.e(TAG, "Invalid keyboard size: " + e.getMessage());
             keyboardSizePx = defaultKbSizeDp * density;
-            ksizeEditText.setText(Integer.toString(defaultKbSizeDp));
+            ksizeEditText.setText(String.format(Locale.getDefault(), "%d", defaultKbSizeDp));
         }
     }
 
