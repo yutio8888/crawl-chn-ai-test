@@ -828,10 +828,6 @@ static const int min_cjk_sidebar_cols = 14;
 /// Minimum/maximum text rows for the top stat bar in Android portrait mode.
 static const int min_top_bar_text_rows = 6;
 static const int max_top_bar_text_rows = 7;
-// Leave the first glyph row clear of the top edge. CJK fallback glyphs can
-// extend slightly above the primary font's ascender, which otherwise clips
-// their upper strokes when the Android top HUD starts at y = 0.
-static const int top_bar_top_padding = 2;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -892,6 +888,11 @@ void TilesFramework::do_layout()
     bool use_small_layout = is_using_small_layout();
     bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
     bool use_top_bar = use_small_layout && top_bar_policy;
+    // Leave the first glyph row clear of the top edge. CJK fallback glyphs can
+    // extend above the primary font's ascender, so a fixed two-pixel gap is
+    // insufficient at phone-scale font sizes. Scale the gap with the actual
+    // stat line height while retaining the previous minimum for tiny fonts.
+    const int top_bar_top_padding = max(2, m_region_stat->dy / 4);
     const auto top_bar_message_height = [this]()
     {
         const int preferred =
