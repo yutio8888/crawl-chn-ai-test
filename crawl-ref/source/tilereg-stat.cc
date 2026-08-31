@@ -203,6 +203,9 @@ void StatRegion::render()
         // black-out part of screen that stats are written on to
         //  - double up area to cover behind where tabs are drawn
         m_shape_buf.add(sx,sy,ex+(ex-sx),ey,VColour(0,0,0,255));
+        // DungeonRegion leaves its tile transform active. Draw this backing
+        // rectangle in screen coordinates so it cannot cover the map.
+        glmanager->reset_transform();
         m_shape_buf.draw();
     }
     TextRegion::render();
