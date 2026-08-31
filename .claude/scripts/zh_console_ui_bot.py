@@ -75,6 +75,34 @@ HELP_CASES = [
     ('text:item', 'i', 'dagger', '匕首'),
 ]
 
+GUIDE_CASES = (
+    ('help:guide:quickstart', b'^', ('Crawl 快速入门指南',),
+     ('Crawl Quick-Start Guide',)),
+    ('help:guide:manual', b'*', ('Dungeon Crawl Stone Soup 手册',),
+     ('Dungeon Crawl Stone Soup manual',)),
+    ('help:guide:macros', b'~', ('宏与按键映射',),
+     ('Macros and Keymaps',)),
+    ('help:guide:options', b'&', ('Crawl 选项指南',),
+     ("Guide to Crawl's options",)),
+)
+
+# Independent ordered contract for the rendered help shard. Tiles is omitted
+# because the console target has no USE_TILE_LOCAL `t` entry.
+HELP_EXPECTED_IDS = (
+    'help:probe:ok',
+    'help:guide:quickstart:ok', 'help:guide:manual:ok',
+    'help:guide:macros:ok', 'help:guide:options:ok',
+    'help:god:ok', 'help:branch:ok', 'help:cloud:ok', 'help:card:ok',
+    'help:skill:ok', 'help:passive:ok', 'help:status:ok',
+    'help:status:bat:ok', 'help:monster:ok', 'help:spell:ok',
+    'help:ability:ok', 'help:feature:ok', 'help:item:ok',
+    'help:mutation:ok', 'help:bane:ok', 'help:spell_school:ok',
+    'help:text:spell:ok', 'help:text:ability:ok',
+    'help:text:mutation:ok', 'help:text:feature:ok',
+    'help:text:bane:ok', 'help:text:monster:ok', 'help:text:item:ok',
+    'help:phase:done',
+)
+
 # Kept independent from the implementation below: every workflow marker must
 # be emitted exactly once and in this order. This is a separate contract from
 # the RC and panel manifests because the evidence comes from interactive
@@ -304,9 +332,19 @@ def run_help(bot: PtyBot) -> None:
     initial = bot.wait_for_screen(required)
     assert_screen('help:probe', initial, required)
     emit('help:probe')
+    emitted = ['help:probe:ok']
+    for case_id, hotkey, positive, negative in GUIDE_CASES:
+        help_screen = bot.send(b'?')
+        if '查询说明' not in help_screen:
+            raise BotFailure(f'{case_id}: main help did not render')
+        page = bot.send(hotkey)
+        assert_screen(case_id, page, positive, negative)
+        emit(case_id, required=list(positive))
+        emitted.append(case_id + ':ok')
+        exit_nested_help(bot)
     for name, shortcut, query, positive in HELP_CASES:
         help_screen = bot.send(b'?')
-        if 'Lookup description' not in help_screen:
+        if '查询说明' not in help_screen:
             raise BotFailure(f'help:{name}: main help did not render')
         lookup = bot.send(b'/')
         assert_screen(f'help:{name}:lookup', lookup, ('查询以下信息', '神祇'))
@@ -320,8 +358,13 @@ def run_help(bot: PtyBot) -> None:
         # No-search types display a list; searchable types display a prompt or
         # result. Both must have produced fresh non-map Chinese UI.
         emit(f'help:{name}', cjk=len(CJK_RE.findall(combined)))
+        emitted.append(f'help:{name}:ok')
         exit_nested_help(bot)
     emit('help:phase:done')
+    emitted.append('help:phase:done')
+    if tuple(emitted) != HELP_EXPECTED_IDS:
+        raise BotFailure(
+            f'help manifest mismatch: expected {HELP_EXPECTED_IDS}, got {emitted}')
 
 
 def drain_more(bot: PtyBot, text: str, max_pages: int = 6) -> str:

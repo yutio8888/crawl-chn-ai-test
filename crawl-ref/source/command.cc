@@ -45,6 +45,15 @@ using namespace ui;
  #include "rltiles/tiledef-gui.h"
 #endif
 
+#ifdef USE_SOUND
+#ifdef SOUND_BACKEND
+static const char* _sound_backend_name()
+{
+    return SOUND_BACKEND;
+}
+#endif
+#endif
+
 static const char *features[] =
 {
 #ifdef CLUA_BINDINGS
@@ -67,16 +76,20 @@ static const char *features[] =
     "Debug mode",
 #endif
 
-#if defined(REGEX_POSIX)
+#ifdef REGEX_POSIX
     "POSIX regexps",
-#elif defined(REGEX_PCRE)
+#else
+#ifdef REGEX_PCRE
     "PCRE regexps",
 #else
     "Glob patterns",
 #endif
+#endif
 
-#if defined(USE_SOUND) && defined(SOUND_BACKEND)
-    SOUND_BACKEND,
+#ifdef USE_SOUND
+#ifdef SOUND_BACKEND
+    _sound_backend_name(),
+#endif
 #endif
 
 #ifdef DGL_MILESTONES
@@ -451,6 +464,29 @@ static help_file help_files[] =
     { nullptr, 0, false }
 };
 
+string help_file_path(const string& filename)
+{
+    if (Options.lang_name && *Options.lang_name)
+    {
+        const string localized = datafile_path(
+            Options.lang_name + string(1, FILE_SEPARATOR) + filename, false);
+        if (!localized.empty())
+            return localized;
+    }
+    return datafile_path(filename, false);
+}
+
+string help_header_suffix(int page)
+{
+    static const map<int, const char*> headers = {
+        {'*', N_("manual")}, {'%', N_("Aptitudes")},
+        {'^', N_("Quickstart")}, {'~', N_("Macros")},
+        {'&', N_("Options")}, {'t', N_("Tiles")},
+        {'?', N_("Key help")}
+    };
+    return headers.count(page) ? ": " + string(T_(headers.at(page))) : "";
+}
+
 // Reads all questions from database/FAQ.txt, outputs them in the form of
 // a selectable menu and prints the corresponding answer for a chosen question.
 static void _handle_FAQ()
@@ -694,19 +730,17 @@ static void _display_diag()
 
     // on webtiles we suppress some info that will just be confusing / not
     // useful.
-    const bool webtiles_client
 #ifdef USE_TILE_WEB
-        = tiles.is_controlled_from_web();
+    const bool webtiles_client = tiles.is_controlled_from_web();
 #else
-        = false;
+    const bool webtiles_client = false;
 #endif
 
     // if true, mostly just display the palettes.
-    const bool suppress_unix_stuff =
 #if defined(USE_TILE_LOCAL) || defined(TARGET_OS_WINDOWS)
-        true;
+    const bool suppress_unix_stuff = true;
 #else
-        webtiles_client;
+    const bool suppress_unix_stuff = webtiles_client;
 #endif
 
     s += make_stringf(T_("Display type: <w>%s</w>\n"), info.type.c_str());
@@ -818,24 +852,24 @@ static void _add_formatted_help_menu(column_composer &cols)
             T_("<w>:</w>: Browse character notes\n"
                "<w>#</w>: Browse character dump"), false);
     }
-    // NOTE: #ifdef inside T_() creates build-config-dependent keys.
-    // Restructure before adding source.txt entries.
     cols.add_formatted(0,
         T_("<w>~</w>: Macros help\n"
            "<w>&</w>: Options help\n"
            "<w>%</w>: Table of aptitudes\n"
            "<w>/</w>: Lookup description\n"
-           "<w>Q</w>: FAQ\n"
+           "<w>Q</w>: FAQ\n"), false);
 #ifdef USE_TILE_LOCAL
-           "<w>T</w>: Tiles key help\n"
+    cols.add_formatted(0, T_("<w>T</w>: Tiles key help\n"), false);
 #endif
-           "<w>V</w>: Version information\n"
+    cols.add_formatted(0,
+        T_("<w>V</w>: Version information\n"
            "<w>!</w>: Display diagnostics\n"
-           "<w>Home</w>: This screen\n"
+           "<w>Home</w>: This screen\n"), false);
 #ifdef __ANDROID__
-           // XX is this the bet place for this? It should at least be duplicated
-           // in `??`.
-           "\n"
+    // XX is this the best place for this? It should at least be duplicated
+    // in `??`.
+    cols.add_formatted(0,
+        T_("\n"
            "<h>Android Controls\n"
            "\n"
            "<w>Back key</w>: Alias for escape\n"
@@ -843,10 +877,8 @@ static void _add_formatted_help_menu(column_composer &cols)
            "Long press for right click.\n"
            "Touch with two fingers for scrolling.\n"
            "Toggle keyboard icon controls the\n"
-           "virtual keyboard visibility.\n"
+           "virtual keyboard visibility.\n"), false);
 #endif
-        ),
-        false);
 
     // TODO: generate this from the manual somehow
     cols.add_formatted(
@@ -1023,8 +1055,13 @@ static void _add_formatted_keyhelp(column_composer &cols)
                            false);
     }
     else
-#endif
+    {
+        _add_command(cols, 0, CMD_READ_MESSAGES,
+                     "read messages (online play only)", 2);
+    }
+#else
     _add_command(cols, 0, CMD_READ_MESSAGES, "read messages (online play only)", 2);
+#endif
 #endif
 
     cols.add_formatted(
@@ -1334,12 +1371,6 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
 {
     static map<int, int> hotkeys;
     static map<int, formatted_string> page_text;
-    static map<int, string> headers = {
-        {'*', "Manual"}, {'%', "Aptitudes"}, {'^', "Quickstart"},
-        {'~', "Macros"}, {'&', "Options"}, {'t', "Tiles"},
-        {'?', "Key help"}
-    };
-
     if (!page_text.size())
     {
         for (int i = 0; help_files[i].name != nullptr; ++i)
@@ -1348,7 +1379,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
             bool next_is_hotkey = false;
             char buf[200];
             string fname = canonicalise_file_separator(help_files[i].name);
-            FILE* fp = fopen_u(datafile_path(fname, false).c_str(), "r");
+            FILE* fp = fopen_u(help_file_path(fname).c_str(), "r");
             ASSERTM(fp, "Failed to open '%s'!", fname.c_str());
             while (fgets(buf, sizeof buf, fp))
             {
@@ -1371,7 +1402,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     // All hotkeys are currently on *-page
     const int page = hotkeys.count(section) ? '*' : section;
 
-    string header = headers.count(page) ? ": "+headers[page] : "";
+    const string header = help_header_suffix(page);
     header_out = formatted_string::parse_string(
                     make_stringf(T_("<yellow>Dungeon Crawl Help%s</yellow>"), header.c_str()));
     scroll_out = 0;

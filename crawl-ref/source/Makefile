@@ -1334,7 +1334,7 @@ RLTILES_CFLAGS := $(ALL_CFLAGS) -Wno-tautological-compare
 
 DOC_BASE        := ../docs
 DOC_TEMPLATES   := $(DOC_BASE)/template
-GENERATED_DOCS  := $(DOC_BASE)/aptitudes.txt $(DOC_BASE)/aptitudes-wide.txt $(DOC_BASE)/FAQ.html $(DOC_BASE)/crawl_manual.txt $(DOC_BASE)/quickstart.txt
+GENERATED_DOCS  := $(DOC_BASE)/aptitudes.txt $(DOC_BASE)/aptitudes-wide.txt $(DOC_BASE)/FAQ.html $(DOC_BASE)/crawl_manual.txt $(DOC_BASE)/quickstart.txt $(DOC_BASE)/zh/crawl_manual.txt $(DOC_BASE)/zh/quickstart.txt
 # Headers that need to exist before attempting to compile cc files
 GENERATED_HEADERS := art-enum.h config.h mon-mst.h species-type.h job-type.h \
                      form-data.h $(RLTILES)status-icon-sizes.h
@@ -1552,6 +1552,12 @@ $(DOC_BASE)/quickstart.txt: $(DOC_BASE)/quickstart.md
 $(DOC_BASE)/crawl_manual.txt: $(DOC_BASE)/crawl_manual.rst util/unrest.pl
 	$(QUIET_GEN)util/unrest.pl <$< >$@
 
+$(DOC_BASE)/zh/quickstart.txt: $(DOC_BASE)/zh/quickstart.md
+	$(QUIET_COPY)$(COPY) $< $@
+
+$(DOC_BASE)/zh/crawl_manual.txt: $(DOC_BASE)/zh/crawl_manual.rst util/unrest.pl
+	$(QUIET_GEN)util/unrest.pl <$< >$@
+
 api:
 	mkdir -p $(DOC_BASE)/develop/lua/
 	# need abspath here because ldoc is fragile
@@ -1612,7 +1618,14 @@ ifdef ANDROID
   shareddir_fp =
 endif
 
-install-data: $(GENERATED_FILES)
+.PHONY: install-guide-docs
+install-guide-docs: $(GENERATED_DOCS)
+	mkdir -p $(datadir_fp)/docs/zh
+	$(COPY) ../docs/*.txt $(datadir_fp)/docs/
+	$(COPY) ../docs/*.md $(datadir_fp)/docs/
+	$(COPY) ../docs/zh/*.txt $(datadir_fp)/docs/zh/
+
+install-data: $(GENERATED_FILES) $(GENERATED_DOCS)
 ifeq ($(DESTDIR)$(prefix)$(ANDROID),)
 	@echo Neither "DESTDIR" nor "prefix" defined -- nowhere to install to, aborting.
 	@exit 1
@@ -1632,6 +1645,7 @@ endif
 	mkdir -p $(datadir_fp)/docs/develop
 	mkdir -p $(datadir_fp)/docs/develop/levels
 	mkdir -p $(datadir_fp)/docs/license
+	$(MAKE) --no-print-directory install-guide-docs datadir_fp="$(datadir_fp)"
 	mkdir -p $(datadir_fp)/settings
 	$(COPY_R) dat/des/* $(datadir_fp)/dat/des/
 	$(COPY_R) dat/dlua/* $(datadir_fp)/dat/dlua/
@@ -1650,8 +1664,6 @@ endif
 	done
 	mkdir -p $(datadir_fp)/dat/dist_bones
 	$(COPY) dat/dist_bones/* $(datadir_fp)/dat/dist_bones/
-	$(COPY) ../docs/*.txt $(datadir_fp)/docs/
-	$(COPY) ../docs/*.md $(datadir_fp)/docs/
 	$(COPY) ../docs/develop/*.txt $(datadir_fp)/docs/develop/
 	$(COPY) ../docs/develop/levels/*.txt $(datadir_fp)/docs/develop/levels/
 	$(COPY) ../docs/license/*.txt $(datadir_fp)/docs/license/
