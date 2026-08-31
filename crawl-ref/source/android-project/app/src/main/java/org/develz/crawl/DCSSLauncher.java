@@ -52,6 +52,9 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
     // Default keyboard size in dp
     private int defaultKbSizeDp;
 
+    // Guard TextWatcher callbacks while normalizing an out-of-range value.
+    private boolean updatingKeyboardSize;
+
     // Screen density
     private float density;
 
@@ -91,7 +94,11 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         // Density is the relationship between px and dp
         density = getResources().getDisplayMetrics().density;
         defaultKbSizeDp = Math.round(getResources().getDimension(R.dimen.key_height) / density);
-        int keyboardSizeDp = preferences.getInt("keyboard_size", defaultKbSizeDp);
+        int storedKeyboardSizeDp = preferences.getInt("keyboard_size", defaultKbSizeDp);
+        int keyboardSizeDp = clampKeyboardSizeDp(storedKeyboardSizeDp);
+        if (keyboardSizeDp != storedKeyboardSizeDp) {
+            preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
+        }
         keyboardSizePx = keyboardSizeDp * density;
 
         // Keyboard spinner
@@ -208,15 +215,41 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (updatingKeyboardSize) {
+            return;
+        }
         try {
-            int keyboardSizeDp = Integer.parseInt(charSequence.toString());
+            int requestedSizeDp = Integer.parseInt(charSequence.toString());
+            int keyboardSizeDp = clampKeyboardSizeDp(requestedSizeDp);
+            if (keyboardSizeDp != requestedSizeDp) {
+                updatingKeyboardSize = true;
+                ksizeEditText.setText(String.format(Locale.getDefault(), "%d", keyboardSizeDp));
+                ksizeEditText.setSelection(ksizeEditText.getText().length());
+                updatingKeyboardSize = false;
+            }
             keyboardSizePx = keyboardSizeDp * density;
             preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
         } catch (NumberFormatException e) {
             Log.e(TAG, "Invalid keyboard size: " + e.getMessage());
             keyboardSizePx = defaultKbSizeDp * density;
+            updatingKeyboardSize = true;
             ksizeEditText.setText(String.format(Locale.getDefault(), "%d", defaultKbSizeDp));
+            ksizeEditText.setSelection(ksizeEditText.getText().length());
+            updatingKeyboardSize = false;
         }
+    }
+
+    private int clampKeyboardSizeDp(int keyboardSizeDp) {
+        // The full keyboard has four rows. Limit a key row to one sixth of the
+        // shortest display side so rotation always leaves room for the game
+        // surface, including row spacing and system insets.
+        int shortestSidePx = Math.min(
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels);
+        int maximumSizeDp = Math.max(
+                defaultKbSizeDp,
+                (int) Math.floor(shortestSidePx / density / 6.0f));
+        return Math.max(0, Math.min(keyboardSizeDp, maximumSizeDp));
     }
 
     @Override

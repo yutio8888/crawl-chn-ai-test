@@ -258,7 +258,25 @@ public class SDLActivity extends AppCompatActivity {
         // explicit access to inset values for Surface sizing and future portrait layout.
         if (Build.VERSION.SDK_INT >= 21) {
             mLayout.setOnApplyWindowInsetsListener((v, insets) -> {
-                int topInset = fullScreen ? 0 : insets.getSystemWindowInsetTop();
+                int leftInset = insets.getSystemWindowInsetLeft();
+                int topInset = insets.getSystemWindowInsetTop();
+                int rightInset = insets.getSystemWindowInsetRight();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                        && insets.getDisplayCutout() != null) {
+                    leftInset = Math.max(leftInset,
+                            insets.getDisplayCutout().getSafeInsetLeft());
+                    topInset = Math.max(topInset,
+                            insets.getDisplayCutout().getSafeInsetTop());
+                    rightInset = Math.max(rightInset,
+                            insets.getDisplayCutout().getSafeInsetRight());
+                }
+                // Full screen hides the status bar, but the physical display
+                // cutout remains. Only drop the top inset on screens without
+                // a cutout safe area.
+                if (fullScreen && (Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+                        || insets.getDisplayCutout() == null)) {
+                    topInset = 0;
+                }
                 mSystemTopInset = topInset;
                 mSystemBottomInset = insets.getSystemWindowInsetBottom();
                 if (Build.VERSION.SDK_INT >= 30) {
@@ -268,9 +286,9 @@ public class SDLActivity extends AppCompatActivity {
                 }
                 updateSurfaceSize();
                 v.setPadding(
-                    insets.getSystemWindowInsetLeft(),
+                    leftInset,
                     topInset,
-                    insets.getSystemWindowInsetRight(),
+                    rightInset,
                     insets.getSystemWindowInsetBottom()
                 );
                 return insets.consumeSystemWindowInsets();
@@ -1334,9 +1352,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // Keep track of the surface size to normalize touch events
     protected static float mWidth, mHeight;
 
-    // CRAWL HACK: Last resize event time
-    protected static long lastResize = 0L;
-
     // CRAWL HACK: Keep track of scroll status
     protected static boolean scrolling;
 
@@ -1411,17 +1426,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     public void surfaceChanged(SurfaceHolder holder,
                                int format, int width, int height) {
         Log.v("SDL", "surfaceChanged()");
-
-        // CRAWL HACK: Wait if we just processed the last event to make sure it's over
-        long currentTime = System.currentTimeMillis();
-        long delay = 1000 - (currentTime - lastResize);
-        if (delay > 0) {
-            try{
-                Log.v("SDL", "wait for "+delay);
-                Thread.sleep(delay);
-            } catch(InterruptedException e) {}
-        }
-        lastResize = currentTime;
 
         int sdlFormat = 0x15151002; // SDL_PIXELFORMAT_RGB565 by default
         switch (format) {
