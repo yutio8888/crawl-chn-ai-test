@@ -39,6 +39,14 @@
     <string name="keyboard_full">Full</string>
     <string name="keyboard_compact">Compact</string>
     <string name="keyboard_rest">Wait</string>
+    <string name="keyboard_move_up_left">Move up-left</string>
+    <string name="keyboard_move_up">Move up</string>
+    <string name="keyboard_move_up_right">Move up-right</string>
+    <string name="keyboard_move_left">Move left</string>
+    <string name="keyboard_move_right">Move right</string>
+    <string name="keyboard_move_down_left">Move down-left</string>
+    <string name="keyboard_move_down">Move down</string>
+    <string name="keyboard_move_down_right">Move down-right</string>
     <string name="mods_hint">Here you can override game data resources.
         Extra fonts need to be enabled in the init file.</string>
     <string name="tv_warning">WARNING\n\nYou need a keyboard, a mouse or a touch screen in order

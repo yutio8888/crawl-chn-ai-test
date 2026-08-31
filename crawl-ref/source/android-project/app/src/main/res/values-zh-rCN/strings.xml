@@ -39,6 +39,14 @@
     <string name="keyboard_full">完整</string>
     <string name="keyboard_compact">紧凑</string>
     <string name="keyboard_rest">等待</string>
+    <string name="keyboard_move_up_left">向左上移动</string>
+    <string name="keyboard_move_up">向上移动</string>
+    <string name="keyboard_move_up_right">向右上移动</string>
+    <string name="keyboard_move_left">向左移动</string>
+    <string name="keyboard_move_right">向右移动</string>
+    <string name="keyboard_move_down_left">向左下移动</string>
+    <string name="keyboard_move_down">向下移动</string>
+    <string name="keyboard_move_down_right">向右下移动</string>
     <string name="mods_hint">可在此覆盖游戏数据资源。
         额外字体需要在初始设置中启用。</string>
     <string name="tv_warning">警告\n\n游玩 Dungeon Crawl Stone Soup 需要键盘、鼠标或触摸屏。\n\n如果只有鼠标或触摸屏，建议在下一页启用虚拟键盘。</string>

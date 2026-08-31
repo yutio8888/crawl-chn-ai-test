@@ -21,6 +21,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2196\ufe0e"
+            android:contentDescription="@string/keyboard_move_up_left"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -31,6 +32,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2191\ufe0e"
+            android:contentDescription="@string/keyboard_move_up"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -41,6 +43,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2197\ufe0e"
+            android:contentDescription="@string/keyboard_move_up_right"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -79,6 +82,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2190\ufe0e"
+            android:contentDescription="@string/keyboard_move_left"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -99,6 +103,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2192\ufe0e"
+            android:contentDescription="@string/keyboard_move_right"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -137,6 +142,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2199\ufe0e"
+            android:contentDescription="@string/keyboard_move_down_left"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -147,6 +153,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2193\ufe0e"
+            android:contentDescription="@string/keyboard_move_down"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
@@ -157,6 +164,7 @@
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
             android:text="\u2198\ufe0e"
+            android:contentDescription="@string/keyboard_move_down_right"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 
