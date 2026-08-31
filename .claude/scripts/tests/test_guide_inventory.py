@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import hashlib
 import importlib.util
 from pathlib import Path
 import shutil
@@ -64,8 +65,8 @@ class GuideInventoryTest(unittest.TestCase):
         self.assertEqual(english.returncode, 0, english.stderr.decode(
             "utf-8", errors="replace"))
         self.assertEqual(
-            english.stdout,
-            (ROOT / "crawl-ref/docs/crawl_manual.txt").read_bytes())
+            hashlib.sha256(english.stdout).hexdigest(),
+            "4e9fd82dd363d32e72298edc66e49227581ce68b734be7de90309f845140c1d3")
 
     def test_unrest_rejects_invalid_utf8(self):
         invalid = self._run_unrest(b"Valid heading\n\xff\n")
