@@ -1,7 +1,12 @@
 package org.libsdl.app;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.media.*;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 public class SDLAudioManager
 {
@@ -109,7 +114,17 @@ public class SDLAudioManager
     /**
      * This method is called by SDL using JNI.
      */
+    // Crawl intentionally does not declare microphone access. The explicit
+    // check below rejects capture unless a future build grants it, and the
+    // catch still handles permission revocation between check and use.
+    @SuppressLint("MissingPermission")
     public static int captureOpen(int sampleRate, boolean is16Bit, boolean isStereo, int desiredFrames) {
+        if (ContextCompat.checkSelfPermission(SDL.getContext(), Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "Audio capture is unavailable without microphone permission");
+            return -1;
+        }
+
         int channelConfig = isStereo ? AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
         int audioFormat = is16Bit ? AudioFormat.ENCODING_PCM_16BIT : AudioFormat.ENCODING_PCM_8BIT;
         int frameSize = (isStereo ? 2 : 1) * (is16Bit ? 2 : 1);
@@ -122,18 +137,27 @@ public class SDLAudioManager
         desiredFrames = Math.max(desiredFrames, (AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat) + frameSize - 1) / frameSize);
 
         if (mAudioRecord == null) {
-            mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRate,
-                    channelConfig, audioFormat, desiredFrames * frameSize);
+            try {
+                mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRate,
+                        channelConfig, audioFormat, desiredFrames * frameSize);
 
-            // see notes about AudioTrack state in audioOpen(), above. Probably also applies here.
-            if (mAudioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
-                Log.e(TAG, "Failed during initialization of AudioRecord");
-                mAudioRecord.release();
-                mAudioRecord = null;
+                // see notes about AudioTrack state in audioOpen(), above. Probably also applies here.
+                if (mAudioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
+                    Log.e(TAG, "Failed during initialization of AudioRecord");
+                    mAudioRecord.release();
+                    mAudioRecord = null;
+                    return -1;
+                }
+
+                mAudioRecord.startRecording();
+            } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
+                Log.e(TAG, "Failed to start audio capture", e);
+                if (mAudioRecord != null) {
+                    mAudioRecord.release();
+                    mAudioRecord = null;
+                }
                 return -1;
             }
-
-            mAudioRecord.startRecording();
         }
 
         Log.v(TAG, "SDL capture: got " + ((mAudioRecord.getChannelCount() >= 2) ? "stereo" : "mono") + " " + ((mAudioRecord.getAudioFormat() == AudioFormat.ENCODING_PCM_16BIT) ? "16-bit" : "8-bit") + " " + (mAudioRecord.getSampleRate() / 1000f) + "kHz, " + desiredFrames + " frames buffer");
