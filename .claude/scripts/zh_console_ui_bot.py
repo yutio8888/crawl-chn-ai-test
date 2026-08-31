@@ -75,6 +75,8 @@ HELP_CASES = [
     ('text:item', 'i', 'dagger', '匕首'),
 ]
 
+HELP_MAIN_REQUIRED = ('地牢爬行帮助', '查找说明')
+
 # Kept independent from the implementation below: every workflow marker must
 # be emitted exactly once and in this order. This is a separate contract from
 # the RC and panel manifests because the evidence comes from interactive
@@ -306,8 +308,7 @@ def run_help(bot: PtyBot) -> None:
     emit('help:probe')
     for name, shortcut, query, positive in HELP_CASES:
         help_screen = bot.send(b'?')
-        if 'Lookup description' not in help_screen:
-            raise BotFailure(f'help:{name}: main help did not render')
+        assert_screen(f'help:{name}:main', help_screen, HELP_MAIN_REQUIRED)
         lookup = bot.send(b'/')
         assert_screen(f'help:{name}:lookup', lookup, ('查询以下信息', '神祇'))
         selected = bot.send(shortcut.encode('ascii'))

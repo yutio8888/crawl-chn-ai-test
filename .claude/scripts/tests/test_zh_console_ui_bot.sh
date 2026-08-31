@@ -67,6 +67,16 @@ finally:
     delayed.close()
 
 bot.assert_screen('positive', '你的法术：魔法飞弹', ('魔法飞弹',))
+bot.assert_screen('help-main-positive', '地牢爬行帮助：查找说明',
+                  bot.HELP_MAIN_REQUIRED)
+try:
+    bot.assert_screen('help-main-english-mutation',
+                      'Dungeon Crawl Help: Lookup description',
+                      bot.HELP_MAIN_REQUIRED)
+except bot.BotFailure:
+    pass
+else:
+    raise SystemExit('help main accepted stale English-only evidence')
 for text in (
     '未知命令。', "没有匹配搜索字符串'foo'的法术。",
     '中文 [string "db_embedded_lua"]:2: error',

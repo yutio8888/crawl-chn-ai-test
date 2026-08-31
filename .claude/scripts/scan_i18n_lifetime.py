@@ -47,7 +47,7 @@ CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}
 SKIP_FILES = {"catch_amalgamated.cc"}
 KNOWN_PRODUCTION_LEXICAL_DEBT = {
     ("branch-data.h", "unmatched } at offset 12640"),
-    ("end.cc", "unmatched } at offset 12112"),
+    ("end.cc", "unmatched } at offset 12845"),
     ("macros.h", "unmatched ) at offset 1874"),
     ("threads.h", "unclosed ( at offset 1016"),
 }
