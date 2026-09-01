@@ -430,6 +430,9 @@ static void _post_init(bool newc)
     update_screen();
     viewwindow();
     update_screen();
+#ifdef __ANDROID__
+    _android_startup_marker("dungeon_ready");
+#endif
 
     activate_notes(true);
 
