@@ -38,8 +38,8 @@ public:
     void set_more() { m_more.clear(); }
     void set_more(formatted_string more) { m_more = std::move(more); }
 
-    void set_title() { m_title.clear(); };
-    void set_title(formatted_string title) { m_title = std::move(title); };
+    void set_title();
+    void set_title(formatted_string title);
 
     void scroll_to_end();
     void set_scroll(int y);
@@ -53,6 +53,7 @@ protected:
     formatted_string contents;
     string m_tag;
     formatted_string m_title;
+    shared_ptr<ui::Text> m_title_text;
     formatted_string m_more;
     int m_lastch;
     int m_flags;

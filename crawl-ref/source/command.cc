@@ -45,6 +45,15 @@ using namespace ui;
  #include "rltiles/tiledef-gui.h"
 #endif
 
+#ifdef USE_SOUND
+#ifdef SOUND_BACKEND
+static const char* _sound_backend_name()
+{
+    return SOUND_BACKEND;
+}
+#endif
+#endif
+
 static const char *features[] =
 {
 #ifdef CLUA_BINDINGS
@@ -67,16 +76,20 @@ static const char *features[] =
     "Debug mode",
 #endif
 
-#if defined(REGEX_POSIX)
+#ifdef REGEX_POSIX
     "POSIX regexps",
-#elif defined(REGEX_PCRE)
+#else
+#ifdef REGEX_PCRE
     "PCRE regexps",
 #else
     "Glob patterns",
 #endif
+#endif
 
-#if defined(USE_SOUND) && defined(SOUND_BACKEND)
-    SOUND_BACKEND,
+#ifdef USE_SOUND
+#ifdef SOUND_BACKEND
+    _sound_backend_name(),
+#endif
 #endif
 
 #ifdef DGL_MILESTONES
@@ -436,20 +449,109 @@ struct help_file
     const char* name;
     int hotkey;
     bool auto_hotkey;
+    const char* title;
 };
 
-static help_file help_files[] =
+static const help_file manual_help_file =
+    { "crawl_manual.txt", '*', true, "Manual" };
+static const help_file aptitudes_help_file =
+    { "aptitudes.txt", '%', false, "Aptitudes" };
+static const help_file quickstart_help_file =
+    { "quickstart.txt", '^', false, "Quickstart" };
+static const help_file macros_help_file =
+    { "macros_guide.txt", '~', false, "Macros" };
+static const help_file options_help_file =
+    { "options_guide.txt", '&', false, "Options" };
+static const help_file tiles_help_file =
+    { "tiles_help.txt", 't', false, "Tiles" };
+
+// This is the production hotkey table. Keep platform-only guides out of
+// non-local-tiles builds, even though the shared loader is tested below.
+static const help_file* help_files[] =
 {
-    { "crawl_manual.txt",  '*', true },
-    { "aptitudes.txt",     '%', false },
-    { "quickstart.txt",     '^', false },
-    { "macros_guide.txt",  '~', false },
-    { "options_guide.txt", '&', false },
+    &manual_help_file,
+    &aptitudes_help_file,
+    &quickstart_help_file,
+    &macros_help_file,
+    &options_help_file,
 #ifdef USE_TILE_LOCAL
-    { "tiles_help.txt",    't', false },
+    &tiles_help_file,
 #endif
-    { nullptr, 0, false }
+    nullptr
 };
+
+static string _localized_help_file_path(const string& filename)
+{
+    if (!Options.lang_name || !*Options.lang_name)
+        return "";
+
+    return datafile_path(
+        Options.lang_name + string(1, FILE_SEPARATOR) + filename, false);
+}
+
+string help_file_path(const string& filename)
+{
+    const string localized = _localized_help_file_path(filename);
+    if (!localized.empty())
+        return localized;
+    return datafile_path(filename, false);
+}
+
+static bool _is_help_title_decoration(const string& line)
+{
+    return line.size() >= 3
+           && strchr("=-+#*", line[0])
+           && line.find_first_not_of(line[0]) == string::npos;
+}
+
+static string _localized_help_file_title(const help_file& file)
+{
+    const string fname = canonicalise_file_separator(file.name);
+    const string localized = _localized_help_file_path(fname);
+    if (localized.empty())
+        return "";
+
+    FILE* fp = fopen_u(localized.c_str(), "r");
+    if (!fp)
+        return "";
+
+    string previous;
+    char buf[200];
+    while (fgets(buf, sizeof buf, fp))
+    {
+        string current(buf);
+        trim_string(current);
+        if (_is_help_title_decoration(current) && !previous.empty()
+            && !_is_help_title_decoration(previous))
+        {
+            fclose(fp);
+            return previous;
+        }
+        previous = current;
+    }
+    fclose(fp);
+    return "";
+}
+
+static string _help_file_title(const help_file& file)
+{
+    const string localized = _localized_help_file_title(file);
+    return localized.empty() ? string(file.title) : localized;
+}
+
+string help_header_suffix(int page)
+{
+    if (page == '?')
+        return ": Key help";
+    if (page == tiles_help_file.hotkey)
+        return ": " + _help_file_title(tiles_help_file);
+    for (int i = 0; help_files[i] != nullptr; ++i)
+    {
+        if (page == help_files[i]->hotkey)
+            return ": " + _help_file_title(*help_files[i]);
+    }
+    return "";
+}
 
 // Reads all questions from database/FAQ.txt, outputs them in the form of
 // a selectable menu and prints the corresponding answer for a chosen question.
@@ -694,19 +796,17 @@ static void _display_diag()
 
     // on webtiles we suppress some info that will just be confusing / not
     // useful.
-    const bool webtiles_client
 #ifdef USE_TILE_WEB
-        = tiles.is_controlled_from_web();
+    const bool webtiles_client = tiles.is_controlled_from_web();
 #else
-        = false;
+    const bool webtiles_client = false;
 #endif
 
     // if true, mostly just display the palettes.
-    const bool suppress_unix_stuff =
 #if defined(USE_TILE_LOCAL) || defined(TARGET_OS_WINDOWS)
-        true;
+    const bool suppress_unix_stuff = true;
 #else
-        webtiles_client;
+    const bool suppress_unix_stuff = webtiles_client;
 #endif
 
     s += make_stringf(T_("Display type: <w>%s</w>\n"), info.type.c_str());
@@ -1021,8 +1121,13 @@ static void _add_formatted_keyhelp(column_composer &cols)
                            false);
     }
     else
-#endif
+    {
+        _add_command(cols, 0, CMD_READ_MESSAGES,
+                     "read messages (online play only)", 2);
+    }
+#else
     _add_command(cols, 0, CMD_READ_MESSAGES, "read messages (online play only)", 2);
+#endif
 #endif
 
     cols.add_formatted(
@@ -1328,50 +1433,66 @@ static formatted_string _col_conv(void (*func)(column_composer &))
     return contents;
 }
 
-static int _get_help_section(int section, formatted_string &header_out, formatted_string &text_out, int &scroll_out)
+static formatted_string _load_help_file(const help_file& file,
+                                        map<int, int>* hotkeys = nullptr)
+{
+    formatted_string text;
+    bool next_is_hotkey = false;
+    char buf[200];
+    const string fname = canonicalise_file_separator(file.name);
+    FILE* fp = fopen_u(help_file_path(fname).c_str(), "r");
+    ASSERTM(fp, "Failed to open '%s'!", fname.c_str());
+    while (fgets(buf, sizeof buf, fp))
+    {
+        text += string(buf);
+        if (hotkeys && next_is_hotkey
+            && (isaupper(buf[0]) || isadigit(buf[0])))
+        {
+            const int hotkey = tolower_safe(buf[0]);
+            (*hotkeys)[hotkey] = count_occurrences(text.tostring(), "\n");
+        }
+        next_is_hotkey =
+            strstr(buf, "------------------------------------------"
+                        "------------------------------") == buf;
+    }
+    trim_string_right(text.ops.back().text);
+    return text;
+}
+
+static formatted_string _help_header(int page)
+{
+    const string header = help_header_suffix(page);
+    return formatted_string::parse_string(
+        make_stringf(T_("<yellow>Dungeon Crawl Help%s</yellow>"),
+                     header.c_str()));
+}
+
+static int _get_help_section(int section, formatted_string &header_out,
+                             formatted_string &text_out, int &scroll_out)
 {
     static map<int, int> hotkeys;
     static map<int, formatted_string> page_text;
-    static map<int, string> headers = {
-        {'*', "Manual"}, {'%', "Aptitudes"}, {'^', "Quickstart"},
-        {'~', "Macros"}, {'&', "Options"}, {'t', "Tiles"},
-        {'?', "Key help"}
-    };
-
+    static string cached_language;
+    const string language = Options.lang_name ? Options.lang_name : "";
+    if (cached_language != language)
+    {
+        hotkeys.clear();
+        page_text.clear();
+        cached_language = language;
+    }
     if (!page_text.size())
     {
-        for (int i = 0; help_files[i].name != nullptr; ++i)
+        for (int i = 0; help_files[i] != nullptr; ++i)
         {
-            formatted_string text;
-            bool next_is_hotkey = false;
-            char buf[200];
-            string fname = canonicalise_file_separator(help_files[i].name);
-            FILE* fp = fopen_u(datafile_path(fname, false).c_str(), "r");
-            ASSERTM(fp, "Failed to open '%s'!", fname.c_str());
-            while (fgets(buf, sizeof buf, fp))
-            {
-                text += string(buf);
-                if (next_is_hotkey && (isaupper(buf[0]) || isadigit(buf[0])))
-                {
-                    int hotkey = tolower_safe(buf[0]);
-                    hotkeys[hotkey] = count_occurrences(text.tostring(), "\n");
-                }
-
-                next_is_hotkey =
-                    strstr(buf, "------------------------------------------"
-                                        "------------------------------") == buf;
-            }
-            trim_string_right(text.ops.back().text);
-            page_text[help_files[i].hotkey] = text;
+            page_text[help_files[i]->hotkey] =
+                _load_help_file(*help_files[i], &hotkeys);
         }
     }
 
     // All hotkeys are currently on *-page
     const int page = hotkeys.count(section) ? '*' : section;
 
-    string header = headers.count(page) ? ": "+headers[page] : "";
-    header_out = formatted_string::parse_string(
-                    make_stringf(T_("<yellow>Dungeon Crawl Help%s</yellow>"), header.c_str()));
+    header_out = _help_header(page);
     scroll_out = 0;
     switch (section)
     {
@@ -1397,6 +1518,15 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     return 0;
 }
 
+int platform_help_section_for_test(int section, string& header, string& text)
+{
+    if (section != tiles_help_file.hotkey)
+        return 0;
+    header = _help_header(section).tostring();
+    text = _load_help_file(tiles_help_file).tostring();
+    return section;
+}
+
 class help_popup : public formatted_scroller
 {
 public:
@@ -1404,6 +1534,14 @@ public:
         set_tag("help");
         process_key(key);
     };
+    int state_for_test(int key, string& header, string& text)
+    {
+        if (key)
+            process_key(key);
+        header = m_title.tostring();
+        text = contents.tostring();
+        return prev_page;
+    }
 private:
     maybe_bool process_key(int ch) override
     {
@@ -1439,6 +1577,7 @@ private:
                     m_contents_dirty = true;
                     prev_page = page;
                 }
+                set_title(header_text);
                 scroll = scroll ? (scroll-2)*line_height : 0;
                 set_scroll(scroll);
                 return true;
@@ -1448,6 +1587,13 @@ private:
     };
     int prev_page{0};
 };
+
+int help_popup_state_for_test(int initial_section, int next_section,
+                              string& header, string& text)
+{
+    help_popup popup(initial_section);
+    return popup.state_for_test(next_section, header, text);
+}
 
 static bool _show_help_special(int key)
 {

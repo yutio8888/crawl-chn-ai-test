@@ -59,6 +59,7 @@
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
+#include "command.h"         // localized standalone guide resolution
 
 #include <algorithm>
 #include <cstring>
@@ -168,6 +169,107 @@ private:
 };
 
 } // anonymous namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: standalone guide popups render localized pages",
+                 "[zh-help][guides]")
+{
+    struct guide_expectation
+    {
+        int hotkey;
+        const char* marker;
+        const char* english_marker;
+    };
+    const vector<guide_expectation> popup_guides = {
+        {'*', "Dungeon Crawl Stone Soup 手册",
+              "Dungeon Crawl Stone Soup manual"},
+        {'^', "Crawl 快速入门指南", "Crawl Quick-Start Guide"},
+        {'~', "宏与按键映射", "Macros and Keymaps"},
+        {'&', "Crawl 选项指南", "Guide to Crawl's options"},
+#ifdef USE_TILE_LOCAL
+        {'t', "贴图版专用命令", "Tiles specific commands"},
+#endif
+    };
+    for (const auto& guide : popup_guides)
+    {
+        string header;
+        string text;
+        INFO("Guide hotkey: " << static_cast<char>(guide.hotkey));
+        CHECK(help_popup_state_for_test(guide.hotkey, 0, header, text)
+              == guide.hotkey);
+        CHECK(header.find("地下城 Crawl 帮助") != string::npos);
+        CHECK(header.find(guide.marker) != string::npos);
+        CHECK(header.find("Dungeon Crawl Help") == string::npos);
+        CHECK(text.find(guide.marker) != string::npos);
+        CHECK(text.find(guide.english_marker) == string::npos);
+        CHECK(contains_cjk_text(text));
+    }
+
+    // The title and body stored by the live popup must both change when the
+    // user switches pages after opening it.
+    for (const auto& guide : popup_guides)
+    {
+        if (guide.hotkey == '*')
+            continue;
+        string header;
+        string text;
+        INFO("Guide switch hotkey: " << static_cast<char>(guide.hotkey));
+        CHECK(help_popup_state_for_test('*', guide.hotkey, header, text)
+              == guide.hotkey);
+        CHECK(header.find("地下城 Crawl 帮助") != string::npos);
+        CHECK(header.find(guide.marker) != string::npos);
+        CHECK(header.find("Dungeon Crawl Help") == string::npos);
+        CHECK(text.find(guide.marker) != string::npos);
+        CHECK(text.find(guide.english_marker) == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: tiles guide uses shared loader without console hotkey",
+                 "[zh-help][guides]")
+{
+    string header;
+    string text;
+#ifndef USE_TILE_LOCAL
+    CHECK(help_popup_state_for_test('t', 0, header, text) == 0);
+    CHECK(header.empty());
+    CHECK(text.empty());
+#endif
+
+    CHECK(platform_help_section_for_test('t', header, text) == 't');
+    CHECK(header.find("地下城 Crawl 帮助") != string::npos);
+    CHECK(header.find("贴图版专用命令") != string::npos);
+    CHECK(header.find("Dungeon Crawl Help") == string::npos);
+    CHECK(text.find("贴图版专用命令") != string::npos);
+    CHECK(text.find("Tiles specific commands") == string::npos);
+    CHECK(contains_cjk_text(text));
+
+#ifndef USE_TILE_LOCAL
+    header.clear();
+    text.clear();
+    CHECK(help_popup_state_for_test('t', 0, header, text) == 0);
+    CHECK(header.empty());
+    CHECK(text.empty());
+#endif
+}
+
+TEST_CASE("zh-help: standalone guides fall back to English",
+          "[zh-help][guides]")
+{
+    const char* saved = Options.lang_name;
+    Options.lang_name = "zz-missing-guide-language";
+    const string missing_language = help_file_path("options_guide.txt");
+    CHECK(missing_language.find("zz-missing-guide-language") == string::npos);
+    CHECK(missing_language.find("options_guide.txt") != string::npos);
+    CHECK(help_header_suffix('&') == ": Options");
+
+    Options.lang_name = nullptr;
+    const string english = help_file_path("quickstart.txt");
+    CHECK(english.find("zh" + string(1, FILE_SEPARATOR)) == string::npos);
+    CHECK(english.find("quickstart.txt") != string::npos);
+    CHECK(help_header_suffix('^') == ": Quickstart");
+    Options.lang_name = saved;
+}
 
 // =============================================================================
 // [zh-help][issue-52] — load the complete frozen Help/FAQ inventory through

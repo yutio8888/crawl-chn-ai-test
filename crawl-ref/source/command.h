@@ -30,6 +30,16 @@ void show_spell_library_help();
 
 void show_help(int section = CK_HOME, string highlight_string = "");
 
+// Resolve an installed guide using the active data language, falling back to
+// the English guide when no localized copy exists.
+string help_file_path(const string& filename);
+string help_header_suffix(int page);
+// Narrow verification seams over the real popup state and the shared loader
+// for platform-only guides.
+int help_popup_state_for_test(int initial_section, int next_section,
+                              string& header, string& text);
+int platform_help_section_for_test(int section, string& header, string& text);
+
 int show_keyhelp_menu(const vector<formatted_string> &lines);
 
 // XXX: Actually defined in main.cc; we may want to move this to command.cc.

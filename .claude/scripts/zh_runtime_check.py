@@ -144,6 +144,21 @@ BOT_REQUIRED_CONTENT = {
     "path3:enchantress_msg": ("妖术女王",),
 }
 
+HELP_BOT_EXPECTED_IDS = [
+    "help:probe:ok",
+    "help:guide:quickstart:ok", "help:guide:manual:ok",
+    "help:guide:macros:ok", "help:guide:options:ok",
+    "help:god:ok", "help:branch:ok", "help:cloud:ok", "help:card:ok",
+    "help:skill:ok", "help:passive:ok", "help:status:ok",
+    "help:status:bat:ok", "help:monster:ok", "help:spell:ok",
+    "help:ability:ok", "help:feature:ok", "help:item:ok",
+    "help:mutation:ok", "help:bane:ok", "help:spell_school:ok",
+    "help:text:spell:ok", "help:text:ability:ok",
+    "help:text:mutation:ok", "help:text:feature:ok",
+    "help:text:bane:ok", "help:text:monster:ok", "help:text:item:ok",
+    "help:phase:done",
+]
+
 # Canonical JSON encoding: UTF-8, sort_keys=True, separators=(",",":"), ensure_ascii=False
 _CANONICAL_JSON_KWARGS = {
     "sort_keys": True,
@@ -869,6 +884,15 @@ def _mode_help(args) -> int:
         )
 
     current = build_help_baseline_from_jsonl(issues, summaries)
+
+    if args.bot_stderr:
+        records = _parse_bot_frame_records(args.bot_stderr)
+        observed = [record["case_id"] for record in records]
+        if observed != HELP_BOT_EXPECTED_IDS:
+            _protocol_error(
+                "help bot manifest mismatch: expected "
+                f"{HELP_BOT_EXPECTED_IDS}, got {observed}"
+            )
 
     if args.output_baseline:
         proto = _make_catch2_protocol(suite, ZH_HELP_ENUMERATORS)

@@ -88,9 +88,19 @@ def gen_all(perl):
     # Generate a .txt version because some servers need it
     # TODO: actually render this
     copy_if_needed('../docs/quickstart.md', '../docs/quickstart.txt')
+    copy_if_needed('../docs/zh/quickstart.md', '../docs/zh/quickstart.txt')
 
     generated_files = ['../docs/crawl_manual.txt']
     input_files = ['util/unrest.pl', '../docs/crawl_manual.rst']
+    if needs_running(generated_files, input_files):
+        with open(generated_files[0], 'wb', 0) as file:
+            command = [perl] + input_files
+            result = subprocess.call(command, stdout=file)
+            if(result != 0):
+                sys.exit(result)
+
+    generated_files = ['../docs/zh/crawl_manual.txt']
+    input_files = ['util/unrest.pl', '../docs/zh/crawl_manual.rst']
     if needs_running(generated_files, input_files):
         with open(generated_files[0], 'wb', 0) as file:
             command = [perl] + input_files

@@ -1,0 +1,87 @@
+# Standalone Guide Review Plan
+
+- Inventory digest: `0599d8548bb2379282e085bd8aec38429a2f5b63ed19cac60803199678b3b075`
+- Glossary SHA-256: `366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`
+- Frozen identities: 79
+
+The boundary is the five canonical English/Chinese guide pairs. Each identity below requires one structural terminal conclusion; linguistic readiness remains reviewer-owned.
+
+- `guide:quickstart:chapter-crawl-quick-start-guide`
+- `guide:quickstart:chapter-introduction-to-crawl`
+- `guide:quickstart:chapter-starting-out`
+- `guide:quickstart:chapter-exploring`
+- `guide:quickstart:chapter-items`
+- `guide:quickstart:chapter-monsters`
+- `guide:quickstart:chapter-death`
+- `guide:manual:preamble`
+- `guide:manual:chapter-A`
+- `guide:manual:chapter-B`
+- `guide:manual:chapter-C`
+- `guide:manual:chapter-D`
+- `guide:manual:chapter-E`
+- `guide:manual:chapter-F`
+- `guide:manual:chapter-G`
+- `guide:manual:chapter-H`
+- `guide:manual:chapter-I`
+- `guide:manual:chapter-J`
+- `guide:manual:chapter-K`
+- `guide:manual:chapter-L`
+- `guide:manual:chapter-M`
+- `guide:manual:chapter-N`
+- `guide:manual:appendix-1`
+- `guide:manual:appendix-2`
+- `guide:manual:appendix-3`
+- `guide:manual:appendix-4`
+- `guide:manual:appendix-5`
+- `guide:manual:appendix-6`
+- `guide:options:preamble`
+- `guide:options:section-0`
+- `guide:options:section-0-a`
+- `guide:options:section-0-b`
+- `guide:options:section-0-c`
+- `guide:options:section-0-d`
+- `guide:options:section-0-e`
+- `guide:options:section-1`
+- `guide:options:section-2`
+- `guide:options:section-3`
+- `guide:options:section-3-a`
+- `guide:options:section-3-b`
+- `guide:options:section-3-c`
+- `guide:options:section-3-d`
+- `guide:options:section-3-e`
+- `guide:options:section-3-f`
+- `guide:options:section-3-g`
+- `guide:options:section-3-h`
+- `guide:options:section-3-i`
+- `guide:options:section-3-j`
+- `guide:options:section-3-k`
+- `guide:options:section-3-l`
+- `guide:options:section-3-m`
+- `guide:options:section-3-n`
+- `guide:options:section-4`
+- `guide:options:section-4-a`
+- `guide:options:section-4-b`
+- `guide:options:section-4-c`
+- `guide:options:section-5`
+- `guide:options:section-5-a`
+- `guide:options:section-5-b`
+- `guide:options:section-5-c`
+- `guide:options:section-6`
+- `guide:options:section-6-a`
+- `guide:options:section-6-b`
+- `guide:options:section-6-c`
+- `guide:options:section-6-d`
+- `guide:options:section-7`
+- `guide:macros:chapter-macros-and-keymaps`
+- `guide:macros:chapter-how-to-create-macros-and-keymaps`
+- `guide:macros:chapter-the-macro-txt-file`
+- `guide:macros:chapter-examples`
+- `guide:tiles:chapter-tiles-specific-commands`
+- `guide:tiles:chapter-movement`
+- `guide:tiles:chapter-getting-information`
+- `guide:tiles:chapter-attacking-monsters`
+- `guide:tiles:chapter-item-usage`
+- `guide:tiles:chapter-interacting-with-the-dungeon`
+- `guide:tiles:chapter-character-status`
+- `guide:tiles:chapter-character-appearance`
+- `guide:tiles:chapter-if-you-are-experiencing-significant-slowdown-and-lags`

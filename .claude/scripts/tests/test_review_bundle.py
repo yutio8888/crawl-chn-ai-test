@@ -1033,7 +1033,11 @@ raise SystemExit(7 if mode == 'fail' else 0)
             cwd=self.candidate,
             env=attribute_environment,
         )
-        self.assertNotEqual(expected_diff, raw_attribute_diff)
+        # GIT_ATTR_SOURCE was added after Git 2.39. Older supported Git
+        # versions ignore it, so the scrubbed operation below is authoritative
+        # on every version while a raw mismatch is only observable when the
+        # installed Git implements this attack vector.
+        attribute_source_supported = raw_attribute_diff != expected_diff
 
         shallow_file = self.temp / "hostile-shallow"
         shallow_file.write_text(self.head + "\n", encoding="ascii")
@@ -1052,7 +1056,9 @@ raise SystemExit(7 if mode == 'fail' else 0)
         )
         self.assertEqual(1, raw_ancestor.returncode)
 
-        with self.fake_environment(
+        with self.subTest(
+            git_attr_source_supported=attribute_source_supported
+        ), self.fake_environment(
             GIT_ATTR_SOURCE=attribute_source,
             GIT_NAMESPACE="hostile-namespace",
             GIT_SHALLOW_FILE=str(shallow_file),
