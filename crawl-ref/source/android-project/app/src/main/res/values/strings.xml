@@ -32,10 +32,10 @@
     <string name="keyboard_size">Keyboard size</string>
     <string name="full_screen">Full screen</string>
     <string name="keyboard_explore">Explore</string>
+    <string name="keyboard_autofight">Auto-fight</string>
     <string name="keyboard_menu">Game menu</string>
     <string name="keyboard_inventory">Inventory</string>
     <string name="keyboard_pickup">Pick up</string>
-    <string name="keyboard_help">Help</string>
     <string name="keyboard_full">Full</string>
     <string name="keyboard_compact">Compact</string>
     <string name="keyboard_rest">Wait</string>

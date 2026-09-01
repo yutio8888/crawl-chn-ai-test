@@ -58,12 +58,12 @@
             android:theme="@style/ButtonColor2"/>
 
         <Button
-            android:id="@+id/key_mobile_menu"
-            android:tag="131"
+            android:id="@+id/key_mobile_autofight"
+            android:tag="61"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="@string/keyboard_menu"
+            android:text="@string/keyboard_autofight"
             android:padding="0dp"
             android:theme="@style/ButtonColor2"/>
 
@@ -169,12 +169,12 @@
             android:theme="@style/ButtonColor3"/>
 
         <Button
-            android:id="@+id/key_mobile_help"
-            android:tag="59,76"
+            android:id="@+id/key_mobile_menu"
+            android:tag="131"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="1"
-            android:text="@string/keyboard_help"
+            android:text="@string/keyboard_menu"
             android:padding="0dp"
             android:theme="@style/ButtonColor2"/>
 

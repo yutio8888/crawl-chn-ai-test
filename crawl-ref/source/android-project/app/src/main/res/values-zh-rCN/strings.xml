@@ -32,10 +32,10 @@
     <string name="keyboard_size">键盘大小</string>
     <string name="full_screen">全屏</string>
     <string name="keyboard_explore">探索</string>
+    <string name="keyboard_autofight">自动战斗</string>
     <string name="keyboard_menu">游戏菜单</string>
     <string name="keyboard_inventory">背包</string>
     <string name="keyboard_pickup">拾取</string>
-    <string name="keyboard_help">帮助</string>
     <string name="keyboard_full">完整</string>
     <string name="keyboard_compact">紧凑</string>
     <string name="keyboard_rest">等待</string>

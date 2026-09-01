@@ -222,7 +222,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_mobile_8);
         initKey(R.id.key_mobile_9);
         initKey(R.id.key_mobile_explore);
-        initKey(R.id.key_mobile_menu);
+        initKey(R.id.key_mobile_autofight);
         initKey(R.id.key_mobile_4);
         initKey(R.id.key_mobile_5);
         initKey(R.id.key_mobile_6);
@@ -231,7 +231,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_mobile_1);
         initKey(R.id.key_mobile_2);
         initKey(R.id.key_mobile_3);
-        initKey(R.id.key_mobile_help);
+        initKey(R.id.key_mobile_menu);
         initKey(R.id.key_mobile_expand);
     }
 
