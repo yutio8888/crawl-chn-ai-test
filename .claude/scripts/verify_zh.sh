@@ -720,6 +720,60 @@ record_external_phase() {
             run_source_db_static || RESULTS=$((RESULTS + 1))
     fi
 
+    # Strictly validate every formal review ledger against the same candidate
+    # snapshot and fixed review bases used by the final gate. The review
+    # profile remains the authoritative final-evidence owner; the CI profile
+    # reuses this function only to fail early on stale or invalid ledgers.
+    run_review_ledgers() {
+        local rc=0
+        local ledgers=(
+            "$WORKTREE/docs/character-mechanics-review-results.md"
+            "$WORKTREE/docs/god-review-results.md"
+            "$WORKTREE/docs/item-extended-review-results.md"
+            "$WORKTREE/docs/monster-review-results.md"
+            "$WORKTREE/docs/species-background-review-results.md"
+            "$WORKTREE/docs/world-review-results.md"
+        )
+        PYTHONDONTWRITEBYTECODE=1 \
+            PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \
+            python3 - "$WORKTREE" "${ledgers[@]}" <<'PY' || return $?
+import sys
+from pathlib import Path
+
+from review_bundle import _path_under_checkout
+
+checkout = Path(sys.argv[1])
+for supplied in sys.argv[2:]:
+    _path_under_checkout(checkout, supplied, "review ledger")
+PY
+        python3 "$SCRIPT_DIR/audit_character_mechanics_inventory.py" \
+            --review-results \
+            "${ledgers[0]}" \
+            --output "$CHARACTER_INVENTORY_FILE" || rc=$?
+        python3 "$SCRIPT_DIR/audit_god_inventory.py" \
+            --review-results "${ledgers[1]}" \
+            --output "$GOD_INVENTORY_FILE" || rc=$?
+        python3 "$SCRIPT_DIR/audit_species_background_inventory.py" \
+            --review-results \
+            "${ledgers[4]}" \
+            --output "$SPECIES_BACKGROUND_INVENTORY_FILE" || rc=$?
+        python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
+            --scope issue29-v2 \
+            --review-base 01dc9911ec9948aff661f6ec0b9b0a798fcf909d \
+            --review-results \
+            "${ledgers[2]}" \
+            --output "$ITEM_INVENTORY_FILE" || rc=$?
+        python3 "$SCRIPT_DIR/monster_name_ssot.py" \
+            --inventory-output "$MONSTER_INVENTORY_FILE" \
+            --review-results "${ledgers[3]}" \
+            --baseline-ref \
+            7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c || rc=$?
+        python3 "$SCRIPT_DIR/audit_world_inventory.py" \
+            --review-results "${ledgers[5]}" \
+            --output "$WORLD_INVENTORY_FILE" || rc=$?
+        return "$rc"
+    }
+
     case "$PROFILE" in
         translation)
             run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
@@ -734,55 +788,6 @@ record_external_phase() {
             run_phase "review-static" 1 "Review verification (post-reviewer.sh)" \
                 env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
                     bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
-            run_review_ledgers() {
-                local rc=0
-                local ledgers=(
-                    "$WORKTREE/docs/character-mechanics-review-results.md"
-                    "$WORKTREE/docs/god-review-results.md"
-                    "$WORKTREE/docs/item-extended-review-results.md"
-                    "$WORKTREE/docs/monster-review-results.md"
-                    "$WORKTREE/docs/species-background-review-results.md"
-                    "$WORKTREE/docs/world-review-results.md"
-                )
-                PYTHONDONTWRITEBYTECODE=1 \
-                    PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \
-                    python3 - "$WORKTREE" "${ledgers[@]}" <<'PY' || return $?
-import sys
-from pathlib import Path
-
-from review_bundle import _path_under_checkout
-
-checkout = Path(sys.argv[1])
-for supplied in sys.argv[2:]:
-    _path_under_checkout(checkout, supplied, "review ledger")
-PY
-                python3 "$SCRIPT_DIR/audit_character_mechanics_inventory.py" \
-                    --review-results \
-                    "${ledgers[0]}" \
-                    --output "$CHARACTER_INVENTORY_FILE" || rc=$?
-                python3 "$SCRIPT_DIR/audit_god_inventory.py" \
-                    --review-results "${ledgers[1]}" \
-                    --output "$GOD_INVENTORY_FILE" || rc=$?
-                python3 "$SCRIPT_DIR/audit_species_background_inventory.py" \
-                    --review-results \
-                    "${ledgers[4]}" \
-                    --output "$SPECIES_BACKGROUND_INVENTORY_FILE" || rc=$?
-                python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
-                    --scope issue29-v2 \
-                    --review-base 01dc9911ec9948aff661f6ec0b9b0a798fcf909d \
-                    --review-results \
-                    "${ledgers[2]}" \
-                    --output "$ITEM_INVENTORY_FILE" || rc=$?
-                python3 "$SCRIPT_DIR/monster_name_ssot.py" \
-                    --inventory-output "$MONSTER_INVENTORY_FILE" \
-                    --review-results "${ledgers[3]}" \
-                    --baseline-ref \
-                    7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c || rc=$?
-                python3 "$SCRIPT_DIR/audit_world_inventory.py" \
-                    --review-results "${ledgers[5]}" \
-                    --output "$WORLD_INVENTORY_FILE" || rc=$?
-                return "$rc"
-            }
             run_phase "review-ledgers" 1 "Strict review ledger audit" \
                 run_review_ledgers || RESULTS=$((RESULTS + 1))
             run_tooling_tests() {
@@ -818,7 +823,11 @@ PY
             ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.
-            # source-db-static (run above) + translation-static + code-static.
+            # It also fails early when any formal review ledger is stale or
+            # invalid, while the review profile retains final-evidence ownership.
+            run_phase "ledger-freshness" 1 \
+                "Strict review ledger freshness audit" \
+                run_review_ledgers || RESULTS=$((RESULTS + 1))
             run_phase "translation-static" 1 "Translation verification (static)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             run_phase "code-static" 1 "Code verification (post-coder.sh, static)" \

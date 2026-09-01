@@ -81,6 +81,9 @@ printf '%s\n' \
     'control_commits = Path(".observed-control-commits")' \
     'control_commit = "item:" + os.environ.get("ZH_VERIFY_CONTROL_COMMIT", "<unset>") + "\n"' \
     'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
+    'if "--review-results" in sys.argv:' \
+    '    ledger_runs = Path(".observed-ledger-auditors")' \
+    '    ledger_runs.write_text(ledger_runs.read_text() + "item\n" if ledger_runs.exists() else "item\n")' \
     'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -111,8 +114,12 @@ do
         'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
         'if "--review-results" in sys.argv:' \
         '    Path(".ledger-auditor-started").write_text("started\n")' \
+        '    ledger_runs = Path(".observed-ledger-auditors")' \
+        '    ledger_runs.write_text(ledger_runs.read_text() + name + "\n" if ledger_runs.exists() else name + "\n")' \
         'output = Path(sys.argv[sys.argv.index("--output") + 1])' \
         'output.write_text("{}\n")' \
+        'if name == "audit_god_inventory" and os.environ.get("TEST_LEDGER_AUDITOR_RC"):' \
+        '    raise SystemExit(int(os.environ["TEST_LEDGER_AUDITOR_RC"]))' \
         'if name == "audit_world_inventory" and "MUTATED_CARD" in Path("docs/world-review-results.md").read_text():' \
         '    raise SystemExit(7)' \
         'raise SystemExit(0)' \
@@ -135,6 +142,9 @@ printf '%s\n' \
     'control_commits = Path(".observed-control-commits")' \
     'control_commit = "monster:" + os.environ.get("ZH_VERIFY_CONTROL_COMMIT", "<unset>") + "\n"' \
     'control_commits.write_text(control_commits.read_text() + control_commit if control_commits.exists() else control_commit)' \
+    'if "--review-results" in sys.argv:' \
+    '    ledger_runs = Path(".observed-ledger-auditors")' \
+    '    ledger_runs.write_text(ledger_runs.read_text() + "monster\n" if ledger_runs.exists() else "monster\n")' \
     'output = Path(sys.argv[sys.argv.index("--inventory-output") + 1])' \
     'output.write_text("{}\n")' \
     'raise SystemExit(0)' \
@@ -171,6 +181,9 @@ chmod +x "$REPO/.claude/scripts/post-reviewer.sh"
 printf '%s\n' '#!/bin/bash' 'exit 0' \
     > "$REPO/.claude/scripts/post-coder.sh"
 chmod +x "$REPO/.claude/scripts/post-coder.sh"
+printf '%s\n' '#!/bin/bash' 'exit 0' \
+    > "$REPO/.claude/scripts/post-translator.sh"
+chmod +x "$REPO/.claude/scripts/post-translator.sh"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/scan_i18n.py"
 chmod +x "$REPO/.claude/scripts/scan_i18n.py"
@@ -390,6 +403,144 @@ if find "$RUN_DIR" -maxdepth 1 -name '.*.tmp.*' | grep -q .; then
 else
     pass "metadata updates leave no temporary file"
 fi
+
+echo "--- CI strict review ledger freshness ---"
+rm -f "$REPO/.observed-ledger-auditors" "$REPO/.ledger-auditor-started"
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile ci
+) > "$TMP_ROOT/ci-ledgers-pass.out" 2>&1
+RC=$?
+assert_status "ci profile accepts all six fresh review ledgers" 0 "$RC"
+CI_RUN_DIR=$(latest_run_dir)
+python3 - "$CI_RUN_DIR/metadata.json" "$REPO/.observed-ledger-auditors" <<'PY'
+import json
+import sys
+
+metadata_path, observed_path = sys.argv[1:]
+data = json.load(open(metadata_path, encoding="utf-8"))
+assert data["profile"] == "ci"
+assert data["scope"] == "full"
+assert data["status"] == "pass"
+assert data["failures"] == 0
+assert [phase["id"] for phase in data["phases"]] == [
+    "policy-sync", "source-db-static", "ledger-freshness",
+    "translation-static", "code-static", "message-overlay-static",
+]
+freshness = [phase for phase in data["phases"]
+             if phase["id"] == "ledger-freshness"]
+assert freshness == [{
+    "id": "ledger-freshness", "required": True,
+    "status": "pass", "exit_code": 0,
+}]
+observed = open(observed_path, encoding="utf-8").read().splitlines()
+assert sorted(observed) == sorted([
+    "audit_character_mechanics_inventory", "audit_god_inventory",
+    "audit_species_background_inventory", "audit_world_inventory",
+    "item", "monster",
+]), observed
+PY
+assert_status "ci metadata binds one required six-ledger freshness phase" 0 "$?"
+
+WORLD_LEDGER="$REPO/docs/world-review-results.md"
+WORLD_LEDGER_BACKUP="$TMP_ROOT/world-ledger-ci"
+cp "$WORLD_LEDGER" "$WORLD_LEDGER_BACKUP"
+printf '%s\n' 'MUTATED_CARD' >> "$WORLD_LEDGER"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile ci
+) > "$TMP_ROOT/ci-ledger-stale.out" 2>&1
+RC=$?
+set -e
+assert_status "ci profile blocks a stale review ledger" 1 "$RC"
+CI_STALE_RUN_DIR=$(latest_run_dir)
+python3 - "$CI_STALE_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+freshness = [phase for phase in data["phases"]
+             if phase["id"] == "ledger-freshness"]
+assert freshness == [{
+    "id": "ledger-freshness", "required": True,
+    "status": "fail", "exit_code": 7,
+}]
+assert data["status"] == "fail"
+assert data["failures"] == 1
+PY
+assert_status "stale ledger failure is required phase metadata" 0 "$?"
+cp "$WORLD_LEDGER_BACKUP" "$WORLD_LEDGER"
+
+set +e
+(
+    cd "$REPO"
+    TEST_LEDGER_AUDITOR_RC=13 \
+        bash .claude/scripts/verify_zh.sh --profile ci
+) > "$TMP_ROOT/ci-ledger-auditor-failure.out" 2>&1
+RC=$?
+set -e
+assert_status "ci profile blocks an auditor failure" 1 "$RC"
+CI_AUDITOR_RUN_DIR=$(latest_run_dir)
+python3 - "$CI_AUDITOR_RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+freshness = [phase for phase in data["phases"]
+             if phase["id"] == "ledger-freshness"]
+assert freshness == [{
+    "id": "ledger-freshness", "required": True,
+    "status": "fail", "exit_code": 13,
+}]
+assert data["status"] == "fail"
+assert data["failures"] == 1
+PY
+assert_status "auditor failure is preserved in freshness metadata" 0 "$?"
+
+MISSING_LEDGER="$REPO/docs/god-review-results.md"
+mv "$MISSING_LEDGER" "$TMP_ROOT/god-review-results.md"
+rm -f "$REPO/.ledger-auditor-started"
+set +e
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile ci
+) > "$TMP_ROOT/ci-ledger-missing.out" 2>&1
+RC=$?
+set -e
+assert_status "ci profile fails closed on a missing review ledger" 1 "$RC"
+if [[ -e "$REPO/.ledger-auditor-started" ]]; then
+    fail "missing CI ledger starts an auditor before path validation"
+else
+    pass "missing CI ledger is rejected before any auditor starts"
+fi
+mv "$TMP_ROOT/god-review-results.md" "$MISSING_LEDGER"
+
+for task_profile in translation code; do
+    rm -f "$REPO/.observed-ledger-auditors" "$REPO/.ledger-auditor-started"
+    (
+        cd "$REPO"
+        bash .claude/scripts/verify_zh.sh --profile "$task_profile"
+    ) > "$TMP_ROOT/$task_profile-no-ledgers.out" 2>&1
+    RC=$?
+    assert_status "$task_profile profile succeeds without ledger freshness" 0 "$RC"
+    TASK_RUN_DIR=$(latest_run_dir)
+    python3 - "$TASK_RUN_DIR/metadata.json" "$task_profile" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+assert data["profile"] == sys.argv[2]
+assert "ledger-freshness" not in [phase["id"] for phase in data["phases"]]
+assert "review-ledgers" not in [phase["id"] for phase in data["phases"]]
+PY
+    assert_status "$task_profile metadata has no ledger phase" 0 "$?"
+    if [[ -e "$REPO/.observed-ledger-auditors" ]]; then
+        fail "$task_profile profile invoked a strict ledger auditor"
+    else
+        pass "$task_profile profile leaves strict ledgers untouched"
+    fi
+done
 
 # Use the frozen phase ids from the real contract (checked above) rather than a
 # duplicated list: the contract is the single source of truth.
@@ -869,15 +1020,16 @@ assert_status "interruption is distinct from ordinary failure" 0 "$?"
 
 RUN_COUNT=$(find "$REPO/.claude/metrics/verify" -mindepth 1 -maxdepth 1 \
     -type d | wc -l)
-# The external proof/fallback section contributes three successful run dirs,
-# and the
+# The CI freshness section contributes six run dirs (passing, stale, auditor
+# failure, missing ledger, and two task-profile controls). The external
+# proof/fallback section contributes three successful run dirs, and the
 # tooling phase section contributes failure, missing-runner, symlink-runner,
 # and code-profile control runs. Argument-error cases exit before creating a
 # run directory.
-if [[ "$RUN_COUNT" -eq 12 ]]; then
+if [[ "$RUN_COUNT" -eq 18 ]]; then
     pass "each started invocation creates a unique run directory"
 else
-    fail "expected 12 unique run directories, found $RUN_COUNT"
+    fail "expected 18 unique run directories, found $RUN_COUNT"
 fi
 
 echo "--- ZH Catch2 risk routing ---"
