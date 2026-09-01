@@ -330,6 +330,7 @@ catch2-tests/test_mon_cast_message_keys.o \
 catch2-tests/test_mon_cast_target.o \
 catch2-tests/test_mon-util.o \
 catch2-tests/test_ng-init-branches.o \
+catch2-tests/test_pattern.o \
 catch2-tests/test_player.o \
 catch2-tests/test_player_fixture.o \
 catch2-tests/test_randbook.o \

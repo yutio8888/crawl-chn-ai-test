@@ -242,6 +242,12 @@ jobs:
         run: bash .claude/scripts/post_zh_runtime.sh catch2
         env:
           TERM: dumb
+      - name: Build bundled-PCRE Catch2 tests and run the PCRE regression
+        run: |
+          make clean
+          make catch2-tests-executable BUILD_PCRE=y COVERAGE=YesPlease PYTHON=python3 -j4
+          ./catch2-tests-executable '[pcre-regression]'
+        working-directory: crawl-ref/source
 
   zh_runtime_full:
     permissions:
@@ -562,9 +568,18 @@ jobs:
       - name: Prepare Android build
         run: make ANDROID=1 TILES=y android -j4
         working-directory: crawl-ref/source
-      - name: Build Android buildTest APK
-        run: gradle :app:assembleBuildTest
+      - name: Build Android four-ABI debug APK
+        run: gradle :app:assembleDebug
         working-directory: crawl-ref/source/android-project
+      - name: Validate packaged PCRE linkage for every Android ABI
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          readelf="$sdk_root/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
+          [[ -x "$readelf" ]]
+          bash .claude/scripts/check_android_pcre_apk.sh \
+            --apk crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk \
+            --llvm-readelf "$readelf"
 
   release_draft:
     if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
