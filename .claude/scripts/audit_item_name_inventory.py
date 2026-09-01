@@ -130,6 +130,7 @@ DEVELOPMENT_NON_OVERWRITE_STATEMENT = (
 
 from i18n_shared import (
     compute_canonical_key,
+    i18n_escape_key,
     load_review_input,
     parse_entries_physical,
     review_input_metadata,
@@ -1733,22 +1734,41 @@ def source_db_dependency_spec(row):
     category = row["category"]
     english = row["english_source"]
     if category == "unrand":
-        return {"canonical_key": english.lower(), "fallback": None}
-    if category == "appearance":
+        context = None
+    elif category == "appearance":
         if row["input"] == "crawl-ref/source/zh-scroll-appearance.cc":
             return None
-        lookup = "" if english == "(empty component)" else english
-        return {
-            "canonical_key": lookup.lower(),
-            "fallback": lookup,
-        }
-    if category == "special":
+        english = "" if english == "(empty component)" else english
+        context = None
+    elif category == "special":
         if str(row["identity"]).startswith("special:RUNE_"):
-            key = f"rune_name|{english}".lower()
+            context = "rune_name"
         else:
-            key = english.lower()
-        return {"canonical_key": key, "fallback": None}
-    return None
+            context = None
+    elif category != "unrand":
+        return None
+    candidates = []
+    if context and english:
+        runtime_key = f"{context}|{english}"
+        escaped_key = i18n_escape_key(runtime_key)
+        candidates.append({
+            "branch": "context",
+            "lookup_key": escaped_key,
+            "canonical_key": compute_canonical_key(escaped_key),
+        })
+    if english:
+        escaped_english = i18n_escape_key(english)
+        candidates.append({
+            "branch": "plain",
+            "lookup_key": escaped_english,
+            "canonical_key": compute_canonical_key(escaped_english),
+        })
+    return {
+        "lookup_kind": "C_" if context else "T_",
+        "context": context,
+        "english": english,
+        "candidates": candidates,
+    }
 
 
 def source_db_definition_chains(directory, requested_keys, snapshot=None):
@@ -1795,31 +1815,46 @@ def source_db_definition_chains(directory, requested_keys, snapshot=None):
     return chains
 
 
-def source_db_dependency(spec, definitions):
-    """Resolve one logical-key definition chain with explicit runtime state."""
-    fallback = spec["fallback"]
-    winner_index = len(definitions) - 1 if definitions else None
-    if definitions:
-        resolved = definitions[-1]["runtime_value"]
-        state = "empty" if resolved == "" else "value"
-    elif fallback is not None:
-        resolved = fallback
-        state = "fallback"
-    else:
-        resolved = None
-        state = "missing"
+def source_db_dependency(spec, chains):
+    """Resolve the production C_()/T_() candidate chain and EN fallback."""
+    candidates = []
+    selected = None
+    for candidate_spec in spec["candidates"]:
+        definitions = (
+            [] if selected is not None
+            else chains[candidate_spec["canonical_key"]]
+        )
+        winner_index = len(definitions) - 1 if definitions else None
+        if selected is not None:
+            candidate_state = "not-evaluated"
+        elif definitions:
+            value = definitions[-1]["runtime_value"]
+            candidate_state = "empty" if value == "" else "value"
+            selected = (candidate_spec["branch"], candidate_state, value)
+        else:
+            candidate_state = "missing"
+        candidates.append({
+            **candidate_spec,
+            "state": candidate_state,
+            "winner_index": winner_index,
+            "definitions": definitions,
+        })
+    if selected is None:
+        selected = ("english", "fallback", spec["english"])
+    selected_branch, state, resolved = selected
     return {
         "schema": "dcss-localized-sourcedb-dependency-v1",
-        "canonical_key": spec["canonical_key"],
-        "fallback": (
-            {"mode": "none"}
-            if fallback is None
-            else {"mode": "literal", "value": fallback}
-        ),
+        "lookup_kind": spec["lookup_kind"],
+        "context": spec["context"],
+        "english": spec["english"],
+        "candidates": candidates,
+        "fallback": {
+            "branch": "english",
+            "runtime_value": spec["english"],
+        },
+        "selected_branch": selected_branch,
         "state": state,
         "resolved_value": resolved,
-        "winner_index": winner_index,
-        "definitions": definitions,
     }
 
 
@@ -1844,8 +1879,9 @@ def v3_decision_cards(rows, v2_rows, source_directory=ZH_SOURCE_DIR,
     chains = source_db_definition_chains(
         source_directory,
         (
-            spec["canonical_key"]
+            candidate["canonical_key"]
             for spec in specs.values() if spec is not None
+            for candidate in spec["candidates"]
         ),
         snapshot=snapshot,
     )
@@ -1866,9 +1902,10 @@ def v3_decision_cards(rows, v2_rows, source_directory=ZH_SOURCE_DIR,
         spec = specs[identity]
         dependencies = []
         if spec is not None:
-            dependencies.append(source_db_dependency(
-                spec, chains[spec["canonical_key"]]
-            ))
+            dependency = source_db_dependency(spec, chains)
+            dependencies.append(dependency)
+            decision["current_chinese"] = dependency["resolved_value"]
+            decision["adopted_chinese"] = dependency["resolved_value"]
         cards.append({
             "identity": identity,
             "decision": decision,
@@ -2451,8 +2488,12 @@ V3_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v3 -->"
 V3_CARD_FIELDS = {"identity", "decision", "source_dependencies"}
 V3_DECISION_FIELD_SET = set(V3_DECISION_FIELDS)
 V3_DEPENDENCY_FIELDS = {
-    "schema", "canonical_key", "fallback", "state", "resolved_value",
-    "winner_index", "definitions",
+    "schema", "lookup_kind", "context", "english", "candidates",
+    "fallback", "selected_branch", "state", "resolved_value",
+}
+V3_CANDIDATE_FIELDS = {
+    "branch", "lookup_key", "canonical_key", "state", "winner_index",
+    "definitions",
 }
 V3_DEFINITION_FIELDS = {
     "canonical_key", "raw_key", "runtime_value", "path", "load_order",
@@ -2514,103 +2555,152 @@ def validate_v3_decision_cards(rows):
                 raise RuntimeError(
                     f"{identity} dependency has unknown or missing fields"
                 )
-            key = dependency["canonical_key"]
+            lookup_kind = dependency["lookup_kind"]
+            context = dependency["context"]
+            english = dependency["english"]
             if (
-                not isinstance(key, str)
-                or key != compute_canonical_key(key)
-            ):
-                raise RuntimeError(
-                    f"{identity} dependency canonical key is invalid"
+                lookup_kind not in {"C_", "T_"}
+                or not isinstance(english, str)
+                or (
+                    lookup_kind == "C_"
+                    and (not isinstance(context, str) or not context)
                 )
+                or (lookup_kind == "T_" and context is not None)
+            ):
+                raise RuntimeError(f"{identity} lookup call is invalid")
             fallback = dependency["fallback"]
-            if not isinstance(fallback, dict) or fallback.get("mode") not in {
-                "none", "literal",
+            if fallback != {
+                "branch": "english", "runtime_value": english,
             }:
                 raise RuntimeError(f"{identity} fallback is invalid")
-            expected_fallback_fields = (
-                {"mode"} if fallback.get("mode") == "none"
-                else {"mode", "value"}
-            )
-            if set(fallback) != expected_fallback_fields or (
-                fallback.get("mode") == "literal"
-                and not isinstance(fallback.get("value"), str)
-            ):
-                raise RuntimeError(f"{identity} fallback is invalid")
-            definitions = dependency["definitions"]
-            if not isinstance(definitions, list):
-                raise RuntimeError(f"{identity} definitions are invalid")
-            per_file = Counter()
-            order_keys = []
-            for definition_index, definition in enumerate(definitions):
-                if (
-                    not isinstance(definition, dict)
-                    or set(definition) != V3_DEFINITION_FIELDS
-                ):
-                    raise RuntimeError(
-                        f"{identity} definition has unknown or missing fields"
-                    )
-                if (
-                    definition["canonical_key"] != key
-                    or not isinstance(definition["raw_key"], str)
-                    or compute_canonical_key(definition["raw_key"]) != key
-                ):
-                    raise RuntimeError(
-                        f"{identity} definition canonical key mismatch"
-                    )
-                path = definition["path"]
-                _canonical_relative_path(
-                    path, f"{identity} definition[{definition_index}].path"
-                )
-                name = PurePosixPath(path).name
-                expected_load_order = (
-                    "source.txt-first" if name == "source.txt"
-                    else f"sorted-txt:{name}"
-                )
-                if definition["load_order"] != expected_load_order:
-                    raise RuntimeError(
-                        f"{identity} definition load order is invalid"
-                    )
-                expected_ordinal = per_file[path]
-                if definition["occurrence_ordinal"] != expected_ordinal:
-                    raise RuntimeError(
-                        f"{identity} definition occurrence order is invalid"
-                    )
-                per_file[path] += 1
-                if (
-                    not isinstance(definition["runtime_value"], str)
-                    or not isinstance(definition["winner"], bool)
-                ):
-                    raise RuntimeError(
-                        f"{identity} definition value is invalid"
-                    )
-                order_keys.append((
-                    0 if name == "source.txt" else 1,
-                    "" if name == "source.txt" else name,
-                    expected_ordinal,
+            expected_candidates = []
+            if context is not None and english:
+                expected_candidates.append((
+                    "context", i18n_escape_key(f"{context}|{english}")
                 ))
-            if order_keys != sorted(order_keys):
-                raise RuntimeError(f"{identity} definition chain is unordered")
-            expected_winner = len(definitions) - 1 if definitions else None
-            if dependency["winner_index"] != expected_winner or [
-                index for index, definition in enumerate(definitions)
-                if definition["winner"]
-            ] != ([] if expected_winner is None else [expected_winner]):
-                raise RuntimeError(f"{identity} winner is invalid")
-            if definitions:
-                expected_value = definitions[-1]["runtime_value"]
-                expected_state = "empty" if expected_value == "" else "value"
-            elif fallback["mode"] == "literal":
-                expected_value = fallback["value"]
-                expected_state = "fallback"
-            else:
-                expected_value = None
-                expected_state = "missing"
+            if english:
+                expected_candidates.append((
+                    "plain", i18n_escape_key(english)
+                ))
+            candidates = dependency["candidates"]
             if (
-                dependency["resolved_value"] != expected_value
-                or dependency["state"] != expected_state
+                not isinstance(candidates, list)
+                or len(candidates) != len(expected_candidates)
+            ):
+                raise RuntimeError(f"{identity} lookup candidates are invalid")
+            selected = None
+            for candidate_index, (candidate, expected) in enumerate(zip(
+                candidates, expected_candidates
+            )):
+                evaluated = selected is None
+                expected_branch, expected_lookup_key = expected
+                if (
+                    not isinstance(candidate, dict)
+                    or set(candidate) != V3_CANDIDATE_FIELDS
+                    or candidate["branch"] != expected_branch
+                    or candidate["lookup_key"] != expected_lookup_key
+                    or candidate["canonical_key"]
+                    != compute_canonical_key(expected_lookup_key)
+                ):
+                    raise RuntimeError(
+                        f"{identity} lookup candidate is invalid"
+                    )
+                key = candidate["canonical_key"]
+                definitions = candidate["definitions"]
+                if not isinstance(definitions, list):
+                    raise RuntimeError(f"{identity} definitions are invalid")
+                per_file = Counter()
+                order_keys = []
+                for definition_index, definition in enumerate(definitions):
+                    if (
+                        not isinstance(definition, dict)
+                        or set(definition) != V3_DEFINITION_FIELDS
+                    ):
+                        raise RuntimeError(
+                            f"{identity} definition has unknown or missing fields"
+                        )
+                    if (
+                        definition["canonical_key"] != key
+                        or not isinstance(definition["raw_key"], str)
+                        or compute_canonical_key(definition["raw_key"]) != key
+                    ):
+                        raise RuntimeError(
+                            f"{identity} definition canonical key mismatch"
+                        )
+                    path = definition["path"]
+                    _canonical_relative_path(
+                        path,
+                        f"{identity} candidate[{candidate_index}]"
+                        f".definition[{definition_index}].path",
+                    )
+                    name = PurePosixPath(path).name
+                    expected_load_order = (
+                        "source.txt-first" if name == "source.txt"
+                        else f"sorted-txt:{name}"
+                    )
+                    if definition["load_order"] != expected_load_order:
+                        raise RuntimeError(
+                            f"{identity} definition load order is invalid"
+                        )
+                    expected_ordinal = per_file[path]
+                    if definition["occurrence_ordinal"] != expected_ordinal:
+                        raise RuntimeError(
+                            f"{identity} definition occurrence order is invalid"
+                        )
+                    per_file[path] += 1
+                    if (
+                        not isinstance(definition["runtime_value"], str)
+                        or not isinstance(definition["winner"], bool)
+                    ):
+                        raise RuntimeError(
+                            f"{identity} definition value is invalid"
+                        )
+                    order_keys.append((
+                        0 if name == "source.txt" else 1,
+                        "" if name == "source.txt" else name,
+                        expected_ordinal,
+                    ))
+                if order_keys != sorted(order_keys):
+                    raise RuntimeError(
+                        f"{identity} definition chain is unordered"
+                    )
+                expected_winner = (
+                    len(definitions) - 1 if definitions else None
+                )
+                if candidate["winner_index"] != expected_winner or [
+                    index for index, definition in enumerate(definitions)
+                    if definition["winner"]
+                ] != ([] if expected_winner is None else [expected_winner]):
+                    raise RuntimeError(f"{identity} winner is invalid")
+                if not evaluated:
+                    if definitions:
+                        raise RuntimeError(
+                            f"{identity} unevaluated candidate has definitions"
+                        )
+                    expected_state = "not-evaluated"
+                elif definitions:
+                    expected_value = definitions[-1]["runtime_value"]
+                    expected_state = (
+                        "empty" if expected_value == "" else "value"
+                    )
+                    selected = (
+                        expected_branch, expected_state, expected_value
+                    )
+                else:
+                    expected_state = "missing"
+                if candidate["state"] != expected_state:
+                    raise RuntimeError(
+                        f"{identity} lookup candidate state is invalid"
+                    )
+            if selected is None:
+                selected = ("english", "fallback", english)
+            if (
+                dependency["selected_branch"] != selected[0]
+                or dependency["state"] != selected[1]
+                or dependency["resolved_value"] != selected[2]
             ):
                 raise RuntimeError(f"{identity} dependency state is invalid")
-            if decision["current_chinese"] != expected_value:
+            if decision["current_chinese"] != selected[2]:
                 raise RuntimeError(
                     f"{identity} dependency does not match current Chinese"
                 )

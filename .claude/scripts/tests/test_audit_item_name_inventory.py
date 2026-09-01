@@ -56,22 +56,32 @@ def v3_sourcedb_fixture(source_dir, specs, snapshot=None):
     db = MODULE.source_entries(source_dir, active)
     internal = []
     v2_rows = []
-    for identity, key, fallback in specs:
-        current = db.get(key, fallback) if fallback is not None else db.get(key)
-        category = "appearance" if fallback is not None else "unrand"
+    for identity, key, context in specs:
+        category = "special" if context is not None else "unrand"
         row = {
             "identity": identity,
             "category": category,
             "lifecycle": "current",
             "english_source": key,
-            "_pre_review_chinese": current,
-            "current_chinese": current,
+            "_pre_review_chinese": None,
+            "current_chinese": None,
             "producer": "fixture SourceDB lookup",
             "consumer": "fixture display",
             "input": "crawl-ref/source/item-name.cc",
             "_metadata": {"category": "fixture"},
             "_conclusion": "keep",
         }
+        spec = MODULE.source_db_dependency_spec(row)
+        if context is not None:
+            if context != "rune_name" or spec["context"] != context:
+                raise AssertionError("fixture context does not match production")
+        current = key
+        for candidate in spec["candidates"]:
+            if candidate["canonical_key"] in db:
+                current = db[candidate["canonical_key"]]
+                break
+        row["_pre_review_chinese"] = current
+        row["current_chinese"] = current
         internal.append(row)
         v2_rows.append({
             "identity": identity,
@@ -238,14 +248,15 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             write_sourcedb(override, [("glowing", "覆盖")])
             original, _ = v3_sourcedb_fixture(source_dir, specs)
             dependency = original[0]["source_dependencies"][0]
+            candidate = dependency["candidates"][0]
             self.assertEqual([0, 1, 0], [
                 definition["occurrence_ordinal"]
-                for definition in dependency["definitions"]
+                for definition in candidate["definitions"]
             ])
-            self.assertEqual(2, dependency["winner_index"])
+            self.assertEqual(2, candidate["winner_index"])
             self.assertEqual([False, False, True], [
                 definition["winner"]
-                for definition in dependency["definitions"]
+                for definition in candidate["definitions"]
             ])
 
             write_sourcedb(source, [
@@ -289,7 +300,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 changed_v3_identities(deleted, added_cards),
             )
 
-    def test_v3_sourcedb_states_cover_missing_fallback_empty_and_value(self):
+    def test_v3_sourcedb_states_separate_missing_empty_value_and_fallback(self):
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
@@ -298,7 +309,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             write_sourcedb(source, [("empty", ""), ("value", "值")])
             cards, _ = v3_sourcedb_fixture(source_dir, [
                 ("missing", "missing", None),
-                ("fallback", "fallback", "fallback"),
+                ("fallback", "fallback", None),
+                ("empty-key", "", None),
                 ("empty", "empty", None),
                 ("value", "value", None),
             ])
@@ -308,10 +320,125 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             }
             self.assertEqual({
                 "empty": "empty",
+                "empty-key": "fallback",
                 "fallback": "fallback",
-                "missing": "missing",
+                "missing": "fallback",
                 "value": "value",
             }, states)
+            empty_key = next(
+                card for card in cards if card["identity"] == "empty-key"
+            )["source_dependencies"][0]
+            self.assertFalse(empty_key["candidates"])
+            self.assertEqual("english", empty_key["selected_branch"])
+            self.assertEqual("", empty_key["resolved_value"])
+            for card in cards:
+                dependency = card["source_dependencies"][0]
+                if card["identity"] in {"fallback", "missing"}:
+                    self.assertEqual(
+                        "missing", dependency["candidates"][0]["state"]
+                    )
+                    self.assertEqual(
+                        "english", dependency["selected_branch"]
+                    )
+
+    def test_v3_lookup_chain_matches_context_plain_and_english_fallbacks(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            rune = [("special:RUNE_FIX", "glowing", "rune_name")]
+
+            write_sourcedb(source, [("glowing", "普通译文")])
+            plain, _ = v3_sourcedb_fixture(source_dir, rune)
+            dependency = plain[0]["source_dependencies"][0]
+            self.assertEqual("C_", dependency["lookup_kind"])
+            self.assertEqual(["context", "plain"], [
+                candidate["branch"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual(["missing", "value"], [
+                candidate["state"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual("plain", dependency["selected_branch"])
+            self.assertEqual("普通译文", dependency["resolved_value"])
+
+            write_sourcedb(source, [
+                ("rune_name|glowing", "语境译文"),
+                ("glowing", "普通译文"),
+            ])
+            contextual, _ = v3_sourcedb_fixture(source_dir, rune)
+            dependency = contextual[0]["source_dependencies"][0]
+            self.assertEqual("context", dependency["selected_branch"])
+            self.assertEqual(["value", "not-evaluated"], [
+                candidate["state"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual("语境译文", dependency["resolved_value"])
+            write_sourcedb(source, [
+                ("rune_name|glowing", "语境译文"),
+                ("glowing", "未执行普通译文变更"),
+            ])
+            skipped_plain, _ = v3_sourcedb_fixture(source_dir, rune)
+            self.assertEqual(contextual, skipped_plain)
+
+            write_sourcedb(source, [
+                ("rune_name|glowing", ""),
+                ("glowing", "普通译文"),
+            ])
+            empty, _ = v3_sourcedb_fixture(source_dir, rune)
+            dependency = empty[0]["source_dependencies"][0]
+            self.assertEqual("context", dependency["selected_branch"])
+            self.assertEqual(["empty", "not-evaluated"], [
+                candidate["state"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual("empty", dependency["state"])
+            self.assertEqual("", dependency["resolved_value"])
+
+            write_sourcedb(source, [("unrelated", "无关")])
+            english, _ = v3_sourcedb_fixture(source_dir, rune)
+            dependency = english[0]["source_dependencies"][0]
+            self.assertEqual(["missing", "missing"], [
+                candidate["state"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual("english", dependency["selected_branch"])
+            self.assertEqual("fallback", dependency["state"])
+            self.assertEqual("glowing", dependency["resolved_value"])
+
+    def test_v3_lookup_chain_uses_production_key_escape_and_fails_closed(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            english = "Path\\Name\nTabbed\tEnd"
+            escaped = MODULE.i18n_escape_key(english)
+            write_sourcedb(source, [(escaped, "特殊译文")])
+            cards, _ = v3_sourcedb_fixture(
+                source_dir, [("escaped", english, None)]
+            )
+            dependency = cards[0]["source_dependencies"][0]
+            candidate = dependency["candidates"][0]
+            self.assertEqual("T_", dependency["lookup_kind"])
+            self.assertEqual(escaped, candidate["lookup_key"])
+            self.assertEqual(
+                MODULE.compute_canonical_key(escaped),
+                candidate["canonical_key"],
+            )
+            self.assertEqual("特殊译文", dependency["resolved_value"])
+
+            for mutation in ("lookup-key", "selected-branch"):
+                changed = copy.deepcopy(cards)
+                if mutation == "lookup-key":
+                    changed[0]["source_dependencies"][0]["candidates"][0][
+                        "lookup_key"
+                    ] = english
+                else:
+                    changed[0]["source_dependencies"][0][
+                        "selected_branch"
+                    ] = "english"
+                with self.subTest(mutation=mutation), self.assertRaises(
+                    RuntimeError
+                ):
+                    MODULE.validate_v3_decision_cards(changed)
 
     def test_tag_branch_filter_works_without_generated_build_headers(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -688,7 +815,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         glowing = [
             row for row in payload["rows"]
             if any(
-                dependency["canonical_key"] == "glowing"
+                any(
+                    candidate["canonical_key"] == "glowing"
+                    and candidate["state"] != "not-evaluated"
+                    for candidate in dependency["candidates"]
+                )
                 for dependency in row["source_dependencies"]
             )
         ]
