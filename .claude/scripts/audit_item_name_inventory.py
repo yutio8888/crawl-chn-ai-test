@@ -129,6 +129,7 @@ DEVELOPMENT_NON_OVERWRITE_STATEMENT = (
 )
 
 from i18n_shared import (
+    compute_canonical_key,
     load_review_input,
     parse_entries_physical,
     review_input_metadata,
@@ -1723,8 +1724,172 @@ def evidence_card(row, source_evidence):
     }
 
 
+def source_db_dependency_spec(row):
+    """Return the localized SourceDB lookup made by one inventory row.
+
+    The key and fallback mirror the row construction above.  A None return
+    means that the row is not produced through localized SourceDB lookup.
+    """
+    category = row["category"]
+    english = row["english_source"]
+    if category == "unrand":
+        return {"canonical_key": english.lower(), "fallback": None}
+    if category == "appearance":
+        if row["input"] == "crawl-ref/source/zh-scroll-appearance.cc":
+            return None
+        lookup = "" if english == "(empty component)" else english
+        return {
+            "canonical_key": lookup.lower(),
+            "fallback": lookup,
+        }
+    if category == "special":
+        if str(row["identity"]).startswith("special:RUNE_"):
+            key = f"rune_name|{english}".lower()
+        else:
+            key = english.lower()
+        return {"canonical_key": key, "fallback": None}
+    return None
+
+
+def source_db_definition_chains(directory, requested_keys, snapshot=None):
+    """Freeze complete production-ordered definitions for logical keys.
+
+    Occurrence ordinals are scoped to one canonical key in one file.  They do
+    not drift when an unrelated entry is inserted elsewhere in that file.
+    File ordering is represented by the production rule and relative path,
+    rather than a numeric whole-directory ordinal that unrelated files could
+    shift.
+    """
+    active = snapshot or audit_snapshot()
+    keys = sorted(set(requested_keys))
+    chains = {key: [] for key in keys}
+    key_set = set(keys)
+    for path in source_files(directory, active):
+        relative = path.relative_to(ROOT).as_posix()
+        load_order = (
+            "source.txt-first"
+            if path.name == "source.txt"
+            else f"sorted-txt:{path.name}"
+        )
+        occurrences = Counter()
+        for entry in parse_entries_physical(active.read(
+            path, allow_external_unbound=True
+        )):
+            key = entry.canonical_key
+            if key not in key_set:
+                continue
+            ordinal = occurrences[key]
+            occurrences[key] += 1
+            chains[key].append({
+                "canonical_key": key,
+                "raw_key": entry.raw_key,
+                "runtime_value": runtime_normalize_value(entry.value),
+                "path": relative,
+                "load_order": load_order,
+                "occurrence_ordinal": ordinal,
+                "winner": False,
+            })
+    for definitions in chains.values():
+        if definitions:
+            definitions[-1]["winner"] = True
+    return chains
+
+
+def source_db_dependency(spec, definitions):
+    """Resolve one logical-key definition chain with explicit runtime state."""
+    fallback = spec["fallback"]
+    winner_index = len(definitions) - 1 if definitions else None
+    if definitions:
+        resolved = definitions[-1]["runtime_value"]
+        state = "empty" if resolved == "" else "value"
+    elif fallback is not None:
+        resolved = fallback
+        state = "fallback"
+    else:
+        resolved = None
+        state = "missing"
+    return {
+        "schema": "dcss-localized-sourcedb-dependency-v1",
+        "canonical_key": spec["canonical_key"],
+        "fallback": (
+            {"mode": "none"}
+            if fallback is None
+            else {"mode": "literal", "value": fallback}
+        ),
+        "state": state,
+        "resolved_value": resolved,
+        "winner_index": winner_index,
+        "definitions": definitions,
+    }
+
+
+V3_DECISION_FIELDS = (
+    "lifecycle", "english_source", "pre_review_chinese",
+    "current_chinese", "adopted_english", "adopted_chinese", "producer",
+    "consumer", "metadata", "input", "terminal_conclusion",
+    "semantic_reason", "reentry_trigger",
+)
+
+
+def v3_decision_cards(rows, v2_rows, source_directory=ZH_SOURCE_DIR,
+                      snapshot=None):
+    """Project candidate rows into canonical v3 decisions and dependencies."""
+    v2_by_identity = {row["identity"]: row for row in v2_rows}
+    if len(v2_by_identity) != len(v2_rows):
+        raise RuntimeError("v3 decision projection has duplicate identities")
+    specs = {
+        row["identity"]: source_db_dependency_spec(row)
+        for row in rows
+    }
+    chains = source_db_definition_chains(
+        source_directory,
+        (
+            spec["canonical_key"]
+            for spec in specs.values() if spec is not None
+        ),
+        snapshot=snapshot,
+    )
+    cards = []
+    for row in rows:
+        identity = row["identity"]
+        try:
+            source = v2_by_identity[identity]
+        except KeyError as error:
+            raise RuntimeError(
+                f"v3 decision projection is missing v2 identity: {identity}"
+            ) from error
+        decision = {field: source[field] for field in V3_DECISION_FIELDS}
+        decision["reentry_trigger"] = (
+            "Re-review if this identity's logical source dependencies, "
+            "decision fields, or glossary authority change."
+        )
+        spec = specs[identity]
+        dependencies = []
+        if spec is not None:
+            dependencies.append(source_db_dependency(
+                spec, chains[spec["canonical_key"]]
+            ))
+        cards.append({
+            "identity": identity,
+            "decision": decision,
+            "source_dependencies": dependencies,
+        })
+    return sorted(cards, key=lambda card: card["identity"])
+
+
+def v3_decision_digest(rows):
+    encoded = json.dumps(
+        sorted(rows, key=lambda card: card["identity"]),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return sha_bytes(encoded)
+
+
 @audit_snapshot_invocation(ROOT)
-def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE):
+def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
+                             *, return_source_rows=False):
     snapshot = audit_snapshot()
     review_base = resolve_commit(review_base)
     historical = revision_snapshot(review_base)
@@ -2030,7 +2195,29 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE):
         "audit_snapshot": snapshot.metadata(),
         "review_base_snapshot": historical.metadata(),
     }
+    if return_source_rows:
+        return payload, public_rows, rows
     return payload, public_rows
+
+
+@audit_snapshot_invocation(ROOT)
+def build_extended_inventory_v3(review_base=ISSUE29_REVIEW_BASE):
+    """Build the explicit transitional v3 decision inventory."""
+    payload, public_rows, source_rows = build_extended_inventory(
+        review_base, return_source_rows=True
+    )
+    v3_rows = v3_decision_cards(
+        source_rows, public_rows, snapshot=audit_snapshot()
+    )
+    payload["schema"] = "dcss-item-extended-review-inventory-v3"
+    payload["candidate_inventory_sha256"] = payload.pop("inventory_sha256")
+    payload["rows"] = v3_rows
+    payload["decision_inventory_sha256"] = v3_decision_digest(v3_rows)
+    payload["inventory_sha256"] = payload["decision_inventory_sha256"]
+    payload["input_manifest_sha256"] = payload["audit_snapshot"][
+        "input_manifest_sha256"
+    ]
+    return payload, v3_rows
 
 
 TERMINAL_CONCLUSIONS = {
@@ -2255,6 +2442,306 @@ def render_review_results(inventory, rows):
         lines.append(json.dumps(
             row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ))
+    lines.append("```")
+    return "\n".join(lines) + "\n"
+
+
+V3_REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v3 -->"
+V3_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v3 -->"
+V3_CARD_FIELDS = {"identity", "decision", "source_dependencies"}
+V3_DECISION_FIELD_SET = set(V3_DECISION_FIELDS)
+V3_DEPENDENCY_FIELDS = {
+    "schema", "canonical_key", "fallback", "state", "resolved_value",
+    "winner_index", "definitions",
+}
+V3_DEFINITION_FIELDS = {
+    "canonical_key", "raw_key", "runtime_value", "path", "load_order",
+    "occurrence_ordinal", "winner",
+}
+
+
+def _canonical_relative_path(value, label):
+    if not isinstance(value, str) or not value:
+        raise RuntimeError(f"{label} is not a canonical relative path")
+    path = PurePosixPath(value)
+    if path.is_absolute() or value != path.as_posix() or ".." in path.parts:
+        raise RuntimeError(f"{label} is not a canonical relative path")
+
+
+def validate_v3_decision_cards(rows):
+    """Fail closed on unknown, incomplete, or non-canonical v3 state."""
+    if not isinstance(rows, list):
+        raise RuntimeError("v3 evidence cards are not a list")
+    identities = []
+    for card_index, card in enumerate(rows):
+        label = f"v3 card[{card_index}]"
+        if not isinstance(card, dict) or set(card) != V3_CARD_FIELDS:
+            raise RuntimeError(f"{label} has unknown or missing fields")
+        identity = card["identity"]
+        if not isinstance(identity, str) or not identity:
+            raise RuntimeError(f"{label} identity is invalid")
+        identities.append(identity)
+        decision = card["decision"]
+        if (
+            not isinstance(decision, dict)
+            or set(decision) != V3_DECISION_FIELD_SET
+        ):
+            raise RuntimeError(
+                f"{identity} decision has unknown or missing fields"
+            )
+        if decision["terminal_conclusion"] not in TERMINAL_CONCLUSIONS:
+            raise RuntimeError(
+                f"{identity} decision has invalid terminal conclusion"
+            )
+        if decision["reentry_trigger"] != (
+            "Re-review if this identity's logical source dependencies, "
+            "decision fields, or glossary authority change."
+        ):
+            raise RuntimeError(f"{identity} reentry trigger is not v3")
+        if not isinstance(decision["metadata"], dict):
+            raise RuntimeError(f"{identity} decision metadata is invalid")
+        _canonical_relative_path(decision["input"], f"{identity} input")
+        dependencies = card["source_dependencies"]
+        if not isinstance(dependencies, list) or len(dependencies) > 1:
+            raise RuntimeError(f"{identity} source dependencies are invalid")
+        for dependency in dependencies:
+            if (
+                not isinstance(dependency, dict)
+                or set(dependency) != V3_DEPENDENCY_FIELDS
+                or dependency["schema"]
+                != "dcss-localized-sourcedb-dependency-v1"
+            ):
+                raise RuntimeError(
+                    f"{identity} dependency has unknown or missing fields"
+                )
+            key = dependency["canonical_key"]
+            if (
+                not isinstance(key, str)
+                or key != compute_canonical_key(key)
+            ):
+                raise RuntimeError(
+                    f"{identity} dependency canonical key is invalid"
+                )
+            fallback = dependency["fallback"]
+            if not isinstance(fallback, dict) or fallback.get("mode") not in {
+                "none", "literal",
+            }:
+                raise RuntimeError(f"{identity} fallback is invalid")
+            expected_fallback_fields = (
+                {"mode"} if fallback.get("mode") == "none"
+                else {"mode", "value"}
+            )
+            if set(fallback) != expected_fallback_fields or (
+                fallback.get("mode") == "literal"
+                and not isinstance(fallback.get("value"), str)
+            ):
+                raise RuntimeError(f"{identity} fallback is invalid")
+            definitions = dependency["definitions"]
+            if not isinstance(definitions, list):
+                raise RuntimeError(f"{identity} definitions are invalid")
+            per_file = Counter()
+            order_keys = []
+            for definition_index, definition in enumerate(definitions):
+                if (
+                    not isinstance(definition, dict)
+                    or set(definition) != V3_DEFINITION_FIELDS
+                ):
+                    raise RuntimeError(
+                        f"{identity} definition has unknown or missing fields"
+                    )
+                if (
+                    definition["canonical_key"] != key
+                    or not isinstance(definition["raw_key"], str)
+                    or compute_canonical_key(definition["raw_key"]) != key
+                ):
+                    raise RuntimeError(
+                        f"{identity} definition canonical key mismatch"
+                    )
+                path = definition["path"]
+                _canonical_relative_path(
+                    path, f"{identity} definition[{definition_index}].path"
+                )
+                name = PurePosixPath(path).name
+                expected_load_order = (
+                    "source.txt-first" if name == "source.txt"
+                    else f"sorted-txt:{name}"
+                )
+                if definition["load_order"] != expected_load_order:
+                    raise RuntimeError(
+                        f"{identity} definition load order is invalid"
+                    )
+                expected_ordinal = per_file[path]
+                if definition["occurrence_ordinal"] != expected_ordinal:
+                    raise RuntimeError(
+                        f"{identity} definition occurrence order is invalid"
+                    )
+                per_file[path] += 1
+                if (
+                    not isinstance(definition["runtime_value"], str)
+                    or not isinstance(definition["winner"], bool)
+                ):
+                    raise RuntimeError(
+                        f"{identity} definition value is invalid"
+                    )
+                order_keys.append((
+                    0 if name == "source.txt" else 1,
+                    "" if name == "source.txt" else name,
+                    expected_ordinal,
+                ))
+            if order_keys != sorted(order_keys):
+                raise RuntimeError(f"{identity} definition chain is unordered")
+            expected_winner = len(definitions) - 1 if definitions else None
+            if dependency["winner_index"] != expected_winner or [
+                index for index, definition in enumerate(definitions)
+                if definition["winner"]
+            ] != ([] if expected_winner is None else [expected_winner]):
+                raise RuntimeError(f"{identity} winner is invalid")
+            if definitions:
+                expected_value = definitions[-1]["runtime_value"]
+                expected_state = "empty" if expected_value == "" else "value"
+            elif fallback["mode"] == "literal":
+                expected_value = fallback["value"]
+                expected_state = "fallback"
+            else:
+                expected_value = None
+                expected_state = "missing"
+            if (
+                dependency["resolved_value"] != expected_value
+                or dependency["state"] != expected_state
+            ):
+                raise RuntimeError(f"{identity} dependency state is invalid")
+            if decision["current_chinese"] != expected_value:
+                raise RuntimeError(
+                    f"{identity} dependency does not match current Chinese"
+                )
+    if len(set(identities)) != len(identities):
+        raise RuntimeError("v3 evidence cards have duplicate identities")
+    if identities != sorted(identities):
+        raise RuntimeError("v3 evidence cards are not canonically ordered")
+
+
+def parse_review_results_v3(review_input):
+    text = review_input.text
+    if (
+        text.count(V3_REVIEW_ARTIFACT_BEGIN) != 1
+        or text.count(V3_REVIEW_ARTIFACT_END) != 1
+        or REVIEW_ARTIFACT_BEGIN in text
+        or REVIEW_ARTIFACT_END in text
+        or re.search(r"ITEM REVIEW ARTIFACT v(?!3\b)", text)
+    ):
+        raise RuntimeError("unknown or mixed item review schema")
+    rows = parse_review_results(review_input)
+    validate_v3_decision_cards(rows)
+    return rows
+
+
+def parse_review_header_v3(review_input):
+    patterns = {
+        "decision_inventory_sha256": (
+            r"^- Decision inventory SHA-256: `([0-9a-f]{64})`$"
+        ),
+        "glossary_sha256": r"^- Glossary SHA-256: `([0-9a-f]{64})`$",
+        "baseline": r"^- Review base: `([0-9a-f]{40})`$",
+        "count": r"^- Decision rows: `([0-9]+)`$",
+        "schema": r"^- Review schema: `(dcss-item-review-decisions-v3)`$",
+    }
+    result = {}
+    for field, pattern in patterns.items():
+        matches = re.findall(pattern, review_input.text, re.MULTILINE)
+        result[field] = matches[0] if len(matches) == 1 else None
+        result[field + "_header_count"] = len(matches)
+    if result["count"] is not None:
+        result["count"] = int(result["count"])
+    return result
+
+
+def review_violations_v3(inventory_rows, review_rows, inventory, header,
+                         review_input=None):
+    validate_v3_decision_cards(inventory_rows)
+    validate_v3_decision_cards(review_rows)
+    inventory_ids = [row["identity"] for row in inventory_rows]
+    review_ids = [row["identity"] for row in review_rows]
+    expected_header = {
+        "decision_inventory_sha256": inventory[
+            "decision_inventory_sha256"
+        ],
+        "glossary_sha256": inventory["glossary_sha256"],
+        "baseline": inventory["baseline"],
+        "count": inventory["count"],
+        "schema": "dcss-item-review-decisions-v3",
+    }
+    violations = {
+        "inventory_duplicates": sorted(
+            key for key, count in Counter(inventory_ids).items() if count > 1
+        ),
+        "review_duplicates": sorted(
+            key for key, count in Counter(review_ids).items() if count > 1
+        ),
+        "inventory_minus_review": sorted(set(inventory_ids) - set(review_ids)),
+        "review_minus_inventory": sorted(set(review_ids) - set(inventory_ids)),
+        "decision_mismatches": sorted(
+            identity for identity, left, right in zip(
+                inventory_ids, inventory_rows, review_rows
+            ) if identity != right["identity"] or left != right
+        ) if len(inventory_rows) == len(review_rows) else ["row-count"],
+        "header_mismatches": sorted(
+            field for field, expected in expected_header.items()
+            if header.get(field) != expected
+            or header.get(field + "_header_count") != 1
+        ),
+    }
+    if review_input is not None:
+        violations["artifact_mismatch"] = (
+            [] if review_input.text == render_review_results_v3(
+                inventory, review_rows
+            ) else ["review artifact is not the exact canonical v3 rendering"]
+        )
+    return violations
+
+
+def review_artifact_summary_v3(inventory, rows):
+    return {
+        "baseline": inventory["baseline"],
+        "decision_inventory_sha256": inventory[
+            "decision_inventory_sha256"
+        ],
+        "glossary_sha256": inventory["glossary_sha256"],
+        "review_schema": "dcss-item-review-decisions-v3",
+        "row_count": len(rows),
+        "terminal_conclusion_counts": dict(sorted(Counter(
+            row["decision"]["terminal_conclusion"] for row in rows
+        ).items())),
+    }
+
+
+def render_review_results_v3(inventory, rows):
+    validate_v3_decision_cards(rows)
+    summary = json.dumps(
+        review_artifact_summary_v3(inventory, rows),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    lines = [
+        "# Item translation review decisions",
+        "",
+        V3_REVIEW_ARTIFACT_BEGIN,
+        summary,
+        V3_REVIEW_ARTIFACT_END,
+        "",
+        "- Review schema: `dcss-item-review-decisions-v3`",
+        f"- Decision inventory SHA-256: `{inventory['decision_inventory_sha256']}`",
+        f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
+        f"- Review base: `{inventory['baseline']}`",
+        f"- Decision rows: `{inventory['count']}`",
+        "",
+        "## Evidence cards",
+        "",
+        "```jsonl",
+    ]
+    lines.extend(json.dumps(
+        row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ) for row in rows)
     lines.append("```")
     return "\n".join(lines) + "\n"
 
@@ -2879,6 +3366,14 @@ def write_review_results(path, inventory, rows):
     )
 
 
+def write_review_results_v3(path, inventory, rows):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        render_review_results_v3(inventory, rows),
+        encoding="utf-8",
+    )
+
+
 @audit_snapshot_invocation(ROOT)
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
@@ -2898,6 +3393,15 @@ def main(argv=None):
         help=(
             "target commit for issue29-v2 before/after evidence "
             f"(default: {ISSUE29_REVIEW_BASE})"
+        ),
+    )
+    parser.add_argument(
+        "--review-schema",
+        choices=("v2", "v3"),
+        default="v2",
+        help=(
+            "explicit review artifact schema for issue29-v2; v2 remains the "
+            "transitional default until ledger migration"
         ),
     )
     parser.add_argument(
@@ -2951,6 +3455,7 @@ def main(argv=None):
     )
     if quality_requested and (
         args.scope != "issue29-v2"
+        or args.review_schema != "v2"
         or not args.review_results
         or not args.quality_prompt
         or not args.quality_context
@@ -2968,13 +3473,23 @@ def main(argv=None):
 
     try:
         if args.scope == "issue29-v2":
-            payload, internal_rows = build_extended_inventory(
+            builder = (
+                build_extended_inventory_v3
+                if args.review_schema == "v3"
+                else build_extended_inventory
+            )
+            payload, internal_rows = builder(
                 args.review_base or ISSUE29_REVIEW_BASE
             )
             if args.write_review_results:
-                write_review_results(
-                    args.write_review_results, payload, internal_rows
-                )
+                if args.review_schema == "v3":
+                    write_review_results_v3(
+                        args.write_review_results, payload, internal_rows
+                    )
+                else:
+                    write_review_results(
+                        args.write_review_results, payload, internal_rows
+                    )
             if args.review_results:
                 review_input = load_review_input(
                     ROOT,
@@ -2982,19 +3497,30 @@ def main(argv=None):
                     snapshot=audit_snapshot(),
                 )
                 payload["review_input"] = review_input_metadata(review_input)
-                review = parse_review_results(review_input)
-                review_header = parse_review_header(review_input)
-                payload["review_violations"] = review_violations(
-                    payload["rows"],
-                    review,
-                    payload,
-                    review_header,
-                    review_input,
-                )
+                if args.review_schema == "v3":
+                    review = parse_review_results_v3(review_input)
+                    review_header = parse_review_header_v3(review_input)
+                    payload["review_violations"] = review_violations_v3(
+                        payload["rows"],
+                        review,
+                        payload,
+                        review_header,
+                        review_input,
+                    )
+                else:
+                    review = parse_review_results(review_input)
+                    review_header = parse_review_header(review_input)
+                    payload["review_violations"] = review_violations(
+                        payload["rows"],
+                        review,
+                        payload,
+                        review_header,
+                        review_input,
+                    )
         else:
             if (
                 args.review_results or args.write_review_results
-                or args.review_base
+                or args.review_base or args.review_schema != "v2"
             ):
                 raise RuntimeError(
                     "review options are valid only for --scope issue29-v2"

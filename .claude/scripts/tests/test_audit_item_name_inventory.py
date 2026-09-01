@@ -45,6 +45,67 @@ def review_input(path):
     )
 
 
+def write_sourcedb(path, entries):
+    path.write_text("".join(
+        f"%%%%\n{key}\n{value}\n" for key, value in entries
+    ), encoding="utf-8")
+
+
+def v3_sourcedb_fixture(source_dir, specs, snapshot=None):
+    active = snapshot or SHARED.AuditSnapshot(MODULE.ROOT, None)
+    db = MODULE.source_entries(source_dir, active)
+    internal = []
+    v2_rows = []
+    for identity, key, fallback in specs:
+        current = db.get(key, fallback) if fallback is not None else db.get(key)
+        category = "appearance" if fallback is not None else "unrand"
+        row = {
+            "identity": identity,
+            "category": category,
+            "lifecycle": "current",
+            "english_source": key,
+            "_pre_review_chinese": current,
+            "current_chinese": current,
+            "producer": "fixture SourceDB lookup",
+            "consumer": "fixture display",
+            "input": "crawl-ref/source/item-name.cc",
+            "_metadata": {"category": "fixture"},
+            "_conclusion": "keep",
+        }
+        internal.append(row)
+        v2_rows.append({
+            "identity": identity,
+            "lifecycle": "current",
+            "english_source": key,
+            "pre_review_chinese": current,
+            "current_chinese": current,
+            "adopted_english": key,
+            "adopted_chinese": current,
+            "producer": row["producer"],
+            "consumer": row["consumer"],
+            "metadata": {"category": category},
+            "input": row["input"],
+            "source_files": [],
+            "terminal_conclusion": "keep",
+            "semantic_reason": "keep: fixture decision",
+            "reentry_trigger": "v2 source SHA trigger",
+        })
+    cards = MODULE.v3_decision_cards(
+        internal, v2_rows, source_directory=source_dir, snapshot=active
+    )
+    MODULE.validate_v3_decision_cards(cards)
+    return cards, active.metadata()
+
+
+def changed_v3_identities(before, after):
+    old = {row["identity"]: row for row in before}
+    new = {row["identity"]: row for row in after}
+    return sorted(
+        identity for identity in old.keys() | new.keys()
+        if old.get(identity) != new.get(identity)
+    )
+
+
 _QUALITY_M1_FIXTURE = None
 
 
@@ -103,6 +164,154 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(FileNotFoundError):
                 MODULE.source_entries(Path(directory))
+
+    def test_v3_sourcedb_dependency_fanout_and_unrelated_input_isolation(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            later = source_dir / "later.txt"
+            specs = [
+                ("unique", "unique", None),
+                ("shared-a", "glowing", None),
+                ("shared-b", "glowing", None),
+            ]
+            write_sourcedb(source, [
+                ("android-only", "安卓"),
+                ("unique", "唯一"),
+                ("glowing", "初值"),
+            ])
+            write_sourcedb(later, [("glowing", "覆盖")])
+            before, before_manifest = v3_sourcedb_fixture(
+                source_dir, specs
+            )
+            before_digest = MODULE.v3_decision_digest(before)
+
+            write_sourcedb(source, [
+                ("android-only", "安卓变更"),
+                ("unrelated-new", "无关"),
+                ("unique", "唯一"),
+                ("glowing", "初值"),
+            ])
+            unrelated, unrelated_manifest = v3_sourcedb_fixture(
+                source_dir, specs
+            )
+            self.assertEqual(before, unrelated)
+            self.assertEqual(
+                before_digest, MODULE.v3_decision_digest(unrelated)
+            )
+            self.assertNotEqual(
+                before_manifest["input_manifest_sha256"],
+                unrelated_manifest["input_manifest_sha256"],
+            )
+
+            write_sourcedb(source, [
+                ("android-only", "安卓变更"),
+                ("unique", "唯一变更"),
+                ("glowing", "初值"),
+            ])
+            unique, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(["unique"], changed_v3_identities(
+                unrelated, unique
+            ))
+
+            write_sourcedb(later, [("glowing", "覆盖变更")])
+            shared, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(unique, shared),
+            )
+
+    def test_v3_sourcedb_chain_freezes_overrides_duplicates_and_winner(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            override = source_dir / "b.txt"
+            specs = [("shared-a", "glowing", None),
+                     ("shared-b", "glowing", None)]
+            write_sourcedb(source, [
+                ("glowing", "第一"), ("glowing", "第二")
+            ])
+            write_sourcedb(override, [("glowing", "覆盖")])
+            original, _ = v3_sourcedb_fixture(source_dir, specs)
+            dependency = original[0]["source_dependencies"][0]
+            self.assertEqual([0, 1, 0], [
+                definition["occurrence_ordinal"]
+                for definition in dependency["definitions"]
+            ])
+            self.assertEqual(2, dependency["winner_index"])
+            self.assertEqual([False, False, True], [
+                definition["winner"]
+                for definition in dependency["definitions"]
+            ])
+
+            write_sourcedb(source, [
+                ("glowing", "第一"),
+                ("glowing", "插入"),
+                ("glowing", "第二"),
+            ])
+            duplicate_added, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(original, duplicate_added),
+            )
+
+            write_sourcedb(source, [
+                ("glowing", "第二"), ("glowing", "第一")
+            ])
+            reordered, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(duplicate_added, reordered),
+            )
+
+            renamed = source_dir / "z.txt"
+            override.rename(renamed)
+            renamed_cards, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(reordered, renamed_cards),
+            )
+            renamed.unlink()
+            deleted, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(renamed_cards, deleted),
+            )
+            added = source_dir / "zz.txt"
+            write_sourcedb(added, [("glowing", "新增覆盖")])
+            added_cards, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(
+                ["shared-a", "shared-b"],
+                changed_v3_identities(deleted, added_cards),
+            )
+
+    def test_v3_sourcedb_states_cover_missing_fallback_empty_and_value(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            write_sourcedb(source, [("empty", ""), ("value", "值")])
+            cards, _ = v3_sourcedb_fixture(source_dir, [
+                ("missing", "missing", None),
+                ("fallback", "fallback", "fallback"),
+                ("empty", "empty", None),
+                ("value", "value", None),
+            ])
+            states = {
+                card["identity"]: card["source_dependencies"][0]["state"]
+                for card in cards
+            }
+            self.assertEqual({
+                "empty": "empty",
+                "fallback": "fallback",
+                "missing": "missing",
+                "value": "value",
+            }, states)
 
     def test_tag_branch_filter_works_without_generated_build_headers(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -407,6 +616,173 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             },
             payload["scope"]["randart_component_metrics"]["totals"],
         )
+
+    def test_issue29_v2_default_writer_is_byte_compatible(self):
+        expected = (
+            MODULE.ROOT / "docs/item-extended-review-results.md"
+        ).read_bytes()
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            generated = Path(directory) / "review.md"
+            proc = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--write-review-results", str(generated),
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            actual = generated.read_bytes()
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        self.assertEqual(expected, actual)
+
+    def test_issue29_v3_is_explicit_and_round_trips_strictly(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            root = Path(directory)
+            inventory = root / "inventory.json"
+            results = root / "results.md"
+            generated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-schema", "v3", "--output", str(inventory),
+                    "--write-review-results", str(results),
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(0, generated.returncode, generated.stderr)
+            payload = json.loads(inventory.read_text(encoding="utf-8"))
+            parsed = MODULE.parse_review_results_v3(review_input(results))
+            validated = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-schema", "v3", "--output", str(inventory),
+                    "--review-results", str(results),
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            result_text = results.read_text(encoding="utf-8")
+        self.assertEqual(0, validated.returncode, validated.stderr)
+        self.assertEqual(
+            "dcss-item-extended-review-inventory-v3", payload["schema"]
+        )
+        self.assertEqual(payload["rows"], parsed)
+        self.assertEqual(
+            payload["decision_inventory_sha256"],
+            MODULE.v3_decision_digest(payload["rows"]),
+        )
+        self.assertEqual(
+            payload["input_manifest_sha256"],
+            payload["audit_snapshot"]["input_manifest_sha256"],
+        )
+        glowing = [
+            row for row in payload["rows"]
+            if any(
+                dependency["canonical_key"] == "glowing"
+                for dependency in row["source_dependencies"]
+            )
+        ]
+        self.assertEqual([
+            "appearance:amulet-secondary:006",
+            "appearance:potion-qualifier:007",
+            "appearance:ring-secondary:002",
+            "appearance:staff-primary:000",
+            "appearance:wand-secondary:011",
+        ], [row["identity"] for row in glowing])
+        self.assertTrue(all(
+            row["source_dependencies"] == glowing[0]["source_dependencies"]
+            for row in glowing
+        ))
+        self.assertNotIn("source_files", json.dumps(payload["rows"]))
+        self.assertNotIn("source SHA", result_text)
+
+    def test_v3_reader_rejects_unknown_mixed_and_noncanonical_artifacts(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory) / "db"
+            source_dir.mkdir()
+            write_sourcedb(source_dir / "source.txt", [("key", "值")])
+            rows, _ = v3_sourcedb_fixture(
+                source_dir, [("identity", "key", None)]
+            )
+            inventory = {
+                "baseline": "3" * 40,
+                "count": 1,
+                "decision_inventory_sha256": MODULE.v3_decision_digest(rows),
+                "glossary_sha256": "2" * 64,
+            }
+            canonical = MODULE.render_review_results_v3(inventory, rows)
+            path = Path(directory) / "review.md"
+
+            def loaded(text):
+                path.write_text(text, encoding="utf-8")
+                return review_input(path)
+
+            parsed = MODULE.parse_review_results_v3(loaded(canonical))
+            header = MODULE.parse_review_header_v3(loaded(canonical))
+            self.assertFalse(any(MODULE.review_violations_v3(
+                rows, parsed, inventory, header, loaded(canonical)
+            ).values()))
+
+            for name, text in {
+                "unknown-schema": canonical.replace(
+                    "ITEM REVIEW ARTIFACT v3", "ITEM REVIEW ARTIFACT v4"
+                ),
+                "mixed-schema": canonical + MODULE.REVIEW_ARTIFACT_BEGIN + "\n",
+            }.items():
+                with self.subTest(name=name), self.assertRaisesRegex(
+                    RuntimeError, "unknown or mixed"
+                ):
+                    MODULE.parse_review_results_v3(loaded(text))
+
+            json_line = next(
+                line for line in canonical.splitlines()
+                if line.startswith('{"decision"')
+            )
+            unknown = json.loads(json_line)
+            unknown["unknown"] = True
+            unknown_text = canonical.replace(
+                json_line,
+                json.dumps(unknown, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")),
+            )
+            with self.assertRaisesRegex(RuntimeError, "unknown or missing"):
+                MODULE.parse_review_results_v3(loaded(unknown_text))
+
+            noncanonical = canonical.replace(json_line, json_line + " ", 1)
+            noncanonical_input = loaded(noncanonical)
+            noncanonical_rows = MODULE.parse_review_results_v3(
+                noncanonical_input
+            )
+            self.assertTrue(MODULE.review_violations_v3(
+                rows,
+                noncanonical_rows,
+                inventory,
+                MODULE.parse_review_header_v3(noncanonical_input),
+                noncanonical_input,
+            )["artifact_mismatch"])
+
+            reordered = copy.deepcopy(rows)
+            reordered.append(copy.deepcopy(rows[0]))
+            reordered[1]["identity"] = "a-before"
+            with self.assertRaisesRegex(RuntimeError, "canonically ordered"):
+                MODULE.validate_v3_decision_cards(reordered)
+
+            malformed = copy.deepcopy(rows)
+            malformed[0]["source_dependencies"][0]["unknown"] = True
+            with self.assertRaisesRegex(RuntimeError, "unknown or missing"):
+                MODULE.validate_v3_decision_cards(malformed)
 
     def test_paired_components_reject_minimal_key_count_token_mutations(self):
         def write(path, entries):
