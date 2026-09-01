@@ -464,6 +464,26 @@ def _require_directory_generation(
         raise RootfixError(f"{label} contents changed during enumeration")
 
 
+def _rewind_directory_for_scan(
+    directory: DirectoryHandle,
+    *,
+    label: str = "rootfix directory",
+) -> None:
+    """Reset a held directory FD before a fresh ``os.scandir`` pass.
+
+    ``os.scandir(fd)`` consumes the directory position associated with the
+    supplied open file description. Reusing a security-bound directory FD
+    without rewinding it can therefore make a later inventory appear empty.
+    Keep the held identity, but start every enumeration from offset zero.
+    """
+
+    _validate_directory_handle(directory, label=label)
+    try:
+        os.lseek(directory.fd, 0, os.SEEK_SET)
+    except OSError as error:
+        raise RootfixError(f"{label} cannot be rewound for enumeration") from error
+
+
 def _open_evidence_context(
     root: Path,
     *,
@@ -2073,6 +2093,9 @@ def _artifact_snapshot_handle(
         )
         directory_generations.append((current, generation))
         try:
+            _rewind_directory_for_scan(
+                current, label="rootfix snapshot directory"
+            )
             with os.scandir(current.fd) as stream:
                 entries = sorted(
                     (
@@ -3621,6 +3644,9 @@ def _attempt_paths(attempts: Path | DirectoryHandle) -> list[Path]:
         generation = _directory_generation(
             handle, label="rootfix attempts"
         )
+        _rewind_directory_for_scan(
+            handle, label="rootfix attempt directory"
+        )
         with os.scandir(handle.fd) as entries:
             for entry in sorted(entries, key=lambda value: value.name):
                 if (
@@ -3668,6 +3694,9 @@ def _published_attempts(
     try:
         generation = _directory_generation(
             attempts, label="rootfix attempts"
+        )
+        _rewind_directory_for_scan(
+            attempts, label="rootfix attempts directory"
         )
         with os.scandir(attempts.fd) as stream:
             entries = sorted(
@@ -4382,6 +4411,9 @@ def _validate_recovery_archive(
             archive_handle,
             label="rootfix bundle recovery archive",
         )
+        _rewind_directory_for_scan(
+            archive_handle, label="rootfix bundle recovery archive"
+        )
         with os.scandir(archive_handle.fd) as stream:
             entries = sorted(
                 (
@@ -4599,6 +4631,9 @@ def _validate_evidence_objects(
     try:
         _validate_evidence_context(context)
         generation = _directory_generation(
+            context.root, label="rootfix evidence root"
+        )
+        _rewind_directory_for_scan(
             context.root, label="rootfix evidence root"
         )
         with os.scandir(context.root.fd) as entries:
@@ -5201,6 +5236,9 @@ def _attempt_directory_state(
     try:
         generation = _directory_generation(
             handle, label="rootfix attempts"
+        )
+        _rewind_directory_for_scan(
+            handle, label="rootfix staging directory"
         )
         with os.scandir(handle.fd) as entries:
             for entry in entries:
