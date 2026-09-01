@@ -11,10 +11,11 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
                     $(LOCAL_PATH)/../sqlite \
                     $(LOCAL_PATH)/../lua/src \
                     $(LOCAL_PATH)/../freetype/include \
+                    $(LOCAL_PATH)/../pcre \
                     $(LOCAL_PATH)/$(CRAWL_PATH) \
                     $(LOCAL_PATH)/$(CRAWL_PATH)/rltiles
 
-LOCAL_CFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cflags) -Wno-error=format-security -Wno-format-security
+LOCAL_CFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cflags) -Wno-error=format-security -Wno-format-security -DREGEX_PCRE
 LOCAL_CXXFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cxxflags) -Wno-error=format-security -Wno-format-security
 
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
@@ -341,7 +342,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/rltiles/tiledef-unrand.cc \
     $(CRAWL_PATH)/version.cc
 
-LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image mikmod smpeg2 SDL2_mixer freetype sqlite lua zlib
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image mikmod smpeg2 SDL2_mixer freetype sqlite lua zlib libpcre
 
 LOCAL_LDLIBS := -ldl -lGLESv1_CM -lGLESv2 -llog -landroid
 
