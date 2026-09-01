@@ -39,8 +39,14 @@ class GuidePackagingTest(unittest.TestCase):
                        f"datadir_fp={destination}", f"DESTDIR={directory}"]
             if android:
                 command.append("ANDROID=test")
-            subprocess.run(command, cwd=SOURCE, check=True,
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.run(
+                command, cwd=SOURCE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, text=True)
+            self.assertEqual(
+                process.returncode, 0,
+                f"command failed: {' '.join(command)}\n"
+                f"stdout:\n{process.stdout}\n"
+                f"stderr:\n{process.stderr}")
             for guide in GUIDES:
                 self.assertTrue((destination / "docs" / guide).is_file(), guide)
                 self.assertTrue((destination / "docs" / "zh" / guide).is_file(),

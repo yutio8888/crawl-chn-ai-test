@@ -1334,7 +1334,8 @@ RLTILES_CFLAGS := $(ALL_CFLAGS) -Wno-tautological-compare
 
 DOC_BASE        := ../docs
 DOC_TEMPLATES   := $(DOC_BASE)/template
-GENERATED_DOCS  := $(DOC_BASE)/aptitudes.txt $(DOC_BASE)/aptitudes-wide.txt $(DOC_BASE)/FAQ.html $(DOC_BASE)/crawl_manual.txt $(DOC_BASE)/quickstart.txt $(DOC_BASE)/zh/crawl_manual.txt $(DOC_BASE)/zh/quickstart.txt
+GENERATED_GUIDE_DOCS := $(DOC_BASE)/crawl_manual.txt $(DOC_BASE)/quickstart.txt $(DOC_BASE)/zh/crawl_manual.txt $(DOC_BASE)/zh/quickstart.txt
+GENERATED_DOCS  := $(DOC_BASE)/aptitudes.txt $(DOC_BASE)/aptitudes-wide.txt $(DOC_BASE)/FAQ.html $(GENERATED_GUIDE_DOCS)
 # Headers that need to exist before attempting to compile cc files
 GENERATED_HEADERS := art-enum.h config.h mon-mst.h species-type.h job-type.h \
                      form-data.h $(RLTILES)status-icon-sizes.h
@@ -1619,7 +1620,7 @@ ifdef ANDROID
 endif
 
 .PHONY: install-guide-docs
-install-guide-docs: $(GENERATED_DOCS)
+install-guide-docs: $(GENERATED_GUIDE_DOCS)
 	mkdir -p $(datadir_fp)/docs/zh
 	$(COPY) ../docs/*.txt $(datadir_fp)/docs/
 	$(COPY) ../docs/*.md $(datadir_fp)/docs/
