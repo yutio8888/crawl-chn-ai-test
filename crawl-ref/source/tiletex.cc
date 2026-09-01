@@ -29,10 +29,11 @@ GenericTexture::~GenericTexture()
 
 void GenericTexture::unload_texture()
 {
-    if (!m_handle)
-        return;
+    unsigned int handle = m_handle;
+    m_handle = 0;
 
-    glmanager->delete_textures(1, &m_handle);
+    if (handle && glmanager)
+        glmanager->delete_textures(1, &handle);
 }
 
 bool GenericTexture::load_texture(const char *filename,
