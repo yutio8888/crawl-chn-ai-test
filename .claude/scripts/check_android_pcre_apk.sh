@@ -60,16 +60,12 @@ DUPLICATES="$(LC_ALL=C sort "$ENTRY_LIST" | uniq -d)"
 [[ -z "$DUPLICATES" ]] \
     || die "APK contains duplicate zip entries: $(tr '\n' ' ' <<<"$DUPLICATES")"
 
-mapfile -t ACTUAL_ABIS < <(
+ACTUAL_ABIS="$(
     awk -F/ '$1 == "lib" && NF >= 3 { print $2 }' "$ENTRY_LIST" \
-        | LC_ALL=C sort -u
-)
-[[ ${#ACTUAL_ABIS[@]} -eq ${#EXPECTED_ABIS[@]} ]] \
-    || die "APK ABI set mismatch: expected '${EXPECTED_ABIS[*]}', got '${ACTUAL_ABIS[*]}'"
-for i in "${!EXPECTED_ABIS[@]}"; do
-    [[ "${ACTUAL_ABIS[$i]}" == "${EXPECTED_ABIS[$i]}" ]] \
-        || die "APK ABI set mismatch: expected '${EXPECTED_ABIS[*]}', got '${ACTUAL_ABIS[*]}'"
-done
+        | LC_ALL=C sort -u | paste -sd ' ' -
+)"
+[[ "$ACTUAL_ABIS" == "${EXPECTED_ABIS[*]}" ]] \
+    || die "APK ABI set mismatch: expected '${EXPECTED_ABIS[*]}', got '$ACTUAL_ABIS'"
 
 for abi in "${EXPECTED_ABIS[@]}"; do
     for library in libmain.so libpcre.so; do

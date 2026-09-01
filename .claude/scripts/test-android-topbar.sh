@@ -254,19 +254,27 @@ if [[ -z "$APK" ]]; then
     [[ -d "$ANDROID_PROJECT" ]] \
         || die "Android worktree not found for APK auto-detection: $WT_SOURCE"
     APK_DIR="$ANDROID_PROJECT/app/build/outputs/apk/buildTest"
-    APK="$(find "$APK_DIR" -maxdepth 1 -type f -name 'app-buildTest*.apk' \
-        -printf '%T@ %p\n' 2>/dev/null | sort -nr | awk 'NR == 1 { print $2 }')"
+    for candidate in "$APK_DIR"/app-buildTest*.apk; do
+        [[ -f "$candidate" ]] || continue
+        if [[ -z "$APK" || "$candidate" -nt "$APK" ]]; then
+            APK="$candidate"
+        fi
+    done
 fi
 [[ -n "$APK" && -f "$APK" ]] || die "APK not found; pass --apk or --build"
 
-BUILD_TOOLS="$(find "$SDK_ROOT/build-tools" -mindepth 1 -maxdepth 1 \
-    -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)"
-[[ -n "$BUILD_TOOLS" ]] || die "Android build-tools not found under $SDK_ROOT"
-ZIPALIGN="$SDK_ROOT/build-tools/$BUILD_TOOLS/zipalign"
-APKSIGNER="$SDK_ROOT/build-tools/$BUILD_TOOLS/apksigner"
-
 INSTALL_APK="$APK"
 if [[ "$APK" == *-unsigned.apk ]]; then
+    BUILD_TOOLS="$(
+        for candidate in "$SDK_ROOT"/build-tools/*; do
+            [[ -d "$candidate" ]] || continue
+            printf '%s\n' "${candidate##*/}"
+        done | LC_ALL=C sort -t. -k1,1n -k2,2n -k3,3n | tail -1
+    )"
+    [[ -n "$BUILD_TOOLS" ]] \
+        || die "Android build-tools not found under $SDK_ROOT"
+    ZIPALIGN="$SDK_ROOT/build-tools/$BUILD_TOOLS/zipalign"
+    APKSIGNER="$SDK_ROOT/build-tools/$BUILD_TOOLS/apksigner"
     KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
     [[ -f "$KEYSTORE" ]] || die "debug keystore not found: $KEYSTORE"
     [[ -x "$ZIPALIGN" && -x "$APKSIGNER" ]] \
