@@ -107,12 +107,14 @@ done
 if [[ -n "$SERIAL" ]]; then
     ADB=(adb -s "$SERIAL")
 else
-    ADB=(adb)
-    mapfile -t DEVICES < <(adb devices | awk 'NR > 1 && $2 == "device" { print $1 }')
-    [[ ${#DEVICES[@]} -gt 0 ]] || die "no adb device is connected and authorized"
-    [[ ${#DEVICES[@]} -eq 1 ]] \
+    DEVICE_LIST="$(adb devices | awk 'NR > 1 && $2 == "device" { print $1 }')"
+    DEVICE_COUNT="$(printf '%s\n' "$DEVICE_LIST" \
+        | awk 'NF { count++ } END { print count + 0 }')"
+    [[ "$DEVICE_COUNT" -gt 0 ]] \
+        || die "no adb device is connected and authorized"
+    [[ "$DEVICE_COUNT" -eq 1 ]] \
         || die "multiple adb devices found; pass --serial SERIAL"
-    SERIAL="${DEVICES[0]}"
+    SERIAL="$(printf '%s\n' "$DEVICE_LIST" | awk 'NF { print; exit }')"
     ADB=(adb -s "$SERIAL")
 fi
 
@@ -265,11 +267,26 @@ fi
 
 INSTALL_APK="$APK"
 if [[ "$APK" == *-unsigned.apk ]]; then
+    build_tools_version_key()
+    {
+        local version="$1"
+        local pattern='^([0-9]+)\.([0-9]+)\.([0-9]+)(-rc([0-9]+))?$'
+        local channel=0 prerelease=0
+        [[ "$version" =~ $pattern ]] || return 0
+        if [[ -n "${BASH_REMATCH[4]}" ]]; then
+            channel=1
+            prerelease="${BASH_REMATCH[5]}"
+        fi
+        printf '%012d%012d%012d%01d%012d %s\n' \
+            "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" \
+            "${BASH_REMATCH[3]}" "$channel" "$prerelease" "$version"
+    }
+
     BUILD_TOOLS="$(
         for candidate in "$SDK_ROOT"/build-tools/*; do
             [[ -d "$candidate" ]] || continue
-            printf '%s\n' "${candidate##*/}"
-        done | LC_ALL=C sort -t. -k1,1n -k2,2n -k3,3n | tail -1
+            build_tools_version_key "${candidate##*/}"
+        done | LC_ALL=C sort | tail -1 | awk '{ print $2 }'
     )"
     [[ -n "$BUILD_TOOLS" ]] \
         || die "Android build-tools not found under $SDK_ROOT"
