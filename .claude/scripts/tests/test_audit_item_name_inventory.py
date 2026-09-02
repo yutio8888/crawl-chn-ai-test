@@ -131,7 +131,7 @@ def quality_m1_fixture():
         with mock.patch.object(
             MODULE, "audit_snapshot", return_value=snapshot
         ):
-            payload, _internal_rows = MODULE.build_extended_inventory()
+            payload, _internal_rows = MODULE.build_extended_inventory_v3()
         payload["review_input"] = {"input_sha256": "a" * 64}
         payload["review_violations"] = {}
         files = MODULE.build_quality_m1_files(
@@ -875,11 +875,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     result = MODULE.main(["--output", str(output)])
         self.assertEqual(1, result)
 
-    def test_issue29_v2_freezes_every_finite_production_boundary(self):
+    def test_issue29_source_inventory_freezes_every_production_boundary(self):
         payload, internal_rows = MODULE.build_extended_inventory()
-        self.assertEqual(
-            "dcss-item-extended-review-inventory-v2", payload["schema"]
-        )
         self.assertEqual(390, payload["ordinary_v1"]["count"])
         self.assertEqual(
             {
@@ -913,7 +910,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             payload["scope"]["randart_component_metrics"]["totals"],
         )
 
-    def test_issue29_v2_default_writer_is_byte_compatible(self):
+    def test_issue29_v3_default_writer_is_byte_compatible(self):
         expected = (
             MODULE.ROOT / "docs/item-extended-review-results.md"
         ).read_bytes()
@@ -935,7 +932,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(0, proc.returncode, proc.stderr)
         self.assertEqual(expected, actual)
 
-    def test_issue29_v3_is_explicit_and_round_trips_strictly(self):
+    def test_issue29_v3_default_round_trips_strictly(self):
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
@@ -945,7 +942,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             generated = subprocess.run(
                 [
                     sys.executable, str(SCRIPT), "--scope", "issue29-v2",
-                    "--review-schema", "v3", "--output", str(inventory),
+                    "--output", str(inventory),
                     "--write-review-results", str(results),
                 ],
                 cwd=MODULE.ROOT,
@@ -967,21 +964,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 capture_output=True,
                 check=False,
             )
-            mismatched = subprocess.run(
-                [
-                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
-                    "--review-schema", "v2",
-                    "--review-results", str(results),
-                ],
-                cwd=MODULE.ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
             result_text = results.read_text(encoding="utf-8")
         self.assertEqual(0, validated.returncode, validated.stderr)
-        self.assertEqual(2, mismatched.returncode)
-        self.assertIn("does not match artifact", mismatched.stderr)
         self.assertEqual(
             "dcss-item-extended-review-inventory-v3", payload["schema"]
         )
@@ -1049,10 +1033,18 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             ).values()))
 
             for name, text in {
+                "legacy-v2": canonical.replace(
+                    "ITEM REVIEW ARTIFACT v3",
+                    "ITEM REVIEW ARTIFACT v2",
+                ),
                 "unknown-schema": canonical.replace(
                     "ITEM REVIEW ARTIFACT v3", "ITEM REVIEW ARTIFACT v4"
                 ),
-                "mixed-schema": canonical + MODULE.REVIEW_ARTIFACT_BEGIN + "\n",
+                "mixed-schema": (
+                    canonical
+                    + MODULE.LEGACY_V2_REVIEW_ARTIFACT_BEGIN
+                    + "\n"
+                ),
             }.items():
                 with self.subTest(name=name), self.assertRaisesRegex(
                     RuntimeError, "unknown or mixed"
@@ -1097,64 +1089,44 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "unknown or missing"):
                 MODULE.validate_v3_decision_cards(malformed)
 
-    def test_review_schema_detection_fails_closed_on_marker_ambiguity(self):
-        current = MODULE.ROOT / "docs/item-extended-review-results.md"
-        self.assertEqual(
-            "v2", MODULE.detect_review_schema(review_input(current))
-        )
+    def test_issue29_v2_cli_and_ledger_are_rejected(self):
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
-            source_dir = Path(directory) / "db"
-            source_dir.mkdir()
-            write_sourcedb(source_dir / "source.txt", [("key", "值")])
-            rows, _ = v3_sourcedb_fixture(
-                source_dir, [("identity", "key", None)]
+            root = Path(directory)
+            legacy = root / "legacy.md"
+            legacy.write_text(
+                "# Legacy\n\n"
+                f"{MODULE.LEGACY_V2_REVIEW_ARTIFACT_BEGIN}\n"
+                "{}\n"
+                f"{MODULE.LEGACY_V2_REVIEW_ARTIFACT_END}\n\n"
+                "```jsonl\n```\n",
+                encoding="utf-8",
             )
-            inventory = {
-                "baseline": "3" * 40,
-                "count": 1,
-                "decision_inventory_sha256": MODULE.v3_decision_digest(rows),
-                "glossary_sha256": "2" * 64,
-            }
-            canonical = MODULE.render_review_results_v3(inventory, rows)
-            path = Path(directory) / "review.md"
-
-            def detect(text):
-                path.write_text(text, encoding="utf-8")
-                return MODULE.detect_review_schema(review_input(path))
-
-            self.assertEqual("v3", detect(canonical))
-            mutations = {
-                "missing": canonical.replace(
-                    MODULE.V3_REVIEW_ARTIFACT_BEGIN + "\n", "", 1
-                ).replace(MODULE.V3_REVIEW_ARTIFACT_END + "\n", "", 1),
-                "duplicate": canonical.replace(
-                    MODULE.V3_REVIEW_ARTIFACT_BEGIN,
-                    MODULE.V3_REVIEW_ARTIFACT_BEGIN + "\n"
-                    + MODULE.V3_REVIEW_ARTIFACT_BEGIN,
-                    1,
-                ),
-                "mixed": canonical + "\n" + MODULE.REVIEW_ARTIFACT_BEGIN
-                + "\n{}\n" + MODULE.REVIEW_ARTIFACT_END + "\n",
-                "unknown": canonical.replace(
-                    "ITEM REVIEW ARTIFACT v3", "ITEM REVIEW ARTIFACT v4"
-                ),
-                "v3-marker-v2-schema": canonical.replace(
-                    '"review_schema":"dcss-item-review-decisions-v3"',
-                    '"review_schema":"dcss-item-review-decisions-v2"',
-                ),
-                "v2-marker-v3-shape": canonical.replace(
-                    MODULE.V3_REVIEW_ARTIFACT_BEGIN,
-                    MODULE.REVIEW_ARTIFACT_BEGIN,
-                ).replace(
-                    MODULE.V3_REVIEW_ARTIFACT_END,
-                    MODULE.REVIEW_ARTIFACT_END,
-                ),
-            }
-            for name, text in mutations.items():
-                with self.subTest(name=name), self.assertRaises(RuntimeError):
-                    detect(text)
+            rejected_ledger = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-results", str(legacy),
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            rejected_option = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-schema", "v2",
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(2, rejected_ledger.returncode)
+        self.assertIn("unknown or mixed", rejected_ledger.stderr)
+        self.assertEqual(2, rejected_option.returncode)
+        self.assertIn("unrecognized arguments", rejected_option.stderr)
 
     def test_paired_components_reject_minimal_key_count_token_mutations(self):
         def write(path, entries):
@@ -1292,106 +1264,6 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "invalid review base"):
                 MODULE.resolve_commit("missing-review-base", root)
 
-    def test_review_coverage_rejects_each_minimal_mutation(self):
-        def card(identity, conclusion):
-            return {
-                "identity": identity,
-                "lifecycle": "current",
-                "english_source": f"English {identity}",
-                "pre_review_chinese": f"旧{identity}",
-                "current_chinese": f"新{identity}",
-                "adopted_english": f"English {identity}",
-                "adopted_chinese": f"新{identity}",
-                "producer": "fixture producer",
-                "consumer": "fixture consumer",
-                "metadata": {"category": "fixture"},
-                "input": "fixture.txt",
-                "source_files": [{
-                    "path": "fixture.txt",
-                    "review_base_sha256": "0" * 64,
-                    "current_sha256": "1" * 64,
-                }],
-                "terminal_conclusion": conclusion,
-                "semantic_reason": f"{conclusion}: fixture reason",
-                "reentry_trigger": "Re-review on fixture change.",
-            }
-
-        valid = [card("a", "keep"), card("b", "adjust")]
-        inventory = copy.deepcopy(valid)
-        self.assertFalse(any(
-            MODULE.review_violations(inventory, valid).values()
-        ))
-
-        duplicate = valid + [dict(valid[0])]
-        self.assertEqual(
-            ["a"],
-            MODULE.review_violations(inventory, duplicate)[
-                "review_duplicates"
-            ],
-        )
-        self.assertEqual(
-            ["b"],
-            MODULE.review_violations(inventory, valid[:1])[
-                "inventory_minus_review"
-            ],
-        )
-        extra = valid + [card("c", "keep")]
-        self.assertEqual(
-            ["c"],
-            MODULE.review_violations(inventory, extra)[
-                "review_minus_inventory"
-            ],
-        )
-        invalid = [
-            dict(valid[0], terminal_conclusion="pending"), valid[1]
-        ]
-        self.assertEqual(
-            ["a"],
-            MODULE.review_violations(inventory, invalid)[
-                "invalid_terminal_conclusions"
-            ],
-        )
-        deferred = [dict(
-            valid[0],
-            terminal_conclusion="defer implementation",
-            semantic_reason="not applicable",
-            reentry_trigger="not applicable",
-        ), valid[1]]
-        self.assertEqual(
-            ["a"],
-            MODULE.review_violations(inventory, deferred)[
-                "invalid_deferrals"
-            ],
-        )
-
-        for field, value in [
-            ("adopted_english", "changed English"),
-            ("adopted_chinese", "改坏"),
-        ]:
-            mutated = copy.deepcopy(valid)
-            mutated[0][field] = value
-            self.assertEqual(
-                ["a"],
-                MODULE.review_violations(inventory, mutated)[
-                    "mismatched_evidence_cards"
-                ],
-            )
-
-        mutated_sha = copy.deepcopy(valid)
-        mutated_sha[0]["source_files"][0]["current_sha256"] = "2" * 64
-        self.assertEqual(
-            ["a"],
-            MODULE.review_violations(inventory, mutated_sha)[
-                "mismatched_evidence_cards"
-            ],
-        )
-
-        missing = copy.deepcopy(valid)
-        del missing[0]["adopted_chinese"]
-        violations = MODULE.review_violations(inventory, missing)
-        self.assertEqual(["a:adopted_chinese"],
-                         violations["missing_required_fields"])
-        self.assertEqual(["a"], violations["mismatched_evidence_cards"])
 
     def test_issue29_cli_review_results_has_exact_bidirectional_coverage(self):
         with tempfile.TemporaryDirectory(dir=MODULE.ROOT / ".claude") as directory:
@@ -1406,14 +1278,6 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 ],
                 cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
             )
-            mismatched = subprocess.run(
-                [
-                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
-                    "--review-schema", "v3",
-                    "--review-results", str(results),
-                ],
-                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
-            )
             self.assertEqual(0, generated.returncode, generated.stderr)
             validated = subprocess.run(
                 [
@@ -1425,10 +1289,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             )
             payload = json.loads(inventory.read_text(encoding="utf-8"))
             result_text = results.read_text(encoding="utf-8")
-            parsed_results = MODULE.parse_review_results(review_input(results))
+            parsed_results = MODULE.parse_review_results_v3(
+                review_input(results)
+            )
         self.assertEqual(0, validated.returncode, validated.stderr)
-        self.assertEqual(2, mismatched.returncode)
-        self.assertIn("does not match artifact", mismatched.stderr)
         self.assertFalse(any(payload["review_violations"].values()))
         self.assertEqual(
             payload["baseline"],
@@ -1459,179 +1323,9 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         )
         self.assertIn(payload["baseline"], result_text)
         self.assertNotIn(payload["candidate_head"], result_text)
-        for report in MODULE.DEVELOPMENT_REPORTS:
-            self.assertIn(report["path"], result_text)
-            self.assertIn(f"status={report['status']}", result_text)
-            self.assertIn(
-                f"blocking_failures={report['blocking_failures']}",
-                result_text,
-            )
-            self.assertIn(report["note"], result_text)
-        self.assertIn(
-            MODULE.DEVELOPMENT_NON_OVERWRITE_STATEMENT, result_text
-        )
-        for evidence in MODULE.ITEM_PRODUCER_CONSUMER_EVIDENCE:
-            self.assertIn(evidence, result_text)
+        self.assertIn("dcss-item-review-decisions-v3", result_text)
+        self.assertNotIn("current_sha256", result_text)
 
-    def test_issue29_review_header_rejects_each_minimal_mutation(self):
-        inventory = {
-            "inventory_sha256": "1" * 64,
-            "glossary_sha256": "2" * 64,
-            "baseline": "3" * 40,
-            "count": 2,
-        }
-        labels = {
-            "inventory_sha256": "Inventory SHA-256",
-            "glossary_sha256": "Glossary SHA-256",
-            "baseline": "Review base",
-            "count": "Inventory rows",
-        }
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "results.md"
-
-            def write(values):
-                path.write_text("\n".join(
-                    f"- {labels[field]}: `{values[field]}`"
-                    for field in labels
-                ) + "\n```jsonl\n```\n", encoding="utf-8")
-
-            write(inventory)
-            clean = MODULE.review_violations(
-                [], [], inventory, MODULE.parse_review_header(review_input(path))
-            )
-            self.assertFalse(clean["header_mismatches"])
-            for field, value in (
-                ("inventory_sha256", "4" * 64),
-                ("glossary_sha256", "5" * 64),
-                ("baseline", "6" * 40),
-                ("count", 3),
-            ):
-                with self.subTest(field=field):
-                    changed = dict(inventory, **{field: value})
-                    write(changed)
-                    violations = MODULE.review_violations(
-                        [], [], inventory,
-                        MODULE.parse_review_header(review_input(path))
-                    )
-                    self.assertEqual(
-                        [field], violations["header_mismatches"]
-                    )
-
-    def test_issue29_full_artifact_rejects_summary_marker_and_prose_mutations(self):
-        inventory = {
-            "inventory_sha256": "1" * 64,
-            "glossary_sha256": "2" * 64,
-            "baseline": "3" * 40,
-            "count": 0,
-            "development_reports": copy.deepcopy(
-                MODULE.DEVELOPMENT_REPORTS
-            ),
-            "scope": {
-                "randart_component_metrics": {
-                    "totals": {
-                        "physical_variant_identities": 1,
-                        "raw_nonempty_grammar_lines": 2,
-                        "explicit_weight_marker_lines": 0,
-                        "continuation_lines": 1,
-                        "weight_mass": 10,
-                    },
-                },
-            },
-        }
-        clean = MODULE.render_review_results(inventory, [])
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "results.md"
-
-            def violations(text):
-                path.write_text(text, encoding="utf-8")
-                loaded = review_input(path)
-                return MODULE.review_violations(
-                    [],
-                    MODULE.parse_review_results(loaded),
-                    inventory,
-                    MODULE.parse_review_header(loaded),
-                    loaded,
-                )
-
-            self.assertFalse(any(violations(clean).values()))
-            lines = clean.splitlines()
-            summary_index = lines.index(MODULE.REVIEW_ARTIFACT_BEGIN) + 1
-            summary = json.loads(lines[summary_index])
-            mutations = {
-                "external-prose": clean + "unbound final assertion\n",
-                "missing-marker": clean.replace(
-                    MODULE.REVIEW_ARTIFACT_BEGIN, "", 1
-                ),
-                "duplicate-marker": clean.replace(
-                    MODULE.REVIEW_ARTIFACT_BEGIN,
-                    MODULE.REVIEW_ARTIFACT_BEGIN + "\n"
-                    + MODULE.REVIEW_ARTIFACT_BEGIN,
-                    1,
-                ),
-                "old-v1-marker": clean.replace(
-                    "ITEM REVIEW ARTIFACT v2",
-                    "ITEM REVIEW ARTIFACT v1",
-                ),
-                "missing-producer-consumer": clean.replace(
-                    f"- {MODULE.ITEM_PRODUCER_CONSUMER_EVIDENCE[0]}\n",
-                    "",
-                    1,
-                ),
-                "missing-development-report": clean.replace(
-                    next(
-                        line + "\n" for line in clean.splitlines()
-                        if MODULE.DEVELOPMENT_REPORTS[0]["path"] in line
-                    ),
-                    "",
-                    1,
-                ),
-                "tampered-development-status": clean.replace(
-                    "status=fail; blocking_failures=1",
-                    "status=pass; blocking_failures=0",
-                    1,
-                ),
-                "missing-non-overwrite-statement": clean.replace(
-                    MODULE.DEVELOPMENT_NON_OVERWRITE_STATEMENT + "\n",
-                    "",
-                    1,
-                ),
-            }
-            for field in summary:
-                changed = list(lines)
-                mutated = dict(summary)
-                mutated[field] = "mutated"
-                changed[summary_index] = json.dumps(
-                    mutated,
-                    ensure_ascii=False,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                )
-                mutations[f"summary-{field}"] = "\n".join(changed) + "\n"
-            for name, text in mutations.items():
-                with self.subTest(mutation=name):
-                    self.assertTrue(
-                        violations(text)["artifact_mismatch"]
-                    )
-
-        for name, reports in {
-            "missing": MODULE.DEVELOPMENT_REPORTS[:-1],
-            "tampered": [
-                dict(MODULE.DEVELOPMENT_REPORTS[0], status="pass"),
-                *MODULE.DEVELOPMENT_REPORTS[1:],
-            ],
-            "reordered": [
-                MODULE.DEVELOPMENT_REPORTS[1],
-                MODULE.DEVELOPMENT_REPORTS[0],
-                *MODULE.DEVELOPMENT_REPORTS[2:],
-            ],
-        }.items():
-            with self.subTest(inventory_history=name):
-                changed = copy.deepcopy(inventory)
-                changed["development_reports"] = copy.deepcopy(reports)
-                with self.assertRaisesRegex(
-                    RuntimeError, "four-report history"
-                ):
-                    MODULE.render_review_results(changed, [])
 
     def test_quality_m1_reproduces_m0_selection_and_is_byte_deterministic(self):
         payload, files = quality_m1_fixture()
@@ -1713,15 +1407,15 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         duplicate = copy.deepcopy(payload)
         duplicate["rows"].append(copy.deepcopy(description))
         duplicate["category_counts"]["item-description"] += 1
-        mutations["identities are not unique"] = duplicate
+        mutations["duplicate identities"] = duplicate
 
         changed_keep = copy.deepcopy(payload)
         keep = next(
             row for row in changed_keep["rows"]
             if row["identity"].startswith("item-description:")
-            and row["terminal_conclusion"] == "keep"
+            and row["decision"]["terminal_conclusion"] == "keep"
         )
-        keep["pre_review_chinese"] += "变更"
+        keep["decision"]["pre_review_chinese"] += "变更"
         mutations["conclusion/revision mismatch"] = changed_keep
 
         absolute_path = copy.deepcopy(payload)
@@ -1729,7 +1423,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             row for row in absolute_path["rows"]
             if row["identity"].startswith("item-description:")
         )
-        row["source_files"][0]["path"] = "/tmp/input.txt"
+        row["decision"]["input"] = "/tmp/input.txt"
         mutations["canonical relative path"] = absolute_path
 
         violations = copy.deepcopy(payload)

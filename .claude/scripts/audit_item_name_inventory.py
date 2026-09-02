@@ -2262,7 +2262,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
 
 @audit_snapshot_invocation(ROOT)
 def build_extended_inventory_v3(review_base=ISSUE29_REVIEW_BASE):
-    """Build the explicit transitional v3 decision inventory."""
+    """Build the canonical v3 decision inventory."""
     payload, public_rows, source_rows = build_extended_inventory(
         review_base, return_source_rows=True
     )
@@ -2284,17 +2284,13 @@ TERMINAL_CONCLUSIONS = {
     "keep", "adjust", "retranslate",
     "defer terminology", "defer implementation",
 }
-REQUIRED_CARD_FIELDS = {
-    "identity", "lifecycle", "english_source", "pre_review_chinese",
-    "current_chinese", "adopted_english", "adopted_chinese", "producer",
-    "consumer", "metadata", "input", "source_files",
-    "terminal_conclusion", "semantic_reason", "reentry_trigger",
-}
-REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v2 -->"
-REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v2 -->"
+LEGACY_V2_REVIEW_ARTIFACT_BEGIN = (
+    "<!-- BEGIN ITEM REVIEW ARTIFACT v2 -->"
+)
+LEGACY_V2_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v2 -->"
 
 
-def parse_review_results(review_input):
+def _parse_review_jsonl_rows(review_input):
     rows = []
     in_cards = False
     saw_cards = False
@@ -2334,243 +2330,8 @@ def parse_review_results(review_input):
     return rows
 
 
-def parse_review_header(review_input):
-    text = review_input.text
-    patterns = {
-        "inventory_sha256": r"^- Inventory SHA-256: `([0-9a-f]{64})`$",
-        "glossary_sha256": r"^- Glossary SHA-256: `([0-9a-f]{64})`$",
-        "baseline": r"^- Review base: `([0-9a-f]{40})`$",
-        "count": r"^- Inventory rows: `([0-9]+)`$",
-    }
-    result = {}
-    for field, pattern in patterns.items():
-        matches = re.findall(pattern, text, re.MULTILINE)
-        result[field] = matches[0] if len(matches) == 1 else None
-        result[field + "_header_count"] = len(matches)
-    if result["count"] is not None:
-        result["count"] = int(result["count"])
-    return result
-
-
-def review_violations(
-    inventory_rows,
-    review_rows,
-    inventory=None,
-    header=None,
-    review_input=None,
-):
-    inventory_ids = [
-        row.get("identity", "<missing>") for row in inventory_rows
-    ]
-    review_ids = [row.get("identity", "<missing>") for row in review_rows]
-    inventory_set = set(inventory_ids)
-    review_set = set(review_ids)
-    missing_required = sorted(
-        f"{row.get('identity', '<missing>')}:{field}"
-        for row in review_rows
-        for field in REQUIRED_CARD_FIELDS - set(row)
-    )
-    invalid_terminal = sorted(
-        row.get("identity", "<missing>") for row in review_rows
-        if row.get("terminal_conclusion") not in TERMINAL_CONCLUSIONS
-    )
-    invalid_deferral = sorted(
-        row.get("identity", "<missing>") for row in review_rows
-        if str(row.get("terminal_conclusion", "")).startswith("defer ")
-        and (
-            not row.get("semantic_reason")
-            or row.get("semantic_reason") == "not applicable"
-            or not row.get("reentry_trigger")
-            or row.get("reentry_trigger") == "not applicable"
-        )
-    )
-    inventory_by_id = {
-        row["identity"]: row for row in inventory_rows
-        if "identity" in row
-    }
-    review_by_id = {
-        row["identity"]: row for row in review_rows
-        if "identity" in row
-    }
-    mismatched = sorted(
-        identity for identity in inventory_set & review_set
-        if inventory_by_id.get(identity) != review_by_id.get(identity)
-    )
-    violations = {
-        "inventory_duplicates": sorted(
-            key for key, count in Counter(inventory_ids).items() if count > 1
-        ),
-        "review_duplicates": sorted(
-            key for key, count in Counter(review_ids).items() if count > 1
-        ),
-        "inventory_minus_review": sorted(inventory_set - review_set),
-        "review_minus_inventory": sorted(review_set - inventory_set),
-        "missing_required_fields": missing_required,
-        "mismatched_evidence_cards": mismatched,
-        "invalid_terminal_conclusions": invalid_terminal,
-        "invalid_deferrals": invalid_deferral,
-    }
-    if inventory is not None:
-        header = header or {}
-        expected_header = {
-            "inventory_sha256": inventory["inventory_sha256"],
-            "glossary_sha256": inventory["glossary_sha256"],
-            "baseline": inventory["baseline"],
-            "count": inventory["count"],
-        }
-        violations["header_mismatches"] = sorted(
-            field for field, expected in expected_header.items()
-            if header.get(field) != expected
-            or header.get(field + "_header_count") != 1
-        )
-        if review_input is not None:
-            violations["artifact_mismatch"] = (
-                []
-                if review_input.text == render_review_results(
-                    inventory, review_rows
-                )
-                else ["review artifact is not the exact canonical rendering"]
-            )
-    return violations
-
-
-def review_artifact_summary(inventory, rows):
-    counts = Counter(row["terminal_conclusion"] for row in rows)
-    metrics = inventory["scope"]["randart_component_metrics"]["totals"]
-    return {
-        "baseline": inventory["baseline"],
-        "development_reports": inventory["development_reports"],
-        "glossary_sha256": inventory["glossary_sha256"],
-        "inventory_count": inventory["count"],
-        "inventory_sha256": inventory["inventory_sha256"],
-        "randart_production_boundary": metrics,
-        "terminal_conclusion_counts": dict(sorted(counts.items())),
-    }
-
-
-def development_history_lines(inventory):
-    reports = inventory.get("development_reports")
-    if reports != DEVELOPMENT_REPORTS:
-        raise RuntimeError(
-            "item development report provenance differs from the canonical "
-            "four-report history"
-        )
-    lines = [
-        "## Producer / consumer implementation evidence",
-        "",
-        *(f"- {evidence}" for evidence in ITEM_PRODUCER_CONSUMER_EVIDENCE),
-        "",
-        "## Raw development reports",
-        "",
-    ]
-    for report in reports:
-        lines.append(
-            f"- `{report['path']}` — profile={report['profile']}; "
-            f"status={report['status']}; "
-            f"blocking_failures={report['blocking_failures']}; "
-            f"{report['note']}."
-        )
-    lines.extend(["", DEVELOPMENT_NON_OVERWRITE_STATEMENT, ""])
-    return lines
-
-
-def render_review_results(inventory, rows):
-    summary = json.dumps(
-        review_artifact_summary(inventory, rows),
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-    lines = [
-        "# Item translation review",
-        "",
-        REVIEW_ARTIFACT_BEGIN,
-        summary,
-        REVIEW_ARTIFACT_END,
-        "",
-        f"- Inventory SHA-256: `{inventory['inventory_sha256']}`",
-        f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
-        f"- Review base: `{inventory['baseline']}`",
-        f"- Inventory rows: `{inventory['count']}`",
-        "",
-        *development_history_lines(inventory),
-        "## Evidence cards",
-        "",
-        "```jsonl",
-    ]
-    for row in rows:
-        lines.append(json.dumps(
-            row, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        ))
-    lines.append("```")
-    return "\n".join(lines) + "\n"
-
-
 V3_REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v3 -->"
 V3_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v3 -->"
-V2_ARTIFACT_SUMMARY_FIELDS = {
-    "baseline", "development_reports", "glossary_sha256",
-    "inventory_count", "inventory_sha256", "randart_production_boundary",
-    "terminal_conclusion_counts",
-}
-V3_ARTIFACT_SUMMARY_FIELDS = {
-    "baseline", "decision_inventory_sha256", "glossary_sha256",
-    "review_schema", "row_count", "terminal_conclusion_counts",
-}
-
-
-def _review_artifact_summary(text, begin_marker, end_marker):
-    lines = text.splitlines()
-    begin = [index for index, line in enumerate(lines)
-             if line == begin_marker]
-    end = [index for index, line in enumerate(lines)
-           if line == end_marker]
-    if len(begin) != 1 or len(end) != 1 or end[0] != begin[0] + 2:
-        raise RuntimeError("review artifact markers are missing or ambiguous")
-    try:
-        summary = json.loads(lines[begin[0] + 1])
-    except json.JSONDecodeError as error:
-        raise RuntimeError(
-            "review artifact schema summary is invalid"
-        ) from error
-    if not isinstance(summary, dict):
-        raise RuntimeError("review artifact schema summary is not an object")
-    return summary
-
-
-def detect_review_schema(review_input):
-    """Identify one trusted review schema from its unique marker/summary."""
-    text = review_input.text
-    marker_lines = [
-        line for line in text.splitlines()
-        if "ITEM REVIEW ARTIFACT" in line
-    ]
-    v2_markers = {REVIEW_ARTIFACT_BEGIN, REVIEW_ARTIFACT_END}
-    v3_markers = {V3_REVIEW_ARTIFACT_BEGIN, V3_REVIEW_ARTIFACT_END}
-    marker_set = set(marker_lines)
-    if not marker_lines or not marker_set <= v2_markers | v3_markers:
-        raise RuntimeError("unknown review artifact schema marker")
-    has_v2 = bool(marker_set & v2_markers)
-    has_v3 = bool(marker_set & v3_markers)
-    if has_v2 == has_v3:
-        raise RuntimeError("review artifact schema is mixed or ambiguous")
-    if has_v2:
-        summary = _review_artifact_summary(
-            text, REVIEW_ARTIFACT_BEGIN, REVIEW_ARTIFACT_END
-        )
-        if set(summary) != V2_ARTIFACT_SUMMARY_FIELDS:
-            raise RuntimeError("v2 marker/schema summary mismatch")
-        return "v2"
-    summary = _review_artifact_summary(
-        text, V3_REVIEW_ARTIFACT_BEGIN, V3_REVIEW_ARTIFACT_END
-    )
-    if (
-        set(summary) != V3_ARTIFACT_SUMMARY_FIELDS
-        or summary.get("review_schema")
-        != "dcss-item-review-decisions-v3"
-    ):
-        raise RuntimeError("v3 marker/schema summary mismatch")
-    return "v3"
 V3_CARD_FIELDS = {"identity", "decision", "source_dependencies"}
 V3_DECISION_FIELD_SET = set(V3_DECISION_FIELDS)
 V3_DEPENDENCY_FIELDS = {
@@ -2826,12 +2587,12 @@ def parse_review_results_v3(review_input):
     if (
         text.count(V3_REVIEW_ARTIFACT_BEGIN) != 1
         or text.count(V3_REVIEW_ARTIFACT_END) != 1
-        or REVIEW_ARTIFACT_BEGIN in text
-        or REVIEW_ARTIFACT_END in text
+        or LEGACY_V2_REVIEW_ARTIFACT_BEGIN in text
+        or LEGACY_V2_REVIEW_ARTIFACT_END in text
         or re.search(r"ITEM REVIEW ARTIFACT v(?!3\b)", text)
     ):
         raise RuntimeError("unknown or mixed item review schema")
-    rows = parse_review_results(review_input)
+    rows = _parse_review_jsonl_rows(review_input)
     validate_v3_decision_cards(rows)
     return rows
 
@@ -3007,14 +2768,33 @@ def quality_m1_population(inventory):
     review_input_sha = review_input.get("input_sha256")
     if not re.fullmatch(r"[0-9a-f]{64}", str(review_input_sha)):
         raise RuntimeError("quality M1 review input digest is invalid")
-    rows = sorted(
-        (
-            row for row in inventory["rows"]
-            if row.get("metadata", {}).get("category")
-            == "item-description"
-        ),
-        key=lambda row: row["identity"],
-    )
+    validate_v3_decision_cards(inventory["rows"])
+    cards = [
+        card for card in inventory["rows"]
+        if card["decision"]["metadata"].get("category")
+        == "item-description"
+    ]
+    rows = []
+    for card in cards:
+        decision = card["decision"]
+        quality_m1_require_relative_path(
+            decision["input"], f"{card['identity']} input"
+        )
+        dependency_paths = sorted({
+            definition["path"]
+            for dependency in card["source_dependencies"]
+            for candidate in dependency["candidates"]
+            for definition in candidate["definitions"]
+        })
+        rows.append({
+            "identity": card["identity"],
+            **decision,
+            "source_files": [
+                {"path": path}
+                for path in dependency_paths or [decision["input"]]
+            ],
+        })
+    rows.sort(key=lambda row: row["identity"])
     expected_count = inventory["category_counts"].get("item-description")
     if expected_count != len(rows):
         raise RuntimeError(
@@ -3026,9 +2806,12 @@ def quality_m1_population(inventory):
             "quality M1 item-description identities are not unique"
         )
     for row in rows:
-        if set(row) != REQUIRED_CARD_FIELDS:
-            missing_fields = sorted(REQUIRED_CARD_FIELDS - set(row))
-            unknown_fields = sorted(set(row) - REQUIRED_CARD_FIELDS)
+        required_fields = {
+            "identity", "source_files", *V3_DECISION_FIELD_SET,
+        }
+        if set(row) != required_fields:
+            missing_fields = sorted(required_fields - set(row))
+            unknown_fields = sorted(set(row) - required_fields)
             raise RuntimeError(
                 f"quality M1 evidence-card fields differ for "
                 f"{row.get('identity')!r}: missing={missing_fields}, "
@@ -3559,14 +3342,6 @@ def verify_quality_m1_bundle(path, expected_files):
     return output
 
 
-def write_review_results(path, inventory, rows):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        render_review_results(inventory, rows),
-        encoding="utf-8",
-    )
-
-
 def write_review_results_v3(path, inventory, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -3594,15 +3369,6 @@ def main(argv=None):
         help=(
             "target commit for issue29-v2 before/after evidence "
             f"(default: {ISSUE29_REVIEW_BASE})"
-        ),
-    )
-    parser.add_argument(
-        "--review-schema",
-        choices=("v2", "v3"),
-        default=None,
-        help=(
-            "explicit review artifact schema for issue29-v2; readers detect "
-            "an omitted schema from the artifact, while writers default to v2"
         ),
     )
     parser.add_argument(
@@ -3656,7 +3422,6 @@ def main(argv=None):
     )
     if quality_requested and (
         args.scope != "issue29-v2"
-        or args.review_schema not in {None, "v2"}
         or not args.review_results
         or not args.quality_prompt
         or not args.quality_context
@@ -3674,72 +3439,33 @@ def main(argv=None):
 
     try:
         if args.scope == "issue29-v2":
-            review_input = None
-            artifact_schema = None
+            payload, internal_rows = build_extended_inventory_v3(
+                args.review_base or ISSUE29_REVIEW_BASE
+            )
+            if args.write_review_results:
+                write_review_results_v3(
+                    args.write_review_results, payload, internal_rows
+                )
             if args.review_results:
                 review_input = load_review_input(
                     ROOT,
                     args.review_results,
                     snapshot=audit_snapshot(),
                 )
-                artifact_schema = detect_review_schema(review_input)
-                if (
-                    args.review_schema is not None
-                    and args.review_schema != artifact_schema
-                ):
-                    raise RuntimeError(
-                        "explicit review schema does not match artifact"
-                    )
-            effective_schema = (
-                args.review_schema or artifact_schema or "v2"
-            )
-            if quality_requested and effective_schema != "v2":
-                raise RuntimeError(
-                    "quality M1 requires a strict v2 review artifact"
-                )
-            builder = (
-                build_extended_inventory_v3
-                if effective_schema == "v3"
-                else build_extended_inventory
-            )
-            payload, internal_rows = builder(
-                args.review_base or ISSUE29_REVIEW_BASE
-            )
-            if args.write_review_results:
-                if effective_schema == "v3":
-                    write_review_results_v3(
-                        args.write_review_results, payload, internal_rows
-                    )
-                else:
-                    write_review_results(
-                        args.write_review_results, payload, internal_rows
-                    )
-            if args.review_results:
                 payload["review_input"] = review_input_metadata(review_input)
-                if effective_schema == "v3":
-                    review = parse_review_results_v3(review_input)
-                    review_header = parse_review_header_v3(review_input)
-                    payload["review_violations"] = review_violations_v3(
-                        payload["rows"],
-                        review,
-                        payload,
-                        review_header,
-                        review_input,
-                    )
-                else:
-                    review = parse_review_results(review_input)
-                    review_header = parse_review_header(review_input)
-                    payload["review_violations"] = review_violations(
-                        payload["rows"],
-                        review,
-                        payload,
-                        review_header,
-                        review_input,
-                    )
+                review = parse_review_results_v3(review_input)
+                review_header = parse_review_header_v3(review_input)
+                payload["review_violations"] = review_violations_v3(
+                    payload["rows"],
+                    review,
+                    payload,
+                    review_header,
+                    review_input,
+                )
         else:
             if (
                 args.review_results or args.write_review_results
-                or args.review_base or args.review_schema is not None
+                or args.review_base
             ):
                 raise RuntimeError(
                     "review options are valid only for --scope issue29-v2"
