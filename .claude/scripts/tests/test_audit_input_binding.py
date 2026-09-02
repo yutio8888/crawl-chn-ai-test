@@ -786,8 +786,24 @@ class AuditInputBindingTests(unittest.TestCase):
         self.assertTrue(species_result["coverage_equal"])
         assert_frozen_result(species_result, species_input)
 
-        item_row = {
-            "identity": "item:FIXTURE",
+        item_source_row = {
+            "identity": "item-description:fixture",
+            "category": "item-description",
+            "lifecycle": "current",
+            "english_source": "fixture",
+            "_pre_review_chinese": "样例",
+            "current_chinese": "样例",
+            "producer": "fixture producer",
+            "consumer": "fixture consumer",
+            "input": "fixture.cc",
+            "_metadata": {
+                "category": "item-description",
+                "description_key": "fixture",
+            },
+            "_conclusion": "keep",
+        }
+        item_v2_decision = {
+            "identity": item_source_row["identity"],
             "lifecycle": "current",
             "english_source": "fixture",
             "pre_review_chinese": "样例",
@@ -796,33 +812,40 @@ class AuditInputBindingTests(unittest.TestCase):
             "adopted_chinese": "样例",
             "producer": "fixture producer",
             "consumer": "fixture consumer",
-            "metadata": {},
-            "input": {},
-            "source_files": ["fixture"],
+            "metadata": item_source_row["_metadata"],
+            "input": "fixture.cc",
+            "source_files": [],
             "terminal_conclusion": "keep",
             "semantic_reason": "direct production evidence",
             "reentry_trigger": "not applicable",
         }
+        with tempfile.TemporaryDirectory(
+            dir=ITEM.ROOT / ".claude"
+        ) as item_source_directory:
+            item_source_path = Path(item_source_directory)
+            (item_source_path / "source.txt").write_text(
+                "", encoding="utf-8"
+            )
+            item_rows = ITEM.v3_decision_cards(
+                [item_source_row],
+                [item_v2_decision],
+                source_directory=item_source_path,
+                snapshot=SHARED.AuditSnapshot(ITEM.ROOT, None),
+            )
         item_payload = {
             "baseline": "2" * 40,
             "count": 1,
-            "development_reports": ITEM.DEVELOPMENT_REPORTS,
+            "decision_inventory_sha256": ITEM.v3_decision_digest(item_rows),
             "glossary_sha256": "3" * 64,
-            "inventory_sha256": "4" * 64,
-            "rows": [item_row],
-            "scope": {
-                "randart_component_metrics": {"totals": {}},
-            },
+            "rows": item_rows,
         }
-        item_text = ITEM.render_review_results(
-            item_payload, [item_row]
-        )
+        item_text = ITEM.render_review_results_v3(item_payload, item_rows)
         item_input = self._load_then_replace(item_text)
-        item_rows = ITEM.parse_review_results(item_input)
-        item_header = ITEM.parse_review_header(item_input)
-        item_violations = ITEM.review_violations(
+        parsed_item_rows = ITEM.parse_review_results_v3(item_input)
+        item_header = ITEM.parse_review_header_v3(item_input)
+        item_violations = ITEM.review_violations_v3(
             item_payload["rows"],
-            item_rows,
+            parsed_item_rows,
             item_payload,
             item_header,
             item_input,
