@@ -843,7 +843,7 @@ class AuditInputBindingTests(unittest.TestCase):
         item_input = self._load_then_replace(item_text)
         parsed_item_rows = ITEM.parse_review_results_v3(item_input)
         item_header = ITEM.parse_review_header_v3(item_input)
-        item_violations = ITEM.review_violations_v3(
+        item_violations, _item_glossary_matches = ITEM.review_violations_v3(
             item_payload["rows"],
             parsed_item_rows,
             item_payload,

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import contextlib
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 import subprocess
 import sys
@@ -421,6 +423,39 @@ class GodInventoryAuditTest(unittest.TestCase):
                     metadata, sort_keys=True, separators=(",", ":")
                 )
                 mutations[field] = changed
+            # A format-valid historical digest recorded by BOTH artifact copies
+            # is provenance, not a freshness blocker: a ledger consistently
+            # recording an older digest must still pass coverage (Slice A),
+            # with exactly one non-blocking notice on stderr.
+            stale_clean = MODULE.render_review_results(
+                payload,
+                {
+                    "GOD_OTHER": decision(
+                        "keep",
+                        "full rationale\nwith | pipe and " + "r" * 200,
+                    ),
+                    "GOD_TEST": decision("adjust", "test rationale"),
+                },
+                glossary_overlay="c" * 64,
+            )
+            path.write_text(stale_clean, encoding="utf-8")
+            stale = MODULE.review_coverage(payload, review_input(path))
+            self.assertTrue(stale["coverage_equal"])
+            self.assertFalse(stale["glossary_digest_matches"])
+            # A structurally broken digest (wrong width) still fails at parse.
+            stale_lines = stale_clean.splitlines()
+            stale_metadata_index = (
+                stale_lines.index(MODULE.STRICT_REVIEW_BEGIN) + 1
+            )
+            changed = list(stale_lines)
+            metadata = json.loads(changed[stale_metadata_index])
+            metadata["glossary_sha256"] = "x"
+            changed[stale_metadata_index] = json.dumps(
+                metadata, sort_keys=True, separators=(",", ":")
+            )
+            path.write_text("\n".join(changed) + "\n", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                MODULE.review_coverage(payload, review_input(path))
             first = json.loads(lines[first_index])
             mutations.update({
                 "fact": [
@@ -673,6 +708,145 @@ class GodInventoryAuditTest(unittest.TestCase):
         rendered = MODULE.render_review_results(payload, decisions)
         self.assertIn("reviewer-authored full rationale", rendered)
         self.assertIn("explicit reviewer decision for new god", rendered)
+
+
+class SliceADecoupledLedgerRegression(unittest.TestCase):
+    """Central Slice-A regression: all six formal auditors.
+
+    A format-valid historical glossary digest (and, for the world ledger, the
+    ``docs/decisions.md`` digest) is provenance from the review's input
+    snapshot, not a freshness gate against the current tree.  An unrelated
+    glossary or decisions edit changes the *current* digest while the ledger
+    keeps recording the old one; that must not fail any auditor's coverage.
+    Structural damage (missing/duplicate identity, malformed digest) must
+    still fail.
+    """
+
+    @staticmethod
+    def _load_module(name):
+        import importlib.util
+        script = Path(__file__).resolve().parent.parent / f"{name}.py"
+        spec = importlib.util.spec_from_file_location(name, script)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
+
+    @staticmethod
+    def _review_input(path):
+        data = Path(path).read_bytes()
+        return AuditInput(
+            audit_commit=None,
+            logical_path=str(path),
+            relative_path=str(path),
+            bytes=data,
+            text=data.decode("utf-8", errors="strict"),
+            sha256=hashlib.sha256(data).hexdigest(),
+        )
+
+    def _assert_notice(self, stderr):
+        self.assertEqual(1, stderr.count("notice:"))
+
+    def test_unrelated_glossary_and_decisions_edits_do_not_block(self):
+        stale_glossary = "a" * 64
+        stale_decisions = "b" * 64
+        god = self._load_module("audit_god_inventory")
+        char = self._load_module("audit_character_mechanics_inventory")
+        species = self._load_module("audit_species_background_inventory")
+        item = self._load_module("audit_item_name_inventory")
+        world = self._load_module("audit_world_inventory")
+
+        god_payload = god.build_inventory()
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            coverage = god.review_coverage(
+                {**god_payload, "glossary_sha256": stale_glossary},
+                self._review_input("docs/god-review-results.md"),
+            )
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertFalse(coverage["glossary_digest_matches"])
+        self._assert_notice(err.getvalue())
+
+        char_payload = char.build_inventory()
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            coverage = char.review_coverage(
+                {**char_payload, "glossary_sha256": stale_glossary},
+                self._review_input(
+                    "docs/character-mechanics-review-results.md"
+                ),
+            )
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertFalse(coverage["glossary_digest_matches"])
+        self._assert_notice(err.getvalue())
+
+        species_payload = species.build_inventory()
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            coverage = species.review_coverage(
+                {**species_payload, "glossary_sha256": stale_glossary},
+                self._review_input(
+                    "docs/species-background-review-results.md"
+                ),
+            )
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertFalse(coverage["glossary_digest_matches"])
+        self._assert_notice(err.getvalue())
+
+        item_payload, _rows = item.build_extended_inventory_v3(
+            "01dc9911ec9948aff661f6ec0b9b0a798fcf909d"
+        )
+        item_input = self._review_input(
+            "docs/item-extended-review-results.md"
+        )
+        item_review_rows = item.parse_review_results_v3(item_input)
+        item_header = item.parse_review_header_v3(item_input)
+        stale_item_payload = {
+            **item_payload,
+            "glossary_sha256": stale_glossary,
+        }
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            violations, matches = item.review_violations_v3(
+                stale_item_payload["rows"],
+                item_review_rows,
+                stale_item_payload,
+                item_header,
+                item_input,
+            )
+        self.assertFalse(any(violations.values()), violations)
+        self.assertFalse(matches)
+        self._assert_notice(err.getvalue())
+
+        world_payload = world.build_inventory()
+        stale_world_payload = {
+            **world_payload,
+            "glossary_sha256": stale_glossary,
+            "input_sha256": {
+                **world_payload["input_sha256"],
+                "docs/decisions.md": stale_decisions,
+            },
+        }
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            coverage = world.review_coverage(
+                stale_world_payload,
+                self._review_input("docs/world-review-results.md"),
+            )
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertFalse(coverage["glossary_digest_matches"])
+        self.assertFalse(coverage["decisions_digest_matches"])
+        self.assertEqual(2, err.getvalue().count("notice:"))
+
+    def test_monster_ledger_ignores_unrelated_glossary_edit(self):
+        import monster_name_ssot as monster_audit
+        baseline = "7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c"
+        payload = monster_audit.build_inventory(baseline_ref=baseline)
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            coverage = monster_audit.review_coverage(
+                {**payload, "glossary_sha256": "a" * 64},
+                self._review_input("docs/monster-review-results.md"),
+                baseline,
+            )
+        self.assertTrue(coverage["coverage_equal"])
+        self.assertTrue(coverage["artifact_exact"])
+        self._assert_notice(err.getvalue())
+
 
 
 if __name__ == "__main__":

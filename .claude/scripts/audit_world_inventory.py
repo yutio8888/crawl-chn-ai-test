@@ -2546,6 +2546,74 @@ def render_review_results(
     return rendered
 
 
+def _review_recorded_authority(cards):
+    """Parse the ledger-recorded glossary/decisions digests from one row.
+
+    The ``glossary_decision_authority`` cell records the review's input
+    snapshot digests.  Every row in a canonical ledger records the same pair;
+    return None when no row carries the cell (legacy or empty fixtures), and
+    raise when recorded values are not canonical 64-hex strings.
+    """
+    for identity in sorted(cards):
+        card = cards[identity]
+        raw = card.get("glossary_decision_authority")
+        if raw is None or raw in {"(none)", "", "-", "—"}:
+            continue
+        try:
+            parsed = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            return None
+        if not isinstance(parsed, dict):
+            return None
+        glossary = parsed.get("glossary_sha256")
+        decisions = parsed.get("decisions_sha256")
+
+        def _valid_digest(value):
+            # ``not supplied`` is the fixture/placeholder spelling when the
+            # current payload has no real digest for that slot; a real value
+            # must be canonical 64-hex.
+            if value is None or value == "not supplied":
+                return True
+            return isinstance(value, str) and bool(
+                re.fullmatch(r"[0-9a-f]{64}", value)
+            )
+
+        if glossary is None and decisions is None:
+            return None
+        if not (_valid_digest(glossary) and _valid_digest(decisions)):
+            raise RuntimeError(
+                "world review glossary_decision_authority digest is malformed"
+            )
+        return {
+            "glossary_sha256": (
+                glossary if isinstance(glossary, str)
+                and re.fullmatch(r"[0-9a-f]{64}", glossary) else None
+            ),
+            "decisions_sha256": (
+                decisions if isinstance(decisions, str)
+                and re.fullmatch(r"[0-9a-f]{64}", decisions) else None
+            ),
+        }
+    return None
+
+
+def _review_payload_with_authority(payload, recorded):
+    """Return a payload copy whose authority digests are the recorded ones."""
+    overlaid = {
+        **payload,
+        "glossary_sha256": (
+            recorded["glossary_sha256"]
+            if recorded["glossary_sha256"] is not None
+            else payload.get("glossary_sha256")
+        ),
+    }
+    input_sha256 = dict(payload.get("input_sha256", {}))
+    if recorded["decisions_sha256"] is not None:
+        input_sha256["docs/decisions.md"] = recorded["decisions_sha256"]
+    overlaid["input_sha256"] = input_sha256
+    return overlaid
+
+
 def review_coverage(
     payload, review_input, allow_test_fixture_subset=False
 ):
@@ -2585,6 +2653,54 @@ def review_coverage(
     actual = set(identities)
     cards = {identity: card for identity, card in rows}
     inventory_rows = {row["identity"]: row for row in payload["rows"]}
+
+    # Slice A: the glossary/decisions digests inside each row's
+    # ``glossary_decision_authority`` cell are provenance records from the
+    # review's input snapshot.  Compare the ledger against those recorded
+    # values (overlay), not against the current tree digests, so an unrelated
+    # glossary or decisions.md edit cannot poison coverage.  The recorded
+    # cells must still parse as canonical 64-hex JSON.
+    original_payload = payload
+    recorded_authority = _review_recorded_authority(cards)
+    if recorded_authority is not None:
+        payload = _review_payload_with_authority(payload, recorded_authority)
+    current_glossary_digest = original_payload.get("glossary_sha256")
+    current_decisions_digest = original_payload.get(
+        "input_sha256", {}
+    ).get("docs/decisions.md")
+    recorded_glossary_digest = (
+        recorded_authority["glossary_sha256"]
+        if recorded_authority is not None else None
+    )
+    recorded_decisions_digest = (
+        recorded_authority["decisions_sha256"]
+        if recorded_authority is not None else None
+    )
+    if (
+        recorded_glossary_digest is not None
+        and current_glossary_digest is not None
+        and recorded_glossary_digest != current_glossary_digest
+    ):
+        print(
+            "notice: world review ledger records glossary_sha256 "
+            f"{recorded_glossary_digest} != current "
+            f"{current_glossary_digest}; verify whether a related "
+            "terminology review is needed",
+            file=sys.stderr,
+        )
+    if (
+        recorded_decisions_digest is not None
+        and current_decisions_digest is not None
+        and recorded_decisions_digest != current_decisions_digest
+    ):
+        print(
+            "notice: world review ledger records decisions_sha256 "
+            f"{recorded_decisions_digest} != current "
+            f"{current_decisions_digest}; verify whether a related "
+            "decisions review is needed",
+            file=sys.stderr,
+        )
+
     fact_mismatches = {}
     adopted_translation_mismatches = {}
     composite_adoption_mismatches = {}
@@ -2705,6 +2821,16 @@ def review_coverage(
         "inventory_digest_matches": bool(
             digest_match
             and digest_match.group(1) == payload["inventory_sha256"]
+        ),
+        "glossary_digest_matches": (
+            recorded_glossary_digest == current_glossary_digest
+            if recorded_glossary_digest is not None
+            and current_glossary_digest is not None else True
+        ),
+        "decisions_digest_matches": (
+            recorded_decisions_digest == current_decisions_digest
+            if recorded_decisions_digest is not None
+            and current_decisions_digest is not None else True
         ),
         "required_columns": required_columns,
         "header_matches": header == required_columns,

@@ -587,7 +587,6 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             ])
             for field, value in (
                 ("baseline", "0" * 40),
-                ("glossary_sha256", "0" * 64),
                 ("inventory_sha256", "1" * 64),
                 ("identity_count", 3),
             ):
@@ -601,6 +600,52 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                     )[
                         "coverage_equal"
                     ])
+
+            # A format-valid historical digest recorded by BOTH artifact copies
+            # is provenance, not a freshness blocker (Slice A): a ledger
+            # consistently recording an older digest passes with a notice.
+            stale_clean = MODULE.render_review_results(
+                payload,
+                {
+                    "status:STATUS_ONE": decision(
+                        "keep",
+                        "full rationale\nwith | pipe and " + "r" * 200,
+                    ),
+                    "status:STATUS_TWO": decision(
+                        "adjust", "second complete rationale"
+                    ),
+                },
+                glossary_overlay="c" * 64,
+            )
+            path.write_text(stale_clean, encoding="utf-8")
+            stale = MODULE.review_coverage(payload, review_input(path))
+            self.assertTrue(stale["coverage_equal"])
+            self.assertFalse(stale["glossary_digest_matches"])
+            # Malformed digest width still fails at parse time.
+            stale_lines = stale_clean.splitlines()
+            stale_marker = stale_lines.index(MODULE.STRICT_REVIEW_BEGIN)
+            changed = list(stale_lines)
+            metadata = json.loads(changed[stale_marker + 1])
+            metadata["glossary_sha256"] = "x"
+            changed[stale_marker + 1] = json.dumps(
+                metadata, sort_keys=True, separators=(",", ":")
+            )
+            path.write_text("\n".join(changed) + "\n", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                MODULE.review_coverage(payload, review_input(path))
+
+            # Single-copy tamper of the strict metadata glossary field is an
+            # internal same-generation inconsistency and must still fail.
+            path.write_text(
+                mutate_metadata(clean_text, "glossary_sha256", "0" * 64)
+                + "\n",
+                encoding="utf-8",
+            )
+            self.assertFalse(MODULE.review_coverage(
+                payload, review_input(path)
+            )[
+                "coverage_equal"
+            ])
 
             summary_lines = clean_text.splitlines()
             summary_index = summary_lines.index(
