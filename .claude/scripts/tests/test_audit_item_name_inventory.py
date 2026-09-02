@@ -77,8 +77,9 @@ def v3_sourcedb_fixture(source_dir, specs, snapshot=None):
                 raise AssertionError("fixture context does not match production")
         current = key
         for candidate in spec["candidates"]:
-            if candidate["canonical_key"] in db:
-                current = db[candidate["canonical_key"]]
+            value = db.get(candidate["canonical_key"])
+            if value:
+                current = value
                 break
         row["_pre_review_chinese"] = current
         row["current_chinese"] = current
@@ -319,12 +320,18 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 for card in cards
             }
             self.assertEqual({
-                "empty": "empty",
+                "empty": "fallback",
                 "empty-key": "fallback",
                 "fallback": "fallback",
                 "missing": "fallback",
                 "value": "value",
             }, states)
+            empty_value = next(
+                card for card in cards if card["identity"] == "empty"
+            )["source_dependencies"][0]
+            self.assertEqual("empty", empty_value["candidates"][0]["state"])
+            self.assertEqual("english", empty_value["selected_branch"])
+            self.assertEqual("empty", empty_value["resolved_value"])
             empty_key = next(
                 card for card in cards if card["identity"] == "empty-key"
             )["source_dependencies"][0]
@@ -386,12 +393,35 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             ])
             empty, _ = v3_sourcedb_fixture(source_dir, rune)
             dependency = empty[0]["source_dependencies"][0]
-            self.assertEqual("context", dependency["selected_branch"])
-            self.assertEqual(["empty", "not-evaluated"], [
+            self.assertEqual("plain", dependency["selected_branch"])
+            self.assertEqual(["empty", "value"], [
                 candidate["state"] for candidate in dependency["candidates"]
             ])
-            self.assertEqual("empty", dependency["state"])
-            self.assertEqual("", dependency["resolved_value"])
+            self.assertEqual("value", dependency["state"])
+            self.assertEqual("普通译文", dependency["resolved_value"])
+
+            forged_empty = copy.deepcopy(empty)
+            forged_dependency = forged_empty[0]["source_dependencies"][0]
+            forged_dependency["selected_branch"] = "context"
+            forged_dependency["state"] = "empty"
+            forged_dependency["resolved_value"] = ""
+            forged_empty[0]["decision"]["current_chinese"] = ""
+            forged_empty[0]["decision"]["adopted_chinese"] = ""
+            with self.assertRaisesRegex(RuntimeError, "dependency state"):
+                MODULE.validate_v3_decision_cards(forged_empty)
+
+            write_sourcedb(source, [("glowing", "")])
+            missing_context_empty_plain, _ = v3_sourcedb_fixture(
+                source_dir, rune
+            )
+            dependency = missing_context_empty_plain[0][
+                "source_dependencies"
+            ][0]
+            self.assertEqual(["missing", "empty"], [
+                candidate["state"] for candidate in dependency["candidates"]
+            ])
+            self.assertEqual("english", dependency["selected_branch"])
+            self.assertEqual("glowing", dependency["resolved_value"])
 
             write_sourcedb(source, [("unrelated", "无关")])
             english, _ = v3_sourcedb_fixture(source_dir, rune)

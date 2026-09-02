@@ -1830,7 +1830,8 @@ def source_db_dependency(spec, chains):
         elif definitions:
             value = definitions[-1]["runtime_value"]
             candidate_state = "empty" if value == "" else "value"
-            selected = (candidate_spec["branch"], candidate_state, value)
+            if candidate_state == "value":
+                selected = (candidate_spec["branch"], candidate_state, value)
         else:
             candidate_state = "missing"
         candidates.append({
@@ -2683,9 +2684,10 @@ def validate_v3_decision_cards(rows):
                     expected_state = (
                         "empty" if expected_value == "" else "value"
                     )
-                    selected = (
-                        expected_branch, expected_state, expected_value
-                    )
+                    if expected_state == "value":
+                        selected = (
+                            expected_branch, expected_state, expected_value
+                        )
                 else:
                     expected_state = "missing"
                 if candidate["state"] != expected_state:
