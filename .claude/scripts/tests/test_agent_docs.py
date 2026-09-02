@@ -347,21 +347,9 @@ class AgentDocumentationTests(unittest.TestCase):
         for job in (tooling, gate):
             self.assertIn("os: [ubuntu-latest, macos-latest]", job)
             self.assertIn("runs-on: ${{ matrix.os }}", job)
-            self.assertIn("PYTHONSAFEPATH: \"1\"", job)
+            self.assertIn('PYTHONSAFEPATH: "1"', job)
             self.assertIn("uses: actions/setup-python@v4", job)
-            self.assertLess(
-                job.index("Prepare trusted verification control checkout"),
-                job.index("Build trusted target luac"),
-            )
         self.assertIn("uses: actions/setup-node@v4", tooling)
-        self.assertIn("id: trusted_control", tooling)
-        self.assertIn("id: trusted_control", gate)
-        self.assertIn(
-            'steps.trusted_control.outputs.root', tooling
-        )
-        self.assertIn(
-            'steps.trusted_control.outputs.root', gate
-        )
         self.assertIn(
             "/bin/bash .claude/scripts/tests/run_all.sh", tooling
         )
@@ -370,74 +358,48 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         run_all = (ROOT / ".claude/scripts/tests/run_all.sh").read_text()
         verify_zh = (ROOT / ".claude/scripts/verify_zh.sh").read_text()
-        self.assertIn('export PYTHONPATH="${SCRIPTS_ROOT}${PYTHONPATH:+:$PYTHONPATH}"', run_all)
-        self.assertIn('export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"', verify_zh)
-        self.assertIn("control_sha", workflow)
-        self.assertIn("submodule update --init --recursive", tooling)
+        self.assertIn(
+            'export PYTHONPATH="${SCRIPTS_ROOT}${PYTHONPATH:+:$PYTHONPATH}"',
+            run_all,
+        )
+        self.assertIn(
+            'export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"',
+            verify_zh,
+        )
+        self.assertNotIn("control_sha", workflow)
+        self.assertNotIn("trusted_control", workflow)
+        self.assertNotIn("Build trusted target luac", workflow)
         self.assertLess(
-            tooling.index("Build trusted target luac"),
+            tooling.index("Build vendored luac (monspeak Lua syntax gate)"),
             tooling.index("Run tooling tests"),
         )
         self.assertLess(
-            gate.index("Build trusted target luac"),
+            gate.index("Build vendored luac (monspeak Lua syntax gate)"),
             gate.index("Run Chinese localization CI gate"),
         )
+        self.assertNotIn("--profile review", verify_zh)
 
-    def test_external_ci_control_path_is_structurally_bound(self) -> None:
+    def test_ci_has_no_proof_binding_or_control_sha(self) -> None:
         workflow_path = ROOT / ".github/workflows/ci.yml"
         workflow_text = workflow_path.read_text()
 
-        def assert_contract(text: str) -> None:
+        def assert_clean(text: str) -> None:
             data = yaml.safe_load(text)
             jobs = data["jobs"]
-            dispatch = data.get(True, data.get("on", {})).get(
-                "workflow_dispatch", {}
-            )
-            control_input = dispatch.get("inputs", {}).get("control_sha", {})
-            self.assertTrue(control_input.get("required"))
+            self.assertNotIn("control_sha", str(data))
             for job_name in ("zh_tooling_tests", "zh_ci_gate"):
                 job = jobs[job_name]
-                self.assertEqual(job.get("env", {}).get("PYTHONSAFEPATH"), "1")
+                self.assertEqual(
+                    job.get("env", {}).get("PYTHONSAFEPATH"), "1"
+                )
                 steps = job["steps"]
                 names = [step.get("name") for step in steps]
-                prepare_index = names.index(
-                    "Prepare trusted verification control checkout"
+                self.assertNotIn(
+                    "Prepare trusted verification control checkout", names
                 )
-                luac_index = names.index("Build trusted target luac")
-                candidate_luac_index = names.index(
-                    "Build vendored luac (monspeak Lua syntax gate)"
-                )
-                prepare = steps[prepare_index]
-                luac = steps[luac_index]
-                candidate_luac = steps[candidate_luac_index]
-                self.assertEqual(
-                    prepare.get("if"),
-                    "${{ github.event_name == 'workflow_dispatch' }}",
-                )
+                self.assertNotIn("Build trusted target luac", names)
                 self.assertIn(
-                    '[[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]',
-                    prepare.get("run", ""),
-                )
-                self.assertIn(
-                    'test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"',
-                    prepare.get("run", ""),
-                )
-                self.assertIn("printf 'sha=%s", prepare.get("run", ""))
-                self.assertEqual(
-                    luac.get("if"),
-                    "${{ github.event_name == 'workflow_dispatch' }}",
-                )
-                self.assertEqual(
-                    candidate_luac.get("if"),
-                    "${{ github.event_name != 'workflow_dispatch' }}",
-                )
-                self.assertIn(
-                    'git -C "$root" submodule update --init --recursive',
-                    luac.get("run", ""),
-                )
-                self.assertIn(
-                    'cd "$root/crawl-ref/source/contrib/lua/src"',
-                    luac.get("run", ""),
+                    "Build vendored luac (monspeak Lua syntax gate)", names
                 )
             gate = jobs["zh_ci_gate"]
             gate_run = next(
@@ -446,23 +408,19 @@ class AgentDocumentationTests(unittest.TestCase):
                 if step.get("name")
                 == "Run Chinese localization CI gate (static only)"
             )
-            self.assertIn(
-                '--base "${{ steps.trusted_control.outputs.sha }}"', gate_run
+            self.assertIn("--profile ci", gate_run)
+            self.assertNotIn("trusted_control", gate_run)
+            self.assertNotIn("control_sha", gate_run)
+            tooling = jobs["zh_tooling_tests"]
+            tooling_run = next(
+                step["run"]
+                for step in tooling["steps"]
+                if step.get("name") == "Run tooling tests"
             )
-            self.assertIn('--head "$GITHUB_SHA"', gate_run)
-            self.assertIn(
-                '"${{ steps.trusted_control.outputs.root }}/.claude/scripts/verify_zh.sh"',
-                gate_run,
-            )
+            self.assertIn("/bin/bash .claude/scripts/tests/run_all.sh",
+                          tooling_run)
 
-        assert_contract(workflow_text)
-        mutated = workflow_text.replace(
-            '[[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]',
-            'test -n "$CONTROL_SHA"',
-            1,
-        )
-        with self.assertRaises(AssertionError):
-            assert_contract(mutated)
+        assert_clean(workflow_text)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
