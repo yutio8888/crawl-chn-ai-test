@@ -2956,35 +2956,20 @@ i18n_lifetime_status=$?
 set -e
 cat /tmp/actual_i18n_lifetime.txt
 assert_status "i18n-lifetime: black-box unit suite" 0 "$i18n_lifetime_status"
-assert_contains "i18n-lifetime: post-reviewer blocking gate is wired" \
-    "scan_i18n_lifetime.py" \
-    "$SCRIPT_DIR/../post-reviewer.sh"
-assert_contains "i18n-lifetime: post-reviewer supports changed-file scope" \
-    "args=(--files" \
-    "$SCRIPT_DIR/../post-reviewer.sh"
-assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
-    '"$SCRIPT_DIR/i18n_extract.py" validate' \
-    "$SCRIPT_DIR/../post-reviewer.sh"
-assert_contains "source-db dedup: post-reviewer standalone coverage is conditional" \
-    'ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE' \
-    "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "source-db dedup: post-coder standalone coverage is conditional" \
     'ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE' \
     "$SCRIPT_DIR/../post-coder.sh"
 assert_contains "source-db dedup: dispatcher marks nested domain scripts" \
     'env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1' \
     "$SCRIPT_DIR/../verify_zh.sh"
-assert_contains "i18n-lifetime: final gate owns review profile" \
-    "review_bundle.py" \
-    "$SCRIPT_DIR/../review_final_gate.sh"
-assert_contains "i18n-lifetime: merge gate verifies candidate worktree" \
-    "WORKTREE_PATH" \
-    "$SCRIPT_DIR/../review_at_merge.sh"
-if grep -Fq -- '--profile review' "$SCRIPT_DIR/../review_at_merge.sh"; then
-    echo "  FAIL: merge gate must not run the review profile"
+assert_contains "i18n-lifetime: ci code-static runs the lifetime scanner" \
+    'scan_i18n_lifetime.py' \
+    "$SCRIPT_DIR/../post-coder.sh"
+if grep -Fq -- '--profile review' "$SCRIPT_DIR/../verify_zh.sh"; then
+    echo "  FAIL: verify_zh.sh must not accept the retired review profile"
     FAIL=$((FAIL + 1))
 else
-    echo "  PASS: merge gate is free of review-profile execution"
+    echo "  PASS: verify_zh.sh is free of the retired review profile"
     PASS=$((PASS + 1))
 fi
 

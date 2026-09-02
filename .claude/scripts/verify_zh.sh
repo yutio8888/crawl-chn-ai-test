@@ -4,23 +4,14 @@
 # Usage:
 #   verify_zh.sh --profile translation   # Translation / data-file changes
 #   verify_zh.sh --profile code           # C++ / i18n code changes
-#   verify_zh.sh --profile review         # Legacy internal profile (retiring)
 #   verify_zh.sh --profile ci             # CI gate (union of translation + code)
 #   verify_zh.sh --profile code --scope changed
-#   verify_zh.sh --profile review --base <rev> --head <rev> \
-#       --routing-sha256 <sha256> --control-plane-sha256 <sha256>
-#   verify_zh.sh --profile review --base <rev> --head <rev> \
-#       --github-actions-proof <proof.json> --github-proof-artifact <name> \
-#       --github-externalized-phases <csv>
 #
-# --base and --head bind a run to an immutable commit range. They must be used
-# together. For bound runs, the checked-out HEAD must equal --head and glossary
-# diff checks automatically compare against --base.
-#
-# --github-actions-proof switches an internal final-gate review run into
-# external-CI mode: the listed externalized phases are recorded as proven by a
-# bound GitHub Actions proof instead of running locally. Only review_bundle.py
-# may pass this flag; every other call uses the default fully local mode.
+# --base and --head bind a run to a clean committed ancestor range. They must
+# be used together; the checked-out HEAD must equal --head and glossary diff
+# checks automatically compare against --base. The bound mode expresses the
+# clean-candidate/ancestor relationship only; it no longer binds any control
+# plane SHA.
 #
 # Exit codes:
 #   0 — all blocking checks passed
@@ -30,7 +21,6 @@
 set -euo pipefail
 export GIT_NO_REPLACE_OBJECTS=1
 unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
-unset ZH_VERIFY_CONTROL_ROOT ZH_VERIFY_CONTROL_COMMIT
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # CI sets PYTHONSAFEPATH=1 so Python will not prepend this script directory.
@@ -46,14 +36,6 @@ HEAD_SHA=""
 DIFF_HASH=""
 DIFF_SHA256=""
 OUTPUT_DIR=".claude/metrics/verify"
-ROUTING_SHA256=""
-CONTROL_PLANE_SHA256=""
-GITHUB_ACTIONS_PROOF=""
-GITHUB_ACTIONS_RUN=""
-GITHUB_PROOF_ARTIFACT=""
-GITHUB_EXTERNALIZED_PHASES=""
-GITHUB_LOCAL_FALLBACK_REASON=""
-VERIFICATION_CONTRACT="dcss-zh-review-v5"
 RUN_DIR=""
 RUN_ID=""
 REPORT_FILE=""
@@ -80,20 +62,13 @@ RISK_MESSAGE_OVERLAY=0
 
 usage() {
     cat <<'EOF'
-Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full]
+Usage: verify_zh.sh --profile <translation|code|ci> [--scope changed|full]
                     [--base <rev> --head <rev>] [--full]
-                    [--output-dir <path>] [--routing-sha256 <sha256>]
-                    [--control-plane-sha256 <sha256>]
-                    [--github-actions-proof <proof.json>]
-                    [--github-actions-run <run-id>]
-                    [--github-proof-artifact <name>]
-                    [--github-externalized-phases <csv>]
-                    [--github-actions-fallback-local <reason>]
+                    [--output-dir <path>]
 
 Profiles:
   translation   Translation / data-file changes
   code          C++ / i18n code changes
-  review        Legacy internal profile retained for Slice C removal; not a merge entry point
   ci            CI gate (translation + code union)
 
 Evidence range:
@@ -101,16 +76,8 @@ Evidence range:
   --head <rev>  Candidate commit; requires --base and must be checked out
 
 Scope and runtime:
-  --scope changed|full  Task profiles default to changed; review/ci to full
+  --scope changed|full  Task profiles default to changed; ci to full
   --full                Alias for --scope full plus the full runtime suite
-
-External CI (review profile only, invoked by review_bundle.py):
-  --github-actions-proof <path>       Canonical github-actions-proof.json
-  --github-actions-run <run-id>       GitHub Actions run id (audit log only)
-  --github-proof-artifact <name>      Proof artifact name inside the run dir
-  --github-externalized-phases <csv>  Phases replaced by the bound proof
-  --github-actions-fallback-local <reason>
-                                      Audited local fallback reason
 EOF
     exit 2
 }
@@ -123,7 +90,7 @@ argument_error() {
 # ── Parse arguments ──
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --profile|--base|--head|--scope|--output-dir|--routing-sha256|--control-plane-sha256|--github-actions-proof|--github-actions-run|--github-proof-artifact|--github-externalized-phases|--github-actions-fallback-local)
+        --profile|--base|--head|--scope|--output-dir)
             [[ $# -ge 2 && -n "${2:-}" ]] \
                 || argument_error "$1 requires a value"
             case "$1" in
@@ -132,13 +99,6 @@ while [[ $# -gt 0 ]]; do
                 --head) HEAD="$2" ;;
                 --scope) SCOPE="$2" ;;
                 --output-dir) OUTPUT_DIR="$2" ;;
-                --routing-sha256) ROUTING_SHA256="$2" ;;
-                --control-plane-sha256) CONTROL_PLANE_SHA256="$2" ;;
-                --github-actions-proof) GITHUB_ACTIONS_PROOF="$2" ;;
-                --github-actions-run) GITHUB_ACTIONS_RUN="$2" ;;
-                --github-proof-artifact) GITHUB_PROOF_ARTIFACT="$2" ;;
-                --github-externalized-phases) GITHUB_EXTERNALIZED_PHASES="$2" ;;
-                --github-actions-fallback-local) GITHUB_LOCAL_FALLBACK_REASON="$2" ;;
             esac
             shift 2
             ;;
@@ -163,16 +123,16 @@ fi
 
 # ── Validate profile and optional immutable range ──
 case "$PROFILE" in
-    translation|code|review|ci) ;;
+    translation|code|ci) ;;
     *)
-        argument_error "unknown profile '$PROFILE'. Valid: translation, code, review, ci"
+        argument_error "unknown profile '$PROFILE'. Valid: translation, code, ci"
         ;;
 esac
 
 if [[ -z "$SCOPE" ]]; then
     case "$PROFILE" in
         translation|code) SCOPE="changed" ;;
-        review|ci) SCOPE="full" ;;
+        ci) SCOPE="full" ;;
     esac
 fi
 case "$SCOPE" in
@@ -215,106 +175,6 @@ if [[ -n "$BASE" ]]; then
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
     export ZH_VERIFY_AUDIT_ROOT="$WORKTREE"
     export ZH_VERIFY_AUDIT_COMMIT="$HEAD_SHA"
-    CONTROL_ROOT=$(git -C "$SCRIPT_DIR/../.." rev-parse --show-toplevel \
-        2>/dev/null) \
-        || argument_error "trusted control scripts are not inside a Git worktree"
-    [[ "$CONTROL_ROOT" = /* ]] \
-        || argument_error "trusted control Git top-level must be absolute"
-    CONTROL_ROOT=$(cd "$CONTROL_ROOT" && pwd -P) \
-        || argument_error "trusted control Git top-level cannot be resolved"
-    CONTROL_HEAD=$(git -C "$CONTROL_ROOT" rev-parse --verify HEAD \
-        2>/dev/null) \
-        || argument_error "trusted control worktree has no valid HEAD"
-    if [[ "$CONTROL_HEAD" != "$BASE_SHA" && "$CONTROL_HEAD" != "$HEAD_SHA" ]]; then
-        argument_error \
-            "trusted control HEAD must equal bound base or head: $CONTROL_HEAD"
-    fi
-    if [[ -n "$(git -C "$CONTROL_ROOT" status --porcelain \
-        --untracked-files=all)" ]]; then
-        argument_error "bound verification requires a clean trusted control worktree"
-    fi
-    export ZH_VERIFY_CONTROL_ROOT="$CONTROL_ROOT"
-    export ZH_VERIFY_CONTROL_COMMIT="$CONTROL_HEAD"
-fi
-
-for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do
-    digest_value="${!digest_name}"
-    if [[ -n "$digest_value" && ! "$digest_value" =~ ^[0-9a-f]{64}$ ]]; then
-        digest_label=$(printf '%s' "$digest_name" | tr '[:upper:]' '[:lower:]')
-        argument_error "$digest_label must be a lowercase SHA-256"
-    fi
-done
-
-# ── External GitHub Actions proof mode (review profile only) ──
-# review_bundle.py is the only sanctioned caller. Default behaviour is the
-# fully local profile; proof mode is explicit and fail-closed.
-is_externalized_phase() {
-    local padded=",${GITHUB_EXTERNALIZED_PHASES},"
-    [[ "$padded" == *",$1,"* ]]
-}
-if [[ -n "$GITHUB_ACTIONS_PROOF" ]]; then
-    [[ "$PROFILE" == review ]] \
-        || argument_error "--github-actions-proof requires --profile review"
-    [[ -n "$BASE" && -n "$HEAD" ]] \
-        || argument_error "--github-actions-proof requires a bound --base/--head review run"
-    [[ -f "$GITHUB_ACTIONS_PROOF" && ! -L "$GITHUB_ACTIONS_PROOF" ]] \
-        || argument_error "GitHub Actions proof file is missing or unsafe: $GITHUB_ACTIONS_PROOF"
-    [[ -n "$GITHUB_PROOF_ARTIFACT" && "$GITHUB_PROOF_ARTIFACT" != */* ]] \
-        || argument_error "--github-proof-artifact must name a single artifact file"
-    python3 - "$GITHUB_ACTIONS_PROOF" "$HEAD_SHA" <<'PY' || argument_error "GitHub Actions proof failed validation"
-import json
-import sys
-import re
-
-path, head_sha = sys.argv[1:]
-try:
-    with open(path, encoding="utf-8") as stream:
-        proof = json.load(stream)
-except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-    raise SystemExit(f"proof JSON is invalid: {exc}")
-if not isinstance(proof, dict):
-    raise SystemExit("proof must be a JSON object")
-for key in ("schema", "repository", "head_sha", "status", "conclusion",
-            "required_jobs"):
-    if key not in proof:
-        raise SystemExit(f"proof is missing {key}")
-if not isinstance(proof["head_sha"], str) \
-        or not re.fullmatch(r"[0-9a-f]{40,64}", proof["head_sha"]):
-    raise SystemExit("proof head_sha is invalid")
-if proof["head_sha"] != head_sha:
-    raise SystemExit("proof head_sha does not match the bound head")
-if proof["status"] != "completed" \
-        or not isinstance(proof["conclusion"], str) \
-        or not proof["conclusion"]:
-    raise SystemExit("proof run is not completed with a recorded conclusion")
-if not isinstance(proof["required_jobs"], list) or not proof["required_jobs"]:
-    raise SystemExit("proof required_jobs must be a non-empty list")
-if not isinstance(proof["repository"], str) or not proof["repository"]:
-    raise SystemExit("proof repository is invalid")
-PY
-fi
-if [[ -n "$GITHUB_ACTIONS_PROOF" && -z "$GITHUB_ACTIONS_RUN" ]]; then
-    argument_error "--github-actions-proof requires --github-actions-run"
-fi
-if [[ -n "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
-    [[ "$PROFILE" == review ]] \
-        || argument_error "--github-actions-fallback-local requires --profile review"
-    [[ -n "$BASE" && -n "$HEAD" ]] \
-        || argument_error "--github-actions-fallback-local requires a bound --base/--head review run"
-    [[ -n "$GITHUB_ACTIONS_RUN" ]] \
-        || argument_error "--github-actions-fallback-local requires --github-actions-run"
-    [[ -z "$GITHUB_ACTIONS_PROOF" ]] \
-        || argument_error "--github-actions-fallback-local cannot accompany a proof"
-    [[ "$GITHUB_LOCAL_FALLBACK_REASON" == "github-actions-proof-unavailable" ]] \
-        || argument_error "unknown GitHub Actions local fallback reason"
-fi
-if [[ -n "$GITHUB_ACTIONS_RUN" && -z "$GITHUB_ACTIONS_PROOF" \
-      && -z "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
-    argument_error "--github-actions-run requires proof or audited local fallback"
-fi
-if [[ -z "$GITHUB_ACTIONS_PROOF" \
-      && ( -n "$GITHUB_PROOF_ARTIFACT" || -n "$GITHUB_EXTERNALIZED_PHASES" ) ]]; then
-    argument_error "GitHub proof artifact/phases require --github-actions-proof"
 fi
 
 # The changed set is used only to narrow checks that accept explicit file
@@ -433,9 +293,6 @@ WORLD_INVENTORY_FILE="$RUN_DIR/world-inventory.json"
 WRAPPER_FILE="$OUTPUT_DIR/verify-${PROFILE}-${RUN_ID}.log"
 mkdir -p "$RUN_DIR"
 : > "$PHASES_FILE"
-if [[ -n "$GITHUB_ACTIONS_PROOF" ]]; then
-    cp "$GITHUB_ACTIONS_PROOF" "$RUN_DIR/$GITHUB_PROOF_ARTIFACT"
-fi
 
 # Write metadata through a sibling temporary file and atomically replace the
 # public file. Arguments are JSON-encoded by Python, not interpolated into JSON.
@@ -447,15 +304,12 @@ write_metadata() {
         "$METADATA_FILE" "$status" "$PROFILE" "$BASE_SHA" "$HEAD_SHA" \
         "$DIFF_HASH" "$DIFF_SHA256" "$GLOSSARY_SHA256" "$WORKTREE" \
         "$STARTED_AT" "$completed_at" "$failures" "$RUN_ID" "$SCOPE" \
-        "$ROUTING_SHA256" "$CONTROL_PLANE_SHA256" "$VERIFICATION_CONTRACT" \
         "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_ZH_TEST_RUNTIME" \
         "$RISK_MESSAGE_OVERLAY" \
         "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" \
         "$ITEM_INVENTORY_FILE" "$CHARACTER_INVENTORY_FILE" \
         "$GOD_INVENTORY_FILE" "$SPECIES_BACKGROUND_INVENTORY_FILE" \
-        "$MONSTER_INVENTORY_FILE" "$WORLD_INVENTORY_FILE" \
-        "$GITHUB_PROOF_ARTIFACT" "$GITHUB_ACTIONS_RUN" \
-        "$GITHUB_LOCAL_FALLBACK_REASON" <<'PY'
+        "$MONSTER_INVENTORY_FILE" "$WORLD_INVENTORY_FILE" <<'PY'
 import hashlib
 import json
 import os
@@ -464,13 +318,11 @@ import sys
 (
     path, status, profile, base, head, diff_hash, diff_sha256,
     glossary_sha256, worktree, started_at, completed_at, failures, run_id,
-    scope, routing_sha256, control_plane_sha256, verification_contract,
-    risk_cpp_i18n, risk_cjk_runtime, risk_zh_test_runtime,
+    scope, risk_cpp_i18n, risk_cjk_runtime, risk_zh_test_runtime,
     risk_message_overlay, explicit_full, phases_path, report_path,
     item_inventory_path, character_inventory_path, god_inventory_path,
     species_background_inventory_path, monster_inventory_path,
-    world_inventory_path, gha_proof_artifact, gha_run_id,
-    gha_local_fallback_reason,
+    world_inventory_path,
 ) = sys.argv[1:]
 phases = []
 if os.path.isfile(phases_path):
@@ -481,15 +333,12 @@ if os.path.isfile(phases_path):
                 continue
             parts = line.split("\t")
             phase_id, required, phase_status, exit_code = parts[0:4]
-            phase_source = parts[4] if len(parts) > 4 and parts[4] else "local"
             record = {
                 "id": phase_id,
                 "required": required == "1",
                 "status": phase_status,
                 "exit_code": int(exit_code),
             }
-            if phase_source != "local":
-                record["source"] = phase_source
             phases.append(record)
 artifacts = []
 if os.path.isfile(report_path):
@@ -516,8 +365,7 @@ for artifact_path, artifact_name in (
         "sha256": hashlib.sha256(data).hexdigest(),
     })
 payload = {
-    "schema_version": 3,
-    "verification_contract": verification_contract,
+    "schema_version": 4,
     "run_id": run_id,
     "status": status,
     "profile": profile,
@@ -527,15 +375,13 @@ payload = {
     "diff_hash": diff_hash or None,
     "diff_sha256": diff_sha256 or None,
     "glossary_sha256": glossary_sha256,
-    "routing_sha256": routing_sha256 or None,
-    "control_plane_sha256": control_plane_sha256 or None,
     "risk_cpp_i18n": risk_cpp_i18n == "1",
     "risk_cjk_runtime": risk_cjk_runtime == "1",
     "risk_zh_test_runtime": risk_zh_test_runtime == "1",
     "risk_message_overlay": risk_message_overlay == "1",
     "runtime_mode": ("full" if explicit_full == "1" else
                      "catch2" if profile != "ci"
-                     and (profile == "review" or risk_cjk_runtime == "1"
+                     and (risk_cjk_runtime == "1"
                           or risk_zh_test_runtime == "1")
                      else "none"),
     "phases": phases,
@@ -545,32 +391,6 @@ payload = {
     "completed_at": completed_at or None,
     "failures": int(failures),
 }
-if gha_proof_artifact:
-    proof_path = os.path.join(os.path.dirname(path), gha_proof_artifact)
-    if os.path.isfile(proof_path):
-        data = open(proof_path, "rb").read()
-        artifacts.append({
-            "path": gha_proof_artifact,
-            "size": len(data),
-            "sha256": hashlib.sha256(data).hexdigest(),
-        })
-        try:
-            proof = json.loads(data.decode("utf-8", errors="strict"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise SystemExit(f"proof artifact is invalid JSON: {exc}")
-        payload["external_ci"] = {
-            "schema": proof.get("schema"),
-            "repository": proof.get("repository"),
-            "run_id": proof.get("run_id"),
-            "proof_artifact": gha_proof_artifact,
-            "github_actions_run": gha_run_id or None,
-        }
-elif gha_local_fallback_reason:
-    payload["external_ci"] = {
-        "source": "local-fallback",
-        "fallback_reason": gha_local_fallback_reason,
-        "github_actions_run": gha_run_id,
-    }
 directory = os.path.dirname(path)
 temporary = os.path.join(directory, f".{os.path.basename(path)}.tmp.{os.getpid()}")
 with open(temporary, "w", encoding="utf-8") as stream:
@@ -653,19 +473,6 @@ run_phase() {
     return "$phase_rc"
 }
 
-# Record a phase that was proven by the bound GitHub Actions proof instead of
-# running locally. The metadata validator only accepts this source for phases
-# listed in the trusted contract's externalizable set, so a caller cannot use
-# it to hide missing local evidence.
-record_external_phase() {
-    local phase_id="$1" required="$2" label="$3"
-    echo "=== $label ==="
-    echo "EXTERNAL: proven by bound GitHub Actions CI proof (source=github-actions)"
-    echo "RESULT: PASS (external)"
-    printf '%s\t%s\tpass\t0\tgithub-actions\n' "$phase_id" "$required" >> "$PHASES_FILE"
-    echo ""
-}
-
 # ── Dispatch by profile ──
 {
     echo "=== verify_zh.sh --profile $PROFILE @ $STARTED_AT ==="
@@ -679,22 +486,11 @@ record_external_phase() {
         echo "Diff SHA-256: $DIFF_SHA256"
     fi
     echo "Glossary SHA-256: $GLOSSARY_SHA256"
-    if [[ -n "$GITHUB_LOCAL_FALLBACK_REASON" ]]; then
-        echo "External CI source: local-fallback"
-        echo "External CI fallback reason: $GITHUB_LOCAL_FALLBACK_REASON"
-        echo "External CI requested run: $GITHUB_ACTIONS_RUN"
-    fi
     echo ""
 
-    if is_externalized_phase "policy-sync"; then
-        record_external_phase "policy-sync" 1 \
-            "Agent/Skill policy synchronization (external GitHub Actions evidence)"
-    else
-        run_phase "policy-sync" 1 "Agent/Skill policy synchronization" \
-            python3 "$SCRIPT_DIR/check_agent_policies.py" --root "$WORKTREE" \
-            || RESULTS=$((RESULTS + 1))
-    fi
-
+    run_phase "policy-sync" 1 "Agent/Skill policy synchronization" \
+        python3 "$SCRIPT_DIR/check_agent_policies.py" --root "$WORKTREE" \
+        || RESULTS=$((RESULTS + 1))
     # ── source-db-static: REQUIRED for ALL profiles, NOT bypassable ──
     run_source_db_static() {
         local rc=0
@@ -711,18 +507,11 @@ record_external_phase() {
             --defaults-dir "$WORKTREE/crawl-ref/source/dat/defaults" || rc=$?
         return "$rc"
     }
-    if is_externalized_phase "source-db-static"; then
-        record_external_phase "source-db-static" 1 \
-            "Source/DB static integrity (external GitHub Actions evidence)"
-    else
-        run_phase "source-db-static" 1 "Source/DB static integrity" \
-            run_source_db_static || RESULTS=$((RESULTS + 1))
-    fi
+    run_phase "source-db-static" 1 "Source/DB static integrity" \
+        run_source_db_static || RESULTS=$((RESULTS + 1))
 
     # Strictly validate every formal review ledger against the same candidate
-    # snapshot and fixed review bases used by the final gate. The review
-    # profile remains the authoritative final-evidence owner; the CI profile
-    # reuses this function only to fail early on stale or invalid ledgers.
+    # snapshot and fixed review bases used by the ci profile.
     run_review_ledgers() {
         local rc=0
         local ledgers=(
@@ -733,17 +522,35 @@ record_external_phase() {
             "$WORKTREE/docs/species-background-review-results.md"
             "$WORKTREE/docs/world-review-results.md"
         )
+        # Reject any ledger path that escapes the candidate top-level: refuse
+        # relative parents and symlink escapes, mirroring the retired
+        # review_bundle._path_under_checkout semantics. No new module is
+        # introduced for this guard; it is inline by design.
         PYTHONDONTWRITEBYTECODE=1 \
             PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" \
             python3 - "$WORKTREE" "${ledgers[@]}" <<'PY' || return $?
+import os
 import sys
 from pathlib import Path
 
-from review_bundle import _path_under_checkout
-
-checkout = Path(sys.argv[1])
+checkout = Path(sys.argv[1]).resolve()
 for supplied in sys.argv[2:]:
-    _path_under_checkout(checkout, supplied, "review ledger")
+    candidate = Path(supplied)
+    if not candidate.is_absolute():
+        raise SystemExit(f"review ledger path is not absolute: {supplied}")
+    resolved = candidate.resolve()
+    try:
+        relative = resolved.relative_to(checkout)
+    except ValueError:
+        raise SystemExit(
+            f"review ledger path escapes the candidate top-level: {supplied}"
+        )
+    if any(part == ".." for part in candidate.parts) or resolved != candidate:
+        raise SystemExit(
+            f"review ledger path uses parent or symlink escape: {supplied}"
+        )
+    if not resolved.is_file():
+        raise SystemExit(f"review ledger is missing: {supplied}")
 PY
         python3 "$SCRIPT_DIR/audit_character_mechanics_inventory.py" \
             --review-results \
@@ -783,47 +590,9 @@ PY
                 env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
                     bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
-        review)
-            run_phase "review-static" 1 "Review verification (post-reviewer.sh)" \
-                env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
-                    bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
-            run_phase "review-ledgers" 1 "Strict review ledger audit" \
-                run_review_ledgers || RESULTS=$((RESULTS + 1))
-            run_tooling_tests() {
-                local candidate_commit runner_relative
-                runner_relative=".claude/scripts/tests/run_all.sh"
-                local runner="$WORKTREE/.claude/scripts/tests/run_all.sh"
-                if [[ ! -e "$runner" ]]; then
-                    echo "ERROR: candidate tooling test runner is missing: $runner" >&2
-                    return 1
-                fi
-                if [[ -L "$runner" || ! -f "$runner" ]]; then
-                    echo "ERROR: candidate tooling test runner is unsafe: $runner" >&2
-                    return 1
-                fi
-                candidate_commit="${HEAD_SHA:-$CURRENT_HEAD}"
-                # Bash 3.2 on macOS cannot reliably source a non-seekable
-                # /dev/stdin.  Read the exact Git blob into the child shell and
-                # evaluate it from memory instead: there is no mutable pathname
-                # between verification and execution, while $0 remains the
-                # candidate runner path used by run_all.sh for discovery.
-                git -C "$WORKTREE" cat-file blob \
-                    "${candidate_commit}:${runner_relative}" \
-                    | env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2 PYTHONPATH= \
-                        /bin/bash -c \
-                            'unset GIT_NO_REPLACE_OBJECTS GLOSSARY_DIFF_BASE
-                             unset ZH_VERIFY_AUDIT_ROOT ZH_VERIFY_AUDIT_COMMIT
-                             unset ZH_VERIFY_CONTROL_ROOT ZH_VERIFY_CONTROL_COMMIT
-                             runner_source=$(cat) && eval "$runner_source"' \
-                            "$runner"
-            }
-            run_phase "tooling-tests" 1 "ZH tooling tests" \
-                run_tooling_tests || RESULTS=$((RESULTS + 1))
-            ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.
-            # It also fails early when any formal review ledger is stale or
-            # invalid, while the review profile retains final-evidence ownership.
+            # It fails early when any formal review ledger is stale or invalid.
             run_phase "ledger-freshness" 1 \
                 "Strict review ledger freshness audit" \
                 run_review_ledgers || RESULTS=$((RESULTS + 1))
@@ -864,13 +633,8 @@ PY
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
                 --sidecar crawl-ref/source/fork-message-overlay.generated.inc
     }
-    if is_externalized_phase "message-overlay-static"; then
-        record_external_phase "message-overlay-static" 1 \
-            "TextDB message overlay static audit (external GitHub Actions evidence)"
-    else
-        run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
-            run_message_overlay_static || RESULTS=$((RESULTS + 1))
-    fi
+    run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
+        run_message_overlay_static || RESULTS=$((RESULTS + 1))
 
     resolve_build_python() {
         local candidate resolved
@@ -936,17 +700,12 @@ PY
     if [[ "$EXPLICIT_FULL" -eq 1 ]]; then
         run_phase "zh-runtime-full" 1 "Risk gate: full ZH runtime" run_runtime full \
             || RESULTS=$((RESULTS + 1))
-    elif [[ "$PROFILE" != ci && ( "$RISK_CJK_RUNTIME" -eq 1 || "$RISK_ZH_TEST_RUNTIME" -eq 1 || "$PROFILE" == review ) ]]; then
+    elif [[ "$PROFILE" != ci && ( "$RISK_CJK_RUNTIME" -eq 1 || "$RISK_ZH_TEST_RUNTIME" -eq 1 ) ]]; then
         # post_zh_runtime.sh calls its build-and-run Catch2 path "catch2";
         # its "fast" mode only re-aggregates an existing evidence directory.
         # ci profile is truly static — skip runtime entirely.
-        if is_externalized_phase "zh-runtime-catch2"; then
-            record_external_phase "zh-runtime-catch2" 1 \
-                "Risk gate: fast ZH runtime (external GitHub Actions evidence)"
-        else
-            run_phase "zh-runtime-catch2" 1 "Risk gate: fast ZH runtime" run_runtime catch2 \
-                || RESULTS=$((RESULTS + 1))
-        fi
+        run_phase "zh-runtime-catch2" 1 "Risk gate: fast ZH runtime" run_runtime catch2 \
+            || RESULTS=$((RESULTS + 1))
     fi
 
     echo "Summary: $RESULTS blocking failure(s)"
