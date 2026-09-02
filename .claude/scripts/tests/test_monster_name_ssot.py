@@ -408,20 +408,22 @@ class MonsterNameSsotTests(unittest.TestCase):
             self.assertFalse(result["artifact_exact"])
             self.assertEqual(1, cli_result())
 
-            path.write_text(
-                rendered.replace(
-                    payload["glossary_sha256"],
-                    "0" * 64,
-                    1,
-                ),
-                encoding="utf-8",
+            # Slice A: a format-valid historical glossary digest is
+            # provenance, not a freshness blocker.  A ledger that records an
+            # older digest (the only digest copy is the header line) must pass
+            # coverage, emitting a non-blocking notice, and the CLI stays green.
+            stale_ledger = rendered.replace(
+                payload["glossary_sha256"],
+                "0" * 64,
+                1,
             )
+            path.write_text(stale_ledger, encoding="utf-8")
             result = audit.review_coverage(
                 payload, review_input(path), baseline
             )
-            self.assertFalse(result["coverage_equal"])
-            self.assertFalse(result["artifact_exact"])
-            self.assertEqual(1, cli_result())
+            self.assertTrue(result["coverage_equal"])
+            self.assertTrue(result["artifact_exact"])
+            self.assertEqual(0, cli_result())
 
             path.write_text(
                 rendered

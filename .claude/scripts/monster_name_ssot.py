@@ -1001,7 +1001,35 @@ def review_coverage(
         text,
         re.MULTILINE,
     )
-    expected_text = render_review_results(payload, baseline_oid)
+    current_glossary = payload.get("glossary_sha256")
+    recorded_glossary = re.findall(
+        r"^- 术语表 SHA-256：`([0-9a-f]{64})`$",
+        text,
+        re.MULTILINE,
+    )
+    if (
+        len(recorded_glossary) == 1
+        and current_glossary is not None
+        and recorded_glossary[0] != str(current_glossary)
+    ):
+        print(
+            "notice: monster review ledger records glossary_sha256 "
+            f"{recorded_glossary[0]} != current "
+            f"{current_glossary}; verify whether a related "
+            "terminology review is needed",
+            file=sys.stderr,
+        )
+    # The recorded digest (not the current tree digest) is what the historical
+    # artifact actually embeds; overlay it so an unrelated glossary edit does
+    # not poison artifact comparison (Slice A).
+    overlay = (
+        recorded_glossary[0]
+        if len(recorded_glossary) == 1 and current_glossary is not None
+        else current_glossary
+    )
+    expected_text = render_review_results(
+        payload, baseline_oid, glossary_overlay=overlay
+    )
     matches = re.findall(
         r"^\|\s*`(monster:MONS_[A-Z0-9_]+)`\s*\|.*?"
         r"\|\s*([^|\n]+?)\s*\|\s*$",
@@ -1063,9 +1091,27 @@ def _git_text(ref: str, path: Path) -> str:
 def render_review_results(
     payload: Mapping[str, object],
     baseline_ref: str,
+    glossary_overlay: str | None = None,
 ) -> str:
-    """Render one evidence-backed terminal conclusion per frozen identity."""
+    """Render one evidence-backed terminal conclusion per frozen identity.
+
+    ``glossary_overlay`` lets a validator compare a historical ledger against
+    the digest that ledger actually recorded instead of the current
+    ``docs/glossary.md`` digest.  Writer paths omit it and keep recording the
+    current digest.
+    """
     baseline_ref = _resolve_commit(baseline_ref)
+    if glossary_overlay is not None:
+        if not isinstance(glossary_overlay, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", glossary_overlay
+        ):
+            raise RuntimeError(
+                "monster review glossary overlay must be 64 hex chars"
+            )
+        payload = {
+            **payload,
+            "glossary_sha256": glossary_overlay,
+        }
     baseline_names = _parse_textdb_content(
         f"{baseline_ref}:{_relative(ZH_SOURCE)}",
         _git_text(baseline_ref, ZH_SOURCE),

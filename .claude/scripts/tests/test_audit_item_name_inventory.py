@@ -1028,9 +1028,56 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
 
             parsed = MODULE.parse_review_results_v3(loaded(canonical))
             header = MODULE.parse_review_header_v3(loaded(canonical))
-            self.assertFalse(any(MODULE.review_violations_v3(
-                rows, parsed, inventory, header, loaded(canonical)
-            ).values()))
+            canonical_violations, canonical_glossary_matches = (
+                MODULE.review_violations_v3(
+                    rows, parsed, inventory, header, loaded(canonical)
+                )
+            )
+            self.assertFalse(any(canonical_violations.values()))
+            self.assertTrue(canonical_glossary_matches)
+
+            # Slice A: a consistent historical ledger recording an older
+            # glossary digest is provenance, not a freshness blocker.  It must
+            # not produce any blocking violation even though the recorded
+            # digest differs from the current inventory digest.
+            stale = MODULE.render_review_results_v3(
+                {
+                    **inventory,
+                    "glossary_sha256": "5" * 64,
+                },
+                rows,
+                glossary_overlay="5" * 64,
+            )
+            stale_violations, stale_glossary_matches = (
+                MODULE.review_violations_v3(
+                    rows,
+                    MODULE.parse_review_results_v3(loaded(stale)),
+                    inventory,
+                    MODULE.parse_review_header_v3(loaded(stale)),
+                    loaded(stale),
+                )
+            )
+            self.assertFalse(stale_violations["artifact_mismatch"])
+            self.assertNotIn("glossary_sha256", stale_violations[
+                "header_mismatches"
+            ])
+            self.assertFalse(stale_glossary_matches)
+            self.assertFalse(any(stale_violations.values()))
+            # A missing or malformed glossary header is still structural
+            # breakage and must remain a header mismatch.
+            missing_glossary = stale.replace(
+                f"- Glossary SHA-256: `{'5' * 64}`\n", "", 1
+            )
+            missing_violations, _ = MODULE.review_violations_v3(
+                rows,
+                MODULE.parse_review_results_v3(loaded(missing_glossary)),
+                inventory,
+                MODULE.parse_review_header_v3(loaded(missing_glossary)),
+                loaded(missing_glossary),
+            )
+            self.assertIn("glossary_sha256", missing_violations[
+                "header_mismatches"
+            ])
 
             for name, text in {
                 "legacy-v2": canonical.replace(
@@ -1070,13 +1117,14 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             noncanonical_rows = MODULE.parse_review_results_v3(
                 noncanonical_input
             )
-            self.assertTrue(MODULE.review_violations_v3(
+            noncanonical_violations, _ = MODULE.review_violations_v3(
                 rows,
                 noncanonical_rows,
                 inventory,
                 MODULE.parse_review_header_v3(noncanonical_input),
                 noncanonical_input,
-            )["artifact_mismatch"])
+            )
+            self.assertTrue(noncanonical_violations["artifact_mismatch"])
 
             reordered = copy.deepcopy(rows)
             reordered.append(copy.deepcopy(rows[0]))

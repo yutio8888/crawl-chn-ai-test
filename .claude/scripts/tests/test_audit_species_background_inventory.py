@@ -369,6 +369,40 @@ class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
                     metadata, sort_keys=True, separators=(",", ":")
                 )
                 mutations[field] = changed
+            # A format-valid historical digest recorded by BOTH artifact copies
+            # is provenance, not a freshness blocker (Slice A): a ledger
+            # consistently recording an older digest passes with a notice.
+            stale_clean = MODULE.render_review_results(
+                payload,
+                {
+                    "background:JOB_TEST": decision(
+                        "keep",
+                        "full rationale\nwith | pipe and " + "r" * 200,
+                    ),
+                    "species:SP_TEST": decision(
+                        "adjust", "complete species rationale"
+                    ),
+                },
+                glossary_overlay="c" * 64,
+            )
+            path.write_text(stale_clean, encoding="utf-8")
+            stale = MODULE.review_coverage(payload, review_input(path))
+            self.assertTrue(stale["coverage_equal"])
+            self.assertFalse(stale["glossary_digest_matches"])
+            # Malformed digest width still fails at parse time.
+            stale_lines = stale_clean.splitlines()
+            stale_metadata_index = (
+                stale_lines.index(MODULE.STRICT_REVIEW_BEGIN) + 1
+            )
+            changed = list(stale_lines)
+            metadata = json.loads(changed[stale_metadata_index])
+            metadata["glossary_sha256"] = "x"
+            changed[stale_metadata_index] = json.dumps(
+                metadata, sort_keys=True, separators=(",", ":")
+            )
+            path.write_text("\n".join(changed) + "\n", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                MODULE.review_coverage(payload, review_input(path))
             first = json.loads(lines[first_index])
             mutations.update({
                 "fact": [

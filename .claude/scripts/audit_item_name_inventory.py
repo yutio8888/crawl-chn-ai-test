@@ -2627,11 +2627,29 @@ def review_violations_v3(inventory_rows, review_rows, inventory, header,
         "decision_inventory_sha256": inventory[
             "decision_inventory_sha256"
         ],
-        "glossary_sha256": inventory["glossary_sha256"],
         "baseline": inventory["baseline"],
         "count": inventory["count"],
         "schema": "dcss-item-review-decisions-v3",
     }
+    # The historical glossary header digest is provenance, not a freshness
+    # blocker (Slice A).  It must still appear exactly once and be 64 hex
+    # (parse_review_header_v3 enforces the format); a different current digest
+    # alone must not produce a header mismatch.
+    glossary_provenance_ok = (
+        header.get("glossary_sha256") is not None
+        and header.get("glossary_sha256_header_count") == 1
+    )
+    glossary_digest_matches = header.get("glossary_sha256") == inventory.get(
+        "glossary_sha256"
+    )
+    if not glossary_digest_matches:
+        print(
+            "notice: item review ledger records glossary_sha256 "
+            f"{header.get('glossary_sha256')} != current "
+            f"{inventory.get('glossary_sha256')}; verify whether a related "
+            "terminology review is needed",
+            file=sys.stderr,
+        )
     violations = {
         "inventory_duplicates": sorted(
             key for key, count in Counter(inventory_ids).items() if count > 1
@@ -2650,18 +2668,25 @@ def review_violations_v3(inventory_rows, review_rows, inventory, header,
             field for field, expected in expected_header.items()
             if header.get(field) != expected
             or header.get(field + "_header_count") != 1
-        ),
+        ) + ([] if glossary_provenance_ok else ["glossary_sha256"]),
     }
     if review_input is not None:
         violations["artifact_mismatch"] = (
             [] if review_input.text == render_review_results_v3(
-                inventory, review_rows
+                inventory,
+                review_rows,
+                glossary_overlay=header.get("glossary_sha256"),
             ) else ["review artifact is not the exact canonical v3 rendering"]
         )
-    return violations
+    return violations, glossary_digest_matches
 
 
-def review_artifact_summary_v3(inventory, rows):
+def review_artifact_summary_v3(inventory, rows, glossary_overlay=None):
+    if glossary_overlay is not None:
+        inventory = {
+            **inventory,
+            "glossary_sha256": glossary_overlay,
+        }
     return {
         "baseline": inventory["baseline"],
         "decision_inventory_sha256": inventory[
@@ -2676,8 +2701,26 @@ def review_artifact_summary_v3(inventory, rows):
     }
 
 
-def render_review_results_v3(inventory, rows):
+def render_review_results_v3(inventory, rows, glossary_overlay=None):
+    """Render the canonical v3 decision artifact.
+
+    ``glossary_overlay`` lets a validator compare a historical ledger against
+    the digest that ledger actually recorded instead of the current
+    ``docs/glossary.md`` digest.  Writer paths omit it and keep recording the
+    current digest.
+    """
     validate_v3_decision_cards(rows)
+    if glossary_overlay is not None:
+        if not isinstance(glossary_overlay, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", glossary_overlay
+        ):
+            raise RuntimeError(
+                "item review glossary overlay must be 64 hex chars"
+            )
+        inventory = {
+            **inventory,
+            "glossary_sha256": glossary_overlay,
+        }
     summary = json.dumps(
         review_artifact_summary_v3(inventory, rows),
         ensure_ascii=False,
@@ -3455,13 +3498,15 @@ def main(argv=None):
                 payload["review_input"] = review_input_metadata(review_input)
                 review = parse_review_results_v3(review_input)
                 review_header = parse_review_header_v3(review_input)
-                payload["review_violations"] = review_violations_v3(
+                violations, glossary_matches = review_violations_v3(
                     payload["rows"],
                     review,
                     payload,
                     review_header,
                     review_input,
                 )
+                payload["review_violations"] = violations
+                payload["review_glossary_digest_matches"] = glossary_matches
         else:
             if (
                 args.review_results or args.write_review_results

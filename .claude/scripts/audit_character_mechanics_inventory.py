@@ -1222,6 +1222,10 @@ def _parse_strict_review_text(text):
         "baseline", "glossary_sha256", "identity_count", "inventory_sha256",
     }:
         raise RuntimeError("strict review metadata fields are invalid")
+    if not isinstance(metadata["glossary_sha256"], str) or not re.fullmatch(
+        r"[0-9a-f]{64}", metadata["glossary_sha256"]
+    ):
+        raise RuntimeError("strict review glossary digest is malformed")
     if block[0] != json.dumps(
         metadata, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ):
@@ -1270,14 +1274,22 @@ def review_coverage(payload, review_input):
     )
     bindings = {
         "baseline": metadata["baseline"] == CHARACTER_REVIEW_BASE,
-        "glossary_sha256": (
-            metadata["glossary_sha256"] == payload["glossary_sha256"]
-        ),
         "inventory_sha256": (
             metadata["inventory_sha256"] == payload["inventory_sha256"]
         ),
         "identity_count": metadata["identity_count"] == payload["count"],
     }
+    glossary_digest_matches = (
+        metadata["glossary_sha256"] == payload["glossary_sha256"]
+    )
+    if not glossary_digest_matches:
+        print(
+            "notice: character-mechanics review ledger records glossary_sha256 "
+            f"{metadata['glossary_sha256']} != current "
+            f"{payload['glossary_sha256']}; verify whether a related "
+            "terminology review is needed",
+            file=sys.stderr,
+        )
     duplicate = sorted(
         identity for identity, count in Counter(identities).items()
         if count > 1
@@ -1298,7 +1310,11 @@ def review_coverage(payload, review_input):
         for card in cards
     }
     try:
-        expected_artifact = render_review_results(payload, decisions)
+        expected_artifact = render_review_results(
+            payload,
+            decisions,
+            glossary_overlay=metadata["glossary_sha256"],
+        )
     except RuntimeError:
         expected_artifact = None
     artifact_exact = review_input.text == expected_artifact
@@ -1308,6 +1324,7 @@ def review_coverage(payload, review_input):
         "review_results_sha256": review_input.sha256,
         "evidence_card_count": len(identities),
         "binding_matches": bindings,
+        "glossary_digest_matches": glossary_digest_matches,
         "duplicate_evidence_cards": duplicate,
         "missing_evidence_cards": missing,
         "unexpected_evidence_cards": unexpected,
@@ -1366,7 +1383,25 @@ def review_artifact_summary(payload):
     }
 
 
-def render_review_results(payload, decisions):
+def render_review_results(payload, decisions, glossary_overlay=None):
+    """Render the canonical review artifact.
+
+    ``glossary_overlay`` lets a validator compare a historical ledger against
+    the digest that ledger actually recorded instead of the current
+    ``docs/glossary.md`` digest.  Writer paths omit it and keep recording the
+    current digest.
+    """
+    if glossary_overlay is not None:
+        if not isinstance(glossary_overlay, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", glossary_overlay
+        ):
+            raise RuntimeError(
+                "strict review glossary overlay must be 64 hex chars"
+            )
+        payload = {
+            **payload,
+            "glossary_sha256": glossary_overlay,
+        }
     cards = review_cards(payload, decisions)
     summary = json.dumps(
         review_artifact_summary(payload),
