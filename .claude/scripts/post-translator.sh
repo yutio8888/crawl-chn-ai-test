@@ -40,15 +40,19 @@ run_check() {
     run_check "Term validation (rejected names from decisions.md)" \
         python3 "$SCRIPT_DIR/scan_i18n.py" validate-terms \
         --glossary docs/decisions.md \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-    run_check "Format integrity (%%%% parity)" \
-        bash "$SCRIPT_DIR/check_consistency.sh" --format --strict
-    run_check "Database @keyword@ integrity" \
-        bash "$SCRIPT_DIR/check_consistency.sh" --database --strict
-    run_check "Item terminology consistency" \
-        bash "$SCRIPT_DIR/check_consistency.sh" --items --strict
-    run_check "OmegaT glossary export freshness" \
-        python3 "$SCRIPT_DIR/export_omegat_glossary.py" --check
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+        --zh-dir crawl-ref/source/dat/i18n/zh \
+        --zh-dir crawl-ref/source/dat/descript/zh \
+        --zh-dir crawl-ref/source/dat/database/zh
+    run_check "Cross-file term consistency" \
+        python3 "$SCRIPT_DIR/cross_file_terms.py" \
+        crawl-ref/source/dat/i18n/zh/ \
+        --glossary docs/decisions.md
+    # --all is the non-duplicating superset of the former format, database,
+    # and item calls. It also preserves the rulings, gods, skills, spells,
+    # and monster-SSOT checks that used to run in the reviewer phase.
+    run_check "Translation consistency (all modes)" \
+        bash "$SCRIPT_DIR/check_consistency.sh" --all --strict
     run_check "Changed exact-key terminology (current glossary)" \
         python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"

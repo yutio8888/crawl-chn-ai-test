@@ -2973,6 +2973,77 @@ else
     PASS=$((PASS + 1))
 fi
 
+# ── post-translator production wiring ──
+# Execute the real aggregator with command shims. This verifies the complete
+# argv seen at the production boundary and that each restored blocking check
+# propagates a non-zero status through post-translator.sh.
+POST_TRANSLATOR="$SCRIPT_DIR/../post-translator.sh"
+POST_TRANSLATOR_HARNESS=$(mktemp -d)
+POST_TRANSLATOR_CALL_LOG="$POST_TRANSLATOR_HARNESS/calls.txt"
+POST_TRANSLATOR_OUTPUT="$POST_TRANSLATOR_HARNESS/output.txt"
+mkdir -p "$POST_TRANSLATOR_HARNESS/bin"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'printf '\''%s\n'\'' "$*" >> "$POST_TRANSLATOR_CALL_LOG"' \
+    'if [[ -n "${POST_TRANSLATOR_FAIL_MATCH:-}" && "$*" == *"$POST_TRANSLATOR_FAIL_MATCH"* ]]; then' \
+    '    exit 17' \
+    'fi' \
+    'exit 0' \
+    > "$POST_TRANSLATOR_HARNESS/bin/python3"
+cp "$POST_TRANSLATOR_HARNESS/bin/python3" \
+    "$POST_TRANSLATOR_HARNESS/bin/bash"
+chmod +x "$POST_TRANSLATOR_HARNESS/bin/python3" \
+    "$POST_TRANSLATOR_HARNESS/bin/bash"
+
+set +e
+(
+    cd "$POST_TRANSLATOR_HARNESS"
+    PATH="$POST_TRANSLATOR_HARNESS/bin:$PATH" \
+        POST_TRANSLATOR_CALL_LOG="$POST_TRANSLATOR_CALL_LOG" \
+        /bin/bash "$POST_TRANSLATOR"
+) > "$POST_TRANSLATOR_OUTPUT" 2>&1
+post_translator_wiring_status=$?
+set -e
+assert_status "post-translator: restored checks execute through production aggregator" \
+    0 "$post_translator_wiring_status"
+assert_contains "post-translator: validate-terms scans every production ZH root" \
+    'scan_i18n.py validate-terms --glossary docs/decisions.md --source-txt crawl-ref/source/dat/i18n/zh/source.txt --zh-dir crawl-ref/source/dat/i18n/zh --zh-dir crawl-ref/source/dat/descript/zh --zh-dir crawl-ref/source/dat/database/zh' \
+    "$POST_TRANSLATOR_CALL_LOG"
+assert_contains "post-translator: cross-file scanner is restored" \
+    'cross_file_terms.py crawl-ref/source/dat/i18n/zh/ --glossary docs/decisions.md' \
+    "$POST_TRANSLATOR_CALL_LOG"
+assert_contains "post-translator: consistency superset is restored once" \
+    'check_consistency.sh --all --strict' "$POST_TRANSLATOR_CALL_LOG"
+if grep -Eq -- 'check_consistency\.sh --(format|database|items) --strict' \
+    "$POST_TRANSLATOR_CALL_LOG"; then
+    echo "  FAIL: post-translator duplicates checks already covered by --all"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: post-translator does not duplicate --all consistency modes"
+    PASS=$((PASS + 1))
+fi
+
+for restored_check in \
+    'scan_i18n.py validate-terms' \
+    'cross_file_terms.py' \
+    'check_consistency.sh --all --strict'
+do
+    : > "$POST_TRANSLATOR_CALL_LOG"
+    set +e
+    (
+        cd "$POST_TRANSLATOR_HARNESS"
+        PATH="$POST_TRANSLATOR_HARNESS/bin:$PATH" \
+            POST_TRANSLATOR_CALL_LOG="$POST_TRANSLATOR_CALL_LOG" \
+            POST_TRANSLATOR_FAIL_MATCH="$restored_check" \
+            /bin/bash "$POST_TRANSLATOR"
+    ) > "$POST_TRANSLATOR_OUTPUT" 2>&1
+    post_translator_negative_status=$?
+    set -e
+    assert_status "post-translator: $restored_check failure blocks" \
+        1 "$post_translator_negative_status"
+done
+rm -rf "$POST_TRANSLATOR_HARNESS"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 if [ "$FAIL" -gt 0 ]; then

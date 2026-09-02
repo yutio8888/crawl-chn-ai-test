@@ -176,16 +176,18 @@ when the production consumer observes a larger effective artifact.
 
 1. Resolve the current glossary immediately before review:
    `bash .claude/scripts/context_resolve.sh "<scope>" --task-type review --files <files>`.
-2. Inspect the exact diff and trace affected call paths. Never infer safety from
-   a wrapper name alone.
-3. Inspect the existing development-profile and targeted-test logs. Do not run
-   `verify_zh.sh --profile review`; the orchestrator owns the single final run.
+2. Inspect the exact committed range and its complete diff, then trace affected
+   call paths. Never infer safety from a wrapper name alone.
+3. Confirm that the implementer or orchestrator completed the matching
+   development profile, and inspect the existing profile and targeted-test
+   logs. Reviewers do not rerun whole-project verification suites.
 4. When C++ i18n code changed, explicitly examine output from:
    - `scan_i18n_lifetime.py --require-parser`
    - `scan_varargs_string.py --include-warn`
    - extraction/key validation and movement exact-key audit
-5. Report the glossary SHA-256, reviewed immutable scope, findings, counts, and
-   mechanically derived readiness decision.
+5. Record the glossary SHA-256 and plain human-readable Blocker / Needs Fix /
+   Suggestion findings with counts, followed by a final conclusion of Ready or
+   Changes Requested.
 
 ## Manual review checklist
 
@@ -202,7 +204,7 @@ when the production consumer observes a larger effective artifact.
   with the right context, and appear in the exact-key manifest.
 - Positional formats use `mprf_p`; placeholder indices, types, and token counts
   match without mixing positional and sequential forms.
-- TextDB separators, keys, `@keyword@` references, Lua blocks, and immutable
+- TextDB separators, keys, `@keyword@` references, Lua blocks, and protected
   tokens are intact; changed code compiles with the required target.
 
 Every finding cites exact file and line, evidence, runtime impact, root cause,

@@ -87,11 +87,16 @@ text when useful.
 1. Resolve current terminology for the exact files with
    `context_resolve.sh --task-type review`; never use remembered or embedded
    Chinese mappings.
-2. Read the changed EN source and ZH text in context. Compare every changed
-   claim, mechanic, number, condition, paragraph, token, and speaker.
-3. Inspect existing development-profile and targeted-test results. Do not run
-   the review profile; route implementation defects to the code reviewer.
-4. Report glossary SHA-256, immutable scope, findings, counts, and readiness.
+2. Inspect the exact committed range and its complete diff. Read the changed EN
+   source and ZH text in context, comparing every changed claim, mechanic,
+   number, condition, paragraph, token, and speaker.
+3. Confirm that the implementer or orchestrator completed the matching
+   development profile, and inspect the existing profile and targeted-test
+   results. Reviewers do not rerun whole-project verification suites; route
+   implementation defects to the code reviewer.
+4. Record the glossary SHA-256 and plain human-readable Blocker / Needs Fix /
+   Suggestion findings with counts, followed by a final conclusion of Ready or
+   Changes Requested.
 
 ## Content checklist
 
@@ -105,7 +110,7 @@ text when useful.
 - Proper names and recurring concepts are consistent across the reviewed scope.
 - Dialogue preserves speaker identity, register, humour, threat level, and
   cross-entry voice consistency.
-- Immutable tokens such as `\\n`, `\\t`, `\\r`, `%%%%`, `%N$s`, markup tags,
+- Protected syntax tokens such as `\\n`, `\\t`, `\\r`, `%%%%`, `%N$s`, markup tags,
   and `@keyword@` remain byte-for-byte intact.
 
 Every finding includes exact file and line, EN source, current ZH text, evidence,
