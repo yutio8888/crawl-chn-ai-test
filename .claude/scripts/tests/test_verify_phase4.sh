@@ -27,34 +27,21 @@ mkdir -p "$REPO/.claude/scripts/tests" "$REPO/docs" "$REPO/crawl-ref/source"
 cp "$SCRIPT_DIR/../verify_zh.sh" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../advisory_baseline.py" "$REPO/.claude/scripts/advisory_baseline.py"
 cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
-cp "$SCRIPT_DIR/../review_bundle.py" "$REPO/.claude/scripts/review_bundle.py"
 cp "$SCRIPT_DIR/../i18n_shared.py" "$REPO/.claude/scripts/i18n_shared.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
 mkdir -p "$REPO/crawl-ref/source/dat/defaults"
 printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
 printf '%s\n' '# glossary' > "$REPO/docs/glossary.md"
 printf '%s\n' '.policy-*' '.phase-runs' '.runtime-runs' '.risk-runs' \
-    '.tooling-runs' '.claude/metrics/' \
+    '.claude/metrics/' \
     > "$REPO/.gitignore"
-cat > "$REPO/.claude/scripts/tests/run_all.sh" <<'SH'
-#!/bin/bash
-[[ "$0" == */.claude/scripts/tests/run_all.sh ]] || exit 17
-[[ -z "${BASH_SOURCE[0]}" ]] || exit 18
-[[ -z "${GIT_NO_REPLACE_OBJECTS+x}${GLOSSARY_DIFF_BASE+x}" ]] || exit 19
-[[ -z "${ZH_VERIFY_AUDIT_ROOT+x}${ZH_VERIFY_AUDIT_COMMIT+x}" ]] || exit 20
-[[ -z "${ZH_VERIFY_CONTROL_ROOT+x}${ZH_VERIFY_CONTROL_COMMIT+x}" ]] || exit 21
-[[ -z "${PYTHONPATH-}" ]] || exit 22
-printf '%s\n' tooling >> .tooling-runs
-exit 0
-SH
-chmod +x "$REPO/.claude/scripts/tests/run_all.sh"
 cat > "$REPO/.claude/scripts/check_agent_policies.py" <<'PY'
 from pathlib import Path
 with Path(".policy-runs").open("a") as stream:
     stream.write("policy\n")
 raise SystemExit(int(Path(".policy-rc").read_text().strip()) if Path(".policy-rc").exists() else 0)
 PY
-for phase in post-coder.sh post-translator.sh post-reviewer.sh; do
+for phase in post-coder.sh post-translator.sh; do
     cat > "$REPO/.claude/scripts/$phase" <<'SH'
 #!/bin/bash
 printf '%s|%s\n' "${ZH_VERIFY_SCOPE-}" "${ZH_VERIFY_CHANGED_FILES-}" >> .phase-runs
@@ -135,18 +122,19 @@ assert_contains "task profile defaults to changed" "Scope: changed" "$REPORT"
 assert_contains "domain phase still runs after core failure" "Code verification" "$REPORT"
 
 printf '0\n' > "$REPO/.policy-rc"
-(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile review) >/dev/null
+(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile ci) >/dev/null
 REPORT=$(latest_report)
-assert_contains "review profile defaults to full" "Scope: full" "$REPORT"
-assert_contains "review full triggers fast runtime" "Risk gate: fast ZH runtime" "$REPORT"
-assert_contains "fast runtime is a fresh Catch2 run" "catch2" "$REPO/.runtime-runs"
-assert_contains "review profile runs the committed tooling runner" \
-    "tooling" "$REPO/.tooling-runs"
-
-(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile review --full) >/dev/null
-assert_contains "explicit --full triggers runtime full" "full" "$REPO/.runtime-runs"
-TOOLING_RUNS=$(wc -l < "$REPO/.tooling-runs")
-assert_rc "tooling runner executes once per review profile" 2 "$TOOLING_RUNS"
+assert_contains "ci profile defaults to full" "Scope: full" "$REPORT"
+if grep -Fq "Risk gate: fast ZH runtime" "$REPORT"; then
+    fail "ci profile must stay static (no fast runtime)"
+else
+    pass "ci profile stays static without runtime"
+fi
+if grep -Fq -- '--profile review' "$REPO/.claude/scripts/verify_zh.sh"; then
+    fail "verify_zh.sh must not accept the retired review profile"
+else
+    pass "verify_zh.sh has no review profile reference"
+fi
 
 echo "--- C++ i18n risk routing ---"
 cat > "$REPO/crawl-ref/source/risk.cc" <<'CPP'

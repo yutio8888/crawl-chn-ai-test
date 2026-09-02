@@ -17,10 +17,6 @@ on:
         description: 'Run full runtime tests (L1+L2+L3, slow)'
         type: boolean
         default: false
-      control_sha:
-        description: 'Trusted target commit whose verification controls must run'
-        type: string
-        required: true
 
 permissions: {}
 jobs:
@@ -28,7 +24,7 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH Tooling Tests (${{ matrix.os }}) @ ${{ inputs.control_sha || 'unbound' }}
+    name: ZH Tooling Tests (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -41,38 +37,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Prepare trusted verification control checkout
-        id: trusted_control
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        env:
-          CONTROL_SHA: ${{ inputs.control_sha }}
-        run: |
-          set -euo pipefail
-          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
-          git fetch --no-tags origin "$CONTROL_SHA"
-          git cat-file -e "$CONTROL_SHA^{commit}"
-          control="$RUNNER_TEMP/dcss-control"
-          git worktree add --detach "$control" "$CONTROL_SHA"
-          test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
-          printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
-          printf 'sha=%s\n' "$CONTROL_SHA" >> "$GITHUB_OUTPUT"
-      - name: Build trusted target luac
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          set -euo pipefail
-          root="${{ steps.trusted_control.outputs.root }}"
-          git -C "$root" submodule update --init --recursive
-          cd "$root/crawl-ref/source/contrib/lua/src"
-          luac_link_flags=(-lm)
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            luac_link_flags+=(-ldl)
-          fi
-          cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
-             lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
-             lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
-             lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
-             lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
-             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -86,7 +50,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
       - name: Build vendored luac (monspeak Lua syntax gate)
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           cd crawl-ref/source/contrib/lua/src
           luac_link_flags=(-lm)
@@ -101,11 +64,7 @@ jobs:
              lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run tooling tests
         run: |
-          if [[ -n "${{ steps.trusted_control.outputs.root }}" ]]; then
-            /bin/bash "${{ steps.trusted_control.outputs.root }}/.claude/scripts/tests/run_all.sh"
-          else
-            /bin/bash .claude/scripts/tests/run_all.sh
-          fi
+          /bin/bash .claude/scripts/tests/run_all.sh
         env:
           # GitHub-hosted runners have ~7 GB RAM; the monspeak inventory
           # suite (66 tests) plus the other heavy inventory tests OOM at
@@ -123,7 +82,7 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH CI Gate (static + data, no make, ${{ matrix.os }}) @ ${{ inputs.control_sha || 'unbound' }}
+    name: ZH CI Gate (static + data, no make, ${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -136,38 +95,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-      - name: Prepare trusted verification control checkout
-        id: trusted_control
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        env:
-          CONTROL_SHA: ${{ inputs.control_sha }}
-        run: |
-          set -euo pipefail
-          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
-          git fetch --no-tags origin "$CONTROL_SHA"
-          git cat-file -e "$CONTROL_SHA^{commit}"
-          control="$RUNNER_TEMP/dcss-control"
-          git worktree add --detach "$control" "$CONTROL_SHA"
-          test "$(git -C "$control" rev-parse HEAD)" = "$CONTROL_SHA"
-          printf 'root=%s\n' "$control" >> "$GITHUB_OUTPUT"
-          printf 'sha=%s\n' "$CONTROL_SHA" >> "$GITHUB_OUTPUT"
-      - name: Build trusted target luac
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          set -euo pipefail
-          root="${{ steps.trusted_control.outputs.root }}"
-          git -C "$root" submodule update --init --recursive
-          cd "$root/crawl-ref/source/contrib/lua/src"
-          luac_link_flags=(-lm)
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            luac_link_flags+=(-ldl)
-          fi
-          cc -O2 -o luac -I. luac.c lapi.c lauxlib.c lbaselib.c lcode.c \
-             lcorolib.c lctype.c ldblib.c ldebug.c ldo.c ldump.c lfunc.c \
-             lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c \
-             lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c \
-             lstrlib.c ltable.c ltablib.c ltm.c lundump.c lutf8lib.c \
-             lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -177,7 +104,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
       - name: Build vendored luac (monspeak Lua syntax gate)
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           cd crawl-ref/source/contrib/lua/src
           luac_link_flags=(-lm)
@@ -192,13 +118,7 @@ jobs:
              lvm.c lzio.c "${luac_link_flags[@]}"
       - name: Run Chinese localization CI gate (static only)
         run: |
-          if [[ -n "${{ steps.trusted_control.outputs.root }}" ]]; then
-            /bin/bash "${{ steps.trusted_control.outputs.root }}/.claude/scripts/verify_zh.sh" \
-              --profile ci --base "${{ steps.trusted_control.outputs.sha }}" \
-              --head "$GITHUB_SHA"
-          else
-            /bin/bash .claude/scripts/verify_zh.sh --profile ci
-          fi
+          /bin/bash .claude/scripts/verify_zh.sh --profile ci
       - name: Upload verification evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
