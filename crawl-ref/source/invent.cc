@@ -1869,9 +1869,11 @@ int prompt_invent_item(const char *prompt,
         }
 
         if (need_prompt)
+        {
             mprf(MSGCH_PROMPT,
                  T_("%s (<w>?</w> for menu, <w>Esc</w> to quit)"),
                  prompt);
+        }
         else
             flush_prev_message();
 

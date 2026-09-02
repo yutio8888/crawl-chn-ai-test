@@ -760,8 +760,10 @@ public:
             {
                 const char* more_str;
                 if (is_tiles())
+                {
                     more_str = T_("--more-- Press Space or click to continue."
                                  " You can later reread messages with Ctrl-P.");
+                }
                 else
                     more_str = T_("--more-- Press Space to continue."
                                  " You can later reread messages with Ctrl-P.");

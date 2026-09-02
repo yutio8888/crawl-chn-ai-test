@@ -677,12 +677,14 @@ void melee_attack::handle_concussion_brand()
             if (needs_message)
             {
                 if (attacker->is_monster())
+                {
                     mprf(T_("%s crushes %s against the %s%s"),
                         attacker->name(DESC_THE).c_str(),
                         defender->name(DESC_THE).c_str(),
                         feat_is_wall(env.grid(back)) ? T_("the wall")
                                                     : raw_feature_description(back).c_str(),
                         attack_strength_punctuation(special_damage).c_str());
+                }
                 else
                     mprf(T_("%s crush %s against the %s%s"),
                         attacker->name(DESC_THE).c_str(),
@@ -1238,9 +1240,11 @@ static void _consider_devouring(monster &defender)
         // handle this carefully, so the player knows what's going on
         // conj_verb handled via singular/plural T_() keys
         if (defender.pronoun_plurality())
+        {
             mprf(T_("You spit out %s as %s twist & change in your maw!"),
                  defender.name(DESC_THE).c_str(),
                  defender.pronoun(PRONOUN_SUBJECTIVE).c_str());
+        }
         else
             mprf(T_("You spit out %s as %s twists & changes in your maw!"),
                  defender.name(DESC_THE).c_str(),
@@ -2688,9 +2692,11 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
         {
             // %s count differs — handled with two T_() keys
             if (you.can_see(*defender))
+            {
                 mprf(T_("You %s %s, but do no damage."),
                      aux_verb.c_str(),
                      defender->name(DESC_THE).c_str());
+            }
             else
                 mprf(T_("You %s %s."),
                      aux_verb.c_str(),
