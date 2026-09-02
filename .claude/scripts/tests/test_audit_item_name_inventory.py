@@ -460,6 +460,28 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     ):
                         MODULE.validate_v3_decision_cards(forged)
 
+            for branch, valid in (
+                ("value", contextual),
+                ("english-fallback", english),
+            ):
+                for field in ("adopted_english", "english_source"):
+                    with self.subTest(
+                        english_mutation=field, branch=branch
+                    ):
+                        forged = copy.deepcopy(valid)
+                        original_dependency = copy.deepcopy(
+                            forged[0]["source_dependencies"]
+                        )
+                        forged[0]["decision"][field] += " forged"
+                        self.assertEqual(
+                            original_dependency,
+                            forged[0]["source_dependencies"],
+                        )
+                        with self.assertRaisesRegex(
+                            RuntimeError, "runtime English"
+                        ):
+                            MODULE.validate_v3_decision_cards(forged)
+
     def test_v3_lookup_chain_uses_production_key_escape_and_fails_closed(self):
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
@@ -482,16 +504,22 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             )
             self.assertEqual("特殊译文", dependency["resolved_value"])
 
-            for mutation in ("lookup-key", "selected-branch"):
+            for mutation in (
+                "lookup-key", "runtime-english", "selected-branch"
+            ):
                 changed = copy.deepcopy(cards)
                 if mutation == "lookup-key":
                     changed[0]["source_dependencies"][0]["candidates"][0][
                         "lookup_key"
                     ] = english
-                else:
+                elif mutation == "selected-branch":
                     changed[0]["source_dependencies"][0][
                         "selected_branch"
                     ] = "english"
+                else:
+                    changed[0]["source_dependencies"][0]["english"] += (
+                        " forged"
+                    )
                 with self.subTest(mutation=mutation), self.assertRaises(
                     RuntimeError
                 ):

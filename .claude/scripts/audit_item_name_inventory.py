@@ -1905,6 +1905,8 @@ def v3_decision_cards(rows, v2_rows, source_directory=ZH_SOURCE_DIR,
         if spec is not None:
             dependency = source_db_dependency(spec, chains)
             dependencies.append(dependency)
+            decision["english_source"] = dependency["english"]
+            decision["adopted_english"] = dependency["english"]
             decision["current_chinese"] = dependency["resolved_value"]
             decision["adopted_chinese"] = dependency["resolved_value"]
         cards.append({
@@ -2574,6 +2576,13 @@ def validate_v3_decision_cards(rows):
                 "branch": "english", "runtime_value": english,
             }:
                 raise RuntimeError(f"{identity} fallback is invalid")
+            if (
+                decision["english_source"] != english
+                or decision["adopted_english"] != english
+            ):
+                raise RuntimeError(
+                    f"{identity} decision does not match runtime English"
+                )
             expected_candidates = []
             if context is not None and english:
                 expected_candidates.append((
