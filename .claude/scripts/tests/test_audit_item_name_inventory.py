@@ -171,6 +171,39 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             entries,
         )
 
+    def test_source_db_effective_value_matches_production_stages(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            source.write_bytes(
+                b"%%%%\r\n"
+                b"key\r\n"
+                b"\r\n"
+                b"\r\n"
+                b"  leading spaces\r\n"
+                b"internal\r\n"
+                b"escaped-tail\\n\r\n"
+            )
+            entries = MODULE.source_entries(source_dir)
+            chains = MODULE.source_db_definition_chains(
+                source_dir, ["key"]
+            )
+
+        # This expected value is an independent production oracle: physical
+        # CRLF/leading blank lines are removed before storage, while semantic
+        # spaces, internal LF, and an escaped trailing LF survive lookup.
+        self.assertEqual(
+            "  leading spaces\ninternal\nescaped-tail\n",
+            entries["key"],
+        )
+        self.assertEqual(
+            "  leading spaces\ninternal\nescaped-tail\\n",
+            chains["key"][0]["source_value"],
+        )
+        self.assertEqual(entries["key"], chains["key"][0]["runtime_value"])
+
     def test_source_entries_requires_source_txt(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(FileNotFoundError):
@@ -388,8 +421,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             self.assertEqual(contextual, skipped_plain)
 
             write_sourcedb(source, [
-                ("rune_name|glowing", ""),
-                ("glowing", "普通译文"),
+                ("rune_name|glowing", "\n\n"),
+                ("glowing", "\n普通译文"),
             ])
             empty, _ = v3_sourcedb_fixture(source_dir, rune)
             dependency = empty[0]["source_dependencies"][0]
@@ -399,6 +432,12 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             ])
             self.assertEqual("value", dependency["state"])
             self.assertEqual("普通译文", dependency["resolved_value"])
+            self.assertEqual(
+                "",
+                dependency["candidates"][0]["definitions"][0][
+                    "source_value"
+                ],
+            )
 
             forged_empty = copy.deepcopy(empty)
             forged_dependency = forged_empty[0]["source_dependencies"][0]
@@ -505,7 +544,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             self.assertEqual("特殊译文", dependency["resolved_value"])
 
             for mutation in (
-                "lookup-key", "runtime-english", "selected-branch"
+                "lookup-key", "runtime-english", "selected-branch",
+                "effective-value",
             ):
                 changed = copy.deepcopy(cards)
                 if mutation == "lookup-key":
@@ -516,6 +556,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     changed[0]["source_dependencies"][0][
                         "selected_branch"
                     ] = "english"
+                elif mutation == "effective-value":
+                    changed[0]["source_dependencies"][0]["candidates"][0][
+                        "definitions"
+                    ][0]["runtime_value"] += " forged"
                 else:
                     changed[0]["source_dependencies"][0]["english"] += (
                         " forged"
@@ -524,6 +568,46 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     RuntimeError
                 ):
                     MODULE.validate_v3_decision_cards(changed)
+
+    def test_v3_sourcedb_ignores_only_physical_leading_blank_lines(self):
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory)
+            source = source_dir / "source.txt"
+            specs = [("item", "key", None)]
+
+            write_sourcedb(source, [("key", "译文")])
+            baseline, _ = v3_sourcedb_fixture(source_dir, specs)
+            baseline_digest = MODULE.v3_decision_digest(baseline)
+
+            write_sourcedb(source, [("key", "\n\n译文")])
+            leading_blank, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(baseline, leading_blank)
+            self.assertEqual(
+                baseline_digest,
+                MODULE.v3_decision_digest(leading_blank),
+            )
+
+            write_sourcedb(source, [("key", "译文\n内部")])
+            internal, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual(["item"], changed_v3_identities(
+                baseline, internal
+            ))
+            self.assertNotEqual(
+                baseline_digest,
+                MODULE.v3_decision_digest(internal),
+            )
+
+            write_sourcedb(source, [("key", "译文\\n")])
+            escaped_trailing, _ = v3_sourcedb_fixture(source_dir, specs)
+            self.assertEqual("译文\n", escaped_trailing[0]["decision"][
+                "current_chinese"
+            ])
+            self.assertNotEqual(
+                baseline_digest,
+                MODULE.v3_decision_digest(escaped_trailing),
+            )
 
     def test_tag_branch_filter_works_without_generated_build_headers(self):
         with tempfile.TemporaryDirectory() as directory:

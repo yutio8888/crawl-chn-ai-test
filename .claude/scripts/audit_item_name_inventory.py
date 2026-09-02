@@ -131,6 +131,7 @@ DEVELOPMENT_NON_OVERWRITE_STATEMENT = (
 from i18n_shared import (
     compute_canonical_key,
     i18n_escape_key,
+    i18n_unescape_value,
     load_review_input,
     parse_entries_physical,
     review_input_metadata,
@@ -232,6 +233,21 @@ def source_files(directory, snapshot=None):
     ]
 
 
+def source_db_effective_value(parsed_value):
+    """Return SourceDB's stored source form and runtime lookup value.
+
+    parse_entries_physical already mirrors per-line right trimming, CRLF line
+    handling, and removal of the DB storage newline suffix.  Production
+    _parse_text_db then removes only physical leading LF bytes before storing;
+    i18n_source_lookup unescapes value tokens only after a successful fetch.
+    """
+    source_value = parsed_value.lstrip("\n")
+    return {
+        "source_value": source_value,
+        "runtime_value": i18n_unescape_value(source_value),
+    }
+
+
 def source_entries(directory, snapshot=None):
     # Localized SourceDB loads source.txt first, then every other sorted .txt
     # file with trim_keys=false. DBM_REPLACE makes the final exact canonical
@@ -242,7 +258,9 @@ def source_entries(directory, snapshot=None):
         for entry in parse_entries_physical(active.read(
             path, allow_external_unbound=True
         )):
-            result[entry.canonical_key] = runtime_normalize_value(entry.value)
+            result[entry.canonical_key] = source_db_effective_value(
+                entry.value
+            )["runtime_value"]
     return result
 
 
@@ -1179,7 +1197,9 @@ def source_entries_at_revision(directory, revision):
     result = {}
     for path in paths:
         for entry in parse_entries_physical(historical.read(path)):
-            result[entry.canonical_key] = runtime_normalize_value(entry.value)
+            result[entry.canonical_key] = source_db_effective_value(
+                entry.value
+            )["runtime_value"]
     return result
 
 
@@ -1803,7 +1823,7 @@ def source_db_definition_chains(directory, requested_keys, snapshot=None):
             chains[key].append({
                 "canonical_key": key,
                 "raw_key": entry.raw_key,
-                "runtime_value": runtime_normalize_value(entry.value),
+                **source_db_effective_value(entry.value),
                 "path": relative,
                 "load_order": load_order,
                 "occurrence_ordinal": ordinal,
@@ -2499,8 +2519,8 @@ V3_CANDIDATE_FIELDS = {
     "definitions",
 }
 V3_DEFINITION_FIELDS = {
-    "canonical_key", "raw_key", "runtime_value", "path", "load_order",
-    "occurrence_ordinal", "winner",
+    "canonical_key", "raw_key", "source_value", "runtime_value", "path",
+    "load_order", "occurrence_ordinal", "winner",
 }
 
 
@@ -2659,11 +2679,24 @@ def validate_v3_decision_cards(rows):
                         )
                     per_file[path] += 1
                     if (
-                        not isinstance(definition["runtime_value"], str)
+                        not isinstance(definition["source_value"], str)
+                        or not isinstance(definition["runtime_value"], str)
                         or not isinstance(definition["winner"], bool)
                     ):
                         raise RuntimeError(
                             f"{identity} definition value is invalid"
+                        )
+                    effective = source_db_effective_value(
+                        definition["source_value"]
+                    )
+                    if (
+                        effective["source_value"]
+                        != definition["source_value"]
+                        or effective["runtime_value"]
+                        != definition["runtime_value"]
+                    ):
+                        raise RuntimeError(
+                            f"{identity} definition effective value is invalid"
                         )
                     order_keys.append((
                         0 if name == "source.txt" else 1,
