@@ -238,7 +238,7 @@ class ReviewerRoutingTests(unittest.TestCase):
                     self.assertEqual(classification, result["classification"])
                     self.assertEqual(reviewers, result["reviewers"])
 
-    def test_review_context_uses_v3_readiness_contract_and_ownership(self):
+    def test_review_context_uses_v6_domain_review_contract_and_ownership(self):
         proc = subprocess.run(
             [
                 "bash", ".claude/scripts/context_resolve.sh", "review routing",
@@ -248,26 +248,27 @@ class ReviewerRoutingTests(unittest.TestCase):
             cwd=REPO, text=True, capture_output=True, check=True,
         )
         output = proc.stdout
-        self.assertIn("review-contract-v5", output)
+        self.assertIn("review-contract-v6", output)
         self.assertIn("**Blocker**", output)
         self.assertIn("**Needs Fix**", output)
         self.assertIn("**Suggestion**", output)
         self.assertIn("`zh-code-reviewer`", output)
         self.assertIn("`translation-reviewer`", output)
-        self.assertIn("Ready for Final Gate", output)
-        self.assertIn("review_final_gate.sh", output)
-        self.assertIn(
-            "TERM=xterm-256color bash .claude/scripts/review_final_gate.sh",
-            output,
-        )
-        self.assertIn("Only the orchestrator runs the final profile", output)
-        self.assertIn("complete prepared diff", output)
+        self.assertIn("classify_reviewers.py", output)
+        self.assertIn("**Ready**", output)
+        self.assertIn("**Changes Requested**", output)
+        self.assertIn("no separate final evidence gate", output)
+        self.assertIn("complete diff", output)
         self.assertIn("Plan non-goals do not excuse defects", output)
         self.assertIn("theoretical risk outside the acceptance criteria is non-blocking", output)
         self.assertIn("before adding mechanisms", output)
         self.assertNotIn("Conditional Go", output)
         self.assertNotIn("P0", output)
         self.assertNotIn("P1", output)
+        self.assertNotIn("review_final_gate.sh", output)
+        self.assertNotIn("Ready for Final Gate", output)
+        self.assertNotIn("No-Go", output)
+        self.assertNotIn("review_prepare.sh", output)
 
 
 if __name__ == "__main__":

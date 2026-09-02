@@ -49,17 +49,18 @@ Follow `.agents/policies/asset-ownership.md` and
 4. run the single matching development profile;
 5. commit the candidate and leave its worktree clean.
 
-## Review and Final Evidence
+## Review and Domain Review
 
 Follow `.agents/policies/review-contract.md` and `docs/agent-routing.md`.
-Prepare the immutable candidate with `review_prepare.sh`, consume its mechanical
-reviewer routing, and dispatch only the required domain reviewers. Reviewers
-inspect the complete prepared diff; plan non-goals do not excuse defects the
+Commit the candidate and leave its worktree clean, route reviewers with
+`classify_reviewers.py`, and dispatch only the routed domain reviewers.
+Reviewers inspect the complete diff; plan non-goals do not excuse defects the
 diff introduces.
 
-After every required reviewer is Ready, let the orchestrator run the existing
-`review_final_gate.sh` once. Do not invent alternative readiness, merge, lease,
-recovery, clock, reflog, or persistent-state protocols.
+Merge requires the matching development profile, the routed domain review,
+and existing GitHub Actions CI. Do not invent alternative readiness, merge,
+lease, recovery, clock, reflog, or persistent-state protocols.
 
 Report changed files, EN-to-ZH decisions, glossary SHA-256, development
-verification, readiness, final-gate status, and merge status.
+verification, reviewer conclusion (Ready or Changes Requested), and merge
+status.

@@ -15,8 +15,8 @@ to invoke these roles.
 | read-only explorer | Search, call-chain tracing, scope discovery | File edits |
 
 Translation-asset writer rules are normative in
-`.agents/policies/asset-ownership.md`. Reviewer boundaries and readiness states
-are normative in `.agents/policies/review-contract.md`.
+`.agents/policies/asset-ownership.md`. Reviewer boundaries and conclusions
+(Ready / Changes Requested) are normative in `.agents/policies/review-contract.md`.
 
 ## Routing
 
@@ -57,7 +57,7 @@ from one wording judgment and from one reported translation bug.
 ## Full Pipeline
 
 Use the shared `translation-pipeline` Skill. Reviewer routing comes only from
-`classify_reviewers.py` for the exact prepared boundary; never hard-code a
+`classify_reviewers.py` for the committed candidate range; never hard-code a
 fixed reviewer count. The active runtime supplies invocation syntax only.
 
 ## Fallback

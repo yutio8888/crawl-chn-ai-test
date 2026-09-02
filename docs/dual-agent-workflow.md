@@ -75,7 +75,7 @@ linked pull request.
 
 ### Implementation → review
 
-The implementer records the clean candidate branch and commit range. For
-translation-related changes, the target checkout runs `review_prepare.sh`; the
-prepared bundle's routing decides which reviewers are required. Informal
-cross-runtime review cannot replace schema-v4 readiness or final evidence.
+The implementer records the clean candidate branch and commit range. Domain
+review is routed by `classify_reviewers.py` over that committed range; only the
+routed reviewers are required. Merge requires the matching verification
+profile, the routed domain review, and existing GitHub Actions CI.

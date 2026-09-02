@@ -34,7 +34,6 @@ Agent 生成修改 → verify_zh.sh --profile <type>  (单入口调度器)
                    │  zh_runtime_check.py (运行时聚合)         │
                    │  smoke_test.sh                            │
                    │  check_checkpoint.sh                      │
-                   │  record_review.sh                         │
                   └──────────────────────────────────────────┘
 
 Parser (统一):
@@ -48,7 +47,7 @@ Parser (统一):
 |------|------|
 | **翻译/数据改动验证** | `bash .claude/scripts/verify_zh.sh --profile translation` |
 | **C++/i18n 改动验证** | `bash .claude/scripts/verify_zh.sh --profile code` |
-| **合并前审查** | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
+| **合并前领域审阅路由** | `python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>` |
 | **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
 | **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
 | **冻结常规物品与 ego 名称清单** | `python3 .claude/scripts/audit_item_name_inventory.py --output /tmp/item-name-inventory.json` |
@@ -262,7 +261,7 @@ python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查�
 # missing-t: 未翻译的 mprf/mpr 调用（宽泛启发式，供人工审计）
 python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/
 
-# 高置信显示契约（code/review profile 阻断）
+# 高置信显示契约（code/ci profile 阻断）
 # 覆盖 direct sink、显示文本 producer、Tiles builder 和动态 key wrapper。
 python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
     --display-contracts-only \
@@ -523,8 +522,6 @@ python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json -
 #   退出码: 0=当前, 2=落后1-5个commit, 3=落后6+个commit
 bash .claude/scripts/check_checkpoint.sh
 
-# record_review.sh: 记录单行 schema-v2 review JSONL；merge-time 必须附证据字段
-bash .claude/scripts/record_review.sh '{"schema_version":2,"review_id":"...","run_id":"...","date":"...","agent_type":"...","task_summary":"...","base":"...","head":"...","diff_hash":"...","glossary_sha256":"...","raw_log":"...","findings":{"blocker":0,"needs_fix":0,"suggestion":0},"fix_iterations":0,"verdict":"Go","trigger":"merge-time","session_id":"..."}'
 
 # context_resolve.sh: 为 Agent 调度生成精简上下文
 CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
@@ -549,14 +546,12 @@ bash .claude/scripts/verify_zh.sh --profile code --scope full
 # CI 门禁（纯静态，不执行 make/runtime）
 bash .claude/scripts/verify_zh.sh --profile ci
 
-# 合并审核唯一入口；不要手工运行 --profile review 或 review --full
-bash .claude/scripts/review_prepare.sh <candidate> <target>
-# 按 routing 完成 reviewer readiness 后：
-bash .claude/scripts/review_final_gate.sh <candidate> <target>
-bash .claude/scripts/review_at_merge.sh <candidate> <target>
+# 干净提交后路由领域审阅
+python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>
+# 合并条件：匹配的 verify profile + 领域审阅 + GitHub Actions CI
 ```
 
-`translation`/`code` 默认 `--scope changed`，`review`/`ci` 默认
+`translation`/`code` 默认 `--scope changed`，`ci` 默认
 `--scope full`。changed 只缩小明确支持文件列表的 AST 扫描；Agent/Skill
 策略同步、**source-db-static**、source.txt/TextDB 完整性、key coverage、格式、
 术语与导出新鲜度等全局门禁始终全量执行。绑定 `--base/--head` 时 changed 集合
@@ -580,32 +575,14 @@ coverage；无论前置 phase 成败，`source-db-static` 的结果都已独立�
 + translation-static + code-static）。
 
 风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
-font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2。review profile 仅由
-`review_final_gate.sh` 调用，并运行统一 Catch2；不要在 readiness 或本地 preflight
-手工重跑。final gate 会在所有 reviewer Ready 后，对 exact candidate 以
-`PYTHONSAFEPATH=1`、`ZH_TOOLING_TEST_JOBS=2` 自动运行一次
-从 candidate commit Git blob 读取的 `.claude/scripts/tests/run_all.sh`（`$0`
-仍为 candidate worktree 路径，以发现 candidate tests）；不要把它作为 final gate
-前的独立手工步骤。
-`--full` 是显式的三层 runtime 开发/发布工具，不属于 reviewer readiness。
-`ci` 完全跳过编译和运行时。
+font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2。`ci` 完全跳过
+编译和运行时；`--full` 是显式的三层 runtime 开发/发布工具。
 
-指定 `--github-actions-run` 时，只有同时显式给出
-`--github-actions-fallback-local`，且 trusted proof helper 将 GitHub
-API/网络/认证/`gh` 判定为 unavailable，final gate 才改用同一 fully-local
-phase plan，并在 metadata 记录 local-fallback source、reason 与 run id。
-远端 run/job failure 或 cancelled、identity/workflow/event/inventory 不匹配、
-malformed/tampered proof 和其他 HTTP 错误一律阻断，不得 fallback；本地 verifier
-仍只运行一次，因此不会重复 `review-ledgers` 或 `tooling-tests`。无法明确归类的
-`gh` 命令失败也按 invalid 阻断，不推定为网络不可用。
-旧 frozen contract 未包含 `allow_local_fallback` 时仍可只读验证，但该缺省值严格
-解释为 false；工具不会改写历史 evidence，也不会据此放宽 fallback。
-
-同一 immutable mixed candidate 不得串行运行 `translation`、`code`、`ci` 三个
-profile。开发期按当前改动选 domain profile；若需要一次组合静态 preflight，只跑
-`ci`。先完成 bundle reviewer；`run_all.sh` 由唯一的 `review_final_gate.sh`
-在 reviewer-approved 最终 OID 上运行一次。任务或 release 契约另行要求的
-`help-full`、runtime `full` 也只对该最终 OID 各运行一次。
+同一 mixed candidate 不得串行运行 `translation`、`code`、`ci` 三个 profile。
+开发期按当前改动选一个匹配的 domain profile；若需要一次组合静态 preflight，
+只跑 `ci`。合并条件是匹配的 `verify_zh.sh` profile、`classify_reviewers.py`
+路由的领域审阅，以及现有 GitHub Actions CI。任务或 release 契约另行要求的
+`help-full`、runtime `full` 只在 CI 通过后的最终候选上运行。
 
 `post-coder.sh` 的 string-concat advisory 使用版本控制的
 `data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码
@@ -757,10 +734,11 @@ bash .claude/scripts/verify_zh.sh --profile translation
 bash .claude/scripts/verify_zh.sh --profile code
 ```
 
-### 提交前审查
+### 提交后领域审阅与合并
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile review
+bash .claude/scripts/verify_zh.sh --profile ci
+python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>
 ```
 
 ### 发现盲区
@@ -775,7 +753,7 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 
 | 脚本 | 子命令 | 发现时退出码 |
 |------|--------|-------------|
-| `verify_zh.sh` | `--profile translation/code/review/ci` | 1（有 blocking failure） |
+| `verify_zh.sh` | `--profile translation/code/ci` | 1（有 blocking failure） |
 | `i18n_extract.py` | `validate` | 1（有缺失 key） |
 | `i18n_extract.py` | `stale`, `missing`, `extract` | 0（信息性） |
 | i18n 扫描器 | 输入/依赖/发现/读取/解析失败 | 2（基础设施失败） |
