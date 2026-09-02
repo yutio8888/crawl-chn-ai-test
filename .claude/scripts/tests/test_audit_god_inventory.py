@@ -734,11 +734,17 @@ class SliceADecoupledLedgerRegression(unittest.TestCase):
 
     @staticmethod
     def _review_input(path):
-        data = Path(path).read_bytes()
+        resolved = Path(path)
+        if not resolved.is_absolute():
+            # run_all.sh executes from .claude/scripts/tests; the production
+            # ledgers live at the repository root.
+            root = Path(__file__).resolve().parents[3]
+            resolved = root / path
+        data = resolved.read_bytes()
         return AuditInput(
             audit_commit=None,
-            logical_path=str(path),
-            relative_path=str(path),
+            logical_path=str(resolved),
+            relative_path=str(resolved),
             bytes=data,
             text=data.decode("utf-8", errors="strict"),
             sha256=hashlib.sha256(data).hexdigest(),
