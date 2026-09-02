@@ -959,7 +959,18 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             validated = subprocess.run(
                 [
                     sys.executable, str(SCRIPT), "--scope", "issue29-v2",
-                    "--review-schema", "v3", "--output", str(inventory),
+                    "--output", str(inventory),
+                    "--review-results", str(results),
+                ],
+                cwd=MODULE.ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            mismatched = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-schema", "v2",
                     "--review-results", str(results),
                 ],
                 cwd=MODULE.ROOT,
@@ -969,6 +980,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             )
             result_text = results.read_text(encoding="utf-8")
         self.assertEqual(0, validated.returncode, validated.stderr)
+        self.assertEqual(2, mismatched.returncode)
+        self.assertIn("does not match artifact", mismatched.stderr)
         self.assertEqual(
             "dcss-item-extended-review-inventory-v3", payload["schema"]
         )
@@ -1083,6 +1096,65 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             malformed[0]["source_dependencies"][0]["unknown"] = True
             with self.assertRaisesRegex(RuntimeError, "unknown or missing"):
                 MODULE.validate_v3_decision_cards(malformed)
+
+    def test_review_schema_detection_fails_closed_on_marker_ambiguity(self):
+        current = MODULE.ROOT / "docs/item-extended-review-results.md"
+        self.assertEqual(
+            "v2", MODULE.detect_review_schema(review_input(current))
+        )
+        with tempfile.TemporaryDirectory(
+            dir=MODULE.ROOT / ".claude"
+        ) as directory:
+            source_dir = Path(directory) / "db"
+            source_dir.mkdir()
+            write_sourcedb(source_dir / "source.txt", [("key", "值")])
+            rows, _ = v3_sourcedb_fixture(
+                source_dir, [("identity", "key", None)]
+            )
+            inventory = {
+                "baseline": "3" * 40,
+                "count": 1,
+                "decision_inventory_sha256": MODULE.v3_decision_digest(rows),
+                "glossary_sha256": "2" * 64,
+            }
+            canonical = MODULE.render_review_results_v3(inventory, rows)
+            path = Path(directory) / "review.md"
+
+            def detect(text):
+                path.write_text(text, encoding="utf-8")
+                return MODULE.detect_review_schema(review_input(path))
+
+            self.assertEqual("v3", detect(canonical))
+            mutations = {
+                "missing": canonical.replace(
+                    MODULE.V3_REVIEW_ARTIFACT_BEGIN + "\n", "", 1
+                ).replace(MODULE.V3_REVIEW_ARTIFACT_END + "\n", "", 1),
+                "duplicate": canonical.replace(
+                    MODULE.V3_REVIEW_ARTIFACT_BEGIN,
+                    MODULE.V3_REVIEW_ARTIFACT_BEGIN + "\n"
+                    + MODULE.V3_REVIEW_ARTIFACT_BEGIN,
+                    1,
+                ),
+                "mixed": canonical + "\n" + MODULE.REVIEW_ARTIFACT_BEGIN
+                + "\n{}\n" + MODULE.REVIEW_ARTIFACT_END + "\n",
+                "unknown": canonical.replace(
+                    "ITEM REVIEW ARTIFACT v3", "ITEM REVIEW ARTIFACT v4"
+                ),
+                "v3-marker-v2-schema": canonical.replace(
+                    '"review_schema":"dcss-item-review-decisions-v3"',
+                    '"review_schema":"dcss-item-review-decisions-v2"',
+                ),
+                "v2-marker-v3-shape": canonical.replace(
+                    MODULE.V3_REVIEW_ARTIFACT_BEGIN,
+                    MODULE.REVIEW_ARTIFACT_BEGIN,
+                ).replace(
+                    MODULE.V3_REVIEW_ARTIFACT_END,
+                    MODULE.REVIEW_ARTIFACT_END,
+                ),
+            }
+            for name, text in mutations.items():
+                with self.subTest(name=name), self.assertRaises(RuntimeError):
+                    detect(text)
 
     def test_paired_components_reject_minimal_key_count_token_mutations(self):
         def write(path, entries):
@@ -1334,6 +1406,14 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 ],
                 cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
             )
+            mismatched = subprocess.run(
+                [
+                    sys.executable, str(SCRIPT), "--scope", "issue29-v2",
+                    "--review-schema", "v3",
+                    "--review-results", str(results),
+                ],
+                cwd=MODULE.ROOT, text=True, capture_output=True, check=False,
+            )
             self.assertEqual(0, generated.returncode, generated.stderr)
             validated = subprocess.run(
                 [
@@ -1347,6 +1427,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             result_text = results.read_text(encoding="utf-8")
             parsed_results = MODULE.parse_review_results(review_input(results))
         self.assertEqual(0, validated.returncode, validated.stderr)
+        self.assertEqual(2, mismatched.returncode)
+        self.assertIn("does not match artifact", mismatched.stderr)
         self.assertFalse(any(payload["review_violations"].values()))
         self.assertEqual(
             payload["baseline"],

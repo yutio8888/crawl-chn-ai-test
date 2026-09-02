@@ -2508,6 +2508,69 @@ def render_review_results(inventory, rows):
 
 V3_REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v3 -->"
 V3_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v3 -->"
+V2_ARTIFACT_SUMMARY_FIELDS = {
+    "baseline", "development_reports", "glossary_sha256",
+    "inventory_count", "inventory_sha256", "randart_production_boundary",
+    "terminal_conclusion_counts",
+}
+V3_ARTIFACT_SUMMARY_FIELDS = {
+    "baseline", "decision_inventory_sha256", "glossary_sha256",
+    "review_schema", "row_count", "terminal_conclusion_counts",
+}
+
+
+def _review_artifact_summary(text, begin_marker, end_marker):
+    lines = text.splitlines()
+    begin = [index for index, line in enumerate(lines)
+             if line == begin_marker]
+    end = [index for index, line in enumerate(lines)
+           if line == end_marker]
+    if len(begin) != 1 or len(end) != 1 or end[0] != begin[0] + 2:
+        raise RuntimeError("review artifact markers are missing or ambiguous")
+    try:
+        summary = json.loads(lines[begin[0] + 1])
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            "review artifact schema summary is invalid"
+        ) from error
+    if not isinstance(summary, dict):
+        raise RuntimeError("review artifact schema summary is not an object")
+    return summary
+
+
+def detect_review_schema(review_input):
+    """Identify one trusted review schema from its unique marker/summary."""
+    text = review_input.text
+    marker_lines = [
+        line for line in text.splitlines()
+        if "ITEM REVIEW ARTIFACT" in line
+    ]
+    v2_markers = {REVIEW_ARTIFACT_BEGIN, REVIEW_ARTIFACT_END}
+    v3_markers = {V3_REVIEW_ARTIFACT_BEGIN, V3_REVIEW_ARTIFACT_END}
+    marker_set = set(marker_lines)
+    if not marker_lines or not marker_set <= v2_markers | v3_markers:
+        raise RuntimeError("unknown review artifact schema marker")
+    has_v2 = bool(marker_set & v2_markers)
+    has_v3 = bool(marker_set & v3_markers)
+    if has_v2 == has_v3:
+        raise RuntimeError("review artifact schema is mixed or ambiguous")
+    if has_v2:
+        summary = _review_artifact_summary(
+            text, REVIEW_ARTIFACT_BEGIN, REVIEW_ARTIFACT_END
+        )
+        if set(summary) != V2_ARTIFACT_SUMMARY_FIELDS:
+            raise RuntimeError("v2 marker/schema summary mismatch")
+        return "v2"
+    summary = _review_artifact_summary(
+        text, V3_REVIEW_ARTIFACT_BEGIN, V3_REVIEW_ARTIFACT_END
+    )
+    if (
+        set(summary) != V3_ARTIFACT_SUMMARY_FIELDS
+        or summary.get("review_schema")
+        != "dcss-item-review-decisions-v3"
+    ):
+        raise RuntimeError("v3 marker/schema summary mismatch")
+    return "v3"
 V3_CARD_FIELDS = {"identity", "decision", "source_dependencies"}
 V3_DECISION_FIELD_SET = set(V3_DECISION_FIELDS)
 V3_DEPENDENCY_FIELDS = {
@@ -3536,10 +3599,10 @@ def main(argv=None):
     parser.add_argument(
         "--review-schema",
         choices=("v2", "v3"),
-        default="v2",
+        default=None,
         help=(
-            "explicit review artifact schema for issue29-v2; v2 remains the "
-            "transitional default until ledger migration"
+            "explicit review artifact schema for issue29-v2; readers detect "
+            "an omitted schema from the artifact, while writers default to v2"
         ),
     )
     parser.add_argument(
@@ -3593,7 +3656,7 @@ def main(argv=None):
     )
     if quality_requested and (
         args.scope != "issue29-v2"
-        or args.review_schema != "v2"
+        or args.review_schema not in {None, "v2"}
         or not args.review_results
         or not args.quality_prompt
         or not args.quality_context
@@ -3611,16 +3674,39 @@ def main(argv=None):
 
     try:
         if args.scope == "issue29-v2":
+            review_input = None
+            artifact_schema = None
+            if args.review_results:
+                review_input = load_review_input(
+                    ROOT,
+                    args.review_results,
+                    snapshot=audit_snapshot(),
+                )
+                artifact_schema = detect_review_schema(review_input)
+                if (
+                    args.review_schema is not None
+                    and args.review_schema != artifact_schema
+                ):
+                    raise RuntimeError(
+                        "explicit review schema does not match artifact"
+                    )
+            effective_schema = (
+                args.review_schema or artifact_schema or "v2"
+            )
+            if quality_requested and effective_schema != "v2":
+                raise RuntimeError(
+                    "quality M1 requires a strict v2 review artifact"
+                )
             builder = (
                 build_extended_inventory_v3
-                if args.review_schema == "v3"
+                if effective_schema == "v3"
                 else build_extended_inventory
             )
             payload, internal_rows = builder(
                 args.review_base or ISSUE29_REVIEW_BASE
             )
             if args.write_review_results:
-                if args.review_schema == "v3":
+                if effective_schema == "v3":
                     write_review_results_v3(
                         args.write_review_results, payload, internal_rows
                     )
@@ -3629,13 +3715,8 @@ def main(argv=None):
                         args.write_review_results, payload, internal_rows
                     )
             if args.review_results:
-                review_input = load_review_input(
-                    ROOT,
-                    args.review_results,
-                    snapshot=audit_snapshot(),
-                )
                 payload["review_input"] = review_input_metadata(review_input)
-                if args.review_schema == "v3":
+                if effective_schema == "v3":
                     review = parse_review_results_v3(review_input)
                     review_header = parse_review_header_v3(review_input)
                     payload["review_violations"] = review_violations_v3(
@@ -3658,7 +3739,7 @@ def main(argv=None):
         else:
             if (
                 args.review_results or args.write_review_results
-                or args.review_base or args.review_schema != "v2"
+                or args.review_base or args.review_schema is not None
             ):
                 raise RuntimeError(
                     "review options are valid only for --scope issue29-v2"
