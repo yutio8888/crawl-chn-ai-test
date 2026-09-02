@@ -433,6 +433,33 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             self.assertEqual("fallback", dependency["state"])
             self.assertEqual("glowing", dependency["resolved_value"])
 
+            for branch, valid in (
+                ("value", contextual),
+                ("plain-fallback", plain),
+                ("english-fallback", english),
+            ):
+                with self.subTest(adopted_chinese_mutation=branch):
+                    forged = copy.deepcopy(valid)
+                    original_current = forged[0]["decision"][
+                        "current_chinese"
+                    ]
+                    original_dependency = copy.deepcopy(
+                        forged[0]["source_dependencies"]
+                    )
+                    forged[0]["decision"]["adopted_chinese"] += "篡改"
+                    self.assertEqual(
+                        original_current,
+                        forged[0]["decision"]["current_chinese"],
+                    )
+                    self.assertEqual(
+                        original_dependency,
+                        forged[0]["source_dependencies"],
+                    )
+                    with self.assertRaisesRegex(
+                        RuntimeError, "current or adopted Chinese"
+                    ):
+                        MODULE.validate_v3_decision_cards(forged)
+
     def test_v3_lookup_chain_uses_production_key_escape_and_fails_closed(self):
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"

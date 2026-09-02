@@ -2702,9 +2702,13 @@ def validate_v3_decision_cards(rows):
                 or dependency["resolved_value"] != selected[2]
             ):
                 raise RuntimeError(f"{identity} dependency state is invalid")
-            if decision["current_chinese"] != selected[2]:
+            if (
+                decision["current_chinese"] != selected[2]
+                or decision["adopted_chinese"] != selected[2]
+            ):
                 raise RuntimeError(
-                    f"{identity} dependency does not match current Chinese"
+                    f"{identity} dependency does not match current or "
+                    "adopted Chinese"
                 )
     if len(set(identities)) != len(identities):
         raise RuntimeError("v3 evidence cards have duplicate identities")
