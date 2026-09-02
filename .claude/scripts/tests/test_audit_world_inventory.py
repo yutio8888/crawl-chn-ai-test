@@ -1580,6 +1580,85 @@ epilogue {{
             self.assertEqual([feature_row["identity"]],
                              broken["missing_evidence_cards"])
 
+    def test_authority_cells_are_provenance_and_must_be_uniform(self):
+        """Slice A: recorded authority digests are input provenance.
+
+        An unrelated current-tree glossary/decisions edit (all rows recording
+        one consistent older pair) must not fail coverage, while a row whose
+        authority cell diverges from the others is internal inconsistency and
+        must fail closed.
+        """
+        branch_row = next(
+            row for row in self.payload["rows"] if row["category"] == "branch"
+        )
+        feature_row = next(
+            row for row in self.payload["rows"]
+            if row["category"] == "feature"
+            and row["lifecycle"] == "current"
+            and row.get("current_chinese_name")
+        )
+        fixture = {
+            **self.payload,
+            "inventory_sha256": "a" * 64,
+            "rows": [branch_row, feature_row],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.md"
+            canonical = review_document(fixture, [
+                (branch_row, "保留：正确", None),
+                (feature_row, "adjust wording", None),
+            ])
+            path.write_text(canonical, encoding="utf-8")
+            clean = fixture_review_coverage(fixture, review_input(path))
+            self.assertTrue(clean["coverage_equal"])
+            self.assertTrue(clean["glossary_digest_matches"])
+            self.assertTrue(clean["decisions_digest_matches"])
+
+            # Simulate an unrelated current-tree glossary edit: the ledger
+            # keeps its recorded digest but the payload (current tree) moves.
+            stale_fixture = {
+                **fixture,
+                "glossary_sha256": "c" * 64,
+                "input_sha256": {
+                    **fixture["input_sha256"],
+                    "docs/decisions.md": "d" * 64,
+                },
+            }
+            stale = fixture_review_coverage(
+                stale_fixture, review_input(path)
+            )
+            self.assertTrue(stale["coverage_equal"])
+            self.assertFalse(stale["glossary_digest_matches"])
+            self.assertFalse(stale["decisions_digest_matches"])
+
+            # A single row recording a different authority digest is an
+            # internal inconsistency and must fail closed.
+            tampered_lines = canonical.splitlines()
+            authority_column = MODULE.REVIEW_COLUMNS.index(
+                "glossary_decision_authority"
+            )
+            for index, line in enumerate(tampered_lines):
+                if not line.lstrip().startswith("| `" + branch_row["identity"]):
+                    continue
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                cells[authority_column] = cells[authority_column].replace(
+                    fixture["input_sha256"]["docs/decisions.md"],
+                    "e" * 64,
+                    1,
+                )
+                tampered_lines[index] = (
+                    "| " + " | ".join(cells) + " |"
+                )
+                break
+            else:
+                self.fail("branch row not found for authority tamper")
+            path.write_text("\n".join(tampered_lines) + "\n", encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "not uniform across ledger rows",
+            ):
+                fixture_review_coverage(fixture, review_input(path))
+
     def test_composite_adoption_binds_protected_tokens(self):
         source = next(
             row for row in self.payload["rows"]

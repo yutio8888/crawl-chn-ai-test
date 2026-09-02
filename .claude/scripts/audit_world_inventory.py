@@ -2554,6 +2554,7 @@ def _review_recorded_authority(cards):
     return None when no row carries the cell (legacy or empty fixtures), and
     raise when recorded values are not canonical 64-hex strings.
     """
+    observed = None
     for identity in sorted(cards):
         card = cards[identity]
         raw = card.get("glossary_decision_authority")
@@ -2584,7 +2585,7 @@ def _review_recorded_authority(cards):
             raise RuntimeError(
                 "world review glossary_decision_authority digest is malformed"
             )
-        return {
+        current = {
             "glossary_sha256": (
                 glossary if isinstance(glossary, str)
                 and re.fullmatch(r"[0-9a-f]{64}", glossary) else None
@@ -2594,7 +2595,17 @@ def _review_recorded_authority(cards):
                 and re.fullmatch(r"[0-9a-f]{64}", decisions) else None
             ),
         }
-    return None
+        if observed is None:
+            observed = current
+        elif current != observed:
+            # Every row of one canonical ledger records the same review-input
+            # snapshot.  A divergent cell is an internal inconsistency (tamper
+            # or partial regeneration), not an unrelated current-tree edit.
+            raise RuntimeError(
+                "world review glossary_decision_authority cells are not "
+                "uniform across ledger rows"
+            )
+    return observed
 
 
 def _review_payload_with_authority(payload, recorded):
