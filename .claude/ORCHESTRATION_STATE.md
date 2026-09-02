@@ -25,8 +25,8 @@ Issue 索引、当前任务面板、提交清单或验证输出目录。
    `.claude/scripts/context_resolve.sh`；术语以 `docs/glossary.md` 为唯一来源。
 4. 协议/显示边界、格式参数、TextDB 结构和所有权规则以 `.agents/policies/` 为准，
    不在此复制具体规则清单。
-5. 评审使用 `review_prepare.sh` 生成的不可变候选，并按当前 review contract
-   机械路由；非正式审阅不能替代 final gate。
+5. 评审对象是干净提交的候选 commit，由 `classify_reviewers.py` 路由；合并条件
+   是匹配的验证 profile、领域审阅与 GitHub CI。
 6. 运行匹配改动类型的单一验证 profile，避免对同一候选串行运行所有 profile。
 
 ## Issue 追踪切换决策

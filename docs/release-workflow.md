@@ -51,9 +51,10 @@
 ## 候选准备
 
 1. 确认候选工作树已提交且干净，版本范围、延期平台和已知问题已经写入 release issue。
-2. 按 `.agents/policies/review-contract.md` 准备不可变候选，并完成机械路由的就绪审查和
-   final gate。
-3. 从目标分支检出获批的准确提交；不得从另一个 linked worktree 移动目标分支引用。
+2. 按 `.agents/policies/review-contract.md` 运行匹配的验证 profile，并由
+   `classify_reviewers.py` 路由领域审查；现有 GitHub Actions CI 必须通过。
+3. 从目标分支检出通过验证、领域审阅与 CI 的准确提交；不得从另一个 linked
+   worktree 移动目标分支引用。
 4. 经发布负责人确认版本号后，创建 annotated tag：
 
    ```bash

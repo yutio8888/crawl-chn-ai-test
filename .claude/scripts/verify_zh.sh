@@ -4,9 +4,8 @@
 # Usage:
 #   verify_zh.sh --profile translation   # Translation / data-file changes
 #   verify_zh.sh --profile code           # C++ / i18n code changes
-#   verify_zh.sh --profile review         # Final-gate internal profile
+#   verify_zh.sh --profile review         # Legacy internal profile (retiring)
 #   verify_zh.sh --profile ci             # CI gate (union of translation + code)
-#   review_final_gate.sh <candidate> <target>  # Supported review entry point
 #   verify_zh.sh --profile code --scope changed
 #   verify_zh.sh --profile review --base <rev> --head <rev> \
 #       --routing-sha256 <sha256> --control-plane-sha256 <sha256>
@@ -94,7 +93,7 @@ Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full
 Profiles:
   translation   Translation / data-file changes
   code          C++ / i18n code changes
-  review        Final-gate internal review report; use review_final_gate.sh
+  review        Legacy internal profile retained for Slice C removal; not a merge entry point
   ci            CI gate (translation + code union)
 
 Evidence range:

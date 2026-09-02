@@ -159,14 +159,21 @@ When the user authorizes persisted task artifacts, keep them distinct:
 - the glossary and decision log remain terminology authority;
 - a change summary is derived from the final diff and does not replace evidence.
 
-## Use Existing Final Review
+## Landing Review (Target Process)
 
-After landing all accepted batches, create one clean committed candidate. Use
-the repository's existing `review_prepare.sh`, mechanical reviewer routing,
-immutable readiness records, and single `review_final_gate.sh` run exactly as
-defined by `.agents/policies/review-contract.md`.
+After landing all accepted batches, create one clean committed candidate. Run
+the matching development `verify_zh.sh` profile, route domain reviewers with
+`classify_reviewers.py`, and merge only after existing GitHub Actions CI
+passes — the process defined by `.agents/policies/review-contract.md`. This
+category's own inventory/glossary digests may still be frozen as the input
+record for the review session.
+
+When a glossary or `docs/decisions.md` entry that is relevant to this category
+changes after the ledger was written, this Skill decides whether to regenerate
+or re-review the category ledger; CI only prints a non-blocking notice and
+never blocks on the digest difference alone.
 
 Report the baseline and candidate identities, inventory and glossary digests,
 coverage equality, conclusion counts, changed translations and descriptions,
-deferred items, development verification, routed readiness, and final-gate
-status.
+deferred items, development verification, reviewer conclusion (Ready or
+Changes Requested), and merge status.

@@ -39,9 +39,9 @@ default. Dedicated detached build worktrees remain governed by
 ## Review and Merge
 
 Code-review answers use findings-first format with exact file/line evidence.
-For translation candidates, use the schema-v4 process in
-`.agents/policies/review-contract.md`; do not substitute an informal review for
-mechanical routing or final evidence.
+For translation candidates, route domain review with `classify_reviewers.py`
+per `.agents/policies/review-contract.md`; merge requires the matching
+verification profile, domain review, and GitHub Actions CI.
 
 Use a Codex identity only when the active runtime or user has declared one;
 otherwise omit the co-author trailer. Cross-runtime handoff state belongs in

@@ -213,9 +213,9 @@ bash .claude/scripts/verify_zh.sh --profile ci
 - 没有修改字体子模块指针，也没有提交未授权字体、`init.txt`、构建产物、缓存或部署目录；
   仓库规定的 Maple Mono NF CN 字体及其许可证除外。
 
-翻译相关候选进入合并阶段后，由维护者按不可变 commit 执行
-`review_prepare.sh`、机械路由的领域审查、`review_final_gate.sh` 和合并时校验。不要用一次
-非正式 review 或单独运行 `--profile review` 代替该流程。详情见
+翻译相关候选进入合并阶段后，先运行匹配的验证 profile，再由
+`classify_reviewers.py` 路由领域审查，最后以现有 GitHub Actions CI 通过为
+合并条件。详情见
 [.agents/policies/review-contract.md](.agents/policies/review-contract.md)。当前 CI 配置以
 [.github/workflows/ci.yml](.github/workflows/ci.yml) 为准。
 

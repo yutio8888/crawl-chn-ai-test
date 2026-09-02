@@ -28,7 +28,7 @@ in this file or `.agents/policies/`.
 | Translation terminology | `docs/glossary.md` |
 | i18n safety | `.agents/policies/i18n-safety.md` |
 | Translation-asset ownership | `.agents/policies/asset-ownership.md` |
-| Review findings and final evidence | `.agents/policies/review-contract.md` |
+| Review findings and domain review | `.agents/policies/review-contract.md` |
 | Worktree placement and branch safety | `.agents/policies/worktree-policy.md` |
 | Portable repository and external paths | `.agents/policies/path-portability.md` |
 | Translation architecture | `docs/translation-architecture.md` |
@@ -117,38 +117,26 @@ paths and documented environment variables as defined by
 `.agents/policies/path-portability.md`.
 
 Do not move another branch ref from inside a linked worktree. Commit in the
-candidate worktree, prepare and review the immutable candidate, then merge the
-approved commit from the target checkout. Dedicated detached build worktrees
+candidate worktree, then merge the commit that passed verification, domain
+review, and CI from the target checkout. Dedicated detached build worktrees
 may be reset only through their guarded helper scripts or after the documented
 clean-tree check in `docs/build-workflow.md`.
 
 ## Verification
 
 Use the single matching development profile; do not run a dozen individual
-scripts or serially run every profile against one immutable candidate.
+scripts or serially run every profile against one candidate.
 
 | Change | Command |
 |---|---|
 | Translation or ZH data | `bash .claude/scripts/verify_zh.sh --profile translation` |
 | C++ or i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
 | Combined static CI preflight | `bash .claude/scripts/verify_zh.sh --profile ci` |
-| Final evidence | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
-| Merge-time validation | `bash .claude/scripts/review_at_merge.sh <candidate> <target>` |
 
-The `review` profile is final-gate internal. Reviewers do not run it during
-readiness. Prepare the exact committed, clean boundary with
-`review_prepare.sh`, dispatch only mechanically routed reviewers, record their
-readiness, and let `review_final_gate.sh` own the single final run. See
-`.agents/policies/review-contract.md`.
-
-On a resource-constrained control plane, the final gate may substitute a live,
-bound GitHub Actions run for the contract-listed externalizable phases with
-`review_final_gate.sh <candidate> <target> --github-actions-run <run-id>`.
-This replaces CI proof only; reviewer readiness, strict review ledgers, final
-approval, and the read-only merge gate remain local. The trusted contract owns
-the repository, workflow, required jobs, and externalizable phase set, and the
-proof is fetched live through `gh` — never caller-supplied. See
-`docs/zh-testing.md` and `.agents/policies/review-contract.md`.
+After a clean commit, route domain review with
+`classify_reviewers.py` and merge only after existing GitHub Actions CI
+passes. Reviewers produce human-readable findings; there is no separate
+final evidence gate. See `.agents/policies/review-contract.md`.
 
 Use at most eight build jobs. Agents compiling alongside other work should use
 `-j4`, and concurrent agents must not start overlapping compile storms.

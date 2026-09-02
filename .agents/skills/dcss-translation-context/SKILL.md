@@ -53,6 +53,5 @@ bash .claude/scripts/verify_zh.sh --profile translation
 bash .claude/scripts/verify_zh.sh --profile code
 ```
 
-For a prepared candidate, the orchestrator owns `review_prepare.sh` and the
-single `review_final_gate.sh` run. Reviewers inspect the exact prepared bundle
-and do not execute the review profile themselves.
+For a clean committed candidate, route domain review with
+`classify_reviewers.py` and merge after GitHub Actions CI passes.
