@@ -42,6 +42,15 @@ def pi_role_body(role: str) -> str:
     return text.split(separator, 1)[1].lstrip("\n").rstrip("\n")
 
 
+def without_generated_blocks(text: str) -> str:
+    return re.sub(
+        r"<!-- BEGIN GENERATED: ([^ ]+) -->.*?<!-- END GENERATED: \1 -->",
+        "",
+        text,
+        flags=re.DOTALL,
+    )
+
+
 class PolicySyncTests(unittest.TestCase):
     def test_active_runtime_agents_are_policy_targets(self) -> None:
         self.assertIn(".codex/agents/crawl-coder.toml", SYNC.TARGETS["i18n-safety"])
@@ -87,6 +96,32 @@ class PolicySyncTests(unittest.TestCase):
                      "zh-code-reviewer"):
             with self.subTest(role=role):
                 self.assertEqual(codex_role_body(role), pi_role_body(role))
+
+    def test_reviewer_workflows_match_human_review_contract(self) -> None:
+        stale_fragments = (
+            "--profile review",
+            "review profile",
+            "single final run",
+            "immutable",
+            "readiness",
+        )
+        required_fragments = (
+            "exact committed range",
+            "complete diff",
+            "implementer or orchestrator completed the matching",
+            "Reviewers do not rerun whole-project verification suites",
+            "plain human-readable Blocker / Needs Fix /",
+            "final conclusion of Ready or",
+            "Changes Requested",
+        )
+        for role in ("translation-reviewer", "zh-code-reviewer"):
+            body = without_generated_blocks(codex_role_body(role))
+            for fragment in required_fragments:
+                with self.subTest(role=role, required=fragment):
+                    self.assertIn(fragment, body)
+            for fragment in stale_fragments:
+                with self.subTest(role=role, stale=fragment):
+                    self.assertNotIn(fragment, body.lower())
 
     def test_replace_preserves_yaml_frontmatter(self) -> None:
         original = "---\nname: reviewer\n---\n\n# Title\n\n<!-- BEGIN GENERATED: p -->\nold\n<!-- END GENERATED: p -->\n"
