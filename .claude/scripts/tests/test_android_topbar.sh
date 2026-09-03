@@ -94,6 +94,8 @@ shift 2
 
 if [[ "${1:-}" == "install" ]]; then
     echo Success
+elif [[ "${1:-}" == "uninstall" ]]; then
+    echo Success
 elif [[ "${1:-}" == "logcat" && "${2:-}" == "-c" ]]; then
     :
 elif [[ "${1:-}" == "logcat" && "${2:-}" == "-d" ]]; then
@@ -143,6 +145,9 @@ elif [[ "${1:-}" == "shell" ]]; then
         "am start -W -n org.develz.crawl/.DCSSLauncher")
             echo 'Status: ok'
             ;;
+        "pm path org.develz.crawl")
+            echo 'package:/data/app/org.develz.crawl/base.apk'
+            ;;
         "uiautomator dump /sdcard/dcss-topbar-window.xml")
             echo 'UI hierarchy dumped'
             ;;
@@ -188,11 +193,18 @@ expect_result()
 {
     local label="$1" scenario="$2" expected="$3" pattern="$4"
     local run_target="${5:-$TARGET}"
+    local extra_arg="${6:-}"
     local output="$TMP_ROOT/$label.out"
     local artifacts="$TMP_ROOT/$label-artifacts"
     local adb_log="$TMP_ROOT/$label-adb.log"
     local adb_state="$TMP_ROOT/$label-adb.state"
     local rc
+    local command=(
+        bash "$run_target" --apk "$TMP_ROOT/dummy.apk" --serial test-serial
+        --output-dir "$artifacts" --launcher-wait 0 --game-wait 0
+        --stage-timeout 1 --save-downs 0
+    )
+    [[ -z "$extra_arg" ]] || command+=("$extra_arg")
 
     set +e
     PATH="$FAKE_BIN:$PATH" \
@@ -200,9 +212,7 @@ expect_result()
     FAKE_ADB_LOG="$adb_log" \
     FAKE_ADB_STATE="$adb_state" \
     FAKE_SCENARIO="$scenario" \
-        bash "$run_target" --apk "$TMP_ROOT/dummy.apk" --serial test-serial \
-        --output-dir "$artifacts" --launcher-wait 0 --game-wait 0 \
-        --stage-timeout 1 --save-downs 0 >"$output" 2>&1
+        "${command[@]}" >"$output" 2>&1
     rc=$?
     set -e
 
@@ -236,6 +246,23 @@ expect_result()
                             && logcat_line < start_line )); then
                     echo "launch boundary was not cleared in order for $label" >&2
                     exit 1
+                fi
+                if [[ "$extra_arg" == --fresh-install ]]; then
+                    local path_line uninstall_line install_line
+                    path_line="$(grep -nF 'shell pm path org.develz.crawl' "$adb_log" | head -1 | cut -d: -f1)"
+                    uninstall_line="$(grep -nF 'uninstall org.develz.crawl' "$adb_log" | head -1 | cut -d: -f1)"
+                    install_line="$(grep -nE '^\-s test-serial install ' "$adb_log" | head -1 | cut -d: -f1)"
+                    if [[ -z "$path_line" || -z "$uninstall_line" \
+                          || -z "$install_line" ]] \
+                        || ! (( path_line < uninstall_line \
+                                && uninstall_line < install_line )); then
+                        echo "fresh uninstall did not precede install for $label" >&2
+                        exit 1
+                    fi
+                    if grep -Eq '^\-s test-serial install -r ' "$adb_log"; then
+                        echo "fresh install unexpectedly used -r for $label" >&2
+                        exit 1
+                    fi
                 fi
             fi
             return
@@ -312,6 +339,8 @@ expect_parameter_failure stage-timeout-text 'invalid --stage-timeout' --stage-ti
 expect_parameter_failure stage-timeout-missing '--stage-timeout requires seconds' --stage-timeout
 expect_parameter_failure save-downs-leading-zero 'invalid --save-downs' --save-downs 08
 expect_result success success success 'Android top-bar smoke test completed'
+expect_result fresh-install success success \
+    'Android fresh-install startup test completed' "$TARGET" --fresh-install
 expect_result detached-explicit-apk success success \
     'Android top-bar smoke test completed' "$DETACHED_TARGET"
 expect_custom_result auto-apk-and-device success 'app-buildTest-new\.apk' \

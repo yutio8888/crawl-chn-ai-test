@@ -4,12 +4,15 @@
 # The automated flow is:
 #   install APK -> launch DCSSLauncher -> tap Start Game -> dismiss splash
 #   -> load the first save -> capture the top HUD
+# With --fresh-install, it uninstalls the package first and stops after proving
+# that a new installation reaches the startup menu without existing saves.
 #
 # Usage:
 #   bash .claude/scripts/test-android-topbar.sh [options]
 #
 # Options:
 #   --build             Build buildTest in .worktrees/android-tiles first.
+#   --fresh-install     Uninstall first (DELETES package data) and test startup.
 #   --apk PATH          Use PATH instead of auto-detecting the latest APK.
 #   --serial SERIAL     Target a specific adb device.
 #   --output-dir DIR    Store screenshots/logs in DIR.
@@ -32,6 +35,7 @@ APK=""
 SERIAL="${ADB_SERIAL:-}"
 OUTPUT_DIR=""
 DO_BUILD=0
+FRESH_INSTALL=0
 LAUNCHER_WAIT=3
 GAME_WAIT=3
 STAGE_TIMEOUT=120
@@ -39,7 +43,7 @@ SAVE_DOWNS=8
 
 usage()
 {
-    sed -n '2,20s/^# \{0,1\}//p' "$0"
+    sed -n '2,23s/^# \{0,1\}//p' "$0"
 }
 
 die()
@@ -52,6 +56,10 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --build)
             DO_BUILD=1
+            shift
+            ;;
+        --fresh-install)
+            FRESH_INSTALL=1
             shift
             ;;
         --apk)
@@ -330,8 +338,20 @@ tap_start_button()
     "${ADB[@]}" shell input tap "$x" "$y"
 }
 
-echo "[3/7] Installing $(basename "$INSTALL_APK") on $SERIAL..."
-"${ADB[@]}" install -r "$INSTALL_APK" | tee "$OUTPUT_DIR/install.log"
+if [[ $FRESH_INSTALL -eq 1 ]]; then
+    echo "[3/7] Removing $PACKAGE and its data for a fresh-install test..."
+    if "${ADB[@]}" shell pm path "$PACKAGE" | grep -q '^package:'; then
+        "${ADB[@]}" uninstall "$PACKAGE" | tee "$OUTPUT_DIR/uninstall.log"
+    else
+        echo "Package is not currently installed." | tee "$OUTPUT_DIR/uninstall.log"
+    fi
+    echo "Installing $(basename "$INSTALL_APK") on $SERIAL..."
+    "${ADB[@]}" install "$INSTALL_APK" | tee "$OUTPUT_DIR/install.log"
+else
+    echo "[3/7] Updating the existing installation..."
+    echo "Installing $(basename "$INSTALL_APK") on $SERIAL..."
+    "${ADB[@]}" install -r "$INSTALL_APK" | tee "$OUTPUT_DIR/install.log"
+fi
 
 echo "[4/7] Launching DCSSLauncher..."
 "${ADB[@]}" shell am force-stop "$PACKAGE"
@@ -355,6 +375,21 @@ echo "[6/7] Dismissing the splash and selecting the first save..."
 wait_for_phase startup_menu_ready "startup menu readiness"
 sleep "$GAME_WAIT"
 screenshot 03-main-menu
+
+if [[ $FRESH_INSTALL -eq 1 ]]; then
+    echo "[7/7] Capturing fresh-install startup evidence..."
+    capture_evidence_strict
+    assert_game_foreground
+    assert_no_runtime_failure
+
+    echo "Android fresh-install startup test completed."
+    echo "Device: $SERIAL"
+    echo "APK: $INSTALL_APK"
+    echo "Artifacts: $OUTPUT_DIR"
+    echo "Final screenshot: $OUTPUT_DIR/03-main-menu.png"
+    exit 0
+fi
+
 for ((i = 0; i < SAVE_DOWNS; ++i)); do
     "${ADB[@]}" shell input keyevent KEYCODE_DPAD_DOWN
 done

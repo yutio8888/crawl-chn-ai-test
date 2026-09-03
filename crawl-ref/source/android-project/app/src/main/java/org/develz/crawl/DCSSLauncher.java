@@ -29,7 +29,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
     public final static String TAG = "LAUNCHER";
 
-    private static final String INIT_FILE = "/init.txt";
+    private static final String INIT_FILE = "init.txt";
 
     // Crawl's init file
     private File initFile;
@@ -129,8 +129,32 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         fullScreenSwitch.setChecked(fullScreen);
         fullScreenSwitch.setOnCheckedChangeListener(this);
 
+        // Native mkdir cannot traverse Android's scoped-storage ancestors, so
+        // create the writable directory layout through the Android API first.
+        File externalFilesDir = getExternalFilesDir(null);
+        if (externalFilesDir == null) {
+            Log.e(TAG, "External files directory is unavailable");
+            findViewById(R.id.startButton).setEnabled(false);
+            findViewById(R.id.editInitFile).setEnabled(false);
+            findViewById(R.id.morgueButton).setEnabled(false);
+            findViewById(R.id.modsButton).setEnabled(false);
+            return;
+        }
+        String versionName = null;
+        try {
+            versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Can't read package version", e);
+        }
+        if (versionName == null
+                || !createGameDirectories(externalFilesDir, versionName)) {
+            Log.e(TAG, "Can't create game directories");
+            findViewById(R.id.startButton).setEnabled(false);
+        }
+
         // Create the init file if needed
-        initFile = new File(getExternalFilesDir(null)+INIT_FILE);
+        initFile = new File(externalFilesDir, INIT_FILE);
         resetInitFile(false);
 
         // TV users get a warning
@@ -147,6 +171,31 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
                 preferences.edit().putBoolean("tv_warning_shown", true).apply();
             }
         }
+    }
+
+    static boolean createGameDirectories(File externalFilesDir, String version) {
+        if (externalFilesDir == null) {
+            return false;
+        }
+
+        String[] directories = {
+            "saves",
+            "morgue",
+            "saves/bones",
+            "saves/sprint",
+            "saves/sprint/bones",
+            "saves/descent",
+            "saves/descent/bones",
+            "saves/cache." + version + "/db",
+            "saves/cache." + version + "/des"
+        };
+        for (String directory : directories) {
+            File path = new File(externalFilesDir, directory);
+            if (!path.isDirectory() && !path.mkdirs()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Start game

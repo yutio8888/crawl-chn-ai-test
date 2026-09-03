@@ -505,6 +505,9 @@ jobs:
       - name: Prepare Android build
         run: make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4
         working-directory: crawl-ref/source
+      - name: Run Android launcher unit tests
+        run: gradle :app:testDebugUnitTest
+        working-directory: crawl-ref/source/android-project
       - name: Build Android four-ABI debug APK
         run: gradle :app:assembleDebug
         working-directory: crawl-ref/source/android-project
