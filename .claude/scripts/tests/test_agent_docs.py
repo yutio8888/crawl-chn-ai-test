@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 from pathlib import Path
 import re
 import subprocess
@@ -266,6 +267,10 @@ class AgentDocumentationTests(unittest.TestCase):
 
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         self.assertIn(
+            "'0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]'",
+            workflow,
+        )
+        self.assertNotIn(
             "'0.34.1-zh[0-9]+-[0-9]+-[0-9][0-9][0-9]'",
             workflow,
         )
@@ -281,13 +286,16 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("verify_release_artifacts.py", workflow)
         self.assertIn("--draft --verify-tag", workflow)
         self.assertIn("Create draft release once", workflow)
-        self.assertIn("Expected 4 release assets", workflow)
+        self.assertIn("Expected 5 release assets", workflow)
         self.assertNotIn("Download Linux package", workflow)
         self.assertNotIn("name: linux-console", workflow)
         self.assertIn("Download macOS package", workflow)
         self.assertIn("name: macos-tiles-app", workflow)
-        self.assertIn("中文桌面正式版", workflow)
+        self.assertIn("Download Android package", workflow)
+        self.assertIn("name: android-release-apk", workflow)
+        self.assertIn("基于上游 DCSS 0.34.1 的中文版", workflow)
         self.assertIn("macOS Tiles：ad-hoc 签名 DMG", workflow)
+        self.assertIn("Android：签名的四 ABI APK", workflow)
         self.assertIn("xattr -dr com.apple.quarantine", workflow)
         self.assertEqual(7, workflow.count("name: Ensure version info"))
         self.assertEqual(
@@ -306,6 +314,7 @@ class AgentDocumentationTests(unittest.TestCase):
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertNotIn("- build_linux_console", release_needs)
         self.assertIn("- build_macos_tiles", release_needs)
+        self.assertIn("- build_android", release_needs)
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("gh release edit", workflow)
 
@@ -335,6 +344,184 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         self.assertIn("Dungeon Crawl Stone Soup - Tiles.app", codesign_commands)
         self.assertNotIn(r"Dungeon\ Crawl\ Stone\ Soup", codesign_commands)
+
+    def test_android_debug_and_release_apks_are_fail_closed(self) -> None:
+        def assert_contract(config: dict) -> None:
+            jobs = config["jobs"]
+            android = jobs["build_android"]
+            self.assertEqual("Android (buildTest)", android["name"])
+
+            steps = android["steps"]
+            prepare = next(
+                step
+                for step in steps
+                if step.get("name") == "Prepare Android build"
+            )
+            self.assertEqual(
+                'make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4',
+                prepare["run"],
+            )
+            build_index = next(
+                index
+                for index, step in enumerate(steps)
+                if ":app:assembleDebug" in step.get("run", "")
+            )
+            validate_index = next(
+                index
+                for index, step in enumerate(steps)
+                if "check_android_pcre_apk.sh" in step.get("run", "")
+            )
+            upload_index = next(
+                index
+                for index, step in enumerate(steps)
+                if step.get("uses") == "actions/upload-artifact@v4"
+            )
+            self.assertLess(build_index, validate_index)
+            self.assertLess(validate_index, upload_index)
+
+            upload = steps[upload_index]["with"]
+            self.assertEqual("android-debug-apk", upload["name"])
+            self.assertEqual(
+                "crawl-ref/source/android-project/app/build/outputs/apk/"
+                "debug/app-debug.apk",
+                upload["path"],
+            )
+            self.assertEqual("error", upload["if-no-files-found"])
+
+            release_steps = {
+                step.get("name"): (index, step)
+                for index, step in enumerate(steps)
+                if step.get("name")
+            }
+            require_index, require = release_steps[
+                "Require Android release signing secrets"
+            ]
+            sign_index, sign = release_steps[
+                "Build and sign Android release APK"
+            ]
+            release_validate_index, release_validate = release_steps[
+                "Validate release APK PCRE linkage for every Android ABI"
+            ]
+            release_upload_index, release_upload = release_steps[
+                "Upload Android release APK"
+            ]
+            self.assertLess(require_index, sign_index)
+            setup_index = next(
+                index
+                for index, step in enumerate(steps)
+                if step.get("name") == "Set up Python from .python-version"
+            )
+            self.assertLess(require_index, setup_index)
+            self.assertLess(sign_index, release_validate_index)
+            self.assertLess(release_validate_index, release_upload_index)
+            for step in (require, sign, release_validate, release_upload):
+                self.assertEqual(
+                    "${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}",
+                    step["if"],
+                )
+
+            require_run = require["run"]
+            self.assertIn("^0\\.34\\.1-zh[1-9][0-9]*-", require_run)
+            self.assertIn("base64 --decode", require_run)
+            for secret in (
+                "ANDROID_KEYSTORE_BASE64",
+                "ANDROID_KEYSTORE_PASS",
+                "ANDROID_KEY_ALIAS",
+            ):
+                self.assertIn(
+                    f"missing GitHub Actions secret {secret}", require_run
+                )
+            self.assertEqual(
+                {
+                    "ANDROID_KEYSTORE_BASE64": (
+                        "${{ secrets.ANDROID_KEYSTORE_BASE64 }}"
+                    ),
+                    "ANDROID_KEYSTORE_PASS": (
+                        "${{ secrets.ANDROID_KEYSTORE_PASS }}"
+                    ),
+                    "ANDROID_KEY_ALIAS": "${{ secrets.ANDROID_KEY_ALIAS }}",
+                },
+                require["env"],
+            )
+
+            sign_run = sign["run"]
+            self.assertIn("gradle :app:assembleRelease", sign_run)
+            self.assertIn("app-release-unsigned.apk", sign_run)
+            self.assertIn(
+                "stone_soup-${GITHUB_REF_NAME}-android.apk", sign_run
+            )
+            self.assertIn('"$zipalign" -p -f 4', sign_run)
+            self.assertIn('"$apksigner" sign', sign_run)
+            self.assertIn("--ks-pass env:ANDROID_STORE_PASSWORD", sign_run)
+            self.assertIn(
+                "--key-pass env:ANDROID_PRIVATE_KEY_PASSWORD", sign_run
+            )
+            self.assertIn(
+                '${ANDROID_KEY_PASS:-$ANDROID_KEYSTORE_PASS}', sign_run
+            )
+            self.assertIn(
+                '"$apksigner" verify --verbose --print-certs', sign_run
+            )
+            self.assertNotIn("--ks-pass pass:", sign_run)
+            self.assertNotIn("--key-pass pass:", sign_run)
+
+            release_upload_with = release_upload["with"]
+            self.assertEqual(
+                "android-release-apk", release_upload_with["name"]
+            )
+            self.assertEqual(
+                "stone_soup-${{ github.ref_name }}-android.apk",
+                release_upload_with["path"],
+            )
+            self.assertEqual(
+                "error", release_upload_with["if-no-files-found"]
+            )
+
+            release = jobs["release_draft"]
+            self.assertIn("build_android", release["needs"])
+            release_download = next(
+                step
+                for step in release["steps"]
+                if step.get("name") == "Download Android package"
+            )
+            self.assertEqual(
+                "android-release-apk", release_download["with"]["name"]
+            )
+            release_gate = next(
+                step
+                for step in release["steps"]
+                if step.get("name")
+                == "Validate closed-world release artifact set"
+            )
+            self.assertIn("--apksigner", release_gate["run"])
+
+        workflow = yaml.safe_load(
+            (ROOT / ".github/workflows/ci.yml").read_text()
+        )
+        assert_contract(workflow)
+
+        wrong_path = copy.deepcopy(workflow)
+        android_steps = wrong_path["jobs"]["build_android"]["steps"]
+        upload = next(
+            step
+            for step in android_steps
+            if step.get("uses") == "actions/upload-artifact@v4"
+        )
+        upload["with"]["path"] += ".missing"
+        with self.assertRaises(AssertionError):
+            assert_contract(wrong_path)
+
+        unsigned = copy.deepcopy(workflow)
+        release_sign = next(
+            step
+            for step in unsigned["jobs"]["build_android"]["steps"]
+            if step.get("name") == "Build and sign Android release APK"
+        )
+        release_sign["run"] = release_sign["run"].replace(
+            "--ks-pass env:ANDROID_STORE_PASSWORD", ""
+        )
+        with self.assertRaises(AssertionError):
+            assert_contract(unsigned)
 
     def test_zh_static_tooling_runs_on_linux_and_macos(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()

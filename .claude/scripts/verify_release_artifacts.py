@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed validation for the DCSS Chinese desktop release archives."""
+"""Fail-closed validation for the DCSS Chinese release artifacts."""
 
 from __future__ import annotations
 
@@ -25,6 +25,8 @@ ZH_DATA_TREES = (
     "crawl-ref/source/dat/database/zh",
     "crawl-ref/source/dat/descript/zh",
 )
+ANDROID_ABIS = ("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+ANDROID_LIBRARIES = ("libmain.so", "libpcre.so")
 
 
 class ReleaseArtifactError(RuntimeError):
@@ -42,7 +44,7 @@ class ContentSource:
 class ArtifactRule:
     filename: str
     archive_type: str
-    root: str
+    root: str | None
     required_files: tuple[str, ...]
     executable_files: tuple[str, ...]
     content_sources: tuple[ContentSource, ...]
@@ -132,6 +134,23 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
             data_root=f"{macos_resources}/dat",
             normalize_text_crlf=False,
         ),
+        ArtifactRule(
+            filename=f"stone_soup-{tag}-android.apk",
+            archive_type="apk",
+            root=None,
+            required_files=(
+                "AndroidManifest.xml",
+                *(
+                    f"lib/{abi}/{library}"
+                    for abi in ANDROID_ABIS
+                    for library in ANDROID_LIBRARIES
+                ),
+            ),
+            executable_files=(),
+            content_sources=(),
+            data_root="assets/dat",
+            normalize_text_crlf=False,
+        ),
     )
 
 
@@ -199,11 +218,11 @@ def release_rules(tag: str, source_root: Path) -> tuple[ArtifactRule, ...]:
 
 
 def _validate_member_names(
-    names: list[str], *, root: str, archive_name: str
+    names: list[str], *, root: str | None, archive_name: str
 ) -> None:
     seen: set[str] = set()
     seen_casefolded: set[str] = set()
-    root_prefix = f"{root}/"
+    root_prefix = f"{root}/" if root is not None else None
     for name in names:
         if not name or "\\" in name or "//" in name:
             raise ReleaseArtifactError(
@@ -230,7 +249,11 @@ def _validate_member_names(
             )
         seen.add(canonical)
         seen_casefolded.add(folded)
-        if canonical != root and not canonical.startswith(root_prefix):
+        if (
+            root is not None
+            and canonical != root
+            and not canonical.startswith(root_prefix)
+        ):
             raise ReleaseArtifactError(
                 f"{archive_name}: member outside expected root {root!r}: "
                 f"{canonical!r}"
@@ -330,6 +353,98 @@ def _validate_zip(path: Path, rule: ArtifactRule, source_root: Path) -> None:
     _validate_required_files(path.name, sizes, rule.required_files)
     _validate_executables(path.name, permissions, rule.executable_files)
     _validate_content_sources(path.name, content, rule.content_sources, source_root)
+
+
+def _validate_apk(path: Path, rule: ArtifactRule, source_root: Path) -> None:
+    try:
+        with zipfile.ZipFile(path) as archive:
+            infos = archive.infolist()
+            _validate_member_names(
+                [info.filename for info in infos],
+                root=None,
+                archive_name=path.name,
+            )
+            _validate_zh_member_set(
+                path.name,
+                [(info.filename, info.is_dir()) for info in infos],
+                rule,
+            )
+            for info in infos:
+                raw_mode = (info.external_attr >> 16) & 0o177777
+                file_type = raw_mode & 0o170000
+                if file_type == stat.S_IFLNK:
+                    raise ReleaseArtifactError(
+                        f"{path.name}: symbolic links are not allowed: "
+                        f"{info.filename!r}"
+                    )
+                if file_type not in (0, stat.S_IFREG, stat.S_IFDIR):
+                    raise ReleaseArtifactError(
+                        f"{path.name}: special members are not allowed: "
+                        f"{info.filename!r}"
+                    )
+            corrupt = archive.testzip()
+            if corrupt is not None:
+                raise ReleaseArtifactError(
+                    f"{path.name}: corrupt APK member {corrupt!r}"
+                )
+            sizes = {
+                info.filename.rstrip("/"): info.file_size
+                for info in infos
+                if not info.is_dir()
+            }
+            content = {
+                contract.member: archive.read(contract.member)
+                for contract in rule.content_sources
+                if contract.member in sizes
+            }
+    except (OSError, zipfile.BadZipFile) as error:
+        raise ReleaseArtifactError(f"{path.name}: invalid APK: {error}") from error
+
+    actual_abis = {
+        parts[1]
+        for member in sizes
+        if len(parts := PurePosixPath(member).parts) >= 3
+        and parts[0] == "lib"
+    }
+    if actual_abis != set(ANDROID_ABIS):
+        raise ReleaseArtifactError(
+            f"{path.name}: Android ABI set mismatch; "
+            f"expected={list(ANDROID_ABIS)}, actual={sorted(actual_abis)}"
+        )
+    _validate_required_files(path.name, sizes, rule.required_files)
+    _validate_content_sources(path.name, content, rule.content_sources, source_root)
+
+
+def _validate_apk_signature(path: Path, apksigner: Path) -> None:
+    if apksigner.is_symlink() or not apksigner.is_file() or not os.access(
+        apksigner, os.X_OK
+    ):
+        raise ReleaseArtifactError(
+            f"{path.name}: apksigner is missing or unsafe: {apksigner}"
+        )
+    try:
+        verification = subprocess.run(
+            [
+                str(apksigner),
+                "verify",
+                "--verbose",
+                "--print-certs",
+                str(path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as error:
+        raise ReleaseArtifactError(
+            f"{path.name}: apksigner failed to start: {error}"
+        ) from error
+    if verification.returncode != 0:
+        detail = (verification.stderr or verification.stdout).strip()
+        raise ReleaseArtifactError(
+            f"{path.name}: Android APK signature is invalid: "
+            f"{detail or 'apksigner verification failed'}"
+        )
 
 
 def _validate_mounted_tree(
@@ -583,6 +698,7 @@ def validate_release(
     commit: str,
     checksums_path: Path,
     manifest_path: Path,
+    apksigner: Path,
 ) -> None:
     if RELEASE_TAG_RE.fullmatch(tag) is None:
         raise ReleaseArtifactError(
@@ -637,6 +753,9 @@ def validate_release(
             _validate_zip(path, rule, source_root)
         elif rule.archive_type == "dmg":
             _validate_dmg(path, rule, source_root)
+        elif rule.archive_type == "apk":
+            _validate_apk(path, rule, source_root)
+            _validate_apk_signature(path, apksigner)
         else:
             raise ReleaseArtifactError(
                 f"{rule.filename}: unknown archive type {rule.archive_type!r}"
@@ -647,9 +766,8 @@ def validate_release(
     manifest = (
         f"Release tag: {tag}\n"
         f"Commit: {commit}\n"
-        "Included: Windows Tiles; macOS Tiles\n"
-        "Deferred: Linux (CI build only); Android "
-        "(signed APK and physical-device acceptance pending)\n"
+        "Included: Windows Tiles; macOS Tiles; Android\n"
+        "Deferred: Linux (CI build only)\n"
         "Artifacts:\n"
         + "".join(f"- {name}: sha256:{digest}\n" for name, digest in digests)
     )
@@ -665,6 +783,7 @@ def main() -> int:
     parser.add_argument("--commit", required=True)
     parser.add_argument("--checksums", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--apksigner", type=Path, required=True)
     args = parser.parse_args()
     try:
         validate_release(
@@ -674,10 +793,14 @@ def main() -> int:
             args.commit,
             args.checksums,
             args.manifest,
+            args.apksigner,
         )
     except ReleaseArtifactError as error:
         parser.error(str(error))
-    print(f"OK: validated Windows and macOS release archives for {args.tag}")
+    print(
+        f"OK: validated Windows, macOS, and Android release artifacts "
+        f"for {args.tag}"
+    )
     return 0
 
 

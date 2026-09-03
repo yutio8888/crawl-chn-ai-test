@@ -5,7 +5,7 @@ on:
     branches:
       - chn-0.34.1-base
     tags:
-      - '0.34.1-zh[0-9]+-[0-9]+-[0-9][0-9][0-9]'
+      - '0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]'
   pull_request:
     branches:
       - chn-0.34.1-base
@@ -454,6 +454,23 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Require Android release signing secrets
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF_NAME" =~ ^0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$ ]]
+          : "${ANDROID_KEYSTORE_BASE64:?missing GitHub Actions secret ANDROID_KEYSTORE_BASE64}"
+          : "${ANDROID_KEYSTORE_PASS:?missing GitHub Actions secret ANDROID_KEYSTORE_PASS}"
+          : "${ANDROID_KEY_ALIAS:?missing GitHub Actions secret ANDROID_KEY_ALIAS}"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" \
+            | base64 --decode > "$RUNNER_TEMP/android-release.keystore"
+          [[ -s "$RUNNER_TEMP/android-release.keystore" ]]
+          chmod 600 "$RUNNER_TEMP/android-release.keystore"
       - name: Set up Python from .python-version
         uses: actions/setup-python@v4
         with:
@@ -486,7 +503,7 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Prepare Android build
-        run: make ANDROID=1 TILES=y android -j4
+        run: make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4
         working-directory: crawl-ref/source
       - name: Build Android four-ABI debug APK
         run: gradle :app:assembleDebug
@@ -500,6 +517,62 @@ jobs:
           bash .claude/scripts/check_android_pcre_apk.sh \
             --apk crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk \
             --llvm-readelf "$readelf"
+      - name: Upload Android debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          path: crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Build and sign Android release APK
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        shell: bash
+        working-directory: crawl-ref/source/android-project
+        env:
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
+        run: |
+          set -euo pipefail
+          gradle :app:assembleRelease
+          unsigned="$PWD/app/build/outputs/apk/release/app-release-unsigned.apk"
+          aligned="$RUNNER_TEMP/app-release-aligned.apk"
+          signed="$GITHUB_WORKSPACE/stone_soup-${GITHUB_REF_NAME}-android.apk"
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          build_tools="$(find "$sdk_root/build-tools" -mindepth 1 -maxdepth 1 \
+            -type d -print | LC_ALL=C sort -V | tail -1)"
+          zipalign="$build_tools/zipalign"
+          apksigner="$build_tools/apksigner"
+          [[ -s "$unsigned" ]]
+          [[ -x "$zipalign" ]]
+          [[ -x "$apksigner" ]]
+          "$zipalign" -p -f 4 "$unsigned" "$aligned"
+          export ANDROID_STORE_PASSWORD="$ANDROID_KEYSTORE_PASS"
+          export ANDROID_PRIVATE_KEY_PASSWORD="${ANDROID_KEY_PASS:-$ANDROID_KEYSTORE_PASS}"
+          "$apksigner" sign \
+            --ks "$RUNNER_TEMP/android-release.keystore" \
+            --ks-key-alias "$ANDROID_KEY_ALIAS" \
+            --ks-pass env:ANDROID_STORE_PASSWORD \
+            --key-pass env:ANDROID_PRIVATE_KEY_PASSWORD \
+            --out "$signed" "$aligned"
+          "$apksigner" verify --verbose --print-certs "$signed"
+          [[ -s "$signed" ]]
+      - name: Validate release APK PCRE linkage for every Android ABI
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          readelf="$sdk_root/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
+          [[ -x "$readelf" ]]
+          bash .claude/scripts/check_android_pcre_apk.sh \
+            --apk "stone_soup-${GITHUB_REF_NAME}-android.apk" \
+            --llvm-readelf "$readelf"
+      - name: Upload Android release APK
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: stone_soup-${{ github.ref_name }}-android.apk
+          if-no-files-found: error
 
   release_draft:
     if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
@@ -512,6 +585,7 @@ jobs:
       - linting
       - build_macos_tiles
       - build_windows_tiles
+      - build_android
     permissions:
       contents: write
 
@@ -535,15 +609,30 @@ jobs:
         with:
           name: macos-tiles-app
           path: ${{ runner.temp }}/release-assets
+      - name: Download Android package
+        uses: actions/download-artifact@v4
+        with:
+          name: android-release-apk
+          path: ${{ runner.temp }}/release-assets
       - name: Validate closed-world release artifact set
         shell: bash
         run: |
           set -euo pipefail
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          apksigner=""
+          for candidate in "$sdk_root"/build-tools/*/apksigner; do
+            if [[ -x "$candidate" ]]; then
+              apksigner="$candidate"
+              break
+            fi
+          done
+          [[ -n "$apksigner" ]]
           python3 .claude/scripts/verify_release_artifacts.py \
             --artifacts-dir "$RUNNER_TEMP/release-assets" \
             --source-root "$GITHUB_WORKSPACE" \
             --tag "$GITHUB_REF_NAME" \
             --commit "$GITHUB_SHA" \
+            --apksigner "$apksigner" \
             --checksums "$RUNNER_TEMP/SHA256SUMS" \
             --manifest "$RUNNER_TEMP/RELEASE-MANIFEST.txt"
           mv "$RUNNER_TEMP/SHA256SUMS" "$RUNNER_TEMP/release-assets/"
@@ -555,7 +644,7 @@ jobs:
           {
             echo "# DCSS 中文版 $GITHUB_REF_NAME"
             echo
-            echo "基于上游 DCSS 0.34.1 的中文桌面正式版。发布身份绑定提交 \`$GITHUB_SHA\`。"
+            echo "基于上游 DCSS 0.34.1 的中文版。发布身份绑定提交 \`$GITHUB_SHA\`。"
             echo
             echo "## 主要内容"
             echo
@@ -568,17 +657,17 @@ jobs:
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
             echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
             echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
+            echo "- Android：签名的四 ABI APK，下载后按系统提示安装。"
             echo
             echo "## 延期平台"
             echo
             echo "- Linux：仅保留 CI 编译验证。"
-            echo "- Android：待签名 APK、真机验收和移动端已知问题关闭后另行发布。"
             echo
             echo "## 下载校验"
             echo
-            echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP 与 macOS DMG；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
+            echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP、macOS DMG 与 Android APK；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
             echo
-            echo "本 Release 由自动流程创建为草稿；完成 Windows 与 macOS 环境解压、启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
+            echo "本 Release 由自动流程创建为草稿；完成 Windows、macOS 与 Android 真机的启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
           } > "$RUNNER_TEMP/release-notes.md"
       - name: Create draft release once
         shell: bash
@@ -592,8 +681,8 @@ jobs:
             assets[${#assets[@]}]="$asset"
           done < <(find "$RUNNER_TEMP/release-assets" \
             -maxdepth 1 -type f -print | LC_ALL=C sort)
-          if [[ ${#assets[@]} -ne 4 ]]; then
-            echo "Expected 4 release assets after evidence generation" >&2
+          if [[ ${#assets[@]} -ne 5 ]]; then
+            echo "Expected 5 release assets after evidence generation" >&2
             exit 1
           fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
