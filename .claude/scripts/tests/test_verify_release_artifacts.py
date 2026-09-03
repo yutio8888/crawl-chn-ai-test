@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Negative-mutation coverage for the desktop release artifact gate."""
+"""Negative-mutation coverage for the release artifact gate."""
 
 from __future__ import annotations
 
@@ -40,6 +40,9 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.source_root.mkdir()
         self.dmg_fixtures = self.root / "dmg-fixtures"
         self.dmg_fixtures.mkdir()
+        self.apksigner = self.root / "apksigner"
+        self.apksigner.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        self.apksigner.chmod(0o755)
         base_rules = MODULE.artifact_rules(TAG)
         for rule in base_rules:
             for contract in rule.content_sources:
@@ -177,6 +180,13 @@ class ReleaseArtifactTest(unittest.TestCase):
                 extra=zip_extra,
                 mode_overrides=mode_overrides,
             )
+        elif rule.archive_type == "apk":
+            self._write_zip(
+                rule,
+                payloads,
+                extra=zip_extra,
+                mode_overrides=mode_overrides,
+            )
         else:
             self.fail(f"unknown fixture archive type: {rule.archive_type}")
 
@@ -191,10 +201,14 @@ class ReleaseArtifactTest(unittest.TestCase):
         commit=COMMIT,
         source_root=None,
         real_dmg=False,
+        real_apk_signature=False,
     ) -> None:
         original_validate_dmg = MODULE._validate_dmg
+        original_validate_apk_signature = MODULE._validate_apk_signature
         if not real_dmg:
             MODULE._validate_dmg = self._validate_dmg_fixture
+        if not real_apk_signature:
+            MODULE._validate_apk_signature = lambda path, apksigner: None
         try:
             MODULE.validate_release(
                 self.artifacts,
@@ -203,9 +217,11 @@ class ReleaseArtifactTest(unittest.TestCase):
                 commit,
                 self.root / "SHA256SUMS",
                 self.root / "RELEASE-MANIFEST.txt",
+                self.apksigner,
             )
         finally:
             MODULE._validate_dmg = original_validate_dmg
+            MODULE._validate_apk_signature = original_validate_apk_signature
 
     def assert_rejected(self, pattern: str, **kwargs) -> None:
         with self.assertRaisesRegex(MODULE.ReleaseArtifactError, pattern):
@@ -220,17 +236,20 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertEqual(first_manifest, (self.root / "RELEASE-MANIFEST.txt").read_bytes())
         self.assertIn(TAG.encode(), first_manifest)
         self.assertIn(COMMIT.encode(), first_manifest)
-        self.assertIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
+        self.assertIn(
+            b"Included: Windows Tiles; macOS Tiles; Android", first_manifest
+        )
         self.assertIn(b"Linux (CI build only)", first_manifest)
-        self.assertIn(b"Android", first_manifest)
         self.assertNotIn(b"Deferred: macOS", first_manifest)
+        self.assertNotIn(b"Deferred: Linux (CI build only); Android", first_manifest)
 
-    def test_release_scope_is_exactly_windows_and_macos_tiles(self) -> None:
-        self.assertEqual(2, len(self.rules))
+    def test_release_scope_is_exactly_windows_macos_and_android(self) -> None:
+        self.assertEqual(3, len(self.rules))
         self.assertEqual(
             {
                 f"stone_soup-{TAG}-tiles-win32.zip",
                 f"stone_soup-{TAG}-tiles-macosx.dmg",
+                f"stone_soup-{TAG}-android.apk",
             },
             {rule.filename for rule in self.rules},
         )
@@ -241,6 +260,14 @@ class ReleaseArtifactTest(unittest.TestCase):
             "Dungeon Crawl Stone Soup - Tiles.app/Contents/Info.plist",
             macos.required_files,
         )
+        android = next(
+            rule for rule in self.rules if rule.archive_type == "apk"
+        )
+        self.assertIsNone(android.root)
+        self.assertEqual("assets/dat", android.data_root)
+        for abi in MODULE.ANDROID_ABIS:
+            for library in MODULE.ANDROID_LIBRARIES:
+                self.assertIn(f"lib/{abi}/{library}", android.required_files)
 
     def test_tag_and_commit_identity_are_strict(self) -> None:
         for tag in (
@@ -375,6 +402,66 @@ class ReleaseArtifactTest(unittest.TestCase):
         )
         self.assert_rejected("unexpected ZH archive directory")
 
+    def test_android_apk_rejects_missing_extra_and_empty_abis(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        original = self._payloads(rule)
+
+        missing = dict(original)
+        del missing["lib/x86/libpcre.so"]
+        self._rewrite(rule, missing)
+        self.assert_rejected("missing required file")
+
+        extra = dict(original)
+        extra["lib/riscv64/libmain.so"] = b"unexpected ABI\n"
+        self._rewrite(rule, extra)
+        self.assert_rejected("Android ABI set mismatch")
+
+        empty = dict(original)
+        empty["lib/arm64-v8a/libmain.so"] = b""
+        self._rewrite(rule, empty)
+        self.assert_rejected("required file is empty")
+        self._rewrite(rule, original)
+
+    def test_android_apk_signature_is_verified_and_fail_closed(self) -> None:
+        calls = []
+
+        def signed_run(args, **kwargs):
+            calls.append(args)
+            return subprocess.CompletedProcess(args, 0, "Signer #1", "")
+
+        with mock.patch.object(
+            MODULE.subprocess, "run", side_effect=signed_run
+        ):
+            self._validate(real_apk_signature=True)
+        android_name = f"stone_soup-{TAG}-android.apk"
+        self.assertEqual(
+            [
+                str(self.apksigner),
+                "verify",
+                "--verbose",
+                "--print-certs",
+                str(self.artifacts / android_name),
+            ],
+            calls[0],
+        )
+
+        with mock.patch.object(
+            MODULE.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(
+                [], 1, "", "DOES NOT VERIFY"
+            ),
+        ):
+            self.assert_rejected(
+                "Android APK signature is invalid",
+                real_apk_signature=True,
+            )
+
+        self.apksigner.chmod(0o644)
+        self.assert_rejected(
+            "apksigner is missing or unsafe", real_apk_signature=True
+        )
+
     def test_source_inputs_fail_closed_when_missing_empty_or_symlinked(self) -> None:
         contract = next(
             item for item in self.rules[0].content_sources
@@ -394,40 +481,82 @@ class ReleaseArtifactTest(unittest.TestCase):
         source.unlink()
         source.write_bytes(original)
 
-    def test_zip_paths_duplicates_case_collisions_links_and_root_are_rejected(self) -> None:
-        rule = self.rules[0]
-        payloads = self._payloads(rule)
-        mutations = (
-            ("unsafe archive member", [("../escape", b"x", None)]),
-            ("unsafe archive member", [("/absolute", b"x", None)]),
-            (
-                "unsafe archive member",
-                [(f"{rule.root}/./crawl.exe", b"x", None)],
-            ),
-            ("invalid archive member", [("bad\\path", b"x", None)]),
-            ("invalid archive member", [(f"{rule.root}//double", b"x", None)]),
-            ("outside expected root", [("other-root/file", b"x", None)]),
-            (
-                "symbolic links",
-                [(f"{rule.root}/link", b"target", stat.S_IFLNK | 0o777)],
-            ),
-            (
-                "special members",
-                [(f"{rule.root}/fifo", b"", stat.S_IFIFO | 0o644)],
-            ),
+    def test_zip_and_apk_member_safety_invariants_are_rejected(self) -> None:
+        archive_rules = [
+            rule
+            for rule in self.rules
+            if rule.archive_type in ("zip", "apk")
+        ]
+        self.assertEqual(
+            {"zip", "apk"},
+            {rule.archive_type for rule in archive_rules},
         )
-        for pattern, extra in mutations:
-            with self.subTest(pattern=pattern):
-                self._write_zip(rule, payloads, extra=extra)
-                self.assert_rejected(pattern)
-        duplicate = rule.required_files[0]
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", UserWarning)
-            self._write_zip(rule, payloads, extra=[(duplicate, b"again", None)])
-        self.assert_rejected("duplicate archive member")
-        collision = duplicate.swapcase()
-        self._write_zip(rule, payloads, extra=[(collision, b"again", None)])
-        self.assert_rejected("case-insensitive member collision")
+
+        for rule in archive_rules:
+            payloads = self._payloads(rule)
+            prefix = rule.root or "assets"
+            mutations = (
+                ("unsafe archive member", [("../escape", b"x", None)]),
+                ("unsafe archive member", [("/absolute", b"x", None)]),
+                (
+                    "unsafe archive member",
+                    [(f"{prefix}/./file", b"x", None)],
+                ),
+                ("invalid archive member", [("bad\\path", b"x", None)]),
+                (
+                    "invalid archive member",
+                    [(f"{prefix}//double", b"x", None)],
+                ),
+                (
+                    "symbolic links",
+                    [(f"{prefix}/link", b"target", stat.S_IFLNK | 0o777)],
+                ),
+                (
+                    "special members",
+                    [(f"{prefix}/fifo", b"", stat.S_IFIFO | 0o644)],
+                ),
+            )
+            for pattern, extra in mutations:
+                with self.subTest(
+                    archive=rule.filename, invariant=pattern
+                ):
+                    self._rewrite(rule, payloads, zip_extra=extra)
+                    self.assert_rejected(pattern)
+
+            duplicate = rule.required_files[0]
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", UserWarning)
+                self._rewrite(
+                    rule,
+                    payloads,
+                    zip_extra=[(duplicate, b"again", None)],
+                )
+            with self.subTest(
+                archive=rule.filename, invariant="duplicate member"
+            ):
+                self.assert_rejected("duplicate archive member")
+
+            collision = duplicate.swapcase()
+            self._rewrite(
+                rule,
+                payloads,
+                zip_extra=[(collision, b"again", None)],
+            )
+            with self.subTest(
+                archive=rule.filename, invariant="case collision"
+            ):
+                self.assert_rejected("case-insensitive member collision")
+            if rule.root is not None:
+                self._rewrite(
+                    rule,
+                    payloads,
+                    zip_extra=[("other-root/file", b"x", None)],
+                )
+                with self.subTest(
+                    archive=rule.filename, invariant="single root"
+                ):
+                    self.assert_rejected("outside expected root")
+            self._rewrite(rule, payloads)
 
     def test_dmg_mount_rejects_unsafe_members_and_outside_root(self) -> None:
         rule = next(item for item in self.rules if item.archive_type == "dmg")
@@ -624,9 +753,12 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             with self.subTest(rule=rule.filename):
                 (self.artifacts / rule.filename).write_bytes(b"not an archive")
-                self.assert_rejected(
-                    "invalid ZIP" if rule.archive_type == "zip" else "invalid DMG"
-                )
+                expected = {
+                    "zip": "invalid ZIP",
+                    "dmg": "invalid DMG",
+                    "apk": "invalid APK",
+                }[rule.archive_type]
+                self.assert_rejected(expected)
                 self._rewrite(rule, self._payloads(rule))
 
     def test_downstream_version_is_reported_as_final(self) -> None:
