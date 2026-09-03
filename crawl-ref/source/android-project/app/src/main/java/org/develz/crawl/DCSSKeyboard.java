@@ -232,6 +232,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_mobile_2);
         initKey(R.id.key_mobile_3);
         initKey(R.id.key_mobile_menu);
+        initKey(R.id.key_mobile_back);
         initKey(R.id.key_mobile_expand);
     }
 

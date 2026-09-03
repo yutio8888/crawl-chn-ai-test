@@ -53,6 +53,7 @@
 
 #ifdef __ANDROID__
 # include "syscalls.h"
+# include "topbar-drawer.h"
 #endif
 
 #ifdef TARGET_OS_WINDOWS
@@ -675,7 +676,21 @@ int TilesFramework::getch_ck()
                 }
                 break;
             case WME_KEYDOWN:
-                key        = event.key.keysym.sym;
+                key = event.key.keysym.sym;
+#ifdef __ANDROID__
+                // The compact keyboard labels F1 as its game-menu key. Route
+                // it through the same touch-first drawer as the top HUD, but
+                // only for normal dungeon commands so F1 keeps its usual
+                // meaning in other input contexts and larger layouts.
+                if (key == CK_F1
+                    && is_using_small_layout()
+                    && mouse_control::current_mode() == MOUSE_MODE_COMMAND)
+                {
+                    const command_type command = show_topbar_command_menu();
+                    key = command == CMD_NO_CMD ? 0
+                                                : encode_command_as_key(command);
+                }
+#endif
                 m_region_tile->place_cursor(CURSOR_MOUSE, NO_CURSOR);
 
                 // If you hit a key, disable tooltips until the mouse
