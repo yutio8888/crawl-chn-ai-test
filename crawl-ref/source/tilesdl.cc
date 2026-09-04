@@ -197,6 +197,8 @@ void TilesFramework::shutdown()
     delete m_region_inv;
     delete m_region_abl;
     delete m_region_spl;
+    delete m_region_quick_spl;
+    delete m_region_quick_abl;
     delete m_region_mem;
     delete m_region_mon;
     delete m_region_cmd;
@@ -212,6 +214,9 @@ void TilesFramework::shutdown()
     m_region_inv   = nullptr;
     m_region_abl   = nullptr;
     m_region_spl   = nullptr;
+    m_region_quick_spl = nullptr;
+    m_region_quick_abl = nullptr;
+    m_quick_row_shown = false;
     m_region_mem   = nullptr;
     m_region_mon   = nullptr;
     m_region_cmd   = nullptr;
@@ -403,6 +408,12 @@ bool TilesFramework::initialise()
     m_region_tab  = new TabbedRegion(m_init);
     m_region_inv  = new InventoryRegion(m_init);
     m_region_spl  = new SpellRegion(m_init);
+    // Android quick row: separate instances from the sidebar grids, so the row
+    // has its own cells and its own casting semantics (see place_quick_row()).
+    // The sidebar SpellRegion keeps its mouse cast; the row asks for the range
+    // check the z command performs after its own selection step.
+    m_region_quick_spl = new SpellRegion(m_init, true);
+    m_region_quick_abl = new AbilityRegion(m_init);
     m_region_mem  = new MemoriseRegion(m_init);
     m_region_abl  = new AbilityRegion(m_init);
     m_region_mon  = new MonsterRegion(m_init);
@@ -574,6 +585,11 @@ void TilesFramework::resize_event(int w, int h)
 
 int TilesFramework::handle_mouse(wm_mouse_event &event)
 {
+    // The Android quick row is not part of a layer, so dispatch to it first.
+    // It occupies the bottom edge alone and never overlaps another region.
+    if (const int quick_key = handle_quick_row_mouse(event))
+        return quick_key;
+
     // Note: the mouse event goes to all regions in the active layer because
     // we want to be able to start some GUI event (e.g. far viewing) and
     // stop if it moves to another region.
@@ -638,6 +654,10 @@ int TilesFramework::getch_ck()
     m_tooltip.clear();
     m_region_msg->alt_text().clear();
     string prev_msg_alt_text = "";
+
+    // The input pump is the safe point for a pending quick-row relayout: it is
+    // never reached from inside viewwindow(), which is what polls the lists.
+    apply_quick_row_relayout();
 
     if (need_redraw())
         redraw();
@@ -874,6 +894,9 @@ void TilesFramework::do_layout()
             m_region_msg->place(0, 0, 0);
             m_region_msg->resize_to_fit(10000, 10000);
         }
+        m_quick_row_spells = false;
+        m_quick_row_abilities = false;
+        m_quick_row_shown = false;
         return;
     }
 
@@ -906,6 +929,14 @@ void TilesFramework::do_layout()
     bool use_small_layout = is_using_small_layout();
     bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
     bool use_top_bar = use_small_layout && top_bar_policy;
+
+    // The Android quick row is a single icon row along the bottom edge of the
+    // SDL surface, which is where the compact keyboard stops. Its height has to
+    // leave the vertical budget before any tile-size arithmetic, including the
+    // short-surface fallback below.
+    quick_row_live_lists(m_quick_row_spells, m_quick_row_abilities);
+    const int quick_row_h = m_quick_row_spells || m_quick_row_abilities
+                            ? m_region_quick_spl->dy : 0;
     // Leave the first glyph row clear of the top edge. CJK fallback glyphs can
     // extend above the primary font's ascender, so a fixed two-pixel gap is
     // insufficient at phone-scale font sizes. Scale the gap with the actual
@@ -932,12 +963,23 @@ void TilesFramework::do_layout()
                                   + m_region_stat->dy
                                     * min_top_bar_text_rows;
         const int msg_min_h = top_bar_message_height();
-        const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h;
+        const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h
+                               - quick_row_h;
         if (m_region_tile->dx <= 0 || m_region_tile->dy <= 0
             || min_tile_h < ENV_SHOW_DIAMETER)
         {
             use_top_bar = false;
         }
+    }
+
+    // A surface too short for the top bar has no quick row either; leave the
+    // regions with no cells so they cannot be hit or drawn.
+    m_quick_row_shown = use_top_bar
+                        && (m_quick_row_spells || m_quick_row_abilities);
+    if (!m_quick_row_shown && m_region_quick_spl && m_region_quick_abl)
+    {
+        m_region_quick_spl->resize(0, 0);
+        m_region_quick_abl->resize(0, 0);
     }
 
     if (use_top_bar)
@@ -950,7 +992,7 @@ void TilesFramework::do_layout()
                                        + m_region_stat->dy
                                          * max_top_bar_text_rows;
         const int expanded_tile_h = m_windowsz.y - expanded_top_bar_h
-                                    - msg_min_h;
+                                    - msg_min_h - quick_row_h;
         // Add a seventh row only when it neither forces the dungeon cells to
         // shrink nor lets the HUD consume an excessive share of a short
         // screen. Tall phone displays normally satisfy both constraints.
@@ -963,7 +1005,7 @@ void TilesFramework::do_layout()
                               + m_region_stat->dy * top_bar_text_rows;
 
         // Ensure dungeon view fits ENV_SHOW_DIAMETER.
-        int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
+        int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h - quick_row_h;
         if (tile_avail_h / m_region_tile->dy < ENV_SHOW_DIAMETER)
         {
             m_region_tile->dy = max(1, tile_avail_h / ENV_SHOW_DIAMETER);
@@ -998,8 +1040,15 @@ void TilesFramework::do_layout()
         VColour overlay_col = Options.tile_overlay_col;
         overlay_col.a = (255 * Options.tile_overlay_alpha_percent)/100;
         m_region_msg->set_overlay(true, overlay_col);
-        m_region_msg->place(0, m_windowsz.y - msg_min_h, 0);
+        m_region_msg->place(0, m_windowsz.y - quick_row_h - msg_min_h, 0);
         m_region_msg->resize_to_fit(m_windowsz.x, msg_min_h);
+
+        // Quick row along the very bottom, directly under the message overlay.
+        if (m_quick_row_shown)
+        {
+            place_quick_row(m_windowsz.y - quick_row_h,
+                            m_quick_row_spells, m_quick_row_abilities);
+        }
 
         // Tabs on right (overlay on dungeon)
         m_region_tab->set_small_layout(true, m_windowsz);
@@ -1201,6 +1250,174 @@ void TilesFramework::do_layout()
     crawl_view.hudsz.x = m_region_stat->mx;
     crawl_view.hudsz.y = m_region_stat->my;
     crawl_view.init_view();
+}
+
+/**
+ * Can the current layout host the Android quick row at all?
+ *
+ * uses_top_hud() is false for every desktop and webtiles policy, so this is
+ * dead on those builds and neither CRT nor startup screens can reach it. The
+ * row is also suppressed on the map screen, which relays out on entry and exit.
+ */
+bool TilesFramework::quick_row_supported() const
+{
+    return !in_headless_mode()
+           && !crawl_state.game_is_arena()
+           && species::is_valid(you.species)
+           && m_region_quick_spl && m_region_quick_abl
+           && m_layout_policy
+           && m_layout_policy->uses_top_hud()
+           && m_layout_policy->uses_overlay_sidebar()
+           && !m_map_mode_enabled;
+}
+
+/**
+ * Which of the quick row's two lists currently have entries.
+ *
+ * These are the same lists the regions build: you.spell_no counts exactly the
+ * memorised spells SpellRegion::update() walks, and your_talents(true) is what
+ * AbilityRegion::update() asks for.
+ */
+void TilesFramework::quick_row_live_lists(bool &spells, bool &abilities) const
+{
+    spells = false;
+    abilities = false;
+    if (!quick_row_supported())
+        return;
+    spells = you.spell_no > 0;
+    abilities = !your_talents(true).empty();
+}
+
+/**
+ * Place the quick row as a single icon row at row_y, the bottom edge of the
+ * surface. Two live lists sit side by side with half the row each; a single
+ * live list takes the full width. The split depends only on which lists are
+ * live, never on how many entries they hold, so gaining or losing an entry
+ * within a live list never needs a relayout. Anything past the cells the row
+ * can show is truncated by update(): there is no paging and nothing persists.
+ */
+void TilesFramework::place_quick_row(int row_y, bool spells, bool abilities)
+{
+    const int cell = m_region_quick_spl->dx;
+    const int cells = cell > 0 ? m_windowsz.x / cell : 0;
+    const int spell_cells = spells ? (abilities ? cells / 2 : cells) : 0;
+    const int ability_cells = abilities ? cells - spell_cells : 0;
+
+    m_region_quick_spl->place(0, row_y, 0);
+    m_region_quick_spl->resize(spell_cells, spell_cells > 0 ? 1 : 0);
+    m_region_quick_abl->place(spell_cells * cell, row_y, 0);
+    m_region_quick_abl->resize(ability_cells, ability_cells > 0 ? 1 : 0);
+
+    m_region_quick_spl->update();
+    m_region_quick_abl->update();
+}
+
+/**
+ * Poll the quick row's lists on the normal redraw cadence.
+ *
+ * This runs from inside viewwindow(), which refuses to recurse, so a changed
+ * reservation is only recorded here; apply_quick_row_relayout() performs it.
+ */
+void TilesFramework::update_quick_row()
+{
+    bool spells = false;
+    bool abilities = false;
+    quick_row_live_lists(spells, abilities);
+
+    if (spells != m_quick_row_spells || abilities != m_quick_row_abilities)
+    {
+        m_quick_row_relayout = true;
+        set_need_redraw();
+        return;
+    }
+
+    if (!m_quick_row_shown)
+        return;
+
+    m_region_quick_spl->update();
+    m_region_quick_abl->update();
+}
+
+/**
+ * Perform a deferred quick-row relayout, at the input pump rather than under
+ * viewwindow().
+ *
+ * Reserving or releasing the row changes crawl_view.viewsz, so the dungeon
+ * buffer has to be rebuilt before anything renders it; do_layout() followed by
+ * redraw_screen() is the pair set_map_display() already uses for the same
+ * reason. The pending flag survives an unsafe moment and is retried later.
+ */
+void TilesFramework::apply_quick_row_relayout()
+{
+    if (!m_quick_row_relayout || m_in_quick_row_relayout)
+        return;
+
+    // Only at an ordinary command prompt on the normal layer: rebuilding the
+    // viewport underneath a targeting prompt, a menu, or a startup screen
+    // would discard what is on them.
+    if (m_active_layer != LAYER_NORMAL
+        || !crawl_state.need_save
+        || crawl_state.game_is_arena()
+        || mouse_control::current_mode() != MOUSE_MODE_COMMAND)
+    {
+        return;
+    }
+
+    m_quick_row_relayout = false;
+    // The guard keeps the nested viewwindow() -> update_quick_row() from
+    // re-entering here even if do_layout() cannot satisfy the new state.
+    unwind_bool no_reentry(m_in_quick_row_relayout, true);
+    do_layout();
+    redraw_screen(false);
+    update_screen();
+}
+
+/// Draw the quick row. Hidden outside ordinary command input.
+void TilesFramework::render_quick_row()
+{
+    if (!m_quick_row_shown
+        || m_active_layer != LAYER_NORMAL
+        || mouse_control::current_mode() != MOUSE_MODE_COMMAND)
+    {
+        return;
+    }
+
+    if (m_region_quick_spl->mx > 0)
+        m_region_quick_spl->render();
+    if (m_region_quick_abl->mx > 0)
+        m_region_quick_abl->render();
+}
+
+/**
+ * Offer a mouse event to the quick row.
+ *
+ * The regions' own handlers decide what happens: a left press casts or
+ * activates through the ordinary command call, a right press -- which is what
+ * SDLActivity.onTouch() synthesises for a hold of 500 ms or more -- describes
+ * without activating, and a release matches neither and falls through as 0.
+ * The row is inert whenever it is hidden.
+ */
+int TilesFramework::handle_quick_row_mouse(wm_mouse_event &event)
+{
+    if (!m_quick_row_shown
+        || m_active_layer != LAYER_NORMAL
+        || mouse_control::current_mode() != MOUSE_MODE_COMMAND)
+    {
+        return 0;
+    }
+
+    int key = 0;
+    if (m_region_quick_spl->mx > 0)
+        key = m_region_quick_spl->handle_mouse(event);
+    if (!key && m_region_quick_abl->mx > 0)
+        key = m_region_quick_abl->handle_mouse(event);
+
+    // The row is a button strip, not a browsable grid: drop the grid cursor so
+    // no selection highlight or description tag is left drawn over the HUD.
+    m_region_quick_spl->place_cursor(NO_CURSOR);
+    m_region_quick_abl->place_cursor(NO_CURSOR);
+
+    return key;
 }
 
 bool TilesFramework::is_using_small_layout()
@@ -1618,6 +1835,8 @@ void TilesFramework::redraw()
     for (Region *region : m_layers[m_active_layer].m_regions)
         region->render();
 
+    render_quick_row();
+
     // Draw tooltip
     if (Options.tile_tooltip_ms > 0 && !m_tooltip.empty())
     {
@@ -1687,6 +1906,10 @@ void TilesFramework::update_minimap_bounds()
 
 void TilesFramework::update_tabs()
 {
+    // Runs before the legacy-sidebar guard: the Android layout has no tabs but
+    // still needs the quick row polled on this cadence.
+    update_quick_row();
+
     if (!m_layout_policy
         || !m_layout_policy->uses_legacy_tabbed_sidebar()
         || Options.tile_show_items.empty() || crawl_state.game_is_arena()
