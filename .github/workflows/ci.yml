@@ -449,11 +449,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NDK_CCACHE: ccache
+      ANDROID_TEST_CERT_SHA256: ab57cadd85e4cc2cc94cc6107e7f929080acf3a58e3c1134b37f6066c337c287
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: true
+      - name: Require Android test signing secrets
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        env:
+          ANDROID_TEST_KEYSTORE_BASE64: ${{ secrets.ANDROID_TEST_KEYSTORE_BASE64 }}
+          ANDROID_TEST_KEYSTORE_PASS: ${{ secrets.ANDROID_TEST_KEYSTORE_PASS }}
+          ANDROID_TEST_KEY_ALIAS: ${{ secrets.ANDROID_TEST_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          : "${ANDROID_TEST_KEYSTORE_BASE64:?missing GitHub Actions secret ANDROID_TEST_KEYSTORE_BASE64}"
+          : "${ANDROID_TEST_KEYSTORE_PASS:?missing GitHub Actions secret ANDROID_TEST_KEYSTORE_PASS}"
+          : "${ANDROID_TEST_KEY_ALIAS:?missing GitHub Actions secret ANDROID_TEST_KEY_ALIAS}"
       - name: Require Android release signing secrets
         if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
         shell: bash
@@ -520,10 +533,62 @@ jobs:
           bash .claude/scripts/check_android_pcre_apk.sh \
             --apk crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk \
             --llvm-readelf "$readelf"
-      - name: Upload Android debug APK
+      - name: Sign Android debug APK for test updates
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        working-directory: crawl-ref/source/android-project
+        env:
+          ANDROID_TEST_KEYSTORE_BASE64: ${{ secrets.ANDROID_TEST_KEYSTORE_BASE64 }}
+          ANDROID_TEST_KEYSTORE_PASS: ${{ secrets.ANDROID_TEST_KEYSTORE_PASS }}
+          ANDROID_TEST_KEY_ALIAS: ${{ secrets.ANDROID_TEST_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          umask 077
+          keystore="$RUNNER_TEMP/android-test.keystore"
+          trap 'rm -f "$keystore"' EXIT
+          printf '%s' "$ANDROID_TEST_KEYSTORE_BASE64" \
+            | base64 --decode > "$keystore"
+          [[ -s "$keystore" ]]
+          debug_apk="$PWD/app/build/outputs/apk/debug/app-debug.apk"
+          aligned_apk="$RUNNER_TEMP/app-debug-aligned.apk"
+          signed_apk="$RUNNER_TEMP/app-debug-test-signed.apk"
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          build_tools="$(find "$sdk_root/build-tools" -mindepth 1 -maxdepth 1 \
+            -type d -print | LC_ALL=C sort -V | tail -1)"
+          zipalign="$build_tools/zipalign"
+          apksigner="$build_tools/apksigner"
+          [[ -s "$debug_apk" ]]
+          [[ -x "$zipalign" ]]
+          [[ -x "$apksigner" ]]
+          "$zipalign" -p -f 4 "$debug_apk" "$aligned_apk"
+          export ANDROID_TEST_STORE_PASSWORD="$ANDROID_TEST_KEYSTORE_PASS"
+          export ANDROID_TEST_PRIVATE_KEY_PASSWORD="$ANDROID_TEST_KEYSTORE_PASS"
+          "$apksigner" sign \
+            --ks "$keystore" \
+            --ks-key-alias "$ANDROID_TEST_KEY_ALIAS" \
+            --ks-pass env:ANDROID_TEST_STORE_PASSWORD \
+            --key-pass env:ANDROID_TEST_PRIVATE_KEY_PASSWORD \
+            --out "$signed_apk" "$aligned_apk"
+          verify_output="$("$apksigner" verify --verbose --print-certs \
+            "$signed_apk")"
+          printf '%s\n' "$verify_output"
+          cert_digest="$(sed -nE \
+            's/^(V[0-9.]+ )?Signer( #[0-9]+)?:? certificate SHA-256 digest: //p' \
+            <<<"$verify_output")"
+          [[ "$cert_digest" == "$ANDROID_TEST_CERT_SHA256" ]]
+          mv "$signed_apk" "$debug_apk"
+      - name: Upload Android test APK
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk
+          path: crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Upload Android PR debug APK
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-pr-debug-apk
           path: crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Build and sign Android release APK

@@ -116,26 +116,36 @@ Release builds require the signing environment validated by the helper. The
 helper refuses success if the resulting APK remains unsigned. Do not document
 or deploy an `*-unsigned.apk` as a successful artifact.
 
-GitHub Actions keeps the four-ABI debug APK as the `android-debug-apk` artifact
-for ordinary branch and pull-request runs. On a valid three-part release tag it
-also builds `assembleRelease`, zipaligns and signs the APK, verifies the signature
-and four-ABI PCRE contract, and uploads the versioned file as
-`android-release-apk`:
+GitHub Actions keeps the four-ABI debug APK from ordinary branch, scheduled,
+and manual runs as the `android-debug-apk` test artifact. It replaces Gradle's
+ephemeral debug signature with a dedicated stable test certificate, verifies
+the pinned public certificate digest, and only then uploads the APK. This lets
+testers install later branch artifacts as updates without exposing or reusing
+the production release key. Pull requests cannot access the test signing
+secrets; their ephemeral artifact is named `android-pr-debug-apk` so it cannot
+be mistaken for the update channel.
+
+On a valid three-part release tag the workflow also builds `assembleRelease`,
+zipaligns and signs the APK, verifies the signature and four-ABI PCRE contract,
+and uploads the versioned file as `android-release-apk`:
 
 ```text
 stone_soup-0.34.1-zhA-B-CCC-android.apk
 ```
 
-Configure repository Actions secrets `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASS`, and `ANDROID_KEY_ALIAS`. `ANDROID_KEY_PASS` is optional
-and falls back to the store password. The workflow passes both passwords to
-`apksigner` through environment-variable references, never as literal command
-line values. The Android `versionCode` comes from the positive, monotonically
-increasing `GITHUB_RUN_NUMBER`; the player-visible `versionName` remains the
-release tag. Missing required secrets, invalid Base64, or an empty decoded
-keystore fail before the release Gradle task. A wrong password, alias, or
-keystore fails during signing; in every case, an unsigned or unverifiable APK
-is never uploaded as a release asset.
+Configure dedicated test-signing Actions secrets
+`ANDROID_TEST_KEYSTORE_BASE64`, `ANDROID_TEST_KEYSTORE_PASS`, and
+`ANDROID_TEST_KEY_ALIAS`. The test key password is also used as its private-key
+password. Configure the separate production secrets `ANDROID_KEYSTORE_BASE64`,
+`ANDROID_KEYSTORE_PASS`, and `ANDROID_KEY_ALIAS`; `ANDROID_KEY_PASS` is optional
+and falls back to the production store password. The workflow passes passwords
+to `apksigner` through environment-variable references, never as literal
+command-line values. The Android `versionCode` comes from the positive,
+monotonically increasing `GITHUB_RUN_NUMBER`; the player-visible `versionName`
+remains the release tag. Missing required secrets, invalid Base64, an empty
+decoded keystore, a wrong password or alias, or a test certificate that differs
+from the pinned digest fails before its artifact is uploaded. An unsigned or
+unverifiable APK is never uploaded as a test or release asset.
 
 ## Windows Deployment
 
