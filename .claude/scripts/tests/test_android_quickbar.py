@@ -24,7 +24,6 @@ SPELL_REGION_CC = ROOT / "crawl-ref/source/tilereg-spl.cc"
 ABILITY_REGION_CC = ROOT / "crawl-ref/source/tilereg-abl.cc"
 ANDROID_RES = ROOT / "crawl-ref/source/android-project/app/src/main/res"
 ANDROID_MOBILE_LAYOUT = ANDROID_RES / "layout/keyboard_mobile.xml"
-ANDROID_JAVA = ROOT / "crawl-ref/source/android-project/app/src/main/java/org/develz/crawl"
 UI_CC = ROOT / "crawl-ref/source/ui.cc"
 
 MENU_TEXT_CALL = re.compile(
@@ -77,19 +76,27 @@ class AndroidFirstRunTests(unittest.TestCase):
         zh_names = self.string_names("values-zh")
         self.assertEqual(default_names, zh_names)
 
-    def test_android_surfaces_use_the_chinese_game_display_locale(self) -> None:
-        for filename in ("DCSSLauncher.java", "DungeonCrawlStoneSoup.java"):
-            source = (ANDROID_JAVA / filename).read_text(encoding="utf-8")
-            on_create = block_after(
-                source, "protected void onCreate(Bundle savedInstanceState)")
-            self.assertIn("Locale.SIMPLIFIED_CHINESE", on_create, filename)
-            self.assertIn("configuration.setLocale", on_create, filename)
-            self.assertIn("getResources().updateConfiguration", on_create,
-                          filename)
-            self.assertLess(on_create.index("updateConfiguration"),
-                            on_create.index("setContentView")
-                            if "setContentView" in on_create
-                            else on_create.index("super.onCreate"))
+    def test_android_shell_retains_english_fallback_resources(self) -> None:
+        # Check the fallback artifact, not a simulated Android locale resolver.
+        # Activity resource selection still needs a device smoke test in both
+        # Chinese and an unsupported locale.
+        root = ET.parse(ANDROID_RES / "values/strings.xml").getroot()
+        strings = {node.attrib["name"]: node.text
+                   for node in root.findall("string")}
+        expected = {
+            "start_game": "Start Game",
+            "edit_rc": "Edit Init File",
+            "virtual_keyboard": "Virtual keyboard",
+            "extra_keyboard": "Extra directional pad",
+            "keyboard_size": "Keyboard size",
+            "keyboard_explore": "Explore",
+            "keyboard_autofight": "Auto-fight",
+            "keyboard_rest": "Wait",
+            "keyboard_inventory": "Inventory",
+            "keyboard_pickup": "Pick up",
+        }
+        for name, text in expected.items():
+            self.assertEqual(text, strings[name], name)
 
     def test_compact_action_buttons_have_localized_accessibility_names(self) -> None:
         root = ET.parse(ANDROID_MOBILE_LAYOUT).getroot()

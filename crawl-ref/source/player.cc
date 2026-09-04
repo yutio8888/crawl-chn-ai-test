@@ -5912,10 +5912,11 @@ bool player_save_info::operator<(const player_save_info& rhs) const
 
 string player_save_info::really_short_desc() const
 {
-    const string display_species = species == SP_UNKNOWN
+    // Save browsing accepts future enum values; retain their header names.
+    const string display_species = !species::is_valid(species)
                                  ? T_(species_name.c_str())
                                  : species::name(species);
-    const string display_class = job == JOB_UNKNOWN
+    const string display_class = !job_type_valid(job)
                                ? T_(class_name.c_str())
                                : get_job_name(job);
 
@@ -5938,14 +5939,15 @@ string player_save_info::short_desc(bool use_qualifier) const
     if (!qualifier.empty())
         desc << "[" << qualifier << "] ";
 
-    const string display_species = species == SP_UNKNOWN
+    const string display_species = !species::is_valid(species)
                                  ? T_(species_name.c_str())
                                  : species::name(species);
-    const string display_class = job == JOB_UNKNOWN
+    const string display_class = !job_type_valid(job)
                                ? T_(class_name.c_str())
                                : get_job_name(job);
-    const string display_god = religion == GOD_NO_GOD
-                             ? "" : ::god_name(religion);
+    const string display_god = religion == GOD_NO_GOD ? ""
+                             : religion > GOD_NO_GOD && religion < NUM_GODS
+                             ? ::god_name(religion) : T_(god_name.c_str());
 
     desc << make_stringf(T_("%s, a level %d %s %s"),
                          name.c_str(), experience_level,

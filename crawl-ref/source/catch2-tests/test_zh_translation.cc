@@ -225,6 +225,69 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     CHECK(info.really_short_desc() == "i（牛头人 狂战士）");
     CHECK(info.short_desc(false) == "i，第1级牛头人 狂战士，信仰特洛格");
+
+    Options.language = lang_t::EN;
+    i18n_cache_clear();
+    CHECK(info.really_short_desc() == "i the Minotaur Berserker");
+    CHECK(info.short_desc(false) == "i, a level 1 Minotaur Berserker of Trog");
+    CHECK(info.species_name == "Minotaur");
+    CHECK(info.class_name == "Berserker");
+    CHECK(info.god_name == "Trog");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: save browser preserves future character header names",
+                 "[zh-translation][android-playtest][save-menu]")
+{
+    const auto ids = GENERATE(table<int, int, int>({
+        { NUM_SPECIES, NUM_JOBS, NUM_GODS },
+        { SP_UNKNOWN, JOB_UNKNOWN, GOD_NAMELESS },
+        { 255, 255, 255 },
+    }));
+    const auto language = GENERATE(lang_t::ZH, lang_t::EN);
+    Options.language = language;
+    i18n_cache_clear();
+
+    // Synthetic future TAG_CHR payload: the current writer cannot emit unknown
+    // species/jobs. Match _tag_construct_char's field order and exercise the
+    // production browser reader, which deliberately accepts future enums.
+    // marshallString is the implementation of tags.cc's private String2 helper.
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    marshallString(output, "i");
+    marshallString(output, "future-version");
+    marshallByte(output, std::get<0>(ids));
+    marshallByte(output, std::get<1>(ids));
+    marshallByte(output, 1);
+    marshallString(output, "Future Background");
+    marshallByte(output, std::get<2>(ids));
+    marshallString(output, "");
+    marshallBoolean(output, false);
+    marshallByte(output, GAME_TYPE_NORMAL);
+    marshallString(output, "Future Species");
+    marshallString(output, "Future God");
+    marshallString(output, "");
+    marshallBoolean(output, false);
+
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    auto info = tag_read_char_info(input, TAG_CHR_FORMAT,
+                                  TAG_MAJOR_VERSION, TAG_MINOR_VERSION);
+    info.save_loadable = false;
+    REQUIRE(info.species == std::get<0>(ids));
+    REQUIRE(info.job == std::get<1>(ids));
+    REQUIRE(info.religion == std::get<2>(ids));
+    CHECK(info.really_short_desc()
+          == (language == lang_t::ZH
+              ? "i（Future Species Future Background）"
+              : "i the Future Species Future Background"));
+    CHECK(info.short_desc(false)
+          == (language == lang_t::ZH
+              ? "i，第1级Future Species Future Background，信仰Future God"
+              : "i, a level 1 Future Species Future Background of Future God"));
+    CHECK(info.species_name == "Future Species");
+    CHECK(info.class_name == "Future Background");
+    CHECK(info.god_name == "Future God");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
