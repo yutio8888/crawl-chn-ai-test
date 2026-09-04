@@ -49,6 +49,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "item-use.h"
+#include "jobs.h"
 #include "kills.h"
 #include "level-state-type.h"
 #include "libutil.h"
@@ -5911,8 +5912,18 @@ bool player_save_info::operator<(const player_save_info& rhs) const
 
 string player_save_info::really_short_desc() const
 {
+    const string display_species = species == SP_UNKNOWN
+                                 ? T_(species_name.c_str())
+                                 : species::name(species);
+    const string display_class = job == JOB_UNKNOWN
+                               ? T_(class_name.c_str())
+                               : get_job_name(job);
+
     ostringstream desc;
-    desc << name << T_(" the ") << species_name << ' ' << class_name;
+    if (Options.language == lang_t::ZH)
+        desc << name << "（" << display_species << ' ' << display_class << "）";
+    else
+        desc << name << " the " << display_species << ' ' << display_class;
 
     return desc.str();
 }
@@ -5927,14 +5938,23 @@ string player_save_info::short_desc(bool use_qualifier) const
     if (!qualifier.empty())
         desc << "[" << qualifier << "] ";
 
+    const string display_species = species == SP_UNKNOWN
+                                 ? T_(species_name.c_str())
+                                 : species::name(species);
+    const string display_class = job == JOB_UNKNOWN
+                               ? T_(class_name.c_str())
+                               : get_job_name(job);
+    const string display_god = religion == GOD_NO_GOD
+                             ? "" : ::god_name(religion);
+
     desc << make_stringf(T_("%s, a level %d %s %s"),
                          name.c_str(), experience_level,
-                         species_name.c_str(), class_name.c_str());
+                         display_species.c_str(), display_class.c_str());
 
     if (religion == GOD_JIYVA)
-        desc << T_(" of ") << god_name << " " << jiyva_second_name;
+        desc << T_(" of ") << display_god << " " << jiyva_second_name;
     else if (religion != GOD_NO_GOD)
-        desc << T_(" of ") << god_name;
+        desc << T_(" of ") << display_god;
 
 #ifdef WIZARD
     if (wizard)

@@ -39,6 +39,7 @@
 #include "options.h"
 #include "player.h"
 #include "player-reacts.h"
+#include "player-save-info.h"
 #include "positional_format.h"
 #include "random.h"
 #include "religion.h"
@@ -203,6 +204,27 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(command_menu_text("android command menu|Go Downstairs") == "下楼");
     CHECK(command_menu_text("android command menu|Go Upstairs") == "上楼");
     CHECK(command_menu_text("android command menu|Pick Up") == "拾取");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: save summaries localize character display fields",
+                 "[zh-translation][android-playtest][save-menu]")
+{
+    player_save_info info;
+    info.name = "i";
+    info.species = SP_MINOTAUR;
+    info.job = JOB_BERSERKER;
+    info.experience_level = 1;
+    info.religion = GOD_TROG;
+
+    // Save headers intentionally retain canonical English snapshots. Display
+    // must derive localized names from their stable enum identities instead.
+    info.species_name = "Minotaur";
+    info.class_name = "Berserker";
+    info.god_name = "Trog";
+
+    CHECK(info.really_short_desc() == "i（牛头人 狂战士）");
+    CHECK(info.short_desc(false) == "i，第1级牛头人 狂战士，信仰特洛格");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
@@ -68,6 +69,13 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        Configuration configuration = new Configuration(
+                getResources().getConfiguration());
+        configuration.setLocale(Locale.SIMPLIFIED_CHINESE);
+        getResources().updateConfiguration(
+                configuration, getResources().getDisplayMetrics());
+
         Log.i("AndroidStartup", "launcher_on_create elapsed_realtime_ms="
                 + SystemClock.elapsedRealtime());
         setContentView(R.layout.launcher);
@@ -191,7 +199,10 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         };
         for (String directory : directories) {
             File path = new File(externalFilesDir, directory);
-            if (!path.isDirectory() && !path.mkdirs()) {
+            if (!path.isDirectory() && !path.mkdirs() && !path.isDirectory()) {
+                // Locale-aware activity creation can overlap a configuration
+                // restart. Treat a directory won by the other instance as
+                // success rather than disabling Start Game.
                 return false;
             }
         }
