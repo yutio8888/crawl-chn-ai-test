@@ -545,3 +545,27 @@ android command menu summary|Pick Up
 
 拾取脚下的物品
 %%%%
+android command menu|Quick Cast
+
+快捷施法
+%%%%
+android command menu summary|Quick Cast
+
+点按法术即可施放；长按可查看说明
+%%%%
+android command menu|Quick Abilities
+
+快捷能力
+%%%%
+android command menu summary|Quick Abilities
+
+点按能力即可使用；长按可查看说明
+%%%%
+android command menu|Previous
+
+上一页
+%%%%
+android command menu|Next
+
+下一页
+%%%%

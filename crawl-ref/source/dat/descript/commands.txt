@@ -569,3 +569,27 @@ android command menu summary|Pick Up
 
 Pick up items from your current square
 %%%%
+android command menu|Quick Cast
+
+Quick Cast
+%%%%
+android command menu summary|Quick Cast
+
+Tap a spell to cast it; hold to read its description
+%%%%
+android command menu|Quick Abilities
+
+Quick Abilities
+%%%%
+android command menu summary|Quick Abilities
+
+Tap an ability to use it; hold to read its description
+%%%%
+android command menu|Previous
+
+Previous
+%%%%
+android command menu|Next
+
+Next
+%%%%
