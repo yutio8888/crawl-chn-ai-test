@@ -18,7 +18,8 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "tilereg-cmd.h"
-SpellRegion::SpellRegion(const TileRegionInit &init) : GridRegion(init)
+SpellRegion::SpellRegion(const TileRegionInit &init, bool check_range)
+    : GridRegion(init), m_check_range(check_range)
 {
 }
 void SpellRegion::activate()
@@ -58,7 +59,7 @@ int SpellRegion::handle_mouse(wm_mouse_event &event)
     {
         m_last_clicked_item = item_idx;
         tiles.set_need_redraw();
-        if (cast_a_spell(false, spell) == spret::abort)
+        if (cast_a_spell(m_check_range, spell) == spret::abort)
             flush_input_buffer(FLUSH_ON_FAILURE);
         return CK_MOUSE_CMD;
     }

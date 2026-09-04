@@ -274,6 +274,10 @@ protected:
     InventoryRegion *m_region_inv;
     AbilityRegion   *m_region_abl;
     SpellRegion     *m_region_spl;
+    // Android quick row: separate instances from the sidebar ones above, so
+    // the row keeps its own grid, its own page and its own cast semantics.
+    SpellRegion     *m_region_quick_spl;
+    AbilityRegion   *m_region_quick_abl;
     MemoriseRegion  *m_region_mem;
     MonsterRegion   *m_region_mon;
     SkillRegion     *m_region_skl;
@@ -308,6 +312,18 @@ protected:
     int m_map_pixels;
 
     void do_layout();
+    /// Can the current layout host the Android quick row at all?
+    bool quick_row_supported() const;
+    /// Which quick-row lists are live; both false when unsupported.
+    void quick_row_live_lists(bool &spells, bool &abilities) const;
+    /// Lay the quick row out along the bottom edge of the top-HUD layout.
+    void place_quick_row(int row_y, bool spells, bool abilities);
+    /// Poll the live lists on the normal redraw cadence.
+    void update_quick_row();
+    /// Perform a deferred quick-row relayout at a re-entrancy-safe point.
+    void apply_quick_row_relayout();
+    void render_quick_row();
+    int handle_quick_row_mouse(wm_mouse_event &event);
     int calc_tab_lines(const int num_elements) const;
     int calc_min_tab_lines(int idx) const;
     bool place_tab(int idx);
@@ -322,6 +338,17 @@ protected:
     // Mouse state.
     coord_def m_mouse;
     unsigned int m_last_tick_redraw;
+
+    // Android quick row state. The two list flags are the visibility
+    // do_layout() last computed; m_quick_row_shown is what it actually placed,
+    // which the short-surface fallback can refuse. Polling against the list
+    // flags rather than against m_quick_row_shown keeps a refused row from
+    // asking for a relayout on every frame.
+    bool m_quick_row_spells = false;
+    bool m_quick_row_abilities = false;
+    bool m_quick_row_shown = false;
+    bool m_quick_row_relayout = false;
+    bool m_in_quick_row_relayout = false;
 
     string m_tooltip;
     bool m_show_tooltip = false;
