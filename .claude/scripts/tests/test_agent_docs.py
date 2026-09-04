@@ -352,6 +352,23 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertEqual("Android (buildTest)", android["name"])
 
             steps = android["steps"]
+            step_by_name = {
+                step.get("name"): (index, step)
+                for index, step in enumerate(steps)
+                if step.get("name")
+            }
+            test_require_index, test_require = step_by_name[
+                "Require Android test signing secrets"
+            ]
+            test_sign_index, test_sign = step_by_name[
+                "Sign Android debug APK for test updates"
+            ]
+            test_upload_index, test_upload = step_by_name[
+                "Upload Android test APK"
+            ]
+            pr_upload_index, pr_upload = step_by_name[
+                "Upload Android PR debug APK"
+            ]
             prepare = next(
                 step
                 for step in steps
@@ -371,22 +388,76 @@ class AgentDocumentationTests(unittest.TestCase):
                 for index, step in enumerate(steps)
                 if "check_android_pcre_apk.sh" in step.get("run", "")
             )
-            upload_index = next(
-                index
-                for index, step in enumerate(steps)
-                if step.get("uses") == "actions/upload-artifact@v4"
-            )
+            self.assertLess(test_require_index, build_index)
             self.assertLess(build_index, validate_index)
-            self.assertLess(validate_index, upload_index)
+            self.assertLess(validate_index, test_sign_index)
+            self.assertLess(test_sign_index, test_upload_index)
+            self.assertLess(validate_index, pr_upload_index)
 
-            upload = steps[upload_index]["with"]
-            self.assertEqual("android-debug-apk", upload["name"])
+            non_pr = "${{ github.event_name != 'pull_request' }}"
+            self.assertEqual(non_pr, test_require["if"])
+            self.assertEqual(non_pr, test_sign["if"])
+            self.assertEqual(non_pr, test_upload["if"])
+            self.assertEqual(
+                "${{ github.event_name == 'pull_request' }}",
+                pr_upload["if"],
+            )
+            for secret in (
+                "ANDROID_TEST_KEYSTORE_BASE64",
+                "ANDROID_TEST_KEYSTORE_PASS",
+                "ANDROID_TEST_KEY_ALIAS",
+            ):
+                self.assertIn(
+                    f"missing GitHub Actions secret {secret}",
+                    test_require["run"],
+                )
+                secret_reference = "${{ secrets.%s }}" % secret
+                self.assertEqual(
+                    secret_reference,
+                    test_require["env"][secret],
+                )
+                self.assertEqual(
+                    secret_reference,
+                    test_sign["env"][secret],
+                )
+            self.assertNotIn("base64 --decode", test_require["run"])
+            self.assertIn("umask 077", test_sign["run"])
+            self.assertIn("base64 --decode", test_sign["run"])
+            self.assertIn("trap 'rm -f \"$keystore\"' EXIT", test_sign["run"])
+            self.assertIn('--ks "$keystore"', test_sign["run"])
+            self.assertIn('"$zipalign" -p -f 4', test_sign["run"])
+            self.assertIn('"$apksigner" sign', test_sign["run"])
+            self.assertIn(
+                "--ks-pass env:ANDROID_TEST_STORE_PASSWORD",
+                test_sign["run"],
+            )
+            self.assertIn(
+                "--key-pass env:ANDROID_TEST_PRIVATE_KEY_PASSWORD",
+                test_sign["run"],
+            )
+            self.assertIn(
+                '[[ "$cert_digest" == "$ANDROID_TEST_CERT_SHA256" ]]',
+                test_sign["run"],
+            )
+            self.assertRegex(
+                android["env"]["ANDROID_TEST_CERT_SHA256"],
+                r"^[0-9a-f]{64}$",
+            )
+            self.assertNotIn("--ks-pass pass:", test_sign["run"])
+            self.assertNotIn("--key-pass pass:", test_sign["run"])
+
+            test_upload_with = test_upload["with"]
+            self.assertEqual("android-debug-apk", test_upload_with["name"])
             self.assertEqual(
                 "crawl-ref/source/android-project/app/build/outputs/apk/"
                 "debug/app-debug.apk",
-                upload["path"],
+                test_upload_with["path"],
             )
-            self.assertEqual("error", upload["if-no-files-found"])
+            self.assertEqual("error", test_upload_with["if-no-files-found"])
+            pr_upload_with = pr_upload["with"]
+            self.assertEqual("android-pr-debug-apk", pr_upload_with["name"])
+            self.assertEqual(test_upload_with["path"], pr_upload_with["path"])
+            self.assertEqual("error", pr_upload_with["if-no-files-found"])
 
             release_steps = {
                 step.get("name"): (index, step)
@@ -505,11 +576,24 @@ class AgentDocumentationTests(unittest.TestCase):
         upload = next(
             step
             for step in android_steps
-            if step.get("uses") == "actions/upload-artifact@v4"
+            if step.get("name") == "Upload Android test APK"
         )
         upload["with"]["path"] += ".missing"
         with self.assertRaises(AssertionError):
             assert_contract(wrong_path)
+
+        unpinned_test_key = copy.deepcopy(workflow)
+        test_sign = next(
+            step
+            for step in unpinned_test_key["jobs"]["build_android"]["steps"]
+            if step.get("name")
+            == "Sign Android debug APK for test updates"
+        )
+        test_sign["run"] = test_sign["run"].replace(
+            '[[ "$cert_digest" == "$ANDROID_TEST_CERT_SHA256" ]]', ""
+        )
+        with self.assertRaises(AssertionError):
+            assert_contract(unpinned_test_key)
 
         unsigned = copy.deepcopy(workflow)
         release_sign = next(
