@@ -22,7 +22,6 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
-#include "windowmanager.h"
 
 namespace
 {
@@ -34,8 +33,6 @@ static const int COMMAND_MENU_ICON_GAP = 16;
 static const int QUICK_ICON_ROWS = 2;
 static const int QUICK_ICON_COLS = 6;
 static const int QUICK_ICON_PAGE_SIZE = QUICK_ICON_ROWS * QUICK_ICON_COLS;
-// A press held at least this long describes the entry instead of using it.
-static const unsigned int QUICK_LONG_PRESS_MS = 450;
 
 static string _status_description(const status_info &info)
 {
@@ -416,55 +413,38 @@ private:
     bool m_outside_press = false;
 };
 
-// A quick-access icon button. A short tap activates it like any other menu
-// button; a press held past QUICK_LONG_PRESS_MS instead runs the long-press
-// handler and swallows the release, so one gesture never both describes and
-// uses an entry. The press instant is the only extra state, and it lives no
-// longer than the gesture.
+// A quick-access icon button.
+//
+// The Android touch adapter in SDLActivity.onTouch() sends nothing at
+// finger-down; on release it replays the whole gesture as one button, left for
+// a short tap and right once the hold reaches its own half-second threshold.
+// So the drawer cannot time a press itself, and does not try to: a long press
+// simply arrives as the right button, exactly as the spell and ability tile
+// regions already treat right-click as "describe".
+//
+// The right press describes and the right release is swallowed, so a hold
+// never also reaches MenuButton, which only ever activates on the left button.
 class QuickButton final : public MenuButton
 {
 public:
-    function<void ()> on_long_press;
+    function<void ()> on_describe;
 
     bool on_event(const ui::Event &event) override
     {
-        const bool left_button =
-            (event.type() == ui::Event::Type::MouseDown
-             || event.type() == ui::Event::Type::MouseUp)
-            && static_cast<const ui::MouseEvent&>(event).button()
-               == ui::MouseEvent::Button::Left;
-
-        if (left_button && event.type() == ui::Event::Type::MouseDown)
+        if (event.type() == ui::Event::Type::MouseDown
+            || event.type() == ui::Event::Type::MouseUp)
         {
-            m_pressing = wm != nullptr;
-            m_press_ticks = m_pressing ? wm->get_ticks() : 0;
-        }
-        else if (event.type() == ui::Event::Type::MouseLeave)
-            m_pressing = false;
-        else if (left_button && event.type() == ui::Event::Type::MouseUp)
-        {
-            // Unsigned arithmetic stays correct across a tick counter wrap.
-            const bool held = m_pressing
-                && wm->get_ticks() - m_press_ticks >= QUICK_LONG_PRESS_MS;
-            m_pressing = false;
-
-            if (held && on_long_press)
+            const auto &mouse = static_cast<const ui::MouseEvent&>(event);
+            if (mouse.button() == ui::MouseEvent::Button::Right)
             {
-                // Drop the press MenuButton would otherwise turn into an
-                // activation when it sees this release.
-                active = false;
-                _queue_allocation();
-                on_long_press();
+                if (event.type() == ui::Event::Type::MouseDown && on_describe)
+                    on_describe();
                 return true;
             }
         }
 
         return MenuButton::on_event(event);
     }
-
-private:
-    bool m_pressing = false;
-    unsigned int m_press_ticks = 0;
 };
 
 // The parts of a built quick-access page the drawer has to wire up afterwards.
@@ -630,11 +610,15 @@ command_type show_topbar_command_menu(bool *acted)
                             done = true;
                             return true;
                         });
-                    button->on_long_press = [idx, is_spell]() {
+                    button->on_describe = [&scroller, idx, is_spell]() {
                         if (is_spell)
                             describe_spell((spell_type) idx);
                         else
                             describe_ability((ability_type) idx);
+                        // The moves that opened this gesture left the drawer
+                        // scroller mid-drag; drop it so returning to the page
+                        // does not scroll from a stale origin.
+                        scroller->cancel_drag();
                     };
 
                     buttons.push_back(button);
@@ -664,13 +648,14 @@ command_type show_topbar_command_menu(bool *acted)
             // Wrapping keeps both controls meaningful on every icon page and
             // keeps the switcher index in range without extra bookkeeping.
             const auto turn_page =
-                [icon_pages, indicator, icon_page_count](int delta) {
+                [&scroller, icon_pages, indicator, icon_page_count](int delta) {
                     int &shown = icon_pages->current();
                     shown = (shown + delta + icon_page_count)
                             % icon_page_count;
                     indicator->set_text(formatted_string(
                         make_stringf("%d / %d", shown + 1, icon_page_count),
                         LIGHTGREY));
+                    scroller->cancel_drag();
                 };
 
             auto previous_button = make_compact_button(
@@ -904,6 +889,7 @@ command_type show_topbar_command_menu(bool *acted)
 
     const auto show_page = [&](int index, MenuButton *focus) {
         pages->current() = index;
+        scroller->cancel_drag();
         scroller->set_scroll(0);
         ui::set_focused_widget(focus);
     };
@@ -967,18 +953,15 @@ command_type show_topbar_command_menu(bool *acted)
 
     // A quick-access pick runs only once the drawer has closed, through the
     // same calls the z and a commands reach after their own selection step, so
-    // range checks, confirmations, costs, failures and turn use are unchanged.
-    // The entry is resolved against the live list here, so a page can never
-    // act on something the player no longer has.
+    // range checks, confirmations, costs, failures, messages and turn use are
+    // unchanged. Only the enum was carried out of the page, and the talent
+    // behind an ability is looked up again here, so nothing stale is used.
     if (quick_spell != SPELL_NO_SPELL)
     {
         if (acted)
             *acted = true;
-        if (!you.has_spell(quick_spell)
-            || cast_a_spell(true, quick_spell) == spret::abort)
-        {
+        if (cast_a_spell(true, quick_spell) == spret::abort)
             flush_input_buffer(FLUSH_ON_FAILURE);
-        }
         return CMD_NO_CMD;
     }
 
