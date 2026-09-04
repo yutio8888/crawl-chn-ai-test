@@ -4,18 +4,25 @@
 
 #include "topbar-drawer.h"
 
+#include "ability.h"
 #include "database.h"
+#include "describe.h"
 #include "env.h"
 #include "items.h"
 #include "libutil.h"
+#include "macro.h"
 #include "outer-menu.h"
 #include "player.h"
+#include "prompt.h"
+#include "spl-cast.h"
+#include "spl-util.h"
 #include "status.h"
 #include "stringutil.h"
 #include "terrain.h"
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
+#include "windowmanager.h"
 
 namespace
 {
@@ -24,6 +31,11 @@ static const int DRAWER_PADDING = 24;
 static const int COMMAND_MENU_ITEM_HEIGHT = 72;
 static const int COMMAND_MENU_ITEM_PADDING = 12;
 static const int COMMAND_MENU_ICON_GAP = 16;
+static const int QUICK_ICON_ROWS = 2;
+static const int QUICK_ICON_COLS = 6;
+static const int QUICK_ICON_PAGE_SIZE = QUICK_ICON_ROWS * QUICK_ICON_COLS;
+// A press held at least this long describes the entry instead of using it.
+static const unsigned int QUICK_LONG_PRESS_MS = 450;
 
 static string _status_description(const status_info &info)
 {
@@ -83,6 +95,71 @@ static formatted_string _build_status_text()
         text += T_("no status effects");
 
     return text;
+}
+
+// One tappable entry in a quick-access page. Only the enum value is stored:
+// the live spell or talent is resolved again when the entry is used, so a page
+// can never act on a stale reference.
+struct quick_entry
+{
+    int idx;
+    char letter;
+    tileidx_t tile;
+    int cost;
+    bool usable;
+};
+
+// Memorised spells in the same deterministic letter order the spell tab and
+// the "Cast which spell?" prompt use.
+static vector<quick_entry> _quick_spell_entries()
+{
+    vector<quick_entry> entries;
+
+    for (int i = 0; i < 52; ++i)
+    {
+        const char letter = index_to_letter(i);
+        const spell_type spell = get_spell_by_letter(letter);
+        if (spell == SPELL_NO_SPELL)
+            continue;
+
+        quick_entry entry;
+        entry.idx = (int) spell;
+        entry.letter = letter;
+        entry.tile = tileidx_spell(spell);
+        entry.cost = spell_mana(spell);
+        entry.usable = !spell_is_useless(spell, true, true);
+        entries.push_back(entry);
+    }
+
+    return entries;
+}
+
+// Talents in the same deterministic order your_talents() hands to the ability
+// menu, including currently unusable ones so the page does not reshuffle.
+static vector<quick_entry> _quick_ability_entries()
+{
+    vector<quick_entry> entries;
+
+    for (const talent &tal : your_talents(true))
+    {
+        quick_entry entry;
+        entry.idx = (int) tal.which;
+        entry.letter = tal.hotkey;
+        entry.tile = tileidx_ability(tal.which);
+        entry.cost = (int) ability_mp_cost(tal.which);
+        entry.usable = check_ability_possible(tal.which, true);
+        entries.push_back(entry);
+    }
+
+    return entries;
+}
+
+static string _quick_entry_caption(const quick_entry &entry)
+{
+    string caption = isaalpha(entry.letter) ? string(1, entry.letter) : "-";
+    if (entry.cost > 0)
+        caption += make_stringf(" %d", entry.cost);
+    return caption;
 }
 
 class DrawerScroller final : public ui::Scroller
@@ -339,6 +416,65 @@ private:
     bool m_outside_press = false;
 };
 
+// A quick-access icon button. A short tap activates it like any other menu
+// button; a press held past QUICK_LONG_PRESS_MS instead runs the long-press
+// handler and swallows the release, so one gesture never both describes and
+// uses an entry. The press instant is the only extra state, and it lives no
+// longer than the gesture.
+class QuickButton final : public MenuButton
+{
+public:
+    function<void ()> on_long_press;
+
+    bool on_event(const ui::Event &event) override
+    {
+        const bool left_button =
+            (event.type() == ui::Event::Type::MouseDown
+             || event.type() == ui::Event::Type::MouseUp)
+            && static_cast<const ui::MouseEvent&>(event).button()
+               == ui::MouseEvent::Button::Left;
+
+        if (left_button && event.type() == ui::Event::Type::MouseDown)
+        {
+            m_pressing = wm != nullptr;
+            m_press_ticks = m_pressing ? wm->get_ticks() : 0;
+        }
+        else if (event.type() == ui::Event::Type::MouseLeave)
+            m_pressing = false;
+        else if (left_button && event.type() == ui::Event::Type::MouseUp)
+        {
+            // Unsigned arithmetic stays correct across a tick counter wrap.
+            const bool held = m_pressing
+                && wm->get_ticks() - m_press_ticks >= QUICK_LONG_PRESS_MS;
+            m_pressing = false;
+
+            if (held && on_long_press)
+            {
+                // Drop the press MenuButton would otherwise turn into an
+                // activation when it sees this release.
+                active = false;
+                _queue_allocation();
+                on_long_press();
+                return true;
+            }
+        }
+
+        return MenuButton::on_event(event);
+    }
+
+private:
+    bool m_pressing = false;
+    unsigned int m_press_ticks = 0;
+};
+
+// The parts of a built quick-access page the drawer has to wire up afterwards.
+struct quick_page_refs
+{
+    shared_ptr<MenuButton> back;
+    shared_ptr<MenuButton> focus;
+    int index = -1;
+};
+
 } // namespace
 
 void show_topbar_status_drawer()
@@ -361,9 +497,11 @@ void show_topbar_status_drawer()
     tiles.set_need_redraw();
 }
 
-command_type show_topbar_command_menu()
+command_type show_topbar_command_menu(bool *acted)
 {
     command_type selected_command = CMD_NO_CMD;
+    spell_type quick_spell = SPELL_NO_SPELL;
+    ability_type quick_ability = ABIL_NON_ABILITY;
     bool done = false;
 
     vector<shared_ptr<MenuButton>> buttons;
@@ -396,6 +534,177 @@ command_type show_topbar_command_menu()
         return button;
     };
 
+    auto pages = make_shared<ui::Switcher>();
+    pages->align_x = pages->align_y = ui::Widget::STRETCH;
+
+    auto scroller = make_shared<DrawerScroller>();
+    scroller->set_child(pages);
+    scroller->set_scrollbar_visible(true);
+    scroller->expand_h = scroller->expand_v = true;
+
+    const auto make_compact_button = [&buttons](string label) {
+        auto text = make_shared<ui::Text>(
+            formatted_string(std::move(label), WHITE));
+        text->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
+
+        auto button = make_shared<MenuButton>();
+        button->highlight_colour = BROWN;
+        button->set_child(std::move(text));
+        buttons.push_back(button);
+        return button;
+    };
+
+    // Build one quick-access page: a title, a Back entry, the icon buttons in
+    // pages of at most QUICK_ICON_ROWS x QUICK_ICON_COLS, and explicit
+    // Previous/Next controls with a current/total indicator when more than one
+    // icon page exists. A tap records the entry and closes the drawer; the
+    // action itself runs afterwards, outside the pushed layout.
+    const auto build_quick_page =
+        [&](const vector<quick_entry> &entries, const string &title_label,
+            bool is_spell) {
+        quick_page_refs refs;
+
+        auto page = make_shared<ui::Box>(ui::Widget::VERT);
+        page->set_cross_alignment(ui::Widget::STRETCH);
+
+        auto page_title = make_shared<ui::Text>(
+            formatted_string(title_label, YELLOW));
+        page_title->set_margin_for_sdl(0, 0, 16, 0);
+        page->add_child(std::move(page_title));
+
+        refs.back = make_button(
+            _command_menu_text("android command menu", "Back"),
+            _command_menu_text("android command menu summary", "Back"),
+            TILEG_CMD_MAP_EXIT_MAP);
+        page->add_child(refs.back);
+
+        const int icon_page_count =
+            ((int) entries.size() + QUICK_ICON_PAGE_SIZE - 1)
+            / QUICK_ICON_PAGE_SIZE;
+
+        auto icon_pages = make_shared<ui::Switcher>();
+        icon_pages->align_x = icon_pages->align_y = ui::Widget::STRETCH;
+
+        for (int icon_page = 0; icon_page < icon_page_count; ++icon_page)
+        {
+            auto grid = make_shared<ui::Box>(ui::Widget::VERT);
+            grid->set_cross_alignment(ui::Widget::STRETCH);
+
+            for (int row = 0; row < QUICK_ICON_ROWS; ++row)
+            {
+                auto strip = make_shared<ui::Box>(ui::Widget::HORZ);
+                strip->set_cross_alignment(ui::Widget::CENTER);
+                bool filled = false;
+
+                for (int col = 0; col < QUICK_ICON_COLS; ++col)
+                {
+                    const size_t at = (size_t) icon_page * QUICK_ICON_PAGE_SIZE
+                                      + (size_t) row * QUICK_ICON_COLS + col;
+                    if (at >= entries.size())
+                        break;
+
+                    const quick_entry &entry = entries[at];
+                    auto cell = make_shared<ui::Box>(ui::Widget::VERT);
+                    cell->set_cross_alignment(ui::Widget::CENTER);
+                    cell->set_main_alignment(ui::Widget::CENTER);
+                    cell->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING / 2);
+                    cell->add_child(
+                        make_shared<ui::Image>(tile_def(entry.tile)));
+                    cell->add_child(make_shared<ui::Text>(formatted_string(
+                        _quick_entry_caption(entry),
+                        entry.usable ? LIGHTGREY : DARKGREY)));
+
+                    auto button = make_shared<QuickButton>();
+                    button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+                    button->highlight_colour = BROWN;
+                    button->expand_h = true;
+                    button->set_child(std::move(cell));
+
+                    const int idx = entry.idx;
+                    button->on_activate_event(
+                        [&, idx, is_spell](const ui::ActivateEvent&) {
+                            if (is_spell)
+                                quick_spell = (spell_type) idx;
+                            else
+                                quick_ability = (ability_type) idx;
+                            done = true;
+                            return true;
+                        });
+                    button->on_long_press = [idx, is_spell]() {
+                        if (is_spell)
+                            describe_spell((spell_type) idx);
+                        else
+                            describe_ability((ability_type) idx);
+                    };
+
+                    buttons.push_back(button);
+                    if (!refs.focus)
+                        refs.focus = button;
+                    strip->add_child(std::move(button));
+                    filled = true;
+                }
+
+                if (!filled)
+                    break;
+                grid->add_child(std::move(strip));
+            }
+
+            icon_pages->add_child(std::move(grid));
+        }
+
+        icon_pages->current() = 0;
+        page->add_child(icon_pages);
+
+        if (icon_page_count > 1)
+        {
+            auto indicator = make_shared<ui::Text>(formatted_string(
+                make_stringf("1 / %d", icon_page_count), LIGHTGREY));
+            indicator->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP);
+
+            // Wrapping keeps both controls meaningful on every icon page and
+            // keeps the switcher index in range without extra bookkeeping.
+            const auto turn_page =
+                [icon_pages, indicator, icon_page_count](int delta) {
+                    int &shown = icon_pages->current();
+                    shown = (shown + delta + icon_page_count)
+                            % icon_page_count;
+                    indicator->set_text(formatted_string(
+                        make_stringf("%d / %d", shown + 1, icon_page_count),
+                        LIGHTGREY));
+                };
+
+            auto previous_button = make_compact_button(
+                _command_menu_text("android command menu", "Previous"));
+            previous_button->on_activate_event(
+                [turn_page](const ui::ActivateEvent&) {
+                    turn_page(-1);
+                    return true;
+                });
+
+            auto next_button = make_compact_button(
+                _command_menu_text("android command menu", "Next"));
+            next_button->on_activate_event(
+                [turn_page](const ui::ActivateEvent&) {
+                    turn_page(1);
+                    return true;
+                });
+
+            auto controls = make_shared<ui::Box>(ui::Widget::HORZ);
+            controls->set_cross_alignment(ui::Widget::CENTER);
+            controls->add_child(std::move(previous_button));
+            controls->add_child(std::move(indicator));
+            controls->add_child(std::move(next_button));
+            page->add_child(std::move(controls));
+        }
+
+        if (!refs.focus)
+            refs.focus = refs.back;
+
+        refs.index = (int) pages->num_children();
+        pages->add_child(std::move(page));
+        return refs;
+    };
+
     const auto add_command_button =
         [&](const shared_ptr<ui::Box> &page, string label, string summary,
             tileidx_t tile, command_type command) {
@@ -409,6 +718,11 @@ command_type show_topbar_command_menu()
             page->add_child(button);
             return button;
         };
+
+    // Quick-access pages exist only for a non-empty current list, so the menu
+    // never offers an entry point that would open an empty page.
+    const vector<quick_entry> spell_entries = _quick_spell_entries();
+    const vector<quick_entry> ability_entries = _quick_ability_entries();
 
     auto main_page = make_shared<ui::Box>(ui::Widget::VERT);
     main_page->set_cross_alignment(ui::Widget::STRETCH);
@@ -481,11 +795,30 @@ command_type show_topbar_command_menu()
         _command_menu_text("android command menu", "Spells"),
         _command_menu_text("android command menu summary", "Spells"),
         TILEG_CMD_CAST_SPELL, CMD_DISPLAY_SPELLS);
+    shared_ptr<MenuButton> quick_spell_entry;
+    if (!spell_entries.empty())
+    {
+        quick_spell_entry = make_button(
+            _command_menu_text("android command menu", "Quick Cast"),
+            _command_menu_text("android command menu summary", "Quick Cast"),
+            TILEG_TAB_SPELL);
+        main_page->add_child(quick_spell_entry);
+    }
     add_command_button(
         main_page,
         _command_menu_text("android command menu", "Abilities"),
         _command_menu_text("android command menu summary", "Abilities"),
         TILEG_CMD_USE_ABILITY, CMD_USE_ABILITY);
+    shared_ptr<MenuButton> quick_ability_entry;
+    if (!ability_entries.empty())
+    {
+        quick_ability_entry = make_button(
+            _command_menu_text("android command menu", "Quick Abilities"),
+            _command_menu_text("android command menu summary",
+                               "Quick Abilities"),
+            TILEG_TAB_ABILITY);
+        main_page->add_child(quick_ability_entry);
+    }
     add_command_button(
         main_page,
         _command_menu_text("android command menu", "Character"),
@@ -552,16 +885,9 @@ command_type show_topbar_command_menu()
         _command_menu_text("android command menu summary", "Commands"),
         TILEG_CMD_DISPLAY_COMMANDS, CMD_DISPLAY_COMMANDS);
 
-    auto pages = make_shared<ui::Switcher>();
-    pages->align_x = pages->align_y = ui::Widget::STRETCH;
     pages->add_child(main_page);
     pages->add_child(more_page);
     pages->current() = 0;
-
-    auto scroller = make_shared<DrawerScroller>();
-    scroller->set_child(pages);
-    scroller->set_scrollbar_visible(true);
-    scroller->expand_h = scroller->expand_v = true;
 
     more->on_activate_event([&](const ui::ActivateEvent&) {
         pages->current() = 1;
@@ -575,6 +901,45 @@ command_type show_topbar_command_menu()
         ui::set_focused_widget(primary_button.get());
         return true;
     });
+
+    const auto show_page = [&](int index, MenuButton *focus) {
+        pages->current() = index;
+        scroller->set_scroll(0);
+        ui::set_focused_widget(focus);
+    };
+
+    if (quick_spell_entry)
+    {
+        const quick_page_refs spell_page = build_quick_page(
+            spell_entries,
+            _command_menu_text("android command menu", "Quick Cast"), true);
+        quick_spell_entry->on_activate_event(
+            [&, spell_page](const ui::ActivateEvent&) {
+                show_page(spell_page.index, spell_page.focus.get());
+                return true;
+            });
+        spell_page.back->on_activate_event([&](const ui::ActivateEvent&) {
+            show_page(0, primary_button.get());
+            return true;
+        });
+    }
+
+    if (quick_ability_entry)
+    {
+        const quick_page_refs ability_page = build_quick_page(
+            ability_entries,
+            _command_menu_text("android command menu", "Quick Abilities"),
+            false);
+        quick_ability_entry->on_activate_event(
+            [&, ability_page](const ui::ActivateEvent&) {
+                show_page(ability_page.index, ability_page.focus.get());
+                return true;
+            });
+        ability_page.back->on_activate_event([&](const ui::ActivateEvent&) {
+            show_page(0, primary_button.get());
+            return true;
+        });
+    }
 
     auto panel = make_shared<DrawerPanel>(scroller);
     auto scrim = make_shared<DrawerScrim>(panel, scroller);
@@ -596,6 +961,36 @@ command_type show_topbar_command_menu()
         ui::pump_events();
     ui::pop_layout();
     tiles.set_need_redraw();
+
+    if (acted)
+        *acted = false;
+
+    // A quick-access pick runs only once the drawer has closed, through the
+    // same calls the z and a commands reach after their own selection step, so
+    // range checks, confirmations, costs, failures and turn use are unchanged.
+    // The entry is resolved against the live list here, so a page can never
+    // act on something the player no longer has.
+    if (quick_spell != SPELL_NO_SPELL)
+    {
+        if (acted)
+            *acted = true;
+        if (!you.has_spell(quick_spell)
+            || cast_a_spell(true, quick_spell) == spret::abort)
+        {
+            flush_input_buffer(FLUSH_ON_FAILURE);
+        }
+        return CMD_NO_CMD;
+    }
+
+    if (quick_ability != ABIL_NON_ABILITY)
+    {
+        if (acted)
+            *acted = true;
+        const talent tal = get_talent(quick_ability);
+        if (tal.which == ABIL_NON_ABILITY || !activate_talent(tal))
+            flush_input_buffer(FLUSH_ON_FAILURE);
+        return CMD_NO_CMD;
+    }
 
     return selected_command;
 }

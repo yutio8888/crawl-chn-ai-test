@@ -90,9 +90,10 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
             }
         }
 
-        const command_type command = show_topbar_command_menu();
+        bool acted = false;
+        const command_type command = show_topbar_command_menu(&acted);
         if (command == CMD_NO_CMD)
-            return 0;
+            return acted ? CK_MOUSE_CMD : 0;
         return encode_command_as_key(command);
     }
 #endif

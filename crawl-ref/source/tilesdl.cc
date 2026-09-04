@@ -686,9 +686,12 @@ int TilesFramework::getch_ck()
                     && is_using_small_layout()
                     && mouse_control::current_mode() == MOUSE_MODE_COMMAND)
                 {
-                    const command_type command = show_topbar_command_menu();
-                    key = command == CMD_NO_CMD ? 0
-                                                : encode_command_as_key(command);
+                    bool acted = false;
+                    const command_type command
+                        = show_topbar_command_menu(&acted);
+                    key = command != CMD_NO_CMD
+                              ? encode_command_as_key(command)
+                              : acted ? CK_MOUSE_CMD : 0;
                 }
 #endif
                 m_region_tile->place_cursor(CURSOR_MOUSE, NO_CURSOR);
