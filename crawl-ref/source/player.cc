@@ -4564,9 +4564,7 @@ void contaminate_player(int change, bool controlled, bool msg)
         }
 
         if (!player_harmful_contamination() && was_glowing && you.invisible())
-        {
             mpr(T_("You fade completely from view now that you are no longer glowing from magical contamination."));
-        }
     }
 
     if (msg && old_amount > 0 && you.magic_contamination == 0)
@@ -4681,8 +4679,10 @@ bool poison_player(int amount, string source, string source_aux, bool force)
     if (you.duration[DUR_POISONING] > old_value)
     {
         if (poison_is_lethal() && !was_fatal)
+        {
             mprf(MSGCH_DANGER,
                 T_("You are lethally poisoned!"));
+        }
         else
         {
             mprf(MSGCH_WARN, T_("You are %spoisoned."),
