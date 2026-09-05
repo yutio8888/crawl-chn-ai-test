@@ -968,8 +968,38 @@ int SDLWrapper::wait_event(wm_event *event, int timeout)
         // event below.
     }
 
+#ifdef __ANDROID__
+    // SDLActivity.onPause() parks a save request for this thread; run it here,
+    // where the game is between commands, instead of on the UI thread.
+    // SDL_WaitEventTimeout() is itself a poll loop that pumps every 10ms, so
+    // slicing a long wait into fixed steps costs no extra wakeups, and it
+    // avoids pushing a wakeup event: ui.cc reads WME_CUSTOMEVENT's data1 as a
+    // timer callback pointer, so there is no harmless user event to push.
+    const int save_poll_ms = 100;
+    const bool wait_forever = timeout < 0; // SDL reads negative as "no timeout"
+    int remaining = timeout;
+    bool got_event = false;
+    while (true)
+    {
+        android_run_pending_save();
+        const int slice = wait_forever ? save_poll_ms : min(remaining, save_poll_ms);
+        if (SDL_WaitEventTimeout(&sdlevent, slice))
+        {
+            got_event = true;
+            break;
+        }
+        if (wait_forever)
+            continue;
+        remaining -= slice;
+        if (remaining <= 0)
+            break;
+    }
+    if (!got_event)
+        return 0;
+#else
     if (!SDL_WaitEventTimeout(&sdlevent, timeout))
         return 0;
+#endif
 
     if (sdlevent.type != SDL_TEXTINPUT)
         prev_keycode = 0;

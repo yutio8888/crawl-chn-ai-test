@@ -56,6 +56,7 @@ bool ensure_utf8_ctype()
 
 #ifdef __ANDROID__
 #include "player.h"
+#include "state.h"
 #include <errno.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -165,13 +166,118 @@ time_t jni_package_last_update_time()
     return cached_update_time;
 }
 
-// Used to save the game on SDLActivity.onPause
+// Deferred save for SDLActivity.onPause.
+//
+// save_game() walks the player, the current level, the Lua persist table and
+// the save package, all of which the SDL game thread owns; running it on the
+// activity's UI thread races that thread and can interleave two writers into
+// one package. onPause() therefore only parks a request here, and the game
+// thread performs the save itself from android_run_pending_save().
+//
+// The UI thread waits for the result with a bound, so a game thread that is
+// busy (or already gone) delays the pause instead of hanging it.
+static const Uint32 SAVE_REQUEST_TIMEOUT_MS = 2000;
+
+// Constructed on first use, which C++11 makes thread-safe; SDL mutexes and
+// condition variables do not need SDL_Init().
+static SDL_mutex *_save_request_mutex()
+{
+    static SDL_mutex *mutex = SDL_CreateMutex();
+    return mutex;
+}
+
+static SDL_cond *_save_request_cond()
+{
+    static SDL_cond *cond = SDL_CreateCond();
+    return cond;
+}
+
+static bool save_requested = false;
+static bool save_running = false;
+
+// Everything save_game() needs in order not to trip over a half-finished
+// level transition, level build, save or shutdown.
+static bool _pause_save_is_safe()
+{
+    return you.save
+        && crawl_state.need_save
+        && crawl_state.game_started
+        && !crawl_state.saving_game
+        && !crawl_state.generating_level
+        && !crawl_state.updating_scores
+        && !crawl_state.game_crashed
+        && !crawl_state.seen_hups
+        && you.on_current_level
+        && !you.entering_level;
+}
+
+// Releases onPause() even if save_game() leaves through an exception; the
+// exception itself keeps propagating on the game thread as usual.
+namespace
+{
+    struct save_run_guard
+    {
+        ~save_run_guard()
+        {
+            SDL_mutex * const mutex = _save_request_mutex();
+            SDL_LockMutex(mutex);
+            save_running = false;
+            SDL_CondBroadcast(_save_request_cond());
+            SDL_UnlockMutex(mutex);
+        }
+    };
+}
+
+// Called by the game thread at points where no turn is in progress.
+void android_run_pending_save()
+{
+    SDL_mutex * const mutex = _save_request_mutex();
+
+    SDL_LockMutex(mutex);
+    if (!save_requested)
+    {
+        SDL_UnlockMutex(mutex);
+        return;
+    }
+    save_requested = false;
+    if (!_pause_save_is_safe())
+    {
+        // Skipping is safe: the package still holds everything up to the last
+        // commit, so a kill after this loses progress but not the save.
+        SDL_CondBroadcast(_save_request_cond());
+        SDL_UnlockMutex(mutex);
+        return;
+    }
+    save_running = true;
+    SDL_UnlockMutex(mutex);
+
+    save_run_guard guard;
+    save_game(false);
+}
+
 extern "C" JNIEXPORT void JNICALL
 Java_org_libsdl_app_SDLActivity_nativeSaveGame(
     JNIEnv* env, jclass thiz)
 {
-    if (you.save)
-        save_game(false);
+    SDL_mutex * const mutex = _save_request_mutex();
+    SDL_cond * const cond = _save_request_cond();
+
+    SDL_LockMutex(mutex);
+    save_requested = true;
+    SDL_CondBroadcast(cond);
+
+    const Uint32 deadline = SDL_GetTicks() + SAVE_REQUEST_TIMEOUT_MS;
+    while (save_requested || save_running)
+    {
+        const Sint32 left = (Sint32)(deadline - SDL_GetTicks());
+        if (left <= 0)
+            break;
+        SDL_CondWaitTimeout(cond, mutex, (Uint32)left);
+    }
+    // A request the game thread never reached would otherwise fire at some
+    // arbitrary point after the activity resumed; drop it instead.
+    save_requested = false;
+    SDL_UnlockMutex(mutex);
 }
 
 int jni_ref_display_size()

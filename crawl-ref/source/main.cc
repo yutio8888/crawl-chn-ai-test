@@ -2772,6 +2772,12 @@ void world_reacts()
             save_level(level_id::current());
             save_game(false);
         }
+#ifdef __ANDROID__
+        // Travel, autoexplore and rest poll for input with kbhit() instead of
+        // blocking in wait_event(), so a save parked by SDLActivity.onPause()
+        // would otherwise sit unserviced until the run stopped.
+        android_run_pending_save();
+#endif
     }
     // End of a turn.
     //
