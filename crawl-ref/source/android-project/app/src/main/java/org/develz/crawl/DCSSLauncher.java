@@ -197,17 +197,23 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         button.setContentDescription(label);
         button.setOnClickListener(view -> {
             boolean expand = group.getVisibility() != View.VISIBLE;
+            // A touch-focusable Button consumes its first tap just to focus.
+            // Keep touch focus on the container instead, also committing any
+            // size edit and preventing expansion from opening the IME.
+            if (button.isInTouchMode()) {
+                findViewById(R.id.launcherRoot).requestFocus();
+            }
             if (!expand) {
                 // Focus loss commits the size edit before hiding its controls.
-                button.requestFocus();
+                if (!button.isInTouchMode()) {
+                    button.requestFocus();
+                }
                 InputMethodManager ime = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (ime != null) {
                     ime.hideSoftInputFromWindow(button.getWindowToken(), 0);
                 }
             }
-            // Opening a group must not focus the size editor and summon the IME.
-            button.requestFocus();
             group.setVisibility(expand ? View.VISIBLE : View.GONE);
             button.setText((expand ? "− " : "+ ") + label);
         });
