@@ -139,7 +139,13 @@ static formatted_string _build_status_text(int selected_status)
 
         text.textcolour(info.light_colour ? info.light_colour : LIGHTGREY);
         text += title;
-        if (!description.empty() && description != title)
+        if (!info.short_text.empty() && info.short_text != title)
+        {
+            text += "\n";
+            text += formatted_string::parse_string(info.short_text, LIGHTGREY);
+        }
+        if (!description.empty() && description != title
+            && description != info.short_text)
         {
             text += "\n";
             text += formatted_string::parse_string(description, LIGHTGREY);
