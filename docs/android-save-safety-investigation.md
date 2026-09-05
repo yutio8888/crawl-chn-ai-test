@@ -148,7 +148,10 @@ Lua 状态机不是线程安全的；游戏线程执行任意 Lua（用户脚本
 
 ## 5. 复现结果
 
-**未在真机/模拟器上复现，仅静态分析。**
+> 补记（2026-09-05 晚些时候）：模拟器空出后已补做，见第 8 节。
+> 本节保留首轮调查时的状态。
+
+**首轮调查未在真机/模拟器上复现，仅静态分析。**
 
 环境中存在 `emulator-5554`（x86_64）与一台物理设备，但：
 
@@ -236,7 +239,123 @@ Lua 状态机不是线程安全的；游戏线程执行任意 Lua（用户脚本
     （约第 2775 行）。tree-sitter 版本与 `TOOLCHAIN.md` 的固定值一致
     （`tree-sitter==0.26.0`、`tree-sitter-cpp==0.23.4`）。修好扫描器对 `main.cc`
     的解析属于本任务范围之外的基础设施工作。
-- **模拟器复测：未执行**。`emulator-5554`（x86_64）在整个任务期间被并行代理占用
-  （`topResumedActivity` 先后为 `org.develz.crawl.portrait` 与
-  `org.develz.crawl.contextkeyboard`）。安装 `org.develz.crawl` 会覆盖其正在测试的
-  包并抢占前台。第 5 节列出的 Home + `am kill` 场景仍待在独占设备上执行。
+- **模拟器复测：首轮未执行**（`emulator-5554` 当时被并行代理占用）。设备空出后已
+  补做，见第 8 节。
+
+## 8. 模拟器复现与复测（`emulator-5554`，x86_64）
+
+设备空出后补做。所有结论都来自本节记录的实测。
+
+### 8.1 构建与安装
+
+在本 worktree 内构建，不使用 `util/build-android.sh`（它会把
+`.worktrees/android-tiles` 重置到主检出 HEAD）：
+
+```
+make ANDROID=20260905 TILES=y android -j4
+# 生成的（gitignored）app/build.gradle 里给 debug 变体加上
+#   applicationIdSuffix ".savesafety"
+#   ndk { abiFilters "x86_64" }
+# 以免覆盖模拟器上其他代理的 org.develz.crawl* 包
+./gradlew --no-daemon :app:assembleDebug
+```
+
+三个 APK（均为 x86_64 debug，`-DASSERTS -DWIZARD` 已开启，见 `.android-cxxflags`）：
+
+| APK | 源码 | md5 |
+|---|---|---|
+| `baseline-x86_64.apk` | `chn-0.34.1-base` 原文 | `281d8a270c2855512268c1ddf43539e3` |
+| `fixed-x86_64.apk` | `28582d16df`（延迟保存） | `53343b03065cdca46087922a0176bfc2` |
+| `fixed2-x86_64.apk` | `8ca8ad3e13`（加 RESUMED 判据） | `0dac27a01dc93beb2ca4cf5ffde9c27d` |
+
+测试角色：`SSTEST`，牛头人 战士，存档
+`/sdcard/Android/data/org.develz.crawl.savesafety/files/saves/SSTEST.cs`。
+未卸载 `org.develz.crawl.contextkeyboard` / `.portrait` 等其他代理的包。
+
+### 8.2 度量方式
+
+`onPause()` 和 SDL 的 `nativePause()` 都写 logcat（tag `SDL`）。真正要看的是
+**onPause() 占用 UI 线程多久**，取 `onPause()` 之后同一 tid 的下一条日志时间差；
+`nativePause()` 只在 SDL 真正发生状态跃迁时才打，所以不能单独作为口径。
+崩溃口径：logcat 中 `Fatal signal|SIGSEGV|SIGABRT|FATAL EXCEPTION|ANR in` 计数。
+
+### 8.3 修复后构建的结果
+
+| 场景 | onPause 占用 UI 线程 | 存档字节 | `am kill` 后重启 | 崩溃/ANR |
+|---|---|---|---|---|
+| S1 自动探索中按 Home | 179 ms | 52900 → 57897 | 地牢:1，时间 17.9 → **35.9**，等级1 16%，金币 0 → **17**，生命 20/20 | 0 |
+| S2 跨层 travel（请求 D:3）中按 Home | 379 ms | 65858 → 113293 | **地牢:2**（新层已存），时间 742.2 → **777.2**，等级2 68%，生命 27/27，金币 76 | 0 |
+| S3 模态弹窗（travel 目的地提示）中按 Home | 122 ms | 58721 → 62312 | 地牢:1，时间 733.0，等级2 65%，生命 27/27，金币 76，地图与切后台前一致 | 0 |
+| S5 主菜单按 Home | 19 ms | **md5 不变** | 不适用 | 0 |
+| S4 连续 pause/resume ×6（共 12 次 onPause） | 最差 298 ms | 无损坏 | 地牢:2，时间 777.2，等级2 68%，生命 27/27，金币 76 | 0 |
+| 最终回归：修复版读取基线版写出的存档 | 213 ms | 144688 不变 | 地牢:3，等级3 55%，时间 796.3，生命 33/33 | 0 |
+
+S1/S2 的要点是**时间（回合数）向前推进**：切后台前的自动探索/跨层进度被暂停保存
+写了进去，SIGKILL 之后仍在。S5 的要点是 md5 完全不变：没有载入游戏时安全判据
+把请求丢弃，`onPause` 19 ms 返回。
+
+### 8.4 复测中发现并修掉的一个真实回归
+
+第一版修复（`28582d16df`）在"Home 紧跟一次尚未完成的 resume"时会把 2 秒超时跑满：
+
+```
+09-05 08:47:23.080  9248  9248 V SDL     : onResume()
+09-05 08:47:23.090  9248  9248 V SDL     : onPause()
+09-05 08:47:25.090  9248  9248 I Choreographer: Skipped 120 frames!
+```
+
+原因是 SDL 只在 `nativeResume()` 里 post `Android_ResumeSem`；`handleNativeState()`
+还没走到 RESUMED 跃迁时，游戏线程仍阻塞在 `Android_PumpEvents()`，没人能消费
+保存请求。`8ca8ad3e13` 把 Java 侧判据从"`mSDLThread != null`"收紧为
+"并且 `mCurrentNativeState == NativeState.RESUMED`"。这种 pause 本来也没有新东西
+可存——两次 pause 之间游戏线程根本没运行过。
+
+同一场景重测 6 轮共 12 次 onPause：
+
+```
+  onPause #1  ui-thread occupancy=298 ms      # 活动确实处于 RESUMED，保存真的执行了
+  onPause #2  ui-thread occupancy=2 ms        # resume 未完成，判据跳过
+  onPause #3  ui-thread occupancy=269 ms
+  onPause #4  ui-thread occupancy=0 ms
+  onPause #5  ui-thread occupancy=154 ms
+  onPause #6  ui-thread occupancy=0 ms
+  onPause #7  ui-thread occupancy=143 ms
+  onPause #8  ui-thread occupancy=3 ms
+  onPause #9  ui-thread occupancy=130 ms
+  onPause #10 ui-thread occupancy=0 ms
+  onPause #11 ui-thread occupancy=112 ms
+  onPause #12 ui-thread occupancy=0 ms
+  worst ui-thread occupancy: 298 ms  OK (<=2000ms)
+```
+
+即：真正需要保存时 112–298 ms，不需要保存时 0–3 ms，2000 ms 上界只是兜底，
+实测没有再触发。全程 0 次 SIGSEGV / Fatal signal / FATAL EXCEPTION / ANR。
+
+### 8.5 基线（`chn-0.34.1-base`）的复现尝试
+
+同一台模拟器、同一个包、同一个存档，换装基线 APK 后重跑：
+
+| 批次 | onPause 次数 | onPause 占用 UI 线程 | 结果 |
+|---|---|---|---|
+| 自动探索中按 Home | 1 | 52 ms | 重启后存档正常 |
+| 自动探索中按 Home（连打 15 次） | 15 | 最差 174 ms | 无崩溃，存档正常 |
+| 模态提示中按 Home（travel 被怪物打断） | 5 | 18–50 ms | 无崩溃 |
+| 跨层 travel 中按 Home（D:2 → D:3） | 4 | 27–127 ms | 存档 113619 → 144688，重启后地牢:3、等级3、时间 796.3、生命 33/33，正常 |
+
+**基线的并发缺陷没有复现**：约 24 次 pause 事件里没有出现坏档、断言失败或崩溃
+（该构建开着 `-DASSERTS`）。这符合第 3 节的判断——场景 3/4/7 是窄窗口竞态，
+需要 Home 恰好落在游戏线程执行 `save_game()` 的几十毫秒内。**阴性结果不能证伪
+第 3 节的静态结论**，本报告对基线缺陷的论据仍然是调用链和线程归属，而不是这次
+的实测。
+
+### 8.6 本节未覆盖的部分
+
+- 只在 x86_64 模拟器上跑；arm64 真机未测（阶段一/二的改动都与 ABI 无关，
+  `28582d16df` 之前另建过 arm64 `buildTest` APK 验证编译）。
+- 没有构造"保存正在执行时第二次 onPause 到达"的**确定性**重叠：Android 不会在
+  onPause 返回前再投一次 onPause，要让第二次 pause 恰好落在游戏线程仍在
+  `save_game()` 内的窗口里，只能靠概率。8.3/8.4 覆盖的是快速 pause/resume 序列，
+  重叠路径的正确性仍由代码（`save_requested` / `save_running` 两个标志加
+  RAII 守卫）保证，不是实测。
+- 没有测试保存过程中写失败（磁盘满、存档被外部删除）的表现。
+- 测试用的驱动脚本是一次性的，放在 `/tmp`，未入库。
