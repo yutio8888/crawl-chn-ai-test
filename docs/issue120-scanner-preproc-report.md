@@ -1,7 +1,7 @@
 # Issue 120：基线探针与实施边界
 
-状态：探针完成，尚未实施豁免。方案 2 的三条件与三文件全部通过之间存在
-已复现的冲突，须先确定范围。没有改动扫描器或被扫描的 C++ 文件。
+状态：已按后续授权完成方案 2 和三个宏的局部适配。下文先保留探针阶段的
+原始记录，文末给出最终实现、验证和剩余工作。未修改被扫描的 C++ 文件。
 
 基线：`6b82440c5496e04517fc6ae197943bbf84f8ae43`。
 分支：`codex/scanner-preproc-exemption`。
@@ -128,202 +128,167 @@ with tempfile.TemporaryDirectory() as td:
         print('STDERR:\n' + result.stderr)
 ```
 
-## 探针原始输出
+## 探针原始输出摘要
 
-上述 Python 探针退出码：0。内嵌两条 CLI 均退出 2，分别有两个文件解析失败；
-varargs HIGH/WARN 均为 0，concat 已扫描的 directn.cc 有六条既存 MED advisory。
-失败来自尚未适配的基线语法，属于本任务必须解决的阻断，不是工具缺失。
+探针枚举 directn.cc 10 个、main.cc 7 个、menu.cc 9 个 ERROR/missing 节点。
+两个基线 CLI 均退出 2，coverage 为 discovered=3、scanned=1、failed=2。
+逐节点成因见上表；原文保存在
+`.claude/metrics/verify/issue120/issue120-probe.txt`（gitignored）。
 
-```text
-tree-sitter 0.26.0
-tree-sitter-cpp 0.23.4
-FILE crawl-ref/source/directn.cc
-622 missing } b'' window= True
-626 ERROR b'}' window= True
-1941 ERROR b'else' window= True
-2439 ERROR b'#ifdef USE_TILE_LOCAL\n    : public' window= True
-2441 ERROR b'#else\n    : public ui' window= False
-2443 ERROR b'#endif' window= False
-2446 ERROR b'UIDirectionChooserView(direction_chooser& dc) :' window= True
-2447 missing ; b'' window= True
-3721 ERROR b'*' window= True
-3721 ERROR b'.' window= True
-FILE crawl-ref/source/main.cc
-193 ERROR b'void' window= False
-235 ERROR b'__attribute__((externally_visible))' window= True
-426 ERROR b'void' window= False
-2041 ERROR b'#ifdef USE_TILE_LOCAL' window= False
-2043 ERROR b'#endif' window= False
-2051 ERROR b'"<w>"' window= False
-2400 ERROR b'tiles.' window= True
-FILE crawl-ref/source/menu.cc
-115 ERROR b'#ifdef USE_TILE_LOCAL' window= False
-117 ERROR b'#endif' window= False
-791 missing ; b'' window= False
-2397 ERROR b'indent\n#ifdef' window= False
-2401 ERROR b'=' window= False
-2810 ERROR b'const int width =' window= False
-2987 ERROR b'#ifdef USE_TILE_LOCAL' window= False
-2989 ERROR b'#endif' window= False
-3566 ERROR b', int' window= False
-COMMAND: python3 .claude/scripts/scan_varargs_string.py --files /tmp/tmp7d69tfjz/crawl-ref/source/directn.cc,/tmp/tmp7d69tfjz/crawl-ref/source/main.cc,/tmp/tmp7d69tfjz/crawl-ref/source/menu.cc --format json --require-parser
-EXIT: 2
-STDOUT:
-{
-  "scanner": "scan_varargs_string.py",
-  "findings": [],
-  "summary": {
-    "HIGH": 0,
-    "WARN": 0
-  },
-  "coverage": {
-    "discovered": 3,
-    "scanned": 1,
-    "failed": [
-      "/tmp/tmp7d69tfjz/crawl-ref/source/main.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/main.cc",
-      "/tmp/tmp7d69tfjz/crawl-ref/source/menu.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc"
-    ]
-  }
-}
+## 最终实施（授权后的方案 2）
 
-STDERR:
-ERROR: /tmp/tmp7d69tfjz/crawl-ref/source/main.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/main.cc
-ERROR: /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc
+后续授权允许对精确模式扩展条件窗口，并在现有 annotation helper 中适配
+三个具体宏。前文“待确定”及“尚未实施”记录的是探针提交时的状态；以下为
+最终实现与验证结果。
 
-COMMAND: python3 .claude/scripts/scan_string_concat.py --files /tmp/tmp7d69tfjz/crawl-ref/source/directn.cc,/tmp/tmp7d69tfjz/crawl-ref/source/main.cc,/tmp/tmp7d69tfjz/crawl-ref/source/menu.cc --format json --require-parser
-EXIT: 2
-STDOUT:
-{
-  "meta": {
-    "scanner": "scan_string_concat.py",
-    "version": "1.0.0",
-    "mode": "bare-only",
-    "source": "/tmp/tmp7d69tfjz/crawl-ref/source",
-    "coverage": {
-      "discovered": 3,
-      "scanned": 1,
-      "failed": [
-        "/tmp/tmp7d69tfjz/crawl-ref/source/main.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/main.cc",
-        "/tmp/tmp7d69tfjz/crawl-ref/source/menu.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc"
-      ]
-    }
-  },
-  "findings": [
-    {
-      "file": "directn.cc",
-      "line": 3040,
-      "column": 30,
-      "rule": "COMPOUND_ASSIGN",
-      "risk": "MED",
-      "score": 2,
-      "literal": "fruit cache",
-      "receiver": "messageLookup",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    },
-    {
-      "file": "directn.cc",
-      "line": 3042,
-      "column": 30,
-      "rule": "COMPOUND_ASSIGN",
-      "risk": "MED",
-      "score": 2,
-      "literal": "meat cache",
-      "receiver": "messageLookup",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    },
-    {
-      "file": "directn.cc",
-      "line": 3044,
-      "column": 30,
-      "rule": "COMPOUND_ASSIGN",
-      "risk": "MED",
-      "score": 2,
-      "literal": "baked goods cache",
-      "receiver": "messageLookup",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    },
-    {
-      "file": "directn.cc",
-      "line": 3072,
-      "column": 80,
-      "rule": "RUNTIME_CONCAT",
-      "risk": "MED",
-      "score": 2,
-      "literal": " peaceful ",
-      "receiver": "?",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    },
-    {
-      "file": "directn.cc",
-      "line": 3078,
-      "column": 43,
-      "rule": "RUNTIME_CONCAT",
-      "risk": "MED",
-      "score": 2,
-      "literal": "default peaceful ",
-      "receiver": "?",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    },
-    {
-      "file": "directn.cc",
-      "line": 3081,
-      "column": 43,
-      "rule": "RUNTIME_CONCAT",
-      "risk": "MED",
-      "score": 2,
-      "literal": "default ",
-      "receiver": "?",
-      "wrapped": false,
-      "reason": [
-        "file=directn.cc (+2)"
-      ],
-      "sink": null
-    }
-  ],
-  "summary": {
-    "COMPOUND_ASSIGN": {
-      "total": 3,
-      "HIGH": 0,
-      "MED": 3,
-      "LOW": 0
-    },
-    "RUNTIME_CONCAT": {
-      "total": 3,
-      "HIGH": 0,
-      "MED": 3,
-      "LOW": 0
-    }
-  },
-  "per_file": {
-    "directn.cc": {
-      "MED": 6,
-      "total": 6
-    }
-  }
-}
+`i18n_shared.py` 的 `_PREPROCESSOR_PATTERNS` 使用
+`crawl-ref/source/directn.cc`、`main.cc`、`menu.cc` 的仓库相对路径后缀，
+不再使用整文件 SHA 或绝对行号。导出目录和独立 worktree 保留该后缀即可
+复用豁免，同名文件放在其他目录不会得到豁免。省略路径也不会匹配模式。
 
-STDERR:
-ERROR: /tmp/tmp7d69tfjz/crawl-ref/source/main.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/main.cc
-ERROR: /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc: tree-sitter parse error in /tmp/tmp7d69tfjz/crawl-ref/source/menu.cc
+每个模式登记节点类型、精确节点文本（missing 节点使用缺失 token）及完整
+局部上下文。匹配 ERROR 文本采用全等，防止 parser recovery 吞入新错误后
+仍因前缀相同而被放行。原有 phase-2 lexer 和 `_PREPROC_SWITCH_WINDOW=4`
+保持不变；原 live-body/post-endif 窗口之外，仅在登记上下文含 lexer 确认的
+真实条件指令且节点距该指令至多四行时允许匹配。这覆盖指令前节点和 else
+分支，不全局扩展窗口。ERROR 子节点继续逐个校验，未配对条件指令仍阻断。
+三个登记文件的 directive ERROR 也使用具体模式，不走原有泛用 directive
+恢复分支。模式旁保留逐节点成因，探针行号只作注释证据。
 
+三个宏适配均属于**方案 3 的前置局部步骤**，以后完整预处理实现时一并替换：
+
+- `NORETURN static void`：复用既有函数声明/定义前缀匹配，等长空格替换
+  NORETURN；函数签名及函数体继续由 parser 校验。
+- `CRAWL`：只匹配 AST 中的独立 identifier，且与实际字符串字面量之间
+  只有空白，将五字节替换为五字节的空字符串占位。注释、raw-string 内容、
+  宏定义和更长标识符不会触发。
+- `va_arg`：只匹配该具体调用名；简单命名类型、限定符及指针/引用类型经
+  alias declaration 解析确认后，把类型操作数等长改为普通表达式占位。
+  保留完整第一操作数，避免抹掉其嵌套调用中的风险或真实语法错误。
+  未支持的复杂类型形式保持原样并继续 fail-closed。
+
+所有替换保持字节长度和换行位置。字符串取值读取归一化 AST 文本，诊断
+仍使用原始源代码位置，避免把占位位置上的原始 `CRAWL` 字节误读成字符串。
+varargs、生命周期和拼接风险规则没有改变；被扫描 C++ 文件没有修改。
+
+除了前述 changed/no-C++ 的 SKIP（保持不变），回归测试确认两个扫描器的
+生产目录入口原本还会跳过 parse validation。因此三个已登记路径在目录
+入口也强制走同一解析校验，这是关闭实际验收缺口的最小入口修复。
+其他文件的既有目录入口行为没有扩大到本任务处理范围。
+
+## 测试与证据说明
+
+新增测试通过真实 varargs/concat CLI 覆盖三文件基线、插入七行、删除五处
+空行、两个入口、错误路径、窗口外删分号、窗口内未登记错误。三个宏分别
+覆盖合法输入与同一位置删分号，并检查字节终点及换行位置。额外验证具体
+宏名限制、注释/字符串/define 不改写及 va_arg 第一操作数中的 HIGH 风险
+不会被归一化隐藏。原 completeness 测试更新为路径/上下文语义，保留 EOL
+和 phase-2 lexer 回归。
+
+基线和两个 Android HEAD 均使用 `git archive` 导出到临时目录，用当前分支
+脚本运行。每个分支显式扫描“本分支改动的全部 C/C++ 文件 + 三个登记文件”，
+并分别对整个 source 目录运行 varargs、concat、lifetime 三个 CLI。没有修改
+其他 worktree。concat 退出 1 表示 advisory；退出 2 或非空 coverage.failed
+才是解析/基础设施失败。varargs/lifetime 必须退出 0。
+
+首轮沙箱验证失败原文也保留：沙箱将 /tmp 属主显示为 uid 65534，且禁止
+部分既有测试写 Git 对象；初始 PATH 中 Python 是 3.11.2。最终验证使用
+`.python-version` 指定的 Python 3.13.14，通过 run_isolated.sh 在宿主权限
+下执行。宿主默认四路 run_all 有一次清单测试因临时 dirty checkout 失败，
+因此使用现有 ZH_TOOLING_TEST_JOBS=1 串行设置重跑，不修改测试门禁。
+
+完整命令、退出码及输出保存在 gitignored 的
+`.claude/metrics/verify/issue120/issue120-scanner-validation.txt` 和
+`.claude/metrics/verify/issue120/issue120-scanner-branches.txt`。
+verify 的汇总 stdout、内部 verify.log 及
+post-coder 原始日志均保留，避免只提供报告路径而遗漏实际 code-static 输出。
+
+最终 full-scope code profile 退出 0，`0 blocking failure(s)`；code-static
+报告八项 advisory。额外导出基线版本的 concat 扫描器和 shared helper 复查，
+得到相同的 571 existing、8 new、22 resolved 及相同八条 identity。这些是
+既有 advisory baseline 差异，不是本次改动引入，未改写该 baseline。
+
+领域审阅路由结果为 zh-code-reviewer；尚未执行独立领域审阅或 GitHub CI，
+供后续接手者在合并前完成。按用户要求没有 push、merge。方案 3 的完整
+Android/桌面宏配置预处理留待后续。
+## 最终验收结果
+
+验证代码提交：`dba4d2d4ffd7`（后续提交仅保存本文及原始证据）。
+
+| 验证 | 结果 |
+|---|---|
+| 完整 run_all（Python 3.13.14、host、JOBS=1） | exit 0；61 passed, 0 failed |
+| code --scope full --base 6b82440c54 --head dba4d2d4ff | exit 0；0 blocking failure(s) |
+| 基线三文件显式 CLI | varargs=0，concat=1 advisory，lifetime=0；解析失败为零 |
+| android-save-safety 84df089468a39c7b912be08ea23d14acc8d46622 | 显式范围和全目录三个扫描器全部通过 |
+| android-context-keyboard 108705b0f6edffe1b2457972aa146c691cc8ae39 | 显式范围和全目录三个扫描器全部通过 |
+
+验证后再次读取两个分支 HEAD，均与导出时一致。当前分支相对基线的
+`crawl-ref/source` diff 为空。
+
+原始证据（仅本地，不入库）：
+`.claude/metrics/verify/issue120/issue120-scanner-validation.txt`、
+`.claude/metrics/verify/issue120/issue120-scanner-branches.txt`。
+
+## 分支只读扫描复现脚本
+
+将下列脚本保存到临时文件，在当前 worktree 根目录使用 run_isolated.sh
+运行。脚本只读其他 worktree，所有导出文件都在临时目录；不创建 worktree、
+不移动任何分支引用。它的全部 stdout/stderr 见上述分支扫描日志。
+
+```python
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+
+root = Path.cwd()
+scripts = root / '.claude/scripts'
+base = '6b82440c5496e04517fc6ae197943bbf84f8ae43'
+branches = [
+    ('baseline', root, base),
+    ('android-save-safety', root.parent / 'android-save-safety', 'HEAD'),
+    ('android-context-keyboard', root.parent / 'android-context-keyboard', 'HEAD'),
+]
+failed = False
+for label, repo, ref in branches:
+    head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref], text=True).strip()
+    print(f'=== {label} HEAD={head} ===', flush=True)
+    with tempfile.TemporaryDirectory(prefix='issue120-') as td:
+        export = Path(td)
+        # Archive extraction only writes this temporary directory.
+        archive = subprocess.Popen(['git', '-C', str(repo), 'archive', head,
+                                    'crawl-ref/source'], stdout=subprocess.PIPE)
+        extracted = subprocess.run(['tar', '-x', '-C', td], stdin=archive.stdout)
+        archive.stdout.close()
+        if archive.wait() or extracted.returncode:
+            raise RuntimeError('archive export failed')
+        changed = subprocess.check_output(['git', '-C', str(repo), 'diff',
+                                           '--name-only', base, head], text=True).splitlines()
+        files = {f'crawl-ref/source/{name}.cc' for name in ('directn', 'main', 'menu')}
+        files.update(p for p in changed if Path(p).suffix in ('.cc', '.h', '.cpp', '.c'))
+        absolute = [str(export / p) for p in sorted(files)]
+        for scanner in ('scan_varargs_string.py', 'scan_string_concat.py', 'scan_i18n_lifetime.py'):
+            scopes = ('explicit',) if label == 'baseline' else ('explicit', 'full')
+            for scope in scopes:
+                args = [str(export / 'crawl-ref/source')] if scope == 'full' else (
+                    ['--files', *absolute] if scanner == 'scan_i18n_lifetime.py'
+                    else ['--files', ','.join(absolute)])
+                command = ['python3', str(scripts / scanner), *args,
+                           '--format', 'json', '--require-parser']
+                print('COMMAND:', ' '.join(command), flush=True)
+                result = subprocess.run(command, text=True, capture_output=True)
+                print('EXIT:', result.returncode, flush=True)
+                print('STDOUT:\n' + result.stdout, flush=True)
+                print('STDERR:\n' + result.stderr, flush=True)
+                data = json.loads(result.stdout)
+                coverage = data.get('coverage', data.get('meta', {}).get('coverage'))
+                acceptable = result.returncode == 0 or (
+                    scanner == 'scan_string_concat.py' and result.returncode == 1)
+                if coverage and coverage['failed']:
+                    acceptable = False
+                print(f'CHECK {label} {scanner} {scope}: {"PASS" if acceptable else "FAIL"}', flush=True)
+                failed |= not acceptable
+raise SystemExit(1 if failed else 0)
 ```
