@@ -36,7 +36,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error,
-                         parse_cpp_annotations,
+                         parse_cpp_annotations, preprocessor_patterns_for_path,
                          _normalize_eol)
 
 # ── Tree-sitter availability ──────────────────────────────────────────────────
@@ -173,7 +173,9 @@ def _string_content(node, source_bytes):
     """Extract the actual string value (without quotes) from a string_literal
     or concatenated_string node, processing basic C escape sequences."""
     if node.type == "string_literal":
-        raw = _text(node, source_bytes)
+        # Local macro placeholders belong to the parsed text; source_bytes
+        # still supplies original locations and diagnostic context.
+        raw = node.text.decode("utf-8", errors="replace")
         # Handle raw string literals: R"(...)" or R"delim(...)delim"
         if raw.startswith('R"'):
             idx = raw.find('(')
@@ -875,7 +877,8 @@ def scan_file(filepath, parser, include_wrapped=False, validate_parse=False):
     source_bytes = _normalize_eol(raw)
 
     tree = parse_cpp_annotations(parser, source_bytes)
-    if validate_parse and has_relevant_parse_error(tree.root_node, source_bytes):
+    if ((validate_parse or preprocessor_patterns_for_path(filepath))
+            and has_relevant_parse_error(tree.root_node, source_bytes, filepath)):
         raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
     _walk_node(tree.root_node, source_bytes, filepath, findings,
