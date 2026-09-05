@@ -294,9 +294,12 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     // Called on the Android UI thread. Repeated native input waits must not
     // override a user's manual choice of full/compact/numeric layout.
     // Screen values match ui::InputScreen. No translated text is an identity.
-    private int contextLabelResource(int screen, int slot) {
+    // Slot-based tables come first; pages whose slots hold different keys per
+    // situation resolve by the game key instead.
+    private int contextLabelResource(int screen, int slot, int key) {
         switch (screen) {
             case 1: // Inventory (including pickup)
+                if (key == '-') return R.string.keyboard_known_toggle;
                 switch (slot) {
                     case 0: return R.string.ok;
                     case 1: return R.string.back;
@@ -330,6 +333,81 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                     case 5: return R.string.keyboard_traps;
                 }
                 break;
+            case 8: // Use-item menus (wield, wear, quaff, read, evoke, ...)
+                switch (key) {
+                    case '!': return R.string.keyboard_switch_action;
+                    case '?': return R.string.keyboard_describe;
+                    case ',': return R.string.keyboard_switch_list;
+                    case '-': return R.string.keyboard_unarmed;
+                }
+                break;
+            case 9: // Shop
+                switch (key) {
+                    case '!': return R.string.keyboard_switch_action;
+                    case '/': return R.string.keyboard_sort;
+                    case '$': return R.string.keyboard_shopping_list;
+                }
+                break;
+            case 10: // Generic menus with a mode cycle, help or sorting
+                switch (key) {
+                    case '/': return R.string.keyboard_sort;
+                    case '=': return R.string.keyboard_filter_useless;
+                    case '-': return R.string.keyboard_more_info;
+                }
+                break;
+            case 11: // Monster and generic descriptions
+            case 12: // God description and join
+                switch (key) {
+                    case '!': return R.string.keyboard_cycle_pane;
+                    case 13: return R.string.keyboard_join;
+                }
+                break;
+            case 13: // Feature description
+                switch (key) {
+                    case '<': return R.string.keyboard_go_up;
+                    case '>': return R.string.keyboard_go_down;
+                    case '[':
+                    case ']': return R.string.keyboard_view_destination;
+                    case 'o': return R.string.keyboard_open_door;
+                    case 'c': return R.string.keyboard_close_door;
+                }
+                break;
+            case 14: // Skills
+                switch (key) {
+                    case '!': return R.string.keyboard_cycle_view;
+                    case '*': return R.string.keyboard_all_skills;
+                }
+                break;
+            case 15: // Interlevel travel prompt
+                switch (key) {
+                    case 9: return R.string.keyboard_default_target;
+                    case '*': return R.string.keyboard_waypoints;
+                    case '_': return R.string.keyboard_altars;
+                }
+                break;
+            case 16: // Display layer toggles
+                switch (key) {
+                    case 'a': return R.string.keyboard_layers_all;
+                    case 'm': return R.string.keyboard_layers_monsters;
+                    case 'p': return R.string.keyboard_layers_player;
+                    case 'i': return R.string.keyboard_layers_items;
+                    case 'c': return R.string.keyboard_layers_clouds;
+                }
+                break;
+            case 17: // Quiver action selection
+                switch (key) {
+                    case '*': return R.string.keyboard_inventory;
+                    case '&': return R.string.keyboard_all_spells;
+                    case '^': return R.string.keyboard_all_abilities;
+                    case '-': return R.string.keyboard_clear_quiver;
+                }
+                break;
+        }
+        switch (key) {
+            case 13: return R.string.ok;
+            case 27: return R.string.back;
+            case '!': return R.string.keyboard_cycle_mode;
+            case '?': return R.string.keyboard_help;
         }
         return 0;
     }
@@ -345,7 +423,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             final int key = keys[i];
             String label = labels[i] == null ? "" : labels[i];
             if (key != 0 && label.isEmpty()) {
-                int resource = contextLabelResource(screen, i);
+                int resource = contextLabelResource(screen, i, key);
                 if (resource != 0) label = getResources().getString(resource);
             }
             boolean active = key != 0 && !label.isEmpty();
