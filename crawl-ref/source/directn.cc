@@ -2720,6 +2720,12 @@ bool direction_chooser::choose_direction()
     // associated with these ui calls, but I'm not sure of a clean way to make
     // that work
     ui::push_layout(directn_view, KMC_TARGETING);
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::TARGET,
+        {{{T_("Confirm"), CK_ENTER}, {T_("Cancel"), CK_ESCAPE},
+          {T_("Previous target"), '-'}, {T_("Next target"), '='},
+          {T_("Self"), 'r'}}});
+#endif
     directn_view->_queue_allocation();
     while (directn_view->is_alive() && !handle_signals())
         ui::pump_events();

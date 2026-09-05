@@ -1600,6 +1600,46 @@ void Menu::do_menu()
     update_menu();
     ui::push_layout(m_ui.popup, m_kmc);
 
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions;
+    auto keyboard_screen = ui::InputScreen::DEFAULT;
+    if (tag == "inventory")
+    {
+        keyboard_screen = ui::InputScreen::INVENTORY;
+        if (!is_set(MF_NOSELECT))
+            keyboard_actions[0] = {T_("Confirm"), CK_ENTER};
+        if (!is_set(MF_UNCANCEL))
+            keyboard_actions[1] = {T_("Back"), CK_ESCAPE};
+        if (is_set(MF_PAGED_INVENTORY))
+        {
+            keyboard_actions[2] = {T_("Previous category"), CK_LEFT};
+            keyboard_actions[3] = {T_("Next category"), CK_RIGHT};
+        }
+        if (is_set(MF_MULTISELECT))
+            keyboard_actions[4] = {T_("Select all"), ','};
+        if (action_cycle != CYCLE_NONE)
+            keyboard_actions[5] = {T_("Switch action"), '!'};
+    }
+    else if (m_kmc == KMC_CONFIRM)
+    {
+        keyboard_screen = ui::InputScreen::CONFIRM;
+        // Offer only answers actually present in this confirmation menu.
+        for (const auto* entry : items)
+        {
+            if (entry->hotkeys.empty())
+                continue;
+            switch (entry->hotkeys[0])
+            {
+            case 'Y': keyboard_actions[0] = {T_("Yes"), 'Y'}; break;
+            case 'N': keyboard_actions[1] = {T_("No"), 'N'}; break;
+            case 'A': keyboard_actions[2] = {T_("Always"), 'A'}; break;
+            }
+        }
+    }
+    ui::InputActionScope keyboard_scope(keyboard_screen,
+                                        std::move(keyboard_actions));
+#endif
+
 #ifdef USE_TILE_WEB
     tiles.push_menu(this);
     _webtiles_title_changed = false;

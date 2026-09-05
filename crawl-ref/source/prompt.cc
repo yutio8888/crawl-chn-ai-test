@@ -223,6 +223,11 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
         }
     }
     mouse_control mc(MOUSE_MODE_YESNO);
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::CONFIRM,
+        {{{T_("Yes"), 'Y'}, {T_("No"), 'N'},
+          ask_always ? ui::InputAction(T_("Always"), 'A') : ui::InputAction()}});
+#endif
     while (true)
     {
         int tmp = ESCAPE;

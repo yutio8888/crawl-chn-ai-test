@@ -2011,6 +2011,11 @@ static void readkey_more(const function<void()>& redraw_prompt, bool user_forced
 #endif
     mouse_control mc(MOUSE_MODE_MORE);
 
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::MORE,
+                                        {{{T_("Continue"), ' '}}});
+#endif
+
     do
     {
         keypress = getch_ck();
