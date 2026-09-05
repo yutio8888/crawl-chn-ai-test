@@ -529,8 +529,10 @@ public:
                                  : VColour(32, 37, 45);
         m_buf.add(m_region.x, m_region.y, m_region.ex(), m_region.ey(), bg);
         if (focused || hovered || active)
+        {
             m_line_buf.add_square(m_region.x, m_region.y, m_region.ex()-1,
                                  m_region.ey()-1, VColour(198, 166, 107));
+        }
     }
 
     void _render() override
@@ -883,8 +885,10 @@ command_type show_topbar_command_menu(bool *acted)
             labels->add_child(_drawer_text(formatted_string(
                 _quick_entry_caption(entry), LIGHTGREY)));
             if (!entry.reason.empty())
+            {
                 labels->add_child(_drawer_text(formatted_string(
                     entry.reason, LIGHTGREY)));
+            }
             row->add_child(labels);
 
             auto button = make_shared<QuickButton>();
@@ -980,8 +984,10 @@ command_type show_topbar_command_menu(bool *acted)
             const auto viewport = scroller->get_region();
             const int padding = _menu_dp(4);
             if (item.y < viewport.y + padding)
+            {
                 scroller->set_scroll(scroller->get_scroll()
                                      + item.y - viewport.y - padding);
+            }
             else if (item.ey() > viewport.ey() - padding)
                 scroller->set_scroll(scroller->get_scroll()
                                      + item.ey() - viewport.ey() + padding);

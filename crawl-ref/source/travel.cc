@@ -4845,8 +4845,10 @@ string runrest::runmode_name() const
         return T_("travel");
     default:
         if (runmode > 0)
+        {
             return pos.origin() ? (T_("rest"))
                                 : (T_("run"));
+        }
         return "";
     }
 }

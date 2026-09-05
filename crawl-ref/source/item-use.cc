@@ -1671,18 +1671,14 @@ bool can_unequip_item(item_def& item, bool silent)
     if (is_unrandom_artefact(item, UNRAND_DEMON_AXE) && you.beheld())
     {
         if (!silent)
-        {
             mprf(MSGCH_PROMPT, T_("Your thirst for blood prevents you from unwielding your weapon!"));
-        }
         return false;
     }
 
     if (you.duration[DUR_VAINGLORY] && is_unrandom_artefact(item, UNRAND_VAINGLORY))
     {
         if (!silent)
-        {
             mprf(MSGCH_PROMPT, T_("It would be unfitting for someone so glorious to remove their crown in front of an audience."));
-        }
         return false;
     }
 

@@ -580,8 +580,10 @@ string SkillMenuSwitch::get_help()
                 && have_passive(passive_t::bondage_skill_boost))
             {
                 if (chinese)
+                {
                     causes.push_back(make_stringf(T_("%s's power"),
                                                   god_name(you.religion).c_str()));
+                }
                 else
                     causes.push_back(apostrophise(god_name(you.religion))
                                      + " power");
@@ -589,17 +591,25 @@ string SkillMenuSwitch::get_help()
             if (_any_crosstrained())
                 causes.push_back(T_("cross-training"));
             if (_hermit_bonus())
+            {
                 causes.push_back(chinese ? T_("Hermit's Pendant")
                                          : "the Hermit's pendant");
+            }
             if (_wildshape_bonus())
+            {
                 causes.push_back(chinese ? C_("skill cause", "wildshape")
                                          : "wildshape");
+            }
             if (_charlatan_bonus())
+            {
                 causes.push_back(chinese ? T_("Charlatan's Orb")
                                          : "the Charlatan's Orb");
+            }
             if (you.form == transformation::walking_scroll)
+            {
                 causes.push_back(chinese ? T_("scribal knowledge")
                                          : "scribal knowledge");
+            }
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
@@ -621,17 +631,23 @@ string SkillMenuSwitch::get_help()
             if (player_under_penance(GOD_ASHENZARI))
             {
                 if (chinese)
+                {
                     causes.push_back(make_stringf(T_("%s's anger"),
                                                   god_name(GOD_ASHENZARI).c_str()));
+                }
                 else
                     causes.push_back("Ashenzari's anger");
             }
             if (_hermit_penalty())
+            {
                 causes.push_back(chinese ? T_("Hermit's Pendant")
                                          : "the Hermit's pendant");
+            }
             if (you.has_bane(BANE_DILETTANTE))
+            {
                 causes.push_back(chinese ? T_("Bane of the Dilettante")
                                          : "the Bane of the Dilettante");
+            }
             if (!result.empty())
                 result += " ";
             if (chinese)
@@ -671,9 +687,7 @@ string SkillMenuSwitch::get_help()
 
         string result = T_("The relative cost of raising each skill is in <cyan>cyan</cyan>");
         if (skm.is_set(SKMF_MANUAL))
-        {
             result += T_(" (or <lightred>red</lightred> if enhanced by a manual)");
-        }
         result += T_(".\n");
         return result;
     }
@@ -1567,9 +1581,7 @@ void SkillMenu::set_default_help()
 {
     string text;
     if (is_set(SKMF_EXPERIENCE))
-    {
         text = T_("Select the skills you want to be trained. The chosen skills will be raised to the level shown in <cyan>cyan</cyan>.");
-    }
     else if (is_set(SKMF_SIMPLE))
         text = hints_skills_info();
     else

@@ -647,8 +647,10 @@ private:
              << (T_("   [<w>?</w>] help"));
 
         if (search_text.size())
+        {
             return pad_more_with(desc.str(),
                 T_("[<w>Esc</w>] clear"));
+        }
         else
             return pad_more_with_esc(desc.str());
     }
@@ -919,8 +921,10 @@ public:
         else
         {
             if (player_spell_levels() > 1 || player_spell_levels() == 0)
+            {
                 spell_levels_str = make_stringf(T_("<lightgreen>%d spell levels left</lightgreen>"),
                                                 player_spell_levels());
+            }
             else
                 spell_levels_str = make_stringf(T_("<lightgreen>%d spell level left </lightgreen>"),
                                                 player_spell_levels());
