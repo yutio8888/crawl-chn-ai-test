@@ -71,7 +71,6 @@ public class SDLActivity extends AppCompatActivity {
     protected static int extraKeyboardOption;
     protected static int keyboardSize;
     protected static boolean fullScreen;
-    private int lastInputContext = -1;
     protected static View mTextEdit;
     protected static boolean mScreenKeyboardShown;
     protected static ViewGroup mLayout;
@@ -940,16 +939,18 @@ public class SDLActivity extends AppCompatActivity {
     // Input context changes presentation, independently of keyboard visibility.
     public static void jniInputContext(int context, int screen, String[] labels, int[] keys) {
         SDLActivity activity = mSingleton;
-        if (activity == null) {
+        if (activity == null || labels == null || keys == null
+                || labels.length != 6 || keys.length != 6) {
             return;
         }
-        activity.lastInputContext = context;
         activity.runOnUiThread(() -> {
             if (mSingleton == activity && mKeyboard != null) {
-                mKeyboard.setInputContext(context);
+                mKeyboard.setInputContext(context, screen, labels, keys);
             }
         });
     }
+
+    public static native void nativeKeyboardKey(int key);
 
     // CRAWL HACK: Function used to toggle the keyboard, called using JNI.
     public static boolean jniKeyboardControl(int action) {

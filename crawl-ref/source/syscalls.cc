@@ -265,6 +265,29 @@ void jni_input_context(const ui::InputDescriptor& descriptor)
         env->ExceptionClear();
 }
 
+// Only keys without an InputConnection character representation use this
+// bridge. Queue normal SDL events; never touch the game from the UI thread.
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeKeyboardKey(JNIEnv*, jclass, jint key)
+{
+    SDL_Keycode sym;
+    switch (key)
+    {
+    case CK_LEFT:  sym = SDLK_LEFT; break;
+    case CK_RIGHT: sym = SDLK_RIGHT; break;
+    default: return;
+    }
+    SDL_Event event = {};
+    event.type = SDL_KEYDOWN;
+    event.key.state = SDL_PRESSED;
+    event.key.keysym.sym = sym;
+    event.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
+    SDL_PushEvent(&event);
+    event.type = SDL_KEYUP;
+    event.key.state = SDL_RELEASED;
+    SDL_PushEvent(&event);
+}
+
 float jni_get_display_density()
 {
     JNIEnv *env = Android_JNI_GetEnv();
