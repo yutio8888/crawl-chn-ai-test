@@ -251,7 +251,7 @@ class QuickRowTests(unittest.TestCase):
         # nothing quick-row specific leaked into the shared ability region
         self.assertNotIn("quick", source.lower())
 
-    def test_row_is_reserved_only_while_a_live_list_is_non_empty(self) -> None:
+    def test_row_requires_a_live_list_and_available_space(self) -> None:
         live = self.fn("void TilesFramework::quick_row_live_lists")
         self.assertIn("you.spell_no > 0", live)
         self.assertIn("your_talents(true).empty()", live)
@@ -262,9 +262,19 @@ class QuickRowTests(unittest.TestCase):
         layout = self.fn("void TilesFramework::do_layout()")
         self.assertRegex(
             layout,
+            r"int quick_row_h = m_quick_row_spells \|\| m_quick_row_abilities"
+            r"\s*\? m_region_quick_spl->dy : 0;")
+        self.assertRegex(
+            layout,
             r"m_quick_row_shown\s*=\s*use_top_bar\s*&&\s*"
-            r"\(m_quick_row_spells \|\| m_quick_row_abilities\)")
-        # both lists empty: no cells at all, so no blank strip is reserved
+            r"quick_row_h > 0")
+        # A live list must also yield when it would shrink the full LOS.
+        self.assertRegex(
+            layout,
+            r"if \(m_windowsz.y - min_top_bar_h - msg_min_h - quick_row_h"
+            r"\s*< ENV_SHOW_DIAMETER \* m_region_tile->dy\)"
+            r"\s*\{\s*quick_row_h = 0;")
+        # Empty lists or insufficient space leave no drawable/hittable cells.
         self.assertRegex(layout, r"m_region_quick_spl->resize\(0, 0\)")
         self.assertRegex(layout, r"m_region_quick_abl->resize\(0, 0\)")
 
