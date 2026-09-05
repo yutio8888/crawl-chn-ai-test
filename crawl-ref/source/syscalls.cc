@@ -56,6 +56,7 @@ bool ensure_utf8_ctype()
 
 #ifdef __ANDROID__
 #include "player.h"
+#include "ui.h"
 #include <errno.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -204,17 +205,59 @@ bool jni_keyboard_control(int action)
     return shown;
 }
 
-void jni_input_context(int context)
+void jni_input_context(const ui::InputDescriptor& descriptor)
 {
+    static ui::InputDescriptor last;
+    static bool sent = false;
+    if (sent && last == descriptor)
+        return;
     JNIEnv *env = Android_JNI_GetEnv();
     if (!env)
         return;
     jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
     if (sdl_class)
     {
-        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext", "(I)V");
+        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext",
+            "(II[Ljava/lang/String;[I)V");
         if (method)
-            env->CallStaticVoidMethod(sdl_class, method, context);
+        {
+            jclass string_class = env->FindClass("java/lang/String");
+            jobjectArray labels = string_class
+                ? env->NewObjectArray(6, string_class, nullptr) : nullptr;
+            jintArray keys = labels ? env->NewIntArray(6) : nullptr;
+            if (keys)
+            {
+                jint values[6];
+                for (int i = 0; i < 6 && !env->ExceptionCheck(); ++i)
+                {
+                    values[i] = descriptor.actions[i].key;
+                    jstring label = env->NewStringUTF(descriptor.actions[i].label.c_str());
+                    if (label)
+                    {
+                        env->SetObjectArrayElement(labels, i, label);
+                        env->DeleteLocalRef(label);
+                    }
+                }
+                if (!env->ExceptionCheck())
+                {
+                    env->SetIntArrayRegion(keys, 0, 6, values);
+                    env->CallStaticVoidMethod(sdl_class, method,
+                        static_cast<int>(descriptor.context),
+                        static_cast<int>(descriptor.screen), labels, keys);
+                    if (!env->ExceptionCheck())
+                    {
+                        last = descriptor;
+                        sent = true;
+                    }
+                }
+            }
+            if (keys)
+                env->DeleteLocalRef(keys);
+            if (labels)
+                env->DeleteLocalRef(labels);
+            if (string_class)
+                env->DeleteLocalRef(string_class);
+        }
         env->DeleteLocalRef(sdl_class);
     }
     // An unavailable presentation bridge must not poison later JNI calls.

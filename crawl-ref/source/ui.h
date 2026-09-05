@@ -6,6 +6,9 @@
 #pragma once
 
 #include <functional>
+#ifdef __ANDROID__
+#include <array>
+#endif
 #include <vector>
 
 #include "format.h"
@@ -1287,6 +1290,45 @@ shared_ptr<Widget> top_layout();
 // visibility toggle. Values are shared with DCSSKeyboard.java.
 enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
 InputContext input_context();
+#ifdef __ANDROID__
+enum class InputScreen { DEFAULT, INVENTORY, ITEM, SPELL, TARGET, CONFIRM, MORE, MAP };
+struct InputAction
+{
+    InputAction(string text = "", int input = 0)
+        : label(std::move(text)), key(input) {}
+    string label;
+    int key;
+    bool operator==(const InputAction& other) const
+    { return label == other.label && key == other.key; }
+};
+struct InputDescriptor
+{
+    InputContext context = InputContext::NAVIGATION;
+    InputScreen screen = InputScreen::DEFAULT;
+    // Confirm and cancel always occupy slots 0 and 1 respectively.
+    std::array<InputAction, 6> actions;
+    bool operator==(const InputDescriptor& other) const
+    {
+        return context == other.context && screen == other.screen
+            && actions == other.actions;
+    }
+};
+class InputActionScope
+{
+public:
+    InputActionScope(InputScreen screen, std::array<InputAction, 6> actions,
+                     shared_ptr<Widget> layout = top_layout());
+    ~InputActionScope();
+    InputActionScope(const InputActionScope&) = delete;
+    InputActionScope& operator=(const InputActionScope&) = delete;
+private:
+    friend InputDescriptor input_descriptor();
+    InputDescriptor descriptor;
+    shared_ptr<Widget> owner;
+    InputActionScope* previous;
+};
+InputDescriptor input_descriptor();
+#endif
 #ifdef USE_TILE_LOCAL
 bool scroll_touch_at(int x, int y, int delta_y);
 #endif

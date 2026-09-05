@@ -938,9 +938,9 @@ public class SDLActivity extends AppCompatActivity {
     }
 
     // Input context changes presentation, independently of keyboard visibility.
-    public static void jniInputContext(int context) {
+    public static void jniInputContext(int context, int screen, String[] labels, int[] keys) {
         SDLActivity activity = mSingleton;
-        if (activity == null || activity.lastInputContext == context) {
+        if (activity == null) {
             return;
         }
         activity.lastInputContext = context;
