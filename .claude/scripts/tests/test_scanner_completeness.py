@@ -449,13 +449,10 @@ some "quoted text
                             self.assertIn(str(source),
                                           coverage["failed"][0])
 
-    def test_baseline_exemption_binds_frozen_directn_nodes(self):
-        # R4-CODE-004: the frozen exemption is bound to the real
-        # ERROR/missing nodes of the baseline directn.cc content. Only the
-        # byte-identical baseline content parses as exempt; a generic '}'
-        # / 'else' ERROR node at a switch point, the same line text at a
-        # switch point in another file, and every mutation of the baseline
-        # content (single-byte flip, line shift, truncation) fail closed.
+    def test_baseline_exemption_binds_directn_context(self):
+        # Issue 120 replaces content hashes with path and local context.
+        # Line shifts pass; generic tokens, incomplete context and real
+        # syntax errors still fail closed.
         try:
             import tree_sitter_cpp as _tscpp
             from tree_sitter import Language as _Language
@@ -498,11 +495,11 @@ some "quoted text
 }}
 '''.encode("utf-8"),
              True),
-            ("single-byte mutation of the baseline fails closed",
-             baseline_bytes[:50000] + b"X" + baseline_bytes[50001:],
+            ("syntax error added to the baseline fails closed",
+             b"int x = ;\n" + baseline_bytes,
              True),
-            ("line-shifted copy of the baseline fails closed",
-             b"int x = 1;\n" + baseline_bytes, True),
+            ("line-shifted copy of the baseline remains exempt",
+             b"int x = 1;\n" + baseline_bytes, False),
             ("truncated baseline fails closed",
              baseline_bytes[:3000], True),
         ]
@@ -511,7 +508,8 @@ some "quoted text
                 tree = parser.parse(source)
                 self.assertEqual(
                     expected,
-                    has_relevant_parse_error(tree.root_node, source),
+                    has_relevant_parse_error(tree.root_node, source,
+                                             "crawl-ref/source/directn.cc"),
                     name)
 
     def test_phase2_splice_advances_across_all_line_endings(self):
@@ -1582,11 +1580,11 @@ int main() { return 0; }
         parser = _Parser(lang)
         tree_lf = parser.parse(lf)
         tree_norm = parser.parse(_normalize_eol(cr))
-        self.assertFalse(has_relevant_parse_error(tree_lf.root_node, lf))
+        self.assertFalse(has_relevant_parse_error(tree_lf.root_node, lf, directn))
         self.assertEqual(
-            has_relevant_parse_error(tree_lf.root_node, lf),
+            has_relevant_parse_error(tree_lf.root_node, lf, directn),
             has_relevant_parse_error(tree_norm.root_node,
-                                     _normalize_eol(cr)))
+                                     _normalize_eol(cr), directn))
 
         # End-to-end through the real scanner CLIs: the CRLF-converted
         # copy of directn.cc must produce the same exit codes, coverage
@@ -1598,7 +1596,8 @@ int main() { return 0; }
             "scan_varargs_string.py": (0, []),
         }
         with tempfile.TemporaryDirectory() as td:
-            source = Path(td) / "directn.cc"
+            source = Path(td) / "crawl-ref/source/directn.cc"
+            source.parent.mkdir(parents=True)
             source.write_bytes(crlf)
             for scanner, (exit_code, findings) in expected.items():
                 with self.subTest(scanner=scanner, entry="files"):
