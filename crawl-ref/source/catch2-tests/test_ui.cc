@@ -6,6 +6,79 @@
 
 #include "ui.h"
 #include "ui-scissor.h"
+#include "libutil.h"
+
+// Layout-only tests do not need a GL context. Console push/pop clears a live
+// terminal, so exercise these through the existing local-tiles test target.
+#ifdef USE_TILE_LOCAL
+namespace
+{
+class test_layout
+{
+public:
+    explicit test_layout(shared_ptr<ui::Widget> widget)
+    {
+        ui::push_layout(std::move(widget));
+    }
+    ~test_layout() { ui::pop_layout(); }
+};
+
+class text_input_box : public ui::Box
+{
+public:
+    text_input_box() : ui::Box(ui::Widget::VERT) {}
+    bool accepts_text_input() const override { return true; }
+};
+}
+
+TEST_CASE("Input context follows focus and nested layout restoration", "[ui-input]")
+{
+    REQUIRE_FALSE(ui::has_layout());
+    mouse_control command_mode(MOUSE_MODE_COMMAND);
+    CHECK(ui::input_context() == ui::InputContext::GAME);
+    auto text = make_shared<text_input_box>();
+    auto child = make_shared<ui::Box>(ui::Widget::VERT);
+    text->add_child(child);
+    {
+        test_layout outer(text);
+        ui::set_focused_widget(child.get());
+        CHECK(ui::input_context() == ui::InputContext::TEXT);
+        {
+            test_layout modal(make_shared<ui::Box>(ui::Widget::VERT));
+            CHECK(ui::input_context() == ui::InputContext::NAVIGATION);
+        }
+        CHECK(ui::get_focused_widget() == child.get());
+        CHECK(ui::input_context() == ui::InputContext::TEXT);
+    }
+    CHECK(ui::input_context() == ui::InputContext::GAME);
+    {
+        mouse_control target_mode(MOUSE_MODE_TARGET);
+        CHECK(ui::input_context() == ui::InputContext::NAVIGATION);
+    }
+    CHECK(ui::input_context() == ui::InputContext::GAME);
+}
+
+TEST_CASE("Legacy text input scope does not leak into a nested menu", "[ui-input]")
+{
+    REQUIRE_FALSE(ui::has_layout());
+    mouse_control command_mode(MOUSE_MODE_COMMAND);
+    {
+        ui::TextInputScope input;
+        CHECK(ui::input_context() == ui::InputContext::TEXT);
+        {
+            test_layout menu(make_shared<ui::Box>(ui::Widget::VERT));
+            CHECK(ui::input_context() == ui::InputContext::NAVIGATION);
+            {
+                ui::TextInputScope nested_input;
+                CHECK(ui::input_context() == ui::InputContext::TEXT);
+            }
+            CHECK(ui::input_context() == ui::InputContext::NAVIGATION);
+        }
+        CHECK(ui::input_context() == ui::InputContext::TEXT);
+    }
+    CHECK(ui::input_context() == ui::InputContext::GAME);
+}
+#endif
 
 TEST_CASE( "Test region methods", "[single-file]" ) {
 

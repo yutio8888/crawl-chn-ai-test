@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "syscalls.h"
+#include <cmath>
 
 #ifdef TARGET_OS_WINDOWS
 # ifdef TARGET_COMPILER_VC
@@ -178,6 +179,46 @@ bool jni_keyboard_control(int action)
     jboolean shown = env->CallStaticBooleanMethod(sdlClass, mid, action);
 
     return shown;
+}
+
+void jni_input_context(int context)
+{
+    JNIEnv *env = Android_JNI_GetEnv();
+    if (!env)
+        return;
+    jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
+    if (sdl_class)
+    {
+        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext", "(I)V");
+        if (method)
+            env->CallStaticVoidMethod(sdl_class, method, context);
+        env->DeleteLocalRef(sdl_class);
+    }
+    // An unavailable presentation bridge must not poison later JNI calls.
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
+}
+
+float jni_get_display_density()
+{
+    JNIEnv *env = Android_JNI_GetEnv();
+    if (!env)
+        return 1.0f;
+    jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
+    float density = 1.0f;
+    if (sdl_class)
+    {
+        jmethodID method = env->GetStaticMethodID(sdl_class, "jniDisplayDensity", "()F");
+        if (method)
+            density = env->CallStaticFloatMethod(sdl_class, method);
+        env->DeleteLocalRef(sdl_class);
+    }
+    if (env->ExceptionCheck())
+    {
+        env->ExceptionClear();
+        return 1.0f;
+    }
+    return std::isfinite(density) && density > 0 ? density : 1.0f;
 }
 #endif
 

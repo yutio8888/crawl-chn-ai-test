@@ -952,6 +952,10 @@ int SDLWrapper::send_textinput(wm_event *event)
 
 int SDLWrapper::wait_event(wm_event *event, int timeout)
 {
+#ifdef __ANDROID__
+    // Sampling here avoids transient mouse_control changes between prompts.
+    jni_input_context(static_cast<int>(ui::input_context()));
+#endif
     SDL_Event sdlevent;
 
     if (!m_textinput_queue.empty())

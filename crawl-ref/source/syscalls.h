@@ -30,6 +30,8 @@ int mkstemp(char *dummy);
 #ifdef __ANDROID__
 int jni_ref_display_size();
 bool jni_keyboard_control(int toggle);
+void jni_input_context(int context);
+float jni_get_display_density();
 time_t jni_package_last_update_time();
 #endif
 

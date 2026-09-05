@@ -599,6 +599,7 @@ int line_reader::getkey()
 
 int line_reader::read_line_core(bool reset_cursor)
 {
+    ui::TextInputScope text_input;
     length = strlen(buffer);
     int width = strwidth(buffer);
 
