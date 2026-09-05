@@ -373,10 +373,15 @@ public class SDLActivity extends AppCompatActivity {
         Log.v(TAG, "onPause()");
 
         // CRAWL HACK: Save game. The native call hands the save to SDLThread
-        // and waits for it, so skip it when that thread is gone: nothing would
-        // service the request. It must stay ahead of handleNativeState(), which
-        // pauses SDL and blocks SDLThread in Android_PumpEvents().
-        if (SDLActivity.mSDLThread != null) {
+        // and waits for it, so ask only when that thread can answer: gone, or
+        // still parked in Android_PumpEvents() because the activity never
+        // finished resuming, means nothing would service the request and the
+        // wait would just burn its whole timeout. A pause that follows a
+        // resume the game thread never saw also has nothing new to save.
+        // This must stay ahead of handleNativeState(), which pauses SDL and
+        // parks SDLThread again.
+        if (SDLActivity.mSDLThread != null
+                && SDLActivity.mCurrentNativeState == NativeState.RESUMED) {
             SDLActivity.nativeSaveGame();
         }
 
