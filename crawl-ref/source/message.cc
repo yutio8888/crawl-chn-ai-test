@@ -355,7 +355,8 @@ public:
     }
 };
 
-static void readkey_more(bool user_forced=false);
+static void readkey_more(const function<void()>& redraw_prompt,
+                         bool user_forced=false);
 
 // Types of message prefixes.
 // Higher values override lower.
@@ -803,55 +804,63 @@ public:
         if (user)
             flush_input_buffer(FLUSH_FORCE_MORE);
 
-        int last_row = crawl_view.msgsz.y;
-        if (first_col_more())
+        const auto draw_prompt = [&]()
         {
-            cgotoxy(1, last_row, GOTO_MSG);
-            cglyph_t g = _prefix_glyph(full ? prefix_type::full_more : prefix_type::other_more);
-            formatted_string f;
-            f.add_glyph(g);
-            f.display();
-            // Move cursor back for nicer display.
-            cgotoxy(1, last_row, GOTO_MSG);
-            // Need to read_key while cursor_control in scope.
-            cursor_control con(true);
-            readkey_more();
-        }
-        else
-        {
-#ifdef __ANDROID__
-            cgotoxy(1, last_row, GOTO_MSG);
-            const string more_prompt = chop_string(
-                string(" ") + T_("--more-- Tap to continue.") + " ",
-                width(), false);
-            const int prompt_width = strwidth(more_prompt);
-            const int left_pad = max(0, (width() - prompt_width) / 2);
-            const string bar = string(left_pad, ' ') + more_prompt
-                + string(max(0, width() - left_pad - prompt_width), ' ');
-            draw_colour colours(WHITE, BROWN);
-            cprintf("%s", bar.c_str());
-#else
-            cgotoxy(use_first_col() ? 2 : 1, last_row, GOTO_MSG);
-            textcolour(channel_to_colour(MSGCH_PROMPT));
-            if (crawl_state.game_is_hints())
+            int last_row = crawl_view.msgsz.y;
+            if (first_col_more())
             {
-                const char* more_str;
-                if (is_tiles())
-                {
-                    more_str = T_("--more-- Press Space or click to continue."
-                                 " You can later reread messages with Ctrl-P.");
-                }
-                else
-                    more_str = T_("--more-- Press Space to continue."
-                                 " You can later reread messages with Ctrl-P.");
-                cprintf(more_str);
+                cgotoxy(1, last_row, GOTO_MSG);
+                cglyph_t g = _prefix_glyph(full ? prefix_type::full_more : prefix_type::other_more);
+                formatted_string f;
+                f.add_glyph(g);
+                f.display();
+                // Move cursor back for nicer display.
+                cgotoxy(1, last_row, GOTO_MSG);
             }
             else
-                cprintf(T_("--more--"));
+            {
+#ifdef __ANDROID__
+                cgotoxy(1, last_row, GOTO_MSG);
+                const string more_prompt = chop_string(
+                    string(" ") + T_("--more-- Tap to continue.") + " ",
+                    width(), false);
+                const int prompt_width = strwidth(more_prompt);
+                const int left_pad = max(0, (width() - prompt_width) / 2);
+                const string bar = string(left_pad, ' ') + more_prompt
+                    + string(max(0, width() - left_pad - prompt_width), ' ');
+                draw_colour colours(WHITE, BROWN);
+                cprintf("%s", bar.c_str());
+#else
+                cgotoxy(use_first_col() ? 2 : 1, last_row, GOTO_MSG);
+                textcolour(channel_to_colour(MSGCH_PROMPT));
+                if (crawl_state.game_is_hints())
+                {
+                    const char* more_str;
+                    if (is_tiles())
+                    {
+                        more_str = T_("--more-- Press Space or click to continue."
+                                     " You can later reread messages with Ctrl-P.");
+                    }
+                    else
+                        more_str = T_("--more-- Press Space to continue."
+                                     " You can later reread messages with Ctrl-P.");
+                    cprintf(more_str);
+                }
+                else
+                    cprintf(T_("--more--"));
 #endif
 
-            readkey_more(user);
+            }
+        };
+        draw_prompt();
+        if (first_col_more())
+        {
+            // Keep the prefix cursor visible throughout input and redraws.
+            cursor_control con(true);
+            readkey_more(draw_prompt);
         }
+        else
+            readkey_more(draw_prompt, user);
     }
 };
 
@@ -1992,7 +2001,7 @@ void set_more_autoclear(bool on)
     autoclear_more = on;
 }
 
-static void readkey_more(bool user_forced)
+static void readkey_more(const function<void()>& redraw_prompt, bool user_forced)
 {
     if (autoclear_more)
         return;
@@ -2008,6 +2017,7 @@ static void readkey_more(bool user_forced)
         if (keypress == CK_REDRAW)
         {
             redraw_screen();
+            redraw_prompt();
             update_screen();
             continue;
         }
