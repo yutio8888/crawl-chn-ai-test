@@ -12,6 +12,7 @@
 #include "libutil.h"
 #include "macro.h"
 #include "outer-menu.h"
+#include "options.h"
 #include "player.h"
 #include "prompt.h"
 #include "spl-cast.h"
@@ -22,6 +23,9 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
+#ifdef __ANDROID__
+#include "syscalls.h"
+#endif
 
 namespace
 {
@@ -31,6 +35,45 @@ static const int COMMAND_MENU_ITEM_HEIGHT = 72;
 static const int COMMAND_MENU_ITEM_PADDING = 12;
 static const int COMMAND_MENU_ICON_GAP = 16;
 static const int QUICK_ICON_PAGE_SIZE = 12;
+
+static int _command_item_height()
+{
+#ifdef __ANDROID__
+    const int pixels = (int) ceil(48 * jni_get_display_density());
+    return max(COMMAND_MENU_ITEM_HEIGHT,
+               display_density.apply_game_scale(pixels + Options.game_scale - 1));
+#else
+    return COMMAND_MENU_ITEM_HEIGHT;
+#endif
+}
+
+static bool _negative_status(int status)
+{
+    if (status < NUM_DURATIONS)
+        return duration_negative((duration_type) status);
+    // These effects are intrinsically harmful. Mixed-purpose statuses such as
+    // terrain, clouds, speed and regeneration deliberately keep their order.
+    switch (status)
+    {
+    case STATUS_BEHELD:
+    case STATUS_NET:
+    case STATUS_BACKLIT:
+    case STATUS_CONSTRICTED:
+    case STATUS_LIQUEFIED:
+    case STATUS_DRAINED:
+    case STATUS_NO_SCROLL:
+    case STATUS_RF_ZERO:
+    case STATUS_CORROSION:
+    case STATUS_NO_POTIONS:
+    case STATUS_LOWERED_WL:
+    case STATUS_STAT_ZERO:
+    case STATUS_CLAUSTROPHOBIA:
+    case STATUS_OSTRACISM:
+        return true;
+    default:
+        return false;
+    }
+}
 
 static string _status_description(const status_info &info)
 {
@@ -67,12 +110,10 @@ static formatted_string _build_status_text(int selected_status)
         if (fill_status_info(status, info))
             statuses.push_back(status);
     }
-    // Only durations have shared negative-effect metadata. Keep other status
-    // IDs in their original order rather than guessing from display colours.
     const auto priority = [selected_status](int status) {
         if (status == selected_status)
             return 0;
-        if (status < NUM_DURATIONS && duration_negative((duration_type) status))
+        if (_negative_status(status))
             return 1;
         return 2;
     };
@@ -538,7 +579,7 @@ command_type show_topbar_command_menu(bool *acted)
         row->add_child(std::move(labels));
 
         auto button = make_shared<MenuButton>();
-        button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+        button->min_size().height = _command_item_height();
         button->highlight_colour = BROWN;
         button->set_child(std::move(row));
         buttons.push_back(button);
@@ -644,7 +685,7 @@ command_type show_topbar_command_menu(bool *acted)
                 cell->add_child(std::move(labels));
 
                 auto button = make_shared<QuickButton>();
-                button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+                button->min_size().height = _command_item_height();
                 button->highlight_colour = BROWN;
                 button->expand_h = true;
                 button->set_child(std::move(cell));
@@ -759,7 +800,11 @@ command_type show_topbar_command_menu(bool *acted)
     main_title->set_margin_for_sdl(0, 0, 16, 0);
     main_page->add_child(std::move(main_title));
 
-    shared_ptr<MenuButton> primary_button;
+    // Contextual entries must not shift the stable command positions when the
+    // player moves off stairs or picks up the last item on a square.
+    auto context_commands = make_shared<ui::Box>(ui::Widget::VERT);
+    context_commands->set_cross_alignment(ui::Widget::STRETCH);
+    context_commands->set_margin_for_sdl(16, 0, 0, 0);
     const dungeon_feature_type feature = env.grid(you.pos());
     const command_type stair_command = feat_stair_direction(feature);
     if (stair_command != CMD_NO_CMD && !feat_is_altar(feature))
@@ -787,8 +832,8 @@ command_type show_topbar_command_menu(bool *acted)
             summary = "Go Downstairs";
         }
 
-        primary_button = add_command_button(
-            main_page,
+        add_command_button(
+            context_commands,
             _command_menu_text("android command menu", label),
             _command_menu_text("android command menu summary", summary),
             tileidx_feature(you.pos()), stair_command);
@@ -796,22 +841,18 @@ command_type show_topbar_command_menu(bool *acted)
 
     if (you.visible_igrd(you.pos()) != NON_ITEM)
     {
-        const auto pickup = add_command_button(
-            main_page,
+        add_command_button(
+            context_commands,
             _command_menu_text("android command menu", "Pick Up"),
             _command_menu_text("android command menu summary", "Pick Up"),
             TILEG_TAB_ITEM, CMD_PICKUP);
-        if (!primary_button)
-            primary_button = pickup;
     }
 
-    const auto explore = add_command_button(
+    const auto primary_button = add_command_button(
         main_page,
         _command_menu_text("android command menu", "Auto-explore"),
         _command_menu_text("android command menu summary", "Auto-explore"),
         tileidx_command(CMD_EXPLORE), CMD_EXPLORE);
-    if (!primary_button)
-        primary_button = explore;
 
     add_command_button(
         main_page,
@@ -830,7 +871,6 @@ command_type show_topbar_command_menu(bool *acted)
             _command_menu_text("android command menu", "Quick Cast"),
             _command_menu_text("android command menu summary", "Quick Cast"),
             TILEG_TAB_SPELL);
-        main_page->add_child(quick_spell_entry);
     }
     add_command_button(
         main_page,
@@ -845,7 +885,6 @@ command_type show_topbar_command_menu(bool *acted)
             _command_menu_text("android command menu summary",
                                "Quick Abilities"),
             TILEG_TAB_ABILITY);
-        main_page->add_child(quick_ability_entry);
     }
     add_command_button(
         main_page,
@@ -869,6 +908,13 @@ command_type show_topbar_command_menu(bool *acted)
         _command_menu_text("android command menu summary", "More"),
         TILEG_TAB_COMMAND2);
     main_page->add_child(more);
+
+    if (quick_spell_entry)
+        context_commands->add_child(quick_spell_entry);
+    if (quick_ability_entry)
+        context_commands->add_child(quick_ability_entry);
+    if (context_commands->num_children())
+        main_page->add_child(context_commands);
 
     auto more_page = make_shared<ui::Box>(ui::Widget::VERT);
     more_page->set_cross_alignment(ui::Widget::STRETCH);

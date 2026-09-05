@@ -314,6 +314,22 @@ void TilesFramework::calculate_default_options()
     while (++auto_size < num_screen_sizes - 1);
 
     m_map_pixels = Options.tile_map_pixels;
+#ifdef __ANDROID__
+    // Font options are game pixels, not Android density-independent pixels.
+    // Give automatic text a readable floor without overriding explicit rc
+    // sizes. Round up through the game scale just as for touch target sizes.
+    const int font_pixels = (int) ceil(14 * jni_get_display_density());
+    const int auto_font_floor = display_density.apply_game_scale(
+        font_pixels + Options.game_scale - 1);
+    int *const fonts[] = { &Options.tile_font_crt_size,
+                          &Options.tile_font_stat_size,
+                          &Options.tile_font_msg_size,
+                          &Options.tile_font_tip_size,
+                          &Options.tile_font_lbl_size };
+    for (int i = 0; i < 5; ++i)
+        if (*fonts[i] == 0)
+            *fonts[i] = max(auto_font_floor, _screen_sizes[auto_size][i + 3]);
+#endif
     // Auto pick map and font sizes if option is zero.
     // XX this macro is silly
 #define AUTO(x,y) (x = (x) ? (x) : _screen_sizes[auto_size][(y)])
@@ -935,6 +951,16 @@ void TilesFramework::do_layout()
     // leave the vertical budget before any tile-size arithmetic, including the
     // short-surface fallback below.
     quick_row_live_lists(m_quick_row_spells, m_quick_row_abilities);
+#ifdef __ANDROID__
+    if (m_region_quick_spl && m_region_quick_abl)
+    {
+        const int pixels = (int) ceil(48 * jni_get_display_density());
+        const int cell = max(Options.tile_sidebar_pixels,
+            display_density.apply_game_scale(pixels + Options.game_scale - 1));
+        m_region_quick_spl->dx = m_region_quick_spl->dy = cell;
+        m_region_quick_abl->dx = m_region_quick_abl->dy = cell;
+    }
+#endif
     const int quick_row_h = m_quick_row_spells || m_quick_row_abilities
                             ? m_region_quick_spl->dy : 0;
     // Leave the first glyph row clear of the top edge. CJK fallback glyphs can
