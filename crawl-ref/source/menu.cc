@@ -1703,14 +1703,6 @@ void Menu::do_menu()
     update_menu();
     ui::push_layout(m_ui.popup, m_kmc);
 
-#ifdef __ANDROID__
-    ui::InputScreen keyboard_screen;
-    std::array<ui::InputAction, 6> keyboard_actions;
-    keyboard_descriptor(keyboard_screen, keyboard_actions);
-    ui::InputActionScope keyboard_scope(keyboard_screen,
-                                        std::move(keyboard_actions));
-#endif
-
 #ifdef USE_TILE_WEB
     tiles.push_menu(this);
     _webtiles_title_changed = false;
@@ -1722,6 +1714,15 @@ void Menu::do_menu()
         done = !on_show();
     while (alive && !done && !crawl_state.seen_hups)
     {
+#ifdef __ANDROID__
+        // A key can change this menu's operation without opening a new menu
+        // (for example equip/unequip). Publish the current actions each wait.
+        ui::InputScreen keyboard_screen;
+        std::array<ui::InputAction, 6> keyboard_actions;
+        keyboard_descriptor(keyboard_screen, keyboard_actions);
+        ui::InputActionScope keyboard_scope(keyboard_screen,
+                                            std::move(keyboard_actions));
+#endif
 #ifdef USE_TILE_WEB
         if (_webtiles_title_changed)
         {

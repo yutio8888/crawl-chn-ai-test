@@ -360,6 +360,68 @@ class QuickAccessPanelTests(unittest.TestCase):
             self.source = original
 
 
+class ContextActionRefreshTests(unittest.TestCase):
+    """Guard the two real input loops against stale in-place mode labels.
+
+    These source checks establish publication lifetime and ordering, not JNI
+    delivery; equip/unequip and rune/gem label changes still need device tests.
+    """
+
+    CASES = (
+        ("menu.cc", "void Menu::do_menu()",
+         "while (alive && !done && !crawl_state.seen_hups)", "ui::pump_events();"),
+        ("prompt.cc", "vector<MenuEntry *> PromptMenu::show_in_msgpane()",
+         "while (true)", "int key = get_ch();"),
+    )
+
+    def assert_refreshes_each_wait(self, function: str, loop_anchor: str,
+                                  wait: str) -> None:
+        loop = block_after(function, loop_anchor)
+        # No nested scope may destroy InputActionScope before the input wait.
+        # Match the direct loop prefix, including its Android-only guard.
+        clean = re.sub(r"//[^\n]*", "", loop)
+        self.assertRegex(
+            clean,
+            r"^\{\s*#ifdef __ANDROID__\s*"
+            r"ui::InputScreen keyboard_screen;\s*"
+            r"std::array<ui::InputAction, 6> keyboard_actions;\s*"
+            r"keyboard_descriptor\(keyboard_screen, keyboard_actions\);\s*"
+            r"ui::InputActionScope keyboard_scope\(keyboard_screen,\s*"
+            r"std::move\(keyboard_actions\)\);\s*#endif")
+        for marker in ("keyboard_descriptor(", "ui::InputActionScope keyboard_scope("):
+            self.assertEqual(1, function.count(marker))
+            self.assertLess(loop.index(marker), loop.index(wait))
+
+    def test_menu_and_prompt_publish_current_actions_each_input_wait(self) -> None:
+        for filename, signature, loop, wait in self.CASES:
+            with self.subTest(source=filename):
+                source = (ROOT / "crawl-ref/source" / filename).read_text(encoding="utf-8")
+                self.assert_refreshes_each_wait(block_after(source, signature), loop, wait)
+
+    def test_publication_outside_loop_is_rejected(self) -> None:
+        for filename, signature, anchor, wait in self.CASES:
+            source = (ROOT / "crawl-ref/source" / filename).read_text(encoding="utf-8")
+            function = block_after(source, signature)
+            loop = block_after(function, anchor)
+            android_start = loop.index("#ifdef __ANDROID__")
+            android_end = loop.index("#endif", android_start) + len("#endif")
+            publication = loop[android_start:android_end]
+            descriptor = "keyboard_descriptor(keyboard_screen, keyboard_actions);"
+            scope_match = re.search(
+                r"ui::InputActionScope keyboard_scope\(keyboard_screen,\s*"
+                r"std::move\(keyboard_actions\)\);", publication)
+            self.assertIsNotNone(scope_match)
+            for moved in (publication, descriptor, scope_match.group()):
+                with self.subTest(source=filename, moved=moved):
+                    # Keep each production statement present, but hoist it
+                    # once before the loop: the original stale-label bug.
+                    mutated = function.replace(moved, "", 1)
+                    insertion = mutated.index(anchor)
+                    mutated = mutated[:insertion] + moved + "\n" + mutated[insertion:]
+                    with self.assertRaises(AssertionError):
+                        self.assert_refreshes_each_wait(mutated, anchor, wait)
+
+
 class QuickRowTests(unittest.TestCase):
     """The persistent single icon row along the bottom of the Android surface."""
 
