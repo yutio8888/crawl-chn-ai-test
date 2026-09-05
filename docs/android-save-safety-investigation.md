@@ -182,7 +182,9 @@ Lua 状态机不是线程安全的；游戏线程执行任意 Lua（用户脚本
 
 1. `nativeSaveGame()`（`syscalls.cc`）不再自己存档，改为置一个"待保存"请求，
    唤醒并有界等待（2 秒上限）游戏线程完成，然后无论成败都返回。UI 线程绝不
-   触碰 `you` / `env` / `clua` / `you.save`。
+   触碰 `you` / `env` / `clua` / `you.save`。请求点在
+   `handleNativeState()` 的 RESUMED → PAUSED 跃迁处、`nativePause()` 之前，
+   而不是 `onPause()` 里——见 §10.1。
 2. 游戏线程在两个已有的安全点消费该请求：
    - `SDLWrapper::wait_event()`（`windowmanager-sdl.cc`）的入口——游戏线程在等
      输入，回合已结算完毕；覆盖场景 1/6/8/9；
@@ -307,8 +309,13 @@ S1/S2 的要点是**时间（回合数）向前推进**：切后台前的自动�
 原因是 SDL 只在 `nativeResume()` 里 post `Android_ResumeSem`；`handleNativeState()`
 还没走到 RESUMED 跃迁时，游戏线程仍阻塞在 `Android_PumpEvents()`，没人能消费
 保存请求。`8ca8ad3e13` 把 Java 侧判据从"`mSDLThread != null`"收紧为
-"并且 `mCurrentNativeState == NativeState.RESUMED`"。这种 pause 本来也没有新东西
-可存——两次 pause 之间游戏线程根本没运行过。
+"并且 `mCurrentNativeState == NativeState.RESUMED`"。
+
+> 更正（§10.1）：当时写的"这种 pause 本来也没有新东西可存"说过头了。只有在
+> **上一次 pause 自己完成了存档**时才成立；如果上一次进入后台的路径根本没发出
+> 存档请求（`onWindowFocusChanged(false)` 就是这种路径），那么两次 pause 之间
+> 虽然游戏线程没运行，可存的东西早在更前面就积累下来了。`8ca8ad3e13` 把请求点
+> 留在 `onPause()` 里，正是漏掉了那条路径；§10.1 把请求点移到状态跃迁处修掉了它。
 
 同一场景重测 6 轮共 12 次 onPause：
 
@@ -431,3 +438,147 @@ S4 的 12 次 onPause 分布与模拟器一致，RESUMED 判据在真机上同�
   重叠、没有测试保存写失败、驱动脚本未入库。
 - 测试结束后 `org.develz.crawl.savesafety` 已从真机和模拟器卸载，
   其余 `org.develz.crawl*` 包未动。
+
+## 10. 独立审核后的修复与复测（Pixel 8a）
+
+`Fable 5.1 / zh-code-reviewer` 审核结论 Changes Requested：Blocker 0、
+Needs Fix 1、Suggestion 5。本节记录修复、取舍与复测。
+
+### 10.1 Needs Fix：失焦路径完全绕过了暂停存档
+
+`8ca8ad3e13` 之前把请求点放在 `onPause()` 里，判据是
+`mCurrentNativeState == RESUMED`。但 `onWindowFocusChanged(false)`
+（SDLActivity.java）也会把 `mNextNativeState` 置 PAUSED 并调用
+`handleNativeState()`，而那条路径不发存档请求就直接 `nativePause()`，
+游戏线程随即停驻在 `Android_PumpEvents()`；等 `onPause()` 到来时
+`mCurrentNativeState` 已经是 PAUSED，判据把它跳过。触发方式都是日常操作：
+下拉通知栏、进最近任务、任何系统窗口先夺焦。
+
+基线（`chn-0.34.1-base`）在同一序列里反而存得下来——它在 UI 线程上无条件
+执行 `save_game`，而此时游戏线程恰好已经停驻，没有竞争。也就是说这是修复引入的
+回归，不是原有缺陷。
+
+**真机实测（`27c0fe5c59` 构建，修复前）**：
+
+```
+[PREFIX-a] 下拉通知栏 → Home
+  18:00:49.056  onWindowFocusChanged(): false   ui-thread occupancy=1 ms
+  18:00:49.057  nativePause()          ← 同一毫秒就停驻了游戏线程，没有发请求
+  18:00:51.037  onPause()   ui-thread occupancy=337 ms
+  pause-save diagnostics: 0
+[PREFIX-b] 最近任务 → Home
+  18:03:48.245  onWindowFocusChanged(): false   ui-thread occupancy=0 ms
+  18:03:48.245  nativePause()
+  18:03:50.736  onPause()   ui-thread occupancy=1 ms
+```
+
+两条路径的存档 md5 在切后台前后**完全没变**。以 (a) 为例：游戏内从
+时间 39.8 休息到 **806.8**，切后台、`am kill`、重启之后回到
+**时间 0.0、等级1 0%、起始位置**——806 个回合全部丢失，且玩家全程无感知。
+
+**修复**：请求点移到 `handleNativeState()` 里 RESUMED → PAUSED 的唯一跃迁处，
+紧挨 `nativePause()` 之前；`onPause()`、失焦、`surfaceDestroyed()` 三条路径都
+汇聚于此，`onPause()` 里的调用删除。判据保留 `mCurrentNativeState == RESUMED`。
+
+`mSDLThread != null` **保留**（对应 Suggestion 4，不采纳删除）：
+`handleNativeExit()` 先把 `mSDLThread` 置空再调 `finish()`，此时
+`mCurrentNativeState` 仍是 RESUMED，仍会走到这个跃迁；没有这个判据，玩家正常
+退出游戏时会白等满 2 秒。
+
+**真机实测（修复后）**：
+
+```
+[FIXED-a] 下拉通知栏 → Home
+  18:06:43.449  onWindowFocusChanged(): false   ui-thread occupancy=201 ms   ← 存档在这里执行
+  18:06:43.650  nativePause()
+  存档 66002 → 66563 字节，md5 变化
+[FIXED-b] 最近任务 → Home
+  18:08:12.236  onWindowFocusChanged(): false   ui-thread occupancy=75 ms
+  18:08:12.311  nativePause()
+  存档 67031 → 67093 字节，md5 变化
+```
+
+| 场景 | 切后台前 | `am kill` 后重启 | 结论 |
+|---|---|---|---|
+| (a) 通知栏 → Home，修复前 | 时间 806.8 | **时间 0.0** | 全丢 |
+| (a) 通知栏 → Home，修复后 | 时间 798.0 | **时间 798.0** | 一致 |
+| (b) 最近任务 → Home，修复后 | 时间 1398.0 | **时间 1398.0** | 一致 |
+
+为了让"是否存下"无歧义，这几轮用连按"等待"推进回合：休息不触发 crawl 自身的
+检查点（`main.cc` 的 `save_after_turn` 只在跨层/冲刺模式下置位），所以切后台前
+存档 md5 必然未变，切后台后变没变完全取决于暂停存档。
+
+### 10.2 原有场景重跑（修复后，同一台 Pixel 8a）
+
+| 场景 | 关键跃迁的 UI 线程占用 | 存档 | `am kill` 后重启 | 崩溃/ANR |
+|---|---|---|---|---|
+| 自动探索中 Home | `onPause` 84 ms | 67148 → 67273 | 地牢:1，时间 1398.0 → **1405.0** | 0 |
+| 主菜单 Home | `onPause` 38 ms | **md5 不变** | 不适用 | 0 |
+
+主菜单那次新加的诊断日志给出了跳过原因：
+
+```
+I Crawl: pause save skipped: save=0 need_save=0 started=0 saving=0 genlevel=0
+         scores=0 crashed=0 hups=0 on_level=1 entering=0
+```
+
+修复后各场景 logcat 合计 4428 行，
+`Fatal signal|SIGSEGV|SIGABRT|FATAL EXCEPTION|ANR in` 命中 **0** 次；
+`ApplicationExitInfo` 只有本次测试自己发的 FORCE STOP / KILL BACKGROUND
+和一次 PACKAGE UPDATED（换装 APK）。
+
+注意 §8.2 的"UI 线程占用"是**上界**——取 onPause/失焦之后同一线程的下一条日志。
+真正执行存档的那次跃迁后面紧跟 `nativePause()`，所以那个数字是紧的；而已经
+PAUSED 之后再来的回调（比如修复后 (a) 里 `onPause` 那 334 ms）后面隔着框架自己
+的工作才有下一条日志，那个数字并不代表 crawl 的开销。
+
+### 10.3 采纳的 Suggestion
+
+- **1（切片漂移）采纳**。`wait_event` 原先按 `remaining -= slice` 记账，每片可能
+  多花 10 ms（`SDL_WaitEventTimeout` 内部就是 10 ms 轮询），长超时会累计偏移。
+  改成一次算出 `SDL_GetTicks()` 绝对截止时间，去掉 `remaining`，代码也更短。
+  零超时仍然保证恰好轮询一次。
+- **2（无日志）采纳**。安全判据跳过时打一条 INFO 并列出各判据取值，UI 线程等满
+  超时丢弃时打一条 WARN。10.2 里那条日志就是它的实际输出。
+- **4（`mSDLThread` 冗余）不采纳**，理由见 10.1。
+
+### 10.4 Suggestion 3：启动窗口的实测
+
+游戏线程已创建（`mCurrentNativeState == RESUMED`）但还在 `_initialize()` 里
+加载数据、尚未到达任何一个消费点时按 Home，请求没人接，UI 线程会等满上界。
+点"Start Game"后分别延迟 0.8 / 1.5 / 2.5 秒按 Home：
+
+```
+[STARTUP+0.8s] onPause ui-thread occupancy=2003 ms
+   W Crawl: pause save timed out after 2000 ms (reached=0 still_running=0); request dropped
+[STARTUP+1.5s] onPause ui-thread occupancy=1070 ms
+   I Crawl: pause save skipped: save=0 need_save=0 started=0 ...
+[STARTUP+2.5s] onPause ui-thread occupancy=2003 ms
+   W Crawl: pause save timed out after 2000 ms (reached=0 still_running=0); request dropped
+```
+
+三次里两次等满 2000 ms。2003/2002 ms 里超出 2000 的那 2–3 ms 是外层 Java 帧，
+原生等待本身没有越界。这个窗口里 `need_save=0`、`game_started=0`，本来就没有
+东西可存，等待纯属浪费；ANR 阈值是 5 秒，2 秒不会触发 ANR，但确实是一次可感知
+的卡顿。
+
+按审核要求这条只测量记录、**不修**。如果以后要修，最小做法是让游戏线程在
+消费点里把 `_pause_save_is_safe()` 的结果发布到同一把锁下的一个布尔，UI 线程
+发请求前先看它——代价是多一个进程内标志，且它天然滞后一个消费点。
+这不是本次改动引入的，从 `28582d16df` 起就存在。
+
+### 10.5 Suggestion 5：`wait_event` 并非严格"命令之间"
+
+如实记录：`wait_event` 不只在两条命令之间被调用，`world_reacts()` 中途的
+`more()`（消息窗口翻页）等提示也会进去。也就是说暂停存档可能落在一个回合
+结算到一半的时刻，存下来的是那个半回合快照。这不是坏档——crawl 自己在
+`player-reacts.cc`、`ouch.cc` 的检查点同样在回合中途落盘，读档后从该点继续；
+只是"存档时刻恰好等于回合边界"这个说法不准确。不改。
+
+### 10.6 本节未覆盖的部分
+
+- (a)/(b) 两条新场景没有在 x86_64 模拟器上重跑，只在 Pixel 8a 上做过。
+- §8.5 的基线对照仍然只有模拟器数据；本节的修复前对照用的是
+  `27c0fe5c59`（第一版修复），不是 `chn-0.34.1-base`。
+- §8.6 列的其余三条仍然成立：没有确定性构造保存中重叠 onPause、没有测试
+  保存写失败、驱动脚本未入库。
