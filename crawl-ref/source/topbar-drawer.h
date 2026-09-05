@@ -4,7 +4,7 @@
 #include "command-type.h"
 
 // Show the modal status-details drawer used by the compact Android top HUD.
-void show_topbar_status_drawer();
+void show_topbar_status_drawer(int selected_status = -1);
 
 // Show the compact Android command drawer and return the selected command.
 // Cancellation returns CMD_NO_CMD. A spell or ability picked from a

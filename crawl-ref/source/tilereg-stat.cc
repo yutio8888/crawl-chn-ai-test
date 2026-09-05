@@ -85,7 +85,7 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
         {
             if (cy == hitbox.y && cx >= hitbox.x1 && cx <= hitbox.x2)
             {
-                show_topbar_status_drawer();
+                show_topbar_status_drawer(hitbox.status);
                 return CK_NO_KEY;
             }
         }

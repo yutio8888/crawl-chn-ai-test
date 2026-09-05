@@ -30,9 +30,7 @@ static const int DRAWER_PADDING = 24;
 static const int COMMAND_MENU_ITEM_HEIGHT = 72;
 static const int COMMAND_MENU_ITEM_PADDING = 12;
 static const int COMMAND_MENU_ICON_GAP = 16;
-static const int QUICK_ICON_ROWS = 2;
-static const int QUICK_ICON_COLS = 6;
-static const int QUICK_ICON_PAGE_SIZE = QUICK_ICON_ROWS * QUICK_ICON_COLS;
+static const int QUICK_ICON_PAGE_SIZE = 12;
 
 static string _status_description(const status_info &info)
 {
@@ -57,12 +55,32 @@ static string _command_menu_text(const char *context, const char *text)
     return translated.empty() ? text : translated;
 }
 
-static formatted_string _build_status_text()
+static formatted_string _build_status_text(int selected_status)
 {
     formatted_string text(LIGHTGREY);
     bool found_status = false;
 
+    vector<int> statuses;
     for (int status = 0; status <= STATUS_LAST_STATUS; ++status)
+    {
+        status_info info;
+        if (fill_status_info(status, info))
+            statuses.push_back(status);
+    }
+    // Only durations have shared negative-effect metadata. Keep other status
+    // IDs in their original order rather than guessing from display colours.
+    const auto priority = [selected_status](int status) {
+        if (status == selected_status)
+            return 0;
+        if (status < NUM_DURATIONS && duration_negative((duration_type) status))
+            return 1;
+        return 2;
+    };
+    stable_sort(statuses.begin(), statuses.end(), [&](int a, int b) {
+        return priority(a) < priority(b);
+    });
+
+    for (int status : statuses)
     {
         status_info info;
         if (!fill_status_info(status, info))
@@ -80,7 +98,13 @@ static formatted_string _build_status_text()
 
         text.textcolour(info.light_colour ? info.light_colour : LIGHTGREY);
         text += title;
-        if (!description.empty() && description != title)
+        if (!info.short_text.empty() && info.short_text != title)
+        {
+            text += "\n";
+            text += formatted_string::parse_string(info.short_text, LIGHTGREY);
+        }
+        if (!description.empty() && description != title
+            && description != info.short_text)
         {
             text += "\n";
             text += formatted_string::parse_string(description, LIGHTGREY);
@@ -94,16 +118,18 @@ static formatted_string _build_status_text()
     return text;
 }
 
-// One tappable entry in a quick-access page. Only the enum value is stored:
-// the live spell or talent is resolved again when the entry is used, so a page
-// can never act on a stale reference.
+// One tappable entry in a quick-access page. Display strings are owned snapshots;
+// the live spell or talent is resolved by enum again when the entry is used, so
+// a page can never act on a stale reference.
 struct quick_entry
 {
     int idx;
     char letter;
     tileidx_t tile;
-    int cost;
+    string cost;
     bool usable;
+    string name;
+    string reason;
 };
 
 // Memorised spells in the same deterministic letter order the spell tab and
@@ -123,8 +149,10 @@ static vector<quick_entry> _quick_spell_entries()
         entry.idx = (int) spell;
         entry.letter = letter;
         entry.tile = tileidx_spell(spell);
-        entry.cost = spell_mana(spell);
-        entry.usable = !spell_is_useless(spell, true, true);
+        entry.cost = string(T_("MP")) + make_stringf(": %d", spell_mana(spell));
+        entry.name = spell_title(spell);
+        entry.reason = spell_uselessness_reason(spell, true, true);
+        entry.usable = entry.reason.empty();
         entries.push_back(entry);
     }
 
@@ -143,8 +171,12 @@ static vector<quick_entry> _quick_ability_entries()
         entry.idx = (int) tal.which;
         entry.letter = tal.hotkey;
         entry.tile = tileidx_ability(tal.which);
-        entry.cost = (int) ability_mp_cost(tal.which);
+        entry.cost = make_cost_description(tal.which);
         entry.usable = check_ability_possible(tal.which, true);
+        entry.name = ability_name(tal.which);
+        if (!entry.usable)
+            entry.reason = _command_menu_text("android command menu summary",
+                                              "Unavailable");
         entries.push_back(entry);
     }
 
@@ -154,8 +186,7 @@ static vector<quick_entry> _quick_ability_entries()
 static string _quick_entry_caption(const quick_entry &entry)
 {
     string caption = isaalpha(entry.letter) ? string(1, entry.letter) : "-";
-    if (entry.cost > 0)
-        caption += make_stringf(" %d", entry.cost);
+    caption += "  " + entry.cost;
     return caption;
 }
 
@@ -457,9 +488,9 @@ struct quick_page_refs
 
 } // namespace
 
-void show_topbar_status_drawer()
+void show_topbar_status_drawer(int selected_status)
 {
-    auto text = make_shared<ui::Text>(_build_status_text());
+    auto text = make_shared<ui::Text>(_build_status_text(selected_status));
     text->set_wrap_text(true);
 
     auto scroller = make_shared<DrawerScroller>();
@@ -534,8 +565,8 @@ command_type show_topbar_command_menu(bool *acted)
         return button;
     };
 
-    // Build one quick-access page: a title, a Back entry, the icon buttons in
-    // pages of at most QUICK_ICON_ROWS x QUICK_ICON_COLS, and explicit
+    // Build one quick-access page: a title, a Back entry, full-width cards in
+    // pages of at most QUICK_ICON_PAGE_SIZE, and explicit
     // Previous/Next controls with a current/total indicator when more than one
     // icon page exists. A tap records the entry and closes the drawer; the
     // action itself runs afterwards, outside the pushed layout.
@@ -551,6 +582,12 @@ command_type show_topbar_command_menu(bool *acted)
             formatted_string(title_label, YELLOW));
         page_title->set_margin_for_sdl(0, 0, 16, 0);
         page->add_child(std::move(page_title));
+
+        auto hint = make_shared<ui::Text>(formatted_string(
+            _command_menu_text("android command menu summary",
+                               "Long press for details"), LIGHTGREY));
+        hint->set_wrap_text(true);
+        page->add_child(std::move(hint));
 
         refs.back = make_button(
             _command_menu_text("android command menu", "Back"),
@@ -570,67 +607,73 @@ command_type show_topbar_command_menu(bool *acted)
             auto grid = make_shared<ui::Box>(ui::Widget::VERT);
             grid->set_cross_alignment(ui::Widget::STRETCH);
 
-            for (int row = 0; row < QUICK_ICON_ROWS; ++row)
+            // A single column lets the text use all available drawer width;
+            // wrapped names and reasons determine each card's height.
+            for (int row = 0; row < QUICK_ICON_PAGE_SIZE; ++row)
             {
-                auto strip = make_shared<ui::Box>(ui::Widget::HORZ);
-                strip->set_cross_alignment(ui::Widget::CENTER);
-                bool filled = false;
-
-                for (int col = 0; col < QUICK_ICON_COLS; ++col)
-                {
-                    const size_t at = (size_t) icon_page * QUICK_ICON_PAGE_SIZE
-                                      + (size_t) row * QUICK_ICON_COLS + col;
-                    if (at >= entries.size())
-                        break;
-
-                    const quick_entry &entry = entries[at];
-                    auto cell = make_shared<ui::Box>(ui::Widget::VERT);
-                    cell->set_cross_alignment(ui::Widget::CENTER);
-                    cell->set_main_alignment(ui::Widget::CENTER);
-                    cell->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING / 2);
-                    cell->add_child(
-                        make_shared<ui::Image>(tile_def(entry.tile)));
-                    cell->add_child(make_shared<ui::Text>(formatted_string(
-                        _quick_entry_caption(entry),
-                        entry.usable ? LIGHTGREY : DARKGREY)));
-
-                    auto button = make_shared<QuickButton>();
-                    button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
-                    button->highlight_colour = BROWN;
-                    button->expand_h = true;
-                    button->set_child(std::move(cell));
-
-                    const int idx = entry.idx;
-                    button->on_activate_event(
-                        [&, idx, is_spell](const ui::ActivateEvent&) {
-                            if (is_spell)
-                                quick_spell = (spell_type) idx;
-                            else
-                                quick_ability = (ability_type) idx;
-                            done = true;
-                            return true;
-                        });
-                    button->on_describe = [&scroller, idx, is_spell]() {
-                        if (is_spell)
-                            describe_spell((spell_type) idx);
-                        else
-                            describe_ability((ability_type) idx);
-                        // The moves that opened this gesture left the drawer
-                        // scroller mid-drag; drop it so returning to the page
-                        // does not scroll from a stale origin.
-                        scroller->cancel_drag();
-                    };
-
-                    buttons.push_back(button);
-                    if (!refs.focus)
-                        refs.focus = button;
-                    strip->add_child(std::move(button));
-                    filled = true;
-                }
-
-                if (!filled)
+                const size_t at = (size_t) icon_page * QUICK_ICON_PAGE_SIZE
+                                  + row;
+                if (at >= entries.size())
                     break;
-                grid->add_child(std::move(strip));
+
+                const quick_entry &entry = entries[at];
+                auto cell = make_shared<ui::Box>(ui::Widget::HORZ);
+                cell->set_cross_alignment(ui::Widget::CENTER);
+                cell->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
+                auto icon = make_shared<ui::Image>(tile_def(entry.tile));
+                icon->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP, 0, 0);
+                cell->add_child(std::move(icon));
+                auto labels = make_shared<ui::Box>(ui::Widget::VERT);
+                labels->set_cross_alignment(ui::Widget::STRETCH);
+                labels->expand_h = true;
+                auto name = make_shared<ui::Text>(formatted_string(
+                    entry.name, entry.usable ? WHITE : LIGHTGREY));
+                name->set_wrap_text(true);
+                labels->add_child(std::move(name));
+                auto caption = make_shared<ui::Text>(formatted_string(
+                    _quick_entry_caption(entry), LIGHTGREY));
+                caption->set_wrap_text(true);
+                labels->add_child(std::move(caption));
+                if (!entry.reason.empty())
+                {
+                    auto reason = make_shared<ui::Text>(formatted_string(
+                        entry.reason, LIGHTRED));
+                    reason->set_wrap_text(true);
+                    labels->add_child(std::move(reason));
+                }
+                cell->add_child(std::move(labels));
+
+                auto button = make_shared<QuickButton>();
+                button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+                button->highlight_colour = BROWN;
+                button->expand_h = true;
+                button->set_child(std::move(cell));
+
+                const int idx = entry.idx;
+                button->on_activate_event(
+                    [&, idx, is_spell](const ui::ActivateEvent&) {
+                        if (is_spell)
+                            quick_spell = (spell_type) idx;
+                        else
+                            quick_ability = (ability_type) idx;
+                        done = true;
+                        return true;
+                    });
+                button->on_describe = [&scroller, idx, is_spell]() {
+                    if (is_spell)
+                        describe_spell((spell_type) idx);
+                    else
+                        describe_ability((ability_type) idx);
+                    // The moves that opened this gesture left the drawer
+                    // scroller mid-drag; drop it so returning to the page
+                    // does not scroll from a stale origin.
+                    scroller->cancel_drag();
+                };
+
+                buttons.push_back(button);
+                if (!refs.focus)
+                    refs.focus = button;
+                grid->add_child(std::move(button));
             }
 
             icon_pages->add_child(std::move(grid));
