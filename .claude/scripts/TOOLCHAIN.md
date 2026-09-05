@@ -515,6 +515,17 @@ python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json -
 修复：先构造 `std::string` 局部变量再传 `.c_str()`；三元 `cond ? string(a) : ""`
 会把两个分支都提升为 `std::string`。依赖 `pip3 install tree-sitter tree-sitter-cpp`。
 
+`scan_varargs_string.py` 与 `scan_string_concat.py` 对 Issue #120 的三个登记
+文件采用路径后缀、精确节点文本及完整局部上下文的条件编译豁免，目录入口
+也会验证这些文件的解析完整性。任何以 `crawl-ref/source/<登记文件名>`
+结尾的路径都能匹配，不要求属于特定仓库。
+
+登记文件内关闭了通用 `#` 指令 ERROR 恢复分支，因此新增条件切分结构会比
+未登记文件更严格地 fail-closed；需要探测并解释节点后补充精确模式。
+完整上下文包含空白，局部格式变化也可能撤销豁免；这不影响窗口外解析错误
+继续阻断。详见 `docs/issue120-scanner-preproc-report.md`。原始验证日志只存放
+在 gitignored 的 `.claude/metrics/verify/`，报告入库时只保留关键摘录和路径。
+
 ### 编排者工具
 
 ```bash

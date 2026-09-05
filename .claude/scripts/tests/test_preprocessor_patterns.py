@@ -10,12 +10,21 @@ import unittest
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPTS = ROOT / '.claude/scripts'
 sys.path.insert(0, str(SCRIPTS))
-from i18n_shared import parse_cpp_annotations, has_relevant_parse_error
-from tree_sitter import Language, Parser
-import tree_sitter_cpp
+from i18n_shared import (parse_cpp_annotations, _matches_preprocessor_node,
+                         _directive_events)
+try:
+    from tree_sitter import Language, Parser
+    import tree_sitter_cpp
+    PARSER_IMPORT_ERROR = None
+except ImportError as exc:
+    PARSER_IMPORT_ERROR = str(exc)
 
 
 class PreprocessorPatternTests(unittest.TestCase):
+    def setUp(self):
+        if PARSER_IMPORT_ERROR is not None:
+            self.skipTest(f"tree-sitter not installed: {PARSER_IMPORT_ERROR}")
+
     def check_cli(self, path, success, directory=False):
         for scanner in ('scan_varargs_string.py', 'scan_string_concat.py'):
             args = [str(path.parent)] if directory else ['--files', str(path)]
@@ -81,6 +90,37 @@ class PreprocessorPatternTests(unittest.TestCase):
                 wrong = Path(td) / name
                 wrong.write_bytes(original)
                 self.check_cli(wrong, False)
+
+    def test_missing_semicolon_inside_registered_context(self):
+        original = (ROOT / 'crawl-ref/source/directn.cc').read_bytes()
+        # This exact line is inside the registered * / . error context.
+        # Mutate only its semicolon; retain the registered path and directives.
+        line = b'const vault_placement &vp(*env.level_vaults[map_index]);'
+        self.assertEqual(original.count(line), 1)
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'crawl-ref/source/directn.cc'
+            path.parent.mkdir(parents=True)
+            for broken in (False, True):
+                path.write_bytes(original.replace(line, line[:-1]) if broken else original)
+                for directory in (False, True):
+                    with self.subTest(broken=broken, directory=directory):
+                        self.check_cli(path, not broken, directory=directory)
+
+    def test_directive_after_context_is_outside_context(self):
+        source = b'void f() {\n    else\n#ifdef FLAG\n#endif\n}\n'
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        tree = parser.parse(source)
+        stack = [tree.root_node]
+        errors = []
+        while stack:
+            node = stack.pop()
+            if node.type == 'ERROR' and node.text == b'else':
+                errors.append(node)
+            stack.extend(node.children)
+        self.assertEqual(len(errors), 1)
+        self.assertFalse(_matches_preprocessor_node(
+            errors[0], source, [('ERROR', b'else', b'    else\n')],
+            frozenset(), tuple(_directive_events(source))))
 
     def test_each_macro_and_missing_semicolon_at_same_location(self):
         cases = (

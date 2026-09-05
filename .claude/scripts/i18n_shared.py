@@ -1187,7 +1187,7 @@ _PREPROC_SWITCH_WINDOW = 4
 # crawl-ref/source/directn.cc found only 42 preproc_if/preproc_ifdef/
 # preproc_ifndef nodes for 87 actual conditional directives, including no
 # node for the #ifdef USE_TILE_LOCAL at line 2439 whose post-#endif window
-    # covers the baseline probe lines 2446/2447. Directive discovery therefore
+# covers the baseline probe lines 2446/2447. Directive discovery therefore
 # uses a complete phase-2 lexer (backslash-newline splicing, raw-string
 # prefixes/delimiters/terminators, continuation-aware comments, string and
 # char literals) instead of tree-sitter nodes.
@@ -1974,7 +1974,7 @@ def _matches_preprocessor_node(node, source, patterns, switch_lines, events):
         if line in switch_lines:
             return True
         first = _line_of_byte(source, start)
-        last = _line_of_byte(source, start + len(context))
+        last = _line_of_byte(source, start + len(context) - 1)
         if any(first <= directive <= last
                and abs(line - directive) <= _PREPROC_SWITCH_WINDOW
                for _, directive, _ in events):

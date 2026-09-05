@@ -276,28 +276,32 @@ class ScannerCompletenessTests(unittest.TestCase):
         # (outside any preprocessor switch point) and both entries must fail.
         directn = ROOT / "crawl-ref" / "source" / "directn.cc"
         with tempfile.TemporaryDirectory() as td:
-            source = Path(td) / "directn.cc"
-            source.write_bytes(b"int x = ;\n" + directn.read_bytes())
-            for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
-                for entry, args in (("files", ("--files", source)),
-                                    ("dir", (td,))):
-                    with self.subTest(scanner=scanner, entry=entry):
-                        proc = self.run_scanner(scanner, *args,
-                                                "--format", "json",
-                                                "--require-parser")
-                        self.assertEqual(2, proc.returncode, proc.stderr)
-                        coverage = _coverage(json.loads(proc.stdout))
-                        self.assertEqual(coverage["scanned"], 0)
-                        self.assertEqual(len(coverage["failed"]), 1)
+            source = Path(td) / "crawl-ref/source/directn.cc"
+            source.parent.mkdir(parents=True)
+            for broken in (False, True):
+                source.write_bytes((b"int x = ;\n" if broken else b"")
+                                   + directn.read_bytes())
+                for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (source.parent,))):
+                        with self.subTest(scanner=scanner, entry=entry, broken=broken):
+                            proc = self.run_scanner(scanner, *args,
+                                                    "--format", "json",
+                                                    "--require-parser")
+                            expected = 2 if broken else (
+                                1 if scanner == "scan_string_concat.py" else 0)
+                            self.assertEqual(expected, proc.returncode, proc.stderr)
+                            coverage = _coverage(json.loads(proc.stdout))
+                            self.assertEqual(coverage["scanned"], 0 if broken else 1)
+                            self.assertEqual(len(coverage["failed"]), 1 if broken else 0)
 
     def test_preprocessor_mutations_fail_closed_both_entries(self):
-        # Issue #40 W1 round-2 blockers, end to end: fake #ifdef/#endif
-        # inside raw strings or line-spliced comments must not forge switch
-        # eligibility (CODE-002), a live conditional nested inside #if 0
-        # must not leak a post-#endif window over the frozen baseline
-        # (CODE-001), and unmatched openers / extra #endif must fail closed
-        # (CODE-003). Every mutation runs through both real scanner CLIs
-        # and both validating entries with exact exit/coverage assertions.
+        # End-to-end rejection cases from Issue #40 W1. Since Issue #120,
+        # copied baseline fragments in mutation.cc cannot match the registered
+        # path or full context. These cases therefore test CLI rejection, not
+        # lexer window eligibility in isolation. The dedicated phase-2/window
+        # tests below directly exercise fake directives, dead branches and
+        # unmatched conditionals. Both real CLIs and both entries reject here.
         baseline = ('const vault_placement '
                     '&vp(*env.level_vaults[map_index]);')
         mutations = {
@@ -340,12 +344,12 @@ some "quoted text
 ''',
             # R3-CODE-003: '#IF'/'#ENDIF' are not directives (directive
             # names are case-sensitive); with no conditional recognized the
-            # frozen baseline right after them must fail closed.
+            # copied fragment right after them is unregistered and rejected.
             "uppercase-directives": (
                 f"void f() {{\n#IF 1\n    {baseline}\n#ENDIF\n}}\n"),
             # R3-CODE-002: '#elif 0' after '#if 0' is dead, so a nested
             # conditional inside it must not forge a switch point over the
-            # frozen baseline.
+            # copied baseline fragment (also unregistered at this path).
             "elif-zero-dead-if-nested": (
                 f"void f() {{\n#if 0\n#elif 0\n#ifdef INNER\n    {baseline}"
                 f"\n#endif\n#endif\n    (void)0;\n}}\n"),
@@ -365,8 +369,8 @@ some "quoted text
                 + baseline.encode() + b"\r\n    (void)s;\r\n}\r\n"),
             # R4-CODE-001: a branch after the chain was already taken
             # (#elif 0 after #if 1) is dead; its lines must never become
-            # switch points, so the frozen baseline inside the nested
-            # #ifdef in the dead elif branch fails closed. (The old code
+            # switch points. This copied fragment is also unregistered
+            # at mutation.cc. (The old code
             # kept lines 4-6 in the switch set and wrongly certified this
             # file clean.)
             "chain-dead-elif-baseline": (
@@ -383,9 +387,9 @@ some "quoted text
                 "#endif\n}\n"),
             # R4-CODE-003: comments are replaced before the first condition
             # token is read, so '#if /* comment */ 0' is a dead branch and
-            # the frozen baseline inside it fails closed. (The old code
+            # this unregistered copied fragment fails closed. (The old code
             # read '/*' as the first token, treated the branch as live and
-            # wrongly exempted the baseline.)
+            # wrongly exempted the copied fragment.)
             "if-comment-zero-baseline": (
                 f"void f() {{\n#if /* comment */ 0\n    {baseline}"
                 f"\n#endif\n}}\n"),
@@ -396,8 +400,8 @@ some "quoted text
                 f"void f() {{\n#if 0 /* comment\n#ifdef FAKE\n#endif\n*/\n"
                 f"    {baseline}\n#endif\n}}\n"),
             # R4-CODE-004: generic '}' / 'else' ERROR nodes at a switch
-            # point are not the frozen baseline nodes (file content, line
-            # and node text all differ), so they fail closed. (The old
+            # point do not match the registered path and full context,
+            # so they fail closed. (The old
             # line-text exemption wrongly certified both files clean.)
             "generic-brace-at-switch-point": (
                 "void f() {\n#ifdef FOO\n}\n#endif\n}\n"),
@@ -405,23 +409,23 @@ some "quoted text
                 "void f() {\n#ifdef FOO\n    else\n#endif\n}\n"),
             # R4-CODE-005: bare CR is a phase-1 end-of-line indicator, so
             # directives are discovered with real physical line numbers;
-            # the frozen baseline inside a live conditional of a bare-CR
-            # file still fails closed (the file is not the frozen content).
+            # the copied fragment inside a live conditional of a bare-CR
+            # file still fails closed (unregistered path and context).
             "bare-cr-live-conditional": (
                 b"void f() {\x0d#ifdef REAL\x0d    " + baseline.encode()
                 + b"\x0d#endif\x0d}\x0d"),
             # R6-TEST-002: a backslash-newline inside a raw-string body
             # is literal text (no phase-2 splice), so the fake directives
             # on the continuation line cannot forge switch points for the
-            # frozen baseline.
+            # copied fragment, which is also unregistered at this path.
             "raw-body-backslash-eol-pseudo-directives": (
                 b"void f() {\n    auto s = R\"_x(\n\\\n"
                 b"#ifdef FAKE\n#endif\n)_x\";\n"
                 + baseline.encode() + b"\n    (void)s;\n}\n"),
             # R6-TEST-002: an adjacent trailing comment is phase-3
             # comment replacement, so '#if 0/**/' and '#if 0//comment'
-            # are dead branches (g++ accepts both); the frozen baseline
-            # inside them fails closed.
+            # are dead branches (g++ accepts both); the copied fragment
+            # inside them is also unregistered at this path and fails closed.
             "if-adjacent-trailing-block-comment-zero-baseline": (
                 f"void f() {{\n#if 0/**/\n    {baseline}\n#endif\n}}\n"),
             "if-adjacent-trailing-line-comment-zero-baseline": (

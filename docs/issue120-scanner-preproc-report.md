@@ -144,7 +144,9 @@ with tempfile.TemporaryDirectory() as td:
 `i18n_shared.py` 的 `_PREPROCESSOR_PATTERNS` 使用
 `crawl-ref/source/directn.cc`、`main.cc`、`menu.cc` 的仓库相对路径后缀，
 不再使用整文件 SHA 或绝对行号。导出目录和独立 worktree 保留该后缀即可
-复用豁免，同名文件放在其他目录不会得到豁免。省略路径也不会匹配模式。
+复用豁免。任何以 `crawl-ref/source/<登记文件名>` 结尾的路径都可匹配，
+不校验其所在仓库身份；只有同名、但不具备该后缀的路径不会匹配。
+省略路径也不会匹配模式。
 
 每个模式登记节点类型、精确节点文本（missing 节点使用缺失 token）及完整
 局部上下文。匹配 ERROR 文本采用全等，防止 parser recovery 吞入新错误后
@@ -154,6 +156,11 @@ with tempfile.TemporaryDirectory() as td:
 分支，不全局扩展窗口。ERROR 子节点继续逐个校验，未配对条件指令仍阻断。
 三个登记文件的 directive ERROR 也使用具体模式，不走原有泛用 directive
 恢复分支。模式旁保留逐节点成因，探针行号只作注释证据。
+
+精确上下文包含空白：menu.cc L115 模式以前置空行开头，删除该空行也会
+撤销豁免。这是选择完整上下文匹配带来的已知脆弱点，不承诺任意格式改动
+均可通过。登记文件内关闭了通用 `#` 指令 ERROR 恢复；新增条件切分结构
+会比未登记文件更严格地 fail-closed，须探测新节点并登记有成因的精确模式。
 
 三个宏适配均属于**方案 3 的前置局部步骤**，以后完整预处理实现时一并替换：
 
@@ -208,10 +215,11 @@ post-coder 原始日志均保留，避免只提供报告路径而遗漏实际 co
 得到相同的 571 existing、8 new、22 resolved 及相同八条 identity。这些是
 既有 advisory baseline 差异，不是本次改动引入，未改写该 baseline。
 
-领域审阅路由结果为 zh-code-reviewer；尚未执行独立领域审阅或 GitHub CI，
-供后续接手者在合并前完成。按用户要求没有 push、merge。方案 3 的完整
+领域审阅路由结果为 zh-code-reviewer；用户提供的独立审核（Fable 5.1）结论
+为 Changes Requested（Blocker 0、Needs Fix 1、Suggestion 8），修复见下文。
+修复后的独立复审及 GitHub CI 待接手者在合并前完成。按用户要求没有 push、merge。方案 3 的完整
 Android/桌面宏配置预处理留待后续。
-## 最终验收结果
+## 首轮验收结果（审核修复前）
 
 验证代码提交：`dba4d2d4ffd7`（后续提交仅保存本文及原始证据）。
 
@@ -229,6 +237,46 @@ Android/桌面宏配置预处理留待后续。
 原始证据（仅本地，不入库）：
 `.claude/metrics/verify/issue120/issue120-scanner-validation.txt`、
 `.claude/metrics/verify/issue120/issue120-scanner-branches.txt`。
+
+## 独立审核修复
+
+- Needs Fix：directn 副本使用 `td/crawl-ref/source/directn.cc`，目录入口指向
+  `td/crawl-ref/source`；两个扫描器、两个入口均先证明未注入时通过，再证明
+  窗口外注入错误后失败，避免路径不匹配造成无效负例。
+- S2/S3：更新伪指令集成负例的注释，明确它们不能单独证明 lexer 窗口语义；
+  修正 lexer 说明的误缩进。
+- S4：在登记的 `vault_placement &vp(...)` 上下文内部只删除一个分号，
+  通过真实 CLI 和两个入口验证正例通过、负例阻断。
+- S5：上下文最后一行由最后一个实际字节（`start + len(context) - 1`）
+  计算；新增边界负例，拒绝把紧随上下文的下一行指令算进上下文。
+- S6/S7：准确说明路径后缀匹配不绑定仓库身份；缺少 tree-sitter 时通过
+  setUp/skipTest 跳过该依赖测试，而不是导入失败。
+- S8/S9：上文记录空白也参与精确匹配的脆弱点，以及登记文件新增条件切分
+  结构会更严格 fail-closed 的行为；TOOLCHAIN.md 同步说明后者。
+
+原始日志已逐字移至 `.claude/metrics/verify/issue120/`（gitignored），
+未推送的原文档提交通过 `git commit --amend` 移除两份日志，现为
+`2754330f18`，没有使用 reset --hard。
+
+本轮复验使用 Python 3.13.14、宿主权限和 run_isolated.sh，串行运行完整
+套件以避开既有 clean-checkout 夹具竞态，再对干净修复提交执行完整 code
+profile。原文位置（不入库）：
+
+```text
+.claude/metrics/verify/issue120/review-targeted.log
+.claude/metrics/verify/issue120/review-completeness.log
+.claude/metrics/verify/issue120/review-missing-parser.log
+.claude/metrics/verify/issue120/review-run-all.log
+.claude/metrics/verify/issue120/review-code-full.log
+```
+
+完整 profile 的内部 verify.log 和 post-coder 日志也汇入 review-code-full.log。
+执行命令（PATH 先选用 .python-version 指定版本）：
+
+```bash
+ZH_TOOLING_TEST_JOBS=1 bash .claude/scripts/run_isolated.sh bash .claude/scripts/tests/run_all.sh
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code --scope full --base 6b82440c54 --head HEAD
+```
 
 ## 分支只读扫描复现脚本
 
