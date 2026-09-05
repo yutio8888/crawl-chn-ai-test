@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import subprocess
 import sys
@@ -30,6 +31,13 @@ def main():
     pretty = '--pretty=%h%x1F%cn%x1F%s%x1F%b%x1E'
     branch_to_check = os.environ.get("GITHUB_HEAD_REF","HEAD")
     base_branch = os.environ.get("GITHUB_BASE_REF", "origin/master")
+    if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+        # Checkout uses a detached merge commit; local branch names need not
+        # exist, especially for fork PRs. Check the event's exact commit IDs.
+        with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as event_file:
+            pull_request = json.load(event_file)["pull_request"]
+        branch_to_check = pull_request["head"]["sha"]
+        base_branch = pull_request["base"]["sha"]
     print(f"Checking commits being merged from {branch_to_check} to {base_branch}")
 
     git_args = [ "git", "log", "--no-merges", pretty, branch_to_check, f"^{base_branch}" ]

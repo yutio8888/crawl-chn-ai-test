@@ -737,10 +737,17 @@ public:
         }
         else if (_game_defined(defaults))
         {
+            const string character = newgame_char_description(defaults);
+            string named_character = character;
+            if (!defaults.name.empty())
+            {
+                named_character = Options.language == lang_t::ZH
+                                ? defaults.name + "（" + character + "）"
+                                : defaults.name + " the " + character;
+            }
             instructions_text +=
                     (T_("<white>[tab]</white> quick-start last combo: "))
-                    + (defaults.name.size() ? (defaults.name + " the ") : "")
-                    + newgame_char_description(defaults) + "\n";
+                    + named_character + "\n";
         }
         instructions_text +=
             (T_("<white>[ctrl-p]</white> view rc file information and log"));

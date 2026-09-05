@@ -49,6 +49,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "item-use.h"
+#include "jobs.h"
 #include "kills.h"
 #include "level-state-type.h"
 #include "libutil.h"
@@ -4563,9 +4564,7 @@ void contaminate_player(int change, bool controlled, bool msg)
         }
 
         if (!player_harmful_contamination() && was_glowing && you.invisible())
-        {
             mpr(T_("You fade completely from view now that you are no longer glowing from magical contamination."));
-        }
     }
 
     if (msg && old_amount > 0 && you.magic_contamination == 0)
@@ -4680,8 +4679,10 @@ bool poison_player(int amount, string source, string source_aux, bool force)
     if (you.duration[DUR_POISONING] > old_value)
     {
         if (poison_is_lethal() && !was_fatal)
+        {
             mprf(MSGCH_DANGER,
                 T_("You are lethally poisoned!"));
+        }
         else
         {
             mprf(MSGCH_WARN, T_("You are %spoisoned."),
@@ -5911,8 +5912,19 @@ bool player_save_info::operator<(const player_save_info& rhs) const
 
 string player_save_info::really_short_desc() const
 {
+    // Save browsing accepts future enum values; retain their header names.
+    const string display_species = !species::is_valid(species)
+                                 ? T_(species_name.c_str())
+                                 : species::name(species);
+    const string display_class = !job_type_valid(job)
+                               ? T_(class_name.c_str())
+                               : get_job_name(job);
+
     ostringstream desc;
-    desc << name << T_(" the ") << species_name << ' ' << class_name;
+    if (Options.language == lang_t::ZH)
+        desc << name << "（" << display_species << ' ' << display_class << "）";
+    else
+        desc << name << " the " << display_species << ' ' << display_class;
 
     return desc.str();
 }
@@ -5927,14 +5939,24 @@ string player_save_info::short_desc(bool use_qualifier) const
     if (!qualifier.empty())
         desc << "[" << qualifier << "] ";
 
+    const string display_species = !species::is_valid(species)
+                                 ? T_(species_name.c_str())
+                                 : species::name(species);
+    const string display_class = !job_type_valid(job)
+                               ? T_(class_name.c_str())
+                               : get_job_name(job);
+    const string display_god = religion == GOD_NO_GOD ? ""
+                             : religion > GOD_NO_GOD && religion < NUM_GODS
+                             ? ::god_name(religion) : T_(god_name.c_str());
+
     desc << make_stringf(T_("%s, a level %d %s %s"),
                          name.c_str(), experience_level,
-                         species_name.c_str(), class_name.c_str());
+                         display_species.c_str(), display_class.c_str());
 
     if (religion == GOD_JIYVA)
-        desc << T_(" of ") << god_name << " " << jiyva_second_name;
+        desc << T_(" of ") << display_god << " " << jiyva_second_name;
     else if (religion != GOD_NO_GOD)
-        desc << T_(" of ") << god_name;
+        desc << T_(" of ") << display_god;
 
 #ifdef WIZARD
     if (wizard)

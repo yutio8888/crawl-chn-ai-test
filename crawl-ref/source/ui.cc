@@ -3270,10 +3270,14 @@ void pump_events(int wait_event_timeout)
             ui_root.needs_paint = true;
             break;
 
+        case WME_MOUSEBUTTONDOWN:
+        case WME_MOUSEBUTTONUP:
         case WME_MOUSEMOTION:
-            // FIXME: move update_hover_path() into event delivery
+            // Touchscreen taps may arrive without a preceding motion event.
+            // Hit-test the coordinates carried by every pointer event so the
+            // first tap reaches the button under the finger.
             ui_root.update_hover_path();
-            ui_root.on_event(event);
+            // fall through
 
         default:
             if (!ui_root.on_event(event) && event.type == WME_MOUSEBUTTONDOWN)

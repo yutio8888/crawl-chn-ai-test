@@ -68,6 +68,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
         Log.i("AndroidStartup", "launcher_on_create elapsed_realtime_ms="
                 + SystemClock.elapsedRealtime());
         setContentView(R.layout.launcher);
@@ -191,7 +192,9 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         };
         for (String directory : directories) {
             File path = new File(externalFilesDir, directory);
-            if (!path.isDirectory() && !path.mkdirs()) {
+            if (!path.isDirectory() && !path.mkdirs() && !path.isDirectory()) {
+                // Another caller may have created the directory after the
+                // first check. Only fail if it is still missing.
                 return false;
             }
         }

@@ -10,6 +10,7 @@ from being bypassed, and the description keys the labels resolve against.
 from pathlib import Path
 import re
 import unittest
+import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -21,6 +22,9 @@ TILESDL_H = ROOT / "crawl-ref/source/tilesdl.h"
 SPELL_REGION_H = ROOT / "crawl-ref/source/tilereg-spl.h"
 SPELL_REGION_CC = ROOT / "crawl-ref/source/tilereg-spl.cc"
 ABILITY_REGION_CC = ROOT / "crawl-ref/source/tilereg-abl.cc"
+ANDROID_RES = ROOT / "crawl-ref/source/android-project/app/src/main/res"
+ANDROID_MOBILE_LAYOUT = ANDROID_RES / "layout/keyboard_mobile.xml"
+UI_CC = ROOT / "crawl-ref/source/ui.cc"
 
 MENU_TEXT_CALL = re.compile(
     r'_command_menu_text\(\s*"(android command menu(?: summary)?)"\s*,\s*'
@@ -58,6 +62,68 @@ def database_keys(path: Path) -> set:
         if stripped:
             keys.add(stripped.splitlines()[0].strip())
     return keys
+
+
+class AndroidFirstRunTests(unittest.TestCase):
+    def string_names(self, qualifier: str) -> set[str]:
+        root = ET.parse(ANDROID_RES / qualifier / "strings.xml").getroot()
+        return {node.attrib["name"] for node in root if "name" in node.attrib}
+
+    def test_generic_chinese_resources_cover_the_android_shell(self) -> None:
+        # A Chinese language with a non-CN region resolves values-zh rather
+        # than values-zh-rCN. It must not silently inherit visible English UI.
+        default_names = self.string_names("values")
+        zh_names = self.string_names("values-zh")
+        self.assertEqual(default_names, zh_names)
+
+    def test_android_shell_retains_english_fallback_resources(self) -> None:
+        # Check the fallback artifact, not a simulated Android locale resolver.
+        # Activity resource selection still needs a device smoke test in both
+        # Chinese and an unsupported locale.
+        root = ET.parse(ANDROID_RES / "values/strings.xml").getroot()
+        strings = {node.attrib["name"]: node.text
+                   for node in root.findall("string")}
+        expected = {
+            "start_game": "Start Game",
+            "edit_rc": "Edit Init File",
+            "virtual_keyboard": "Virtual keyboard",
+            "extra_keyboard": "Extra directional pad",
+            "keyboard_size": "Keyboard size",
+            "keyboard_explore": "Explore",
+            "keyboard_autofight": "Auto-fight",
+            "keyboard_rest": "Wait",
+            "keyboard_inventory": "Inventory",
+            "keyboard_pickup": "Pick up",
+        }
+        for name, text in expected.items():
+            self.assertEqual(text, strings[name], name)
+
+    def test_compact_action_buttons_have_localized_accessibility_names(self) -> None:
+        root = ET.parse(ANDROID_MOBILE_LAYOUT).getroot()
+        android = "{http://schemas.android.com/apk/res/android}"
+        expected = {
+            "key_mobile_explore": "@string/keyboard_explore",
+            "key_mobile_autofight": "@string/keyboard_autofight",
+            "key_mobile_5": "@string/keyboard_rest",
+            "key_mobile_inventory": "@string/keyboard_inventory",
+            "key_mobile_pickup": "@string/keyboard_pickup",
+        }
+        actual = {}
+        for node in root.iter("Button"):
+            resource_id = node.attrib.get(android + "id", "").removeprefix("@+id/")
+            if resource_id in expected:
+                actual[resource_id] = node.attrib.get(android + "contentDescription")
+        self.assertEqual(expected, actual)
+
+    def test_pointer_buttons_are_hit_tested_without_prior_motion(self) -> None:
+        source = UI_CC.read_text(encoding="utf-8")
+        event_loop = block_after(source, "void pump_events(int wait_event_timeout)")
+        pointer_cases = event_loop[event_loop.index("case WME_MOUSEBUTTONDOWN:"):
+                                   event_loop.index("default:")]
+        for event_type in ("WME_MOUSEBUTTONDOWN", "WME_MOUSEBUTTONUP",
+                           "WME_MOUSEMOTION"):
+            self.assertIn("case %s:" % event_type, pointer_cases)
+        self.assertIn("ui_root.update_hover_path();", pointer_cases)
 
 
 class QuickAccessPageTests(unittest.TestCase):
