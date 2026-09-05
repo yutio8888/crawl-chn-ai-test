@@ -4246,6 +4246,37 @@ command_type describe_item_popup(const item_def &item,
     command_type action = CMD_NO_CMD;
     int lastch; // unused??
     bool show_spell_success = false;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions;
+    keyboard_actions[1] = {"", CK_ESCAPE};
+    size_t slot = 2;
+    // Prefer direct item interactions over quiver/letter/training metadata.
+    // Reuse the actual page parser and footer, including overloaded keys.
+    for (bool secondary : {false, true})
+    {
+        for (auto cmd : actions)
+        {
+            const bool metadata = cmd == CMD_QUIVER_ITEM
+                || cmd == CMD_ADJUST_INVENTORY || cmd == CMD_INSCRIBE_ITEM
+                || cmd == CMD_SET_SKILL_TARGET;
+            if (metadata != secondary || slot == keyboard_actions.size())
+                continue;
+            for (char key : string("wutvrpqgdi=s"))
+            {
+                if (_get_action(key, actions) != cmd)
+                    continue;
+                string label = cmd == CMD_QUIVER_ITEM && key == 'v'
+                    ? string(T_("qui(v)er")) : _actions_desc({cmd});
+                if (!label.empty() && label.back() == '.')
+                    label.pop_back();
+                keyboard_actions[slot++] = {std::move(label), key};
+                break;
+            }
+        }
+    }
+    ui::InputActionScope keyboard_scope(ui::InputScreen::ITEM,
+                                        std::move(keyboard_actions), popup);
+#endif
     popup->on_keydown_event([&](const KeyEvent& ev) {
         const auto key = ev.key() == '{' ? 'i' : ev.key();
         lastch = key;
@@ -5001,6 +5032,10 @@ void describe_spell(spell_type spell, const monster_info *mon_owner,
     popup->on_layout_pop([](){ tiles.pop_ui_layout(); });
 #endif
 
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::SPELL,
+                                        {{{}, {"", CK_ESCAPE}}}, popup);
+#endif
     ui::run_layout(std::move(popup), done);
 }
 

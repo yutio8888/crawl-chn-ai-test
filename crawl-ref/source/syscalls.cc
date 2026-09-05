@@ -55,8 +55,12 @@ bool ensure_utf8_ctype()
 #endif
 
 #ifdef __ANDROID__
+#include <atomic>
 #include "player.h"
+#include "state.h"
+#include "ui.h"
 #include <errno.h>
+#include <android/log.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <jni.h>
@@ -165,13 +169,136 @@ time_t jni_package_last_update_time()
     return cached_update_time;
 }
 
-// Used to save the game on SDLActivity.onPause
+// Deferred save for SDLActivity.onPause.
+//
+// save_game() walks the player, the current level, the Lua persist table and
+// the save package, all of which the SDL game thread owns; running it on the
+// activity's UI thread races that thread and can interleave two writers into
+// one package. onPause() therefore only parks a request here, and the game
+// thread performs the save itself from android_run_pending_save().
+//
+// The UI thread waits for the result with a bound, so a game thread that is
+// busy (or already gone) delays the pause instead of hanging it.
+static const Uint32 SAVE_REQUEST_TIMEOUT_MS = 2000;
+
+// Constructed on first use, which C++11 makes thread-safe; SDL mutexes and
+// condition variables do not need SDL_Init().
+static SDL_mutex *_save_request_mutex()
+{
+    static SDL_mutex *mutex = SDL_CreateMutex();
+    return mutex;
+}
+
+static SDL_cond *_save_request_cond()
+{
+    static SDL_cond *cond = SDL_CreateCond();
+    return cond;
+}
+
+static bool save_requested = false;
+static bool save_running = false;
+
+// Everything save_game() needs in order not to trip over a half-finished
+// level transition, level build, save or shutdown.
+static bool _pause_save_is_safe()
+{
+    return you.save
+        && crawl_state.need_save
+        && crawl_state.game_started
+        && !crawl_state.saving_game
+        && !crawl_state.generating_level
+        && !crawl_state.updating_scores
+        && !crawl_state.game_crashed
+        && !crawl_state.seen_hups
+        && you.on_current_level
+        && !you.entering_level;
+}
+
+// Releases onPause() even if save_game() leaves through an exception; the
+// exception itself keeps propagating on the game thread as usual.
+namespace
+{
+    struct save_run_guard
+    {
+        ~save_run_guard()
+        {
+            SDL_mutex * const mutex = _save_request_mutex();
+            SDL_LockMutex(mutex);
+            save_running = false;
+            SDL_CondBroadcast(_save_request_cond());
+            SDL_UnlockMutex(mutex);
+        }
+    };
+}
+
+// Called by the game thread at points where no turn is in progress.
+void android_run_pending_save()
+{
+    SDL_mutex * const mutex = _save_request_mutex();
+
+    SDL_LockMutex(mutex);
+    if (!save_requested)
+    {
+        SDL_UnlockMutex(mutex);
+        return;
+    }
+    save_requested = false;
+    if (!_pause_save_is_safe())
+    {
+        // Skipping is safe: the package still holds everything up to the last
+        // commit, so a kill after this loses progress but not the save.
+        __android_log_print(ANDROID_LOG_INFO, "Crawl",
+                            "pause save skipped: save=%d need_save=%d "
+                            "started=%d saving=%d genlevel=%d scores=%d "
+                            "crashed=%d hups=%d on_level=%d entering=%d",
+                            you.save ? 1 : 0, crawl_state.need_save,
+                            crawl_state.game_started, crawl_state.saving_game,
+                            crawl_state.generating_level,
+                            crawl_state.updating_scores,
+                            crawl_state.game_crashed, crawl_state.seen_hups,
+                            you.on_current_level, you.entering_level);
+        SDL_CondBroadcast(_save_request_cond());
+        SDL_UnlockMutex(mutex);
+        return;
+    }
+    save_running = true;
+    SDL_UnlockMutex(mutex);
+
+    save_run_guard guard;
+    save_game(false);
+}
+
 extern "C" JNIEXPORT void JNICALL
 Java_org_libsdl_app_SDLActivity_nativeSaveGame(
     JNIEnv* env, jclass thiz)
 {
-    if (you.save)
-        save_game(false);
+    SDL_mutex * const mutex = _save_request_mutex();
+    SDL_cond * const cond = _save_request_cond();
+
+    SDL_LockMutex(mutex);
+    save_requested = true;
+    SDL_CondBroadcast(cond);
+
+    const Uint32 deadline = SDL_GetTicks() + SAVE_REQUEST_TIMEOUT_MS;
+    while (save_requested || save_running)
+    {
+        const Sint32 left = (Sint32)(deadline - SDL_GetTicks());
+        if (left <= 0)
+            break;
+        SDL_CondWaitTimeout(cond, mutex, (Uint32)left);
+    }
+    // A request the game thread never reached would otherwise fire at some
+    // arbitrary point after the activity resumed; drop it instead.
+    if (save_requested || save_running)
+    {
+        __android_log_print(ANDROID_LOG_WARN, "Crawl",
+                            "pause save timed out after %u ms (reached=%d "
+                            "still_running=%d); request dropped",
+                            SAVE_REQUEST_TIMEOUT_MS, save_requested ? 0 : 1,
+                            save_running ? 1 : 0);
+    }
+    save_requested = false;
+    SDL_UnlockMutex(mutex);
 }
 
 int jni_ref_display_size()
@@ -204,22 +331,108 @@ bool jni_keyboard_control(int action)
     return shown;
 }
 
-void jni_input_context(int context)
+static std::atomic<bool> input_context_refresh(false);
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeResetInputContext(JNIEnv*, jclass)
 {
+    // Only the event thread owns the cached descriptor. Keep a reset arriving
+    // during publication pending for its next wait, rather than losing it.
+    input_context_refresh.store(true);
+    SDL_Event event = {};
+    event.type = SDL_WINDOWEVENT;
+    event.window.event = SDL_WINDOWEVENT_EXPOSED;
+    SDL_PushEvent(&event); // Wake an existing wait; first startup may have none.
+}
+
+void jni_input_context(const ui::InputDescriptor& descriptor)
+{
+    static ui::InputDescriptor last;
+    static bool sent = false;
+    if (input_context_refresh.exchange(false))
+        sent = false;
+    if (sent && last == descriptor)
+        return;
     JNIEnv *env = Android_JNI_GetEnv();
     if (!env)
         return;
     jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
     if (sdl_class)
     {
-        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext", "(I)V");
+        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext",
+            "(II[Ljava/lang/String;[I)V");
         if (method)
-            env->CallStaticVoidMethod(sdl_class, method, context);
+        {
+            jclass string_class = env->FindClass("java/lang/String");
+            jobjectArray labels = string_class
+                ? env->NewObjectArray(6, string_class, nullptr) : nullptr;
+            jintArray keys = labels ? env->NewIntArray(6) : nullptr;
+            if (keys)
+            {
+                jint values[6];
+                for (int i = 0; i < 6 && !env->ExceptionCheck(); ++i)
+                {
+                    values[i] = descriptor.actions[i].key;
+                    // BMP UTF-8 without NUL agrees with JNI Modified UTF-8.
+                    // InputAction labels must stay within that subset.
+                    jstring label = env->NewStringUTF(descriptor.actions[i].label.c_str());
+                    if (label)
+                    {
+                        env->SetObjectArrayElement(labels, i, label);
+                        env->DeleteLocalRef(label);
+                    }
+                }
+                if (!env->ExceptionCheck())
+                {
+                    env->SetIntArrayRegion(keys, 0, 6, values);
+                    env->CallStaticVoidMethod(sdl_class, method,
+                        static_cast<int>(descriptor.context),
+                        static_cast<int>(descriptor.screen), labels, keys);
+                    if (!env->ExceptionCheck())
+                    {
+                        last = descriptor;
+                        sent = true;
+                    }
+                }
+            }
+            if (keys)
+                env->DeleteLocalRef(keys);
+            if (labels)
+                env->DeleteLocalRef(labels);
+            if (string_class)
+                env->DeleteLocalRef(string_class);
+        }
         env->DeleteLocalRef(sdl_class);
     }
     // An unavailable presentation bridge must not poison later JNI calls.
     if (env->ExceptionCheck())
         env->ExceptionClear();
+}
+
+// Only keys without an InputConnection character representation use this
+// bridge. Queue normal SDL events; never touch the game from the UI thread.
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeKeyboardKey(JNIEnv*, jclass, jint key)
+{
+    SDL_Keycode sym;
+    switch (key)
+    {
+    case CK_LEFT:  sym = SDLK_LEFT; break;
+    case CK_RIGHT: sym = SDLK_RIGHT; break;
+    default:
+        __android_log_print(ANDROID_LOG_WARN, "AndroidKeyboard",
+                            "Unsupported keyboard key: %d", static_cast<int>(key));
+        return;
+    }
+    SDL_Event event = {};
+    event.type = SDL_KEYDOWN;
+    event.key.state = SDL_PRESSED;
+    event.key.keysym.sym = sym;
+    event.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
+    SDL_PushEvent(&event);
+    event.type = SDL_KEYUP;
+    event.key.state = SDL_RELEASED;
+    SDL_PushEvent(&event);
 }
 
 float jni_get_display_density()

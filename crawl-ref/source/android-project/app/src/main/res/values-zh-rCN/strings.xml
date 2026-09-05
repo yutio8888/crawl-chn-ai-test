@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="keyboard_always">总是</string>
     <string name="input_display">输入与显示</string>
     <string name="advanced">高级</string>
     <string name="app_name">Dungeon Crawl Stone Soup</string>

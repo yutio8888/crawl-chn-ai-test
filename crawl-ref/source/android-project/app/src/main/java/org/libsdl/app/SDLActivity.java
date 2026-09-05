@@ -71,7 +71,6 @@ public class SDLActivity extends AppCompatActivity {
     protected static int extraKeyboardOption;
     protected static int keyboardSize;
     protected static boolean fullScreen;
-    private int lastInputContext = -1;
     protected static View mTextEdit;
     protected static boolean mScreenKeyboardShown;
     protected static ViewGroup mLayout;
@@ -300,8 +299,8 @@ public class SDLActivity extends AppCompatActivity {
         mKeyboard = new DCSSKeyboard(this);
         mKeyboard.setVisibility(View.INVISIBLE);
         mKeyboard.initKeyboard(keyboardOption, keyboardSize);
-        // Context changes and manual full/compact switches change row count
-        // without changing visibility. Reserve the actual post-layout height.
+        // Reserve the initial measured height. Context and manual layout
+        // switches now share the same fixed four-row height.
         mKeyboard.addOnLayoutChangeListener((view, left, top, right, bottom,
                 oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom - top != oldBottom - oldTop) {
@@ -355,6 +354,9 @@ public class SDLActivity extends AppCompatActivity {
         keyboardsLayout.setLayoutParams(keyLParams);
         mLayout.addView(keyboardsLayout);
         setContentView(mLayout);
+        // The native deduplication cache survives an Activity recreation.
+        // Request publication only after the replacement keyboard is ready.
+        nativeResetInputContext();
         // CRAWL HACK: Custom keyboard (END)
 
         // Get filename from "Open with" of another application
@@ -372,9 +374,8 @@ public class SDLActivity extends AppCompatActivity {
     protected void onPause() {
         Log.v(TAG, "onPause()");
 
-        // CRAWL HACK: Save game
-        SDLActivity.nativeSaveGame();
-
+        // CRAWL HACK: the pause save is requested from handleNativeState(),
+        // which every route into the background reaches.
         super.onPause();
         mNextNativeState = NativeState.PAUSED;
         mIsResumedCalled = false;
@@ -562,6 +563,24 @@ public class SDLActivity extends AppCompatActivity {
 
         // Try a transition to paused state
         if (mNextNativeState == NativeState.PAUSED) {
+            // CRAWL HACK: Save game. Every route into the background funnels
+            // through this one RESUMED -> PAUSED transition: onPause(), losing
+            // window focus to a system window such as the notification shade,
+            // and surfaceDestroyed(). It is also the last moment SDLThread is
+            // still running, because nativePause() below parks it in
+            // Android_PumpEvents() until the next resume.
+            //
+            // The native call hands the save to SDLThread and waits for it
+            // with a bound, so only ask when that thread can answer. Coming
+            // from any state other than RESUMED means SDLThread is already
+            // parked, and a departed thread (mSDLThread cleared by
+            // handleNativeExit(), which then calls finish() and so reaches
+            // this transition) would never answer at all; either way the wait
+            // would just burn its whole timeout.
+            if (mCurrentNativeState == NativeState.RESUMED
+                    && mSDLThread != null) {
+                nativeSaveGame();
+            }
             nativePause();
             mSurface.handlePause();
             mCurrentNativeState = mNextNativeState;
@@ -938,18 +957,21 @@ public class SDLActivity extends AppCompatActivity {
     }
 
     // Input context changes presentation, independently of keyboard visibility.
-    public static void jniInputContext(int context) {
+    public static void jniInputContext(int context, int screen, String[] labels, int[] keys) {
         SDLActivity activity = mSingleton;
-        if (activity == null || activity.lastInputContext == context) {
+        if (activity == null || labels == null || keys == null
+                || labels.length != 6 || keys.length != 6) {
             return;
         }
-        activity.lastInputContext = context;
         activity.runOnUiThread(() -> {
             if (mSingleton == activity && mKeyboard != null) {
-                mKeyboard.setInputContext(context);
+                mKeyboard.setInputContext(context, screen, labels, keys);
             }
         });
     }
+
+    public static native void nativeKeyboardKey(int key);
+    public static native void nativeResetInputContext();
 
     // CRAWL HACK: Function used to toggle the keyboard, called using JNI.
     public static boolean jniKeyboardControl(int action) {

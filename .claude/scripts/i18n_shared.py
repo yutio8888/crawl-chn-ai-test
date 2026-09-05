@@ -1051,69 +1051,132 @@ def read_utf8(path: str) -> str:
         return stream.read()
 
 
-# Frozen baseline of the pre-existing tree-sitter-cpp false positives in
-# crawl-ref/source/directn.cc, caused by preprocessor conditionals splitting
-# C++ constructs (if/else chains, class inheritance lists, ...).
-#
-# The exemption is bound to the real ERROR/missing nodes parsed from the
-# baseline file itself: every entry is (physical line, node kind, text
-# anchor). For ERROR nodes the anchor is the node's own text (matched as a
-# prefix, since a later grammar may absorb more text into the node); for
-# missing nodes the node text is empty, so the anchor is the missing token
-# (node.type), the only text a missing node carries. The list below was
-# probed from the baseline directn.cc (10 ERROR/missing nodes total; the
-# three directive-fragment ERROR nodes at lines 2439/2441/2443 are exempted
-# by the separate '#'-directive rule below, not by this list):
-#
-#   622  missing '}'   - #ifndef USE_TILE_LOCAL splits the else clause from
-#                        its if; the '}' before the else body is reported
-#                        missing on the 'str = "         " + fss[j]...' line
-#   626  ERROR '}'     - orphan '}' closing the else body
-#   1941 ERROR 'else'  - #ifdef DEBUG_DIAGNOSTICS splits a dangling else
-#                        from its if, leaving an orphan 'else' node
-#   2446 ERROR 'UIDir..' - #ifdef USE_TILE_LOCAL splits the class
-#                        inheritance list; the constructor line right after
-#                        #endif is mis-parsed as a labeled statement
-#   2447 missing ';'   - the following member-init line then lacks a ';'
-#   3721 ERROR '*' / '.' - unique_ptr dereference *env.level_vaults[...]
-#                        inside #ifdef DEBUG_DIAGNOSTICS is mis-parsed as a
-#                        declarator
-#
-# File identity is bound by the SHA-256 of the phase-1 normalized
-# baseline bytes (LF, CRLF and bare-CR forms of the same content
-# normalize identically via _normalize_eol): the scanner entry
-# points do not thread the file path into has_relevant_parse_error(),
-# so the only sound file binding available there is the normalized
-# baseline bytes. This is strictly stronger than a path match: a
-# path-identical but modified directn.cc is never exempted, while a
-# byte-identical copy in any line-ending style (the directory entry
-# scenario) is, which is exactly the identity the frozen pairs belong
-# to. Generic text such as '}' or 'else' at a switch point in any other
-# content therefore still fails closed.
-#
-# A node is exempt only when all of the following hold:
-#   1. sha256(source) == the frozen baseline sha256 (the node's file is the
-#      frozen baseline file);
-#   2. the node's (line, kind, text anchor) matches a frozen pair exactly;
-#   3. the node's line is a preprocessor switch point (inside a conditional
-#      body or within _PREPROC_SWITCH_WINDOW lines after its #endif), the
-#      retained window mechanism.
-# Every other parse error still fails closed.
-_PREPROCESSOR_BASELINE_DIRECTN = {
-    "sha256": "85881f8e4ef82f7e92647655ab87390ab793b4066ee3f9b5e069c9d192361f5b",
-    "nodes": frozenset({
-        (622, "missing", b"}"),
-        (626, "ERROR", b"}"),
-        (1941, "ERROR", b"else"),
-        (2446, "ERROR",
-         b"UIDirectionChooserView(direction_chooser& dc) :"),
-        (2447, "missing", b";"),
-        (3721, "ERROR", b"*"),
-        (3721, "ERROR", b"."),
-    }),
+# Issue #120: repository-relative path, exact node text and local context.
+# Probe line numbers in comments are evidence only, never matching keys.
+# Contexts explain conditional splits; macros use parse_cpp_annotations.
+_PREPROCESSOR_PATTERNS = {
+    "crawl-ref/source/directn.cc": (
+        # L622: `#ifndef USE_TILE_LOCAL` 切开 if/else，恢复时提前结束 else 块；现有窗口内
+        ('missing', b'}',
+         b'                {\n'
+         b'                    str = "         " + fss[j].tostring();\n'
+         b'                    me = new MenuEntry(str, MEL_ITEM, 1);\n'),
+        # L626: 上述提前结束使真正闭括号孤立；现有窗口内
+        ('ERROR', b'}',
+         b'                    me->data = (void*)&mi;\n'
+         b'                }\n'
+         b'#endif\n'),
+        # L1941: `DEBUG_DIAGNOSTICS` 分支末尾的 else 与 endif 后语句分离；现有窗口内
+        ('ERROR', b'else',
+         b'        _debug_describe_feature_at(target());\n'
+         b'    else\n'
+         b'#endif\n'),
+        # L2439: 类继承列表被条件指令切开；现有 directive 规则处理
+        ('ERROR', b'#ifdef USE_TILE_LOCAL\n    : public',
+         b'class UIDirectionChooserView\n'
+         b'#ifdef USE_TILE_LOCAL\n'
+         b'    : public ui::Widget\n'
+         b'#else\n'),
+        # L2441: 同一继承列表的另一分支；现有 directive 规则处理
+        ('ERROR', b'#else\n    : public ui',
+         b'    : public ui::Widget\n'
+         b'#else\n'
+         b'    : public ui::OverlayWidget\n'
+         b'#endif\n'),
+        # L2443: 同一继承列表结束指令；现有 directive 规则处理
+        ('ERROR', b'#endif',
+         b'    : public ui::OverlayWidget\n'
+         b'#endif\n'
+         b'{\n'),
+        # L2446: 类头恢复失败，构造函数被误读；现有窗口内
+        ('ERROR', b'UIDirectionChooserView(direction_chooser& dc) :',
+         b'public:\n'
+         b'    UIDirectionChooserView(direction_chooser& dc) :\n'
+         b'        m_dc(dc), old_target(dc.target())\n'),
+        # L2447: 上述恢复把成员初始化列表当作需要分号的语句；现有窗口内
+        ('missing', b';',
+         b'    UIDirectionChooserView(direction_chooser& dc) :\n'
+         b'        m_dc(dc), old_target(dc.target())\n'
+         b'    {\n'),
+        # L3721: DEBUG_DIAGNOSTICS 内直接初始化被误读为声明符，* 无法归约。
+        ('ERROR', b'*',
+         b'    {\n'
+         b'        const vault_placement &vp(*env.level_vaults[map_index]);\n'
+         b'        const coord_def br = vp.pos + vp.size - 1;\n'),
+        # L3721: 同一初始化被误读后的成员访问恢复错误；现有窗口内
+        ('ERROR', b'.',
+         b'    {\n'
+         b'        const vault_placement &vp(*env.level_vaults[map_index]);\n'
+         b'        const coord_def br = vp.pos + vp.size - 1;\n'),
+    ),
+    "crawl-ref/source/main.cc": (
+        # L235: 条件分支内的 GNU 属性与 endif 后 main 声明分离；现有窗口内
+        ('ERROR', b'__attribute__((externally_visible))',
+         b'// from this treatment.\n'
+         b'__attribute__((externally_visible))\n'
+         b'# endif\n'),
+        # L2041: 构造函数参数中的位或表达式被条件切开；现有 directive 规则处理
+        ('ERROR', b'#ifdef USE_TILE_LOCAL',
+         b'                | MF_ARROWS_SELECT | MF_WRAP | MF_INIT_HOVER\n'
+         b'#ifdef USE_TILE_LOCAL\n'
+         b'                | MF_SPECIAL_MINUS // doll editor (why?)\n'),
+        # L2043: 上述参数表达式的条件结束；现有 directive 规则处理
+        ('ERROR', b'#endif',
+         b'                | MF_SPECIAL_MINUS // doll editor (why?)\n'
+         b'#endif\n'
+         b'                ),\n'),
+        # L2400: USE_TILE_WEB 内的 else 与前面的 if 分隔，调用被误读为声明；现有窗口内
+        ('ERROR', b'tiles.',
+         b'        else\n'
+         b'            tiles.send_dump_info("command", you.your_name);\n'
+         b'#endif\n'),
+    ),
+    "crawl-ref/source/menu.cc": (
+        # L115: 构造函数成员初始化列表中插入指令；现有 directive 规则处理
+        ('ERROR', b'#ifdef USE_TILE_LOCAL',
+         b'\n'
+         b'#ifdef USE_TILE_LOCAL\n'
+         b'    , m_font_entry(tiles.get_crt_font()), m_text_buf(m_font_entry)\n'),
+        # L117: 上述初始化列表的条件结束；现有 directive 规则处理
+        ('ERROR', b'#endif',
+         b'    , m_font_entry(tiles.get_crt_font()), m_text_buf(m_font_entry)\n'
+         b'#endif\n'
+         b'    {\n'),
+        # L791: `if (min_column_width <= 0)` 的语句体从下一行 ifdef 开始，恢复时误报缺少分号；节点在指令之前，不在窗口内
+        ('missing', b';',
+         b'    int min_column_width = m_menu->m_ui.menu->get_min_col_width();\n'
+         b'    if (min_column_width <= 0)\n'
+         b'#ifdef USE_TILE_LOCAL\n'),
+        # L2397: 声明名与初始化值被 ifdef 切开；节点起点不在窗口内，现有 directive 规则也不匹配
+        ('ERROR', b'indent\n#ifdef',
+         b'    // the title only (TODO)\n'
+         b'    const int indent\n'
+         b'#ifdef USE_TILE_LOCAL\n'
+         b'        = 0; // tiles does line-wrapping inside the text\n'),
+        # L2401: 上述声明的 else 分支留下孤立初始化符；现有 lexer 将该分支从窗口扣除
+        ('ERROR', b'=',
+         b'#else\n'
+         b'        = static_cast<int>(_get_text_preface().size());\n'
+         b'    width -= indent;\n'),
+        # L2810: 声明与初始化值被下一行 ifdef 切开；节点在指令之前，不在窗口内
+        ('ERROR', b'const int width =',
+         b'    // min width is explicitly set.\n'
+         b'    const int width =\n'
+         b'#ifdef USE_TILE_LOCAL\n'),
+        # L2987: set_scroll 参数表达式被条件切开；现有 directive 规则处理
+        ('ERROR', b'#ifdef USE_TILE_LOCAL',
+         b'    m_ui.scroller->set_scroll(y1\n'
+         b'#ifdef USE_TILE_LOCAL\n'
+         b'            - UI_SCROLLER_SHADE_SIZE / 2\n'),
+        # L2989: 上述参数表达式的条件结束；现有 directive 规则处理
+        ('ERROR', b'#endif',
+         b'            - UI_SCROLLER_SHADE_SIZE / 2\n'
+         b'#endif\n'
+         b'            );\n'),
+    ),
 }
 
-# Window (in lines) after an #endif within which a matching frozen baseline
+# Window (in lines) after an #endif within which a matching registered
 # node is still considered a preprocessor switch-point false positive.
 _PREPROC_SWITCH_WINDOW = 4
 
@@ -1124,7 +1187,7 @@ _PREPROC_SWITCH_WINDOW = 4
 # crawl-ref/source/directn.cc found only 42 preproc_if/preproc_ifdef/
 # preproc_ifndef nodes for 87 actual conditional directives, including no
 # node for the #ifdef USE_TILE_LOCAL at line 2439 whose post-#endif window
-# covers the frozen baseline lines 2446/2447. Directive discovery therefore
+# covers the baseline probe lines 2446/2447. Directive discovery therefore
 # uses a complete phase-2 lexer (backslash-newline splicing, raw-string
 # prefixes/delimiters/terminators, continuation-aware comments, string and
 # char literals) instead of tree-sitter nodes.
@@ -1888,34 +1951,39 @@ def _preprocessor_switch_lines(source: bytes):
     return frozenset(add_lines.difference(subtract_lines))
 
 
-def _matches_frozen_baseline_node(node, source: bytes, baseline: dict) -> bool:
-    """True when this ERROR/missing node is one of the frozen baseline nodes.
+def _matches_preprocessor_node(node, source, patterns, switch_lines, events):
+    """Match a registered node and its complete local source context.
 
-    The frozen list stores (physical line, node kind, text anchor). For
-    ERROR nodes the anchor is the node's own text and is matched as a
-    prefix (a later grammar version may absorb more text into the node);
-    for missing nodes the node text is empty, so the anchor is the missing
-    token (node.type), the only text a missing node carries. Line numbers
-    are physical 1-indexed lines, exactly as recorded when the baseline
-    was probed, resolved with the EOL-agnostic mapping (_line_of_byte) so
-    CRLF/CR variants of the same file match the same frozen lines
-    (CODE-003).
+    Existing live-body/post-endif windows are retained. Only a registered
+    context containing a real lexer directive can extend that window to
+    the preceding lines or an else branch. No global window is widened.
+    Exact node text prevents a recovery node absorbing new broken syntax.
     """
-    line_no = _line_of_byte(source, node.start_byte)
-    if node.is_missing:
-        return (line_no, "missing", node.type.encode("ascii")) \
-            in baseline["nodes"]
-    fragment = source[node.start_byte:node.end_byte].lstrip()
-    return any(
-        line_no == frozen_line
-        and fragment.startswith(frozen_anchor)
-        for frozen_line, frozen_kind, frozen_anchor in baseline["nodes"]
-        if frozen_kind == "ERROR"
-    )
+    kind = "missing" if node.is_missing else node.type
+    anchor = (node.type.encode("ascii") if node.is_missing else
+              source[node.start_byte:node.end_byte])
+    line = _line_of_byte(source, node.start_byte)
+    for expected_kind, expected_anchor, context in patterns:
+        if (kind, anchor) != (expected_kind, expected_anchor):
+            continue
+        start = source.rfind(context, 0, node.start_byte + len(context))
+        if start < 0 or not (start <= node.start_byte <= start + len(context)):
+            continue
+        if node.end_byte > start + len(context):
+            continue
+        if line in switch_lines:
+            return True
+        first = _line_of_byte(source, start)
+        last = _line_of_byte(source, start + len(context) - 1)
+        if any(first <= directive <= last
+               and abs(line - directive) <= _PREPROC_SWITCH_WINDOW
+               for _, directive, _ in events):
+            return True
+    return False
 
 
 def parse_cpp_annotations(parser, source: bytes):
-    """Parse known declaration annotations without losing source offsets.
+    """Parse known annotations and local macros without losing offsets.
 
     The first tree identifies actual function declarations/definitions, so
     text in comments, literals and macro bodies is never rewritten. Only the
@@ -1928,13 +1996,45 @@ def parse_cpp_annotations(parser, source: bytes):
     normalized = bytearray(source)
     changed = False
     stack = [tree.root_node]
+    identifiers = []
+    literals = []
     prefixes = (
-        rb"(?P<annotation>NORETURN)\s+void\s+",
+        rb"(?P<annotation>NORETURN)\s+(?:static\s+)?void\s+",
         rb"static\s+void\s+(?P<annotation>CALLBACK)\s+",
         rb"(?P<annotation>JNIEXPORT)\s+void\s+(?P<calling>JNICALL)\s+",
     )
     while stack:
         node = stack.pop()
+        if node.type in ("comment", "char_literal", "raw_string_literal",
+                         "preproc_def", "preproc_function_def", "preproc_arg"):
+            continue
+        if node.type == "string_literal":
+            literals.append((node.start_byte, node.end_byte))
+            continue
+        if (node.type == "identifier"
+                and source[node.start_byte:node.end_byte] == b"CRAWL"):
+            identifiers.append(node)
+        if node.type == "call_expression":
+            function = node.child_by_field_name("function")
+            args = node.child_by_field_name("arguments")
+            if (function is not None and function.type == "identifier"
+                    and source[function.start_byte:function.end_byte] == b"va_arg"
+                    and args is not None):
+                # Scheme 3 precursor: retain the complete expression argument
+                # (and its findings/errors); only make the type operand an
+                # ordinary expression placeholder. Unsupported type syntax
+                # stays untouched. Never consume a semicolon or newline.
+                comma = source.rfind(b",", args.start_byte, args.end_byte)
+                operand = source[comma + 1:args.end_byte - 1]
+                if (comma >= args.start_byte and re.fullmatch(
+                        rb"[ \t]*[A-Za-z_]\w*(?:(?:[ \t]+|::)[A-Za-z_]\w*)*"
+                        rb"[ \t]*[*&]*[ \t]*", operand)):
+                    type_tree = parser.parse(b"using __va_type = " + operand + b";")
+                    if not type_tree.root_node.has_error:
+                        begin = comma + 1
+                        normalized[begin:args.end_byte - 1] = (
+                            b"0" + b" " * (len(operand) - 1))
+                        changed = True
         if node.type in ("function_definition", "declaration"):
             declarator = node.child_by_field_name("declarator")
             if declarator is not None and declarator.type == "function_declarator":
@@ -1956,10 +2056,29 @@ def parse_cpp_annotations(parser, source: bytes):
                     changed = True
                     break
         stack.extend(node.children)
+    # Scheme 3 precursor: only an AST identifier adjacent to an actual
+    # string literal, with whitespace between them, denotes this object
+    # macro. Comments, raw-string contents and longer identifiers cannot
+    # trigger it. Five bytes remain five bytes; no source location moves.
+    for node in identifiers:
+        if any((end <= node.start_byte
+                and not source[end:node.start_byte].strip())
+               or (node.end_byte <= begin
+                   and not source[node.end_byte:begin].strip())
+               for begin, end in literals):
+            normalized[node.start_byte:node.end_byte] = b'""   '
+            changed = True
     return parser.parse(bytes(normalized)) if changed else tree
 
 
-def has_relevant_parse_error(root, source: bytes) -> bool:
+def preprocessor_patterns_for_path(filepath):
+    """Registered repository-relative identity, including exported copies."""
+    path = Path(filepath).as_posix() if filepath is not None else ""
+    return next((entries for relative, entries in _PREPROCESSOR_PATTERNS.items()
+                 if path == relative or path.endswith("/" + relative)), ())
+
+
+def has_relevant_parse_error(root, source: bytes, filepath=None) -> bool:
     """Ignore only recoverable preprocessor/member-pointer false positives."""
     switch_lines = _preprocessor_switch_lines(source)
     if switch_lines is None:
@@ -1969,19 +2088,8 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
         # ERROR/missing node, so continuing the walk would certify the
         # file as successfully scanned.
         return True
-    baseline = _PREPROCESSOR_BASELINE_DIRECTN
-    # The binding hashes the phase-1 normalized bytes, so the identical
-    # file in LF, CRLF, or bare-CR form binds to the same frozen baseline
-    # and the exemption judgment is line-ending-style independent
-    # (CODE-003). Any other byte difference (a single flip, insertion,
-    # splice change, ...) still changes the normalized hash and fails
-    # closed. Positions and text anchors below use the raw `source`
-    # (tree-sitter parsed those bytes); only line numbers and the hash
-    # are normalized.
-    baseline_content = (
-        hashlib.sha256(_normalize_eol(source)).hexdigest()
-        == baseline["sha256"]
-    )
+    patterns = preprocessor_patterns_for_path(filepath)
+    events = tuple(_directive_events(source)) if patterns else ()
     stack = [root]
     while stack:
         node = stack.pop()
@@ -1990,22 +2098,10 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
                                               node.end_byte)
             line = source[line_start:line_end]
 
-            # Known pre-existing false positives caused by a preprocessor
-            # conditional splitting a C++ construct (if/else chain, class
-            # inheritance list, ...). Exempt only the real frozen baseline
-            # nodes: the node must belong to the exact frozen baseline
-            # content, its (line, kind, text anchor) must match a frozen
-            # pair, and its line must be a preprocessor switch point. A
-            # generic '}' / 'else' line or the same line text in any other
-            # file, at any other line, or with any other node text still
-            # fails closed (CODE-004). This is the only exemption that
-            # applies to missing nodes, which otherwise always fail
-            # closed.
-            if (baseline_content
-                    and _line_of_byte(source, node.start_byte)
-                    in switch_lines
-                    and _matches_frozen_baseline_node(node, source,
-                                                      baseline)):
+            # Path, exact node/context and a lexer-discovered conditional
+            # window must all match, including for missing tokens.
+            if _matches_preprocessor_node(node, source, patterns,
+                                          switch_lines, events):
                 stack.extend(node.children)
                 continue
 
@@ -2016,7 +2112,8 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
 
             # tree-sitter-cpp can split one preprocessor directive into
             # multiple ERROR nodes (for example '#if TAG == 34' and '34').
-            if fragment.startswith(b"#") or line.lstrip().startswith(b"#"):
+            if not patterns and (fragment.startswith(b"#")
+                                 or line.lstrip().startswith(b"#")):
                 stack.extend(node.children)
                 continue
 

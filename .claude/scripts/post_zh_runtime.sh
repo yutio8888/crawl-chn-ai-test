@@ -465,6 +465,14 @@ case "$MODE" in
             --catch2-stdout "$STDOUT_C2_ZH" \
             --baseline "$ZH_BASELINE" || zh_result=$?
         echo "  zh-translation=$rc_zh (parse=$zh_result)"
+        if [ "$zh_result" -ne 0 ]; then
+            echo "  [zh-translation] raw issue records:"
+            # Keep the original keys and samples visible in CI, which may
+            # not retain metrics. This is diagnostic only; the parser above
+            # remains responsible for protocol validation and the exit code.
+            grep -E '^[[:space:]]*ZH_ISSUE_JSON:.*"record_type"[[:space:]]*:[[:space:]]*"issue"' \
+                "$STDERR_C2_ZH" || true
+        fi
 
         # message-overlay doesn't emit JSONL protocol — just use raw exit code
         echo "  message-overlay=$rc_mo"

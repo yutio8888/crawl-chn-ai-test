@@ -20,17 +20,53 @@ def _coverage(data):
 
 
 class ScannerCompletenessTests(unittest.TestCase):
-    # Expected normalized findings for the real directn.cc concat scan:
-    # directn.cc:3040/3042/3044 messageLookup += and 3072/3078/3081 runtime
-    # concat. Tuple: (file, line, rule, literal).
-    DIRECTN_CONCAT_FINDINGS = [
-        ("directn.cc", 3040, "COMPOUND_ASSIGN", "fruit cache"),
-        ("directn.cc", 3042, "COMPOUND_ASSIGN", "meat cache"),
-        ("directn.cc", 3044, "COMPOUND_ASSIGN", "baked goods cache"),
-        ("directn.cc", 3072, "RUNTIME_CONCAT", " peaceful "),
-        ("directn.cc", 3078, "RUNTIME_CONCAT", "default peaceful "),
-        ("directn.cc", 3081, "RUNTIME_CONCAT", "default "),
+    # Keep the six rule/literal expectations independent of scanner output.
+    # Unique full source lines locate them after unrelated preceding edits.
+    DIRECTN_CONCAT_ANCHORS = [
+        ('            messageLookup += "fruit cache";',
+         "COMPOUND_ASSIGN", "fruit cache"),
+        ('            messageLookup += "meat cache";',
+         "COMPOUND_ASSIGN", "meat cache"),
+        ('            messageLookup += "baked goods cache";',
+         "COMPOUND_ASSIGN", "baked goods cache"),
+        ('                decorLine = getMiscString(string(_god_name_en(you.religion)) + " peaceful " + messageLookup);',
+         "RUNTIME_CONCAT", " peaceful "),
+        ('                decorLine = getMiscString("default peaceful " + messageLookup);',
+         "RUNTIME_CONCAT", "default peaceful "),
+        ('                decorLine = getMiscString("default " + messageLookup);',
+         "RUNTIME_CONCAT", "default "),
     ]
+
+    def _directn_concat_findings(self, source):
+        lines = source.splitlines()
+        findings = []
+        for anchor, rule, literal in self.DIRECTN_CONCAT_ANCHORS:
+            matches = [line for line, text in enumerate(lines, 1)
+                       if text == anchor]
+            self.assertEqual(1, len(matches),
+                             f"Expected one directn.cc anchor, got {len(matches)}: {anchor!r}")
+            findings.append(("directn.cc", matches[0], rule, literal))
+        return sorted(findings)
+
+    @property
+    def DIRECTN_CONCAT_FINDINGS(self):
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        return self._directn_concat_findings(source)
+
+    def test_directn_finding_anchors_shift_and_fail_closed(self):
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        findings = self._directn_concat_findings(source)
+        self.assertEqual(
+            [(file, line + 5, rule, literal)
+             for file, line, rule, literal in findings],
+            self._directn_concat_findings("\n" * 5 + source))
+        for anchor, _, _ in self.DIRECTN_CONCAT_ANCHORS:
+            with self.subTest(anchor=anchor, mutation="missing"):
+                with self.assertRaisesRegex(AssertionError, "anchor, got 0"):
+                    self._directn_concat_findings(source.replace(anchor + "\n", "", 1))
+            with self.subTest(anchor=anchor, mutation="duplicate"):
+                with self.assertRaisesRegex(AssertionError, "anchor, got 2"):
+                    self._directn_concat_findings(source + "\n" + anchor + "\n")
 
     def _normalized_findings(self, data):
         return sorted(
@@ -276,28 +312,32 @@ class ScannerCompletenessTests(unittest.TestCase):
         # (outside any preprocessor switch point) and both entries must fail.
         directn = ROOT / "crawl-ref" / "source" / "directn.cc"
         with tempfile.TemporaryDirectory() as td:
-            source = Path(td) / "directn.cc"
-            source.write_bytes(b"int x = ;\n" + directn.read_bytes())
-            for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
-                for entry, args in (("files", ("--files", source)),
-                                    ("dir", (td,))):
-                    with self.subTest(scanner=scanner, entry=entry):
-                        proc = self.run_scanner(scanner, *args,
-                                                "--format", "json",
-                                                "--require-parser")
-                        self.assertEqual(2, proc.returncode, proc.stderr)
-                        coverage = _coverage(json.loads(proc.stdout))
-                        self.assertEqual(coverage["scanned"], 0)
-                        self.assertEqual(len(coverage["failed"]), 1)
+            source = Path(td) / "crawl-ref/source/directn.cc"
+            source.parent.mkdir(parents=True)
+            for broken in (False, True):
+                source.write_bytes((b"int x = ;\n" if broken else b"")
+                                   + directn.read_bytes())
+                for scanner in ("scan_string_concat.py", "scan_varargs_string.py"):
+                    for entry, args in (("files", ("--files", source)),
+                                        ("dir", (source.parent,))):
+                        with self.subTest(scanner=scanner, entry=entry, broken=broken):
+                            proc = self.run_scanner(scanner, *args,
+                                                    "--format", "json",
+                                                    "--require-parser")
+                            expected = 2 if broken else (
+                                1 if scanner == "scan_string_concat.py" else 0)
+                            self.assertEqual(expected, proc.returncode, proc.stderr)
+                            coverage = _coverage(json.loads(proc.stdout))
+                            self.assertEqual(coverage["scanned"], 0 if broken else 1)
+                            self.assertEqual(len(coverage["failed"]), 1 if broken else 0)
 
     def test_preprocessor_mutations_fail_closed_both_entries(self):
-        # Issue #40 W1 round-2 blockers, end to end: fake #ifdef/#endif
-        # inside raw strings or line-spliced comments must not forge switch
-        # eligibility (CODE-002), a live conditional nested inside #if 0
-        # must not leak a post-#endif window over the frozen baseline
-        # (CODE-001), and unmatched openers / extra #endif must fail closed
-        # (CODE-003). Every mutation runs through both real scanner CLIs
-        # and both validating entries with exact exit/coverage assertions.
+        # End-to-end rejection cases from Issue #40 W1. Since Issue #120,
+        # copied baseline fragments in mutation.cc cannot match the registered
+        # path or full context. These cases therefore test CLI rejection, not
+        # lexer window eligibility in isolation. The dedicated phase-2/window
+        # tests below directly exercise fake directives, dead branches and
+        # unmatched conditionals. Both real CLIs and both entries reject here.
         baseline = ('const vault_placement '
                     '&vp(*env.level_vaults[map_index]);')
         mutations = {
@@ -340,12 +380,12 @@ some "quoted text
 ''',
             # R3-CODE-003: '#IF'/'#ENDIF' are not directives (directive
             # names are case-sensitive); with no conditional recognized the
-            # frozen baseline right after them must fail closed.
+            # copied fragment right after them is unregistered and rejected.
             "uppercase-directives": (
                 f"void f() {{\n#IF 1\n    {baseline}\n#ENDIF\n}}\n"),
             # R3-CODE-002: '#elif 0' after '#if 0' is dead, so a nested
             # conditional inside it must not forge a switch point over the
-            # frozen baseline.
+            # copied baseline fragment (also unregistered at this path).
             "elif-zero-dead-if-nested": (
                 f"void f() {{\n#if 0\n#elif 0\n#ifdef INNER\n    {baseline}"
                 f"\n#endif\n#endif\n    (void)0;\n}}\n"),
@@ -365,8 +405,8 @@ some "quoted text
                 + baseline.encode() + b"\r\n    (void)s;\r\n}\r\n"),
             # R4-CODE-001: a branch after the chain was already taken
             # (#elif 0 after #if 1) is dead; its lines must never become
-            # switch points, so the frozen baseline inside the nested
-            # #ifdef in the dead elif branch fails closed. (The old code
+            # switch points. This copied fragment is also unregistered
+            # at mutation.cc. (The old code
             # kept lines 4-6 in the switch set and wrongly certified this
             # file clean.)
             "chain-dead-elif-baseline": (
@@ -383,9 +423,9 @@ some "quoted text
                 "#endif\n}\n"),
             # R4-CODE-003: comments are replaced before the first condition
             # token is read, so '#if /* comment */ 0' is a dead branch and
-            # the frozen baseline inside it fails closed. (The old code
+            # this unregistered copied fragment fails closed. (The old code
             # read '/*' as the first token, treated the branch as live and
-            # wrongly exempted the baseline.)
+            # wrongly exempted the copied fragment.)
             "if-comment-zero-baseline": (
                 f"void f() {{\n#if /* comment */ 0\n    {baseline}"
                 f"\n#endif\n}}\n"),
@@ -396,8 +436,8 @@ some "quoted text
                 f"void f() {{\n#if 0 /* comment\n#ifdef FAKE\n#endif\n*/\n"
                 f"    {baseline}\n#endif\n}}\n"),
             # R4-CODE-004: generic '}' / 'else' ERROR nodes at a switch
-            # point are not the frozen baseline nodes (file content, line
-            # and node text all differ), so they fail closed. (The old
+            # point do not match the registered path and full context,
+            # so they fail closed. (The old
             # line-text exemption wrongly certified both files clean.)
             "generic-brace-at-switch-point": (
                 "void f() {\n#ifdef FOO\n}\n#endif\n}\n"),
@@ -405,23 +445,23 @@ some "quoted text
                 "void f() {\n#ifdef FOO\n    else\n#endif\n}\n"),
             # R4-CODE-005: bare CR is a phase-1 end-of-line indicator, so
             # directives are discovered with real physical line numbers;
-            # the frozen baseline inside a live conditional of a bare-CR
-            # file still fails closed (the file is not the frozen content).
+            # the copied fragment inside a live conditional of a bare-CR
+            # file still fails closed (unregistered path and context).
             "bare-cr-live-conditional": (
                 b"void f() {\x0d#ifdef REAL\x0d    " + baseline.encode()
                 + b"\x0d#endif\x0d}\x0d"),
             # R6-TEST-002: a backslash-newline inside a raw-string body
             # is literal text (no phase-2 splice), so the fake directives
             # on the continuation line cannot forge switch points for the
-            # frozen baseline.
+            # copied fragment, which is also unregistered at this path.
             "raw-body-backslash-eol-pseudo-directives": (
                 b"void f() {\n    auto s = R\"_x(\n\\\n"
                 b"#ifdef FAKE\n#endif\n)_x\";\n"
                 + baseline.encode() + b"\n    (void)s;\n}\n"),
             # R6-TEST-002: an adjacent trailing comment is phase-3
             # comment replacement, so '#if 0/**/' and '#if 0//comment'
-            # are dead branches (g++ accepts both); the frozen baseline
-            # inside them fails closed.
+            # are dead branches (g++ accepts both); the copied fragment
+            # inside them is also unregistered at this path and fails closed.
             "if-adjacent-trailing-block-comment-zero-baseline": (
                 f"void f() {{\n#if 0/**/\n    {baseline}\n#endif\n}}\n"),
             "if-adjacent-trailing-line-comment-zero-baseline": (
@@ -449,13 +489,10 @@ some "quoted text
                             self.assertIn(str(source),
                                           coverage["failed"][0])
 
-    def test_baseline_exemption_binds_frozen_directn_nodes(self):
-        # R4-CODE-004: the frozen exemption is bound to the real
-        # ERROR/missing nodes of the baseline directn.cc content. Only the
-        # byte-identical baseline content parses as exempt; a generic '}'
-        # / 'else' ERROR node at a switch point, the same line text at a
-        # switch point in another file, and every mutation of the baseline
-        # content (single-byte flip, line shift, truncation) fail closed.
+    def test_baseline_exemption_binds_directn_context(self):
+        # Issue 120 replaces content hashes with path and local context.
+        # Line shifts pass; generic tokens, incomplete context and real
+        # syntax errors still fail closed.
         try:
             import tree_sitter_cpp as _tscpp
             from tree_sitter import Language as _Language
@@ -498,11 +535,11 @@ some "quoted text
 }}
 '''.encode("utf-8"),
              True),
-            ("single-byte mutation of the baseline fails closed",
-             baseline_bytes[:50000] + b"X" + baseline_bytes[50001:],
+            ("syntax error added to the baseline fails closed",
+             b"int x = ;\n" + baseline_bytes,
              True),
-            ("line-shifted copy of the baseline fails closed",
-             b"int x = 1;\n" + baseline_bytes, True),
+            ("line-shifted copy of the baseline remains exempt",
+             b"int x = 1;\n" + baseline_bytes, False),
             ("truncated baseline fails closed",
              baseline_bytes[:3000], True),
         ]
@@ -511,7 +548,8 @@ some "quoted text
                 tree = parser.parse(source)
                 self.assertEqual(
                     expected,
-                    has_relevant_parse_error(tree.root_node, source),
+                    has_relevant_parse_error(tree.root_node, source,
+                                             "crawl-ref/source/directn.cc"),
                     name)
 
     def test_phase2_splice_advances_across_all_line_endings(self):
@@ -1582,11 +1620,11 @@ int main() { return 0; }
         parser = _Parser(lang)
         tree_lf = parser.parse(lf)
         tree_norm = parser.parse(_normalize_eol(cr))
-        self.assertFalse(has_relevant_parse_error(tree_lf.root_node, lf))
+        self.assertFalse(has_relevant_parse_error(tree_lf.root_node, lf, directn))
         self.assertEqual(
-            has_relevant_parse_error(tree_lf.root_node, lf),
+            has_relevant_parse_error(tree_lf.root_node, lf, directn),
             has_relevant_parse_error(tree_norm.root_node,
-                                     _normalize_eol(cr)))
+                                     _normalize_eol(cr), directn))
 
         # End-to-end through the real scanner CLIs: the CRLF-converted
         # copy of directn.cc must produce the same exit codes, coverage
@@ -1598,7 +1636,8 @@ int main() { return 0; }
             "scan_varargs_string.py": (0, []),
         }
         with tempfile.TemporaryDirectory() as td:
-            source = Path(td) / "directn.cc"
+            source = Path(td) / "crawl-ref/source/directn.cc"
+            source.parent.mkdir(parents=True)
             source.write_bytes(crlf)
             for scanner, (exit_code, findings) in expected.items():
                 with self.subTest(scanner=scanner, entry="files"):
