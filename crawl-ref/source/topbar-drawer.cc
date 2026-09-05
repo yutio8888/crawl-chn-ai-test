@@ -287,9 +287,7 @@ private:
         {
             const auto &mouse = static_cast<const ui::MouseEvent&>(event);
             if (!m_dragging)
-            {
                 return false;
-            }
 
             set_scroll(get_scroll() + m_last_y - mouse.y());
             m_last_y = mouse.y();
