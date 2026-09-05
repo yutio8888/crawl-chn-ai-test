@@ -725,6 +725,16 @@ private:
         return Menu::get_command(keyin);
     }
 
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        std::array<ui::InputAction, 6> actions;
+        actions[2] = {"", '!'}; // cycle_mode override, no action_cycle
+        actions[3] = {T_("help"), '?'};
+        return actions;
+    }
+#endif
+
     virtual bool process_command(command_type cmd) override
     {
         bool entries_changed = false;

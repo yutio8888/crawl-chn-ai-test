@@ -1561,6 +1561,109 @@ vector<MenuEntry *> Menu::show(bool reuse_selections)
     return sel;
 }
 
+#ifdef __ANDROID__
+ui::InputScreen Menu::keyboard_screen() const
+{
+    if (tag == "inventory" || tag == "pickup")
+        return ui::InputScreen::INVENTORY;
+    if (m_kmc == KMC_CONFIRM)
+        return ui::InputScreen::CONFIRM;
+    return ui::InputScreen::MENU;
+}
+
+// `!` reaches cycle_mode only for menus with an action cycle whose subclass
+// does not reserve the key as an item shortcut (InvMenu, gauntlet travel).
+bool Menu::keyboard_cycles_mode()
+{
+    return action_cycle != CYCLE_NONE && !skip_process_command('!');
+}
+
+std::array<ui::InputAction, 6> Menu::keyboard_actions()
+{
+    std::array<ui::InputAction, 6> actions;
+    switch (keyboard_screen())
+    {
+    case ui::InputScreen::INVENTORY:
+        if (!is_set(MF_NOSELECT))
+            actions[0] = {"", CK_ENTER};
+        if (!is_set(MF_UNCANCEL))
+            actions[1] = {"", CK_ESCAPE};
+        if (is_set(MF_PAGED_INVENTORY))
+        {
+            actions[2] = {"", CK_LEFT};
+            actions[3] = {"", CK_RIGHT};
+        }
+        if (is_set(MF_MULTISELECT))
+            actions[4] = {T_("Select all"), ','};
+        if (keyboard_cycles_mode())
+            actions[5] = {"", '!'};
+        break;
+    case ui::InputScreen::CONFIRM:
+        // Offer only answers actually present in this confirmation menu.
+        for (const auto* entry : items)
+        {
+            if (entry->hotkeys.empty())
+                continue;
+            switch (entry->hotkeys[0])
+            {
+            case 'Y': actions[0] = {T_("Yes"), 'Y'}; break;
+            case 'N': actions[1] = {T_("No"), 'N'}; break;
+            case 'A': actions[2] = {"", 'A'}; break;
+            }
+        }
+        break;
+    default:
+        // Generic menus: only keys the base class really dispatches.
+        if (keyboard_cycles_mode())
+            actions[2] = {"", '!'};
+        if (!help_key().empty())
+            actions[3] = {"", '?'};
+        if (is_set(MF_MULTISELECT))
+            actions[4] = {T_("Select all"), ','};
+        break;
+    }
+    return actions;
+}
+
+// Menus without any page-specific key keep an empty context row, so a plain
+// scroller or help page never shows redundant confirm/cancel buttons.
+void Menu::keyboard_descriptor(ui::InputScreen &screen,
+                               std::array<ui::InputAction, 6> &actions)
+{
+    screen = keyboard_screen();
+    actions = keyboard_actions();
+    if (screen == ui::InputScreen::INVENTORY
+        || screen == ui::InputScreen::CONFIRM)
+    {
+        return;
+    }
+    bool any = false;
+    for (size_t i = 2; i < actions.size(); ++i)
+        any = any || actions[i].key != 0;
+    if (!any)
+    {
+        screen = ui::InputScreen::DEFAULT;
+        actions = {};
+        return;
+    }
+    if (!actions[0].key && !is_set(MF_NOSELECT))
+        actions[0] = {"", CK_ENTER};
+    if (!actions[1].key && !is_set(MF_UNCANCEL))
+        actions[1] = {"", CK_ESCAPE};
+}
+
+std::array<ui::InputAction, 6> ToggleableMenu::keyboard_actions()
+{
+    auto actions = Menu::keyboard_actions();
+    if (!actions[2].key
+        && find(toggle_keys.begin(), toggle_keys.end(), '!') != toggle_keys.end())
+    {
+        actions[2] = {"", '!'};
+    }
+    return actions;
+}
+#endif
+
 void Menu::do_menu()
 {
     bool done = false;
@@ -1601,41 +1704,9 @@ void Menu::do_menu()
     ui::push_layout(m_ui.popup, m_kmc);
 
 #ifdef __ANDROID__
+    ui::InputScreen keyboard_screen;
     std::array<ui::InputAction, 6> keyboard_actions;
-    auto keyboard_screen = ui::InputScreen::DEFAULT;
-    if (tag == "inventory" || tag == "pickup")
-    {
-        keyboard_screen = ui::InputScreen::INVENTORY;
-        if (!is_set(MF_NOSELECT))
-            keyboard_actions[0] = {"", CK_ENTER};
-        if (!is_set(MF_UNCANCEL))
-            keyboard_actions[1] = {"", CK_ESCAPE};
-        if (is_set(MF_PAGED_INVENTORY))
-        {
-            keyboard_actions[2] = {"", CK_LEFT};
-            keyboard_actions[3] = {"", CK_RIGHT};
-        }
-        if (is_set(MF_MULTISELECT))
-            keyboard_actions[4] = {T_("Select all"), ','};
-        if (action_cycle != CYCLE_NONE && !skip_process_command('!'))
-            keyboard_actions[5] = {"", '!'};
-    }
-    else if (m_kmc == KMC_CONFIRM)
-    {
-        keyboard_screen = ui::InputScreen::CONFIRM;
-        // Offer only answers actually present in this confirmation menu.
-        for (const auto* entry : items)
-        {
-            if (entry->hotkeys.empty())
-                continue;
-            switch (entry->hotkeys[0])
-            {
-            case 'Y': keyboard_actions[0] = {T_("Yes"), 'Y'}; break;
-            case 'N': keyboard_actions[1] = {T_("No"), 'N'}; break;
-            case 'A': keyboard_actions[2] = {"", 'A'}; break;
-            }
-        }
-    }
+    keyboard_descriptor(keyboard_screen, keyboard_actions);
     ui::InputActionScope keyboard_scope(keyboard_screen,
                                         std::move(keyboard_actions));
 #endif

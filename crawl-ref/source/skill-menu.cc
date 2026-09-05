@@ -1018,6 +1018,32 @@ void SkillMenu::clear_flag(int flag)
     m_flags &= ~flag;
 }
 
+#ifdef __ANDROID__
+// Switch hotkeys from init_switches/init_buttons; a switch with a single
+// state has size() == 0 and ignores its key.
+std::array<ui::InputAction, 6> SkillMenu::keyboard_actions() const
+{
+    std::array<ui::InputAction, 6> actions;
+    if (is_set(SKMF_EXPERIENCE))
+        actions[0] = {"", CK_ENTER};
+    actions[1] = {"", CK_ESCAPE};
+    auto has_switch = [this](skill_menu_switch sw)
+    {
+        auto it = m_switches.find(sw);
+        return it != m_switches.end() && it->second && it->second->size() > 0;
+    };
+    if (has_switch(SKM_VIEW))
+        actions[2] = {"", '!'};
+    if (has_switch(SKM_SHOW))
+        actions[3] = {"", '*'};
+    if (has_switch(SKM_MODE))
+        actions[4] = {T_("mode"), '/'};
+    if (!is_set(SKMF_SPECIAL))
+        actions[5] = {T_("help"), '?'};
+    return actions;
+}
+#endif
+
 bool SkillMenu::is_set(int flag) const
 {
     return m_flags & flag;
@@ -1960,6 +1986,10 @@ void skill_menu(int flag, int exp)
         return;
     }
 
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
+                                        skm.keyboard_actions(), popup);
+#endif
     ui::run_layout(std::move(popup), done);
 
     skm.clear();

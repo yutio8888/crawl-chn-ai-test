@@ -2760,6 +2760,26 @@ namespace quiver
             return true;
         }
 
+#ifdef __ANDROID__
+        ui::InputScreen keyboard_screen() const override
+        { return ui::InputScreen::QUIVER; }
+        std::array<ui::InputAction, 6> keyboard_actions() override
+        {
+            std::array<ui::InputAction, 6> actions;
+            actions[2] = {T_("Focus mode"), '!'};
+            size_t slot = 3;
+            if (any_items)
+                actions[slot++] = {"", '*'};
+            if (any_spells)
+                actions[slot++] = {"", '&'};
+            if (any_abilities && slot < actions.size())
+                actions[slot++] = {"", '^'};
+            if (allow_empty && slot < actions.size())
+                actions[slot++] = {"", '-'};
+            return actions;
+        }
+#endif
+
         bool process_key(int key) override
         {
             // TODO: some kind of view action option?

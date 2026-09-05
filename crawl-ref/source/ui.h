@@ -1291,7 +1291,13 @@ shared_ptr<Widget> top_layout();
 enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
 InputContext input_context();
 #ifdef __ANDROID__
-enum class InputScreen { DEFAULT, INVENTORY, ITEM, SPELL, TARGET, CONFIRM, MORE, MAP };
+// Values are shared with DCSSKeyboard.contextLabelResource(); append only.
+enum class InputScreen
+{
+    DEFAULT, INVENTORY, ITEM, SPELL, TARGET, CONFIRM, MORE, MAP,
+    USE_ITEM, SHOP, MENU, DESCRIPTION, GOD, FEATURE, SKILLS, TRAVEL, LAYERS,
+    QUIVER,
+};
 struct InputAction
 {
     InputAction(string text = "", int input = 0)
