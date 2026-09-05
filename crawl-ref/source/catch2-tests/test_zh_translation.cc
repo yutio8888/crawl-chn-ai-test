@@ -4679,7 +4679,7 @@ void check_quiet_ability_preview()
     you.experience_level = 27;
     you.hp = you.hp_max = 100;
     you.magic_points = you.max_magic_points = 30;
-    you.piety = 200;
+    you.raw_piety = 200;
 
     ability_type ability = ABIL_DAMNATION;
     string expected;
@@ -4751,6 +4751,17 @@ void check_quiet_ability_preview()
     {
         usable = true;
     }
+    SECTION("Blinkbolt cooldown")
+    {
+        ability = ABIL_BLINKBOLT;
+        you.duration[DUR_BLINKBOLT_COOLDOWN] = 10;
+        expected = T_("You can't do that yet.");
+    }
+    SECTION("Ready Blinkbolt clears a previous reason")
+    {
+        ability = ABIL_BLINKBOLT;
+        usable = true;
+    }
 
     const player before = you;
     const string history = get_last_messages(20, true);
@@ -4766,7 +4777,7 @@ void check_quiet_ability_preview()
     CHECK(get_last_messages(20, true) == history);
     CHECK(you.hp == before.hp);
     CHECK(you.magic_points == before.magic_points);
-    CHECK(you.piety == before.piety);
+    CHECK(you.raw_piety == before.raw_piety);
     CHECK(you.gold == before.gold);
     CHECK(you.num_turns == before.num_turns);
     CHECK(you.turn_is_over == before.turn_is_over);

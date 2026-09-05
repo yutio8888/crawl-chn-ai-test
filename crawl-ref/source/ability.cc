@@ -1808,10 +1808,12 @@ static bool _can_hop(bool quiet, string* reason = nullptr)
     return _can_movement_ability(quiet, reason);
 }
 
-static bool _can_blinkbolt(bool quiet)
+static bool _can_blinkbolt(bool quiet, string* reason = nullptr)
 {
     if (you.duration[DUR_BLINKBOLT_COOLDOWN])
     {
+        if (reason)
+            *reason = T_("You can't do that yet.");
         if (!quiet)
             canned_msg(MSG_CANNOT_DO_YET);
         return false;
@@ -2256,7 +2258,8 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
         if (you.attribute[ATTR_HELD])
         {
             return fail(make_stringf(T_("You cannot wall jump while caught in a %s."),
-                                     you.caught_by() == CAUGHT_WEB ? "web" : "net"));
+                                     you.caught_by() == CAUGHT_WEB
+                                         ? T_("web") : T_("net")));
         }
         // Is there a valid place to wall jump?
         bool has_targets = false;
@@ -2360,7 +2363,11 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
 
 bool check_ability_possible(const ability_type ability, bool quiet, string* reason)
 {
-    return _check_ability_possible(get_ability_def(ability), quiet, reason);
+    if (!_check_ability_possible(get_ability_def(ability), quiet, reason))
+        return false;
+    // Public previews (including quiver availability) also reject cooldowns.
+    // Activation retains its existing check in _do_ability.
+    return ability != ABIL_BLINKBOLT || _can_blinkbolt(quiet, reason);
 }
 
 class ability_targeting_behaviour : public targeting_behaviour
