@@ -34,7 +34,7 @@ void jni_input_context(int context);
 float jni_get_display_density();
 time_t jni_package_last_update_time();
 // Runs a save parked by SDLActivity.onPause. Game thread only, and only from
-// a point where no turn is in progress.
+// a point where the game thread is waiting for input.
 void android_run_pending_save();
 #endif
 

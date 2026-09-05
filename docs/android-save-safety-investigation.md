@@ -186,8 +186,8 @@ Lua 状态机不是线程安全的；游戏线程执行任意 Lua（用户脚本
    `handleNativeState()` 的 RESUMED → PAUSED 跃迁处、`nativePause()` 之前，
    而不是 `onPause()` 里——见 §10.1。
 2. 游戏线程在两个已有的安全点消费该请求：
-   - `SDLWrapper::wait_event()`（`windowmanager-sdl.cc`）的入口——游戏线程在等
-     输入，回合已结算完毕；覆盖场景 1/6/8/9；
+   - `SDLWrapper::wait_event()`（`windowmanager-sdl.cc`）的入口——游戏线程在
+     等待输入；覆盖场景 1/6/8/9。注意这里未必是回合边界，见 §10.5；
    - `world_reacts()` 尾部现有检查点旁（`main.cc:2765-2774`）——覆盖自动探索 /
      travel / 休息（场景 2/4/7）。
 3. 唤醒问题（第 2 节末尾）：不向 SDL 队列推自定义事件（`SDL_USEREVENT` 会被
