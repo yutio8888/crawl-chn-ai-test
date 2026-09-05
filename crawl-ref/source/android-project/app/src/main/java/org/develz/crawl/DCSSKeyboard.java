@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,6 +14,11 @@ import android.widget.RelativeLayout;
 public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListener {
 
     static final int MINIMUM_TOUCH_TARGET_DP = 48;
+    public static final int CONTEXT_GAME = 0;
+    public static final int CONTEXT_NAVIGATION = 1;
+    public static final int CONTEXT_TEXT = 2;
+    private int inputContext = -1;
+    private int keyboardMode;
 
     // Keyboards
     private final View keyboardLower;
@@ -241,6 +247,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     // Extra init settings
     @Override
     public void initKeyboard(int keyboardOption, int size) {
+        keyboardMode = keyboardOption;
         // The touch-first layout is the primary Android control surface, so
         // keep every target at least 48dp even when an older installation has
         // a smaller keyboard-size preference saved.
@@ -264,6 +271,41 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             // drawn last. Make the visible surface the actual hit-test front.
             keyboardMobile.bringToFront();
             compactToggle.setVisibility(View.VISIBLE);
+        }
+        if (keyboardOption == 1 || keyboardOption == 2) {
+            compactToggle.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Called on the Android UI thread. Repeated native input waits must not
+    // override a user's manual choice of full/compact/numeric layout.
+    public void setInputContext(int context) {
+        if (context == inputContext || keyboardMode == 0 || keyboardMode == 3) {
+            return;
+        }
+        inputContext = context;
+        boolean gameplay = context == CONTEXT_GAME;
+        Button explore = findViewById(R.id.key_mobile_explore);
+        explore.setTag(Integer.toString(gameplay ? KeyEvent.KEYCODE_O : KeyEvent.KEYCODE_ENTER));
+        explore.setText(gameplay ? R.string.keyboard_explore : R.string.ok);
+        explore.setContentDescription(getResources().getString(
+                gameplay ? R.string.keyboard_explore : R.string.ok));
+        Button center = findViewById(R.id.key_mobile_5);
+        center.setText(gameplay ? getResources().getString(R.string.keyboard_rest) : "5");
+        center.setContentDescription(center.getText());
+        for (int id : new int[] {R.id.key_mobile_autofight, R.id.key_mobile_inventory,
+                R.id.key_mobile_pickup, R.id.key_mobile_menu}) {
+            // Keep grid geometry stable while removing gameplay-only actions.
+            findViewById(id).setVisibility(gameplay ? View.VISIBLE : View.INVISIBLE);
+        }
+        keyboardUpper.setVisibility(View.GONE);
+        keyboardCtrl.setVisibility(View.GONE);
+        keyboardNumeric.setVisibility(View.GONE);
+        boolean full = context == CONTEXT_TEXT || gameplay && keyboardMode != 4;
+        keyboardLower.setVisibility(full ? View.VISIBLE : View.GONE);
+        keyboardMobile.setVisibility(full ? View.GONE : View.VISIBLE);
+        if (!full) {
+            keyboardMobile.bringToFront();
         }
     }
 

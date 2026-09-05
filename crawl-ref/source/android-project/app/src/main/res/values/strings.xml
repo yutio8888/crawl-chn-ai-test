@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="input_display">Input and display</string>
+    <string name="advanced">Advanced</string>
     <string name="app_name">Dungeon Crawl Stone Soup</string>
     <string name="start_game">Start Game</string>
     <string name="edit_rc">Edit Init File</string>

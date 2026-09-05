@@ -71,6 +71,7 @@ public class SDLActivity extends AppCompatActivity {
     protected static int extraKeyboardOption;
     protected static int keyboardSize;
     protected static boolean fullScreen;
+    private int lastInputContext = -1;
     protected static View mTextEdit;
     protected static boolean mScreenKeyboardShown;
     protected static ViewGroup mLayout;
@@ -299,6 +300,18 @@ public class SDLActivity extends AppCompatActivity {
         mKeyboard = new DCSSKeyboard(this);
         mKeyboard.setVisibility(View.INVISIBLE);
         mKeyboard.initKeyboard(keyboardOption, keyboardSize);
+        // Context changes and manual full/compact switches change row count
+        // without changing visibility. Reserve the actual post-layout height.
+        mKeyboard.addOnLayoutChangeListener((view, left, top, right, bottom,
+                oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom - top != oldBottom - oldTop) {
+                view.post(() -> {
+                    if (mSingleton == this && keyboardsLayout != null && mSurface != null) {
+                        updateSurfaceSize();
+                    }
+                });
+            }
+        });
         mKeyboardExtra = new DCSSKeyboardExtra(this);
         mKeyboardExtra.setVisibility(View.INVISIBLE);
         mKeyboardExtra.initKeyboard(extraKeyboardOption, keyboardSize);
@@ -912,8 +925,31 @@ public class SDLActivity extends AppCompatActivity {
         return Math.min(width, height);
     }
 
-    // CRAWL HACK: Function used to toggle the keyboard
-    // This method is called using JNI
+    // Read-only resource metrics can be queried from the native event thread.
+    public static float jniDisplayDensity() {
+        Context context = getContext();
+        if (context == null) {
+            return 1.0f;
+        }
+        float density = context.getResources().getDisplayMetrics().density;
+        return density > 0 && !Float.isInfinite(density) ? density : 1.0f;
+    }
+
+    // Input context changes presentation, independently of keyboard visibility.
+    public static void jniInputContext(int context) {
+        SDLActivity activity = mSingleton;
+        if (activity == null || activity.lastInputContext == context) {
+            return;
+        }
+        activity.lastInputContext = context;
+        activity.runOnUiThread(() -> {
+            if (mSingleton == activity && mKeyboard != null) {
+                mKeyboard.setInputContext(context);
+            }
+        });
+    }
+
+    // CRAWL HACK: Function used to toggle the keyboard, called using JNI.
     public static boolean jniKeyboardControl(int action) {
         Log.i(TAG, "jniKeyboardControl. Action = " + action);
         if (action == 0) { // Hide keyboard

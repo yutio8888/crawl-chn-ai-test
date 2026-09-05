@@ -37,13 +37,6 @@
                 android:theme="@style/ButtonColor2"/>
 
             <Button
-                android:id="@+id/editInitFile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/edit_rc"/>
-
-            <Button
                 android:id="@+id/morgueButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,129 +44,174 @@
                 android:text="@string/morgue"/>
 
             <Button
-                android:id="@+id/modsButton"
+                android:id="@+id/inputDisplayButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/mods"/>
+                android:focusableInTouchMode="true"
+                android:text="@string/input_display"/>
 
             <LinearLayout
-                android:id="@+id/keyboardSpinnerLayout"
+                android:id="@+id/inputDisplayGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginHorizontal="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:layout_marginEnd="6dp"
-                    android:text="@string/virtual_keyboard"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/keyboardSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/green_spinner"
-                    android:contentDescription="@string/virtual_keyboard"
-                    android:popupBackground="@color/dark_green"
-                    android:spinnerMode="dropdown" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/extraKeyboardSpinnerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginHorizontal="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:layout_marginEnd="6dp"
-                    android:text="@string/extra_keyboard"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/extraKeyboardSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/green_spinner"
-                    android:contentDescription="@string/extra_keyboard"
-                    android:popupBackground="@color/dark_green"
-                    android:spinnerMode="dropdown" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/keyboardSizeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginHorizontal="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:layout_marginEnd="6dp"
-                    android:text="@string/keyboard_size"
-                    android:labelFor="@id/keyboardSize"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/keyboardSize"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="number"
-                    android:imeOptions="actionDone"
-                    android:importantForAutofill="no"
-                    android:nextFocusDown="@+id/fullScreen" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/fullScreenLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginHorizontal="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="6dp"
-                    android:text="@string/full_screen"
-                    android:textStyle="bold" />
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
+                    android:id="@+id/keyboardSpinnerLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginHorizontal="6dp"
                     android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/fullScreen"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/full_screen"
-                        android:checked="true" />
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/virtual_keyboard"
+                        android:textStyle="bold" />
 
+                    <Spinner
+                        android:id="@+id/keyboardSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/green_spinner"
+                        android:contentDescription="@string/virtual_keyboard"
+                        android:popupBackground="@color/dark_green"
+                        android:spinnerMode="dropdown" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/extraKeyboardSpinnerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/extra_keyboard"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/extraKeyboardSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/green_spinner"
+                        android:contentDescription="@string/extra_keyboard"
+                        android:popupBackground="@color/dark_green"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/keyboardSizeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/keyboard_size"
+                        android:labelFor="@id/keyboardSize"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/keyboardSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:inputType="number"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:nextFocusDown="@+id/fullScreen" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/fullScreenLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/full_screen"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/fullScreen"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/full_screen"
+                            android:checked="true" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/advancedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:focusableInTouchMode="true"
+                android:text="@string/advanced"/>
+
+            <LinearLayout
+                android:id="@+id/advancedGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/editInitFile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/edit_rc"/>
+
+                <Button
+                    android:id="@+id/modsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/mods"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

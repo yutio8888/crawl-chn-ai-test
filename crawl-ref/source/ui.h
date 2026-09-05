@@ -290,6 +290,7 @@ public:
     };
 
     virtual ~Widget();
+    virtual bool accepts_text_input() const { return false; }
 
     int flex_grow = 1;
     bool expand_h = false, expand_v = false;
@@ -1095,6 +1096,7 @@ class TextEntry : public Widget
 {
 public:
     TextEntry();
+    bool accepts_text_input() const override { return true; }
     virtual void _render() override;
     virtual SizeReq _get_preferred_size(Direction dim, int prosp_width) override;
     virtual void _allocate_region() override;
@@ -1268,6 +1270,23 @@ public:
 void push_layout(shared_ptr<Widget> root, KeymapContext km = KMC_DEFAULT);
 void pop_layout();
 shared_ptr<Widget> top_layout();
+
+// Android's keyboard presentation follows the active input consumer, not the
+// visibility toggle. Values are shared with DCSSKeyboard.java.
+enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
+InputContext input_context();
+
+class TextInputScope
+{
+public:
+    TextInputScope();
+    ~TextInputScope();
+    TextInputScope(const TextInputScope&) = delete;
+    TextInputScope& operator=(const TextInputScope&) = delete;
+private:
+    bool previous_active;
+    shared_ptr<Widget> previous_layout;
+};
 void pump_events(int wait_event_timeout = INT_MAX);
 void run_layout(shared_ptr<Widget> root, const bool& done,
         shared_ptr<Widget> initial_focus = nullptr);

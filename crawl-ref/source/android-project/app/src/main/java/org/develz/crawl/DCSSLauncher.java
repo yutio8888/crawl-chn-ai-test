@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -137,6 +140,11 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         fullScreenSwitch.setChecked(fullScreen);
         fullScreenSwitch.setOnCheckedChangeListener(this);
 
+        setupExpandableGroup(R.id.inputDisplayButton, R.id.inputDisplayGroup,
+                R.string.input_display);
+        setupExpandableGroup(R.id.advancedButton, R.id.advancedGroup,
+                R.string.advanced);
+
         // Native mkdir cannot traverse Android's scoped-storage ancestors, so
         // create the writable directory layout through the Android API first.
         File externalFilesDir = getExternalFilesDir(null);
@@ -179,6 +187,52 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
                 preferences.edit().putBoolean("tv_warning_shown", true).apply();
             }
         }
+    }
+
+    private void setupExpandableGroup(int buttonId, int groupId, int labelId) {
+        Button button = findViewById(buttonId);
+        View group = findViewById(groupId);
+        String label = getString(labelId);
+        button.setText("+ " + label);
+        button.setContentDescription(label);
+        button.setOnClickListener(view -> {
+            boolean expand = group.getVisibility() != View.VISIBLE;
+            if (!expand) {
+                // Focus loss commits the size edit before hiding its controls.
+                button.requestFocus();
+                InputMethodManager ime = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (ime != null) {
+                    ime.hideSoftInputFromWindow(button.getWindowToken(), 0);
+                }
+            }
+            // Opening a group must not focus the size editor and summon the IME.
+            button.requestFocus();
+            group.setVisibility(expand ? View.VISIBLE : View.GONE);
+            button.setText((expand ? "− " : "+ ") + label);
+        });
+        button.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host,
+                                                         AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.addAction(group.getVisibility() == View.VISIBLE
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE
+                        : AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND);
+            }
+
+            @Override
+            public boolean performAccessibilityAction(View host, int action,
+                                                      Bundle arguments) {
+                int expected = group.getVisibility() == View.VISIBLE
+                        ? AccessibilityNodeInfo.ACTION_COLLAPSE
+                        : AccessibilityNodeInfo.ACTION_EXPAND;
+                if (action == expected) {
+                    return host.performClick();
+                }
+                return super.performAccessibilityAction(host, action, arguments);
+            }
+        });
     }
 
     static boolean createGameDirectories(File externalFilesDir, String version) {

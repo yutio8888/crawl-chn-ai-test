@@ -3138,6 +3138,45 @@ shared_ptr<Widget> top_layout()
     return ui_root.top_child();
 }
 
+static bool text_input_active = false;
+static shared_ptr<Widget> text_input_layout;
+
+TextInputScope::TextInputScope()
+    : previous_active(text_input_active), previous_layout(text_input_layout)
+{
+    text_input_active = true;
+    text_input_layout = top_layout();
+}
+
+TextInputScope::~TextInputScope()
+{
+    text_input_active = previous_active;
+    text_input_layout = previous_layout;
+}
+
+InputContext input_context()
+{
+    const auto top = top_layout();
+    if (text_input_active && text_input_layout == top)
+        return InputContext::TEXT;
+    // Focus can be restored by pop_layout without a FocusIn event. Inspect
+    // the current path at the input boundary, including composite widgets.
+    if (top)
+    {
+        for (auto* widget = get_focused_widget(); widget;
+             widget = widget->_get_parent())
+        {
+            if (widget->accepts_text_input())
+                return InputContext::TEXT;
+            if (widget == top.get())
+                break;
+        }
+        return InputContext::NAVIGATION;
+    }
+    return mouse_control::current_mode() == MOUSE_MODE_COMMAND
+        ? InputContext::GAME : InputContext::NAVIGATION;
+}
+
 void resize(int w, int h)
 {
     ui_root.resize(w, h);

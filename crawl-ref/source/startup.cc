@@ -613,6 +613,7 @@ static bool _game_defined(const newgame_def& ng)
 class UIStartupMenu : public Widget
 {
 public:
+    bool accepts_text_input() const override { return true; }
     UIStartupMenu(newgame_def& _ng_choice, const newgame_def &_defaults)
                 : done(false), end_game(false), ng_choice(_ng_choice),
                   defaults(_defaults),
