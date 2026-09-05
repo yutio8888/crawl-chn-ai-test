@@ -744,7 +744,8 @@ command_type show_topbar_command_menu(bool *acted)
     auto command_grid = make_shared<CommandGrid>(3, min_command_width);
     content->add_child(command_grid);
 
-    const auto describe = [scroller](const string &label, const string &body) {
+    const weak_ptr<DrawerScroller> weak_scroller = scroller;
+    const auto describe = [weak_scroller](const string &label, const string &body) {
         // Command hints use the same readable font as the panel; the generic
         // CRT description popup is too small on a high-density phone.
         auto details = make_shared<ui::Box>(ui::Widget::VERT);
@@ -786,7 +787,8 @@ command_type show_topbar_command_menu(bool *acted)
         dismiss->on_keydown_event(detail_key);
         popup->on_keydown_event(detail_key);
         ui::run_layout(popup, dismissed, dismiss);
-        scroller->cancel_drag();
+        if (const auto owner = weak_scroller.lock())
+            owner->cancel_drag();
     };
     for (const auto &entry : commands)
     {
@@ -907,12 +909,13 @@ command_type show_topbar_command_menu(bool *acted)
                     }
                     return true;
                 });
-            button->on_describe = [scroller, idx, is_spell]() {
+            button->on_describe = [weak_scroller, idx, is_spell]() {
                 if (is_spell)
                     describe_spell((spell_type)idx);
                 else
                     describe_ability((ability_type)idx);
-                scroller->cancel_drag();
+                if (const auto owner = weak_scroller.lock())
+                    owner->cancel_drag();
             };
             buttons.push_back(button);
             grid->append(button);

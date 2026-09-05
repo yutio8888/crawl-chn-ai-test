@@ -200,7 +200,22 @@ class QuickAccessPanelTests(unittest.TestCase):
         # before UIRoot can clear focus, and returning must reset the old drag.
         self.assertIn("ui::run_layout(popup, dismissed, dismiss);", description)
         self.assertLess(description.index("ui::run_layout("),
-                        description.index("scroller->cancel_drag();"))
+                        description.index("owner->cancel_drag();"))
+
+    def test_child_description_callbacks_do_not_own_their_scroller(self) -> None:
+        # The scroller owns content -> buttons -> callbacks. Retaining a
+        # shared scroller in either stored description callback leaks that
+        # complete tree whenever the menu is dismissed.
+        self.assertIn("const weak_ptr<DrawerScroller> weak_scroller = scroller;",
+                      self.source)
+        self.assertIn("const auto describe = [weak_scroller]", self.source)
+        self.assertIn("button->on_describe = [weak_scroller, idx, is_spell]",
+                      self.source)
+        for anchor in ("const auto describe =",
+                       "button->on_describe = [weak_scroller, idx, is_spell]"):
+            callback = self.block_after(anchor)
+            self.assertRegex(callback, r"if \(const auto owner = weak_scroller.lock\(\)\)\s*owner->cancel_drag\(\);")
+            self.assertNotIn("scroller->", callback)
 
     def test_selection_uses_the_normal_cast_and_activate_calls(self) -> None:
         # z reaches cast_a_spell(true, ...); Z would pass false. Nothing may
@@ -282,7 +297,7 @@ class QuickAccessPanelTests(unittest.TestCase):
         self.assertIn("return true;", right)
         self.assertNotIn("MenuButton::on_event", right)
         self.assertIn("ui::Event::Type::MouseUp", handler)
-        describe = self.block_after("button->on_describe = [scroller, idx, is_spell]")
+        describe = self.block_after("button->on_describe = [weak_scroller, idx, is_spell]")
         self.assertIn("describe_spell((spell_type)idx);", describe)
         self.assertIn("describe_ability((ability_type)idx);", describe)
         self.assertIn("cancel_drag()", describe)
@@ -324,10 +339,15 @@ class QuickAccessPanelTests(unittest.TestCase):
              self.test_selection_uses_the_normal_cast_and_activate_calls),
             ("tiles.set_need_redraw();", "tiles.do_layout();",
              self.test_menu_does_not_resize_surface_or_toggle_keyboard),
-            ("scroller->cancel_drag();", "/* missing drag reset */",
+            ("owner->cancel_drag();", "/* missing drag reset */",
              self.test_single_scroller_has_no_page_or_submenu_navigation),
             ("dismiss->on_keydown_event(detail_key);", "/* no focus-target handler */",
              self.test_description_escape_is_consumed_before_focus_reset),
+            ("const auto describe = [weak_scroller]", "const auto describe = [scroller]",
+             self.test_child_description_callbacks_do_not_own_their_scroller),
+            ("button->on_describe = [weak_scroller, idx, is_spell]",
+             "button->on_describe = [scroller, idx, is_spell]",
+             self.test_child_description_callbacks_do_not_own_their_scroller),
         )
         try:
             for before, after, check in mutations:
