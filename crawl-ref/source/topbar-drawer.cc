@@ -36,6 +36,18 @@ static const int COMMAND_MENU_ITEM_PADDING = 12;
 static const int COMMAND_MENU_ICON_GAP = 16;
 static const int QUICK_ICON_PAGE_SIZE = 12;
 
+static shared_ptr<ui::Text> _drawer_text(const formatted_string &content)
+{
+    auto text = make_shared<ui::Text>(content);
+#ifdef __ANDROID__
+    // Unlike legacy CRT menus, drawer rows can wrap and scroll at the larger
+    // message font size without imposing a fixed-column minimum width.
+    text->set_font(tiles.get_msg_font());
+    text->set_wrap_text(true);
+#endif
+    return text;
+}
+
 static int _command_item_height()
 {
 #ifdef __ANDROID__
@@ -531,7 +543,7 @@ struct quick_page_refs
 
 void show_topbar_status_drawer(int selected_status)
 {
-    auto text = make_shared<ui::Text>(_build_status_text(selected_status));
+    auto text = _drawer_text(_build_status_text(selected_status));
     text->set_wrap_text(true);
 
     auto scroller = make_shared<DrawerScroller>();
@@ -569,10 +581,10 @@ command_type show_topbar_command_menu(bool *acted)
 
         auto labels = make_shared<ui::Box>(ui::Widget::VERT);
         labels->expand_h = true;
-        labels->add_child(make_shared<ui::Text>(
+        labels->add_child(_drawer_text(
             formatted_string(std::move(label), WHITE)));
 
-        auto summary_text = make_shared<ui::Text>(
+        auto summary_text = _drawer_text(
             formatted_string(std::move(summary), LIGHTGREY));
         summary_text->set_wrap_text(true);
         labels->add_child(std::move(summary_text));
@@ -595,7 +607,7 @@ command_type show_topbar_command_menu(bool *acted)
     scroller->expand_h = scroller->expand_v = true;
 
     const auto make_compact_button = [&buttons](string label) {
-        auto text = make_shared<ui::Text>(
+        auto text = _drawer_text(
             formatted_string(std::move(label), WHITE));
         text->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
 
@@ -619,12 +631,12 @@ command_type show_topbar_command_menu(bool *acted)
         auto page = make_shared<ui::Box>(ui::Widget::VERT);
         page->set_cross_alignment(ui::Widget::STRETCH);
 
-        auto page_title = make_shared<ui::Text>(
+        auto page_title = _drawer_text(
             formatted_string(title_label, YELLOW));
         page_title->set_margin_for_sdl(0, 0, 16, 0);
         page->add_child(std::move(page_title));
 
-        auto hint = make_shared<ui::Text>(formatted_string(
+        auto hint = _drawer_text(formatted_string(
             _command_menu_text("android command menu summary",
                                "Long press for details"), LIGHTGREY));
         hint->set_wrap_text(true);
@@ -667,17 +679,17 @@ command_type show_topbar_command_menu(bool *acted)
                 auto labels = make_shared<ui::Box>(ui::Widget::VERT);
                 labels->set_cross_alignment(ui::Widget::STRETCH);
                 labels->expand_h = true;
-                auto name = make_shared<ui::Text>(formatted_string(
+                auto name = _drawer_text(formatted_string(
                     entry.name, entry.usable ? WHITE : LIGHTGREY));
                 name->set_wrap_text(true);
                 labels->add_child(std::move(name));
-                auto caption = make_shared<ui::Text>(formatted_string(
+                auto caption = _drawer_text(formatted_string(
                     _quick_entry_caption(entry), LIGHTGREY));
                 caption->set_wrap_text(true);
                 labels->add_child(std::move(caption));
                 if (!entry.reason.empty())
                 {
-                    auto reason = make_shared<ui::Text>(formatted_string(
+                    auto reason = _drawer_text(formatted_string(
                         entry.reason, LIGHTRED));
                     reason->set_wrap_text(true);
                     labels->add_child(std::move(reason));
@@ -725,7 +737,7 @@ command_type show_topbar_command_menu(bool *acted)
 
         if (icon_page_count > 1)
         {
-            auto indicator = make_shared<ui::Text>(formatted_string(
+            auto indicator = _drawer_text(formatted_string(
                 make_stringf("1 / %d", icon_page_count), LIGHTGREY));
             indicator->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP);
 
@@ -795,7 +807,7 @@ command_type show_topbar_command_menu(bool *acted)
 
     auto main_page = make_shared<ui::Box>(ui::Widget::VERT);
     main_page->set_cross_alignment(ui::Widget::STRETCH);
-    auto main_title = make_shared<ui::Text>(formatted_string(
+    auto main_title = _drawer_text(formatted_string(
         _command_menu_text("android command menu", "Game menu"), YELLOW));
     main_title->set_margin_for_sdl(0, 0, 16, 0);
     main_page->add_child(std::move(main_title));
@@ -918,7 +930,7 @@ command_type show_topbar_command_menu(bool *acted)
 
     auto more_page = make_shared<ui::Box>(ui::Widget::VERT);
     more_page->set_cross_alignment(ui::Widget::STRETCH);
-    auto more_title = make_shared<ui::Text>(
+    auto more_title = _drawer_text(
         formatted_string(more_label, YELLOW));
     more_title->set_margin_for_sdl(0, 0, 16, 0);
     more_page->add_child(std::move(more_title));
