@@ -225,9 +225,9 @@ static vector<quick_entry> _quick_ability_entries()
         entry.letter = tal.hotkey;
         entry.tile = tileidx_ability(tal.which);
         entry.cost = make_cost_description(tal.which);
-        entry.usable = check_ability_possible(tal.which, true);
+        entry.usable = check_ability_possible(tal.which, true, &entry.reason);
         entry.name = ability_name(tal.which);
-        if (!entry.usable)
+        if (!entry.usable && entry.reason.empty())
         {
             entry.reason = _command_menu_text("android command menu summary",
                                               "Unavailable");
@@ -287,18 +287,7 @@ private:
         {
             const auto &mouse = static_cast<const ui::MouseEvent&>(event);
             if (!m_dragging)
-            {
-#ifdef __ANDROID__
-                // SDL's Android touch adapter emits Move/Up, but no Down, for
-                // a single-finger swipe. Treat the first in-panel move as the
-                // drag origin; taps still arrive as Down/Up at release time.
-                m_dragging = true;
-                m_last_y = mouse.y();
-                return true;
-#else
                 return false;
-#endif
-            }
 
             set_scroll(get_scroll() + m_last_y - mouse.y());
             m_last_y = mouse.y();

@@ -2266,10 +2266,14 @@ static bool _is_level_corrupted()
     return !!env.markers.find(MAT_CORRUPTION_NEXUS);
 }
 
-bool is_level_incorruptible(bool quiet)
+bool is_level_incorruptible(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     if (_is_level_corrupted())
     {
+        if (reason)
+            *reason = T_("This place is already infused with evil and corruption.");
         if (!quiet)
             mpr(T_("This place is already infused with evil and corruption."));
         return true;

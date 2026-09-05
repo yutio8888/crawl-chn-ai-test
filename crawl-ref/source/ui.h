@@ -264,8 +264,20 @@ public:
     }
     void remove_by_target(Target *target)
     {
-        if (alive)
-            handlers.erase(target);
+        if (!alive)
+            return;
+        const auto range = handlers.equal_range(target);
+        vector<HandlerSig> removed;
+        removed.reserve(std::distance(range.first, range.second));
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            removed.emplace_back();
+            removed.back().swap(it->second);
+        }
+        // Captured widgets can remove their own handlers on destruction.
+        // Finish erasing empty nodes before releasing any captured objects:
+        // reentry could otherwise erase this range's end iterator.
+        handlers.erase(range.first, range.second);
     }
 protected:
     bool alive {true};
@@ -437,17 +449,17 @@ public:
             return cb(static_cast<const CLASS&>(event)); \
         }); \
     }
-    EVENT_HANDLER_HELPER(on_keydown_event, KeyDown, KeyEvent)
-    EVENT_HANDLER_HELPER(on_keyup_event, KeyUp, KeyEvent)
-    EVENT_HANDLER_HELPER(on_mousemove_event, MouseMove, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mousedown_event, MouseDown, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseup_event, MouseUp, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseenter_event, MouseEnter, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseleave_event, MouseLeave, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mousewheel_event, MouseWheel, MouseEvent)
-    EVENT_HANDLER_HELPER(on_focusin_event, FocusIn, FocusEvent)
-    EVENT_HANDLER_HELPER(on_focusout_event, FocusOut, FocusEvent)
-    EVENT_HANDLER_HELPER(on_activate_event, Activate, ActivateEvent)
+    EVENT_HANDLER_HELPER(on_keydown_event, KeyDown, KeyEvent);
+    EVENT_HANDLER_HELPER(on_keyup_event, KeyUp, KeyEvent);
+    EVENT_HANDLER_HELPER(on_mousemove_event, MouseMove, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mousedown_event, MouseDown, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseup_event, MouseUp, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseenter_event, MouseEnter, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseleave_event, MouseLeave, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mousewheel_event, MouseWheel, MouseEvent);
+    EVENT_HANDLER_HELPER(on_focusin_event, FocusIn, FocusEvent);
+    EVENT_HANDLER_HELPER(on_focusout_event, FocusOut, FocusEvent);
+    EVENT_HANDLER_HELPER(on_activate_event, Activate, ActivateEvent);
 #undef EVENT_HANDLER_HELPER
 
     /**
@@ -1275,6 +1287,9 @@ shared_ptr<Widget> top_layout();
 // visibility toggle. Values are shared with DCSSKeyboard.java.
 enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
 InputContext input_context();
+#ifdef USE_TILE_LOCAL
+bool scroll_touch_at(int x, int y, int delta_y);
+#endif
 
 class TextInputScope
 {

@@ -416,6 +416,19 @@ class message_window
     int input_line;    // last line-after-input
     vector<formatted_string> lines;
     prefix_type prompt; // current prefix prompt
+#ifdef __ANDROID__
+    message_line repeated_display;
+    int repeated_row = -1;
+    int repeated_width = 0;
+    int repeated_height = 0;
+#endif
+
+    void end_display_repeat()
+    {
+#ifdef __ANDROID__
+        repeated_row = -1;
+#endif
+    }
 
     int height() const
     {
@@ -555,6 +568,8 @@ public:
 
     void resize()
     {
+        if (static_cast<int>(lines.size()) != height())
+            end_display_repeat();
         // if this is resized to 0, bad crashes will happen. N.b. I have no idea
         // if this issue is what the following note is about:
         // XXX: broken (why?)
@@ -573,6 +588,7 @@ public:
 
     void clear_lines()
     {
+        end_display_repeat();
         lines.clear();
         lines.resize(height());
     }
@@ -604,6 +620,7 @@ public:
 
     void scroll(int n)
     {
+        end_display_repeat();
         // We might be asked to scroll off everything by the line reader.
         if (next_line < n)
             n = next_line;
@@ -621,6 +638,10 @@ public:
     // write to screen (without refresh)
     void show()
     {
+#ifdef __ANDROID__
+        if (repeated_width != static_cast<int>(out_width()) || repeated_height != height())
+            end_display_repeat();
+#endif
         // skip if there is no layout yet
         if (width() <= 0)
             return;
@@ -647,6 +668,7 @@ public:
     void add_item(string text, prefix_type first_col = prefix_type::none,
                   bool temporary = false)
     {
+        end_display_repeat();
         prompt = prefix_type::none; // reset prompt
 
         vector<formatted_string> newlines;
@@ -669,8 +691,60 @@ public:
         show();
     }
 
+    void add_message(const message_line& msg, bool temporary)
+    {
+#ifdef __ANDROID__
+        // This is a display-only copy. The store, Lua hooks, sound and
+        // interruption logic still receive every original message.
+        const bool eligible = Options.msg_condense_repeats && !temporary
+            && !crawl_state.game_is_arena()
+            && msg.channel != MSGCH_PROMPT && msg.messages.size() == 1
+            && msg.last_msg().pure_text().find_first_of("\n\r") == string::npos;
+        if (eligible && repeated_row >= 0 && repeated_row == next_line - 1
+            && repeated_row < static_cast<int>(lines.size())
+            && repeated_width == static_cast<int>(out_width()) && repeated_height == height()
+            && repeated_display.channel == msg.channel
+            && repeated_display.param == msg.param
+            && repeated_display.turn == msg.turn
+            && repeated_display.last_msg().text == msg.last_msg().text
+            && repeated_display.last_msg().repeats <= INT_MAX - msg.last_msg().repeats)
+        {
+            message_line combined = repeated_display;
+            combined.messages.back().repeats += msg.last_msg().repeats;
+            auto rendered = formatted_string::parse_string(combined.full_text());
+            // Leave room for the cursor as well as the existing xN suffix.
+            // Once wrapping would be needed, begin a normal new output row.
+            if (rendered.width() < out_width())
+            {
+                formatted_string line;
+                if (use_first_col())
+                    line = lines[repeated_row].chop(1);
+                line += rendered;
+                lines[repeated_row] = line;
+                repeated_display = std::move(combined);
+                input_line = min(input_line, repeated_row);
+                prompt = prefix_type::none;
+                show();
+                return;
+            }
+        }
+#endif
+        add_item(msg.full_text(), prefix_type::none, temporary);
+#ifdef __ANDROID__
+        if (eligible && next_line > 0
+            && formatted_string::parse_string(msg.full_text()).width() < out_width())
+        {
+            repeated_display = msg;
+            repeated_row = next_line - 1;
+            repeated_width = out_width();
+            repeated_height = height();
+        }
+#endif
+    }
+
     void roll_back()
     {
+        end_display_repeat();
         temp_line = max(temp_line, 0);
         for (int i = temp_line; i < next_line; ++i)
             lines[i].clear();
@@ -692,6 +766,8 @@ public:
 
     void new_cmdturn(bool new_turn)
     {
+        if (new_turn)
+            end_display_repeat();
         output_prefix(new_turn ? prefix_type::new_turn : prefix_type::new_cmd);
     }
 
@@ -705,6 +781,7 @@ public:
      */
     void more(bool full, bool user=false)
     {
+        end_display_repeat();
         rng::generator rng(rng::UI);
 
         if (_pre_more())
@@ -853,7 +930,6 @@ public:
 
     void store_msg(const message_line& msg)
     {
-        prefix_type p = prefix_type::none;
         msgs.push_back(msg);
         if (_temporary)
             temp++;
@@ -865,7 +941,7 @@ public:
         unwind_bool dontsend(send_ignore_one, true);
 #endif
         if (crawl_state.io_inited && crawl_state.game_started)
-            msgwin.add_item(msg.full_text(), p, _temporary);
+            msgwin.add_message(msg, _temporary);
     }
 
     void roll_back()

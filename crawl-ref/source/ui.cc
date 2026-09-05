@@ -2279,7 +2279,7 @@ int TextEntry::LineReader::process_key(int ch)
 {
     switch (ch)
     {
-    CASE_ESCAPE
+    CASE_ESCAPE;
         return CK_ESCAPE; // triggers focusout, not close
     case CK_UP:
     case CONTROL('P'):
@@ -3139,6 +3139,31 @@ shared_ptr<Widget> top_layout()
 }
 
 static bool text_input_active = false;
+#ifdef USE_TILE_LOCAL
+bool scroll_touch_at(int x, int y, int delta_y)
+{
+    // A blocking getch (e.g. a confirmation over a menu) owns all input.
+    if (event_filter)
+        return false;
+    auto widget = top_layout();
+    if (!widget || !widget->get_region().contains_point(x, y))
+        return false;
+    // Resolve the gesture's fixed origin, never its moving endpoint. A swipe
+    // cannot begin on the map or escape a list into a background command.
+    while (auto child = widget->get_child_at_offset(x, y))
+        widget = std::move(child);
+    for (auto* ancestor = widget.get(); ancestor; ancestor = ancestor->_get_parent())
+    {
+        if (auto* scroller = dynamic_cast<Scroller*>(ancestor))
+        {
+            scroller->set_scroll(max(0, scroller->get_scroll() - delta_y));
+            return true;
+        }
+    }
+    return false;
+}
+#endif
+
 static shared_ptr<Widget> text_input_layout;
 
 TextInputScope::TextInputScope()
@@ -3208,14 +3233,15 @@ void render()
 void pump_events(int wait_event_timeout)
 {
     int macro_key = macro_buf_get();
-
+    bool render_layout = true;
 #ifdef USE_TILE_LOCAL
     // Don't render while there are unhandled mousewheel events,
     // since these can come in faster than crawl can redraw.
     // unlike mousemotion events, we don't drop all but the last event
     // ...but if there are macro keys, we do need to layout (for menu UI)
-    if (!wm || !wm->next_event_is(WME_MOUSEWHEEL) || macro_key != -1)
+    render_layout = !wm || !wm->next_event_is(WME_MOUSEWHEEL) || macro_key != -1;
 #endif
+    if (render_layout)
     {
         ui_root.layout();
 #ifdef USE_TILE_WEB

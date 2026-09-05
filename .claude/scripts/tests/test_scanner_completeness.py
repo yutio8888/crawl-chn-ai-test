@@ -42,6 +42,77 @@ class ScannerCompletenessTests(unittest.TestCase):
             [sys.executable, str(SCRIPTS / name), *map(str, args)],
             text=True, capture_output=True, check=False)
 
+    def test_annotation_functions_keep_body_findings_and_source_locations(self):
+        prefixes = ("NORETURN void", "static void CALLBACK",
+                    'extern "C" JNIEXPORT void JNICALL')
+        bodies = {
+            "scan_varargs_string.py": 'mprf("%s", std::string("unsafe value"));',
+            "scan_string_concat.py": 'auto label = std::string("visible ") + value;',
+        }
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "annotations.cc"
+            for prefix in prefixes:
+                for scanner, body in bodies.items():
+                    for unsafe in (False, True):
+                        with self.subTest(prefix=prefix, scanner=scanner, unsafe=unsafe):
+                            statement = body if unsafe else 'mprf("%s", "safe");'
+                            path.write_text('// 中文 keeps byte offsets significant\n'
+                                            + prefix + ' f() {\n  ' + statement
+                                            + '\n}\n', encoding="utf-8")
+                            proc = self.run_scanner(scanner, "--files", path,
+                                                    "--format", "json", "--require-parser")
+                            self.assertEqual(1 if unsafe else 0, proc.returncode, proc.stderr)
+                            data = json.loads(proc.stdout)
+                            self.assertEqual({"discovered": 1, "scanned": 1, "failed": []},
+                                             _coverage(data))
+                            if unsafe:
+                                self.assertTrue(data["findings"])
+                                self.assertTrue(all(f["line"] == 3 for f in data["findings"]))
+                            else:
+                                self.assertEqual([], data["findings"])
+
+    def test_annotation_parse_preserves_bytes_except_known_declaration_tokens(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import parse_cpp_annotations
+        import tree_sitter_cpp
+        from tree_sitter import Language, Parser
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        source = (b'// NORETURN void comment() {}\n'
+                  b'#define NORETURN __attribute__((noreturn))\n'
+                  b'const char* raw = R"x(\nNORETURN void literal() {}\n)x";\n'
+                  b'int NORETURN = 1;\nvoid f(int CALLBACK);\n'
+                  b'NORETURN void real();\n'
+                  b'extern "C" JNIEXPORT void JNICALL real_jni() { mprf("%s", "ok"); }\n')
+        expected = source.replace(b'NORETURN void real()', b'         void real()')
+        expected = expected.replace(b'JNIEXPORT void JNICALL real_jni',
+                                    b'          void         real_jni')
+        tree = parse_cpp_annotations(parser, source)
+        self.assertFalse(tree.root_node.has_error)
+        self.assertEqual(len(source), tree.root_node.end_byte)
+        self.assertEqual(expected, tree.root_node.text)
+
+    def test_annotation_normalization_does_not_hide_unknown_or_broken_syntax(self):
+        cases = (
+            'UNKNOWN void f() {}',
+            'NORETURN UNKNOWN void f() {}',
+            'extern "C" JNIEXPORT void UNKNOWN f() {}',
+            'JNIEXPORT void JNICALL f() {}',
+            'static void UNKNOWN f() {}',
+            'NORETURN void f() { mprf("%s", std::string("bad"); }',
+            'NORETURN void f( { return; }',
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "broken.cc"
+            for source in cases:
+                path.write_text(source + "\n", encoding="utf-8")
+                for scanner in ("scan_varargs_string.py", "scan_string_concat.py"):
+                    with self.subTest(source=source, scanner=scanner):
+                        proc = self.run_scanner(scanner, "--files", path,
+                                                "--format", "json", "--require-parser")
+                        self.assertEqual(2, proc.returncode, proc.stderr)
+                        self.assertIn("parse error", proc.stderr)
+                        self.assertEqual(1, len(_coverage(json.loads(proc.stdout))["failed"]))
+
     def test_explicit_missing_inputs_fail_visible(self):
         missing = ROOT / "does-not-exist.cc"
         for scanner in ("scan_string_concat.py", "scan_varargs_string.py",

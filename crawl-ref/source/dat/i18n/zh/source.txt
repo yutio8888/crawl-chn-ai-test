@@ -4430,7 +4430,7 @@ immune to
 免疫
 %%%%
 In %d experience levels, you will have learned enough to assemble a masterpiece.
-在%d经验等级内，你将学到足以组装一件杰作。
+再提升%d个经验等级，你就能学会组装一件杰作。
 %%%%
 In a burst of heat and light, you briefly surge upwards...but you can't rise from here.
 在一阵热与光的爆发中，你短暂地向上冲去……但无法从这里升起。
@@ -5502,7 +5502,7 @@ Please don't try to blink into monsters.
 请不要尝试闪烁到怪物身上。
 %%%%
 Please finish your current recitation first.
-请先完成你当前的布道。
+请先完成你当前的吟诵。
 %%%%
  Please press [Y]es or [n]no.
  请输入 [Y]是 或 [n]否。
@@ -8387,7 +8387,7 @@ You are already invisible!
 你已经隐形了！
 %%%%
 You are already invoking Yredulemnul's grip!
-你已经在施展伊雷德勒姆努之握了！
+你已经在施展伊莱德莱姆努尔之握了！
 %%%%
 You are already lashing out.
 你已经在猛烈攻击了。
@@ -8534,7 +8534,7 @@ You are too berserk!
 你太狂暴了！
 %%%%
 You are too confused!
-你太困惑了！
+你太混乱了！
 %%%%
 You are too depleted to draw on your %s recklessly!
 你过于虚弱，无法鲁莽地消耗%s！
@@ -9170,7 +9170,7 @@ You cannot shoot with your %s while %s.
 你在%2$s时无法用你的%1$s射击。
 %%%%
 You cannot speak a word of chaos while %s.
-你在%s时无法说出混乱之语。
+你在%s时无法说出混沌之语。
 %%%%
 You cannot throw/fire anything while %s.
 你在%s时无法投掷/发射任何东西。
@@ -10735,7 +10735,7 @@ You're too confused to attack without stumbling around!
 你太混乱了，无法不跌跌撞撞地攻击！
 %%%%
 You're too confused to cast spells.
-你太困惑了，无法施法。
+你太混乱了，无法施法。
 %%%%
 You're too confused to move!
 你太困惑了，无法移动！
@@ -12455,7 +12455,7 @@ You're already rising!
 你已经在上升了！
 %%%%
 You can't rise from this level without the Orb!
-没有天球，你无法从这层上升！
+没有佐特宝珠，你无法从这层上升！
 %%%%
 You can't rise from this level!
 你无法从这层上升！
@@ -12467,7 +12467,7 @@ You are not zealous enough to affect this audience!
 你的热忱不足以打动这群观众！
 %%%%
 There's already a sanctuary in place on this level.
-这层已经有一个避难所了。
+这层已经有一个庇护所了。
 %%%%
 You are already engaged in single combat!
 你已经在单挑中了！
@@ -12476,7 +12476,7 @@ Any gift you received here would fall and be lost!
 你在这里收到的任何礼物都会掉落丢失！
 %%%%
 You can't heal while in death's door.
-你在死之门中无法治疗。
+你处于死亡之门的效果中，无法治疗。
 %%%%
 Nothing ails you!
 你没有任何不适！
@@ -12509,7 +12509,7 @@ You have exhausted your breath weapon. Slay more foes!
 你的吐息武器已耗尽。杀死更多敌人吧！
 %%%%
 You don't have enough innate magic capacity.
-你的先天魔力不足。
+你的先天法力上限不足。
 %%%%
 Night has already fallen.
 夜幕已经降临。
@@ -17636,10 +17636,10 @@ You don't have enough health right now.
 你当前没有足够的生命值。
 %%%%
 You don't have enough magic capacity right now.
-你当前没有足够的魔力容量。
+你当前的法力上限不足。
 %%%%
 You don't have enough magic right now.
-你当前没有足够的魔力。
+你当前的法力不足。
 %%%%
 Your magical contamination has completely subsided.
 你的魔法污染已经完全消退了。
@@ -42413,3 +42413,24 @@ Alistair's Party Mansion
 %%%%
 sewer drain
 排水口
+%%%%
+You're already berserk!
+你已经处于狂暴状态了！
+%%%%
+You're still recovering from your berserk rage.
+你还未从狂暴中恢复过来。
+%%%%
+You can't enter a blood rage from death's door.
+你处于死亡之门的效果中，无法激起狂暴的热血。
+%%%%
+You are too mesmerised to rage.
+你深受迷魂影响，无法狂暴。
+%%%%
+You're too calm and focused to rage.
+你太过冷静专注，无法狂暴。
+%%%%
+You cannot raise a blood rage in your lifeless body.
+你毫无生机的躯体无法激起狂暴的热血。
+%%%%
+Your stasis prevents you from going berserk.
+你的停滞状态阻止了你进入狂暴。

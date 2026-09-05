@@ -102,7 +102,7 @@ bool can_do_capstone_ability(god_type god);
 bool bless_weapon(god_type god, brand_type brand, colour_t colour);
 bool zin_donate_gold();
 string zin_recite_text(const int seed, const int prayertype, int step);
-bool zin_check_able_to_recite(bool quiet = false);
+bool zin_check_able_to_recite(bool quiet = false, string* reason = nullptr);
 vector<coord_def> find_recite_targets();
 recite_eligibility zin_check_recite_to_single_monster(const monster *mon,
                                                   recite_counts &eligibility,
@@ -186,16 +186,16 @@ void dithmenos_cache_marionette_viability();
 string dithmenos_cannot_marionette_reason();
 spret dithmenos_marionette(monster& target, bool fail);
 
-bool gozag_setup_potion_petition(bool quiet = false);
+bool gozag_setup_potion_petition(bool quiet = false, string* reason = nullptr);
 bool gozag_potion_petition();
 int gozag_price_for_shop(bool max = false);
-bool gozag_setup_call_merchant(bool quiet = false);
+bool gozag_setup_call_merchant(bool quiet = false, string* reason = nullptr);
 bool gozag_call_merchant();
 branch_type gozag_fixup_branch(branch_type branch);
 int gozag_type_bribable(monster_type type);
 bool gozag_branch_bribable(branch_type branch);
 void gozag_deduct_bribe(branch_type br, int amount);
-bool gozag_check_bribe_branch(bool quiet = false);
+bool gozag_check_bribe_branch(bool quiet = false, string* reason = nullptr);
 bool gozag_bribe_branch();
 
 dice_def qazlal_upheaval_damage(bool allow_random = true);

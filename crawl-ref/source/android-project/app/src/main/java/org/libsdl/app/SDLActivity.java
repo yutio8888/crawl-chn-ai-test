@@ -754,6 +754,8 @@ public class SDLActivity extends AppCompatActivity {
     public static native void onNativeKeyUp(int keycode);
     public static native void onNativeKeyboardFocusLost();
     public static native void onNativeMouse(int button, int action, float x, float y);
+    public static native void nativeTouchScroll(float originX, float originY,
+                                                float previousY, float currentY);
     public static native void onNativeTouch(int touchDevId, int pointerFingerId,
                                             int action, float x,
                                             float y, float p);
@@ -1392,10 +1394,40 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     protected static boolean scrolling;
 
     // CRAWL HACK: Long press as right click
-    protected static long touchStart = 0L;
-    protected static float touchStartX = 0;
-    protected static float touchStartY = 0;
-    protected static boolean touchMoved = false;
+    private long touchStart = 0L;
+    private float touchStartX;
+    private float touchStartY;
+    private float touchLastY;
+    private boolean touchMoved;
+    private boolean longPressReady;
+    private final Runnable longPressFeedback = () -> {
+        if (touchStart != 0L && !touchMoved && !scrolling) {
+            longPressReady = true;
+            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        }
+    };
+
+    private void cancelTouch() {
+        removeCallbacks(longPressFeedback);
+        touchStart = 0L;
+        touchMoved = false;
+        longPressReady = false;
+    }
+
+    private boolean exceededTouchSlop(MotionEvent event) {
+        int slop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        // Batched motion can leave the target and return before delivery.
+        for (int i = 0; i <= event.getHistorySize(); i++) {
+            float x = i == event.getHistorySize() ? event.getX() : event.getHistoricalX(i);
+            float y = i == event.getHistorySize() ? event.getY() : event.getHistoricalY(i);
+            float dx = x - touchStartX;
+            float dy = y - touchStartY;
+            if (dx * dx + dy * dy > slop * slop) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Startup
     public SDLSurface(Context context) {
@@ -1421,6 +1453,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     public void handlePause() {
+        cancelTouch();
         enableSensor(Sensor.TYPE_ACCELEROMETER, false);
     }
 
@@ -1660,58 +1693,62 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                         return true;
                     }
 
-                    // CRAWL HACK: Long press as right click
-                    // Android may batch an entire swipe into one move event.
-                    // Preserve its origin so modal scrollers can calculate a
-                    // delta; the main game still coalesces consecutive moves.
-                    if (!touchMoved && touchStart != 0L) {
-                        SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY,
-                                action, touchStartX, touchStartY);
-                        touchMoved = true;
+                    // One finger uses the touch-only Scroller route. Keep the
+                    // origin fixed even when the finger leaves the list.
+                    if (!scrolling && touchStart != 0L) {
+                        if (exceededTouchSlop(event)) {
+                            touchMoved = true;
+                            removeCallbacks(longPressFeedback);
+                        }
+                        if (touchMoved) {
+                            SDLActivity.nativeTouchScroll(touchStartX, touchStartY,
+                                    touchLastY, event.getY());
+                            touchLastY = event.getY();
+                        }
                     }
-                    SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, action, event.getX(0), event.getY(0));
                     break;
 
                 // CRAWL HACK: Start scrolling
                 //case MotionEvent.ACTION_POINTER_UP:
                 case MotionEvent.ACTION_POINTER_DOWN:
+                    cancelTouch();
                     scrolling = true;
                     break;
 
                 // CRAWL HACK: Long press as right click
                 case MotionEvent.ACTION_DOWN:
-                    touchStart = System.currentTimeMillis();
+                    cancelTouch();
+                    scrolling = false;
+                    touchStart = event.getEventTime();
                     touchStartX = event.getX();
                     touchStartY = event.getY();
-                    touchMoved = false;
+                    touchLastY = touchStartY;
+                    // Hover feedback only. Sending Down now would activate
+                    // checkboxes and map commands before a swipe is resolved.
+                    SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, touchStartX, touchStartY);
+                    postDelayed(longPressFeedback, ViewConfiguration.getLongPressTimeout());
                     break;
 
                 // CRAWL HACK: Long press as right click
                 case MotionEvent.ACTION_UP:
-                    if (!scrolling) {
-                        // Don't perform a click if the finger moved more than 1%
-                        float margin = Math.min(mWidth, mHeight) / 100;
-                        if (event.getX() + margin >= touchStartX && event.getX() - margin <= touchStartX &&
-                            event.getY() + margin >= touchStartY && event.getY() - margin <= touchStartY)
-                        {
-                            if (touchStart + 500 > System.currentTimeMillis()) {
-                                SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, MotionEvent.ACTION_DOWN, event.getX(0), event.getY(0));
-                            } else {
-                                SDLActivity.onNativeMouse(MotionEvent.BUTTON_SECONDARY, MotionEvent.ACTION_DOWN, event.getX(0), event.getY(0));
-                            }
+                    if (!scrolling && !touchMoved && touchStart != 0L) {
+                        if (!exceededTouchSlop(event)) {
+                            int button = longPressReady ? MotionEvent.BUTTON_SECONDARY
+                                    : MotionEvent.BUTTON_PRIMARY;
+                            SDLActivity.onNativeMouse(button, MotionEvent.ACTION_DOWN,
+                                    touchStartX, touchStartY);
+                            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP,
+                                    touchStartX, touchStartY);
                         }
-                        SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP, event.getX(0), event.getY(0));
                     }
                     scrolling = false;
-                    touchStart = 0L;
-                    touchMoved = false;
+                    cancelTouch();
                     break;
 
                 case MotionEvent.ACTION_CANCEL:
                     // CRAWL HACK: Stop actions
                     scrolling = false;
-                    touchStart = 0L;
-                    touchMoved = false;
+                    cancelTouch();
                     break;
 
                 default:

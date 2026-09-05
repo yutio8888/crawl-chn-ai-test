@@ -8,6 +8,53 @@
 #include "ui-scissor.h"
 #include "libutil.h"
 
+namespace
+{
+struct slot_cleanup
+{
+    ui::Slot<int, bool()>& slot;
+    int* target;
+    int& destroyed;
+
+    ~slot_cleanup()
+    {
+        ++destroyed;
+        slot.remove_by_target(target);
+    }
+};
+}
+
+TEST_CASE("Slot callback destruction can remove another target", "[ui-slot]")
+{
+    ui::Slot<int, bool()> slot;
+    // Array addresses ensure target 1 is target 0's equal_range end node.
+    int targets[3] = {};
+    int destroyed = 0;
+    int calls = 0;
+    auto captured = shared_ptr<slot_cleanup>(
+        new slot_cleanup{slot, &targets[1], destroyed});
+    SECTION("Destruction removes the following target") {}
+    SECTION("Destruction removes the same target again")
+    {
+        captured->target = &targets[0];
+    }
+    const int removed_target = captured->target - targets;
+    slot.on(&targets[0], [captured]() { return false; });
+    slot.on(&targets[0], []() { return false; });
+    slot.on(&targets[1], [&calls]() { ++calls; return true; });
+    slot.on(&targets[2], [&calls]() { ++calls; return true; });
+    captured.reset();
+
+    slot.remove_by_target(&targets[0]);
+    CHECK(destroyed == 1);
+    CHECK_FALSE(slot.emit(&targets[0]));
+    CHECK(slot.emit(&targets[1]) == (removed_target != 1));
+    CHECK(slot.emit(&targets[2]));
+    CHECK(calls == (removed_target == 1 ? 1 : 2));
+    slot.remove_by_target(&targets[0]);
+    CHECK(destroyed == 1);
+}
+
 // Layout-only tests do not need a GL context. Console push/pop clears a live
 // terminal, so exercise these through the existing local-tiles test target.
 #ifdef USE_TILE_LOCAL
@@ -29,6 +76,43 @@ public:
     text_input_box() : ui::Box(ui::Widget::VERT) {}
     bool accepts_text_input() const override { return true; }
 };
+
+class scroll_test_content : public ui::Widget
+{
+public:
+    void _render() override {}
+    ui::SizeReq _get_preferred_size(Direction dim, int) override
+    {
+        return dim == VERT ? ui::SizeReq{400, 400} : ui::SizeReq{200, 200};
+    }
+};
+}
+
+TEST_CASE("Finger scroll only affects a scroller at its origin", "[ui-touch]")
+{
+    REQUIRE_FALSE(ui::has_layout());
+    CHECK_FALSE(ui::scroll_touch_at(50, 50, -30));
+    auto scroller = make_shared<ui::Scroller>();
+    scroller->set_child(make_shared<scroll_test_content>());
+    {
+        test_layout layout(scroller);
+        scroller->allocate_region({0, 0, 200, 100});
+        CHECK(ui::scroll_touch_at(50, 50, -30));
+        CHECK(scroller->get_scroll() == 30);
+        CHECK_FALSE(ui::scroll_touch_at(50, 101, -30));
+        CHECK(scroller->get_scroll() == 30);
+        CHECK(ui::scroll_touch_at(50, 50, 60));
+        CHECK(scroller->get_scroll() == 0);
+        {
+            auto modal = make_shared<ui::Box>(ui::Widget::VERT);
+            test_layout nested(modal);
+            modal->allocate_region({0, 0, 200, 100});
+            CHECK_FALSE(ui::scroll_touch_at(50, 50, -30));
+            CHECK(scroller->get_scroll() == 0);
+        }
+        CHECK(ui::scroll_touch_at(50, 50, -30));
+        CHECK(scroller->get_scroll() == 30);
+    }
 }
 
 TEST_CASE("Input context follows focus and nested layout restoration", "[ui-input]")
@@ -154,9 +238,9 @@ TEST_CASE( "Test scissor stack", "[single-file]" ) {
         REQUIRE(s.top() == ui::Region(0, 0, INT_MAX, INT_MAX));
     }
 
-#if 0
-    // TODO: this can't work right now, because we don't have a GL manager.
-    // This can be tested if we switch to dependency injection.
+#ifndef USE_TILE_LOCAL
+    // Local tiles need a live GL manager; the console build exercises the
+    // same stack operations without sending the resulting clip to GL.
     SECTION ("Test that scissor stack top() returns top region.") {
         ui::ScissorStack s;
 
@@ -166,6 +250,37 @@ TEST_CASE( "Test scissor stack", "[single-file]" ) {
         REQUIRE(s.top() == ui::Region(0, 0, 2, 2));
         s.push(ui::Region(0, 0, 1, 1));
         REQUIRE(s.top() == ui::Region(0, 0, 1, 1));
+        s.pop();
+        REQUIRE(s.top() == ui::Region(0, 0, 2, 2));
+    }
+
+    SECTION ("Disjoint and touching clips stay empty and restore the parent") {
+        const ui::Region parent(10, 10, 20, 20);
+        const ui::Region children[] = {
+            {40, 15, 5, 5}, {0, 15, 5, 5},
+            {15, 40, 5, 5}, {15, 0, 5, 5},
+            {30, 15, 5, 5}, {15, 30, 5, 5},
+        };
+        for (const auto &child : children)
+        {
+            ui::ScissorStack s;
+            s.push(parent);
+            s.push(child);
+            REQUIRE(s.top().width >= 0);
+            REQUIRE(s.top().height >= 0);
+            REQUIRE((s.top().width == 0 || s.top().height == 0));
+            const auto empty = s.top();
+            s.push(parent);
+            REQUIRE(s.top().width >= 0);
+            REQUIRE(s.top().height >= 0);
+            REQUIRE((s.top().width == 0 || s.top().height == 0));
+            s.pop();
+            REQUIRE(s.top() == empty);
+            s.pop();
+            REQUIRE(s.top() == parent);
+            s.pop();
+            REQUIRE(s.top() == ui::Region(0, 0, INT_MAX, INT_MAX));
+        }
     }
 #endif
 }
