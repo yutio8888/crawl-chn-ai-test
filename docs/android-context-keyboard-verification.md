@@ -113,3 +113,159 @@ Source/DB、翻译生命周期、movement、桌面编译、消息覆盖检查与
 模拟器地牢图块区域显示为空白，未将本次键盘冒烟视作渲染正确性验证，也未
 追查其基线归属。GitHub Actions 未运行（按要求不 push）。
 下一步先在真机补齐这些交互，再处理扫描器基线解析限制并运行远端 CI。
+
+## Pixel 8a 真机复测（2026-09-05）
+
+本节补充并更新上文历史未验证项。代码为 `f2b595fef8`（含 Activity 重建时
+重发描述符、Classic 1/2 恢复原热区偏好的修正）。设备为 Pixel 8a，Android 15，
+`arm64-v8a`；所有设备命令均指定 `adb -s 44061JEKB02240`。
+没有操作 `emulator-5554`，没有卸载或清除原游戏数据。测试包
+`org.develz.crawl.contextkeyboard` 并存安装，应用语言 zh-CN；使用其独立目录中的
+Human Conjurer 巫师角色 `PixelKeyboard`，不使用已有正式存档。
+
+### 构建与图块空白归属
+
+最终 APK：`/tmp/pixel-context-arm64-debug.apk`，SHA-256：
+`07af148447dc917ee292f974f5fbb33138255a5059564f41435378ddbc41a983`。
+`versionName=0.34.1-zh5-1-010-131-gf2b595fef8`，与 `build.h` 中的
+`CRAWL_VERSION_LONG` 一致；只替换生成工程的 applicationId。
+
+本次定位了两项构建准备问题，均已纠正后重新安装、验证：
+
+1. 初次人为追加测试版 versionName 后缀，导致 Java 创建的缓存目录与原生版本号
+   不一致。原文为 `DB directory .../cache.0.34.1-zh5-1-010-131-gf2b595fef8/db/
+   does not exist and I can't create it`，随后退出时出现 `FORTIFY:
+   pthread_mutex_lock called on a destroyed mutex`。改回一致版本号后可正常启动。
+   这是初始测试构建配置失败，不能从整次任务记录中删除，也不计入最终 APK 的
+   无崩溃结论。
+2. 真机初次进入地牢也空白，且物品图标同样缺失。PNG 解码正常，例如诊断原文
+   `texture floor.png 1024x2048 bpp=4 alpha=1072653`；但本地生成的
+   `rltiles/tiledef-floor.cc` 图块信息全部为 `tile_info(0, 0, 0, 0, 0, 0, 0, 0)`。
+   无 tiles 构建留下的生成数据被直接 Gradle 构建复用，零尺寸使图块被跳过。
+   重新执行带 `TILES=y` 的生成步骤后恢复为
+   `tile_info(32, 32, 0, 0, 0, 0, 32, 32)`；同步图集并重建后，墙、地板、角色、
+   背包物品图标均正常。临时诊断代码已移除，无需修改 Surface/viewport 或资源路径。
+
+因此空白归属为**构建产物污染**，不能归为模拟器 GPU 环境问题。旧模拟器 APK
+本次没有复测，不能据真机修复结果声称该旧包已通过。后续运行过无 tiles 构建后，
+必须重新准备 tiles 生成数据再运行 Android Gradle；只重新打包 PNG 不够。
+
+本次修复构建产物的命令（均在当前 worktree，构建限制四任务）：
+
+```sh
+bash .claude/scripts/run_isolated.sh make -C crawl-ref/source/rltiles -j4 TILES=y
+cp crawl-ref/source/rltiles/{floor,wall,feat,main,player,gui,icons}.png \
+  crawl-ref/source/android-project/app/src/main/assets/dat/tiles/
+# SDK、Gradle 缓存位置通过本机环境配置，不提交生成工程。
+cd crawl-ref/source/android-project
+./gradlew --offline --no-daemon --max-workers=4 \
+  -Pandroid.injected.build.abi=arm64-v8a :app:assembleDebug
+```
+
+Gradle 实际通过 `run_isolated.sh` 在子 shell 中运行。最终构建/安装原文：
+
+```text
+BUILD SUCCESSFUL in 52s
+36 actionable tasks: 7 executed, 29 up-to-date
+Performing Streamed Install
+Success
+```
+
+### 点击验收
+
+以下证据均位于当前 worktree 的 `.claude/metrics/verify/`，文件名前缀统一为
+`pixel-context-`；截图 `.png` 同时配有 `.xml` UIAutomator dump 与
+`-window.log`。SDL 原生标题/列表不在 UIAutomator 树内，按截图核对；Java 按钮
+按 resource-id 定位点击，不以发送等价硬件键替代按钮验收。
+
+| 项目 | 点击前 → 点击后（通过） | 截图后缀 |
+|---|---|---|
+| 地牢渲染 | 空白 → 墙、地板、角色和快捷图标正常 | `loaded`、`tiles-restored` |
+| A-01 下一类 | 装备：`a - +0 长袍（已穿戴）` → 药水：`g - 魔法药水` | `a01-before`、`a01-next` |
+| A-01 上一类 | 药水页 → 原装备页，长袍列表恢复 | `a01-next`、`a01-prev` |
+| 拾取全选、确定 | 匕首和药水未选 → 两项选中 → 菜单关闭，消息显示 `b - +0 匕首; d - 块状的棕色药水` | `pickup-before`、`pickup-selected`、`pickup-done` |
+| 物品脱下、穿戴 | 点击 `(t)脱下`，护甲 2→0，消息确认脱下；重开页按钮变 `(w)穿戴`，点击后护甲恢复 2 | `item-before`、`item-removed`、`item-unworn`、`item-worn` |
+| 瞄准下个、上个、自身 | 地精 → 老鼠 → 地精 → 玩家，黄色目标框和瞄准说明同步变化 | `target-before`、`target-next`、`target-prev`、`target-self` |
+| 地图楼梯与返回 | 巫师揭示地图后，连续点下行楼梯使地图移到两个不同位置；上行楼梯返回入口区域；返回退出地图 | `map-before`、`map-stairs1`、`map-stairs2`、`map-up`、`map-return` |
+| 是、否 | 原生 yesno 提示，分别点是/否后关闭；`crawl.mpr(tostring(crawl.yesno(...)))` 显示 `True` / `False` | `yes-before`、`no-before`、`yes-result`、`no-result` |
+| 更多继续 | 临时 `force_more_message += .` 触发实际 `--更多-- 点按继续`；点击槽位“继续”后提示消失，恢复巫师命令输入 | `more-prompt`、`more-continued` |
+
+拾取物品由巫师 `&%` 创建；瞄准使用 `&m` 创建 rat/goblin，`&E` 暂停时间，
+使用魔法飞弹瞄准但不发射。是非通过巫师 Lua 调用真实 `yesno` 路径。
+Lua 解释器内 `crawl.more()` 被原生明确抑制，因此未将这次无提示调用计为通过；
+改用退出解释器后的实际消息提示，完成后以 `force_more_message -= .` 移除临时规则。
+
+### 十轮稳定性、手动切换与生命周期
+
+设备日志时区为 Asia/Shanghai。17:13:02–17:15:55 完成十轮：
+主地牢 → 背包 → 长袍描述 → 退出两层 → 魔法飞弹瞄准 → 取消 →
+巫师创建怪物的文本输入 → 取消。每种状态检查实际键盘树及情境按钮，
+首末轮另存截图；共 51 次状态断言，50 份 `round-01-*` 至 `round-10-*` XML。
+文本输入自动显示完整键盘，退出自动恢复紧凑。
+
+`pixel-context-rounds.log` 与 `pixel-context-summary.log` 的原文摘录：
+
+```text
+device start 2026-09-05_17:13:02
+device end 2026-09-05_17:15:55
+rounds=10 state_checks=51 bounds=['[0,1833][1080,2337]']
+round_context_changes=88
+round_updateLayout=0
+round_surfaceChanged=0
+round_heights=['504']
+manual_updateLayout=2
+manual_surfaceChanged=0
+final_pid=13104 fatal_segv_anr_fortify_gl_error_matches=0
+```
+
+键盘显示后的 SDL Surface 为 `1080x1712`。从 17:05:38 显示键盘至
+17:16:54 首次 Home 前没有新的 surfaceChanged，涵盖以上所有点击测试、十轮
+上下文测试，以及 17:16:06–17:16:24 手动完整/紧凑测试。
+手动展开后进入背包、返回地牢仍保持完整键盘；再点击“紧凑”恢复，三份截图
+`manual-full`、`manual-full-inv`、`manual-compact` 的边界均相同。
+
+```text
+09-05 17:05:38.762 13104 13104 V SDL     : Window size: 1080x1712
+09-05 17:16:11.347 13104 13104 I AndroidKeyboard: context=1 screen=1 manualFull=true height=504
+09-05 17:16:16.281 13104 13104 I AndroidKeyboard: context=0 screen=0 manualFull=true height=504
+```
+
+Home 返回用 `am task focus 185` 恢复原有游戏任务，背包四个情境按钮仍正确；
+`home-before`、`home-resumed` 保留前后证据。首次尝试用 `am start` 启动 launcher
+只是增加了一层 launcher，已用 Back 退出该层，再执行上述已有任务恢复测试；
+没有将 launcher 截图冒充游戏恢复结果。后台 Surface 销毁/恢复会产生回调，
+恢复尺寸仍为 `1080x1712`，不计为键盘上下文切换引起的 resize。
+
+横屏支持：在背包中旋转后四个情境按钮仍显示，点击“下一类”成功从装备切到药水，
+转回竖屏仍保留药水分类和正确按钮。证据 `landscape-inventory`、`landscape-next`、
+`portrait-return`。横屏键盘边界 `[121,513][2400,1017]`，高度仍 504；
+Surface 稳定于 `2279x513`，转回恢复 `1080x1712`。旋转本身会改变 Surface
+尺寸并产生中间回调，不属于上述“同方向内切换键盘不 resize”的断言。
+设备旋转设置已恢复原值 `free`、`accelerometer_rotation=1`、`user_rotation=0`。
+
+最终 APK 从启动至旋转完成始终为 PID 13104。其完整 logcat 中未检出
+SIGSEGV、Fatal、ANR、FORTIFY 或 Crawl.gl ERROR；events 缓冲无本测试包
+am_anr/am_crash，exit-info 中没有最终进程退出记录。原文和检查结果保存在
+`pixel-context-final-logcat.log`、`pixel-context-events.log`、
+`pixel-context-exit-info.log`、`pixel-context-summary.log`。
+初始错误版本号构建的失败另见 `pixel-context-initial-startup-failure.log`，
+没有声称包含该失败在内的整次会话“零 Fatal”。
+
+### 结果与边界
+
+- 通过：arm64 debug 构建及并存安装、修复后的真机图块渲染、A-01 双向分类点击、
+  拾取全选/确定、物品穿脱、瞄准前后目标/自身、地图楼梯/返回、是/否、更多继续、
+  十轮稳定性、手动完整键盘保留与切回、Home 恢复、横竖屏恢复、最终运行无崩溃/ANR。
+- 初始失败已解决：测试 versionName 不一致、无 tiles 的零坐标生成产物。
+  本次没有遗留源代码修复，也没有未解决的本轮阻断缺陷。
+- 未覆盖：模拟器和其他 ABI 复测、强制 Activity 重建（旋转由 configChanges
+  接管，不能替代重建测试）、所有物品/法术描述/已知物品菜单变体、实际发射法术、
+  键盘整体隐藏/显示专门断言。GitHub Actions 未运行，未 push。
+
+本次最终差异仅验证文档；源代码仍为先前通过 code profile 和领域复审的
+`f2b595fef8`。既有 code profile 原文为 `Summary: 0 blocking failure(s)`，记录：
+`.claude/metrics/verify/20260905T083002357202476+0000-420503-f2b595fef86d/verify.log`。
+本次 Android 原生重新编译通过，`git diff --check` 通过；文档分类器输出
+`classification=none, reviewers=[]`，不重复运行会改变 tiles 生成状态的无关构建。
+截图、XML 和日志为本 worktree 的本地验证产物（Git 忽略），本提交保存结果与索引。
+下一步按需补强制 Activity 重建和其他设备；复测前先按本节准备完整 tiles 产物。
