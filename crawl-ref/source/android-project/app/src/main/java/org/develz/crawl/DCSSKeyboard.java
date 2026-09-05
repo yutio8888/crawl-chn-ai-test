@@ -3,6 +3,7 @@ package org.develz.crawl;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,6 +20,8 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     public static final int CONTEXT_TEXT = 2;
     private int inputContext = -1;
     private int keyboardMode;
+    private boolean manualFull;
+    private final Button[] contextButtons = new Button[6];
 
     // Keyboards
     private final View keyboardLower;
@@ -242,6 +245,13 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_mobile_menu);
         initKey(R.id.key_mobile_back);
         initKey(R.id.key_mobile_expand);
+        int[] slots = {R.id.key_context_0, R.id.key_context_1, R.id.key_context_2,
+                R.id.key_context_3, R.id.key_context_4, R.id.key_context_5};
+        for (int i = 0; i < slots.length; ++i) {
+            Button button = findViewById(slots[i]);
+            contextButtons[i] = button;
+            buttonList.add(button);
+        }
     }
 
     // Extra init settings
@@ -258,6 +268,10 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             effectiveSize = Math.max(size, minimumTouchTarget);
         }
         super.initKeyboard(keyboardOption, effectiveSize);
+        // Every full layout and the compact layout have exactly four rows.
+        // Reserve that space even while child visibility changes, so the
+        // activity's layout listener never resizes SDL for a layout switch.
+        findViewById(R.id.main_layout).getLayoutParams().height = 4 * effectiveSize;
         if (keyboardOption == 2) {
             transparentKeyboard();
         } else if (keyboardOption == 4) {
@@ -279,8 +293,69 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
 
     // Called on the Android UI thread. Repeated native input waits must not
     // override a user's manual choice of full/compact/numeric layout.
-    public void setInputContext(int context) {
-        if (context == inputContext || keyboardMode == 0 || keyboardMode == 3) {
+    // Screen values match ui::InputScreen. No translated text is an identity.
+    private int contextLabelResource(int screen, int slot) {
+        switch (screen) {
+            case 1: // Inventory (including pickup)
+                switch (slot) {
+                    case 0: return R.string.ok;
+                    case 1: return R.string.back;
+                    case 2: return R.string.keyboard_previous_category;
+                    case 3: return R.string.keyboard_next_category;
+                    case 5: return R.string.keyboard_switch_action;
+                }
+                break;
+            case 2: // Item description
+            case 3: // Spell description
+                if (slot == 1) return R.string.back;
+                break;
+            case 4: // Targeting
+                switch (slot) {
+                    case 0: return R.string.ok;
+                    case 1: return R.string.cancel;
+                    case 2: return R.string.keyboard_previous_target;
+                    case 3: return R.string.keyboard_next_target;
+                    case 4: return R.string.keyboard_self;
+                }
+                break;
+            case 5: // Confirmation
+                if (slot == 2) return R.string.keyboard_always;
+                break;
+            case 7: // Level map
+                switch (slot) {
+                    case 1: return R.string.back;
+                    case 2: return R.string.keyboard_upstairs;
+                    case 3: return R.string.keyboard_downstairs;
+                    case 4: return R.string.keyboard_portals;
+                    case 5: return R.string.keyboard_traps;
+                }
+                break;
+        }
+        return 0;
+    }
+
+    public void setInputContext(int context, int screen, String[] labels, int[] keys) {
+        if (keyboardMode == 0 || keyboardMode == 3) {
+            return;
+        }
+        Log.i("AndroidKeyboard", "context=" + context + " screen=" + screen
+                + " manualFull=" + manualFull + " height=" + getHeight());
+        for (int i = 0; i < contextButtons.length; ++i) {
+            Button button = contextButtons[i];
+            final int key = keys[i];
+            String label = labels[i] == null ? "" : labels[i];
+            if (key != 0 && label.isEmpty()) {
+                int resource = contextLabelResource(screen, i);
+                if (resource != 0) label = getResources().getString(resource);
+            }
+            boolean active = key != 0 && !label.isEmpty();
+            button.setText(label);
+            button.setContentDescription(label);
+            button.setEnabled(active);
+            button.setVisibility(active ? View.VISIBLE : View.INVISIBLE);
+            button.setOnClickListener(active ? v -> sendContextKey(key) : null);
+        }
+        if (context == inputContext) {
             return;
         }
         inputContext = context;
@@ -298,6 +373,9 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             // Keep grid geometry stable while removing gameplay-only actions.
             findViewById(id).setVisibility(gameplay ? View.VISIBLE : View.INVISIBLE);
         }
+        if (manualFull) {
+            return;
+        }
         keyboardUpper.setVisibility(View.GONE);
         keyboardCtrl.setVisibility(View.GONE);
         keyboardNumeric.setVisibility(View.GONE);
@@ -312,10 +390,14 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     // Swap keyboards
     @Override
     protected void updateLayout(View v) {
+        Log.i("AndroidKeyboard", "updateLayout key=" + v.getId()
+                + " context=" + inputContext + " height=" + getHeight());
         if (v.getId() == R.id.key_mobile_expand) {
+            manualFull = true;
             keyboardMobile.setVisibility(View.GONE);
             keyboardLower.setVisibility(View.VISIBLE);
         } else if (v.getId() == R.id.key_compact_lower) {
+            manualFull = false;
             keyboardLower.setVisibility(View.GONE);
             keyboardUpper.setVisibility(View.GONE);
             keyboardCtrl.setVisibility(View.GONE);

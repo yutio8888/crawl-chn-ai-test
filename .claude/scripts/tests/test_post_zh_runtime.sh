@@ -36,11 +36,12 @@ cat > "$FAKE_SOURCE/catch2-tests-executable" <<'SCRIPT'
 if [[ "$*" == *"zh-translation"* ]]; then
     cat >&2 <<'JSONL'
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"spells","sequence":0,"kind":"MIXED_CN_EN","source":"source.txt","key":"Corona","sample":"怪异发光球","sample_bytes_hex":"e680aae5bc82e58f91e58589e79083"}
-ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"durations","sequence":0,"kind":"MIXED_CN_EN","source":"source.txt","key":"drain","sample":"汲取","sample_bytes_hex":"e6b1b2e58f96"}}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"durations","sequence":0,"kind":"MIXED_CN_EN","source":"source.txt","key":"drain","sample":"汲取","sample_bytes_hex":"e6b1b2e58f96"}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"spells","issue_count":1}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"durations","issue_count":1}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"gods","issue_count":0}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"god_abilities","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"godspeak","issue_count":0}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"monsters","issue_count":0}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"features","issue_count":0}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"clouds","issue_count":0}
@@ -53,7 +54,7 @@ ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translati
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"armour_egos","issue_count":0}
 ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"item_base_names","issue_count":0}
 JSONL
-    exit 1
+    exit "${FAKE_ZH_EXIT:-1}"
 elif [[ "$*" == *"message-overlay"* ]]; then
     echo "Simulating message-overlay success"
     exit 0
@@ -77,20 +78,12 @@ export ZH_RUNTIME_BASELINES_DIR="$TMP_ROOT/baselines"
 export ZH_RUNTIME_CHECK_SCRIPT="$SCRIPT_DIR/../zh_runtime_check.py"
 mkdir -p "$TMP_ROOT/metrics" "$TMP_ROOT/baselines/zh"
 
-# Create empty baseline (with protocol metadata)
+# Create empty baseline with metadata from the production migration command.
 cat > "$TMP_ROOT/baselines/zh/zh-baseline.json" <<'BASELINE'
-{
-  "schema_version": 1,
-  "enumerators": {},
-  "catch2_protocol": {
-    "schema": "dcss-zh-catch2-jsonl",
-    "schema_version": 1,
-    "suite": "zh_translation",
-    "enumerators": [],
-    "manifest_sha256": "bac996e8ba93f0d7c17f6f7768f4d84a9af39f7f469c842d8e3443709392c8e5"
-  }
-}
+{"schema_version": 1, "enumerators": {}}
 BASELINE
+python3 "$ZH_RUNTIME_CHECK_SCRIPT" --migrate-baseline-protocol \
+    "$TMP_ROOT/baselines/zh/zh-baseline.json" --suite zh_translation
 
 set +e
 # Run with catch2 mode
@@ -148,6 +141,23 @@ if [ -n "$C2_REPORT" ] && [ -f "$C2_REPORT" ]; then
     else
         fail "Report has too few phase records ($lines lines, expected >= 3)"
     fi
+fi
+
+# A successful binary can still emit valid protocol issues that regress.
+# The driver must fail and expose their keys on stdout, not only in metrics.
+set +e
+FAKE_ZH_EXIT=0 bash "$POST_RUNTIME" catch2 \
+    > "$TMP_ROOT/diagnostic-stdout.log" 2> "$TMP_ROOT/diagnostic-stderr.log"
+diagnostic_rc=$?
+set -e
+if [ "$diagnostic_rc" -eq 1 ] && \
+   grep -Fq 'zh-translation=0 (parse=1)' "$TMP_ROOT/diagnostic-stdout.log" && \
+   grep -Eq '^ZH_ISSUE_JSON:.*"key":"Corona"' "$TMP_ROOT/diagnostic-stdout.log" && \
+   grep -Eq '^ZH_ISSUE_JSON:.*"key":"drain"' "$TMP_ROOT/diagnostic-stdout.log"; then
+    pass "Valid protocol regressions print issue keys on stdout and remain failures"
+else
+    fail "Missing issue keys or changed regression exit status ($diagnostic_rc)"
+    cat "$TMP_ROOT/diagnostic-stdout.log" "$TMP_ROOT/diagnostic-stderr.log"
 fi
 
 # RC shards have their own exact 17-case manifest; panels/workflows enforce

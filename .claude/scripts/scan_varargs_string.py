@@ -48,7 +48,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error,
-                         parse_cpp_annotations,
+                         parse_cpp_annotations, preprocessor_patterns_for_path,
                          _normalize_eol)
 
 TREE_SITTER_AVAILABLE = False
@@ -388,7 +388,7 @@ def _format_literal_text(node, src):
                         if len(call_args) >= 2 else None)
         return None
 
-    text = _text(node, src)
+    text = node.text.decode("utf-8", errors="replace")
     literals = re.findall(r'"(?:\\.|[^"\\])*"', text)
     if not literals:
         return None
@@ -602,7 +602,8 @@ def scan_file(filepath, parser, validate_parse=False):
     # file's physical lines.
     src = _normalize_eol(raw)
     tree = parse_cpp_annotations(parser, src)
-    if validate_parse and has_relevant_parse_error(tree.root_node, src):
+    if ((validate_parse or preprocessor_patterns_for_path(filepath))
+            and has_relevant_parse_error(tree.root_node, src, filepath)):
         raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
     type_bindings = _build_type_bindings(tree.root_node, src)

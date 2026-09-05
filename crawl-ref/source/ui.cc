@@ -3202,6 +3202,41 @@ InputContext input_context()
         ? InputContext::GAME : InputContext::NAVIGATION;
 }
 
+#ifdef __ANDROID__
+static InputActionScope* input_action_scope = nullptr;
+
+InputActionScope::InputActionScope(InputScreen screen,
+                                 std::array<InputAction, 6> actions,
+                                 shared_ptr<Widget> layout)
+    : owner(std::move(layout)), previous(input_action_scope)
+{
+    descriptor.screen = screen;
+    descriptor.actions = std::move(actions);
+    input_action_scope = this;
+}
+
+InputActionScope::~InputActionScope()
+{
+    ASSERT(input_action_scope == this);
+    input_action_scope = previous;
+}
+
+InputDescriptor input_descriptor()
+{
+    InputDescriptor result;
+    result.context = input_context();
+    // Only the innermost scope may publish actions, and only for its owner.
+    // An unregistered nested popup must never inherit destructive commands.
+    if (input_action_scope && input_action_scope->owner == top_layout()
+        && result.context != InputContext::TEXT)
+    {
+        result = input_action_scope->descriptor;
+        result.context = InputContext::NAVIGATION;
+    }
+    return result;
+}
+#endif
+
 void resize(int w, int h)
 {
     ui_root.resize(w, h);
