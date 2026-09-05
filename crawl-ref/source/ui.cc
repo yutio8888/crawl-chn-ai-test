@@ -2279,7 +2279,7 @@ int TextEntry::LineReader::process_key(int ch)
 {
     switch (ch)
     {
-    CASE_ESCAPE
+    CASE_ESCAPE;
         return CK_ESCAPE; // triggers focusout, not close
     case CK_UP:
     case CONTROL('P'):
@@ -3233,14 +3233,15 @@ void render()
 void pump_events(int wait_event_timeout)
 {
     int macro_key = macro_buf_get();
-
+    bool render_layout = true;
 #ifdef USE_TILE_LOCAL
     // Don't render while there are unhandled mousewheel events,
     // since these can come in faster than crawl can redraw.
     // unlike mousemotion events, we don't drop all but the last event
     // ...but if there are macro keys, we do need to layout (for menu UI)
-    if (!wm || !wm->next_event_is(WME_MOUSEWHEEL) || macro_key != -1)
+    render_layout = !wm || !wm->next_event_is(WME_MOUSEWHEEL) || macro_key != -1;
 #endif
+    if (render_layout)
     {
         ui_root.layout();
 #ifdef USE_TILE_WEB

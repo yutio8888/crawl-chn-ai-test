@@ -36,6 +36,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error,
+                         parse_cpp_annotations,
                          _normalize_eol)
 
 # ── Tree-sitter availability ──────────────────────────────────────────────────
@@ -873,7 +874,7 @@ def scan_file(filepath, parser, include_wrapped=False, validate_parse=False):
     # file's physical lines.
     source_bytes = _normalize_eol(raw)
 
-    tree = parser.parse(source_bytes)
+    tree = parse_cpp_annotations(parser, source_bytes)
     if validate_parse and has_relevant_parse_error(tree.root_node, source_bytes):
         raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []

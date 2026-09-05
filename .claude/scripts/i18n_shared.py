@@ -1914,6 +1914,51 @@ def _matches_frozen_baseline_node(node, source: bytes, baseline: dict) -> bool:
     )
 
 
+def parse_cpp_annotations(parser, source: bytes):
+    """Parse known declaration annotations without losing source offsets.
+
+    The first tree identifies actual function declarations/definitions, so
+    text in comments, literals and macro bodies is never rewritten. Only the
+    complete declaration prefixes observed in Crawl are supported. Unknown
+    annotations and all body syntax remain for normal fail-closed validation.
+    The returned tree indexes the original bytes: annotations become spaces,
+    never deleted text, and callers still inspect/report the original source.
+    """
+    tree = parser.parse(source)
+    normalized = bytearray(source)
+    changed = False
+    stack = [tree.root_node]
+    prefixes = (
+        rb"(?P<annotation>NORETURN)\s+void\s+",
+        rb"static\s+void\s+(?P<annotation>CALLBACK)\s+",
+        rb"(?P<annotation>JNIEXPORT)\s+void\s+(?P<calling>JNICALL)\s+",
+    )
+    while stack:
+        node = stack.pop()
+        if node.type in ("function_definition", "declaration"):
+            declarator = node.child_by_field_name("declarator")
+            if declarator is not None and declarator.type == "function_declarator":
+                prefix = source[node.start_byte:declarator.start_byte]
+                for pattern in prefixes:
+                    match = re.fullmatch(pattern, prefix)
+                    if match is None:
+                        continue
+                    if "calling" in match.groupdict():
+                        parent = node.parent
+                        if parent is None or parent.type != "linkage_specification":
+                            continue
+                        linkage = parent.child_by_field_name("value")
+                        if linkage is None or source[linkage.start_byte:linkage.end_byte] != b'"C"':
+                            continue
+                    for name, text in match.groupdict().items():
+                        begin = node.start_byte + match.start(name)
+                        normalized[begin:begin + len(text)] = b" " * len(text)
+                    changed = True
+                    break
+        stack.extend(node.children)
+    return parser.parse(bytes(normalized)) if changed else tree
+
+
 def has_relevant_parse_error(root, source: bytes) -> bool:
     """Ignore only recoverable preprocessor/member-pointer false positives."""
     switch_lines = _preprocessor_switch_lines(source)

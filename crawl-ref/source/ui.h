@@ -437,17 +437,17 @@ public:
             return cb(static_cast<const CLASS&>(event)); \
         }); \
     }
-    EVENT_HANDLER_HELPER(on_keydown_event, KeyDown, KeyEvent)
-    EVENT_HANDLER_HELPER(on_keyup_event, KeyUp, KeyEvent)
-    EVENT_HANDLER_HELPER(on_mousemove_event, MouseMove, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mousedown_event, MouseDown, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseup_event, MouseUp, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseenter_event, MouseEnter, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mouseleave_event, MouseLeave, MouseEvent)
-    EVENT_HANDLER_HELPER(on_mousewheel_event, MouseWheel, MouseEvent)
-    EVENT_HANDLER_HELPER(on_focusin_event, FocusIn, FocusEvent)
-    EVENT_HANDLER_HELPER(on_focusout_event, FocusOut, FocusEvent)
-    EVENT_HANDLER_HELPER(on_activate_event, Activate, ActivateEvent)
+    EVENT_HANDLER_HELPER(on_keydown_event, KeyDown, KeyEvent);
+    EVENT_HANDLER_HELPER(on_keyup_event, KeyUp, KeyEvent);
+    EVENT_HANDLER_HELPER(on_mousemove_event, MouseMove, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mousedown_event, MouseDown, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseup_event, MouseUp, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseenter_event, MouseEnter, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mouseleave_event, MouseLeave, MouseEvent);
+    EVENT_HANDLER_HELPER(on_mousewheel_event, MouseWheel, MouseEvent);
+    EVENT_HANDLER_HELPER(on_focusin_event, FocusIn, FocusEvent);
+    EVENT_HANDLER_HELPER(on_focusout_event, FocusOut, FocusEvent);
+    EVENT_HANDLER_HELPER(on_activate_event, Activate, ActivateEvent);
 #undef EVENT_HANDLER_HELPER
 
     /**

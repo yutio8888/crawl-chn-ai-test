@@ -112,12 +112,11 @@ bool fatal_error_notification(string error_msg)
         cio_init();
 #endif
 
-    const bool ui_available =
 #if (!defined(DGAMELAUNCH)) || defined(DGL_PAUSE_AFTER_ERROR)
-        // possibly changed by the cio_init call
-        ui::is_available() && !msg::uses_stderr(MSGCH_ERROR);
+    // possibly changed by the cio_init call
+    const bool ui_available = ui::is_available() && !msg::uses_stderr(MSGCH_ERROR);
 #else
-        false;
+    const bool ui_available = false;
 #endif
 
     if (!ui_available || crawl_state.seen_hups)
@@ -294,18 +293,18 @@ NORETURN void end_game(scorefile_entry &se)
                         || death_type == KILLED_BY_LEAVING;
 
     int hiscore_index = -1;
+    bool record_score = true;
 #ifndef SCORE_WIZARD_CHARACTERS
-    if (!you.wizard && !you.explore)
+    record_score = !you.wizard && !you.explore;
 #endif
+    if (record_score)
     {
         // Add this highscore to the score file.
         hiscore_index = hiscores_new_entry(se);
         logfile_new_entry(se);
     }
-#ifndef SCORE_WIZARD_CHARACTERS
     else
         hiscores_read_to_memory();
-#endif
 
     // Never generate bones files of wizard or tutorial characters -- bwr
     if (!non_death && !crawl_state.game_is_tutorial() && !you.wizard)
@@ -320,10 +319,11 @@ NORETURN void end_game(scorefile_entry &se)
     delete_files();
 
     string fname = morgue_name(you.your_name, se.get_death_time());
-    if (!dump_char(fname, true, true, &se))
+    const bool dumped = dump_char(fname, true, true, &se);
+    if (!dumped)
         mpr(T_("Char dump unsuccessful! Sorry about that."));
 #ifdef USE_TILE_WEB
-    else
+    if (dumped)
         tiles.send_dump_info("morgue", fname);
 #endif
 
@@ -485,7 +485,7 @@ NORETURN void game_ended(game_exit exit, const string &message)
             end(retval);
     }
 #ifdef USE_TILE_WEB
-    else if (exit == game_exit::abort)
+    if (exit == game_exit::abort)
         tiles.send_exit_reason("cancel", message);
 #endif
     throw game_ended_condition(exit, message);
