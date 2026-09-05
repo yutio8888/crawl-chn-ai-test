@@ -2477,6 +2477,25 @@ public:
         return PromptMenu::show_in_msgpane();
     }
 
+#ifdef __ANDROID__
+    ui::InputScreen keyboard_screen() const override
+    { return ui::InputScreen::TRAVEL; }
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        std::array<ui::InputAction, 6> actions;
+        size_t slot = 2;
+        if (has_default_target())
+            actions[slot++] = {"", CK_TAB};
+        if (mode_allowed(Mode::waypoints))
+            actions[slot++] = {"", '*'};
+        if (mode_allowed(Mode::altars))
+            actions[slot++] = {"", '_'};
+        if (!(prompt_flags & TPF_SHOW_ALL_BRANCHES))
+            actions[slot++] = {T_("help"), '?'};
+        return actions;
+    }
+#endif
+
     bool skip_process_command(int keyin) override
     {
         if (keyin == '!')

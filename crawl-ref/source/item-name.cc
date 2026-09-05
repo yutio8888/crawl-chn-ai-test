@@ -2532,6 +2532,21 @@ static MenuEntry* _fixup_runeorb_entry(MenuEntry* me)
 class RuneMenu : public InvMenu
 {
     virtual bool process_key(int keyin) override;
+#ifdef __ANDROID__
+    ui::InputScreen keyboard_screen() const override
+    { return ui::InputScreen::MENU; }
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        std::array<ui::InputAction, 6> actions;
+        if (can_show_gems())
+        {
+            actions[2] = {"", '!'};
+            if (!Options.more_gem_info && can_show_more_gems())
+                actions[3] = {"", '-'};
+        }
+        return actions;
+    }
+#endif
 
 public:
     RuneMenu();

@@ -1548,6 +1548,15 @@ public:
 
 protected:
     bool process_key(int key) override;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        auto actions = Menu::keyboard_actions();
+        actions[3] = {"", '/'};
+        actions[4] = {"", '='};
+        return actions;
+    }
+#endif
     virtual formatted_string calc_title() override;
     bool examine_index(int i) override;
 };

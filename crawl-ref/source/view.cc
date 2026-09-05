@@ -1030,6 +1030,12 @@ void draw_cell(screen_cell_t *cell, const coord_def &gc,
 static void _config_layers_menu()
 {
     bool exit = false;
+#ifdef __ANDROID__
+    // Message-pane prompt: any other key exits, so Escape is the cancel.
+    ui::InputActionScope keyboard_scope(ui::InputScreen::LAYERS,
+        {{{"", 'a'}, {"", CK_ESCAPE}, {"", 'm'}, {"", 'p'}, {"", 'i'},
+          {"", 'c'}}});
+#endif
 
     _layers = _layers_saved;
     crawl_state.viewport_weapons    = !!(_layers & Layer::MONSTER_WEAPONS);

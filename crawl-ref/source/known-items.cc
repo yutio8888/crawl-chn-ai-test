@@ -127,6 +127,17 @@ protected:
         return Menu::process_key(key);
     }
 
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        auto actions = InvMenu::keyboard_actions();
+        // '-' swaps the recognised and unrecognised lists (see process_key).
+        if (!all_items_known)
+            actions[5] = {"", '-'};
+        return actions;
+    }
+#endif
+
     string get_keyhelp(bool scrollable) const override
     {
         string navigation;

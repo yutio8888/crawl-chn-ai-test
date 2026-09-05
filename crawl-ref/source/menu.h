@@ -488,6 +488,17 @@ protected:
 
     virtual string help_key() const { return ""; }
 
+#ifdef __ANDROID__
+    // Touch actions published while this menu owns the input. Subclasses
+    // report the keys their process_key actually accepts; slots 0 and 1 are
+    // filled with confirm/cancel by keyboard_descriptor.
+    virtual ui::InputScreen keyboard_screen() const;
+    virtual std::array<ui::InputAction, 6> keyboard_actions();
+    void keyboard_descriptor(ui::InputScreen &screen,
+                             std::array<ui::InputAction, 6> &actions);
+    bool keyboard_cycles_mode();
+#endif
+
     virtual void update_title();
     bool filter_with_regex(const char *re);
 };
@@ -502,6 +513,9 @@ public:
     void add_toggle_from_command(command_type cmd);
 protected:
     virtual int pre_process(int key) override;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() override;
+#endif
 
     vector<int> toggle_keys;
 };

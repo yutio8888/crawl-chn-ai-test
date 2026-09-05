@@ -979,6 +979,20 @@ class ShopMenu : public InvMenu
 
     virtual bool process_key(int keyin) override;
     bool process_command(command_type cmd) override;
+#ifdef __ANDROID__
+    ui::InputScreen keyboard_screen() const override
+    { return ui::InputScreen::SHOP; }
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        std::array<ui::InputAction, 6> actions;
+        if (can_purchase)
+            actions[2] = {"", '!'};
+        actions[3] = {"", '/'};
+        if (can_purchase)
+            actions[4] = {"", '$'};
+        return actions;
+    }
+#endif
 
 protected:
     void select_item_index(int idx, int qty = MENU_SELECT_INVERT) override;
