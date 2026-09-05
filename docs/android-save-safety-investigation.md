@@ -359,3 +359,75 @@ S1/S2 的要点是**时间（回合数）向前推进**：切后台前的自动�
   RAII 守卫）保证，不是实测。
 - 没有测试保存过程中写失败（磁盘满、存档被外部删除）的表现。
 - 测试用的驱动脚本是一次性的，放在 `/tmp`，未入库。
+
+## 9. 真机复测（Pixel 8a，Android 15，arm64-v8a）
+
+补 8.6 里"只在 x86_64 模拟器上跑过"这一条。设备序列号 `44061JEKB02240`。
+机上原有的 `org.develz.crawl.uiux105`、`org.develz.crawl.contextkeyboard` 未卸载、
+未清数据；本节全程只用并存安装的 `org.develz.crawl.savesafety`。
+
+### 9.1 构建
+
+与 8.1 相同的流程，只把生成的 `app/build.gradle` 里 debug 变体的
+`abiFilters` 换成 `arm64-v8a`：
+
+| 项 | 值 |
+|---|---|
+| 源码 | `27c0fe5c59`（含 `8ca8ad3e13` 的 RESUMED 判据） |
+| APK | arm64-v8a debug，53323650 字节 |
+| SHA-256 | `b3065329fdb193659d57599cfba5a455e27abf5ed1fa14e36910de3169a4ba9d` |
+| 游戏内版本串 | `0.34.1-zh5-1-010-129-g27c0fe5c59` |
+
+`unzip -l` 确认只含 `lib/arm64-v8a/`。测试角色与 8.1 相同：`SSTEST`，牛头人 战士，
+新建存档（真机上是全新数据目录，与模拟器上的存档无关）。
+
+测试期间把 `settings system screen_off_timeout` 从 30000 临时改为 600000，
+结束后已改回 30000。
+
+### 9.2 结果
+
+度量口径同 8.2（onPause 之后同一 tid 的下一条 logcat 行）。
+
+| 场景 | onPause 占用 UI 线程 | 存档字节 | `am kill` 后重启 | 崩溃/ANR |
+|---|---|---|---|---|
+| S1 自动探索中 Home | 84 ms | 52772 → 58856 | 地牢:1，时间 54.3 → **57.3**，等级1 33%，金币 25，生命 20/20 | 0 |
+| S2 travel 中 Home（未跨层，被怪物打断） | 170 ms | 60377 → 60655 | 地牢:1，时间 60.7 → **69.7**，等级1 41%，金币 25，生命 20/20 | 0 |
+| S2b 下楼并生成 D:2 时 Home | 155 ms | 60922 → **107455** | **地牢:2**，时间 69.7 → **78.6**，等级1 50%，金币 25，生命 20/20 | 0 |
+| S3 模态弹窗（"去哪里？"）中 Home | 140 ms | 60271 → 60339 | 地牢:1，时间 57.3，等级1 33%，金币 25，生命 20/20，与切后台前逐项一致 | 0 |
+| S4 连续 pause/resume ×6（12 次 onPause） | 最差 387 ms | 无损坏 | 地牢:2，时间 82.6，等级1 50%，金币 25，生命 20/20 | 0 |
+| S5 主菜单 Home | 67 ms | **md5 不变** | 不适用 | 0 |
+
+S1/S2/S2b 的要点仍是回合数向前推进——切后台前的进度进了存档并扛过 SIGKILL；
+S2b 另外证明新生成的 D:2 整层也在里面（存档从 60 KB 涨到 107 KB）。
+S3 的要点是重启后逐项与切后台前完全相同。S5 的要点是 md5 一字节没变。
+
+S4 的 12 次 onPause 分布与模拟器一致，RESUMED 判据在真机上同样有效：
+
+```
+  onPause #1  ui-thread occupancy=115 ms      onPause #7  ui-thread occupancy=103 ms
+  onPause #2  ui-thread occupancy=15 ms       onPause #8  ui-thread occupancy=2 ms
+  onPause #3  ui-thread occupancy=109 ms      onPause #9  ui-thread occupancy=133 ms
+  onPause #4  ui-thread occupancy=13 ms       onPause #10 ui-thread occupancy=155 ms
+  onPause #5  ui-thread occupancy=128 ms      onPause #11 ui-thread occupancy=145 ms
+  onPause #6  ui-thread occupancy=387 ms      onPause #12 ui-thread occupancy=1 ms
+  worst ui-thread occupancy: 387 ms  OK (<=2000ms)
+```
+
+1–15 ms 的是活动尚未回到 RESUMED、判据直接跳过的；103–387 ms 的是真的执行了保存。
+2000 ms 上界在真机上同样没有被触发过。
+
+### 9.3 崩溃与异常退出
+
+全部 6 个场景的 logcat 合计 11399 行，
+`Fatal signal|SIGSEGV|SIGABRT|FATAL EXCEPTION|ANR in` 命中 **0** 次。
+`dumpsys activity exit-info org.develz.crawl.savesafety` 里的记录全部是本次测试
+自己发的 `KILL BACKGROUND`（`am kill`）与 `FORCE STOP`（`am force-stop`），
+没有 LMK、崩溃或 ANR 造成的退出。
+
+### 9.4 真机未覆盖的部分
+
+- 没有在真机上跑基线（`chn-0.34.1-base`）对照；8.5 的阴性结论只来自模拟器。
+- 8.6 列的其余三条仍然成立：没有确定性构造"保存执行中第二次 onPause 到达"的
+  重叠、没有测试保存写失败、驱动脚本未入库。
+- 测试结束后 `org.develz.crawl.savesafety` 已从真机和模拟器卸载，
+  其余 `org.develz.crawl*` 包未动。
