@@ -42413,3 +42413,24 @@ Alistair's Party Mansion
 %%%%
 sewer drain
 排水口
+%%%%
+You're already berserk!
+你已经处于狂暴状态了！
+%%%%
+You're still recovering from your berserk rage.
+你还未从狂暴中恢复过来。
+%%%%
+You can't enter a blood rage from death's door.
+你处于死亡之门的效果中，无法激起狂暴的热血。
+%%%%
+You are too mesmerised to rage.
+你深受迷魂影响，无法狂暴。
+%%%%
+You're too calm and focused to rage.
+你太过冷静专注，无法狂暴。
+%%%%
+You cannot raise a blood rage in your lifeless body.
+你毫无生机的躯体无法激起狂暴的热血。
+%%%%
+Your stasis prevents you from going berserk.
+你的停滞状态阻止了你进入狂暴。

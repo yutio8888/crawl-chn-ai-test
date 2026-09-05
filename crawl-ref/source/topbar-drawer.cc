@@ -225,11 +225,13 @@ static vector<quick_entry> _quick_ability_entries()
         entry.letter = tal.hotkey;
         entry.tile = tileidx_ability(tal.which);
         entry.cost = make_cost_description(tal.which);
-        entry.usable = check_ability_possible(tal.which, true);
+        entry.usable = check_ability_possible(tal.which, true, &entry.reason);
         entry.name = ability_name(tal.which);
-        if (!entry.usable)
+        if (!entry.usable && entry.reason.empty())
+        {
             entry.reason = _command_menu_text("android command menu summary",
                                               "Unavailable");
+        }
         entries.push_back(entry);
     }
 
@@ -285,9 +287,7 @@ private:
         {
             const auto &mouse = static_cast<const ui::MouseEvent&>(event);
             if (!m_dragging)
-            {
                 return false;
-            }
 
             set_scroll(get_scroll() + m_last_y - mouse.y());
             m_last_y = mouse.y();

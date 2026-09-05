@@ -8401,10 +8401,14 @@ bool player::do_shaft()
     return true;
 }
 
-bool player::can_do_shaft_ability(bool quiet) const
+bool player::can_do_shaft_ability(bool quiet, string* reason) const
 {
+    if (reason)
+        reason->clear();
     if (form_changes_anatomy())
     {
+        if (reason)
+            *reason = T_("Cannot jump into a shaft in your current form.");
         if (!quiet)
             mpr(T_("Cannot jump into a shaft in your current form."));
         return false;
@@ -8412,6 +8416,11 @@ bool player::can_do_shaft_ability(bool quiet) const
 
     if (attribute[ATTR_HELD])
     {
+        if (reason)
+        {
+            *reason = make_stringf(T_("You cannot jump into a shaft while %s."),
+                                  held_status());
+        }
         if (!quiet)
             mprf(T_("You cannot jump into a shaft while %s."), held_status());
         return false;
@@ -8419,6 +8428,8 @@ bool player::can_do_shaft_ability(bool quiet) const
 
     if (you.cannot_move())
     {
+        if (reason)
+            *reason = T_("Cannot jump into a shaft while unable to move.");
         if (!quiet)
             mpr(T_("Cannot jump into a shaft while unable to move."));
         return false;
@@ -8428,6 +8439,8 @@ bool player::can_do_shaft_ability(bool quiet) const
     {
         if (!is_valid_shaft_level(false))
         {
+            if (reason)
+                *reason = T_("Cannot jump into a shaft on this floor.");
             if (!quiet)
                 mpr(T_("Cannot jump into a shaft on this floor."));
             return false;
@@ -8435,6 +8448,8 @@ bool player::can_do_shaft_ability(bool quiet) const
     }
     else
     {
+        if (reason)
+            *reason = T_("Cannot jump into a shaft on this terrain.");
         if (!quiet)
             mpr(T_("Cannot jump into a shaft on this terrain."));
         return false;

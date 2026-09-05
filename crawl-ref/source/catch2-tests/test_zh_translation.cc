@@ -4666,3 +4666,127 @@ TEST_CASE_METHOD(EnTranslationFixture,
     check_mons_speaks_genus_fallback();
     check_mons_speaks_glyph_fallback();
 }
+
+namespace
+{
+void check_quiet_ability_preview()
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<command_type> restore_repeat(crawl_state.repeat_cmd, CMD_WAIT);
+    unwind_var<bool> restore_again(crawl_state.doing_prev_cmd_again, true);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 27;
+    you.hp = you.hp_max = 100;
+    you.magic_points = you.max_magic_points = 30;
+    you.piety = 200;
+
+    ability_type ability = ABIL_DAMNATION;
+    string expected;
+    bool usable = false;
+    SECTION("Current MP shortage")
+    {
+        ability = ABIL_SIPHON_ESSENCE;
+        you.magic_points = 0;
+        REQUIRE(get_real_mp(true) >= 20);
+        expected = T_("You don't have enough magic right now.");
+    }
+    SECTION("MP capacity shortage")
+    {
+        ability = ABIL_SIPHON_ESSENCE;
+        you.experience_level = 1;
+        you.magic_points = 0;
+        REQUIRE(get_real_mp(true) < 20);
+        expected = T_("You don't have enough magic capacity right now.");
+    }
+    SECTION("HP shortage")
+    {
+        you.hp = 1;
+        expected = T_("You don't have enough health right now.");
+    }
+    SECTION("HP casting uses the ability's effective HP cost")
+    {
+        ability = ABIL_SIPHON_ESSENCE;
+        you.mutation[MUT_HP_CASTING] = 1;
+        you.hp = 1;
+        expected = T_("You don't have enough health right now.");
+    }
+    SECTION("Death's door is distinct from HP shortage")
+    {
+        you.duration[DUR_DEATHS_DOOR] = 10;
+        expected = T_("You are functionally dead and cannot pay life.");
+    }
+    SECTION("Berserk")
+    {
+        you.duration[DUR_BERSERK] = 10;
+        expected = T_("You are too berserk!");
+    }
+    SECTION("Confusion")
+    {
+        you.duration[DUR_CONF] = 10;
+        expected = T_("You are too confused!");
+    }
+    SECTION("Trog exhaustion")
+    {
+        ability = ABIL_TROG_BERSERK;
+        you.religion = GOD_TROG;
+        you.duration[DUR_BERSERK_COOLDOWN] = 10;
+        expected = T_("You're still recovering from your berserk rage.");
+    }
+    SECTION("Zin recitation cooldown")
+    {
+        ability = ABIL_ZIN_RECITE;
+        you.religion = GOD_ZIN;
+        you.duration[DUR_RECITE_COOLDOWN] = 10;
+        expected = T_("You are not yet ready to recite again.");
+    }
+    SECTION("Sif cannot access magic")
+    {
+        ability = ABIL_SIF_MUNA_DIVINE_EXEGESIS;
+        you.religion = GOD_SIF_MUNA;
+        you.duration[DUR_NO_CAST] = 10;
+        expected = T_("You are unable to access your magic!");
+    }
+    SECTION("Successful preview clears a previous reason")
+    {
+        usable = true;
+    }
+
+    const player before = you;
+    const string history = get_last_messages(20, true);
+    const uint64_t rng_state = rng::current_generator().get_state();
+    const uint64_t rng_count = rng::current_generator().get_count();
+    msg::tee messages;
+    string reason = "stale failure";
+    CHECK(check_ability_possible(ability, true, &reason) == usable);
+    CHECK(reason == expected);
+    if (!usable && Options.language == lang_t::ZH)
+        CHECK(contains_non_ascii(reason));
+    CHECK(messages.get_store().empty());
+    CHECK(get_last_messages(20, true) == history);
+    CHECK(you.hp == before.hp);
+    CHECK(you.magic_points == before.magic_points);
+    CHECK(you.piety == before.piety);
+    CHECK(you.gold == before.gold);
+    CHECK(you.num_turns == before.num_turns);
+    CHECK(you.turn_is_over == before.turn_is_over);
+    for (int i = 0; i < NUM_DURATIONS; ++i)
+        CHECK(you.duration[i] == before.duration[i]);
+    CHECK(crawl_state.repeat_cmd == CMD_WAIT);
+    CHECK(crawl_state.doing_prev_cmd_again);
+    CHECK(rng::current_generator().get_state() == rng_state);
+    CHECK(rng::current_generator().get_count() == rng_count);
+}
+} // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture, "zh: quiet ability preview explains failures",
+                 "[zh-translation][ability-preview]")
+{
+    check_quiet_ability_preview();
+}
+
+TEST_CASE_METHOD(EnTranslationFixture, "en: quiet ability preview explains failures",
+                 "[zh-translation][ability-preview]")
+{
+    check_quiet_ability_preview();
+}

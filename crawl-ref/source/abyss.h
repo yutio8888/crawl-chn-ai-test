@@ -50,7 +50,7 @@ void maybe_shift_abyss_around_player();
 void abyss_maybe_spawn_xp_exit();
 void abyss_teleport(bool wizard_tele = false);
 void save_abyss_uniques();
-bool is_level_incorruptible(bool quiet = false);
+bool is_level_incorruptible(bool quiet = false, string* reason = nullptr);
 bool is_level_incorruptible_monster();
 void lugonu_corrupt_level(int power);
 void lugonu_corrupt_level_monster(const monster &who);

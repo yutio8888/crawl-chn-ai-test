@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "ability.h"
+#include "positional_format.h"
 
 #include <cctype>
 #include <cmath>
@@ -973,18 +974,14 @@ const string make_cost_description(ability_type ability)
     const ability_def& abil = get_ability_def(ability);
     string ret;
     if (abil.get_mp_cost())
-    {
         ret += make_stringf(T_(", %d MP"), abil.get_mp_cost());
-    }
 
     if (abil.flags & abflag::variable_mp)
         ret += T_(", MP");
 
 #if TAG_MAJOR_VERSION == 34
     if (ability == ABIL_HEAL_WOUNDS)
-    {
         ret += make_stringf(T_(", Permanent MP (%d remaining)"), get_real_mp(false));
-    }
 #endif
 
     if (ability == ABIL_CACOPHONY)
@@ -999,14 +996,10 @@ const string make_cost_description(ability_type ability)
 
     const int hp_cost = abil.get_hp_cost();
     if (hp_cost)
-    {
         ret += make_stringf(T_(", %d HP"), hp_cost);
-    }
 
     if (abil.piety_cost)
-    {
         ret += make_stringf(T_(", Piety %s"), abil.piety_pips().c_str());
-    }
 
     if (abil.flags & abflag::breath)
         ret += T_(", Breath");
@@ -1046,9 +1039,7 @@ const string make_cost_description(ability_type ability)
     {
         const int amount = get_gold_cost(ability);
         if (amount)
-        {
             ret += make_stringf(T_(", %d Gold"), amount);
-        }
         else if (ability == ABIL_GOZAG_POTION_PETITION)
             ret += T_(", Free");
         else
@@ -1071,9 +1062,7 @@ const string make_cost_description(ability_type ability)
     }
 
     if (abil.flags & abflag::torchlight)
-    {
         ret += T_(", Torchlight");
-    }
 
     // If we haven't output anything so far, then the effect has no cost
     if (ret.empty())
@@ -1795,25 +1784,28 @@ bool activate_ability()
     return activate_talent(talents[selected]);
 }
 
-static bool _can_movement_ability(bool quiet)
+static bool _ability_failure(const string& text, bool quiet, string* reason)
+{
+    if (reason)
+        *reason = text;
+    if (!quiet)
+        mpr(text);
+    return false;
+}
+
+static bool _can_movement_ability(bool quiet, string* failure_reason = nullptr)
 {
     const string reason = movement_impossible_reason();
     if (reason.empty())
         return true;
-    if (!quiet)
-        mpr(reason);
-    return false;
+    return _ability_failure(reason, quiet, failure_reason);
 }
 
-static bool _can_hop(bool quiet)
+static bool _can_hop(bool quiet, string* reason = nullptr)
 {
     if (you.duration[DUR_NO_HOP])
-    {
-        if (!quiet)
-            mpr(T_("Your legs are too worn out to hop."));
-        return false;
-    }
-    return _can_movement_ability(quiet);
+        return _ability_failure(T_("Your legs are too worn out to hop."), quiet, reason);
+    return _can_movement_ability(quiet, reason);
 }
 
 static bool _can_blinkbolt(bool quiet)
@@ -1827,70 +1819,65 @@ static bool _can_blinkbolt(bool quiet)
     return true;
 }
 
-static bool _can_rising_flame(bool quiet)
+static bool _can_rising_flame(bool quiet, string* reason = nullptr)
 {
     ASSERT(can_do_capstone_ability(GOD_IGNIS));
     if (you.duration[DUR_RISING_FLAME])
-    {
-        if (!quiet)
-            mpr(T_("You're already rising!"));
-        return false;
-    }
+        return _ability_failure(T_("You're already rising!"), quiet, reason);
     if (you.where_are_you == BRANCH_DUNGEON && you.depth == 1)
     {
         if (player_has_orb())
             return true;
         else
         {
-            if (!quiet)
-                mpr(T_("You can't rise from this level without the Orb!"));
-            return false;
+            return _ability_failure(T_("You can't rise from this level without the Orb!"),
+                                    quiet, reason);
         }
     }
     if (!level_above().is_valid())
-    {
-        if (!quiet)
-            mpr(T_("You can't rise from this level!"));
-        return false;
-    }
+        return _ability_failure(T_("You can't rise from this level!"), quiet, reason);
     return true;
 }
 
 // Check prerequisites for a number of abilities.
 // Abort any attempt if these cannot be met, without losing the turn.
 // TODO: Many more cases need to be added!
-static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
+static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
+                                    string* reason = nullptr)
 {
+    if (reason)
+        reason->clear();
+    const auto fail = [&](const string& text)
+    {
+        return _ability_failure(text, quiet, reason);
+    };
+    const auto fail_canned = [&](canned_message_type message, const string& text)
+    {
+        if (reason)
+            *reason = text;
+        // Preserve canned_msg's channel and command-repeat side effects.
+        if (!quiet)
+            canned_msg(message);
+        return false;
+    };
 #ifdef WIZARD
     if (abil.ability >= ABIL_FIRST_WIZ)
         return you.wizard;
 #endif
     if (you.confused() && !testbits(abil.flags, abflag::conf_ok))
-    {
-        if (!quiet)
-            canned_msg(MSG_TOO_CONFUSED);
-        return false;
-    }
+        return fail_canned(MSG_TOO_CONFUSED, T_("You are too confused!"));
 
     if (you.berserk() && !testbits(abil.flags, abflag::berserk_ok))
-    {
-        if (!quiet)
-            canned_msg(MSG_TOO_BERSERK);
-        return false;
-    }
+        return fail_canned(MSG_TOO_BERSERK, T_("You are too berserk!"));
 
     if (abil.ability == ABIL_TROG_BERSERK
-        && !you.can_go_berserk(true, false, quiet))
+        && !you.can_go_berserk(true, false, quiet, reason))
     {
         return false;
     }
 
     if (you.confused() && !testbits(abil.flags, abflag::conf_ok))
-    {
-        if (!quiet)
-            canned_msg(MSG_TOO_CONFUSED);
-        return false;
-    }
+        return fail_canned(MSG_TOO_CONFUSED, T_("You are too confused!"));
 
     // Silence and engulf
     if (you.is_silenced())
@@ -1898,37 +1885,23 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         talent tal = get_talent(abil.ability);
         if (tal.is_invocation && abil.ability != ABIL_RENOUNCE_RELIGION)
         {
-            if (!quiet)
-            {
-                // mprf_p enables positional %n$s params in T_() translation
-                mprf_p(T_("You cannot call out to %s while %s."),
-                       god_name(you.religion).c_str(),
-                       player_silenced_reason());
-            }
-            return false;
+            return fail(make_stringf_p(T_("You cannot call out to %s while %s."),
+                                      god_name(you.religion).c_str(),
+                                      player_silenced_reason()));
         }
         if (abil.ability == ABIL_WORD_OF_CHAOS)
         {
-            if (!quiet)
-                mprf(T_("You cannot speak a word of chaos while %s."), player_silenced_reason());
-            return false;
+            return fail(make_stringf(T_("You cannot speak a word of chaos while %s."),
+                                     player_silenced_reason()));
         }
     }
 
     const god_power* god_power = god_power_from_ability(abil.ability);
     if (god_power && !god_power_usable(*god_power))
-    {
-        if (!quiet)
-            canned_msg(MSG_GOD_DECLINES);
-        return false;
-    }
+        return fail_canned(MSG_GOD_DECLINES, T_("Your god isn't willing to do this for you now."));
 
     if (testbits(abil.flags, abflag::card) && !deck_cards(ability_deck(abil.ability)))
-    {
-        if (!quiet)
-            mpr(T_("That deck is empty!"));
-        return false;
-    }
+        return fail(T_("That deck is empty!"));
 
     if (!quiet)
     {
@@ -1944,10 +1917,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
                     string prompt = make_stringf(T_("Really use %s?"),
                                                  display_name.c_str());
                     if (!yesno(prompt.c_str(), false, 'n'))
-                    {
-                        canned_msg(MSG_OK);
-                        return false;
-                    }
+                        return fail_canned(MSG_OK, T_("Okay, then."));
                     break;
                 }
             }
@@ -1957,30 +1927,49 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     // Check that we can afford to pay the costs.
     // Note that mutation shenanigans might leave us with negative MP,
     // so don't fail in that case if there's no MP cost.
-    if (abil.get_mp_cost() > 0 && !enough_mp(abil.get_mp_cost(), quiet, !quiet))
+    const auto hp_reason = []() -> string
+    {
+        return you.duration[DUR_DEATHS_DOOR]
+            ? T_("You are functionally dead and cannot pay life.")
+            : T_("You don't have enough health right now.");
+    };
+    const int mpcost = abil.get_mp_cost();
+    if (mpcost > 0 && !enough_mp(mpcost, quiet, !quiet))
+    {
+        if (reason)
+        {
+            // enough_mp delegates to enough_hp for HP casting. Keep the
+            // original checks/side effects and explain their actual failure.
+            *reason = you.has_mutation(MUT_HP_CASTING) ? hp_reason()
+                : get_real_mp(true) < mpcost
+                    ? T_("You don't have enough magic capacity right now.")
+                    : T_("You don't have enough magic right now.");
+        }
         return false;
+    }
 
     const int hpcost = abil.get_hp_cost();
     if (hpcost > 0 && !enough_hp(hpcost, quiet, !quiet))
+    {
+        if (reason)
+            *reason = hp_reason();
         return false;
+    }
 
     switch (abil.ability)
     {
     case ABIL_ZIN_RECITE:
     {
-        if (!zin_check_able_to_recite(quiet))
+        if (!zin_check_able_to_recite(quiet, reason))
             return false;
 
         int result = zin_check_recite_to_monsters(quiet);
         if (result != 1)
         {
-            if (!quiet)
-            {
-                if (result == 0)
-                    mpr(T_("There's no appreciative audience!"));
-                else if (result == -1)
-                    mpr(T_("You are not zealous enough to affect this audience!"));
-            }
+            if (result == 0)
+                return fail(T_("There's no appreciative audience!"));
+            else if (result == -1)
+                return fail(T_("You are not zealous enough to affect this audience!"));
             return false;
         }
         return true;
@@ -1988,54 +1977,30 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
 
     case ABIL_ZIN_SANCTUARY:
         if (env.sanctuary_time)
-        {
-            if (!quiet)
-                mpr(T_("There's already a sanctuary in place on this level."));
-            return false;
-        }
+            return fail(T_("There's already a sanctuary in place on this level."));
         return true;
 
     case ABIL_ZIN_DONATE_GOLD:
         if (!you.gold)
-        {
-            if (!quiet)
-                mpr(T_("You have nothing to donate!"));
-            return false;
-        }
+            return fail(T_("You have nothing to donate!"));
         return true;
 
     case ABIL_OKAWARU_DUEL:
         if (okawaru_duel_active() || player_in_branch(BRANCH_ARENA))
-        {
-            if (!quiet)
-                mpr(T_("You are already engaged in single combat!"));
-            return false;
-        }
+            return fail(T_("You are already engaged in single combat!"));
         return true;
 
     case ABIL_OKAWARU_GIFT_WEAPON:
     case ABIL_OKAWARU_GIFT_ARMOUR:
         if (feat_eliminates_items(env.grid(you.pos())))
-        {
-            if (!quiet)
-                mpr(T_("Any gift you received here would fall and be lost!"));
-            return false;
-        }
+            return fail(T_("Any gift you received here would fall and be lost!"));
         return true;
 
     case ABIL_ELYVILON_HEAL_SELF:
         if (you.hp == you.hp_max)
-        {
-            if (!quiet)
-                canned_msg(MSG_FULL_HEALTH);
-            return false;
-        }
+            return fail_canned(MSG_FULL_HEALTH, T_("Your health is already full."));
         if (you.duration[DUR_DEATHS_DOOR])
-        {
-            if (!quiet)
-                mpr(T_("You can't heal while in death's door."));
-            return false;
-        }
+            return fail(T_("You can't heal while in death's door."));
         return true;
 
     case ABIL_ELYVILON_PURIFICATION:
@@ -2046,82 +2011,52 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             && !player_drained()
             && !you.duration[DUR_WEAK])
         {
-            if (!quiet)
-                mpr(T_("Nothing ails you!"));
-            return false;
+            return fail(T_("Nothing ails you!"));
         }
         return true;
 
     case ABIL_ELYVILON_DIVINE_VIGOUR:
         if (you.duration[DUR_DIVINE_VIGOUR])
-        {
-            if (!quiet)
-                mpr(T_("You have already been granted divine vigour!"));
-            return false;
-        }
+            return fail(T_("You have already been granted divine vigour!"));
         return true;
 
     case ABIL_JIYVA_OOZEMANCY:
         if (you.duration[DUR_OOZEMANCY])
-        {
-            if (!quiet)
-                mpr(T_("You are already calling forth ooze!"));
-            return false;
-        }
+            return fail(T_("You are already calling forth ooze!"));
         return true;
 
     case ABIL_LUGONU_ABYSS_EXIT:
         if (!player_in_branch(BRANCH_ABYSS))
-        {
-            if (!quiet)
-                mpr(T_("You aren't in the Abyss!"));
-            return false;
-        }
+            return fail(T_("You aren't in the Abyss!"));
         return true;
 
     case ABIL_LUGONU_CORRUPT:
-        return !is_level_incorruptible(quiet);
+        return !is_level_incorruptible(quiet, reason);
 
     case ABIL_LUGONU_ABYSS_ENTER:
         if (player_in_branch(BRANCH_ABYSS))
-        {
-            if (!quiet)
-                mpr(T_("You're already here!"));
-            return false;
-        }
+            return fail(T_("You're already here!"));
         return true;
 
     case ABIL_SIF_MUNA_FORGET_SPELL:
         if (you.spell_no == 0)
-        {
-            if (!quiet)
-                canned_msg(MSG_NO_SPELLS);
-            return false;
-        }
+            return fail_canned(MSG_NO_SPELLS, T_("You don't know any spells."));
         return true;
 
     case ABIL_SIF_MUNA_DIVINE_EXEGESIS:
-        return can_cast_spells(quiet);
+        return can_cast_spells(quiet, reason);
 
     case ABIL_FEDHAS_WALL_OF_BRIARS:
     {
         vector<coord_def> spaces = find_briar_spaces(true);
         if (spaces.empty())
-        {
-            if (!quiet)
-                mpr(T_("There isn't enough space to grow briars here."));
-            return false;
-        }
+            return fail(T_("There isn't enough space to grow briars here."));
         return true;
     }
 
     case ABIL_RU_DRAW_OUT_POWER:
         if (you.duration[DUR_EXHAUSTED])
-        {
-            if (!quiet)
-                mpr(T_("You're too exhausted to draw out your power."));
-            return false;
-        }
+            return fail(T_("You're too exhausted to draw out your power."));
         if (you.hp == you.hp_max && you.magic_points == you.max_magic_points
             && !you.duration[DUR_CONF]
             && !you.duration[DUR_SLOW]
@@ -2131,39 +2066,25 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             && !you.afraid()
             && !you.is_constricted())
         {
-            if (!quiet)
-                mpr(T_("You have no need to draw out power."));
-            return false;
+            return fail(T_("You have no need to draw out power."));
         }
         return true;
 
     case ABIL_RU_POWER_LEAP:
         if (you.duration[DUR_EXHAUSTED])
-        {
-            if (!quiet)
-                mpr(T_("You're too exhausted to power leap."));
-            return false;
-        }
+            return fail(T_("You're too exhausted to power leap."));
         return true;
 
     case ABIL_RU_APOCALYPSE:
         if (you.duration[DUR_EXHAUSTED])
-        {
-            if (!quiet)
-                mpr(T_("You're too exhausted to unleash your apocalyptic power."));
-            return false;
-        }
+            return fail(T_("You're too exhausted to unleash your apocalyptic power."));
         return true;
 
     case ABIL_QAZLAL_ELEMENTAL_FORCE:
     {
         vector<coord_def> clouds = find_elemental_targets();
         if (clouds.empty())
-        {
-            if (!quiet)
-                mpr(T_("You can't see any clouds you can empower."));
-            return false;
-        }
+            return fail(T_("You can't see any clouds you can empower."));
         return true;
     }
 
@@ -2177,61 +2098,38 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     case ABIL_NOXIOUS_BREATH:
     case ABIL_MUD_BREATH:
         if (draconian_breath_uses_available() <= 0)
-        {
-            if (!quiet)
-                mpr(T_("You have exhausted your breath weapon. Slay more foes!"));
-            return false;
-        }
+            return fail(T_("You have exhausted your breath weapon. Slay more foes!"));
         return true;
 
     case ABIL_SPIT_POISON:
     case ABIL_BREATHE_POISON:
         if (you.duration[DUR_BREATH_WEAPON])
-        {
-            if (!quiet)
-                canned_msg(MSG_CANNOT_DO_YET);
-            return false;
-        }
+            return fail_canned(MSG_CANNOT_DO_YET, T_("You can't do that yet."));
         return true;
 
 #if TAG_MAJOR_VERSION == 34
     case ABIL_HEAL_WOUNDS:
         if (you.hp == you.hp_max)
-        {
-            if (!quiet)
-                canned_msg(MSG_FULL_HEALTH);
-            return false;
-        }
+            return fail_canned(MSG_FULL_HEALTH, T_("Your health is already full."));
         if (you.duration[DUR_DEATHS_DOOR])
-        {
-            if (!quiet)
-                mpr(T_("You can't heal while in death's door."));
-            return false;
-        }
+            return fail(T_("You can't heal while in death's door."));
         if (get_real_mp(false) < 1)
-        {
-            if (!quiet)
-                mpr(T_("You don't have enough innate magic capacity."));
-            return false;
-        }
+            return fail(T_("You don't have enough innate magic capacity."));
         return true;
 #endif
 
     case ABIL_SHAFT_SELF:
-        return you.can_do_shaft_ability(quiet);
+        return you.can_do_shaft_ability(quiet, reason);
 
     case ABIL_HOP:
-        return _can_hop(quiet);
+        return _can_hop(quiet, reason);
 
     case ABIL_INVENT_GIZMO:
     {
         if (you.experience_level < COGLIN_GIZMO_XL)
         {
-            if (!quiet)
-            {
-                mprf(T_("In %d experience levels, you will have learned enough to assemble a masterpiece."), (COGLIN_GIZMO_XL - you.experience_level));
-            }
-            return false;
+            return fail(make_stringf(T_("In %d experience levels, you will have learned enough to assemble a masterpiece."),
+                                     COGLIN_GIZMO_XL - you.experience_level));
         }
 
         return true;
@@ -2241,90 +2139,48 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         // In the very unlikely case that the player has regained enough XP to
         // use this ability again before it ends. Maybe in Sprint?
         if (you.duration[DUR_CACOPHONY])
-        {
-            if (!quiet)
-                mpr(T_("You are already making a cacophony!"));
-            return false;
-        }
+            return fail(T_("You are already making a cacophony!"));
         else if (you.props.exists(CACOPHONY_XP_KEY))
-        {
-            if (!quiet)
-                mpr(T_("You must recover your energy before unleashing another cacophony."));
-            return false;
-        }
+            return fail(T_("You must recover your energy before unleashing another cacophony."));
         else if (!you.equipment.get_first_slot_item(SLOT_HAUNTED_AUX))
-        {
-            if (!quiet)
-                mpr(T_("You aren't haunting any armour at the moment!"));
-            return false;
-        }
+            return fail(T_("You aren't haunting any armour at the moment!"));
 
         return true;
 
     case ABIL_BAT_SWARM:
     {
         if (you.props.exists(BATFORM_XP_KEY))
-        {
-            if (!quiet)
-                mpr(T_("You must recover your energy before scattering into bats again."));
-            return false;
-        }
+            return fail(T_("You must recover your energy before scattering into bats again."));
         const string reason = cant_transform_reason(transformation::bat_swarm);
         if (!reason.empty())
-        {
-            if (!quiet)
-                mpr(reason);
-            return false;
-        }
+            return fail(reason);
         return true;
     }
 
     case ABIL_ENKINDLE:
     {
         if (you.duration[DUR_ENKINDLED])
-        {
-            if (!quiet)
-                mpr(T_("You are already burning your memories away!"));
-
-            return false;
-        }
+            return fail(T_("You are already burning your memories away!"));
         else if (you.props[ENKINDLE_CHARGES_KEY].get_int() == 0)
-        {
-            if (!quiet)
-                mpr(T_("You don't have any memories left to burn."));
-
-            return false;
-        }
+            return fail(T_("You don't have any memories left to burn."));
 
         return true;
     }
 
     case ABIL_WORD_OF_CHAOS:
         if (you.duration[DUR_WORD_OF_CHAOS_COOLDOWN])
-        {
-            if (!quiet)
-                canned_msg(MSG_CANNOT_DO_YET);
-            return false;
-        }
+            return fail_canned(MSG_CANNOT_DO_YET, T_("You can't do that yet."));
         return true;
 
     // Note: *Not* identical to blink. Is not affected by -Tele.
     case ABIL_SPIDER_JUMP:
         if (you.duration[DUR_BLINK_COOLDOWN])
-        {
-            if (!quiet)
-                canned_msg(MSG_CANNOT_DO_YET);
-            return false;
-        }
+            return fail_canned(MSG_CANNOT_DO_YET, T_("You can't do that yet."));
         return true;
 
     case ABIL_EVOKE_BLINK:
         if (you.duration[DUR_BLINK_COOLDOWN])
-        {
-            if (!quiet)
-                canned_msg(MSG_CANNOT_DO_YET);
-            return false;
-        }
+            return fail_canned(MSG_CANNOT_DO_YET, T_("You can't do that yet."));
         // fallthrough
     case ABIL_BLINKBOLT:
     {
@@ -2332,58 +2188,41 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (no_tele_reason.empty())
             return true;
 
-        if (!quiet)
-             mpr(no_tele_reason);
-        return false;
+        return fail(no_tele_reason);
     }
 
     case ABIL_WATERY_GRAVE:
         if (you.props.exists(WATERY_GRAVE_XP_KEY))
-        {
-            if (!quiet)
-                mpr(T_("You must recover your energy before doing this again."));
-            return false;
-        }
+            return fail(T_("You must recover your energy before doing this again."));
         for (radius_iterator ri(you.pos(), 4, C_SQUARE, LOS_NO_TRANS, false); ri; ++ri)
         {
             if (feat_is_water(env.grid(*ri)))
                 return true;
         }
 
-        if (!quiet)
-            mpr(T_("There is no water in range!"));
-
-        return false;
+        return fail(T_("There is no water in range!"));
 
     case ABIL_TROG_BERSERK:
-        return you.can_go_berserk(true, false, true)
+        return you.can_go_berserk(true, false, true, reason)
                && (quiet || berserk_check_wielded_weapon());
 
     case ABIL_EVOKE_TURN_INVISIBLE:
         if (you.duration[DUR_INVIS])
-        {
-            if (!quiet)
-                mpr(T_("You are already invisible!"));
-            return false;
-        }
+            return fail(T_("You are already invisible!"));
         return true;
 
     case ABIL_GOZAG_POTION_PETITION:
-        return gozag_setup_potion_petition(quiet);
+        return gozag_setup_potion_petition(quiet, reason);
 
     case ABIL_GOZAG_CALL_MERCHANT:
-        return gozag_setup_call_merchant(quiet);
+        return gozag_setup_call_merchant(quiet, reason);
 
     case ABIL_GOZAG_BRIBE_BRANCH:
-        return gozag_check_bribe_branch(quiet);
+        return gozag_check_bribe_branch(quiet, reason);
 
     case ABIL_RU_SACRIFICE_EXPERIENCE:
         if (you.experience_level <= RU_SAC_XP_LEVELS)
-        {
-            if (!quiet)
-                mpr(T_("You don't have enough experience to sacrifice."));
-            return false;
-        }
+            return fail(T_("You don't have enough experience to sacrifice."));
         return true;
 
         // only available while your ancestor is alive.
@@ -2392,56 +2231,32 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     case ABIL_HEPLIAKLQANA_TRANSFERENCE:
         if (hepliaklqana_ancestor() == MID_NOBODY)
         {
-            if (!quiet)
-            {
-                mprf(T_("%s is still trapped in memory!"),
-                     hepliaklqana_ally_name().c_str());
-            }
-            return false;
+            return fail(make_stringf(T_("%s is still trapped in memory!"),
+                                     hepliaklqana_ally_name().c_str()));
         }
         return true;
 
     case ABIL_WU_JIAN_SERPENTS_LASH:
         if (you.attribute[ATTR_SERPENTS_LASH])
-        {
-            if (!quiet)
-                mpr(T_("You are already lashing out."));
-            return false;
-        }
+            return fail(T_("You are already lashing out."));
         if (you.duration[DUR_EXHAUSTED])
-        {
-            if (!quiet)
-                mpr(T_("You are too exhausted to lash out."));
-            return false;
-        }
+            return fail(T_("You are too exhausted to lash out."));
         return true;
 
     case ABIL_WU_JIAN_HEAVENLY_STORM:
         if (you.props.exists(WU_JIAN_HEAVENLY_STORM_KEY))
-        {
-            if (!quiet)
-                mpr(T_("You are already engulfed in a heavenly storm!"));
-            return false;
-        }
+            return fail(T_("You are already engulfed in a heavenly storm!"));
         return true;
 
     case ABIL_WU_JIAN_WALLJUMP:
     {
         // TODO: Add check for whether there is any valid landing spot
         if (you.is_nervous())
-        {
-            if (!quiet)
-                mpr(T_("You are too terrified to wall jump!"));
-            return false;
-        }
+            return fail(T_("You are too terrified to wall jump!"));
         if (you.attribute[ATTR_HELD])
         {
-            if (!quiet)
-            {
-                mprf(T_("You cannot wall jump while caught in a %s."),
-                     you.caught_by() == CAUGHT_WEB ? "web" : "net");
-            }
-            return false;
+            return fail(make_stringf(T_("You cannot wall jump while caught in a %s."),
+                                     you.caught_by() == CAUGHT_WEB ? "web" : "net"));
         }
         // Is there a valid place to wall jump?
         bool has_targets = false;
@@ -2453,110 +2268,68 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             }
 
         if (!has_targets)
-        {
-            if (!quiet)
-                mpr(T_("There is nothing to wall jump against here."));
-            return false;
-        }
+            return fail(T_("There is nothing to wall jump against here."));
         return true;
     }
 
     case ABIL_IGNIS_RISING_FLAME:
-        return _can_rising_flame(quiet);
+        return _can_rising_flame(quiet, reason);
 
     case ABIL_DIG:
-        return !form_changes_anatomy();
+        if (form_changes_anatomy())
+        {
+            if (reason)
+                *reason = T_("You can't do that in your present form.");
+            return false;
+        }
+        return true;
 
     case ABIL_SIPHON_ESSENCE:
         if (you.duration[DUR_SIPHON_COOLDOWN])
-        {
-            if (!quiet)
-                canned_msg(MSG_CANNOT_DO_YET);
-            return false;
-        }
+            return fail_canned(MSG_CANNOT_DO_YET, T_("You can't do that yet."));
         return true;
 
     case ABIL_YRED_LIGHT_THE_TORCH:
     {
         if (yred_torch_is_raised())
-        {
-            if (!quiet)
-                mpr(T_("The black torch is already ablaze!"));
-            return false;
-        }
+            return fail(T_("The black torch is already ablaze!"));
         const string reason = yred_cannot_light_torch_reason();
         if (!reason.empty())
-        {
-            if (!quiet)
-                mpr(reason.c_str());
-            return false;
-        }
+            return fail(reason.c_str());
         return true;
     }
 
     case ABIL_YRED_HURL_TORCHLIGHT:
         if (!yred_torch_is_raised())
-        {
-            if (!quiet)
-                mpr(T_("The black torch is unlit!"));
-            return false;
-        }
+            return fail(T_("The black torch is unlit!"));
         if (yred_get_torch_power() < 1)
-        {
-            if (!quiet)
-                mpr(T_("You must stoke the torch's fire more first."));
-            return false;
-        }
+            return fail(T_("You must stoke the torch's fire more first."));
         return true;
 
     case ABIL_YRED_FATHOMLESS_SHACKLES:
         if (you.duration[DUR_FATHOMLESS_SHACKLES])
-        {
-            if (!quiet)
-                mpr(T_("You are already invoking Yredulemnul's grip!"));
-            return false;
-        }
+            return fail(T_("You are already invoking Yredulemnul's grip!"));
         return true;
 
     case ABIL_BEOGH_RECRUIT_APOSTLE:
         if (get_num_apostles() == 3)
-        {
-            if (!quiet)
-                mpr(T_("You already have the maximum number of followers. Dismiss one first."));
-            return false;
-        }
+            return fail(T_("You already have the maximum number of followers. Dismiss one first."));
         return true;
 
     case ABIL_BEOGH_BLOOD_FOR_BLOOD:
         if (you.duration[DUR_BLOOD_FOR_BLOOD])
-        {
-            if (!quiet)
-                mpr(T_("You have already called for blood!"));
-            return false;
-        }
+            return fail(T_("You have already called for blood!"));
         else if (!you.props.exists(BEOGH_RES_PIETY_NEEDED_KEY))
-        {
-            if (!quiet)
-                mpr(T_("Your apostles are all alive!"));
-            return false;
-        }
+            return fail(T_("Your apostles are all alive!"));
         else if (!tile_has_valid_bfb_corpse(you.pos()))
-        {
-            if (!quiet)
-                mpr(T_("You must be standing atop the corpse of a fallen apostle!"));
-            return false;
-        }
+            return fail(T_("You must be standing atop the corpse of a fallen apostle!"));
         return true;
 
     case ABIL_DITHMENOS_SHADOWSLIP:
     {
         const string reason = dithmenos_cannot_shadowslip_reason();
         if (!reason.empty())
-        {
-            if (!quiet)
-                mpr(reason.c_str());
-            return false;
-        }
+            return fail(reason.c_str());
         return true;
     }
 
@@ -2564,36 +2337,20 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     {
         const string reason = dithmenos_cannot_marionette_reason();
         if (!reason.empty())
-        {
-            if (!quiet)
-                mpr(reason.c_str());
-            return false;
-        }
+            return fail(reason.c_str());
         return true;
     }
 
     case ABIL_DITHMENOS_PRIMORDIAL_NIGHTFALL:
         if (you.duration[DUR_PRIMORDIAL_NIGHTFALL])
-        {
-            if (!quiet)
-                mpr(T_("Night has already fallen."));
-            return false;
-        }
+            return fail(T_("Night has already fallen."));
         return true;
 
     case ABIL_MAKHLEB_VESSEL_OF_SLAUGHTER:
         if (player_in_branch(BRANCH_CRUCIBLE))
-        {
-            if (!quiet)
-                mpr(T_("Makhleb denies you. Endure the Crucible first!"));
-            return false;
-        }
+            return fail(T_("Makhleb denies you. Endure the Crucible first!"));
         else if (you.form == transformation::slaughter)
-        {
-            if (!quiet)
-                mpr(T_("You are already a vessel of slaughter!"));
-            return false;
-        }
+            return fail(T_("You are already a vessel of slaughter!"));
         return true;
 
     default:
@@ -2601,9 +2358,9 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     }
 }
 
-bool check_ability_possible(const ability_type ability, bool quiet)
+bool check_ability_possible(const ability_type ability, bool quiet, string* reason)
 {
-    return _check_ability_possible(get_ability_def(ability), quiet);
+    return _check_ability_possible(get_ability_def(ability), quiet, reason);
 }
 
 class ability_targeting_behaviour : public targeting_behaviour
