@@ -316,21 +316,21 @@ void TilesFramework::calculate_default_options()
     m_map_pixels = Options.tile_map_pixels;
 #ifdef __ANDROID__
     // Font options are game pixels, not Android density-independent pixels.
-    // Give automatic HUD/message text a readable floor without overriding
-    // explicit rc sizes. Keep CRT text at its existing screen-based size:
-    // legacy menus still require a fixed number of columns. Drawers use the
-    // message font instead, so their wrapping text can grow independently.
+    // Give automatic message text a readable floor without overriding
+    // explicit rc sizes. Keep CRT and stat text at their screen-based sizes:
+    // legacy menus and the HUD's six-attribute row require a fixed number of
+    // columns. Drawers use the message font instead, so their wrapping text
+    // can grow independently without hiding attributes on narrow phones.
     // Round up through the game scale just as for touch target sizes.
     const int font_pixels = (int) ceil(14 * jni_get_display_density());
     const int auto_font_floor = display_density.apply_game_scale(
         font_pixels + Options.game_scale - 1);
-    int *const fonts[] = { &Options.tile_font_stat_size,
-                          &Options.tile_font_msg_size,
+    int *const fonts[] = { &Options.tile_font_msg_size,
                           &Options.tile_font_tip_size,
                           &Options.tile_font_lbl_size };
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
         if (*fonts[i] == 0)
-            *fonts[i] = max(auto_font_floor, _screen_sizes[auto_size][i + 4]);
+            *fonts[i] = max(auto_font_floor, _screen_sizes[auto_size][i + 5]);
 #endif
     // Auto pick map and font sizes if option is zero.
     // XX this macro is silly
