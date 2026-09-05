@@ -179,13 +179,17 @@ static string _welcome(const newgame_def& ng)
     if (!ng.name.empty())
     {
         if (!text.empty())
-            text = (T_(" the ")) + text;
+        {
+            text = Options.language == lang_t::ZH
+                 ? "（" + text + "）"
+                 : T_(" the ") + text;
+        }
         text = ng.name + text;
     }
     else if (!text.empty())
         text = (T_("unnamed ")) + text;
     if (!text.empty())
-        text = (T_(", ")) + text;
+        text = (Options.language == lang_t::ZH ? "，" : T_(", ")) + text;
     text = (T_("Welcome")) + text + (T_("."));
     return text;
 }
@@ -808,10 +812,14 @@ public:
             string clip = wm->get_clipboard();
             // try to avoid pasting in crazy garbage, by parsing as uint64
             // this could be done better
-            uint64_t clip_seed;
-            int clip_found = sscanf(clip.c_str(), "%" SCNu64, &clip_seed);
+            unsigned long long parsed_seed;
+            int clip_found = sscanf(clip.c_str(), "%llu", &parsed_seed);
             if (clip_found)
-                set_text(make_stringf("%" PRIu64, clip_seed));
+            {
+                const uint64_t clip_seed = static_cast<uint64_t>(parsed_seed);
+                set_text(make_stringf("%llu",
+                                     static_cast<unsigned long long>(clip_seed)));
+            }
         }
     }
 #endif
@@ -829,11 +837,10 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     else if (Options.seed_from_rc)
         choice.seed = Options.seed_from_rc;
 
-    const bool show_pregen_toggle =
 #ifndef DGAMELAUNCH
-                        true;
+    const bool show_pregen_toggle = true;
 #else
-                        false;
+    const bool show_pregen_toggle = false;
 #endif
 
     bool done = false;
@@ -865,7 +872,8 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     seed_hbox->add_child(make_shared<ui::Text>(prompt_text));
     auto seed_input = make_shared<SeedTextEntry>(begin_label.get());
     seed_input->set_sync_id("seed");
-    seed_input->set_text(make_stringf("%" PRIu64, choice.seed));
+    seed_input->set_text(make_stringf("%llu",
+                                    static_cast<unsigned long long>(choice.seed)));
     seed_input->set_keyproc(_keyfun_seed_input);
 
 #ifndef USE_TILE_LOCAL
@@ -955,15 +963,14 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
         if (!seed_input->valid_seed())
             return false; // TODO: message why this failed
         auto cur_focus = ui::get_focused_widget();
-        if (
+        bool can_begin = cur_focus == begin_btn.get()
+                         || cur_focus == seed_input.get();
 #ifdef USE_TILE_WEB
-            // focus doesn't seem to be tracked right from web?
-            tiles.is_controlled_from_web() ||
+        // focus doesn't seem to be tracked right from web?
+        can_begin = tiles.is_controlled_from_web() || can_begin;
 #endif
-            cur_focus == begin_btn.get() || cur_focus == seed_input.get())
-        {
+        if (can_begin)
             return done = true;
-        }
         // let the other buttons activate on enter
         return false;
     });
@@ -973,16 +980,19 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     popup->on_keydown_event([&](const KeyEvent& ev) {
         const auto key = ev.key();
         if (key == '?') // TODO: text box absorbs this still
+        {
             show_help('D', "Seeded play"); // TODO: scroll to section
+            return false;
+        }
 #ifdef USE_TILE_LOCAL
-        else if ((key == 'p' || key == 'P' || key == CONTROL('V')))
+        if ((key == 'p' || key == 'P' || key == CONTROL('V')))
         {
             seed_input->paste();
             ui::set_focused_widget(seed_input.get());
             return false;
         }
 #endif
-        else if (ui::key_exits_popup(key, false))
+        if (ui::key_exits_popup(key, false))
             return done = cancel = true;
         return false;
     });
@@ -1000,10 +1010,11 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     ui::run_layout(std::move(popup), done, seed_input);
 
     string result = seed_input->get_text();
-    uint64_t tmp_seed = 0;
+    unsigned long long parsed_seed = 0;
     // TODO: if the user types in a number that exceeds the max value, sscanf
     // will give back the max value. Probably better to print an error?
-    int found = sscanf(result.c_str(), "%" SCNu64, &tmp_seed);
+    int found = sscanf(result.c_str(), "%llu", &parsed_seed);
+    const uint64_t tmp_seed = static_cast<uint64_t>(parsed_seed);
 
     if (cancel || crawl_state.seen_hups || !found || result.size() == 0)
         game_ended(game_exit::abort);
@@ -1744,11 +1755,12 @@ static void _construct_weapon_menu(const newgame_def& ng,
             item_def dummy;
             dummy.base_type = OBJ_WEAPONS;
             dummy.sub_type = wpn_type;
-            choices.emplace_back(item_attack_skill(dummy), text
 #ifdef USE_TILE
-                    , tileidx_item(dummy)
+            choices.emplace_back(item_attack_skill(dummy), text,
+                                 tileidx_item(dummy));
+#else
+            choices.emplace_back(item_attack_skill(dummy), text);
 #endif
-            );
         }
     }
 
@@ -2248,9 +2260,10 @@ static void _prompt_gamemode_map(newgame_def& ng, newgame_def& ng_choice,
     welcome.textcolour(BROWN);
     welcome.cprintf("%s\n", _welcome(ng).c_str());
     if (Options.seed_from_rc)
-        welcome.cprintf(
-        "%s%" PRIu64 "\n", T_("Custom seed: "),
-        Options.seed_from_rc);
+    {
+        welcome.cprintf("%s%llu\n", T_("Custom seed: "),
+                        static_cast<unsigned long long>(Options.seed_from_rc));
+    }
 
     welcome.textcolour(CYAN);
     welcome.cprintf(
