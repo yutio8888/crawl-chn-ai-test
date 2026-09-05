@@ -754,7 +754,8 @@ public class SDLActivity extends AppCompatActivity {
     public static native void onNativeKeyUp(int keycode);
     public static native void onNativeKeyboardFocusLost();
     public static native void onNativeMouse(int button, int action, float x, float y);
-    public static native void nativeTouchScroll(float originX, float originY, float deltaY);
+    public static native void nativeTouchScroll(float originX, float originY,
+                                                float previousY, float currentY);
     public static native void onNativeTouch(int touchDevId, int pointerFingerId,
                                             int action, float x,
                                             float y, float p);
@@ -1701,7 +1702,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                         }
                         if (touchMoved) {
                             SDLActivity.nativeTouchScroll(touchStartX, touchStartY,
-                                    event.getY() - touchLastY);
+                                    touchLastY, event.getY());
                             touchLastY = event.getY();
                         }
                     }

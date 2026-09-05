@@ -71,11 +71,13 @@ AAssetManager *_android_asset_manager = nullptr; // XXX
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_libsdl_app_SDLActivity_nativeTouchScroll(
-    JNIEnv*, jclass, jfloat x, jfloat y, jfloat delta_y)
+    JNIEnv*, jclass, jfloat x, jfloat y, jfloat previous_y, jfloat current_y)
 {
     // SDL's Android_OnMouse hardcodes mouse ID 0, so onNativeMouse cannot
     // distinguish a finger swipe from a real wheel. Reuse SDL's touch mouse
-    // source marker; this wheel's delta is pixels, consumed only by Scroller.
+    // source marker. This internal wheel carries previous/current surface Y
+    // in x/y, consumed only by Scroller. Scale the absolute positions before
+    // subtracting so slow drags do not lose a pixel on every event.
     SDL_Event events[2] = {};
     events[0].type = SDL_MOUSEMOTION;
     events[0].motion.which = SDL_TOUCH_MOUSEID;
@@ -83,7 +85,8 @@ Java_org_libsdl_app_SDLActivity_nativeTouchScroll(
     events[0].motion.y = static_cast<int>(y);
     events[1].type = SDL_MOUSEWHEEL;
     events[1].wheel.which = SDL_TOUCH_MOUSEID;
-    events[1].wheel.y = static_cast<int>(delta_y);
+    events[1].wheel.x = static_cast<int>(previous_y);
+    events[1].wheel.y = static_cast<int>(current_y);
     // Add together so another producer cannot separate the origin and delta.
     SDL_PeepEvents(events, 2, SDL_ADDEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
 }

@@ -1038,9 +1038,16 @@ int SDLWrapper::wait_event(wm_event *event, int timeout)
 #ifdef __ANDROID__
         if (sdlevent.wheel.which == SDL_TOUCH_MOUSEID)
         {
-            if (s_event_mouse_position_valid)
-                ui::scroll_touch_at(s_event_mouse_x, s_event_mouse_y,
-                    display_density.apply_game_scale(sdlevent.wheel.y));
+            if (s_event_mouse_position_valid
+                && ui::scroll_touch_at(s_event_mouse_x, s_event_mouse_y,
+                    display_density.apply_game_scale(sdlevent.wheel.y)
+                    - display_density.apply_game_scale(sdlevent.wheel.x)))
+            {
+                // Return to the UI pump's layout/render step, including after
+                // a single batched move with no subsequent click on release.
+                event->type = WME_EXPOSE;
+                return 1;
+            }
             // Never expose finger scrolling as a dungeon wheel command.
             return 0;
         }
