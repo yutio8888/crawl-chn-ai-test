@@ -45,7 +45,10 @@ APK：`crawl-ref/source/android-project/app/build/intermediates/apk/debug/app-de
 
 ## Code profile
 
-先执行要求的 `verify_zh.sh --profile code`。该次发现新增缺失标签、生成资产
+首次执行 `verify_zh.sh --profile code` 未指定 base/head（未绑定范围，不能作为
+某个完整提交范围的证据）；Run ID 为
+`20260905T080418675402025+0000-3-7037cc22b713`，Scope 为 changed，
+结果为 `Summary: 3 blocking failure(s)`。该次发现新增缺失标签、生成资产
 副本被扫描和只读 Git 对象导致的 fixture 失败，均已修正或消除环境干扰。
 随后在干净候选上完整执行：
 
@@ -293,3 +296,55 @@ directn.cc 又因整文件 SHA 变化使绑定豁免失效；更新豁免属于�
 S-4 不采纳：原任务明确要求两处 `Log.i("AndroidKeyboard", ...)` 供统计，保持该约定。
 S-6 仅记录：manualFull 在 Activity 重建后丢失，不新增偏好持久化或生命周期状态。
 本次提供的建议编号中没有 S-5，不推测其内容。
+
+### 修正提交的构建与完整范围复跑
+
+修正代码提交：`b2cf9b486da493259d309b9ad99d986daa8e1590`。
+Android arm64 debug 使用前述隔离 Gradle 命令构建，未安装、未操作任何设备。
+补齐新增日志需要的 Android log 头文件后，最终原文：
+
+```text
+BUILD SUCCESSFUL in 14s
+36 actionable tasks: 8 executed, 28 up-to-date
+```
+
+构建日志：`.claude/metrics/verify/android-context-always-build.log`。
+随后在干净修正提交上执行用户要求的完整范围：
+
+```sh
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh \
+  --profile code --base 6b82440c54 --head b2cf9b486d
+```
+
+确切范围与原文：
+
+```text
+Run ID: 20260905T100650265267344+0000-1059436-b2cf9b486da4
+Base: 6b82440c5496e04517fc6ae197943bbf84f8ae43
+Head: b2cf9b486da493259d309b9ad99d986daa8e1590
+=== Code verification (post-coder.sh) ===
+RESULT: FAIL (exit 1)
+=== Risk gate: incremental C++ build ===
+RESULT: PASS
+=== Risk gate: ZH smoke ===
+Smoke test passed
+RESULT: PASS
+Summary: 1 blocking failure(s)
+```
+
+完整范围 **仍失败**：post-coder/code-static 中 varargs 与拼接扫描继续报告
+menu.cc/directn.cc 的 tree-sitter 解析错误。未将基线解析问题或 SHA 绑定豁免失效
+改写成通过，未更新豁免配置。其余阶段通过：策略同步、Source/DB（8211/8211）、
+生命周期、movement、消息覆盖、桌面编译、ZH smoke；smoke 原文为
+`No protocol leaks`、`No English residue in core UI`、`No crashes`。
+
+完整日志：
+`.claude/metrics/verify/20260905T100650265267344+0000-1059436-b2cf9b486da4/verify.log`；
+失败明细：`.claude/metrics/verify/coder-2026-09-05T10-06-57+00-00.log`。
+验证期间临时移出生成的 Android build/assets，结束后恢复，并重新生成完整 tiles
+数据，避免无 tiles 验证构建污染后续 Android 构建。未修改翻译资产。
+
+分类器路由 zh-code-reviewer；修正增量 `aea9f475fe..b2cf9b486d` 复审为
+`Ready — 0 Blocker，0 Needs Fix，0 Suggestion`，这不代表完整分支 profile 通过。
+本段后续文档提交只记录结果，不改变已编译、已验证的源码；没有把它冒充为
+另一次完整 profile。扫描器配置是否更新仍留给用户决定。未 push、未 merge。
