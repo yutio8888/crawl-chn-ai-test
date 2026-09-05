@@ -20,6 +20,10 @@ public:
     {
         if (regions.size() > 0)
             scissor = scissor.aabb_intersect(regions.top());
+        // Disjoint regions have negative intersection extents. GL requires
+        // non-negative scissor dimensions, including for an empty clip.
+        scissor.width = max(0, scissor.width);
+        scissor.height = max(0, scissor.height);
         regions.push(scissor);
 #ifdef USE_TILE_LOCAL
         glmanager->set_scissor(scissor.x, scissor.y, scissor.width, scissor.height);
