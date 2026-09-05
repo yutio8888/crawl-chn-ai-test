@@ -8,6 +8,53 @@
 #include "ui-scissor.h"
 #include "libutil.h"
 
+namespace
+{
+struct slot_cleanup
+{
+    ui::Slot<int, bool()>& slot;
+    int* target;
+    int& destroyed;
+
+    ~slot_cleanup()
+    {
+        ++destroyed;
+        slot.remove_by_target(target);
+    }
+};
+}
+
+TEST_CASE("Slot callback destruction can remove another target", "[ui-slot]")
+{
+    ui::Slot<int, bool()> slot;
+    // Array addresses ensure target 1 is target 0's equal_range end node.
+    int targets[3] = {};
+    int destroyed = 0;
+    int calls = 0;
+    auto captured = shared_ptr<slot_cleanup>(
+        new slot_cleanup{slot, &targets[1], destroyed});
+    SECTION("Destruction removes the following target") {}
+    SECTION("Destruction removes the same target again")
+    {
+        captured->target = &targets[0];
+    }
+    const int removed_target = captured->target - targets;
+    slot.on(&targets[0], [captured]() { return false; });
+    slot.on(&targets[0], []() { return false; });
+    slot.on(&targets[1], [&calls]() { ++calls; return true; });
+    slot.on(&targets[2], [&calls]() { ++calls; return true; });
+    captured.reset();
+
+    slot.remove_by_target(&targets[0]);
+    CHECK(destroyed == 1);
+    CHECK_FALSE(slot.emit(&targets[0]));
+    CHECK(slot.emit(&targets[1]) == (removed_target != 1));
+    CHECK(slot.emit(&targets[2]));
+    CHECK(calls == (removed_target == 1 ? 1 : 2));
+    slot.remove_by_target(&targets[0]);
+    CHECK(destroyed == 1);
+}
+
 // Layout-only tests do not need a GL context. Console push/pop clears a live
 // terminal, so exercise these through the existing local-tiles test target.
 #ifdef USE_TILE_LOCAL
