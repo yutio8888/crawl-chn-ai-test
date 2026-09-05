@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 
 public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListener {
 
+    static final int MINIMUM_TOUCH_TARGET_DP = 48;
+
     // Keyboards
     private final View keyboardLower;
     private final View keyboardUpper;
@@ -245,7 +247,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         int effectiveSize = size;
         if (keyboardOption == 4) {
             int minimumTouchTarget = Math.round(
-                    48 * getResources().getDisplayMetrics().density);
+                    MINIMUM_TOUCH_TARGET_DP * getResources().getDisplayMetrics().density);
             effectiveSize = Math.max(size, minimumTouchTarget);
         }
         super.initKeyboard(keyboardOption, effectiveSize);

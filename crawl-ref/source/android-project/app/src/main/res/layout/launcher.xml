@@ -137,6 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:inputType="number"
+                    android:imeOptions="actionDone"
                     android:importantForAutofill="no"
                     android:nextFocusDown="@+id/fullScreen" />
             </LinearLayout>
