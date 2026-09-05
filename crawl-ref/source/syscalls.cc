@@ -58,6 +58,7 @@ bool ensure_utf8_ctype()
 #include "player.h"
 #include "state.h"
 #include <errno.h>
+#include <android/log.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <jni.h>
@@ -244,6 +245,16 @@ void android_run_pending_save()
     {
         // Skipping is safe: the package still holds everything up to the last
         // commit, so a kill after this loses progress but not the save.
+        __android_log_print(ANDROID_LOG_INFO, "Crawl",
+                            "pause save skipped: save=%d need_save=%d "
+                            "started=%d saving=%d genlevel=%d scores=%d "
+                            "crashed=%d hups=%d on_level=%d entering=%d",
+                            you.save ? 1 : 0, crawl_state.need_save,
+                            crawl_state.game_started, crawl_state.saving_game,
+                            crawl_state.generating_level,
+                            crawl_state.updating_scores,
+                            crawl_state.game_crashed, crawl_state.seen_hups,
+                            you.on_current_level, you.entering_level);
         SDL_CondBroadcast(_save_request_cond());
         SDL_UnlockMutex(mutex);
         return;
@@ -276,6 +287,14 @@ Java_org_libsdl_app_SDLActivity_nativeSaveGame(
     }
     // A request the game thread never reached would otherwise fire at some
     // arbitrary point after the activity resumed; drop it instead.
+    if (save_requested || save_running)
+    {
+        __android_log_print(ANDROID_LOG_WARN, "Crawl",
+                            "pause save timed out after %u ms (reached=%d "
+                            "still_running=%d); request dropped",
+                            SAVE_REQUEST_TIMEOUT_MS, save_requested ? 0 : 1,
+                            save_running ? 1 : 0);
+    }
     save_requested = false;
     SDL_UnlockMutex(mutex);
 }

@@ -969,29 +969,34 @@ int SDLWrapper::wait_event(wm_event *event, int timeout)
     }
 
 #ifdef __ANDROID__
-    // SDLActivity.onPause() parks a save request for this thread; run it here,
-    // where the game is between commands, instead of on the UI thread.
+    // The activity parks a save request for this thread when it pauses; run it
+    // here, where the game is waiting for input, instead of on the UI thread.
     // SDL_WaitEventTimeout() is itself a poll loop that pumps every 10ms, so
     // slicing a long wait into fixed steps costs no extra wakeups, and it
     // avoids pushing a wakeup event: ui.cc reads WME_CUSTOMEVENT's data1 as a
     // timer callback pointer, so there is no harmless user event to push.
+    // Slices run against one absolute deadline so the caller's timeout does
+    // not drift by however long each SDL_WaitEventTimeout() actually took.
     const int save_poll_ms = 100;
     const bool wait_forever = timeout < 0; // SDL reads negative as "no timeout"
-    int remaining = timeout;
+    const Uint32 deadline = SDL_GetTicks() + (Uint32)(timeout > 0 ? timeout : 0);
     bool got_event = false;
     while (true)
     {
         android_run_pending_save();
-        const int slice = wait_forever ? save_poll_ms : min(remaining, save_poll_ms);
+        int slice = save_poll_ms;
+        if (!wait_forever)
+        {
+            const Sint32 left = (Sint32)(deadline - SDL_GetTicks());
+            slice = left < save_poll_ms ? (left > 0 ? (int)left : 0) : save_poll_ms;
+        }
         if (SDL_WaitEventTimeout(&sdlevent, slice))
         {
             got_event = true;
             break;
         }
-        if (wait_forever)
-            continue;
-        remaining -= slice;
-        if (remaining <= 0)
+        // Checked after the wait so a zero timeout still polls exactly once.
+        if (!wait_forever && (Sint32)(deadline - SDL_GetTicks()) <= 0)
             break;
     }
     if (!got_event)
