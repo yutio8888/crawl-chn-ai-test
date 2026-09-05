@@ -308,13 +308,9 @@ bool zin_donate_gold()
     if (player_under_penance())
     {
         if (estimated_piety >= you.penance[GOD_ZIN])
-        {
             mpr(T_("You feel that you will soon be absolved of all your sins."));
-        }
         else
-        {
             mpr(T_("You feel that your burden of sins will soon be lighter."));
-        }
     }
     else
     {
@@ -335,8 +331,10 @@ bool zin_donate_gold()
             piety_text = T_("noncommittal");
 
         if (donation >= 30 && you.raw_piety < piety_breakpoint(5))
+        {
             mprf(T_("You feel that %s will soon be %s!"),
                  god_name(GOD_ZIN).c_str(), piety_text.c_str());
+        }
         else
             mprf(T_("You feel that %s will soon be %s."),
                  god_name(GOD_ZIN).c_str(), piety_text.c_str());
@@ -776,23 +774,25 @@ int zin_recite_power()
     return (invo_power + piety_power) / 2 / power_mult;
 }
 
-bool zin_check_able_to_recite(bool quiet)
+bool zin_check_able_to_recite(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     if (you.duration[DUR_RECITE])
     {
+        if (reason)
+            *reason = T_("Please finish your current recitation first.");
         if (!quiet)
-        {
             mpr(T_("Please finish your current recitation first."));
-        }
         return false;
     }
 
     if (you.duration[DUR_RECITE_COOLDOWN])
     {
+        if (reason)
+            *reason = T_("You are not yet ready to recite again.");
         if (!quiet)
-        {
             mpr(T_("You are not yet ready to recite again."));
-        }
         return false;
     }
 
@@ -1327,13 +1327,9 @@ void zin_sanctuary()
 
     // Yes, shamelessly stolen from NetHack...
     if (!silenced(you.pos())) // How did you manage that?
-    {
         mprf(MSGCH_SOUND, T_("You hear the singing of a choir!"));
-    }
     else
-    {
         mpr(T_("You are suddenly bathed in radiance!"));
-    }
 
     flash_view(UA_PLAYER, WHITE);
     // Allow extra time for the flash to linger.
@@ -1443,26 +1439,18 @@ string yred_cannot_light_torch_reason()
 {
     // First check invalid locations
     if (player_in_branch(BRANCH_TEMPLE))
-    {
         return T_("There are no souls to scour here; only the pathetic idols of powerless gods.");
-    }
     else if (player_in_branch(BRANCH_BAZAAR) || player_in_branch(BRANCH_TROVE))
-    {
         return T_("There are no souls worth scouring here.");
-    }
     else if (player_in_branch(BRANCH_ABYSS))
-    {
         return T_("Not even a god could conquer a realm without end; waste no time trying.");
-    }
 
     if (!you.props.exists(YRED_TORCH_USED_KEY))
         return "";
 
     CrawlHashTable &levels = you.props[YRED_TORCH_USED_KEY].get_table();
     if (levels.exists(level_id::current().describe()))
-    {
         return T_("You have raised the torch once already on this floor. Yredelemnul offers no second chances.");
-    }
 
     return "";
 }
@@ -3264,10 +3252,17 @@ static void _gozag_add_potions(CrawlVector &vec, potion_type *which)
 
 #define ADD_POTIONS(a,b) _gozag_add_potions(a, b[random2(ARRAYSZ(b))])
 
-bool gozag_setup_potion_petition(bool quiet)
+bool gozag_setup_potion_petition(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     if (you.gold < GOZAG_POTION_PETITION_AMOUNT)
     {
+        if (reason)
+        {
+            *reason = make_stringf(T_("You need at least %d gold to purchase potions right now!"),
+                                  GOZAG_POTION_PETITION_AMOUNT);
+        }
         if (!quiet)
         {
             mprf(T_("You need at least %d gold to purchase potions right now!"),
@@ -3414,25 +3409,34 @@ int gozag_price_for_shop(bool max)
     return price;
 }
 
-bool gozag_setup_call_merchant(bool quiet)
+bool gozag_setup_call_merchant(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     const int gold_min = gozag_price_for_shop(true);
     if (you.gold < gold_min)
     {
-        if (!quiet)
+        if (reason)
         {
-            mprf(T_("You currently need %d gold to open negotiations with a merchant."), gold_min);
+            *reason = make_stringf(T_("You currently need %d gold to open negotiations with a merchant."),
+                                  gold_min);
         }
+        if (!quiet)
+            mprf(T_("You currently need %d gold to open negotiations with a merchant."), gold_min);
         return false;
     }
     if (!is_connected_branch(level_id::current().branch))
     {
+        if (reason)
+            *reason = T_("No merchants are willing to come to this location.");
         if (!quiet)
             mpr(T_("No merchants are willing to come to this location."));
         return false;
     }
     if (env.grid(you.pos()) != DNGN_FLOOR)
     {
+        if (reason)
+            *reason = T_("You need to be standing on open floor to call a merchant.");
         if (!quiet)
             mpr(T_("You need to be standing on open floor to call a merchant."));
         return false;
@@ -3773,11 +3777,18 @@ void gozag_deduct_bribe(branch_type br, int amount)
     }
 }
 
-bool gozag_check_bribe_branch(bool quiet)
+bool gozag_check_bribe_branch(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     const int bribe_amount = GOZAG_BRIBE_AMOUNT;
     if (you.gold < bribe_amount)
     {
+        if (reason)
+        {
+            *reason = make_stringf(T_("You need at least %d gold to offer a bribe."),
+                                  bribe_amount);
+        }
         if (!quiet)
             mprf(T_("You need at least %d gold to offer a bribe."), bribe_amount);
         return false;
@@ -3804,6 +3815,13 @@ bool gozag_check_bribe_branch(bool quiet)
         && (branch2 == NUM_BRANCHES
             || !gozag_branch_bribable(branch2)))
     {
+        if (reason)
+        {
+            *reason = branch2 != NUM_BRANCHES
+                      ? make_stringf(T_("You can't bribe %s or %s."),
+                                     who.c_str(), who2.c_str())
+                      : make_stringf(T_("You can't bribe %s."), who.c_str());
+        }
         if (!quiet)
         {
             if (branch2 != NUM_BRANCHES)
@@ -7016,9 +7034,7 @@ void makhleb_infernal_servant()
             beam.explode();
         }
         else if (tyrant)
-        {
             mprf(T_("%s answers the call of its master!"), demon->name(DESC_A).c_str());
-        }
         else
         {
             mprf(T_("%s answers your call of %s!"), demon->name(DESC_A).c_str(),
@@ -7045,17 +7061,11 @@ void makhleb_infernal_servant()
             if (monster* bad_demon = create_monster(mg2))
             {
                 if (tyrant)
-                {
                     mprf(T_("A traitor %s dares to challenge your wrath!"), bad_demon->name(DESC_PLAIN).c_str());
-                }
                 else if (coinflip())
-                {
                     mprf(T_("A jealous %s chases after it!"), bad_demon->name(DESC_PLAIN).c_str());
-                }
                 else
-                {
                     mprf(T_("A rebellious %s flees with it!"), bad_demon->name(DESC_PLAIN).c_str());
-                }
             }
         }
     }

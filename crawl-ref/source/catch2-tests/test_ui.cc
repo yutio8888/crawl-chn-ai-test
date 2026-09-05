@@ -191,9 +191,9 @@ TEST_CASE( "Test scissor stack", "[single-file]" ) {
         REQUIRE(s.top() == ui::Region(0, 0, INT_MAX, INT_MAX));
     }
 
-#if 0
-    // TODO: this can't work right now, because we don't have a GL manager.
-    // This can be tested if we switch to dependency injection.
+#ifndef USE_TILE_LOCAL
+    // Local tiles need a live GL manager; the console build exercises the
+    // same stack operations without sending the resulting clip to GL.
     SECTION ("Test that scissor stack top() returns top region.") {
         ui::ScissorStack s;
 
@@ -203,6 +203,37 @@ TEST_CASE( "Test scissor stack", "[single-file]" ) {
         REQUIRE(s.top() == ui::Region(0, 0, 2, 2));
         s.push(ui::Region(0, 0, 1, 1));
         REQUIRE(s.top() == ui::Region(0, 0, 1, 1));
+        s.pop();
+        REQUIRE(s.top() == ui::Region(0, 0, 2, 2));
+    }
+
+    SECTION ("Disjoint and touching clips stay empty and restore the parent") {
+        const ui::Region parent(10, 10, 20, 20);
+        const ui::Region children[] = {
+            {40, 15, 5, 5}, {0, 15, 5, 5},
+            {15, 40, 5, 5}, {15, 0, 5, 5},
+            {30, 15, 5, 5}, {15, 30, 5, 5},
+        };
+        for (const auto &child : children)
+        {
+            ui::ScissorStack s;
+            s.push(parent);
+            s.push(child);
+            REQUIRE(s.top().width >= 0);
+            REQUIRE(s.top().height >= 0);
+            REQUIRE((s.top().width == 0 || s.top().height == 0));
+            const auto empty = s.top();
+            s.push(parent);
+            REQUIRE(s.top().width >= 0);
+            REQUIRE(s.top().height >= 0);
+            REQUIRE((s.top().width == 0 || s.top().height == 0));
+            s.pop();
+            REQUIRE(s.top() == empty);
+            s.pop();
+            REQUIRE(s.top() == parent);
+            s.pop();
+            REQUIRE(s.top() == ui::Region(0, 0, INT_MAX, INT_MAX));
+        }
     }
 #endif
 }

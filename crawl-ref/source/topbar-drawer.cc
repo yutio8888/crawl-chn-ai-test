@@ -225,9 +225,9 @@ static vector<quick_entry> _quick_ability_entries()
         entry.letter = tal.hotkey;
         entry.tile = tileidx_ability(tal.which);
         entry.cost = make_cost_description(tal.which);
-        entry.usable = check_ability_possible(tal.which, true);
+        entry.usable = check_ability_possible(tal.which, true, &entry.reason);
         entry.name = ability_name(tal.which);
-        if (!entry.usable)
+        if (!entry.usable && entry.reason.empty())
         {
             entry.reason = _command_menu_text("android command menu summary",
                                               "Unavailable");

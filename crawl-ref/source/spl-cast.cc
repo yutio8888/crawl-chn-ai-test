@@ -731,10 +731,14 @@ void inspect_spells()
  * @param quiet    If true, don't print a reason why no spell can be cast.
  * @return True if we could cast a spell, false otherwise.
 */
-bool can_cast_spells(bool quiet)
+bool can_cast_spells(bool quiet, string* reason)
 {
+    if (reason)
+        reason->clear();
     if (!get_form()->can_cast)
     {
+        if (reason)
+            *reason = T_("You can't do that in your present form.");
         if (!quiet)
             canned_msg(MSG_PRESENT_FORM);
         return false;
@@ -742,6 +746,8 @@ bool can_cast_spells(bool quiet)
 
     if (you.duration[DUR_NO_CAST])
     {
+        if (reason)
+            *reason = T_("You are unable to access your magic!");
         if (!quiet)
             mpr(T_("You are unable to access your magic!"));
         return false;
@@ -750,6 +756,8 @@ bool can_cast_spells(bool quiet)
     // Randart weapons.
     if (you.no_cast())
     {
+        if (reason)
+            *reason = T_("Something interferes with your magic!");
         if (!quiet)
             mpr(T_("Something interferes with your magic!"));
         return false;
@@ -757,6 +765,8 @@ bool can_cast_spells(bool quiet)
 
     if (you.berserk())
     {
+        if (reason)
+            *reason = T_("You are too berserk!");
         if (!quiet)
             canned_msg(MSG_TOO_BERSERK);
         return false;
@@ -764,6 +774,8 @@ bool can_cast_spells(bool quiet)
 
     if (you.confused())
     {
+        if (reason)
+            *reason = T_("You're too confused to cast spells.");
         if (!quiet)
             mpr(T_("You're too confused to cast spells."));
         return false;
@@ -771,6 +783,11 @@ bool can_cast_spells(bool quiet)
 
     if (you.is_silenced())
     {
+        if (reason)
+        {
+            *reason = make_stringf(T_("You cannot cast spells while %s!"),
+                                  player_silenced_reason());
+        }
         if (!quiet)
         {
             mprf(T_("You cannot cast spells while %s!"),

@@ -71,7 +71,9 @@ int abil_skill_weight(ability_type abil);
 
 void no_ability_msg();
 bool activate_ability();
-bool check_ability_possible(const ability_type ability, bool quiet = false);
+// Optional display-only failure text; quiet previews do not print it.
+bool check_ability_possible(const ability_type ability, bool quiet = false,
+                            string* reason = nullptr);
 bool ability_has_targeter(ability_type abil);
 unique_ptr<targeter> find_ability_targeter(ability_type ability);
 bool activate_talent(const talent& tal, dist *target = nullptr);

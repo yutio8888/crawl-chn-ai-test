@@ -748,19 +748,19 @@ bool player::can_go_berserk(bool intentional, bool potion, bool quiet,
     bool success = false;
 
     if (berserk() && temp)
-        msg = "You're already berserk!";
+        msg = T_("You're already berserk!");
     else if (duration[DUR_BERSERK_COOLDOWN] && temp)
-        msg = "You're still recovering from your berserk rage.";
+        msg = T_("You're still recovering from your berserk rage.");
     else if (duration[DUR_DEATHS_DOOR] && temp)
-        msg = "You can't enter a blood rage from death's door.";
+        msg = T_("You can't enter a blood rage from death's door.");
     else if (beheld() && !you.unrand_equipped(UNRAND_DEMON_AXE) && temp)
-        msg = "You are too mesmerised to rage.";
+        msg = T_("You are too mesmerised to rage.");
     else if (!intentional && !potion && clarity() && temp)
-        msg = "You're too calm and focused to rage.";
+        msg = T_("You're too calm and focused to rage.");
     else if (is_lifeless_undead(temp))
-        msg = "You cannot raise a blood rage in your lifeless body.";
+        msg = T_("You cannot raise a blood rage in your lifeless body.");
     else if (stasis())
-        msg = "Your stasis prevents you from going berserk.";
+        msg = T_("Your stasis prevents you from going berserk.");
     else
         success = true;
 
