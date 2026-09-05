@@ -991,12 +991,13 @@ void TilesFramework::do_layout()
                                   + m_region_stat->dy
                                     * min_top_bar_text_rows;
         const int msg_min_h = top_bar_message_height();
-        // In a short landscape surface the optional quick row can be the
-        // difference between a complete HUD and the legacy sidebar fallback.
-        // Keep HP/MP and the dungeon visible first; the same spells/abilities
-        // remain available through the command drawer while this row is hidden.
+        // Reserve the optional quick row only when the full LOS fits at the
+        // configured tile size. Otherwise it would shrink the dungeon merely
+        // to duplicate actions already available through the command drawer.
+        // do_layout() restores the configured tile size above on every call,
+        // so a taller surface can show the row again after a resize.
         if (m_windowsz.y - min_top_bar_h - msg_min_h - quick_row_h
-            < ENV_SHOW_DIAMETER)
+            < ENV_SHOW_DIAMETER * m_region_tile->dy)
         {
             quick_row_h = 0;
         }
