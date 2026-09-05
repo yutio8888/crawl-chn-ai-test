@@ -78,6 +78,7 @@
     <string name="keyboard_previous_target">上个目标</string>
     <string name="keyboard_next_target">下个目标</string>
     <string name="keyboard_self">自身</string>
+    <string name="keyboard_always">总是</string>
     <string name="keyboard_upstairs">上行楼梯</string>
     <string name="keyboard_downstairs">下行楼梯</string>
     <string name="keyboard_portals">传送门</string>

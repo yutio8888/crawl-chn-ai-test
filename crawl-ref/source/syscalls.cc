@@ -61,6 +61,7 @@ bool ensure_utf8_ctype()
 #include <errno.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <android/log.h>
 #include <jni.h>
 #include <SDL.h>
 
@@ -248,6 +249,8 @@ void jni_input_context(const ui::InputDescriptor& descriptor)
                 for (int i = 0; i < 6 && !env->ExceptionCheck(); ++i)
                 {
                     values[i] = descriptor.actions[i].key;
+                    // BMP UTF-8 without NUL agrees with JNI Modified UTF-8.
+                    // InputAction labels must stay within that subset.
                     jstring label = env->NewStringUTF(descriptor.actions[i].label.c_str());
                     if (label)
                     {
@@ -292,7 +295,10 @@ Java_org_libsdl_app_SDLActivity_nativeKeyboardKey(JNIEnv*, jclass, jint key)
     {
     case CK_LEFT:  sym = SDLK_LEFT; break;
     case CK_RIGHT: sym = SDLK_RIGHT; break;
-    default: return;
+    default:
+        __android_log_print(ANDROID_LOG_WARN, "AndroidKeyboard",
+                            "Unsupported keyboard key: %d", static_cast<int>(key));
+        return;
     }
     SDL_Event event = {};
     event.type = SDL_KEYDOWN;

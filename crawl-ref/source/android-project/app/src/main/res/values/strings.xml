@@ -80,6 +80,7 @@
     <string name="keyboard_previous_target">Prev target</string>
     <string name="keyboard_next_target">Next target</string>
     <string name="keyboard_self">Self</string>
+    <string name="keyboard_always">Always</string>
     <string name="keyboard_upstairs">Upstairs</string>
     <string name="keyboard_downstairs">Downstairs</string>
     <string name="keyboard_portals">Portals</string>

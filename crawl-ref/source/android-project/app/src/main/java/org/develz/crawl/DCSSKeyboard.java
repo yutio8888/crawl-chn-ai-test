@@ -318,6 +318,9 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                     case 4: return R.string.keyboard_self;
                 }
                 break;
+            case 5: // Confirmation
+                if (slot == 2) return R.string.keyboard_always;
+                break;
             case 7: // Level map
                 switch (slot) {
                     case 1: return R.string.back;

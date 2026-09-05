@@ -1296,9 +1296,12 @@ struct InputAction
 {
     InputAction(string text = "", int input = 0)
         : label(std::move(text)), key(input) {}
+    // JNI NewStringUTF requires BMP UTF-8 labels without embedded NULs.
     string label;
     // key == 0 means absent. Empty labels on present shell actions resolve
     // from Android resources by screen and slot, without a TextDB asset edit.
+    // The only supported negative CK_* keys are CK_LEFT and CK_RIGHT;
+    // extend nativeKeyboardKey before publishing any other special key.
     int key;
     bool operator==(const InputAction& other) const
     { return label == other.label && key == other.key; }

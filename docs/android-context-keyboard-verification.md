@@ -1,6 +1,6 @@
 # Android 情境键盘验证记录
 
-代码候选：`6b82440c54..b1fe3122ec`。仅在当前 worktree 提交，未 push、merge。
+代码候选：`6b82440c54..HEAD`（当前分支；每次验证的确切 head 见下文）。仅在当前 worktree 提交，未 push、merge。
 术语表 SHA-256：`366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`。
 
 ## 实施提交
@@ -60,6 +60,9 @@ bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh \
 ```text
 Run ID: 20260905T081509321339862+0000-75691-b1fe3122ecf5
 Failures: 1
+--- post-coder / code-static ---
+RESULT: FAIL (exit 1)
+--- zh smoke ---
 Smoke test passed
 RESULT: PASS
 Summary: 1 blocking failure(s)
@@ -262,10 +265,31 @@ am_anr/am_crash，exit-info 中没有最终进程退出记录。原文和检查�
   接管，不能替代重建测试）、所有物品/法术描述/已知物品菜单变体、实际发射法术、
   键盘整体隐藏/显示专门断言。GitHub Actions 未运行，未 push。
 
-本次最终差异仅验证文档；源代码仍为先前通过 code profile 和领域复审的
-`f2b595fef8`。既有 code profile 原文为 `Summary: 0 blocking failure(s)`，记录：
+Pixel 验证提交仅修改文档，源代码为 `f2b595fef8`。当时的零失败 code profile
+范围仅为 `a45c7d2a77888e1d1237c7651dd5fe824bd768c1..f2b595fef86d76d9b0695bbb5be145efd87f54d8`，
+只覆盖最后一个修复提交，不证明整条分支通过。原文为 `Summary: 0 blocking failure(s)`，记录：
 `.claude/metrics/verify/20260905T083002357202476+0000-420503-f2b595fef86d/verify.log`。
 本次 Android 原生重新编译通过，`git diff --check` 通过；文档分类器输出
 `classification=none, reviewers=[]`，不重复运行会改变 tiles 生成状态的无关构建。
 截图、XML 和日志为本 worktree 的本地验证产物（Git 忽略），本提交保存结果与索引。
 下一步按需补强制 Activity 重建和其他设备；复测前先按本节准备完整 tiles 产物。
+
+## 独立审核修正（无设备，2026-09-05）
+
+Needs Fix 1：两个 CONFIRM 生产路径的 Always 槽位均改为空标签、保留 `A` 键，
+Java 在 screen 5 / slot 2 回退到 `keyboard_always`，values 为 Always，
+values-zh 与 values-zh-rCN 为“总是”。未修改 TextDB 翻译资产或桌面行为。
+
+Needs Fix 2：上文零失败结论已限定为最后一个提交的增量范围。
+此前完整范围是 `6b82440c5496e04517fc6ae197943bbf84f8ae43..b1fe3122ecf5d83fa627aa4d66aba7337d8f1d51`，
+其 post-coder/code-static 为 `RESULT: FAIL (exit 1)`；之后零失败的增量测试未覆盖
+menu.cc/directn.cc，不能消除完整范围失败。基线文件已有 tree-sitter 解析问题，
+directn.cc 又因整文件 SHA 变化使绑定豁免失效；更新豁免属于扫描器配置变更，
+留给用户决定，本次不改扫描器或豁免。
+
+建议取舍：S-1 采纳，声明仅支持 CK_LEFT/CK_RIGHT，未支持按键记录警告，便于
+定位误发布；S-2 采纳，`!` 同时检查 `skip_process_command`，避免子类禁用动作后
+出现无效按钮；S-3 采纳，注明 JNI 标签必须为不含 NUL 的 BMP UTF-8 子集。
+S-4 不采纳：原任务明确要求两处 `Log.i("AndroidKeyboard", ...)` 供统计，保持该约定。
+S-6 仅记录：manualFull 在 Activity 重建后丢失，不新增偏好持久化或生命周期状态。
+本次提供的建议编号中没有 S-5，不推测其内容。

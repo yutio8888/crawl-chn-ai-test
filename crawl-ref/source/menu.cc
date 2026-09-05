@@ -1617,7 +1617,7 @@ void Menu::do_menu()
         }
         if (is_set(MF_MULTISELECT))
             keyboard_actions[4] = {T_("Select all"), ','};
-        if (action_cycle != CYCLE_NONE)
+        if (action_cycle != CYCLE_NONE && !skip_process_command('!'))
             keyboard_actions[5] = {"", '!'};
     }
     else if (m_kmc == KMC_CONFIRM)
@@ -1632,7 +1632,7 @@ void Menu::do_menu()
             {
             case 'Y': keyboard_actions[0] = {T_("Yes"), 'Y'}; break;
             case 'N': keyboard_actions[1] = {T_("No"), 'N'}; break;
-            case 'A': keyboard_actions[2] = {T_("Always"), 'A'}; break;
+            case 'A': keyboard_actions[2] = {"", 'A'}; break;
             }
         }
     }
