@@ -213,3 +213,30 @@ Lua 状态机不是线程安全的；游戏线程执行任意 Lua（用户脚本
 - 已知的行为取舍：若游戏线程 2 秒内没有到达任何安全点（例如卡在层生成里），
   这次暂停就不存档。相对当前实现，这是用"可能少一次检查点"换掉"可能写坏存档"，
   而且崩溃后仍可回到上一次 commit（第 4 节）。
+
+## 7. 修复后的验证结果
+
+实施提交：`fix(android): run the onPause save on the game thread`。
+
+- **NDK 编译**：在本 worktree 内直接执行 `make ANDROID=... TILES=y android -j4` 与
+  `./gradlew :app:assembleBuildTest`（arm64-v8a），`BUILD SUCCESSFUL`，产出
+  `app-buildTest-unsigned.apk`。改动的 C++ 与 Java 都通过 NDK / javac 编译。
+  未使用 `util/build-android.sh`，因为它会把 `.worktrees/android-tiles` 重置到
+  主检出的 HEAD。构建产物已在验证前清除。
+- **`bash .claude/scripts/verify_zh.sh --profile code`**：0 blocking failure
+  （run `20260905T082210302215498+0000-272734-28582d16df5f`）。
+- **tree-sitter 扫描器**：`verify_zh` 的 `SCOPE=changed` 在工作树干净时会
+  SKIP 这两个扫描器，因此额外手工执行：
+  - `scan_varargs_string.py --files syscalls.cc,windowmanager-sdl.cc --require-parser` → PASS
+  - `scan_i18n_lifetime.py --files syscalls.cc windowmanager-sdl.cc main.cc --require-parser` → PASS
+  - `scan_varargs_string.py --files main.cc --require-parser` → exit 2，
+    `tree-sitter parse error`。**与本次改动无关**：同一扫描器对
+    `chn-0.34.1-base`、`98269f6866^`、`317cb622fb^` 的 `main.cc` 原文同样报错，
+    ERROR 节点位于第 193/235/426/2041/2043/2051/2400 行，均远离本次改动
+    （约第 2775 行）。tree-sitter 版本与 `TOOLCHAIN.md` 的固定值一致
+    （`tree-sitter==0.26.0`、`tree-sitter-cpp==0.23.4`）。修好扫描器对 `main.cc`
+    的解析属于本任务范围之外的基础设施工作。
+- **模拟器复测：未执行**。`emulator-5554`（x86_64）在整个任务期间被并行代理占用
+  （`topResumedActivity` 先后为 `org.develz.crawl.portrait` 与
+  `org.develz.crawl.contextkeyboard`）。安装 `org.develz.crawl` 会覆盖其正在测试的
+  包并抢占前台。第 5 节列出的 Home + `am kill` 场景仍待在独占设备上执行。
