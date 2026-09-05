@@ -55,8 +55,10 @@ bool ensure_utf8_ctype()
 #endif
 
 #ifdef __ANDROID__
+#include <atomic>
 #include "player.h"
 #include "state.h"
+#include "ui.h"
 #include <errno.h>
 #include <android/log.h>
 #include <android/asset_manager.h>
@@ -329,22 +331,108 @@ bool jni_keyboard_control(int action)
     return shown;
 }
 
-void jni_input_context(int context)
+static std::atomic<bool> input_context_refresh(false);
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeResetInputContext(JNIEnv*, jclass)
 {
+    // Only the event thread owns the cached descriptor. Keep a reset arriving
+    // during publication pending for its next wait, rather than losing it.
+    input_context_refresh.store(true);
+    SDL_Event event = {};
+    event.type = SDL_WINDOWEVENT;
+    event.window.event = SDL_WINDOWEVENT_EXPOSED;
+    SDL_PushEvent(&event); // Wake an existing wait; first startup may have none.
+}
+
+void jni_input_context(const ui::InputDescriptor& descriptor)
+{
+    static ui::InputDescriptor last;
+    static bool sent = false;
+    if (input_context_refresh.exchange(false))
+        sent = false;
+    if (sent && last == descriptor)
+        return;
     JNIEnv *env = Android_JNI_GetEnv();
     if (!env)
         return;
     jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
     if (sdl_class)
     {
-        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext", "(I)V");
+        jmethodID method = env->GetStaticMethodID(sdl_class, "jniInputContext",
+            "(II[Ljava/lang/String;[I)V");
         if (method)
-            env->CallStaticVoidMethod(sdl_class, method, context);
+        {
+            jclass string_class = env->FindClass("java/lang/String");
+            jobjectArray labels = string_class
+                ? env->NewObjectArray(6, string_class, nullptr) : nullptr;
+            jintArray keys = labels ? env->NewIntArray(6) : nullptr;
+            if (keys)
+            {
+                jint values[6];
+                for (int i = 0; i < 6 && !env->ExceptionCheck(); ++i)
+                {
+                    values[i] = descriptor.actions[i].key;
+                    // BMP UTF-8 without NUL agrees with JNI Modified UTF-8.
+                    // InputAction labels must stay within that subset.
+                    jstring label = env->NewStringUTF(descriptor.actions[i].label.c_str());
+                    if (label)
+                    {
+                        env->SetObjectArrayElement(labels, i, label);
+                        env->DeleteLocalRef(label);
+                    }
+                }
+                if (!env->ExceptionCheck())
+                {
+                    env->SetIntArrayRegion(keys, 0, 6, values);
+                    env->CallStaticVoidMethod(sdl_class, method,
+                        static_cast<int>(descriptor.context),
+                        static_cast<int>(descriptor.screen), labels, keys);
+                    if (!env->ExceptionCheck())
+                    {
+                        last = descriptor;
+                        sent = true;
+                    }
+                }
+            }
+            if (keys)
+                env->DeleteLocalRef(keys);
+            if (labels)
+                env->DeleteLocalRef(labels);
+            if (string_class)
+                env->DeleteLocalRef(string_class);
+        }
         env->DeleteLocalRef(sdl_class);
     }
     // An unavailable presentation bridge must not poison later JNI calls.
     if (env->ExceptionCheck())
         env->ExceptionClear();
+}
+
+// Only keys without an InputConnection character representation use this
+// bridge. Queue normal SDL events; never touch the game from the UI thread.
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeKeyboardKey(JNIEnv*, jclass, jint key)
+{
+    SDL_Keycode sym;
+    switch (key)
+    {
+    case CK_LEFT:  sym = SDLK_LEFT; break;
+    case CK_RIGHT: sym = SDLK_RIGHT; break;
+    default:
+        __android_log_print(ANDROID_LOG_WARN, "AndroidKeyboard",
+                            "Unsupported keyboard key: %d", static_cast<int>(key));
+        return;
+    }
+    SDL_Event event = {};
+    event.type = SDL_KEYDOWN;
+    event.key.state = SDL_PRESSED;
+    event.key.keysym.sym = sym;
+    event.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
+    SDL_PushEvent(&event);
+    event.type = SDL_KEYUP;
+    event.key.state = SDL_RELEASED;
+    SDL_PushEvent(&event);
 }
 
 float jni_get_display_density()

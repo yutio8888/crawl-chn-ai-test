@@ -214,4 +214,88 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+        <Button
+            android:id="@+id/key_context_0"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+
+        <Button
+            android:id="@+id/key_context_1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+
+        <Button
+            android:id="@+id/key_context_2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+
+        <Button
+            android:id="@+id/key_context_3"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+
+        <Button
+            android:id="@+id/key_context_4"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+
+        <Button
+            android:id="@+id/key_context_5"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/key_height"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:theme="@style/ButtonColor2"/>
+    </LinearLayout>
+
 </LinearLayout>

@@ -943,6 +943,11 @@ bool show_map(level_pos &lpos, bool travel_mode, bool allow_offlevel)
 #endif
 
         ui::push_layout(map_view, KMC_LEVELMAP);
+#ifdef __ANDROID__
+        ui::InputActionScope keyboard_scope(ui::InputScreen::MAP,
+            {{{}, {"", CK_ESCAPE}, {"", '<'}, {"", '>'},
+              {"", '\t'}, {"", '^'}}});
+#endif
         while (map_view->is_alive() && !crawl_state.seen_hups)
             ui::pump_events();
         ui::pop_layout();

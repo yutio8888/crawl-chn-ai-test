@@ -147,6 +147,28 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
     }
 
     // Process all keyboard events
+    protected void sendContextKey(int key) {
+        if (inputConnection == null) {
+            return;
+        }
+        int androidKey;
+        switch (key) {
+            case 13: androidKey = KeyEvent.KEYCODE_ENTER; break;
+            case 27: androidKey = KeyEvent.KEYCODE_ESCAPE; break;
+            case 9: androidKey = KeyEvent.KEYCODE_TAB; break;
+            default:
+                if (key < 0) {
+                    SDLActivity.nativeKeyboardKey(key);
+                } else if (key >= 32 && key <= 126) {
+                    inputConnection.commitText(String.valueOf((char) key), 1);
+                }
+                return;
+        }
+        inputConnection.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, androidKey));
+        inputConnection.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, androidKey));
+    }
+
+    // Process all keyboard events
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Log.v("KEY", "KeyEvent: " + event.toString());
