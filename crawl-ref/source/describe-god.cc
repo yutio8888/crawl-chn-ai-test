@@ -1258,6 +1258,10 @@ void describe_god(god_type which_god)
     build_partial_god_ui(which_god, popup, desc_sw, more_sw);
 
     bool done = false;
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::GOD,
+        {{{}, {"", CK_ESCAPE}, {"", '!'}}}, popup);
+#endif
     popup->on_keydown_event([&](const KeyEvent& ev) {
         const auto key = ev.key();
         if (key == '!' || key == '^')
@@ -1333,6 +1337,13 @@ bool describe_god_with_join(god_type which_god)
     join_step_type step = SHOW;
     bool yesno_only = false;
     bool done = false, join = false;
+#ifdef __ANDROID__
+    // Replaced when the page moves to the abandon confirmation; destroy the
+    // old scope first so the RAII stack unwinds in order.
+    unique_ptr<ui::InputActionScope> keyboard_scope(new ui::InputActionScope(
+        ui::InputScreen::GOD,
+        {{{"", CK_ENTER}, {"", CK_ESCAPE}, {"", '!'}}}, popup));
+#endif
 
     // The join-god UI state machine transition function
     popup->on_keydown_event([&](const KeyEvent& ev) {
@@ -1387,6 +1398,12 @@ bool describe_god_with_join(god_type which_god)
                 return done = join = true;
 
             step = ABANDON;
+#ifdef __ANDROID__
+            keyboard_scope.reset();
+            keyboard_scope.reset(new ui::InputActionScope(
+                ui::InputScreen::GOD,
+                {{{T_("Yes"), 'Y'}, {T_("No"), 'N'}, {"", '!'}}}, popup));
+#endif
         }
         else
             return done = true;

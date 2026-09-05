@@ -220,6 +220,17 @@ protected:
         return ToggleableMenu::get_command(keyin);
     }
 
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() override
+    {
+        auto actions = ToggleableMenu::keyboard_actions();
+        // '?' describes the hovered spell (process_command above).
+        if (is_set(MF_ARROWS_SELECT))
+            actions[3] = {trimmed_string(T_("describe")), '?'};
+        return actions;
+    }
+#endif
+
     bool process_command(command_type cmd) override
     {
         if (cmd == CMD_MENU_HELP)

@@ -532,6 +532,15 @@ vector<MenuEntry *> PromptMenu::show_in_msgpane()
     build_prompt_menu(); // could just rebuild it on every loop...
     while (true)
     {
+#ifdef __ANDROID__
+        // Refresh after an in-place mode change. A fallback to Menu::show()
+        // nests its own scope under this message-pane scope.
+        ui::InputScreen keyboard_screen;
+        std::array<ui::InputAction, 6> keyboard_actions;
+        keyboard_descriptor(keyboard_screen, keyboard_actions);
+        ui::InputActionScope keyboard_scope(keyboard_screen,
+                                            std::move(keyboard_actions));
+#endif
         if (!fits_in_mpane())
         {
             // build_prompt_menu updates the column widths, so if the menu

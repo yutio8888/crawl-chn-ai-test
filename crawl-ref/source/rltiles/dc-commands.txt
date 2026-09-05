@@ -43,3 +43,21 @@ find_altar CMD_MAP_FIND_ALTAR
 find_stash CMD_MAP_FIND_STASH
 keyboard CMD_KEYBOARD
 game_menu CMD_GAME_MENU
+
+# Mobile command panel: a coherent set of native 32px icons. Keep the desktop
+# command and 20px tab sprites unchanged.
+menu_explore MENU_EXPLORE
+menu_inventory MENU_INVENTORY
+menu_look MENU_LOOK
+menu_spells MENU_SPELLS
+menu_abilities MENU_ABILITIES
+menu_memorise MENU_MEMORISE
+menu_character MENU_CHARACTER
+menu_skills MENU_SKILLS
+menu_religion MENU_RELIGION
+menu_map MENU_MAP
+menu_known_items MENU_KNOWN_ITEMS
+menu_mutations MENU_MUTATIONS
+menu_help MENU_HELP
+menu_pickup MENU_PICKUP
+menu_exit MENU_EXIT

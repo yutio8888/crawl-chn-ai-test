@@ -415,7 +415,7 @@ Inventory
 %%%%
 android command menu summary|Inventory
 
-Inventory
+View the items you are carrying
 %%%%
 android command menu|Spells
 
@@ -423,7 +423,7 @@ Spells
 %%%%
 android command menu summary|Spells
 
-Spells
+View your memorised spells
 %%%%
 android command menu|Abilities
 
@@ -431,7 +431,7 @@ Abilities
 %%%%
 android command menu summary|Abilities
 
-Abilities
+Use divine, innate, or other activatable abilities
 %%%%
 android command menu|Character
 
@@ -439,7 +439,7 @@ Character
 %%%%
 android command menu summary|Character
 
-Character
+View your attributes, resistances, and equipment
 %%%%
 android command menu|Skills
 
@@ -447,7 +447,7 @@ Skills
 %%%%
 android command menu summary|Skills
 
-Skills
+View and adjust skill training
 %%%%
 android command menu|Religion
 
@@ -455,7 +455,7 @@ Religion
 %%%%
 android command menu summary|Religion
 
-Religion
+View your god and piety
 %%%%
 android command menu|More
 
@@ -463,7 +463,7 @@ More
 %%%%
 android command menu summary|More
 
-More
+Show more commands
 %%%%
 android command menu|Back
 
@@ -471,7 +471,7 @@ Back
 %%%%
 android command menu summary|Back
 
-Back
+Return to the main menu
 %%%%
 android command menu|Memorise
 
@@ -479,7 +479,7 @@ Memorise
 %%%%
 android command menu summary|Memorise
 
-Memorise
+Memorise spells from your library
 %%%%
 android command menu|Map
 
@@ -487,7 +487,7 @@ Map
 %%%%
 android command menu summary|Map
 
-Map
+View the map of the current level
 %%%%
 android command menu|Known Objects
 
@@ -495,7 +495,7 @@ Known Objects
 %%%%
 android command menu summary|Known Objects
 
-Known Objects
+View the item types you have discovered
 %%%%
 android command menu|Full View
 
@@ -503,7 +503,7 @@ Full View
 %%%%
 android command menu summary|Full View
 
-Full View
+Examine nearby monsters, items, and terrain
 %%%%
 android command menu|Mutations
 
@@ -511,15 +511,15 @@ Mutations
 %%%%
 android command menu summary|Mutations
 
-Mutations
+View your mutations
 %%%%
 android command menu|Commands
 
-Commands
+Command help
 %%%%
 android command menu summary|Commands
 
-Commands
+View the list of commands and their keys
 %%%%
 android command menu|Auto-explore
 
@@ -600,4 +600,20 @@ Long press for details
 android command menu summary|Unavailable
 
 Unavailable
+%%%%
+android command menu|Close
+
+Close
+%%%%
+android command menu|Exit
+
+Exit
+%%%%
+android command menu summary|No items here
+
+There are no items here to pick up
+%%%%
+android command menu summary|No exit here
+
+There is no usable exit here
 %%%%

@@ -199,6 +199,14 @@ int show_description(const describe_info &inf, const tile_def *tile)
 
     bool done = false;
     int lastch;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions;
+    keyboard_actions[1] = {"", CK_ESCAPE};
+    if (!inf.quote.empty())
+        keyboard_actions[2] = {"", '!'};
+    ui::InputActionScope keyboard_scope(ui::InputScreen::DESCRIPTION,
+                                        std::move(keyboard_actions), popup);
+#endif
     popup->on_keydown_event([&](const KeyEvent& ev) {
         lastch = ev.key();
         if (!inf.quote.empty() && (lastch == '!' || lastch == '^'))
@@ -3749,6 +3757,48 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
 
     bool done = false;
     command_type action = CMD_NO_CMD;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions;
+    keyboard_actions[1] = {"", CK_ESCAPE};
+    {
+        const dungeon_feature_type feat = env.map_knowledge(pos).feat();
+        size_t slot = 2;
+        for (auto cmd : actions)
+        {
+            if (slot == keyboard_actions.size())
+                break;
+            // Reuse the translated footer phrase where one exists; the plain
+            // stair and door phrases resolve from Android resources by key.
+            string label;
+            const bool special = cmd == CMD_GO_DOWNSTAIRS
+                    && (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP
+                        || feat_is_portal(feat) || feat_is_gate(feat)
+                        || feat == DNGN_TRANSPORTER)
+                || cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat);
+            if (special)
+            {
+                label = _feat_action_desc({cmd}, feat);
+                if (!label.empty() && label.back() == '.')
+                    label.pop_back();
+            }
+            int key = 0;
+            switch (cmd)
+            {
+            case CMD_GO_UPSTAIRS:    key = '<'; break;
+            case CMD_GO_DOWNSTAIRS:  key = '>'; break;
+            case CMD_MAP_PREV_LEVEL: key = '['; break;
+            case CMD_MAP_NEXT_LEVEL: key = ']'; break;
+            case CMD_OPEN_DOOR:      key = 'o'; break;
+            case CMD_CLOSE_DOOR:     key = 'c'; break;
+            default: break;
+            }
+            if (key)
+                keyboard_actions[slot++] = {std::move(label), key};
+        }
+    }
+    ui::InputActionScope keyboard_scope(ui::InputScreen::FEATURE,
+                                        std::move(keyboard_actions), popup);
+#endif
 
     // use on_hotkey_event, not on_event, to preempt the scroller key handling
     popup->on_hotkey_event([&](const KeyEvent& ev) {
@@ -7573,6 +7623,14 @@ int describe_monster(const monster_info &mi, const string& /*footer*/)
 
     bool done = false;
     int lastch;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions;
+    keyboard_actions[1] = {"", CK_ESCAPE};
+    if (num_modes > 1)
+        keyboard_actions[2] = {"", '!'};
+    ui::InputActionScope keyboard_scope(ui::InputScreen::DESCRIPTION,
+                                        std::move(keyboard_actions), popup);
+#endif
     popup->on_keydown_event([&](const KeyEvent& ev) {
         const auto key = ev.key();
         lastch = key;

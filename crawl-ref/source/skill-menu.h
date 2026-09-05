@@ -141,6 +141,9 @@ public:
     void init(int flag, int region_height);
     void clear() override;
     bool is_set(int flag) const;
+#ifdef __ANDROID__
+    std::array<ui::InputAction, 6> keyboard_actions() const;
+#endif
     void set_flag(int flag);
     void toggle_flag(int flag);
 
