@@ -1012,8 +1012,10 @@ static void _print_stats_mp(int x, int y)
             MP_Bar.vdraw(6, 24, you.magic_points, you.max_magic_points);
     }
     else
-#endif
         MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
+#else
+    MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
+#endif
 
     you.redraw_magic_points = false;
 }
@@ -1073,8 +1075,10 @@ static void _print_stats_hp(int x, int y)
             HP_Bar.vdraw(2, 24, you.hp, you.hp_max);
     }
     else
-#endif
         HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+#else
+    HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+#endif
 
     you.redraw_hit_points = false;
 }
@@ -1501,48 +1505,50 @@ static void _print_status_lights(int y)
     }
 #endif
 
+    bool compact_hud = false;
 #ifdef USE_TILE_LOCAL
-    if (!_uses_compact_hud())
-    {
+    compact_hud = _uses_compact_hud();
 #endif
-    size_t i_light = 0;
-    while (true)
+    if (!compact_hud)
     {
-        const int end_x = (wherex() - crawl_view.hudp.x)
-                + (i_light < lights.size() ? strwidth(lights[i_light].text)
-                                           : 10000);
+        size_t i_light = 0;
+        while (true)
+        {
+            const int end_x = (wherex() - crawl_view.hudp.x)
+                    + (i_light < lights.size() ? strwidth(lights[i_light].text)
+                                               : 10000);
 
-        if (end_x <= crawl_view.hudsz.x)
-        {
-#ifdef USE_TILE_LOCAL
-            if (i_light < lights.size())
+            if (end_x <= crawl_view.hudsz.x)
             {
-                const int status_x = wherex() - crawl_view.hudp.x;
-                const int status_w = strwidth(lights[i_light].text);
-                record_status_hitbox(lights[i_light].status,
-                                     status_x, status_x + status_w - 1,
-                                     (int)line_cur - 1);
-            }
+#ifdef USE_TILE_LOCAL
+                if (i_light < lights.size())
+                {
+                    const int status_x = wherex() - crawl_view.hudp.x;
+                    const int status_w = strwidth(lights[i_light].text);
+                    record_status_hitbox(lights[i_light].status,
+                                         status_x, status_x + status_w - 1,
+                                         (int)line_cur - 1);
+                }
 #endif
-            textcolour(lights[i_light].colour);
-            NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
-            if (end_x < crawl_view.hudsz.x)
-                NOWRAP_EOL_CPRINTF(" ");
-            ++i_light;
-        }
-        else
-        {
-            clear_to_end_of_line();
-            ++line_cur;
-            // Careful not to trip the )#(*$ CGOTOXY ASSERT
-            if (line_cur == line_end)
-                break;
-            CGOTOXY(1, line_cur, GOTO_STAT);
+                textcolour(lights[i_light].colour);
+                NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
+                if (end_x < crawl_view.hudsz.x)
+                    NOWRAP_EOL_CPRINTF(" ");
+                ++i_light;
+            }
+            else
+            {
+                clear_to_end_of_line();
+                ++line_cur;
+                // Careful not to trip the )#(*$ CGOTOXY ASSERT
+                if (line_cur == line_end)
+                    break;
+                CGOTOXY(1, line_cur, GOTO_STAT);
+            }
         }
     }
 #ifdef USE_TILE_LOCAL
-    }
-    else
+    if (compact_hud)
     {
         size_t i_light = 0;
         if (lights.size() == 1)
@@ -2278,9 +2284,10 @@ void smallterm_warning()
 
 void redraw_screen(bool show_updates)
 {
-    if (!crawl_state.need_save)
+    if (!crawl_state.need_save && !crawl_state.player_is_dead())
     {
-        // If the game hasn't started, don't do much.
+        // Before play there is no dungeon to redraw. During the death more,
+        // the save is already deleted but the player and level are still live.
         clrscr();
         return;
     }

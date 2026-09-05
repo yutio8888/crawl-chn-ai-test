@@ -581,11 +581,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Issue 16 real score entries keep protocol fields English",
-                 "[zh-translation][issue-16][hiscores]")
+                 "[zh-translation][issue-16][hiscores][issue-114]")
 {
     unwind_var<player> restore_player(you);
     you = player();
     you.your_name = "Issue16";
+    you.birth_time = 1599999900;
     you.species = SP_HUMAN;
     you.char_class = JOB_MONK;
     you.chr_class_name = get_job_name(you.char_class);
@@ -625,6 +626,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(fields.str_field("maxskills") != skill_name(SK_FIGHTING));
     CHECK(fields.str_field("fifteenskills")
           != string(skill_name(SK_FIGHTING)) + "," + skill_name(SK_AXES));
+
+    // A historic title belongs to that record, not the current player's
+    // higher-ranked title. Only its display is translated; xlog stays English.
+    for (const string& title : {string("Trooper"), string("Unknown legacy title")})
+    {
+        const string historical = replace_all(raw, "title=Conqueror",
+                                             "title=" + title);
+        scorefile_entry saved;
+        REQUIRE(saved.parse(historical));
+        const string chinese = saved.character_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(chinese.find(T_(title.c_str())) != string::npos);
+        if (title == "Trooper")
+            CHECK(chinese.find("Trooper") == string::npos);
+        CHECK(saved.raw_string() == historical);
+        CHECK(saved.get_fields().str_field("title") == title);
+        {
+            EnTranslationFixture english;
+            const string description =
+                saved.character_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(description.find(" the " + title + " (level ") != string::npos);
+            CHECK(saved.raw_string() == historical);
+        }
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
