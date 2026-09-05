@@ -963,8 +963,8 @@ void TilesFramework::do_layout()
         m_region_quick_abl->dx = m_region_quick_abl->dy = cell;
     }
 #endif
-    const int quick_row_h = m_quick_row_spells || m_quick_row_abilities
-                            ? m_region_quick_spl->dy : 0;
+    int quick_row_h = m_quick_row_spells || m_quick_row_abilities
+                      ? m_region_quick_spl->dy : 0;
     // Leave the first glyph row clear of the top edge. CJK fallback glyphs can
     // extend above the primary font's ascender, so a fixed two-pixel gap is
     // insufficient at phone-scale font sizes. Scale the gap with the actual
@@ -991,6 +991,15 @@ void TilesFramework::do_layout()
                                   + m_region_stat->dy
                                     * min_top_bar_text_rows;
         const int msg_min_h = top_bar_message_height();
+        // In a short landscape surface the optional quick row can be the
+        // difference between a complete HUD and the legacy sidebar fallback.
+        // Keep HP/MP and the dungeon visible first; the same spells/abilities
+        // remain available through the command drawer while this row is hidden.
+        if (m_windowsz.y - min_top_bar_h - msg_min_h - quick_row_h
+            < ENV_SHOW_DIAMETER)
+        {
+            quick_row_h = 0;
+        }
         const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h
                                - quick_row_h;
         if (m_region_tile->dx <= 0 || m_region_tile->dy <= 0
@@ -1002,8 +1011,7 @@ void TilesFramework::do_layout()
 
     // A surface too short for the top bar has no quick row either; leave the
     // regions with no cells so they cannot be hit or drawn.
-    m_quick_row_shown = use_top_bar
-                        && (m_quick_row_spells || m_quick_row_abilities);
+    m_quick_row_shown = use_top_bar && quick_row_h > 0;
     if (!m_quick_row_shown && m_region_quick_spl && m_region_quick_abl)
     {
         m_region_quick_spl->resize(0, 0);
