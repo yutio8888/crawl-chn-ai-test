@@ -20,17 +20,53 @@ def _coverage(data):
 
 
 class ScannerCompletenessTests(unittest.TestCase):
-    # Expected normalized findings for the real directn.cc concat scan:
-    # directn.cc:3040/3042/3044 messageLookup += and 3072/3078/3081 runtime
-    # concat. Tuple: (file, line, rule, literal).
-    DIRECTN_CONCAT_FINDINGS = [
-        ("directn.cc", 3040, "COMPOUND_ASSIGN", "fruit cache"),
-        ("directn.cc", 3042, "COMPOUND_ASSIGN", "meat cache"),
-        ("directn.cc", 3044, "COMPOUND_ASSIGN", "baked goods cache"),
-        ("directn.cc", 3072, "RUNTIME_CONCAT", " peaceful "),
-        ("directn.cc", 3078, "RUNTIME_CONCAT", "default peaceful "),
-        ("directn.cc", 3081, "RUNTIME_CONCAT", "default "),
+    # Keep the six rule/literal expectations independent of scanner output.
+    # Unique full source lines locate them after unrelated preceding edits.
+    DIRECTN_CONCAT_ANCHORS = [
+        ('            messageLookup += "fruit cache";',
+         "COMPOUND_ASSIGN", "fruit cache"),
+        ('            messageLookup += "meat cache";',
+         "COMPOUND_ASSIGN", "meat cache"),
+        ('            messageLookup += "baked goods cache";',
+         "COMPOUND_ASSIGN", "baked goods cache"),
+        ('                decorLine = getMiscString(string(_god_name_en(you.religion)) + " peaceful " + messageLookup);',
+         "RUNTIME_CONCAT", " peaceful "),
+        ('                decorLine = getMiscString("default peaceful " + messageLookup);',
+         "RUNTIME_CONCAT", "default peaceful "),
+        ('                decorLine = getMiscString("default " + messageLookup);',
+         "RUNTIME_CONCAT", "default "),
     ]
+
+    def _directn_concat_findings(self, source):
+        lines = source.splitlines()
+        findings = []
+        for anchor, rule, literal in self.DIRECTN_CONCAT_ANCHORS:
+            matches = [line for line, text in enumerate(lines, 1)
+                       if text == anchor]
+            self.assertEqual(1, len(matches),
+                             f"Expected one directn.cc anchor, got {len(matches)}: {anchor!r}")
+            findings.append(("directn.cc", matches[0], rule, literal))
+        return sorted(findings)
+
+    @property
+    def DIRECTN_CONCAT_FINDINGS(self):
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        return self._directn_concat_findings(source)
+
+    def test_directn_finding_anchors_shift_and_fail_closed(self):
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        findings = self._directn_concat_findings(source)
+        self.assertEqual(
+            [(file, line + 5, rule, literal)
+             for file, line, rule, literal in findings],
+            self._directn_concat_findings("\n" * 5 + source))
+        for anchor, _, _ in self.DIRECTN_CONCAT_ANCHORS:
+            with self.subTest(anchor=anchor, mutation="missing"):
+                with self.assertRaisesRegex(AssertionError, "anchor, got 0"):
+                    self._directn_concat_findings(source.replace(anchor + "\n", "", 1))
+            with self.subTest(anchor=anchor, mutation="duplicate"):
+                with self.assertRaisesRegex(AssertionError, "anchor, got 2"):
+                    self._directn_concat_findings(source + "\n" + anchor + "\n")
 
     def _normalized_findings(self, data):
         return sorted(
