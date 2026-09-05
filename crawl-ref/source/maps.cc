@@ -1502,7 +1502,11 @@ static void _parse_maps(const string &s)
     // won't be seen by the user unless they look for it
     mprf(MSGCH_PLAIN, T_("Regenerating des: %s"), s.c_str());
 
-    time_t mtime = file_modtime(dat);
+    // Stamp the cache with the same path-based mtime that _load_map_cache
+    // verifies against. On Android the des file is a funopen() asset stream
+    // whose fstat() fails, so the FILE* overload returned 0 and every launch
+    // regenerated the whole des cache.
+    time_t mtime = file_modtime(s);
     _reset_map_parser();
 
     extern int yyparse();
