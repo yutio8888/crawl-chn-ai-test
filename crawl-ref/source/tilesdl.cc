@@ -314,6 +314,24 @@ void TilesFramework::calculate_default_options()
     while (++auto_size < num_screen_sizes - 1);
 
     m_map_pixels = Options.tile_map_pixels;
+#ifdef __ANDROID__
+    // Font options are game pixels, not Android density-independent pixels.
+    // Give automatic message text a readable floor without overriding
+    // explicit rc sizes. Keep CRT and stat text at their screen-based sizes:
+    // legacy menus and the HUD's six-attribute row require a fixed number of
+    // columns. Drawers use the message font instead, so their wrapping text
+    // can grow independently without hiding attributes on narrow phones.
+    // Round up through the game scale just as for touch target sizes.
+    const int font_pixels = (int) ceil(14 * jni_get_display_density());
+    const int auto_font_floor = display_density.apply_game_scale(
+        font_pixels + Options.game_scale - 1);
+    int *const fonts[] = { &Options.tile_font_msg_size,
+                          &Options.tile_font_tip_size,
+                          &Options.tile_font_lbl_size };
+    for (int i = 0; i < 3; ++i)
+        if (*fonts[i] == 0)
+            *fonts[i] = max(auto_font_floor, _screen_sizes[auto_size][i + 5]);
+#endif
     // Auto pick map and font sizes if option is zero.
     // XX this macro is silly
 #define AUTO(x,y) (x = (x) ? (x) : _screen_sizes[auto_size][(y)])
@@ -935,8 +953,18 @@ void TilesFramework::do_layout()
     // leave the vertical budget before any tile-size arithmetic, including the
     // short-surface fallback below.
     quick_row_live_lists(m_quick_row_spells, m_quick_row_abilities);
-    const int quick_row_h = m_quick_row_spells || m_quick_row_abilities
-                            ? m_region_quick_spl->dy : 0;
+#ifdef __ANDROID__
+    if (m_region_quick_spl && m_region_quick_abl)
+    {
+        const int pixels = (int) ceil(48 * jni_get_display_density());
+        const int cell = max(Options.tile_sidebar_pixels,
+            display_density.apply_game_scale(pixels + Options.game_scale - 1));
+        m_region_quick_spl->dx = m_region_quick_spl->dy = cell;
+        m_region_quick_abl->dx = m_region_quick_abl->dy = cell;
+    }
+#endif
+    int quick_row_h = m_quick_row_spells || m_quick_row_abilities
+                      ? m_region_quick_spl->dy : 0;
     // Leave the first glyph row clear of the top edge. CJK fallback glyphs can
     // extend above the primary font's ascender, so a fixed two-pixel gap is
     // insufficient at phone-scale font sizes. Scale the gap with the actual
@@ -963,6 +991,16 @@ void TilesFramework::do_layout()
                                   + m_region_stat->dy
                                     * min_top_bar_text_rows;
         const int msg_min_h = top_bar_message_height();
+        // Reserve the optional quick row only when the full LOS fits at the
+        // configured tile size. Otherwise it would shrink the dungeon merely
+        // to duplicate actions already available through the command drawer.
+        // do_layout() restores the configured tile size above on every call,
+        // so a taller surface can show the row again after a resize.
+        if (m_windowsz.y - min_top_bar_h - msg_min_h - quick_row_h
+            < ENV_SHOW_DIAMETER * m_region_tile->dy)
+        {
+            quick_row_h = 0;
+        }
         const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h
                                - quick_row_h;
         if (m_region_tile->dx <= 0 || m_region_tile->dy <= 0
@@ -974,8 +1012,7 @@ void TilesFramework::do_layout()
 
     // A surface too short for the top bar has no quick row either; leave the
     // regions with no cells so they cannot be hit or drawn.
-    m_quick_row_shown = use_top_bar
-                        && (m_quick_row_spells || m_quick_row_abilities);
+    m_quick_row_shown = use_top_bar && quick_row_h > 0;
     if (!m_quick_row_shown && m_region_quick_spl && m_region_quick_abl)
     {
         m_region_quick_spl->resize(0, 0);

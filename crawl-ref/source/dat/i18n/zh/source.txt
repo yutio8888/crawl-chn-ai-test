@@ -2087,7 +2087,7 @@ barrage of energy
 ，%d 生命
 %%%%
 , %d MP
-，%d 魔力
+，%d 法力
 %%%%
 , %d/%d uses available
 ，%d/%d 次可用
@@ -2135,7 +2135,7 @@ barrage of energy
 ，瞬间
 %%%%
 , MP
-，魔力
+，法力
 %%%%
 , Noise
 ，噪音
@@ -28117,7 +28117,7 @@ HP
 生命
 %%%%
 MP
-魔力
+法力
 %%%%
 Clar
 清明

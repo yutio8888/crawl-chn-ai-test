@@ -561,6 +561,14 @@ android command menu summary|Quick Abilities
 
 点按能力即可使用；长按可查看说明
 %%%%
+android command menu summary|Long press for details
+
+长按可查看详细说明
+%%%%
+android command menu summary|Unavailable
+
+当前无法使用
+%%%%
 android command menu|Previous
 
 上一页

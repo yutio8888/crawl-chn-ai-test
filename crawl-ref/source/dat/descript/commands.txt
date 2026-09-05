@@ -593,3 +593,11 @@ android command menu|Next
 
 Next
 %%%%
+android command menu summary|Long press for details
+
+Long press for details
+%%%%
+android command menu summary|Unavailable
+
+Unavailable
+%%%%

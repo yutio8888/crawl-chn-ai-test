@@ -12,6 +12,7 @@
 #include "libutil.h"
 #include "macro.h"
 #include "outer-menu.h"
+#include "options.h"
 #include "player.h"
 #include "prompt.h"
 #include "spl-cast.h"
@@ -22,6 +23,9 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "ui.h"
+#ifdef __ANDROID__
+#include "syscalls.h"
+#endif
 
 namespace
 {
@@ -30,9 +34,58 @@ static const int DRAWER_PADDING = 24;
 static const int COMMAND_MENU_ITEM_HEIGHT = 72;
 static const int COMMAND_MENU_ITEM_PADDING = 12;
 static const int COMMAND_MENU_ICON_GAP = 16;
-static const int QUICK_ICON_ROWS = 2;
-static const int QUICK_ICON_COLS = 6;
-static const int QUICK_ICON_PAGE_SIZE = QUICK_ICON_ROWS * QUICK_ICON_COLS;
+static const int QUICK_ICON_PAGE_SIZE = 12;
+
+static shared_ptr<ui::Text> _drawer_text(const formatted_string &content)
+{
+    auto text = make_shared<ui::Text>(content);
+#ifdef __ANDROID__
+    // Unlike legacy CRT menus, drawer rows can wrap and scroll at the larger
+    // message font size without imposing a fixed-column minimum width.
+    text->set_font(tiles.get_msg_font());
+    text->set_wrap_text(true);
+#endif
+    return text;
+}
+
+static int _command_item_height()
+{
+#ifdef __ANDROID__
+    const int pixels = (int) ceil(48 * jni_get_display_density());
+    return max(COMMAND_MENU_ITEM_HEIGHT,
+               display_density.apply_game_scale(pixels + Options.game_scale - 1));
+#else
+    return COMMAND_MENU_ITEM_HEIGHT;
+#endif
+}
+
+static bool _negative_status(int status)
+{
+    if (status < NUM_DURATIONS)
+        return duration_negative((duration_type) status);
+    // These effects are intrinsically harmful. Mixed-purpose statuses such as
+    // terrain, clouds, speed and regeneration deliberately keep their order.
+    switch (status)
+    {
+    case STATUS_BEHELD:
+    case STATUS_NET:
+    case STATUS_BACKLIT:
+    case STATUS_CONSTRICTED:
+    case STATUS_LIQUEFIED:
+    case STATUS_DRAINED:
+    case STATUS_NO_SCROLL:
+    case STATUS_RF_ZERO:
+    case STATUS_CORROSION:
+    case STATUS_NO_POTIONS:
+    case STATUS_LOWERED_WL:
+    case STATUS_STAT_ZERO:
+    case STATUS_CLAUSTROPHOBIA:
+    case STATUS_OSTRACISM:
+        return true;
+    default:
+        return false;
+    }
+}
 
 static string _status_description(const status_info &info)
 {
@@ -57,12 +110,30 @@ static string _command_menu_text(const char *context, const char *text)
     return translated.empty() ? text : translated;
 }
 
-static formatted_string _build_status_text()
+static formatted_string _build_status_text(int selected_status)
 {
     formatted_string text(LIGHTGREY);
     bool found_status = false;
 
+    vector<int> statuses;
     for (int status = 0; status <= STATUS_LAST_STATUS; ++status)
+    {
+        status_info info;
+        if (fill_status_info(status, info))
+            statuses.push_back(status);
+    }
+    const auto priority = [selected_status](int status) {
+        if (status == selected_status)
+            return 0;
+        if (_negative_status(status))
+            return 1;
+        return 2;
+    };
+    stable_sort(statuses.begin(), statuses.end(), [&](int a, int b) {
+        return priority(a) < priority(b);
+    });
+
+    for (int status : statuses)
     {
         status_info info;
         if (!fill_status_info(status, info))
@@ -80,7 +151,13 @@ static formatted_string _build_status_text()
 
         text.textcolour(info.light_colour ? info.light_colour : LIGHTGREY);
         text += title;
-        if (!description.empty() && description != title)
+        if (!info.short_text.empty() && info.short_text != title)
+        {
+            text += "\n";
+            text += formatted_string::parse_string(info.short_text, LIGHTGREY);
+        }
+        if (!description.empty() && description != title
+            && description != info.short_text)
         {
             text += "\n";
             text += formatted_string::parse_string(description, LIGHTGREY);
@@ -94,16 +171,18 @@ static formatted_string _build_status_text()
     return text;
 }
 
-// One tappable entry in a quick-access page. Only the enum value is stored:
-// the live spell or talent is resolved again when the entry is used, so a page
-// can never act on a stale reference.
+// One tappable entry in a quick-access page. Display strings are owned snapshots;
+// the live spell or talent is resolved by enum again when the entry is used, so
+// a page can never act on a stale reference.
 struct quick_entry
 {
     int idx;
     char letter;
     tileidx_t tile;
-    int cost;
+    string cost;
     bool usable;
+    string name;
+    string reason;
 };
 
 // Memorised spells in the same deterministic letter order the spell tab and
@@ -123,8 +202,10 @@ static vector<quick_entry> _quick_spell_entries()
         entry.idx = (int) spell;
         entry.letter = letter;
         entry.tile = tileidx_spell(spell);
-        entry.cost = spell_mana(spell);
-        entry.usable = !spell_is_useless(spell, true, true);
+        entry.cost = string(T_("MP")) + make_stringf(": %d", spell_mana(spell));
+        entry.name = spell_title(spell);
+        entry.reason = spell_uselessness_reason(spell, true, true);
+        entry.usable = entry.reason.empty();
         entries.push_back(entry);
     }
 
@@ -143,8 +224,14 @@ static vector<quick_entry> _quick_ability_entries()
         entry.idx = (int) tal.which;
         entry.letter = tal.hotkey;
         entry.tile = tileidx_ability(tal.which);
-        entry.cost = (int) ability_mp_cost(tal.which);
+        entry.cost = make_cost_description(tal.which);
         entry.usable = check_ability_possible(tal.which, true);
+        entry.name = ability_name(tal.which);
+        if (!entry.usable)
+        {
+            entry.reason = _command_menu_text("android command menu summary",
+                                              "Unavailable");
+        }
         entries.push_back(entry);
     }
 
@@ -154,8 +241,7 @@ static vector<quick_entry> _quick_ability_entries()
 static string _quick_entry_caption(const quick_entry &entry)
 {
     string caption = isaalpha(entry.letter) ? string(1, entry.letter) : "-";
-    if (entry.cost > 0)
-        caption += make_stringf(" %d", entry.cost);
+    caption += "  " + entry.cost;
     return caption;
 }
 
@@ -457,9 +543,9 @@ struct quick_page_refs
 
 } // namespace
 
-void show_topbar_status_drawer()
+void show_topbar_status_drawer(int selected_status)
 {
-    auto text = make_shared<ui::Text>(_build_status_text());
+    auto text = _drawer_text(_build_status_text(selected_status));
     text->set_wrap_text(true);
 
     auto scroller = make_shared<DrawerScroller>();
@@ -497,17 +583,17 @@ command_type show_topbar_command_menu(bool *acted)
 
         auto labels = make_shared<ui::Box>(ui::Widget::VERT);
         labels->expand_h = true;
-        labels->add_child(make_shared<ui::Text>(
+        labels->add_child(_drawer_text(
             formatted_string(std::move(label), WHITE)));
 
-        auto summary_text = make_shared<ui::Text>(
+        auto summary_text = _drawer_text(
             formatted_string(std::move(summary), LIGHTGREY));
         summary_text->set_wrap_text(true);
         labels->add_child(std::move(summary_text));
         row->add_child(std::move(labels));
 
         auto button = make_shared<MenuButton>();
-        button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
+        button->min_size().height = _command_item_height();
         button->highlight_colour = BROWN;
         button->set_child(std::move(row));
         buttons.push_back(button);
@@ -523,7 +609,7 @@ command_type show_topbar_command_menu(bool *acted)
     scroller->expand_h = scroller->expand_v = true;
 
     const auto make_compact_button = [&buttons](string label) {
-        auto text = make_shared<ui::Text>(
+        auto text = _drawer_text(
             formatted_string(std::move(label), WHITE));
         text->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
 
@@ -534,8 +620,8 @@ command_type show_topbar_command_menu(bool *acted)
         return button;
     };
 
-    // Build one quick-access page: a title, a Back entry, the icon buttons in
-    // pages of at most QUICK_ICON_ROWS x QUICK_ICON_COLS, and explicit
+    // Build one quick-access page: a title, a Back entry, full-width cards in
+    // pages of at most QUICK_ICON_PAGE_SIZE, and explicit
     // Previous/Next controls with a current/total indicator when more than one
     // icon page exists. A tap records the entry and closes the drawer; the
     // action itself runs afterwards, outside the pushed layout.
@@ -547,10 +633,16 @@ command_type show_topbar_command_menu(bool *acted)
         auto page = make_shared<ui::Box>(ui::Widget::VERT);
         page->set_cross_alignment(ui::Widget::STRETCH);
 
-        auto page_title = make_shared<ui::Text>(
+        auto page_title = _drawer_text(
             formatted_string(title_label, YELLOW));
         page_title->set_margin_for_sdl(0, 0, 16, 0);
         page->add_child(std::move(page_title));
+
+        auto hint = _drawer_text(formatted_string(
+            _command_menu_text("android command menu summary",
+                               "Long press for details"), LIGHTGREY));
+        hint->set_wrap_text(true);
+        page->add_child(std::move(hint));
 
         refs.back = make_button(
             _command_menu_text("android command menu", "Back"),
@@ -570,67 +662,73 @@ command_type show_topbar_command_menu(bool *acted)
             auto grid = make_shared<ui::Box>(ui::Widget::VERT);
             grid->set_cross_alignment(ui::Widget::STRETCH);
 
-            for (int row = 0; row < QUICK_ICON_ROWS; ++row)
+            // A single column lets the text use all available drawer width;
+            // wrapped names and reasons determine each card's height.
+            for (int row = 0; row < QUICK_ICON_PAGE_SIZE; ++row)
             {
-                auto strip = make_shared<ui::Box>(ui::Widget::HORZ);
-                strip->set_cross_alignment(ui::Widget::CENTER);
-                bool filled = false;
-
-                for (int col = 0; col < QUICK_ICON_COLS; ++col)
-                {
-                    const size_t at = (size_t) icon_page * QUICK_ICON_PAGE_SIZE
-                                      + (size_t) row * QUICK_ICON_COLS + col;
-                    if (at >= entries.size())
-                        break;
-
-                    const quick_entry &entry = entries[at];
-                    auto cell = make_shared<ui::Box>(ui::Widget::VERT);
-                    cell->set_cross_alignment(ui::Widget::CENTER);
-                    cell->set_main_alignment(ui::Widget::CENTER);
-                    cell->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING / 2);
-                    cell->add_child(
-                        make_shared<ui::Image>(tile_def(entry.tile)));
-                    cell->add_child(make_shared<ui::Text>(formatted_string(
-                        _quick_entry_caption(entry),
-                        entry.usable ? LIGHTGREY : DARKGREY)));
-
-                    auto button = make_shared<QuickButton>();
-                    button->min_size().height = COMMAND_MENU_ITEM_HEIGHT;
-                    button->highlight_colour = BROWN;
-                    button->expand_h = true;
-                    button->set_child(std::move(cell));
-
-                    const int idx = entry.idx;
-                    button->on_activate_event(
-                        [&, idx, is_spell](const ui::ActivateEvent&) {
-                            if (is_spell)
-                                quick_spell = (spell_type) idx;
-                            else
-                                quick_ability = (ability_type) idx;
-                            done = true;
-                            return true;
-                        });
-                    button->on_describe = [&scroller, idx, is_spell]() {
-                        if (is_spell)
-                            describe_spell((spell_type) idx);
-                        else
-                            describe_ability((ability_type) idx);
-                        // The moves that opened this gesture left the drawer
-                        // scroller mid-drag; drop it so returning to the page
-                        // does not scroll from a stale origin.
-                        scroller->cancel_drag();
-                    };
-
-                    buttons.push_back(button);
-                    if (!refs.focus)
-                        refs.focus = button;
-                    strip->add_child(std::move(button));
-                    filled = true;
-                }
-
-                if (!filled)
+                const size_t at = (size_t) icon_page * QUICK_ICON_PAGE_SIZE
+                                  + row;
+                if (at >= entries.size())
                     break;
-                grid->add_child(std::move(strip));
+
+                const quick_entry &entry = entries[at];
+                auto cell = make_shared<ui::Box>(ui::Widget::HORZ);
+                cell->set_cross_alignment(ui::Widget::CENTER);
+                cell->set_margin_for_sdl(COMMAND_MENU_ITEM_PADDING);
+                auto icon = make_shared<ui::Image>(tile_def(entry.tile));
+                icon->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP, 0, 0);
+                cell->add_child(std::move(icon));
+                auto labels = make_shared<ui::Box>(ui::Widget::VERT);
+                labels->set_cross_alignment(ui::Widget::STRETCH);
+                labels->expand_h = true;
+                auto name = _drawer_text(formatted_string(
+                    entry.name, entry.usable ? WHITE : LIGHTGREY));
+                name->set_wrap_text(true);
+                labels->add_child(std::move(name));
+                auto caption = _drawer_text(formatted_string(
+                    _quick_entry_caption(entry), LIGHTGREY));
+                caption->set_wrap_text(true);
+                labels->add_child(std::move(caption));
+                if (!entry.reason.empty())
+                {
+                    auto reason = _drawer_text(formatted_string(
+                        entry.reason, LIGHTRED));
+                    reason->set_wrap_text(true);
+                    labels->add_child(std::move(reason));
+                }
+                cell->add_child(std::move(labels));
+
+                auto button = make_shared<QuickButton>();
+                button->min_size().height = _command_item_height();
+                button->highlight_colour = BROWN;
+                button->expand_h = true;
+                button->set_child(std::move(cell));
+
+                const int idx = entry.idx;
+                button->on_activate_event(
+                    [&, idx, is_spell](const ui::ActivateEvent&) {
+                        if (is_spell)
+                            quick_spell = (spell_type) idx;
+                        else
+                            quick_ability = (ability_type) idx;
+                        done = true;
+                        return true;
+                    });
+                button->on_describe = [&scroller, idx, is_spell]() {
+                    if (is_spell)
+                        describe_spell((spell_type) idx);
+                    else
+                        describe_ability((ability_type) idx);
+                    // The moves that opened this gesture left the drawer
+                    // scroller mid-drag; drop it so returning to the page
+                    // does not scroll from a stale origin.
+                    scroller->cancel_drag();
+                };
+
+                buttons.push_back(button);
+                if (!refs.focus)
+                    refs.focus = button;
+                grid->add_child(std::move(button));
             }
 
             icon_pages->add_child(std::move(grid));
@@ -641,7 +739,7 @@ command_type show_topbar_command_menu(bool *acted)
 
         if (icon_page_count > 1)
         {
-            auto indicator = make_shared<ui::Text>(formatted_string(
+            auto indicator = _drawer_text(formatted_string(
                 make_stringf("1 / %d", icon_page_count), LIGHTGREY));
             indicator->set_margin_for_sdl(0, COMMAND_MENU_ICON_GAP);
 
@@ -711,12 +809,16 @@ command_type show_topbar_command_menu(bool *acted)
 
     auto main_page = make_shared<ui::Box>(ui::Widget::VERT);
     main_page->set_cross_alignment(ui::Widget::STRETCH);
-    auto main_title = make_shared<ui::Text>(formatted_string(
+    auto main_title = _drawer_text(formatted_string(
         _command_menu_text("android command menu", "Game menu"), YELLOW));
     main_title->set_margin_for_sdl(0, 0, 16, 0);
     main_page->add_child(std::move(main_title));
 
-    shared_ptr<MenuButton> primary_button;
+    // Contextual entries must not shift the stable command positions when the
+    // player moves off stairs or picks up the last item on a square.
+    auto context_commands = make_shared<ui::Box>(ui::Widget::VERT);
+    context_commands->set_cross_alignment(ui::Widget::STRETCH);
+    context_commands->set_margin_for_sdl(16, 0, 0, 0);
     const dungeon_feature_type feature = env.grid(you.pos());
     const command_type stair_command = feat_stair_direction(feature);
     if (stair_command != CMD_NO_CMD && !feat_is_altar(feature))
@@ -744,8 +846,8 @@ command_type show_topbar_command_menu(bool *acted)
             summary = "Go Downstairs";
         }
 
-        primary_button = add_command_button(
-            main_page,
+        add_command_button(
+            context_commands,
             _command_menu_text("android command menu", label),
             _command_menu_text("android command menu summary", summary),
             tileidx_feature(you.pos()), stair_command);
@@ -753,22 +855,18 @@ command_type show_topbar_command_menu(bool *acted)
 
     if (you.visible_igrd(you.pos()) != NON_ITEM)
     {
-        const auto pickup = add_command_button(
-            main_page,
+        add_command_button(
+            context_commands,
             _command_menu_text("android command menu", "Pick Up"),
             _command_menu_text("android command menu summary", "Pick Up"),
             TILEG_TAB_ITEM, CMD_PICKUP);
-        if (!primary_button)
-            primary_button = pickup;
     }
 
-    const auto explore = add_command_button(
+    const auto primary_button = add_command_button(
         main_page,
         _command_menu_text("android command menu", "Auto-explore"),
         _command_menu_text("android command menu summary", "Auto-explore"),
         tileidx_command(CMD_EXPLORE), CMD_EXPLORE);
-    if (!primary_button)
-        primary_button = explore;
 
     add_command_button(
         main_page,
@@ -787,7 +885,6 @@ command_type show_topbar_command_menu(bool *acted)
             _command_menu_text("android command menu", "Quick Cast"),
             _command_menu_text("android command menu summary", "Quick Cast"),
             TILEG_TAB_SPELL);
-        main_page->add_child(quick_spell_entry);
     }
     add_command_button(
         main_page,
@@ -802,7 +899,6 @@ command_type show_topbar_command_menu(bool *acted)
             _command_menu_text("android command menu summary",
                                "Quick Abilities"),
             TILEG_TAB_ABILITY);
-        main_page->add_child(quick_ability_entry);
     }
     add_command_button(
         main_page,
@@ -827,9 +923,16 @@ command_type show_topbar_command_menu(bool *acted)
         TILEG_TAB_COMMAND2);
     main_page->add_child(more);
 
+    if (quick_spell_entry)
+        context_commands->add_child(quick_spell_entry);
+    if (quick_ability_entry)
+        context_commands->add_child(quick_ability_entry);
+    if (context_commands->num_children())
+        main_page->add_child(context_commands);
+
     auto more_page = make_shared<ui::Box>(ui::Widget::VERT);
     more_page->set_cross_alignment(ui::Widget::STRETCH);
-    auto more_title = make_shared<ui::Text>(
+    auto more_title = _drawer_text(
         formatted_string(more_label, YELLOW));
     more_title->set_margin_for_sdl(0, 0, 16, 0);
     more_page->add_child(std::move(more_title));

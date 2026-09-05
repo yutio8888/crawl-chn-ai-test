@@ -138,11 +138,16 @@ class QuickAccessPageTests(unittest.TestCase):
         self.assertIsNotNone(match, name)
         return int(match.group(1))
 
-    def test_icon_grid_is_two_by_six_per_page(self) -> None:
-        self.assertEqual(2, self.constant("QUICK_ICON_ROWS"))
-        self.assertEqual(6, self.constant("QUICK_ICON_COLS"))
-        self.assertIn("QUICK_ICON_PAGE_SIZE = QUICK_ICON_ROWS * QUICK_ICON_COLS",
-                      self.source)
+    def test_cards_keep_twelve_entries_per_page_and_wrap_display_text(self) -> None:
+        # Static regression checks only; actual fitting and scrolling need SDL.
+        self.assertEqual(12, self.constant("QUICK_ICON_PAGE_SIZE"))
+        self.assertNotIn("QUICK_ICON_COLS", self.source)
+        self.assertIn("entry.name = spell_title(spell)", self.source)
+        self.assertIn("entry.name = ability_name(tal.which)", self.source)
+        self.assertIn("entry.cost = make_cost_description(tal.which)", self.source)
+        for label in ("name", "caption", "reason"):
+            self.assertIn(f"{label}->set_wrap_text(true)", self.source)
+        self.assertIn('T_("MP")', self.source)
 
     def test_entry_points_require_a_non_empty_list(self) -> None:
         for guard, label in (
@@ -246,7 +251,7 @@ class QuickRowTests(unittest.TestCase):
         # nothing quick-row specific leaked into the shared ability region
         self.assertNotIn("quick", source.lower())
 
-    def test_row_is_reserved_only_while_a_live_list_is_non_empty(self) -> None:
+    def test_row_requires_a_live_list_and_available_space(self) -> None:
         live = self.fn("void TilesFramework::quick_row_live_lists")
         self.assertIn("you.spell_no > 0", live)
         self.assertIn("your_talents(true).empty()", live)
@@ -257,9 +262,19 @@ class QuickRowTests(unittest.TestCase):
         layout = self.fn("void TilesFramework::do_layout()")
         self.assertRegex(
             layout,
+            r"int quick_row_h = m_quick_row_spells \|\| m_quick_row_abilities"
+            r"\s*\? m_region_quick_spl->dy : 0;")
+        self.assertRegex(
+            layout,
             r"m_quick_row_shown\s*=\s*use_top_bar\s*&&\s*"
-            r"\(m_quick_row_spells \|\| m_quick_row_abilities\)")
-        # both lists empty: no cells at all, so no blank strip is reserved
+            r"quick_row_h > 0")
+        # A live list must also yield when it would shrink the full LOS.
+        self.assertRegex(
+            layout,
+            r"if \(m_windowsz.y - min_top_bar_h - msg_min_h - quick_row_h"
+            r"\s*< ENV_SHOW_DIAMETER \* m_region_tile->dy\)"
+            r"\s*\{\s*quick_row_h = 0;")
+        # Empty lists or insufficient space leave no drawable/hittable cells.
         self.assertRegex(layout, r"m_region_quick_spl->resize\(0, 0\)")
         self.assertRegex(layout, r"m_region_quick_abl->resize\(0, 0\)")
 
