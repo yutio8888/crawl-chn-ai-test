@@ -92,6 +92,11 @@ class UseItemMenu : public InvMenu
     void clear() override;
     bool examine_index(int i) override;
     bool cycle_mode(bool forward) override;
+#ifdef __ANDROID__
+    ui::InputScreen keyboard_screen() const override
+    { return ui::InputScreen::USE_ITEM; }
+    std::array<ui::InputAction, 6> keyboard_actions() override;
+#endif
     void save_hover();
     void restore_hover(bool preserve_pos);
     string get_keyhelp(bool scrollable) const override;
@@ -782,6 +787,35 @@ string UseItemMenu::get_keyhelp(bool) const
             return pad_more_with(r, desc_key.size() ? desc_key : eu_modes);
     }
 }
+
+#ifdef __ANDROID__
+// Mirror get_keyhelp and process_key: only keys this menu really dispatches.
+std::array<ui::InputAction, 6> UseItemMenu::keyboard_actions()
+{
+    std::array<ui::InputAction, 6> actions;
+    size_t slot = 2;
+    if (_equip_oper(oper))
+    {
+        // Tab switches to the opposite operation; label it by destination.
+        const bool equipping = generalize_oper(oper) == OPER_EQUIP;
+        actions[slot++] = {T_(equipping ? "unequip" : "equip"), CK_TAB};
+    }
+    if (oper != OPER_ANY && available_modes.size() > 1)
+        actions[slot++] = {"", '!'};
+    if (show_unarmed() && slot < actions.size())
+        actions[slot++] = {"", '-'};
+    const bool easy_floor = Options.easy_floor_use && item_floor.size() == 1
+        && (is_inventory || !inv_header);
+    if (inv_header && floor_header && !easy_floor && slot < actions.size())
+        actions[slot++] = {"", ','};
+    if (is_set(MF_ARROWS_SELECT) && item_type_filter != OSEL_UNIDENT
+        && slot < actions.size())
+    {
+        actions[slot++] = {"", '?'};
+    }
+    return actions;
+}
+#endif
 
 bool UseItemMenu::process_key(int key)
 {
@@ -1637,18 +1671,14 @@ bool can_unequip_item(item_def& item, bool silent)
     if (is_unrandom_artefact(item, UNRAND_DEMON_AXE) && you.beheld())
     {
         if (!silent)
-        {
             mprf(MSGCH_PROMPT, T_("Your thirst for blood prevents you from unwielding your weapon!"));
-        }
         return false;
     }
 
     if (you.duration[DUR_VAINGLORY] && is_unrandom_artefact(item, UNRAND_VAINGLORY))
     {
         if (!silent)
-        {
             mprf(MSGCH_PROMPT, T_("It would be unfitting for someone so glorious to remove their crown in front of an audience."));
-        }
         return false;
     }
 

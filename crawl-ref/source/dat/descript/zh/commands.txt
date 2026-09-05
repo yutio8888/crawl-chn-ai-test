@@ -491,7 +491,7 @@ android command menu summary|Mutations
 %%%%
 android command menu|Commands
 
-命令列表
+命令帮助
 %%%%
 android command menu summary|Commands
 
@@ -563,7 +563,7 @@ android command menu summary|Quick Abilities
 %%%%
 android command menu summary|Long press for details
 
-长按可查看详细说明
+长按查看说明
 %%%%
 android command menu summary|Unavailable
 
@@ -576,4 +576,20 @@ android command menu|Previous
 android command menu|Next
 
 下一页
+%%%%
+android command menu|Close
+
+关闭
+%%%%
+android command menu|Exit
+
+出入口
+%%%%
+android command menu summary|No items here
+
+脚下没有可拾取的物品
+%%%%
+android command menu summary|No exit here
+
+脚下没有可使用的出入口
 %%%%

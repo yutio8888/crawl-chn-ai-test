@@ -580,8 +580,10 @@ string SkillMenuSwitch::get_help()
                 && have_passive(passive_t::bondage_skill_boost))
             {
                 if (chinese)
+                {
                     causes.push_back(make_stringf(T_("%s's power"),
                                                   god_name(you.religion).c_str()));
+                }
                 else
                     causes.push_back(apostrophise(god_name(you.religion))
                                      + " power");
@@ -589,17 +591,25 @@ string SkillMenuSwitch::get_help()
             if (_any_crosstrained())
                 causes.push_back(T_("cross-training"));
             if (_hermit_bonus())
+            {
                 causes.push_back(chinese ? T_("Hermit's Pendant")
                                          : "the Hermit's pendant");
+            }
             if (_wildshape_bonus())
+            {
                 causes.push_back(chinese ? C_("skill cause", "wildshape")
                                          : "wildshape");
+            }
             if (_charlatan_bonus())
+            {
                 causes.push_back(chinese ? T_("Charlatan's Orb")
                                          : "the Charlatan's Orb");
+            }
             if (you.form == transformation::walking_scroll)
+            {
                 causes.push_back(chinese ? T_("scribal knowledge")
                                          : "scribal knowledge");
+            }
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
@@ -621,17 +631,23 @@ string SkillMenuSwitch::get_help()
             if (player_under_penance(GOD_ASHENZARI))
             {
                 if (chinese)
+                {
                     causes.push_back(make_stringf(T_("%s's anger"),
                                                   god_name(GOD_ASHENZARI).c_str()));
+                }
                 else
                     causes.push_back("Ashenzari's anger");
             }
             if (_hermit_penalty())
+            {
                 causes.push_back(chinese ? T_("Hermit's Pendant")
                                          : "the Hermit's pendant");
+            }
             if (you.has_bane(BANE_DILETTANTE))
+            {
                 causes.push_back(chinese ? T_("Bane of the Dilettante")
                                          : "the Bane of the Dilettante");
+            }
             if (!result.empty())
                 result += " ";
             if (chinese)
@@ -671,9 +687,7 @@ string SkillMenuSwitch::get_help()
 
         string result = T_("The relative cost of raising each skill is in <cyan>cyan</cyan>");
         if (skm.is_set(SKMF_MANUAL))
-        {
             result += T_(" (or <lightred>red</lightred> if enhanced by a manual)");
-        }
         result += T_(".\n");
         return result;
     }
@@ -1017,6 +1031,32 @@ void SkillMenu::clear_flag(int flag)
 {
     m_flags &= ~flag;
 }
+
+#ifdef __ANDROID__
+// Switch hotkeys from init_switches/init_buttons; a switch with a single
+// state has size() == 0 and ignores its key.
+std::array<ui::InputAction, 6> SkillMenu::keyboard_actions() const
+{
+    std::array<ui::InputAction, 6> actions;
+    if (is_set(SKMF_EXPERIENCE))
+        actions[0] = {"", CK_ENTER};
+    actions[1] = {"", CK_ESCAPE};
+    auto has_switch = [this](skill_menu_switch sw)
+    {
+        auto it = m_switches.find(sw);
+        return it != m_switches.end() && it->second && it->second->size() > 0;
+    };
+    if (has_switch(SKM_VIEW))
+        actions[2] = {"", '!'};
+    if (has_switch(SKM_SHOW))
+        actions[3] = {"", '*'};
+    if (has_switch(SKM_MODE))
+        actions[4] = {T_("mode"), '/'};
+    if (!is_set(SKMF_SPECIAL))
+        actions[5] = {T_("help"), '?'};
+    return actions;
+}
+#endif
 
 bool SkillMenu::is_set(int flag) const
 {
@@ -1541,9 +1581,7 @@ void SkillMenu::set_default_help()
 {
     string text;
     if (is_set(SKMF_EXPERIENCE))
-    {
         text = T_("Select the skills you want to be trained. The chosen skills will be raised to the level shown in <cyan>cyan</cyan>.");
-    }
     else if (is_set(SKMF_SIMPLE))
         text = hints_skills_info();
     else
@@ -1960,6 +1998,10 @@ void skill_menu(int flag, int exp)
         return;
     }
 
+#ifdef __ANDROID__
+    ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
+                                        skm.keyboard_actions(), popup);
+#endif
     ui::run_layout(std::move(popup), done);
 
     skm.clear();
