@@ -372,9 +372,8 @@ public class SDLActivity extends AppCompatActivity {
     protected void onPause() {
         Log.v(TAG, "onPause()");
 
-        // CRAWL HACK: Save game
-        SDLActivity.nativeSaveGame();
-
+        // CRAWL HACK: the pause save is requested from handleNativeState(),
+        // which every route into the background reaches.
         super.onPause();
         mNextNativeState = NativeState.PAUSED;
         mIsResumedCalled = false;
@@ -562,6 +561,24 @@ public class SDLActivity extends AppCompatActivity {
 
         // Try a transition to paused state
         if (mNextNativeState == NativeState.PAUSED) {
+            // CRAWL HACK: Save game. Every route into the background funnels
+            // through this one RESUMED -> PAUSED transition: onPause(), losing
+            // window focus to a system window such as the notification shade,
+            // and surfaceDestroyed(). It is also the last moment SDLThread is
+            // still running, because nativePause() below parks it in
+            // Android_PumpEvents() until the next resume.
+            //
+            // The native call hands the save to SDLThread and waits for it
+            // with a bound, so only ask when that thread can answer. Coming
+            // from any state other than RESUMED means SDLThread is already
+            // parked, and a departed thread (mSDLThread cleared by
+            // handleNativeExit(), which then calls finish() and so reaches
+            // this transition) would never answer at all; either way the wait
+            // would just burn its whole timeout.
+            if (mCurrentNativeState == NativeState.RESUMED
+                    && mSDLThread != null) {
+                nativeSaveGame();
+            }
             nativePause();
             mSurface.handlePause();
             mCurrentNativeState = mNextNativeState;
