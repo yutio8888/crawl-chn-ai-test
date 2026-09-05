@@ -55,6 +55,7 @@ bool ensure_utf8_ctype()
 #endif
 
 #ifdef __ANDROID__
+#include <atomic>
 #include "player.h"
 #include "ui.h"
 #include <errno.h>
@@ -205,10 +206,26 @@ bool jni_keyboard_control(int action)
     return shown;
 }
 
+static std::atomic<bool> input_context_refresh(false);
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeResetInputContext(JNIEnv*, jclass)
+{
+    // Only the event thread owns the cached descriptor. Keep a reset arriving
+    // during publication pending for its next wait, rather than losing it.
+    input_context_refresh.store(true);
+    SDL_Event event = {};
+    event.type = SDL_WINDOWEVENT;
+    event.window.event = SDL_WINDOWEVENT_EXPOSED;
+    SDL_PushEvent(&event); // Wake an existing wait; first startup may have none.
+}
+
 void jni_input_context(const ui::InputDescriptor& descriptor)
 {
     static ui::InputDescriptor last;
     static bool sent = false;
+    if (input_context_refresh.exchange(false))
+        sent = false;
     if (sent && last == descriptor)
         return;
     JNIEnv *env = Android_JNI_GetEnv();

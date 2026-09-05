@@ -262,7 +262,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         // keep every target at least 48dp even when an older installation has
         // a smaller keyboard-size preference saved.
         int effectiveSize = size;
-        if (keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4) {
+        if (keyboardOption == 4) {
             int minimumTouchTarget = Math.round(
                     MINIMUM_TOUCH_TARGET_DP * getResources().getDisplayMetrics().density);
             effectiveSize = Math.max(size, minimumTouchTarget);

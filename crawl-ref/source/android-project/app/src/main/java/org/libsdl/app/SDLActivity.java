@@ -299,8 +299,8 @@ public class SDLActivity extends AppCompatActivity {
         mKeyboard = new DCSSKeyboard(this);
         mKeyboard.setVisibility(View.INVISIBLE);
         mKeyboard.initKeyboard(keyboardOption, keyboardSize);
-        // Context changes and manual full/compact switches change row count
-        // without changing visibility. Reserve the actual post-layout height.
+        // Reserve the initial measured height. Context and manual layout
+        // switches now share the same fixed four-row height.
         mKeyboard.addOnLayoutChangeListener((view, left, top, right, bottom,
                 oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom - top != oldBottom - oldTop) {
@@ -354,6 +354,9 @@ public class SDLActivity extends AppCompatActivity {
         keyboardsLayout.setLayoutParams(keyLParams);
         mLayout.addView(keyboardsLayout);
         setContentView(mLayout);
+        // The native deduplication cache survives an Activity recreation.
+        // Request publication only after the replacement keyboard is ready.
+        nativeResetInputContext();
         // CRAWL HACK: Custom keyboard (END)
 
         // Get filename from "Open with" of another application
@@ -951,6 +954,7 @@ public class SDLActivity extends AppCompatActivity {
     }
 
     public static native void nativeKeyboardKey(int key);
+    public static native void nativeResetInputContext();
 
     // CRAWL HACK: Function used to toggle the keyboard, called using JNI.
     public static boolean jniKeyboardControl(int action) {
