@@ -26,6 +26,7 @@
         android:appCategory="game">
         <activity
             android:name=".DCSSLauncher"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
@@ -37,22 +38,27 @@
         </activity>
         <activity
             android:name=".DungeonCrawlStoneSoup"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DCSSTextViewer"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DCSSTextEditor"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DCSSMorgue"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DCSSMods"
+            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
     </application>
