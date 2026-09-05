@@ -29,6 +29,43 @@ public:
     text_input_box() : ui::Box(ui::Widget::VERT) {}
     bool accepts_text_input() const override { return true; }
 };
+
+class scroll_test_content : public ui::Widget
+{
+public:
+    void _render() override {}
+    ui::SizeReq _get_preferred_size(Direction dim, int) override
+    {
+        return dim == VERT ? ui::SizeReq{400, 400} : ui::SizeReq{200, 200};
+    }
+};
+}
+
+TEST_CASE("Finger scroll only affects a scroller at its origin", "[ui-touch]")
+{
+    REQUIRE_FALSE(ui::has_layout());
+    CHECK_FALSE(ui::scroll_touch_at(50, 50, -30));
+    auto scroller = make_shared<ui::Scroller>();
+    scroller->set_child(make_shared<scroll_test_content>());
+    {
+        test_layout layout(scroller);
+        scroller->allocate_region({0, 0, 200, 100});
+        CHECK(ui::scroll_touch_at(50, 50, -30));
+        CHECK(scroller->get_scroll() == 30);
+        CHECK_FALSE(ui::scroll_touch_at(50, 101, -30));
+        CHECK(scroller->get_scroll() == 30);
+        CHECK(ui::scroll_touch_at(50, 50, 60));
+        CHECK(scroller->get_scroll() == 0);
+        {
+            auto modal = make_shared<ui::Box>(ui::Widget::VERT);
+            test_layout nested(modal);
+            modal->allocate_region({0, 0, 200, 100});
+            CHECK_FALSE(ui::scroll_touch_at(50, 50, -30));
+            CHECK(scroller->get_scroll() == 0);
+        }
+        CHECK(ui::scroll_touch_at(50, 50, -30));
+        CHECK(scroller->get_scroll() == 30);
+    }
 }
 
 TEST_CASE("Input context follows focus and nested layout restoration", "[ui-input]")

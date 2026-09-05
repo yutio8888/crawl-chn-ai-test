@@ -267,11 +267,17 @@ class HiscoreScroller : public Scroller
 public:
     virtual void _allocate_region();
     int scroll_target = 0;
+private:
+    bool initial_scroll_pending = true;
 };
 
 void HiscoreScroller::_allocate_region()
 {
-    m_scroll = scroll_target - m_region.height/2;
+    if (initial_scroll_pending)
+    {
+        m_scroll = scroll_target - m_region.height/2;
+        initial_scroll_pending = false;
+    }
     Scroller::_allocate_region();
 }
 

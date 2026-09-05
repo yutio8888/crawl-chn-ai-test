@@ -1275,6 +1275,9 @@ shared_ptr<Widget> top_layout();
 // visibility toggle. Values are shared with DCSSKeyboard.java.
 enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
 InputContext input_context();
+#ifdef USE_TILE_LOCAL
+bool scroll_touch_at(int x, int y, int delta_y);
+#endif
 
 class TextInputScope
 {

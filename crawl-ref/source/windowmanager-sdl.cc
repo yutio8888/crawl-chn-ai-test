@@ -1035,6 +1035,16 @@ int SDLWrapper::wait_event(wm_event *event, int timeout)
         _translate_event(sdlevent.button, event->mouse_event);
         break;
     case SDL_MOUSEWHEEL:
+#ifdef __ANDROID__
+        if (sdlevent.wheel.which == SDL_TOUCH_MOUSEID)
+        {
+            if (s_event_mouse_position_valid)
+                ui::scroll_touch_at(s_event_mouse_x, s_event_mouse_y,
+                    display_density.apply_game_scale(sdlevent.wheel.y));
+            // Never expose finger scrolling as a dungeon wheel command.
+            return 0;
+        }
+#endif
         event->type = WME_MOUSEWHEEL;
         _translate_wheel_event(sdlevent.wheel, event->mouse_event);
         break;

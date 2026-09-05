@@ -286,16 +286,7 @@ private:
             const auto &mouse = static_cast<const ui::MouseEvent&>(event);
             if (!m_dragging)
             {
-#ifdef __ANDROID__
-                // SDL's Android touch adapter emits Move/Up, but no Down, for
-                // a single-finger swipe. Treat the first in-panel move as the
-                // drag origin; taps still arrive as Down/Up at release time.
-                m_dragging = true;
-                m_last_y = mouse.y();
-                return true;
-#else
                 return false;
-#endif
             }
 
             set_scroll(get_scroll() + m_last_y - mouse.y());

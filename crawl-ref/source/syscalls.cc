@@ -60,6 +60,7 @@ bool ensure_utf8_ctype()
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <jni.h>
+#include <SDL.h>
 
 extern "C"
 {
@@ -67,6 +68,25 @@ extern "C"
 }
 
 AAssetManager *_android_asset_manager = nullptr; // XXX
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLActivity_nativeTouchScroll(
+    JNIEnv*, jclass, jfloat x, jfloat y, jfloat delta_y)
+{
+    // SDL's Android_OnMouse hardcodes mouse ID 0, so onNativeMouse cannot
+    // distinguish a finger swipe from a real wheel. Reuse SDL's touch mouse
+    // source marker; this wheel's delta is pixels, consumed only by Scroller.
+    SDL_Event events[2] = {};
+    events[0].type = SDL_MOUSEMOTION;
+    events[0].motion.which = SDL_TOUCH_MOUSEID;
+    events[0].motion.x = static_cast<int>(x);
+    events[0].motion.y = static_cast<int>(y);
+    events[1].type = SDL_MOUSEWHEEL;
+    events[1].wheel.which = SDL_TOUCH_MOUSEID;
+    events[1].wheel.y = static_cast<int>(delta_y);
+    // Add together so another producer cannot separate the origin and delta.
+    SDL_PeepEvents(events, 2, SDL_ADDEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+}
 
 time_t jni_package_last_update_time()
 {
