@@ -1603,22 +1603,22 @@ void Menu::do_menu()
 #ifdef __ANDROID__
     std::array<ui::InputAction, 6> keyboard_actions;
     auto keyboard_screen = ui::InputScreen::DEFAULT;
-    if (tag == "inventory")
+    if (tag == "inventory" || tag == "pickup")
     {
         keyboard_screen = ui::InputScreen::INVENTORY;
         if (!is_set(MF_NOSELECT))
-            keyboard_actions[0] = {T_("Confirm"), CK_ENTER};
+            keyboard_actions[0] = {"", CK_ENTER};
         if (!is_set(MF_UNCANCEL))
-            keyboard_actions[1] = {T_("Back"), CK_ESCAPE};
+            keyboard_actions[1] = {"", CK_ESCAPE};
         if (is_set(MF_PAGED_INVENTORY))
         {
-            keyboard_actions[2] = {T_("Previous category"), CK_LEFT};
-            keyboard_actions[3] = {T_("Next category"), CK_RIGHT};
+            keyboard_actions[2] = {"", CK_LEFT};
+            keyboard_actions[3] = {"", CK_RIGHT};
         }
         if (is_set(MF_MULTISELECT))
             keyboard_actions[4] = {T_("Select all"), ','};
         if (action_cycle != CYCLE_NONE)
-            keyboard_actions[5] = {T_("Switch action"), '!'};
+            keyboard_actions[5] = {"", '!'};
     }
     else if (m_kmc == KMC_CONFIRM)
     {

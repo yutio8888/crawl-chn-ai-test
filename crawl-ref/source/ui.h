@@ -1297,6 +1297,8 @@ struct InputAction
     InputAction(string text = "", int input = 0)
         : label(std::move(text)), key(input) {}
     string label;
+    // key == 0 means absent. Empty labels on present shell actions resolve
+    // from Android resources by screen and slot, without a TextDB asset edit.
     int key;
     bool operator==(const InputAction& other) const
     { return label == other.label && key == other.key; }

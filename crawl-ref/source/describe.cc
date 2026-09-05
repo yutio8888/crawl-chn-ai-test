@@ -4248,7 +4248,7 @@ command_type describe_item_popup(const item_def &item,
     bool show_spell_success = false;
 #ifdef __ANDROID__
     std::array<ui::InputAction, 6> keyboard_actions;
-    keyboard_actions[1] = {T_("Back"), CK_ESCAPE};
+    keyboard_actions[1] = {"", CK_ESCAPE};
     size_t slot = 2;
     // Prefer direct item interactions over quiver/letter/training metadata.
     // Reuse the actual page parser and footer, including overloaded keys.
@@ -5034,7 +5034,7 @@ void describe_spell(spell_type spell, const monster_info *mon_owner,
 
 #ifdef __ANDROID__
     ui::InputActionScope keyboard_scope(ui::InputScreen::SPELL,
-                                        {{{}, {T_("Back"), CK_ESCAPE}}}, popup);
+                                        {{{}, {"", CK_ESCAPE}}}, popup);
 #endif
     ui::run_layout(std::move(popup), done);
 }

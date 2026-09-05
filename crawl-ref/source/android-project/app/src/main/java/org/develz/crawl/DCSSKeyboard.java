@@ -293,6 +293,44 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
 
     // Called on the Android UI thread. Repeated native input waits must not
     // override a user's manual choice of full/compact/numeric layout.
+    // Screen values match ui::InputScreen. No translated text is an identity.
+    private int contextLabelResource(int screen, int slot) {
+        switch (screen) {
+            case 1: // Inventory (including pickup)
+                switch (slot) {
+                    case 0: return R.string.ok;
+                    case 1: return R.string.back;
+                    case 2: return R.string.keyboard_previous_category;
+                    case 3: return R.string.keyboard_next_category;
+                    case 5: return R.string.keyboard_switch_action;
+                }
+                break;
+            case 2: // Item description
+            case 3: // Spell description
+                if (slot == 1) return R.string.back;
+                break;
+            case 4: // Targeting
+                switch (slot) {
+                    case 0: return R.string.ok;
+                    case 1: return R.string.cancel;
+                    case 2: return R.string.keyboard_previous_target;
+                    case 3: return R.string.keyboard_next_target;
+                    case 4: return R.string.keyboard_self;
+                }
+                break;
+            case 7: // Level map
+                switch (slot) {
+                    case 1: return R.string.back;
+                    case 2: return R.string.keyboard_upstairs;
+                    case 3: return R.string.keyboard_downstairs;
+                    case 4: return R.string.keyboard_portals;
+                    case 5: return R.string.keyboard_traps;
+                }
+                break;
+        }
+        return 0;
+    }
+
     public void setInputContext(int context, int screen, String[] labels, int[] keys) {
         if (keyboardMode == 0 || keyboardMode == 3) {
             return;
@@ -302,9 +340,14 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         for (int i = 0; i < contextButtons.length; ++i) {
             Button button = contextButtons[i];
             final int key = keys[i];
-            boolean active = key != 0 && labels[i] != null && !labels[i].isEmpty();
-            button.setText(labels[i]);
-            button.setContentDescription(labels[i]);
+            String label = labels[i] == null ? "" : labels[i];
+            if (key != 0 && label.isEmpty()) {
+                int resource = contextLabelResource(screen, i);
+                if (resource != 0) label = getResources().getString(resource);
+            }
+            boolean active = key != 0 && !label.isEmpty();
+            button.setText(label);
+            button.setContentDescription(label);
             button.setEnabled(active);
             button.setVisibility(active ? View.VISIBLE : View.INVISIBLE);
             button.setOnClickListener(active ? v -> sendContextKey(key) : null);
