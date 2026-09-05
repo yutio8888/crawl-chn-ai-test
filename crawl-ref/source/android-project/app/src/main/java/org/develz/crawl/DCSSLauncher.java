@@ -6,10 +6,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -25,7 +24,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnItemSelectedListener, TextWatcher, CompoundButton.OnCheckedChangeListener {
+public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
 
     public final static String TAG = "LAUNCHER";
 
@@ -51,9 +50,6 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
     // Default keyboard size in dp
     private int defaultKbSizeDp;
-
-    // Guard TextWatcher callbacks while normalizing an out-of-range value.
-    private boolean updatingKeyboardSize;
 
     // Screen density
     private float density;
@@ -96,7 +92,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         density = getResources().getDisplayMetrics().density;
         defaultKbSizeDp = Math.round(getResources().getDimension(R.dimen.key_height) / density);
         int storedKeyboardSizeDp = preferences.getInt("keyboard_size", defaultKbSizeDp);
-        int keyboardSizeDp = clampKeyboardSizeDp(storedKeyboardSizeDp);
+        int keyboardSizeDp = normalizedKeyboardSize(Integer.toString(storedKeyboardSizeDp));
         if (keyboardSizeDp != storedKeyboardSizeDp) {
             preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
         }
@@ -123,7 +119,18 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         // Keyboard size input
         ksizeEditText = findViewById(R.id.keyboardSize);
         ksizeEditText.setText(String.format(Locale.getDefault(), "%d", keyboardSizeDp));
-        ksizeEditText.addTextChangedListener(this);
+        ksizeEditText.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus) {
+                commitKeyboardSize();
+            }
+        });
+        ksizeEditText.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                commitKeyboardSize();
+            }
+            // Let the IME also perform its normal Done action (dismissal).
+            return false;
+        });
 
         // Full screen switch
         fullScreenSwitch = findViewById(R.id.fullScreen);
@@ -203,6 +210,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
 
     // Start game
     private void startGame(View v) {
+        // A touch on Start need not move focus away from the size editor.
+        commitKeyboardSize();
         long clickTime = SystemClock.elapsedRealtime();
         Log.i("AndroidStartup", "start_game_click elapsed_realtime_ms=" + clickTime);
         Intent intent = new Intent(getBaseContext(), DungeonCrawlStoneSoup.class);
@@ -251,6 +260,9 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         if (parent.getId() == R.id.keyboardSpinner) {
             keyboardOption = position;
             preferences.edit().putInt("keyboard", position).apply();
+            if (ksizeEditText != null) {
+                commitKeyboardSize();
+            }
         } else if (parent.getId() == R.id.extraKeyboardSpinner) {
             extraKeyboardOption = position;
             preferences.edit().putInt("extra_keyboard", position).apply();
@@ -262,50 +274,42 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         // This shouldn't happen
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (updatingKeyboardSize) {
-            return;
+    private void commitKeyboardSize() {
+        int keyboardSizeDp = normalizedKeyboardSize(ksizeEditText.getText().toString());
+        String normalized = String.format(Locale.getDefault(), "%d", keyboardSizeDp);
+        if (!normalized.contentEquals(ksizeEditText.getText())) {
+            ksizeEditText.setText(normalized);
+            ksizeEditText.setSelection(normalized.length());
         }
-        try {
-            int requestedSizeDp = Integer.parseInt(charSequence.toString());
-            int keyboardSizeDp = clampKeyboardSizeDp(requestedSizeDp);
-            if (keyboardSizeDp != requestedSizeDp) {
-                updatingKeyboardSize = true;
-                ksizeEditText.setText(String.format(Locale.getDefault(), "%d", keyboardSizeDp));
-                ksizeEditText.setSelection(ksizeEditText.getText().length());
-                updatingKeyboardSize = false;
-            }
-            keyboardSizePx = keyboardSizeDp * density;
-            preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Invalid keyboard size: " + e.getMessage());
-            keyboardSizePx = defaultKbSizeDp * density;
-            updatingKeyboardSize = true;
-            ksizeEditText.setText(String.format(Locale.getDefault(), "%d", defaultKbSizeDp));
-            ksizeEditText.setSelection(ksizeEditText.getText().length());
-            updatingKeyboardSize = false;
-        }
+        keyboardSizePx = keyboardSizeDp * density;
+        preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
     }
 
-    private int clampKeyboardSizeDp(int keyboardSizeDp) {
+    private int normalizedKeyboardSize(String input) {
         // The full keyboard has four rows. Limit a key row to one sixth of the
         // shortest display side so rotation always leaves room for the game
         // surface, including row spacing and system insets.
         int shortestSidePx = Math.min(
                 getResources().getDisplayMetrics().widthPixels,
                 getResources().getDisplayMetrics().heightPixels);
-        int maximumSizeDp = Math.max(
-                defaultKbSizeDp,
+        return normalizeKeyboardSizeDp(input, keyboardOption, defaultKbSizeDp,
                 (int) Math.floor(shortestSidePx / density / 6.0f));
-        return Math.max(0, Math.min(keyboardSizeDp, maximumSizeDp));
     }
 
-    @Override
-    public void afterTextChanged(Editable editable) {}
+    static int normalizeKeyboardSizeDp(String input, int keyboardOption,
+                                       int defaultSizeDp, int displayLimitDp) {
+        int requestedSizeDp;
+        try {
+            requestedSizeDp = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            requestedSizeDp = defaultSizeDp;
+        }
+        // Match the compact keyboard's actual touch target. Other modes keep
+        // accepting zero, and keyboard visibility remains controlled by mode.
+        int minimumSizeDp = keyboardOption == 4 ? DCSSKeyboard.MINIMUM_TOUCH_TARGET_DP : 0;
+        int maximumSizeDp = Math.max(minimumSizeDp, Math.max(defaultSizeDp, displayLimitDp));
+        return Math.max(minimumSizeDp, Math.min(requestedSizeDp, maximumSizeDp));
+    }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
