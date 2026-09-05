@@ -228,8 +228,10 @@ static vector<quick_entry> _quick_ability_entries()
         entry.usable = check_ability_possible(tal.which, true);
         entry.name = ability_name(tal.which);
         if (!entry.usable)
+        {
             entry.reason = _command_menu_text("android command menu summary",
                                               "Unavailable");
+        }
         entries.push_back(entry);
     }
 
