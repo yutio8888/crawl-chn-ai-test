@@ -264,8 +264,20 @@ public:
     }
     void remove_by_target(Target *target)
     {
-        if (alive)
-            handlers.erase(target);
+        if (!alive)
+            return;
+        const auto range = handlers.equal_range(target);
+        vector<HandlerSig> removed;
+        removed.reserve(std::distance(range.first, range.second));
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            removed.emplace_back();
+            removed.back().swap(it->second);
+        }
+        // Captured widgets can remove their own handlers on destruction.
+        // Finish erasing empty nodes before releasing any captured objects:
+        // reentry could otherwise erase this range's end iterator.
+        handlers.erase(range.first, range.second);
     }
 protected:
     bool alive {true};
