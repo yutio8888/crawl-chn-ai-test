@@ -285,13 +285,13 @@ public class SDLActivity extends AppCompatActivity {
                 } else {
                     mImeBottomInset = 0;
                 }
-                updateSurfaceSize();
                 v.setPadding(
                     leftInset,
                     topInset,
                     rightInset,
                     insets.getSystemWindowInsetBottom()
                 );
+                v.post(SDLActivity::updateSurfaceSize);
                 return insets.consumeSystemWindowInsets();
             });
         }
@@ -300,6 +300,7 @@ public class SDLActivity extends AppCompatActivity {
         mKeyboard = new DCSSKeyboard(this);
         mKeyboard.setVisibility(View.INVISIBLE);
         mKeyboard.initKeyboard(keyboardOption, keyboardSize);
+        mKeyboard.setGeometryChangedListener(SDLActivity::updateSurfaceSize);
         // Context changes and manual full/compact switches change row count
         // without changing visibility. Reserve the actual post-layout height.
         mKeyboard.addOnLayoutChangeListener((view, left, top, right, bottom,
@@ -354,6 +355,13 @@ public class SDLActivity extends AppCompatActivity {
         keyLParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         keyboardsLayout.setLayoutParams(keyLParams);
         mLayout.addView(keyboardsLayout);
+        keyboardsLayout.addOnLayoutChangeListener((view, left, top, right, bottom,
+                oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (right - left != oldRight - oldLeft
+                    || bottom - top != oldBottom - oldTop) {
+                updateSurfaceSize();
+            }
+        });
         setContentView(mLayout);
         // CRAWL HACK: Custom keyboard (END)
 
@@ -1322,10 +1330,29 @@ public class SDLActivity extends AppCompatActivity {
     // keyboard (IME). On API 30+ the IME height comes directly from WindowInsets;
     // on pre-API 30 we fall back to manual measurement of the keyboard layout.
     protected static void updateSurfaceSize() {
+        if (mSurface == null || keyboardsLayout == null || mKeyboard == null) {
+            return;
+        }
         boolean keyboardActive = mScreenKeyboardShown
             && (keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4);
 
-        if (keyboardActive) {
+        mKeyboard.updateAvailableSpace(keyboardsLayout.getWidth(), keyboardsLayout.getHeight(),
+                keyboardActive && mImeBottomInset == 0);
+        int side = mKeyboard.getLandscapeLeftWidth();
+        int rightSide = mKeyboard.getLandscapeRightWidth();
+        RelativeLayout.LayoutParams surfaceParams =
+                (RelativeLayout.LayoutParams) mSurface.getLayoutParams();
+        int width = side == 0 ? ViewGroup.LayoutParams.MATCH_PARENT
+                : keyboardsLayout.getWidth() - side - rightSide;
+        if (surfaceParams.width != width || surfaceParams.leftMargin != side
+                || surfaceParams.rightMargin != rightSide) {
+            surfaceParams.width = width;
+            surfaceParams.leftMargin = side;
+            surfaceParams.rightMargin = rightSide;
+            mSurface.setLayoutParams(surfaceParams);
+        }
+
+        if (keyboardActive && side == 0) {
             int surfaceHeight;
             // API 30+ IME path: WindowInsets.Type.ime() reports exact keyboard height
             if (Build.VERSION.SDK_INT >= 30 && mImeBottomInset > 0) {

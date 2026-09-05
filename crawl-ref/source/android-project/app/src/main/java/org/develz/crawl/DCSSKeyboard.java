@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Space;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,6 +21,12 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     public static final int CONTEXT_TEXT = 2;
     private int inputContext = -1;
     private int keyboardMode;
+    private boolean landscapeSplit;
+    private int sideWidth;
+    private final java.util.List<View> mobileRows = new java.util.ArrayList<>();
+    private final java.util.List<java.util.List<View>> mobileKeys = new java.util.ArrayList<>();
+    private Runnable geometryChanged;
+    private final android.util.SparseIntArray actionMaxLines = new android.util.SparseIntArray();
 
     // Keyboards
     private final View keyboardLower;
@@ -50,6 +58,20 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         keyboardNumeric = findViewById(R.id.keyboard_numeric);
         keyboardMobile = findViewById(R.id.keyboard_mobile);
         compactToggle = findViewById(R.id.key_compact_lower);
+        LinearLayout mobile = (LinearLayout) keyboardMobile;
+        for (int row = 0; row < mobile.getChildCount(); row++) {
+            ViewGroup rowView = (ViewGroup) mobile.getChildAt(row);
+            mobileRows.add(rowView);
+            java.util.List<View> keys = new java.util.ArrayList<>();
+            for (int key = 0; key < rowView.getChildCount(); key++) {
+                keys.add(rowView.getChildAt(key));
+            }
+            mobileKeys.add(keys);
+        }
+        for (int id : new int[] {R.id.key_mobile_explore, R.id.key_mobile_autofight,
+                R.id.key_mobile_inventory, R.id.key_mobile_pickup}) {
+            actionMaxLines.put(id, ((Button) findViewById(id)).getMaxLines());
+        }
 
         // Initialize key buttons - lower keyboard
         initKey(R.id.key_q);
@@ -307,6 +329,101 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         if (!full) {
             keyboardMobile.bringToFront();
         }
+        notifyGeometryChanged();
+    }
+
+    public void setGeometryChangedListener(Runnable listener) {
+        geometryChanged = listener;
+    }
+
+    private void notifyGeometryChanged() {
+        if (geometryChanged != null) {
+            geometryChanged.run();
+        }
+    }
+
+    // Keep a square central viewport, with a 320dp floor, rather than gaining
+    // height by squeezing the map into an unusably narrow strip.
+    static boolean canSplit(int width, int height, int keySize, int minimumCenter) {
+        return width > height && keySize > 0 && height >= 3 * keySize
+                && width - 7 * keySize >= Math.max(height, minimumCenter);
+    }
+
+    public int getLandscapeLeftWidth() {
+        return landscapeSplit ? sideWidth : 0;
+    }
+
+    public int getLandscapeRightWidth() {
+        return landscapeSplit ? sideWidth / 3 * 4 : 0;
+    }
+
+    public void updateAvailableSpace(int width, int height, boolean active) {
+        int minimum = Math.round(MINIMUM_TOUCH_TARGET_DP
+                * getResources().getDisplayMetrics().density);
+        int keySize = Math.max(minimum,
+                findViewById(R.id.key_mobile_7).getLayoutParams().height);
+        boolean split = active && keyboardMobile.getVisibility() == View.VISIBLE
+                && canSplit(width, height, keySize,
+                    Math.round(320 * getResources().getDisplayMetrics().density));
+        if (split == landscapeSplit && (!split || sideWidth == 3 * keySize)) {
+            return;
+        }
+        landscapeSplit = split;
+        sideWidth = 3 * keySize;
+        LinearLayout mobile = (LinearLayout) keyboardMobile;
+        // Preserve the same views, key tags, accessibility text and listeners.
+        for (java.util.List<View> keys : mobileKeys) {
+            for (View key : keys) {
+                ((ViewGroup) key.getParent()).removeView(key);
+            }
+        }
+        mobile.removeAllViews();
+        mobile.setOrientation(split ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
+        if (split) {
+            LinearLayout left = new LinearLayout(getContext());
+            LinearLayout right = new LinearLayout(getContext());
+            left.setOrientation(LinearLayout.VERTICAL);
+            right.setOrientation(LinearLayout.VERTICAL);
+            left.setBaselineAligned(false);
+            right.setBaselineAligned(false);
+            mobile.addView(left, new LinearLayout.LayoutParams(sideWidth, -2));
+            mobile.addView(new Space(getContext()), new LinearLayout.LayoutParams(0, 1, 1));
+            mobile.addView(right, new LinearLayout.LayoutParams(4 * keySize, -2));
+            for (java.util.List<View> keys : mobileKeys) {
+                LinearLayout leftRow = new LinearLayout(getContext());
+                LinearLayout rightRow = new LinearLayout(getContext());
+                leftRow.setBaselineAligned(false);
+                rightRow.setBaselineAligned(false);
+                left.addView(leftRow, new LinearLayout.LayoutParams(-1, keySize));
+                right.addView(rightRow, new LinearLayout.LayoutParams(-1, keySize));
+                for (int i = 0; i < keys.size(); i++) {
+                    (i < 3 ? leftRow : rightRow).addView(keys.get(i),
+                            new LinearLayout.LayoutParams(0, keySize, 1));
+                }
+            }
+        } else {
+            for (int row = 0; row < mobileRows.size(); row++) {
+                LinearLayout original = (LinearLayout) mobileRows.get(row);
+                mobile.addView(original);
+                java.util.List<View> keys = mobileKeys.get(row);
+                for (int i = 0; i < keys.size(); i++) {
+                    original.addView(keys.get(i), new LinearLayout.LayoutParams(0,
+                            keySize, i < 3 ? 11 : row == 2 ? 9 : 13.5f));
+                }
+            }
+        }
+        findViewById(R.id.main_layout).setBackgroundColor(
+                split || keyboardMode == 2 ? Color.TRANSPARENT : Color.BLACK);
+        // Large system fonts must wrap within the narrower side actions rather
+        // than paint across their neighbour. Keep the user's scaled font size.
+        int padding = split ? Math.round(4 * getResources().getDisplayMetrics().density) : 0;
+        for (int i = 0; i < actionMaxLines.size(); i++) {
+            Button action = findViewById(actionMaxLines.keyAt(i));
+            int lines = split ? 2 : actionMaxLines.valueAt(i);
+            action.setSingleLine(lines == 1);
+            action.setMaxLines(lines);
+            action.setPadding(padding, 0, padding, 0);
+        }
     }
 
     // Swap keyboards
@@ -353,6 +470,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             keyboardMobile.setVisibility(View.GONE);
             keyboardLower.setVisibility(View.VISIBLE);
         }
+        notifyGeometryChanged();
     }
 
     // Turn keyboard transparent
