@@ -44,6 +44,7 @@ POLICY_PREFIXES = (
 POLICY_FILES = {
     "AGENTS.md",
     "CODEX.md",
+    "DSH.md",
     "docs/agent-routing.md",
     "docs/build-workflow.md",
     "docs/cjk-tiles-architecture.md",

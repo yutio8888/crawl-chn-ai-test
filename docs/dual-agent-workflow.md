@@ -1,4 +1,4 @@
-# Cross-Runtime Collaboration — Pi and Codex
+# Cross-Runtime Collaboration — Pi, Codex, and DSH
 
 This document defines shared handoff and ownership. Runtime capabilities and
 model assignments change over time; read current runtime configuration instead
@@ -28,6 +28,8 @@ claims here.
 
 - Pi-authored branches use `pi/<topic>` by default.
 - Codex-authored branches use `codex/<topic>` by default.
+- DSH-authored branches use `dsh/<topic>` by default; see `DSH.md` for the
+  experimental compatibility contract.
 
 Branch naming does not replace commit review or attribution.
 
@@ -48,13 +50,13 @@ creating or posting a handoff. Existing user authority governs remote comments.
 
 ### Worktrees are shared infrastructure
 
-Both runtimes follow `.agents/policies/worktree-policy.md`. Pi has an
-additional extension guard, while Codex obeys the same relative
-`.worktrees/<name>` rule through its shell behavior.
+All runtimes follow `.agents/policies/worktree-policy.md`. Pi has an
+additional extension guard; Codex and DSH must follow the same relative
+`.worktrees/<name>` rule without relying on Pi's guard.
 
 ### Authorship is truthful
 
-- Pi and Codex use a declared runtime identity when required; otherwise they
+- Pi, Codex, and DSH use a declared runtime identity when required; otherwise they
   omit the co-author trailer rather than borrowing another identity.
 
 ## Handoff Protocol

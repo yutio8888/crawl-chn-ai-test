@@ -2,7 +2,7 @@
 
 > Status: **canonical shared instructions**. This file is intentionally
 > runtime-neutral. Runtime-specific tool syntax belongs in
-> `.pi/APPEND_SYSTEM.md` or `CODEX.md`.
+> `.pi/APPEND_SYSTEM.md`, `CODEX.md`, or `DSH.md`.
 
 This repository contains the DCSS Chinese translation, i18n tooling, and CJK
 tiles work. Read this file first in every agent runtime. For the source-of-truth
@@ -16,6 +16,7 @@ After this file, read only the adapter for the active runtime:
 |---|---|
 | Pi | `.pi/APPEND_SYSTEM.md` |
 | Codex | `CODEX.md` |
+| DSH | `DSH.md` (experimental compatibility contract) |
 
 Adapters translate tool syntax only. They must not weaken the shared policies
 in this file or `.agents/policies/`.
@@ -179,8 +180,8 @@ Authorship must match the runtime that actually produced the change. Follow the
 active runtime's declared identity policy; if no trailer is required, omit it
 rather than inventing or borrowing an identity.
 
-Branch names are an ownership signal: Pi uses `pi/<topic>` and Codex uses
-`codex/<topic>` unless the user requests another name.
+Branch names are an ownership signal: Pi uses `pi/<topic>`, Codex uses
+`codex/<topic>`, and DSH uses `dsh/<topic>` unless the user requests another name.
 
 ## Task Completion and Cleanup
 

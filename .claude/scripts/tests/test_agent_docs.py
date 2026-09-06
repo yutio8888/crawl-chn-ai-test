@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[3]
 ENTRY_POINTS = [
     ROOT / "AGENTS.md",
     ROOT / "CODEX.md",
+    ROOT / "DSH.md",
     ROOT / ".pi/APPEND_SYSTEM.md",
 ]
 
@@ -67,6 +68,7 @@ class AgentDocumentationTests(unittest.TestCase):
         limits = {
             "AGENTS.md": 220,
             "CODEX.md": 100,
+            "DSH.md": 100,
             ".pi/APPEND_SYSTEM.md": 100,
         }
         for path in ENTRY_POINTS:
@@ -86,6 +88,33 @@ class AgentDocumentationTests(unittest.TestCase):
         for path in ENTRY_POINTS:
             with self.subTest(path=path.relative_to(ROOT)):
                 self.assertIsNone(model_pattern.search(path.read_text()))
+
+    def test_dsh_adapter_is_reference_driven_and_explicitly_experimental(self) -> None:
+        text = " ".join((ROOT / "DSH.md").read_text().split())
+        for fragment in (
+            "experimental, documentation-level adapter",
+            "docs/agent-routing.md",
+            ".agents/skills/<name>/SKILL.md",
+            "context_resolve.sh",
+            "sole-writer",
+            "not a registered native role",
+            "self-check is not an independent approval",
+            "translation assets are written sequentially by their single owner",
+            "run_in_background: true",
+            "authorized escalation path",
+            "do not themselves provide resource isolation",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, text)
+        self.assertIn("| DSH | `DSH.md`", (ROOT / "AGENTS.md").read_text())
+        self.assertIn("`DSH.md`", (ROOT / ".agents/README.md").read_text())
+        self.assertIn("dsh/<topic>", (ROOT / "docs/dual-agent-workflow.md").read_text())
+        self.assertIn("dsh/<topic>", (ROOT / "AGENTS.md").read_text())
+        self.assertIn("DSH.md", (ROOT / "README.md").read_text())
+        self.assertIn(
+            '"DSH.md",',
+            (ROOT / ".claude/scripts/check_path_portability.py").read_text(),
+        )
 
     def test_pi_runtime_configuration_is_native_and_guarded(self) -> None:
         settings = json.loads((ROOT / ".pi/settings.json").read_text())
