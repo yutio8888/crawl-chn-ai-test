@@ -430,7 +430,10 @@ class GameActionRowTests(unittest.TestCase):
     resources it names. Turn accounting and delivery need device tests.
     """
 
-    GAME_KEYS = ("'5'", "'q'", "'r'", "'f'", "'z'", "'a'")
+    GAME_ROW = ("CMD_REST", "CMD_QUAFF", "CMD_READ", "CMD_FIRE", "CMD_CAST_SPELL",
+                "CMD_USE_ABILITY")
+    GAME_LABELS = ("keyboard_rest", "keyboard_quaff", "keyboard_read", "keyboard_fire",
+                   "keyboard_cast", "keyboard_ability")
 
     def setUp(self) -> None:
         self.ui_h = (ROOT / "crawl-ref/source/ui.h").read_text(encoding="utf-8")
@@ -440,8 +443,8 @@ class GameActionRowTests(unittest.TestCase):
 
     def screens(self) -> list:
         body = block_after(self.ui_h, "enum class InputScreen")
-        return [name.strip() for name in body.strip("{}").replace("\n", "").split(",")
-                if name.strip()]
+        body = re.sub(r"//[^\n]*", "", body)
+        return re.findall(r"\b[A-Z][A-Z_]*\b", body)
 
     def game_branch(self) -> str:
         function = block_after(self.ui_cc, "InputDescriptor input_descriptor()")
@@ -452,48 +455,52 @@ class GameActionRowTests(unittest.TestCase):
                         function.index(anchor))
         return block_after(function, anchor)
 
-    def test_game_screen_is_appended_last_and_shared_with_java(self) -> None:
+    def test_game_screen_ordinal_is_shared_with_java(self) -> None:
         screens = self.screens()
-        self.assertEqual("GAME", screens[-1])
+        # Append-only: the value is shared with DCSSKeyboard.java.
+        self.assertEqual(screens.index("QUIVER") + 1, screens.index("GAME"))
         self.assertIn("case %d: // Ordinary dungeon commands" % screens.index("GAME"),
                       self.java)
 
-    def test_game_actions_are_plain_default_keys(self) -> None:
+    def test_game_actions_follow_the_live_bindings(self) -> None:
         branch = self.game_branch()
-        keys = re.findall(r"InputAction\(\"\",\s*('.')\)", branch)
-        self.assertEqual(list(self.GAME_KEYS), keys)
-        for key in keys:
-            # Only printable characters reach the game through the
-            # InputConnection; CK_* keys need the native bridge allowlist.
-            self.assertTrue(32 <= ord(key[1]) <= 126, key)
+        row = block_after(branch, "static const command_type row[6] =")
+        self.assertEqual(list(self.GAME_ROW), re.findall(r"CMD_\w+", row))
+        self.assertIn("_printable_command_key(row[slot])", branch)
+        # Only printable characters reach the game through the
+        # InputConnection; CK_* keys need the native bridge allowlist.
+        helper = block_after(self.ui_cc, "static int _printable_command_key(command_type cmd)")
+        self.assertIn("command_to_keys(cmd)", helper)
+        self.assertIn("key >= 32 && key <= 126", helper)
         self.assertNotIn("CK_", branch)
         self.assertIn("InputScreen::GAME", branch)
 
-    def test_java_labels_cover_exactly_the_published_keys(self) -> None:
+    def test_java_labels_resolve_by_slot(self) -> None:
         case = self.java[self.java.index("// Ordinary dungeon commands"):]
         case = case[:case.index("break;")]
-        labelled = re.findall(r"case ('.'): return R\.string\.(keyboard_\w+);", case)
-        self.assertEqual(list(self.GAME_KEYS), [key for key, _ in labelled])
-        names = [name for _, name in labelled]
-        self.assertEqual("keyboard_rest", names[0])
+        self.assertIn("switch (slot)", case)
+        labelled = dict(re.findall(r"case (\d): return R\.string\.(keyboard_\w+);", case))
+        self.assertEqual({str(i): name for i, name in enumerate(self.GAME_LABELS)},
+                         labelled)
         for qualifier in ("values", "values-zh"):
             strings = AndroidFirstRunTests().string_names(qualifier)
-            for name in names + ["keyboard_wait"]:
+            for name in self.GAME_LABELS + ("keyboard_wait",):
                 self.assertIn(name, strings, qualifier)
 
     def test_centre_key_waits_only_in_the_dungeon(self) -> None:
         function = block_after(self.java, "public void setInputContext(")
-        self.assertIn("KeyEvent.KEYCODE_PERIOD", function)
-        self.assertRegex(function, r"center\.setTag\(Integer\.toString\(gameplay \? "
-                         r"KeyEvent\.KEYCODE_PERIOD\s*:\s*KeyEvent\.KEYCODE_NUMPAD_5\)\);")
-        self.assertIn("R.string.keyboard_wait) : \"5\"", function)
+        self.assertRegex(function, r"retarget\(R\.id\.key_mobile_5,\s*gameplay \? "
+                         r"KeyEvent\.KEYCODE_PERIOD : KeyEvent\.KEYCODE_NUMPAD_5,\s*"
+                         r"gameplay \? getResources\(\)\.getString\(R\.string\.keyboard_wait\)"
+                         r" : \"5\"\);")
         self.assertNotIn("R.string.keyboard_rest", function)
-        # The static layout keeps numpad 5 until the dungeon context arrives.
+        # The static layout pairs the wait label with the wait key
+        # (KEYCODE_PERIOD = 56) so no publish window shows Wait but rests.
         root = ET.parse(ANDROID_MOBILE_LAYOUT).getroot()
         android = "{http://schemas.android.com/apk/res/android}"
         tags = {node.attrib.get(android + "id"): node.attrib.get(android + "tag")
                 for node in root.iter("Button")}
-        self.assertEqual("149", tags["@+id/key_mobile_5"])
+        self.assertEqual("56", tags["@+id/key_mobile_5"])
 
     def test_wait_and_rest_labels_differ_in_every_locale(self) -> None:
         for qualifier in ("values", "values-zh", "values-zh-rCN"):

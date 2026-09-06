@@ -3232,6 +3232,18 @@ InputActionScope::~InputActionScope()
     input_action_scope = previous;
 }
 
+// The first key of a command's live binding that can travel through the
+// InputConnection as a character, or 0 when the command has none. Reading the
+// binding table keeps the row truthful under user key layouts such as
+// dvorak_command_keys.txt, which the APK ships in its settings assets.
+static int _printable_command_key(command_type cmd)
+{
+    for (int key : command_to_keys(cmd))
+        if (key >= 32 && key <= 126)
+            return key;
+    return 0;
+}
+
 InputDescriptor input_descriptor()
 {
     InputDescriptor result;
@@ -3249,19 +3261,18 @@ InputDescriptor input_descriptor()
         // Ordinary dungeon command input owns the compact keyboard's action
         // row only while no layout or scope is on top; every menu, prompt or
         // targeter above it replaces these with its own actions. Keys are
-        // the default bindings, sent as plain characters through the
-        // InputConnection, so the game's own availability rules, prompts and
-        // turn accounting apply unchanged. Labels resolve from Android
-        // resources by screen and key.
+        // sent as plain characters through the InputConnection, so the
+        // game's own availability rules, prompts and turn accounting apply
+        // unchanged. Labels resolve from Android resources by slot, so a
+        // rebound key keeps its label and an unbound command leaves its slot
+        // empty rather than sending a stale character.
+        static const command_type row[6] = {
+            CMD_REST, CMD_QUAFF, CMD_READ, CMD_FIRE, CMD_CAST_SPELL,
+            CMD_USE_ABILITY,
+        };
         result.screen = InputScreen::GAME;
-        result.actions = {{
-            InputAction("", '5'), // CMD_REST
-            InputAction("", 'q'), // CMD_QUAFF
-            InputAction("", 'r'), // CMD_READ
-            InputAction("", 'f'), // CMD_FIRE
-            InputAction("", 'z'), // CMD_CAST_SPELL
-            InputAction("", 'a'), // CMD_USE_ABILITY
-        }};
+        for (size_t slot = 0; slot < result.actions.size(); ++slot)
+            result.actions[slot] = InputAction("", _printable_command_key(row[slot]));
     }
     return result;
 }

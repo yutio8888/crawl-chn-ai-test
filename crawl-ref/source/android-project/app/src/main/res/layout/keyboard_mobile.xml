@@ -90,7 +90,7 @@
 
         <Button
             android:id="@+id/key_mobile_5"
-            android:tag="149"
+            android:tag="56"
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="11"

@@ -404,14 +404,14 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                     case '-': return R.string.keyboard_clear_quiver;
                 }
                 break;
-            case 18: // Ordinary dungeon commands
-                switch (key) {
-                    case '5': return R.string.keyboard_rest;
-                    case 'q': return R.string.keyboard_quaff;
-                    case 'r': return R.string.keyboard_read;
-                    case 'f': return R.string.keyboard_fire;
-                    case 'z': return R.string.keyboard_cast;
-                    case 'a': return R.string.keyboard_ability;
+            case 18: // Ordinary dungeon commands; keys follow the live bindings
+                switch (slot) {
+                    case 0: return R.string.keyboard_rest;
+                    case 1: return R.string.keyboard_quaff;
+                    case 2: return R.string.keyboard_read;
+                    case 3: return R.string.keyboard_fire;
+                    case 4: return R.string.keyboard_cast;
+                    case 5: return R.string.keyboard_ability;
                 }
                 break;
         }
@@ -450,19 +450,15 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         }
         inputContext = context;
         boolean gameplay = context == CONTEXT_GAME;
-        Button explore = findViewById(R.id.key_mobile_explore);
-        explore.setTag(Integer.toString(gameplay ? KeyEvent.KEYCODE_O : KeyEvent.KEYCODE_ENTER));
-        explore.setText(gameplay ? R.string.keyboard_explore : R.string.ok);
-        explore.setContentDescription(getResources().getString(
-                gameplay ? R.string.keyboard_explore : R.string.ok));
+        retarget(R.id.key_mobile_explore,
+                gameplay ? KeyEvent.KEYCODE_O : KeyEvent.KEYCODE_ENTER,
+                getResources().getString(gameplay ? R.string.keyboard_explore : R.string.ok));
         // In the dungeon the centre of the pad waits one turn (CMD_WAIT via
         // '.'); resting lives in the action row. Every other context keeps
         // numpad 5 so menus, targeting and the level map see their usual key.
-        Button center = findViewById(R.id.key_mobile_5);
-        center.setTag(Integer.toString(gameplay ? KeyEvent.KEYCODE_PERIOD
-                                                : KeyEvent.KEYCODE_NUMPAD_5));
-        center.setText(gameplay ? getResources().getString(R.string.keyboard_wait) : "5");
-        center.setContentDescription(center.getText());
+        retarget(R.id.key_mobile_5,
+                gameplay ? KeyEvent.KEYCODE_PERIOD : KeyEvent.KEYCODE_NUMPAD_5,
+                gameplay ? getResources().getString(R.string.keyboard_wait) : "5");
         for (int id : new int[] {R.id.key_mobile_autofight, R.id.key_mobile_inventory,
                 R.id.key_mobile_pickup, R.id.key_mobile_menu}) {
             // Keep grid geometry stable while removing gameplay-only actions.
@@ -480,6 +476,14 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         if (!full) {
             keyboardMobile.bringToFront();
         }
+    }
+
+    // A fixed button whose key and label follow the input context.
+    private void retarget(int id, int keycode, CharSequence label) {
+        Button button = findViewById(id);
+        button.setTag(Integer.toString(keycode));
+        button.setText(label);
+        button.setContentDescription(label);
     }
 
     // Swap keyboards
