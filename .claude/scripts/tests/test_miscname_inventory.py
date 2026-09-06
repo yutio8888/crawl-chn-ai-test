@@ -311,7 +311,8 @@ class MiscnameInventoryTests(unittest.TestCase):
             ["git", "-C", str(ROOT), "status", "--porcelain",
              "--untracked-files=all"], text=True
         )
-        if (status and os.environ.get("ZH_VERIFY_SCOPE") == "changed"
+        if (status and os.environ.get("ZH_VERIFY_PROFILE") in ("code", "translation")
+                and os.environ.get("ZH_VERIFY_SCOPE") == "changed"
                 and not os.environ.get("ZH_VERIFY_AUDIT_COMMIT")):
             self.skipTest("candidate integration requires a clean committed range; "
                           "unbound development fixtures are still exercised")
@@ -402,6 +403,30 @@ class MiscnameInventoryTests(unittest.TestCase):
         records[1]["deferral_owner"] = "nobody"
         with self.assertRaisesRegex(MODULE.InventoryError, "forbids deferral"):
             MODULE.validate_results(ROOT / "unused", self.inventory, records=records)
+
+    def test_candidate_evidence_skip_is_local_unbound_changed_only(self):
+        # A dirty candidate must still fail under CI (even --scope changed),
+        # full scope, direct test runs, and bound verification.
+        cases = (
+            ("code", "changed", "", unittest.SkipTest),
+            ("translation", "changed", "", unittest.SkipTest),
+            ("ci", "changed", "", AssertionError),
+            ("ci", "full", "", AssertionError),
+            ("code", "full", "", AssertionError),
+            ("code", "changed", "bound-candidate", AssertionError),
+            ("", "changed", "", AssertionError),
+        )
+        for profile, scope, candidate, expected in cases:
+            with self.subTest(profile=profile, scope=scope, candidate=candidate):
+                probe = type(self)("test_repository_ledger_binds_exact_clean_candidate")
+                with mock.patch.dict(os.environ, {
+                    "ZH_VERIFY_PROFILE": profile,
+                    "ZH_VERIFY_SCOPE": scope,
+                    "ZH_VERIFY_AUDIT_COMMIT": candidate,
+                }, clear=True), mock.patch.object(
+                    subprocess, "check_output", return_value=" M tracked-file\n"
+                ), self.assertRaises(expected):
+                    probe.test_repository_ledger_binds_exact_clean_candidate()
 
     def test_inventory_output_must_be_tmp(self):
         with self.assertRaises(Exception):

@@ -194,6 +194,7 @@ else
     } | LC_ALL=C sort -u)
 fi
 export ZH_VERIFY_SCOPE="$SCOPE"
+export ZH_VERIFY_PROFILE="$PROFILE"
 export ZH_VERIFY_CHANGED_FILES="$CHANGED_FILES"
 
 if [[ -n "$CHANGED_FILES" ]]; then
