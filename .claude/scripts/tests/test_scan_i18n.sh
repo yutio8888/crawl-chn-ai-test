@@ -253,6 +253,69 @@ assert_contains "lua identity: duplicate definition is explicit" "exactly one LU
 assert_contains "lua identity: decoy dataflow is rejected" "canonical accessor must initialize" /tmp/actual_lua_identity_decoy-dataflow.txt
 assert_contains "lua identity: duplicate artifacts are explicit" "exactly one production l-you.cc artifact" /tmp/actual_lua_identity_two-artifacts.txt
 
+# ── anti-patterns git-visible gating (ignored copies match CI semantics) ──
+# The anti-patterns walk must scan only files git would version.  A fresh CI
+# checkout cannot contain ignored build/generated copies (e.g. the Android
+# zh-guide assets copied under crawl-ref/source/android-project), so findings
+# raised solely by such copies are local-only noise.  Tracked files and newly
+# created untracked (non-ignored) files must still be scanned.
+echo "--- anti-patterns git-visible gating ---"
+AP_GIT_ROOT=$(mktemp -d)
+trap 'rm -rf "$AP_GIT_ROOT"' EXIT
+(
+    cd "$AP_GIT_ROOT"
+    git init -q .
+    cp "$FIXTURES/lua-identity/pass/l-you.cc" l-you.cc
+    printf '中文里混入 the 冠词是错误的。\n' > tracked.txt
+    printf 'ignored.txt\n' > .gitignore
+    printf '中文里混入 the 冠词是错误的。\n' > ignored.txt
+    printf '无错误文本。\n' > clean.txt
+    git add l-you.cc tracked.txt clean.txt .gitignore
+)
+set +e
+python3 "$SCAN_I18N" anti-patterns "$AP_GIT_ROOT" --strict > /tmp/actual_ap_git.txt 2>&1
+ap_git_status=$?
+set -e
+assert_status "anti-patterns: ignored copies are skipped in a git worktree" 1 "$ap_git_status"
+assert_contains "anti-patterns: tracked article file still flagged" \
+    "tracked.txt:1" /tmp/actual_ap_git.txt
+if grep -Fq "ignored.txt" /tmp/actual_ap_git.txt; then
+    echo "  FAIL: anti-patterns scanned ignored copy (ignored.txt)"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: anti-patterns skips ignored copy (ignored.txt)"
+    PASS=$((PASS + 1))
+fi
+if grep -Fq "clean.txt" /tmp/actual_ap_git.txt; then
+    echo "  FAIL: anti-patterns flagged clean tracked file (clean.txt)"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: anti-patterns leaves clean tracked file alone"
+    PASS=$((PASS + 1))
+fi
+
+# Newly created untracked files (not ignored) must still be scanned: a
+# coder's fresh file has not been committed yet and must not escape the gate.
+printf '新增文件也混入 the 冠词。\n' > "$AP_GIT_ROOT/new_sample.txt"
+set +e
+python3 "$SCAN_I18N" anti-patterns "$AP_GIT_ROOT" --strict > /tmp/actual_ap_git_new.txt 2>&1
+ap_git_new_status=$?
+set -e
+assert_status "anti-patterns: new untracked file still scanned in git worktree" 1 "$ap_git_new_status"
+assert_contains "anti-patterns: new untracked file is flagged" \
+    "new_sample.txt:1" /tmp/actual_ap_git_new.txt
+assert_contains "anti-patterns: ignored copy still skipped with new file" \
+    "tracked.txt:1" /tmp/actual_ap_git_new.txt
+if grep -Fq "ignored.txt" /tmp/actual_ap_git_new.txt; then
+    echo "  FAIL: anti-patterns scanned ignored copy after new-file check (ignored.txt)"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: anti-patterns keeps skipping ignored copy with new file"
+    PASS=$((PASS + 1))
+fi
+rm -rf "$AP_GIT_ROOT"
+trap - EXIT
+
 # ── Issue 68 registered protocol/display producers ──
 echo "--- protocol-boundaries ---"
 set +e

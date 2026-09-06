@@ -4034,11 +4034,54 @@ def _lua_identity_findings(filepath, source, rel_path):
     return []
 
 
+def _git_visible_files(source_dir):
+    """Return the set of files git would version under source_dir, or None.
+
+    The anti-patterns walk must match what CI sees.  A fresh CI checkout only
+    contains git-tracked files, so scanning every file os.walk finds can raise
+    findings on ignored build/generated copies that never reach CI (for
+    example the Android asset copies of the zh guides under
+    crawl-ref/source/android-project/app/{src/main/assets,build/...}).  When
+    source_dir sits inside a git worktree we therefore restrict the scan to
+    files git would version: tracked files plus untracked files that are not
+    ignored (newly created files in a dirty worktree must still be scanned).
+
+    Returns None when git is unavailable or source_dir is not inside a git
+    worktree; callers then fall back to the full walk so fixture and synthetic
+    trees (which are not git repositories) keep their existing behavior.
+    """
+    import subprocess
+    try:
+        root = os.path.abspath(source_dir)
+        listed = subprocess.run(
+            ['git', '-C', root, 'ls-files', '--cached', '--others',
+             '--exclude-standard', '-z', '--', '.'],
+            capture_output=True, check=False,
+        )
+        if listed.returncode != 0:
+            return None
+    except OSError:
+        return None
+    visible = set()
+    for rel in listed.stdout.split(b'\0'):
+        if not rel:
+            continue
+        rel_text = rel.decode('utf-8', errors='surrogateescape')
+        visible.add(os.path.normpath(os.path.join(root, rel_text)))
+    return visible or None
+
+
 def cmd_anti_patterns(args):
     """Detect known anti-patterns in modified files."""
     findings = []
     strict_only = args.strict
     source_dir = args.source_dir
+
+    # Restrict the walk to files git would version when possible so ignored
+    # build/generated copies (Android assets, generated headers) do not raise
+    # findings that a fresh CI checkout can never see.  None = not a git
+    # worktree: scan everything (fixture and synthetic trees).
+    git_visible = _git_visible_files(source_dir)
 
     # Collect files to scan.  l-you.cc is a production artifact, not an
     # optional fixture: validate its cardinality before scanning unrelated files.
@@ -4049,6 +4092,9 @@ def cmd_anti_patterns(args):
         for fn in sorted(filenames):
             if fn.endswith('.cc') or fn.endswith('.h') or fn.endswith('.txt'):
                 filepath = os.path.join(dirpath, fn)
+                if git_visible is not None and os.path.normpath(
+                        os.path.abspath(filepath)) not in git_visible:
+                    continue
                 files_to_scan.append(filepath)
                 if fn == 'l-you.cc':
                     lua_artifacts.append((filepath, os.path.relpath(filepath, source_dir)))
