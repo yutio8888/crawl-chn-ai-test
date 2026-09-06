@@ -19,7 +19,7 @@ void monster_consider_shouting(monster &mon);
 bool monster_attempt_shout(monster &mon);
 void monster_shout(monster &mons, int s_type);
 // Production seam for monster_shout(): the ShoutDB lookup key for a
-// monster (English canonical identity; see shout.cc).  Exported so the
+// monster (English canonical identity; see shout.cc). Exported so the
 // zh translation tests drive the real producer instead of rebuilding
 // the key themselves.
 string _shout_key(const monster &mons);
