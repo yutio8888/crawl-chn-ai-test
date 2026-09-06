@@ -2389,6 +2389,19 @@ bool direction_chooser::process_command(command_type command)
         cycle_target(1);
         break;
 
+    case CMD_TARGET_OBJ_CYCLE_BACK:
+    case CMD_TARGET_OBJ_CYCLE_FORWARD:
+    {
+        const int dir = command == CMD_TARGET_OBJ_CYCLE_FORWARD ? 1 : -1;
+        // Reuse the visible, in-range item candidates without replacing the
+        // monster cycle or its cursor. The current target anchors each step.
+        const unwind_var<vector<coord_def>> saved_points(cycle_pos, {});
+        const unwind_var<int> saved_index(cycle_index, dir > 0 ? -1 : 0);
+        fill_object_cycle_points();
+        cycle_target(dir);
+        break;
+    }
+
     case CMD_TARGET_CANCEL:
         loop_done = true;
         moves.isCancel = true;
