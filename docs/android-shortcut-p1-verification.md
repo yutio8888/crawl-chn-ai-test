@@ -95,7 +95,37 @@ SHA-256 `f6fea34bd65393ec3c4fa91067e95546460a4843185c59e07a20d4c28f17d93e`。
   “你没有东西可装入箭袋”）。溢出问题按报告 4.6 留待 P3。
 - 首屏消息“发现了五 item”存在英文残留，属翻译问题，与本改动无关，另行登记。
 
+## 审阅修复（候选 `3da7571e82`）
+
+内联应用 `zh-code-reviewer` 域（本运行时无独立审阅角色，不宣称独立审阅）得到 7 条发现，
+全部处理：
+
+| 发现 | 处理 |
+|---|---|
+| 第四行硬编码默认键，用户启用 APK 自带的 `dvorak_command_keys.txt`/`neo_command_keys.txt` 后“射击”会变成移动 | `ui.cc` 改为按 `command_to_keys()` 取每个命令当前绑定中第一个可打印键；无可打印键则槽位为空；Java `case 18` 改为按槽位取标签 |
+| 静态布局把 `keyboard_wait` 与 tag 149 配对，发布前窗口内“等待”会执行休息 | `keyboard_mobile.xml` 初始 tag 改为 56（`KEYCODE_PERIOD`），与标签自洽 |
+| 测试把 GAME 钉为枚举末项，违背 append-only | 改为断言 GAME 紧随 QUIVER，并与 Java 序号一致 |
+| 测试钉住 Java switch 顺序 | 改为按槽位字典比较 |
+| 枚举分词对注释/显式值脆弱 | 先剥注释再按标识符提取 |
+| `InputDescriptor` 槽 0/1 注释已不准确 | 注释限定为 scope 描述符，说明 GAME 描述符六槽全为命令 |
+| 中心键与探索键的重定向代码重复 | 提取 `retarget(id, keycode, label)` |
+
+- 35 项静态测试通过。
+- code profile：`--base 8e71c1c1e7 --head 3da7571e82`，Run ID
+  `20260906T053547636602737+0000-454554-3da7571e8230`，Failures 0。
+- 重新 `make ANDROID=1 TILES=y android` 后 Gradle 构建成功；APK SHA-256 前缀 `d0c94bbf8dfe8421`。
+  注意：第一次只跑 Gradle 的重建（前缀 `ed9734c731b05b2d`）在真机启动约 2 秒后崩溃，日志为
+  `Cannot create db directory '.../saves/cache.<版本>/db/'` 与 `FORTIFY: pthread_mutex_lock
+  called on a destroyed mutex`。原因是同一 worktree 内 code profile 的 smoke 控制台构建覆盖了
+  生成产物，重新执行 `make android` 后无代码改动即恢复；不是本改动的缺陷。
+- 真机复测（读取 Tester129 存档）：GAME 行六槽显示、等待单击生效、饮用进入菜单并在返回后恢复
+  （r10–r13）。
+- 键位重绑定实测：在设备 `init.txt` 写入 `include = dvorak_command_keys.txt` 后重启读档，
+  六槽标签不变，点“射击”进入瞄准（该布局下 `f` 已是移动键，说明按钮发送的是重绑定后的键）；
+  测试后已恢复空 `init.txt`（d01、d02）。
+
 ## 结论
 
 P1 验收矩阵中除 320dp 窄屏外全部通过；等待与休息已是两个语义不同的按钮，
-游戏态第四行由最内层页面接管并在返回后恢复。未 push、未 merge。
+游戏态第四行由最内层页面接管并在返回后恢复，且随用户键位重绑定保持正确。
+候选已推送到 PR #130，等待 CI 与合并。
