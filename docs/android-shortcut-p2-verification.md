@@ -93,5 +93,6 @@ PR #131 已改为目标 `chn-0.34.1-base`。原候选 `26a1eb6c1b` 的
 原地自动战斗相邻/远处/无目标已补测：相邻近战，两格外投标枪，无目标不动作，
 位置均不变。证据 `rat2-location`、`autofight-adjacent-verified`、
 `adjacent-fixture`（实际为两格远）、`autofight-adjacent`（实际为两格远）、
-`autofight-empty-verified`。丢弃多选和分类切换已验证；数量输入及长背包滚动恢复
-仍缺完整设备证据，不能写为完整矩阵通过。
+`autofight-empty-verified`。丢弃多选和分类切换已验证；数量输入通过完整键盘 5 + 物品字母选择部分数量，确认后石头 7→2，
+`five-stones-selected`、`five-stones-result`。长背包滚动恢复仍缺专门设备证据，
+不能写为完整矩阵通过。
