@@ -42458,3 +42458,6 @@ Switch list
 %%%%
 Describe item
 描述
+%%%%
+You cannot shout and have no allies to order.
+你无法喊叫，也没有可听从命令的盟友。

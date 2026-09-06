@@ -426,6 +426,14 @@ static bool _follows_orders(monster* mon)
            && !mon->has_ench(ENCH_VEXED);
 }
 
+bool have_allies_to_order()
+{
+    for (monster_near_iterator mi(you.pos()); mi; ++mi)
+        if (_follows_orders(*mi))
+            return true;
+    return false;
+}
+
 // Sets foe target of friendly monsters.
 // If allow_patrol is true, patrolling monsters get MHITNOT instead.
 static void _set_friendly_foes(bool allow_patrol = false)

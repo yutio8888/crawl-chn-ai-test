@@ -10,6 +10,7 @@ bool fake_noisy(int loudness, const coord_def& where);
 
 void yell(const actor* target = nullptr);
 void issue_orders();
+bool have_allies_to_order();
 
 void item_noise(const item_def& item, actor &act, string msg, int loudness = 25);
 void noisy_equipment(const item_def &item);
