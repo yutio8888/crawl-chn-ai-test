@@ -42,6 +42,7 @@ POLICY_PREFIXES = (
 POLICY_FILES = {
     "AGENTS.md",
     "CODEX.md",
+    "DSH.md",
     "docs/build-workflow.md",
     "docs/dual-agent-workflow.md",
     "docs/zh-testing.md",

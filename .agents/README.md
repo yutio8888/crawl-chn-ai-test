@@ -13,7 +13,9 @@ defined per concern; no one monolithic file is authoritative for everything.
 3. `.agents/skills/` contains shared repository-scoped skills discovered by
    Pi and Codex.
 4. `docs/` contains stable architecture and operational reference material.
-5. `.pi/APPEND_SYSTEM.md` and `CODEX.md` are thin syntax adapters.
+5. `.pi/APPEND_SYSTEM.md`, `CODEX.md`, and `DSH.md` are thin syntax adapters.
+   DSH is an experimental documentation-level adapter; it reuses shared skills
+   through the exposed catalog or explicit file loading, without a new role tree.
 6. `.pi/agents/` and `.codex/agents/` contain runtime-specific role prompts.
    Shared policy blocks in those files are generated copies.
 7. Scripts and runtime configuration are authoritative for command-line

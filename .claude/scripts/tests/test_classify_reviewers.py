@@ -69,8 +69,9 @@ class ReviewerRoutingTests(unittest.TestCase):
             "code", ["zh-code-reviewer"],
         )
 
-    def test_pi_policy_and_zh_testing_route_only_code_reviewer(self):
+    def test_runtime_policy_and_zh_testing_route_only_code_reviewer(self):
         for path in (
+            "DSH.md",
             ".pi/agents/translation-reviewer.md",
             "docs/zh-testing.md",
         ):

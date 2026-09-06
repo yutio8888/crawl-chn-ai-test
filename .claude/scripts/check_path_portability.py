@@ -17,6 +17,7 @@ ROOT_DOCUMENTS = (
     ".dcss-paths.conf.example",
     "AGENTS.md",
     "CODEX.md",
+    "DSH.md",
     "README.md",
 )
 

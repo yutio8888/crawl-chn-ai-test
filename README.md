@@ -239,6 +239,7 @@ bash .claude/scripts/verify_zh.sh --profile ci
 .
 ├── AGENTS.md                         # 跨 runtime 的协作入口
 ├── CODEX.md / .pi/APPEND_SYSTEM.md   # runtime adapter
+├── DSH.md                            # 实验性 DSH 兼容契约
 ├── .agents/                          # 共享 policy、角色路由与技能来源
 ├── .claude/scripts/                  # 验证、审查、部署和辅助脚本
 ├── .codex/ / .pi/                    # 各 runtime 配置
