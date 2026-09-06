@@ -501,6 +501,21 @@ static int _issue_orders_prompt()
 
     flush_prev_message(); // buffer doesn't get flushed otherwise
 
+#ifdef __ANDROID__
+    // The compact keyboard's own Back key already sends the cancelling
+    // Escape, so all six slots carry the order keys listed above. Slots are
+    // absent under the same conditions that hide their prompt line.
+    const bool can_shout = !you.cannot_speak();
+    const bool can_order = !you.berserk() && !you.confused();
+    ui::InputActionScope keyboard_scope(ui::InputScreen::SHOUT, {{
+        can_shout ? ui::InputAction("", 't') : ui::InputAction(),
+        can_order ? ui::InputAction("", 'a') : ui::InputAction(),
+        can_order ? ui::InputAction("", 'r') : ui::InputAction(),
+        can_order ? ui::InputAction("", 's') : ui::InputAction(),
+        can_order ? ui::InputAction("", 'g') : ui::InputAction(),
+        can_order ? ui::InputAction("", 'f') : ui::InputAction(),
+    }});
+#endif
     const int keyn = get_ch();
     clear_messages();
     return keyn;

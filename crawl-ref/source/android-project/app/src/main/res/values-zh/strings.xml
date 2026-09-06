@@ -121,4 +121,10 @@
     <string name="keyboard_fire">射击</string>
     <string name="keyboard_cast">施法</string>
     <string name="keyboard_ability">能力</string>
+    <string name="keyboard_shout">喊叫</string>
+    <string name="keyboard_order_attack">攻击</string>
+    <string name="keyboard_order_retreat">撤退</string>
+    <string name="keyboard_order_stop">停止</string>
+    <string name="keyboard_order_guard">守卫</string>
+    <string name="keyboard_order_follow">跟随</string>
 </resources>

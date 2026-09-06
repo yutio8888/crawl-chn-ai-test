@@ -123,4 +123,10 @@
     <string name="keyboard_fire">Fire</string>
     <string name="keyboard_cast">Cast</string>
     <string name="keyboard_ability">Ability</string>
+    <string name="keyboard_shout">Shout</string>
+    <string name="keyboard_order_attack">Attack</string>
+    <string name="keyboard_order_retreat">Retreat</string>
+    <string name="keyboard_order_stop">Stop</string>
+    <string name="keyboard_order_guard">Guard</string>
+    <string name="keyboard_order_follow">Follow</string>
 </resources>
