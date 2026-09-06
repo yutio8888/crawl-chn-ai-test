@@ -20,77 +20,72 @@ belong to `translation-reviewer`.
 <!-- BEGIN GENERATED: review-contract -->
 # review-contract-v6
 
-Domain review is a human-readable review phase routed by
-`classify_reviewers.py`, with merge gated by the matching development profile
-and existing GitHub Actions CI. There is no immutable bundle, readiness
-object, digest-bound approval, lock, attempt/retry state, local merge
-authorization, or `.git/zh-review-evidence` directory.
+Domain review produces human-readable findings for the requested scope.
+`classify_reviewers.py` selects relevant domains, not additional permission,
+mandatory subagents, or a requirement to run every i18n check.
 
 ## Finding model
 
-- **Blocker**: runtime/functional failure, undefined behaviour, protocol or
-  lookup corruption, structural data damage, compilation failure, failure to
-  review the complete diff, an unmet confirmed acceptance criterion within
-  that diff, or an interrupted required verification.
+- **Blocker**: a demonstrated functional failure, undefined behaviour, protocol
+  or lookup corruption, structural data damage, compilation failure, or unmet
+  confirmed acceptance criterion introduced by the reviewed change.
 - **Needs Fix**: a definite semantic, terminology, accuracy, completeness, or
   language error without runtime corruption.
-- **Suggestion**: a non-required style preference.
+- **Suggestion**: a non-required style preference; it never blocks acceptance.
+- **Validation Gap**: required evidence or assigned coverage could not be
+  obtained. State what is missing and why; do not present it as a proven defect.
 
 ## Conclusion
 
-- **Ready**: `blocker == 0` and `needs_fix == 0`.
-- **Changes Requested**: a Blocker or Needs Fix exists, or the reviewer could
-  not complete the assigned scope.
+- **Ready**: no Blocker or Needs Fix, assigned review complete, and evidence
+  required for this review's endpoint is available.
+- **Changes Requested**: a Blocker or Needs Fix exists, or required review or
+  validation remains incomplete. Distinguish defects from Validation Gaps.
 
-Suggestions do not block. There is no Conditional Go. Plan non-goals do not
-excuse defects introduced by the diff under review. When proposing a
-resolution, prefer deleting unnecessary design, reusing repository
-mechanisms, and narrowing the commitment, in that order.
+An ordinary audit is delivered when findings and coverage gaps are reported;
+it need not claim merge readiness. Report confirmed findings even if another
+part is blocked. Plan non-goals do not excuse defects introduced by the diff.
+Resolve findings within scope, preferring existing mechanisms and narrow fixes.
 
 ## Reviewer ownership
 
 - `zh-code-reviewer` owns runtime safety, protocol/display separation,
-  extraction and key coverage, format arguments, TextDB structure, borrowed
-  translation lifetime, variadic calls, movement phrase routing, English
-  morphology, compilation, and scanner warning triage.
-- `translation-reviewer` owns EN/ZH semantic parity, current-glossary choices
-  in context, facts and numbers, completeness, natural Chinese, terminology
-  consistency, and character voice. It reports implementation defects it
-  encounters but does not duplicate the code reviewer's primary scope.
+  extraction and key coverage, formats, TextDB structure, translation lifetime,
+  variadic calls, movement routing, English morphology, compilation, scanner
+  triage, and relevant tooling/governance changes.
+- `translation-reviewer` owns EN/ZH semantic parity, contextual glossary use,
+  facts and numbers, completeness, naturalness, terminology, and character voice.
 
-For mixed changes, each reviewer stays within that ownership and inspects the
-shared context/fallback boundary only where the two domains meet. Neither
-reviewer reruns whole-project verification suites during readiness.
-`docs/*-review-results.md` ledgers classify as mixed and require both
-reviewers.
+For mixed changes, each reviewer inspects its domain and the shared boundary
+where they meet. `docs/*-review-results.md` ledgers classify as mixed. A role's
+checklist applies only to affected behavior; governance review does not require
+gameplay tracing or terminology lookup. Reuse the implementer's relevant logs.
+Reviewers do not rerun whole-project verification suites; targeted checks are
+appropriate to resolve a concrete uncertainty. Reviewers remain read-only and
+return fixes to the assigned writer.
 
-## Reviewer output
+## Output and stages
 
-Reviewers record their findings as plain human-readable text in the PR or
-issue. No structured JSON, digest, signature, or evidence directory is
-required. Each record includes at least:
-
-- the reviewer role;
-- findings classified as Blocker / Needs Fix / Suggestion;
-- for each finding, the file, line, evidence, impact, and a concrete
-  suggested fix when applicable;
-- a final conclusion of Ready or Changes Requested.
-
-Translation-reviewer findings cite the English source and the current Chinese
-text when useful.
-
-## Orchestration
-
-- Review starts only after the candidate changes are committed and the
-  worktree is clean.
-- The reviewer set comes from
-  `classify_reviewers.py --base <target> --head <candidate>` (or an explicit
-  `--files` list); never hard-code a fixed reviewer count.
-- Development verification uses exactly one matching profile
-  (`translation`, `code`, or `ci`); do not serially run all three profiles
-  against the same candidate.
-- Existing GitHub Actions CI must pass before merge.
-- There is no immutable bundle ID and no digest-bound readiness.
+- Ordinary review accepts named files, existing content, staged changes, or a
+  worktree diff. State the boundary and any concurrent changes observed; neither
+  a commit nor a clean worktree is a prerequisite.
+- Merge review binds a clean committed candidate and its complete diff against
+  the target. Route with `classify_reviewers.py --base <target> --head <candidate>`;
+  ordinary review can use `--files`. Apply domains inline if delegation is
+  unavailable or unnecessary; do not claim independent review in that case.
+- Report role/scope, classified findings, file/line evidence, impact, suggested
+  fixes, validation gaps, and the conclusion. Cite EN/ZH text when useful.
+  Return the report locally unless remote posting is authorized. No JSON,
+  signature, evidence bundle, or new status artifact is required.
+- Development uses one matching profile and focused checks as described in
+  `docs/zh-testing.md`. A committed-candidate run includes `--base` and `--head`;
+  unbound changed scope covers only uncommitted changes. Reuse evidence when
+  tested content and dependencies are unchanged.
+- Merge requires applicable GitHub Actions CI and completed domain review.
+  Existing user authorization governs committing, posting, and merging. A task
+  branch alone does not trigger CI: use the existing PR/manual workflow when
+  merge is requested. No separate final evidence gate or local merge protocol
+  is required.
 <!-- END GENERATED: review-contract -->
 
 <!-- BEGIN GENERATED: i18n-safety -->
@@ -130,8 +125,9 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   fallback path with a targeted test.
 - Use `mprf_p` for positional `%n$s` formats and never mix positional and
   sequential placeholders.
-- Resolve terminology from the current `docs/glossary.md` immediately before
-  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+- When choosing translated terms, use current relevant `docs/glossary.md`
+  context as described in the context Skill. Pure structural work does not
+  require terminology lookup. Do not embed canonical terms in prompts.
 
 Configuration checks validate this policy's generated blocks. C++ source
 analysis remains the responsibility of `scan_i18n_lifetime.py`,
@@ -143,70 +139,51 @@ analysis remains the responsibility of `scan_i18n_lifetime.py`,
 <!-- BEGIN GENERATED: verification-authoring -->
 # verification-authoring-v1
 
-This policy applies when an agent writes or reviews a validator, scanner,
-deployment check, parser-facing test, or other verification control.
+Apply this policy when writing or reviewing a validator, scanner, deployment
+check, or parser-facing test. Cover the behavior the tool claims to guarantee
+and risks introduced by the change, using existing tests and interfaces.
 
-- Enumerate the complete production artifact and its invariants before writing
-  the check. Counts alone never prove identity, membership, uniqueness, order,
-  content, conservation, or rejection of unknown data.
-- Match production semantics for the parser, working directory,
-  initialization, locale, environment, and compile/runtime options. Prefer the
-  production helper or entry point. If a test must reimplement semantics,
-  document the difference and cover it with a strict end-to-end check.
-- Exercise the real construction, lookup, fallback, or deployment path. A
-  relaxed helper test is insufficient unless a stricter end-to-end test covers
-  the behaviour it omits.
-- Fail closed when required input is missing, parsing is incomplete, an unknown
-  field or state appears, or the complete invariant cannot be evaluated. Expose
-  the failure through the validator's existing interface, normally a non-zero
-  exit or an existing structured unresolved result. This requirement does not
-  introduce a new result protocol, parser, persistent state, distributed
-  coordination, recovery mechanism, or general compiler.
-- Give every invariant a passing fixture and a minimal negative mutation that
-  breaks only that invariant and must be rejected.
-- Preserve raw tool evidence. Report the exact command, exit code, blocking
-  failure count, relevant warnings, and the reason a failure is or is not
-  actionable.
-
-Reviewers reject checks that validate only source tokens or a convenient subset
-when the production consumer observes a larger effective artifact.
+- Identify relevant artifacts, consumer semantics, and invariants. Counts alone
+  do not prove identity, membership, uniqueness, order, or content when the
+  check claims those guarantees.
+- Prefer production helpers and realistic inputs. A focused unit test may
+  reuse existing integration coverage; add end-to-end coverage only when a
+  changed construction, lookup, fallback, or deployment boundary needs it.
+  Document material differences if a fixture reimplements production behavior.
+- Blocking release, protocol, and structural/parser integrity checks fail
+  closed if required input is missing or their claimed invariant cannot be
+  evaluated. Test new or changed guarantees with passing cases and minimal
+  negative mutations. Preserve existing strict artifact-validation coverage.
+- Advisory or heuristic tools may report unsupported input or incomplete
+  coverage through their existing interface. They must not claim complete
+  validation or a successful blocking check on that basis. Unknown states block
+  only when the tool's declared contract requires rejection.
+- Do not add tests that merely mirror wording or implementation details. Reuse
+  existing fixtures and regression entry points; no new evidence protocol,
+  persistent state, parser framework, or universal end-to-end gate is implied.
+- Preserve logs for actual checks. Report commands/results and material warnings
+  or gaps; detailed raw evidence can stay in the existing verification log.
 <!-- END GENERATED: verification-authoring -->
 
 ## Required workflow
 
-1. Resolve the current glossary immediately before review:
-   `bash .claude/scripts/context_resolve.sh "<scope>" --task-type review --files <files>`.
-2. Inspect the exact committed range and its complete diff, then trace affected
-   call paths. Never infer safety from a wrapper name alone.
-3. Confirm that the implementer or orchestrator completed the matching
-   development profile, and inspect the existing profile and targeted-test
-   logs. Reviewers do not rerun whole-project verification suites.
-4. When C++ i18n code changed, explicitly examine output from:
-   - `scan_i18n_lifetime.py --require-parser`
-   - `scan_varargs_string.py --include-warn`
-   - extraction/key validation and movement exact-key audit
-5. Record the glossary SHA-256 and plain human-readable Blocker / Needs Fix /
-   Suggestion findings with counts, followed by a final conclusion of Ready or
-   Changes Requested.
+1. Identify the requested files, existing implementation, or diff. Ordinary
+   review may inspect uncommitted changes; merge review binds the exact committed
+   range and its complete diff.
+2. Apply only checks relevant to the changed behavior. Resolve current glossary
+   context only if making terminology judgments. Governance/tooling review does
+   not require gameplay tracing or a glossary hash.
+3. Inspect existing verification and targeted-test logs. Reviewers do not rerun
+   whole-project verification suites. Report missing required evidence as a
+   Validation Gap; do not infer runtime failure from unavailable evidence.
+4. For affected C++ i18n paths, inspect lifetime and varargs scanner results,
+   extraction/key validation, and movement exact-key evidence where relevant.
+   Manually confirm return types behind relevant `CALL_NO_CSTR` warnings.
+5. Report plain human-readable Blocker / Needs Fix / Suggestion findings and
+   Validation Gaps, with file/line evidence, impact, and concrete fixes, followed
+   by a final conclusion of Ready or Changes Requested for the assigned endpoint.
 
-## Manual review checklist
-
-- Protocol, serialization, Lua comparisons, matching, and TextDB lookup keys
-  remain English; translation happens only at display sinks.
-- Literal and dynamic `T_()`/`C_()` keys have extraction/audit coverage and
-  corresponding database entries.
-- Persistent tables use `N_()`/`NC_()` and translate at consumption. No borrowed
-  translation pointer survives cache clearing.
-- No `std::string` object or expression enters a printf-style variadic `%s`.
-  Manually determine the return type behind every `CALL_NO_CSTR` warning.
-- Translated strings never enter `conj_verb()` or other English morphology.
-- Movement values stay English internally, reach `translated_move_phrase()`
-  with the right context, and appear in the exact-key manifest.
-- Positional formats use `mprf_p`; placeholder indices, types, and token counts
-  match without mixing positional and sequential forms.
-- TextDB separators, keys, `@keyword@` references, Lua blocks, and protected
-  tokens are intact; changed code compiles with the required target.
-
-Every finding cites exact file and line, evidence, runtime impact, root cause,
-and a concrete fix. Do not assign language-quality findings unless they expose
-an implementation defect.
+The injected safety policy is the checklist for affected i18n behavior; do not
+duplicate it as a universal task preflight. Translation wording remains the
+translation reviewer's domain. Ordinary audits finish with findings and gaps,
+without implying merge readiness or remote-posting authority.

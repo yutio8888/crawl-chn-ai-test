@@ -34,8 +34,9 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   fallback path with a targeted test.
 - Use `mprf_p` for positional `%n$s` formats and never mix positional and
   sequential placeholders.
-- Resolve terminology from the current `docs/glossary.md` immediately before
-  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+- When choosing translated terms, use current relevant `docs/glossary.md`
+  context as described in the context Skill. Pure structural work does not
+  require terminology lookup. Do not embed canonical terms in prompts.
 
 Configuration checks validate this policy's generated blocks. C++ source
 analysis remains the responsibility of `scan_i18n_lifetime.py`,

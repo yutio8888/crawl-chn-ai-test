@@ -2,22 +2,54 @@
 
 ## Development Profiles
 
-Use one profile matching the active edit:
+Use focused existing checks during development, then one profile matching the
+coherent change when it affects translation, game code, or verification tools:
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile translation
-bash .claude/scripts/verify_zh.sh --profile code
-bash .claude/scripts/verify_zh.sh --profile ci
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile ci
 ```
 
-`translation` and `code` default to changed scope. `ci` is the combined static
-gate. Read the current options from `verify_zh.sh --help`; do not duplicate an
-exhaustive phase list in agent adapters.
+`translation` and `code` default to changed scope. Without a bound range, they
+inspect only changes relative to HEAD, including untracked files. A clean
+worktree does not mean the last commit has been verified. For a committed
+candidate, use the matching profile with an explicit range, for example:
+
+```bash
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh \
+  --profile code --base <base> --head <candidate>
+```
+
+The bound candidate must be checked out and clean. Do not discard unrelated
+work to meet that condition. Reuse earlier verification if the tested content
+and relevant dependencies are unchanged; record the scope covered by the evidence.
+
+| Task | Local verification |
+|---|---|
+| Read-only review | Inspect scope and existing logs; targeted checks only to resolve concrete uncertainty |
+| Policy/docs only | Existing documentation, configuration, and sync checks; no game build |
+| Verification tooling | Relevant regression tests and `code` profile |
+| Translated assets | `translation` profile, preserving global key/structure integrity |
+| C++/i18n | `code` profile and affected target/runtime checks selected by risk |
+| Mixed assets and code | `code` profile plus focused translation checks; use `ci` instead when combined full static preflight is needed, with runtime checks separately if required |
+
+Known governance-only changes skip game static and overlay phases in local
+changed mode. Relevant source/data and validator dependencies retain global
+integrity checks; overlay dependencies select the heavy overlay suite. Unknown
+paths are conservative. `ci` and full scope retain their full static coverage.
+Skipping unrelated phases does not verify the changed tool: run its focused
+tests. Read current options from `verify_zh.sh --help`.
+
+The miscname exact-candidate integration test needs committed inputs. A dirty,
+unbound changed run explicitly skips that case while exercising its fixture
+regressions; bound and CI/full runs retain the clean-candidate check. Report
+the skip as unavailable candidate evidence, not a successful integration run.
 
 Agents that write or review verification controls follow
-`.agents/policies/verification-authoring.md`. It is authoritative for complete
-invariant coverage, production-semantic fixtures, fail-closed behaviour, and
-negative mutation tests; this document does not duplicate that contract.
+`.agents/policies/verification-authoring.md` for coverage proportional to the
+tool's claimed guarantees, realistic fixtures, and blocking versus advisory
+behavior. No new end-to-end test is needed when existing coverage is sufficient.
 
 The report is written below `.claude/metrics/verify/`. Agents report the exact
 command, exit code, blocking failure count, and relevant warnings rather than
@@ -41,8 +73,8 @@ for current modes and artifact locations. Avoid
 hard-coded test/assertion/marker counts in prose because the suites evolve.
 
 A newly created linked worktree has empty directories for recorded contrib
-submodules. Before verification on a candidate, initialize its exact gitlinks
-and confirm that the superproject remains clean:
+submodules. Before a build or a check that needs contrib dependencies,
+initialize its exact gitlinks and confirm the superproject remains clean:
 
 ```bash
 git submodule update --init --recursive
@@ -53,24 +85,31 @@ Submodule initialization is environment preparation, not candidate content.
 
 ## Domain Review and Merge
 
-Review is a human-readable domain-review phase, separate from the development
-verification above:
+Ordinary review accepts existing files or uncommitted changes and reports
+findings plus Validation Gaps. It does not require a build, commit, or remote
+comment. For an authorized merge:
 
 1. commit the candidate and require a clean worktree;
-2. run the single matching `verify_zh.sh` development profile
-   (`translation`, `code`, or `ci`);
+2. verify the matching profile with `--base <base> --head <candidate>`, or reuse
+   valid evidence for unchanged content and dependencies;
 3. route reviewers with
    `python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>`
-   and dispatch only the routed domain reviewers;
-4. reviewers record Blocker / Needs Fix / Suggestion findings plus a Ready or
-   Changes Requested conclusion as plain text in the PR/issue;
-5. existing GitHub Actions CI (`.github/workflows/ci.yml`) must pass;
+   and apply the routed domains, inline when delegation is unavailable or unnecessary;
+4. reviewers report findings, Validation Gaps, and Ready or Changes Requested;
+   post to the PR/issue only when authorized;
+5. applicable GitHub Actions CI (`.github/workflows/ci.yml`) must pass; use the
+   existing PR or manual workflow, since a task branch alone does not trigger CI;
 6. merge from the target checkout.
 
 The complete review contract is `.agents/policies/review-contract.md`. There is
 no separate final evidence gate, immutable bundle, readiness object, or local
 merge authorization. Expired one-time recovery records remain available in the
 non-authorizing [review recovery archive](review-recovery-history.md).
+
+Verification is not restarted solely because the task advances to review or
+delivery. New changes, failures, or missing evidence justify additional checks.
+Task completion and cleanup follow `AGENTS.md`; do not apply release gates to
+ordinary development.
 
 ## CI
 

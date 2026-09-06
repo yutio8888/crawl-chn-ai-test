@@ -1,57 +1,45 @@
 ---
 name: dcss-translation-context
-description: Load the current DCSS Chinese glossary and route the matching terminology, safety, ownership, and review policies. Use whenever work touches T_(), C_(), zh/source.txt, ZH TextDB files, translated game text, docs/glossary.md, or a DCSS Chinese translation review.
+description: Resolve current DCSS Chinese terminology and applicable i18n policies for translated wording, T_()/C_() changes, or ZH TextDB work. Pure tooling or governance work needs only its relevant policy, not terminology lookup.
 ---
 
 # DCSS Translation Context
 
-Use `docs/glossary.md` from the current worktree as the only terminology data
-source. Do not rely on remembered terms or copy glossary rows into this Skill.
+Locate affected files before loading context. Use current `docs/glossary.md`
+for terminology decisions, not remembered mappings or a copied prompt glossary.
 
-## Resolve Current Context
+## Resolve and reuse relevant context
 
-From the repository root, choose the task type and run:
+When making translation or terminology judgments, run from the repository root:
 
 ```bash
 bash .claude/scripts/context_resolve.sh "<task description>" \
   --task-type <translate|code|review> --files <target-files>
 ```
 
-Read and apply the complete output before editing or reviewing. Keep the emitted
-glossary SHA-256 and include it in the final report. If `docs/glossary.md`
-changes during the task, rerun the command before continuing.
+Apply the relevant returned terms in context. Share the output with writers or
+reviewers making the same judgments; do not rerun it merely for each dispatch
+or edit. Refresh for a changed file scope or relevant terminology/decision.
+After any glossary change, refresh the digest used for final translation
+evidence; formal translation reports include its SHA-256. Pure structural,
+tooling, or governance work does not need a glossary hash.
 
-For an ambiguous term, query it instead of guessing:
+Use `--terminology yes` when judgment needs terms that automatic detection
+cannot recognize; use `--terminology no` for purely structural work. For an
+ambiguous term, use `python3 .claude/scripts/glossary_query.py --term "<term>"`.
+Alternative target forms apply only where their comments fit. Record new
+terminology decisions in the owned glossary/decision files and regenerate
+`docs/glossary.utf8` with the existing exporter when the glossary changes.
 
-```bash
-python3 .claude/scripts/glossary_query.py --term "<English term>"
-```
+## Load only applicable policy
 
-Multiple target forms are alternatives only when their comments fit the
-current context. Record a new translation decision in `docs/glossary.md` and
-regenerate `docs/glossary.utf8` with the project exporter.
-
-## Apply Only the Matching Policies
-
-- Translation writing: read `../../policies/translation-integrity.md` and
+- Translation writing: `../../policies/translation-integrity.md` and
   `../../policies/asset-ownership.md`.
-- C++ or i18n implementation: read `../../policies/i18n-safety.md` and
-  `../../policies/asset-ownership.md`. Also read
-  `../../policies/verification-authoring.md` when changing a validator or
-  scanner.
-- Review: read `../../policies/review-contract.md` and the matching translation
-  or implementation policy.
+- i18n implementation: `../../policies/i18n-safety.md` and ownership.
+- Validator/scanner changes: `../../policies/verification-authoring.md`.
+- Review: `../../policies/review-contract.md` and the affected domain's policy.
 
-Do not load unrelated policy bodies into the task context.
-
-## Verify
-
-Run the single profile matching the work:
-
-```bash
-bash .claude/scripts/verify_zh.sh --profile translation
-bash .claude/scripts/verify_zh.sh --profile code
-```
-
-For a clean committed candidate, route domain review with
-`classify_reviewers.py` and merge after GitHub Actions CI passes.
+Read only missing relevant sections; generated policy already present in an
+active role is sufficient when unchanged. This Skill is context preparation,
+not a command to build, commit, or merge. Writers choose checks using
+`docs/zh-testing.md`; reviewers inspect existing evidence and report gaps.
