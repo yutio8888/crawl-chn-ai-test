@@ -72,6 +72,11 @@ bool DesktopLayoutPolicy::uses_top_hud() const
     return false;
 }
 
+bool DesktopLayoutPolicy::uses_bottom_popups() const
+{
+    return false;
+}
+
 // -------------------------------------------------------------------
 // AndroidPortraitLayoutPolicy — portrait-aware layout for Android.
 // Uses aspect-ratio detection (height > width * 1.25) to switch
@@ -152,6 +157,15 @@ bool AndroidPortraitLayoutPolicy::uses_top_hud() const
     // Android's touch layout has no usable legacy sidebar: in landscape that
     // path can consume the dungeon viewport without drawing the map. Keep the
     // compact HUD above the dungeon in both orientations.
+    return true;
+}
+
+bool AndroidPortraitLayoutPolicy::uses_bottom_popups() const
+{
+    // The software keyboard and its context action row are pinned to the
+    // bottom of the window, and the SDL surface is cropped to sit above them.
+    // Anchoring popups to that shared edge keeps a menu and the buttons that
+    // confirm it within the same thumb reach.
     return true;
 }
 

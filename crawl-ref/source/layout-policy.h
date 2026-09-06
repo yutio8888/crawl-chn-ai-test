@@ -37,6 +37,12 @@ public:
     /// Stat region rendered as a top horizontal bar (portrait HUD).
     /// When false, stat region is a right-side column (desktop / small-landscape).
     virtual bool uses_top_hud() const = 0;
+
+    /// In-game popups grow upwards from the bottom edge instead of hanging
+    /// from the top one. Touch layouts keep their action buttons along the
+    /// bottom of the screen, so a top-anchored popup strands its content a
+    /// full screen away from the fingers that operate it.
+    virtual bool uses_bottom_popups() const = 0;
 };
 
 class DesktopLayoutPolicy : public LayoutPolicy
@@ -64,6 +70,7 @@ public:
     bool uses_overlay_messages() const override;
 
     bool uses_top_hud() const override;
+    bool uses_bottom_popups() const override;
 };
 
 class AndroidPortraitLayoutPolicy : public LayoutPolicy
@@ -91,6 +98,7 @@ public:
     bool uses_overlay_messages() const override;
 
     bool uses_top_hud() const override;
+    bool uses_bottom_popups() const override;
 };
 
 std::unique_ptr<LayoutPolicy> make_layout_policy();
