@@ -62,3 +62,33 @@ APK SHA-256 前缀 `00da1ad419b9ae71`（候选 `96ab734865`，游戏内版本串
 
 未测：盟友命令的实际下达（当前角色无盟友；提示与键位链路已验证）；抽屉在字体 130% 下的
 滚动成本。
+
+## 2026-09-06 Codex 补充审核与验收
+
+审核域为 `zh-code-reviewer` 与 `translation-reviewer`，内联执行，不宣称独立审阅。
+`classify_reviewers.py --base 8745b0af18 --head b915769e5c` 分类为 mixed；
+术语 SHA-256 沿用上文，未改术语表。
+
+发现并修复 §3.2 的不可用原因遗漏（原候选未满足要求）：
+`b915769e5c` 在抽屉复用 `quiver::anything_to_quiver()`；
+喊叫模块提供复用 `_follows_orders` 的盟友查询。无可用箭袋动作、
+不能说话且没有可听从命令的盟友时灰显，点击/长按沿用说明弹窗。
+新增英文 `You cannot shout and have no allies to order.` 与中文
+“你无法喊叫，也没有可听从命令的盟友。”语义一致，无格式占位符。
+
+- code profile `ba663f09a0..b915769e5c`：
+  `20260906T070726906283241+0000-1345390-b915769e5c39`，Failures 0；快捷键测试 36 项通过。
+- 合并 P2 修复的 P3 APK `950f523bab`：构建成功，Pixel 8a 安装成功。
+  两种灰显和中文原因均设备复测通过：`unavailable-orders-verified`、`empty-quiver-reason`。
+- 盟友喊叫/攻击/撤退/停止/守卫/跟随全部实际执行，目标选择、取消无需完整键盘；
+  一次命令消耗一次行动。证据 `orders-*`、`attack-order-done`。
+- 320dp / 130% 字体下分组可滚动、标签可读，`narrow-drawer`、`narrow-drawer-scroll`。
+  标准屏两屏内滚完复用原证据。
+- 新证据位于 P3 worktree 的 `.claude/metrics/verify/android-shortcut-final-2026-09-06/`。
+
+PR #131 已改为目标 `chn-0.34.1-base`。原候选 `26a1eb6c1b` 的
+手动 CI run `34017568264` 全部适用任务通过；该结果不覆盖新修复。
+新提交推送被自动审批拒绝，等待用户明确授权向现有公开 GitHub 仓库导出；
+因此当前合并结论为 Changes Requested（Validation Gap：新候选 CI）。
+丢弃数量及长背包滚动恢复、原地自动战斗相邻/远处的完整设备矩阵尚缺专门记录；
+当前证据仅覆盖丢弃多选、无目标与取消友军保护时不移动，不能将其写成完整矩阵通过。
