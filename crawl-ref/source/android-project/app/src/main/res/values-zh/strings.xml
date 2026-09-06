@@ -102,6 +102,8 @@
     <string name="keyboard_close_door">关门</string>
     <string name="keyboard_cycle_view">切换视图</string>
     <string name="keyboard_all_skills">全部技能</string>
+    <string name="keyboard_set_target">设置目标</string>
+    <string name="keyboard_clear_target">清除目标</string>
     <string name="keyboard_default_target">上次目的地</string>
     <string name="keyboard_waypoints">路径点</string>
     <string name="keyboard_altars">祭坛</string>
