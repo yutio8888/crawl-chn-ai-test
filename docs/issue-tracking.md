@@ -51,6 +51,11 @@ evidence in the closing comment and linked pull request.
 
 ## Issue Content
 
+These recording rules apply when issue tracking or cross-session handoff is
+part of the task. Ordinary local review may return its report in the session.
+Do not create issues or post comments without existing user authorization; the
+documentation's information authority is not publication permission.
+
 Keep the current problem, reproduction, acceptance criteria, explicit
 non-goals, implementation ownership, and required verification in the issue
 body. Put investigation updates, decisions, and cross-session handoffs in

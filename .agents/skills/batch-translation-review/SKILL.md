@@ -14,7 +14,7 @@ never copy a completed audit's counts, hashes, paths, or translations here.
 
 1. Load `$dcss-translation-context` with task type `review` and the actual
    collection files.
-2. Read the complete resolver output and retain its glossary SHA-256.
+2. Reuse relevant current resolver output and retain its glossary SHA-256.
 3. Read the domain naming rules, existing decisions, and any current inventory
    tool or plan relevant to the collection.
 4. Route a single reported bug to `$translation-pipeline` instead. Route a
@@ -58,30 +58,25 @@ every member of a dependency group before landing any rename from that group.
 
 ## Build One Evidence Card per Identity
 
-Collect evidence read-only. Use `not applicable` explicitly rather than
-silently omitting a field:
+Collect evidence read-only. A table row is sufficient for a simple entry;
+each identity needs these basic fields:
 
 ```text
 Identity:
-Lifecycle:
 English source name:
 Current Chinese name:
-Metadata and display context:
-Producer, consumer, and user:
-English source meaning:
-Actual effect or behavior:
-Target, scope, conditions, exceptions, and consequences:
-English description:
-Chinese description semantic parity:
-Shared dependency group:
-Current glossary and decision authority:
 Conclusion:
-Proposed translation:
-Rejected alternatives:
+Reason and proposed translation (if changed):
 Evidence locations:
-Confidence:
-Deferred follow-up:
 ```
+
+Add lifecycle, display context, actual behavior, description parity, shared
+dependencies, terminology authority, alternatives, or uncertainty only where
+they matter to the judgment. Deferrals need a reason, owner, and re-entry
+trigger. Cite shared evidence once for a group; do not duplicate long cards or
+fill unrelated fields with `not applicable`. Existing domain ledger formats
+remain valid; use required fields when updating such an artifact, without
+introducing a second ledger or migrating its schema for this Skill.
 
 Inspect implementation or data behavior whenever the displayed name or
 description promises a game effect. Do not let the English title alone
@@ -124,8 +119,8 @@ Follow `.agents/policies/asset-ownership.md` and
 
 1. Assign exactly one writer to every file.
 2. Let one `zh-translator` update Chinese translation assets sequentially.
-3. Separate code support into a later `crawl-coder` phase without reopening
-   translator-owned files.
+3. Arrange code support in dependency order; the same asset owner may revise
+   translations after keys, placeholders, or contexts change.
 4. Update affected descriptions, related display terms, glossary entries,
    exported glossary artifacts, and durable decisions in the same coherent
    batch.
@@ -135,8 +130,8 @@ Follow `.agents/policies/asset-ownership.md` and
 7. Preserve the raw report and explain failures. Record a failed attempt when a
    stale glossary, structural issue, or other real defect requires a retry.
 
-Do not run the final review profile after each batch and do not create a new
-readiness schema, ledger, or final-gate substitute.
+Reuse valid batch verification; do not repeat it solely to change stages or
+create a new readiness schema, ledger, or final-gate substitute.
 
 ## Prove Completion
 
@@ -161,10 +156,12 @@ When the user authorizes persisted task artifacts, keep them distinct:
 
 ## Landing Review (Target Process)
 
-After landing all accepted batches, create one clean committed candidate. Run
-the matching development `verify_zh.sh` profile, route domain reviewers with
-`classify_reviewers.py`, and merge only after existing GitHub Actions CI
-passes — the process defined by `.agents/policies/review-contract.md`. This
+Only when merge is authorized, prepare one clean committed candidate. Verify
+the matching profile with `--base <base> --head <candidate>` (or reuse evidence
+for unchanged tested content), route domain reviewers with
+`classify_reviewers.py`, and merge after applicable GitHub Actions CI passes
+under `.agents/policies/review-contract.md`. Ordinary review accepts files or
+an uncommitted diff and ends with its coverage report. This
 category's own inventory/glossary digests may still be frozen as the input
 record for the review session.
 
@@ -173,7 +170,8 @@ changes after the ledger was written, this Skill decides whether to regenerate
 or re-review the category ledger; CI only prints a non-blocking notice and
 never blocks on the digest difference alone.
 
-Report the baseline and candidate identities, inventory and glossary digests,
+Report the baseline and candidate identities when applicable, inventory and glossary digests,
 coverage equality, conclusion counts, changed translations and descriptions,
-deferred items, development verification, reviewer conclusion (Ready or
-Changes Requested), and merge status.
+deferred items, available verification, reviewer conclusion, and the requested
+delivery status. Task completion and cleanup follow `AGENTS.md`; reporting does
+not require an unauthorized commit, remote comment, or merge.

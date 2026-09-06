@@ -69,6 +69,16 @@ class ReviewerRoutingTests(unittest.TestCase):
             "code", ["zh-code-reviewer"],
         )
 
+    def test_canonical_governance_docs_route_code_review(self):
+        for path in (
+            "docs/agent-routing.md", "docs/release-workflow.md",
+            "docs/issue-tracking.md", "docs/build-workflow.md",
+            "docs/dual-agent-workflow.md", "docs/zh-testing.md",
+            "docs/cjk-tiles-architecture.md", "docs/translation-architecture.md",
+        ):
+            with self.subTest(path=path):
+                self.assert_route([path], "code", ["zh-code-reviewer"])
+
     def test_pi_policy_and_zh_testing_route_only_code_reviewer(self):
         for path in (
             ".pi/agents/translation-reviewer.md",
@@ -238,37 +248,75 @@ class ReviewerRoutingTests(unittest.TestCase):
                     self.assertEqual(classification, result["classification"])
                     self.assertEqual(reviewers, result["reviewers"])
 
-    def test_review_context_uses_v6_domain_review_contract_and_ownership(self):
-        proc = subprocess.run(
-            [
-                "bash", ".claude/scripts/context_resolve.sh", "review routing",
-                "--task-type", "review", "--files",
-                ".agents/skills/translation-pipeline/SKILL.md",
-            ],
-            cwd=REPO, text=True, capture_output=True, check=True,
+    def resolve_context(self, task_type, *extra):
+        # Exercise the real resolver CLI with an observable terminology provider.
+        with tempfile.TemporaryDirectory() as tmp:
+            scripts = Path(tmp) / ".claude/scripts"
+            scripts.mkdir(parents=True)
+            (scripts / "context_resolve.sh").write_bytes(
+                (REPO / ".claude/scripts/context_resolve.sh").read_bytes()
+            )
+            (scripts / "glossary_query.py").write_text(
+                'import json, sys\nprint("GLOSSARY_QUERY " + json.dumps(sys.argv[1:]))\n',
+                encoding="utf-8",
+            )
+            return subprocess.run(
+                ["bash", str(scripts / "context_resolve.sh"), "scope check",
+                 "--task-type", task_type, *extra],
+                text=True, capture_output=True,
+            )
+
+    def test_governance_context_references_policy_without_terms_or_execution(self):
+        for task_type in ("review", "code"):
+            with self.subTest(task_type=task_type):
+                proc = self.resolve_context(
+                    task_type, "--files", ".agents/skills/translation-pipeline/SKILL.md"
+                )
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertNotIn("GLOSSARY_QUERY", proc.stdout)
+                self.assertIn("docs/zh-testing.md", proc.stdout)
+                if task_type == "review":
+                    self.assertIn(".agents/policies/review-contract.md", proc.stdout)
+                self.assertNotIn("make -j", proc.stdout)
+                self.assertNotIn("verify_zh.sh --profile", proc.stdout)
+
+    def test_translation_context_queries_provider_with_actual_files(self):
+        target = "crawl-ref/source/dat/i18n/zh/source.txt"
+        for task_type in ("translate", "review", "code"):
+            with self.subTest(task_type=task_type):
+                proc = self.resolve_context(task_type, "--files", target)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                query = next(line for line in proc.stdout.splitlines()
+                             if line.startswith("GLOSSARY_QUERY "))
+                args = json.loads(query.removeprefix("GLOSSARY_QUERY "))
+                self.assertIn(target, args)
+                self.assertIn("--task", args)
+                if task_type == "translate":
+                    self.assertIn(".agents/policies/translation-integrity.md", proc.stdout)
+
+    def test_terminology_override_and_tool_policy(self):
+        proc = self.resolve_context(
+            "code", "--files", "crawl-ref/source/dat/i18n/zh/source.txt",
+            "--terminology", "no",
         )
-        output = proc.stdout
-        self.assertIn("review-contract-v6", output)
-        self.assertIn("**Blocker**", output)
-        self.assertIn("**Needs Fix**", output)
-        self.assertIn("**Suggestion**", output)
-        self.assertIn("`zh-code-reviewer`", output)
-        self.assertIn("`translation-reviewer`", output)
-        self.assertIn("classify_reviewers.py", output)
-        self.assertIn("**Ready**", output)
-        self.assertIn("**Changes Requested**", output)
-        self.assertIn("no separate final evidence gate", output)
-        self.assertIn("complete diff", output)
-        self.assertIn("Plan non-goals do not excuse defects", output)
-        self.assertIn("theoretical risk outside the acceptance criteria is non-blocking", output)
-        self.assertIn("before adding mechanisms", output)
-        self.assertNotIn("Conditional Go", output)
-        self.assertNotIn("P0", output)
-        self.assertNotIn("P1", output)
-        self.assertNotIn("review_final_gate.sh", output)
-        self.assertNotIn("Ready for Final Gate", output)
-        self.assertNotIn("No-Go", output)
-        self.assertNotIn("review_prepare.sh", output)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertNotIn("GLOSSARY_QUERY", proc.stdout)
+        self.assertIn(".agents/policies/i18n-safety.md", proc.stdout)
+        proc = self.resolve_context(
+            "review", "--files", ".claude/scripts/context_resolve.sh",
+            "--terminology", "yes",
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("GLOSSARY_QUERY", proc.stdout)
+        self.assertIn(".agents/policies/verification-authoring.md", proc.stdout)
+
+    def test_invalid_context_options_do_not_silently_change_scope(self):
+        for args in (("--terminology", "maybe"), ("--terminology",),
+                     ("--files",), ("--unknown",)):
+            with self.subTest(args=args):
+                proc = self.resolve_context("review", *args)
+                self.assertEqual(proc.returncode, 2)
+                self.assertIn("ERROR:", proc.stderr)
 
 
 if __name__ == "__main__":

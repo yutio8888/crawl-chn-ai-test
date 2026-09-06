@@ -1,29 +1,26 @@
 # verification-authoring-v1
 
-This policy applies when an agent writes or reviews a validator, scanner,
-deployment check, parser-facing test, or other verification control.
+Apply this policy when writing or reviewing a validator, scanner, deployment
+check, or parser-facing test. Cover the behavior the tool claims to guarantee
+and risks introduced by the change, using existing tests and interfaces.
 
-- Enumerate the complete production artifact and its invariants before writing
-  the check. Counts alone never prove identity, membership, uniqueness, order,
-  content, conservation, or rejection of unknown data.
-- Match production semantics for the parser, working directory,
-  initialization, locale, environment, and compile/runtime options. Prefer the
-  production helper or entry point. If a test must reimplement semantics,
-  document the difference and cover it with a strict end-to-end check.
-- Exercise the real construction, lookup, fallback, or deployment path. A
-  relaxed helper test is insufficient unless a stricter end-to-end test covers
-  the behaviour it omits.
-- Fail closed when required input is missing, parsing is incomplete, an unknown
-  field or state appears, or the complete invariant cannot be evaluated. Expose
-  the failure through the validator's existing interface, normally a non-zero
-  exit or an existing structured unresolved result. This requirement does not
-  introduce a new result protocol, parser, persistent state, distributed
-  coordination, recovery mechanism, or general compiler.
-- Give every invariant a passing fixture and a minimal negative mutation that
-  breaks only that invariant and must be rejected.
-- Preserve raw tool evidence. Report the exact command, exit code, blocking
-  failure count, relevant warnings, and the reason a failure is or is not
-  actionable.
-
-Reviewers reject checks that validate only source tokens or a convenient subset
-when the production consumer observes a larger effective artifact.
+- Identify relevant artifacts, consumer semantics, and invariants. Counts alone
+  do not prove identity, membership, uniqueness, order, or content when the
+  check claims those guarantees.
+- Prefer production helpers and realistic inputs. A focused unit test may
+  reuse existing integration coverage; add end-to-end coverage only when a
+  changed construction, lookup, fallback, or deployment boundary needs it.
+  Document material differences if a fixture reimplements production behavior.
+- Blocking release, protocol, and structural/parser integrity checks fail
+  closed if required input is missing or their claimed invariant cannot be
+  evaluated. Test new or changed guarantees with passing cases and minimal
+  negative mutations. Preserve existing strict artifact-validation coverage.
+- Advisory or heuristic tools may report unsupported input or incomplete
+  coverage through their existing interface. They must not claim complete
+  validation or a successful blocking check on that basis. Unknown states block
+  only when the tool's declared contract requires rejection.
+- Do not add tests that merely mirror wording or implementation details. Reuse
+  existing fixtures and regression entry points; no new evidence protocol,
+  persistent state, parser framework, or universal end-to-end gate is implied.
+- Preserve logs for actual checks. Report commands/results and material warnings
+  or gaps; detailed raw evidence can stay in the existing verification log.

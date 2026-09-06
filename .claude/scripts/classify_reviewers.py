@@ -4,6 +4,8 @@
 The classifier is the single source of truth for the shared review pipeline.
 It accepts either an immutable git range or an explicit file list and emits one
 JSON object on stdout.
+Reviewer selection identifies expertise, not verification scope or a requirement
+to launch another agent. Apply the review contract to the actual changed content.
 """
 
 from __future__ import annotations
@@ -42,8 +44,13 @@ POLICY_PREFIXES = (
 POLICY_FILES = {
     "AGENTS.md",
     "CODEX.md",
+    "docs/agent-routing.md",
     "docs/build-workflow.md",
+    "docs/cjk-tiles-architecture.md",
     "docs/dual-agent-workflow.md",
+    "docs/issue-tracking.md",
+    "docs/release-workflow.md",
+    "docs/translation-architecture.md",
     "docs/zh-testing.md",
 }
 CODE_SUFFIXES = {

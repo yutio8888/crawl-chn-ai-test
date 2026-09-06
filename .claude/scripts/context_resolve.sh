@@ -1,140 +1,124 @@
 #!/bin/bash
-# context_resolve.sh — Dynamic context injection for agent dispatch.
-#
-# Given a task description and target files, supplements the active role prompt
-# with current-worktree terminology and a focused operational summary.
-#
-# Usage:
-#   bash .claude/scripts/context_resolve.sh "translate god descriptions" \
-#       --files crawl-ref/source/dat/database/zh/godspeak.txt
-#   bash .claude/scripts/context_resolve.sh "add T_() to beam.cc" \
-#       --task-type code
-
+# Resolve task-relevant terminology and policy references, without duplicating
+# policy bodies or adding build, commit, review, or publication requirements.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
 
+usage() {
+    cat <<'EOF'
+Usage: context_resolve.sh "<task>" [--task-type translate|code|review|general]
+                         [--files <paths...>] [--terminology auto|yes|no]
+Resolve relevant glossary terms and policy references. Existing current output
+can be reused within a task. Pure structural/tooling work can select no terms.
+EOF
+}
+if [[ "${1:-}" == --help || "${1:-}" == -h ]]; then
+    usage
+    exit 0
+fi
 TASK="${1:-}"
 shift 2>/dev/null || true
-
 TASK_TYPE=""
+TERMINOLOGY=auto
 FILES=()
-
 while [ $# -gt 0 ]; do
     case "$1" in
-        --task-type)
-            [ $# -ge 2 ] || { echo "ERROR: --task-type requires a value" >&2; exit 1; }
-            TASK_TYPE="$2"; shift 2 ;;
+        --task-type|--terminology)
+            [ $# -ge 2 ] || { echo "ERROR: $1 requires a value" >&2; exit 2; }
+            case "$1" in
+                --task-type) TASK_TYPE="$2" ;;
+                --terminology) TERMINOLOGY="$2" ;;
+            esac
+            shift 2 ;;
         --files)
             shift
-            [ $# -ge 1 ] && [[ "$1" != --* ]] || {
-                echo "ERROR: --files requires at least one value" >&2
-                exit 1
+            [ $# -gt 0 ] && [[ "$1" != --* ]] || {
+                echo "ERROR: --files requires at least one value" >&2; exit 2;
             }
             while [ $# -gt 0 ] && [[ "$1" != --* ]]; do
-                FILES+=("$1")
-                shift
-            done
-            ;;
-        *) shift ;;
+                FILES+=("$1"); shift
+            done ;;
+        *) echo "ERROR: unknown option $1" >&2; exit 2 ;;
     esac
 done
-
-# Detect task type from keywords if not specified
-if [ -z "$TASK_TYPE" ]; then
-    # Check review first (narrower patterns, higher priority)
-    if echo "$TASK ${FILES[*]}" | grep -qiE 'review|审查|审核|audit'; then
-        TASK_TYPE="review"
-    # Check code second
-    elif echo "$TASK ${FILES[*]}" | grep -qiE '\.cc$|\.h$|T_\(|mprf|compile|build|bug|fix|编译|代码|函数|修复|修改|添加'; then
-        TASK_TYPE="code"
-    # Check translate last (broadest patterns)
-    elif echo "$TASK ${FILES[*]}" | grep -qiE 'translate|翻译|source\.txt|descript|database|dat/.*\.txt'; then
-        TASK_TYPE="translate"
+if [[ -z "$TASK_TYPE" ]]; then
+    if printf '%s\n' "$TASK" | grep -qiE 'review|审查|审核|audit'; then
+        TASK_TYPE=review
+    elif printf '%s\n' "$TASK ${FILES[*]}" | grep -qiE '\.cc|\.h|T_\(|C_\(|compile|build|代码|编译'; then
+        TASK_TYPE=code
+    elif printf '%s\n' "$TASK" | grep -qiE 'translat|翻译|译文'; then
+        TASK_TYPE=translate
     else
-        TASK_TYPE="general"
+        TASK_TYPE=general
     fi
 fi
+case "$TASK_TYPE" in
+    translate|code|review|general) ;;
+    *) echo "ERROR: invalid task type: $TASK_TYPE" >&2; exit 2 ;;
+esac
+case "$TERMINOLOGY" in
+    auto|yes|no) ;;
+    *) echo "ERROR: invalid terminology mode: $TERMINOLOGY" >&2; exit 2 ;;
+esac
 
-echo "## Context Injection — $(date -Iminutes)"
-echo ""
-
-# ── Common constraints (always included) ──
-echo "### Hard Constraints (all tasks)"
-echo ""
-echo "- NEVER translate Lua comparison strings (\`\"Mummy\"\`, \`\"Zin\"\`)"
-echo "- NEVER call \`conj_verb()\` on Chinese strings"
-echo "- Positional format \`%n\$s\` → use \`mprf_p\`, not \`mprf\`"
-echo "- \`god_name()\` for DB lookup → use \`_god_name_en()\`"
-echo ""
-
-# Always resolve terminology from the current worktree.  The query includes a
-# glossary hash so callers and reviewers can prove which revision was used.
-python3 "$SCRIPT_DIR/glossary_query.py" \
-    --task "$TASK" \
-    --files "${FILES[@]}" \
-    --limit 120
-echo ""
-
-# ── Translation context ──
-if [ "$TASK_TYPE" = "translate" ]; then
-    echo "### Translation Rules"
-    echo ""
-    echo "- No articles (a/an/the), no plural markers"
-    echo "- Adverbs BEFORE verbs"
-    echo "- Add 了 after verbs for completed actions"
-    echo "- Preserve all @keyword@, w:N weights, %%%% separators"
-    echo ""
-
-    echo "### Post-task: run \`bash .claude/scripts/verify_zh.sh --profile translation\`"
-    echo ""
+NEEDS_TERMS=0
+I18N_POLICY=0
+TOOL_POLICY=0
+[[ "$TASK_TYPE" != translate ]] || NEEDS_TERMS=1
+for file in "${FILES[@]}"; do
+    case "${file#./}" in
+        crawl-ref/source/dat/i18n/zh/*|crawl-ref/source/dat/database/zh/*|\
+        crawl-ref/source/dat/descript/zh/*|docs/glossary.md|docs/glossary.utf8|\
+        docs/decisions.md|docs/spell-naming-rules.md)
+            NEEDS_TERMS=1; I18N_POLICY=1 ;;
+        crawl-ref/source/*.cc|crawl-ref/source/*.h)
+            I18N_POLICY=1 ;;
+        .claude/scripts/*|.github/*)
+            TOOL_POLICY=1 ;;
+    esac
+done
+if [[ "${#FILES[@]}" -eq 0 ]] && printf '%s\n' "$TASK" | grep -qiE 'translat|terminolog|glossary|翻译|译文|术语'; then
+    NEEDS_TERMS=1
 fi
-
-# ── Code context ──
-if [ "$TASK_TYPE" = "code" ]; then
-    echo "### Code Modification Rules"
-    echo ""
-    echo "- \`const char*\` return → no \`.c_str()\`"
-    echo "- \`string\` return → need \`.c_str()\`"
-    echo "- \`mprf_p\` for positional format strings"
-    echo "- \`grep -F\` source.txt before appending"
-    echo "- Compile: \`make -j4\` before commit"
-    echo ""
-    echo "### Post-task: run \`bash .claude/scripts/verify_zh.sh --profile code\`"
-    echo ""
+if printf '%s\n' "$TASK" | grep -qE 'T_\(|C_\('; then
+    I18N_POLICY=1
+    NEEDS_TERMS=1
 fi
+case "$TERMINOLOGY" in
+    yes) NEEDS_TERMS=1 ;;
+    no) NEEDS_TERMS=0 ;;
+esac
 
-# ── Review context ──
-if [ "$TASK_TYPE" = "review" ]; then
-    echo "### Review Contract (review-contract-v6)"
-    echo ""
-    echo "#### Finding severity"
-    echo "- **Blocker**: runtime/functional failure, undefined behaviour, protocol or lookup corruption, structural data damage, compilation failure, failure to review the complete diff, an unmet confirmed acceptance criterion within that diff, or interrupted required verification"
-    echo "- **Needs Fix**: definite semantic, terminology, accuracy, completeness, or language error without runtime corruption"
-    echo "- **Suggestion**: non-required style preference"
-    echo "- **Ready**: zero Blocker and zero Needs Fix"
-    echo "- **Changes Requested**: a Blocker or Needs Fix exists, or the reviewer could not complete the assigned scope"
-    echo "- Plan non-goals do not excuse defects introduced by the diff under review"
-    echo "- A theoretical risk outside the acceptance criteria is non-blocking unless the reviewed diff creates or materially worsens it"
-    echo "- Prefer deleting unnecessary design, reusing repository mechanisms, and narrowing commitments before adding mechanisms"
-    echo ""
-    echo "#### Reviewer ownership"
-    echo "- \`zh-code-reviewer\`: runtime safety, protocol/display separation, extraction and key coverage, format arguments, TextDB structure, borrowed translation lifetime, variadic calls, movement routing, English morphology, compilation, and scanner warning triage"
-    echo "- \`translation-reviewer\`: EN/ZH semantic parity, glossary choice in context, facts and numbers, completeness, natural Chinese, terminology consistency, and character voice"
-    echo "- Reviewer routing comes only from \`python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>\`; record findings as plain text in the PR/issue"
-    echo ""
-    echo "### Code-review anti-patterns to check:"
-    echo "- \`equip_slot_name()\` used for matching → needs \`_en()\` variant"
-    echo "- \`god_name()\` for DB key construction → needs \`_god_name_en()\`"
-    echo "- DB query key mismatch: EN key vs ZH code"
-    echo ""
-    echo "### Post-task: run the matching \`verify_zh.sh\` development profile"
-    echo ""
-    echo "Merge requires the matching development profile, domain review, and GitHub Actions CI; there is no separate final evidence gate."
-    echo ""
+echo "## Task context"
+if [[ "$NEEDS_TERMS" -eq 1 ]]; then
+    python3 "$SCRIPT_DIR/glossary_query.py" \
+        --task "$TASK" --files "${FILES[@]}" --limit 120
+else
+    echo "Terminology: not selected; use --terminology yes if this task makes wording judgments."
 fi
-
-echo "---"
-echo "Full documentation: AGENTS.md, docs/glossary.md, docs/decisions.md, .claude/scripts/TOOLCHAIN.md"
+echo ""
+echo "### Applicable policy references"
+echo "Read only relevant sections not already present in current task context."
+case "$TASK_TYPE" in
+    translate)
+        echo "- .agents/policies/translation-integrity.md"
+        echo "- .agents/policies/asset-ownership.md" ;;
+    code)
+        echo "- .agents/policies/asset-ownership.md" ;;
+    review)
+        echo "- .agents/policies/review-contract.md"
+        if [[ "$NEEDS_TERMS" -eq 1 ]]; then
+            echo "- .agents/policies/translation-integrity.md"
+        fi ;;
+esac
+if [[ "$I18N_POLICY" -eq 1 && "$TASK_TYPE" != translate ]]; then
+    echo "- .agents/policies/i18n-safety.md"
+fi
+if [[ "$TOOL_POLICY" -eq 1 ]]; then
+    echo "- .agents/policies/verification-authoring.md"
+fi
+echo "Verification selection and evidence reuse: docs/zh-testing.md."
+echo "Task endpoint, existing authorization, and cleanup: AGENTS.md."

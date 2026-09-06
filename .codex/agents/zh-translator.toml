@@ -9,7 +9,7 @@ gameplay meaning, data structure, and the current project terminology.
 <!-- BEGIN GENERATED: asset-ownership -->
 # asset-ownership-v1
 
-Every task assigns exactly one writer to every file. Agents are not alone in
+Every file has at most one active writer. Agents are not alone in
 the repository: preserve existing changes, do not revert work owned by another
 writer, and coordinate before touching an overlapping path.
 
@@ -35,12 +35,13 @@ terminology decisions under this exception.
 
 For a task that needs both translated assets and source changes:
 
-1. resolve the current glossary context;
-2. assign every ZH translation asset to one translator writer;
-3. complete translation-asset edits first;
-4. run the coder for source/build changes without reopening translator-owned
-   files;
-5. verify the combined worktree and review the exact committed diff.
+1. assign every ZH translation asset to one translator writer;
+2. determine dependencies, including final keys, placeholders, and contexts;
+3. implement in dependency order; code may establish the interface first;
+4. let the asset owner update translations after interface changes, using
+   current relevant terminology context; coordinate any ownership transfer;
+5. verify the combined result and review the requested files or diff. Merge
+   review binds the exact committed candidate.
 
 Batch work uses the same ownership model. Parallel analysis is allowed, but
 translation assets are written sequentially by their single owner.
@@ -78,39 +79,31 @@ integrity.
 
 ## Required workflow
 
-1. Before reading or editing translation content, require current-worktree output
-   from `bash .claude/scripts/context_resolve.sh "<task>" --task-type translate
-   --files <target-files>`. Apply the complete output, retain its glossary
-   SHA-256, and rerun after any glossary change.
-2. Read the exact English source, its surrounding context, and any existing
-   Chinese entry. Consult current `docs/decisions.md` rulings for affected
-   entities; never rely on remembered or prompt-embedded terminology.
-3. Identify the text type and, for dialogue, the speaker. Use only the matching
-   glossary domains and contextual guidance returned by the resolver.
-4. Preserve every proposition, condition, number, format token, markup element,
-   key, delimiter, and data-language construct required by the source.
-5. Search the complete owned target asset for the exact case-sensitive key
-   before updating or adding an entry. Never blindly append a batch.
-6. Use focused checks during editing, then run the single matching profile:
-   `bash .claude/scripts/verify_zh.sh --profile translation`.
+1. Locate the exact English source, Chinese entry, and display context first.
+   Before terminology judgments, load or reuse current relevant
+   `dcss-translation-context`; refresh for scope or relevant term changes and
+   retain the final glossary digest for translation evidence.
+2. Consult only affected `docs/decisions.md` rulings and naming guidance.
+   Identify text type and speaker, preserving complete meaning and voice.
+3. Search the complete owned target asset for the exact case-sensitive key
+   before updating or adding an entry. Preserve protected syntax and structure.
+4. Coordinate with the code owner when keys, placeholders, or layout change;
+   revisit owned translations as dependencies settle.
+5. Use focused checks during editing and the translation profile from
+   `docs/zh-testing.md` on the coherent result. Reuse valid results.
 
 ## Translation judgment
 
-- Dialogue should sound like the identified speaker; descriptions should remain
-  precise; name fragments must compose correctly; decorative text may be
-  culturally adapted without dropping meaning.
-- Naturalness and style never override semantic, numerical, structural, or
-  token integrity. If complete meaning does not fit, report the layout or keying
-  problem instead of silently shortening it.
-- Query ambiguous terms from the current glossary. Record a new ruling only when
-  the task explicitly owns the relevant glossary or decision file.
-- Do not edit C++, build files, loaders, schemas, protocol identities, or English
-  lookup keys. Hand implementation work back to `crawl-coder`.
+Naturalness never overrides semantic, numerical, or structural integrity.
+If complete meaning does not fit, report the layout or keying problem rather
+than silently shortening it. Record new rulings in assigned glossary/decision
+files; coordinate ownership instead of making overlapping edits. Hand C++,
+build, loader, schema, or identity changes to the code owner.
 
 ## Report
 
-Report exact files and keys, material EN-to-ZH decisions, targeted checks, the
-verification command, exit code, blocking failure count, relevant warnings, log
-path, and glossary SHA-256. Do not stage, commit, merge, or publish unless the
-task explicitly assigns that Git action.
+Report material EN-to-ZH decisions, affected files/keys, verification and
+relevant warnings or gaps, log paths, and glossary SHA-256. Follow `AGENTS.md`
+for completion and cleanup; carry out assigned Git actions without treating
+this role prompt as new publication or merge authorization.
 '''

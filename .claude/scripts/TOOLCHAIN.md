@@ -8,8 +8,8 @@
 `check_moveto*()` 固定动词及 `_find_cblink_target()` 动词，并将可达语法
 场景与 `.claude/scripts/data/move_i18n_manifest.json` 的结构化清单比较。
 每个 `move.<context>|<verb>` 都必须有精确且非空的 TextDB 条目；运行时
-`C_()` 回退不能视为覆盖成功。此检查在 translation、code、review 和 CI
-四类 profile 中均为阻断项。
+`C_()` 回退不能视为覆盖成功。此检查在启用的 translation/code 静态阶段及
+CI 中为阻断项；普通只读审查复用对应证据。
 
 ```bash
 python3 .claude/scripts/audit_move_i18n.py
@@ -22,14 +22,14 @@ Agent 生成修改 → verify_zh.sh --profile <type>  (单入口调度器)
         │
         ├─ translation  → post-translator.sh
         ├─ code         → post-coder.sh
-        └─ review       → post-reviewer.sh
+        └─ ci           → translation + code 静态检查与全量 CI 数据审计
                                     ↓
                   ┌──────────────────────────────────────────┐
                    │  scan_i18n.py (子命令集)                  │
-                   │  i18n_extract.py (4 子命令)               │
+                   │  i18n_extract.py (键提取与验证)           │
                    │  audit_data_i18n.py (数据驱动覆盖)        │
                    │  source_control_parity.py (控制符奇偶)    │
-                   │  check_consistency.sh (7 模式)             │
+                   │  check_consistency.sh                    │
                    │  cross_file_terms.py                      │
                    │  zh_runtime_check.py (运行时聚合)         │
                    │  smoke_test.sh                            │
@@ -45,10 +45,10 @@ Parser (统一):
 
 | 需求 | 命令 |
 |------|------|
-| **翻译/数据改动验证** | `bash .claude/scripts/verify_zh.sh --profile translation` |
-| **C++/i18n 改动验证** | `bash .claude/scripts/verify_zh.sh --profile code` |
+| **翻译/数据改动验证** | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation` |
+| **C++/i18n 改动验证** | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code` |
 | **合并前领域审阅路由** | `python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>` |
-| **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
+| **CI 门禁** | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile ci` |
 | **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
 | **冻结常规物品与 ego 名称清单** | `python3 .claude/scripts/audit_item_name_inventory.py --output /tmp/item-name-inventory.json` |
 | **检查本次修改的精确术语键** | `python3 .claude/scripts/check_glossary_terms.py --base HEAD` |
@@ -172,9 +172,9 @@ python3 .claude/scripts/audit_item_name_inventory.py \
 
 ### glossary_query.py — 当前术语表上下文
 
-`docs/glossary.md` 是唯一术语数据源。Agent、Skill 和编排器在翻译、i18n
-实现或审核开始前调用本脚本，根据任务说明、文件路径和明确词条选择相关
-domain，并输出术语表 SHA-256。输出可直接附加到 Agent prompt：
+`docs/glossary.md` 是唯一术语数据源。进行译文或术语判断时，按任务说明、
+文件路径和明确词条查询相关 domain，并输出术语表 SHA-256。
+纯工具、结构或治理任务不需要术语查询。输出可共享给相关角色：
 
 ```bash
 python3 .claude/scripts/glossary_query.py \
@@ -185,8 +185,9 @@ python3 .claude/scripts/glossary_query.py \
 python3 .claude/scripts/glossary_query.py --term cast --format json
 ```
 
-不要把脚本输出复制回 Agent/Skill 形成静态术语副本；每次任务重新查询，
-才能使用当前 worktree 的最新术语表。`context_resolve.sh` 已统一调用本脚本。
+不要把输出复制回 Agent/Skill 形成静态术语副本。同一任务复用当前上下文，
+范围或相关术语变化时刷新；正式翻译证据记录最终词表摘要。
+`context_resolve.sh` 按需调用本脚本，支持 `--terminology auto|yes|no`。
 
 ### check_glossary_terms.py — 增量精确键门禁
 
@@ -195,7 +196,7 @@ python3 .claude/scripts/glossary_query.py --term cast --format json
 均可通过；未批准后缀也会失败（例如术语为“召回”时，“召回术”不视为匹配）。
 
 ```bash
-# 默认只检查相对 HEAD 新增或改动的条目（已接入三个 post-* 入口）
+# 默认只检查相对 HEAD 新增或改动的条目（已接入匹配的验证入口）
 python3 .claude/scripts/check_glossary_terms.py
 
 # 合并前指定比较基线
@@ -206,8 +207,7 @@ python3 .claude/scripts/check_glossary_terms.py --all
 ```
 
 门禁前先运行 `export_omegat_glossary.py --check`，确保 OmegaT 导出与 Markdown
-源一致。该检查已接入 `post-translator.sh`、`post-coder.sh` 和
-`post-reviewer.sh`。
+源一致。该检查已接入 `post-translator.sh`、`post-coder.sh`。
 
 ### i18n_extract.py — T_() 键提取与验证
 
@@ -541,59 +541,37 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
 
 ### verify_zh.sh — 单入口验证调度器
 
-Agent 每次只需运行一个与改动类型匹配的命令，无需记忆脚本列表。
+任务阶段、验证范围和证据复用以 `docs/zh-testing.md` 为准。
+开发中使用一个匹配的 profile；只读审查不自动构建，纯文档使用相关现有检查。
 
 ```bash
-# 翻译/数据文件改动
-bash .claude/scripts/verify_zh.sh --profile translation
+# 工作树改动：按实际类型选择 translation 或 code
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
 
-# C++/i18n 代码改动
-bash .claude/scripts/verify_zh.sh --profile code
+# 已提交候选：必须明确范围，不能把干净工作树当作上次提交验证
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh \
+  --profile code --base <base> --head <candidate>
 
-# 任务期默认 changed；也可显式要求全量静态检查
-bash .claude/scripts/verify_zh.sh --profile code --scope changed
-bash .claude/scripts/verify_zh.sh --profile code --scope full
-
-# CI 门禁（纯静态，不执行 make/runtime）
-bash .claude/scripts/verify_zh.sh --profile ci
-
-# 干净提交后路由领域审阅
-python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>
-# 合并条件：匹配的 verify profile + 领域审阅 + GitHub Actions CI
+# 组合全量静态预检（替代上面的开发 profile，不是固定追加步骤）
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile ci
 ```
 
-`translation`/`code` 默认 `--scope changed`，`ci` 默认
-`--scope full`。changed 只缩小明确支持文件列表的 AST 扫描；Agent/Skill
-策略同步、**source-db-static**、source.txt/TextDB 完整性、key coverage、格式、
-术语与导出新鲜度等全局门禁始终全量执行。绑定 `--base/--head` 时 changed 集合
-来自该不可变范围；未绑定时来自 `HEAD` 相对工作树（含 untracked files）。
+`translation`/`code` 默认 changed，未绑定时只覆盖相对 HEAD 的未提交改动；
+绑定时覆盖指定提交范围。已知治理文档变更跳过游戏静态与 overlay 阶段；
+相关源码、数据和验证工具依赖保留全局 key/结构完整性检查，overlay 依赖触发
+对应重型测试。未知路径保守处理。`ci` 与 full scope 保留全量静态阶段。
 
-**source-db-static 阶段**：所有 profile 均要求执行，不可绕过。连续运行三个
-检查（即使前一个失败也继续），收集全部证据后统一判断是否阻断：
-```bash
-python3 .claude/scripts/scan_i18n.py source-db-structure --source-txt ...
-python3 .claude/scripts/scan_i18n.py source-key-collisions --source-txt ...
-python3 .claude/scripts/i18n_extract.py validate crawl-ref/source --source-txt ...
-```
+启用 source-db-static 时，保留完整结构、key、提取覆盖、物品 inventory 和
+默认编码检查；dispatcher 通过 `ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1`
+避免 `post-coder.sh` 重复提取检查。直接调用底层脚本仍执行其原有检查。
 
-`verify_zh.sh` 随后嵌套调用 `post-coder.sh` / `post-reviewer.sh` 时会设置
-`ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1`，仅跳过底层脚本中重复的
-`i18n_extract.py validate`。直接运行底层脚本时不设置该标记，仍执行完整 key
-coverage；无论前置 phase 成败，`source-db-static` 的结果都已独立记录且阻断。
+`ci` 的默认模式不编译、不执行运行时测试；`--full` 是显式追加完整运行时
+的开发/发布选项。C++ i18n、CJK 或 runtime 改动按风险触发构建及相关运行时
+检查。检查工具自身的改动还须运行对应工具测试；profile 跳过无关阶段不等于
+验证了该工具。
 
-**--profile ci 纯静态**：`ci` profile 不执行 `make`、`smoke_test.sh`、
-`post_zh_runtime.sh` 等任何编译/运行时操作。仅运行静态数据检查（source-db-static
-+ translation-static + code-static）。
-
-风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
-font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2。`ci` 完全跳过
-编译和运行时；`--full` 是显式的三层 runtime 开发/发布工具。
-
-同一 mixed candidate 不得串行运行 `translation`、`code`、`ci` 三个 profile。
-开发期按当前改动选一个匹配的 domain profile；若需要一次组合静态 preflight，
-只跑 `ci`。合并条件是匹配的 `verify_zh.sh` profile、`classify_reviewers.py`
-路由的领域审阅，以及现有 GitHub Actions CI。任务或 release 契约另行要求的
-`help-full`、runtime `full` 只在 CI 通过后的最终候选上运行。
+复用内容和依赖未变化的验证结果；新修改、失败或证据缺口才追加检查。
+任务或 release 所需的运行时证据按其真实依赖执行，不统一等待 CI 后再开始。
 
 `post-coder.sh` 的 string-concat advisory 使用版本控制的
 `data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码
@@ -612,10 +590,10 @@ stream builder 若直接以 `builder.str()` 进入 `mpr`/`mprf` 等高置信显�
 报告会携带 sink provenance 并提升为 HIGH；`N_`/`NC_` 仅是延迟键标记，不被
 误认为已翻译。发现仍为 advisory，但扫描器输入、读取或解析失败按退出码 2 阻断。
 
-每个 profile 运行 core-static 检查（始终阻断）加上领域特定检查。
-报告写入 `.claude/metrics/verify/verify-<profile>-<timestamp>.log`。
+启用的静态阶段保留其原有阻断条件；阶段选择见上文。
+报告及 metadata 写入 `.claude/metrics/verify/`。
 
-底层仍保留 `post-coder.sh`、`post-translator.sh`、`post-reviewer.sh`，
+底层保留 `post-coder.sh`、`post-translator.sh`，
 但它们通过 `verify_zh.sh` 统一调度。
 
 ### post_zh_runtime.sh — 运行时测试与基线回归
@@ -736,21 +714,24 @@ python3 .claude/scripts/split_source.py crawl-ref/source/dat/i18n/zh/source.txt 
 ### 新增翻译后
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile translation
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
 ### 代码修改后
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile code
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 ### 提交后领域审阅与合并
 
+复用有效验证，或使用上文带 `--base/--head` 的匹配 profile 验证准确候选。
+
 ```bash
-bash .claude/scripts/verify_zh.sh --profile ci
 python3 .claude/scripts/classify_reviewers.py --base <target> --head <candidate>
 ```
+
+合并要求领域审查和适用 GitHub CI；普通审查使用 `--files`，不要求先提交。
 
 ### 发现盲区
 
@@ -779,7 +760,6 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 | `source_control_parity.py` | `--strict-all` | 1（有任何控制符不匹配） |
 | `post-coder.sh` | — | 1（有 blocking failure） |
 | `post-translator.sh` | — | 1（有 blocking failure） |
-| `post-reviewer.sh` | — | 1（有 blocking failure） |
 | `post_zh_runtime.sh` | `catch2`, `full`, `baseline` | 1+（任一层/聚合失败或基线回归） |
 | `post_zh_runtime.sh` | `bot`, `bot-fast` | 1+（缺失/重复/乱序/语义失败、非零退出或超时） |
 | `post_zh_runtime.sh` | `fast` | 1+（聚合失败） |

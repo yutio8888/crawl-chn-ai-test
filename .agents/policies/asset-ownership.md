@@ -1,6 +1,6 @@
 # asset-ownership-v1
 
-Every task assigns exactly one writer to every file. Agents are not alone in
+Every file has at most one active writer. Agents are not alone in
 the repository: preserve existing changes, do not revert work owned by another
 writer, and coordinate before touching an overlapping path.
 
@@ -26,12 +26,13 @@ terminology decisions under this exception.
 
 For a task that needs both translated assets and source changes:
 
-1. resolve the current glossary context;
-2. assign every ZH translation asset to one translator writer;
-3. complete translation-asset edits first;
-4. run the coder for source/build changes without reopening translator-owned
-   files;
-5. verify the combined worktree and review the exact committed diff.
+1. assign every ZH translation asset to one translator writer;
+2. determine dependencies, including final keys, placeholders, and contexts;
+3. implement in dependency order; code may establish the interface first;
+4. let the asset owner update translations after interface changes, using
+   current relevant terminology context; coordinate any ownership transfer;
+5. verify the combined result and review the requested files or diff. Merge
+   review binds the exact committed candidate.
 
 Batch work uses the same ownership model. Parallel analysis is allowed, but
 translation assets are written sequentially by their single owner.

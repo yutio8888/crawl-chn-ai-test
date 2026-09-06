@@ -43,8 +43,9 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   fallback path with a targeted test.
 - Use `mprf_p` for positional `%n$s` formats and never mix positional and
   sequential placeholders.
-- Resolve terminology from the current `docs/glossary.md` immediately before
-  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+- When choosing translated terms, use current relevant `docs/glossary.md`
+  context as described in the context Skill. Pure structural work does not
+  require terminology lookup. Do not embed canonical terms in prompts.
 
 Configuration checks validate this policy's generated blocks. C++ source
 analysis remains the responsibility of `scan_i18n_lifetime.py`,
@@ -54,7 +55,7 @@ analysis remains the responsibility of `scan_i18n_lifetime.py`,
 <!-- BEGIN GENERATED: asset-ownership -->
 # asset-ownership-v1
 
-Every task assigns exactly one writer to every file. Agents are not alone in
+Every file has at most one active writer. Agents are not alone in
 the repository: preserve existing changes, do not revert work owned by another
 writer, and coordinate before touching an overlapping path.
 
@@ -80,12 +81,13 @@ terminology decisions under this exception.
 
 For a task that needs both translated assets and source changes:
 
-1. resolve the current glossary context;
-2. assign every ZH translation asset to one translator writer;
-3. complete translation-asset edits first;
-4. run the coder for source/build changes without reopening translator-owned
-   files;
-5. verify the combined worktree and review the exact committed diff.
+1. assign every ZH translation asset to one translator writer;
+2. determine dependencies, including final keys, placeholders, and contexts;
+3. implement in dependency order; code may establish the interface first;
+4. let the asset owner update translations after interface changes, using
+   current relevant terminology context; coordinate any ownership transfer;
+5. verify the combined result and review the requested files or diff. Merge
+   review binds the exact committed candidate.
 
 Batch work uses the same ownership model. Parallel analysis is allowed, but
 translation assets are written sequentially by their single owner.
@@ -96,73 +98,53 @@ translation assets are written sequentially by their single owner.
 <!-- BEGIN GENERATED: verification-authoring -->
 # verification-authoring-v1
 
-This policy applies when an agent writes or reviews a validator, scanner,
-deployment check, parser-facing test, or other verification control.
+Apply this policy when writing or reviewing a validator, scanner, deployment
+check, or parser-facing test. Cover the behavior the tool claims to guarantee
+and risks introduced by the change, using existing tests and interfaces.
 
-- Enumerate the complete production artifact and its invariants before writing
-  the check. Counts alone never prove identity, membership, uniqueness, order,
-  content, conservation, or rejection of unknown data.
-- Match production semantics for the parser, working directory,
-  initialization, locale, environment, and compile/runtime options. Prefer the
-  production helper or entry point. If a test must reimplement semantics,
-  document the difference and cover it with a strict end-to-end check.
-- Exercise the real construction, lookup, fallback, or deployment path. A
-  relaxed helper test is insufficient unless a stricter end-to-end test covers
-  the behaviour it omits.
-- Fail closed when required input is missing, parsing is incomplete, an unknown
-  field or state appears, or the complete invariant cannot be evaluated. Expose
-  the failure through the validator's existing interface, normally a non-zero
-  exit or an existing structured unresolved result. This requirement does not
-  introduce a new result protocol, parser, persistent state, distributed
-  coordination, recovery mechanism, or general compiler.
-- Give every invariant a passing fixture and a minimal negative mutation that
-  breaks only that invariant and must be rejected.
-- Preserve raw tool evidence. Report the exact command, exit code, blocking
-  failure count, relevant warnings, and the reason a failure is or is not
-  actionable.
-
-Reviewers reject checks that validate only source tokens or a convenient subset
-when the production consumer observes a larger effective artifact.
+- Identify relevant artifacts, consumer semantics, and invariants. Counts alone
+  do not prove identity, membership, uniqueness, order, or content when the
+  check claims those guarantees.
+- Prefer production helpers and realistic inputs. A focused unit test may
+  reuse existing integration coverage; add end-to-end coverage only when a
+  changed construction, lookup, fallback, or deployment boundary needs it.
+  Document material differences if a fixture reimplements production behavior.
+- Blocking release, protocol, and structural/parser integrity checks fail
+  closed if required input is missing or their claimed invariant cannot be
+  evaluated. Test new or changed guarantees with passing cases and minimal
+  negative mutations. Preserve existing strict artifact-validation coverage.
+- Advisory or heuristic tools may report unsupported input or incomplete
+  coverage through their existing interface. They must not claim complete
+  validation or a successful blocking check on that basis. Unknown states block
+  only when the tool's declared contract requires rejection.
+- Do not add tests that merely mirror wording or implementation details. Reuse
+  existing fixtures and regression entry points; no new evidence protocol,
+  persistent state, parser framework, or universal end-to-end gate is implied.
+- Preserve logs for actual checks. Report commands/results and material warnings
+  or gaps; detailed raw evidence can stay in the existing verification log.
 <!-- END GENERATED: verification-authoring -->
 
 ## Required workflow
 
-1. Inspect the task, acceptance criteria, explicit non-goals, current diff, and
-   existing implementation before editing. Preserve unrelated worktree changes.
-2. Before touching `T_()`, `C_()`, translation data, or a ZH TextDB file,
-   require current-worktree output from:
-   `bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files>`.
-   Retain its glossary SHA-256 and rerun after any glossary change.
-3. Confirm exact file ownership. In mixed work, translation assets are completed
-   first by `zh-translator`; do not reopen them during the code phase. A ZH data
-   repair is allowed only for explicitly assigned structural paths.
-4. Trace affected producers, intermediate consumers, identity uses, display
-   sinks, and fallback paths. Extend existing helpers, scanners, and tests before
-   adding a new mechanism.
-5. Implement the smallest coherent change and use focused tests during the
-   feedback loop. Do not broaden scope to unrelated cleanup.
-6. After the code is stable, run the single matching development profile:
-   `bash .claude/scripts/verify_zh.sh --profile code`.
-
-## Implementation boundaries
-
-- Keep protocol, lookup, serialization, Lua comparison, and TextDB key values in
-  English. Localize only display output unless the canonical safety policy
-  explicitly permits an audited exception.
-- Use `N_()`/`NC_()` for persistent extractable literals and translate at the
-  consumption site with `T_()`/`C_()`. Dynamic keys require explicit extraction
-  or audit coverage.
-- Use `mprf_p` for positional formats and preserve placeholder types, indices,
-  and immutable data-language tokens.
-- Preserve TextDB English keys, `%%%%` separators, Lua blocks, sentinels,
-  markup, and `@keyword@` references exactly.
-- Compile the affected target when required by the task or code profile. Follow
-  the repository build-job limits and do not start overlapping compile storms.
+1. Inspect the requested behavior, affected diff, and existing implementation.
+   Use the matching policies already injected above; do not reread unchanged
+   policy or unrelated architecture documents.
+2. When choosing translated terms, load or reuse current relevant
+   `dcss-translation-context`. Pure tooling/governance/structural work does not
+   require a glossary hash.
+3. Respect assigned ownership and implementation dependencies. Let the
+   translator revise owned assets as keys and placeholders settle.
+4. Trace affected producers, identity consumers, display sinks, and fallback
+   where the change crosses those boundaries. For tooling or governance,
+   inspect the relevant command/configuration behavior instead.
+5. Implement the scoped change and use focused regression checks. After it is
+   stable, use the matching profile from `docs/zh-testing.md`; compile affected
+   targets when the task or risk warrants it, within the build-job limits.
 
 ## Report
 
-Report changed files, behavior, focused tests, the exact verification command,
-exit code, blocking failure count, relevant warnings, log path, and glossary
-SHA-256. Do not stage, commit, merge, or publish unless the task explicitly
-assigns that Git action.
+Report behavior, files, relevant test results, material warnings or gaps, and
+log paths. Include glossary SHA-256 only for translation evidence. Follow
+`AGENTS.md` for completion and cleanup. Complete Git actions already assigned
+to this role; do not infer remote posting or merge authority from this prompt.
 '''

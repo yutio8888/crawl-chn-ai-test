@@ -111,6 +111,7 @@ export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 BASE=$(git -C "$REPO" rev-parse HEAD)
 
 echo "--- default scope and invariant gate ---"
+printf '%s\n' 'int ordinary;' > "$REPO/crawl-ref/source/ordinary.cc"
 printf '1\n' > "$REPO/.policy-rc"
 set +e
 (cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile code) >/dev/null 2>&1
@@ -120,6 +121,7 @@ assert_rc "changed scope cannot bypass the global policy gate" 1 "$RC"
 REPORT=$(latest_report)
 assert_contains "task profile defaults to changed" "Scope: changed" "$REPORT"
 assert_contains "domain phase still runs after core failure" "Code verification" "$REPORT"
+rm "$REPO/crawl-ref/source/ordinary.cc"
 
 printf '0\n' > "$REPO/.policy-rc"
 (cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile ci) >/dev/null
@@ -135,6 +137,62 @@ if grep -Fq -- '--profile review' "$REPO/.claude/scripts/verify_zh.sh"; then
 else
     pass "verify_zh.sh has no review profile reference"
 fi
+
+echo "--- local governance and dependency routing ---"
+assert_phases() {
+    local expected="$1"
+    python3 - "$(dirname "$(latest_report)")/metadata.json" "$expected" <<'PY'
+import json
+import sys
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+actual = [phase["id"] for phase in data["phases"]]
+assert actual == sys.argv[2].split(), actual
+PY
+}
+for path in docs/agent-routing.md docs/cjk-tiles-architecture.md \
+    .agents/skills/example/SKILL.md \
+    .codex/agents/example.toml .claude/scripts/tests/test_agent_docs.py; do
+    mkdir -p "$REPO/$(dirname "$path")"
+    printf '%s\n' '# governance fixture' > "$REPO/$path"
+    (cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile code) >/dev/null
+    assert_phases "policy-sync"
+    pass "$path skips unrelated game phases"
+    rm "$REPO/$path"
+done
+
+printf '%s\n' 'int ordinary;' > "$REPO/crawl-ref/source/ordinary.cc"
+(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile code) >/dev/null
+assert_phases "policy-sync source-db-static code-static"
+pass "ordinary source retains integrity without unrelated overlay or runtime checks"
+rm "$REPO/crawl-ref/source/ordinary.cc"
+
+for path in crawl-ref/source/dat/i18n/zh/example.txt \
+    crawl-ref/source/dat/database/example.txt crawl-ref/source/database.cc \
+    .claude/scripts/tests/test_monspell_inventory.py \
+    .claude/scripts/unknown_validator.py unknown.asset; do
+    mkdir -p "$REPO/$(dirname "$path")"
+    printf '%s\n' '# dependency fixture' > "$REPO/$path"
+    (cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile code) >/dev/null
+    assert_phases "policy-sync source-db-static code-static message-overlay-static"
+    pass "$path retains global integrity and overlay coverage"
+    rm "$REPO/$path"
+done
+
+printf '%s\n' '# translation fixture' >> "$REPO/docs/glossary.md"
+(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile translation) >/dev/null
+assert_phases "policy-sync source-db-static translation-static message-overlay-static"
+pass "glossary dependency retains global translation and overlay coverage"
+git -C "$REPO" restore -- docs/glossary.md
+
+for profile in translation code; do
+    (cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile "$profile" --scope full) >/dev/null
+    if [[ "$profile" == translation ]]; then phase=translation-static; else phase=code-static; fi
+    assert_phases "policy-sync source-db-static $phase message-overlay-static"
+    pass "$profile full scope retains all static phases without worktree changes"
+done
+(cd "$REPO" && bash .claude/scripts/verify_zh.sh --profile ci --scope changed) >/dev/null
+assert_phases "policy-sync source-db-static ledger-freshness translation-static code-static message-overlay-static"
+pass "explicit changed scope cannot reduce CI static phase coverage"
 
 echo "--- C++ i18n risk routing ---"
 cat > "$REPO/crawl-ref/source/risk.cc" <<'CPP'
@@ -154,6 +212,23 @@ assert_contains "C++ i18n triggers incremental build" "build" "$REPO/.risk-runs"
 assert_contains "C++ i18n triggers ZH smoke" "smoke" "$REPO/.risk-runs"
 assert_contains "changed files are passed to the phase" \
     "crawl-ref/source/risk.cc" "$REPO/.phase-runs"
+
+: > "$REPO/.risk-runs"
+(cd "$REPO" && \
+    ZH_VERIFY_BUILD_COMMAND='echo build >> .risk-runs' \
+    ZH_VERIFY_SMOKE_COMMAND='echo smoke >> .risk-runs' \
+    bash .claude/scripts/verify_zh.sh --profile code) > "$TMP_ROOT/clean-unbound.out"
+REPORT=$(latest_report)
+assert_contains "clean unbound run explicitly excludes the last commit" \
+    "this run does not verify the last commit" "$REPORT"
+assert_contains "empty worktree warning is visible without opening logs" \
+    "this run does not verify the last commit" "$TMP_ROOT/clean-unbound.out"
+assert_phases "policy-sync"
+if [[ ! -s "$REPO/.risk-runs" ]]; then
+    pass "unbound clean run cannot silently inherit committed risk checks"
+else
+    fail "unbound clean run incorrectly used a committed diff"
+fi
 
 : > "$REPO/.risk-runs"
 cat > "$REPO/crawl-ref/source/untracked.cpp" <<'CPP'
