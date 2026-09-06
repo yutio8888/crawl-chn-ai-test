@@ -1143,7 +1143,7 @@ void direction_chooser::fill_object_cycle_points()
 {
     for (radius_iterator ri(you.pos(), LOS_NO_TRANS); ri; ++ri)
     {
-        if (grid_distance(*ri, you.pos()) > range)
+        if (!_is_target_in_range(*ri, range, hitfunc))
             continue;
 
         if (needs_path && _blocked_ray(*ri))
