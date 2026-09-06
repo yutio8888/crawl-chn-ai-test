@@ -60,7 +60,8 @@
    为空时，标签 job 会在 release Gradle 构建前失败；密码、alias 或 keystore 内容错误会
    在签名阶段失败，未签名或签名无法验证的 APK 不会上传。
 2. 确认候选工作树已提交且干净，版本范围、延期平台和已知问题已经写入 release issue。
-3. 按 `.agents/policies/review-contract.md` 运行匹配的验证 profile，并由
+3. 按 `.agents/policies/review-contract.md` 使用 `--base <base> --head <candidate>`
+   运行匹配 profile，或复用内容及依赖未变化的验证证据，并由
    `classify_reviewers.py` 路由领域审查；现有 GitHub Actions CI 必须通过。
 4. 从目标分支检出通过验证、领域审阅与 CI 的准确提交；不得从另一个 linked
    worktree 移动目标分支引用。
@@ -101,12 +102,12 @@ GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证�
 工具测试会自动发现发布校验器的正例和逐项负向变异：
 
 ```bash
-python3 .claude/scripts/tests/test_verify_release_artifacts.py
-bash .claude/scripts/tests/run_all.sh
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_verify_release_artifacts.py
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/tests/run_all.sh
 ```
 
 完整仓库变更仍使用项目统一入口：
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile code
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
 ```

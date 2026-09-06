@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import copy
+import json
+import tomllib
 from pathlib import Path
 import re
 import subprocess
@@ -115,9 +117,14 @@ class AgentDocumentationTests(unittest.TestCase):
         )
 
     def test_pi_runtime_configuration_is_native_and_guarded(self) -> None:
-        settings = (ROOT / ".pi/settings.json").read_text()
-        self.assertIn('"defaultProvider": "openai-codex"', settings)
-        self.assertIn('"defaultModel": "gpt-5.6-sol"', settings)
+        settings = json.loads((ROOT / ".pi/settings.json").read_text())
+        for key in ("defaultProvider", "defaultModel"):
+            self.assertIsInstance(settings[key], str)
+            self.assertTrue(settings[key].strip())
+        for path in (ROOT / ".codex/agents").glob("*.toml"):
+            config = tomllib.loads(path.read_text())
+            self.assertEqual(path.stem, config["name"])
+            self.assertTrue(config["developer_instructions"].strip())
         self.assertTrue((ROOT / ".pi/prompts/goal.md").is_file())
         guard = (ROOT / ".pi/extensions/enforce-worktree-path.ts").read_text()
         self.assertIn('pi.on("tool_call"', guard)
@@ -178,22 +185,6 @@ class AgentDocumentationTests(unittest.TestCase):
             "| Complete enumerable translation audit |",
             (ROOT / ".agents/README.md").read_text(),
         )
-
-    def test_plan_review_enforces_minimal_sufficient_design(self) -> None:
-        path = ROOT / ".agents/skills/translation-pipeline/SKILL.md"
-        text = path.read_text()
-        required_fragments = (
-            "observable acceptance criteria",
-            "explicit non-goals",
-            "observed failure",
-            "existing mechanism is insufficient",
-            "simplest alternative is not viable",
-            "design_induced",
-            "delete, reuse, narrow, then add",
-        )
-        for fragment in required_fragments:
-            with self.subTest(fragment=fragment):
-                self.assertIn(fragment, text)
 
     def test_retired_runtime_adapters_are_absent(self) -> None:
         for path in (

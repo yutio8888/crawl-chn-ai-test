@@ -23,6 +23,12 @@ Their helper scripts may reset them to the main checkout's exact HEAD only
 after refusing a dirty worktree. Manual operation must reproduce the same
 clean-tree guard documented in `docs/build-workflow.md`.
 
-Before merging, both target and candidate worktrees must be clean. Translation
-candidates additionally follow the schema-v4 process in
-`.agents/policies/review-contract.md`.
+Before merging, both target and candidate worktrees must be clean. Do not
+discard unrelated work to achieve this; use a suitable checkout when necessary.
+Merge review follows `.agents/policies/review-contract.md`. Ordinary review
+does not require a clean or committed worktree.
+
+Reuse an appropriate existing checkout. Create a worktree when isolation is
+needed, not for every task. Remove only an authorized task-owned worktree or
+branch whose work is delivered and which nobody is using. Keep shared caches
+and dedicated build worktrees; repository-wide cleanup is not routine closure.

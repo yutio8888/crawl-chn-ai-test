@@ -44,8 +44,9 @@ following in the shared authority that owns it:
   linked pull request; and
 - only cross-issue orchestration constraints in `.claude/ORCHESTRATION_STATE.md`.
 
-A handoff is incomplete until the receiving runtime can reconstruct the task
-from these durable artifacts without relying on conversation memory.
+For an authorized cross-session handoff, the receiving runtime must be able to
+reconstruct the task from those artifacts. Ordinary local work does not require
+creating or posting a handoff. Existing user authority governs remote comments.
 
 ### Worktrees are shared infrastructure
 
@@ -71,13 +72,16 @@ The handing-off runtime records:
 5. branch/worktree and starting commit;
 6. required verification.
 
-The implementing runtime confirms file ownership before editing and reports the
-resulting commit plus verification evidence back to the same GitHub Issue and
-linked pull request.
+The implementing runtime uses assigned file ownership and completes the agreed
+endpoint. It reports results and verification locally, or to the existing
+GitHub Issue/PR when that remote action is authorized. Routine implementation
+details within scope do not require another handoff approval.
 
 ### Implementation → review
 
-The implementer records the clean candidate branch and commit range. Domain
-review is routed by `classify_reviewers.py` over that committed range; only the
-routed reviewers are required. Merge requires the matching verification
-profile, the routed domain review, and existing GitHub Actions CI.
+Ordinary review can inspect files or an uncommitted diff. For merge review,
+record the clean candidate branch and commit range; route domains with
+`classify_reviewers.py` over that range. Merge requires applicable verification
+bound with `--base`/`--head` (or valid reused evidence), completed domain review,
+and applicable GitHub Actions CI. Role selection does not mandate a subagent
+or repeat whole-project verification.

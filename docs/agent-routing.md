@@ -38,8 +38,12 @@ Translation-asset writer rules are normative in
   per identity, dependency-group consistency, or complete-coverage proof → the
   `batch-translation-review` skill.
 
-For every translation, i18n implementation, or review route, run
-`context_resolve.sh` first and attach its complete output.
+Routes select domain expertise, not a mandatory subagent or universal checklist.
+Use inline handling when delegation is unavailable or unnecessary; keep one
+active writer per file and never claim an inline review was independent.
+For terminology decisions, share current relevant `context_resolve.sh` output;
+reuse it within the task. Pure structural/tooling/governance work needs only
+the applicable policy, not glossary lookup or game-specific checks.
 
 ## Batch Translation Review
 
@@ -56,9 +60,11 @@ from one wording judgment and from one reported translation bug.
 
 ## Full Pipeline
 
-Use the shared `translation-pipeline` Skill. Reviewer routing comes only from
-`classify_reviewers.py` for the committed candidate range; never hard-code a
-fixed reviewer count. The active runtime supplies invocation syntax only.
+Use the shared `translation-pipeline` Skill. Reviewer routing uses
+`classify_reviewers.py --files <files>` for ordinary review, or `--base <target>
+--head <candidate>` for merge review. Never hard-code a reviewer count. The
+active runtime supplies invocation syntax only. Review-only requests do not
+require a clean commit, builds, or remote posting.
 
 ## Fallback
 

@@ -59,6 +59,7 @@ RISK_CPP_I18N=0
 RISK_CJK_RUNTIME=0
 RISK_ZH_TEST_RUNTIME=0
 RISK_MESSAGE_OVERLAY=0
+GAME_STATIC=0
 
 usage() {
     cat <<'EOF'
@@ -78,6 +79,11 @@ Evidence range:
 Scope and runtime:
   --scope changed|full  Task profiles default to changed; ci to full
   --full                Alias for --scope full plus the full runtime suite
+
+Unbound changed runs inspect only worktree changes relative to HEAD, not the
+last commit. Use --base and --head to verify an already committed candidate.
+Local changed runs skip game checks for known governance/documentation-only
+changes. Full scope and ci retain all static phases.
 EOF
     exit 2
 }
@@ -177,8 +183,8 @@ if [[ -n "$BASE" ]]; then
     export ZH_VERIFY_AUDIT_COMMIT="$HEAD_SHA"
 fi
 
-# The changed set is used only to narrow checks that accept explicit file
-# lists and to select risk tests. Global integrity and policy gates remain full.
+# Select task-relevant phases; within an enabled game integrity phase, checks
+# remain global because keys and their consumers cross file boundaries.
 if [[ -n "$BASE_SHA" ]]; then
     CHANGED_FILES=$(git diff --no-renames --name-only "$BASE_SHA..$HEAD_SHA")
 else
@@ -188,11 +194,45 @@ else
     } | LC_ALL=C sort -u)
 fi
 export ZH_VERIFY_SCOPE="$SCOPE"
+export ZH_VERIFY_PROFILE="$PROFILE"
 export ZH_VERIFY_CHANGED_FILES="$CHANGED_FILES"
 
 if [[ -n "$CHANGED_FILES" ]]; then
     while IFS= read -r changed_file; do
         [[ -n "$changed_file" ]] || continue
+        case "$changed_file" in
+            docs/glossary.md|docs/glossary.utf8|docs/decisions.md|\
+            docs/spell-naming-rules.md|docs/*-review-results.md|\
+            docs/textdb-i18n-*|crawl-ref/source/dat/*|\
+            .claude/data/*)
+                GAME_STATIC=1
+                RISK_MESSAGE_OVERLAY=1
+                ;;
+            docs/*.md|AGENTS.md|CODEX.md|README*|\
+            .agents/*.md|.pi/*.md|.codex/*.md|.claude/*.md|\
+            .codex/agents/*.toml|.codex/config.toml|\
+            .claude/scripts/check_agent_policies.py|\
+            .claude/scripts/sync_agent_policies.py|\
+            .claude/scripts/classify_reviewers.py|\
+            .claude/scripts/context_resolve.sh|\
+            .claude/scripts/tests/test_agent_docs.py|\
+            .claude/scripts/tests/test_classify_reviewers.py)
+                # These paths govern agent workflow, not game semantics.
+                continue
+                ;;
+            crawl-ref/source/*.cc|crawl-ref/source/*.h|\
+            crawl-ref/source/*.cpp|crawl-ref/source/*.hpp|\
+            crawl-ref/source/*.c|crawl-ref/source/*.hh|\
+            crawl-ref/source/*.cxx|crawl-ref/source/*.hxx)
+                GAME_STATIC=1
+                ;;
+            *)
+                # Unknown assets, build settings and validator dependencies
+                # retain broad coverage until a narrower dependency is known.
+                GAME_STATIC=1
+                RISK_MESSAGE_OVERLAY=1
+                ;;
+        esac
         case "$changed_file" in
             crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
             crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
@@ -235,6 +275,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
             .claude/scripts/tests/test_shout_inventory.py|\
             docs/textdb-i18n-*|\
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
+            crawl-ref/source/i18n.*|\
             crawl-ref/source/fork-message-overlay.*|\
             crawl-ref/source/mon-cast.cc|crawl-ref/source/mon-cast-target.h|\
             crawl-ref/source/mon-cast-message-keys.*|\
@@ -269,6 +310,10 @@ if [[ -n "$CHANGED_FILES" ]]; then
                 ;;
         esac
     done <<< "$CHANGED_FILES"
+fi
+
+if [[ "$PROFILE" == ci || "$SCOPE" == full ]]; then
+    GAME_STATIC=1
 fi
 
 GLOSSARY_FILE="$WORKTREE/docs/glossary.md"
@@ -478,6 +523,12 @@ run_phase() {
     echo "=== verify_zh.sh --profile $PROFILE @ $STARTED_AT ==="
     echo "Run ID: $RUN_ID"
     echo "Scope: $SCOPE"
+    if [[ -z "$BASE_SHA" ]]; then
+        echo "Evidence: worktree changes relative to HEAD; no committed range is bound."
+        if [[ "$SCOPE" == changed && -z "$CHANGED_FILES" ]]; then
+            echo "WARNING: no worktree changes; this run does not verify the last commit. Use --base <base> --head HEAD for a committed candidate."
+        fi
+    fi
     echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME zh_test_runtime=$RISK_ZH_TEST_RUNTIME message_overlay=$RISK_MESSAGE_OVERLAY explicit_full=$EXPLICIT_FULL"
     if [[ -n "$BASE_SHA" ]]; then
         echo "Base: $BASE_SHA"
@@ -491,7 +542,7 @@ run_phase() {
     run_phase "policy-sync" 1 "Agent/Skill policy synchronization" \
         python3 "$SCRIPT_DIR/check_agent_policies.py" --root "$WORKTREE" \
         || RESULTS=$((RESULTS + 1))
-    # ── source-db-static: REQUIRED for ALL profiles, NOT bypassable ──
+    # Global integrity is required whenever game source/data is in scope.
     run_source_db_static() {
         local rc=0
         python3 "$SCRIPT_DIR/scan_i18n.py" source-db-structure \
@@ -507,8 +558,12 @@ run_phase() {
             --defaults-dir "$WORKTREE/crawl-ref/source/dat/defaults" || rc=$?
         return "$rc"
     }
-    run_phase "source-db-static" 1 "Source/DB static integrity" \
-        run_source_db_static || RESULTS=$((RESULTS + 1))
+    if [[ "$GAME_STATIC" -eq 1 ]]; then
+        run_phase "source-db-static" 1 "Source/DB static integrity" \
+            run_source_db_static || RESULTS=$((RESULTS + 1))
+    else
+        echo "SKIP: game static checks (no game source/data or validator dependency changes)."
+    fi
 
     # Strictly validate every formal review ledger against the same candidate
     # snapshot and fixed review bases used by the ci profile.
@@ -580,17 +635,17 @@ PY
         return "$rc"
     }
 
-    case "$PROFILE" in
-        translation)
+    case "$PROFILE:$GAME_STATIC" in
+        translation:1)
             run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
-        code)
+        code:1)
             run_phase "code-static" 1 "Code verification (post-coder.sh)" \
                 env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
                     bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
-        ci)
+        ci:1)
             # --profile ci is truly static: no make, no runtime execution.
             # It fails early when any formal review ledger is stale or invalid.
             run_phase "ledger-freshness" 1 \
@@ -613,7 +668,7 @@ PY
         # >15 min) is excluded from this static chain: it exceeds the
         # GitHub-hosted runner budget on CI.  Run it directly when the
         # full monspeak gate is needed:
-        #   python3 .claude/scripts/tests/test_monspeak_inventory.py
+        #   bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_monspeak_inventory.py
         python3 "$SCRIPT_DIR/tests/test_message_overlay.py" \
             && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
             && python3 "$SCRIPT_DIR/tests/test_decorlines_inventory.py" \
@@ -633,8 +688,12 @@ PY
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
                 --sidecar crawl-ref/source/fork-message-overlay.generated.inc
     }
-    run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
-        run_message_overlay_static || RESULTS=$((RESULTS + 1))
+    if [[ "$PROFILE" == ci || "$SCOPE" == full || "$RISK_MESSAGE_OVERLAY" -eq 1 ]]; then
+        run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
+            run_message_overlay_static || RESULTS=$((RESULTS + 1))
+    else
+        echo "SKIP: message overlay static audit (no overlay dependency changes)."
+    fi
 
     resolve_build_python() {
         local candidate resolved
@@ -762,6 +821,9 @@ echo "Report: $REPORT_FILE"
 echo "Metadata: $METADATA_FILE"
 echo "Wrapper: $WRAPPER_FILE"
 echo "Failures: $RESULTS"
+if [[ -z "$BASE_SHA" && "$SCOPE" == changed && -z "$CHANGED_FILES" ]]; then
+    echo "WARNING: no worktree changes; this run does not verify the last commit. Use --base <base> --head HEAD for a committed candidate."
+fi
 echo ""
 
 exit "$FINAL_RC"

@@ -21,6 +21,11 @@ After this file, read only the adapter for the active runtime:
 Adapters translate tool syntax only. They must not weaken the shared policies
 in this file or `.agents/policies/`.
 
+The source map below is a lookup index, not a reading checklist. Read only the
+sections needed for the active task. Reuse already loaded, unchanged context;
+locating files does not require first reading architecture or terminology docs.
+Session instructions and existing user authorization govern permissions.
+
 ## Canonical Sources
 
 | Concern | Authority |
@@ -51,28 +56,30 @@ state, script `--help`, or CI workflow instead.
   existing repository mechanisms that can be extended.
 - Prefer modifying an existing script, test, Skill, or verification entry
   point.
-- A new module, schema, persistent state, or directory requires an observed
-  failure, evidence that existing mechanisms are insufficient, and rejection
-  of the simplest alternative.
+- Choose routine implementation details, helper files, and directories within
+  the accepted scope autonomously. Explain material design choices briefly.
 - Reviewer findings do not automatically expand task scope. Resolve them by
   deleting, reusing, or narrowing before adding mechanisms.
-- If a fix requires new infrastructure or material scope expansion, stop and
-  return the decision to the user.
+- Escalate an unapproved external dependency, persistent mechanism, material
+  scope expansion, or product tradeoff requiring user input. Existing approval
+  remains valid; continue independent authorized work while a decision is pending.
 
 ## Mandatory Terminology Context
 
-For every translation, i18n implementation, or translation review task, resolve
-terminology from the current worktree immediately before dispatch or editing:
+Before making translation or terminology judgments, resolve relevant terms
+from the current worktree (initial file discovery can happen first):
 
 ```bash
 bash .claude/scripts/context_resolve.sh "<task>" \
   --task-type <translate|code|review> --files <target-files>
 ```
 
-Pass the complete output to every applicable agent. Preserve the emitted
-`docs/glossary.md` SHA-256 in the final report. If the glossary changes, rerun
-the resolver before continuing. Never embed a fixed canonical terminology list
-in an Agent, Skill, workflow, or runtime adapter.
+Share that output with agents making the same judgments and reuse it within
+the task. Refresh when the file scope or relevant glossary context changes;
+refresh the digest for final translation evidence after any glossary change.
+Preserve its SHA-256 in formal translation reports. Pure tooling, structural,
+or governance work does not require terminology or a glossary hash unless it
+makes a terminology decision. Never embed a fixed terminology list in prompts.
 
 ## Task Routing
 
@@ -96,7 +103,8 @@ Translation assets have one writer per task. By default, `zh-translator` owns
 `crawl-ref/source/dat/descript/zh/`; `crawl-coder` owns source and build files.
 A coder may receive an explicitly scoped structural
 repair in a ZH data file only when it is the sole writer for that path. Mixed
-tasks execute translation-asset edits first and code edits second. See
+tasks follow dependency order, with assets updated by their owner as interfaces
+settle. See
 `.agents/policies/asset-ownership.md`.
 
 ## Worktrees and Branches
@@ -130,14 +138,17 @@ scripts or serially run every profile against one candidate.
 
 | Change | Command |
 |---|---|
-| Translation or ZH data | `bash .claude/scripts/verify_zh.sh --profile translation` |
-| C++ or i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
-| Combined static CI preflight | `bash .claude/scripts/verify_zh.sh --profile ci` |
+| Read-only review | Inspect the requested scope and existing evidence; no automatic build |
+| Governance/docs/tooling | Focused existing checks; `code` profile for verification-tool changes |
+| Translation or ZH data | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation` |
+| C++ or i18n code | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code` |
+| Combined static CI preflight | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile ci` |
 
-After a clean commit, route domain review with
-`classify_reviewers.py` and merge only after existing GitHub Actions CI
-passes. Reviewers produce human-readable findings; there is no separate
-final evidence gate. See `.agents/policies/review-contract.md`.
+For committed candidates, append `--base <base> --head <candidate>` to the
+matching profile: unbound changed scope covers only uncommitted work. Route
+merge review with `classify_reviewers.py` and merge only after applicable
+GitHub Actions CI passes. Ordinary review accepts files or a worktree diff.
+See `docs/zh-testing.md` and `.agents/policies/review-contract.md`.
 
 Use at most eight build jobs. Agents compiling alongside other work should use
 `-j4`, and concurrent agents must not start overlapping compile storms.
@@ -171,6 +182,25 @@ rather than inventing or borrowing an identity.
 
 Branch names are an ownership signal: Pi uses `pi/<topic>`, Codex uses
 `codex/<topic>`, and DSH uses `dsh/<topic>` unless the user requests another name.
+
+## Task Completion and Cleanup
+
+- Use the user's requested endpoint: review report, implemented change, merge,
+  or release. Skills do not add Git actions or external publication authority.
+- Review-only work is complete with findings, evidence, and any coverage gaps.
+- Implementation is complete when acceptance criteria are met, relevant checks
+  pass, introduced blocking defects are resolved, the final diff is inspected,
+  and already-authorized delivery steps are done. Do not ask again for existing
+  approval or stop at an offer to finish those steps.
+- Reuse valid verification. Repeat or broaden it only for new changes, failures,
+  or unresolved evidence gaps. Report genuine blockers without claiming success;
+  continue work that does not depend on the missing input.
+- Remove only this task's disposable temporary artifacts. Do not clean others'
+  files to satisfy a clean-tree gate. Branch/worktree removal requires known
+  ownership, delivered work, no active user, and authorization; retain shared
+  caches and dedicated build worktrees. Do not clean the whole repository.
+- Write PR/Issue comments only when authorized; use existing issue/PR records
+  for cross-session handoff, not an extra local status system.
 
 ## Configuration Maintenance
 

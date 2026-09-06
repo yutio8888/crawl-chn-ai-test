@@ -23,7 +23,7 @@ Dispatch one role with a complete task contract:
 ```typescript
 subagent({
   agent: "crawl-coder",
-  task: "<complete task and current context_resolve.sh output>",
+  task: "<task scope and applicable current context>",
   async: true
 })
 ```
@@ -52,8 +52,9 @@ Pi discovers the shared skills under `.agents/skills/`. Load them on demand:
 /skill:batch-translation-review <task>
 ```
 
-For every applicable dispatch, run `context_resolve.sh` in the current
-worktree first and pass its complete output to the child.
+Share current relevant context with the child; reuse unchanged resolver output.
+Refresh when scope or relevant terminology changes. Pure structural, tooling,
+or governance tasks need the applicable policy, not a glossary query.
 
 For an enumerable full-category audit, load `batch-translation-review`. Use
 `scout` only for read-only evidence discovery and keep one sequential
@@ -73,9 +74,10 @@ Use the project tool instead:
 1. Call `project_worktree` with `action: "create"`, a one-component `name`,
    and optionally a new `pi/<topic>` branch. Omit `branch` for detached HEAD.
 2. Pass the returned absolute `cwd` to `subagent(...)`.
-3. Commit or intentionally discard the child changes, then call
-   `project_worktree` with `action: "remove"`. Removal refuses dirty or active
-   worktrees and retains any task branch.
+3. Retain the worktree while work or handoff needs it. For authorized cleanup
+   after delivery, call `project_worktree` with `action: "remove"` only when
+   nobody is using it. Removal refuses dirty or active worktrees and retains
+   any task branch; do not discard unfinished changes merely to remove it.
 
 `project_worktree` discovers the primary checkout, executes Git there with a
 relative `.worktrees/<name>` target, and supports `list` for recovery. The
