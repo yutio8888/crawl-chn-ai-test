@@ -1,11 +1,16 @@
 package org.develz.crawl;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -15,10 +20,17 @@ import android.widget.RelativeLayout;
 public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListener {
 
     static final int MINIMUM_TOUCH_TARGET_DP = 48;
+    // Holding the compact auto-fight key keeps attacking without repeated
+    // taps. One repeat per interval keeps the queue close to the game's own
+    // pace, and the cap bounds a finger that never lifts.
+    static final long AUTOFIGHT_REPEAT_INTERVAL_MS = 300;
+    static final int AUTOFIGHT_MAX_REPEATS = 60;
     public static final int CONTEXT_GAME = 0;
     public static final int CONTEXT_NAVIGATION = 1;
     public static final int CONTEXT_TEXT = 2;
     private int inputContext = -1;
+    private final Handler autofightHandler = new Handler(Looper.getMainLooper());
+    private int autofightRepeats;
     private int keyboardMode;
     private boolean manualFull;
     private final Button[] contextButtons = new Button[6];
@@ -252,6 +264,56 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             contextButtons[i] = button;
             buttonList.add(button);
         }
+        initAutofightRepeat();
+    }
+
+    // Auto-fight is the one compact action a player repeats many times in a
+    // row, so let a long press hold it down instead of tapping per attack.
+    @SuppressLint("ClickableViewAccessibility")
+    private void initAutofightRepeat() {
+        Button autofight = findViewById(R.id.key_mobile_autofight);
+        autofight.setOnLongClickListener(v -> {
+            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            autofightRepeats = 0;
+            repeatAutofight();
+            return true;
+        });
+        // Returning false leaves the click and long-click handling intact;
+        // this only observes the release that ends a repeat.
+        autofight.setOnTouchListener((v, event) -> {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                stopAutofightRepeat();
+            }
+            return false;
+        });
+    }
+
+    // Send one auto-fight key and schedule the next one, unless the hold has
+    // reached the cap.
+    private void repeatAutofight() {
+        Button autofight = findViewById(R.id.key_mobile_autofight);
+        onClick(autofight);
+        long delay = autofightRepeatDelayMs(++autofightRepeats);
+        if (delay >= 0) {
+            autofightHandler.postDelayed(this::repeatAutofight, delay);
+        }
+    }
+
+    // Delay before the repeat that follows `repeatsSoFar` sent keys, or -1
+    // once the hold has produced enough of them.
+    static long autofightRepeatDelayMs(int repeatsSoFar) {
+        return repeatsSoFar < AUTOFIGHT_MAX_REPEATS ? AUTOFIGHT_REPEAT_INTERVAL_MS : -1;
+    }
+
+    private void stopAutofightRepeat() {
+        autofightHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        stopAutofightRepeat();
+        super.onDetachedFromWindow();
     }
 
     // Extra init settings
@@ -455,11 +517,16 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             button.setVisibility(active ? View.VISIBLE : View.INVISIBLE);
             button.setOnClickListener(active ? v -> sendContextKey(key) : null);
         }
+        boolean gameplay = context == CONTEXT_GAME;
+        if (!gameplay) {
+            // A menu, prompt or targeting screen ends the allowed range for a
+            // held auto-fight: further keys would answer that screen instead.
+            stopAutofightRepeat();
+        }
         if (context == inputContext) {
             return;
         }
         inputContext = context;
-        boolean gameplay = context == CONTEXT_GAME;
         retarget(R.id.key_mobile_explore,
                 gameplay ? KeyEvent.KEYCODE_O : KeyEvent.KEYCODE_ENTER,
                 getResources().getString(gameplay ? R.string.keyboard_explore : R.string.ok));
@@ -499,6 +566,9 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     // Swap keyboards
     @Override
     protected void updateLayout(View v) {
+        if (v.getId() != R.id.key_mobile_autofight) {
+            stopAutofightRepeat();
+        }
         Log.i("AndroidKeyboard", "updateLayout key=" + v.getId()
                 + " context=" + inputContext + " height=" + getHeight());
         if (v.getId() == R.id.key_mobile_expand) {
