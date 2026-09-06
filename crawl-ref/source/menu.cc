@@ -1628,10 +1628,12 @@ std::array<ui::InputAction, 6> Menu::keyboard_actions()
 // Menus without any page-specific key keep an empty context row, so a plain
 // scroller or help page never shows redundant confirm/cancel buttons.
 void Menu::keyboard_descriptor(ui::InputScreen &screen,
-                               std::array<ui::InputAction, 6> &actions)
+                               std::array<ui::InputAction, 6> &actions,
+                               vector<ui::InputAction> &more)
 {
     screen = keyboard_screen();
     actions = keyboard_actions();
+    more = keyboard_more();
     if (screen == ui::InputScreen::INVENTORY
         || screen == ui::InputScreen::CONFIRM)
     {
@@ -1719,9 +1721,12 @@ void Menu::do_menu()
         // (for example equip/unequip). Publish the current actions each wait.
         ui::InputScreen keyboard_screen;
         std::array<ui::InputAction, 6> keyboard_actions;
-        keyboard_descriptor(keyboard_screen, keyboard_actions);
+        vector<ui::InputAction> keyboard_more;
+        keyboard_descriptor(keyboard_screen, keyboard_actions, keyboard_more);
         ui::InputActionScope keyboard_scope(keyboard_screen,
-                                            std::move(keyboard_actions));
+                                            std::move(keyboard_actions),
+                                            ui::top_layout(),
+                                            std::move(keyboard_more));
 #endif
 #ifdef USE_TILE_WEB
         if (_webtiles_title_changed)

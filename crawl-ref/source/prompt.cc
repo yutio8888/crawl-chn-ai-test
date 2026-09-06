@@ -537,9 +537,12 @@ vector<MenuEntry *> PromptMenu::show_in_msgpane()
         // nests its own scope under this message-pane scope.
         ui::InputScreen keyboard_screen;
         std::array<ui::InputAction, 6> keyboard_actions;
-        keyboard_descriptor(keyboard_screen, keyboard_actions);
+        vector<ui::InputAction> keyboard_more;
+        keyboard_descriptor(keyboard_screen, keyboard_actions, keyboard_more);
         ui::InputActionScope keyboard_scope(keyboard_screen,
-                                            std::move(keyboard_actions));
+                                            std::move(keyboard_actions),
+                                            ui::top_layout(),
+                                            std::move(keyboard_more));
 #endif
         if (!fits_in_mpane())
         {

@@ -4299,9 +4299,10 @@ command_type describe_item_popup(const item_def &item,
 #ifdef __ANDROID__
     std::array<ui::InputAction, 6> keyboard_actions;
     keyboard_actions[1] = {"", CK_ESCAPE};
-    size_t slot = 2;
     // Prefer direct item interactions over quiver/letter/training metadata.
     // Reuse the actual page parser and footer, including overloaded keys.
+    // Candidates beyond the four direct slots stay reachable through More.
+    vector<ui::InputAction> keyboard_candidates;
     for (bool secondary : {false, true})
     {
         for (auto cmd : actions)
@@ -4309,7 +4310,7 @@ command_type describe_item_popup(const item_def &item,
             const bool metadata = cmd == CMD_QUIVER_ITEM
                 || cmd == CMD_ADJUST_INVENTORY || cmd == CMD_INSCRIBE_ITEM
                 || cmd == CMD_SET_SKILL_TARGET;
-            if (metadata != secondary || slot == keyboard_actions.size())
+            if (metadata != secondary)
                 continue;
             for (char key : string("wutvrpqgdi=s"))
             {
@@ -4319,13 +4320,17 @@ command_type describe_item_popup(const item_def &item,
                     ? string(T_("qui(v)er")) : _actions_desc({cmd});
                 if (!label.empty() && label.back() == '.')
                     label.pop_back();
-                keyboard_actions[slot++] = {std::move(label), key};
+                keyboard_candidates.push_back({std::move(label), key});
                 break;
             }
         }
     }
+    vector<ui::InputAction> keyboard_more;
+    ui::spill_input_actions(keyboard_actions, 2, std::move(keyboard_candidates),
+                            keyboard_more);
     ui::InputActionScope keyboard_scope(ui::InputScreen::ITEM,
-                                        std::move(keyboard_actions), popup);
+                                        std::move(keyboard_actions), popup,
+                                        std::move(keyboard_more));
 #endif
     popup->on_keydown_event([&](const KeyEvent& ev) {
         const auto key = ev.key() == '{' ? 'i' : ev.key();

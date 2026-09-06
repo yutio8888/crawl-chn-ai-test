@@ -19,6 +19,8 @@
 #include "libutil.h"
 #include "windowmanager.h"
 #include "ui-scissor.h"
+#include "describe.h"
+#include "topbar-drawer.h"
 
 #ifdef USE_TILE_LOCAL
 # include "glwrapper.h"
@@ -2933,6 +2935,20 @@ bool UIRoot::deliver_event(Event& event)
             return false;
 
         const auto key = static_cast<const KeyEvent&>(event).key();
+#ifdef __ANDROID__
+        // The compact keyboard's More slot. The chosen key is queued as if
+        // typed, so the page underneath handles it through its own rules.
+        if (event.type() == Event::Type::KeyDown && key == INPUT_MORE_KEY)
+        {
+            if (const auto *more = input_more_actions())
+            {
+                const int chosen = show_more_actions_popup(*more);
+                if (chosen)
+                    macro_buf_add(chosen);
+            }
+            return true;
+        }
+#endif
         event.set_target(get_focused_widget()->get_shared());
 
         // give hotkey handlers a chance to intercept this key; they are only
@@ -3218,12 +3234,53 @@ static InputActionScope* input_action_scope = nullptr;
 
 InputActionScope::InputActionScope(InputScreen screen,
                                  std::array<InputAction, 6> actions,
-                                 shared_ptr<Widget> layout)
-    : owner(std::move(layout)), previous(input_action_scope)
+                                 shared_ptr<Widget> layout,
+                                 vector<InputAction> more)
+    : more_actions(std::move(more)), owner(std::move(layout)),
+      previous(input_action_scope)
 {
     descriptor.screen = screen;
     descriptor.actions = std::move(actions);
     input_action_scope = this;
+}
+
+const vector<InputAction>* input_more_actions()
+{
+    if (input_action_scope && input_action_scope->owner == top_layout()
+        && !input_action_scope->more_actions.empty())
+    {
+        return &input_action_scope->more_actions;
+    }
+    return nullptr;
+}
+
+void spill_input_actions(std::array<InputAction, 6>& actions, size_t first,
+                         vector<InputAction> candidates,
+                         vector<InputAction>& more)
+{
+    size_t slot = first;
+    for (size_t i = 0; i < candidates.size(); ++i)
+    {
+        if (slot < actions.size())
+        {
+            actions[slot++] = std::move(candidates[i]);
+            continue;
+        }
+        // Overflow: the last direct slot opens the list, which starts with
+        // the action it displaced, so the visible order is preserved.
+        if (more.empty())
+        {
+            more.push_back(std::move(actions[actions.size() - 1]));
+            actions[actions.size() - 1] = InputAction("", INPUT_MORE_KEY);
+        }
+        more.push_back(std::move(candidates[i]));
+    }
+}
+
+InputAction command_input_action(command_type cmd)
+{
+    return InputAction(get_command_description(cmd, true),
+                       command_to_key(cmd));
 }
 
 InputActionScope::~InputActionScope()

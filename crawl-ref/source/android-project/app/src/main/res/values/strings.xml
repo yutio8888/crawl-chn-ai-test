@@ -129,4 +129,5 @@
     <string name="keyboard_order_stop">Stop</string>
     <string name="keyboard_order_guard">Guard</string>
     <string name="keyboard_order_follow">Follow</string>
+    <string name="keyboard_more">More</string>
 </resources>

@@ -13,4 +13,11 @@ void show_topbar_status_drawer(int selected_status = -1);
 // report the tap as already handled.
 command_type show_topbar_command_menu(bool *acted = nullptr);
 
+#ifdef __ANDROID__
+namespace ui { struct InputAction; }
+// Lists the overflow actions of the current page; returns the chosen key or
+// 0 when dismissed. Runs a nested layout, like the drawer's own details.
+int show_more_actions_popup(const vector<ui::InputAction> &actions);
+#endif
+
 #endif

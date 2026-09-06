@@ -944,9 +944,29 @@ bool show_map(level_pos &lpos, bool travel_mode, bool allow_offlevel)
 
         ui::push_layout(map_view, KMC_LEVELMAP);
 #ifdef __ANDROID__
+        // Slot 0 lists the map commands without a direct slot: exclusions,
+        // waypoints, level and feature searches, annotation and help. Keys
+        // are looked up in the level-map keymap, so rebinding is honoured
+        // and control keys never cross the Java bridge.
         ui::InputActionScope keyboard_scope(ui::InputScreen::MAP,
-            {{{}, {"", CK_ESCAPE}, {"", '<'}, {"", '>'},
-              {"", '\t'}, {"", '^'}}});
+            {{{"", ui::INPUT_MORE_KEY}, {"", CK_ESCAPE}, {"", '<'}, {"", '>'},
+              {"", '\t'}, {"", '^'}}}, map_view,
+            {ui::command_input_action(CMD_MAP_EXCLUDE_AREA),
+             ui::command_input_action(CMD_MAP_EXCLUDE_RADIUS),
+             ui::command_input_action(CMD_MAP_CLEAR_EXCLUDES),
+             ui::command_input_action(CMD_MAP_FIND_EXCLUDED),
+             ui::command_input_action(CMD_MAP_ADD_WAYPOINT),
+             ui::command_input_action(CMD_MAP_FIND_WAYPOINT),
+             ui::command_input_action(CMD_MAP_FIND_ALTAR),
+             ui::command_input_action(CMD_MAP_FIND_STASH),
+             ui::command_input_action(CMD_MAP_FIND_YOU),
+             ui::command_input_action(CMD_MAP_PREV_LEVEL),
+             ui::command_input_action(CMD_MAP_NEXT_LEVEL),
+             ui::command_input_action(CMD_MAP_GOTO_LEVEL),
+             ui::command_input_action(CMD_MAP_ANNOTATE_LEVEL),
+             ui::command_input_action(CMD_MAP_DESCRIBE),
+             ui::command_input_action(CMD_MAP_EXPLORE),
+             ui::command_input_action(CMD_MAP_HELP)});
 #endif
         while (map_view->is_alive() && !crawl_state.seen_hups)
             ui::pump_events();

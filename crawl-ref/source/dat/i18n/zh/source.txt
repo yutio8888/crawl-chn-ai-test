@@ -42437,3 +42437,24 @@ You cannot raise a blood rage in your lifeless body.
 %%%%
 Your stasis prevents you from going berserk.
 你的停滞状态阻止了你进入狂暴。
+%%%%
+Set target
+设置目标
+%%%%
+Cycle view
+切换视图
+%%%%
+All skills
+全部技能
+%%%%
+Switch action
+切换动作
+%%%%
+Fight unarmed
+徒手
+%%%%
+Switch list
+切换列表
+%%%%
+Describe item
+描述

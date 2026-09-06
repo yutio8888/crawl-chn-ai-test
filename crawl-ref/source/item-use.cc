@@ -96,6 +96,8 @@ class UseItemMenu : public InvMenu
     ui::InputScreen keyboard_screen() const override
     { return ui::InputScreen::USE_ITEM; }
     std::array<ui::InputAction, 6> keyboard_actions() override;
+    vector<ui::InputAction> keyboard_more() override { return m_keyboard_more; }
+    vector<ui::InputAction> m_keyboard_more;
 #endif
     void save_hover();
     void restore_hover(bool preserve_pos);
@@ -793,26 +795,26 @@ string UseItemMenu::get_keyhelp(bool) const
 std::array<ui::InputAction, 6> UseItemMenu::keyboard_actions()
 {
     std::array<ui::InputAction, 6> actions;
-    size_t slot = 2;
+    // Labels are native so an overflowing candidate can be listed by More.
+    vector<ui::InputAction> candidates;
     if (_equip_oper(oper))
     {
         // Tab switches to the opposite operation; label it by destination.
         const bool equipping = generalize_oper(oper) == OPER_EQUIP;
-        actions[slot++] = {T_(equipping ? "unequip" : "equip"), CK_TAB};
+        candidates.push_back({T_(equipping ? "unequip" : "equip"), CK_TAB});
     }
     if (oper != OPER_ANY && available_modes.size() > 1)
-        actions[slot++] = {"", '!'};
-    if (show_unarmed() && slot < actions.size())
-        actions[slot++] = {"", '-'};
+        candidates.push_back({T_("Switch action"), '!'});
+    if (show_unarmed())
+        candidates.push_back({T_("Fight unarmed"), '-'});
     const bool easy_floor = Options.easy_floor_use && item_floor.size() == 1
         && (is_inventory || !inv_header);
-    if (inv_header && floor_header && !easy_floor && slot < actions.size())
-        actions[slot++] = {"", ','};
-    if (is_set(MF_ARROWS_SELECT) && item_type_filter != OSEL_UNIDENT
-        && slot < actions.size())
-    {
-        actions[slot++] = {"", '?'};
-    }
+    if (inv_header && floor_header && !easy_floor)
+        candidates.push_back({T_("Switch list"), ','});
+    if (is_set(MF_ARROWS_SELECT) && item_type_filter != OSEL_UNIDENT)
+        candidates.push_back({T_("Describe item"), '?'});
+    m_keyboard_more.clear();
+    ui::spill_input_actions(actions, 2, std::move(candidates), m_keyboard_more);
     return actions;
 }
 #endif
