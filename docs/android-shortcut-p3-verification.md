@@ -10,7 +10,7 @@
 - P1：`ba663f09a0`，PR #130 已合并为 `8745b0af18`；主检出已快进。
 - P2：在原 `26a1eb6c1b` 上补充 `b915769e5c`，尚未推送该修复。
 - P3：原 `affa46fccd` 上补充 `27307024dd`、`b94a07535c`；
-  `626dca4961` 合入 P2 修复。最终代码候选 `b94a07535c`。
+  `626dca4961` 合入 P2 修复。对象循环补充修复 `c54c569cf0`、`aa9bd4ad43`；最终代码候选 `aa9bd4ad43`。
 - 推送受自动审批阻止；尚不能宣称 P2/P3 合并就绪或交付完成。
   本地报告与既有截图不替代新候选的 GitHub CI。
 
@@ -21,8 +21,8 @@
 | Blocker（已修复） | `topbar-drawer.cc:show_more_actions_popup` 的布局接管导致原第四行消失，违反 §4.3；真机 `map-more` 可复现 | 弹窗登记调用页描述符，保持四行；不继承 more 列表，避免递归打开。`fixed-more`、`fixed-more-repeat` 复测 |
 | Blocker（已修复） | `viewmap.cc:CMD_MAP_EXCLUDE_RADIUS` 原来直接 `getchm()`，不能自动展开数字输入，且取消会把 Escape 减去 `'0'` 当半径 | Android 使用 `TextInputScope`，显示既有命令标签与 0–9，仅接受数字；桌面路径保持原行为 |
 | Blocker（已修复） | `CMD_MAP_ADD_WAYPOINT` 的原生编号提示同样直接读键，第四行仍是 MAP | Android 在调用 `add_waypoint` 期间登记 `TextInputScope` |
-| Blocker（已修复，待最终设备复测） | P2 §3.2 要求的空箭袋、不能喊叫且无可命令盟友的禁用原因未实现 | 复用 `quiver::anything_to_quiver()`；`have_allies_to_order()` 复用喊叫模块现有 `_follows_orders` 条件；灰显和长按原因沿用抽屉路径 |
-| Blocker（已修复，待复测） | 瞄准对象循环命令有枚举与键位，却没有 `process_command` 分支，真机按钮无效 | 临时收集已有物品候选并复用 `cycle_target`；RAII 恢复怪物候选和索引 |
+| Blocker（已修复） | P2 §3.2 要求的空箭袋、不能喊叫且无可命令盟友的禁用原因未实现 | 复用 `quiver::anything_to_quiver()`；`have_allies_to_order()` 复用喊叫模块现有 `_follows_orders` 条件；灰显和长按原因沿用抽屉路径 |
+| Blocker（已修复） | 瞄准对象循环命令有枚举与键位，却没有 `process_command` 分支，真机按钮无效 | 临时收集已有物品候选并复用 `cycle_target`；RAII 恢复怪物候选和索引；复用 `_is_target_in_range` 处理 -1 与 hitfunc 范围 |
 | Needs Fix（文档，已修复） | 方案摘要仍称 Ctrl 桥、溢出表误写四个直接槽、决策存放位置互相矛盾 | 对齐 D6–D8；溢出时实际为三个直接业务槽加“更多”；报告与附录缺口表增加实施后判定 |
 
 输入和 i18n 审阅：`InputAction` 持有 `std::string`，借用译文立即复制；
@@ -43,18 +43,23 @@
 - P3 最终代码与依赖：`--profile code --base b915769e5c --head 950f523bab`，
   Run ID `20260906T072014976846241+0000-1547360-950f523bab89`，Failures 0。
   前一轮所有检查通过，但期间编辑验收文档触发候选变动门槛；固定文档后重跑通过。
-  快捷键测试 41 项通过。所有重型检查与构建均使用资源隔离，构建不超过四个并行作业。
+  快捷键测试 41 项通过。对象循环完整修复的 code profile `b915769e5c..aa9bd4ad43`：
+  `20260906T074400241935136+0000-1766433-aa9bd4ad43b8`，Failures 0。
+  所有重型检查与构建均使用资源隔离，构建不超过四个并行作业。
 - APK `27307024dd`：`make ANDROID=1 TILES=y android -j4`，随后离线 Gradle
   `--max-workers=4 -Pandroid.injected.build.abi=arm64-v8a :app:assembleDebug`，
   `BUILD SUCCESSFUL in 1m 29s`。最终代码 `b94a07535c`（构建 HEAD `950f523bab`）
   再构建 `BUILD SUCCESSFUL in 54s`，APK 摘要见证据目录 `final-apk.sha256`。
+  对象循环完整修复 APK `aa9bd4ad43`：`BUILD SUCCESSFUL in 48s`，
+  摘要见 `range-apk.sha256`；真机安装与回归通过。
   生成工程仅临时使用 `org.develz.crawl.shortcut129`。
 
 ## Pixel 8a 补充验收
 
 设备证据存于本 worktree 的
 `.claude/metrics/verify/android-shortcut-final-2026-09-06/`（git 忽略）。
-测试只操作独立包 `org.develz.crawl.shortcut129`；保留原测试存档备份。
+测试只操作独立包 `org.develz.crawl.shortcut129`；测试结束已恢复原 Tester129 存档与
+init.txt，逐文件 SHA-256 与备份一致。保留本次 APK，原正式包未操作。
 实际功能入口使用触屏按钮；巫师命令仅用于创建盟友、敌人等前置局面。
 窄屏通过系统 density=540 在 1080px 宽设备上得到 320dp，字体为 130%；
 测后恢复原 density=420 与 font_scale=1.0。
@@ -73,13 +78,30 @@
 | P3 技能溢出 | 列表有全部技能、帮助；执行全部技能后显示完整技能集合；`skills-more`、`skills-all`；帮助先进入技能说明模式，再次点击打开正文，`skills-help-page` |
 | P3 物品溢出 | 刺剑列表显示技能目标及刻写；执行刻写进入 TEXT，写入 P3check 后返回 GAME 且物品显示铭刻；`item-more`、`item-inscribe`、`item-inscribed` |
 | P3 使用物品溢出 | 装备菜单五候选保留前三项；更多中切换列表选中地面匕首，再执行描述打开该匕首详情；`equip-more-list`、`equip-switch-list`、`equip-describe` |
+| P3 对象循环 | 最终 APK 下查看模式锁子甲→地面标枪→反向锁子甲；射击模式同样定位锁子甲，保持光路与 TARGET，回合不变；`object-range-first`、`object-range-next`、`object-range-back`、`object-fire-range` |
 | P3 瞄准 | 更多列出强制/终点确认、箭袋、物体循环等；关闭恢复 TARGET 六槽；`target-more-correct` |
 
 ## 尚待闭合的验收门槛
 
-- 空箭袋的不可用原因设备复测；不能喊叫且无盟友的灰显与中文原因已通过，`unavailable-orders-verified`。
-- 强制确认与普通确认的对照、修复后对象循环的完整设备证据。
+- P2 长背包滚动恢复仍缺专门设备证据；两种不可用原因均已通过，
+  `empty-quiver-reason`、`unavailable-orders-verified`。
+- 普通确认与更多中的强制确认分别实际投出标枪，
+  `ordinary-confirm-final`、`force-shot-verified`；强制确认仍保留自伤与友军保护，
+  `force-confirm-shot`、`force-confirm`。范围差异由 `select(false, false)` / `select(true, false)`
+  的代码分支核验，未把投掷物射程内测试声称为射程外实测。
   箭袋前后切换已通过：石头与银标枪互换，`quiver-next-final`、`quiver-prev-final`。
 - P2/P3 新候选推送、GitHub Actions、完成域审核后的顺序合并。
 
 当前结论：**Changes Requested（Validation Gaps）**；没有把未取得证据的项目写为通过。
+
+## 最终审核边界
+
+P2 代码候选 `b915769e5c`，后续提交仅补充文档；P3 代码候选 `aa9bd4ad43`，
+后续只合并 P2 验收记录与更新本报告，复用内容及依赖未变化的验证。
+`classify_reviewers.py` 对 P2 相对 `8745b0af18`、P3 相对 P2 的差异均为 mixed，
+两域已内联检查。P1 原未跟踪设计稿已通过命名 stash 保留，未覆盖或删除。
+
+已发现的实现阻塞均修复；当前合并结论仍为 Changes Requested（Validation Gaps）：
+P2 长背包滚动恢复专项设备记录，以及 P2/P3 新候选的 GitHub CI 尚待闭合。
+原 P2 CI run `34017568264` 成功，但不覆盖新修复。自动审批两次拒绝推送到现有
+公开 origin，要求用户明确授权代码载荷导出到该 GitHub 仓库；未绕过审批。
