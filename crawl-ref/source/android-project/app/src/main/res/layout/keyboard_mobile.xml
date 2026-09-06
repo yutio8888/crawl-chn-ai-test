@@ -94,8 +94,8 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/key_height"
             android:layout_weight="11"
-            android:text="@string/keyboard_rest"
-            android:contentDescription="@string/keyboard_rest"
+            android:text="@string/keyboard_wait"
+            android:contentDescription="@string/keyboard_wait"
             android:padding="0dp"
             android:theme="@style/ButtonColor3"/>
 

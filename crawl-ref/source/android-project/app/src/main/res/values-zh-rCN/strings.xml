@@ -41,7 +41,8 @@
     <string name="keyboard_pickup">拾取</string>
     <string name="keyboard_full">完整</string>
     <string name="keyboard_compact">紧凑</string>
-    <string name="keyboard_rest">等待</string>
+    <string name="keyboard_rest">休息</string>
+    <string name="keyboard_wait">等待</string>
     <string name="keyboard_move_up_left">向左上移动</string>
     <string name="keyboard_move_up">向上移动</string>
     <string name="keyboard_move_up_right">向右上移动</string>

@@ -404,6 +404,16 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                     case '-': return R.string.keyboard_clear_quiver;
                 }
                 break;
+            case 18: // Ordinary dungeon commands
+                switch (key) {
+                    case '5': return R.string.keyboard_rest;
+                    case 'q': return R.string.keyboard_quaff;
+                    case 'r': return R.string.keyboard_read;
+                    case 'f': return R.string.keyboard_fire;
+                    case 'z': return R.string.keyboard_cast;
+                    case 'a': return R.string.keyboard_ability;
+                }
+                break;
         }
         switch (key) {
             case 13: return R.string.ok;
@@ -445,8 +455,13 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         explore.setText(gameplay ? R.string.keyboard_explore : R.string.ok);
         explore.setContentDescription(getResources().getString(
                 gameplay ? R.string.keyboard_explore : R.string.ok));
+        // In the dungeon the centre of the pad waits one turn (CMD_WAIT via
+        // '.'); resting lives in the action row. Every other context keeps
+        // numpad 5 so menus, targeting and the level map see their usual key.
         Button center = findViewById(R.id.key_mobile_5);
-        center.setText(gameplay ? getResources().getString(R.string.keyboard_rest) : "5");
+        center.setTag(Integer.toString(gameplay ? KeyEvent.KEYCODE_PERIOD
+                                                : KeyEvent.KEYCODE_NUMPAD_5));
+        center.setText(gameplay ? getResources().getString(R.string.keyboard_wait) : "5");
         center.setContentDescription(center.getText());
         for (int id : new int[] {R.id.key_mobile_autofight, R.id.key_mobile_inventory,
                 R.id.key_mobile_pickup, R.id.key_mobile_menu}) {

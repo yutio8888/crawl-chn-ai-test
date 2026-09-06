@@ -40,7 +40,8 @@
     <string name="keyboard_pickup">Pick up</string>
     <string name="keyboard_full">Full</string>
     <string name="keyboard_compact">Compact</string>
-    <string name="keyboard_rest">Wait</string>
+    <string name="keyboard_rest">Rest</string>
+    <string name="keyboard_wait">Wait</string>
     <string name="keyboard_move_up_left">Move up-left</string>
     <string name="keyboard_move_up">Move up</string>
     <string name="keyboard_move_up_right">Move up-right</string>
@@ -117,4 +118,9 @@
     <string name="keyboard_all_spells">All spells</string>
     <string name="keyboard_all_abilities">All abilities</string>
     <string name="keyboard_clear_quiver">Clear quiver</string>
+    <string name="keyboard_quaff">Quaff</string>
+    <string name="keyboard_read">Read</string>
+    <string name="keyboard_fire">Fire</string>
+    <string name="keyboard_cast">Cast</string>
+    <string name="keyboard_ability">Ability</string>
 </resources>

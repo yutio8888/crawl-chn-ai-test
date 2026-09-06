@@ -40,7 +40,8 @@
     <string name="keyboard_pickup">拾取</string>
     <string name="keyboard_full">完整</string>
     <string name="keyboard_compact">紧凑</string>
-    <string name="keyboard_rest">等待</string>
+    <string name="keyboard_rest">休息</string>
+    <string name="keyboard_wait">等待</string>
     <string name="keyboard_move_up_left">向左上移动</string>
     <string name="keyboard_move_up">向上移动</string>
     <string name="keyboard_move_up_right">向右上移动</string>
@@ -115,4 +116,9 @@
     <string name="keyboard_all_spells">全部法术</string>
     <string name="keyboard_all_abilities">全部能力</string>
     <string name="keyboard_clear_quiver">清空箭袋</string>
+    <string name="keyboard_quaff">饮用</string>
+    <string name="keyboard_read">阅读</string>
+    <string name="keyboard_fire">射击</string>
+    <string name="keyboard_cast">施法</string>
+    <string name="keyboard_ability">能力</string>
 </resources>

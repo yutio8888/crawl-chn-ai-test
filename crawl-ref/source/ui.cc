@@ -3244,6 +3244,25 @@ InputDescriptor input_descriptor()
         result = input_action_scope->descriptor;
         result.context = InputContext::NAVIGATION;
     }
+    else if (result.context == InputContext::GAME)
+    {
+        // Ordinary dungeon command input owns the compact keyboard's action
+        // row only while no layout or scope is on top; every menu, prompt or
+        // targeter above it replaces these with its own actions. Keys are
+        // the default bindings, sent as plain characters through the
+        // InputConnection, so the game's own availability rules, prompts and
+        // turn accounting apply unchanged. Labels resolve from Android
+        // resources by screen and key.
+        result.screen = InputScreen::GAME;
+        result.actions = {{
+            InputAction("", '5'), // CMD_REST
+            InputAction("", 'q'), // CMD_QUAFF
+            InputAction("", 'r'), // CMD_READ
+            InputAction("", 'f'), // CMD_FIRE
+            InputAction("", 'z'), // CMD_CAST_SPELL
+            InputAction("", 'a'), // CMD_USE_ABILITY
+        }};
+    }
     return result;
 }
 #endif
