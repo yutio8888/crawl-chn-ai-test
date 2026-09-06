@@ -412,9 +412,11 @@ class ContextActionRefreshTests(unittest.TestCase):
             r"^\{\s*#ifdef __ANDROID__\s*"
             r"ui::InputScreen keyboard_screen;\s*"
             r"std::array<ui::InputAction, 6> keyboard_actions;\s*"
-            r"keyboard_descriptor\(keyboard_screen, keyboard_actions\);\s*"
+            r"vector<ui::InputAction> keyboard_more;\s*"
+            r"keyboard_descriptor\(keyboard_screen, keyboard_actions, keyboard_more\);\s*"
             r"ui::InputActionScope keyboard_scope\(keyboard_screen,\s*"
-            r"std::move\(keyboard_actions\)\);\s*#endif")
+            r"std::move\(keyboard_actions\),\s*ui::top_layout\(\),\s*"
+            r"std::move\(keyboard_more\)\);\s*#endif")
         for marker in ("keyboard_descriptor(", "ui::InputActionScope keyboard_scope("):
             self.assertEqual(1, function.count(marker))
             self.assertLess(loop.index(marker), loop.index(wait))
@@ -433,10 +435,12 @@ class ContextActionRefreshTests(unittest.TestCase):
             android_start = loop.index("#ifdef __ANDROID__")
             android_end = loop.index("#endif", android_start) + len("#endif")
             publication = loop[android_start:android_end]
-            descriptor = "keyboard_descriptor(keyboard_screen, keyboard_actions);"
+            descriptor = ("keyboard_descriptor(keyboard_screen, keyboard_actions, "
+                          "keyboard_more);")
             scope_match = re.search(
                 r"ui::InputActionScope keyboard_scope\(keyboard_screen,\s*"
-                r"std::move\(keyboard_actions\)\);", publication)
+                r"std::move\(keyboard_actions\),\s*ui::top_layout\(\),\s*"
+                r"std::move\(keyboard_more\)\);", publication)
             self.assertIsNotNone(scope_match)
             for moved in (publication, descriptor, scope_match.group()):
                 with self.subTest(source=filename, moved=moved):
@@ -554,6 +558,87 @@ class GameActionRowTests(unittest.TestCase):
             root = ET.parse(ANDROID_RES / qualifier / "strings.xml").getroot()
             text = {node.attrib.get("name"): node.text for node in root}
             self.assertNotEqual(text["keyboard_rest"], text["keyboard_wait"], qualifier)
+
+
+class MoreActionsTests(unittest.TestCase):
+    """The More slot: one sentinel key, a native popup, keys queued as typed."""
+
+    SOURCE_DIR = ROOT / "crawl-ref/source"
+
+    def read(self, name: str) -> str:
+        return (self.SOURCE_DIR / name).read_text(encoding="utf-8")
+
+    def test_sentinel_key_is_shared_by_native_bridge_and_java(self) -> None:
+        ui_h = self.read("ui.h")
+        self.assertIn("constexpr int INPUT_MORE_KEY = CK_F10;", ui_h)
+        cio = self.read("cio.h")
+        # Android takes the non-Windows branch: keys count down from
+        # CK_F15 = -279, so CK_F10 is -274.
+        self.assertIn("#if defined(TARGET_OS_WINDOWS)", cio)
+        posix = cio[cio.index("CK_F15 = -279"):]
+        posix = posix[posix.index("#endif"):]
+        names = re.findall(r"\bCK_F(\d+)\b", posix[:posix.index("CK_F0")])
+        self.assertEqual(["14", "13", "12", "11", "10", "9", "8", "7", "6",
+                          "5", "4", "3", "2", "1"], names)
+        self.assertEqual(-279 + (15 - 10), -274)
+        java = self.read("android-project/app/src/main/java/org/develz/crawl/DCSSKeyboard.java")
+        self.assertIn("private static final int KEY_MORE = -274;", java)
+        self.assertIn("case KEY_MORE: return R.string.keyboard_more;", java)
+        syscalls = self.read("syscalls.cc")
+        bridge = block_after(syscalls, "Java_org_libsdl_app_SDLActivity_nativeKeyboardKey")
+        self.assertIn("case CK_F10:   sym = SDLK_F10; break;", bridge)
+        for qualifier in ("values", "values-zh"):
+            self.assertIn("keyboard_more", AndroidFirstRunTests().string_names(qualifier))
+
+    def test_more_key_is_intercepted_before_widget_dispatch(self) -> None:
+        ui_cc = self.read("ui.cc")
+        deliver = block_after(ui_cc, "bool UIRoot::deliver_event(Event& event)")
+        intercept = deliver.index("key == INPUT_MORE_KEY")
+        self.assertLess(intercept, deliver.index("event.set_target(get_focused_widget()"))
+        branch = deliver[intercept:deliver.index("#endif", intercept)]
+        self.assertIn("show_more_actions_popup(*more)", branch)
+        self.assertIn("macro_buf_add(chosen)", branch)
+        self.assertIn("return true;", branch)
+        # Only a scope owning the top layout may publish an overflow list.
+        more = block_after(ui_cc, "const vector<InputAction>* input_more_actions()")
+        self.assertIn("input_action_scope->owner == top_layout()", more)
+
+    def test_spill_keeps_every_candidate_reachable(self) -> None:
+        spill = block_after(self.read("ui.cc"), "void spill_input_actions(")
+        self.assertIn("more.push_back(std::move(actions[actions.size() - 1]));", spill)
+        self.assertIn("actions[actions.size() - 1] = InputAction(\"\", INPUT_MORE_KEY);", spill)
+        for name, anchor in (("describe.cc", "ui::spill_input_actions(keyboard_actions, 2,"),
+                             ("item-use.cc", "ui::spill_input_actions(actions, 2,"),
+                             ("skill-menu.cc", "ui::spill_input_actions(actions, 2,")):
+            self.assertIn(anchor, self.read(name), name)
+        # Every spilling page hands its list to the scope it registers.
+        self.assertIn("std::move(keyboard_more));", self.read("describe.cc"))
+        skills = self.read("skill-menu.cc")
+        self.assertRegex(skills, r"auto keyboard_actions = skm\.keyboard_actions\(\);\s*"
+                         r"ui::InputActionScope keyboard_scope\(ui::InputScreen::SKILLS,\s*"
+                         r"std::move\(keyboard_actions\),\s*ui::top_layout\(\),\s*"
+                         r"skm\.keyboard_more\(\)\);")
+        # Menus reach the same scope through Menu::do_menu's keyboard_more().
+        self.assertIn("more = keyboard_more();", self.read("menu.cc"))
+
+    def test_map_and_targeter_publish_command_lists(self) -> None:
+        for name, screen in (("viewmap.cc", "MAP"), ("directn.cc", "TARGET")):
+            source = self.read(name)
+            scope = source[source.index("ui::InputActionScope keyboard_scope(ui::InputScreen::%s" % screen):]
+            scope = scope[:scope.index("#endif")]
+            self.assertIn('{"", ui::INPUT_MORE_KEY}', scope)
+            self.assertGreaterEqual(scope.count("ui::command_input_action(CMD_"), 10)
+            # Control keys never cross the Java bridge: the list is native.
+            self.assertNotIn("CONTROL(", scope)
+
+    def test_native_more_labels_have_translations(self) -> None:
+        source = self.read("dat/i18n/zh/source.txt")
+        for label in ("Set target", "Cycle view", "All skills", "Switch action",
+                      "Fight unarmed", "Switch list", "Describe item", "Clear target", "mode",
+                      "help"):
+            self.assertIn("\n%s\n" % label, source, label)
+        for path in (DESCRIPT_EN, DESCRIPT_ZH):
+            self.assertIn("android command menu|More actions", database_keys(path))
 
 
 class QuickRowTests(unittest.TestCase):

@@ -666,6 +666,74 @@ void show_topbar_status_drawer(int selected_status)
     tiles.set_need_redraw();
 }
 
+#ifdef __ANDROID__
+int show_more_actions_popup(const vector<ui::InputAction> &actions)
+{
+    const auto keyboard = ui::input_descriptor();
+    int chosen = 0;
+    bool dismissed = false;
+    auto content = make_shared<ui::Box>(ui::Widget::VERT);
+    content->set_cross_alignment(ui::Widget::STRETCH);
+    content->max_size().width = _menu_dp(320);
+    auto title = _drawer_text(formatted_string(
+        _command_menu_text("android command menu", "More actions"), YELLOW));
+    title->set_margin_for_sdl(0, 0, _menu_dp(8), 0);
+    content->add_child(title);
+    auto list = make_shared<ui::Box>(ui::Widget::VERT);
+    list->set_cross_alignment(ui::Widget::STRETCH);
+    for (const ui::InputAction &action : actions)
+    {
+        auto button = make_shared<QuickButton>();
+        auto text = _drawer_text(formatted_string(action.label, WHITE));
+        text->set_margin_for_sdl(_menu_dp(12));
+        button->set_child(text);
+        button->min_size().height = _menu_dp(48);
+        button->set_margin_for_sdl(_menu_dp(2), 0);
+        const int key = action.key;
+        button->on_activate_event([&chosen, &dismissed, key](const ui::ActivateEvent&) {
+            chosen = key;
+            dismissed = true;
+            return true;
+        });
+        list->add_child(button);
+    }
+    auto scroller = make_shared<DrawerScroller>();
+    scroller->set_child(list);
+    content->add_child(scroller);
+    auto dismiss = make_shared<QuickButton>();
+    auto close_text = _drawer_text(formatted_string(
+        _command_menu_text("android command menu", "Close"), WHITE));
+    close_text->set_margin_for_sdl(_menu_dp(12));
+    dismiss->set_child(close_text);
+    dismiss->min_size().height = _menu_dp(48);
+    dismiss->set_margin_for_sdl(_menu_dp(12), 0, 0, 0);
+    dismiss->on_activate_event([&dismissed](const ui::ActivateEvent&) {
+        dismissed = true;
+        return true;
+    });
+    content->add_child(dismiss);
+    auto popup = make_shared<ui::Popup>(content);
+    const auto on_key = [&dismissed, scroller](const ui::KeyEvent &event) {
+        if (ui::key_exits_popup(event.key(), true))
+        {
+            dismissed = true;
+            return true;
+        }
+        const int key = numpad_to_regular(event.key(), true);
+        return key == CK_UP || key == CK_DOWN || key == CK_PGUP
+            || key == CK_PGDN || key == CK_HOME || key == CK_END
+            ? scroller->on_event(event) : false;
+    };
+    dismiss->on_keydown_event(on_key);
+    popup->on_keydown_event(on_key);
+    // Keep the invoking page's row visible while this modal owns input.
+    // Do not copy its overflow list: More must not recursively reopen it.
+    ui::InputActionScope keyboard_scope(keyboard.screen, keyboard.actions, popup);
+    ui::run_layout(popup, dismissed, dismiss);
+    return chosen;
+}
+#endif
+
 command_type show_topbar_command_menu(bool *acted)
 {
     command_type selected_command = CMD_NO_CMD;

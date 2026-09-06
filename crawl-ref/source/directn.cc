@@ -1143,7 +1143,7 @@ void direction_chooser::fill_object_cycle_points()
 {
     for (radius_iterator ri(you.pos(), LOS_NO_TRANS); ri; ++ri)
     {
-        if (grid_distance(*ri, you.pos()) > range)
+        if (!_is_target_in_range(*ri, range, hitfunc))
             continue;
 
         if (needs_path && _blocked_ray(*ri))
@@ -2389,6 +2389,19 @@ bool direction_chooser::process_command(command_type command)
         cycle_target(1);
         break;
 
+    case CMD_TARGET_OBJ_CYCLE_BACK:
+    case CMD_TARGET_OBJ_CYCLE_FORWARD:
+    {
+        const int dir = command == CMD_TARGET_OBJ_CYCLE_FORWARD ? 1 : -1;
+        // Reuse the visible, in-range item candidates without replacing the
+        // monster cycle or its cursor. The current target anchors each step.
+        const unwind_var<vector<coord_def>> saved_points(cycle_pos, {});
+        const unwind_var<int> saved_index(cycle_index, dir > 0 ? -1 : 0);
+        fill_object_cycle_points();
+        cycle_target(dir);
+        break;
+    }
+
     case CMD_TARGET_CANCEL:
         loop_done = true;
         moves.isCancel = true;
@@ -2721,9 +2734,30 @@ bool direction_chooser::choose_direction()
     // that work
     ui::push_layout(directn_view, KMC_TARGETING);
 #ifdef __ANDROID__
+    // Slot 5 lists the advanced targeting commands: forced and endpoint
+    // confirmation, quiver and object cycling, exclusions, description.
+    // The direct confirm in slot 0 stays the ordinary, safe one.
     ui::InputActionScope keyboard_scope(ui::InputScreen::TARGET,
         {{{"", CK_ENTER}, {"", CK_ESCAPE},
-          {"", '-'}, {"", '='}, {"", 'r'}}});
+          {"", '-'}, {"", '='}, {"", 'r'}, {"", ui::INPUT_MORE_KEY}}},
+        directn_view,
+        {ui::command_input_action(CMD_TARGET_SELECT_ENDPOINT),
+         ui::command_input_action(CMD_TARGET_SELECT_FORCE),
+         ui::command_input_action(CMD_TARGET_SELECT_FORCE_ENDPOINT),
+         ui::command_input_action(CMD_TARGET_CYCLE_QUIVER_FORWARD),
+         ui::command_input_action(CMD_TARGET_CYCLE_QUIVER_BACKWARD),
+         ui::command_input_action(CMD_TARGET_SELECT_ACTION),
+         ui::command_input_action(CMD_TARGET_OBJ_CYCLE_FORWARD),
+         ui::command_input_action(CMD_TARGET_OBJ_CYCLE_BACK),
+         ui::command_input_action(CMD_TARGET_TOGGLE_BEAM),
+         ui::command_input_action(CMD_TARGET_EXCLUDE),
+         ui::command_input_action(CMD_TARGET_DESCRIBE),
+         ui::command_input_action(CMD_TARGET_FIND_UPSTAIR),
+         ui::command_input_action(CMD_TARGET_FIND_DOWNSTAIR),
+         ui::command_input_action(CMD_TARGET_FIND_ALTAR),
+         ui::command_input_action(CMD_TARGET_FIND_PORTAL),
+         ui::command_input_action(CMD_TARGET_FIND_TRAP),
+         ui::command_input_action(CMD_TARGET_HELP)});
 #endif
     directn_view->_queue_allocation();
     while (directn_view->is_alive() && !handle_signals())

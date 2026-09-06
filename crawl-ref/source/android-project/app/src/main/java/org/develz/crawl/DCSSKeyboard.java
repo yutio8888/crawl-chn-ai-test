@@ -26,6 +26,10 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
     static final long AUTOFIGHT_REPEAT_INTERVAL_MS = 300;
     static final int AUTOFIGHT_MAX_REPEATS = 60;
     public static final int CONTEXT_GAME = 0;
+    // ui::INPUT_MORE_KEY: CK_F10, which cio.h numbers down from
+    // CK_F15 = -279 on every non-Windows build. Opens the native list of
+    // the page's remaining actions.
+    private static final int KEY_MORE = -274;
     public static final int CONTEXT_NAVIGATION = 1;
     public static final int CONTEXT_TEXT = 2;
     private int inputContext = -1;
@@ -488,6 +492,7 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                 break;
         }
         switch (key) {
+            case KEY_MORE: return R.string.keyboard_more;
             case 13: return R.string.ok;
             case 27: return R.string.back;
             case '!': return R.string.keyboard_cycle_mode;

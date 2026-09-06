@@ -978,12 +978,14 @@ public:
         : Menu(MF_SINGLESELECT | MF_ARROWS_SELECT | MF_INIT_HOVER) {}
 
     void keyboard_descriptor(ui::InputScreen &screen,
-                             std::array<ui::InputAction, 6> &actions) override
+                             std::array<ui::InputAction, 6> &actions,
+                             vector<ui::InputAction> &more) override
     {
         screen = ui::InputScreen::DEFAULT;
         actions = {};
         actions[0] = {"", CK_ENTER};
         actions[1] = {"", CK_ESCAPE};
+        more.clear();
     }
 };
 
@@ -1158,22 +1160,23 @@ std::array<ui::InputAction, 6> SkillMenu::keyboard_actions()
     const bool can_set_target = buttons && !is_set(SKMF_SET_TARGET)
         && (target_view || !you.has_mutation(MUT_DISTRIBUTED_TRAINING));
     // Four slots for six candidate keys: order them by touch value, since a
-    // switch row entry stays clickable inside the menu itself.
+    // switch row entry stays clickable inside the menu itself. The rest are
+    // listed by More, so labels are native.
     vector<ui::InputAction> candidates;
     if (can_set_target)
-        candidates.push_back({"", '='});
+        candidates.push_back({T_("Set target"), '='});
     if (has_switch(SKM_VIEW))
-        candidates.push_back({"", '!'});
+        candidates.push_back({T_("Cycle view"), '!'});
     if (buttons && target_view)
-        candidates.push_back({"", '-'});
+        candidates.push_back({T_("Clear target"), '-'});
     if (has_switch(SKM_MODE))
         candidates.push_back({T_("mode"), '/'});
     if (has_switch(SKM_SHOW))
-        candidates.push_back({"", '*'});
+        candidates.push_back({T_("All skills"), '*'});
     if (!is_set(SKMF_SPECIAL))
         candidates.push_back({T_("help"), '?'});
-    for (size_t i = 0; i < candidates.size() && i + 2 < actions.size(); ++i)
-        actions[i + 2] = candidates[i];
+    m_keyboard_more.clear();
+    ui::spill_input_actions(actions, 2, std::move(candidates), m_keyboard_more);
     return actions;
 }
 #endif
@@ -2125,8 +2128,13 @@ void skill_menu(int flag, int exp)
     ui::push_layout(std::move(popup));
     while (!done && !crawl_state.seen_hups)
     {
+        // keyboard_actions() also computes the overflow list, so call it
+        // before keyboard_more().
+        auto keyboard_actions = skm.keyboard_actions();
         ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
-                                            skm.keyboard_actions());
+                                            std::move(keyboard_actions),
+                                            ui::top_layout(),
+                                            skm.keyboard_more());
         ui::pump_events();
     }
     ui::pop_layout();

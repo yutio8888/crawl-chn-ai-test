@@ -745,3 +745,91 @@ android command menu summary|System Menu
 
 Save, quit, macros and other system options
 %%%%
+android command menu|More actions
+
+More actions
+%%%%
+CMD_MAP_EXCLUDE_RADIUS
+
+Set exclusion radius
+%%%%
+CMD_MAP_ANNOTATE_LEVEL
+
+Annotate level
+%%%%
+CMD_MAP_DESCRIBE
+
+Describe location
+%%%%
+CMD_MAP_HELP
+
+Map help
+%%%%
+CMD_TARGET_SELECT_ENDPOINT
+
+Aim at path endpoint
+%%%%
+CMD_TARGET_SELECT_FORCE
+
+Force confirm
+%%%%
+CMD_TARGET_SELECT_FORCE_ENDPOINT
+
+Force confirm at path endpoint
+%%%%
+CMD_TARGET_CYCLE_QUIVER_FORWARD
+
+Next quiver action
+%%%%
+CMD_TARGET_CYCLE_QUIVER_BACKWARD
+
+Previous quiver action
+%%%%
+CMD_TARGET_SELECT_ACTION
+
+Choose quiver action
+%%%%
+CMD_TARGET_OBJ_CYCLE_FORWARD
+
+Next object
+%%%%
+CMD_TARGET_OBJ_CYCLE_BACK
+
+Previous object
+%%%%
+CMD_TARGET_TOGGLE_BEAM
+
+Toggle path display
+%%%%
+CMD_TARGET_EXCLUDE
+
+Toggle exclusion
+%%%%
+CMD_TARGET_DESCRIBE
+
+Describe target
+%%%%
+CMD_TARGET_FIND_UPSTAIR
+
+Find upward staircase
+%%%%
+CMD_TARGET_FIND_DOWNSTAIR
+
+Find downward staircase
+%%%%
+CMD_TARGET_FIND_ALTAR
+
+Find altar
+%%%%
+CMD_TARGET_FIND_PORTAL
+
+Find shop or portal
+%%%%
+CMD_TARGET_FIND_TRAP
+
+Find trap
+%%%%
+CMD_TARGET_HELP
+
+Targeting help
+%%%%

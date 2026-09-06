@@ -18,6 +18,7 @@
 #include "tilefont.h"
 #include "unwind.h"
 #include "cio.h"
+#include "command-type.h"
 #ifdef USE_TILE_LOCAL
 # include "tilebuf.h"
 # include "tiledgnbuf.h"
@@ -1326,21 +1327,41 @@ struct InputDescriptor
             && actions == other.actions;
     }
 };
+// A slot carrying this key opens the innermost scope's overflow list (see
+// input_more_actions()); Java labels it "More". It is the only special key
+// besides CK_LEFT/CK_RIGHT that nativeKeyboardKey accepts.
+constexpr int INPUT_MORE_KEY = CK_F10;
 class InputActionScope
 {
 public:
+    // `more` holds actions that did not fit the six slots. Each needs a
+    // native label: the list is drawn by a native popup, not by Java.
     InputActionScope(InputScreen screen, std::array<InputAction, 6> actions,
-                     shared_ptr<Widget> layout = top_layout());
+                     shared_ptr<Widget> layout = top_layout(),
+                     vector<InputAction> more = vector<InputAction>());
     ~InputActionScope();
     InputActionScope(const InputActionScope&) = delete;
     InputActionScope& operator=(const InputActionScope&) = delete;
 private:
     friend InputDescriptor input_descriptor();
+    friend const vector<InputAction>* input_more_actions();
     InputDescriptor descriptor;
+    vector<InputAction> more_actions;
     shared_ptr<Widget> owner;
     InputActionScope* previous;
 };
 InputDescriptor input_descriptor();
+// Overflow actions of the innermost scope owning the top layout, else null.
+const vector<InputAction>* input_more_actions();
+// Fills slots from `first` with `candidates` in order. When they do not all
+// fit, the last direct slot becomes the More key and its action joins the
+// rest in `more`, so nothing is silently dropped.
+void spill_input_actions(std::array<InputAction, 6>& actions, size_t first,
+                         vector<InputAction> candidates,
+                         vector<InputAction>& more);
+// An overflow entry for a command in the current keymap context: its terse
+// description from the command database and its first bound key.
+InputAction command_input_action(command_type cmd);
 #endif
 #ifdef USE_TILE_LOCAL
 bool scroll_touch_at(int x, int y, int delta_y);

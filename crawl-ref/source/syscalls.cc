@@ -419,6 +419,7 @@ Java_org_libsdl_app_SDLActivity_nativeKeyboardKey(JNIEnv*, jclass, jint key)
     {
     case CK_LEFT:  sym = SDLK_LEFT; break;
     case CK_RIGHT: sym = SDLK_RIGHT; break;
+    case CK_F10:   sym = SDLK_F10; break; // ui::INPUT_MORE_KEY
     default:
         __android_log_print(ANDROID_LOG_WARN, "AndroidKeyboard",
                             "Unsupported keyboard key: %d", static_cast<int>(key));

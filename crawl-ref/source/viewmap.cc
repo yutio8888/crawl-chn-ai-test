@@ -15,6 +15,7 @@
 #include "coord.h"
 #include "coordit.h"
 #include "database.h"
+#include "describe.h"
 #include "dgn-overview.h"
 #include "directn.h"
 #include "env.h"
@@ -944,9 +945,29 @@ bool show_map(level_pos &lpos, bool travel_mode, bool allow_offlevel)
 
         ui::push_layout(map_view, KMC_LEVELMAP);
 #ifdef __ANDROID__
+        // Slot 0 lists the map commands without a direct slot: exclusions,
+        // waypoints, level and feature searches, annotation and help. Keys
+        // are looked up in the level-map keymap, so rebinding is honoured
+        // and control keys never cross the Java bridge.
         ui::InputActionScope keyboard_scope(ui::InputScreen::MAP,
-            {{{}, {"", CK_ESCAPE}, {"", '<'}, {"", '>'},
-              {"", '\t'}, {"", '^'}}});
+            {{{"", ui::INPUT_MORE_KEY}, {"", CK_ESCAPE}, {"", '<'}, {"", '>'},
+              {"", '\t'}, {"", '^'}}}, map_view,
+            {ui::command_input_action(CMD_MAP_EXCLUDE_AREA),
+             ui::command_input_action(CMD_MAP_EXCLUDE_RADIUS),
+             ui::command_input_action(CMD_MAP_CLEAR_EXCLUDES),
+             ui::command_input_action(CMD_MAP_FIND_EXCLUDED),
+             ui::command_input_action(CMD_MAP_ADD_WAYPOINT),
+             ui::command_input_action(CMD_MAP_FIND_WAYPOINT),
+             ui::command_input_action(CMD_MAP_FIND_ALTAR),
+             ui::command_input_action(CMD_MAP_FIND_STASH),
+             ui::command_input_action(CMD_MAP_FIND_YOU),
+             ui::command_input_action(CMD_MAP_PREV_LEVEL),
+             ui::command_input_action(CMD_MAP_NEXT_LEVEL),
+             ui::command_input_action(CMD_MAP_GOTO_LEVEL),
+             ui::command_input_action(CMD_MAP_ANNOTATE_LEVEL),
+             ui::command_input_action(CMD_MAP_DESCRIBE),
+             ui::command_input_action(CMD_MAP_EXPLORE),
+             ui::command_input_action(CMD_MAP_HELP)});
 #endif
         while (map_view->is_alive() && !crawl_state.seen_hups)
             ui::pump_events();
@@ -1080,12 +1101,17 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break;
 
     case CMD_MAP_ADD_WAYPOINT:
+    {
+#ifdef __ANDROID__
+        const ui::TextInputScope text_input;
+#endif
         travel_cache.add_waypoint(state.lpos.pos.x, state.lpos.pos.y);
         // We need to do this all over again so that the user can jump
         // to the waypoint he just created.
         _reset_travel_colours(*state.features, state.on_level);
         state.feats->init();
         break;
+    }
 
         // Cycle the radius of an exclude.
     case CMD_MAP_EXCLUDE_AREA:
@@ -1105,7 +1131,21 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break;
 
     case CMD_MAP_EXCLUDE_RADIUS:
+#ifdef __ANDROID__
+        {
+            // This command reads one digit, without a line editor. Publish
+            // TEXT explicitly so the compact keyboard exposes number input.
+            const ui::TextInputScope text_input;
+            const string label = get_command_description(CMD_MAP_EXCLUDE_RADIUS, true);
+            mprf(MSGCH_PROMPT, "%s (0-9)", label.c_str());
+            const int key = getchm();
+            if (key < '0' || key > '9')
+                break;
+            set_exclude(state.lpos.pos, key - '0');
+        }
+#else
         set_exclude(state.lpos.pos, getchm() - '0');
+#endif
 
         _reset_travel_colours(*state.features, state.on_level);
         state.feats->init();

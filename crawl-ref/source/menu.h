@@ -55,7 +55,7 @@ struct menu_letter
     menu_letter operator ++ (int)
     {
         menu_letter copy = *this;
-        operator++();
+        ++*this;
         return copy;
     }
 };
@@ -80,7 +80,7 @@ struct menu_letter2
     menu_letter2 operator ++ (int)
     {
         menu_letter2 copy = *this;
-        operator++();
+        ++*this;
         return copy;
     }
 };
@@ -494,10 +494,14 @@ protected:
     // filled with confirm/cancel by keyboard_descriptor.
     virtual ui::InputScreen keyboard_screen() const;
     virtual std::array<ui::InputAction, 6> keyboard_actions();
+    // Actions that keyboard_actions() could not fit; reached through the
+    // More slot. Computed by keyboard_actions(), which runs first.
+    virtual vector<ui::InputAction> keyboard_more() { return {}; }
     // Virtual so a selection menu with no page-specific key can still ask
     // for confirm/cancel, which the default rule drops as redundant.
     virtual void keyboard_descriptor(ui::InputScreen &screen,
-                                     std::array<ui::InputAction, 6> &actions);
+                                     std::array<ui::InputAction, 6> &actions,
+                                     vector<ui::InputAction> &more);
     bool keyboard_cycles_mode();
 #endif
 
