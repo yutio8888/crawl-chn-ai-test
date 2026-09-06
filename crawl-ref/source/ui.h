@@ -1296,7 +1296,7 @@ enum class InputScreen
 {
     DEFAULT, INVENTORY, ITEM, SPELL, TARGET, CONFIRM, MORE, MAP,
     USE_ITEM, SHOP, MENU, DESCRIPTION, GOD, FEATURE, SKILLS, TRAVEL, LAYERS,
-    QUIVER,
+    QUIVER, GAME,
 };
 struct InputAction
 {
@@ -1316,7 +1316,9 @@ struct InputDescriptor
 {
     InputContext context = InputContext::NAVIGATION;
     InputScreen screen = InputScreen::DEFAULT;
-    // Confirm and cancel always occupy slots 0 and 1 respectively.
+    // In every InputActionScope descriptor, confirm and cancel occupy slots
+    // 0 and 1 respectively. The GAME descriptor has no confirm or cancel and
+    // fills all six slots with dungeon commands.
     std::array<InputAction, 6> actions;
     bool operator==(const InputDescriptor& other) const
     {
