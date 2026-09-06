@@ -88,11 +88,13 @@ APK SHA-256 前缀 `00da1ad419b9ae71`（候选 `96ab734865`，游戏内版本串
 
 PR #131 已改为目标 `chn-0.34.1-base`。原候选 `26a1eb6c1b` 的
 手动 CI run `34017568264` 全部适用任务通过；该结果不覆盖新修复。
-新提交推送被自动审批拒绝，等待用户明确授权向现有公开 GitHub 仓库导出；
-因此当前合并结论为 Changes Requested（Validation Gap：新候选 CI）。
+用户已明确授权公开推送，修复及注释空格修正 `0758b73a37` 已发布。
+新候选 CI 与最终合并结论记录在 PR #131。
 原地自动战斗相邻/远处/无目标已补测：相邻近战，两格外投标枪，无目标不动作，
 位置均不变。证据 `rat2-location`、`autofight-adjacent-verified`、
 `adjacent-fixture`（实际为两格远）、`autofight-adjacent`（实际为两格远）、
 `autofight-empty-verified`。丢弃多选和分类切换已验证；数量输入通过完整键盘 5 + 物品字母选择部分数量，确认后石头 7→2，
-`five-stones-selected`、`five-stones-result`。长背包滚动恢复仍缺专门设备证据，
-不能写为完整矩阵通过。
+`five-stones-selected`、`five-stones-result`。
+长背包已用 41 件物品补测：详情取消返回保留位置（`longpack-cancel-before/after`）；
+详情丢弃及抽屉多选确认后回 GAME，再次打开从顶部开始（`longpack-reopened`）。
+用户明确确认不要求关闭重开恢复位置，§3.4 已同步；该验收缺口闭合。
