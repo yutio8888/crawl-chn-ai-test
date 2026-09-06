@@ -1101,12 +1101,17 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break;
 
     case CMD_MAP_ADD_WAYPOINT:
+    {
+#ifdef __ANDROID__
+        const ui::TextInputScope text_input;
+#endif
         travel_cache.add_waypoint(state.lpos.pos.x, state.lpos.pos.y);
         // We need to do this all over again so that the user can jump
         // to the waypoint he just created.
         _reset_travel_colours(*state.features, state.on_level);
         state.feats->init();
         break;
+    }
 
         // Cycle the radius of an exclude.
     case CMD_MAP_EXCLUDE_AREA:
