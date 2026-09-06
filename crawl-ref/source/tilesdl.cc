@@ -1464,6 +1464,11 @@ bool TilesFramework::is_using_small_layout()
     return m_layout_policy && m_layout_policy->uses_overlay_sidebar();
 }
 
+bool TilesFramework::popups_anchor_bottom()
+{
+    return m_layout_policy && m_layout_policy->uses_bottom_popups();
+}
+
 #define ZOOM_INC 0.1
 
 void TilesFramework::zoom_dungeon(bool in)

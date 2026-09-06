@@ -374,6 +374,8 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                 break;
             case 14: // Skills
                 switch (key) {
+                    case '=': return R.string.keyboard_set_target;
+                    case '-': return R.string.keyboard_clear_target;
                     case '!': return R.string.keyboard_cycle_view;
                     case '*': return R.string.keyboard_all_skills;
                 }

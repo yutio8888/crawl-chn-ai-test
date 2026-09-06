@@ -169,6 +169,7 @@ public:
     int get_number_of_lines();
     int get_number_of_cols();
     bool is_using_small_layout();
+    bool popups_anchor_bottom();
     LayoutPolicy &layout_policy() { return *m_layout_policy; }
     void zoom_dungeon(bool in);
 

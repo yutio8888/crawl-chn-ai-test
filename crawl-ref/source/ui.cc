@@ -1715,8 +1715,19 @@ void Popup::_allocate_region()
     region.height = max(vsr.min, min(region.height, vsr.nat));
 
     region.x += pad + (m_region.width-2*pad-region.width)/2;
-    region.y += pad + (m_centred ? (m_region.height-2*pad-region.height)/2
-            : m_depth*m_depth_indent);
+    if (m_centred)
+        region.y += pad + (m_region.height-2*pad-region.height)/2;
+    else if (tiles.popups_anchor_bottom())
+    {
+        // Grow upwards from the bottom edge, so a short popup lands next to
+        // the touch action row instead of a screen away from it. Nested
+        // popups cascade upwards for the same reason they cascade downwards
+        // on a top-anchored layout.
+        region.y += m_region.height - pad - region.height
+                    - m_depth*m_depth_indent;
+    }
+    else
+        region.y += pad + m_depth*m_depth_indent;
 
     m_buf.add(region.x - m_padding, region.y - m_padding,
             region.x + region.width + m_padding,
