@@ -1604,13 +1604,20 @@ int main() { return 0; }
         self.assertEqual(lf, _normalize_eol(cr))
 
         # The lexer sees the same conditional events and switch lines for
-        # every style (the frozen baseline lines stay switch points).
+        # every style. Locate known switch-body lines by source content
+        # so unrelated edits above them do not invalidate this regression.
         switch_lf = _preprocessor_switch_lines(lf)
         self.assertIsNotNone(switch_lf)
         self.assertEqual(switch_lf, _preprocessor_switch_lines(crlf))
         self.assertEqual(switch_lf, _preprocessor_switch_lines(cr))
-        self.assertIn(622, switch_lf)
-        self.assertIn(3721, switch_lf)
+        for anchor in (
+            b'                    str = "         " + fss[j].tostring();',
+            b'    const dungeon_feature_type feat = env.grid(where);',
+        ):
+            matches = [line for line, text in enumerate(lf.splitlines(), 1)
+                       if text == anchor]
+            self.assertEqual(len(matches), 1, anchor)
+            self.assertIn(matches[0], switch_lf)
 
         # tree-sitter agrees with the lexer on the same normalized input:
         # parsing _normalize_eol(cr) is byte-identical to parsing the LF
