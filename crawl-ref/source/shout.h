@@ -10,6 +10,7 @@ bool fake_noisy(int loudness, const coord_def& where);
 
 void yell(const actor* target = nullptr);
 void issue_orders();
+bool have_allies_to_order();
 
 void item_noise(const item_def& item, actor &act, string msg, int loudness = 25);
 void noisy_equipment(const item_def &item);
@@ -18,7 +19,7 @@ void monster_consider_shouting(monster &mon);
 bool monster_attempt_shout(monster &mon);
 void monster_shout(monster &mons, int s_type);
 // Production seam for monster_shout(): the ShoutDB lookup key for a
-// monster (English canonical identity; see shout.cc).  Exported so the
+// monster (English canonical identity; see shout.cc). Exported so the
 // zh translation tests drive the real producer instead of rebuilding
 // the key themselves.
 string _shout_key(const monster &mons);

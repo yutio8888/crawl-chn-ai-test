@@ -15,6 +15,8 @@
 #include "options.h"
 #include "player.h"
 #include "prompt.h"
+#include "quiver.h"
+#include "shout.h"
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "status.h"
@@ -713,38 +715,58 @@ command_type show_topbar_command_menu(bool *acted)
         return true;
     });
 
-    // Commands stay in a stable row-major order, including the unavailable
-    // pickup and exit slots. No navigation-only "More" or quick-page entries.
+    // Commands stay in a stable row-major order inside titled sections,
+    // including the unavailable pickup and exit slots. Sections are plain
+    // headings in the one scroller; there are no tabs, pages or submenus.
+    // Every entry returns its command to the main loop through
+    // encode_command_as_key(), which encodes the enum itself, so commands
+    // without a default key such as CMD_AUTOFIGHT_NOMOVE work unchanged.
     struct command_entry
     {
+        const char *section;
         const char *label;
         tileidx_t tile;
         command_type command;
     };
     const command_entry commands[] = {
-        {"Auto-explore", TILEG_MENU_EXPLORE, CMD_EXPLORE},
-        {"Inventory", TILEG_MENU_INVENTORY, CMD_DISPLAY_INVENTORY},
-        {"Full View", TILEG_MENU_LOOK, CMD_FULL_VIEW},
-        {"Spells", TILEG_MENU_SPELLS, CMD_DISPLAY_SPELLS},
-        {"Abilities", TILEG_MENU_ABILITIES, CMD_USE_ABILITY},
-        {"Memorise", TILEG_MENU_MEMORISE, CMD_MEMORISE_SPELL},
-        {"Character", TILEG_MENU_CHARACTER, CMD_RESISTS_SCREEN},
-        {"Skills", TILEG_MENU_SKILLS, CMD_DISPLAY_SKILLS},
-        {"Religion", TILEG_MENU_RELIGION, CMD_DISPLAY_RELIGION},
-        {"Map", TILEG_MENU_MAP, CMD_DISPLAY_MAP},
-        {"Known Objects", TILEG_MENU_KNOWN_ITEMS, CMD_DISPLAY_KNOWN_OBJECTS},
-        {"Mutations", TILEG_MENU_MUTATIONS, CMD_DISPLAY_MUTATIONS},
-        {"Commands", TILEG_MENU_HELP, CMD_DISPLAY_COMMANDS},
-        {"Pick Up", TILEG_MENU_PICKUP, CMD_PICKUP},
-        {"Exit", TILEG_MENU_EXIT, CMD_NO_CMD},
+        {"Combat and items", "Auto-fight in place", TILEG_CMD_AUTOFIGHT, CMD_AUTOFIGHT_NOMOVE},
+        {"Combat and items", "Attack", TILE_WPN_LONG_SWORD, CMD_PRIMARY_ATTACK},
+        {"Combat and items", "Fire Item", TILE_MI_STONE, CMD_FIRE_ITEM_NO_QUIVER},
+        {"Combat and items", "Quiver", TILE_MI_ARROW, CMD_QUIVER_ITEM},
+        {"Combat and items", "Evoke", TILE_WAND_OFFSET, CMD_EVOKE},
+        {"Combat and items", "Swap Weapon", TILE_WPN_DAGGER, CMD_WEAPON_SWAP},
+        {"Combat and items", "Inventory", TILEG_MENU_INVENTORY, CMD_DISPLAY_INVENTORY},
+        {"Combat and items", "Pick Up", TILEG_MENU_PICKUP, CMD_PICKUP},
+        {"Combat and items", "Drop", TILEG_CMD_DROP, CMD_DROP},
+        {"Combat and items", "Orders", TILEG_ABILITY_BEOGH_RECALL, CMD_SHOUT},
+        {"Combat and items", "Spells", TILEG_MENU_SPELLS, CMD_DISPLAY_SPELLS},
+        {"Combat and items", "Abilities", TILEG_MENU_ABILITIES, CMD_USE_ABILITY},
+        {"Explore and map", "Auto-explore", TILEG_MENU_EXPLORE, CMD_EXPLORE},
+        {"Explore and map", "Map", TILEG_MENU_MAP, CMD_DISPLAY_MAP},
+        {"Explore and map", "Travel", TILEG_CMD_INTERLEVEL_TRAVEL, CMD_INTERLEVEL_TRAVEL},
+        {"Explore and map", "Overview", TILEG_CMD_DISPLAY_OVERMAP, CMD_DISPLAY_OVERMAP},
+        {"Explore and map", "Search", TILEG_CMD_SEARCH_STASHES, CMD_SEARCH_STASHES},
+        {"Explore and map", "Full View", TILEG_MENU_LOOK, CMD_FULL_VIEW},
+        {"Explore and map", "Exit", TILEG_MENU_EXIT, CMD_NO_CMD},
+        {"Character and info", "Character", TILEG_MENU_CHARACTER, CMD_RESISTS_SCREEN},
+        {"Character and info", "Skills", TILEG_MENU_SKILLS, CMD_DISPLAY_SKILLS},
+        {"Character and info", "Religion", TILEG_MENU_RELIGION, CMD_DISPLAY_RELIGION},
+        {"Character and info", "Mutations", TILEG_MENU_MUTATIONS, CMD_DISPLAY_MUTATIONS},
+        {"Character and info", "Memorise", TILEG_MENU_MEMORISE, CMD_MEMORISE_SPELL},
+        {"Character and info", "Known Objects", TILEG_MENU_KNOWN_ITEMS, CMD_DISPLAY_KNOWN_OBJECTS},
+        {"Character and info", "Messages", TILEG_CMD_REPLAY_MESSAGES, CMD_REPLAY_MESSAGES},
+        {"Character and info", "Gold", TILEG_ABILITY_ZIN_DONATE_GOLD, CMD_LIST_GOLD},
+        {"System", "Commands", TILEG_MENU_HELP, CMD_DISPLAY_COMMANDS},
+        {"System", "System Menu", TILEG_CMD_GAME_MENU, CMD_GAME_MENU},
     };
 
     // Keep enough width for two lines at the chosen game font size. Increasing
     // the font can reduce the column count; it must never shrink the font.
     const int min_command_width = max(_menu_dp(96),
         (int)tiles.get_msg_font()->char_height() * 4 + _menu_dp(16));
-    auto command_grid = make_shared<CommandGrid>(3, min_command_width);
-    content->add_child(command_grid);
+    // One grid per section, created when the table reaches a new heading.
+    const char *current_section = nullptr;
+    shared_ptr<CommandGrid> command_grid;
 
     const weak_ptr<DrawerScroller> weak_scroller = scroller;
     const auto describe = [weak_scroller](const string &label, const string &body) {
@@ -794,10 +816,34 @@ command_type show_topbar_command_menu(bool *acted)
     };
     for (const auto &entry : commands)
     {
+        if (!current_section || strcmp(current_section, entry.section) != 0)
+        {
+            current_section = entry.section;
+            auto section = _drawer_text(formatted_string(
+                _command_menu_text("android command menu", entry.section),
+                YELLOW));
+            section->set_margin_for_sdl(_menu_dp(12), _menu_dp(4), _menu_dp(4),
+                                        _menu_dp(4));
+            content->add_child(section);
+            command_grid = make_shared<CommandGrid>(3, min_command_width);
+            content->add_child(command_grid);
+        }
         const char *label_key = entry.label;
         const char *summary_key = label_key;
         command_type command = entry.command;
         bool available = true;
+        string unavailable_reason;
+        if (command == CMD_QUIVER_ITEM && !quiver::anything_to_quiver())
+        {
+            available = false;
+            unavailable_reason = T_("You have nothing to quiver.");
+        }
+        else if (command == CMD_SHOUT && you.cannot_speak()
+                 && !have_allies_to_order())
+        {
+            available = false;
+            unavailable_reason = T_("You cannot shout and have no allies to order.");
+        }
         if (command == CMD_PICKUP && you.visible_igrd(you.pos()) == NON_ITEM)
         {
             available = false;
@@ -823,8 +869,9 @@ command_type show_topbar_command_menu(bool *acted)
             }
         }
         const string label = _command_menu_text("android command menu", label_key);
-        const string summary = _command_menu_text("android command menu summary",
-                                                  summary_key);
+        const string summary = unavailable_reason.empty()
+            ? _command_menu_text("android command menu summary", summary_key)
+            : unavailable_reason;
         auto cell = make_shared<ui::Box>(ui::Widget::VERT);
         cell->set_cross_alignment(ui::Widget::CENTER);
         cell->set_main_alignment(ui::Widget::CENTER);

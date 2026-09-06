@@ -593,3 +593,131 @@ android command menu summary|No exit here
 
 脚下没有可使用的出入口
 %%%%
+android command menu|Combat and items
+
+战斗与物品
+%%%%
+android command menu|Explore and map
+
+探索与地图
+%%%%
+android command menu|Character and info
+
+角色与信息
+%%%%
+android command menu|System
+
+系统
+%%%%
+android command menu|Auto-fight in place
+
+原地自动战斗
+%%%%
+android command menu summary|Auto-fight in place
+
+不移动，攻击最近的敌人
+%%%%
+android command menu|Attack
+
+攻击
+%%%%
+android command menu summary|Attack
+
+用当前武器朝一个方向攻击
+%%%%
+android command menu|Fire Item
+
+发射物品
+%%%%
+android command menu summary|Fire Item
+
+投掷或发射一件物品，不改变箭袋
+%%%%
+android command menu|Quiver
+
+箭袋
+%%%%
+android command menu summary|Quiver
+
+选择射击命令使用的动作
+%%%%
+android command menu|Evoke
+
+激活
+%%%%
+android command menu summary|Evoke
+
+激活魔杖或其他可激活物品
+%%%%
+android command menu|Swap Weapon
+
+切换武器
+%%%%
+android command menu summary|Swap Weapon
+
+在主副武器之间切换
+%%%%
+android command menu|Drop
+
+丢弃
+%%%%
+android command menu summary|Drop
+
+丢弃背包中的物品
+%%%%
+android command menu|Orders
+
+盟友命令
+%%%%
+android command menu summary|Orders
+
+喊叫或向盟友下达命令
+%%%%
+android command menu|Travel
+
+跨层旅行
+%%%%
+android command menu summary|Travel
+
+前往其他楼层或记住的地点
+%%%%
+android command menu|Overview
+
+地牢概览
+%%%%
+android command menu summary|Overview
+
+显示地牢概览
+%%%%
+android command menu|Search
+
+搜索
+%%%%
+android command menu summary|Search
+
+搜索你见过的物品和地形
+%%%%
+android command menu|Messages
+
+消息历史
+%%%%
+android command menu summary|Messages
+
+查看消息历史
+%%%%
+android command menu|Gold
+
+金币
+%%%%
+android command menu summary|Gold
+
+查看金币与购物清单
+%%%%
+android command menu|System Menu
+
+系统菜单
+%%%%
+android command menu summary|System Menu
+
+保存、退出、宏与其他系统选项
+%%%%

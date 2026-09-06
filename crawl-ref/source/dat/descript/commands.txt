@@ -617,3 +617,131 @@ android command menu summary|No exit here
 
 There is no usable exit here
 %%%%
+android command menu|Combat and items
+
+Combat and items
+%%%%
+android command menu|Explore and map
+
+Explore and map
+%%%%
+android command menu|Character and info
+
+Character and info
+%%%%
+android command menu|System
+
+System
+%%%%
+android command menu|Auto-fight in place
+
+Auto-fight in place
+%%%%
+android command menu summary|Auto-fight in place
+
+Attack the nearest enemy without moving
+%%%%
+android command menu|Attack
+
+Attack
+%%%%
+android command menu summary|Attack
+
+Attack in a direction with your wielded weapon
+%%%%
+android command menu|Fire Item
+
+Fire Item
+%%%%
+android command menu summary|Fire Item
+
+Throw or fire an item without changing your quiver
+%%%%
+android command menu|Quiver
+
+Quiver
+%%%%
+android command menu summary|Quiver
+
+Choose the action used by the fire command
+%%%%
+android command menu|Evoke
+
+Evoke
+%%%%
+android command menu summary|Evoke
+
+Evoke a wand or other usable item
+%%%%
+android command menu|Swap Weapon
+
+Swap Weapon
+%%%%
+android command menu summary|Swap Weapon
+
+Swap between your primary and secondary weapons
+%%%%
+android command menu|Drop
+
+Drop
+%%%%
+android command menu summary|Drop
+
+Drop items from your inventory
+%%%%
+android command menu|Orders
+
+Orders
+%%%%
+android command menu summary|Orders
+
+Shout or give orders to your allies
+%%%%
+android command menu|Travel
+
+Travel
+%%%%
+android command menu summary|Travel
+
+Travel to another level or a remembered place
+%%%%
+android command menu|Overview
+
+Overview
+%%%%
+android command menu summary|Overview
+
+Show the dungeon overview
+%%%%
+android command menu|Search
+
+Search
+%%%%
+android command menu summary|Search
+
+Search for items and features you have seen
+%%%%
+android command menu|Messages
+
+Messages
+%%%%
+android command menu summary|Messages
+
+Show the message history
+%%%%
+android command menu|Gold
+
+Gold
+%%%%
+android command menu summary|Gold
+
+Show your gold and shopping list
+%%%%
+android command menu|System Menu
+
+System Menu
+%%%%
+android command menu summary|System Menu
+
+Save, quit, macros and other system options
+%%%%

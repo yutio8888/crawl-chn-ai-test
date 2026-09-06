@@ -476,6 +476,16 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
                     case 5: return R.string.keyboard_ability;
                 }
                 break;
+            case 19: // Shout and ally orders prompt
+                switch (key) {
+                    case 't': return R.string.keyboard_shout;
+                    case 'a': return R.string.keyboard_order_attack;
+                    case 'r': return R.string.keyboard_order_retreat;
+                    case 's': return R.string.keyboard_order_stop;
+                    case 'g': return R.string.keyboard_order_guard;
+                    case 'f': return R.string.keyboard_order_follow;
+                }
+                break;
         }
         switch (key) {
             case 13: return R.string.ok;

@@ -134,9 +134,9 @@ class QuickAccessPanelTests(unittest.TestCase):
     def block_after(self, anchor: str) -> str:
         return block_after(self.source, anchor)
 
-    def command_entries(self) -> list[tuple[str, str, str]]:
+    def command_entries(self) -> list[tuple[str, str, str, str]]:
         table = self.block_after("const command_entry commands[] =")
-        pattern = r'\{"([^"]+)",\s*(TILEG_\w+),\s*(CMD_\w+)\},'
+        pattern = r'\{"([^"]+)",\s*"([^"]+)",\s*(TILEG?_\w+),\s*(CMD_\w+)\},'
         entries = re.findall(pattern, table)
         # Reject an unparsed initializer, not merely accept a subset.
         self.assertEqual("{}", re.sub(r"\s+", "", re.sub(pattern, "", table)))
@@ -228,26 +228,50 @@ class QuickAccessPanelTests(unittest.TestCase):
         self.assertIn("activate_talent(tal)", self.source)
 
     def test_all_commands_keep_their_fixed_order_and_identity(self) -> None:
+        combat, explore, info, system = ("Combat and items", "Explore and map",
+                                         "Character and info", "System")
         expected = [
-            ("Auto-explore", "EXPLORE", "EXPLORE"),
-            ("Inventory", "INVENTORY", "DISPLAY_INVENTORY"),
-            ("Full View", "LOOK", "FULL_VIEW"),
-            ("Spells", "SPELLS", "DISPLAY_SPELLS"),
-            ("Abilities", "ABILITIES", "USE_ABILITY"),
-            ("Memorise", "MEMORISE", "MEMORISE_SPELL"),
-            ("Character", "CHARACTER", "RESISTS_SCREEN"),
-            ("Skills", "SKILLS", "DISPLAY_SKILLS"),
-            ("Religion", "RELIGION", "DISPLAY_RELIGION"),
-            ("Map", "MAP", "DISPLAY_MAP"),
-            ("Known Objects", "KNOWN_ITEMS", "DISPLAY_KNOWN_OBJECTS"),
-            ("Mutations", "MUTATIONS", "DISPLAY_MUTATIONS"),
-            ("Commands", "HELP", "DISPLAY_COMMANDS"),
-            ("Pick Up", "PICKUP", "PICKUP"),
-            ("Exit", "EXIT", "NO_CMD"),
+            (combat, "Auto-fight in place", "TILEG_CMD_AUTOFIGHT", "AUTOFIGHT_NOMOVE"),
+            (combat, "Attack", "TILE_WPN_LONG_SWORD", "PRIMARY_ATTACK"),
+            (combat, "Fire Item", "TILE_MI_STONE", "FIRE_ITEM_NO_QUIVER"),
+            (combat, "Quiver", "TILE_MI_ARROW", "QUIVER_ITEM"),
+            (combat, "Evoke", "TILE_WAND_OFFSET", "EVOKE"),
+            (combat, "Swap Weapon", "TILE_WPN_DAGGER", "WEAPON_SWAP"),
+            (combat, "Inventory", "TILEG_MENU_INVENTORY", "DISPLAY_INVENTORY"),
+            (combat, "Pick Up", "TILEG_MENU_PICKUP", "PICKUP"),
+            (combat, "Drop", "TILEG_CMD_DROP", "DROP"),
+            (combat, "Orders", "TILEG_ABILITY_BEOGH_RECALL", "SHOUT"),
+            (combat, "Spells", "TILEG_MENU_SPELLS", "DISPLAY_SPELLS"),
+            (combat, "Abilities", "TILEG_MENU_ABILITIES", "USE_ABILITY"),
+            (explore, "Auto-explore", "TILEG_MENU_EXPLORE", "EXPLORE"),
+            (explore, "Map", "TILEG_MENU_MAP", "DISPLAY_MAP"),
+            (explore, "Travel", "TILEG_CMD_INTERLEVEL_TRAVEL", "INTERLEVEL_TRAVEL"),
+            (explore, "Overview", "TILEG_CMD_DISPLAY_OVERMAP", "DISPLAY_OVERMAP"),
+            (explore, "Search", "TILEG_CMD_SEARCH_STASHES", "SEARCH_STASHES"),
+            (explore, "Full View", "TILEG_MENU_LOOK", "FULL_VIEW"),
+            (explore, "Exit", "TILEG_MENU_EXIT", "NO_CMD"),
+            (info, "Character", "TILEG_MENU_CHARACTER", "RESISTS_SCREEN"),
+            (info, "Skills", "TILEG_MENU_SKILLS", "DISPLAY_SKILLS"),
+            (info, "Religion", "TILEG_MENU_RELIGION", "DISPLAY_RELIGION"),
+            (info, "Mutations", "TILEG_MENU_MUTATIONS", "DISPLAY_MUTATIONS"),
+            (info, "Memorise", "TILEG_MENU_MEMORISE", "MEMORISE_SPELL"),
+            (info, "Known Objects", "TILEG_MENU_KNOWN_ITEMS", "DISPLAY_KNOWN_OBJECTS"),
+            (info, "Messages", "TILEG_CMD_REPLAY_MESSAGES", "REPLAY_MESSAGES"),
+            (info, "Gold", "TILEG_ABILITY_ZIN_DONATE_GOLD", "LIST_GOLD"),
+            (system, "Commands", "TILEG_MENU_HELP", "DISPLAY_COMMANDS"),
+            (system, "System Menu", "TILEG_CMD_GAME_MENU", "GAME_MENU"),
         ]
-        self.assertEqual([(label, "TILEG_MENU_" + tile, "CMD_" + cmd)
-                          for label, tile, cmd in expected], self.command_entries())
+        self.assertEqual([(section, label, tile, "CMD_" + cmd)
+                          for section, label, tile, cmd in expected],
+                         self.command_entries())
+        # Sections are contiguous runs; each run gets one heading and grid.
+        sections = [section for section, _, _, _ in self.command_entries()]
+        runs = [section for i, section in enumerate(sections)
+                if i == 0 or sections[i - 1] != section]
+        self.assertEqual([combat, explore, info, system], runs)
         loop = self.block_after("for (const auto &entry : commands)")
+        self.assertIn('_command_menu_text("android command menu", entry.section)', loop)
+        self.assertIn("command_grid = make_shared<CommandGrid>(3, min_command_width);", loop)
         self.assertNotRegex(loop, r"\b(?:continue|break)\b")
         self.assertIn("command_grid->append(button);", loop)
         self.assertIn("you.visible_igrd(you.pos()) == NON_ITEM", loop)
@@ -307,8 +331,10 @@ class QuickAccessPanelTests(unittest.TestCase):
         used = {"%s|%s" % match for match in MENU_TEXT_CALL.findall(self.source)}
         # Labels now also reach TextDB through the command inventory and the
         # inline-section helper; direct literal calls alone miss those sinks.
-        labels = {label for label, _, _ in self.command_entries()}
+        labels = {label for _, label, _, _ in self.command_entries()}
         labels.update(("Enter Shop", "Enter", "Go Upstairs", "Go Downstairs"))
+        for section, _, _, _ in self.command_entries():
+            used.add("android command menu|" + section)
         for label in labels:
             used.add("android command menu|" + label)
             # Exit's summary always becomes an actual stair label or the
@@ -501,6 +527,27 @@ class GameActionRowTests(unittest.TestCase):
         tags = {node.attrib.get(android + "id"): node.attrib.get(android + "tag")
                 for node in root.iter("Button")}
         self.assertEqual("56", tags["@+id/key_mobile_5"])
+
+    def test_orders_prompt_publishes_its_keys_with_java_labels(self) -> None:
+        screens = self.screens()
+        self.assertIn("case %d: // Shout and ally orders prompt" % screens.index("SHOUT"),
+                      self.java)
+        shout = (ROOT / "crawl-ref/source/shout.cc").read_text(encoding="utf-8")
+        prompt = block_after(shout, "static int _issue_orders_prompt()")
+        scope = prompt[prompt.index("ui::InputActionScope keyboard_scope(ui::InputScreen::SHOUT"):]
+        scope = scope[:scope.index("#endif")]
+        keys = re.findall(r"ui::InputAction\(\"\", ('.')\)", scope)
+        self.assertEqual(["'t'", "'a'", "'r'", "'s'", "'g'", "'f'"], keys)
+        # Published before the prompt's own input wait, inside the same block.
+        self.assertLess(prompt.index("keyboard_scope"), prompt.index("get_ch()"))
+        case = self.java[self.java.index("// Shout and ally orders prompt"):]
+        case = case[:case.index("break;")]
+        labelled = re.findall(r"case ('.'): return R\.string\.(keyboard_\w+);", case)
+        self.assertEqual(keys, [key for key, _ in labelled])
+        for qualifier in ("values", "values-zh"):
+            strings = AndroidFirstRunTests().string_names(qualifier)
+            for _, name in labelled:
+                self.assertIn(name, strings, qualifier)
 
     def test_wait_and_rest_labels_differ_in_every_locale(self) -> None:
         for qualifier in ("values", "values-zh", "values-zh-rCN"):
