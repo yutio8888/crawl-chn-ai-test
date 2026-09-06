@@ -104,6 +104,8 @@
     <string name="keyboard_close_door">Close</string>
     <string name="keyboard_cycle_view">Cycle view</string>
     <string name="keyboard_all_skills">All skills</string>
+    <string name="keyboard_set_target">Set target</string>
+    <string name="keyboard_clear_target">Clear targets</string>
     <string name="keyboard_default_target">Last target</string>
     <string name="keyboard_waypoints">Waypoints</string>
     <string name="keyboard_altars">Altars</string>

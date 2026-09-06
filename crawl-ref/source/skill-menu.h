@@ -142,7 +142,7 @@ public:
     void clear() override;
     bool is_set(int flag) const;
 #ifdef __ANDROID__
-    std::array<ui::InputAction, 6> keyboard_actions() const;
+    std::array<ui::InputAction, 6> keyboard_actions();
 #endif
     void set_flag(int flag);
     void toggle_flag(int flag);

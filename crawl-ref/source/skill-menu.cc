@@ -943,6 +943,7 @@ static string _format_skill_target(int target)
                             locale_data->decimal_point, target % 10);
 }
 
+#ifndef __ANDROID__
 static keyfun_action _keyfun_target_input(int &ch)
 {
     if (ch == '-')
@@ -963,9 +964,111 @@ static keyfun_action _keyfun_target_input(int &ch)
     }
     return KEYFUN_IGNORE;
 }
+#endif
+
+#ifdef __ANDROID__
+// A plain selection menu publishes no touch actions at all, because
+// Menu::keyboard_descriptor treats a bare confirm/cancel pair as redundant on
+// pages that are only scrolled. Here the pair is the whole point: the player
+// arrives from a context row and needs the same two buttons to leave.
+class SkillTargetMenu : public Menu
+{
+public:
+    SkillTargetMenu()
+        : Menu(MF_SINGLESELECT | MF_ARROWS_SELECT | MF_INIT_HOVER) {}
+
+    void keyboard_descriptor(ui::InputScreen &screen,
+                             std::array<ui::InputAction, 6> &actions) override
+    {
+        screen = ui::InputScreen::DEFAULT;
+        actions = {};
+        actions[0] = {"", CK_ENTER};
+        actions[1] = {"", CK_ESCAPE};
+    }
+};
+
+// The inline editor below runs its own line_reader loop outside the ui::
+// widget tree, so the Android input context never leaves NAVIGATION and the
+// compact keyboard stays up with no digits on it; the full keyboard's numeric
+// layout has no decimal point either. Offer the useful targets as an ordinary
+// menu instead, which already scrolls and labels itself for touch.
+// Returns a target in tenths, or -1 if the player cancelled.
+static int _android_pick_skill_target(skill_type sk, int old_target)
+{
+    const int level = you.skills[sk];
+    static const int presets[] = {50, 100, 140, 180, 220, 270};
+    const int next = (level + 1) * 10;
+
+    vector<int> targets;
+    auto push = [&targets, level](int tenths)
+    {
+        if (tenths <= level * 10 || tenths > 270)
+            return;
+        // The candidates are generated in ascending order, so an adjacent
+        // match is the only possible duplicate.
+        if (!targets.empty() && targets.back() == tenths)
+            return;
+        targets.push_back(tenths);
+    };
+    bool added_next = false;
+    for (int preset : presets)
+    {
+        if (!added_next && next < preset)
+        {
+            push(next);
+            added_next = true;
+        }
+        push(preset);
+    }
+    if (!added_next)
+        push(next);
+
+    // A mastered skill with no existing target has nothing to offer.
+    if (targets.empty() && old_target <= 0)
+        return -1;
+
+    SkillTargetMenu menu;
+    menu.set_tag("skill_target");
+    menu.set_title(new MenuEntry(make_stringf(
+        T_("Enter a skill target for %s: "), skill_name(sk)), MEL_TITLE));
+    menu_letter hotkey;
+    for (int tenths : targets)
+    {
+        MenuEntry *entry = new MenuEntry(_format_skill_target(tenths),
+                                         MEL_ITEM, 1, hotkey++);
+        entry->data = (void *)(intptr_t) tenths;
+        menu.add_entry(entry);
+    }
+    if (old_target > 0)
+    {
+        MenuEntry *entry = new MenuEntry(T_("Clear target"), MEL_ITEM, 1, '-');
+        entry->data = (void *)(intptr_t) 0;
+        menu.add_entry(entry);
+    }
+
+    vector<MenuEntry *> selection = menu.show();
+    if (selection.empty())
+        return -1;
+    return (int)(intptr_t) selection[0]->data;
+}
+#endif
 
 int SkillMenu::read_skill_target(skill_type sk)
 {
+#ifdef __ANDROID__
+    const int chosen = _android_pick_skill_target(sk,
+                                                  you.get_training_target(sk));
+    if (chosen < 0)
+    {
+        cancel_set_target();
+        return -1;
+    }
+    set_help("");
+    you.set_training_target(sk, chosen);
+    cancel_set_target();
+    refresh_display();
+    return chosen;
+#else
     SkillMenuEntry *entry = find_entry(sk);
     ASSERT(entry);
     EditableTextItem *progress = entry->get_progress();
@@ -1012,6 +1115,7 @@ int SkillMenu::read_skill_target(skill_type sk)
     cancel_set_target();
     refresh_display();
     return input;
+#endif
 }
 
 void SkillMenu::clear()
@@ -1035,7 +1139,7 @@ void SkillMenu::clear_flag(int flag)
 #ifdef __ANDROID__
 // Switch hotkeys from init_switches/init_buttons; a switch with a single
 // state has size() == 0 and ignores its key.
-std::array<ui::InputAction, 6> SkillMenu::keyboard_actions() const
+std::array<ui::InputAction, 6> SkillMenu::keyboard_actions()
 {
     std::array<ui::InputAction, 6> actions;
     if (is_set(SKMF_EXPERIENCE))
@@ -1046,14 +1150,30 @@ std::array<ui::InputAction, 6> SkillMenu::keyboard_actions() const
         auto it = m_switches.find(sw);
         return it != m_switches.end() && it->second && it->second->size() > 0;
     };
+    // Mirrors the conditions refresh_button_row() uses for the middle and
+    // right button rows: those single-line labels are the only other way to
+    // reach a training target, and they are far too small to hit reliably.
+    const bool buttons = !is_set(SKMF_SPECIAL) && !is_set(SKMF_HELP);
+    const bool target_view = get_state(SKM_VIEW) == SKM_VIEW_TARGETS;
+    const bool can_set_target = buttons && !is_set(SKMF_SET_TARGET)
+        && (target_view || !you.has_mutation(MUT_DISTRIBUTED_TRAINING));
+    // Four slots for six candidate keys: order them by touch value, since a
+    // switch row entry stays clickable inside the menu itself.
+    vector<ui::InputAction> candidates;
+    if (can_set_target)
+        candidates.push_back({"", '='});
     if (has_switch(SKM_VIEW))
-        actions[2] = {"", '!'};
-    if (has_switch(SKM_SHOW))
-        actions[3] = {"", '*'};
+        candidates.push_back({"", '!'});
+    if (buttons && target_view)
+        candidates.push_back({"", '-'});
     if (has_switch(SKM_MODE))
-        actions[4] = {T_("mode"), '/'};
+        candidates.push_back({T_("mode"), '/'});
+    if (has_switch(SKM_SHOW))
+        candidates.push_back({"", '*'});
     if (!is_set(SKMF_SPECIAL))
-        actions[5] = {T_("help"), '?'};
+        candidates.push_back({T_("help"), '?'});
+    for (size_t i = 0; i < candidates.size() && i + 2 < actions.size(); ++i)
+        actions[i + 2] = candidates[i];
     return actions;
 }
 #endif
@@ -1999,10 +2119,20 @@ void skill_menu(int flag, int exp)
     }
 
 #ifdef __ANDROID__
-    ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
-                                        skm.keyboard_actions(), popup);
-#endif
+    // Setting a target, toggling the view and entering help all change which
+    // keys this menu accepts without opening a new layout, so republish the
+    // actions before each wait the way Menu::do_menu does.
+    ui::push_layout(std::move(popup));
+    while (!done && !crawl_state.seen_hups)
+    {
+        ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
+                                            skm.keyboard_actions());
+        ui::pump_events();
+    }
+    ui::pop_layout();
+#else
     ui::run_layout(std::move(popup), done);
+#endif
 
     skm.clear();
 }
