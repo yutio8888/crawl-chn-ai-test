@@ -42437,3 +42437,6 @@ You cannot raise a blood rage in your lifeless body.
 %%%%
 Your stasis prevents you from going berserk.
 你的停滞状态阻止了你进入狂暴。
+%%%%
+You cannot shout and have no allies to order.
+你无法喊叫，也没有可听从命令的盟友。

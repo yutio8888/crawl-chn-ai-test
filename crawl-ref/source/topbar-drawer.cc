@@ -15,6 +15,8 @@
 #include "options.h"
 #include "player.h"
 #include "prompt.h"
+#include "quiver.h"
+#include "shout.h"
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "status.h"
@@ -830,6 +832,18 @@ command_type show_topbar_command_menu(bool *acted)
         const char *summary_key = label_key;
         command_type command = entry.command;
         bool available = true;
+        string unavailable_reason;
+        if (command == CMD_QUIVER_ITEM && !quiver::anything_to_quiver())
+        {
+            available = false;
+            unavailable_reason = T_("You have nothing to quiver.");
+        }
+        else if (command == CMD_SHOUT && you.cannot_speak()
+                 && !have_allies_to_order())
+        {
+            available = false;
+            unavailable_reason = T_("You cannot shout and have no allies to order.");
+        }
         if (command == CMD_PICKUP && you.visible_igrd(you.pos()) == NON_ITEM)
         {
             available = false;
@@ -855,8 +869,9 @@ command_type show_topbar_command_menu(bool *acted)
             }
         }
         const string label = _command_menu_text("android command menu", label_key);
-        const string summary = _command_menu_text("android command menu summary",
-                                                  summary_key);
+        const string summary = unavailable_reason.empty()
+            ? _command_menu_text("android command menu summary", summary_key)
+            : unavailable_reason;
         auto cell = make_shared<ui::Box>(ui::Widget::VERT);
         cell->set_cross_alignment(ui::Widget::CENTER);
         cell->set_main_alignment(ui::Widget::CENTER);
