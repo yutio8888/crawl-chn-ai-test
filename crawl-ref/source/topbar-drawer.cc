@@ -667,6 +667,7 @@ void show_topbar_status_drawer(int selected_status)
 #ifdef __ANDROID__
 int show_more_actions_popup(const vector<ui::InputAction> &actions)
 {
+    const auto keyboard = ui::input_descriptor();
     int chosen = 0;
     bool dismissed = false;
     auto content = make_shared<ui::Box>(ui::Widget::VERT);
@@ -723,6 +724,9 @@ int show_more_actions_popup(const vector<ui::InputAction> &actions)
     };
     dismiss->on_keydown_event(on_key);
     popup->on_keydown_event(on_key);
+    // Keep the invoking page's row visible while this modal owns input.
+    // Do not copy its overflow list: More must not recursively reopen it.
+    ui::InputActionScope keyboard_scope(keyboard.screen, keyboard.actions, popup);
     ui::run_layout(popup, dismissed, dismiss);
     return chosen;
 }

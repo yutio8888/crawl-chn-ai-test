@@ -15,6 +15,7 @@
 #include "coord.h"
 #include "coordit.h"
 #include "database.h"
+#include "describe.h"
 #include "dgn-overview.h"
 #include "directn.h"
 #include "env.h"
@@ -1125,7 +1126,21 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break;
 
     case CMD_MAP_EXCLUDE_RADIUS:
+#ifdef __ANDROID__
+        {
+            // This command reads one digit, without a line editor. Publish
+            // TEXT explicitly so the compact keyboard exposes number input.
+            const ui::TextInputScope text_input;
+            const string label = get_command_description(CMD_MAP_EXCLUDE_RADIUS, true);
+            mprf(MSGCH_PROMPT, "%s (0-9)", label.c_str());
+            const int key = getchm();
+            if (key < '0' || key > '9')
+                break;
+            set_exclude(state.lpos.pos, key - '0');
+        }
+#else
         set_exclude(state.lpos.pos, getchm() - '0');
+#endif
 
         _reset_travel_colours(*state.features, state.on_level);
         state.feats->init();
