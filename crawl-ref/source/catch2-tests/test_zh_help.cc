@@ -958,7 +958,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             // values. Other query lists retain their canonical English keys.
             if (lht != LOOKUP_HELP_SPELL && lht != LOOKUP_HELP_ABILITY
                 && lht != LOOKUP_HELP_FEATURE)
+            {
                 CHECK(en_keys == zh_keys);
+            }
             else
                 CHECK(en_keys.size() == zh_keys.size());
         }
