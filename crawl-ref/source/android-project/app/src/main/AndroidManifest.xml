@@ -39,7 +39,7 @@
         <activity
             android:name=".DungeonCrawlStoneSoup"
             android:screenOrientation="portrait"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|fontScale|uiMode"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DCSSTextViewer"
