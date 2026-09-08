@@ -443,16 +443,12 @@ string get_god_dislikes(god_type which_god)
     if (dislikes.empty() && really_dislikes.empty())
         return "";
 
-    // RETAIN: List join characters — UI formatting, not translation text
-    const char* dis_conj = Options.language == lang_t::ZH ? "或" : " or ";
-    const char* dis_sep = Options.language == lang_t::ZH ? "、" : ", ";
-
     if (!dislikes.empty())
     {
         text += uppercase_first(god_name(which_god));
         text += make_stringf(T_(" dislikes it when %s."),
             comma_separated_line(dislikes.begin(), dislikes.end(),
-                                 dis_conj, dis_sep).c_str());
+                                 T_(" or "), T_(", ")).c_str());
 
         if (!really_dislikes.empty())
             text += " ";
@@ -464,7 +460,7 @@ string get_god_dislikes(god_type which_god)
         text += make_stringf(T_(" strongly dislikes it when %s."),
             comma_separated_line(really_dislikes.begin(),
                                  really_dislikes.end(),
-                                 dis_conj, dis_sep).c_str());
+                                 T_(" or "), T_(", ")).c_str());
     }
 
     return text;
@@ -1138,15 +1134,14 @@ string get_god_likes(god_type which_god)
     }
     else
     {
-        // RETAIN: List join characters — UI formatting, not translation text
-        const char* like_conj = Options.language == lang_t::ZH ? "、" : " and ";
-        const char* like_sep = Options.language == lang_t::ZH ? "、" : ", ";
+        const string like_and = Options.language == lang_t::ZH
+                                ? T_(", ") : " and ";
 
         if (!likes.empty())
         {
             text += make_stringf(T_(" likes it when %s."),
                 comma_separated_line(likes.begin(), likes.end(),
-                                     like_conj, like_sep).c_str());
+                                     like_and, T_(", ")).c_str());
             if (!really_likes.empty())
             {
                 text += " ";
@@ -1159,7 +1154,7 @@ string get_god_likes(god_type which_god)
             text += make_stringf(T_(" especially likes it when %s."),
                 comma_separated_line(really_likes.begin(),
                                      really_likes.end(),
-                                     like_conj, like_sep).c_str());
+                                     like_and, T_(", ")).c_str());
         }
     }
 
