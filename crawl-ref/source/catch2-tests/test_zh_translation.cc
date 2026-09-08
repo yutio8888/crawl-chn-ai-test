@@ -44,6 +44,7 @@
 #include "positional_format.h"
 #include "random.h"
 #include "religion.h"
+#include "skill-menu.h"
 #include "skills.h"
 #include "shout.h"
 #include "species.h"
@@ -72,6 +73,8 @@
 #endif
 
 string bind_random_body_part_message(string msg, bool plural);
+
+extern SkillMenu skm;
 
 namespace
 {
@@ -5066,4 +5069,81 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             check_filled(info);
         }
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: skill menu cause lists join every item with T_(comma)",
+                 "[zh-translation][skill-menu-lists]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+
+    SkillMenuSwitch sw("level", '_');
+    sw.add(SKM_LEVEL_ENHANCED);
+
+    const string zh_sep(T_(","));
+    const string zh_and(T_(" and "));
+    const string heroism(T_("Heroism"));
+    const string scribal(T_("scribal knowledge"));
+    const string enhanced_fmt(T_("Skills enhanced by: %s."));
+    const string reduced_fmt(T_("Skills reduced by: %s."));
+    const string bane(T_("Bane of the Dilettante"));
+    const string ash_anger(make_stringf(T_("%s's anger"),
+                                        god_name(GOD_ASHENZARI).c_str()));
+    i18n_cache_clear();
+
+    // Display-only help text: two smallest enhanced causes that
+    // SkillMenuSwitch::get_help() actually pushes (Heroism duration and
+    // walking_scroll scribal knowledge). Reduced uses Ashenzari penance
+    // plus Bane of the Dilettante so jewellery/unrand setup is unnecessary.
+    you.duration[DUR_HEROISM] = 10;
+    you.form = transformation::walking_scroll;
+    skm.set_flag(SKMF_ENHANCED);
+    const string two_enhanced = sw.get_help();
+    skm.clear_flag(SKMF_ENHANCED);
+
+    const string enhanced_listed = heroism + zh_sep + scribal;
+    CHECK(two_enhanced == make_stringf(enhanced_fmt.c_str(),
+                                       enhanced_listed.c_str()));
+    CHECK(two_enhanced.find(zh_sep) != string::npos);
+    CHECK(two_enhanced.find(zh_and) == string::npos);
+    CHECK(two_enhanced.find(" and ") == string::npos);
+
+    you.form = transformation::none;
+    skm.set_flag(SKMF_ENHANCED);
+    const string one_enhanced = sw.get_help();
+    skm.clear_flag(SKMF_ENHANCED);
+    CHECK(one_enhanced == make_stringf(enhanced_fmt.c_str(), heroism.c_str()));
+    CHECK(one_enhanced.find(zh_sep) == string::npos);
+    CHECK(one_enhanced.find(zh_and) == string::npos);
+
+    you.duration[DUR_HEROISM] = 0;
+    you.penance[GOD_ASHENZARI] = 1;
+    you.banes[BANE_DILETTANTE] = 1;
+    skm.set_flag(SKMF_REDUCED);
+    const string two_reduced = sw.get_help();
+    skm.clear_flag(SKMF_REDUCED);
+    const string reduced_listed = ash_anger + zh_sep + bane;
+    CHECK(two_reduced == make_stringf(reduced_fmt.c_str(),
+                                      reduced_listed.c_str()));
+    CHECK(two_reduced.find(zh_sep) != string::npos);
+    CHECK(two_reduced.find(zh_and) == string::npos);
+
+    {
+        EnTranslationFixture english;
+        you.penance[GOD_ASHENZARI] = 0;
+        you.banes[BANE_DILETTANTE] = 0;
+        you.duration[DUR_HEROISM] = 10;
+        you.form = transformation::walking_scroll;
+        skm.set_flag(SKMF_ENHANCED);
+        const string english_help = sw.get_help();
+        skm.clear_flag(SKMF_ENHANCED);
+        CHECK(english_help.find("Heroism and scribal knowledge") != string::npos);
+        CHECK(english_help.find("Skills enhanced by ") != string::npos);
+        CHECK(english_help.find(zh_sep) == string::npos);
+        CHECK(english_help.find("、") == string::npos);
+    }
+
+    i18n_cache_clear();
+    CHECK(duration_by_name("poisoning") == DUR_POISONING);
 }
