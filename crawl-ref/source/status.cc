@@ -1291,13 +1291,12 @@ static void _describe_poison(status_info& inf)
                         ? DARKGREY : _bad_ench_colour(pois_perc, 35, 100));
     inf.light_text   = T_("Pois");
     inf.db_key       = "Pois";
-    const bool zh = Options.language == lang_t::ZH;
     const string adj =
          (pois_perc >= 100) ? (T_("lethally")) :
          (pois_perc > 65)   ? (T_("seriously")) :
          (pois_perc > 35)   ? (T_("quite"))
                             : (T_("mildly"));
-    inf.short_text   = zh ? adj + "中毒" : adj + T_(" poisoned");
+    inf.short_text   = adj + T_(" poisoned");
     inf.short_text  += make_stringf(T_(" (%d -> %d)"), you.hp, poison_survival());
     inf.long_text    = T_("You are ") + inf.short_text + T_(".");
 }
