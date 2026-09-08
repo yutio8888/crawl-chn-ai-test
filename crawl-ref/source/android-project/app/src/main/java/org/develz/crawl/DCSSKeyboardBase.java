@@ -2,6 +2,9 @@ package org.develz.crawl;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.os.Build;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +29,7 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
 
     // All buttons
     protected List<Button> buttonList;
+    private final List<Float> textSizesSp = new ArrayList<>();
 
     // Constructors
     public DCSSKeyboardBase(Context context) {
@@ -68,9 +72,28 @@ public abstract class DCSSKeyboardBase extends RelativeLayout implements View.On
 
     // Extra init settings
     public void initKeyboard(int keyboardOption, int size) {
+        if (textSizesSp.isEmpty()) {
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            for (Button button : buttonList) {
+                // Android 14+ has nonlinear font scaling: dividing pixels by
+                // scaledDensity does not recover the original sp size there.
+                float sp = Build.VERSION.SDK_INT >= 34
+                        ? TypedValue.deriveDimension(TypedValue.COMPLEX_UNIT_SP,
+                                button.getTextSize(), metrics)
+                        : button.getTextSize() / metrics.scaledDensity;
+                textSizesSp.add(sp);
+            }
+        }
         for (Button button : buttonList) {
             button.getLayoutParams().height = size;
         }
+    }
+
+    public void refreshTextSizes() {
+        for (int i = 0; i < textSizesSp.size(); ++i) {
+            buttonList.get(i).setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizesSp.get(i));
+        }
+        requestLayout();
     }
 
     // Init a single key
