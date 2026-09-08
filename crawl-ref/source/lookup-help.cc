@@ -82,12 +82,12 @@ DEF_BITFIELD(lookup_type_flags, lookup_type);
 class LookupType
 {
 public:
-    LookupType(char _symbol, string _type, string _display_name, db_keys_recap _recap,
+    LookupType(char _symbol, string _type, string _display_key, db_keys_recap _recap,
                db_find_filter _filter_forbid, keys_by_glyph _glyph_fetch,
                simple_key_list _simple_key_fetch,
                menu_entry_generator _menu_gen, key_describer _describer,
                lookup_type_flags _flags)
-    : symbol(_symbol), type(_type), display_name(_display_name), filter_forbid(_filter_forbid),
+    : symbol(_symbol), type(_type), display_key(_display_key), filter_forbid(_filter_forbid),
       flags(_flags),
       simple_key_fetch(_simple_key_fetch), glyph_fetch(_glyph_fetch),
       recap(_recap), menu_gen(_menu_gen), describer(_describer)
@@ -115,10 +115,10 @@ public:
      */
     bool no_search() const { return simple_key_fetch != nullptr; }
 
-    /// Returns the locale-appropriate display name: Chinese in ZH, English otherwise.
-    string name() const { return (Options.language == lang_t::ZH) ? display_name : type; }
+    /// Translate the deferred key only when displaying the type.
+    string name() const { return C_("lookup type", display_key.c_str()); }
 
-    bool find_description(string &response) const;
+    bool find_description(lookup_help_type lht, string &response) const;
     int describe(const string &key, bool exact_match = false) const;
 
 public:
@@ -126,8 +126,8 @@ public:
     char symbol;
     /// A description of the lookup type (e.g. "monster"). case insensitive
     string type;
-    /// The localized display name for this lookup type (e.g. "怪物").
-    string display_name;
+    /// An English deferred display key; never a cached translation.
+    string display_key;
     /// a function returning 'true' if the search result corresponding to
     /// the corresponding search should be filtered out of the results
     db_find_filter filter_forbid;
@@ -1500,46 +1500,46 @@ static int _describe_bane(const string &key, const string &suffix,
 
 /// All types of ?/ queries the player can enter.
 static const vector<LookupType> lookup_types = {
-    LookupType('M', "monster", "怪物", nullptr, _monster_filter,
+    LookupType('M', "monster", NC_("lookup type", "monster"), nullptr, _monster_filter,
                _get_monster_keys, nullptr, nullptr,
                _describe_monster, lookup_type::toggleable_sort),
-    LookupType('S', "spell", "法术", _recap_spell_keys, _spell_filter,
+    LookupType('S', "spell", NC_("lookup type", "spell"), _recap_spell_keys, _spell_filter,
                nullptr, nullptr, _spell_menu_gen,
                _describe_spell, lookup_type::db_suffix),
-    LookupType('K', "skill", "技能", nullptr, nullptr,
+    LookupType('K', "skill", NC_("lookup type", "skill"), nullptr, nullptr,
                nullptr, _get_skill_keys, _skill_menu_gen,
                _describe_skill, lookup_type::none),
-    LookupType('A', "ability", "能力", _recap_ability_keys, _ability_filter,
+    LookupType('A', "ability", NC_("lookup type", "ability"), _recap_ability_keys, _ability_filter,
                nullptr, nullptr, _ability_menu_gen,
                _describe_ability, lookup_type::db_suffix),
-    LookupType('C', "card", "卡牌", nullptr, nullptr,
+    LookupType('C', "card", NC_("lookup type", "card"), nullptr, nullptr,
                nullptr, _get_card_keys, _card_menu_gen,
                _describe_card, lookup_type::db_suffix),
-    LookupType('I', "item", "物品", _recap_item_keys, _item_filter,
+    LookupType('I', "item", NC_("lookup type", "item"), _recap_item_keys, _item_filter,
                item_name_list_for_glyph, nullptr, _item_menu_gen,
                _describe_item, lookup_type::none),
-    LookupType('F', "feature", "地形", _recap_feat_keys, _feature_filter,
+    LookupType('F', "feature", NC_("lookup type", "feature"), _recap_feat_keys, _feature_filter,
                nullptr, nullptr, _feature_menu_gen,
                _describe_feature, lookup_type::none),
-    LookupType('G', "god", "神祇", nullptr, nullptr,
+    LookupType('G', "god", NC_("lookup type", "god"), nullptr, nullptr,
                nullptr, _get_god_keys, _god_menu_gen,
                _describe_god, lookup_type::none),
-    LookupType('B', "branch", "分支", nullptr, nullptr,
+    LookupType('B', "branch", NC_("lookup type", "branch"), nullptr, nullptr,
                nullptr, _get_branch_keys, _branch_menu_gen,
                _describe_branch, lookup_type::disable_sort),
-    LookupType('L', "cloud", "云雾", nullptr, nullptr,
+    LookupType('L', "cloud", NC_("lookup type", "cloud"), nullptr, nullptr,
                nullptr, _get_cloud_keys, _cloud_menu_gen,
                _describe_cloud, lookup_type::db_suffix),
-    LookupType('P', "passive", "被动能力", nullptr, _passive_filter,
+    LookupType('P', "passive", NC_("lookup type", "passive"), nullptr, _passive_filter,
                nullptr, nullptr, _passive_menu_gen,
                _describe_generic, lookup_type::db_suffix),
-    LookupType('T', "status", "状态", nullptr, _status_filter,
+    LookupType('T', "status", NC_("lookup type", "status"), nullptr, _status_filter,
                nullptr, nullptr, _status_menu_gen,
                _describe_generic, lookup_type::db_suffix),
-    LookupType('U', "mutation", "突变", nullptr, _mutation_filter,
+    LookupType('U', "mutation", NC_("lookup type", "mutation"), nullptr, _mutation_filter,
                nullptr, nullptr, _mut_menu_gen,
                _describe_mutation, lookup_type::db_suffix),
-    LookupType('N', "bane", "灾祸", nullptr, _bane_filter,
+    LookupType('N', "bane", NC_("lookup type", "bane"), nullptr, _bane_filter,
                nullptr, nullptr, _bane_menu_gen,
                _describe_bane, lookup_type::db_suffix),
 };
@@ -1562,9 +1562,7 @@ static const map<char, const LookupType*> _lookup_types_by_symbol
 string lookup_help_type_name(lookup_help_type lht)
 {
     ASSERT(lht >= 0 && lht < NUM_LOOKUP_HELP_TYPES);
-    if (Options.language == lang_t::ZH)
-        return lookup_types[lht].display_name;
-    return lookup_types[lht].type;
+    return C_("lookup type", lookup_types[lht].display_key.c_str());
 }
 
 /// Return the hotkey character for the given lookup type.
@@ -1621,6 +1619,17 @@ static bool _exact_lookup_match(const LookupType &lookup_type,
     return !getLongDescription(regex + lookup_type.suffix()).empty();
 }
 
+// Shared by the interactive menu and non-interactive lookup callers.
+vector<string> lookup_help_matching_keys(lookup_help_type lht, const string &regex,
+                                         bool *exact_match)
+{
+    ASSERT(lht >= 0 && lht < NUM_LOOKUP_HELP_TYPES);
+    const auto &lookup = lookup_types[lht];
+    if (exact_match)
+        *exact_match = _exact_lookup_match(lookup, regex);
+    return lookup.matching_keys(regex);
+}
+
 /**
  * Check if the provided keylist is invalid; if so, return the reason why.
  *
@@ -1665,7 +1674,7 @@ bool find_description_of_type(lookup_help_type lht)
 {
     ASSERT(lht >= 0 && lht < NUM_LOOKUP_HELP_TYPES);
     string response;
-    bool done = lookup_types[lht].find_description(response);
+    bool done = lookup_types[lht].find_description(lht, response);
     if (!response.empty() && response != "Okay, then.") // TODO: ...
         _show_type_response(response);
     return done;
@@ -1678,7 +1687,7 @@ bool find_description_of_type(lookup_help_type lht)
  * @return                true if the ?/ loop should continue
  *                        false if it should return control to the caller
  */
-bool LookupType::find_description(string &response) const
+bool LookupType::find_description(lookup_help_type lht, string &response) const
 {
     const bool want_regex = !no_search();
     const string regex = want_regex ?
@@ -1696,9 +1705,8 @@ bool LookupType::find_description(string &response) const
     }
 
     // Try to get an exact match first.
-    const bool exact_match = _exact_lookup_match(*this, regex);
-
-    vector<string> key_list = matching_keys(regex);
+    bool exact_match = false;
+    vector<string> key_list = lookup_help_matching_keys(lht, regex, &exact_match);
 
     const bool by_symbol = supports_glyph_lookup() && regex.size() == 1;
     response = _keylist_invalid_reason(key_list, name(),

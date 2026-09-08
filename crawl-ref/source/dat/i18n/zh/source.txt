@@ -42461,3 +42461,45 @@ Describe item
 %%%%
 You cannot shout and have no allies to order.
 你无法喊叫，也没有可听从命令的盟友。
+%%%%
+lookup type|monster
+怪物
+%%%%
+lookup type|spell
+法术
+%%%%
+lookup type|skill
+技能
+%%%%
+lookup type|ability
+能力
+%%%%
+lookup type|card
+卡牌
+%%%%
+lookup type|item
+物品
+%%%%
+lookup type|feature
+地形
+%%%%
+lookup type|god
+神祇
+%%%%
+lookup type|branch
+分支
+%%%%
+lookup type|cloud
+云雾
+%%%%
+lookup type|passive
+被动能力
+%%%%
+lookup type|status
+状态
+%%%%
+lookup type|mutation
+突变
+%%%%
+lookup type|bane
+灾祸
