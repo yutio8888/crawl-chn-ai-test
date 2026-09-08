@@ -613,7 +613,7 @@ string SkillMenuSwitch::get_help()
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
-                    causes.begin(), causes.end(), T_("、"), T_("、"));
+                    causes.begin(), causes.end(), T_(","), T_(","));
                 result = make_stringf(T_("Skills enhanced by: %s."),
                                       cause_list.c_str());
             }
@@ -653,7 +653,7 @@ string SkillMenuSwitch::get_help()
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
-                    causes.begin(), causes.end(), T_("、"), T_("、"));
+                    causes.begin(), causes.end(), T_(","), T_(","));
                 result += make_stringf(T_("Skills reduced by: %s."),
                                        cause_list.c_str());
             }
