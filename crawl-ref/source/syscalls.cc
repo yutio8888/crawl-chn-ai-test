@@ -409,6 +409,18 @@ void jni_input_context(const ui::InputDescriptor& descriptor)
         env->ExceptionClear();
 }
 
+// Configuration changes can invalidate the Android window without resizing
+// SDL. Schedule an ordinary expose event on the game thread; this is not input
+// and must not advance a turn or dismiss a prompt.
+extern "C" JNIEXPORT void JNICALL
+Java_org_develz_crawl_DungeonCrawlStoneSoup_nativeRequestRedraw(JNIEnv*, jclass)
+{
+    SDL_Event event = {};
+    event.type = SDL_WINDOWEVENT;
+    event.window.event = SDL_WINDOWEVENT_EXPOSED;
+    SDL_PushEvent(&event);
+}
+
 // Only keys without an InputConnection character representation use this
 // bridge. Queue normal SDL events; never touch the game from the UI thread.
 extern "C" JNIEXPORT void JNICALL

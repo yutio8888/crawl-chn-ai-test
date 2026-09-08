@@ -21,7 +21,16 @@ public class DungeonCrawlStoneSoup extends SDLActivity {
         if (mKeyboardExtra != null) {
             mKeyboardExtra.refreshTextSizes();
         }
+        // Repaint SDL after the Android view traversal has applied the new
+        // text metrics, even when the native surface dimensions are unchanged.
+        getWindow().getDecorView().post(() -> {
+            if (mSingleton == this && !mBrokenLibraries && mIsSurfaceReady) {
+                nativeRequestRedraw();
+            }
+        });
     }
+
+    private static native void nativeRequestRedraw();
 
     @Override
     public void setOrientationBis(int w, int h, boolean resizable, String hint) {
