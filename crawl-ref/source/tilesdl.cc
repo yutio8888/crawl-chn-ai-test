@@ -820,10 +820,8 @@ int TilesFramework::getch_ck()
                 // intentional fallthrough
             case WME_EXPOSE:
                 set_need_redraw();
-                // The small layout also has UI widgets (dungeon/messages).
-                // Redrawing native regions alone clears those widgets, so let
-                // the caller repaint the complete screen without taking a turn.
-                return CK_REDRAW;
+                // AFAIK no need to return CK_REDRAW, as resize() hasn't been called
+                break;
 
             case WME_CUSTOMEVENT:
             default:
