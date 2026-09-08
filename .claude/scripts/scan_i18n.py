@@ -1026,7 +1026,14 @@ CPP_STRING_RE = re.compile(
     r'(?:u8|u|U|L)?"((?:[^"\\]|\\.)*)"', re.DOTALL)
 
 
-def _mask_cpp_comments(source: str) -> str:
+CPP_RAW_STRING_RE = re.compile(
+    r'(?:u8|u|U|L)?R"(?P<delimiter>[^ ()\\\t\r\n]{0,16})\(.*?\)(?P=delimiter)"', re.DOTALL)
+CPP_LITERAL_RE = re.compile(
+    CPP_RAW_STRING_RE.pattern + '|' + CPP_STRING_RE.pattern
+    + r"|(?:u8|u|U|L)?'(?:[^'\\]|\\.)*'", re.DOTALL)
+
+
+def _mask_cpp_comments(source: str, *, raw_strings=False) -> str:
     """Replace comments with spaces while preserving indices and newlines."""
     out = list(source)
     i = 0
@@ -1035,6 +1042,11 @@ def _mask_cpp_comments(source: str) -> str:
         c = source[i]
         nxt = source[i + 1] if i + 1 < len(source) else ''
         if state == 'code':
+            raw = (CPP_RAW_STRING_RE.match(source, i)
+                   if raw_strings and c in 'RuUL' else None)
+            if raw:
+                i = raw.end()
+                continue
             if c == '/' and nxt == '/':
                 out[i] = out[i + 1] = ' '
                 i += 2
@@ -7058,11 +7070,134 @@ def cmd_protocol_boundaries(args):
     return 0
 
 
+# Issue #6: bounded inventory of source CJK, not an automatic translator.
+CJK_SOURCE_EXTENSIONS = ('.c', '.cc', '.cpp', '.h', '.hpp')
+CJK_INVENTORY_FIELDS = ('path', 'line', 'column', 'literal_sha256')
+
+
+def cjk_source_inventory(source_dir):
+    """Scan Git-owned and new unignored sources; submodule contents are external.
+
+    Reuse the display scanner's comment masker and literal recognizer. Comments
+    are reported per physical line. No preprocessor branches are excluded.
+    """
+    import subprocess
+    from pathlib import Path
+    root = Path(source_dir).resolve()
+    if not root.is_dir():
+        raise ValueError(f'missing source root: {root}')
+    paths = subprocess.check_output(
+        ['git', '-C', str(root), 'ls-files', '--cached', '--others',
+         '--exclude-standard', '-z', '.']).decode().split('\0')
+    records = []
+    for path in sorted(set(paths) - {''}):
+        if Path(path).suffix not in CJK_SOURCE_EXTENSIONS:
+            continue
+        source = (root / path).read_text(encoding='utf-8')
+        masked = _mask_cpp_comments(source, raw_strings=True)
+        fixture = path.startswith('catch2-tests/') or path == 'test_fixed.cpp'
+
+        def record(offset, literal, category):
+            return dict(path=path, line=source.count('\n', 0, offset) + 1,
+                        column=offset - source.rfind('\n', 0, offset),
+                        literal=literal,
+                        literal_sha256=hashlib.sha256(literal.encode()).hexdigest(),
+                        classification=category)
+
+        for match in CPP_LITERAL_RE.finditer(masked):
+            if has_cjk(match.group(0)):
+                records.append(record(match.start(), match.group(0),
+                                      'test_fixture' if fixture else 'unclassified'))
+        offset = 0
+        for original, code in zip(source.splitlines(True), masked.splitlines(True)):
+            # Recover comment characters erased by the shared masker, without
+            # treating comment-looking bytes inside strings as comments.
+            comment = ''.join(c if c != m else ' ' for c, m in zip(original, code))
+            if has_cjk(comment):
+                start = len(comment) - len(comment.lstrip())
+                records.append(record(offset + start, comment.strip(), 'comment'))
+            offset += len(original)
+    if not paths or paths == ['']:
+        raise ValueError('source inventory cannot be evaluated: no Git source files')
+    return records
+
+
+def check_cjk_inventory(records, manifest):
+    """Exact production occurrences must remain classified or explicitly retired."""
+    def identity(row):
+        return tuple(row[field] for field in CJK_INVENTORY_FIELDS)
+
+    if (manifest.get('source_root') != 'crawl-ref/source'
+            or manifest.get('extensions') != list(CJK_SOURCE_EXTENSIONS)
+            or not re.fullmatch(r'[0-9a-f]{40}', manifest.get('commit', ''))
+            or not isinstance(manifest.get('entries'), list)
+            or not manifest['entries']):
+        raise ValueError('invalid or empty CJK inventory metadata')
+    expected, retired = {}, {}
+    for row in manifest['entries']:
+        key = identity(row)
+        if (row.get('classification') not in ('display', 'protocol_parse')
+                or not row.get('reason') or not row.get('batch')
+                or row.get('literal_sha256') != hashlib.sha256(row['literal'].encode()).hexdigest()
+                or row.get('state') not in ('remaining', 'migrated')
+                or key in expected or key in retired):
+            raise ValueError(f'invalid/duplicate CJK inventory entry: {key}')
+        (retired if row['state'] == 'migrated' else expected)[key] = row
+    actual = {identity(row): row for row in records
+              if row['classification'] not in ('comment', 'test_fixture')}
+    errors = [f'unclassified production CJK: {key}' for key in actual.keys() - expected.keys()]
+    errors += [f'frozen production CJK missing/moved: {key}' for key in expected.keys() - actual.keys()]
+    # A retired occurrence must stay absent even at another location. Production
+    # additions already fail above; this message identifies the first batch.
+    errors += [f'migrated lookup CJK remains: {key}' for key in actual
+               if key[0] == 'lookup-help.cc']
+    return sorted(errors)
+
+
+def cmd_cjk_inventory(args):
+    import subprocess
+    try:
+        with open(args.manifest, encoding='utf-8') as handle:
+            manifest = json.load(handle)
+        records = cjk_source_inventory(args.source_dir)
+        errors = check_cjk_inventory(records, manifest)
+        known = {tuple(row[field] for field in CJK_INVENTORY_FIELDS): row
+                 for row in manifest['entries']}
+        for row in records:
+            frozen = known.get(tuple(row[field] for field in CJK_INVENTORY_FIELDS))
+            if frozen:
+                row.update({k: frozen[k] for k in ('classification', 'reason', 'batch')})
+            elif row['classification'] in ('test_fixture', 'comment'):
+                row.update(reason=('Catch2 TEST_OBJECTS or standalone test_fixed.cpp main; not a production display'
+                                   if row['classification'] == 'test_fixture' else
+                                   'Comment masked by the shared C++ scanner; not runtime text'),
+                           batch='excluded')
+        if args.output:
+            commit = subprocess.check_output(
+                ['git', '-C', args.source_dir, 'rev-parse', 'HEAD'], text=True).strip()
+            with open(args.output, 'w', encoding='utf-8') as handle:
+                json.dump(dict(commit=commit, source_root='crawl-ref/source',
+                               extensions=CJK_SOURCE_EXTENSIONS, entries=records),
+                          handle, ensure_ascii=False, indent=2)
+        for error in errors:
+            print(error)
+        print(f'CJK inventory: {len(records)} occurrences; {len(errors)} violations')
+        return bool(errors)
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as error:
+        print(f'CJK inventory ERROR: {error}', file=sys.stderr)
+        return 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="T_() world translation blind-spot scanner"
     )
     subparsers = parser.add_subparsers(dest="command", help="Subcommands")
+
+    p_cjk = subparsers.add_parser("cjk-inventory", help="Check frozen production CJK occurrences")
+    p_cjk.add_argument("source_dir")
+    p_cjk.add_argument("--manifest", required=True)
+    p_cjk.add_argument("--output", help="Write full classified source/test/comment evidence")
 
     # missing-t
     p_missing = subparsers.add_parser(
@@ -7416,6 +7551,8 @@ def main():
     # ── Issue 66 commands ──
     elif args.command == "source-key-collisions":
         return cmd_source_key_collisions(args)
+    elif args.command == "cjk-inventory":
+        return cmd_cjk_inventory(args)
     elif args.command == "source-key-collision-inventory":
         return cmd_source_key_collision_inventory(args)
     elif args.command == "source-db-structure":

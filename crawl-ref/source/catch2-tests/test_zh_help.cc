@@ -907,39 +907,63 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // [zh-help][home-page] — verify home page labels return Chinese under ZH fixture.
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh-help: home page labels are Chinese",
+                 "zh-help: lookup labels and query identities survive language switches",
                  "[zh-help][home-page]")
 {
+    init_monsters();
+    init_mon_name_cache();
+    init_spell_descs();
+    init_spell_name_cache();
+    init_feat_desc_cache();
+    init_mut_index();
+    init_item_name_cache();
+    static const char *const english[] = {
+        "monster", "spell", "skill", "ability", "card", "item", "feature",
+        "god", "branch", "cloud", "passive", "status", "mutation", "bane"
+    };
+    static const char *const chinese[] = {
+        "怪物", "法术", "技能", "能力", "卡牌", "物品", "地形",
+        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸"
+    };
+    REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(english) / sizeof(*english));
+    REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(chinese) / sizeof(*chinese));
+    const auto check_english_queries = [] {
+        // Spell recapping deliberately localizes the returned menu text.
+        const auto keys = lookup_help_matching_keys(LOOKUP_HELP_SPELL, "magic dart");
+        const string expected = make_stringf(T_("%s spell"), spell_title(SPELL_MAGIC_DART));
+        CHECK(std::find(keys.begin(), keys.end(), expected) != keys.end());
+        CHECK_FALSE(getLongDescription("magic dart spell").empty());
+        bool exact = false;
+        lookup_help_matching_keys(LOOKUP_HELP_MONSTER, "goblin", &exact);
+        CHECK(exact);
+        lookup_help_matching_keys(LOOKUP_HELP_MONSTER, "no such monster", &exact);
+        CHECK_FALSE(exact);
+    };
+    check_english_queries();
     for (int i = 0; i < NUM_LOOKUP_HELP_TYPES; ++i)
     {
-        const lookup_help_type lht = static_cast<lookup_help_type>(i);
-        const string label = lookup_help_type_name(lht);
-        INFO("type=" << i << " label=" << label);
-        CHECK_FALSE(label.empty());
-        // Chinese display names must contain CJK characters (UTF-8 3-byte
-        // sequences starting with 0xE4-0xE9).
-        size_t pos = 0;
-        bool has_cjk = false;
-        while (pos < label.size())
+        const auto lht = static_cast<lookup_help_type>(i);
+        INFO("type=" << english[i]);
+        CHECK(lookup_help_type_name(lht) == chinese[i]);
+        auto zh_keys = lookup_help_matching_keys(lht, ".+");
+        REQUIRE_FALSE(zh_keys.empty());
+        std::sort(zh_keys.begin(), zh_keys.end());
         {
-            const unsigned char lead = label[pos];
-            if ((lead >= 0xE4 && lead <= 0xE9) || lead >= 0xF0)
-            {
-                has_cjk = true;
-                break;
-            }
-            // Advance: 1-byte (ASCII), 2-byte, 3-byte, 4-byte
-            if ((lead & 0x80) == 0)
-                pos += 1;
-            else if ((lead & 0xE0) == 0xC0)
-                pos += 2;
-            else if ((lead & 0xF0) == 0xE0)
-                pos += 3;
+            EnTranslationFixture english_mode;
+            check_english_queries();
+            CHECK(lookup_help_type_name(lht) == english[i]);
+            auto en_keys = lookup_help_matching_keys(lht, ".+");
+            std::sort(en_keys.begin(), en_keys.end());
+            // These three recap functions already produce localized display
+            // values. Other query lists retain their canonical English keys.
+            if (lht != LOOKUP_HELP_SPELL && lht != LOOKUP_HELP_ABILITY
+                && lht != LOOKUP_HELP_FEATURE)
+                CHECK(en_keys == zh_keys);
             else
-                pos += 4;
+                CHECK(en_keys.size() == zh_keys.size());
         }
-        CHECK(has_cjk);
-        // Verify shortcut exists and is a letter.
+        // Reloading the TextDB cache must not invalidate the persistent table.
+        CHECK(lookup_help_type_name(lht) == chinese[i]);
         CHECK(isalpha(lookup_help_type_shortcut(lht)));
     }
 }

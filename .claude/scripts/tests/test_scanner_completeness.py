@@ -1757,5 +1757,108 @@ int main() { return 0; }
                          {"discovered": 1, "scanned": 1, "failed": []})
 
 
+class CjkInventoryTests(unittest.TestCase):
+    """Exercise the production inventory parser and CLI in a real Git fixture."""
+
+    def setUp(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import scan_i18n
+        self.scanner = scan_i18n
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
+        self.source = self.root / 'crawl-ref/source'
+        self.source.mkdir(parents=True)
+        (self.source / 'display.cc').write_text('void show() { mpr("怪物"); }\n')
+        (self.source / 'protocol.cc').write_text(
+            'auto key = "怪物";\nbool match = input == "怪物";\n'
+            'if (input == "清除") return CK_CLEAR;\n')
+        (self.source / 'catch2-tests').mkdir()
+        (self.source / 'catch2-tests/test_input.cc').write_text('CHECK(name == "怪物");\n')
+        (self.source / 'comment.h').write_text('// "怪物"\n/* 清除 */\n')
+        self.manifest = dict(commit='a' * 40, source_root='crawl-ref/source',
+                             extensions=list(self.scanner.CJK_SOURCE_EXTENSIONS), entries=[])
+        for row in self.records():
+            if row['classification'] == 'unclassified':
+                row.update(classification='display' if row['path'] == 'display.cc' else 'protocol_parse',
+                           reason='Display call' if row['path'] == 'display.cc' else
+                                  'Literal key/comparison/input alias; preserve parser bytes',
+                           batch='defer:fixture', state='remaining')
+                self.manifest['entries'].append(row)
+
+    def records(self):
+        return self.scanner.cjk_source_inventory(self.source)
+
+    def check(self):
+        return self.scanner.check_cjk_inventory(self.records(), self.manifest)
+
+    def test_display_protocol_alias_tests_and_comments(self):
+        self.assertEqual([], self.check())
+        self.assertEqual(4, sum(r['classification'] == 'unclassified' for r in self.records()))
+        self.assertEqual(1, sum(r['classification'] == 'test_fixture' for r in self.records()))
+        self.assertEqual(2, sum(r['classification'] == 'comment' for r in self.records()))
+        # A new test assertion is not a new production display occurrence.
+        (self.source / 'catch2-tests/test_more.cpp').write_text('CHECK(name == "清除");\n')
+        self.assertEqual([], self.check())
+
+    def test_new_display_and_new_protocol_both_require_classification(self):
+        for call in ('mpr("清除");', 'if (input == "清除") return;'):
+            with self.subTest(call=call):
+                (self.source / 'test_new_production.cc').write_text(call)
+                self.assertTrue(any('unclassified' in e for e in self.check()))
+
+    def test_change_move_delete_and_duplicate_fail(self):
+        path = self.source / 'display.cc'
+        original = path.read_text()
+        for mutated in (original.replace('怪物', '清除'), '\n' + original, '', original + original):
+            with self.subTest(mutated=mutated):
+                path.write_text(mutated)
+                self.assertTrue(self.check())
+        path.write_text(original)
+        path.rename(self.source / 'moved.cc')
+        self.assertTrue(self.check())
+
+    def test_retired_lookup_must_stay_absent(self):
+        row = self.manifest['entries'][0].copy()
+        row.update(path='lookup-help.cc', state='migrated', batch='lookup-labels')
+        self.manifest['entries'].append(row)
+        self.assertEqual([], self.check())
+        (self.source / 'lookup-help.cc').write_text('mpr("怪物");')
+        self.assertTrue(any('migrated lookup' in e for e in self.check()))
+
+    def test_raw_strings_comments_escapes_and_character_literals(self):
+        (self.source / 'catch2-tests/test_lex.cc').write_text(
+            'auto a = u8R"tag(怪物 " // 清除 /* 怪物 */)tag";\n'
+            'auto b = "怪物\\\" // 怪物"; // 清除\n'
+            "auto c = U'怪';\n")
+        rows = [r for r in self.records() if r['path'] == 'catch2-tests/test_lex.cc']
+        self.assertEqual(3, sum(r['classification'] == 'test_fixture' for r in rows))
+        self.assertEqual(1, sum(r['classification'] == 'comment' for r in rows))
+        self.assertIn('/* 怪物 */', rows[0]['literal'])
+
+    def test_invalid_manifest_fails_closed(self):
+        for field, value in [('commit', ''), ('extensions', []), ('entries', [])]:
+            with self.subTest(field=field):
+                manifest = dict(self.manifest, **{field: value})
+                with self.assertRaises(ValueError):
+                    self.scanner.check_cjk_inventory(self.records(), manifest)
+        self.manifest['entries'].append(self.manifest['entries'][0])
+        with self.assertRaises(ValueError):
+            self.check()
+
+    def test_cli_and_missing_inputs(self):
+        path = self.root / 'manifest.json'
+        path.write_text(json.dumps(self.manifest))
+        cmd = [sys.executable, str(SCRIPTS / 'scan_i18n.py'), 'cjk-inventory',
+               str(self.source), '--manifest', str(path)]
+        self.assertEqual(0, subprocess.run(cmd, capture_output=True).returncode)
+        path.unlink()
+        self.assertEqual(1, subprocess.run(cmd, capture_output=True).returncode)
+        path.write_text(json.dumps(self.manifest))
+        shutil.rmtree(self.source)
+        self.assertEqual(1, subprocess.run(cmd, capture_output=True).returncode)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

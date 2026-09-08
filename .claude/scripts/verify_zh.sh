@@ -554,6 +554,8 @@ run_phase() {
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
         python3 "$SCRIPT_DIR/audit_item_name_inventory.py" \
             --output "$ITEM_INVENTORY_FILE" || rc=$?
+        python3 "$SCRIPT_DIR/scan_i18n.py" cjk-inventory "$WORKTREE/crawl-ref/source" \
+            --manifest "$SCRIPT_DIR/cjk_inventory.json" || rc=$?
         python3 "$SCRIPT_DIR/check_default_utf8.py" \
             --defaults-dir "$WORKTREE/crawl-ref/source/dat/defaults" || rc=$?
         return "$rc"
