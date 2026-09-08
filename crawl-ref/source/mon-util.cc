@@ -4688,7 +4688,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = bind_random_body_part_message(msg, true);
     }
 
-    // Replace with species specific insults.  The canonical English genus
+    // Replace with species specific insults. The canonical English genus
     // is the SpeakDB lookup identity: insult.txt keys are English, so a
     // localized genus (zh_monster_name / T_ genus) would miss and silently
     // fall back to the generic insults.
