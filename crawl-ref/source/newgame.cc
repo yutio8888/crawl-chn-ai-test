@@ -1137,41 +1137,41 @@ static void _construct_species_menu(const newgame_def& ng,
     }
 }
 
-static job_group jobs_order[] =
-{
+static const std::array<job_group, 5> jobs_order =
+{{
     {
-        "战士",
+        NC_("job group", "Warrior"),
         coord_def(0, 0), 20,
-        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND },
-        "Warrior"
+        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND }
     },
     {
-        "狂热者",
+        NC_("job group", "Zealot"),
         coord_def(0, 6), 25,
-        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT },
-        "Zealot"
+        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT }
     },
     {
-        "冒险家",
+        NC_("job group", "Adventurer"),
         coord_def(1, 0), 20,
-        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER, },
-        "Adventurer"
+        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER, }
     },
     {
-        "战法",
+        NC_("job group", "Warrior-mage"),
         coord_def(1, 5), 26,
-        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER },
-        "Warrior-mage"
+        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER }
     },
     {
-        "法师",
+        NC_("job group", "Mage"),
         coord_def(2, 0), 22,
         { JOB_HEDGE_WIZARD, JOB_CONJURER, JOB_SUMMONER, JOB_NECROMANCER,
           JOB_FORGEWRIGHT, JOB_FIRE_ELEMENTALIST, JOB_ICE_ELEMENTALIST,
-          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST },
-        "Mage"
+          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST }
     }
-};
+}};
+
+const std::array<job_group, 5>& newgame_job_groups()
+{
+    return jobs_order;
+}
 
 /**
  * Helper for _choose_job
@@ -1183,7 +1183,7 @@ static void _construct_backgrounds_menu(const newgame_def& ng,
 {
     menu_letter letter = 'a';
     // Add entries for any job groups with at least one playable background.
-    for (job_group& group : jobs_order)
+    for (const job_group& group : newgame_job_groups())
     {
         if (ng.species == SP_UNKNOWN
             || any_of(begin(group.jobs), end(group.jobs), [&ng](job_type job)
@@ -1583,16 +1583,20 @@ void UINewGameMenu::menu_item_activated(int id)
     }
 }
 
-void job_group::attach(const newgame_def& ng, const newgame_def& defaults,
-                       UINewGameMenu* ng_menu, menu_letter &letter)
+string job_group::display_name() const
 {
-    // TODO: Issue 32 Phase 2 — migrate job_group name/name_en to T_()
-    ng_menu->_add_group_title(
-        Options.language == lang_t::ZH ? name : name_en, position);
+    return C_("job group", name);
+}
+
+void job_group::attach(const newgame_def& ng, const newgame_def& defaults,
+                       UINewGameMenu* ng_menu, menu_letter &letter) const
+{
+    const string title = display_name();
+    ng_menu->_add_group_title(title.c_str(), position);
 
     coord_def pos(position);
 
-    for (job_type &job : jobs)
+    for (const job_type job : jobs)
     {
         if (job == JOB_UNKNOWN)
             break;
