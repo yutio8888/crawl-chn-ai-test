@@ -35,6 +35,7 @@
 #include "movement-i18n.h"
 #include "mutation.h"
 #include "nearby-danger.h"
+#include "newgame.h"
 #include "notes.h"
 #include "options.h"
 #include "player.h"
@@ -4824,4 +4825,53 @@ TEST_CASE_METHOD(EnTranslationFixture, "en: quiet ability preview explains failu
                  "[zh-translation][ability-preview]")
 {
     check_quiet_ability_preview();
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: newgame job group titles preserve selection data across languages",
+                 "[zh-translation][newgame-job-groups]")
+{
+    const auto& groups = newgame_job_groups();
+    static const char* const english[] = {
+        "Warrior", "Zealot", "Adventurer", "Warrior-mage", "Mage"
+    };
+    static const char* const chinese[] = {
+        "战士", "狂热者", "冒险家", "战法", "法师"
+    };
+    const coord_def positions[] = {
+        coord_def(0, 0), coord_def(0, 6), coord_def(1, 0),
+        coord_def(1, 5), coord_def(2, 0)
+    };
+    const int widths[] = { 20, 25, 20, 26, 22 };
+    const vector<job_type> jobs[] = {
+        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND },
+        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT },
+        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER },
+        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER },
+        { JOB_HEDGE_WIZARD, JOB_CONJURER, JOB_SUMMONER, JOB_NECROMANCER,
+          JOB_FORGEWRIGHT, JOB_FIRE_ELEMENTALIST, JOB_ICE_ELEMENTALIST,
+          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST }
+    };
+    REQUIRE(groups.size() == sizeof(english) / sizeof(*english));
+    for (size_t i = 0; i < groups.size(); ++i)
+    {
+        const auto& group = groups[i];
+        INFO("job group=" << english[i]);
+        CHECK(string(group.name) == english[i]);
+        CHECK(group.position == positions[i]);
+        CHECK(group.width == widths[i]);
+        CHECK(group.jobs == jobs[i]);
+        const string saved_title = group.display_name();
+        CHECK(saved_title == chinese[i]);
+        i18n_cache_clear();
+        CHECK(saved_title == chinese[i]);
+        CHECK(group.display_name() == chinese[i]);
+        {
+            EnTranslationFixture english_mode;
+            CHECK(group.display_name() == english[i]);
+            CHECK(string(group.name) == english[i]);
+        }
+        CHECK(group.display_name() == chinese[i]);
+        CHECK(group.jobs == jobs[i]);
+    }
 }

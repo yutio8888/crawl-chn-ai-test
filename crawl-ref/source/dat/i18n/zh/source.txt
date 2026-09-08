@@ -42503,3 +42503,18 @@ lookup type|mutation
 %%%%
 lookup type|bane
 灾祸
+%%%%
+job group|Warrior
+战士
+%%%%
+job group|Zealot
+狂热者
+%%%%
+job group|Adventurer
+冒险家
+%%%%
+job group|Warrior-mage
+战法
+%%%%
+job group|Mage
+法师
