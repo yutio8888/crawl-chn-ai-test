@@ -4959,3 +4959,111 @@ TEST_CASE("monster damage level thresholds stay frozen",
         CHECK(mons_get_damage_level(mons) == c.expected);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: poison status description assembles T_ poisoned without a language branch",
+                 "[zh-translation][status-description]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+
+    auto poison_perc = []() {
+        return (you.hp <= 0) ? 100
+             : ((you.hp - max(0, poison_survival())) * 100 / you.hp);
+    };
+    auto expected_adj = [](int perc) {
+        return string((perc >= 100) ? T_("lethally") :
+                      (perc > 65)   ? T_("seriously") :
+                      (perc > 35)   ? T_("quite")
+                                    : T_("mildly"));
+    };
+    auto expected_short_text = [&]() {
+        string text = expected_adj(poison_perc()) + T_(" poisoned");
+        text += make_stringf(T_(" (%d -> %d)"), you.hp, poison_survival());
+        return text;
+    };
+    auto check_filled = [&](status_info& info) {
+        REQUIRE(fill_status_info(DUR_POISONING, info));
+        CHECK(info.db_key == "Pois");
+        CHECK(info.short_text == expected_short_text());
+        CHECK(info.short_db_key != "poisoned");
+        const string short_text = info.short_text;
+        const string long_text = info.long_text;
+        const string db_key = info.db_key;
+        i18n_cache_clear();
+        CHECK(info.short_text == short_text);
+        CHECK(info.long_text == long_text);
+        CHECK(info.db_key == db_key);
+        CHECK(db_key == "Pois");
+    };
+
+    CHECK(duration_by_name("poisoning") == DUR_POISONING);
+
+    SECTION("mildly when remaining poison cannot reduce HP")
+    {
+        you.hp = 20;
+        you.hp_max = 20;
+        you.duration[DUR_POISONING] = 1;
+        REQUIRE(poison_perc() == 0);
+
+        status_info info;
+        check_filled(info);
+        CHECK(info.short_text.find(string(T_("mildly"))) != string::npos);
+        {
+            EnTranslationFixture english_mode;
+            status_info english_info;
+            REQUIRE(fill_status_info(DUR_POISONING, english_info));
+            CHECK(english_info.db_key == "Pois");
+            CHECK(english_info.short_text.find(" poisoned") != string::npos);
+            CHECK(english_info.short_text.find("中毒") == string::npos);
+            CHECK(english_info.short_text == expected_short_text());
+        }
+        status_info restored;
+        REQUIRE(fill_status_info(DUR_POISONING, restored));
+        CHECK(restored.db_key == "Pois");
+        CHECK(restored.short_text.find(" poisoned") == string::npos);
+        CHECK(restored.short_text.find(string(T_(" poisoned"))) != string::npos);
+        CHECK(restored.short_text == expected_short_text());
+    }
+
+    SECTION("lethally when HP is already zero")
+    {
+        you.hp = 0;
+        you.hp_max = 20;
+        you.duration[DUR_POISONING] = 1;
+        REQUIRE(poison_perc() == 100);
+
+        status_info info;
+        check_filled(info);
+        CHECK(info.short_text.find(string(T_("lethally"))) != string::npos);
+        {
+            EnTranslationFixture english_mode;
+            status_info english_info;
+            REQUIRE(fill_status_info(DUR_POISONING, english_info));
+            CHECK(english_info.db_key == "Pois");
+            CHECK(english_info.short_text.find(" poisoned") != string::npos);
+            CHECK(english_info.short_text.find("中毒") == string::npos);
+        }
+        status_info restored;
+        REQUIRE(fill_status_info(DUR_POISONING, restored));
+        CHECK(restored.short_text.find(string(T_(" poisoned"))) != string::npos);
+    }
+
+    SECTION("middle bands use the production percent formula")
+    {
+        you.hp = 100;
+        you.hp_max = 100;
+        const int durations[] = { 1000, 40000, 70000, 120000, 500000 };
+        for (int duration : durations)
+        {
+            you.duration[DUR_POISONING] = duration;
+            INFO("duration=" << duration
+                 << " hp=" << you.hp
+                 << " poison_survival=" << poison_survival()
+                 << " perc=" << poison_perc());
+            status_info info;
+            check_filled(info);
+        }
+    }
+}
