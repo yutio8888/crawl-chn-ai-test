@@ -4875,3 +4875,87 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(group.jobs == jobs[i]);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monster wound adjectives preserve severity and holiness selection",
+                 "[zh-translation][monster-wounds]")
+{
+    struct wound_case
+    {
+        mon_dam_level_type level;
+        const char* wounded;
+        const char* damaged;
+        const char* en_wounded;
+        const char* en_damaged;
+    };
+    static const wound_case cases[] = {
+        { MDAM_ALMOST_DEAD,         "奄奄一息", "奄奄一息",
+          "almost dead",       "almost destroyed" },
+        { MDAM_SEVERELY_DAMAGED,    "严重受伤", "严重受损",
+          "severely wounded",  "severely damaged" },
+        { MDAM_HEAVILY_DAMAGED,     "重度受伤", "重度受损",
+          "heavily wounded",   "heavily damaged" },
+        { MDAM_MODERATELY_DAMAGED,  "中度受伤", "中度受损",
+          "moderately wounded", "moderately damaged" },
+        { MDAM_LIGHTLY_DAMAGED,     "轻度受伤", "轻度受损",
+          "lightly wounded",   "lightly damaged" },
+        { MDAM_OKAY,                "未受伤",   "未受伤",
+          "not wounded",       "not damaged" },
+    };
+    for (const wound_case& c : cases)
+    {
+        INFO("damage level=" << static_cast<int>(c.level));
+        // MH_HOLY is living -> wounded wording; MH_UNDEAD -> damaged wording.
+        CHECK(get_damage_level_string(MH_HOLY, c.level) == c.wounded);
+        CHECK(get_damage_level_string(MH_UNDEAD, c.level) == c.damaged);
+        i18n_cache_clear();
+        CHECK(get_damage_level_string(MH_HOLY, c.level) == c.wounded);
+        {
+            EnTranslationFixture english_mode;
+            CHECK(get_damage_level_string(MH_HOLY, c.level) == c.en_wounded);
+            CHECK(get_damage_level_string(MH_UNDEAD, c.level) == c.en_damaged);
+        }
+        CHECK(get_damage_level_string(MH_HOLY, c.level) == c.wounded);
+    }
+
+    // print_wounds() sentence assembly: EN " is <adj>." / ZH "<adj>。".
+    CHECK(make_stringf(C_("monster wound sentence", " is %s."), "严重受伤")
+          == "严重受伤。");
+    {
+        EnTranslationFixture english_mode;
+        CHECK(make_stringf(C_("monster wound sentence", " is %s."),
+                           "severely wounded") == " is severely wounded.");
+    }
+}
+
+TEST_CASE("monster damage level thresholds stay frozen",
+          "[zh-translation][monster-wounds]")
+{
+    monster mons;
+    mons.max_hit_points = 100;
+    struct threshold_case
+    {
+        int hit_points;
+        mon_dam_level_type expected;
+    };
+    static const threshold_case cases[] = {
+        { 100, MDAM_OKAY },
+        {  99, MDAM_LIGHTLY_DAMAGED },
+        {  81, MDAM_LIGHTLY_DAMAGED },
+        {  80, MDAM_MODERATELY_DAMAGED },
+        {  61, MDAM_MODERATELY_DAMAGED },
+        {  60, MDAM_HEAVILY_DAMAGED },
+        {  41, MDAM_HEAVILY_DAMAGED },
+        {  40, MDAM_SEVERELY_DAMAGED },
+        {  21, MDAM_SEVERELY_DAMAGED },
+        {  20, MDAM_ALMOST_DEAD },
+        {   1, MDAM_ALMOST_DEAD },
+        {   0, MDAM_ALMOST_DEAD },
+    };
+    for (const threshold_case& c : cases)
+    {
+        mons.hit_points = c.hit_points;
+        INFO("hit points=" << c.hit_points);
+        CHECK(mons_get_damage_level(mons) == c.expected);
+    }
+}

@@ -42518,3 +42518,42 @@ job group|Warrior-mage
 %%%%
 job group|Mage
 法师
+%%%%
+wound adjective|almost destroyed
+奄奄一息
+%%%%
+wound adjective|almost dead
+奄奄一息
+%%%%
+wound adjective|severely damaged
+严重受损
+%%%%
+wound adjective|severely wounded
+严重受伤
+%%%%
+wound adjective|heavily damaged
+重度受损
+%%%%
+wound adjective|heavily wounded
+重度受伤
+%%%%
+wound adjective|moderately damaged
+中度受损
+%%%%
+wound adjective|moderately wounded
+中度受伤
+%%%%
+wound adjective|lightly damaged
+轻度受损
+%%%%
+wound adjective|lightly wounded
+轻度受伤
+%%%%
+wound adjective|not damaged
+未受伤
+%%%%
+wound adjective|not wounded
+未受伤
+%%%%
+monster wound sentence| is %s.
+%s。

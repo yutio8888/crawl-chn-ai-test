@@ -4688,7 +4688,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = bind_random_body_part_message(msg, true);
     }
 
-    // Replace with species specific insults.  The canonical English genus
+    // Replace with species specific insults. The canonical English genus
     // is the SpeakDB lookup identity: insult.txt keys are English, so a
     // localized genus (zh_monster_name / T_ genus) would miss and silently
     // fall back to the generic insults.
@@ -5442,32 +5442,44 @@ mon_dam_level_type mons_get_damage_level(const monster& mons)
         return MDAM_OKAY;
 }
 
+/// Localized display adjective for a monster's damage level. Severity comes
+/// from mons_get_damage_level(); wounded_damaged(holi) selects the damaged or
+/// wounded wording; both selections stay in code, only the wording is TextDB.
 string get_damage_level_string(mon_holy_type holi, mon_dam_level_type mdam)
 {
-    const bool zh = Options.language == lang_t::ZH;
     const bool wd = wounded_damaged(holi);
+    const char* key;
 
     switch (mdam)
     {
     case MDAM_ALMOST_DEAD:
-        return zh ? (wd ? "奄奄一息" : "奄奄一息")
-                  : (string("almost") + (wd ? " destroyed" : " dead"));
+        key = wd ? NC_("wound adjective", "almost destroyed")
+                 : NC_("wound adjective", "almost dead");
+        break;
     case MDAM_SEVERELY_DAMAGED:
-        return zh ? (wd ? "严重受损" : "严重受伤")
-                  : (string("severely") + (wd ? " damaged" : " wounded"));
+        key = wd ? NC_("wound adjective", "severely damaged")
+                 : NC_("wound adjective", "severely wounded");
+        break;
     case MDAM_HEAVILY_DAMAGED:
-        return zh ? (wd ? "重度受损" : "重度受伤")
-                  : (string("heavily") + (wd ? " damaged" : " wounded"));
+        key = wd ? NC_("wound adjective", "heavily damaged")
+                 : NC_("wound adjective", "heavily wounded");
+        break;
     case MDAM_MODERATELY_DAMAGED:
-        return zh ? (wd ? "中度受损" : "中度受伤")
-                  : (string("moderately") + (wd ? " damaged" : " wounded"));
+        key = wd ? NC_("wound adjective", "moderately damaged")
+                 : NC_("wound adjective", "moderately wounded");
+        break;
     case MDAM_LIGHTLY_DAMAGED:
-        return zh ? (wd ? "轻度受损" : "轻度受伤")
-                  : (string("lightly") + (wd ? " damaged" : " wounded"));
+        key = wd ? NC_("wound adjective", "lightly damaged")
+                 : NC_("wound adjective", "lightly wounded");
+        break;
     case MDAM_OKAY:
     default:
-        return zh ? "未受伤" : (string("not") + (wd ? " damaged" : " wounded"));
+        key = wd ? NC_("wound adjective", "not damaged")
+                 : NC_("wound adjective", "not wounded");
+        break;
     }
+
+    return C_("wound adjective", key);
 }
 
 void print_wounds(const monster& mons)
@@ -5476,15 +5488,10 @@ void print_wounds(const monster& mons)
         return;
 
     mon_dam_level_type dam_level = mons_get_damage_level(mons);
-    string desc = get_damage_level_string(mons.holiness(), dam_level);
+    const string wounds = get_damage_level_string(mons.holiness(), dam_level);
+    const string desc = make_stringf(C_("monster wound sentence", " is %s."),
+                                     wounds.c_str());
 
-    if (Options.language == lang_t::ZH)
-        desc = desc + "。";
-    else
-    {
-        desc.insert(0, " is ");
-        desc += ".";
-    }
     simple_monster_message(mons, desc.c_str(), false, MSGCH_MONSTER_DAMAGE,
                            dam_level);
 }
