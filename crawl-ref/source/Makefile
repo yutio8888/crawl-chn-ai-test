@@ -108,7 +108,7 @@ MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
         build-windows package-windows-installer docs greet api api-dev android FORCE \
         monster catch2-tests plug-and-play-tests \
         crawl-universal crawl-arm64-apple-macos11 crawl-x86_64-apple-macos10.7 clean-mac \
-        ccache-config mac-app-tiles-dmg
+        ccache-config mac-app-tiles-dmg i18n-compile-commands
 
 include Makefile.obj
 
@@ -1919,6 +1919,16 @@ endif
 ifndef NO_INLINE_DEPGEN
 	@if [ -f $(@:%.o=%.d) ]; then touch -r $@ $(@:%.o=%.d); fi
 endif
+
+# Explicit scanner experiment: export this configuration's ordinary core TUs.
+# Dependencies/generated headers must already exist; this target builds nothing.
+# Target-specific utility/rltiles/Catch2 flags and header inclusion contexts are
+# deliberately outside this exporter. Android uses the NDK's actual TU commands.
+i18n-compile-commands:
+	$(if $(strip $(I18N_COMPILE_COMMANDS)),,$(error Set I18N_COMPILE_COMMANDS to the output JSON path))
+	$(if $(strip $(I18N_SCAN_FILES)),,$(error Set I18N_SCAN_FILES to core .cc filenames))
+	$(if $(filter-out $(filter-out %/%,$(OBJECTS:.o=.cc)) main.cc,$(I18N_SCAN_FILES)),$(error I18N_SCAN_FILES must contain ordinary core .cc files))
+	$(QUIET_PYTHON)$(PYTHON) -c 'import json, sys; from pathlib import Path; split = sys.argv.index("--"); files = sys.argv[2:split]; command = sys.argv[split + 1:]; entries = [{"directory": str(Path.cwd()), "file": name, "arguments": command + ["-c", name, "-o", str(Path(name).with_suffix(".o"))]} for name in files]; Path(sys.argv[1]).write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")' "$(I18N_COMPILE_COMMANDS)" $(I18N_SCAN_FILES) -- $(CXX) $(STDFLAG) $(ALL_CFLAGS)
 
 icon.o: util/crawl.rc dat/tiles/stone_soup_icon.ico .cflags
 	$(QUIET_WINDRES)$(WINDRES) util/crawl.rc icon.o

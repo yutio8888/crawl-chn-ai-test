@@ -340,3 +340,81 @@ for label, repo, ref in branches:
                 failed |= not acceptable
 raise SystemExit(1 if failed else 0)
 ```
+
+## 方案 3 的显式实验入口（基线 5209b80e3b）
+
+本轮新增可用的 `--compile-commands DB` 补充扫描入口，没有切换默认门禁。
+每个 DB 表示一个配置；三个扫描器先保留原始源码的风险结果，再严格检查
+每个请求文件在每个 DB 中的展开内容。缺文件条目、缺依赖、CPP 失败和
+展开后的 ERROR/missing 均退出 2。此模式不把原始条件编译造成的恢复节点
+作为整个文件的语法证明，语法判断来自明确列出的 CPP 配置；未列出的配置
+也不因原始恢复扫描而获得语法覆盖。默认模式的失败行为及已有适配仍保留。
+
+共用 helper 调用 Clang `-E`，从真实 linemarker 提取目标文件文本并映射
+回原始调用行，不保留整份依赖头文本。字符串内部的伪 marker 不参与映射；
+多行 raw literal 的内部换行与 Clang 另外输出的行填充分别处理，中文文件名
+按 C 字节转义解码。源码主动写入的 `#line`/GNU marker 暂不支持并拒绝，
+包括 phase-2 拼接和注释后的指令；不能借伪造 filename 静默裁掉目标代码。
+宏展开诊断定位到原调用行，不声称提供逐 token 拼写列。
+
+`__builtin_va_arg` 是 CPP 后仍存在的编译器 intrinsic。其第二操作数经受限
+类型语法及 alias declaration 检查后等长替换为表达式占位，完整保留第一
+操作数；不支持类型、错误第一操作数和其他真实语法仍拒绝。它没有重用
+前置 `va_arg` 豁免来宣称宏已被解决。`directn.cc` 的局部引用初始化改为
+`const vault_placement &vp = *env.level_vaults[map_index];`，消除确认过的
+合法 C++ 被 tree-sitter 误解析的问题，引用对象、初始化时机和作用域不变。
+
+数据库接受标准 `arguments` 或 Unix shell 风格 `command`，每文件每 DB
+必须唯一。首版支持 Clang 和 NDK Clang，明确拒绝 GCC、响应文件、外部
+compiler config、间接预处理参数和其他编译动作。对象/依赖输出参数移除，
+现代 Clang 的自动 driver config 关闭；配置所需参数必须显式写在命令中。
+真实 NDK 回归确认 config 内藏 `-o` 不能在验证失败前覆盖既有输出文件。
+
+Makefile 的 `i18n-compile-commands` 目标只导出调用配置下普通 core `.cc`
+的 `CXX`、`STDFLAG` 和 `ALL_CFLAGS`，不维护另一份宏清单，不编译依赖。
+header、utility、rltiles 和 Catch2 的专属上下文/参数不由该目标猜测。
+详细命令及限制见 `.claude/scripts/TOOLCHAIN.md` 的显式预处理章节。
+生命周期 helper 索引只展开 DB 中列出的文件，未列出的仍使用既有 lexical
+索引；不同 DB 的互斥 helper 分开建立索引。该入口不是完整跨文件预处理。
+展开结果仅在一次进程内复用，没有新后台服务、磁盘缓存或默认 CI 依赖。
+
+### 实测范围与剩余条件
+
+原型覆盖 directn/main/menu 三个真实 TU，配置为 Linux console、local
+tiles、webtiles、console 加 DEBUG_DIAGNOSTICS，以及 NDK arm64 API 21。
+最终桌面 CLI 使用 Makefile 导出参数，显式配置同 tree 已准备的依赖/生成
+头目录；NDK 部分仍是基于现有构建宏的有界原型参数，并非完整 NDK 构建数据库。
+这些证据不代表 Windows、macOS、其他 Android ABI/API 或全部 debug 组合。
+
+原型比较每 TU 的 dump-tokens 与普通 `-E`：前者约 70–79 MB、5.2–5.8 秒，
+后者约 3.6–6.2 MB、0.23–0.37 秒，提取的目标文本约 63–97 KB。因此显式入口
+采用 linemarker，不把逐 token dump 放入默认工作流。
+
+console 全发现范围探针共 784 文件，111.422 秒：740 个没有 CPP/TS 缺口，
+44 个有缺口（9 CPP、35 parser）。这不是 44 个游戏源码错误，也不是 740 个
+文件风险扫描通过：缺口包括平台头、header 包含前置上下文、合法 C++ 的
+TS 限制及 prebuilt 的源内 `#line`。arena、beam、clua 等真实 TU 也仍有
+TS 缺口，不能用三个成功原型覆盖代替全目录支持。以后默认替换前还需解决
+这些输入、从真实 TU 保留 header 的包含上下文、验证真实平台构建矩阵，
+然后才能删除已被充分替代的旧模式和前置适配。Issue #120 继续保留该范围。
+
+最终三个扫描器对三文件和五 DB 的真实 CLI 退出码分别为 varargs=0、
+concat=1 advisory、lifetime=0，coverage.failed 均为空。concat 同时报告原始
+与各配置的结果，因此可包含重复 identity 和宏标记展开后的建议项；没有
+改写既有 baseline，也不把 advisory 退出 1 误作解析失败或无风险结论。
+
+定向回归覆盖宏参数中的 T_/C_/mprf_p、原始风险保留、互斥 helper 配置隔离、
+原调用行诊断、源内伪 marker、Unicode/空格路径、缺配置和真实语法负例，
+以及输出参数与 compiler config 的文件保护。已有 completeness 和 lifetime
+套件也通过。实际命令和 stdout/stderr 保留在本机临时日志：
+
+- `/tmp/issue120-configured-final.log`：预处理和真实 CLI/Makefile 回归。
+- `/tmp/issue120-completeness-tests.log`：既有 scanner completeness。
+- `/tmp/issue120-lifetime-tests.log`：既有 lifetime scanner 回归。
+- `/tmp/issue120-final-real-clis.log`：实际配置参数、CLI 命令、结果和 NDK sentinel；
+  各 scanner 的完整输出路径也记录在此文件。
+- `/tmp/issue120-full-console-inventory.jsonl`：全发现范围的 CPP/TS 探针。
+- `/tmp/issue120-prototype-negatives-final.log`：前期真实源配置及负例原型。
+
+绑定候选的 code profile、领域复审和 CI 由编排者统一执行；本节不预先宣称
+它们已经通过，也不以本轮显式入口关闭整个方案 3。

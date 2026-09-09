@@ -37,7 +37,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error,
                          parse_cpp_annotations, preprocessor_patterns_for_path,
-                         _normalize_eol)
+                         _normalize_eol, CppCompilationDatabase,
+                         parse_preprocessed_cpp)
 
 # ── Tree-sitter availability ──────────────────────────────────────────────────
 
@@ -865,19 +866,26 @@ def _walk_node(node, source_bytes, filepath, findings, include_wrapped,
 
 # ── File Scanner ──────────────────────────────────────────────────────────────
 
-def scan_file(filepath, parser, include_wrapped=False, validate_parse=False):
+def scan_file(filepath, parser, include_wrapped=False, validate_parse=False,
+              preprocessed=None, supplementary=False):
     """Parse a C++ source file and return a list of raw findings."""
-    with open(filepath, "rb") as f:
-        raw = f.read()
+    if preprocessed is None:
+        with open(filepath, "rb") as f:
+            raw = f.read()
+    else:
+        raw = preprocessed.source
     # Phase-1 end-of-line normalization: tree-sitter and the directive
     # lexer must consume the same bytes (CODE-003), so a CRLF or bare-CR
     # file parses exactly like its LF form. The mapping is line-count
     # preserving, so reported line numbers are identical to the original
     # file's physical lines.
-    source_bytes = _normalize_eol(raw)
+    source_bytes = raw if preprocessed is not None else _normalize_eol(raw)
 
-    tree = parse_cpp_annotations(parser, source_bytes)
-    if ((validate_parse or preprocessor_patterns_for_path(filepath))
+    tree = (parse_preprocessed_cpp(parser, source_bytes, preprocessed=preprocessed, filepath=filepath)
+            if preprocessed is not None
+            else parse_cpp_annotations(parser, source_bytes))
+    if (preprocessed is None and not supplementary
+            and (validate_parse or preprocessor_patterns_for_path(filepath))
             and has_relevant_parse_error(tree.root_node, source_bytes, filepath)):
         raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
@@ -977,6 +985,7 @@ def format_json(findings, source_dir, coverage):
             "wrapped": f.get("wrapped", False),
             "reason": f["reason"],
             "sink": f.get("sink"),
+            **({"configuration": f["configuration"]} if "configuration" in f else {}),
         })
         summary[f["rule"]][f["risk"]] += 1
         per_file[rel_path][f["risk"]] += 1
@@ -1061,6 +1070,8 @@ def main():
                            help="Include T_()-wrapped literals (default: bare only)")
     argparser.add_argument("--require-parser", action="store_true",
                            help="Exit 2 if tree-sitter is unavailable")
+    argparser.add_argument("--compile-commands", action="append", default=[], metavar="DB",
+                           help="Supplement raw findings with expanded target TUs; one build configuration per DB, repeat for more")
 
     args = argparser.parse_args()
 
@@ -1068,7 +1079,7 @@ def main():
     if not TREE_SITTER_AVAILABLE:
         msg = ("ERROR: tree-sitter is required but not installed. "
                "Install with: pip3 install tree-sitter tree-sitter-cpp")
-        if args.require_parser:
+        if args.require_parser or args.compile_commands:
             print(msg, file=sys.stderr)
             return 2
         else:
@@ -1113,43 +1124,53 @@ def main():
     # ── Initialize parser ─────────────────────────────────────────────────
     lang = _Language(_tscpp.language())
     ts_parser = _Parser(lang)
+    try:
+        databases = [CppCompilationDatabase(path) for path in args.compile_commands]
+    except (OSError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
     # ── Scan files ────────────────────────────────────────────────────────
     include_wrapped = args.all
     all_findings = []
     for filepath in files_to_scan:
         try:
-            raw_findings, source_bytes, display_sinks = scan_file(
-                filepath, ts_parser, include_wrapped, validate_parse)
+            inputs = [("raw-source" if databases else None, None)]
+            inputs += [(str(db.path), db.source(filepath)) for db in databases]
+            file_findings = []
+            for configuration, expanded in inputs:
+                raw_findings, source_bytes, display_sinks = scan_file(
+                    filepath, ts_parser, include_wrapped, validate_parse, expanded,
+                    supplementary=bool(databases) and expanded is None)
+                for finding in raw_findings:
+                    if _hard_exclude(finding, filepath, source_bytes):
+                        continue
+                    score, reasons = _score_finding(
+                        finding, filepath, source_bytes, display_sinks)
+                    risk = _score_to_risk(score)
+                    risk_order = {"LOW": 0, "MED": 1, "HIGH": 2}
+                    if risk_order[risk] < risk_order[args.min_risk]:
+                        continue
+                    if args.skip_low and risk == "LOW":
+                        continue
+                    node = finding["node"]
+                    finding["file"] = filepath
+                    finding["line"] = node.start_point[0] + 1
+                    finding["col"] = node.start_point[1] + 1
+                    if expanded is not None:
+                        finding["line"] = expanded.original_line(node.start_point[0])
+                        finding["col"] = 1
+                    if configuration is not None:
+                        finding["configuration"] = configuration
+                    finding["score"] = score
+                    finding["risk"] = risk
+                    finding["reason"] = reasons
+                    file_findings.append(finding)
+            all_findings.extend(file_findings)
             coverage.scanned += 1
         except (OSError, ValueError) as exc:
             coverage.failed.append(f"{filepath}: {exc}")
             continue
-
-        for finding in raw_findings:
-            if _hard_exclude(finding, filepath, source_bytes):
-                continue
-
-            score, reasons = _score_finding(
-                finding, filepath, source_bytes, display_sinks)
-            risk = _score_to_risk(score)
-
-            risk_order = {"LOW": 0, "MED": 1, "HIGH": 2}
-            if risk_order[risk] < risk_order[args.min_risk]:
-                continue
-
-            if args.skip_low and risk == "LOW":
-                continue
-
-            node = finding["node"]
-            finding["file"] = filepath
-            finding["line"] = node.start_point[0] + 1
-            finding["col"] = node.start_point[1] + 1
-            finding["score"] = score
-            finding["risk"] = risk
-            finding["reason"] = reasons
-
-            all_findings.append(finding)
 
     # ── Output ────────────────────────────────────────────────────────────
     out_dir = _display_root(files_to_scan, args.source_dir)
