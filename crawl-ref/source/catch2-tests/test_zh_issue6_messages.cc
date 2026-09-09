@@ -16,6 +16,8 @@
 #include "test_zh_fixture.h"
 #include "unwind.h"
 
+#include <utility>
+
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: item origin keeps its pronoun and place across locales",
                  "[zh-translation][issue6][item-messages]")
