@@ -9,6 +9,7 @@
 #include "dungeon.h"
 #include "english.h"
 #include "env.h"
+#include "format.h"
 #include "i18n.h"
 #include "item-prop.h"
 #include "item-use.h"
@@ -117,12 +118,15 @@ struct issue10_world
 string observe_message(const std::function<void()> &emit)
 {
     string raw;
-    msg::tee capture(raw);
-    emit();
+    {
+        msg::tee capture(raw);
+        emit();
+    }
     REQUIRE_FALSE(raw.empty());
-    const string stored = get_last_messages(1, true);
-    REQUIRE_FALSE(stored.empty());
-    return stored;
+    // tee observes this invocation before final capitalization and history
+    // filtering. A consumer may emit more than one line (e.g. movement then
+    // an encounter), so retain all of its actual emissions and strip markup.
+    return formatted_string::parse_string(raw).tostring();
 }
 
 string target_description(const monster &m, bool ally_target)
@@ -281,17 +285,28 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
     const string escape = observe_message([&] {
         REQUIRE(mon->blink_to(coord_def(20, 22), false, get<1>(row)));
     });
+    CAPTURE(language, movement, escape);
     CHECK_FALSE(mon->is_constricted());
     CHECK_FALSE(constrictor->is_constricting());
     CHECK(mon->pos() == coord_def(20, 22));
-    CHECK(escape.find(movement) != string::npos);
+    string constrictor_name = constrictor->name(DESC_THE);
+    lowercase(constrictor_name);
+    const string expected_escape = language == lang_t::ZH
+        ? mon->name(DESC_THE) + movement + "挣脱了"
+          + constrictor_name + "！"
+        : mon->name(DESC_THE) + " " + movement + " free of "
+          + constrictor_name + "!";
+    CHECK(escape.find(expected_escape) != string::npos);
     if (language == lang_t::ZH)
-    {
         CHECK(escape.find(movement + "s") == string::npos);
-        CHECK(escape.find("挣脱了") != string::npos);
-    }
-    else
-        CHECK(escape.find(movement + " free of ") != string::npos);
+
+    const string announcement = observe_message([&] {
+        REQUIRE(mon->blink_to(coord_def(20, 23), false, get<1>(row)));
+    });
+    CHECK(announcement.find(mon->name(DESC_THE) + " " + movement + "!")
+          != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(announcement.find(movement + "s") == string::npos);
 }
 
 TEST_CASE("issue 10 monster target descriptions preserve direction and list shape",
@@ -345,7 +360,7 @@ TEST_CASE("issue 10 penetration weapon messages suppress English verb slots",
     unwind_var<item_def> restore_item(env.item[index]);
     item_def &bow = env.item[index];
     bow.base_type = OBJ_WEAPONS;
-    bow.sub_type = WPN_LONG_BOW;
+    bow.sub_type = WPN_LONGBOW;
     bow.quantity = 1;
     bow.brand = SPWPN_PENETRATION;
     monster *mon = world.place(MONS_ORC, coord_def(20, 21));
@@ -365,10 +380,11 @@ TEST_CASE("issue 10 penetration weapon messages suppress English verb slots",
 
     item_def &player_bow = you.inv[0];
     player_bow.base_type = OBJ_WEAPONS;
-    player_bow.sub_type = WPN_LONG_BOW;
+    player_bow.sub_type = WPN_LONGBOW;
     player_bow.quantity = 1;
     player_bow.brand = SPWPN_PENETRATION;
     player_bow.link = 0;
+    player_bow.pos = ITEM_IN_INVENTORY;
     const string player_message = observe_message([&] {
         equip_item(SLOT_WEAPON, 0);
     });
@@ -414,9 +430,11 @@ TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
     item.sub_type = weapon;
     item.quantity = 1;
     item.link = 0;
+    item.pos = ITEM_IN_INVENTORY;
     equip_item(SLOT_WEAPON, 0, false, true);
     REQUIRE(you.weapon() == &item);
     const string message = observe_message([] { xom_take_action(XOM_GOOD_CLEAVING, 10); });
+    CAPTURE(language, message);
     if (language == lang_t::ZH)
     {
         const string suffix = weapon == WPN_HAND_AXE
