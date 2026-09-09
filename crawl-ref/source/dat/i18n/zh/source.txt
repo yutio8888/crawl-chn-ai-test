@@ -23081,10 +23081,10 @@ You lack an exoframe to install that in.
 %s被一阵闪烁的随机色彩光环短暂环绕。
 %%%%
 Your %s briefly %s through it before you manage to get a firm grip on it.
-你的%s在你握紧之前短暂地%s穿过了它。
+你的%1$s短暂地穿过了它，随后你才将它握稳%2$.0s。
 %%%%
 %1$s %2$s briefly %3$s through it before %4$s %5$s to get a firm grip on it.
-%1$s%2$s在%4$s握紧之前短暂地%3$s了它。
+%1$s%2$s短暂地穿过了它，随后%4$s才将它握稳%3$.0s%5$.0s。
 %%%%
 You stand defiantly in death's doorway!
 你无畏地站在死亡的门槛上！
@@ -42875,3 +42875,12 @@ monster target|%1$s is currently targeting %2$s.\n
 %%%%
 move.bare|leap
 飞扑
+%%%%
+tukima unarmed|%1$s %2$s %3$s.
+%1$s%2$s抽动了一下%3$.0s。
+%%%%
+xom cleaving|%s looks sharp.
+%s看起来很锋利。
+%%%%
+xom cleaving|%s looks sharp (like it always does).
+%s看起来很锋利（一如既往）。
