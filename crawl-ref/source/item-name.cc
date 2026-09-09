@@ -1525,7 +1525,7 @@ string sub_type_string(const item_def &item, bool known)
                     ? C_("book full name", "Necromancy")
                     : T_(_book_type_name(sub_type));
             if (Options.language == lang_t::ZH)
-                return string(book_type) + T_("之书");
+                return string(book_type) + T_("book of ");
             return string(T_("book of ")) + book_type;
         }
         }
@@ -1667,7 +1667,8 @@ string weapon_brand_desc(const char *body, const item_def &weap,
     }
     // Structural: ZH prefix "之" vs EN " of "
     else if (Options.language == lang_t::ZH)
-        return make_stringf("%s之%s", brand_name.c_str(), body);
+        return make_stringf_p(C_("weapon brand full name", "%1$s of %2$s"),
+                              body, brand_name.c_str());
     else
         return make_stringf(T_("%s of %s"), body, brand_name.c_str());
 }
@@ -1815,7 +1816,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             {
                 // Structural: ZH prefix "之" vs EN " of "
                 if (Options.language == lang_t::ZH)
-                    buff << missile_brand_name(*this, MBN_NAME) << "之";
+                    buff << make_stringf(C_("item ego prefix", "of %s"),
+                                         missile_brand_name(*this, MBN_NAME));
                 else
                     buff << " of " << missile_brand_name(*this, MBN_NAME);
             }
@@ -1888,7 +1890,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                     else if (terse && Options.language != lang_t::ZH)
                         ego_str = string(" {") + armour_ego_name(*this, terse) + "}";
                     else if (Options.language == lang_t::ZH)
-                        ego_str = string(armour_ego_name(*this, terse)) + "之";
+                        ego_str = make_stringf(C_("item ego prefix", "of %s"),
+                                               armour_ego_name(*this, terse));
                 }
             }
 
@@ -1917,7 +1920,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             // Structural: ZH "X魔杖" vs EN "wand of X"
             if (Options.language == lang_t::ZH)
-                buff << _wand_type_name(item_typ) << "魔杖";
+                buff << _wand_type_name(item_typ) << T_("wand");
             else
                 buff << "wand of " << _wand_type_name(item_typ);
         }
@@ -1928,7 +1931,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             {
                 buff << wand_secondary_string(subtype_rnd / NDSC_WAND_PRI)
                      << wand_primary_string(subtype_rnd % NDSC_WAND_PRI)
-                     << "魔杖";
+                     << T_("wand");
             }
             else
             {
@@ -1957,7 +1960,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             // Structural: ZH "X药水" vs EN "potion of X"
             if (Options.language == lang_t::ZH)
-                buff << potion_type_name(item_typ) << "药水";
+                buff << potion_type_name(item_typ) << T_("potion");
             else
                 buff << "potion of " << potion_type_name(item_typ);
         }
@@ -2030,14 +2033,11 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                 buff << scroll_type_name(item_typ) << T_("scroll");
             else
             {
-                // Derive binding/seal indices from the existing make_name seed.
-                const int binding = (subtype_rnd >> 4) % NDSC_SCROLL_BINDING;
-                const int seal    = (subtype_rnd >> 12) % NDSC_SCROLL_SEAL;
-
-                buff << scroll_binding_zh[binding];
-                if (seal != SSE_NONE)
-                    buff << scroll_seal_zh[seal];
-                buff << "的" << T_("scroll");
+                const string appearance = translated_scroll_appearance(subtype_rnd);
+                if (!appearance.empty())
+                    buff << appearance;
+                else
+                    buff << "scroll labelled " << make_name(subtype_rnd, MNAME_SCROLL);
             }
         }
         else
@@ -2161,7 +2161,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             {
                 // Structural: ZH "X法杖" vs EN "X staff"
                 if (Options.language == lang_t::ZH)
-                    buff << staff_type_name(static_cast<stave_type>(sub_type)) << "法杖";
+                    buff << staff_type_name(static_cast<stave_type>(sub_type)) << T_("staff");
                 else
                     buff << staff_type_name(static_cast<stave_type>(sub_type)) << " staff";
             }
@@ -2184,7 +2184,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             // Structural: ZH "X法杖" vs EN "staff of X"
             if (Options.language == lang_t::ZH)
-                buff << staff_type_name(static_cast<stave_type>(item_typ)) << "法杖";
+                buff << staff_type_name(static_cast<stave_type>(item_typ)) << T_("staff");
             else
                 buff << "staff of " << staff_type_name(static_cast<stave_type>(item_typ));
         }

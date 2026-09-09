@@ -534,47 +534,37 @@ namespace species
     string skin_name_en(species_type species, bool adj)
     {
         if (is_draconian(species) || species == SP_NAGA)
-            return adj ? "scaled" : "scales";
+            return adj ? NC_("species skin", "scaled")
+                       : NC_("species skin", "scales");
         else if (species == SP_TENGU)
-            return adj ? "feathered" : "feathers";
+            return adj ? NC_("species skin", "feathered")
+                       : NC_("species skin", "feathers");
         else if (species == SP_FELID)
-            return adj ? "furry" : "fur";
+            return adj ? NC_("species skin", "furry")
+                       : NC_("species skin", "fur");
         else if (species == SP_MUMMY)
-            return adj ? "bandage-wrapped" : "bandages";
+            return adj ? NC_("species skin", "bandage-wrapped")
+                       : NC_("species skin", "bandages");
         else if (species == SP_GARGOYLE)
-            return adj ? "stony" : "stone";
+            return adj ? NC_("species skin", "stony")
+                       : NC_("species skin", "stone");
         else if (species == SP_POLTERGEIST)
-            return adj ? "ectoplasmic" : "ectoplasm";
+            return adj ? NC_("species skin", "ectoplasmic")
+                       : NC_("species skin", "ectoplasm");
         else if (species == SP_REVENANT)
-            return adj ? "bony" : "bones";
+            return adj ? NC_("species skin", "bony")
+                       : NC_("species skin", "bones");
         else
-            return adj ? "fleshy" : "skin";
+            return adj ? NC_("species skin", "fleshy")
+                       : NC_("species skin", "skin");
     }
 
     string skin_name(species_type species, bool adj)
     {
-        // Aside from direct uses, some flavor stuff checks the strings
-        // here. TODO: should some of these be species flags a la hair?
-        // Also, some skin mutations should have a way of overriding these perhaps
-        if (Options.language != lang_t::ZH)
-            return skin_name_en(species, adj);
-
-        if (is_draconian(species) || species == SP_NAGA)
-            return adj ? "鳞片的" : "鳞片";
-        else if (species == SP_TENGU)
-            return adj ? "羽毛的" : "羽毛";
-        else if (species == SP_FELID)
-            return adj ? "毛茸茸的" : "毛皮";
-        else if (species == SP_MUMMY)
-            return adj ? "绷带包裹的" : "绷带";
-        else if (species == SP_GARGOYLE)
-            return adj ? "石质的" : "石头";
-        else if (species == SP_POLTERGEIST)
-            return adj ? "灵质的" : "灵质";
-        else if (species == SP_REVENANT)
-            return adj ? "骨质的" : "骨头";
-        else
-            return adj ? "皮肤的" : "皮肤";
+        // Morphology and identity consumers keep using skin_name_en(). Only
+        // this display accessor resolves the selected noun/adjective key.
+        const string canonical = skin_name_en(species, adj);
+        return C_("species skin", canonical.c_str());
     }
 
     string arm_name(species_type species)
