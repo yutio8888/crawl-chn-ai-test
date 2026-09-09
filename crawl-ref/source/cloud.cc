@@ -1771,22 +1771,22 @@ void cloud_struct::announce_actor_engulfed(const actor *act,
     {
         mprf_p(T_("%1$s %2$s in the rain."),
             act->name(DESC_THE).c_str(),
-            act->conj_verb(silenced(act->pos())?
-                        C_("verb", "steam") : C_("verb", "sizzle")).c_str());
+            act->verb_for_display(silenced(act->pos())
+                ? NC_("verb", "steam") : NC_("verb", "sizzle"), "verb").c_str());
     }
     else if (type == CLOUD_BATS)
     {
         mprf_p(T_("%1$s %2$s %3$s."),
              act->name(DESC_THE).c_str(),
-             act->conj_verb(C_("verb", "are swarmed by")).c_str(),
+             act->verb_for_display(NC_("verb", "are swarmed by"), "verb").c_str(),
              T_(cloud_name().c_str()));
     }
     else
     {
         mprf_p(T_("%1$s %2$s in %3$s."),
              act->name(DESC_THE).c_str(),
-             beneficial ? act->conj_verb(C_("verb", "bask")).c_str()
-                        : act->conj_verb(C_("verb", "are engulfed")).c_str(),
+             beneficial ? act->verb_for_display(NC_("verb", "bask"), "verb").c_str()
+                        : act->verb_for_display(NC_("verb", "are engulfed"), "verb").c_str(),
              T_(cloud_name().c_str()));
         return;
     }

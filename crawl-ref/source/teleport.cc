@@ -21,6 +21,8 @@
 #include "mon-death.h"
 #include "mon-place.h"
 #include "mon-tentacle.h"
+#include "movement-i18n.h"
+#include "options.h"
 #include "random.h"
 #include "terrain.h"
 #include "view.h"
@@ -59,18 +61,24 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
     if (dest == pos())
         return false;
 
-    const string verb = (jump ? mons_genus(type) == MONS_FROG ? T_("hop") : T_("leap") : T_("blink"));
+    const char *verb = jump ? (mons_genus(type) == MONS_FROG
+                              ? NC_("move.bare", "hop")
+                              : NC_("move.bare", "leap"))
+                            : NC_("move.bare", "blink");
+    const string display_verb = Options.language == lang_t::ZH
+        ? translated_move_phrase(verb, move_phrase_context::bare)
+        : conj_verb(verb);
 
     if (is_constricted())
     {
         // Constriction escape will already produce an appropriate message.
         quiet = true;
-        stop_being_constricted(false, verb + "s");
+        stop_being_constricted(false, display_verb);
     }
 
     if (!quiet)
     {
-        string message = " " + conj_verb(verb) + "!";
+        string message = " " + display_verb + "!";
         simple_monster_message(*this, message.c_str());
     }
 

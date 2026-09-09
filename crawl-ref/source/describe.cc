@@ -6411,6 +6411,7 @@ static string _monster_current_target_description(const monster_info &mi)
 
     const string pronoun = mi.pronoun(PRONOUN_SUBJECTIVE);
     const bool plural = mi.pronoun_plurality();
+    const bool zh = Options.language == lang_t::ZH;
 
     ostringstream result;
     if (mi.is(MB_ALLY_TARGET))
@@ -6418,16 +6419,31 @@ static string _monster_current_target_description(const monster_info &mi)
         auto allies = find_allies_targeting(*m);
         if (allies.size() == 1)
         {
-            result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural)
-                   << T_(" currently targeted by ")
-                   << allies[0]->name(DESC_YOUR) << ".\n";
+            if (zh)
+            {
+                result << make_stringf_p(C_("monster target",
+                    "%1$s is currently targeted by %2$s.\n"),
+                    uppercase_first(pronoun).c_str(),
+                    allies[0]->name(DESC_YOUR).c_str());
+            }
+            else
+                result << uppercase_first(pronoun) << " "
+                       << conjugate_verb("are", plural)
+                       << " currently targeted by "
+                       << allies[0]->name(DESC_YOUR) << ".\n";
         }
         else
         {
-            result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural)
-                   << T_(" currently targeted by:\n");
+            if (zh)
+            {
+                result << make_stringf(C_("monster target",
+                    "%s is currently targeted by:\n"),
+                    uppercase_first(pronoun).c_str());
+            }
+            else
+                result << uppercase_first(pronoun) << " "
+                       << conjugate_verb("are", plural)
+                       << " currently targeted by:\n";
             for (auto *a : allies)
                 result << "  " << a->name(DESC_YOUR) << "\n";
         }
@@ -6436,10 +6452,18 @@ static string _monster_current_target_description(const monster_info &mi)
     // TODO: this might be ambiguous, give a relative position?
     if (mi.attitude == ATT_FRIENDLY && m->get_foe())
     {
-        result << uppercase_first(pronoun) << " "
-               << conjugate_verb(T_("are"), plural)
-               << T_(" currently targeting ")
-               << m->get_foe()->name(DESC_THE) << ".\n";
+        if (zh)
+        {
+            result << make_stringf_p(C_("monster target",
+                "%1$s is currently targeting %2$s.\n"),
+                uppercase_first(pronoun).c_str(),
+                m->get_foe()->name(DESC_THE).c_str());
+        }
+        else
+            result << uppercase_first(pronoun) << " "
+                   << conjugate_verb("are", plural)
+                   << " currently targeting "
+                   << m->get_foe()->name(DESC_THE) << ".\n";
     }
 
     return result.str();
@@ -6850,7 +6874,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural) << " "
+                   << conjugate_verb("are", plural) << " "
                    << comma_separated_line(resist_descriptions.begin(),
                                            resist_descriptions.end(),
                                            T_("; and "), T_("; "))
@@ -6873,7 +6897,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural) << T_(" susceptible to ")
+                   << conjugate_verb("are", plural) << T_(" susceptible to ")
                    << comma_separated_line(suscept.begin(), suscept.end())
                    << T_(".\n");
         }
@@ -6889,7 +6913,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural)
+                   << conjugate_verb("are", plural)
                    << T_(" vulnerable to silver and hated by Zin.\n");
         }
     }
@@ -6911,7 +6935,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         }
         else
             result << uppercase_first(pronoun)
-                   << " " << conjugate_verb(T_("are"), plural)
+                   << " " << conjugate_verb("are", plural)
                    << T_(" cold-blooded and may be slowed by cold attacks.\n");
     }
 
@@ -6938,7 +6962,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("inflict"), plural)
+                   << conjugate_verb("inflict", plural)
                    << T_(" 1d5 acid damage when struck in melee.\n");
         }
     }
@@ -6953,7 +6977,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         }
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural)
+                   << conjugate_verb("are", plural)
                    << T_(" insubstantial and immune to ensnarement.\n");
     }
     else if (mons_class_flag(mi.type, M_AMORPHOUS))
@@ -6965,7 +6989,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         }
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("are"), plural)
+                   << conjugate_verb("are", plural)
                    << T_(" amorphous and immune to ensnarement.\n");
     }
 
@@ -6985,7 +7009,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         }
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb(T_("cover"), plural)
+                   << conjugate_verb("cover", plural)
                    << T_(" ground more quickly when invisible.\n");
     }
 
@@ -7184,7 +7208,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
     const string it = mi.pronoun(PRONOUN_SUBJECTIVE);
     const string it_o = mi.pronoun(PRONOUN_OBJECTIVE);
     const string It = uppercase_first(it);
-    const string is = conjugate_verb(T_("are"), mi.pronoun_plurality());
+    const string is = conjugate_verb("are", mi.pronoun_plurality());
 
     switch (mi.type)
     {

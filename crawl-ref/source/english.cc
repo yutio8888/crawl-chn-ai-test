@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "i18n.h"
+#include "lang-en-guard.h"
 #include "options.h"
 #include "stringutil.h"
 
@@ -286,6 +287,22 @@ string conjugate_verb(const string &verb, bool plural)
     }
 
     return pluralise(verb);
+}
+
+string conjugate_verb_for_display(const char *english_key, bool plural,
+                                  const char *context)
+{
+    if (Options.language == lang_t::ZH)
+    {
+        const string translated = C_(context, english_key);
+        if (translated != english_key)
+            return translated;
+    }
+
+    // A missing or empty translation falls back to grammatical English.
+    // Only the original English key ever reaches English morphology.
+    const ScopedLangEn english;
+    return conjugate_verb(english_key, plural);
 }
 
 static const char * const _pronoun_declension[][NUM_PRONOUN_CASES] =

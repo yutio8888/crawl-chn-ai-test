@@ -121,6 +121,9 @@ public:
     virtual string pronoun(pronoun_type which_pronoun,
                            bool force_visible = false) const = 0;
     virtual string conj_verb(const string &verb) const = 0;
+    // Display-only: pass deferred English N_/NC_ keys, never translated text.
+    string verb_for_display(const char *english_key,
+                            const char *context = nullptr) const;
     virtual string hand_name(bool plural, bool *can_plural = nullptr) const = 0;
     virtual string foot_name(bool plural, bool *can_plural = nullptr) const = 0;
     virtual string arm_name(bool plural, bool *can_plural = nullptr) const = 0;

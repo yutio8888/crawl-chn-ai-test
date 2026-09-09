@@ -297,9 +297,8 @@ spret cast_jinxbite(int pow, bool fail)
 spret cast_confusing_touch(int power, bool fail)
 {
     fail_check();
-    msg::stream << you.hands_act("begin", "to glow ")
-                << (you.duration[DUR_CONFUSING_TOUCH] ? "brighter" : "red")
-                << "." << endl;
+    msg::stream << you.hands_act("begin", you.duration[DUR_CONFUSING_TOUCH]
+                               ? "to glow brighter." : "to glow red.") << endl;
 
     you.set_duration(DUR_CONFUSING_TOUCH,
                      max(10 + div_rand_round(random2(1 + power), 5),
