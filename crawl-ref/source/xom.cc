@@ -2683,7 +2683,9 @@ static void _xom_enchant_monster(int sever, bool helpful)
 
         mprf(T_("%s suddenly %s%s!"),
               application->name(DESC_THE).c_str(),
-              (ench == ENCH_PETRIFYING || ench == ENCH_REGENERATION) ? "开始" : "看起来",
+              (ench == ENCH_PETRIFYING || ench == ENCH_REGENERATION)
+                  ? C_("xom enchantment", "starts ")
+                  : C_("xom enchantment", "looks "),
               ench_name.c_str());
 
         application->add_ench(mon_enchant(ench, &you, time));

@@ -1299,7 +1299,8 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
                 const int facet = sv.get_int();
                 ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
                 return zh_facet_descs[facet];
-            }, T_("，并且"), T_("、"));
+            }, C_("mutant beast facets", ", and it"),
+            C_("mutant beast facets", ", it"));
         return make_stringf_p(T_("%1$s."), description.c_str());
     }
 
@@ -6408,7 +6409,7 @@ static string _monster_current_target_description(const monster_info &mi)
         return "";
     const monster *m = monster_at(mi.pos);
 
-    const char* pronoun = mi.pronoun(PRONOUN_SUBJECTIVE);
+    const string pronoun = mi.pronoun(PRONOUN_SUBJECTIVE);
     const bool plural = mi.pronoun_plurality();
 
     ostringstream result;
@@ -6775,7 +6776,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     if (mi.props.exists(CLOUD_IMMUNE_MB_KEY) && mi.props[CLOUD_IMMUNE_MB_KEY])
         extreme_resists.emplace_back(T_("clouds of all kinds"));
 
-    const char* pronoun = mi.pronoun(PRONOUN_SUBJECTIVE);
+    const string pronoun = mi.pronoun(PRONOUN_SUBJECTIVE);
     const bool plural = mi.pronoun_plurality();
 
     vector<string> resist_descriptions;
@@ -6842,8 +6843,9 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
             result << uppercase_first(pronoun)
                    << comma_separated_line(resist_descriptions.begin(),
                                            resist_descriptions.end(),
-                                           "；", "；")
-                   << "。\n";
+                                           C_("monster resistance list", "; and "),
+                                           C_("monster resistance list", "; "))
+                   << C_("monster description", ".\n");
         }
         else
         {
@@ -6861,9 +6863,12 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     {
         if (zh)
         {
-            result << uppercase_first(pronoun) << "易受"
-                   << comma_separated_line(suscept.begin(), suscept.end())
-                   << "影响。\n";
+            const string subject = uppercase_first(pronoun);
+            const string vulnerabilities =
+                comma_separated_line(suscept.begin(), suscept.end());
+            result << make_stringf_p(
+                C_("monster description", "%1$s is susceptible to %2$s.\n"),
+                subject.c_str(), vulnerabilities.c_str());
         }
         else
         {
@@ -6877,7 +6882,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     if (mi.is(MB_CHAOTIC))
     {
         if (zh)
-            result << uppercase_first(pronoun) << "易受银器伤害，并被吉恩憎恨。\n";
+            result << uppercase_first(pronoun)
+                   << T_(" vulnerable to silver and hated by Zin.\n");
         else
         {
             result << uppercase_first(pronoun) << " "
@@ -6899,7 +6905,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         if (zh)
         {
             result << uppercase_first(pronoun)
-                   << "是冷血动物，可能被寒冷攻击减速。\n";
+                   << T_(" cold-blooded and may be slowed by cold attacks.\n");
         }
         else
             result << uppercase_first(pronoun)
@@ -6924,7 +6930,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         if (zh)
         {
             result << uppercase_first(pronoun)
-                   << "近战攻击时会额外造成1d5点酸伤害。\n";
+                   << C_("monster description",
+                         " inflict 1d5 acid damage when struck in melee.\n");
         }
         else
         {
@@ -6940,7 +6947,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         if (zh)
         {
             result << uppercase_first(pronoun)
-                   << "是无实体的，免疫缠绕。\n";
+                   << T_(" insubstantial and immune to ensnarement.\n");
         }
         else
             result << uppercase_first(pronoun) << " "
@@ -6952,7 +6959,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         if (zh)
         {
             result << uppercase_first(pronoun)
-                   << "是无定形的，免疫缠绕。\n";
+                   << T_(" amorphous and immune to ensnarement.\n");
         }
         else
             result << uppercase_first(pronoun) << " "
@@ -6969,7 +6976,9 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     {
         // Cf. monster::action_energy() in monster.cc.
         if (zh)
-            result << uppercase_first(pronoun) << "隐形时移动速度更快。\n";
+            result << uppercase_first(pronoun)
+                   << C_("monster description",
+                         " cover ground more quickly when invisible.\n");
         else
             result << uppercase_first(pronoun) << " "
                    << conjugate_verb(T_("cover"), plural)
@@ -6980,9 +6989,11 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     {
         if (zh)
         {
-            result << "受伤或死亡时会释放多种史莱姆，"
-                      "数量与受到的伤害成正比。\n";
-            result << "被变形时会释放所有史莱姆。\n";
+            result << C_("monster description",
+                "It will release varied jellies when damaged or killed,"
+                " with the number of jellies proportional to the amount of"
+                " damage.\n");
+            result << T_("It will release all of its jellies when polymorphed.\n");
         }
         else
         {
@@ -7061,8 +7072,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         {
             if (zh)
             {
-                result << "尽管外表" << mi.pronoun(PRONOUN_POSSESSIVE)
-                       << "，但它能开门。\n";
+                result << make_stringf(
+                    C_("monster description",
+                       "Despite %s appearance, it can open doors.\n"),
+                    mi.pronoun(PRONOUN_POSSESSIVE));
             }
             else
                 result << T_("Despite ") << mi.pronoun(PRONOUN_POSSESSIVE)
@@ -7816,21 +7829,23 @@ string get_ghost_description(const monster_info &mi, bool concise)
         // Build the whole Chinese display string here. The English form below
         // relies on articles, spaces, commas, and "of", none of which can be
         // safely appended to Chinese names and titles.
-        const char* rank = T_(xl_rank_names[mi.i_ghost.xl_rank]);
+        const string rank = T_(xl_rank_names[mi.i_ghost.xl_rank]);
         const string species_name = species::name(gspecies);
         const char* job_name = get_job_name(mi.i_ghost.job);
 
         if (mi.i_ghost.religion != GOD_NO_GOD)
         {
             const string god = god_name(mi.i_ghost.religion);
-            return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）"),
-                                mi.mname.c_str(), title.c_str(), rank,
+            return make_stringf_p(C_("ghost description",
+                                    "%1$s the %2$s, %3$s %4$s %5$s of %6$s"),
+                                mi.mname.c_str(), title.c_str(), rank.c_str(),
                                 species_name.c_str(), job_name,
                                 god.c_str());
         }
 
-        return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s）"),
-                            mi.mname.c_str(), title.c_str(), rank,
+        return make_stringf_p(C_("ghost description",
+                                "%1$s the %2$s, %3$s %4$s %5$s"),
+                            mi.mname.c_str(), title.c_str(), rank.c_str(),
                             species_name.c_str(), job_name);
     }
 
