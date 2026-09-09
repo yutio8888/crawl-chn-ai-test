@@ -49,7 +49,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error,
                          parse_cpp_annotations, preprocessor_patterns_for_path,
-                         _normalize_eol)
+                         _normalize_eol, CppCompilationDatabase,
+                         parse_preprocessed_cpp)
 
 TREE_SITTER_AVAILABLE = False
 _tscpp = None
@@ -592,17 +593,24 @@ def _walk(node, src, findings, type_bindings):
         _walk(child, src, findings, type_bindings)
 
 
-def scan_file(filepath, parser, validate_parse=False):
-    with open(filepath, "rb") as f:
-        raw = f.read()
+def scan_file(filepath, parser, validate_parse=False, preprocessed=None,
+              supplementary=False):
+    if preprocessed is None:
+        with open(filepath, "rb") as f:
+            raw = f.read()
+    else:
+        raw = preprocessed.source
     # Phase-1 end-of-line normalization: tree-sitter and the directive
     # lexer must consume the same bytes (CODE-003), so a CRLF or bare-CR
     # file parses exactly like its LF form. The mapping is line-count
     # preserving, so reported line numbers are identical to the original
     # file's physical lines.
-    src = _normalize_eol(raw)
-    tree = parse_cpp_annotations(parser, src)
-    if ((validate_parse or preprocessor_patterns_for_path(filepath))
+    src = raw if preprocessed is not None else _normalize_eol(raw)
+    tree = (parse_preprocessed_cpp(parser, src, preprocessed=preprocessed, filepath=filepath)
+            if preprocessed is not None
+            else parse_cpp_annotations(parser, src))
+    if (preprocessed is None and not supplementary
+            and (validate_parse or preprocessor_patterns_for_path(filepath))
             and has_relevant_parse_error(tree.root_node, src, filepath)):
         raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
@@ -610,6 +618,8 @@ def scan_file(filepath, parser, validate_parse=False):
     _walk(tree.root_node, src, findings, type_bindings)
     for f in findings:
         f["file"] = filepath
+        if preprocessed is not None:
+            f["line"] = preprocessed.original_line(f["node"].start_point[0])
         del f["node"]
     return findings
 
@@ -630,12 +640,14 @@ def main():
                     help="Exit 2 if tree-sitter is unavailable")
     ap.add_argument("--include-warn", action="store_true",
                     help="Report WARN (CALL_NO_CSTR) findings too")
+    ap.add_argument("--compile-commands", action="append", default=[], metavar="DB",
+                    help="Supplement raw findings with expanded target TUs; one build configuration per DB, repeat for more")
     args = ap.parse_args()
 
     if not TREE_SITTER_AVAILABLE:
         msg = ("tree-sitter required but not installed. "
                "Install: pip3 install tree-sitter tree-sitter-cpp")
-        if args.require_parser:
+        if args.require_parser or args.compile_commands:
             print(f"ERROR: {msg}", file=sys.stderr)
             return 2
         print(f"Warning: {msg}\nSkipping varargs-string scan.", file=sys.stderr)
@@ -675,11 +687,29 @@ def main():
 
     lang = _Language(_tscpp.language())
     parser = _Parser(lang)
+    try:
+        databases = [CppCompilationDatabase(path) for path in args.compile_commands]
+    except (OSError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
     all_findings = []
     for fp in files:
         try:
-            all_findings.extend(scan_file(fp, parser, validate_parse))
+            if databases:
+                # Raw recovery findings are supplemental. Every requested
+                # configuration below must still preprocess and parse strictly.
+                raw_findings = scan_file(fp, parser, supplementary=True)
+                for finding in raw_findings:
+                    finding["configuration"] = "raw-source"
+                all_findings.extend(raw_findings)
+                for database in databases:
+                    findings = scan_file(fp, parser, preprocessed=database.source(fp))
+                    for finding in findings:
+                        finding["configuration"] = str(database.path)
+                    all_findings.extend(findings)
+            else:
+                all_findings.extend(scan_file(fp, parser, validate_parse))
             coverage.scanned += 1
         except (OSError, ValueError) as exc:
             coverage.failed.append(f"{fp}: {exc}")

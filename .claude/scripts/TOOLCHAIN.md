@@ -526,6 +526,47 @@ python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json -
 继续阻断。详见 `docs/issue120-scanner-preproc-report.md`。原始验证日志只存放
 在 gitignored 的 `.claude/metrics/verify/`，报告入库时只保留关键摘录和路径。
 
+### 显式预处理实验入口（Issue #120）
+
+三个扫描器均可重复指定 `--compile-commands DB`，在原始源码风险结果之外，
+增加每个数据库配置下的目标 TU 展开扫描。默认门禁仍使用原有模式；此入口
+不代表完整跨文件、全部平台预处理已经完成。每个请求文件必须在每个 DB 中
+有且仅有一个条目；缺条目、缺依赖、CPP 失败或展开后的解析错误均退出 2。
+
+先按正常构建流程准备依赖和生成头，再从同一配置的 Makefile 导出普通 core
+`.cc` 的真实参数。以下目标不编译，也不生成缺失的依赖：
+
+```bash
+make -C crawl-ref/source i18n-compile-commands FORCE_CXX=clang++ PYTHON=python3 \
+  I18N_SCAN_FILES='directn.cc main.cc menu.cc' \
+  I18N_COMPILE_COMMANDS="${TMPDIR:-/tmp}/crawl-console-commands.json"
+python3 .claude/scripts/scan_varargs_string.py \
+  --files crawl-ref/source/directn.cc,crawl-ref/source/main.cc,crawl-ref/source/menu.cc \
+  --compile-commands "${TMPDIR:-/tmp}/crawl-console-commands.json" --format json
+```
+
+分别用原构建选项 `TILES=y`、`WEBTILES=y` 或
+`EXTRA_FLAGS=-DDEBUG_DIAGNOSTICS` 导出不同 DB，并重复传入扫描器。
+`scan_string_concat.py` 使用相同参数；`scan_i18n_lifetime.py` 的 `--files`
+接受以空格分隔的路径。JSON 中的 `configuration` 区分展开来源；宏诊断定位
+到原调用行，展开列不冒充原始拼写列。源码中的 `#line` 暂不支持并明确拒绝。
+
+支持 Unix 风格 Clang（包括 Android NDK Clang），暂不支持 GCC、响应文件、
+外部 driver config 和间接预处理参数。自动 driver config 被关闭；所需
+defines/includes/target 必须明确出现在编译命令中。对象和依赖输出参数会
+移除，编译器及数据库本身应来自可信构建配置。Android 需使用 NDK 对应
+ABI/API 的真实 TU 命令，不能把主机 Makefile 的宏当作完整 NDK 配置。
+
+Makefile 导出器拒绝 header、utility、rltiles、Catch2 等有特殊上下文或
+目标参数的条目。已有标准 `compile_commands.json` 可直接输入，但当前只
+保留指定文件本身的展开文本，不扫描其包含文件的定义。生命周期 helper
+索引仅对该 DB 明确配置的文件使用展开内容，其余仍用原 lexical 索引；
+不同 DB 的 helper 不混合。原始源码结果始终保留，宏配置不能删掉已有风险。
+进程内复用同一 DB 的展开结果，不使用后台服务或持久缓存。
+
+完整替换的剩余语法、header 上下文和平台覆盖边界见
+`docs/issue120-scanner-preproc-report.md` 的显式实验记录。
+
 ### 编排者工具
 
 ```bash

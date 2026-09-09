@@ -3757,7 +3757,7 @@ static void _debug_describe_feature_at(const coord_def &where)
     const int map_index = env.level_map_ids(where);
     if (map_index != INVALID_MAP_INDEX)
     {
-        const vault_placement &vp(*env.level_vaults[map_index]);
+        const vault_placement &vp = *env.level_vaults[map_index];
         const coord_def br = vp.pos + vp.size - 1;
         vault = make_stringf(" [Vault: %s (%d,%d)-(%d,%d) (%dx%d)]",
                              vp.map_name_at(where).c_str(),

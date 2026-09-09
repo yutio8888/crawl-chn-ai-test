@@ -30,7 +30,8 @@ from dataclasses import dataclass, field
 from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import CPP_AST_SCAN_SKIP_DIRS
+from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CppCompilationDatabase,
+                         parse_preprocessed_cpp)
 
 
 try:
@@ -1033,7 +1034,8 @@ def _deduplicate(findings: Iterable[dict]) -> List[dict]:
     by_key = {}
     for finding in findings:
         key = (finding["rule"], finding["file"], finding["line"],
-               finding["column"], finding["storage"], finding["field_path"])
+               finding["column"], finding["storage"], finding["field_path"],
+               finding.get("configuration"))
         by_key.setdefault(key, finding)
     return sorted(by_key.values(), key=lambda f: (
         os.path.normcase(f["file"]), f["line"], f["column"], f["rule"],
@@ -1160,12 +1162,13 @@ def _build_index(paths: Sequence[str], language,
     return (None if errors else index), errors, tree_keepalive, retained
 
 
-def _build_lexical_index(paths: Sequence[str]) -> Index:
+def _build_lexical_index(paths: Sequence[str], sources=None) -> Index:
     """Pure-stdlib facts for large files that cannot safely enter this TS ABI."""
     index = Index()
     for path in paths:
         try:
-            source = open(path, "r", encoding="utf-8", errors="replace").read()
+            source = (sources[path] if sources is not None and path in sources
+                      else open(path, "r", encoding="utf-8", errors="replace").read())
         except OSError:
             continue
         masked = _mask_cpp_comments(source)
@@ -1846,6 +1849,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                             help="include LIFE1xx advisory findings")
     parser_cli.add_argument("--require-parser", action="store_true",
                             help="compatibility flag; parser failures always exit 2")
+    parser_cli.add_argument("--compile-commands", action="append", default=[], metavar="DB",
+                            help="Supplement raw findings with expanded target TUs; helper definitions expand only when listed in that DB")
     args = parser_cli.parse_args(argv)
 
     if not TREE_SITTER_AVAILABLE:
@@ -1922,6 +1927,35 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 target, index, validate=False, source=source_text,
                 masked=masked))
         language = None
+        # Preserve the existing raw-source findings. Configuration pruning must
+        # not remove an existing lifetime warning or borrowed-pointer finding.
+        # Each database's expanded helper definitions form a separate index;
+        # declarations from mutually exclusive ABIs are never merged together.
+        for database_path in args.compile_commands:
+            database = CppCompilationDatabase(database_path)
+            expanded_sources = {
+                str(path): database.source(path).source.decode("utf-8")
+                for path in database.commands
+            }
+            configured_paths = list(dict.fromkeys([*index_paths, *expanded_sources]))
+            configured_index = _build_lexical_index(configured_paths, expanded_sources)
+            cpp_parser = _Parser(_Language(_tscpp.language()))
+            for target in targets:
+                expanded = database.source(target)
+                parse_preprocessed_cpp(cpp_parser, expanded.source,
+                                       preprocessed=expanded, filepath=target)
+                source_text = expanded.source.decode("utf-8")
+                masked, lexical_error = _lex_cpp(source_text)
+                if lexical_error:
+                    raise ValueError(f"preprocessed lexical integrity error in {target}: {lexical_error}")
+                additions = _scan_large_lexical(
+                    target, configured_index, validate=False,
+                    source=source_text, masked=masked)
+                for finding in additions:
+                    finding["line"] = expanded.original_line(finding["line"] - 1)
+                    finding["column"] = 1
+                    finding["configuration"] = str(database.path)
+                pre_findings.extend(additions)
     except Exception as exc:
         print(f"ERROR: cannot initialize/build tree-sitter index: {exc}", file=sys.stderr)
         return 2
