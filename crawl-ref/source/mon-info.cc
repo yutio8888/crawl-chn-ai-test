@@ -1197,7 +1197,9 @@ string monster_info::_apply_adjusted_description(description_level_type desc,
             return apply_description(desc, s);
         if (desc == DESC_YOUR
             || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
+        {
             return apply_description(DESC_YOUR, s);
+        }
         return apply_description(DESC_PLAIN, s);
     }
 
@@ -1799,8 +1801,10 @@ string monster_info::speed_description() const
     _add_energy_desc(menergy.move,
         T_("travel"), speed, unusuals);
     if (menergy.swim != menergy.move)
+    {
         _add_energy_desc(menergy.swim,
             T_("swim"), speed, unusuals);
+    }
     // If we ever add a non-magical monster with fast/slow abilities,
     // we'll need to update this.
     _add_energy_desc(menergy.spell,
@@ -2325,9 +2329,7 @@ string description_for_ench(enchant_type type)
 
     for (auto& name : monster_info_flag_names)
         if (name.flag == *flag)
-        {
             return C_("flag long", name.long_singular.c_str());
-        }
 
     return "";
 }

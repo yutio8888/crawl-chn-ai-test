@@ -6882,8 +6882,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     if (mi.is(MB_CHAOTIC))
     {
         if (zh)
+        {
             result << uppercase_first(pronoun)
                    << T_(" vulnerable to silver and hated by Zin.\n");
+        }
         else
         {
             result << uppercase_first(pronoun) << " "
@@ -6976,9 +6978,11 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     {
         // Cf. monster::action_energy() in monster.cc.
         if (zh)
+        {
             result << uppercase_first(pronoun)
                    << C_("monster description",
                          " cover ground more quickly when invisible.\n");
+        }
         else
             result << uppercase_first(pronoun) << " "
                    << conjugate_verb(T_("cover"), plural)

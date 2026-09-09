@@ -248,8 +248,10 @@ static void _monster_headsup(const vector<monster*> &monsters,
         // Build subject+verb prefix (EN only; ZH drops this via positional params)
         string subject_verb;
         if (monsters.size() == 1)
+        {
             subject_verb = uppercase_first(mon->pronoun(PRONOUN_SUBJECTIVE))
                            + " " + conjugate_verb("are", mon->pronoun_plurality());
+        }
         else if (mon->type == MONS_DANCING_WEAPON)
             subject_verb = "There is";
         else if (single.count(mon))

@@ -534,8 +534,10 @@ namespace species
     string skin_name_en(species_type species, bool adj)
     {
         if (is_draconian(species) || species == SP_NAGA)
+        {
             return adj ? NC_("species skin", "scaled")
                        : NC_("species skin", "scales");
+        }
         else if (species == SP_TENGU)
             return adj ? NC_("species skin", "feathered")
                        : NC_("species skin", "feathers");

@@ -1146,7 +1146,9 @@ bool force_player_cleave(coord_def target)
         targeter_cleave hitfunc(&you, target, range);
         if (stop_attack_prompt(hitfunc,
                 T_("attack ")))
+        {
             return true;
+        }
 
         melee_attack atk(&you, nullptr);
         atk.launch_attack_set();

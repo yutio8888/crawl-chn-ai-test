@@ -145,6 +145,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     scroll.sub_type = SCR_BLINKING;
     scroll.quantity = 1;
     scroll.pos = coord_def(-1, -1);
+    scroll.rnd = 1; // Required item identity byte, independent of subtype_rnd.
 
     // Seeds exercise every binding and seal, including SSE_NONE and high bits.
     const pair<uint32_t, const char *> cases[] =

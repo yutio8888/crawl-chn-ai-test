@@ -11,8 +11,10 @@
 #include "lang-fake.h"
 #include "libutil.h"
 #include "mon-info.h"
+#include "mon-util.h"
 #include "options.h"
 #include "place.h"
+#include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
 
@@ -51,6 +53,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: hydra head display keeps words and decimal boundaries",
                  "[zh-translation][issue6][monster-info]")
 {
+    init_monsters();
     monster_info hydra(MONS_HYDRA);
     for (const auto &row : {std::make_pair(1, "（一头）"),
                             std::make_pair(10, "（十头）"),

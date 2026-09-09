@@ -337,8 +337,10 @@ const char *decline_pronoun(gender_type gender, pronoun_type variant)
     ASSERT_RANGE(gender, 0, NUM_GENDERS);
     ASSERT_RANGE(variant, 0, NUM_PRONOUN_CASES);
     if (Options.language == lang_t::ZH)
+    {
         return C_(_pronoun_contexts[variant],
                   _pronoun_declension[gender][variant]);
+    }
     return _pronoun_declension[gender][variant];
 }
 
