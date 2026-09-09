@@ -314,8 +314,8 @@ static void _count_monster_types(const vector<monster*> &monsters,
 
 static string _describe_monsters_from_species(const vector<details> &species)
 {
-    const string and_sep = Options.language == lang_t::ZH ? " 和 " : " and ";
-    const string comma_sep = Options.language == lang_t::ZH ? "、" : ", ";
+    const string and_sep = " " + string(C_("monster notice list", "and")) + " ";
+    const string comma_sep = T_(", ");
     return comma_separated_fn(species.begin(), species.end(),
         [] (const details &det)
         {
@@ -445,7 +445,7 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
     }
     else
         out << (T_("You encounter "))
-            << _describe_monsters_from_species(species) << "。";
+            << _describe_monsters_from_species(species) << T_(".");
 
     _monster_headsup(monsters, single, out);
 

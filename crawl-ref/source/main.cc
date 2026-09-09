@@ -440,23 +440,13 @@ NORETURN static void _launch_game()
 
     if (!crawl_state.game_is_tutorial())
     {
-        if (Options.language == lang_t::ZH)
-        {
-            // ZH: uses Chinese punctuation and name format without "the"
-            const char* welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
-            msg::stream << "<yellow>" << welcome_word << "，"
-                        << you.your_name << "（"
-                        << species::name(you.species)
-                        << " " << get_job_name(you.char_class) << "）。</yellow>";
-        }
-        else
-        {
-            const char* welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
-            msg::stream << "<yellow>" << welcome_word << ", "
-                        << you.your_name << " the "
-                        << species::name(you.species)
-                        << " " << get_job_name(you.char_class) << ".</yellow>";
-        }
+        const string welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
+        const string species_name = species::name(you.species);
+        const string job_name = get_job_name(you.char_class);
+        msg::stream << make_stringf(
+            C_("game start", "<yellow>%s, %s the %s %s.</yellow>"),
+            welcome_word.c_str(), you.your_name.c_str(),
+            species_name.c_str(), job_name.c_str());
         // TODO: seeded sprint?
         if (crawl_state.type == GAME_TYPE_CUSTOM_SEED)
             msg::stream << endl << "<white>" << seed_description() << "</white>";
@@ -715,10 +705,10 @@ static void _wanderer_note_equipment()
     mprf(T_("You begin with %s%s%s."), equip_str.c_str(),
          spell_str.c_str(), library_str.c_str());
 
-    // ZH uses different sentence structure for the starting note
-    const string combined_str = Options.language == lang_t::ZH
-        ? you.your_name + "携带" + equip_str + spell_str + library_str + "出发了。"
-        : you.your_name + " set off with " + equip_str + spell_str + library_str + ".";
+    // This note remains a display snapshot in the language used at creation.
+    const string combined_str = make_stringf(
+        C_("game start", "%s set off with %s%s%s."), you.your_name.c_str(),
+        equip_str.c_str(), spell_str.c_str(), library_str.c_str());
     take_note(Note(NOTE_MESSAGE, 0, 0, combined_str));
 }
 
@@ -776,19 +766,11 @@ static void _god_greeting_message(bool game_start)
 static void _take_starting_note()
 {
     ostringstream notestr;
-    // ZH uses different name format and punctuation
-    if (Options.language == lang_t::ZH)
-    {
-        notestr << you.your_name << "（"
-                << species::name(you.species) << " "
-                << get_job_name(you.char_class)
-                << "）开始了寻找宝珠的征程。";
-    }
-    else
-        notestr << you.your_name << " the "
-                << species::name(you.species) << " "
-                << get_job_name(you.char_class)
-                << " began the quest for the Orb.";
+    const string species_name = species::name(you.species);
+    const string job_name = get_job_name(you.char_class);
+    notestr << make_stringf(
+        C_("game start", "%s the %s %s began the quest for the Orb."),
+        you.your_name.c_str(), species_name.c_str(), job_name.c_str());
     take_note(Note(NOTE_MESSAGE, 0, 0, notestr.str()));
     mark_milestone("begin", "began the quest for the Orb.");
 

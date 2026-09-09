@@ -1266,10 +1266,8 @@ bool origin_describable(const item_def &item)
 
 static string _article_it(const item_def &/*item*/)
 {
-    if (Options.language == lang_t::ZH)
-        return "它";
     // "it" is always correct, since gloves and boots also come in pairs.
-    return "it";
+    return T_("it");
 }
 
 static bool _origin_is_original_equip(const item_def &item)

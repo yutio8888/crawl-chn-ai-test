@@ -1322,12 +1322,9 @@ string monster_info::common_name(description_level_type desc) const
     // name intact and show the current number after any derived-form suffix.
     if (show_hydra_heads && Options.language == lang_t::ZH)
     {
-        ss << "（";
-        if (num_heads < 11)
-            ss << number_in_words(num_heads);
-        else
-            ss << std::to_string(num_heads);
-        ss << "头）";
+        const string heads = num_heads < 11 ? number_in_words(num_heads)
+                                           : std::to_string(num_heads);
+        ss << make_stringf(C_("hydra heads", " (%s heads)"), heads.c_str());
     }
 
     if (is(MB_SHAPESHIFTER))
