@@ -18,6 +18,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "god-conduct.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
@@ -5146,4 +5147,63 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     i18n_cache_clear();
     CHECK(duration_by_name("poisoning") == DUR_POISONING);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: god conduct lists join dislikes with or and likes with enumerative comma",
+                 "[zh-translation][god-conduct-lists]")
+{
+    const string zh_or(T_(" or "));
+    const string zh_comma_space(T_(", "));
+    const string zh_comma(T_(","));
+    const string zh_and(T_(" and "));
+    i18n_cache_clear();
+
+    const string dislikes = get_god_dislikes(GOD_TROG);
+    const string likes = get_god_likes(GOD_TROG);
+    const string zh_list_comma = !zh_comma_space.empty() ? zh_comma_space
+                                                         : zh_comma;
+
+    auto count_occ = [](const string& hay, const string& needle) -> size_t
+    {
+        if (needle.empty())
+            return 0;
+        size_t n = 0;
+        for (size_t pos = hay.find(needle); pos != string::npos;
+             pos = hay.find(needle, pos + needle.size()))
+        {
+            ++n;
+        }
+        return n;
+    };
+
+    // Trog has 4 really_dislikes: both comma and last-join fire.
+    CHECK(dislikes.find(zh_or) != string::npos);
+    CHECK(dislikes.find(zh_list_comma) != string::npos);
+    CHECK(count_occ(dislikes, zh_list_comma) >= 2);
+    CHECK(zh_or.find("或") != string::npos);
+    CHECK(dislikes.find("或") != string::npos);
+    CHECK(dislikes.find(zh_and) == string::npos);
+    CHECK(dislikes.find("以及") == string::npos);
+
+    // Trog has 5 likes: every join including last is enumerative comma.
+    CHECK(likes.find(zh_list_comma) != string::npos);
+    CHECK(count_occ(likes, zh_list_comma) >= 4);
+    CHECK(likes.find(zh_and) == string::npos);
+    CHECK(likes.find("以及") == string::npos);
+    CHECK(likes.find(" and ") == string::npos);
+
+    {
+        EnTranslationFixture english;
+        const string en_dislikes = get_god_dislikes(GOD_TROG);
+        const string en_likes = get_god_likes(GOD_TROG);
+        CHECK(en_dislikes.find(" or ") != string::npos);
+        CHECK(en_dislikes.find(", ") != string::npos);
+        CHECK(en_likes.find(" and ") != string::npos);
+        CHECK(en_likes.find(", ") != string::npos);
+        CHECK(en_dislikes.find("、") == string::npos);
+        CHECK(en_dislikes.find("或") == string::npos);
+        CHECK(en_likes.find("、") == string::npos);
+        CHECK(en_likes.find("或") == string::npos);
+    }
 }
