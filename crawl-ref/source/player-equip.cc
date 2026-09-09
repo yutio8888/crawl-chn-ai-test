@@ -1971,7 +1971,7 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
             bool plural = true;
             string hand = you.hand_name(true, &plural);
 
-            mprf(T_("Your %s briefly %s through it before you manage "
+            mprf_p(T_("Your %s briefly %s through it before you manage "
                     "to get a firm grip on it."),
                     hand.c_str(), conjugate_verb("pass", plural).c_str());
             break;
@@ -2558,8 +2558,10 @@ static void _handle_regen_item_equip(const item_def& item)
         if (regen_hp)
         {
             if (plural)
+            {
                 mprf(T_("The %s throb as they attune themselves to your"
                         " uninjured body."), item_name.c_str());
+            }
             else
                 mprf(T_("The %s throbs as it attunes itself to your"
                         " uninjured body."), item_name.c_str());
@@ -2567,8 +2569,10 @@ static void _handle_regen_item_equip(const item_def& item)
         else
         {
             if (plural)
+            {
                 mprf(T_("The %s throb as they attune themselves to your"
                         " body."), item_name.c_str());
+            }
             else
                 mprf(T_("The %s throbs as it attunes itself to your"
                         " body."), item_name.c_str());
@@ -2580,8 +2584,10 @@ static void _handle_regen_item_equip(const item_def& item)
     if (low_hp)
     {
         if (plural)
+        {
             mprf(T_("The %s cannot attune themselves to your injured"
                     " body."), item_name.c_str());
+        }
         else
             mprf(T_("The %s cannot attune itself to your injured"
                     " body."), item_name.c_str());
@@ -2589,8 +2595,10 @@ static void _handle_regen_item_equip(const item_def& item)
     else
     {
         if (plural)
+        {
             mprf(T_("The %s cannot attune themselves to your exhausted"
                     " body."), item_name.c_str());
+        }
         else
             mprf(T_("The %s cannot attune itself to your exhausted"
                     " body."), item_name.c_str());

@@ -6,11 +6,13 @@
 #include "cloud.h"
 #include "database.h"
 #include "describe.h"
+#include "dungeon.h"
 #include "english.h"
 #include "env.h"
 #include "i18n.h"
 #include "item-prop.h"
 #include "item-use.h"
+#include "items.h"
 #include "losglobal.h"
 #include "message.h"
 #include "mon-info.h"
@@ -19,12 +21,15 @@
 #include "movement-i18n.h"
 #include "options.h"
 #include "player.h"
+#include "player-equip.h"
 #include "spl-selfench.h"
+#include "spl-summoning.h"
 #include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
+#include "xom.h"
 
 #include <functional>
 #include <tuple>
@@ -327,4 +332,104 @@ TEST_CASE("issue 10 monster target descriptions preserve direction and list shap
         CHECK(active.find("It is currently targeting ") != string::npos);
         CHECK(multiple.find("It is currently targeted by:\n") != string::npos);
     }
+}
+
+TEST_CASE("issue 10 penetration weapon messages suppress English verb slots",
+          "[zh-translation][issue10]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[index]);
+    item_def &bow = env.item[index];
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONG_BOW;
+    bow.quantity = 1;
+    bow.brand = SPWPN_PENETRATION;
+    monster *mon = world.place(MONS_ORC, coord_def(20, 21));
+    const string monster_message = observe_message([&] {
+        REQUIRE(mon->pickup_item(bow, true, true));
+    });
+    CHECK(mon->weapon() == &bow);
+    if (language == lang_t::ZH)
+    {
+        CHECK(monster_message.find("短暂地穿过了它") != string::npos);
+        CHECK(monster_message.find("才将它握稳") != string::npos);
+        CHECK(monster_message.find("pass") == string::npos);
+        CHECK(monster_message.find("manage") == string::npos);
+    }
+    else
+        CHECK(monster_message.find("briefly pass through it") != string::npos);
+
+    item_def &player_bow = you.inv[0];
+    player_bow.base_type = OBJ_WEAPONS;
+    player_bow.sub_type = WPN_LONG_BOW;
+    player_bow.quantity = 1;
+    player_bow.brand = SPWPN_PENETRATION;
+    player_bow.link = 0;
+    const string player_message = observe_message([&] {
+        equip_item(SLOT_WEAPON, 0);
+    });
+    REQUIRE(you.weapon() == &player_bow);
+    if (language == lang_t::ZH)
+    {
+        CHECK(player_message.find("短暂地穿过了它") != string::npos);
+        CHECK(player_message.find("随后你才将它握稳") != string::npos);
+        CHECK(player_message.find("pass") == string::npos);
+    }
+    else
+        CHECK(player_message.find("Your hands briefly pass through it") != string::npos);
+}
+
+TEST_CASE("issue 10 Tukima unarmed failure formats the complete hand action",
+          "[zh-translation][issue10]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *mon = world.place(MONS_ORC, coord_def(20, 21));
+    REQUIRE_FALSE(mon->weapon());
+    const string message = observe_message([&] { cast_tukimas_dance(30, mon); });
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find(mon->hand_name(true) + "抽动了一下。") != string::npos);
+        CHECK(message.find("twitch") == string::npos);
+    }
+    else
+        CHECK(message.find("hands twitch.") != string::npos);
+    CHECK_FALSE(mon->weapon());
+}
+
+TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
+          "[zh-translation][issue10]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const weapon_type weapon = GENERATE(WPN_HAND_AXE, WPN_DAGGER);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    item_def &item = you.inv[0];
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = weapon;
+    item.quantity = 1;
+    item.link = 0;
+    equip_item(SLOT_WEAPON, 0, false, true);
+    REQUIRE(you.weapon() == &item);
+    const string message = observe_message([] { xom_take_action(XOM_GOOD_CLEAVING, 10); });
+    if (language == lang_t::ZH)
+    {
+        const string suffix = weapon == WPN_HAND_AXE
+            ? "看起来很锋利（一如既往）。" : "看起来很锋利。";
+        CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
+        CHECK(message.find("sharp") == string::npos);
+        CHECK(message.find("look") == string::npos);
+    }
+    else
+    {
+        const string suffix = weapon == WPN_HAND_AXE
+            ? " looks sharp (like it always does)." : " looks sharp.";
+        CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
+    }
+    CHECK(you.duration[DUR_CLEAVE] > 0);
 }
