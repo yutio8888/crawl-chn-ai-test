@@ -4337,10 +4337,21 @@ static void _xom_cleaving(int sever)
     if (const item_def* const weapon = you.weapon())
     {
         const bool axe = item_attack_skill(*weapon) == SK_AXES;
-        mprf(MSGCH_DURATION,
-             "%s %s sharp%s", weapon->name(DESC_YOUR).c_str(),
-             conjugate_verb("look", weapon->quantity > 1).c_str(),
-             (axe) ? " (like it always does)." : ".");
+        if (Options.language == lang_t::ZH)
+        {
+            const char *key = axe
+                ? NC_("xom cleaving", "%s looks sharp (like it always does).")
+                : NC_("xom cleaving", "%s looks sharp.");
+            mprf(MSGCH_DURATION, C_("xom cleaving", key),
+                 weapon->name(DESC_YOUR).c_str());
+        }
+        else
+        {
+            mprf(MSGCH_DURATION,
+                 "%s %s sharp%s", weapon->name(DESC_YOUR).c_str(),
+                 conjugate_verb("look", weapon->quantity > 1).c_str(),
+                 (axe) ? " (like it always does)." : ".");
+        }
     }
     else
     {

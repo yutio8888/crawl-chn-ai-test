@@ -1,8 +1,8 @@
 {
   "contexts": {
     "move.bare": {
-      "description": "Standalone action labels and cancellation prompts without a directional complement.",
-      "verbs": ["blink", "hop"]
+      "description": "Standalone action labels, movement announcements, and escape verbs without a directional complement.",
+      "verbs": ["blink", "hop", "leap"]
     },
     "move.enter-area": {
       "description": "Entering an area, cloud, trap, bog, or travel-excluded cell.",

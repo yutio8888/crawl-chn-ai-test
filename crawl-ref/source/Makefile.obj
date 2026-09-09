@@ -347,6 +347,7 @@ catch2-tests/test_positional_format.o \
 catch2-tests/test_zh_bilingual_search.o \
 catch2-tests/test_zh_fixture.o \
 catch2-tests/test_zh_helpers.o \
+catch2-tests/test_zh_issue10_boundaries.o \
 catch2-tests/test_zh_issue6_names.o \
 catch2-tests/test_zh_issue6_descriptions.o \
 catch2-tests/test_zh_issue6_messages.o \

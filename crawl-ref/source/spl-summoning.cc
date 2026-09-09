@@ -874,7 +874,7 @@ static bool _check_tukima_validity(const actor *target)
         bool plural = true;
         const string hand = target->hand_name(true, &plural);
 
-        mprf_p(T_("%1$s %2$s %3$s."),
+        mprf_p(C_("tukima unarmed", "%1$s %2$s %3$s."),
                apostrophise(target->name(DESC_THE)).c_str(),
                hand.c_str(), conjugate_verb("twitch", plural).c_str());
 
@@ -1888,9 +1888,7 @@ spret cast_battlesphere(actor* agent, int pow, bool fail)
         }
 
         if (recalled)
-        {
             mpr(T_("You recall your battlesphere and imbue it with extra charge."));
-        }
         else
             mpr(T_("You imbue your battlesphere with extra charge."));
 

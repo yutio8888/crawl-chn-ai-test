@@ -23,6 +23,10 @@ string pluralise(const string &name,
 string pluralise_monster(const string &name);
 string apostrophise(const string &name);
 string conjugate_verb(const string &verb, bool plural);
+// Accept an English base key only; return an owned display string. Chinese
+// looks up the base key/context, while English (including fallback) conjugates.
+string conjugate_verb_for_display(const char *english_key, bool plural,
+                                  const char *context = nullptr);
 // Display result is borrowed until i18n_cache_clear(); copy if retained.
 const char *decline_pronoun(gender_type gender, pronoun_type variant);
 string walk_verb_to_present(string verb);

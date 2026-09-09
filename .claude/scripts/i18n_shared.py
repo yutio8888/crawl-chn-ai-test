@@ -3,8 +3,10 @@
 
 from __future__ import annotations
 
+import ast
 import ctypes
 import ctypes.util
+import bisect
 import contextvars
 import fnmatch
 import functools
@@ -14,6 +16,7 @@ import os
 import posixpath
 import re
 import shutil
+import shlex
 import stat
 import subprocess
 import sys
@@ -1049,6 +1052,296 @@ def read_utf8(path: str) -> str:
     """Read source strictly so encoding/read failures cannot look clean."""
     with open(path, "r", encoding="utf-8", errors="strict") as stream:
         return stream.read()
+
+
+@dataclass(frozen=True)
+class CppPreprocessedSource:
+    """One target's expanded text, mapped to original physical source lines.
+
+    Columns in the expanded text are not columns in the original file. Macro
+    findings point to the invocation line; no spelling-column claim is made.
+    """
+
+    source: bytes
+    original_lines: tuple[int, ...]
+    diagnostics: str = ""
+
+    def original_line(self, expanded_row: int) -> int:
+        if 0 <= expanded_row < len(self.original_lines):
+            return self.original_lines[expanded_row]
+        if expanded_row == len(self.original_lines):
+            return self.original_lines[-1] + 1 if self.original_lines else 1
+        raise ValueError(f"invalid preprocessed source row: {expanded_row}")
+
+
+_CLANG_DRIVER = re.compile(r"(?:[A-Za-z0-9_.]+-)*clang(?:\+\+)?(?:-\d+(?:\.\d+)*)?")
+
+
+def _reject_source_line_directives(source: bytes) -> None:
+    """Compiler-generated markers are trusted; source-authored ones are not."""
+    from scan_i18n import CPP_LITERAL_RE, _mask_cpp_comments
+
+    logical, _ = _phase2_splice(source)
+    visible = _mask_cpp_comments(logical.decode("utf-8-sig"), raw_strings=True)
+    literals = [(m.start(), m.end()) for m in CPP_LITERAL_RE.finditer(visible)]
+    starts = [start for start, _ in literals]
+    for directive in re.finditer(
+            r"(?m)^[ \t\f\v]*#[ \t\f\v]*(?:line\b|[0-9])", visible):
+        before = bisect.bisect_right(starts, directive.start()) - 1
+        if before < 0 or directive.start() >= literals[before][1]:
+            raise ValueError("unsupported source-authored #line/linemarker")
+
+
+def _extract_cpp_preprocessed(path: Path, output: bytes,
+                              diagnostics: str = "", directory=None) -> CppPreprocessedSource:
+    """Read clang -E markers without treating raw-string contents as markers."""
+    from scan_i18n import CPP_LITERAL_RE
+
+    text = output.decode("utf-8")
+    literal_ranges = [(m.start(), m.end()) for m in CPP_LITERAL_RE.finditer(text)]
+    literal_starts = [start for start, _ in literal_ranges]
+    marker_re = re.compile(
+        r'(?m)^#[ \t]+(\d+)[ \t]+("(?:\\.|[^"\\])*")'
+        r'((?:[ \t]+\d+)*)[ \t]*$')
+    previous = 0
+    current_path, current_line = None, None
+    target_seen = False
+    pieces, origins = [], []
+
+    def inside_literal(position):
+        before = bisect.bisect_right(literal_starts, position) - 1
+        return before >= 0 and position < literal_ranges[before][1]
+
+    def append(chunk, begin):
+        nonlocal current_line
+        # Only LF is a preprocessing output line separator. str.splitlines()
+        # would also split legitimate form feeds and Unicode literal content.
+        for line in re.finditer(r"[^\n]*\n|[^\n]+$", chunk):
+            if current_path == str(path):
+                pieces.append(line[0])
+                origins.append(current_line)
+            # Clang emits multiline raw tokens, then separately pads to the
+            # next logical line. Their internal LF bytes must not count twice.
+            if current_line is not None and not inside_literal(begin + line.end() - 1):
+                current_line += 1
+
+    for marker in marker_re.finditer(text):
+        if inside_literal(marker.start()):
+            continue
+        append(text[previous:marker.start()], previous)
+        # Clang quotes non-ASCII filename bytes with C octal escapes, which
+        # JSON does not support. A bytes literal also preserves raw UTF-8.
+        quoted_bytes = marker[2].encode("utf-8").decode("ascii", errors="backslashreplace")
+        next_path = ast.literal_eval("b" + quoted_bytes).decode("utf-8")
+        if not (next_path.startswith("<") and next_path.endswith(">")):
+            next_path = str((Path(directory or path.parent) / next_path).resolve())
+        flags = {int(value) for value in marker[3].split()}
+        if (current_path is not None and next_path != current_path
+                and not flags.intersection({1, 2})):
+            raise ValueError("unsupported filename change in preprocessor linemarker")
+        current_line = int(marker[1])
+        current_path = next_path
+        target_seen |= current_path == str(path)
+        previous = marker.end()
+        if previous < len(text) and text[previous] == "\n":
+            previous += 1
+    append(text[previous:], previous)
+    if not target_seen:
+        raise ValueError(f"preprocessor did not emit target provenance: {path}")
+    return CppPreprocessedSource("".join(pieces).encode("utf-8"),
+                                 tuple(origins), diagnostics)
+
+
+def preprocess_cpp(filepath, compiler: str, flags=(), *, directory=None,
+                   source_argument=None, timeout=30) -> CppPreprocessedSource:
+    """Expand one real translation-unit configuration; required failures block.
+
+    The caller supplies build-derived compiler flags. This helper does not
+    invent platform defines or substitute empty headers for missing inputs.
+    """
+    path = Path(filepath).resolve(strict=True)
+    if not _CLANG_DRIVER.fullmatch(Path(compiler).name):
+        raise ValueError("preprocessing currently requires a clang driver (including Android NDK clang)")
+    _reject_source_line_directives(path.read_bytes())
+    try:
+        result = subprocess.run(
+            [compiler, "-x", "c++", "-E", *flags, source_argument or str(path)],
+            cwd=directory or path.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env={**os.environ, "CLANG_NO_DEFAULT_CONFIG": "1"},
+            timeout=timeout, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ValueError(f"cannot preprocess {path}: {exc}") from exc
+    diagnostics = result.stderr.decode("utf-8", errors="replace")
+    if result.returncode:
+        raise ValueError(
+            f"preprocessor failed for {path} (exit {result.returncode}): {diagnostics.strip()}")
+    return _extract_cpp_preprocessed(path, result.stdout, diagnostics, directory)
+
+
+class CppCompilationDatabase:
+    """One build configuration from a standard compile_commands.json file.
+
+    Multiple configurations use separate databases. Duplicate file entries
+    within one database are rejected rather than selecting an arbitrary ABI
+    or combining mutually exclusive lifetime helper definitions.
+    """
+
+    def __init__(self, filename):
+        self.path = Path(filename).resolve(strict=True)
+        entries = json.loads(self.path.read_text(encoding="utf-8"))
+        if not isinstance(entries, list) or not entries:
+            raise ValueError("compilation database must be a nonempty array")
+        self.commands = {}
+        self._sources = {}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise ValueError("invalid compilation database entry")
+            directory = entry.get("directory")
+            filename = entry.get("file")
+            if not isinstance(directory, str) or not isinstance(filename, str):
+                raise ValueError("compile command needs directory and file strings")
+            workdir = Path(directory)
+            if not workdir.is_absolute():
+                raise ValueError("compile command directory must be absolute")
+            workdir = workdir.resolve(strict=True)
+            target = (workdir / filename).resolve(strict=True)
+            if target.suffix not in CPP_SOURCE_EXTENSIONS or not target.is_file():
+                raise ValueError(f"invalid compile command source: {target}")
+            if target in self.commands:
+                raise ValueError(f"duplicate compile configuration for {target}")
+            argv = entry.get("arguments")
+            if argv is None and isinstance(entry.get("command"), str):
+                argv = shlex.split(entry["command"])
+            if (not isinstance(argv, list) or not argv
+                    or any(not isinstance(arg, str) or "\0" in arg for arg in argv)):
+                raise ValueError("compile command needs a nonempty argument array")
+            argv = list(argv)
+            while argv and Path(argv[0]).name in {"ccache", "sccache"}:
+                argv.pop(0)
+            if not argv or not _CLANG_DRIVER.fullmatch(Path(argv[0]).name):
+                raise ValueError("compile command must invoke a clang driver")
+            compiler = argv[0]
+            if "/" in compiler and not Path(compiler).is_absolute():
+                compiler = str(workdir / compiler)
+            flags = []
+            positional_inputs = 0
+            source_argument = None
+            cursor = 1
+            value_flags = {
+                "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros",
+                "-isysroot", "--sysroot", "--target", "-target", "-arch", "-x", "-D", "-U",
+            }
+            discarded_values = {"-o", "--output", "-MF", "-MT", "-MQ", "-MJ",
+                                "-serialize-diagnostics", "--serialize-diagnostics"}
+            while cursor < len(argv):
+                arg = argv[cursor]
+                cursor += 1
+                if arg in discarded_values | value_flags:
+                    if cursor == len(argv):
+                        raise ValueError(f"missing compile option operand: {arg}")
+                    if arg in value_flags:
+                        flags.extend((arg, argv[cursor]))
+                    cursor += 1
+                elif arg in {"-c", "-MD", "-MMD", "-MP", "-MG"}:
+                    continue
+                elif arg.startswith(("-o", "--output=", "-MF", "-MT", "-MQ", "-MJ",
+                                     "-serialize-diagnostics=", "--serialize-diagnostics=")):
+                    continue
+                elif arg.startswith(("@", "-Xclang", "-Xpreprocessor", "-Wp,", "--config")):
+                    raise ValueError(f"unsupported indirect compile option: {arg}")
+                elif arg.startswith(("-save-temps", "--save-temps", "-fmodules",
+                                     "-fimplicit-module", "-fmodule-")):
+                    raise ValueError(f"unsupported compile side-effect option: {arg}")
+                elif arg in {"-E", "-S", "-M", "-MM", "-fsyntax-only"}:
+                    raise ValueError(f"not an object compilation command: {arg}")
+                elif not arg.startswith("-"):
+                    if (workdir / arg).resolve() != target:
+                        raise ValueError(f"unexpected compile command input: {arg}")
+                    positional_inputs += 1
+                    source_argument = arg
+                else:
+                    flags.append(arg)
+            if positional_inputs != 1:
+                raise ValueError("compile command must name its source exactly once")
+            self.commands[target] = (compiler, tuple(flags), workdir, source_argument)
+
+    def source(self, filename) -> CppPreprocessedSource:
+        target = Path(filename).resolve(strict=True)
+        if target not in self.commands:
+            raise ValueError(f"missing compile configuration for {target} in {self.path}")
+        if target not in self._sources:
+            compiler, flags, directory, source_argument = self.commands[target]
+            self._sources[target] = preprocess_cpp(
+                target, compiler, flags, directory=directory,
+                source_argument=source_argument)
+            if self._sources[target].diagnostics:
+                print(self._sources[target].diagnostics, end="", file=sys.stderr)
+        return self._sources[target]
+
+
+def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath=None):
+    """Parse expanded C++; lower only the compiler va_arg type operand.
+
+    __builtin_va_arg remains a compiler intrinsic after real preprocessing.
+    Its second operand is a type, which tree-sitter's ordinary call grammar
+    cannot represent. Validate the supported type syntax, then replace only
+    that operand with a same-length expression. The complete first operand
+    remains available to every risk scanner. Unsupported intrinsic syntax
+    blocks instead of becoming a parse-error exemption.
+    """
+    def fail(message, node):
+        if preprocessed is not None:
+            line = preprocessed.original_line(node.start_point[0])
+            message = f"{filepath}:{line}: {message}"
+        raise ValueError(message)
+
+    tree = parser.parse(source)
+    normalized = bytearray(source)
+    changed = False
+    stack = [tree.root_node]
+    while stack:
+        node = stack.pop()
+        if node.type == "call_expression":
+            function = node.child_by_field_name("function")
+            args = node.child_by_field_name("arguments")
+            if (function is not None and function.text == b"__builtin_va_arg"
+                    and args is not None):
+                comma = source.rfind(b",", args.start_byte, args.end_byte)
+                operand = source[comma + 1:args.end_byte - 1]
+                valid_type = comma >= args.start_byte and re.fullmatch(
+                    rb"[ \t]*[A-Za-z_]\w*(?:(?:[ \t]+|::)[A-Za-z_]\w*)*"
+                    rb"[ \t]*[*&]*[ \t]*", operand)
+                if not valid_type:
+                    fail("unsupported __builtin_va_arg type operand", node)
+                type_tree = parser.parse(b"using __va_type = " + operand + b";")
+                first = source[args.start_byte + 1:comma]
+                first_tree = parser.parse(b"void __va_probe(){ __va_sink(" + first + b"); }")
+                first_args = []
+                pending = [first_tree.root_node]
+                while pending:
+                    probe_node = pending.pop()
+                    probe_function = probe_node.child_by_field_name("function")
+                    if (probe_node.type == "call_expression" and probe_function is not None
+                            and probe_function.text == b"__va_sink"):
+                        first_args = probe_node.child_by_field_name("arguments").named_children
+                        break
+                    pending.extend(probe_node.children)
+                if (type_tree.root_node.has_error or first_tree.root_node.has_error
+                        or len(first_args) != 1):
+                    fail("invalid __builtin_va_arg operands", node)
+                normalized[comma + 1:args.end_byte - 1] = b"0" + b" " * (len(operand) - 1)
+                changed = True
+        stack.extend(node.children)
+    tree = parser.parse(bytes(normalized)) if changed else tree
+    if preprocessed is not None and tree.root_node.has_error:
+        pending = [tree.root_node]
+        while pending:
+            node = pending.pop()
+            if node.type == "ERROR" or node.is_missing:
+                fail("tree-sitter parse error after preprocessing", node)
+            pending.extend(reversed(node.children))
+        fail("tree-sitter parse error after preprocessing", tree.root_node)
+    return tree
 
 
 # Issue #120: repository-relative path, exact node text and local context.

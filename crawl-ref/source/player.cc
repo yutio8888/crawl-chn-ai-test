@@ -52,6 +52,7 @@
 #include "jobs.h"
 #include "kills.h"
 #include "level-state-type.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "macro.h"
 #include "melee-attack.h"
@@ -9356,7 +9357,7 @@ string player::hands_verb(const string &plural_verb) const
 {
     bool plural;
     const string hand = hand_name(true, &plural);
-    return hand + " " + conjugate_verb(T_(plural_verb.c_str()), plural);
+    return hand + " " + conjugate_verb_for_display(plural_verb.c_str(), plural);
 }
 
 // Is this a character that would not normally have a preceding space when
@@ -9388,7 +9389,41 @@ string player::hands_act(const string &plural_verb,
                          const string &object) const
 {
     const bool space = !object.empty() && !_is_end_punct(object[0]);
-    return T_("Your ") + hands_verb(plural_verb) + (space ? " " : "") + object;
+    if (Options.language == lang_t::ZH)
+    {
+        // These are the complete actions used by the finite hands_act callers.
+        // Keep deferred full keys visible to extraction. The noun is localized
+        // separately; no English predicate fragment enters a Chinese sentence.
+        static const char * const actions[] =
+        {
+            NC_("hands action", "Your %s get new energy."),
+            NC_("hands action", "Your %s stop glowing."),
+            NC_("hands action", "Your %s slow down."),
+            NC_("hands action", "Your %s burn!"),
+            NC_("hands action", "Your %s tingle!"),
+            NC_("hands action", "Your %s look sharp."),
+            NC_("hands action", "Your %s are glowing red."),
+            NC_("hands action", "Your %s are covered in slime."),
+            NC_("hands action", "Your %s begin to glow red."),
+            NC_("hands action", "Your %s begin to glow brighter."),
+        };
+        const string key = "Your %s " + plural_verb
+                           + (space ? " " : "") + object;
+        for (const char *action : actions)
+        {
+            if (key != action)
+                continue;
+            const string translated = C_("hands action", action);
+            if (translated != action)
+                return make_stringf(translated.c_str(), hand_name(true).c_str());
+            break;
+        }
+    }
+
+    // Preserve complete English, including singular body-part agreement, if
+    // the action is unknown or its complete translation is unavailable.
+    const ScopedLangEn english;
+    return "Your " + hands_verb(plural_verb) + (space ? " " : "") + object;
 }
 
 int player::inaccuracy() const
