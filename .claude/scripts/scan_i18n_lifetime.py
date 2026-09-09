@@ -1937,7 +1937,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 str(path): database.source(path).source.decode("utf-8")
                 for path in database.commands
             }
-            configured_paths = list(dict.fromkeys([*index_paths, *expanded_sources]))
+            # DB keys are physical paths. A source alias must not add a second
+            # raw helper definition beside this configuration's expanded one.
+            configured_paths = list(dict.fromkeys(
+                os.path.realpath(path) for path in [*index_paths, *expanded_sources]))
             configured_index = _build_lexical_index(configured_paths, expanded_sources)
             cpp_parser = _Parser(_Language(_tscpp.language()))
             for target in targets:

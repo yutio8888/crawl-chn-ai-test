@@ -385,7 +385,11 @@ void f() {
 }
 '''
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            # Reproduce macOS's /var -> /private/var canonicalization on Linux.
+            physical_root = Path(td) / 'physical'
+            physical_root.mkdir()
+            root = Path(td) / 'linked'
+            root.symlink_to(physical_root, target_is_directory=True)
             target = root / 'sample.cc'
             target.write_text(source)
             (root / 'calls.h').write_text(
@@ -401,7 +405,8 @@ void f() {
                     result = self.run_cli(scanner, target, [database])
                     self.assertEqual(result.returncode, 1, result.stderr)
                     findings = json.loads(result.stdout)['findings']
-                    expanded = [f for f in findings if f.get('configuration') == str(database)]
+                    expanded = [f for f in findings
+                                if f.get('configuration') == str(database.resolve())]
                     self.assertTrue(any(f['rule'] == expected for f in expanded), findings)
                     for finding in expanded:
                         self.assertIn(source_call, source.splitlines()[finding['line'] - 1])
@@ -430,7 +435,10 @@ void f() {
 
     def test_lifetime_helpers_from_mutually_exclusive_builds_are_separate(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            physical_root = Path(td) / 'physical'
+            physical_root.mkdir()
+            root = Path(td) / 'linked'
+            root.symlink_to(physical_root, target_is_directory=True)
             (root / 'helper.cc').write_text('''const char *choose() {
 #ifdef BORROW
   return T_("key");
@@ -446,9 +454,10 @@ void f() {
             result = self.run_cli('scan_i18n_lifetime.py', target, [safe, borrowed])
             self.assertEqual(result.returncode, 1, result.stderr)
             findings = json.loads(result.stdout)['findings']
-            self.assertTrue(any(f.get('configuration') == str(borrowed)
+            self.assertTrue(any(f.get('configuration') == str(borrowed.resolve())
                                 and f['risk'] == 'HIGH' for f in findings))
-            self.assertFalse(any(f.get('configuration') == str(safe) for f in findings))
+            self.assertFalse(any(f.get('configuration') == str(safe.resolve())
+                                 for f in findings), findings)
 
     def test_missing_configuration_and_real_cpp_or_syntax_errors_block(self):
         with tempfile.TemporaryDirectory() as td:
