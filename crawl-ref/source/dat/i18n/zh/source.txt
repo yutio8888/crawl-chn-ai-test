@@ -2398,9 +2398,6 @@ barrage of energy
 [<w>Esc</w>] clear
 [<w>Esc</w>] 清除
 %%%%
-  [<w>J</w>/<w>回车</w>]: join
-  [<w>J</w>/<w>回车</w>]: 皈依
-%%%%
 Clear target
 清除目标
 %%%%
@@ -20893,9 +20890,6 @@ eggplant
 %d.%02d/turn%s\n
 %d.%02d/回合%s\n
 %%%%
-%1$s向%4$s%3$s%5$s%6$s%7$s%8$s
-%1$s向%4$s%3$s%5$s%6$s%7$s%8$s
-%%%%
 sleepcap
 眠帽
 %%%%
@@ -20939,9 +20933,6 @@ level %d of %s
 %2$s第%1$d层
 %%%%
 in 
-在
-%%%%
-在
 在
 %%%%
 original equipment
@@ -30489,12 +30480,6 @@ It is covered in dense fur and muscle.
 %1$s.
 %1$s。
 %%%%
-，并且
-，并且
-%%%%
-、
-、
-%%%%
 It looks just like you...spooky!\n
 它看起来就像你……好诡异！\n
 %%%%
@@ -36447,9 +36432,6 @@ Treatise on Traps
 My Sojourn through Swampland
 我的沼泽之旅
 %%%%
-之书
-之书
-%%%%
 book of 
 之书
 %%%%
@@ -39801,12 +39783,6 @@ Skills reduced by: %s.
 %1$s%2$s%3$s
 %1$s%2$s%3$s
 %%%%
-%1$s（%2$s，%3$s%4$s%5$s）
-%1$s（%2$s，%3$s%4$s%5$s）
-%%%%
-%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
-%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
-%%%%
 %1$s (skeletalised by now)
 %1$s（现已化为骷髅）
 %%%%
@@ -42557,3 +42533,303 @@ wound adjective|not wounded
 %%%%
 monster wound sentence| is %s.
 %s。
+%%%%
+game start|<yellow>%s, %s the %s %s.</yellow>
+<yellow>%s，%s（%s %s）。</yellow>
+%%%%
+game start|%s set off with %s%s%s.
+%s携带%s%s%s出发了。
+%%%%
+game start|%s the %s %s began the quest for the Orb.
+%s（%s %s）开始了寻找宝珠的征程。
+%%%%
+hydra heads| (%s heads)
+（%s头）
+%%%%
+monster notice list|and
+和
+%%%%
+mutant beast facets|, and it
+，并且
+%%%%
+mutant beast facets|, it
+、
+%%%%
+monster resistance list|; and 
+；
+%%%%
+monster resistance list|; 
+；
+%%%%
+monster description|.\n
+。\n
+%%%%
+monster description|%1$s is susceptible to %2$s.\n
+%1$s易受%2$s影响。\n
+%%%%
+monster description| inflict 1d5 acid damage when struck in melee.\n
+近战攻击时会额外造成1d5点酸伤害。\n
+%%%%
+monster description| cover ground more quickly when invisible.\n
+隐形时移动速度更快。\n
+%%%%
+monster description|It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
+受伤或死亡时会释放多种史莱姆，数量与受到的伤害成正比。\n
+%%%%
+monster description|Despite %s appearance, it can open doors.\n
+尽管外表%s，但它能开门。\n
+%%%%
+ghost description|%1$s the %2$s, %3$s %4$s %5$s of %6$s
+%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
+%%%%
+ghost description|%1$s the %2$s, %3$s %4$s %5$s
+%1$s（%2$s，%3$s%4$s%5$s）
+%%%%
+god wrath list| and 
+和
+%%%%
+god wrath list|, 
+、
+%%%%
+  [<w>J</w>/<w>Enter</w>]: join
+  [<w>J</w>/<w>回车</w>]: 皈依
+%%%%
+attack prompt|your ally 
+你的盟友
+%%%%
+attack prompt|your 
+你的
+%%%%
+attack prompt|ally 
+盟友
+%%%%
+attack prompt|fire in %s direction
+向%s的方向
+%%%%
+spore attack|%1$s %2$s at %3$s%4$s%5$s%6$s%7$s
+%1$s向%3$s%2$s%4$s%5$s%6$s%7$s
+%%%%
+xom enchantment|starts 
+开始
+%%%%
+xom enchantment|looks 
+看起来
+%%%%
+pronoun subject|it
+它
+%%%%
+pronoun possessive|its
+它的
+%%%%
+pronoun reflexive|itself
+它自己
+%%%%
+pronoun object|it
+它
+%%%%
+pronoun subject|he
+他
+%%%%
+pronoun possessive|his
+他的
+%%%%
+pronoun reflexive|himself
+他自己
+%%%%
+pronoun object|him
+他
+%%%%
+pronoun subject|she
+她
+%%%%
+pronoun possessive|her
+她的
+%%%%
+pronoun reflexive|herself
+她自己
+%%%%
+pronoun object|her
+她
+%%%%
+pronoun subject|you
+你
+%%%%
+pronoun possessive|your
+你的
+%%%%
+pronoun reflexive|yourself
+你自己
+%%%%
+pronoun object|you
+你
+%%%%
+pronoun subject|they
+它们
+%%%%
+pronoun possessive|their
+它们的
+%%%%
+pronoun reflexive|themself
+它们自己
+%%%%
+pronoun object|them
+它们
+%%%%
+number word|zero
+零
+%%%%
+number word|one
+一
+%%%%
+number word|two
+二
+%%%%
+number word|three
+三
+%%%%
+number word|four
+四
+%%%%
+number word|five
+五
+%%%%
+number word|six
+六
+%%%%
+number word|seven
+七
+%%%%
+number word|eight
+八
+%%%%
+number word|nine
+九
+%%%%
+number word|ten
+十
+%%%%
+number word|hundred
+百
+%%%%
+number word|thousand
+千
+%%%%
+species skin|scaled
+鳞片的
+%%%%
+species skin|scales
+鳞片
+%%%%
+species skin|feathered
+羽毛的
+%%%%
+species skin|feathers
+羽毛
+%%%%
+species skin|furry
+毛茸茸的
+%%%%
+species skin|fur
+毛皮
+%%%%
+species skin|bandage-wrapped
+绷带包裹的
+%%%%
+species skin|bandages
+绷带
+%%%%
+species skin|stony
+石质的
+%%%%
+species skin|stone
+石头
+%%%%
+species skin|ectoplasmic
+灵质的
+%%%%
+species skin|ectoplasm
+灵质
+%%%%
+species skin|bony
+骨质的
+%%%%
+species skin|bones
+骨头
+%%%%
+species skin|fleshy
+皮肤的
+%%%%
+species skin|skin
+皮肤
+%%%%
+weapon brand full name|%1$s of %2$s
+%2$s之%1$s
+%%%%
+item ego prefix|of %s
+%s之
+%%%%
+scroll binding|red silk ribbon
+红绸带
+%%%%
+scroll binding|blue silk ribbon
+蓝绸带
+%%%%
+scroll binding|hemp cord
+麻绳
+%%%%
+scroll binding|gold thread
+金丝线
+%%%%
+scroll binding|silver thread
+银丝线
+%%%%
+scroll binding|leather cord
+皮绳
+%%%%
+scroll binding|green silk ribbon
+绿绸带
+%%%%
+scroll binding|purple silk ribbon
+紫绸带
+%%%%
+scroll binding|black thread
+黑丝线
+%%%%
+scroll binding|white silk ribbon
+白绸带
+%%%%
+scroll binding|copper chain
+铜链
+%%%%
+scroll binding|plain band
+素色带
+%%%%
+scroll seal|wax seal
+蜡封
+%%%%
+scroll seal|gold foil seal
+金箔封
+%%%%
+scroll seal|silver foil seal
+银箔封
+%%%%
+scroll seal|bone clasp
+骨扣
+%%%%
+scroll seal|jade clasp
+玉扣
+%%%%
+scroll seal|copper clasp
+铜扣
+%%%%
+scroll seal|tin seal
+锡封
+%%%%
+scroll seal|sealing wax stamp
+火漆印
+%%%%
+scroll seal|talisman seal
+符纸封
+%%%%
+scroll appearance|%s%s scroll
+%s%s的卷轴
