@@ -2012,7 +2012,7 @@ def parse_cpp_annotations(parser, source: bytes):
             literals.append((node.start_byte, node.end_byte))
             continue
         if (node.type == "identifier"
-                and source[node.start_byte:node.end_byte] == b"CRAWL"):
+                and source[node.start_byte:node.end_byte] in (b"CRAWL", b"LETTERS")):
             identifiers.append(node)
         if node.type == "call_expression":
             function = node.child_by_field_name("function")
@@ -2059,14 +2059,16 @@ def parse_cpp_annotations(parser, source: bytes):
     # Scheme 3 precursor: only an AST identifier adjacent to an actual
     # string literal, with whitespace between them, denotes this object
     # macro. Comments, raw-string contents and longer identifiers cannot
-    # trigger it. Five bytes remain five bytes; no source location moves.
+    # trigger it. CRAWL (version.h) and LETTERS (lang-fake.cc) are the
+    # supported object macros; all bytes and newlines retain their offsets.
     for node in identifiers:
         if any((end <= node.start_byte
                 and not source[end:node.start_byte].strip())
                or (node.end_byte <= begin
                    and not source[node.end_byte:begin].strip())
                for begin, end in literals):
-            normalized[node.start_byte:node.end_byte] = b'""   '
+            normalized[node.start_byte:node.end_byte] = (
+                b'""' + b' ' * (node.end_byte - node.start_byte - 2))
             changed = True
     return parser.parse(bytes(normalized)) if changed else tree
 

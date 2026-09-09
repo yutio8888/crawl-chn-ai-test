@@ -1146,7 +1146,9 @@ bool force_player_cleave(coord_def target)
         targeter_cleave hitfunc(&you, target, range);
         if (stop_attack_prompt(hitfunc,
                 T_("attack ")))
+        {
             return true;
+        }
 
         melee_attack atk(&you, nullptr);
         atk.launch_attack_set();
@@ -1356,7 +1358,7 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
         {
             // ZH uses complete phrases; EN handles articles
             if (Options.language == lang_t::ZH)
-                adj = "你的盟友";
+                adj = C_("attack prompt", "your ally ");
             else
             {
                 adj = "your ally ";
@@ -1370,11 +1372,11 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
         {
             if (Options.language == lang_t::ZH)
             {
-                adj = "你的";
+                adj = C_("attack prompt", "your ");
 
                 monster_info mi(mon, MILEV_NAME);
                 if (mi.is(MB_NAME_UNQUALIFIED))
-                    adj += "盟友";
+                    adj += C_("attack prompt", "ally ");
             }
             else
             {
@@ -1455,7 +1457,8 @@ bool stop_attack_prompt(const monster* mon, bool beam_attack,
         {
             if (zh)
             {
-                verb = "向" + mon_name + "的方向";
+                verb = make_stringf(C_("attack prompt", "fire in %s direction"),
+                                    mon_name.c_str());
                 mon_name = "";
             }
             else

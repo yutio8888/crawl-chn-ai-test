@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 enum scroll_binding_type
 {
     SBI_RED_SILK,       // 红绸带
@@ -44,5 +47,6 @@ enum scroll_seal_type
     NDSC_SCROLL_SEAL
 };
 
-extern const char* const scroll_binding_zh[];
-extern const char* const scroll_seal_zh[];
+// Returns an owning display string, or empty when a complete Chinese
+// appearance is unavailable and the caller must use the English scroll label.
+std::string translated_scroll_appearance(uint32_t seed);

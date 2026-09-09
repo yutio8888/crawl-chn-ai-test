@@ -380,12 +380,13 @@ static void _wide(string &txt)
 
     for (char ch : txt)
     {
-        if (ch == ' ')
-            out += "　"; // U+3000 rather than U+FF00
-        else if (ch > 32 && ch < 127)
+        if (ch >= 32 && ch < 127)
         {
             char buf[4];
-            int r = wctoutf8(buf, ch + 0xFF00 - 32);
+            // This is the wide pseudo-language's Unicode mapping, independent
+            // of the UI locale: ASCII space maps to U+3000, not U+FF00.
+            const int codepoint = ch == ' ' ? 0x3000 : ch + 0xFF00 - 32;
+            int r = wctoutf8(buf, codepoint);
             for (int j = 0; j < r; j++)
                 out.push_back(buf[j]);
         }

@@ -1197,7 +1197,9 @@ string monster_info::_apply_adjusted_description(description_level_type desc,
             return apply_description(desc, s);
         if (desc == DESC_YOUR
             || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
+        {
             return apply_description(DESC_YOUR, s);
+        }
         return apply_description(DESC_PLAIN, s);
     }
 
@@ -1322,12 +1324,9 @@ string monster_info::common_name(description_level_type desc) const
     // name intact and show the current number after any derived-form suffix.
     if (show_hydra_heads && Options.language == lang_t::ZH)
     {
-        ss << "（";
-        if (num_heads < 11)
-            ss << number_in_words(num_heads);
-        else
-            ss << std::to_string(num_heads);
-        ss << "头）";
+        const string heads = num_heads < 11 ? number_in_words(num_heads)
+                                           : std::to_string(num_heads);
+        ss << make_stringf(C_("hydra heads", " (%s heads)"), heads.c_str());
     }
 
     if (is(MB_SHAPESHIFTER))
@@ -1802,8 +1801,10 @@ string monster_info::speed_description() const
     _add_energy_desc(menergy.move,
         T_("travel"), speed, unusuals);
     if (menergy.swim != menergy.move)
+    {
         _add_energy_desc(menergy.swim,
             T_("swim"), speed, unusuals);
+    }
     // If we ever add a non-magical monster with fast/slow abilities,
     // we'll need to update this.
     _add_energy_desc(menergy.spell,
@@ -2328,9 +2329,7 @@ string description_for_ench(enchant_type type)
 
     for (auto& name : monster_info_flag_names)
         if (name.flag == *flag)
-        {
             return C_("flag long", name.long_singular.c_str());
-        }
 
     return "";
 }

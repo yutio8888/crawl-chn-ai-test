@@ -22,7 +22,7 @@ string prep_branch_level_name(level_id id)
         place[0] = tolower_safe(place[0]);
 
     if (Options.language == lang_t::ZH)
-        return T_("在") + place;
+        return T_("in ") + place;
 
     return place.find("level") == 0 ? T_("on ") + place
                                     : T_("in ") + place;

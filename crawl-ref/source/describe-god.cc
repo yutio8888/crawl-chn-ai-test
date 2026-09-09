@@ -489,9 +489,9 @@ static string _describe_god_wrath_causes(god_type which_god)
         // XXX: refactor this if any god hates chaotic but not evil gods
     }
 
-    // RETAIN: Language-appropriate delimiters for list joining — UI formatting, not translation text
-    const char* and_word = Options.language == lang_t::ZH ? "和" : " and ";
-    const char* sep_word = Options.language == lang_t::ZH ? "、" : ", ";
+    // Copy the localized list separators before assembling the descriptions.
+    const string and_word = C_("god wrath list", " and ");
+    const string sep_word = C_("god wrath list", ", ");
 
     switch (which_god)
     {
@@ -1302,7 +1302,7 @@ bool describe_god_with_join(god_type which_god)
         Text* label = static_cast<Text*>(child.get());
         formatted_string text = label->get_text();
         text += formatted_string::parse_string(
-            T_("  [<w>J</w>/<w>回车</w>]: join"));
+            T_("  [<w>J</w>/<w>Enter</w>]: join"));
 
         // We assume that a player who has enough gold such that
         // the join fee plus accumulated gold overflows knows what this menu

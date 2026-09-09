@@ -106,6 +106,58 @@ class PreprocessorPatternTests(unittest.TestCase):
                     with self.subTest(broken=broken, directory=directory):
                         self.check_cli(path, not broken, directory=directory)
 
+    def test_issue6_sources_and_negative_mutations_through_both_entries(self):
+        # These production constructs were formerly unparseable in changed
+        # scope: split conditionals, reference initializers and ON_UNWIND.
+        # Source-side equivalent statements avoid adding recovery exemptions.
+        mutations = {
+            'item-name.cc': (b'CASE_REMOVED_POTIONS(item.sub_type);',
+                             b'CASE_REMOVED_POTIONS(item.sub_type)'),
+            'items.cc': (b'int& ob = *obj;', b'int& ob = *obj'),
+            'melee-attack.cc': (
+                b'set_artefact_name(*mutable_wpn, saved_gyre_name);',
+                b'set_artefact_name(*mutable_wpn, saved_gyre_name)'),
+            'lang-fake.cc': (b'"!" LETTERS', b'"!" LETTERSX'),
+        }
+        for name, (good, bad) in mutations.items():
+            original = (ROOT / 'crawl-ref/source' / name).read_bytes()
+            self.assertIn(good, original)
+            with tempfile.TemporaryDirectory() as td:
+                # Standalone directory scans, like --files changed scope,
+                # use strict parse coverage. The historical full production
+                # root mode has a different, permissive parse contract.
+                path = Path(td) / name
+                for label, source, success in (
+                    ('baseline', original, True),
+                    ('line-shift', b'// unrelated line\n' * 7 + original, True),
+                    ('malformed', original.replace(good, bad, 1), False),
+                ):
+                    path.write_bytes(source)
+                    for directory in (False, True):
+                        with self.subTest(file=name, variant=label,
+                                          directory=directory):
+                            self.check_cli(path, success, directory=directory)
+
+    def test_issue6_cleanup_lambda_body_remains_scanned(self):
+        original = (ROOT / 'crawl-ref/source/melee-attack.cc').read_bytes()
+        call = b'set_artefact_name(*mutable_wpn, saved_gyre_name);'
+        self.assertEqual(original.count(call), 1)
+        hazard = b'mprf("%s", std::string("issue6 hazard"));'
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'melee-attack.cc'
+            path.write_bytes(original.replace(call, hazard))
+            result = subprocess.run(
+                [sys.executable, str(SCRIPTS / 'scan_varargs_string.py'),
+                 '--files', str(path), '--format', 'json', '--require-parser'],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            data = json.loads(result.stdout)
+            self.assertEqual(data['coverage'], {'discovered': 1, 'scanned': 1,
+                                                 'failed': []})
+            self.assertTrue(any(f['risk'] == 'HIGH'
+                                and f['arg'] == 'std::string("issue6 hazard")'
+                                for f in data['findings']))
+
     def test_directive_after_context_is_outside_context(self):
         source = b'void f() {\n    else\n#ifdef FLAG\n#endif\n}\n'
         parser = Parser(Language(tree_sitter_cpp.language()))
@@ -126,6 +178,7 @@ class PreprocessorPatternTests(unittest.TestCase):
         cases = (
             b'NORETURN static void f() { int x = 1; }\n',
             b'void f() { auto x = "prefix" CRAWL "suffix"; }\n',
+            b'void f() { auto x = "!" LETTERS; }\n',
             b'void f() { int x = va_arg(args, int); }\n',
         )
         parser = Parser(Language(tree_sitter_cpp.language()))
@@ -149,12 +202,17 @@ class PreprocessorPatternTests(unittest.TestCase):
         source = (b'// "prefix" CRAWL va_arg(args, int)\n'
                   b'#define TEXT "prefix" CRAWL\n'
                   b'#define ARG va_arg(args, int)\n'
+                  b'// "prefix" LETTERS\n'
+                  b'#define TEXT2 "prefix" LETTERS\n'
+                  b'auto letters_raw = R"x("prefix" LETTERS)x";\n'
+                  b'int LETTERS = 0;\n'
                   b'auto raw = R"x("prefix" CRAWL va_arg(args, int))x";\n'
                   b'int CRAWL = 0;\n')
         self.assertEqual(source, parse_cpp_annotations(parser, source).root_node.text)
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / 'macros.cc'
             for bad in (b'void f() { auto x = "a" CRAWLX "b"; }',
+                        b'void f() { auto x = "!" LETTERSX; }',
                         b'void f() { int x = va_arg_other(args, int); }',
                         b'void f() { int x = va_arg(args +, int); }',
                         b'NORETURN static void f() { int x = ; }'):

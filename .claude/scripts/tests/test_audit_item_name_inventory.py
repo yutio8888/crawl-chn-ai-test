@@ -875,6 +875,132 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     result = MODULE.main(["--output", str(output)])
         self.assertEqual(1, result)
 
+    def test_scroll_appearance_inventory_tracks_current_and_historical_producers(self):
+        current = MODULE.scroll_appearance_components()
+        historical = MODULE.scroll_appearance_components(
+            MODULE.revision_snapshot(MODULE.ISSUE29_REVIEW_BASE)
+        )
+        identities = lambda rows: [
+            (row["family"], row["ordinal"], row["enum_identity"])
+            for row in rows
+        ]
+        self.assertEqual(identities(historical), identities(current))
+        self.assertEqual(22, len(current))
+        self.assertTrue(all(row["deferred"] for row in current))
+        self.assertFalse(any(row["deferred"] for row in historical))
+        self.assertEqual("red silk ribbon", current[0]["value"])
+        self.assertEqual("红绸带", historical[0]["value"])
+        self.assertEqual(("SSE_NONE", None, ""), (
+            current[-1]["enum_identity"], current[-1]["context"],
+            current[-1]["value"],
+        ))
+        db = MODULE.source_entries(MODULE.ZH_SOURCE_DIR)
+        with mock.patch.object(MODULE, "scroll_appearance_components",
+                               side_effect=[current, historical]):
+            rows = MODULE.scroll_appearance_rows(db, {}, MODULE.ISSUE29_REVIEW_BASE)
+        for row, old in zip(rows, historical):
+            self.assertEqual(old["value"], row["_pre_review_chinese"])
+            self.assertEqual(old["value"], row["current_chinese"])
+            self.assertEqual("keep", row["_conclusion"])
+        self.assertIsNone(MODULE.source_db_dependency_spec(rows[-1]))
+        spec = MODULE.source_db_dependency_spec(rows[0])
+        self.assertEqual("C_", spec["lookup_kind"])
+        self.assertEqual("scroll binding", spec["context"])
+        self.assertEqual("scroll binding|red silk ribbon",
+                         spec["candidates"][0]["canonical_key"])
+        self.assertIn("crawl-ref/source/dat/i18n/zh/source.txt",
+                      MODULE.evidence_source_paths(rows[0]))
+        self.assertIn("crawl-ref/source/zh-scroll-appearance.h",
+                      MODULE.evidence_source_paths(rows[-1]))
+
+    def test_scroll_appearance_missing_ambiguous_and_malformed_inputs_fail(self):
+        source = MODULE.active_source(MODULE.SRC / "zh-scroll-appearance.cc")
+        enums = MODULE.enum_constants(
+            ["zh-scroll-appearance.h"],
+            {"scroll_binding_type", "scroll_seal_type"},
+        )
+        declaration = source[source.index("static const char * const _scroll_binding_keys"):
+                             source.index("};") + 2]
+        mutations = {
+            "missing array": source.replace("_scroll_binding_keys[]", "_lost_keys[]"),
+            "duplicate array": source + declaration,
+            "duplicate key": source.replace('"blue silk ribbon"', '"red silk ribbon"'),
+            "wrong deferred context": source.replace(
+                'NC_("scroll binding",', 'NC_("wrong context",', 1),
+            "wrong consumer context": source.replace(
+                'C_("scroll binding",', 'C_("wrong context",', 1),
+            "comment cannot forge a consumer": source.replace(
+                'C_("scroll binding", binding_key)',
+                '/* C_("scroll binding", binding_key) */ '
+                'C_("wrong context", binding_key)'),
+            "literal cannot forge a consumer": source.replace(
+                'C_("scroll binding", binding_key)',
+                '((void)R"(C_("scroll binding", binding_key))", '
+                'C_("wrong context", binding_key))'),
+            "comment cannot forge an array": source.replace(
+                declaration, "/* " + declaration + " */"),
+            "wrong selected array": source.replace(
+                "binding_key = _scroll_binding_keys[binding]",
+                "binding_key = _scroll_seal_keys[binding]"),
+            "unsupported expression": source.replace(
+                'NC_("scroll binding", "red silk ribbon")', 'unknown_component()'),
+            "wrong empty position": source.replace(
+                'NC_("scroll binding", "red silk ribbon")', '""'),
+            "missing structural empty": source.replace(
+                '"", // SSE_NONE', 'NC_("scroll seal", "none"), // SSE_NONE'),
+        }
+        with mock.patch.object(MODULE, "enum_constants", return_value=enums):
+            for label, mutated in mutations.items():
+                with self.subTest(mutation=label):
+                    with mock.patch.object(MODULE, "active_source", return_value=mutated):
+                        with self.assertRaises(RuntimeError):
+                            MODULE.scroll_appearance_components()
+        malformed_enums = copy.deepcopy(enums)
+        malformed_enums["scroll_seal_type"][1] = ("SSE_GOLD_FOIL", 0)
+        with mock.patch.object(MODULE, "enum_constants", return_value=malformed_enums):
+            with self.assertRaisesRegex(RuntimeError, "enum identity/order"):
+                MODULE.scroll_appearance_components()
+
+    def test_scroll_keys_preserve_comment_like_bytes(self):
+        source = MODULE.active_source(MODULE.SRC / "zh-scroll-appearance.cc")
+        historical = MODULE.scroll_appearance_components(
+            MODULE.revision_snapshot(MODULE.ISSUE29_REVIEW_BASE)
+        )
+        db = MODULE.source_entries(MODULE.ZH_SOURCE_DIR)
+        for key in ("red /*ignored*/silk ribbon", "red //silk ribbon"):
+            mutated = source.replace('"red silk ribbon"', json.dumps(key), 1)
+            with self.subTest(key=key):
+                with mock.patch.object(MODULE, "active_source", return_value=mutated):
+                    current = MODULE.scroll_appearance_components()
+                self.assertEqual(key, current[0]["value"])
+                with mock.patch.object(MODULE, "scroll_appearance_components",
+                                       side_effect=[current, historical]):
+                    with self.assertRaisesRegex(RuntimeError, "scroll SourceDB"):
+                        MODULE.scroll_appearance_rows(db, {}, MODULE.ISSUE29_REVIEW_BASE)
+
+    def test_scroll_appearance_missing_context_key_fails_without_treating_none_as_missing(self):
+        current = MODULE.scroll_appearance_components()
+        historical = MODULE.scroll_appearance_components(
+            MODULE.revision_snapshot(MODULE.ISSUE29_REVIEW_BASE)
+        )
+        db = MODULE.source_entries(MODULE.ZH_SOURCE_DIR)
+        key = "scroll binding|red silk ribbon"
+        for value in (None, "", " ", "red silk ribbon"):
+            broken = dict(db)
+            if value is None:
+                del broken[key]
+            else:
+                broken[key] = value
+            # A plain-key fallback cannot pretend the required context exists.
+            broken["red silk ribbon"] = "红绸带"
+            with self.subTest(value=value):
+                with mock.patch.object(MODULE, "scroll_appearance_components",
+                                       side_effect=[current, historical]):
+                    with self.assertRaisesRegex(RuntimeError, "scroll SourceDB"):
+                        MODULE.scroll_appearance_rows(
+                            broken, {}, MODULE.ISSUE29_REVIEW_BASE,
+                        )
+
     def test_issue29_source_inventory_freezes_every_production_boundary(self):
         payload, internal_rows = MODULE.build_extended_inventory()
         self.assertEqual(390, payload["ordinary_v1"]["count"])
@@ -1000,6 +1126,23 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             row["source_dependencies"] == glowing[0]["source_dependencies"]
             for row in glowing
         ))
+        scroll_cards = [row for row in parsed
+                        if row["identity"].startswith("appearance:scroll-")]
+        self.assertEqual(22, len(scroll_cards))
+        for card in scroll_cards:
+            decision = card["decision"]
+            if decision["metadata"]["enum_identity"] == "SSE_NONE":
+                self.assertEqual([], card["source_dependencies"])
+                self.assertEqual("", decision["adopted_chinese"])
+            else:
+                self.assertEqual(1, len(card["source_dependencies"]))
+                dependency = card["source_dependencies"][0]
+                self.assertEqual("C_", dependency["lookup_kind"])
+                self.assertEqual("context", dependency["selected_branch"])
+                self.assertEqual(decision["metadata"]["source_context"],
+                                 dependency["context"])
+                self.assertEqual(decision["adopted_chinese"],
+                                 dependency["resolved_value"])
         self.assertNotIn("source_files", json.dumps(payload["rows"]))
         self.assertNotIn("source SHA", result_text)
 

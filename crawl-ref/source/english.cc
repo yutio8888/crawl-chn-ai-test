@@ -11,7 +11,9 @@
 #include <cstddef>
 #include <cwctype>
 #include <string>
+#include <vector>
 
+#include "i18n.h"
 #include "options.h"
 #include "stringutil.h"
 
@@ -203,9 +205,9 @@ string apostrophise(const string &name)
     if (name.empty())
         return name;
 
-    // Chinese has no possessive 's — use 的 instead.
+    // Chinese uses a translated possessive template.
     if (Options.language == lang_t::ZH)
-        return name + "的";
+        return make_stringf(T_("%s's"), name.c_str());
 
     if (name == "you" || name == "You")
         return name + "r";
@@ -288,31 +290,57 @@ string conjugate_verb(const string &verb, bool plural)
 
 static const char * const _pronoun_declension[][NUM_PRONOUN_CASES] =
 {
-    // subj  poss    refl        obj
-    { "it",  "its",  "itself",   "it"  }, // neuter
-    { "he",  "his",  "himself",  "him" }, // masculine
-    { "she", "her",  "herself",  "her" }, // feminine
-    { "you", "your", "yourself", "you" }, // 2nd person
-    { "they", "their", "themself", "them" }, // neutral
+    {
+        NC_("pronoun subject", "it"),
+        NC_("pronoun possessive", "its"),
+        NC_("pronoun reflexive", "itself"),
+        NC_("pronoun object", "it")
+    },
+    {
+        NC_("pronoun subject", "he"),
+        NC_("pronoun possessive", "his"),
+        NC_("pronoun reflexive", "himself"),
+        NC_("pronoun object", "him")
+    },
+    {
+        NC_("pronoun subject", "she"),
+        NC_("pronoun possessive", "her"),
+        NC_("pronoun reflexive", "herself"),
+        NC_("pronoun object", "her")
+    },
+    {
+        NC_("pronoun subject", "you"),
+        NC_("pronoun possessive", "your"),
+        NC_("pronoun reflexive", "yourself"),
+        NC_("pronoun object", "you")
+    },
+    {
+        NC_("pronoun subject", "they"),
+        NC_("pronoun possessive", "their"),
+        NC_("pronoun reflexive", "themself"),
+        NC_("pronoun object", "them")
+    },
 };
 
-static const char * const _pronoun_declension_zh[][NUM_PRONOUN_CASES] =
+static const char * const _pronoun_contexts[] =
 {
-    // subj  poss    refl        obj
-    { "它",  "它的",  "它自己",   "它"  }, // neuter
-    { "他",  "他的",  "他自己",   "他"  }, // masculine
-    { "她",  "她的",  "她自己",   "她"  }, // feminine
-    { "你",  "你的",  "你自己",   "你"  }, // 2nd person
-    { "它们", "它们的", "它们自己", "它们" }, // neutral
+    "pronoun subject",
+    "pronoun possessive",
+    "pronoun reflexive",
+    "pronoun object"
 };
 
 const char *decline_pronoun(gender_type gender, pronoun_type variant)
 {
     COMPILE_CHECK(ARRAYSZ(_pronoun_declension) == NUM_GENDERS);
+    COMPILE_CHECK(ARRAYSZ(_pronoun_contexts) == NUM_PRONOUN_CASES);
     ASSERT_RANGE(gender, 0, NUM_GENDERS);
     ASSERT_RANGE(variant, 0, NUM_PRONOUN_CASES);
     if (Options.language == lang_t::ZH)
-        return _pronoun_declension_zh[gender][variant];
+    {
+        return C_(_pronoun_contexts[variant],
+                  _pronoun_declension[gender][variant]);
+    }
     return _pronoun_declension[gender][variant];
 }
 
@@ -392,37 +420,33 @@ static string _number_in_words(unsigned num, unsigned period)
                                   : ""));
 }
 
-static string _chinese_number_in_words(unsigned num)
+static string _chinese_number_in_words(unsigned num,
+                                       const vector<string> &words)
 {
-    static const char *digits[] =
-    {
-        "零", "一", "二", "三", "四", "五", "六", "七", "八", "九"
-    };
-
     if (num < 10)
-        return digits[num];
+        return words[num];
 
     if (num < 20)
-        return string("十") + (num % 10 ? digits[num % 10] : "");
+        return words[10] + (num % 10 ? words[num % 10] : "");
 
     if (num < 100)
     {
         unsigned tens = num / 10;
         unsigned ones = num % 10;
-        return string(digits[tens]) + "十" + (ones ? digits[ones] : "");
+        return words[tens] + words[10] + (ones ? words[ones] : "");
     }
 
     if (num < 1000)
     {
         unsigned hundreds = num / 100;
         unsigned rest = num % 100;
-        string result = string(digits[hundreds]) + "百";
+        string result = words[hundreds] + words[11];
         if (rest)
         {
             if (rest < 10)
-                result += string("零") + digits[rest];
+                result += words[0] + words[rest];
             else
-                result += _chinese_number_in_words(rest);
+                result += _chinese_number_in_words(rest, words);
         }
         return result;
     }
@@ -430,12 +454,12 @@ static string _chinese_number_in_words(unsigned num)
     // 1000+
     unsigned thousands = num / 1000;
     unsigned rest = num % 1000;
-    string result = _chinese_number_in_words(thousands) + "千";
+    string result = _chinese_number_in_words(thousands, words) + words[12];
     if (rest)
     {
         if (rest < 100)
-            result += "零";
-        result += _chinese_number_in_words(rest);
+            result += words[0];
+        result += _chinese_number_in_words(rest, words);
     }
     return result;
 }
@@ -448,7 +472,35 @@ string number_in_words_en(unsigned num)
 string number_in_words(unsigned num)
 {
     if (Options.language == lang_t::ZH)
-        return _chinese_number_in_words(num);
+    {
+        static const char * const keys[] =
+        {
+            NC_("number word", "zero"),
+            NC_("number word", "one"),
+            NC_("number word", "two"),
+            NC_("number word", "three"),
+            NC_("number word", "four"),
+            NC_("number word", "five"),
+            NC_("number word", "six"),
+            NC_("number word", "seven"),
+            NC_("number word", "eight"),
+            NC_("number word", "nine"),
+            NC_("number word", "ten"),
+            NC_("number word", "hundred"),
+            NC_("number word", "thousand")
+        };
+        // The grouping algorithm is language-specific. If its vocabulary is
+        // unavailable, use the complete English number instead of mixing words.
+        vector<string> words;
+        for (const char *key : keys)
+        {
+            const string word = C_("number word", key);
+            if (word == key)
+                return number_in_words_en(num);
+            words.push_back(word);
+        }
+        return _chinese_number_in_words(num, words);
+    }
     return number_in_words_en(num);
 }
 
@@ -497,7 +549,7 @@ string apply_description(description_level_type desc, const string &name,
         switch (desc)
         {
         case DESC_YOUR:
-            return "你的" + name;
+            return T_("your ") + name;
         case DESC_PLAIN:
         default:
             // Chinese has no articles — return name as-is

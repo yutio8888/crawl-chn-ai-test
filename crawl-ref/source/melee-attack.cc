@@ -1868,7 +1868,7 @@ bool melee_attack::attack()
     // Restore gyre's name before we return. We cannot use an unwind_var here
     // because the precise address of the ARTEFACT_NAME_KEY property might
     // change, for example if a summoned item is reset.
-    ON_UNWIND
+    unwinder restore_gyre_name = [&] () -> void
     {
         if (!saved_gyre_name.empty() && weapon
                 && is_unrandom_artefact(*weapon, UNRAND_GYRE))
@@ -3724,10 +3724,10 @@ void melee_attack::announce_hit()
 
             if (Options.language == lang_t::ZH && attk_type == AT_SPORE)
             {
-                // Chinese: attacker 向 defender verb
-                mprf_p(T_("%1$s向%4$s%3$s%5$s%6$s%7$s%8$s"),
+                // Spore order omits the stealth slot, as before.
+                mprf_p(C_("spore attack",
+                          "%1$s %2$s at %3$s%4$s%5$s%6$s%7$s"),
                        atk_name(DESC_THE).c_str(),
-                       stealth.c_str(),
                        verb.c_str(),
                        defender_name(true).c_str(),
                        charge_desc().c_str(),

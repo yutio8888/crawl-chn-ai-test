@@ -1362,9 +1362,164 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     return rows
 
 
-def unidentified_appearance_rows(source_db, base_source_db):
+def scroll_appearance_components(snapshot=None):
+    """Read ordered scroll components from current keys or historical literals."""
+    # Reuse the scanner's string-aware masker: source comments cannot stand
+    # in for declarations or C_ consumers, and comment-like key bytes survive.
+    from scan_i18n import CPP_LITERAL_RE, _mask_cpp_comments
+
+    def code_matches(pattern, source):
+        literals = list(CPP_LITERAL_RE.finditer(source))
+        return [match for match in re.finditer(pattern, source, re.S)
+                if not any(literal.start() <= match.start() < literal.end()
+                           for literal in literals)]
+
+    active = snapshot or audit_snapshot()
+    text = _mask_cpp_comments(
+        active_source(SRC / "zh-scroll-appearance.cc", active), raw_strings=True,
+    )
+    enums = enum_constants(
+        ["zh-scroll-appearance.h"],
+        {"scroll_binding_type", "scroll_seal_type"}, active,
+    )
+    # This finite producer has only literal and NC_ entries. Consume the entire
+    # initializer; collecting every quoted string would mistake contexts for
+    # additional components and silently lose ordering or unsupported entries.
+    literal = r'"(?:\\.|[^"\\])*"'
+    trivia = r"\s*"
+    entry_pattern = re.compile(
+        trivia + r"(?:NC_" + trivia + r"\(" + trivia + "(" + literal + ")"
+        + trivia + "," + trivia + "(" + literal + ")" + trivia + r"\)|("
+        + literal + "))" + trivia + r"(,|$)", re.S,
+    )
+    result = []
+    for family, enum_name, sentinel, count, context in (
+        ("scroll-binding", "scroll_binding_type", "NDSC_SCROLL_BINDING", 12,
+         "scroll binding"),
+        ("scroll-seal", "scroll_seal_type", "NDSC_SCROLL_SEAL", 10,
+         "scroll seal"),
+    ):
+        constants = enums.get(enum_name, [])
+        if (len(constants) != count + 1 or constants[-1] != (sentinel, count)
+                or [value for _, value in constants] != list(range(count + 1))
+                or len({name for name, _ in constants}) != len(constants)):
+            raise RuntimeError(f"scroll enum identity/order drift: {enum_name}")
+        stem = family.replace("-", "_")
+        current_name = f"_{stem}_keys"
+        legacy_name = f"{stem}_zh"
+        arrays = code_matches(
+            r"\b(" + re.escape(current_name) + "|" + re.escape(legacy_name)
+            + r")\s*\[\]\s*=\s*\{(.*?)\};", text,
+        )
+        if len(arrays) != 1:
+            raise RuntimeError(f"missing or duplicate scroll array: {family}")
+        array_name, body = arrays[0].groups()
+        deferred = array_name == current_name
+        if deferred:
+            definitions = code_matches(
+                r"\btranslated_scroll_appearance\s*\([^;]*?\)\s*\{", text,
+            )
+            if len(definitions) != 1:
+                raise RuntimeError("missing or duplicate scroll display consumer")
+            consumer = function_body(text[definitions[0].start():],
+                                     "translated_scroll_appearance")
+            part = family.removeprefix("scroll-")
+            if not (
+                code_matches(r"\b" + part + r"_key\s*=\s*"
+                             + re.escape(array_name) + r"\[" + part + r"\]\s*;",
+                             consumer)
+                and code_matches(r'C_\(\s*"' + re.escape(context)
+                                 + r'"\s*,\s*' + part + r'_key\s*\)', consumer)
+            ):
+                raise RuntimeError(f"scroll NC_/C_ consumer drift: {array_name}")
+        # Comments are trivia only between tokens, never inside a key.
+        body = body.strip()
+        values = []
+        offset = 0
+        while offset < len(body):
+            if re.fullmatch(trivia, body[offset:], re.S):
+                break
+            match = entry_pattern.match(body, offset)
+            if match is None:
+                raise RuntimeError(f"unsupported scroll array entry: {array_name}")
+            raw_context, raw_key, raw_literal, _ = match.groups()
+            entry_context = json.loads(raw_context) if raw_context else None
+            value = json.loads(raw_key or raw_literal)
+            if deferred:
+                if entry_context != (context if value else None):
+                    raise RuntimeError(f"scroll context drift: {array_name}")
+            elif entry_context is not None:
+                raise RuntimeError(f"unexpected historical scroll lookup: {array_name}")
+            values.append((entry_context, value))
+            offset = match.end()
+        if len(values) != count or len({value for _, value in values}) != count:
+            raise RuntimeError(f"scroll array count or duplicate drift: {array_name}")
+        for ordinal, ((enum_id, _), (entry_context, value)) in enumerate(
+            zip(constants, values)
+        ):
+            if (value == "") != (enum_id == "SSE_NONE"):
+                raise RuntimeError(f"scroll empty component drift: {enum_id}")
+            result.append({
+                "family": family, "ordinal": ordinal, "enum_identity": enum_id,
+                "array": array_name, "deferred": deferred,
+                "context": entry_context, "value": value,
+            })
+    return result
+
+
+def scroll_appearance_rows(source_db, base_source_db, review_base):
+    current = scroll_appearance_components()
+    historical = scroll_appearance_components(revision_snapshot(review_base))
+    historical_by_enum = {entry["enum_identity"]: entry for entry in historical}
+
+    def chinese(entry, db, boundary):
+        if entry["context"] is None:
+            return entry["value"]
+        key = compute_canonical_key(i18n_escape_key(
+            f"{entry['context']}|{entry['value']}"
+        ))
+        value = db.get(key)
+        if not value or not value.strip() or value == entry["value"]:
+            raise RuntimeError(f"missing scroll SourceDB translation: {boundary}:{key}")
+        return value
+
+    rows = []
+    for entry in current:
+        family, ordinal = entry["family"], entry["ordinal"]
+        previous = historical_by_enum.get(entry["enum_identity"])
+        if previous is None or previous["ordinal"] != ordinal:
+            raise RuntimeError(f"historical scroll identity/order drift: {family}:{ordinal}")
+        metadata = {"family": family, "physical_ordinal": ordinal}
+        producer = "item-name.cc unidentified appearance arrays"
+        consumer = "item_def::name unidentified display grammar"
+        if entry["deferred"]:
+            metadata.update({
+                "enum_identity": entry["enum_identity"],
+                "deferred_array": entry["array"],
+                "source_context": entry["context"],
+                "structural_empty": entry["value"] == "",
+            })
+            producer = f"zh-scroll-appearance.cc {entry['array']} NC_ keys"
+            consumer = (
+                "translated_scroll_appearance C_ lookup -> item_def::name; "
+                "missing selected component/template uses English scroll label"
+            )
+        rows.append({
+            "identity": f"appearance:{family}:{ordinal:03d}",
+            "category": "appearance", "lifecycle": "current",
+            "english_source": entry["value"] or "(empty component)",
+            "_pre_review_chinese": chinese(previous, base_source_db, "review base"),
+            "current_chinese": chinese(entry, source_db, "candidate"),
+            "producer": producer, "consumer": consumer,
+            "input": "crawl-ref/source/zh-scroll-appearance.cc",
+            "_metadata": metadata, "_conclusion": "keep",
+        })
+    return rows
+
+
+def unidentified_appearance_rows(source_db, base_source_db,
+                                 review_base=ISSUE29_REVIEW_BASE):
     item_name = active_source(SRC / "item-name.cc")
-    scroll = active_source(SRC / "zh-scroll-appearance.cc")
     specs = [
         ("wand-primary", array_literals(item_name, "primary_strings")[:12]),
         ("wand-secondary",
@@ -1390,8 +1545,6 @@ def unidentified_appearance_rows(source_db, base_source_db):
                         "secondary_strings")),
         ("potion-colour", array_literals(item_name, "potion_colours")),
         ("potion-qualifier", array_literals(item_name, "potion_qualifiers")),
-        ("scroll-binding", array_literals(scroll, "scroll_binding_zh")),
-        ("scroll-seal", array_literals(scroll, "scroll_seal_zh")),
     ]
     expected = {
         "wand-primary": 12, "wand-secondary": 16,
@@ -1399,7 +1552,6 @@ def unidentified_appearance_rows(source_db, base_source_db):
         "amulet-primary": 29, "amulet-secondary": 13,
         "staff-primary": 4, "staff-secondary": 10,
         "potion-colour": 23, "potion-qualifier": 15,
-        "scroll-binding": 12, "scroll-seal": 10,
     }
     counts = {name: len(values) for name, values in specs}
     if counts != expected:
@@ -1408,33 +1560,26 @@ def unidentified_appearance_rows(source_db, base_source_db):
     for family, values in specs:
         for ordinal, value in enumerate(values):
             english = value.strip()
-            current_chinese = (
-                value if family.startswith("scroll-")
-                else source_db.get(english.lower(), english)
-            )
+            current_chinese = source_db.get(english.lower(), english)
             rows.append({
                 "identity": f"appearance:{family}:{ordinal:03d}",
                 "category": "appearance",
                 "lifecycle": "current",
                 "english_source": english or "(empty component)",
                 "_pre_review_chinese": (
-                    current_chinese if family.startswith("scroll-")
-                    else base_source_db.get(english.lower(), english)
+                    base_source_db.get(english.lower(), english)
                 ),
                 "current_chinese": current_chinese,
                 "producer": "item-name.cc unidentified appearance arrays",
                 "consumer": "item_def::name unidentified display grammar",
-                "input": (
-                    "crawl-ref/source/zh-scroll-appearance.cc"
-                    if family.startswith("scroll-")
-                    else "crawl-ref/source/item-name.cc"
-                ),
+                "input": "crawl-ref/source/item-name.cc",
                 "_metadata": {
                     "family": family,
                     "physical_ordinal": ordinal,
                 },
                 "_conclusion": "keep",
             })
+    rows.extend(scroll_appearance_rows(source_db, base_source_db, review_base))
     return rows
 
 
@@ -1629,7 +1774,15 @@ def evidence_source_paths(row):
     elif category == "unident":
         paths.append("crawl-ref/source/dat/descript/zh/unident.txt")
     elif category in {"appearance", "special"}:
-        if input_path != "crawl-ref/source/zh-scroll-appearance.cc":
+        if input_path == "crawl-ref/source/zh-scroll-appearance.cc":
+            if row.get("_metadata", {}).get("deferred_array"):
+                paths.extend([
+                    "crawl-ref/source/zh-scroll-appearance.h",
+                    "crawl-ref/source/item-name.cc",
+                ])
+                if row["_metadata"].get("source_context"):
+                    paths.append("crawl-ref/source/dat/i18n/zh/source.txt")
+        else:
             paths.append("crawl-ref/source/dat/i18n/zh/source.txt")
     elif category in {"gizmo", "randart-component", "randart-grammar"}:
         paths.append(input_path.replace(
@@ -1656,6 +1809,13 @@ def conclusion_reason(row):
     boundary = (
         f"{row['identity']} at {row['producer']} -> {row['consumer']}"
     )
+    if conclusion == "keep" and metadata.get("deferred_array"):
+        return (
+            f"keep: {boundary} preserves the previously reviewed Chinese "
+            "component and physical ordinal. Issue 6 rebinds source evidence "
+            "to deferred English keys and display-time SourceDB lookup; "
+            "SSE_NONE remains structural absence. The wording decision is unchanged."
+        )
     if conclusion == "keep":
         return (
             f"keep: {boundary} has {changed} differing from the review base; "
@@ -1757,9 +1917,12 @@ def source_db_dependency_spec(row):
         context = None
     elif category == "appearance":
         if row["input"] == "crawl-ref/source/zh-scroll-appearance.cc":
-            return None
+            context = row.get("_metadata", {}).get("source_context")
+            if context is None:  # Historical literals and structural SSE_NONE.
+                return None
+        else:
+            context = None
         english = "" if english == "(empty component)" else english
-        context = None
     elif category == "special":
         if str(row["identity"]).startswith("special:RUNE_"):
             context = "rune_name"
@@ -2007,7 +2170,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
             ),
         })
 
-    rows.extend(unidentified_appearance_rows(source_db, base_source_db))
+    rows.extend(unidentified_appearance_rows(source_db, base_source_db, review_base))
     rows.extend(special_item_rows(source_db, base_source_db))
 
     gizmo_en = SRC / "dat/database/gizmo.txt"
