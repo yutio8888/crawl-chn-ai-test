@@ -1868,7 +1868,7 @@ bool melee_attack::attack()
     // Restore gyre's name before we return. We cannot use an unwind_var here
     // because the precise address of the ARTEFACT_NAME_KEY property might
     // change, for example if a summoned item is reset.
-    ON_UNWIND
+    unwinder restore_gyre_name = [&] () -> void
     {
         if (!saved_gyre_name.empty() && weapon
                 && is_unrandom_artefact(*weapon, UNRAND_GYRE))

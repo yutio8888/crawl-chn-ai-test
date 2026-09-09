@@ -1712,7 +1712,8 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
         // crop long artefact names when not controlled by webtiles -
         // webtiles displays weapon names across multiple lines
 #ifdef USE_TILE_WEB
-        if (!tiles.is_controlled_from_web())
+        if (tiles.is_controlled_from_web())
+            return long_name;
 #endif
         {
             const bool has_inscript = desc != DESC_BASENAME
@@ -1727,10 +1728,6 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
             if (!terse || total_length <= max_length)
                 return long_name;
         }
-#ifdef USE_TILE_WEB
-        else
-            return long_name;
-#endif
 
         // special case: these two shouldn't ever have their base name revealed
         // (since showing 'eudaemon blade' is unhelpful in the former case, and
@@ -1816,8 +1813,10 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             {
                 // Structural: ZH prefix "之" vs EN " of "
                 if (Options.language == lang_t::ZH)
+                {
                     buff << make_stringf(C_("item ego prefix", "of %s"),
                                          missile_brand_name(*this, MBN_NAME));
+                }
                 else
                     buff << " of " << missile_brand_name(*this, MBN_NAME);
             }
@@ -3271,7 +3270,7 @@ bool is_good_item(const item_def &item)
             return true;
         default:
             return false;
-        CASE_REMOVED_POTIONS(item.sub_type)
+        CASE_REMOVED_POTIONS(item.sub_type);
         }
     default:
         return false;
@@ -3792,11 +3791,11 @@ bool is_useless_item(const item_def &item, bool temp, bool ident)
             return player_prot_life(false, temp, false) == 3;
 
         case AMU_REGENERATION:
-            return
 #if TAG_MAJOR_VERSION == 34
-                   you.get_mutation_level(MUT_NO_REGENERATION) > 0 ||
+            if (you.get_mutation_level(MUT_NO_REGENERATION) > 0)
+                return true;
 #endif
-                    (temp && regeneration_is_inhibited());
+            return temp && regeneration_is_inhibited();
 
         case AMU_MANA_REGENERATION:
             return !you.max_magic_points;

@@ -539,8 +539,10 @@ void unlink_item(int dest)
 
 #if TAG_MAJOR_VERSION == 34
         if (env.item[dest].pos.x != 0 || env.item[dest].pos.y < 5)
-#endif
+            ASSERT_IN_BOUNDS(env.item[dest].pos);
+#else
         ASSERT_IN_BOUNDS(env.item[dest].pos);
+#endif
 
         // First check the top:
         if (env.igrid(env.item[dest].pos) == dest)
@@ -930,7 +932,7 @@ void item_check()
     // Special case
     if (items.size() == 1)
     {
-        const item_def& it(*items[0]);
+        const item_def& it = *items[0];
         string name = menu_colour_item_name(it, DESC_A);
         strm << (T_("You see here "))
              << name << (T_(".")) << endl;
@@ -1899,8 +1901,10 @@ static void _get_book(item_def& it)
     }
 
     if (you.skill_manual_points[sk])
+    {
         mprf(T_("You pick up another %s and continue studying."),
              it.name(DESC_PLAIN).c_str());
+    }
     else
         mprf(T_("You pick up %s and begin studying."),
              it.name(DESC_A).c_str());
@@ -2587,7 +2591,7 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
 {
     ASSERT_IN_BOUNDS(p);
 
-    int& ob(*obj);
+    int& ob = *obj;
 
     // Must be a valid reference to a valid object.
     if (ob == NON_ITEM || !env.item[ob].defined())
@@ -2678,8 +2682,10 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
     }
 
     if (p == you.pos() && _id_floor_item(item))
+    {
         mprf(T_("You see here %s."),
              item.name(DESC_A).c_str());
+    }
 
     return true;
 }
@@ -4447,16 +4453,16 @@ colour_t item_def::get_colour() const
 
 bool item_type_has_unidentified(object_class_type base_type)
 {
+#if TAG_MAJOR_VERSION == 34
+    if (base_type == OBJ_RODS)
+        return true;
+#endif
     return base_type == OBJ_WANDS
         || base_type == OBJ_SCROLLS
         || base_type == OBJ_JEWELLERY
         || base_type == OBJ_POTIONS
         || base_type == OBJ_BOOKS
-        || base_type == OBJ_STAVES
-#if TAG_MAJOR_VERSION == 34
-        || base_type == OBJ_RODS
-#endif
-        ;
+        || base_type == OBJ_STAVES;
 }
 
 // Checks whether the item is actually a good one.
