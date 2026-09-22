@@ -202,6 +202,7 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
 def message_fixture() -> str:
     return COMMON + r'''
 #include <climits>
+#include <cstdint>
 #include <cstring>
 struct formatted_string : string {
     using string::string;
