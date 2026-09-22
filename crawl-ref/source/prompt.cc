@@ -324,6 +324,7 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
  */
 int prompt_for_quantity(const char *prompt)
 {
+    const ui::TextInputScope text_input(true);
     msgwin_prompt(prompt);
 
     int ch = getch_ck();
@@ -350,7 +351,7 @@ int prompt_for_int(const char *prompt, bool nonneg, const string &prefill)
     char specs[80];
 
     int getline_ret = msgwin_get_line(prompt, specs, sizeof(specs), nullptr,
-                                            prefill);
+                                            prefill, true);
 
     if (specs[0] == '\0' || getline_ret == CK_ESCAPE)
         return nonneg ? -1 : 0;
@@ -368,7 +369,7 @@ double prompt_for_float(const char* prompt)
 {
     char specs[80];
 
-    int getline_ret = msgwin_get_line(prompt, specs, sizeof(specs));
+    int getline_ret = msgwin_get_line(prompt, specs, sizeof(specs), nullptr, "", true);
 
     if (specs[0] == '\0' || getline_ret == CK_ESCAPE)
         return -1;

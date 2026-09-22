@@ -10,6 +10,8 @@ import android.app.*;
 import android.content.*;
 import android.content.res.Resources;
 import android.text.InputType;
+import android.text.Editable;
+import android.text.Selection;
 import android.view.*;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
@@ -73,6 +75,11 @@ public class SDLActivity extends AppCompatActivity {
     protected static boolean fullScreen;
     protected static View mTextEdit;
     protected static boolean mScreenKeyboardShown;
+    private static int mInputContext = -1;
+    private static boolean mTemporaryIme;
+    private static boolean mTemporaryImeSeen;
+    private static boolean mImeBackPending;
+    private static int mImeUnobscuredHeight;
     protected static ViewGroup mLayout;
     protected static LinearLayout keyboardsLayout;
     protected static SDLClipboardHandler mClipboardHandler;
@@ -156,6 +163,11 @@ public class SDLActivity extends AppCompatActivity {
         keyboardSize = 0;
         fullScreen = true;
         mTextEdit = null;
+        mInputContext = -1;
+        mTemporaryIme = false;
+        mTemporaryImeSeen = false;
+        mImeBackPending = false;
+        mImeUnobscuredHeight = 0;
         mLayout = null;
         keyboardsLayout = null;
         mClipboardHandler = null;
@@ -281,6 +293,12 @@ public class SDLActivity extends AppCompatActivity {
                 mSystemBottomInset = insets.getSystemWindowInsetBottom();
                 if (Build.VERSION.SDK_INT >= 30) {
                     mImeBottomInset = insets.getInsets(WindowInsets.Type.ime()).bottom;
+                    if (mTemporaryIme) {
+                        // Floating keyboards can be visible with a zero
+                        // bottom inset; their dismissal must also restore us.
+                        if (insets.isVisible(WindowInsets.Type.ime())) mTemporaryImeSeen = true;
+                        else if (mTemporaryImeSeen) finishTemporaryIme();
+                    }
                 } else {
                     mImeBottomInset = 0;
                 }
@@ -299,8 +317,9 @@ public class SDLActivity extends AppCompatActivity {
         mKeyboard = new DCSSKeyboard(this);
         mKeyboard.setVisibility(View.INVISIBLE);
         mKeyboard.initKeyboard(keyboardOption, keyboardSize);
+        mKeyboard.setSystemKeyboardAction(SDLActivity::showTemporarySystemKeyboard);
         // Reserve the initial measured height. Context and manual layout
-        // switches now share the same fixed four-row height.
+        // switches share the same configuration-dependent height.
         mKeyboard.addOnLayoutChangeListener((view, left, top, right, bottom,
                 oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom - top != oldBottom - oldTop) {
@@ -353,6 +372,20 @@ public class SDLActivity extends AppCompatActivity {
         keyLParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         keyboardsLayout.setLayoutParams(keyLParams);
         mLayout.addView(keyboardsLayout);
+        mLayout.addOnLayoutChangeListener((view, left, top, right, bottom,
+                oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (mTemporaryIme && bottom - top != oldBottom - oldTop) {
+                if (Build.VERSION.SDK_INT < 30) {
+                    int threshold = Math.round(48 * getResources().getDisplayMetrics().density);
+                    if (bottom - top < mImeUnobscuredHeight - threshold) {
+                        mTemporaryImeSeen = true;
+                    } else if (mTemporaryImeSeen) {
+                        finishTemporaryIme();
+                    }
+                }
+                updateSurfaceSize();
+            }
+        });
         setContentView(mLayout);
         // The native deduplication cache survives an Activity recreation.
         // Request publication only after the replacement keyboard is ready.
@@ -377,6 +410,7 @@ public class SDLActivity extends AppCompatActivity {
         // CRAWL HACK: the pause save is requested from handleNativeState(),
         // which every route into the background reaches.
         super.onPause();
+        finishTemporaryIme();
         mNextNativeState = NativeState.PAUSED;
         mIsResumedCalled = false;
 
@@ -492,6 +526,7 @@ public class SDLActivity extends AppCompatActivity {
         }
 
         int keyCode = event.getKeyCode();
+        if (consumeTemporaryImeBack(keyCode, event)) return true;
 
         // CRAWL HACK: Remap hardware keys
         // Use back key as escape
@@ -676,6 +711,7 @@ public class SDLActivity extends AppCompatActivity {
                 }
                 break;
             case COMMAND_TEXTEDIT_HIDE:
+                finishTemporaryIme();
                 if (mTextEdit != null) {
                     // Note: On some devices setting view to GONE creates a flicker in landscape.
                     // Setting the View's sizes to 0 is similar to GONE but without the flicker.
@@ -706,14 +742,15 @@ public class SDLActivity extends AppCompatActivity {
             {
                 Log.v(TAG, "command update keyboard visibility");
                 if (context instanceof Activity) {
+                    if (!mScreenKeyboardShown) finishTemporaryIme();
                     if (mScreenKeyboardShown && (keyboardOption == 1 || keyboardOption == 2
                             || keyboardOption == 4)) {
-                        mKeyboard.setVisibility(View.VISIBLE);
+                        mKeyboard.setVisibility(mTemporaryIme ? View.INVISIBLE : View.VISIBLE);
                     } else {
                         mKeyboard.setVisibility(View.GONE);
                     }
                     if (mScreenKeyboardShown && extraKeyboardOption > 0) {
-                        mKeyboardExtra.setVisibility(View.VISIBLE);
+                        mKeyboardExtra.setVisibility(mTemporaryIme ? View.INVISIBLE : View.VISIBLE);
                     } else {
                         mKeyboardExtra.setVisibility(View.GONE);
                     }
@@ -916,11 +953,20 @@ public class SDLActivity extends AppCompatActivity {
             }
 
             mTextEdit.setVisibility(View.VISIBLE);
+            ((DummyEdit) mTextEdit).configureIme(keyboardOption == 3 || mTemporaryIme,
+                    mInputContext);
             mTextEdit.requestFocus();
 
-            if (keyboardOption == 3) {
+            if (keyboardOption == 3 || mTemporaryIme) {
                 InputMethodManager imm = (InputMethodManager) SDL.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mTextEdit, InputMethodManager.SHOW_IMPLICIT);
+                View editor = mTextEdit;
+                editor.post(() -> {
+                    if (editor == mTextEdit && (keyboardOption == 3 || mTemporaryIme)
+                            && !imm.showSoftInput(editor, InputMethodManager.SHOW_IMPLICIT)
+                            && mTemporaryIme) {
+                        finishTemporaryIme();
+                    }
+                });
             }
 
             // CRAWL HACK: Custom keyboard
@@ -965,6 +1011,19 @@ public class SDLActivity extends AppCompatActivity {
         }
         activity.runOnUiThread(() -> {
             if (mSingleton == activity && mKeyboard != null) {
+                int previous = mInputContext;
+                mInputContext = context;
+                if (!DCSSKeyboard.isTextContext(context)) finishTemporaryIme();
+                if (mTextEdit instanceof DummyEdit && previous != context) {
+                    DummyEdit editor = (DummyEdit) mTextEdit;
+                    editor.configureIme(keyboardOption == 3 || mTemporaryIme, context);
+                    connectCustomKeyboards(editor);
+                    if (keyboardOption == 3 || mTemporaryIme) {
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        imm.restartInput(editor);
+                    }
+                }
                 mKeyboard.setInputContext(context, screen, labels, keys);
             }
         });
@@ -972,6 +1031,57 @@ public class SDLActivity extends AppCompatActivity {
 
     public static native void nativeKeyboardKey(int key);
     public static native void nativeResetInputContext();
+
+    private static void connectCustomKeyboards(DummyEdit editor) {
+        InputConnection connection = editor.onCreateInputConnection(new EditorInfo());
+        if (mKeyboard != null) mKeyboard.setInputConnection(connection);
+        if (mKeyboardExtra != null) mKeyboardExtra.setInputConnection(connection);
+    }
+
+    // A temporary editor session changes neither the saved keyboard option nor
+    // the custom keyboard's measured geometry. Native text input still uses
+    // the existing DummyEdit -> SDLInputConnection -> SDL_TEXTINPUT path.
+    public static void showTemporarySystemKeyboard() {
+        if (mSingleton == null || mTemporaryIme || !DCSSKeyboard.isTextContext(mInputContext)
+                || !(keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4)) {
+            return;
+        }
+        mTemporaryIme = true;
+        mTemporaryImeSeen = false;
+        mImeUnobscuredHeight = mLayout.getHeight();
+        mSingleton.sendCommand(COMMAND_UPDATE_KEYBOARD_VISIBILITY, null);
+        new ShowTextInputTask(0, 0, 1, 1).run();
+    }
+
+    static void finishTemporaryIme() {
+        if (!mTemporaryIme) return;
+        mTemporaryIme = false;
+        mTemporaryImeSeen = false;
+        if (mTextEdit instanceof DummyEdit) {
+            DummyEdit editor = (DummyEdit) mTextEdit;
+            InputMethodManager imm = (InputMethodManager) editor.getContext().getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(editor.getWindowToken(), 0);
+            editor.configureIme(false, mInputContext);
+            connectCustomKeyboards(editor);
+        }
+        if (mSurface != null) mSurface.requestFocus();
+        if (mSingleton != null) {
+            mSingleton.sendCommand(COMMAND_UPDATE_KEYBOARD_VISIBILITY, null);
+        }
+    }
+
+    static boolean consumeTemporaryImeBack(int keyCode, KeyEvent event) {
+        if (keyCode != KeyEvent.KEYCODE_BACK || !(mTemporaryIme || mImeBackPending)) {
+            return false;
+        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN) mImeBackPending = true;
+        if (event.getAction() == KeyEvent.ACTION_UP) {
+            mImeBackPending = false;
+            finishTemporaryIme();
+        }
+        return true;
+    }
 
     // CRAWL HACK: Function used to toggle the keyboard, called using JNI.
     public static boolean jniKeyboardControl(int action) {
@@ -1358,7 +1468,11 @@ public class SDLActivity extends AppCompatActivity {
                 // Pre-API 30 or IME insets unavailable: manual keyboard measurement.
                 // keyboardsLayout is already measured inside the nav-bar-padded parent,
                 // so this formula correctly accounts for the navigation bar.
-                surfaceHeight = keyboardsLayout.getHeight() - mKeyboard.getHeight();
+                // Keep the previous size until the opening IME has appeared;
+                // then adjustResize already supplies the pre-30 usable height.
+                if (mTemporaryIme && !mTemporaryImeSeen) return;
+                surfaceHeight = keyboardsLayout.getHeight()
+                        - (mTemporaryIme ? 0 : mKeyboard.getHeight());
             }
             surfaceHeight = Math.max(surfaceHeight, 100);
             ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
@@ -1832,19 +1946,26 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
  * pan&scan region
  */
 class DummyEdit extends View implements View.OnKeyListener {
-    InputConnection ic;
+    SDLInputConnection ic;
+    private boolean imeEnabled;
+    private int inputContext = -1;
 
     public DummyEdit(Context context, int keyboardOption) {
         super(context);
-        // CRAWL HACK: Focusable=false disables the soft keyboard
-        if (keyboardOption != 3) {
-            setFocusableInTouchMode(false);
-            setFocusable(false);
-        } else {
-            setFocusableInTouchMode(true);
-            setFocusable(true);
-        }
+        configureIme(keyboardOption == 3, -1);
         setOnKeyListener(this);
+    }
+
+    void configureIme(boolean enabled, int context) {
+        if (imeEnabled != enabled || inputContext != context) {
+            if (ic != null) ic.deactivate();
+            ic = null;
+        }
+        imeEnabled = enabled;
+        inputContext = context;
+        if (!enabled) clearFocus();
+        setFocusableInTouchMode(enabled);
+        setFocusable(enabled);
     }
 
     @Override
@@ -1873,6 +1994,7 @@ class DummyEdit extends View implements View.OnKeyListener {
     //
     @Override
     public boolean onKeyPreIme (int keyCode, KeyEvent event) {
+        if (SDLActivity.consumeTemporaryImeBack(keyCode, event)) return true;
         // As seen on StackOverflow: http://stackoverflow.com/questions/7634346/keyboard-hide-event
         // FIXME: Discussion at http://bugzilla.libsdl.org/show_bug.cgi?id=1639
         // FIXME: This is not a 100% effective solution to the problem of detecting if the keyboard is showing or not
@@ -1890,25 +2012,54 @@ class DummyEdit extends View implements View.OnKeyListener {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        ic = new SDLInputConnection(this, true);
+        if (ic == null) ic = createInputConnection();
 
-        outAttrs.inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+        if (inputContext == DCSSKeyboard.CONTEXT_NUMBER) {
+            outAttrs.inputType = InputType.TYPE_CLASS_NUMBER
+                    | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+        } else {
+            // Visible-password mode suppresses candidate composition on some
+            // IMEs. Keep that legacy command-mode setting only outside text.
+            outAttrs.inputType = InputType.TYPE_CLASS_TEXT
+                    | (DCSSKeyboard.isTextContext(inputContext) ? 0
+                    : InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        }
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
-                | EditorInfo.IME_FLAG_NO_FULLSCREEN /* API 11 */;
+                | EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_ACTION_DONE;
 
         return ic;
+    }
+
+    protected SDLInputConnection createInputConnection() {
+        return new SDLInputConnection(this, true);
     }
 }
 
 class SDLInputConnection extends BaseInputConnection {
+    private boolean active = true;
+    private final View targetView;
+    private boolean pendingComposition;
 
     public SDLInputConnection(View targetView, boolean fullEditor) {
         super(targetView, fullEditor);
+        this.targetView = targetView;
+    }
 
+    void deactivate() {
+        active = false;
+        pendingComposition = false;
+        super.finishComposingText();
+        getEditable().clear();
+    }
+
+    protected void sendNativeKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) SDLActivity.onNativeKeyDown(event.getKeyCode());
+        else if (event.getAction() == KeyEvent.ACTION_UP) SDLActivity.onNativeKeyUp(event.getKeyCode());
     }
 
     @Override
     public boolean sendKeyEvent(KeyEvent event) {
+        if (!active) return false;
         /*
          * This handles the keycodes from soft keyboard (and IME-translated input from hardkeyboard)
          */
@@ -1917,10 +2068,10 @@ class SDLInputConnection extends BaseInputConnection {
             if (SDLActivity.isTextInputEvent(event)) {
                 commitText(String.valueOf((char) event.getUnicodeChar()), 1);
             }
-            SDLActivity.onNativeKeyDown(keyCode);
+            sendNativeKeyEvent(event);
             return true;
         } else if (event.getAction() == KeyEvent.ACTION_UP) {
-            SDLActivity.onNativeKeyUp(keyCode);
+            sendNativeKeyEvent(event);
             return true;
         }
         return super.sendKeyEvent(event);
@@ -1928,7 +2079,8 @@ class SDLInputConnection extends BaseInputConnection {
 
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
-
+        if (!active) return false;
+        pendingComposition = false;
         nativeCommitText(text.toString(), newCursorPosition);
 
         return super.commitText(text, newCursorPosition);
@@ -1936,32 +2088,122 @@ class SDLInputConnection extends BaseInputConnection {
 
     @Override
     public boolean setComposingText(CharSequence text, int newCursorPosition) {
-
+        if (!active) return false;
         nativeSetComposingText(text.toString(), newCursorPosition);
-
-        return super.setComposingText(text, newCursorPosition);
+        boolean accepted = super.setComposingText(text, newCursorPosition);
+        if (accepted) pendingComposition = true;
+        return accepted;
     }
 
-    public native void nativeCommitText(String text, int newCursorPosition);
+    @Override
+    public boolean setComposingRegion(int start, int end) {
+        if (!active || !pendingComposition) return false;
+        Editable text = getEditable();
+        int first = Math.min(start, end);
+        int last = Math.max(start, end);
+        // SDL gives no acknowledgement of native field filtering, capacity,
+        // or cursor moves. Editable cannot safely identify committed native
+        // text for reconversion. Only retag the exact uncommitted candidate;
+        // rejecting another region must leave that candidate untouched.
+        if (first < 0 || first != getComposingSpanStart(text)
+                || last != getComposingSpanEnd(text)) return false;
+        return super.setComposingRegion(first, last);
+    }
+
+    public void nativeCommitText(String text, int newCursorPosition) {
+        // SDL's bundled String JNI path uses modified UTF-8 and truncates a
+        // whole commit to one event. Send real UTF-8 through Crawl's bridge;
+        // it splits long commits without splitting a Unicode character.
+        nativeCommitUtf8(text.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    protected native void nativeCommitUtf8(byte[] text);
 
     public native void nativeSetComposingText(String text, int newCursorPosition);
 
     @Override
-    public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-        // Workaround to capture backspace key. Ref: http://stackoverflow.com/questions/14560344/android-backspace-in-webview-baseinputconnection
-        // and https://bugzilla.libsdl.org/show_bug.cgi?id=2265
-        if (beforeLength > 0 && afterLength == 0) {
-            boolean ret = true;
-            // backspace(s)
-            while (beforeLength-- > 0) {
-               boolean ret_key = sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-                              && sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
-               ret = ret && ret_key;
-            }
-            return ret;
+    public boolean finishComposingText() {
+        if (!active) return false;
+        Editable text = getEditable();
+        int start = getComposingSpanStart(text);
+        int end = getComposingSpanEnd(text);
+        if (pendingComposition) {
+            // Some IMEs finalize the existing composition without a separate
+            // commitText callback. A region merely tagged by setComposingRegion
+            // is already committed and must never be sent a second time.
+            nativeCommitText(start >= 0 && end > start
+                    ? text.subSequence(start, end).toString() : "", 1);
         }
+        pendingComposition = false;
+        nativeSetComposingText("", 0);
+        return super.finishComposingText();
+    }
 
+    @Override
+    public boolean performEditorAction(int actionCode) {
+        if (!active) return false;
+        if (actionCode == EditorInfo.IME_ACTION_NONE) return false;
+        finishComposingText();
+        return sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
+                && sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
+    }
+
+    @Override
+    public boolean performContextMenuAction(int id) {
+        if (!active) return false;
+        if (id == android.R.id.paste || id == android.R.id.pasteAsPlainText) {
+            ClipboardManager clipboard = (ClipboardManager) targetView.getContext()
+                    .getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = clipboard.getPrimaryClip();
+            if (clip == null || clip.getItemCount() == 0) return false;
+            CharSequence text = clip.getItemAt(0).coerceToText(targetView.getContext());
+            return text != null && commitText(text, 1);
+        }
+        return super.performContextMenuAction(id);
+    }
+
+    private void deleteNativeCharacters(int before, int after) {
+        for (int i = 0; i < before; ++i) {
+            sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+            sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
+        }
+        for (int i = 0; i < after; ++i) {
+            sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
+            sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
+        }
+    }
+
+    @Override
+    public boolean deleteSurroundingText(int beforeLength, int afterLength) {
+        if (!active || beforeLength < 0 || afterLength < 0) return false;
+        Editable text = getEditable();
+        int start = Math.max(0, Math.min(Selection.getSelectionStart(text),
+                Selection.getSelectionEnd(text)));
+        int end = Math.max(start, Math.max(Selection.getSelectionStart(text),
+                Selection.getSelectionEnd(text)));
+        int composingStart = getComposingSpanStart(text);
+        int composingEnd = getComposingSpanEnd(text);
+        if (composingStart >= 0 && composingEnd >= 0) {
+            start = Math.min(start, composingStart);
+            end = Math.max(end, composingEnd);
+        }
+        int beforeStart = Math.max(0, start - beforeLength);
+        int afterEnd = Math.min(text.length(), end + afterLength);
+        // SDL consumes Unicode characters, whereas this API counts UTF-16
+        // units. Preserve backspace for native prefill not mirrored by IME.
+        int before = Character.codePointCount(text, beforeStart, start)
+                + Math.max(0, beforeLength - start);
+        int after = Character.codePointCount(text, end, afterEnd)
+                + Math.max(0, afterLength - (text.length() - end));
+        deleteNativeCharacters(before, after);
         return super.deleteSurroundingText(beforeLength, afterLength);
+    }
+
+    @Override
+    public boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength) {
+        if (!active || beforeLength < 0 || afterLength < 0) return false;
+        deleteNativeCharacters(beforeLength, afterLength);
+        return super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
     }
 }
 

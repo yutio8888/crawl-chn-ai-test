@@ -18,9 +18,26 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "tilereg-cmd.h"
-SpellRegion::SpellRegion(const TileRegionInit &init, bool check_range)
-    : GridRegion(init), m_check_range(check_range)
+#include "topbar-drawer.h"
+#include "tilefont.h"
+#include "rltiles/tiledef-gui.h"
+SpellRegion::SpellRegion(const TileRegionInit &init, bool check_range,
+                         bool quick_access)
+    : GridRegion(init), m_check_range(check_range), m_quick_access(quick_access)
 {
+}
+// A category icon with a visible plus denotes access to the complete list.
+// Draw the label at the reading font size, independently of tile scaling.
+void SpellRegion::render()
+{
+    GridRegion::render();
+    if (!m_quick_access || mx <= 0 || m_items.empty() || m_items.back().idx != -1)
+        return;
+    const int index = m_items.size() - 1;
+    auto* font = tiles.get_msg_font();
+    font->render_string(sx + ox + (index % mx + 1) * dx - font->char_width(),
+                        sy + oy + (index / mx + 1) * dy - font->char_height(),
+                        formatted_string("+", YELLOW));
 }
 void SpellRegion::activate()
 {
@@ -39,7 +56,11 @@ void SpellRegion::draw_tag()
         return;
     int idx = m_items[curs_index].idx;
     if (idx == -1)
+    {
+        if (m_quick_access)
+            draw_desc(T_("All spells"));
         return;
+    }
     const spell_type spell = (spell_type) idx;
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
     string desc = make_stringf(T_("%d MP    %s    (%s)"), spell_mana(spell),
@@ -48,12 +69,19 @@ void SpellRegion::draw_tag()
 }
 int SpellRegion::handle_mouse(wm_mouse_event &event)
 {
-    unsigned int item_idx;
-    if (!place_cursor(event, item_idx)
-        || tile_command_not_applicable(CMD_CAST_SPELL, true))
+    unsigned int item_idx = UINT_MAX;
+    const bool selected = place_cursor(event, item_idx);
+    // GridRegion marks idx=-1 as empty, but sets item_idx only for a valid
+    // command-mode press. Intercept our overflow before any spell/talent API.
+    if (m_quick_access && item_idx < m_items.size() && m_items[item_idx].idx == -1)
     {
-        return 0;
+        if (event.button != wm_mouse_event::LEFT && event.button != wm_mouse_event::RIGHT)
+            return 0;
+        show_topbar_command_menu(nullptr, CommandMenuSection::SPELLS);
+        return CK_MOUSE_CMD;
     }
+    if (!selected || tile_command_not_applicable(CMD_CAST_SPELL, true))
+        return 0;
     const spell_type spell = (spell_type) m_items[item_idx].idx;
     if (event.button == wm_mouse_event::LEFT)
     {
@@ -86,8 +114,15 @@ bool SpellRegion::update_tip_text(string& tip)
     if (m_cursor == NO_CURSOR)
         return false;
     unsigned int item_idx = cursor_index();
-    if (item_idx >= m_items.size() || m_items[item_idx].empty())
+    if (item_idx >= m_items.size())
         return false;
+    if (m_items[item_idx].idx == -1)
+    {
+        if (!m_quick_access)
+            return false;
+        tip = T_("All spells");
+        return true;
+    }
     int flag = m_items[item_idx].flag;
     vector<command_type> cmd;
     if (flag & TILEI_FLAG_INVALID)
@@ -107,8 +142,15 @@ bool SpellRegion::update_alt_text(string &alt)
     if (m_cursor == NO_CURSOR)
         return false;
     unsigned int item_idx = cursor_index();
-    if (item_idx >= m_items.size() || m_items[item_idx].empty())
+    if (item_idx >= m_items.size())
         return false;
+    if (m_items[item_idx].idx == -1)
+    {
+        if (!m_quick_access)
+            return false;
+        alt = T_("All spells");
+        return true;
+    }
     if (m_last_clicked_item >= 0
         && item_idx == (unsigned int) m_last_clicked_item)
     {
@@ -159,8 +201,9 @@ void SpellRegion::update()
     m_dirty = true;
     if (mx * my == 0)
         return;
-    const unsigned int max_spells = min(22, mx*my);
-    for (int i = 0; i < 52; ++i)
+    const bool overflow = m_quick_access && you.spell_no > min(22, mx*my);
+    const unsigned int max_spells = min(22, mx*my - (overflow ? 1 : 0));
+    for (int i = 0; i < 52 && m_items.size() < max_spells; ++i)
     {
         const char letter = index_to_letter(i);
         const spell_type spell = get_spell_by_letter(letter);
@@ -176,8 +219,12 @@ void SpellRegion::update()
             desc.flag |= TILEI_FLAG_INVALID;
         }
         m_items.push_back(desc);
-        if (m_items.size() >= max_spells)
-            break;
+    }
+    if (overflow)
+    {
+        InventoryTile more;
+        more.tile = TILEG_MENU_SPELLS;
+        m_items.push_back(more);
     }
 }
 #endif

@@ -97,6 +97,7 @@ public class DCSSMorgue extends AppCompatActivity
         Log.d(DCSSLauncher.TAG, "Morgue item selected: " + position);
         File morgue = adapter.getMorgueFile(position);
         if (morgue != null) {
+            adapter.setSelectedPosition(position);
             Intent intent = new Intent(getBaseContext(), DCSSTextViewer.class);
             intent.putExtra("file", morgue);
             intent.putExtra("download", true);

@@ -440,6 +440,10 @@ protected:
         shared_ptr<UIMenu> menu;
         shared_ptr<ui::Scroller> scroller;
         shared_ptr<ui::Text> title;
+#ifdef __ANDROID__
+        // Optional controls that remain above the scrolling entries.
+        shared_ptr<ui::Box> header;
+#endif
         shared_ptr<UIMenuMore> more;
         shared_ptr<UIShowHide> more_bin;
         shared_ptr<ui::Box> vbox;

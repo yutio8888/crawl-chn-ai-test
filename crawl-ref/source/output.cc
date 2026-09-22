@@ -1453,12 +1453,16 @@ static void _print_status_lights(int y)
     vector<status_light> lights;
     static int last_number_of_lights = 0;
     _get_status_lights(lights);
+    bool show_status_button = false;
+#if defined(USE_TILE_LOCAL) && defined(__ANDROID__)
+    show_status_button = _uses_top_bar();
+#endif
 #ifdef USE_TILE_LOCAL
     // The registry is a per-layout snapshot and must be dropped before any
     // early return, otherwise stale hitboxes remain active while no lights do.
     clear_status_hitboxes();
 #endif
-    if (lights.empty() && last_number_of_lights == 0)
+    if (lights.empty() && last_number_of_lights == 0 && !show_status_button)
     {
         you.redraw_status_lights = false;
         return;
@@ -1468,9 +1472,37 @@ static void _print_status_lights(int y)
 #ifdef USE_TILE_LOCAL
     if (_uses_top_bar())
     {
-        int status_x = 1;
+        size_t visible = lights.size();
+        int occupied = 0;
         for (const status_light &light : lights)
+            occupied += strwidth(light.text) + 1;
+        string all_statuses;
+        if (show_status_button)
         {
+            // Keep the existing priority order and reserve the complete
+            // overflow label before painting any lights. Recalculate when
+            // the number of hidden statuses gains another digit.
+            for (;;)
+            {
+                const int hidden = lights.size() - visible;
+                all_statuses = hidden
+                    ? make_stringf(T_("[All statuses +%d]"), hidden)
+                    : T_("[All statuses]");
+                if (!visible || occupied + strwidth(all_statuses)
+                                <= crawl_view.hudsz.x)
+                {
+                    break;
+                }
+                occupied -= strwidth(lights[--visible].text) + 1;
+            }
+            all_statuses = chop_string(all_statuses, crawl_view.hudsz.x, false);
+        }
+        // These strings are bounded against the HUD grid below. The generic
+        // nowrap helper uses the message grid, whose font may be larger.
+        int status_x = 1;
+        for (size_t i = 0; i < visible; ++i)
+        {
+            const status_light &light = lights[i];
             const int status_w = strwidth(light.text);
             if (status_x + status_w - 1 > crawl_view.hudsz.x)
                 break;
@@ -1479,13 +1511,24 @@ static void _print_status_lights(int y)
             record_status_hitbox(light.status, status_x - 1,
                                  status_x + status_w - 2, y - 1);
             textcolour(light.colour);
-            NOWRAP_EOL_CPRINTF("%s", light.text.c_str());
+            CPRINTF("%s", light.text.c_str());
             status_x += status_w + 1;
         }
         if (status_x <= crawl_view.hudsz.x)
         {
             CGOTOXY(status_x, y, GOTO_STAT);
             clear_to_end_of_line();
+        }
+        if (show_status_button)
+        {
+            const int button_x = max(1, crawl_view.hudsz.x
+                                       - strwidth(all_statuses) + 1);
+            CGOTOXY(button_x, y, GOTO_STAT);
+            textcolour(LIGHTCYAN);
+            CPRINTF("%s", all_statuses.c_str());
+            // Individual lights keep their focused details. The remaining
+            // row, including the spaces between them, opens the full list.
+            record_status_hitbox(-1, 0, crawl_view.hudsz.x - 1, y - 1);
         }
         CGOTOXY(1, 1, GOTO_STAT);
         you.redraw_status_lights = false;

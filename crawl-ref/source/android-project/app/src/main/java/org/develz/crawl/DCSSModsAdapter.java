@@ -1,13 +1,14 @@
 package org.develz.crawl;
 
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.CheckedTextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
             }
         }
         this.modsFiles = modsDir.listFiles();
+        if (modsFiles == null) modsFiles = new File[0];
         this.selected = -1;
         this.modsListener = modsListener;
     }
@@ -45,7 +47,7 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
     // Single element in the RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener {
         private final LinearLayout layout;
-        private final TextView nameView;
+        private final CheckedTextView nameView;
         private OnModsListener modsListener;
 
         public ViewHolder(View view, OnModsListener modsListener) {
@@ -55,6 +57,15 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
             view.setOnClickListener(this);
             view.setOnFocusChangeListener(this);
             this.modsListener = modsListener;
+            view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(View host,
+                                                               AccessibilityNodeInfo info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.setCheckable(true);
+                    info.setChecked(host.isActivated());
+                }
+            });
         }
 
         public LinearLayout getLayout() {
@@ -67,14 +78,14 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
-            this.modsListener.onModsClick(getBindingAdapterPosition());
+            int position = getBindingAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) this.modsListener.onModsClick(position);
         }
 
         @Override
         public void onFocusChange(View view, boolean b) {
             Resources resources = getNameView().getResources();
-            int selected = ((DCSSModsAdapter)getBindingAdapter()).getSelected();
-            if (getBindingAdapterPosition() == selected) {
+            if (view.isActivated()) {
                 if (view.isFocused()) {
                     getLayout().setBackgroundColor(resources.getColor(R.color.dark_green_focused));
                 } else {
@@ -102,12 +113,11 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getNameView().setText(modsFiles[position].getName());
-        Resources resources = viewHolder.getNameView().getResources();
-        if (position == selected) {
-            viewHolder.getLayout().setBackgroundColor(resources.getColor(R.color.dark_green_focused));
-        } else {
-            viewHolder.getLayout().setBackgroundColor(resources.getColor(R.color.black));
-        }
+        viewHolder.itemView.setContentDescription(modsFiles[position].getName());
+        viewHolder.itemView.setSelected(position == selected);
+        viewHolder.itemView.setActivated(position == selected);
+        viewHolder.nameView.setChecked(position == selected);
+        viewHolder.onFocusChange(viewHolder.itemView, viewHolder.itemView.isFocused());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -121,8 +131,15 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
     }
 
     public void reloadModsFiles() {
+        File selectedFile = getSelectedFile();
         modsFiles = modsDir.listFiles();
-        sortModsFiles();
+        if (modsFiles == null) modsFiles = new File[0];
+        Arrays.sort(modsFiles, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+        selected = -1;
+        for (int i = 0; i < modsFiles.length; ++i) {
+            if (modsFiles[i].equals(selectedFile)) selected = i;
+        }
+        notifyDataSetChanged();
     }
 
     public void sortModsFiles() {
@@ -143,7 +160,8 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
     }
 
     public boolean deleteSelectedFile() {
-        if (getModsFile(selected).delete()) {
+        File file = getSelectedFile();
+        if (file != null && file.delete()) {
             selected = -1;
             reloadModsFiles();
             return true;
@@ -153,10 +171,10 @@ public class DCSSModsAdapter extends RecyclerView.Adapter<DCSSModsAdapter.ViewHo
     }
 
     public void setSelectedPosition(int selected) {
-        if (selected != this.selected) {
+        if (selected >= 0 && selected < modsFiles.length && selected != this.selected) {
             int oldSelected = this.selected;
             this.selected = selected;
-            notifyItemChanged(oldSelected);
+            if (oldSelected >= 0) notifyItemChanged(oldSelected);
             notifyItemChanged(selected);
         }
     }

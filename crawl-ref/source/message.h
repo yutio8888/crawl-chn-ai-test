@@ -88,7 +88,8 @@ void msgwin_got_input();
 int msgwin_get_line(string prompt,
                     char *buf, int len,
                     input_history *mh = nullptr,
-                    const string &fill = "");
+                    const string &fill = "",
+                    bool numeric_input = false);
 
 // Do not use this templated function directly. Use the macro below instead.
 template<int> static int msgwin_get_line_autohist_temp(string prompt,

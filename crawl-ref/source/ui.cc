@@ -3166,6 +3166,7 @@ shared_ptr<Widget> top_layout()
 }
 
 static bool text_input_active = false;
+static InputContext text_input_context = InputContext::TEXT;
 #ifdef USE_TILE_LOCAL
 bool scroll_touch_at(int x, int y, int delta_y)
 {
@@ -3193,16 +3194,19 @@ bool scroll_touch_at(int x, int y, int delta_y)
 
 static shared_ptr<Widget> text_input_layout;
 
-TextInputScope::TextInputScope()
-    : previous_active(text_input_active), previous_layout(text_input_layout)
+TextInputScope::TextInputScope(bool numeric)
+    : previous_active(text_input_active), previous_context(text_input_context),
+      previous_layout(text_input_layout)
 {
     text_input_active = true;
+    text_input_context = numeric ? InputContext::NUMBER : InputContext::TEXT;
     text_input_layout = top_layout();
 }
 
 TextInputScope::~TextInputScope()
 {
     text_input_active = previous_active;
+    text_input_context = previous_context;
     text_input_layout = previous_layout;
 }
 
@@ -3210,7 +3214,7 @@ InputContext input_context()
 {
     const auto top = top_layout();
     if (text_input_active && text_input_layout == top)
-        return InputContext::TEXT;
+        return text_input_context;
     // Focus can be restored by pop_layout without a FocusIn event. Inspect
     // the current path at the input boundary, including composite widgets.
     if (top)
@@ -3219,7 +3223,10 @@ InputContext input_context()
              widget = widget->_get_parent())
         {
             if (widget->accepts_text_input())
-                return InputContext::TEXT;
+            {
+                return widget->accepts_numeric_input()
+                    ? InputContext::NUMBER : InputContext::TEXT;
+            }
             if (widget == top.get())
                 break;
         }
@@ -3308,7 +3315,8 @@ InputDescriptor input_descriptor()
     // Only the innermost scope may publish actions, and only for its owner.
     // An unregistered nested popup must never inherit destructive commands.
     if (input_action_scope && input_action_scope->owner == top_layout()
-        && result.context != InputContext::TEXT)
+        && result.context != InputContext::TEXT
+        && result.context != InputContext::NUMBER)
     {
         result = input_action_scope->descriptor;
         result.context = InputContext::NAVIGATION;

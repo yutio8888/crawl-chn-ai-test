@@ -12,6 +12,10 @@
     <string name="open_error">Error opening file</string>
     <string name="save">Save</string>
     <string name="save_error">Error saving file</string>
+    <string name="discard_changes_title">Discard unsaved changes?</string>
+    <string name="discard_changes_message">Your changes have not been saved.</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="discard_changes">Discard changes</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
@@ -130,4 +134,21 @@
     <string name="keyboard_order_guard">Guard</string>
     <string name="keyboard_order_follow">Follow</string>
     <string name="keyboard_more">More</string>
+    <string name="keyboard_system">System keyboard</string>
+    <string name="keyboard_skip_messages">Skip remaining messages</string>
+    <string name="keyboard_height_dp">Key height (dp)</string>
+    <string name="keyboard_height_range">Allowed: %1$d–%2$d dp. Custom keyboard keys grow to at least 48 dp and to fit the system text size.</string>
+    <string name="keyboard_height_applied">Saved key height: %1$d dp.</string>
+    <string name="keyboard_size_presets">Key height presets</string>
+    <string name="size_small">Small</string>
+    <string name="size_standard">Standard</string>
+    <string name="size_large">Large</string>
+    <string name="keyboard_preview">Main keyboard preview</string>
+    <string name="keyboard_preview_height">Actual keyboard: %1$d dp high (%2$d%% of the screen). Preview is scaled to fit.</string>
+    <string name="keyboard_preview_unavailable">The selected mode uses the system keyboard or no keyboard. Its size is managed outside these settings.</string>
+    <string name="reading_size">Reading text size</string>
+    <string name="reading_size_help">Scales lists, descriptions and messages with the system text size. Explicit font sizes in the configuration file take precedence.</string>
+    <string name="reading_size_preview">Preview: lists, descriptions and messages</string>
+    <string name="map_scale_help">Map zoom changes tile size separately; use the in-game zoom controls.</string>
+    <string name="reading_percentage">%1$d%%</string>
 </resources>

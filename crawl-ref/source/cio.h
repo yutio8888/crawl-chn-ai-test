@@ -54,7 +54,12 @@ static inline void cursorxy(const coord_def& p) { cursorxy(p.x, p.y); }
 int unmangle_direction_keys(int keyin, KeymapContext keymap = KMC_DEFAULT,
                             bool allow_fake_modifiers = true);
 
-void nowrap_eol_cprintf(PRINTF(0, ));
+#ifdef __GNUC__
+void nowrap_eol_cprintf(const char *format, ...)
+    __attribute__((format(CRAWL_PRINTF_FORMAT, 1, 2)));
+#else
+void nowrap_eol_cprintf(const char *format, ...);
+#endif
 void wrapcprintf(int wrapcol, const char *s, ...);
 void wrapcprintf(const char *s, ...);
 
@@ -69,7 +74,8 @@ int cancellable_get_line(char *buf,
                          input_history *mh = nullptr,
                          keyfun_action (*keyproc)(int &c) = nullptr,
                          const string &fill = "",
-                         const string &tag = "");
+                         const string &tag = "",
+                         bool numeric_input = false);
 
 // Do not use this templated function directly. Use the macro below instead.
 template<int> static int cancellable_get_line_autohist_temp(char *buf, int len)
@@ -370,6 +376,7 @@ public:
 
     void set_input_history(input_history *ih);
     void set_keyproc(keyproc fn);
+    void set_numeric_input(bool numeric) { numeric_input = numeric; }
 
     void set_edit_mode(edit_mode m);
     edit_mode get_edit_mode();
@@ -408,6 +415,7 @@ protected:
     GotoRegion      region;
     coord_def       start;
     keyproc         keyfn;
+    bool            numeric_input = false;
     int             wrapcol;
     edit_mode       mode;
     COLOURS         fg_colour;

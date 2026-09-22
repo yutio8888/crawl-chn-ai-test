@@ -322,7 +322,7 @@ void TilesFramework::calculate_default_options()
     // columns. Drawers use the message font instead, so their wrapping text
     // can grow independently without hiding attributes on narrow phones.
     // Round up through the game scale just as for touch target sizes.
-    const int font_pixels = (int) ceil(14 * jni_get_display_density());
+    const int font_pixels = (int) ceil(jni_get_reading_font_pixels());
     const int auto_font_floor = display_density.apply_game_scale(
         font_pixels + Options.game_scale - 1);
     int *const fonts[] = { &Options.tile_font_msg_size,
@@ -430,8 +430,8 @@ bool TilesFramework::initialise()
     // has its own cells and its own casting semantics (see place_quick_row()).
     // The sidebar SpellRegion keeps its mouse cast; the row asks for the range
     // check the z command performs after its own selection step.
-    m_region_quick_spl = new SpellRegion(m_init, true);
-    m_region_quick_abl = new AbilityRegion(m_init);
+    m_region_quick_spl = new SpellRegion(m_init, true, true);
+    m_region_quick_abl = new AbilityRegion(m_init, true);
     m_region_mem  = new MemoriseRegion(m_init);
     m_region_abl  = new AbilityRegion(m_init);
     m_region_mon  = new MonsterRegion(m_init);
@@ -1327,18 +1327,19 @@ void TilesFramework::quick_row_live_lists(bool &spells, bool &abilities) const
 
 /**
  * Place the quick row as a single icon row at row_y, the bottom edge of the
- * surface. Two live lists sit side by side with half the row each; a single
- * live list takes the full width. The split depends only on which lists are
- * live, never on how many entries they hold, so gaining or losing an entry
- * within a live list never needs a relayout. Anything past the cells the row
- * can show is truncated by update(): there is no paging and nothing persists.
+ * surface. Start with a balanced split and donate unused cells to the other
+ * list. Each region reserves its last cell for the full list when it overflows;
+ * spell entries retain the existing 22-spell quick limit plus an overflow cell.
  */
 void TilesFramework::place_quick_row(int row_y, bool spells, bool abilities)
 {
     const int cell = m_region_quick_spl->dx;
     const int cells = cell > 0 ? m_windowsz.x / cell : 0;
-    const int spell_cells = spells ? (abilities ? cells / 2 : cells) : 0;
-    const int ability_cells = abilities ? cells - spell_cells : 0;
+    const int spell_count = spells ? min(23, (int)you.spell_no) : 0;
+    const int ability_count = abilities ? (int)your_talents(true).size() : 0;
+    int spell_cells = min(spell_count, abilities ? (cells + 1) / 2 : cells);
+    const int ability_cells = min(ability_count, cells - spell_cells);
+    spell_cells = min(spell_count, cells - ability_cells);
 
     m_region_quick_spl->place(0, row_y, 0);
     m_region_quick_spl->resize(spell_cells, spell_cells > 0 ? 1 : 0);
@@ -1371,8 +1372,9 @@ void TilesFramework::update_quick_row()
     if (!m_quick_row_shown)
         return;
 
-    m_region_quick_spl->update();
-    m_region_quick_abl->update();
+    // Counts can change while both lists remain live. Rebalance in place;
+    // only presence/absence needs the deferred whole-screen height relayout.
+    place_quick_row(m_region_quick_spl->sy, spells, abilities);
 }
 
 /**

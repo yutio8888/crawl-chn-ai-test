@@ -307,6 +307,7 @@ public:
 
     virtual ~Widget();
     virtual bool accepts_text_input() const { return false; }
+    virtual bool accepts_numeric_input() const { return false; }
 
     int flex_grow = 1;
     bool expand_h = false, expand_v = false;
@@ -1113,6 +1114,8 @@ class TextEntry : public Widget
 public:
     TextEntry();
     bool accepts_text_input() const override { return true; }
+    bool accepts_numeric_input() const override { return m_numeric_input; }
+    void set_numeric_input(bool numeric) { m_numeric_input = numeric; }
     virtual void _render() override;
     virtual SizeReq _get_preferred_size(Direction dim, int prosp_width) override;
     virtual void _allocate_region() override;
@@ -1154,6 +1157,7 @@ protected:
 #endif
 
     string m_text;
+    bool m_numeric_input = false;
     int m_cursor = 0;
     int m_hscroll = 0;
 
@@ -1289,7 +1293,7 @@ shared_ptr<Widget> top_layout();
 
 // Android's keyboard presentation follows the active input consumer, not the
 // visibility toggle. Values are shared with DCSSKeyboard.java.
-enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2 };
+enum class InputContext { GAME = 0, NAVIGATION = 1, TEXT = 2, NUMBER = 3 };
 InputContext input_context();
 #ifdef __ANDROID__
 // Values are shared with DCSSKeyboard.contextLabelResource(); append only.
@@ -1370,12 +1374,13 @@ bool scroll_touch_at(int x, int y, int delta_y);
 class TextInputScope
 {
 public:
-    TextInputScope();
+    explicit TextInputScope(bool numeric = false);
     ~TextInputScope();
     TextInputScope(const TextInputScope&) = delete;
     TextInputScope& operator=(const TextInputScope&) = delete;
 private:
     bool previous_active;
+    InputContext previous_context;
     shared_ptr<Widget> previous_layout;
 };
 void pump_events(int wait_event_timeout = INT_MAX);

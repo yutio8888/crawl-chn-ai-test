@@ -5260,6 +5260,9 @@ No
 No %squiver actions available for cycling.%s
 没有可循环的%s箭袋动作%s
 %%%%
+No action is quivered. Press <w>%</w> to choose one.
+尚未设置箭袋动作。按 <w>%</w> 选择一个。
+%%%%
 No God
 无神
 %%%%
@@ -23410,6 +23413,12 @@ Select first
 [<w>*/%</w>] Inventory
 [<w>*/%</w>] 物品栏
 %%%%
+All spells
+全部法术
+%%%%
+All abilities
+全部能力
+%%%%
 [<w>&</w>] All spells
 [<w>&</w>] 所有法术
 %%%%
@@ -27223,6 +27232,9 @@ Evocable Items:
 %%%%
 Inventory: 
 物品栏：
+%%%%
+Drop what?
+要丢弃什么？
 %%%%
 Drop what? (Left/Right to switch category) 
 要丢弃什么？（左右键切换分类）
@@ -40542,6 +40554,18 @@ Tap here or press Back to view the score summary.
 --more-- Tap to continue.
 --更多-- 点按继续
 %%%%
+[All statuses +%d]
+[全部状态 +%d]
+%%%%
+[All statuses]
+[全部状态]
+%%%%
+Message history
+消息历史
+%%%%
+Skip remaining messages
+跳过剩余消息
+%%%%
 Continue
 继续
 %%%%
@@ -42419,6 +42443,21 @@ Set target
 %%%%
 Cycle view
 切换视图
+%%%%
+General skills
+常规技能
+%%%%
+Spell skills
+法术技能
+%%%%
+Show general skills
+切换到常规技能
+%%%%
+Show spell skills
+切换到法术技能
+%%%%
+Selected: %zu
+已选：%zu
 %%%%
 All skills
 全部技能

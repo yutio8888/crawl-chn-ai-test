@@ -15,8 +15,25 @@
 #include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "tilereg-cmd.h"
-AbilityRegion::AbilityRegion(const TileRegionInit &init) : GridRegion(init)
+#include "topbar-drawer.h"
+#include "tilefont.h"
+#include "rltiles/tiledef-gui.h"
+AbilityRegion::AbilityRegion(const TileRegionInit &init, bool quick_access)
+    : GridRegion(init), m_quick_access(quick_access)
 {
+}
+// A category icon with a visible plus denotes access to the complete list.
+// Draw the label at the reading font size, independently of tile scaling.
+void AbilityRegion::render()
+{
+    GridRegion::render();
+    if (!m_quick_access || mx <= 0 || m_items.empty() || m_items.back().idx != -1)
+        return;
+    const int index = m_items.size() - 1;
+    auto* font = tiles.get_msg_font();
+    font->render_string(sx + ox + (index % mx + 1) * dx - font->char_width(),
+                        sy + oy + (index / mx + 1) * dy - font->char_height(),
+                        formatted_string("+", YELLOW));
 }
 void AbilityRegion::activate()
 {
@@ -35,7 +52,11 @@ void AbilityRegion::draw_tag()
         return;
     int idx = m_items[curs_index].idx;
     if (idx == -1)
+    {
+        if (m_quick_access)
+            draw_desc(T_("All abilities"));
         return;
+    }
     const ability_type ability = (ability_type) idx;
     const string failure = failure_rate_to_string(get_talent(ability).fail);
     string desc = make_stringf("%s    (%s)",
@@ -44,12 +65,19 @@ void AbilityRegion::draw_tag()
 }
 int AbilityRegion::handle_mouse(wm_mouse_event &event)
 {
-    unsigned int item_idx;
-    if (!place_cursor(event, item_idx)
-        || tile_command_not_applicable(CMD_USE_ABILITY, true))
+    unsigned int item_idx = UINT_MAX;
+    const bool selected = place_cursor(event, item_idx);
+    // GridRegion marks idx=-1 as empty, but sets item_idx only for a valid
+    // command-mode press. Intercept our overflow before any spell/talent API.
+    if (m_quick_access && item_idx < m_items.size() && m_items[item_idx].idx == -1)
     {
-        return 0;
+        if (event.button != wm_mouse_event::LEFT && event.button != wm_mouse_event::RIGHT)
+            return 0;
+        show_topbar_command_menu(nullptr, CommandMenuSection::ABILITIES);
+        return CK_MOUSE_CMD;
     }
+    if (!selected || tile_command_not_applicable(CMD_USE_ABILITY, true))
+        return 0;
     const ability_type ability = (ability_type) m_items[item_idx].idx;
     if (event.button == wm_mouse_event::LEFT)
     {
@@ -83,8 +111,15 @@ bool AbilityRegion::update_tip_text(string& tip)
     if (m_cursor == NO_CURSOR)
         return false;
     unsigned int item_idx = cursor_index();
-    if (item_idx >= m_items.size() || m_items[item_idx].empty())
+    if (item_idx >= m_items.size())
         return false;
+    if (m_items[item_idx].idx == -1)
+    {
+        if (!m_quick_access)
+            return false;
+        tip = T_("All abilities");
+        return true;
+    }
     int flag = m_items[item_idx].flag;
     vector<command_type> cmd;
     if (flag & TILEI_FLAG_INVALID)
@@ -103,8 +138,15 @@ bool AbilityRegion::update_alt_text(string &alt)
     if (m_cursor == NO_CURSOR)
         return false;
     unsigned int item_idx = cursor_index();
-    if (item_idx >= m_items.size() || m_items[item_idx].empty())
+    if (item_idx >= m_items.size())
         return false;
+    if (m_items[item_idx].idx == -1)
+    {
+        if (!m_quick_access)
+            return false;
+        alt = T_("All abilities");
+        return true;
+    }
     if (m_last_clicked_item >= 0
         && item_idx == (unsigned int) m_last_clicked_item)
     {
@@ -168,25 +210,30 @@ void AbilityRegion::update()
     m_dirty = true;
     if (mx * my == 0)
         return;
-    const unsigned int max_abilities = min(get_max_slots(), mx*my);
-    vector<talent> talents = your_talents(true);
-    if (talents.empty())
-        return;
-    vector<InventoryTile> m_invoc;
-    for (const auto &talent : talents)
-    {
+    const vector<talent> talents = your_talents(true);
+    const bool overflow = m_quick_access && (int)talents.size() > mx*my;
+    const unsigned int max_abilities = m_quick_access
+        ? mx*my - (overflow ? 1 : 0) : min(get_max_slots(), mx*my);
+    // Keep the sidebar's existing non-invocation-before-invocation order.
+    // Collect identities first so a zero-capacity real list still gets More.
+    vector<ability_type> ordered;
+    for (const auto& talent : talents)
+        if (!talent.is_invocation)
+            ordered.push_back(talent.which);
+    for (const auto& talent : talents)
         if (talent.is_invocation)
-            m_invoc.push_back(_tile_for_ability(talent.which));
-        else
-            m_items.push_back(_tile_for_ability(talent.which));
-        if (m_items.size() >= max_abilities)
-            return;
-    }
-    for (const auto &tile : m_invoc)
+            ordered.push_back(talent.which);
+    for (auto ability : ordered)
     {
-        m_items.push_back(tile);
         if (m_items.size() >= max_abilities)
-            return;
+            break;
+        m_items.push_back(_tile_for_ability(ability));
+    }
+    if (overflow)
+    {
+        InventoryTile more;
+        more.tile = TILEG_MENU_ABILITIES;
+        m_items.push_back(more);
     }
 }
 #endif

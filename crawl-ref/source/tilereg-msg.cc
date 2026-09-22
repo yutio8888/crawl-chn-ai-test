@@ -8,6 +8,8 @@
 #include "libutil.h"
 #include "format.h"
 #include "macro.h"
+#include "options.h"
+#include "syscalls.h"
 #include "tilebuf.h"
 #include "tilefont.h"
 #include "tiles-build-specific.h"
@@ -21,6 +23,19 @@ MessageRegion::MessageRegion(FontWrapper *font_arg) :
 
 int MessageRegion::handle_mouse(wm_mouse_event &event)
 {
+    coord_def start, end;
+    formatted_string label;
+    if (history_button_bounds(start, end, label)
+        && event.px >= start.x && event.px < end.x
+        && event.py >= start.y && event.py < end.y)
+    {
+        // The overlay receives events before the dungeon. Consume every event
+        // in this visible button so a tap cannot also move the player.
+        return event.event == wm_mouse_event::PRESS
+               && event.button == wm_mouse_event::LEFT
+               ? encode_command_as_key(CMD_REPLAY_MESSAGES) : CK_NO_KEY;
+    }
+
     if (m_overlay)
         return 0;
 
@@ -37,6 +52,46 @@ int MessageRegion::handle_mouse(wm_mouse_event &event)
         return 0;
 
     return encode_command_as_key(CMD_REPLAY_MESSAGES);
+}
+
+bool MessageRegion::history_button_bounds(coord_def &start, coord_def &end,
+                                         formatted_string &label) const
+{
+#ifdef __ANDROID__
+    if (!m_overlay || !tiles.is_using_small_layout() || mx <= 0 || my <= 0
+        || mouse_control::current_mode() != MOUSE_MODE_COMMAND)
+    {
+        return false;
+    }
+
+    const int pixels = static_cast<int>(ceil(48 * jni_get_display_density()));
+    const int touch = max(1, display_density.apply_game_scale(
+                                pixels + Options.game_scale - 1));
+    const int padding = max(2, static_cast<int>(m_font->char_height()) / 4);
+    const int available = ex - sx;
+    if (available < touch || available <= 2 * padding || sy < touch
+        || sy - 2 * padding < static_cast<int>(m_font->char_height()))
+    {
+        return false;
+    }
+
+    label = m_font->split(formatted_string::parse_string(T_("Message history")),
+                         available - 2 * padding, sy - 2 * padding);
+    if (label.empty())
+        return false;
+    const int label_width = m_font->string_width(label) + 2 * padding;
+    const int label_height = m_font->string_height(label) + 2 * padding;
+    if (label_width > available || label_height > sy)
+        return false;
+    const int width = min(available, max(touch,
+                                       label_width));
+    const int height = max(touch, label_height);
+    start = coord_def(ex - width, sy - height);
+    end = coord_def(ex, sy);
+    return true;
+#else
+    return false;
+#endif
 }
 
 bool MessageRegion::update_tip_text(string& tip)
@@ -125,6 +180,19 @@ void MessageRegion::render()
     {
         cbuf[idx] = char_back;
         abuf[idx] = col_back;
+    }
+
+    coord_def start, end;
+    formatted_string label;
+    if (history_button_bounds(start, end, label))
+    {
+        glmanager->reset_transform();
+        ShapeBuffer button;
+        button.add(start.x, start.y, end.x, end.y, VColour(40, 55, 70, 255));
+        button.draw();
+        const int x = start.x + (end.x - start.x - m_font->string_width(label)) / 2;
+        const int y = start.y + (end.y - start.y - m_font->string_height(label)) / 2;
+        m_font->render_string(x, y, label);
     }
 }
 

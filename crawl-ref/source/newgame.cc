@@ -875,6 +875,7 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     seed_input->set_text(make_stringf("%llu",
                                     static_cast<unsigned long long>(choice.seed)));
     seed_input->set_keyproc(_keyfun_seed_input);
+    seed_input->set_numeric_input(true);
 
 #ifndef USE_TILE_LOCAL
     seed_input->max_size().width = 21;
