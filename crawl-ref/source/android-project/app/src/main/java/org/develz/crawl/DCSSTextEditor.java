@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
+
 import java.io.File;
 import java.util.Locale;
 
@@ -25,6 +28,9 @@ public class DCSSTextEditor extends DCSSTextBase {
 
     private TextView status;
 
+    private String originalText;
+    private AlertDialog discardDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +49,24 @@ public class DCSSTextEditor extends DCSSTextBase {
         if (!openFile(file, editor)) {
             status.setText(R.string.open_error);
         }
+        // Capture the file baseline before Android restores any unsaved draft
+        // through the EditText's normal view state after onCreate.
+        originalText = editor.getText().toString();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requestClose();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (discardDialog != null) {
+            discardDialog.dismiss();
+        }
+        super.onDestroy();
     }
 
     // Save button
@@ -57,8 +81,24 @@ public class DCSSTextEditor extends DCSSTextBase {
 
     // Close button
     private void onClickClose(View v) {
-        status.setText("");
-        close();
+        requestClose();
+    }
+
+    private void requestClose() {
+        if (originalText.contentEquals(editor.getText())) {
+            close();
+            return;
+        }
+        if (discardDialog != null && discardDialog.isShowing()) {
+            return;
+        }
+        discardDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.discard_changes_title)
+                .setMessage(R.string.discard_changes_message)
+                .setNegativeButton(R.string.keep_editing, null)
+                .setPositiveButton(R.string.discard_changes, (dialog, which) -> close())
+                .create();
+        discardDialog.show();
     }
 
     // Help button

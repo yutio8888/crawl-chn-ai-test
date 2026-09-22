@@ -13,13 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 
 public abstract class DCSSTextBase extends AppCompatActivity {
 
@@ -34,14 +33,9 @@ public abstract class DCSSTextBase extends AppCompatActivity {
 
     // Load the file
     protected boolean openFile(File file, TextView text) {
-        try {
+        try (InputStream input = new FileInputStream(file)) {
             Log.i(DCSSLauncher.TAG, "Opening file: " + file.getAbsolutePath());
-            FileReader reader = new FileReader(file);
-            CharBuffer buffer = CharBuffer.allocate((int) file.length());
-            reader.read(buffer);
-            reader.close();
-            buffer.rewind();
-            text.setText(buffer);
+            text.setText(DCSSTextFile.readUtf8(input));
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't open file: " + e.getMessage());
@@ -53,10 +47,7 @@ public abstract class DCSSTextBase extends AppCompatActivity {
     protected boolean saveFile(File file, EditText text) {
         try {
             Log.i(DCSSLauncher.TAG, "Saving file: " + file.getAbsolutePath());
-            FileWriter writer = new FileWriter(file);
-            CharSequence buffer = text.getText();
-            writer.append(buffer);
-            writer.close();
+            DCSSTextFile.save(file, text.getText());
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't save file: " + e.getMessage());
@@ -66,12 +57,9 @@ public abstract class DCSSTextBase extends AppCompatActivity {
 
     // Load the asset
     protected boolean openAsset(String asset, TextView text) {
-        try {
+        try (InputStream input = getAssets().open(asset)) {
             Log.i(DCSSLauncher.TAG, "Opening asset: " + asset);
-            InputStream inputStream = getAssets().open(asset);
-            byte[] buffer = new byte[inputStream.available()];
-            inputStream.read(buffer);
-            text.setText(new String(buffer));
+            text.setText(DCSSTextFile.readUtf8(input));
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't open asset: " + e.getMessage());
@@ -104,7 +92,8 @@ public abstract class DCSSTextBase extends AppCompatActivity {
                         Uri uri = resultData.getData();
                         Log.i(DCSSLauncher.TAG, "Destination: " + uri.toString());
                         OutputStream outputStream = getContentResolver().openOutputStream(uri);
-                        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                        OutputStreamWriter writer = new OutputStreamWriter(outputStream,
+                                StandardCharsets.UTF_8);
                         writer.append(textToDownload.getText());
                         writer.close();
                         onDownloadOk();

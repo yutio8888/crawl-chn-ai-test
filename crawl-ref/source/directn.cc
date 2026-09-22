@@ -2542,10 +2542,17 @@ public:
             || ev.type() == ui::Event::Type::MouseDown)
         {
             auto wm_event = to_wm_event(static_cast<const ui::MouseEvent&>(ev));
-            tiles.handle_mouse(wm_event);
-            process_command(ev.type() == ui::Event::Type::MouseMove ?
-                                CMD_TARGET_MOUSE_MOVE :
-                                CMD_TARGET_MOUSE_SELECT);
+            const int mouse_key = tiles.handle_mouse(wm_event);
+            // DungeonRegion validates the map hit and button. Ignoring its
+            // result would confirm the previous cursor on a HUD click, or
+            // turn a right click (Android long press) into a shot.
+            if (mouse_key == CK_MOUSE_MOVE)
+                process_command(CMD_TARGET_MOUSE_MOVE);
+            else if (mouse_key == CK_MOUSE_CLICK
+                     && wm_event.button == wm_mouse_event::LEFT)
+            {
+                process_command(CMD_TARGET_MOUSE_SELECT);
+            }
             return true;
         }
 #endif

@@ -1486,12 +1486,11 @@ namespace quiver
             if (ability == ABIL_WIZ_BUILD_TERRAIN
                 && last_feat != DNGN_UNSEEN)
             {
-                qdesc.cprintf(T_("Build '%s'"), dungeon_feature_name(
+                abil_name = make_stringf(T_("Build '%s'"), dungeon_feature_name(
                     static_cast<dungeon_feature_type>(last_feat)));
             }
-            else
 #endif
-                qdesc.cprintf("%s", ability_name(ability).c_str());
+            qdesc.cprintf("%s", abil_name.c_str());
 
             if (is_card_ability(ability))
                 qdesc.cprintf(" %s", nemelex_card_text(ability).c_str());
@@ -1893,12 +1892,12 @@ namespace quiver
         if (type == "ammo_action")
             return make_shared<ammo_action>(param);
 #if TAG_MAJOR_VERSION == 34
-        else if (type == "launcher_ammo_action")
+        if (type == "launcher_ammo_action")
             return make_shared<ammo_action>(-1);
         else if (type == "fumble_action")
             return make_shared<ammo_action>(-1);
 #endif
-        else if (type == "spell_action")
+        if (type == "spell_action")
             return make_shared<spell_action>(static_cast<spell_type>(param));
         else if (type == "ability_action")
             return make_shared<ability_action>(static_cast<ability_type>(param));
@@ -2861,6 +2860,24 @@ namespace quiver
      */
     void action_cycler::target()
     {
+        // A deliberately cleared quiver is valid but inert. An unavailable
+        // action (for example, after running out of ammunition) also needs a
+        // replacement before entering targeting. Disabled but valid actions
+        // retain their own failure messages.
+        if (is_empty() || !get()->is_valid())
+        {
+            if (!anything_to_quiver())
+            {
+                mpr(T_("You have nothing to quiver."));
+                return;
+            }
+
+            mpr(T_("Nothing quivered!"));
+            choose(*this, false);
+            if (is_empty() || !get()->is_valid())
+                return;
+        }
+
         // This is a somewhat indirect interface that allows cycling between
         // arbitrary code paths that call a direction chooser. Because the
         // setup for direction choosers is so varied and complicated, we can't

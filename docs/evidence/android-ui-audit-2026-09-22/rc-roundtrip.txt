@@ -1,0 +1,2 @@
+rc-fixture.txt: bytes=23, NUL=0, hex=2320e4b8ade696870a6c616e6775616765203d207a680a, repr=b'# \xe4\xb8\xad\xe6\x96\x87\nlanguage = zh\n'
+rc-after-save.txt: bytes=27, NUL=4, hex=2320e4b8ade696870a6c616e6775616765203d207a680a00000000, repr=b'# \xe4\xb8\xad\xe6\x96\x87\nlanguage = zh\n\x00\x00\x00\x00'
