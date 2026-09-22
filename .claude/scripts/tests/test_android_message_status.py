@@ -11,8 +11,10 @@ layout/font checks remain necessary for those boundaries.
 
 from pathlib import Path
 import re
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_android_quickbar as quickbar
 
 

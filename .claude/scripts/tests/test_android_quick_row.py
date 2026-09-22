@@ -6,8 +6,10 @@ membership, ordering, overflow reachability and no sentinel dispatch; icon
 rendering and modal gestures still need the Android build/device checks.
 """
 from pathlib import Path
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_android_quickbar as regression
 
 ROOT = Path(__file__).resolve().parents[3]

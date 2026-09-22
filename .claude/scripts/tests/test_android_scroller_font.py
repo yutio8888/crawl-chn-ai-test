@@ -6,8 +6,10 @@ fixture ends before input dispatch and uses deterministic font measurements;
 SDL rendering, scrolling gestures and actual font shaping need device evidence.
 """
 from pathlib import Path
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_android_quickbar as regression
 
 ROOT = Path(__file__).resolve().parents[3]

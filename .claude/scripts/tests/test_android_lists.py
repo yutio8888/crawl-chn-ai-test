@@ -7,8 +7,10 @@ Android screenshots/instrumentation. The dispatcher test executes the shared
 skill state-routing code, while the skill calculation backend remains a double.
 """
 from pathlib import Path
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_android_quickbar as regression
 
 ROOT = Path(__file__).resolve().parents[3]
