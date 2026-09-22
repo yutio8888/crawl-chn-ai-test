@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.CheckedTextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 public class DCSSMorgueAdapter extends RecyclerView.Adapter<DCSSMorgueAdapter.ViewHolder> {
 
     private File[] morgueFiles;
+    private File selectedFile;
 
     private OnMorgueListener morgueListener;
 
@@ -29,13 +31,14 @@ public class DCSSMorgueAdapter extends RecyclerView.Adapter<DCSSMorgueAdapter.Vi
             }
         }
         this.morgueFiles = morgueDir.listFiles();
+        if (morgueFiles == null) morgueFiles = new File[0];
         this.morgueListener = morgueListener;
     }
 
     // Single element in the RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener {
         private final LinearLayout layout;
-        private final TextView nameView;
+        private final CheckedTextView nameView;
         private final TextView timeView;
         private OnMorgueListener morgueListener;
 
@@ -63,17 +66,17 @@ public class DCSSMorgueAdapter extends RecyclerView.Adapter<DCSSMorgueAdapter.Vi
 
         @Override
         public void onClick(View v) {
-            this.morgueListener.onMorgueClick(getBindingAdapterPosition());
+            int position = getBindingAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) this.morgueListener.onMorgueClick(position);
         }
 
         @Override
         public void onFocusChange(View view, boolean b) {
             Resources resources = getNameView().getResources();
-            if (view.isFocused()) {
-                getLayout().setBackgroundColor(resources.getColor(R.color.black_focused));
-            } else {
-                getLayout().setBackgroundColor(resources.getColor(R.color.black));
-            }
+            int color = view.isActivated()
+                    ? (view.isFocused() ? R.color.dark_green_focused : R.color.dark_green)
+                    : (view.isFocused() ? R.color.black_focused : R.color.black);
+            getLayout().setBackgroundColor(resources.getColor(color));
         }
     }
 
@@ -92,6 +95,13 @@ public class DCSSMorgueAdapter extends RecyclerView.Adapter<DCSSMorgueAdapter.Vi
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date modifiedDate = new Date(morgueFiles[position].lastModified());
         viewHolder.getTimeView().setText(dateFormat.format(modifiedDate));
+        boolean selected = morgueFiles[position].equals(selectedFile);
+        viewHolder.itemView.setSelected(selected);
+        viewHolder.itemView.setActivated(selected);
+        viewHolder.nameView.setChecked(selected);
+        viewHolder.itemView.setContentDescription(morgueFiles[position].getName()
+                + ", " + dateFormat.format(modifiedDate));
+        viewHolder.onFocusChange(viewHolder.itemView, viewHolder.itemView.isFocused());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -123,6 +133,18 @@ public class DCSSMorgueAdapter extends RecyclerView.Adapter<DCSSMorgueAdapter.Vi
             return morgueFiles[position];
         } else {
             return null;
+        }
+    }
+
+    public void setSelectedPosition(int position) {
+        File file = getMorgueFile(position);
+        if (file != null && !file.equals(selectedFile)) {
+            File previous = selectedFile;
+            selectedFile = file;
+            for (int i = 0; i < morgueFiles.length; ++i) {
+                if (morgueFiles[i].equals(previous)) notifyItemChanged(i);
+            }
+            notifyItemChanged(position);
         }
     }
 

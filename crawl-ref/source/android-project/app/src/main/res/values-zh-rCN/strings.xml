@@ -13,6 +13,10 @@
     <string name="open_error">无法打开文件</string>
     <string name="save">保存</string>
     <string name="save_error">保存文件失败</string>
+    <string name="discard_changes_title">要放弃未保存的更改吗？</string>
+    <string name="discard_changes_message">你的更改尚未保存。</string>
+    <string name="keep_editing">继续编辑</string>
+    <string name="discard_changes">放弃更改</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
@@ -74,4 +78,21 @@
         <item>左下</item>
         <item>右下</item>
     </string-array>
+    <string name="keyboard_system">系统键盘</string>
+    <string name="keyboard_skip_messages">跳过剩余消息</string>
+    <string name="keyboard_height_dp">按键高度（dp）</string>
+    <string name="keyboard_height_range">允许范围：%1$d–%2$d dp。自定义键盘的按键高度至少为 48 dp，并会随系统字号增大以容纳文字。</string>
+    <string name="keyboard_height_applied">已保存的按键高度：%1$d dp。</string>
+    <string name="keyboard_size_presets">按键高度预设</string>
+    <string name="size_small">小</string>
+    <string name="size_standard">标准</string>
+    <string name="size_large">大</string>
+    <string name="keyboard_preview">主键盘预览</string>
+    <string name="keyboard_preview_height">实际键盘高度：%1$d dp（占屏幕高度的 %2$d%%）。预览已缩放以适应显示区域。</string>
+    <string name="keyboard_preview_unavailable">所选模式使用系统键盘或不启用键盘，尺寸不在此处设置。</string>
+    <string name="reading_size">阅读字号</string>
+    <string name="reading_size_help">结合系统字号缩放列表、描述和消息中的文字。配置文件中明确指定的字体大小优先。</string>
+    <string name="reading_size_preview">预览：列表、描述和消息</string>
+    <string name="map_scale_help">地图缩放单独调整图块大小；请使用游戏内的缩放控件。</string>
+    <string name="reading_percentage">%1$d%%</string>
 </resources>

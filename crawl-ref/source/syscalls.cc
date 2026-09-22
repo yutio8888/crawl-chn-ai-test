@@ -469,6 +469,31 @@ float jni_get_display_density()
     }
     return std::isfinite(density) && density > 0 ? density : 1.0f;
 }
+
+float jni_get_reading_font_pixels()
+{
+    const float fallback = 14 * jni_get_display_density();
+    JNIEnv *env = Android_JNI_GetEnv();
+    if (!env)
+        return fallback;
+    jclass crawl_class = env->FindClass("org/develz/crawl/DungeonCrawlStoneSoup");
+    float pixels = fallback;
+    if (crawl_class)
+    {
+        jmethodID method = env->GetStaticMethodID(crawl_class,
+                                                "jniReadingFontPixels", "()F");
+        if (method)
+            pixels = env->CallStaticFloatMethod(crawl_class, method);
+        env->DeleteLocalRef(crawl_class);
+    }
+    if (env->ExceptionCheck())
+    {
+        env->ExceptionClear();
+        return fallback;
+    }
+    return std::isfinite(pixels) && pixels > 0 ? pixels : fallback;
+}
+
 #endif
 
 bool lock_file(int fd, bool write, bool wait)

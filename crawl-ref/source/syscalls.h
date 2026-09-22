@@ -33,6 +33,7 @@ bool jni_keyboard_control(int toggle);
 namespace ui { struct InputDescriptor; }
 void jni_input_context(const ui::InputDescriptor& descriptor);
 float jni_get_display_density();
+float jni_get_reading_font_pixels();
 time_t jni_package_last_update_time();
 // Runs a save parked by SDLActivity.onPause. Game thread only, and only from
 // a point where the game thread is waiting for input.

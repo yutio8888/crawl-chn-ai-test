@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Source invariants for the Android command panel and quick row.
+"""Source invariants and focused callbacks for the Android command UI.
 
-Both are SDL Tiles UI with no headless harness, so these are static checks.
-They cover only what could silently regress: the acceptance shape of the grid
+The SDL Tiles UI has no headless harness, so most checks are static. Small
+targeting callbacks are compiled from production source with input/output
+doubles; they do not simulate SDL layout, hit-testing, or game turns.
+The checks cover what could silently regress: the acceptance shape of the grid
 and of the persistent bottom row, the guards that keep the normal command paths
 from being bypassed, and the description keys the labels resolve against.
 """
 
 from pathlib import Path
 import re
+import shutil
+import subprocess
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -62,6 +67,258 @@ def database_keys(path: Path) -> set:
         if stripped:
             keys.add(stripped.splitlines()[0].strip())
     return keys
+
+
+class TargetingSafetyTests(unittest.TestCase):
+    def run_cpp(self, source: str) -> None:
+        compiler = shutil.which("c++")
+        if not compiler:
+            self.skipTest("C++ compiler required for production callback tests")
+        with tempfile.TemporaryDirectory(prefix="android-targeting-") as tmp:
+            path = Path(tmp)
+            (path / "test.cc").write_text(source, encoding="utf-8")
+            build = subprocess.run(
+                [compiler, "-std=c++11", "-Wall", "-Wextra", "-Werror",
+                 str(path / "test.cc"), "-o", str(path / "test")],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(build.returncode, 0, build.stdout + build.stderr)
+            run = subprocess.run([str(path / "test")], capture_output=True,
+                                 text=True, timeout=10)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+
+    def test_target_mouse_dispatch_respects_button_and_region_result(self) -> None:
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        chooser = block_after(source, "class UIDirectionChooserView")
+        handler = block_after(chooser, "bool on_event(const ui::Event& ev)")
+        mouse = block_after(handler, "if (ev.type() == ui::Event::Type::MouseMove")
+        # Execute the real callback, varying the result supplied by the region
+        # hit-test. HUD/message/margin presses return no mouse-click key;
+        # right click and Android long press may never select even if a region
+        # unexpectedly reports a click. Full geometry still needs SDL testing.
+        self.run_cpp(r'''
+#include <cassert>
+#include <initializer_list>
+enum { CK_NO_KEY = -1, CK_MOUSE_MOVE = 1, CK_MOUSE_CLICK, CK_MOUSE_CMD,
+       CMD_TARGET_MOUSE_MOVE, CMD_TARGET_MOUSE_SELECT };
+struct wm_mouse_event {
+    enum { LEFT, RIGHT, MIDDLE };
+    int button;
+};
+namespace ui {
+struct Event {
+    enum class Type { MouseMove, MouseDown };
+    Type kind;
+    explicit Event(Type t) : kind(t) {}
+    Type type() const { return kind; }
+};
+struct MouseEvent : Event {
+    int button;
+    MouseEvent(Type t, int b) : Event(t), button(b) {}
+};
+}
+wm_mouse_event to_wm_event(const ui::MouseEvent &ev) { return {ev.button}; }
+struct Tiles {
+    int result = 0;
+    int handle_mouse(wm_mouse_event &) { return result; }
+} tiles;
+int dispatched = 0;
+void process_command(int cmd) { assert(!dispatched); dispatched = cmd; }
+bool on_event(const ui::Event &ev)
+''' + mouse + r'''
+int main() {
+    const int results[] = {0, CK_NO_KEY, CK_MOUSE_MOVE, CK_MOUSE_CLICK,
+                           CK_MOUSE_CMD, 99};
+    for (auto type : {ui::Event::Type::MouseMove, ui::Event::Type::MouseDown})
+        for (int button : {wm_mouse_event::LEFT, wm_mouse_event::RIGHT,
+                           wm_mouse_event::MIDDLE})
+            for (int result : results) {
+                tiles.result = result;
+                dispatched = 0;
+                assert(on_event(ui::MouseEvent(type, button)));
+                const int expected = type == ui::Event::Type::MouseMove
+                    ? (result == CK_MOUSE_MOVE ? CMD_TARGET_MOUSE_MOVE : 0)
+                    : (button == wm_mouse_event::LEFT && result == CK_MOUSE_CLICK
+                       ? CMD_TARGET_MOUSE_SELECT : 0);
+                assert(dispatched == expected);
+            }
+}
+''')
+
+    def test_target_mouse_selection_keeps_map_and_normal_safety_checks(self) -> None:
+        source = (ROOT / "crawl-ref/source/directn.cc").read_text(encoding="utf-8")
+        update = block_after(source, "bool direction_chooser::tiles_update_target()")
+        self.assertIn("gc != NO_CURSOR && map_bounds(gc)", update)
+        commands = block_after(source, "bool direction_chooser::process_command")
+        selection = commands[commands.index("case CMD_TARGET_MOUSE_SELECT:"):
+                             commands.index("case CMD_TARGET_MOUSE_MOVE:")]
+        self.assertIn("if (tiles_update_target())", selection)
+        self.assertIn("select(false, false)", selection)
+        # Region hit-testing supplies the callback's click result. A map
+        # margin cannot become a click, even if the old cursor is still valid.
+        region = (ROOT / "crawl-ref/source/tilereg-dgn.cc").read_text(encoding="utf-8")
+        target = block_after(region, "if (mouse_control::current_mode() == MOUSE_MODE_TARGET")
+        self.assertIn("event.button == wm_mouse_event::LEFT && on_screen(gc)", target)
+        handler = block_after(region, "int DungeonRegion::handle_mouse")
+        self.assertLess(handler.index("if (!on_map)"), handler.index(target))
+
+    def test_empty_quiver_explains_reason_before_entering_action(self) -> None:
+        source = (ROOT / "crawl-ref/source/quiver.cc").read_text(encoding="utf-8")
+        header = (ROOT / "crawl-ref/source/quiver.h").read_text(encoding="utf-8")
+        target = block_after(source, "void action_cycler::target()")
+        entry = target[1:target.index("// This is a somewhat indirect interface")]
+        constructors = source[source.index("action_cycler::action_cycler(shared_ptr"):
+                              source.index("void action_cycler::save(")]
+        item = block_after(source, "struct item_action : public action")
+        # Use production state construction and type/validity semantics, not
+        # an 'empty' boolean double: the initial and loaded ammo_action(-1)
+        # shows Empty but is_empty() is false, unlike a manually cleared action.
+        # Inventory, untested action types, and message output remain doubles;
+        # real command dispatch, UI rendering, and turns require device tests.
+        self.run_cpp(r'''
+#include <cassert>
+#include <initializer_list>
+#include <map>
+#include <memory>
+#include <string>
+#include <typeinfo>
+#include <vector>
+using std::string;
+using std::shared_ptr;
+using std::make_shared;
+enum { CMD_QUIVER_ITEM = 1 };
+bool candidates = false;
+bool anything_to_quiver() { return candidates; }
+const char *T_(const char *s) { return s; }
+std::vector<string> messages;
+int binding_used = 0;
+void mpr(const string &s) { messages.push_back(s); }
+void insert_commands(string &s, std::initializer_list<int> commands) {
+    assert(commands.size() == 1);
+    binding_used = *commands.begin();
+    s.replace(s.find('%'), 1, "test-remapped-key");
+}
+struct action {
+    virtual ~action() = default;
+    virtual bool equals(const action &) const { return true; }
+    virtual bool operator==(const action &other) const
+''' + block_after(header, "virtual bool operator==(") + r'''
+    virtual bool is_valid() const
+''' + block_after(header, "virtual bool is_valid() const") + r'''
+    virtual bool is_enabled() const { return false; }
+};
+enum { ENDOFPACK = 1 };
+struct Item { bool defined() const { return true; } };
+struct { Item inv[ENDOFPACK]; } you;
+struct ammo_action : action {
+    int item_slot;
+    explicit ammo_action(int slot) : item_slot(slot) {}
+    // The production item validity check rejects -1 before inventory access.
+    bool is_valid() const override
+''' + block_after(item, "bool is_valid() const override") + r'''
+};
+struct configured_action : action {
+    bool enabled;
+    explicit configured_action(bool value) : enabled(value) {}
+    bool is_enabled() const override { return enabled; }
+};
+// These loader branches are parsed but not exercised in this test.
+struct other_action : action { explicit other_action(int = 0) {} };
+using spell_type = int;
+using ability_type = int;
+using spell_action = other_action;
+using ability_action = other_action;
+using consumable_action = other_action;
+using wand_action = other_action;
+using misc_action = other_action;
+using melee_action = other_action;
+using ranged_action = other_action;
+struct StoreValue {
+    string text;
+    int number = 0;
+    const string &get_string() const { return text; }
+    int get_int() const { return number; }
+};
+struct CrawlHashTable : std::map<string, StoreValue> {
+    bool exists(const string &key) const { return count(key); }
+};
+#define TAG_MAJOR_VERSION 34
+static shared_ptr<action> _load_action(CrawlHashTable &source)
+''' + block_after(source, "static shared_ptr<action> _load_action(") + r'''
+struct action_cycler {
+    shared_ptr<action> current;
+    bool entered_action = false;
+    action_cycler();
+    explicit action_cycler(shared_ptr<action> init);
+    shared_ptr<action> get() const { return current; }
+    bool set(shared_ptr<action> value) { current = value; return true; }
+    bool clear()
+''' + block_after(source, "bool action_cycler::clear()") + r'''
+    bool is_empty() const
+''' + block_after(header, "virtual bool is_empty() const") + r'''
+    void target() {
+''' + entry + r'''
+        entered_action = true;
+    }
+};
+''' + constructors + r'''
+int main() {
+    action_cycler initial;
+    assert(!initial.is_empty() && !initial.get()->is_valid());
+    action_cycler cleared;
+    cleared.clear();
+    assert(cleared.is_empty() && cleared.get()->is_valid());
+    CrawlHashTable saved;
+    saved["type"].text = "ammo_action";
+    saved["param"].number = -1;
+    action_cycler loaded(_load_action(saved));
+    assert(!loaded.is_empty() && !loaded.get()->is_valid());
+    // Legacy/minimal saved empty action has no param, and loads as invalid.
+    saved["type"].text = "action";
+    saved.erase("param");
+    action_cycler loaded_empty(_load_action(saved));
+    assert(!loaded_empty.is_empty() && !loaded_empty.get()->is_valid());
+    action_cycler enabled(make_shared<configured_action>(true));
+    action_cycler disabled(make_shared<configured_action>(false));
+    assert(disabled.get()->is_valid() && !disabled.get()->is_enabled());
+    action_cycler *states[] = {&initial, &cleared, &loaded, &loaded_empty,
+                               &enabled, &disabled};
+    for (int i = 0; i < 6; ++i)
+        for (bool have_candidates : {false, true}) {
+            const bool needs_action = i < 4;
+            candidates = have_candidates;
+            messages.clear();
+            binding_used = 0;
+            action_cycler &cycler = *states[i];
+            cycler.entered_action = false;
+            cycler.target();
+            assert(cycler.entered_action == !needs_action);
+            assert(messages.size() == (needs_action ? 1u : 0u));
+            assert(binding_used == (needs_action && candidates ? CMD_QUIVER_ITEM : 0));
+            if (needs_action && candidates)
+                assert(messages[0].find("test-remapped-key") != string::npos);
+            else if (needs_action)
+                assert(messages[0] == "You have nothing to quiver.");
+        }
+}
+''')
+
+    def test_candidate_lookup_includes_equipped_launcher(self) -> None:
+        # Keep the actual candidate path connected to the equipped launcher,
+        # instead of treating an empty quiver as having no inventory options.
+        quiver = (ROOT / "crawl-ref/source/quiver.cc").read_text(encoding="utf-8")
+        invent = (ROOT / "crawl-ref/source/invent.cc").read_text(encoding="utf-8")
+        self.assertIn("_any_items_to_quiver()",
+                      block_after(quiver, "bool anything_to_quiver()"))
+        self.assertIn("any_items_of_type(OSEL_QUIVER_ACTION)",
+                      block_after(quiver, "static bool _any_items_to_quiver()"))
+        selector = invent[invent.index("case OSEL_QUIVER_ACTION:",
+                                       invent.index("case OSEL_QUIVER_ACTION:") + 1):]
+        selector = selector[:selector.index("case OSEL_WORN_JEWELLERY_OR_TALISMAN:")]
+        self.assertIn("quiver::slot_to_action(i.link)", selector)
+        action = block_after(quiver, "shared_ptr<action> slot_to_action(int slot)")
+        launcher = block_after(action, "else if (you.weapon()")
+        self.assertIn("is_range_weapon(*you.weapon())", action)
+        self.assertIn("return get_primary_action();", launcher)
 
 
 class AndroidFirstRunTests(unittest.TestCase):
@@ -160,10 +417,14 @@ class QuickAccessPanelTests(unittest.TestCase):
         self.assertRegex(section, r"if \(entries.empty\(\)\)\s*return;")
         self.assertLess(section.index("entries.empty()"), section.index("content->add_child(title)"))
         for entries, label, spell in (
-            ("_quick_spell_entries()", "Quick Cast", "true"),
-            ("_quick_ability_entries()", "Quick Abilities", "false"),
+            ("_quick_spell_entries()", "All spells", "true"),
+            ("_quick_ability_entries()", "All abilities", "false"),
         ):
-            self.assertIn(f'add_quick_section({entries}, "{label}", {spell});', self.source)
+            self.assertIn(f'add_quick_section({entries}, T_("{label}"), {spell});', self.source)
+        self.assertRegex(self.source, r"if \(section != CommandMenuSection::ABILITIES\)\s*"
+                         r"add_quick_section\(_quick_spell_entries\(\)")
+        self.assertRegex(self.source, r"if \(section != CommandMenuSection::SPELLS\)\s*"
+                         r"add_quick_section\(_quick_ability_entries\(\)")
 
     def test_ordinary_spell_and_ability_commands_are_preserved(self) -> None:
         for command in ("CMD_DISPLAY_SPELLS", "CMD_USE_ABILITY"):
@@ -272,14 +533,23 @@ class QuickAccessPanelTests(unittest.TestCase):
         loop = self.block_after("for (const auto &entry : commands)")
         self.assertIn('_command_menu_text("android command menu", entry.section)', loop)
         self.assertIn("command_grid = make_shared<CommandGrid>(3, min_command_width);", loop)
-        self.assertNotRegex(loop, r"\b(?:continue|break)\b")
+        # Focused full-list views omit the entire command grid. The ordinary
+        # menu must still include every table entry in the same order.
+        section_guard = r"if \(section != CommandMenuSection::ALL\)\s*break;"
+        self.assertRegex(loop, section_guard)
+        self.assertNotRegex(re.sub(section_guard, "", loop), r"\b(?:continue|break)\b")
         self.assertIn("command_grid->append(button);", loop)
         self.assertIn("you.visible_igrd(you.pos()) == NON_ITEM", loop)
         self.assertIn("command = feat_stair_direction(feature);", loop)
         self.assertIn("feat_is_altar(feature)", loop)
         for reason in ("No items here", "No exit here"):
             self.assertIn(f'summary_key = "{reason}";', loop)
-        self.assertRegex(loop, r"if \(!available\)\s*describe\(label, summary\);\s*else\s*\{\s*selected_command = command;\s*done = true;")
+        self.assertRegex(loop, r"if \(!available\)\s*describe\(label, summary\);\s*else\s*\{")
+        self.assertRegex(loop, r"if \(command == CMD_DISPLAY_SPELLS\)\s*"
+                         r"selected_section = CommandMenuSection::SPELLS;\s*"
+                         r"else if \(command == CMD_USE_ABILITY\)\s*"
+                         r"selected_section = CommandMenuSection::ABILITIES;\s*"
+                         r"else\s*selected_command = command;\s*done = true;")
 
     def test_menu_does_not_resize_surface_or_toggle_keyboard(self) -> None:
         for absent in ("show_keyboard(", "hide_keyboard(", "toggle_keyboard(",
@@ -614,10 +884,11 @@ class MoreActionsTests(unittest.TestCase):
         # Every spilling page hands its list to the scope it registers.
         self.assertIn("std::move(keyboard_more));", self.read("describe.cc"))
         skills = self.read("skill-menu.cc")
-        self.assertRegex(skills, r"auto keyboard_actions = skm\.keyboard_actions\(\);\s*"
-                         r"ui::InputActionScope keyboard_scope\(ui::InputScreen::SKILLS,\s*"
-                         r"std::move\(keyboard_actions\),\s*ui::top_layout\(\),\s*"
-                         r"skm\.keyboard_more\(\)\);")
+        skill_menu = block_after(skills, "class AndroidSkillMenu : public Menu")
+        descriptor = block_after(skill_menu, "void keyboard_descriptor(")
+        self.assertIn("screen = ui::InputScreen::SKILLS;", descriptor)
+        self.assertIn("actions = skm.keyboard_actions();", descriptor)
+        self.assertIn("more = skm.keyboard_more();", descriptor)
         # Menus reach the same scope through Menu::do_menu's keyboard_more().
         self.assertIn("more = keyboard_more();", self.read("menu.cc"))
 
@@ -657,8 +928,8 @@ class QuickRowTests(unittest.TestCase):
         self.assertRegex(self.header, r"SpellRegion\s+\*m_region_quick_spl;")
         self.assertRegex(self.header, r"AbilityRegion\s+\*m_region_quick_abl;")
         init = self.fn("bool TilesFramework::initialise()")
-        self.assertIn("m_region_quick_spl = new SpellRegion(m_init, true);", init)
-        self.assertIn("m_region_quick_abl = new AbilityRegion(m_init);", init)
+        self.assertIn("m_region_quick_spl = new SpellRegion(m_init, true, true);", init)
+        self.assertIn("m_region_quick_abl = new AbilityRegion(m_init, true);", init)
         # separate instances, not aliases of the sidebar regions
         self.assertIn("m_region_spl  = new SpellRegion(m_init);", init)
         self.assertIn("m_region_abl  = new AbilityRegion(m_init);", init)
@@ -670,11 +941,12 @@ class QuickRowTests(unittest.TestCase):
     def test_quick_spell_row_keeps_z_semantics_without_moving_the_sidebar(self) -> None:
         # Phase B settled on cast_a_spell(true, ...), what z reaches after its
         # own selection step. The sidebar SpellRegion must keep its own call, so
-        # the adaptation is one defaulted constructor flag.
+        # Range checks and the overflow affordance are separately defaulted.
         header = SPELL_REGION_H.read_text(encoding="utf-8")
         self.assertRegex(
             header,
-            r"SpellRegion\(const TileRegionInit &init,\s*bool check_range = false\)")
+            r"SpellRegion\(const TileRegionInit &init,\s*bool check_range = false,\s*"
+            r"bool quick_access = false\)")
         source = SPELL_REGION_CC.read_text(encoding="utf-8")
         self.assertIn("cast_a_spell(m_check_range, spell)", source)
         for absent in ("cast_a_spell(false", "cast_a_spell(true"):
@@ -685,8 +957,10 @@ class QuickRowTests(unittest.TestCase):
         self.assertIn("talent tal = get_talent(ability);", source)
         self.assertIn("activate_talent(tal)", source)
         self.assertIn("describe_ability(ability);", source)
-        # nothing quick-row specific leaked into the shared ability region
-        self.assertNotIn("quick", source.lower())
+        # The overflow sentinel is dispatched before the ordinary talent path.
+        handler = block_after(source, "int AbilityRegion::handle_mouse")
+        self.assertLess(handler.index("m_items[item_idx].idx == -1"),
+                        handler.index("get_talent(ability)"))
 
     def test_row_requires_a_live_list_and_available_space(self) -> None:
         live = self.fn("void TilesFramework::quick_row_live_lists")
@@ -746,15 +1020,13 @@ class QuickRowTests(unittest.TestCase):
         for args in resizes:
             # one cell tall, or no cells at all -- never a second stacked row
             self.assertRegex(args, r"\?\s*1\s*:\s*0\s*$")
-        # side by side when both are live, full width for a sole live list
-        self.assertRegex(
-            place,
-            r"spell_cells\s*=\s*spells\s*\?\s*\(abilities\s*\?"
-            r"\s*cells\s*/\s*2\s*:\s*cells\)\s*:\s*0")
-        self.assertRegex(
-            place,
-            r"ability_cells\s*=\s*abilities\s*\?\s*cells - spell_cells\s*:\s*0")
-        # overflow is left to the regions' own truncation: no paging state
+        # Count-aware allocation donates spare space to the other list. The
+        # production matrix in test_android_quick_row.py checks all balances.
+        self.assertIn("min(23, (int)you.spell_no)", place)
+        self.assertIn("your_talents(true).size()", place)
+        self.assertIn("min(ability_count, cells - spell_cells)", place)
+        self.assertIn("spell_cells = min(spell_count, cells - ability_cells);", place)
+        # The regions reserve an overflow button; no paging state is needed.
         for absent in ("m_grid_page", "swipe", "turn_page"):
             self.assertNotIn(absent, place, absent)
 

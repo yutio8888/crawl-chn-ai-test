@@ -350,7 +350,7 @@ void wrapcprintf(const char *s, ...)
 
 int cancellable_get_line(char *buf, int len, input_history *mh,
                         keyfun_action (*keyproc)(int &ch), const string &fill,
-                        const string &tag)
+                        const string &tag, bool numeric_input)
 {
     UNUSED(tag);
 
@@ -360,6 +360,7 @@ int cancellable_get_line(char *buf, int len, input_history *mh,
     line_reader reader(buf, len, get_number_of_cols());
     reader.set_input_history(mh);
     reader.set_keyproc(keyproc);
+    reader.set_numeric_input(numeric_input);
 #ifdef USE_TILE_WEB
     reader.set_tag(tag);
 #endif
@@ -599,7 +600,7 @@ int line_reader::getkey()
 
 int line_reader::read_line_core(bool reset_cursor)
 {
-    ui::TextInputScope text_input;
+    ui::TextInputScope text_input(numeric_input);
     length = strlen(buffer);
     int width = strwidth(buffer);
 
@@ -926,7 +927,9 @@ int line_reader::process_key(int ch)
 
     switch (ch)
     {
-    CASE_ESCAPE
+    case ESCAPE:
+    case CONTROL('G'):
+    case -1:
         return CK_ESCAPE;
     case CK_UP:
     case CONTROL('P'):

@@ -11,7 +11,9 @@ void show_topbar_status_drawer(int selected_status = -1);
 // inline quick-access section is used through its normal command path once the panel
 // has closed; that also returns CMD_NO_CMD, with *acted set so the caller can
 // report the tap as already handled.
-command_type show_topbar_command_menu(bool *acted = nullptr);
+enum class CommandMenuSection { ALL, SPELLS, ABILITIES };
+command_type show_topbar_command_menu(bool *acted = nullptr,
+    CommandMenuSection section = CommandMenuSection::ALL);
 
 #ifdef __ANDROID__
 namespace ui { struct InputAction; }

@@ -2542,10 +2542,18 @@ public:
             || ev.type() == ui::Event::Type::MouseDown)
         {
             auto wm_event = to_wm_event(static_cast<const ui::MouseEvent&>(ev));
-            tiles.handle_mouse(wm_event);
-            process_command(ev.type() == ui::Event::Type::MouseMove ?
-                                CMD_TARGET_MOUSE_MOVE :
-                                CMD_TARGET_MOUSE_SELECT);
+            const int key = tiles.handle_mouse(wm_event);
+            // The dungeon region validates the hit position before returning
+            // a mouse key. Other regions and margins must not confirm the
+            // previously selected target, nor may a right click/long press.
+            if (ev.type() == ui::Event::Type::MouseMove && key == CK_MOUSE_MOVE)
+                process_command(CMD_TARGET_MOUSE_MOVE);
+            else if (ev.type() == ui::Event::Type::MouseDown
+                     && wm_event.button == wm_mouse_event::LEFT
+                     && key == CK_MOUSE_CLICK)
+            {
+                process_command(CMD_TARGET_MOUSE_SELECT);
+            }
             return true;
         }
 #endif

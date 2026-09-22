@@ -6,9 +6,10 @@
 class AbilityRegion : public GridRegion
 {
 public:
-    AbilityRegion(const TileRegionInit &init);
+    AbilityRegion(const TileRegionInit &init, bool quick_access = false);
 
     virtual void update() override;
+    void render() override;
     virtual int handle_mouse(wm_mouse_event &event) override;
     virtual bool update_tip_text(string &tip) override;
     virtual bool update_tab_tip_text(string &tip, bool active) override;
@@ -17,6 +18,8 @@ public:
     virtual const string name() const override { return "Abilities"; }
 
 protected:
+    const bool m_quick_access;
+
     virtual int get_max_slots();
 
     virtual void pack_buffers() override;

@@ -175,6 +175,9 @@ protected:
     int pre_process(int key) override;
     bool process_command(command_type cmd) override;
     string get_select_count_string(int count) const override;
+#ifdef __ANDROID__
+    string get_keyhelp(bool scrollable) const override;
+#endif
     virtual bool skip_process_command(int keyin) override;
     virtual bool is_selectable(int index) const override;
     virtual string help_key() const override;

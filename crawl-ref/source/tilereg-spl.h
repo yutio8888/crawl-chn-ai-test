@@ -10,9 +10,11 @@ public:
     // left click reaches: false is the sidebar's mouse cast, true is what the
     // z command reaches after its own selection step. The Android quick row
     // needs z semantics; every other instance keeps the sidebar behaviour.
-    SpellRegion(const TileRegionInit &init, bool check_range = false);
+    SpellRegion(const TileRegionInit &init, bool check_range = false,
+                bool quick_access = false);
 
     virtual void update() override;
+    void render() override;
     virtual int handle_mouse(wm_mouse_event &event) override;
     virtual bool update_tip_text(string &tip) override;
     virtual bool update_tab_tip_text(string &tip, bool active) override;
@@ -24,6 +26,7 @@ protected:
     virtual int get_max_slots();
 
     const bool m_check_range;
+    const bool m_quick_access;
 
     virtual void pack_buffers() override;
     virtual void draw_tag() override;

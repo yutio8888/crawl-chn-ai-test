@@ -17,6 +17,7 @@
 #include "cio.h"
 #include "clua.h"
 #include "command.h"
+#include "colour.h"
 #include "describe.h"
 #include "english.h" // apostrophise
 #include "evoke.h"
@@ -36,6 +37,10 @@
 #include "ui.h"
 #include "unwind.h"
 #include "database.h"
+#ifdef __ANDROID__
+#include "outer-menu.h"
+#include "syscalls.h"
+#endif
 
 using namespace ui;
 
@@ -1139,6 +1144,108 @@ void SkillMenu::clear_flag(int flag)
 }
 
 #ifdef __ANDROID__
+// Android renders the existing skill state through the scrolling Menu UI.
+// Keep PrecisionMenu as the calculation/input backend, so targets, experience
+// allocation, descriptions and uppercase focus retain their existing semantics.
+class AndroidSkillEntry : public MenuEntry
+{
+public:
+    using MenuEntry::MenuEntry;
+    string get_text() const override { return text; }
+    skill_type skill = SK_NONE;
+};
+
+void SkillMenuEntry::add_android_entry(Menu& menu, const SkillMenuEntry& heading)
+{
+    if (is_invalid_skill(m_sk) || is_useless_skill(m_sk))
+        return;
+
+    string text = get_prefix() + " " + skill_name(m_sk);
+    auto add_column = [&text](const TextItem* label, const TextItem* value)
+    {
+        if (trimmed_string(value->get_text()).empty())
+            return;
+        const string colour = colour_to_str(value->get_fg_colour());
+        text += "  " + trimmed_string(label->get_text()) + " "
+              + "<" + colour + ">" + trimmed_string(value->get_text())
+              + "</" + colour + ">";
+    };
+    text += "\n";
+    add_column(heading.m_level, m_level);
+    add_column(heading.m_progress, m_progress);
+    if (is_set(SKMF_APTITUDE))
+        add_column(heading.m_aptitude, m_aptitude);
+    auto entry = new AndroidSkillEntry(text, MEL_ITEM, 1);
+    entry->colour = m_name->get_fg_colour();
+    entry->hotkeys = m_name->get_hotkeys();
+    if (!is_selectable())
+        entry->hotkeys.clear();
+    // The skill identity is kept separate from the translated display text.
+    entry->skill = m_sk;
+    if (is_set(SKMF_SKILL_ICONS))
+    {
+        const auto status = mastered() ? TRAINING_MASTERED
+            : !you.training[m_sk] ? TRAINING_INACTIVE : you.train[m_sk];
+        entry->tiles.emplace_back(tileidx_skill(m_sk, status));
+    }
+    menu.add_entry(entry);
+}
+
+void SkillMenu::populate_android_menu(Menu& menu, bool split_pages, bool magic_page)
+{
+    menu.clear();
+    string title = is_set(SKMF_SPECIAL) ? m_title->get_text() : T_("skills");
+    if (split_pages)
+    {
+        if (is_set(SKMF_SPECIAL))
+            title += "\n";
+        else
+            title.clear();
+        title += magic_page ? T_("Spell skills") : T_("General skills");
+    }
+    menu.set_title(title);
+    // A title row supplies the current view's labels (training, target, cost,
+    // etc.). Each skill repeats them so wrapping never loses column meaning.
+    SkillMenuEntry* heading = nullptr;
+    for (auto& row : m_skills)
+        for (auto& entry : row)
+            if (entry.get_skill() == SK_TITLE)
+                heading = &entry;
+    ASSERT(heading);
+    for (int col = 0; col < SK_ARR_COL; ++col)
+        for (int ln = 0; ln < SK_ARR_LN; ++ln)
+        {
+            auto& entry = m_skills[ln][col];
+            const skill_type skill = entry.get_skill();
+            if (!is_invalid_skill(skill)
+                && (!split_pages || is_magic_skill(skill) == magic_page))
+            {
+                entry.add_android_entry(menu, *heading);
+            }
+        }
+
+    auto add_control = [&menu](TextItem* item)
+    {
+        if (!item || trimmed_string(item->get_text()).empty())
+            return;
+        auto entry = new AndroidSkillEntry(item->get_text(), MEL_ITEM, 1);
+        if (item->can_be_highlighted())
+            entry->hotkeys = item->get_hotkeys();
+        menu.add_entry(entry);
+    };
+    for (const auto& sw : m_switches)
+        add_control(sw.second);
+    if (!is_set(SKMF_SPECIAL))
+    {
+        add_control(m_help_button);
+        add_control(m_middle_button);
+        add_control(m_clear_targets_button);
+    }
+    // Put potentially long explanations inside the scroller too.
+    menu.add_entry(new AndroidSkillEntry(m_help->get_text(), MEL_ITEM));
+    menu.update_menu();
+}
+
 // Switch hotkeys from init_switches/init_buttons; a switch with a single
 // state has size() == 0 and ignores its key.
 std::array<ui::InputAction, 6> SkillMenu::keyboard_actions()
@@ -2008,6 +2115,240 @@ bool UISkillMenu::on_event(const Event& ev)
 }
 #endif
 
+// Returns true only after the skill backend has accepted an exit.
+static bool _process_skill_menu_key(int keyn)
+{
+    if (!skm.process_key(keyn))
+    {
+        switch (keyn)
+        {
+        case CK_UP:
+        case CK_DOWN:
+        case CK_LEFT:
+        case CK_RIGHT:
+            return false;
+        case CK_ENTER:
+            if (!skm.is_set(SKMF_EXPERIENCE))
+                return false;
+        // Fallthrough. In experience mode, you can exit with enter.
+        case CK_ESCAPE:
+            // Escape cancels help if it is being displayed.
+            if (skm.is_set(SKMF_HELP))
+            {
+                skm.cancel_help();
+                return false;
+            }
+            else if (skm.is_set(SKMF_SET_TARGET))
+            {
+                skm.cancel_set_target();
+                return false;
+            }
+        // Fallthrough
+        default:
+            if (ui::key_exits_popup(keyn, true) && skm.exit(false))
+                return true;
+            // Don't exit from !experience on random keys.
+            if (!skm.is_set(SKMF_EXPERIENCE) && skm.exit(false))
+                return true;
+        }
+    }
+    else
+    {
+        vector<MenuItem*> selection = skm.get_selected_items();
+        skm.clear_selections();
+        // There should only be one selection, otherwise something broke
+        if (selection.size() != 1)
+            return false;
+        int sel_id = selection.at(0)->get_id();
+        if (sel_id == SKM_HELP)
+            skm.help();
+        else if (sel_id == SKM_CLEAR_TARGETS)
+            skm.clear_targets();
+        else if (sel_id == SKM_SET_TARGET)
+            skm.set_target_mode();
+        else if (sel_id < 0)
+        {
+            if (sel_id <= SKM_SWITCH_FIRST)
+                skm.toggle((skill_menu_switch)sel_id);
+            else
+                dprf("Unhandled menu switch %d", sel_id);
+        }
+        else
+        {
+            skill_type sk = static_cast<skill_type>(sel_id);
+            ASSERT(!is_invalid_skill(sk));
+            skm.select(sk, keyn);
+        }
+    }
+    return false;
+}
+
+#ifdef __ANDROID__
+class AndroidSkillPageButton : public MenuButton
+{
+public:
+    void _allocate_region() override
+    {
+        MenuButton::_allocate_region();
+        m_line_buf.add_square(m_region.x + 1, m_region.y + 1,
+                             m_region.ex() - 1, m_region.ey() - 1,
+                             term_colours[LIGHTCYAN]);
+    }
+
+protected:
+    // Touching the category must not divert the next Enter from the skill
+    // selection (or the experience-allocation confirmation).
+    bool can_take_focus() override { return false; }
+};
+
+class AndroidSkillMenu : public Menu
+{
+public:
+    AndroidSkillMenu() : Menu(MF_SINGLESELECT | MF_ARROWS_SELECT
+                             | MF_ALLOW_FORMATTING, "skills")
+    {
+        if (m_split_pages)
+        {
+            m_page_label = make_shared<Text>();
+            m_page_label->set_font(tiles.get_msg_font());
+            m_page_label->set_wrap_text(true);
+            m_page_label->set_margin_for_sdl(8, 8, 8, 8);
+            auto button = make_shared<AndroidSkillPageButton>();
+            const int pixels = static_cast<int>(ceil(48 * jni_get_display_density()));
+            button->min_size().height = max(1, display_density.apply_game_scale(
+                pixels + Options.game_scale - 1));
+            button->set_child(m_page_label);
+            button->on_activate_event([this](const ActivateEvent&) {
+                switch_page();
+                return true;
+            });
+            m_ui.header->add_child(std::move(button));
+        }
+        refresh_page();
+    }
+
+    bool process_key(int key) override
+    {
+        if (m_split_pages && key == '\t')
+        {
+            switch_page();
+            return true;
+        }
+        // Navigation belongs to the scrolling presentation. All state changes
+        // go through precisely the same skill backend as desktop key input.
+        switch (key)
+        {
+        case CK_UP: case CK_DOWN: case CK_LEFT: case CK_RIGHT:
+        case CK_PGUP: case CK_PGDN: case CK_HOME: case CK_END:
+            return Menu::process_key(key);
+        default: break;
+        }
+        if (key == CK_MOUSE_B1 || key == CK_MOUSE_B2
+            || (key == CK_ENTER && !skm.is_set(SKMF_EXPERIENCE)))
+        {
+            // Menu owns the visible selection; PrecisionMenu's cursor is not
+            // moved by the scrolling UI's navigation. Resolve Enter through
+            // the visible row's identity just like a tap, while experience
+            // mode keeps the backend's confirmation/exit handling.
+            if (last_hovered < 0 || last_hovered >= static_cast<int>(items.size())
+                || items[last_hovered]->hotkeys.empty())
+            {
+                return true;
+            }
+            if (key == CK_MOUSE_B2)
+            {
+                const auto skill = static_cast<AndroidSkillEntry*>(
+                    items[last_hovered])->skill;
+                if (!is_invalid_skill(skill))
+                    describe_skill(skill);
+                return true;
+            }
+            key = items[last_hovered]->hotkeys.front();
+        }
+        // The backend still contains both categories. Never dispatch a skill
+        // shortcut unless its selectable row is on this page; uppercase
+        // shortcuts keep their existing focus semantics for visible rows.
+        if (m_split_pages && (key >= 'a' && key <= 'z'
+                              || key >= 'A' && key <= 'Z'
+                              || key >= '0' && key <= '9'))
+        {
+            const bool visible_key = any_of(items.begin(), items.end(),
+                [key](const MenuEntry* entry) {
+                    return find(entry->hotkeys.begin(), entry->hotkeys.end(), key)
+                           != entry->hotkeys.end();
+                });
+            if (!visible_key)
+                return true;
+        }
+        if (_process_skill_menu_key(key))
+            return false;
+        refresh_page();
+        return true;
+    }
+
+protected:
+    void keyboard_descriptor(ui::InputScreen& screen,
+                             std::array<ui::InputAction, 6>& actions,
+                             vector<ui::InputAction>& more) override
+    {
+        screen = ui::InputScreen::SKILLS;
+        actions = skm.keyboard_actions();
+        more = skm.keyboard_more();
+    }
+
+private:
+    const bool m_split_pages = tiles.is_using_small_layout();
+    bool m_magic_page = false;
+    shared_ptr<Text> m_page_label;
+
+    void switch_page()
+    {
+        m_magic_page = !m_magic_page;
+        // Category changes affect only presentation, never the skill backend.
+        last_hovered = -1;
+        reset();
+        refresh_page();
+    }
+
+    void refresh_page()
+    {
+        skill_type previous_skill = SK_NONE;
+        int previous_control = 0;
+        if (last_hovered >= 0 && last_hovered < static_cast<int>(items.size()))
+        {
+            const auto* entry = static_cast<AndroidSkillEntry*>(items[last_hovered]);
+            previous_skill = entry->skill;
+            if (is_invalid_skill(previous_skill) && !entry->hotkeys.empty())
+                previous_control = entry->hotkeys.front();
+        }
+        last_hovered = -1;
+        skm.populate_android_menu(*this, m_split_pages, m_magic_page);
+        if (m_page_label)
+        {
+            const string label = m_magic_page ? T_("Show general skills")
+                                             : T_("Show spell skills");
+            m_page_label->set_text(formatted_string(label, LIGHTCYAN));
+        }
+        int selected = -1;
+        for (int i = 0; i < static_cast<int>(items.size()); ++i)
+        {
+            const auto* entry = static_cast<AndroidSkillEntry*>(items[i]);
+            if (entry->hotkeys.empty())
+                continue;
+            if (selected < 0)
+                selected = i;
+            if ((!is_invalid_skill(previous_skill) && entry->skill == previous_skill)
+                || (previous_control && entry->hotkeys.front() == previous_control))
+            {
+                selected = i;
+                break;
+            }
+        }
+        set_hovered(selected);
+    }
+};
+#endif
+
 void skill_menu(int flag, int exp)
 {
     // experience potion; you may elect to put experience in normally
@@ -2026,81 +2367,17 @@ void skill_menu(int flag, int exp)
 
     you.exp_available += exp;
 
+#ifndef __ANDROID__
     bool done = false;
     auto skill_menu_ui = make_shared<UISkillMenu>(flag);
     auto popup = make_shared<ui::Popup>(skill_menu_ui);
 
     skill_menu_ui->on_keydown_event([&done, &skill_menu_ui](const KeyEvent& ev) {
-        const auto keyn = numpad_to_regular(ev.key(), true);
-
+        done = _process_skill_menu_key(numpad_to_regular(ev.key(), true));
         skill_menu_ui->_expose();
-
-        if (!skm.process_key(keyn))
-        {
-            switch (keyn)
-            {
-            case CK_UP:
-            case CK_DOWN:
-            case CK_LEFT:
-            case CK_RIGHT:
-                return true;
-            case CK_ENTER:
-                if (!skm.is_set(SKMF_EXPERIENCE))
-                    return true;
-            // Fallthrough. In experience mode, you can exit with enter.
-            case CK_ESCAPE:
-                // Escape cancels help if it is being displayed.
-                if (skm.is_set(SKMF_HELP))
-                {
-                    skm.cancel_help();
-                    return true;
-                }
-                else if (skm.is_set(SKMF_SET_TARGET))
-                {
-                    skm.cancel_set_target();
-                    return true;
-                }
-            // Fallthrough
-            default:
-                if (ui::key_exits_popup(keyn, true) && skm.exit(false))
-                    return done = true;
-                // Don't exit from !experience on random keys.
-                if (!skm.is_set(SKMF_EXPERIENCE) && skm.exit(false))
-                    return done = true;
-            }
-        }
-        else
-        {
-            vector<MenuItem*> selection = skm.get_selected_items();
-            skm.clear_selections();
-            // There should only be one selection, otherwise something broke
-            if (selection.size() != 1)
-                return true;
-            int sel_id = selection.at(0)->get_id();
-            if (sel_id == SKM_HELP)
-                skm.help();
-            else if (sel_id == SKM_CLEAR_TARGETS)
-                skm.clear_targets();
-            else if (sel_id == SKM_SET_TARGET)
-                skm.set_target_mode();
-            else if (sel_id < 0)
-            {
-                if (sel_id <= SKM_SWITCH_FIRST)
-                    skm.toggle((skill_menu_switch)sel_id);
-                else
-                    dprf("Unhandled menu switch %d", sel_id);
-            }
-            else
-            {
-                skill_type sk = static_cast<skill_type>(sel_id);
-                ASSERT(!is_invalid_skill(sk));
-                skm.select(sk, keyn);
-                skill_menu_ui->_expose();
-            }
-        }
-
         return true;
     });
+#endif
 
 #ifdef USE_TILE_WEB
     tiles_crt_popup show_as_popup("skills");
@@ -2110,7 +2387,14 @@ void skill_menu(int flag, int exp)
     // position even after skm.init is called again, crashing when the screen
     // size is actually too small; ideally, the skill menu will get rewritten
     // to use the new ui framework; until then, this fixes the crash.
+#ifdef __ANDROID__
+    // The backend is no longer allocated by UISkillMenu. Give its invisible
+    // fixed-coordinate objects a valid height once; visible size/scrolling
+    // belong to AndroidSkillMenu and must not reset experience state.
+    skm.init(flag, tiles.get_crt_font()->char_height() * 38);
+#else
     skm.init(flag, MIN_LINES);
+#endif
 
     // Calling a user lua function here to let players automatically accept
     // the given skill distribution for a potion of experience.
@@ -2122,22 +2406,8 @@ void skill_menu(int flag, int exp)
     }
 
 #ifdef __ANDROID__
-    // Setting a target, toggling the view and entering help all change which
-    // keys this menu accepts without opening a new layout, so republish the
-    // actions before each wait the way Menu::do_menu does.
-    ui::push_layout(std::move(popup));
-    while (!done && !crawl_state.seen_hups)
-    {
-        // keyboard_actions() also computes the overflow list, so call it
-        // before keyboard_more().
-        auto keyboard_actions = skm.keyboard_actions();
-        ui::InputActionScope keyboard_scope(ui::InputScreen::SKILLS,
-                                            std::move(keyboard_actions),
-                                            ui::top_layout(),
-                                            skm.keyboard_more());
-        ui::pump_events();
-    }
-    ui::pop_layout();
+    AndroidSkillMenu menu;
+    menu.show();
 #else
     ui::run_layout(std::move(popup), done);
 #endif

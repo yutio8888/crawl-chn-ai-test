@@ -11,6 +11,7 @@
 #include "items.h"
 #include "libutil.h"
 #include "macro.h"
+#include "message.h"
 #include "outer-menu.h"
 #include "options.h"
 #include "player.h"
@@ -734,9 +735,24 @@ int show_more_actions_popup(const vector<ui::InputAction> &actions)
 }
 #endif
 
-command_type show_topbar_command_menu(bool *acted)
+command_type show_topbar_command_menu(bool *acted, CommandMenuSection section)
 {
+    if (acted)
+        *acted = false;
+    if (section == CommandMenuSection::SPELLS && !you.spell_no)
+    {
+        canned_msg(MSG_NO_SPELLS);
+        flush_prev_message();
+        return CMD_NO_CMD;
+    }
+    if (section == CommandMenuSection::ABILITIES && your_talents(true).empty())
+    {
+        no_ability_msg();
+        flush_prev_message();
+        return CMD_NO_CMD;
+    }
     command_type selected_command = CMD_NO_CMD;
+    CommandMenuSection selected_section = CommandMenuSection::ALL;
     spell_type quick_spell = SPELL_NO_SPELL;
     ability_type quick_ability = ABIL_NON_ABILITY;
     bool done = false;
@@ -757,7 +773,9 @@ command_type show_topbar_command_menu(bool *acted)
     auto heading = make_shared<ui::Box>(ui::Widget::VERT);
     heading->expand_h = true;
     heading->add_child(_drawer_text(formatted_string(
-        _command_menu_text("android command menu", "Game menu"), YELLOW)));
+        section == CommandMenuSection::SPELLS ? string(T_("All spells"))
+        : section == CommandMenuSection::ABILITIES ? string(T_("All abilities"))
+        : _command_menu_text("android command menu", "Game menu"), YELLOW)));
     heading->add_child(_drawer_text(formatted_string(
         _command_menu_text("android command menu summary",
                            "Long press for details"), LIGHTGREY)));
@@ -884,6 +902,8 @@ command_type show_topbar_command_menu(bool *acted)
     };
     for (const auto &entry : commands)
     {
+        if (section != CommandMenuSection::ALL)
+            break;
         if (!current_section || strcmp(current_section, entry.section) != 0)
         {
             current_section = entry.section;
@@ -936,7 +956,9 @@ command_type show_topbar_command_menu(bool *acted)
                 summary_key = label_key;
             }
         }
-        const string label = _command_menu_text("android command menu", label_key);
+        const string label = command == CMD_DISPLAY_SPELLS ? string(T_("All spells"))
+            : command == CMD_USE_ABILITY ? string(T_("All abilities"))
+            : _command_menu_text("android command menu", label_key);
         const string summary = unavailable_reason.empty()
             ? _command_menu_text("android command menu summary", summary_key)
             : unavailable_reason;
@@ -963,7 +985,12 @@ command_type show_topbar_command_menu(bool *acted)
                     describe(label, summary);
                 else
                 {
-                    selected_command = command;
+                    if (command == CMD_DISPLAY_SPELLS)
+                        selected_section = CommandMenuSection::SPELLS;
+                    else if (command == CMD_USE_ABILITY)
+                        selected_section = CommandMenuSection::ABILITIES;
+                    else
+                        selected_command = command;
                     done = true;
                 }
                 return true;
@@ -973,11 +1000,11 @@ command_type show_topbar_command_menu(bool *acted)
     }
 
     const auto add_quick_section = [&](const vector<quick_entry> &entries,
-                                        const char *title_key, bool is_spell) {
+                                        const string &heading_text, bool is_spell) {
         if (entries.empty())
             return;
         auto title = _drawer_text(formatted_string(
-            _command_menu_text("android command menu", title_key), YELLOW));
+            heading_text, YELLOW));
         title->set_margin_for_sdl(_menu_dp(12), _menu_dp(4), _menu_dp(4),
                                  _menu_dp(4));
         content->add_child(title);
@@ -1040,8 +1067,10 @@ command_type show_topbar_command_menu(bool *acted)
             grid->append(button);
         }
     };
-    add_quick_section(_quick_spell_entries(), "Quick Cast", true);
-    add_quick_section(_quick_ability_entries(), "Quick Abilities", false);
+    if (section != CommandMenuSection::ABILITIES)
+        add_quick_section(_quick_spell_entries(), T_("All spells"), true);
+    if (section != CommandMenuSection::SPELLS)
+        add_quick_section(_quick_ability_entries(), T_("All abilities"), false);
 
     // Spatial navigation uses the allocated geometry, so the same logic works
     // after a three-to-two-column reflow and between sections of different width.
@@ -1058,7 +1087,7 @@ command_type show_topbar_command_menu(bool *acted)
             [current](const shared_ptr<QuickButton> &b) { return b.get() == current; });
         auto target = buttons.front();
         if (key == CK_HOME)
-            target = buttons[1];
+            target = buttons.size() > 1 ? buttons[1] : close;
         else if (key == CK_END)
             target = buttons.back();
         else if (key == CK_TAB || found == buttons.end())
@@ -1127,7 +1156,7 @@ command_type show_topbar_command_menu(bool *acted)
     }
 
     ui::push_layout(scrim);
-    ui::set_focused_widget(buttons[1].get());
+    ui::set_focused_widget((buttons.size() > 1 ? buttons[1] : close).get());
     while (!done && !scrim->close_requested() && !crawl_state.seen_hups)
         ui::pump_events();
     ui::pop_layout();
@@ -1135,6 +1164,11 @@ command_type show_topbar_command_menu(bool *acted)
 
     if (acted)
         *acted = false;
+
+    // Full-list buttons and quick-row overflow use this same panel. Transition
+    // only after closing the command menu, so one selection dispatches once.
+    if (selected_section != CommandMenuSection::ALL)
+        return show_topbar_command_menu(acted, selected_section);
 
     // A quick-access pick runs only once the drawer has closed, through the
     // same calls the z and a commands reach after their own selection step, so

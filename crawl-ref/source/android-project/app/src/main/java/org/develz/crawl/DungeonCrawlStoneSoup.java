@@ -2,6 +2,8 @@ package org.develz.crawl;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.util.TypedValue;
 
 import org.libsdl.app.SDLActivity;
 
@@ -13,8 +15,8 @@ public class DungeonCrawlStoneSoup extends SDLActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Keep SDL and the selected keyboard layouts alive. Key heights are
-        // launcher-supplied pixels; fontScale changes only the button text.
+        // Keep SDL and the selected keyboard layouts alive. Refit key rows
+        // for the new font metrics before the next view traversal.
         if (mKeyboard != null) {
             mKeyboard.refreshTextSizes();
         }
@@ -28,6 +30,19 @@ public class DungeonCrawlStoneSoup extends SDLActivity {
                 nativeRequestRedraw();
             }
         });
+    }
+
+    // Native font sizing reads this at the point of layout; use current
+    // resources so Android 14 nonlinear SP scaling and configuration changes
+    // are reflected instead of caching scaledDensity or a startup font size.
+    public static float jniReadingFontPixels() {
+        Resources resources = mSingleton == null ? Resources.getSystem()
+                : mSingleton.getResources();
+        int percent = mSingleton == null || mSingleton.getIntent() == null ? 100
+                : DCSSLauncher.normalizeReadingScale(
+                        mSingleton.getIntent().getIntExtra("reading_scale", 100));
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14,
+                resources.getDisplayMetrics()) * percent / 100.0f;
     }
 
     private static native void nativeRequestRedraw();

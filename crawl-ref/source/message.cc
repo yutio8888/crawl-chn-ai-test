@@ -1769,9 +1769,16 @@ void msgwin_got_input()
 }
 
 int msgwin_get_line(string prompt, char *buf, int len,
-                    input_history *mh, const string &fill)
+                    input_history *mh, const string &fill, bool numeric_input)
 {
+#ifdef __ANDROID__
+    // Opening the IME resizes and redraws the message region, whose replay
+    // contains the prompt but not a line_reader's live edit buffer. TextEntry
+    // owns and redraws that buffer through the existing resize-aware popup.
+    const bool use_popup = true;
+#else
     bool use_popup = !crawl_state.need_save || ui::has_layout();
+#endif
 
     int ret;
     if (use_popup)
@@ -1786,12 +1793,25 @@ int msgwin_get_line(string prompt, char *buf, int len,
         auto vbox = make_shared<ui::Box>(ui::Widget::VERT);
         auto popup = make_shared<ui::Popup>(vbox);
 
-        vbox->add_child(make_shared<ui::Text>(colour_prompt + "\n"));
+        auto prompt_text = make_shared<ui::Text>(colour_prompt + "\n");
+#ifdef __ANDROID__
+        if (tiles.is_using_small_layout())
+        {
+            prompt_text->set_font(tiles.get_msg_font());
+            prompt_text->set_wrap_text(true);
+        }
+#endif
+        vbox->add_child(prompt_text);
 
         auto input = make_shared<ui::TextEntry>();
+#ifdef __ANDROID__
+        if (tiles.is_using_small_layout())
+            input->set_font(tiles.get_msg_font());
+#endif
         input->set_sync_id("input");
         input->set_text(fill);
         input->set_input_history(mh);
+        input->set_numeric_input(numeric_input);
 #ifndef USE_TILE_LOCAL
         input->max_size().width = 20;
 #endif
@@ -1822,14 +1842,25 @@ int msgwin_get_line(string prompt, char *buf, int len,
 #endif
         ui::run_layout(std::move(popup), done, input);
 
-        strncpy(buf, input->get_text().c_str(), len - 1);
-        buf[len - 1] = '\0';
+        const string text = input->get_text();
+        size_t copied = 0;
+        while (copied < text.size())
+        {
+            char32_t cp;
+            const int bytes = utf8towc(&cp, text.c_str() + copied);
+            // Reserve the terminator without splitting a UTF-8 character.
+            if (!bytes || copied + bytes >= static_cast<size_t>(len))
+                break;
+            copied += bytes;
+        }
+        memcpy(buf, text.data(), copied);
+        buf[copied] = '\0';
     }
     else
     {
         if (!prompt.empty())
             msgwin_prompt(prompt);
-        ret = cancellable_get_line(buf, len, mh, nullptr, fill);
+        ret = cancellable_get_line(buf, len, mh, nullptr, fill, "", numeric_input);
         msgwin_reply(buf);
     }
 
@@ -2013,7 +2044,7 @@ static void readkey_more(const function<void()>& redraw_prompt, bool user_forced
 
 #ifdef __ANDROID__
     ui::InputActionScope keyboard_scope(ui::InputScreen::MORE,
-                                        {{{T_("Continue"), ' '}}});
+        {{{T_("Continue"), ' '}, {T_("Skip remaining messages"), CK_ESCAPE}}});
 #endif
 
     do
@@ -2428,7 +2459,14 @@ static void _replay_messages_core(formatted_scroller &hist)
 
 void replay_messages()
 {
-    formatted_scroller hist(FS_START_AT_END | FS_PREWRAPPED_TEXT);
+    int flags = FS_START_AT_END | FS_PREWRAPPED_TEXT;
+#ifdef __ANDROID__
+    // Mobile reading text reflows at its selected font size. Fixed-format
+    // scrollers elsewhere still keep their prewrapped layout and CRT font.
+    if (tiles.is_using_small_layout())
+        flags &= ~FS_PREWRAPPED_TEXT;
+#endif
+    formatted_scroller hist(flags);
     hist.set_more();
 
     _replay_messages_core(hist);

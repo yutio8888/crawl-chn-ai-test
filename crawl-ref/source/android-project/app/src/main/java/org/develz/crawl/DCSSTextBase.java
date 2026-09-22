@@ -13,13 +13,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.CharBuffer;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public abstract class DCSSTextBase extends AppCompatActivity {
 
@@ -36,12 +39,7 @@ public abstract class DCSSTextBase extends AppCompatActivity {
     protected boolean openFile(File file, TextView text) {
         try {
             Log.i(DCSSLauncher.TAG, "Opening file: " + file.getAbsolutePath());
-            FileReader reader = new FileReader(file);
-            CharBuffer buffer = CharBuffer.allocate((int) file.length());
-            reader.read(buffer);
-            reader.close();
-            buffer.rewind();
-            text.setText(buffer);
+            text.setText(readUtf8(new FileInputStream(file)));
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't open file: " + e.getMessage());
@@ -49,14 +47,47 @@ public abstract class DCSSTextBase extends AppCompatActivity {
         }
     }
 
-    // Save the file and close the activity
+    // Read through EOF, including streams whose reads return only part of the
+    // requested data. The reader owns and closes the supplied stream.
+    static String readUtf8(InputStream input) throws IOException {
+        try (Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8.newDecoder())) {
+            StringBuilder text = new StringBuilder();
+            char[] buffer = new char[4096];
+            int length;
+            while ((length = reader.read(buffer)) != -1) {
+                text.append(buffer, 0, length);
+            }
+            return text.toString();
+        }
+    }
+
+    // Android uses an atomic rename when both files are on the same filesystem.
+    // Never truncate or remove the original before the replacement is ready.
+    static void writeUtf8(File file, CharSequence text) throws IOException {
+        File target = file.getAbsoluteFile();
+        File temporary = File.createTempFile(".dcss-" + target.getName(), ".tmp",
+                target.getParentFile());
+        try {
+            try (FileOutputStream output = new FileOutputStream(temporary);
+                    Writer writer = new OutputStreamWriter(output,
+                            StandardCharsets.UTF_8.newEncoder())) {
+                writer.append(text);
+                writer.flush();
+                output.getFD().sync();
+            }
+            if (!temporary.renameTo(target)) {
+                throw new IOException("Can't replace file: " + target);
+            }
+        } finally {
+            temporary.delete();
+        }
+    }
+
+    // Save the file, leaving both the original file and editor intact on failure.
     protected boolean saveFile(File file, EditText text) {
         try {
             Log.i(DCSSLauncher.TAG, "Saving file: " + file.getAbsolutePath());
-            FileWriter writer = new FileWriter(file);
-            CharSequence buffer = text.getText();
-            writer.append(buffer);
-            writer.close();
+            writeUtf8(file, text.getText());
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't save file: " + e.getMessage());
@@ -68,10 +99,7 @@ public abstract class DCSSTextBase extends AppCompatActivity {
     protected boolean openAsset(String asset, TextView text) {
         try {
             Log.i(DCSSLauncher.TAG, "Opening asset: " + asset);
-            InputStream inputStream = getAssets().open(asset);
-            byte[] buffer = new byte[inputStream.available()];
-            inputStream.read(buffer);
-            text.setText(new String(buffer));
+            text.setText(readUtf8(getAssets().open(asset)));
             return true;
         } catch (IOException e) {
             Log.e(DCSSLauncher.TAG, "Can't open asset: " + e.getMessage());

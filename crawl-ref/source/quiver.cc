@@ -1486,12 +1486,11 @@ namespace quiver
             if (ability == ABIL_WIZ_BUILD_TERRAIN
                 && last_feat != DNGN_UNSEEN)
             {
-                qdesc.cprintf(T_("Build '%s'"), dungeon_feature_name(
+                abil_name = make_stringf(T_("Build '%s'"), dungeon_feature_name(
                     static_cast<dungeon_feature_type>(last_feat)));
             }
-            else
 #endif
-                qdesc.cprintf("%s", ability_name(ability).c_str());
+            qdesc.cprintf("%s", abil_name.c_str());
 
             if (is_card_ability(ability))
                 qdesc.cprintf(" %s", nemelex_card_text(ability).c_str());
@@ -1893,27 +1892,26 @@ namespace quiver
         if (type == "ammo_action")
             return make_shared<ammo_action>(param);
 #if TAG_MAJOR_VERSION == 34
-        else if (type == "launcher_ammo_action")
+        if (type == "launcher_ammo_action")
             return make_shared<ammo_action>(-1);
-        else if (type == "fumble_action")
+        if (type == "fumble_action")
             return make_shared<ammo_action>(-1);
 #endif
-        else if (type == "spell_action")
+        if (type == "spell_action")
             return make_shared<spell_action>(static_cast<spell_type>(param));
-        else if (type == "ability_action")
+        if (type == "ability_action")
             return make_shared<ability_action>(static_cast<ability_type>(param));
-        else if (type == "consumable_action")
+        if (type == "consumable_action")
             return make_shared<consumable_action>(param);
-        else if (type == "wand_action")
+        if (type == "wand_action")
             return make_shared<wand_action>(param);
-        else if (type == "misc_action")
+        if (type == "misc_action")
             return make_shared<misc_action>(param);
-        else if (type == "melee_action")
+        if (type == "melee_action")
             return make_shared<melee_action>();
-        else if (type == "ranged_action")
+        if (type == "ranged_action")
             return make_shared<ranged_action>();
-        else
-            return make_shared<action>();
+        return make_shared<action>();
     }
 
     shared_ptr<action> find_ammo_action()
@@ -2465,6 +2463,17 @@ namespace quiver
 
         string get_keyhelp(bool) const override
         {
+#ifdef __ANDROID__
+            if (tiles.is_using_small_layout())
+            {
+                // Action buttons already expose the shortcuts. Keep only
+                // the state and any substantive message beside the list.
+                string status = more_message.empty() ? "" : more_message + "\n";
+                status += string(T_("Focus mode")) + ": "
+                          + (focus_mode == Focus::NONE ? T_("off") : T_("on"));
+                return status;
+            }
+#endif
             string s = more_message + "\n";
 
             if (any_items)
@@ -2766,18 +2775,21 @@ namespace quiver
         std::array<ui::InputAction, 6> keyboard_actions() override
         {
             std::array<ui::InputAction, 6> actions;
-            actions[2] = {T_("Focus mode"), '!'};
-            size_t slot = 3;
+            vector<ui::InputAction> candidates = {{T_("Focus mode"), '!'}};
             if (any_items)
-                actions[slot++] = {"", '*'};
+                candidates.push_back({T_("items"), '*'});
             if (any_spells)
-                actions[slot++] = {"", '&'};
-            if (any_abilities && slot < actions.size())
-                actions[slot++] = {"", '^'};
-            if (allow_empty && slot < actions.size())
-                actions[slot++] = {"", '-'};
+                candidates.push_back({T_("All spells"), '&'});
+            if (any_abilities)
+                candidates.push_back({T_("All abilities"), '^'});
+            if (allow_empty)
+                candidates.push_back({T_("clear"), '-'});
+            m_keyboard_more.clear();
+            ui::spill_input_actions(actions, 2, std::move(candidates), m_keyboard_more);
             return actions;
         }
+        vector<ui::InputAction> keyboard_more() override { return m_keyboard_more; }
+        vector<ui::InputAction> m_keyboard_more;
 #endif
 
         bool process_key(int key) override
@@ -2861,6 +2873,22 @@ namespace quiver
      */
     void action_cycler::target()
     {
+        // Both a cleared action (valid but inert) and the initial/expired
+        // invalid action display as empty. Explain how to assign an action
+        // before either can silently return from the targeting machinery.
+        if (is_empty() || !get()->is_valid())
+        {
+            if (anything_to_quiver())
+            {
+                string msg = T_("No action is quivered. Press <w>%</w> to choose one.");
+                insert_commands(msg, { CMD_QUIVER_ITEM });
+                mpr(msg);
+            }
+            else
+                mpr(T_("You have nothing to quiver."));
+            return;
+        }
+
         // This is a somewhat indirect interface that allows cycling between
         // arbitrary code paths that call a direction chooser. Because the
         // setup for direction choosers is so varied and complicated, we can't

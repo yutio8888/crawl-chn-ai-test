@@ -343,7 +343,12 @@ void InvMenu::set_title(const string &s)
             case 2: str = T_("Scrolls: "); break;
             case 3: str = T_("Evocable Items: "); break;
         }
+#ifdef __ANDROID__
+        if (!tiles.is_using_small_layout())
+            str += T_("    (Left/Right to switch category)");
+#else
         str += T_("    (Left/Right to switch category)");
+#endif
         set_title(new InvTitle(this, str, title_annotate));
         return;
     }
@@ -444,6 +449,12 @@ void InvMenu::set_page(int page)
     }
     get_selected(&sel);
     update_title();
+#ifdef __ANDROID__
+    // The compact footer owns the selection count, including restored items
+    // on this page and selections retained on the other pages.
+    if (tiles.is_using_small_layout())
+        update_more();
+#endif
 }
 
 bool InvMenu::process_command(command_type cmd)
@@ -498,6 +509,14 @@ void InvMenu::select_index(int index, int qty)
 
 string InvMenu::get_select_count_string(int) const
 {
+#ifdef __ANDROID__
+    if (tiles.is_using_small_layout() && (flags & MF_PAGED_INVENTORY)
+        && !(flags & MF_NOSELECT)
+        && !(flags & MF_NO_WRAP_ROWS))
+    {
+        return "";
+    }
+#endif
     if (flags & MF_PAGED_INVENTORY)
     {
         vector<SelItem> all_sel = get_selitems(true);
@@ -510,6 +529,25 @@ string InvMenu::get_select_count_string(int) const
 
     return Menu::get_select_count_string(0);
 }
+
+#ifdef __ANDROID__
+string InvMenu::get_keyhelp(bool scrollable) const
+{
+    if (tiles.is_using_small_layout() && (flags & MF_PAGED_INVENTORY)
+        && (flags & MF_MULTISELECT) && !(flags & MF_NOSELECT)
+        && !(flags & MF_NO_WRAP_ROWS))
+    {
+        // Current selections may have changed before the cached `sel` is
+        // refreshed (e.g. clear-selection). Read the live entries here.
+        size_t chosen_count = selected_entries().size();
+        for (int page = 0; page < static_cast<int>(ARRAYSZ(offscreen_sel)); ++page)
+            if (page != cur_osel)
+                chosen_count += offscreen_sel[page].size();
+        return make_stringf(T_("Selected: %zu"), chosen_count);
+    }
+    return Menu::get_keyhelp(scrollable);
+}
+#endif
 
 bool InvMenu::examine_index(int i)
 {
@@ -769,7 +807,7 @@ bool InvMenu::is_selectable(int index) const
 template <const string &(InvEntry::*method)() const>
 static int compare_item_str(const InvEntry *a, const InvEntry *b)
 {
-    return (a->*method)().compare((b->*method)());
+    return ((*a).*method)().compare(((*b).*method)());
 }
 
 // Would call this just compare_item, but MSVC mistakenly thinks the next
@@ -783,13 +821,13 @@ static int compare_item_fn(const InvEntry *a, const InvEntry *b)
 template <typename T, T (InvEntry::*method)() const>
 static int compare_item(const InvEntry *a, const InvEntry *b)
 {
-    return int((a->*method)()) - int((b->*method)());
+    return int(((*a).*method)()) - int(((*b).*method)());
 }
 
 template <typename T, T (InvEntry::*method)() const>
 static int compare_item_rev(const InvEntry *a, const InvEntry *b)
 {
-    return int((b->*method)()) - int((a->*method)());
+    return int(((*b).*method)()) - int(((*a).*method)());
 }
 
 template <item_sort_fn cmp>
@@ -1527,6 +1565,10 @@ void display_inventory()
 
 static string _drop_menu_titlefn(const Menu*, const string &)
 {
+#ifdef __ANDROID__
+    if (tiles.is_using_small_layout())
+        return string(T_("Drop what?")) + " " + slot_description();
+#endif
     return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
@@ -1558,7 +1600,7 @@ vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items)
 
 static bool item_matches_digit_inscription(item_def &item, char digit, operation_types oper)
 {
-    const string& r(item.inscription);
+    const string& r = item.inscription;
     const char iletter = static_cast<char>(oper);
     for (unsigned int j = 0; j + 2 < r.size(); ++j)
         if (r[j] == '@' && (r[j+1] == iletter || r[j+1] == '*') && r[j+2] == digit)
@@ -1606,7 +1648,7 @@ static bool _has_warning_inscription(const item_def& item,
 {
     const char iletter = static_cast<char>(oper);
 
-    const string& r(item.inscription);
+    const string& r = item.inscription;
     for (unsigned int i = 0; i + 1 < r.size(); ++i)
     {
         if (r[i] == '!')

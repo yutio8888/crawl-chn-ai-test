@@ -61,6 +61,9 @@
 #include "ui.h"
 #include "unicode.h"
 #include "unwind.h"
+#ifdef __ANDROID__
+#include "syscalls.h"
+#endif
 #ifdef USE_TILE_LOCAL
 #include "windowmanager.h"
 #endif
@@ -111,10 +114,6 @@ class UIMenu : public Widget
     friend class UIMenuPopup;
 public:
     UIMenu(Menu *menu) : m_menu(menu), m_num_columns(1)
-
-#ifdef USE_TILE_LOCAL
-    , m_font_entry(tiles.get_crt_font()), m_text_buf(m_font_entry)
-#endif
     {
 #ifdef USE_TILE_LOCAL
         // this seems ... non-ideal?? (pattern occurs in a few other places,
@@ -190,6 +189,15 @@ protected:
 #ifdef USE_TILE_LOCAL
 
     int get_max_viewport_height();
+    bool uses_touch_rows() const
+    {
+#ifdef __ANDROID__
+        return !m_menu->is_set(MF_NOSELECT)
+            && !m_menu->is_set(MF_NO_WRAP_ROWS);
+#else
+        return false;
+#endif
+    }
 
     vector<int> row_heights;
 
@@ -202,10 +210,16 @@ protected:
 
     bool m_buffers_dirty = false;
     bool m_draw_tiles;
-    FontWrapper *m_font_entry;
+#ifdef __ANDROID__
+    FontWrapper *m_font_entry = m_menu->is_set(MF_NOSELECT)
+                               || m_menu->is_set(MF_NO_WRAP_ROWS)
+                               ? tiles.get_crt_font() : tiles.get_msg_font();
+#else
+    FontWrapper *m_font_entry = tiles.get_crt_font();
+#endif
     ShapeBuffer m_shape_buf;
     LineBuffer m_line_buf, m_div_line_buf;
-    FontBuffer m_text_buf;
+    FontBuffer m_text_buf{m_font_entry};
     FixedVector<TileBuffer, TEX_MAX> m_tile_buf;
 
 public:
@@ -385,6 +399,15 @@ void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
     const int min_column_width = m_min_col_width > 0 ? m_min_col_width : 400;
     const int max_column_width = mw / num_columns;
     const int text_height = m_font_entry->char_height();
+    int min_row_height = 0;
+#ifdef __ANDROID__
+    if (uses_touch_rows())
+    {
+        const int pixels = static_cast<int>(ceil(48 * jni_get_display_density()));
+        min_row_height = max(1, display_density.apply_game_scale(
+            pixels + Options.game_scale - 1));
+    }
+#endif
 
     int column = -1; // an initial increment makes this 0
     int column_width = 0;
@@ -435,9 +458,10 @@ void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
             row_height = text_height + (i == 0 ? 5 : 10);
 
             // wrap titles to two lines if they don't fit
-            if (m_draw_tiles && text_width > mw)
+            if ((m_draw_tiles || uses_touch_rows()) && text_width > mw)
             {
-                formatted_string split = m_font_entry->split(entry.text, mw, UINT_MAX);
+                formatted_string split = m_font_entry->split(entry.text,
+                                                             max(1, mw), UINT_MAX);
                 row_height = max(row_height, (int)m_font_entry->string_height(split));
             }
             column = num_columns-1;
@@ -448,12 +472,15 @@ void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
 
             entry.x = text_indent;
             int text_sx = text_indent;
-            int item_height = max(text_height, !entry.tiles.empty() ? 32 : 0);
+            int item_height = max({text_height, min_row_height,
+                                   !entry.tiles.empty() ? 32 : 0});
 
-            // Split menu entries that don't fit into a single line into two lines.
+            // Touch lists keep every wrapped line; desktop retains its
+            // compact two-line limit. Explicit no-wrap screens stay fixed.
             if (!m_menu->is_set(MF_NO_WRAP_ROWS))
             {
-                if ((text_width > max_column_width-entry.x-pad_right))
+                if (uses_touch_rows()
+                    || text_width > max_column_width-entry.x-pad_right)
                 {
                     formatted_string text;
                     // TODO: refactor to use _get_text_preface
@@ -469,10 +496,11 @@ void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
                     else
                         text += entry.text;
 
-                    int w = max_column_width - text_sx - pad_right;
+                    int w = max(1, max_column_width - text_sx - item_pad - pad_right);
                     formatted_string split = m_font_entry->split(text, w, UINT_MAX);
                     int string_height = m_font_entry->string_height(split);
-                    string_height = min(string_height, text_height*2);
+                    if (!uses_touch_rows())
+                        string_height = min(string_height, text_height*2);
                     item_height = max(item_height, string_height);
                 }
             }
@@ -704,7 +732,11 @@ public:
         // height change, but m_region isn't updated until later, so you get
         // the wrong wrapping behavior + a lack of reflowing until the next
         // update.
-        wrap_text_to_size(m_region.width, m_region.height);
+        // Templates are initialized before allocation. Wrapping at width zero
+        // caches one glyph per line as an unconstrained size, making the
+        // footer taller than the screen even after a real width is supplied.
+        if (m_region.width > 0)
+            wrap_text_to_size(m_region.width, m_region.height);
     }
 
     void set_more_template(const string &scroll, const string &noscroll)
@@ -828,16 +860,27 @@ void UIMenuPopup::_allocate_region()
     int max_height = m_menu->m_ui.popup->get_max_child_size().height;
     max_height -= m_menu->m_ui.title->get_region().height;
     max_height -= m_menu->m_ui.title->get_margin().bottom;
+#ifdef __ANDROID__
+    max_height -= m_menu->m_ui.header->get_region().height;
+#endif
     max_height -= m_menu->m_ui.more->get_region().height;
     int viewport_height = m_menu->m_ui.scroller->get_region().height;
     int menu_w = m_menu->m_ui.menu->get_region().width;
     m_menu->m_ui.menu->do_layout(menu_w, 1);
 
+    // Touch lists keep one readable column; long lists already scroll.
+    // Explicit fixed-column/no-wrap menus retain their existing layout.
+#ifdef __ANDROID__
+    const bool touch_rows = m_menu->m_ui.menu->uses_touch_rows();
+#else
+    const bool touch_rows = false;
+#endif
+
     // see if we should try a two-column layout
     int m_height = m_menu->m_ui.menu->m_height;
     int more_height = m_menu->m_ui.more->get_region().height;
     int num_cols = m_menu->m_ui.menu->get_num_columns();
-    if (m_menu->is_set(MF_GRID_LAYOUT))
+    if (!touch_rows && m_menu->is_set(MF_GRID_LAYOUT))
     {
         const int max_columns = _calc_columns(menu_w);
         if (num_cols != max_columns)
@@ -849,7 +892,7 @@ void UIMenuPopup::_allocate_region()
             ui::restart_layout(); // NORETURN
         }
     }
-    else if (m_menu->is_set(MF_USE_TWO_COLUMNS))
+    else if (!touch_rows && m_menu->is_set(MF_USE_TWO_COLUMNS))
     {
         // XX should this be smarter about width for console?
         if ((num_cols == 1 && m_height+more_height > max_height)
@@ -1157,9 +1200,11 @@ void UIMenu::pack_buffers()
                 text += entry.text;
 
             // Line wrap and render the remaining text
-            int w = entry_ex-text_sx - pad_right;
+            int w = max(1, entry_ex-text_sx - pad_right);
             int h = m_font_entry->char_height();
             h *= m_menu->is_set(MF_NO_WRAP_ROWS) ? 1 : 2;
+            if (uses_touch_rows())
+                h = max(h, entry_h - 2*item_pad);
             formatted_string split = m_font_entry->split(text, w, h);
             int string_height = m_font_entry->string_height(split);
             text_sy = entry.y + (entry_h - string_height)/2;
@@ -1215,11 +1260,27 @@ Menu::Menu(int _flags, const string& tagname, KeymapContext kmc)
     m_ui.scroller = make_shared<UIMenuScroller>();
     m_ui.title = make_shared<Text>();
     m_ui.more = make_shared<UIMenuMore>(this);
+#ifdef __ANDROID__
+    if (!is_set(MF_NOSELECT) && !is_set(MF_NO_WRAP_ROWS))
+    {
+        m_ui.title->set_font(tiles.get_msg_font());
+        m_ui.more->set_font(tiles.get_msg_font());
+        // Unwrapped Text sets its minimum width to the whole line. At the
+        // reading font size that can force the centred popup offscreen.
+        m_ui.title->set_wrap_text(true);
+        m_ui.more->set_wrap_text(true);
+    }
+#endif
     m_ui.more->set_visible(false);
     m_ui.vbox = make_shared<Box>(Widget::VERT);
     m_ui.vbox->set_cross_alignment(Widget::STRETCH);
 
     m_ui.vbox->add_child(m_ui.title);
+#ifdef __ANDROID__
+    m_ui.header = make_shared<Box>(Widget::VERT);
+    m_ui.header->set_cross_alignment(Widget::STRETCH);
+    m_ui.vbox->add_child(m_ui.header);
+#endif
 #ifdef USE_TILE_LOCAL
     m_ui.vbox->add_child(m_ui.scroller);
 #else
@@ -1416,6 +1477,18 @@ string menu_keyhelp_cmd(command_type cmd)
 
 string Menu::get_keyhelp(bool scrollable) const
 {
+#ifdef __ANDROID__
+    // Compact touch controls already expose navigation/confirmation. Repeating
+    // keyboard bindings here can displace every row at large reading sizes.
+    // Derived keyhelp and explicitly supplied footers keep their own content.
+    if (tiles.is_using_small_layout() && !is_set(MF_NOSELECT)
+        && !is_set(MF_NO_WRAP_ROWS))
+    {
+        if (is_set(MF_MULTISELECT))
+            return make_stringf(T_("Selected: %zu"), selected_entries().size());
+        return "";
+    }
+#endif
     // TODO: derive this from cmd key bindings
 
     // multiselect always shows a keyhelp, for singleselect it is blank unless

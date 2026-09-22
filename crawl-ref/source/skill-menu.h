@@ -84,6 +84,9 @@ public:
     void set_skill(skill_type sk = SK_NONE);
     void set_cost();
     EditableTextItem *get_progress();
+#ifdef __ANDROID__
+    void add_android_entry(Menu& menu, const SkillMenuEntry& heading);
+#endif
 
 private:
     skill_type m_sk;
@@ -145,6 +148,7 @@ public:
     std::array<ui::InputAction, 6> keyboard_actions();
     vector<ui::InputAction> keyboard_more() { return m_keyboard_more; }
     vector<ui::InputAction> m_keyboard_more;
+    void populate_android_menu(Menu& menu, bool split_pages, bool magic_page);
 #endif
     void set_flag(int flag);
     void toggle_flag(int flag);

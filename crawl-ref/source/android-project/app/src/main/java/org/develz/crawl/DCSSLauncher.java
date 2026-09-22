@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
@@ -16,7 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -54,6 +58,10 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
     // Default keyboard size in dp
     private int defaultKbSizeDp;
 
+    private static final int[] READING_SCALES = {80, 100, 120, 150};
+    private int readingScale;
+    private KeyboardPreview keyboardPreview;
+
     // Screen density
     private float density;
 
@@ -90,6 +98,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         keyboardOption = preferences.getInt("keyboard", defaultKeyboard);
         extraKeyboardOption = preferences.getInt("extra_keyboard", defaultExtraKeyboard);
         fullScreen = preferences.getBoolean("full_screen", true);
+        readingScale = normalizeReadingScale(preferences.getInt("reading_scale", 100));
+        preferences.edit().putInt("reading_scale", readingScale).apply();
 
         // Density is the relationship between px and dp
         density = getResources().getDisplayMetrics().density;
@@ -104,8 +114,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         // Keyboard spinner
         Spinner keyboardSpinner = findViewById(R.id.keyboardSpinner);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(
-                this, R.array.keyboard_options, android.R.layout.simple_spinner_item);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                this, R.array.keyboard_options, R.layout.settings_spinner_item);
+        arrayAdapter.setDropDownViewResource(R.layout.settings_spinner_item);
         keyboardSpinner.setAdapter(arrayAdapter);
         keyboardSpinner.setOnItemSelectedListener(this);
         keyboardSpinner.setSelection(keyboardOption);
@@ -113,8 +123,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         // Extra keyboard spinner
         Spinner extraKeyboardSpinner = findViewById(R.id.extraKeyboardSpinner);
         ArrayAdapter<CharSequence> extraArrayAdapter = ArrayAdapter.createFromResource(
-                this, R.array.extra_keyboard_options, android.R.layout.simple_spinner_item);
-        extraArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                this, R.array.extra_keyboard_options, R.layout.settings_spinner_item);
+        extraArrayAdapter.setDropDownViewResource(R.layout.settings_spinner_item);
         extraKeyboardSpinner.setAdapter(extraArrayAdapter);
         extraKeyboardSpinner.setOnItemSelectedListener(this);
         extraKeyboardSpinner.setSelection(extraKeyboardOption);
@@ -134,6 +144,8 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
             // Let the IME also perform its normal Done action (dismissal).
             return false;
         });
+
+        setupDisplaySizes();
 
         // Full screen switch
         fullScreenSwitch = findViewById(R.id.fullScreen);
@@ -280,6 +292,7 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra("extra_keyboard", extraKeyboardOption);
         intent.putExtra("keyboard_size", Math.round(keyboardSizePx));
         intent.putExtra("full_screen", fullScreen);
+        intent.putExtra("reading_scale", readingScale);
         startActivity(intent);
     }
 
@@ -343,6 +356,145 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         }
         keyboardSizePx = keyboardSizeDp * density;
         preferences.edit().putInt("keyboard_size", keyboardSizeDp).apply();
+        updateKeyboardPreview(keyboardSizeDp);
+    }
+
+    private void setupDisplaySizes() {
+        int[] buttons = {R.id.keyboardSmall, R.id.keyboardStandard, R.id.keyboardLarge};
+        int[] sizes = {48, 56, 64};
+        for (int i = 0; i < buttons.length; ++i) {
+            final int size = sizes[i];
+            findViewById(buttons[i]).setOnClickListener(view -> {
+                ksizeEditText.setText(Integer.toString(size));
+                commitKeyboardSize();
+                findViewById(R.id.launcherRoot).requestFocus();
+            });
+        }
+        keyboardPreview = new KeyboardPreview(this);
+        keyboardPreview.setContentDescription(getString(R.string.keyboard_preview));
+        ((LinearLayout) findViewById(R.id.keyboardPreviewContainer)).addView(keyboardPreview,
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+        keyboardPreview.addOnLayoutChangeListener((view, l, t, r, b, ol, ot, or, ob) -> {
+            if (keyboardPreview.keyboard != null) {
+                int actualHeight = keyboardPreview.keyboard.getMeasuredHeight();
+                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                TextView summary = findViewById(R.id.keyboardPreviewSummary);
+                String value = getString(R.string.keyboard_preview_height,
+                        Math.round(actualHeight / density),
+                        Math.round(100.0f * actualHeight / screenHeight));
+                // Text wrapping changes this sibling's height. Request its
+                // layout after the current pass rather than from inside it.
+                summary.post(() -> {
+                    if (!value.contentEquals(summary.getText())) summary.setText(value);
+                });
+            }
+        });
+        updateKeyboardPreview(Math.round(keyboardSizePx / density));
+
+        Spinner readingSpinner = findViewById(R.id.readingSize);
+        String[] labels = new String[READING_SCALES.length];
+        int selected = 1;
+        for (int i = 0; i < labels.length; ++i) {
+            labels[i] = getString(R.string.reading_percentage, READING_SCALES[i]);
+            if (READING_SCALES[i] == readingScale) selected = i;
+        }
+        ArrayAdapter<String> readingAdapter = new ArrayAdapter<>(this,
+                R.layout.settings_spinner_item, labels);
+        readingAdapter.setDropDownViewResource(R.layout.settings_spinner_item);
+        readingSpinner.setAdapter(readingAdapter);
+        readingSpinner.setSelection(selected);
+        readingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                readingScale = READING_SCALES[position];
+                preferences.edit().putInt("reading_scale", readingScale).apply();
+                updateReadingPreview();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+        updateReadingPreview();
+    }
+
+    private void updateReadingPreview() {
+        TextView preview = findViewById(R.id.readingSizePreview);
+        preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, 14, getResources().getDisplayMetrics())
+                * readingScale / 100.0f);
+    }
+
+    private void updateKeyboardPreview(int sizeDp) {
+        if (keyboardPreview == null) return;
+        boolean custom = keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4;
+        int minimum = custom ? DCSSKeyboard.MINIMUM_TOUCH_TARGET_DP : 0;
+        int maximum = normalizedKeyboardSize(Integer.toString(Integer.MAX_VALUE));
+        ((TextView) findViewById(R.id.keyboardSizeRange)).setText(
+                getString(R.string.keyboard_height_range, minimum, maximum));
+        ((TextView) findViewById(R.id.keyboardSizeApplied)).setText(
+                getString(R.string.keyboard_height_applied, sizeDp));
+        keyboardPreview.setKeyboard(custom ? keyboardOption : 0, Math.round(keyboardSizePx));
+        keyboardPreview.setVisibility(custom ? View.VISIBLE : View.GONE);
+        if (!custom) {
+            ((TextView) findViewById(R.id.keyboardPreviewSummary)).setText(
+                    R.string.keyboard_preview_unavailable);
+        }
+    }
+
+    static int normalizeReadingScale(int requested) {
+        for (int scale : READING_SCALES) {
+            if (requested == scale) return scale;
+        }
+        return 100;
+    }
+
+    // Measure the production keyboard at the game's width, then draw a scaled
+    // view of it. It stays detached: none of its keys can take focus, dispatch
+    // game commands or start repeat handlers from a tap on the preview.
+    static class KeyboardPreview extends View {
+        DCSSKeyboard keyboard;
+
+        KeyboardPreview(Context context) {
+            super(context);
+        }
+
+        void setKeyboard(int mode, int keyHeight) {
+            keyboard = mode == 0 ? null : new DCSSKeyboard(getContext());
+            if (keyboard != null) {
+                keyboard.initKeyboard(mode, keyHeight);
+                keyboard.setInputContext(DCSSKeyboard.CONTEXT_GAME, 18,
+                        new String[6], new int[] {'5', 'q', 'r', 'f', 'z', 'a'});
+            }
+            requestLayout();
+            invalidate();
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            int width = MeasureSpec.getSize(widthMeasureSpec);
+            int height = 0;
+            if (keyboard != null && width > 0) {
+                int gameWidth = getRootView().getWidth();
+                if (gameWidth == 0) gameWidth = getResources().getDisplayMetrics().widthPixels;
+                keyboard.measure(MeasureSpec.makeMeasureSpec(gameWidth, MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                keyboard.layout(0, 0, gameWidth, keyboard.getMeasuredHeight());
+                height = Math.round((float) keyboard.getMeasuredHeight() * width / gameWidth);
+            }
+            setMeasuredDimension(width, resolveSize(height, heightMeasureSpec));
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            if (keyboard != null && keyboard.getWidth() > 0) {
+                int saved = canvas.save();
+                float scale = (float) getWidth() / keyboard.getWidth();
+                canvas.scale(scale, scale);
+                keyboard.draw(canvas);
+                canvas.restoreToCount(saved);
+            }
+        }
     }
 
     private int normalizedKeyboardSize(String input) {
@@ -364,9 +516,10 @@ public class DCSSLauncher extends AppCompatActivity implements AdapterView.OnIte
         } catch (NumberFormatException e) {
             requestedSizeDp = defaultSizeDp;
         }
-        // Match the compact keyboard's actual touch target. Other modes keep
-        // accepting zero, and keyboard visibility remains controlled by mode.
-        int minimumSizeDp = keyboardOption == 4 ? DCSSKeyboard.MINIMUM_TOUCH_TARGET_DP : 0;
+        // Match every custom keyboard's actual minimum, including old stored
+        // full-keyboard values. Visibility remains controlled by mode.
+        boolean custom = keyboardOption == 1 || keyboardOption == 2 || keyboardOption == 4;
+        int minimumSizeDp = custom ? DCSSKeyboard.MINIMUM_TOUCH_TARGET_DP : 0;
         int maximumSizeDp = Math.max(minimumSizeDp, Math.max(defaultSizeDp, displayLimitDp));
         return Math.max(minimumSizeDp, Math.min(requestedSizeDp, maximumSizeDp));
     }

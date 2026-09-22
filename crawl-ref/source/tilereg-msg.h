@@ -3,6 +3,8 @@
 
 #include "tilereg-text.h"
 
+class formatted_string;
+
 class MessageRegion : public TextRegion
 {
 public:
@@ -16,6 +18,8 @@ public:
 
     string &alt_text() { return m_alt_text; }
 protected:
+    bool history_button_bounds(coord_def &start, coord_def &end,
+                               formatted_string &label) const;
     string m_alt_text;
     bool m_overlay;
     VColour m_overlay_col;

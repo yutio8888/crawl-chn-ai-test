@@ -79,12 +79,23 @@ void formatted_scroller::scroll_to_end()
 
 int formatted_scroller::show()
 {
+#ifdef __ANDROID__
+    const bool reading_text = tiles.is_using_small_layout()
+                              && !(m_flags & FS_PREWRAPPED_TEXT);
+#endif
     auto vbox = make_shared<Box>(Widget::VERT);
     vbox->set_cross_alignment(Widget::Align::STRETCH);
 
     if (!m_title.empty())
     {
         m_title_text = make_shared<Text>();
+#ifdef __ANDROID__
+        if (reading_text)
+        {
+            m_title_text->set_font(tiles.get_msg_font());
+            m_title_text->set_wrap_text(true);
+        }
+#endif
         m_title_text->set_text(m_title);
         m_title_text->set_margin_for_crt(0, 0, 1, 0);
         m_title_text->set_margin_for_sdl(0, 0, 20, 0);
@@ -106,6 +117,10 @@ int formatted_scroller::show()
     m_scroller->expand_v = true;
 #endif
     auto text = make_shared<Text>();
+#ifdef __ANDROID__
+    if (reading_text)
+        text->set_font(tiles.get_msg_font());
+#endif
     formatted_string c = formatted_string::parse_string(contents.to_colour_string(LIGHTGRAY));
     text->set_text(c);
     text->set_highlight_pattern(highlight, true);
@@ -117,6 +132,13 @@ int formatted_scroller::show()
     {
         shared_ptr<Text> more = make_shared<Text>();
         more = make_shared<Text>();
+#ifdef __ANDROID__
+        if (reading_text)
+        {
+            more->set_font(tiles.get_msg_font());
+            more->set_wrap_text(true);
+        }
+#endif
         more->set_text(m_more);
         more->set_margin_for_crt(1, 0, 0, 0);
         more->set_margin_for_sdl(20, 0, 0, 0);

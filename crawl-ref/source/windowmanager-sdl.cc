@@ -11,6 +11,7 @@
 # include <SDL.h>
 # include <SDL_image.h>
 # include <android/log.h>
+# include <jni.h>
 # include <SDL_mixer.h>
 #else
 # ifdef TARGET_COMPILER_VC
@@ -43,6 +44,58 @@ WindowManager *wm = nullptr;
 static bool s_event_mouse_position_valid = false;
 static int s_event_mouse_x = 0;
 static int s_event_mouse_y = 0;
+
+static void _queue_android_text_input(const string &text)
+{
+    if (SDL_GetEventState(SDL_TEXTINPUT) != SDL_ENABLE)
+        return;
+
+    SDL_Event event = {};
+    event.type = SDL_TEXTINPUT;
+    SDL_Window *window = SDL_GetKeyboardFocus();
+    event.text.windowID = window ? SDL_GetWindowID(window) : 0;
+    size_t used = 0;
+    for (size_t offset = 0; offset < text.size();)
+    {
+        char32_t cp;
+        const int bytes = utf8towc(&cp, text.c_str() + offset);
+        offset += max(1, bytes); // Embedded NUL is not an end-of-array marker.
+        // Committed text belongs to a single-line field. Enter and other
+        // editing commands arrive separately through the key-event path.
+        if (cp < ' ' || cp == 127)
+            continue;
+        char encoded[4];
+        const int length = wctoutf8(encoded, cp);
+        if (used + length >= sizeof(event.text.text))
+        {
+            event.text.text[used] = '\0';
+            SDL_PushEvent(&event);
+            used = 0;
+        }
+        memcpy(event.text.text + used, encoded, length);
+        used += length;
+    }
+    if (used)
+    {
+        event.text.text[used] = '\0';
+        SDL_PushEvent(&event);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_libsdl_app_SDLInputConnection_nativeCommitUtf8(JNIEnv *env, jobject,
+                                                      jbyteArray bytes)
+{
+    if (!bytes)
+        return;
+    string text(env->GetArrayLength(bytes), '\0');
+    if (text.empty())
+        return;
+    env->GetByteArrayRegion(bytes, 0, text.size(),
+                           reinterpret_cast<jbyte*>(&text[0]));
+    if (!env->ExceptionCheck())
+        _queue_android_text_input(text);
+}
 #endif
 
 #define MIN_SDL_WINDOW_SIZE_X 800
