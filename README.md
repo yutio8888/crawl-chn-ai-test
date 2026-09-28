@@ -23,7 +23,8 @@
 - `crawl-ref/` 中未被本项目修改的上游文档保留 0.34.1 发布时的历史版本号、旧标签和
   `trunk` 语境；这些文字不是本中文分支的支持矩阵或开发状态。
 - 标为“历史记录”“阶段快照”或“审查输入”的文档只保存当时证据。当前问题和进度以
-  GitHub Issues 为准，当前架构、术语和流程以 `AGENTS.md` 中列出的权威文档为准。
+  GitHub Issues 为准，当前架构、术语和流程以 `AGENTS.md` 中列出的权威文档为准；
+  `docs/` 的分类索引见 [docs/README.md](docs/README.md)。
 
 ## 当前状态
 
@@ -39,7 +40,7 @@
 校验结果，请运行：
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile translation
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
 当前问题、状态和验收标准以
@@ -133,6 +134,12 @@ TextDB 缓存以确保文本更新生效。运行中的游戏应先关闭。完�
 [docs/build-workflow.md](docs/build-workflow.md)，渲染原理见
 [docs/cjk-tiles-architecture.md](docs/cjk-tiles-architecture.md)。
 
+## Android
+
+Android APK 同样使用专用的 `.worktrees/android-tiles` 构建，构建、签名、CI 测试包和部署见
+[docs/build-workflow.md](docs/build-workflow.md)。触控键盘、命令抽屉、生命周期处理以及
+模拟器/真机验证方法见 [docs/android-architecture.md](docs/android-architecture.md)。
+
 ## 如何参与开发
 
 ### 开始一个任务
@@ -178,7 +185,7 @@ bash .claude/scripts/context_resolve.sh "<任务说明>" \
 同一任务中的中文翻译资产必须保持单一写入者。修改完成后运行：
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile translation
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
 ### C++、Lua 或 i18n 实现修改
@@ -189,14 +196,14 @@ API 值或数据库查找键。新增 `T_()` 调用时，同一任务还要补�
 ```bash
 bash .claude/scripts/context_resolve.sh "<任务说明>" \
   --task-type code --files <目标文件...>
-bash .claude/scripts/verify_zh.sh --profile code
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 随后按受影响目标执行一次匹配的构建或运行时测试。若一个候选同时修改代码和翻译资产，
 可运行一次组合静态预检：
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile ci
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile ci
 ```
 
 不要对同一个不可变候选依次重复运行 `translation`、`code` 和 `ci`。测试层级、产物位置和

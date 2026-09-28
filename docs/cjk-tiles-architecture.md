@@ -36,6 +36,22 @@ not change the upstream `contrib/fonts` submodule; the default CJK font is
 versioned directly in `dat/tiles/`. See `docs/build-workflow.md` for optional
 `init.txt` overrides and the deployment process.
 
+## Windows Text Encoding
+
+MinGW builds decode files without a byte-order mark through the system ANSI
+code page (for example CP936), which corrupts UTF-8 CJK text. Any file the
+game writes and later reads back through `FileLineInput` with non-ASCII
+content must therefore start with a UTF-8 BOM; `FileLineInput` then takes the
+`BOM_UTF8` path (`utf8_validate()`) instead of `mb_to_utf8()`. The prefs file
+written by `initfile.cc` follows this rule; the clua persist file written by
+`clua.cc` does not yet, so non-ASCII persisted Lua data is not protected on
+MinGW.
+
+`lowercase_string()` preserves U+2E80–U+9FFF byte-for-byte instead of calling
+`towlower()`, because `iswupper()`/`towlower()` misbehave for these ranges on
+MinGW/msvcrt. Chinese names looked up through lowercase comparisons rely on
+this guard.
+
 ## Change Verification
 
 CJK width, font, atlas, or rendering changes require focused tests plus the

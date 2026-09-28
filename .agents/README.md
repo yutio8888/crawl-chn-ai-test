@@ -52,10 +52,12 @@ Never edit generated blocks directly.
 | Build/deployment | `docs/build-workflow.md` |
 | Translation design | `docs/translation-architecture.md` |
 | CJK tiles design | `docs/cjk-tiles-architecture.md` |
+| Android touch UI and device verification | `docs/android-architecture.md` |
 | Verification | `docs/zh-testing.md`, `.claude/scripts/TOOLCHAIN.md` |
 | Cross-runtime handoff | `docs/dual-agent-workflow.md` |
 | Issue tracking | `docs/issue-tracking.md` |
 | Path portability | `.agents/policies/path-portability.md` |
+| Documentation index | `docs/README.md` |
 | Historical review recovery | `docs/review-recovery-history.md` (archival only) |
 
 ## Change Rules

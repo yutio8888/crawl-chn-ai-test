@@ -267,6 +267,13 @@ python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
     --display-contracts-only \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
+# cjk-inventory: 生产 C/C++ 源码中的 CJK 字面量必须与冻结清单逐项一致
+# （verify_zh.sh 的 source-db-static 阶段阻断；任一 profile 覆盖游戏源码/数据时运行）。新增未分类 CJK、
+# 冻结的 remaining 项被移动/删除、或已 migrated 的项重新出现都会失败；
+# 注释与测试夹具不计入。新增显示文本应走 T_()/C_() 与翻译资产，而不是改清单。
+python3 .claude/scripts/scan_i18n.py cjk-inventory crawl-ref/source \
+    --manifest .claude/scripts/cjk_inventory.json
+
 # mprf-p: 位置参数（%n$s）必须用 mprf_p 而非 mprf（MinGW 兼容）
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
@@ -566,6 +573,76 @@ Makefile 导出器拒绝 header、utility、rltiles、Catch2 等有特殊上下�
 
 完整替换的剩余语法、header 上下文和平台覆盖边界见
 `docs/issue120-scanner-preproc-report.md` 的显式实验记录。
+
+### TextDB 生产 dump 与消息 overlay
+
+TextDB 类 inventory 与 `monspell` 消息 overlay 审计只消费生产 C++ parser 导出的
+canonical dump，Python 不重新解析 TextDB 或 `w:N` 权重。dump 由 Catch2 可执行文件
+生成，多个 dump 必须串行运行，避免并发重建同一可执行文件；输出放在临时目录，不加入 Git。
+
+```bash
+# 英文 canonical dump（默认 speak；misc/shout 追加 TEXTDB_PHASE0_DB=misc 或 shout）
+make -C crawl-ref/source -j4 textdb-phase0-dump \
+    TEXTDB_PHASE0_DUMP=/tmp/textdb-speak-en.json
+
+# 同一数据库的中文 dump
+make -C crawl-ref/source -j4 textdb-phase0-dump \
+    TEXTDB_PHASE0_LANGUAGE=zh TEXTDB_PHASE0_DUMP=/tmp/textdb-speak-zh.json
+
+# monspell 生产候选查找上界 dump（行为报告与可达性锚点使用）
+make -C crawl-ref/source -j4 textdb-monspell-candidate-dump \
+    TEXTDB_MONSPELL_CANDIDATE_DUMP=/tmp/monspell-candidate-upper-bound.json
+```
+
+dump 的 `schema_version` 与来源规范化（移除 BOM、`CRLF`/`CR` 归一为 `LF`，拒绝非法
+UTF-8 与 NUL）由生产 parser `crawl-ref/source/database.cc` 的 `dump_*_typed()` 与
+`_normalize_textdb_source()` 决定；`crawl-ref/source/catch2-tests/textdb_phase0_artifact.cc`
+只负责固定顺序的 JSON 序列化。`audit_monspell_phase0.py` 的 `validate_artifact` 是
+Python 侧共享校验入口，被 monflee、monspell、wpnnoise 等 inventory 脚本复用。
+
+TextDB 家族 inventory 所需的数据库：decorlines、miscname 使用 `misc`；shout 使用
+`shout`；monflee、monspeak、monspell、wpnnoise、miscast、graffiti 使用默认 `speak`。
+基线 dump 应在 HEAD 等于 `--baseline-ref` 的干净检出中生成，输出写到尚不存在的
+`/tmp` 新文件；候选阶段所需的 `--review-results`、`--candidate-ref` 与双语候选 dump
+见各脚本 `--help`。对应的冻结台账为 `docs/<家族>-review-results.md`。
+
+```bash
+# 以 dump 重建并逐字节核对 checked-in monspell phase0 inventory
+python3 .claude/scripts/audit_monspell_phase0.py \
+    --dump /tmp/textdb-speak-en.json \
+    --check .claude/data/message-overlay/monspell-phase0-inventory.json \
+    --materialization-policy \
+      .claude/data/message-overlay/monspell-phase0-materialization-policy.json
+
+# 重新生成（去掉 --check）或核对（加 --check）monspell 行为报告
+python3 .claude/scripts/audit_monspell_behavior.py \
+    --candidate-anchor .claude/data/message-overlay/monspell-candidate-anchor.json \
+    --candidate-artifact /tmp/monspell-candidate-upper-bound.json \
+    --english-artifact /tmp/textdb-speak-en.json \
+    --localized-artifact /tmp/textdb-speak-zh.json \
+    --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
+    --manifest .claude/data/message-overlay/monspell.json \
+    --output .claude/data/message-overlay/monspell-behavior-report.json --check
+```
+
+`audit_textdb_slots_phase0.py --dump <speak dump> --schema
+.claude/data/message-overlay/monspell-phase0-slot-schema.json` 审计 `${slot}` schema；
+`compare_textdb_locale_phase0.py --canonical-dump <en> --localized-dump <zh>` 比较两种
+语言的静态选择拓扑（不证明动态 RNG/Lua trace 等价）。
+`compare_monspell_phase0.py` 只比较两份 inventory，不自动继承 stable ID。候选锚点
+`monspell-candidate-anchor.json` 不得根据新 dump 自动改写：先审计 scenario、counts
+和上游 recipe 差异，确认后再显式更新 anchor，重新生成报告并重复 `--check`。
+`crawl-ref/source/fork-message-overlay.generated.inc` 由 `generate_message_overlay.py`
+生成，不得手改；`verify_zh.sh` 会运行其 `--check` 与 `audit_message_overlay.py`。
+架构、artifact 角色和年度升级流程见 `docs/textdb-i18n-architecture.md`。
+
+monspeak 候选审计对每个候选 Lua 块执行 `luac -p`，只接受仓库内 vendored 的
+Lua 5.4.8 编译器，缺失、不可执行或版本不符时失败关闭（不回退到 PATH 中的 `luac`）。
+同一门禁也会在 `code`/`ci` profile 的协议边界检查中触发。新 worktree 的 contrib 子模块
+目录为空，需先 `git submodule update --init crawl-ref/source/contrib/lua`，再按
+`.github/workflows/ci.yml` 中 “Build vendored luac” 步骤的 `cc` 命令在
+`crawl-ref/source/contrib/lua/src/` 编译 `luac`（该目录的 Makefile 只生成 `liblua.a`），
+最后用 `crawl-ref/source/contrib/lua/src/luac -v` 确认报告 Lua 5.4.8。
 
 ### 编排者工具
 
