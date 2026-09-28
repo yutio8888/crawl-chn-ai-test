@@ -590,7 +590,7 @@ binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target
 大小写受控别名，以及 player name、resolved foe possessive 和神名等窄槽类型，
 并只验证模板实际声明的字段。
 英文模板仍可使用所有格和反身槽，中文模板可按自然语序省略冗余代词，只要完整
-EN/ZH 模板矩阵的 schema union 与声明一致。第三批的 `mennas cast` 首次启用
+EN/ZH 模板矩阵的 schema union 与声明一致。`mennas cast` 首次启用
 生产 `VISUAL` sensory/channel metadata：纯模板不携带 `VISUAL:` 正文协议前缀，
 输出层将 sensory 映射到 `MSGCH_TALK_VISUAL`，并由现有
 `mons_speaks_msg()` 在 caster 不可见时抑制该行。candidate 搜索本身不会把
@@ -617,7 +617,7 @@ singular-they 变格，现有 `pronoun_plurality()` 因主谓一致会返回 tru
 `structured actor possessive|neutral singular` 渲染“其”；否则继续使用全局
 pronoun 表。该规则不改变英文 canonical binding，也不修改通用代词语义。
 
-第四批的 `airstrike blizzard demon cast` 新增窄类型
+`airstrike blizzard demon cast` 新增窄类型
 `actor_arms_plural` 槽。production binding 在 canonical English 边界调用
 caster 的 `arm_name(false, &can_plural)`，只有可复数时才继续调用
 `arm_name(true)`；这一顺序与 legacy replacement 完全一致。该解析由 descriptor
@@ -815,7 +815,8 @@ legacy expansion/Lua 的 output 与 RNG trace，随后停止，不解析目标�
 审计阶段不得自动把旧 stable ID 绑定到新语义。
 
 审计器必须与生产 parser 同构。首选由生产代码导出 canonical dump，离线工具
-只比较 dump；若必须维护独立 parser，则须通过共享 fixture 证明以下行为一致：
+只比较 dump（当前入口为 `make textdb-phase0-dump`，用法见
+`.claude/scripts/TOOLCHAIN.md`）；若必须维护独立 parser，则须通过共享 fixture 证明以下行为一致：
 
 - key 小写化和规范化；
 - 文件载入、覆盖顺序和同名 key 合并；
@@ -899,8 +900,7 @@ legacy expansion/Lua 的 output 与 RNG trace，随后停止，不解析目标�
 实现改动完成后，按风险运行：
 
 ```bash
-bash .claude/scripts/verify_zh.sh --profile code
-bash .claude/scripts/verify_zh.sh --profile review
+bash .claude/scripts/run_isolated.sh bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 并执行受影响平台构建。
@@ -929,117 +929,27 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-17）：上述基础设施已落地，262 个 inventory root 已全部进入
-catalog。250 个 canonical key、341 个 canonical variant 完整进入 structured；
-另有 10 个 `LEGACY_ONLY` key/12 个 variant 和 2 个 `CLOSURE_ONLY` key/2 个
-variant。
-首个迁移项为 `beam catchall cast`（stable ID
-`mon.cast.beam_catchall.v1`，`NONE`）。
-normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
-保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
-[`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
-`monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT`
-仅启用 Nergalle 的三个 `orc name`、leaf-only vocabulary、无 Lua/substring
-randomness 窄切片。正常 `monspell` 路径的 gesture 正文嗅探已删除；仅
-overlay 故障/未加载或语言不受支持的 compiled-candidate compatibility fallback
-保留旧行为。structured binding 已支持显式
-`resolves_target`、gesture，以及 actor possessive/reflexive 槽；模板是否引用
+实施状态：上述基础设施已落地，262 个 inventory root 已全部进入 catalog，
+共 355 个 canonical variant、35 个 materialization case：250 key/341 variant 为
+`CANDIDATE`（structured），10 key/12 variant 为 `LEGACY_ONLY`，2 key/2 variant
+为 `CLOSURE_ONLY`。`LEGACY_ONLY` 条目参与 fingerprint、闭包和年度漂移校验，但不被
+`monspell_overlay_covers()` 收录。normal 与 silent fallback 已接入生产候选搜索；
+unseen、未覆盖 key 和不支持语言保持 legacy 语义。`CASE_MAP` 与 `CAPTURE_SLOT`
+只启用经 generator/loader 双重验证的窄切片（例如 Nergalle 的三个 `orc name`
+leaf replacement 从同一 canonical English trace 捕获，EN/ZH 共享捕获值且不重新
+随机）。structured binding 支持显式 `resolves_target`、gesture、`resolved_foe`
+以及 actor possessive/reflexive 槽，applicability 支持 `requires_foe`；模板是否引用
 `${target}` 不再决定是否解析目标。
 
 production candidate recipe 的 closed-world upper-bound dump 已与 EN/ZH effective
-SpeakDB 做 containment join。当前两种语言各命中 251 个 runtime root，Phase 0
-inventory 的 262 个 root 中有 11 个不在候选上界内；报告标记
+SpeakDB 做 containment join；tracked behavior report 标记
 `candidate_key_containment_proven=true`、`runtime_reachability_proven=true` 与
-`reachability_kind=SOUND_UPPER_BOUND_NOT_EXACT`。这证明所有生产 candidate lookup
-都进入分析域，但不声称逐局精确可达。Phase 2 首批已将
-`ensnare arachne cast` 与 `guardian serpent cast targeted` 的全部 5 个 canonical
-variant 迁移为显式 behavior metadata；effective runtime EN/ZH mismatch 已降为 0。
-第二批又迁移 `wizard cast targeted`、`wizard cast`、
-`magical cast targeted` 与 `magical cast` 的全部 8 个 variant，并正式启用
-non-target `resolves_target=false` / `NONE` relation 契约。第三批低风险迁移新增
-`awaken flesh kobold fleshcrafter cast`、`dispel undead revenant cast`、
-`malign offering priest cast`、`sheza's dance cast`、
-`silent blizzard demon cast`、`ushabti cast targeted` 与 `mennas cast`，
-共 7 个完整 key 闭包、10 个 canonical variant；其中 `mennas cast` 是首个生产
-`VISUAL` sensory/channel descriptor，unseen suppression 继续由 sensory 输出层
-承担。第四批迁移 `airstrike blizzard demon cast` 的全部 3 个 variant，并以
-`actor_arms_plural` 收敛 legacy `@arms@` 身体部位替换，并以 descriptor-derived
-requirement 保持随机身体形态的 legacy RNG 调用顺序。第五批迁移 `vv cast`
-的全部 4 个 variant 与 `smiting jeremiah cast` 的全部 5 个 variant；两者均
-使用 non-target `NONE` 契约，并逐行保留原有 `VISUAL` / `PLAIN` sensory 与
-显式 gesture metadata，不增加新槽类型或随机物化策略。第六批迁移
-`cantrip gastronok cast` 的全部 9 个 variant，显式表达 3 个 visual-only caster
-行和 5 个 player-directed 行的 applicability，并验证末尾 weight-5 变体、
-真实 Gastronok 所有格以及 visible/unseen candidate 行为。第七批迁移
-`hellfire mortar wiglaf cast` 的全部
-3 个 variant，引入窄类型 `resolved_foe` binding 与 `requires_foe` applicability；
-target relation 与 foe entity 独立解析，无 foe 的 normal attempt 在 binding
-前继续下一个 candidate，silent-unprefixed 无法解析 foe 时则 fail closed。
-第八批迁移 `vanquished vanguard nergalle cast` 的全部 2 个 variant；ordinal 0
-以受控 `CAPTURE_SLOT` 从同一 canonical English trace 捕获三个有序
-`orc name` leaf replacement，EN/ZH 共享捕获值且不重新随机，ordinal 1 使用
-`NONE`。依赖闭包、站点顺序、模板槽和 103 项 leaf vocabulary 均由
-generator/loader 双重验证。当前 behavior report 的 unanalyzable occurrence 与
-fail-closed root 均为 0，`phase2_ready=true`。随后完成独立删除批次：
-ordinary legacy targeted `monspell` 仍做目标/beam replacement，但固定
-`gestured=false`；structured 路径只使用 descriptor `implies_gesture`。
-若 overlay 非 `ENABLED` 或语言不受支持，compiled catalog 中的 `CANDIDATE`
-会得到 typed compatibility 标记，并在该窄 fallback 中保留旧正文嗅探。
-
-其后完成一次 21-key/22-variant 分片并行试点：顶层 manifest 只持有 catalog
-顺序与 fragment glob，既有 21-key baseline 和三个 worker pilot 分别保存在独立
-fragment 中；worker 不写共享 sidecar，集成者在全局 stable ID、case ID 与
-tombstone 唯一性检查和确定性排序后统一生成。该机制验证了并行迁移的集成边界，
-在该试点基础上，Wave B 又由三个独立 fragment 并行迁移 30 个 actor-only key；
-每个 key 都是单一 `NONE` 变体，只声明 `${actor}`，并显式保持
-`resolves_target=false`。其中 `ostracise cast` 虽含面向玩家的英文措辞，仍按
-legacy candidate applicability 保持全部 `requires_*` 为 false（包括
-`requires_player=false`），不从正文代词推导新门禁。72-key catalog 是 Wave B
-完成时的阶段计数，不代表剩余条目已经
-结构化或可以跳过逐 key 闭包、RNG、适用性与译文审计。
-
-Wave C 再由三个独立 fragment 并行迁移 26 个单变体 key：18 个 unseen 消息使用
-无槽纯模板，其中所有以 `You` 开头的 variant 显式声明
-`requires_player=true`，其余 applicability 仍按 legacy 保持 false；另外 8 个
-visible key 使用 `${actor}`。全部条目均为 `NONE`、`PLAIN`，无递归、Lua 或
-`[a|b]`，且不从正文中的听觉措辞推导 `audible` 或 channel。集成后 catalog 为
-98 个 key、129 个 variant、258 个逐语言验证单位；仍只是 262 个 inventory root
-的子集。
-
-Wave D 的八个分片共审计 80 个 key、93 个 variant。73 个 key、85 个 variant
-完整进入 structured 路径；`acid splash cast`、`branch summon cast prefix`、
-`chilling breath cast`、`polymorphed wizard cast`、
-`polymorphed wizard cast targeted`、`rebounding chill thermic dynamo cast` 与
-`summon water elementals elemental wellspring cast` 以整 key 的 `LEGACY_ONLY`
-模式留在 catalog 中，共 7 个 key、8 个 variant。它们参与 fingerprint、闭包和
-年度漂移校验，但不会被 `monspell_overlay_covers()` 收录，也不会计入 structured
-metadata 完整性分母。由于这些 key 当前都不存在 legacy gesture/visual 等
-behavior occurrence，behavior report 仍有
-`remaining_legacy_behavior_occurrences=0`、`phase2_ready=true`。集成后 catalog
-总量为 178 key、222 variant；structured 覆盖为 171 key、214 variant、428 个
-逐语言验证单位。
-
-Wave E 的三个分片共审计 20 个 key、44 个 variant。E1 将 8 个单变体 key
-迁入 structured，并将 `flashing balestra undying armoury cast` 与
-`lee's rapid deconstruction screaming refraction cast` 的 2 个单变体完整标记为
-`LEGACY_ONLY`；E2 迁移 5 个 key、19 个 variant，包括 `resolved_foe`、
-`requires_foe` 与目标关系矩阵；E3 再迁移 5 个 key、15 个 variant，并验证
-无 `@at@` 的 Norris 目标模板在三种 relation 下保持同文。集成后 catalog 总量为
-198 key、266 variant；structured 覆盖为 189 key、256 variant、512 个逐语言
-验证单位，`LEGACY_ONLY` 为 9 key、10 variant。
-
-最终分片继续迁移剩余 inventory，并补齐 recursive case、特殊 actor/player/foe
-槽、显式 suppress descriptor 与闭包节点。当前完整 catalog 因而达到 262 key、
-355 variant、35 个 materialization case：250 key/341 variant 为 `CANDIDATE`，
-10 key/12 variant 为 `LEGACY_ONLY`，2 key/2 variant 为 `CLOSURE_ONLY`。这是
-Phase 2 数据迁移的最终计数；tracked behavior report 已按该 catalog 重新生成，
-完整 code profile 验证已通过。
-
-candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
-artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
-scenario cover，并由 lowercase base expression 三路 merge/coalesce 重建完整
-lookup/attempt 闭包。年度升级生成的新 dump 不得自动更新 anchor；必须先审计
-recipe 与 artifact 差异，再显式更新该可达性证明锚点。
+`reachability_kind=SOUND_UPPER_BOUND_NOT_EXACT`，即所有生产 candidate lookup 都
+进入分析域，但不声称逐局精确可达。candidate dump 还必须匹配 tracked production
+anchor；anchor 固定经人工审阅的 artifact SHA-256、counts 与 producer contract。
+年度升级生成的新 dump 不得自动更新 anchor；必须先审计 recipe 与 artifact 差异，
+再显式更新该可达性证明锚点。重新生成 dump 与 behavior report 的命令见
+`.claude/scripts/TOOLCHAIN.md` 的“TextDB 生产 dump 与消息 overlay”一节。
 
 ### Phase 2：移除正文行为嗅探
 

@@ -39,6 +39,7 @@ Session instructions and existing user authorization govern permissions.
 | Portable repository and external paths | `.agents/policies/path-portability.md` |
 | Translation architecture | `docs/translation-architecture.md` |
 | CJK tiles architecture | `docs/cjk-tiles-architecture.md` |
+| Android touch UI and device verification | `docs/android-architecture.md` |
 | Build and deployment | `docs/build-workflow.md` |
 | ZH testing and verification | `docs/zh-testing.md` and `.claude/scripts/TOOLCHAIN.md` |
 | Cross-runtime collaboration | `docs/dual-agent-workflow.md` |

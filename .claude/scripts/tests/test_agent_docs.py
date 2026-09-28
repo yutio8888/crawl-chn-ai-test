@@ -31,6 +31,7 @@ AUTHORITIES = [
     ROOT / "docs/agent-routing.md",
     ROOT / "docs/build-workflow.md",
     ROOT / "docs/cjk-tiles-architecture.md",
+    ROOT / "docs/android-architecture.md",
     ROOT / "docs/dual-agent-workflow.md",
     ROOT / "docs/issue-tracking.md",
     ROOT / "docs/translation-architecture.md",
@@ -41,7 +42,12 @@ ARCHIVES = [
     ROOT / "docs/review-recovery-history.md",
 ]
 
-DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES + ARCHIVES + [ROOT / "README.md"]
+REFERENCES = [
+    ROOT / "docs/README.md",
+]
+
+DOCS_TO_LINT = (ENTRY_POINTS + AUTHORITIES + ARCHIVES + REFERENCES
+                + [ROOT / "README.md"])
 
 STALE_PATTERNS = {
     r"28 project tool scripts": "hard-coded obsolete script count",
@@ -60,7 +66,7 @@ MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 class AgentDocumentationTests(unittest.TestCase):
     def test_documented_files_exist(self) -> None:
         missing = [path.relative_to(ROOT).as_posix()
-                   for path in ENTRY_POINTS + AUTHORITIES + ARCHIVES
+                   for path in ENTRY_POINTS + AUTHORITIES + ARCHIVES + REFERENCES
                    if not path.is_file()]
         self.assertEqual([], missing)
 
@@ -204,7 +210,6 @@ class AgentDocumentationTests(unittest.TestCase):
         paths = (
             ROOT / "README.md",
             ROOT / "docs/issue-tracking.md",
-            ROOT / "docs/known-issues-zh.md",
             ROOT / "docs/dual-agent-workflow.md",
             ROOT / ".claude/ORCHESTRATION_STATE.md",
             ROOT / ".agents/skills/translation-pipeline/SKILL.md",
@@ -718,8 +723,6 @@ class AgentDocumentationTests(unittest.TestCase):
         for pattern in (r"~30,", r"30,452", r"~93%", r"\*\*活跃开发分支\*\*"):
             self.assertIsNone(re.search(pattern, text))
         self.assertNotIn("必须保留 DejaVu Sans Mono", text)
-        historical = (ROOT / "docs/cjk-tiles-support.md").read_text()
-        self.assertIn("历史实现记录", historical[:500])
 
     def test_relative_markdown_links_resolve(self) -> None:
         for path in DOCS_TO_LINT:

@@ -71,6 +71,15 @@ may still apply their existing lowercase/pluralisation conventions.
 - Never persist the pointer returned by `T_()`/`C_()`; copy it to
   `std::string` if ownership must cross a statement or cache generation.
 - Never feed translated text into English morphology such as `conj_verb()`.
+  Display verbs pass the original English key and context to
+  `actor::verb_for_display()` or `conjugate_verb_for_display()`: ZH returns
+  the complete translated form, while English (including a missing ZH entry)
+  conjugates only the English key.
+- Game C/C++ source contains no Chinese display literals. Chinese display
+  text lives in the translation assets; the remaining production CJK
+  occurrences are protocol/parse values frozen by
+  `.claude/scripts/cjk_inventory.json` and checked by
+  `scan_i18n.py cjk-inventory` (see `.claude/scripts/TOOLCHAIN.md`).
 - Movement phrases remain English internal values until
   `translated_move_phrase()` applies the correct grammar context at display.
 
