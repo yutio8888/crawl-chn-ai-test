@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run production display methods against a deliberately distinct test catalog."""
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,59 @@ SRC = ROOT / "crawl-ref/source"
 
 
 class TrunkDisplayTests(unittest.TestCase):
+    def test_wind_message_sinks_with_distinct_english_and_chinese_catalogs(self):
+        calls = []
+        for filename, signature, key in (
+            ("skills.cc", r"void update_four_winds", "You feel the winds around you beginning to shift..."),
+            ("attack.cc", r"int attack::player_stab", "The winds around you quicken."),
+        ):
+            body = exact_function_body(_strip_cpp_comments((SRC / filename).read_text()), signature)
+            sinks = [call for call in re.findall(r"mprf\([^;]+;", body) if key in call]
+            self.assertEqual(1, len(sinks), filename)
+            calls.append(sinks[0])
+        # Execute the actual production statements. These keys are deliberately
+        # absent from the real catalog until the catalog owner supplies them;
+        # a distinct test catalog proves the boundary even while C_/T_ fallback
+        # in the runtime tests still returns English.
+        source = r'''
+#include <cassert>
+#include <string>
+using namespace std;
+bool zh = false;
+const int MSGCH_WARN = 1, MSGCH_DURATION = 2;
+string message;
+int channel;
+const char *T_(const char *key) {
+    if (!zh) return key;
+    return string(key) == "The winds around you quicken." ? "TAILWIND_ZH" : "WIND_SHIFT_ZH";
+}
+void mprf(int ch, const char *text) { channel = ch; message = text; }
+void shift() {''' + calls[0] + r'''}
+void quicken() {''' + calls[1] + r'''}
+int main() {
+    for (bool language : {false, true}) {
+        zh = language;
+        shift();
+        assert(channel == MSGCH_WARN);
+        assert(message == (zh ? "WIND_SHIFT_ZH" : "You feel the winds around you beginning to shift..."));
+        quicken();
+        assert(channel == MSGCH_DURATION);
+        assert(message == (zh ? "TAILWIND_ZH" : "The winds around you quicken."));
+    }
+}
+'''
+        compiler = shutil.which("c++")
+        self.assertIsNotNone(compiler)
+        with tempfile.TemporaryDirectory(prefix="wind-display-") as tmp:
+            path = Path(tmp)
+            (path / "test.cc").write_text(source)
+            build = subprocess.run([compiler, "-std=c++11", "-Wall", "-Wextra", "-Werror",
+                                    str(path / "test.cc"), "-o", str(path / "test")],
+                                   capture_output=True, text=True, timeout=30)
+            self.assertEqual(0, build.returncode, build.stdout + build.stderr)
+            run = subprocess.run([str(path / "test")], capture_output=True, text=True, timeout=10)
+            self.assertEqual(0, run.returncode, run.stdout + run.stderr)
+
     def test_form_and_curse_display_boundaries_in_both_languages(self):
         transform = _strip_cpp_comments((SRC / "transform.cc").read_text())
         methods = []
