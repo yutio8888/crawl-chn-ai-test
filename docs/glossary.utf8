@@ -879,7 +879,7 @@ minotaur	牛头人	domain=species; source=EN/ZH
 miscast	施法失误	domain=core; source=EN/ZH; 注意事项=非"施法失败"（后者指被中断）
 Mislead	误导术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 miss	未命中	domain=combat; source=EN/ZH
-Mist	幽魂雾	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt 新神器特效标签；明确 spectral mist，区别药水名雾；decision=D-C-095
+mist	雾	domain=items; source=EN/ZH; 依据 / 作用域=catalog 共享键；art-data.txt 的 Mist 铭文／说明标签与稳定版 mist 是同一大小写不敏感的运行时身份，沿用“雾”；decision=D-C-098（取代 D-C-095 的幽魂雾译法）
 mist talisman	雾护符	domain=items; source=EN/ZH; 依据 / 作用域=item-prop.cc；对应 Mistmane，物品名未带 mane；decision=D-C-095
 Mistmane	雾鬃	domain=magic; source=EN/ZH; 依据 / 作用域=form/status; mistmane.yaml；头部化为雾团，保留 mane 意象；decision=D-C-095
 mistmane-form	雾鬃形态	domain=magic; source=EN/ZH; 依据 / 作用域=form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095
@@ -1036,7 +1036,7 @@ potion clouds	药水云雾	domain=mutations; source=EN/ZH; 依据 / 作用域=mi
 potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
 potion full name|might	力量	domain=items; source=EN/ZH; Scope / comment=potion context key; melee-only effect; decision=D-B-022
 potion full name|mist	雾	domain=items; source=EN/ZH; 依据 / 作用域=药水完整名上下文的效果片段；与雾药水同词根；decision=D-C-095
-potion of mist	雾药水	domain=items; source=EN/ZH; 依据 / 作用域=items.txt / item-name.cc；Mistmane 产物；decision=D-C-095
+potion of mist	雾药水	domain=core; source=EN/ZH; 依据 / 作用域=完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐）
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
