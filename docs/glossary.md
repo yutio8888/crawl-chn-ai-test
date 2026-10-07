@@ -917,7 +917,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Elementalist | 元素师 | 与 elementalist 大小写不敏感的共享 catalog 身份同译；完整能力名、职业名各依其独立键；decision=D-C-098（取代 D-C-095 的此键译法） |
 | Battlemage | 战斗法师 | 旧先祖类型保留兼容；一般角色词不受替代；decision=D-C-095 |
 | Curse Item | 诅咒物品 | 旧能力标题保留兼容；当前装备仪式用 Ritual of Binding；decision=D-C-095 |
-| Ancestor Life: Elementalist | 先祖生涯：元素使 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
+| Ancestor Life: Elementalist | 先祖生涯：元素师 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
