@@ -4808,14 +4808,14 @@
     "canonical_structured_variant_metadata_units": 341,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
-    "en_zh_behavior_analysis_conclusive": false,
+    "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
-    "fail_closed_behavior_roots": 1,
+    "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
     "per_language_structured_variant_verification_complete": 682,
     "per_language_structured_variant_verification_units": 682,
     "remaining_legacy_behavior_occurrences": 0,
-    "unanalysable_occurrences": 2
+    "unanalysable_occurrences": 0
   },
   "domain": "monspell",
   "inputs": {
@@ -4895,23 +4895,6 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
-          }
-        },
-        {
-          "behavior": "UNANALYSABLE",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "detail": "antimagic gaze goji cast:0: embedded Lua",
-          "language": "en",
-          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
-          "phase": "ANALYSIS",
-          "recursive_provenance": [],
-          "requested_root": "antimagic gaze goji cast",
-          "top_locator": {
-            "canonical_key": "antimagic gaze goji cast",
-            "variant_ordinal": 0
           }
         },
         {
@@ -5494,9 +5477,7 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [
-          "antimagic gaze goji cast"
-        ],
+        "UNANALYSABLE": [],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -7946,23 +7927,6 @@
           }
         },
         {
-          "behavior": "UNANALYSABLE",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "detail": "antimagic gaze goji cast:0: embedded Lua",
-          "language": "zh",
-          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
-          "phase": "ANALYSIS",
-          "recursive_provenance": [],
-          "requested_root": "antimagic gaze goji cast",
-          "top_locator": {
-            "canonical_key": "antimagic gaze goji cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -8542,9 +8506,7 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [
-          "antimagic gaze goji cast"
-        ],
+        "UNANALYSABLE": [],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -10951,22 +10913,11 @@
       ]
     }
   },
-  "locale_behavior_inconclusive": [
-    {
-      "en_analyzable": false,
-      "en_proven_predicates": [],
-      "requested_root": "antimagic gaze goji cast",
-      "zh_analyzable": false,
-      "zh_proven_predicates": []
-    }
-  ],
+  "locale_behavior_inconclusive": [],
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
-  "phase2_blockers": [
-    "2 behavior occurrences are unanalysable",
-    "EN/ZH behavior analysis is inconclusive"
-  ],
-  "phase2_ready": false,
+  "phase2_blockers": [],
+  "phase2_ready": true,
   "raw_legacy_evidence": {
     "en": {
       "behavior_root_union": [
@@ -11009,23 +10960,6 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
-          }
-        },
-        {
-          "behavior": "UNANALYSABLE",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "detail": "antimagic gaze goji cast:0: embedded Lua",
-          "language": "en",
-          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
-          "phase": "ANALYSIS",
-          "recursive_provenance": [],
-          "requested_root": "antimagic gaze goji cast",
-          "top_locator": {
-            "canonical_key": "antimagic gaze goji cast",
-            "variant_ordinal": 0
           }
         },
         {
@@ -11626,7 +11560,6 @@
         ],
         "SOUND_LIKE_CHANNEL": [],
         "UNANALYSABLE": [
-          "antimagic gaze goji cast",
           "vanquished vanguard nergalle cast"
         ],
         "VISUAL_APPLICABILITY": [
@@ -11685,23 +11618,6 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
-          }
-        },
-        {
-          "behavior": "UNANALYSABLE",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "detail": "antimagic gaze goji cast:0: embedded Lua",
-          "language": "zh",
-          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
-          "phase": "ANALYSIS",
-          "recursive_provenance": [],
-          "requested_root": "antimagic gaze goji cast",
-          "top_locator": {
-            "canonical_key": "antimagic gaze goji cast",
-            "variant_ordinal": 0
           }
         },
         {
@@ -12268,7 +12184,6 @@
         ],
         "SOUND_LIKE_CHANNEL": [],
         "UNANALYSABLE": [
-          "antimagic gaze goji cast",
           "vanquished vanguard nergalle cast"
         ],
         "VISUAL_APPLICABILITY": [

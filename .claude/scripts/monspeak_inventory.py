@@ -2008,6 +2008,65 @@ def _lua_return_branch_texts(block: str) -> list[str]:
             for outcomes in _lua_return_branch_expansions(block, None)]
 
 
+
+def literal_conditional_lua_returns(block: str) -> list[str]:
+    """Prove every path of a conditional chunk returns one literal string.
+
+    Reuse the existing protocol lexer, escape decoder and executable-syntax
+    gate. A return-expression list alone does not prove completeness: each
+    if/elseif branch and the mandatory else must terminate in a literal return
+    or another complete conditional. Statements after a return, missing else,
+    nonliteral returns and nonconditional chunks remain unsupported.
+    """
+    protocol = _lua_block_protocol(block)
+    _require(protocol["error"] is None,
+             f"unsupported conditional Lua: {protocol['error']}")
+    returns = [_lua_literal_value(value)
+               for value in protocol["return_strings"]]
+    _require(returns and all(value is not None for value in returns),
+             "conditional Lua requires literal-only returns")
+    # Frames hold [current branch returns, an else branch was seen].
+    frames: list[list[bool]] = []
+    finished = False
+    return_count = 0
+    for line in protocol["skeleton"].splitlines():
+        statement = line.strip()
+        if not statement:
+            continue
+        _require(not finished, "statement after complete Lua conditional")
+        if re.fullmatch(r"if\b.*\bthen", statement):
+            _require(not frames or not frames[-1][0],
+                     "statement after Lua return")
+            frames.append([False, False])
+        elif re.fullmatch(r"elseif\b.*\bthen", statement):
+            _require(frames and frames[-1][0] and not frames[-1][1],
+                     "incomplete or misplaced Lua elseif")
+            frames[-1][0] = False
+        elif statement == "else":
+            _require(frames and frames[-1][0] and not frames[-1][1],
+                     "incomplete or misplaced Lua else")
+            frames[-1] = [False, True]
+        elif statement == "end":
+            _require(frames and all(frames[-1]),
+                     "Lua conditional needs a returning else branch")
+            frames.pop()
+            if frames:
+                frames[-1][0] = True
+            else:
+                finished = True
+        elif statement == "return " + _LUA_RETURN_MARKER:
+            _require(frames and not frames[-1][0],
+                     "misplaced or duplicate Lua return")
+            frames[-1][0] = True
+            return_count += 1
+        else:
+            raise InventoryError(f"unsupported conditional Lua statement {statement!r}")
+    _require(finished and not frames and return_count == len(returns),
+             "conditional Lua return closure is incomplete")
+    _lua_syntax_check([block])
+    return returns
+
+
 def _lua_return_branch_expansions(
     block: str, family_lookup: dict[str, list[str]] | None
 ) -> list[list[str]]:

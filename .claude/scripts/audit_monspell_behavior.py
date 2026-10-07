@@ -29,6 +29,10 @@ from audit_monspell_phase0 import (
     textdb_marker_sites,
 )
 from generate_message_overlay import ManifestError, load_manifest, validate_manifest
+from monspeak_inventory import (
+    InventoryError as LuaInventoryError, _lua_sites_strict,
+    literal_conditional_lua_returns,
+)
 
 
 SCHEMA_VERSION = 1
@@ -709,10 +713,37 @@ class PredicateAnalyzer:
                 f"{key}:{ordinal}: unbalanced @ marker at offset {unbalanced}")
         return markers
 
-    @staticmethod
-    def _check_lua(text: str, key: str, ordinal: int) -> None:
-        if "{{" in text or "}}" in text:
-            raise Unanalysable(f"{key}:{ordinal}: embedded Lua")
+    def _literal_lua_outcomes(self, text: str, key: str,
+                              ordinal: int) -> list[str]:
+        if "{{" not in text and "}}" not in text:
+            return [text]
+        try:
+            sites = _lua_sites_strict(text)
+            results = [""]
+            cursor = 0
+            for site in sites:
+                block = text[site["start"] + 2:site["end"] - 2]
+                # TextDB expands recursive markers in raw Lua before executing
+                # it. Do not decode literals before a recursive replacement
+                # could change their quoting/control flow. Runtime-only slots
+                # (actor, possessive, etc.) are bound after Lua and are safe.
+                for marker in self._checked_markers(block, key, ordinal):
+                    if str(marker["canonical_key"]) in self.entries:
+                        raise Unanalysable(
+                            f"{key}:{ordinal}: recursive marker inside conditional Lua")
+                choices = literal_conditional_lua_returns(block)
+                if len(results) * len(choices) > MAX_SUMMARIES:
+                    raise Unanalysable(f"{key}:{ordinal}: Lua branch product exceeds limit")
+                prefix = text[cursor:site["start"]]
+                results = [result + prefix + choice
+                           for result in results for choice in choices]
+                cursor = site["end"]
+            return [result + text[cursor:] for result in results]
+        except LuaInventoryError as exc:
+            raise Unanalysable(f"{key}:{ordinal}: embedded Lua: {exc}") from exc
+
+    def _check_lua(self, text: str, key: str, ordinal: int) -> None:
+        self._literal_lua_outcomes(text, key, ordinal)
 
     def validate_limits(self, key: str, ordinal: int) -> None:
         memo: dict[tuple[str, int], tuple[int, int]] = {}
@@ -771,24 +802,30 @@ class PredicateAnalyzer:
         text = self._variant(key, ordinal)["raw_pattern"]
         self._check_lua(text, key, ordinal)
         self._checked_markers(text, key, ordinal)
-        result = {_pre_literal("")}
-        for kind, value in _marker_parts(text):
-            if kind == "literal":
-                part = {_pre_literal(value)}
-            else:
-                child_key = value.lower()
-                child = self.entries.get(child_key)
-                if child and child.variants and child.parse_error is None:
-                    part = set()
-                    for child_ordinal in self._ordinals(child_key):
-                        part.update(self.pre_variant(
-                            child_key, child_ordinal, stack + (locator,)))
-                elif child and child.parse_error is not None:
-                    raise Unanalysable(f"{child_key}: corrupt recursive entry")
+        all_results: set[PreSummary] = set()
+        for outcome in self._literal_lua_outcomes(text, key, ordinal):
+            result = {_pre_literal("")}
+            for kind, value in _marker_parts(outcome):
+                if kind == "literal":
+                    part = {_pre_literal(value)}
                 else:
-                    part = {_pre_literal(f"@{value}@")}
-            result = _product(result, part, _pre_concat,
-                              f"{key}:{ordinal} pre-binding")
+                    child_key = value.lower()
+                    child = self.entries.get(child_key)
+                    if child and child.variants and child.parse_error is None:
+                        part = set()
+                        for child_ordinal in self._ordinals(child_key):
+                            part.update(self.pre_variant(
+                                child_key, child_ordinal, stack + (locator,)))
+                    elif child and child.parse_error is not None:
+                        raise Unanalysable(f"{child_key}: corrupt recursive entry")
+                    else:
+                        part = {_pre_literal(f"@{value}@")}
+                result = _product(result, part, _pre_concat,
+                                  f"{key}:{ordinal} pre-binding")
+            all_results.update(result)
+            if len(all_results) > MAX_SUMMARIES:
+                raise Unanalysable(f"{key}:{ordinal}: Lua summary union exceeds limit")
+        result = all_results
         self._pre_cache[locator] = result
         return result
 
@@ -802,33 +839,39 @@ class PredicateAnalyzer:
         text = self._variant(key, ordinal)["raw_pattern"]
         self._check_lua(text, key, ordinal)
         self._checked_markers(text, key, ordinal)
-        result = {_post_literal("")}
-        for kind, value in _marker_parts(text):
-            if kind == "marker":
-                child_key = value.lower()
-                child = self.entries.get(child_key)
-                if child and child.variants and child.parse_error is None:
-                    part: set[PostSummary] = set()
-                    for child_ordinal in self._ordinals(child_key):
-                        part.update(self.post_variant(
-                            child_key, child_ordinal, stack + (locator,)))
-                elif child and child.parse_error is not None:
-                    raise Unanalysable(f"{child_key}: corrupt recursive entry")
+        all_results: set[PostSummary] = set()
+        for outcome in self._literal_lua_outcomes(text, key, ordinal):
+            result = {_post_literal("")}
+            for kind, value in _marker_parts(outcome):
+                if kind == "marker":
+                    child_key = value.lower()
+                    child = self.entries.get(child_key)
+                    if child and child.variants and child.parse_error is None:
+                        part: set[PostSummary] = set()
+                        for child_ordinal in self._ordinals(child_key):
+                            part.update(self.post_variant(
+                                child_key, child_ordinal, stack + (locator,)))
+                    elif child and child.parse_error is not None:
+                        raise Unanalysable(f"{child_key}: corrupt recursive entry")
+                    else:
+                        part = {_post_literal(f"@{value}@")}
                 else:
-                    part = {_post_literal(f"@{value}@")}
-            else:
-                part = {_post_literal("")}
-                for random_kind, options in _random_parts(value):
-                    if random_kind == "choice" and any(
-                            "[" in option or "]" in option for option in options):
-                        raise Unanalysable(
-                            f"{key}:{ordinal}: random replacement can create a new bracket site")
-                    choices = (_post_literal(options[0]),) if random_kind == "literal" \
-                        else tuple(_post_literal(option) for option in options)
-                    part = _product(part, set(choices), _post_concat,
-                                    f"{key}:{ordinal} random materialization")
-            result = _product(result, part, _post_concat,
-                              f"{key}:{ordinal} post-materialization")
+                    part = {_post_literal("")}
+                    for random_kind, options in _random_parts(value):
+                        if random_kind == "choice" and any(
+                                "[" in option or "]" in option for option in options):
+                            raise Unanalysable(
+                                f"{key}:{ordinal}: random replacement can create a new bracket site")
+                        choices = (_post_literal(options[0]),) if random_kind == "literal" \
+                            else tuple(_post_literal(option) for option in options)
+                        part = _product(part, set(choices), _post_concat,
+                                        f"{key}:{ordinal} random materialization")
+                result = _product(result, part, _post_concat,
+                                  f"{key}:{ordinal} post-materialization")
+            all_results.update(result)
+            if len(all_results) > MAX_SUMMARIES:
+                raise Unanalysable(f"{key}:{ordinal}: Lua summary union exceeds limit")
+        result = all_results
         self._post_cache[locator] = result
         return result
 

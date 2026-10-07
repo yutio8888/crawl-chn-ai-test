@@ -307,6 +307,46 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
                     "corrupt cast"):
             self.assertEqual(self._behaviors(report, "en", key), {"UNANALYSABLE"})
 
+    def test_literal_conditional_returns_enumerate_every_branch(self):
+        self.en["conditional cast"] = ["{{\nif you.see_invisible() then\n"
+            "return 'VISUAL: gestures.'\nelse\nreturn 'SOUND: chant'\nend\n}}"]
+        self.zh["conditional cast"] = ["{{\nif you.see_invisible() then\n"
+            "return 'VISUAL: 手势'\nelse\nreturn 'SOUND: 吟唱'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        expected = {"GESTURE", "VISUAL_APPLICABILITY", "VISUAL_CHANNEL",
+                    "SOUND_LIKE_CHANNEL"}
+        for language in ("en", "zh"):
+            self.assertEqual(self._behaviors(report, language,
+                                             "conditional cast"), expected)
+        self.assertNotIn("conditional cast", {
+            row["requested_root"] for row in report["locale_behavior_inconclusive"]})
+
+    def test_conditional_nonliteral_or_incomplete_returns_fail_closed(self):
+        cases = {
+            "concat": "'gesture' .. 's'",
+            "call": "you.name()",
+            "variable": "message",
+        }
+        for name, expression in cases.items():
+            self.en[name + " cast"] = [
+                "{{\nif you.see_invisible() then\nreturn 'plain'\nelse\nreturn "
+                + expression + "\nend\n}}"]
+        self.en["missing else cast"] = [
+            "{{\nif you.see_invisible() then\nreturn 'plain'\nend\n}}"]
+        self.en["empty branch cast"] = [
+            "{{\nif you.see_invisible() then\nelse\nreturn 'plain'\nend\n}}"]
+        self.en["recursive lua cast"] = [
+            "{{\nif you.see_invisible() then\nreturn '@gesture word@'\nelse\n"
+            "return 'plain'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        for key in [name + " cast" for name in cases] + [
+                "missing else cast", "empty branch cast", "recursive lua cast"]:
+            with self.subTest(key=key):
+                self.assertEqual(self._behaviors(report, "en", key),
+                                 {"UNANALYSABLE"})
+
     def test_weight_reachability_matches_cumulative_production_bounds(self):
         self.en.update({
             "negative leading cast": [(-5, " Gesture"), (10, "plain")],
@@ -865,27 +905,16 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
             355 - 12 - 2)
-        # Upstream 43d89d912d introduces Goji's conditional Lua key.
-        # Keep its whole key legacy and preserve the audit's fail-closed result.
-        self.assertEqual(report["coverage"]["unanalysable_occurrences"], 2)
-        self.assertEqual(
-            report["coverage"]["fail_closed_behavior_roots"], 1)
+        # Upstream 43d89d912d Goji stays legacy. Literal-only conditional
+        # branches are now exhaustively analyzed; absent ZH falls back to EN.
+        self.assertEqual(report["coverage"]["unanalysable_occurrences"], 0)
+        self.assertEqual(report["coverage"]["fail_closed_behavior_roots"], 0)
         self.assertTrue(report["coverage"]["catalog_coverage_complete"])
-        self.assertFalse(
-            report["coverage"]["en_zh_behavior_analysis_conclusive"])
+        self.assertTrue(report["coverage"]["en_zh_behavior_analysis_conclusive"])
         self.assertEqual(report["locale_behavior_mismatch"], [])
-        self.assertEqual(report["locale_behavior_inconclusive"], [{
-            "en_analyzable": False,
-            "en_proven_predicates": [],
-            "requested_root": "antimagic gaze goji cast",
-            "zh_analyzable": False,
-            "zh_proven_predicates": [],
-        }])
-        self.assertFalse(report["phase2_ready"])
-        self.assertEqual(report["phase2_blockers"], [
-            "2 behavior occurrences are unanalysable",
-            "EN/ZH behavior analysis is inconclusive",
-        ])
+        self.assertEqual(report["locale_behavior_inconclusive"], [])
+        self.assertTrue(report["phase2_ready"])
+        self.assertEqual(report["phase2_blockers"], [])
 
     def test_monspell_gesture_sniffing_is_compatibility_gated(self):
         source = MON_CAST_SOURCE.read_text(encoding="utf-8")
