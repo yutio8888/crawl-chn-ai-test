@@ -4141,6 +4141,99 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-097 — Issue #147 B0-3 glossary 归属与检查边界
+
+- **Type**: C — Glossary scope correction and label ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source / scope**: 按维护者要求先同步 `claude/trunk-zh`，同步提交
+  `d31477e0a5`。核对 item-term CI 诊断、当前 catalog、TextDB 数据与显示调用。
+  只修改 glossary、导出和本记录，不编辑译文资产或检查器。
+- **Table ownership**: 复用唯一的现有 `domain:core` 区段，把 40 个随机命名
+  组件整体移到“新增随机命名组件”表（包含已命中的 deep 与历史兼容的
+  Apeoromancy）；encumbrance rating 移到“界面机制参数”表。
+  六个仅用于神器传说的名字／材料 Hana、Zmysua、Yntzoia、Fimbulwinter、
+  Carina、coolibah 移到 core 的“神器传说专名与材料”表：它们是英文
+  `unrand.txt` 正文的组成词，不是独立的物品显示查找键。
+  共调整 47 个词条的领域归属，所有 EN/ZH 及已有来源备注保留。
+  随机命名组件实际由 randname、rand_arm、rand_wpn、randbook、gizmo、
+  colourname 等 TextDB 提供，不要求独立存在于 source.txt。
+  不新增领域标记，不重复插入 domain，不改变导出器的领域白名单。
+- **Items retained**: 新物品、完整神器名与铭文／特效标签继续留在 items，
+  缺失的 catalog 键仍由其负责译者补。Mist 原来误混入随机命名表，现移回
+  固定神器表；`art-data.txt` 的 ghost crab claws 使用 `INSCRIP: Mist`，
+  与普通 mist 药水片段不同，定稿“幽魂雾”保持有效。
+- **Apostate choice**: items 里的 Apostate 保持“叛教”。`art-data.txt:2107`
+  为 Forgewarden 胸甲的 `INSCRIP: Apostate`，`:2116` 为同名 DESCRIP
+  标签，描述穿戴时降低虔诚值、后续获取仅为正常速率的四分之三。
+  `describe.cc` 的 `_randart_propnames` 通过 `T_(entry->inscrip)` 显示它。
+  本处是装备铭文／属性标签，不是在命名一个叛教的人，“叛教者”不作为
+  本属性的译名；本次不为迎合既有 catalog 更改已定稿术语。
+  当前 `source.txt:14036` 的 Apostate 键译文（`:14037`）为“叛教者”，
+  留给 catalog 译者处理。另需保留人物称号的语境：`skills.cc:124`
+  的祈神技能称号及 `describe-god.cc:191` 的比欧弗信徒称号也使用此英文词，
+  指人时“叛教者”正确。比欧弗称号已经由 `C_("god title", ...)` 查找；
+  catalog／A3 应核对各显示路径的上下文，避免修铭文时损坏人物称号。
+- **Literal parentheses**: 未找到能表示“全角括号属于译名本身”并得到当前
+  导出器与检查器共同支持的既有写法。Markdown 的反引号会被导出器
+  `clean_cell` 去掉；既有 `\|` 仅表示源语键中的字面管道符，不表示括号。
+  `check_glossary_terms.py:37` 不区分作用域，直接剥除末尾 `（…）`；现有
+  `test_strips_context_labels_from_allowed_targets` 只验证语境括注剥除，
+  没有字面括号的标记或保留约定。
+  四个 Dragon Vein (Fire/Ice/Air/Earth) 保持“龙脉（火／冰／气／土）”的
+  已定稿字面括号，各译名不变，不自造转义、不替换标点、不改资产。
+  交 A3 修工具，需同时保留真正语境注释的已有行为。
+  当前误报位置为 `source.txt:17654`、`:17657`、`:17660`、`:17663`；
+  四条实际译文均符合 glossary，不作为翻译缺陷转交译者。
+- **Remaining catalog work**: 本候选 `check_item_terms.py` 仍退出 1：
+  34 个缺键（第 2 类，见下表）及 Apostate 的一处已裁决待修不一致。
+  已消除所有误把本次非 catalog 术语纳入 items 的失败；资产不可写的
+  边界下，不声称已经达到“只剩第 2 类失败”。待 catalog 译者修订
+  Apostate 后，预期只剩以下 34 个缺键。
+
+| 缺失的 catalog 英文键 | 定稿中文 |
+|----|----|
+| `potion of mist` | 雾药水 |
+| `potion full name\|mist` | 雾 |
+| `partisan of Prune` | 梅干阔头枪 |
+| `amulet of Tranquility` | 宁静项链 |
+| `swamp witch's dragon scales` | 沼泽女巫龙鳞甲 |
+| `athame "Fimbulwinter"` | 仪式匕首"芬布尔之冬" |
+| `fire dragon occultist's scales` | 火龙神秘学者鳞甲 |
+| `ice dragon arcanist's scales` | 冰龙奥术师鳞甲 |
+| `giant spiked club "Carina at Dusk"` | 巨刺棍"暮色船底座" |
+| `coolibah bardiche` | 库利巴木长柄斧 |
+| `staff of Five Virtues` | 五德杖 |
+| `Stagehand's Sword` | 舞台工之剑 |
+| `Hana's Scimitar` | 哈娜之弯刀 |
+| `arcane splint mail` | 奥术条板甲 |
+| `bone scales` | 骨鳞甲 |
+| `Forgewarden's cuirass` | 锻炉守卫胸甲 |
+| `ghost crab claws` | 幽灵螃蟹爪 |
+| `RageSunder` | 怒裂 |
+| `Salvo` | 齐射 |
+| `TrickPois` | 诡毒 |
+| `IceDoom` | 寒冰厄运 |
+| `FireExpos` | 火焰暴露 |
+| `FireWiz` | 火焰施法辅助 |
+| `IceExpos` | 寒冰暴露 |
+| `IceWiz` | 寒冰施法辅助 |
+| `ShootingStar` | 流星 |
+| `ConstrDrown` | 束缚溺水 |
+| `ConstrBog` | 束缚毒沼 |
+| `VirtueSH` | 五德格挡 |
+| `VirtueRefl` | 五德反射 |
+| `DevInvis` | 诡诈隐形 |
+| `ValArchmagi` | 勇武大法师 |
+| `^Dim` | 卸下削弱法术 |
+| `Mist` | 幽魂雾 |
+
+- **Supersedes / narrows**: 只调整 D-C-095、D-C-096 相关词条的领域归属；
+  Apostate 与四个 Dragon Vein 译名继续有效，不改写既有裁决正文。
+- **Affected files**: `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4288,3 +4381,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
 | D-C-095 | Upstream 0.35 trunk B0 terminology (#147) | glossary 定稿；资产与 defaults 后续实施 | active |
 | D-C-096 | B0-2 missing terms and mutagenic (#147) | 补登记；诱变词根统一，固定法术名例外；资产修订交接 | active |
+| D-C-097 | B0-3 glossary table ownership (#147) | core 接收非 catalog 词；叛教铭文保留；字面括号误报交 A3 | active |
