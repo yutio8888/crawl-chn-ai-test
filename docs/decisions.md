@@ -4252,9 +4252,18 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     item-name.cc 的物品命名和 mon-info.cc 的显示共用此键。
     不要求前缀“束缚的”；D-C-095 相应前缀文字及 glossary 同步改为“束缚”。
     括注“（已束缚）”、菜单／费用“已束缚物品”保持有效。
+  - B0-5：ghost crab claws 的 `Mist` 铭文／说明标签与稳定版 `mist → 雾`
+    经 database.cc 的大小写不敏感 SourceDB 查找共用同一运行时身份，
+    因而沿用“雾”，取代 D-C-095 的“幽魂雾”；glossary items 行以实际
+    catalog 键 `mist` 登记，备注保留 `Mist` 标签身份。
   - **Optional follow-up**: 将来若需要铭文与人物称号，或物品前缀与其他
     bound 用法分别译为不同措辞，应先在代码显示调用中引入明确的上下文键，
     再由 catalog 译者填充并验证各语境。本次不实施此可选改进。
+- **B0-5 lookup alignment**: `potion of mist → 雾药水` 移至 core 的组合
+  显示名说明；完整英文名用于 TextDB／协议查找，当前中文显示由
+  item-name.cc 的 `T_("mist")` 与 `T_("potion")` 拼接，不要求 catalog
+  存在完整键。items 中 `potion full name|mist → 雾` 保持不变，待 A3
+  把相邻药水一致的上下文调用应用到 POT_MIST 后，由 catalog 译者补键。
 - **Enumeration / registration**: 报告清单展开共有 136 项：134 项命名／
   标签／参数术语逐项登记，2 项完整说明句不另立术语。初始清单没有
   与既有导出表完全相同的英文术语键；近似词根沿用而非覆盖旧条目。

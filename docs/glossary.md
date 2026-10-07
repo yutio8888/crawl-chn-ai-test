@@ -344,6 +344,12 @@
 | lonesome duellist | 孤高决斗者 | bazaar.des 完整消息中的称号；沿用共享旧 duelist 消息词根，duellist 拼写变化不另立中文名；decision=D-C-098 |
 | Yara's Duellist Academy | 亚拉的决斗学院 | wizlab.des 巫师实验室名；Yara 沿用亚拉；旧 Duelist 拼写只作历史兼容；decision=D-C-098 |
 
+### 组合物品显示名说明（B0-5）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| potion of mist | 雾药水 | 完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐） |
+
 <!-- domain:combat -->
 ## 五、战斗与伤害
 
@@ -482,7 +488,6 @@
 | gecko talisman | 壁虎护符 | item-prop.cc；对应 Hypnogecko／Gecko；decision=D-C-095 |
 | mist talisman | 雾护符 | item-prop.cc；对应 Mistmane，物品名未带 mane；decision=D-C-095 |
 | centipede bauble | 蜈蚣球 | items.txt；球内的蜈蚣临时化为武器；沿用 flux bauble 的球词根；decision=D-C-095 |
-| potion of mist | 雾药水 | items.txt / item-name.cc；Mistmane 产物；decision=D-C-095 |
 | `potion full name\|mist` | 雾 | 药水完整名上下文的效果片段；与雾药水同词根；decision=D-C-095 |
 | athame | 仪式匕首 | item-prop.cc / items.txt；由历史兼容恢复为现行武器；decision=D-C-095 |
 | detected item | 探测到的物品 | item-name.cc / items.txt；未知类别的探测物标记；decision=D-C-095 |
@@ -519,7 +524,7 @@
 | ValArchmagi | 勇武大法师 | art-data.txt；法力充足时增强法术；decision=D-C-095 |
 | ^Dim | 卸下削弱法术 | art-data.txt；卸下后的临时法术减弱；显示释义，保护内部标记；decision=D-C-095 |
 | Apostate | 叛教者 | art-data.txt 铭文与稳定版称号共用 catalog 键；本次不新增上下文；decision=D-C-098（取代 D-C-097 的铭文译法） |
-| Mist | 幽魂雾 | art-data.txt 新神器特效标签；明确 spectral mist，区别药水名雾；decision=D-C-095 |
+| mist | 雾 | catalog 共享键；art-data.txt 的 Mist 铭文／说明标签与稳定版 mist 是同一大小写不敏感的运行时身份，沿用“雾”；decision=D-C-098（取代 D-C-095 的幽魂雾译法） |
 | giant spiked club | 巨刺棍 | Carina 神器所依赖的现行武器基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
 
 
