@@ -328,7 +328,7 @@
 | athame "Fimbulwinter" | 仪式匕首"芬布尔之冬" | unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095 |
 | fire dragon occultist's scales | 火龙神秘学者鳞甲 | unrand.txt；属于火龙神秘学者 Zmysua；decision=D-C-095 |
 | ice dragon arcanist's scales | 冰龙奥术师鳞甲 | unrand.txt；属于冰龙奥术师 Yntzoia；复用 arcanist；decision=D-C-095 |
-| giant spiked club "Carina at Dusk" | 巨刺棍"卡里纳暮色" | unrand.txt；巨魔诗人的星空作品；Carina 采用专名音译，不擅定星座典故；decision=D-C-095 |
+| giant spiked club "Carina at Dusk" | 巨刺棍"暮色船底座" | unrand.txt 的星空颂歌、art-data.txt 的 ShootingStar 铭文与流星效果共同确认 Carina 指船底座；decision=D-C-095 |
 | coolibah bardiche | 库利巴木长柄斧 | unrand.txt；整棵 coolibah tree 雕成；不无据指定树种；decision=D-C-095 |
 | staff of Five Virtues | 五德杖 | unrand.txt；五种行为／能力条件；显示名不强改为底层双头杖；decision=D-C-095 |
 | Stagehand's Sword | 舞台工之剑 | unrand.txt；伪装为戏剧道具的机关剑；不凭空设立人名；decision=D-C-095 |
@@ -341,7 +341,7 @@
 | Zmysua | 兹米苏娅 | unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095 |
 | Yntzoia | 因佐娅 | unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095 |
 | Fimbulwinter | 芬布尔之冬 | unrand lore proper name；与武器专名统一；decision=D-C-095 |
-| Carina | 卡里纳 | unrand lore proper name；不以未确认典故译成船底座；decision=D-C-095 |
+| Carina | 船底座 | unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095 |
 | coolibah | 库利巴木 | unrand material name；不以未确认分类学知识增补树种；decision=D-C-095 |
 | RageSunder | 怒裂 | art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095 |
 | Salvo | 齐射 | art-data.txt / status.txt；附带攻击其他目标的连续射击效果；decision=D-C-095 |

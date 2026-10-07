@@ -3946,10 +3946,15 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     优势并隐藏伤势；不是旧版纯 EV 增益。SPELL_PHASE_SHIFT_OLD 保留旧身份。
   - deflecting missiles 取代 repelling missiles 怪物状态标签，复用
     Deflect Missiles → 偏转飞弹；不重译现存 Repel Missiles 法术。
+- **B0 review correction (2026-10-07)**: 维护者确认 Carina 指星座船底座：
+  `unrand.txt` 的 "a paean to the heavens far above" 与 `art-data.txt` 的
+  ShootingStar 铭文及生成流星的效果共同构成星空语境证据。
+  定稿 `Carina → 船底座`、`giant spiked club "Carina at Dusk" → 巨刺棍"暮色船底座"`。
+  “暮色船底座”将 dusk 作为时景修饰星座，采用自然、简洁的名词短语。
+  旧“卡里纳／卡里纳暮色”因误作未确认专名音译而废止，不再作为候选。
+  库利巴木、兹米苏娅／因佐娅、玉衣维持现有定稿。
 - **Human-review candidates**: 本次已选定保守方案，不留无译名条目。
   以下若要采用典故／更具体释义，需要维护者后续裁决：
-  - Carina：采用“卡里纳”；候选“船底座”。神器描述提到星空却未明确星座，
-    前者避免补设典故，后者若获上游命名意图证实会更鲜明。
   - coolibah：采用“库利巴木”；候选“库利巴桉”。英文只明确树木材质，
     后者加入植物分类，需要可靠释义，不能由材质句推断。
   - Zmysua、Yntzoia：采用“兹米苏娅、因佐娅”；候选“兹米斯娅、因佐伊娅”。

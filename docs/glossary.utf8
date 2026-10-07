@@ -232,7 +232,7 @@ Call Tide	呼唤潮汐	domain=spells; source=EN/ZH; 备注=✅
 camouflage	伪装	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 cane toad	海蟾蜍	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Cantrip	小戏法	domain=spells; source=EN/ZH; 备注=✅
-Carina	卡里纳	domain=items; source=EN/ZH; 依据 / 作用域=unrand lore proper name；不以未确认典故译成船底座；decision=D-C-095
+Carina	船底座	domain=items; source=EN/ZH; 依据 / 作用域=unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095
 Cassandra title	注定毁灭的先知卡珊德拉	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 cast	施法（通用）/ 吟诵（仪式）/ 咏唱（神圣）	domain=core; source=EN/ZH; 注意事项=按语境选择
 catoblepas	卡托布勒帕斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -555,7 +555,7 @@ Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能�
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅；吞噬友方并产生使活物衰竭的负能量爆发
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 giant spiked club	巨刺棍	domain=items; source=EN/ZH; 依据 / 作用域=Carina 神器所依赖的现行武器基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095
-giant spiked club "Carina at Dusk"	巨刺棍"卡里纳暮色"	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；巨魔诗人的星空作品；Carina 采用专名音译，不擅定星座典故；decision=D-C-095
+giant spiked club "Carina at Dusk"	巨刺棍"暮色船底座"	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt 的星空颂歌、art-data.txt 的 ShootingStar 铭文与流星效果共同确认 Carina 指船底座；decision=D-C-095
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
 Glaciate	冰封	domain=spells; source=EN/ZH; 备注=🆕；锥形寒冰冲击会冰封并减速目标
 Gladiator	角斗士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
