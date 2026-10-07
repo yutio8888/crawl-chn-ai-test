@@ -791,6 +791,9 @@ Ashenzari will now identify your possessions.
 Ashenzari will no longer identify your possesions.
 艾申扎利不再鉴定你的所有物。
 %%%%
+Ashenzari will no longer identify your possessions.
+艾申扎利不再鉴定你的所有物。
+%%%%
 Ashenzari identifies your possessions.
 艾申扎利鉴定你的所有物。
 %%%%
