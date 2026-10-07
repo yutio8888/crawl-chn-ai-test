@@ -142,7 +142,12 @@ static int crawl_set_test_language(lua_State *ls)
     if (value == "en")
         Options.language = lang_t::EN;
     else if (value == "zh")
-        Options.language = lang_t::ZH;
+    {
+        // An English startup has no translation layer. Reconcile the DBs when
+        // a bilingual fixture needs ZH; the option alone cannot load that layer.
+        Options.read_option_line("language=zh");
+        databaseSystemInit();
+    }
     else
         return luaL_error(ls, "unknown test language: %s", value.c_str());
     return 0;
