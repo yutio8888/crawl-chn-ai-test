@@ -365,9 +365,11 @@ def status_display_literals(fragment):
     )
     for assignment in assignments:
         expression = assignment.group(2)
-        values = cpp_strings(expression)
-        if re.search(r'\bC_\s*\(\s*"status"\s*,', expression):
-            values = [value for value in values if value != "status"]
+        # C_ and deferred NC_ both carry a context argument, not display text.
+        # Remove that argument only: a real key named "status" still counts.
+        display_expression = re.sub(
+            r'\b(?:C_|NC_)\s*\(\s*"status"\s*,', '(', expression)
+        values = cpp_strings(display_expression)
         for value in values:
             if value and value not in display:
                 display.append(value)

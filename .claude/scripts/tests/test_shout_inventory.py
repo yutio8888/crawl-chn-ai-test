@@ -391,7 +391,7 @@ class ShoutInventoryTests(unittest.TestCase):
         # producer_consumer facts and SpeakDB graph keys, so the hash is
         # mechanically updated together with the regenerated ledger.
         self.assertEqual(
-            "d94dc35f212bb3ab29282681466c313fe26ed2ceaa8353b7ae8ec7838414ff9d",
+            "4357632e7009980b574aa84cc8ce2dcacf8bd759fd2fde00e94947d547e93db7",
             self.inventory["inventory_sha256"],
         )
 
