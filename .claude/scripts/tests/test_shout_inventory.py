@@ -263,21 +263,16 @@ def aligned_candidate_artifacts(en_shout, en_insult, zh_shout, zh_insult):
 
 
 def fixed_candidate_sources() -> dict[str, str]:
-    """The worktree-fixed C++ consumers as fixture replacement blobs.
+    """Historical identity repair, with the historical locator model intact.
 
-    The baseline OID predates the I69-R4-CODE-001 consumer fix, so every
-    candidate fixture must explicitly carry the fixed shout.cc and
-    mon-util.cc: the candidate-role identity shape checks reject the
-    baseline's localized accessors, mirroring the real review gate for
-    commits that regress to a localized ShoutDB producer."""
-    return {
-        "crawl-ref/source/shout.cc": (
-            ROOT / "crawl-ref/source/shout.cc").read_text(
-                encoding="utf-8"),
-        "crawl-ref/source/mon-util.cc": (
-            ROOT / "crawl-ref/source/mon-util.cc").read_text(
-                encoding="utf-8"),
-    }
+    The baseline predates I69-R4-CODE-001. Freeze that repair's two consumers
+    at its commit instead of mixing later trunk bodies and line locations
+    into historical candidate evidence. The separate glyph test exercises
+    the current trunk construction.
+    """
+    repair = "5944239f73"
+    return {path: committed_source(repair, path) for path in (
+        "crawl-ref/source/shout.cc", "crawl-ref/source/mon-util.cc")}
 
 
 def card_for(entry: dict) -> dict:
@@ -507,6 +502,27 @@ class ShoutInventoryTests(unittest.TestCase):
         self.assertIn("wanderer", facts["jobs"])
         self.assertEqual(MODULE.SPEAKDB_POSTPROCESS_KEYS,
                          set(facts["speakdb_postprocess"]))
+
+    def test_trunk_and_historical_glyph_constructions_are_bound(self):
+        shared = MODULE.hardened.shared
+        current = (ROOT / "crawl-ref/source/shout.cc").read_bytes()
+        historical = shared._git_blob_at_oid(BASELINE, "crawl-ref/source/shout.cc", "fixture")
+        for source in (historical, current):
+            with mock.patch.object(shared, "_git_blob_at_oid", return_value=source):
+                MODULE._glyph_consumer_shape(BASELINE, "fixture")
+        for old, new in (
+            (b'stringize_glyph(mchar)', b'mons_type_name(mons.type)'),
+            (b'glyph_key += stringize_glyph(mchar);', b''),
+            (b'glyph_key += stringize_glyph(mchar);',
+             b'glyph_key += mchar; glyph_key += stringize_glyph(mchar);'),
+            (b'if (isaupper(mchar))', b'if (isalower(mchar))'),
+        ):
+            with self.subTest(mutation=old):
+                self.assertIn(old, current)
+                with mock.patch.object(shared, "_git_blob_at_oid",
+                                       return_value=current.replace(old, new, 1)):
+                    with self.assertRaises(MODULE.InventoryError):
+                        MODULE._glyph_consumer_shape(BASELINE, "negative")
 
     def test_mutated_default_msg_keys_fail_closed(self):
         # I69-CODE-004 exact-source negative: dropping one entry from the

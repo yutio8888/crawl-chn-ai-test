@@ -5,6 +5,7 @@ import json
 import tomllib
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import unittest
 import yaml
@@ -399,9 +400,13 @@ class AgentDocumentationTests(unittest.TestCase):
                 for step in steps
                 if step.get("name") == "Prepare Android build"
             )
+            make_line = next(line for line in prepare["run"].replace("\\\n", " ").splitlines()
+                             if line.startswith("make "))
             self.assertEqual(
-                'make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4',
-                prepare["run"],
+                ['make', 'ANDROID=$GITHUB_RUN_NUMBER', 'TILES=y', 'NPROC=4',
+                 'ANDROID_APPLICATION_ID=$ANDROID_APPLICATION_ID',
+                 'ANDROID_APP_NAME=$ANDROID_APP_NAME', 'android', '-j4'],
+                shlex.split(make_line),
             )
             build_index = next(
                 index
@@ -512,7 +517,9 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertLess(release_validate_index, release_upload_index)
             for step in (require, sign, release_validate, release_upload):
                 self.assertEqual(
-                    "${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}",
+                    "${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || "
+                    "(startsWith(github.ref, 'refs/tags/') && "
+                    "contains(github.ref_name, '-trunk-'))) }}",
                     step["if"],
                 )
 
@@ -595,6 +602,14 @@ class AgentDocumentationTests(unittest.TestCase):
             (ROOT / ".github/workflows/ci.yml").read_text()
         )
         assert_contract(workflow)
+
+        wrong_identity = copy.deepcopy(workflow)
+        prepare = next(step for step in wrong_identity["jobs"]["build_android"]["steps"]
+                       if step.get("name") == "Prepare Android build")
+        prepare["run"] = prepare["run"].replace(
+            'ANDROID_APPLICATION_ID="$ANDROID_APPLICATION_ID"', '')
+        with self.assertRaises(AssertionError):
+            assert_contract(wrong_identity)
 
         wrong_path = copy.deepcopy(workflow)
         android_steps = wrong_path["jobs"]["build_android"]["steps"]

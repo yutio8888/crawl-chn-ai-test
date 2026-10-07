@@ -322,11 +322,37 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertNotIn("conditional cast", {
             row["requested_root"] for row in report["locale_behavior_inconclusive"]})
 
+    def test_conditional_identity_concatenations_are_dynamic_slots(self):
+        self.en["identity cast"] = ["{{\nif you.invisible() then\n"
+            "return 'VISUAL: gesture'\nelse\n"
+            "return 'SOUND: Silly ' .. you.species():lower() .. '! chant'\nend\n}}"]
+        self.zh["identity cast"] = ["{{\nif you.invisible() then\n"
+            "return 'VISUAL: 手势'\nelse\n"
+            "return 'SOUND: “傻' .. crawl.t_(you.species()) .. '! 吟唱'\nend\n}}"]
+        self.en["literal concat cast"] = ["{{\nif you.invisible() then\n"
+            "return ' ges' .. 'tures'\nelse\nreturn 'plain'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        for language in ("en", "zh"):
+            self.assertEqual({"GESTURE", "VISUAL_APPLICABILITY", "VISUAL_CHANNEL",
+                              "SOUND_LIKE_CHANNEL"},
+                             self._behaviors(report, language, "identity cast"))
+        self.assertEqual({"GESTURE"}, self._behaviors(report, "en", "literal concat cast"))
+
     def test_conditional_nonliteral_or_incomplete_returns_fail_closed(self):
         cases = {
-            "concat": "'gesture' .. 's'",
+            "unknown concat": "'gesture' .. you.name()",
             "call": "you.name()",
             "variable": "message",
+            "genus concat": "'gesture' .. you.genus()",
+            "genus return": "you.genus()",
+            "dynamic prefix": "you.species() .. ': gesture'",
+            "arguments": "'gesture' .. you.species('x')",
+            "method": "'gesture' .. you.species():upper()",
+            "wrapper": "'gesture' .. crawl.t_(you.name())",
+            "arithmetic": "'gesture' .. (1 + 2)",
+            "extra return": "'gesture', you.race()",
+            "trailing concat": "'gesture' .. you.race() ..",
         }
         for name, expression in cases.items():
             self.en[name + " cast"] = [

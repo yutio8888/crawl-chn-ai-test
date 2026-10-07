@@ -4,8 +4,8 @@
 The identity space is the canonical-lowercase union of the effective EN and
 ZH Hints TextDBs.  Producer evidence is rebuilt independently from every
 ``print_hint``, ``_get_hint`` and ``getHintString`` call in ``hints.cc``;
-the only accepted non-literal producer calls are the two proven finite random
-families.  Lifecycle exceptions are bound to their real enum/test consumers.
+the accepted non-literal producer calls are proven finite random families
+and the finite cloud-description selector.  Lifecycle exceptions are bound to their real enum/test consumers.
 
 The script deliberately records language-structure differences without
 turning them into translation judgements.  Malformed/unknown tokens and
@@ -200,7 +200,7 @@ def _canonical_key(raw: str, path: str, line: int) -> str:
 
 
 def extract_producers(
-    hints_cc: bytes,
+    hints_cc: bytes, hints_en: bytes | None = None,
 ) -> tuple[list[str], dict[str, list[dict[str, object]]]]:
     """Rebuild all static and finite-family hint producers from hints.cc.
 
@@ -322,6 +322,42 @@ def extract_producers(
                 "finite-family",
                 match.group(0),
             )
+
+    # Trunk externalized cloud descriptions. Bind the complete selector,
+    # rather than treating arbitrary _get_hint(variable) calls as producers.
+    cloud_call = re.compile(
+        r"_get_hint\(hint_key, apply_description\(DESC_THE, cname\)\)"
+    )
+    cloud_calls = list(cloud_call.finditer(text))
+    if cloud_calls:
+        selector = re.compile(
+            r"string hint_key;\s*"
+            r"if \(is_harmless_cloud\(ctype\)\)\s*\{\s*"
+            r'hint_key = plural \? "([^"\n]+)"\s*: "([^"\n]+)";\s*\}\s*'
+            r"else if \(is_damaging_cloud\(ctype, true\)\)\s*\{\s*"
+            r'hint_key = plural \? "([^"\n]+)"\s*: "([^"\n]+)";\s*\}\s*'
+            r"else\s*\{\s*"
+            r'hint_key = plural \? "([^"\n]+)"\s*: "([^"\n]+)";\s*\}\s*'
+            r"ostr << uppercase_first\("
+            r"_get_hint\(hint_key, apply_description\(DESC_THE, cname\)\)\);"
+        )
+        selectors = list(selector.finditer(text))
+        if len(cloud_calls) != 1 or len(selectors) != 1:
+            raise RuntimeError(f"{HINTS_CC}: cloud hint selector shape changed")
+        selected = selectors[0]
+        call = cloud_calls[0]
+        if not selected.start() < call.start() < selected.end():
+            raise RuntimeError(f"{HINTS_CC}: cloud hint selector call moved")
+        if hints_en is None:
+            raise RuntimeError(f"{HINTS_EN}: cloud hint keys require English TextDB")
+        en_keys = {lowercase_string(entry.raw_key) for entry in parse_db_keys(
+            hints_en.decode("utf-8", errors="strict"), HINTS_EN
+        )}
+        for raw in selected.groups():
+            if _canonical_key(raw, HINTS_CC, _line_number(text, call.start())) not in en_keys:
+                raise RuntimeError(f"{HINTS_EN}: missing cloud hint key {raw!r}")
+            add(raw, "_get_hint", call.start(), "finite-selector", selected.group(0))
+        classified.add(call.start())
 
     calls = list(_ANY_HINT_CALL_RE.finditer(text))
     unresolved = [
@@ -883,7 +919,7 @@ def build_payload_from_blobs(
         )
     consumers = _verify_consumers(blobs)
     lifecycle = _verify_lifecycle_sources(blobs)
-    producer_keys, producer_facts = extract_producers(blobs[HINTS_CC])
+    producer_keys, producer_facts = extract_producers(blobs[HINTS_CC], blobs[HINTS_EN])
     en_effective, zh_effective = _entry_maps(blobs)
     en_keys = set(en_effective)
     zh_keys = set(zh_effective)

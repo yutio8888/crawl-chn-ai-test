@@ -590,15 +590,30 @@ class MonspellInventoryTests(unittest.TestCase):
             "production-zh.json", exact_artifact(PRODUCTION_BASELINE, "zh")
         )
 
+        # This is a historical exact-Git regression. Phase 0, behavior
+        # evidence and candidate recipe must come from that same commit,
+        # never from the migrated checkout's current artifacts.
+        historical = {}
+        for name in ("monspell-phase0-inventory.json",
+                     "monspell-behavior-report.json",
+                     "monspell-candidate-anchor.json"):
+            relative = ".claude/data/message-overlay/" + name
+            data = subprocess.run(
+                ["git", "-C", str(ROOT), "show", f"{PRODUCTION_BASELINE}:{relative}"],
+                check=True, text=True, capture_output=True,
+                env=MODULE.shared.trusted_git_environment(),
+            ).stdout
+            historical[name] = self.write(name, json.loads(data))
+
         def build(glossary: Path) -> dict:
             inventory = MODULE.build_inventory(
                 PRODUCTION_BASELINE,
                 en_path,
                 zh_path,
-                ROOT / ".claude/data/message-overlay/monspell-phase0-inventory.json",
+                historical["monspell-phase0-inventory.json"],
                 ROOT / ".claude/data/message-overlay/monspell.json",
-                ROOT / ".claude/data/message-overlay/monspell-behavior-report.json",
-                ROOT / ".claude/data/message-overlay/monspell-candidate-anchor.json",
+                historical["monspell-behavior-report.json"],
+                historical["monspell-candidate-anchor.json"],
                 glossary,
             )
             inventory["dumps"]["english"]["artifact_sha256"] = (

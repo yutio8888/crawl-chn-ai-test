@@ -8,7 +8,7 @@
       "description": "Entering an area, cloud, trap, bog, or travel-excluded cell.",
       "verbs": [
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
-        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "stalk", "wriggle", "sprint", "float", "hop", "trot", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
         "charge", "stumble"
       ]
@@ -17,7 +17,7 @@
       "description": "Moving onto a sigil, pressure plate, alarm trap, or other surface.",
       "verbs": [
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
-        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "stalk", "wriggle", "sprint", "float", "hop", "trot", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
         "charge", "stumble"
       ]
@@ -30,7 +30,7 @@
       "description": "Passing through allied fungi or plants.",
       "verbs": [
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
-        "stalk", "wriggle", "sprint", "float", "hop"
+        "stalk", "wriggle", "sprint", "float", "hop", "trot"
       ]
     },
     "move.toward-target": {
@@ -41,7 +41,7 @@
       "description": "Moving over deep water or lava while a flight or transformation effect expires.",
       "verbs": [
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
-        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "stalk", "wriggle", "sprint", "float", "hop", "trot", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
         "charge", "stumble"
       ]
