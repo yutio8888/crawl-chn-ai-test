@@ -46,6 +46,7 @@ alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; sour
 alligator snapping turtle	巨鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from snapping turtle → 鳄龟
 Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Amaemon title	恶魔投毒者亚麦蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+ambrosia	神食	domain=items; source=EN/ZH; 依据 / 作用域=药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096
 amulet	项链	domain=items; source=EN/ZH
 amulet of the Air	空气项链	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-021
 amulet of the Four Winds	四方之风项链	domain=items; source=EN/ZH; 依据 / 作用域=旧神器名仅保留兼容；当前改用 amulet of Tranquility；decision=D-C-095
@@ -70,6 +71,7 @@ apis	阿匹斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=so
 apocalypse crab	天启螃蟹	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Apostate	叛教	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；装备降低虔诚并减少后续获取；decision=D-C-095
 Apportation	隔空取物	domain=spells; source=EN/ZH; 备注=✅
+aptitude	资质	domain=skills; source=EN/ZH; 依据 / 作用域=种族／技能训练效率参数；弃用该参数的“天赋／能力倾向”；普通人物魔法天赋不受影响；decision=D-C-096
 Arachne	阿拉克涅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Arachne title	被放逐的阿拉克涅	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 arbalest	重弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
@@ -99,6 +101,8 @@ Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; 
 athame	仪式匕首	domain=items; source=EN/ZH; 依据 / 作用域=item-prop.cc / items.txt；由历史兼容恢复为现行武器；decision=D-C-095
 athame "Fimbulwinter"	仪式匕首"芬布尔之冬"	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095
 attack	攻击	domain=combat; source=EN/ZH
+attack of opportunity	借机攻击	domain=combat; source=EN/ZH; 依据 / 作用域=player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096
+attacks of opportunity	借机攻击	domain=combat; source=EN/ZH; 依据 / 作用域=player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096
 Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Aura of Vigour	活力光环	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.txt；提升自己生命／法力上限，并赋予邻近友军活力；decision=D-C-095
 autotomy	自断尾	domain=mutations; source=EN/ZH; 依据 / 作用域=hypnogecko.yaml / mutations.txt；受重伤后脱尾诱敌；decision=D-C-095
@@ -125,6 +129,7 @@ bane	灾祸	domain=core; source=EN/ZH; 注意事项=负面游戏机制；专名 
 Banishment	放逐	domain=spells; source=EN/ZH; 备注=✅
 banyan tree	榕树	domain=magic; source=EN/ZH; 依据 / 作用域=tree.yaml 的新具体形体描述；Tree 形态身份未改名；decision=D-C-095
 barachi	蛙人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+barbs	倒刺	domain=status; source=EN/ZH; 依据 / 作用域=造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096
 Barding	马铠	domain=items; source=EN/ZH; Scope / comment=armour; decision=D-B-019
 basilisk	石化蜥蜴	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bat	蝙蝠	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -332,6 +337,7 @@ daeva	德瓦	domain=monsters; source=EN/ZH; Scope / comment=monster; source=sour
 damage	伤害	domain=combat; source=EN/ZH
 Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
+dazed	眩晕	domain=status; source=EN/ZH; 依据 / 作用域=catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096
 Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死精粹并生成瘴气云
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态
@@ -429,7 +435,9 @@ enchant	附魔	domain=items; source=EN/ZH
 Enchanter	惑控师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Enchantress	妖术女王	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Encoldened	变冷的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；变冷结果；decision=D-C-095
+encumbrance rating	负重等级	domain=items; source=EN/ZH; 依据 / 作用域=护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096
 Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
+enlightenment	启迪	domain=items; source=EN/ZH; 依据 / 作用域=药水效果／状态词根；一般宗教语境如入祭坛的 enlightenment 可译“觉悟”；decision=D-C-096
 Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅；射出蛛网困住单个目标
 Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
 Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
@@ -468,6 +476,7 @@ faun	牧神	domain=species; source=EN/ZH
 Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
 felid	猫	domain=species; source=EN/ZH; 裁决=[D-A-039]
+fenstrider witch	沼行女巫	domain=monsters; source=EN/ZH; 依据 / 作用域=怪物名及幽灵螃蟹爪的制作群体；沿用 catalog，不混作 swamp witch 沼泽女巫；decision=D-C-096
 fiery dragon vein	火龙脉	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h；同系列；decision=D-C-095
 fiery jade	火玉晶	domain=monsters; source=EN/ZH; 依据 / 作用域=jade-crystal-fire.yaml；同系列；decision=D-C-095
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -725,6 +734,8 @@ Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / com
 Lesser Beckoning	次级招引	domain=spells; source=EN/ZH; 备注=🆕；把目标拉至施法者相邻位置，不是召唤法术
 Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
+ley line	地脉	domain=magic; source=EN/ZH; 依据 / 作用域=Dragon Veins spell 与四种 dragon vein 地形；指贯穿地牢的魔法能量脉络；可写“元素能量地脉／土魔法地脉”等，不将“魔法地脉”另立术语；decision=D-C-096
+ley lines	地脉	domain=magic; source=EN/ZH; 依据 / 作用域=Dragon Veins spell 与四种 dragon vein 地形；指贯穿地牢的魔法能量脉络；可写“元素能量地脉／土魔法地脉”等，不将“魔法地脉”另立术语；decision=D-C-096
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -817,8 +828,16 @@ mummy	木乃伊	domain=species; source=EN/ZH; 复合格式=木乃伊 + 职业
 Murky Legion	浊影军团	domain=spells; source=EN/ZH; 依据 / 作用域=spells.txt；召唤浊光怨灵；保留 murky 与 legion 意象；decision=D-C-095
 Murray	默里	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Murray title	会说话的恶魔头骨默里	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-mutagenic drain	诱变排水口	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095
-Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅
+mutagenic	诱变	domain=status; source=EN/ZH; 依据 / 作用域=描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096
+mutagenic drain	诱变排水口	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095；词根统一见 D-C-096
+mutagenic energies	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096
+mutagenic energy	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096
+mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096
+Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096
+mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096
+mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096
+mutagenic radiation	诱变辐射	domain=status; source=EN/ZH; 依据 / 作用域=复用 Contamination 既有译法；decision=D-C-096
+mutagenic serum	诱变血清	domain=status; source=EN/ZH; 依据 / 作用域=净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096
 mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
 Mystic	秘术师	domain=backgrounds; source=EN/ZH; 依据 / 作用域=background; mystic.yaml；元素法术与变形并用，不与学派名“神秘”混同；decision=D-C-095
 naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
@@ -851,6 +870,7 @@ Norris title	哲人诺里斯	domain=monster-titles; source=EN/ZH; Scope / commen
 North Wind's embodiment	北风化身	domain=mutations; source=EN/ZH; 依据 / 作用域=mutation-data.h；四风强化系列；decision=D-C-095
 Noxious Breath	毒瘴吐息	domain=spells; source=EN/ZH; 备注=✅
 Noxious Cloud	毒瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
+noxious fumes	毒烟	domain=status; source=EN/ZH; 依据 / 作用域=造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096
 Nullifying Breath	消魔吐息	domain=spells; source=EN/ZH; 备注=✅
 Névé	粒雪	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095
 Oblivion Howl	湮灭嚎叫	domain=spells; source=EN/ZH; 备注=✅
@@ -902,6 +922,7 @@ Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Phantom Blitz	幻影突击	domain=spells; source=EN/ZH; 备注=✅；发射保有施法者战斗能力的幻影复制体
 Phantom Mirror	幻影镜	domain=spells; source=EN/ZH; 备注=✅；制造较脆弱但近似原体的怪物幻影
 Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=✅ trunk 新 SPELL_PHASE_SHIFT 已复审：身体偏离常规空间；SPELL_PHASE_SHIFT_OLD 保留同名旧身份兼容；decision=D-C-095
+piety	虔诚值	domain=core; source=EN/ZH; 依据 / 作用域=神祇好感资源／数值及界面标签；一般叙述可简称“虔诚”，神眷作为解释性释义；弃用数值名“虔诚度”；decision=D-C-096
 Pikel	皮克尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Pikel title	皮克尔，灵魂商人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Planar Overlay	位面叠加	domain=spells; source=EN/ZH; 备注=✅
@@ -1044,6 +1065,7 @@ Shields	盾牌	domain=skills; source=EN/ZH; Scope / comment=skill; source=source
 Shock	震击	domain=spells; source=EN/ZH; 备注=✅
 ShootingStar	流星	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；命中／击退产生 shooting star；非装备伤害形容词；decision=D-C-095
 Short Blades	短刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+shortbow	短弓	domain=items; source=EN/ZH; 依据 / 作用域=基础武器名；catalog、hints、Hunter 与 tutorial 一致；decision=D-C-096
 shout	喊叫	domain=core; source=EN/ZH; 注意事项=非"吼叫"（那是 roar）
 shouts	喊道	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Shrammed	冻僵的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；英国方言受冻麻木；decision=D-C-095
@@ -1095,11 +1117,13 @@ Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 spectralising	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose; decision=D-B-016/D-B-020
 spell	法术	domain=core; source=EN/ZH; 注意事项=泛指
+spell library	法术库	domain=core; source=EN/ZH; 依据 / 作用域=hints、Divine Exegesis、记忆菜单与 catalog 一致；decision=D-C-096
 Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
 Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
 Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
 Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Spider Nest	蜘蛛巢穴	domain=core; source=EN/ZH; 依据 / 作用域=分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096
 Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅；向单个目标喷吐酸液
 Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
 Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=📝；与同名能力及其描述统一
@@ -1119,6 +1143,8 @@ stampeding	奔踏中	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.t
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+status|ambrosia-drunk	神食酣醉	domain=status; source=EN/ZH; 依据 / 作用域=神食作用状态；保留 drunk 的酣醉意象，药水词根统一；decision=D-C-096
+status|Barbs	倒刺	domain=status; source=EN/ZH; 依据 / 作用域=玩家倒刺状态；与 barbs 一致；decision=D-C-096
 status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
@@ -1228,6 +1254,7 @@ Touch of Paradox	悖论之触	domain=spells; source=EN/ZH; 依据 / 作用域=sp
 tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Translocation	传送系	domain=magic; source=EN/ZH
 Translocations	传送系	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+travel exclusion	禁区	domain=core; source=EN/ZH; 依据 / 作用域=自动旅行／自动探索避开的地图标记；解释性限定可写“旅行禁区／移动禁区”，不会阻止玩家手动进入；decision=D-C-096
 Tremorstone	震石	domain=spells; source=EN/ZH; 备注=✅
 TrickPois	诡毒	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；施加负面状态附带中毒；decision=D-C-095
 triple crossbow	三弦弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
@@ -1297,6 +1324,7 @@ weapon brand full name|draining	汲取	domain=items; source=EN/ZH; Scope / comme
 weapon brand terse|drain	汲取	domain=items; source=EN/ZH; Scope / comment=weapon brand terse context key; decision=D-B-016/D-B-020
 wear	穿戴	domain=items; source=EN/ZH
 Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+West Wind	西风	domain=monsters; source=EN/ZH; 依据 / 作用域=Zephyr 传说中人格化的西风；与 West Wind's embodiment → 西风化身共用词根；decision=D-C-096
 West Wind's embodiment	西风化身	domain=mutations; source=EN/ZH; 依据 / 作用域=mutation-data.h；同系列；decision=D-C-095
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
 wield	持握	domain=items; source=EN/ZH

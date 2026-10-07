@@ -3970,6 +3970,161 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 ---
 
 
+### D-C-096 — Issue #147 B0-2 缺失术语登记与 mutagenic 统一
+
+- **Type**: C — Terminology registration and consistency ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source / scope**: B1 hints、desc-a、desc-b 报告；候选起点 `d9c1185a5c`。
+  核对当前 `dat/i18n/zh/` catalog，以及 `dat/descript/*.txt` 和
+  `dat/descript/zh/*.txt` 按英文查找键配对的正文。只登记术语、导出、记录裁决；
+  以下资产位置是交接清单，本提交不修改任何译文资产。
+- **Registration**: 缺失的 16 组术语按领域登记于 `docs/glossary.md` 的
+  “B0-2”表；近似的 West Wind's embodiment、Throw Barbs 只复用其词根，
+  不另造译法，不覆盖既有法术名称。desc-a 反查确认：
+  `attacks of opportunity`、`barbs`、`dazed`、`fenstrider witch`、`West Wind`。
+  sanguine talisman 原文实际为 `daze`，使用同一状态词根。
+- **Context boundaries**:
+  - piety 的资源／数值名和标签为“虔诚值”；一般叙述可简称“虔诚”，
+    神眷作为神祇好感的解释性释义。数值标签“虔诚度”及明确的数额／
+    消耗参数按表修订；不将“虔诚的信徒”机械改成“虔诚值的信徒”。
+  - aptitude 的技能训练参数采用“资质”；Dowan 描述中的一般魔法天赋
+    不属于种族训练参数，保持原样。encumbrance rating 采用“负重等级”，
+    是护甲对动作／施法的阻碍参数，不表示背包重量。
+  - travel exclusion 采用“禁区”，保留“旅行禁区／移动禁区”作为解释性
+    限定，不保留“排除区域”作为另一套名称；该标记不禁止手动行走。
+  - enlightenment 药水与效果采用“启迪”；入祭坛的普通宗教 enlightenment
+    可保留“觉悟”。ambrosia 药水词根采用“神食”，作用状态采用“神食酣醉”；
+    hive talisman 的 `ambrosial nectar` 是普通传说修辞，不强制替换成药水名。
+  - noxious fumes 的命名及明确指称该云类型的正文采用“毒烟”，
+    与 poison gas 的“毒气”区分；云描述的性质说明无需硬插名称。
+  - ley line 采用“地脉”。Dragon Veins 英文明确为贯穿地牢的元素能量
+    脉络；“魔法”是语境修饰，可写“元素能量地脉／土魔法地脉”等。
+    拒绝把“魔法地脉”另立为不允许修饰组合的固定长名；Dragon Veins 与
+    可踏入的具体地形仍叫“龙脉”，不改已有法术或地形身份。
+- **Mutagenic distribution**（基点逐键统计，大小写不敏感；不以中文全文词频
+  代替语义配对，不把英文查找键当成漏译）:
+  - `dat/i18n/zh/source.txt` 共 18 个含 mutagenic 的英文键：15 条对应
+    “变异”（含已定稿的 Mutagenic Gaze 名称 1 条）、2 条对应“突变”、
+    1 条对应“致变”，0 条对应“诱变”。其他中文 catalog 文件无此词。
+  - 英文 descript 共 14 个相关条目、16 次出现（正文 12 次、查找键 4 次）。
+    按配对条目归类：6 条正文直接采用“诱变”（Gulch、净化诱变催化器、
+    glowing orange brain、radroach、Yara's Violent Unravelling、Contam）；
+    3 条采用“变异”（环绕雾气怪物状态、neqoxec、Mutagenic Gaze 正文）；
+    1 条“致变”（potion clouds）；1 条释义“诱发变异”（Warp Body）；
+    1 条省略对应能量／倍量表述（contamination susceptible）；
+    2 条仅在英文查找键中出现（mutagenic fog cloud、A mutagenic drain）。
+    仅键出现的两条保留英文身份；前者中文正文已有“诱变辐射”。
+- **Mutagenic choice**: 生产性形容词及普通复合名词统一使用“诱变”词根，
+  表达“使生物发生变异”的致因关系；energy、power、glow、radiation、fog、
+  serum 和 drain 等组合见 glossary。保留已定稿的固定法术名
+  `Mutagenic Gaze → 变异凝视` 作为明确例外；其描述正文使用“诱变能量”。
+  不把该名称例外扩展到其他普通复合词。mutation／mutate 指变异本身或
+  发生变异，仍使用既有“变异”，如“变异药水”及“造成有害变异”。
+  Warp Body 的完整释义“诱发变异的腐化力量”符合致因关系，保留。
+- **Rejected alternatives**: 全部采用“变异”会混淆过程／结果与致因，且与
+  既有 Contamination 的“诱变辐射”和 B0 排水口词根分裂；“致变”虽能表达
+  致因，当前只用于 fog，缺乏机制上的独立分类依据。不以 fog／energy
+  作为任意分界。强制重命名已确认的“变异凝视”则会推翻现行法术裁决，
+  本次用明确固定名称例外保留。两条 mutagenic power 的“突变能量”改为
+  “诱变力量”，同时保持原文 power 与 energy 的语义区别。
+- **Song-title choices**: 引文署名采用项目译名，不声称官方／通行中文曲名；
+  不改英文查找键或引文归属。
+  - A Whiter Shade of Pale 选《更淡的苍白》；保留反常的色彩意象，
+    比《更浅一层的苍白》简洁自然，不添加原题没有的层级量词。
+  - One of Us Cannot Be Wrong 保留《我们之中有一个不会错》；
+    cannot be wrong 的情态不等于“必有一人是对的”的肯定判断，
+    不采用后一候选。本条资产无需修改（`quotes.txt:3784`）。
+- **Deferred asset changes**: 以下行号固定对应 `d9c1185a5c`，由各文件负责
+  译者修订。每行指中文译文，不允许改动英文 key、Lua、格式符或控制标记。
+  仅术语省略的两条须对照完整英文补齐相关分句，不以本表片段代替全句。
+
+| 资产位置（相对仓库根，译文行） | 当前用词 | 修订要求 | 术语 |
+|----|----|----|----|
+| `crawl-ref/source/dat/descript/zh/features.txt:428` | 蜘蛛巢 | 蜘蛛巢穴 | Spider Nest |
+| `crawl-ref/source/dat/descript/zh/gods.txt:379` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/descript/zh/monstatus.txt:558` | 变异雾气 | 诱变雾气 | mutagenic |
+| `crawl-ref/source/dat/descript/zh/monsters.txt:857` | 倒钩 | 倒刺 | barbs |
+| `crawl-ref/source/dat/descript/zh/monsters.txt:1769` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/descript/zh/mutations.txt:941` | 你更容易受到魔法污染的影响，使其更快积累。 | 按英文补齐“从魔法污染中吸收双倍诱变能量”；不得仅替换词语而遗漏倍量条件 | mutagenic（省略） |
+| `crawl-ref/source/dat/descript/zh/mutations.txt:1190` | 负重评级 | 负重等级 | encumbrance rating |
+| `crawl-ref/source/dat/descript/zh/mutations.txt:1416` | 致变雾气 | 诱变雾气 | mutagenic |
+| `crawl-ref/source/dat/descript/zh/quotes.txt:3749` | 《更浅一层的苍白》 | 《更淡的苍白》 | 歌曲题名 |
+| `crawl-ref/source/dat/descript/zh/spells.txt:526` | 蜘蛛巢 | 蜘蛛巢穴 | Spider Nest |
+| `crawl-ref/source/dat/descript/zh/spells.txt:850` | 有害烟雾 | 毒烟 | noxious fumes |
+| `crawl-ref/source/dat/descript/zh/spells.txt:921` | 有毒烟雾 | 毒烟 | noxious fumes |
+| `crawl-ref/source/dat/descript/zh/spells.txt:946` | 负担等级 | 负重等级 | encumbrance rating |
+| `crawl-ref/source/dat/descript/zh/spells.txt:1831` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/descript/zh/spells.txt:2109` | 元素能量脉络 | 元素能量地脉 | ley line |
+| `crawl-ref/source/dat/descript/zh/status.txt:176` | 有刺 | 有倒刺 | barbs |
+| `crawl-ref/source/dat/descript/zh/status.txt:177` | 这些刺 | 这些倒刺 | barbs |
+| `crawl-ref/source/dat/descript/zh/tutorial.txt:501` | 有毒气体 | 毒烟 | noxious fumes |
+| `crawl-ref/source/dat/i18n/zh/source.txt:1790` | 晕眩 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:2510` | 虔诚增长 | 虔诚值增长 | piety（数值） |
+| `crawl-ref/source/dat/i18n/zh/source.txt:3783` | 变异光芒 | 诱变光芒 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:4532` | 晕眩 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:4532` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:4535` | 晕头转向 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:4688` | 变异光芒 | 诱变光芒 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5219` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5222` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5225` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5228` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5493` | 排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5763` | 排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:5808` | 排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:6543` | 排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:7183` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:7606` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:7639` | 被标记为排除 | 设有禁区标记 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:9164` | 排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:9506` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:10729` | 探索排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:17798` | 恍惚 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:18971` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:20144` | 晕眩 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:20654` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:21338` | 恍惚 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:24060` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:24066` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:24537` | 突变能量 | 诱变力量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:24666` | 突变能量 | 诱变力量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:24834` | 仙酿 | 神食 | ambrosia |
+| `crawl-ref/source/dat/i18n/zh/source.txt:26637` | 负重评级 | 负重等级 | encumbrance rating |
+| `crawl-ref/source/dat/i18n/zh/source.txt:27598` | 负重评级 | 负重等级 | encumbrance rating |
+| `crawl-ref/source/dat/i18n/zh/source.txt:27859` | 旅行排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:29503` | 虔诚消耗 | 虔诚值消耗 | piety（消耗参数） |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33112` | 震慑 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33422` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33425` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33431` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33434` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:33449` | 虔诚度值 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:34767` | 排除区 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:35277` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:35634` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:35805` | 天赋 | 资质 | aptitude |
+| `crawl-ref/source/dat/i18n/zh/source.txt:36027` | 虔诚度 | 虔诚值 | piety |
+| `crawl-ref/source/dat/i18n/zh/source.txt:36187` | 致变雾气 | 诱变雾气 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:37771` | 尖刺 | 倒刺 | barbs 状态 |
+| `crawl-ref/source/dat/i18n/zh/source.txt:38341` | 仙酒醉 | 神食酣醉 | ambrosia 状态 |
+| `crawl-ref/source/dat/i18n/zh/source.txt:38899` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:38902` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:38905` | 变异能量 | 诱变能量 | mutagenic |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40417` | 探索排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40420` | 探索排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40441` | 探索排除区域 | 禁区 | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40537` | 能力倾向表 | 资质表 | aptitude |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40732` | 相对于当前 | 按英文补齐“以资质为零的技能从零级升到一级所需的经验值为基准” | aptitude（省略） |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40834` | 排除区域 | 禁区；同句“排除标记”改为“禁区标记” | travel exclusion |
+| `crawl-ref/source/dat/i18n/zh/source.txt:40903` | 被标记为已排除 | 设有禁区标记 | travel exclusion |
+
+- **Supersedes / narrows**: 补充 D-C-095 的 mutagenic 词根边界；
+  Mutagenic Gaze 固定法术名及其他既有法术／神器定稿维持有效。
+- **Affected files**: `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4116,3 +4271,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
 | D-C-095 | Upstream 0.35 trunk B0 terminology (#147) | glossary 定稿；资产与 defaults 后续实施 | active |
+| D-C-096 | B0-2 missing terms and mutagenic (#147) | 补登记；诱变词根统一，固定法术名例外；资产修订交接 | active |
