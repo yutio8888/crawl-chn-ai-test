@@ -12231,6 +12231,15 @@ Bazaar
 
 集市
 %%%%
+Gulch
+污渠
+%%%%
+a gutter gulch
+排污渠
+%%%%
+You enter the Vaults' gutter gulch!
+你进入了宝库的排污渠！
+%%%%
 Troves
 
 宝藏库
@@ -31617,8 +31626,14 @@ It occasionally leaves clouds of freezing vapour upon striking a foe, and grants
 You hear the sound of rushing water.
 你听到了流水声。
 %%%%
+You hear the sound of rushing sludge.
+你听到了污泥奔流的声音。
+%%%%
 There is an entrance to a sewer on this level. Hurry and find it before the portal rusts away!
 这个楼层有一个通往下水道的入口。在传送门生锈消失前找到它！
+%%%%
+There is an entrance to a gutter gulch on this level. Hurry and find it before the portal rusts away!
+这一层有通往排污渠的入口。快在传送门锈坏前找到它！
 %%%%
 You hear the drain falling apart.
 你听到排水口散架的声音。
@@ -44046,6 +44061,9 @@ Upon your arrival, your hatred by all makes the other customers disperse.
 Upon your arrival, your lonesome duelist's vow makes the other customers flee.
 你一到来，孤高决斗者的誓言便让其他顾客纷纷逃走。
 %%%%
+Upon your arrival, your lonesome duellist's vow makes the other customers flee.
+你一到来，孤高决斗者的誓言便让其他顾客纷纷逃走。
+%%%%
 Xom shifts dimensions to make the bazaar a little more interesting.
 佐姆扭转维度，让集市变得更有趣了一点。
 %%%%
@@ -44105,6 +44123,9 @@ rusting
 %%%%
 The drain falls to bits.
 排水口散架了。
+%%%%
+The mutagenic drain falls to bits.
+诱变排水口散架了。
 %%%%
 Entered %s
 进入了%s
@@ -44677,6 +44698,9 @@ Maxwell's Workshop
 麦克斯韦的工坊
 %%%%
 Yara's Duelist Academy
+亚拉的决斗学院
+%%%%
+Yara's Duellist Academy
 亚拉的决斗学院
 %%%%
 Borgnjor's Mausoleum
