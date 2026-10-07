@@ -3839,6 +3839,132 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-095 — Issue #147 trunk 迁移 B0 术语定稿
+
+- **Type**: C — Upstream naming migration ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source**: Issue #147，迁移设计 §7.4 与 D3（新增内容全部翻译）；
+  固定上游 `1eebc1a289`（0.34.1）→ `43d89d912d`；
+  术语候选起点 `6bff4dac4f`。本裁决只修改 glossary、导出与本记录，
+  不表示中文资产、defaults 正则或 trunk 发布验收已经完成。
+- **Enumeration**:
+  - 以两端 `git diff` 和各端名称集合差枚举；YAML 文件名本身不视为显示名。
+    `dat/species/*.yaml`、`dat/jobs/*.yaml`、`dat/forms/*.yaml`、
+    `dat/mons/*.yaml` 核对 `name`、短名、幼体名、形容词与生成器默认名称；
+    `util/job-gen.py` 核对职业分组，`util/form-gen.py` 核对派生形态名。
+  - `spl-data.h` 分开核对现行定义与 AXED_SPELL：14 个新标题，以及
+    同名但新枚举／新机制的 Phase Shift。名称不变不能证明机制未变。
+  - `art-data.txt` 枚举 NAME、INSCRIP 与 DBRAND/DESCRIP 特效名；
+    `item-prop.cc`、`item-name.cc` 核对新武器、药水、护符与 bauble；
+    `feature-data.h`、`branch-data.h`、`dat/des/portals/` 与
+    `dat/des/branches/` 核对地形和门户显示文本。
+  - `cloud.cc`、`duration-data.h`、`status.cc`、`mutation-data.h`、
+    `ability.cc`、`mon-info.cc` 与相应英文 `dat/descript/*.txt`
+    交叉核对新云、状态、形态特征、能力和神器传说专名。
+  - 补查命名数据库 montitle、monname、randname、rand_arm、rand_wpn、
+    randbook、gizmo 与 colourname 的新增有限组件：Goji 称号、Desdemona、
+    虚构元素、神器双关／抽象名、书名寒冷主题及作者专名一并登记。
+    randbook 的 _the_book_magic_ → _the_subject_ 等是递归查找身份变更，
+    不是新术语；Absolute Zero 作为随机书名主题登记“绝对零度”，
+    不将书名组件误当成恢复同名法术。
+    mon-lurk.cc 是潜伏者机制类的依据，不把 lurker 误列成新物种。
+  - 检查未变化的基础术语，保留并复用，避免重复建立；补登记依赖的
+    ghost crab、giant spiked club、occultist、Divine Exegesis 等现行基词。
+    `undead` 伪变异复用已存在的 `undead → 亡灵`，不再新建同键。
+  - 排除纯数值变化、内部 enum/协议／查找键、YAML 文件与 enum 的对齐改名、
+    DES NAME/TAGS 等生成身份及非命名正文。deep elf fire/air mage 文件改名
+    不是 pyromancer/zephyrmancer 显示名新增，两端 name 相同。
+    Descent 属 ALPHA 可见流程，纳入术语覆盖，不声称本区间新增该模式。
+- **Choice**: 逐项 EN、ZH、依据和作用域见 `docs/glossary.md` 各域的
+  “trunk B0”表。名称定稿供后续翻译使用；本记录不复制另一套术语表。
+- **Series rules and rejected choices**:
+  - Gale Centaur 保留 centaur → 半人马，采用“疾风半人马”；拒绝
+    “风马人”（丢失已有种族基词）和“甲马人”（不同、已移除种族）。
+  - Mystic → 秘术师，Stalker → 潜行者，Metamorph → 变形者；
+    不把分组改成职业 Shapeshifter 的“变形人”。旧 Stalker 的同名显示
+    词根可复用，当前机制依据是新 YAML，不复用旧职业长描述。
+  - Vision → 灵视，Jademantle → 玉衣（短名 Jade → 玉晶），
+    Hypnogecko → 迷魂壁虎（短名 Gecko → 壁虎），Mistmane → 雾鬃。
+    拒绝 Vision → 幻象（误示幻觉）、Jademantle → 翡翠斗篷（误示独立装备）、
+    Hypnogecko → 变色龙（生物类别错误）。
+    生成长名 `vision-form`、`jade-form`、`gecko-form`、`mistmane-form`
+    分别使用“灵视形态、玉衣形态、迷魂壁虎形态、雾鬃形态”；
+    短状态名仍按短名表使用，不将长短名混成不同机制。
+  - Dragon Veins → 龙脉，四个触发法术使用“龙脉（火／冰／气／土）”；
+    地形分别使用“火／冰／气／土龙脉”。脉络是 ley lines，不是龙的血管。
+    Ice Thorns → 冰棘，Sirocco → 灼热风；拒绝“冰灾”和“沙尘暴”，
+    原名与当前机制均不支持增添规模或沙尘。
+  - Stampede → 奔踏，所有法术、状态、变异同根，区别 Rampage → 冲锋。
+    Touch、Bolt、Ufetubus、Brambles 的基础构词沿用已有体系。
+  - Gulch → 污渠：英文分支描述明确为宝库的排水、废料和诱变实验空间。
+    拒绝孤立字面“峡谷”（误导空间）、“下水道”（与既有 Sewer 辨识度低）。
+  - telencephalon → 端脑保留原作解剖学命名；不改成原文没有的“脑魔”。
+    mongrel wurm → 杂种蠕龙保留杂交龙形生物；不译普通“杂种蠕虫”。
+  - 既有物件基词沿用“仪式匕首、巨刺棍、长柄斧、幽灵螃蟹”；
+    新神器名按显示名翻译，不用 OBJ 底层 subtype 改写 bone scales 或
+    staff of Five Virtues。Stagehand 按舞台工这一角色译，不擅设人名。
+- **Random-name lexical evidence**: 这些是随机命名组件，不是新增游戏状态或
+  战斗效果，近义组件允许同译。Apeiromancy 的“无穷术”按 apeiro 词根
+  推导，不把它当成新学派；旧 Apeoromancy 保留同译兼容。
+  来源数据及注释决定类别，词义补充核对 [DSL Cauldrife](https://dsl.ac.uk/entry/snd/cauldrife_adj_adv)、
+  [DSL Nither](https://dsl.ac.uk/entry/snd/nither)、
+  [DSL Oorie](https://dsl.ac.uk/entry/snd/oorie)、
+  [Merriam-Webster Key-cold](https://www.merriam-webster.com/dictionary/key-cold)、
+  [Collins Pernio](https://www.collinsdictionary.com/dictionary/english/pernio)、
+  [Frazil](https://www.dictionary.com/browse/frazil)、
+  [Infrigidation](https://www.etymonline.com/fr/word/infrigidation)、
+  [Nixious 历史释义](https://www.phrases.org.uk/meanings/181700.html)。
+  不把 Nixious 误读成 noxious，不把 Hibernal 误读成冬眠，
+  不把 Subnivean 误读成零下。
+- **Renames / compatibility**:
+  - Armataur → Gale Centaur 是种族替代，不是同物种的中文润色：
+    “甲马人”标记为 trunk 已移除，保留 0.34.1 和 deprecated YAML 兼容。
+  - Battlemage → Elementalist 只发生在先祖类型及相关菜单／能力名：
+    当前采用“元素使”，旧“战斗法师”保留历史先祖兼容；一般传说中的
+    battlemage（如 Yara）不受本裁决改名。
+  - **Ogre → Oni 不属于本区间种族改名**：基线 `dat/species/oni.yaml`
+    已有 `name: Oni`；两端都是 Oni。Lua 种族比较更新为 Oni 是纠正旧比较值，
+    不废止仍存在的 ogre 怪物及“食人魔”；种族 oni → 鬼继续有效。
+  - cursed → bound 仅替换 Ashenzari 装备绑定的显示用语：前缀
+    “束缚的”、括注“（已束缚）”、菜单／费用“已束缚物品”、动作
+    “束缚／解除束缚”、仪式“束缚仪式”、意象“枷锁”。
+    原 core `curse → 诅咒` 补充适用边界，不全局替换诅咒、死亡诅咒、
+    curse skull/toe 或 bound soul。内部 `cursed()`、CURSE 枚举仍是英文。
+    后续中文 defaults 规则应配对当前显示形式；B0 不改任何正则。
+  - Divine Vigour → Aura of Vigour 的能力菜单使用“活力光环”；
+    效果名 divine vigour 仍为“神圣活力”，旧能力标题保留兼容。
+    Pacify 和 Divine Alms 是当前独立显示能力，不继承旧治疗能力名。
+  - glaive of Prune → partisan of Prune：词根“梅干”及 D-B-021 的双关
+    保持有效；当前武器显示“梅干阔头枪”，旧“梅干长柄刀”保留历史兼容。
+    amulet of the Four Winds → amulet of Tranquility：当前“宁静项链”，
+    旧“四方之风项链”保留历史兼容。
+  - Summon Ufetubus → Ufetubi Swarm、Wall of Brambles → Cage of Brambles：
+    新机制采用新标题，旧标题标记为 trunk 已替代，仅保留历史兼容。
+  - Phase Shift：采用“相位变换”，更新旧 glossary 的“暂缓，恢复时复审”
+    为当前已复审。新法术使身体稍偏离常规空间，对无 SInv 攻击者有闪避
+    优势并隐藏伤势；不是旧版纯 EV 增益。SPELL_PHASE_SHIFT_OLD 保留旧身份。
+  - deflecting missiles 取代 repelling missiles 怪物状态标签，复用
+    Deflect Missiles → 偏转飞弹；不重译现存 Repel Missiles 法术。
+- **Human-review candidates**: 本次已选定保守方案，不留无译名条目。
+  以下若要采用典故／更具体释义，需要维护者后续裁决：
+  - Carina：采用“卡里纳”；候选“船底座”。神器描述提到星空却未明确星座，
+    前者避免补设典故，后者若获上游命名意图证实会更鲜明。
+  - coolibah：采用“库利巴木”；候选“库利巴桉”。英文只明确树木材质，
+    后者加入植物分类，需要可靠释义，不能由材质句推断。
+  - Zmysua、Yntzoia：采用“兹米苏娅、因佐娅”；候选“兹米斯娅、因佐伊娅”。
+    无读音说明，短音译易读，较长方案保留更多字母映射，维护者可复核。
+  - Jademantle：采用“玉衣”；候选“玉晶披覆”。前者凝练且保留 mantle，
+    后者机制更直观但较长；短名 Jade 已明确为“玉晶”。
+- **Supersedes / narrows**: D-B-021 仅 glaive of Prune 的现行武器基词及
+  athame 的“仅兼容”状态由本次上游内容替代，双关解释不废止；
+  既有法术复审中 Phase Shift 的暂缓状态及 Summon Ufetubus、
+  Wall of Brambles 的“现行”范围限定为 0.34.1。其他旧裁决保持有效。
+- **Affected files**: `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+---
+
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -3984,3 +4110,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |
 | D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
+| D-C-095 | Upstream 0.35 trunk B0 terminology (#147) | glossary 定稿；资产与 defaults 后续实施 | active |
