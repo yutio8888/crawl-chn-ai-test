@@ -797,6 +797,30 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                                    for identity, name in definitions
                                    if identity.removeprefix("UNRAND_") in expected})
 
+    def test_trunk_unrand_changed_name_boundary_rejects_unreviewed_drift(self):
+        source = MODULE.source_entries(MODULE.ZH_SOURCE_DIR)
+        baseline = MODULE.source_entries_at_revision(
+            MODULE.ZH_SOURCE_DIR, MODULE.ISSUE29_REVIEW_BASE)
+        descriptions = {entry.canonical_key: entry.value for entry in
+                        MODULE.textdb_rows(MODULE.SRC / "dat/descript/zh/unrand.txt")}
+        rows = MODULE.unrand_rows(descriptions, source, {}, baseline,
+                                  MODULE.ISSUE29_REVIEW_BASE)
+        self.assertEqual(155, len(rows))
+        # A nineteenth changed name must require a new explicit audit.
+        source["robe of vines"] = "unreviewed change"
+        with self.assertRaisesRegex(RuntimeError,
+                                    "unrand SourceDB conclusion boundary drift"):
+            MODULE.unrand_rows(descriptions, source, {}, baseline,
+                               MODULE.ISSUE29_REVIEW_BASE)
+
+    def test_trunk_description_population_includes_new_and_former_compat_keys(self):
+        payload, _ = MODULE.build_extended_inventory()
+        rows = {row["identity"]: row for row in payload["rows"]}
+        self.assertIsNone(rows["item-description:assassin centipede"]["pre_review_chinese"])
+        self.assertTrue(rows["item-description:assassin centipede"]["current_chinese"])
+        self.assertEqual([], payload["scope"]["compatibility_key_exceptions"]["items_zh_only"])
+        self.assertEqual([], payload["scope"]["compatibility_key_exceptions"]["unrand_zh_only"])
+
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
             "identity": "weapon:WPN_TEST",
@@ -889,7 +913,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                          payload["schema"])
         self.assertEqual(398, payload["count"])
         self.assertEqual(
-            "63f0eb9c721654284401130123b6149af5cb2a46cbe2a2fe0b74979223b113d2",
+            "0089c11c7a248d4503ea18f6708f3420f03acf75859395062ff479d4e6428413",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
@@ -1094,9 +1118,9 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "unident": 7,
                 "appearance": 186,
                 "special": 23,
-                "gizmo": 539,
-                "item-description": 307,
-                "randart-component": 2440,
+                "gizmo": 543,
+                "item-description": 317,
+                "randart-component": 2443,
                 "randart-grammar": 115,
             },
             payload["category_counts"],
@@ -1111,11 +1135,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(
             {
                 "grammar_keys": 115,
-                "physical_variant_identities": 2440,
-                "raw_nonempty_grammar_lines": 2734,
+                "physical_variant_identities": 2443,
+                "raw_nonempty_grammar_lines": 2737,
                 "explicit_weight_marker_lines": 293,
                 "continuation_lines": 1,
-                "weight_mass": 27304,
+                "weight_mass": 27334,
             },
             payload["scope"]["randart_component_metrics"]["totals"],
         )

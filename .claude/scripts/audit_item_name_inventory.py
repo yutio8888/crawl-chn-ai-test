@@ -1120,19 +1120,19 @@ RANDART_METRICS = {
     },
     "rand_wpn.txt": {
         "grammar_keys": 45,
-        "physical_variant_identities": 845,
-        "raw_nonempty_grammar_lines": 867,
+        "physical_variant_identities": 846,
+        "raw_nonempty_grammar_lines": 868,
         "explicit_weight_marker_lines": 22,
         "continuation_lines": 0,
-        "weight_mass": 8346,
+        "weight_mass": 8356,
     },
     "rand_arm.txt": {
         "grammar_keys": 19,
-        "physical_variant_identities": 529,
-        "raw_nonempty_grammar_lines": 537,
+        "physical_variant_identities": 531,
+        "raw_nonempty_grammar_lines": 539,
         "explicit_weight_marker_lines": 8,
         "continuation_lines": 0,
-        "weight_mass": 5242,
+        "weight_mass": 5262,
     },
     "rand_all.txt": {
         "grammar_keys": 18,
@@ -1311,15 +1311,22 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         if base_source_db.get(key) != source_db.get(key):
             changed_names.add(key)
     expected_changed_names = {
-        "glaive of prune", 'morningstar "eos"',
-        "sword of cerebov", "amulet of the air",
+        # Issue #147: 13 new upstream definitions, Prune and Tranquility
+        # renames, plus the three surviving pre-trunk reviewed name changes.
+        "amulet of the air", "amulet of tranquility", "arcane splint mail",
+        'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
+        "fire dragon occultist's scales", "forgewarden's cuirass",
+        "ghost crab claws", 'giant spiked club "carina at dusk"',
+        "hana's scimitar", "ice dragon arcanist's scales",
+        'morningstar "eos"', "partisan of prune", "staff of five virtues",
+        "stagehand's sword", "swamp witch's dragon scales", "sword of cerebov",
     }
     if changed_names != expected_changed_names:
         raise RuntimeError(
             f"unrand SourceDB conclusion boundary drift: "
             f"{sorted(changed_names)}"
         )
-    adjust_names = {"glaive of prune", 'morningstar "eos"'}
+    adjust_names = {"partisan of prune", 'morningstar "eos"'}
 
     rows = []
     for enum_id, definition in zip(enums, definitions):
@@ -2188,13 +2195,13 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         e.canonical_key: e
         for e in revision_textdb_rows(description_zh, review_base)
     }
-    allowed_zh_extra = {"athame"}
+    # Trunk now has an English athame description; retire the ZH-only exception.
+    allowed_zh_extra = set()
     if set(en_items) - set(zh_items) or set(zh_items) - set(en_items) != (
         allowed_zh_extra
     ):
         raise RuntimeError(
-            "ordinary description EN/ZH key mismatch outside explicit "
-            "athame compatibility key"
+            "ordinary description EN/ZH key mismatch"
         )
     changed_items = changed_textdb_keys(description_zh, review_base)
     for key in sorted(en_items):
@@ -2205,7 +2212,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
             "english_source": runtime_normalize_value(en_items[key].value),
             "_pre_review_chinese": runtime_normalize_value(
                 base_zh_items[key].value
-            ),
+            ) if key in base_zh_items else None,
             "current_chinese": runtime_normalize_value(zh_items[key].value),
             "producer": f"DescriptionDB key {key}",
             "consumer": "item_def::name(DESC_DBNAME) -> getLongDescription",
@@ -2262,9 +2269,9 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "unident": 7,
         "appearance": 186,
         "special": 23,
-        "gizmo": 539,
-        "item-description": 307,
-        "randart-component": 2440,
+        "gizmo": 543,
+        "item-description": 317,
+        "randart-component": 2443,
         "randart-grammar": 115,
     }
     if dict(counts) != expected_counts:
@@ -2279,13 +2286,9 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         entry.canonical_key
         for entry in textdb_rows(SRC / "dat/descript/unrand.txt")
     }
-    allowed_unrand_extra = {
-        'athame "fimbulwinter"',
-        "fire dragon occultist's scales",
-        "ice dragon arcanist's scales",
-        "swamp witch's dragon scales",
-    }
-    if unrand_zh - unrand_en != allowed_unrand_extra:
+    # All four former ZH-only artefacts have production trunk EN descriptions.
+    allowed_unrand_extra = set()
+    if unrand_en - unrand_zh or unrand_zh - unrand_en != allowed_unrand_extra:
         raise RuntimeError("unrand compatibility key classification drift")
 
     source_evidence = build_source_evidence(rows, review_base)
@@ -2330,11 +2333,11 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     }
     expected_randart_totals = {
         "grammar_keys": 115,
-        "physical_variant_identities": 2440,
-        "raw_nonempty_grammar_lines": 2734,
+        "physical_variant_identities": 2443,
+        "raw_nonempty_grammar_lines": 2737,
         "explicit_weight_marker_lines": 293,
         "continuation_lines": 1,
-        "weight_mass": 27304,
+        "weight_mass": 27334,
     }
     if randart_totals != expected_randart_totals:
         raise RuntimeError(
