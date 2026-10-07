@@ -1302,6 +1302,9 @@ w:1
 
 @The_weapon@唱道：“我们曾欢笑，我们曾快乐，我们在阳光下斩杀恶魔……”
 
+# "Little" Jimmy Dickens
+@The_weapon@唱道：“愿天堂鸟飞进你的鼻子里……”
+
 ############ 真实的歌曲，低紧张度 ############
 %%%%
 _real_song_low_tension_
@@ -2036,3 +2039,33 @@ zonguldrok hat mask of the Dragon
 如此原始的杀戮力量，我的传人……
 
 保持坚强的意志，给所有反对我们的人带去死亡！
+%%%%
+fire dragon occultist scales greeting
+
+你感到身后刚刚闪过一道温柔的目光，宛如重燃的火焰。
+
+好奇的余烬在周围噼啪作响，渴望新的引火物。
+
+w:5
+你感到岁月的重压缓缓爬过你的心智与魔法。
+%%%%
+fire dragon occultist scales farewell
+
+你听到一声巨龙不耐烦的鼻息，在脑海中低低回响。
+
+龙鳞因狂热的不满而剧烈轰鸣。
+%%%%
+ice dragon arcanist scales greeting
+
+你感到身后刚刚闪过一抹会心的冷笑，宛如回荡的冰霜。
+
+霜纹在周围噼啪作响，渴望新的受害者。
+
+w:5
+你感到岁月的重压缓缓爬过你的心智与魔法。
+%%%%
+ice dragon arcanist scales farewell
+
+你几乎听到一声巨龙不以为然的嗤笑，在脑海中低低回响。
+
+龙鳞因冰冷的挫败感而剧烈震响。

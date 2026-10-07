@@ -374,31 +374,19 @@ VISUAL:@The_monster@ 看起来很烦躁。
 @The_monster@ 对 @foe@ 尖叫道："我想一个人待着！"
 %%%%
 _Terence_rare_
-@The_monster@ 对 @foe@ 尖叫道："你那{{
-if you.race() == "Armataur" then
-    return "坚韧的厚皮"
-else
-    return "所谓的技巧"
-end
-}}救不了你！" @player_only@
+@The_monster@ @at_foe@尖叫道："你那所谓的技巧救不了你！"
 
-@The_monster@ 对 @foe@ 尖叫道："你的{{
-if you.race() == "Armataur" then
-    return "大象"
-else
-    return "力量"
-end
-}}哪去了？！" @player_only@
+@The_monster@ @at_foe@尖叫道："你的力量哪去了？！"
 
-@The_monster@ 对 @foe@ 尖叫道："站住，懦夫！你想打，就拿出点荣誉来！"
+@The_monster@ @at_foe@尖叫道："站住，懦夫！你想打，就拿出点荣誉来！"
 
-@The_monster@ 对 @foe@ 说："我厌倦了战争。但如果你想要血，那就血！"
+@The_monster@ @to_foe@说："我厌倦了战争。但如果你想要血，那就让你见血！"
 
-@The_monster@ 对 @foe@ 尖叫道："滚出去，别等我赶你出去！"
+@The_monster@ @at_foe@尖叫道："滚出去，别等我赶你出去！"
 
-@The_monster@ 对 @foe@ 尖叫道："我恨闯入者！"
+@The_monster@ @at_foe@尖叫道："我恨闯入者！"
 
-@The_monster@ 对 @foe@ 尖叫道："我挂了'请勿打扰'的牌子！你不识字吗？！"
+@The_monster@ @at_foe@尖叫道："我挂了'请勿打扰'的牌子！你不识字吗？！"
 %%%%
 Terence triumphant
 
@@ -788,6 +776,10 @@ w:2
 w:2
 # 《天堂的车床》
 @The_monster@ 说："什么样的正常人能活在这世界上而不疯掉？"
+
+w:2
+# Harry Chapin, "Corey's Coming"
+@The_monster@ 说："现实不过是一个词。"
 %%%%
 _crazy_yiuf_speech_verbs_
 w:20
@@ -5283,7 +5275,9 @@ _crazy_yiuf_wordlist2_
 
 牛
 
+羊
 
+狐
 
 蔑视
 
@@ -5331,7 +5325,7 @@ _crazy_yiuf_wordlist2_
 
 血红
 
-
+叽叽喳喳
 
 二十三
 
@@ -5378,6 +5372,8 @@ _crazy_yiuf_wordlist2_
 
 
 嘶嘶泡
+
+卡扎克
 %%%%
 # Nemelex's deck of destruction
 _deck_of_destruction_line_
@@ -9644,11 +9640,6 @@ __NONE
 # 友善的小恶魔
 
 ###############
-%%%%
-default '8'
-
-
-__NONE
 
 #########################################
 
@@ -9884,10 +9875,6 @@ friendly cognitogaunt
 @cognitogaunt@
 %%%%
 friendly good god 'cap-A'
-w:19
-__NONE
-
-w:1
 @_holy_being_@
 %%%%
 friendly laughing skull
@@ -9932,7 +9919,7 @@ w:5
 neutral good god 'cap-A'
 __NONE
 
-w:1
+w:5
 @_holy_being_@
 %%%%
 related Saint Roka
@@ -10078,3 +10065,76 @@ VISUAL:@The_monster@ 愤怒地仰望苍天。
 VISUAL:@The_monster@ 愤怒地四处比划。
 
 VISUAL:@The_monster@ 面带正义的愤慨，皱起眉头。
+%%%%
+Goji
+
+@The_monster@说：“别的骑手看到俺，肯定全都羡慕。可他们看不见！”
+
+@The_monster@喊道：“隐蔽是赢下*所有*战斗的关键。”
+
+@The_monster@说：“俺总能出其不意。”
+
+w:20
+VISUAL:{{
+  if you.see_invisible() then
+    return "@The_monster@差点从@possessive@坐骑上滑下来。"
+  else
+    return "@The_monster@一度摇摇欲坠地歪向一侧。"
+  end
+}}
+
+w:20
+VISUAL:{{
+  if you.see_invisible() then
+    return "@The_monster@被@possessive@坐骑的翅膀反复拍打。@Subjective@似乎毫无察觉。"
+  else
+    return "@The_monster@的脸被某个看不见的东西反复拍打。"
+  end
+}}
+
+w:20
+VISUAL:{{
+  if you.see_invisible() then
+    return "@The_monster@的坐骑试图把@objective@甩下来，却没成功。"
+  else
+    return "@The_monster@上下晃动，看着令人心惊。"
+  end
+}}
+
+VISUAL:@The_monster@费力地将@possessive@武器从@possessive@鞍具中解开。
+
+@The_monster@说：“就算是伯劳，也躲不开看不见的东西！”
+
+@The_monster@说：“这下俺肯定能当队长了。”
+
+w:2
+@The_monster@说：“像蝴蝶一样飘，像……拿着长矛的蝴蝶一样刺！”
+%%%%
+Goji killed
+
+@The_monster@嘶哑地说：“可俺……应该……看不见才对……”
+%%%%
+Goji triumphant
+
+{{
+  if you.invisible() then
+    return '@The_monster@得意地大笑。“戈吉*更*隐形！”'
+  else
+    return '@The_monster@大笑。“傻' .. crawl.t_(you.species()) .. "！你根本看不见俺。”"
+  end
+}}
+%%%%
+neutral good god 'Å'
+
+__NONE
+
+w:5
+@_holy_being_@
+%%%%
+friendly good god 'Å'
+
+@_holy_being_@
+%%%%
+default 'Å'
+
+__NONE
