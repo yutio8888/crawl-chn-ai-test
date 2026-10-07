@@ -122,6 +122,15 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             MODULE.status_display_literals(fragments["STATUS_TWO"]),
         )
 
+    def test_status_context_is_not_a_deferred_display_key(self):
+        self.assertEqual(["Crystals", "-Tail", "status"],
+                         MODULE.status_display_literals(
+                             'inf.light_text = NC_("status", "Crystals");'
+                             'inf.short_text = NC_("status", "-Tail");'
+                             'inf.long_text = C_("status", "status");'))
+        self.assertEqual(["status"], MODULE.status_display_literals(
+            'inf.short_text = "status";'))
+
     def test_enum_parser_keeps_explicit_expressions_and_excludes_aliases(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "status.h"
