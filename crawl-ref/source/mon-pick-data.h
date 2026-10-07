@@ -1187,6 +1187,22 @@ POP_DEPTHS,
   {  1,  1,  100, FLAT, MONS_WRAITH },
   {  1,  1,  100, FLAT, MONS_SHADOWGHAST },
 },
+
+{ // Gulch
+  {  1,  1,    5, FLAT, MONS_ALLIGATOR },
+  {  1,  1,    5, FLAT, MONS_SNAPPING_TURTLE },
+  {  1,  1,    5, FLAT, MONS_ANACONDA },
+  {  1,  1,   25, FLAT, MONS_RADROACH },
+  {  1,  1,   25, FLAT, MONS_SLIME_CREATURE },
+  {  1,  1,  100, FLAT, MONS_CRAWLING_FLESH_CAGE },
+  {  1,  1,  200, FLAT, MONS_MONGREL_WURM },
+  {  1,  1,  175, FLAT, MONS_FUNGAL_SHAMBLER },
+  {  1,  1,  200, FLAT, MONS_ROAMING_SLUDGEFISH },
+  {  1,  1,  175, FLAT, MONS_RUSTED_INSPECTOR },
+  {  1,  1,   75, FLAT, MONS_TELENCEPHALON },
+  {  1,  1,   25, FLAT, MONS_SEWAGE_SOVEREIGN },
+  {  1,  1,   25, FLAT, MONS_SCRAPSHELL_CHIMERA },
+},
 };
 
 COMPILE_CHECK(ARRAYSZ(population) == NUM_BRANCHES);
@@ -1341,6 +1357,7 @@ static const vector<pop_entry> population_water[] =
     GENERIC_WATER_POP, // Arena
     GENERIC_WATER_POP, // Crucible
     GENERIC_WATER_POP, // Necropolis
+    GENERIC_WATER_POP, // Gulch
 };
 COMPILE_CHECK(ARRAYSZ(population_water) == NUM_BRANCHES);
 
@@ -1445,6 +1462,7 @@ static const vector<pop_entry> population_lava[] =
     GENERIC_LAVA_POP, // Arena
     GENERIC_LAVA_POP, // Crucible
     GENERIC_LAVA_POP, // Necropolis
+    GENERIC_LAVA_POP, // Gulch
 };
 
 COMPILE_CHECK(ARRAYSZ(population_lava) == NUM_BRANCHES);

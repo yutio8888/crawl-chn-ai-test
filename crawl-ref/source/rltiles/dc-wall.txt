@@ -734,9 +734,8 @@ slime7
 %weight 3
 slime_stone0 STONE_WALL_SLIME
 slime_stone1
-%weight 10
+%weight 20
 slime_stone2
-slime_stone3
 
 slimy_transparent_stone0 SLIMY_TRANSPARENT_STONE
 slimy_transparent_stone1
@@ -1721,6 +1720,33 @@ bmaus_stone_wall0 WALL_BORG_STONE
 bmaus_stone_wall1
 bmaus_stone_wall2
 bmaus_stone_wall3
+
+# Gulch tiles.
+gulch_rock0 WALL_GULCH_BRICK
+gulch_rock1
+gulch_rock2
+gulch_rock3
+%weight 4
+gulch_rock4
+gulch_rock5
+gulch_rock6
+gulch_rock7
+
+%weight 10
+wall_stone_gulch0 WALL_STONE_GULCH
+wall_stone_gulch1
+wall_stone_gulch2
+wall_stone_gulch3
+%weight 4
+wall_stone_gulch4
+wall_stone_gulch5
+wall_stone_gulch6
+wall_stone_gulch7
+
+wall_metal_gulch0 METAL_WALL_GULCH
+wall_metal_gulch1
+wall_metal_gulch2
+wall_metal_gulch3
 
 desolation1 WALL_DESOLATION
 desolation2

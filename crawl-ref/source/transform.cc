@@ -1864,9 +1864,6 @@ string cant_transform_reason(transformation which_trans,
     if (you.transform_uncancellable && which_trans != transformation::slaughter)
         return T_("You are stuck in your current form!");
 
-    if (which_trans == transformation::death && you.duration[DUR_DEATHS_DOOR])
-        return T_("You cannot mock death while in death's door.");
-
     return "";
 }
 
@@ -1912,6 +1909,17 @@ bool check_transform_into(transformation which_trans, bool involuntary,
     {
         if (!yesno(T_("This transformation would significantly lower your maximum hit points. "
                   "Transform anyway?"), true, 'n'))
+        {
+            return false;
+        }
+    }
+
+    if (!involuntary && you.duration[DUR_DEATHS_DOOR]
+                     && (which_trans == transformation::vampire
+                        || which_trans == transformation::death))
+    {
+        if (!yesno("Becoming undead will pull you out of death's doorway! "
+                   "Transform anyway?", true, 'n'))
         {
             return false;
         }
@@ -1968,9 +1976,14 @@ static void _on_enter_form(transformation which_trans)
         break;
 
     case transformation::death:
+        you.duration[DUR_DEATHS_DOOR] = 0;
         you.redraw_status_lights = true;
         _print_death_brand_changes(you.weapon(), true);
         _print_death_brand_changes(you.offhand_weapon(), true);
+        break;
+
+    case transformation::vampire:
+        you.duration[DUR_DEATHS_DOOR] = 0;
         break;
 
     case transformation::maw:
@@ -2263,7 +2276,7 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     else if (old_form == transformation::rime_yak)
     {
         you.duration[DUR_RIME_YAK_AURA] = 0;
-        end_terrain_change(TERRAIN_CHANGE_RIME_YAK);
+        end_terrain_changes(TERRAIN_CHANGE_RIME_YAK);
     }
     else if (old_form == transformation::werewolf)
         you.duration[DUR_WEREFURY] = 0;

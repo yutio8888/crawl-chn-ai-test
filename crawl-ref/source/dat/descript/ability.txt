@@ -475,7 +475,7 @@ debt paid.
 Channel Magic ability
 
 Dramatically increases the user's regeneration of magical power for a duration
-that increases with Invocations skill.
+that increases with Spellcasting skill.
 %%%%
 Forget Spell ability
 
@@ -484,8 +484,8 @@ Removes a known spell from memory, so as to free memory to learn others.
 Divine Exegesis ability
 
 Casts any spell from your spell library with guaranteed success. You receive a
-bonus to spell power based on your Invocations skill that is worth 50% more
-than equivalent levels of training in the relevant skills of the spell itself.
+bonus to spell power based on your Spellcasting skill that is worth the same as
+equivalent levels of training in the relevant skills of the spell itself.
 %%%%
 # Trog
 Berserk ability
@@ -505,6 +505,8 @@ also fortifies the user's willpower, protecting against many magical effects.
 Brothers in Arms ability
 
 Summons huge angry allies to wreak havoc.
+
+The strength of the summoned allies increases with the user's experience level.
 %%%%
 # Elyvilon
 Purification ability
@@ -983,10 +985,11 @@ Ancestor Life: Knight ability
 Remembers your ancestor as a knight, a strong melee combatant with superior
 defences. This choice is permanent and cannot be undone.
 %%%%
-Ancestor Life: Battlemage ability
+Ancestor Life: Elementalist ability
 
-Remembers your ancestor as a battlemage, a warrior capable of relentless offence
-with both melee and conjurations. This choice is permanent and cannot be undone.
+Remembers your ancestor as a elementalist, a powerful but fragile mage capable
+of unleashing destructive spells from a safe distance. This choice is permanent
+and cannot be undone.
 %%%%
 Ancestor Life: Hexer ability
 

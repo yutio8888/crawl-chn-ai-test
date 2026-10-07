@@ -405,7 +405,7 @@ void melee_attack::handle_phase_dodged()
         && defender->is_player()
         && attacker->alive()
         && !mons_aligned(attacker, defender) // confused friendlies attacking
-        && !attacker->as_monster()->neutral()) // don't anger neutrals, even if they hit you
+        && !attacker->neutral()) // don't anger neutrals, even if they hit you
     {
         // Active retaliations on the player's part require you to be able to act.
         if (you.can_see(*attacker) && !you.cannot_act() && !you.confused())
@@ -787,23 +787,27 @@ void melee_attack::maybe_do_mesmerism()
         defender->as_monster()->add_ench(mon_enchant(ENCH_ORB_COOLDOWN, defender, random_range(120, 200)));
 }
 
-static void _grow_mushrooms(const monster& mon)
+void melee_attack::grow_burstshrooms(int hd)
 {
     // Can't extract position from a reset monster (which may have happened due
     // to disto banishment).
-    if (mon.type == MONS_NO_MONSTER || mon.is_firewood() || mon.wont_attack())
+    if (!defender || defender->type == MONS_NO_MONSTER || defender->is_firewood()
+        || mons_aligned(attacker, defender))
+    {
         return;
+    }
 
-    vector<coord_def> spots = get_wall_ring_spots(mon.pos(),
-                                                  mon.pos() + (mon.pos() - you.pos()),
+    vector<coord_def> spots = get_wall_ring_spots(defender->pos(),
+                                                  defender->pos() + (defender->pos() - attacker->pos()),
                                                   3);
 
-    mgen_data mgen = mgen_data(MONS_BURSTSHROOM, BEH_FRIENDLY, coord_def(),
+    mgen_data mgen = mgen_data(MONS_BURSTSHROOM, SAME_ATTITUDE(attacker), coord_def(),
                                MHITNOT, MG_FORCE_PLACE);
-    mgen.hd = get_form()->get_level(1) / 2;
-    mgen.set_summoned(&you, MON_SUMM_SPORE, 100, false);
+    mgen.hd = hd;
+    mgen.set_summoned(attacker, MON_SUMM_SPORE, 100, false, false);
 
     bool created = false;
+    bool player_can_see = you.see_cell(defender->pos());
     for (coord_def spot : spots)
     {
         if (actor_at(spot))
@@ -815,11 +819,12 @@ static void _grow_mushrooms(const monster& mon)
             // Randomize detonation time a little.
             shroom->number = random_range(3, 5);
             created = true;
+            player_can_see |= you.see_cell(spot);
         }
     }
 
-    if (created)
-        mprf(T_("Mushrooms sprout behind %s."), mon.name(DESC_THE).c_str());
+    if (created && player_can_see)
+        mprf(T_("Mushrooms sprout behind %s."), defender->name(DESC_THE).c_str());
 }
 
 /* An attack has been determined to have hit something
@@ -1010,7 +1015,7 @@ bool melee_attack::handle_phase_hit()
 
     if (attacker->is_player() && you.form == transformation::spore)
     {
-        _grow_mushrooms(*defender->as_monster());
+        grow_burstshrooms(get_form()->get_level(1) / 2);
 
         if (defender->alive() && !defender->is_unbreathing()
             && mons_has_attacks(*defender->as_monster(), false)
@@ -1149,7 +1154,7 @@ bool melee_attack::handle_phase_aux()
         // returns whether an aux attack successfully took place
         // additional attacks from cleave don't get aux
         const int aux_dist = you.form == transformation::aqua ? 3 : 1;
-        if (!defender->as_monster()->friendly()
+        if (!defender->friendly()
             && grid_distance(defender->pos(), attack_position) <= aux_dist)
         {
             player_do_aux_attacks();
@@ -2824,7 +2829,19 @@ int melee_attack::player_apply_final_multipliers(int damage, bool aux)
 
     // Electric charge bonus.
     if (charge_pow > 0 && defender->res_elec() <= 0)
+    {
         damage += div_rand_round(damage * charge_pow, 150);
+
+       // HACK: We'd need another refactor to make this fit the elemental checks
+       // made in monster.cc, since this isn't actually _doing_ electric damage.
+       if (attacker->is_player() && defender->is_monster()
+           && you.has_mutation(MUT_SPARK_SWARM)
+           && !defender->as_monster()->has_ench(ENCH_CORONA)
+           && x_chance_in_y(you.get_mutation_level(MUT_SPARK_SWARM) * 4, 10))
+        {
+            defender->as_monster()->add_ench(mon_enchant(ENCH_CORONA, &you, random_range(90, 150)));
+        }
+    }
 
     if (you.duration[DUR_WEAK])
         damage = div_rand_round(damage * 3, 4);
@@ -2832,7 +2849,7 @@ int melee_attack::player_apply_final_multipliers(int damage, bool aux)
     apply_rev_penalty(damage);
 
     if (you.has_mutation(MUT_RECKLESS) && weapon
-        && hands_reqd(&you, weapon->base_type, weapon->sub_type) == HANDS_TWO)
+        && you.hands_reqd(*weapon) == HANDS_TWO)
     {
         damage = div_rand_round(damage * 115, 100);
     }
@@ -3531,7 +3548,8 @@ bool melee_attack::apply_staff_damage()
             defender->poison(attacker, 2);
     }
 
-    if (you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT)
+    if (attacker->is_player()
+        && you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT)
         && you.magic_points < you.max_magic_points)
     {
         mpr(T_("You draw in some of the released energy."));
@@ -3913,6 +3931,7 @@ static bool _attack_flavour_needs_living_defender(attack_flavour flavour)
 {
     switch (flavour)
     {
+        case AF_CONTAM_WATER:
         case AF_SCARAB:
         case AF_VAMPIRIC:
         case AF_BLINK:
@@ -4331,6 +4350,45 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
             stop_delay(true);
         break;
 
+    case AF_CONTAM_WATER:
+        {
+        if (attacker->type == MONS_GLOWMURK_GHAST)
+            attacker->as_monster()->suicide(-10);
+
+        int time = random_range(attacker->get_hit_dice() * 4 + 66,
+                                attacker->get_hit_dice() * 4 + 66 * 3 / 2);
+        bool contam = x_chance_in_y(2, 3);
+
+        // Effects are following off the precedent of Irradiate.
+        if (contam)
+        {
+            if (defender->is_player())
+                contaminate_player(random_range(125, 175));
+            else if (defender->can_mutate())
+                defender->malmutate(attacker);
+        }
+
+        if (feat_is_floor(env.grid(attacker->pos()))
+            || env.grid(attacker->pos()) == DNGN_SHALLOW_WATER)
+        {
+            temp_change_terrain(attacker->pos(), DNGN_SHALLOW_WATER, time,
+                                TERRAIN_CHANGE_FLOOD);
+        }
+        if (feat_is_floor(env.grid(defender->pos()))
+            || env.grid(defender->pos()) == DNGN_SHALLOW_WATER)
+        {
+            temp_change_terrain(defender->pos(), DNGN_SHALLOW_WATER, time,
+                                TERRAIN_CHANGE_FLOOD);
+        }
+        simple_monster_message(*attacker->as_monster(),
+                                attacker->type == MONS_GLOWMURK_GHAST
+                                ? contam ? " fades away in a splash of mutagenic energy!"
+                                : " fades away." :
+                                contam ? " sprays mutagenic energy!"
+                                : " fails to spray mutagenic energy.");
+        }
+        break;
+
     case AF_FLOOD:
         if (coinflip())
         {
@@ -4622,6 +4680,10 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         break;
     }
 
+    case AF_BURSTSHROOM:
+        grow_burstshrooms(attacker->get_hit_dice() * 2 / 3);
+        break;
+
     }
 
     if (needs_message && !special_damage_message.empty())
@@ -4788,14 +4850,9 @@ void melee_attack::do_spines()
     }
     else if (defender->as_monster()->is_spiny())
     {
-        // Thorn hunters can attack their own brambles without injury
-        if (defender->type == MONS_BRIAR_PATCH
-            && attacker->type == MONS_THORN_HUNTER
-            // Don't let spines kill things out of LOS.
-            || !monster_los_is_valid(defender->as_monster(), attacker))
-        {
+        // Don't let friendly monster spines kill things out of LOS.
+        if (!monster_los_is_valid(defender->as_monster(), attacker))
             return;
-        }
 
         const bool cactus = defender->type == MONS_CACTUS_GIANT;
         if (attacker->alive() && (cactus || one_chance_in(3)))
@@ -4989,6 +5046,7 @@ bool melee_attack::do_knockback(bool slippery)
     if (!slippery && !x_chance_in_y(size_diff + 3, 6)
         // need a valid tile
         || !defender->is_habitable(new_pos)
+        || !in_bounds(new_pos)
         // don't trample anywhere the attacker can't follow
         || !attacker->is_habitable(old_pos)
         // don't trample into a monster - or do we want to cause a chain

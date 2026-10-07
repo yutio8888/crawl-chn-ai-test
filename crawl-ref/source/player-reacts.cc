@@ -477,7 +477,7 @@ static void _handle_hoarding()
 {
     if (you.has_mutation(MUT_RENOUNCE_POTIONS))
     {
-        if (you.hp < you.hp_max / 2)
+        if (2 * you.hp < you.hp_max)
             you.props.erase(RENOUNCE_POTIONS_TIMER_KEY);
         else if (there_are_monsters_nearby(true, true, false))
             you.props[RENOUNCE_POTIONS_TIMER_KEY].get_int() = you.elapsed_time + 60;
@@ -487,7 +487,7 @@ static void _handle_hoarding()
 
     if (you.has_mutation(MUT_RENOUNCE_SCROLLS))
     {
-        if (you.hp <= you.hp_max / 2)
+        if (2 * you.hp < you.hp_max)
             you.props.erase(RENOUNCE_SCROLLS_TIMER_KEY);
         else if (there_are_monsters_nearby(true, true, false))
             you.props[RENOUNCE_SCROLLS_TIMER_KEY].get_int() = you.elapsed_time + 60;
@@ -1358,9 +1358,6 @@ void player_reacts()
         you.props.erase(BLASTMOTE_IMMUNE_KEY);
 
     actor_apply_toxic_bog(&you);
-
-    if (you.duration[DUR_SPIKE_LAUNCHER_ACTIVE])
-        handle_spike_launcher(you.time_taken);
 
     if (you.duration[DUR_RIME_YAK_AURA])
         frigid_walls_damage(you.time_taken);

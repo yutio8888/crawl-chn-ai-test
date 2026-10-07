@@ -124,6 +124,7 @@ oblivion_hound MONS_OBLIVION_HOUND
 hog MONS_HOG
 hell_hog MONS_HELL_HOG
 holy_swine MONS_HOLY_SWINE
+sewage_sovereign MONS_SEWAGE_SOVEREIGN
 %rim 1
 %sdir player/felids
 cat4 MONS_FELID
@@ -272,6 +273,10 @@ goliath_frog MONS_GOLIATH_FROG
 skyshark MONS_SKYSHARK
 %sdir mon/aquatic
 rock_fish MONS_ROCK_FISH
+roaming_sludgefish0 MONS_ROAMING_SLUDGEFISH
+roaming_sludgefish1
+roaming_sludgefish2
+roaming_sludgefish3
 %sdir mon/undead
 marrowcuda MONS_MARROWCUDA
 
@@ -506,7 +511,7 @@ wendigo MONS_WENDIGO
 %sdir mon/nonliving
 ancestor MONS_ANCESTOR
 ancestor_knight MONS_ANCESTOR_KNIGHT
-ancestor_battlemage MONS_ANCESTOR_BATTLEMAGE
+ancestor_elementalist MONS_ANCESTOR_ELEMENTALIST
 ancestor_hexer MONS_ANCESTOR_HEXER
 
 ## Abominations ('X')
@@ -578,6 +583,7 @@ bomblet MONS_BOMBLET
 walking_alembic MONS_WALKING_ALEMBIC
 iron_golem MONS_IRON_GOLEM
 ushabti MONS_USHABTI
+rusted_inspector MONS_RUSTED_INSPECTOR
 peacekeeper MONS_PEACEKEEPER
 saltling MONS_SALTLING
 undertaker MONS_UNDERTAKER
@@ -596,6 +602,12 @@ roxanne MONS_ROXANNE
 %sdir mon/statues
 pile_of_debris_00 MONS_PILE_OF_DEBRIS
 pile_of_debris_01
+%weight 10
+stack_of_scrap0 MONS_STACK_OF_SCRAP
+stack_of_scrap1
+%weight 5
+stack_of_scrap2
+%weight 10
 pile_of_flesh0 MONS_PILE_OF_FLESH
 pile_of_flesh1
 pile_of_flesh2
@@ -707,9 +719,9 @@ zenata MONS_ZENATA
 %rim 1
 terence MONS_TERENCE
 %sdir mon/nonliving
+%rim 0
 player_shadow MONS_PLAYER_SHADOW
 %sdir mon/nonliving/shadows
-%rim 0
 shadow_gale_centaur MONS_PLAYER_SHADOW_GALE_CENTAUR
 shadow_barachi MONS_PLAYER_SHADOW_BARACHI
 shadow_coglin MONS_PLAYER_SHADOW_COGLIN
@@ -836,6 +848,7 @@ rime_drake MONS_RIME_DRAKE
 lindwurm MONS_LINDWURM
 death_drake MONS_DEATH_DRAKE
 wind_drake MONS_WIND_DRAKE
+mongrel_wurm MONS_MONGREL_WURM
 wyrmhole0 MONS_WYRMHOLE
 wyrmhole1
 wyrmhole2
@@ -877,6 +890,7 @@ ballistomycete_spore MONS_BALLISTOMYCETE_SPORE
 glass_eye MONS_GLASS_EYE
 %rim 0
 mon/aberrations/glowing_orange_brain MONS_GLOWING_ORANGE_BRAIN
+mon/aberrations/telencephalon MONS_TELENCEPHALON
 %rim 1
 great_orb_of_eyes MONS_GREAT_ORB_OF_EYES
 %rim 0
@@ -958,6 +972,7 @@ twing2
 twing3
 twing4
 twing5
+mon/aberrations/scrapshell_chimera MONS_SCRAPSHELL_CHIMERA
 %sdir mon/unique
 %rim 1
 sojobo MONS_SOJOBO
@@ -1119,6 +1134,15 @@ treant MONS_TREANT
 alderking0 MONS_ALDERKING
 alderking1
 briar_patch MONS_BRIAR_PATCH
+fungal_shambler MONS_FUNGAL_SHAMBLER
+fungus_gulch0 MONS_FUNGUS_GULCH
+fungus_gulch1
+fungus_gulch2
+fungus_gulch3
+fungus_gulch_patch0 MONS_FUNGUS_GULCH_PATCH
+fungus_gulch_patch1
+fungus_gulch_patch2
+fungus_gulch_patch3
 %rim 1
 vine_stalker MONS_VINE_STALKER
 %rim 0
@@ -1272,6 +1296,7 @@ boggart MONS_BOGGART
 spriggan MONS_SPRIGGAN
 spriggan_rider MONS_SPRIGGAN_RIDER
 spriggan_druid MONS_SPRIGGAN_DRUID
+spriggan_druid_staffless MONS_SPRIGGAN_DRUID_STAFFLESS
 spriggan_berserker MONS_SPRIGGAN_BERSERKER
 spriggan_defender MONS_SPRIGGAN_DEFENDER
 %rim 0
@@ -1352,6 +1377,7 @@ silent_spectre MONS_SILENT_SPECTRE
 lost_soul MONS_LOST_SOUL /*'*'*/
 soul_wisp MONS_SOUL_WISP
 drowned_soul MONS_DROWNED_SOUL
+glowmurk_ghast MONS_GLOWMURK_GHAST
 flayed_ghost MONS_FLAYED_GHOST
 martyred_shade MONS_MARTYRED_SHADE
 %sdir mon/nonliving

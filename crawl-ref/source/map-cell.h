@@ -72,8 +72,7 @@ struct cloud_info
     // for clouds with duration: decay/20, clamped to 0-3
     // for vortex clouds: the vortex phase
     uint8_t variety;
-    // TODO: should this be tileidx_t?
-    unsigned short tile;
+    tileidx_t tile;
     coord_def pos;
     killer_type killer;
 };
@@ -170,9 +169,13 @@ struct map_cell
         return _feat_colour;
     }
 
-    void set_feature(dungeon_feature_type nfeat, unsigned colour = 0)
+    void set_feature(dungeon_feature_type nfeat)
     {
         _feat = nfeat;
+    }
+
+    void set_feat_colour(colour_t colour = 0)
+    {
         _feat_colour = colour;
     }
 
@@ -308,6 +311,11 @@ struct map_cell
     bool mapped() const
     {
         return !!(flags & MAP_MAGIC_MAPPED_FLAG);
+    }
+
+    bool feat_known() const
+    {
+        return !!(flags & (MAP_MAGIC_MAPPED_FLAG | MAP_SEEN_FLAG));
     }
 
 #ifdef USE_TILE

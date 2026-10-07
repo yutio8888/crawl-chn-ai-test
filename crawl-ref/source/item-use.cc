@@ -203,6 +203,7 @@ static string _oper_name(operation_types oper)
     case OPER_TAKEOFF: return T_("take off");
     case OPER_REMOVE:  return T_("remove");
     case OPER_UNEQUIP: return T_("unequip");
+    case OPER_ANY: return T_("select");
     default:
         return "buggy";
     }

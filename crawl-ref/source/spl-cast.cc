@@ -431,6 +431,12 @@ static int _apply_spellcasting_success_boosts(spell_type spell, int chance)
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_RESONANCE) && spell_typematch(spell, spschool::forgecraft))
         fail_reduce = fail_reduce * 2 / 3;
 
+    if (you.unrand_equipped(UNRAND_FIRE_DRAGON_OCCULTIST_SCALES) && spell_typematch(spell, spschool::fire))
+        fail_reduce = fail_reduce * 3 / 4;
+
+    if (you.unrand_equipped(UNRAND_ICE_DRAGON_ARCANIST_SCALES) && spell_typematch(spell, spschool::ice))
+        fail_reduce = fail_reduce * 3 / 4;
+
     const int wizardry = player_wizardry();
 
     if (wizardry > 0)
@@ -585,7 +591,7 @@ int calc_spell_power(spell_type spell)
     int power = _skill_power(spell);
 
     if (you.divine_exegesis)
-        power += you.skill(SK_INVOCATIONS, 300);
+        power += you.skill(SK_SPELLCASTING, 200);
 
     power = (power * you.intel()) / 10;
 
@@ -1628,7 +1634,7 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
 
     case SPELL_SPIKE_LAUNCHER:
     {
-        vector<coord_def> walls = find_spike_launcher_walls();
+        vector<coord_def> walls = find_spike_launcher_walls(you.pos());
         return make_unique<targeter_multiposition>(&you, walls, walls.size() > 1
                                                                     ? AFF_MAYBE
                                                                     : AFF_YES);
@@ -1638,7 +1644,8 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
         break;
     }
 
-    if (spell_to_zap(spell) != NUM_ZAPS)
+    if (get_spell_flags(spell) & spflag::targeting_mask
+        && spell_to_zap(spell) != NUM_ZAPS)
     {
         return make_unique<targeter_beam>(&you, range, spell_to_zap(spell),
                                           pow, 0, 0);
@@ -2699,7 +2706,7 @@ static spret _do_cast(spell_type spell, int powc, const dist& spd,
         return cast_clockwork_bee(beam.target, fail);
 
     case SPELL_SPIKE_LAUNCHER:
-        return cast_spike_launcher(powc, fail);
+        return cast_spike_launcher(you, powc, fail);
 
     case SPELL_DIAMOND_SAWBLADES:
         return cast_diamond_sawblades(powc, fail);

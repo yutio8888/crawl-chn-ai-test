@@ -11,6 +11,7 @@ crawl_require('dlua/util.lua')
 util.namespace('callback')
 
 dgn.necropolis_chance_percent = 3
+dgn.gulch_chance_percent = 6
 dgn.wizlab_chance_percent = 5
 dgn.desolation_chance_percent = 5
 

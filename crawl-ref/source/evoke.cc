@@ -625,6 +625,14 @@ static bool _phial_of_floods(dist *target)
     return false;
 }
 
+bool mirror_can_effect(monster *victim)
+{
+    // Mirrored monsters (including by Mara, rakshasas) can still be
+    // re-reflected.
+    return actor_is_illusion_cloneable(victim)
+        || victim->has_ench(ENCH_PHANTOM_MIRROR);
+}
+
 static spret _phantom_mirror(dist *target)
 {
     bolt beam;
@@ -633,7 +641,7 @@ static spret _phantom_mirror(dist *target)
     if (!target)
         target = &target_local;
 
-    targeter_smite tgt(&you, LOS_RADIUS);
+    targeter_phantom_mirror tgt(&you);
 
     direction_chooser_args args;
     args.restricts = DIR_TARGET;
@@ -653,10 +661,7 @@ static spret _phantom_mirror(dist *target)
         return spret::abort;
     }
 
-    // Mirrored monsters (including by Mara, rakshasas) can still be
-    // re-reflected.
-    if (!actor_is_illusion_cloneable(victim)
-        && !victim->has_ench(ENCH_PHANTOM_MIRROR))
+    if (!mirror_can_effect(victim))
     {
         mpr(T_("The mirror can't reflect that."));
         return spret::abort;

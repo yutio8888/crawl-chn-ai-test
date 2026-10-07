@@ -277,11 +277,11 @@ int dgn_count_tele_zones(bool choose_stairless);
 void dgn_replace_area(const coord_def& p1, const coord_def& p2,
                       dungeon_feature_type replace,
                       dungeon_feature_type feature,
-                      unsigned mmask = 0, bool needs_update = false);
+                      unsigned mmask = 0);
 void dgn_replace_area(int sx, int sy, int ex, int ey,
                       dungeon_feature_type replace,
                       dungeon_feature_type feature,
-                      unsigned mmask = 0, bool needs_update = false);
+                      unsigned mmask = 0);
 
 vault_placement *dgn_vault_at(coord_def gp);
 void dgn_seen_vault_at(coord_def gp);

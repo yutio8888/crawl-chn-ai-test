@@ -345,9 +345,9 @@ void InvMenu::set_title(const string &s)
         }
 #ifdef __ANDROID__
         if (!tiles.is_using_small_layout())
-            str += T_("    (Left/Right to switch category)");
+            str += T_("    (Left/Right/Tab to switch category)");
 #else
-        str += T_("    (Left/Right to switch category)");
+        str += T_("    (Left/Right/Tab to switch category)");
 #endif
         set_title(new InvTitle(this, str, title_annotate));
         return;
@@ -1193,7 +1193,7 @@ int InvMenu::getkey() const
         return mkey;
 
     // this is sort of a mess. It seems to be converting a lot of keys to ' '
-    // so that invprompt_flag::escape_only can work right, but it almost
+    // so that alternate ways of exiting menus can work right, but it almost
     // certainly has other effects. Needless to say, it makes modifying key
     // handling in specific menus pretty annoying, but I don't dare touch it
     // right now.
@@ -1589,7 +1589,7 @@ static string _drop_menu_titlefn(const Menu*, const string &)
     if (tiles.is_using_small_layout())
         return string(T_("Drop what?")) + " " + slot_description();
 #endif
-    return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
+    return T_("Drop what? (Left/Right/Tab to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
 /**
@@ -1688,7 +1688,7 @@ static bool _has_warning_inscription(const item_def& item,
                     return true;
                 else if (item.base_type == OBJ_ARMOUR && r[i+1] == 'T')
                     return true;
-                else if (is_weapon(item) && r[i+i] == 'w')
+                else if (is_weapon(item) && r[i+1] == 'w')
                     return true;
             }
             else if (oper == OPER_EQUIP)
@@ -1697,7 +1697,7 @@ static bool _has_warning_inscription(const item_def& item,
                     return true;
                 else if (item.base_type == OBJ_ARMOUR && r[i+1] == 'W')
                     return true;
-                else if (is_weapon(item) && r[i+i] == 'w')
+                else if (is_weapon(item) && r[i+1] == 'w')
                     return true;
             }
         }
@@ -1897,7 +1897,6 @@ int prompt_invent_item(const char *prompt,
     const bool allow_list_known = !(flags & invprompt_flag::hide_known);
     const bool must_exist = !(flags & invprompt_flag::unthings_ok);
     const bool auto_list = !(flags & invprompt_flag::manual_list);
-    const bool allow_easy_quit = !(flags & invprompt_flag::escape_only);
 
     if (!any_items_of_type(type_expect) && type_expect != OSEL_WIELD
         && type_expect != OSEL_QUIVER_ACTION)
@@ -2030,7 +2029,7 @@ int prompt_invent_item(const char *prompt,
                     break;
             }
         }
-        else if (key_is_escape(keyin) || allow_easy_quit && keyin == ' ')
+        else if (key_is_escape(keyin) || keyin == ' ')
         {
             ret = PROMPT_ABORT;
             break;
@@ -2060,13 +2059,10 @@ int prompt_invent_item(const char *prompt,
             ret = you.last_unequip;
             break;
         }
-        else if (!isspace(keyin))
+        else
         {
             // We've got a character we don't understand...
             canned_msg(MSG_HUH);
-        }
-        else
-        {
             // We're going to loop back up, so don't draw another prompt.
             need_prompt = false;
         }

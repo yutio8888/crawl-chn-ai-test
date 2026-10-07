@@ -773,13 +773,6 @@ bat
 A large grey bat that, despite being herbivorous, is quite aggressive. It is
 myopic and uses echolocation to navigate.
 %%%%
-battlemage
-
-A humanoid construct of insubstantial memory, floating through the air. Though
-perhaps somewhat changed in shape and bearing few discernable features, still
-it seems somehow to resemble a warrior from the distantly remembered past,
-skilled with both conjurations and melee combat.
-%%%%
 battlesphere
 
 A small globe of destructive energy. Each time its creator casts an offensive
@@ -1409,6 +1402,13 @@ elemental wellspring
 A swirling conflux of elemental water streaming from the elemental plane into
 this one, with powerful spirits and mighty floods flowing from it.
 %%%%
+elementalist
+
+A humanoid construct of insubstantial memory, floating through the air. Though
+perhaps somewhat changed in shape and bearing few discernable features, still
+it seems somehow to resemble a mage from the distantly remembered past, skilled
+with destructive elemental magic.
+%%%%
 elephant
 
 A large, thick-hided pachyderm. It crushes its foes and then thrashes them with
@@ -1559,9 +1559,18 @@ A slender prism of unstable, soft gold that crackles with barely-contained
 destructive energy. Any blow which cracks its fragile surface is likely to
 result in a violent explosion.
 %%%%
+fungal shambler
+
+Through considerable effort, certain strains of fungi may be cultivated and
+mutated to ravenously parasitise living tissue. This particular variety has
+consumed the flesh and possessions of whatever intruder was fed to it and now
+serves as a roving guard, wielding scavenged armaments and its own explosive
+spores.
+%%%%
 fungus
 
-A lumpy grey fungus, growing well in the dank underground dungeon.
+A lumpy {{ if you.branch() == "Gulch" then return "mauve"; else return "grey";
+end }} fungus, growing well in the dank underground dungeon.
 %%%%
 gargoyle
 
@@ -1622,6 +1631,13 @@ Hells themselves. It pursues a designated target inexorably, growing in size as
 it travels. If it collides with either a creature or wall, it will explode
 violently - though its creator is protected from the wild destruction unleashed
 as it does so.
+%%%%
+glowmurk ghast
+
+A shuddering, shimmering apparition borne from the drowned dead, repeatedly
+called to this plane by some cruel mystic experiment. It will share its memories
+and experiences of drowning in tainted waters with whatever it first touches,
+then dissipate.
 %%%%
 goblin
 
@@ -2141,6 +2157,13 @@ A flying munitions factory, held aloft on jets of fiery exhaust and packed to
 the brim with explosives. It can rapidly fill an area with bomblets, and when
 commanded by its creator, will explode them all (and itself) to devastating
 effect.
+%%%%
+mongrel wurm
+
+A serpentine crossbreed, blending traits of lesser dragons and countless other
+creatures that nature never intended to interbreed. Its many stunted limbs
+struggle to propel its grime-coated body, while its oversized scaleless head
+wheezes with the pressure of clashing breath weapons.
 %%%%
 morphogenic ooze
 
@@ -2665,6 +2688,13 @@ river rat
 A rodent with hair of a most peculiar green colour, and a powerful bite. It
 tends to form great swarms with its kin.
 %%%%
+roaming sludgefish
+
+A mutant sewer fish whose continuous exposure to wild magic has given it an
+appetite for magic itself. It swims through the air in a telekinetic bubble
+of the very sludge that gave birth to it, seeking out exotic prey from which
+to siphon novel magic.
+%%%%
 rock fish
 
 A strange stone-scaled fish that swims through solid rock with the same ease
@@ -2690,6 +2720,13 @@ rust devil
 
 A hideous humanoid figure with rust-spotted metal skin, spreading corrosion
 and decay to all it touches.
+%%%%
+rusted inspector
+
+A slithering metal construct, once built to monitor for mutated entities
+encroaching upon the Vaults and long-since abandoned. While it can still dampen
+most unwanted magic, a lack of proper maintenance has lead to it becoming coated
+with a highly corrosive mystic rust.
 %%%%
 sacred lotus
 
@@ -2729,6 +2766,14 @@ scorpion
 A loathsome arachnid, armed to the teeth. Its body is covered in a thick
 carapace, its tail is tipped by a venomous sting, and its forelimbs are
 equipped with a pair of sharp grasping claws.
+%%%%
+scrapshell chimera
+
+A living engine of aquatic animal flesh fused with a colossal mass of bewitched
+metal scrap. Such hybrid terrors are perhaps the most successful experiments
+conducted in these tainted waters: its necromantically-attuned shell and a diet
+of furious drowned thieves has granted even this thrashing beast the ability to
+control the sunken souls of its countless victims.
 %%%%
 screaming refraction
 
@@ -2773,6 +2818,12 @@ servant of whispers
 A member of an order of monks who abandoned their former faith. It now serves
 a minor god of wind and whispers, who allows it to calm the air and, when
 in great need, to break the stillness with divine thunder.
+%%%%
+sewage sovereign
+
+A hulking mutant swine who feasts like a king upon the abundant fungus of
+its realm and lords over its other denizens with brute force and unstoppable
+bulk.
 %%%%
 shadow
 
@@ -3042,6 +3093,10 @@ spriggan rider
 A spriggan that has tamed a hornet as its mount, and is tasked with protecting
 the spriggan fens and cairns from intruders.
 %%%%
+stack of scrap
+
+A tarnished towering mess of half-assembled constructs and spare broken parts.
+%%%%
 star jelly
 
 A white gelatinous mound that pulses with a strange iridescence. Its body
@@ -3145,6 +3200,16 @@ titans attempted to pull themselves free of mortality through brute strength.
 They almost succeeded before rot dragged them to Ereshkigal. A glimmer of their
 former beauty remains, alluring despite the stench.
 %%%%
+telencephalon
+
+An abandoned arcane experiment, its original purpose more inscrutable than most.
+Made of magical crystal fused with mutant brain tissue, it bobs about
+autonomously and erratically, sparking all the while.
+
+When badly damaged, it will unleash a staggering telekinetic shockwave, knocking
+back those in its surroundings and inflicting irresistible confusion on any who
+might harm it.
+%%%%
 tengu
 
 A humanoid figure with the head and talons of a bird. Its ferociously combative
@@ -3200,8 +3265,11 @@ whirls of fire and ice occasionally escape and ricochet wildly off of walls.
 thorn hunter
 
 A predatory marsh plant, possessed of motility and a rudimentary intelligence.
-It ensnares its prey with protrusions of spiny brambles and then skewers the
-trapped creatures with its razor-sharp thorns.
+It ensnares its prey in rings of spiny brambles and then skewers the trapped
+creatures with its razor-sharp thorns.
+
+When injured or approached by enemies, it can even raise these brambles as a
+barricade around itself.
 %%%%
 toadstool
 
@@ -3526,8 +3594,8 @@ A muscular yellow-scaled humanoid with a reptilian tail and small wings.
 %%%%
 ynoxinul
 
-A winged demon covered in shiny metallic scales. It has a legion of minor
-demons under its command.
+A winged demon covered in shiny metallic scales. It has a legion of minor demons
+at its command, which it impels to savage fury.
 %%%%
 zombie
 

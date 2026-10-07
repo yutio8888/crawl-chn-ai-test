@@ -531,6 +531,9 @@ bool prompt_dangerous_portal(dungeon_feature_type ftype)
                      "deep as Abyss:%d and might not be able to return immediately. "
                      "Continue?"), abyss_default_depth(true)).c_str(), false, 'n');
     }
+    case DNGN_ENTER_GULCH:
+        return yesno("If you enter this portal, the magical contamination on the "
+                     "other side will temporarily mutate you thrice. Continue?", false, 'n');
     default:
         return true;
     }
@@ -656,8 +659,8 @@ static void _handle_trying_to_move_into_unpassable_terrain(coord_def targ)
         map_cell& knowledge = env.map_knowledge(targ);
         if (!knowledge.mapped() || knowledge.changed())
         {
-            dungeon_feature_type newfeat = env.grid(targ);
-            knowledge.set_feature(newfeat, env.grid_colours(targ));
+            update_terrain_knowledge(targ);
+            update_grid_colour_knowledge(targ);
             set_terrain_mapped(targ);
         }
     }
@@ -790,20 +793,20 @@ static bool _check_beholders(const coord_def& pos, bool quiet = false)
     return false;
 }
 
-static vector<monster*> _get_stampede_line(const coord_def& start, const coord_def& delta, bool only_known = false)
+vector<actor*> get_stampede_line(const coord_def& start, const coord_def& delta, bool only_known_to_player)
 {
-    // Iterate to find how many connected monsters are in a row that the player can see.
-    vector<monster*> move_targets;
+    // Iterate to find how many connected actors are in a row (possibly only those which the player can see.)
+    vector<actor*> move_targets;
     coord_def pos = start;
-    while (monster* mon = monster_at(pos))
+    while (actor* mon = actor_at(pos))
     {
         // Don't count things outside the player's LoS if checking known monsters.
-        if (only_known && !you.can_see(*mon))
+        if (only_known_to_player && !you.can_see(*mon))
             break;
 
         // Can't move anything with a stationary monster in its cluster.
         if (mon->is_stationary())
-            return vector<monster*>();
+            return vector<actor*>();
 
         // Add this monster to the line and advance one step
         move_targets.push_back(mon);
@@ -823,13 +826,13 @@ static int _stampede_move_check(const coord_def& delta)
     if (is_feat_dangerous(env.grid(you.pos() + delta)))
         return 0;
 
-    vector<monster*> move_targets = _get_stampede_line(you.pos() + delta, delta, true);
+    vector<actor*> move_targets = get_stampede_line(you.pos() + delta, delta, true);
 
     if (move_targets.empty())
         return 0;
 
-    for (monster* mon : move_targets)
-        if (!monster_habitable_grid(mon, mon->pos() + delta))
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta))
             return 0;
 
     // Now we know we can stampede at least one tile. Check if we can stampede 2.
@@ -838,16 +841,47 @@ static int _stampede_move_check(const coord_def& delta)
     if (is_feat_dangerous(env.grid(you.pos() + delta + delta)))
         return 1;
 
-    vector<monster*> second_move_targets = _get_stampede_line(move_targets.back()->pos() + delta + delta, delta, true);
+    vector<actor*> second_move_targets = get_stampede_line(move_targets.back()->pos() + delta + delta, delta, true);
 
-    for (monster* mon : second_move_targets)
-        if (!monster_habitable_grid(mon, mon->pos() + delta))
+    for (actor* act : second_move_targets)
+        if (!act->is_habitable(act->pos() + delta))
             return 1;
-    for (monster* mon : move_targets)
-        if (!monster_habitable_grid(mon, mon->pos() + delta + delta))
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta + delta))
             return 1;
 
     return 2;
+}
+
+bool stampede_step(actor& agent, const coord_def& target, bool allow_solo)
+{
+    const coord_def delta = target - agent.pos();
+    vector<actor*> move_targets = get_stampede_line(target, delta);
+
+    // Check if we have targets that can be pushed.
+    // (Monster stampede is allowed to move the agent without anything to push.)
+    if (!allow_solo && move_targets.empty())
+        return false;
+    if (!agent.is_habitable(agent.pos() + delta))
+        return false;
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta))
+            return false;
+
+    // Now move everyone (and ourselves).
+    const coord_def old_pos = agent.pos();
+    for (int i = (int)move_targets.size() - 1; i >= 0; --i)
+        move_targets[i]->move_to(old_pos + delta * (i + 2), MV_DEFAULT, true);
+    agent.move_to(old_pos + delta, MV_DELIBERATE, true);
+
+    // Now finalise movement (to avoid dispersal traps causing all sorts of
+    // problems with keeping everyone together in the middle)
+    for (size_t i = 0; i < move_targets.size(); ++i)
+        if (move_targets[i]->alive())
+            move_targets[i]->finalise_movement();
+    agent.finalise_movement();
+
+    return true;
 }
 
 static bool _try_stampede(const coord_def& target)
@@ -855,32 +889,7 @@ static bool _try_stampede(const coord_def& target)
     if (you.is_constricted() || you.cannot_move() || you.caught() || _check_beholders(target, true))
         return false;
 
-    const coord_def delta = target - you.pos();
-    vector<monster*> move_targets = _get_stampede_line(target, delta);
-
-    // Check if we have targets that can be pushed.
-    if (move_targets.empty())
-        return false;
-    if (is_feat_dangerous(env.grid(you.pos() + delta)) || !you.can_pass_through(you.pos() + delta))
-        return false;
-    for (monster* mon : move_targets)
-        if (!monster_habitable_grid(mon, mon->pos() + delta))
-            return false;
-
-    // Now move everyone (and ourselves).
-    const coord_def old_pos = you.pos();
-    for (int i = (int)move_targets.size() - 1; i >= 0; --i)
-        move_targets[i]->move_to(old_pos + delta * (i + 2), MV_DEFAULT, true);
-    you.move_to(old_pos + delta, MV_DELIBERATE, true);
-
-    // Now finalise movement (to avoid dispersal traps causing all sorts of
-    // problems with keeping everyone together in the middle)
-    for (size_t i = 0; i < move_targets.size(); ++i)
-        if (move_targets[i]->alive())
-            move_targets[i]->finalise_movement();
-    you.finalise_movement();
-
-    return true;
+    return stampede_step(you, target);
 }
 
 // Handles the player trying to move/attack/swap into a given location.
@@ -894,6 +903,17 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
     monster* mon = monster_at(targ);
     coord_def mon_swap_dest;
     bool fedhas_move = false;
+
+    // If we can't move, and don't have a non-move action, stop. We sometimes want
+    // to hit invisible monsters, but if we can't see them and can't move, it leaks
+    // information to allow the player to hit them.
+    if ((!mon || !mon->visible_to(&you))
+        && you.cannot_move()
+        && !feat_is_closed_door(env.grid(targ)))
+    {
+        canned_msg(MSG_CANNOT_MOVE);
+        return false;
+    }
 
     // First, check for fighting a monster.
     if (mon)
@@ -986,12 +1006,7 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
     // Now we know we actually want to move *into* this spot, let's see if we can.
     // XXX: Liquids the player cannot enter are handled by check_moveto_terrain(),
     //      which has already been called, so no need to check again.
-    if (you.cannot_move())
-    {
-        canned_msg(MSG_CANNOT_MOVE);
-        return false;
-    }
-    else if (_cannot_step_into(targ))
+    if (_cannot_step_into(targ))
     {
         _handle_trying_to_move_into_unpassable_terrain(targ);
         you.digging = false;

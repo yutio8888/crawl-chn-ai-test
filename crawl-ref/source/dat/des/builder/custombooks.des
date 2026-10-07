@@ -55,9 +55,10 @@ local books = {
   .. "splinterfrost_shell",
 "Hitting_the_Bricks numspells:4 spells:blink&passwall&swiftness&"
   .. "passage_of_golubria",
-"Honourable_Companions owner:Okawaru numspells:5 spells:foxfire&"
-  .. "fulminant_prism&iskenderun's_battlesphere&conjure_ball_lightning&"
-  .. "orb_of_destruction",
+"Honourable_Companions owner:Okawaru numspells:8 spells:foxfire&"
+  .. "construct_spike_launcher&iskenderun's_battlesphere&rending_blade&"
+  .. "conjure_ball_lightning&diamond_sawblades&orb_of_destruction&"
+  .. "hellfire_mortar",
 "Cookery numspells:4 spells:freeze&searing_ray&"
   .. "scorch&ozocubu's_refrigeration",
 "Legendary_Spells,_Part_II numspells:7 spells:leda's_liquefaction&"

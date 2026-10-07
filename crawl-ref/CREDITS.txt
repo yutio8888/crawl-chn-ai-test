@@ -216,6 +216,7 @@
     Brian Haase
     Sophie Hamilton
     Chris Hamons
+    hanchyan
     Tomas Krag Hansen
     Lexi Hattaway
     Taylor Hedberg
@@ -308,6 +309,7 @@
     Eva Myers
     Mystic Sailboat
     nagdon
+    NagyDonat
     Naruni
     neofelis
     nirrattner
@@ -317,7 +319,6 @@
     Erkki Nurmi
     Mattias Nyberg
     nyra
-    Odds
     Weston Odom
     Dylan O'Donnell
     Heinrich Ody
@@ -352,6 +353,7 @@
     Iago Porto
     Alexander Posch
     Brian Power
+    Predelnik
     psywombats
     pubby
     pyy156941
@@ -455,6 +457,7 @@
     Zhang Haocheng
     Brian 'buehler' Faires
     Dossy Shiobara
+    Jewel
 
 The Dungeon Crawl Stone Soup development team is:
     advil
@@ -499,6 +502,7 @@ The Dungeon Crawl Stone Soup development team is:
     Neil Moore
     nicolae
     Steven Noonan
+    Odds
     Stefan O'Rear
     Charles Otto
     Aaron Pixton

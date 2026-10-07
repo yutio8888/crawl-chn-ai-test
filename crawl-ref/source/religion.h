@@ -141,7 +141,7 @@ void vehumet_accept_gift(spell_type spell);
 
 mgen_data hepliaklqana_ancestor_gen_data();
 string hepliaklqana_ally_name();
-int hepliaklqana_ally_hp();
+int hepliaklqana_ally_hp(monster_type type);
 
 void upgrade_hepliaklqana_ancestor(bool quiet_force = false);
 void upgrade_hepliaklqana_weapon(monster_type mtyp, item_def &item);
@@ -157,7 +157,7 @@ void religion_turn_end();
 
 int get_tension(god_type god = you.religion);
 int get_monster_tension(const monster& mons, god_type god = you.religion);
-int get_fuzzied_monster_difficulty(const monster& mons);
+int okawaru_monster_difficulty(const monster& mons);
 
 typedef void (*delayed_callback)(const mgen_data &mg, monster *&mon, int placed);
 

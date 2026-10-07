@@ -584,6 +584,12 @@ stilling the winds monstatus
 
 This creature is preventing any clouds from being created on the current floor.
 %%%%
+stampeding monstatus
+
+This creature is moving in a single direction at incredible speed. Any enemies
+they run into will be pushed backwards and attacked with 50% bonus damage and
+increased accuracy.
+%%%%
 strong monstatus
 
 This creature's melee attacks deal 50% more damage.

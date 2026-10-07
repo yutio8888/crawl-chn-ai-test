@@ -571,7 +571,6 @@ void dgn_place_transporter(const coord_def &pos, const coord_def &dest)
     ASSERT(pos != dest);
 
     env.markers.add(new map_position_marker(pos, DNGN_TRANSPORTER, dest));
-    env.markers.clear_need_activate();
     dungeon_terrain_changed(pos, DNGN_TRANSPORTER, false, true);
     dungeon_terrain_changed(dest, DNGN_TRANSPORTER_LANDING, false, true);
 }
@@ -1560,6 +1559,7 @@ void dgn_reset_level(bool enable_random_maps)
     env.grid_colours.init(BLACK);
     env.map_knowledge.init(map_cell());
     env.map_forgotten.reset();
+    tile_env.remembered_flavour.reset();
     env.map_seen.reset();
 
     // Initialise all items.
@@ -4506,7 +4506,6 @@ const vault_placement *dgn_place_map(const map_def *mdef,
             if (!you.see_cell(p))
                 set_terrain_changed(p);
         }
-        env.markers.clear_need_activate();
 
         setup_environment_effects();
         _dgn_postprocess_level();
@@ -5125,6 +5124,7 @@ int dgn_place_item(const item_spec &spec,
 
                 item_made = items(spec.allow_uniques, base_type,
                                   spec.sub_type, level, spec.ego, NO_AGENT,
+                                  spec.level == ISPEC_ACQUIREMENT,
                                   _get_custom_name(spec), fixed_props);
 
                 if (spec.level == ISPEC_MUNDANE)
@@ -5230,7 +5230,7 @@ static void _dgn_give_mon_spec_items(mons_spec &mspec, monster *mon)
 
                 item_made = items(spec.allow_uniques, spec.base_type,
                                   spec.sub_type, item_level, spec.ego, NO_AGENT,
-                                  _get_custom_name(spec), fixed_props);
+                                  false, _get_custom_name(spec), fixed_props);
 
                 if (spec.level == ISPEC_MUNDANE)
                     squash_plusses(item_made);
@@ -5794,31 +5794,20 @@ bool seen_destroy_feat(dungeon_feature_type old_feat)
 void dgn_replace_area(int sx, int sy, int ex, int ey,
                       dungeon_feature_type replace,
                       dungeon_feature_type feature,
-                      unsigned mmask, bool needs_update)
+                      unsigned mmask)
 {
     dgn_replace_area(coord_def(sx, sy), coord_def(ex, ey),
-                      replace, feature, mmask, needs_update);
+                      replace, feature, mmask);
 }
 
 void dgn_replace_area(const coord_def& p1, const coord_def& p2,
                        dungeon_feature_type replace,
-                       dungeon_feature_type feature, uint32_t mapmask,
-                       bool needs_update)
+                       dungeon_feature_type feature, uint32_t mapmask)
 {
     for (rectangle_iterator ri(p1, p2); ri; ++ri)
     {
         if (env.grid(*ri) == replace && !map_masked(*ri, mapmask))
-        {
             env.grid(*ri) = feature;
-            if (needs_update && env.map_knowledge(*ri).seen())
-            {
-                env.map_knowledge(*ri).set_feature(feature, 0);
-#ifdef USE_TILE
-                // XXX: this will not be the correct tile for the feature...
-                tile_env.bk_bg(*ri) = feature;
-#endif
-            }
-        }
     }
 }
 
@@ -6683,10 +6672,7 @@ static coord_def _get_feat_dest(coord_def base_pos, dungeon_feature_type feat,
         }
 
         if (!shaft)
-        {
             env.markers.add(new map_position_marker(base_pos, feat, dest_pos));
-            env.markers.clear_need_activate();
-        }
         return dest_pos;
     }
     else

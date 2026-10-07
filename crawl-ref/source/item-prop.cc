@@ -972,7 +972,7 @@ static const gem_def Gem_prop[] =
     { GEM_SNAKE,   "jade",        BRANCH_SNAKE,   6000 },
     { GEM_SPIDER,  "milky-white", BRANCH_SPIDER,  6000 },
 
-    { GEM_SLIME,   "starry",      BRANCH_SLIME,   1500 }, // usually dived fast
+    { GEM_SLIME,   "starry",      BRANCH_SLIME,   1800 }, // usually dived
     { GEM_VAULTS,  "shining",     BRANCH_VAULTS,  7500 }, // big, travel time
     { GEM_CRYPT,   "ivory",       BRANCH_CRYPT,   6000 },
     { GEM_TOMB,    "sanguine",    BRANCH_TOMB,    6000 },
@@ -1099,6 +1099,7 @@ const set<pair<object_class_type, int> > removed_items =
     { OBJ_BOOKS,     BOOK_TRANSFIGURATIONS },
     { OBJ_BOOKS,     BOOK_OZOCUBU },
     { OBJ_BOOKS,     BOOK_NEARBY },
+    { OBJ_BOOKS,     BOOK_RANDART_LEVEL },
     { OBJ_RODS,      ROD_VENOM },
     { OBJ_RODS,      ROD_WARDING },
     { OBJ_RODS,      ROD_DESTRUCTION },
@@ -1818,16 +1819,6 @@ hands_reqd_type basic_hands_reqd(const item_def &item, size_type size)
         return HANDS_TWO;
     return size >= Weapon_prop[Weapon_index[wpn_type]].min_1h_size ? HANDS_ONE
                                                                    : HANDS_TWO;
-}
-
-hands_reqd_type hands_reqd(const actor* ac, object_class_type base_type, int sub_type)
-{
-    item_def item;
-    item.base_type = base_type;
-    item.sub_type  = sub_type;
-    // This function is used for item generation only, so use the actor's
-    // (player's) base size, not its current form.
-    return ac->hands_reqd(item, true);
 }
 
 /**

@@ -219,7 +219,7 @@ KITEM:    a = potion of curing q:4 pre_id, \
 KITEM:    b = scroll of blinking q:1 pre_id, \
               scroll of amnesia q:2 pre_id
 KITEM:    d = any blast wand charges:10 pre_id /\
-              any beam wand charges:10 pre_id, \
+              any beam wand charges:10 pre_id
 KITEM:    e = rapier plus:2 ego:electrocution pre_id /\
            rapier plus:2 ego:draining pre_id /\
            rapier plus:2 ego:venom pre_id /\

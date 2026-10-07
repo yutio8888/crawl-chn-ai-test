@@ -32,6 +32,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "terrain.h"
+#include "tile-env.h"
 #include "tileview.h"
 #include "tiles-build-specific.h"
 #include "travel.h"
@@ -155,6 +156,7 @@ bool is_feature(char32_t feature, const coord_def& where)
         return feat_stair_direction(grid) == CMD_GO_DOWNSTAIRS
                 && !feat_is_altar(grid)
                 && grid != DNGN_ENTER_SHOP
+                && grid != DNGN_PURIFIED_MUTATION_CATALYST
                 && grid != DNGN_TRANSPORTER;
     case '^':
         return feat_is_trap(grid);
@@ -395,8 +397,11 @@ class feature_list
             return feat_dir(feat);
         if (feat == DNGN_TRAP_SHAFT)
             return G_DOWN;
-        if (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP)
+        if (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP
+            || feat == DNGN_PURIFIED_MUTATION_CATALYST)
+        {
             return G_OTHER;
+        }
         if (get_feature_dchar(feat) == DCHAR_ARCH)
             return G_PORTAL;
         return G_NONE;
@@ -503,16 +508,22 @@ static void _unforget_map()
     MapKnowledge &old(*env.map_forgotten);
 
     for (rectangle_iterator ri(0); ri; ++ri)
-        if (!env.map_knowledge(*ri).seen() && old(*ri).seen())
-        {
-            // Don't overwrite known squares, nor magic-mapped with
-            // magic-mapped data -- what was forgotten is less up to date.
+    {
+        // Don't overwrite known squares, nor magic-mapped with
+        // magic-mapped data -- what was forgotten is less up to date.
+        if (env.map_knowledge(*ri).seen() || !old(*ri).seen())
+            continue;
+
+        if (!env.map_knowledge(*ri).mapped())
             env.map_knowledge(*ri) = old(*ri);
-            env.map_seen.set(*ri);
-#ifdef USE_TILE
-            tiles.update_minimap(*ri);
-#endif
+        else
+        {
+            // Don't use set_terrain_seen as that clears the
+            // MAP_CHANGED_FLAG flag
+            env.map_knowledge(*ri).flags |= MAP_SEEN_FLAG;
         }
+        redraw_view_at(*ri);
+    }
 }
 
 static void _forget_map(bool wizard_forget = false)
@@ -546,6 +557,7 @@ static void _forget_map(bool wizard_forget = false)
 }
 
 map_control_state process_map_command(command_type cmd, const map_control_state &state);
+void describe_location(coord_def pos, map_control_state& state);
 
 static coord_def _recentre_map_target(const level_id level,
                                       const level_id original)
@@ -751,6 +763,12 @@ public:
                     m_state.lpos.pos
                         = tiles.get_cursor().clamped(known_map_bounds());
                 }
+            }
+            else if (k == CK_MOUSE_CMD
+                && ev.type() == ui::Event::Type::MouseDown)
+            {
+                describe_location(tiles.get_cursor(), m_state);
+                return true;
             }
             _expose();
             return true;
@@ -1423,17 +1441,7 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break; // allow mouse clicks to move cursor without leaving map mode
 #endif
     case CMD_MAP_DESCRIBE:
-        if (map_bounds(state.lpos.pos) && env.map_knowledge(state.lpos.pos).known())
-        {
-            if (full_describe_square(state.lpos.pos, false))
-            {
-                state.map_alive = false;
-                state.chose = false; // don't go to the location
-            }
-            // n.b. it's possible for the describe popup to trigger a reentrant
-            // call and overwrite state
-            state.redraw_map = true;
-        }
+        describe_location(state.lpos.pos, state);
         break;
 
     default:
@@ -1443,6 +1451,21 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
     }
 
     return state;
+}
+
+void describe_location(coord_def pos, map_control_state& state)
+{
+    if (map_bounds(pos) && env.map_knowledge(pos).known())
+    {
+        if (full_describe_square(pos, false))
+        {
+            state.map_alive = false;
+            state.chose = false; // don't go to the location
+        }
+        // n.b. it's possible for the describe popup to trigger a reentrant
+        // call and overwrite state
+        state.redraw_map = true;
+    }
 }
 
 bool emphasise(const coord_def& where)

@@ -783,11 +783,13 @@ KITEM:  s = robe damaged ego:none / leather armour damaged ego:none / \
             pair of gloves damaged ego:none w:2
 KFEAT:  S = armour shop / antique armour shop w:5
 : end
+SUBST:  ? : ?..
+: decorative_floor(_G, '?', "assortment of trash")
 MAP
 .....
-.s.s.
-..S..
-.s.s.
+.s?s.
+.?S?.
+.s?s.
 .....
 ENDMAP
 
@@ -1320,7 +1322,7 @@ NAME: nicolae_rare_books
 TAGS: transparent extra
 DEPTH: Elf, Depths
 KFEAT: S = book shop type:One-of-a-Kind suffix:Books count:5 ; \
-       any fixed theme book | any fixed level book
+       any fixed theme book
 MAP
  c.c
 .....

@@ -191,8 +191,8 @@ static const mon_spellbook mspell_list[] =
     // ('f') Mobile plants and fungi.
     {  MST_THORN_HUNTER,
       {
-       { SPELL_THORN_VOLLEY, 43, MON_SPELL_NATURAL },
-       { SPELL_WALL_OF_BRAMBLES, 22, MON_SPELL_MAGICAL },
+       { SPELL_THORN_VOLLEY, 50, MON_SPELL_NATURAL },
+       { SPELL_CAGE_OF_BRAMBLES, 80, MON_SPELL_NATURAL },
       }
     },
 
@@ -268,6 +268,12 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    {  MST_SEWAGE_SOVEREIGN,
+      {
+       { SPELL_STAMPEDE, 200, MON_SPELL_NATURAL},
+      }
+    },
+
     {  MST_RAIJU,
       {
        { SPELL_BLINKBOLT, 40, MON_SPELL_MAGICAL },
@@ -336,6 +342,13 @@ static const mon_spellbook mspell_list[] =
     {  MST_LINDWURM,
       {
        { SPELL_FIRE_BREATH, 62, MON_SPELL_NATURAL | MON_SPELL_BREATH },
+      }
+    },
+
+    { MST_MONGREL_WURM,
+      {
+        { SPELL_HARPOON_SHOT, 62, MON_SPELL_NATURAL | MON_SPELL_BREATH },
+        { SPELL_SCORCH, 54, MON_SPELL_NATURAL | MON_SPELL_BREATH },
       }
     },
 
@@ -1054,6 +1067,14 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    // ('F') Frogs and fish.
+    {  MST_ROAMING_SLUDGEFISH,
+      {
+        { SPELL_BOLT_OF_ANTIMAGIC, 34, MON_SPELL_MAGICAL },
+        { SPELL_HURL_SLUDGE, 30, MON_SPELL_MAGICAL },
+      }
+    },
+
     // ('G') Organs.
     {  MST_GLASS_EYE,
       {
@@ -1103,6 +1124,13 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    {  MST_TELENCEPHALON,
+      {
+       { SPELL_BRAIN_BITE, 30, MON_SPELL_MAGICAL },
+       { SPELL_CALL_DOWN_LIGHTNING, 20, MON_SPELL_MAGICAL },
+      }
+    },
+
     // ('H') Animal hybrids.
     {  MST_MANTICORE,
       {
@@ -1145,6 +1173,12 @@ static const mon_spellbook mspell_list[] =
       {
        { SPELL_BOLT_OF_DRAINING, 20, MON_SPELL_WIZARD },
        { SPELL_ENSNARE, 40, MON_SPELL_WIZARD },
+      }
+    },
+
+    {  MST_SCRAPSHELL_CHIMERA,
+      {
+       { SPELL_MURKY_LEGION, 60, MON_SPELL_MAGICAL },
       }
     },
 
@@ -1644,8 +1678,8 @@ static const mon_spellbook mspell_list[] =
     // ('3') Common demons.
     {  MST_YNOXINUL,
       {
-       { SPELL_IRON_SHOT, 19, MON_SPELL_MAGICAL },
-       { SPELL_SUMMON_UFETUBUS, 38, MON_SPELL_MAGICAL },
+       { SPELL_IRON_SHOT, 22, MON_SPELL_MAGICAL },
+       { SPELL_UFETUBI_SWARM, 50, MON_SPELL_MAGICAL },
       }
     },
 
@@ -1823,6 +1857,12 @@ static const mon_spellbook mspell_list[] =
        { SPELL_DEATH_RATTLE, 36, MON_SPELL_MAGICAL },
        { SPELL_WARNING_CRY, 56, MON_SPELL_VOCAL | MON_SPELL_BREATH },
        { SPELL_DISPEL_UNDEAD_RANGE, 44, MON_SPELL_MAGICAL },
+      }
+    },
+
+    { MST_RUSTED_INSPECTOR,
+      {
+        { SPELL_DIMINISH_SPELLS, 55, MON_SPELL_MAGICAL },
       }
     },
 

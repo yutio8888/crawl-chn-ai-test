@@ -421,7 +421,6 @@ ENDMAP
 NAME:   pf_dread_powers_of_hell
 TAGS:   transparent uniq_hell_entry_geh
 WEIGHT: 2
-KMONS:  i = reaper ; wand of flame / balrug ; wand of flame pre_id
 TILE:   c = dngn_stone_wall_red
 COLOUR: c = red
 FTILE:  'iO = floor_infernal_blank
@@ -430,7 +429,7 @@ FTILE:  'iO = floor_infernal_blank
 MAP
      ........
     ..cccccc...
-   ....cci'ccc..
+   ....cc''ccc..
   ...l..cc'''cc..
  ...lll..cc'''cc..
 ...lllll..cc'''cc..
@@ -438,7 +437,7 @@ MAP
 ...lllll..cc'''cc..
  ...lll..cc'''cc..
   ...l..cc'''cc..
-   ....cci'ccc..
+   ....cc''ccc..
     ..cccccc...
      ........
 ENDMAP

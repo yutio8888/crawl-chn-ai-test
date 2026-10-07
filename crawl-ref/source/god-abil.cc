@@ -54,6 +54,7 @@
 #include "libutil.h"
 #include "losglobal.h"
 #include "macro.h"
+#include "map-knowledge.h"
 #include "mapmark.h"
 #include "maps.h"
 #include "message.h"
@@ -89,6 +90,7 @@
 #include "spl-book.h"
 #include "spl-goditem.h"
 #include "spl-monench.h"
+#include "spl-summoning.h"
 #include "spl-transloc.h"
 #include "spl-util.h"
 #include "sprint.h"
@@ -165,8 +167,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
 
     int item_slot = prompt_invent_item("Brand which weapon?",
                                        menu_type::invlist,
-                                       OSEL_BLESSABLE_WEAPON, OPER_ANY,
-                                       invprompt_flag::escape_only);
+                                       OSEL_BLESSABLE_WEAPON, OPER_ANY);
 
     if (item_slot == PROMPT_NOTHING || item_slot == PROMPT_ABORT)
     {
@@ -1433,6 +1434,55 @@ void trog_remove_trogs_hand()
     you.duration[DUR_TROGS_HAND] = 0;
 }
 
+static const vector<random_pick_entry<monster_type>> _trog_brothers =
+{
+  { -3,  10,  150, PEAK, MONS_BLACK_BEAR },
+  { -1,  13,  150, PEAK, MONS_POLAR_BEAR },
+  {  3,  19,  250, PEAK, MONS_OGRE },
+  {  6,  19,  200, PEAK, MONS_TROLL },
+  {  8,  19,  150, PEAK, MONS_ELEPHANT },
+  {  10, 20,  100, PEAK, MONS_SKYSHARK },
+  {  12, 23,  200, PEAK, MONS_CYCLOPS },
+  {  13, 24,  125, PEAK, MONS_DEATH_YAK },
+  {  13, 27,  200, PEAK, MONS_TWO_HEADED_OGRE },
+  {  13, 27,  100, RISE, MONS_TWO_HEADED_OGRE },
+  {  15, 30,  200, PEAK, MONS_DEEP_TROLL },
+  {  18, 31,  150, PEAK, MONS_IRON_TROLL },
+  {  19, 35,  150, PEAK, MONS_STONE_GIANT },
+  {  20, 37,   90, PEAK, MONS_DIRE_ELEPHANT },
+  {  22, 38,   90, PEAK, MONS_ETTIN },
+};
+
+monster_type trog_get_brother_type(int power)
+{
+    monster_picker picker;
+    return picker.pick(_trog_brothers, power, MONS_OGRE);
+}
+
+spret trog_brothers_in_arms(bool fail)
+{
+    static const vector<monster_type> types = { MONS_BLACK_BEAR,
+                                                MONS_POLAR_BEAR,
+                                                MONS_OGRE,
+                                                MONS_TROLL,
+                                                MONS_ELEPHANT,
+                                                MONS_SKYSHARK,
+                                                MONS_CYCLOPS,
+                                                MONS_DEATH_YAK,
+                                                MONS_TWO_HEADED_OGRE,
+                                                MONS_DEEP_TROLL,
+                                                MONS_IRON_TROLL,
+                                                MONS_STONE_GIANT,
+                                                MONS_ETTIN };
+    if (!player_summon_check(types))
+        return spret::abort;
+
+    fail_check();
+
+    summon_berserker(&you, trog_get_brother_type(you.experience_level));
+    return spret::success;
+}
+
 // Return whether the player can light the torch on their current floor
 // (ie: it is a valid place to do so and it has never been lit here before)
 string yred_cannot_light_torch_reason()
@@ -2351,8 +2401,7 @@ bool ashenzari_curse_item()
     const string prompt_msg = make_stringf(T_("Curse which item? (Esc to abort)"));
     const int item_slot = prompt_invent_item(prompt_msg.c_str(),
                                              menu_type::invlist,
-                                             OSEL_CURSABLE, OPER_ANY,
-                                             invprompt_flag::escape_only);
+                                             OSEL_CURSABLE, OPER_ANY);
     if (prompt_failed(item_slot))
         return false;
 
@@ -2385,8 +2434,7 @@ bool ashenzari_uncurse_item()
 {
     int item_slot = prompt_invent_item("Uncurse and destroy which item?",
                                        menu_type::invlist,
-                                       OSEL_CURSED_WORN, OPER_ANY,
-                                       invprompt_flag::escape_only);
+                                       OSEL_CURSED_WORN, OPER_ANY);
     if (prompt_failed(item_slot))
         return false;
 
@@ -2961,7 +3009,6 @@ bool valid_marionette_spell(spell_type spell)
         case SPELL_STILL_WINDS:
         case SPELL_DIG:
         case SPELL_SILENCE:
-        case SPELL_WALL_OF_BRAMBLES:
         case SPELL_CALL_TIDE:
         case SPELL_DRUIDS_CALL:
 
@@ -2996,13 +3043,22 @@ static bool _marionette_spell_attempt(monster& caster, spell_type spell,
                                       vector<monster*>& targs,
                                       bool check_only = false)
 {
-    shuffle_array(targs);
+    const spell_flags flags = get_spell_flags(spell);
+    const bool aggressive = (flags & (spflag::targeting_mask))
+                            && !(flags & ((spflag::helpful | spflag::escape)));
 
+    shuffle_array(targs);
     for (monster* targ : targs)
     {
+        // Don't cast attack spells directly on ourselves.
+        // (This is a very crude approximation, but in general we assume
+        // untargeted AoE already won't hurt its own caster.)
+        if (targ == &caster && aggressive)
+            continue;
+
         // We verify alignment again at this point, just in case it's changed
         // in the middle of Marionette (eg: by the monster charming something).
-        if (!targ->alive() || targ->wont_attack())
+        if (!targ->alive() || (targ->wont_attack() && targ != &caster))
             continue;
 
         caster.foe = targ->mindex();
@@ -3617,7 +3673,6 @@ static void _gozag_place_shop(int index)
 
     link_items();
     env.markers.add(new map_feature_marker(you.pos(), DNGN_ABANDONED_SHOP));
-    env.markers.clear_need_activate();
 
     shop_struct *shop = shop_at(you.pos());
     ASSERT(shop);
@@ -4112,6 +4167,7 @@ spret qazlal_upheaval(coord_def target, bool quiet, bool fail, dist *player_targ
 static const map<cloud_type, monster_type> elemental_clouds = {
     { CLOUD_FIRE,           MONS_FIRE_ELEMENTAL },
     { CLOUD_FOREST_FIRE,    MONS_FIRE_ELEMENTAL },
+    { CLOUD_BLASTMOTES,     MONS_FIRE_ELEMENTAL },
     { CLOUD_COLD,           MONS_WATER_ELEMENTAL },
     { CLOUD_RAIN,           MONS_WATER_ELEMENTAL },
     { CLOUD_DUST,           MONS_EARTH_ELEMENTAL },
@@ -4120,6 +4176,7 @@ static const map<cloud_type, monster_type> elemental_clouds = {
     { CLOUD_GREY_SMOKE,     MONS_AIR_ELEMENTAL },
     { CLOUD_BLUE_SMOKE,     MONS_AIR_ELEMENTAL },
     { CLOUD_PURPLE_SMOKE,   MONS_AIR_ELEMENTAL },
+    { CLOUD_FLUFFY,         MONS_AIR_ELEMENTAL },
     { CLOUD_STORM,          MONS_AIR_ELEMENTAL },
 };
 
@@ -5560,6 +5617,8 @@ bool ru_power_leap()
     wave.loudness = 2;
     wave.explode();
 
+    mpr("You perform a powerful leap!");
+
     // we need to exempt the player from damage.
     for (adjacent_iterator ai(you.pos(), false); ai; ++ai)
     {
@@ -5982,7 +6041,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
 
     static const map<int, monster_type> ancestor_types = {
         { ABIL_HEPLIAKLQANA_TYPE_KNIGHT, MONS_ANCESTOR_KNIGHT },
-        { ABIL_HEPLIAKLQANA_TYPE_BATTLEMAGE, MONS_ANCESTOR_BATTLEMAGE },
+        { ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST, MONS_ANCESTOR_ELEMENTALIST },
         { ABIL_HEPLIAKLQANA_TYPE_HEXER, MONS_ANCESTOR_HEXER },
     };
 
@@ -6775,6 +6834,7 @@ void makhleb_setup_destruction_beam(bolt& beam, int power, bool signature_only)
         case BEAM_ELECTRICITY:
             beam.name = "torrent of electricity";
             beam.colour = LIGHTCYAN;
+            beam.tile_beam = TILE_BOLT_STRONG_ELEC;
             break;
 
         case BEAM_NEG:
@@ -6787,11 +6847,13 @@ void makhleb_setup_destruction_beam(bolt& beam, int power, bool signature_only)
         case BEAM_LAVA:
             beam.name = "gout of magma";
             beam.colour = RED;
+            beam.tile_beam = TILE_BOLT_MAGMA;
             break;
 
         case BEAM_ICE:
             beam.name = "flurry of ice";
             beam.colour = ETC_ICE;
+            beam.tile_beam = TILE_BOLT_ICEBLAST;
             break;
 
         case BEAM_DEVASTATION:
@@ -6929,10 +6991,10 @@ static const vector<random_pick_entry<monster_type>> _makhleb_servants =
   { 17,  27,  220, SEMI, MONS_EXECUTIONER },
 
   // Accessible only through the Mark of the Tyrant
-  { 19,  27,  260, SEMI, MONS_TZITZIMITL },
-  { 21,  27,  280, SEMI, MONS_ICE_FIEND },
-  { 22,  27,  300, SEMI, MONS_BRIMSTONE_FIEND },
-  { 26,  27,  150, SEMI, MONS_HELL_SENTINEL },
+  { 19,  30,  260, SEMI, MONS_TZITZIMITL },
+  { 21,  30,  280, SEMI, MONS_ICE_FIEND },
+  { 22,  30,  300, SEMI, MONS_BRIMSTONE_FIEND },
+  { 26,  27,  180, SEMI, MONS_HELL_SENTINEL },
 };
 
 static monster* _find_carnage_target(monster_type demon_type, coord_def& demon_spot)
@@ -7360,7 +7422,7 @@ void makhleb_crucible_kill(monster& victim)
         dungeon_terrain_changed(pos, DNGN_EXIT_CRUCIBLE);
         simple_god_message(T_(" acknowledges your contrition and permits you to depart the Crucible."), false, GOD_MAKHLEB);
 
-        env.map_knowledge(pos).set_feature(DNGN_EXIT_CRUCIBLE);
+        update_terrain_knowledge(pos);
 #ifdef USE_TILE
         tile_env.bk_bg(pos) = TILE_DNGN_PORTAL;
         tiles.update_minimap(pos);

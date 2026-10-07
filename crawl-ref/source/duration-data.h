@@ -88,7 +88,14 @@ static void _end_growing_destruction()
 
 static void _end_toxic_bog()
 {
-    end_terrain_change(TERRAIN_CHANGE_BOG);
+    end_terrain_changes(you, TERRAIN_CHANGE_BOG);
+}
+
+static void _end_exegesis()
+{
+    mprf(MSGCH_DURATION, "Your divinely inspired understanding of %s fades.",
+                         spell_title(static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int())));
+    you.props.erase(EXEGESIS_SPELL);
 }
 
 // properties of the duration.
@@ -859,7 +866,6 @@ static const duration_def duration_data[] =
     { DUR_CONSTRICTION_IMMUNITY, 0, "", "", "constrict immune", "", D_NO_FLAGS, {{""}}},
     { DUR_GRAVE_CLAW_RECHARGE, 0, "", "", "grave claw recharging", "", D_NO_FLAGS},
     { DUR_TIME_WARPED_BLOOD_COOLDOWN, 0, "", "", "time-warped blood cooldown", "", D_NO_FLAGS},
-    { DUR_SPIKE_LAUNCHER_ACTIVE, 0, "", "", "spike launcher", "", D_NO_FLAGS, {{"", end_spike_launcher}}},
     { DUR_PARAGON_ACTIVE, 0, "", "", "paragon active", "", D_NO_FLAGS},
     { DUR_FORTRESS_BLAST_TIMER, 0, "", "", "fortress blast charging", "", D_DISPELLABLE},
     { DUR_PHALANX_BARRIER, 0, "", "phalanx barrier", "phalanx barrier", "", D_NO_FLAGS},
@@ -875,6 +881,7 @@ static const duration_def duration_data[] =
     { DUR_OOZE_REGEN, LIGHTBLUE, "OozeRegen", "ooze regen", "ooze regen", "coated in regenerative ooze", D_NO_FLAGS,
        {{"The regenerative ooze finishes dripping off of you."}}},
     { DUR_INDOMITABLE, LIGHTBLUE, "Indom", "", "", "", D_NO_FLAGS},
+    { DUR_EXEGESIS, WHITE, "Exegesis", "", "", "", D_NO_FLAGS, {{"", _end_exegesis}}},
 
 #if TAG_MAJOR_VERSION == 34
     // And removed ones
@@ -932,5 +939,6 @@ static const duration_def duration_data[] =
     { DUR_CLUMSY, 0, "", "", "old clumsy", "", D_NO_FLAGS },
     { DUR_SLEEP_IMMUNITY, 0, "", "", "old sleep immunity", "", D_NO_FLAGS, {{""}}},
     { DUR_VILE_CLUTCH_OLD, 0, "", "", "old vile clutch", "", D_NO_FLAGS, {{""}}},
+    { DUR_SPIKE_LAUNCHER_ACTIVE, 0, "", "", "old spike launcher", "", D_NO_FLAGS, {{""}}},
 #endif
 };

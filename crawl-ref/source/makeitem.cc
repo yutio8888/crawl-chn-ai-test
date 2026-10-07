@@ -163,7 +163,8 @@ static weapon_type _determine_weapon_subtype(int item_level)
     }
 }
 
-static bool _try_make_item_unrand(item_def& item, int &force_type, int item_level, int agent)
+static bool _try_make_item_unrand(item_def& item, int &force_type,
+                                  int item_level, int agent, bool acquirement)
 {
     if (player_in_branch(BRANCH_PANDEMONIUM) && agent == NO_AGENT)
         return false;
@@ -172,7 +173,7 @@ static bool _try_make_item_unrand(item_def& item, int &force_type, int item_leve
     const bool include_abyssed = player_in_branch(BRANCH_ABYSS)
                                  && agent == NO_AGENT;
     const int idx = find_okay_unrandart(item.base_type, force_type, item_level,
-                                        include_abyssed);
+                                        include_abyssed, acquirement);
     if (idx == -1)
         return false;
 
@@ -197,7 +198,7 @@ static bool _weapon_disallows_randart(int sub_type)
 // Return whether we made an artefact.
 static bool _try_make_weapon_artefact(item_def& item, int force_type,
                                       int item_level, bool force_randart,
-                                      int agent)
+                                      int agent, bool acquirement)
 {
     const int old_ego = item.brand;
     if (item_level > 0 && x_chance_in_y(101 + item_level * 3, 4000)
@@ -209,8 +210,11 @@ static bool _try_make_weapon_artefact(item_def& item, int force_type,
         if (one_chance_in(item_level == ISPEC_GOOD_ITEM ? 7 : 20)
             && !force_randart)
         {
-            if (_try_make_item_unrand(item, force_type, item_level, agent))
+            if (_try_make_item_unrand(item, force_type, item_level, agent,
+                                      acquirement))
+            {
                 return true;
+            }
             if (item.base_type == OBJ_STAVES)
             {
                 // TODO: this is a bit messy: a fallback randart for an unrand
@@ -423,7 +427,8 @@ void set_artefact_brand(item_def &item, int brand)
 
 static void _generate_weapon_item(item_def& item, bool allow_uniques,
                                   int force_type, int item_level,
-                                  int agent = NO_AGENT)
+                                  int agent = NO_AGENT,
+                                  bool acquirement = false)
 {
     // Determine weapon type.
     if (force_type != OBJ_RANDOM)
@@ -440,7 +445,8 @@ static void _generate_weapon_item(item_def& item, bool allow_uniques,
     {
         int ego = item.brand;
         for (int i = 0; i < 100; ++i)
-            if (_try_make_weapon_artefact(item, force_type, 0, true, agent))
+            if (_try_make_weapon_artefact(item, force_type, 0, true, agent,
+                                          acquirement))
             {
                 if (ego > SPWPN_NORMAL)
                     set_artefact_brand(item, ego);
@@ -462,7 +468,8 @@ static void _generate_weapon_item(item_def& item, bool allow_uniques,
 
     // If we make the unique roll, no further generation necessary.
     if (allow_uniques
-        && _try_make_weapon_artefact(item, force_type, item_level, false, agent))
+        && _try_make_weapon_artefact(item, force_type, item_level, false,
+                                     agent, acquirement))
     {
         return;
     }
@@ -741,7 +748,7 @@ static bool _try_make_armour_artefact(item_def& item, int force_type,
     if (one_chance_in(item_level == ISPEC_GOOD_ITEM ? 7 : 20)
         && !force_randart)
     {
-        if (_try_make_item_unrand(item, force_type, item_level, agent))
+        if (_try_make_item_unrand(item, force_type, item_level, agent, false))
             return true;
     }
 
@@ -1534,12 +1541,6 @@ static void _generate_book_item(item_def& item, int force_type, int item_level)
         item.plus = static_cast<int>(choose_parchment_spell(item_level));
     else if (item.sub_type == BOOK_RANDART_THEME)
         build_themed_book(item, capped_spell_filter(20));
-    else if (item.sub_type == BOOK_RANDART_LEVEL)
-    {
-        int max_level  = min(9, max(1, item_level / 3));
-        int spl_level  = random_range(1, max_level);
-        make_book_level_randart(item, spl_level);
-    }
 }
 
 static stave_type _get_random_stave_type()
@@ -1567,7 +1568,8 @@ static void _roll_stave_type(item_def& item)
 }
 
 static void _try_make_staff_artefact(item_def& item, bool allow_uniques,
-                                     int item_level, int agent)
+                                     int item_level, int agent,
+                                     bool acquirement)
 {
     const bool force_randart = item_level == ISPEC_RANDART;
 
@@ -1579,8 +1581,11 @@ static void _try_make_staff_artefact(item_def& item, bool allow_uniques,
         // TODO: ???
         item.base_type = OBJ_WEAPONS;
         int fake_force_type = WPN_STAFF;
-        if (_try_make_item_unrand(item, fake_force_type, item_level, agent))
+        if (_try_make_item_unrand(item, fake_force_type, item_level, agent,
+                                  acquirement))
+        {
             return;
+        }
         // We failed. Go back to trying a staff.
         // TODO: support hypothetical fallback to a specific staff type
         item.base_type = OBJ_STAVES;
@@ -1596,14 +1601,16 @@ static void _try_make_staff_artefact(item_def& item, bool allow_uniques,
 }
 
 static void _generate_staff_item(item_def& item, bool allow_uniques,
-                                 int force_type, int item_level, int agent)
+                                 int force_type, int item_level, int agent,
+                                 bool acquirement)
 {
     if (force_type == OBJ_RANDOM)
         _roll_stave_type(item);
     else
         item.sub_type = force_type;
 
-    _try_make_staff_artefact(item, allow_uniques, item_level, agent);
+    _try_make_staff_artefact(item, allow_uniques, item_level, agent,
+                             acquirement);
 }
 
 static void _generate_rune_item(item_def& item, int force_type)
@@ -1662,7 +1669,7 @@ static bool _try_make_jewellery_unrandart(item_def& item, int force_type,
         && one_chance_in(20)
         && x_chance_in_y(101 + item_level * 3, 2000))
     {
-        if (_try_make_item_unrand(item, type, item_level, agent))
+        if (_try_make_item_unrand(item, type, item_level, agent, false))
             return true;
     }
 
@@ -2004,6 +2011,7 @@ static void _setup_fallback_randart(const int unrand_id,
  * @param item_level How powerful the item is allowed to be
  * @param force_ego The desired ego/brand
  * @param agent The agent creating the item (Example: Xom) or -1 if NA
+ * @param acquirement Whether the item should be tailored to fit the player
  * @param custom_name A custom name for the item
  * @param props Any special item props
  *
@@ -2015,6 +2023,7 @@ int items(bool allow_uniques,
           int item_level,
           int force_ego,
           int agent,
+          bool acquirement,
           string custom_name,
           CrawlHashTable const *fixed_props)
 {
@@ -2116,7 +2125,7 @@ int items(bool allow_uniques,
     {
     case OBJ_WEAPONS:
         _generate_weapon_item(item, allow_uniques, force_type, item_level,
-                              agent);
+                              agent, acquirement);
         break;
 
     case OBJ_MISSILES:
@@ -2153,7 +2162,7 @@ int items(bool allow_uniques,
         // Don't generate unrand staves this way except through acquirement,
         // since they also generate as OBJ_WEAPONS.
         _generate_staff_item(item, (agent != NO_AGENT), force_type,
-                             item_level, agent);
+                             item_level, agent, acquirement);
         break;
 
     case OBJ_ORBS:              // always forced in current setup {dlb}
@@ -2341,7 +2350,7 @@ void lucky_upgrade_item(item_def& item)
     if (item.base_type == OBJ_ARMOUR)
         did_upgrade = _try_make_armour_artefact(item, 0, ISPEC_RANDART, 0);
     else if (item.base_type == OBJ_WEAPONS)
-        did_upgrade = _try_make_weapon_artefact(item, 0, ISPEC_RANDART, true, 0);
+        did_upgrade = _try_make_weapon_artefact(item, 0, ISPEC_RANDART, true, 0, true);
     else
         did_upgrade = make_item_randart(item);
 

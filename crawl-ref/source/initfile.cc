@@ -582,6 +582,7 @@ const vector<GameOption*> game_options::build_options_list()
         new BoolGameOption(SIMPLE_NAME(dump_on_save), true),
         new BoolGameOption(SIMPLE_NAME(rest_wait_both), false),
         new BoolGameOption(SIMPLE_NAME(rest_wait_ancestor), false),
+        new BoolGameOption(SIMPLE_NAME(rest_wait_ignore_mp), false),
         new BoolGameOption(SIMPLE_NAME(cloud_status), !is_tiles()),
         new BoolGameOption(SIMPLE_NAME(always_show_zot), false),
         new BoolGameOption(SIMPLE_NAME(always_show_gems), false),
@@ -1663,7 +1664,7 @@ void game_options::reset_options()
           ABIL_CHEIBRIADOS_SLOUCH, ABIL_QAZLAL_DISASTER_AREA,
           ABIL_RU_APOCALYPSE, ABIL_LUGONU_CORRUPT, ABIL_IGNIS_FOXFIRE,
           ABIL_SIPHON_ESSENCE, ABIL_DITHMENOS_SHADOWSLIP,
-          ABIL_WATERY_GRAVE };
+          ABIL_WATERY_GRAVE, ABIL_MAKHLEB_VESSEL_OF_SLAUGHTER };
     always_use_static_ability_targeters = false;
 
     force_scroll_targeter =

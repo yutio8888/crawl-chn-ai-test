@@ -46,6 +46,7 @@
 #include "libutil.h"
 #include "losglobal.h"
 #include "makeitem.h"
+#include "map-knowledge.h"
 #include "mapmark.h"
 #include "message.h"
 #include "misc.h"
@@ -73,6 +74,7 @@
 #include "spl-damage.h"
 #include "spl-goditem.h"
 #include "spl-monench.h"
+#include "spl-other.h"
 #include "spl-summoning.h"
 #include "spl-transloc.h"
 #include "spl-util.h"
@@ -150,6 +152,8 @@ static ai_action::goodness _foe_not_nearby(const monster &caster);
 static ai_action::goodness _foe_near_lava(const monster &caster);
 static ai_action::goodness _mons_likes_blinking(const monster &caster);
 static ai_action::goodness _mesmerise_is_effective(monster* mons, bool check_hearing);
+static ai_action::goodness _spike_launcher_goodness(const monster& caster);
+static ai_action::goodness _stampede_goodness(const monster& caster);
 static void _cast_injury_mirror(monster &mons, mon_spell_slot, bolt&);
 static void _cast_smiting(monster &mons, mon_spell_slot slot, bolt&);
 static void _cast_brain_bite(monster &mons, mon_spell_slot slot, bolt&);
@@ -200,6 +204,8 @@ static ai_action::goodness _sojourning_bolt_goodness(const monster &caster);
 static bool _cast_dominate_undead(const monster& caster, int pow, bool check_only);
 static bool _mon_cast_tempering(const monster& caster, bool check_only);
 static coord_def _mons_boulder_tracer(const monster* mons);
+static bool _mons_splinterfrost_shell(const monster& caster, bool check_only = false);
+static void _mons_start_stampede(monster& caster);
 
 enum spell_logic_flag
 {
@@ -251,6 +257,22 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         _should_selfench(ENCH_HASTE),
         _fire_simple_beam,
         _selfench_beam_setup(BEAM_HASTE),
+    } },
+    { SPELL_BOLSTER, {
+        [](const monster &caster)
+        {
+            return ai_action::good_or_bad(!caster.has_ench(ENCH_MIGHT)
+                                          || !caster.has_ench(ENCH_RESISTANCE));
+        },
+        [](monster &caster, mon_spell_slot, bolt&)
+        {
+            simple_monster_message(caster, " vitality is bolstered.", true);
+            flash_tile(caster.pos(), LIGHTBLUE);
+            const int dur = random_range(220, 300);
+            caster.add_ench(mon_enchant(ENCH_MIGHT, &caster, dur));
+            caster.add_ench(mon_enchant(ENCH_RESISTANCE, &caster, dur));
+        },
+        nullptr,
     } },
     { SPELL_MINOR_HEALING, {
         [](const monster &caster) {
@@ -638,10 +660,9 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         MSPELL_LOGIC_NONE, 10,
     } },
     { SPELL_DIMINISH_SPELLS, { [](const monster &caster) {
-        const actor* foe = caster.get_foe();
-        ASSERT(foe);
-        return ai_action::good_or_impossible(foe->antimagic_susceptible()); },
-        _fire_simple_beam, _zap_setup(SPELL_DIMINISH_SPELLS),
+        return _foe_effect_viable(caster, DUR_DIMINISHED_SPELLS, ENCH_DIMINISHED_SPELLS); },
+        _fire_simple_beam,
+        _zap_setup(SPELL_DIMINISH_SPELLS),
         MSPELL_LOGIC_NONE, 10,
     } },
     { SPELL_VIRULENCE, _hex_logic(SPELL_VIRULENCE, [](const monster &caster) {
@@ -1063,6 +1084,26 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             _cast_landbreaker(caster, beam);
         },
         _zap_setup(SPELL_LANDBREAKER) } },
+    { SPELL_SPIKE_LAUNCHER, {
+        _spike_launcher_goodness,
+       [](monster &caster, mon_spell_slot, bolt&) {
+            cast_spike_launcher(caster, mons_spellpower(caster, SPELL_SPIKE_LAUNCHER), false);
+        }
+    } },
+    { SPELL_SPLINTERFROST_SHELL, {
+        [](const monster &caster) {
+            return ai_action::good_or_impossible(_mons_splinterfrost_shell(caster, true));
+        },
+        [](monster& caster, mon_spell_slot, bolt&) {
+            _mons_splinterfrost_shell(caster);
+        }
+    } },
+    { SPELL_STAMPEDE, {
+        _stampede_goodness,
+       [](monster &caster, mon_spell_slot, bolt&) {
+            _mons_start_stampede(caster);
+        }
+    } },
 };
 
 // Logic for special-cased Aphotic Marionette hijacking of monster buffs to
@@ -1114,7 +1155,7 @@ static const map<spell_type, mons_spell_logic> marionette_spell_to_logic {
     } },
     { SPELL_MALIGN_GATEWAY, {
         [](const monster&) {
-            return ai_action::good_or_impossible(can_cast_malign_gateway());
+            return ai_action::good_or_impossible(can_cast_malign_gateway(you));
         },
         [] (monster&, mon_spell_slot /*slot*/, bolt& /*beem*/) {
             cast_malign_gateway(&you, 200);
@@ -2115,6 +2156,7 @@ static int _mons_power_hd_factor(spell_type spell)
         case SPELL_FOXFIRE:
         case SPELL_MANIFOLD_ASSAULT:
         case SPELL_SHADOW_PRISM:
+        case SPELL_SPLINTERFROST_SHELL:
             return 6;
 
         case SPELL_SUMMON_DRAGON:
@@ -2374,6 +2416,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_STUNNING_BURST:
     case SPELL_MALIGN_OFFERING:
     case SPELL_BOLT_OF_DEVASTATION:
+    case SPELL_BOLT_OF_ANTIMAGIC:
     case SPELL_BORGNJORS_VILE_CLUTCH:
     case SPELL_CRYSTALLISING_SHOT:
     case SPELL_HELLFIRE_MORTAR:
@@ -2653,7 +2696,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
 #endif
     case SPELL_CALL_IMP:
     case SPELL_SUMMON_MINOR_DEMON:
-    case SPELL_SUMMON_UFETUBUS:
+    case SPELL_UFETUBI_SWARM:
     case SPELL_SUMMON_SIN_BEAST:  // Geryon
     case SPELL_SUMMON_UNDEAD:
     case SPELL_SUMMON_ICE_BEAST:
@@ -2698,7 +2741,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_MASS_CONFUSION:
     case SPELL_ENGLACIATION:
     case SPELL_AWAKEN_VINES:
-    case SPELL_WALL_OF_BRAMBLES:
+    case SPELL_CAGE_OF_BRAMBLES:
     case SPELL_WIND_BLAST:
     case SPELL_SUMMON_VERMIN:
     case SPELL_POLAR_VORTEX:
@@ -2710,6 +2753,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_SUMMON_MANA_VIPER:
     case SPELL_SUMMON_SCORPIONS:
     case SPELL_SUMMON_EMPEROR_SCORPIONS:
+    case SPELL_MURKY_LEGION:
     case SPELL_BATTLECRY:
     case SPELL_WARNING_CRY:
     case SPELL_HUNTING_CALL:
@@ -3524,7 +3568,7 @@ static bool _seal_doors_and_stairs(const monster* warden,
                 {
                     if (env.map_knowledge(dc).seen())
                     {
-                        env.map_knowledge(dc).set_feature(DNGN_CLOSED_DOOR);
+                        update_terrain_knowledge(dc);
 #ifdef USE_TILE
                         tile_env.bk_bg(dc) = TILE_DNGN_CLOSED_DOOR;
 #endif
@@ -4240,124 +4284,60 @@ static void _cast_druids_call(const monster* mon)
         _place_druids_call_beast(mon, mon_list[i], target);
 }
 
-static double _angle_between(coord_def origin, coord_def p1, coord_def p2)
-{
-    double ang0 = atan2(p1.x - origin.x, p1.y - origin.y);
-    double ang  = atan2(p2.x - origin.x, p2.y - origin.y);
-    return min(fabs(ang - ang0), fabs(ang - ang0 + 2 * PI));
-}
-
-// Does there already appear to be a bramble wall in this direction?
-// We approximate this by seeing if there are at least two briar patches in
-// a ray between us and our target, which turns out to be a pretty decent
-// metric in practice.
-static bool _already_bramble_wall(const monster* mons, coord_def targ)
-{
-    bolt tracer;
-    tracer.source    = mons->pos();
-    tracer.target    = targ;
-    tracer.range     = 12;
-    tracer.set_is_tracer(true);
-    tracer.pierce    = true;
-    tracer.fire();
-
-    int briar_count = 0;
-    bool targ_reached = false;
-    for (coord_def p : tracer.path_taken)
-    {
-        if (!targ_reached && p == targ)
-            targ_reached = true;
-        else if (!targ_reached)
-            continue;
-
-        if (monster_at(p) && monster_at(p)->type == MONS_BRIAR_PATCH)
-            ++briar_count;
-    }
-
-    return briar_count > 1;
-}
-
-static bool _wall_of_brambles(monster* mons)
+// Attempt to create a ring of brairs at radius 2 of all hostile creatures
+// in sight, without placing any briars adjacent to any of these creatures.
+static void _cage_of_brambles(monster* mons)
 {
     mgen_data briar_mg = mgen_data(MONS_BRIAR_PATCH, SAME_ATTITUDE(mons),
                                    coord_def(-1, -1), MHITNOT, MG_FORCE_PLACE);
 
-    // We want to raise a defensive wall if we think our foe is moving to attack
-    // us, and otherwise raise a wall further away to block off their escape.
-    // (Each wall type uses different parameters)
-    bool defensive = mons->props[FOE_APPROACHING_KEY].get_bool();
-
-    coord_def aim_pos = you.pos();
-    coord_def targ_pos = mons->pos();
-
-    // A defensive wall cannot provide any cover if our target is already
-    // adjacent, so don't bother creating one.
-    if (defensive && mons->pos().distance_from(aim_pos) == 1)
-        return false;
-
-    // Don't raise a non-defensive wall if it looks like there's an existing one
-    // in the same direction already (this looks rather silly to see walls
-    // springing up in the distance behind already-closed paths, and probably
-    // is more likely to aid the player than the monster)
-    if (!defensive)
+    bool seen = false;
+    bool made = false;
+    for (actor_near_iterator mi(mons, LOS_NO_TRANS); mi; ++mi)
     {
-        if (_already_bramble_wall(mons, aim_pos))
-            return false;
-    }
+        if (mi->is_firewood() || mons_aligned(mons, *mi))
+            continue;
 
-    // Select a random radius for the circle used draw an arc from (affects
-    // both shape and distance of the resulting wall)
-    int rad = (defensive ? random_range(3, 5)
-                         : min(11, mons->pos().distance_from(you.pos()) + 6));
-
-    // Adjust the center of the circle used to draw the arc of the wall if
-    // we're raising one defensively, based on both its radius and foe distance.
-    // (The idea is the ensure that our foe will end up on the other side of it
-    // without always raising the wall in exactly the same shape and position)
-    if (defensive)
-    {
-        coord_def adjust = (targ_pos - aim_pos).sgn();
-
-        targ_pos += adjust;
-        if (rad == 5)
-            targ_pos += adjust;
-        if (mons->pos().distance_from(aim_pos) == 2)
-            targ_pos += adjust;
-    }
-
-    // XXX: There is almost certainly a better way to calculate the points
-    //      along the desired arcs, though this code produces the proper look.
-    vector<coord_def> points;
-    for (distance_iterator di(targ_pos, false, false, rad); di; ++di)
-    {
-        if (di.radius() == rad || di.radius() == rad - 1)
+        for (radius_iterator ri(mi->pos(), 2, C_SQUARE, LOS_NO_TRANS); ri; ++ri)
         {
-            if (!actor_at(*di) && !cell_is_solid(*di))
+            if (grid_distance(*ri, mi->pos()) != 2)
+                continue;
+
+            if (actor_at(*ri) || !in_bounds(*ri) || !monster_habitable_grid(MONS_BRIAR_PATCH, *ri))
+                continue;
+
+            // Don't place adjacent to any hostiles that themselves will be targeted by this
+            bool found = false;
+            for (adjacent_iterator ai(*ri); ai; ++ai)
             {
-                if (defensive && _angle_between(targ_pos, aim_pos, *di) <= PI/4.0
-                    || (!defensive
-                        && _angle_between(targ_pos, aim_pos, *di) <= PI/(4.2 + rad/6.0)))
+                if (const actor* act_at = actor_at(*ai))
                 {
-                    points.push_back(*di);
+                    if (!mons_aligned(mons, act_at) && !act_at->is_firewood())
+                    {
+                        found = true;
+                        break;
+                    }
                 }
+            }
+            if (found)
+                continue;
+
+            briar_mg.pos = *ri;
+            briar_mg.set_summoned(mons, SPELL_NO_SPELL, random_range(60, 110), false, false);
+            if (monster* briar = create_monster(briar_mg, false))
+            {
+                made = true;
+                if (you.can_see(*briar))
+                    seen = true;
             }
         }
     }
 
-    bool seen = false;
-    for (coord_def point : points)
-    {
-        briar_mg.pos = point;
-        briar_mg.set_summoned(mons, SPELL_NO_SPELL, 80 + random2(100), false, false);
-        monster* briar = create_monster(briar_mg, false);
-        if (briar && you.can_see(*briar))
-            seen = true;
-    }
+    if (made)
+        mons->add_ench(mon_enchant(ENCH_BRAMBLE_COOLDOWN, mons, random_range(70, 120)));
 
     if (seen)
         mpr(T_("Thorny briars emerge from the ground!"));
-
-    return true;
 }
 
 /**
@@ -5952,6 +5932,69 @@ static coord_def _mons_boulder_tracer(const monster* mons)
     return coord_def();
 }
 
+// Checks if it is a reasonable idea to cast Spike Launcher now. Will prefer not
+// to cast if one is already active and in range of something, or if nothing
+// would be in range if it did cast.
+static ai_action::goodness _spike_launcher_goodness(const monster& caster)
+{
+    vector<coord_def> spots = find_spike_launcher_walls(caster.pos());
+    if (spots.empty())
+        return ai_action::impossible();
+
+    for (map_active_feature_marker* mark : env.markers.get_active_features(DNGN_SPIKE_LAUNCHER, caster.mid))
+        if (has_adjacent_enemy(mark->pos, caster))
+            return ai_action::bad();
+
+    for (const coord_def& spot : spots)
+        if (has_adjacent_enemy(spot, caster))
+            return ai_action::good();
+
+    return ai_action::bad();
+}
+
+static ai_action::goodness _stampede_goodness(const monster& caster)
+{
+    // Can only stampede if we're able to move and not already stampeding
+    if (caster.has_ench(ENCH_STAMPEDE) || caster.cannot_move() || caster.is_constricted() || caster.caught())
+        return ai_action::impossible();
+
+    // Can only stampede at visible foes.
+    const actor* foe = caster.get_foe();
+    if (!foe || !caster.can_see(*foe) || adjacent(caster.pos(), foe->pos()))
+        return ai_action::impossible();
+
+    // Can only stampede in a compass direction.
+    const coord_def delta = foe->pos() - caster.pos();
+    if (!(abs(delta.x) == abs(delta.y) || delta.x == 0 || delta.y == 0))
+        return ai_action::impossible();
+
+    // Now actually trace to see if it's possible to reach our foe from here.
+    const coord_def step = delta.sgn();
+    coord_def pos = caster.pos();
+    while (!adjacent(pos, foe->pos()))
+    {
+        pos += step;
+        if (actor_at(pos) || !monster_habitable_grid(&caster, pos))
+            return ai_action::impossible();
+    }
+
+    return ai_action::good();
+}
+
+static void _mons_start_stampede(monster& mon)
+{
+    const actor* foe = mon.get_foe();
+    const coord_def step = (foe->pos() - mon.pos()).sgn();
+
+    mon.add_ench(mon_enchant(ENCH_STAMPEDE, &mon, INFINITE_DURATION));
+    mon.props[STAMPEDE_DIRECTION_KEY].get_coord() = step;
+
+    if (you.can_see(mon))
+        mprf("%s starts stampeding towards %s.", mon.name(DESC_THE).c_str(), foe->name(DESC_THE).c_str());
+
+    mon_do_stampede(mon);
+}
+
 void setup_breath_timeout(monster* mons)
 {
     if (mons->has_ench(ENCH_BREATH_WEAPON))
@@ -6315,14 +6358,12 @@ static coord_def _mons_fragment_target(const monster &mon)
     int maxpower = 0;
     for (distance_iterator di(mons->pos(), true, true, range); di; ++di)
     {
-        bool temp;
-
         if (!cell_see_cell(mons->pos(), *di, LOS_NO_TRANS))
             continue;
 
         bolt beam;
         const char *what = nullptr;
-        if (!setup_fragmentation_beam(beam, pow, mons, *di, true, &what, temp))
+        if (!setup_fragmentation_beam(beam, pow, mons, *di, true, &what))
             continue;
 
         beam.range = range;
@@ -6864,8 +6905,8 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
         return;
 
     const string foe_name = foe.name(DESC_THE);
-    const auto chan = foe.as_monster()->friendly() ? MSGCH_MONSTER_SPELL
-                                                   : MSGCH_FRIEND_SPELL;
+    const auto chan = foe.friendly() ? MSGCH_MONSTER_SPELL
+                                     : MSGCH_FRIEND_SPELL;
     if (!seen)
     {
         if (!sleep_pow)
@@ -7543,6 +7584,36 @@ static bool _mon_cast_tempering(const monster& caster, bool check_only)
     return true;
 }
 
+static bool _mons_splinterfrost_shell(const monster& caster, bool check_only)
+{
+    const actor* foe = caster.get_foe();
+    const coord_def aim = caster.pos() + (foe->pos() - caster.pos()).sgn();
+
+    if (check_only)
+    {
+        // Don't raise a barrier if our foe is the player and they are retreating.
+        if (foe->is_player() && grid_distance(you.pos(), caster.pos())
+                                > grid_distance(you.pos_at_turn_start, caster.pos()))
+        {
+            return false;
+        }
+
+        // Do a quick check to ensure that there is (probably) at least one placeable wall.
+        // (This can still fail in very crowded places where actors cannot be
+        // shifted away, but should generally be sufficient.)
+        vector<coord_def> spots = get_wall_ring_spots(caster.pos(), aim, 4, true);
+        for (coord_def& spot : spots)
+            if (!actor_at(spot) || !actor_at(spot)->is_stationary())
+                return true;
+
+        return false;
+    }
+
+    cast_splinterfrost_shell(caster, aim, mons_spellpower(caster, SPELL_SPLINTERFROST_SHELL), false);
+
+    return true;
+}
+
 /**
  *  Make this monster cast a spell
  *
@@ -7951,17 +8022,15 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         }
         return;
 
-    case SPELL_SUMMON_UFETUBUS:
-        sumcount2 = 2 + random2(2);
-
-        duration  = min(2 + mons->spell_hd(spell_cast) / 5, 6);
-
+    case SPELL_UFETUBI_SWARM:
+        sumcount2 = random_range(3, 4);
         for (sumcount = 0; sumcount < sumcount2; ++sumcount)
         {
-            create_monster(
-                mgen_data(MONS_UFETUBUS, SAME_ATTITUDE(mons), mons->pos(),
-                          mons->foe, MG_NONE, god)
-                .set_summoned(mons, spell_cast, summ_dur(duration)));
+            mgen_data mg(MONS_UFETUBUS, SAME_ATTITUDE(mons), mons->pos(),
+                         mons->foe, MG_NONE, god);
+            mg.set_summoned(mons, spell_cast, summ_dur(3));
+            if (monster* ufetubus = create_monster(mg))
+                ufetubus->add_ench(mon_enchant(ENCH_BERSERK, ufetubus, INFINITE_DURATION));
         }
         return;
 
@@ -7998,12 +8067,6 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         return;
 
     case SPELL_MALIGN_GATEWAY:
-        if (!can_cast_malign_gateway())
-        {
-            dprf("ERROR: %s can't cast malign gateway, but is casting anyway! "
-                 "Counted %d gateways.", mons->name(DESC_THE).c_str(),
-                 count_malign_gateways());
-        }
         cast_malign_gateway(mons, 200);
         return;
 
@@ -8062,12 +8125,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_BROTHERS_IN_ARMS:
     {
-        // Invocation; don't use spell_hd
-        int power = (mons->get_hit_dice() * 20)
-                          + random2(mons->get_hit_dice() * 5);
-        power -= random2(mons->get_hit_dice() * 5); // force a sequence point
         monster_type to_summon;
-
         if (mons->type == MONS_SPRIGGAN_BERSERKER)
         {
             monster_type berserkers[] = { MONS_POLAR_BEAR, MONS_ELEPHANT,
@@ -8077,12 +8135,12 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         else
         {
             monster_type berserkers[] = { MONS_BLACK_BEAR, MONS_OGRE, MONS_TROLL,
-                                           MONS_TWO_HEADED_OGRE, MONS_DEEP_TROLL };
+                                          MONS_TWO_HEADED_OGRE, MONS_DEEP_TROLL };
             to_summon = RANDOM_ELEMENT(berserkers);
         }
 
-        summon_berserker(power, mons, to_summon);
-        mons->props[BROTHERS_KEY].get_int()++;
+        if (summon_berserker(mons, to_summon))
+            mons->props[BROTHERS_KEY].get_int()++;
         return;
     }
 
@@ -8360,15 +8418,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         _awaken_vines(mons);
         return;
 
-    case SPELL_WALL_OF_BRAMBLES:
-        // If we can't cast this for some reason (can be expensive to determine
-        // at every call to _monster_spell_goodness), refund the energy for it so that
-        // the caster can do something else
-        if (!_wall_of_brambles(mons))
-        {
-            mons->speed_increment +=
-                get_monster_data(mons->type)->energy_usage.spell;
-        }
+    case SPELL_CAGE_OF_BRAMBLES:
+        _cage_of_brambles(mons);
         return;
 
     case SPELL_WIND_BLAST:
@@ -8452,6 +8503,13 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         return;
     }
 
+    case SPELL_MURKY_LEGION:
+    {
+        for (int i = 0; i < 2; ++i)
+            _summon(*mons, MONS_GLOWMURK_GHAST, summ_dur(1), slot);
+        return;
+    }
+
     case SPELL_SUMMON_SCORPIONS:
     {
         const int max_scorps = 1 + div_rand_round(splpow, 42);
@@ -8468,6 +8526,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
             _summon(*mons, MONS_EMPEROR_SCORPION, summ_dur(5), slot);
         return;
     }
+
+
 
     case SPELL_BATTLECRY:
         _battle_cry(*mons, SPELL_BATTLECRY);
@@ -8601,9 +8661,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_SPORULATE:
     {
-        mgen_data mgen (MONS_BALLISTOMYCETE_SPORE,
-                mons->friendly() ? BEH_FRIENDLY : BEH_HOSTILE, mons->pos(),
-                mons->foe);
+        mgen_data mgen (MONS_BALLISTOMYCETE_SPORE, SAME_ATTITUDE(mons),
+                        mons->pos(), mons->foe);
         mgen.set_summoned(mons, SPELL_SPORULATE, random_range(40, 70), false, false);
         // Add 1HD to the spore for each additional HD the spawner has.
         mgen.hd = mons_class_hit_dice(MONS_BALLISTOMYCETE_SPORE) +
@@ -8616,9 +8675,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_LAUNCH_SPORANGIUM:
     {
-        mgen_data mgen (MONS_CAUSTIC_SPORANGIUM,
-                mons->friendly() ? BEH_FRIENDLY : BEH_HOSTILE, mons->pos(),
-                mons->foe, MG_FORCE_PLACE);
+        mgen_data mgen (MONS_CAUSTIC_SPORANGIUM, SAME_ATTITUDE(mons),
+                        mons->pos(), mons->foe, MG_FORCE_PLACE);
         mgen.set_summoned(mons, SPELL_LAUNCH_SPORANGIUM, random_range(90, 220), false, false);
 
         // Since this is used by a wall monster, if we're actually trying to
@@ -10131,7 +10189,7 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
             _glaciate_tracer(mon, mons_spellpower(*mon, spell), foe->pos()));
 
     case SPELL_MALIGN_GATEWAY:
-        return ai_action::good_or_bad(can_cast_malign_gateway());
+        return ai_action::good_or_bad(can_cast_malign_gateway(*mon));
 
     case SPELL_SIREN_SONG:
         return _mesmerise_is_effective(mon, true);
@@ -10270,6 +10328,9 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
         return ai_action::good_or_impossible(
             _mons_cast_hellfire_mortar(*mon, *mon->get_foe(), 100, true));
     }
+
+    case SPELL_CAGE_OF_BRAMBLES:
+        return ai_action::good_or_impossible(!mon->has_ench(ENCH_BRAMBLE_COOLDOWN));
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_SUMMON_SWARM:

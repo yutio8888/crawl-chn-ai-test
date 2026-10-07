@@ -289,7 +289,7 @@ void leaving_level_now(dungeon_feature_type stair_used)
         dungeon_events.fire_position_event(DET_PLAYER_CLIMBS, you.pos());
     dungeon_events.fire_event(DET_LEAVING_LEVEL);
 
-    end_terrain_change(TERRAIN_CHANGE_GOLUBRIA);
+    end_terrain_changes(TERRAIN_CHANGE_GOLUBRIA);
     _remove_unstable_monsters();
 
     // Allow players to be interrupted by sensed monsters on their return to this level.
@@ -1017,6 +1017,22 @@ void floor_transition(dungeon_feature_type how,
 
         if (branch == BRANCH_ARENA)
             okawaru_duel_healing();
+
+        if (branch == BRANCH_GULCH)
+        {
+            mpr("Mutagenic energy floods into you!");
+            if (you.can_safely_mutate())
+            {
+                temp_mutate(RANDOM_CORRUPT_MUTATION, "entering Gulch");
+                temp_mutate(RANDOM_CORRUPT_MUTATION, "entering Gulch");
+                temp_mutate(RANDOM_CORRUPT_MUTATION, "entering Gulch");
+            }
+            else
+            {
+                mprf(MSGCH_MUTATION, "Your body decomposes!");
+                drain_player(150, false, true, true);
+            }
+        }
 
         const set<branch_type> boring_branch_exits = {
             BRANCH_TEMPLE,

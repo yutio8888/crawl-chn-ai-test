@@ -137,9 +137,7 @@ msc += $warning:融化.*噼啪
 msc += $warning:hiss.*sand
 # CN: $warning:sand hissing
 msc += $warning:沙.*嘶嘶
-msc += $warning:sound.*rushing water
-# CN: $warning:rushing water
-msc += $warning:流水声|水声
+msc += $warning:sound.*rushing (water|sludge)
 msc += $warning:rusting.*drain
 # CN: $warning:rusting drain
 msc += $warning:下水道.*锈蚀
@@ -176,6 +174,9 @@ msc += $warning:滑落|滑坡
 msc += $warning:settles down
 # CN: $warning:settles down
 msc += $warning:平息|落定
+msc += white:There is a(n entrance| portal| gateway) to.*on this level
+msc += white:caravan has stopped on this level
+msc += lightcyan:(There is|Found).*purified mutation catalyst
 
 msc += lightcyan:LOW MAGIC WARNING
 # CN: $lightcyan:low magic warning
@@ -310,36 +311,11 @@ force_more_message += ^小心！
 force_more_message += interdimensional caravan
 # Chinese translation compatibility
 force_more_message += 跨次元商队
-force_more_message += solemn chanting
-# Chinese translation compatibility
-force_more_message += 仪式.*吟唱
-force_more_message += distant snort
-# Chinese translation compatibility
-force_more_message += 远处.*鼻息
-force_more_message += roar of battle
-# Chinese translation compatibility
-force_more_message += 战斗的怒吼
-force_more_message += wave of frost
-# Chinese translation compatibility
-force_more_message += 寒霜掠过
-force_more_message += hiss of flowing sand
-# Chinese translation compatibility
-force_more_message += 流沙的嘶嘶声
-force_more_message += sound of rushing water
-# Chinese translation compatibility
-force_more_message += 流水声
-force_more_message += oppressive heat about you
-# Chinese translation compatibility
-force_more_message += 灼热包围着你
-force_more_message += crackle of arcane power
-# Chinese translation compatibility
-force_more_message += 奥术能量的噼啪声
-force_more_message += hear a distant wind
-# Chinese translation compatibility
-force_more_message += 远处的风声
+force_more_message += There is a(n entrance| portal| gateway) to.*on this level
 force_more_message += Beware! This is a limited time offer
 
 # Religion
+force_more_message += warns you to remove
 force_more_message += press .* to convert to Beogh
 # Chinese translation compatibility
 force_more_message += 皈依比欧弗

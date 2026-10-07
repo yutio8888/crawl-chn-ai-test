@@ -33,6 +33,8 @@
 #include "item-prop.h"
 #include "items.h"
 #include "libutil.h"
+#include "mapdef.h"
+#include "map-knowledge.h"
 #include "melee-attack.h" // mut_aux_attack_desc
 #include "menu.h"
 #include "message.h"
@@ -42,11 +44,16 @@
 #include "output.h"
 #include "player-stats.h"
 #include "religion.h"
+#include "shout.h"
 #include "skills.h"
+#include "spl-clouds.h"
 #include "state.h"
 #include "stringutil.h"
 #include "tag-version.h"
 #include "terrain.h"
+#include "rltiles/tiledef-dngn.h"
+#include "tile-env.h"
+#include "tileview.h"
 #include "transform.h"
 #include "unicode.h"
 #include "view.h"
@@ -1251,7 +1258,7 @@ static int _calc_mutation_amusement_value(mutation_type which_mutation)
     return amusement;
 }
 
-static bool _accept_mutation(mutation_type mutat, bool temp)
+static bool _accept_mutation(mutation_type mutat, bool temp, bool catalyst)
 {
     if (!_is_valid_mutation(mutat))
         return false;
@@ -1267,6 +1274,16 @@ static bool _accept_mutation(mutation_type mutat, bool temp)
             || mutat == MUT_WEAK
             || mutat == MUT_CLUMSY
             || mutat == MUT_DOPEY))
+    {
+        return false;
+    }
+
+    // Catalyst mutations avoid the boring pure stat mutation trio, and also
+    // try to avoid providing any auxes that could disable equipment.
+    if (catalyst
+        && (mutat == MUT_HORNS || mutat == MUT_ANTENNAE
+            || mutat == MUT_CLAWS || mutat == MUT_HOOVES || mutat == MUT_TALONS
+            || mutat == MUT_STRONG || mutat == MUT_CLEVER || mutat == MUT_AGILE))
     {
         return false;
     }
@@ -1341,6 +1358,7 @@ static mutation_type _get_random_mutation(mutation_type mutclass,
             mt = mutflag::bad;
             break;
         case RANDOM_GOOD_MUTATION:
+        case RANDOM_CATALYST_MUTATION:
             mt = mutflag::good;
             break;
         default:
@@ -1350,8 +1368,11 @@ static mutation_type _get_random_mutation(mutation_type mutclass,
     for (int attempt = 0; attempt < 100; ++attempt)
     {
         mutation_type mut = _get_mut_with_flag(mt);
-        if (_accept_mutation(mut, perm == MUTCLASS_TEMPORARY))
+        if (_accept_mutation(mut, perm == MUTCLASS_TEMPORARY,
+                             mutclass == RANDOM_CATALYST_MUTATION))
+        {
             return mut;
+        }
     }
 
     return NUM_MUTATIONS;
@@ -2141,6 +2162,7 @@ mutation_type concretize_mut(mutation_type mut,
     case RANDOM_BAD_MUTATION:
     case RANDOM_CORRUPT_MUTATION:
     case RANDOM_XOM_MUTATION:
+    case RANDOM_CATALYST_MUTATION:
         return _get_random_mutation(mut, mutclass);
     case RANDOM_SLIME_MUTATION:
         return _get_random_slime_mutation();
@@ -2274,12 +2296,69 @@ bool _delete_single_mutation_level(mutation_type mutat,
     return true;
 }
 
+/*
+ * Interact with a special dungeon feature that gives a good mutation and
+ * then breaks, with various clause checks first.
+ */
+void use_mutation_catalyst()
+{
+    if (you.religion == GOD_ZIN)
+    {
+        mprf(MSGCH_GOD, "Zin forbids you from drinking this foul brew!");
+        return;
+    }
+    else if (you.form == transformation::death)
+    {
+        mprf("You must return to life before you may mutate.");
+        return;
+    }
+    else if (you.is_lifeless_undead()
+            || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
+    {
+        mprf("Sadly, you cannot mutate.");
+        return;
+    }
+    else
+    {
+        // XXX: Maybe some goofy flavour message for potion hoarders?
+        mprf("You break open the mutation catalyst, and crackling magic pours forth!");
+        noisy(10, you.pos());
+        big_cloud(CLOUD_FLAME, &you, you.pos(), random_range(2, 6), random_range(28, 32));
+        big_cloud(CLOUD_ELECTRICITY, &you, you.pos(), random_range(2, 6), random_range(16, 18));
+        big_cloud(CLOUD_MAGIC_TRAIL, &you, you.pos(), random_range(2, 6), random_range(8, 11));
+        mprf("You bathe in the mists of the mutagenic serum and feel extremely strange.");
+        mutate(RANDOM_CATALYST_MUTATION, "breaking open a mutation catalyst",
+               true, true, false, true);
+        // XXX: This hardcoded flavour rearrangements, as Imprison also uses,
+        //      should be vastly simplified and standardized.
+        map_wiz_props_marker *marker = new map_wiz_props_marker(you.pos());
+        tileidx_t idx = tile_dngn_coloured(TILE_FLOOR_GULCH, GREEN);
+        marker->set_property("feature_description", "an empty mutation catalyst");
+        env.markers.add(marker);
+        dungeon_terrain_changed(you.pos(), DNGN_DECORATIVE_FLOOR);
+        tile_env.flv(you.pos()).feat_idx =
+                store_tilename_get_index("dngn_empty_mutation_catalyst");
+        tile_env.flv(you.pos()).feat = TILE_DNGN_EMPTY_MUTATION_CATALYST;
+#ifdef USE_TILE
+        tile_env.bk_bg(you.pos()) = TILE_DNGN_EMPTY_MUTATION_CATALYST;
+        tile_env.bk_fg(you.pos()) = 0;
+#endif
+        tile_env.flv(you.pos()).floor = idx;
+        tile_env.flv(you.pos()).floor_idx = store_tilename_get_index(tile_dngn_name(idx));
+        tile_init_flavour(you.pos());
+        update_terrain_knowledge(you.pos());
+        update_grid_colour_knowledge(you.pos());
+        you.turn_is_over = true;
+    }
+}
+
 /// Returns the mutflag corresponding to a given class of random mutations, or 0.
 static mutflag _mutflag_for_random_type(mutation_type mut_type)
 {
     switch (mut_type)
     {
     case RANDOM_GOOD_MUTATION:
+    case RANDOM_CATALYST_MUTATION:
         return mutflag::good;
     case RANDOM_BAD_MUTATION:
     case RANDOM_CORRUPT_MUTATION:
@@ -2305,6 +2384,7 @@ static mutation_type _concretize_mut_deletion(mutation_type mut_type)
         case RANDOM_GOOD_MUTATION:
         case RANDOM_BAD_MUTATION:
         case RANDOM_CORRUPT_MUTATION:
+        case RANDOM_CATALYST_MUTATION:
         case RANDOM_XOM_MUTATION:
         case RANDOM_SLIME_MUTATION:
             break;
@@ -3115,7 +3195,7 @@ bool perma_mutate(mutation_type which_mut, int how_much, const string &reason)
 
 bool temp_mutate(mutation_type which_mut, const string &reason)
 {
-    return mutate(which_mut, reason, false, false, false, false, MUTCLASS_TEMPORARY);
+    return mutate(which_mut, reason, true, false, false, false, MUTCLASS_TEMPORARY);
 }
 
 bool temp_mutation_wanes()

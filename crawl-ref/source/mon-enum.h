@@ -162,6 +162,8 @@ enum attack_flavour
     AF_DOOM,
     AF_SLIMIFY,
     AF_DIM,
+    AF_BURSTSHROOM,
+    AF_CONTAM_WATER,
 };
 
 // Non-spell "summoning" types to give to monster::mark_summoned(), or

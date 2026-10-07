@@ -52,6 +52,8 @@ bool mutate(mutation_type which_mutation, const string &reason,
 bool _delete_single_mutation_level(mutation_type mutat,
                                    const string &reason, bool transient);
 
+void use_mutation_catalyst();
+
 int mut_check_conflict(mutation_type mut, bool innate_only = false);
 bool mut_is_compatible(mutation_type mut, bool base_only = false);
 

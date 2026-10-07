@@ -1004,6 +1004,7 @@ python.exe util/gen-all.py</Command>
     <ClInclude Include="..\text-tag-type.h" />
     <ClInclude Include="..\threads.h" />
     <ClInclude Include="..\throw.h" />
+    <ClInclude Include="..\tile-env.h" />
     <ClInclude Include="..\tile-flags.h" />
     <ClInclude Include="..\tile-inventory-flags.h" />
     <ClInclude Include="..\tile-player-flag-cut.h" />

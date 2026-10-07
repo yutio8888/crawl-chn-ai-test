@@ -965,29 +965,26 @@ gauntlet2
 gauntlet3
 
 %weight 10
-%domino 0
 crypt_domino_1a FLOOR_CRYPT
 %weight 2
 crypt_domino_1b
+%domino FLOOR_CRYPT 1
+crypt_domino_2a FLOOR_CRYPT_B
+%domino FLOOR_CRYPT 2
+crypt_domino_3a FLOOR_CRYPT_C
+%domino FLOOR_CRYPT 3
 %weight 10
-%domino 1
-crypt_domino_2a
-%domino 2
-crypt_domino_3a
-%domino 3
-crypt_domino_4a
+crypt_domino_4a FLOOR_CRYPT_D
 %weight 2
 crypt_domino_4b
-%weight 10
-%domino 4
-crypt_domino_5a
-%domino 5
-crypt_domino_6a
-%domino 6
-crypt_domino_7a
-%domino 7
-crypt_domino_8a
-%domino 0
+%domino FLOOR_CRYPT 4
+crypt_domino_5a FLOOR_CRYPT_E
+%domino FLOOR_CRYPT 5
+crypt_domino_6a FLOOR_CRYPT_F
+%domino FLOOR_CRYPT 6
+crypt_domino_7a FLOOR_CRYPT_G
+%domino FLOOR_CRYPT 7
+crypt_domino_8a FLOOR_CRYPT_H
 
 zot_diamonds0 FLOOR_ZOT_DIAMONDS
 zot_diamonds1
@@ -1139,6 +1136,15 @@ demonic_red9
 %resetcol
 
 %weight 10
+swirlstone0 FLOOR_SWIRLSTONE
+swirlstone1
+swirlstone2
+swirlstone3
+swirlstone4
+swirlstone5
+swirlstone6
+swirlstone7
+
 green_bones01 FLOOR_GREEN_BONES
 green_bones02
 green_bones03
@@ -1165,6 +1171,36 @@ necropolis_grass_1 FLOOR_NECROPOLIS_GRASS
 necropolis_grass_2
 necropolis_grass_3
 necropolis_grass_4
+
+%weight 24
+floor_gulch0 FLOOR_GULCH
+floor_gulch1
+floor_gulch2
+floor_gulch3
+%weight 4
+floor_gulch4
+floor_gulch5
+%weight 3
+floor_gulch6
+%weight 2
+floor_gulch7
+floor_gulch8
+%weight 1
+floor_gulch9
+
+%weight 7
+floor_gulch_trash0 FLOOR_GULCH_TRASH
+floor_gulch_trash1
+floor_gulch_trash2
+%weight 3
+floor_gulch_trash3
+floor_gulch_trash4
+floor_gulch_trash5
+%weight 2
+floor_gulch_trash6
+floor_gulch_trash7
+
+floor_gulch_catalyst FLOOR_GULCH_CATALYST
 
 studio0 FLOOR_STUDIO
 studio1

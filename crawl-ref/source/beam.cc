@@ -1259,50 +1259,6 @@ void bolt::do_fire()
 
         const dungeon_feature_type feat = env.grid(pos());
 
-        if (in_bounds(target)
-            // Starburst beams are essentially untargeted; some might even hit
-            // a victim if others have LOF blocked.
-            && origin_spell != SPELL_STARBURST
-            // We ran into a solid wall with a real beam...
-            && (feat_is_solid(feat)
-                && flavour != BEAM_DIGGING && flavour <= BEAM_LAST_REAL
-                && !cell_is_solid(target)
-            // Or hit a monster that'll stop our beam...
-                || at_blocking_monster())
-            // and it's a player tracer that cares about blocked paths...
-            && is_tracer() && tracer->is_collecting_warnings() && YOU_KILL(thrower)
-            // and we're actually between you and the target...
-            && !passed_target && pos() != target && pos() != source
-            // ?
-            && !tracer->has_hit_foe() && bounces == 0 && reflections == 0
-            // and you aren't shooting out of LOS.
-            && you.see_cell(target))
-        {
-            // Okay, with all those tests passed, this is probably an instance
-            // of the player manually targeting something whose line of fire
-            // is blocked, even though its line of sight isn't blocked. Give
-            // a warning about this fact.
-            const monster* mon = monster_at(target);
-
-            string blockee;
-            if (mon && mon->observable())
-                blockee = mon->name(DESC_THE);
-            else
-            {
-                blockee = "the targeted "
-                        + feature_description_at(target, false, DESC_PLAIN);
-            }
-
-            const string blocker = feat_is_solid(feat) ?
-                        feature_description_at(pos(), false, DESC_A) :
-                        monster_at(pos())->name(DESC_A);
-
-            tracer->blocked(make_stringf(T_("Your line of fire to %s is blocked by %s."),
-                            blockee.c_str(), blocker.c_str()));
-            finish_beam();
-            return;
-        }
-
         // If requested to stop before hitting allies (or neutrals our god would
         // object to us harming), do so now.
         const actor* act_at = actor_at(pos());
@@ -2748,7 +2704,7 @@ void bolt::affect_endpoint()
             break;
 
         monster* blade = create_monster(mgen_data(MONS_DANCING_WEAPON,
-                                        SAME_ATTITUDE(agent(true)->as_monster()),
+                                        SAME_ATTITUDE(agent(true)),
                                         pos(), agent(true)->as_monster()->foe)
                         .set_summoned(agent(true), SPELL_FLASHING_BALESTRA, summ_dur(1), false)
                         .set_range(1));
@@ -2769,8 +2725,14 @@ void bolt::affect_endpoint()
         if (actor_at(p) || !monster_habitable_grid(MONS_PILE_OF_FLESH, p))
             p = get_last_affected_pos(0);
 
+        // If the bolt didn't affect anything, we can't create the flesh. This
+        // can for example happen if the bolt was redirected by Ru at something
+        // the monster can't actually hit.
+        if (p.origin())
+            break;
+
         create_monster(mgen_data(MONS_PILE_OF_FLESH,
-                       SAME_ATTITUDE(agent(true)->as_monster()),
+                       SAME_ATTITUDE(agent(true)),
                        p, agent(true)->as_monster()->foe)
                        .set_summoned(agent(true), SPELL_BOLT_OF_FLESH, summ_dur(3), false)
                        .set_range(0, 1));
@@ -2889,8 +2851,8 @@ bool bolt::found_player() const
         && dist <= 2
         && (!agent()
             || (agent()->is_monster()
-                && !agent()->as_monster()->friendly()
-                && agent()->as_monster()->attitude != ATT_MARIONETTE))
+                && !agent()->friendly()
+                && agent()->temp_attitude() != ATT_MARIONETTE))
         // No point in fuzzing to a position that could never be hit.
         && you.see_cell_no_trans(pos())
         && !cell_is_solid(pos())
@@ -3353,7 +3315,7 @@ bool bolt::harmless_to_player() const
         return player_res_poison(false) > 0 || you.clarity();
 
     case BEAM_PETRIFY:
-        return you.res_petrify() || you.petrified();
+        return you.res_petrify() || you.petrified() || you.petrifying();
 
     case BEAM_COLD:
         return is_big_cloud() && actor_cloud_immune(you, CLOUD_COLD);
@@ -4180,7 +4142,7 @@ static const vector<pie_effect> pie_effects = {
                 monster *mons = defender.as_monster();
                 simple_monster_message(*mons, T_(" looks more vulnerable to fire."));
                 mons->add_ench(mon_enchant(ENCH_FIRE_VULN, beam.agent(),
-                                           15 + random2(11) * BASELINE_DELAY));
+                                           (15 + random2(11)) * BASELINE_DELAY));
             }
             else
             {
@@ -4508,7 +4470,7 @@ void bolt::affect_player()
     if (flavour == BEAM_CRYSTALLISING && !one_chance_in(4))
         you.vitrify(agent(), random_range(8, 18));
 
-    if (flavour == BEAM_DRAIN_MAGIC)
+    if (flavour == BEAM_ANTIMAGIC)
         you.drain_magic(agent(), ench_power);
 
     if (origin_spell == SPELL_SOJOURNING_BOLT
@@ -4677,6 +4639,9 @@ void bolt::tracer_enchantment_affect_monster(monster* mon)
     }
 
     tracer->monster_hit(*this, *mon);
+
+    // Potentially chain to adjacent monsters.
+    handle_enchant_chaining(mon->pos());
     extra_range_used += range_used_on_hit();
 }
 
@@ -4907,7 +4872,7 @@ void bolt::tracer_affect_monster(monster* mon)
 {
     // Ignore unseen monsters.
     if ((agent() && !agent()->can_see(*mon))
-        || !cell_see_cell(source, mon->pos(), LOS_NO_TRANS))
+        || !cell_see_cell(source, mon->pos(), LOS_DEFAULT))
     {
         return;
     }
@@ -5031,7 +4996,8 @@ static void _add_chain_candidates(const bolt& beam, coord_def pos,
         if (!act
             || mons_aligned(beam.agent(), act)
             || act->is_peripheral()
-            || shoot_through_actor(beam.agent(), act))
+            || shoot_through_actor(beam.agent(), act)
+            || (beam.is_tracer() && !act->visible_to(beam.agent())))
         {
             continue;
         }
@@ -5242,7 +5208,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
     if (flavour == BEAM_CRYSTALLISING && !one_chance_in(4))
         mon->vitrify(agent(), random_range(8, 18));
 
-    if (flavour == BEAM_DRAIN_MAGIC)
+    if (flavour == BEAM_ANTIMAGIC)
         mon->drain_magic(agent(), ench_power);
 
     if (dmg)
@@ -5511,27 +5477,6 @@ bool bolt::bush_immune(const monster &mons) const
         // We allow hitting the bush-like monster with a bolt when it's the
         // target.
         && target != mons.pos();
-}
-
-// Is there a visible monster at this position which will keep the beam from
-// continuing onward? (And, if so, is it firewood or something else we'd never
-// actually want to bother hitting?)
-bool bolt::at_blocking_monster() const
-{
-    const monster *mon = monster_at(pos());
-    if (!mon || !you.can_see(*mon))
-        return false;
-
-    if (!pierce && !ignores_monster(mon) && mon->is_firewood())
-        return true;
-    if (have_passive(passive_t::neutral_slimes)
-        && mons_is_slime(*mon)
-        && mon->wont_attack()
-        && flavour != BEAM_VILE_CLUTCH)
-    {
-        return true;
-    }
-    return false;
 }
 
 void bolt::affect_monster(monster* mon)
@@ -6011,7 +5956,8 @@ bool ench_flavour_affects_monster(actor *agent, beam_type flavour,
 
     case BEAM_PORKALATOR:
         rc = (mon->holiness() & MH_DEMONIC && mon->type != MONS_HELL_HOG)
-              || (mon->holiness() & MH_NATURAL && mon->type != MONS_HOG)
+              || (mon->holiness() & MH_NATURAL && mon->type != MONS_HOG
+                                               && mon->type != MONS_SEWAGE_SOVEREIGN)
               || (mon->holiness() & MH_HOLY && mon->type != MONS_HOLY_SWINE);
         break;
 
@@ -6033,7 +5979,7 @@ bool ench_flavour_affects_monster(actor *agent, beam_type flavour,
         break;
 
     case BEAM_DIMINISH_SPELLS:
-    case BEAM_DRAIN_MAGIC:
+    case BEAM_ANTIMAGIC:
         rc = mon->antimagic_susceptible();
         break;
 
@@ -6042,7 +5988,7 @@ bool ench_flavour_affects_monster(actor *agent, beam_type flavour,
         break;
 
     case BEAM_PETRIFY:
-        rc = !mon->res_petrify();
+        rc = !mon->res_petrify() && !mon->petrifying() && !mon->petrified();
         break;
 
     case BEAM_INFESTATION:
@@ -7549,111 +7495,111 @@ static string _beam_type_name(beam_type type)
     switch (type)
     {
     case BEAM_NONE:                  return T_("none");
-    case BEAM_MISSILE:                  return T_("missile");
-    case BEAM_MMISSILE:                  return T_("magic missile");
+    case BEAM_MISSILE:               return T_("missile");
+    case BEAM_MMISSILE:              return T_("magic missile");
     case BEAM_FIRE:                  return T_("fire");
     case BEAM_COLD:                  return T_("cold");
-    case BEAM_WATER:                  return T_("water");
-    case BEAM_MAGIC:                  return T_("magic");
-    case BEAM_ELECTRICITY:                  return T_("electricity");
-    case BEAM_MEPHITIC:                  return T_("noxious fumes");
-    case BEAM_POISON:                  return T_("poison");
-    case BEAM_NEG:                  return T_("negative energy");
+    case BEAM_WATER:                 return T_("water");
+    case BEAM_MAGIC:                 return T_("magic");
+    case BEAM_ELECTRICITY:           return T_("electricity");
+    case BEAM_MEPHITIC:              return T_("noxious fumes");
+    case BEAM_POISON:                return T_("poison");
+    case BEAM_NEG:                   return T_("negative energy");
     case BEAM_ACID:                  return T_("acid");
-    case BEAM_LIGHT:                  return T_("light");
-    case BEAM_MIASMA:                  return T_("miasma");
-    case BEAM_SPORE:                  return T_("spores");
-    case BEAM_POISON_ARROW:                  return T_("poison sting");
-    case BEAM_DAMNATION:                  return T_("damnation");
-    case BEAM_STICKY_FLAME:                  return T_("sticky fire");
-    case BEAM_STEAM:                  return T_("steam");
-    case BEAM_ENERGY:                  return T_("energy");
+    case BEAM_LIGHT:                 return T_("light");
+    case BEAM_MIASMA:                return T_("miasma");
+    case BEAM_SPORE:                 return T_("spores");
+    case BEAM_POISON_ARROW:          return T_("poison sting");
+    case BEAM_DAMNATION:             return T_("damnation");
+    case BEAM_STICKY_FLAME:          return T_("sticky fire");
+    case BEAM_STEAM:                 return T_("steam");
+    case BEAM_ENERGY:                return T_("energy");
     case BEAM_HOLY:                  return T_("cleansing flame");
-    case BEAM_FOUL_FLAME:                  return T_("foul flame");
+    case BEAM_FOUL_FLAME:            return T_("foul flame");
     case BEAM_FRAG:                  return T_("fragments");
     case BEAM_LAVA:                  return T_("magma");
-    case BEAM_ICE:                  return T_("ice");
-    case BEAM_THUNDER:                  return T_("thunder");
-    case BEAM_STUN_BOLT:                  return T_("stunning bolt");
-    case BEAM_DESTRUCTION:                  return T_("destruction");
-    case BEAM_RANDOM:                  return T_("random");
-    case BEAM_CHAOS:                  return T_("chaos");
+    case BEAM_ICE:                   return T_("ice");
+    case BEAM_THUNDER:               return T_("thunder");
+    case BEAM_STUN_BOLT:             return T_("stunning bolt");
+    case BEAM_DESTRUCTION:           return T_("destruction");
+    case BEAM_RANDOM:                return T_("random");
+    case BEAM_CHAOS:                 return T_("chaos");
     case BEAM_SLOW:                  return T_("slow");
-    case BEAM_HASTE:                  return T_("haste");
-    case BEAM_MIGHT:                  return T_("might");
-    case BEAM_HEALING:                  return T_("healing");
-    case BEAM_PARALYSIS:                  return T_("paralysis");
-    case BEAM_CONFUSION:                  return T_("confusion");
-    case BEAM_INVISIBILITY:                  return T_("invisibility");
-    case BEAM_DIGGING:                  return T_("digging");
-    case BEAM_TELEPORT:                  return T_("teleportation");
-    case BEAM_POLYMORPH:                  return T_("polymorph");
-    case BEAM_MALMUTATE:                  return T_("malmutation");
-    case BEAM_CHARM:                  return T_("charming");
-    case BEAM_BANISH:                  return T_("banishment");
+    case BEAM_HASTE:                 return T_("haste");
+    case BEAM_MIGHT:                 return T_("might");
+    case BEAM_HEALING:               return T_("healing");
+    case BEAM_PARALYSIS:             return T_("paralysis");
+    case BEAM_CONFUSION:             return T_("confusion");
+    case BEAM_INVISIBILITY:          return T_("invisibility");
+    case BEAM_DIGGING:               return T_("digging");
+    case BEAM_TELEPORT:              return T_("teleportation");
+    case BEAM_POLYMORPH:             return T_("polymorph");
+    case BEAM_MALMUTATE:             return T_("malmutation");
+    case BEAM_CHARM:                 return T_("charming");
+    case BEAM_BANISH:                return T_("banishment");
     case BEAM_PAIN:                  return T_("pain");
-    case BEAM_AGONY:                  return T_("agony");
-    case BEAM_CURSE_OF_AGONY:                  return T_("curse of agony");
-    case BEAM_DISPEL_UNDEAD:                  return T_("dispel undead");
-    case BEAM_MINDBURST:                  return T_("mindburst");
-    case BEAM_BLINK:                  return T_("blink");
-    case BEAM_BLINK_CLOSE:                  return T_("blink close");
-    case BEAM_BECKONING:                  return T_("beckoning");
-    case BEAM_PETRIFY:                  return T_("petrify");
-    case BEAM_CORONA:                  return T_("backlight");
-    case BEAM_PORKALATOR:                  return T_("porkalator");
-    case BEAM_HIBERNATION:                  return T_("hibernation");
-    case BEAM_SLEEP:                  return T_("sleep");
-    case BEAM_BERSERK:                  return T_("berserk");
-    case BEAM_VISUAL:                  return T_("visual effects");
-    case BEAM_TORMENT_DAMAGE:                  return T_("torment damage");
-    case BEAM_AIR:                  return T_("air");
-    case BEAM_INNER_FLAME:                  return T_("inner flame");
-    case BEAM_PETRIFYING_CLOUD:                  return T_("calcifying dust");
-    case BEAM_ENSNARE:                  return T_("magic web");
-    case BEAM_SENTINEL_MARK:                  return T_("sentinel's mark");
-    case BEAM_DIMENSION_ANCHOR:                  return T_("dimension anchor");
-    case BEAM_VULNERABILITY:                  return T_("vulnerability");
-    case BEAM_MALIGN_OFFERING:                  return T_("malign offering");
-    case BEAM_VIRULENCE:                  return T_("virulence");
-    case BEAM_AGILITY:                  return T_("agility");
-    case BEAM_SAP_MAGIC:                  return T_("sap magic");
-    case BEAM_DRAIN_MAGIC:                  return T_("drain magic");
-    case BEAM_DIMINISH_SPELLS:                  return T_("diminish spells");
-    case BEAM_TUKIMAS_DANCE:                  return T_("tukima's dance");
-    case BEAM_DEATH_RATTLE:                  return T_("breath of the dead");
-    case BEAM_RESISTANCE:                  return T_("resistance");
-    case BEAM_UNRAVELLING:                  return T_("unravelling");
-    case BEAM_UNRAVELLED_MAGIC:                  return T_("unravelled magic");
-    case BEAM_SHARED_PAIN:                  return T_("shared pain");
-    case BEAM_IRRESISTIBLE_CONFUSION:                  return T_("confusion");
-    case BEAM_INFESTATION:                  return T_("infestation");
-    case BEAM_VILE_CLUTCH:                  return T_("vile clutch");
-    case BEAM_VAMPIRIC_DRAINING:                  return T_("vampiric draining");
-    case BEAM_CONCENTRATE_VENOM:                  return T_("concentrate venom");
-    case BEAM_ENFEEBLE:                  return T_("enfeeble");
-    case BEAM_SOUL_SPLINTER:                  return T_("soul splinter");
-    case BEAM_ROOTS:                  return T_("roots");
-    case BEAM_VITRIFY:                  return T_("vitrification");
-    case BEAM_VITRIFYING_GAZE:                  return T_("vitrification");
-    case BEAM_WEAKNESS:                  return T_("weakness");
-    case BEAM_DEVASTATION:                  return T_("devastation");
-    case BEAM_UMBRAL_TORCHLIGHT:                  return T_("umbral torchlight");
-    case BEAM_CRYSTALLISING:                  return T_("crystallising");
-    case BEAM_WARPING:                  return T_("spatial disruption");
-    case BEAM_QAZLAL:                  return T_("upheaval targetter");
-    case BEAM_RIMEBLIGHT:                  return T_("rimeblight");
-    case BEAM_SHADOW_TORPOR:                  return T_("shadow torpor");
-    case BEAM_HAEMOCLASM:                  return T_("gore");
-    case BEAM_BLOODRITE:                  return T_("blood");
-    case BEAM_DOUBLE_VIGOUR:                  return T_("vigour-doubling");
-    case BEAM_VEX:                  return T_("vexing");
-    case BEAM_SEISMIC:                  return T_("seismic shockwave");
-    case BEAM_BOLAS:                  return T_("entwining bolas");
-    case BEAM_MERCURY:                  return T_("mercury");
-    case BEAM_BAT_CLOUD:                  return T_("cloud of bats");
-    case BEAM_ILL_OMEN:                  return T_("omen");
-    case BEAM_WARP_BODY:                  return T_("warp body");
+    case BEAM_AGONY:                 return T_("agony");
+    case BEAM_CURSE_OF_AGONY:        return T_("curse of agony");
+    case BEAM_DISPEL_UNDEAD:         return T_("dispel undead");
+    case BEAM_MINDBURST:             return T_("mindburst");
+    case BEAM_BLINK:                 return T_("blink");
+    case BEAM_BLINK_CLOSE:           return T_("blink close");
+    case BEAM_BECKONING:             return T_("beckoning");
+    case BEAM_PETRIFY:               return T_("petrify");
+    case BEAM_CORONA:                return T_("backlight");
+    case BEAM_PORKALATOR:            return T_("porkalator");
+    case BEAM_HIBERNATION:           return T_("hibernation");
+    case BEAM_SLEEP:                 return T_("sleep");
+    case BEAM_BERSERK:               return T_("berserk");
+    case BEAM_VISUAL:                return T_("visual effects");
+    case BEAM_TORMENT_DAMAGE:        return T_("torment damage");
+    case BEAM_AIR:                   return T_("air");
+    case BEAM_INNER_FLAME:           return T_("inner flame");
+    case BEAM_PETRIFYING_CLOUD:      return T_("calcifying dust");
+    case BEAM_ENSNARE:               return T_("magic web");
+    case BEAM_SENTINEL_MARK:         return T_("sentinel's mark");
+    case BEAM_DIMENSION_ANCHOR:      return T_("dimension anchor");
+    case BEAM_VULNERABILITY:         return T_("vulnerability");
+    case BEAM_MALIGN_OFFERING:       return T_("malign offering");
+    case BEAM_VIRULENCE:             return T_("virulence");
+    case BEAM_AGILITY:               return T_("agility");
+    case BEAM_SAP_MAGIC:             return T_("sap magic");
+    case BEAM_ANTIMAGIC:             return T_("antimagic");
+    case BEAM_DIMINISH_SPELLS:       return T_("diminish spells");
+    case BEAM_TUKIMAS_DANCE:         return T_("tukima's dance");
+    case BEAM_DEATH_RATTLE:          return T_("breath of the dead");
+    case BEAM_RESISTANCE:            return T_("resistance");
+    case BEAM_UNRAVELLING:           return T_("unravelling");
+    case BEAM_UNRAVELLED_MAGIC:      return T_("unravelled magic");
+    case BEAM_SHARED_PAIN:           return T_("shared pain");
+    case BEAM_IRRESISTIBLE_CONFUSION:return T_("confusion");
+    case BEAM_INFESTATION:           return T_("infestation");
+    case BEAM_VILE_CLUTCH:           return T_("vile clutch");
+    case BEAM_VAMPIRIC_DRAINING:     return T_("vampiric draining");
+    case BEAM_CONCENTRATE_VENOM:     return T_("concentrate venom");
+    case BEAM_ENFEEBLE:              return T_("enfeeble");
+    case BEAM_SOUL_SPLINTER:         return T_("soul splinter");
+    case BEAM_ROOTS:                 return T_("roots");
+    case BEAM_VITRIFY:               return T_("vitrification");
+    case BEAM_VITRIFYING_GAZE:       return T_("vitrification");
+    case BEAM_WEAKNESS:              return T_("weakness");
+    case BEAM_DEVASTATION:           return T_("devastation");
+    case BEAM_UMBRAL_TORCHLIGHT:     return T_("umbral torchlight");
+    case BEAM_CRYSTALLISING:         return T_("crystallising");
+    case BEAM_WARPING:               return T_("spatial disruption");
+    case BEAM_QAZLAL:                return T_("upheaval targetter");
+    case BEAM_RIMEBLIGHT:            return T_("rimeblight");
+    case BEAM_SHADOW_TORPOR:         return T_("shadow torpor");
+    case BEAM_HAEMOCLASM:            return T_("gore");
+    case BEAM_BLOODRITE:             return T_("blood");
+    case BEAM_DOUBLE_VIGOUR:         return T_("vigour-doubling");
+    case BEAM_VEX:                   return T_("vexing");
+    case BEAM_SEISMIC:               return T_("seismic shockwave");
+    case BEAM_BOLAS:                 return T_("entwining bolas");
+    case BEAM_MERCURY:               return T_("mercury");
+    case BEAM_BAT_CLOUD:             return T_("cloud of bats");
+    case BEAM_ILL_OMEN:              return T_("omen");
+    case BEAM_WARP_BODY:             return T_("warp body");
 
     case NUM_BEAMS:                  die("invalid beam type");
     }
@@ -7854,18 +7800,11 @@ void player_beam_tracer::monster_hit(const bolt& beam, const monster& mon)
     }
 }
 
-void player_beam_tracer::blocked(string message) noexcept
-{
-    blocked_message = std::move(message);
-    blocked_count++;
-}
-
 // Returns true if there is anything this tracer might possibly want to prompt
 // the player about.
 bool player_beam_tracer::has_any_warnings() noexcept
 {
-    return blocked_count > 0
-            || god_hated_target
+    return god_hated_target
             || bad_charm_target
             || hit_self_count > 0
             || !bad_attack_targets.empty();
@@ -7904,16 +7843,8 @@ int targeting_tracer::player_hit_count() noexcept
 }
 
 // returns true if the player wishes to cancel firing the bolt, false otherwise
-bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
-                        int beams_fired)
+bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer)
 {
-    ASSERT(beams_fired >= tracer.blocked_count);
-    if (tracer.blocked_count >= beams_fired)
-    {
-        mpr(tracer.blocked_message);
-        return true;
-    }
-
     const spell_type spell = beam.origin_spell;
 
     if (tracer.god_hated_target

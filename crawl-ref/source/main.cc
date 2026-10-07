@@ -1197,7 +1197,8 @@ static void _input()
     if (you_are_delayed()
         && !dynamic_cast<MacroProcessKeyDelay*>(current_delay().get()))
     {
-        stop_channelling_spells();
+        if (!current_delay().get()->is_macro())
+            stop_channelling_spells();
         handle_delay();
 
         // Some delays set you.turn_is_over.
@@ -1370,7 +1371,8 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
                              bool known_shaft)
 {
     // Up and down both work for shops, portals, and altars.
-    if (ftype == DNGN_ENTER_SHOP || feat_is_altar(ftype))
+    if (ftype == DNGN_ENTER_SHOP || feat_is_altar(ftype)
+        || ftype == DNGN_PURIFIED_MUTATION_CATALYST)
     {
         if (crawl_state.doing_prev_cmd_again)
         {
@@ -1382,6 +1384,8 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
             canned_msg(MSG_TOO_BERSERK);
         else if (ftype == DNGN_ENTER_SHOP) // don't convert to capitalism
             shop();
+        else if (ftype == DNGN_PURIFIED_MUTATION_CATALYST)
+            use_mutation_catalyst();
         else
             try_god_conversion(feat_altar_god(ftype));
         // Even though we may have "succeeded", return false so we don't keep
@@ -1952,13 +1956,13 @@ static void _handle_autofight(command_type cmd, command_type prev_cmd)
 
     if (cmd == CMD_AUTOFIRE)
     {
-        auto a = quiver::get_secondary_action();
-        if (!a || !a->is_valid())
+        if (quiver::is_empty())
         {
-            mpr(T_("Nothing quivered!")); // Can this happen?
+            mpr(T_("Nothing quivered!"));
             return;
         }
 
+        auto a = quiver::get_secondary_action();
         const bool secondary_enabled = a->is_enabled();
 
         // Some quiver actions need to be triggered directly. Disabled quiver

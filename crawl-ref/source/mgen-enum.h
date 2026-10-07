@@ -148,6 +148,7 @@ enum band_type
     BAND_AMOEBA_ORGANS,
     BAND_DRAINING_EYE_CORPS,
     BAND_MORPHOGENIC_OOZE,
+    BAND_SEWAGE_SOVEREIGNS,
     NUM_BANDS                   // always last
 };
 

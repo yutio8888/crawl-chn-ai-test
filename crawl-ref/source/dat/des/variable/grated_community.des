@@ -230,21 +230,21 @@ NSUBST: P = 1:P / *:G
 KMONS:  P = withered plant
 :   kitem("% = $, any wand / w:15 nothing, " .. s)
 :   kitem("* = scroll of torment pre_id q:" .. q .. " / nothing, " .. s)
-:   kitem("| = potion of magic pre_id q: " .. q .. " / nothing, " .. p)
+:   kitem("| = potion of magic pre_id q:" .. q .. " / nothing, " .. p)
 KFEAT:  C = altar_kikubaaqudgha / altar_sif_muna w:4
 SUBST:  & = ddddd., G = GGGGGY
 : elseif occupant == 1 then
 KMONS:  P = plant
 :   kitem("% = $, " .. p .. ", " .. p .. ", " ..p)
 :   kitem("% = scroll of vulnerability / nothing, " .. s)
-:   kitem("* = potion of magic pre_id q: " .. q .. " / nothing, " .. p)
+:   kitem("* = potion of magic pre_id q:" .. q .. " / nothing, " .. p)
 KFEAT:  C = altar_sif_muna / altar_ashenzari w:5
 SUBST:  1 = 2, & = eeeee., G = GTU
 : else
 KITEM:  % = $, any beam wand / any blast wand, \
             potion of brilliance pre_id / nothing
 :   kitem("* = scroll of immolation pre_id / nothing, " .. s)
-:   kitem("| = scroll of immolation pre_id q: " .. q .. " / nothing, " .. s)
+:   kitem("| = scroll of immolation pre_id q:" .. q .. " / nothing, " .. s)
 KFEAT:  C = altar_vehumet / altar_makhleb w:2
 KFEAT:  P = cache_of_fruit
 SUBST:  1 = 3, & = fffff.

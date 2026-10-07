@@ -644,6 +644,7 @@ bool mons_class_is_draconic(monster_type mc)
         case MONS_DRAKE:
         case MONS_DRACONIAN:
         case MONS_WYRMHOLE:
+        case MONS_MONGREL_WURM:
             return true;
         default:
             return false;
@@ -1875,11 +1876,12 @@ static mon_attack_def _hepliaklqana_ancestor_attack(const monster &mon,
         return { };
 
     const int HD = mon.get_experience_level();
-    const int dam = HD + 3; // 4 at 1 HD, 21 at 18 HD (max)
-    // battlemages do double base melee damage (+25-50% including their weapon)
-    const int dam_mult = mon.type == MONS_ANCESTOR_BATTLEMAGE ? 2 : 1;
+    const int base_dam = HD + 3; // 4 at 1 HD, 21 at 18 HD (max)
+    // elementalists do reduced base melee damage
+    const int dam = mon.type == MONS_ANCESTOR_ELEMENTALIST ? base_dam * 2 / 3
+                                                           : base_dam;
 
-    return { AT_HIT, AF_PLAIN, dam * dam_mult };
+    return { AT_HIT, AF_PLAIN, dam };
 }
 
 /** Get the attack type, attack flavour and damage for a monster attack.
@@ -2180,8 +2182,10 @@ bool flavour_triggers_damageless(attack_flavour flavour)
         || flavour == AF_AIRSTRIKE
         || flavour == AF_SHADOWSTAB
         || flavour == AF_DROWN
+        || flavour == AF_CONTAM_WATER
         || flavour == AF_CORRODE
-        || flavour == AF_DIM;
+        || flavour == AF_DIM
+        || flavour == AF_BURSTSHROOM;
 }
 
 /**
@@ -2617,6 +2621,11 @@ monster_type draconian_job_for_colour(monster_type colour)
 static mon_spellbook_type _get_mc_spellbook(const monster_type mon_type)
 {
     return static_cast<mon_spellbook_type>(get_monster_data(mon_type)->sec);
+}
+
+bool mon_type_has_spells(const monster_type mon_type)
+{
+    return _get_mc_spellbook(mon_type) != MST_NO_SPELLS;
 }
 
 mon_spellbook_type get_spellbook(const monster_info &mon)
@@ -5298,13 +5307,6 @@ bool mons_is_recallable(const actor* caller, const monster& targ)
            && mons_class_is_threatening(targ.type);
 }
 
-bool mons_stores_tracking_data(const monster& mons)
-{
-    return mons.type == MONS_THORN_HUNTER
-           || mons.type == MONS_MERFOLK_AVATAR
-           || mons.type == MONS_BOULDER_BEETLE;
-}
-
 bool mons_is_beast(monster_type mc)
 {
     if (!(mons_class_holiness(mc) & MH_NATURAL)
@@ -5693,12 +5695,6 @@ void throw_monster_bits(const monster& mon)
     }
 }
 
-/// Add an ancestor spell to the given list.
-static void _add_ancestor_spell(monster_spells &spells, spell_type spell)
-{
-    spells.emplace_back(spell, 25, MON_SPELL_WIZARD);
-}
-
 /**
  * Set the correct spells for a given ancestor, corresponding to their HD and
  * type.
@@ -5718,26 +5714,49 @@ void set_ancestor_spells(monster &ancestor, bool notify)
     const int HD = ancestor.get_experience_level();
     switch (ancestor.type)
     {
-    case MONS_ANCESTOR_BATTLEMAGE:
-        _add_ancestor_spell(ancestor.spells, HD >= 10 ?
-                                             SPELL_BOLT_OF_MAGMA :
-                                             SPELL_THROW_FROST);
-        _add_ancestor_spell(ancestor.spells, HD >= 16 ?
-                                             SPELL_LEHUDIBS_CRYSTAL_SPEAR :
-                                             SPELL_STONE_ARROW);
+    case MONS_ANCESTOR_ELEMENTALIST:
+        ancestor.spells.emplace_back(SPELL_DEFLECT_MISSILES, 200, MON_SPELL_WIZARD);
+
+        if (HD < 10)
+            ancestor.spells.emplace_back(SPELL_SHOCK, 35, MON_SPELL_WIZARD);
+        if (HD < 13)
+            ancestor.spells.emplace_back(SPELL_STONE_ARROW, 35, MON_SPELL_WIZARD);
+        if (HD >= 10 && HD < 16)
+        {
+            ancestor.spells.emplace_back(SPELL_ICEBLAST, 35, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_BOLT_OF_MAGMA, 35, MON_SPELL_WIZARD);
+        }
+        if (HD >= 13)
+            ancestor.spells.emplace_back(SPELL_LRD, 40, MON_SPELL_WIZARD);
+        if (HD >= 16)
+            ancestor.spells.emplace_back(SPELL_PLASMA_BEAM, 30, MON_SPELL_WIZARD);
+        if (HD >= 16)
+            ancestor.spells.emplace_back(SPELL_PERMAFROST_ERUPTION, 30, MON_SPELL_WIZARD);
+
         break;
+
     case MONS_ANCESTOR_HEXER:
-        _add_ancestor_spell(ancestor.spells, HD >= 10 ? SPELL_PARALYSE
-                                                      : SPELL_SLOW);
-        _add_ancestor_spell(ancestor.spells, HD >= 13 ? SPELL_MASS_CONFUSION
-                                                      : SPELL_CONFUSE);
+        if (HD < 10)
+            ancestor.spells.emplace_back(SPELL_SLOW, 25, MON_SPELL_WIZARD);
+        if (HD < 13)
+            ancestor.spells.emplace_back(SPELL_CONFUSE, 25, MON_SPELL_WIZARD);
+        if (HD >= 10)
+            ancestor.spells.emplace_back(SPELL_PARALYSE, 25, MON_SPELL_WIZARD);
+        if (HD >= 13)
+        {
+            ancestor.spells.emplace_back(SPELL_HASTE, 25, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_MASS_CONFUSION, 25, MON_SPELL_WIZARD);
+        }
         break;
+
+    case MONS_ANCESTOR_KNIGHT:
+        if (HD >= 13)
+            ancestor.spells.emplace_back(SPELL_BOLSTER, 50, MON_SPELL_WIZARD);
+        break;
+
     default:
         break;
     }
-
-    if (HD >= 13)
-        ancestor.spells.emplace_back(SPELL_HASTE, 25, MON_SPELL_WIZARD);
 
     if (ancestor.spells.size())
         ancestor.props[CUSTOM_SPELLS_KEY] = true;

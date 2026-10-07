@@ -81,14 +81,14 @@ void do_galvanic_jolt(const actor& agent, coord_def pos, dice_def damage);
 void do_eel_melee_jolt(coord_def pos);
 void do_eel_arcjolt();
 bool mons_should_fire_plasma(int pow, const actor &agent);
-spret cast_plasma_beam(int pow, const actor &agent, bool fail);
+spret cast_plasma_beam(int pow, const actor &agent, bool fail, bool is_tracer=false);
 vector<coord_def> plasma_beam_targets(const actor &agent, int pow, bool actual);
 vector<coord_def> plasma_beam_paths(coord_def source, const vector<coord_def> &targets);
 dice_def base_fragmentation_damage(int pow, bool random);
 bool monster_type_is_fraggable(monster_type mc);
 bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
                               const coord_def target, bool quiet,
-                              const char **what, bool &hole);
+                              const char **what);
 spret cast_fragmentation(int powc, const actor *caster,
                               const coord_def target, bool fail);
 spret cast_polar_vortex(int powc, bool fail, bool no_prompt = false);

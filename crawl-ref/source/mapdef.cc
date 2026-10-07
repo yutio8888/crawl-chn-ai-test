@@ -647,7 +647,6 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
                 if (colour)
                     floor = tile_dngn_coloured(floor, colour);
                 tile_env.flv(gc).floor = floor;
-                tile_init_flavour(gc);
                 has_floor = true;
             }
 
@@ -661,8 +660,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
                 tile_dngn_index(name.c_str(), &rock);
                 if (colour)
                     rock = tile_dngn_coloured(rock, colour);
-                int offset = random2(tile_dngn_count(rock));
-                tile_env.flv(gc).wall = rock + offset;
+                tile_env.flv(gc).wall = rock;
                 has_rock = true;
             }
 
@@ -2430,6 +2428,13 @@ void map_def::read_full(reader& inf)
 
 int map_def::weight(const level_id &lid) const
 {
+    // Over several decades, less than a dozen vaults are left with >99 weight,
+    // and only one has above 1000. This should be fine for catching mistakes.
+    if (_weight.depth_value(lid) > 5000)
+    {
+        mprf(MSGCH_DANGER, "Error: testing weight of %d deployed for vault %s.",
+                           _weight.depth_value(lid), map_def::name.c_str());
+    }
     return _weight.depth_value(lid);
 }
 
@@ -5766,13 +5771,6 @@ void item_list::parse_random_by_class(string c, item_spec &spec)
         spec.plus      = -1;
         return;
     }
-    else if (c == "fixed level book")
-    {
-        spec.base_type = OBJ_BOOKS;
-        spec.sub_type  = BOOK_RANDART_LEVEL;
-        spec.plus      = -1;
-        return;
-    }
     else if (c == "ring")
     {
         spec.base_type = OBJ_JEWELLERY;
@@ -5888,8 +5886,8 @@ item_list::item_spec_slot item_list::parse_item_spec(string spec, bool ignore_ex
         item_spec parsed_spec;
         if (!parse_single_spec(parsed_spec, specifier))
         {
-            dprf(DIAG_DNGN, "Failed to parse: %s", specifier.c_str());
-            continue;
+            error = make_stringf("Error parsing '%s':\n%s", spec.c_str(), error.c_str());
+            break;
         }
         if (ignore_excluded
             || parsed_spec.props.exists(NO_EXCLUDE_KEY)

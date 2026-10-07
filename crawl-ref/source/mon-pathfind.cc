@@ -448,13 +448,9 @@ bool monster_pathfind::traversable(const coord_def& p)
 
     if (monster* mon_at = monster_at(p))
     {
-        // XXX: Ugly hack to make thorn hunters use their briars for defensive
-        //      cover instead of just pathing around them.
-        if (mons && mons->type == MONS_THORN_HUNTER
-            && mon_at->type == MONS_BRIAR_PATCH)
-        {
+        // Thorn hunters can walk freely through their own briars.
+        if (mons && mons->type == MONS_THORN_HUNTER && mon_at->was_created_by(*mons))
             return true;
-        }
 
         // Try to path around immobile monsters.
         if (mon_at->is_stationary())

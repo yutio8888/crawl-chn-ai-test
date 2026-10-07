@@ -37,6 +37,7 @@ bool cell_is_solid(const coord_def &c);
 bool cell_is_invalid_target(const coord_def &c);
 bool cell_is_runed(const coord_def &p);
 
+bool feat_is_floor(dungeon_feature_type feat);
 bool feat_is_malign_gateway_suitable(dungeon_feature_type feat);
 bool feat_is_wall(dungeon_feature_type feat);
 bool feat_is_opaque(dungeon_feature_type feat);
@@ -172,7 +173,8 @@ void temp_change_terrain(coord_def pos, dungeon_feature_type newfeat, int dur,
                          terrain_change_type type = TERRAIN_CHANGE_GENERIC,
                          int mid = MID_NOBODY);
 bool revert_terrain_change(coord_def pos,
-                           terrain_change_type ctype = NUM_TERRAIN_CHANGE_TYPES);
+                           terrain_change_type ctype = NUM_TERRAIN_CHANGE_TYPES,
+                           bool expire = true);
 bool is_temp_terrain(coord_def pos);
 
 bool plant_forbidden_at(const coord_def &p, bool connectivity_only = false);

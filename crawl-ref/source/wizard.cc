@@ -105,7 +105,7 @@ static void _do_wizard_command(int wiz_command)
     case 'I': wizard_unidentify_pack(); break;
     case CONTROL('I'): debug_item_statistics(); break;
 
-    // case 'j': break;
+    case 'j': wizard_reset_god_capstones(); break;
     case 'J':
         mpr(T_("Running Jiyva off-level sacrifice."));
         jiyva_eat_offlevel_items();
@@ -152,7 +152,6 @@ static void _do_wizard_command(int wiz_command)
 
     case 'u': wizard_level_travel(false); break;
     case 'U': wizard_unobtain_unrands(); break;
-    // case 'U': break;
     case CONTROL('U'): debug_terp_dlua(clua); break;
 
     case 'v': wizard_recharge_evokers(); break;
@@ -448,6 +447,7 @@ int list_wizard_commands(bool do_redraw_screen)
                        "<w>=</w>      show info about skill points\n"
                        "<w>n</w>      set Zot clock to a value\n"
                        "<w>N</w>      get current tension value\n"
+                       "<w>j</w>      reset single-use god abilities\n"
                        "\n"
                        "<yellow>Dungeon features</yellow>\n"
                        "<w>,</w>/<w>.</w>    create up/down staircase\n"

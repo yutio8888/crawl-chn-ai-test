@@ -745,7 +745,10 @@ void handle_behaviour(monster* mon)
             // Batty monsters don't automatically reseek so that
             // they'll flitter away, we'll reset them just before
             // they get movement in handle_monsters() instead. -- bwr
-            if ((proxFoe || mons_foe_is_marked(*mon)) && !mons_is_batty(*mon))
+            // The exception is friendly batty monsters targetting the player,
+            // who should seek the player.
+            if ((proxFoe || mons_foe_is_marked(*mon))
+                && (!mons_is_batty(*mon) || (isFriendly && mon->foe == MHITYOU)))
             {
                 new_beh = BEH_SEEK;
                 break;
@@ -1119,8 +1122,12 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
 
             if (you.can_see(*mon))
             {
+                const actor* attacker = src;
+                if (attacker && attacker->mindex() == YOU_FAULTLESS)
+                    attacker = nullptr;
+
                 mprf_p(T_("%1$s attack snaps %2$s out of %3$s fear."),
-                        src ? src->name(DESC_ITS).c_str() : "the",
+                        attacker ? attacker->name(DESC_ITS).c_str() : "the",
                         mon->name(DESC_THE).c_str(),
                         mon->pronoun(PRONOUN_POSSESSIVE).c_str());
             }

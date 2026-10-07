@@ -84,7 +84,7 @@ void schedule_stardust_fineff(actor* agent, int power, int max_stars,
 void schedule_pyromania_fineff();
 void schedule_celebrant_bloodrite_fineff();
 void schedule_eeljolt_fineff();
-
+void schedule_psychokinetic_burst_fineff(actor* agent);
 
 void fire_final_effects();
 void clear_final_effects();

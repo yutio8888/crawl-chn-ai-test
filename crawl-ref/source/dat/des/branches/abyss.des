@@ -851,7 +851,7 @@ MONS:    rakshasa ; whip good_item | trident good_item | long sword good_item . 
                     ring mail good_item | kite shield good_item . \
                     mundane javelin | boomerang | throwing net
 MONS:    guardian serpent / great orb of eyes
-ITEM:    d = potion of curing pre_id / potion of moonshine pre_id
+ITEM:    potion of curing pre_id / potion of moonshine pre_id
 SUBST:   x = ccccvbb
 MAP
      .x.x

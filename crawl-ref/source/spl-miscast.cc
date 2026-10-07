@@ -89,7 +89,7 @@ static void _ouch(actor& target, actor * source, miscast_source_info mc_info, in
         else if (source && source->is_monster())
         {
             if (source->as_monster()->confused_by_you()
-                && !source->as_monster()->friendly())
+                && !source->friendly())
             {
                 kt = KILL_YOU_CONF;
             }

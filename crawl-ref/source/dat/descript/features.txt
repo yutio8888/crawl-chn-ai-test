@@ -38,8 +38,8 @@ surroundings.
 %%%%
 A white marble altar of Elyvilon
 
-An altar to Elyvilon the Healer, made from purest white marble and topped by a
-sculpture of the Chalice of Purification.
+An altar to Elyvilon the Healer, made from invigorated white marble and topped
+by a sculpture of the Chalice of Purification.
 %%%%
 A blossoming altar of Fedhas
 
@@ -233,7 +233,7 @@ cause temporary corrosion.
 %%%%
 A metal wall
 
-A wall of bluish-grey metal. As every dungeon electrician knows, it will ground
+A wall of shiny grey metal. As every dungeon electrician knows, it will ground
 even magical bolts of lightning.
 %%%%
 A rock wall
@@ -478,6 +478,22 @@ A statue of an orb of entropy
 
 A statue of a terrifying globe of profound nothingness, said to dwell within the
 Realm of Zot.
+%%%%
+A patch of mould
+
+A dense carpet of colourful mould, rustling with fecundity. The towering fungi
+which sprout from it can grow back in the blink of an eye, no matter how many
+times they are cut down.
+%%%%
+a purified mutation catalyst
+
+An experimental arcane still, brewing some incomplete- if refined- mutagenic
+serum. Breaking this open will bathe you in mystic mists, imparting upon you one
+beneficial mutation (excluding those that could restrict equipment slots).
+%%%%
+an empty mutation catalyst
+
+A complex arcane still, cracked open and fully emptied of its contents.
 %%%%
 ########################################################################
 ### Branch entrances and exits
@@ -983,6 +999,11 @@ contain the evils sealed therein. Whatever protections this arch once offered
 have finally succumbed to the ravages of time, and a bitter breeze pours forth
 from the distant land beyond.
 %%%%
+A mutagenic drain
+
+A passage leading to a gutter gulch, gradually rusting away. Entering it will
+inflict three temporary mutations upon you, or decompose you if you're undead.
+%%%%
 A magical portal
 
 A portal leading to a wizard's laboratory. It is fading away.
@@ -1382,6 +1403,10 @@ Bones are a common sight in the Dungeon, but skulls left impaled in a shrike's
 manner on display send a more deliberate message to trespassers: the pike has
 room for one more skull, and whoever set it up is happy to help relieve its
 owner of theirs.
+%%%%
+An assortment of trash
+
+A scattered mess of fragmented, crumbling garbage, caked in ashes and dirt.
 %%%%
 # Graveyards, Crypt, Necropolis.
 A mourning vase

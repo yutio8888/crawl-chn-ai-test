@@ -69,7 +69,7 @@ static void _ouch(actor& target, const actor * source, int dam,
         kt = KILL_YOU_MISSILE;
     else if (source && source->is_monster())
         if (source->as_monster()->confused_by_you()
-            && !source->as_monster()->friendly())
+            && !source->friendly())
         {
             kt = KILL_YOU_CONF;
         }

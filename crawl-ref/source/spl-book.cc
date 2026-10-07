@@ -164,7 +164,6 @@ bool book_exists(book_type bt)
 {
     switch (bt)
     {
-    case BOOK_RANDART_LEVEL:
     case BOOK_RANDART_THEME:
     case BOOK_MANUAL:
     case BOOK_PARCHMENT:
@@ -1242,7 +1241,14 @@ spret divine_exegesis(bool fail)
 
     ASSERT(is_valid_spell(spell));
 
-    return cast_a_spell(false, spell, nullptr, fail);
+    spret ret = cast_a_spell(false, spell, nullptr, fail);
+    if (ret == spret::success)
+    {
+        you.duration[DUR_EXEGESIS] = random_range(90, 140);
+        you.props[EXEGESIS_SPELL] = spell;
+    }
+
+    return ret;
 }
 
 static spell_list _get_player_servitor_spells()

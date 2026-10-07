@@ -457,9 +457,6 @@ public:
     bool trap_in_net(bool real, bool quiet = false) override;
     void stop_being_caught(bool drop_net = false) override;
 
-    bool friendly() const;
-    bool neutral() const;
-    bool good_neutral() const;
     bool wont_attack() const override;
     bool pacified() const;
 
@@ -583,6 +580,8 @@ public:
     bool is_band_leader_of(const monster& follower) const;
     monster* get_band_leader() const;
     void set_band_leader(const monster& leader);
+
+    bool is_vengeance_target() const;
 
 private:
     int hit_dice;

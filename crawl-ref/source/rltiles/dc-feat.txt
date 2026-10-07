@@ -490,6 +490,9 @@ ensign_beogh DNGN_ENSIGN_BEOGH
 ensign_dark DNGN_ENSIGN_DARK
 ensign_gehenna DNGN_ENSIGN_GEHENNA
 bottled_spirits DNGN_BOTTLED_SPIRITS
+assortment_of_trash0 DNGN_ASSORTMENT_OF_TRASH
+assortment_of_trash1
+assortment_of_trash2
 ## preferably have more of these
 %weight 10
 skull_pike_1 DNGN_SKULL_PIKE
@@ -509,6 +512,9 @@ fountain_xom DNGN_FOUNTAIN_NOVELTY_XOM
 stone_smooth_beogh_0 STONE_SMOOTH_WALL_BEOGH
 stone_smooth_beogh_1
 gilded_reliquary DNGN_GILDED_RELIQUARY
+
+mould_patch_gulch0 DNGN_MOULD_PATCH_GULCH
+mould_patch_gulch1
 
 %sdir dngn/wall
 spike_launcher DNGN_SPIKE_LAUNCHER
@@ -727,6 +733,9 @@ zig_used DNGN_PORTAL_ZIGGURAT_GONE
 desolation_portal DNGN_PORTAL_DESOLATION
 desolation_exit DNGN_EXIT_DESOLATION
 desolation_portal_closed DNGN_PORTAL_DESOLATION_GONE
+gulch_portal DNGN_PORTAL_GULCH
+gulch_exit DNGN_EXIT_GULCH
+gulch_portal_rusted DNGN_PORTAL_GULCH_GONE
 crucible_exit DNGN_EXIT_CRUCIBLE
 
 portal_unknown DNGN_UNKNOWN_PORTAL
@@ -870,6 +879,12 @@ teleporter DNGN_TELEPORTER
 
 transporter DNGN_TRANSPORTER
 transporter_landing_site DNGN_TRANSPORTER_LANDING
+
+mould_patch0 DNGN_MOULD_PATCH
+mould_patch1
+
+purified_mutation_catalyst DNGN_PURIFIED_MUTATION_CATALYST
+empty_mutation_catalyst DNGN_EMPTY_MUTATION_CATALYST
 
 #### Automatic animation ends here.
 ## Miscellaneous entries that get drawn on the background.

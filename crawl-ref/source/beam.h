@@ -83,10 +83,6 @@ struct beam_tracer
     {
         UNUSED(bolt, mon);
     }
-    virtual void blocked(string message)
-    {
-        UNUSED(message);
-    }
 };
 
 // Used when casting a spell to check if the spell should be aborted
@@ -104,8 +100,6 @@ struct player_beam_tracer : beam_tracer
     const monster* god_hated_target = nullptr;
     int hit_self_count = 0;
     int foe_count = 0;
-    string blocked_message;
-    int blocked_count = 0;
 
     player_beam_tracer() {}
 
@@ -119,7 +113,6 @@ struct player_beam_tracer : beam_tracer
     void actor_affected(bool friendly_fire, int power) noexcept override;
     void player_hit(bool was_friendly) noexcept override;
     void monster_hit(const bolt& bolt, const monster& mon) override;
-    void blocked(string message) noexcept override;
     bool has_any_warnings() noexcept;
 };
 
@@ -353,7 +346,7 @@ private:
     bool is_big_cloud() const; // expands into big_cloud at endpoint
     int range_used_on_hit() const;
     bool bush_immune(const monster &mons) const;
-    bool at_blocking_monster() const;
+
     int apply_to_hit_modifiers(int base_hit, const actor &target) const;
 
     void do_ranged_attack(actor& target);
@@ -494,8 +487,7 @@ void fill_chain_targets(const bolt& beam, coord_def centre,
 
 bolt setup_targeting_beam(const monster &mons);
 
-bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
-                        int beams_fired = 1);
+bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer);
 
 int apply_willpower_bypass(const actor& source, int willpower);
 int apply_willpower_bypass(const monster_info& source, int willpower);

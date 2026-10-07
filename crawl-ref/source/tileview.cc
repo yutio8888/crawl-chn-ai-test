@@ -58,15 +58,15 @@ void tile_new_level(bool first_time, bool init_unseen)
     for (unsigned int x = 0; x < GXM; x++)
         for (unsigned int y = 0; y < GYM; y++)
         {
-            unsigned int tile = tile_env.bk_bg[x][y];
-            if ((tile & TILE_FLAG_NEW_STAIR)
+            tile_with_flags_t tile = tile_env.bk_bg[x][y];
+            if ((tile.has_flag(TILE_FLAG_NEW_STAIR))
                 && !is_unknown_stair(coord_def(x,y)))
             {
-                tile_env.bk_bg[x][y] &= ~TILE_FLAG_NEW_STAIR;
+                tile_env.bk_bg[x][y].remove_flag(TILE_FLAG_NEW_STAIR);
             }
-            else if ((tile & TILE_FLAG_NEW_TRANSPORTER)
+            else if ((tile.has_flag(TILE_FLAG_NEW_TRANSPORTER))
                      && !is_unknown_transporter(coord_def(x,y)))
-                tile_env.bk_bg[x][y] &= ~TILE_FLAG_NEW_TRANSPORTER;
+                tile_env.bk_bg[x][y].remove_flag(TILE_FLAG_NEW_TRANSPORTER);
         }
 
     tiles.clear_minimap();
@@ -242,6 +242,13 @@ void tile_default_flv(branch_type br, tile_flavour &flv)
         break;
 
     case BRANCH_ZIGGURAT:
+        flv.wall  = TILE_WALL_VAULT;
+        if (you.zigs_completed > 0)
+            flv.floor = TILE_FLOOR_ETCHED;
+        else
+            flv.floor = TILE_FLOOR_VAULT;
+        return;
+
     case BRANCH_BAZAAR:
     case BRANCH_TROVE:
         flv.wall  = TILE_WALL_VAULT;
@@ -284,6 +291,11 @@ void tile_default_flv(branch_type br, tile_flavour &flv)
     case BRANCH_VOLCANO:
         flv.wall  = TILE_WALL_VOLCANIC;
         flv.floor = TILE_FLOOR_ROUGH_RED;
+        return;
+
+    case BRANCH_GULCH:
+        flv.wall  = TILE_WALL_GULCH_BRICK;
+        flv.floor = TILE_FLOOR_GULCH;
         return;
 
     case BRANCH_WIZLAB:
@@ -409,60 +421,20 @@ static void _get_depths_wall_tiles_by_depth(int depth,
     t.emplace_back(TILE_WALL_BRICK_DARK_6_TORCH, torch_weight);
 }
 
-static int _find_variants(tileidx_t idx, int variant, vector<int> &out)
-{
-    const int count = tile_dngn_count(idx);
-    out.reserve(count);
-    if (count == 1)
-    {
-        out.push_back(1);
-        return 1;
-    }
-
-    int total = 0;
-    int curr_prob = 0;
-    for (int i = 0; i < count; ++i)
-    {
-        int last_prob = curr_prob;
-        curr_prob = tile_dngn_probs(idx + i);
-        if (tile_dngn_dominoes(idx + i) == variant)
-        {
-            int weight = curr_prob - last_prob;
-            total += weight;
-            out.push_back(weight);
-        }
-        else
-            out.push_back(0);
-    }
-    if (!total)
-    {
-        out.clear();
-        out.push_back(tile_dngn_probs(idx));
-        for (int i = 1; i < count; ++i)
-            out.push_back(tile_dngn_probs(idx + i) - tile_dngn_probs(idx + i - 1));
-        return tile_dngn_probs(idx + count - 1);
-    }
-    return total;
-}
-
-tileidx_t pick_dngn_tile(tileidx_t idx, int value, int domino)
+tileidx_t pick_dngn_tile(tileidx_t idx, int value)
 {
     ASSERT_LESS(idx, TILE_DNGN_MAX);
-    static vector<int> weights;
-    weights.clear();
-
-    int total = _find_variants(idx, domino, weights);
-    if (weights.size() == 1)
+    const unsigned int count = tile_dngn_count(idx);
+    if (count == 1)
         return idx;
-    int rand = value % total;
-
-    for (size_t i = 0; i < weights.size(); ++i)
+    const int total_weight = tile_dngn_probs(idx + count - 1);
+    int rand = value % total_weight;
+    for (unsigned int i = 0; i < count; ++i)
     {
-        rand -= weights[i];
-        if (rand < 0)
+        int weight = tile_dngn_probs(idx + i);
+        if (rand < weight)
             return idx + i;
     }
-
     return idx;
 }
 
@@ -484,7 +456,7 @@ static tileidx_t _pick_dngn_tile_multi(
             // XXX: this should be for any animated tile
             if (is_torch_tile(candidate.first))
                 return candidate.first;
-            return pick_dngn_tile(candidate.first, rand2, -1);
+            return pick_dngn_tile(candidate.first, rand2);
         }
         rand1 -= candidate.second;
     }
@@ -506,6 +478,46 @@ static bool _same_door_at(dungeon_feature_type feat, const coord_def &gc)
            && (feat_is_sealed(feat) || feat_is_sealed(door));
 }
 
+static void _init_feat_flavour(tileidx_t& flavour, dungeon_feature_type feat)
+{
+    if (feat_is_stone_stair(feat))
+    {
+        const bool up = feat_stair_direction(feat) == CMD_GO_UPSTAIRS;
+        if (player_in_branch(BRANCH_SHOALS))
+        {
+            flavour = up ? TILE_DNGN_SHOALS_STAIRS_UP
+                         : TILE_DNGN_SHOALS_STAIRS_DOWN;
+        }
+        else if (player_in_branch(BRANCH_VAULTS))
+        {
+            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
+                flavour = TILE_DNGN_METAL_STAIRS_DOWN;
+            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
+                flavour = TILE_DNGN_METAL_STAIRS_UP;
+        }
+        else if (player_in_branch(BRANCH_ZOT))
+        {
+            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
+                flavour = TILE_DNGN_ZOT_STAIRS_DOWN;
+            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
+                flavour = TILE_DNGN_ZOT_STAIRS_UP;
+        }
+        else if (player_in_branch(BRANCH_SLIME) && !you.royal_jelly_dead)
+        {
+            if (up)
+                flavour = TILE_DNGN_SLIMY_STAIRS_UP;
+            else
+                flavour = TILE_DNGN_SLIMY_STAIRS_DOWN;
+        }
+    }
+    else if (feat_is_escape_hatch(feat) && player_in_branch(BRANCH_TOMB))
+    {
+        const bool up = feat_stair_direction(feat) == CMD_GO_UPSTAIRS;
+        flavour = up ? TILE_DNGN_ONE_WAY_STAIRS_UP
+                     : TILE_DNGN_ONE_WAY_STAIRS_DOWN;
+    }
+}
+
 void tile_init_flavour(const coord_def &gc, const int domino)
 {
     if (!map_bounds(gc))
@@ -520,10 +532,11 @@ void tile_init_flavour(const coord_def &gc, const int domino)
     if (!tile_env.flv(gc).floor)
     {
         tileidx_t floor_base = tile_env.default_flavour.floor;
+        floor_base = tile_dngn_apply_domino(floor_base, domino);
         int colour = env.grid_colours(gc);
         if (colour)
             floor_base = tile_dngn_coloured(floor_base, colour);
-        tile_env.flv(gc).floor = pick_dngn_tile(floor_base, rand1, domino);
+        tile_env.flv(gc).floor = pick_dngn_tile(floor_base, rand1);
     }
     else if (tile_env.flv(gc).floor != TILE_HALO_GRASS
              && tile_env.flv(gc).floor != TILE_HALO_GRASS2
@@ -557,43 +570,7 @@ void tile_init_flavour(const coord_def &gc, const int domino)
     else
         tile_env.flv(gc).wall = pick_dngn_tile(tile_env.flv(gc).wall, rand2);
 
-    if (feat_is_stone_stair(env.grid(gc)))
-    {
-        const bool up = feat_stair_direction(env.grid(gc)) == CMD_GO_UPSTAIRS;
-        if (player_in_branch(BRANCH_SHOALS))
-        {
-            tile_env.flv(gc).feat = up ? TILE_DNGN_SHOALS_STAIRS_UP
-                                       : TILE_DNGN_SHOALS_STAIRS_DOWN;
-        }
-        else if (player_in_branch(BRANCH_VAULTS))
-        {
-            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
-                tile_env.flv(gc).feat = TILE_DNGN_METAL_STAIRS_DOWN;
-            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
-                tile_env.flv(gc).feat = TILE_DNGN_METAL_STAIRS_UP;
-        }
-        else if (player_in_branch(BRANCH_ZOT))
-        {
-            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
-                tile_env.flv(gc).feat = TILE_DNGN_ZOT_STAIRS_DOWN;
-            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
-                tile_env.flv(gc).feat = TILE_DNGN_ZOT_STAIRS_UP;
-        }
-        else if (player_in_branch(BRANCH_SLIME) && !you.royal_jelly_dead)
-        {
-            if (up)
-                tile_env.flv(gc).feat = TILE_DNGN_SLIMY_STAIRS_UP;
-            else
-                tile_env.flv(gc).feat = TILE_DNGN_SLIMY_STAIRS_DOWN;
-        }
-    }
-
-    if (feat_is_escape_hatch(env.grid(gc)) && player_in_branch(BRANCH_TOMB))
-    {
-        const bool up = feat_stair_direction(env.grid(gc)) == CMD_GO_UPSTAIRS;
-        tile_env.flv(gc).feat = up ? TILE_DNGN_ONE_WAY_STAIRS_UP
-                                   : TILE_DNGN_ONE_WAY_STAIRS_DOWN;
-    }
+    _init_feat_flavour(tile_env.flv(gc).feat, env.grid(gc));
 
     if (feat_is_door(env.grid(gc)))
     {
@@ -629,6 +606,17 @@ void tile_init_flavour(const coord_def &gc, const int domino)
     }
     else if (!tile_env.flv(gc).special)
         tile_env.flv(gc).special = hash_with_seed(256, seed, 10);
+}
+
+void tile_init_remembered_flavour(coord_def pos)
+{
+    dungeon_feature_type feat = env.map_knowledge(pos).feat();
+    if (!env.map_knowledge(pos).feat_known() && env.map_forgotten)
+        feat = (*env.map_forgotten)(pos).feat();
+    tileidx_t tile = tile_env.remembered_flavour.feat_flavour(pos);
+    _init_feat_flavour(tile, feat);
+    unsigned short idx = tile_env.remembered_flavour.feat_flavour_idx(pos);
+    tile_env.remembered_flavour.set_feat_flavour(pos, tile, idx);
 }
 
 enum SpecialIdx
@@ -909,9 +897,9 @@ void tile_draw_map_cells()
         }
 }
 
-static tileidx_t _get_floor_bg(const coord_def& gc)
+static tile_with_flags_t _get_floor_bg(const coord_def& gc)
 {
-    tileidx_t bg = TILE_DNGN_UNSEEN | tileidx_unseen_flag(gc);
+    tile_with_flags_t bg(TILE_DNGN_UNSEEN, tileidx_unseen_flag(gc));
 
     if (map_bounds(gc))
     {
@@ -943,7 +931,7 @@ void tile_draw_floor()
             if (!you.see_cell(gc))
                 continue;
 
-            tileidx_t bg = _get_floor_bg(gc);
+            tile_with_flags_t bg = _get_floor_bg(gc);
 
             // init tiles
             tile_env.bk_bg(gc) = bg;
@@ -966,7 +954,7 @@ void tile_forget_map(const coord_def &gc)
 static void _tile_place_item(const coord_def &gc, const item_def &item,
                              bool more_items)
 {
-    tileidx_t t = tileidx_item(item);
+    tile_with_flags_t t = tileidx_item(item);
     if (more_items)
         t |= TILE_FLAG_S_UNDER;
 
@@ -978,7 +966,8 @@ static void _tile_place_item(const coord_def &gc, const item_def &item,
 
 static void _tile_place_item_marker(const coord_def &gc, const item_def &item)
 {
-    tile_env.bk_fg(gc) = ((tileidx_t)tile_env.bk_fg(gc)) | TILE_FLAG_S_UNDER;
+    tile_with_flags_t fg = tile_env.bk_fg(gc);
+    tile_env.bk_fg(gc) = fg | TILE_FLAG_S_UNDER;
 
     if (item_needs_autopickup(item))
         tile_env.bk_bg(gc) |= TILE_FLAG_CURSOR3;
@@ -1007,9 +996,8 @@ static void _tile_place_invisible_monster(const coord_def &gc)
 
 static void _tile_place_monster(const coord_def &gc, const monster_info& mon)
 {
-    tileidx_t t    = tileidx_monster(mon);
-    tileidx_t t0   = t & TILE_FLAG_MASK;
-    tileidx_t flag = t & (~TILE_FLAG_MASK);
+    tile_with_flags_t t = tileidx_monster(mon);
+    tileidx_t t0 = t.tile();
 
     if (mons_class_is_stationary(mon.type)
         && mon.type != MONS_TRAINING_DUMMY)
@@ -1026,7 +1014,8 @@ static void _tile_place_monster(const coord_def &gc, const monster_info& mon)
     else
     {
         tileidx_t mcache_idx = mcache.register_monster(mon);
-        t = flag | (mcache_idx ? mcache_idx : t0);
+        t0 = mcache_idx ? mcache_idx : t0;
+        t.set_tile(t0);
     }
 
     tile_env.bk_fg(gc) = t;
@@ -1070,7 +1059,7 @@ static void _tile_place_monster(const coord_def &gc, const monster_info& mon)
 void tile_reset_fg(const coord_def &gc)
 {
     // remove autopickup cursor, it will be added back if necessary
-    tile_env.bk_bg(gc) &= ~TILE_FLAG_CURSOR3;
+    tile_env.bk_bg(gc).remove_flag(TILE_FLAG_CURSOR3);
     tile_draw_map_cell(gc, true);
     tiles.update_minimap(gc);
 }
@@ -1140,11 +1129,9 @@ static bool _tile_has_random_misc_animation(tileidx_t tile)
 
 // Updates the "flavour" of tiles that are animated.
 // Unfortunately, these are all hard-coded for now.
-void tile_apply_animations(tileidx_t bg, tile_flavour *flv)
+void tile_apply_animations(tileidx_t bg_idx, tile_flavour *flv)
 {
 #ifndef USE_TILE_WEB
-    tileidx_t bg_idx = bg & TILE_FLAG_MASK;
-
     if (_tile_has_cycling_misc_animation(bg_idx))
         flv->special = (flv->special + 1) % tile_dngn_count(bg_idx);
     else if (bg_idx == TILE_DNGN_LAVA && Options.tile_water_anim)
@@ -1163,7 +1150,7 @@ void tile_apply_animations(tileidx_t bg, tile_flavour *flv)
     else if (_tile_has_random_misc_animation(bg_idx))
         flv->special = random2(256);
 #else
-    UNUSED(bg, flv);
+    UNUSED(bg_idx, flv);
 #endif
 }
 
@@ -1215,7 +1202,9 @@ void tile_apply_properties(const coord_def &gc, packed_cell &cell)
     if (!map_bounds(gc))
         return;
 
-    apply_variations(tile_env.flv(gc), &cell.bg, gc);
+    tileidx_t bg_tile = cell.bg.tile();
+    apply_variations(tile_env.flv(gc), &bg_tile, gc);
+    cell.bg.set_tile(bg_tile);
 
     const map_cell& mc = env.map_knowledge(gc);
 
@@ -1239,7 +1228,7 @@ void tile_apply_properties(const coord_def &gc, packed_cell &cell)
     if (mc.flags & MAP_LIQUEFIED)
         cell.is_liquefied = true;
     else if (print_blood && (feat_suppress_blood(mc.feat())
-                             || _suppress_blood((cell.bg) & TILE_FLAG_MASK)))
+                             || _suppress_blood(bg_tile)))
     {
         print_blood = false;
     }
@@ -1316,8 +1305,9 @@ void tile_apply_properties(const coord_def &gc, packed_cell &cell)
     {
         // Use the id of the underlying tile to randomize the rock appearance.
         // XXX: This doesn't look great when the underlying tile is animated.
-        tileidx_t tile = TILE_FLOOR_SEISMOROCK
-                            + cell.bg % tile_dngn_count(TILE_FLOOR_SEISMOROCK);
+        unsigned int tile_count = tile_dngn_count(TILE_FLOOR_SEISMOROCK);
+        tileidx_t offset = (tileidx_t)(cell.bg.value % tile_count);
+        tileidx_t tile = TILE_FLOOR_SEISMOROCK + offset;
 
         cell.add_overlay(tile);
     }

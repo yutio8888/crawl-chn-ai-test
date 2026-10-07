@@ -3209,6 +3209,8 @@ static string _feat_action_desc(const vector<command_type>& actions,
                 // XX disable for portals without item? The command still works.
                 return string(T_("(>)enter"));
             }
+            else if (cmd == CMD_GO_DOWNSTAIRS && feat == DNGN_PURIFIED_MUTATION_CATALYST)
+                return string("(>)imbibe");
             else if (cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat))
                 return string(T_("(<)exit"));
             else
@@ -3429,6 +3431,42 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
                 "with the <w>%s</w> key."),
                 desc_the.c_str(),
                 command_to_string(CMD_GO_DOWNSTAIRS).c_str());
+    }
+    else if (feat == DNGN_PURIFIED_MUTATION_CATALYST)
+    {
+        if (you.religion == GOD_ZIN)
+        {
+            long_desc += make_stringf(
+            "\nYour adherence to the laws of Zin forbids you from using "
+              "such a device.");
+        }
+        else if (you.form == transformation::death)
+        {
+            long_desc += make_stringf(
+            "\nYou must first come back to life before you may mutate.");
+        }
+        else if (you.is_lifeless_undead()
+             || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
+        {
+            long_desc += make_stringf(
+            "\nThis is completely useless to you, as you cannot mutate.");
+        }
+        else
+        {
+            long_desc += make_stringf(
+                      "<w>\nWhile standing here, you can crack open %s with "
+                      "the</w> <cyan>%s</cyan> <w>key</w>.", desc_the.c_str(),
+                       command_to_string(CMD_GO_DOWNSTAIRS).c_str());
+        }
+    }
+    else if (feat == DNGN_SPIKE_LAUNCHER)
+    {
+        map_active_feature_marker* mark = env.markers.get_active_feature_at(pos, DNGN_SPIKE_LAUNCHER);
+        if (mark)
+        {
+            dice_def dmg = zap_damage(ZAP_SPIKE_LAUNCHER, mark->power, mark->owner != MID_PLAYER, false);
+            long_desc += make_stringf("\nIt does %dd%d damage.", dmg.num, dmg.size);
+        }
     }
 
     // mention that permanent trees are usually flammable
@@ -5243,6 +5281,7 @@ static string _flavour_base_desc(attack_flavour flavour)
         { AF_VULN,              "reduce willpower" },
         { AF_SHADOWSTAB,        "increased damage when unseen" },
         { AF_DROWN,             "drowning damage" },
+        { AF_CONTAM_WATER,      "spread contamination & shallow water" },
         { AF_CORRODE,           "cause corrosion" },
         { AF_TRAMPLE,           "knock back the defender" },
         { AF_WEAKNESS,          "cause weakness" },
@@ -5264,6 +5303,7 @@ static string _flavour_base_desc(attack_flavour flavour)
         { AF_DOOM,              "inflict doom" },
         { AF_SLIMIFY,           "slowly slimify the target" },
         { AF_DIM,               "diminish the target's spells" },
+        { AF_BURSTSHROOM,       "grow burstshrooms behind the defender" },
         { AF_PLAIN,             "" },
     };
 
@@ -6970,6 +7010,11 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         const dice_def dam = battlesphere_damage_from_hd(mi.hd);
         result << T_("Projectile damage: ") << dam.num << "d" << dam.size << "\n";
     }
+    else if (mi.type == MONS_BURSTSHROOM && mi.summoner_id != MID_PLAYER)
+    {
+        const dice_def dam = zap_damage(ZAP_BURSTSPORE, mi.hd * 10, true, false);
+        result << "Spore damage: " << dam.num << "d" << dam.size << "\n";
+    }
 
     // Flying monsters can't be forced to fall into liquids these days.
     if (!(mi.airborne()))
@@ -7044,6 +7089,14 @@ static string _desc_shooting_star_dam(const monster_info &mi)
     bolt beam;
     zappy(ZAP_SHOOTING_STAR, mi.hd, mi.attitude != ATT_FRIENDLY, beam);
     return make_stringf(T_("%dd%d"), beam.damage.num, beam.damage.size);
+}
+
+static string _desc_splinterfrost_dam(const monster_info &mi)
+{
+    bolt beam;
+    const int pow = mi.props[SPLINTERFROST_POWER_KEY].get_int();
+    zappy(ZAP_SPLINTERFROST_FRAGMENT, pow, mi.summoner_id != MID_PLAYER, beam);
+    return make_stringf("%dd%d", beam.damage.num, beam.damage.size);
 }
 
 // Fetches the monster's database description and reads it into inf.
@@ -7157,6 +7210,10 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 
     case MONS_SHOOTING_STAR:
         inf.body << make_stringf(T_("\nIt deals %s damage.\n"), _desc_shooting_star_dam(mi).c_str());
+        break;
+
+    case MONS_SPLINTERFROST_BARRICADE:
+        inf.body << "\nIt deals " << _desc_splinterfrost_dam(mi) << " damage when destroyed.\n";
         break;
 
     case MONS_PROGRAM_BUG:
@@ -7620,20 +7677,20 @@ int describe_monster(const monster_info &mi, const string& /*footer*/)
     write_spellset(spells, nullptr, &mi);
 
     {
-        tileidx_t t    = tileidx_monster(mi);
-        tileidx_t t0   = t & TILE_FLAG_MASK;
-        tileidx_t flag = t & (~TILE_FLAG_MASK);
+        tile_with_flags_t t = tileidx_monster(mi);
+        tileidx_t t0 = t.tile();
+        tile_flag_t flag = t.flags();
 
         if (!mons_class_is_stationary(mi.type) || mi.type == MONS_TRAINING_DUMMY)
         {
             tileidx_t mcache_idx = mcache.register_monster(mi);
-            t = flag | (mcache_idx ? mcache_idx : t0);
-            t0 = t & TILE_FLAG_MASK;
+            t0 = mcache_idx ? mcache_idx : t0;
+            t.set_tile(t0);
         }
 
         tiles.json_write_int("fg_idx", t0);
         tiles.json_write_name("flag");
-        tiles.write_tileidx(flag);
+        tiles.write_tile_with_flags(flag);
         tiles.json_write_icons(status_icons_for(mi));
 
         if (t0 >= TILEP_MCACHE_START)

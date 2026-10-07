@@ -90,7 +90,6 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_BREATH_WEAPON,   MB_BREATH_WEAPON },
     { ENCH_ROLLING,         MB_ROLLING },
     { ENCH_WRETCHED,        MB_WRETCHED },
-    { ENCH_SCREAMED,        MB_SCREAMED },
     { ENCH_WORD_OF_RECALL,  MB_WORD_OF_RECALL },
     { ENCH_INJURY_BOND,     MB_INJURY_BOND },
     { ENCH_FLAYED,          MB_FLAYED },
@@ -154,6 +153,7 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_WARDING,         MB_WARDING },
     { ENCH_DIMINISHED_SPELLS, MB_DIMINISHED_SPELLS },
     { ENCH_EXPOSED,         MB_EXPOSED },
+    { ENCH_STAMPEDE,        MB_STAMPEDE },
 };
 
 static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
@@ -161,8 +161,7 @@ static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
     // Suppress silly-looking combinations, even if they're
     // internally valid.
     if (mons.paralysed() && (ench == ENCH_SLOW || ench == ENCH_HASTE
-                      || ench == ENCH_SWIFT
-                      || ench == ENCH_PETRIFIED || ench == ENCH_PETRIFYING))
+                      || ench == ENCH_SWIFT || ench == ENCH_PETRIFIED))
     {
         return NUM_MB_FLAGS;
     }
@@ -203,7 +202,8 @@ static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
         return mons.get_ench(ench).degree == 1 ? MB_CONTAM_LIGHT : MB_CONTAM_HEAVY;
     case ENCH_SLOWLY_DYING:
         if (mons.type == MONS_WITHERED_PLANT ||
-            mons.type == MONS_PILE_OF_DEBRIS)
+            mons.type == MONS_PILE_OF_DEBRIS ||
+            mons.type == MONS_STACK_OF_SCRAP)
         {
             return MB_CRUMBLING;
         }
@@ -256,7 +256,8 @@ static bool _is_public_key(string key)
      || key == VAULT_HD_KEY
      || key == POLY_SET_KEY
      || key == NOBODY_MEMORIES_KEY
-     || key == ORIGINAL_TYPE_KEY)
+     || key == ORIGINAL_TYPE_KEY
+     || key == SPLINTERFROST_POWER_KEY)
     {
         return true;
     }

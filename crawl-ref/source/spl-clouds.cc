@@ -47,7 +47,6 @@ spret cast_putrefaction(monster* target, int pow, bool fail)
     // Start the cloud at radius 1, regardless of the speed of the killing blow
     marker->speed_increment -= you.time_taken - 7;
     env.markers.add(marker);
-    env.markers.clear_need_activate();
 
     mprf(T_("Rot billows forth from %s wounds!"), target->name(DESC_ITS).c_str());
 
@@ -107,7 +106,7 @@ spret cast_freezing_cloud(int pow, const coord_def& target, bool fail)
     hitfunc.set_aim(target);
 
     if (stop_attack_prompt(hitfunc, "conjure a freezing cloud",
-                            [](const actor *act) { return act->is_player() || act->res_cold() < 3;},
+                            [](const actor *act) { return (act->is_player() || act->res_cold() < 3) && !act->cloud_immune();},
                             nullptr, nullptr, false, true))
     {
         return spret::abort;

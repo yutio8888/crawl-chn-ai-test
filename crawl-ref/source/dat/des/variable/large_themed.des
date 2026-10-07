@@ -66,6 +66,7 @@ MONS:    goblin ; club / hobgoblin ; club / gnoll w:3 ; club | spear
 MONS:    kobold ; stone
 MONS:    kobold ; club w:18 / kobold brigand w:1 / gnoll w:3 ; club | spear
 MONS:    goblin rider, kobold brigand
+KMONS:   S = stack of scrap
 ITEM:    stone q:1 no_pickup
 KITEM:   D = gold
 KMONS:   D = hobgoblin / kobold / gnoll
@@ -75,9 +76,9 @@ SUBST:   ABC = 2, ? = 2 1:2 .:22
 : if you.depth() > 5 then
 NSUBST:  2 = 1:5 / *:2
 : end
-SHUFFLE: 125 / 346
+SHUFFLE: 125S / 346~
 SUBST:   1 = 1:12 ., 2 = 2:23 ., 3 = 3., 4 = 4:22 .
-SUBST:   y : y:48 w:1 W:1, Y : Y:48 W:1 .:1, y = wWW, Y = WW.
+SUBST:   y : y:48 w:1 W:1, Y : Y:48 W:1 .:1, y = wWW, Y = WW., S = S., ~ = .
 NSUBST:  ' = 3 = MMMdd / *:d
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -85,15 +86,15 @@ xxxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxxxxx
 xxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxx
 xxxxwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwcccccwwwwxxxxxx
 xxxwwwwwcAAAccccccccccccccccccccccccccccccccccccccccccccccccccccccDDDcwwwwwxxxxx
-xxxwwwwwcAAAc1.....ccccc.....c??????'c1..1c'??????c.............1cDDDcwwwwwwxxxx
-xxxwwwwwcAAAc.......ccc.2....+??????'c....c'??????+...........2..cDDDcwwwwwwxxxx
+xxxwwwwwcAAAc1..S..ccccc..S..c??????'c1..1c'??????c..S.....S.S..1cDDDcwwwwwwxxxx
+xxxwwwwwcAAAc......Sccc.2....+??????'c....c'??????+...........2..cDDDcwwwwwwxxxx
 xxwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwxxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwxxx
 xxwwwwwwwc...........+..............+......+..........cccccccc.2....cwwwwwwwwwxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwwxx
 xwwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwwxx
-xwwwwwwwcBBBc.......ccc.2....+??????'c....c'??????+...........2..cCCCcwwwwwwwwwx
-xwwwwwwwcBBBc1.....ccccc.....c??????'c....c'??????c.............1cCCCcwwwwwwwwwx
+xwwwwwwwcBBBc......Sccc.2....+??????'c....c'??????+...........2..cCCCcwwwwwwwwwx
+xwwwwwwwcBBBc1..S..ccccc..S..c??????'c....c'??????c..S.....S.S..1cCCCcwwwwwwwwwx
 xwwwwwwwcBBBccccccccccccccccccccccccccc++cccccccccccccccccccccccccCCCcwwwwwwwwwx
 xwwwwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwyY1..1Yywwwwwwwwwwwwwwwwwwwwwcccccwwwwwwwwwx
 xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwyY....Yywwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
@@ -564,7 +565,8 @@ MONS:   vault guard / centaur warrior w:4 / dire elephant w:2 / arcanist w:2
 MONS:   yaktaur, yaktaur captain
 MONS:   vault sentinel ; arbalest . halberd . ring mail
 MONS:   vault warden ; arbalest | hand cannon w:4 . glaive . scale mail
-SUBST:  @ = ., * = **%, | = ||*
+KITEM:  % = $, barding / %
+SUBST:  @ = ., * = **d, | = ||*
 CLEAR:  x
 :   vaults_hard_standard(_G)
 : else
@@ -1585,20 +1587,21 @@ DEPTH:  D:3-4
   kmons("O = " .. boss)
 }}
 MONS:   goblin, goblin ; sling, jackal
+KMONS:  S = stack of scrap
 KFEAT:  F = cache_of_fruit / cache_of_meat
 SUBST:  F : F.
 NSUBST: . = 1:0 / 3:3 / *:.
 MAP
 xxxxxxxxxxxxxxxxxxx
-x...+....B.Fx%%*xww
+xS..+....B.Fx%%*xww
 x...+......O+%%%xww
 x...x....B.Fxxxxxww
 x...xxxxxxxxxx...ww
-x............x...ww
+x...........Sx...ww
 x.....1.1....x.2.ww
 xx+xx.....xx+xx..ww
 x...x.....x...x..ww
-x...x.....x...x..ww
+x.S.x.....x.S.x..ww
 x...x.....x...x..ww
 xx+xx.....xx+xx..ww
 x.2.x.....x.2....ww
@@ -2358,7 +2361,7 @@ SUBST:  3 = 3G
 : else
 MONS:   ice dragon / white very ugly thing / freezing wraith / simulacrum
 MONS:   ettin simulacrum / spriggan defender simulacrum / \
-        golden dragon simulacrum / caustic shrike simulacrum
+        storm dragon simulacrum / caustic shrike simulacrum w:5
 MONS:   orange crystal statue
 :   mons("frost giant / blizzard demon / reaper ; " .. scythe("freezing"))
 MONS:   titan w:20 / nargun
@@ -2816,20 +2819,20 @@ KMONS:   L = moth of wrath
 NSUBST:  V> = 1:} / 1 = ):6 >:1 / 1 = ]:6 >:1
 SUBST:   " = 1
 TILE:    v = dngn_metal_wall_red
-FTILE:   ."~01234567Rs>V%$d*|-+abcdefABCDEFTUVn = floor_zot_diamonds
+FTILE:   ._"~012345678Rs>V%$d*|-+abcdefABCDEFTUVn = floor_zot_diamonds
 : end
 KITEM:   & = demon whip / demon blade / demon trident / \
-             plate armor ego:fire_resistance pre_id / \
+             plate armour ego:fire_resistance pre_id / \
              plate armour ego:command pre_id w:5 / \
              fire dragon scales good_item / fire dragon scales randart / \
              sanguine talisman w:2 / dragon-coil talisman w:3
 KITEM:   d = large rock q:1 / stone q:10
-KITEM:   e = any weapon
+KITEM:   ef = any weapon
 KFEAT:   L = l
 KFEAT:   - = broken_door
 KFEAT:   _ = altar_ecumenical / altar_ignis
 SHUFFLE: ABCDEF
-SUBST:   A = v, B : v., C : v., DEF" = ., d = xldd, ~ = lllds., _ = __b
+SUBST:   A = v, B : v., C : v., DEF" = ., d = xldd, e = ef, ~ = lllds., _ = __b
 NSUBST:  0 = 1:56 / 2:1 / 2:2 / 2:3 / 2:5 / * = 1123.
 NSUBST:  1 = 2:. / 2:L / *:1, | = 1:& / *:|
 SHUFFLE: 23, 23 / 23 / 23 / 24 / 34
@@ -2837,6 +2840,7 @@ KPROP:   lL_ = no_tele_into
 KMASK:   lL_ = opaque
 TILE:    b = bedevilled_crystal_dis
 : set_feature_name("crystal_wall", "bedevilled crystal wall")
+: decorative_floor(_G, 'f', "assortment of trash")
 MAP
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3511,8 +3515,9 @@ ITEM:    any scroll, parchment
 # Books with notable spells at level 6 or higher, across each school.
 ITEM:    book of spontaneous combustion / book of ice / book of spectacle / \
          book of power / book of chaos / book of the warp / book of death / \
-         book of siegecraft / necronomicon / grand grimoire / book of annihilations
-ITEM:    robe randart / orb ego:guile randart / orb ego:channeling randart / \
+         compendium of siegecraft / necronomicon / grand grimoire / \
+         book of annihilations
+ITEM:    robe randart / orb ego:guile randart / orb ego:energy randart / \
          orb ego:stardust randart / orb ego:attunement randart / \
          any magical staff randart w:15 / \
          ring of wizardry randart / manual of spellcasting w:5

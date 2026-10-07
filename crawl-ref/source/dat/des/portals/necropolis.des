@@ -1695,18 +1695,24 @@ NAME:    gammafunk_necropolis_ghost_cemetery
 :                               "shoals", "spider", "vaults_elf", "depths_crypt"})
 TAGS:    allow_dup luniq
 : if dgn.persist.necropolis_difficulty == "pre_lair_d" then
-WEIGHT:  3
+WEIGHT:  5
 : end
 KMONS:   DFH = player ghost
 KMONS:   p = withered plant
+: if dgn.persist.necropolis_difficulty == "pre_lair_d" then
+# 1/3 chance for 3 ghosts, 2/3 chance for 2.
+SHUFFLE: Ffr / Zyz / Zyz
+SUBST:   H = Z, h = y, s = z
+: else
 # 1/12 chance for 5 ghosts, 1/6 for 4, 1/4 for 3, 1/2 for 2.
 SHUFFLE: FfrHhs / ZyzHhs / ZyzHhs / FfrZyz / FfrZyz / FfrZyz / ZyzZyz / \
          ZyzZyz / ZyzZyz / ZyzZyz / ZyzZyz / ZyzZyz
+: end
 # 1.5 items per ghost, upgrading quality with depth. 'd' and 'e' get replaced
 # with good_items later on.
 : ghost_good_loot(_G)
 : if dgn.persist.necropolis_difficulty == "pre_lair_d" then
-NSUBST:  de = 2:* / *%$-, f = * / *%$-, h = 2=* / *%$-
+NSUBST:  de = 3:* / *%$-, z = * / *%$-, f = 2:* / * = *%$-
 : elseif dgn.persist.necropolis_difficulty == "post_lair_d" then
 NSUBST:  d = 1:d / * = *%$-, e = 1:e / |*--, f = 1:|* / * = |*--
 NSUBST:  h = 2 = |* / * = |*--
@@ -1716,6 +1722,7 @@ NSUBST:  h = 2 = |* / * = |*%-
 : end
 SUBST:   qrs = G, Z = -, y = p, z = V, p : tp
 COLOUR:  t = lightblue
+TILE:    G = dngn_necropolis_gravestone
 TILE:    t = dngn_dead_tree_of_woe
 TILE:    c = wall_crypt
 KPROP:   -de$%*|DFGHpGVt = no_tele_into
@@ -3640,7 +3647,6 @@ ENDMAP
 
 # Map inspired by trog_three_pillars_becter
 NAME:    gammafunk_necropolis_ghost_wrathful_warriors
-WEIGHT:  999999
 : necropolis_depth_tagging(_G, {"pre_lair_d", "lair", "post_lair_d",
 :                               "orc", "snake", "shoals", "swamp",
 :                               "vaults_elf", "depths_crypt"})
@@ -4501,7 +4507,7 @@ ITEM:    any magical staff / quarterstaff randart ego:spectral w:5 pre_id / \
          dagger randart plus:9 pre_id w:5 / rapier good_item / \
          randbook disc:hexes disc2:summoning spells:summon_forest numspells:3 / \
          swamp dragon scales no_pickup / any ally scroll q:2 pre_id
-ITEM:    any staff randart artprops:Hexes / \
+ITEM:    any magical staff randart artprops:Hexes / \
          lajatang randart ego:spectral w:5 pre_id / \
          athame randart w:2 / quick blade good_item / \
          randbook disc:hexes disc2:summoning spells:summon_forest numspells:6 / \
@@ -4689,7 +4695,7 @@ NSUBST:  ' = 1:1 / 1:2 / *:', " = 2:1 / *:"
 NSUBST:  $ = 2:d / *:%, * = 1:e / 1:f, % = 2:* / *:%
 : end
 KMONS:   O = player ghost
-ITEM:    dagger ego:vamprism pre_id / falchion ego:vampirism pre_id / \
+ITEM:    dagger ego:vampirism pre_id / falchion ego:vampirism pre_id / \
          potion of curing q:1 pre_id w:20 / scroll of fog q:1 pre_id w:5 / \
          amulet of regeneration pre_id w:5
 ITEM:    rapier ego:vampirism pre_id / scimitar ego:vampirism pre_id / \
@@ -4748,7 +4754,7 @@ SUBST:   ?! = %
 KMONS:   O = player ghost
 ITEM:    staff of fire / staff of necromancy / quarterstaff ego:spectral / \
          quarterstaff ego:pain / any ring randart artprops:rN pre_id w:15
-ITEM:    staff of fire randart / staff of pain randart / \
+ITEM:    staff of fire randart / staff of necromancy randart / \
          lajatang ego:spectral / lajatang ego:pain / \
          any amulet randart artprops:Regen&&rN pre_id w:15
 ITEM:    scarab talisman, scarab talisman randart

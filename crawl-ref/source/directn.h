@@ -286,6 +286,10 @@ private:
     targeter *hitfunc;         // Determine what would be hit.
     bool is_ranged_attack;     // Is this a launcher/throwing attack being aimed?
     bool is_piercing;          // If a ranged attack, does it penetrate targets?
+    bool is_autotargeting;     // True if this is getting a default target
+                               // non-interactively which using autofight with
+                               // quivered spells (and thus we should be more
+                               // stringent about only returning useful paths).
     coord_def default_place;    // Start somewhere other than you.pos()?
 
     // Internal data.

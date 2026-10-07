@@ -204,6 +204,7 @@ private:
     void do_valour_beam();
     bool is_sundering_weapon() const;
     void handle_concussion_brand();
+    void grow_burstshrooms(int hd);
 
     // Spell effects.
     void maybe_trigger_detonation();

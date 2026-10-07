@@ -3006,22 +3006,6 @@ int monster::off_level_regen_rate() const
     return max(natural_regen_rate() * 4, 10);
 }
 
-bool monster::friendly() const
-{
-    return temp_attitude() == ATT_FRIENDLY;
-}
-
-bool monster::neutral() const
-{
-    const mon_attitude_type att = temp_attitude();
-    return att == ATT_NEUTRAL || att == ATT_GOOD_NEUTRAL;
-}
-
-bool monster::good_neutral() const
-{
-    return temp_attitude() == ATT_GOOD_NEUTRAL;
-}
-
 bool monster::wont_attack() const
 {
     return friendly() || good_neutral() || attitude == ATT_MARIONETTE;
@@ -3523,6 +3507,11 @@ int monster::known_chaos(bool check_spells_god) const
         || type == MONS_ABOMINATION_SMALL
         || type == MONS_ABOMINATION_LARGE
         || type == MONS_MUTANT_BEAST
+        || type == MONS_TELENCEPHALON       // Experimental mutant.
+        || type == MONS_MONGREL_WURM       // Hybrid breed mutants.
+        || type == MONS_ROAMING_SLUDGEFISH  // Psychic mutant.
+        || type == MONS_SEWAGE_SOVEREIGN    // Hulking mutant.
+        || type == MONS_SCRAPSHELL_CHIMERA  // Manufactured hybrid mutant.
         || type == MONS_WRETCHED_STAR
         || type == MONS_MORPHOGENIC_OOZE
         || type == MONS_KOBOLD_FLESHCRAFTER // Mutated tentacles!
@@ -4378,7 +4367,7 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
                 schedule_mirror_damage_fineff(valid_agent, this, amount * 2 / 3);
         }
 
-        // Trigger corrupting presence and orbs of glass
+        // Trigger corrupting presence, elemental damage checks, orbs of glass
         if (agent && agent->is_player() && alive())
         {
             if (you.get_mutation_level(MUT_CORRUPTING_PRESENCE))
@@ -4389,6 +4378,44 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
                         && one_chance_in(12))
                 {
                     this->malmutate(&you, "Your corrupting presence");
+                }
+            }
+
+            bool fire_check = ((flavour == BEAM_FIRE || flavour == BEAM_LAVA
+                               || flavour == BEAM_STICKY_FLAME)
+                               && this->res_fire() < 3);
+            bool cold_check = ((flavour == BEAM_COLD || flavour == BEAM_ICE)
+                               && this->res_cold() < 3);
+            bool elec_check = ((flavour == BEAM_ELECTRICITY || flavour == BEAM_THUNDER)
+                                && this->res_elec() < 3);
+
+            if (fire_check)
+            {
+                if (you.unrand_equipped(UNRAND_FIRE_DRAGON_OCCULTIST_SCALES)
+                    && !this->has_ench(ENCH_EXPOSED) && coinflip())
+                {
+                    this->add_ench(mon_enchant(ENCH_EXPOSED, &you, random_range(30, 50)));
+                }
+            }
+            else if (cold_check)
+            {
+                if (you.unrand_equipped(UNRAND_FIMBULWINTER))
+                    this->doom(5 + roll_dice(4, 3));
+
+                if (you.unrand_equipped(UNRAND_ICE_DRAGON_ARCANIST_SCALES)
+                    && !this->has_ench(ENCH_EXPOSED) && coinflip())
+                {
+                    this->add_ench(mon_enchant(ENCH_EXPOSED, &you, random_range(30, 50)));
+                }
+            }
+
+            if (fire_check || elec_check)
+            {
+                if (you.has_mutation(MUT_SPARK_SWARM)
+                    && !this->has_ench(ENCH_CORONA)
+                    && x_chance_in_y(you.get_mutation_level(MUT_SPARK_SWARM) * 4, 10))
+                {
+                    this->add_ench(mon_enchant(ENCH_CORONA, &you, random_range(90, 150)));
                 }
             }
         }
@@ -4418,7 +4445,7 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
             {
                 if (type == MONS_WITHERED_PLANT)
                     mprf(T_("%s begins to crumble."), this->name(DESC_THE).c_str());
-                if (type == MONS_PILE_OF_DEBRIS)
+                if (type == MONS_PILE_OF_DEBRIS || type == MONS_STACK_OF_SCRAP)
                     mprf(T_("%s begins to collapse."), this->name(DESC_THE).c_str());
                 else
                     mprf(T_("%s begins to die."), this->name(DESC_THE).c_str());
@@ -5259,10 +5286,14 @@ bool monster::doom(int amount)
     if (stacks >= 50)
     {
         stacks = 0;
-        if (you.can_see(*this))
-            mprf(T_("Doom befalls %s."), name(DESC_THE).c_str());
-
         enchant_type ench = random_choose(ENCH_SLOW, ENCH_VITRIFIED, ENCH_WEAK, ENCH_BLIND, ENCH_DRAINED);
+        if (you.can_see(*this))
+        {
+            mprf("Doom befalls %s, leaving %s %s.", name(DESC_THE).c_str(),
+                 pronoun(PRONOUN_OBJECTIVE).c_str(),
+                 ench == ENCH_DRAINED ? "deeply drained" :
+                 description_for_ench(ench).c_str());
+        }
 
         // High degree specifically for Draining
         add_ench(mon_enchant(ench, nullptr, random_range(1000, 2000), 7));
@@ -5398,13 +5429,21 @@ void monster::self_destruct()
  */
 bool monster::move_to(const coord_def& newpos, movement_type mvflags, bool defer_finalisation)
 {
-    const actor* a = actor_at(newpos);
+    actor* a = actor_at(newpos);
     if (a
         // When doing manual mgrid updating, assume ovelaps with other monsters are expected.
         && !(mvflags & MV_NO_MGRID_UPDATE)
         && !(a->is_player() && (fedhas_passthrough(this) || testbits(mvflags, MV_ALLOW_OVERLAP))))
     {
-        return false;
+        // Thorn hunters can step 'onto' their own briars as part of their movement
+        // (which removes them), but other overlaps should not happen
+        if (type == MONS_THORN_HUNTER && a->type == MONS_BRIAR_PATCH && a->was_created_by(*this)
+            && (mvflags & MV_DELIBERATE))
+        {
+            monster_die(*a->as_monster(), KILL_RESET, NON_MONSTER);
+        }
+        else
+            return false;
     }
 
     // Store current position for later finalisation (but if we have been moved
@@ -5603,7 +5642,7 @@ void monster::finalise_movement(const actor* to_blame)
 
     // Trigger traps last (since they could cause movement that might affect
     // some of the rest of this).
-    if (feat_is_trap(env.grid(pos()))
+    if (last_move_pos != pos() && feat_is_trap(env.grid(pos()))
         && (env.grid(pos()) != DNGN_PASSAGE_OF_GOLUBRIA || !(last_move_flags & MV_GOLUBRIA)))
     {
         trigger_trap(*this);
@@ -6030,6 +6069,12 @@ void monster::react_to_damage(const actor *oppressor, int damage,
         add_ench(mon_enchant(ENCH_DIMINISHED_SPELLS, this, random_range(500, 650)));
         schedule_stardust_fineff(this, 150, 3, true);
     }
+    else if (type == MONS_TELENCEPHALON && !has_ench(ENCH_WEAK)
+             && mons_get_damage_level(*this) >= MDAM_SEVERELY_DAMAGED)
+    {
+        schedule_psychokinetic_burst_fineff(this);
+        add_ench(mon_enchant(ENCH_WEAK, this, random_range(500, 650)));
+    }
 
     // Interrupt autorest for allies standing clouds, on fire, etc.
     // (We exclude poison, since even in cases where this is lethal, there's
@@ -6157,6 +6202,8 @@ void monster::react_to_damage(const actor *oppressor, int damage,
             props[EMERGENCY_CLONE_KEY].get_bool() = true;
         }
     }
+    else if (type == MONS_THORN_HUNTER)
+        thorn_hunter_raise_barrier(*this, true);
 
     else if (type == MONS_BAI_SUZHEN && hit_points < max_hit_points * 2 / 3
                                      && hit_points - damage > 0)
@@ -6677,7 +6724,11 @@ int monster::spell_hd(spell_type spell) const
     UNUSED(spell);
     int hd = get_hit_dice();
     if (mons_is_hepliaklqana_ancestor(type))
+    {
         hd = max(1, hd * 2 / 3);
+        if (type == MONS_ANCESTOR_ELEMENTALIST && get_experience_level() >= 13)
+            hd += 5;
+    }
     if (has_ench(ENCH_IDEALISED))
         hd *= 2;
     if (has_ench(ENCH_FIGMENT))
@@ -6806,7 +6857,7 @@ bool monster::is_peripheral() const
  */
 int monster::threat_range(bool include_lof_requiring, bool include_lof_ignoring) const
 {
-    if (include_lof_requiring && (launcher() || missiles()))
+    if (include_lof_requiring && (launcher() || missiles() || type == MONS_BATTLESPHERE))
         return LOS_RADIUS;
 
     if (include_lof_ignoring && mons_has_los_ability(type))

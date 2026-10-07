@@ -64,6 +64,7 @@
 #define DEVIOUS_KEY "devious_stacks"
 #define FORCED_MESMERISE_KEY "forced_mesmerise"
 #define SALVO_KEY "salvo_stacks"
+#define DAZED_ON_KEY "dazed_on"
 
 constexpr int ENKINDLE_CHARGE_COST = 40;
 #define ENKINDLE_CHARGES_KEY "enkindle_charges"

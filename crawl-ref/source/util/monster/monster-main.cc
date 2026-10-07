@@ -1127,6 +1127,9 @@ int main(int argc, char* argv[])
                                                             hd * 3 / 4,
                                                             hd * 3 / 2));
                     break;
+                case AF_CONTAM_WATER:
+                    monsterattacks += colour(YELLOW, "(contam + shallow water)");
+                    break;
                 case AF_FLOOD:
                     monsterattacks += colour(LIGHTBLUE, "(flood)");
                     break;

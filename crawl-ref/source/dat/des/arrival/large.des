@@ -266,14 +266,14 @@ ORIENT:  float
 WEIGHT:  2
 SHUFFLE: {[(
 SUBST:   [( = .
-SUBST:   ' : . x ':40
-SUBST:   '=x.
+SUBST:   ' : . x ':40, ' = x., M = M..
+: decorative_floor(_G, 'M', "assortment of trash")
 MAP
 xxxxxxx@xxxxxxxxxxxxx@xxxxxxx
 x....x..'.x.................x
 x...'.xxxx...........'x.....x
-x'..''.''.........xx..x'....x
-x'...'...x'...'....'xx.xx...x
+x'..''.''.........xx.Mx'....x
+x'...'...x'...'....'xxMxx...x
 x'...x'......x.x.....x..''..x
 x'.'x'x'.......'....'x......x
 x'..'x.......x'x.....''..x..x
@@ -281,13 +281,13 @@ x'...'...xxx..{...x'....'x'.x
 @''.......'.....'....'..'x'.x
 x''......xxx...xx........x..x
 x....x.......'xx.x...[....x.@
-x...'....x''..x.xx........x.x
+x...'....x''..xMxx........x.x
 x'....x....'..x'x..'''...x..x
-x...'.'....'.xx.x...x...'x.'x
+x...'.'....'.xxMx...x...'x.'x
 x..x.....(...x.xx.......'x.'x
 x..'..'x.........xx.....'x..x
-x...x...........xx.x..x..x..x
-x.......'x.'''..x.xx........x
+x...x...........xxMx..x..x..x
+x.......'x.'''..xMxx........x
 x.........'......xx.........x
 xxxxxxxxxxx@xxxxxxxxxxxxxxxxx
 ENDMAP
@@ -946,8 +946,6 @@ MAP
 .........xxx+xxx.........
 @.......................@
 ENDMAP
-
-#       arrival/large
 
 NAME:   kennysheep_arrival_seaside
 TAGS:   arrival no_monster_gen no_trap_gen transparent

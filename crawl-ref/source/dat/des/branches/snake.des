@@ -2603,7 +2603,7 @@ KMONS:  12 = guardian serpent / naga w:20 / salamander / anaconda w:20 / \
 KMONS:  3 = naga mage / naga ritualist / naga sharpshooter / shock serpent / \
             salamander mystic / nothing w:40
 KMONS:  4 = nagaraja / salamander tyrant
-KITEM:  2 = %:15 / * / |:5 / nothing w:5
+KITEM:  2 = % w:15 / * / | w:5 / nothing w:5
 NSUBST: 4 = 2=4 / 34
 SUBST:  D = 13
 MAP

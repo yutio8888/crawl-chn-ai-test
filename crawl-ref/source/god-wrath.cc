@@ -31,6 +31,7 @@
 #include "items.h"
 #include "losglobal.h"
 #include "makeitem.h"
+#include "map-knowledge.h"
 #include "message.h"
 #include "misc.h"
 #include "mon-behv.h"
@@ -735,28 +736,15 @@ static bool _trog_retribution()
         // safely interrupt you, or tension's so high they're not making things
         // much worse, summon berserkers from the Brothers In Arms monster set.
         int count = 0;
-        int points = 2 + you.experience_level * 3;
-
         {
             msg::suppress msg;
 
-            while (points > 0)
+            const int wanted = random_range(3, 6);
+
+            for (int i = 0; i < wanted; ++i)
             {
-                int cost =
-                    min(min(random2avg((1 + you.experience_level / 4), 2) + 3,
-                            10),
-                        points);
-
-                // quick reduction for large values
-                if (points > 20 && coinflip())
-                {
-                    points -= 10;
-                    cost = min(1 + div_rand_round(you.experience_level, 2), 10);
-                }
-
-                points -= cost;
-
-                if (summon_berserker(cost * 20, 0))
+                const int pow = random_range(you.experience_level - 3, you.experience_level + 5);
+                if (summon_berserker(nullptr, trog_get_brother_type(pow)))
                     count++;
             }
         }
@@ -1937,8 +1925,7 @@ void gozag_abandon_shops_on_level()
             dungeon_change_base_terrain(pos, DNGN_ABANDONED_SHOP);
             if (env.map_knowledge(pos).feat() == DNGN_ENTER_SHOP)
             {
-                const colour_t col = env.map_knowledge(pos).feat_colour();
-                env.map_knowledge(pos).set_feature(DNGN_ABANDONED_SHOP, col);
+                update_terrain_knowledge(pos, !env.map_knowledge(pos).seen());
                 redraw_view_at(pos);
             }
             env.markers.remove(feat);

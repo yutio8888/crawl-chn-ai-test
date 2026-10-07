@@ -310,8 +310,6 @@ const char * const THUNDERBOLT_AIM_KEY     = "thunderbolt_aim";
 #define FAKE_MON_KEY "fake"
 #define MMOV_KEY "mmov"
 #define BATTLESPHERE_KEY "battlesphere"
-#define FOE_APPROACHING_KEY "foe_approaching"
-#define FAUX_PAS_KEY "foe_pos"
 #define SWOOP_COOLDOWN_KEY "swoop_cooldown"
 #define OUTWARDS_KEY "outwards"
 #define INWARDS_KEY "inwards"

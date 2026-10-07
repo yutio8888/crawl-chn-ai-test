@@ -1316,7 +1316,8 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     // Keep random monsters created inside the Orb vault from passively
     // wandering out until the tesseracts are activated.
     bool needs_patrol = false;
-    if (mg.place == level_id(BRANCH_ZOT, 5) && !mg.is_summoned())
+    if (mg.place == level_id(BRANCH_ZOT, 5) && !mg.is_summoned()
+        && mg.behaviour != BEH_FRIENDLY)
     {
         const vault_placement *vp = dgn_vault_at(mon->pos());
         if (vp && vp->map_name_at(mon->pos()) == "hall_of_Zot")
@@ -1690,7 +1691,7 @@ monster_type pick_local_zombifiable_monster(level_id place,
         // Vaults draugr are later enough they can get a little push-up.
         place.depth += random_range(1, 3);
     }
-    else
+    else if (cs != MONS_DRAUGR || place.branch == BRANCH_CRYPT)
     {
         // Zombies tend to be weaker than their normal counterparts;
         // thus, make them OOD proportional to the current dungeon depth.
@@ -2081,6 +2082,7 @@ static const map<monster_type, band_set> bands_by_leader = {
 
     // special-cased band-sizes
     { MONS_SPRIGGAN_DRUID,  { {3}, {{ BAND_SPRIGGAN_DRUID, {0, 1}, true }}}},
+    { MONS_SEWAGE_SOVEREIGN, { {}, {{ BAND_SEWAGE_SOVEREIGNS, {0, 1} }}}},
     { MONS_THRASHING_HORROR, { {}, {{ BAND_THRASHING_HORRORS, {0, 1} }}}},
     { MONS_BRAIN_WORM, { {}, {{ BAND_BRAIN_WORMS, {0, 1} }}}},
     { MONS_LAUGHING_SKULL, { {}, {{ BAND_LAUGHING_SKULLS, {0, 1} }}}},
@@ -2247,6 +2249,10 @@ static band_type _choose_band(monster_type mon_type, int *band_size_p,
             band_size = 1;
         break;
 
+    case MONS_SEWAGE_SOVEREIGN:
+        band_size = one_chance_in(3) ? 2 : 1;
+        break;
+
     case MONS_BRAIN_WORM:
         if (player_in_branch(BRANCH_ABYSS))
             band_size = random2(you.depth) / 2;
@@ -2402,6 +2408,7 @@ static const map<band_type, vector<member_possibilities>> band_membership = {
     { BAND_EXECUTIONER,         {{{MONS_ABOMINATION_LARGE, 1}}}},
     { BAND_VASHNIA,             {{{MONS_NAGA_SHARPSHOOTER, 1}}}},
     { BAND_PHANTASMAL_WARRIORS, {{{MONS_PHANTASMAL_WARRIOR, 1}}}},
+    { BAND_SEWAGE_SOVEREIGNS,   {{{MONS_SEWAGE_SOVEREIGN, 1}}}},
     { BAND_PRESERVER,           {{{MONS_DEEP_TROLL, 10},
                                   {MONS_POLTERGUARDIAN, 2}},
                                 {{MONS_DEEP_TROLL, 1}}}},
@@ -2937,11 +2944,7 @@ monster* mons_place(mgen_data mg)
         mg.flags |= MG_PERMIT_BANDS;
 
     if (mg.behaviour == BEH_COPY)
-    {
-        mg.behaviour = (mg.summoner && mg.summoner->is_player())
-                        ? BEH_FRIENDLY
-                        : SAME_ATTITUDE(mg.summoner->as_monster());
-    }
+        mg.behaviour = SAME_ATTITUDE(mg.summoner);
 
     monster* creation = place_monster(mg);
     if (!creation)

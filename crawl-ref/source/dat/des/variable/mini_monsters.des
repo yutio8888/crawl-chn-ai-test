@@ -282,6 +282,7 @@ SUBST:   D : xc, E : x .:5, F : xxc .:2
 SUBST:   0 = 3:50 0
 :    else
 SUBST:   c : cb
+:      decorative_floor(_G, '2', "assortment of trash")
 :    end
 :  end
 MAP
@@ -487,7 +488,7 @@ NSUBST:  10 = 2:3 / 1:2, % = 1:| / 1:* / 1:e / * = *%%
 SUBST:   W = ., X = x
 : end
 ITEM:    throwing net q:1 no_pickup / rapier ego:venom no_pickup w:12 / \
-         scimitar ego:venom no_pickup w:8 / \ any hex wand charges:8 no_pickup / \
+         scimitar ego:venom no_pickup w:8 / any hex wand charges:8 no_pickup / \
          potion of ambrosia q:1 w:3 pre_id / potion of curing w:3 pre_id / \
          fen folio w:3 / my sojourn through swampland w:3 / \
          dart ego:curare no_pickup w:3 / scarab talisman
@@ -528,7 +529,7 @@ DEPTH:   D:3-7, Depths
 : if you.in_branch("D") then
 MONS:    bombardier beetle
 MONS:    orc wizard w:20 / orc wizard band w:15 / orc band / orc w:5
-KITEM:   any weapon ego:flaming w:18 / parchment disc:fire w:18 / \
+ITEM:    any weapon ego:flaming w:18 / parchment disc:fire w:18 / \
          wand of flame w:18 / scarab talisman w:18 / \
          ring of protection from fire w:18 / manual of fire magic w:15 / \
          fire dragon scales w:15 / pair of gloves ego:fire w:5 / \
@@ -595,8 +596,9 @@ ENDMAP
 NAME:  minmay_rat_gold_closets
 TAGS:  transparent
 DEPTH: D:1-2
-MONS:  rat
-SUBST: 1 = 111$
+KMONS: 01 = rat
+SUBST: 1 = 001$
+: decorative_floor(_G, '0', "assortment of trash")
 MAP
 .............
 .x+x+x+x+x+x.
@@ -934,6 +936,7 @@ SUBST: d = e
 : elseif crawl.one_chance_in(2) then
 SUBST: d = f
 : end
+: decorative_floor(_G, 'def', "assortment of trash")
 MAP
 ...........
 .xxxxxxxxx.
@@ -1772,14 +1775,16 @@ NAME:    minmay_goblin_outpost
 TAGS:    no_pool_fixup transparent
 DEPTH:   D:2-4
 MONS:    goblin / hobgoblin w:5, goblin ; sling
-KMASK:   >_"+2 = opaque
+KMONS:   S = stack of scrap
+KFEAT:   S = w
+KMASK:   >_"+2S = opaque
 SUBST:   y = .WWw, Y = ...W, . = .....1
 SHUFFLE: >X/_"
 SUBST:   X = x, _ = +, " = @
 MAP
    XXX
 xxxx>xxxx
-xxxx+xxxx
+xSxx+xxSx
 xwww2wwwx
 xyywwwyyx
 xYYYYYYYx
@@ -2179,20 +2184,22 @@ Xxx+xxx
    @
 ENDMAP
 
-NAME:   corexii_shack
-TAGS:   no_monster_gen no_item_gen allow_dup extra transparent
-DEPTH:  D:2-6
-NSUBST: + = 1:+ / *:x, m = 1:m / *:x, - = 1:1 / *:d
-ITEM:   any weapon / any armour / w:5 any potion / w:40 nothing
-MONS:   goblin / hobgoblin / kobold / orc, plant / w:100 nothing
+NAME:    corexii_shack
+TAGS:    no_monster_gen no_item_gen allow_dup extra transparent
+DEPTH:   D:2-6
+MONS:    goblin / hobgoblin w:15, kobold / orc, stack of scrap, plant
+ITEM:    any weapon / any armour / any potion w:5
+NSUBST:  + = 1:+ / *:x, m = 1:m / *:x, - = 1:1 / 1:d. / * = 1 d:25 .:30
+NSUBST:  S = 1:3 / 1:. / * = 3 .:100
+SHUFFLE: 13 / 24
 MAP
 ........
-..2..2..
-.2x++x2.
-.2m--m2.
-.2m--m2.
-.2xmmx2.
-..2222..
+..S..S..
+.Sx++xS.
+.Sm--mS.
+.Sm--mS.
+.SxmmxS.
+..SSSS..
 ........
 ENDMAP
 
@@ -2831,12 +2838,13 @@ KITEM:  e = randbook disc:necromancy slevels:2 owner:Jessica / \
             randbook disc:hexes slevels:2 owner:Jessica / \
             randbook disc:translocation slevels:2 owner:Jessica
 MONS:   jessica, quokka
+: decorative_floor(_G, 'M', "assortment of trash")
 veto {{ return you.uniques("Jessica") }}
 MAP
    .....
   .......
  ..xxxxx..
-..xx.12xx..
+..xxM12xx..
 ..xd...dx..
 ..xd...dx..
 ..xd...dx..
@@ -2898,7 +2906,11 @@ MONS:  orc warrior band
 : else
 MONS:  gnoll sergeant band
 : end
-: decorative_floor(_G, 'V', "floral vase")
+: if you.in_branch("D") and crawl.coinflip() then
+:   decorative_floor(_G, 'V', "assortment of trash")
+: else
+:   decorative_floor(_G, 'V', "floral vase")
+: end
 MAP
 wwwwwwwww
 wccwwwccw
@@ -3919,13 +3931,14 @@ MONS:    orc warrior ; trident good_item . ring mail
 KITEM:   $ = $ no_pickup
 SHUFFLE: 1234
 KMASK:   l = no_monster_gen
+: decorative_floor(_G, 'M', "assortment of trash")
 MAP
 ...........
 .ll.v.v.ll.
 .l..v.v..l.
 ...vv.vv...
 .vvv1$2vvv.
-....$.$....
+....$M$....
 .vvv3$4vvv.
 ...vv.vv...
 .l..v.v..l.
@@ -4433,7 +4446,7 @@ ENDMAP
 # It's mostly ufetubi. It's fine. You'll be fine.
 NAME:    nicolae_fort_ynox
 TAGS:    transparent no_pool_fixup
-DEPTH:   D:9-12
+DEPTH:   D:10-14
 MONS:    ufetubus, ynoxinul
 KFEAT:   - = iron_grate
 SHUFFLE: }])>>
@@ -4767,30 +4780,32 @@ DEPTH:   D:12-, Vaults, !Vaults:$
 MONS:    crystal guardian, thermic dynamo
 MONS:    orange crystal statue, ironbound mechanist
 KFEAT:   + = closed_clear_door
+KFEAT:   ^ = trap_teleport
 SUBST:   . = .:80 %$*|
 : if you.in_branch("D") then
-SUBST:   14 = 0, + = =
+SUBST:   14 = 0, + = =, B = b
 KPROP:   .$%*|023 = no_tele_into
 CLEAR:   `
 : else
 FTILE:   .1234$%*|+ = floor_crystal
+CLEAR:   B^
 : end
 MAP
-````````````````
-`WWWWWWWWWWWWWW`
-`WbbbbbbbbbbbbW`
-`Wbb2.......1bW`
-`Wbb.........bW`
-`Wbb.........bW`
-`Wnn.........bW`
-`WW+....3.4..bW`
-`Wnn.........bW`
-`Wbb.........bW`
-`Wbb.........bW`
-`Wbb2.......1bW`
-`WbbbbbbbbbbbbW`
-`WWWWWWWWWWWWWW`
-````````````````
+  ````````````````
+  `WWWWWWWWWWWWWW`
+  `WbbbbbbbbbbbbW`
+  `Wbb1........bW`
+  `Wbb....2....bW`
+  `Wbb.........bW`
+BB`Wnn.........bW`
+B^'WW+....3...4bW`
+BB`Wnn.........bW`
+  `Wbb.........bW`
+  `Wbb....2....bW`
+  `Wbb1........bW`
+  `WbbbbbbbbbbbbW`
+  `WWWWWWWWWWWWWW`
+  ````````````````
 ENDMAP
 
 NAME:  minmay_more_statues
@@ -7901,6 +7916,8 @@ NAME:   minmay_increasing_density
 TAGS:   transparent
 DEPTH:  D:2-
 SUBST:  0 = 0.
+KITEM:  % = %
+: decorative_floor(_G, '%', "assortment of trash")
 MAP
 .........................
 x.......x.......x.......x
@@ -8255,7 +8272,7 @@ ENDMAP
 
 NAME:   minmay_shattered_shrine
 DEPTH:  D:7-, Depths, Lair
-TAGS:   transparent
+TAGS:   transparent no_hmirror no_vmirror
 KMONS:  p = plant
 SUBST:  9 = 9., " = .:190 0:5 %:5, ' = .:30 0:5 %:5
 MAP
@@ -9511,9 +9528,10 @@ NAME:   wander_guarded_unrand_ratskin
 TAGS:   no_monster_gen no_item_gen
 DEPTH:  D:5-8
 WEIGHT: 3
-ITEM:   ratskin_cloak no_pickup
 MONS:   river rat, hell rat
-SUBST:  - = 1 .:50, ' = 112...
+ITEM:   ratskin_cloak no_pickup
+SUBST:  - = 1 .:50, ' = 112MM.
+: decorative_floor(_G, 'M', "assortment of trash")
 MAP
      xxxxxxxxx
   xxxx-x---x-xxx
@@ -9619,12 +9637,12 @@ DEPTH:  D:13-, Elf
 WEIGHT: 3
 ITEM:   damnation no_pickup
 : if you.in_branch("Elf") then
-MONS:   deep elf sorcerer / deep elf high priest, hellion
+MONS:   deep elf sorcerer / deep elf high priest, deep elf master archer
 KFEAT:  a = iron_grate
-NSUBST: D = 2=2 / 1.
+NSUBST: D = 1:2 / * = 1.
 : else  -- D:13-
 MONS:   efreet, hellion
-NSUBST: D = 2 / 1..
+NSUBST: D = 1:2 / * = 1..
 SUBST:  a = c
 : end
 SUBST:  b = bc, c : cv

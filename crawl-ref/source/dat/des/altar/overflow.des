@@ -117,9 +117,11 @@ function callback.xom_greatest_gift(data, triggerable, triggerer, marker, ev)
   elseif not dgn.persist.xom_gg_granted and you.god() == "Xom" then
     local pos = dgn.find_marker_positions_by_prop("gift", "altar")
     local gob = "generate_awake att:good_neutral goblin perm_ench:might " ..
-                "perm_ench:haste perm_ench:invis perm_ench:repel_missiles " ..
+                "perm_ench:haste perm_ench:deflect_missiles " ..
                 "perm_ench:resistant perm_ench:regen perm_ench:magic_res " ..
-                "perm_ench:doubled_vigour perm_ench:mirror_dam perm_ench:swift"
+                "perm_ench:doubled_vigour perm_ench:mirror_dam " ..
+                "perm_ench:warding perm_ench:chaos_laced " ..
+                "perm_ench:paradox-touched perm_ench:swift"
     dgn.create_monster(pos[1].x, pos[1].y, gob)
     crawl.god_speaks("Xom", crawl.t_('A goblin pops into existence! It looks at you'
                      .. ' with admiration.'))
@@ -1040,7 +1042,7 @@ ENDMAP
 NAME:   nicolae_elyvilon_little_fluffy_clouds
 TAGS:   transparent decor
 WEIGHT: 7
-KITEM:  _ = none w:100 / orb / orb ego:light w:1
+KITEM:  _ = nothing w:100 / orb / orb ego:light w:1
 MARKER: _ = lua:fog_machine{cloud_type = "white fluffiness", pow_min = 10, \
              pow_max = 15, delay_min = 20, delay_max = 30, size = 1, \
              walk_dist = 3, spread_rate = 0}
@@ -1144,14 +1146,15 @@ ENDMAP
 NAME:   fedhas_altar_3
 TAGS:   transparent decor lairdec
 DEPTH:  D:3-, Lair, Depths
-NSUBST: b = 1:. / *:1
+NSUBST: M = 2:M / *:.
 MONS:   plant w:5 / fungus / nothing w:3
+KFEAT:  M = mould_patch
 : standard_overflow_setup(_G, { { "fedhas", "_" } }, true)
 MAP
 @111@
-1b1b1
+1M1M1
 11_11
-1b1b1
+1M1M1
 @111@
 ENDMAP
 
@@ -1182,9 +1185,11 @@ DEPTH:   D:3-, Lair
 KPROP:   xzd3P = no_tele_into
 MONS:    plant, fungus, oklob plant, bush, toadstool
 KMONS:   S = sacred lotus
-KFEAT:   d = floor
+KFEAT:   f = cache_of_fruit
+KFEAT:   M = mould_patch
 KFEAT:   S = w
 KFEAT:   C = c
+NSUBST:  M = 2:M / *:x, m = 2:M / *:x
 SUBST:   x = TTPPPPP.
 # Only make "oklob behind bushes" situation possible a bit deeper.
 : if you.absdepth() > 5 then
@@ -1193,8 +1198,7 @@ SUBST:   Q = 114, R = 11124
 : end
 SUBST:   P = 112, z = ., S : Sww
 SHUFFLE: ...", TU
-SUBST:   T = xt, U = xx
-SUBST:   " = .....5
+SUBST:   T = xt, U = xx, " = .....5
 COLOUR:  . = green / none
 COLOUR:  ' = green
 TILE:    c = dngn_stone_wall_green
@@ -1204,11 +1208,11 @@ MAP
 cccccccccCcCcCccccccccc
 cxxxxxxxxxxxxxxxxxxxxxc
 cxxxxxxxxxxxxxxPxxd3xxc
-cxxxxxxxxxxxxxxPddddxxc
-cxxxxxxxxxxxxxxPPPxzdxc
-cxxxxxxx.......xxPPxxxc
-cxxxxxx..ww.ww..xxPPxxc
-cxxxxx..www.www..xxxPxc
+cxxxxxxMxxxxxxxP...fxxc
+cxxxxxMxxxxxxxxPPPxz.xc
+cxxxMMxx.......xxPPxxxc
+cxxxMxx..ww.ww..xxPPxxc
+cxxMxx..www.www..xxxPxc
 cxxxx..wwww.wwww..xxxxc
 Cxxxx.wwwww.wwwww.xxxxC
 cxxxx.wwww'''wwww.xxxxc
@@ -1216,10 +1220,10 @@ Cxxxx.wSww'_'wwSw.xxxxC
 cxxxx.wwww'''wwww.xxxxc
 Cxxxx.wwwwwwwwwww.xxxxC
 cxxxx..wwwwwwwww..xxxxc
-cxxxxx..wwwwwww..xxxxxc
-cxxxxxx..wwwww..xxxxxxc
-cxxxxxxx.......xxxxxxxc
-cxxxxxxxxxC.Cxxxxxxxxxc
+cxxxxx..wwwwwww..xxmxxc
+cxxxxxx..wwwww..xxmxxxc
+cxxxxxxx.......xxmmxxxc
+cxxxxxxxxxC.Cxxxmxxxxxc
 cxxxxxxxxxc.cxxxxxxxxxc
 ccccccccCcC@CcCcccccccc
 ENDMAP
@@ -1322,26 +1326,28 @@ xxxxx'xxxxx
    x2@2x
 ENDMAP
 
-NAME:   nicolae_fedhas_fungal_naptime
-TAGS:   transparent decor
-DEPTH:  D:4-8
-KMONS:  1_ = sleepcap
-KMONS:  p = fungus
-ITEM:   spore talisman
+NAME:    nicolae_fedhas_fungal_naptime
+TAGS:    transparent decor
+DEPTH:   D:4-8
+KMONS:   1_ = sleepcap
+KMONS:   Pp = fungus
+ITEM:    spore talisman
+KFEAT:   P = mould_patch
+SHUFFLE: OP / OP / PO
 : if you.depth() >= 6 then
-NSUBST: ` = 1 / `
+NSUBST:  ` = 1 / `
 : end
-NSUBST: ` = 1:d``` / * = ```p
-SUBST:  p = ppp'
-FTILE:  '`_1pd = floor_rough_brown
+NSUBST:  ` = 1:d``` / * = ```p
+SUBST:   Op = ppp'
+FTILE:   '`_1pPd = floor_rough_brown
 : standard_overflow_setup(_G, { { "fedhas", "_" } }, true)
 MAP
 .......
-.`p`p`.
-.p`p`p.
+.`p`O`.
+.p`P`p.
 .`p_p`.
-.p`p`p.
-.`p`p`.
+.p`P`p.
+.`O`p`.
 .......
 ENDMAP
 
@@ -5020,7 +5026,7 @@ ENDMAP
 
 NAME:    regret_index_xom_buried_treasure
 TAGS:    transparent decor
-ITEM:    stone q:1 no_pickup
+KITEM:   d = stone q:1 no_pickup
 KMONS:   ! = pile of debris
 KITEM:   ! = plate armour randart plus:-12 pre_id / \
              kite shield randart plus:-12 pre_id / mundane club w:9980
@@ -5028,6 +5034,7 @@ KITEM:   ? = mundane club / gold q:1 w:9970, large rock q:1
 SHUFFLE: ?" / ?" / !!
 SUBST:   b : bcc, y : xx., z : xx., Y : xxd, Z : xxd, " = .
 : standard_overflow_setup(_G, { { "xom", "_" } }, true)
+: decorative_floor(_G, 'd', "assortment of trash")
 MAP
 xx@. ..xx
 xbx...zbx
@@ -5091,8 +5098,9 @@ SUBST:   y : x., z = ., - = +, " = ., ? : x..
 : if you.in_branch("D") then
 :   if you.depth() < 8 then
 MONS:    drude, ufetubus band / phantom
-:   elseif  you.depth() < 12 then
-MONS:    draugr, boggart / vampire
+:   elseif you.depth() < 12 then
+:     mons("place:D:" .. you.depth() - 2 .. " draugr")
+MONS:    boggart / vampire
 SUBST:   $ = $%
 :   else
 MONS:    draugr ; mace ego:chaos
@@ -6180,18 +6188,21 @@ ENDMAP
 
 NAME:  grunt_temple_overflow_growth_and_decay
 TAGS:  transparent decor
-MONS:  plant, withered plant
+KMONS: 1P = fungus
+KMONS: 2S = withered plant
+KFEAT: P = mould_patch
+KITEM: S = human skeleton / kobold skeleton w:5
 SUBST: 1 = 1., 2 = 2.
 : standard_overflow_setup(_G, { { "fedhas", "A" },
 :                               { "kikubaaqudgha", "B" } }, true)
 MAP
 xxxxx
-x111xx@@
+x11Pxx@@
 x1A111..xxx
-x11.....22xxxx
-xxxx11.....22x
+xP1.....22xxxx
+xxxx11.....2Sx
    xxx..222B2x
-      @@xx222x
+      @@xxS22x
          xxxxx
 ENDMAP
 

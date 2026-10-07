@@ -11,6 +11,7 @@
 #include "directn.h"
 #include "english.h"
 #include "env.h"
+#include "evoke.h"
 #include "fight.h"
 #include "god-abil.h"
 #include "god-passive.h"
@@ -54,11 +55,6 @@ bool targeter::set_aim(coord_def a)
 }
 
 bool targeter::preferred_aim(coord_def)
-{
-    return false;
-}
-
-bool targeter::can_affect_outside_range()
 {
     return false;
 }
@@ -280,18 +276,13 @@ bool targeter_beam::valid_aim(coord_def a)
     return true;
 }
 
-bool targeter_beam::can_affect_outside_range()
-{
-    // XXX is this everything?
-    return max_expl_rad > 0;
-}
-
 aff_type targeter_beam::is_affected(coord_def loc)
 {
     bool on_path = false;
     int visit_count = 0;
     coord_def c;
     aff_type current = AFF_YES;
+    aff_type initial = AFF_YES;
     for (auto pc : path_taken)
     {
         if (cell_is_solid(pc)
@@ -306,6 +297,7 @@ aff_type targeter_beam::is_affected(coord_def loc)
         if (c == loc)
         {
             visit_count++;
+            initial = current;
             if (max_expl_rad > 0)
                 on_path = true;
             else if (cell_is_solid(pc))
@@ -326,7 +318,11 @@ aff_type targeter_beam::is_affected(coord_def loc)
             // We assume an exploding spell will always stop here.
             if (max_expl_rad > 0)
                 break;
-            current = AFF_MAYBE;
+
+            if (monster_at(pc) && monster_at(pc)->is_firewood())
+                current = AFF_BAD;
+            else if (current != AFF_BAD)
+                current = AFF_MAYBE;
         }
     }
     if (max_expl_rad > 0)
@@ -352,8 +348,8 @@ aff_type targeter_beam::is_affected(coord_def loc)
     }
 
     return visit_count == 0 ? AFF_NO :
-           visit_count == 1 ? AFF_YES :
-                              AFF_MULTIPLE;
+           visit_count == 1 ? initial
+                            : AFF_MULTIPLE;
 }
 
 bool targeter_beam::affects_monster(const monster_info& mon)
@@ -473,12 +469,6 @@ bool targeter_smite::set_aim(coord_def a)
     return true;
 }
 
-bool targeter_smite::can_affect_outside_range()
-{
-    // XXX is this everything?
-    return exp_range_max > 0;
-}
-
 bool targeter_smite::can_affect_walls()
 {
     return affects_walls;
@@ -577,11 +567,6 @@ aff_type targeter_passwall::is_affected(coord_def loc)
         if (p == loc)
             return AFF_YES;
     return AFF_NO;
-}
-
-bool targeter_passwall::can_affect_outside_range()
-{
-    return true;
 }
 
 bool targeter_passwall::can_affect_unseen()
@@ -710,6 +695,22 @@ bool targeter_transference::affects_monster(const monster_info& mon)
     return !mons_is_hepliaklqana_ancestor(mon.type)
             && !mons_class_is_stationary(mon.type)
             && !mons_is_tentacle_or_tentacle_segment(mon.type);
+}
+
+targeter_phantom_mirror::targeter_phantom_mirror(const actor* act) :
+    targeter_smite(act, LOS_RADIUS)
+{
+}
+
+bool targeter_phantom_mirror::valid_aim(coord_def a)
+{
+    if (!targeter_smite::valid_aim(a))
+        return false;
+
+    monster *victim = monster_at(a);
+    if (victim && you.can_see(*victim) && !mirror_can_effect(victim))
+        return notify_fail("The mirror can't reflect that.");
+    return true;
 }
 
 targeter_permafrost::targeter_permafrost(const actor &act) :
@@ -922,8 +923,7 @@ bool targeter_fragment::valid_aim(coord_def a)
         return false;
 
     bolt tempbeam;
-    bool temp;
-    if (!setup_fragmentation_beam(tempbeam, pow, agent, a, true, nullptr, temp))
+    if (!setup_fragmentation_beam(tempbeam, pow, agent, a, true, nullptr))
         return notify_fail(T_("You cannot affect that."));
     return true;
 }
@@ -934,9 +934,8 @@ bool targeter_fragment::set_aim(coord_def a)
         return false;
 
     bolt tempbeam;
-    bool temp;
 
-    if (setup_fragmentation_beam(tempbeam, pow, agent, a, true, nullptr, temp))
+    if (setup_fragmentation_beam(tempbeam, pow, agent, a, true, nullptr))
     {
         exp_range_min = tempbeam.ex_size;
         exp_range_max = tempbeam.ex_size;
@@ -1137,11 +1136,6 @@ bool targeter_cloud::set_aim(coord_def a)
     return true;
 }
 
-bool targeter_cloud::can_affect_outside_range()
-{
-    return true;
-}
-
 aff_type targeter_cloud::is_affected(coord_def loc)
 {
     if (!valid_aim(aim))
@@ -1158,52 +1152,6 @@ aff_type targeter_cloud::is_affected(coord_def loc)
 bool targeter_cloud::harmful_to_player()
 {
     return !actor_cloud_immune(you, ctype);
-}
-
-
-targeter_splash::targeter_splash(const actor *act, int r, int pow)
-    : targeter_beam(act, r, ZAP_COMBUSTION_BREATH, pow, 0, 0)
-{
-}
-
-aff_type targeter_splash::is_affected(coord_def loc)
-{
-    bool on_path = false;
-    coord_def c;
-    for (auto pc : path_taken)
-    {
-        if (cell_is_invalid_target(pc))
-            break;
-
-        c = pc;
-        if (pc == loc)
-            on_path = true;
-
-        if (anyone_there(pc) && !beam.ignores_monster(monster_at(pc)))
-            break;
-    }
-
-    if (loc == c)
-        return AFF_YES;
-
-    // self-spit doesn't splash
-    if (aim == origin)
-        return AFF_NO;
-
-    // it splashes around only upon hitting someone
-    if (anyone_there(c))
-    {
-        if (grid_distance(loc, c) > 1)
-            return on_path ? AFF_YES : AFF_NO;
-
-        // you're safe from being splashed by own spit
-        if (loc == origin)
-            return AFF_NO;
-
-        return anyone_there(loc) ? AFF_YES : AFF_MAYBE;
-    }
-
-    return on_path ? AFF_YES : AFF_NO;
 }
 
 targeter_radius::targeter_radius(const actor *act, los_type _los,
@@ -2601,6 +2549,9 @@ bool targeter_surprising_crocodile::set_aim(coord_def a)
 
 aff_type targeter_surprising_crocodile::is_affected(coord_def loc)
 {
+    if (loc == aim)
+        return AFF_YES;
+
     for (coord_def spot : landing_spots)
         if (spot == loc)
             return AFF_YES;
@@ -2634,7 +2585,7 @@ aff_type targeter_wall_arc::is_affected(coord_def loc)
 }
 
 targeter_tempering::targeter_tempering() :
-    targeter_smite(&you, LOS_RADIUS, 1, 1)
+    targeter_smite(&you, LOS_RADIUS, 1, 1, true)
 {
 }
 

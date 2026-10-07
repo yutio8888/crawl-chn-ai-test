@@ -68,8 +68,9 @@ function base_monster_setup(e)
                place:Crypt:1 draugr / large abomination / cognitogaunt /\
                anaconda simulacrum / alligator simulacrum / death knight /\
                eidolon / flayed ghost / phantasmal warrior / vampire knight /\
-               vampire mage / starcursed mass / demonic crawler / neqoxec /\
-               sixfirhy / sun demon / rust devil / shadow demon /\
+               vampire mage / mongrel wurm / rusted inspector /\
+               roaming sludgefish /  starcursed mass / demonic crawler /\
+               neqoxec / sixfirhy / sun demon / rust devil / shadow demon /\
                hell hog band w:5 / sin beast / death scarab / minotaur")
   e.kmons("E = orc warlord / yaktaur captain band w:5 / vault warden /\
                ironbound mechanist / ironbound thunderhulk /\
@@ -82,7 +83,8 @@ function base_monster_setup(e)
                deep elf elementalist / shadow dragon /\
                deep elf blademaster w:5 / deep elf master archer w:5 /\
                spriggan air mage / spriggan berserker /\
-               spriggan defender / chonchon band / colossal amoeba /\
+               spriggan defender / chonchon band / fungal shambler /\
+               telencephalon w:2 / colossal amoeba /\
                star jelly / morphogenic ooze / glass eye /\
                walking divine tome / walking earthen tome / nagaraja /\
                salamander tyrant / guardian serpent / shock serpent w:5 /\
@@ -96,11 +98,12 @@ function base_monster_setup(e)
                searing wretch / imperial myrmidon / halazid warlock")
   e.kmons("F = storm dragon w:12 / shadow dragon / golden dragon w:12 /\
                iron dragon / quicksilver dragon w:15 / wyrmhole / spark wasp /\
-               tengu reaver / juggernaut / titan / lich /\
-               tentacled monstrosity / undying armoury w:5 /\
-               deep elf blademaster / deep elf master archer /\
-               walking frostbound tome / walking crystal tome / acid blob /\
-               rockslime / slymdra band / moth of wrath w:15 / ghost moth /\
+               tengu reaver / juggernaut / titan / sewage sovereign band /\
+               scrapshell chimera / lich / tentacled monstrosity /\
+               undying armoury w:5 / deep elf blademaster /\
+               deep elf master archer / walking frostbound tome /\
+               walking crystal tome / acid blob / rockslime / slymdra band /\
+               moth of wrath w:15 / ghost moth /\
                killer klown / draconian monk w:4 / draconian stormcaller w:7 /\
                draconian scorcher w:7 / draconian annihilator w:7 /\
                draconian knight w:7 / alderking / vampire bloodprince /\
@@ -704,7 +707,7 @@ KITEM: k = protean talisman / serpent talisman /\
            scale mail plus:4 pre_id /\
            plate armour plus:3 pre_id
 KITEM: l = any randbook slevels:14, /\
-       ring of protection plus:3 pre_id \
+       ring of protection plus:3 pre_id /\
        ring of evasion plus:3 pre_id /\
        ring of strength plus:3 pre_id /\
        ring of intelligence plus:3 pre_id /\

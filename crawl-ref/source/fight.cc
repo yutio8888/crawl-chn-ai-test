@@ -268,7 +268,7 @@ int mon_to_hit_pct(int to_land, int scaled_ev)
     for (int ev1 = 0; ev1 < ev; ev1++)
         for (int ev2 = 0; ev2 < ev; ev2++)
             hits_lower += max(0, to_land - (ev1 + ev2));
-    double hit_chance_lower = ((double)hits_lower) / (to_land * ev * ev);
+    double hit_chance_lower = ev ? ((double)hits_lower) / (to_land * ev * ev) : 1.0;
 
     int hits_upper = 0;
     for (int ev1 = 0; ev1 < ev+1; ev1++)
@@ -402,6 +402,41 @@ static void _do_medusa_stinger()
     }
 
     you.did_trigger(DID_MEDUSA_STINGER);
+}
+
+static void _knight_pinning_attack(monster* mon)
+{
+    for (adjacent_iterator ai(mon->pos()); ai; ++ai)
+    {
+        if (monster* targ = monster_at(*ai))
+        {
+            if (could_harm_enemy(mon, targ) && monster_los_is_valid(mon, targ))
+            {
+                // Doesn't stack duration, but has a higher chance to refresh
+                // duration on already-bound monsters than to bind them initially.
+                if (targ->has_ench(ENCH_BOUND))
+                {
+                    if (!one_chance_in(10))
+                    {
+                        mon_enchant bind = targ->get_ench(ENCH_BOUND);
+                        bind.duration = max(20, bind.duration);
+                        targ->update_ench(bind);
+                    }
+                }
+                else if (!one_chance_in(3))
+                {
+                    if (you.can_see(*mon))
+                    {
+                        mprf("%s pins %s in place with %s attack.",
+                            mon->name(DESC_THE).c_str(),
+                            targ->name(DESC_THE).c_str(),
+                            mon->pronoun(PRONOUN_POSSESSIVE).c_str());
+                    }
+                    targ->add_ench(mon_enchant(ENCH_BOUND, mon, 20));
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -553,6 +588,9 @@ bool mons_fight(monster *attacker, actor *defender, bool *did_hit, bool simu)
         return false;
     }
 
+    if (attacker->type == MONS_THORN_HUNTER && defender->was_created_by(*attacker))
+        return false;
+
     melee_attack attk(attacker, defender);
     attk.simu = simu;
     attk.launch_attack_set();
@@ -575,6 +613,9 @@ bool mons_fight(monster *attacker, actor *defender, bool *did_hit, bool simu)
     // actions, rather than additional times for bonus attacks (ie: from Autumn Katana)
     if (attacker->type == MONS_PLATINUM_PARAGON)
         paragon_charge_up(*attacker);
+
+    if (attacker->type == MONS_ANCESTOR_KNIGHT && attacker->get_experience_level() >= 10)
+        _knight_pinning_attack(attacker);
 
     return true;
 }
@@ -1534,7 +1575,7 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
         }
     }
 
-    const bool hits_player = include_player && hitfunc.is_affected(you.pos());
+    const bool hits_player = include_player && hitfunc.is_affected(you.pos()) && affects(&you);
 
     if (victims.empty() && !hits_player)
         return false;

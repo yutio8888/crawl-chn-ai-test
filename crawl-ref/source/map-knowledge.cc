@@ -14,6 +14,7 @@
 #include "religion.h"
 #include "stringutil.h"
 #include "terrain.h"
+#include "tile-env.h"
 #ifdef USE_TILE
  #include "tilepick.h"
  #include "tileview.h"
@@ -30,12 +31,7 @@ void set_terrain_mapped(const coord_def gc)
     map_cell* cell = &env.map_knowledge(gc);
     cell->flags &= (~MAP_CHANGED_FLAG);
     cell->flags |= MAP_MAGIC_MAPPED_FLAG;
-#ifdef USE_TILE
-    // This may have changed the explore horizon, so update adjacent minimap
-    // squares as well.
-    for (adjacent_iterator ai(gc, false); ai; ++ai)
-        tiles.update_minimap(*ai);
-#endif
+    redraw_view_at(gc);
 }
 
 int count_detected_mons()
@@ -489,8 +485,13 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
             // If the player has already seen the square, update map
             // knowledge with the new terrain. Otherwise clear what we had
             // before.
-            if (knowledge.seen())
-                knowledge.set_feature(env.grid(pos), env.grid_colours(pos));
+            if (knowledge.seen()
+                || env.map_forgotten && (*env.map_forgotten)(pos).seen())
+            {
+                update_terrain_knowledge(pos);
+                update_grid_colour_knowledge(pos);
+                redraw_view_at(pos);
+            }
             else
                 knowledge.clear();
         }
@@ -505,17 +506,20 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
         if (!full_info && (knowledge.seen() || already_mapped))
             continue;
 
-        dungeon_feature_type feat = env.grid(pos);
-        if (!full_info)
-            feat = magic_map_base_feat(feat);
-
         bool open = true;
 
-        if (feat_is_solid(feat) && !feat_is_closed_door(feat))
+        if (feat_is_solid(env.grid(pos))
+            && !feat_is_closed_door(env.grid(pos)))
         {
             open = false;
             for (adjacent_iterator ai(pos); ai; ++ai)
             {
+                // This avoids revealing walls at the 'back' of the minotaur
+                // areas in Gauntlets (where the wall is technically not part of
+                // the subvault, but still outlines it).
+                if (respect_no_automap && (env.pgrid(*ai) & FPROP_NO_AUTOMAP))
+                    break;
+
                 if (map_bounds(*ai) && (!feat_is_opaque(env.grid(*ai))
                                         || feat_is_closed_door(env.grid(*ai))))
                 {
@@ -523,13 +527,15 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
                     break;
                 }
             }
+
         }
 
         if (open)
         {
-            knowledge.set_feature(feat, _feat_default_map_colour(feat));
-            if (is_notable_terrain(feat))
-                seen_notable_thing(feat, pos);
+            update_terrain_knowledge(pos, !full_info);
+            update_grid_colour_knowledge(pos, !full_info);
+            if (is_notable_terrain(knowledge.feat()))
+                seen_notable_thing(knowledge.feat(), pos);
 
             if (emphasise(pos))
                 knowledge.flags |= MAP_EMPHASIZE;
@@ -539,18 +545,18 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
                 set_terrain_seen(pos);
                 StashTrack.add_stash(pos);
                 show_update_at(pos);
+#ifdef USE_TILE
+                tile_draw_map_cell(pos);
+#endif
             }
             else
             {
                 set_terrain_mapped(pos);
-                if (get_feature_dchar(feat) == DCHAR_ALTAR)
+                if (get_feature_dchar(knowledge.feat()) == DCHAR_ALTAR)
                     num_altars++;
-                else if (get_feature_dchar(feat) == DCHAR_ARCH)
+                else if (get_feature_dchar(knowledge.feat()) == DCHAR_ARCH)
                     num_shops_portals++;
             }
-#ifdef USE_TILE
-            tile_draw_map_cell(pos);
-#endif
 
             did_map = true;
         }
@@ -583,4 +589,33 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
     }
 
     return did_map;
+}
+
+void update_terrain_knowledge(coord_def pos,
+                              bool partial_knowledge_only)
+{
+    dungeon_feature_type feat = env.grid(pos);
+    tileidx_t feat_tile = tile_env.flv(pos).feat;
+    unsigned short feat_tile_idx = tile_env.flv(pos).feat_idx;
+    if (partial_knowledge_only)
+    {
+        feat = magic_map_base_feat(feat);
+        if (feat == DNGN_UNKNOWN_PORTAL || feat == DNGN_UNKNOWN_ALTAR)
+        {
+            feat_tile = 0;
+            feat_tile_idx = 0;
+        }
+    }
+    env.map_knowledge(pos).set_feature(feat);
+    tile_env.remembered_flavour.set_feat_flavour(pos, feat_tile,
+                                                 feat_tile_idx);
+}
+
+void update_grid_colour_knowledge(coord_def pos,
+                             bool partial_knowledge_only)
+{
+    colour_t colour = env.grid_colours(pos);
+    if (partial_knowledge_only)
+        colour = _feat_default_map_colour(env.map_knowledge(pos).feat());
+    env.map_knowledge(pos).set_feat_colour(colour);
 }

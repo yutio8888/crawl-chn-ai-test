@@ -37,6 +37,24 @@ InventoryRegion::InventoryRegion(const TileRegionInit &init) : GridRegion(init)
 {
 }
 
+static tileidx_t _get_floor_tile_cycling(unsigned int i)
+{
+    tileidx_t base_tile = tile_env.default_flavour.floor;
+    unsigned int total_tiles = tile_dngn_count(base_tile);
+    unsigned int domino_count = 1;
+    while (true)
+    {
+        tileidx_t domino_tile = tile_dngn_apply_domino(base_tile,
+                                                       domino_count);
+        if (domino_tile == base_tile)
+            break;
+        ++domino_count;
+        total_tiles += tile_dngn_count(domino_tile);
+    }
+    unsigned int index = i % total_tiles;
+    return base_tile + index;
+}
+
 void InventoryRegion::pack_buffers()
 {
     unsigned int i = 0 + (m_grid_page*mx*my - m_grid_page*2); // this has to match the logic in cursor_index()
@@ -54,8 +72,7 @@ void InventoryRegion::pack_buffers()
                 if (i > (unsigned int) mx * my * (m_grid_page+1) && item.tile)
                     break;
 
-                int num_floor = tile_dngn_count(tile_env.default_flavour.floor);
-                tileidx_t t = tile_env.default_flavour.floor + i % num_floor;
+                tileidx_t t = _get_floor_tile_cycling(i);
                 m_buf.add_dngn_tile(t, x, y);
             }
             else if (!tiles.is_using_small_layout())

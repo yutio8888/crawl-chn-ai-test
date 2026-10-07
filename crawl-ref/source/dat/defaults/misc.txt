@@ -30,9 +30,7 @@ note_monsters += ancient lich, dread lich, Sigmund
 note_monsters += 火焰之球, 寒冬之球, 熵之球
 note_monsters += 远古巫妖, 恐怖巫妖, 西格蒙德
 
-monster_item_view_features += stair, trap, runelight
-# CN: monster item view features
-monster_item_view_features += 楼梯, 陷阱, 符文光
+monster_item_view_features += stair, trap, runelight, purified mutation catalyst
 
 # Dangerous and non-tactical items
 action_panel_filter  = attraction,moonshine,experience,mutation

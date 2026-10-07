@@ -43,6 +43,12 @@ icicle7
 iceblast0 BOLT_ICEBLAST
 iceblast1
 
+permafrost_earth0 BOLT_PERMAFROST_EARTH
+permafrost_earth1
+
+permafrost_cold0 BOLT_PERMAFROST_COLD
+permafrost_cold1
+
 icicle_salvo0 BOLT_ICICLE_SALVO
 icicle_salvo1
 icicle_salvo2
@@ -64,6 +70,23 @@ medium_air0 BOLT_MEDIUM_AIR
 medium_air1
 strong_air0 BOLT_STRONG_AIR
 strong_air1
+
+weak_elec_shot0 BOLT_WEAK_ELEC
+weak_elec_shot1
+weak_elec_shot2
+
+strong_elec_shot0 BOLT_STRONG_ELEC
+strong_elec_shot1
+strong_elec_shot2
+
+electric_blast0 BOLT_ELECTRIC_BLAST
+electric_blast1
+
+electric_arc0 BOLT_ELECTRIC_ARC
+electric_arc1
+electric_arc2
+electric_arc3
+electric_arc4
 
 # Earth bolts
 sandblast0 BOLT_SANDBLAST
@@ -245,6 +268,10 @@ splinters_metal4
 splinters_metal5
 splinters_metal6
 splinters_metal7
+
+antimagic0 BOLT_ANTIMAGIC
+antimagic1
+antimagic2
 
 flesh0 BOLT_FLESH
 flesh1

@@ -86,6 +86,7 @@
 #include "syscalls.h"
 #include "tag-version.h"
 #include "terrain.h"
+#include "timed-effects.h"
 #include "rltiles/tiledef-dngn.h"
 #include "rltiles/tiledef-player.h"
 #include "tilepick.h"
@@ -1488,48 +1489,6 @@ static void _fix_spectral_weapons()
         }
     }
 }
-
-static void _timeout_permanent_hellfire_mortar_lava()
-{
-    bool has_player_mortars = false;
-    map<coord_def, int> lava_mortar_counts;
-    for (monster_iterator mi; mi; ++mi)
-    {
-        if (mi->type != MONS_HELLFIRE_MORTAR)
-            continue;
-        if (!mi->props.exists(HELLFIRE_LAVA_LENGTH))
-            continue;
-
-        const CrawlVector& path = mi->props[HELLFIRE_PATH_KEY];
-        int lava_length = mi->props[HELLFIRE_LAVA_LENGTH];
-        for (int i = 0; i < lava_length; ++i)
-        {
-            coord_def pos = path[i].get_coord();
-            lava_mortar_counts[pos]++;
-        }
-        if (mi->summoner == MID_PLAYER)
-            has_player_mortars = true;
-    }
-
-    for (map_marker* marker : env.markers.get_all(MAT_HELLFIRE_MORTAR_LAVA))
-    {
-        map_hellfire_mortar_lava_marker* mortar_marker =
-            dynamic_cast<map_hellfire_mortar_lava_marker*>(marker);
-        const coord_def& pos = mortar_marker->pos;
-        int old_count = mortar_marker->num_mortars_supporting_lava;
-        int new_count = lava_mortar_counts[pos];
-        mortar_marker->num_mortars_supporting_lava = new_count;
-        if (!new_count)
-            revert_terrain_change(pos, TERRAIN_CHANGE_HELLFIRE_MORTAR);
-    }
-
-    int max_dur = hellfire_mortar_cooldown_after_mortar_gone(LOS_MAX_RANGE);
-    if (!has_player_mortars
-        && you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] > max_dur)
-    {
-        you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = 0;
-    }
-}
 #endif
 
 // Read a piece of data from inf into memory, then run the appropriate reader.
@@ -1676,8 +1635,12 @@ void tag_read(reader &inf, tag_type tag_id)
                 unequip_item(*item);
         }
 
-        if (th.getMinorVersion() < TAG_MINOR_FIX_PERMANENT_HELLFIRE_MORTAR)
-            _timeout_permanent_hellfire_mortar_lava();
+        if (th.getMinorVersion() >= TAG_MINOR_FIX_HELLFIRE_MORTAR_LAVA_DURATION
+            && th.getMinorVersion() < TAG_MINOR_REMOVE_MORTAR_MARKERS)
+        {
+            end_terrain_changes(you, TERRAIN_CHANGE_HELLFIRE_MORTAR);
+            you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = 0;
+        }
 
 #endif
         break;
@@ -1973,8 +1936,6 @@ static void _tag_construct_you(writer &th)
     marshallShort(th, you.fearmongers.size());
     for (mid_t monger : you.fearmongers)
         _marshall_as_int(th, monger);
-
-    marshallByte(th, you.piety_hysteresis);
 
     you.quiver_action.save(QUIVER_MAIN_SAVE_KEY);
 
@@ -4456,7 +4417,10 @@ static void _tag_read_you(reader &th)
         you.fearmongers.push_back(unmarshall_int_as<mid_t>(th));
     }
 
-    you.piety_hysteresis = unmarshallByte(th);
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() < TAG_MINOR_REMOVE_PIETY_DECAY)
+        unmarshallByte(th);
+#endif
 
 #if TAG_MAJOR_VERSION == 34
     you.m_quiver_history.load(th);
@@ -4838,6 +4802,15 @@ static void _tag_read_you(reader &th)
             you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_NO_SPELL;
             you.attribute[ATTR_CHANNEL_DURATION] = 0;
         }
+    }
+
+    // We didn't always used to increase the vengeance number when ending a
+    // vengeance, but monster::is_vengeance_target requires it to be higher
+    // than it was during the last vengeance if we are no longer in vengeance
+    if (th.getMinorVersion() < TAG_MINOR_FIX_VENGEANCE_CLEANUP
+        && !you.duration[DUR_BEOGH_SEEKING_VENGEANCE])
+    {
+        you.props[BEOGH_VENGEANCE_NUM_KEY].get_int() += 1;
     }
 #endif
 }
@@ -6548,7 +6521,8 @@ void unmarshallMapCell(reader &th, map_cell& cell)
 #endif
     }
 
-    cell.set_feature(feature, feat_colour);
+    cell.set_feature(feature);
+    cell.set_feat_colour(feat_colour);
 
     if (flags & MAP_SERIALIZE_CLOUD)
     {
@@ -7195,6 +7169,15 @@ void _tag_construct_level_tiles(writer &th)
             marshallShort(th, tile_env.flv[count_x][count_y].special);
         }
 
+    const flavour_knowledge& remembered = tile_env.remembered_flavour;
+    for (int count_x = 0; count_x < GXM; count_x++)
+        for (int count_y = 0; count_y < GYM; count_y++)
+        {
+            coord_def pos(count_x, count_y);
+            unsigned short tile_idx = remembered.feat_flavour_idx(pos);
+            marshallShort(th, tile_idx);
+        }
+
     marshallInt(th, TILE_WALL_MAX);
 }
 
@@ -7575,7 +7558,6 @@ static void _tag_read_old_traps(reader &th)
                                               DNGN_PASSAGE_OF_GOLUBRIA,
                                               0, 0, ammo * BASELINE_DELAY);
             env.markers.add(marker);
-            env.markers.clear_need_activate();
         }
     }
 }
@@ -8303,25 +8285,50 @@ static void _debug_count_tiles()
 {
 #ifdef DEBUG_DIAGNOSTICS
 # ifdef USE_TILE
-    map<int,bool> found;
-    int t, cnt = 0;
-    for (int i = 0; i < GXM; i++)
-        for (int j = 0; j < GYM; j++)
-        {
-            t = tile_env.bk_bg[i][j];
-            if (!found.count(t))
-                cnt++, found[t] = true;
-            t = tile_env.bk_fg[i][j];
-            if (!found.count(t))
-                cnt++, found[t] = true;
-            t = tile_env.bk_cloud[i][j];
-            if (!found.count(t))
-                cnt++, found[t] = true;
-        }
+    set<tileidx_t> found;
+    tileidx_t t = 0;
+    for (rectangle_iterator ri(0); ri; ++ri)
+    {
+        coord_def pos = *ri;
+        t = tile_env.bk_bg(pos).tile();
+        found.insert(t);
+        t = ((tile_with_flags_t)tile_env.bk_fg(pos)).tile();
+        found.insert(t);
+        t = tile_env.bk_cloud(pos);
+        found.insert(t);
+    }
+    const int cnt = (int)found.size();
     dprf("Unique tiles found: %d", cnt);
 # endif
 #endif
 }
+
+#if TAG_MAJOR_VERSION == 34
+static void _fixup_flavour_knowledge()
+{
+    flavour_knowledge& knowledge = tile_env.remembered_flavour;
+    const MapKnowledge& map = env.map_knowledge;
+
+    for (rectangle_iterator ri(0); ri; ++ri)
+    {
+        const dungeon_feature_type feat = map(*ri).feat();
+        // We used to ignore tile overrides on these features
+        if (feat != DNGN_FLOOR
+            && feat != DNGN_UNSEEN
+            && feat != DNGN_PASSAGE_OF_GOLUBRIA
+            && feat != DNGN_MALIGN_GATEWAY
+            && feat != DNGN_BINDING_SIGIL
+            && feat != DNGN_UNKNOWN_PORTAL
+            && feat != DNGN_TREE)
+        {
+            unsigned short tile_idx = tile_env.flv(*ri).feat_idx;
+            knowledge.set_feat_flavour(*ri, 0, tile_idx);
+        }
+        else
+            knowledge.set_feat_flavour(*ri, 0, 0);
+    }
+}
+#endif
 
 void _tag_read_level_tiles(reader &th)
 {
@@ -8364,6 +8371,22 @@ void _tag_read_level_tiles(reader &th)
             tile_env.flv[x][y].feat    = unmarshallShort(th);
             tile_env.flv[x][y].special = unmarshallShort(th);
         }
+
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() < TAG_MINOR_FLAVOUR_KNOWLEDGE)
+        _fixup_flavour_knowledge();
+    else
+#endif
+    {
+        flavour_knowledge& remembered = tile_env.remembered_flavour;
+        for (int x = 0; x < gx; x++)
+            for (int y = 0; y < gy; y++)
+            {
+                coord_def pos(x, y);
+                unsigned short feat_idx = unmarshallShort(th);
+                remembered.set_feat_flavour(pos, 0, feat_idx);
+            }
+    }
 
     _debug_count_tiles();
 
@@ -8461,9 +8484,23 @@ static void _regenerate_tile_flavour()
             else
                 flv.feat = new_feat;
         }
+
+        unsigned short remembered_feat_idx =
+            tile_env.remembered_flavour.feat_flavour_idx(*ri);
+        if (remembered_feat_idx)
+        {
+            tileidx_t new_feat = _get_tile_from_vector(remembered_feat_idx);
+            if (!new_feat)
+                remembered_feat_idx = 0;
+            tile_env.remembered_flavour.set_feat_flavour(*ri, new_feat,
+                                                         remembered_feat_idx);
+        }
     }
 
     tile_new_level(true, false);
+
+    for (rectangle_iterator ri(0); ri; ++ri)
+        tile_init_remembered_flavour(*ri);
 }
 
 static void _draw_tiles()

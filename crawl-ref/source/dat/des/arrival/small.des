@@ -306,9 +306,7 @@ NAME:    minmay_arrival_stair_chambers
 TAGS:    arrival no_monster_gen
 ORIENT:  float
 SHUFFLE: {[(
-SUBST:   T = T V G b:3 .:3
-SUBST:   [ = G
-SUBST:   ( = G
+SUBST:   T = T V G b:3 .:3, [( = G
 MAP
     x+xxx+x
 xxxxx.....xxxxx
@@ -3961,9 +3959,9 @@ ENDMAP
 NAME:    angelslayer_arrival_pockets_within_ring
 TAGS:    arrival no_monster_gen transparent
 ORIENT:  float
-SHUFFLE: {([
-SHUFFLE: DEFH
-SUBST:   [H = ., ( = >, DEF = x, T = TV
+SHUFFLE: {([, DEFH
+SUBST:   [ = M., H = ., ( = >, DEF = x, T = TV
+: decorative_floor(_G, 'M', "assortment of trash")
 MAP
       xxxxxxx
     DxD.....ExE

@@ -20,4 +20,7 @@ bool prompt_descent_shortcut(dungeon_feature_type ftype);
 monster *get_rampage_target(coord_def move);
 void move_player_action(coord_def move);
 
+bool stampede_step(actor& agent, const coord_def& target, bool allow_solo = false);
+vector<actor*> get_stampede_line(const coord_def& start, const coord_def& delta, bool only_known_to_player = false);
+
 void east_wind_expose_monster(monster* mon);

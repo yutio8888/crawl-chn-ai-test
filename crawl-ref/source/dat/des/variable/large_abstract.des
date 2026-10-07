@@ -24,8 +24,9 @@ DEPTH:  Depths, !Depths:$
 NSUBST: A = 1:+ / *:xxxx+, B = 1:+ / *:xxxx+, C = 1:+ / *:xxxx+
 NSUBST: D = 1:+ / *:xxxx+, E = 1:+ / *:xxxx+, F = 1:+ / *:xxxx+
 NSUBST: H = 1:+ / *:xxxx+, I = 1:+ / *:xxxx+, J = 1:+ / *:xxxx+
-SUBST:  d : *., e : *., f : *., g : *., h : *., i : *.
-KMASK:   - = !opaque
+SUBST:  d : ***M.., e : ***M.., f : ***M.., g : ***M.., h : ***M.., i : ***M..
+: decorative_floor(_G, 'M', "assortment of trash")
+KMASK:  - = !opaque
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxcccccccxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -159,40 +160,42 @@ NAME:    cell_vault
 ORIENT:  northwest
 DEPTH:   Depths, !Depths:$
 SHUFFLE: 890
-KITEM:   8 = | / nothing w:50
-KITEM:   9 = * / nothing w:50
-KITEM:   0 = % / nothing w:50
-KFEAT:   8 = 8
-KFEAT:   9 = 9
-KFEAT:   0 = 0
+KMONS:   01 = 0
+KMONS:   92 = 9
+KMONS:   83 = 8
+KITEM:   0 = %
+KITEM:   9 = *
+KITEM:   8 = |
+SUBST:   M = MM., 0 = 011111, 9 = 922222, 8 = 833333
+: decorative_floor(_G, 'M', "assortment of trash")
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xcccccccccccccccccccccccccccccccc
 xccw.............w.............wc
 xcc.ccccccccccccc.ccccccccccccc.c
-xcc.c....c.c....c.c....c.c....c.c
+xcc.c....c.c...Mc.c....c.c...Mc.c
 xcc.c.8..+.c....c.c....+.c..9.c.c
 xcc.c....c.+..9.c.c.9..c.+....c.c
-xcc.c....c.c....c.c....c.c....c.c
+xcc.cM...c.c....c.cM...c.c....c.c
 xcc.cccccc.cccccc.cccccc.cccccc.c
-xcc.c....c.c....c.c....c.c....c.c
-xcc.c....c.c....c.c....+.c....c.c
-xcc.c8...+.+..8.c.c.8..c.+....c.c
-xcc.c....c.c....c.c....c.c....c.c
+xcc.cM...c.c...Mc.c....c.c...Mc.c
+xcc.c....c.c....c.c....+.c...Mc.c
+xcc.c8...+.+..8.c.c.8..c.+...Mc.c
+xcc.c....c.c....c.cM...c.c...Mc.c
 xcc.cccccc.cccccc.cccccc.cccccc.c
-xcc.c....c.c....c.c....c.c....c.c
+xcc.c....c.c...Mc.cM...c.c...Mc.c
 xcc.c....+.c....c.c.0..c.c....c.c
 xcc.c..9.c.+.8..c.c....+.+.0..c.c
-xcc.c....c.c....c.c....c.c....c.c
+xcc.cM...c.c....c.c....c.c....c.c
 xcc.cccccc.cccccc.cccccc.cccccc.c
 xcc.c....c.c....c.c....c.c....c.c
-xcc.c.0..+.+.0..c.c....+.+....c.c
+xcc.cM0..+.+.0..c.c....+.+...Mc.c
 xcc.c....c.c....c.c.0..c.c.8..c.c
-xcc.cccccc.c....c.c....c.cccccc.c
-xcc.c....c.cccccc.cccccc.c....c.c
+xcc.cccccc.c...Mc.cM...c.cccccc.c
+xcc.cM...c.cccccc.cccccc.c....c.c
 xcc.c....c.c....c.c..9.+.+....c.c
-xcc.c.0..+.+....c.c9...c.c.0..c.c
-xcc.c....c.c.8..c.c....c.c....c.c
+xcc.c.0..+.+...Mc.c9...c.c.0..c.c
+xcc.c....c.c.8..c.cM...c.c...Mc.c
 xcc.cccccc.cccccc.cccccc.cccccc.c
 xccw.......Twwwwc.cwwwwT.......wc
 xcccccccccccccccc.ccccccccccccccc
@@ -316,7 +319,11 @@ ENDMAP
 NAME:   angbandy_vault
 ORIENT: northeast
 DEPTH:  Depths, !Depths:$
+KITEM:  * = *
+KITEM:  | = |
 SUBST:  "=.", '=.', '=$, "=*, *=* |:1
+# It's nice to make it more obviously Angbandy somehow, so:
+: decorative_floor(_G, '*|', "assortment of trash")
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ccccccccccccccccccccccccccccccccx
@@ -1299,12 +1306,13 @@ MAP
 xxxxxxxxxxxxxxxx
 ENDMAP
 
-NAME:  grunt_bent_corner
-DEPTH: Depths, !Depths:$
+NAME:   grunt_bent_corner
+DEPTH:  Depths, !Depths:$
 ORIENT: northwest
-KMONS: 8 = 8 band w:20 / 9 band
-KMONS: 9 = 9 band w:20 / 0 band
-KMONS: 0 = 0 band w:20 / nothing
+KMONS:  8 = 8 band w:15 / 9 band
+KMONS:  9 = 9 band w:15 / 0 band
+KMONS:  0 = 0 band w:15 / nothing
+FTILE:  @%*|098.+Gc = floor_etched
 MAP
 xxxxxxxxxxxxxxxxxxcccccc
 xxcccccxxxxxxcccccc....ccccc
@@ -1344,6 +1352,8 @@ DEPTH:  Depths, !Depths:$
 KMONS:  0 = 0 band
 KMONS:  9 = 9 band
 KMONS:  8 = 8 band
+FTILE:  @ = floor_rough_darkgray
+FTILE:  .*|098G+ = floor_etched
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxc@
 xxxxxxx........ccxxxxxxxxxx.@

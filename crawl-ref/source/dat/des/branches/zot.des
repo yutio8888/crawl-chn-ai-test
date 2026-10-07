@@ -2798,7 +2798,7 @@ ITEM:    ring of flight randart pre_id no_pickup
 SHUFFLE: defg, hi
 SUBST:   HIJ = c
 SUBST:   1 = 112., 2 = 221.
-FTILE:   .123defg$%*|GF = floor_zot_diamonds
+FTILE:   .>123defg$%*|GF = floor_zot_diamonds
 MAP
 xx'''''''''''''''''''@@'''''''''''''''''''
 xx'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'
@@ -2813,8 +2813,8 @@ xx'Wwcccc..........................ccccwW'
 xx'Wwwwwc...ccccccccGccGcccccccc...cwwwwW'
 xx'Wwwwwc...HccccccccccccccccccH...cwwwwW'
 xx'Wwwwwc...cccccccccccccccccccc...cwwwwW'
-xx'Wwwwwc.2.ccc*|*cccccccc*|*ccc.2.cwwwwW'
-xx'Wwwwwc...ccc$$$cccccccc$$$ccc...cwwwwW'
+xx'Wwwwwc.2.ccc*>*cccccccc*>*ccc.2.cwwwwW'
+xx'Wwwwwc...ccc$|$cccccccc$|$ccc...cwwwwW'
 xx'Wwwwwc...ccc...cccccccc...ccc...cwwwwW'
 xx'Wwwwwc...ccc.F.cccccccc.F.ccc...cwwwwW'
 xx'Wwwwwc...Icc...cccccccc...ccI...cwwwwW'
@@ -2831,10 +2831,10 @@ xx'Wwwwwc...cccccccJc..cJccccccc...cwwwwW'
 xx'Wwwwwc...Hcccccccc..ccccccccH...cwwwwW'
 xx'Wwwwwc...cccccccGc..cGccccccc...cwwwwW'
 xx'Wwcccc..........................ccccwW'
-xx'Wwc1........2............2........1cwW'
-xx'Wwc$$$$........................$$$$cwW'
+xx'Wwc1$.......2............2.......$1cwW'
+xx'Wwc$$$..........................$$$cwW'
 xx'Wwc%$$$.cccccccccccccccccccccc.$$$%cwW'
-xx'Wwc*i$$.cwwwwwwwwwwwwwwwwwwwwc.$$h*cwW'
+xx'Wwc*i$$$cwwwwwwwwwwwwwwwwwwwwc$$$h*cwW'
 xx'Wwce*%$1cwwwwwwwwwwwwwwwwwwwwc1$%*fcwW'
 xx'WwcccccccwwwwwwwwwwwwwwwwwwwwcccccccwW'
 xx'WwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwW'
@@ -3424,7 +3424,7 @@ KITEM: F = randbook numspells:4 spells:starburst&fireball&sticky_flame&flame_wav
 KITEM: _ = manual of invocations
 COLOUR:    r = red, y = yellow, b = blue, g = green, \
            m = magenta, q = cyan, c = magenta, S = electricity
-FTILE:     .1234ST_G+ = floor_zot_diamonds
+FTILE:     .1234STDZF_G+ = floor_zot_diamonds
 TILE:      r = dngn_transparent_stone_red, y = dngn_transparent_stone_yellow, \
            b = dngn_transparent_stone_blue, m = dngn_transparent_stone_magenta, \
            g = dngn_transparent_stone_green, q = dngn_transparent_stone
@@ -3840,7 +3840,7 @@ SHUFFLE: ])deOG, OGUCD~, GM
 : tile("b = dngn_crystal_" .. wallc)
 : tile("v = dngn_metal_wall_" .. wallc)
 : tile("c = dngn_stone_wall_" .. wallc)
-: ftile(".`123409deO%CDTG~+ = floor_rough_" .. floorc)
+: ftile(".`^123409deO%CDTG~+ = floor_rough_" .. floorc)
 : vault_granite_statue_setup(_G, "G", "scintillating statue")
 : vault_metal_statue_setup(_G, "M", "enigmatic dynamo")
 MAP
@@ -3900,7 +3900,7 @@ KMONS:  O = diamond obelisk
 KMONS:  S = lightning spire
 ITEM:   storm talisman, randbook disc:air spells:chain_lightning
 : local e = "ego:electrocution good_item pre_id no_pickup"
-: item("quickblade " .. e .. " w:5 / double sword " .. e .. " w:5 / " ..
+: item("quick blade " .. e .. " w:5 / double sword " .. e .. " w:5 / " ..
 :      "executioner's axe " .. e .. " w:5 / eveningstar " .. e .. " w:5 / " ..
 :      "bardiche " .. e .. " w:5 / lajatang " .. e .. " w:5 / " ..
 :      "rapier " .. e .. " / scimitar " .. e .. " / dire flail " .. " / " ..
@@ -4690,7 +4690,7 @@ XXXXXXXXXXXXeeeeeeeeeeeeeeeeeeeXcccccccccccccccccXjjjjjjjjjjjjjjjjjjjXXXXXXXXXXX
 XXXXXXXXXXXXXeeeeee2eeeeeeeeXXXXcccccccccccccccccXXXXjjjjjjjj2jjjjjjXXXXXXXXXXXX
 XXXXXXXXXXXXXX.111.ccXXXXXXXXXXXcccccccccccccccccXXXXXXXXXXXcc.111.XXXXXXXXXXXXX
 XXXXXXXXXXXccddddddGdddddddODDo1ccccccccccccccccc1pHHPhhhhhhhGhhhhhhccXXXXXXXXXX
-XXXXXXXXXXccddddddddddddddddcc1...ccccccccccccc...1cchhhhhhhhhhhhhhhhccXXXXXXXXX
+XXXXXXXXXXccddddddddddddddd.cc1...ccccccccccccc...1cc.hhhhhhhhhhhhhhhccXXXXXXXXX
 XXXXXXXXXccddddddddddddddddddccc...ccccccccccc...ccchhhhhhhhhhhhhhhhhhccXXXXXXXX
 XXXXXXXXXcddddddddddddddddddddccc.1.....1.....1.ccchhhhhhhhhhhhhhhhhhhhcXXXXXXXX
 XXXXXXXXXcddddddddddddddddddddcXcc......R......ccXchhhhhhhhhhhhhhhhhhhhcXXXXXXXX

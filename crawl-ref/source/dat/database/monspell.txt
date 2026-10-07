@@ -897,6 +897,18 @@ Bolt of Magma molten gargoyle cast
 
 @The_monster@ blasts magma @at@ @target@!
 %%%%
+Harpoon Shot mongrel wurm cast
+
+@The_monster@ hacks up a harpoon shot aimed @at@ @foe@.
+
+@The_monster@ half-collapses as it coughs up a harpoon shot @at@ @foe@.
+%%%%
+Scorch mongrel wurm cast
+
+@The_monster@ nearly chokes as it lobs forward flames.
+
+@The_monster@ expels rasping flames.
+%%%%
 orange crystal statue cast
 
 @The_monster@ glitters.
@@ -969,6 +981,38 @@ Blink Away revenant cast
 
 __NONE
 %%%%
+Hurl Sludge roaming sludgefish cast
+
+@The_monster@ coughs and spits up spare sludge @at@ @target@.
+
+@The_monster@ concentrates and launches forth toxic muck @at@ @target@.
+%%%%
+Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@ writhes with glee as it focuses its will @at@ @target@.
+
+@The_monster@ burbles hungrily as it manifests raw antimagic @at@ @target@.
+%%%%
+silent Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@ writhes with hunger as it focuses its will @at@ @target@.
+%%%%
+rusted inspector cast
+
+@The_monster@ fervently clicks and whirrs while staring @at@ @target@.
+
+@The_monster@ surveys @target@ with malign shimmering curiousity.
+
+@The_monster@ [rumbles|shudders] with under-developed magic as it glares @at@ @target@.
+%%%%
+silent rusted inspector cast
+
+@The_monster@ squirms violently as it stares @at@ @target@.
+
+@The_monster@ surveys @target@ with malign shimmering curiousity.
+
+@The_monster@ shudders with under-developed magic as it glares @at@ @target@.
+%%%%
 Battlecry satyr cast
 
 @The_monster@ plays a rousing melody on @possessive@ pipes!
@@ -980,6 +1024,20 @@ Cause Fear satyr cast
 Sleep satyr cast
 
 @The_monster@ plays a lulling melody on @possessive@ pipes!
+%%%%
+Murky Legion scrapshell chimera cast
+
+@The_monster@ thrashes about, unleashing tainted phantasms!
+
+@The_monster@'s components convulse as foul spirits manifest!
+
+@The_monster@ screeches thrice-fold calling forth its victims' souls!
+%%%%
+silent Murky Legion scrapshell chimera cast
+
+@The_monster@ thrashes silently as it unleashes tainted phantasms!
+
+@The_monster@'s components convulse as foul spirits manifest!
 %%%%
 Injury Mirror screaming refraction cast
 
@@ -1042,6 +1100,18 @@ sun moth cast
 
 @The_monster_possessive@ wings beat fiercely.
 %%%%
+Brain Bite telencephalon cast
+
+@The_monster@ pulsates in unstable patterns.
+
+@The_monster@ spins and shimmers in dizzy loops.
+%%%%
+Call Down Lightning telencephalon cast
+
+Electricity dances across @the_monster_possessive@ nodes.
+
+@The_monster@ bathes in capricious mystic energies.
+%%%%
 Rebounding Blaze thermic dynamo cast
 
 A wild whirl of fire shoots out from @the_monster@ @at@ @target@.
@@ -1057,6 +1127,10 @@ A wild whirl of ice shoots out from @the_monster@ @at@ @target@.
 unseen thermic dynamo cast
 
 You hear a violent whirl.
+%%%%
+thorn hunter cast
+
+@The_monster@ reaches out with @possessive@ roots.
 %%%%
 thrashing horror cast
 

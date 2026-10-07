@@ -204,7 +204,7 @@ mset(with_props(spec_fn(function ()
   local f = 5 + you.zigs_completed() * 9
   local g = 10 + you.zigs_completed() * 12
   return "place:Lair:$ w:" .. d .. " / dire elephant w:" .. e .. " / " ..
-         "skyshark w:" .. e .. " /  catoblepas w:" .. e - 5 .. " / " ..
+         "sewage sovereign w:" .. e .. " /  catoblepas w:" .. e - 5 .. " / " ..
          "spriggan druid w:" .. e - 5 .. " / torpor snail w:" .. f + 5 .. " / " ..
          "hellephant w:" .. g .. " / caustic shrike w:" .. g
 end), { weight = 5 }))
@@ -452,9 +452,9 @@ mset(with_props(spec_fn(function ()
   local d = 20 + you.zigs_completed() * 6
   local e = 20 + you.zigs_completed() * 9
   return "swamp drake / rime drake / wind drake w:20 / death drake w:20 / " ..
-         "wyvern / hydra / steam dragon w:20 / acid dragon w:20 / " ..
-         "swamp dragon w:" .. d .. " / fire dragon w:" .. d .. " / " ..
-         "ice dragon w:" .. d .. " / storm dragon w:" .. d .. " / " ..
+         "mongrel wurm / wyvern / hydra / steam dragon w:20 / " ..
+         "acid dragon w:20 / swamp dragon w:" .. d .. " / " ..
+         "fire dragon w:" .. d .. " / ice dragon w:" .. d .. " / storm dragon w:" .. d .. " / " ..
          "shadow dragon w:" .. d .. " / iron dragon w:" .. d .. " / " ..
          "quicksilver dragon w:" .. e .. " / golden dragon w:" .. e .. " / " ..
          "wyrmhole w:" .. e
@@ -655,14 +655,19 @@ local function ziggurat_create_loot_at(c)
   -- dgn.good_scrolls is a list of items with total weight 1000
   local good_loot = dgn.item_spec("* no_pickup w:7000 /" ..
                                   dgn.good_scrolls)
+
+  -- Potions of experience can still do something in the first Zig, but will do
+  -- very little afterwards. As such, the weight shifts over to more potions of
+  -- mutation when doing multiple zigs.
+  local xpw = math.max(10, 190 - you.zigs_completed() * 30)
+  local mtw = math.min(470, 290 + you.zigs_completed() * 30)
   local super_loot = dgn.item_spec("| no_pickup w:7000 /" ..
-                                   "potion of experience no_pickup w:190 q:1 /" ..
-                                   "potion of mutation no_pickup w:290 /" ..
-                                   "potion of cancellation q:5 no_pickup / " ..
-                                   "potion of heal wounds q:5 no_pickup / " ..
-                                   "potion of magic q:5 no_pickup / " ..
-                                   "potion of haste q:5 no_pickup / " ..
-                                   dgn.good_scrolls)
+                    "potion of experience no_pickup q:1 w:" .. xpw .. " / " ..
+                    "potion of mutation no_pickup w:" .. mtw .. " / " ..
+                    "potion of cancellation q:5 no_pickup / " ..
+                    "potion of heal wounds q:5 no_pickup / " ..
+                    "potion of magic q:5 no_pickup / " ..
+                    "potion of haste q:5 no_pickup / " ..  dgn.good_scrolls)
 
   local loot_spots = find_free_space(nloot * 4)
 

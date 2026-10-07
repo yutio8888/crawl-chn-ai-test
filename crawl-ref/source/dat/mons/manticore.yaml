@@ -15,4 +15,4 @@ spells: manticore
 has_corpse: true
 intelligence: animal
 size: large
-shape: quadruped
+shape: quadruped_winged

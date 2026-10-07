@@ -28,6 +28,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "libutil.h"
+#include "map-knowledge.h"
 #include "options.h"
 #include "mapmark.h"
 #include "mon-cast.h" // recall for zot traps
@@ -252,7 +253,7 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
     { [] {
              coord_def pt = find_gateway_location(&you);
              if (pt != coord_def(0, 0))
-                 create_malign_gateway(pt, BEH_HOSTILE, "a Zot trap", 150);
+                 create_malign_gateway(pt, MID_NOBODY, BEH_HOSTILE, "a Zot trap", 150);
          }, 1 },
     { [] {
               mgen_data mg = mgen_data::hostile_at(MONS_TWISTER,
@@ -682,10 +683,11 @@ void destroy_trap(const coord_def& pos)
     if (!feat_is_trap(env.grid(pos)))
         return;
 
-    dungeon_terrain_changed(pos, DNGN_FLOOR);
+    if (!revert_terrain_change(pos, TERRAIN_CHANGE_GOLUBRIA, false))
+        dungeon_terrain_changed(pos, DNGN_FLOOR);
     if (you.see_cell(pos))
     {
-        env.map_knowledge(pos).set_feature(DNGN_FLOOR);
+        update_terrain_knowledge(pos);
         StashTrack.update_stash(pos);
     }
 }

@@ -31,6 +31,7 @@ howler CORPSE_HOWLER_MONKEY
 warg CORPSE_WARG
 wolf CORPSE_WOLF
 hog CORPSE_HOG
+sewage_sovereign CORPSE_SEWAGE_SOVEREIGN
 hell_hound CORPSE_HELL_HOUND
 oblivion_hound CORPSE_OBLIVION_HOUND
 raiju CORPSE_RAIJU
@@ -131,8 +132,11 @@ blink_frog CORPSE_BLINK_FROG
 cane_toad CORPSE_CANE_TOAD
 goliath_frog CORPSE_GOLIATH_FROG
 skyshark CORPSE_SKYSHARK
+%sdir mon/aquatic
+roaming_sludgefish0 CORPSE_ROAMING_SLUDGEFISH
 
 ## Snakes ('S')
+%sdir mon/animals
 ball_python CORPSE_BALL_PYTHON
 adder CORPSE_ADDER
 black_mamba CORPSE_BLACK_MAMBA
@@ -186,6 +190,7 @@ rime_drake CORPSE_RIME_DRAKE
 lindwurm CORPSE_LINDWURM
 death_drake CORPSE_DEATH_DRAKE
 wind_drake CORPSE_WIND_DRAKE
+mongrel_wurm CORPSE_MONGREL_WURM
 
 ## Merfolk ('m')
 mon/demihumanoids/merfolk/merfolk_water CORPSE_MERFOLK
@@ -288,6 +293,7 @@ guardian_sphinx CORPSE_GUARDIAN_SPHINX
 tengu CORPSE_TENGU
 jorogumo CORPSE_JOROGUMO
 mon/unique/arachne_staveless CORPSE_ARACHNE
+mon/aberrations/scrapshell_chimera CORPSE_SCRAPSHELL_CHIMERA
 %sdir mon/mutantbeast
 base3 CORPSE_MUTANT_BEAST
 

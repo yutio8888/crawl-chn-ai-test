@@ -101,7 +101,7 @@ static string _level_description_string_hud()
 
 static bool _low_vertical_space()
 {
-    return crawl_view.hudsz.y < 30;
+    return crawl_view.hudsz.y < 32;
 }
 
 /*
@@ -135,7 +135,9 @@ static bool _low_vertical_space()
 20 W: foobar
 22 Abil: Bes
 23
-24 XXXXXXXXX      status lights
+24 Doom 16%
+25 Cont 110%
+26 XXXXXXXXX      status lights
 .
 y  HPP MPP
  */
@@ -183,6 +185,8 @@ enum touchui_states
     TOUCH_V_WP    = 0x020A, // dummy
     TOUCH_T_QV    = 0x010B,
     TOUCH_V_QV    = 0x020B, // dummy
+    TOUCH_V_DOOM  = 0x2005,
+    TOUCH_V_CONTA = 0x1E06,
     TOUCH_V_LIGHT = 0x010C,
     // Explicit state used by the compact top bar. Top-bar coordinates are
     // already final screen coordinates; keeping a distinct state prevents
@@ -304,8 +308,14 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         case TOUCH_V_QV:
             x = 4; y = (super_small) ? 18 : 21;
             break;
-        case TOUCH_V_LIGHT:
+        case TOUCH_V_DOOM:
             x = 1; y = (super_small) ? 19 : 23;
+            break;
+        case TOUCH_V_CONTA:
+            x = 1; y = (super_small) ? 20 : 24;
+            break;
+        case TOUCH_V_LIGHT:
+            x = 1; y = (super_small) ? 21 : 25;
             break;
         case TOUCH_T_HP:
             x = 2; y = crawl_view.hudsz.y;
@@ -1008,9 +1018,9 @@ static void _print_stats_mp(int x, int y)
     else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
-            MP_Bar.vdraw(6, 19, you.magic_points, you.max_magic_points);
+            MP_Bar.vdraw(6, 21, you.magic_points, you.max_magic_points);
         else
-            MP_Bar.vdraw(6, 24, you.magic_points, you.max_magic_points);
+            MP_Bar.vdraw(6, 26, you.magic_points, you.max_magic_points);
     }
     else
         MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
@@ -1071,9 +1081,9 @@ static void _print_stats_hp(int x, int y)
     else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
-            HP_Bar.vdraw(2, 19, you.hp, you.hp_max);
+            HP_Bar.vdraw(2, 21, you.hp, you.hp_max);
         else
-            HP_Bar.vdraw(2, 24, you.hp, you.hp_max);
+            HP_Bar.vdraw(2, 26, you.hp, you.hp_max);
     }
     else
         HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
@@ -1125,7 +1135,10 @@ static void _print_stats_doom(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("%s: ", T_("Misfortune"));
+    if (!_is_using_small_layout())
+        CPRINTF("%s", T_("Doom: "));
+    else
+        CPRINTF("%s", T_("Doom "));
 
     if (you.attribute[ATTR_DOOM] >= 75)
         textcolour(LIGHTMAGENTA);
@@ -1155,7 +1168,10 @@ static void _print_stats_contam(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("%s: ", T_("Contam"));
+    if (!_is_using_small_layout())
+        CPRINTF("%s", T_("Contam: "));
+    else
+        CPRINTF("%s", T_("Cont "));
 
     const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                            you.magic_contamination / 10);
@@ -2074,15 +2090,19 @@ static void _render_top_bar()
     {
         const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                                you.magic_contamination / 10);
-        const string contam_text = make_stringf("%s: %d%% ", T_("Contam"),
-                                                contam);
+        const string contam_label = _is_using_small_layout()
+            ? T_("Cont ") : T_("Contam: ");
+        const string contam_text = make_stringf("%s%d%% ",
+                                                contam_label.c_str(), contam);
         const int contam_x = max(1, right_edge - strwidth(contam_text) + 1);
         _print_stats_contam(contam_x, warning_row);
         right_edge = contam_x - field_gap;
     }
     if (show_doom)
     {
-        const string doom_text = make_stringf("%s: %d%% ", T_("Misfortune"),
+        const string doom_label = _is_using_small_layout()
+            ? T_("Doom ") : T_("Doom: ");
+        const string doom_text = make_stringf("%s%d%% ", doom_label.c_str(),
                                               you.attribute[ATTR_DOOM]);
         const int doom_x = max(1, right_edge - strwidth(doom_text) + 1);
         _print_stats_doom(doom_x, warning_row);

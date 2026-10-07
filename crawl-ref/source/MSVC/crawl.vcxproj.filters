@@ -2305,6 +2305,9 @@
     <ClInclude Include="..\mon-aura.h">
       <Filter>h</Filter>
     </ClInclude>
+    <ClInclude Include="..\tile-env.h">
+      <Filter>h</Filter>
+    </ClInclude>
     <ClInclude Include="..\rltiles\status-icon-sizes.h">
       <Filter>rtiles_generated</Filter>
     </ClInclude>
