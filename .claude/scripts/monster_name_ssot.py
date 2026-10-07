@@ -621,6 +621,12 @@ def audit_repository(
     zh_quotes = _parse_required_textdb(
         os.path.join(source_dir, "dat", "descript", "zh", "quotes.txt")
     )
+    # <TextDB key> references name lookup identities, not quoted characters.
+    # Ignore balanced reference/tag tokens while retaining surrounding prose.
+    en_quotes = {key: re.sub(r"<[^<>\n]+>", "", body)
+                 for key, body in en_quotes.items()}
+    zh_quotes = {key: re.sub(r"<[^<>\n]+>", "", body)
+                 for key, body in zh_quotes.items()}
 
     findings: list[str] = []
     zh_names: dict[str, str] = {}
