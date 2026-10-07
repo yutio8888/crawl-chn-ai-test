@@ -128,6 +128,12 @@
 | Surge Dmg | 元素涌流伤害 | Jademantle 数据中的伤害标签；decision=D-C-095 |
 | Glimmer Dmg | 微光伤害 | Vision 数据中的伤害标签；与 glimmer 云共用词根；decision=D-C-095 |
 
+### 魔法地脉（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| ley line / ley lines | 地脉 | Dragon Veins spell 与四种 dragon vein 地形；指贯穿地牢的魔法能量脉络；可写“元素能量地脉／土魔法地脉”等，不将“魔法地脉”另立术语；decision=D-C-096 |
+
 <!-- domain:core -->
 ## 四、核心游戏术语
 
@@ -186,7 +192,7 @@
 |----|----|---------------|
 | Gulch | 污渠 | branch-data.h / portals/gulch.des / branches.txt；宝库废物与诱变污水的排水空间；decision=D-C-095 |
 | gutter gulch | 排污渠 | Gulch 分支长描述；普通称呼，不用山间峡谷意象；decision=D-C-095 |
-| mutagenic drain | 诱变排水口 | feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095 |
+| mutagenic drain | 诱变排水口 | feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095；词根统一见 D-C-096 |
 | purified mutation catalyst | 净化诱变催化器 | feature-data.h / features.txt；可打破的实验装置，非背包药剂；decision=D-C-095 |
 | empty mutation catalyst | 空诱变催化器 | features.txt；催化器被打开后排空的状态；decision=D-C-095 |
 | patch of mould | 霉菌丛 | feature-data.h / features.txt；长出可再生菌类的地表；decision=D-C-095 |
@@ -197,6 +203,15 @@
 | icy dragon vein | 冰龙脉 | feature-data.h；同系列；decision=D-C-095 |
 | assortment of trash | 杂乱垃圾 | features.txt；垃圾装饰地形新描述标题，非掉落物品；decision=D-C-095 |
 | Descent | 下行 | trunk ALPHA 可见模式名；向地牢深处推进的游戏模式，英文配置身份不变；decision=D-C-095 |
+
+### 机制与地点补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| piety | 虔诚值 | 神祇好感资源／数值及界面标签；一般叙述可简称“虔诚”，神眷作为解释性释义；弃用数值名“虔诚度”；decision=D-C-096 |
+| travel exclusion | 禁区 | 自动旅行／自动探索避开的地图标记；解释性限定可写“旅行禁区／移动禁区”，不会阻止玩家手动进入；decision=D-C-096 |
+| spell library | 法术库 | hints、Divine Exegesis、记忆菜单与 catalog 一致；decision=D-C-096 |
+| Spider Nest | 蜘蛛巢穴 | 分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096 |
 
 <!-- domain:combat -->
 ## 五、战斗与伤害
@@ -219,6 +234,12 @@
 | immune | 免疫 |
 
 ---
+
+### 战斗机制补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| attack of opportunity / attacks of opportunity | 借机攻击 | player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096 |
 
 <!-- domain:items -->
 ## 六、物品与装备
@@ -409,6 +430,15 @@
 | Nazja | 纳兹亚 | randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095 |
 | Mist | 幽魂雾 | art-data.txt 新神器特效标签；明确 spectral mist，区别药水名雾；decision=D-C-095 |
 
+### 物品与护甲参数补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
+| shortbow | 短弓 | 基础武器名；catalog、hints、Hunter 与 tutorial 一致；decision=D-C-096 |
+| enlightenment | 启迪 | 药水效果／状态词根；一般宗教语境如入祭坛的 enlightenment 可译“觉悟”；decision=D-C-096 |
+| ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096 |
+
 <!-- domain:dialogue -->
 ## 七、对话动词（按语境选择）
 
@@ -508,6 +538,13 @@
 
 ---
 
+### 引文歌曲题名（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| A Whiter Shade of Pale | 《更淡的苍白》 | quotes 中普洛柯哈伦歌曲署名；反常色彩意象的项目译名，不声称官方中文曲名；decision=D-C-096 |
+| One of Us Cannot Be Wrong | 《我们之中有一个不会错》 | quotes 中伦纳德·科恩歌曲署名；保留 cannot be wrong 的情态；项目译名，不声称官方中文曲名；decision=D-C-096 |
+
 <!-- domain:species -->
 ## 十二、种族/物种名称
 
@@ -595,6 +632,12 @@
 | Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
 
+### 技能参数补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| aptitude | 资质 | 种族／技能训练效率参数；弃用该参数的“天赋／能力倾向”；普通人物魔法天赋不受影响；decision=D-C-096 |
+
 <!-- domain:status -->
 ## 十四、状态与效果
 
@@ -648,6 +691,23 @@
 | exposed | 暴露 | monstatus.txt；更易遭非攻击伤害且意志降低；不译为防具破碎；decision=D-C-095 |
 | out of phase | 相位偏移 | monstatus.txt；相位变换效果，区别单纯隐形；decision=D-C-095 |
 | stampeding | 奔踏中 | monstatus.txt；与 Stampede 同词根；decision=D-C-095 |
+
+### 状态、云与诱变词根补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
+| barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
+| `status\|Barbs` | 倒刺 | 玩家倒刺状态；与 barbs 一致；decision=D-C-096 |
+| `status\|ambrosia-drunk` | 神食酣醉 | 神食作用状态；保留 drunk 的酣醉意象，药水词根统一；decision=D-C-096 |
+| noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
+| mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
+| mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
+| mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
+| mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
+| mutagenic radiation | 诱变辐射 | 复用 Contamination 既有译法；decision=D-C-096 |
+| mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
+| mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
 
 <!-- domain:backgrounds -->
 ## 十五、角色背景
@@ -915,6 +975,13 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | lurker | 潜伏者 | mon-lurk.cc；未显现而等待触发的怪物机制类，非新增物种；区别 Stalker；decision=D-C-095 |
 | ghost crab | 幽灵螃蟹 | 新增神器命名所依赖的现行怪物基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
 | occultist | 神秘学者 | 新增火龙鳞甲所依赖的现行角色基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
+
+### 描述专名补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| fenstrider witch | 沼行女巫 | 怪物名及幽灵螃蟹爪的制作群体；沿用 catalog，不混作 swamp witch 沼泽女巫；decision=D-C-096 |
+| West Wind | 西风 | Zephyr 传说中人格化的西风；与 West Wind's embodiment → 西风化身共用词根；decision=D-C-096 |
 
 <!-- domain:unique-monsters -->
 ## 十九、独特怪物名称
@@ -1276,7 +1343,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Antimagic Gaze | 反魔法凝视 | ✅ |
 | Confusion Gaze | 困惑凝视 | ✅ |
 | Draining Gaze | 衰竭凝视 | ✅；施加 Drain/衰竭，不治疗施法者 |
-| Mutagenic Gaze | 变异凝视 | ✅ |
+| Mutagenic Gaze | 变异凝视 | ✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096 |
 | Paralysis Gaze | 麻痹凝视 | ✅ |
 | Vitrifying Gaze | 玻璃化凝视 | ✅ |
 | Weakening Gaze | 虚弱凝视 | ✅ |
