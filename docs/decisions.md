@@ -4123,6 +4123,22 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   Mutagenic Gaze 固定法术名及其他既有法术／神器定稿维持有效。
 - **Affected files**: `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
 
+- **Scope split**（B0-2 审查补充）: 维护者逐行比较上表各唯一位置的中文，
+  以其在 `d9c1185a5c` 与稳定版 D（`d1a7d2d36b`）中是否完全相同，
+  判定修订所属范围。结果为 3 处 trunk 新增位置、73 处稳定版共享位置，
+  共 76 个唯一位置；`source.txt:4532` 的两项修订属于同一位置。
+  - 以下 3 处 trunk 新增位置由 B1 译者在本次迁移中修订：
+    `crawl-ref/source/dat/descript/zh/mutations.txt:1416`、
+    `crawl-ref/source/dat/descript/zh/quotes.txt:3749`、
+    `crawl-ref/source/dat/descript/zh/spells.txt:2109`。
+  - 其余 73 处共享位置转交稳定线后续任务，不在本次 trunk 迁移中修改。
+    按迁移设计 §8 的同步规则，两边都涉及的翻译修复先落在稳定版，
+    再前向合并到 trunk。执行时以稳定线 HEAD 为准重新定位；上表行号
+    只对应 `d9c1185a5c`，不得直接作为稳定线修订行号。
+  - 在共享修复前向合并之前，trunk 上新写的内容一律使用本次定稿的新术语，
+    已有共享条目暂时保持旧用词。这是已知的暂时不一致；本段限定上表的
+    执行范围与顺序，不撤回已采纳的术语、mutagenic 裁决或歌曲题名。
+
 ---
 
 ## Quick Reference: All Decision IDs
