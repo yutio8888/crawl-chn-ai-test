@@ -130,8 +130,9 @@ int get_player_equip_slot_count(equipment_slot slot, string* zero_reason = nullp
 FixedVector<int, NUM_EQUIP_SLOTS> get_total_player_equip_slots();
 const vector<equipment_slot>& get_alternate_slots(equipment_slot slot);
 
-bool can_equip_item(const item_def& item, bool include_form = false,
-                    string* veto_reason = nullptr);
+bool can_equip_item(const item_def& item, bool temp = false,
+                    string* veto_reason = nullptr,
+                    bool* god_forbids = nullptr);
 
 // XXX: the msg flag isn't implemented in all cases.
 void equip_item(equipment_slot slot, int item_slot, bool msg=true,
@@ -143,11 +144,12 @@ bool slot_is_melded(equipment_slot slot);
 void autoequip_item(item_def& item);
 
 void equip_effect(int item_slot, bool unmeld, bool msg);
-void unequip_effect(int item_slot, bool meld, bool msg);
+void unequip_effect(int item_slot, bool meld, bool msg, bool was_melded);
 
 struct item_def;
 void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld);
-void unequip_artefact_effect(item_def &item, bool *show_msgs, bool meld);
+void unequip_artefact_effect(item_def &item, bool *show_msgs, bool meld,
+                             bool was_melded = false);
 
 bool acrobat_boost_active();
 bool parrying_boost_active();

@@ -865,7 +865,6 @@ static void _handle_energy_orb(int cost, spret cast_result)
         mpr(T_("Magical energy flows into your mind!"));
         inc_mp(cost, true);
     }
-    did_god_conduct(DID_WIZARDLY_ITEM, 10);
 }
 
 /**
@@ -1064,10 +1063,11 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
     }
 
     // MP, confusion, Ru sacs
-    const auto reason = casting_uselessness_reason(spell, true);
+    bool god_forbids = false;
+    const auto reason = casting_uselessness_reason(spell, true, &god_forbids);
     if (!reason.empty())
     {
-        mpr(reason);
+        mprf(god_forbids ? MSGCH_GOD : MSGCH_PLAIN, "%s", reason.c_str());
         crawl_state.zero_turns_taken();
         return spret::abort;
     }
@@ -1086,19 +1086,6 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         }
         crawl_state.zero_turns_taken();
         return spret::abort;
-    }
-
-    if (god_punishes_spell(spell, you.religion)
-        && !crawl_state.disables[DIS_CONFIRMATIONS])
-    {
-        // None currently dock just piety, right?
-        if (!yesno(T_("Casting this spell will place you under penance. "
-                   "Really cast?"), true, 'n'))
-        {
-            canned_msg(MSG_OK);
-            crawl_state.zero_turns_taken();
-            return spret::abort;
-        }
     }
 
     you.last_cast_spell = spell;
@@ -1137,7 +1124,6 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         stardust_orb_trigger(cost);
         if (you.unrand_equipped(UNRAND_MAJIN) && one_chance_in(500))
             _majin_speak(spell);
-        did_god_conduct(DID_SPELL_CASTING, 1 + random2(5));
         count_action(CACT_CAST, spell);
     }
 
@@ -1155,34 +1141,6 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
 }
 
 /**
- * Handles divine response to spellcasting.
- *
- * @param spell         The type of spell just cast.
- */
-static void _spellcasting_god_conduct(spell_type spell)
-{
-    // If you are casting while a god is acting, then don't do conducts.
-    // (Presumably Xom is forcing you to cast a spell.)
-    if (crawl_state.is_god_acting())
-        return;
-
-    const int conduct_level = 10 + spell_difficulty(spell);
-
-    if (is_evil_spell(spell) || you.spellcasting_unholy())
-        did_god_conduct(DID_EVIL, conduct_level);
-
-    if (is_unclean_spell(spell))
-        did_god_conduct(DID_UNCLEAN, conduct_level);
-
-    if (is_chaotic_spell(spell))
-        did_god_conduct(DID_CHAOS, conduct_level);
-
-    // not is_hasty_spell since the other ones handle the conduct themselves.
-    if (spell == SPELL_SWIFTNESS)
-        did_god_conduct(DID_HASTY, conduct_level);
-}
-
-/**
  * Handles side effects of successfully casting a spell.
  *
  * Spell noise, magic 'sap' effects, and god conducts.
@@ -1195,8 +1153,6 @@ static void _spellcasting_god_conduct(spell_type spell)
 static void _spellcasting_side_effects(spell_type spell, god_type god,
                                        bool fake_spell)
 {
-    _spellcasting_god_conduct(spell);
-
     if (god == GOD_NO_GOD)
     {
         if (you.duration[DUR_SAP_MAGIC] && !fake_spell)
@@ -1392,8 +1348,9 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
     case SPELL_AIRSTRIKE:
         return make_unique<targeter_airstrike>();
     case SPELL_MOMENTUM_STRIKE:
-    case SPELL_DIMENSIONAL_BULLSEYE:
         return make_unique<targeter_smite>(&you, range);
+    case SPELL_DIMENSIONAL_BULLSEYE:
+        return make_unique<targeter_single_monster>();
     case SPELL_FULMINANT_PRISM:
         return make_unique<targeter_smite>(&you, range, 0, 2);
     case SPELL_GRAVITAS:
@@ -1505,7 +1462,7 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
     case SPELL_DISCORD:
         return make_unique<targeter_discord>();
     case SPELL_IGNITION:
-        return make_unique<targeter_multifireball>(&you,
+        return make_unique<targeter_ignition>(&you,
                    get_ignition_blast_sources(&you, true));
 
     // Summons. Most summons have a simple range 2 radius, see
@@ -1577,8 +1534,8 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
         return make_unique<targeter_scorch>(you, range, false);
     case SPELL_DRAGON_CALL: // this is just convenience: you can start the spell
                             // with no enemies in sight
-        return make_unique<targeter_multifireball>(&you,
-                                                   _simple_find_all_hostiles());
+        return make_unique<targeter_dragon_call>(&you,
+                                                 _simple_find_all_hostiles());
     case SPELL_NOXIOUS_BOG:
         return make_unique<targeter_bog>(&you);
     case SPELL_FLAME_WAVE:
@@ -1639,6 +1596,9 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
                                                                     ? AFF_MAYBE
                                                                     : AFF_YES);
     }
+
+    case SPELL_CLOCKWORK_BEE:
+        return make_unique<targeter_single_monster>();
 
     default:
         break;
@@ -1704,7 +1664,7 @@ int hex_success_chance(const int wl, int powc, int scale, bool round_up)
         return 0;
     if (target <= 100)
         return (scale * (denom - _triangular_number(target)) + adjust) / denom;
-    return (scale * _triangular_number(201 - target) + adjust) / denom;
+    return (scale * _triangular_number(200 - target) + adjust) / denom;
 }
 
 // approximates _test_beam_hit in a deterministic fashion.
@@ -1722,33 +1682,41 @@ static int _to_hit_pct(const monster_info& mi, int acc)
 
     const int base_ev = mi.ev + (mi.is(MB_DEFLECT_MSL) ? DEFLECT_MISSILES_EV_BONUS : 0);
 
-    int hits = 0;
-    int iters = 0;
+    // This exhaustively tests every combination of hit and evasion rolls to determine
+    // the real chance of a hit.
+    //
+    // Since target evasion is rolled twice, and the range of the second roll depends
+    // on the first, we independently calculate the chance of a hit for each possible
+    // result of the first roll, then average all of those chances at the end.
+    int hit_sum = 0;
     for (int outer_ev_roll = 0; outer_ev_roll < base_ev; outer_ev_roll++)
     {
+        int hits = 0;
+        int iters = 0;
         for (int inner_ev_roll_a = 0; inner_ev_roll_a < outer_ev_roll; inner_ev_roll_a++)
         {
-            for (int inner_ev_roll_b = 0; inner_ev_roll_b < outer_ev_roll; inner_ev_roll_b++)
+            for (int inner_ev_roll_b = 0; inner_ev_roll_b < outer_ev_roll + 1; inner_ev_roll_b++)
             {
-                const int ev = (inner_ev_roll_a + inner_ev_roll_b) / 2; // not right but close
+                const int ev = (inner_ev_roll_a + inner_ev_roll_b) / 2;
                 for (int rolled_mhit = 0; rolled_mhit < acc; rolled_mhit++)
                 {
                     iters++;
-                    if (iters >= 1000000)
+                    if (iters >= 100000)
                         return -1; // sanity breakout to not kill servers
                     if (rolled_mhit >= ev)
                         hits++;
                 }
             }
         }
+
+        // Add overall chance of hitting if the monster rolls this result on their first EV roll
+        if (iters > 0)
+            hit_sum += (hits * 100 / iters);
+        else
+            hit_sum += 100;
     }
 
-    int base_chance = 0;
-    if (iters <= 0) // probably low monster ev?
-        base_chance = 100;
-    else
-        base_chance = hits * 100 / iters;
-
+    int base_chance = base_ev > 0 ? hit_sum / base_ev : 100;
     base_chance = base_chance * (100 - player_blind_miss_chance(you.pos().distance_from(mi.pos))) / 100;
     return base_chance;
 }
@@ -2346,7 +2314,8 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
             const coord_def back = you.stumble_pos(target->target);
             if (!back.origin()
                 && back != you.pos()
-                && !check_moveto_possible_forced(back, false))
+                && !check_moveto(back, "potentially stumble back",
+                                 false, false))
             {
                 return spret::abort;
             }

@@ -60,7 +60,8 @@ static bool _god_fits_artefact(const god_type which_god, const item_def &item,
     // First check the item's base_type and sub_type, then check the
     // item's brand and other randart properties.
 
-    const bool type_bad = !god_likes_item_type(item, which_god);
+    const bool type_bad = !god_likes_item_type(item.base_type, item.sub_type,
+                                               which_god);
 
     if (type_bad && !name_check_only)
     {
@@ -71,7 +72,7 @@ static bool _god_fits_artefact(const god_type which_god, const item_def &item,
     if (type_bad)
         return false;
 
-    const int brand = get_weapon_brand(item);
+    const brand_type brand = get_weapon_brand(item);
     const int ego   = get_armour_ego_type(item);
 
     if (is_evil_god(which_god) && brand == SPWPN_HOLY_WRATH)

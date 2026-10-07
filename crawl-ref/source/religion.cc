@@ -732,7 +732,7 @@ void dec_penance(god_type god, int val)
             if (have_passive(passive_t::sinv))
             {
                 mprf(MSGCH_GOD, T_("Your vision regains its divine sight."));
-                autotoggle_autopickup(false);
+                env.invis_knowledge.clear();
             }
             if (have_passive(passive_t::stat_boost))
             {
@@ -2486,7 +2486,7 @@ static void _handle_piety_gain(int old_piety)
             if (rank == rank_for_passive(passive_t::jelly_regen))
                 simple_god_message(T_(" begins accelerating your health and magic regeneration."));
             if (rank == rank_for_passive(passive_t::sinv))
-                autotoggle_autopickup(false);
+                env.invis_knowledge.clear();
             if (rank == rank_for_passive(passive_t::clarity))
             {
                 // Inconsistent with donning amulets, but matches the
@@ -2609,7 +2609,10 @@ static void _gain_piety_point()
             || you.raw_piety >= piety_breakpoint(5) && x_chance_in_y(2, 5)
             || you.raw_piety >= piety_breakpoint(3) && x_chance_in_y(2, 5))
         {
-            you.piety_info.register_piety_gain(PG_EVENT_STEPDOWN);
+            PietyGainEvent event = (you.raw_piety >= MAX_PIETY
+                                    ? PG_EVENT_MAX_PIETY
+                                    : PG_EVENT_STEPDOWN);
+            you.piety_info.register_piety_gain(event);
             do_god_gift();
             return;
         }
@@ -3046,7 +3049,6 @@ void excommunication(bool voluntary, god_type new_god)
         if (you.duration[DUR_TROGS_HAND])
             trog_remove_trogs_hand();
         schedule_dismiss_divine_allies_fineff(GOD_TROG);
-        you.skills_to_show.insert(SK_SPELLCASTING);
         break;
 
     case GOD_BEOGH:
@@ -3255,10 +3257,6 @@ void excommunication(bool voluntary, god_type new_god)
     learned_something_new(HINT_EXCOMMUNICATE,
                           coord_def((int)new_god, old_piety));
 
-    for (ability_type abil : get_god_abilities())
-        you.skills_to_hide.insert(abil_skill(abil));
-
-    update_can_currently_train();
     reset_training();
 
     // Perhaps we abandoned Trog with everything but Spellcasting maxed out.
@@ -3309,16 +3307,34 @@ bool god_hates_attacking_friend(god_type god, const monster& fr)
     }
 }
 
-static bool _transformed_player_can_join_god(god_type which_god)
+bool god_forbids_form(god_type which_god, transformation which_trans)
 {
-    if (which_god == GOD_ZIN && you.form != transformation::none)
-        return false; // zin hates everything
+    if (which_god == GOD_ZIN && which_trans != transformation::none)
+        return true; // zin hates everything
 
-    if (is_good_god(which_god) && you.form == transformation::death)
+    if (is_good_god(which_god)
+        && get_form(which_trans)->undead_state != US_ALIVE)
+    {
+        return true;
+    }
+
+    if (which_god == GOD_OKAWARU && which_trans == transformation::hive)
+        return true;
+    return false;
+}
+
+bool transformed_player_can_join_god(god_type which_god)
+{
+    if (god_forbids_form(which_god, you.form))
         return false;
 
-    if (which_god == GOD_OKAWARU && you.form == transformation::hive)
+    // Check our talisman rather than our form, as we are not allowed to
+    // join a god when our form is masked by a polymorph.
+    if (you.active_talisman()
+        && god_forbids_form(which_god, form_for_talisman(*you.active_talisman())))
+    {
         return false;
+    }
 
     return true;
 }
@@ -3354,39 +3370,96 @@ static bool _god_rejects_loveless(god_type god)
 }
 
 /**
- * Return true if the player can worship which_god.
+ * Why can the player not worship which_god?
  *
- * @param which_god  god to query
- * @param temp       If true (default), test if you can worship which_god now.
- *                   If false, test if you may ever be able to worship the god.
- * @return           Whether you can worship which_god.
+ * @param which_god    god to query
+ * @param include_temp If true (default), test if you can worship which_god
+ *                     now.
+ *                     If false, test if you may ever be able to worship the
+ *                     god.
+ * @param check_gear   If true (default), test items and forms.
+ * @return             A complete, ready-to-print message (including the god's
+ *                     name) explaining why worship is refused, or the empty
+ *                     string if the player can worship which_god.
  */
-bool player_can_join_god(god_type which_god, bool temp)
+string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_gear)
 {
-    if (you.has_mutation(MUT_FORLORN))
-        return false;
+    const string god = god_speaker(which_god);
 
-    if (is_good_god(which_god) && you.undead_or_demonic(temp))
-        return false;
-
-    if (you.has_mutation(MUT_INNATE_CASTER)
-        && (which_god == GOD_SIF_MUNA
-            || which_god == GOD_VEHUMET
-            || which_god == GOD_KIKUBAAQUDGHA))
+    // Only check permanent statuses here, as we will have more specific
+    // messages for e.g. temporary forms further down.
+    if (you.has_mutation(MUT_FORLORN)
+        || (is_good_god(which_god) && you.undead_or_demonic(false))
+        || (you.has_mutation(MUT_INNATE_CASTER)
+            && (which_god == GOD_SIF_MUNA
+                || which_god == GOD_VEHUMET
+                || which_god == GOD_KIKUBAAQUDGHA)))
     {
-        return false;
+        return god + T_(" does not accept worship from those such as you!");
     }
 
-    if (which_god == GOD_GOZAG && temp && you.gold < gozag_service_fee())
-        return false;
+    if (which_god == GOD_GOZAG && include_temp && you.gold < gozag_service_fee())
+    {
+        const int fee = gozag_service_fee();
+        string reason = god + T_(" does not accept service from beggars like you!") + " ";
+        if (you.gold == 0)
+        {
+            reason += make_stringf(T_("The service fee for joining is currently %d gold; you have none."), fee);
+        }
+        else
+        {
+            reason += make_stringf(T_("The service fee for joining is currently %d gold; you only have %d."), fee, you.gold);
+        }
+        return reason;
+    }
 
-    if (you.get_base_mutation_level(MUT_NO_LOVE, true, temp, temp)
+    if (you.get_base_mutation_level(MUT_NO_LOVE, true, include_temp, include_temp)
         && _god_rejects_loveless(which_god))
     {
-        return false;
+        return god + T_(" does not accept worship from the loveless!");
     }
 
-    return !temp || _transformed_player_can_join_god(which_god);
+    if (include_temp && !transformed_player_can_join_god(which_god) && check_gear)
+    {
+        if (which_god == GOD_OKAWARU)
+        {
+            return god + T_(" says: You must forswear the aid of any and all before you are fit to worship.");
+        }
+        return god + T_(" says: How dare you approach in such a loathsome form!");
+    }
+
+    // You can't join a god while wearing gear they hate.
+    if (include_temp && check_gear)
+    {
+        vector<string> hated;
+        for (item_def* item : you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT, true))
+            if (god_forbids_item(*item, which_god))
+                hated.push_back(item->name(DESC_YOUR, false, false, false));
+        if (!hated.empty())
+        {
+            const string equipment = comma_separated_line(hated.begin(), hated.end(),
+                                                         T_(" or "));
+            return make_stringf(T_("%s will not accept your worship while you use %s."),
+                                god.c_str(), equipment.c_str());
+        }
+    }
+
+    return "";
+}
+
+/**
+ * Return true if the player can worship which_god.
+ *
+ * @param which_god    god to query
+ * @param include_temp If true (default), test if you can worship which_god
+ *                     now.
+ *                     If false, test if you may ever be able to worship the
+ *                     god.
+ * @return             Whether you can worship which_god.
+ */
+bool player_can_join_god(god_type which_god, bool include_temp)
+{
+    return cannot_join_god_reason(which_god, include_temp).empty();
 }
 
 // Handle messaging and identification for items/equipment on conversion.
@@ -3406,23 +3479,10 @@ static void _god_welcome_handle_gear()
     if (have_passive(passive_t::detect_portals))
         ash_detect_portals(true);
 
-    // Give a reminder to remove any disallowed equipment.
-    vector<item_def*> all_eq = you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT, true);
-    for (item_def* item : all_eq)
-    {
-        if (god_hates_item(*item))
-        {
-            // included in default force_more_message
-            mprf_p(MSGCH_GOD, T_("%s warns you to remove %s."),
-                 uppercase_first(god_name(you.religion)).c_str(),
-                 item->name(DESC_YOUR, false, false, false).c_str());
-        }
-    }
-
     if (you.props.exists(PARAGON_WEAPON_KEY))
     {
         item_def wpn = you.props[PARAGON_WEAPON_KEY].get_item();
-        if (god_hates_item(wpn))
+        if (god_forbids_item(wpn))
         {
             mprf(MSGCH_GOD, T_("%s removes the imprint of %s from your paragon."),
                  god_name(you.religion).c_str(),
@@ -3767,7 +3827,6 @@ void join_trog_skills()
 {
     if (!you.has_mutation(MUT_DISTRIBUTED_TRAINING))
         set_magic_training(TRAINING_DISABLED);
-    you.skills_to_hide.insert(SK_SPELLCASTING);
 }
 
 // Setup for joining the orderly ascetics of Zin.
@@ -3965,11 +4024,9 @@ void join_religion(god_type which_god)
     if (you_worship(GOD_VEHUMET))
         do_god_gift();
 
-    // Allow training all divine ability skills immediately.
-    vector<ability_type> abilities = get_god_abilities();
-    for (ability_type abil : abilities)
-        you.skills_to_show.insert(abil_skill(abil));
-    update_can_currently_train();
+    // Divine ability skills become trainable (and shown by default) now that
+    // we have a god; recompute training in case that changed anything.
+    reset_training();
 
     // now that you have a god, you can't save any piety from your prev god
     you.previous_good_god = GOD_NO_GOD;
@@ -4002,10 +4059,11 @@ void god_pitch(god_type which_god)
     // return, or not allow worshippers from other religions. - bwr
 
     // Gods can be racist...
-    if (!player_can_join_god(which_god))
+    string rejection_message = cannot_join_god_reason(which_god);
+    if (!rejection_message.empty())
     {
         you.turn_is_over = false;
-        print_god_rejection(which_god);
+        mprf(MSGCH_GOD, "%s", rejection_message.c_str());
         return;
     }
 
@@ -4025,51 +4083,6 @@ void god_pitch(god_type which_god)
         redraw_screen();
         update_screen();
     }
-}
-
-void print_god_rejection(god_type which_god)
-{
-
-    if (which_god == GOD_GOZAG)
-    {
-        simple_god_message(T_(" does not accept service from beggars like you!"),
-                           false, which_god);
-        const int fee = gozag_service_fee();
-        if (you.gold == 0)
-        {
-            mprf(T_("The service fee for joining is currently %d gold; you have"
-                 " none."), fee);
-        }
-        else
-        {
-            mprf(T_("The service fee for joining is currently %d gold; you only"
-                 " have %d."), fee, you.gold);
-        }
-        return;
-    }
-    if (you.get_mutation_level(MUT_NO_LOVE) && _god_rejects_loveless(which_god))
-    {
-        simple_god_message(T_(" does not accept worship from the loveless!"),
-                           false, which_god);
-        return;
-    }
-    if (!_transformed_player_can_join_god(which_god))
-    {
-        if (which_god == GOD_OKAWARU)
-        {
-            simple_god_message(T_(" says: You must forswear the aid of any and all "
-                                "before you are fit to worship."), false, which_god);
-        }
-        else
-        {
-            simple_god_message(T_(" says: How dare you approach in such a loathsome "
-                                "form!"), false, which_god);
-        }
-        return;
-    }
-
-    simple_god_message(T_(" does not accept worship from those such as you!"),
-                       false, which_god);
 }
 
 /** Ask the user for a god by name.
@@ -4194,58 +4207,6 @@ bool god_likes_spell(spell_type spell, god_type god)
     default: // quash unhandled constants warnings
         return false;
     }
-}
-
-/**
- * Does your god hate spellcasting?
- *
- * @param god           The god to check against
- * @return              Whether the god hates spellcasting
- */
-bool god_hates_spellcasting(god_type god)
-{
-    return god == GOD_TROG;
-}
-
-/**
- * Will your god put you under penance if you actually cast spell?
- *
- * @param spell         The spell to check against
- * @param god           The god to check against
- * @param fake_spell    true if the spell is evoked or from an innate or divine ability
- *                      false if it is a spell being cast normally.
- * @return              true if the god hates the spell
- */
-bool god_hates_spell(spell_type spell, god_type god, bool fake_spell)
-{
-    if (god_hates_spellcasting(god))
-        return !fake_spell;
-
-    if (god_punishes_spell(spell, god))
-        return true;
-
-    // (this is literally only Discord as of July 2022... simplify?)
-    return god == GOD_CHEIBRIADOS && is_hasty_spell(spell);
-}
-
-/**
- * Checks to see if your god hates this spell, hates spellcasting in general,
- * or punishes memorising spells. Returns a warning string if so.
- *
- * @param spell         The spell to check against
- * @param god           The god to check against
- * @return              Warning string if god has strong opinions on spell
- *                      Empty string if god doesn't care about spell
- */
-string god_spell_warn_string(spell_type spell, god_type god)
-{
-    if (god_punishes_memorising_spells(god))
-        return T_("This will place you under penance!");
-    if (god_hates_spellcasting(god))
-        return T_("Your god hates spellcasting!");
-    if (god_hates_spell(spell, god))
-        return T_("Your god hates this spell!");
-    return "";
 }
 
 bool god_protects_from_harm()

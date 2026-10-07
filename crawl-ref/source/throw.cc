@@ -616,7 +616,7 @@ static bool _trace_player_ranged_attacks(vector<ranged_attack_beam>& atks, bool 
         const coord_def back = you.stumble_pos(atks[0].beam.target);
         if (!back.origin()
             && back != you.pos()
-            && !check_moveto_possible_forced(back, false))
+            && !check_moveto(back, "potentially stumble back", false, false))
         {
             return true;
         }
@@ -832,8 +832,6 @@ static void _fire_salvo(const ranged_attack_beam &pbolt)
 static void _player_shoot(ranged_attack_beam &pbolt, bool allow_salvo)
 {
     const item_def& item = *pbolt.atk.weapon;
-    const int bow_brand = get_weapon_brand(item);
-    const int ammo_brand = get_ammo_brand(item);
     const bool returning = _returning(item);
     const bool is_thrown = is_throwable(&you, item);
     const bool will_mulch = _thrown_object_destroyed(item);
@@ -910,15 +908,6 @@ static void _player_shoot(ranged_attack_beam &pbolt, bool allow_salvo)
             }
         }
     }
-
-    if (bow_brand == SPWPN_CHAOS || ammo_brand == SPMSL_CHAOS)
-        did_god_conduct(DID_CHAOS, 2 + random2(3), bow_brand == SPWPN_CHAOS);
-
-    if (bow_brand == SPWPN_SPEED)
-        did_god_conduct(DID_HASTY, 1, true);
-
-    if (ammo_brand == SPMSL_FRENZY)
-        did_god_conduct(DID_HASTY, 6 + random2(3), true);
 
     if (returning && !will_mulch)
     {
@@ -1054,7 +1043,7 @@ bool do_west_wind_shot()
 
     // Downscale damage from slow weapons versus the player's movement speed.
     const int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;
-    const int move_delay = player_movement_speed() * player_speed();
+    const int move_delay = player_overall_move_delay(BASELINE_DELAY);
     if (attack_delay > move_delay)
         prototype.dmg_mult += (move_delay * 100 / attack_delay) - 100;
 

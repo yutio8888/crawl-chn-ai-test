@@ -24,6 +24,7 @@
 #include "dungeon.h"
 #include "english.h"
 #include "god-abil.h"
+#include "god-conduct.h"
 #include "god-item.h"
 #include "god-passive.h"
 #include "item-name.h"
@@ -799,8 +800,8 @@ static int _find_acquirement_subtype(object_class_type &class_wanted,
         dummy.plus = 1; // empty wands would be useless
         dummy.flags |= ISFLAG_IDENTIFIED;
 
-        if (!is_useless_item(dummy, false) && !god_hates_item(dummy)
-            && (agent >= NUM_GODS || god_likes_item_type(dummy,
+        if (!is_useless_item(dummy, false)
+            && (agent >= NUM_GODS || god_likes_item_type(class_wanted, type_wanted,
                                                          (god_type)agent)))
         {
             break;
@@ -851,7 +852,7 @@ static int _book_weight(book_type book)
         // Skip over spells already in library.
         if (you.spell_library[stype])
             continue;
-        if (god_hates_spell(stype, you.religion))
+        if (god_forbids_spell(stype, you.religion))
             continue;
 
         total_weight += _spell_weight(stype);
@@ -1223,8 +1224,7 @@ int acquirement_create_item(object_class_type class_wanted,
         else
         {
             // This may clobber class_wanted (e.g. staves)
-            type_wanted = _find_acquirement_subtype(class_wanted, quant,
-                                                    agent);
+            type_wanted = _find_acquirement_subtype(class_wanted, quant, agent);
         }
         ASSERT(type_wanted != -1);
 
@@ -1378,7 +1378,7 @@ int acquirement_create_item(object_class_type class_wanted,
         int oldflags = acq_item.flags;
         acq_item.flags |= ISFLAG_IDENTIFIED;
         if ((is_useless_item(acq_item, false) && agent != GOD_XOM)
-            || god_hates_item(acq_item))
+            || god_forbids_item(acq_item))
         {
             if (!quiet)
                 dprf("destroying useless item");
@@ -1402,7 +1402,7 @@ int acquirement_create_item(object_class_type class_wanted,
     }
 
     ASSERT(!is_useless_item(env.item[thing_created], false) || agent == GOD_XOM);
-    ASSERT(!god_hates_item(env.item[thing_created]));
+    ASSERT(!god_forbids_item(env.item[thing_created]));
 
     // If we have a zero coord_def, don't move the item to the grid. Used for
     // generating scroll of acquirement items.
@@ -1660,7 +1660,7 @@ static item_def _acquirement_item_def(object_class_type item_type, int agent)
 
     if (item_index != NON_ITEM)
     {
-        ASSERT(!god_hates_item(env.item[item_index]));
+        ASSERT(!god_forbids_item(env.item[item_index]));
 
         // We make a copy of the item def, but we don't keep the real item.
         item = env.item[item_index];

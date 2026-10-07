@@ -256,8 +256,10 @@ bool fill_status_info(int status, status_info& inf)
 
     case STATUS_DRACONIAN_BREATH:
     {
-        if ((!species::is_draconian(you.species) || you.experience_level < 7)
-                && you.form != transformation::dragon)
+        if ((!species::is_draconian(you.species)
+             || you.experience_level < 7
+             || form_changes_anatomy())
+            && you.form != transformation::dragon)
         {
             break;
         }
@@ -354,17 +356,6 @@ bool fill_status_info(int status, status_info& inf)
             inf.db_key       = "-Potion";
             inf.short_text   = T_("unable to drink");
             inf.long_text    = T_("You cannot drink potions.");
-        }
-        break;
-
-    case DUR_SWIFTNESS:
-        if (you.attribute[ATTR_SWIFTNESS] < 0)
-        {
-            inf.light_text   = T_("-Swift");
-            inf.db_key       = "-Swift";
-            inf.light_colour = RED;
-            inf.short_text   = T_("unswift");
-            inf.long_text    = T_("You are covering ground slowly.");
         }
         break;
 

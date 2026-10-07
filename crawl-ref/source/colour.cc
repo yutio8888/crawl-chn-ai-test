@@ -51,7 +51,7 @@ int base_colour_calc::rand(bool non_random, coord_def pos) const
     uint32_t data[] = { (uint32_t)you.birth_time, (uint32_t)pos.x,
                         (uint32_t)pos.y, (uint32_t)you.frame_no,
                         (uint32_t)type, (uint32_t)you.depth };
-    return hash32(data, sizeof(data)) % rand_max;
+    return hash_uint32(data) % rand_max;
 }
 
 int element_colour_calc::get(const coord_def& loc, bool non_random) const
@@ -307,6 +307,10 @@ static int _etc_orb_glow(int, const coord_def& loc)
 
 int dam_colour(const monster_info& mi)
 {
+    // Hide wound state for invisible creatures.
+    if (mi.is(MB_REMEMBERED_INVIS) || mi.is(MB_KNOWN_INVIS))
+        return BLACK;
+
     switch (mi.dam)
     {
         case MDAM_OKAY:                 return Options.enemy_hp_colour[0];

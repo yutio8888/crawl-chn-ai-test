@@ -70,6 +70,8 @@ struct game_state
     bool map_stat_gen;      // Set if we're generating stats on maps.
     bool map_stat_dump_disconnect; // Set if we dump disconnected maps and exit
                                    // under mapstat.
+    bool map_stat_veto_closets; // Set if mapstat should veto levels with
+                                // teleport closets rather than masking them.
     bool obj_stat_gen;      // Set if we're generating object stats.
 
     string force_map;       // Set if we're forcing a specific map to generate.
@@ -140,8 +142,8 @@ struct game_state
     // Area beyond which view should be darkened,  0 = disabled.
     targeter *darken_range;
 
-    // Monsters to highlight on the screen, 0 = disabled.
-    vector<monster *> *flash_monsters;
+    // Monster positions to highlight on the screen, 0 = disabled.
+    vector<coord_def> *flash_monsters;
 
     // monsters which saw the player retreating.
     set<monster*> potential_pursuers;

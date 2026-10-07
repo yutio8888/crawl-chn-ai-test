@@ -600,6 +600,9 @@ static void _show_commandline_options_help()
     puts("  -dump-disconnect    In mapstat when a disconnected level is "
          "generated, dump");
     puts("      map to map.dump and exit");
+    puts("  -veto-closets       In mapstat, veto levels with teleport closets "
+         "rather than");
+    puts("      masking the closets as in normal play");
     puts("  -objstat [<levels>] run monster and item stats on the given range "
          "of levels");
     puts("      Defaults to entire dungeon; same level syntax as -mapstat.");
@@ -1218,9 +1221,6 @@ static void _input()
             world_reacts();
         }
 
-        if (!you_are_delayed())
-            update_can_currently_train();
-
 #ifdef USE_TILE_WEB
         tiles.flush_messages();
 #endif
@@ -1359,8 +1359,6 @@ static void _input()
         viewwindow();
         update_screen();
     }
-
-    update_can_currently_train();
 
     _update_replay_state();
 
@@ -2206,11 +2204,8 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_ENABLE_MORE:  crawl_state.show_more_prompt = true;  break;
 
     case CMD_TOGGLE_AUTOPICKUP:
-        if (Options.autopickup_on < 1)
-            Options.autopickup_on = 1;
-        else
-            Options.autopickup_on = 0;
-        mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0
+        Options.autopickup_on = !Options.autopickup_on;
+        mprf(T_("Autopickup is now %s."), Options.autopickup_on
              ? C_("autopickup state", "on")
              : C_("autopickup state", "off"));
         break;
@@ -2226,6 +2221,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_CLEAR_MAP:       clear_map_or_travel_trail(); break;
     case CMD_DISPLAY_OVERMAP: display_overview(); break;
     case CMD_DISPLAY_MAP:     _do_display_map(); break;
+    case CMD_IGNORE_INVISIBLE: env.invis_knowledge.suppress_invis_warning(); break;
 
 #ifdef USE_TILE
     case CMD_ZOOM_IN:   tiles.zoom_dungeon(true); break;
@@ -2694,10 +2690,14 @@ void world_reacts()
         player_reacts_to_monsters();
 
     clear_monster_flags();
-
-    add_auto_excludes();
+    env.invis_knowledge.handle_time();
 
     viewwindow();
+
+    // Needs to happen after viewwindow() so that the map knowledge is up to
+    // date to decide which monsters to exclude.
+    add_auto_excludes();
+
     update_screen();
 
     _check_trapped();
@@ -2839,7 +2839,7 @@ static void _swing_at_target(coord_def move)
     if (monster* mon = monster_at(target.target))
         if (!could_harm(&you, mon, true, true))
         {
-            if (!you.can_see(*mon))
+            if (!you.aware_of(*mon))
                 you.turn_is_over = true;
             return;
         }

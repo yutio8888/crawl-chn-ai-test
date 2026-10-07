@@ -392,7 +392,6 @@ private:
 public:
     mon_resist_type try_enchant_monster(monster* mon, int &res_margin);
     mon_resist_type apply_enchantment_to_monster(monster* mon);
-    void apply_beam_conducts();
 private:
     void apply_bolt_paralysis(monster* mons);
     void apply_bolt_petrify(monster* mons);
@@ -424,6 +423,28 @@ public:
 
     bool is_tracer() const noexcept { return tracer != nullptr; }
     void set_is_tracer(bool value) noexcept;
+};
+
+// Iterates over the cells affected by an explosion.
+class explosion_iterator
+{
+public:
+    explosion_iterator(coord_def origin, int radius,
+                       beam_type flavour = BEAM_NONE,
+                       spell_type spell = SPELL_NO_SPELL,
+                       mid_t source = MID_PLAYER,
+                       bool stop_at_statues = true,
+                       bool stop_at_walls = true);
+
+    operator bool() const;
+    coord_def operator*() const;
+    const coord_def* operator->() const;
+    void operator++();
+    void operator++(int);
+
+private:
+    vector<coord_def> cells;
+    size_t index = 0;
 };
 
 int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,

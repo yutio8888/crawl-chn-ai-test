@@ -45,6 +45,7 @@
 #include "libutil.h"
 #include "positional_format.h"
 #include "makeitem.h"
+#include "map-knowledge.h"
 #include "message.h"
 #include "misc.h"
 #include "mon-abil.h"
@@ -438,7 +439,8 @@ vorpal_damage_type monster::damage_type(int which_attack) const
  * @return            The time taken by an attack with the monster's weapon
  *                    and the given projectile, in aut.
  */
-random_var monster::attack_delay(const item_def *projectile) const
+random_var monster::attack_delay(const item_def *projectile,
+                                 bool /*include_temp*/) const
 {
     const item_def* weap = weapon();
     if (!weap || (projectile && is_throwable(this, *projectile)))
@@ -1191,6 +1193,17 @@ bool monster::pickup_launcher(item_def &launch, bool msg, bool force)
     if (!force && !_needs_ranged_attack(this))
         return false;
 
+    const bool dual_wielding = mons_wields_two_weapons(*this);
+    if (dual_wielding)
+    {
+        // If we have either weapon slot free, pick up the weapon.
+        if (inv[MSLOT_WEAPON] == NON_ITEM)
+            return pickup(launch, MSLOT_WEAPON, msg);
+
+        if (inv[MSLOT_ALT_WEAPON] == NON_ITEM)
+            return pickup(launch, MSLOT_ALT_WEAPON, msg);
+    }
+
     const int mdam_rating = mons_weapon_damage_rating(launch);
     for (int i = MSLOT_WEAPON; i <= MSLOT_ALT_WEAPON; ++i)
     {
@@ -1198,6 +1211,11 @@ bool monster::pickup_launcher(item_def &launch, bool msg, bool force)
         const item_def *old_weapon = mslot_item(slot);
         if (!old_weapon)
             return pickup(launch, slot, msg);
+
+        // If dual-wielding, don't mix types. If not, don't pick up two ranged
+        // weapons.
+        if (!is_range_weapon(*old_weapon))
+            continue;
 
         // If the old weapon is better than the new one, or just as
         // good and with as good a brand, don't bother swapping.
@@ -1494,24 +1512,9 @@ bool monster::wants_weapon(const item_def &weap) const
         return false;
     }
 
-    // Holy monsters that aren't gifts/worshippers of chaotic gods
-    // and monsters that are gifts/worshippers of good gods won't
-    // use potentially evil weapons.
-    if (((is_holy() && !is_chaotic_god(god))
-            || is_good_god(god))
-        && is_potentially_evil_item(weap))
-    {
-        return false;
-    }
-
     // Holy monsters and monsters that are gifts/worshippers of good
     // gods won't use evil weapons.
     if ((is_holy() || is_good_god(god)) && is_evil_item(weap))
-        return false;
-
-    // Monsters that are gifts/worshippers of Zin won't use unclean
-    // weapons.
-    if (god == GOD_ZIN && is_unclean_item(weap))
         return false;
 
     // Holy monsters that aren't gifts/worshippers of chaotic gods
@@ -2134,7 +2137,7 @@ static string _mon_special_name(const monster& mon, description_level_type desc,
         return _invalid_monster_str(mon.type);
 
     // Handle non-visible case first.
-    if (!force_seen && !mon.observable())
+    if (!force_seen && !mon.observable() && !you.aware_of(mon))
     {
         switch (desc)
         {
@@ -2200,7 +2203,7 @@ string monster::full_name(description_level_type desc) const
 
 string monster::pronoun(pronoun_type pro, bool force_visible) const
 {
-    const bool seen = force_visible || you.can_see(*this);
+    const bool seen = force_visible || you.aware_of(*this);
     if (seen && props.exists(MON_GENDER_KEY))
     {
         return decline_pronoun((gender_type)props[MON_GENDER_KEY].get_int(),
@@ -2211,7 +2214,7 @@ string monster::pronoun(pronoun_type pro, bool force_visible) const
 
 bool monster::pronoun_plurality(bool force_visible) const
 {
-    const bool seen = force_visible || you.can_see(*this);
+    const bool seen = force_visible || you.aware_of(*this);
     if (seen && props.exists(MON_GENDER_KEY))
         return props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL;
 
@@ -2231,9 +2234,9 @@ string monster::hand_name(bool plural, bool *can_plural) const
     *can_plural = true;
 
     string str;
-    char ch = mons_base_char(mons_is_pghost(type)
-                             ? species::to_mons_species(ghost->species)
-                             : type);
+    char32_t ch = mons_base_char(mons_is_pghost(type)
+                                 ? species::to_mons_species(ghost->species)
+                                 : type);
 
     const bool rand = (type == MONS_CHAOS_SPAWN);
 
@@ -2247,8 +2250,13 @@ string monster::hand_name(bool plural, bool *can_plural) const
     case MON_SHAPE_HUMANOID_WINGED:
     case MON_SHAPE_HUMANOID_TAILED:
     case MON_SHAPE_HUMANOID_WINGED_TAILED:
-        if (ch == 'T' || ch == 'n' || mons_is_demon(type))
+        if (mons_is_demon(type)
+            || mons_genus(type) == MONS_TROLL
+            || mons_genus(type) == MONS_REVENANT
+            || mons_genus(type) == MONS_GHOUL)
+        {
             str = "claw";
+        }
         break;
 
     case MON_SHAPE_QUADRUPED:
@@ -2365,9 +2373,9 @@ string monster::foot_name(bool plural, bool *can_plural) const
 
     string str;
 
-    char ch = mons_base_char(mons_is_pghost(type)
-                             ? species::to_mons_species(ghost->species)
-                             : type);
+    char32_t ch = mons_base_char(mons_is_pghost(type)
+                                 ? species::to_mons_species(ghost->species)
+                                 : type);
 
     const bool rand = (type == MONS_CHAOS_SPAWN);
 
@@ -2384,7 +2392,7 @@ string monster::foot_name(bool plural, bool *can_plural) const
     case MON_SHAPE_HUMANOID_WINGED:
     case MON_SHAPE_HUMANOID_TAILED:
     case MON_SHAPE_HUMANOID_WINGED_TAILED:
-        if (type == MONS_MINOTAUR)
+        if (mons_genus(type) == MONS_MINOTAUR)
             str = "hoof";
         else if (swimming() && mons_genus(type) == MONS_MERFOLK)
         {
@@ -2407,18 +2415,21 @@ string monster::foot_name(bool plural, bool *can_plural) const
         }
         else if (mons_genus(type) == MONS_HOG)
             str = "trotter";
-        else if (ch == 'h')
-            str = "paw";
-        else if (ch == 'l' || ch == 'D')
-            str = "talon";
-        else if (type == MONS_YAK || type == MONS_DEATH_YAK)
-            str = "hoof";
-        else if (ch == 'H')
+        else if (mons_genus(type) == MONS_HOUND
+                 || mons_genus(type) == MONS_FELID
+                 || mons_genus(type) == MONS_SPHINX
+                 || type == MONS_MANTICORE)
         {
-            if (type == MONS_MANTICORE || mons_genus(type) == MONS_SPHINX)
-                str = "paw";
-            else
-                str = "talon";
+            str = "paw";
+        }
+        else if (mons_genus(type) == MONS_DRAGON)
+            str = "talon";
+        else if (mons_genus(type) == MONS_YAK
+                 || mons_genus(type) == MONS_ELEPHANT
+                 || type == MONS_DREAM_SHEEP
+                 || type == MONS_APIS)
+        {
+            str = "hoof";
         }
         break;
 
@@ -2819,9 +2830,16 @@ bool monster::immune_to_silence() const
     return true;
 }
 
+static bool _is_unclean_spell(spell_type spell)
+{
+    spell_flags flags = get_spell_flags(spell);
+
+    return bool(flags & spflag::unclean);
+}
+
 bool monster::has_unclean_spell() const
 {
-    return search_spells(is_unclean_spell);
+    return search_spells(_is_unclean_spell);
 }
 
 bool monster::has_chaotic_spell() const
@@ -2944,7 +2962,7 @@ bool monster::unswappable() const
         || mons_is_projectile(*this);
 }
 
-bool monster::backlit(bool self_halo, bool /*temp*/) const
+bool monster::backlit(bool self_halo, bool /*include_temp*/) const
 {
     if (has_ench(ENCH_CORONA) || has_ench(ENCH_STICKY_FLAME)
         || has_ench(ENCH_SILVER_CORONA) || has_ench(ENCH_CONTAM))
@@ -3295,10 +3313,10 @@ int monster::base_evasion() const
 /**
  * What's the current evasion of this monster?
  *
- * @param ignore_temporary Whether to ignore temporary bonuses/penalties.
+ * @param include_temp Whether to include temporary bonuses/penalties.
  * @return The evasion of this monster, after applying items & statuses.
  **/
-int monster::evasion(bool ignore_temporary, const actor* /*act*/) const
+int monster::evasion(bool include_temp, const actor* /*act*/) const
 {
     int ev = base_evasion();
 
@@ -3324,7 +3342,7 @@ int monster::evasion(bool ignore_temporary, const actor* /*act*/) const
     ev += scan_artefacts(ARTP_EVASION);
 
     // Only temporary modifiers after this
-    if (ignore_temporary)
+    if (!include_temp)
         return max(ev, 0);
 
     if (paralysed() || petrified() || petrifying() || asleep()
@@ -3389,7 +3407,7 @@ void monster::suicide(int hp_target)
     hit_points = hp_target;
 }
 
-mon_holy_type monster::holiness(bool /*temp*/, bool /*incl_form*/) const
+mon_holy_type monster::holiness(bool /*include_temp*/, bool /*incl_form*/) const
 {
     // zombie kraken tentacles
     if (testbits(flags, MF_FAKE_UNDEAD))
@@ -3398,7 +3416,7 @@ mon_holy_type monster::holiness(bool /*temp*/, bool /*incl_form*/) const
     return mons_class_holiness(type);
 }
 
-bool monster::undead_or_demonic(bool /*temp*/) const
+bool monster::undead_or_demonic(bool /*include_temp*/) const
 {
     const mon_holy_type holi = holiness();
 
@@ -3435,7 +3453,7 @@ bool monster::is_holy() const
     return bool(holiness() & MH_HOLY) || is_priest() && is_good_god(god);
 }
 
-bool monster::is_nonliving(bool /*temp*/, bool /*incl_form*/) const
+bool monster::is_nonliving(bool /*include_temp*/, bool /*incl_form*/) const
 {
     return bool(holiness() & MH_NONLIVING);
 }
@@ -3747,7 +3765,7 @@ bool monster::res_water_drowning() const
                && type != MONS_ORC_APOSTLE);
 }
 
-int monster::res_poison(bool temp) const
+int monster::res_poison(bool include_temp) const
 {
     int u = get_mons_resist(*this, MR_RES_POISON);
 
@@ -3757,7 +3775,7 @@ int monster::res_poison(bool temp) const
             return 3;
     }
 
-    if (temp && has_ench(ENCH_POISON_VULN))
+    if (include_temp && has_ench(ENCH_POISON_VULN))
         u--;
 
     if (u > 0)
@@ -3800,7 +3818,7 @@ bool monster::res_sticky_flame() const
     return is_insubstantial();
 }
 
-bool monster::res_miasma(bool /*temp*/) const
+bool monster::res_miasma(bool /*include_temp*/) const
 {
     if ((holiness() & (MH_HOLY | MH_DEMONIC | MH_UNDEAD | MH_NONLIVING))
         || get_mons_resist(*this, MR_RES_MIASMA))
@@ -3895,7 +3913,7 @@ bool monster::res_polar_vortex() const
     return has_ench(ENCH_POLAR_VORTEX);
 }
 
-bool monster::res_petrify(bool /*temp*/) const
+bool monster::res_petrify(bool /*include_temp*/) const
 {
     return is_insubstantial() || get_mons_resist(*this, MR_RES_PETRIFY) > 0;
 }
@@ -4006,7 +4024,7 @@ int monster::slaying(bool /*throwing*/, bool /*random*/) const
             + wearing_ego(OBJ_WEAPONS, SPWPN_DEVIOUS) * 6;
 }
 
-bool monster::no_tele(bool /*blinking*/, bool /*temp*/) const
+bool monster::no_tele(bool /*blinking*/, bool /*include_temp*/) const
 {
     // Plants can't survive without roots, so it's either this or auto-kill.
     // Statues have pedestals so moving them is weird.
@@ -4075,7 +4093,7 @@ bool monster::poison(actor *agent, int amount, bool force)
     return poison_monster(this, agent, amount, force);
 }
 
-int monster::skill(skill_type sk, int scale, bool /*real*/, bool /*temp*/) const
+int monster::skill(skill_type sk, int scale, bool /*real*/, bool /*include_temp*/) const
 {
     // Let spectral weapons have necromancy skill for pain brand.
     if (mons_intel(*this) < I_HUMAN && !mons_is_avatar(type))
@@ -5102,7 +5120,7 @@ bool monster::can_mutate() const
     return !(holi & (MH_UNDEAD | MH_NONLIVING));
 }
 
-bool monster::can_safely_mutate(bool /*temp*/) const
+bool monster::can_safely_mutate(bool /*include_temp*/) const
 {
     return can_mutate();
 }
@@ -5134,7 +5152,7 @@ bool monster::can_polymorph() const
     return can_mutate();
 }
 
-bool monster::has_blood(bool /*temp*/) const
+bool monster::has_blood(bool /*include_temp*/) const
 {
     if (petrified())
         return false;
@@ -5142,7 +5160,7 @@ bool monster::has_blood(bool /*temp*/) const
     return mons_has_blood(type);
 }
 
-bool monster::has_bones(bool /*temp*/) const
+bool monster::has_bones(bool /*include_temp*/) const
 {
     return mons_has_skeleton(type);
 }
@@ -5509,6 +5527,24 @@ void monster::finalise_movement(const actor* to_blame)
         dungeon_events.fire_position_event(DET_MONSTER_MOVED, pos());
         if (has_ench(ENCH_SUNDER_CHARGE))
             del_ench(ENCH_SUNDER_CHARGE);
+
+        // If a known invisible monster moves, its position stops being known
+        // to the player, but you should still remember where it last was.
+        if (flags & MF_KNOWN_INVISIBLE)
+        {
+            flags &= ~MF_KNOWN_INVISIBLE;
+            env.invis_knowledge.update(*this, false, last_move_pos);
+        }
+    }
+
+    if (invisible())
+    {
+        if (!airborne() && feat_is_water(env.grid(pos())))
+            sense_if_invisible();
+
+        if (cloud_struct *cloud = cloud_at(pos()))
+            if (is_opaque_cloud(cloud->type) && !is_insubstantial())
+                sense_if_invisible();
     }
 
     if (!(mons_habitat(*this) & HT_DRY_LAND)
@@ -5916,7 +5952,7 @@ bool monster::matches_player_speed() const
 
 int monster::player_speed_energy() const
 {
-    const int pmove = player_movement_speed() * player_speed();
+    const int pmove = player_overall_move_delay(BASELINE_DELAY);
     return div_rand_round(speed * pmove, 100);
 }
 
@@ -6897,4 +6933,26 @@ int monster::threat_range(bool include_lof_requiring, bool include_lof_ignoring)
     }
 
     return range;
+}
+
+/**
+ * Possibly inform the player about this monster's location and presence,
+ * if it is invisible but otherwise in LoS (eg: after shooting something at
+ * them or being attacked by them.)
+ *
+ * @param reveal_position   If true (the default), unambiguously reveals the
+ *                          monster's current position. If false (for instance,
+ *                          if a monster does something that only suggests it is
+ *                          'somewhere in LoS'), add only a general hint to
+ *                          invis knowledge.
+ */
+void monster::sense_if_invisible(bool reveal_position)
+{
+    if (!has_ench(ENCH_INVIS) || visible_to(&you) || !you.see_cell(pos()))
+        return;
+
+    if (reveal_position)
+        flags |= MF_KNOWN_INVISIBLE;
+
+    env.invis_knowledge.update(*this, reveal_position);
 }

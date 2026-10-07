@@ -304,7 +304,7 @@ int current_horror_level()
 {
     int horror_level = 0;
 
-    for (monster_near_iterator mi(&you, LOS_NO_TRANS); mi; ++mi)
+    for (monster_near_iterator mi(&you, LOS_NO_TRANS, true); mi; ++mi)
     {
         if (mons_aligned(*mi, &you)
             || !mons_is_threatening(**mi)
@@ -501,10 +501,6 @@ static void _handle_hoarding()
  */
 void player_reacts_to_monsters()
 {
-    // In case Maurice managed to steal a needed item for example.
-    if (!you_are_delayed())
-        update_can_currently_train();
-
     check_monster_detect();
 
     if (have_passive(passive_t::detect_items) || you.has_mutation(MUT_JELLY_GROWTH)
@@ -770,25 +766,24 @@ static void _decrement_durations()
 
     _decrement_transform_duration(delay);
 
-    if (you.attribute[ATTR_SWIFTNESS] >= 0)
+    if (you.duration[DUR_SWIFTNESS])
     {
         if (_decrement_a_duration(DUR_SWIFTNESS, delay,
                                   T_("You feel sluggish."), coinflip(),
                                   T_("You start to feel a little slower.")))
         {
             // Start anti-swiftness.
-            you.duration[DUR_SWIFTNESS] = you.attribute[ATTR_SWIFTNESS];
-            you.attribute[ATTR_SWIFTNESS] = -1;
-        }
-    }
-    else
-    {
-        if (_decrement_a_duration(DUR_SWIFTNESS, delay,
-                                  T_("You no longer feel sluggish."), coinflip(),
-                                  T_("You start to feel a little faster.")))
-        {
+            you.duration[DUR_ANTISWIFT] = you.attribute[ATTR_SWIFTNESS];
             you.attribute[ATTR_SWIFTNESS] = 0;
         }
+    }
+    else if (you.duration[DUR_ANTISWIFT])
+    {
+        // We don't make this a normal duration so that it doesn't decrement
+        // later in this function on the turn where swiftness wears off.
+        _decrement_a_duration(DUR_ANTISWIFT, delay,
+                              "You no longer feel sluggish.", coinflip(),
+                              "You start to feel a little faster.");
     }
 
     // Decrement Powered By Death strength
@@ -985,12 +980,6 @@ static void _decrement_durations()
             T_(you.berserk() ? "rip and tear" : "carefully extract"));
         extract_barbs(barbs_msg.c_str());
     }
-
-    if (you.wearing_jewellery(AMU_WILDSHAPE))
-        did_god_conduct(DID_CHAOS, 1);
-
-    if (you.wearing_ego(OBJ_ARMOUR, SPARM_DEATH))
-        did_god_conduct(DID_EVIL, 1);
 
     if (!you.duration[DUR_ANCESTOR_DELAY]
         && have_passive(passive_t::frail)

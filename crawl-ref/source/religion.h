@@ -11,6 +11,7 @@
 #include "mgen-data.h"
 #include "player.h"
 #include "religion-enum.h"
+#include "transform.h"
 
 using std::vector;
 
@@ -66,11 +67,14 @@ void handle_god_time(int /*time_delta*/);
 int god_colour(god_type god);
 colour_t god_message_altar_colour(god_type god);
 int gozag_service_fee();
-bool player_can_join_god(god_type which_god, bool temp = true);
+string cannot_join_god_reason(god_type which_god, bool include_temp = true,
+                              bool check_gear = true);
+bool player_can_join_god(god_type which_god, bool include_temp = true);
+bool god_forbids_form(god_type which_god, transformation which_trans);
+bool transformed_player_can_join_god(god_type which_god);
 void join_trog_skills(void);
 void join_religion(god_type which_god);
 void god_pitch(god_type which_god);
-void print_god_rejection(god_type which_god);
 god_type choose_god(god_type def_god = NUM_GODS);
 vector<god_type> get_ecu_gods(coord_def pos);
 
@@ -108,9 +112,6 @@ bool god_hates_killing(god_type god, const monster& mon);
 bool god_hates_eating(god_type god, monster_type mc);
 
 bool god_likes_spell(spell_type spell, god_type god);
-bool god_hates_spellcasting(god_type god);
-bool god_hates_spell(spell_type spell, god_type god, bool fake_spell = false);
-string god_spell_warn_string(spell_type spell, god_type god);
 
 void initialize_ashenzari_props();
 bool god_protects_from_harm();

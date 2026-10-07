@@ -16,7 +16,6 @@ struct skill_state
 {
     skill_state();
 
-    FixedBitVector<NUM_SKILLS>            can_currently_train;
     FixedVector<uint8_t, NUM_SKILLS>      skills;
     FixedVector<int, NUM_SKILLS>          real_skills;    // Those two are
     FixedVector<int, NUM_SKILLS>          changed_skills; // scaled by 10.
@@ -62,13 +61,11 @@ int calc_skill_cost_level(int xp, int start);
 int calc_skill_cost(int skill_cost_level);
 void check_skill_cost_change(bool quiet = false);
 
-bool skill_default_shown(skill_type sk);
+skill_set default_shown_skills();
 void reassess_starting_skills(bool balance_djinn = true);
 bool check_selected_skills();
 void init_train();
-void init_can_currently_train();
 void init_training();
-void update_can_currently_train();
 void reset_training();
 int calc_skill_level_change(skill_type sk, int starting_level, int sk_points);
 void check_skill_level_change(skill_type sk, bool do_level_up = true);
@@ -115,10 +112,10 @@ void init_skill_order();
 bool is_removed_skill(skill_type skill);
 skill_type random_skill();
 bool can_sacrifice_skill(mutation_type mut);
-bool is_useless_skill(skill_type skill);
-bool is_harmful_skill(skill_type skill);
-bool can_enable_skill(skill_type sk, bool override = false);
-bool trainable_skills(bool check_all = false);
+bool is_forbidden_skill(skill_type skill);
+bool is_useless_skill(skill_type skill, bool include_god = true);
+bool can_enable_skill(skill_type sk);
+bool trainable_skills();
 bool skills_being_trained();
 
 int species_apt(skill_type skill, species_type species = you.species);

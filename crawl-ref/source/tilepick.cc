@@ -879,9 +879,14 @@ void apply_variations(const tile_flavour &flv, tileidx_t *bg,
     if (tile == TILE_FLOOR_NORMAL)
         tile = flv.floor;
     else if (tile == TILE_WALL_NORMAL)
+    {
         tile = flv.wall;
+        needs_tile_picking = is_torch_tile(tile);
+    }
     else if (is_door_tile(tile))
     {
+        unsigned short door_connect = env.map_knowledge(gc).door_connect();
+        ASSERT(door_connect < 7);
         tileidx_t override = flv.feat;
         // For vaults overriding door tiles, like Cigotuvi's Fleshworks.
         if (is_door_tile(override))
@@ -890,11 +895,11 @@ void apply_variations(const tile_flavour &flv, tileidx_t *bg,
             bool runed = (tile == TILE_DNGN_RUNED_DOOR);
             bool broken = (tile == TILE_DNGN_BROKEN_DOOR);
             int offset = _get_door_offset(override, opened, runed, broken,
-                flv.special);
+                                          door_connect);
             tile = override + offset;
         }
         else
-            tile = tile + min((int)flv.special, 6);
+            tile = tile + door_connect;
     }
     else if (tile == TILE_DNGN_TRAP_WEB)
     {
@@ -1036,19 +1041,15 @@ tileidx_t tileidx_tentacle(const monster_info& mon)
         // Get the parent tentacle's location.
         h_pos = t_pos + mon.props[INWARDS_KEY].get_coord();
     }
-    if (no_head_connect && (mon.type == MONS_SNAPLASHER_VINE
-                            || mon.type == MONS_SNAPLASHER_VINE_SEGMENT))
+    // Vines next to trees don't have an inwards key, but they remember
+    // the position of the tree they spawned from.
+    if (no_head_connect
+        && (mon.type == MONS_SNAPLASHER_VINE
+            || mon.type == MONS_SNAPLASHER_VINE_SEGMENT)
+        && mon.props.exists(TREE_POSITION_KEY))
     {
-        // Find an adjacent tree to pretend we're connected to.
-        for (adjacent_iterator ai(t_pos); ai; ++ai)
-        {
-            if (feat_is_tree(env.grid(*ai)))
-            {
-                h_pos = *ai;
-                no_head_connect = false;
-                break;
-            }
-        }
+        h_pos = mon.props[TREE_POSITION_KEY].get_coord();
+        no_head_connect = false;
     }
 
     // Is there a connection to the given direction?
@@ -1302,7 +1303,7 @@ void tileidx_out_of_los(tile_with_flags_t *fg,
     // Override foreground for monsters/items
     if (env.map_knowledge(gc).detected_monster())
     {
-        ASSERT(cell.monster() == MONS_SENSED);
+        ASSERT(cell.mon_type() == MONS_SENSED);
         *fg = tileidx_monster_base(cell.monsterinfo()->base_type, 0);
     }
     else if (env.map_knowledge(gc).detected_item())
@@ -2709,6 +2710,9 @@ tile_with_flags_t tileidx_monster(const monster_info& mons)
     }
 #endif
 
+    if (mons.is(MB_KNOWN_INVIS))
+        ch |= TILE_FLAG_INVIS;
+
     return ch;
 }
 #endif
@@ -2798,6 +2802,7 @@ static const map<monster_info_flags, tileidx_t> monster_status_icons = {
     { MB_MUTE, TILEI_MUTE },
     { MB_EXPOSED, TILEI_EXPOSED },
     { MB_STAMPEDE, TILEI_STAMPEDE },
+    { MB_KNOWN_INVIS, TILEI_UNSEEN_INVIS_KNOWN },
 };
 
 set<tileidx_t> status_icons_for(const monster_info &mons)
@@ -3905,6 +3910,7 @@ tileidx_t vary_bolt_tile(tileidx_t tile, int dir, int dist)
     case TILE_BOLT_FLAME:
     case TILE_BOLT_IGNITE_POISON_TARGET:
     case TILE_BOLT_IGNITE_POISON_TERRAIN:
+    case TILE_BOLT_BOG_FLASH:
     case TILE_BOLT_MAGMA:
     case TILE_BOLT_ICEBLAST:
     case TILE_BOLT_PERMAFROST_EARTH:
@@ -3925,12 +3931,17 @@ tileidx_t vary_bolt_tile(tileidx_t tile, int dir, int dist)
     case TILE_BOLT_BOMBLET_LAUNCH:
     case TILE_BOLT_BOMBLET_BLAST:
     case TILE_BOLT_MANIFOLD_ASSAULT:
+    case TILE_BOLT_SHATTER_WAVE_YELLOW:
+    case TILE_BOLT_SHATTER_WAVE_WHITE:
+    case TILE_BOLT_SHATTER_WALL:
     case TILE_BOLT_PARAGON_TEMPEST:
     case TILE_BOLT_ANTIMAGIC:
     case TILE_BOLT_FLESH:
     case TILE_BOLT_CHAOS:
     case TILE_BOLT_CHAOS_BUFF:
+    case TILE_BOLT_SLIME_WAVE:
     case TILE_BOLT_GLOOM:
+    case TILE_BOLT_DRAIN_LIFE:
     case TILE_BOLT_SUNDERING:
     case TILE_BOLT_WIND_HUSH:
     case TILE_BOLT_CORRUPTION:

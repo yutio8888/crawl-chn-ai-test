@@ -39,6 +39,7 @@
 #include "outer-menu.h"
 #include "message.h"
 #include "mon-util.h"
+#include "mon-info-flag-name.h"
 #include "notes.h"
 #include "options.h"
 #include "player.h"
@@ -1529,9 +1530,9 @@ void TilesFramework::send_doll(const dolls_data &doll, bool submerged, bool ghos
     tiles.json_close_array();
 }
 
-void TilesFramework::send_mcache(mcache_entry *entry, bool submerged, bool send)
+void TilesFramework::send_mcache(mcache_entry *entry, bool submerged, bool invis, bool send)
 {
-    bool trans = entry->transparent();
+    bool trans = entry->transparent() || invis;
     if (trans && send)
         tiles.json_write_int("trans", 1);
 
@@ -1646,6 +1647,8 @@ void TilesFramework::_send_cell(const coord_def &gc,
         const tileidx_t fg_idx = next_pc.fg.tile();
 
         const bool in_water = is_in_water(next_pc);
+        const bool invis = (next_pc.fg.flags() & TILE_FLAG_INVIS)
+                            || (next_pc.bg.flags() & TILE_FLAG_REMEMBERED_INVIS);
         bool fg_changed = false;
 
         if (next_pc.fg != current_pc.fg)
@@ -1762,7 +1765,7 @@ void TilesFramework::_send_cell(const coord_def &gc,
             {
                 mcache_entry *entry = mcache.get(fg_idx);
                 if (entry)
-                    send_mcache(entry, in_water);
+                    send_mcache(entry, in_water, invis);
                 else
                 {
                     json_write_comma();
@@ -1803,7 +1806,7 @@ void TilesFramework::_send_cell(const coord_def &gc,
                     tileidx_t mcache_idx = mcache.register_monster(minfo);
                     mcache_entry *entry = mcache.get(mcache_idx);
                     if (entry)
-                        send_mcache(entry, in_water, false);
+                        send_mcache(entry, in_water, invis, false);
                     else
                         json_write_null("mcache");
                 }
@@ -1815,6 +1818,9 @@ void TilesFramework::_send_cell(const coord_def &gc,
         {
             if (fg_changed)
             {
+                if (invis)
+                    tiles.json_write_int("trans", 1);
+
                 json_write_comma();
                 write_message("\"doll\":[[%u,%d]]", (unsigned int) fg_idx, TILE_Y);
                 json_write_null("mcache");
@@ -1925,6 +1931,9 @@ void TilesFramework::_send_map(bool spectator_only)
         m_player_on_level = you.on_current_level;
     }
 
+    _update_string(force_full, invis_mon_desc,
+                   env.invis_knowledge.get_unknown_monster_description(), "invis_mon_desc");
+
     if (force_full || m_current_gc != m_next_gc)
     {
         if (m_origin.equals(-1, -1))
@@ -1963,9 +1972,9 @@ void TilesFramework::_send_map(bool spectator_only)
                 screen_cell_t *cell = &m_next_view(gc);
 
                 if (you.flash_where && you.flash_where->is_affected(gc) <= 0)
-                    draw_cell(cell, gc, false, 0);
+                    draw_cell(cell, gc, false, 0, 0);
                 else
-                    draw_cell(cell, gc, false, flash_colour);
+                    draw_cell(cell, gc, false, flash_colour, you.flash_alpha);
 
                 pack_cell_overlays(gc, m_next_view);
             }

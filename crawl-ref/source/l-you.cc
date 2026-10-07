@@ -252,7 +252,7 @@ LUAFN(you_can_train_skill)
     skill_type sk = l_skill(ls);
     if (sk > NUM_SKILLS)
         return 0;
-    PLUARET(boolean, you.can_currently_train[sk]);
+    PLUARET(boolean, !is_useless_skill(sk));
 }
 
 /*** Is this skill useless (removed, sacrificed, or unusable) to the player?
@@ -421,7 +421,8 @@ LUARET1(you_confused, boolean, you.confused())
  * @treturn int Swift level
  * @function swift
  */
-LUARET1(you_swift, integer, you.duration[DUR_SWIFTNESS] ? ((you.attribute[ATTR_SWIFTNESS] >= 0) ? 1 : -1) : 0)
+LUARET1(you_swift, integer, you.duration[DUR_SWIFTNESS]
+                            ? 1 : (you.duration[DUR_ANTISWIFT] ? -1 : 0))
 
 /*** What was the loudest noise you heard in the last turn?
  * Returns a number from [0, 1000], representing the current noise bar.
@@ -1132,6 +1133,16 @@ LUAFN(you_reach_range)
     return 1;
 }
 
+/*** How long to take the next step (including form, terrain, speed adjustments)?
+ * @treturn int movement cost as aut per step
+ * @function movement_cost
+ */
+ LUAFN(you_movement_cost)
+ {
+    int cost = player_overall_move_delay(1, true, true, false);
+    PLUARET(integer, cost);
+ }
+
 /*** Get the mutation level of a mutation.
  * If all optional parameters are false this returns zero.
  * @tparam string mutationname
@@ -1556,6 +1567,7 @@ static const struct luaL_Reg you_clib[] =
     { "status",       you_status },
     { "immune_to_hex", you_immune_to_hex },
     { "reach_range", you_reach_range },
+    { "movement_cost", you_movement_cost },
 
     { "stop_activity", you_stop_activity },
     { "taking_stairs", you_taking_stairs },

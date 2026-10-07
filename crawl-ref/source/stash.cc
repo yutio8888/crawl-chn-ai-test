@@ -408,7 +408,7 @@ vector<stash_search_result> Stash::matches_search(
         // Build search haystack from the Chinese display name plus an
         // English version (for bilingual matching). Under EN mode the
         // guard is a no-op and fdesc_en equals fdesc.
-        string haystack = prefix + " " + fdesc;
+        string haystack = prefix + " " + fdesc + " feature";
         if (Options.language == lang_t::ZH)
         {
             ScopedLangEn en;
@@ -1267,6 +1267,21 @@ static bool _compare_by_name(const stash_search_result& lhs,
     }
 }
 
+// helper for search_stashes
+static bool _compare_by_type(const stash_search_result& lhs,
+                             const stash_search_result& rhs)
+{
+    if (lhs.match_type != rhs.match_type)
+        return lhs.match_type < rhs.match_type;
+    else if (lhs.match_type == MATCH_ITEM && rhs.match_type == MATCH_ITEM
+             && lhs.item.base_type != rhs.item.base_type)
+    {
+        return lhs.item.base_type < rhs.item.base_type;
+    }
+    else
+        return _compare_by_name(lhs, rhs);
+}
+
 static vector<stash_search_result> _inventory_search(const base_pattern &search)
 {
     vector<stash_search_result> results;
@@ -1314,7 +1329,7 @@ static vector<stash_search_result> _stash_filter_duplicates(vector<stash_search_
     out.reserve(in.size());
     // TODO: any problems doing this in place?
     // Everything gets resorted before display.
-    stable_sort(in.begin(), in.end(), _compare_by_name);
+    stable_sort(in.begin(), in.end(), _compare_by_type);
 
     for (const stash_search_result &res : in)
     {
@@ -1464,20 +1479,20 @@ void StashTracker::search_stashes(string search_term)
                                   _is_useless_result),
                         dedup_results.end());
 
-    bool sort_by_dist = true;
+    stash_sort_mode sort_mode = STASH_SORT_TYPE;
     bool filter_useless = true;
     bool default_execute = true;
     while (true)
     {
         bool again;
-        // Note that sort_by_dist and filter_useless can be modified by the
+        // Note that sort_mode and filter_useless can be modified by the
         // following call if requested by the user. Also, "results" will be
         // sorted by the call as appropriate:
         if (filter_useless)
         {
             // use the deduplicated results if we are filtering useless items
             again = display_search_results(dedup_results,
-                                           sort_by_dist,
+                                           sort_mode,
                                            filter_useless,
                                            default_execute,
                                            search,
@@ -1488,7 +1503,7 @@ void StashTracker::search_stashes(string search_term)
         else
         {
             again = display_search_results(results,
-                                           sort_by_dist,
+                                           sort_mode,
                                            filter_useless,
                                            default_execute,
                                            search,
@@ -1705,7 +1720,7 @@ bool StashSearchMenu::examine_index(int i)
 // Returns true to request redisplay if display method was toggled
 bool StashTracker::display_search_results(
     vector<stash_search_result> &results_in,
-    bool& sort_by_dist,
+    stash_sort_mode& sort_mode,
     bool& filter_useless,
     bool& default_execute,
     base_pattern* search,
@@ -1714,12 +1729,16 @@ bool StashTracker::display_search_results(
 {
     vector<stash_search_result> * results = &results_in;
 
-    if (sort_by_dist)
+    if (sort_mode == STASH_SORT_DIST)
         stable_sort(results->begin(), results->end(), _compare_by_distance);
-    else
+    else if (sort_mode == STASH_SORT_NAME)
         stable_sort(results->begin(), results->end(), _compare_by_name);
+    else if (sort_mode == STASH_SORT_TYPE)
+        stable_sort(results->begin(), results->end(), _compare_by_type);
 
-    StashSearchMenu stashmenu(sort_by_dist ? "dist" : "name",
+    StashSearchMenu stashmenu(sort_mode == STASH_SORT_DIST ? "dist"
+                              : sort_mode == STASH_SORT_TYPE ? "type"
+                                                             : "name",
                               filter_useless ? "hide" : "show");
     stashmenu.set_tag("stash");
     stashmenu.action_cycle = Menu::CYCLE_TOGGLE;
@@ -1735,7 +1754,7 @@ bool StashTracker::display_search_results(
     stashmenu.set_title(mtitle);
 
     bool need_here_subtitle = stashmenu.menu_action == Menu::ACT_EXECUTE
-                                                            && sort_by_dist;
+                                                        && sort_mode == STASH_SORT_DIST;
     bool need_there_subtitle = false;
     StashMenuEntry *first_hdr = nullptr;
 
@@ -1877,7 +1896,10 @@ bool StashTracker::display_search_results(
     default_execute = stashmenu.menu_action == Menu::ACT_EXECUTE;
     if (stashmenu.request_toggle_sort_method)
     {
-        sort_by_dist = !sort_by_dist;
+        if (sort_mode < STASH_SORT_DIST)
+            sort_mode = static_cast<stash_sort_mode>(sort_mode + 1);
+        else
+            sort_mode = STASH_SORT_TYPE;
         return true;
     }
     if (stashmenu.request_toggle_filter_useless)

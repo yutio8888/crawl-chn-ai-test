@@ -2,9 +2,6 @@
 
 """
 Generate species-data.h, aptitudes.h, species-groups.h, and species-type.h
-
-Works with both Python 2 & 3. If that changes, update how the Makefile calls
-this.
 """
 
 from __future__ import print_function
@@ -172,7 +169,9 @@ def parse_glyph_char(s):
         raise ValueError("glyph isn't a string")
     if len(s) != 1:
         raise ValueError("glyph must be exactly one character")
-    return s
+    if (ord(s) > 127):
+        return "U\'\\" + hex(ord(s)).lstrip('0') + "\'"
+    return "\'" + s + "\'"
 
 def parse_flags(s):
     flags = []
@@ -390,7 +389,7 @@ defaults = {
 }
 
 def load_template(templatedir, name):
-    return open(os.path.join(templatedir, name)).read()
+    return open(os.path.join(templatedir, name), encoding='utf-8').read()
 
 def main():
     parser = argparse.ArgumentParser(description='Generate mon-data.h')
@@ -414,7 +413,7 @@ def main():
             continue
         f_path = os.path.join(args.datadir, f_name)
         try:
-            mon_spec = yaml.safe_load(open(f_path))
+            mon_spec = yaml.safe_load(open(f_path, encoding='utf-8'))
         except yaml.YAMLError as e:
             print("Failed to load %s: %s" % (f_name, e))
             sys.exit(1)
@@ -429,7 +428,7 @@ def main():
 
     text += load_template(args.templatedir, 'footer.txt')
 
-    with open(args.mon_data, 'w') as f:
+    with open(args.mon_data, 'w', encoding='utf-8') as f:
         f.write(text)
 
 if __name__ == '__main__':

@@ -2184,6 +2184,10 @@ static void _corrupt_level_features(const corrupt_env &cenv)
 
         const int roll = random2(1000);
 
+        // TODO: It'd be nice to use the same BOLT_CORRUPTION effects as the
+        // monster one does, but this would need lots of rearrangements- both to
+        // animate outwards instead of topdown, and to pick spaces to flash
+        // before they're actually changed so they're not darkened by new walls.
         if (roll < corrupt_perc_chance && _is_grid_corruptible(*ri))
             _corrupt_square(cenv, *ri);
         else if (roll < corrupt_flavor_chance && _is_grid_corruptible(*ri))
@@ -2230,7 +2234,7 @@ static void _corrupt_level_features_monster(const corrupt_env &cenv, monster mon
                 if (shimmer)
                 {
                     flash_tile(*ri, random_choose(RED, BLUE, YELLOW,
-                                MAGENTA), 8, TILE_BOLT_CORRUPTION);
+                                MAGENTA), 4, TILE_BOLT_CORRUPTION);
                 }
                 _corrupt_square_flavor(cenv, *ri);
             }
@@ -2240,7 +2244,7 @@ static void _corrupt_level_features_monster(const corrupt_env &cenv, monster mon
             if (shimmer )
             {
                 flash_tile(*ri, random_choose(RED, BLUE, YELLOW,
-                            MAGENTA), 8, TILE_BOLT_CORRUPTION);
+                            MAGENTA), 4, TILE_BOLT_CORRUPTION);
             }
             // chance to change the colour of any grid
             if (roll < corrupt_flavor_chance && _is_grid_corruptible(*ri))
@@ -2331,6 +2335,7 @@ void lugonu_corrupt_level_monster(const monster &who)
     corrupt_env cenv;
     _corrupt_choose_colours(&cenv);
     _corrupt_level_features_monster(cenv, who);
+    animation_delay(50, true);
 
     // Monster version does not use a timed effect to handle monster summons.
     // This simplifies the effect and allows for the summons to be abjured once

@@ -14,6 +14,7 @@
 #include "english.h"
 #include "externs.h"
 #include "god-abil.h"
+#include "god-conduct.h"
 #include "invent.h"
 #include "libutil.h"
 #include "menu.h"
@@ -301,7 +302,7 @@ static int _spell_colour(spell_type spell, const item_def* const source_item)
         return COL_USELESS;
     }
 
-    if (god_hates_spell(spell, you.religion))
+    if (god_forbids_spell(spell, you.religion))
         return COL_FORBIDDEN;
 
     if (you.experience_level < spell_difficulty(spell)

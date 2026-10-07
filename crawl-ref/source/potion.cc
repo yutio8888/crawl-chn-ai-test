@@ -786,7 +786,8 @@ public:
         if (effect(was_known))
         {
             you.transform_uncancellable = true;
-            did_god_conduct(DID_CHAOS, 10, was_known);
+            if (!was_known)
+                god_forgive_inadvertent_act(FORBID_TRANSFORMATION);
         }
         else
             mpr(T_("You feel woody for a moment."));
@@ -850,22 +851,18 @@ public:
         if (was_known && !check_known_quaff())
             return false;
 
-        string msg = "Really drink that potion of mutation";
-        msg += you.rmut_from_item() ? T_(" while resistant to mutation?") : "?";
-        const bool zin_check = you_worship(GOD_ZIN)
-                            && !have_passive(passive_t::cleanse_mut_potions);
-        if (zin_check)
-            msg += T_(" Zin will disapprove.");
-        if (was_known && (zin_check || you.rmut_from_item())
-                      && !yesno(msg.c_str(), false, 'n'))
+        if (was_known && you.rmut_from_item()
+            && !yesno(T_("Really drink that potion of mutation while resistant to mutation?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
         }
 
-        effect();
-        if (zin_check)
-            did_god_conduct(DID_DELIBERATE_MUTATING, 15, was_known);
+        if (effect() && !was_known
+            && !have_passive(passive_t::cleanse_mut_potions))
+        {
+            god_forgive_inadvertent_act(FORBID_TRANSFORMATION);
+        }
         return true;
     }
 };

@@ -51,6 +51,7 @@
 #include "jobs.h"
 #include "kills.h"
 #include "libutil.h"
+#include "longwalk-range-mode.h"
 #include "macro.h"
 #include "mapdef.h"
 #include "maps.h"
@@ -432,11 +433,7 @@ const vector<GameOption*> game_options::build_options_list()
 #endif // else case of defined(DGAMELAUNCH)
 
         new BoolGameOption(SIMPLE_NAME(autopickup_starting_ammo), true),
-        new MultipleChoiceGameOption<int>(
-            autopickup_on, {"default_autopickup"},
-            1,
-            {{"true", 1}, // XX this would be better as an enum
-             {"false", 0}}, true),
+        new BoolGameOption(autopickup_on, {"default_autopickup"}, true),
         new StringGameOption(SIMPLE_NAME(game_seed), "", false,
             [this]() {
                 // special handling because of the large type.
@@ -598,6 +595,13 @@ const vector<GameOption*> game_options::build_options_list()
         new BoolGameOption(SIMPLE_NAME(reduce_animations),
 #ifdef USE_TILE_WEB
             // true
+            tiles.is_controlled_from_web()
+#else
+            false
+#endif
+            ),
+        new BoolGameOption(SIMPLE_NAME(alt_shatter_animation),
+#ifdef USE_TILE_WEB
             tiles.is_controlled_from_web()
 #else
             false
@@ -771,6 +775,8 @@ const vector<GameOption*> game_options::build_options_list()
              {"open", travel_open_doors_type::open},
              {"false", travel_open_doors_type::_false},
              {"true", travel_open_doors_type::_true}}),
+        new StringGameOption(ON_SET_NAME(longwalk_range), "15", false,
+            [this]() { set_longwalk_range(longwalk_range_option); }),
 
         new MultipleChoiceGameOption<level_gen_type>(
             SIMPLE_NAME(pregen_dungeon),
@@ -1991,6 +1997,20 @@ void game_options::remove_force_scroll_targeter(const string &s)
 static monster_type _mons_class_by_string(const string &name)
 {
     const string match = lowercase_string(name);
+
+    // These are cases of multiple enums sharing the same in-game name, and must
+    // be handled separately
+    if (match == "bai suzhen (dragon)")
+        return MONS_BAI_SUZHEN_DRAGON;
+    else if (match == "serpent of hell (geh)")
+        return MONS_SERPENT_OF_HELL;
+    else if (match == "serpent of hell (coc)")
+        return MONS_SERPENT_OF_HELL_COCYTUS;
+    else if (match == "serpent of hell (tar)")
+        return MONS_SERPENT_OF_HELL_TARTARUS;
+    else if (match == "serpent of hell (dis)")
+        return MONS_SERPENT_OF_HELL_DIS;
+
     for (monster_type i = MONS_0; i < NUM_MONSTERS; ++i)
     {
         const monsterentry *me = get_monster_data(i);
@@ -2003,7 +2023,7 @@ static monster_type _mons_class_by_string(const string &name)
     return MONS_0;
 }
 
-static set<monster_type> _mons_classes_by_glyph(const char letter)
+static set<monster_type> _mons_classes_by_glyph(const char32_t letter)
 {
     set<monster_type> matches;
     for (monster_type i = MONS_0; i < NUM_MONSTERS; ++i)
@@ -2025,7 +2045,7 @@ cglyph_t game_options::parse_mon_glyph(const string &s) const
     vector<string> phrases = split_string(" ", s);
     for (const string &p : phrases)
     {
-        const int col = str_to_colour(p, -1, false);
+        const int col = str_to_colour(p, -1, false, true);
         if (col != -1)
             md.col = col;
         else
@@ -3564,6 +3584,33 @@ void game_options::set_menu_sort(const string &field)
     sort_menus.push_back(cond);
 }
 
+// Option syntax is:
+// longwalk_range = los | visible | unlimited | <positive integer>
+// A bare number sets a constant maximum distance.
+void game_options::set_longwalk_range(const string &field)
+{
+    const string f = lowercase_string(trimmed_string(field));
+
+    if (f == "los")
+        longwalk_range = LWR_LOS;
+    else if (f == "visible")
+        longwalk_range = LWR_VISIBLE;
+    else if (f == "unlimited")
+        longwalk_range = LWR_UNLIMITED;
+    else
+    {
+        int dist;
+        if (!parse_int(f.c_str(), dist) || dist < 1)
+        {
+            report_error("Bad longwalk_range: \"%s\" (expected los, visible, "
+                         "unlimited, or a positive number)", field.c_str());
+            return;
+        }
+        longwalk_range = LWR_CONSTANT;
+        longwalk_range_constant = dist;
+    }
+}
+
 void base_game_options::set_option_fragment(const string &s, bool /*prepend*/)
 {
     if (s.empty())
@@ -4810,6 +4857,7 @@ enum commandline_option_type
     CLO_MACRO,
     CLO_MAPSTAT,
     CLO_MAPSTAT_DUMP_DISCONNECT,
+    CLO_MAPSTAT_VETO_CLOSETS,
     CLO_OBJSTAT,
     CLO_ITERATIONS,
     CLO_FORCE_MAP,
@@ -4871,6 +4919,7 @@ static set<commandline_option_type> clo_headless_ok = {
     CLO_EDIT_BONES,
     CLO_MAPSTAT,
     CLO_MAPSTAT_DUMP_DISCONNECT,
+    CLO_MAPSTAT_VETO_CLOSETS,
     CLO_OBJSTAT,
 #ifndef USE_TILE_LOCAL
 // TODO: still too crashy in local tiles to enable
@@ -4892,8 +4941,9 @@ static const char *cmd_ops[] =
 {
     "scores", "name", "species", "background", "dir", "rc", "rcdir", "tscores",
     "vscores", "scorefile", "morgue", "macro", "mapstat", "dump-disconnect",
-    "objstat", "iters", "force-map", "arena", "dump-maps", "test", "script",
-    "builddb", "help", "version", "seed", "pregen", "save-version", "sprint",
+    "veto-closets", "objstat", "iters", "force-map", "arena", "dump-maps",
+    "test", "script", "builddb", "help", "version", "seed", "pregen",
+    "save-version", "sprint",
     "extra-opt-first", "extra-opt-last", "sprint-map", "edit-save",
     "print-charset", "tutorial", "wizard", "explore", "no-save",
     "no-player-bones", "gdb", "no-gdb", "nogdb", "throttle", "no-throttle",
@@ -5881,6 +5931,14 @@ bool parse_args(int argc, char **argv, bool rc_only)
 #else
             end(1, false, "%s", dbg_stat_err);
 #endif
+        case CLO_MAPSTAT_VETO_CLOSETS:
+#ifdef DEBUG_STATISTICS
+            crawl_state.map_stat_veto_closets = true;
+            break;
+#else
+            end(1, false, "%s", dbg_stat_err);
+#endif
+
         case CLO_MAPSTAT_DUMP_DISCONNECT:
 #ifdef DEBUG_STATISTICS
             crawl_state.map_stat_dump_disconnect = true;

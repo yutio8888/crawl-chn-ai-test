@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
+#include <set>
 #include <vector>
 
 #include "abyss.h"
@@ -294,7 +296,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         }
 
         monster* target_mons = monster_at(target.target);
-        if (target_mons && you.can_see(*target_mons))
+        if (target_mons && you.aware_of(*target_mons))
         {
             mprf(T_("You can't %s onto %s!"),
                  translated_move_phrase(verb.c_str(),
@@ -303,7 +305,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             continue;
         }
 
-        if (!check_moveto(target.target, verb, false))
+        if (!check_moveto(target.target, verb, false, false))
         {
             continue;
             // try again (messages handled by check_moveto)
@@ -363,7 +365,7 @@ void wizard_blink()
         return wizard_blink();
     }
 
-    if (!check_moveto(beam.target, "blink", false))
+    if (!check_moveto(beam.target, "blink", false, false))
     {
         return wizard_blink();
         // try again (messages handled by check_moveto)
@@ -401,7 +403,7 @@ public:
             return AFF_NO; // XX is this handled by the valid blink check?
 
         const actor* p_act = actor_at(p);
-        if (p_act && (incl_unseen || agent->can_see(*p_act)))
+        if (p_act && (incl_unseen || agent->aware_of(*p_act)))
             return AFF_NO;
 
         // terrain details are cached in exp_map_max by set_aim
@@ -636,7 +638,7 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
             }
 
             const monster* mon = monster_at(ray.pos());
-            if (mon && agent.can_see(*mon) && mons_class_is_stationary(mon->type))
+            if (mon && agent.aware_of(*mon) && mons_class_is_stationary(mon->type))
             {
                 if (fail_reason)
                 {
@@ -1366,16 +1368,6 @@ void you_teleport_now(bool wizard_tele, string reason)
 
 spret cast_dimensional_bullseye(int pow, monster *target, bool fail)
 {
-    if (target == nullptr || !you.can_see(*target))
-    {
-        canned_msg(MSG_NOTHING_THERE);
-        // You cannot place a bullseye on invisible enemies, so just abort
-        return spret::abort;
-    }
-
-    if (stop_attack_prompt(target, false, you.pos()))
-        return spret::abort;
-
     fail_check();
 
     // We can only have a bullseye on one target a time, so remove the old one
@@ -1652,7 +1644,7 @@ bool golubria_valid_cell(coord_def p, bool just_check)
 {
     return in_bounds(p)
            && feat_is_floor(env.grid(p))
-           && (!monster_at(p) || just_check && !you.can_see(*monster_at(p)))
+           && (!monster_at(p) || just_check && !you.aware_of(*monster_at(p)))
            && cell_see_cell(you.pos(), p, LOS_NO_TRANS);
 }
 
@@ -1678,59 +1670,40 @@ spret cast_golubrias_passage(int pow, const coord_def& where, bool fail)
         return spret::abort;
     }
 
-    // XXX: this can abort nondeterministically and should be rewritten to use
-    //reservoir sampling or something
-    int tries = 0;
-    int tries2 = 0;
-    const int range = GOLUBRIA_FUZZ_RANGE;
-    coord_def randomized_where = where;
-    coord_def randomized_here = you.pos();
-    do
-    {
-        tries++;
-        randomized_where = where;
-        randomized_where.x += random_range(-range, range);
-        randomized_where.y += random_range(-range, range);
-    }
-    while ((!golubria_valid_cell(randomized_where)
-            || randomized_where == you.pos())
-           && tries < 100);
+    vector<coord_def> here_candidates;
+    vector<coord_def> there_candidates;
+    for (radius_iterator ri(you.pos(), GOLUBRIA_FUZZ_RANGE, C_SQUARE); ri; ++ri)
+        if (golubria_valid_cell(*ri))
+            here_candidates.emplace_back(*ri);
 
-    do
-    {
-        tries2++;
-        randomized_here = you.pos();
-        randomized_here.x += random_range(-range, range);
-        randomized_here.y += random_range(-range, range);
-    }
-    while ((!golubria_valid_cell(randomized_here)
-            || randomized_here == randomized_where)
-           && tries2 < 100);
+    for (radius_iterator ri(where, GOLUBRIA_FUZZ_RANGE, C_SQUARE); ri; ++ri)
+        if (golubria_valid_cell(*ri) && *ri != you.pos())
+            there_candidates.emplace_back(*ri);
 
-    if (tries >= 100 || tries2 >= 100)
+    if (here_candidates.size() == 0 || there_candidates.size() == 0
+        || (here_candidates.size() == 1 && there_candidates.size() == 1
+            && here_candidates[0] == there_candidates[0]))
     {
-        if (you.trans_wall_blocking(randomized_where))
-        {
-            mpr(T_("You cannot create a passage on the other side of the "
-                "transparent wall."));
-        }
-        else
-        {
-            // XXX: bleh, dumb message
-            mpr(T_("Creating a passage of Golubria requires sufficient empty "
-                "space."));
-        }
-
+        mpr(T_("Creating a passage of Golubria requires sufficient empty space."));
         return spret::abort;
     }
 
+    coord_def here;
+    coord_def there;
+    do
+    {
+        here = here_candidates[random2(here_candidates.size())];
+        there = there_candidates[random2(there_candidates.size())];
+    }
+    while (here == there);
+
     fail_check();
 
-    temp_change_terrain(randomized_where, DNGN_PASSAGE_OF_GOLUBRIA,
+    temp_change_terrain(there, DNGN_PASSAGE_OF_GOLUBRIA,
                         random_range(10, 19) * BASELINE_DELAY,
                         TERRAIN_CHANGE_GOLUBRIA);
 
-    temp_change_terrain(randomized_here, DNGN_PASSAGE_OF_GOLUBRIA,
+    temp_change_terrain(here, DNGN_PASSAGE_OF_GOLUBRIA,
                         random_range(10, 19) * BASELINE_DELAY,
                         TERRAIN_CHANGE_GOLUBRIA);
 
@@ -2003,7 +1976,7 @@ vector<monster *> find_chaos_targets(bool just_check)
             && !mi->is_peripheral()
             && !mi->wont_attack())
         {
-            if (!just_check || you.can_see(**mi))
+            if (!just_check || you.aware_of(**mi))
                 targets.push_back(*mi);
         }
     }
@@ -2127,7 +2100,7 @@ static vector<monster*> _get_monster_line(coord_def start, bool actual)
     {
         // If the player can't see the monster here, don't leak its position to
         // the targeter.
-        if (!mon || !actual && !you.can_see(*mon))
+        if (!mon || !actual && !you.aware_of(*mon))
             break;
 
         // Can't move anything with a stationary monster (or friend) in its cluster.
@@ -2195,6 +2168,9 @@ int piledriver_path_distance(const coord_def& target, bool actual)
         }
 
         // Found something to hit; this is where we stop.
+        // XXX: Note that this one checks true visibility and not just awareness.
+        //      Invis monster knowledge should not affect whether the spell is
+        //      castable or not.
         if (cell_is_solid(pos)
             || monster_at(pos) && (actual || you.can_see(*monster_at(pos))))
         {
@@ -2301,19 +2277,11 @@ dice_def gavotte_impact_damage(int pow, int dist, bool random)
         return dice_def(2, div_rand_round((pow * 3 / 4 + 35) * (dist + 5), 20) + 1);
 }
 
-static void _maybe_penance_for_collision(god_conduct_trigger conducts[3], actor& victim)
-{
-    if (victim.is_monster() && victim.alive())
-    {
-        //potentially penance
-        set_attack_conducts(conducts, *victim.as_monster(),
-            you.can_see(*victim.as_monster()));
-    }
-}
-
-static void _push_actor(actor& victim, coord_def dir, int dist, int pow)
+static void _push_actor(actor& victim, coord_def dir, int dist, int pow,
+                        const set<mid_t>& seen_at_start)
 {
     const bool immune = !could_harm(&you, &victim);
+    const bool known = seen_at_start.count(victim.mid);
 
     god_conduct_trigger conducts[3];
 
@@ -2328,22 +2296,23 @@ static void _push_actor(actor& victim, coord_def dir, int dist, int pow)
     {
         const coord_def next_pos = starting_pos + (dir * i);
 
-        if (!victim.can_pass_through_feat(env.grid(next_pos)) && i > 1
-            && !victim.is_player())
-        {
-            victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
-            _maybe_penance_for_collision(conducts, victim);
-            break;
-        }
-        else if (actor* act_at_space = actor_at(next_pos))
+        if (actor* act_at_space = actor_at(next_pos))
         {
             if (i > 1 && &victim != act_at_space && !victim.is_player()
                 && !act_at_space->is_player())
             {
+                set_attack_conducts(conducts, *victim.as_monster(), known);
+                set_attack_conducts(conducts, *act_at_space->as_monster(),
+                                    bool(seen_at_start.count(act_at_space->mid)));
                 victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
-                _maybe_penance_for_collision(conducts, victim);
-                _maybe_penance_for_collision(conducts, *act_at_space);
             }
+            break;
+        }
+        else if (!victim.can_pass_through_feat(env.grid(next_pos)) && i > 1
+                 && !victim.is_player())
+        {
+            set_attack_conducts(conducts, *victim.as_monster(), known);
+            victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
             break;
         }
         else if (!victim.is_habitable(next_pos))
@@ -2402,6 +2371,13 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
     if (!you.is_stationary() && !you.stasis())
         targs.push_back(&you);
 
+    // The player is responsible for the wellbeing of any ally they could see
+    // at the start of the cast.
+    set<mid_t> seen_at_start;
+    for (monster_near_iterator mi(you.pos()); mi; ++mi)
+        if (you.aware_of(**mi))
+            seen_at_start.insert(mi->mid);
+
     for (monster_near_iterator mi(you.pos()); mi; ++mi)
     {
         if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
@@ -2421,7 +2397,7 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
         // Some circumstances, such as lost souls sacrificing themselves, can
         // result in monsters dying before it even comes time to push them.
         if (targs[i]->alive())
-            _push_actor(*targs[i], dir, GAVOTTE_DISTANCE, pow);
+            _push_actor(*targs[i], dir, GAVOTTE_DISTANCE, pow, seen_at_start);
     }
 
     you.increase_duration(DUR_GAVOTTE_COOLDOWN, random_range(5, 9) - div_rand_round(pow, 50));
@@ -2432,99 +2408,93 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
 // Note: this is only used for the targeting display and prompts about
 // potentially harming allies. As such, it relies on player-known info and may
 // not reflect the exact results of the spell.
-static bool _gavotte_will_wall_slam(const monster* mon, coord_def dir)
-{
-    // Scan in our push direction. We want to find at least one tile of open
-    // space before the nearest solid feature or stationary monster. Non-stationary
-    // monsters are 'free'
-    int steps = GAVOTTE_DISTANCE;
-    coord_def pos = mon->pos();
-    while (steps)
-    {
-        pos += dir;
-
-        // It is possible to move out of bounds if we're near the level boundary
-        // and the player has not seen some of the terrain between this monster
-        // and the level edge (meaning it assumes that terrain is non-collidable)
-        if (!in_bounds(pos))
-            return steps < GAVOTTE_DISTANCE;
-
-        // Can never collide with the player (for the player's sake)
-        if (pos == you.pos())
-            return false;
-
-        // If we are moving out of the player's line of sight, use map knowledge
-        // to estimate collisions with walls the player has already seen, but do
-        // not leak info about unseen terrain.
-        const bool seen = you.see_cell(pos);
-        dungeon_feature_type feat = seen ? env.grid(pos)
-                                         : env.map_knowledge(pos).feat();
-
-        // Assume that monsters can pass through unknown terrain
-        if (feat == DNGN_UNSEEN)
-            feat = DNGN_FLOOR;
-
-        // If there is an obstructing feature here - or the player THINKS there
-        // is, at least - consider this monster affected if it moved at least
-        // one space before hitting it.
-        if (!mon->can_pass_through_feat(feat))
-            return steps < GAVOTTE_DISTANCE;
-
-        bool mons_in_way = false;
-        bool mons_in_way_is_stationary = false;
-
-        // Find any visible monster that may be in the way (or our memory of such)
-        if (seen)
-        {
-            monster* mon_at_pos = monster_at(pos);
-            if (mon_at_pos && you.can_see(*mon_at_pos))
-            {
-                mons_in_way = true;
-                mons_in_way_is_stationary = mon_at_pos->is_stationary();
-            }
-        }
-        else
-        {
-            monster_info* mon_at_pos = env.map_knowledge(pos).monsterinfo();
-            if (mon_at_pos)
-            {
-                mons_in_way = true;
-                mons_in_way_is_stationary = mons_class_is_stationary(mon_at_pos->type);
-            }
-        }
-
-        // If we're about to hit a blocker, check whether we will have moved at
-        // least one space before doing so. Skip over mobile monsters as 'free'
-        // spaces (since we can all pile up against a wall)
-        if (mons_in_way)
-        {
-            if (mons_in_way_is_stationary)
-                return steps < GAVOTTE_DISTANCE;
-            else
-                steps++;
-        }
-
-        steps--;
-    }
-
-    return false;
-}
-
 vector<monster*> gavotte_affected_monsters(const coord_def dir)
 {
-    vector<monster*> affected;
-
+    // The positions during the simulation.
+    map<coord_def, actor*> occupied;
+    // The actors who will be moved.
+    vector<actor*> movers;
     for (monster_near_iterator mi(you.pos()); mi; ++mi)
-    {
-        if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos())
-            && you.can_see(**mi))
+        if (you.aware_of(**mi))
         {
-            if (_gavotte_will_wall_slam(*mi, dir))
-                affected.push_back(*mi);
+            occupied[mi->pos()] = *mi;
+            if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
+                movers.push_back(*mi);
         }
+
+    occupied[you.pos()] = &you;
+    if (!you.is_stationary() && !you.stasis())
+        movers.push_back(&you);
+
+    // Push the actors nearest the pull direction first, exactly as cast_gavotte.
+    sort(movers.begin(), movers.end(), [dir](actor* a, actor* b)
+    {
+        return (a->pos().x * dir.x) + (a->pos().y * dir.y)
+               > (b->pos().x * dir.x) + (b->pos().y * dir.y);
+    });
+
+    set<monster*> harmed;
+    for (actor* mover : movers)
+    {
+        const coord_def start = mover->pos();
+        coord_def cur = start;
+        occupied.erase(start);
+
+        for (int i = 1; i <= GAVOTTE_DISTANCE; ++i)
+        {
+            const coord_def pos = start + (dir * i);
+            if (!in_bounds(pos))
+            {
+                if (i > 1 && !mover->is_player())
+                    harmed.insert(mover->as_monster());
+                break;
+            }
+
+            auto it = occupied.find(pos);
+            actor *occupant = it == occupied.end() ? nullptr : it->second;
+
+            // Hitting an actor. Stop and do damage unless it's the player.
+            if (occupant)
+            {
+                if (!occupant->is_player() && !mover->is_player() && i > 1)
+                {
+                    harmed.insert(mover->as_monster());
+                    harmed.insert(occupant->as_monster());
+                }
+                break;
+            }
+            else if (!you.see_cell(pos) && env.map_knowledge(pos).monsterinfo())
+            {
+                if (!mover->is_player() && i > 1)
+                    harmed.insert(mover->as_monster());
+                break;
+            }
+
+            dungeon_feature_type feat = env.map_knowledge(pos).feat();
+            // Assume monsters can pass through unseen terrain.
+            if (feat == DNGN_UNSEEN)
+                feat = DNGN_FLOOR;
+
+            // Hitting solid terrain from range; do damage.
+            if (!mover->can_pass_through_feat(feat) && i > 1
+                && !mover->is_player())
+            {
+                harmed.insert(mover->as_monster());
+                break;
+            }
+
+            // Stop without damage because of short distance or soft terrain.
+            if (!mover->is_habitable_feat(feat))
+                break;
+
+            // The tile is clear; slide onto it and keep going.
+            cur = pos;
+        }
+
+        occupied[cur] = mover;
     }
 
-    return affected;
+    return vector<monster*>(harmed.begin(), harmed.end());
 }
 
 spret cast_teleport_other(const coord_def& target, int power, bool fail)
@@ -2546,7 +2516,7 @@ vector<coord_def> get_bestial_landing_spots(coord_def target)
     {
         if (in_bounds(*ai) && you.see_cell_no_trans(*ai)
             && !cell_is_solid(*ai) && !is_feat_dangerous(env.grid(*ai))
-            && (!actor_at(*ai) || !you.can_see(*actor_at(*ai))))
+            && (!actor_at(*ai) || !you.aware_of(*actor_at(*ai))))
         {
             spots.push_back(*ai);
         }

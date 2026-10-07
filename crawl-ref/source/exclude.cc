@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <sstream>
 
+#include "act-iter.h"
 #include "cloud.h"
 #include "coord.h"
 #include "coordit.h"
@@ -97,16 +98,21 @@ void add_auto_excludes()
         return;
 
     vector<monster*> mons;
-    for (radius_iterator ri(you.pos(), LOS_DEFAULT); ri; ++ri)
+    // We don't use LOS_DEFAULT because we want to include monsters that are
+    // currently visible via revelation.
+    for (monster_near_iterator mi(you.pos(), LOS_NONE); mi; ++mi)
     {
-        monster *mon = monster_at(*ri);
-        if (!mon || mon->is_summoned())
+        monster *mon = *mi;
+        if (!you.can_see(*mon))
+            continue;
+
+        if (mon->is_summoned())
             continue;
 
         // Something of a speed hack, but some vaults have a TON of plants.
         if (mon->is_firewood())
             continue;
-        if (_need_auto_exclude(mon) && !is_exclude_root(*ri))
+        if (_need_auto_exclude(mon) && !is_exclude_root(mon->pos()))
         {
             int radius = _get_full_exclusion_radius();
             // Sting and Harpoon Shot's minimum ranges, respectively.
@@ -115,7 +121,7 @@ void add_auto_excludes()
             else if (mon->type == MONS_STARFLOWER)
                 radius = min(radius, 6);
 
-            set_exclude(*ri, radius, true);
+            set_exclude(mon->pos(), radius, true);
             mons.emplace_back(mon);
         }
     }
@@ -561,9 +567,9 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
             // Don't list a monster in the exclusion annotation if the
             // exclusion was triggered by e.g. the flamethrowers' lua check.
             const map_cell& cell = env.map_knowledge(p);
-            if (cell.monster() != MONS_NO_MONSTER)
+            if (cell.mon_type() != MONS_NO_MONSTER)
             {
-                desc = mons_type_name(cell.monster(), DESC_PLAIN);
+                desc = mons_type_name(cell.mon_type(), DESC_PLAIN);
                 if (cell.detected_monster())
                     desc += T_(" (detected)");
             }

@@ -431,7 +431,17 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
                 mprf(T_("%s liquefies the ground around %s!"),
                      caster.name(DESC_THE).c_str(),
                      caster.pronoun(PRONOUN_REFLEXIVE).c_str());
-                flash_view_delay(UA_MONSTER, BROWN, 80);
+
+                for (radius_iterator ri(caster.pos(), 5, C_SQUARE, LOS_NO_TRANS); ri; ++ri)
+                {
+                    if (you.see_cell(*ri) && (*ri == caster.pos()
+                        || feat_has_solid_floor(env.grid(*ri))
+                        && !feat_is_shallow_water((env.grid(*ri)))))
+                    {
+                        flash_tile(*ri, BROWN, 0, TILE_BOLT_LIQUEFY_BROWN);
+                    }
+                }
+                animation_delay(140, true);
             }
 
             caster.add_ench(ENCH_LIQUEFYING);
@@ -525,7 +535,13 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         _caster_sees_foe,
         [](monster &caster, mon_spell_slot slot, bolt&) {
             flash_tile(caster.get_foe()->pos(), MAGENTA, 120, TILE_BOLT_ANTIMAGIC_GAZE);
+            actor* foe = caster.get_foe();
             caster.get_foe()->drain_magic(&caster, mons_spellpower(caster, slot.spell));
+
+            // It isn't worth being exhaustive about this sort of thing, but this
+            // is by far one of the most common scenarios, and worth the UI hint.
+            if (foe->is_player())
+                caster.sense_if_invisible(false);
         },
     } },
     { SPELL_WEAKENING_GAZE, {
@@ -870,7 +886,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             if (you.can_see(caster))
             {
                 targeter_radius hitfunc(&caster, LOS_SOLID, 2);
-                flash_view_delay(UA_MONSTER, DARKGREY, 200, &hitfunc);
+                flash_view_delay(UA_MONSTER, DARKGREY, 200, 0, &hitfunc);
                 mprf(T_("%s draws nearby shadows into %s."),
                     caster.name(DESC_THE).c_str(),
                     caster.pronoun(PRONOUN_REFLEXIVE).c_str());
@@ -1817,7 +1833,7 @@ static void _cast_siphon_essence(monster &caster, mon_spell_slot, bolt&)
     if (you.see_cell(caster.pos()))
     {
         targeter_radius hitfunc(&caster, LOS_SOLID, 2);
-        flash_view_delay(UA_MONSTER, DARKGREY, 200, &hitfunc);
+        flash_view_delay(UA_MONSTER, DARKGREY, 200, 0, &hitfunc);
         seen = true;
     }
 
@@ -3263,25 +3279,15 @@ static void _corrupt_locale(monster &mons)
     lugonu_corrupt_level_monster(mons);
 }
 
-static void _set_door(const vector<coord_def>& door, dungeon_feature_type feat)
-{
-    for (const auto &dc : door)
-    {
-        env.grid(dc) = feat;
-        set_terrain_changed(dc);
-    }
-}
-
 static int _tension_door_closed(const vector<coord_def>& door)
 {
     ASSERT(!door.empty());
     const dungeon_feature_type old_feat = env.grid(door[0]);
-    // this unwind is a bit heavy, but because out-of-los clouds dissipate
-    // instantly, they can be wiped out by these door tests.
-    unwind_var<map<coord_def, cloud_struct>> cloud_state(env.cloud);
-    _set_door(door, DNGN_CLOSED_DOOR);
+    for (coord_def dc : door)
+        env.grid(dc) = DNGN_CLOSED_DOOR;
     const int new_tension = get_tension(GOD_NO_GOD);
-    _set_door(door, old_feat);
+    for (coord_def dc : door)
+        env.grid(dc) = old_feat;
     return new_tension;
 }
 
@@ -3569,9 +3575,7 @@ static bool _seal_doors_and_stairs(const monster* warden,
                     if (env.map_knowledge(dc).seen())
                     {
                         update_terrain_knowledge(dc);
-#ifdef USE_TILE
-                        tile_env.bk_bg(dc) = TILE_DNGN_CLOSED_DOOR;
-#endif
+                        redraw_view_at(dc);
                     }
                 }
 
@@ -4192,6 +4196,9 @@ static bool _awaken_vines(monster* mon, bool test_only = false)
                         MG_FORCE_PLACE, mon->god)
             .set_summoned(mon, SPELL_AWAKEN_VINES, random_range(250, 380), false)))
         {
+            // Stash a tree position so that we can draw the vine connecting
+            // to it.
+            vine->props[TREE_POSITION_KEY].get_coord() = tree_anchor_pos(spot);
             --num_vines;
             if (you.can_see(*vine))
                 seen = true;
@@ -4351,7 +4358,7 @@ static void _corrupting_pulse(monster *mons)
     if (you.see_cell(mons->pos()))
     {
         targeter_radius hitfunc(mons, LOS_NO_TRANS);
-        flash_view_delay(UA_MONSTER, MAGENTA, 300, &hitfunc);
+        flash_view_delay(UA_MONSTER, MAGENTA, 300, 0, &hitfunc);
 
         if (could_harm_enemy(mons, &you, true)
             && cell_see_cell(you.pos(), mons->pos(), LOS_NO_TRANS))
@@ -7815,7 +7822,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
             return;
         if (foe->is_player())
             mpr(T_("The long-dead rise up around you."));
-        else if (you.can_see(*foe))
+        else if (you.see_cell(foe->pos()))
             mprf(T_("The long-dead rise up around %s."), foe->name(DESC_THE).c_str());
         _cast_vanquished_vanguard(mons);
         return;
@@ -8102,16 +8109,26 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
            if (living)
            {
-#ifdef USE_TILE
                 if (spell == SPELL_LEHUDIBS_CRYSTAL_SPEAR)
+                {
                     living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_CRYSTAL;
+                    living->colour = YELLOW;
+                }
                 else if (spell == SPELL_PETRIFY)
+                {
                     living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_EARTH;
+                    living->colour = BROWN;
+                }
                 else if (spell == SPELL_SMITING)
+                {
                     living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_HOLY;
+                    living->colour = LIGHTGREEN;
+                }
                 else if (spell == SPELL_ICEBLAST)
+                {
                     living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_ICE;
-#endif
+                    living->colour = LIGHTBLUE;
+                }
            }
         }
         return;

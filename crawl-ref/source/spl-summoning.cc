@@ -54,6 +54,7 @@
 #include "mon-pathfind.h"
 #include "mon-place.h"
 #include "mon-speak.h"
+#include "movement.h"
 #include "mutation.h"
 #include "place.h" // absdungeon_depth
 #include "player-equip.h"
@@ -833,6 +834,13 @@ static bool _check_tukima_validity(const actor *target)
         return false;
     }
 
+    // Our god won't let us animate a weapon they abhor.
+    if (god_forbids_item(*wpn))
+    {
+        simple_god_message(" forbids you from animating such a foul weapon!");
+        return false;
+    }
+
     return true;
 }
 
@@ -882,16 +890,7 @@ static void _animate_weapon(int pow, actor* target)
 
     montarget->unequip(wp_slot, false, true);
 
-    // Find out what our god thinks before killing the item.
-    conduct_type why = god_hates_item_handling(*wpn);
-
     wpn->clear();
-
-    if (why)
-    {
-        simple_god_message(T_(" booms: How dare you animate that foul thing!"));
-        did_god_conduct(why, 10, true, mons);
-    }
 }
 
 /**
@@ -1477,18 +1476,6 @@ spret cast_haunt(int pow, const coord_def& where, bool fail)
         return spret::abort;
 
     monster* m = monster_at(where);
-
-    if (m == nullptr)
-    {
-        fail_check();
-        mpr(T_("A malign force gathers, but soon dissipates."));
-        return spret::success; // still losing a turn
-    }
-    else if (m->wont_attack())
-    {
-        mpr(T_("You cannot possess a target not hostile to you."));
-        return spret::abort;
-    }
 
     int mi = m->mindex();
     ASSERT(!invalid_monster_index(mi));
@@ -2082,10 +2069,10 @@ spret cast_fulminating_prism(actor* caster, int pow, const coord_def& where,
         return spret::abort;
     }
 
-    actor* victim = monster_at(where);
+    monster* victim = monster_at(where);
     if (victim)
     {
-        if (caster->can_see(*victim))
+        if (caster->aware_of(*victim))
         {
             if (caster->is_player())
                 mpr(T_("You can't place the prism on a creature."));
@@ -2093,19 +2080,7 @@ spret cast_fulminating_prism(actor* caster, int pow, const coord_def& where,
         }
 
         fail_check();
-
-        // FIXME: maybe should do _paranoid_option_disable() here?
-        if (caster->is_player()
-            || (you.can_see(*caster) && you.see_cell(where)))
-        {
-            if (you.can_see(*victim))
-            {
-                mprf_p(T_("%1$s %2$s."), victim->name(DESC_THE).c_str(),
-                       victim->conj_verb("twitch").c_str());
-            }
-            else
-                canned_msg(MSG_GHOSTLY_OUTLINE);
-        }
+        canned_msg(MSG_GHOSTLY_OUTLINE);
         return spret::success;      // Don't give free detection!
     }
 
@@ -2572,7 +2547,7 @@ vector<coord_def> find_briar_spaces(bool just_check)
     {
         if (monster_habitable_grid(MONS_BRIAR_PATCH, *adj_it)
             && (!actor_at(*adj_it)
-                || just_check && !you.can_see(*actor_at(*adj_it))))
+                || just_check && !you.aware_of(*actor_at(*adj_it))))
         {
             result.push_back(*adj_it);
         }
@@ -2678,7 +2653,7 @@ spret fedhas_grow_ballistomycete(const coord_def& target, bool fail)
     monster* mons = monster_at(target);
     if (mons)
     {
-        if (you.can_see(*mons))
+        if (you.aware_of(*mons))
         {
             mpr(T_("That space is already occupied."));
             return spret::abort;
@@ -2725,7 +2700,7 @@ spret fedhas_grow_oklob(const coord_def& target, bool fail)
     monster* mons = monster_at(target);
     if (mons)
     {
-        if (you.can_see(*mons))
+        if (you.aware_of(*mons))
         {
             mpr(T_("That space is already occupied."));
             return spret::abort;
@@ -2853,7 +2828,7 @@ spret cast_foxfire(actor &agent, int pow, bool fail, bool marshlight)
     {
         if (cell_is_solid(*ai))
             continue;
-        if (actor_at(*ai) && agent.can_see(*actor_at(*ai)))
+        if (actor_at(*ai) && agent.aware_of(*actor_at(*ai)))
             continue;
         see_space = true;
         break;
@@ -3278,7 +3253,7 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
     if (agent.is_player())
     {
         monster* mon = monster_at(beam.path_taken[0]);
-        if (mon && you.can_see(*mon))
+        if (mon && you.aware_of(*mon))
         {
             mprf(T_("%s is in the way!"), mon->name(DESC_THE).c_str());
             return spret::abort;
@@ -3567,17 +3542,6 @@ spret cast_clockwork_bee(coord_def target, bool fail)
 
     monster* targ = monster_at(target);
 
-    if (!targ || !you.can_see(*targ))
-    {
-        mpr(T_("You see nothing there to target."));
-        return spret::abort;
-    }
-    else if (targ->wont_attack())
-    {
-        mpr(T_("Your bee can only target hostiles."));
-        return spret::abort;
-    }
-
     you.props[CLOCKWORK_BEE_TARGET].get_int() = targ->mid;
 
     mprf(T_("You lock target on %s and prepare to deploy your bee."),
@@ -3736,7 +3700,7 @@ vector<coord_def> diamond_sawblade_spots(bool actual)
         {
             if (!(act->type == MONS_DIAMOND_SAWBLADE
                   && act->was_created_by(SPELL_DIAMOND_SAWBLADES))
-                && (actual || you.can_see(*act)))
+                && (actual || you.aware_of(*act)))
             {
                 continue;
             }
@@ -3799,10 +3763,13 @@ string surprising_crocodile_unusable_reason(const actor& agent, const coord_def&
     if (!targ || !agent.can_see(*targ) || mons_aligned(&agent, targ))
         return T_("You can't see a valid target there.");
 
+    if (targ->invisible())
+        return "Your crocodile wouldn't be able to see that.";
+
     const coord_def drag_shift = -(target - agent.pos()).sgn();
     const coord_def move_pos = agent.pos() + drag_shift;
     if (cell_is_solid(move_pos)
-        || actor_at(move_pos) && (actual || agent.can_see(*actor_at(move_pos))))
+        || actor_at(move_pos) && (actual || agent.aware_of(*actor_at(move_pos))))
     {
         return T_("There's not enough room behind you.");
     }
@@ -3849,7 +3816,7 @@ bool surprising_crocodile_can_drag(const actor& agent, const coord_def& target,
     }
 
     // Can't move the agent into an occupied space
-    if (actor_at(agent_move_pos) && (actual || agent.can_see(*actor_at(agent_move_pos))))
+    if (actor_at(agent_move_pos) && (actual || agent.aware_of(*actor_at(agent_move_pos))))
         return false;
 
     return true;
@@ -3871,12 +3838,13 @@ spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bo
             // crocodile in one_square_move. Check the crocodile position only
             // for traps, which it will trigger.
             if (!check_moveto_trap(one_square_move, verb)
-                || !check_moveto(one_square_move + drag_shift, verb))
+                || !check_moveto(one_square_move + drag_shift, verb,
+                                 true, false))
             {
                 return spret::abort;
             }
         }
-        else if (!check_moveto(one_square_move, verb))
+        else if (!check_moveto(one_square_move, verb, true, false))
             return spret::abort;
     }
 
@@ -3954,6 +3922,16 @@ spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bo
              agent.pronoun(PRONOUN_POSSESSIVE).c_str());
     }
 
+    // We need to finalize the movement before making the temporary water, so
+    // because the temporary terrain change will clear deferred movement
+    // effects.
+    //
+    // This means that any existing terrain effects will be triggered, even if
+    // they would be suppressed by water. However, since we only create water
+    // on plain DNGN_FLOOR tiles, there should not be any such effects to worry
+    // about.
+    agent.finalise_movement();
+
     // Make the temporary water (after the movement, so we don't get slash
     // messages before the main part appears to happen).)
     for (int i = 0; i < 3; ++i)
@@ -3965,8 +3943,6 @@ spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bo
                                 TERRAIN_CHANGE_FLOOD);
         }
     }
-
-    agent.finalise_movement();
 
     return spret::success;
 }
@@ -4056,7 +4032,7 @@ spret cast_platinum_paragon(const coord_def& target, int pow, bool fail)
         if (random_near_space(blocker, blocker->pos(), spot, true)
             && env.grid(spot) != DNGN_TRAP_DISPERSAL)
         {
-            blocker->blink_to(spot, true);
+            blocker->move_to(spot, MV_TRANSLOCATION);
         }
         else
             monster_teleport(blocker, true);
@@ -4440,7 +4416,6 @@ spret monarch_detonation(const actor& agent, int pow, bool fail)
     zappy(ZAP_MONARCH_DETONATION, pow, false, detonation);
     detonation.set_agent(&agent);
     detonation.ex_size       = 0;
-    detonation.apply_beam_conducts();
     detonation.in_explosion_phase = true;
 
     for (coord_def spot : spots)

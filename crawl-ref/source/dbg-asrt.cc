@@ -202,7 +202,7 @@ static void _dump_player(FILE *file)
     for (size_t i = 0; i < NUM_SKILLS; ++i)
     {
         const skill_type sk = skill_type(i);
-        if (is_useless_skill(sk))
+        if (is_useless_skill(sk, false))
             continue;
 
         int needed_min = 0, needed_max = 0;
@@ -213,7 +213,7 @@ static void _dump_player(FILE *file)
 
         fprintf(file, "%-16s|          %c          |   %u   |   %3u    |   %2d  | %6d | %d/%d\n",
                 skill_name(sk),
-                you.can_currently_train[sk] ? 'X' : ' ',
+                !is_useless_skill(sk) ? 'X' : ' ',
                 you.train[sk],
                 you.training[sk],
                 you.skills[sk],

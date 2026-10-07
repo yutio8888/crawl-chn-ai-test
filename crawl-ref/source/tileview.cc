@@ -447,17 +447,11 @@ static tileidx_t _pick_dngn_tile_multi(
         total += candidate.second;
 
     int rand1 = rand % total;
-    int rand2 = rand / total;
 
     for (const pair<tileidx_t, int>& candidate : candidates)
     {
         if (rand1 < candidate.second)
-        {
-            // XXX: this should be for any animated tile
-            if (is_torch_tile(candidate.first))
-                return candidate.first;
-            return pick_dngn_tile(candidate.first, rand2);
-        }
+            return candidate.first;
         rand1 -= candidate.second;
     }
 
@@ -476,6 +470,41 @@ static bool _same_door_at(dungeon_feature_type feat, const coord_def &gc)
         || feat_is_closed_door(door)
            && feat_is_opaque(feat) == feat_is_opaque(door)
            && (feat_is_sealed(feat) || feat_is_sealed(door));
+}
+
+unsigned short tile_door_connect(coord_def gc)
+{
+    dungeon_feature_type feat = env.grid(gc);
+    if (!feat_is_door(feat))
+        return 0;
+
+    // Check for gates.
+    bool door_left  = _same_door_at(feat, coord_def(gc.x - 1, gc.y));
+    bool door_right = _same_door_at(feat, coord_def(gc.x + 1, gc.y));
+    bool door_up    = _same_door_at(feat, coord_def(gc.x, gc.y - 1));
+    bool door_down  = _same_door_at(feat, coord_def(gc.x, gc.y + 1));
+
+    if (!door_left && !door_right && !door_up && !door_down)
+        return 0;
+
+    tileidx_t target;
+    if (door_left && door_right)
+        target = TILE_DNGN_GATE_CLOSED_MIDDLE;
+    else if (door_up && door_down)
+        target = TILE_DNGN_VGATE_CLOSED_MIDDLE;
+    else if (door_left)
+        target = TILE_DNGN_GATE_CLOSED_RIGHT;
+    else if (door_right)
+        target = TILE_DNGN_GATE_CLOSED_LEFT;
+    else if (door_up)
+        target = TILE_DNGN_VGATE_CLOSED_DOWN;
+    else
+        target = TILE_DNGN_VGATE_CLOSED_UP;
+
+    // NOTE: This requires that closed gates and open gates
+    // are positioned in the tile set relative to their
+    // door counterpart.
+    return (unsigned short)(target - TILE_DNGN_CLOSED_DOOR);
 }
 
 static void _init_feat_flavour(tileidx_t& flavour, dungeon_feature_type feat)
@@ -556,7 +585,13 @@ void tile_init_flavour(const coord_def &gc, const int domino)
                 _get_depths_wall_tiles_by_depth(you.depth, tile_candidates);
             else
                 _get_dungeon_wall_tiles_by_depth(you.depth, tile_candidates);
-            tile_env.flv(gc).wall = _pick_dngn_tile_multi(tile_candidates, rand2);
+            int rand3 = hash_with_seed(INT_MAX, seed, 2);
+            tileidx_t wall = _pick_dngn_tile_multi(tile_candidates, rand3);
+            // XXX: this should be for any animated tile not just torches
+            if (is_torch_tile(wall))
+                tile_env.flv(gc).wall = wall;
+            else
+                tile_env.flv(gc).wall = pick_dngn_tile(wall, rand2);
         }
         else
         {
@@ -568,43 +603,17 @@ void tile_init_flavour(const coord_def &gc, const int domino)
         }
     }
     else
-        tile_env.flv(gc).wall = pick_dngn_tile(tile_env.flv(gc).wall, rand2);
+    {
+        // XXX: this should be for any animated tile not just torches
+        tileidx_t wall = tile_env.flv(gc).wall;
+        if (!is_torch_tile(wall))
+            tile_env.flv(gc).wall = pick_dngn_tile(wall, rand2);
+    }
+
 
     _init_feat_flavour(tile_env.flv(gc).feat, env.grid(gc));
 
-    if (feat_is_door(env.grid(gc)))
-    {
-        // Check for gates.
-        bool door_left  = _same_door_at(env.grid(gc), coord_def(gc.x - 1, gc.y));
-        bool door_right = _same_door_at(env.grid(gc), coord_def(gc.x + 1, gc.y));
-        bool door_up    = _same_door_at(env.grid(gc), coord_def(gc.x, gc.y - 1));
-        bool door_down  = _same_door_at(env.grid(gc), coord_def(gc.x, gc.y + 1));
-
-        if (door_left || door_right || door_up || door_down)
-        {
-            tileidx_t target;
-            if (door_left && door_right)
-                target = TILE_DNGN_GATE_CLOSED_MIDDLE;
-            else if (door_up && door_down)
-                target = TILE_DNGN_VGATE_CLOSED_MIDDLE;
-            else if (door_left)
-                target = TILE_DNGN_GATE_CLOSED_RIGHT;
-            else if (door_right)
-                target = TILE_DNGN_GATE_CLOSED_LEFT;
-            else if (door_up)
-                target = TILE_DNGN_VGATE_CLOSED_DOWN;
-            else
-                target = TILE_DNGN_VGATE_CLOSED_UP;
-
-            // NOTE: This requires that closed gates and open gates
-            // are positioned in the tile set relative to their
-            // door counterpart.
-            tile_env.flv(gc).special = target - TILE_DNGN_CLOSED_DOOR;
-        }
-        else
-            tile_env.flv(gc).special = 0;
-    }
-    else if (!tile_env.flv(gc).special)
+    if (!tile_env.flv(gc).special)
         tile_env.flv(gc).special = hash_with_seed(256, seed, 10);
 }
 
@@ -973,27 +982,6 @@ static void _tile_place_item_marker(const coord_def &gc, const item_def &item)
         tile_env.bk_bg(gc) |= TILE_FLAG_CURSOR3;
 }
 
-/**
- * Place the tile for an unseen monster's disturbance.
- *
- * @param gc    The disturbance's map position.
-**/
-static void _tile_place_invisible_monster(const coord_def &gc)
-{
-    const map_cell& cell = env.map_knowledge(gc);
-
-    // Shallow water has its own modified tile for disturbances
-    // see tileidx_feature
-    // That tile is hidden by clouds though
-    if (cell.feat() != DNGN_SHALLOW_WATER || cell.cloud() != CLOUD_NONE)
-        tile_env.bk_fg(gc) = TILE_UNSEEN_MONSTER;
-    else
-        tile_env.bk_fg(gc) = 0;
-
-    if (env.map_knowledge(gc).item())
-        _tile_place_item_marker(gc, *env.map_knowledge(gc).item());
-}
-
 static void _tile_place_monster(const coord_def &gc, const monster_info& mon)
 {
     tile_with_flags_t t = tileidx_monster(mon);
@@ -1019,6 +1007,14 @@ static void _tile_place_monster(const coord_def &gc, const monster_info& mon)
     }
 
     tile_env.bk_fg(gc) = t;
+
+    if (env.map_knowledge(gc).old_invisible_monster())
+    {
+        tile_env.bk_bg(gc) |= TILE_FLAG_REMEMBERED_INVIS;
+        tile_with_flags_t fg = tile_env.bk_fg(gc);
+        tile_env.bk_fg(gc) = fg | TILE_FLAG_REMEMBERED_INVIS;
+    }
+
     if (!you.see_cell(gc))
         return;
     set<tileidx_t> status_icons = status_icons_for(mon);
@@ -1080,9 +1076,7 @@ void tile_draw_map_cell(const coord_def& gc, bool foreground_only)
     const map_cell& cell = env.map_knowledge(gc);
 
     tile_env.bk_fg(gc) = 0;
-    if (cell.invisible_monster())
-        _tile_place_invisible_monster(gc);
-    else if (cell.monsterinfo())
+    if (cell.monsterinfo())
         _tile_place_monster(gc, *cell.monsterinfo());
     else if (cell.item())
     {
@@ -1131,6 +1125,9 @@ static bool _tile_has_random_misc_animation(tileidx_t tile)
 // Unfortunately, these are all hard-coded for now.
 void tile_apply_animations(tileidx_t bg_idx, tile_flavour *flv)
 {
+    if (bg_idx == TILE_WALL_NORMAL)
+        bg_idx = flv->wall;
+
 #ifndef USE_TILE_WEB
     if (_tile_has_cycling_misc_animation(bg_idx))
         flv->special = (flv->special + 1) % tile_dngn_count(bg_idx);

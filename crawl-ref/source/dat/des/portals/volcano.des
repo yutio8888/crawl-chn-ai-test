@@ -105,7 +105,12 @@ end
 -- "Volcano" functions. While the sizes may appear extreme, they are carefully
 -- weighted and balanced and have been tested extensively.
 function callback.volcano_in_radius_12(x, y)
-  return dgn.point_in_radius(dgn.point(x, y), dgn.point(you.pos()), 12)
+  local px, py = you.pos()
+  -- May run during off-level catchup when the player is not placed.
+  if not dgn.in_bounds(px, py) then
+    return false
+  end
+  return dgn.point_in_radius(dgn.point(x, y), dgn.point(px, py), 12)
 end
 
 local large_warning = tw_machine(3, "The air gets thick with the scent of sulphur.",
@@ -121,14 +126,16 @@ function place_large_volcano(e)
     e.kfeat("V = l")
     e.lua_marker('V', fog_machine { cloud_type = "flame", walk_dist=15, pow_max=6,
                                    delay = 300, size = 10000, spread_rate = 30,
-                                   listener = large_warning, excl_rad = -1 })
+                                   listener = large_warning, excl_rad = -1,
+                                   countdown_limit = 1 })
 end
 
 function place_chained_volcano(e)
     e.kfeat("V = l")
     e.lua_marker('V', chained_fog_machine { cloud_type = "flame", walk_dist=15, pow_max=6,
-                                            delay = 300, size = 100, spread_rate = 30,
-                                            listener = large_warning, excl_rad = -1 } )
+                                           delay = 300, size = 100, spread_rate = 30,
+                                           listener = large_warning, excl_rad = -1,
+                                           countdown_limit = 1 })
 end
 
 
@@ -136,7 +143,8 @@ function place_small_volcano(e)
     e.kfeat("V = l")
     e.lua_marker('V', fog_machine { cloud_type = "flame", walk_dist=15, pow_max=6,
                                    delay = 300, size = 800, spread_rate = 30,
-                                   listener = small_warning, excl_rad = -1 })
+                                   listener = small_warning, excl_rad = -1,
+                                   countdown_limit = 1 })
 end
 
 function place_lake_volcanoes (e, glyphs)
@@ -150,14 +158,16 @@ function place_lake_volcano (e, glyph)
     e.lua_marker(glyph, chained_fog_machine { cloud_type = "flame", walk_dist=0,
                             pow_max=6, delay_min = 300, delay_max = 800,
                             size = 125, spread_rate = 5,
-                            listener = small_warning, excl_rad = -1 })
+                            listener = small_warning, excl_rad = -1,
+                            countdown_limit = 1 })
 end
 
 function place_tiny_volcano(e)
     e.kfeat("V = l")
     e.lua_marker('V', fog_machine { cloud_type = "flame", walk_dist=10, pow_max=6,
                                    delay = 800, size = 40, spread_rate = 10,
-                                   listener = large_warning, excl_rad = -1 })
+                                   listener = large_warning, excl_rad = -1,
+                                   countdown_limit = 1 })
 end
 -- #
 -- ###

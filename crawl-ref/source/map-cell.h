@@ -4,6 +4,7 @@
 
 #include "enum.h"
 #include "mon-info.h"
+#include "monster.h"
 #include "tag-version.h"
 
 #define MAP_MAGIC_MAPPED_FLAG   0x01
@@ -13,9 +14,10 @@
 #define MAP_INVISIBLE_MONSTER   0x10
 #define MAP_DETECTED_ITEM       0x20
 #define MAP_VISIBLE_FLAG        0x40
+#define MAP_OLD_INVIS_MONSTER   0x80
 #define MAP_GRID_KNOWN (MAP_MAGIC_MAPPED_FLAG | MAP_SEEN_FLAG \
                         | MAP_DETECTED_MONSTER | MAP_INVISIBLE_MONSTER \
-                        | MAP_DETECTED_ITEM | MAP_VISIBLE_FLAG)
+                        | MAP_DETECTED_ITEM | MAP_VISIBLE_FLAG | MAP_OLD_INVIS_MONSTER)
 
 #define MAP_EMPHASIZE          0x100
 #define MAP_MORE_ITEMS         0x200
@@ -26,7 +28,7 @@
 #define MAP_ICY               0x8000
 
 /* these flags require more space to serialize: put infrequently used ones there */
-#define MAP_EXCLUDED_STAIRS  0x10000
+#define MAP_DOOR_CONNECT_1   0x10000
 #define MAP_BLOOD_WEST       0x20000
 #define MAP_BLOOD_NORTH      0x40000
 #define MAP_SANCTUARY_1      0x80000
@@ -40,6 +42,8 @@
 #define MAP_DISJUNCT       0X8000000
 #define MAP_BLASPHEMY     0X10000000
 #define MAP_BFB_CORPSE    0X20000000
+#define MAP_DOOR_CONNECT_2 0x40000000
+#define MAP_DOOR_CONNECT_3 0x80000000
 
 struct cloud_info
 {
@@ -213,7 +217,7 @@ struct map_cell
         flags &= ~(MAP_DETECTED_ITEM | MAP_MORE_ITEMS);
     }
 
-    monster_type monster() const
+    monster_type mon_type() const
     {
         return _mons ? _mons->type : MONS_NO_MONSTER;
     }
@@ -234,9 +238,16 @@ struct map_cell
         return !!(flags & MAP_DETECTED_MONSTER);
     }
 
+    // An invisible monster which the player is unambiguously aware is currently here.
     bool invisible_monster() const
     {
         return !!(flags & MAP_INVISIBLE_MONSTER);
+    }
+
+    // The last-known location of an invisible monster that is no longer here.
+    bool old_invisible_monster() const
+    {
+        return !!(flags & MAP_OLD_INVIS_MONSTER);
     }
 
     void set_detected_monster(monster_type mons)
@@ -247,17 +258,28 @@ struct map_cell
         flags |= MAP_DETECTED_MONSTER;
     }
 
-    void set_invisible_monster()
+    void set_invisible_monster(const monster* mon)
     {
         clear_monster();
+        _mons = make_unique<monster_info>(mon);
+        _mons->mb.set(MB_INVISIBLE, false); // Avoid redundant invisibility descriptions.
         flags |= MAP_INVISIBLE_MONSTER;
+        _mons->mb.set(MB_KNOWN_INVIS);
+    }
+
+    void set_old_invisible_monster(const monster* mon)
+    {
+        _mons = make_unique<monster_info>(mon->type, mon->base_monster);
+        _mons->mb.set(MB_INVISIBLE, false); // Avoid redundant invisibility descriptions.
+        flags |= MAP_OLD_INVIS_MONSTER;
+        _mons->mb.set(MB_REMEMBERED_INVIS);
     }
 
     void clear_monster()
     {
         // TODO: internal callers are doing a bit of duplicate work here
         _mons.reset();
-        flags &= ~(MAP_DETECTED_MONSTER | MAP_INVISIBLE_MONSTER);
+        flags &= ~(MAP_DETECTED_MONSTER | MAP_INVISIBLE_MONSTER | MAP_OLD_INVIS_MONSTER);
     }
 
     cloud_type cloud() const
@@ -329,6 +351,32 @@ struct map_cell
         return result;
     }
 #endif
+
+    void set_door_connect(unsigned short door_connect)
+    {
+        uint32_t door_connect_flags = MAP_DOOR_CONNECT_1 | MAP_DOOR_CONNECT_2
+                                      | MAP_DOOR_CONNECT_3;
+        flags &= ~door_connect_flags;
+        ASSERT(door_connect < 7);
+        if (door_connect & 1)
+            flags |= MAP_DOOR_CONNECT_1;
+        if ((door_connect >> 1) & 1)
+            flags |= MAP_DOOR_CONNECT_2;
+        if ((door_connect >> 2) & 1)
+            flags |= MAP_DOOR_CONNECT_3;
+    }
+
+    unsigned short door_connect() const
+    {
+        unsigned short result = 0;
+        if (flags & MAP_DOOR_CONNECT_1)
+            result += 1;
+        if (flags & MAP_DOOR_CONNECT_2)
+            result += 2;
+        if (flags & MAP_DOOR_CONNECT_3)
+            result += 4;
+        return result;
+    }
 
 public:
     uint32_t flags = 0;   // Flags describing the mappedness of this square.

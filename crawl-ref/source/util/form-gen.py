@@ -2,9 +2,6 @@
 
 """
 Generate form-data.h
-
-Works with both Python 2 & 3. If that changes, update how the Makefile calls
-this.
 """
 
 from __future__ import print_function
@@ -350,6 +347,7 @@ keyfns = {
     'changes_anatomy': Field(parse_bool),
     'changes_substance': Field(parse_bool),
     'holiness': Field(lambda s: "MH_" + s.upper()),
+    'undead_state': Field(lambda s: "US_" + s.upper()),
 
     'is_badform': Field(parse_bool),
     'has_blood': Field(parse_capability),
@@ -412,6 +410,7 @@ defaults = {
     'changes_anatomy': "false",
     'changes_substance': "false",
     'holiness': "MH_NONE",
+    'undead_state': 'US_ALIVE',
 
     'is_badform': 'false',
     'has_blood': "FC_DEFAULT",
@@ -435,7 +434,7 @@ defaults = {
 }
 
 def load_template(templatedir, name):
-    return open(os.path.join(templatedir, name)).read()
+    return open(os.path.join(templatedir, name), encoding='utf-8').read()
 
 def main():
     parser = argparse.ArgumentParser(description='Generate form-data.h')
@@ -462,7 +461,7 @@ def main():
     enum_order = {}
     enum_started = False
     index = 0
-    transformation_h = open(args.form_enum).read()
+    transformation_h = open(args.form_enum, encoding='utf-8').read()
     enum_lines = transformation_h.splitlines()
     for ln in enum_lines:
         trimmed = ln.lstrip()
@@ -483,7 +482,7 @@ def main():
             continue
         f_path = os.path.join(args.datadir, f_name)
         try:
-            form_spec = yaml.safe_load(open(f_path))
+            form_spec = yaml.safe_load(open(f_path, encoding='utf-8'))
         except yaml.YAMLError as e:
             print("Failed to load %s: %s" % (f_name, e))
             sys.exit(1)
@@ -505,7 +504,7 @@ def main():
 
     text += load_template(args.templatedir, 'footer.txt')
 
-    with open(args.form_data, 'w') as f:
+    with open(args.form_data, 'w', encoding='utf-8') as f:
         f.write(text)
 
 if __name__ == '__main__':

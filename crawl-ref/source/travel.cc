@@ -23,6 +23,7 @@
 #include "cloud.h"
 #include "clua.h"
 #include "command.h"
+#include "coord-def.h"
 #include "coordit.h"
 #include "daction-type.h"
 #include "dactions.h"
@@ -43,12 +44,14 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "longwalk-range-mode.h"
 #include "macro.h"
 #include "mapmark.h"
 #include "menu.h"
 #include "message.h"
 #include "mon-death.h"
 #include "nearby-danger.h"
+#include "options.h"
 #include "output.h"
 #include "place.h"
 #include "prompt.h"
@@ -552,7 +555,7 @@ static bool _is_safe_move(const coord_def& c)
     {
         // Stop before wasting energy on plants and fungi,
         // unless worshipping Fedhas.
-        if (you.can_see(*mon) && mon->is_firewood() && !fedhas_passthrough(mon))
+        if (you.aware_of(*mon) && mon->is_firewood() && !fedhas_passthrough(mon))
             return false;
 
         // If this is any *other* monster, it'll be visible and
@@ -1109,22 +1112,10 @@ command_type travel()
             if (you.duration[type] == 0)
                 continue;
 
-            // Only rest off the bad part of Swiftness
-            if (type == DUR_SWIFTNESS && you.attribute[ATTR_SWIFTNESS] > 0)
-                continue;
-
             // Only try to rest off transformations when this is both possible
             // and the form is negative.
             if (type == DUR_TRANSFORMATION
                 && (!you.transform_uncancellable || !form_is_bad()))
-            {
-                continue;
-            }
-
-            // Poison doesn't wear off while in this state, so don't try waiting
-            // for it.
-            if (type == DUR_POISONING
-                && (you.is_nonliving() || you.is_lifeless_undead()))
             {
                 continue;
             }
@@ -4661,6 +4652,8 @@ void runrest::initialise(int dir, int mode)
     notified_ancestor_hp_full = false;
     turns_passed = 0;
     skip_autorest = false;
+    starting_pos = you.pos();
+    max_longwalk_distance = -1; // Default to no maximum.
 
     if (dir == RDIR_REST)
     {
@@ -4682,6 +4675,34 @@ void runrest::initialise(int dir, int mode)
         set_run_check(0, left);
         set_run_check(1, dir);
         set_run_check(2, right);
+
+        switch (Options.longwalk_range)
+        {
+            case LWR_LOS:
+                max_longwalk_distance = get_los_radius();
+                break;
+            case LWR_CONSTANT:
+                max_longwalk_distance = Options.longwalk_range_constant;
+                break;
+            case LWR_VISIBLE:
+
+                // See how far we can go in the "pos" direction to find the furthest
+                // visible tile. We don't need to worry about impassible tiles too
+                // much because max_distance is only one limitation. We'll never set
+                // the distance to 0 because we will always attempt to move at least
+                // 1 tile so that wouldn't do anything anyway.
+                max_longwalk_distance = 1;
+                for (int dist = 2; dist <= get_los_radius(); dist++)
+                {
+                    coord_def target = starting_pos + pos*dist;
+                    if (!in_bounds(target) || !you.see_cell_no_trans(target))
+                        break;
+                    max_longwalk_distance = dist;
+                }
+                break;
+            case LWR_UNLIMITED: ; // do nothing. It's already initialized.
+        }
+
     }
 
     if (runmode == RMODE_REST_DURATION || runmode == RMODE_WAIT_DURATION)
@@ -4734,6 +4755,13 @@ bool runrest::run_should_stop() const
 {
     const coord_def targ = you.pos() + pos;
     const map_cell& tcell = env.map_knowledge(targ);
+
+    if (max_longwalk_distance >= 0
+        && starting_pos.distance_from(targ) > max_longwalk_distance)
+    {
+        return true;
+    }
+
 
     if (!_is_safe_cloud(targ))
         return true;

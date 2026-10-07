@@ -229,10 +229,12 @@ static const mutation_conflict mut_conflicts[] =
     { MUT_COLD_RESISTANCE,     MUT_COLD_VULNERABILITY,      true},
     { MUT_SHOCK_RESISTANCE,    MUT_SHOCK_VULNERABILITY,     true},
     { MUT_STRONG_WILLED,       MUT_WEAK_WILLED,             true},
+    // It is slightly odd to have two inverses for devolution, but it makes
+    // sense as long as those inverses are themselves conflicting.
     { MUT_MUTATION_RESISTANCE, MUT_DEVOLUTION,              true},
     { MUT_EVOLUTION,           MUT_DEVOLUTION,              true},
-    { MUT_MUTATION_RESISTANCE, MUT_EVOLUTION,               true},
 
+    { MUT_MUTATION_RESISTANCE, MUT_EVOLUTION,              false},
     { MUT_FANGS,               MUT_BEAK,                   false},
     { MUT_ANTENNAE,            MUT_HORNS,                  false},
     { MUT_BEAK,                MUT_HORNS,                  false},
@@ -1281,9 +1283,8 @@ static bool _accept_mutation(mutation_type mutat, bool temp, bool catalyst)
     // Catalyst mutations avoid the boring pure stat mutation trio, and also
     // try to avoid providing any auxes that could disable equipment.
     if (catalyst
-        && (mutat == MUT_HORNS || mutat == MUT_ANTENNAE
-            || mutat == MUT_CLAWS || mutat == MUT_HOOVES || mutat == MUT_TALONS
-            || mutat == MUT_STRONG || mutat == MUT_CLEVER || mutat == MUT_AGILE))
+        && (is_body_facet(mutat) || mutat == MUT_STRONG
+            || mutat == MUT_CLEVER || mutat == MUT_AGILE))
     {
         return false;
     }
@@ -1471,7 +1472,7 @@ static int _handle_conflicting_mutations(mutation_type mutation,
         // We can never delete innate mutations this way, so if there are no
         // non-innate mutations (and we're not trying to apply to temporary
         // invertable mutation, which is allowed), immediately fail.
-        if (innate_only && !conflict.is_inverse && !temp)
+        if (innate_only && !(conflict.is_inverse && temp))
         {
             dprf("Delete mutation failed: %s conflicting with innate mutation %s.",
                     mutation_name(mutation), mutation_name(confl_mut));
@@ -2072,8 +2073,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
             break;
 
         case MUT_ACUTE_VISION:
-            // We might have to turn autopickup back on again.
-            autotoggle_autopickup(false);
+            env.invis_knowledge.clear();
             break;
 
         case MUT_NIGHTSTALKER:
@@ -2711,13 +2711,13 @@ mutation_type mutation_from_name(string name, bool allow_category, vector<mutati
  * @return      The mutation's description, helpfully trimmed.
  *              e.g. "you are frail (-10% HP)".
  */
-string mut_upgrade_summary(mutation_type mut)
+string innate_mut_upgrade_summary(mutation_type mut)
 {
     if (!_is_valid_mutation(mut))
         return "";
 
     string mut_desc =
-        lowercase_first(mutation_desc(mut, you.mutation[mut] + 1));
+        lowercase_first(mutation_desc(mut, you.innate_mutation[mut] + 1));
     strip_suffix(mut_desc, ".");
     return mut_desc;
 }
@@ -3373,7 +3373,7 @@ void check_monster_detect()
         // forth, since every time it leaves LOS of the mimic, the
         // mimic is forgotten (replaced by MONS_SENSED).
         // XXX: since mimics were changed, is this safe to remove now?
-        const monster_type remembered_monster = cell.monster();
+        const monster_type remembered_monster = cell.mon_type();
         if (remembered_monster == mon->type)
             continue;
 

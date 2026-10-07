@@ -10,7 +10,7 @@
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
         "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
-        "charge"
+        "charge", "stumble"
       ]
     },
     "move.onto-surface": {
@@ -19,7 +19,7 @@
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
         "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
-        "charge"
+        "charge", "stumble"
       ]
     },
     "move.onto-actor": {
@@ -43,7 +43,7 @@
         "walk", "fly", "swim", "slither", "stride", "roll", "stampede", "rampage",
         "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
         "leap", "passwall", "line pass", "move", "transfer", "wall jump",
-        "charge"
+        "charge", "stumble"
       ]
     }
   }

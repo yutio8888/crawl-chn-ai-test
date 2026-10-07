@@ -658,6 +658,7 @@ string no_selectables_message(int item_selector)
     case OSEL_LAUNCHING:
         return T_("You aren't carrying any items that might be thrown or fired.");
     case OSEL_EVOKABLE:
+    case OSEL_EVOKABLE_ALL:
         if (you.get_mutation_level(MUT_NO_ARTIFICE)) // iffy
             return T_("You cannot evoke magical items.");
         return T_("You aren't carrying any items that you can evoke.");
@@ -1337,16 +1338,13 @@ vector<SelItem> select_items(const vector<const item_def*> &items,
 bool item_is_selected(const item_def &i, int selector)
 {
     const object_class_type itype = i.base_type;
-    if (selector == OSEL_ANY || selector == itype
-                                && itype != OBJ_ARMOUR)
-    {
+    if (selector == OSEL_ANY || selector == itype)
         return true;
-    }
 
     switch (selector)
     {
     case OBJ_ARMOUR:
-        return itype == OBJ_ARMOUR && can_equip_item(i, true);
+        return itype == OBJ_ARMOUR;
 
     case OSEL_WORN_ARMOUR:
         return itype == OBJ_ARMOUR && item_is_equipped(i);
@@ -1711,9 +1709,8 @@ static bool _has_warning_inscription(const item_def& item,
 bool maybe_warn_about_removing(const item_def& item)
 {
     string prompt;
-    bool penance = false;
 
-    if (!needs_handle_warning(item, OPER_UNEQUIP, penance))
+    if (!needs_handle_warning(item, OPER_UNEQUIP))
         return true;
 
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
@@ -1728,8 +1725,6 @@ bool maybe_warn_about_removing(const item_def& item)
         prompt += T_("and destroy ");
     prompt += item.name(DESC_INVENTORY);
     prompt += "?";
-    if (penance)
-        prompt += T_(" This could place you under penance!");
     return yesno(prompt.c_str(), false, 'n');
 }
 
@@ -1773,7 +1768,7 @@ bool needs_notele_warning(const item_def &item, operation_types oper)
 }
 
 bool needs_handle_warning(const item_def &item, operation_types oper,
-                          bool &penance, bool check_inscriptions)
+                          bool check_inscriptions)
 {
     if (check_inscriptions && _has_warning_inscription(item, oper))
         return true;
@@ -1787,21 +1782,8 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
         return true;
     }
 
-    if ((oper == OPER_EVOKE || oper == OPER_PUTON)
-        && god_hates_item(item))
-    {
-        penance = true;
-        return true;
-    }
-
     if (needs_notele_warning(item, oper))
         return true;
-
-    if (oper == OPER_ATTACK && god_hates_item(item))
-    {
-        penance = true;
-        return true;
-    }
 
     if ((oper == OPER_EQUIP || oper == OPER_UNEQUIP))
     {
@@ -1835,9 +1817,8 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
 bool check_warning_inscriptions(const item_def& item,
                                  operation_types oper)
 {
-    bool penance = false;
     if (item.defined()
-        && needs_handle_warning(item, oper, penance))
+        && needs_handle_warning(item, oper))
     {
         if (oper == OPER_UNEQUIP)
         {
@@ -1853,10 +1834,6 @@ bool check_warning_inscriptions(const item_def& item,
         if (needs_notele_warning(item, oper))
             prompt += T_(" while about to teleport");
         prompt += "?";
-        if (god_despises_item(item, you.religion))
-            prompt += T_(" You'd be excommunicated if you did!");
-        else if (penance)
-            prompt += T_(" This could place you under penance!");
         return yesno(prompt.c_str(), false, 'n');
     }
 

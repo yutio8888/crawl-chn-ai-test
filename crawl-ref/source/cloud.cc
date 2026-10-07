@@ -421,6 +421,12 @@ static void _los_cloud_changed(const coord_def& p, const cloud_type t, const clo
 {
     if (is_opaque_cloud(t) || is_opaque_cloud(old))
         los_terrain_changed(p);
+
+    // Opaque clouds reveal the presence of most invisible monsters.
+    if (is_opaque_cloud(t))
+        if (monster* mons = monster_at(p))
+            if (!mons->is_insubstantial())
+                mons->sense_if_invisible();
 }
 
 cloud_struct::cloud_struct(coord_def p, cloud_type c, int d, int spread,
@@ -810,7 +816,7 @@ bool place_cloud(cloud_type cl_type, const coord_def& ctarget, int cl_range,
             && mons && mons->alive()
             && !actor_cloud_immune(*mons, cl_type))
         {
-            set_attack_conducts(conducts, *mons, you.can_see(*mons));
+            set_attack_conducts(conducts, *mons, you.aware_of(*mons));
         }
 
         whose = KC_YOU;
@@ -1171,11 +1177,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
             return true;
         }
         else if (coinflip() && mons->malmutate(cloud.agent(), "mutagenic cloud"))
-        {
-            if (you_worship(GOD_ZIN) && cloud.whose == KC_YOU)
-                did_god_conduct(DID_DELIBERATE_MUTATING, 5 + random2(3));
             return true;
-        }
         return false;
 
     case CLOUD_ALCOHOL:
@@ -1223,11 +1225,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
         dam = timescale_damage(act, dam);
 
         if (dam > 0)
-        {
             act->hurt(agent, dam, BEAM_NEG, KILLED_BY_CLOUD, "", cloud.cloud_name(true));
-            if (cloud.whose == KC_YOU)
-                did_god_conduct(DID_EVIL, 5 + random2(3));
-        }
 
         return true;
     }

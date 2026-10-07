@@ -128,22 +128,31 @@ skill_type SkillMenuEntry::get_skill() const
     return m_sk;
 }
 
-static bool _show_skill(skill_type sk, skill_menu_state state)
+static skill_set _shown_skills(skill_menu_state state)
 {
+    skill_set shown;
     switch (state)
     {
     case SKM_SHOW_DEFAULT:
-        return you.can_currently_train[sk] && (you.should_show_skill[sk]
-                                               || you.training[sk])
-            || you.skill(sk, 10, false, false);
-    case SKM_SHOW_ALL:     return true;
-    default:               return false;
+        shown = default_shown_skills();
+        break;
+    case SKM_SHOW_ALL:
+        for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+            if (!is_useless_skill(sk, false))
+                shown.insert(sk);
+        break;
+    default:
+        break;
     }
+    return shown;
 }
 
 bool SkillMenuEntry::is_selectable(bool)
 {
     if (is_invalid_skill(m_sk))
+        return false;
+
+    if (is_useless_skill(m_sk))
         return false;
 
     if (is_set(SKMF_HELP))
@@ -174,7 +183,7 @@ void SkillMenuEntry::refresh(bool keep_hotkey)
 {
     if (m_sk == SK_TITLE)
         set_title();
-    else if (is_invalid_skill(m_sk) || is_useless_skill(m_sk))
+    else if (is_invalid_skill(m_sk) || is_useless_skill(m_sk, false))
         _clear();
     else
     {
@@ -310,7 +319,7 @@ string SkillMenuEntry::get_prefix()
     else
         letter = ' ';
 
-    const int sign = (!you.can_currently_train[m_sk] || mastered()) ? ' ' :
+    const int sign = (is_useless_skill(m_sk) || mastered()) ? ' ' :
                                    (you.train[m_sk] == TRAINING_FOCUSED) ? '*' :
                                           you.train[m_sk] ? '+'
                                                           : '-';
@@ -814,16 +823,6 @@ void SkillMenu::init_experience()
         you.auto_training = false;
         reset_training();
         you.clear_training_targets();
-
-        for (int i = 0; i < NUM_SKILLS; ++i)
-        {
-            const skill_type sk = skill_type(i);
-            if (!is_useless_skill(sk) && !you.can_currently_train[sk])
-            {
-                you.can_currently_train.set(sk);
-                you.train[sk] = TRAINING_DISABLED;
-            }
-        }
     }
 }
 
@@ -1347,8 +1346,8 @@ bool SkillMenu::do_skill_enabled_check()
         if (get_state(SKM_SHOW) == SKM_SHOW_DEFAULT)
         {
             bool showing_trainable = false;
-            for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
-                if (_show_skill(sk, SKM_SHOW_DEFAULT) && can_enable_skill(sk))
+            for (skill_type sk : _shown_skills(SKM_SHOW_DEFAULT))
+                if (can_enable_skill(sk))
                 {
                     showing_trainable = true;
                     break;
@@ -1853,6 +1852,8 @@ void SkillMenu::set_skills()
 
     int col = 0, ln = 0;
 
+    const skill_set shown = _shown_skills(get_state(SKM_SHOW));
+
     for (int i = 0; i < ndisplayed_skills; ++i)
     {
         skill_type sk = skill_display_order[i];
@@ -1869,7 +1870,7 @@ void SkillMenu::set_skills()
             ln = 0;
             continue;
         }
-        else if (!is_invalid_skill(sk) && !_show_skill(sk, get_state(SKM_SHOW)))
+        else if (!is_invalid_skill(sk) && !shown.count(sk))
             continue;
         else
         {
@@ -1890,7 +1891,7 @@ void SkillMenu::set_skills()
 
 void SkillMenu::toggle_practise(skill_type sk, int keyn)
 {
-    ASSERT(you.can_currently_train[sk]);
+    ASSERT(!is_useless_skill(sk));
     if (keyn >= 'A' && keyn <= 'Z')
         you.train.init(TRAINING_DISABLED);
     if (get_state(SKM_DO) == SKM_DO_PRACTISE)
@@ -2351,10 +2352,7 @@ private:
 
 void skill_menu(int flag, int exp)
 {
-    // experience potion; you may elect to put experience in normally
-    // untrainable skills (e.g. skills that your god hates). The only
-    // case where we abort is if all in-principle trainable skills are maxed.
-    if (flag & SKMF_EXPERIENCE && !trainable_skills(true))
+    if (flag & SKMF_EXPERIENCE && !trainable_skills())
     {
         mpr(T_("You feel omnipotent."));
         return;

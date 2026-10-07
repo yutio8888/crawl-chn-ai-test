@@ -53,6 +53,7 @@
 #include "mon-place.h"
 #include "mon-poly.h"
 #include "mon-util.h"
+#include "mon-tentacle.h"
 #include "mutation.h"
 #include "nearby-danger.h"
 #include "options.h"
@@ -304,32 +305,24 @@ bool player_tracer(zap_type ztype, int power, bolt &pbolt, int range)
     return true;
 }
 
-// Returns true if the player wants / needs to abort based on god displeasure
-// with targeting this target with this spell. Returns false otherwise.
-static bool _stop_because_god_hates_target_prompt(const monster* mon,
-                                                  spell_type spell,
-                                                  bool check_only = false)
+// If the cast must be aborted because the player's god forbids it, this
+// returns the reason. Otherwise returns "".
+static string _god_forbids_target_reason(const monster* mon, spell_type spell)
 {
     if (spell == SPELL_TUKIMAS_DANCE)
     {
         const item_def * const first = mon->weapon(0);
         const item_def * const second = mon->weapon(1);
-        bool prompt = first && god_hates_item(*first)
-                      || second && god_hates_item(*second);
-        if (prompt)
+        bool forbidden = first && god_forbids_item(*first)
+                         || second && god_forbids_item(*second);
+        if (forbidden)
         {
-            if (check_only)
-                return true;
-            if (!yesno(T_("Animating this weapon would place you under penance. "
-                "Really cast this spell?"), false, 'n'))
-            {
-                canned_msg(MSG_OK);
-                return true;
-            }
+            return make_stringf(T_("%s forbids you from animating such a foul weapon!"),
+                                uppercase_first(god_name(you.religion)).c_str());
         }
     }
 
-    return false;
+    return "";
 }
 
 struct zap_info
@@ -716,24 +709,6 @@ void bolt::precalc_agent_properties()
     can_see_invis = a->can_see_invisible();
 }
 
-void bolt::apply_beam_conducts()
-{
-    if (is_tracer() && BLAME_KILL(thrower))
-    {
-        switch (flavour)
-        {
-        case BEAM_DAMNATION:
-        {
-            const int level = 2 + random2(3);
-            did_god_conduct(DID_EVIL, level, god_cares());
-            break;
-        }
-        default:
-            break;
-        }
-    }
-}
-
 void bolt::choose_ray()
 {
     if ((!chose_ray || reflections > 0)
@@ -966,6 +941,9 @@ void bolt::burn_wall_effect()
                 place_cloud(CLOUD_FIRE, *ai, random_range(11, 25), agent());
         }
     }
+
+    // Fix or destroy vines anchored to the destroyed tree.
+    reanchor_or_destroy_vines(pos(), agent());
 
     obvious_effect = true;
 
@@ -1231,7 +1209,10 @@ void bolt::do_fire()
         return;
     }
 
-    apply_beam_conducts();
+    // Visible beams reveal the presence of invisible monsters.
+    if (visible() && agent() && agent()->is_monster() && !is_tracer())
+        agent()->as_monster()->sense_if_invisible();
+
     cursor_control coff(false);
 
     msg_generated = false;
@@ -1655,9 +1636,6 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                 pbolt.obvious_effect = true;
 
             mons->drain(pbolt.agent());
-
-            if (BLAME_KILL(pbolt.thrower))
-                did_god_conduct(DID_EVIL, 2, pbolt.god_cares());
         }
         break;
 
@@ -1676,9 +1654,6 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                 return hurted;
 
             miasma_monster(mons, pbolt.agent());
-
-            if (BLAME_KILL(pbolt.thrower))
-                did_god_conduct(DID_UNCLEAN, 2, pbolt.god_cares());
         }
         break;
 
@@ -1797,7 +1772,8 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
     case BEAM_BOLAS:
         if (doFlavouredEffects)
         {
-            if (mons->is_insubstantial() || mons->is_amorphous())
+            bool seen = you.see_cell(mons->pos());
+            if ((mons->is_insubstantial() || mons->is_amorphous()) && seen)
             {
                 mprf(T_("The bolas passes through %s!"),
                       mons->name(DESC_THE).c_str());
@@ -1806,9 +1782,12 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
             {
                 mons->add_ench(mon_enchant(ENCH_BOUND, pbolt.agent(),
                                            random_range(4, 8)));
-                mprf(T_("The bolas warps around %s and binds %s in place!"),
-                     mons->name(DESC_THE).c_str(),
-                     mons->pronoun(PRONOUN_OBJECTIVE).c_str());
+                if (seen)
+                {
+                    mprf(T_("The bolas warps around %s and binds %s in place!"),
+                            mons->name(DESC_THE).c_str(),
+                            mons->pronoun(PRONOUN_OBJECTIVE).c_str());
+                }
             }
         }
         break;
@@ -1947,9 +1926,6 @@ spret mass_enchantment(enchant_type wh_enchant, int pow, bool fail)
     if (!did_msg)
         canned_msg(MSG_NOTHING_HAPPENS);
 
-    if (wh_enchant == ENCH_FRENZIED)
-        did_god_conduct(DID_HASTY, 8, true);
-
     return spret::success;
 }
 
@@ -2059,9 +2035,6 @@ bool miasma_monster(monster* mons, const actor* who)
         mons->hurt(who, roll_dice(2, 4), BEAM_MMISSILE, KILLED_BY_CLOUD);
         success = true;
     }
-
-    if (who && who->is_player() && is_good_god(you.religion))
-        did_god_conduct(DID_EVIL, 5 + random2(3));
 
     if (mons->alive() && one_chance_in(3))
     {
@@ -3692,7 +3665,6 @@ void bolt::affect_player_enchantment(bool resistible)
 
     case BEAM_HASTE:
         haste_player(40 + random2(ench_power));
-        did_god_conduct(DID_HASTY, 10, blame_player);
         obvious_effect = true;
         nasty = false;
         nice  = true;
@@ -4245,15 +4217,6 @@ void bolt::affect_player()
     {
         do_ranged_attack(you);
         return;
-    }
-
-    // Visible beams reveal invisible monsters; otherwise animations confer
-    // an information advantage for sighted players
-    if (visible() && agent() && agent()->is_monster())
-    {
-        monster* mons = agent()->as_monster();
-        mons->revealed_this_turn = true;
-        mons->revealed_at_pos = mons->pos();
     }
 
     if (misses_player())
@@ -4871,7 +4834,7 @@ void bolt::tracer_nonenchantment_affect_monster(monster* mon)
 void bolt::tracer_affect_monster(monster* mon)
 {
     // Ignore unseen monsters.
-    if ((agent() && !agent()->can_see(*mon))
+    if ((agent() && !agent()->aware_of(*mon))
         || !cell_see_cell(source, mon->pos(), LOS_DEFAULT))
     {
         return;
@@ -4903,7 +4866,7 @@ void bolt::enchantment_affect_monster(monster* mon)
     {
         if (BLAME_KILL(thrower))
         {
-            set_attack_conducts(conducts, *mon, you.can_see(*mon));
+            set_attack_conducts(conducts, *mon, you.aware_of(*mon));
 
             if (have_passive(passive_t::convert_orcs)
                 && mons_genus(mon->type) == MONS_ORC
@@ -4967,6 +4930,8 @@ void bolt::enchantment_affect_monster(monster* mon)
     handle_enchant_chaining(mon->pos());
 
     extra_range_used += range_used_on_hit();
+    if (range_used() > range)
+        mon->sense_if_invisible();
 
     // Nasty enchantments will annoy the monster, and are considered
     // naughty (even if a monster resisted).
@@ -4997,7 +4962,7 @@ static void _add_chain_candidates(const bolt& beam, coord_def pos,
             || mons_aligned(beam.agent(), act)
             || act->is_peripheral()
             || shoot_through_actor(beam.agent(), act)
-            || (beam.is_tracer() && !act->visible_to(beam.agent())))
+            || (beam.is_tracer() && !beam.agent()->aware_of(*act)))
         {
             continue;
         }
@@ -5426,6 +5391,8 @@ bool bolt::attempt_block(monster* mon)
     if (sh_hit >= shield_block || mon->shield_exhausted())
         return false;
 
+    mon->sense_if_invisible();
+
     const string beam_name = _beam_display_name(*this);
     item_def *shield = mon->mslot_item(MSLOT_SHIELD);
     if (is_reflectable(*mon))
@@ -5574,6 +5541,7 @@ void bolt::affect_monster(monster* mon)
         // It hit a monster, so the beam should terminate.
         // Don't actually affect the monster; the explosion
         // will take care of that.
+        mon->sense_if_invisible();
         finish_beam();
         return;
     }
@@ -5600,7 +5568,7 @@ void bolt::affect_monster(monster* mon)
     if (nasty_to(mon))
     {
         if (agent() && agent()->is_player()  && final > 0)
-            set_attack_conducts(conducts, *mon, you.can_see(*mon));
+            set_attack_conducts(conducts, *mon, you.aware_of(*mon));
     }
 
     if (engulfs && flavour == BEAM_SPORE // XXX: engulfs is redundant?
@@ -5707,6 +5675,9 @@ void bolt::affect_monster(monster* mon)
                    no_damage,
                    attack_strength_punctuation(final).c_str());
         }
+
+        if (!pierce)
+            mon->sense_if_invisible();
     }
     else if (heard && !hit_noise_msg.empty())
         mprf(MSGCH_SOUND, "%s", hit_noise_msg.c_str());
@@ -6075,9 +6046,6 @@ bool enchant_monster_invisible(monster* mon, const string &how)
              how.c_str(),
              is_visible ? T_(" for a moment.")
                         : T_("!"));
-
-        if (!is_visible && !mons_is_safe(mon))
-            autotoggle_autopickup(true);
     }
 
     return true;
@@ -6151,22 +6119,12 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
     case BEAM_POLYMORPH:
         if (mon->polymorph(0))
             obvious_effect = true;
-        if (BLAME_KILL(thrower))
-        {
-            const int level = 2 + random2(3);
-            did_god_conduct(DID_DELIBERATE_MUTATING, level, god_cares());
-        }
         return MON_AFFECTED;
 
     case BEAM_MALMUTATE:
     case BEAM_UNRAVELLED_MAGIC:
         if (mon->malmutate(agent())) // exact source doesn't matter
             obvious_effect = true;
-        if (BLAME_KILL(thrower))
-        {
-            const int level = 2 + random2(3);
-            did_god_conduct(DID_DELIBERATE_MUTATING, level, god_cares());
-        }
         return MON_AFFECTED;
 
     case BEAM_BANISH:
@@ -6300,9 +6258,6 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
     }
 
     case BEAM_HASTE:
-        if (BLAME_KILL(thrower))
-            did_god_conduct(DID_HASTY, 6, god_cares());
-
         if (mon->stasis())
             return MON_AFFECTED;
 
@@ -7233,6 +7188,59 @@ void bolt::determine_affected_cells(explosion_map& m, const coord_def& delta,
     }
 }
 
+explosion_iterator::explosion_iterator(coord_def origin, int radius,
+                                       beam_type flavour, spell_type spell,
+                                       mid_t source, bool stop_at_statues,
+                                       bool stop_at_walls)
+{
+    bolt beam;
+    beam.source_id         = source;
+    beam.target            = origin;
+    beam.use_target_as_pos = true;
+    beam.flavour           = flavour;
+    beam.origin_spell      = spell;
+
+    explosion_map affected;
+    affected.init(INT_MAX);
+    beam.determine_affected_cells(affected, coord_def(), 0, radius,
+                                  stop_at_statues, stop_at_walls);
+
+    const coord_def centre(9, 9);
+    const int r = min(radius, centre.x);
+    for (int dx = -r; dx <= r; ++dx)
+        for (int dy = -r; dy <= r; ++dy)
+        {
+            const coord_def delta(dx, dy);
+            if (affected(delta + centre) < INT_MAX)
+                cells.push_back(origin + delta);
+        }
+}
+
+explosion_iterator::operator bool() const
+{
+    return index < cells.size();
+}
+
+coord_def explosion_iterator::operator*() const
+{
+    return cells[index];
+}
+
+const coord_def* explosion_iterator::operator->() const
+{
+    return &cells[index];
+}
+
+void explosion_iterator::operator++()
+{
+    ++index;
+}
+
+void explosion_iterator::operator++(int)
+{
+    ++index;
+}
+
 // Returns true if the beam is harmful ((mostly) ignoring monster
 // resists) -- mon is given for 'special' cases where,
 // for example, "Heal" might actually hurt undead, or
@@ -7760,11 +7768,14 @@ void player_beam_tracer::player_hit(bool /*was_friendly*/) noexcept
 
 void player_beam_tracer::monster_hit(const bolt& beam, const monster& mon)
 {
-    if (!you.can_see(mon))
+    if (!you.aware_of(mon))
         return;
 
     if (beam.is_harmless(&mon))
         return;
+
+    if (!_god_forbids_target_reason(&mon, beam.origin_spell).empty())
+        god_hated_target = &mon;
 
     bool penance = false;
     string adj, suffix;
@@ -7785,8 +7796,6 @@ void player_beam_tracer::monster_hit(const bolt& beam, const monster& mon)
                                            std::move(suffix), penance });
         }
     }
-    else if (_stop_because_god_hates_target_prompt(&mon, beam.origin_spell, true))
-        god_hated_target = &mon;
     // Handle charming monsters when a nasty dur is up: give a prompt for
     // attempting to charm monsters that might be affected.
     else if (beam.flavour == BEAM_CHARM)
@@ -7847,10 +7856,10 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer)
 {
     const spell_type spell = beam.origin_spell;
 
-    if (tracer.god_hated_target
-        && _stop_because_god_hates_target_prompt(tracer.god_hated_target,
-                                                 spell))
+    if (tracer.god_hated_target)
     {
+        mprf(MSGCH_GOD, "%s",
+            _god_forbids_target_reason(tracer.god_hated_target, spell).c_str());
         return true;
     }
 
@@ -7980,6 +7989,12 @@ void bolt::do_ranged_attack(actor& targ)
     if (attk.reflected)
         reflect();
     extra_range_used += attk.range_used;
+    if (ag->is_player() && targ.is_monster() && !attk.is_piercing()
+        && range_used() > range && !attk.attack_verb.empty() && !attk.is_piercing())
+    {
+        targ.as_monster()->sense_if_invisible();
+    }
+
     if (attk.did_net())
         drop_item = false;
 }

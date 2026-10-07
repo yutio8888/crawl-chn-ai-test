@@ -113,7 +113,7 @@ bool ranged_attack::attack()
         return true;
     }
 
-    int ev = defender->evasion(false, attacker);
+    int ev = defender->evasion(true, attacker);
 
     // Works even if the defender is incapacitated
     ev += defender->missile_repulsion();
@@ -125,7 +125,7 @@ bool ranged_attack::attack()
     if (attacker->is_player() && attacker != defender)
     {
         set_attack_conducts(conducts, *defender->as_monster(),
-                            you.can_see(*defender));
+                            you.aware_of(*defender));
     }
 
     if (shield_blocked)

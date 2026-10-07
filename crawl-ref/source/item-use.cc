@@ -224,7 +224,7 @@ int default_osel(operation_types oper)
     case OPER_READ:
         return OBJ_SCROLLS;
     case OPER_EVOKE:
-        return OSEL_EVOKABLE;
+        return OSEL_EVOKABLE_ALL;
     case OPER_EQUIP:
         return OSEL_EQUIPABLE;
     case OPER_TAKEOFF:
@@ -968,9 +968,11 @@ static bool _can_wield_anything()
     item_def dummy_weapon;
     dummy_weapon.base_type = OBJ_WEAPONS;
     string veto_reason;
-    bool ret = can_equip_item(dummy_weapon, true, &veto_reason);
+    bool god_forbids;
+    bool ret = can_equip_item(dummy_weapon, true, &veto_reason, &god_forbids);
+    msg_channel_type veto_channel = god_forbids ? MSGCH_GOD : MSGCH_PROMPT;
     if (!veto_reason.empty())
-        mprf(MSGCH_PROMPT, T_("%s"), veto_reason.c_str());
+        mprf(veto_channel, T_("%s"), veto_reason.c_str());
 
     return ret;
 }
@@ -1366,9 +1368,11 @@ bool try_equip_item(item_def& item)
         return use_talisman(item);
 
     string reason;
-    if (!can_equip_item(item, true, &reason))
+    bool god_forbids;
+    if (!can_equip_item(item, true, &reason, &god_forbids))
     {
-        mprf(MSGCH_PROMPT, T_("%s"), reason.c_str());
+        msg_channel_type channel = god_forbids ? MSGCH_GOD : MSGCH_PROMPT;
+        mprf(channel, T_("%s"), reason.c_str());
         return false;
     }
 
@@ -1942,10 +1946,11 @@ bool oni_drunken_swing()
 
 bool drink(item_def* potion)
 {
-    string r = cannot_drink_item_reason(potion, true, true);
+    bool god_forbids = false;
+    string r = cannot_drink_item_reason(potion, true, true, false, &god_forbids);
     if (!r.empty())
     {
-        mpr(r);
+        mprf(god_forbids ? MSGCH_GOD : MSGCH_PLAIN, "%s", r.c_str());
         return false;
     }
     ASSERT(potion);
@@ -1958,12 +1963,9 @@ bool drink(item_def* potion)
         return false;
     }
 
-    bool penance = god_hates_item(*potion);
-    string prompt = make_stringf(T_("Really quaff the %s?%s"),
-                                 potion->name(DESC_DBNAME).c_str(),
-                                 penance ? T_(" This action would place"
-                                              " you under penance!") : "");
-    if (alreadyknown && (is_dangerous_item(*potion, true) || penance)
+    string prompt = make_stringf(T_("Really quaff the %s?"),
+                                 potion->name(DESC_DBNAME).c_str());
+    if (alreadyknown && is_dangerous_item(*potion, true)
         && Options.bad_item_prompt
         && !yesno(prompt.c_str(), false, 'n'))
     {
@@ -2077,7 +2079,7 @@ bool drink(item_def* potion)
 
 // XXX: there's probably a nicer way of doing this.
 // Conducts, maybe?
-bool god_hates_brand(const int brand)
+bool god_hates_brand(const brand_type brand)
 {
     if (is_good_god(you.religion) && is_evil_brand(brand))
         return true;
@@ -2709,7 +2711,7 @@ aff_type targeter_poison_scroll::is_affected(coord_def loc)
     if (cell_is_solid(loc) || cloud_type_at(loc) != CLOUD_NONE)
         return AFF_NO;
     const actor* act = actor_at(loc);
-    if (act != nullptr && you.can_see(*act))
+    if (act != nullptr && you.aware_of(*act))
         return AFF_NO;
     return AFF_YES;
 }
@@ -2876,10 +2878,12 @@ static bool _scroll_has_forced_targeter(scroll_type scroll)
  */
 bool read(item_def* scroll, dist *target)
 {
-    string failure_reason = cannot_read_item_reason(scroll);
+    bool god_forbids = false;
+    string failure_reason = cannot_read_item_reason(scroll, true, false,
+                                                    &god_forbids);
     if (!failure_reason.empty())
     {
-        mpr(failure_reason);
+        mprf(god_forbids ? MSGCH_GOD : MSGCH_PLAIN, "%s", failure_reason.c_str());
         return false;
     }
     ASSERT(scroll);
@@ -2889,15 +2893,8 @@ bool read(item_def* scroll, dist *target)
     if (item_type_known(*scroll))
     {
         const bool hostile_check = scroll_hostile_check(which_scroll);
-        bool penance = god_hates_item(*scroll);
         const string verb_object = make_stringf(
             T_("read the %s"), scroll->name(DESC_DBNAME).c_str());
-
-        string penance_prompt = make_stringf(T_("Really %s? This action would"
-                                             " place you under penance%s!"),
-                                             verb_object.c_str(),
-                                             hostile_check ? ""
-                    : T_(" and you can't even see any enemies this would affect"));
 
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
@@ -2914,11 +2911,6 @@ bool read(item_def* scroll, dist *target)
                                },
                                nullptr, nullptr))
         {
-            return false;
-        }
-        else if (penance && !yesno(penance_prompt.c_str(), false, 'n'))
-        {
-            canned_msg(MSG_OK);
             return false;
         }
         else if (bad_item
@@ -3107,8 +3099,8 @@ bool read(item_def* scroll, dist *target)
     case SCR_TORMENT:
         torment(&you, TORMENT_SCROLL, you.pos());
 
-        // This is only naughty if you know you're doing it.
-        did_god_conduct(DID_EVIL, 10, item_type_known(*scroll));
+        if (!item_type_known(*scroll))
+            god_forgive_inadvertent_act(FORBID_EVIL);
         bad_effect = !you.res_torment();
         break;
 
@@ -3389,9 +3381,13 @@ bool invisibility_target_check(const char* prompt)
     return target.isValid && !target.isCancel;
 }
 
-string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
+string cannot_put_on_talisman_reason(const item_def& talisman, bool temp,
+                                     bool* god_forbids)
 {
     ASSERT(talisman.base_type == OBJ_TALISMANS);
+
+    if (god_forbids)
+        *god_forbids = false;
 
     if (talisman.sub_type == TALISMAN_PROTEAN)
     {
@@ -3407,6 +3403,17 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
     }
 
     const transformation trans = form_for_talisman(talisman);
+    if (god_forbids_form(you.religion, trans))
+    {
+        if (god_forbids)
+            *god_forbids = true;
+
+        if (you_worship(GOD_OKAWARU))
+            return "you have forsworn all allies in Okawaru's name.";
+
+        return make_stringf(T_("%s forbids the use of this talisman."),
+                            uppercase_first(god_name(you.religion)).c_str());
+    }
     const string form_unreason = cant_transform_reason(trans, false, temp);
     if (!form_unreason.empty())
         return lowercase_first(form_unreason);
@@ -3416,8 +3423,6 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
 
     if (trans == transformation::hive)
     {
-        if (you_worship(GOD_OKAWARU))
-            return T_("you have forsworn all allies in Okawaru's name.");
         if (you.get_mutation_level(MUT_NO_LOVE))
             return T_("you are loveless.");
     }
@@ -3427,10 +3432,12 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
 
 bool use_talisman(item_def& talisman)
 {
-    string reason = cannot_put_on_talisman_reason(talisman);
+    bool god_forbids;
+    string reason = cannot_put_on_talisman_reason(talisman, true, &god_forbids);
     if (!reason.empty())
     {
-        mpr(reason);
+        msg_channel_type channel = god_forbids ? MSGCH_GOD : MSGCH_PLAIN;
+        mprf(channel, "%s", reason.c_str());
         return false;
     }
 
@@ -3472,8 +3479,6 @@ bool use_talisman(item_def& talisman)
 
     count_action(CACT_FORM, (int)trans);
     start_delay<TransformDelay>(trans, &real_item);
-    if (god_despises_item(real_item, you.religion))
-        excommunication();
     you.turn_is_over = true;
     return true;
 }

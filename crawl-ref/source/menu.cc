@@ -2816,6 +2816,11 @@ bool MonsterMenuEntry::get_tiles(vector<tile_def>& tileset) const
         tileset.emplace_back(TILEI_UNAWARE);
     }
 
+    if (m->is(MB_KNOWN_INVIS))
+        tileset.emplace_back(TILEI_UNSEEN_INVIS_KNOWN);
+    else if (m->is(MB_REMEMBERED_INVIS))
+        tileset.emplace_back(TILEI_UNSEEN_INVIS_REMEMBERED);
+
     return true;
 }
 
@@ -3716,7 +3721,10 @@ void Menu::webtiles_write_item(const MenuEntry* me) const
 
 int menu_colour(const string &text, const string &prefix, const string &tag, bool strict)
 {
-    const string tmp_text = prefix + text;
+    bool extra_space = !text.empty() && text.front() != ' '
+                       && !prefix.empty() && prefix.back() != ' ';
+
+    const string tmp_text = prefix + (extra_space ? " " : "") + text;
 
     for (const colour_mapping &cm : Options.menu_colour_mappings)
     {

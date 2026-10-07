@@ -174,15 +174,22 @@ static int _get_mons_colour(const monster_info& mi)
     // assuming the user has not remapped their colour.
     if (col == mons_class_colour(mi.type))
     {
-        if (mi.type == MONS_SLIME_CREATURE && mi.slime_size > 1)
-            col = LIGHTGREEN;
-        else if (mi.type == MONS_ZOMBIE && mons_zombie_size(mi.base_type) == Z_BIG)
+        if (mi.type == MONS_SLIME_CREATURE)
+        {
+            if (mi.slime_size == 2)
+                col = LIGHTBLUE;
+            else if (mi.slime_size > 2 && mi.slime_size <= 4)
+                col = LIGHTCYAN;
+            else if (mi.slime_size == 5)
+                col = LIGHTMAGENTA;
+        }
+        else if (mi.type == MONS_ZOMBIE && mi.hd > 10)
             col = YELLOW;
-        else if (mi.type == MONS_SIMULACRUM && mons_zombie_size(mi.base_type) == Z_BIG)
+        else if (mi.type == MONS_SIMULACRUM && mi.hd > 10)
             col = LIGHTCYAN;
-        else if (mi.type == MONS_DRAUGR && mons_zombie_size(mi.base_type) == Z_BIG)
+        else if (mi.type == MONS_DRAUGR && mi.hd > 10)
             col = WHITE;
-        else if (mi.type == MONS_SPECTRAL_THING && mons_zombie_size(mi.base_type) == Z_BIG)
+        else if (mi.type == MONS_SPECTRAL_THING && mi.hd > 10)
             col = LIGHTGREEN;
     }
 
@@ -233,14 +240,9 @@ static int _get_mons_colour(const monster_info& mi)
         }
     }
 
-    // Backlit monsters are fuzzy and override colours, but not highlights.
-    if (!crawl_state.game_is_arena()
-        && !you.can_see_invisible()
-        && mi.is(MB_INVISIBLE)
-        && mi.attitude != ATT_FRIENDLY)
-    {
+    // 'Remembered' invisible monsters override colours.
+    if (!crawl_state.game_is_arena() && mi.is(MB_REMEMBERED_INVIS))
         col = (col & COLFLAG_MASK) | DARKGREY;
-    }
 
     return col;
 }
@@ -298,12 +300,9 @@ static cglyph_t _get_item_override(const item_def &item)
 show_class get_cell_show_class(const map_cell& cell,
                                bool only_stationary_monsters)
 {
-    if (cell.invisible_monster())
-        return SH_INVIS_EXPOSED;
-
-    if (cell.monster() != MONS_NO_MONSTER
+    if (cell.mon_type() != MONS_NO_MONSTER
         && (!only_stationary_monsters
-            || mons_class_is_stationary(cell.monster())))
+            || mons_class_is_stationary(cell.mon_type())))
     {
         return SH_MONSTER;
     }
@@ -335,26 +334,6 @@ show_class get_cell_show_class(const map_cell& cell,
     return SH_NOTHING;
 }
 
-static const unsigned short ripple_table[] =
-{
-     BLUE,          // BLACK        => BLUE (default)
-     BLUE,          // BLUE         => BLUE
-     GREEN,         // GREEN        => GREEN
-     CYAN,          // CYAN         => CYAN
-     RED,           // RED          => RED
-     MAGENTA,       // MAGENTA      => MAGENTA
-     BROWN,         // BROWN        => BROWN
-     DARKGREY,      // LIGHTGREY    => DARKGREY
-     DARKGREY,      // DARKGREY     => DARKGREY
-     BLUE,          // LIGHTBLUE    => BLUE
-     GREEN,         // LIGHTGREEN   => GREEN
-     BLUE,          // LIGHTCYAN    => BLUE
-     RED,           // LIGHTRED     => RED
-     MAGENTA,       // LIGHTMAGENTA => MAGENTA
-     BROWN,         // YELLOW       => BROWN
-     LIGHTGREY,     // WHITE        => LIGHTGREY
-};
-
 static cglyph_t _get_cell_glyph_with_class(const map_cell& cell,
                                            const coord_def& loc,
                                            const show_class cls,
@@ -369,19 +348,9 @@ static cglyph_t _get_cell_glyph_with_class(const map_cell& cell,
 
     switch (cls)
     {
-    case SH_INVIS_EXPOSED:
-        ASSERT(cell.invisible_monster());
-
-        show.cls = SH_INVIS_EXPOSED;
-        if (cell_cloud != CLOUD_NONE)
-            g.col = cell.cloud_colour();
-        else
-            g.col = ripple_table[cell.feat_colour() & 0xf];
-        break;
-
     case SH_MONSTER:
     {
-        show = cell.monster();
+        show = cell.mon_type();
         const monster_info* mi = cell.monsterinfo();
         ASSERT(mi);
 

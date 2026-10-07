@@ -149,7 +149,7 @@ static int l_item_do_equip(lua_State *ls)
 
 /*** Equip this item.
  * @treturn boolean successfully equipped
- * @function equip
+ * @function item.equip
  */
 IDEFN(equip, do_equip)
 
@@ -183,7 +183,7 @@ static int l_item_do_remove(lua_State *ls)
 /*** Remove this item from our body.
  * @treturn boolean|nil successfully removed something; nil if nothing to
  * remove
- * @function remove
+ * @function item.remove
  */
 IDEFN(remove, do_remove)
 
@@ -219,7 +219,7 @@ static int l_item_do_drop(lua_State *ls)
  * Optionally specify how many for partially dropping a stack.
  * @tparam[opt] int qty
  * @treturn boolean successfully dropped
- * @function drop
+ * @function item.drop
  */
 IDEFN(drop, do_drop)
 
@@ -258,7 +258,7 @@ static int l_item_do_inscribe(lua_State *ls)
  * @tparam[opt=""] string inscription to add
  * @tparam[opt=true] boolean append to existing inscription; if false, replace
  * @treturn boolean successfully inscribed
- * @function inscribe
+ * @function item.inscribe
  */
 IDEFN(inscribe, do_inscribe)
 
@@ -294,7 +294,7 @@ static int l_item_do_class(lua_State *ls)
 /*** What is the item class?
  * @tparam[opt=false] boolean terse
  * @treturn string
- * @function class
+ * @function item.class
  */
 IDEFN(class, do_class)
 
@@ -355,7 +355,7 @@ static int l_item_do_subtype_en(lua_State *ls)
 /*** What is the subtype?
  * @tparam[opt=true] boolean armour_slots return slot, not subtype, for armour
  * @treturn string|nil the item's subtype, if any
-  * @function subtype
+ * @function item.subtype
  */
 IDEFN(subtype, do_subtype)
 IDEFN(subtype_en, do_subtype_en)
@@ -427,7 +427,7 @@ static int l_item_do_ego_en(lua_State *ls)
 /*** What is the ego?
  * @tparam[opt=false] boolean terse
  * @treturn string|nil the item's ego, if any
- * @function ego
+ * @function item.ego
  */
 IDEFN(ego, do_ego)
 IDEFN(ego_en, do_ego_en)
@@ -504,7 +504,7 @@ static int l_item_do_marker_identity(lua_State *ls)
  * @tparam[opt="plain"] string desc description type
  * @tparam[opt="false"] boolean terse
  * @treturn string
- * @function name
+ * @function item.name
  */
 IDEFN(name, do_name)
 IDEFN(name_en, do_name_en)
@@ -536,7 +536,7 @@ static int l_item_do_name_coloured(lua_State *ls)
  * @tparam[opt="plain"] string desc description type
  * @tparam[opt="false"] boolean terse
  * @treturn string
- * @function name_coloured
+ * @function item.name_coloured
  */
 IDEFN(name_coloured, do_name_coloured)
 
@@ -996,7 +996,7 @@ static int l_item_do_damage_rating(lua_State *ls)
 /*** Item damage rating.
  * @treturn number The item's damage rating.
  * @treturn string The item's full damage rating string.
- * @function damage_rating
+ * @function item.damage_rating
  */
 IDEFN(damage_rating, do_damage_rating)
 
