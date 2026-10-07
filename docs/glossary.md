@@ -800,7 +800,7 @@
 | Vapour | 汽雾 | status.txt；饮药后待喷出的气体混合物；decision=D-C-095 |
 | Insubst | 虚体 | status.txt；无实体身体，免疫束缚等，非幽灵种族；decision=D-C-095 |
 | insubstantial | 虚体 | duration-data.h；与 Insubst 同词根；decision=D-C-095 |
-| -Swift | 缓步 | duration-data.h；行动加速后的移动迟缓，区别普通 Slow；decision=D-C-095 |
+| -Swift | -迅捷 | 行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法） |
 | -Sirocco | 灼热风冷却 | status.txt；移动会延后再次施放；decision=D-C-095 |
 | -Tail | 断尾待生 | status.txt；探索后尾巴才能长回；decision=D-C-095 |
 | -Jolt | 放电冷却 | status.txt；完全恢复生命后才能再次满强度放电；decision=D-C-095 |
@@ -816,8 +816,8 @@
 |----|----|---------------|
 | dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
 | barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
-| `status\|Barbs` | 倒刺 | 玩家倒刺状态；与 barbs 一致；decision=D-C-096 |
-| `status\|ambrosia-drunk` | 神食酣醉 | 神食作用状态；保留 drunk 的酣醉意象，药水词根统一；decision=D-C-096 |
+| `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
+| `status\|ambrosia-drunk` | 仙酒醉 | 药水作用状态的稳定版共享上下文键；ambrosia 药水仍用神食；decision=D-C-098（取代 D-C-096 的神食酣醉标签译法） |
 | noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
 | mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
 | mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
@@ -900,11 +900,11 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | bind | 束缚 | Ashenzari 装备语境；bind an item → 束缚物品；decision=D-C-095 |
 | binding | 束缚 | Ashenzari 仪式／装备语境；binding sigil 属另一战斗机制，不从本项推导改名；decision=D-C-095 |
 | bound | 已束缚 / 束缚 | Ashenzari 装备状态／菜单；物品名前缀的共享 catalog 键（bound 后含空格）使用“束缚”，括注使用“（已束缚）”；decision=D-C-095；前缀由 D-C-098 对齐 |
-| bound item | 已束缚物品 | 菜单／能力费用；不写作“诅咒物品”；decision=D-C-095 |
+| Bound item | 绑定物品 | describe-god.cc 神祇详情页的独立共享 catalog 标签；菜单／费用的完整键仍用已束缚物品；decision=D-C-098（限定 D-C-095 的用词范围） |
 | unbind | 解除束缚 | Ashenzari 操作提示；仍需完整说明摧毁物品后果；decision=D-C-095 |
 | unbound | 未束缚 | Ashenzari 装备状态；与已束缚成对；decision=D-C-095 |
 | chains | 枷锁 | Ashenzari 仪式意象；chain yourself → 以枷锁束缚自己；decision=D-C-095 |
-| cursed | 被诅咒 | 旧版装备前缀保留兼容；trunk Ashenzari 装备绑定状态改用 bound；真正诅咒仍用诅咒；decision=D-C-095 |
+| cursed | 诅咒的 | 稳定版共享 catalog 键，旧版装备前缀保留兼容；trunk Ashenzari 装备绑定状态改用 bound；真正诅咒仍用诅咒；decision=D-C-098（取代 D-C-095 的此键译法） |
 | Pacify | 安抚 | ability.txt；使敌对生物中立并离开，不再用治疗能力名表达；decision=D-C-095 |
 | Divine Alms | 神圣施济 | ability.txt；医治受苦友军，alms 保留施济语义；decision=D-C-095 |
 | Aura of Vigour | 活力光环 | ability.txt；提升自己生命／法力上限，并赋予邻近友军活力；decision=D-C-095 |
@@ -913,11 +913,11 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Divine Vigour | 神圣活力 | 旧能力名保留 0.34.1 兼容；trunk 菜单用 Aura of Vigour；decision=D-C-095 |
 | divine vigour | 神圣活力 | monster enchant/message；Aura of Vigour 的效果名；decision=D-C-095 |
 | Divine Exegesis | 神圣释经 | 既有能力，登记词根以支持新增 Repeat Exegesis；decision=D-C-095 |
-| Repeat Exegesis | 再次释经 | ability.cc；重复最近的神圣释经法术；decision=D-C-095 |
-| Elementalist | 元素使 | 先祖类型菜单片段；与 elementalist 怪物同译；decision=D-C-095 |
+| Repeat Exegesis | 重复释经 | ability.cc；对齐稳定版共享 catalog 键，重复最近的神圣释经法术；decision=D-C-098（取代 D-C-095 的此键译法） |
+| Elementalist | 元素师 | 与 elementalist 大小写不敏感的共享 catalog 身份同译；完整能力名、职业名各依其独立键；decision=D-C-098（取代 D-C-095 的此键译法） |
 | Battlemage | 战斗法师 | 旧先祖类型保留兼容；一般角色词不受替代；decision=D-C-095 |
 | Curse Item | 诅咒物品 | 旧能力标题保留兼容；当前装备仪式用 Ritual of Binding；decision=D-C-095 |
-| Ancestor Life: Elementalist | 先祖生涯：元素使 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
+| Ancestor Life: Elementalist | 先祖生涯：元素师 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
@@ -958,7 +958,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
-| spark swarm | 火星群 | mutation-data.h；火星与余烬环绕并照亮受火／电伤害的敌人；decision=D-C-095 |
+| spark swarm | 火花群 | 对齐稳定版共享 catalog 名称；火星与余烬环绕并照亮受火／电伤害的敌人，现象描述不作为名称；decision=D-C-098（取代 D-C-095 的火星群译法） |
 | stampede | 奔踏 | mutation-data.h；Gale Centaur 固有特征；与法术、状态同词根；decision=D-C-095 |
 | North Wind's embodiment | 北风化身 | mutation-data.h；四风强化系列；decision=D-C-095 |
 | South Wind's embodiment | 南风化身 | mutation-data.h；同系列；decision=D-C-095 |
@@ -1142,7 +1142,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
-| elementalist | 元素使 | ancestor-elementalist.yaml；先祖由 Battlemage 改为 Elementalist；沿用背景元素使词根；decision=D-C-095 |
+| elementalist | 元素师 | ancestor-elementalist.yaml；先祖由 Battlemage 改为 Elementalist；对齐稳定版共享 catalog 身份，不改独立职业／完整能力名键；decision=D-C-098（取代 D-C-095 的此键译法） |
 | abyssal acolyte | 深渊侍僧 | abyssal-acolyte.yaml；复用 Abyss 与 acolyte；decision=D-C-095 |
 | herald of the Abyss | 深渊先驱 | herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095 |
 | airy jade | 气玉晶 | jade-crystal-air.yaml；Jademantle 的气元素晶体；decision=D-C-095 |
@@ -1154,7 +1154,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | fungal shambler | 蹒跚菌怪 | monsters.txt；吞噬活体后游荡的寄生菌；decision=D-C-095 |
 | glowmurk ghast | 浊光怨灵 | monsters.txt；闪烁的溺亡幽影，接触后消散；decision=D-C-095 |
 | mongrel wurm | 杂种蠕龙 | monsters.txt；幼龙等生物的蛇形杂交体，不误作普通蠕虫；decision=D-C-095 |
-| roaming sludgefish | 游荡泥浆鱼 | roaming-sludgefish.yaml；泥浆鱼与游荡动作；decision=D-C-095 |
+| roaming sludgefish | 游荡泥鱼 | roaming-sludgefish.yaml；对齐稳定版共享 catalog 键；decision=D-C-098（取代 D-C-095 的此键译法） |
 | rusted inspector | 锈蚀监察者 | monsters.txt；失修、抑制魔法的金属监控构装体；decision=D-C-095 |
 | scrapshell chimera | 废铁壳奇美拉 | monsters.txt；水生血肉与废铁甲壳融合；decision=D-C-095 |
 | sewage sovereign | 污水君主 | monsters.txt；统治污水领域的巨型变异猪；decision=D-C-095 |
@@ -2048,9 +2048,9 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Cage of Brambles | 荆棘牢笼 | spells.txt；围住各邻近敌人的环状荆棘墙；decision=D-C-095 |
 | Murky Legion | 浊影军团 | spells.txt；召唤浊光怨灵；保留 murky 与 legion 意象；decision=D-C-095 |
 | Touch of Paradox | 悖论之触 | spells.txt；使友军脱离常规空间；沿用 Touch 构词；decision=D-C-095 |
-| Bolt of Antimagic | 反魔法箭 | spells.txt；穿透且汲取法力；沿用 Bolt → 箭；decision=D-C-095 |
+| Bolt of Antimagic | 反魔箭 | spells.txt / spl-util.cc；标题与稳定版 bolt of antimagic 共用大小写不敏感的 catalog 键；decision=D-C-098（取代 D-C-095 的此键译法） |
 | Stampede | 奔踏 | spl-data.h / spells.txt；直线奔袭推退敌人，区别 Rampage → 冲锋；decision=D-C-095 |
-| Bolster | 强化体魄 | spells.txt；增强近战与元素抗性，区别 Might → 强壮；decision=D-C-095 |
+| Bolster | 强化 | spells.txt；对齐稳定版共享 catalog 键；增强近战与元素抗性，区别 Might → 强壮；decision=D-C-098（取代 D-C-095 的此键译法） |
 
 **历史汇总（0.34.1 复审批次）**：511 法术，✅ 保留 370，📝 修订 15，🆕 新增 28，⚠️ 已移除兼容 98。trunk 增量以 D-C-095 与上述 B0 表为准，不从这份历史统计推导现行法术集合。
 
