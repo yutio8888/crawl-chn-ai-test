@@ -292,7 +292,7 @@ force_more_message += You feel space start to destabilise
 force_more_message += 空间开始变得不稳定
 force_more_message += You feel the winds around you beginning to shift
 # Chinese translation compatibility
-force_more_message += 周围的风.*开始.*(转向|转变|变化|改变)
+force_more_message += 你感到周围的风向开始转变……
 
 ## Zot is coming!
 force_more_message += You have lingered too long

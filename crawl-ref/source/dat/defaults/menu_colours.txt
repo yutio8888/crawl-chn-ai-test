@@ -23,10 +23,10 @@ menu += $forbidden:.*forbidden.*
 # Handle bound and equipped items early to override other colour settings.
 menu += lightred:.*equipped.* bound
 # CN: bound equipment display
-menu += lightred:.*equipped.*([[:space:]]束缚|（已束缚）)
+menu += lightred:.*equipped.*( 束缚|（已束缚）)
 menu += red: (a|the) bound
 # CN: bound equipment display
-menu += red:(^|[[:space:]])束缚|（已束缚）
+menu += red:(^| )(weapon|armour|jewellery|magical staff) +(. [-+#] +)?(\(.*\) +)?束缚|（已束缚）
 menu += lightgreen:.*equipped.*
 # CN: equipped
 menu += lightgreen:装备.*
