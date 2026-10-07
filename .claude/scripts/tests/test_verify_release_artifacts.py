@@ -243,6 +243,17 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertNotIn(b"Deferred: macOS", first_manifest)
         self.assertNotIn(b"Deferred: Linux (CI build only); Android", first_manifest)
 
+    def test_trunk_closed_world_set_and_evidence(self) -> None:
+        for tag in ("0.35-trunk-001", "0.36-trunk-999"):
+            with self.subTest(tag=tag):
+                for artifact in self.artifacts.iterdir():
+                    artifact.unlink()
+                self.rules = MODULE.release_rules(tag, self.source_root)
+                self._write_valid_set()
+                self._validate(tag=tag)
+                self.assertIn(tag.encode(), (self.root / "RELEASE-MANIFEST.txt").read_bytes())
+                self.assertTrue(all(tag in rule.filename for rule in self.rules))
+
     def test_release_scope_is_exactly_windows_macos_and_android(self) -> None:
         self.assertEqual(3, len(self.rules))
         self.assertEqual(
@@ -278,6 +289,10 @@ class ReleaseArtifactTest(unittest.TestCase):
             "0.34.1-zh5-1-1000",
             "v0.34.1-zh5-1-001",
             "0.35.0-zh5-1-001",
+            "0.35-trunk-000",
+            "0.35-trunk-1",
+            "0.35-trunk-1000",
+            "0.35-trunk-001-1-gabcdef0",
         ):
             with self.subTest(tag=tag):
                 self.assert_rejected("release tag", tag=tag)

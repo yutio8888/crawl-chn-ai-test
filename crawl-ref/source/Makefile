@@ -1357,9 +1357,12 @@ GENERATED_FILES := $(GENERATED_HEADERS) art-data.h mi-enum.h \
 
 LANGUAGES = $(filter-out en, $(notdir $(wildcard dat/descript/??)))
 SRC_PKG_BASE  := stone_soup
-SRC_VERSION   := $(shell git describe $(MERGE_BASE) 2>/dev/null || cat util/release_ver)
+# Export to gen_ver.pl and recursive make; never select stable/final tags.
+GIT_DESCRIBE_FLAGS := --match '*-a[0-9]*' --match '*-trunk-[0-9][0-9][0-9]'
+export GIT_DESCRIBE_FLAGS
+SRC_VERSION   := $(shell git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) 2>/dev/null || cat util/release_ver)
 MAJOR_VERSION = $(shell echo "$(SRC_VERSION)"|$(SED) -r 's/-.*//;s/^([^.]+\.[^.]+).*/\1/')
-RECENT_TAG    := $(shell git describe --abbrev=0 $(MERGE_BASE))
+RECENT_TAG    := $(shell git describe $(GIT_DESCRIBE_FLAGS) --abbrev=0 $(MERGE_BASE))
 WINARCH := $(shell $(GXX) -dumpmachine | grep -q x64_64 && echo win64 || echo win32)
 
 export SRC_VERSION
@@ -1420,7 +1423,7 @@ STATICFILES = $(TILEIMAGEFILES:%=webserver/game_data/static/%.png) \
 $(TILEINFOJS:%=$(RLTILES)/tileinfo-%.js): build-rltiles
 
 webserver/webtiles/version.txt: .ver
-	@git describe $(MERGE_BASE) > webserver/webtiles/version.txt
+	@git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) > webserver/webtiles/version.txt
 
 webserver/game_data/static/%.js: $(RLTILES)/%.js
 	$(QUIET_COPY)$(COPY) $< webserver/game_data/static/
@@ -2118,7 +2121,7 @@ source: removeold prebuildyacc
 		tar xf - -C $(BSRC)contrib/$$x; \
 	  done
 	find build -name .gitignore -execdir rm -f '{}' +
-	git describe $(MERGE_BASE) > $(BSRC)util/release_ver
+	git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) > $(BSRC)util/release_ver
 	cp build/LICENSE build/crawl-ref/LICENSE
 	mv build/crawl-ref build/$(PKG_SRC_DIR)
 
@@ -2271,9 +2274,11 @@ mac-app-console: all
 #
 
 NPROC := $(shell nproc 2>/dev/null || echo 1)
+ANDROID_APPLICATION_ID ?= org.develz.crawl
+ANDROID_APP_NAME ?= Dungeon Crawl Stone Soup
 
 android-project/app/build.gradle: android-project/app/build.gradle.in FORCE
-	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" <android-project/app/build.gradle.in >android-project/app/build.gradle
+	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" -e "s/@ANDROID_APPLICATION_ID@/$(ANDROID_APPLICATION_ID)/" -e "s/@ANDROID_APP_NAME@/$(ANDROID_APP_NAME)/" <android-project/app/build.gradle.in >android-project/app/build.gradle
 android-project/local.properties: android-project/local.properties.in
 	sed -e "s~@HOME@~${HOME}~" <android-project/local.properties.in >android-project/local.properties
 
