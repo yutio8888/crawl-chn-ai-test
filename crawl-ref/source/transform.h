@@ -104,6 +104,7 @@ public:
      * @return The 'long name' of the form.
      */
     virtual string get_long_name() const { return long_name; }
+    string get_short_name() const;
 
     /**
      * A description of this form.

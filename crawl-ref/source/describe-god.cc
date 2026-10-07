@@ -272,8 +272,8 @@ string god_title(god_type which_god, species_type which_species, int piety)
         { "Walker", Options.language == lang_t::ZH
                         ? C_("god title walker suffix", "Walker")
                                                    : species::walking_title(which_species) + "er" },
-        { "Child", species::child_name(which_species) },
-        { "Orc", species::orc_name(which_species) },
+        { "Child", T_(species::child_name(which_species).c_str()) },
+        { "Orc", T_(species::orc_name(which_species).c_str()) },
     };
 
     return replace_keys(title, replacements);

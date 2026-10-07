@@ -95,7 +95,7 @@ static void _end_toxic_bog()
 
 static void _end_exegesis()
 {
-    mprf(MSGCH_DURATION, "Your divinely inspired understanding of %s fades.",
+    mprf(MSGCH_DURATION, T_("Your divinely inspired understanding of %s fades."),
                          spell_title(static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int())));
     you.props.erase(EXEGESIS_SPELL);
 }

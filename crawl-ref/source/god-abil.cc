@@ -2513,6 +2513,9 @@ static void _do_curse_item(item_def &item)
 
     for (auto & curse : you.props[CURSE_KNOWLEDGE_KEY].get_vector())
     {
+        // Automatic inscriptions are persistent, user-editable save content.
+        // Keep the canonical English abbreviation; display menus translate it
+        // separately with the "curse abbreviation" context.
         add_inscription(item,
                 curse_abbr(static_cast<curse_type>(curse.get_int())));
         item.props[CURSE_KNOWLEDGE_KEY].get_vector().push_back(curse);

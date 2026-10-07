@@ -931,7 +931,7 @@ const char* potion_type_name(int potiontype)
     case POT_RESISTANCE:        return T_("resistance");
     case POT_LIGNIFY:           return T_("lignification");
 
-    case POT_MIST:              return T_("mist");
+    case POT_MIST:              return C_("potion full name", "mist");
 
     // FIXME: Remove this once known-items no longer uses this as a sentinel.
     default:

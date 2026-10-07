@@ -1591,7 +1591,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
         if ((transformation)subtype == transformation::none)
             return T_("Default");
         else
-            return get_form((transformation)subtype)->short_name;
+            return get_form((transformation)subtype)->get_short_name();
     case CACT_ATTACK:
         ASSERT_RANGE(subtype, 0, NUM_ATTACK_COUNT_TYPES);
         return T_(_attack_count_names[subtype]);
@@ -1818,10 +1818,9 @@ static void _sdump_xp_by_form(dump_params &par)
         if (!used_form[form])
             continue;
 
-        const char* name = form > 0 ? get_form(static_cast<transformation>(form))->short_name.c_str()
-                                    : N_("None");
-
-        const string display_name = T_(name);
+        const string display_name = form > 0
+            ? get_form(static_cast<transformation>(form))->get_short_name()
+            : T_("None");
         par.text += make_stringf("%s%s |", display_name.c_str(),
                                  string(max(0, 12 - strwidth(display_name)), ' ').c_str());
 

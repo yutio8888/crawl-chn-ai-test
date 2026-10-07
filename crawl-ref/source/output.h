@@ -12,6 +12,7 @@ void update_message_status();
 #endif
 
 void reset_hud();
+int contamination_hud_clear_width(bool compact, int contamination_percent = 200);
 
 void update_turn_count();
 

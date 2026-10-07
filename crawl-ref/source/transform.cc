@@ -231,10 +231,14 @@ int Form::get_level(int scale) const
  *                       tense.
  * @return               A description for the form.
  */
+string Form::get_short_name() const
+{
+    return C_("status", short_name.c_str());
+}
+
 string Form::get_description(bool past_tense) const
 {
-    return make_stringf_p(T_("You %1$s %2$s"),
-                        past_tense ? "were" : "are",
+    return make_stringf(past_tense ? T_("You were %s") : T_("You are %s"),
                         T_(get_transform_description().c_str()));
 }
 
@@ -418,7 +422,7 @@ string Form::get_uc_attack_name(string default_name) const
     const string brand_suffix = _brand_suffix(get_uc_brand());
     if (uc_attack.empty())
         return default_name + brand_suffix;
-    return uc_attack + brand_suffix;
+    return string(T_(uc_attack.c_str())) + brand_suffix;
 }
 
 /**
@@ -551,7 +555,7 @@ string Form::player_prayer_action() const
 {
     // If the form is naturally flying & specifies an action, use that.
     if (can_fly == FC_ENABLE && !prayer_action.empty())
-        return prayer_action;
+        return T_(prayer_action.c_str());
     // Otherwise, if you're flying, use the generic flying action.
     // XXX: if we ever get a default-permaflying species again that wants to
     // have a separate verb, we'll want to check for that right here.
@@ -559,7 +563,7 @@ string Form::player_prayer_action() const
         return T_("hover solemnly before");
     // Otherwise, if you have a verb, use that...
     if (!prayer_action.empty())
-        return prayer_action;
+        return T_(prayer_action.c_str());
     // Finally, default to your species' verb.
     return species::prayer_action(you.species);
 }
@@ -614,8 +618,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s overflowing with transmutational energy."),
-                            past_tense ? "were" : "are");
+        return past_tense ? T_("You were overflowing with transmutational energy.")
+                          : T_("You are overflowing with transmutational energy.");
     }
 
     string transform_message() const override
@@ -642,8 +646,8 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s blades growing out of your body."),
-                            past_tense ? "had" : "have");
+        return past_tense ? T_("You had blades growing out of your body.")
+                          : T_("You have blades growing out of your body.");
     }
 
     /**
@@ -1148,8 +1152,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("Your body %s made of elemental water."),
-                            past_tense ? "was" : "is");
+        return past_tense ? T_("Your body was made of elemental water.")
+                          : T_("Your body is made of elemental water.");
     }
 
     string transform_message() const override
@@ -1275,8 +1279,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s a mane of long, stinging tendrils on your head."),
-                            past_tense ? "had" : "have");
+        return past_tense ? T_("You had a mane of long, stinging tendrils on your head.")
+                          : T_("You have a mane of long, stinging tendrils on your head.");
     }
 
     // Number of monsters affected by tendrils per attack (multiplied by 10,
@@ -1314,9 +1318,9 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf_p(T_("You %1$s %2$s for %3$s."),
-                            past_tense ? "had" : "have",
-                            you.arm_count() == 1 ? "an electric eel" : "electric eels",
+        return make_stringf_p(past_tense ? T_("You had %1$s for %2$s.")
+                                       : T_("You have %1$s for %2$s."),
+                            you.arm_count() == 1 ? T_("an electric eel") : T_("electric eels"),
                             hand_transform_parts().c_str());
     }
 
@@ -1383,9 +1387,9 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf_p(T_("Your %1$s %2$s a mass of colorful fungus."),
-                            you.arm_name(false).c_str(),
-                            past_tense ? "was" : "is");
+        return make_stringf(past_tense ? T_("Your %s was a mass of colorful fungus.")
+                                     : T_("Your %s is a mass of colorful fungus."),
+                            you.arm_name(false).c_str());
     }
 };
 

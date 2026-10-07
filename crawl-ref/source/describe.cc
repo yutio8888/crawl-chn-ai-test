@@ -2841,7 +2841,7 @@ static string _describe_item_curse(const item_def &item)
     ostringstream desc;
 
     desc << T_("\nIt bears a divine curse which improves your skill at ");
-    desc << desc_curse_skills(curses) << ".";
+    desc << desc_curse_skills(curses) << T_(".");
 
     return desc.str();
 }
@@ -8839,6 +8839,6 @@ string extra_cloud_info(cloud_type cloud_type)
 string player_species_name()
 {
     if (you_worship(GOD_BEOGH))
-        return species::orc_name(you.species);
+        return T_(species::orc_name(you.species).c_str());
     return species::name(you.species);
 }
