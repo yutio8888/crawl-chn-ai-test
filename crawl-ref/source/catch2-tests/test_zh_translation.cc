@@ -5249,3 +5249,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(en_likes.find("或") == string::npos);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: ego lookup uses canonical English names in both languages",
+                 "[zh-translation][ego-lookup]")
+{
+    const auto check = [] {
+        REQUIRE(weapon_ego_from_name("draining (drain)") == SPWPN_DRAINING);
+        REQUIRE(armour_ego_from_name("fire resistance (rF+)") == SPARM_FIRE_RESISTANCE);
+        REQUIRE(missile_ego_from_name("poisoned (poison)") == SPMSL_POISONED);
+        REQUIRE(string(special_missile_type_name_en(SPMSL_POISONED, MBN_NAME)) == "poisoned");
+    };
+    check();
+    REQUIRE(ego_title_for_display("draining (drain) weapon ego").find(C_("weapon brand full name", "draining")) != string::npos);
+    REQUIRE(ego_title_for_display("invisibility (+Inv) armour ego").find(
+                C_("armour ego full name", "invisibility")) != string::npos);
+    REQUIRE(ego_title_for_display("poisoned (poison) missile ego").find(T_("poisoned")) != string::npos);
+    {
+        EnTranslationFixture english;
+        check();
+        REQUIRE(ego_title_for_display("draining (drain) weapon ego") == "draining (drain) weapon ego");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: status tooltip uses the English database key and expiry state",
+                 "[zh-translation][status-tooltip]")
+{
+    status_info info;
+    info.light_text = T_("Fast");
+    info.db_key = "Fast";
+    info.short_text = T_("hasted");
+    string expected = getLongDescription("Fast status");
+    trim_string_right(expected);
+    REQUIRE_FALSE(expected.empty());
+    REQUIRE(status_light_description(info) == expected);
+    info.is_expiring = true;
+    REQUIRE(status_light_description(info) == expected + T_(" (expiring)"));
+    status_info missing;
+    missing.light_text = "no database entry";
+    REQUIRE(status_light_description(missing) == T_("No description found"));
+    {
+        EnTranslationFixture english;
+        expected = getLongDescription("Fast status");
+        trim_string_right(expected);
+        REQUIRE_FALSE(expected.empty());
+        REQUIRE(status_light_description(info) == expected + " (expiring)");
+    }
+}

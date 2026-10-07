@@ -928,11 +928,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     init_item_name_cache();
     static const char *const english[] = {
         "monster", "spell", "skill", "ability", "card", "item", "feature",
-        "god", "branch", "cloud", "passive", "status", "mutation", "bane"
+        "god", "branch", "cloud", "passive", "status", "mutation", "bane",
+        "weapon Ego", "armour Ego", "missile Ego"
     };
     static const char *const chinese[] = {
         "怪物", "法术", "技能", "能力", "卡牌", "物品", "地形",
-        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸"
+        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸",
+        // These upstream categories have no ZH entries yet. Keep the old
+        // Chinese assertions and verify the exact fallback for each new type.
+        "weapon Ego", "armour Ego", "missile Ego"
     };
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(english) / sizeof(*english));
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(chinese) / sizeof(*chinese));

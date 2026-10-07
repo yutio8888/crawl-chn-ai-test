@@ -1126,9 +1126,8 @@ bool fill_status_info(int status, status_info& inf)
 
 string status_light_description(const status_info& inf)
 {
-    // Split off any extra info, e.g. counts for things like Zot and Flay.
-    // (Status db descriptions never have spaces.)
-    string dbname = split_string(" ", inf.db_key, true, true, 1)[0];
+    // db_key is the canonical English stem, without translated text or counts.
+    string dbname = inf.db_key;
     // Don't claim Zot is impending when it's not near.
     if (dbname == "Zot" && inf.light_colour == WHITE)
         dbname = "Zot count";

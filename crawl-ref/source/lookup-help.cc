@@ -581,6 +581,13 @@ static MenuEntry* _passive_menu_gen(char letter, const string &str,
     return me;
 }
 
+static MenuEntry* _ego_menu_gen(char letter, const string& str, string& key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+    me->text = uppercase_first(ego_title_for_display(key));
+    return me;
+}
+
 static bool _weapon_ego_filter(string key, string /*body*/)
 {
     lowercase(key);
@@ -1614,13 +1621,13 @@ static const vector<LookupType> lookup_types = {
     // dat/defaults/menu_colours.txt don't colour the menu titles green
     // just for containing "ego".
     LookupType('W', "weapon Ego", NC_("lookup type", "weapon Ego"), nullptr, _weapon_ego_filter,
-               nullptr, nullptr, _simple_menu_gen,
+               nullptr, nullptr, _ego_menu_gen,
                _describe_weapon_ego, lookup_type::db_suffix),
     LookupType('R', "armour Ego", NC_("lookup type", "armour Ego"), nullptr, _armour_ego_filter,
-               nullptr, nullptr, _simple_menu_gen,
+               nullptr, nullptr, _ego_menu_gen,
                _describe_armour_ego, lookup_type::db_suffix),
     LookupType('E', "missile Ego", NC_("lookup type", "missile Ego"), nullptr, _missile_ego_filter,
-               nullptr, nullptr, _simple_menu_gen,
+               nullptr, nullptr, _ego_menu_gen,
                _describe_missile_ego, lookup_type::db_suffix),
 };
 

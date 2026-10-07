@@ -5469,13 +5469,55 @@ void describe_bane(bane_type bane)
     show_description(inf);
 }
 
+// The TextDB key stays English; only the title/menu label is translated.
+string ego_title_for_display(const string& key)
+{
+    const size_t close = key.find(")");
+    if (close == string::npos)
+        return T_(key.c_str());
+
+    const string name = key.substr(0, close + 1);
+    const string suffix = key.substr(close + 1);
+    if (suffix == " weapon ego")
+    {
+        const brand_type ego = weapon_ego_from_name(name);
+        if (ego == NUM_SPECIAL_WEAPONS)
+            return T_(key.c_str());
+        const string verbose = brand_type_name(ego, false);
+        const string terse = brand_type_name(ego, true);
+        return make_stringf(C_("ego title", "%s (%s) weapon ego"),
+                            verbose.c_str(), terse.c_str());
+    }
+    if (suffix == " armour ego")
+    {
+        const special_armour_type ego = armour_ego_from_name(name);
+        if (ego == NUM_SPECIAL_ARMOURS)
+            return T_(key.c_str());
+        const string verbose = special_armour_type_name(ego, false);
+        const string terse = special_armour_type_name(ego, true);
+        return make_stringf(C_("ego title", "%s (%s) armour ego"),
+                            verbose.c_str(), terse.c_str());
+    }
+    if (suffix == " missile ego")
+    {
+        const special_missile_type ego = missile_ego_from_name(name);
+        if (ego == NUM_SPECIAL_MISSILES)
+            return T_(key.c_str());
+        const string verbose = special_missile_type_name(ego, MBN_NAME);
+        const string terse = special_missile_type_name(ego, MBN_TERSE);
+        return make_stringf(C_("ego title", "%s (%s) missile ego"),
+                            verbose.c_str(), terse.c_str());
+    }
+    return T_(key.c_str());
+}
+
 void describe_weapon_ego(brand_type wpn)
 {
     describe_info inf;
     string ego_key = _weapon_ego_key(wpn);
     string ego_desc = getEgoString(ego_key);
 
-    inf.title = uppercase_first(ego_key);
+    inf.title = uppercase_first(ego_title_for_display(ego_key));
     inf.body << ego_desc;
 
     show_description(inf);
@@ -5487,7 +5529,7 @@ void describe_armour_ego(special_armour_type arm)
     string ego_key = _armour_ego_key(arm);
     string ego_desc = getEgoString(ego_key);
 
-    inf.title = uppercase_first(ego_key);
+    inf.title = uppercase_first(ego_title_for_display(ego_key));
     inf.body << ego_desc;
 
     show_description(inf);
@@ -5499,7 +5541,7 @@ void describe_missile_ego(special_missile_type msl)
     string ego_key = _missile_ego_key(msl);
     string ego_desc = getEgoString(ego_key);
 
-    inf.title = uppercase_first(ego_key);
+    inf.title = uppercase_first(ego_title_for_display(ego_key));
     inf.body << ego_desc;
 
     show_description(inf);
