@@ -24734,7 +24734,7 @@ batswarm-form
 蝠群形态
 %%%%
 a swarm of vampire bats.
-一群吸血蝙蝠。
+一群吸血鬼蝙蝠。
 %%%%
 Teeth
 牙齿
@@ -24758,7 +24758,7 @@ You are tiny, dextrous, and very evasive.
 你体型微小，身手灵巧，极善闪避。
 %%%%
 vampire fangs
-吸血獠牙
+吸血鬼獠牙
 %%%%
 Your fangs allow you to drain the lifeblood from your enemies.
 你的獠牙让你可以吸取敌人的生命之血。
