@@ -1,7 +1,7 @@
 # Standalone Guide Review Plan
 
-- Inventory digest: `0599d8548bb2379282e085bd8aec38429a2f5b63ed19cac60803199678b3b075`
-- Glossary SHA-256: `366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`
+- Inventory digest: `54e094fd7db4ac528187835885ff5055316ad8bec820b0ac096ba8871cecf036`
+- Glossary SHA-256: `585d5d145c6987d3f8ce789c4173aa415e4481c96821198e37cf0e00d1caa9ae`
 - Frozen identities: 79
 
 The boundary is the five canonical English/Chinese guide pairs. Each identity below requires one structural terminal conclusion; linguistic readiness remains reviewer-owned.
