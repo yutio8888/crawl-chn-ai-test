@@ -2174,7 +2174,7 @@ string hints_describe_item(const item_def &item)
             }
             else if (item.sub_type == ARM_BARDING)
             {
-                ostr << T_("Only nagas and armataurs can wear barding.");
+                ostr << T_("Only nagas and gale centaurs can wear barding.");
                 wearable = false;
             }
             else

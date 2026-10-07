@@ -381,6 +381,16 @@ void monster::add_enchantment_effect(const mon_enchant &ench, bool quiet)
     default:
         break;
     }
+
+    if (ench.who == KC_YOU && you.unrand_equipped(UNRAND_SWAMP_WITCH_SCALES) &&
+        ench_triggers_trickster(ench.ench))
+    {
+        // 4 levels for rPois0 or rPois-, 1 level for rPois, or 0 further up.
+        // Gets pretty message spammy with mass effects if we actually printed
+        // any messages in poisoning others, alas.
+        int pois = res_poison() > 2 ? 0 : res_poison() == 1 ? 1 : 4;
+        poison_monster(this, &you, pois, true);
+    }
 }
 
 
@@ -1136,6 +1146,11 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
         monster_die(*this, KILL_TIMEOUT, NON_MONSTER);
         break;
 
+    case ENCH_EXPOSED:
+        if (!quiet)
+            simple_monster_message(*this, " is no longer exposed.");
+        break;
+
     default:
         break;
     }
@@ -1458,6 +1473,7 @@ void monster::apply_enchantment(const mon_enchant &me)
     case ENCH_MIRROR_DAMAGE:
     case ENCH_DRAINED:
     case ENCH_SUNDER_CHARGE:
+    case ENCH_EXPOSED:
         decay_enchantment(en);
         break;
 
@@ -2230,6 +2246,7 @@ static const char *enchant_names[] =
     "vampire_thrall", "pyrrhic_recollection", "clockwork_bee_cast",
     "phalanx_barrier", "figment", "paradox-touched", "warding",
     "diminished_spells", "orb_cooldown", "sunder_charge",
+    "exposed",
     "buggy", // NUM_ENCHANTMENTS
 };
 

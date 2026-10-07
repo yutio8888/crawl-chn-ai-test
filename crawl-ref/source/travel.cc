@@ -531,15 +531,8 @@ bool is_travelsafe_square(const coord_def& c, bool ignore_hostile,
     if (!_is_safe_cloud(c) && !try_fallback)
         return false;
 
-    if (is_trap(c))
-    {
-        trap_def trap;
-        trap.pos = c;
-        trap.type = env.map_knowledge(c).trap();
-        trap.ammo_qty = 1;
-        if (trap.is_safe())
-            return true;
-    }
+    if (feat_is_trap(env.map_knowledge(c).feat()) && trap_is_safe(env.map_knowledge(c).feat()))
+        return true;
 
     if (grid == DNGN_BINDING_SIGIL && !you.is_binding_sigil_immune())
         return false;
@@ -568,7 +561,7 @@ static bool _is_safe_move(const coord_def& c)
         //    should have been aborted already by the checks in view.cc.
     }
 
-    if (is_trap(c) && !trap_at(c)->is_safe())
+    if (feat_is_trap(env.grid(c)) && !trap_is_safe(env.grid(c)))
         return false;
 
     return _is_safe_cloud(c);

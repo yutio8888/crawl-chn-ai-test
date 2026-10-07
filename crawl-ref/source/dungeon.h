@@ -238,8 +238,6 @@ void dgn_record_veto(const dgn_veto_exception &e);
 void level_clear_vault_memory();
 void run_map_epilogues();
 
-void place_specific_trap(const coord_def& where, trap_type trap_spec, int charges = 0);
-
 struct shop_spec;
 void place_spec_shop(const coord_def& where, shop_type force_type);
 void place_spec_shop(const coord_def& where, shop_spec &spec, int shop_level = 0);

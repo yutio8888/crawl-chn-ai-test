@@ -479,10 +479,11 @@ void handle_time()
     }
 }
 
-static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time)
+static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time,
+                                 bool do_effects = true)
 {
     if (ench.duration <= time)
-        mon.del_ench(ench.ench, true);
+        mon.del_ench(ench.ench, true, do_effects);
     else
     {
         ench.duration -= time;
@@ -503,8 +504,10 @@ static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time)
  * recalled from another floor.
  *
  * @param time  How many aut to simulate passing.
+ * @param no_drowning   If true, don't immediately kill monsters whose
+ *                      ENCH_FLIGHT wears off over deep water or lava.
  */
-void monster::timeout_enchantments(int time)
+void monster::timeout_enchantments(int time, bool no_drowning)
 {
     if (enchantments.empty())
         return;
@@ -548,7 +551,7 @@ void monster::timeout_enchantments(int time)
         case ENCH_CHANGED_APPEARANCE: case ENCH_CHANNEL_SEARING_RAY:
         case ENCH_CONSTRICTED: case ENCH_CURSE_OF_AGONY:
         case ENCH_DIMENSION_ANCHOR: case ENCH_DOUBLED_VIGOUR: case ENCH_DUMB:
-        case ENCH_FLIGHT: case ENCH_HATCHING: case ENCH_INSTANT_CLEAVE:
+        case ENCH_HATCHING: case ENCH_INSTANT_CLEAVE:
         case ENCH_KINETIC_GRAPNEL: case ENCH_MAD: case ENCH_MISDIRECTED:
         case ENCH_MUTE: case ENCH_PHALANX_BARRIER: case ENCH_POISON_VULN:
         case ENCH_POLAR_VORTEX: case ENCH_POLAR_VORTEX_COOLDOWN:
@@ -559,6 +562,10 @@ void monster::timeout_enchantments(int time)
         case ENCH_HELD: case ENCH_BULLSEYE_TARGET: case ENCH_FATIGUE:
         case ENCH_TIDE: case ENCH_SLOWLY_DYING:
             _timeout_enchantment(*this, entry.second, time);
+            break;
+
+        case ENCH_FLIGHT:
+            _timeout_enchantment(*this, entry.second, time, !no_drowning);
             break;
 
         case ENCH_FRENZIED: case ENCH_BERSERK:

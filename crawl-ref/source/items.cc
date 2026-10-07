@@ -391,7 +391,6 @@ bool dec_inv_item_quantity(int obj, int amount)
         you.inv[obj].base_type = OBJ_UNASSIGNED;
         you.inv[obj].quantity  = 0;
         you.inv[obj].props.clear();
-
         ret = true;
 
         // If we're repeating a command, the repetitions used up the
@@ -400,6 +399,9 @@ bool dec_inv_item_quantity(int obj, int amount)
         crawl_state.cancel_cmd_repeat();
         crawl_state.cancel_cmd_again();
         quiver::on_actions_changed();
+
+        if (you.last_fired == obj)
+            you.last_fired = -1;
     }
     else
         you.inv[obj].quantity -= amount;

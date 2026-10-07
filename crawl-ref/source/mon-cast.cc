@@ -8873,7 +8873,7 @@ static string _canonical_target_display(const resolved_speech_target &target,
             return target_actor->name(DESC_THE);
         return "";
     case speech_target_kind::FEATURE:
-        return feature_description(target.feature, NUM_TRAPS, "", DESC_THE);
+        return feature_description(target.feature, "", DESC_THE);
     case speech_target_kind::THIN_AIR:
         return "thin air";
     case speech_target_kind::INDEFINITE:

@@ -2712,7 +2712,7 @@ void fedhas_wall_of_briars()
 static void _overgrow_wall(const coord_def &pos)
 {
     const dungeon_feature_type feat = env.grid(pos);
-    const string what = feature_description(feat, NUM_TRAPS, "", DESC_THE);
+    const string what = feature_description(feat, "", DESC_THE);
 
     if (monster_at(pos))
     {
@@ -3358,6 +3358,96 @@ static bool _hellfire_stops_here(bolt& beam, coord_def pos)
                   || !beam.can_affect_wall(pos));
 }
 
+static void _start_timing_out_hellfire_mortar_lava(const CrawlVector& path,
+                                                   int len)
+{
+    for (int i = 0; i < len; ++i)
+    {
+        coord_def pos = path[i].get_coord();
+
+        map_marker* m_marker = env.markers.find(pos, MAT_HELLFIRE_MORTAR_LAVA);
+        ASSERT(m_marker);
+        map_hellfire_mortar_lava_marker* mortar_marker =
+            dynamic_cast<map_hellfire_mortar_lava_marker*>(m_marker);
+        mortar_marker->num_mortars_supporting_lava--;
+        int marker_duration = mortar_marker->earliest_end_time
+                              - you.elapsed_time;
+        int new_duration = ((len - i - 1) * BASELINE_DELAY) / 2 + 1;
+        int duration = max(marker_duration, new_duration);
+        mortar_marker->earliest_end_time = you.elapsed_time + duration;
+
+        if (mortar_marker->num_mortars_supporting_lava > 0)
+            continue;
+
+        env.markers.remove(m_marker);
+
+        for (map_marker* marker : env.markers.get_markers_at(pos))
+        {
+            if (marker->get_type() != MAT_TERRAIN_CHANGE)
+                continue;
+            map_terrain_change_marker* tmarker =
+                dynamic_cast<map_terrain_change_marker*>(marker);
+            if (tmarker->change_type != TERRAIN_CHANGE_HELLFIRE_MORTAR)
+                continue;
+
+            tmarker->duration = duration;
+            break;
+        }
+    }
+}
+
+int hellfire_mortar_cooldown_after_mortar_gone(int lava_length)
+{
+    // This should be equal to the duration of the longest lasting lava
+    return ((lava_length - 1) * BASELINE_DELAY) / 2 + 1;
+}
+
+void hellfire_mortal_on_mortar_gone(monster& mortar)
+{
+    if (!mortar.props.exists(HELLFIRE_LAVA_LENGTH))
+        return;
+
+    const CrawlVector& path = mortar.props[HELLFIRE_PATH_KEY];
+    int lava_length = mortar.props[HELLFIRE_LAVA_LENGTH];
+    _start_timing_out_hellfire_mortar_lava(path, lava_length);
+    if (mortar.summoner == MID_PLAYER)
+    {
+        ASSERT(lava_length > 0);
+        int lava_dur = hellfire_mortar_cooldown_after_mortar_gone(lava_length);
+        you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = lava_dur;
+    }
+}
+
+static void _add_hellfire_mortar_lava_marker(coord_def pos)
+{
+    map_marker* m_marker = env.markers.find(pos, MAT_HELLFIRE_MORTAR_LAVA);
+    if (m_marker)
+    {
+        map_hellfire_mortar_lava_marker* mortar_marker =
+            dynamic_cast<map_hellfire_mortar_lava_marker*>(m_marker);
+        mortar_marker->num_mortars_supporting_lava++;
+        return;
+    }
+
+    int earliest_end_time = 0;
+    for (map_marker* marker : env.markers.get_markers_at(pos))
+    {
+        if (marker->get_type() != MAT_TERRAIN_CHANGE)
+            continue;
+        map_terrain_change_marker* tmarker =
+            dynamic_cast<map_terrain_change_marker*>(marker);
+        if (tmarker->change_type != TERRAIN_CHANGE_HELLFIRE_MORTAR)
+            continue;
+        earliest_end_time = you.elapsed_time + tmarker->duration;
+        break;
+    }
+
+    map_hellfire_mortar_lava_marker* mortar_marker =
+        new map_hellfire_mortar_lava_marker(pos, earliest_end_time);
+    env.markers.add(mortar_marker);
+    env.markers.clear_need_activate();
+}
+
 spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
 {
     // Determine path by firing digging tracer
@@ -3402,7 +3492,7 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
     }
 
     // Make the lava
-    int dur = len * 3 / 2 * BASELINE_DELAY;
+    int lava_length = 0;
     for (int i = 0; i < len; ++i)
     {
         const coord_def pos = beam.path_taken[i];
@@ -3423,15 +3513,21 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
             break;
         }
 
-        temp_change_terrain(beam.path_taken[i], DNGN_LAVA,
-                            dur - (i * BASELINE_DELAY / 2),
+        _add_hellfire_mortar_lava_marker(pos);
+
+        temp_change_terrain(pos, DNGN_LAVA, INFINITE_DURATION,
                             TERRAIN_CHANGE_HELLFIRE_MORTAR);
+
+        lava_length = i + 1;
 
         flash_tile(pos, RED, 5);
     }
 
     noisy(spell_effect_noise(SPELL_HELLFIRE_MORTAR), agent.pos(), agent.mid);
 
+    // The mortar will almost certainly hit the end of the lava and disappear
+    // before this unless it gets pushed back repeatedly
+    int dur = (len * 3 * BASELINE_DELAY) / 2;
     mgen_data mg = _summon_data(agent, MONS_HELLFIRE_MORTAR, 0,
                                 SPELL_HELLFIRE_MORTAR);
     mg.set_summoned(&agent, SPELL_HELLFIRE_MORTAR, dur, false, false);
@@ -3445,6 +3541,11 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
     // empty), but let's guard against it anyway.
     if (!cannon)
     {
+        CrawlVector path;
+        for (coord_def pos : beam.path_taken)
+            path.push_back(pos);
+        _start_timing_out_hellfire_mortar_lava(path, len);
+
         if (agent.is_player())
             mpr(T_("Something prevents your mortar from forming!"));
         return spret::success;
@@ -3452,17 +3553,17 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
 
     // Store the cannon's movement path
     CrawlVector& path = cannon->props[HELLFIRE_PATH_KEY].get_vector();
-    for (unsigned int i = 0; i < beam.path_taken.size(); ++i)
-    {
-        const coord_def pos = beam.path_taken[i];
+    for (coord_def pos : beam.path_taken)
         path.push_back(pos);
-    }
+    // The path sometimes includes one square after the lava ends, so we can't
+    // use its length to know when the lava ends
+    cannon->props[HELLFIRE_LAVA_LENGTH].get_int() = lava_length;
 
     mprf(T_("With a deafening crack, the ground splits apart in the path of %s "
         "chthonic artillery!"), agent.name(DESC_ITS).c_str());
 
     if (agent.is_player())
-        you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = dur;
+        you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = INFINITE_DURATION;
 
     return spret::success;
 }
@@ -4213,7 +4314,7 @@ void paragon_attack_trigger()
         return;
 
     mpr(T_("Your paragon attacks with you!"));
-    fight_melee(paragon, targ);
+    mons_fight(paragon, targ);
     paragon->speed_increment += paragon->action_energy(EUT_ATTACK);
     you.did_trigger(DID_PARAGON);
 }
@@ -4547,45 +4648,19 @@ static bool _push_line_back(const coord_def& center, const coord_def& dir)
     return !actor_at(center + dir);
 }
 
+static bool _wall_is_okay(const coord_def& pos, bool water_okay)
+{
+    return !cell_is_solid(pos)
+            && env.grid(pos) != DNGN_LAVA
+            && (water_okay || env.grid(pos) != DNGN_DEEP_WATER)
+            && !feat_is_trap(env.grid(pos));
+}
 
 vector<coord_def> get_wall_ring_spots(const coord_def& center,
                                       const coord_def& aim,
                                       int num_walls, bool water_okay)
 {
-    vector<coord_def> spots;
-
-    // Convert aim to a compass direction
-    coord_def delta = (aim - center).sgn();
-
-    int dir = 0;
-    for (int i = 0; i < 8; ++i)
-    {
-        if (Compass[i] == delta)
-        {
-            dir = i;
-            break;
-        }
-    }
-
-    // Now choose adjacent compass spots to test
-    int start = dir - ((num_walls - 1) / 2);
-    if (start < 0)
-        start = start + 8;
-
-    for (int i = start; i < start + num_walls; ++i)
-    {
-        const int index = i % 8;
-        const coord_def spot = center + Compass[index];
-        if (in_bounds(spot) && !cell_is_solid(spot)
-            && env.grid(spot) != DNGN_LAVA
-            && (water_okay || env.grid(spot) != DNGN_DEEP_WATER)
-            && !feat_is_trap(env.grid(spot)))
-        {
-            spots.push_back(spot);
-        }
-    }
-
-    return spots;
+    return get_ring_spots(center, aim, num_walls, bind(_wall_is_okay, placeholders::_1, water_okay));
 }
 
 spret cast_splinterfrost_shell(const actor& agent, const coord_def& aim,

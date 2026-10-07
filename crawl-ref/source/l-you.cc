@@ -1683,7 +1683,7 @@ static int _you_unrands(lua_State *ls)
     return 1;
 }
 
-LUAWRAP(_you_die,ouch(INSTANT_DEATH, KILLED_BY_SOMETHING))
+LUAWRAP(_you_die, player_die(KILLED_BY_SOMETHING))
 
 static int _you_piety(lua_State *ls)
 {

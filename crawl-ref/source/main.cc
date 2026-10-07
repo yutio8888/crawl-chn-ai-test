@@ -129,6 +129,7 @@
 #include "startup.h"
 #include "stash.h"
 #include "state.h"
+#include "stepdown.h"
 #include "stringutil.h"
 #include "tags.h"
 #include "target.h"
@@ -1711,7 +1712,7 @@ static void _take_stairs(bool down)
 
     const dungeon_feature_type ygrd = env.grid(you.pos());
 
-    const bool shaft = (down && get_trap_type(you.pos()) == TRAP_SHAFT);
+    const bool shaft = (down && env.grid(you.pos()) == DNGN_TRAP_SHAFT);
 
     if (!_can_take_stairs(ygrd, down, shaft))
         return;
@@ -1737,12 +1738,10 @@ static void _take_stairs(bool down)
         start_delay<DescendingStairsDelay>(0);
     else if (ygrd == DNGN_TRANSPORTER)
         _take_transporter();
-    else if (get_trap_type(you.pos()) == TRAP_GOLUBRIA)
+    else if (env.grid(you.pos()) == DNGN_PASSAGE_OF_GOLUBRIA)
     {
         coord_def old_pos = you.pos();
-        bool trap_triggered = you.handle_trap();
-        // only returns false if no trap was found, which shouldn't happen
-        ASSERT(trap_triggered);
+        trigger_trap(you);
         you.turn_is_over = (you.pos() != old_pos);
     }
     else
@@ -2488,7 +2487,7 @@ void process_command(command_type cmd, command_type prev_cmd)
                         ? T_("Are you sure you want to abandon this character and return to the main menu?")
                         : T_("Are you sure you want to abandon this character and quit the game?")))
         {
-            ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
+            player_die(KILLED_BY_QUITTING);
         }
         else
             canned_msg(MSG_OK);
@@ -2535,8 +2534,10 @@ static void _prep_input()
     you.time_taken = player_speed();
     you.shield_blocks = 0;              // no blocks this round
     you.reprisals.clear();
+    you.whirlwind_targets.clear();
     you.triggers_done.init(0);
     you.attempted_attack = false;
+    you.pos_at_turn_start = you.pos();
 
     you.redraw_status_lights = true;
     you.redraw_title = true;
@@ -2580,30 +2581,6 @@ static void _check_trapped()
         do_trap_effects();
         you.trapped = false;
     }
-}
-
-static void _update_golubria_traps(int dur)
-{
-    vector<coord_def> traps = find_golubria_on_level();
-    for (auto c : traps)
-    {
-        trap_def *trap = trap_at(c);
-        if (trap && trap->type == TRAP_GOLUBRIA)
-        {
-            trap->ammo_qty -= div_rand_round(dur, BASELINE_DELAY);
-            if (trap->ammo_qty <= 0)
-            {
-                if (you.see_cell(c))
-                    mpr(T_("Your passage of Golubria closes with a snap!"));
-                else
-                    mprf(MSGCH_SOUND, T_("You hear a snapping sound."));
-                trap->destroy();
-                noisy(spell_effect_noise(SPELL_GOLUBRIAS_PASSAGE), c);
-            }
-        }
-    }
-    if (traps.empty())
-        env.level_state &= ~LSTATE_GOLUBRIA;
 }
 
 static void _update_still_winds()
@@ -2693,18 +2670,20 @@ void world_reacts()
         // Please do not give it a custom ktyp or make it cool in any way
         // whatsoever, because players are insane. Usually, not being dragged
         // down by sanity is good, but this is not the case here.
-        ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
+        player_die(KILLED_BY_QUITTING);
     }
 
     handle_time();
+    // handle_time might have scheduled on death effects for monsters killed
+    // by contamination explosions etc.
+    fire_final_effects();
+
     manage_clouds();
 
     // This needs to happen after `manage_clouds` is called as fog clouds
     // decaying will affect whether a monster is still in view
     print_mons_left_view_messages();
 
-    if (env.level_state & LSTATE_GOLUBRIA)
-        _update_golubria_traps(you.time_taken);
     if (env.level_state & LSTATE_STILL_WINDS)
         _update_still_winds();
     if (!crawl_state.game_is_arena())

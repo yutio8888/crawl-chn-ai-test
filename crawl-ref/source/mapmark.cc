@@ -43,7 +43,8 @@ map_marker::marker_reader map_marker::readers[NUM_MAP_MARKER_TYPES] =
     &map_door_seal_marker::read,
 #endif
     &map_terrain_change_marker::read,
-    &map_cloud_spreader_marker::read
+    &map_cloud_spreader_marker::read,
+    &map_hellfire_mortar_lava_marker::read
 };
 
 map_marker::marker_parser map_marker::parsers[NUM_MAP_MARKER_TYPES] =
@@ -864,6 +865,53 @@ bool map_terrain_change_marker::any_at(coord_def pos, function<bool(map_terrain_
                 return true;
         }
     return false;
+}
+
+////////////////////////////////////////////////////////////////////////////
+// map_hellfire_mortar_lava_marker
+
+map_hellfire_mortar_lava_marker::map_hellfire_mortar_lava_marker(coord_def p,
+                                                                 int end_time)
+    : map_marker(MAT_HELLFIRE_MORTAR_LAVA, p),
+    num_mortars_supporting_lava(1),
+    earliest_end_time(end_time)
+{
+}
+
+void map_hellfire_mortar_lava_marker::write(writer& out) const
+{
+    map_marker::write(out);
+    marshallUnsigned(out, num_mortars_supporting_lava);
+    marshallInt(out, earliest_end_time);
+}
+
+void map_hellfire_mortar_lava_marker::read(reader& in)
+{
+    map_marker::read(in);
+    num_mortars_supporting_lava = unmarshallUnsigned(in);
+    earliest_end_time = unmarshallInt(in);
+}
+
+map_marker* map_hellfire_mortar_lava_marker::clone() const
+{
+    map_hellfire_mortar_lava_marker* mark =
+        new map_hellfire_mortar_lava_marker(pos, earliest_end_time);
+    mark->num_mortars_supporting_lava = num_mortars_supporting_lava;
+    return mark;
+}
+
+string map_hellfire_mortar_lava_marker::debug_describe() const
+{
+    return make_stringf("Hellfire mortar marker (%u)",
+                        num_mortars_supporting_lava);
+}
+
+map_marker* map_hellfire_mortar_lava_marker::read(reader& in, map_marker_type)
+{
+    map_hellfire_mortar_lava_marker* mc =
+        new map_hellfire_mortar_lava_marker();
+    mc->read(in);
+    return mc;
 }
 
 ////////////////////////////////////////////////////////////////////////////

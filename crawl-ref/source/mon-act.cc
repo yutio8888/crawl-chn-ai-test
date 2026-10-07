@@ -217,10 +217,10 @@ static void _melee_attack_player(monster &mons, monster* ru_target)
         mons.foe = ru_target->mindex();
         mprf(MSGCH_GOD, T_("You redirect %s's attack!"),
              mons.name(DESC_THE).c_str());
-        fight_melee(&mons, ru_target);
+        mons_fight(&mons, ru_target);
     }
     else
-        fight_melee(&mons, &you);
+        mons_fight(&mons, &you);
 }
 
 static energy_use_type _get_swim_or_move(monster& mon)
@@ -833,7 +833,7 @@ static bool _handle_swoop_or_flank(monster& mons)
             }
         }
         mons.move_to(tracer.path_taken[j+1], MV_DELIBERATE, true);
-        fight_melee(&mons, defender);
+        mons_fight(&mons, defender);
         mons.props[SWOOP_COOLDOWN_KEY].get_int() = you.elapsed_time
                                                   + 40 + random2(51);
         mons.finalise_movement();
@@ -877,7 +877,7 @@ static bool _handle_reaching(monster& mons)
         // The monster has to be attacking the correct position.
         && mons.target == foepos)
     {
-        fight_melee(&mons, foe);
+        mons_fight(&mons, foe);
         return true;
     }
 
@@ -2343,7 +2343,7 @@ void handle_monster_move(monster* mons)
                 if (!new_target && mons->confused() && one_chance_in(6))
                     _do_move_monster(*mons, coord_def(0,0));
                 _handle_battiness(*mons);
-                DEBUG_ENERGY_USE("fight_melee()");
+                DEBUG_ENERGY_USE("mons_fight()");
                 return;
             }
         }
@@ -2376,11 +2376,11 @@ void handle_monster_move(monster* mons)
             // Figure out if they fight.
             if ((!targ->is_firewood()
                     || mons->is_child_tentacle())
-                        && fight_melee(mons, targ))
+                        && mons_fight(mons, targ))
             {
                 _handle_battiness(*mons);
 
-                DEBUG_ENERGY_USE("fight_melee()");
+                DEBUG_ENERGY_USE("mons_fight()");
                 return;
             }
         }
@@ -3717,14 +3717,14 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
     if (f == you.pos())
     {
         // XX is this actually reachable?
-        fight_melee(&mons, &you);
+        mons_fight(&mons, &you);
         return true;
     }
 
     // This includes the case where the monster attacks itself.
     if (monster* def = monster_at(f))
     {
-        fight_melee(&mons, def);
+        mons_fight(&mons, def);
         return true;
     }
 
@@ -4042,7 +4042,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
         // with in handle_monster_move
         if (mons->pos() + delta == you.pos())
         {
-            ret = fight_melee(mons, &you);
+            ret = mons_fight(mons, &you);
             delta.reset();
         }
 
@@ -4078,7 +4078,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
             }
             else if (!delta.origin()) // confused self-hit handled below
             {
-                fight_melee(mons, targ);
+                mons_fight(mons, targ);
                 ret = true;
             }
 
@@ -4117,7 +4117,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
         monster* targ = monster_at(mons->pos() + delta);
         if (!delta.origin() && targ && _may_cutdown(mons, targ))
         {
-            fight_melee(mons, targ);
+            mons_fight(mons, targ);
             ret = true;
         }
 
@@ -4161,6 +4161,9 @@ static bool _monster_move(monster* mons, coord_def& delta)
 void seen_monsters_react()
 {
     if (you.duration[DUR_TIME_STEP] || crawl_state.game_is_arena())
+        return;
+
+    if (you.time_taken == 0)
         return;
 
     const int stealth = player_stealth();

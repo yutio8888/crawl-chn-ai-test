@@ -238,6 +238,23 @@ public:
     int colour;
 };
 
+class map_hellfire_mortar_lava_marker : public map_marker
+{
+public:
+    map_hellfire_mortar_lava_marker(coord_def pos = coord_def(0, 0),
+                                    int end_time = 0);
+
+    void write(writer&) const override;
+    void read(reader&) override;
+    map_marker* clone() const override;
+    string debug_describe() const override;
+
+    static map_marker* read(reader&, map_marker_type);
+public:
+    unsigned int num_mortars_supporting_lava;
+    int earliest_end_time;
+};
+
 class map_cloud_spreader_marker : public map_marker
 {
 public:

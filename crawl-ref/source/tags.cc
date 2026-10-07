@@ -80,6 +80,7 @@
 #include "skills.h"
 #include "species.h"
 #include "spl-damage.h" // vortex_power_key
+#include "spl-summoning.h"
 #include "state.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -1487,6 +1488,48 @@ static void _fix_spectral_weapons()
         }
     }
 }
+
+static void _timeout_permanent_hellfire_mortar_lava()
+{
+    bool has_player_mortars = false;
+    map<coord_def, int> lava_mortar_counts;
+    for (monster_iterator mi; mi; ++mi)
+    {
+        if (mi->type != MONS_HELLFIRE_MORTAR)
+            continue;
+        if (!mi->props.exists(HELLFIRE_LAVA_LENGTH))
+            continue;
+
+        const CrawlVector& path = mi->props[HELLFIRE_PATH_KEY];
+        int lava_length = mi->props[HELLFIRE_LAVA_LENGTH];
+        for (int i = 0; i < lava_length; ++i)
+        {
+            coord_def pos = path[i].get_coord();
+            lava_mortar_counts[pos]++;
+        }
+        if (mi->summoner == MID_PLAYER)
+            has_player_mortars = true;
+    }
+
+    for (map_marker* marker : env.markers.get_all(MAT_HELLFIRE_MORTAR_LAVA))
+    {
+        map_hellfire_mortar_lava_marker* mortar_marker =
+            dynamic_cast<map_hellfire_mortar_lava_marker*>(marker);
+        const coord_def& pos = mortar_marker->pos;
+        int old_count = mortar_marker->num_mortars_supporting_lava;
+        int new_count = lava_mortar_counts[pos];
+        mortar_marker->num_mortars_supporting_lava = new_count;
+        if (!new_count)
+            revert_terrain_change(pos, TERRAIN_CHANGE_HELLFIRE_MORTAR);
+    }
+
+    int max_dur = hellfire_mortar_cooldown_after_mortar_gone(LOS_MAX_RANGE);
+    if (!has_player_mortars
+        && you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] > max_dur)
+    {
+        you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = 0;
+    }
+}
 #endif
 
 // Read a piece of data from inf into memory, then run the appropriate reader.
@@ -1632,6 +1675,10 @@ void tag_read(reader &inf, tag_type tag_id)
             for (item_def* item : to_remove)
                 unequip_item(*item);
         }
+
+        if (th.getMinorVersion() < TAG_MINOR_FIX_PERMANENT_HELLFIRE_MORTAR)
+            _timeout_permanent_hellfire_mortar_lava();
+
 #endif
         break;
     case TAG_GHOST:
@@ -4021,7 +4068,7 @@ static void _tag_read_you(reader &th)
     {
         _fixup_species_mutations(MUT_RUGGED_BROWN_SCALES);
         _fixup_species_mutations(MUT_TOUGH_SKIN);
-        _fixup_species_mutations(MUT_ROLLPAGE);
+        _fixup_species_mutations(MUT_STAMPEDE);
         _fixup_species_mutations(MUT_AWKWARD_TONGUE);
     }
 
@@ -6443,9 +6490,6 @@ void marshallMapCell(writer &th, const map_cell &cell)
     if (flags & MAP_SERIALIZE_FEATURE_COLOUR)
         marshallUnsigned(th, cell.feat_colour());
 
-    if (feat_is_trap(cell.feat()))
-        marshallByte(th, cell.trap());
-
     if (flags & MAP_SERIALIZE_CLOUD)
     {
         cloud_info* ci = cell.cloudinfo();
@@ -6467,7 +6511,6 @@ void unmarshallMapCell(reader &th, map_cell& cell)
 {
     unsigned flags = unmarshallUnsigned(th);
     unsigned cell_flags = 0;
-    trap_type trap = TRAP_UNASSIGNED;
 
     cell.clear();
 
@@ -6499,20 +6542,13 @@ void unmarshallMapCell(reader &th, map_cell& cell)
 
     if (feat_is_trap(feature))
     {
-        trap = (trap_type)unmarshallByte(th);
 #if TAG_MAJOR_VERSION == 34
-        if (th.getMinorVersion() == TAG_MINOR_0_11 && trap >= TRAP_TELEPORT)
-            trap = (trap_type)(trap - 1);
-        if (trap == TRAP_ALARM)
-            feature = DNGN_TRAP_ALARM;
-        else if (trap == TRAP_ZOT)
-            feature = DNGN_TRAP_ZOT;
-        else if (trap == TRAP_GOLUBRIA)
-            feature = DNGN_PASSAGE_OF_GOLUBRIA;
+        if (th.getMinorVersion() < TAG_MINOR_NO_TRAP_DEF)
+            unmarshallByte(th);
 #endif
     }
 
-    cell.set_feature(feature, feat_colour, trap);
+    cell.set_feature(feature, feat_colour);
 
     if (flags & MAP_SERIALIZE_CLOUD)
     {
@@ -6548,16 +6584,6 @@ void unmarshallMapCell(reader &th, map_cell& cell)
 
 static void _tag_construct_level_items(writer &th)
 {
-    // how many traps?
-    marshallShort(th, env.trap.size());
-    for (const auto& entry : env.trap)
-    {
-        const trap_def& trap = entry.second;
-        marshallByte(th, trap.type);
-        marshallCoord(th, trap.pos);
-        marshallShort(th, trap.ammo_qty);
-    }
-
     // how many items?
     const int ni = _last_used_index(env.item, MAX_ITEMS);
     marshallShort(th, ni);
@@ -7518,52 +7544,50 @@ static bool _need_poly_refresh(const monster &mon)
     }
     return false;
 }
-#endif
 
-static void _tag_read_level_items(reader &th)
+int constexpr OLD_TRAP_UNASSIGNED = 100;
+int constexpr OLD_TRAP_GOLUBRIA = 11;
+static void _tag_read_old_traps(reader &th)
 {
-    unwind_bool dont_scan(crawl_state.crash_debug_scans_safe, false);
-    env.trap.clear();
     // how many traps?
     const int trap_count = unmarshallShort(th);
-    trap_def trap;
     for (int i = 0; i < trap_count; ++i)
     {
-        trap.type = static_cast<trap_type>(unmarshallUByte(th));
-#if TAG_MAJOR_VERSION == 34
-        if (trap.type == TRAP_UNASSIGNED)
+        const int trap_type = unmarshallUByte(th);
+
+        if (trap_type == OLD_TRAP_UNASSIGNED)
             continue;
-#else
-        ASSERT(trap.type != TRAP_UNASSIGNED);
-#endif
-        trap.pos      = unmarshallCoord(th);
-        trap.ammo_qty = unmarshallShort(th);
-#if TAG_MAJOR_VERSION == 34
-        if (th.getMinorVersion() == TAG_MINOR_0_11 && trap.type >= TRAP_TELEPORT)
-            trap.type = (trap_type)(trap.type - 1);
-        if (th.getMinorVersion() < TAG_MINOR_REVEAL_TRAPS)
-            env.grid(trap.pos) = trap.feature();
+
+        const coord_def pos = unmarshallCoord(th);
+        const int ammo = unmarshallShort(th);
+
         if (th.getMinorVersion() >= TAG_MINOR_TRAPS_DETERM
             && th.getMinorVersion() != TAG_MINOR_0_11
             && th.getMinorVersion() < TAG_MINOR_REVEALED_TRAPS)
         {
             unmarshallUByte(th);
         }
-#endif
-        env.trap[trap.pos] = trap;
+
+        if (trap_type == OLD_TRAP_GOLUBRIA)
+        {
+            map_terrain_change_marker *marker =
+                new map_terrain_change_marker(pos, DNGN_FLOOR,
+                                              DNGN_PASSAGE_OF_GOLUBRIA,
+                                              0, 0, ammo * BASELINE_DELAY);
+            env.markers.add(marker);
+            env.markers.clear_need_activate();
+        }
     }
+}
+#endif
+
+static void _tag_read_level_items(reader &th)
+{
+    unwind_bool dont_scan(crawl_state.crash_debug_scans_safe, false);
 
 #if TAG_MAJOR_VERSION == 34
-    // Fix up floor that trap_def::destroy left as a trap (from
-    // 0.18-a0-605-g5e852a4 to 0.18-a0-614-gc92b81f).
-    for (int i = 0; i < GXM; i++)
-        for (int j = 0; j < GYM; j++)
-        {
-            coord_def pos(i, j);
-            if (feat_is_trap(env.grid(pos)) && !map_find(env.trap, pos))
-                env.grid(pos) = DNGN_FLOOR;
-        }
-
+    if (th.getMinorVersion() < TAG_MINOR_NO_TRAP_DEF)
+        _tag_read_old_traps(th);
 #endif
 
     // how many items?

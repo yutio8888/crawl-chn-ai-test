@@ -34,7 +34,8 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
                              const item_def *wpn,
                              bool tele, actor *blame)
     : ::attack(attk, defn, blame), range_used(0), reflected(false),
-        will_mulch(false), teleport(tele), _did_net(false)
+        will_mulch(false), pierce(false),
+        teleport(tele), _did_net(false)
 {
     ASSERT(wpn && (wpn->base_type == OBJ_MISSILES || is_range_weapon(*wpn)));
 
@@ -67,6 +68,16 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
     }
 
     needs_message = defender_visible;
+}
+
+void ranged_attack::copy_params_to(ranged_attack &other) const
+{
+    other.teleport     = teleport;
+    other.will_mulch   = will_mulch;
+    other.pierce       = pierce;
+    other.proj_name    = proj_name;
+
+    attack::copy_params_to(other);
 }
 
 int ranged_attack::post_roll_to_hit_modifiers(int mhit, bool random)
@@ -260,7 +271,7 @@ bool ranged_attack::handle_phase_hit()
 
     if (mulch_bonus()
         // XXX: this kind of hijacks the shield block check
-        || !is_penetrating_attack(*weapon))
+        || !is_piercing())
     {
         range_used = BEAM_STOP;
     }
@@ -368,7 +379,7 @@ int ranged_attack::calc_mon_to_hit_base()
     return mon_to_hit_base(attacker->get_hit_dice(), attacker->as_monster()->is_archer());
 }
 
-int ranged_attack::apply_damage_modifiers(int damage)
+int ranged_attack::apply_mon_damage_modifiers(int damage)
 {
     ASSERT(attacker->is_monster());
 
@@ -400,7 +411,7 @@ int ranged_attack::player_apply_final_multipliers(int damage, bool /*aux*/)
     {
         damage = damage * 3 / 2;
     }
-    return damage;
+    return attack::player_apply_final_multipliers(damage);
 }
 
 bool ranged_attack::mulch_bonus() const
@@ -428,7 +439,7 @@ bool ranged_attack::ignores_shield()
     if (defender->is_player() && player_omnireflects())
         return false;
 
-    return is_penetrating_attack(*weapon);
+    return is_piercing();
 }
 
 special_missile_type ranged_attack::random_chaos_missile_brand()
@@ -793,7 +804,7 @@ bool ranged_attack::player_good_stab()
 
 void ranged_attack::set_attack_verb(int/* damage*/)
 {
-    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? T_("pierces through") : T_("hits");
+    attack_verb = !mulch_bonus() && is_piercing() ? T_("pierces through") : T_("hits");
 }
 
 void ranged_attack::announce_hit()
@@ -810,7 +821,17 @@ void ranged_attack::announce_hit()
          attack_strength_punctuation(damage_done).c_str());
 }
 
+void ranged_attack::set_projectile_prefix(string prefix)
+{
+    proj_name = prefix + " " + proj_name;
+}
+
 string ranged_attack::projectile_name() const
 {
     return proj_name;
+}
+
+bool ranged_attack::is_piercing() const
+{
+    return pierce || is_penetrating_attack(*weapon);
 }

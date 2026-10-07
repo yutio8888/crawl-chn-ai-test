@@ -33,6 +33,7 @@ struct item_def;
 class actor;
 class CrawlVector;
 class monster;
+class melee_attack;
 
 enum unrand_flag_type
 {
@@ -81,7 +82,7 @@ struct unrandart_entry
     void (*unequip_func)(item_def* item, bool* show_msgs);
     void (*world_reacts_func)(item_def* item);
     void (*melee_effects)(item_def* item, actor* attacker,
-                          actor* defender, bool mondied, int damage);
+                          actor* defender, int damage, melee_attack* atk);
     void (*launch)(bolt* beam);
     void (*death_effects)(item_def* item, monster* mons, killer_type killer);
 };

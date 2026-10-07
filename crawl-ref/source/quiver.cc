@@ -336,6 +336,12 @@ namespace quiver
             return !you.confused();
         }
 
+        bool is_piercing() const override
+        {
+            const item_def* wpn = you.weapon();
+            return wpn && is_penetrating_attack(*wpn);
+        }
+
         bool allow_autofight() const override
         {
             return is_enabled();
@@ -753,7 +759,7 @@ namespace quiver
 
                 // something to attack, let's do it:
                 you.turn_is_over = true;
-                if (!fight_melee(&you, mons) && targ_mid)
+                if (!player_fight(mons) && targ_mid)
                 {
                     // turn_is_over may have been reset to false by fight_melee, but
                     // a failed attempt to reach further should not be free; instead,
@@ -891,6 +897,11 @@ namespace quiver
         bool is_targeted() const override
         {
             return !you.confused();
+        }
+
+        bool is_piercing() const override
+        {
+            return item_slot >= 0 && item_slot < MAX_GEAR && is_penetrating_attack(you.inv[item_slot]);
         }
 
         bool allow_autofight() const override

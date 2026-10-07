@@ -285,7 +285,7 @@ static const armour_def Armour_prop[] =
     }},
 
     // Following all ARM_ entries for the benefit of util/gather_items
-    DRAGON_ARMOUR(STEAM,       "steam",                   5,   0,   400,
+    DRAGON_ARMOUR(STEAM,       "steam",                   5,   0,   375,
         ARMF_RES_STEAM),
     DRAGON_ARMOUR(ACID,        "acid",                    6,  -50,  400,
         ARMF_RES_CORR),
@@ -301,7 +301,7 @@ static const armour_def Armour_prop[] =
         ARMF_RES_NEG),
     DRAGON_ARMOUR(STORM,       "storm",                  10, -150,  650,
         ARMF_RES_ELEC),
-    DRAGON_ARMOUR(SHADOW,      "shadow",                 11, -150,  650,
+    DRAGON_ARMOUR(SHADOW,      "shadow",                 11, -150,  575,
         ARMF_STEALTH),
     DRAGON_ARMOUR(GOLDEN,      "golden",                 12, -230,  800,
         ARMF_RES_FIRE | ARMF_RES_COLD | ARMF_RES_POISON),
@@ -593,7 +593,7 @@ static const weapon_def Weapon_prop[] =
     // Short Blades
     { WPN_DAGGER,            "dagger",              4,  6, 10,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
-        DAMV_PIERCING, 10, 50, 20, {
+        DAMV_PIERCING, 10, 40, 20, {
             { SPWPN_VENOM,          28 },
             { SPWPN_NORMAL,         20 },
             { SPWPN_SPEED,          10 },
@@ -630,7 +630,24 @@ static const weapon_def Weapon_prop[] =
         DAMV_PIERCING, 8, 0, 30, SBL_BRANDS },
     { WPN_RAPIER,           "rapier",               7,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
-        DAMV_PIERCING, 8, 25, 55, SBL_BRANDS },
+        DAMV_PIERCING, 8, 20, 55, SBL_BRANDS },
+    { WPN_ATHAME,       "athame",         6, 5, 13,
+        SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
+        DAMV_PIERCING, 2, 15, 100, {
+            { SPWPN_NORMAL,          38 },
+            { SPWPN_FLAMING,         9 },
+            { SPWPN_FREEZING,        9 },
+            { SPWPN_PROTECTION,      8 },
+            { SPWPN_ELECTROCUTION,   8 },
+            { SPWPN_DEVIOUS,         6 },
+            { SPWPN_VAMPIRISM,       6 },
+            { SPWPN_DRAINING,        4 },
+            { SPWPN_SPEED,           4 },
+            { SPWPN_PAIN,            4 },
+            { SPWPN_HOLY_WRATH,      2 },
+            { SPWPN_DISTORTION,      1 },
+            { SPWPN_ANTIMAGIC,       1 },
+        }},
 #if TAG_MAJOR_VERSION == 34
     { WPN_CUTLASS,          "old cutlass",          8,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,

@@ -79,6 +79,7 @@ msc += $danger:身体.*玻璃|脆弱.*玻璃
 msc += lightmagenta:malevolent force fills
 # CN: $lightmagenta:malevolent force
 msc += lightmagenta:邪恶力量充满
+msc += lightmagenta:too known and too boring
 
 # Less urgent, but still significant messages
 #
@@ -275,6 +276,7 @@ force_more_message += 恶意.*不稳定中流淌
 force_more_message += You feel space start to destabilise
 # Chinese translation compatibility
 force_more_message += 空间开始变得不稳定
+force_more_message += You feel the winds around you beginning to shift
 
 ## Zot is coming!
 force_more_message += You have lingered too long
@@ -481,6 +483,7 @@ force_more_message += Beogh speaks to you:
 force_more_message += is forced to slowly start .* word of recall
 # Chinese translation compatibility
 force_more_message += 被迫.*开始.*召回术
+force_more_message += too known and too boring
 
 # Crucible exit notification
 force_more_message += Makhleb acknowledges your contrition

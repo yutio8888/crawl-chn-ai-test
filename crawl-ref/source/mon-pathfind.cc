@@ -507,10 +507,9 @@ int monster_pathfind::mons_travel_cost(coord_def npos)
         return 2;
 
     // Try to avoid traps.
-    const trap_def* ptrap = trap_at(npos);
-    if (ptrap)
+    if (feat_is_trap(env.grid(npos)))
     {
-        if (ptrap->is_bad_for_player())
+        if (trap_is_bad_for_player(env.grid(npos)))
         {
             // Your allies take extra precautions to avoid traps that are bad
             // for you (elsewhere further checks are made to mark Zot traps as

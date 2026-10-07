@@ -920,118 +920,6 @@ static string _artefact_descrip(const item_def &item)
     return out.str();
 }
 
-static const char *trap_names[] =
-{
-#if TAG_MAJOR_VERSION == 34
-    "harlequin's", "archmage's", "spear",
-#endif
-#if TAG_MAJOR_VERSION > 34
-    "tyrant's",
-    "archmage's",
-    "harlequin's",
-    "devourer's",
-    "dispersal",
-    "teleport",
-#endif
-    "permanent teleport",
-    "alarm",
-#if TAG_MAJOR_VERSION == 34
-    "tyrant's", "bolt",
-#endif
-    "net",
-    "Zot",
-#if TAG_MAJOR_VERSION == 34
-    "devourer's",
-#endif
-    "shaft",
-    "passage",
-    "pressure plate",
-    "web",
-#if TAG_MAJOR_VERSION == 34
-    "gas", "teleport", "shadow", "dormant shadow", "dispersal"
-#endif
-};
-
-string trap_name(trap_type trap)
-{
-    return T_(trap_name_en(trap).c_str());
-}
-
-string trap_name_en(trap_type trap)
-{
-    COMPILE_CHECK(ARRAYSZ(trap_names) == NUM_TRAPS);
-
-    if (trap >= 0 && trap < NUM_TRAPS)
-        return trap_names[trap];
-    return "";
-}
-
-string full_trap_name(trap_type trap)
-{
-    switch (trap)
-    {
-    case TRAP_DISPERSAL:
-        return T_("dispersal trap");
-    case TRAP_TELEPORT:
-        return T_("teleport trap");
-    case TRAP_TELEPORT_PERMANENT:
-        return T_("permanent teleport trap");
-    case TRAP_TYRANT:
-        return T_("tyrant's trap");
-    case TRAP_ARCHMAGE:
-        return T_("archmage's trap");
-    case TRAP_HARLEQUIN:
-        return T_("harlequin's trap");
-    case TRAP_DEVOURER:
-        return T_("devourer's trap");
-    case TRAP_ALARM:
-        return T_("alarm trap");
-    case TRAP_NET:
-        return T_("net trap");
-    case TRAP_ZOT:
-        return T_("Zot trap");
-    case TRAP_SHAFT:
-        return T_("shaft");
-    case TRAP_GOLUBRIA:
-        return T_("passage of Golubria");
-    case TRAP_PLATE:
-        return T_("pressure plate");
-    case TRAP_WEB:
-        return T_("web");
-#if TAG_MAJOR_VERSION == 34
-    case TRAP_SPEAR:
-        return T_("spear trap");
-    case TRAP_BOLT:
-        return T_("bolt trap");
-    case TRAP_GAS:
-        return T_("gas trap");
-    case TRAP_SHADOW:
-        return T_("shadow trap");
-    case TRAP_SHADOW_DORMANT:
-        return T_("dormant shadow trap");
-#endif
-    default:
-        return trap_name(trap) + T_(" trap");
-    }
-}
-
-int str_to_trap(const string &s)
-{
-    // "Zot trap" is capitalised in trap_names[], but the other trap
-    // names aren't.
-    const string tspec = lowercase_string(s);
-
-    // allow a couple of synonyms
-    if (tspec == "random" || tspec == "any")
-        return TRAP_RANDOM;
-
-    for (int i = 0; i < NUM_TRAPS; ++i)
-        if (tspec == lowercase_string(trap_names[i]))
-            return i;
-
-    return -1;
-}
-
 /**
  * How should this panlord be described?
  *
@@ -3389,7 +3277,7 @@ static string _feature_description_en(const coord_def &pos)
 string feature_description_en(dungeon_feature_type feat)
 {
     ScopedLangEn en;
-    return feature_description(feat, NUM_TRAPS, "", DESC_A, NUM_BRANCHES);
+    return feature_description(feat, "", DESC_A, NUM_BRANCHES);
 }
 
 void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_extra)
@@ -3839,9 +3727,7 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
 void describe_feature_type(dungeon_feature_type feat)
 {
     describe_info inf;
-    // Display title: use locale-aware (T_()'d) feature description.
-    string name = feature_description(feat, NUM_TRAPS, "", DESC_A,
-                                      NUM_BRANCHES);
+    string name = feature_description(feat, "", DESC_A, NUM_BRANCHES);
     string title = uppercase_first(name);
     if (!ends_with(title, ".") && !ends_with(title, "!") && !ends_with(title, "?"))
         title += ".";
@@ -5695,7 +5581,9 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
         // From attack::calc_damage
         // damage = 1 + random2(monster attack damage)
         //          + random2(weapon damage) + random2(1 + enchant + slay)
-        const int base_dam = property(*wpn, PWPN_DAMAGE);
+        // (HACK?: Bake in the athame debuff roll into the max display.)
+        int base_dam = (wpn->sub_type == WPN_ATHAME) ? property(*wpn, PWPN_DAMAGE) + 4:
+                                                       property(*wpn, PWPN_DAMAGE);
         dam += brand_adjust_weapon_damage(base_dam, get_weapon_brand(*wpn), false) - 1;
         if (ranged && mons_class_flag(mi.type, M_ARCHER))
             dam += archer_bonus_damage(mi.hd);

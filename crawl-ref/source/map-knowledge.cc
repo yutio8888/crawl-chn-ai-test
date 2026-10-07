@@ -490,11 +490,7 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
             // knowledge with the new terrain. Otherwise clear what we had
             // before.
             if (knowledge.seen())
-            {
-                dungeon_feature_type newfeat = env.grid(pos);
-                trap_type tr = feat_is_trap(newfeat) ? get_trap_type(pos) : TRAP_UNASSIGNED;
-                knowledge.set_feature(newfeat, env.grid_colours(pos), tr);
-            }
+                knowledge.set_feature(env.grid(pos), env.grid_colours(pos));
             else
                 knowledge.clear();
         }
@@ -531,8 +527,7 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
 
         if (open)
         {
-            knowledge.set_feature(feat, _feat_default_map_colour(feat),
-                feat_is_trap(env.grid(pos)) ? get_trap_type(pos) : TRAP_UNASSIGNED);
+            knowledge.set_feature(feat, _feat_default_map_colour(feat));
             if (is_notable_terrain(feat))
                 seen_notable_thing(feat, pos);
 

@@ -8,7 +8,6 @@
 #include "ability-type.h"
 #include "command-type.h"
 #include "game-type.h"
-#include "trap-type.h"
 #include "rltiles/tiledef_defines.h"
 #include "job-type.h"
 #include "species-type.h"
@@ -35,7 +34,6 @@ void apply_variations(const tile_flavour& flv, tileidx_t* bg,
 // Tile index lookup from Crawl data.
 tileidx_t tileidx_feature_for_cache(coord_def gc);
 tileidx_t tileidx_feature(const coord_def &gc);
-tileidx_t tileidx_trap(trap_type type);
 tileidx_t tileidx_shop(const shop_struct *shop);
 tileidx_t tileidx_feature_base(dungeon_feature_type feat);
 tileidx_t tileidx_out_of_bounds(int branch);

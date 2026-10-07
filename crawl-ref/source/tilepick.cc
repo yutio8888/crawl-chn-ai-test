@@ -96,49 +96,6 @@ TextureID get_tile_texture(tileidx_t idx)
 }
 #endif
 
-tileidx_t tileidx_trap(trap_type type)
-{
-    switch (type)
-    {
-#if TAG_MAJOR_VERSION == 34
-    case TRAP_SPEAR:
-        return TILE_DNGN_TRAP_SPEAR;
-    case TRAP_BOLT:
-        return TILE_DNGN_TRAP_BOLT;
-#endif
-    case TRAP_DISPERSAL:
-        return TILE_DNGN_TRAP_DISPERSAL;
-    case TRAP_TELEPORT:
-        return TILE_DNGN_TRAP_TELEPORT;
-    case TRAP_TELEPORT_PERMANENT:
-        return TILE_DNGN_TRAP_TELEPORT_PERMANENT;
-    case TRAP_TYRANT:
-        return TILE_DNGN_TRAP_TYRANT;
-    case TRAP_ARCHMAGE:
-        return TILE_DNGN_TRAP_ARCHMAGE;
-    case TRAP_HARLEQUIN:
-        return TILE_DNGN_TRAP_HARLEQUIN;
-    case TRAP_DEVOURER:
-        return TILE_DNGN_TRAP_DEVOURER;
-    case TRAP_ALARM:
-        return TILE_DNGN_TRAP_ALARM;
-    case TRAP_NET:
-        return TILE_DNGN_TRAP_NET;
-    case TRAP_ZOT:
-        return TILE_DNGN_TRAP_ZOT;
-    case TRAP_SHAFT:
-        return TILE_DNGN_TRAP_SHAFT;
-    case TRAP_GOLUBRIA:
-        return TILE_DNGN_TRAP_GOLUBRIA;
-    case TRAP_PLATE:
-        return TILE_DNGN_TRAP_PLATE;
-    case TRAP_WEB:
-        return TILE_DNGN_TRAP_WEB;
-    default:
-        return TILE_DNGN_ERROR;
-    }
-}
-
 tileidx_t tileidx_shop(const shop_struct *shop)
 {
     if (!shop)
@@ -944,7 +901,7 @@ void apply_variations(const tile_flavour &flv, tileidx_t *bg,
         int solid = 0;
         for (int i = 0; i < 4; i++)
             if (feat_is_solid(env.map_knowledge(neigh[i]).feat())
-                || env.map_knowledge(neigh[i]).trap() == TRAP_WEB)
+                || env.map_knowledge(neigh[i]).feat() == DNGN_TRAP_WEB)
             {
                 solid |= 1 << i;
             }
@@ -1013,13 +970,6 @@ static tileidx_t _tileidx_feature_no_overrides(const coord_def &gc)
             return TILE_FLOOR_ICY;
 
         return tileidx_feature_base(feat);
-
-#if TAG_MAJOR_VERSION == 34
-    // New trap-type-specific features are handled in default case.
-    case DNGN_TRAP_MECHANICAL:
-    case DNGN_TRAP_TELEPORT:
-        return tileidx_trap(env.map_knowledge(gc).trap());
-#endif
 
     case DNGN_ENTER_SHOP:
         return tileidx_shop(shop_at(gc));
@@ -2760,6 +2710,8 @@ static const map<monster_info_flags, tileidx_t> monster_status_icons = {
     { MB_STRONG_WILLED, TILEI_STRONG_WILLED },
     { MB_TESSERACT_SPAWN, TILEI_TESSERACT_SPAWN },
     { MB_SUNDERING_READY, TILEI_SUNDERING },
+    { MB_MUTE, TILEI_MUTE },
+    { MB_EXPOSED, TILEI_EXPOSED },
 };
 
 set<tileidx_t> status_icons_for(const monster_info &mons)
@@ -2910,7 +2862,7 @@ tileidx_t tileidx_player_shadow()
 
     switch (you.species)
     {
-        case SP_ARMATAUR:       return TILEP_MONS_PLAYER_SHADOW_ARMATAUR;
+        case SP_GALE_CENTAUR:   return TILEP_MONS_PLAYER_SHADOW_GALE_CENTAUR;
         case SP_BARACHI:        return TILEP_MONS_PLAYER_SHADOW_BARACHI;
         case SP_COGLIN:         return TILEP_MONS_PLAYER_SHADOW_COGLIN;
         case SP_DEMIGOD:        return TILEP_MONS_PLAYER_SHADOW_DEMIGOD;
@@ -2973,6 +2925,7 @@ static tileidx_t _tileidx_weapon_base(const item_def &item)
     case WPN_SHORT_SWORD:           return TILE_WPN_SHORT_SWORD;
     case WPN_QUICK_BLADE:           return TILE_WPN_QUICK_BLADE;
     case WPN_RAPIER:                return TILE_WPN_RAPIER;
+    case WPN_ATHAME:                return TILE_WPN_ATHAME;
     case WPN_FALCHION:              return TILE_WPN_FALCHION;
     case WPN_LONG_SWORD:            return TILE_WPN_LONG_SWORD;
     case WPN_GREAT_SWORD:           return TILE_WPN_GREAT_SWORD;
@@ -3886,6 +3839,8 @@ tileidx_t vary_bolt_tile(tileidx_t tile, int dir, int dist)
     case TILE_BOLT_CHAOS_BUFF:
     case TILE_BOLT_GLOOM:
     case TILE_BOLT_SUNDERING:
+    case TILE_BOLT_WIND_HUSH:
+    case TILE_BOLT_CORRUPTION:
         return tile + ui_random(tile_main_count(tile));
 
     case TILE_MI_BOOMERANG0:
@@ -4756,8 +4711,6 @@ static tileidx_t _tileidx_player_species_base(const species_type species)
             return TILEG_SP_TROLL;
         case SP_BASE_DRACONIAN:
             return TILEG_SP_DRACONIAN;
-        case SP_ARMATAUR:
-            return TILEG_SP_ARMATAUR;
         case SP_DEMIGOD:
             return TILEG_SP_DEMIGOD;
         case SP_SPRIGGAN:
@@ -4799,6 +4752,8 @@ static tileidx_t _tileidx_player_species_base(const species_type species)
             return TILEG_SP_POLTERGEIST;
         case SP_REVENANT:
             return TILEG_SP_REVENANT;
+        case SP_GALE_CENTAUR:
+            return TILEG_SP_GALE_CENTAUR;
         default:
             return TILEP_ERROR;
     }

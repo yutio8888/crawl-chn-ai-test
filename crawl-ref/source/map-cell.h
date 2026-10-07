@@ -5,7 +5,6 @@
 #include "enum.h"
 #include "mon-info.h"
 #include "tag-version.h"
-#include "trap-type.h"
 
 #define MAP_MAGIC_MAPPED_FLAG   0x01
 #define MAP_SEEN_FLAG           0x02
@@ -87,8 +86,7 @@ struct cloud_info
 struct map_cell
 {
     // TODO: in C++20 we can give these a default member initializer
-    map_cell() : _feat(DNGN_UNSEEN),
-                 _trap(TRAP_UNASSIGNED)
+    map_cell() : _feat(DNGN_UNSEEN)
     {
     }
 
@@ -109,7 +107,6 @@ struct map_cell
         flags = o.flags;
         _feat = o._feat;
         _feat_colour = o._feat_colour;
-        _trap = o._trap;
         _cloud = o._cloud ? make_unique<cloud_info>(*o._cloud) : nullptr;
         _item = o._item ? make_unique<item_def>(*o._item) : nullptr;
         _mons = o._mons ? make_unique<monster_info>(*o._mons) : nullptr;
@@ -127,7 +124,6 @@ struct map_cell
         flags = o.flags;
         _feat = o._feat;
         _feat_colour = o._feat_colour;
-        _trap = o._trap;
         _cloud = std::move(o._cloud);
         _item = std::move(o._item);
         _mons = std::move(o._mons);
@@ -174,12 +170,10 @@ struct map_cell
         return _feat_colour;
     }
 
-    void set_feature(dungeon_feature_type nfeat, unsigned colour = 0,
-                     trap_type tr = TRAP_UNASSIGNED)
+    void set_feature(dungeon_feature_type nfeat, unsigned colour = 0)
     {
         _feat = nfeat;
         _feat_colour = colour;
-        _trap = tr;
     }
 
     item_def* item() const
@@ -316,11 +310,6 @@ struct map_cell
         return !!(flags & MAP_MAGIC_MAPPED_FLAG);
     }
 
-    trap_type trap() const
-    {
-        return _trap;
-    }
-
 #ifdef USE_TILE
     char blood_rotation() const noexcept
     {
@@ -339,7 +328,6 @@ private:
     // TODO: shrink enums, shrink/re-order cloud_info and inline it
     dungeon_feature_type _feat:8;
     colour_t _feat_colour = 0;
-    trap_type _trap:8;
     unique_ptr<cloud_info> _cloud;
     unique_ptr<item_def> _item;
     unique_ptr<monster_info> _mons;

@@ -20,6 +20,7 @@ enum map_marker_type
 #endif
     MAT_TERRAIN_CHANGE,
     MAT_CLOUD_SPREADER,
+    MAT_HELLFIRE_MORTAR_LAVA,
     NUM_MAP_MARKER_TYPES,
     MAT_ANY,
 };

@@ -232,7 +232,7 @@ resolved_speech_target resolve_speech_target(
                     result.feature = env.grid(pbolt.target);
                     result.position = pbolt.target;
                     result.display = feature_description(
-                        result.feature, NUM_TRAPS, "", DESC_THE);
+                        result.feature, "", DESC_THE);
                 }
                 else
                 {

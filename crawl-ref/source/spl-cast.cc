@@ -1135,6 +1135,9 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         count_action(CACT_CAST, spell);
     }
 
+    if (you.duration[DUR_STAMPEDE] && you.has_mutation(MUT_EAST_WIND))
+        you.duration[DUR_STAMPEDE] += you.time_taken;
+
     finalize_mp_cost(hp_cost > 0);
     // Check if an HP payment brought us low enough
     // to trigger Celebrant or time-warped blood.
@@ -1704,6 +1707,9 @@ static int _to_hit_pct(const monster_info& mi, int acc)
         return 100;
 
     acc += mi.lighting_modifiers();
+    if (mi.is(MB_EXPOSED))
+        acc *= 2;
+
     if (acc <= 1)
         return mi.ev <= 2 ? 100 : 0;
 
@@ -3521,6 +3527,9 @@ void handle_channelled_spell()
         stop_channelling_spells(true);
         return;
     }
+
+    if (you.duration[DUR_STAMPEDE] && you.has_mutation(MUT_EAST_WIND))
+        you.duration[DUR_STAMPEDE] += you.time_taken;
 
     switch (you.attribute[ATTR_CHANNELLED_SPELL])
     {

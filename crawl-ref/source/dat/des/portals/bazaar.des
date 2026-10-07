@@ -2042,7 +2042,7 @@ KITEM:   $ = $ no_pickup
 KFEAT:   g = metal_statue
 KFEAT:   h = stone_wall
 KFEAT:   t = demonic_tree
-KFEAT:   ^ = permanent teleport trap
+KFEAT:   ^ = trap_teleport_permanent
 KFEAT:   y = x
 KFEAT:   D = abandoned_shop
 KFEAT:   X = altar_xom
@@ -2146,7 +2146,7 @@ local weaps = { "demon blade", "double sword", "triple sword",
                 "demon trident", "partisan", "bardiche", "demon whip",
                 "eveningstar", "great mace", "broad axe", "battleaxe",
                 "executioner's axe", "lajatang", "hand cannon", "longbow",
-                "triple crossbow", "rapier", "quick blade"}
+                "triple crossbow", "rapier", "athame", "quick blade"}
 weaps = util.random_subset(weaps, 3)
 
 local equips = {}
@@ -2159,7 +2159,7 @@ if crawl.x_chance_in_y(3, 4) then
   equip_count = equip_count + 1
 
   local baseunlist = { "plutonium_sword", "singing_sword", "obsidian_axe",
-                       "glaive_of_prune", "mace_of_variability", "firestarter",
+                       "partisan_of_prune", "mace_of_variability", "firestarter",
                        "majin-bo", "robe_of_folly", "robe_of_misfortune",
                        "maxwell's_patent_armour", "orange_crystal_plate_armour",
                        "shield_of_the_gong", "tower_shield_of_ignorance",

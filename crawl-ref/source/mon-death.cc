@@ -675,6 +675,7 @@ static bool _ely_protect_ally(monster* mons, killer_type killer)
     if (mons->holiness() & ~(MH_HOLY | MH_NATURAL | MH_PLANT)
         || !mons->friendly()
         || !you.can_see(*mons) // for simplicity
+        || !monster_habitable_grid(mons, mons->pos())
         || !one_chance_in(20))
     {
         return false;
@@ -702,6 +703,7 @@ static bool _ely_heal_monster(monster* mons, killer_type killer, int i)
         || mons->is_peripheral()
         || mons->props.exists(ELY_WRATH_HEALED_KEY)
         || mons->get_experience_level() < random2(you.experience_level)
+        || !monster_habitable_grid(mons, mons->pos())
         || !one_chance_in(3))
     {
         return false;
@@ -1523,8 +1525,11 @@ static string _derived_undead_message(const monster &mons, monster_type which_z,
         return T_("The dead are flying!");
 
     const auto shape = get_mon_shape(mons);
-    if (shape == MON_SHAPE_SNAKE || shape == MON_SHAPE_SNAIL)
+    if (shape == MON_SHAPE_SNAKE || shape == MON_SHAPE_SNAIL
+        || shape == MON_SHAPE_NAGA)
+    {
         return T_("The dead are slithering!");
+    }
     if (shape == MON_SHAPE_ARACHNID || shape == MON_SHAPE_CENTIPEDE)
         return T_("The dead are crawling!"); // to say nothing of creeping
 
@@ -2564,8 +2569,7 @@ item_def* monster_die(monster& mons, killer_type killer,
 
     const bool spectralised = testbits(mons.flags, MF_SPECTRALISED);
 
-    if (!silent && !mount_death
-        && _monster_avoided_death(&mons, killer, killer_index))
+    if (!mount_death && _monster_avoided_death(&mons, killer, killer_index))
     {
         mons.flags &= ~MF_EXPLODE_KILL;
 
@@ -2880,6 +2884,11 @@ item_def* monster_die(monster& mons, killer_type killer,
     }
     else if (mons.type == MONS_ERYTHROSPITE && !mons.is_abjurable())
         bleed_onto_floor(mons.pos(), MONS_ERYTHROSPITE, 100, false);
+    else if (mons.type == MONS_ROYAL_JELLY && mons.hit_points > 0
+             && real_death && !summoned)
+    {
+        schedule_trj_spawn_fineff(&you, &mons, mons.pos(), mons.hit_points);
+    }
 
     if (mons.has_ench(ENCH_MAGNETISED))
     {
@@ -3768,6 +3777,8 @@ void monster_cleanup(monster* mons)
     if (mons->type == MONS_SEISMOSAURUS_EGG)
         for (distance_iterator di(mons->pos(), false, false, 4); di; ++di)
             env.pgrid(*di) &= ~FPROP_SEISMOROCK;
+    else if (mons->type == MONS_HELLFIRE_MORTAR)
+        hellfire_mortal_on_mortar_gone(*mons);
 
     // May have been constricting something. No message because that depends
     // on the order in which things are cleaned up: If the constrictee is
@@ -3884,10 +3895,7 @@ void mons_check_pool(monster* mons, const coord_def &oldpos,
         killnum = mons->mindex();
     }
 
-    // Yredelemnul special, redux: It's the only one that can
-    // work on drowned monsters.
-    if (!_yred_bind_soul(mons, killer))
-        monster_die(*mons, killer, killnum, true);
+    monster_die(*mons, killer, killnum, true);
 }
 
 // Make all of the monster's original equipment disappear, unless it's a fixed

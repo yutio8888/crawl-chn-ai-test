@@ -24,6 +24,7 @@
 #include "coordit.h"
 #include "database.h"
 #include "describe.h"
+#include "directn.h"
 #include "dlua.h"
 #include "dgn-overview.h"
 #include "end.h"
@@ -207,7 +208,7 @@ static int crawl_test_trap_display_name(lua_State *ls)
     const string value = luaL_checkstring(ls, 1);
     if (value != "permanent teleport")
         return luaL_error(ls, "unknown test trap: %s", value.c_str());
-    lua_pushstring(ls, trap_name(TRAP_TELEPORT_PERMANENT).c_str());
+    lua_pushstring(ls, feature_description(DNGN_TRAP_TELEPORT_PERMANENT, "", DESC_BASENAME).c_str());
     return 1;
 }
 
