@@ -1202,6 +1202,9 @@ The alarm trap emits a blaring wail!
 %s appears from out of thin air!
 %s凭空出现了！
 %%%%
+ forbids you from animating such a foul weapon!
+ 禁止你赋予如此污秽的武器生命！
+%%%%
 %s forbids you from animating such a foul weapon!
 %s禁止你赋予如此污秽的武器生命！
 %%%%
@@ -2572,6 +2575,9 @@ A cloud of volatile blastmotes flares up around you! Run!
 A cold wind forms around you.
 一阵寒风在你周围吹起。
 %%%%
+Your crocodile wouldn't be able to see that.
+你的鳄鱼无法看见那个目标。
+%%%%
 A crocodile bursts forth beneath %s and grabs %s in its jaws!
 一条鳄鱼从%s下方冲出，用巨颚咬住了%s！
 %%%%
@@ -3519,6 +3525,9 @@ jewellery full name|flight
 %%%%
 potion full name|invisibility
 隐形
+%%%%
+potion full name|mist
+雾
 %%%%
 potion full name|might
 力量
@@ -5534,7 +5543,7 @@ Yoink! You pull the item%s %stowards yourself.
 拿来！你将物品%.0s拉向自己%s。
 %%%%
 partway 
-，但只拉近了一段距离 
+，但只拉近了一段距离
 %%%%
 nothing
 虚无
@@ -7438,7 +7447,7 @@ The mutagenic energy flows into you.
 变异能量流入了你的身体。
 %%%%
  shudders as wild magic violently cascades through %s%s
- 在狂暴魔力剧烈涌过%s时颤抖%s
+ 在狂野魔法剧烈涌过%s时颤抖%s
 %%%%
 The nature of this place prevents your teleportation.
 这个地方的本质阻止了你的传送。
@@ -8648,7 +8657,7 @@ You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
 The shaft disappears in a puff of logic!
-竖井随着一缕逻辑消失了！
+竖井在一阵逻辑中消失了！
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
@@ -9602,7 +9611,7 @@ You shed your tail %sto distract predators!
 你甩掉尾巴%s，以分散捕食者的注意！
 %%%%
 and slip away 
-并悄然溜走 
+并悄然溜走
 %%%%
 Your assassin centipede leaps free of your %s with a hiss!
 你的刺客蜈蚣嘶嘶作响，从你的%s上跃下！
@@ -10106,7 +10115,7 @@ You feel purified!
 你感到被净化了！
 %%%%
  and grants %s more time in this world.
- ，并让%s在世间多停留一段时间
+，并让%s在世间多停留一段时间
 %%%%
 The light of Elyvilon comforts %s%s.
 艾利维隆的光芒抚慰了%s%s。
@@ -10250,7 +10259,7 @@ The liquid fire falls away from your body.
 液体火焰从你的身体上脱落了。
 %%%%
 You body stops petrifying.
-你的身体不再石化了。
+你的身体停止了石化。
 %%%%
 The spiked barbs fall from your body.
 尖锐的倒刺从你的身体上脱落了。
@@ -11131,7 +11140,7 @@ You %s towards %s%s!
 你%s%s%s！
 %%%%
  with incredible speed
- ，速度快得惊人
+，速度快得惊人
 %%%%
 You welcome %s%s into your grasp.
 你迎接%s%s落入掌握。
@@ -11264,6 +11273,9 @@ Your %s skill decreases to level %d!
 %%%%
 Your %s skill gained %d levels and is now at level %d!
 你的%s技能提升了%d级，现为%d级！
+%%%%
+You feel the winds around you beginning to shift...
+你感到周围的风向开始转变……
 %%%%
 Your %s skill increases to level %d!
 你的%s技能提升至%d级！
@@ -21593,7 +21605,7 @@ flag short|divine shielded
 神圣护盾
 %%%%
 flag long|divinely shielded
-神圣护盾保护
+受神圣护盾保护
 %%%%
 damnation bolt
 毁灭之矢
@@ -21890,7 +21902,7 @@ Your vision returns to normal.
 你的视力恢复正常了。
 %%%%
 You feel more solid again.
-你觉得身体又凝实了一些。
+你感到身体重新凝实了。
 %%%%
 You are insubstantial.
 你处于虚体状态。
@@ -21906,6 +21918,9 @@ You stop stampeding.
 %%%%
 Your divinely inspired understanding of %s fades.
 你对%s的神赐理解消退了。
+%%%%
+The winds around you quicken.
+你周围的风加速了。
 %%%%
 Your tailwind grows less brisk.
 你的顺风逐渐减弱了。
@@ -24836,7 +24851,7 @@ a fearsome dragon!
 一条可怕的龙！
 %%%%
 bow your head before
-在其面前低头
+低头拜向
 %%%%
 Breath Dmg
 吐息伤害
@@ -24905,7 +24920,7 @@ pincers
 螯钳
 %%%%
 scuttle before
-在其面前横行
+横着爬到
 %%%%
 shell
 甲壳
@@ -24932,7 +24947,7 @@ hypha
 菌丝
 %%%%
 release spores on
-向其释放孢子
+把孢子撒向
 %%%%
 You are tiny and evasive.
 你体型微小，善于闪避。
@@ -25025,7 +25040,7 @@ Pseudopod
 伪足
 %%%%
 squish down before
-在其面前瘫成一团
+瘫软在
 %%%%
 acid body
 酸性身体
@@ -25202,7 +25217,7 @@ coils
 盘曲的蛇身
 %%%%
 coil in front of
-在其面前盘起身体
+盘踞在
 %%%%
 You have a powerful constriction melee attack.
 你拥有强大的近战绞缠攻击。
@@ -25259,7 +25274,7 @@ forepaw
 前爪
 %%%%
 curl up before
-在其面前蜷缩身体
+蜷伏在
 %%%%
 airstrike attack
 空袭攻击
@@ -25271,7 +25286,7 @@ hex mastery
 诅咒精通
 %%%%
 Hexes are much easier for you to cast and harder to resist.
-你施放诅咒更加容易，敌人也更难抵抗。
+你施放诅咒系法术要容易得多，敌人也更难抵抗。
 %%%%
 riddle compulsion
 谜语冲动
@@ -25289,7 +25304,7 @@ front pincers
 前螯
 %%%%
 crawl onto
-爬到其身上
+爬上
 %%%%
 ensnaring attack
 蛛网攻击
@@ -25340,7 +25355,7 @@ a stone statue.
 一尊石像。
 %%%%
 place yourself before
-置身于其面前
+肃立在
 %%%%
 Your melee attacks are powerful.
 你的近战攻击很强大。
@@ -25423,6 +25438,12 @@ fire wizardry
 You can cast Fire magic much more easily.
 你施放火焰魔法容易得多。
 %%%%
+App
+肢体
+%%%%
+appendages
+野兽肢体
+%%%%
 tree-form
 树形态
 %%%%
@@ -25436,7 +25457,7 @@ root
 树根
 %%%%
 sway towards
-向其摇曳
+倾身朝向
 %%%%
 wood
 木质
@@ -25459,6 +25480,21 @@ Your roots penetrate the ground, keeping you stationary.
 You cannot be teleported.
 你无法被传送。
 %%%%
+Porc
+豪猪
+%%%%
+porc-form
+豪猪形态
+%%%%
+a spiny porcupine.
+一只浑身长刺的豪猪。
+%%%%
+front leg
+前腿
+%%%%
+curl into a sanctuary of spikes before
+蜷成刺球护住自己，面向
+%%%%
 vampire-form
 吸血鬼形态
 %%%%
@@ -25475,7 +25511,7 @@ hypnotic gaze
 催眠凝视
 %%%%
 You often daze monsters when they first notice you.
-怪物初次注意到你时，常会被你眩晕。
+怪物初次注意到你时，常会陷入眩晕。
 %%%%
 Vision
 灵视
@@ -25502,7 +25538,7 @@ Magic Parchment
 魔法羊皮纸
 %%%%
 unroll yourself before
-在其面前展开自己
+展开身体面向
 %%%%
 You have increased skill with all magical schools.
 你的所有魔法学派技能都得到提高。
@@ -25565,7 +25601,7 @@ strand
 雾缕
 %%%%
 swirl around
-在其周围盘旋
+环绕
 %%%%
 highly resistant
 高抗性
@@ -25573,14 +25609,74 @@ highly resistant
 You are highly resistant to most damage types. (rF++, rC++, rN+++, rElec, rCorr)
 你对大多数伤害类型具有很高的抗性。(rF++, rC++, rN+++, rElec, rCorr)
 %%%%
+shadow-form
+暗影形态
+%%%%
+a swirling mass of dark shadows.
+一团翻涌的浓黑暗影。
+%%%%
+half damage
+伤害减半
+%%%%
+Damage taken is halved, but you are drained when taking damage.
+你受到的伤害减半，但受伤时会遭受衰竭。
+%%%%
+bleed smoke
+烟雾之血
+%%%%
+You bleed smoke when taking damage.
+你受伤时会流出烟雾。
+%%%%
+You are invisible.
+你处于隐形状态。
+%%%%
+Your attacks do half damage.
+你的攻击伤害减半。
+%%%%
+weak spells
+法术虚弱
+%%%%
+Your spells are much less powerful.
+你的法术威力大幅降低。
+%%%%
+hydra-form
+多头蛇形态
+%%%%
+bow your heads before
+低下所有头颅拜向
+%%%%
+fast swimmer
+游泳迅捷
+%%%%
+You swim very quickly.
+你游泳的速度非常快。
+%%%%
+devour
+吞噬
+%%%%
+You can devour living enemies to heal.
+你可以吞噬活着的敌人来治疗自己。
+%%%%
 hover solemnly before
 庄严地盘旋在
 %%%%
 your old self.
 原来的自己
 %%%%
+You were %s
+你当时是%s
+%%%%
+You are %s
+你是%s
+%%%%
 You %1$s %2$s
 你%1$s%2$s
+%%%%
+You were overflowing with transmutational energy.
+你当时充满了变形能量。
+%%%%
+You are overflowing with transmutational energy.
+你充满了变形能量。
 %%%%
 You %s overflowing with transmutational energy.
 你%s充满了变形能量。
@@ -25590,6 +25686,12 @@ Your body destabilises.
 %%%%
 Your body stabilises again.
 你的身体重新稳定下来了。
+%%%%
+You had blades growing out of your body.
+你的身上当时长着利刃。
+%%%%
+You have blades growing out of your body.
+你的身上长着利刃。
 %%%%
 You %s blades growing out of your body.
 你%s身体上长出了利刃。
@@ -25654,6 +25756,12 @@ Makhleb calls their payment due...
 vessel of slaughter (+%d%% damage done)
 杀戮之器（伤害+%d%%）
 %%%%
+Your body was made of elemental water.
+你的身体当时由元素之水构成。
+%%%%
+Your body is made of elemental water.
+你的身体由元素之水构成。
+%%%%
 Your body %s made of elemental water.
 你的身体%s由元素之水构成。
 %%%%
@@ -25669,8 +25777,26 @@ A mane of stinging tendrils grows from your head.
 Your tendrils shrivel away.
 你的触须枯萎脱落了。
 %%%%
+You had a mane of long, stinging tendrils on your head.
+你的头上当时有一丛长长的刺人触须。
+%%%%
+You have a mane of long, stinging tendrils on your head.
+你的头上有一丛长长的刺人触须。
+%%%%
 You %s a mane of long, stinging tendrils on your head.
 你%s头上有一丛长长的刺人触须。
+%%%%
+You had %1$s for %2$s.
+你的%2$s当时是%1$s。
+%%%%
+You have %1$s for %2$s.
+你的%2$s是%1$s。
+%%%%
+an electric eel
+一条电鳗
+%%%%
+electric eels
+电鳗
 %%%%
 You %1$s %2$s for %3$s.
 你%1$s的%3$s变成了%2$s。
@@ -25689,6 +25815,12 @@ Dense mycelia sprout from your %1$s and %2$s.
 %%%%
 Your mycelia shrivel away.
 你的菌丝枯萎了。
+%%%%
+Your %s was a mass of colorful fungus.
+你的%s当时是一团彩色的菌菇。
+%%%%
+Your %s is a mass of colorful fungus.
+你的%s是一团彩色的菌菇。
 %%%%
 Your %1$s %2$s a mass of colorful fungus.
 你的%1$s变成了一团彩色的菌菇。
@@ -25728,6 +25860,9 @@ Your head dissolves into a mane of billowing mist!
 %%%%
 Your head returns to normal.
 你的头恢复了正常。
+%%%%
+Becoming undead will pull you out of death's doorway! Transform anyway?
+化为亡灵将使你脱离死亡之门状态！仍要变形吗？
 %%%%
 You cannot mock death while in death's door.
 在生死之门中你无法嘲弄死亡。
@@ -26629,6 +26764,9 @@ You are short of breath.
 %%%%
 You are sleeping.
 你正在沉睡。
+%%%%
+If you enter this portal, the magical contamination on the other side will temporarily mutate you thrice. Continue?
+如果进入这道传送门，另一侧的诱变辐射将使你暂时发生三次变异。继续吗？
 %%%%
 You are spewing a noxious bog.
 你正在喷射毒沼。
@@ -28179,10 +28317,10 @@ At your current Evocations and %s skills, it has a %d%% chance to deal up to %d 
 以你当前的魔力释放和%s技能，它有%d%%的几率造成最多%d点额外的%s伤害%s。
 %%%%
  that is resisted by flying
- ，飞行可抵抗此伤害
+，飞行可抵抗此伤害
 %%%%
 It cannot be found normally.
-它通常无法找到。
+它无法通过常规途径找到。
 %%%%
 It is %s %s.
 它是%s的%s。
@@ -31734,6 +31872,78 @@ Potions heal its wearer twice as much.
 It occasionally leaves clouds of freezing vapour upon striking a foe, and grants immunity to clouds of freezing vapour.
 攻击敌人时偶尔留下冰冻蒸汽云，并赋予对冰冻蒸汽云的免疫。
 %%%%
+After you perform multiple consecutive attacks, its next
+连续进行多次攻击后，它的下一次
+%%%%
+attack will deal greatly increased damage and also cleave into targets an extra
+攻击会造成大幅增加的伤害，并能劈砍额外一格
+%%%%
+space away. This effect charges faster and partially retains its charge between
+距离外的目标。此效果会更快蓄能，并在两次
+%%%%
+attacks while you are berserk.
+攻击之间保留部分蓄能，前提是你处于狂暴状态。
+%%%%
+It inflicts powerful necromantic curses on any foe it strikes.
+它会对击中的任何敌人施加威力强大的死灵诅咒。
+%%%%
+Any attack performed with it also shoots at up to 4 other unobstructed targets in range.
+每次用它攻击时，还会射击射程内最多4个未被遮挡的其他目标。
+%%%%
+It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.
+视野内有敌对怪物时使用神祇能力，它偶尔会召唤一条龙。触发几率为10% + 所用能力消耗的虔诚值的两倍。
+%%%%
+Whenever you inflict a negative status on an enemy, you also fully poison it. Those with rPois+ will only be lightly poisoned, and those with rPois∞ won't be poisoned at all.
+每当你对敌人施加负面状态时，还会使其承受完整强度的中毒效果。拥有rPois+的敌人只会轻度中毒，拥有rPois∞的敌人则完全不会中毒。
+%%%%
+Whenever you deal cold damage to an enemy without rCold∞, you inflict some doom upon it. Sufficient doom upon those who do not defy fate as you do will eventually result in long amounts of slowing, weakness, vitrification, blinding, or heavy draining.
+每当你对没有rCold∞的敌人造成寒冷伤害时，就会对其施加一些厄运。对于不像你这样违抗命运的目标，累积足够的厄运最终会造成持续很久的减速、虚弱、玻璃化、致盲，或严重衰竭。
+%%%%
+Whenever you deal fire damage to an enemy without rFire∞, you may briefly leave it exposed, making it take increased damage for non-attack sources, less capable of dodging non-attack projectiles, and mildly reducing its Willpower.
+每当你对没有rFire∞的敌人造成火焰伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
+%%%%
+It increases the success rate of your Fire Magic spells.
+它提高你的火焰魔法法术的成功率。
+%%%%
+Whenever you deal cold damage to an enemy without rCold∞, you may briefly leave it exposed, making it take increased damage for non-attack sources, less capable of dodging non-attack projectiles, and mildly reducing its Willpower.
+每当你对没有rCold∞的敌人造成寒冷伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
+%%%%
+It increases the success rate of your Ice Magic spells.
+它提高你的寒冰魔法法术的成功率。
+%%%%
+When knocking back an enemy, and on one in four other hits, it spawns a shooting star with power proportional to the damage dealt.
+击退敌人时会产生一颗流星；其他命中则有四分之一的几率产生流星。流星的威力与造成的伤害成正比。
+%%%%
+When attacking a constricted enemy, it has a one in three chance to flood their lungs with water.
+攻击被束缚的敌人时，有三分之一的几率向其肺中灌水。
+%%%%
+When attacking a constricted enemy, it has a one in three chance to tempoarily transform the ground beneath them into a noxious bog.
+攻击被束缚的敌人时，有三分之一的几率将其脚下的地面暂时变成毒沼。
+%%%%
+It provides +5 SH for each of five conditions you meet: Staves is your highest skill, or is at maximum level; Your stealth is at least +++++; Your base invocations skill is at least 15; Your intelligence is at least 20; Your base EV is at least 25.
+以下五项条件每满足一项，它就提供+5 SH：杖类是你等级最高的技能，或已达到最高等级；你的潜行至少为+++++；你的基础祈神技能至少为15；你的智力至少为20；你的基础EV至少为25。
+%%%%
+If you meet at least three of the five conditions, it provides reflection and an extra maximum block per turn.
+若你满足五项条件中的至少三项，它会提供反射，并使每回合的格挡次数上限再增加一次。
+%%%%
+When you attack an enemy while devious, you have a chance to turn invisible. The chance increases the more devious you are.
+当你处于狡诈状态时攻击敌人，有几率隐形。你越狡诈，隐形的几率就越高。
+%%%%
+Enhances your magic if you have at least 80% of your maximum magical power remaining (before spending MP to cast the spell).
+若你剩余的法力至少为法力上限的80%（按施法消耗法力前计算），它会增强你的魔法。
+%%%%
+Unequipping it temporarily diminishes your spells.
+卸下它会暂时削弱你的法术。
+%%%%
+Enemies hit by the wearer's projectiles are outlined in light.
+被穿戴者的投射物击中的敌人会被光勾勒出轮廓。
+%%%%
+Equipping it will reduce your piety. While worn, you gain piety at three quarters of the normal rate.
+装备它会降低你的虔诚值。佩戴期间，你获得虔诚值的速率为正常速率的四分之三。
+%%%%
+It may create clouds of spectral mist when the wearer attacks or casts spells, and grants immunity from such clouds. Necromancy spells have a greater chance to produce spectral mist.
+穿戴者攻击或施法时，它可能产生幽魂雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽魂雾气的几率更高。
+%%%%
 You hear the sound of rushing water.
 你听到了流水声。
 %%%%
@@ -31744,7 +31954,7 @@ There is an entrance to a sewer on this level. Hurry and find it before the port
 这个楼层有一个通往下水道的入口。在传送门生锈消失前找到它！
 %%%%
 There is an entrance to a gutter gulch on this level. Hurry and find it before the portal rusts away!
-这一层有通往排污渠的入口。快在传送门锈坏前找到它！
+这个楼层有一个通往排污渠的入口。快在传送门锈坏前找到它！
 %%%%
 You hear the drain falling apart.
 你听到排水口散架的声音。
@@ -32230,7 +32440,7 @@ status|Crystals
 晶体
 %%%%
 status|-Tail
-断尾待生
+-尾巴
 %%%%
 status|Vapour
 汽雾
@@ -32239,7 +32449,7 @@ ability cost|Drain
 削命
 %%%%
 , Bound item
-, 已束缚物品
+，已束缚物品
 %%%%
 verb|steam
 蒸腾
@@ -32770,7 +32980,7 @@ very common
 非常常见
 %%%%
 not found normally
-通常无法找到
+无法通过常规途径找到
 %%%%
 very long
 非常长
@@ -37994,6 +38204,12 @@ obsoleteness
  of 
 ，信仰
 %%%%
+Ashenzari invites you to chain yourself with knowledge.
+艾申扎利邀你以知识铸成枷锁束缚自己。
+%%%%
+Ashenzari invites you to chain yourself with knowledge of %s.
+艾申扎利邀你以%s方面的知识铸成枷锁束缚自己。
+%%%%
 Ashenzari invites you to chain yourself with knowledge%s.
 艾申扎利邀你以知识铸成枷锁束缚自己%s。
 %%%%
@@ -42486,7 +42702,7 @@ move.enter-area|stampede
 move.enter-area|stumble
 踉跄进入
 %%%%
-move.enter-area|trott
+move.enter-area|trot
 小跑进入
 %%%%
 move.enter-area|stalk
@@ -42553,12 +42769,12 @@ move.onto-surface|rampage
 冲上
 %%%%
 move.onto-surface|stampede
-奔踏而上
+奔踏上
 %%%%
 move.onto-surface|stumble
 踉跄踏上
 %%%%
-move.onto-surface|trott
+move.onto-surface|trot
 小跑踏上
 %%%%
 move.onto-surface|stalk
@@ -42633,7 +42849,7 @@ move.through-obstacle|rampage
 move.through-obstacle|stampede
 奔踏穿过
 %%%%
-move.through-obstacle|trott
+move.through-obstacle|trot
 小跑穿过
 %%%%
 move.through-obstacle|stalk
@@ -42685,13 +42901,13 @@ move.over-terrain|rampage
 冲到
 %%%%
 move.over-terrain|stampede
-奔踏而过
+奔踏到
 %%%%
 move.over-terrain|stumble
-踉跄走过
+踉跄走到
 %%%%
-move.over-terrain|trott
-小跑经过
+move.over-terrain|trot
+小跑到
 %%%%
 move.over-terrain|stalk
 悄然走到
@@ -43676,6 +43892,12 @@ Please use version %s to load %s then.
 %%%%
 There exists a save by that name but it appears to be invalid.\nDo you want to delete it?\nError: %s
 存在同名存档，但该存档似乎无效。\n是否删除？\n错误：%s
+%%%%
+This Armataur save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Gale Centaur. Continue?
+此甲马人存档无法直接加载。如果现在加载，\n你的角色将被转换为疾风半人马。继续吗？
+%%%%
+Please load the save in an earlier version if you want to remain an Armataur.
+如果你想保留甲马人种族，请用较早的版本加载此存档。
 %%%%
 This Lava Orc save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Mountain Dwarf. Continue?
 该熔岩兽人存档无法保持原状加载。如果现在加载，\n你的角色将被转换为山矮人。是否继续？
