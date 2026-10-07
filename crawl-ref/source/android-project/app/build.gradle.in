@@ -5,7 +5,8 @@ plugins {
 android {
 
     defaultConfig {
-        applicationId = "org.develz.crawl"
+        applicationId = "@ANDROID_APPLICATION_ID@"
+        manifestPlaceholders = [crawlAppName: "@ANDROID_APP_NAME@"]
         compileSdk = 36
         minSdkVersion 21
         targetSdkVersion 36
@@ -16,7 +17,7 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                arguments '-j8'
+                arguments '-j@NPROC@'
             }
         }
     }
@@ -36,8 +37,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     externalNativeBuild {
         ndkBuild {

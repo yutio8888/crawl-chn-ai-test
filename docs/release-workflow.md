@@ -99,6 +99,63 @@
 GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证据，修复后用新的
 `0.34.1-zhA-B-CCC` 标签发布；不得移动或复用已经对外分发的标签。
 
+## trunk 预发布
+
+`chn-trunk` 持续跟进固定的上游 master 提交；同步引入的新内容须完成翻译和领域审查，
+才能对外发布。稳定线与 trunk 线分别发布，不把 trunk 合回稳定线。
+
+- 标签格式为 `X.Y-trunk-NNN`，`NNN` 是三位序号 `001`–`999`，在同一 `X.Y` 下递增，
+  不移动或复用已有标签。序号用尽时停止发布，另行决定下一步，不回收编号。
+- `X.Y` 必须等于候选提交可达的最近上游 annotated a 标签的主版本号；例如
+  `0.35-a0` 对应 `0.35-trunk-001`。CI 从 `https://github.com/crawl/crawl` 只读取回
+  a 标签；取回失败、没有可达 a 标签或主版本不匹配时失败，不回退到稳定版版本串。
+- 一个提交最多有一个 trunk 标签。打标签前先执行
+  `git tag --points-at <commit> --list '*-trunk-*'`，确认输出为空；同时查看该 `X.Y`
+  已有标签，选择下一个未使用的序号。
+- 发布负责人确认准确候选 SHA、上游基线 SHA、版本号、翻译完成证据、领域审查及 CI
+  结果后，才可创建 annotated tag。标签须指向该准确提交；检查 annotated 对象、
+  提交指向和 `git describe --exact-match` 身份的门禁继续适用。
+- 版本类型始终为 `VER_ALPHA`。精确命中匹配标签时使用裸标签；标签后开发提交带
+  `-N-g<下游SHA>`。源码包的 `util/release_ver` 使用同一筛选规则。trunk 线不支持
+  Xcode 工程和 `util/mac-crawl-build-update-cdo` 两条构建路径；macOS 使用 Makefile。
+
+trunk 标签触发与正式版相同的完整发布依赖链，包括完整 L1+L2+L3 运行时测试、
+Windows/macOS/Android 构建及 `verify_release_artifacts.py` 的封闭集合校验。
+校验器接受 trunk 标签，生成绑定裸标签和准确提交的 `SHA256SUMS` 与
+`RELEASE-MANIFEST.txt`。自动流程仅创建草稿，设置 GitHub prerelease 和
+`latest=false`；发布负责人完成前述多平台人工验收后，方可公开，公开时也必须保留
+prerelease 且不得标为 latest。失败时使用新序号重新发布。
+
+发布说明须明确：**trunk 存档不能回到稳定版，两条线可并存安装**。只用稳定版存档副本
+测试迁移，并记录 trunk 存读档结果与稳定版原件未变化的证据。
+
+Android 使用固定的 `org.develz.crawl.trunk` 包名与 `Dungeon Crawl Stone Soup Trunk`
+应用名，首次发布后保持身份不变。构建时通过 `ANDROID_APPLICATION_ID` 和
+`ANDROID_APP_NAME` 传入，`versionName` 必须与 `build.h` 的长版本一致。
+设备验收遵循 [Android 手动验收流程](android-architecture.md)，确认稳定版包仍在、
+存档在验收前后未变化。**不得使用固定包名的 `test-android-topbar.sh` 冒烟脚本**，
+尤其不得在装有稳定版的设备上运行其 `--fresh-install`。
+
+各平台 trunk 的默认存档隔离已在构建参数中实施：
+
+| 平台 | trunk 存档位置 |
+|---|---|
+| Windows | `%APPDATA%/crawl-trunk/saves/`，通过 `SAVEDIR='~/crawl-trunk'` 指定 |
+| Linux | `~/.crawl-trunk/saves/`，通过 `SAVEDIR='~/.crawl-trunk'` 指定 |
+| macOS | `~/.crawl-trunk/saves/`，通过 `SAVEDIR='~/.crawl-trunk'` 指定 |
+| Android | 应用专属外部文件目录下的 `saves/`，通常为 `Android/data/org.develz.crawl.trunk/files/saves/` |
+
+Windows 上的 `~` 解析到 `%APPDATA%`；Linux/macOS 在运行时解析到用户主目录，
+不依赖启动工作目录。macOS 显式构建路径优先于默认 Application Support 路径；
+未定义 `SAVE_DIR_PATH` 的构建继续使用原来的默认行为。Windows 包仍须解压到独立目录，
+避免覆盖稳定版程序。
+
+macOS trunk 的应用包为 `Dungeon Crawl Stone Soup Trunk - Tiles.app`，
+bundle identifier 为 `net.sourceforge.crawl-ref.trunk`，可与稳定版同时放入
+`/Applications`。通过 `APP_NAME` 和 `BUNDLE_IDENTIFIER` 构建参数生成名称和同一份 plist；
+两项默认值保持稳定版原样。CI 仅在非 `0.34.1-zh*` 标签构建中传入 macOS/Windows
+隔离参数。首个公开 trunk 预发布仍须完成人工存读档及并存安装验收。
+
 ## 本地校验
 
 工具测试会自动发现发布校验器的正例和逐项负向变异：

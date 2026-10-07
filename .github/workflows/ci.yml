@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - chn-0.34.1-base
+      - chn-trunk
     tags:
       - '0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]'
+      - '[0-9]*.[0-9]*-trunk-[0-9][0-9][0-9]'
   pull_request:
     branches:
       - chn-0.34.1-base
+      - chn-trunk
   schedule:
     - cron: '17 18 * * *'
   workflow_dispatch:
@@ -157,24 +160,44 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build catch2-tests and run [zh-translation] + [message-overlay]
-        run: bash .claude/scripts/post_zh_runtime.sh catch2
+        id: runtime_tests
+        run: |
+          ulimit -c unlimited
+          sudo sh -c 'echo core > /proc/sys/kernel/core_pattern'
+          bash .claude/scripts/post_zh_runtime.sh catch2
         env:
           TERM: dumb
       - name: Build bundled-PCRE Catch2 tests and run the PCRE regression
+        id: pcre_tests
         run: |
           make clean
           make catch2-tests-executable BUILD_PCRE=y COVERAGE=YesPlease PYTHON=python3 -j4
           ./catch2-tests-executable '[pcre-regression]'
         working-directory: crawl-ref/source
 
+      - name: Upload runtime failure evidence
+        if: ${{ failure() && (steps.runtime_tests.outcome == 'failure' || steps.pcre_tests.outcome == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-failure-catch2
+          retention-days: 7
+          if-no-files-found: ignore
+          path: |
+            .claude/metrics/verify/
+            crawl-ref/source/morgue/
+            crawl-ref/source/saves/*.cs
+            crawl-ref/source/crawl
+            crawl-ref/source/catch2-tests-executable
+            crawl-ref/source/core
+
   zh_runtime_full:
     permissions:
       contents: read
 
     name: ZH Runtime Full (L1+L2+L3)
-    if: ${{ github.event_name == 'schedule' || startsWith(github.ref, 'refs/tags/0.34.1-zh') || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_full_runtime == 'true') }}
+    if: ${{ github.event_name == 'schedule' || (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_full_runtime == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -200,11 +223,30 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build and run full ZH runtime (L1+L2+L3)
-        run: bash .claude/scripts/post_zh_runtime.sh full
+        id: runtime_tests
+        run: |
+          ulimit -c unlimited
+          sudo sh -c 'echo core > /proc/sys/kernel/core_pattern'
+          bash .claude/scripts/post_zh_runtime.sh full
         env:
           TERM: dumb
+
+      - name: Upload runtime failure evidence
+        if: ${{ failure() && steps.runtime_tests.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-failure-full
+          retention-days: 7
+          if-no-files-found: ignore
+          path: |
+            .claude/metrics/verify/
+            crawl-ref/source/morgue/
+            crawl-ref/source/saves/*.cs
+            crawl-ref/source/crawl
+            crawl-ref/source/catch2-tests-executable
+            crawl-ref/source/core
 
   zh_help_runtime:
     permissions:
@@ -236,11 +278,30 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build and run help-system runtime tests
-        run: bash .claude/scripts/post_zh_runtime.sh help-full
+        id: runtime_tests
+        run: |
+          ulimit -c unlimited
+          sudo sh -c 'echo core > /proc/sys/kernel/core_pattern'
+          bash .claude/scripts/post_zh_runtime.sh help-full
         env:
           TERM: dumb
+
+      - name: Upload runtime failure evidence
+        if: ${{ failure() && steps.runtime_tests.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-failure-help
+          retention-days: 7
+          if-no-files-found: ignore
+          path: |
+            .claude/metrics/verify/
+            crawl-ref/source/morgue/
+            crawl-ref/source/saves/*.cs
+            crawl-ref/source/crawl
+            crawl-ref/source/catch2-tests-executable
+            crawl-ref/source/core
 
   linting:
     if: github.event_name != 'schedule'
@@ -360,9 +421,9 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build Linux console
-        run: make -j4
+        run: make -j4 SAVEDIR='~/.crawl-trunk'
         working-directory: crawl-ref/source
 
   build_macos_tiles:
@@ -385,9 +446,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build macOS tiles app
-        run: make -j4 TILES=y mac-app-tiles-dmg
+        shell: bash
+        run: |
+          mac_args=()
+          if [[ "$GITHUB_REF" != refs/tags/0.34.1-zh* ]]; then
+            mac_args+=('SAVEDIR=~/.crawl-trunk'
+              'APP_NAME=Dungeon Crawl Stone Soup Trunk'
+              'BUNDLE_IDENTIFIER=net.sourceforge.crawl-ref.trunk')
+          fi
+          make -j4 TILES=y "${mac_args[@]}" mac-app-tiles-dmg
         working-directory: crawl-ref/source
       - name: Upload macOS tiles app
         uses: actions/upload-artifact@v4
@@ -428,9 +497,15 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build Windows tiles package
-        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4
+        shell: bash
+        run: |
+          save_args=()
+          if [[ "$GITHUB_REF" != refs/tags/0.34.1-zh* ]]; then
+            save_args+=('SAVEDIR=~/crawl-trunk')
+          fi
+          make CROSSHOST=x86_64-w64-mingw32 "${save_args[@]}" package-windows-tiles -j4
         working-directory: crawl-ref/source
       - name: Upload Windows tiles package
         uses: actions/upload-artifact@v4
@@ -448,6 +523,8 @@ jobs:
     name: Android (buildTest)
     runs-on: ubuntu-latest
     env:
+      ANDROID_APPLICATION_ID: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') && 'org.develz.crawl' || 'org.develz.crawl.trunk' }}
+      ANDROID_APP_NAME: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') && 'Dungeon Crawl Stone Soup' || 'Dungeon Crawl Stone Soup Trunk' }}
       NDK_CCACHE: ccache
       ANDROID_TEST_CERT_SHA256: ab57cadd85e4cc2cc94cc6107e7f929080acf3a58e3c1134b37f6066c337c287
     steps:
@@ -468,7 +545,7 @@ jobs:
           : "${ANDROID_TEST_KEYSTORE_PASS:?missing GitHub Actions secret ANDROID_TEST_KEYSTORE_PASS}"
           : "${ANDROID_TEST_KEY_ALIAS:?missing GitHub Actions secret ANDROID_TEST_KEY_ALIAS}"
       - name: Require Android release signing secrets
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -476,7 +553,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          [[ "$GITHUB_REF_NAME" =~ ^0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$ ]]
+          [[ "$GITHUB_REF_NAME" =~ ^[0-9]+\.[0-9]+-trunk-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$ || "$GITHUB_REF_NAME" =~ ^0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$ ]]
           : "${ANDROID_KEYSTORE_BASE64:?missing GitHub Actions secret ANDROID_KEYSTORE_BASE64}"
           : "${ANDROID_KEYSTORE_PASS:?missing GitHub Actions secret ANDROID_KEYSTORE_PASS}"
           : "${ANDROID_KEY_ALIAS:?missing GitHub Actions secret ANDROID_KEY_ALIAS}"
@@ -498,10 +575,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Setup Gradle 8.13
+      - name: Setup Gradle 9.5.0
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.13
+          gradle-version: 9.5.0
+      - name: Install Android SDK 36 and pinned NDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          sdkmanager="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          [[ -x "$sdkmanager" ]]
+          "$sdkmanager" --sdk_root="$sdk_root" "platforms;android-36" "build-tools;36.0.0" "ndk;28.2.13676358"
+          [[ -f "$sdk_root/platforms/android-36/android.jar" ]]
+          [[ -x "$sdk_root/build-tools/36.0.0/apksigner" ]]
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -514,9 +601,20 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: bash .claude/scripts/ensure_version_info.sh
+        run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Prepare Android build
-        run: make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4
+        shell: bash
+        run: |
+          set -euo pipefail
+          make ANDROID="$GITHUB_RUN_NUMBER" TILES=y NPROC=4 \
+            ANDROID_APPLICATION_ID="$ANDROID_APPLICATION_ID" \
+            ANDROID_APP_NAME="$ANDROID_APP_NAME" android -j4
+          sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          printf 'sdk.dir=%s\n' "$sdk_root" > android-project/local.properties
+          util/gen_ver.pl build.h
+          version=$(sed -n 's/^#define CRAWL_VERSION_LONG "\(.*\)"/\1/p' build.h)
+          [[ -n "$version" ]]
+          grep -Fq "versionName = \"$version\"" android-project/app/build.gradle
         working-directory: crawl-ref/source
       - name: Run Android launcher unit tests
         run: gradle :app:testDebugUnitTest
@@ -592,7 +690,7 @@ jobs:
           path: crawl-ref/source/android-project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Build and sign Android release APK
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         shell: bash
         working-directory: crawl-ref/source/android-project
         env:
@@ -625,7 +723,7 @@ jobs:
           "$apksigner" verify --verbose --print-certs "$signed"
           [[ -s "$signed" ]]
       - name: Validate release APK PCRE linkage for every Android ABI
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         run: |
           set -euo pipefail
           sdk_root="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
@@ -635,7 +733,7 @@ jobs:
             --apk "stone_soup-${GITHUB_REF_NAME}-android.apk" \
             --llvm-readelf "$readelf"
       - name: Upload Android release APK
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         uses: actions/upload-artifact@v4
         with:
           name: android-release-apk
@@ -643,7 +741,7 @@ jobs:
           if-no-files-found: error
 
   release_draft:
-    if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+    if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
     needs:
       - zh_tooling_tests
       - zh_ci_gate
@@ -709,10 +807,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mac_app="Dungeon Crawl Stone Soup - Tiles.app"
+          if [[ "$GITHUB_REF_NAME" == *-trunk-* ]]; then
+            mac_app="Dungeon Crawl Stone Soup Trunk - Tiles.app"
+          fi
           {
             echo "# DCSS 中文版 $GITHUB_REF_NAME"
             echo
-            echo "基于上游 DCSS 0.34.1 的中文版。发布身份绑定提交 \`$GITHUB_SHA\`。"
+            if [[ "$GITHUB_REF_NAME" == *-trunk-* ]]; then
+              echo "基于固定上游 master 提交的 trunk 预发布版。发布身份绑定提交 \`$GITHUB_SHA\`。"
+              echo
+              echo "trunk 存档不能回到稳定版。两条线可并存安装，请仅使用稳定版存档副本测试 trunk。"
+            else
+              echo "基于上游 DCSS 0.34.1 的中文版。发布身份绑定提交 \`$GITHUB_SHA\`。"
+            fi
             echo
             echo "## 主要内容"
             echo
@@ -723,8 +831,8 @@ jobs:
             echo "## 支持平台"
             echo
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
-            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
-            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
+            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`$mac_app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
+            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"$mac_app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
             echo "- Android：签名的四 ABI APK，下载后按系统提示安装。"
             echo
             echo "## 延期平台"
@@ -753,6 +861,10 @@ jobs:
             echo "Expected 5 release assets after evidence generation" >&2
             exit 1
           fi
+          release_flags=()
+          if [[ "$GITHUB_REF_NAME" == *-trunk-* ]]; then
+            release_flags+=(--prerelease --latest=false)
+          fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
-            --draft --verify-tag --title "$title" \
+            --draft --verify-tag --title "$title" "${release_flags[@]}" \
             --notes-file "$RUNNER_TEMP/release-notes.md"

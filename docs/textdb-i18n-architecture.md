@@ -4,7 +4,7 @@
 > 最终 behavior report 与完整 code profile 验证均已完成
 > 版本基线：上游 DCSS `0.34.1`；升级后必须执行第 11 节漂移审计
 > 适用项目：DCSS 中文长期下游分支
-> 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
+> 上游策略：稳定线跟进上游大版本，trunk 线持续跟进上游 master
 > 实施状态：Phase 2 catalog 共覆盖
 > 262 个 canonical key、355 个 variant：250 个 key/341 个 variant 进入
 > structured，10 个 key/12 个 variant 为 `LEGACY_ONLY`，2 个 key/2 个
@@ -790,8 +790,8 @@ legacy expansion/Lua 的 output 与 RNG trace，随后停止，不解析目标�
 
 记录：
 
-- 旧上游 tag；
-- 新上游 tag；
+- 旧上游基线：上游 tag 或固定 SHA，并记录解析后的完整提交 SHA；
+- 新上游基线：上游 tag 或固定 SHA，并记录解析后的完整提交 SHA；
 - overlay manifest schema 版本；
 - 生成器版本；
 - 英文 golden；

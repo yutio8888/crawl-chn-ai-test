@@ -124,13 +124,8 @@ expect_failure "remote lightweight release tag is rejected" \
     run_tag_build "$LIGHTWEIGHT_TAG" "$COMMIT"
 
 git -C "$BUILD" tag -d "$TAG" "$LIGHTWEIGHT_TAG" >/dev/null 2>&1 || true
-expect_success "non-tag build retains development fallback behavior" \
+expect_failure "non-tag build fails without an upstream alpha tag" \
     env -C "$BUILD" GITHUB_REF_TYPE=branch bash "$ENSURE_VERSION"
-if [[ "$(<"$BUILD/crawl-ref/source/util/release_ver")" == "0.0.0-dev0" ]]; then
-    pass "non-tag build writes fallback version without a local tag"
-else
-    fail "non-tag build writes fallback version without a local tag"
-fi
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
