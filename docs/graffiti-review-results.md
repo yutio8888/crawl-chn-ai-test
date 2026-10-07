@@ -1,6 +1,31 @@
-# Graffiti 全量审核结果（Issue #66）
+# graffiti 历史审核台账与 trunk 覆盖边界（Issue #147 F2）
 
-本文件的严格 JSONL 块是 58 个 frozen identity 的完整审核账本。每张卡同时绑定基线 EN/ZH 变体和已批准 proposal；候选审计只接受逐字等于 proposal 的提交。
+## 历史边界
+
+严格 JSONL 块只覆盖历史提交 `888354b254f86a6b2de13e7ec6b1b73992a629f7` 的 58 个 identity；其中 keep、route、变体数和 proposal 都是该快照的事实，不能当成当前 trunk 的全量通过结论。历史卡片保持冻结，以保留原审核和候选协议验证；本次不把新增生产键强塞入旧 schema 或放宽历史门禁。
+
+当前术语绑定为 `61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0`；哈希更新不表示重新独立审查旧译文。
+
+## 当前 trunk 的增量事实与审查证据
+
+以下增量按 `cb4d884e18` 源码/英文和冻结中文 `c55cf7f7a5` 核对。新增键及新增变体在历史卡片中存在明确覆盖缺口，不能由旧卡片的 keep 推导通过；B2 database 独立审查覆盖这些新增内容，delta/delta2 确认要求的修订已闭合。此处列出事实、对应证据和缺口，不生成未经审查的结论。
+
+- 独立证据：`issue147-b2-review-database.md`（SHA-256 `da4d0ebee23b34732ab96dd091d117246eca631545c6ade3d263f9e200e9cb68`，覆盖统计及“已核对、无问题的要点”）；`issue147-b2-review-delta.md`（SHA-256 `bacff995ecb7392730b4c956ba7befc1e42b8b3d3210f1b08b51b34665a57da3`）；`issue147-b2-review-delta2.md`（SHA-256 `00973e387a86ec5aa9cee449010846dc0c05e4e4b1c68f1615c36fced42137c7`）。
+- EN source SHA-256: `b8afe234b240512623f41ccee8610aff65c2a422a6c39c528980e13e5a0f29c9`
+- ZH source SHA-256: `c6297c9a7aa4e97eafff3a5dc9643746f5e9dfd9844e957b9129e2ff23e9cb23`
+
+<!-- BEGIN ISSUE147 TRUNK COVERAGE -->
+| 当前键 | 历史键 | 分类 | 当前 EN 变体 | 当前 ZH 变体 |
+|---|---|---|---:|---:|
+| `_graffiti_unique_comment_` | `_graffiti_unique_comment_` | new-variant | 12 | 12 |
+| `_graffiti_vengeance_` | `_graffiti_vengeance_` | historical-proposal | 12 | 12 |
+<!-- END ISSUE147 TRUNK COVERAGE -->
+
+上游 beb8c678c6 给 `_graffiti_unique_comment_` 加入 Goji 行，11→12 变体；新增 EN 为 `wondering whether Goji will ever realise that he can actually be seen`，B2 的 Goji 核对明确包含涂鸦。第 12 个变体不在 Issue #66 历史卡片内。
+
+`_graffiti_vengeance_` 的变化是旧台账已经批准的 token 修复（`@graffiti_author_any@`→`@_graffiti_author_any_@`），当前 EN 与该卡的 `proposed_english_variants` 一致；它不是另一个未经审核的 trunk 新增变体。
+
+## 冻结历史证据
 
 <!-- BEGIN STRICT GRAFFITI REVIEW EVIDENCE v1 -->
 ```jsonl
