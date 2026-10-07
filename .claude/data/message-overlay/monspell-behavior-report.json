@@ -3,7 +3,7 @@
   "candidate_lookup": {
     "en": {
       "cross_domain_hits": [],
-      "hit_count": 251,
+      "hit_count": 270,
       "hits": [
         {
           "attempts": [
@@ -47,6 +47,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "angel cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "antimagic gaze goji cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -217,6 +226,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "bolt of antimagic roaming sludgefish cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "bolt of draining natural cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -271,6 +289,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "brain bite telencephalon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "brain worm cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -290,6 +317,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "call down lightning cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call down lightning telencephalon cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -344,6 +380,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "cause fear satyr cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cleansing flame cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -847,6 +892,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "harpoon shot mongrel wurm cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "haste other priest cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -911,6 +965,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "holy flames cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hurl sludge roaming sludgefish cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -1054,6 +1117,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "malign gateway herald of the abyss cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "malign offering priest cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1082,15 +1154,6 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "manticore cast",
-          "effective_source": "database/monspell.txt",
-          "source": "database/monspell.txt"
-        },
-        {
-          "attempts": [
-            "normal",
-            "silent_unprefixed_fallback"
-          ],
-          "canonical_key": "mara summon cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -1145,6 +1208,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "minor healing dryad cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "murky legion scrapshell chimera cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -1297,6 +1369,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "phase shift abyssal acolyte cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "poisonous cloud natural cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1414,6 +1495,24 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "rusted inspector cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "scorch mongrel wurm cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "scrub nettle cast targeted",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1483,6 +1582,14 @@
           "attempts": [
             "silent_prefixed"
           ],
+          "canonical_key": "silent bolt of antimagic roaming sludgefish cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
           "canonical_key": "silent curse skull cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1500,6 +1607,22 @@
             "silent_prefixed"
           ],
           "canonical_key": "silent laughing skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent murky legion scrapshell chimera cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent rusted inspector cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -1687,6 +1810,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "summon illusion cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "summon mortal champion fravashi cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1723,6 +1855,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "thorn hunter cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "thrashing horror cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1751,6 +1892,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "throw klown pie cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "touch of paradox abyssal acolyte cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -1887,14 +2037,6 @@
           "attempts": [
             "unseen"
           ],
-          "canonical_key": "unseen mara summon cast",
-          "effective_source": "database/monspell.txt",
-          "source": "database/monspell.txt"
-        },
-        {
-          "attempts": [
-            "unseen"
-          ],
           "canonical_key": "unseen non-humanoid wizard cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1959,6 +2101,14 @@
           "attempts": [
             "unseen"
           ],
+          "canonical_key": "unseen summon illusion cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
           "canonical_key": "unseen symbol of torment cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1968,6 +2118,14 @@
             "unseen"
           ],
           "canonical_key": "unseen thermic dynamo cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen touch of paradox abyssal acolyte cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -2148,6 +2306,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "warp space herald of the abyss cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "weakening gaze cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -2226,7 +2393,7 @@
         }
       ],
       "source_counts": {
-        "database/monspell.txt": 251
+        "database/monspell.txt": 270
       },
       "symbol_match_key_count": 0,
       "symbol_matches": []
@@ -2240,7 +2407,7 @@
     "source_parity_proven": true,
     "zh": {
       "cross_domain_hits": [],
-      "hit_count": 251,
+      "hit_count": 270,
       "hits": [
         {
           "attempts": [
@@ -2285,6 +2452,15 @@
           ],
           "canonical_key": "angel cast targeted",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "antimagic gaze goji cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2454,6 +2630,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "bolt of antimagic roaming sludgefish cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "bolt of draining natural cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -2508,6 +2693,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "brain bite telencephalon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "brain worm cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -2528,6 +2722,15 @@
           ],
           "canonical_key": "call down lightning cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call down lightning telencephalon cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2582,6 +2785,15 @@
           ],
           "canonical_key": "cause fear satyr cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cleansing flame cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3084,6 +3296,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "harpoon shot mongrel wurm cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "haste other priest cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3149,6 +3370,15 @@
           ],
           "canonical_key": "holy flames cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hurl sludge roaming sludgefish cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3291,6 +3521,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "malign gateway herald of the abyss cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "malign offering priest cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3319,15 +3558,6 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "manticore cast",
-          "effective_source": "database/zh/monspell.txt",
-          "source": "database/monspell.txt"
-        },
-        {
-          "attempts": [
-            "normal",
-            "silent_unprefixed_fallback"
-          ],
-          "canonical_key": "mara summon cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -3383,6 +3613,15 @@
           ],
           "canonical_key": "minor healing dryad cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "murky legion scrapshell chimera cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3534,6 +3773,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "phase shift abyssal acolyte cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "poisonous cloud natural cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3651,6 +3899,24 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "rusted inspector cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "scorch mongrel wurm cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "scrub nettle cast targeted",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3720,6 +3986,14 @@
           "attempts": [
             "silent_prefixed"
           ],
+          "canonical_key": "silent bolt of antimagic roaming sludgefish cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
           "canonical_key": "silent curse skull cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3738,6 +4012,22 @@
           ],
           "canonical_key": "silent laughing skull cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent murky legion scrapshell chimera cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent rusted inspector cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3924,6 +4214,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "summon illusion cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "summon mortal champion fravashi cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3960,6 +4259,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "thorn hunter cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "thrashing horror cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3989,6 +4297,15 @@
           ],
           "canonical_key": "throw klown pie cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "touch of paradox abyssal acolyte cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4124,14 +4441,6 @@
           "attempts": [
             "unseen"
           ],
-          "canonical_key": "unseen mara summon cast",
-          "effective_source": "database/zh/monspell.txt",
-          "source": "database/monspell.txt"
-        },
-        {
-          "attempts": [
-            "unseen"
-          ],
           "canonical_key": "unseen non-humanoid wizard cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -4196,6 +4505,14 @@
           "attempts": [
             "unseen"
           ],
+          "canonical_key": "unseen summon illusion cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
           "canonical_key": "unseen symbol of torment cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -4206,6 +4523,14 @@
           ],
           "canonical_key": "unseen thermic dynamo cast",
           "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen touch of paradox abyssal acolyte cast",
+          "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4385,6 +4710,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "warp space herald of the abyss cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "weakening gaze cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -4463,7 +4797,7 @@
         }
       ],
       "source_counts": {
-        "database/monspell.txt": 251
+        "database/monspell.txt": 270
       },
       "symbol_match_key_count": 0,
       "symbol_matches": []
@@ -4474,49 +4808,49 @@
     "canonical_structured_variant_metadata_units": 341,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
-    "en_zh_behavior_analysis_conclusive": true,
+    "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
-    "fail_closed_behavior_roots": 0,
+    "fail_closed_behavior_roots": 1,
     "legacy_behavior_metadata_covered_occurrences": 0,
     "per_language_structured_variant_verification_complete": 682,
     "per_language_structured_variant_verification_units": 682,
     "remaining_legacy_behavior_occurrences": 0,
-    "unanalysable_occurrences": 0
+    "unanalysable_occurrences": 2
   },
   "domain": "monspell",
   "inputs": {
     "candidate_anchor": {
-      "artifact_sha256": "9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083",
-      "sha256": "ad9c696342707d5b776761f2bbb487abc05af7b39bcf3f51bd4391b42f339762"
+      "artifact_sha256": "c7a5b4db5ebbd1aa628db2c3294fa053de1baf71ca54e30e65be3b44b0ff551e",
+      "sha256": "68868c5064bab75d43366f47a4613506db78d0d5e44874f3ccf31da9c5da030f"
     },
     "candidate_artifact": {
       "completeness": "closed_world_upper_bound",
       "counts": {
-        "base_expressions": 409592,
-        "lookup_attempts": 1638320,
-        "lookup_expressions": 1228740,
-        "monster_spell_tuples": 403410,
-        "monster_tuples": 791,
-        "monster_types": 795,
+        "base_expressions": 428100,
+        "lookup_attempts": 1712352,
+        "lookup_expressions": 1284264,
+        "monster_spell_tuples": 421776,
+        "monster_tuples": 808,
+        "monster_types": 813,
         "scenarios": 6,
-        "spells": 510
+        "spells": 522
       },
       "schema_version": 1,
-      "sha256": "9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083"
+      "sha256": "c7a5b4db5ebbd1aa628db2c3294fa053de1baf71ca54e30e65be3b44b0ff551e"
     },
     "english_artifact": {
-      "sha256": "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
+      "sha256": "93cb7af78e8e4150821e6ba12c407ccbfab011a6a20e4c3083d4ba42ff22d80e"
     },
     "inventory": {
-      "semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
-      "sha256": "d8ed29eef2dd9ed45191d83fefe84c9c73836e54d86a971cc3d44a3d53ad09ba"
+      "semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
+      "sha256": "c2b3d3a385812f90c01b3e7b44fba7388c6b60945680f6bd341d6bce02245428"
     },
     "localized_artifact": {
       "language": "zh",
-      "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
+      "sha256": "636f1715ab0d84b92c67577431d66ac522f40f0f79ca3eefd49b06de9ef3c9d3"
     },
     "overlay_manifest": {
-      "sha256": "f0bd508ef5b8507981bb868b80a5a5b40d87c1faf684699b116f09378fb8a1a2"
+      "sha256": "a24509a100e016a9343b5bd3a247355c579a5ff88b1fa94b7e4811f4f2155469"
     }
   },
   "languages": {
@@ -4544,7 +4878,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 251
+        "selected_language": 270
       },
       "occurrences": [
         {
@@ -4561,6 +4895,23 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": null
+          },
+          "detail": "antimagic gaze goji cast:0: embedded Lua",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "antimagic gaze goji cast",
+          "top_locator": {
+            "canonical_key": "antimagic gaze goji cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -5143,7 +5494,9 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [],
+        "UNANALYSABLE": [
+          "antimagic gaze goji cast"
+        ],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -6318,20 +6671,6 @@
         {
           "complete": true,
           "language": "en",
-          "requested_root": "mara summon cast",
-          "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
-          "variant_ordinal": 0
-        },
-        {
-          "complete": true,
-          "language": "en",
-          "requested_root": "mara summon cast",
-          "stable_id": "mon.cast.mara_summon.shimmers.v1",
-          "variant_ordinal": 1
-        },
-        {
-          "complete": true,
-          "language": "en",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
           "variant_ordinal": 0
@@ -7039,6 +7378,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "summon illusion cast",
+          "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "summon illusion cast",
+          "stable_id": "mon.cast.mara_summon.shimmers.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
           "variant_ordinal": 0
@@ -7214,13 +7567,6 @@
         {
           "complete": true,
           "language": "en",
-          "requested_root": "unseen mara summon cast",
-          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
-          "variant_ordinal": 0
-        },
-        {
-          "complete": true,
-          "language": "en",
           "requested_root": "unseen non-humanoid wizard cast",
           "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
           "variant_ordinal": 0
@@ -7265,6 +7611,13 @@
           "language": "en",
           "requested_root": "unseen spit poison cast",
           "stable_id": "mon.cast.unseen_spit_poison.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen summon illusion cast",
+          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
         },
         {
@@ -7571,7 +7924,7 @@
         "wizard cast targeted"
       ],
       "effective_source_counts": {
-        "english_fallback": 0,
+        "english_fallback": 19,
         "missing": 0,
         "selected_language": 251
       },
@@ -7590,6 +7943,23 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": null
+          },
+          "detail": "antimagic gaze goji cast:0: embedded Lua",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "antimagic gaze goji cast",
+          "top_locator": {
+            "canonical_key": "antimagic gaze goji cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -8172,7 +8542,9 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [],
+        "UNANALYSABLE": [
+          "antimagic gaze goji cast"
+        ],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -9347,20 +9719,6 @@
         {
           "complete": true,
           "language": "zh",
-          "requested_root": "mara summon cast",
-          "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
-          "variant_ordinal": 0
-        },
-        {
-          "complete": true,
-          "language": "zh",
-          "requested_root": "mara summon cast",
-          "stable_id": "mon.cast.mara_summon.shimmers.v1",
-          "variant_ordinal": 1
-        },
-        {
-          "complete": true,
-          "language": "zh",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
           "variant_ordinal": 0
@@ -10068,6 +10426,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "summon illusion cast",
+          "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "summon illusion cast",
+          "stable_id": "mon.cast.mara_summon.shimmers.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
           "variant_ordinal": 0
@@ -10243,13 +10615,6 @@
         {
           "complete": true,
           "language": "zh",
-          "requested_root": "unseen mara summon cast",
-          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
-          "variant_ordinal": 0
-        },
-        {
-          "complete": true,
-          "language": "zh",
           "requested_root": "unseen non-humanoid wizard cast",
           "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
           "variant_ordinal": 0
@@ -10294,6 +10659,13 @@
           "language": "zh",
           "requested_root": "unseen spit poison cast",
           "stable_id": "mon.cast.unseen_spit_poison.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen summon illusion cast",
+          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
         },
         {
@@ -10579,11 +10951,22 @@
       ]
     }
   },
-  "locale_behavior_inconclusive": [],
+  "locale_behavior_inconclusive": [
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "antimagic gaze goji cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    }
+  ],
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
-  "phase2_blockers": [],
-  "phase2_ready": true,
+  "phase2_blockers": [
+    "2 behavior occurrences are unanalysable",
+    "EN/ZH behavior analysis is inconclusive"
+  ],
+  "phase2_ready": false,
   "raw_legacy_evidence": {
     "en": {
       "behavior_root_union": [
@@ -10609,7 +10992,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 251
+        "selected_language": 270
       },
       "occurrences": [
         {
@@ -10626,6 +11009,23 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": null
+          },
+          "detail": "antimagic gaze goji cast:0: embedded Lua",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "antimagic gaze goji cast",
+          "top_locator": {
+            "canonical_key": "antimagic gaze goji cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -11226,6 +11626,7 @@
         ],
         "SOUND_LIKE_CHANNEL": [],
         "UNANALYSABLE": [
+          "antimagic gaze goji cast",
           "vanquished vanguard nergalle cast"
         ],
         "VISUAL_APPLICABILITY": [
@@ -11265,7 +11666,7 @@
         "wizard cast targeted"
       ],
       "effective_source_counts": {
-        "english_fallback": 0,
+        "english_fallback": 19,
         "missing": 0,
         "selected_language": 251
       },
@@ -11284,6 +11685,23 @@
           "top_locator": {
             "canonical_key": "airstrike blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": null
+          },
+          "detail": "antimagic gaze goji cast:0: embedded Lua",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "antimagic gaze goji cast",
+          "top_locator": {
+            "canonical_key": "antimagic gaze goji cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -11623,6 +12041,23 @@
           }
         },
         {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1"
+          },
+          "detail": "vanquished vanguard nergalle cast:0 pre-binding: symbolic state limit exceeded",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "vanquished vanguard nergalle cast",
+          "top_locator": {
+            "canonical_key": "vanquished vanguard nergalle cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
             "covered": true,
@@ -11832,7 +12267,10 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [],
+        "UNANALYSABLE": [
+          "antimagic gaze goji cast",
+          "vanquished vanguard nergalle cast"
+        ],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -11859,8 +12297,8 @@
       "en",
       "zh"
     ],
-    "inventory_reachable_root_count": 251,
-    "inventory_root_count": 262,
+    "inventory_reachable_root_count": 270,
+    "inventory_root_count": 281,
     "inventory_roots_contained_in_english_artifact": true,
     "inventory_roots_contained_in_zh_effective_merge": true,
     "inventory_unreachable_root_count": 11,
@@ -11878,7 +12316,7 @@
       "unseen chilling breath cast"
     ],
     "reachability_kind": "SOUND_UPPER_BOUND_NOT_EXACT",
-    "requested_root_count": 251,
+    "requested_root_count": 270,
     "requested_root_source": "union of canonical candidate lookup hits in EN and ZH effective nonempty SpeakDB",
     "runtime_reachability_proven": true,
     "runtime_roots": [
@@ -11887,6 +12325,7 @@
       "airstrike cast",
       "airstrike wind drake cast",
       "angel cast targeted",
+      "antimagic gaze goji cast",
       "antimagic gaze norris cast",
       "avatar song cast",
       "awaken flesh kobold fleshcrafter cast",
@@ -11905,21 +12344,25 @@
       "blink range ironbound thunderhulk cast",
       "blinkbolt cast",
       "blizzard demon cast",
+      "bolt of antimagic roaming sludgefish cast",
       "bolt of draining natural cast",
       "bolt of fire ophan cast",
       "bolt of flesh kobold fleshcrafter cast",
       "bolt of flesh zykzyl cast",
       "bolt of magma molten gargoyle cast",
       "bombardier beetle cast",
+      "brain bite telencephalon cast",
       "brain worm cast",
       "burial acolyte cast",
       "call down lightning cast",
+      "call down lightning telencephalon cast",
       "call lost souls cast",
       "call of chaos cast",
       "cantrip cast",
       "cantrip dissolution cast",
       "cantrip gastronok cast",
       "cause fear satyr cast",
+      "cleansing flame cast",
       "clockroach cast",
       "cognitogaunt cast",
       "cold breath cast",
@@ -11975,6 +12418,7 @@
       "guardian serpent cast",
       "guardian serpent cast targeted",
       "harpoon shot cast",
+      "harpoon shot mongrel wurm cast",
       "haste other priest cast",
       "heal other priest cast",
       "hellfire court cast",
@@ -11983,6 +12427,7 @@
       "hoarfrost bullet cast",
       "hoarfrost bullet cast finale",
       "holy flames cast",
+      "hurl sludge roaming sludgefish cast",
       "hurl torchlight cast",
       "injury mirror screaming refraction cast",
       "invisibility shadowghast cast",
@@ -11998,17 +12443,18 @@
       "magical cast",
       "magical cast targeted",
       "major destruction cast",
+      "malign gateway herald of the abyss cast",
       "malign offering priest cast",
       "malmutate zykzyl cast",
       "manifold assault natural cast",
       "manticore cast",
-      "mara summon cast",
       "march of sorrows bone dragon cast",
       "march of sorrows boris cast",
       "mennas cast",
       "metal splinters war gargoyle cast",
       "might other priest cast",
       "minor healing dryad cast",
+      "murky legion scrapshell chimera cast",
       "non-humanoid wizard cast",
       "non-humanoid wizard cast targeted",
       "obsidian statue cast",
@@ -12025,6 +12471,7 @@
       "petrifying cloud cast",
       "phantom blitz cast",
       "phantom mirror cast",
+      "phase shift abyssal acolyte cast",
       "poisonous cloud natural cast",
       "priest cast",
       "priest cast targeted",
@@ -12038,6 +12485,8 @@
       "rebounding chill thermic dynamo cast",
       "roxanne cast",
       "rupert cast targeted",
+      "rusted inspector cast",
+      "scorch mongrel wurm cast",
       "scrub nettle cast targeted",
       "seal doors cast",
       "searing breath cast",
@@ -12046,9 +12495,12 @@
       "sheza's dance cast",
       "silent berserker rage rupert cast",
       "silent blizzard demon cast",
+      "silent bolt of antimagic roaming sludgefish cast",
       "silent curse skull cast",
       "silent flayed ghost cast",
       "silent laughing skull cast",
+      "silent murky legion scrapshell chimera cast",
+      "silent rusted inspector cast",
       "silent weeping skull cast",
       "siphon essence cast",
       "siren song cast",
@@ -12069,14 +12521,17 @@
       "stone arrow gargoyle cast",
       "stunning burst cast",
       "summon eyeballs dissolution cast",
+      "summon illusion cast",
       "summon mortal champion fravashi cast",
       "summon water elementals elemental wellspring cast",
       "sun moth cast",
       "symbol of torment cast",
+      "thorn hunter cast",
       "thrashing horror cast",
       "throw bolas cast",
       "throw icicle shard shrike cast",
       "throw klown pie cast",
+      "touch of paradox abyssal acolyte cast",
       "undertaker cast targeted",
       "unseen airstrike cast",
       "unseen blinkbolt cast",
@@ -12093,7 +12548,6 @@
       "unseen ghost moth cast targeted",
       "unseen holy flames cast",
       "unseen laughing skull cast",
-      "unseen mara summon cast",
       "unseen non-humanoid wizard cast",
       "unseen orb of destruction cast",
       "unseen phantom blitz cast",
@@ -12102,8 +12556,10 @@
       "unseen searing breath cast",
       "unseen spit acid cast",
       "unseen spit poison cast",
+      "unseen summon illusion cast",
       "unseen symbol of torment cast",
       "unseen thermic dynamo cast",
+      "unseen touch of paradox abyssal acolyte cast",
       "unseen vv cast",
       "unseen warning cry cast",
       "unseen warning cry howler monkey cast",
@@ -12124,6 +12580,7 @@
       "warning cry seraph cast",
       "warning cry ushabti cast",
       "warning cry vault sentinel cast",
+      "warp space herald of the abyss cast",
       "weakening gaze cast",
       "weeping skull cast",
       "wind blast cast",

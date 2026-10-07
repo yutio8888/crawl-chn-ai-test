@@ -1,9 +1,9 @@
 {
   "entries": [
     {
-      "canonical_key": "mara summon cast",
-      "canonical_fingerprint": "fnv1a64:c0a084e8d668755e",
-      "selection_graph_fingerprint": "fnv1a64:39162d3ebd4e4934",
+      "canonical_key": "summon illusion cast",
+      "canonical_fingerprint": "fnv1a64:810355e3c7a6de86",
+      "selection_graph_fingerprint": "fnv1a64:1854f56bf09e5cdc",
       "mode": "CANDIDATE",
       "variants": [
         {

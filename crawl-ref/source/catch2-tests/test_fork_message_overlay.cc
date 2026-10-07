@@ -691,6 +691,60 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     const vector<textdb_phase0::canonical_entry> canonical =
         textdb_phase0::dump_canonical_english_speakdb();
 
+    SECTION("audited upstream renames retain IDs and new keys stay legacy")
+    {
+        // TextDB drift audit against upstream 43d89d912d; no new templates.
+        catalog_source generated = generated_monspell_catalog();
+        const catalog_entry &illusion =
+            catalog_entry_by_key(generated, "summon illusion cast");
+        REQUIRE(illusion.variants.size() == 2);
+        CHECK(illusion.variants[0].stable_id
+              == "mon.cast.mara_summon.weaves_illusion.v1");
+        CHECK(illusion.variants[1].stable_id
+              == "mon.cast.mara_summon.shimmers.v1");
+        const catalog_entry &unseen =
+            catalog_entry_by_key(generated, "unseen summon illusion cast");
+        REQUIRE(unseen.variants.size() == 1);
+        CHECK(unseen.variants[0].stable_id
+              == "mon.cast.unseen_mara_summon.weaves_illusion.v1");
+        CHECK(monspell_overlay_covers("summon illusion cast"));
+        CHECK(monspell_overlay_covers("unseen summon illusion cast"));
+        CHECK_FALSE(monspell_overlay_covers("mara summon cast"));
+        CHECK_FALSE(monspell_overlay_covers("unseen mara summon cast"));
+
+        const char *new_uncovered[] = {
+            "antimagic gaze goji cast",
+            "bolt of antimagic roaming sludgefish cast",
+            "brain bite telencephalon cast",
+            "call down lightning telencephalon cast",
+            "cleansing flame cast",
+            "harpoon shot mongrel wurm cast",
+            "hurl sludge roaming sludgefish cast",
+            "malign gateway herald of the abyss cast",
+            "murky legion scrapshell chimera cast",
+            "phase shift abyssal acolyte cast",
+            "rusted inspector cast",
+            "scorch mongrel wurm cast",
+            "silent bolt of antimagic roaming sludgefish cast",
+            "silent murky legion scrapshell chimera cast",
+            "silent rusted inspector cast",
+            "thorn hunter cast",
+            "touch of paradox abyssal acolyte cast",
+            "unseen touch of paradox abyssal acolyte cast",
+            "warp space herald of the abyss cast",
+        };
+        for (const char *key : new_uncovered)
+        {
+            INFO(key);
+            canonical_entry_by_key(canonical, key);
+            CHECK_FALSE(monspell_overlay_covers(key));
+            for (const char *language : { "en", "zh" })
+                CHECK(route_monspell_message(key, language).route
+                      == message_route::LEGACY);
+        }
+        CHECK(monspell_overlay_report().state == domain_state::ENABLED);
+    }
+
     SECTION("valid generated catalog enables every candidate key")
     {
         scoped_overlay_reset reset;

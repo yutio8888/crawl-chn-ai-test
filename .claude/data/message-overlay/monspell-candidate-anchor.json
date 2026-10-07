@@ -1,14 +1,14 @@
 {
-  "artifact_sha256": "9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083",
+  "artifact_sha256": "c7a5b4db5ebbd1aa628db2c3294fa053de1baf71ca54e30e65be3b44b0ff551e",
   "counts": {
-    "base_expressions": 409592,
-    "lookup_attempts": 1638320,
-    "lookup_expressions": 1228740,
-    "monster_spell_tuples": 403410,
-    "monster_tuples": 791,
-    "monster_types": 795,
+    "base_expressions": 428100,
+    "lookup_attempts": 1712352,
+    "lookup_expressions": 1284264,
+    "monster_spell_tuples": 421776,
+    "monster_tuples": 808,
+    "monster_types": 813,
     "scenarios": 6,
-    "spells": 510
+    "spells": 522
   },
   "domain": "monspell_candidate_lookup",
   "producer_contract": "production scenario_cover + mon_cast_message_keys::build_key_recipe + search_message_candidate recorder",

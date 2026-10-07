@@ -880,9 +880,10 @@ TEST_CASE("Phase 0 canonical English SpeakDB dump is deterministic",
             monspell_variants += first[i].variants.size();
         }
     }
-    CHECK(monspell_keys.size() == 262);
-    CHECK(monspell_variants == 355);
-    CHECK(key_set_fingerprint(monspell_keys) == 0xc87868127106d293ULL);
+    // Audited upstream 43d89d912d data: 19 new keys and two Mara key renames.
+    CHECK(monspell_keys.size() == 281);
+    CHECK(monspell_variants == 391);
+    CHECK(key_set_fingerprint(monspell_keys) == 0x45d4901cb82f4b32ULL);
 }
 
 TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
@@ -3099,7 +3100,8 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
             roots.push_back(entry.canonical_key);
         }
     }
-    REQUIRE(roots.size() == 262);
+    // Audited upstream 43d89d912d canonical monspell root universe.
+    REQUIRE(roots.size() == 281);
     const set<string> canonical_reachable =
         statically_reachable_weighted_keys(canonical, roots);
     const set<string> localized_reachable =
@@ -4442,10 +4444,11 @@ TEST_CASE("write production TextDB Phase 0 artifact",
         }
         if (!localized)
         {
-            CHECK(monspell_keys.size() == 262);
-            CHECK(monspell_variants == 355);
+            // Same audited upstream 43d89d912d baseline as the canonical test.
+            CHECK(monspell_keys.size() == 281);
+            CHECK(monspell_variants == 391);
             CHECK(key_set_fingerprint(monspell_keys)
-                  == 0xc87868127106d293ULL);
+                  == 0x45d4901cb82f4b32ULL);
         }
         else
         {

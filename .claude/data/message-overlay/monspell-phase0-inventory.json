@@ -1729,6 +1729,7 @@
       "airstrike cast",
       "airstrike wind drake cast",
       "angel cast targeted",
+      "antimagic gaze goji cast",
       "antimagic gaze norris cast",
       "avatar song cast",
       "awaken flesh kobold fleshcrafter cast",
@@ -1747,16 +1748,19 @@
       "blink range ironbound thunderhulk cast",
       "blinkbolt cast",
       "blizzard demon cast",
+      "bolt of antimagic roaming sludgefish cast",
       "bolt of draining natural cast",
       "bolt of fire ophan cast",
       "bolt of flesh kobold fleshcrafter cast",
       "bolt of flesh zykzyl cast",
       "bolt of magma molten gargoyle cast",
       "bombardier beetle cast",
+      "brain bite telencephalon cast",
       "brain worm cast",
       "branch summon cast prefix",
       "burial acolyte cast",
       "call down lightning cast",
+      "call down lightning telencephalon cast",
       "call lost souls cast",
       "call of chaos cast",
       "cantrip cast",
@@ -1764,6 +1768,7 @@
       "cantrip gastronok cast",
       "cause fear satyr cast",
       "chilling breath cast",
+      "cleansing flame cast",
       "clockroach cast",
       "cognitogaunt cast",
       "cold breath cast",
@@ -1819,6 +1824,7 @@
       "guardian serpent cast",
       "guardian serpent cast targeted",
       "harpoon shot cast",
+      "harpoon shot mongrel wurm cast",
       "haste other priest cast",
       "heal other priest cast",
       "hellfire court cast",
@@ -1827,6 +1833,7 @@
       "hoarfrost bullet cast",
       "hoarfrost bullet cast finale",
       "holy flames cast",
+      "hurl sludge roaming sludgefish cast",
       "hurl torchlight cast",
       "injury mirror screaming refraction cast",
       "invisibility shadowghast cast",
@@ -1842,17 +1849,18 @@
       "magical cast",
       "magical cast targeted",
       "major destruction cast",
+      "malign gateway herald of the abyss cast",
       "malign offering priest cast",
       "malmutate zykzyl cast",
       "manifold assault natural cast",
       "manticore cast",
-      "mara summon cast",
       "march of sorrows bone dragon cast",
       "march of sorrows boris cast",
       "mennas cast",
       "metal splinters war gargoyle cast",
       "might other priest cast",
       "minor healing dryad cast",
+      "murky legion scrapshell chimera cast",
       "non-humanoid wizard cast",
       "non-humanoid wizard cast targeted",
       "obsidian statue cast",
@@ -1871,6 +1879,7 @@
       "petrifying cloud cast",
       "phantom blitz cast",
       "phantom mirror cast",
+      "phase shift abyssal acolyte cast",
       "poisonous cloud natural cast",
       "polymorphed unseen wizard cast",
       "polymorphed wizard cast",
@@ -1887,6 +1896,8 @@
       "rebounding chill thermic dynamo cast",
       "roxanne cast",
       "rupert cast targeted",
+      "rusted inspector cast",
+      "scorch mongrel wurm cast",
       "scrub nettle cast targeted",
       "seal doors cast",
       "searing breath cast",
@@ -1895,9 +1906,12 @@
       "sheza's dance cast",
       "silent berserker rage rupert cast",
       "silent blizzard demon cast",
+      "silent bolt of antimagic roaming sludgefish cast",
       "silent curse skull cast",
       "silent flayed ghost cast",
       "silent laughing skull cast",
+      "silent murky legion scrapshell chimera cast",
+      "silent rusted inspector cast",
       "silent weeping skull cast",
       "siphon essence cast",
       "siren song cast",
@@ -1918,14 +1932,17 @@
       "stone arrow gargoyle cast",
       "stunning burst cast",
       "summon eyeballs dissolution cast",
+      "summon illusion cast",
       "summon mortal champion fravashi cast",
       "summon water elementals elemental wellspring cast",
       "sun moth cast",
       "symbol of torment cast",
+      "thorn hunter cast",
       "thrashing horror cast",
       "throw bolas cast",
       "throw icicle shard shrike cast",
       "throw klown pie cast",
+      "touch of paradox abyssal acolyte cast",
       "undertaker cast targeted",
       "unseen acid splash cast",
       "unseen airstrike cast",
@@ -1944,7 +1961,6 @@
       "unseen ghost moth cast targeted",
       "unseen holy flames cast",
       "unseen laughing skull cast",
-      "unseen mara summon cast",
       "unseen non-humanoid wizard cast",
       "unseen orb of destruction cast",
       "unseen phantom blitz cast",
@@ -1953,8 +1969,10 @@
       "unseen searing breath cast",
       "unseen spit acid cast",
       "unseen spit poison cast",
+      "unseen summon illusion cast",
       "unseen symbol of torment cast",
       "unseen thermic dynamo cast",
+      "unseen touch of paradox abyssal acolyte cast",
       "unseen vv cast",
       "unseen warning cry cast",
       "unseen warning cry howler monkey cast",
@@ -1975,6 +1993,7 @@
       "warning cry seraph cast",
       "warning cry ushabti cast",
       "warning cry vault sentinel cast",
+      "warp space herald of the abyss cast",
       "weakening gaze cast",
       "weeping skull cast",
       "wind blast cast",
@@ -1996,7 +2015,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 53
+          "ordinal": 54
         }
       ],
       "variants": [
@@ -2025,7 +2044,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 54
+          "ordinal": 55
         }
       ],
       "variants": [
@@ -2054,7 +2073,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 225
+          "ordinal": 244
         }
       ],
       "variants": [
@@ -2105,7 +2124,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 57
+          "ordinal": 58
         }
       ],
       "variants": [
@@ -2156,7 +2175,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 121
+          "ordinal": 126
         }
       ],
       "variants": [
@@ -2302,7 +2321,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 217
+          "ordinal": 236
         }
       ],
       "variants": [
@@ -2360,7 +2379,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 226
+          "ordinal": 245
         }
       ],
       "variants": [
@@ -2405,13 +2424,70 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "db7142c76d04658064cf3397c9d32b0653ea912a7398fc523b470517fd2300e4",
+      "key": "antimagic gaze goji cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 106
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [
+            {
+              "end": 148,
+              "start": 0,
+              "text_fingerprint": "dfd9d89c89933767c1d433c0670506e10766738f36da3479214ba720cd462187"
+            }
+          ],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "antimagic gaze goji cast",
+            "variant_ordinal": 0
+          },
+          "text": "{{\nif you.see_invisible() then\n    return \"@The_monster@'s mount stares at you.\"\nelse\n    return \"@The_monster@ spurs @possessive@ mount on.\"\nend\n}}",
+          "text_fingerprint": "dfd9d89c89933767c1d433c0670506e10766738f36da3479214ba720cd462187",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 56,
+              "start": 43,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 111,
+              "start": 98,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive",
+              "classification": "runtime",
+              "end": 130,
+              "start": 118,
+              "token": "possessive"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "68b9cc2222820aef95076016ed2228b35289b855b7f5a72829a53acd94b14311",
       "key": "antimagic gaze norris cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 109
+          "ordinal": 111
         }
       ],
       "variants": [
@@ -2484,7 +2560,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 51
+          "ordinal": 52
         }
       ],
       "variants": [
@@ -2513,7 +2589,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 164
+          "ordinal": 171
         }
       ],
       "variants": [
@@ -2572,7 +2648,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 119
+          "ordinal": 124
         }
       ],
       "variants": [
@@ -2609,7 +2685,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 118
+          "ordinal": 123
         }
       ],
       "variants": [
@@ -2646,7 +2722,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 59
+          "ordinal": 60
         }
       ],
       "variants": [
@@ -2683,7 +2759,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 128
+          "ordinal": 133
         }
       ],
       "variants": [
@@ -2720,7 +2796,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 184
+          "ordinal": 198
         }
       ],
       "variants": [
@@ -2764,7 +2840,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 261
+          "ordinal": 280
         }
       ],
       "variants": [
@@ -2822,7 +2898,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 129
+          "ordinal": 134
         }
       ],
       "variants": [
@@ -2916,7 +2992,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 158
+          "ordinal": 165
         }
       ],
       "variants": [
@@ -2974,7 +3050,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 112
+          "ordinal": 114
         }
       ],
       "variants": [
@@ -3011,7 +3087,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 120
+          "ordinal": 125
         }
       ],
       "variants": [
@@ -3055,7 +3131,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 183
+          "ordinal": 192
         }
       ],
       "variants": [
@@ -3084,7 +3160,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 248
+          "ordinal": 267
         }
       ],
       "variants": [
@@ -3113,7 +3189,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 162
+          "ordinal": 169
         }
       ],
       "variants": [
@@ -3187,7 +3263,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 123
+          "ordinal": 128
         }
       ],
       "variants": [
@@ -3240,13 +3316,100 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "9a09ce2460420d227bfa19d359637dd5c2e1fc64d44b0da2342795bc6abec2e8",
+      "key": "bolt of antimagic roaming sludgefish cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 194
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "bolt of antimagic roaming sludgefish cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ writhes with glee as it focuses its will @at@ @target@.",
+          "text_fingerprint": "48fc74a2ab346f872cd7ae74939f3d4006bac514d9141ce88244447bd50c2676",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 59,
+              "start": 55,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 68,
+              "start": 60,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "bolt of antimagic roaming sludgefish cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ burbles hungrily as it manifests raw antimagic @at@ @target@.",
+          "text_fingerprint": "0c4ca3c98e2af0160f86a62a1f8fdefb0e2c997640946045f50219d953145bd6",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 65,
+              "start": 61,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 74,
+              "start": 66,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "b9cc62eb5f56fdfd125dcb1b5a3afc94094563920ec90b6c908d5075085373c8",
       "key": "bolt of draining natural cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 60
+          "ordinal": 61
         }
       ],
       "variants": [
@@ -3304,7 +3467,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 177
+          "ordinal": 186
         }
       ],
       "variants": [
@@ -3341,7 +3504,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 165
+          "ordinal": 172
         }
       ],
       "variants": [
@@ -3392,7 +3555,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 239
+          "ordinal": 258
         }
       ],
       "variants": [
@@ -3450,7 +3613,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 170
+          "ordinal": 177
         }
       ],
       "variants": [
@@ -3501,7 +3664,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 124
+          "ordinal": 129
         }
       ],
       "variants": [
@@ -3546,13 +3709,72 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "561581d084a24b75618a7113e80554647b3203cd2de48e3d1c944e58ce5859e7",
+      "key": "brain bite telencephalon cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 217
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "brain bite telencephalon cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ pulsates in unstable patterns.",
+          "text_fingerprint": "9e7fb0f568c59fc8e17f986720aba906749d3c44ba4b8b9d6eaadb86800aaea5",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "brain bite telencephalon cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ spins and shimmers in dizzy loops.",
+          "text_fingerprint": "b7500d72a4f5d474f499fb427f073efcc2c9a3c2b952ddc9a8e3d95107a8b1f6",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "34a65ff4f9e7ac0d45cb67286974ef7809e8034d7326fab8e1c0c62c84892b34",
       "key": "brain worm cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 126
+          "ordinal": 131
         }
       ],
       "variants": [
@@ -3648,7 +3870,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 127
+          "ordinal": 132
         }
       ],
       "variants": [
@@ -3719,6 +3941,65 @@
             }
           ],
           "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "59995393d6051817cdc5b0306e61b6d889df5a86fc1eb9e5ee710e500b3ff4fb",
+      "key": "call down lightning telencephalon cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 218
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "call down lightning telencephalon cast",
+            "variant_ordinal": 0
+          },
+          "text": "Electricity dances across @the_monster_possessive@ nodes.",
+          "text_fingerprint": "98e2e08208adc5455cf973a70ea8159edf6fedb54db2fd809f715d6450c3360a",
+          "tokens": [
+            {
+              "canonical_key": "the_monster_possessive",
+              "classification": "runtime",
+              "end": 50,
+              "start": 26,
+              "token": "the_monster_possessive"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "call down lightning telencephalon cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ bathes in capricious mystic energies.",
+          "text_fingerprint": "415f5be94e20b5ede035b93b8f7709129555a70574643f859fe5ebe11a66b058",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
           "weight": 10
         }
       ]
@@ -3953,7 +4234,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 96
+          "ordinal": 97
         }
       ],
       "variants": [
@@ -4085,7 +4366,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 100
+          "ordinal": 101
         }
       ],
       "variants": [
@@ -4276,7 +4557,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 185
+          "ordinal": 199
         }
       ],
       "variants": [
@@ -4320,7 +4601,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 63
+          "ordinal": 64
         }
       ],
       "variants": [
@@ -4372,13 +4653,50 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "37d643bfa3e2546bcdfd90c1070046a5cd1a35060d18d8ad25d35b9ae47b0072",
+      "key": "cleansing flame cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 12
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "cleansing flame cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ channels a blast of cleansing flame!",
+          "text_fingerprint": "9103290517827633ad638765efba3ce85d6ac82c5be3b118eb7fe524cf6d7860",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "487d029ad61f51563e7d9ebf7188f1b57fda648fc537aee24c6618d89ce6f486",
       "key": "clockroach cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 131
+          "ordinal": 136
         }
       ],
       "variants": [
@@ -4429,7 +4747,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 130
+          "ordinal": 135
         }
       ],
       "variants": [
@@ -4466,7 +4784,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 61
+          "ordinal": 62
         }
       ],
       "variants": [
@@ -4524,7 +4842,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 194
+          "ordinal": 210
         }
       ],
       "variants": [
@@ -4608,7 +4926,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 219
+          "ordinal": 238
         }
       ],
       "variants": [
@@ -4645,7 +4963,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 227
+          "ordinal": 246
         }
       ],
       "variants": [
@@ -4740,7 +5058,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 132
+          "ordinal": 137
         }
       ],
       "variants": [
@@ -4791,7 +5109,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 133
+          "ordinal": 138
         }
       ],
       "variants": [
@@ -4849,7 +5167,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 134
+          "ordinal": 139
         }
       ],
       "variants": [
@@ -4900,7 +5218,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 135
+          "ordinal": 140
         }
       ],
       "variants": [
@@ -4944,7 +5262,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 207
+          "ordinal": 226
         }
       ],
       "variants": [
@@ -4981,7 +5299,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 182
+          "ordinal": 191
         }
       ],
       "variants": [
@@ -5032,7 +5350,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 98
+          "ordinal": 99
         }
       ],
       "variants": [
@@ -5069,7 +5387,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 12
+          "ordinal": 13
         }
       ],
       "variants": [
@@ -5113,7 +5431,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 223
+          "ordinal": 242
         }
       ],
       "variants": [
@@ -5201,7 +5519,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 95
+          "ordinal": 96
         }
       ],
       "variants": [
@@ -5245,7 +5563,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 229
+          "ordinal": 248
         }
       ],
       "variants": [
@@ -5282,7 +5600,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 228
+          "ordinal": 247
         }
       ],
       "variants": [
@@ -5340,7 +5658,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 231
+          "ordinal": 250
         }
       ],
       "variants": [
@@ -5377,7 +5695,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 13
+          "ordinal": 14
         }
       ],
       "variants": [
@@ -5414,7 +5732,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 139
+          "ordinal": 144
         }
       ],
       "variants": [
@@ -5451,7 +5769,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 140
+          "ordinal": 145
         }
       ],
       "variants": [
@@ -5502,7 +5820,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 65
+          "ordinal": 66
         }
       ],
       "variants": [
@@ -5560,7 +5878,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 199
+          "ordinal": 215
         }
       ],
       "variants": [
@@ -5597,7 +5915,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 238
+          "ordinal": 257
         }
       ],
       "variants": [
@@ -5634,7 +5952,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 92
+          "ordinal": 93
         }
       ],
       "variants": [
@@ -5714,7 +6032,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 66
+          "ordinal": 67
         }
       ],
       "variants": [
@@ -5751,7 +6069,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 14
+          "ordinal": 15
         }
       ],
       "variants": [
@@ -5795,7 +6113,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 144
+          "ordinal": 149
         }
       ],
       "variants": [
@@ -5846,7 +6164,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 68
+          "ordinal": 69
         }
       ],
       "variants": [
@@ -5904,7 +6222,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 157
+          "ordinal": 162
         }
       ],
       "variants": [
@@ -5962,7 +6280,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 206
+          "ordinal": 225
         }
       ],
       "variants": [
@@ -6013,7 +6331,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 145
+          "ordinal": 150
         }
       ],
       "variants": [
@@ -6108,7 +6426,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 233
+          "ordinal": 252
         }
       ],
       "variants": [
@@ -6145,7 +6463,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 232
+          "ordinal": 251
         }
       ],
       "variants": [
@@ -6196,7 +6514,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 179
+          "ordinal": 188
         }
       ],
       "variants": [
@@ -6247,7 +6565,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 147
+          "ordinal": 152
         }
       ],
       "variants": [
@@ -6284,7 +6602,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 99
+          "ordinal": 100
         }
       ],
       "variants": [
@@ -6387,7 +6705,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 70
+          "ordinal": 71
         }
       ],
       "variants": [
@@ -6431,7 +6749,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 102
+          "ordinal": 103
         }
       ],
       "variants": [
@@ -6541,7 +6859,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 101
+          "ordinal": 102
         }
       ],
       "variants": [
@@ -6664,7 +6982,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 103
+          "ordinal": 104
         }
       ],
       "variants": [
@@ -6701,7 +7019,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 150
+          "ordinal": 155
         }
       ],
       "variants": [
@@ -6738,7 +7056,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 151
+          "ordinal": 156
         }
       ],
       "variants": [
@@ -6789,7 +7107,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 180
+          "ordinal": 189
         }
       ],
       "variants": [
@@ -6826,7 +7144,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 153
+          "ordinal": 158
         }
       ],
       "variants": [
@@ -6863,7 +7181,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 154
+          "ordinal": 159
         }
       ],
       "variants": [
@@ -6914,7 +7232,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 15
+          "ordinal": 16
         }
       ],
       "variants": [
@@ -6951,7 +7269,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 16
+          "ordinal": 17
         }
       ],
       "variants": [
@@ -6995,7 +7313,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 221
+          "ordinal": 240
         }
       ],
       "variants": [
@@ -7068,7 +7386,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 156
+          "ordinal": 161
         }
       ],
       "variants": [
@@ -7105,7 +7423,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 155
+          "ordinal": 160
         }
       ],
       "variants": [
@@ -7242,7 +7560,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 17
+          "ordinal": 18
         }
       ],
       "variants": [
@@ -7287,13 +7605,100 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "4161379186aa4bda3430f967737c811b5b36f170b1eea9db79ca9d6ea68ab5e0",
+      "key": "harpoon shot mongrel wurm cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 178
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "harpoon shot mongrel wurm cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ hacks up a harpoon shot aimed @at@ @foe@.",
+          "text_fingerprint": "5f81ce0fd18f4600357d857bde2ed7b983aaed9c77cc7e911b918d153a448759",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 48,
+              "start": 44,
+              "token": "at"
+            },
+            {
+              "canonical_key": "foe",
+              "classification": "runtime",
+              "end": 54,
+              "start": 49,
+              "token": "foe"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "harpoon shot mongrel wurm cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ half-collapses as it coughs up a harpoon shot @at@ @foe@.",
+          "text_fingerprint": "3f201140647de18c54b7e4e6906d7302e956e3803e615d88044616d7bc131a86",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 64,
+              "start": 60,
+              "token": "at"
+            },
+            {
+              "canonical_key": "foe",
+              "classification": "runtime",
+              "end": 70,
+              "start": 65,
+              "token": "foe"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "0920b703e209145691e9123211bc7ca8b4eab339de43dd31995ee888c787d944",
       "key": "haste other priest cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 244
+          "ordinal": 263
         }
       ],
       "variants": [
@@ -7344,7 +7749,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 245
+          "ordinal": 264
         }
       ],
       "variants": [
@@ -7395,7 +7800,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 18
+          "ordinal": 19
         }
       ],
       "variants": [
@@ -7439,7 +7844,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 19
+          "ordinal": 20
         }
       ],
       "variants": [
@@ -7490,7 +7895,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 116
+          "ordinal": 118
         }
       ],
       "variants": [
@@ -7612,7 +8017,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 20
+          "ordinal": 21
         }
       ],
       "variants": [
@@ -7649,7 +8054,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 21
+          "ordinal": 22
         }
       ],
       "variants": [
@@ -7707,7 +8112,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 22
+          "ordinal": 23
         }
       ],
       "variants": [
@@ -7738,13 +8143,100 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "c5677d05c97d7b5b0bef011741c642ca62121ab43fb5dfb40f458b769edb0011",
+      "key": "hurl sludge roaming sludgefish cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 193
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "hurl sludge roaming sludgefish cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ coughs and spits up spare sludge @at@ @target@.",
+          "text_fingerprint": "e9f0b037eb23ff3166bcb157471e489b2e024ba6a5d90c8bd7cf2c14dc60d935",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 51,
+              "start": 47,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 60,
+              "start": 52,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "hurl sludge roaming sludgefish cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ concentrates and launches forth toxic muck @at@ @target@.",
+          "text_fingerprint": "4ba8f0a53874defc9d755dbe1c8c12b560a93876985273340a27d1534a181811",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 61,
+              "start": 57,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 70,
+              "start": 62,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "53ff599321c61b569f4dee74853aa2edaa41e0d7a59b34be5de2472665e994cb",
       "key": "hurl torchlight cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 90
+          "ordinal": 91
         }
       ],
       "variants": [
@@ -7781,7 +8273,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 187
+          "ordinal": 203
         }
       ],
       "variants": [
@@ -7840,7 +8332,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 192
+          "ordinal": 208
         }
       ],
       "variants": [
@@ -7877,7 +8369,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 163
+          "ordinal": 170
         }
       ],
       "variants": [
@@ -7935,7 +8427,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 91
+          "ordinal": 92
         }
       ],
       "variants": [
@@ -7979,7 +8471,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 166
+          "ordinal": 173
         }
       ],
       "variants": [
@@ -8060,7 +8552,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 24
+          "ordinal": 25
         }
       ],
       "variants": [
@@ -8097,7 +8589,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 188
+          "ordinal": 204
         }
       ],
       "variants": [
@@ -8148,7 +8640,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 25
+          "ordinal": 26
         }
       ],
       "variants": [
@@ -8185,7 +8677,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 141
+          "ordinal": 146
         }
       ],
       "variants": [
@@ -8243,7 +8735,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 71
+          "ordinal": 72
         }
       ],
       "variants": [
@@ -8301,7 +8793,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 235
+          "ordinal": 254
         }
       ],
       "variants": [
@@ -8359,7 +8851,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 260
+          "ordinal": 279
         }
       ],
       "variants": [
@@ -8396,7 +8888,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 259
+          "ordinal": 278
         }
       ],
       "variants": [
@@ -8447,7 +8939,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 26
+          "ordinal": 27
         }
       ],
       "variants": [
@@ -8485,13 +8977,79 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "de46661bb13b2a9933c32d1ec3ce24dd78b4b1005bc8549c903d62321a9f5264",
+      "key": "malign gateway herald of the abyss cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 164
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "malign gateway herald of the abyss cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ beckons forth otherworldly terror in the name of @possessive_God@.",
+          "text_fingerprint": "103b1b43811fb5319e28a2b35eedb2bb1a536fd888b1fa9cbc48fe9589667bc9",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 79,
+              "start": 63,
+              "token": "possessive_God"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "malign gateway herald of the abyss cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ dispassionately intertwines distant dimensions.",
+          "text_fingerprint": "6a1092e79b5c35b5b6f216b72cefcb0b8ca56e9deaea3b2125802a9500368f73",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "4ef5db1f6da5ce0929440d978daf4df42542b298aea0cce71b97856f5a24e5e3",
       "key": "malign offering priest cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 247
+          "ordinal": 266
         }
       ],
       "variants": [
@@ -8542,7 +9100,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 237
+          "ordinal": 256
         }
       ],
       "variants": [
@@ -8586,7 +9144,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 224
+          "ordinal": 243
         }
       ],
       "variants": [
@@ -8623,7 +9181,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 169
+          "ordinal": 176
         }
       ],
       "variants": [
@@ -8661,72 +9219,13 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
-      "entry_text_fingerprint": "7662bac7dd6c46a9438159bf8c2f889dd66e5dccade4eaaff239a89be70957cb",
-      "key": "mara summon cast",
-      "overridden": false,
-      "source_history": [
-        {
-          "file": "monspell.txt",
-          "ordinal": 27
-        }
-      ],
-      "variants": [
-        {
-          "control_prefixes": [],
-          "lua_sites": [],
-          "random_substring_sites": [],
-          "snapshot_locator": {
-            "canonical_key": "mara summon cast",
-            "variant_ordinal": 0
-          },
-          "text": "@The_monster@ weaves an illusion.",
-          "text_fingerprint": "7ca6d0baed08411950c12fd8c258ad0b019991c8771f3d459e11fc523e4b5941",
-          "tokens": [
-            {
-              "canonical_key": "the_monster",
-              "classification": "runtime",
-              "end": 13,
-              "start": 0,
-              "token": "The_monster"
-            }
-          ],
-          "variant_ordinal": 0,
-          "weight": 10
-        },
-        {
-          "control_prefixes": [],
-          "lua_sites": [],
-          "random_substring_sites": [],
-          "snapshot_locator": {
-            "canonical_key": "mara summon cast",
-            "variant_ordinal": 1
-          },
-          "text": "@The_monster@ shimmers.",
-          "text_fingerprint": "3fe6b267c5e103cdb13cfd6f5583e50a5b6bf4c661979adc96878dec7591cb51",
-          "tokens": [
-            {
-              "canonical_key": "the_monster",
-              "classification": "runtime",
-              "end": 13,
-              "start": 0,
-              "token": "The_monster"
-            }
-          ],
-          "variant_ordinal": 1,
-          "weight": 10
-        }
-      ]
-    },
-    {
-      "defined_in_monspell": true,
-      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "4b074dc5cf92887374442e3818892d9be3e1e2cff52f659a26d42f5695dcf92a",
       "key": "march of sorrows bone dragon cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 125
+          "ordinal": 130
         }
       ],
       "variants": [
@@ -8787,7 +9286,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 94
+          "ordinal": 95
         }
       ],
       "variants": [
@@ -8880,7 +9379,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 106
+          "ordinal": 108
         }
       ],
       "variants": [
@@ -8923,7 +9422,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 213
+          "ordinal": 232
         }
       ],
       "variants": [
@@ -8981,7 +9480,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 246
+          "ordinal": 265
         }
       ],
       "variants": [
@@ -9032,7 +9531,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 138
+          "ordinal": 143
         }
       ],
       "variants": [
@@ -9063,13 +9562,94 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "91d4815753e589d0f083993418167baa96d2f25ff78e305c1c4ba319603dadc3",
+      "key": "murky legion scrapshell chimera cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 201
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "murky legion scrapshell chimera cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ thrashes about, unleashing tainted phantasms!",
+          "text_fingerprint": "98b684f1a6db8d0a3ad9d2e8d9f74df3a076255afa478e58ce213580cbbd78cc",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "murky legion scrapshell chimera cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@'s components convulse as foul spirits manifest!",
+          "text_fingerprint": "8a1535b5df0c57cf8177b15bb50c0fcc1d142053a5e3e8a5435e6d36fb7c1203",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "murky legion scrapshell chimera cast",
+            "variant_ordinal": 2
+          },
+          "text": "@The_monster@ screeches thrice-fold calling forth its victims' souls!",
+          "text_fingerprint": "246427498d910e6a80d6719916c06af08f9d283639b92cc40014ca3917e605e6",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 2,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "3a14d06166da70011afc7805a743ea218e6d649f58a0c9688352626d64f1244a",
       "key": "non-humanoid wizard cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 254
+          "ordinal": 273
         }
       ],
       "variants": [
@@ -9128,7 +9708,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 253
+          "ordinal": 272
         }
       ],
       "variants": [
@@ -9215,7 +9795,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 176
+          "ordinal": 185
         }
       ],
       "variants": [
@@ -9252,7 +9832,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 171
+          "ordinal": 180
         }
       ],
       "variants": [
@@ -9289,7 +9869,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 172
+          "ordinal": 181
         }
       ],
       "variants": [
@@ -9340,7 +9920,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 30
+          "ordinal": 29
         }
       ],
       "variants": [
@@ -9421,7 +10001,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 29
+          "ordinal": 28
         }
       ],
       "variants": [
@@ -9458,7 +10038,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 174
+          "ordinal": 183
         }
       ],
       "variants": [
@@ -9571,7 +10151,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 173
+          "ordinal": 182
         }
       ],
       "variants": [
@@ -9696,7 +10276,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 175
+          "ordinal": 184
         }
       ],
       "variants": [
@@ -9788,7 +10368,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 240
+          "ordinal": 259
         }
       ],
       "variants": [
@@ -9825,7 +10405,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 117
+          "ordinal": 119
         }
       ],
       "variants": [
@@ -9912,7 +10492,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 83
+          "ordinal": 84
         }
       ],
       "variants": [
@@ -9956,7 +10536,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 197
+          "ordinal": 213
         }
       ],
       "variants": [
@@ -10003,7 +10583,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 72
+          "ordinal": 73
         }
       ],
       "variants": [
@@ -10054,7 +10634,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 32
+          "ordinal": 31
         }
       ],
       "variants": [
@@ -10105,7 +10685,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 34
+          "ordinal": 33
         }
       ],
       "variants": [
@@ -10136,13 +10716,72 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "77518ac8fb6e30950965be28e8a0135b7ca8a10270bc8c771d6325b7950ff481",
+      "key": "phase shift abyssal acolyte cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 122
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "phase shift abyssal acolyte cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ fiercely shimmers while chanting indecipherable hymns.",
+          "text_fingerprint": "8714ba4359954d9eacee8b2074847b3cdd9f1201dc9ddefea1bc0f7b6b9bdeda",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "phase shift abyssal acolyte cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ mumbles a few prayers and slips further between dimensions.",
+          "text_fingerprint": "da4a3a22009e876f9c011f9a51413625822e4d19a3aa5ca6cce4c376eeb89d87",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "b9cc62eb5f56fdfd125dcb1b5a3afc94094563920ec90b6c908d5075085373c8",
       "key": "poisonous cloud natural cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 73
+          "ordinal": 74
         }
       ],
       "variants": [
@@ -10200,7 +10839,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 243
+          "ordinal": 262
         }
       ],
       "variants": [
@@ -10229,7 +10868,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 242
+          "ordinal": 261
         }
       ],
       "variants": [
@@ -10266,7 +10905,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 241
+          "ordinal": 260
         }
       ],
       "variants": [
@@ -10317,7 +10956,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 250
+          "ordinal": 269
         }
       ],
       "variants": [
@@ -10419,7 +11058,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 249
+          "ordinal": 268
         }
       ],
       "variants": [
@@ -10542,7 +11181,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 142
+          "ordinal": 147
         }
       ],
       "variants": [
@@ -10579,7 +11218,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 108
+          "ordinal": 110
         }
       ],
       "variants": [
@@ -10681,7 +11320,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 35
+          "ordinal": 34
         }
       ],
       "variants": [
@@ -10718,7 +11357,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 74
+          "ordinal": 75
         }
       ],
       "variants": [
@@ -10776,7 +11415,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 236
+          "ordinal": 255
         }
       ],
       "variants": [
@@ -10820,7 +11459,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 222
+          "ordinal": 241
         }
       ],
       "variants": [
@@ -10893,7 +11532,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 201
+          "ordinal": 219
         }
       ],
       "variants": [
@@ -10987,7 +11626,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 202
+          "ordinal": 220
         }
       ],
       "variants": [
@@ -11074,7 +11713,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 110
+          "ordinal": 112
         }
       ],
       "variants": [
@@ -11111,7 +11750,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 113
+          "ordinal": 115
         }
       ],
       "variants": [
@@ -11192,13 +11831,198 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "2fb4bc25a256648e60a246b98b0a882db78e13f9f5d06483d14dfa31c8662d46",
+      "key": "rusted inspector cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 196
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "rusted inspector cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ fervently clicks and whirrs while staring @at@ @target@.",
+          "text_fingerprint": "44484a23107f2b1d7aa2b51ad310925a43d62d9dad62f3d63548d2584eb5907f",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 60,
+              "start": 56,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 69,
+              "start": 61,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "rusted inspector cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ surveys @target@ with malign shimmering curiousity.",
+          "text_fingerprint": "a122a9f5951a1f1581d12f5f6e0027336b485cc59fd983d4bfc732d84e331b44",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 30,
+              "start": 22,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [
+            {
+              "end": 32,
+              "options": [
+                "rumbles",
+                "shudders"
+              ],
+              "raw": "rumbles|shudders",
+              "start": 14
+            }
+          ],
+          "snapshot_locator": {
+            "canonical_key": "rusted inspector cast",
+            "variant_ordinal": 2
+          },
+          "text": "@The_monster@ [rumbles|shudders] with under-developed magic as it glares @at@ @target@.",
+          "text_fingerprint": "1be19f702d5be927ccb2bf56c109e2cee0f78d8d5b885e744ee59a30bd38e1a0",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 77,
+              "start": 73,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 86,
+              "start": 78,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 2,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "eb70855f87fcdab8e9e8850c88cba3895ac720799320154aecb144b63f426da0",
+      "key": "scorch mongrel wurm cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 179
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "scorch mongrel wurm cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ nearly chokes as it lobs forward flames.",
+          "text_fingerprint": "89466bd74c8104f69f2ece633da18130414201bc4c21ee3cf3e21ca8692e452c",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "scorch mongrel wurm cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ expels rasping flames.",
+          "text_fingerprint": "6044398cb345a0fc5ba7a14c3221040bf7bcfc05e8b6428343f83e82d81a7d7d",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "d17dbe1fe7a5ba49b08e7ea9ff18feee5ddcef7930f07625dade66636730c56f",
       "key": "scrub nettle cast targeted",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 189
+          "ordinal": 205
         }
       ],
       "variants": [
@@ -11249,7 +12073,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 52
+          "ordinal": 53
         }
       ],
       "variants": [
@@ -11278,7 +12102,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 75
+          "ordinal": 76
         }
       ],
       "variants": [
@@ -11336,7 +12160,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 89
+          "ordinal": 90
         }
       ],
       "variants": [
@@ -11380,7 +12204,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 36
+          "ordinal": 35
         }
       ],
       "variants": [
@@ -11431,7 +12255,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 40
+          "ordinal": 39
         }
       ],
       "variants": [
@@ -11490,7 +12314,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 111
+          "ordinal": 113
         }
       ],
       "variants": [
@@ -11527,7 +12351,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 122
+          "ordinal": 127
         }
       ],
       "variants": [
@@ -11580,13 +12404,64 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "7f8c0828e8eee8c10d5729e3c7d3d876b3d05d25515626a3246f7c03f2303226",
+      "key": "silent bolt of antimagic roaming sludgefish cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 195
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent bolt of antimagic roaming sludgefish cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ writhes with hunger as it focuses its will @at@ @target@.",
+          "text_fingerprint": "5430a57e077486f52a34eb9f9b49feb51445d98f363c6a621223acbac4ab9b3d",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 61,
+              "start": 57,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 70,
+              "start": 62,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "5cb9567bb059e8b1a3eb4ae22580e3e6b14016917126ec89a00216283dced9dc",
       "key": "silent curse skull cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 136
+          "ordinal": 141
         }
       ],
       "variants": [
@@ -11630,7 +12505,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 146
+          "ordinal": 151
         }
       ],
       "variants": [
@@ -11703,7 +12578,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 167
+          "ordinal": 174
         }
       ],
       "variants": [
@@ -11756,13 +12631,188 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "1bacda15ba36cd5dc2fc9da984e0d8194238e85161bf6c4bbca08d20c4fc701d",
+      "key": "silent murky legion scrapshell chimera cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 202
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent murky legion scrapshell chimera cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ thrashes silently as it unleashes tainted phantasms!",
+          "text_fingerprint": "ac146dec16a8451f477158a48c74d3172c44f49991cb561b9101e93b95bf7ce3",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent murky legion scrapshell chimera cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@'s components convulse as foul spirits manifest!",
+          "text_fingerprint": "8a1535b5df0c57cf8177b15bb50c0fcc1d142053a5e3e8a5435e6d36fb7c1203",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "f03b8a46967e8a66f4a2050e774a8bb59092b17225c731f93737a55009de131f",
+      "key": "silent rusted inspector cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 197
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent rusted inspector cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ squirms violently as it stares @at@ @target@.",
+          "text_fingerprint": "bf8edf0bc59bbbbae6bc2140e5723af0a265742e1e1ecb5691253cb243150399",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 49,
+              "start": 45,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 58,
+              "start": 50,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent rusted inspector cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ surveys @target@ with malign shimmering curiousity.",
+          "text_fingerprint": "a122a9f5951a1f1581d12f5f6e0027336b485cc59fd983d4bfc732d84e331b44",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 30,
+              "start": 22,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "silent rusted inspector cast",
+            "variant_ordinal": 2
+          },
+          "text": "@The_monster@ shudders with under-developed magic as it glares @at@ @target@.",
+          "text_fingerprint": "fc284817484a4cc2b085c8ce40702153c7348ed618f77297dd907ac82486eace",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 67,
+              "start": 63,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 76,
+              "start": 68,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 2,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "ff5165f6fa9d07253b022ae6317e49fc6d601f5c44fe9dea48f0f3dbb03ed5dc",
       "key": "silent weeping skull cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 215
+          "ordinal": 234
         }
       ],
       "variants": [
@@ -11809,7 +12859,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 37
+          "ordinal": 36
         }
       ],
       "variants": [
@@ -11853,7 +12903,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 50
+          "ordinal": 51
         }
       ],
       "variants": [
@@ -11882,7 +12932,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 186
+          "ordinal": 200
         }
       ],
       "variants": [
@@ -11926,7 +12976,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 77
+          "ordinal": 78
         }
       ],
       "variants": [
@@ -11977,7 +13027,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 196
+          "ordinal": 212
         }
       ],
       "variants": [
@@ -12028,7 +13078,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 105
+          "ordinal": 107
         }
       ],
       "variants": [
@@ -12166,7 +13216,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 41
+          "ordinal": 40
         }
       ],
       "variants": [
@@ -12217,7 +13267,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 181
+          "ordinal": 190
         }
       ],
       "variants": [
@@ -12261,7 +13311,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 198
+          "ordinal": 214
         }
       ],
       "variants": [
@@ -12320,7 +13370,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 55
+          "ordinal": 56
         }
       ],
       "variants": [
@@ -12371,7 +13421,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 78
+          "ordinal": 79
         }
       ],
       "variants": [
@@ -12422,7 +13472,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 79
+          "ordinal": 80
         }
       ],
       "variants": [
@@ -12473,7 +13523,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 81
+          "ordinal": 82
         }
       ],
       "variants": [
@@ -12531,7 +13581,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 82
+          "ordinal": 83
         }
       ],
       "variants": [
@@ -12589,7 +13639,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 42
+          "ordinal": 41
         }
       ],
       "variants": [
@@ -12626,7 +13676,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 43
+          "ordinal": 42
         }
       ],
       "variants": [
@@ -12670,7 +13720,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 149
+          "ordinal": 154
         }
       ],
       "variants": [
@@ -12728,7 +13778,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 44
+          "ordinal": 43
         }
       ],
       "variants": [
@@ -12779,7 +13829,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 97
+          "ordinal": 98
         }
       ],
       "variants": [
@@ -12839,13 +13889,72 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "7662bac7dd6c46a9438159bf8c2f889dd66e5dccade4eaaff239a89be70957cb",
+      "key": "summon illusion cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 44
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "summon illusion cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ weaves an illusion.",
+          "text_fingerprint": "7ca6d0baed08411950c12fd8c258ad0b019991c8771f3d459e11fc523e4b5941",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "summon illusion cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ shimmers.",
+          "text_fingerprint": "3fe6b267c5e103cdb13cfd6f5583e50a5b6bf4c661979adc96878dec7591cb51",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "ded5d6a5c78bcf27bd149af7f47aac4bc3903fdc66bfe85d39d00cf1ebf9cee8",
       "key": "summon mortal champion fravashi cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 148
+          "ordinal": 153
         }
       ],
       "variants": [
@@ -12882,7 +13991,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 143
+          "ordinal": 148
         }
       ],
       "variants": [
@@ -12919,7 +14028,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 200
+          "ordinal": 216
         }
       ],
       "variants": [
@@ -12956,7 +14065,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 38
+          "ordinal": 37
         }
       ],
       "variants": [
@@ -12987,13 +14096,57 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "5d2995e8bd050b9b06344d4e9a57675f60c019fec150a40c5fc357e1a80f2340",
+      "key": "thorn hunter cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 222
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "thorn hunter cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ reaches out with @possessive@ roots.",
+          "text_fingerprint": "b9c8ebcb847862617e9be1805753df03f28637bd5a5b950493d260cc3ef1e5ee",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive",
+              "classification": "runtime",
+              "end": 43,
+              "start": 31,
+              "token": "possessive"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "7166a1bcf1f8eb534ba7a4ddd4986d98c1dafb5f16fecb3f31d44648c3e70a80",
       "key": "thrashing horror cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 204
+          "ordinal": 223
         }
       ],
       "variants": [
@@ -13030,7 +14183,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 45
+          "ordinal": 46
         }
       ],
       "variants": [
@@ -13081,7 +14234,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 193
+          "ordinal": 209
         }
       ],
       "variants": [
@@ -13132,7 +14285,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 46
+          "ordinal": 47
         }
       ],
       "variants": [
@@ -13170,13 +14323,86 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "b02d9427067411d56ac17fc7893725a1e220a1dd9b1d0f74c087154ed94b752e",
+      "key": "touch of paradox abyssal acolyte cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 120
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "touch of paradox abyssal acolyte cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ calls down @possessive_God@'s blessing.",
+          "text_fingerprint": "c05a5357ce3a4253121cfb0269e518a13535079c6fe3d98c9eb3498a8b65edc5",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 41,
+              "start": 25,
+              "token": "possessive_God"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "touch of paradox abyssal acolyte cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ invokes a beneficient rending in the name of @possessive_God@.",
+          "text_fingerprint": "aef64daed4b01fa1a0a21b8b234263540d1b9fed6811d566369a9246d1d4f41f",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 75,
+              "start": 59,
+              "token": "possessive_God"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "4383d1860e3fab7b3f736a6adafd0b524ab4e937d0ae29773a1407e89b662d45",
       "key": "undertaker cast targeted",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 205
+          "ordinal": 224
         }
       ],
       "variants": [
@@ -13220,7 +14446,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 58
+          "ordinal": 59
         }
       ],
       "variants": [
@@ -13315,7 +14541,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 178
+          "ordinal": 187
         }
       ],
       "variants": [
@@ -13381,7 +14607,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 64
+          "ordinal": 65
         }
       ],
       "variants": [
@@ -13418,7 +14644,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 62
+          "ordinal": 63
         }
       ],
       "variants": [
@@ -13455,7 +14681,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 137
+          "ordinal": 142
         }
       ],
       "variants": [
@@ -13484,7 +14710,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 230
+          "ordinal": 249
         }
       ],
       "variants": [
@@ -13513,7 +14739,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 93
+          "ordinal": 94
         }
       ],
       "variants": [
@@ -13542,7 +14768,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 67
+          "ordinal": 68
         }
       ],
       "variants": [
@@ -13571,7 +14797,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 69
+          "ordinal": 70
         }
       ],
       "variants": [
@@ -13608,7 +14834,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 234
+          "ordinal": 253
         }
       ],
       "variants": [
@@ -13645,7 +14871,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 104
+          "ordinal": 105
         }
       ],
       "variants": [
@@ -13674,7 +14900,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 152
+          "ordinal": 157
         }
       ],
       "variants": [
@@ -13711,7 +14937,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 23
+          "ordinal": 24
         }
       ],
       "variants": [
@@ -13740,7 +14966,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 168
+          "ordinal": 175
         }
       ],
       "variants": [
@@ -13777,42 +15003,13 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
-      "entry_text_fingerprint": "9d9d5188c678bad83650ec695c85c8a0806ed6dcbc1726b4060a06f84ccc1bf0",
-      "key": "unseen mara summon cast",
-      "overridden": false,
-      "source_history": [
-        {
-          "file": "monspell.txt",
-          "ordinal": 28
-        }
-      ],
-      "variants": [
-        {
-          "control_prefixes": [],
-          "lua_sites": [],
-          "random_substring_sites": [],
-          "snapshot_locator": {
-            "canonical_key": "unseen mara summon cast",
-            "variant_ordinal": 0
-          },
-          "text": "Something weaves an illusion!",
-          "text_fingerprint": "ae715d59ba497418182f9ab39519177fa1489c3233688717a4ce55daaf7b1abd",
-          "tokens": [],
-          "variant_ordinal": 0,
-          "weight": 10
-        }
-      ]
-    },
-    {
-      "defined_in_monspell": true,
-      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "3b0a3b05da4c5c7cc4b470aec62842d4b51a627e79b45efb5a2770bbdbecd73f",
       "key": "unseen non-humanoid wizard cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 255
+          "ordinal": 274
         }
       ],
       "variants": [
@@ -13841,7 +15038,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 31
+          "ordinal": 30
         }
       ],
       "variants": [
@@ -13878,7 +15075,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 33
+          "ordinal": 32
         }
       ],
       "variants": [
@@ -13915,7 +15112,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 252
+          "ordinal": 271
         }
       ],
       "variants": [
@@ -13952,7 +15149,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 251
+          "ordinal": 270
         }
       ],
       "variants": [
@@ -14075,7 +15272,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 76
+          "ordinal": 77
         }
       ],
       "variants": [
@@ -14112,7 +15309,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 56
+          "ordinal": 57
         }
       ],
       "variants": [
@@ -14149,7 +15346,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 80
+          "ordinal": 81
         }
       ],
       "variants": [
@@ -14180,13 +15377,42 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "9d9d5188c678bad83650ec695c85c8a0806ed6dcbc1726b4060a06f84ccc1bf0",
+      "key": "unseen summon illusion cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 45
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "unseen summon illusion cast",
+            "variant_ordinal": 0
+          },
+          "text": "Something weaves an illusion!",
+          "text_fingerprint": "ae715d59ba497418182f9ab39519177fa1489c3233688717a4ce55daaf7b1abd",
+          "tokens": [],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "821696823c01b0a77e66bcfc6f733322a2b52b0a2f97d4ff50ceff8eb87a20f9",
       "key": "unseen symbol of torment cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 39
+          "ordinal": 38
         }
       ],
       "variants": [
@@ -14223,7 +15449,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 203
+          "ordinal": 221
         }
       ],
       "variants": [
@@ -14246,13 +15472,50 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "f3c0d31de86d3e0d6e7044ee1aeaadfb4cc48055bd84d00545b7c13c7f8751d2",
+      "key": "unseen touch of paradox abyssal acolyte cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 121
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "unseen touch of paradox abyssal acolyte cast",
+            "variant_ordinal": 0
+          },
+          "text": "You hear some strange prayers to @possessive_God@.",
+          "text_fingerprint": "376242e66e5ef1040e77efd0205a45adf6b9206c672d84c1197ccdb8d15310a2",
+          "tokens": [
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 49,
+              "start": 33,
+              "token": "possessive_God"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "1d5e7b168a94a0c9e4d56cee4e13da47762a3ad542d1929170c4607e2e4c7dfe",
       "key": "unseen vv cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 115
+          "ordinal": 117
         }
       ],
       "variants": [
@@ -14281,7 +15544,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 86
+          "ordinal": 87
         }
       ],
       "variants": [
@@ -14310,7 +15573,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 160
+          "ordinal": 167
         }
       ],
       "variants": [
@@ -14339,7 +15602,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 191
+          "ordinal": 207
         }
       ],
       "variants": [
@@ -14368,7 +15631,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 209
+          "ordinal": 228
         }
       ],
       "variants": [
@@ -14397,7 +15660,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 211
+          "ordinal": 230
         }
       ],
       "variants": [
@@ -14426,7 +15689,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 216
+          "ordinal": 235
         }
       ],
       "variants": [
@@ -14455,7 +15718,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 258
+          "ordinal": 277
         }
       ],
       "variants": [
@@ -14484,7 +15747,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 210
+          "ordinal": 229
         }
       ],
       "variants": [
@@ -14535,7 +15798,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 107
+          "ordinal": 109
         }
       ],
       "variants": [
@@ -14615,7 +15878,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 195
+          "ordinal": 211
         }
       ],
       "variants": [
@@ -14663,7 +15926,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 47
+          "ordinal": 48
         }
       ],
       "variants": [
@@ -14700,7 +15963,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 84
+          "ordinal": 85
         }
       ],
       "variants": [
@@ -14751,7 +16014,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 114
+          "ordinal": 116
         }
       ],
       "variants": [
@@ -14892,7 +16155,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 85
+          "ordinal": 86
         }
       ],
       "variants": [
@@ -14929,7 +16192,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 159
+          "ordinal": 166
         }
       ],
       "variants": [
@@ -14966,7 +16229,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 161
+          "ordinal": 168
         }
       ],
       "variants": [
@@ -15003,7 +16266,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 190
+          "ordinal": 206
         }
       ],
       "variants": [
@@ -15047,7 +16310,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 208
+          "ordinal": 227
         }
       ],
       "variants": [
@@ -15084,7 +16347,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 212
+          "ordinal": 231
         }
       ],
       "variants": [
@@ -15115,13 +16378,107 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "e88bf255435c062adf0bb8558dcfad7b3c68b97f60961922a91285bc82851b51",
+      "key": "warp space herald of the abyss cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 163
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "warp space herald of the abyss cast",
+            "variant_ordinal": 0
+          },
+          "text": "@The_monster@ solemnly invokes the wrath of @possessive_God@ @at@ @target@!",
+          "text_fingerprint": "85468ac63cb33d76f98bf78c1d08006a3f43137436bd59160d3b80cf78bc4ea5",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 60,
+              "start": 44,
+              "token": "possessive_God"
+            },
+            {
+              "canonical_key": "at",
+              "classification": "runtime",
+              "end": 65,
+              "start": 61,
+              "token": "at"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 74,
+              "start": 66,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        },
+        {
+          "control_prefixes": [],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "warp space herald of the abyss cast",
+            "variant_ordinal": 1
+          },
+          "text": "@The_monster@ gurgles dread orisons to @possessive_God@ against @target@!",
+          "text_fingerprint": "cce3308c3acef7fa874df6f38fbfe5b94d41c6fd48f44ff7dc08ff881f4ca3fc",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 13,
+              "start": 0,
+              "token": "The_monster"
+            },
+            {
+              "canonical_key": "possessive_god",
+              "classification": "runtime",
+              "end": 55,
+              "start": 39,
+              "token": "possessive_God"
+            },
+            {
+              "canonical_key": "target",
+              "classification": "runtime",
+              "end": 72,
+              "start": 64,
+              "token": "target"
+            }
+          ],
+          "variant_ordinal": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "529953c032afde604e136c62f2b3f54f22367e39ab9a460d116c9a504aff1b4b",
       "key": "weakening gaze cast",
       "overridden": false,
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 87
+          "ordinal": 88
         }
       ],
       "variants": [
@@ -15165,7 +16522,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 214
+          "ordinal": 233
         }
       ],
       "variants": [
@@ -15244,7 +16601,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 48
+          "ordinal": 49
         }
       ],
       "variants": [
@@ -15281,7 +16638,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 218
+          "ordinal": 237
         }
       ],
       "variants": [
@@ -15318,7 +16675,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 257
+          "ordinal": 276
         }
       ],
       "variants": [
@@ -15399,7 +16756,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 256
+          "ordinal": 275
         }
       ],
       "variants": [
@@ -15522,7 +16879,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 88
+          "ordinal": 89
         }
       ],
       "variants": [
@@ -15559,7 +16916,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 49
+          "ordinal": 50
         }
       ],
       "variants": [
@@ -15596,7 +16953,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 220
+          "ordinal": 239
         }
       ],
       "variants": [
@@ -15626,8 +16983,8 @@
     }
   ],
   "schema_version": 1,
-  "semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
-  "source_fingerprint": "49ef2b9eb42f55312a4cf3965487af07c82b555f5b6720c3c1fa43903828a054",
+  "semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
+  "source_fingerprint": "d86a9c3c6edadd8111af8f5c51cdcc6152c8adce7f5666e7fde97183cd97f5bd",
   "speakdb_directory": "database/",
   "speakdb_files": [
     "monspeak.txt",
@@ -15644,13 +17001,13 @@
   "summary": {
     "closure_cycles": 0,
     "closure_edge_sites": 18,
-    "closure_keys": 266,
-    "lua_sites": 0,
-    "monspell_keys": 262,
+    "closure_keys": 285,
+    "lua_sites": 1,
+    "monspell_keys": 281,
     "overridden_keys": 0,
-    "random_substring_sites": 12,
+    "random_substring_sites": 13,
     "recursive_tokens": 15,
-    "runtime_tokens": 590,
-    "variants": 355
+    "runtime_tokens": 661,
+    "variants": 391
   }
 }
