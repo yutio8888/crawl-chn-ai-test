@@ -137,7 +137,8 @@ air (Air) armour ego
 %%%%
 archery (Archery) armour ego
 
-对于远程战斗来说，它的负重仅为正常值的一半。
+进行远程战斗时，它的累赘程度仅为正常值的三分之一，
+并会根据穿戴者的护甲技能略微增加远程伤害。
 %%%%
 attunement (Attunement) armour ego
 
@@ -158,7 +159,9 @@ corrosion resistance (rCorr) armour ego
 %%%%
 death (Death) armour ego
 
-它可以增强你的死灵术法术并提高其成功率，但会为其他魔法施加生命值消耗。
+它会增强你的死灵术法术并提高其成功率。
+施放死灵术法术时，它可能从相邻且能受此效果影响的敌人身上汲取生命力来治疗你；
+触发概率和效果强度取决于法术等级。
 %%%%
 dexterity (Dex+3) armour ego
 
@@ -230,9 +233,11 @@ mayhem (Mayhem) armour ego
 %%%%
 mesmerism (Mesmerism) armour ego
 
-当你在近战中被击中时，它会短暂地使所有附近的敌人晕眩，
-之后需要通过静止不动来重新充能。其持续时间、范围和充能速度
-随你的魔力释放技能提升。
+当你在近战中被击中时，它会短暂地使附近所有敌人晕眩，
+之后需要通过静止不动一段时间来重新充能。
+其持续时间、范围和充能速度随你的魔力释放技能提升而增加。
+
+每当你进入不同楼层时，它都会暂时休眠。
 %%%%
 parrying (Parrying) armour ego
 
@@ -280,8 +285,9 @@ resistance (rC+ rF+) armour ego
 %%%%
 resonance (Resonance) armour ego
 
-它可以提高你的锻造法术的成功率，并根据你的锻造术技能比例增强
-你的近战攻击。
+它会提高你的锻造术法术的成功率。
+当你近战攻击与自己的某个造物相邻的敌人时，
+它会按你的锻造术技能成比例地增强这次近战攻击。
 %%%%
 see invisible (SInv) armour ego
 
