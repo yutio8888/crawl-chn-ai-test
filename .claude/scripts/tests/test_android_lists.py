@@ -130,7 +130,7 @@ int main() {
     assert(menu.get_keyhelp(true) == "Selected: 0");
     tiles.small = false;
     menu.set_title("");
-    assert(menu.shown_title.find("Left/Right to switch category") != string::npos);
+    assert(menu.shown_title.find("Left/Right/Tab to switch category") != string::npos);
     assert(_drop_menu_titlefn(&menu, "").find("(_ for help)") != string::npos);
     assert(menu.get_keyhelp(true) == "legacy footer");
     menu.sel = {&a};
@@ -983,7 +983,7 @@ struct Skills {
     vector<MenuItem*> selection;
     bool process_key(int) { return handled; }
     bool is_set(int value) { return flags & value; }
-    bool exit(bool) { ++exits; return can_exit; }
+    bool exit() { ++exits; return can_exit; }
     void cancel_help() { flags &= ~SKMF_HELP; }
     void cancel_set_target() { flags &= ~SKMF_SET_TARGET; }
     vector<MenuItem*> get_selected_items() { return selection; }

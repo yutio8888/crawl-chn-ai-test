@@ -84,15 +84,37 @@ def status_text_contract() -> str:
 
 def status_fixture() -> str:
     output = (SOURCE / "output.cc").read_text(encoding="utf-8")
-    getter = quickbar.block_after(output, "static void _get_status_lights")
-    priority = quickbar.block_after(getter, "const unsigned int important_statuses[]")
+    getter = quickbar.block_after(output, "static vector<status_light> _get_status_lights()")
+    priority = body("status.cc", "static const vector<unsigned int> important_statuses =")
     statuses = re.findall(r"\b(?:STATUS|DUR)_[A-Z_]+\b", priority)
     return COMMON + r'''
 #include <bitset>
+#include <iterator>
+#define PURE
 #define ARRAYSZ(array) (sizeof(array) / sizeof((array)[0]))
 using colour_t = int;
 enum { LIGHTCYAN, GOTO_STAT };
 ''' + "enum { " + ", ".join(statuses) + ", STATUS_LAST_STATUS = 256 };\n" + status_text_contract() + r'''
+void cprintf(const char *, ...);
+struct formatted_string : string {
+    formatted_string() = default;
+    formatted_string(const string &text, int) : string(text) {}
+    int width() const { return strwidth(*this); }
+    string tostring() const { return *this; }
+    void display(int = -1, int end = -1) const { if (end != 0) cprintf("%s", c_str()); }
+};
+static const vector<unsigned int> important_statuses =
+''' + priority + ''';
+class status_iterator : public iterator<forward_iterator_tag, int>
+''' + body("status.h", "class status_iterator :") + ''';
+status_iterator::status_iterator() : current(0), in_priority_phase(true)
+''' + body("status.cc", "status_iterator::status_iterator()") + '''
+status_iterator::operator bool() const
+''' + body("status.cc", "status_iterator::operator bool() const") + '''
+int status_iterator::operator *() const
+''' + body("status.cc", "int status_iterator::operator *() const") + '''
+void status_iterator::operator ++()
+''' + body("status.cc", "void status_iterator::operator ++()") + '''
 struct status_light
 ''' + quickbar.block_after(output, "struct status_light") + r''';
 struct { bool redraw_status_lights = true; } you;
@@ -104,7 +126,7 @@ struct { bool is_using_small_layout() { return top_bar; } } tiles;
 map<int, string> available_statuses;
 void _add_status_light_to_out(int status, vector<status_light> &out) {
     auto it = available_statuses.find(status);
-    if (it != available_statuses.end()) out.emplace_back(0, it->second, status);
+    if (it != available_statuses.end()) out.emplace_back(formatted_string(it->second, 0), status);
 }
 struct status_hitbox { int status, x1, x2, y; };
 vector<status_hitbox> _status_hitboxes;
@@ -121,6 +143,7 @@ int cursor_x = 1, cursor_y = 1;
 int message_columns = 20;
 int get_number_of_cols() { return message_columns; }
 int wherex() { return cursor_x; }
+int wherey() { return cursor_y; }
 void move_cursor(int x, int y, int) { cursor_x = x; cursor_y = y; }
 #define CGOTOXY move_cursor
 string vmake_stringf(const char *format, va_list args) {
@@ -177,7 +200,12 @@ void assert_text_at(int x, int y, const string &text) {
         next += bytes;
     }
 }
-static void _get_status_lights(vector<status_light> &out)
+struct status_light_area
+''' + quickbar.block_after(output, "struct status_light_area") + ''';
+vector<status_light_area> _status_light_areas;
+static void _record_status_light(const status_light& light, int width)
+''' + quickbar.block_after(output, "static void _record_status_light") + '''
+static vector<status_light> _get_status_lights()
 ''' + getter + r'''
 static void _print_status_lights(int y)
 ''' + quickbar.block_after(output, "static void _print_status_lights(int y)") + r'''
@@ -187,11 +215,15 @@ using command_type = int;
 command_type show_topbar_command_menu(bool *) { return CMD_NO_CMD; }
 struct StatRegion {
     int m_last_mouse_x = 0, m_last_mouse_y = 0;
+    coord_def m_mouse_cell;
     bool inside(int x, int y) {
         return x >= 0 && x < crawl_view.hudsz.x && y >= 0 && y < crawl_view.hudsz.y;
     }
-    bool _text_mouse_pos(int x, int y, int &cx, int &cy) {
+    bool mouse_pos(int x, int y, int &cx, int &cy) {
         cx = x; cy = y; return inside(x, y);
+    }
+    bool _text_mouse_pos(int x, int y, int &cx, int &cy) {
+        return mouse_pos(x, y, cx, cy);
     }
     int handle_mouse(wm_mouse_event &event);
 };
@@ -332,8 +364,7 @@ int main() {
     for (int count : {0, 1, 9, 10, 11, 99, 100, 101}) {
         available_statuses.clear();
         for (int i = 0; i < count; ++i) available_statuses[100 + i] = "s" + to_string(i);
-        vector<status_light> ordered;
-        _get_status_lights(ordered);
+        vector<status_light> ordered = _get_status_lights();
         for (int width = 1; width <= 100; ++width) {
             crawl_view.hudsz.x = width;
             message_columns = max(1, width / 2);
