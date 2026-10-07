@@ -197,6 +197,19 @@ class MoveI18nAuditTest(unittest.TestCase):
         self.assertIn("WARNING: move.bare: stale manifest verbs: ghost-step",
                       result.stdout)
 
+    def test_current_manifest_classifies_stems_and_routes_sentinel(self):
+        result = subprocess.run(
+            [sys.executable, str(AUDIT), str(ROOT / "crawl-ref/source"),
+             "--source-txt", str(ROOT / "crawl-ref/source/dat/i18n/zh/source.txt"),
+             "--manifest", str(ROOT / ".claude/scripts/data/move_i18n_manifest.json")],
+            capture_output=True, text=True, check=False)
+        self.assertNotIn("unclassified reachable verbs", result.stderr)
+        self.assertNotIn("forced movement sentinel", result.stderr)
+        self.assertNotIn("trott", result.stdout + result.stderr)
+        self.assertNotIn("potentially stumble back", result.stdout + result.stderr)
+        # Missing exact catalog keys may still fail: classification is separate.
+        self.assertIn("trot", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
