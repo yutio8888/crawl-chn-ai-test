@@ -375,7 +375,7 @@ CMD_CHARACTER_DUMP
 %%%%
 CMD_EXPLORE_NO_REST
 
-自动探索当前楼层，并沿途收集物品。一旦有敌对怪物出现，或是遇到新物品或新地标时，探索就会停止。与 CMD_EXPLORE 不同，此命令会将 explore_auto_rest 视为 false，将 explore_auto_rest_status 视为空。
+自动探索当前楼层，不先休息
 %%%%
 CMD_TOGGLE_KEYBOARD verbose
 
@@ -808,4 +808,21 @@ CMD_TARGET_FIND_TRAP
 CMD_TARGET_HELP
 
 瞄准帮助
+%%%%
+CMD_EXPLORE_NO_REST verbose
+
+自动探索当前楼层，并沿途收集物品。一旦有敌对怪物进入视野，
+或是遇到新物品或新地标时，探索就会停止。
+与 CMD_EXPLORE 不同，此命令会将 explore_auto_rest 视为 false，
+将 explore_auto_rest_status 视为空。
+%%%%
+CMD_IGNORE_INVISIBLE
+
+暂时关闭附近可能有隐形生物时的休息警告。
+%%%%
+CMD_IGNORE_INVISIBLE verbose
+
+清除最近有关附近有不可见隐形生物的记忆，使休息和自动探索恢复正常。
+这用于少数玩家能够判断安全、但界面无法判断的情况，
+例如关上门，将一只不会开门的怪物挡在门外之后。
 %%%%

@@ -1148,6 +1148,12 @@ mimic reveal plural|%s are mimics!
 %s sets off the alarm!
 %s触发了警报！
 %%%%
+The alarm trap vibrates slightly, failing to make a sound.
+警报陷阱微微振动，未能发出声音。
+%%%%
+The alarm trap emits a blaring wail!
+警报陷阱发出刺耳的尖啸！
+%%%%
 %s %s yanked forward by the %s.
 %1$s被%3$s向前猛拉%2$.0s。
 %%%%
@@ -1195,6 +1201,9 @@ mimic reveal plural|%s are mimics!
 %%%%
 %s appears from out of thin air!
 %s凭空出现了！
+%%%%
+%s forbids you from animating such a foul weapon!
+%s禁止你赋予如此污秽的武器生命！
 %%%%
 %s appears from out of your range of vision.
 %s从你的视野之外出现了。
@@ -1265,6 +1274,9 @@ mimic reveal plural|%s are mimics!
 %s blocks %s with %s %s... and reflects it back!
 %s用%s%s挡住了%s……并将其反弹了回去！
 %%%%
+%s reflects off the divine shield protecting %s!
+%s被保护%s的神圣护盾反弹了！
+%%%%
 %s blocks the %s.
 %s格挡了%s。
 %%%%
@@ -1327,6 +1339,9 @@ mimic reveal plural|%s are mimics!
 %%%%
 %s crumbles to dust!
 %s化为尘土！
+%%%%
+You grip the centipede bauble in your %s and it winds around your %s and fuses with it.
+你用%s握住蜈蚣球，它缠上你的%s并与之融合。
 %%%%
 %s crushes %s against %s and falls apart!
 %s把%s压在%s上撞碎了！
@@ -1498,6 +1513,24 @@ mimic reveal plural|%s are mimics!
 %s is briefly mesmerised by your gaze.
 %s被你的凝视短暂迷住了。
 %%%%
+%s finishes recrystalising.
+%s重新结晶完毕。
+%%%%
+%s surges with power!
+%s力量涌动！
+%%%%
+Your mantle thrums with power.
+你的玉衣随着力量的涌动而震颤。
+%%%%
+You condense the dungeon air into a potion of mist.
+你将地牢中的空气凝聚成一瓶雾药水。
+%%%%
+The potion decomposes into %s within you.
+药水在你体内分解成了%s。
+%%%%
+%s billows from you!
+%s从你身上翻涌而出！
+%%%%
 %s is briefly surrounded by shifting shadows.
 %s被变幻的阴影短暂包围。
 %%%%
@@ -1561,6 +1594,9 @@ mimic reveal plural|%s are mimics!
 %s is melded into your body!
 %s融入了你的身体！
 %%%%
+%s is chained to your body!
+%s被枷锁束缚在你的身体上！
+%%%%
 %s is neutral towards you.
 %s对你持中立态度。
 %%%%
@@ -1587,6 +1623,9 @@ mimic reveal plural|%s are mimics!
 %%%%
 %s is still trapped in memory!
 %s仍被困在记忆中！
+%%%%
+%s is not nearby!
+%s不在附近！
 %%%%
 %s is struck blind by the light of your shield.
 %s 被你盾牌的光芒致盲了。
@@ -1894,6 +1933,9 @@ barrage of energy
 %s tunnels through space-time and arrives with you!
 %s穿越时空而来，与你一同抵达！
 %%%%
+You feel the abyssal rune grow more distant.
+你感到深渊符文变得更远了。
+%%%%
 %s turn aside %s attack!
 %s挡开了%s的攻击！
 %%%%
@@ -2038,6 +2080,9 @@ barrage of energy
  (quivered)
 （已装入箭袋）
 %%%%
+ (bound)
+ （已束缚）
+%%%%
 (Slaying mortal victims (and occasionally demons) will eventually satisfy Makhleb and create an exit.)
 (屠杀凡人受害者（有时甚至是恶魔）将最终满足马科列布并创造一个出口。）
 %%%%
@@ -2169,6 +2214,33 @@ barrage of energy
 %%%%
 , with one final cry of rage, burns out of existence.
 发出最后一声怒吼，燃烧殆尽。
+%%%%
+Your summoned allies will not expire while fighting evil.
+你的召唤盟友与邪恶作战时不会消失。
+%%%%
+You can now gain power from killing the unholy and evil.
+你现在能从杀死不洁与邪恶生物中获得力量。
+%%%%
+You can no longer gain power from killing the unholy and evil.
+你不再能从杀死不洁与邪恶生物中获得力量。
+%%%%
+You can gain power from killing the unholy and evil.
+你能从杀死不洁与邪恶生物中获得力量。
+%%%%
+The Shining One may bless your followers whenever you slay foes.
+每当你杀死敌人，光辉者都可能祝福你的追随者。
+%%%%
+The Shining One will no longer blesses your followers when you slay foes.
+你杀死敌人时，光辉者不再祝福你的追随者了。
+%%%%
+The Shining One sometimes blesses your followers when you slay foes.
+你杀死敌人时，光辉者有时会祝福你的追随者。
+%%%%
+attempt to pacify hostile creatures
+尝试安抚敌对生物
+%%%%
+comfort your suffering allies
+抚慰受苦的盟友
 %%%%
 --more--
 --更多--
@@ -2401,6 +2473,9 @@ barrage of energy
 Clear target
 清除目标
 %%%%
+Enter a base skill target for %s: 
+输入%s的基础技能目标： 
+%%%%
 [<yellow>-</yellow>] clear all targets
 [<yellow>-</yellow>] 清除所有目标
 %%%%
@@ -2445,6 +2520,9 @@ Clear target
 %%%%
 \nWith your current stats and equipment, %1$s this skill would increase your SH by %2$.1f.
 \n以你当前的属性和装备，%1$s此技能将使你的SH提高%2$.1f。
+%%%%
+\nYour current base training target is %.1f.
+\n你当前的基础训练目标为%.1f。
 %%%%
 \nYou can choose %s:
 \n你可以选择%s:
@@ -2500,6 +2578,9 @@ A crocodile bursts forth beneath %s and grabs %s in its jaws!
 A cursed item is preventing you from removing %s.
 一个被诅咒的物品阻止你卸下%s。
 %%%%
+You rip the centipede off your %s and it falls limp.
+你将蜈蚣从你的%s上扯下，它无力地垂了下来。
+%%%%
 A divine halo surrounds you!
 一道神圣光环包围了你！
 %%%%
@@ -2529,6 +2610,9 @@ A fierce wind blows from the card.
 %%%%
 A flurry of magic pours from %s injured body!
 一股魔法从%s受伤的身体中涌出！
+%%%%
+%s weapon unleashes a flurry of shooting stars!
+%s武器释放出一阵流星！
 %%%%
 A forested plane collides here with a resounding crunch!
 一个森林遍布的位面在这里碰撞，发出了响亮的嘎吱声！
@@ -2700,6 +2784,12 @@ A web thrashes wildly, something is caught inside!
 %%%%
 A whirlwind of blades manifests around you!
 一股刀刃旋风在你周围显现！
+%%%%
+ blesses %s with protection!
+ 赐予%s庇护的祝福！
+%%%%
+ blesses %s with fervor!
+ 赐予%s狂热的祝福！
 %%%%
 abandoned
 背弃了
@@ -2892,6 +2982,9 @@ Antique Weapon
  appreciates the change of pace.
  欣赏这种节奏的变化。
 %%%%
+Your tail finishes growing back.
+你的尾巴已经完全长回来了。
+%%%%
  appreciates your contribution to the ecosystem.
  对你为生态系统做出的贡献表示赞赏。
 %%%%
@@ -2923,6 +3016,9 @@ Armaments
  装备着
 %%%%
 Armour
+护甲
+%%%%
+curse abbreviation|Arm
 护甲
 %%%%
 Block
@@ -3256,6 +3352,9 @@ burns
  burns!
  燃烧了起来！
 %%%%
+ burns.
+ 燃烧着。
+%%%%
  bursts through the door, destroying it!
  撞破了门！
 %%%%
@@ -3279,6 +3378,9 @@ Calm down first, please.
 %%%%
  can burrow through diggable terrain.\n
 能在可挖掘的地形中掘进。\n
+%%%%
+%s can use ranged and thrown weapons in melee range.\n
+%s能在近战范围内使用远程武器和投掷武器。\n
 %%%%
  can crash through doors.\n
 能撞开门。\n
@@ -3312,6 +3414,9 @@ Cancelling %s due to HUP.
 %%%%
 Cancelling grand finale due to HUP.
 因HUP取消终章。
+%%%%
+You can't see a target there!
+你看不到那里的目标！
 %%%%
 Cancelling leap due to HUP.
 因HUP取消跳跃。
@@ -3457,6 +3562,9 @@ Clearing quiver.
 Clearing the skill training target for %s.
 正在清除%s的技能训练目标。
 %%%%
+Setting a base skill training target for %s at %d.%d.
+正在将%s的基础技能训练目标设为%d.%d。
+%%%%
 Clearing travel trail.
 正在清除旅行轨迹。
 %%%%
@@ -3477,6 +3585,9 @@ Clouds arounds you coalesce and take form!
 %%%%
 Clouds condense from the air!
 云朵从空气中凝聚而出！
+%%%%
+You don't have enough room in your inventory!
+你的物品栏没有足够的空间！
 %%%%
 clouds of all kinds
 各类云雾
@@ -3501,6 +3612,9 @@ Confirm with . or Enter, or press ? or * to list all spells.
 %%%%
 Conjurations
 咒法系
+%%%%
+curse abbreviation|Conj
+咒法
 %%%%
 constriction
 缠绕
@@ -3537,6 +3651,9 @@ removed rod
 %%%%
 corpse bug
 尸体错误
+%%%%
+detected item
+探测到的物品
 %%%%
 Corr (%d)
 腐蚀（%d）
@@ -3630,6 +3747,15 @@ Dangerous Friends
 %%%%
  dark mirror aura disappears.
 暗镜光环消失了。
+%%%%
+ divine shield fades away.
+ 神圣护盾消退了。
+%%%%
+ is no longer glowing with power.
+ 不再闪耀着力量的光芒了。
+%%%%
+ is no longer insubstantial
+ 不再是虚体
 %%%%
 datura
 曼陀罗
@@ -4103,6 +4229,9 @@ Floor.
  flows through the trees.
  在树林中流动。
 %%%%
+%s is distracted by your tail.
+%s被你的尾巴分散了注意力。
+%%%%
  flows with the water.
  随水流移动。
 %%%%
@@ -4150,6 +4279,9 @@ Follow me!
 %%%%
 Found %s
 发现了%s
+%%%%
+hatch
+逃生口
 %%%%
 Found %s %s.
 发现了%s %s。
@@ -4360,6 +4492,9 @@ Hepliaklqana
 Hexes
 诅咒系
 %%%%
+curse abbreviation|Hex
+诅咒
+%%%%
 High
 高
 %%%%
@@ -4396,6 +4531,9 @@ HP: %d    AC: %d    Damage:%d (w/weapon)\n
 HPRegen
 回血
 %%%%
+%s%d.%02d%s/turn\n
+%s%d.%02d%s/回合\n
+%%%%
 huge
 巨大的
 %%%%
@@ -4422,6 +4560,9 @@ Ignis
 %%%%
  illusion
 的幻象
+%%%%
+living petrification spell
+活体石化法术
 %%%%
 immolation
 内焰
@@ -4534,6 +4675,9 @@ is covered in magical glow
  is dazed by the spores.
  被孢子弄得晕头转向。
 %%%%
+You are dazed by the spores!
+孢子令你晕眩！
+%%%%
  is devoured by a tear in reality.
 被现实中的一道裂缝吞噬了。
 %%%%
@@ -4557,6 +4701,9 @@ is covered in magical glow
 %%%%
  is enlightened!
 被启迪了！
+%%%%
+ becomes insubstantial!
+ 化为了虚体！
 %%%%
  is entangled in a web!
 被蛛网缠住了！
@@ -4629,6 +4776,12 @@ is lit by a halo
 %%%%
  is no longer infested.
 不再被寄生。
+%%%%
+The zombie hands constricting %s return to the earth.
+束缚%s的僵尸之手缩回了土中。
+%%%%
+The roots constricting %s sink back into the ground.
+束缚%s的根须沉回了地下。
 %%%%
  is no longer laced with chaos.
 不再被混沌缠绕。
@@ -4864,6 +5017,12 @@ Its outline shimmers with magical energy.
 its own
 自己的
 %%%%
+%s is struck blind by the light of %s divine shield.
+%s被%s神圣护盾的光芒致盲了。
+%%%%
+You are blinded by the light of %s divine shield.
+你被%s神圣护盾的光芒致盲了。
+%%%%
 Its scales and tail are adapted to the water.
 它的鳞片和尾巴适应了水域生活。
 %%%%
@@ -4963,6 +5122,9 @@ Lightning arcs from %s %s!
 lignification
 木质化
 %%%%
+mist
+雾
+%%%%
  likes it when %s.
 喜欢当%s。
 %%%%
@@ -4998,6 +5160,9 @@ looks %s,
 %%%%
  looks more energetic.
 看起来更有精神了。
+%%%%
+ divine vigour fades away.
+ 神圣活力消退了。
 %%%%
  looks more healthy.
 看起来更健康了。
@@ -5089,6 +5254,9 @@ Maledictions
 Malevolent energies surge around you.
 恶意能量在你周围涌动。
 %%%%
+Your unholy armour drains life force from %s.
+你的不洁护甲从%s身上汲取生命力。
+%%%%
 Marked for pickup.
 已标记拾取。
 %%%%
@@ -5121,6 +5289,9 @@ Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s
 %%%%
  memory burns away to nothing.
 记忆燃烧殆尽。
+%%%%
+ is no longer touched by paradox.
+ 不再受悖论之触的影响了。
 %%%%
 Mesm
 迷魂
@@ -5214,6 +5385,9 @@ MPRegen
 %%%%
 Mushrooms sprout behind %s.
 蘑菇在%s背后冒了出来。
+%%%%
+A bog forms beneath %s!
+%s下方形成了一片沼泽！
 %%%%
 Mutagenic energies flood into your body!
 变异能量涌入你的身体！
@@ -5341,6 +5515,27 @@ Not in Shoals or no heightmap; tide not available.
 Not with that terrain in the way!
 有那种地形挡路可不行！
 %%%%
+The Orb shrieks and becomes a dead weight against your magic!
+佐特宝珠尖啸着，沉重得让你的魔法无法拉动它！
+%%%%
+The Orb lets out a furious burst of light and becomes a dead weight against your magic!
+佐特宝珠愤怒地迸发出一阵强光，沉重得让你的魔法无法拉动它！
+%%%%
+The Orb shrieks as your magic touches it!
+你的魔法一碰到佐特宝珠，它就尖啸起来！
+%%%%
+The Orb lets out a furious burst of light as your magic touches it!
+你的魔法一碰到佐特宝珠，它就愤怒地迸发出一阵强光！
+%%%%
+Now pick up the Orb and get out of here!
+现在拾起佐特宝珠，逃出去！
+%%%%
+Yoink! You pull the item%s %stowards yourself.
+拿来！你将物品%.0s拉向自己%s。
+%%%%
+partway 
+，但只拉近了一段距离 
+%%%%
 nothing
 虚无
 %%%%
@@ -5388,6 +5583,9 @@ Once activated
 %%%%
 One of the Royal Jelly's fragments survives.
 果冻王的一块碎片存活了下来。
+%%%%
+%s of the Royal Jelly's fragments survive.
+果冻王的碎块中有%s块存活了下来。
 %%%%
 Oops! There was something there already!
 哎呀！那里已经有东西了！
@@ -5723,6 +5921,12 @@ Really %s%s%s?%s
 Really abandon %s for an unknown god?
 真的要为了未知神祇放弃%s吗？
 %%%%
+%s dispels your loathsome form.
+%s驱散了你那令人厌恶的形态。
+%%%%
+%s removes %s.
+%s移除了%s。
+%%%%
 Really abort (and waste the scroll)?
 真的要中止（并浪费卷轴）吗？
 %%%%
@@ -5734,6 +5938,12 @@ Really dismiss %s?
 %%%%
 Really remove and destroy %s?%s
 真的要移除并摧毁%s吗？%s
+%%%%
+ Ashenzari will withdraw the current offer of knowledge!
+ 艾申扎利将收回当前的知识馈赠！
+%%%%
+You shatter the chains binding %1$s!
+你打碎了束缚%1$s的枷锁！
 %%%%
  recites the Axioms of Law to you!
  向你朗诵秩序之律！
@@ -5827,6 +6037,21 @@ removing yourself from
 %%%%
 Repeat Exegesis
 重复释经
+%%%%
+Pacify
+安抚
+%%%%
+Divine Alms
+神圣施济
+%%%%
+Aura of Vigour
+活力光环
+%%%%
+Ritual of Binding
+束缚仪式
+%%%%
+Recast %s
+再次施放%s
 %%%%
 repel missiles
 排斥飞弹
@@ -5992,6 +6217,9 @@ Running generate_armour_item tests.
 %%%%
 Running generate_weapon_item tests.
 正在运行生成武器物品测试。
+%%%%
+<cyan>Lucky! %s is actually %s</cyan>!
+<cyan>真幸运！%s其实是%s</cyan>！
 %%%%
 sack of spiders
 蜘蛛之袋
@@ -6438,6 +6666,9 @@ Space twists violently!
 Space warps into you!
 空间向你扭曲！
 %%%%
+Swapping back to %d
+切换回%d
+%%%%
 Sparks flare out of its mouth and nostrils.
 电火花从它的嘴和鼻孔中迸发。
 %%%%
@@ -6512,6 +6743,9 @@ starts %s,
 开始了%s，
 %%%%
 stealth
+潜行
+%%%%
+curse abbreviation|Stlth
 潜行
 %%%%
 steam
@@ -6897,6 +7131,9 @@ The bodies of the dead rush to embrace you!
 The bolas passes through %s!
 流星索穿过了%s！
 %%%%
+The bolas wraps around %s and binds %s in place!
+流星索缠住了%s，将%s束缚在原地！
+%%%%
 The bolas passes through you!
 流星索穿过了你！
 %%%%
@@ -6911,6 +7148,9 @@ The buzzing within you returns to its normal rhythm.
 %%%%
 The cacophony subsides as you leave the area.
 你离开该区域时，嘈杂攻击平息了。
+%%%%
+You have escaped!
+你逃出去了！
 %%%%
 The captain's cutlass flashes! You lacerate %s!!
 船长弯刀闪烁！你割裂了%s！！
@@ -7026,6 +7266,9 @@ The flames cauterise the wound!
 The flames covering %s go out.
 覆盖%s的火焰熄灭了。
 %%%%
+ burns terribly!
+ 剧烈地燃烧！
+%%%%
 The flow of time bends around you.
 时间的流动在你周围弯曲了。
 %%%%
@@ -7037,6 +7280,15 @@ The forest calms down.
 %%%%
 The forest fire spreads!
 森林大火蔓延了！
+%%%%
+glimmer
+微光
+%%%%
+faint frost
+淡霜
+%%%%
+blinding haze
+致盲浓雾
 %%%%
 The forest starts to sway and rumble!
 森林开始摇晃并隆隆作响！
@@ -7170,6 +7422,9 @@ The mirror clouds!
 The momentum dissipates harmlessly.
 动量无害地消散了。
 %%%%
+You can't see anything to fire at!
+你看不到任何可以射击的目标！
+%%%%
 The monsters scatter in all directions!
 怪物们四散奔逃！
 %%%%
@@ -7181,6 +7436,9 @@ The mud splashes down.
 %%%%
 The mutagenic energy flows into you.
 变异能量流入了你的身体。
+%%%%
+ shudders as wild magic violently cascades through %s%s
+ 在狂暴魔力剧烈涌过%s时颤抖%s
 %%%%
 The nature of this place prevents your teleportation.
 这个地方的本质阻止了你的传送。
@@ -7245,6 +7503,9 @@ The pull of %s song draws you forwards.
 The rain has left you waist-deep in water!
 雨水让你陷入了齐腰深的水中！
 %%%%
+You condense the glimmer around your %s and fire it at %s!
+你凝聚起你的%s周围的微光，射向%s！
+%%%%
 the Rangers
 游侠
 %%%%
@@ -7256,6 +7517,9 @@ The roots around %s sink back into the ground.
 %%%%
 The roots around you sink back into the ground.
 你周围的根蔓缩回了地面。
+%%%%
+The zombie hands constricting you return to the earth.
+束缚你的僵尸之手缩回了土中。
 %%%%
 The roots grab %s!
 树根抓住了%s！
@@ -7506,6 +7770,9 @@ there is a lethal amount of poison in your body
 There is a shattering impact!
 传来一阵粉碎性的冲击！
 %%%%
+You can't see anything to scorch!
+你看不到任何可以烧焦的目标！
+%%%%
 there is a strange disturbance nearby
 附近有奇怪的扰动
 %%%%
@@ -7577,6 +7844,12 @@ There's only one card left!
 %%%%
 There's something in the way.
 那里有东西挡住了。
+%%%%
+There's %s in the way.
+%s挡住了去路。
+%%%%
+%s is immovably fixed in your path.
+%s牢牢固定在你的路径上，无法移动。
 %%%%
  These spells will remain available as long as you worship Vehumet.
 只要你继续崇拜维胡梅特，这些法术将一直可用。
@@ -7825,6 +8098,9 @@ your paragon is already deployed, but not yet charged.
 you are already charging a Fortress Blast.
 你已经在为堡垒爆破充能了。
 %%%%
+you need to wait for the hot winds to gather around you again.
+你需要等待灼热的风再次聚集到你身边。
+%%%%
  toggle spell headers
  切换表头
 %%%%
@@ -7933,6 +8209,9 @@ Unemployed
 %%%%
 unequip
 卸下
+%%%%
+select
+选择
 %%%%
 Unfortunately, you learned nothing new or useful.
 遗憾的是，你没有学到任何新的或有用的东西。
@@ -8123,6 +8402,12 @@ Whoops, nicked a vault in slime connectivity fixup
 Why would you want to do that?
 你为什么要那样做？
 %%%%
+You can't charge at yourself.
+你不能向自己冲锋。
+%%%%
+You're already next to there.
+你已经紧挨着那里了。
+%%%%
 Why would you want to repeat a run command?
 你为什么要重复执行奔跑命令？
 %%%%
@@ -8153,6 +8438,9 @@ skill cause|wildshape
 Will
 意志
 %%%%
+%s (%d%%)
+%s（%d%%）
+%%%%
  will have no effect
  不会有任何效果
 %%%%
@@ -8176,6 +8464,9 @@ Wisps of shadow whirl around you...
 %%%%
  with 
 用
+%%%%
+ with a divine shield
+ 借助神圣护盾
 %%%%
 With a burst of heat and light, you rocket upwards!
 随着一阵热与光的爆发，你像火箭一样向上冲！
@@ -8356,6 +8647,9 @@ You also have %d voucher%s.
 You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
+The shaft disappears in a puff of logic!
+竖井随着一缕逻辑消失了！
+%%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
 %%%%
@@ -8407,6 +8701,12 @@ You are amphibious.
 you are being drained by your emergency flight
 紧急飞行正在消耗你的魔力
 %%%%
+There are probably monsters nearby
+附近可能有怪物
+%%%%
+%s is probably nearby
+%s可能就在附近
+%%%%
 You are briefly dazzled by a blinding flash.
 你被一道耀眼的光芒短暂地炫目了。
 %%%%
@@ -8454,6 +8754,12 @@ You are hurled through space towards %s monster%s!
 %%%%
 you are in a cloud of %s
 你正处于%s之中
+%%%%
+ (Press *t to temporarily disregard this.)
+ （按*t暂时忽略此警告。）
+%%%%
+ (Press Ctrl+T to temporarily disregard this.)
+ （按Ctrl+T暂时忽略此警告。）
 %%%%
 You are incapable of wielding weapons or throwing items.
 你无法持握武器或投掷物品。
@@ -8581,6 +8887,9 @@ You aren't carrying any armour which can be enchanted further.
 You aren't carrying any artefact melee weapons.
 你没有携带任何神器近战武器。
 %%%%
+You aren't wearing any items which can be bound.
+你没有穿戴任何可以束缚的物品。
+%%%%
 You aren't carrying any currently wearable armour.
 你当前没有可穿戴的护甲。
 %%%%
@@ -8589,6 +8898,9 @@ You aren't carrying any items that might be thrown or fired.
 %%%%
 You aren't carrying any items that you can evoke.
 你没有携带任何你可以唤起的物品。
+%%%%
+None of your equipped items are bound to you.
+你装备的物品中没有任何一件与你束缚在一起。
 %%%%
 You aren't carrying any jewellery or talismans.
 你没有携带任何珠宝或护符。
@@ -8998,11 +9310,26 @@ You can't see that place.
 You can't set training targets!
 你无法设置训练目标！
 %%%%
+Clearing the base skill training target for %s.
+正在清除%s的基础技能训练目标。
+%%%%
 You can't stand on top of the monster!
 你不能站在怪物身上！
 %%%%
 You can't transfer that.
 你无法转移那个。
+%%%%
+You can't see that clearly enough to target.
+你看不清它，无法瞄准。
+%%%%
+%s can't be transferred to your ancestor's location.
+%s无法被传送到你先祖所在的位置。
+%%%%
+%s can't be transferred there.
+%s无法被传送到那里。
+%%%%
+You can't see that clearly enough.
+你看不清它。
 %%%%
 You can't transfer your ancestor with %s.
 你无法将先祖与%s交换位置。
@@ -9136,6 +9463,15 @@ You cannot move closer to %s!
 You cannot move.
 你无法移动。
 %%%%
+%s %s visible enough to target properly.
+%s%s足够清晰，无法准确瞄准。
+%%%%
+aren't
+不
+%%%%
+You can't see anything there to charge at.
+你看不到那里有任何可以冲锋的目标。
+%%%%
 You cannot move. (Use ctrl+direction or * direction to attack while stationary and confused.)
 你无法移动。（使用ctrl+方向或*方向在困惑状态下站在原地攻击。）
 %%%%
@@ -9147,6 +9483,9 @@ You cannot pacify immobile monsters!
 %%%%
 You cannot pacify mindless monsters!
 你不能安抚无意识的怪物！
+%%%%
+%s isn't hostile.
+%s并不敌对。
 %%%%
 You cannot pacify nonliving monsters!
 你不能安抚非活的怪物！
@@ -9232,6 +9571,9 @@ You choke on the stench!
 You clear your throat and prepare to recite.
 你清了清喉咙，准备吟诵。
 %%%%
+You channel a blast of cleansing flame!
+你引导出一股净化之焰！
+%%%%
 You close the %s%s%s.
 你关上了%s%s%s。
 %%%%
@@ -9250,11 +9592,32 @@ You conjure up an array of volatile reagents!
 You consecrate your suffering and invoke the rites of blood!
 你献祭了自己的痛苦并举行了血之仪式！
 %%%%
+ unleashes a burst of psychic force!
+ 释放出一股精神冲击！
+%%%%
+psychic force
+精神冲击
+%%%%
+You shed your tail %sto distract predators!
+你甩掉尾巴%s，以分散捕食者的注意！
+%%%%
+and slip away 
+并悄然溜走 
+%%%%
+Your assassin centipede leaps free of your %s with a hiss!
+你的刺客蜈蚣嘶嘶作响，从你的%s上跃下！
+%%%%
+Your assassin centipede withers and dies.
+你的刺客蜈蚣枯萎死去了。
+%%%%
 You conserve a charge of your wand.
 你节省了一次魔杖的充能。
 %%%%
 You construct a shell of ice in front of yourself.
 你在自己面前构筑了一面冰壳。
+%%%%
+%s constructs a shell of ice in front of %s.
+%s在%s面前构筑了一层冰壳。
 %%%%
 You continue transforming.
 你继续变形。
@@ -9309,6 +9672,9 @@ You die...
 %%%%
 You dig through %s.
 你挖穿了%s。
+%%%%
+You %s slowly and carefully through the %s.
+你缓慢而小心地%s%s。
 %%%%
 You disentangle yourself.
 你从蛛网中挣脱出来。
@@ -9586,6 +9952,9 @@ You feel devious.
 You feel dizzy.
 你感到头晕。
 %%%%
+The haze blurs your vision!
+浓雾模糊了你的视线！
+%%%%
 You feel doom gather around you.
 你感到厄运在你周围聚集。
 %%%%
@@ -9594,6 +9963,12 @@ You feel extremely nervous for a moment...
 %%%%
 You feel extremely strange.
 你感到极度怪异。
+%%%%
+Really drink that potion of mutation while resistant to mutation?
+你拥有变异抗性，真的要喝下那瓶变异药水吗？
+%%%%
+There's no one nearby to share it with.
+附近没有可以分享的对象。
 %%%%
 You feel guileless.
 你感到天真无邪。
@@ -9652,6 +10027,12 @@ You feel less strong-willed.
 You feel lethargic.
 你感到昏昏欲睡。
 %%%%
+ turns your own shadow against you.
+ 让你的影子反过来攻击你。
+%%%%
+ fails to turn your shadow against you.
+ 未能让你的影子反过来攻击你。
+%%%%
 You feel life coursing into your body%s
 你感到生命力涌入你的身体%s
 %%%%
@@ -9706,11 +10087,32 @@ You feel perceptive.
 You feel powerful.
 你感到强大。
 %%%%
+You feel potentially powerful.
+你觉得自己蕴藏着强大的力量。
+%%%%
+You feel a bit dim.
+你觉得有些黯淡。
+%%%%
+You feel a strange surge of divine displeasure.
+你感到一股奇异的神怒涌来。
+%%%%
+ seems less inclined to favour you.
+ 似乎不再那么愿意眷顾你了。
+%%%%
 You feel protected.
 你感到被保护了。
 %%%%
 You feel purified!
 你感到被净化了！
+%%%%
+ and grants %s more time in this world.
+ ，并让%s在世间多停留一段时间
+%%%%
+The light of Elyvilon comforts %s%s.
+艾利维隆的光芒抚慰了%s%s。
+%%%%
+%s grants you and your allies divine vigour.
+%s赐予你和盟友神圣活力。
 %%%%
 You feel rather ponderous.
 你感到相当笨重。
@@ -9778,6 +10180,9 @@ You feel strangely stable.
 You feel strangely unstable.
 你感到异常的不稳定。
 %%%%
+You feel the power of the Abyss delaying your translocation and deflecting it away from its rune!
+你感到深渊的力量拖延着你的传送，并使其偏离深渊符文！
+%%%%
 You feel strong-willed.
 你感到意志坚定。
 %%%%
@@ -9834,6 +10239,24 @@ You feel the transmutational energy in your body is nearly expended.
 %%%%
 You feel tipsy.
 你感到微醺。
+%%%%
+You become very slightly more insubstantial.
+你的虚体变得略微更加虚无了。
+%%%%
+Your body becomes insubstantial.
+你的身体变成了虚体。
+%%%%
+The liquid fire falls away from your body.
+液体火焰从你的身体上脱落了。
+%%%%
+You body stops petrifying.
+你的身体不再石化了。
+%%%%
+The spiked barbs fall from your body.
+尖刺倒钩从你的身体上脱落了。
+%%%%
+insubstantial
+虚体
 %%%%
 You feel unable to drink.
 你感到无法饮用。
@@ -10099,6 +10522,9 @@ You hear a grinding noise.
 You hear a hand cannon's boom.
 你听到手炮发出“轰”的一声。
 %%%%
+a salvo of %ss
+一轮%s齐射
+%%%%
 You hear a loud "Zot"!
 你听到一声响亮的"佐特"！
 %%%%
@@ -10194,6 +10620,9 @@ You lock target on %s and prepare to deploy your bee.
 %%%%
 You lose access to your magic!
 你失去了获取魔力的能力！
+%%%%
+The residue of your spell condenses into glimmer.
+你的法术残余凝聚成微光。
 %%%%
 You lose track of time!
 你忘记了时间的流逝！
@@ -10447,6 +10876,12 @@ You reveal a symbol of torment!
 You reveal the great annihilating truth to your foes!
 你向敌人揭示了伟大的湮灭真理！
 %%%%
+The shockwave
+冲击波
+%%%%
+Stomp anyway?
+仍然要践踏吗？
+%%%%
 You revel in the kill!
 你沉醉于杀戮之中！
 %%%%
@@ -10671,6 +11106,18 @@ You turn to %s%s.
 You unleash %s concussive blast!
 你释放了%s震荡冲击！
 %%%%
+You can't tap into the dragon vein in your current state.
+你当前的状态无法汲取龙脉的能量。
+%%%%
+You don't have enough magical energy left to tap into this dragon vein.
+你剩余的法力不足以汲取这条龙脉的能量。
+%%%%
+You attempt to draw power from the ground, but there is nothing in range to harm.
+你尝试从地下汲取力量，但范围内没有可以伤害的目标。
+%%%%
+You draw %s magic from the ground and channel it!
+你从地下汲取%s魔法并引导其能量！
+%%%%
 You unleash the spiteful dead!
 你释放了怨恨的亡灵！
 %%%%
@@ -10679,6 +11126,12 @@ You utter a prayer to Makhleb and carve the %s into yourself.
 %%%%
 You weave more energy into your solar ember.
 你将更多能量编织进你的太阳余烬。
+%%%%
+You %s towards %s%s!
+你%s%s%s！
+%%%%
+ with incredible speed
+ ，速度快得惊人
 %%%%
 You welcome %s%s into your grasp.
 你迎接%s%s落入掌握。
@@ -10706,6 +11159,9 @@ You writhe in agony!
 %%%%
 You%s miss %s%s.
 你%s未命中%s%s。
+%%%%
+Your blow resonates through %s.
+你的打击在%s体内激起了共鸣。
 %%%%
 You'd need another %s to do that!
 你需要另一种%s才能做到！
@@ -10793,6 +11249,9 @@ Your %s have fully recharged.
 %%%%
 Your %s misses %s.
 你的%s未命中%s。
+%%%%
+You %s %s but do no damage.
+你%s%s，但没有造成伤害。
 %%%%
 Your %s mutation feels more permanent.
 你的%s变异感觉更加永久了。
@@ -10961,6 +11420,9 @@ Your confusion fades away as the thirst for blood takes over your mind.
 %%%%
 Your curses shatter.
 你的诅咒破碎了。
+%%%%
+%s falls away from you.
+%s从你身上脱落了。
 %%%%
 Your damage is reflected back at you!
 你的伤害被反射回来了！
@@ -11308,6 +11770,9 @@ Your time-warped blood is ready to ripple again.
 Your tiny sun winks out.
 你的微型太阳熄灭了。
 %%%%
+%s evaporate!
+%s蒸发了！
+%%%%
 Your toxic radiance grows in intensity.
 你的毒素辐射强度增加了。
 %%%%
@@ -11337,6 +11802,9 @@ Your water-walking will last only until you reach solid ground.
 %%%%
 Your weapon can't reach that far!
 你的武器够不到那么远！
+%%%%
+You can't reach that far!
+你够不到那么远的地方！
 %%%%
 Your weapon gleams with eagerness.
 你的武器闪烁着渴望的光芒。
@@ -11478,6 +11946,9 @@ Tesseract
 %%%%
 Missing
 缺失
+%%%%
+No description found
+未找到描述
 %%%%
 Rev+
 暖机+
@@ -12039,9 +12510,15 @@ The silver sears
 
 %1$s从%3$s身上%2$.0s汲取了生命力%4$s
 %%%%
+...but it dissipates before reaching you.
+……但它还未到达你身边便消散了。
+%%%%
 %s blocks the %s with %s %s... and reflects it back!
 
 %s用%s%s格挡了%s……并将其反射了回去！
+%%%%
+The %s reflects off the divine shield protecting %s!
+这道%s被保护%s的神圣护盾反射了！
 %%%%
 constricted by
 
@@ -12183,6 +12660,21 @@ Adjust which ability?
 Inscribe which item?
 
 铭刻哪个物品？
+%%%%
+twirl %s
+挥舞%s
+%%%%
+flex your muscles
+绷紧肌肉
+%%%%
+You take an eager swig of the potion and %s. Strong stuff!
+你急切地灌下一口药水，%s。真烈！
+%%%%
+You take a swig of the potion and %s.
+你灌下一口药水，%s。
+%%%%
+Really quaff the %s?
+真的要喝下%s吗？
 %%%%
 Inscribe with what?
 
@@ -12989,6 +13481,9 @@ monster equip|%1$s %2$s.
 %s appear in pursuit of the Orb! 
 %s出现，追踪宝珠而来！
 %%%%
+%s ambushes you!
+%s伏击了你！
+%%%%
 Dungeon Crawl
 地牢爬行
 %%%%
@@ -13682,6 +14177,12 @@ a %1$s
 %s is nearby
 %s在附近
 %%%%
+You cannot rest while %s is nearby.
+%s就在附近，你无法休息。
+%%%%
+You cannot rest while monsters are nearby.
+怪物就在附近，你无法休息。
+%%%%
 weakened
 变虚弱
 %%%%
@@ -13837,6 +14338,21 @@ The world feels relentlessly logical and grey.
 %%%%
 You feel supremely confident.
 你感到无比自信。
+%%%%
+The Stagehand's Sword gleams wickedly %s
+舞台工之剑闪着阴险的光芒，%s
+%%%%
+but you remain visible.
+但你的身形依然可见。
+%%%%
+and you become more transparent.
+而你的身形变得更加透明了。
+%%%%
+and you slip into invisibility!
+而你悄然隐去了身形！
+%%%%
+You feel unable to tap into the sword's magical power.
+你觉得无法汲取这把剑的魔力。
 %%%%
 Pharaoh
 法老
@@ -14009,6 +14525,9 @@ Adventurer
 Fighting
 格斗
 %%%%
+curse abbreviation|Fight
+格斗
+%%%%
 Short Blades
 短刃
 %%%%
@@ -14036,7 +14555,13 @@ Throwing
 Dodging
 闪避
 %%%%
+curse abbreviation|Dodg
+闪避
+%%%%
 Shields
+盾牌
+%%%%
+curse abbreviation|Shld
 盾牌
 %%%%
 Unarmed Combat
@@ -14045,26 +14570,50 @@ Unarmed Combat
 Spellcasting
 施法能力
 %%%%
+curse abbreviation|Splcast
+施法
+%%%%
 Summonings
 召唤系
+%%%%
+curse abbreviation|Summ
+召唤
 %%%%
 Translocations
 传送系
 %%%%
+curse abbreviation|Tloc
+传送
+%%%%
 Forgecraft
 锻造术
+%%%%
+curse abbreviation|Forge
+锻造
 %%%%
 Fire Magic
 火焰魔法
 %%%%
+curse abbreviation|Fire
+火焰
+%%%%
 Ice Magic
 寒冰魔法
+%%%%
+curse abbreviation|Ice
+寒冰
 %%%%
 Air Magic
 空气魔法
 %%%%
+curse abbreviation|Air
+空气
+%%%%
 Earth Magic
 大地魔法
+%%%%
+curse abbreviation|Earth
+大地
 %%%%
 Invocations
 祈神
@@ -14072,8 +14621,14 @@ Invocations
 Evocations
 魔力释放
 %%%%
+curse abbreviation|Evo
+魔释
+%%%%
 Shapeshifting
 变形术
+%%%%
+curse abbreviation|Shape
+变形
 %%%%
 title article|La 
 %%%%
@@ -15116,6 +15671,9 @@ air
 alchemy
 炼金术
 %%%%
+curse abbreviation|Alch
+炼金
+%%%%
 animal skin
 动物皮
 %%%%
@@ -15275,6 +15833,12 @@ ice dragon scales
 inkwell talisman
 墨池护符
 %%%%
+vision talisman
+灵视护符
+%%%%
+gecko talisman
+壁虎护符
+%%%%
 javelin
 标枪
 %%%%
@@ -15313,6 +15877,9 @@ morningstar
 %%%%
 necromancy
 死灵术
+%%%%
+curse abbreviation|Necro
+死灵
 %%%%
 off
 关闭
@@ -15370,6 +15937,9 @@ riddle talisman
 %%%%
 rimehorn talisman
 霜角护符
+%%%%
+mist talisman
+雾护符
 %%%%
 ring mail
 环甲
@@ -15430,6 +16000,9 @@ spirit shield
 %%%%
 spore talisman
 孢子护符
+%%%%
+jade talisman
+玉晶护符
 %%%%
 steam dragon scales
 蒸汽龙鳞甲
@@ -15596,6 +16169,15 @@ speed
 sunder
 碎裂
 %%%%
+status crystals|<%1$s>Cr<%2$s>ys<%3$s>ta<%4$s>ls
+<%1$s>元<%2$s>素<%3$s>晶<%4$s>体
+%%%%
+vapourise (%s)
+汽化（%s）
+%%%%
+producing %s
+正在产生%s
+%%%%
 sundering
 碎裂
 %%%%
@@ -15643,6 +16225,12 @@ beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
 %%%%
  but does no damage
 但没有造成伤害
+%%%%
+ but do no damage
+ 但没有造成伤害
+%%%%
+%s icy thorns crumble before %s.
+%s冰棘在%s面前碎裂了。
 %%%%
 The %1$s repels the %2$s!
 %2$s弹开了%1$s！
@@ -17057,6 +17645,30 @@ Mislead
 Phase Shift
 相位变换
 %%%%
+Touch of Paradox
+悖论之触
+%%%%
+Dragon Veins
+龙脉
+%%%%
+Dragon Vein (Fire)
+龙脉（火）
+%%%%
+Dragon Vein (Ice)
+龙脉（冰）
+%%%%
+Dragon Vein (Air)
+龙脉（气）
+%%%%
+Dragon Vein (Earth)
+龙脉（土）
+%%%%
+Ice Thorns
+冰棘
+%%%%
+Sirocco
+灼热风
+%%%%
 Poison Weapon
 淬毒武器
 %%%%
@@ -17288,6 +17900,12 @@ Ench
 Slay
 杀敌
 %%%%
+ x %d%% (Archery)
+ x %d%%（箭术）
+%%%%
+%d (Base %s x %d%% (%s) x %d%% (%s)%s)%s%s.
+%d（基础%s x %d%%（%s） x %d%%（%s）%s）%s%s。
+%%%%
 %d (Base %s x %d%% (%s) x %d%% (%s)%s)%s.
 %d (基础 %s x %d%% (%s) x %d%% (%s)%s)%s。
 %%%%
@@ -17308,6 +17926,12 @@ Base accuracy: %+d  Base damage: %d
 %%%%
 Base attack delay: %.1f\nThis weapon's minimum attack delay (%.1f) is reached at skill level %d.
 基础攻击延迟: %.1f\n该武器的最小攻击延迟(%.1f)在技能等级%d时达到。
+%%%%
+heavy armour
+重甲
+%%%%
+a shield
+盾牌
 %%%%
 Your heavy armour
 你的重甲
@@ -17596,6 +18220,30 @@ Extra life!
 The power to cast %s surges from within.
 施放%s的力量从内心涌出。
 %%%%
+wisps of flame dancing upon you
+火苗在你身上跳动
+%%%%
+the chill of winter seizing you
+凛冬的寒意攫住你
+%%%%
+electricity coursing through you
+电流流经你的身体
+%%%%
+the impact of arcane energy battering you
+奥术能量冲击着你
+%%%%
+the bite of steel piercing you
+钢铁刺穿你时的痛楚
+%%%%
+the sting of sand against your skin
+沙粒刺痛你的皮肤
+%%%%
+the taste of poison filling your lungs
+毒气充满你的肺部
+%%%%
+icy daggers piercing you
+冰冷的匕首刺穿你
+%%%%
 You remember nothing but emptiness.
 你只记得一片虚无。
 %%%%
@@ -17661,6 +18309,9 @@ Your divine stamina protects you from miasma!
 %%%%
 You dive into the water, extinguishing the flames!
 你浸入水中，火焰熄灭了！
+%%%%
+The liquid fire burns you%s%s
+液体火焰灼烧着你，令你%s痛苦%s
 %%%%
 The liquid flame finally runs out.
 液体火焰终于耗尽了。
@@ -18409,6 +19060,15 @@ double potion healing
 drunken brawling
 醉拳
 %%%%
+Whenever you drink a potion, you attack all enemies around you.
+每当你喝下一瓶药水，便会攻击周围的所有敌人。
+%%%%
+You brawl whenever you drink a potion.
+每当你喝下一瓶药水，便会大打出手。
+%%%%
+You no longer brawl whenever you drink a potion.
+你不再每喝下一瓶药水就大打出手了。
+%%%%
 efficient magic
 高效魔法
 %%%%
@@ -18456,6 +19116,12 @@ formless
 %%%%
 foul shadow
 污秽之影
+%%%%
+You are faintly shadowed, rarely releasing foul flame when damaged in melee.
+你笼罩在淡淡的阴影中，近战受伤时很少会释放污秽火焰。
+%%%%
+You are darkly shadowed, often releasing foul flame when damaged in melee.
+你笼罩在浓重的阴影中，近战受伤时经常会释放污秽火焰。
 %%%%
 foul stench
 恶臭
@@ -20092,6 +20758,9 @@ increased damage when unseen
 drowning damage
 溺水伤害
 %%%%
+spread contamination & shallow water
+散布诱变辐射与浅水
+%%%%
 cause corrosion
 造成腐蚀
 %%%%
@@ -20155,6 +20824,12 @@ slowly slimify the target
 diminish the target's spells
 削弱目标法术
 %%%%
+grow burstshrooms behind the defender
+在受击者身后长出爆裂菇
+%%%%
+undefined
+未定义
+%%%%
 Holy
 神圣
 %%%%
@@ -20205,6 +20880,9 @@ mesmerising
 %%%%
 fast
 快速
+%%%%
+hasted
+加速
 %%%%
 rolling
 滚动中
@@ -20881,8 +21559,23 @@ flag long|rolling
 flag long|regenerating
 正在再生
 %%%%
+flag short|phased
+相位偏移
+%%%%
+flag long|out of phase
+相位偏移
+%%%%
+flag short|divine shielded
+神圣护盾
+%%%%
+flag long|divinely shielded
+神圣护盾保护
+%%%%
 damnation bolt
 毁灭之矢
+%%%%
+assassin centipede
+刺客蜈蚣
 %%%%
 eggplant
 茄子
@@ -20991,6 +21684,9 @@ Failure to toggle bane.
 %%%%
 If you continue, your game will not be scored!
 如果继续，你的游戏将不计分！
+%%%%
+<w>q</w>      set god gift timeout\n
+<w>q</w>      设置神赐等待计数\n
 %%%%
 In explore mode, death is optional.
 探索模式下，死亡是可选的。
@@ -21168,6 +21864,9 @@ You now have enough gold to
 %%%%
 Your vision returns to normal.
 你的视力恢复正常了。
+%%%%
+You feel more solid again.
+你觉得身体又凝实了一些。
 %%%%
 \n[<w>/</w>] sort (%s)%s  %s
 \n[<w>/</w>] 排序（%s）%s  %s
@@ -21666,6 +22365,9 @@ living paralysis spell
 %%%%
 living smiting commandment
 活体神罚律令
+%%%%
+living iceblast spell
+活体冰爆法术
 %%%%
 mana viper
 魔力毒蛇
@@ -22321,6 +23023,9 @@ roughly hewn altar of Beogh
 runed door
 符文门
 %%%%
+Error, no message for '%s'.
+错误：找不到“%s”的消息。
+%%%%
 runed translucent door
 刻有符文的半透明门
 %%%%
@@ -22498,6 +23203,9 @@ something's
 not susceptible
 不受影响
 %%%%
+cannot heal from
+无法从其身上获得治疗
+%%%%
 already infected
 已感染
 %%%%
@@ -22539,6 +23247,9 @@ Aim
 %%%%
 Look
 观察
+%%%%
+no longer here
+已不在此处
 %%%%
 %s: <lightgrey>%s</lightgrey>
 %s：<lightgrey>%s</lightgrey>
@@ -22593,6 +23304,9 @@ Blink to where?
 %%%%
  terribly
 极其
+%%%%
+. You resist.
+。你抵抗了这次伤害。
 %%%%
 a god
 某个神
@@ -22663,6 +23377,15 @@ You are too large for most types of armour.
 You cannot fit into any form of body armour or wear helmets.
 你无法穿戴任何形式的身体护甲或头盔。
 %%%%
+Your fleshless body is immune to poison, disease, and asphyxiation.
+你的身体没有血肉，免疫毒素、疾病和窒息。
+%%%%
+Your plant body is immune to sleep, blinding, and asphyxiation.
+你的植物身体免疫睡眠、致盲和窒息。
+%%%%
+You are undead, granting you many immunities and vulnerabilities.
+你是亡灵，拥有许多免疫能力与弱点。
+%%%%
 You flicker for a moment.
 你的身影闪烁了一下。
 %%%%
@@ -22701,6 +23424,15 @@ Focus mode
 %%%%
 Melee damage
 近战伤害
+%%%%
+Armour egos
+护甲附魔
+%%%%
+Elemental magic skill
+元素魔法技能
+%%%%
+Other magic skill
+其他魔法技能
 %%%%
 Bite speed
 撕咬速度
@@ -22807,6 +23539,9 @@ your reserves of magic are already full.
 you cannot cast such powerful magic in your current form.
 当前形态下你无法施放如此强大的魔法。
 %%%%
+%s won't allow you to cast this spell.
+%s不允许你施放此法术。
+%%%%
 fravashi
 弗拉瓦希
 %%%%
@@ -22833,6 +23568,9 @@ The sprites lose interest in your situation.
 %%%%
 You lose your grip on the chains of life and death.
 你失去了对生死之链的掌控。
+%%%%
+Your vapourised %s dissipates without effect.
+你汽化的%s消散了，没有产生效果。
 %%%%
 You are no longer glowing.
 你不再发光了。
@@ -22902,6 +23640,12 @@ A barrage of hail descends around you!
 %%%%
 %dd%d / collision
 %dd%d / 碰撞
+%%%%
+You can't see a target there. Cast anyway?
+你看不到那里的目标。仍然施法吗？
+%%%%
+Your magnetic shrapnel fails to attach to any target and your spell fizzles.
+你的磁力碎片未能附着在任何目标上，法术消散了。
 %%%%
 Electricity arcs towards the lodestone!
 电流向磁铁矿弧去！
@@ -23059,6 +23803,9 @@ Really become a tree while standing in a cloud of %s?
 You feel rather light.
 你感到相当轻盈。
 %%%%
+%s crumbles into nothing.
+%s碎裂并消失了。
+%%%%
 You see sparks fly.
 你看到火花四溅。
 %%%%
@@ -23214,6 +23961,21 @@ You move over the binding sigil and are bound in place!
 %%%%
  moves over the binding sigil and is bound in place!
 踩过束缚符文，被固定在原地！
+%%%%
+%s %s a spike launcher from a nearby wall.
+%s%s了附近的墙壁，造出一座尖刺发射器。
+%%%%
+verb|shape
+重塑
+%%%%
+You cannot tap into any power from your present location.
+你无法从当前的位置汲取任何力量。
+%%%%
+You tap into the flow of magic beneath your %s.
+你汲取了%s下方流动的魔力。
+%%%%
+Thorns of ice sprout around %s.
+冰棘在%s周围长了出来。
 %%%%
 You shape a spike launcher from a nearby wall.
 你从附近的墙上塑造了一个尖刺发射器。
@@ -23371,6 +24133,9 @@ Range: %s\n
 Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces
 购物清单: %1$d %2$s%3$s，共需 %4$d 枚金币
 %%%%
+%*s%5d gold  %s%s%s
+%*s%5d金币  %s%s%s
+%%%%
 %s entry fee %d gold pieces.
 %s 入场费 %d 枚金币。
 %%%%
@@ -23397,6 +24162,9 @@ You are electrocuted%s
 %%%%
 Lightning courses through %s%s
 闪电贯穿了%s%s
+%%%%
+%s draws vitality from your wounds!
+%s从你的伤口中汲取生命力！
 %%%%
 You %1$s collected %2$d gold pieces.\n
 你收集了%2$d枚金币。\n
@@ -23427,6 +24195,9 @@ All abilities
 %%%%
 %s slips away as you move towards %s!
 %s在你移向%s时滑开了！
+%%%%
+dangerous cloud
+危险云雾
 %%%%
 No space for %s to move out of your way! (Try telling them to retreat with <w>%sr</w> instead.)
 没有空间让%s从你的路上移开！（试试按<w>%sr</w>让他们撤退）
@@ -23977,6 +24748,42 @@ Your mycelia shrivel away.
 Your %1$s %2$s a mass of colorful fungus.
 你的%1$s变成了一团彩色的菌菇。
 %%%%
+Your third eye was open.
+你的第三只眼当时睁开着。
+%%%%
+Your third eye is open.
+你的第三只眼睁开着。
+%%%%
+Your third eye opens!
+你的第三只眼睁开了！
+%%%%
+Your hands return to normal.
+你的双手恢复了正常。
+%%%%
+Jade crystal shrouded your upper body.
+玉晶当时笼罩着你的上半身。
+%%%%
+Jade crystal shrouds your upper body.
+玉晶笼罩着你的上半身。
+%%%%
+A mantle of jade grows out of you.
+一件玉衣从你体内长了出来。
+%%%%
+Your mantle of jade crumbles away.
+你的玉衣碎裂消散了。
+%%%%
+Your head was a mane of billowing mist.
+你的头当时是一团翻涌的雾鬃。
+%%%%
+Your head is a mane of billowing mist.
+你的头是一团翻涌的雾鬃。
+%%%%
+Your head dissolves into a mane of billowing mist!
+你的头化作了一团翻涌的雾鬃！
+%%%%
+Your head returns to normal.
+你的头恢复了正常。
+%%%%
 You cannot mock death while in death's door.
 在生死之门中你无法嘲弄死亡。
 %%%%
@@ -24071,8 +24878,14 @@ Conduct
  || total\n
  || 总计\n
 %%%%
+ | XLs as\n
+ | 主用等级数\n
+%%%%
 Conduct count\n
 戒律计数\n
+%%%%
+Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety wasted at max piety\n J = Piety decays\n K = Piety lost (inc. decay)\n
+表格图例：\n A = 神祇\n B = 虔诚等级\n C = 起始时间\n D = 起始虔诚\n E = 获得的虔诚\n F = 神赐扣除的虔诚\n G = 偿还神罚所用的虔诚\n H = 递减扣除的虔诚\n I = 虔诚已满时浪费的虔诚\n J = 自然衰减的虔诚\n K = 损失的虔诚（含衰减）\n
 %%%%
 Illustrated notes\n\n
 带图笔记\n\n
@@ -24209,6 +25022,12 @@ Skill      XL: |
 Apostles: \n\n
 使徒：\n\n
 %%%%
+Percentage of experience gained in each form (* = 100%):\n\n
+以各形态获得的经验百分比（* = 100%）：\n\n
+%%%%
+Form     XL: |
+形态   等级: |
+%%%%
 was
 曾经
 %%%%
@@ -24223,6 +25042,9 @@ their
 %%%%
 %1$s falls away from you.
 %1$s从你身上脱落了。
+%%%%
+ withdraws the invitation to bind yourself further.
+ 收回了进一步束缚自己的邀请。
 %%%%
 %1$s glares at %2$s!
 %1$s怒视着%2$s！
@@ -24373,6 +25195,18 @@ You shatter the curse binding %1$s!
 %%%%
 Your binding sigil disappears.
 你的束缚符文消失了。
+%%%%
+The spike launcher falls apart.
+尖刺发射器散架了。
+%%%%
+%s spike launcher falls apart as %s %s too distant to maintain it.
+%s尖刺发射器散架了，因为%s%s太远，无法维持它。
+%%%%
+verb|grow
+离得
+%%%%
+%s spike launcher falls apart.
+%s尖刺发射器散架了。
 %%%%
 Your binding sigils disappear.
 你的束缚符文消失了。
@@ -26390,6 +27224,24 @@ It inflicts you with a random bane when you equip it.
 buggy
 有问题
 %%%%
+Your inability to use magical devices prevents you from drawing on the full power of this staff in melee.
+你无法使用魔法装置，因此不能在近战中发挥这根法杖的全部威力。
+%%%%
+Your skills are insufficient to deal any additional %s damage using this staff.
+你的技能不足以用这根法杖造成任何额外的%s伤害。
+%%%%
+At your current Evocations and %s skills, it has a %d%% chance to deal up to %d additional %s damage%s.
+以你当前的魔力释放和%s技能，它有%d%%的几率造成最多%d点额外的%s伤害%s。
+%%%%
+ that is resisted by flying
+ ，飞行可抵抗此伤害
+%%%%
+It cannot be found normally.
+它通常无法找到。
+%%%%
+It is %s %s.
+它是%s的%s。
+%%%%
 It causes incoming damage to be divided between your reserves of health and magic.
 使受到的伤害在你的生命值和魔力储备之间分摊。
 %%%%
@@ -26756,6 +27608,12 @@ either
  or 
 或
 %%%%
+\nWearing %s would reduce your attack speed with this weapon.
+\n穿戴%s会降低你使用此武器的攻击速度。
+%%%%
+%s will not accept your worship while you use %s.
+%s不会接受仍在使用%s的你作为信徒。
+%%%%
 ; 
 ； 
 %%%%
@@ -26809,6 +27667,12 @@ greatly
 %%%%
 This spell is empowered while you are enkindled.\n
 此法术在燃魂状态下被强化。\n
+%%%%
+\nYou cannot cast this spell: %s\n
+\n你无法施放此法术：%s\n
+%%%%
+\nYou cannot memorise this spell: %s\n
+\n你无法记忆此法术：%s\n
 %%%%
 Airstrike Dmg
 空袭伤害
@@ -26866,6 +27730,12 @@ If you enter this portal you could be pulled as deep as Abyss:%d and might not b
 %%%%
 Location (%d, %d)
 坐标 (%d, %d)
+%%%%
+Press: ? - help, v - describe, . - travel
+按键：? - 帮助，v - 描述，. - 前往
+%%%%
+<cyan>Here:</cyan> %s
+<cyan>此处：</cyan> %s
 %%%%
 Really target yourself?
 确定以自己为目标？
@@ -27059,6 +27929,24 @@ Shooting star damage:
 Skill
 技能
 %%%%
+Crystal HP
+晶体生命
+%%%%
+Shed Tail HP
+断尾生命
+%%%%
+Distraction Stab Chance
+诱敌刺杀几率
+%%%%
+Cloud range
+云雾射程
+%%%%
+Cloud duration
+云雾持续时间
+%%%%
+Distill rate
+凝雾速率
+%%%%
 Space - Change
 空格 - 更换
 %%%%
@@ -27114,6 +28002,9 @@ You took
 
 （_查看帮助）
 %%%%
+Drop what? (Left/Right/Tab to switch category) 
+丢弃什么？（左/右/Tab切换类别） 
+%%%%
 Identified
 
 鉴定了
@@ -27157,6 +28048,30 @@ silent
 the 
 
 此
+%%%%
+There were no monsters in sight!
+当时视野内没有怪物！
+%%%%
+There are no monsters in sight!
+视野内没有怪物！
+%%%%
+You could see %s.
+你当时能看到%s。
+%%%%
+You can see %s.
+你能看到%s。
+%%%%
+You were aware of %s.
+你当时能察觉到%s。
+%%%%
+You are aware of %s.
+你能察觉到%s。
+%%%%
+You could see %s and were aware of %s.
+你当时能看到%s，并察觉到%s。
+%%%%
+You can see %s and are aware of %s.
+你能看到%s，并察觉到%s。
 %%%%
  the 
 %%%%
@@ -27230,6 +28145,9 @@ Scrolls:
 Evocable Items: 
 可激活物品：
 %%%%
+    (Left/Right/Tab to switch category)
+    （左/右/Tab切换类别）
+%%%%
 Inventory: 
 物品栏：
 %%%%
@@ -27282,6 +28200,9 @@ carrying
 , 
 
 、
+%%%%
+%s forbids you from %s.
+%s禁止你%s。
 %%%%
 %s (Confirm with "%s".) 
 
@@ -27475,6 +28396,9 @@ helpless
 
 无助
 %%%%
+invisible 
+隐形的 
+%%%%
 its 
 
 它的
@@ -27566,6 +28490,18 @@ This could place you under penance!
 %%%%
 HP:  
 生命: 
+%%%%
+Doom: 
+厄运: 
+%%%%
+Doom 
+厄运 
+%%%%
+Contam: 
+诱变辐射: 
+%%%%
+Cont 
+辐射 
 %%%%
 You 
 你 
@@ -27692,6 +28628,9 @@ pulverise
 %%%%
 clumsily bash
 笨拙地猛击
+%%%%
+balefully
+凶险地
 %%%%
 's weak point
 的弱点
@@ -27855,6 +28794,9 @@ Die?
 This transformation would significantly lower your maximum hit points. Transform anyway?
 此变形会显著降低你的最大生命值。仍然变形吗？
 %%%%
+Leaving this form will destroy all of your potions of mist! Transform anyway?
+离开此形态将摧毁你所有的雾药水！仍然变形吗？
+%%%%
 Put travel exclusion on door? (Y/n)
 在门上设置旅行排除区域？(Y/n)
 %%%%
@@ -27921,6 +28863,12 @@ Choose to examine item
  (unknown)
 （未知）
 %%%%
+ (owned: %d)
+ （已拥有：%d）
+%%%%
+ <%s>%c %c </%s><%s>%4d gold   %s%s%s</%s>
+ <%s>%c %c </%s><%s>%4d金币   %s%s%s</%s>
+%%%%
 Damage: %s\n 
 伤害：%s\n 
 %%%%
@@ -27947,6 +28895,12 @@ releases
 %%%%
 \n%*s: %s
 \n%*s：%s
+%%%%
+Defences
+防御
+%%%%
+Resists
+抗性
 %%%%
 \n\n%*s: 
 \n\n%*s：
@@ -28073,6 +29027,9 @@ A nearby %s perishes wretchedly.
 %%%%
 You sensed 
 你感应到了
+%%%%
+Marking recently encountered invisible creatures as non-dangerous.
+将最近遇到的隐形生物标记为无危险。
 %%%%
 Error! failed to place monster in tentacle connect change
 错误！触手连接变更中未能放置怪物
@@ -29007,6 +29964,18 @@ back
 seems to be blocked by something
 似乎被什么东西堵住了
 %%%%
+You enter a dispersal trap!
+你踏入了空间驱离陷阱！
+%%%%
+%s enters a dispersal trap!
+%s踏入了空间驱离陷阱！
+%%%%
+You enter a teleport trap!
+你踏入了传送陷阱！
+%%%%
+The teleport trap disappears.
+传送陷阱消失了。
+%%%%
 doesn't lead anywhere
 不通往任何地方
 %%%%
@@ -29097,6 +30066,9 @@ kneel at
  shrivels and dies.
 枯萎而死。
 %%%%
+ shrivels and falls limp.
+ 萎缩并无力地垂了下来。
+%%%%
 %1$s %3$s an %2$s energy prism!
 %1$s%3$.0s创造了一个%2$s能量棱镜！
 %%%%
@@ -29108,6 +30080,9 @@ kneel at
 %%%%
 %s %s %s grip on %s.
 %1$s%2$.0s%3$.0s不再束缚%4$s。
+%%%%
+release
+松开
 %%%%
 %s %s constricted%s%s
 %s%s紧紧缠绕%s%s
@@ -29129,6 +30104,9 @@ kneel at
 %%%%
 %s collapses into a mass of ice!
 %s崩塌成了一堆冰块！
+%%%%
+The residue of %s spell condenses into glimmer.
+%s法术的残余凝聚成微光。
 %%%%
 %s commands the forest to attack, but nothing happens.
 %s命令森林攻击，但什么也没发生。
@@ -30096,6 +31074,9 @@ Aphotic Marionette
 Primordial Nightfall
 原始夜幕
 %%%%
+Ancestor Life: Elementalist
+先祖生涯：元素使
+%%%%
 Your shadow is still firmly attached to your body.
 你的影子仍然牢牢地附在你身上。
 %%%%
@@ -30183,8 +31164,20 @@ status|Your life force is drained.
 status|Your life force is lightly drained.
 你的生命力被轻度削弱了。
 %%%%
+status|Crystals
+晶体
+%%%%
+status|-Tail
+断尾待生
+%%%%
+status|Vapour
+汽雾
+%%%%
 ability cost|Drain
 削命
+%%%%
+, Bound item
+, 已束缚物品
 %%%%
 verb|steam
 蒸腾
@@ -30290,6 +31283,12 @@ verb|fire
 %%%%
  is healed.
  被治愈了。
+%%%%
+ form blurs.
+ 身形变得模糊了。
+%%%%
+ form wavers for a moment.
+ 身形晃动了片刻。
 %%%%
  is smitten.
  被重击了。
@@ -30549,6 +31548,9 @@ Zin's power protects your fellow warrior from evil magic!
 \nIt has a curse placed upon it.
 \n它被施加了诅咒。
 %%%%
+\nIt bears a divine curse which improves your skill at 
+\n它承载着神圣的束缚，强化了你的以下技能： 
+%%%%
 \nIt has a curse which improves the following skills:\n
 \n它有一个诅咒，可以提升以下技能：\n
 %%%%
@@ -30578,6 +31580,12 @@ Zin's power protects your fellow warrior from evil magic!
 %%%%
 \nRange : 
 \n范围：
+%%%%
+\nDefences : 
+\n防御 : 
+%%%%
+\nResists : 
+\n抗性 : 
 %%%%
 \nSome spells can be cast through it.
 \n一些法术可以穿透它施放。
@@ -30698,6 +31706,9 @@ uncommon
 %%%%
 very common
 非常常见
+%%%%
+not found normally
+通常无法找到
 %%%%
 very long
 非常长
@@ -33439,6 +34450,15 @@ Enter new gold value (current = %d, Enter for %d):
 You now have %d gold piece%s.
 你现在有 %d 枚金币。
 %%%%
+Enter new gift timeout (current = %d, Enter for 0): 
+输入新的神赐等待计数（当前为%d，直接回车设为0）： 
+%%%%
+Gift timeout must be between 0 and 255.
+神赐等待计数必须介于0和255之间。
+%%%%
+Set gift timeout to %d.
+已将神赐等待计数设为%d。
+%%%%
 You are not religious!
 你没有信仰！
 %%%%
@@ -33713,6 +34733,9 @@ Other monster isn't holding it, though.
 flux bauble
 变形球
 %%%%
+centipede bauble
+蜈蚣球
+%%%%
 Results written into 'xom_debug.stat'.
 结果已写入"xom_debug.stat"。
 %%%%
@@ -33815,6 +34838,15 @@ Toggle which debug class (ESC to exit)?
 Do you really want to %s into the Zot trap?
 你确定要%s佐特陷阱吗？
 %%%%
+You might %s into a Zot trap, are you sure?
+你可能会%s佐特陷阱，确定吗？
+%%%%
+Really %s into a trap?
+真的要%s陷阱吗？
+%%%%
+You might %s into a trap, are you sure?
+你可能会%s陷阱，确定吗？
+%%%%
 onto
 上
 %%%%
@@ -33824,8 +34856,14 @@ into
 Are you sure you want to %s onto a binding sigil?
 你确定要%s束缚符文吗？
 %%%%
+You might %s onto a binding sigil, are you sure?
+你可能会%s束缚印记，确定吗？
+%%%%
 Are you sure you want to %s into a toxic bog?
 你确定要%s毒沼吗？
+%%%%
+You might %s into a toxic bog, are you sure?
+你可能会%s剧毒沼泽，确定吗？
 %%%%
 very 
 非常
@@ -34022,6 +35060,12 @@ Unobtained all runes and the Orb of Zot.
 Enter monster name (or MONS spec) (? for help): 
 输入怪物名称（或MONS标识）（? 获取帮助）：
 %%%%
+Monsters: 
+怪物： 
+%%%%
+Lurkers: %s
+潜伏者：%s
+%%%%
 %d monsters, %d total exp value (%d non-uniq)
 %d 个怪物，总计 %d 经验值（%d 非独特）
 %%%%
@@ -34181,6 +35225,9 @@ Doll Editor
   * - Random hints mode character
   * - 随机提示模式角色
 %%%%
+Error, no hint for '%s'.
+错误：找不到“%s”的提示。
+%%%%
 That's a silly name!
 这名字太蠢了！
 %%%%
@@ -34336,6 +35383,36 @@ Stack %s
 %%%%
 %s%dd%d
 %s%dd%d
+%%%%
+%dd(%d/%d/%d/%d) [Fire/Ice/Earth/Air]
+%dd(%d/%d/%d/%d) [火/冰/土/气]
+%%%%
+Varies
+视情况而定
+%%%%
+None (50% rC for icy explosions)
+无（冰爆伤害的50%受寒冷抗性影响）
+%%%%
+AC (x3) (x1 for icy explosions)
+护甲（x3）（冰爆为x1）
+%%%%
+rC (explosion only)
+寒冷抗性（仅爆炸）
+%%%%
+AC (main blast only)
+护甲（仅主冲击）
+%%%%
+rF, rElec (one beam each)
+火焰抗性、电击抗性（各影响一道射线）
+%%%%
+Flying, gelatinous, insubstantial
+飞行、胶质、虚体
+%%%%
+AC (50%)
+护甲（50%）
+%%%%
+AC (x3)
+护甲（x3）
 %%%%
 %s%s (%s)
 %s%s（%s）
@@ -34711,6 +35788,9 @@ weapon of %s
 %%%%
  (and %zu other bad targets)
 （及%zu个其他不良目标）
+%%%%
+%s might hit %s%s.%s %s
+%s可能击中%s%s。%s %s
 %%%%
  (max %d damage)
 （最高%d伤害）
@@ -35189,6 +36269,9 @@ torment%s(%d/%d hp)
 you can't charge at %s because %s
 你无法冲向%s，因为%s
 %%%%
+there are no targets in range which are valid to charge at.
+范围内没有适合冲锋的目标。
+%%%%
 %s by 
 %s，来自
 %%%%
@@ -35570,6 +36653,15 @@ qui(v)er
  each
 每次
 %%%%
+Poison%s and momentary paralysis
+中毒%s与短暂麻痹
+%%%%
+Poison%s and paralysis/slowing
+中毒%s与麻痹/减速
+%%%%
+(Cleave)
+（劈砍）
+%%%%
  (if damage dealt)
 （若造成伤害）
 %%%%
@@ -35641,6 +36733,9 @@ free
 %%%%
 variable
 可变
+%%%%
+One bound item
+一件已束缚物品
 %%%%
 One cursed item
 一件诅咒装备
@@ -35777,6 +36872,27 @@ obsoleteness
  of 
 ，信仰
 %%%%
+Ashenzari invites you to chain yourself with knowledge%s.
+艾申扎利邀你以知识铸成枷锁束缚自己%s。
+%%%%
+You bind %s in chains and feel the brush of Ashenzari's sight against your mind.
+你用枷锁束缚了%s，感到艾申扎利的目光轻触你的心灵。
+%%%%
+Bind which item? (Esc to abort)
+束缚哪件物品？（Esc取消）
+%%%%
+You cannot bind that!
+你无法束缚那件物品！
+%%%%
+Unbind and destroy which item?
+解除哪件物品的束缚并将其摧毁？
+%%%%
+You cannot unchain and destroy that!
+你无法解除那件物品的束缚并摧毁它！
+%%%%
+You cannot shatter the chains on %s while it is melded with your body!
+%s正与你的身体融合，你无法打碎它的枷锁！
+%%%%
  or apply your Berserk <w>a</w>bility
 或使用你的狂暴<w>a</w>能力
 %%%%
@@ -35857,6 +36973,9 @@ obsoleteness
 %%%%
 <darkgrey>(unavailable)</darkgrey>
 <darkgrey>（不可用）</darkgrey>
+%%%%
+<h>Wizard targeting commands:</h>\n<w>Ctrl-C</w> : cycle through beam paths\n<w>D</w>: get debugging information about the monster\n<w>o</w>: give item to monster\n<w>F</w>: cycle monster friendly/good neutral/neutral/hostile\n<w>Ctrl-H</w>: heal the monster fully\n<w>P</w>: apply divine blessing to monster\n<w>m</w>: move monster or player\n<w>M</w>: cause spell miscast for monster or player\n<w>s</w>: force monster to shout or speak\n<w>S</w>: make monster a summoned monster\n<w>w</w>: calculate shortest path to any point on the map\n<w>"</w>: get debugging information about a portal\n<w>~</w>: polymorph monster to specific type\n<w>,</w>: bring down the monster to 1 hp\n<w>Ctrl-F</w>: place a mimic\n<w>Ctrl-B</w>: banish monster\n<w>Ctrl-K</w>: kill monster\n
+<h>巫师模式瞄准指令：</h>\n<w>Ctrl-C</w> : 循环切换射线路径\n<w>D</w>: 获取怪物的调试信息\n<w>o</w>: 将物品交给怪物\n<w>F</w>: 循环切换怪物态度：友好/善意中立/中立/敌对\n<w>Ctrl-H</w>: 完全治愈怪物\n<w>P</w>: 对怪物施加神圣祝福\n<w>m</w>: 移动怪物或玩家\n<w>M</w>: 令怪物或玩家发生施法失误\n<w>s</w>: 强制怪物喊叫或说话\n<w>S</w>: 将怪物变为召唤生物\n<w>w</w>: 计算到地图任意位置的最短路径\n<w>"</w>: 获取传送门的调试信息\n<w>~</w>: 将怪物变为指定类型\n<w>,</w>: 将怪物的生命降至1\n<w>Ctrl-F</w>: 放置拟态怪\n<w>Ctrl-B</w>: 放逐怪物\n<w>Ctrl-K</w>: 杀死怪物\n
 %%%%
 <h>Extended Movement:\n
 <h>扩展移动\n
@@ -38892,6 +40011,9 @@ acrobat
 spell or ability title|Sign of Ruin
 毁灭印记
 %%%%
+\nIf you bind an item with this ritual Ashenzari will enhance the following skills:\n
+\n若你通过此仪式束缚一件物品，艾申扎利将强化以下技能：\n
+%%%%
 spell title|Sting
 毒刺
 %%%%
@@ -39786,6 +40908,9 @@ Bane of the Dilettante
 scribal knowledge
 抄写知识
 %%%%
+jademantle form
+玉衣形态
+%%%%
 Skills enhanced by: %s.
 以下效果会增强以<green>绿色</green>显示的技能：%s。
 %%%%
@@ -39950,6 +41075,9 @@ Xom makes something happen.
 %%%%
  is getting BORED.
 开始觉得无聊了。
+%%%%
+ is getting VERY BORED.
+ 变得极其无聊了。
 %%%%
  is interested.
 感到好奇。
@@ -40410,8 +41538,17 @@ plants
 Really %s onto that %s?
 确定要%s那个%s吗？
 %%%%
+You might %s onto that %s, are you sure?
+你可能会%s那个%s，确定吗？
+%%%%
 Really %s into that %s?
 确定要%s那个%s吗？
+%%%%
+You might %s into a %s, are you sure?
+你可能会%s%s，确定吗？
+%%%%
+You might %s into that %s, are you sure?
+你可能会%s那个%s，确定吗？
 %%%%
 Really %s into a travel-excluded area?
 确定要%s探索排除区域吗？
@@ -40443,14 +41580,26 @@ This might make you stumble backwards into a travel-excluded area. Continue?
 Are you sure you want to %s over %s while you are losing your buoyancy?
 你确定要%s%s上方吗？你的浮力正在消失。
 %%%%
+You might %s over %s while you are losing your buoyancy, are you sure?
+你可能会%s%s上方，而你的浮力正在消退，确定吗？
+%%%%
 Are you sure you want to %s into %s while you are losing your buoyancy?
 你确定要%s%s吗？你的浮力正在消失。
+%%%%
+You might %s into %s while you are losing your buoyancy, are you sure?
+你可能会%s%s，而你的浮力正在消退，确定吗？
 %%%%
 Are you sure you want to %s over %s while your transformation is expiring?
 你确定要%s%s上方吗？你的变形即将结束。
 %%%%
+You might %s over %s while your transformation is expiring, are you sure?
+你可能会%s%s上方，而你的变形即将结束，确定吗？
+%%%%
 Are you sure you want to %s into %s while your transformation is expiring?
 你确定要%s%s吗？你的变形即将结束。
+%%%%
+You might %s into %s while your transformation is expiring, are you sure?
+你可能会%s%s，而你的变形即将结束，确定吗？
 %%%%
 This might make you stumble backwards over %s while you are losing your buoyancy. Continue?
 你的浮力正在消失；这可能使你踉跄着退到%s上方。要继续吗？
@@ -40505,6 +41654,9 @@ efficient metabolism
 %%%%
  powers are based on %s instead of Invocations skill.
  能力基于 %s 而非祈神技能。
+%%%%
+ forbids the training of this skill.
+ 禁止训练此技能。
 %%%%
 %s stares at you suspiciously for a moment, then relaxes.
 %s怀疑地凝视了你一会儿，然后放松了下来。
@@ -40655,6 +41807,18 @@ Your lungs are flooded with %s and you cannot breathe.
 %%%%
 <white>Welcome!</white>\n\n<cyan>You can be:</cyan>
 <white>欢迎！</white>\n\n<cyan>你可以选择：</cyan>
+%%%%
+(Melee oriented character with divine support)
+（侧重近战、有神祇相助的角色）
+%%%%
+(Magic oriented character)
+（侧重魔法的角色）
+%%%%
+(Ranged fighter)
+（远程战士）
+%%%%
+(erroneous character)
+（错误的角色）
 %%%%
 Remember to rest between fights and to enter unexplored terrain with full health and magic. Ideally you should retreat into areas you've already explored and cleared of monsters; resting on the edge of the explored terrain increases the chances of your rest being interrupted by wandering monsters. To rest, press <w>5</w> or <w>Shift-numpad 5</w><tiles>, or <w>click the rest button</w></tiles>.
 记得在战斗之间休息，以满生命和法力进入未探索区域。理想情况下，你应该在遇险时撤退。
@@ -40956,6 +42120,12 @@ It sometimes fires a blinding ray at enemies whose attacks you dodge.
 \nWhile standing here, you can enter %s with with the <w>%s</w> key.
 \n站在这里时，你可以按<w>%s</w>键进入%s。
 %%%%
+\nIt inflicts %s damage when channelled.
+\n引导其能量会造成%s伤害。
+%%%%
+\nStepping on it inflicts %dd%d damage.
+\n踩上去会受到%dd%d伤害。
+%%%%
 \nWhile adjacent to it, you can %s%s it by pressing the <w>%s</w> key.
 \n在它旁边时，你可以按<w>%s</w>键%s%s它。
 %%%%
@@ -40982,6 +42152,15 @@ You cannot be affected by this spell right now. %s\n
 %%%%
 \n<lightmagenta>This bane will be lifted from you when you gain another %.1f XLs worth of experience.</lightmagenta>
 \n<lightmagenta>当你再获得相当于%.1f个经验等级的经验值后，此灾祸便会解除。</lightmagenta>
+%%%%
+ego title|%s (%s) weapon ego
+%s（%s）武器附魔
+%%%%
+ego title|%s (%s) armour ego
+%s（%s）护甲附魔
+%%%%
+ego title|%s (%s) missile ego
+%s（%s）弹药附魔
 %%%%
 It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
 它会在受到伤害或被杀死时释放各种果冻怪，果冻的数量与受到的伤害成正比。\n
@@ -41157,8 +42336,20 @@ You must target an enemy who is afraid.
 Your paragon could not survive being deployed there.
 你的白金典范无法在该位置存活。
 %%%%
+This spell must target an enemy.
+此法术必须以敌人为目标。
+%%%%
+There is nowhere near that target where thorns could grow.
+该目标附近没有可以生长冰棘的地方。
+%%%%
 you are already filled with unstable energy.
 你体内已经充满不稳定能量。
+%%%%
+you need at least %s shapeshifting skill to use this effectively.
+你需要至少%s级变形术才能有效使用它。
+%%%%
+allies are forbidden to you.
+你被禁止拥有盟友。
 %%%%
 Sorry, this item was removed!
 抱歉，该物品已被移除！
@@ -41228,6 +42419,9 @@ you lack the shapeshifting skill to coax this talisman into a stable form.
 %%%%
 you can never gain the skill to use this talisman.
 你永远无法获得使用这枚护符所需的技能。
+%%%%
+%s forbids the use of this talisman.
+%s禁止使用此护符。
 %%%%
 you need to leave your temporary form first.
 你需要先解除临时形态。
@@ -41579,6 +42773,9 @@ Quit menu          q, Ctrl-Q
 %%%%
  Zot: <%s>%d</%s>
  佐特：<%s>%d</%s>
+%%%%
+\n<darkgrey>*You can no longer be shafted in this branch</darkgrey>\n
+\n<darkgrey>*你在此分支中已不会再掉入竖井</darkgrey>\n
 %%%%
 terrain swap actor|you
 你
@@ -42519,6 +43716,15 @@ lookup type|mutation
 lookup type|bane
 灾祸
 %%%%
+lookup type|weapon Ego
+武器附魔
+%%%%
+lookup type|armour Ego
+护甲附魔
+%%%%
+lookup type|missile Ego
+弹药附魔
+%%%%
 job group|Warrior
 战士
 %%%%
@@ -42921,5 +44127,32 @@ tukima unarmed|%1$s %2$s %3$s.
 xom cleaving|%s looks sharp.
 %s看起来很锋利。
 %%%%
+Xom feels this floor is too known and too boring!
+佐姆觉得这层楼太熟悉、太无聊了！
+%%%%
 xom cleaving|%s looks sharp (like it always does).
 %s看起来很锋利（一如既往）。
+%%%%
+ warns you of the presence of a lurking %s.
+ 警告你附近潜伏着%s。
+%%%%
+glimmering dart
+微光飞镖
+%%%%
+surge of energy
+能量涌流
+%%%%
+fiery blast
+烈火冲击
+%%%%
+frigid blast
+酷寒冲击
+%%%%
+blast of wind
+狂风冲击
+%%%%
+blast of rock
+岩石冲击
+%%%%
+scorching wind
+灼热风

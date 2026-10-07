@@ -1335,3 +1335,119 @@ unseen thermic dynamo cast
 你听到一声剧烈的旋转声。
 %%%%
 ######################################################
+%%%%
+Cleansing Flame cast
+
+@The_monster@引导出一股猛烈的净化烈焰！
+%%%%
+Antimagic Gaze Goji cast
+
+{{
+if you.see_invisible() then
+    return "@The_monster@的坐骑盯着你。"
+else
+    return "@The_monster@催促@possessive@坐骑前进。"
+end
+}}
+%%%%
+Touch of Paradox abyssal acolyte cast
+
+@The_monster@祈求@possessive_God@降下祝福。
+
+@The_monster@以@possessive_God@之名唤来赐福的撕裂。
+%%%%
+unseen Touch of Paradox abyssal acolyte cast
+
+你听到一些献给@possessive_God@的奇怪祷词。
+%%%%
+Phase Shift abyssal acolyte cast
+
+@The_monster@剧烈闪烁，吟诵着难以理解的圣歌。
+
+@The_monster@低声念了几句祷词，进一步滑入维度之间。
+%%%%
+Warp Space herald of the abyss cast
+
+@The_monster@庄严地祈求@possessive_God@将怒火@at@ @target@倾泻！
+
+@The_monster@发出汩汩声，向@possessive_God@念诵针对@target@的可怕祷词！
+%%%%
+Malign Gateway herald of the abyss cast
+
+@The_monster@以@possessive_God@之名召来异界的恐怖。
+
+@The_monster@冷漠地将遥远的维度交织在一起。
+%%%%
+Harpoon Shot mongrel wurm cast
+
+@The_monster@@at@ @foe@瞄准，咳出一支鱼叉。
+
+@The_monster@@at@ @foe@咳出一支鱼叉，身子几乎瘫倒。
+%%%%
+Scorch mongrel wurm cast
+
+@The_monster@向前抛出火焰，几乎把自己呛住。
+
+@The_monster@嘶哑地喷出火焰。
+%%%%
+Hurl Sludge roaming sludgefish cast
+
+@The_monster@咳嗽着，将多余的污泥@at@ @target@吐出。
+
+@The_monster@集中精神，将有毒的淤泥@at@ @target@射出。
+%%%%
+Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@欢快地扭动，@at@ @target@集中意志。
+
+@The_monster@饥渴地发出汩汩声，@at@ @target@显现出纯粹的反魔法之力。
+%%%%
+silent Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@饥饿地扭动，@at@ @target@集中意志。
+%%%%
+rusted inspector cast
+
+@The_monster@@at@ @target@凝视，狂热地发出咔嗒声与嗡鸣声。
+
+@The_monster@打量着@target@，闪烁着恶意的好奇心。
+
+@The_monster@@at@ @target@怒视，因尚未成熟的魔力而[轰鸣|颤抖]。
+%%%%
+silent rusted inspector cast
+
+@The_monster@@at@ @target@凝视，剧烈扭动。
+
+@The_monster@打量着@target@，闪烁着恶意的好奇心。
+
+@The_monster@@at@ @target@怒视，因尚未成熟的魔力而颤抖。
+%%%%
+Murky Legion scrapshell chimera cast
+
+@The_monster@疯狂翻腾，释放出污秽的幻影！
+
+@The_monster@的各个部件抽搐起来，邪灵随之显现！
+
+@The_monster@发出三重尖啸，召来受害者的灵魂！
+%%%%
+silent Murky Legion scrapshell chimera cast
+
+@The_monster@无声地翻腾，释放出污秽的幻影！
+
+@The_monster@的各个部件抽搐起来，邪灵随之显现！
+%%%%
+Brain Bite telencephalon cast
+
+@The_monster@以不稳定的节奏搏动。
+
+@The_monster@旋转着闪烁，绕出令人眩晕的圈环。
+%%%%
+Call Down Lightning telencephalon cast
+
+电流在@the_monster_possessive@节点间跃动。
+
+@The_monster@沐浴在变幻莫测的神秘能量中。
+%%%%
+thorn hunter cast
+
+@The_monster@伸出@possessive@根须。
