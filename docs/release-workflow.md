@@ -99,6 +99,50 @@
 GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证据，修复后用新的
 `0.34.1-zhA-B-CCC` 标签发布；不得移动或复用已经对外分发的标签。
 
+## trunk 预发布
+
+`chn-trunk` 持续跟进固定的上游 master 提交；同步引入的新内容须完成翻译和领域审查，
+才能对外发布。稳定线与 trunk 线分别发布，不把 trunk 合回稳定线。
+
+- 标签格式为 `X.Y-trunk-NNN`，`NNN` 是三位序号 `001`–`999`，在同一 `X.Y` 下递增，
+  不移动或复用已有标签。序号用尽时停止发布，另行决定下一步，不回收编号。
+- `X.Y` 必须等于候选提交可达的最近上游 annotated a 标签的主版本号；例如
+  `0.35-a0` 对应 `0.35-trunk-001`。CI 从 `https://github.com/crawl/crawl` 只读取回
+  a 标签；取回失败、没有可达 a 标签或主版本不匹配时失败，不回退到稳定版版本串。
+- 一个提交最多有一个 trunk 标签。打标签前先执行
+  `git tag --points-at <commit> --list '*-trunk-*'`，确认输出为空；同时查看该 `X.Y`
+  已有标签，选择下一个未使用的序号。
+- 发布负责人确认准确候选 SHA、上游基线 SHA、版本号、翻译完成证据、领域审查及 CI
+  结果后，才可创建 annotated tag。标签须指向该准确提交；检查 annotated 对象、
+  提交指向和 `git describe --exact-match` 身份的门禁继续适用。
+- 版本类型始终为 `VER_ALPHA`。精确命中匹配标签时使用裸标签；标签后开发提交带
+  `-N-g<下游SHA>`。源码包的 `util/release_ver` 使用同一筛选规则。trunk 线不支持
+  Xcode 工程和 `util/mac-crawl-build-update-cdo` 两条构建路径；macOS 使用 Makefile。
+
+trunk 标签触发与正式版相同的完整发布依赖链，包括完整 L1+L2+L3 运行时测试、
+Windows/macOS/Android 构建及 `verify_release_artifacts.py` 的封闭集合校验。
+校验器接受 trunk 标签，生成绑定裸标签和准确提交的 `SHA256SUMS` 与
+`RELEASE-MANIFEST.txt`。自动流程仅创建草稿，设置 GitHub prerelease 和
+`latest=false`；发布负责人完成前述多平台人工验收后，方可公开，公开时也必须保留
+prerelease 且不得标为 latest。失败时使用新序号重新发布。
+
+发布说明须明确：**trunk 存档不能回到稳定版，两条线可并存安装**。只用稳定版存档副本
+测试迁移，并记录 trunk 存读档结果与稳定版原件未变化的证据。
+
+Android 使用固定的 `org.develz.crawl.trunk` 包名与 `Dungeon Crawl Stone Soup Trunk`
+应用名，首次发布后保持身份不变。构建时通过 `ANDROID_APPLICATION_ID` 和
+`ANDROID_APP_NAME` 传入，`versionName` 必须与 `build.h` 的长版本一致。
+设备验收遵循 [Android 手动验收流程](android-architecture.md)，确认稳定版包仍在、
+存档在验收前后未变化。**不得使用固定包名的 `test-android-topbar.sh` 冒烟脚本**，
+尤其不得在装有稳定版的设备上运行其 `--fresh-install`。
+
+桌面存档隔离是首个对外 trunk 标签的前置条件。Windows 便携包须解压到独立目录，
+不要覆盖稳定版目录；Linux 构建使用 `SAVEDIR='~/.crawl-trunk'`。
+macOS 当前默认共用 `~/Library/Application Support/Dungeon Crawl Stone Soup`，且其
+初始化顺序使 `SAVEDIR` 无法覆盖这个默认值。**在独立存档目录方案获准、实施并验证前，
+不得对外发布首个 trunk 标签**；仅传入 `SAVEDIR` 不能视为已完成隔离。
+macOS 还须使用独立应用包名称，避免拖入 Applications 时覆盖稳定版应用。
+
 ## 本地校验
 
 工具测试会自动发现发布校验器的正例和逐项负向变异：
