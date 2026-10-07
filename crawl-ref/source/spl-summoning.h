@@ -178,6 +178,7 @@ bool surprising_crocodile_can_drag(const actor& agent, const coord_def& target,
                                    bool actual);
 spret cast_surprising_crocodile(actor& agent, const coord_def& targ,
                                 int pow, bool fail);
+string surprising_crocodile_dismount_message(const actor& agent);
 
 spret cast_platinum_paragon(const coord_def& target, int pow, bool fail);
 void paragon_attack_trigger();

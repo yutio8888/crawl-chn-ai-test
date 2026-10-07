@@ -71,13 +71,17 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     [[ "$described" == "$tag" ]] \
         || die "git describe resolved $described, expected $tag"
 
+    alpha_tag=$(git describe --abbrev=0 --match '*-a[0-9]*' "$commit" 2>/dev/null) \
+        || die "cannot find an annotated upstream alpha tag for $commit"
+    [[ "$alpha_tag" =~ ^([0-9]+\.[0-9]+)-a[0-9]+$ ]] \
+        || die "invalid upstream alpha tag $alpha_tag"
+    upstream_major="${BASH_REMATCH[1]}"
     if [[ "$tag" =~ $trunk_tag_re ]]; then
-        alpha_tag=$(git describe --abbrev=0 --match '*-a[0-9]*' "$commit" 2>/dev/null) \
-            || die "cannot find an annotated upstream alpha tag for $commit"
-        [[ "$alpha_tag" =~ ^([0-9]+\.[0-9]+)-a[0-9]+$ ]] \
-            || die "invalid upstream alpha tag $alpha_tag"
-        [[ "${tag%%-trunk-*}" == "${BASH_REMATCH[1]}" ]] \
+        [[ "${tag%%-trunk-*}" == "$upstream_major" ]] \
             || die "trunk major version ${tag%%-trunk-*} differs from upstream $alpha_tag"
+    else
+        [[ "$upstream_major" == "0.34" ]] \
+            || die "stable zh release requires upstream 0.34, got $alpha_tag"
     fi
 
     printf '%s\n' "$tag" > "$release_ver"

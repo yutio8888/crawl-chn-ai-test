@@ -91,6 +91,25 @@ LUAFN(view_cloud_at)
     return 1;
 }
 
+/*** What kind of known trap (if any) is here?
+ * @tparam int x
+ * @tparam int y
+ * @treturn string|nil Canonical English terrain ID, as passed to
+ *                    c_trap_is_safe(), or nil for non-trap/unknown cells.
+ * @function trap_at
+ */
+LUAFN(view_trap_at)
+{
+    PLAYERCOORDS(p, 1, 2)
+    if (!map_bounds(p) || !feat_is_trap(env.map_knowledge(p).feat()))
+    {
+        lua_pushnil(ls);
+        return 1;
+    }
+    lua_pushstring(ls, dungeon_feature_name(env.map_knowledge(p).feat()));
+    return 1;
+}
+
 /*** Is it safe here? A square is considered unsafe if it has a harmful cloud,
  * harmful trap, untraversable terrain, a runed door, or is excluded. The
  * untraversable terrain check is the same as travel.feature_is_traversable().
@@ -406,6 +425,7 @@ static const struct luaL_Reg view_lib[] =
     { "feature_at", view_feature_at },
     { "seen_at", view_seen_at },
     { "cloud_at", view_cloud_at },
+    { "trap_at", view_trap_at },
     { "is_safe_square", view_is_safe_square },
     { "can_reach", view_can_reach },
     { "withheld", view_withheld },

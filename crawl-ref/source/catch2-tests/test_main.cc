@@ -14,6 +14,7 @@
 #include "files.h"
 #include "initfile.h"
 #include "mutation.h"
+#include "macro.h"
 #include "options.h"
 
 namespace
@@ -44,6 +45,7 @@ bool initialise_catch_environment()
     Options.language = lang_t::EN;
     Options.lang_name = nullptr;
     clua.init_libraries();
+    init_keybindings();
     init_show_table();
     init_mut_index();
     i18n_cache_clear();

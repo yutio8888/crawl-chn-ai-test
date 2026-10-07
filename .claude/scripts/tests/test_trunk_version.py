@@ -105,6 +105,23 @@ class TrunkVersionTest(unittest.TestCase):
         self.assertTrue(commit.startswith(expected.split('-g')[1]))
         self.assert_version(expected)
 
+    def test_stable_zh_tag_accepts_upstream_034(self):
+        self.tag('0.34-a0')
+        self.commit()
+        tag = '0.34.1-zh5-1-011'
+        self.tag(tag)
+        self.ensure(tag)
+        self.assertEqual(tag + '\n', (self.util / 'release_ver').read_text())
+
+    def test_stable_zh_tag_rejects_trunk_before_version_write(self):
+        self.alpha()
+        tag = '0.34.1-zh5-1-012'
+        self.tag(tag)
+        (self.util / 'release_ver').write_text('sentinel\n')
+        result = self.ensure(tag, ok=False)
+        self.assertIn('stable zh release requires upstream 0.34', result.stderr)
+        self.assertEqual('sentinel\n', (self.util / 'release_ver').read_text())
+
     def test_exact_trunk_tag_restores_annotated_identity(self):
         commit = self.alpha()
         tag = '0.35-trunk-001'

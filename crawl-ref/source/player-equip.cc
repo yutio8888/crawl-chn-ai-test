@@ -1860,10 +1860,10 @@ void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld,
                            !(msg && proprt[ARTP_DEXTERITY]));
 
         if (proprt[ARTP_RAMPAGING] && msg && !you.rampaging())
-            mpr("You no longer feel able to rampage towards enemies.");
+            mpr(T_("You no longer feel able to rampage towards enemies."));
 
         if (proprt[ARTP_ARCHMAGI] && msg)
-            mpr("You feel strangely numb.");
+            mpr(T_("You feel strangely numb."));
 
         if (proprt[ARTP_SEE_INVISIBLE])
             _mark_unseen_monsters();

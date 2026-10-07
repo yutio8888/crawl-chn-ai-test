@@ -35,6 +35,8 @@
 #include "job-type.h"        // job_type, NUM_JOBS
 #include "player.h"          // you
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
+#include "hints.h"           // hint_replace_cmds
+#include "format.h"          // formatted_string
 #include "unwind.h"          // unwind_var
 
 // batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
@@ -855,7 +857,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             {
                 if (val.find("attempt to") != std::string::npos)
                     continue;
-                scan_one(val.c_str(), key, path, issues);
+                // Hints display substitutes commands before parsing colours.
+                // Scan that consumer text, not colour names or the valid
+                // "$cmd[CMD_ADJUST_INVENTORY]i" two-key sequence. Unknown
+                // colour tags remain visible in the production parser.
+                if (source.uses_hint_db)
+                {
+                    // Other rules compare raw format/markup bytes. Keep that
+                    // contract: stripping tags can join spaces and punctuation
+                    // that were not adjacent in the source under review.
+                    auto hint_issues = scan_translation(val.c_str(), key, path);
+                    for (auto& issue : hint_issues)
+                        if (issue.kind != ZhIssue::MIXED_CN_EN)
+                            issues.push_back(std::move(issue));
+                    std::string display = val;
+                    hint_replace_cmds(display);
+                    display = formatted_string::parse_string(display).tostring();
+                    auto display_issues = scan_translation(display.c_str(), key, path);
+                    for (auto& issue : display_issues)
+                        if (issue.kind == ZhIssue::MIXED_CN_EN)
+                            issues.push_back(std::move(issue));
+                }
+                else
+                    scan_one(val.c_str(), key, path, issues);
             }
             else
             {
@@ -878,6 +902,28 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     WARN("zh enumerator summary: tutorial/hints/commands -> "
          << issues.size() << " issues");
     REQUIRE(true);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Hint display scanning preserves English leak detection",
+                 "[zh-translation][zh-helpers][issue147]")
+{
+    for (const char* key : {"HINT_WIELD_WEAPON", "HINT_REST_BETWEEN_FIGHTS",
+                            "HINT_SEEN_MONSTER_CONSOLE", "HINT_SKILL_TRAINING"})
+    {
+        INFO(key);
+        std::string text = getHintString(key);
+        REQUIRE_FALSE(text.empty());
+        hint_replace_cmds(text);
+        text = formatted_string::parse_string(text).tostring();
+        INFO(text);
+        CHECK_FALSE(rule_mixed_cn_en(text));
+        CHECK(rule_mixed_cn_en(text + " ordinary English leak"));
+    }
+    CHECK(rule_mixed_cn_en(formatted_string::parse_string(
+        "<brown>ordinary English leak 示例</brown>").tostring()));
+    CHECK(rule_mixed_cn_en(formatted_string::parse_string(
+        "<unknowncolour>示例</unknowncolour>").tostring()));
 }
 
 // =============================================================================

@@ -830,7 +830,11 @@ jobs:
             echo
             echo "## 支持平台"
             echo
-            echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
+            if [[ "$GITHUB_REF_NAME" == *-trunk-* ]]; then
+              printf '%s\n' "- Windows Tiles：ZIP，解压后运行 \`crawl.exe\`；存档写入 \`%APPDATA%\\crawl-trunk\`。"
+            else
+              echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
+            fi
             echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`$mac_app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
             echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"$mac_app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
             echo "- Android：签名的四 ABI APK，下载后按系统提示安装。"
@@ -866,5 +870,5 @@ jobs:
             release_flags+=(--prerelease --latest=false)
           fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
-            --draft --verify-tag --title "$title" "${release_flags[@]}" \
+            --draft --verify-tag --title "$title" ${release_flags[@]+"${release_flags[@]}"} \
             --notes-file "$RUNNER_TEMP/release-notes.md"

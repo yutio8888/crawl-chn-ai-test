@@ -213,12 +213,25 @@ class HintInventoryTests(unittest.TestCase):
         )
         self.assertEqual(
             "localized-test-only-compatibility",
-            rows[MODULE.DISSECTION_KEY]["lifecycle"],
+            rows[MODULE.RETIRED_DISSECTION_KEY]["lifecycle"],
         )
         self.assertEqual([], payload["producer_minus_en"])
         self.assertEqual([], payload["producer_minus_zh"])
         self.assertEqual([], payload["en_minus_zh"])
-        self.assertEqual([MODULE.DISSECTION_KEY], payload["zh_minus_en"])
+        self.assertEqual([MODULE.RETIRED_DISSECTION_KEY], payload["zh_minus_en"])
+
+    def test_current_runtime_god_hint_uses_live_bilingual_entries(self):
+        runtime = (ROOT / MODULE.ZH_RUNTIME_LUA).read_text()
+        keys, _ = MODULE._parse_runtime_test_keys(runtime)
+        self.assertEqual(["hint_killed_monster", "hint_convert"], keys)
+        for path in (MODULE.HINTS_EN, MODULE.HINTS_ZH):
+            text = (ROOT / path).read_text()
+            for key in ("HINT_KILLED_MONSTER", "HINT_CONVERT"):
+                self.assertRegex(text, rf"(?m)^{key}$")
+        self.assertNotIn('"dissection reminder"', runtime)
+        with self.assertRaisesRegex(RuntimeError, "compatibility keys changed"):
+            MODULE._parse_runtime_test_keys(runtime.replace(
+                '"HINT_KILLED_MONSTER"', '"dissection reminder"'))
 
     def test_producers_include_every_finite_family_member(self):
         keys = set(self.payload["producer_keys"])

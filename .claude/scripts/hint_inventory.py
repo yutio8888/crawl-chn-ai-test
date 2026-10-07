@@ -124,7 +124,7 @@ _VAGUE_DEFERRAL_VALUES = {
 }
 
 FLEEING_KEY = "hint_fleeing_monster"
-DISSECTION_KEY = "dissection reminder"
+RETIRED_DISSECTION_KEY = "dissection reminder"
 
 _ANY_HINT_CALL_RE = re.compile(
     r"\b(print_hint|_get_hint|getHintString)\s*\("
@@ -375,7 +375,7 @@ def extract_producers(
     return ordered, {key: facts[key] for key in ordered}
 
 
-def _parse_runtime_test_keys(text: str) -> tuple[list[str], str]:
+def _parse_runtime_test_keys(text: str, *, historical: bool = False) -> tuple[list[str], str]:
     pattern = re.compile(
         r'for _, hint_key in ipairs\(\{(?P<keys>[^}]*)\}\) do\s*'
         r'local hint = crawl\.test_hint_text\(hint_key\)\s*'
@@ -386,12 +386,14 @@ def _parse_runtime_test_keys(text: str) -> tuple[list[str], str]:
     if len(matches) != 1:
         raise RuntimeError(f"{ZH_RUNTIME_LUA}: localized hint test shape changed")
     keys = re.findall(r'"([^"\n]+)"', matches[0].group("keys"))
-    if keys != ["dissection reminder", "HINT_CONVERT"]:
+    expected = ([RETIRED_DISSECTION_KEY, "HINT_CONVERT"] if historical
+                else ["HINT_KILLED_MONSTER", "HINT_CONVERT"])
+    if keys != expected:
         raise RuntimeError(
             f"{ZH_RUNTIME_LUA}: localized compatibility keys changed: {keys}"
         )
     return [lowercase_string(key) for key in keys], (
-        f'{ZH_RUNTIME_LUA}@"dissection reminder", "HINT_CONVERT"'
+        f'{ZH_RUNTIME_LUA}@' + ", ".join(f'"{key}"' for key in keys)
     )
 
 
@@ -407,7 +409,11 @@ def _verify_lifecycle_sources(blobs: dict[str, bytes]) -> dict[str, object]:
             f"{HINTS_H}: TAG34 HINT_FLEEING_MONSTER lifecycle changed"
         )
     runtime_text = blobs[ZH_RUNTIME_LUA].decode("utf-8", errors="strict")
-    test_keys, test_anchor = _parse_runtime_test_keys(runtime_text)
+    # Historical frozen inventories retain their original consumer evidence.
+    # Current trunk has no dissection entry and must use a live EN/ZH hint.
+    historical = bool(re.search(
+        r"(?m)^dissection reminder$", blobs[HINTS_ZH].decode("utf-8")))
+    test_keys, test_anchor = _parse_runtime_test_keys(runtime_text, historical=historical)
     return {
         "fleeing_anchor": f"{HINTS_H}@HINT_FLEEING_MONSTER",
         "localized_test_keys": test_keys,
@@ -952,7 +958,7 @@ def build_payload_from_blobs(
         elif key == FLEEING_KEY and key in en_keys and key in zh_keys:
             lifecycle_name = "tag34-enum-compatibility-unconsumed"
         elif (
-            key == DISSECTION_KEY
+            key == RETIRED_DISSECTION_KEY
             and key not in en_keys
             and key in zh_keys
             and key in lifecycle["localized_test_keys"]

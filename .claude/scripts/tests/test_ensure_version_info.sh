@@ -60,9 +60,12 @@ printf '%s\n' "placeholder" > "$SEED/crawl-ref/source/util/release_ver"
 git -C "$SEED" add crawl-ref/source/util/release_ver
 git -C "$SEED" commit -qm base
 COMMIT=$(git -C "$SEED" rev-parse HEAD)
+git -C "$SEED" tag -a "0.34-a0" -m "upstream alpha"
+git -C "$SEED" commit --allow-empty -qm release
+COMMIT=$(git -C "$SEED" rev-parse HEAD)
 git -C "$SEED" tag -a "$TAG" -m "$TAG"
 git -C "$SEED" remote add origin "$REMOTE"
-git -C "$SEED" push -q origin HEAD:refs/heads/main "refs/tags/$TAG"
+git -C "$SEED" push -q origin HEAD:refs/heads/main "refs/tags/$TAG" "refs/tags/0.34-a0"
 
 git clone -q "$REMOTE" "$BUILD"
 git -C "$BUILD" checkout -q "$COMMIT"
@@ -123,7 +126,7 @@ git -C "$SEED" push -q origin "refs/tags/$LIGHTWEIGHT_TAG"
 expect_failure "remote lightweight release tag is rejected" \
     run_tag_build "$LIGHTWEIGHT_TAG" "$COMMIT"
 
-git -C "$BUILD" tag -d "$TAG" "$LIGHTWEIGHT_TAG" >/dev/null 2>&1 || true
+git -C "$BUILD" tag -d "$TAG" "$LIGHTWEIGHT_TAG" "0.34-a0" >/dev/null 2>&1 || true
 expect_failure "non-tag build fails without an upstream alpha tag" \
     env -C "$BUILD" GITHUB_REF_TYPE=branch bash "$ENSURE_VERSION"
 

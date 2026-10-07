@@ -104,7 +104,7 @@ BOT_REQUIRED_CONTENT = {
     "protocol:cloud:noxious": ("noxious fumes",),
     "protocol:cloud:freezing": ("freezing vapour",),
     "protocol:cloud:foul": ("foul pestilence",),
-    "protocol:trap:permanent": ("permanent teleport", "hook=permanent teleport"),
+    "protocol:trap:permanent": ("trap_teleport_permanent", "hook=trap_teleport_permanent"),
     "setup": ("language=zh", "你攻击"),
     "lua_identity": ("Minotaur", "Fighter", "minotaur"),
     "display_assets": ("牛头人", "战士", "特洛格", "蜘蛛网"),

@@ -11,6 +11,8 @@
 #include "acquire.h"
 #include "art-enum.h"
 #include "artefact.h"
+#include "beam.h"
+#include "clua.h"
 #include "database.h"
 #include "decks.h"
 #include "describe.h"
@@ -33,6 +35,7 @@
 #include "losglobal.h"
 #include "macro.h"
 #include "mapdef.h"
+#include "map-knowledge.h"
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
@@ -46,6 +49,8 @@
 #include "options.h"
 #include "output.h"
 #include "player.h"
+#include "player-equip.h"
+#include "spl-summoning.h"
 #include "player-reacts.h"
 #include "player-save-info.h"
 #include "positional_format.h"
@@ -1943,6 +1948,7 @@ TEST_CASE("MIXED_CN_EN exact hint item templates and technical literals",
         Row{"设置 <w>auto_exclude</w> 选项。",         false},
         Row{"按 <w>Shift-right-click</w> 查看。",      false},
         Row{"按 <w>shift-numpad-5</w> 休息。",         false},
+        Row{"按 <w>Shift-numpad 5</w> 休息。",         false},
         Row{"请访问 http://crawl.develz.org/。",       false},
 
         // Item protocol mutations fail closed.
@@ -1983,6 +1989,8 @@ TEST_CASE("MIXED_CN_EN exact hint item templates and technical literals",
         Row{"按 <w>shift-right-click</w> 查看。",      true},
         Row{"按 <w>Shift-right-click2</w> 查看。",     true},
         Row{"按 <w>Shift-numpad-5</w> 休息。",         true},
+        Row{"按 <w>Shift-numpad 50</w> 休息。",        true},
+        Row{"按 <w>Shift-numpad 5/path</w> 休息。",    true},
         Row{"按 <w>shift-numpad-50</w> 休息。",        true},
         Row{"按 <w>shift-numpad-5/path</w> 休息。",    true},
         Row{"请访问 https://crawl.develz.org/。",      true},
@@ -5532,5 +5540,214 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         trim_string_right(expected);
         REQUIRE_FALSE(expected.empty());
         REQUIRE(status_light_description(info) == expected + " (expiring)");
+    }
+}
+
+
+TEST_CASE("issue147: artefact removal localizes the real unequip path",
+          "[zh-translation][issue147][artefact-removal]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (artefact_prop_type property : {ARTP_RAMPAGING, ARTP_ARCHMAGI})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.set_position(coord_def(20, 20));
+        item_def& item = you.inv[0];
+        item.base_type = OBJ_ARMOUR;
+        item.sub_type = ARM_ROBE;
+        item.quantity = 1;
+        item.pos = ITEM_IN_INVENTORY;
+        item.slot = 'a';
+        item.link = 0;
+        item.props[ARTEFACT_NAME_KEY].get_string() = "test robe";
+        REQUIRE(make_item_randart(item, true));
+        for (int prop = 0; prop < ART_PROPERTIES; ++prop)
+            artefact_set_property(item, static_cast<artefact_prop_type>(prop), 0);
+        artefact_set_property(item, property, 1);
+        item.flags |= ISFLAG_IDENTIFIED;
+        equip_item(SLOT_BODY_ARMOUR, 0, false, true);
+        REQUIRE(you.body_armour() == &item);
+        if (property == ARTP_RAMPAGING)
+            REQUIRE(you.rampaging());
+        const char* key = property == ARTP_RAMPAGING
+            ? "You no longer feel able to rampage towards enemies."
+            : "You feel strangely numb.";
+        const string expected = T_(key);
+        msg::tee messages;
+        REQUIRE(unequip_item(item, true, false, false));
+        CHECK(you.body_armour() == nullptr);
+        CHECK_FALSE(you.rampaging());
+        CHECK(messages.get_store().find(expected) != string::npos);
+        if (language == lang_t::EN)
+            CHECK(expected == key);
+        else
+        {
+            CHECK(expected != key);
+            CHECK(messages.get_store().find(key) == string::npos);
+        }
+
+        // Already-melded items must retain upstream's suppression of effects.
+        msg::tee suppressed;
+        bool show = true;
+        unequip_artefact_effect(item, &show, false, true);
+        CHECK(suppressed.get_store().find(expected) == string::npos);
+    }
+}
+
+TEST_CASE("issue147: real summoning messages preserve upstream English and ZH arguments",
+          "[zh-translation][issue147][summoning-format]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    unwind_var<bool> restore_need_save(crawl_state.need_save, false);
+    unwind_var<use_animations_type> restore_animations(
+        Options.use_animations, use_animations_type());
+    const char* cases[] = {"foxfire", "marshlight", "boulder", "two cannons",
+                           "one cannon", "crocodile", "monarch", "detonate"};
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_agent : {true, false})
+    for (int case_index = 0; case_index < 8; ++case_index)
+    {
+        CAPTURE(language, player_agent, cases[case_index]);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        scoped_monspeak_world world;
+        unwind_var<map_markers> restore_markers(env.markers);
+        vector<mid_t> old_mids;
+        for (int i = 0; i < MAX_MONSTERS; ++i)
+            old_mids.push_back(env.mons[i].mid);
+        unwinder clear_summons([&]() {
+            for (int i = 0; i < MAX_MONSTERS; ++i)
+                if (env.mons[i].mid && env.mons[i].mid != old_mids[i])
+                {
+                    env.mid_cache.erase(env.mons[i].mid);
+                    env.mons[i].reset();
+                }
+        });
+        monster* other = world.place(MONS_ORC, coord_def(20, 21));
+        REQUIRE(other != nullptr);
+        other->hit_points = other->max_hit_points = 1000;
+        actor& agent = player_agent ? static_cast<actor&>(you)
+                                   : static_cast<actor&>(*other);
+        const string name = agent.name(DESC_THE);
+        const string possessive = agent.pronoun(PRONOUN_POSSESSIVE);
+        const char* suffix = player_agent ? "" : "s";
+        const bool chinese = language == lang_t::ZH;
+        string expected;
+        if (case_index == 4)
+        {
+            // Exactly one free cannon placement exercises num_seen == 1.
+            for (int x = 15; x <= 30; ++x)
+                for (int y = 15; y <= 30; ++y)
+                    env.grid(coord_def(x, y)) = DNGN_ROCK_WALL;
+            env.grid(you.pos()) = DNGN_FLOOR;
+            env.grid(other->pos()) = DNGN_FLOOR;
+            env.grid(coord_def(21, 20)) = DNGN_FLOOR;
+            env.grid(coord_def(22, 20)) = DNGN_FLOOR;
+            invalidate_los();
+        }
+        rng::subgenerator fixed_rng(147, case_index);
+        msg::tee messages;
+        switch (case_index)
+        {
+        case 0:
+        case 1:
+            REQUIRE(cast_foxfire(agent, 50, false, case_index == 1) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s summons some %s!"), name.c_str(),
+                               case_index == 1 ? T_("Marshlight") : T_("foxfire"))
+                : make_stringf("%s conjure%s some %s!", name.c_str(), suffix,
+                               case_index == 1 ? "marshlight" : "foxfire");
+            break;
+        case 2:
+            REQUIRE(cast_broms_barrelling_boulder(agent, coord_def(24, 20), 50, false)
+                    == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s sends a boulder rolling forward!"), name.c_str())
+                : make_stringf("%s send%s a boulder barrelling forward!", name.c_str(), suffix);
+            break;
+        case 3:
+        case 4:
+            REQUIRE(cast_hoarfrost_cannonade(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_(case_index == 3 ? "%s sculpts two cannons from ice!"
+                                                 : "%s sculpts a cannon from ice!"), name.c_str())
+                : make_stringf(case_index == 3 ? "%s sculpt%s a pair of cannons out of ice!"
+                                              : "%s sculpt%s a cannon out of ice!", name.c_str(), suffix);
+            break;
+        case 5:
+            // Movement redraw requires a full game world. Exercise the exact
+            // production emission builder, independently of dragging/combat.
+            mpr(surprising_crocodile_dismount_message(agent));
+            expected = chinese
+                ? make_stringf(T_("%s dismounts %s alligator."), name.c_str(), possessive.c_str())
+                : make_stringf("%s dismount%s %s crocodile.", name.c_str(), suffix, possessive.c_str());
+            break;
+        case 6:
+            REQUIRE(cast_monarch_bomb(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s constructs an explosive harbinger and releases it."), name.c_str())
+                : make_stringf("%s construct%s an explosive harbinger and set it loose.", name.c_str(), suffix);
+            break;
+        case 7:
+            REQUIRE(monarch_detonation(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s orders the %s explosives to detonate!"), name.c_str(), possessive.c_str())
+                : make_stringf("%s command%s %s explosives to detonate!", name.c_str(), suffix, possessive.c_str());
+            break;
+        }
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find(expected + "\n") != string::npos);
+        if (chinese)
+        {
+            CHECK(contains_non_ascii(expected));
+            CHECK_FALSE(rule_mixed_cn_en(expected));
+            CHECK_FALSE(rule_format_broken(messages.get_store(), ""));
+            if (case_index < 2)
+                CHECK(messages.get_store().find(case_index == 0 ? "foxfire" : "marshlight")
+                      == string::npos);
+        }
+    }
+}
+
+
+TEST_CASE("issue147: terrain trap Lua API and safety hook share canonical tokens",
+          "[zh-translation][issue147][trap-protocol]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.set_position(coord_def(20, 20));
+        const coord_def trap_position(21, 20);
+        unwind_var<map_cell> restore_trap(env.map_knowledge(trap_position));
+        unwind_var<map_cell> restore_floor(env.map_knowledge(you.pos()));
+        env.map_knowledge(trap_position) = map_cell();
+        env.map_knowledge(trap_position).set_feature(DNGN_TRAP_TELEPORT_PERMANENT);
+        env.map_knowledge(you.pos()) = map_cell();
+        env.map_knowledge(you.pos()).set_feature(DNGN_FLOOR);
+        const int result = clua.execstring(
+            "local old_hook = c_trap_is_safe; "
+            "local ok, err = pcall(function() "
+            "local observed; "
+            "c_trap_is_safe = function(token) observed = token; "
+            "return token == 'trap_teleport_permanent' end; "
+            "assert(view.trap_at(1, 0) == 'trap_teleport_permanent', 'trap token'); "
+            "assert(view.trap_at(0, 0) == nil, 'floor token'); "
+            "assert(view.trap_at(999, 999) == nil, 'out of bounds token'); "
+            "assert(not view.is_safe_square(1, 0), 'terrain trap traversability'); "
+            "assert(observed == 'trap_teleport_permanent', 'hook token'); "
+            "end); c_trap_is_safe = old_hook; assert(ok, err)");
+        INFO(clua.error);
+        REQUIRE(result == 0);
     }
 }

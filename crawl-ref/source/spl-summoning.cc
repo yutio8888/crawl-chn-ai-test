@@ -2852,10 +2852,14 @@ spret cast_foxfire(actor &agent, int pow, bool fail, bool marshlight)
 
     if (created && you.see_cell(agent.pos()))
     {
-        mprf(T_("%s summons some %s!"),
-             agent.name(DESC_THE).c_str(),
-             agent.is_monster() ? "s" : "",
-             marshlight ? "marshlight" : "foxfire");
+        // Keep upstream English grammar separate from the complete ZH sentence.
+        if (Options.language == lang_t::ZH)
+            mprf(T_("%s summons some %s!"), agent.name(DESC_THE).c_str(),
+                 marshlight ? T_("Marshlight") : T_("foxfire"));
+        else
+            mprf("%s conjure%s some %s!", agent.name(DESC_THE).c_str(),
+                 agent.is_monster() ? "s" : "",
+                 marshlight ? "marshlight" : "foxfire");
     }
     else if (agent.is_player())
         canned_msg(MSG_NOTHING_HAPPENS);
@@ -3043,8 +3047,12 @@ spret cast_broms_barrelling_boulder(actor& agent, coord_def targ, int pow, bool 
 
     if (you.can_see(*boulder))
     {
-        mprf(T_("%s sends a boulder rolling forward!"),
-            agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
+        if (Options.language == lang_t::ZH)
+            mprf(T_("%s sends a boulder rolling forward!"),
+                 agent.name(DESC_THE).c_str());
+        else
+            mprf("%s send%s a boulder barrelling forward!",
+                 agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
     }
 
     // Let the boulder roll one space immediately.
@@ -3167,15 +3175,21 @@ spret cast_hoarfrost_cannonade(const actor& agent, int pow, bool fail)
 
     if (num_seen > 1)
     {
-        mprf(T_("%s sculpts two cannons from ice!"),
-             agent.name(DESC_THE).c_str(),
-             agent.is_player() ? ""  : "s");
+        if (Options.language == lang_t::ZH)
+            mprf(T_("%s sculpts two cannons from ice!"),
+                 agent.name(DESC_THE).c_str());
+        else
+            mprf("%s sculpt%s a pair of cannons out of ice!",
+                 agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
     }
     else if (num_seen == 1)
     {
-        mprf(T_("%s sculpts a cannon from ice!"),
-             agent.name(DESC_THE).c_str(),
-             agent.is_player() ? ""  : "s");
+        if (Options.language == lang_t::ZH)
+            mprf(T_("%s sculpts a cannon from ice!"),
+                 agent.name(DESC_THE).c_str());
+        else
+            mprf("%s sculpt%s a cannon out of ice!",
+                 agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
     }
     else
         canned_msg(MSG_NOTHING_HAPPENS);
@@ -3799,6 +3813,17 @@ bool surprising_crocodile_can_drag(const actor& agent, const coord_def& target,
     return true;
 }
 
+string surprising_crocodile_dismount_message(const actor& agent)
+{
+    if (Options.language == lang_t::ZH)
+        return make_stringf(T_("%s dismounts %s alligator."),
+                           agent.name(DESC_THE).c_str(),
+                           agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+    return make_stringf("%s dismount%s %s crocodile.",
+                       agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s",
+                       agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+}
+
 spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bool fail)
 {
     const coord_def start_pos = agent.pos();
@@ -3893,10 +3918,7 @@ spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bo
 
     if (you.can_see(agent))
     {
-        mprf(T_("%s dismounts %s alligator."),
-             agent.name(DESC_THE).c_str(),
-             agent.is_player() ? "" : "s",
-             agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+        mpr(surprising_crocodile_dismount_message(agent));
     }
 
     // We need to finalize the movement before making the temporary water, so
@@ -4289,8 +4311,12 @@ spret cast_monarch_bomb(const actor& agent, int pow, bool fail)
     {
         if (you.can_see(*mon))
         {
-            mprf(T_("%s constructs an explosive harbinger and releases it."),
-                 agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
+            if (Options.language == lang_t::ZH)
+                mprf(T_("%s constructs an explosive harbinger and releases it."),
+                     agent.name(DESC_THE).c_str());
+            else
+                mprf("%s construct%s an explosive harbinger and set it loose.",
+                     agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
         }
     }
     else
@@ -4355,10 +4381,14 @@ spret monarch_detonation(const actor& agent, int pow, bool fail)
 
     if (you.can_see(agent))
     {
-        mprf(T_("%s orders the %s explosives to detonate!"),
-                agent.name(DESC_THE).c_str(),
-                agent.is_player() ? "" : "s",
-                agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf(T_("%s orders the %s explosives to detonate!"),
+                 agent.name(DESC_THE).c_str(),
+                 agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+        else
+            mprf("%s command%s %s explosives to detonate!",
+                 agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s",
+                 agent.pronoun(PRONOUN_POSSESSIVE).c_str());
     }
 
     for (coord_def spot : spots)

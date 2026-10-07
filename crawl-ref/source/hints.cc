@@ -1807,7 +1807,7 @@ static string _hints_abilities(const item_def& item)
             str = _get_hint("HINT_ACTIVATE_ABILITY_JEWELLERY_NOT_WORN");
             break;
         default:
-            str += "<r>(BUG! this item shouldn't give an ability)</r>";
+            str += T_("<r>(BUG! this item shouldn't give an ability)</r>");
             break;
         }
     }
