@@ -139,9 +139,92 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: tree hands and jelly material keep their display contexts",
+                 "[zh-translation][trunk-display][a3c3]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.set_position(coord_def(20, 20));
+        you.species = SP_HUMAN;
+        you.form = transformation::tree;
+        CHECK(get_form()->hand_name == "branch");
+        CHECK(you.hand_name(false) == (language == lang_t::ZH ? "枝条" : "branch"));
+        CHECK(you.hand_name(true) == (language == lang_t::ZH ? "枝条" : "branches"));
+        if (language == lang_t::ZH)
+            CHECK(you.hand_name(false) != T_("branch"));
+
+        you.form = transformation::jelly;
+        CHECK(get_form()->flesh_equivalent == "jelly");
+        CHECK(get_form()->short_name == "Jelly");
+        CHECK(get_form()->get_short_name() == (language == lang_t::ZH ? "凝胶" : "Jelly"));
+        if (language == lang_t::ZH)
+            CHECK(get_form()->get_short_name() != T_("Jelly"));
+
+        // Exercise the real petrification expiry consumer, including its
+        // default flesh path, rather than just comparing two catalog lookups.
+        for (transformation form : {transformation::jelly, transformation::none})
+        {
+            you.form = form;
+            you.duration[DUR_PETRIFIED] = 1;
+            you.time_taken = BASELINE_DELAY;
+            const string material = form == transformation::jelly ? "jelly" : "flesh";
+            const string expected = make_stringf(T_("You turn to %s%s."),
+                C_("body part", material.c_str()), T_(" and can act again"));
+            msgwin_temporary_mode temporary;
+            unwinder clear_messages([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            player_reacts_to_monsters();
+            CHECK(you.duration[DUR_PETRIFIED] == 0);
+            CHECK(observed.get_store().find(expected) != string::npos);
+            if (language == lang_t::ZH)
+                CHECK(expected.find(form == transformation::jelly ? "胶质" : "血肉") != string::npos);
+            else
+                CHECK(expected == "You turn to " + material + " and can act again.");
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: four-winds warning uses the catalog display sink",
+                 "[zh-translation][trunk-display][a3c3]")
+{
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_GALE_CENTAUR;
+        you.mutation[MUT_STAMPEDE] = 2;
+        you.innate_mutation[MUT_STAMPEDE] = 2;
+        you.prevailing_wind = 0;
+        you.wind_category_weight.init(0);
+        you.wind_category_weight[0] = 100;
+        you.wind_category_weight[1] = 95;
+        you.wind_category_inc[1] = true;
+        const string expected = T_("You feel the winds around you beginning to shift...");
+        msgwin_temporary_mode temporary;
+        unwinder clear_messages([]() { msgwin_clear_temporary(); });
+        msg::tee observed;
+        update_four_winds();
+        CHECK(you.gave_wind_change_warning);
+        CHECK(you.prevailing_wind == 0);
+        CHECK(observed.get_store().find(expected) != string::npos);
+        const string first_warning = observed.get_store();
+        update_four_winds();
+        CHECK(observed.get_store() == first_warning);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Exegesis expires through the localized duration callback",
                  "[zh-translation][trunk-display]")
 {
+    init_spell_descs();
     init_duration_index();
     const auto saved_props = you.props;
     unwinder restore_props([&saved_props]() { you.props = saved_props; });

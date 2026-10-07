@@ -1531,7 +1531,7 @@ int attack::player_stab(int damage)
         if (you.has_mutation(MUT_SOUTH_WIND) && !defender->wont_attack())
         {
             if (!you.duration[DUR_TAILWIND])
-                mprf(MSGCH_DURATION, "The winds around you quicken.");
+                mprf(MSGCH_DURATION, T_("The winds around you quicken."));
             you.duration[DUR_TAILWIND] = max(you.duration[DUR_TAILWIND], random_range(50, 90));
         }
     }

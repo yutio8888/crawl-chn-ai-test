@@ -1565,7 +1565,7 @@ void update_four_winds(bool force_recheck)
             if (you.wind_category_inc[i]
                 && you.wind_category_weight[i] + 10 >= prevailing_amount)
             {
-                mprf(MSGCH_WARN, "You feel the winds around you beginning to shift...");
+                mprf(MSGCH_WARN, T_("You feel the winds around you beginning to shift..."));
                 you.gave_wind_change_warning = true;
                 break;
             }

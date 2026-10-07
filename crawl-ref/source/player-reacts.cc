@@ -195,9 +195,10 @@ static void _decrement_petrification(int delay)
         // implicit assumption: all races that can be petrified are made of
         // flesh when not petrified. (Unfortunately, species::skin_name doesn't
         // really work here..)
-        const string flesh_equiv = get_form()->flesh_equivalent.empty() ?
+        const string flesh_key = get_form()->flesh_equivalent.empty() ?
                                             "flesh" :
                                             get_form()->flesh_equivalent;
+        const string flesh_equiv = C_("body part", flesh_key.c_str());
 
         mprf(MSGCH_DURATION, T_("You turn to %s%s."),
              flesh_equiv.c_str(),
