@@ -1140,7 +1140,7 @@ static void _place_player_corpse(bool explode)
     if (you.form != transformation::none)
         mpr(T_("Your form twists in death."));
 
-    place_monster_corpse(dummy, false);
+    place_corpse_or_gold(dummy, false);
 }
 
 #if defined(WIZARD) || defined(DEBUG)
@@ -1342,7 +1342,7 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
 
     // Marionettes will never hurt the player with their spells (even if they
     // have somehow killed themselves in the process)
-    if (monster* mon_source = cached_monster_copy_by_mid(source))
+    if (monster* mon_source = monster_by_mid(source, false, /*allow_dead=*/true))
     {
         if (mon_source->attitude == ATT_MARIONETTE)
             dam = 0;

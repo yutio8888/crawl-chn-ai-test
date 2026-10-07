@@ -115,7 +115,7 @@ static string _bezotting_warning(branch_type branch)
 
 bool check_next_floor_warning()
 {
-    level_id  next_level_id = level_id::get_next_level_id(you.pos());
+    level_id  next_level_id = level_id::current().next_level_id(you.pos());
 
     crawl_state.level_annotation_shown = false;
     const string annotation_warning = _annotation_exclusion_warning(next_level_id);
@@ -280,6 +280,7 @@ void leaving_level_now(dungeon_feature_type stair_used)
         vault_list.push_back("[exit]");
 #endif
         clear_abyssal_rune_knowledge();
+        you.props.erase(ABYSS_AREAS_SEEN_KEY);
     }
 
     // XXX: Don't consider things like banishment or Duel, which use 'stairs'
@@ -291,6 +292,7 @@ void leaving_level_now(dungeon_feature_type stair_used)
 
     end_terrain_changes(TERRAIN_CHANGE_GOLUBRIA);
     _remove_unstable_monsters();
+    cancel_pending_lurkers();
 
     // Allow players to be interrupted by sensed monsters on their return to this level.
     for (monster_iterator mi; mi; ++mi)
@@ -1119,6 +1121,9 @@ void floor_transition(dungeon_feature_type how,
     if (you.unrand_equipped(UNRAND_VAINGLORY))
         _vainglory_arrival();
 
+    if (you.wearing_ego(OBJ_ARMOUR, SPARM_MESMERISM))
+        you.duration[DUR_MESMERISM_COOLDOWN] += random_range(50, 80);
+
     trackers_init_new_level();
 
     if (update_travel_cache && !shaft)
@@ -1186,6 +1191,33 @@ level_id stair_destination(coord_def pos, bool for_real)
                              for_real);
 }
 
+// Where 'feat' leads, if it is the exit stairs of 'from's branch.
+// This does not assume that the player is currently on the level; branches
+// without a fixed parent (e.g. Pan, Abyss) return an empty level_id.
+level_id branch_exit_destination(dungeon_feature_type feat,
+                                 const level_id &from)
+{
+    if (branches[from.branch].exit_stairs != feat
+        || parent_branch(from.branch) >= NUM_BRANCHES
+        || feat == DNGN_EXIT_ZIGGURAT)
+    {
+        return level_id();
+    }
+
+    level_id lev = brentry[from.branch];
+    if (!lev.is_valid())
+    {
+        // Wizmode, the branch wasn't generated this game.
+        // Pick the middle of the range instead.
+        lev = level_id(branches[from.branch].parent_branch,
+                       (branches[from.branch].mindepth
+                        + branches[from.branch].maxdepth) / 2);
+        ASSERT(lev.is_valid());
+    }
+
+    return lev;
+}
+
 // Find the other end of a stair or portal on the current level. feat is the
 // type of feature (DNGN_EXIT_ABYSS, for example), dst is the target of a
 // portal vault entrance (and is ignored for other types of features), and
@@ -1200,23 +1232,9 @@ level_id stair_destination(dungeon_feature_type feat, const string &dst,
 #else
     UNUSED(dst); // see below in the switch
 #endif
-    if (branches[you.where_are_you].exit_stairs == feat
-        && parent_branch(you.where_are_you) < NUM_BRANCHES
-        && feat != DNGN_EXIT_ZIGGURAT)
-    {
-        level_id lev = brentry[you.where_are_you];
-        if (!lev.is_valid())
-        {
-            // Wizmode, the branch wasn't generated this game.
-            // Pick the middle of the range instead.
-            lev = level_id(branches[you.where_are_you].parent_branch,
-                           (branches[you.where_are_you].mindepth
-                            + branches[you.where_are_you].maxdepth) / 2);
-            ASSERT(lev.is_valid());
-        }
-
-        return lev;
-    }
+    const level_id dest = branch_exit_destination(feat, level_id::current());
+    if (dest.is_valid())
+        return dest;
 
     if (feat_is_portal_exit(feat))
         feat = DNGN_EXIT_PANDEMONIUM;
@@ -1393,16 +1411,6 @@ static void _update_level_state()
                 env.pgrid(*ri) &= ~FPROP_ICY;
         }
 #endif
-    }
-
-    env.orb_pos = coord_def();
-    if (item_def* orb = find_floor_item(OBJ_ORBS, ORB_ZOT))
-        env.orb_pos = orb->pos;
-    else if (player_has_orb() || you.unrand_equipped(UNRAND_CHARLATANS_ORB))
-    {
-        if (player_has_orb())
-            env.orb_pos = you.pos();
-        invalidate_agrid(true);
     }
 }
 

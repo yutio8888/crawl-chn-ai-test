@@ -443,6 +443,12 @@ namespace quiver
         }
     };
 
+    static bool _either_weapon_cleaves()
+    {
+        return attack_cleaves(you, you.weapon())
+                || attack_cleaves(you, you.offhand_weapon());
+    }
+
     // class isn't intended for quivering per se. Rather, it's a wrapper on
     // targeted attacks involving melee weapons or unarmed fighting. This
     // covers regular 1-space melee attacks, as well as reaching attacks of
@@ -491,9 +497,9 @@ namespace quiver
                 return T_("punch");
             }
 
-            if (weapon_reach(*weapon) > 1)
+            if (you.reach_range() > 1)
                 return T_("reach");
-            else if (attack_cleaves(you))
+            else if (_either_weapon_cleaves())
                 return T_("cleave");
             else
                 return T_("hit"); // could use more subtype flavor Vs?
@@ -609,11 +615,8 @@ namespace quiver
             args.self = confirm_prompt_type::cancel;
 
             unique_ptr<targeter> hitfunc;
-            if (attack_cleaves(you))
-            {
-                const int range = reach_range;
-                hitfunc = make_unique<targeter_cleave>(&you, you.pos(), range);
-            }
+            if (_either_weapon_cleaves())
+                hitfunc = make_unique<targeter_cleave>(you.pos());
             else
                 hitfunc = make_unique<targeter_reach>(&you, reach_range);
             args.hitfunc = hitfunc.get();
@@ -674,7 +677,7 @@ namespace quiver
             // Cleaving reaches also will never fail to miss, since the player can
             // just attack another target in most cases to hit both.
             if (reach_range < 3
-                && !attack_cleaves(you)
+                && !_either_weapon_cleaves()
                 && (x_distance > 1 || y_distance > 1))
             {
                 const int x_first_middle = you.pos().x + (delta.x) / 2;
@@ -2668,12 +2671,17 @@ namespace quiver
                     first_abil += 1;
                 }
 
-                if (focus_mode != Focus::NONE)
+                // We use real letters for spells and abilities, but for items
+                // we use sequential letters, as we may have items sharing the
+                // same letter (e.g. a wand and a missile).
+                const bool use_real_letters = focus_mode != Focus::NONE
+                                              && i >= it_count;
+                if (use_real_letters)
                     hotkey = a->source_hotkey();
 
                 add_action(a, hotkey);
 
-                if (focus_mode == Focus::NONE)
+                if (!use_real_letters)
                     hotkey++;
                 i++;
             }

@@ -722,7 +722,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_OZOCUBUS_ARMOUR, "Ozocubu's Armour",
     spschool::ice,
-    spflag::no_ghost,
+    spflag::no_ghost | spflag::selfench,
     3,
     100,
     -1, -1,
@@ -1690,6 +1690,17 @@ static const struct spell_desc spelldata[] =
     LOS_RADIUS, LOS_RADIUS,
     0,
     TILEG_HASTE_OTHER,
+},
+
+{
+    SPELL_TOUCH_OF_PARADOX, "Touch of Paradox",
+    spschool::translocation | spschool::hexes,
+    spflag::helpful | spflag::monster,
+    7,
+    200,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_TOUCH_OF_PARADOX,
 },
 
 {
@@ -4682,6 +4693,17 @@ static const struct spell_desc spelldata[] =
     TILEG_BOLSTER,
 },
 
+{
+    SPELL_PHASE_SHIFT, "Phase Shift",
+    spschool::translocation,
+    spflag::helpful | spflag::selfench | spflag::monster,
+    6,
+    200,
+    -1, -1,
+    0,
+    TILEG_PHASE_SHIFT,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },
@@ -4724,7 +4746,7 @@ AXED_SPELL(SPELL_IRON_ELEMENTALS, "Summon Iron Elementals")
 AXED_SPELL(SPELL_LETHAL_INFUSION, "Lethal Infusion")
 AXED_SPELL(SPELL_MELEE, "Melee")
 AXED_SPELL(SPELL_MISLEAD, "Mislead")
-AXED_SPELL(SPELL_PHASE_SHIFT, "Phase Shift")
+AXED_SPELL(SPELL_PHASE_SHIFT_OLD, "Phase Shift")
 AXED_SPELL(SPELL_POISON_WEAPON, "Poison Weapon")
 AXED_SPELL(SPELL_RANDOM_BOLT, "Random Bolt")
 AXED_SPELL(SPELL_REARRANGE_PIECES, "Rearrange the Pieces")

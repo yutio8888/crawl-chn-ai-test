@@ -1184,7 +1184,7 @@ bool item_is_cursable(const item_def &item)
 /**
  * Is the item stationary (unmovable)?
  *
- * Currently only carrion and nets with a trapped victim are stationary.
+ * Currently only carrion is stationary.
  * @param item The item.
  * @return  True iff the item is stationary.
 */
@@ -2654,9 +2654,13 @@ bool get_armour_see_invisible(const item_def &arm, bool check_artp)
     return false;
 }
 
-int get_armour_res_corr(const item_def &arm)
+int get_armour_res_corr(const item_def &arm, bool check_artp)
 {
     ASSERT(arm.base_type == OBJ_ARMOUR);
+
+    if (check_artp && is_artefact(arm))
+        if (artefact_property(arm, ARTP_RCORR))
+            return 1;
 
     // intrinsic armour abilities
     return get_armour_ego_type(arm) == SPARM_CORROSION_RESISTANCE
@@ -2735,6 +2739,21 @@ int get_jewellery_res_poison(const item_def &ring, bool check_artp)
 
     if (check_artp && is_artefact(ring))
         res += artefact_property(ring, ARTP_POISON);
+
+    return res;
+}
+
+int get_jewellery_res_corr(const item_def &ring, bool check_artp)
+{
+    ASSERT(ring.base_type == OBJ_JEWELLERY);
+
+    int res = 0;
+
+    if (ring.sub_type == RING_RESIST_CORROSION)
+        res += 1;
+
+    if (check_artp && is_artefact(ring))
+        res += artefact_property(ring, ARTP_RCORR);
 
     return res;
 }
@@ -3781,23 +3800,31 @@ bool is_usable_talisman(const item_def& item)
     return cannot_put_on_talisman_reason(item, false).empty();
 }
 
-bool item_gives_equip_slots(const item_def& item)
+// The equipment slot type(s) an item grants extra slots of (empty if none).
+vector<equipment_slot> item_granted_slots(const item_def& item)
 {
     if (!is_unrandom_artefact(item))
-        return false;
+        return {};
 
     switch (item.unrand_idx)
     {
         case UNRAND_FINGER_AMULET:
-        case UNRAND_JUSTICARS_REGALIA:
-        case UNRAND_FISTICLOAK:
-        case UNRAND_SKULL_OF_ZONGULDROK:
         case UNRAND_VAINGLORY:
-            return true;
-
+            return {SLOT_RING};
+        case UNRAND_JUSTICARS_REGALIA:
+            return {SLOT_AMULET};
+        case UNRAND_SKULL_OF_ZONGULDROK:
+            return {SLOT_HELMET};
+        case UNRAND_FISTICLOAK:
+            return {SLOT_GLOVES};
         default:
-            return false;
+            return {};
     }
+}
+
+bool item_gives_equip_slots(const item_def& item)
+{
+    return !item_granted_slots(item).empty();
 }
 
 bool item_grants_flight(const item_def& item)
@@ -3842,4 +3869,28 @@ int jewellery_usefulness_limit(jewellery_type type)
         default:
             return INT_MAX;
     }
+}
+
+// Whether equipping a given item affects the agrid (ie: causes a halo or umbra)
+bool item_affects_agrid(const item_def& item)
+{
+    if (item.base_type == OBJ_ARMOUR && get_armour_ego_type(item) == SPARM_LIGHT)
+        return true;
+
+    if (is_unrandom_artefact(item))
+    {
+        switch (item.unrand_idx)
+        {
+            case UNRAND_EOS:
+            case UNRAND_BRILLIANCE:
+            case UNRAND_VAINGLORY:
+            case UNRAND_SHADOWS:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    return false;
 }

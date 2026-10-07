@@ -815,58 +815,47 @@ void player_equip_set::find_removable_items_for_slot(equipment_slot base_slot,
 }
 
 /**
- * Tests whether removing a given item will reduce the player's available
- * equipment slots in a way that requires them to also remove other items.
+ * Given a set of items being removed, tests whether a given equipment slot
+ * type will be overfull after they are all removed.
  *
- * @param item             The item to remove.
- * @param to_replace[out]  If removing the item will cause a slot type to
- *                         overflow, a vector of all removable items in that
- *                         slot type will be added to this vector.
- * @param cursed_okay      True if cursed items are considered okay to remove
- *                         (generally because this is called by someone looking
- *                         to meld rather than remove them).
+ * @param slot              The slot type to check.
+ * @param to_replace[out]   If removing the item will cause this slot to
+ *                          overflow, a vector of all removable items in that
+ *                          slot type will be added to this vector.
+ * @param cursed_okay       True if cursed items are considered okay to remove
+ *                          (generally because this is called by someone looking
+ *                          to meld rather than remove them).
+ * @param already_removing  The set of items being removed.
  *
- * @return How many other items need to be removed before the player could
- *         remove this item. If this is non-zero and to_replace is still empty,
- *         that means that there are *no* valid candidates to remove, despite
- *         needing to do so (almost certainly because every slot of the needed
- *         type contains a cursed item.)
+ * @return How many occupants of the slot must still be removed. If this is
+ *         non-zero and to_replace is still empty, that means there are *no*
+ *         valid candidates to remove, despite needing to do so (almost
+ *         certainly because every occupant of the slot is cursed.)
  */
-int player_equip_set::needs_chain_removal(const item_def& item,
+int player_equip_set::needs_chain_removal(equipment_slot slot,
                                           vector<item_def*>& to_replace,
-                                          bool cursed_okay)
+                                          bool cursed_okay,
+                                          const vector<item_def*>& already_removing)
 {
-    if (!item_gives_equip_slots(item))
-        return 0;
-
-    // XXX: This likely doesn't properly handle the case where an item gives
-    //      slots of *multiple* types, but no such items yet exist. Consider
-    //      changing this code if one is ever added.
     unwind_var<player_equip_set> unwind_eq(you.equipment);
-    remove(item);
+    for (item_def* removing : already_removing)
+        remove(*removing);
 
-    for (int i = SLOT_UNUSED; i < NUM_EQUIP_SLOTS; ++i)
+    const int new_num_slots = get_player_equip_slot_count(slot);
+    int count = 0;
+    for (const player_equip_entry& entry : items)
     {
-        int new_num_slots = get_player_equip_slot_count(static_cast<equipment_slot>(i));
-        if (new_num_slots < num_slots[i])
-        {
-            int count = 0;
-            for (const player_equip_entry& entry : items)
-            {
-                if (entry.slot != i)
-                    continue;
+        if (entry.slot != slot)
+            continue;
 
-                ++count;
+        ++count;
 
-                if (cursed_okay || !entry.get_item().cursed())
-                    to_replace.push_back(&entry.get_item());
-            }
-
-            return count - new_num_slots;
-        }
+        item_def& eq = entry.get_item();
+        if (cursed_okay || !eq.cursed())
+            to_replace.push_back(&eq);
     }
 
-    return 0;
+    return count - new_num_slots;
 }
 
 // Sorter function to be used by get_forced_removal_list()
@@ -918,12 +907,16 @@ static bool _forced_removal_goodness(player_equip_entry* entry1, player_equip_en
  *                           purposes (ie: to scan and remove 'impossible'
  *                           items) and thus should allow for items to remain in
  *                           slots granted by melded items.
+ * @param num_direct[out]    If non-null, set to the number of items removed
+ *                           directly (ie: the leading entries of the returned
+ *                           vector); the rest are due to lost slots.
  *
  * @return A vector of references to all items that must be removed for the
  *         player's current state to become valid again.
  */
 vector<item_def*> player_equip_set::get_forced_removal_list(bool force_full_check,
-                                                            bool is_save_cleanup)
+                                                            bool is_save_cleanup,
+                                                            size_t* num_direct)
 {
     vector<item_def*> to_remove;
 
@@ -978,6 +971,12 @@ vector<item_def*> player_equip_set::get_forced_removal_list(bool force_full_chec
                 to_remove.push_back(&entry.get_item());
         }
     }
+
+    if (num_direct)
+        *num_direct = to_remove.size();
+
+    // Handle removals of items that occupy slots we are now missing.
+    handle_chain_removal(to_remove, false);
 
     return to_remove;
 }
@@ -1511,6 +1510,33 @@ void player_equip_set::shift_twohander_to_slot(equipment_slot new_slot)
     }
 }
 
+// Silently swap the weapon from the coglin-offhand slot to the weapon slot,
+// with no equip/unequip effects. This will move a main weapon to offhand if
+// there is one present, and do nothing if there is no offhand weapon.
+void player_equip_set::swap_offhand_weapon_to_main()
+{
+    player_equip_entry* weapon = nullptr;
+    player_equip_entry* offhand = nullptr;
+    for (player_equip_entry& entry : items)
+    {
+        if (entry.is_overflow || !is_weapon(entry.get_item()))
+            continue;
+
+        if (entry.slot == SLOT_WEAPON_OR_OFFHAND)
+            offhand = &entry;
+
+        if (entry.slot == SLOT_WEAPON)
+            weapon = &entry;
+    }
+
+    if (offhand)
+    {
+        offhand->slot = SLOT_WEAPON;
+        if (weapon)
+            weapon->slot = SLOT_WEAPON_OR_OFFHAND;
+    }
+}
+
 /**
  * Recalculate the player's max hp and set the current hp based on the %change
  * of max hp. This has resulted from our having equipped an artefact that
@@ -1667,6 +1693,9 @@ void equip_effect(int item_slot, bool unmeld, bool msg)
     else if (item.base_type == OBJ_JEWELLERY)
         _equip_jewellery_effect(item, unmeld);
 
+    if (item_affects_agrid(item))
+        invalidate_agrid();
+
     if (!unmeld)
         _handle_regen_item_equip(item);
 
@@ -1699,6 +1728,9 @@ void unequip_effect(int item_slot, bool meld, bool msg, bool was_melded)
         _unequip_armour_effect(item, meld, was_melded);
     else if (item.base_type == OBJ_JEWELLERY)
         _unequip_jewellery_effect(item, meld, was_melded);
+
+    if (item_affects_agrid(item))
+        invalidate_agrid();
 
     if (!meld)
         _unequip_maybe_destroy_item(item);
@@ -2370,10 +2402,6 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
             }
             break;
 
-        case SPARM_LIGHT:
-            invalidate_agrid(true);
-            break;
-
         }
 
     }
@@ -2502,10 +2530,6 @@ static void _unequip_armour_effect(item_def& item, bool meld, bool was_melded)
     case SPARM_INFUSION:
         if (you.max_magic_points || you.has_mutation(MUT_HP_CASTING))
             mprf(T_("You feel magic leave your %s."), you.hand_name(true).c_str());
-        break;
-
-    case SPARM_LIGHT:
-        invalidate_agrid(true);
         break;
 
     default:
@@ -2877,7 +2901,7 @@ void unwield_distortion(bool brand)
     if (coinflip())
     {
         you.props[TELEPORTITIS_SOURCE].get_int() = MID_PLAYER;
-        you_teleport_now(false, "Space warps around you!");
+        you_teleport_now("Space warps around you!");
     }
     else if (coinflip())
     {

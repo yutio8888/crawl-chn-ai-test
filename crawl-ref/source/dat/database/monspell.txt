@@ -563,6 +563,16 @@ unseen Geryon cast
 
 You hear a weird and mournful sound.
 %%%%
+Antimagic Gaze Goji cast
+
+{{
+if you.see_invisible() then
+    return "@The_monster@'s mount stares at you."
+else
+    return "@The_monster@ spurs @possessive@ mount on."
+end
+}}
+%%%%
 Smiting Jeremiah cast
 
 @The_monster@ lets out a twisted cry.
@@ -650,6 +660,22 @@ Paralyse Xtahua cast
 ########################################################################
 # Individual monsters
 ########################################################################
+%%%%
+Touch of Paradox abyssal acolyte cast
+
+@The_monster@ calls down @possessive_God@'s blessing.
+
+@The_monster@ invokes a beneficient rending in the name of @possessive_God@.
+%%%%
+unseen Touch of Paradox abyssal acolyte cast
+
+You hear some strange prayers to @possessive_God@.
+%%%%
+Phase Shift abyssal acolyte cast
+
+@The_monster@ fiercely shimmers while chanting indecipherable hymns.
+
+@The_monster@ mumbles a few prayers and slips further between dimensions.
 %%%%
 basilisk cast targeted
 
@@ -834,6 +860,18 @@ guardian serpent cast
 Fireball hell hog cast
 
 @The_monster@ breathes @beam@ @at@ @target@.
+%%%%
+Warp Space herald of the abyss cast
+
+@The_monster@ solemnly invokes the wrath of @possessive_God@ @at@ @target@!
+
+@The_monster@ gurgles dread orisons to @possessive_God@ against @target@!
+%%%%
+Malign Gateway herald of the abyss cast
+
+@The_monster@ beckons forth otherworldly terror in the name of @possessive_God@.
+
+@The_monster@ dispassionately intertwines distant dimensions.
 %%%%
 Beckoning Gale hippogriff cast
 

@@ -1835,13 +1835,8 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     mon->stop_being_constricted();
 
     // Monsters' haloes should be removed when their souls are bound.
-    if (mon->halo_radius() >= 0
-        || mon->umbra_radius() >= 0
-        || mon->silence_radius() >= 0
-        || mon->liquefying_radius() >= 0)
-    {
+    if (mon->affects_agrid())
         invalidate_agrid();
-    }
 
     // schedule our actual revival for the end of this combat round
     schedule_avoided_death_fineff(mon);
@@ -3192,7 +3187,6 @@ spret dithmenos_marionette(monster& target, bool fail)
     const coord_def old_target = target.target;
     const int old_energy = target.speed_increment;
     target.attitude = ATT_MARIONETTE;
-    env.final_effect_monster_cache.push_back(target);
 
     // Attempt to cast all valid spells the monster has, in randomized order,
     // (but using all spells at least once before repeating). End early if the
@@ -3601,8 +3595,8 @@ static string _describe_gozag_shop(int index)
 /**
  * Let the player choose from the currently available merchants to call.
  *
- * @param   The index of the chosen shop; -1 if none was chosen (due to e.g.
- *          a seen_hup).
+ * @param   The index of the chosen shop; -1 if we had to return early
+ *          due to seen_hup being set.
  */
 static int _gozag_choose_shop()
 {
@@ -6086,24 +6080,13 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
  */
 spret hepliaklqana_idealise(bool fail)
 {
-    const mid_t ancestor_mid = hepliaklqana_ancestor();
-    if (ancestor_mid == MID_NOBODY)
-    {
-        mpr(T_("You have no ancestor to preserve!"));
-        return spret::abort;
-    }
-
-    monster *ancestor = monster_by_mid(ancestor_mid);
-    if (!ancestor || !you.can_see(*ancestor))
-    {
-        mprf(T_("%s isn't nearby!"), hepliaklqana_ally_name().c_str());
-        return spret::abort;
-    }
-
     fail_check();
 
+    monster *ancestor = hepliaklqana_ancestor_mon();
+    ASSERT(ancestor);
+
     simple_god_message(make_stringf(T_(" grants %s healing and protection!"),
-                                ancestor->name(DESC_YOUR).c_str()).c_str());
+                                    ancestor->name(DESC_YOUR).c_str()).c_str());
 
     // 1/3 mhp healed at 0 skill, full at 27 invo
     const int healing = ancestor->max_hit_points
@@ -6121,34 +6104,6 @@ spret hepliaklqana_idealise(bool fail)
                     + random2avg(you.skill(SK_INVOCATIONS, 20), 2);
     ancestor->add_ench({ ENCH_IDEALISED, &you, dur});
     return spret::success;
-}
-
-/**
- * Prompt to allow the player to choose a target for the Transference ability.
- *
- * @return  The chosen target, or the origin if none was chosen.
- */
-static coord_def _get_transference_target()
-{
-    dist spd;
-
-    const int aoe_radius = have_passive(passive_t::transfer_drain) ? 1 : 0;
-    targeter_transference tgt(&you, aoe_radius);
-    direction_chooser_args args;
-    args.hitfunc = &tgt;
-    args.restricts = DIR_TARGET;
-    args.mode = TARG_MOBILE_MONSTER;
-    args.range = LOS_RADIUS;
-    args.needs_path = false;
-    args.self = confirm_prompt_type::none;
-    args.show_floor_desc = true;
-    args.top_prompt = "Select a target.";
-
-    direction(spd, args);
-
-    if (!spd.isValid)
-        return coord_def();
-    return spd.target;
 }
 
 /// Drain any monsters near the destination of Tranference.
@@ -6175,76 +6130,24 @@ static void _transfer_drain_nearby(coord_def destination)
  * ancestor with a targeted creature & potentially slowing monsters adjacent
  * to the target.
  *
+ * @param target    The location being targeted.
  * @param fail      Whether the effect should fail after checking validity.
  * @return          Whether the ability succeeded, failed, or was aborted.
  */
-spret hepliaklqana_transference(bool fail)
+spret hepliaklqana_transference(const coord_def& target, bool fail)
 {
     monster *ancestor = hepliaklqana_ancestor_mon();
-    if (!ancestor || !you.can_see(*ancestor))
-    {
-        mprf(T_("%s isn't nearby!"), hepliaklqana_ally_name().c_str());
-        return spret::abort;
-    }
-
-    coord_def target = _get_transference_target();
-    if (target.origin())
-    {
-        canned_msg(MSG_OK);
-        return spret::abort;
-    }
-
     actor* victim = actor_at(target);
-    const bool victim_visible = victim && you.can_see(*victim);
-    if ((!victim || !victim_visible)
-        && !yesno(T_("You can't see anything there. Try transferring anyway?"),
-                  true, 'n'))
-    {
-        canned_msg(MSG_OK);
-        return spret::abort;
-    }
-
-    if (victim == ancestor)
-    {
-        mprf(T_("You can't transfer your ancestor with %s."), ancestor->pronoun(PRONOUN_REFLEXIVE).c_str());
-        return spret::abort;
-    }
-
-    const bool victim_immovable
-        = victim && (mons_is_tentacle_or_tentacle_segment(victim->type)
-                     || victim->is_stationary()
-                     || mons_is_projectile(victim->type));
-    if (victim_visible && victim_immovable)
-    {
-        mpr(T_("You can't transfer that."));
-        return spret::abort;
-    }
+    ASSERT(victim);
 
     const coord_def destination = ancestor->pos();
     if (victim == &you && !check_moveto(destination, "transfer", false, false))
         return spret::abort;
 
-    const bool uninhabitable = victim && !victim->is_habitable(destination);
-    if (uninhabitable && victim_visible)
-    {
-        mprf(T_("%s cannot be transferred there."), victim->name(DESC_THE).c_str());
-        return spret::abort;
-    }
-
-    // we assume the ancestor flies & so can survive anywhere anything can.
-
     fail_check();
-
-    if (!victim || uninhabitable || victim_immovable)
-    {
-        canned_msg(MSG_NOTHING_HAPPENS);
-        return spret::success;
-    }
 
     if (victim->is_player())
     {
-        if (cancel_harmful_move(false))
-            return spret::abort;
         ancestor->move_to(target, MV_ALLOW_OVERLAP | MV_TRANSLOCATION, true);
         victim->move_to(destination, MV_ALLOW_OVERLAP | MV_TRANSLOCATION, true);
     }
@@ -6568,7 +6471,7 @@ void wu_jian_heavenly_storm()
 
     you.set_duration(DUR_HEAVENLY_STORM, random_range(2, 3));
     you.props[WU_JIAN_HEAVENLY_STORM_KEY] = WU_JIAN_HEAVENLY_STORM_INITIAL;
-    invalidate_agrid(true);
+    invalidate_agrid();
 }
 
 bool okawaru_duel_active()

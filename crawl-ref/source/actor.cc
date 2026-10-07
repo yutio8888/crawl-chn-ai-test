@@ -155,7 +155,7 @@ void actor::set_position(const coord_def &c)
     const coord_def oldpos = position;
     position = c;
     los_actor_moved(this, oldpos);
-    areas_actor_moved(this, oldpos);
+    areas_actor_moved(this);
 }
 
 bool actor::can_hibernate(bool holi_only, bool intrinsic_only) const
@@ -465,13 +465,12 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         && (you.see_cell(pos()) || you.see_cell(constrictee->pos())))
     {
         string attacker_desc;
-        const string verb = intentional ? "release" : "lose";
         bool force_plural = true;
 
         if (ctype == CONSTRICT_BVC)
             attacker_desc = T_("The zombie hands");
         else if (ctype == CONSTRICT_ROOTS)
-            attacker_desc = T_("The roots");
+            attacker_desc = T_("The grasping roots");
         else if (ctype == CONSTRICT_ENTANGLE)
             attacker_desc = T_("The vines");
         else
@@ -482,21 +481,20 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
 
         // Print a different message when breaking free of constriction via
         // blinking or similar
-        if (!escape_verb.empty())
+        if (!intentional)
         {
             mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
+                 constrictee->name(DESC_THE).c_str(),
+                 constrictee->verb_for_display(escape_verb.c_str()).c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else
         {
             mprf_p(T_("%s %s %s grip on %s."),
-                   attacker_desc.c_str(),
-                   force_plural ? verb.c_str()
-                                : conj_verb(verb).c_str(),
-                   force_plural ? T_("their")
-                                : pronoun(PRONOUN_POSSESSIVE).c_str(),
-                   constrictee->name(DESC_THE).c_str());
+                attacker_desc.c_str(),
+                conjugate_verb_for_display(N_("release"), force_plural).c_str(),
+                force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
+                constrictee->name(DESC_THE).c_str());
         }
     }
 }
@@ -671,6 +669,11 @@ void actor::start_constricting(actor &whom, constrict_type ctype, int duration)
 
     if (whom.is_player())
         you.redraw_evasion = true;
+    else if (you.see_cell(whom.pos())
+             && (ctype != CONSTRICT_MELEE || visible_to(&you)))
+    {
+        whom.as_monster()->sense_if_invisible();
+    }
 
     if (duration > 0)
     {
@@ -834,7 +837,7 @@ void actor::constriction_damage_defender(actor &defender)
          basedam, acdam, timescale_dam, infdam);
 
     if (defender.is_monster()
-        && defender.type != MONS_NO_MONSTER // already dead and reset
+        && !invalid_monster(defender.as_monster()) // already dead
         && defender.as_monster()->hit_points < 1)
     {
         monster_die(*defender.as_monster(), this);

@@ -138,7 +138,12 @@ public:
     virtual bool can_see_invisible() const = 0;
     virtual bool invisible() const = 0;
     virtual bool nightvision() const = 0;
+
+    // The maximum range of any attack this actor could make.
     virtual int reach_range(bool include_weapon = true) const = 0;
+
+    // Any (potentially temporary) bonus to the range of any attack this actor makes
+    virtual int reach_range_bonus() const = 0;
 
     // Would looker be able to see the actor when in LOS?
     virtual bool visible_to(const actor *looker) const = 0;
@@ -346,11 +351,11 @@ public:
     virtual int halo_radius() const = 0;
     // Silence radius.
     virtual int silence_radius() const = 0;
-    // Demonspawn silence radius
-    virtual int demon_silence_radius() const = 0;
     // Liquefying radius.
     virtual int liquefying_radius() const = 0;
     virtual int umbra_radius() const = 0;
+
+    virtual bool affects_agrid() const = 0;
 
     virtual bool petrifying() const = 0;
     virtual bool petrified() const = 0;
@@ -405,10 +410,10 @@ public:
     void start_constricting(actor &whom, constrict_type type, int duration = 0);
 
     void stop_constricting(mid_t whom, bool intentional = false,
-                           bool quiet = false, const string& escape_verb = "");
+                           bool quiet = false, const string& escape_verb = "break");
     void stop_constricting_all(bool intentional = false, bool quiet = false);
     void stop_directly_constricting_all(bool entangling_only = false);
-    void stop_being_constricted(bool quiet = false, const string& escape_verb = "");
+    void stop_being_constricted(bool quiet = false, const string& escape_verb = "break");
 
     virtual bool attempt_escape() = 0;
 
@@ -442,7 +447,7 @@ public:
 private:
     void constriction_damage_defender(actor &defender);
     void end_constriction(mid_t whom, bool intentional, bool quiet,
-                          const string& escape_verb = "");
+                          const string& escape_verb = "break");
 };
 
 bool actor_slime_wall_immune(const actor *actor);

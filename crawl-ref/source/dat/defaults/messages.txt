@@ -168,9 +168,7 @@ msc += $warning:风.*呼啸
 msc += $warning:rapidly growing quiet
 # CN: $warning:growing quiet
 msc += $warning:逐渐.*安静
-msc += $warning:slides
-# CN: $warning:slides
-msc += $warning:滑落|滑坡
+msc += $warning:slides (away|towards)
 msc += $warning:settles down
 # CN: $warning:settles down
 msc += $warning:平息|落定

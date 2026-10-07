@@ -54,6 +54,7 @@
 #include "output.h"
 #include "player-equip.h"
 #include "player.h"
+#include "player-reacts.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -70,7 +71,6 @@
 #include "teleport.h"
 #include "terrain.h"
 #include "transform.h"
-#include "traps.h"
 #include "travel.h"
 #include "xom.h"
 #include "zot.h" // ZOT_CLOCK_PER_FLOOR
@@ -224,6 +224,10 @@ const char* EquipOffDelay::get_verb()
 
 bool EquipOffDelay::try_interrupt(bool force)
 {
+    // finish() can trigger interrupts, avoid a double message
+    if (interrupt_block::blocked())
+        return false;
+
     bool interrupt = false;
 
     if (force)
@@ -760,8 +764,10 @@ bool EquipOffDelay::invalidated()
 
 void EquipOffDelay::finish()
 {
-    mprf(T_("You finish %s %s."),
-         get_verb(), equip.name(DESC_YOUR).c_str());
+    // Don't interrupt this delay if a distortion unwield puts us in danger.
+    const interrupt_block block_relocation_interrupt;
+
+    mprf(T_("You finish %s %s."), get_verb(), equip.name(DESC_YOUR).c_str());
     unequip_item(equip);
 
     // Banishment via coglin distortion unwield might not happen until the turn
@@ -844,21 +850,8 @@ void PasswallDelay::finish()
     you.move_to(dest, MV_DELIBERATE | MV_TRANSLOCATION);
 
     // the last phase of the delay is a fake (0-time) turn, so world_reacts
-    // and player_reacts aren't triggered. Need to do a tiny bit of cleanup.
-    // This isn't very elegant, and perhaps a version of player_reacts that is
-    // triggered by changing location would be better (per Pleasingfungus),
-    // but player_reacts is very sensitive to order and can't be easily
-    // refactored in this way.
-    you.update_beholders();
-    you.update_fearmongers();
-
-    // in addition to missing player_reacts we miss world_reacts until after
-    // we act, missing out on a trap.
-    if (you.trapped)
-    {
-        do_trap_effects();
-        you.trapped = false;
-    }
+    // and player_reacts aren't triggered.
+    player_reacts_to_instant_action();
 }
 
 void ShaftSelfDelay::finish()

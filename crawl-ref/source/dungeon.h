@@ -56,7 +56,6 @@ enum map_mask_type
     MMT_NO_WALL         = 0x20,  // Wall fixup should not be applied here.
     MMT_OPAQUE          = 0x40,  // Vault may impede connectivity.
     MMT_NO_TRAP         = 0x80,  // No trap generation
-    MMT_MIMIC           = 0x100, // Feature mimics
     MMT_NO_MIMIC        = 0x200, // Feature shouldn't be turned into a mimic.
 #if TAG_MAJOR_VERSION == 34
     MMT_WAS_DOOR_MIMIC  = 0x400, // There was a door mimic there.
@@ -268,9 +267,7 @@ void dgn_reset_level(bool enable_random_maps = true);
 const vault_placement *dgn_register_place(const vault_placement &place,
                                           bool register_vault);
 
-int dgn_count_disconnected_zones(
-    bool choose_stairless,
-    dungeon_feature_type fill = DNGN_UNSEEN);
+int dgn_count_disconnected_zones(bool choose_stairless);
 
 int dgn_count_tele_zones(bool choose_stairless);
 

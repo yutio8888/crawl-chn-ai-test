@@ -65,6 +65,7 @@
 #include "misc.h"
 #include "mon-death.h"
 #include "mon-ench.h"
+#include "mon-lurk.h"
 #if TAG_MAJOR_VERSION == 34
  #include "mon-place.h"
  #include "mon-poly.h"
@@ -1260,8 +1261,6 @@ static void _add_missing_branches()
         _ensure_entry(BRANCH_VESTIBULE);
     if (lc == level_id(BRANCH_DEPTHS, 2) || lc == level_id(BRANCH_DUNGEON, 24))
         _ensure_entry(BRANCH_PANDEMONIUM);
-    if (lc == level_id(BRANCH_DEPTHS, 3) || lc == level_id(BRANCH_DUNGEON, 25))
-        _ensure_entry(BRANCH_ABYSS);
     if (player_in_branch(BRANCH_VESTIBULE))
     {
         for (rectangle_iterator ri(0); ri; ++ri)
@@ -1973,10 +1972,12 @@ static void _tag_construct_you(writer &th)
     marshallUByte(th, you.octopus_king_rings);
 
     marshallUnsigned(th, you.uncancel.size());
-    for (const pair<uncancellable_type, int>& unc : you.uncancel)
+    for (const uncancellable& unc : you.uncancel)
     {
-        marshallUByte(th, unc.first);
-        marshallInt(th, unc.second);
+        marshallUByte(th, unc.kind);
+        marshallInt(th, unc.piety_cost_or_in_inventory);
+        marshallInt(th, unc.mp_cost_or_item_index);
+        marshallInt(th, unc.hp_cost);
     }
 
     marshallUByte(th, 1); // number of seeds, for historical reasons: always 1
@@ -2498,6 +2499,17 @@ void invis_monster_knowledge::marshall(writer &th) const
 void invis_monster_knowledge::unmarshall(reader &th)
 {
     _unmarshall_vector(th, data, unmarshall_invis_mon_data);
+}
+
+static lurker_data _unmarshall_lurker_data(reader &th)
+{
+    lurker_data data;
+    data.mon = unmarshall_follower(th);
+    data.pos = unmarshallCoord(th);
+    data.alerted = unmarshallBoolean(th);
+    data.timer = unmarshallInt(th);
+    data.ignore_threat = unmarshallBoolean(th);
+    return data;
 }
 
 static void marshall_vault_placement(writer &th, const vault_placement &vp)
@@ -3038,6 +3050,61 @@ static void _read_old_player_equipment(reader &th)
     {
         for (int i = 0; i < count; ++i)
             old_attuned.push_back(false);
+    }
+}
+
+static void _read_old_uncancels(reader& th)
+{
+    if (th.getMinorVersion() < TAG_MINOR_UNCANCELLABLES
+        || th.getMinorVersion() == TAG_MINOR_0_11)
+    {
+        return;
+    }
+
+    vector<pair<uint8_t, int>> uncancel;
+    int count = unmarshallUnsigned(th);
+    ASSERT_RANGE(count, 0, 16); // sanity check
+    uncancel.resize(count);
+    for (int i = 0; i < count; i++)
+    {
+        uncancel[i].first = unmarshallUByte(th);
+        uncancel[i].second = unmarshallInt(th);
+    }
+
+    uint8_t old_unc_acquirement = 0;
+    uint8_t old_unc_mercenary = 3;
+    erase_if(uncancel,
+             [=](const pair<uint8_t, int> uc)
+             {
+                 return uc.first == old_unc_acquirement
+                        || uc.first == old_unc_mercenary;
+             });
+    for (pair<uint8_t, int>& uc : uncancel)
+    {
+        uint8_t to_reduce = 0;
+        if (uc.first > old_unc_acquirement)
+            ++to_reduce;
+        if (uc.first > old_unc_mercenary)
+            ++to_reduce;
+
+        uc.first -= to_reduce;
+    }
+
+    // Cancel any item-based deck manipulations
+    if (th.getMinorVersion() < TAG_MINOR_REMOVE_DECKS)
+    {
+        erase_if(uncancel,
+                 [](const pair<uint8_t, int> uc) {
+                    return uc.first == UNC_DRAW_THREE
+                           || uc.first == UNC_STACK_FIVE;
+                });
+    }
+
+    you.uncancel.reserve(uncancel.size());
+    for (pair<uint8_t, int> uc : uncancel)
+    {
+        uncancellable unc{(uncancellable_type)uc.first, -1, -1, -1};
+        you.uncancel.push_back(unc);
     }
 }
 #endif
@@ -4600,31 +4667,29 @@ static void _tag_read_you(reader &th)
     }
 #endif
 
+    you.uncancel.clear();
 #if TAG_MAJOR_VERSION == 34
-    if (th.getMinorVersion() >= TAG_MINOR_UNCANCELLABLES
-        && th.getMinorVersion() != TAG_MINOR_0_11)
+    if (th.getMinorVersion() < TAG_MINOR_FIX_UNCANCELS)
+        _read_old_uncancels(th);
+    else
     {
 #endif
-    count = unmarshallUnsigned(th);
-    ASSERT_RANGE(count, 0, 16); // sanity check
-    you.uncancel.resize(count);
-    for (int i = 0; i < count; i++)
-    {
-        you.uncancel[i].first = (uncancellable_type)unmarshallUByte(th);
-        you.uncancel[i].second = unmarshallInt(th);
-    }
+        count = unmarshallUnsigned(th);
+        ASSERT_RANGE(count, 0, 16); // sanity check
+        you.uncancel.resize(count);
+        for (int i = 0; i < count; ++i)
+        {
+            uncancellable& unc = you.uncancel[i];
+            unc.kind = (uncancellable_type)unmarshallUByte(th);
+            unc.piety_cost_or_in_inventory = unmarshallInt(th);
+            unc.mp_cost_or_item_index = unmarshallInt(th);
+            unc.hp_cost = unmarshallInt(th);
+        }
 #if TAG_MAJOR_VERSION == 34
-    // Cancel any item-based deck manipulations
-    if (th.getMinorVersion() < TAG_MINOR_REMOVE_DECKS)
-    {
-        erase_if(you.uncancel,
-                 [](const pair<uncancellable_type, int> uc) {
-                    return uc.first == UNC_DRAW_THREE
-                           || uc.first == UNC_STACK_FIVE;
-                });
     }
-    }
+#endif
 
+#if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() >= TAG_MINOR_INCREMENTAL_RECALL
         && th.getMinorVersion() < TAG_MINOR_NO_INCREMENTAL_RECALL)
     {
@@ -5767,6 +5832,16 @@ static void _tag_construct_level(writer &th)
     marshallInt(th, env.density);
 
     env.invis_knowledge.marshall(th);
+
+    marshallInt(th, env.lurkers.size());
+    for (const lurker_data& data : env.lurkers)
+    {
+        marshall_follower(th, data.mon);
+        marshallCoord(th, data.pos);
+        marshallBoolean(th, data.alerted);
+        marshallInt(th, data.timer);
+        marshallBoolean(th, data.ignore_threat);
+    }
 }
 
 void marshallItem(writer &th, const item_def &item, bool iinfo)
@@ -6050,14 +6125,14 @@ void unmarshallItem(reader &th, item_def &item)
 
     // Not putting these in a minor tag since it's possible for an old
     // random monster spawn list to place flame/frost weapons.
-    if (item.base_type == OBJ_WEAPONS && get_weapon_brand(item) == SPWPN_FROST)
+    if (item.base_type == OBJ_WEAPONS && get_weapon_brand(item) == SPWPN_FROST_OLD)
     {
         if (is_artefact(item))
             artefact_set_property(item, ARTP_BRAND, SPWPN_FREEZING);
         else
             item.brand = SPWPN_FREEZING;
     }
-    if (item.base_type == OBJ_WEAPONS && get_weapon_brand(item) == SPWPN_FLAME)
+    if (item.base_type == OBJ_WEAPONS && get_weapon_brand(item) == SPWPN_FLAME_OLD)
     {
         if (is_artefact(item))
             artefact_set_property(item, ARTP_BRAND, SPWPN_FLAMING);
@@ -6463,10 +6538,11 @@ void unmarshallItem(reader &th, item_def &item)
     bind_item_tile(item);
 }
 
-#define MAP_SERIALIZE_FLAGS_MASK 3
+#define MAP_SERIALIZE_FLAGS_MASK (3 | 0x100)
 #define MAP_SERIALIZE_FLAGS_8 1
 #define MAP_SERIALIZE_FLAGS_16 2
 #define MAP_SERIALIZE_FLAGS_32 3
+#define MAP_SERIALIZE_FLAGS_64 0x100
 
 #define MAP_SERIALIZE_FEATURE 4
 #define MAP_SERIALIZE_FEATURE_COLOUR 8
@@ -6478,7 +6554,9 @@ void marshallMapCell(writer &th, const map_cell &cell)
 {
     unsigned flags = 0;
 
-    if (cell.flags > 0xffff)
+    if (cell.flags > 0xffffffff)
+        flags |= MAP_SERIALIZE_FLAGS_64;
+    else if (cell.flags > 0xffff)
         flags |= MAP_SERIALIZE_FLAGS_32;
     else if (cell.flags > 0xff)
         flags |= MAP_SERIALIZE_FLAGS_16;
@@ -6513,6 +6591,9 @@ void marshallMapCell(writer &th, const map_cell &cell)
     case MAP_SERIALIZE_FLAGS_32:
         marshallInt(th, static_cast<int32_t>(cell.flags));
         break;
+    case MAP_SERIALIZE_FLAGS_64:
+        marshallUnsigned(th, cell.flags);
+        break;
     }
 
     if (flags & MAP_SERIALIZE_FEATURE)
@@ -6545,7 +6626,7 @@ void marshallMapCell(writer &th, const map_cell &cell)
 void unmarshallMapCell(reader &th, map_cell& cell)
 {
     unsigned flags = unmarshallUnsigned(th);
-    unsigned cell_flags = 0;
+    map_flag_t cell_flags = 0;
 
     cell.clear();
 
@@ -6559,6 +6640,9 @@ void unmarshallMapCell(reader &th, map_cell& cell)
         break;
     case MAP_SERIALIZE_FLAGS_32:
         cell_flags = static_cast<uint32_t>(unmarshallInt(th));
+        break;
+    case MAP_SERIALIZE_FLAGS_64:
+        cell_flags = unmarshallUnsigned(th);
         break;
     }
 
@@ -6604,7 +6688,7 @@ void unmarshallMapCell(reader &th, map_cell& cell)
     {
         item_def item;
         unmarshallItem(th, item);
-        cell.set_item(item, false);
+        cell.set_item(item);
     }
 
     if (flags & MAP_SERIALIZE_MONSTER)
@@ -6758,6 +6842,8 @@ static void _marshall_mi_attack(writer &th, const mon_attack_def &attk)
     marshallInt(th, attk.type);
     marshallInt(th, attk.flavour);
     marshallInt(th, attk.damage);
+    marshallByte(th, attk.reach);
+    marshallBoolean(th, attk.cleaves);
 }
 
 static mon_attack_def _unmarshall_mi_attack(reader &th)
@@ -6766,6 +6852,17 @@ static mon_attack_def _unmarshall_mi_attack(reader &th)
     attk.type = static_cast<attack_type>(unmarshallInt(th));
     attk.flavour = static_cast<attack_flavour>(unmarshallInt(th));
     attk.damage = unmarshallInt(th);
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() >= TAG_MINOR_MON_ATTACK_DEF_RANGE)
+    {
+#endif
+    attk.reach = unmarshallByte(th);
+    attk.cleaves = unmarshallBoolean(th);
+#if TAG_MAJOR_VERSION == 34
+    }
+    // This is only for xv of monsters not currently in sight, so showing
+    // incorrect information on save upgrade is harmless.
+#endif
 
     return attk;
 }
@@ -7303,6 +7400,18 @@ static void _fixup_door_connect_knowledge(MapKnowledge& map_knowledge)
         map_knowledge(*ri).set_door_connect(door_connect);
     }
 }
+
+static void _fixup_mimics()
+{
+    constexpr unsigned int old_mimic_map_mask = 0x100;
+    for (rectangle_iterator ri(0); ri; ++ri)
+    {
+        if (!(env.level_map_mask(*ri) & old_mimic_map_mask))
+            continue;
+        env.level_map_mask(*ri) &= ~old_mimic_map_mask;
+        env.pgrid(*ri) |= FPROP_MIMIC;
+    }
+}
 #endif
 
 static void _tag_read_level(reader &th)
@@ -7600,6 +7709,19 @@ static void _tag_read_level(reader &th)
     env.invis_knowledge.unmarshall(th);
 #if TAG_MAJOR_VERSION == 34
     }
+    if (th.getMinorVersion() >= TAG_MINOR_INVIS_REFORM)
+    {
+#endif
+    env.lurkers.clear();
+    _unmarshall_vector(th, env.lurkers, _unmarshall_lurker_data);
+    init_lurker_map();
+#if TAG_MAJOR_VERSION == 34
+    }
+#endif
+
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() < TAG_MINOR_MIMIC_PROP)
+        _fixup_mimics();
 #endif
 }
 

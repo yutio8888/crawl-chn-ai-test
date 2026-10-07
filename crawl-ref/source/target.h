@@ -144,7 +144,7 @@ public:
 class targeter_transference : public targeter_smite
 {
 public:
-    targeter_transference(const actor *act, int aoe);
+    targeter_transference(int aoe);
     bool valid_aim(coord_def a) override;
     bool affects_monster(const monster_info& mon) override;
 };
@@ -210,10 +210,11 @@ public:
 class targeter_cleave : public targeter
 {
 public:
-    targeter_cleave(const actor* act, coord_def target, int range);
+    targeter_cleave(coord_def target);
     aff_type is_affected(coord_def loc) override;
     bool valid_aim(coord_def) override;
     bool set_aim(coord_def a) override;
+    bool affects_anything();
 private:
     set<coord_def> targets;
     int range;
@@ -227,6 +228,7 @@ public:
     bool set_aim(coord_def a) override;
     bool valid_aim(coord_def a) override;
     aff_type is_affected(coord_def loc) override;
+    bool affects_monster(const monster_info& mon) override;
     bool harmful_to_player() override;
     cloud_type ctype;
     int range;
@@ -427,7 +429,7 @@ protected:
 class targeter_scorch : public targeter_multiposition
 {
 public:
-    targeter_scorch(const actor &a, int _range, bool affect_invis);
+    targeter_scorch(const actor &a, int _range);
     bool valid_aim(coord_def c) override;
 
 protected:
@@ -643,7 +645,6 @@ class targeter_magnavolt : public targeter_smite
 {
 public:
     targeter_magnavolt(const actor *act, int range);
-    bool valid_aim(coord_def a) override;
     bool preferred_aim(coord_def a) override;
     bool set_aim(coord_def a) override;
     aff_type is_affected(coord_def loc) override;

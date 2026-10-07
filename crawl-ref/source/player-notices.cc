@@ -449,6 +449,11 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
         out << make_stringf(orbrun_fmt,
                             _describe_monsters_from_species(species).c_str());
     }
+    else if (sc == SC_LURKER_AMBUSH)
+    {
+        out << make_stringf(T_("%s ambushes you!"),
+                           _describe_monsters_from_species(species).c_str());
+    }
     else
         out << (T_("You encounter "))
             << _describe_monsters_from_species(species) << T_(".");

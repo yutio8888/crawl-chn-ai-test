@@ -331,7 +331,6 @@ bool wizard_create_feature(dist &target, dungeon_feature_type feat, bool mimic)
             tile_env.flv(pos).feat = 0;
             tile_env.flv(pos).special = 0;
             env.grid_colours(pos) = 0;
-            const dungeon_feature_type old_feat = env.grid(pos);
             dungeon_terrain_changed(pos, feat, false, false, true);
             tile_init_flavour(pos);
             if (pos == you.pos() && cell_is_solid(pos))
@@ -339,12 +338,13 @@ bool wizard_create_feature(dist &target, dungeon_feature_type feat, bool mimic)
         }
 
         if (mimic)
-            env.level_map_mask(pos) |= MMT_MIMIC;
+            env.pgrid(pos) |= FPROP_MIMIC;
 
         if (you.see_cell(pos))
         {
-            view_update_at(pos);
+            show_update_at(pos);
             StashTrack.update_stash(pos);
+            redraw_view_at(pos);
         }
         if (done)
             return success;
@@ -647,7 +647,7 @@ static int _debug_time_explore()
 {
     viewwindow();
     update_screen();
-    start_explore(false);
+    start_explore(false, true);
 
     unwind_var<int> es(Options.explore_stop, 0);
 

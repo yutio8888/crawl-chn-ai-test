@@ -139,7 +139,7 @@ resolved_speech_target resolve_speech_target(
         result.error = result.display;
     }
     else if (!invalid_monster_index(mons->foe)
-             && env.mons[mons->foe].type == MONS_NO_MONSTER)
+             && invalid_monster(&env.mons[mons->foe]))
     {
         result.kind = speech_target_kind::ERROR;
         result.source = speech_target_source::DIRECT_TARGET;

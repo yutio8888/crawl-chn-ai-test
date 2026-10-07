@@ -876,10 +876,10 @@ static string _format_dbrand(string dbrand)
         {
             ASSERT(brand.size() == 2);
             const string &desc = brand[1];
-            // Use chop_string (strwidth-based) for display-width padding.
-            // byte/codepoint-based padding under-counts CJK (1 byte ≠ 2 cols).
-            const string name = string(T_(brand[0].c_str())) + ":";
-            const string pre = chop_string(name, MAX_ARTP_NAME_LEN + 1);
+            // Pad by display width, without truncating a long brand name.
+            const string name = string(T_(brand[0].c_str())) + ": ";
+            const string pre = chop_string(name,
+                max(MAX_ARTP_NAME_LEN + 1, strwidth(name)));
             out.push_back(_format_prop_desc(pre, T_(desc.c_str())));
         }
     }
@@ -3067,6 +3067,7 @@ string get_item_description(const item_def &item,
     case OBJ_GOLD:
     case OBJ_RUNES:
     case OBJ_GEMS:
+    case OBJ_DETECTED:
 
 #if TAG_MAJOR_VERSION == 34
     case OBJ_FOOD:
@@ -3182,7 +3183,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
             tile_def(TILE_FLOOR_ICY)
         });
     }
-    else if (!feat_is_solid(feat))
+    else if (!feat_is_solid(feat) && you.see_cell(pos))
     {
         if (haloed(pos) && !umbraed(pos))
         {
@@ -4150,7 +4151,7 @@ command_type describe_item_popup(const item_def &item,
                                  function<void (string&)> fixup_desc,
                                  bool do_actions)
 {
-    if (!item.defined())
+    if (!item.defined() && item.base_type != OBJ_DETECTED)
         return CMD_NO_CMD;
 
     // Dead players use no items.
@@ -5299,63 +5300,59 @@ static const char* _get_threat_desc(mon_threat_level_type threat)
 static string _flavour_base_desc(attack_flavour flavour)
 {
     static const map<attack_flavour, string> base_descs_en = {
-        { AF_ACID,              "acid damage"},
-        { AF_REACH_TONGUE,      "acid damage" },
-        { AF_BLINK,             "blink self" },
-        { AF_BLINK_WITH,        "blink together with the defender" },
-        { AF_COLD,              "cold damage" },
-        { AF_CONFUSE,           "cause confusion" },
-        { AF_DRAIN,             "drain life" },
-        { AF_VAMPIRIC,          "drain health from the living" },
-        { AF_DRAIN_SPEED,       "drain speed" },
-        { AF_ANTIMAGIC,         "antimagic" },
-        { AF_SCARAB,            "drain speed and health" },
-        { AF_ELEC,              "electric damage" },
-        { AF_FIRE,              "fire damage" },
-        { AF_SEAR,              "remove fire resistance" },
-        { AF_MINIPARA,          "poison and momentary paralysis" },
-        { AF_POISON_PARALYSE,   "poison and paralysis/slowing" },
-        { AF_POISON,            "poison" },
-        { AF_REACH_STING,       "poison" },
-        { AF_POISON_STRONG,     "strong poison" },
-        { AF_DISTORT,           "distortion" },
-        { AF_RIFT,              "distortion" },
-        { AF_RAGE,              "drive defenders berserk" },
-        { AF_CHAOTIC,           "chaos" },
-        { AF_STEAL,             "steal items" },
-        { AF_CRUSH,             "begin ongoing constriction" },
-        { AF_REACH,             "" },
-        { AF_HOLY,              "extra damage to undead/demons" },
-        { AF_PAIN,              "extra pain damage to the living" },
-        { AF_ENSNARE,           "ensnare with webbing" },
-        { AF_FLOOD,             "flood the defender's lungs" },
+        { AF_ACID,              N_("acid damage")},
+        { AF_BLINK,             N_("blink self") },
+        { AF_BLINK_WITH,        N_("blink together with the defender") },
+        { AF_COLD,              N_("cold damage") },
+        { AF_CONFUSE,           N_("cause confusion") },
+        { AF_DRAIN,             N_("drain life") },
+        { AF_VAMPIRIC,          N_("drain health from the living") },
+        { AF_DRAIN_SPEED,       N_("drain speed") },
+        { AF_ANTIMAGIC,         N_("antimagic") },
+        { AF_SCARAB,            N_("drain speed and health") },
+        { AF_ELEC,              N_("electric damage") },
+        { AF_FIRE,              N_("fire damage") },
+        { AF_SEAR,              N_("remove fire resistance") },
+        { AF_MINIPARA,          N_("poison and momentary paralysis") },
+        { AF_POISON_PARALYSE,   N_("poison and paralysis/slowing") },
+        { AF_POISON,            N_("poison") },
+        { AF_POISON_STRONG,     N_("strong poison") },
+        { AF_DISTORT,           N_("distortion") },
+        { AF_RAGE,              N_("drive defenders berserk") },
+        { AF_CHAOTIC,           N_("chaos") },
+        { AF_STEAL,             N_("steal items") },
+        { AF_CONSTRICT,         N_("begin ongoing constriction") },
+        { AF_HOLY,              N_("extra damage to undead/demons") },
+        { AF_PAIN,              N_("extra pain damage to the living") },
+        { AF_ENSNARE,           N_("ensnare with webbing") },
+        { AF_FLOOD,             N_("flood the defender's lungs") },
         { AF_PURE_FIRE,         "" },
-        { AF_VULN,              "reduce willpower" },
-        { AF_SHADOWSTAB,        "increased damage when unseen" },
-        { AF_DROWN,             "drowning damage" },
-        { AF_CONTAM_WATER,      "spread contamination & shallow water" },
-        { AF_CORRODE,           "cause corrosion" },
-        { AF_TRAMPLE,           "knock back the defender" },
-        { AF_WEAKNESS,          "cause weakness" },
-        { AF_BARBS,             "embed barbs" },
-        { AF_SPIDER,            "summon a spider" },
-        { AF_BLOODZERK,         "become enraged on drawing blood" },
-        { AF_SLEEP,             "induce sleep" },
-        { AF_SWOOP,             "swoops behind the defender beforehand" },
-        { AF_FLANK,             "slips behind the defender beforehand" },
-        { AF_DRAG,              "drag the defender backwards"},
-        { AF_FOUL_FLAME,        "extra damage, especially to the good" },
-        { AF_HELL_HUNT,         "summon demonic beasts" },
-        { AF_SWARM,             "summon more of itself" },
-        { AF_ALEMBIC,           "vent poison clouds" },
-        { AF_BOMBLET,           "deploy bomblets" },
-        { AF_AIRSTRIKE,         "open air damage" },
-        { AF_TRICKSTER,         "drain, daze, or confuse" },
-        { AF_REACH_CLEAVE_UGLY, "random ugly thing damage" },
-        { AF_DOOM,              "inflict doom" },
-        { AF_SLIMIFY,           "slowly slimify the target" },
-        { AF_DIM,               "diminish the target's spells" },
-        { AF_BURSTSHROOM,       "grow burstshrooms behind the defender" },
+        { AF_VULN,              N_("reduce willpower") },
+        { AF_SHADOWSTAB,        N_("increased damage when unseen") },
+        { AF_DROWN,             N_("drowning damage") },
+        { AF_CONTAM_WATER,      N_("spread contamination & shallow water") },
+        { AF_CORRODE,           N_("cause corrosion") },
+        { AF_TRAMPLE,           N_("knock back the defender") },
+        { AF_WEAKNESS,          N_("cause weakness") },
+        { AF_BARBS,             N_("embed barbs") },
+        { AF_SPIDER,            N_("summon a spider") },
+        { AF_BLOODZERK,         N_("become enraged on drawing blood") },
+        { AF_SLEEP,             N_("induce sleep") },
+        { AF_SWOOP,             N_("swoops behind the defender beforehand") },
+        { AF_FLANK,             N_("slips behind the defender beforehand") },
+        { AF_DRAG,              N_("drag the defender backwards")},
+        { AF_FOUL_FLAME,        N_("extra damage, especially to the good") },
+        { AF_HELL_HUNT,         N_("summon demonic beasts") },
+        { AF_SWARM,             N_("summon more of itself") },
+        { AF_ALEMBIC,           N_("vent poison clouds") },
+        { AF_BOMBLET,           N_("deploy bomblets") },
+        { AF_AIRSTRIKE,         N_("open air damage") },
+        { AF_TRICKSTER,         N_("drain, daze, or confuse") },
+        { AF_UGLY_THING,        N_("random ugly thing damage") },
+        { AF_DOOM,              N_("inflict doom") },
+        { AF_SLIMIFY,           N_("slowly slimify the target") },
+        { AF_DIM,               N_("diminish the target's spells") },
+        { AF_BURSTSHROOM,       N_("grow burstshrooms behind the defender") },
         { AF_PLAIN,             "" },
     };
 
@@ -5428,6 +5425,8 @@ static string _brand_damage_string(const monster_info &mi, brand_type brand,
         case SPWPN_FLAMING:
         case SPWPN_FREEZING:
         case SPWPN_DRAINING:
+            brand_dam = dam / 2;
+            break;
         case SPWPN_CONCUSSION:
             brand_dam = dam * 3 / 4;
             break;
@@ -5507,14 +5506,17 @@ struct mon_attack_desc_info
 {
     map<mon_attack_info, int> attack_counts;
     brand_type special_flavour;
-    bool has_any_flavour;
+    bool needs_range_desc;
+    bool has_any_bonus;
     bool flavour_without_dam;
     bool plural;
     size_t attk_desc_width;
     size_t damage_width;
+    size_t range_width;
     size_t bonus_width;
     vector<string> attack_descriptions;
     vector<string> damage_descriptions;
+    vector<string> range_descriptions;
     vector<string> bonus_descriptions;
 };
 
@@ -5551,7 +5553,7 @@ static void _check_attack_counts_and_flavours(const monster_info &mi,
             di.plural = true;
             if (quiv->sub_type == MI_DART || quiv->sub_type == MI_THROWING_NET)
             {
-                di.has_any_flavour = true;
+                di.has_any_bonus = true;
                 di.flavour_without_dam = true;
             }
         }
@@ -5559,18 +5561,23 @@ static void _check_attack_counts_and_flavours(const monster_info &mi,
         // Nessos' special cased poisonous ranged attacks
         if (mi.type == MONS_NESSOS && attack_info.weapon && is_range_weapon(*attack_info.weapon))
         {
-            di.has_any_flavour = true;
+            di.has_any_bonus = true;
             di.flavour_without_dam = true;
+        }
+
+        if (attack.reach > 1 || attack.cleaves
+            || (attack_info.weapon && (weapon_reach(*attack_info.weapon) > 1)))
+        {
+            di.needs_range_desc = true;
         }
 
         if (attack.flavour == AF_PLAIN || attack.flavour == AF_PURE_FIRE)
             continue;
 
-        di.has_any_flavour = true;
+        di.has_any_bonus = true;
         const bool needs_dam = !flavour_triggers_damageless(attack.flavour)
-                                && !flavour_has_mobility(attack.flavour)
-                                && !flavour_has_reach(attack.flavour);
-        if (!needs_dam && attack.flavour != AF_REACH_TONGUE)
+                                && !flavour_has_mobility(attack.flavour);
+        if (!needs_dam)
             di.flavour_without_dam = true;
     }
 }
@@ -5583,16 +5590,28 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
     if (!desc.empty())
         desc += " + ";
 
+    const size_t flavour_start = desc.size();
     desc += uppercase_first(_flavour_base_desc(flavour));
     if (flav_dam && attack.flavour != AF_PURE_FIRE)
     {
-        desc += make_stringf(T_(" (max %d%s)"),
-                                flav_dam,
-                                attk_mult > 1 ? T_(" each") : "");
+        const string dmg_desc = make_stringf(T_(" (max %d%s)"),
+                                             flav_dam,
+                                             attk_mult > 1 ? T_(" each") : "");
+        // A translated description cannot be searched for the English "poison".
+        if (flavour == AF_MINIPARA || flavour == AF_POISON_PARALYSE)
+        {
+            desc.resize(flavour_start);
+            desc += make_stringf(flavour == AF_MINIPARA
+                        ? T_("Poison%s and momentary paralysis")
+                        : T_("Poison%s and paralysis/slowing"),
+                        dmg_desc.c_str());
+        }
+        else
+            desc += dmg_desc;
     }
     else if (flavour == AF_DRAIN)
         desc += make_stringf(T_(" (max %d damage)"), real_dam / 2);
-    else if (flavour == AF_CRUSH)
+    else if (flavour == AF_CONSTRICT)
     {
         desc += make_stringf(T_(" (%d-%d dam)"), attack.damage,
                                 attack.damage*2);
@@ -5601,22 +5620,9 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
     if (di.flavour_without_dam
         && !desc.empty()
         && !flavour_triggers_damageless(attack.flavour)
-        && !flavour_has_mobility(attack.flavour)
-        && !(attack.flavour == AF_REACH_CLEAVE_UGLY))
+        && !flavour_has_mobility(attack.flavour))
     {
         desc += T_(" (if damage dealt)");
-    }
-
-    if (flavour_has_reach(attack.flavour))
-    {
-        desc += (desc.empty()
-                     ? (T_("Reaches"))
-                     : (flavour == AF_REACH_CLEAVE_UGLY)
-                         ? (T_("; cleaves"))
-                         : (T_("; reaches")));
-        desc += (flavour == AF_RIFT
-                     ? (T_(" very far"))
-                     : (T_(" from afar")));
     }
 }
 
@@ -5664,7 +5670,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
 
     if (attack.flavour == AF_PURE_FIRE)
         dam = flav_dam;
-    else if (attack.flavour == AF_CRUSH)
+    else if (attack.flavour == AF_CONSTRICT)
         dam = 0;
     else if (attack.flavour == AF_PAIN)
         flav_dam = (mi.props.exists(NECROMANCER_KEY)) ? mi.hd * 2 : mi.hd / 2;
@@ -5734,7 +5740,26 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
     di.damage_width = max(di.damage_width,
                           (size_t)strwidth(final_dam_str));
 
-    // Part 3: The "Bonus" column
+    // Part 3: The "Range" column
+    string range_desc = "";
+
+    int reach = attack.reach;
+    if (wpn)
+        reach += weapon_reach(*wpn) - 1;
+
+    if (reach > 1)
+        range_desc += to_string(reach);
+    if (attack.cleaves)
+    {
+        if (reach > 1)
+            range_desc += " ";
+        range_desc += T_("(Cleave)");
+    }
+
+    di.range_descriptions.emplace_back(range_desc);
+    di.range_width = max(di.range_width, (size_t)strwidth(range_desc));
+
+    // Part 4: The "Bonus" column
     // Describe any additional effects from a monster's attack flavour
 
     string bonus_desc = "";
@@ -5747,14 +5772,14 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
         {
             _add_attack_flavour_desc(bonus_desc, AF_FIRE, attack, di,
                                      flavour_damage(AF_FIRE, mi.hd, false), real_dam, attk_mult);
-            di.has_any_flavour = true;
+            di.has_any_bonus = true;
         }
 
         if (mi.is(MB_CHAOS_LACE))
         {
             _add_attack_flavour_desc(bonus_desc, AF_CHAOTIC, attack, di, 0, real_dam, attk_mult);
-            di.flavour_without_dam = !di.has_any_flavour;
-            di.has_any_flavour = true;
+            di.flavour_without_dam = !di.has_any_bonus;
+            di.has_any_bonus = true;
         }
     }
     // ...except Nessos' ranged attacks apply venom as a special effect
@@ -5850,25 +5875,25 @@ static void _build_table_of_attacks(mon_attack_desc_info &di,
 {
     // Hopefully enough width for every possibility
     di.damage_width    = min(di.damage_width, (size_t) 31);
-    di.bonus_width     = min(di.bonus_width, 69 - di.damage_width);
+    di.bonus_width     = min(di.bonus_width, 69 - di.damage_width - di.range_width);
 
     // Table lines can't be longer than 80 chars wide (incl 4 spaces)
     // so cut off the attack description if it's too long.
     // Note: minimum 7 (length of "Attacks")
     di.attk_desc_width = min(di.attk_desc_width,
-                             76 - di.damage_width - di.bonus_width);
+                             76 - di.damage_width - di.range_width - di.bonus_width);
 
     // Now we can actually build the table of attacks
     // Note: columns are separated by (a minimum of) 2 spaces
 
     // First, the table header
-    // Use display-width-aware padding.  padded_str() counts code points,
-    // which makes a CJK header occupy fewer logical columns than its data.
+    // Pad translated headers by display width, as for the table body.
     result << chop_string(di.plural ? T_("Attacks") : T_("Attack"),
                           di.attk_desc_width + 2)
-           << chop_string(T_("Max Damage"),
-                          di.damage_width + 2);
-    if (di.has_any_flavour)
+           << chop_string(T_("Max Damage"), di.damage_width + 2);
+    if (di.needs_range_desc)
+        result << chop_string(T_("Range"), di.range_width + 2);
+    if (di.has_any_bonus)
     {
         result << chop_string(di.flavour_without_dam
                                   ? (T_("Bonus"))
@@ -5883,8 +5908,15 @@ static void _build_table_of_attacks(mon_attack_desc_info &di,
         result << chop_string(di.attack_descriptions[i], di.attk_desc_width)
                << "  "
                << chop_string(di.damage_descriptions[i], di.damage_width)
-               << "  "
-               << chop_string(di.bonus_descriptions[i], di.bonus_width)
+               << "  ";
+
+        if (di.needs_range_desc)
+        {
+            result << chop_string(di.range_descriptions[i].empty() ? "1"
+                                    : di.range_descriptions[i], di.range_width) << "  ";
+        }
+
+        result << chop_string(di.bonus_descriptions[i], di.bonus_width)
                << "\n";
     }
 }
@@ -5909,7 +5941,8 @@ static string _monster_attacks_description(const monster_info& mi)
         di.special_flavour = (brand_type) mi.props[SPECIAL_WEAPON_KEY].get_int();
     }
 
-    di.has_any_flavour = false;
+    di.has_any_bonus = false;
+    di.needs_range_desc = false;
     di.flavour_without_dam = false;
     di.plural = false;
 
@@ -5923,9 +5956,11 @@ static string _monster_attacks_description(const monster_info& mi)
     result << "\n";
 
     // Assign minimum column widths according to the lengths of their headers.
-    di.attk_desc_width = di.plural ? 7 : 6;         // "Attack"/"Attacks"
-    di.damage_width   = 10;                         // "Max Damage"
-    di.bonus_width = !di.has_any_flavour    ? 0     // no bonus column
+    di.attk_desc_width = max(di.plural ? 7 : 6,
+                            strwidth(di.plural ? T_("Attacks") : T_("Attack")));         // "Attack"/"Attacks"
+    di.damage_width   = max(10, strwidth(T_("Max Damage")));                         // "Max Damage"
+    di.range_width = di.needs_range_desc ? max(5, strwidth(T_("Range"))) : 0;   // "Range"
+    di.bonus_width = !di.has_any_bonus      ? 0     // no bonus column
                    : di.flavour_without_dam ? 5     // "Bonus"
                                             : 19;   // "After Damaging Hits"
 

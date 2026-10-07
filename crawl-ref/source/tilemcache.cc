@@ -472,6 +472,7 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
     case TILEP_MONS_ARCANIST:
     case TILEP_MONS_OCCULTIST:
     case TILEP_MONS_DRAUGR_MEDIUM:
+    case TILEP_MONS_HERALD_OF_THE_ABYSS:
         *ofs_x = -2;
         *ofs_y = -2;
         break;
@@ -566,6 +567,7 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
     case TILEP_MONS_DEEP_ELF_DEATH_MAGE:
     case TILEP_MONS_DEEP_ELF_HIGH_PRIEST:
     case TILEP_MONS_DEEP_ELF_KNIGHT:
+    case TILEP_MONS_DEEP_ELF_KNIGHT_PHASED:
     case TILEP_MONS_DEEP_ELF_DEMONOLOGIST:
     case TILEP_MONS_DEEP_ELF_ANNIHILATOR:
     case TILEP_MONS_PLAYER_SHADOW_ELF:
@@ -598,8 +600,8 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
         *ofs_x = -1;
         *ofs_y = -1;
         break;
-    case TILEP_MONS_DEEP_ELF_AIR_MAGE:
-    case TILEP_MONS_DEEP_ELF_FIRE_MAGE:
+    case TILEP_MONS_DEEP_ELF_ZEPHYRMANCER:
+    case TILEP_MONS_DEEP_ELF_PYROMANCER:
         *ofs_x = -1;
         *ofs_y = -4;
         break;
@@ -639,10 +641,6 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
     case TILEP_MONS_SATYR:
         *ofs_x = 1;
         *ofs_y = -4;
-        break;
-    case TILEP_MONS_MAD_ACOLYTE_OF_LUGONU:
-        *ofs_x = -3;
-        *ofs_y = -2;
         break;
     case TILEP_MONS_HUMAN:
     case TILEP_MONS_HUMAN_1:
@@ -750,6 +748,11 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
         *ofs_x = -5;
         *ofs_y = 1;
         break;
+    case TILEP_MONS_ABYSSAL_ACOLYTE:
+    case TILEP_MONS_ABYSSAL_ACOLYTE_PHASED:
+        *ofs_x = -5;
+        *ofs_y = 2;
+        break;
     case TILEP_TRAN_FORTRESS_CRAB:
     case TILEP_TRAN_FORTRESS_CRAB_GARGOYLE:
         *ofs_x = -1;
@@ -759,6 +762,7 @@ bool mcache_monster::get_weapon_offset(tileidx_t mon_tile,
     case TILEP_MONS_OGRE:
     case TILEP_MONS_SWAMP_OGRE:
     case TILEP_MONS_OGRE_MAGE:
+    case TILEP_MONS_OGRE_MAGE_PHASED:
     case TILEP_MONS_IRONBOUND_THUNDERHULK:
     case TILEP_MONS_LODUL:
         *ofs_x = 1;
@@ -981,6 +985,7 @@ bool mcache_monster::get_shield_offset(tileidx_t mon_tile,
     case TILEP_MONS_ORC_WARLORD:
     case TILEP_MONS_ZOMBIE_ORC:
     case TILEP_MONS_DEEP_ELF_KNIGHT:
+    case TILEP_MONS_DEEP_ELF_KNIGHT_PHASED:
     case TILEP_MONS_KIRKE:
     case TILEP_MONS_DIMME:
     case TILEP_MONS_ORC_APOSTLE_2:
@@ -1215,8 +1220,8 @@ bool mcache_monster::get_shield_offset(tileidx_t mon_tile,
         break;
 
     case TILEP_MONS_DEEP_ELF_DEMONOLOGIST:
-    case TILEP_MONS_DEEP_ELF_AIR_MAGE:
-    case TILEP_MONS_DEEP_ELF_FIRE_MAGE:
+    case TILEP_MONS_DEEP_ELF_ZEPHYRMANCER:
+    case TILEP_MONS_DEEP_ELF_PYROMANCER:
         *ofs_x = 2;
         *ofs_y = 0;
         break;

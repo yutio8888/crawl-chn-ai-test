@@ -363,7 +363,7 @@ static const duration_def duration_data[] =
       "about to teleport", "teleport",
       "You are about to teleport.", D_DISPELLABLE /*but special-cased*/,
       {{ "", []() {
-          you_teleport_now();
+          you_teleport_now("", true);
           untag_followers();
       }}}},
     { DUR_DEATHS_DOOR,
@@ -384,13 +384,13 @@ static const duration_def duration_data[] =
       BLUE, "Quad",
       "quad damage", "",
       "", D_EXPIRES,
-      {{ "", []() { invalidate_agrid(true); }},
+      {{ "", []() { invalidate_agrid(); }},
         { "Quad Damage is wearing off."}}, 3 }, // per client.qc
     { DUR_SILENCE,
       0, "",
       "silenced", "silence",
       "You radiate silence.", D_DISPELLABLE | D_EXPIRES,
-      {{ "Your hearing returns.", []() { invalidate_agrid(true); }}}, 5 },
+      {{ "Your hearing returns.", []() { invalidate_agrid(); }}}, 5 },
     { DUR_STEALTH,
       BLUE, "Stealth",
       "especially stealthy", "stealth",
@@ -400,8 +400,12 @@ static const duration_def duration_data[] =
       RED, "Fear",
       "afraid", "",
       "You are terrified.", D_DISPELLABLE | D_EXPIRES | D_NEGATIVE,
-      {{ "Your fear fades away.", []() { you.clear_fearmongers(); }},
-        {}, true }},
+      // Clear before messaging, so that we don't break the invariant of
+      // fearmongers-iff-afraid during a message that could check it.
+      {{ "", []() {
+          you.clear_fearmongers();
+          mprf(MSGCH_RECOVERY, T_("Your fear fades away."));
+      }}, {}, true }},
     { DUR_VORTEX,
       LIGHTGREY, "Vortex",
       "in a vortex", "vortex",
@@ -425,7 +429,7 @@ static const duration_def duration_data[] =
       "liquefying", "",
       "You are liquefying the ground beneath you.", D_DISPELLABLE,
       {{ "The ground is no longer liquid beneath you.", []() {
-          invalidate_agrid(false);
+          invalidate_agrid();
       }}}},
     { DUR_HEROISM,
       LIGHTBLUE, "Hero",
@@ -449,7 +453,7 @@ static const duration_def duration_data[] =
       "disjoining", "disjunction",
       "You are disjoining your surroundings.", D_DISPELLABLE | D_EXPIRES,
       {{ "The translocation energy dissipates.", []() {
-            invalidate_agrid(true);
+            invalidate_agrid();
       }}}},
     { DUR_SENTINEL_MARK,
       LIGHTRED, "Mark",
@@ -809,8 +813,12 @@ static const duration_def duration_data[] =
         {{ "", _end_invis }, { "You flicker for a moment.", 1}}, 6},
     { DUR_SLOW, 0, "", "", "slow", "", D_DISPELLABLE | D_NEGATIVE},
     { DUR_MESMERISED, 0, "", "", "mesmerised", "", D_DISPELLABLE | D_NEGATIVE,
-      {{ "You break out of your daze.", []() { you.clear_beholders(); }},
-         {}, true }},
+      // Clear before messaging, so that we don't break the invariant of
+      // beholders-iff-mesmerised during a message that could check it.
+      {{ "", []() {
+          you.clear_beholders();
+          mprf(MSGCH_RECOVERY, T_("You break out of your daze."));
+      }}, {}, true }},
     { DUR_MESMERISE_IMMUNE, 0, "", "", "mesmerisation immunity", "", D_NO_FLAGS, {{""}} },
     { DUR_HASTE, 0, "", "", "haste", "", D_DISPELLABLE, {}, 6},
     { DUR_FLIGHT, 0, "", "", "flight", "", D_DISPELLABLE /*but special-cased*/, {}, 10},

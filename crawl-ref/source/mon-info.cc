@@ -154,6 +154,7 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_DIMINISHED_SPELLS, MB_DIMINISHED_SPELLS },
     { ENCH_EXPOSED,         MB_EXPOSED },
     { ENCH_STAMPEDE,        MB_STAMPEDE },
+    { ENCH_PHASE_SHIFT,     MB_PHASE_SHIFT },
 };
 
 static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
@@ -210,11 +211,6 @@ static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
         if (mons_class_is_fragile(mons.type))
             return MB_WITHERING;
         return MB_SLOWLY_DYING;
-    case ENCH_CONSTRICTED:
-        if (mons.constricted_type == CONSTRICT_BVC)
-            return MB_VILE_CLUTCH;
-        else if (mons.constricted_type == CONSTRICT_ROOTS)
-            return MB_GRASPING_ROOTS;
     default:
         return NUM_MB_FLAGS;
     }
@@ -315,6 +311,17 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
                 : type;
 
     _populate_as_generic();
+
+    if (mons_is_unique(type) || mons_is_unique(base_type))
+    {
+        if (mons_is_the(type) || mons_is_the(base_type))
+            mb.set(MB_NAME_THE);
+        else
+        {
+            mb.set(MB_NAME_UNQUALIFIED);
+            mb.set(MB_NAME_THE);
+        }
+    }
 }
 
 // Fill out this monster_info as if the monster were any arbitrary example of
@@ -398,17 +405,6 @@ void monster_info::_populate_as_generic()
         ev += get_mons_class_ev(base_type);
     }
 
-    if (mons_is_unique(type) || mons_is_unique(base_type))
-    {
-        if (mons_is_the(type) || mons_is_the(base_type))
-            mb.set(MB_NAME_THE);
-        else
-        {
-            mb.set(MB_NAME_UNQUALIFIED);
-            mb.set(MB_NAME_THE);
-        }
-    }
-
     for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
         attack[i] = get_monster_data(type)->attack[i];
 
@@ -437,6 +433,88 @@ static description_level_type _article_for(const actor* a)
     return m && m->friendly() ? DESC_YOUR : DESC_A;
 }
 
+void monster_info::_add_constriction_info(const monster* m)
+{
+    // Name of what this monster is directly constricted by, if any
+    constrictor_name = "";
+    if (m->constricted_type == CONSTRICT_MELEE || m->constricted_type == CONSTRICT_ENTANGLE)
+    {
+        const actor * const constrictor = actor_by_mid(m->constricted_by);
+        ASSERT(constrictor);
+        constrictor_name = T_("constricted by ")
+                           + constrictor->name(_article_for(constrictor),
+                                               true);
+    }
+    else if (m->constricted_type == CONSTRICT_BVC)
+        mb.set(MB_VILE_CLUTCH);
+    else if (m->constricted_type == CONSTRICT_ROOTS)
+        mb.set(MB_GRASPING_ROOTS);
+}
+
+void monster_info::_add_name_info(const monster* m, int milev)
+{
+    if (mons_is_unique(type) || mons_is_unique(base_type))
+    {
+        if (mons_is_the(type) || mons_is_the(base_type))
+            mb.set(MB_NAME_THE);
+        else
+        {
+            mb.set(MB_NAME_UNQUALIFIED);
+            mb.set(MB_NAME_THE);
+        }
+    }
+
+    mname = m->mname;
+
+    const auto name_flags = m->flags & MF_NAME_MASK;
+
+    if (name_flags == MF_NAME_SUFFIX)
+        mb.set(MB_NAME_SUFFIX);
+    else if (name_flags == MF_NAME_ADJECTIVE)
+        mb.set(MB_NAME_ADJECTIVE);
+    else if (name_flags == MF_NAME_REPLACE)
+        mb.set(MB_NAME_REPLACE);
+
+    const bool need_name_desc =
+        name_flags == MF_NAME_SUFFIX
+            || name_flags == MF_NAME_ADJECTIVE
+            || (m->flags & MF_NAME_DEFINITE);
+
+    if (!mname.empty()
+        && !(m->flags & MF_NAME_DESCRIPTOR)
+        && !need_name_desc)
+    {
+        mb.set(MB_NAME_UNQUALIFIED);
+        mb.set(MB_NAME_THE);
+    }
+    else if (m->flags & MF_NAME_DEFINITE)
+        mb.set(MB_NAME_THE);
+    if (m->flags & MF_NAME_ZOMBIE)
+        mb.set(MB_NAME_ZOMBIE);
+    if (m->flags & MF_NAME_SPECIES)
+        mb.set(MB_NO_NAME_TAG);
+
+    if (milev <= MILEV_NAME)
+    {
+        if (mons_class_is_animated_weapon(type))
+        {
+            if (m->get_defining_object())
+                inv[MSLOT_WEAPON].reset(new item_def(*m->get_defining_object()));
+            // animated launchers may have a missile too
+            if (m->inv[MSLOT_MISSILE] != NON_ITEM)
+            {
+                inv[MSLOT_MISSILE].reset(new item_def(
+                    env.item[m->inv[MSLOT_MISSILE]]));
+            }
+        }
+        else if ((type == MONS_ARMOUR_ECHO || type == MONS_HAUNTED_ARMOUR)
+                 && m->get_defining_object())
+        {
+            inv[MSLOT_ARMOUR].reset(new item_def(*m->get_defining_object()));
+        }
+    }
+}
+
 monster_info::monster_info(const monster* m, int milev)
 {
     ASSERT(m); // TODO: change to const monster &mon
@@ -455,8 +533,16 @@ monster_info::monster_info(const monster* m, int milev)
     // arbitrary healthy example of its type.
     if (m->flags & MF_KNOWN_INVISIBLE && !you.can_see(*m))
     {
-        _populate_as_generic();
         mb.set(MB_KNOWN_INVIS);
+        _add_name_info(m, milev);
+
+        if (milev <= MILEV_NAME)
+            return;
+
+        _populate_as_generic();
+        // The constriction status of even invisible monsters is considered known
+        // (they're usually being constricted by something visible!)
+        _add_constriction_info(m);
         return;
     }
 
@@ -528,73 +614,15 @@ monster_info::monster_info(const monster* m, int milev)
             mb.set(MB_UNREWARDING);
     }
 
-    if (mons_is_unique(type) || mons_is_unique(base_type))
-    {
-        if (mons_is_the(type) || mons_is_the(base_type))
-            mb.set(MB_NAME_THE);
-        else
-        {
-            mb.set(MB_NAME_UNQUALIFIED);
-            mb.set(MB_NAME_THE);
-        }
-    }
-
-    mname = m->mname;
-
-    const auto name_flags = m->flags & MF_NAME_MASK;
-
-    if (name_flags == MF_NAME_SUFFIX)
-        mb.set(MB_NAME_SUFFIX);
-    else if (name_flags == MF_NAME_ADJECTIVE)
-        mb.set(MB_NAME_ADJECTIVE);
-    else if (name_flags == MF_NAME_REPLACE)
-        mb.set(MB_NAME_REPLACE);
-
-    const bool need_name_desc =
-        name_flags == MF_NAME_SUFFIX
-            || name_flags == MF_NAME_ADJECTIVE
-            || (m->flags & MF_NAME_DEFINITE);
-
-    if (!mname.empty()
-        && !(m->flags & MF_NAME_DESCRIPTOR)
-        && !need_name_desc)
-    {
-        mb.set(MB_NAME_UNQUALIFIED);
-        mb.set(MB_NAME_THE);
-    }
-    else if (m->flags & MF_NAME_DEFINITE)
-        mb.set(MB_NAME_THE);
-    if (m->flags & MF_NAME_ZOMBIE)
-        mb.set(MB_NAME_ZOMBIE);
-    if (m->flags & MF_NAME_SPECIES)
-        mb.set(MB_NO_NAME_TAG);
-
     // Ghostliness needed for name
     if (testbits(m->flags, MF_SPECTRALISED))
         mb.set(MB_SPECTRALISED);
     if (m->has_ench(ENCH_VAMPIRE_THRALL))
         mb.set(MB_VAMPIRE_THRALL);
 
+    _add_name_info(m, milev);
     if (milev <= MILEV_NAME)
-    {
-        if (mons_class_is_animated_weapon(type))
-        {
-            if (m->get_defining_object())
-                inv[MSLOT_WEAPON].reset(new item_def(*m->get_defining_object()));
-            // animated launchers may have a missile too
-            if (m->inv[MSLOT_MISSILE] != NON_ITEM)
-            {
-                inv[MSLOT_MISSILE].reset(new item_def(
-                    env.item[m->inv[MSLOT_MISSILE]]));
-            }
-        }
-        else if ((type == MONS_ARMOUR_ECHO || type == MONS_HAUNTED_ARMOUR)
-                 && m->get_defining_object())
-        {
-            inv[MSLOT_ARMOUR].reset(new item_def(*m->get_defining_object()));
-        }
         return;
-    }
 
     holi = m->holiness();
 
@@ -652,8 +680,6 @@ monster_info::monster_info(const monster* m, int milev)
     else if (stab_bonus == 4)
         mb.set(MB_MAYBE_STABBABLE);
 
-    dam = mons_get_damage_level(*m);
-
     // BEH_SLEEP is meaningless on firewood, don't show it. But it *is*
     // meaningful on non-firewood non-threatening monsters (i.e. butterflies).
     if (!m->is_firewood() && m->asleep())
@@ -691,6 +717,11 @@ monster_info::monster_info(const monster* m, int milev)
         if (flag != NUM_MB_FLAGS)
             mb.set(flag);
     }
+
+    if (!is(MB_PHASE_SHIFT) || you.can_see_invisible())
+        dam = mons_get_damage_level(*m);
+    else
+        dam = MDAM_OKAY;
 
     // Similarly, don't set invisibility stab UI for firewood.
     if (!you.visible_to(m) && !m->is_firewood() && !m->has_ench(ENCH_BLIND))
@@ -827,18 +858,8 @@ monster_info::monster_info(const monster* m, int milev)
     }
 
     // init names of constrictor and constrictees
-    constrictor_name = "";
+    _add_constriction_info(m);
     constricting_name.clear();
-
-    // Name of what this monster is directly constricted by, if any
-    if (m->constricted_type == CONSTRICT_MELEE || m->constricted_type == CONSTRICT_ENTANGLE)
-    {
-        const actor * const constrictor = actor_by_mid(m->constricted_by);
-        ASSERT(constrictor);
-        constrictor_name = T_("constricted by ")
-                           + constrictor->name(_article_for(constrictor),
-                                               true);
-    }
 
     // Names of what this monster is directly constricting, if any
     if (m->constricting)
@@ -1891,19 +1912,18 @@ int monster_info::reach_range(bool items) const
     int range = 1;
 
     for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
-    {
-        const attack_flavour fl = e->attack[i].flavour;
-        if (fl == AF_RIFT)
-            range = 3;
-        else if (flavour_has_reach(fl))
-            range = max(2, range);
-    }
+        range = max(range, attack[i].reach);
 
     if (items)
     {
         const item_def *weapon = inv[MSLOT_WEAPON].get();
         if (weapon)
-            range = max(range, weapon_reach(*weapon));
+        {
+            const int wpn_reach = weapon_reach(*weapon);
+            for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
+                if (attack[i].type == AT_HIT || attack[i].type == AT_WEAP_ONLY)
+                    range = max(range, attack[i].reach + wpn_reach);
+        }
     }
 
     return range;
@@ -1911,20 +1931,7 @@ int monster_info::reach_range(bool items) const
 
 size_type monster_info::body_size() const
 {
-    const size_type class_size = mons_class_body_size(base_type);
-
-    // Slime creature size is increased by the number merged.
-    if (type == MONS_SLIME_CREATURE)
-    {
-        if (slime_size == 2)
-            return SIZE_MEDIUM;
-        else if (slime_size == 3)
-            return SIZE_LARGE;
-        else if (slime_size >= 4) // sizes 4 & 5
-            return SIZE_GIANT;
-    }
-
-    return class_size;
+    return mons_class_body_size(base_type, PSIZE_BODY, slime_size);
 }
 
 bool monster_info::net_immune() const
@@ -2272,7 +2279,7 @@ void mons_conditions_string(string& desc, const vector<monster_info>& mi,
                 missile_count++;
             if (mi[j].reach_range(false) > 1)
                 reach_count++;
-            if (_has_attack_flavour(mi[j], AF_CRUSH))
+            if (_has_attack_flavour(mi[j], AF_CONSTRICT))
                 constrict_count++;
             if (_has_attack_flavour(mi[j], AF_TRAMPLE))
                 trample_count++;

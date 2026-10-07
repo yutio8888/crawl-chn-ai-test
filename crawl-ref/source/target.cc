@@ -14,6 +14,7 @@
 #include "evoke.h"
 #include "fight.h"
 #include "god-abil.h"
+#include "god-companions.h"
 #include "god-passive.h"
 #include "items.h"
 #include "libutil.h"
@@ -663,8 +664,8 @@ aff_type targeter_dig::is_affected(coord_def loc)
     return AFF_NO;
 }
 
-targeter_transference::targeter_transference(const actor* act, int aoe) :
-    targeter_smite(act, LOS_RADIUS, aoe, aoe, true)
+targeter_transference::targeter_transference(int aoe) :
+    targeter_smite(&you, LOS_RADIUS, aoe, aoe, true)
 {
 }
 
@@ -674,19 +675,34 @@ bool targeter_transference::valid_aim(coord_def a)
         return false;
 
     const actor *victim = actor_at(a);
-    if (victim && you.can_see(*victim))
+    if (!victim || !you.aware_of(*victim))
+        return notify_fail("");
+
+    if (mons_is_hepliaklqana_ancestor(victim->type))
     {
-        if (mons_is_hepliaklqana_ancestor(victim->type))
-        {
-            return notify_fail(
-                T_("You can't transfer your ancestor with themself."));
-        }
-        if (mons_is_tentacle_or_tentacle_segment(victim->type)
-            || victim->is_stationary())
-        {
-            return notify_fail(T_("You can't transfer that."));
-        }
+        return notify_fail(T_("You can't transfer your ancestor with themself."));
     }
+    else if (mons_is_tentacle_or_tentacle_segment(victim->type)
+             || victim->is_stationary()
+             || mons_is_projectile(victim->type))
+    {
+        return notify_fail(T_("You can't transfer that."));
+    }
+    else if (!you.can_see(*victim))
+        return notify_fail(T_("You can't see that clearly enough to target."));
+
+    monster *ancestor = hepliaklqana_ancestor_mon();
+    if (!victim->is_habitable(ancestor->pos()))
+    {
+        return notify_fail(make_stringf(T_("%s can't be transferred to your ancestor's location."),
+                                            victim->name(DESC_THE).c_str()));
+    }
+    else if (!ancestor->is_habitable(victim->pos()))
+    {
+        return notify_fail(make_stringf(T_("%s can't be transferred there."),
+                                            ancestor->name(DESC_THE).c_str()));
+    }
+
     return true;
 }
 
@@ -716,14 +732,14 @@ bool targeter_phantom_mirror::valid_aim(coord_def a)
     else if (!mirror_can_effect(victim))
         return notify_fail("The mirror can't reflect that.");
     else if (!you.can_see(*victim))
-        return notify_fail("You can't see that clearly enough.");
+        return notify_fail(T_("You can't see that clearly enough."));
     return true;
 }
 
 targeter_permafrost::targeter_permafrost(const actor &act) :
     targeter_smite(&act)
 {
-    possible_centres = permafrost_targets(act, false);
+    possible_centres = permafrost_targets(act);
     for (coord_def t : possible_centres)
     {
         targets.insert(t);
@@ -1006,12 +1022,11 @@ aff_type targeter_reach::is_affected(coord_def loc)
     return AFF_NO;
 }
 
-targeter_cleave::targeter_cleave(const actor* act, coord_def target, int rng)
+targeter_cleave::targeter_cleave(coord_def target)
 {
-    ASSERT(act);
-    agent = act;
-    origin = act->pos();
-    range = rng;
+    agent = &you;
+    origin = you.pos();
+    range = you.reach_range() - (you.form == transformation::aqua ? 2 : 0);
     set_aim(target);
 }
 
@@ -1019,7 +1034,7 @@ bool targeter_cleave::valid_aim(coord_def a)
 {
     const coord_def delta = a - origin;
     if (delta.rdist() > range)
-        return notify_fail(T_("Your weapon can't reach that far!"));
+        return notify_fail(T_("You can't reach that far!"));
     if (range == 2)
     {
         const coord_def first_middle(origin + delta / 2);
@@ -1038,16 +1053,22 @@ bool targeter_cleave::set_aim(coord_def target)
 {
     aim = target;
     targets.clear();
-    list<actor*> act_targets;
-    get_cleave_targets(*agent, target, act_targets);
-    while (!act_targets.empty())
-    {
-        actor *potential_target = act_targets.front();
-        if (agent->aware_of(*potential_target))
-            targets.insert(potential_target->pos());
-        act_targets.pop_front();
-    }
+    vector<actor*> cleave_targets = get_player_cleave_targets(target);
+
+    if (monster* mon = monster_at(target))
+        if (you.aware_of(*mon))
+            targets.insert(target);
+
+    for (const actor* targ : cleave_targets)
+        if (you.aware_of(*targ))
+            targets.insert(targ->pos());
+
     return true;
+}
+
+bool targeter_cleave::affects_anything()
+{
+    return !targets.empty();
 }
 
 aff_type targeter_cleave::is_affected(coord_def loc)
@@ -1154,6 +1175,14 @@ aff_type targeter_cloud::is_affected(coord_def loc)
             return *aff;
     }
     return AFF_NO;
+}
+
+bool targeter_cloud::affects_monster(const monster_info& mon)
+{
+    monster *victim = monster_at(mon.pos);;
+    if (!victim || !you.aware_of(*victim))
+        return false;
+    return !actor_cloud_immune(*victim, ctype);
 }
 
 bool targeter_cloud::harmful_to_player()
@@ -1698,9 +1727,9 @@ aff_type targeter_multiposition::is_affected(coord_def loc)
     return affected_positions.count(loc) > 0 ? positive : AFF_NO;
 }
 
-targeter_scorch::targeter_scorch(const actor &a, int _range, bool affect_invis)
+targeter_scorch::targeter_scorch(const actor &a, int _range)
     : targeter_multiposition(&a,
-                        find_near_hostiles(_range, affect_invis, a), AFF_MAYBE),
+                        find_near_hostiles(a, _range), AFF_MAYBE),
       range(_range)
 { }
 
@@ -2339,20 +2368,10 @@ targeter_magnavolt::targeter_magnavolt(const actor* act, int _range) :
 {
 }
 
-bool targeter_magnavolt::valid_aim(coord_def a)
-{
-    if (!targeter_smite::valid_aim(a))
-        return false;
-
-    if (!monster_at(a) || !you.can_see(*monster_at(a)))
-        return notify_fail(T_("You don't see a valid target there."));
-
-    return true;
-}
-
 bool targeter_magnavolt::preferred_aim(coord_def a)
 {
-    return !monster_at(a)->has_ench(ENCH_MAGNETISED);
+    monster* mon = monster_at(a);
+    return mon && you.aware_of(*mon) && !mon->has_ench(ENCH_MAGNETISED);
 }
 
 bool targeter_magnavolt::set_aim(coord_def a)
@@ -2364,7 +2383,9 @@ bool targeter_magnavolt::set_aim(coord_def a)
         return false;
 
     beam_targets = get_magnavolt_targets();
-    beam_targets.push_back(a);
+
+    if (monster_at(a) && you.aware_of(*monster_at(a)))
+        beam_targets.push_back(a);
     beam_paths = get_magnavolt_beam_paths(beam_targets);
 
     return true;
@@ -2814,6 +2835,9 @@ bool targeter_bestial_takedown::valid_aim(coord_def a)
 
 bool targeter_bestial_takedown::set_aim(coord_def a)
 {
+    if (!targeter_smite::set_aim(a))
+        return false;
+
     landing_spots = get_bestial_landing_spots(a);
 
     return true;

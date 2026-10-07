@@ -1064,6 +1064,15 @@ void god_conduct_turn_start()
     _first_attack_was_friendly.clear();
 }
 
+void trigger_exploration_conducts()
+{
+    while (you.newly_revealed_cells > 0)
+    {
+        you.newly_revealed_cells--;
+        did_god_conduct(DID_EXPLORATION, 0);
+    }
+}
+
 void set_attack_conducts(god_conduct_trigger conduct[3], const monster &mon,
                          bool known)
 {

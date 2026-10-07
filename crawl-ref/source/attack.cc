@@ -132,8 +132,9 @@ bool attack::handle_phase_damaged()
     }
 
     // It's okay if a monster took lethal damage, but we should stop
-    // the combat if it was already reset (e.g. a spectral weapon that
-    // took damage and then noticed that its caster is gone).
+    // the combat if it is already cleaned up (e.g. a spectral weapon that
+    // took damage and then noticed that its caster is gone), to prevent
+    // messages referencing the monster after its disappearance.
     return defender->is_player() || !invalid_monster(defender->as_monster());
 }
 
@@ -405,6 +406,8 @@ void attack::init_attack(int attack_number)
 
         attk_type       = mon_attk.type;
         attk_flavour    = mon_attk.flavour;
+        attk_reach      = mon_attk.reach;
+        attk_cleaves    = mon_attk.cleaves;
 
         // Don't scale damage for YOU_FAULTLESS etc.
         if (attacker->get_experience_level() == 0)
@@ -429,6 +432,8 @@ void attack::init_attack(int attack_number)
     {
         attk_type    = AT_HIT;
         attk_flavour = AF_PLAIN;
+        attk_reach   = 1;
+        attk_cleaves = false;
     }
 }
 

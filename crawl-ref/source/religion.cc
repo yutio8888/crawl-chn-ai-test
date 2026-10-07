@@ -46,6 +46,7 @@
 #include "item-name.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
+#include "item-use.h"
 #include "items.h"
 #include "level-state-type.h"
 #include "libutil.h"
@@ -722,14 +723,14 @@ void dec_penance(god_type god, int val)
             if (!had_halo && have_passive(passive_t::halo))
             {
                 mprf(MSGCH_GOD, T_("Your divine halo returns!"));
-                invalidate_agrid(true);
+                invalidate_agrid();
             }
             if (!had_umbra && have_passive(passive_t::umbra))
             {
                 mprf(MSGCH_GOD, T_("Your aura of darkness returns!"));
-                invalidate_agrid(true);
+                invalidate_agrid();
             }
-            if (have_passive(passive_t::sinv))
+            if (have_passive(passive_t::see_unseen))
             {
                 mprf(MSGCH_GOD, T_("Your vision regains its divine sight."));
                 env.invis_knowledge.clear();
@@ -2314,21 +2315,16 @@ void god_speaks(god_type god, const char *mesg)
 {
     ASSERT(!crawl_state.game_is_arena());
 
-    int orig_mon = env.mgrid(you.pos());
-
     monster fake_mon;
     fake_mon.type       = MONS_PROGRAM_BUG;
     fake_mon.mid        = MID_NOBODY;
     fake_mon.hit_points = 1;
     fake_mon.god        = god;
-    fake_mon.set_position(you.pos());
+    fake_mon.set_position({-1, -1});
     fake_mon.foe        = MHITYOU;
     fake_mon.mname      = "FAKE GOD MONSTER";
 
     mprf(MSGCH_GOD, god, "%s", do_mon_str_replacements(mesg, fake_mon).c_str());
-
-    fake_mon.reset();
-    env.mgrid(you.pos()) = orig_mon;
 }
 
 void religion_turn_start()
@@ -2485,7 +2481,7 @@ static void _handle_piety_gain(int old_piety)
                 mprf(MSGCH_GOD, T_("You are shrouded in an aura of darkness!"));
             if (rank == rank_for_passive(passive_t::jelly_regen))
                 simple_god_message(T_(" begins accelerating your health and magic regeneration."));
-            if (rank == rank_for_passive(passive_t::sinv))
+            if (rank == rank_for_passive(passive_t::see_unseen))
                 env.invis_knowledge.clear();
             if (rank == rank_for_passive(passive_t::clarity))
             {
@@ -2572,7 +2568,7 @@ static void _handle_piety_gain(int old_piety)
     if (have_passive(passive_t::halo) || have_passive(passive_t::umbra))
     {
         // Piety change affects halo / umbra radius.
-        invalidate_agrid(true);
+        invalidate_agrid();
     }
 }
 
@@ -2756,7 +2752,7 @@ static void _handle_piety_loss(int old_piety)
         || will_have_passive(passive_t::umbra))
     {
         // Piety change affects halo / umbra radius.
-        invalidate_agrid(true);
+        invalidate_agrid();
     }
 }
 
@@ -2874,19 +2870,33 @@ int initial_wrath_penance_for(god_type god)
 
 static void _ash_uncurse()
 {
-    bool uncursed = false;
-    // iterate backwards so we shatter a ring on the macabre finger
-    // necklace before the amulet
+    // Gather the cursed items up front as unequip_item() erases from
+    // you.equipment.items.
+    vector<item_def*> cursed;
     for (player_equip_entry& entry : you.equipment.items)
     {
-        if (!entry.get_item().cursed())
-            continue;
-        if (!uncursed)
+        item_def& item = entry.get_item();
+        // Deduplicate as some items appear multiple times in the list.
+        if (item.cursed()
+            && find(cursed.begin(), cursed.end(), &item) == cursed.end())
         {
-            mprf(MSGCH_GOD, GOD_ASHENZARI, T_("Your curses shatter."));
-            uncursed = true;
+            cursed.push_back(&item);
         }
-        unequip_item(entry.get_item());
+    }
+
+    // Shattering a slot-granting item (eg the macabre finger necklace) can
+    // leave other worn items without a slot; pull those in too.
+    const size_t num_cursed = cursed.size();
+    handle_chain_removal(cursed, false);
+
+    if (num_cursed > 0)
+        mprf(MSGCH_GOD, GOD_ASHENZARI, T_("Your curses shatter."));
+    for (size_t i = 0; i < cursed.size(); ++i)
+    {
+        // The appended items lost their slot rather than their curse.
+        if (i >= num_cursed)
+            mprf(T_("%s falls away from you."), cursed[i]->name(DESC_YOUR).c_str());
+        unequip_item(*cursed[i]);
     }
 }
 
@@ -2996,12 +3006,12 @@ void excommunication(bool voluntary, god_type new_god)
     if (had_halo)
     {
         mprf(MSGCH_GOD, old_god, T_("Your divine halo fades away."));
-        invalidate_agrid(true);
+        invalidate_agrid();
     }
     if (had_umbra)
     {
         mprf(MSGCH_GOD, old_god, T_("Your aura of darkness fades away."));
-        invalidate_agrid(true);
+        invalidate_agrid();
     }
     // You might have lost water walking at a bad time...
     if (had_water_walk && _need_water_walking())
@@ -3792,9 +3802,6 @@ static void _join_gozag()
         ;
 #endif
     }
-
-    // Move gold to top of piles.
-    add_daction(DACT_GOLD_ON_TOP);
 }
 
 static void _join_okawaru()
@@ -3981,12 +3988,13 @@ void join_religion(god_type which_god)
                                     : "").c_str());
     update_whereis();
 
+    take_note(Note(NOTE_GET_GOD, you.religion));
+
     _set_initial_god_piety();
 
     // Only mark the milestone now that piety has been set due to invo titles.
     mark_milestone("god.worship", "became a worshipper of "
                    + string(_god_name_en(you.religion)) + ".");
-    take_note(Note(NOTE_GET_GOD, you.religion));
     you.piety_info.register_join();
 
     const function<void ()> *join_effect = map_find(on_join, you.religion);
@@ -4178,9 +4186,6 @@ bool god_hates_your_god(god_type god, god_type your_god)
 
 bool god_hates_killing(god_type god, const monster& mon)
 {
-    if (invalid_monster(&mon))
-        return false;
-
     // kill as many illusions as you want.
     if (mon.is_illusion())
         return false;

@@ -422,7 +422,7 @@ void lucy_check_meddling()
     for (monster *mon : potential_banishees)
     {
         // We might have banished a summoner and poofed its summons, etc.
-        if (invalid_monster(mon) || !mon->alive())
+        if (!mon->alive())
             continue;
         // 80% chance of banishing god wrath summons, 30% chance of banishing
         // other creatures nearby.
@@ -931,7 +931,7 @@ static void _lugonu_transloc_retribution()
         // Give extra opportunities for embarrassing teleports.
         simple_god_message(T_(" wrath scatters you!"), true, god);
         you.props[TELEPORTITIS_SOURCE].get_int() = MID_NOBODY;
-        you_teleport_now(false, T_("Space warps around you!"));
+        you_teleport_now(T_("Space warps around you!"));
     }
     else if (coinflip())
     {
@@ -1559,7 +1559,7 @@ static bool _wu_jian_retribution()
         case 2:
             wu_jian_sifu_message(T_(" whispers: These will loosen your tongue!"));
             you.increase_duration(DUR_SILENCE, 5 + random2(11), 50);
-            invalidate_agrid(true);
+            invalidate_agrid();
             break;
         case 3:
             wu_jian_sifu_message(T_(" says: Suffer, mortal!"));

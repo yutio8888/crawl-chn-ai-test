@@ -888,7 +888,7 @@ static void _animate_weapon(int pow, actor* target)
     ASSERT(montarget->inv[wp_slot] != NON_ITEM);
     ASSERT(&env.item[montarget->inv[wp_slot]] == wpn);
 
-    montarget->unequip(wp_slot, false, true);
+    montarget->unequip(wp_slot);
 
     wpn->clear();
 }
@@ -3073,29 +3073,9 @@ string mons_simulacrum_immune_reason(const monster *mons)
 
 spret cast_simulacrum(coord_def target, int pow, bool fail)
 {
-    if (cell_is_invalid_target(target))
-    {
-        canned_msg(MSG_UNTHINKING_ACT);
-        return spret::abort;
-    }
+    fail_check();
 
     monster* mons = monster_at(target);
-    if (!mons || !you.can_see(*mons))
-    {
-        fail_check();
-        canned_msg(MSG_NOTHING_CLOSE_ENOUGH);
-        // If there's no monster there, you still pay the costs in
-        // order to prevent locating invisible monsters.
-        return spret::success;
-    }
-
-    if (!mons_can_be_spectralised(*mons))
-    {
-        mpr(T_("You can't make simulacra of that!"));
-        return spret::abort;
-    }
-
-    fail_check();
 
     mprf(T_("You sublimate a sliver of %s essence and reconstitute it in ice."),
          apostrophise(mons->name(DESC_THE)).c_str());
@@ -4324,9 +4304,6 @@ spret cast_monarch_bomb(const actor& agent, int pow, bool fail)
             mprf(T_("%s constructs an explosive harbinger and releases it."),
                  agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
         }
-
-        mon->number = 5 + div_rand_round(pow, 50);
-        //mon->number = random_range(1, 3);
     }
     else
         canned_msg(MSG_NOTHING_HAPPENS);

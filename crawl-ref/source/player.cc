@@ -1057,8 +1057,17 @@ bool player_in_connected_branch()
 
 bool player_likes_water(bool permanently)
 {
-    return cur_form(!permanently)->player_can_swim()
-           || !permanently && you.can_water_walk();
+    if (permanently)
+    {
+        // When checking whether the player can 'always' swim, we need to both
+        // check whether they usually can *and* currently can (since temporary
+        // forms might have fewer capabilities than their default form, eg: a
+        // dragon polymorphed into a pig.)
+        return cur_form(true)->player_can_swim()
+                && cur_form(false)->player_can_swim();
+    }
+
+    return cur_form(true)->player_can_swim() || you.can_water_walk();
 }
 
 /**
@@ -1411,7 +1420,16 @@ static int _player_bonus_regen()
         if (item->is_type(OBJ_JEWELLERY, AMU_REGENERATION))
             rr += REGEN_PIP;
         if (is_artefact(*item))
-            rr += REGEN_PIP * artefact_property(*item, ARTP_REGENERATION);
+        {
+            const int pips = artefact_property(*item, ARTP_REGENERATION);
+            rr += REGEN_PIP * pips;
+            if (you.form == transformation::fortress_crab
+                && item->base_type == OBJ_ARMOUR
+                && get_armour_slot(static_cast<armour_type>(item->sub_type)) == SLOT_BODY_ARMOUR)
+            {
+                rr += REGEN_PIP * pips;
+            }
+        }
     }
 
     // Fast heal mutation.
@@ -5035,7 +5053,7 @@ bool miasma_player(actor *who, string source_aux)
 {
     ASSERT(!crawl_state.game_is_arena());
 
-    if (you.res_miasma() || you.duration[DUR_DEATHS_DOOR])
+    if (you.res_miasma())
         return false;
 
     if (you.duration[DUR_DIVINE_STAMINA] > 0)
@@ -5179,7 +5197,7 @@ void silence_player(int turns)
 
     you.increase_duration(DUR_SILENCE, turns, 30);
 
-    invalidate_agrid(true);
+    invalidate_agrid();
 
     if (you.beheld())
         you.update_beholders();
@@ -5801,6 +5819,8 @@ player::player()
 
     trapped            = false;
     triggered_spectral = false;
+    newly_revealed_cells = 0;
+    took_instant_action = false;
 
     last_view_update = 0;
 
@@ -7570,6 +7590,11 @@ int player::reach_range(bool include_weapon) const
     return max(wpn_reach, off_reach) + bonus;
 }
 
+int player::reach_range_bonus() const
+{
+    return you.form == transformation::aqua ? 2 : 0;
+}
+
 monster_type player::mons_species(bool /*zombie_base*/) const
 {
     return species::to_mons_species(species);
@@ -7596,7 +7621,7 @@ void player::teleport(bool now, bool wizard_tele)
 {
     ASSERT(!crawl_state.game_is_arena());
     if (now)
-        you_teleport_now(wizard_tele);
+        you_teleport_now("", false, wizard_tele);
     else
         you_teleport();
 }
@@ -8086,7 +8111,7 @@ bool player::innate_sinv() const
         return true;
     }
 
-    if (have_passive(passive_t::sinv))
+    if (have_passive(passive_t::see_unseen))
         return true;
 
     return false;
@@ -9235,7 +9260,6 @@ void player_open_door(coord_def doorpos)
         if (cell_is_runed(dc))
             explored_tracked_feature(env.grid(dc));
         dgn_open_door(dc);
-        set_terrain_changed(dc);
         dungeon_events.fire_position_event(DET_DOOR_OPENED, dc);
 
         if (is_excluded(dc))
@@ -9409,7 +9433,6 @@ void player_close_door(coord_def doorpos)
     {
         // Once opened, formerly runed doors become normal doors.
         dgn_close_door(dc);
-        set_terrain_changed(dc);
         dungeon_events.fire_position_event(DET_DOOR_CLOSED, dc);
 
         if (is_excluded(dc))

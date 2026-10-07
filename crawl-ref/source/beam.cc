@@ -957,7 +957,7 @@ void bolt::sporangium_wall_effect()
 
     // Trace the ownership of this sporangium explosion back to the original
     // creeping plasmodium, and exit if we can't find it.
-    const monster* ag = cached_monster_copy_by_mid(source_id);
+    const monster* ag = monster_by_mid(source_id, false, /*allow_dead=*/true);
     if (!ag)
         return;
     monster* orig_plasmodium = monster_by_mid(ag->summoner);
@@ -3077,6 +3077,9 @@ void bolt::affect_place_explosion_clouds()
     // Blazeheart core detonation
     if (origin_spell == SPELL_FORGE_BLAZEHEART_GOLEM)
         place_cloud(CLOUD_FIRE, p, 2 + random2avg(5,2), agent());
+
+    if (origin_spell == SPELL_INNER_FLAME)
+        place_cloud(CLOUD_FIRE, p, 10 + random2(10), agent());
 
     if (origin_spell == SPELL_FIRE_STORM)
     {
@@ -5595,7 +5598,9 @@ void bolt::affect_monster(monster* mon)
 
     defer_rand r;
     const int repel = mon->missile_repulsion();
-    int rand_ev = random2(mon->evasion() + repel);
+    const int phasing = !can_see_invis && mon->has_ench(ENCH_PHASE_SHIFT) ? PHASE_SHIFT_EV_BONUS
+                                                                          : 0;
+    int rand_ev = random2(mon->evasion() + repel + phasing);
 
     int hit_margin = _test_beam_hit(beam_hit, rand_ev, r);
 
@@ -7134,7 +7139,9 @@ void bolt::determine_affected_cells(explosion_map& m, const coord_def& delta,
         // Special case: explosion originates from rock/statue
         // (e.g. Lee's Rapid Deconstruction) - in this case, ignore
         // solid cells at the center of the explosion.
-        if (stop_at_walls && !(delta.origin() && can_affect_wall(loc))
+        if (stop_at_walls
+            && !(delta.origin()
+                 && (can_affect_wall(loc) || origin_spell == SPELL_INNER_FLAME))
             // Also affect *other* wall monsters around the area, as long
             // as caster still has LOS to them (i.e. they're not on the *other*
             // side of the wall) which the later recursion loop will check
@@ -7439,17 +7446,14 @@ actor* bolt::agent(bool ignore_reflection) const
         return &you;
     else
     {
-        actor* act = actor_by_mid(nominal_source);
-        if (act)
+        actor* act = actor_by_mid(nominal_source, false, /*allow_dead=*/true);
+        if (act && act->alive())
             return act;
         // If this is an explosion caused by a dead friendly monster, set its
         // agent to MID_ANON_FRIEND, so that the player gets XP attribution for
         // the damage.
-        else if (monster* mon = cached_monster_copy_by_mid(nominal_source))
-        {
-            if (mon->friendly())
-                return monster_by_mid(MID_ANON_FRIEND);
-        }
+        if (act && act->is_monster() && act->as_monster()->friendly())
+            return monster_by_mid(MID_ANON_FRIEND);
 
         return nullptr;
     }

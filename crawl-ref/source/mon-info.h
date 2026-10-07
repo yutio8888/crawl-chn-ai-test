@@ -274,6 +274,7 @@ enum monster_info_flags
     MB_STAMPEDE,
     MB_KNOWN_INVIS, // Fully invisible, but the player has inferred their location
     MB_REMEMBERED_INVIS,
+    MB_PHASE_SHIFT,
     NUM_MB_FLAGS
 };
 
@@ -520,6 +521,8 @@ protected:
     string _apply_adjusted_description(description_level_type desc, const string& s) const;
 
     void _populate_as_generic();
+    void _add_name_info(const monster* m, int milev);
+    void _add_constriction_info(const monster* mon);
 };
 
 void get_nearby_monster_info(vector<monster_info>& mons,

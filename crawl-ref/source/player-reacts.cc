@@ -69,6 +69,7 @@
 #include "nearby-danger.h"
 #include "options.h"
 #include "ouch.h"
+#include "output.h"
 #include "player.h"
 #include "player-stats.h"
 #include "random.h"
@@ -521,7 +522,7 @@ void player_reacts_to_monsters()
         if (you.constricted_type == CONSTRICT_ROOTS)
             mprf(T_("The roots around you sink back into the ground."));
         else if (you.constricted_type == CONSTRICT_BVC)
-            mprf(T_("The zombie hands holding you return to the earth."));
+            mprf(T_("The zombie hands constricting you return to the earth."));
 
         you.stop_being_constricted(true);
     }
@@ -597,6 +598,36 @@ void player_reacts_to_monsters()
     // so check these again now.
     you.update_beholders();
     you.update_fearmongers();
+}
+
+void check_trapped()
+{
+    if (you.trapped)
+    {
+        do_trap_effects();
+        you.trapped = false;
+    }
+}
+
+// Register taking an action which takes no time.
+void player_takes_instant_action()
+{
+    you.turn_is_over = false;
+    you.elapsed_time_at_last_input = you.elapsed_time;
+    update_turn_count();
+    you.took_instant_action = true;
+}
+
+// Those reactions which should happen even when no time has passed, as long
+// as the player has done something.
+void player_reacts_to_instant_action()
+{
+    you.took_instant_action = false;
+    mons_reset_just_seen();
+    you.update_beholders();
+    you.update_fearmongers();
+    check_trapped();
+    trigger_exploration_conducts();
 }
 
 static bool _check_recite()
@@ -758,10 +789,7 @@ static void _decrement_durations()
     }
 
     // Possible reduction of silence radius.
-    if (you.duration[DUR_SILENCE])
-        invalidate_agrid();
-    // and liquefying radius.
-    if (you.duration[DUR_LIQUEFYING])
+    if (you.duration[DUR_SILENCE] || you.duration[DUR_LIQUEFYING])
         invalidate_agrid();
 
     _decrement_transform_duration(delay);

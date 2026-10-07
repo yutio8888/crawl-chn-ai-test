@@ -339,7 +339,7 @@ void monster::add_enchantment_effect(const mon_enchant &ench, bool quiet)
 
     case ENCH_LIQUEFYING:
     case ENCH_SILENCE:
-        invalidate_agrid(true);
+        invalidate_agrid();
         break;
 
     case ENCH_INVIS:
@@ -928,16 +928,16 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
     {
         if (is_constricted())
         {
-            if (!quiet && you.can_see(*this))
+            if (!quiet && you.aware_of(*this))
             {
                 if (constricted_type == CONSTRICT_BVC)
                 {
-                    mprf(T_("The zombie hands holding %s return to the earth."),
+                    mprf(T_("The zombie hands constricting %s return to the earth."),
                          name(DESC_THE).c_str());
                 }
                 else if (constricted_type == CONSTRICT_ROOTS)
                 {
-                    mprf(T_("The roots around %s sink back into the ground."),
+                    mprf(T_("The roots constricting %s sink back into the ground."),
                          name(DESC_THE).c_str());
                 }
             }
@@ -1109,8 +1109,7 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
 
     case ENCH_PARADOX_TOUCHED:
         if (!quiet)
-            simple_monster_message(*this,
-                T_("is no longer touched by paradox."));
+            simple_monster_message(*this, T_(" is no longer touched by paradox."));
         for (size_t i = 0; i < spells.size(); ++i)
         {
             if (spells[i].spell == SPELL_MANIFOLD_ASSAULT && spells[i].flags | MON_SPELL_NATURAL)
@@ -1158,6 +1157,12 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
     case ENCH_STAMPEDE:
         if (!quiet)
             simple_monster_message(*this, " stops stampeding.");
+        break;
+
+    case ENCH_PREPARING_TO_LURK:
+        if (!you.can_see(*this) && behaviour == BEH_WANDER)
+            start_lurking(*this);
+        break;
 
     default:
         break;
@@ -1481,6 +1486,8 @@ void monster::apply_enchantment(const mon_enchant &me)
     case ENCH_EXPOSED:
     case ENCH_BRAMBLE_COOLDOWN:
     case ENCH_STAMPEDE:
+    case ENCH_PREPARING_TO_LURK:
+    case ENCH_PHASE_SHIFT:
         decay_enchantment(en);
         break;
 
@@ -2070,7 +2077,11 @@ void monster::apply_enchantments()
     // like berserk time out before their parts.
     for (int i = 0; i < NUM_ENCHANTMENTS; ++i)
         if (ec[i] && has_ench(static_cast<enchant_type>(i)))
+        {
             apply_enchantment(enchantments.find(static_cast<enchant_type>(i))->second);
+            if (!alive())
+                return;
+        }
 }
 
 bool monster::is_vengeance_target() const
@@ -2251,6 +2262,7 @@ static const char *enchant_names[] =
     "phalanx_barrier", "figment", "paradox-touched", "warding",
     "diminished_spells", "orb_cooldown", "sunder_charge",
     "exposed", "briar_cooldown", "stampeding",
+    "preparing_to_lurk", "phase_shift",
     "buggy", // NUM_ENCHANTMENTS
 };
 
@@ -2504,6 +2516,8 @@ int mon_enchant::calc_duration(const monster* mons,
     case ENCH_EMPOWERED_SPELLS:
         cturn = 35 * 10 / _mod_speed(10, mons->speed);
         break;
+    case ENCH_PREPARING_TO_LURK:
+        return random_range(100, 500);
     case ENCH_RING_OF_THUNDER:
     case ENCH_RING_OF_FLAMES:
     case ENCH_RING_OF_CHAOS:

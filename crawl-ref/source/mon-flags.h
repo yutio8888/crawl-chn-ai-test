@@ -120,8 +120,8 @@ enum monclass_flag_type : uint64_t
     /// An ancestor granted by Hepliaklqana
     M_ANCESTOR          = BIT(35),
 
-    // Was M_ALWAYS_NAMED and before that M_ALWAYS_CORPSE
-                       // BIT(36),
+    /// Has special ambush behaviour
+    M_LURKER            = BIT(36),
 
     /// prefer ranged attacks over melee
     M_PREFER_RANGED     = BIT(37),
@@ -322,6 +322,10 @@ enum monster_flag_type : uint64_t
 
     /// Was created by a Boundless Tesseract
     MF_TESSERACT_SPAWN    = BIT(45),
+
+    /// Dead/departed the level and cleaned up, but its slot has not been
+    /// reset yet.
+    MF_PENDING_RESET    = BIT(46),
 
 };
 DEF_BITFIELD(monster_flags_t, monster_flag_type);

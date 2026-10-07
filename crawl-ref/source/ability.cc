@@ -66,6 +66,7 @@
 #include "notes.h"
 #include "options.h"
 #include "output.h"
+#include "player-reacts.h"
 #include "player-stats.h"
 #include "potion.h"
 #include "prompt.h"
@@ -325,8 +326,9 @@ struct ability_def
 
 static int _lookup_ability_slot(ability_type abil);
 static spret _do_ability(const ability_def& abil, bool fail, dist *target,
-                         bolt& beam);
-static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp_cost);
+                         bolt& beam, int piety_cost, int mp_cost, int hp_cost);
+static void _finalize_ability_costs(const ability_def& abil, int piety_cost,
+                                    int mp_cost, int hp_cost);
 
 static vector<ability_def> &_get_ability_list()
 {
@@ -719,7 +721,7 @@ static vector<ability_def> &_get_ability_list()
             2, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_HEPLIAKLQANA_TRANSFERENCE, "Transference",
             2, 0, 3, LOS_MAX_RANGE, {fail_basis::invo, 40, 5, 20},
-            abflag::none },
+            abflag::target },
         { ABIL_HEPLIAKLQANA_IDEALISE, "Idealise",
             4, 0, 4, -1, {fail_basis::invo, 60, 4, 25}, abflag::none },
 
@@ -2144,6 +2146,9 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
     case ABIL_HOP:
         return _can_hop(quiet, reason);
 
+    case ABIL_BESTIAL_TAKEDOWN:
+        return _can_movement_ability(quiet);
+
     case ABIL_INVENT_GIZMO:
     {
         if (you.experience_level < COGLIN_GIZMO_XL)
@@ -2245,16 +2250,30 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
             return fail(T_("You don't have enough experience to sacrifice."));
         return true;
 
-        // only available while your ancestor is alive.
+    // only available while your ancestor is alive.
     case ABIL_HEPLIAKLQANA_IDEALISE:
     case ABIL_HEPLIAKLQANA_RECALL:
     case ABIL_HEPLIAKLQANA_TRANSFERENCE:
+    {
         if (hepliaklqana_ancestor() == MID_NOBODY)
         {
             return fail(make_stringf(T_("%s is still trapped in memory!"),
                                      hepliaklqana_ally_name().c_str()));
         }
+
+        if (abil.ability != ABIL_HEPLIAKLQANA_RECALL)
+        {
+            monster* ancestor = hepliaklqana_ancestor_mon();
+            if (!ancestor || !you.can_see(*ancestor))
+            {
+                if (!quiet)
+                    mprf(T_("%s is not nearby!"), hepliaklqana_ally_name().c_str());
+                return false;
+            }
+        }
+
         return true;
+    }
 
     case ABIL_WU_JIAN_SERPENTS_LASH:
         if (you.attribute[ATTR_SERPENTS_LASH])
@@ -2591,6 +2610,9 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     case ABIL_KIKU_SIGN_OF_RUIN:
         return make_unique<targeter_smite>(&you, LOS_RADIUS, 2, 2);
 
+    case ABIL_HEPLIAKLQANA_TRANSFERENCE:
+        return make_unique<targeter_transference>(have_passive(passive_t::transfer_drain) ? 1 : 0);
+
     default:
         break;
     }
@@ -2664,6 +2686,76 @@ static bool _not_free_religious_ability(ability_type ability)
                    || (abil.flags & abflag::torment)
                    || (abil.flags & abflag::injury) || abil.get_hp_cost() > 0
                    || abil.get_mp_cost() > 0);
+}
+
+bool handle_post_ability_effects(ability_type ability,
+                                 spret ability_result,
+                                 int piety_cost,
+                                 int mp_cost,
+                                 int hp_cost,
+                                 bool is_invocation)
+{
+    const ability_def& abil = get_ability_def(ability);
+
+    switch (ability_result)
+    {
+        case spret::success:
+        {
+            practise_using_ability(abil.ability);
+            _finalize_ability_costs(abil, piety_cost, mp_cost, hp_cost);
+
+            // Ephemeral Shield activates on any invocation with a cost,
+            // even if that's just a cooldown or small amounts of HP.
+            // No rapidly wall-jumping or renaming your ancestor, alas.
+            if (_not_free_religious_ability(abil.ability)
+                && you.has_mutation(MUT_EPHEMERAL_SHIELD))
+            {
+                you.set_duration(DUR_EPHEMERAL_SHIELD, random_range(3, 5));
+                you.redraw_armour_class = true;
+            }
+
+            if (_not_free_religious_ability(abil.ability)
+                && you.unrand_equipped(UNRAND_DRAGONMASK)
+                && there_are_monsters_nearby(true, true, false))
+            {
+                if (x_chance_in_y(10 + 2 * abil.avg_piety_cost(), 100))
+                    _invoke_dragons();
+            }
+
+            // XXX: Merge Dismiss Apostle #1/2/3 into a single count
+            ability_type log_type = abil.ability;
+            if (log_type == ABIL_BEOGH_DISMISS_APOSTLE_2
+                || log_type == ABIL_BEOGH_DISMISS_APOSTLE_3)
+            {
+                log_type = ABIL_BEOGH_DISMISS_APOSTLE_1;
+            }
+
+            count_action(is_invocation ? CACT_INVOKE : CACT_ABIL, log_type);
+            return true;
+        }
+        case spret::fail:
+            if (!testbits(abil.flags, abflag::quiet_fail))
+                mpr(T_("You fail to use your ability."));
+            you.turn_is_over = true;
+            if (mp_cost)
+                refund_mp(mp_cost);
+            if (hp_cost)
+                refund_hp(hp_cost);
+            return false;
+        case spret::abort:
+            crawl_state.zero_turns_taken();
+            if (mp_cost)
+                refund_mp(mp_cost);
+            if (hp_cost)
+                refund_hp(hp_cost);
+            return false;
+        case spret::seen_hups:
+            return false;
+        case spret::none:
+        default:
+            die("Weird ability return type");
+            return false;
+    }
 }
 
 bool activate_talent(const talent& tal, dist *target)
@@ -2762,6 +2854,7 @@ bool activate_talent(const talent& tal, dist *target)
     // cancelled.
     const int hp_cost = abil.get_hp_cost();
     const int mp_cost = abil.get_mp_cost();
+    const int piety_cost = abil.piety_cost.cost();
 
     if (mp_cost)
         pay_mp(mp_cost);
@@ -2769,65 +2862,11 @@ bool activate_talent(const talent& tal, dist *target)
     if (hp_cost)
         pay_hp(hp_cost);
 
-    const spret ability_result = _do_ability(abil, fail, target, beam);
-    switch (ability_result)
-    {
-        case spret::success:
-        {
-            ASSERT(!fail);
-            practise_using_ability(abil.ability);
-            _finalize_ability_costs(abil, mp_cost, hp_cost);
-
-            // Ephemeral Shield activates on any invocation with a cost,
-            // even if that's just a cooldown or small amounts of HP.
-            // No rapidly wall-jumping or renaming your ancestor, alas.
-            if (_not_free_religious_ability(abil.ability)
-                && you.has_mutation(MUT_EPHEMERAL_SHIELD))
-            {
-                you.set_duration(DUR_EPHEMERAL_SHIELD, random_range(3, 5));
-                you.redraw_armour_class = true;
-            }
-
-            if (_not_free_religious_ability(abil.ability)
-                && you.unrand_equipped(UNRAND_DRAGONMASK)
-                && there_are_monsters_nearby(true, true, false))
-            {
-                if (x_chance_in_y(10 + 2 * abil.avg_piety_cost(), 100))
-                    _invoke_dragons();
-            }
-
-            // XXX: Merge Dismiss Apostle #1/2/3 into a single count
-            ability_type log_type = abil.ability;
-            if (log_type == ABIL_BEOGH_DISMISS_APOSTLE_2
-                || log_type == ABIL_BEOGH_DISMISS_APOSTLE_3)
-            {
-                log_type = ABIL_BEOGH_DISMISS_APOSTLE_1;
-            }
-
-            count_action(tal.is_invocation ? CACT_INVOKE : CACT_ABIL, log_type);
-            return true;
-        }
-        case spret::fail:
-            if (!testbits(abil.flags, abflag::quiet_fail))
-                mpr(T_("You fail to use your ability."));
-            you.turn_is_over = true;
-            if (mp_cost)
-                refund_mp(mp_cost);
-            if (hp_cost)
-                refund_hp(hp_cost);
-            return false;
-        case spret::abort:
-            crawl_state.zero_turns_taken();
-            if (mp_cost)
-                refund_mp(mp_cost);
-            if (hp_cost)
-                refund_hp(hp_cost);
-            return false;
-        case spret::none:
-        default:
-            die("Weird ability return type");
-            return false;
-    }
+    const spret ability_result = _do_ability(abil, fail, target, beam,
+                                             piety_cost, mp_cost, hp_cost);
+    ASSERT(!(ability_result == spret::success && fail));
+    return handle_post_ability_effects(tal.which, ability_result, piety_cost,
+                                       mp_cost, hp_cost, tal.is_invocation);
 }
 
 /// If the player is stationary, print 'You cannot move.' and return true.
@@ -3050,6 +3089,14 @@ public:
     }
 };
 
+spret run_ability_uncancel(uncancellable_type kind, int piety_cost,
+                           int mp_cost, int hp_cost)
+{
+    uncancellable uc{kind, piety_cost, mp_cost, hp_cost};
+    bool succeeded = run_uncancel(uc);
+    return succeeded ? spret::success : spret::seen_hups;
+}
+
 /*
  * Use an ability.
  *
@@ -3060,7 +3107,7 @@ public:
  *  or was canceled (spret::abort). Never returns spret::none.
  */
 static spret _do_ability(const ability_def& abil, bool fail, dist *target,
-                         bolt& beam)
+                         bolt& beam, int piety_cost, int mp_cost, int hp_cost)
 {
     // Note: the costs will not be applied until after this switch
     // statement... it's assumed that only failures have returned! - bwr
@@ -3150,11 +3197,11 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_IMPRINT_WEAPON:
         {
             item_def *wpn = nullptr;
-            auto success = use_an_item_menu(wpn, OPER_ANY, OSEL_ARTEFACT_WEAPON,
+            spret success = use_an_item_menu(wpn, OPER_ANY, OSEL_ARTEFACT_WEAPON,
                                 T_("Select an artefact weapon to imprint upon your Paragon."),
                                 [=](){return true;});
 
-            if (success == OPER_NONE)
+            if (success != spret::success)
                 return spret::abort;
 
             if (god_forbids_item(*wpn))
@@ -3400,7 +3447,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         // XXX: Some invo formula
         you.duration[DUR_FATHOMLESS_SHACKLES] = random_range(15, 25) * BASELINE_DELAY;
         yred_make_blasphemy();
-        invalidate_agrid(true);
+        invalidate_agrid();
         break;
 
     case ABIL_YRED_BIND_SOUL:
@@ -3657,13 +3704,13 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_NEMELEX_TRIPLE_DRAW:
-        return deck_triple_draw(fail);
+        return deck_triple_draw(fail, piety_cost, mp_cost, hp_cost);
 
     case ABIL_NEMELEX_DEAL_FOUR:
         return deck_deal(fail);
 
     case ABIL_NEMELEX_STACK_FIVE:
-        return deck_stack(fail);
+        return deck_stack(fail, piety_cost, mp_cost, hp_cost);
 
     case ABIL_BEOGH_SMITING:
         return your_spells(SPELL_SMITING, _beogh_smiting_power(),
@@ -3764,12 +3811,12 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return dithmenos_nightfall(fail);
 
     case ABIL_GOZAG_POTION_PETITION:
-        run_uncancel(UNC_POTION_PETITION, 0);
-        break;
+        return run_ability_uncancel(UNC_POTION_PETITION, piety_cost, mp_cost,
+                                    hp_cost);
 
     case ABIL_GOZAG_CALL_MERCHANT:
-        run_uncancel(UNC_CALL_MERCHANT, 0);
-        break;
+        return run_ability_uncancel(UNC_CALL_MERCHANT, piety_cost, mp_cost,
+                                    hp_cost);
 
     case ABIL_GOZAG_BRIBE_BRANCH:
         if (!gozag_bribe_branch())
@@ -3857,7 +3904,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_HEPLIAKLQANA_TRANSFERENCE:
-        return hepliaklqana_transference(fail); // TODO: dist arg
+        return hepliaklqana_transference(beam.target, fail);
 
     case ABIL_HEPLIAKLQANA_TYPE_KNIGHT:
     case ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST:
@@ -3961,10 +4008,9 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
 // Pay piety and time costs, and flush UI for HP/MP costs which have already
 // been paid.
-static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp_cost)
+static void _finalize_ability_costs(const ability_def& abil, int piety_cost,
+                                    int mp_cost, int hp_cost)
 {
-    const int piety_cost = abil.piety_cost.cost();
-
     dprf("Cost: mp=%d; hp=%d; piety=%d",
          mp_cost, hp_cost, piety_cost);
 
@@ -3985,10 +4031,8 @@ static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp
     // serpent's lash is activated.
     if (abil.flags & abflag::instant)
     {
-        you.turn_is_over = false;
-        you.elapsed_time_at_last_input = you.elapsed_time;
+        player_takes_instant_action();
         fire_final_effects();
-        update_turn_count();
     }
     else if (abil.ability != ABIL_WU_JIAN_WALLJUMP)
         you.turn_is_over = true;

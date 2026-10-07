@@ -164,11 +164,24 @@ static void _monster_regenerate(monster* mons)
 
     if (mons->has_ench(ENCH_REGENERATION))
         mons->heal(3 + div_rand_round(mons->max_hit_points, 20));
+}
 
-    if (mons_is_hepliaklqana_ancestor(mons->type))
+// Fire an interrupt when the last seen state of our ancestor goes from injured
+// to healed during a delay.
+static void _hepliaklqana_ancestor_check_interrupt(monster* mons)
+{
+    if (!mons_is_hepliaklqana_ancestor(mons->type)
+        || !you.can_see(*mons) || !you_are_delayed())
     {
-        if (mons->hit_points == mons->max_hit_points && you.can_see(*mons))
-            interrupt_activity(activity_interrupt::ancestor_hp);
+        return;
+    }
+
+    if (mons->hit_points < mons->max_hit_points)
+        you.running.ancestor_was_injured = true;
+    else if (you.running.ancestor_was_injured)
+    {
+        you.running.ancestor_was_injured = false;
+        interrupt_activity(activity_interrupt::ancestor_hp);
     }
 }
 
@@ -1849,7 +1862,7 @@ static void _pre_monster_move(monster& mons)
     if (mons.speed == 0)
         actor_apply_cloud(&mons);
 
-    if (mons.type == MONS_NO_MONSTER)
+    if (!mons.alive())
         return;
 
     // Apply monster enchantments once for every normal-speed
@@ -1860,14 +1873,7 @@ static void _pre_monster_move(monster& mons)
         mons.ench_countdown += 10;
         mons.apply_enchantments();
 
-        // If the monster *merely* died just break from the loop
-        // rather than quit altogether, since we have to deal with
-        // ballistomycete spores and ball lightning exploding at the end of the
-        // function, but do return if the monster's data has been
-        // reset, since then the monster type is invalid.
-        if (mons.type == MONS_NO_MONSTER)
-            return;
-        else if (mons.hit_points < 1)
+        if (!mons.alive())
             break;
     }
 
@@ -2184,6 +2190,7 @@ void handle_monster_move(monster* mons)
         return;
 
     _monster_regenerate(mons);
+    _hepliaklqana_ancestor_check_interrupt(mons);
 
     if (skip_turn)
         return;
@@ -2744,7 +2751,7 @@ static void _post_monster_move(monster* mons)
     // after the player's turn.
     crawl_state.potential_pursuers.erase(mons);
 
-    if (mons->type != MONS_NO_MONSTER && mons->hit_points < 1)
+    if (!invalid_monster(mons) && mons->hit_points < 1)
         monster_die(*mons, KILL_NON_ACTOR, NON_MONSTER);
 }
 
@@ -3131,7 +3138,6 @@ static void _mons_open_door(monster& mons, const coord_def &pos)
             dgn_break_door(dc);
         else
             dgn_open_door(dc);
-        set_terrain_changed(dc);
     }
 
     if (was_seen)
@@ -3828,9 +3834,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
 
     if (mons.is_constricted() && !mons.cannot_move())
     {
-        if (mons.attempt_escape())
-            simple_monster_message(mons, T_(" escapes!"));
-        else
+        if (!mons.attempt_escape())
         {
             simple_monster_message(mons, T_(" struggles to escape constriction."));
             _swim_or_move_energy(mons);
@@ -4187,9 +4191,12 @@ static bool _monster_move(monster* mons, coord_def& delta)
                 dprf("BUG: %s was marked as follower when not following!",
                      mons->name(DESC_PLAIN).c_str());
             }
-            else
+            // If the monster is not adjacent, it can spend its energy
+            // approaching the player. It'll later be untagged for following if
+            // it fails to catch up.
+            else if (adjacent(mons->pos(), you.pos()))
             {
-                ret    = true;
+                ret = false;
                 delta.reset();
 
                 dprf("%s is skipping movement in order to follow.",
@@ -4197,8 +4204,10 @@ static bool _monster_move(monster* mons, coord_def& delta)
             }
         }
 
-        // Check for attacking another monster.
-        if (monster* targ = monster_at(mons->pos() + delta))
+        // Check for attacking *another* monster
+        // Confused self-hit handled below
+        monster* targ = monster_at(mons->pos() + delta);
+        if (targ && !delta.origin())
         {
             if ((mons_aligned(mons, targ) || mons_is_seeker(*targ))
                 && !(mons->has_ench(ENCH_FRENZIED)
@@ -4208,13 +4217,10 @@ static bool _monster_move(monster* mons, coord_def& delta)
                 delta.reset();  // Swapping can fail, but even if it does, we
                                 // shouldn't try hitting our ally later on.
             }
-            else if (!delta.origin()) // confused self-hit handled below
+            else if (mons_fight(mons, targ))
             {
-                if (mons_fight(mons, targ))
-                {
-                    ret = true;
-                    delta.reset();
-                }
+                ret = true;
+                delta.reset();
             }
         }
 

@@ -23,6 +23,8 @@ const int BULLSEYE_TO_HIT_DIV = 6;
 const int REPEL_MISSILES_EV_BONUS = 15;     // Players
 const int DEFLECT_MISSILES_EV_BONUS = 24;   // Monsters
 
+const int PHASE_SHIFT_EV_BONUS = 15;
+
 class attack
 {
 // Public Properties
@@ -66,6 +68,8 @@ public:
     attack_type     attk_type;
     attack_flavour  attk_flavour;
     int             attk_damage;
+    int             attk_reach;
+    bool            attk_cleaves;
 
     const item_def  *weapon;
     brand_type      damage_brand;

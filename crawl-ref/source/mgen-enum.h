@@ -149,6 +149,8 @@ enum band_type
     BAND_DRAINING_EYE_CORPS,
     BAND_MORPHOGENIC_OOZE,
     BAND_SEWAGE_SOVEREIGNS,
+    BAND_ABYSSAL_ACOLYTES,
+    BAND_HERALD_FOLLOWERS,
     NUM_BANDS                   // always last
 };
 
@@ -181,5 +183,6 @@ enum mgen_flag
                              ///  summoner
     MG_COPY_PARENT  = 0x1000, ///< if the summoner is summoned or charmed, will
                               ///  take on those properties themselves
+    MG_AUTOLURK     = 0x2000, ///< if this monster is a lurker, lurk upon creation
 };
 DEF_BITFIELD(mgen_flags, mgen_flag);

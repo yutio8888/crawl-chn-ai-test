@@ -92,7 +92,7 @@ spret cast_disjunction(int pow, bool fail)
 void disjunction_spell()
 {
     int steps = you.time_taken;
-    invalidate_agrid(true);
+    invalidate_agrid();
     for (int step = 0; step < steps; ++step)
     {
         vector<monster*> mvec;
@@ -223,10 +223,13 @@ spret spider_jump()
  * @param verb          What kind of movement is this, exactly?
  *                      (E.g. 'blink', 'hop'.)
  * @param hitfunc       A hitfunc passed to the direction_chooser.
- * @return              True if a target was found; false if the player aborted.
+ * @return              spret::success if a target was found; spret::abort if
+ *                      the player aborted; spret::seen_hups if finding a
+ *                      target had to be stopped early due to hups.
  */
-static bool _find_cblink_target(dist &target, bool safe_cancel,
-                                string verb, targeter *hitfunc = nullptr, bool physical = false)
+static spret _find_cblink_target(dist &target, bool safe_cancel,
+                                string verb, targeter *hitfunc = nullptr,
+                                bool physical = false)
 {
     while (true)
     {
@@ -247,7 +250,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             mprf(T_("Cancelling %s due to HUP."),
                  translated_move_phrase(verb.c_str(),
                                         move_phrase_context::bare));
-            return false;
+            return spret::seen_hups;
         }
 
         if (!target.isValid || target.target == you.pos())
@@ -263,7 +266,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             }
 
             canned_msg(MSG_OK);
-            return false;
+            return spret::abort;
         }
 
         const monster* beholder = you.get_beholder(target.target);
@@ -327,7 +330,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             continue;
         }
 
-        return true;
+        return spret::success;
     }
 }
 
@@ -473,7 +476,8 @@ spret frog_hop(bool fail, dist *target)
 
     while (true)
     {
-        if (!_find_cblink_target(*target, true, "hop", &tgt, true))
+        spret result = _find_cblink_target(*target, true, "hop", &tgt, true);
+        if (result != spret::success)
             return spret::abort;
 
         if (grid_distance(you.pos(), target->target) > hop_range)
@@ -510,17 +514,29 @@ spret frog_hop(bool fail, dist *target)
 string electric_charge_impossible_reason(bool allow_safe_monsters)
 {
     // General movement checks are handled elsewhere.
-    int nearby_mons = 0;
+    int num_reasons = 0;
     string example_reason = "";
     string fail_reason;
-    for (monster_near_iterator mi(&you); mi; ++mi)
+    for (monster_near_iterator mi(&you, LOS_DEFAULT, true); mi; ++mi)
     {
-        ++nearby_mons;
-        if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason).origin())
+        // To increase clarity about the reason why the player cannot cast Vhi's,
+        // try to exclude things which are 'obviously' invalid targets (by being
+        // out of range or friendly). Otherwise, a single adjacent monster can
+        // prevent giving useful information about why any other monster is invalid.
+        bool invalid_target = false;
+        if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason, &invalid_target).origin())
         {
-            example_reason = make_stringf(T_("you can't charge at %s because %s"),
-                                          mi->name(DESC_THE).c_str(),
-                                          fail_reason.c_str());
+            const bool low_priorty = invalid_target
+                && !(you.aware_of(*mi)
+                     && (!you.can_see(*mi) || fedhas_passthrough(*mi)));
+            if (!low_priorty || example_reason.empty())
+            {
+                example_reason = make_stringf(T_("you can't charge at %s because %s"),
+                                            mi->name(DESC_THE).c_str(),
+                                            fail_reason.c_str());
+                if (!low_priorty)
+                    num_reasons++;
+            }
         }
         else if (allow_safe_monsters
                  || !mons_is_safe(*mi, false)
@@ -529,11 +545,9 @@ string electric_charge_impossible_reason(bool allow_safe_monsters)
             return "";
         }
     }
-    if (!nearby_mons)
-        return T_("you can't see anything to charge at.");
-    if (nearby_mons == 1)
+    if (!example_reason.empty() && num_reasons <= 1)
         return lowercase_string(example_reason);
-    return T_("there's one issue or another keeping you from charging at any nearby foe.");
+    return T_("there are no targets in range which are valid to charge at.");
 }
 
 string movement_impossible_reason()
@@ -551,37 +565,19 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
 
     const actor* act = actor_at(target);
 
-    // Target must be in range and non-adjacent
-    if (agent.pos() == target)
-    {
-        if (fail_reason)
-            *fail_reason = "You can't charge at yourself.";
-
-        return false;
-    }
-    else if (adjacent(agent.pos(), target))
-    {
-        if (fail_reason)
-            *fail_reason = "You're already next to there.";
-
-        return false;
-    }
-    else if (grid_distance(agent.pos(), target)
-             > spell_range(SPELL_ELECTRIC_CHARGE, &agent))
-    {
-        if (fail_reason)
-            *fail_reason = "That's out of range!";
-
-        return false;
-    }
-
     // No charging at things the caster cannot see.
     if (!act || !agent.can_see(*act)
         || agent.is_player() && act->is_monster()
            && fedhas_passthrough(act->as_monster()))
     {
-        if (fail_reason)
-            *fail_reason = "You can't see anything there to charge at.";
+        if (act && agent.aware_of(*act) && fail_reason)
+        {
+            *fail_reason = make_stringf(T_("%s %s visible enough to target properly."),
+                                            act->pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                                            act->verb_for_display(N_("aren't")).c_str());
+        }
+        else if (fail_reason)
+            *fail_reason = T_("You can't see anything there to charge at.");
 
         return false;
     }
@@ -590,7 +586,31 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
     if (mons_aligned(act, &agent) || act->is_firewood())
     {
         if (fail_reason)
-            *fail_reason = "Why would you want to do that?";
+            *fail_reason = T_("Why would you want to do that?");
+
+        return false;
+    }
+
+    // Target must be in range and non-adjacent
+    if (agent.pos() == target)
+    {
+        if (fail_reason)
+            *fail_reason = T_("You can't charge at yourself.");
+
+        return false;
+    }
+    else if (adjacent(agent.pos(), target))
+    {
+        if (fail_reason)
+            *fail_reason = T_("You're already next to there.");
+
+        return false;
+    }
+    else if (grid_distance(agent.pos(), target)
+             > spell_range(SPELL_ELECTRIC_CHARGE, &agent))
+    {
+        if (fail_reason)
+            *fail_reason = T_("That's out of range!");
 
         return false;
     }
@@ -602,17 +622,21 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
 // Returns (0, 0) if this charge is invalid for any reason.
 // (fail_reason will get set to an appropriate error message)
 coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
-                                           string* fail_reason)
+                                           string* fail_reason, bool* target_invalid)
 {
     // Double-check that this is a valid thing to try to charge at at all
     if (!valid_electric_charge_target(agent, target, fail_reason))
+    {
+        if (target_invalid)
+            *target_invalid = true;
         return coord_def(0, 0);
+    }
 
     ray_def ray;
     if (!find_ray(agent.pos(), target, ray, opc_solid))
     {
         if (fail_reason)
-            *fail_reason = "There's something in the way.";
+            *fail_reason = T_("There's something in the way.");
 
         return coord_def(0, 0);
     }
@@ -629,9 +653,8 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
             {
                 if (fail_reason)
                 {
-                    *fail_reason = "There's "
-                                   + feature_description_at(ray.pos())
-                                   + " in the way.";
+                    *fail_reason = make_stringf(T_("There's %s in the way."),
+                        feature_description_at(ray.pos()).c_str());
                 }
 
                 return coord_def(0, 0);
@@ -642,8 +665,8 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
             {
                 if (fail_reason)
                 {
-                    *fail_reason = mon->name(DESC_THE)
-                                   + " is immovably fixed in your path.";
+                    *fail_reason = make_stringf(T_("%s is immovably fixed in your path."),
+                                                mon->name(DESC_THE).c_str());
                 }
 
                 return coord_def(0, 0);
@@ -867,7 +890,8 @@ spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target
  * @param safe_cancel   Whether it's OK to let the player cancel the control
  *                      of the blink (or whether there should be a prompt -
  *                      for e.g. read-identified ?blink)
- * @return              Whether the blink succeeded, aborted, or was miscast.
+ * @return              Whether the blink succeeded, aborted, or had to be
+ *                      cancelled due to hups.
  */
 spret controlled_blink(bool safe_cancel, dist *target)
 {
@@ -885,8 +909,10 @@ spret controlled_blink(bool safe_cancel, dist *target)
     if (orb_limits_translocation())
     {
         targeter_hop tgt(max(1, you.current_vision - 2), false);
-        if (!_find_cblink_target(*target, safe_cancel, "blink", &tgt))
-            return spret::abort;
+        spret result = _find_cblink_target(*target, safe_cancel, "blink",
+                                           &tgt);
+        if (result != spret::success)
+            return result;
         target->target = _fuzz_blink_destination(target->target);
         mprf(MSGCH_ORB, T_("You feel the Orb interfering with your translocation!"));
     }
@@ -894,8 +920,10 @@ spret controlled_blink(bool safe_cancel, dist *target)
     {
         targeter_smite tgt(&you, LOS_RADIUS);
         tgt.obeys_mesmerise = true;
-        if (!_find_cblink_target(*target, safe_cancel, "blink", &tgt))
-            return spret::abort;
+        spret result = _find_cblink_target(*target, safe_cancel, "blink",
+                                           &tgt);
+        if (result != spret::success)
+            return result;
     }
 
     // invisible monster that the targeter didn't know to avoid
@@ -1342,9 +1370,19 @@ bool you_teleport_to(const coord_def where_to, bool move_monsters)
     return true;
 }
 
-void you_teleport_now(bool wizard_tele, string reason)
+void you_teleport_now(string reason, bool manual_tele, bool wizard_tele)
 {
     bool randtele;
+
+    // While in the Abyss, teleport scrolls will always take the player slightly
+    // further away from the rune. (But other effects moving you at random
+    // should not.)
+    if (manual_tele && player_in_branch(BRANCH_ABYSS)
+        && !you.props.exists(TELEPORTITIS_SOURCE))
+    {
+        int&areas = you.props[ABYSS_AREAS_SEEN_KEY].get_int();
+        areas = max(0, areas - 2);
+    }
 
     if (!wizard_tele && you.props.exists(TELEPORTITIS_SOURCE))
     {
@@ -1558,33 +1596,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         return spret::abort;
     }
 
-    fail_check();
-
-    // We need to modify the item *before* we move it, because
-    // move_top_item() might change the location, or merge
-    // with something at our position.
-    if (item_is_orb(item))
-    {
-        fake_noisy(30, where);
-
-        // There's also a 1-in-3 flat chance of apport failing.
-        if (one_chance_in(3))
-        {
-            orb_pickup_noise(where, 30,
-                "The Orb shrieks and becomes a dead weight against your magic!",
-                "The Orb lets out a furious burst of light and becomes "
-                    "a dead weight against your magic!");
-            return spret::success;
-        }
-        else // Otherwise it's just a noisy little shiny thing
-        {
-            orb_pickup_noise(where, 30,
-                "The Orb shrieks as your magic touches it!",
-                "The Orb lets out a furious burst of light as your magic touches it!");
-            start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, "Now pick up the Orb and get out of here!");
-        }
-    }
-
+    // Determine spot to pull items onto.
     beam.set_is_tracer(true);
     beam.aimed_at_spot = true;
     beam.affects_nothing = true;
@@ -1622,20 +1634,51 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         {
             // we've checked every position in beam.path_taken within max_dist
             mpr(T_("Not with that terrain in the way!"));
-            return spret::success; // of a sort
+            return spret::abort;
         }
         new_spot = beam.path_taken[location_on_path];
     }
+
+    fail_check();
+
+    for (stack_iterator si(where); si; ++si)
+    {
+        if (item_is_orb(*si))
+        {
+            fake_noisy(30, where);
+
+            // There's also a 1-in-3 flat chance of apport failing.
+            if (one_chance_in(3))
+            {
+                orb_pickup_noise(where, 30,
+                    T_("The Orb shrieks and becomes a dead weight against your magic!"),
+                    T_("The Orb lets out a furious burst of light and becomes "
+                       "a dead weight against your magic!"));
+                return spret::success;
+            }
+            else // Otherwise it's just a noisy little shiny thing
+            {
+                orb_pickup_noise(where, 30,
+                    T_("The Orb shrieks as your magic touches it!"),
+                    T_("The Orb lets out a furious burst of light as your magic touches it!"));
+                start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, T_("Now pick up the Orb and get out of here!"));
+            }
+        }
+    }
+
     dprf("Apport: new spot is %d/%d", new_spot.x, new_spot.y);
 
-    // Actually move the item.
-    mprf(T_("Yoink! You pull the item%s towards yourself."),
-         (item.quantity > 1) ? "s" : "");
+    // Actually move the items.
+    int num_moved = 0;
+    while (you.visible_igrd(where) != NON_ITEM)
+    {
+        if (move_top_item(where, new_spot))
+            ++num_moved;
+    }
 
-    move_top_item(where, new_spot);
-
-    // Mark the item as found now.
-    origin_set(new_spot);
+    mprf(T_("Yoink! You pull the item%s %stowards yourself."),
+         num_moved > 1 ? "s" : "",
+         new_spot != you.pos() ? T_("partway ") : "");
 
     return spret::success;
 }
@@ -1946,6 +1989,7 @@ void attract_monster(monster &mon, int max_move)
 
     _place_tloc_cloud(old_pos);
     _place_tloc_cloud(ray.pos());
+    mon.check_redraw(old_pos);
     mon.finalise_movement();
 }
 

@@ -1452,7 +1452,7 @@ static void _permanent_terrain_changed(coord_def pos,
     if (nfeat != DNGN_UNSEEN)
         unnotice_feature(level_pos(level_id::current(), pos));
     if (!preserve_mimics)
-        env.level_map_mask(pos) &= ~MMT_MIMIC;
+        env.pgrid(pos) &= ~FPROP_MIMIC;
 }
 
 /**
@@ -1651,6 +1651,10 @@ bool swap_features(const coord_def &pos1, const coord_def &pos2,
 
     env.grid_colours(pos1) = col2;
     env.grid_colours(pos2) = col1;
+
+    // Swap feature flavours.
+    swap(tile_env.flv(pos1).feat, tile_env.flv(pos2).feat);
+    swap(tile_env.flv(pos1).feat_idx, tile_env.flv(pos2).feat_idx);
 
     // Swap shops.
     if (shop1 && !shop2)
@@ -2090,23 +2094,6 @@ void set_terrain_changed(const coord_def p)
 
     if (env.grid(p) == DNGN_SLIMY_WALL)
         env.level_state |= LSTATE_SLIMY_WALL;
-    else if (env.grid(p) == DNGN_OPEN_DOOR)
-    {
-        // Restore colour from door-change markers
-        for (map_marker *marker : env.markers.get_markers_at(p, MAT_TERRAIN_CHANGE))
-        {
-            map_terrain_change_marker* tmarker =
-                dynamic_cast<map_terrain_change_marker*>(marker);
-
-            if (tmarker->change_type == TERRAIN_CHANGE_DOOR_SEAL
-                && tmarker->colour != BLACK)
-            {
-                // Restore the unsealed colour.
-                dgn_set_grid_colour_at(p, tmarker->colour);
-                break;
-            }
-        }
-    }
     else if (env.grid(p) == DNGN_MOULD_PATCH)
         update_mould_tracking(p);
 
@@ -2356,6 +2343,7 @@ bool revert_terrain_change(coord_def pos, terrain_change_type ctype, bool expire
     {
         update_terrain_knowledge(pos);
         update_grid_colour_knowledge(pos);
+        redraw_view_at(pos);
     }
 
     return true;
@@ -2587,8 +2575,7 @@ coord_def push_or_teleport_actor_from(const coord_def& pos)
     return act->pos();
 }
 
-/** Close any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Close any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2602,10 +2589,11 @@ void dgn_close_door(const coord_def &dest)
         env.grid(dest) = DNGN_CLOSED_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_CLOSED_DOOR;
+
+    set_terrain_changed(dest);
 }
 
-/** Open any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Open any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2614,14 +2602,17 @@ void dgn_open_door(const coord_def &dest)
     if (!feat_is_closed_door(env.grid(dest)))
         return;
 
+    revert_terrain_change(dest, TERRAIN_CHANGE_DOOR_SEAL);
+
     if (feat_is_clear_door(env.grid(dest)))
         env.grid(dest) = DNGN_OPEN_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_OPEN_DOOR;
+
+    set_terrain_changed(dest);
 }
 
-/** Breaks any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Breaks any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2630,10 +2621,14 @@ void dgn_break_door(const coord_def &dest)
     if (!feat_is_closed_door(env.grid(dest)))
         return;
 
+    revert_terrain_change(dest, TERRAIN_CHANGE_DOOR_SEAL);
+
     if (feat_is_clear_door(env.grid(dest)))
         env.grid(dest) = DNGN_BROKEN_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_BROKEN_DOOR;
+
+    set_terrain_changed(dest);
 }
 
 

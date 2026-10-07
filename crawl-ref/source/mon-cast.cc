@@ -45,6 +45,7 @@
 #include "level-state-type.h"
 #include "libutil.h"
 #include "losglobal.h"
+#include "los.h"
 #include "makeitem.h"
 #include "map-knowledge.h"
 #include "mapmark.h"
@@ -250,7 +251,22 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
     } },
     { SPELL_INVISIBILITY, {
         _should_selfench(ENCH_INVIS),
-        _fire_simple_beam,
+        [](monster &caster, mon_spell_slot, bolt& beam)
+        {
+            beam.fire();
+
+            coord_def spot;
+            int count = 0;
+            monster_pathfind path;
+            path.fill_traversability(&caster, 2, true);
+            for (radius_iterator ri(caster.pos(), 2, C_SQUARE); ri; ++ri)
+            {
+                if (path.is_reachable(*ri) && one_chance_in(++count))
+                    spot = *ri;
+            }
+            if (!spot.origin())
+                caster.move_to(spot);
+        },
         _selfench_beam_setup(BEAM_INVISIBILITY),
     } },
     { SPELL_HASTE, {
@@ -271,6 +287,23 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             const int dur = random_range(220, 300);
             caster.add_ench(mon_enchant(ENCH_MIGHT, &caster, dur));
             caster.add_ench(mon_enchant(ENCH_RESISTANCE, &caster, dur));
+        },
+        nullptr,
+    } },
+    { SPELL_PHASE_SHIFT, {
+        [](const monster &caster)
+        {
+            return ai_action::good_or_bad(!caster.has_ench(ENCH_PHASE_SHIFT));
+        },
+        [](monster &caster, mon_spell_slot, bolt&)
+        {
+            if (!you.can_see_invisible())
+                simple_monster_message(caster, T_(" form blurs."), true);
+            else
+                simple_monster_message(caster, T_(" form wavers for a moment."), true);
+            flash_tile(caster.pos(), LIGHTBLUE);
+            const int dur = random_range(220, 300);
+            caster.add_ench(mon_enchant(ENCH_PHASE_SHIFT, &caster, dur));
         },
         nullptr,
     } },
@@ -445,7 +478,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             }
 
             caster.add_ench(ENCH_LIQUEFYING);
-            invalidate_agrid(true);
+            invalidate_agrid();
         },
         nullptr,
         MSPELL_NO_AUTO_NOISE,
@@ -1666,6 +1699,32 @@ static void _cast_regenerate_other(monster* caster)
     }
 }
 
+static void _cast_touch_of_paradox(monster* caster)
+{
+    int seen = 0;
+    monster* targ = nullptr;
+
+    for (monster_near_iterator mi(caster, LOS_NO_TRANS); mi; ++mi)
+    {
+        if (*mi != caster && mons_aligned(caster, *mi)
+            && mons_has_attacks(*mi->as_monster())
+            && !mi->has_ench(ENCH_PARADOX_TOUCHED))
+        {
+            if (one_chance_in(++seen))
+                targ = *mi;
+        }
+    }
+
+    if (targ != nullptr)
+    {
+        const int pow = mons_spellpower(*caster, SPELL_TOUCH_OF_PARADOX);
+        int dur = (4 + roll_dice(2, pow / 20)) * BASELINE_DELAY;
+        flash_tile(targ->pos(), MAGENTA, 120, TILE_BOLT_CORRUPTION);
+        simple_monster_message(*targ, T_(" is touched by paradox!"));
+        targ->add_ench(mon_enchant(ENCH_PARADOX_TOUCHED, caster, dur));
+    }
+}
+
 static void _cast_mass_regeneration(monster* caster)
 {
     vector<monster*> targs;
@@ -1972,8 +2031,7 @@ static bool _flavour_benefits_monster(beam_type flavour, monster& monster)
         return !monster.has_ench(ENCH_CONCENTRATE_VENOM)
                && (monster.has_spell(SPELL_SPIT_POISON)
                    || monster.has_attack_flavour(AF_POISON)
-                   || monster.has_attack_flavour(AF_POISON_STRONG)
-                   || monster.has_attack_flavour(AF_REACH_STING));
+                   || monster.has_attack_flavour(AF_POISON_STRONG));
 
     default:
         return false;
@@ -2812,6 +2870,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_FUNERAL_DIRGE:
     case SPELL_MANIFOLD_ASSAULT:
     case SPELL_REGENERATE_OTHER:
+    case SPELL_TOUCH_OF_PARADOX:
     case SPELL_MASS_REGENERATION:
     case SPELL_BESTOW_ARMS:
     case SPELL_FULMINANT_PRISM:
@@ -3283,11 +3342,20 @@ static int _tension_door_closed(const vector<coord_def>& door)
 {
     ASSERT(!door.empty());
     const dungeon_feature_type old_feat = env.grid(door[0]);
+    // Simulate the tension with closed doors. We don't want to do a full
+    // terrain change, as this would have side effects like removing clouds,
+    // but we do need to invalidate the LoS cache.
     for (coord_def dc : door)
+    {
         env.grid(dc) = DNGN_CLOSED_DOOR;
+        los_terrain_changed(dc);
+    }
     const int new_tension = get_tension(GOD_NO_GOD);
     for (coord_def dc : door)
+    {
         env.grid(dc) = old_feat;
+        los_terrain_changed(dc);
+    }
     return new_tension;
 }
 
@@ -3556,7 +3624,6 @@ static bool _seal_doors_and_stairs(const monster* warden,
             for (coord_def dc : door_spots)
             {
                 dgn_close_door(dc);
-                set_terrain_changed(dc);
                 dungeon_events.fire_position_event(DET_DOOR_CLOSED, dc);
 
                 if (is_excluded(dc))
@@ -3846,7 +3913,7 @@ static ai_action::goodness _arcjolt_goodness(const monster &caster)
 
 static ai_action::goodness _scorch_goodness(const monster& caster)
 {
-    auto targeter = make_unique<targeter_scorch>(caster, 3, true);
+    auto targeter = make_unique<targeter_scorch>(caster, 3);
     for (auto ti = targeter->affected_iterator(AFF_MAYBE); ti; ++ti)
     {
         if (actor_at(*ti)->res_fire() < 3)
@@ -6504,8 +6571,8 @@ static branch_summon_pair _invitation_summons[] =
     }},
   { BRANCH_ELF,
     { // Elf enemies
-      {  1,   1,   50, FLAT, MONS_DEEP_ELF_AIR_MAGE },
-      {  1,   1,   50, FLAT, MONS_DEEP_ELF_FIRE_MAGE },
+      {  1,   1,   50, FLAT, MONS_DEEP_ELF_ZEPHYRMANCER },
+      {  1,   1,   50, FLAT, MONS_DEEP_ELF_PYROMANCER },
       {  1,   1,   40, FLAT, MONS_DEEP_ELF_KNIGHT },
     }},
   { BRANCH_VAULTS,
@@ -7530,8 +7597,12 @@ static bool _mons_can_be_tempered(const monster& targ)
 
     // We considerable LRD-able non-living monsters to be 'constructs',
     // excepting gargoyles (too 'alive') and including dancing weapons.
-    if (targ.type == MONS_DANCING_WEAPON || targ.type == MONS_HOARFROST_CANNON
-        || mons_genus(targ.type) != MONS_GARGOYLE && monster_type_is_fraggable(targ.type))
+    if (targ.type == MONS_DANCING_WEAPON
+        || targ.type == MONS_HOARFROST_CANNON
+        || targ.type == MONS_SPLINTERFROST_BARRICADE
+        || (monster_type_is_fraggable(targ.type)
+            && mons_intel(targ) == I_BRAINLESS
+            && !targ.is_firewood()))
     {
         return true;
     }
@@ -7892,7 +7963,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_SILENCE:
         mons->add_ench(ENCH_SILENCE);
-        invalidate_agrid(true);
+        invalidate_agrid();
         simple_monster_message(*mons, T_(" surroundings become eerily quiet."), true);
         return;
 
@@ -8765,6 +8836,10 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_BESTOW_ARMS:
         _cast_bestow_arms(*mons);
+        return;
+
+    case SPELL_TOUCH_OF_PARADOX:
+        _cast_touch_of_paradox(mons);
         return;
 
     case SPELL_FULMINANT_PRISM:
@@ -10271,6 +10346,20 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
     case SPELL_REGENERATE_OTHER:
     case SPELL_MASS_REGENERATION:
         return _ally_needs_regeneration(*mon);
+
+    case SPELL_TOUCH_OF_PARADOX:
+        if (!foe || !mon->can_see(*foe))
+            return ai_action::bad();
+
+        for (monster_near_iterator mi(mon, LOS_NO_TRANS); mi; ++mi)
+        {
+            if (*mi != mon && mons_aligned(mon, *mi)
+                && mons_has_attacks(**mi) && !mi->has_ench(ENCH_PARADOX_TOUCHED))
+            {
+                return ai_action::good();
+            }
+        }
+        return ai_action::bad();
 
     case SPELL_POISONOUS_CLOUD:
     case SPELL_MEPHITIC_CLOUD:

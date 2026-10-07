@@ -1648,6 +1648,11 @@ static const vector<branch_type> portal_generation_order =
     BRANCH_DESOLATION,
 };
 
+const vector<branch_type> &dgn_portal_generation_order()
+{
+    return portal_generation_order;
+}
+
 void update_portal_entrances()
 {
     unordered_set<branch_type, std::hash<int>> seen_portals;
@@ -1873,6 +1878,19 @@ static const vector<branch_type> branch_generation_order =
     NUM_BRANCHES,
 };
 
+const vector<branch_type> &dgn_branch_generation_order()
+{
+    return branch_generation_order;
+}
+
+bool dgn_branch_will_generate(branch_type br)
+{
+    return br < NUM_BRANCHES &&
+        (brentry[br].is_valid()
+         || br == BRANCH_DUNGEON || br == BRANCH_VESTIBULE
+         || !is_connected_branch(br));
+}
+
 static bool _branch_pregenerates(branch_type b)
 {
     if (!you.deterministic_levelgen)
@@ -1931,10 +1949,7 @@ bool pregen_dungeon(const level_id &stopping_point)
         // `initialise_branch_depths` for some reason. The vestibule is invalid
         // because its depth isn't set until the player actually enters a
         // portal, similarly for other portal branches.
-        if (br < NUM_BRANCHES &&
-            (brentry[br].is_valid()
-             || br == BRANCH_DUNGEON || br == BRANCH_VESTIBULE
-             || !is_connected_branch(br)))
+        if (dgn_branch_will_generate(br))
         {
             for (int i = 1; i <= brdepth[br]; i++)
             {
@@ -2177,6 +2192,9 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         update_companions();
     }
 
+    // At this point there should be no monsters in the reset queue.
+    ASSERT(!any_pending_monster_reset());
+
 #ifdef USE_TILE
     if (load_mode != LOAD_VISITOR)
     {
@@ -2251,7 +2269,6 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
 
     // Shouldn't happen, but this is too unimportant to assert.
     clear_final_effects();
-    env.final_effect_monster_cache.clear();
 
     los_changed();
 
@@ -2351,6 +2368,8 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
 
         // no cross-level pursuits
         crawl_state.potential_pursuers.clear();
+
+        ash_detect_portals(is_map_persistent());
     }
 
     // Save the created/updated level out to disk:
@@ -2502,8 +2521,6 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
             }
         }
 
-        ash_detect_portals(is_map_persistent());
-
         if (just_created_level)
             xom_new_level_noise_or_stealth();
     }
@@ -2512,7 +2529,7 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         decr_zot_clock();
 
     // Initialize halos, etc.
-    invalidate_agrid(true);
+    invalidate_agrid();
 
     // Maybe make a note if we reached a new level.
     // Don't do so if we are just moving around inside Pan, though.
@@ -2563,6 +2580,9 @@ void save_level(const level_id& lid)
 {
     if (you.level_visited(lid))
         travel_cache.get_level_info(lid).update();
+
+    // Reset any monsters that died/left this action.
+    flush_monster_reset();
 
     // Nail all items to the ground.
     fix_item_coordinates();
@@ -3446,6 +3466,9 @@ bool is_existing_level(const level_id &level)
 
 void delete_level(const level_id &level)
 {
+    // This level's env.mons is being discarded, so clear any pending resets.
+    drop_pending_monster_resets();
+
     travel_cache.erase_level_info(level);
     StashTrack.remove_level(level);
     shopping_list.del_things_from(level);
