@@ -58,7 +58,7 @@ amulet of the Four Winds	四方之风项链	domain=items; source=EN/ZH; 依据 /
 amulet of Tranquility	宁静项链	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；Four Winds 改名，保留 tranquility 字面意象；decision=D-C-095
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Ancestor Life: Elementalist	先祖生涯：元素使	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095
+Ancestor Life: Elementalist	先祖生涯：元素师	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095
 ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
