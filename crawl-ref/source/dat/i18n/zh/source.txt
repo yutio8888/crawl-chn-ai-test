@@ -30147,6 +30147,15 @@ Brill Will-∞
 Conj
 咒法
 %%%%
+ConstrBog
+束缚毒沼
+%%%%
+ConstrDrown
+束缚溺水
+%%%%
+ConstrDrown ConstrBog
+束缚溺水 束缚毒沼
+%%%%
 Corpsefed rMiasma
 食尸 瘴气抗
 %%%%
@@ -30156,11 +30165,23 @@ Dark
 Detect Stab+
 探测 偷袭+
 %%%%
+DevInvis
+诡诈隐形
+%%%%
 Dissipate
 驱散
 %%%%
 Dragonpray
 龙祈
+%%%%
+FireExpos
+火焰暴露
+%%%%
+FireExpos FireWiz
+火焰暴露 火焰施法辅助
+%%%%
+FireWiz
+火焰施法辅助
 %%%%
 Flames, rFlCloud
 烈焰，火云抗
@@ -30182,6 +30203,18 @@ Hex
 %%%%
 ID++
 鉴定++
+%%%%
+IceDoom
+寒冰厄运
+%%%%
+IceExpos
+寒冰暴露
+%%%%
+IceExpos IceWiz
+寒冰暴露 寒冰施法辅助
+%%%%
+IceWiz
+寒冰施法辅助
 %%%%
 Inacc
 失准
@@ -30222,6 +30255,9 @@ PotionHeal*2
 Prune
 梅干
 %%%%
+RageSunder
+怒裂
+%%%%
 Rampage+∞
 冲锋+∞
 %%%%
@@ -30237,6 +30273,15 @@ RevGuard
 Ring+
 戒指+
 %%%%
+Salvo
+齐射
+%%%%
+Salvo,
+齐射,
+%%%%
+ShootingStar
+流星
+%%%%
 Shroompunch Gloves+
 菇拳 手套+
 %%%%
@@ -30246,8 +30291,26 @@ Summ
 Tloc
 传送
 %%%%
+TrickPois
+诡毒
+%%%%
+ValArchmagi
+勇武大法师
+%%%%
+ValArchmagi ^Dim
+勇武大法师 卸下削弱法术
+%%%%
 Valiant
 英勇
+%%%%
+VirtueRefl
+五德反射
+%%%%
+VirtueSH
+五德格挡
+%%%%
+VirtueSH VirtueRefl
+五德格挡 五德反射
 %%%%
 Wiz-
 法术-
@@ -30257,6 +30320,9 @@ Zealotry,
 %%%%
 ^Contam
 ^污染
+%%%%
+^Dim
+卸下削弱法术
 %%%%
 ^Drain
 ^吸取
@@ -30402,6 +30468,12 @@ Elemental Staff
 Eiolaiphi
 埃奥莱菲
 %%%%
+Forgewarden's cuirass
+锻炉守卫胸甲
+%%%%
+Hana's Scimitar
+哈娜之弯刀
+%%%%
 Hermit's Pendant
 隐士之坠
 %%%%
@@ -30435,6 +30507,9 @@ Singing Sword
 Spriggan's Knife
 小精灵之刃
 %%%%
+Stagehand's Sword
+舞台工之剑
+%%%%
 Storm Queen's Shield
 风暴女王之盾
 %%%%
@@ -30456,6 +30531,9 @@ amulet of Cekugob
 amulet of Elemental Vulnerability
 元素易伤项链
 %%%%
+amulet of Tranquility
+宁静项链
+%%%%
 amulet of Vitality
 活力项链
 %%%%
@@ -30474,8 +30552,14 @@ arbalest "Damnation"
 arc blade
 电弧之刃
 %%%%
+arcane splint mail
+奥术条板甲
+%%%%
 armour of Talos
 塔耳塔洛斯之甲
+%%%%
+athame "Fimbulwinter"
+仪式匕首"芬布尔之冬"
 %%%%
 autumn katana
 秋日刀
@@ -30485,6 +30569,9 @@ blowgun of the Assassin
 %%%%
 bo
 棒
+%%%%
+bone scales
+骨鳞甲
 %%%%
 boots of the spider
 蜘蛛之靴
@@ -30506,6 +30593,9 @@ cloak of the Thief
 %%%%
 consecrated labrys
 圣化双刃斧
+%%%%
+coolibah bardiche
+库利巴木长柄斧
 %%%%
 crown of Dyrovepreva
 迪罗夫普雷瓦之冠
@@ -30561,6 +30651,9 @@ faerie dragon scales
 fencer's gloves
 击剑者手套
 %%%%
+fire dragon occultist's scales
+火龙神秘学者鳞甲
+%%%%
 flamberge
 焰形剑
 %%%%
@@ -30573,8 +30666,14 @@ fungal fisticloak
 gauntlets of War
 战争护手
 %%%%
+ghost crab claws
+幽灵螃蟹爪
+%%%%
 giant club "Skullcrusher"
 巨棒"碎颅者"
+%%%%
+giant spiked club "Carina at Dusk"
+巨刺棍"暮色船底座"
 %%%%
 glaive of Prune
 梅干长柄刀
@@ -30620,6 +30719,9 @@ heavy crossbow "Sniper"
 %%%%
 hood of the Assassin
 刺客兜帽
+%%%%
+ice dragon arcanist's scales
+冰龙奥术师鳞甲
 %%%%
 justicar's regalia
 执法官的礼服
@@ -30695,6 +30797,9 @@ pair of quick blades
 %%%%
 pair of quick blades "Gyre" and "Gimble"
 双快刃"盖尔"与"金布尔"
+%%%%
+partisan of Prune
+梅干阔头枪
 %%%%
 plutonium sword
 钚剑
@@ -30795,6 +30900,9 @@ spear of the Botono
 sphere of Battle
 战斗之球
 %%%%
+staff of Five Virtues
+五德杖
+%%%%
 staff of Olgreb
 奥尔格雷布之杖
 %%%%
@@ -30806,6 +30914,9 @@ staff of the Meek
 %%%%
 storm bow
 风暴之弓
+%%%%
+swamp witch's dragon scales
+沼泽女巫龙鳞甲
 %%%%
 sword of Cerebov
 塞雷波夫之剑
