@@ -348,6 +348,10 @@ def copy_contract(root, contract_id):
             en_src = os.path.join(source_root, 'dat/database/monspeak.txt')
             en_dst = os.path.join(root, 'dat/database/monspeak.txt')
             shutil.copyfile(en_src, en_dst)
+            # A protocol fixture needs matching structure independently of
+            # pending trunk translations. Mirror the complete EN snapshot
+            # into its ZH fixture; production ZH remains checked by the CLI.
+            shutil.copyfile(en_src, dst)
 
 
 # CR-021: the monspeak custom artifact has no start/end/required producer
@@ -358,15 +362,19 @@ def copy_contract(root, contract_id):
 # routing and the runtime line count) while leaving the frozen EN
 # identity set untouched.
 MONSPEAK_VISUAL_MUTATIONS = (
+    # Trunk Goji: an unknown identity accessor must block the real scanner.
+    ("lua-identity-accessor",
+     "you.species():lower()", "you.name()",
+     "Lua return topology not bindable"),
     ("line-shift",
-     '@The_monster@吟诵了一篇祷词。\nVISUAL:一阵宁静感笼罩了你。',
-     'VISUAL:一阵宁静感笼罩了你。\n@The_monster@吟诵了一篇祷词。',
+     '@The_monster@ intones a prayer.\nVISUAL:A sense of peace washes over you.',
+     'VISUAL:A sense of peace washes over you.\n@The_monster@ intones a prayer.',
      "VISUAL channel prefix lost at an EN-aligned line"),
     ("newline-merge",
-     'VISUAL:@The_monster@打出手势。\n'
-     'VISUAL:你感到一阵[诅咒|厄运]降临。',
-     'VISUAL:@The_monster@打出手势。'
-     'VISUAL:你感到一阵[诅咒|厄运]降临。',
+     'VISUAL:@The_monster@ gestures.\n'
+     'VISUAL:You feel [cursed|doomed].',
+     'VISUAL:@The_monster@ gestures.'
+     'VISUAL:You feel [cursed|doomed].',
      "runtime line count differs from EN"),
     # CR-023: Lua blocks are evaluated by getSpeakString before the sink,
     # so a literal ``return "VISUAL:..."`` emission is a runtime line of
@@ -375,16 +383,16 @@ MONSPEAK_VISUAL_MUTATIONS = (
     # reviewer probe) must fail the per-branch channel correspondence, and
     # deleting a return branch must fail the branch count.
     ("lua-return-visual-prefix",
-     'return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
-     'return "SOUND:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"',
+     'return "VISUAL:A distinct wet dog smell emanates from @the_monster@."',
+     'return "SOUND:A distinct wet dog smell emanates from @the_monster@."',
      "VISUAL channel prefix lost at an EN-aligned line"),
     ("lua-return-delete",
-     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     '    return "VISUAL:A distinct wet dog smell emanates from @the_monster@."\n'
      'else\n'
-     '    return "VISUAL:@The_monster@ 做出似乎要在你身上把@reflexive@擦干的'
-     '动作。"\n'
+     '    return "VISUAL:@The_monster@ motions as if to dry @reflexive@ off on '
+     'you."\n'
      'end',
-     '    return "VISUAL:一股明显的湿狗气味从 @the_monster@ 身上散发出来。"\n'
+     '    return "VISUAL:A distinct wet dog smell emanates from @the_monster@."\n'
      'end',
      "Lua return branch count differs from EN"),
     # CR-027: a token whose closure introduces Lua (``@friendly hound@``,
@@ -402,22 +410,22 @@ MONSPEAK_VISUAL_MUTATIONS = (
     # Lua return) makes the expanded Lua source fail the vendored 5.4.8
     # syntax gate.
     ("fragment-raw-newline",
-     '@The_monster@说："请容我展示未来的蜜蜂！"',
-     '@The_monster@说："请容我展示未来的蜜蜂！\n还是算了吧"',
+     '@The_monster@ says, "Allow me to demonstrate the bee of the future!"',
+     '@The_monster@ says, "Allow me to demonstrate the bee of the future!\nActually, never mind"',
      "Lua return topology not bindable"),
     # CR-030/CR-032: the same splice path with an unescaped single quote
     # terminates the Lua string literal early, so the expanded source
     # fails the vendored 5.4.8 syntax gate exactly like the raw newline.
     ("fragment-unescaped-quote",
-     '@The_monster@说："请容我展示未来的蜜蜂！"',
-     '@The_monster@说："请容我展示未来的蜜蜂！\'"',
+     '@The_monster@ says, "Allow me to demonstrate the bee of the future!"',
+     '@The_monster@ says, "Allow me to demonstrate the bee of the future!\'"',
      "Lua return topology not bindable"),
     # CR-030/CR-032: the Lua hex escape \x56 becomes 'V' after the
     # splice, so the branch emits a VISUAL: line (talk_visual) where
     # every expanded EN line of the same branch stays talk.
     ("fragment-hex-visual",
-     '@The_monster@说："请容我展示未来的蜜蜂！"',
-     '\\x56ISUAL:@The_monster@说："请容我展示未来的蜜蜂！"',
+     '@The_monster@ says, "Allow me to demonstrate the bee of the future!"',
+     '\\x56ISUAL:@The_monster@ says, "Allow me to demonstrate the bee of the future!"',
      "line channel differs from EN"),
     # CR-030/CR-032: every @marker@ site increments the one shared
     # replacement counter (MAX_REPLACEMENTS 100), including the
@@ -530,7 +538,7 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
                     f"checker {artifact['custom']!r} has no fixture "
                     f"dispatch")
                 continue
-            for kind in ("line-shift", "newline-merge",
+            for kind in ("lua-identity-accessor", "line-shift", "newline-merge",
                          "lua-return-visual-prefix", "lua-return-delete",
                          "closure-lua-prefix", "fragment-raw-newline",
                          "fragment-unescaped-quote", "fragment-hex-visual",
@@ -580,7 +588,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 65 artifacts, 356 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 357 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # CR-034: a malformed weighted TextDB entry must fail closed at the custom
