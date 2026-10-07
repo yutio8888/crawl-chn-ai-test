@@ -3927,7 +3927,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     已有 `name: Oni`；两端都是 Oni。Lua 种族比较更新为 Oni 是纠正旧比较值，
     不废止仍存在的 ogre 怪物及“食人魔”；种族 oni → 鬼继续有效。
   - cursed → bound 仅替换 Ashenzari 装备绑定的显示用语：前缀
-    “束缚的”、括注“（已束缚）”、菜单／费用“已束缚物品”、动作
+    “束缚”、括注“（已束缚）”、菜单／费用“已束缚物品”、动作
     “束缚／解除束缚”、仪式“束缚仪式”、意象“枷锁”。
     原 core `curse → 诅咒` 补充适用边界，不全局替换诅咒、死亡诅咒、
     curse skull/toe 或 bound soul。内部 `cursed()`、CURSE 枚举仍是英文。
@@ -4234,6 +4234,84 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-098 — Issue #147 B0-4 共享 catalog 键对齐与补登记
+
+- **Type**: C — Shared-key constraint and catalog terminology ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source / scope**: 同步提交 `7ad933c9fb`；B1 source 第二轮报告的
+  “glossary未收录／待裁决词”一节。逐项对照当前 catalog、形态 YAML、
+  显示调用与已有 glossary。只修改 glossary、既有脚本导出和本记录；
+  不改代码、不引入新上下文键、不改任何翻译资产。
+- **Shared catalog keys**:
+  - `Apostate` 对齐稳定版既定“叛教者”。神祇等级称号、祈神技能称号及
+    trunk Forgewarden 胸甲铭文使用同一 catalog 词，当前无独立铭文上下文。
+    虽然胸甲这里是属性标签，本次迁移为最小改动采用共享键译文，
+    不单独要求铭文“叛教”，不再要求 catalog 译者改动该共享条目。
+  - `bound `（末尾含一个 ASCII 空格）的物品前缀对齐稳定版既定“束缚”。
+    item-name.cc 的物品命名和 mon-info.cc 的显示共用此键。
+    不要求前缀“束缚的”；D-C-095 相应前缀文字及 glossary 同步改为“束缚”。
+    括注“（已束缚）”、菜单／费用“已束缚物品”保持有效。
+  - **Optional follow-up**: 将来若需要铭文与人物称号，或物品前缀与其他
+    bound 用法分别译为不同措辞，应先在代码显示调用中引入明确的上下文键，
+    再由 catalog 译者填充并验证各语境。本次不实施此可选改进。
+- **Enumeration / registration**: 报告清单展开共有 136 项：134 项命名／
+  标签／参数术语逐项登记，2 项完整说明句不另立术语。初始清单没有
+  与既有导出表完全相同的英文术语键；近似词根沿用而非覆盖旧条目。
+  134 项按域分配：core 4、items 1、combat 7、magic 53、skills 1、
+  species 1、monsters 2、unique-monsters 1、mutations 64。
+  只有 Archery 是本批物品 catalog 标签，归 items；形态名和伤害表标签
+  归 magic，形态 fakemuts／badmuts 的伪变异标签归 mutations，
+  不因为它们出现在护符数据中而放进 items，也不声称伪变异是可遗传突变。
+- **Accepted pending choices**:
+  - Distill rate → 凝雾速率：FormMistmane 的 get_effect_chance 用作
+    雾药水凝制速率，describe.cc 将其显示为该标签；保留凝雾意象。
+    “聚雾速率”偏重收集，“制雾速率”更笼统，本次沿用已写入 catalog 的
+    “凝雾速率”，不添加原文没有的每回合／百分比单位。
+  - psychic force → 精神冲击：fineff.cc 的 psychokinetic burst 用于
+    击退原因，并可使敌对角色混乱；“冲击”表达这一效果，
+    不把普通攻击效果冒充独立法术标题。
+  - Orcataur → 兽人马：保留 orc 与 -taur 的合成意象，作为 Beogh 的种族
+    称呼；不取代 Gale Centaur 正式名“疾风半人马”。
+  - lonesome duellist → 孤高决斗者：沿用共享旧 duelist 消息的称号，
+    本次仅登记词根，不重写稳定版共享消息。Yara's Duellist Academy →
+    亚拉的决斗学院，沿用 Yara 法术名的“亚拉”；旧 Duelist 拼写只保留兼容。
+  - 微光飞镖、能量涌流及四种龙脉射线沿用 catalog，攻击显示名与
+    Dragon Vein（元素）的法术名分别登记；水灵、刀刃、蜂巢等形态短名
+    与对应派生长名同根。Scarab 保留短名“甲虫”，不把短名扩大成
+    完整形体描述“太阳圣甲虫”；Quill 形态的“刺毛”是身体特征，
+    不据此重命名已经定稿的“棘刺护符”。
+  - gift timeout → 神赐等待计数、base skill target → 基础技能目标，
+    以及 lonesome duellist 都是在完整 catalog 消息中出现的组成术语，
+    不是缺失的同名独立键。等待计数只确认 0–255 的值域；技能目标
+    表示未计加成的原始技能等级目标，不改成经验值或当前有效等级。
+- **Complete-sentence exclusions**: 以下两项实际译文与报告一致，说明完整，
+  保留在 catalog，不作为 glossary 中独立的命名术语：
+  `You are susceptible to poisons. (rPois-)`；
+  `You are highly resistant to most damage types. (rF++, rC++, rN+++, rElec, rCorr)`。
+  对应标签 poison vulnerability 与 highly resistant 已另行定稿；
+  不在术语表重复承载完整说明句，抵抗标记也不改写。
+- **Catalog revision handoff**: 其余 128 个命名／参数项沿用现有用词；
+  以下 6 项登记为本次建议／定稿译法，由 catalog 负责译者修改。
+  行号只对应同步点 `7ad933c9fb`，执行时须重新按英文键定位。
+
+| catalog 键 | 现译 | 定稿／建议修订 | 译文位置（本轮同步点） | 依据 |
+|----|----|----|----|----|
+| `ice wizardry` | 冰系施法强化 | 寒冰施法辅助 | `crawl-ref/source/dat/i18n/zh/source.txt:25187` | 与 IceWiz 同根，降低施法难度，不表示法术威力增强 |
+| `fire wizardry` | 火系施法强化 | 火焰施法辅助 | `crawl-ref/source/dat/i18n/zh/source.txt:25421` | 与 FireWiz 同根，降低施法难度，不表示法术威力增强 |
+| `unshakeable will` | 坚韧意志 | 意志不可动摇 | `crawl-ref/source/dat/i18n/zh/source.txt:25238` | 保留 unshakeable 的绝对强度，不弱化为普通坚韧 |
+| `highly resistant` | 强效抗性 | 高抗性 | `crawl-ref/source/dat/i18n/zh/source.txt:25571` | 表示多种伤害抗性较高，不套用 Might 的“强效”词根 |
+| `bat form` | 蝙蝠变形 | 蝠群变形 | `crawl-ref/source/dat/i18n/zh/source.txt:25469` | vampire fakemut 的说明明确变成一群蝙蝠，复用 batswarm-form 的蝠群词根 |
+| `sun companion` | 太阳伴侣 | 太阳伙伴 | `crawl-ref/source/dat/i18n/zh/source.txt:25403` | 指随身的太阳热球／余烬伙伴，companion 不增加伴侣的情爱关系 |
+
+- **Supersedes / narrows**: 取代 D-C-097 的 Apostate 铭文译法及该键待修要求；
+  D-C-097 的表格归属、历史缺键清单和括号工具问题不因此被撤回。
+  D-C-095 仅 bound 长名前缀改为“束缚”；其他绑定用语、
+  D-C-096 的稳定线先修／前向合并规则，以及四个龙脉括号译名保持有效。
+- **Affected files**: `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4382,3 +4460,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-095 | Upstream 0.35 trunk B0 terminology (#147) | glossary 定稿；资产与 defaults 后续实施 | active |
 | D-C-096 | B0-2 missing terms and mutagenic (#147) | 补登记；诱变词根统一，固定法术名例外；资产修订交接 | active |
 | D-C-097 | B0-3 glossary table ownership (#147) | core 接收非 catalog 词；叛教铭文保留；字面括号误报交 A3 | active |
+| D-C-098 | B0-4 shared catalog keys and registration (#147) | 叛教者／束缚对齐共享键；134项登记、6项 catalog 待修 | active |
