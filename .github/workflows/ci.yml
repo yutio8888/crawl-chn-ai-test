@@ -491,7 +491,13 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build Windows tiles package
-        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4
+        shell: bash
+        run: |
+          save_args=()
+          if [[ "$GITHUB_REF" != refs/tags/0.34.1-zh* ]]; then
+            save_args+=('SAVEDIR=~/crawl-trunk')
+          fi
+          make CROSSHOST=x86_64-w64-mingw32 "${save_args[@]}" package-windows-tiles -j4
         working-directory: crawl-ref/source
       - name: Upload Windows tiles package
         uses: actions/upload-artifact@v4

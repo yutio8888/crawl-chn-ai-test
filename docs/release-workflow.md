@@ -136,8 +136,10 @@ Android 使用固定的 `org.develz.crawl.trunk` 包名与 `Dungeon Crawl Stone 
 存档在验收前后未变化。**不得使用固定包名的 `test-android-topbar.sh` 冒烟脚本**，
 尤其不得在装有稳定版的设备上运行其 `--fresh-install`。
 
-桌面存档隔离是首个对外 trunk 标签的前置条件。Windows 便携包须解压到独立目录，
-不要覆盖稳定版目录；Linux 构建使用 `SAVEDIR='~/.crawl-trunk'`。
+桌面存档隔离是首个对外 trunk 标签的前置条件。Windows trunk 包使用
+`SAVEDIR='~/crawl-trunk'`（Windows 上的 `~` 解析到 `%APPDATA%`），存档位于
+`%APPDATA%/crawl-trunk/saves/`，不依赖启动工作目录；仍须解压到独立目录，避免覆盖
+稳定版程序。Linux 构建使用 `SAVEDIR='~/.crawl-trunk'`。
 macOS 当前默认共用 `~/Library/Application Support/Dungeon Crawl Stone Soup`，且其
 初始化顺序使 `SAVEDIR` 无法覆盖这个默认值。**在独立存档目录方案获准、实施并验证前，
 不得对外发布首个 trunk 标签**；仅传入 `SAVEDIR` 不能视为已完成隔离。
