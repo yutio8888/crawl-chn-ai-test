@@ -80,6 +80,8 @@ msc += lightmagenta:malevolent force fills
 # CN: $lightmagenta:malevolent force
 msc += lightmagenta:邪恶力量充满
 msc += lightmagenta:too known and too boring
+# Chinese translation compatibility
+msc += lightmagenta:(太熟悉|太熟知|太了解|过于熟悉).*(太无聊|过于无聊)
 
 # Less urgent, but still significant messages
 #
@@ -138,6 +140,8 @@ msc += $warning:hiss.*sand
 # CN: $warning:sand hissing
 msc += $warning:沙.*嘶嘶
 msc += $warning:sound.*rushing (water|sludge)
+# Chinese translation compatibility
+msc += $warning:(流水|污泥.*(流|涌)|流动.*污泥).*声
 msc += $warning:rusting.*drain
 # CN: $warning:rusting drain
 msc += $warning:下水道.*锈蚀
@@ -169,12 +173,20 @@ msc += $warning:rapidly growing quiet
 # CN: $warning:growing quiet
 msc += $warning:逐渐.*安静
 msc += $warning:slides (away|towards)
+# Chinese translation compatibility
+msc += $warning:滑走|滑了过来|移开了|滑开了
 msc += $warning:settles down
 # CN: $warning:settles down
 msc += $warning:平息|落定
 msc += white:There is a(n entrance| portal| gateway) to.*on this level
+# Chinese translation compatibility
+msc += white:(这个楼层|本层|这一层|此层|本楼层).*(入口|传送门|通道)|(入口|传送门|通道).*(这个楼层|本层|这一层|此层|本楼层)
 msc += white:caravan has stopped on this level
+# Chinese translation compatibility
+msc += white:商队.*(停驻|停(了)?下|停留|驻扎)
 msc += lightcyan:(There is|Found).*purified mutation catalyst
+# Chinese translation compatibility
+msc += lightcyan:(有|发现|找到).*净化诱变催化器
 
 msc += lightcyan:LOW MAGIC WARNING
 # CN: $lightcyan:low magic warning
@@ -223,6 +235,8 @@ msc += $boring:is recalled by Beogh
 # CN: $boring:recalled by Beogh
 msc += $boring:被比欧弗召回
 msc += $boring:finishes recrystalising
+# Chinese translation compatibility
+msc += $boring:(完成|结束|完毕).*重新结晶|重新结晶.*(完成|结束|完毕)
 
 # Ignore Uskayaw *** and **** power loss messages by default; they're spammy.
 msc += mute:Uskayaw will no longer force your foes to helplessly watch your dance\.
@@ -277,6 +291,8 @@ force_more_message += You feel space start to destabilise
 # Chinese translation compatibility
 force_more_message += 空间开始变得不稳定
 force_more_message += You feel the winds around you beginning to shift
+# Chinese translation compatibility
+force_more_message += 周围的风.*开始.*(转向|转变|变化|改变)
 
 ## Zot is coming!
 force_more_message += You have lingered too long
@@ -311,10 +327,14 @@ force_more_message += interdimensional caravan
 # Chinese translation compatibility
 force_more_message += 跨次元商队
 force_more_message += There is a(n entrance| portal| gateway) to.*on this level
+# Chinese translation compatibility
+force_more_message += (这个楼层|本层|这一层|此层|本楼层).*(入口|传送门|通道)|(入口|传送门|通道).*(这个楼层|本层|这一层|此层|本楼层)
 force_more_message += Beware! This is a limited time offer
 
 # Religion
 force_more_message += warns you to remove
+# Chinese translation compatibility
+force_more_message += 警告你.*(取下|卸下|摘下|脱下)
 force_more_message += press .* to convert to Beogh
 # Chinese translation compatibility
 force_more_message += 皈依比欧弗
@@ -443,6 +463,8 @@ force_more_message += deal. but finds you have enough
 # Chinese translation compatibility
 force_more_message += 你已经有足够的
 force_more_message += chain yourself with knowledge
+# Chinese translation compatibility
+force_more_message += 知识.*(束缚|锁链)|(束缚|锁链).*知识
 force_more_message += allow you to induct
 # Chinese translation compatibility
 force_more_message += 将.*纳入麾下
@@ -457,6 +479,8 @@ force_more_message += is forced to slowly start .* word of recall
 # Chinese translation compatibility
 force_more_message += 被迫.*开始.*召回术
 force_more_message += too known and too boring
+# Chinese translation compatibility
+force_more_message += (太熟悉|太熟知|太了解|过于熟悉).*(太无聊|过于无聊)
 
 # Crucible exit notification
 force_more_message += Makhleb acknowledges your contrition
