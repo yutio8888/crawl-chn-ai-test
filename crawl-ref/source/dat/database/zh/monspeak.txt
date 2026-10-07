@@ -2511,6 +2511,8 @@ Boris triumphant
 Boris riddle
 @The_monster@ 说："你竟敢拿这种琐碎问题来问一个已经破解了死亡本身的人？"
 %%%%
+## END Boris ##
+%%%%
 ############ FREDERICK ### 自负的决斗者
 Frederick
 @_Frederick_common_@
@@ -3057,9 +3059,6 @@ VISUAL:@The_monster@ 得意地一笑，露出闪亮的獠牙。
 VISUAL:@The_monster@ 比划着露出 @possessive@脖子。
 
 VISUAL:@The_monster@ 无声地嘶嘶作响。
-%%%%
-_Jory_rare_
-@The_monster@ 说："我的妻子抛弃了我，但我已经报了仇。"
 %%%%
 ############ Urug ### 半盲的独眼兽人
 Urug
@@ -5552,6 +5551,20 @@ _form_
 
 w:5
 龙
+%%%%
+_laughs_
+
+窃笑
+
+嗤嗤地笑
+
+咯咯地笑
+
+开心地大笑
+
+低声轻笑
+
+放声大笑
 %%%%
 _friendly_confused_common_
 
@@ -9815,7 +9828,7 @@ friendly Cassandra
 
 @The_monster@ 说："若你一意孤行，就连我也救不了你了。"
 
-%%%%%
+%%%%
 
 
 ############ 查克 ### 一位狂热的石头收藏家。
