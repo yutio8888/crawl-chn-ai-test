@@ -3,8 +3,8 @@
 ## Frozen boundary
 
 - Baseline: `30a4f03b6cf345f85c16ad4dcd06f0e7cb1a6725`
-- Inventory digest: `54e094fd7db4ac528187835885ff5055316ad8bec820b0ac096ba8871cecf036`
-- Glossary SHA-256: `585d5d145c6987d3f8ce789c4173aa415e4481c96821198e37cf0e00d1caa9ae`
+- Inventory digest: `11d63f79436c2c0674e1fdf731230d00796cb190e4f415e62404ead2c6edf4f2`
+- Glossary SHA-256: `61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0`
 - Frozen identities: 79
 - Method: each frozen English section was manually compared with its Chinese authoritative-source section for clauses, conditions, exceptions, consequences and terminology. The inventory check separately proves identity/order and protected-token equality.
 - Excluded: generated `zh/quickstart.txt` and `zh/crawl_manual.txt` (synchronization outputs), tutorials, developer docs, other languages and code.
@@ -12,7 +12,7 @@
 Canonical-pair SHA-256 (English / Chinese):
 
 - quickstart: `eb29701c283ceb11c81b9c49147f2489417e056e0109955540f8ba77a5164fd0` / `ff4ea00bfd4738526f9f9ab493a451ef8389e081c403150461331468e608d38b`
-- manual: `786bf0233c5e9f0c6e20e56ec037de2f16fbc3da92cb8d9a7a33dfe399a9c114` / `e18517339f13bf78c600592c54823deceee480836af78914f2a9221fce6939ad`
+- manual: `786bf0233c5e9f0c6e20e56ec037de2f16fbc3da92cb8d9a7a33dfe399a9c114` / `39918afaf42944bed29001b89cf290028323e9ef56e539b34d0483aa3dd472d5`
 - options: `33665db80d0cbc6895dc9edbfee6d17919fe85fc9c3126d3cc44a676f6b6a0c8` / `fb5a935941bb5361d7bfda001256777285d60bec9faee2397c438cd3cc0818ca`
 - macros: `f6d8c7f7446139bc95027858c4f69f86cb7d077568b34787d05a6bb742dfc92c` / `b5564ea0caf075494a549ad263a5bd18d81eba2289fb15b8ae77ca73260baa62`
 - tiles: `3a58aa97d21334974388d7c3660e64ec7e543f349169a3e5722021c8db189f6a` / `d39f5d73390f7dda716cfa55c2df8387c81d504aee1ed675a8b2a3db4ffb56a4`
@@ -45,7 +45,7 @@ Each row is one terminal card. Paths are relative to `crawl-ref/docs/`; `N/A` me
 | `guide:manual:chapter-L` | `keep` | `crawl_manual.rst:1192-1269` L. Licence, contact, history | `zh/crawl_manual.rst:893-959` L. 许可证、联系信息与历史 | Licences, source/assets split, contacts, credits, history, people and years preserved; proper names contextual. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | N/A | high |
 | `guide:manual:chapter-M` | `keep` | `crawl_manual.rst:1270-1303` M. Macros, options, performance | `zh/crawl_manual.rst:960-988` M. 宏、选项与性能 | Macro/keymap access, option files, paths and performance guidance complete; identifiers literal. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | N/A | high |
 | `guide:manual:chapter-N` | `keep` | `crawl_manual.rst:1304-1488` N. Philosophy (pas de faq) | `zh/crawl_manual.rst:989-1144` N. 设计理念 (pas de faq) | All eight design topics retain arguments, examples and qualifications; `pas de faq` preserved. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | N/A | high |
-| `guide:manual:appendix-1` | `adjust` | `crawl_manual.rst:1489-2004` 1. List of character species | `zh/crawl_manual.rst:1145-1528` 1. 角色种族列表 | Every species/draconian type retains aptitudes, traits, levels and restrictions; explicit school contexts now use 寒冰魔法、咒法系、召唤系、诅咒系 per glossary/reviewer. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | Adjusted only explicit school-name contexts in species/draconian descriptions; ordinary hex/teleport effects remain contextual. Re-enter if school terminology or source text changes. | high |
+| `guide:manual:appendix-1` | `adjust` | `crawl_manual.rst:1489-2004` 1. List of character species | `zh/crawl_manual.rst:1145-1528` 1. 角色种族列表 | Every species/draconian type retains aptitudes, traits, levels and restrictions; explicit school contexts now use 寒冰魔法、咒法系、召唤系、诅咒系 per glossary/reviewer. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 Issue #147 B2 delta2 §1：手册踩踏击退句已独立复核；79 个身份及保护 token 不变。 | Adjusted only explicit school-name contexts in species/draconian descriptions; ordinary hex/teleport effects remain contextual. Re-enter if school terminology or source text changes. | high |
 | `guide:manual:appendix-2` | `adjust` | `crawl_manual.rst:2005-2208` 2. List of character backgrounds | `zh/crawl_manual.rst:1529-1696` 2. 角色背景列表 | Every group retains starting attributes, equipment, spells and gods; explicit school contexts now use 寒冰魔法、咒法系、召唤系、诅咒系、传送系 per glossary/reviewer. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | Adjusted school labels and naturally composed school-spell phrases; background names and ordinary summon/movement wording remain unchanged. Re-enter if school terminology or source text changes. | high |
 | `guide:manual:appendix-3` | `keep` | `crawl_manual.rst:2209-2350` 3. List of skills | `zh/crawl_manual.rst:1697-1809` 3. 技能列表 | All skill groups retain governing attributes and mechanics; names follow glossary, including Evocations→魔力释放. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | N/A | high |
 | `guide:manual:appendix-4` | `keep` | `crawl_manual.rst:2351-2962` 4. List of keys and commands | `zh/crawl_manual.rst:1810-2388` 4. 按键与命令列表 | Every command group retains keys and mode-specific effects; control characters/ASCII literal. Issue #147: B2 issue147-b2-review-delta.md 的文档同步段逐 hunk 核对当前手册 8 处及选项指南 10 处；保护 token、章节身份及次序重新核验。 | N/A | high |
