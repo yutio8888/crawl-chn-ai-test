@@ -1155,14 +1155,28 @@ static void _print_stats_doom(int x, int y)
     you.redraw_doom = false;
 }
 
+int contamination_hud_clear_width(bool compact, int contamination_percent)
+{
+    const string caption = compact ? T_("Cont ") : T_("Contam: ");
+    // Keep the existing EN minimum, accounting for the actual caption and
+    // digits + %. The trailing space is already blank.
+    const string value = make_stringf("%d%%", contamination_percent);
+    return max(12, strwidth(caption) + strwidth(value));
+}
+
 static void _print_stats_contam(int x, int y)
 {
+    static int last_display_width = 12;
     CGOTOXY(x, y, GOTO_STAT);
 
     // Hide the bar entirely if the player has no contam
     if (you.magic_contamination == 0 && !Options.always_show_doom_contam)
     {
-        CPRINTF("            ");
+        const int width = max(last_display_width,
+                             contamination_hud_clear_width(_uses_compact_hud()));
+        const string blank(width, ' ');
+        CPRINTF("%s", blank.c_str());
+        last_display_width = 12;
         return;
     }
 
@@ -1175,6 +1189,7 @@ static void _print_stats_contam(int x, int y)
 
     const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                            you.magic_contamination / 10);
+    last_display_width = contamination_hud_clear_width(_uses_compact_hud(), contam);
     if (contam >= 200)
         textcolour(RED);
     else if (contam >= 100)

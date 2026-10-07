@@ -17,6 +17,7 @@
 #include "describe-god.h"
 #include "directn.h"
 #include "dungeon.h"
+#include "curse-type.h"
 #include "duration-type.h"
 #include "env.h"
 #include "english.h"
@@ -43,6 +44,7 @@
 #include "newgame.h"
 #include "notes.h"
 #include "options.h"
+#include "output.h"
 #include "player.h"
 #include "player-reacts.h"
 #include "player-save-info.h"
@@ -81,6 +83,111 @@
 string bind_random_body_part_message(string msg, bool plural);
 
 extern SkillMenu skm;
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: trunk display boundaries preserve English identities",
+                 "[zh-translation][trunk-display]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    unwind_var<species_type> species(you.species, SP_GALE_CENTAUR);
+    unwind_var<god_type> god(you.religion, GOD_BEOGH);
+    CHECK(species::child_name(you.species) == "Foal");
+    CHECK(species::orc_name(you.species) == "Orcataur");
+    CHECK(player_species_name() == T_("Orcataur"));
+    CHECK(player_species_name() != "Orcataur");
+    unwind_var<uint8_t> penance(you.penance[GOD_HEPLIAKLQANA], 0);
+    const string child_title = god_title(GOD_HEPLIAKLQANA, you.species, piety_breakpoint(0));
+    CHECK(child_title.find(T_("Foal")) != string::npos);
+    CHECK(child_title.find("Foal") == string::npos);
+    CHECK(string(potion_type_name(POT_MIST)) == C_("potion full name", "mist"));
+    CHECK(walk_verb_to_present(lowercase_first(species::walking_verb(you.species))) == "trot");
+
+    const Form *jade = get_form(transformation::jademantle);
+    CHECK(jade->short_name == "Jade");
+    CHECK(jade->wiz_name == "jademantle");
+    CHECK(jade->get_short_name() == "玉晶");
+    CHECK(jade->get_short_name() != T_("Jade"));
+    CHECK(get_form(transformation::spider)->get_uc_attack_name("DEFAULT") == T_("Fangs"));
+    CHECK(contamination_hud_clear_width(false) > 12);
+    CHECK(contamination_hud_clear_width(true) == 12);
+    CHECK(contamination_hud_clear_width(false, 1000)
+          == contamination_hud_clear_width(false) + 1);
+
+    {
+        EnTranslationFixture english;
+        CHECK(player_species_name() == "Orcataur");
+        CHECK(god_title(GOD_HEPLIAKLQANA, you.species, piety_breakpoint(0)) == "Equine Foal");
+        CHECK(string(potion_type_name(POT_MIST)) == "mist");
+        CHECK(jade->get_short_name() == "Jade");
+        CHECK(get_form(transformation::spider)->get_uc_attack_name("DEFAULT") == "Fangs");
+        CHECK(contamination_hud_clear_width(false) == 12);
+        CHECK(contamination_hud_clear_width(true) == 12);
+        CHECK(get_form(transformation::spider)->get_description(false) == "You are an agile web-spinner.");
+        CHECK(get_form(transformation::spider)->get_description(true) == "You were an agile web-spinner.");
+        CHECK(get_form(transformation::flux)->get_description(false) == "You are overflowing with transmutational energy.");
+        CHECK(get_form(transformation::flux)->get_description(true) == "You were overflowing with transmutational energy.");
+        CHECK(get_form(transformation::blade)->get_description(false) == "You have blades growing out of your body.");
+        CHECK(get_form(transformation::blade)->get_description(true) == "You had blades growing out of your body.");
+        CHECK(get_form(transformation::aqua)->get_description(false) == "Your body is made of elemental water.");
+        CHECK(get_form(transformation::aqua)->get_description(true) == "Your body was made of elemental water.");
+        CHECK(get_form(transformation::medusa)->get_description(false) == "You have a mane of long, stinging tendrils on your head.");
+        CHECK(get_form(transformation::medusa)->get_description(true) == "You had a mane of long, stinging tendrils on your head.");
+    }
+    CHECK(jade->get_short_name() == "玉晶");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Exegesis expires through the localized duration callback",
+                 "[zh-translation][trunk-display]")
+{
+    init_duration_index();
+    const auto saved_props = you.props;
+    unwinder restore_props([&saved_props]() { you.props = saved_props; });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you.props[EXEGESIS_SPELL] = SPELL_MAGIC_DART;
+        const string expected = make_stringf(
+            T_("Your divinely inspired understanding of %s fades."),
+            spell_title(SPELL_MAGIC_DART));
+        msgwin_temporary_mode temporary;
+        unwinder clear_messages([]() { msgwin_clear_temporary(); });
+        msg::tee observed;
+        duration_end_effect(DUR_EXEGESIS);
+        CHECK_FALSE(you.props.exists(EXEGESIS_SPELL));
+        CHECK(observed.get_store().find(expected) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(expected.find("Your divinely inspired") == string::npos);
+        else
+            CHECK(expected == "Your divinely inspired understanding of Magic Dart fades.");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: automatic curse inscriptions remain English save content",
+                 "[zh-translation][trunk-display]")
+{
+    const string abbreviation = curse_abbr(CURSE_MELEE);
+    CHECK(abbreviation == "Melee");
+    { EnTranslationFixture english; CHECK(curse_abbr(CURSE_MELEE) == abbreviation); }
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.pos = coord_def(-1, -1);
+    add_inscription(item, abbreviation);
+    vector<unsigned char> buffer;
+    writer output(&buffer);
+    marshallItem(output, item, true);
+    reader input(buffer);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    item_def loaded;
+    unmarshallItem(input, loaded);
+    CHECK(loaded.inscription == abbreviation);
+}
 
 TEST_CASE_METHOD(EnTranslationFixture,
                  "en: Ashenzari knowledge offers preserve complete sentences",
@@ -632,6 +739,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Issue 16 real score entries keep protocol fields English",
                  "[zh-translation][issue-16][hiscores][issue-114]")
 {
+    // Match game initialization. An all-zero lookup table aliases every
+    // duration to legacy agility; this fixture activates only Haste.
+    init_duration_index();
     unwind_var<player> restore_player(you);
     you = player();
     you.your_name = "Issue16";
@@ -665,11 +775,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(fields.str_field("title") == "Conqueror");
     CHECK(fields.str_field("maxskills") == "Fighting");
     CHECK(fields.str_field("fifteenskills") == "Fighting,Axes");
-    CHECK(fields.str_field("status") == "agile,hasted");
+    CHECK(fields.str_field("status") == "hasted");
     CHECK(raw.find("title=Conqueror") != string::npos);
     CHECK(raw.find("maxskills=Fighting") != string::npos);
     CHECK(raw.find("fifteenskills=Fighting,Axes") != string::npos);
-    CHECK(raw.find("status=agile,hasted") != string::npos);
+    CHECK(raw.find("status=hasted") != string::npos);
 
     CHECK(fields.str_field("title") != player_title(false));
     CHECK(fields.str_field("maxskills") != skill_name(SK_FIGHTING));

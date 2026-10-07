@@ -493,6 +493,24 @@ class MonsterNameSsotTests(unittest.TestCase):
             result = fixture.audit()
         self.assertEqual((), result.findings)
 
+    def test_quote_reference_keys_do_not_count_as_prose_names(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            fixture.monster("clockwork-bee.yaml", "clockwork bee", "发条蜂")
+            fixture.en_quotes["clockwork bee"] = "<Launch Clockwork Bee spell>"
+            fixture.zh_quotes["clockwork bee"] = "<Launch Clockwork Bee spell>"
+            self.assertEqual((), fixture.audit().findings)
+            # A reference alongside real prose must not hide a mismatch.
+            fixture.en_quotes["clockwork bee"] += " The clockwork bee approaches."
+            self.assertTrue(any("quotes.txt mismatch" in finding
+                                for finding in fixture.audit().findings))
+            # A name inside display colour tags is still prose.
+            fixture.en_quotes["clockwork bee"] = "<white>clockwork bee</white>"
+            self.assertTrue(any("quotes.txt mismatch" in finding
+                                for finding in fixture.audit().findings))
+            fixture.zh_quotes["clockwork bee"] = "<white>发条蜂</white>"
+            self.assertEqual((), fixture.audit().findings)
+
     def test_unexcepted_quote_mismatch_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             fixture = Fixture(Path(tmp))

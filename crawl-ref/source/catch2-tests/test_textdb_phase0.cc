@@ -1372,6 +1372,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"deep elf sorcerer", 0, 16, 0},
     {"default 'cap-g'", 0, 0, 0},
     {"default 'cap-j'", 0, 0, 0},
+    {"default 'j'", 0, 0, 0},
     {"default confused 'b'", 0, 0, 0},
     {"default confused 'r'", 0, 0, 0},
     {"default confused arachnid", 0, 0, 0},
@@ -1474,7 +1475,8 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"friendly '5'", 1, 0, 0},
     {"friendly cognitogaunt", 0, 0, 0},
     {"friendly donald", 0, 0, 0},
-    {"friendly good god 'cap-a'", 1, 0, 1},
+    {"friendly good god 'cap-a'", 0, 0, 1},
+    {"friendly good god 'Å'", 0, 0, 1},
     {"friendly hound", 0, 0, 0},
     {"friendly hound", 1, 0, 0},
     {"friendly hound", 2, 0, 0},
@@ -1510,6 +1512,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"goblin sharper", 1, 0, 0},
     {"goblin sharper", 2, 0, 0},
     {"goblin sharper", 3, 0, 0},
+    {"goji", 3, 0, 0},
+    {"goji", 3, 1, 0},
+    {"goji", 4, 0, 0},
+    {"goji", 4, 1, 0},
+    {"goji", 5, 0, 0},
+    {"goji", 5, 1, 0},
+    {"goji", 6, 0, 0},
     {"gozag donald", 0, 0, 0},
     {"gozag frederick triumphant", 1, 0, 0},
     {"gozag player ghost", 0, 0, 0},
@@ -1634,6 +1643,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"nergalle", 2, 0, 0},
     {"nergalle", 3, 0, 0},
     {"neutral good god 'cap-a'", 1, 0, 1},
+    {"neutral good god 'Å'", 1, 0, 1},
     {"no god donald", 0, 0, 0},
     {"norris", 0, 0, 0},
     {"norris", 1, 0, 0},
@@ -2659,7 +2669,10 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                              + to_string(position.branch) + "\n"
                              + to_string(position.line));
     }
-    REQUIRE(frozen_visual.size() == 912);
+    // Same 12 audited tuple changes as scan_i18n (98c1cf45de):
+    // glyph migration 10c3989740 and Goji b1db55a0c2.
+    // C++ TextDB keeps U+00C5 in keys; Python's casefold spells it U+00E5.
+    REQUIRE(frozen_visual.size() == 922);
     set<string> derived_visual;
     for (const textdb_phase0::canonical_entry &entry : english.entries)
     {

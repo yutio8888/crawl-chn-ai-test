@@ -1473,7 +1473,7 @@ static string _curse_desc()
 
     return T_("\nIf you bind an item with this ritual Ashenzari will enhance "
            "the following skills:\n")
-           +  desc_curse_skills(curses) + ".";
+           +  desc_curse_skills(curses) + T_(".");
 }
 
 static string _desc_sac_mut(const CrawlStoreValue &mut_store)
