@@ -245,6 +245,38 @@ class HintInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "unparsed hint call shape"):
             MODULE.build_payload_from_blobs(BASELINE, blobs)
 
+    def test_trunk_externalized_literal_and_cloud_hint_producers(self):
+        cc = (ROOT / MODULE.HINTS_CC).read_bytes()
+        en = (ROOT / MODULE.HINTS_EN).read_bytes()
+        keys, facts = MODULE.extract_producers(cc, en)
+        cloud_keys = {
+            "hint_describe_" + kind + "_cloud_" + number
+            for kind in ("harmless", "harmful", "currently_harmless")
+            for number in ("plural", "singular")
+        }
+        self.assertTrue(cloud_keys <= set(keys))
+        for key in cloud_keys:
+            self.assertEqual("finite-selector", facts[key][0]["kind"])
+        self.assertEqual("literal", facts["hint_on_fire"][0]["kind"])
+        en_keys = {MODULE.lowercase_string(entry.raw_key)
+                   for entry in MODULE.parse_db_keys(en.decode(), MODULE.HINTS_EN)}
+        self.assertTrue(set(keys) <= en_keys)
+
+    def test_trunk_cloud_selector_and_database_mutations_fail_closed(self):
+        cc = (ROOT / MODULE.HINTS_CC).read_bytes()
+        en = (ROOT / MODULE.HINTS_EN).read_bytes()
+        mutations = (
+            (cc.replace(b'"HINT_DESCRIBE_HARMLESS_CLOUD_PLURAL"', b'dynamic_key'), en),
+            (cc.replace(b'is_damaging_cloud(ctype, true)', b'unknown_selector(ctype)'), en),
+            (cc + b'\n_get_hint(hint_key, apply_description(DESC_THE, cname));', en),
+            (cc.replace(b'_get_hint(hint_key,', b'_get_hint(other_key,'), en),
+            (cc, en.replace(b'HINT_DESCRIBE_HARMLESS_CLOUD_PLURAL', b'REMOVED_KEY')),
+        )
+        for mutated_cc, mutated_en in mutations:
+            with self.subTest(cc=mutated_cc != cc, en=mutated_en != en):
+                with self.assertRaises(RuntimeError):
+                    MODULE.extract_producers(mutated_cc, mutated_en)
+
     def test_lifecycle_sources_are_exact_and_fail_closed(self):
         mutations = (
             (
