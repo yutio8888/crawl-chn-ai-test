@@ -25166,7 +25166,7 @@ quill-form
 刺毛形态
 %%%%
 covered in sharp quills.
-浑身长满尖锐的刺毛。
+一个浑身长满尖锐刺毛的生物。
 %%%%
 Quill Dmg
 刺毛伤害
@@ -31879,10 +31879,10 @@ attack will deal greatly increased damage and also cleave into targets an extra
 攻击会造成大幅增加的伤害，并能劈砍额外一格
 %%%%
 space away. This effect charges faster and partially retains its charge between
-距离外的目标。此效果会更快蓄能，并在两次
+距离外的目标。狂暴时，此效果蓄能更快，并能在两次
 %%%%
 attacks while you are berserk.
-攻击之间保留部分蓄能，前提是你处于狂暴状态。
+攻击之间保留部分蓄能。
 %%%%
 It inflicts powerful necromantic curses on any foe it strikes.
 它会对击中的任何敌人施加威力强大的死灵诅咒。
@@ -31942,7 +31942,7 @@ Equipping it will reduce your piety. While worn, you gain piety at three quarter
 装备它会降低你的虔诚值。佩戴期间，你获得虔诚值的速率为正常速率的四分之三。
 %%%%
 It may create clouds of spectral mist when the wearer attacks or casts spells, and grants immunity from such clouds. Necromancy spells have a greater chance to produce spectral mist.
-穿戴者攻击或施法时，它可能产生幽魂雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽魂雾气的几率更高。
+穿戴者攻击或施法时，它可能产生幽灵雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽灵雾气的几率更高。
 %%%%
 You hear the sound of rushing water.
 你听到了流水声。
