@@ -136,14 +136,25 @@ Android 使用固定的 `org.develz.crawl.trunk` 包名与 `Dungeon Crawl Stone 
 存档在验收前后未变化。**不得使用固定包名的 `test-android-topbar.sh` 冒烟脚本**，
 尤其不得在装有稳定版的设备上运行其 `--fresh-install`。
 
-桌面存档隔离是首个对外 trunk 标签的前置条件。Windows trunk 包使用
-`SAVEDIR='~/crawl-trunk'`（Windows 上的 `~` 解析到 `%APPDATA%`），存档位于
-`%APPDATA%/crawl-trunk/saves/`，不依赖启动工作目录；仍须解压到独立目录，避免覆盖
-稳定版程序。Linux 构建使用 `SAVEDIR='~/.crawl-trunk'`。
-macOS 当前默认共用 `~/Library/Application Support/Dungeon Crawl Stone Soup`，且其
-初始化顺序使 `SAVEDIR` 无法覆盖这个默认值。**在独立存档目录方案获准、实施并验证前，
-不得对外发布首个 trunk 标签**；仅传入 `SAVEDIR` 不能视为已完成隔离。
-macOS 还须使用独立应用包名称，避免拖入 Applications 时覆盖稳定版应用。
+各平台 trunk 的默认存档隔离已在构建参数中实施：
+
+| 平台 | trunk 存档位置 |
+|---|---|
+| Windows | `%APPDATA%/crawl-trunk/saves/`，通过 `SAVEDIR='~/crawl-trunk'` 指定 |
+| Linux | `~/.crawl-trunk/saves/`，通过 `SAVEDIR='~/.crawl-trunk'` 指定 |
+| macOS | `~/.crawl-trunk/saves/`，通过 `SAVEDIR='~/.crawl-trunk'` 指定 |
+| Android | 应用专属外部文件目录下的 `saves/`，通常为 `Android/data/org.develz.crawl.trunk/files/saves/` |
+
+Windows 上的 `~` 解析到 `%APPDATA%`；Linux/macOS 在运行时解析到用户主目录，
+不依赖启动工作目录。macOS 显式构建路径优先于默认 Application Support 路径；
+未定义 `SAVE_DIR_PATH` 的构建继续使用原来的默认行为。Windows 包仍须解压到独立目录，
+避免覆盖稳定版程序。
+
+macOS trunk 的应用包为 `Dungeon Crawl Stone Soup Trunk - Tiles.app`，
+bundle identifier 为 `net.sourceforge.crawl-ref.trunk`，可与稳定版同时放入
+`/Applications`。通过 `APP_NAME` 和 `BUNDLE_IDENTIFIER` 构建参数生成名称和同一份 plist；
+两项默认值保持稳定版原样。CI 仅在非 `0.34.1-zh*` 标签构建中传入 macOS/Windows
+隔离参数。首个公开 trunk 预发布仍须完成人工存读档及并存安装验收。
 
 ## 本地校验
 
