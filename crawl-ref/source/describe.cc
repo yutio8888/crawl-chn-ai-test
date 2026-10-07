@@ -7357,8 +7357,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     // check item use to exclude ranged dancing weapons, who will fire in melee
     // range, but don't really "use" a weapon.
     if (mons_class_flag(mi.type, M_PREFER_RANGED) && mi.itemuse() > MONUSE_OPEN_DOORS)
+    {
         result << make_stringf(T_("%s can use ranged and thrown weapons in melee range.\n"),
                                uppercase_first(pronoun).c_str());
+    }
 
     if (mons_class_flag(mi.type, M_ACID_SPLASH))
     {

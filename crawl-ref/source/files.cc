@@ -3254,7 +3254,7 @@ static const char *_type_name_with_article_display(game_type type)
 }
 
 // The translated values above do not include English articles, while the
-// English fallback does.  This display-only helper supplies the noun phrase
+// English fallback does. This display-only helper supplies the noun phrase
 // expected by messages which already provide their own article.
 static string _type_name_without_article_display(game_type type)
 {

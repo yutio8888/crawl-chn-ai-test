@@ -302,7 +302,9 @@ static string _item_subtype(const item_def& item, bool armour_slots)
 {
     if (item.base_type != OBJ_WEAPONS && item.base_type != OBJ_ARMOUR
         && !item.is_identified())
+    {
         return "";
+    }
 
     // Special-case OBJ_ARMOUR behavior to maintain compatibility with
     // existing scripts.

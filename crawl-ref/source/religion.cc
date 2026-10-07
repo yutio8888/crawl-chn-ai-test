@@ -3411,13 +3411,9 @@ string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_
         const int fee = gozag_service_fee();
         string reason = god + T_(" does not accept service from beggars like you!") + " ";
         if (you.gold == 0)
-        {
             reason += make_stringf(T_("The service fee for joining is currently %d gold; you have none."), fee);
-        }
         else
-        {
             reason += make_stringf(T_("The service fee for joining is currently %d gold; you only have %d."), fee, you.gold);
-        }
         return reason;
     }
 
@@ -3430,9 +3426,7 @@ string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_
     if (include_temp && !transformed_player_can_join_god(which_god) && check_gear)
     {
         if (which_god == GOD_OKAWARU)
-        {
             return god + T_(" says: You must forswear the aid of any and all before you are fit to worship.");
-        }
         return god + T_(" says: How dare you approach in such a loathsome form!");
     }
 

@@ -520,8 +520,10 @@ void ImprintDelay::start()
 void TransformDelay::start()
 {
     if (form == transformation::none)
+    {
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin untransforming."));
+    }
     else
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin transforming."));

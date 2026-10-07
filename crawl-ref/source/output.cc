@@ -2493,17 +2493,23 @@ string mpr_monster_list(bool past)
     get_nearby_monster_info(mons, &invis_mons);
 
     if (mons.empty() && invis_mons.empty())
+    {
         return past ? T_("There were no monsters in sight!")
                     : T_("There are no monsters in sight!");
+    }
 
     const string visible = _describe_from_list("", mons);
     const string invisible = _describe_from_list("", invis_mons);
     if (invisible.empty())
+    {
         return make_stringf(past ? T_("You could see %s.")
                                 : T_("You can see %s."), visible.c_str());
+    }
     if (visible.empty())
+    {
         return make_stringf(past ? T_("You were aware of %s.")
                                 : T_("You are aware of %s."), invisible.c_str());
+    }
     return make_stringf(past ? T_("You could see %s and were aware of %s.")
                             : T_("You can see %s and are aware of %s."),
                         visible.c_str(), invisible.c_str());

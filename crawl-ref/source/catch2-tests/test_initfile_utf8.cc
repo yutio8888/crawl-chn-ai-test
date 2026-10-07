@@ -82,7 +82,9 @@ TEST_CASE("All bundled menu colour rules parse in both languages",
         for (string line; std::getline(file, line); )
             if (starts_with(trim_string(line), "menu +=")
                 || starts_with(line, "menu_colour +="))
+            {
                 ++rule_count;
+            }
         REQUIRE(rule_count > 0);
         REQUIRE(options.menu_colour_mappings.size() == builtin_count + rule_count);
         for (const colour_mapping &rule : options.menu_colour_mappings)

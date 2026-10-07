@@ -386,9 +386,7 @@ static bool _sack_of_spiders()
 
     const bool made_mons = _spill_out_spiders();
     if (made_mons)
-    {
         mpr(T_("...and things crawl out!"));
-    }
 
     const bool webbed = _place_webs();
     if (!made_mons && !webbed)
@@ -398,9 +396,7 @@ static bool _sack_of_spiders()
     }
 
     if (!made_mons)
-    {
         mpr(T_("...but only cobwebs fall out."));
-    }
     return true;
 }
 
@@ -489,13 +485,9 @@ void wind_blast(actor* agent, int pow, coord_def target)
     {
         // Nemelex card only.
         if (pow > 120)
-        {
             mpr(T_("A mighty gale blasts forth from the card!"));
-        }
         else
-        {
             mpr(T_("A fierce wind blows from the card."));
-        }
     }
 
     noisy(8, agent->pos());

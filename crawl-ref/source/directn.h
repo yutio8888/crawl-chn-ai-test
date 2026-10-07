@@ -369,7 +369,7 @@ void describe_floor();
 void _walk_on_decor(dungeon_feature_type new_grid);
 
 // Which branch of the decorlines food-cache fallback chain resolved a
-// lookup.  The hit is production evidence: a reverted (localized) species
+// lookup. The hit is production evidence: a reverted (localized) species
 // prefix silently falls back to the generic line, which only a hit check
 // can distinguish from a real species match.
 enum class decor_cache_hit

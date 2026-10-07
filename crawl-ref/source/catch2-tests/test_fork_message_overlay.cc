@@ -739,8 +739,10 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
             canonical_entry_by_key(canonical, key);
             CHECK_FALSE(monspell_overlay_covers(key));
             for (const char *language : { "en", "zh" })
+            {
                 CHECK(route_monspell_message(key, language).route
                       == message_route::LEGACY);
+            }
         }
         CHECK(monspell_overlay_report().state == domain_state::ENABLED);
     }
@@ -1679,9 +1681,7 @@ TEST_CASE("production candidate state machine preserves speech search semantics"
             CHECK(search.lookup_count == 1);
             CHECK(calls == 1);
             if (item.first == message_result::CORRUPT)
-            {
                 CHECK(monspell_overlay_diagnostics().overlay_corrupt >= 1);
-            }
         }
     }
 
@@ -2879,8 +2879,10 @@ TEST_CASE("third Phase 2 batch has exact Chinese catalog goldens",
         for (size_t relation = 0; relation < relation_count; ++relation)
         {
             if (item.resolves_target)
+            {
                 materialized.binding.values.target.relation =
                     relations[relation];
+            }
             const render_result zh =
                 render_materialized_candidate(materialized, "zh");
             REQUIRE(zh.result == message_result::RENDERED);

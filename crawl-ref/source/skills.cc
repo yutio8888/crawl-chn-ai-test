@@ -349,8 +349,10 @@ static void _change_skill_level(skill_type exsk, int n)
         if (specify_base)
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill increases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill decreases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
@@ -358,8 +360,10 @@ static void _change_skill_level(skill_type exsk, int n)
         else
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill increases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill decreases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
@@ -370,8 +374,10 @@ static void _change_skill_level(skill_type exsk, int n)
         if (specify_base)
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill gained %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill lost %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
@@ -379,8 +385,10 @@ static void _change_skill_level(skill_type exsk, int n)
         else
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill gained %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill lost %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
@@ -1317,8 +1325,10 @@ static bool _check_training_target(skill_type sk, bool base)
         else
             you.train_alt[sk] = you.train[sk] = TRAINING_DISABLED;
         if (base)
+        {
             mprf(T_("Base training target %d.%d for %s reached!"),
                  targ / 10, targ % 10, skill_name(sk));
+        }
         else
             mprf(T_("Training target %d.%d for %s reached!"),
                  targ / 10, targ % 10, skill_name(sk));

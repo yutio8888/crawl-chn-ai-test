@@ -716,9 +716,7 @@ void beogh_recruit_apostle()
         if (!you.can_see(*real))
         {
             if (try_recall(real->mid))
-            {
                 msg += make_stringf(T_("Beogh recalls %s to your side and "), real->name(DESC_THE, true).c_str());
-            }
         }
     }
     // Apostle died before we could recruit them

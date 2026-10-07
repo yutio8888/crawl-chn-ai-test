@@ -644,8 +644,10 @@ static void _describe_book(const spellbook_contents &book,
                   + chop_string(T_("Type"), school_column_width)
                   + chop_string(T_("Level"), level_column_width)).c_str());
         if (crawl_state.need_save)
+        {
             description.cprintf("%s",
                                 chop_string(T_("Known"), known_column_width).c_str());
+        }
     }
     description.cprintf("\n");
 
@@ -685,11 +687,11 @@ static void _describe_book(const spellbook_contents &book,
         const int effect_len = strwidth(effect_str);
         const int range_len = range_str.empty() ? 0 : 3;
         const int effect_range_space = effect_len && range_len ? 1 : 0;
-        // Monster spellbooks are rendered as two columns.  The historical
+        // Monster spellbooks are rendered as two columns. The historical
         // 32-column budget leaves no room for the popup's horizontal margins
         // once CJK spell names consume two display columns per character;
         // the generic tile text wrapper then breaks the second column in the
-        // middle of its range (e.g. moving "(7)" to the next line).  Keep a
+        // middle of its range (e.g. moving "(7)" to the next line). Keep a
         // small safety margin for the two-column layout.
         const int content_width = doublecolumn
                                   ? monster_spell_content_width
@@ -724,7 +726,7 @@ static void _describe_book(const spellbook_contents &book,
         if (doublecolumn && first_line_element)
         {
             // Pad the complete first cell to a fixed display width so every
-            // second-column entry starts at the same x position.  Use the
+            // second-column entry starts at the same x position. Use the
             // parsed text width because range_str may contain colour tags.
             const int target_width = content_width + spell_entry_prefix_width;
             const int padding = target_width - strwidth(spell_entry.tostring());

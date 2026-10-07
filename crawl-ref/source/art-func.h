@@ -1816,8 +1816,10 @@ static void _FISTICLOAK_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
         _equip_mpr(show_msgs, getSpeakString("fungus thoughts").c_str());
 
         if (you_worship(GOD_FEDHAS))
+        {
             god_speaks(GOD_FEDHAS,
                        T_("Fedhas smiles on your commitment to the cycle of life."));
+        }
     }
 }
 

@@ -3917,12 +3917,16 @@ spret cast_searing_ray(actor& agent, int pow, bolt &beam, bool fail)
 
     // Announce lock-on, if this causes one.
     if (targ && !beam.aimed_at_spot && agent.is_player())
+    {
         mprf(T_("You focus your ray upon %s."),
              targ->name(DESC_THE).c_str());
+    }
 
     if (agent.is_player())
+    {
         start_channelling_spell(SPELL_SEARING_RAY,
             T_("maintain the ray"));
+    }
     else
     {
         int dur = min(3 + pow / 60, 5);
@@ -3998,8 +4002,10 @@ bool handle_searing_ray(actor& agent, int turn)
         mon_enchant me = mons->get_ench(ENCH_CHANNEL_SEARING_RAY);
         mons->lose_ench_duration(me, 1);
         if (!mons->has_ench(ENCH_CHANNEL_SEARING_RAY))
+        {
             simple_monster_message(*mons,
                 T_(" finishes channelling their searing ray."));
+        }
     }
 
     return true;

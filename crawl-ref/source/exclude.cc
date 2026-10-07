@@ -550,8 +550,10 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
         if (exc->desc.empty() && defer_updates)
         {
             if (cloud_struct* cloud = cloud_at(p))
+            {
                 exc->desc = make_stringf(T_("%s cloud"),
                                          cloud->cloud_name(true).c_str());
+            }
         }
         else if (exc->radius == radius)
             return;

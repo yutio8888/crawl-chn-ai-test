@@ -26,7 +26,7 @@ if [[ "${1:-}" == "--fetch-upstream-tags" && $# == 1 ]]; then
         fi
     done <<< "$refs"
     [[ ${#refspecs[@]} -gt 0 ]] || die "upstream alpha tag list is empty"
-    git fetch --no-tags "$upstream_url" "${refspecs[@]}" \
+    git fetch --no-tags --no-recurse-submodules "$upstream_url" "${refspecs[@]}" \
         || die "failed to fetch upstream alpha tags"
 elif [[ $# != 0 ]]; then
     die "usage: ensure_version_info.sh [--fetch-upstream-tags]"
@@ -47,7 +47,7 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     # actions/checkout can replace an annotated tag ref with a lightweight ref
     # to its commit. Restore the exact remote tag object before git describe is
     # used by the Makefile and util/gen_ver.pl.
-    git fetch --force --no-tags origin \
+    git fetch --force --no-tags --no-recurse-submodules origin \
         "refs/tags/$tag:refs/tags/$tag" \
         || die "failed to fetch release tag $tag from origin"
 

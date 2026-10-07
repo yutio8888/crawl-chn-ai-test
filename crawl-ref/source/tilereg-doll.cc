@@ -284,8 +284,10 @@ void DollEditRegion::render()
         const char *sel = (m_cat_idx == i) ? "->" : "  ";
 
         if (part == TILEP_SHOW_EQUIP)
+        {
             info_str = make_stringf(T_("%2s%9s: (show equip)"),
                                     sel, cat_name[i]);
+        }
         else if (!part)
             info_str = make_stringf(T_("%2s%9s: (none)"), sel, cat_name[i]);
         else

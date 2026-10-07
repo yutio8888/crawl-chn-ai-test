@@ -5712,8 +5712,10 @@ TEST_CASE("issue147: real summoning messages preserve upstream English and ZH ar
             CHECK_FALSE(rule_mixed_cn_en(expected));
             CHECK_FALSE(rule_format_broken(messages.get_store(), ""));
             if (case_index < 2)
+            {
                 CHECK(messages.get_store().find(case_index == 0 ? "foxfire" : "marshlight")
                       == string::npos);
+            }
         }
     }
 }

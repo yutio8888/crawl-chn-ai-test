@@ -872,8 +872,10 @@ static void _draw_stack(int to_stack)
             status = string(T_("<lightred>That deck is empty!</lightred>")) + " ";
 
         if (stack.size() > 0)
+        {
             status += make_stringf(T_("Drawn so far: %s"),
                                    stack_contents().c_str());
+        }
         deck_menu.set_more(formatted_string::parse_string(
                    status + "\n" +
                    T_("Press '<w>!</w>' or '<w>?</w>' to toggle "

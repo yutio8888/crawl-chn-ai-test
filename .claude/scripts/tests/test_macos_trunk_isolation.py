@@ -38,6 +38,10 @@ class MacosIsolationTest(unittest.TestCase):
         self.assertIsNotNone(compiler, 'C++ compiler required for save-path checks')
         init = (SOURCE / 'initfile.cc').read_text()
         files = (SOURCE / 'files.cc').read_text()
+        platform = (SOURCE / 'platform.h').read_text()
+        windows_cleanup = platform[
+            platform.index('#if defined(TARGET_OS_WINDOWS) && !TARGET_OS_WINDOWS'):
+            platform.index('#if defined(TARGET_OS_LINUX) && !TARGET_OS_LINUX')]
         catpath = files[files.index('string catpath('):files.index('// Given a relative path')]
         helpers = init[init.index('static string _user_home_dir()'):
                        init.index('\n#endif\n\nstatic string _get_save_path')]
@@ -50,6 +54,11 @@ class MacosIsolationTest(unittest.TestCase):
         # small environment structure and charset stub needed by this slice.
         (self.work / 'paths.cc').write_text(
             '#include <string>\n#include <cstdlib>\n#include <iostream>\n'
+            # Apple headers define TARGET_OS_WINDOWS to zero. Mirror the
+            # production cleanup after headers, before the extracted #ifdef.
+            + windows_cleanup
+            + '#undef TARGET_OS_MACOSX\n#ifdef TEST_MACOSX\n'
+              '#define TARGET_OS_MACOSX\n#endif\n'
             'using std::string;\n#define FILE_SEPARATOR \'/\'\n'
             '#define CRAWL "Dungeon Crawl Stone Soup"\n'
             'struct { string crawl_name, crawl_dir; } SysEnv;\n'
@@ -60,28 +69,39 @@ class MacosIsolationTest(unittest.TestCase):
         (self.work / 'Makefile').write_text(
             'all: default-mac trunk-mac trunk-linux\n'
             'default-mac: paths.cc\n'
-            '\t$(CXX) -std=c++17 -DTARGET_OS_MACOSX $< -o $@\n'
+            '\t$(CXX) $(CPPFLAGS) -std=c++17 -DTEST_MACOSX $< -o $@\n'
             'trunk-mac: paths.cc\n'
-            '\t$(CXX) -std=c++17 -DTARGET_OS_MACOSX '
+            '\t$(CXX) $(CPPFLAGS) -std=c++17 -DTEST_MACOSX '
             '-DSAVE_DIR_PATH=\\\"~/.crawl-trunk\\\" $< -o $@\n'
             'trunk-linux: paths.cc\n'
-            '\t$(CXX) -std=c++17 -DSAVE_DIR_PATH=\\\"~/.crawl-trunk\\\" $< -o $@\n')
-        self.command(['make', '-j4', f'CXX={compiler}'], cwd=self.work)
+            '\t$(CXX) $(CPPFLAGS) -std=c++17 -DSAVE_DIR_PATH=\\\"~/.crawl-trunk\\\" $< -o $@\n')
         env = os.environ.copy()
         env.pop('CRAWL_DIR', None)
         user_home = env['HOME']
-        for binary, expected in (
+        configurations = (
             ('default-mac', f'{user_home}/Library/Application Support/{STABLE_APP}/saves/'),
             ('trunk-mac', f'{user_home}/.crawl-trunk/saves/'),
             ('trunk-linux', f'{user_home}/.crawl-trunk/saves/'),
-        ):
-            with self.subTest(binary=binary):
-                self.assertEqual(expected, self.command([str(self.work / binary)], env=env))
-        env['CRAWL_DIR'] = str(self.work / 'explicit-user-path')
-        for binary in ('default-mac', 'trunk-mac'):
-            with self.subTest(binary=binary, override=True):
-                self.assertEqual(env['CRAWL_DIR'] + '/saves/',
-                                 self.command([str(self.work / binary)], env=env))
+        )
+        compilers = [compiler]
+        clang = shutil.which('clang++')
+        if clang and clang != compiler:
+            compilers.append(clang)
+        for cxx in compilers:
+            for flags in ('', '-DTARGET_OS_WINDOWS=0 -DTARGET_OS_LINUX=0'):
+                with self.subTest(compiler=cxx, headers=flags):
+                    self.command(['make', '-B', '-j4', f'CXX={cxx}',
+                                  f'CPPFLAGS={flags}'], cwd=self.work)
+                    env.pop('CRAWL_DIR', None)
+                    for binary, expected in configurations:
+                        with self.subTest(binary=binary):
+                            self.assertEqual(expected, self.command(
+                                [str(self.work / binary)], env=env))
+                    env['CRAWL_DIR'] = str(self.work / 'explicit-user-path')
+                    for binary in ('default-mac', 'trunk-mac'):
+                        with self.subTest(binary=binary, override=True):
+                            self.assertEqual(env['CRAWL_DIR'] + '/saves/',
+                                             self.command([str(self.work / binary)], env=env))
 
     def test_bundle_dry_run_and_generated_plist(self):
         probe = self.work / 'probe.mk'

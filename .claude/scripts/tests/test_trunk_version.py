@@ -211,6 +211,58 @@ class TrunkVersionTest(unittest.TestCase):
         self.git('config', f'url.{self.root / "missing"}.insteadOf', 'https://github.com/crawl/crawl')
         self.assertIn('failed to list upstream', self.ensure(fetch=True, ok=False).stderr)
 
+    def test_upstream_tags_ignore_unavailable_initialized_submodule_commit(self):
+        child = self.root / 'child'
+        child.mkdir()
+        child_remote = self.root / 'child.git'
+        self.run_cmd(['git', 'init', '-q', str(child)])
+        for key, value in (('user.name', 'Version test'),
+                           ('user.email', 'version@example.invalid')):
+            self.run_cmd(['git', 'config', key, value], cwd=child)
+        self.run_cmd(['git', 'commit', '--allow-empty', '-qm', 'published'], cwd=child)
+        self.run_cmd(['git', 'clone', '-q', '--bare', str(child), str(child_remote)])
+        self.git('-c', 'protocol.file.allow=always', 'submodule', 'add',
+                 '-q', str(child_remote), 'vendor')
+        self.git('commit', '-qam', 'initialized submodule')
+        self.tag('0.35-a0')
+        self.git('push', '-q', 'origin', 'HEAD:refs/heads/main')
+
+        checkouts = []
+        for label in ('recursive', 'tags-only'):
+            checkout = self.root / label
+            self.run_cmd(['git', 'clone', '-q', '--branch', 'main',
+                          str(self.remote), str(checkout)])
+            self.run_cmd(['git', '-c', 'protocol.file.allow=always', 'submodule',
+                          'update', '--init'], cwd=checkout)
+            self.run_cmd(['git', 'config', 'fetch.recurseSubmodules', 'true'], cwd=checkout)
+            self.run_cmd(['git', 'config', f'url.{self.remote}.insteadOf',
+                          'https://github.com/crawl/crawl'], cwd=checkout)
+            # Verify this is an initialized checkout, not just a .gitmodules fixture.
+            self.assertTrue((checkout / 'vendor/.git').is_file())
+            self.run_cmd(['git', 'rev-parse', '--verify', 'HEAD'], cwd=checkout / 'vendor')
+            checkouts.append(checkout)
+
+        self.run_cmd(['git', 'commit', '--allow-empty', '-qm', 'unpublished'], cwd=child)
+        missing = self.run_cmd(['git', 'rev-parse', 'HEAD'], cwd=child).stdout.strip()
+        self.run_cmd(['git', 'cat-file', '-e', missing], cwd=child_remote, ok=False)
+        self.git('update-index', '--cacheinfo', f'160000,{missing},vendor')
+        self.git('commit', '-qm', 'upstream references unavailable submodule commit')
+        self.tag('0.35-a1')
+
+        # Reproduce CI with the previous command, including its fail-closed error.
+        old_helper = self.root / 'recursive-ensure.sh'
+        old_helper.write_text(ENSURE.read_text().replace(' --no-recurse-submodules', ''))
+        failed = self.run_cmd(['bash', str(old_helper), '--fetch-upstream-tags'],
+                              cwd=checkouts[0], ok=False)
+        self.assertIn(missing, failed.stderr)
+        self.assertIn('not our ref', failed.stderr)
+        self.assertIn('failed to fetch upstream alpha tags', failed.stderr)
+        self.run_cmd(['bash', str(ENSURE), '--fetch-upstream-tags'], cwd=checkouts[1])
+        self.assertEqual('tag', self.run_cmd(['git', 'cat-file', '-t', '0.35-a1'],
+                                           cwd=checkouts[1]).stdout.strip())
+        self.assertEqual('0.35-a0\n',
+                         (checkouts[1] / 'crawl-ref/source/util/release_ver').read_text())
+
     def test_source_bundle_without_git_preserves_trunk_version(self):
         bundle = self.root / 'bundle'
         bundle.mkdir()

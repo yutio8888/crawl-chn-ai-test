@@ -4301,8 +4301,10 @@ void bolt::affect_player()
         if (real_flavour == BEAM_RANDOM)
         {
             if (hit_verb.empty())
+            {
                 hit_verb = engulfs ? (T_("engulfs"))
                                    : (T_("hits"));
+            }
             const string beam_name = _beam_display_name(*this);
             mprf(T_("The %s %s %s!"),
                  beam_name.c_str(), T_(hit_verb.c_str()),
@@ -5597,8 +5599,10 @@ void bolt::affect_monster(monster* mon)
         if (real_flavour == BEAM_RANDOM)
         {
             if (hit_verb.empty())
+            {
                 hit_verb = engulfs ? (T_("engulfs"))
                                    : (T_("hits"));
+            }
             if (you.see_cell(mon->pos()))
             {
                 mprf(T_("The %s %s %s."),

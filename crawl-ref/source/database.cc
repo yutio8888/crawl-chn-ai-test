@@ -904,7 +904,7 @@ _materialize_canonical_entries(const effective_textdb_entries &effective)
 }
 
 // Parameterized phase-0 dump core shared by the SpeakDB, MiscDB and ShoutDB
-// typed wrappers below.  Provenance cannot be recovered from DBM, so the
+// typed wrappers below. Provenance cannot be recovered from DBM, so the
 // canonical dump re-reads the production input sequence of the given TextDB.
 // The speak wrappers keep their exact public signatures and byte-identical
 // output; only database_name and the input family differ for misc/shout.

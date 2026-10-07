@@ -45,7 +45,7 @@ string god_prayer_reaction()
         (rank == 2) ? T_("aware of your devotion")
                     : T_("noncommittal");
 
-    // Chinese does not need a copula here.  Keep the full sentence in one
+    // Chinese does not need a copula here. Keep the full sentence in one
     // translatable template so a translated character dump never displays
     // the English "is" or "was" between the deity and its reaction.
     return make_stringf(crawl_state.player_is_dead()

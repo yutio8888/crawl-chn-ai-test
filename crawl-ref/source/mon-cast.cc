@@ -1915,9 +1915,7 @@ static void _cast_siphon_essence(monster &caster, mon_spell_slot, bolt&)
                  caster.name(DESC_THE).c_str());
         }
         else
-        {
             mpr(T_("Stolen life floods into an unseen void!"));
-        }
     }
 }
 
@@ -6969,13 +6967,9 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
     else if (sleep_pow >= MIN_DREAM_SUCCESS_POWER)
     {
         if (num_sheep == 1)
-        {
             message = T_("The dream sheep shakes its wool and sparkles.");
-        }
         else
-        {
             message = T_("The dream sheep shake their wool and sparkle.");
-        }
     }
     else // if sleep fails
     {
@@ -9336,8 +9330,10 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         bindings.actor.god_indefinite_en = english_god.indefinite_display;
         bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);
         if (requirements.resolves_target)
+        {
             bindings.target.canonical_en =
                 _canonical_target_display(target, mon);
+        }
         if (requirements.needs_foe && foe)
         {
             bindings.foe.canonical_en = _overlay_foe_display(*foe);

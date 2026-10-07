@@ -3448,9 +3448,11 @@ void seen_item(item_def &item)
             {
                 held = &you.inv[i];
                 if (held->quantity > 1)
+                {
                     mprf(T_("You learned that %s are actually %s."),
                             held->name(DESC_YOUR).c_str(),
                             held->name(DESC_A, false, true).c_str());
+                }
                 else
                     mprf(T_("You learned that %s is actually %s."),
                             held->name(DESC_YOUR).c_str(),

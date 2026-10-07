@@ -625,9 +625,7 @@ static bool _makhleb_summon_servants()
                            false, GOD_MAKHLEB);
     }
     else
-    {
         simple_god_message(T_(" minions fail to arrive."), true, GOD_MAKHLEB);
-    }
 
     return true;
 
@@ -700,9 +698,7 @@ static bool _yredelemnul_retribution()
                            false, god);
     }
     else
-    {
         simple_god_message(T_(" servants fail to arrive."), true, god);
-    }
 
     if (coinflip())
     {
@@ -864,13 +860,9 @@ static bool _okawaru_retribution()
         count += _okawaru_random_servant();
 
     if (count > 0)
-    {
         simple_god_message(T_(" sends forces against you!"), false, god);
-    }
     else
-    {
         simple_god_message(T_(" forces are busy with other wars."), true, god);
-    }
 
     return true;
 }
@@ -992,13 +984,9 @@ static void _lugonu_minion_retribution()
     }
 
     if (success)
-    {
         simple_god_message(T_(" sends minions to punish you."), false, god);
-    }
     else
-    {
         simple_god_message(T_(" minions fail to arrive."), true, god);
-    }
 }
 
 /**
@@ -1429,13 +1417,9 @@ static void _qazlal_summon_elementals()
     }
 
     if (success)
-    {
         simple_god_message(T_(" incites the elements against you!"), false, god);
-    }
     else
-    {
         simple_god_message(T_(" fails to incite the elements against you."), false, god);
-    }
 }
 
 /**
@@ -1567,9 +1551,7 @@ static bool _wu_jian_retribution()
         }
     }
     else
-    {
         simple_god_message(T_(" divine weapons fail to arrive."), true, god);
-    }
 
     return true;
 }

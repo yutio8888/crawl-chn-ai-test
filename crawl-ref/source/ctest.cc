@@ -90,7 +90,7 @@ static int crawl_script_args(lua_State *ls)
     return clua_stringtable(ls, crawl_state.script_args);
 }
 
-// Test-only deterministic injection for the three Zot orb variants.  This is
+// Test-only deterministic injection for the three Zot orb variants. This is
 // intentionally not part of the production CLua/DLua API.
 static bool zot_test_state_saved = false;
 static monster_type saved_zot_orb_monster;

@@ -685,9 +685,7 @@ bool targeter_transference::valid_aim(coord_def a)
         return notify_fail("");
 
     if (mons_is_hepliaklqana_ancestor(victim->type))
-    {
         return notify_fail(T_("You can't transfer your ancestor with themself."));
-    }
     else if (mons_is_tentacle_or_tentacle_segment(victim->type)
              || victim->is_stationary()
              || mons_is_projectile(victim->type))
@@ -2100,8 +2098,10 @@ bool targeter_boulder::valid_aim(coord_def a)
 
     const coord_def delta = a - agent->pos();
     if (delta.x && delta.y && abs(delta.x) != abs(delta.y))
+    {
         return notify_fail(
             T_("You can only roll a boulder in a compass direction."));
+    }
 
     ray_def ray;
     if (!find_ray(agent->pos(), a, ray, opc_solid))
@@ -2365,8 +2365,10 @@ bool targeter_gavotte::valid_aim(coord_def a)
     // make sure it's a true cardinal
     const coord_def delta = a - agent->pos();
     if (delta.x && delta.y && abs(delta.x) != abs(delta.y))
+    {
         return notify_fail(
             T_("You can only reorient gravity in a cardinal direction."));
+    }
 
     return true;
 }
@@ -2529,8 +2531,10 @@ bool targeter_marionette::valid_aim(coord_def a)
         return notify_fail(T_("Their shadow is too faded to take hold of."));
 
     if (mons->is_summoned() && !mons->is_illusion())
+    {
         return notify_fail(
             T_("A summoned shadow is too ephemeral to take hold of."));
+    }
 
     if (mons->props[DITHMENOS_MARIONETTE_SPELLS_KEY].get_int() <= 0)
         return notify_fail(T_("They have no useful spells to cast right now."));
@@ -2681,12 +2685,16 @@ bool targeter_tempering::valid_aim(coord_def a)
         return notify_fail(T_("There's nothing to be tempered there."));
 
     if (mons->has_ench(ENCH_TEMPERED))
+    {
         return notify_fail(
             T_("You cannot target a construct which is already augmented."));
+    }
 
     if (!is_valid_tempering_target(*mons, *agent))
+    {
         return notify_fail(
             T_("You can only target your own Forgecraft constructs."));
+    }
 
     return true;
 }
@@ -2845,8 +2853,10 @@ bool targeter_bestial_takedown::valid_aim(coord_def a)
         if (!mon->friendly() && mon->has_ench(ENCH_FEAR) && you.can_see(*mon))
         {
             if (get_bestial_landing_spots(a).empty())
+            {
                 return notify_fail(
                     T_("You can see nowhere safe to land near that."));
+            }
             else
                 return true;
         }
@@ -2894,8 +2904,10 @@ bool targeter_paragon_deploy::valid_aim(coord_def a)
         return notify_fail(T_("There's something in the way."));
 
     if (!monster_habitable_grid(MONS_PLATINUM_PARAGON, a))
+    {
         return notify_fail(
             T_("Your paragon could not survive being deployed there."));
+    }
 
     return true;
 }
