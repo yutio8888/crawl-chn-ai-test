@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import locale
 import os
 import subprocess
 import sys
@@ -22,9 +23,21 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 BASELINE = "89b97ae826e1a065b9cdc9b1b715883c7eaa4d3d"
+PRODUCTION_BASELINE = "4420998ec0ed812e4d183c1bb62ea514792d1b96"
 
 
 def exact_artifact(oid: str, directory: str) -> dict:
+    # The standalone C++ Phase 0 dump starts in the C locale. Match its
+    # non-ASCII casing as well as its serialization, then restore the caller.
+    previous = locale.setlocale(locale.LC_CTYPE)
+    try:
+        locale.setlocale(locale.LC_CTYPE, "C")
+        return _exact_artifact(oid, directory)
+    finally:
+        locale.setlocale(locale.LC_CTYPE, previous)
+
+
+def _exact_artifact(oid: str, directory: str) -> dict:
     shared = MODULE.hardened.shared
     manifest = (
         MODULE.misc_shared._misc_source_manifest(oid, f"fixture {directory}")
@@ -158,6 +171,30 @@ class MiscnameInventoryTests(unittest.TestCase):
             {"_great_adj_": [18, 17], "hell_effect_noisy": [23, 22]},
             self.inventory["scope"]["baseline_asymmetry"],
         )
+
+    def test_current_baseline_uses_production_keys_without_alias(self):
+        keys = MODULE.DIRECT_ROOT_KEYS | MODULE.INTERNAL_FRAGMENT_KEYS
+        self.assertEqual({key: key for key in keys},
+                         MODULE._baseline_chinese_keys(keys, set(keys)))
+
+    def test_baseline_alias_mapping_fails_closed(self):
+        keys = MODULE.DIRECT_ROOT_KEYS | MODULE.INTERNAL_FRAGMENT_KEYS
+        for malformed in (
+            set(keys) | {"sht_int_loss"},
+            set(keys) - {"summon_horrible_things"},
+            set(keys) | {"unreviewed-key"},
+        ):
+            with self.subTest(keys=malformed):
+                with self.assertRaises(MODULE.InventoryError):
+                    MODULE._baseline_chinese_keys(keys, malformed)
+
+    def test_standalone_dump_preserves_non_ascii_c_locale_keys(self):
+        previous = locale.setlocale(locale.LC_CTYPE)
+        artifact = exact_artifact(PRODUCTION_BASELINE, "database/zh/")
+        self.assertEqual(previous, locale.setlocale(locale.LC_CTYPE))
+        keys = {entry["canonical_key"] for entry in artifact["entries"]}
+        self.assertIn("default 'Å'", keys)
+        self.assertNotIn("default 'å'", keys)
 
     def test_consumer_and_missing_hints_lookup_are_bound(self):
         facts = self.inventory["scope"]["consumer_facts"]
@@ -327,16 +364,18 @@ class MiscnameInventoryTests(unittest.TestCase):
         baseline_zh = self.root / "production-baseline-zh.json"
         candidate_en = self.root / "production-candidate-en.json"
         candidate_zh = self.root / "production-candidate-zh.json"
-        baseline_en.write_bytes(production_dump_bytes(self.en))
-        baseline_zh.write_bytes(production_dump_bytes(self.zh))
+        baseline_en.write_bytes(production_dump_bytes(
+            exact_artifact(PRODUCTION_BASELINE, "database/")))
+        baseline_zh.write_bytes(production_dump_bytes(
+            exact_artifact(PRODUCTION_BASELINE, "database/zh/")))
         candidate_en.write_bytes(production_dump_bytes(english))
         candidate_zh.write_bytes(production_dump_bytes(localized))
         self.assertEqual(
-            "468d0df31bb3c762cc8509c80beb64ad8e130f3295c42484943b5f5c56b5f570",
+            "6473113d16d472d8ba8ecb508fd1456ff920fe80b58acda19668af1151a94bf6",
             MODULE._sha256(baseline_en.read_bytes()),
         )
         self.assertEqual(
-            "71d0b7573587b623eadf14d02c475c2282716a31944b8fe1afab757a910709a0",
+            "1fc4ec2f86d68b1c845b0784b9bdde7d267f9314b95d2ab1b83a4e251105ed9a",
             MODULE._sha256(baseline_zh.read_bytes()),
         )
         output = Path("/tmp") / (
@@ -344,7 +383,7 @@ class MiscnameInventoryTests(unittest.TestCase):
         )
         self.addCleanup(lambda: output.unlink(missing_ok=True))
         self.assertEqual(0, MODULE.main([
-            "--baseline-ref", BASELINE,
+            "--baseline-ref", PRODUCTION_BASELINE,
             "--english-dump", str(baseline_en),
             "--localized-dump", str(baseline_zh),
             "--glossary", str(ROOT / "docs/glossary.md"),
@@ -357,10 +396,10 @@ class MiscnameInventoryTests(unittest.TestCase):
         audited = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(10, len(audited["review_evidence"]["cards"]))
         self.assertEqual(
-            152, audited["candidate"]["dumps"]["english"]["variant_count"]
+            167, audited["candidate"]["dumps"]["english"]["variant_count"]
         )
         self.assertEqual(
-            152, audited["candidate"]["dumps"]["localized"]["variant_count"]
+            167, audited["candidate"]["dumps"]["localized"]["variant_count"]
         )
 
     def test_complete_review_ledger_validates(self):
@@ -396,6 +435,25 @@ class MiscnameInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.InventoryError,
                                     "approved proposal"):
             MODULE.validate_results(ROOT / "unused", self.inventory, candidate,
+                                    records=self.records(cards))
+
+    def test_english_drift_cannot_be_approved_against_unchanged_baseline(self):
+        candidate_entries = self.candidate_entries()
+        by_identity = {item["identity"]: item for item in candidate_entries}
+        cards = [card_for(entry,
+                          by_identity[entry["identity"]]["english_variants"],
+                          by_identity[entry["identity"]]["chinese_variants"])
+                 for entry in self.inventory["entries"]]
+        candidate_entries[0]["english_variants"][0]["text"] += " drift"
+        with self.assertRaisesRegex(MODULE.InventoryError, "candidate EN drift"):
+            MODULE.validate_results(ROOT / "unused", self.inventory,
+                                    {"entries": candidate_entries},
+                                    records=self.records(cards))
+        cards[0]["proposed_english_variants_sha256"] = MODULE._variant_digest(
+            candidate_entries[0]["english_variants"])
+        with self.assertRaisesRegex(MODULE.InventoryError, "may not change English"):
+            MODULE.validate_results(ROOT / "unused", self.inventory,
+                                    {"entries": candidate_entries},
                                     records=self.records(cards))
 
     def test_non_deferred_card_rejects_deferral_fields(self):

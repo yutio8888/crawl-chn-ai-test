@@ -36,7 +36,7 @@ STRICT_BEGIN = "<!-- BEGIN STRICT MISCNAME REVIEW EVIDENCE v1 -->"
 STRICT_END = "<!-- END STRICT MISCNAME REVIEW EVIDENCE v1 -->"
 RESULTS_PATH = Path(__file__).resolve().parents[2] / "docs/miscname-review-results.md"
 
-# Historical alias present only in the frozen baseline ZH source.  Stable
+# Historical alias accepted only when present in the baseline ZH source. Stable
 # inventory identities always use the English production lookup key.
 BASELINE_ZH_ALIASES = {"summon_horrible_things": "sht_int_loss"}
 
@@ -370,9 +370,10 @@ def _dataset(ref: str, path: Path, directory: str, label: str,
         roots = DIRECT_ROOT_KEYS
         fragments = INTERNAL_FRAGMENT_KEYS
     else:
-        roots = {
-            BASELINE_ZH_ALIASES.get(key, key) for key in DIRECT_ROOT_KEYS
-        }
+        mapping = _baseline_chinese_keys(
+            DIRECT_ROOT_KEYS | INTERNAL_FRAGMENT_KEYS, physical_keys
+        )
+        roots = {mapping[key] for key in DIRECT_ROOT_KEYS}
         fragments = INTERNAL_FRAGMENT_KEYS
     _require(physical_keys == roots | fragments,
              f"{label} miscname membership differs: "
@@ -414,17 +415,27 @@ def _read_glossary(path: Path, ref: str | None) -> bytes:
     )
 
 
+def _baseline_chinese_keys(english_keys: set[str] | frozenset[str],
+                           chinese_keys: set[str]) -> dict[str, str]:
+    """Bind current keys or the single historical alias, never both."""
+    mapping = {}
+    for key in sorted(english_keys):
+        choices = {key, BASELINE_ZH_ALIASES.get(key, key)} & chinese_keys
+        _require(len(choices) == 1,
+                 f"baseline miscname EN/ZH identity mapping differs at {key!r}")
+        mapping[key] = choices.pop()
+    _require(set(mapping.values()) == chinese_keys,
+             "baseline miscname EN/ZH identity mapping differs")
+    return mapping
+
+
 def _pair_baseline(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]]:
     en_by_key = {entry["key"]: entry for entry in en["entries"]}
     zh_by_key = {entry["key"]: entry for entry in zh["entries"]}
-    expected_zh = {
-        BASELINE_ZH_ALIASES.get(key, key) for key in en_by_key
-    }
-    _require(set(zh_by_key) == expected_zh,
-             "baseline miscname EN/ZH identity mapping differs")
+    mapping = _baseline_chinese_keys(set(en_by_key), set(zh_by_key))
     entries = []
     for key in sorted(en_by_key):
-        zh_key = BASELINE_ZH_ALIASES.get(key, key)
+        zh_key = mapping[key]
         en_entry, zh_entry = en_by_key[key], zh_by_key[zh_key]
         lifecycle = ("recursive-internal-fragment"
                      if key in INTERNAL_FRAGMENT_KEYS
@@ -474,7 +485,11 @@ def build_inventory(baseline_ref: str, english_path: Path,
     scope = {
         "source_basename": SOURCE_BASENAME,
         "identity_keys": [entry["key"] for entry in entries],
-        "baseline_chinese_aliases": BASELINE_ZH_ALIASES,
+        "baseline_chinese_aliases": {
+            entry["key"]: entry["baseline_chinese_key"]
+            for entry in entries
+            if entry["key"] != entry["baseline_chinese_key"]
+        },
         "direct_root_keys": sorted(DIRECT_ROOT_KEYS),
         "internal_fragment_keys": sorted(INTERNAL_FRAGMENT_KEYS),
         "known_missing_lookups": sorted(EXPECTED_MISSING_LOOKUPS),
