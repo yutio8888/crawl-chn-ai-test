@@ -458,8 +458,9 @@ w:1
 傻瓜
 %%%%
 # 入门等级（等级 1）
-starting
+starting level book
 
+w:2
 @_the_subject_@ 101
 
 为@_beginners_@准备的@_the_subject_@
@@ -484,16 +485,18 @@ starting
 
 @_the_subject_@介绍
 
+w:2
 人人都能学@_the_subject_@
 
 @_the_subject_@起步
 
 @_the_subject_@开端
 
-@_subject_@初探
+@_the_subject_@初探
 
 初级@_subject_@
 
+w:2
 就连@_beginners_@也能学@_the_subject_@！
 
 @_the_subject_@第一步
@@ -504,6 +507,7 @@ starting
 
 简单@_subject_@
 
+w:2
 所以你想学@_the_subject_@
 
 @_the_subject_@开篇
@@ -511,7 +515,7 @@ starting
 @_the_subject_@基础
 %%%%
 # 简单等级（等级 2-4）
-easy
+easy level book
 
 @_the_subject_@及其用法
 
@@ -543,18 +547,20 @@ easy
 
 日常@_subject_@
 
+w:2
 @_the_subject_@倒数第三指南
 
 @_the_subject_@基石
 
 @_the_subject_@基本原理
 
+w:2
 @_subject_@的乐趣
 
 @_the_subject_@的关键
 %%%%
 # 中等等级（等级 4-6）
-moderate
+moderate level book
 
 @_the_subject_@，第 @level@ 部分
 
@@ -586,12 +592,14 @@ moderate
 
 @_the_subject_@之路
 
+w:2
 @_the_subject_@倒数第二指南
 
 @_subject_@第二课程
 
 有用的@_subject_@
 
+w:2
 又一本关于@_the_subject_@的@book_noun@
 %%%%
 _powerful_caster_
@@ -1254,6 +1262,8 @@ Hexes
 # 寒冰
 Ice
 
+绝对零度
+
 寒冷
 
 冻疮
@@ -1264,9 +1274,13 @@ Ice
 
 冰卜术
 
+冰晶
+
 粒雪
 
 冻结
+
+寒冷
 
 霜
 
@@ -1284,6 +1298,14 @@ Ice
 
 冰
 
+致冷
+
+冻疮
+
+粒雪
+
+冻疮
+
 制冷
 
 雾凇
@@ -1294,9 +1316,15 @@ Ice
 
 寒意
 
+骤寒
+
 冰裂缝
 
 深冻
+
+浮冰
+
+霜巨人
 
 冰川
 
@@ -1304,7 +1332,13 @@ Ice
 
 冰柱
 
+山巅
+
+北极熊
+
 冰塔
+
+碎片伯劳
 
 雪花
 
@@ -2525,11 +2559,15 @@ Ice adj
 
 冰冷的
 
+酷寒的
+
 高山的
 
 北极的
 
 蔚蓝的
+
+冻僵的
 
 刺骨的
 
@@ -2538,6 +2576,8 @@ Ice adj
 北方的
 
 冬天的
+
+寒冷的
 
 寒冷的
 
@@ -2550,6 +2590,8 @@ Ice adj
 凝结的
 
 结晶的
+
+变冷的
 
 冰冻的
 
@@ -2571,6 +2613,8 @@ Ice adj
 
 冰川的
 
+冬日的
+
 冬天的
 
 极北的
@@ -2583,21 +2627,37 @@ Ice adj
 
 冰冷的
 
+冰冷无温的
+
+冻瑟的
+
 雪的
+
+雪白的
 
 白雪的
 
+雪白的
+
 麻木的
+
+凄冷的
 
 极地的
 
 颤抖的
+
+冻僵的
+
+雪盲的
 
 下雪的
 
 多雪的
 
 雪白的
+
+雪下的
 
 零下的
 
@@ -3273,7 +3333,7 @@ Air owner
 
 尼古拉
 
-维希
+维
 
 __NONE
 %%%%
@@ -3368,11 +3428,128 @@ Forgecraft owner
 
 __NONE
 %%%%
-_the_subject_
+Random
 
-@_the_subject_@
+@_occult_adjective_@技艺
+
+@_occult_adjective_@实践
+
+@_occult_adjective_@仪式
+
+@_occult_adjective_@传统
+
+@_occult_adjective_@真理
+
+隐士的传承
+
+玄秘史话
+
+魔术师的手艺
+
+法师的心智
+
+言语之力
+
+仪式与韵文
+
+印记与符号
+
+古人的智慧
+
+巫师的智慧
+
+力量之言
+
+@_occult_adjective_@洞见
+
+@_occult_adjective_@知识
+
+@_occult_adjective_@力量
+
+@_occult_adjective_@理解
+
+@_occult_adjective_@智慧
+
+施法
+
+灵知
+
+诠释学
+
+赫耳墨斯学
+
+w:2
+魔法把戏
+
+咒语
+
+魔法
+
+魔法之力
+
+神秘主义
+
+玄秘学
+
+巫术
+
+签卜
+
+法术施放
+
+法术技艺
+
+法术编织
+
+法术运作
+
+奇术
+
+神术
+
+意志施法
+
+女巫法术
+
+巫法
+
+巫师施法
+
+巫师术
 %%%%
-_subject_
+Xom_book_title
 
-@_subject_@
+w:30
+
+@random_book_title@
+
+@_chaos_name_@
+
+w:1
+
+@_game_name_@
+
+w:2
+
+@player_death@
+
+w:8
+
+@_wacky_armour_name_@
+
+w:1
+
+@_politics_name_armour_@
+
+w:5
+
+@_power_name_@
+
+w:3
+
+@_discomfort_and_inaction_@
+
+w:3
+
+@_discomfort_weapon_@
 %%%%

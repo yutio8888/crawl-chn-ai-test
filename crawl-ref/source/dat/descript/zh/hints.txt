@@ -3,7 +3,7 @@ welcome
 
 <white>欢迎来到地牢爬行！</white>
 
-你的目标是带领你的<w>{{ return crawl.t_(you.race()) .. " " .. crawl.t_(you.class()) }}</w>角色安全深入地牢，取回传说中的佐特宝珠并把它带回地面。不过，刚开始时，应把探索发现作为主要目标。尽量深入，但要小心；死亡潜伏在每个角落。
+你的目标是带领你的<w>{{ return crawl.t_(you.race()) }} {{ return crawl.t_(you.class()) }}</w>角色安全深入地牢，取回传说中的佐特宝珠并把它带回地面。不过，刚开始时，应把探索发现作为主要目标。尽量深入，但要小心；死亡潜伏在每个角落。
 
 目前只需记住以下按键及其功能：
   <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — 显示物品和命令
@@ -94,13 +94,6 @@ finished random 3
 
 你可以通过 http://crawl.develz.org/ 介绍的任何社区资源，向其他 Crawl 玩家寻求建议和帮助。
 %%%%
-dissection reminder
-
-如果你不想吃掉尸体，按下 <input>p</input>可以献祭给 {{ return crawl.t_(you.god()) }}
-<tiles>。你也可以通过点击地上的尸体或者 <input>鼠标左键</input>
-点击背包中的尸体将其剁碎</tiles>。
-在提示模式中你每遇到一具尸体都可以重读一遍本提示。
-%%%%
 HINT_SEEN_FIRST_OBJECT
 
 那个<console>$1 </console>是物品。走到那里并按
@@ -180,9 +173,9 @@ HINT_CONVERT
 %%%%
 HINT_CONVERT Ashenzari
 
-你刚刚皈依了 <w>艾申扎利</w>。与其他神祇不同，艾申扎利只在意诅咒。
-当你探索地牢时，艾申扎利会提供诅咒，将一件物品锁定在你身上。
-你穿戴的受诅咒物品越多，艾申扎利就越能强化你的技能，并以其他方式帮助你。
+你刚刚皈依了 <w>艾申扎利</w>。与其他神祇不同，艾申扎利只在意装备束缚。
+当你探索地牢时，艾申扎利会提供束缚，将一件物品锁定在你身上。
+你穿戴的已束缚物品越多，艾申扎利就越能强化你的技能，并以其他方式帮助你。
 %%%%
 HINT_CONVERT Gozag
 
@@ -205,21 +198,13 @@ HINT_CONVERT Xom
 没有任何方法能保证佐姆保持好心情——任何追随者所能期望的最好结果
 就是避免让佐姆感到无聊。
 %%%%
-HINT_CONVERT Yredelemnul
-
-你刚刚皈依了 <w>伊莱德莱姆努尔</w>。与其他神祇不同，伊莱德莱姆努尔只在意灵魂。
-你的敌人死后可能会起来为你服务，你可以消耗它们来祈求伊莱德莱姆努尔的援助。
-%%%%
 HINT_DONE_EXPLORE
 
 嘿，你已经探索完这一层的地牢了！在楼层地图（<w>$cmd[CMD_DISPLAY_MAP]</w>）中按 <w>></w> 可以搜索楼梯。光标会跳到最近的楼梯；再按 <w>.</w> 或 <w>回车</w>，角色也会自动走过去。Crawl 的每一层都有三处<console>白色的</console>上楼梯和三处<console>白色的</console>下楼梯。未探索的区域往往可以从另一层抵达。
 %%%%
 HINT_FLEEING_MONSTER
 
-现在那个怪物害怕你了！请注意，你并不绝对必须追它。
-相反，你可以让它跑掉。不过，有时向逃跑的生物投掷东西
-来攻击它们是很有用的。如果你的 <w>$cmd[CMD_DISPLAY_INVENTORY]</w>
-物品栏中有任何石头，你可以用 <w>$cmd[CMD_FIRE]</w> 投掷它们。
+现在那个怪物害怕你了！请注意，你并非一定要追它，也可以让它逃跑。不过，有时向逃跑的生物投掷东西来攻击它会很有用。如果你的物品栏中有石头，就按 <w>$cmd[CMD_DISPLAY_INVENTORY]</w> 打开物品栏，查看其中一块石头，即可阅读相关操作说明。
 %%%%
 HINT_FOUND_UNKNOWN
 
@@ -257,11 +242,11 @@ HINT_GAINED_SPELLCASTING
 %%%%
 HINT_GLOWING
 
-你积累了太多魔法污染，身体已经开始发光！魔法污染通常来自隐身术等强力魔法，或来自施法失误。
+你积累了太多魔法污染，身体已经开始发光！魔法污染通常来自隐形等强力魔法，或来自施法失误。
 %%%%
 HINT_GOD_DISPLEASED
 
-糟了，$1 因你的虔诚值太低而越来越不悦。这可能是因为你做了亵渎之举，也可能是因为 $1 认为你的崇拜不够虔诚，或两者兼有。如果虔诚值降到零，你就会被逐出教门。赶紧设法提高虔诚值，或停止惹怒你的神祇，必要时两者都做。不管怎样，你最好重新阅读宗教说明。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>你的头像</localtiles>即可查看。
+糟了，$1 因你的虔诚值太低而越来越不悦。这可能是因为你做了亵渎之举，也可能是因为你使用 $1 的神力消耗了大量虔诚值，或两者兼有。如果虔诚值降到零，你就会被逐出教门。赶紧设法提高虔诚值，并停止惹怒你的神祇。不管怎样，你最好重新阅读宗教说明。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>你的头像</localtiles>即可查看。
 %%%%
 HINT_HEALING_POTIONS
 
@@ -625,7 +610,7 @@ HINT_TEMPORARILY_FRIENDLY
 %%%%
 HINT_WIELD_WEAPON
 
-按 <w>$cmd[CMD_WEAPON_SWAP]</w> 可以轻松切回 a 槽位中的武器。要更改物品槽位，先按 <w>$cmd[CMD_ADJUST_INVENTORY]</w>，再按 <w>i</w>，然后选择合适的槽位。
+你可以按 <w>$cmd[CMD_WIELD_WEAPON]</w> 持握这把武器，或按 <w>$cmd[CMD_WEAPON_SWAP]</w> 在 a 和 b 槽位中的武器之间切换。（用 <w>$cmd[CMD_ADJUST_INVENTORY]i</w> 调整物品槽位。）
 %%%%
 HINT_YOU_ENCHANTED
 
@@ -656,4 +641,455 @@ HINT_YOU_SILENCE
 death random 4
 
 如果某场遭遇让你觉得难以应付，别忘了尽早使用应急物品。传送卷轴或加速药水确实能救你一命。
+%%%%
+HINT_BERSERK_CONSERVES_HP
+
+此外，狂暴可能有助于你一开始就不会损失那么多生命。要使用你的能力，请按<w>a</w>。
+%%%%
+HINT_MONSTER_LIST_CONSOLE
+
+如果你的控制台设置允许，你总能在屏幕某处看到怪物列表。
+%%%%
+HINT_ATTACK_MONSTER_RANGED
+
+然而，作为一名猎手，你会想用弓箭来对付它。如果你从<w>i</w>背包中查看你的短弓，你会找到相关的操作说明。
+%%%%
+HINT_RANGED_WIELDED
+
+<tiles>用<w>鼠标右键</w>点击你的短弓也可阅读其描述。</tiles>
+%%%%
+HINT_ATTACK_MONSTER_MAGIC
+
+然而，作为一名咒法师，你会想用魔法来对付它。如果你查看<w>M</w>记忆法术界面的帮助条目，就能了解具体操作。
+%%%%
+HINT_SKILL_TARGETS
+
+按技能对应的字母来设定训练目标。达到目标后会有消息显示，训练会自动停止。
+%%%%
+HINT_WEAPON_HAS_ABILITY
+
+持握时，某些武器（比如这把）会提供一些可激活的能力。
+%%%%
+HINT_SHIELD_HINDERS_CASTING
+
+请注意，盾牌会影响你施法的能力，直到你提升足够的盾牌技能来消除惩罚。
+%%%%
+HINT_NO_OFFHAND_WITH_MOST_LAUNCHERS
+
+请注意，许多远程武器是双手武器，不能与副手物品同时使用。
+%%%%
+HINT_DESCRIBE_MANUAL
+
+手册能极大帮助你训练某一技能。捡起手册后，相关技能的训练效率将大幅提高，并会更快升级，直到手册内容耗尽。
+%%%%
+HINT_DESCRIBE_MAGICAL_STAFF
+
+这根法杖可以增强你的施法能力，使其相关学派的法术更加强大。
+%%%%
+HINT_DESCRIBE_TRAP_PLATE
+
+这些讨厌的构造会造成一系列令人不快的效果。你无法通过从陷阱上方飞过来避免触发；它们的魔法构造仍会使其生效。
+%%%%
+HINT_DESCRIBE_TRAP_WEB
+
+地牢的某些区域，比如蜘蛛巢穴，可能布满巨大的蛛网，会让你短暂被困。昆虫、软泥和无实体生物可以安全穿过蛛网。
+%%%%
+HINT_DESCRIBE_UNKNOWN_STAIRS
+
+你还没有走过这组特定的楼梯。
+%%%%
+HINT_DESCRIBE_DUNGEON_EXIT
+
+这些楼梯通往地牢之外。沿楼梯出去会结束游戏。获胜的唯一方法是将传说中的佐特宝珠带到地牢外。
+%%%%
+HINT_DESCRIBE_ALTAR_ATHEIST
+
+这是你加入宗教的机会！通常，神祇会帮助其信徒，赐予各种力量，但其中许多神祇会要求你以奉献一生、不断进贡或娱乐作为回报。
+%%%%
+HINT_DESCRIBE_BRANCH_ENTRY
+
+通往地牢众多侧支之一的入口。
+%%%%
+HINT_DESCRIBE_BRANCH_ENTRY_DANGEROUS
+
+小心，有时这些可能是致命的！
+%%%%
+HINT_DESCRIBE_UNIQUE_MONSTER
+
+你以为自己是地牢里唯一的冒险者吗？你错了！这些独特的对手往往拥有普通怪物没有的技能，所以要小心。
+%%%%
+HINT_DESCRIBE_PLAYER_GHOST
+
+这是已故冒险者的鬼魂，它最想做的就是让你也走上同一条路。
+%%%%
+HINT_DESCRIBE_NASTY_MONSTER
+
+这个怪物看起来非常危险！
+%%%%
+HINT_DESCRIBE_TEMPORARILY_FRIENDLY_MONSTER
+
+但它只是<w>暂时</w>友好的，当这种友好状态消失时它将重新变得危险。
+%%%%
+HINT_DESCRIBE_UNAWARE_MONSTER
+
+它似乎还没有注意到你——至少目前还没有。注意，你并非必须与遇到的每一个怪物交战。有时，谨慎行事才是明智之举。
+%%%%
+HINT_DESCRIBE_DISTRACTED_MONSTER
+
+它似乎被什么东西分散了注意力。你可以利用这个机会潜行靠近它——或者悄悄溜走。
+%%%%
+HINT_REST_BETWEEN_FIGHTS
+
+记得在战斗之间休息，以满生命值和法力进入未探索区域。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>5</w> 或 <w>Shift-numpad 5</w><tiles>，也可以<w>点击休息按钮</w></tiles>来休息。
+%%%%
+HINT_EXCOMMUNICATED
+
+糟了，$1 刚刚因你的虔诚值耗尽而将你逐出教门（你的神恩已化为乌有）。也许你一再违反教规，也许你消耗虔诚值的速度超过了积累的速度，抑或两者皆有。如果你能找到一座供奉 $1 的祭坛，就可以重新皈依，一切都会好起来。
+%%%%
+HINT_GOD_ABANDONED
+
+如果你觉得抛弃 $1 毕竟不是明智之举，想回到原来的信仰，就得找到一座供奉 $1 的祭坛，在那里重新皈依，一切都会好起来。
+%%%%
+HINT_ENDURE_GOD_WRATH
+
+否则，你将不得不忍受这位神祇的不满，直到所有神怒消散。
+%%%%
+HINT_CONVERTED_GOOD_TO_GOOD
+
+幸运的是，$1 似乎并不介意你改信 $2。
+{{
+    if you.piety_rank() > 0 then
+        return "你甚至保留了一部分虔诚值！"
+    end
+}}
+注意，这种联盟仅存在于三位善良神祇之间，所以不要指望这是常态。
+%%%%
+HINT_CONVERTED_GOOD_TO_NEUTRAL
+
+幸运的是，$1 似乎并不介意你改信 $2。这是因为 $1 是善良神祇之一，通常对改信相当宽容——除非你投身邪恶之路，那时祂们的报复可不会留情！
+%%%%
+HINT_CONVERTED_GOOD_TO_EVIL
+
+看来，$1 并不赞赏你改信 $2。不过，从善良神祇改信邪恶神祇，你还想怎样！？如果你改信的神祇并不站在信仰的对立面，$1 本会宽容得多。
+%%%%
+HINT_CONVERTED_NONGOOD_TO_HATED
+
+看来，$1 并不赞赏你改信 $2。（实际上，通常只有三位善良神祇会对这种背信行为表示宽容。）
+%%%%
+HINT_CONVERTED_WRATH
+
+不幸的是，虽然改信回来能平息 $1 的怒火，却会惹怒 $2，所以你只能承受其中一位神祇的怒火了。
+%%%%
+HINT_WIELD_MELEE_WEAPON
+
+按 <w>$cmd[CMD_WEAPON_SWAP]</w> 可以轻松切回 a 槽位中的武器。要更改物品槽位，先按 <w>$cmd[CMD_ADJUST_INVENTORY]</w>，再按 <w>i</w>，然后选择合适的槽位。
+%%%%
+HINT_SEEN_MONSTER_TILES
+
+那个怪物是$1。你可以将鼠标悬停在任何怪物上来了解它，并通过<w>右键单击</w>来阅读其描述。
+%%%%
+HINT_SEEN_MONSTER_CONSOLE
+
+$1 是一个怪物，通常用字母表示。一些典型的早期怪物看起来像 <brown>r</brown>、<green>l</green>、<brown>K</brown> 或 <lightgrey>g</lightgrey>。
+%%%%
+HINT_LEARN_ABOUT_MONSTER_CONSOLE
+
+你可以按 <w>$cmd[CMD_LOOK_AROUND]</w> 并将光标移到怪物上来获取信息，然后按 <w>$cmd[CMD_TARGET_DESCRIBE]</w> 阅读怪物描述。
+%%%%
+HINT_ATTACK_MONSTER
+
+要用持握的武器攻击此怪物，直接向它移动即可。
+<tiles>注意，只要视野中有非友好怪物，你就无法自动移动到远处格子，以免因误点而丧命。</tiles>
+%%%%
+HINT_RANGED_NOT_WIELDED
+
+首先按 <w>w</w> 持握它，然后按照说明操作。<tiles>
+
+作为快捷方式，你也可以<w>右键单击</w>你的短弓来阅读其描述，并<w>左键单击</w>来持握。</tiles>
+%%%%
+HINT_LOAD_SAVED_GAME
+
+欢迎回来！如果有一段时间没玩了，你可能需要回顾一下。\n
+{{
+    local msg = "你的物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）"
+
+    if you.spell_letters() ~= nil and #you.spell_letters() > 0 then
+        msg = msg .. "、你的法术（<w>$cmd[CMD_CAST_SPELL]?</w>）"
+    end
+
+    if you.ability_info() ~= nil and #you.ability_info() > 0 then
+        msg = msg .. "、你的能力（<w>$cmd[CMD_USE_ABILITY]</w>）"
+    end
+
+    if you.how_mutated(true, true, true) > 0 then
+        msg = msg .. "、你的变异（<w>$cmd[CMD_DISPLAY_MUTATIONS]</w>）"
+    end
+
+    if you.god() ~= "No God" then
+        msg = msg .. "、你的信仰状况（<w>$cmd[CMD_DISPLAY_RELIGION]</w>）"
+    end
+
+    msg = msg .. "、消息历史（<w>$cmd[CMD_REPLAY_MESSAGES]</w>）"
+    msg = msg .. "、角色总览界面（<w>$cmd[CMD_RESISTS_SCREEN]</w>）"
+    msg = msg .. "以及地牢总览界面（<w>$cmd[CMD_DISPLAY_OVERMAP]</w>）"
+    msg = msg .. "都值得查看。";
+    return msg
+}}
+%%%%
+HINT_ABILITIES_SCREEN
+
+此界面显示你的角色所拥有的能力。你可以通过特定物品、宗教信仰或变异来获得新能力。激活能力通常需要付出代价，例如消耗法力。按“<w>!</w>”或“<w>?</w>”可在能力选择与描述之间切换。
+%%%%
+HINT_SKILLS_SCREEN
+
+此界面显示你的角色技能。技能旁边的数字是你当前的技能等级，等级越高越好。<w>训练</w>显示训练百分比，<w>成本</w>显示相对训练成本，<w>目标</w>显示技能训练目标。按技能对应的字母可切换是否训练该技能。<darkgrey>灰色</darkgrey>技能不会得到训练，从而让其他技能更容易提升。
+%%%%
+HINT_SKILL_TRAINING
+
+训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练各项技能的相对比例。它会根据你最近使用的技能自动设置。停用某项技能的训练会将其训练比例设为 0。
+%%%%
+HINT_SKILL_COSTS
+
+训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的经验值，以资质为零的技能从零级升到一级所需的经验值为基准。
+%%%%
+HINT_SKILL_DESCRIPTIONS
+
+此界面显示你的角色技能。按技能对应的字母可阅读其描述，再按 <w>?</w> 可返回技能选择界面。
+%%%%
+HINT_MEMORISE_SCREEN
+
+此界面显示你的法术库中的法术。你可以在此选择法术进行记忆，也可以查看法术描述、搜索和整理法术。作为咒法师，你开始时有五个可记忆的法术，以及一个已经记忆的法术：魔法飞弹。（要查看已记忆的法术，可以退出此菜单并按 <w>I</w>。）
+%%%%
+HINT_MEMORISE
+
+没有<darkgray>变灰</darkgray>或被<lightred>禁止</lightred>的法术，可以在此菜单中选中后立即记忆。
+%%%%
+HINT_CANNOT_MEMORISE
+
+你现在无法记忆
+{{
+    if table.getn(you.spell_letters()) > 0 then
+        return "更多"
+    end
+}}
+法术。随着你等级和施法能力的提升，这种情况会改变。
+%%%%
+HINT_CAST_SPELL
+
+要使用魔法，<tiles>你可以按住<w>Ctrl 键</w>，同时<w>左键单击</w>你想要瞄准的怪物（或单击自己的角色来对自己施法），然后从菜单中选择法术。你也可以<w>单击</w>对应的<w>标签页</w>，切换到施法界面。
+
+或者，</tiles>你可以按 <w>$cmd[CMD_CAST_SPELL]</w> 并选择一个法术，比如 <w>a</w>（用 <w>?</w> 查看）。对于攻击法术：
+%%%%
+HINT_TARGET_MODE
+
+随后你会进入瞄准模式，最近的怪物或上一个目标已被自动锁定。你也可以用 <w>+</w> 或 <w>-</w> 在视野内所有敌对怪物之间循环切换。瞄准正确的怪物后，只需按 <w>f</w>、<w>回车</w> 或 <w>.</w> 即可向它发射。如果未命中，按 <w>$1</w> 可再次向同一目标发射。
+%%%%
+HINT_ACTIVATE_ABILITY_ITEM_EQUIPPED
+
+要这样做，先用 <w>$cmd[CMD_USE_ABILITY]</w> 进入能力菜单，再选择对应的能力。注意，这种激活尝试很可能失败，尤其是在缺乏训练时。
+%%%%
+HINT_ACTIVATE_ABILITY_WEAPON_NOT_WIELDED
+
+要这样做，先按 <w>$cmd[CMD_WIELD_WEAPON]</w> 持握它，再用 <w>$cmd[CMD_USE_ABILITY]</w> 进入能力菜单，然后选择对应的能力。注意，这种激活尝试很可能失败，尤其是在缺乏训练时。
+%%%%
+HINT_ACTIVATE_ABILITY_ARMOUR_NOT_WORN
+
+要这样做，先按 <w>$cmd[CMD_WEAR_ARMOUR]</w> 穿戴它，再用 <w>$cmd[CMD_USE_ABILITY]</w> 进入能力菜单，然后选择对应的能力。注意，这种激活尝试很可能失败，尤其是在缺乏训练时。
+%%%%
+HINT_ACTIVATE_ABILITY_JEWELLERY_NOT_WORN
+
+要这样做，先按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 戴上它，再用 <w>$cmd[CMD_USE_ABILITY]</w> 进入能力菜单，然后选择对应的能力。注意，这种激活尝试很可能失败，尤其是在缺乏训练时。
+%%%%
+HINT_THROW_INVENTORY_ITEM
+
+要这样做，先按 <w>$cmd[CMD_FIRE]</w> 发射，再按 <w>$1</w> 选择此物品。
+%%%%
+HINT_THROW_GROUND_ITEM
+
+要这样做，先按 <w>$cmd[CMD_FIRE]</w> 发射，再选择此物品。
+%%%%
+HINT_WEAPON_HAS_RESIST
+
+这把武器可保护持握者免受某些伤害。若要查看你的抗性（以及其他信息），按 <w>$cmd[CMD_RESISTS_SCREEN]</w><tiles>，或用<w>鼠标右键</w>单击你的角色</tiles>。
+%%%%
+HINT_WEAPON_SKILL
+
+不过，你已经训练<w>$1</w>一段时间了，也许应该继续训练该技能，而不是<w>$2</w>。（按 <w>$cmd[CMD_DISPLAY_SKILLS]</w> 查看技能管理界面，了解实际数值。）
+%%%%
+HINT_ATTACK_WITH_RANGED_WEAPON
+
+要攻击怪物，<tiles><w>左键单击</w>该怪物。\n要用键盘发射远程武器，</tiles>按 <w>$cmd[CMD_PRIMARY_ATTACK]</w>。
+%%%%
+HINT_ATTACK_WITH_MELEE_WEAPON
+
+要攻击怪物，你只需向它所在的格子移动。
+%%%%
+HINT_THROWABLE
+
+$1可以直接用 <w>$cmd[CMD_FIRE]</w> 投掷，无需发射器。
+%%%%
+HINT_CANNOT_WEAR_HELMET
+
+由于你长着角，因此无法穿戴头盔。（按 <w>$cmd[CMD_DISPLAY_MUTATIONS]</w> 查看你的变异和先天能力列表。）
+%%%%
+HINT_CANNOT_WEAR_BARDING
+
+只有纳迦和疾风半人马可以穿戴马铠。
+%%%%
+HINT_EQUIP_UNEQUIP_ARMOUR
+
+你可以按 <w>$cmd[CMD_WEAR_ARMOUR]</w> 穿戴护甲，再按 <w>$cmd[CMD_REMOVE_ARMOUR]</w> 卸下<tiles>，也可以直接单击其图块来执行任一操作</tiles>。
+%%%%
+HINT_ARMOUR_HINDERS_CASTING
+
+请注意，负重等级较高的身体护甲可能妨碍施法。轻型护甲（如长袍和皮甲）通常不会妨碍想要施法的角色。
+%%%%
+HINT_UNUSUAL_EQUIPMENT
+
+像这样描述不寻常的武器和护甲，更有可能具有较高的附魔或特殊属性，而这些属性可能有益，也可能有害。
+%%%%
+HINT_ARMOUR_HAS_RESIST
+
+这件护甲可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按 <w>$cmd[CMD_RESISTS_SCREEN]</w><tiles>，或用<w>鼠标右键</w>单击你的角色</tiles>。
+%%%%
+HINT_ARMOUR_HAS_ABILITY
+
+穿戴时，某些类型的护甲（比如这件）会提供一些能力，你可以用 <w>$cmd[CMD_USE_ABILITY]</w> 激活。
+%%%%
+HINT_DESCRIBE_WAND
+
+激活（<w>$cmd[CMD_EVOKE]</w>）这根魔杖，即可释放其中的魔法。
+<tiles>或者，你可以：1）按住 <w>$1</w>，同时<w>左键单击</w>你想要瞄准的怪物（或单击自己的角色来瞄准自己），再从菜单中选择魔杖；2）<w>左键单击</w>魔杖图块，再<w>左键单击</w>你的目标。</tiles>
+%%%%
+HINT_DESCRIBE_SCROLL
+
+按 <w>$cmd[CMD_READ]</w> 阅读此卷轴<tiles>，或直接用<w>鼠标左键</w>单击它</tiles>。
+%%%%
+HINT_DESCRIBE_JEWELLERY
+
+可以按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 戴上首饰，再按 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> 卸下<tiles>；在 Tiles 中，也可以单击物品栏中的该物品来完成任一操作</tiles>。
+%%%%
+HINT_JEWELLERY_HAS_RESIST
+
+这件物品可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按 <w>$cmd[CMD_RESISTS_SCREEN]</w><tiles>，或用<w>鼠标右键</w>单击你的角色</tiles>。
+%%%%
+HINT_JEWELLERY_HAS_ABILITY
+
+穿戴时，某些类型的首饰（比如这件）会提供一些可用 <w>$cmd[CMD_USE_ABILITY]</w> 激活的能力。
+%%%%
+HINT_DESCRIBE_POTION
+
+<w>按 $cmd[CMD_QUAFF] 饮用此药水</w><tiles>，或直接用<w>鼠标左键</w>单击它</tiles>。
+%%%%
+HINT_DESCRIBE_SPELLBOOK
+
+你可以捡起法术书，将其中的法术添加到你的法术库中。（用 <w>$cmd[CMD_MEMORISE_SPELL]</w> 查看你的法术库。）
+%%%%
+HINT_DESCRIBE_CORPSE
+
+骸骨和尸体可以用作某些死灵法术的材料。除此之外，它们基本没什么用。
+%%%%
+HINT_MAGICAL_STAFF_HAS_RESISTANCE
+
+它也能保护持握者免受某些伤害。若要查看你的抗性（以及其他信息），按 <w>$cmd[CMD_RESISTS_SCREEN]</w><tiles>，或用<w>鼠标右键</w>单击你的角色</tiles>。
+%%%%
+HINT_MAGICAL_STAFF_WITH_TROG
+
+特洛格不赞成使用魔法，所以这根法杖对你没什么用，不妨现在就按 <w>$cmd[CMD_DROP]</w> 丢下它。
+%%%%
+HINT_DESCRIBE_MISCELLANEOUS_ITEM
+
+杂项物品有时蕴藏着魔法力量，可以通过 <w>$cmd[CMD_EVOKE]</w> 激活物品来利用。
+%%%%
+HINT_DESCRIBE_TRAP_SHAFT
+
+地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。\n如果想跳下去，请按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。但要注意，返回这里可能会很困难。
+%%%%
+HINT_DESCRIBE_DOWNSTAIRS
+
+你可以顺梯而下进入下一层（更深处）（<w>$cmd[CMD_GO_DOWNSTAIRS]</w>）。要回到这一层，请站在上楼梯上按 <w>$cmd[CMD_GO_UPSTAIRS]</w>。<tiles>在 Tiles 中，无论上楼还是下楼，都可以单击<w>鼠标左键</w>来完成。</tiles>
+%%%%
+HINT_DESCRIBE_UPSTAIRS
+
+你可以顺梯而上进入上一层（更浅处）（<w>$cmd[CMD_GO_UPSTAIRS]</w>）。这很适合撤退或寻找安全的休息地点，因为上一层的怪物较少，而本层的怪物除非紧挨着你，否则无法跟随你上楼。要回到这一层，请站在下楼梯上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。<tiles>在 Tiles 中，两种操作都可以直接单击<w>鼠标左键</w>来完成。</tiles>
+%%%%
+HINT_DESCRIBE_ESCAPE_HATCH
+
+上下逃生舱口分别可以用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 来快速离开当前楼层。注意，你通常无法立即返回。
+%%%%
+HINT_DESCRIBE_CLOSED_DOOR
+
+为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以进入地图视图（<w>$cmd[CMD_DISPLAY_MAP]</w>），将光标移到该格上，按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]$cmd[CMD_MAP_EXCLUDE_AREA]</w> 将其标记为禁区。此禁区会阻止自动旅行进入该格，直到你再次按 <w>$cmd[CMD_DISPLAY_MAP]$cmd[CMD_MAP_EXCLUDE_AREA]</w> 将其移除。
+%%%%
+HINT_DESCRIBE_FADED_ALTAR_ATHEIST
+
+这座祭坛古老得令你无法辨认它供奉哪位神祇！站在祭坛上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 皈依，会使你投入一位随机神祇的麾下；祂会赐予你一些额外的虔诚值作为感谢。
+%%%%
+HINT_DESCRIBE_NONFADED_ALTAR_ATHEIST
+
+要了解<w>$1</w>，请站在祭坛上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。在改信相应神祇前，系统会要求你确认。
+%%%%
+HINT_DESCRIBE_FADED_ALTAR
+
+这座祭坛古老得令你无法辨认它供奉哪位神祇，而且 $1 多半不会喜欢你改信其他神祇。如果你愿意冒险，可以站在祭坛上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 皈依。这样会使你投入一位随机神祇的麾下；祂会赐予你一些额外的虔诚值作为感谢。
+%%%%
+HINT_DESCRIBE_NONFADED_ALTAR
+
+$1 多半不会喜欢你改信其他神祇，不过看看倒是无妨：要了解<w>$2</w>，请站在祭坛上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。在改信相应神祇（并放弃当前信仰！）前，系统会要求你确认。\n要查看你与 $1 当前的关系，按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><tiles>，或按住 <w>Shift</w> 的同时用<w>鼠标右键</w>单击你的角色</tiles>。
+%%%%
+HINT_DESCRIBE_HARMLESS_CLOUD_SINGULAR
+
+$1无害。
+%%%%
+HINT_DESCRIBE_HARMLESS_CLOUD_PLURAL
+
+$1无害。
+%%%%
+HINT_DESCRIBE_HARMFUL_CLOUD_SINGULAR
+
+$1可能有危险，应尽量远离。
+%%%%
+HINT_DESCRIBE_HARMFUL_CLOUD_PLURAL
+
+$1可能有危险，应尽量远离。
+%%%%
+HINT_DESCRIBE_CURRENTLY_HARMLESS_CLOUD_SINGULAR
+
+$1目前无害，但情况可能在某个时候改变。查看总览界面（<w>$cmd[CMD_RESISTS_SCREEN]</w>）来了解你的抗性。
+%%%%
+HINT_DESCRIBE_CURRENTLY_HARMLESS_CLOUD_PLURAL
+
+$1目前无害，但情况可能在某个时候改变。查看总览界面（<w>$cmd[CMD_RESISTS_SCREEN]</w>）来了解你的抗性。
+%%%%
+HINT_DESCRIBE_OPAQUE_CLOUD
+
+这团云是不透明的。如果你和某个格子之间有两团或更多不透明的云，你将无法看到那个格子里的任何东西。
+%%%%
+HINT_DESCRIBE_TOUGH_MONSTER
+
+这个怪物看起来相当危险！
+%%%%
+HINT_DESCRIBE_BERSERKED_MONSTER
+
+狂暴的怪物嗜血好战，疯狂战斗。这种狂暴状态使其格外危险！
+%%%%
+HINT_DESCRIBE_FRIENDLY_MONSTER
+
+友方怪物会跟随你并尝试在战斗中协助你。你可以通过与附近的盟友对话（<w>$cmd[CMD_SHOUT]</w>）来下达指令。
+%%%%
+HINT_DESCRIBE_DANGEROUS_UNAWARE_MONSTER
+
+你可以将它所在的格子标记为危险，以免在使用自动探索或自动旅行时意外进入它的视野。要这样做，先按 <w>$cmd[CMD_LOOK_AROUND]</w> 进入瞄准模式，将光标移到怪物所在的格子上，再按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w>。这样会将该格及周围半径为 8 的所有格子标记为“禁区”，探索或旅行模式都不会进入这些格子。
+%%%%
+HINT_RUN_AWAY
+
+现在也许是逃跑的好时机。
+%%%%
+HINT_RUN_AWAY_OR_BERSERK
+
+现在也许是逃跑或用 <w>a</w> 激活狂暴能力的好时机。
+%%%%
+HINT_DESCRIBE_UNREMARKABLE_MONSTER
+
+这只怪物似乎没有任何抗性或弱点。它不会飞，速度一般。查看其他可能更高级的怪物，或许能为如何对付它们提供重要线索。
 %%%%

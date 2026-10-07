@@ -152,6 +152,8 @@ ignore += you emerge from the shadows\.
 # Chinese translation compatibility
 ignore += 从阴影中显现
 ignore += finished recrystalising\.
+# Chinese translation compatibility
+ignore += (完成|结束|完毕).*重新结晶|重新结晶.*(完成|结束|完毕)
 
 # Uskayaw -- ignore all Uskayaw power gain/loss messages since they happen constantly
 #
