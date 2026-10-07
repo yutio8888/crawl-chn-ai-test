@@ -791,6 +791,9 @@ Ashenzari will now identify your possessions.
 Ashenzari will no longer identify your possesions.
 艾申扎利不再鉴定你的所有物。
 %%%%
+Ashenzari will no longer identify your possessions.
+艾申扎利不再鉴定你的所有物。
+%%%%
 Ashenzari identifies your possessions.
 艾申扎利鉴定你的所有物。
 %%%%
@@ -19603,6 +19606,18 @@ Foes burned or shocked in your presence are regularly outlined in light.
 Foes burned or shocked in your presence may be outlined in light.
 在你面前被烧伤或电击的敌人可能会被光线勾勒出来。
 %%%%
+A subtle swarm of sparks and cinders bursts forth and dances around you.
+一群微弱的火星与余烬迸发而出，在你周围舞动。
+%%%%
+Your quiet swarm of sparks and cinders mildly raises in intensity.
+你那安静的火星与余烬群略微增强了。
+%%%%
+Your faint swarm of sparks and cinders peters out.
+你那微弱的火星与余烬群渐渐消散了。
+%%%%
+Your quiet swarm of sparks and cinders starts to taper off.
+你那安静的火星与余烬群开始减弱了。
+%%%%
 It takes a long time for you to wield or remove held weapons.
 你持握或移除武器需要很长时间。
 %%%%
@@ -19647,6 +19662,21 @@ The South Wind quickens your rampage movements after stabbing.
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
 西风在你狂暴时增强你的远程攻击。
+%%%%
+You feel the indomitable North Wind bolstering your fortitude.
+你感到刚毅的北风正使你更加坚韧。
+%%%%
+You feel the capricious South Wind quickening your steps.
+你感到善变的南风正加快你的步伐。
+%%%%
+You feel the generous West Wind guiding your aim.
+你感到慷慨的西风正助你瞄准。
+%%%%
+You feel the spiteful East Wind laying your enemies bare.
+你感到怨毒的东风正让你的敌人暴露无遗。
+%%%%
+The winds are changing....
+风向正在转变……
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
 受伤时，伤害在你的生命和魔力储备之间分摊。
@@ -20460,6 +20490,18 @@ You sometimes pull newly seen creatures towards you.
 %%%%
 You stampede swiftly towards enemies and can push them backward.
 你向敌人猛冲，可以将他们推回去。
+%%%%
+You become able to stampede towards enemies.
+你现在能向敌人奔踏了。
+%%%%
+Your stampede becomes supported by the winds.
+你的奔踏得到风的助力了。
+%%%%
+You can no longer stampede toward enemies.
+你无法再向敌人奔踏了。
+%%%%
+One of the Four Winds will empower you as you Stampede.
+你奔踏时，四风之一将赋予你力量。
 %%%%
 You take considerably more damage. (AC -15)
 你受到相当多的伤害。（防御-15）
@@ -25166,7 +25208,7 @@ quill-form
 刺毛形态
 %%%%
 covered in sharp quills.
-浑身长满尖锐的刺毛。
+一个浑身长满尖锐刺毛的生物。
 %%%%
 Quill Dmg
 刺毛伤害
@@ -31879,10 +31921,10 @@ attack will deal greatly increased damage and also cleave into targets an extra
 攻击会造成大幅增加的伤害，并能劈砍额外一格
 %%%%
 space away. This effect charges faster and partially retains its charge between
-距离外的目标。此效果会更快蓄能，并在两次
+距离外的目标。狂暴时，此效果蓄能更快，并能在两次
 %%%%
 attacks while you are berserk.
-攻击之间保留部分蓄能，前提是你处于狂暴状态。
+攻击之间保留部分蓄能。
 %%%%
 It inflicts powerful necromantic curses on any foe it strikes.
 它会对击中的任何敌人施加威力强大的死灵诅咒。
@@ -31942,7 +31984,7 @@ Equipping it will reduce your piety. While worn, you gain piety at three quarter
 装备它会降低你的虔诚值。佩戴期间，你获得虔诚值的速率为正常速率的四分之三。
 %%%%
 It may create clouds of spectral mist when the wearer attacks or casts spells, and grants immunity from such clouds. Necromancy spells have a greater chance to produce spectral mist.
-穿戴者攻击或施法时，它可能产生幽魂雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽魂雾气的几率更高。
+穿戴者攻击或施法时，它可能产生幽灵雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽灵雾气的几率更高。
 %%%%
 You hear the sound of rushing water.
 你听到了流水声。
@@ -32347,7 +32389,7 @@ Primordial Nightfall
 原始夜幕
 %%%%
 Ancestor Life: Elementalist
-先祖生涯：元素使
+先祖生涯：元素师
 %%%%
 Your shadow is still firmly attached to your body.
 你的影子仍然牢牢地附在你身上。

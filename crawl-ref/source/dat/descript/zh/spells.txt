@@ -2091,7 +2091,7 @@ Warp Space spell
 %%%%
 Bolt of Antimagic spell
 
-发射一道可穿透目标的反魔法箭，其力量在存在本身的层面上自相矛盾，
+发射一道可穿透目标的反魔箭，其力量在存在本身的层面上自相矛盾，
 能汲取受害者储存的魔力。
 %%%%
 Bolster spell
