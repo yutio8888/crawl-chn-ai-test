@@ -19603,6 +19603,18 @@ Foes burned or shocked in your presence are regularly outlined in light.
 Foes burned or shocked in your presence may be outlined in light.
 在你面前被烧伤或电击的敌人可能会被光线勾勒出来。
 %%%%
+A subtle swarm of sparks and cinders bursts forth and dances around you.
+一群微弱的火星与余烬迸发而出，在你周围舞动。
+%%%%
+Your quiet swarm of sparks and cinders mildly raises in intensity.
+你那安静的火星与余烬群略微增强了。
+%%%%
+Your faint swarm of sparks and cinders peters out.
+你那微弱的火星与余烬群渐渐消散了。
+%%%%
+Your quiet swarm of sparks and cinders starts to taper off.
+你那安静的火星与余烬群开始减弱了。
+%%%%
 It takes a long time for you to wield or remove held weapons.
 你持握或移除武器需要很长时间。
 %%%%
@@ -19647,6 +19659,21 @@ The South Wind quickens your rampage movements after stabbing.
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
 西风在你狂暴时增强你的远程攻击。
+%%%%
+You feel the indomitable North Wind bolstering your fortitude.
+你感到刚毅的北风正使你更加坚韧。
+%%%%
+You feel the capricious South Wind quickening your steps.
+你感到善变的南风正加快你的步伐。
+%%%%
+You feel the generous West Wind guiding your aim.
+你感到慷慨的西风正助你瞄准。
+%%%%
+You feel the spiteful East Wind laying your enemies bare.
+你感到怨毒的东风正让你的敌人暴露无遗。
+%%%%
+The winds are changing....
+风向正在转变……
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
 受伤时，伤害在你的生命和魔力储备之间分摊。
@@ -20460,6 +20487,18 @@ You sometimes pull newly seen creatures towards you.
 %%%%
 You stampede swiftly towards enemies and can push them backward.
 你向敌人猛冲，可以将他们推回去。
+%%%%
+You become able to stampede towards enemies.
+你现在能向敌人奔踏了。
+%%%%
+Your stampede becomes supported by the winds.
+你的奔踏得到风的助力了。
+%%%%
+You can no longer stampede toward enemies.
+你无法再向敌人奔踏了。
+%%%%
+One of the Four Winds will empower you as you Stampede.
+你奔踏时，四风之一将赋予你力量。
 %%%%
 You take considerably more damage. (AC -15)
 你受到相当多的伤害。（防御-15）
