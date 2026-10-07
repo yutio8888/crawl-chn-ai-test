@@ -837,7 +837,7 @@ static bool _check_tukima_validity(const actor *target)
     // Our god won't let us animate a weapon they abhor.
     if (god_forbids_item(*wpn))
     {
-        simple_god_message(" forbids you from animating such a foul weapon!");
+        simple_god_message(T_(" forbids you from animating such a foul weapon!"));
         return false;
     }
 
@@ -3741,7 +3741,7 @@ string surprising_crocodile_unusable_reason(const actor& agent, const coord_def&
         return T_("You can't see a valid target there.");
 
     if (targ->invisible())
-        return "Your crocodile wouldn't be able to see that.";
+        return T_("Your crocodile wouldn't be able to see that.");
 
     const coord_def drag_shift = -(target - agent.pos()).sgn();
     const coord_def move_pos = agent.pos() + drag_shift;

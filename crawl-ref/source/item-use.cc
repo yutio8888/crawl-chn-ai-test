@@ -3498,7 +3498,7 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp,
             *god_forbids = true;
 
         if (you_worship(GOD_OKAWARU))
-            return "you have forsworn all allies in Okawaru's name.";
+            return T_("you have forsworn all allies in Okawaru's name.");
 
         return make_stringf(T_("%s forbids the use of this talisman."),
                             uppercase_first(god_name(you.religion)).c_str());

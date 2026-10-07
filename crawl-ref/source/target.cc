@@ -730,13 +730,13 @@ bool targeter_phantom_mirror::valid_aim(coord_def a)
         return false;
 
     if (a == you.pos())
-        return notify_fail("You can't use the mirror on yourself.");
+        return notify_fail(T_("You can't use the mirror on yourself."));
 
     monster *victim = monster_at(a);
     if (!victim || !you.aware_of(*victim))
         return notify_fail("");
     else if (!mirror_can_effect(victim))
-        return notify_fail("The mirror can't reflect that.");
+        return notify_fail(T_("The mirror can't reflect that."));
     else if (!you.can_see(*victim))
         return notify_fail(T_("You can't see that clearly enough."));
     return true;
@@ -2891,7 +2891,7 @@ bool targeter_paragon_deploy::valid_aim(coord_def a)
         return false;
 
     if (monster_at(a) && you.aware_of(*monster_at(a)))
-        return notify_fail("There's something in the way.");
+        return notify_fail(T_("There's something in the way."));
 
     if (!monster_habitable_grid(MONS_PLATINUM_PARAGON, a))
         return notify_fail(

@@ -540,8 +540,8 @@ bool prompt_dangerous_portal(dungeon_feature_type ftype)
                      "Continue?"), abyss_default_depth(true)).c_str(), false, 'n');
     }
     case DNGN_ENTER_GULCH:
-        return yesno("If you enter this portal, the magical contamination on the "
-                     "other side will temporarily mutate you thrice. Continue?", false, 'n');
+        return yesno(T_("If you enter this portal, the magical contamination on the "
+                     "other side will temporarily mutate you thrice. Continue?"), false, 'n');
     default:
         return true;
     }

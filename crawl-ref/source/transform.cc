@@ -2077,8 +2077,8 @@ bool check_transform_into(transformation which_trans, bool involuntary,
                      && (which_trans == transformation::vampire
                         || which_trans == transformation::death))
     {
-        if (!yesno("Becoming undead will pull you out of death's doorway! "
-                   "Transform anyway?", true, 'n'))
+        if (!yesno(T_("Becoming undead will pull you out of death's doorway! "
+                   "Transform anyway?"), true, 'n'))
         {
             return false;
         }

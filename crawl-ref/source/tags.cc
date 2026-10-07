@@ -8561,7 +8561,7 @@ static void _tag_read_level_monsters(reader &th)
             if (mi2->mid == mid)
             {
                 mprf(MSGCH_ERROR, "elsewhere companion has duplicate mid %d: %s",
-                    mi2->mid, mi2->full_name(DESC_PLAIN).c_str());
+                    mi2->mid, monster_info(&**mi2, MILEV_NAME).title_name().c_str());
                 env.mid_cache[mid] = mi2->mindex();
             }
         }

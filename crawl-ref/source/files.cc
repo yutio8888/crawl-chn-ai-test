@@ -3673,17 +3673,17 @@ static bool _convert_obsolete_species()
     }
     else if (you.species == SP_ARMATAUR)
     {
-        if (!yesno(
+        if (!yesno(T_(
             "This Armataur save game cannot be loaded as-is. If you load it now,\n"
-            "your character will be converted to a Gale Centaur. Continue?",
+            "your character will be converted to a Gale Centaur. Continue?"),
                        false, 'N'))
         {
             you.save->abort(); // don't even rewrite the header
             delete you.save;
             you.save = 0;
             game_ended(game_exit::abort,
-                "Please load the save in an earlier version "
-                "if you want to remain an Armataur.");
+                T_("Please load the save in an earlier version "
+                   "if you want to remain an Armataur."));
         }
         change_species_to(SP_GALE_CENTAUR);
         you.duration[DUR_STAMPEDE] = 0; // Was DUR_ROLLPAGE

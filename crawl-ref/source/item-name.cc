@@ -3506,7 +3506,7 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident,
     {
         if (god_forbids)
             *god_forbids = true;
-        return make_stringf("%s forbids the use of this item.",
+        return make_stringf(T_("%s forbids the use of this item."),
                             uppercase_first(god_name(you.religion)).c_str());
     }
 
@@ -3590,7 +3590,7 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
         {
             if (god_forbids)
                 *god_forbids = true;
-            return make_stringf("%s forbids the use of this item.",
+            return make_stringf(T_("%s forbids the use of this item."),
                                 uppercase_first(god_name(you.religion)).c_str());
         }
     }
