@@ -4256,6 +4256,34 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     经 database.cc 的大小写不敏感 SourceDB 查找共用同一运行时身份，
     因而沿用“雾”，取代 D-C-095 的“幽魂雾”；glossary items 行以实际
     catalog 键 `mist` 登记，备注保留 `Mist` 标签身份。
+  - B0-6：`spark swarm` 沿用稳定版 D（`d1a7d2d36b`）已有共享键的
+    “火花群”，取代 D-C-095 的“火星群”；新变异正文／消息的“火星与余烬”
+    是现象描述，未用作名称，保持有效。
+  - B0-6 全量核对同时对齐以下本次新登记的共享键；既有 catalog 保持不变：
+
+    | EN | 原 glossary | 共享键定稿 |
+    |----|-------------|------------|
+    | -Swift | 缓步 | -迅捷 |
+    | Repeat Exegesis | 再次释经 | 重复释经 |
+    | cursed | 被诅咒 | 诅咒的 |
+    | Bolster | 强化体魄 | 强化 |
+    | Elementalist / elementalist | 元素使 | 元素师 |
+    | roaming sludgefish | 游荡泥浆鱼 | 游荡泥鱼 |
+    | `status\|Barbs` | 倒刺 | 尖刺 |
+    | `status\|ambrosia-drunk` | 神食酣醉 | 仙酒醉 |
+    | Bolt of Antimagic | 反魔法箭 | 反魔箭 |
+    | Bound item | 已束缚物品 | 绑定物品 |
+
+    表中两项状态标签限定 D-C-096 的原裁决；普通 barbs → 倒刺、
+    ambrosia → 神食仍有效。`Bound item` 是 describe-god.cc 的神祇详情页
+    独立键；菜单／能力费用的 `, Bound item`、`One bound item` 仍使用
+    “已束缚物品”词根。Elementalist、Bolt of Antimagic 大小写变体在
+    SourceDB 中共用身份，不能分别定稿；完整能力名／职业名各依其独立键。
+    `Jade`、`Vapour` 有独立的 `status|Jade → 玉晶`、
+    `status|Vapour → 汽雾`，不套用普通材料 jade 或 vapour 的共享译文。
+    此补充取代 D-C-095 对表内单独键的译名，不改已有译文资产。
+    D-C-096 Scope split 已明确延后稳定线处理的 mutagenic fog 继续保留
+    新术语“诱变雾气”及共享旧条目“致变雾气”的已知暂时不一致。
   - **Optional follow-up**: 将来若需要铭文与人物称号，或物品前缀与其他
     bound 用法分别译为不同措辞，应先在代码显示调用中引入明确的上下文键，
     再由 catalog 译者填充并验证各语境。本次不实施此可选改进。
