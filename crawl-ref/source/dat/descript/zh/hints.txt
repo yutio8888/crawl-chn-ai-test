@@ -652,7 +652,7 @@ HINT_MONSTER_LIST_CONSOLE
 %%%%
 HINT_ATTACK_MONSTER_RANGED
 
-然而，作为一名猎手，你会想用弓箭来对付它。如果你从<w>i</w>背包中查看你的短弓，你会找到相关的操作说明。
+然而，作为一名猎手，你会想用弓箭来对付它。如果你按 <w>i</w> 打开物品栏查看你的短弓，就能找到相关的操作说明。
 %%%%
 HINT_RANGED_WIELDED
 
@@ -756,13 +756,7 @@ HINT_ENDURE_GOD_WRATH
 %%%%
 HINT_CONVERTED_GOOD_TO_GOOD
 
-幸运的是，$1 似乎并不介意你改信 $2。
-{{
-    if you.piety_rank() > 0 then
-        return "你甚至保留了一部分虔诚值！"
-    end
-}}
-注意，这种联盟仅存在于三位善良神祇之间，所以不要指望这是常态。
+幸运的是，$1 似乎并不介意你改信 $2。{{ if you.piety_rank() > 0 then return "你甚至保留了一部分虔诚值！" end }}注意，这种联盟仅存在于三位善良神祇之间，所以不要指望这是常态。
 %%%%
 HINT_CONVERTED_GOOD_TO_NEUTRAL
 
@@ -809,32 +803,7 @@ HINT_RANGED_NOT_WIELDED
 %%%%
 HINT_LOAD_SAVED_GAME
 
-欢迎回来！如果有一段时间没玩了，你可能需要回顾一下。\n
-{{
-    local msg = "你的物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）"
-
-    if you.spell_letters() ~= nil and #you.spell_letters() > 0 then
-        msg = msg .. "、你的法术（<w>$cmd[CMD_CAST_SPELL]?</w>）"
-    end
-
-    if you.ability_info() ~= nil and #you.ability_info() > 0 then
-        msg = msg .. "、你的能力（<w>$cmd[CMD_USE_ABILITY]</w>）"
-    end
-
-    if you.how_mutated(true, true, true) > 0 then
-        msg = msg .. "、你的变异（<w>$cmd[CMD_DISPLAY_MUTATIONS]</w>）"
-    end
-
-    if you.god() ~= "No God" then
-        msg = msg .. "、你的信仰状况（<w>$cmd[CMD_DISPLAY_RELIGION]</w>）"
-    end
-
-    msg = msg .. "、消息历史（<w>$cmd[CMD_REPLAY_MESSAGES]</w>）"
-    msg = msg .. "、角色总览界面（<w>$cmd[CMD_RESISTS_SCREEN]</w>）"
-    msg = msg .. "以及地牢总览界面（<w>$cmd[CMD_DISPLAY_OVERMAP]</w>）"
-    msg = msg .. "都值得查看。";
-    return msg
-}}
+欢迎回来！如果有一段时间没玩了，你可能需要回顾一下。\n{{ local msg = "你的物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）" if you.spell_letters() ~= nil and #you.spell_letters() > 0 then msg = msg .. "、你的法术（<w>$cmd[CMD_CAST_SPELL]?</w>）" end if you.ability_info() ~= nil and #you.ability_info() > 0 then msg = msg .. "、你的能力（<w>$cmd[CMD_USE_ABILITY]</w>）" end if you.how_mutated(true, true, true) > 0 then msg = msg .. "、你的变异（<w>$cmd[CMD_DISPLAY_MUTATIONS]</w>）" end if you.god() ~= "No God" then msg = msg .. "、你的信仰状况（<w>$cmd[CMD_DISPLAY_RELIGION]</w>）" end msg = msg .. "、消息历史（<w>$cmd[CMD_REPLAY_MESSAGES]</w>）" msg = msg .. "、角色总览界面（<w>$cmd[CMD_RESISTS_SCREEN]</w>）" msg = msg .. "以及地牢总览界面（<w>$cmd[CMD_DISPLAY_OVERMAP]</w>）" msg = msg .. "都值得查看。"; return msg }}
 %%%%
 HINT_ABILITIES_SCREEN
 
@@ -866,13 +835,7 @@ HINT_MEMORISE
 %%%%
 HINT_CANNOT_MEMORISE
 
-你现在无法记忆
-{{
-    if table.getn(you.spell_letters()) > 0 then
-        return "更多"
-    end
-}}
-法术。随着你等级和施法能力的提升，这种情况会改变。
+你现在无法记忆{{ if table.getn(you.spell_letters()) > 0 then return "更多" end }}法术。随着你等级和施法能力的提升，这种情况会改变。
 %%%%
 HINT_CAST_SPELL
 
@@ -1003,7 +966,7 @@ HINT_DESCRIBE_MISCELLANEOUS_ITEM
 %%%%
 HINT_DESCRIBE_TRAP_SHAFT
 
-地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。\n如果想跳下去，请按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。但要注意，返回这里可能会很困难。
+地牢中有许多天然障碍，比如竖井，会让你掉下一到三层。一旦你知道竖井在那里，就可以安全地从上面走过。\n如果想跳下去，请按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。但要注意，返回这里可能会很困难。
 %%%%
 HINT_DESCRIBE_DOWNSTAIRS
 
