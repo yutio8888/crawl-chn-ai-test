@@ -10120,7 +10120,7 @@ Goji triumphant
   if you.invisible() then
     return '@The_monster@得意地大笑。“戈吉*更*隐形！”'
   else
-    return '@The_monster@大笑。“傻' .. crawl.t_(you.species()) .. "！你根本看不见俺。"
+    return '@The_monster@大笑。“傻' .. crawl.t_(you.species()) .. "！你根本看不见俺。”"
   end
 }}
 %%%%

@@ -81,7 +81,7 @@ msc += lightmagenta:malevolent force fills
 msc += lightmagenta:邪恶力量充满
 msc += lightmagenta:too known and too boring
 # Chinese translation compatibility
-msc += lightmagenta:(太熟悉|太熟知|太了解|过于熟悉).*(太无聊|过于无聊)
+msc += lightmagenta:太熟悉、太无聊了
 
 # Less urgent, but still significant messages
 #
@@ -174,16 +174,16 @@ msc += $warning:rapidly growing quiet
 msc += $warning:逐渐.*安静
 msc += $warning:slides (away|towards)
 # Chinese translation compatibility
-msc += $warning:滑走|滑了过来|移开了|滑开了
+msc += $warning:从你身边滑走了|向你滑了过来|在你.*它(时|后立刻)移开了|一面金属墙滑开了
 msc += $warning:settles down
 # CN: $warning:settles down
 msc += $warning:平息|落定
 msc += white:There is a(n entrance| portal| gateway) to.*on this level
 # Chinese translation compatibility
-msc += white:(这个楼层|本层|这一层|此层|本楼层).*(入口|传送门|通道)|(入口|传送门|通道).*(这个楼层|本层|这一层|此层|本楼层)
+msc += white:这个楼层有一个通往.*的(入口|传送门)
 msc += white:caravan has stopped on this level
 # Chinese translation compatibility
-msc += white:商队.*(停驻|停(了)?下|停留|驻扎)
+msc += white:跨次元商队在这个楼层停了下来
 msc += lightcyan:(There is|Found).*purified mutation catalyst
 # Chinese translation compatibility
 msc += lightcyan:(有|发现|找到).*净化诱变催化器
@@ -236,7 +236,7 @@ msc += $boring:is recalled by Beogh
 msc += $boring:被比欧弗召回
 msc += $boring:finishes recrystalising
 # Chinese translation compatibility
-msc += $boring:(完成|结束|完毕).*重新结晶|重新结晶.*(完成|结束|完毕)
+msc += $boring:重新结晶完毕。
 
 # Ignore Uskayaw *** and **** power loss messages by default; they're spammy.
 msc += mute:Uskayaw will no longer force your foes to helplessly watch your dance\.
@@ -328,13 +328,13 @@ force_more_message += interdimensional caravan
 force_more_message += 跨次元商队
 force_more_message += There is a(n entrance| portal| gateway) to.*on this level
 # Chinese translation compatibility
-force_more_message += (这个楼层|本层|这一层|此层|本楼层).*(入口|传送门|通道)|(入口|传送门|通道).*(这个楼层|本层|这一层|此层|本楼层)
+force_more_message += 这个楼层有一个通往.*的(入口|传送门)
 force_more_message += Beware! This is a limited time offer
 
 # Religion
 force_more_message += warns you to remove
 # Chinese translation compatibility
-force_more_message += 警告你.*(取下|卸下|摘下|脱下)
+force_more_message += 警告你取下
 force_more_message += press .* to convert to Beogh
 # Chinese translation compatibility
 force_more_message += 皈依比欧弗
@@ -464,7 +464,7 @@ force_more_message += deal. but finds you have enough
 force_more_message += 你已经有足够的
 force_more_message += chain yourself with knowledge
 # Chinese translation compatibility
-force_more_message += 知识.*(束缚|锁链)|(束缚|锁链).*知识
+force_more_message += 邀你以知识铸成枷锁束缚自己
 force_more_message += allow you to induct
 # Chinese translation compatibility
 force_more_message += 将.*纳入麾下
@@ -480,7 +480,7 @@ force_more_message += is forced to slowly start .* word of recall
 force_more_message += 被迫.*开始.*召回术
 force_more_message += too known and too boring
 # Chinese translation compatibility
-force_more_message += (太熟悉|太熟知|太了解|过于熟悉).*(太无聊|过于无聊)
+force_more_message += 太熟悉、太无聊了
 
 # Crucible exit notification
 force_more_message += Makhleb acknowledges your contrition
