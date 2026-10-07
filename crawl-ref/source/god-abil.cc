@@ -2468,6 +2468,16 @@ static void _choose_curse_knowledge()
     // piety alone
 }
 
+string format_ashenzari_curse_offer(const string &curse_names)
+{
+    if (curse_names.empty())
+        return T_("Ashenzari invites you to chain yourself with knowledge.");
+
+    return make_stringf(
+        T_("Ashenzari invites you to chain yourself with knowledge of %s."),
+        curse_names.c_str());
+}
+
 /**
  * Offer a new curse to the player, letting them know their new curse is
  * available.
@@ -2485,11 +2495,8 @@ void ashenzari_offer_new_curse()
     you.props[AVAILABLE_CURSE_KEY] = true;
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     const string curse_names = ashenzari_curse_knowledge_list();
-    const string offer_string = curse_names.empty() ? "" :
-                                (T_(" of ") + curse_names);
-
-    mprf(MSGCH_GOD, T_("Ashenzari invites you to chain yourself with knowledge%s."),
-                    offer_string.c_str());
+    const string offer_string = format_ashenzari_curse_offer(curse_names);
+    mprf(MSGCH_GOD, "%s", offer_string.c_str());
 }
 
 static void _do_curse_item(item_def &item)
