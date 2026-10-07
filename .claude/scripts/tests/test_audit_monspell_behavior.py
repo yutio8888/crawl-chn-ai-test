@@ -865,16 +865,27 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
             355 - 12 - 2)
-        self.assertEqual(report["coverage"]["unanalysable_occurrences"], 0)
+        # Upstream 43d89d912d introduces Goji's conditional Lua key.
+        # Keep its whole key legacy and preserve the audit's fail-closed result.
+        self.assertEqual(report["coverage"]["unanalysable_occurrences"], 2)
         self.assertEqual(
-            report["coverage"]["fail_closed_behavior_roots"], 0)
+            report["coverage"]["fail_closed_behavior_roots"], 1)
         self.assertTrue(report["coverage"]["catalog_coverage_complete"])
-        self.assertTrue(
+        self.assertFalse(
             report["coverage"]["en_zh_behavior_analysis_conclusive"])
         self.assertEqual(report["locale_behavior_mismatch"], [])
-        self.assertEqual(report["locale_behavior_inconclusive"], [])
-        self.assertTrue(report["phase2_ready"])
-        self.assertEqual(report["phase2_blockers"], [])
+        self.assertEqual(report["locale_behavior_inconclusive"], [{
+            "en_analyzable": False,
+            "en_proven_predicates": [],
+            "requested_root": "antimagic gaze goji cast",
+            "zh_analyzable": False,
+            "zh_proven_predicates": [],
+        }])
+        self.assertFalse(report["phase2_ready"])
+        self.assertEqual(report["phase2_blockers"], [
+            "2 behavior occurrences are unanalysable",
+            "EN/ZH behavior analysis is inconclusive",
+        ])
 
     def test_monspell_gesture_sniffing_is_compatibility_gated(self):
         source = MON_CAST_SOURCE.read_text(encoding="utf-8")

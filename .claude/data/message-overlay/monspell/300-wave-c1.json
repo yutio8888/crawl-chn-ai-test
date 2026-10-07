@@ -211,9 +211,9 @@
       }]
     },
     {
-      "canonical_key": "unseen mara summon cast",
-      "canonical_fingerprint": "fnv1a64:99259eb12cd6a862",
-      "selection_graph_fingerprint": "fnv1a64:655ec975bd7f7493",
+      "canonical_key": "unseen summon illusion cast",
+      "canonical_fingerprint": "fnv1a64:1706da7b0cd8d34a",
+      "selection_graph_fingerprint": "fnv1a64:306da04fdc31161b",
       "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",

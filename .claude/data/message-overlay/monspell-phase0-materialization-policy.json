@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "inventory_semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
+  "inventory_semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
   "variants": [
     {
       "key": "burial acolyte cast",
@@ -127,6 +127,24 @@
       "lua_site_count": 0,
       "policy": "CASE_MAP_PROTOTYPE",
       "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "antimagic gaze goji cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 1,
+      "policy": "LEGACY_ONLY",
+      "evidence": "Upstream 43d89d912d adds conditional you.see_invisible() Lua; no bilingual structured materialization closure is proven. Entire key is new-uncovered and stays legacy."
+    },
+    {
+      "key": "rusted inspector cast",
+      "variant_ordinal": 2,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "LEGACY_ONLY",
+      "evidence": "Upstream 43d89d912d adds [rumbles|shudders]; no bilingual CASE_MAP golden exists. Entire three-variant key is new-uncovered and stays legacy."
     }
   ]
 }

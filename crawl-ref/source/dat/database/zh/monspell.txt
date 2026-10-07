@@ -112,13 +112,13 @@ Blink Range ironbound thunderhulk cast
 
 奇怪的能量在@the_monster@的装置上噼啪作响。
 %%%%
-Mara Summon cast
+Summon Illusion cast
 
 @The_monster@编织出一个幻象。
 
 @The_monster@发出微光。
 %%%%
-unseen Mara summon cast
+unseen Summon Illusion cast
 
 有什么东西编织出了一个幻象！
 %%%%
@@ -315,11 +315,11 @@ unseen Searing Breath cast
 Searing Breath cast
 
 @The_monster@朝@target@吐出@beam@。
-%%%%%
+%%%%
 Electrical Bolt cast
 
 @The_monster@射出一道@beam@，@at@@target@飞去！
-%%%%%
+%%%%
 Spit Lava cast
 
 @The_monster@朝@target@喷出熔岩。
