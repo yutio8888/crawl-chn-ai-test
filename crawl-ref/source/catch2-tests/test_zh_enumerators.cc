@@ -334,9 +334,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 #if TAG_MAJOR_VERSION == 34
         {DNGN_TRAP_SPEAR, "spear trap", "长矛陷阱"},
         {DNGN_TRAP_BOLT, "bolt trap", "弩箭陷阱"},
-        // The old gas trap mapped to this feature; keep its baseline
-        // expectation so the collapsed terrain name remains visible.
-        {DNGN_TRAP_MECHANICAL, "gas trap", "气体陷阱"},
+        // Upstream merged the old gas trap into this compatibility terrain.
+        {DNGN_TRAP_MECHANICAL, "mechanical trap", "机械陷阱"},
         {DNGN_TRAP_SHADOW, "shadow trap", "暗影陷阱"},
         {DNGN_TRAP_SHADOW_DORMANT, "dormant shadow trap", "休眠暗影陷阱"},
 #endif
