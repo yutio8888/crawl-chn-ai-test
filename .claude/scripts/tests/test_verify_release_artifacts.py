@@ -254,6 +254,23 @@ class ReleaseArtifactTest(unittest.TestCase):
                 self.assertIn(tag.encode(), (self.root / "RELEASE-MANIFEST.txt").read_bytes())
                 self.assertTrue(all(tag in rule.filename for rule in self.rules))
 
+    def test_trunk_macos_paths_and_stable_root_rejection(self) -> None:
+        tag = "0.35-trunk-001"
+        for artifact in self.artifacts.iterdir():
+            artifact.unlink()
+        self.rules = MODULE.release_rules(tag, self.source_root)
+        self._write_valid_set()
+        macos = next(rule for rule in self.rules if rule.archive_type == "dmg")
+        self.assertEqual("Dungeon Crawl Stone Soup Trunk - Tiles.app", macos.root)
+        self.assertIn(
+            f"{macos.root}/Contents/MacOS/Dungeon Crawl Stone Soup Trunk - Tiles",
+            macos.executable_files,
+        )
+        self._validate(tag=tag)
+        mounted = self.dmg_fixtures / f"{macos.filename}.mounted"
+        (mounted / macos.root).rename(mounted / "Dungeon Crawl Stone Soup - Tiles.app")
+        self.assert_rejected("expected mounted root", tag=tag)
+
     def test_release_scope_is_exactly_windows_macos_and_android(self) -> None:
         self.assertEqual(3, len(self.rules))
         self.assertEqual(

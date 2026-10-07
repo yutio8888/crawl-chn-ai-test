@@ -55,10 +55,14 @@ class ArtifactRule:
 def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
     major = ".".join(tag.split("-", 1)[0].split(".")[:2])
     windows_root = f"stone_soup-tiles-{major}"
-    macos_root = "Dungeon Crawl Stone Soup - Tiles.app"
+    macos_name = "Dungeon Crawl Stone Soup"
+    if "-trunk-" in tag:
+        macos_name += " Trunk"
+    macos_name += " - Tiles"
+    macos_root = f"{macos_name}.app"
     macos_resources = f"{macos_root}/Contents/Resources"
     macos_executable = (
-        f"{macos_root}/Contents/MacOS/Dungeon Crawl Stone Soup - Tiles"
+        f"{macos_root}/Contents/MacOS/{macos_name}"
     )
     return (
         ArtifactRule(

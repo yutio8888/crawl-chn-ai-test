@@ -448,7 +448,15 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
       - name: Build macOS tiles app
-        run: make -j4 TILES=y mac-app-tiles-dmg
+        shell: bash
+        run: |
+          mac_args=()
+          if [[ "$GITHUB_REF" != refs/tags/0.34.1-zh* ]]; then
+            mac_args+=('SAVEDIR=~/.crawl-trunk'
+              'APP_NAME=Dungeon Crawl Stone Soup Trunk'
+              'BUNDLE_IDENTIFIER=net.sourceforge.crawl-ref.trunk')
+          fi
+          make -j4 TILES=y "${mac_args[@]}" mac-app-tiles-dmg
         working-directory: crawl-ref/source
       - name: Upload macOS tiles app
         uses: actions/upload-artifact@v4
@@ -799,6 +807,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mac_app="Dungeon Crawl Stone Soup - Tiles.app"
+          if [[ "$GITHUB_REF_NAME" == *-trunk-* ]]; then
+            mac_app="Dungeon Crawl Stone Soup Trunk - Tiles.app"
+          fi
           {
             echo "# DCSS 中文版 $GITHUB_REF_NAME"
             echo
@@ -819,8 +831,8 @@ jobs:
             echo "## 支持平台"
             echo
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
-            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
-            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
+            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`$mac_app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
+            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"$mac_app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
             echo "- Android：签名的四 ABI APK，下载后按系统提示安装。"
             echo
             echo "## 延期平台"
