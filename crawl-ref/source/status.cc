@@ -7,6 +7,7 @@
 #include "art-enum.h" // bearserk
 #include "artefact.h"
 #include "branch.h"
+#include "database.h"
 #include "dungeon.h" // DESCENT_STAIRS_KEY
 #include "duration-type.h"
 #include "env.h"
@@ -158,6 +159,7 @@ static int _dur_colour(int exp_colour, bool expiring)
 
 static void _mark_expiring(status_info& inf, bool expiring)
 {
+    inf.is_expiring = expiring;
     if (expiring)
     {
         if (!inf.short_text.empty())
@@ -646,6 +648,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_text = T_("Fire");
             inf.db_key     = "Fire";
         }
+        break;
     }
 
     case STATUS_BEOGH:
@@ -1091,7 +1094,7 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_SALVO:
         inf.light_text = make_stringf("Salvo (%d)", you.props[SALVO_KEY].get_int());
         inf.short_text = make_stringf("salvo (%d)", you.props[SALVO_KEY].get_int());
-    break;
+        break;
 
     default:
         if (!found)
@@ -1119,6 +1122,26 @@ bool fill_status_info(int status, status_info& inf)
             inf.long_text = C_("status", inf.long_text.c_str());
     }
     return true;
+}
+
+string status_light_description(const status_info& inf)
+{
+    // Split off any extra info, e.g. counts for things like Zot and Flay.
+    // (Status db descriptions never have spaces.)
+    string dbname = split_string(" ", inf.db_key, true, true, 1)[0];
+    // Don't claim Zot is impending when it's not near.
+    if (dbname == "Zot" && inf.light_colour == WHITE)
+        dbname = "Zot count";
+    string dbdesc = getLongDescription(dbname + " status");
+    trim_string_right(dbdesc);
+
+    if (dbdesc.empty())
+        dbdesc = T_("No description found");
+
+    if (inf.is_expiring)
+        dbdesc += T_(" (expiring)");
+
+    return dbdesc;
 }
 
 static colour_t _gem_light_colour(int d_aut_left)

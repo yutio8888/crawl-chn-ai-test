@@ -1213,7 +1213,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
             mon->props[TUKIMA_WEAPON] = true;
         }
         else
-            give_item(mon, place.absdepth(), mg.is_summoned());
+            give_item(mon, place.absdepth());
 
 
         // Dancing weapons *always* have a weapon. Fail to create them
@@ -1241,13 +1241,22 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     else if (mons_class_itemuse(mg.cls) >= MONUSE_STARTING_EQUIPMENT
              && !mg.props.exists(KIKU_WRETCH_KEY))
     {
-        give_item(mon, place.absdepth(), mg.is_summoned());
+        give_item(mon, place.absdepth());
         // Give these monsters a second weapon. - bwr
         if (mons_class_wields_two_weapons(mg.cls))
             give_weapon(mon, place.absdepth());
 
+        // If a monster was given two weapons, start with a ranged weapon
+        // wielded if they're an archer, and a melee weapon wielded otherwise.
+        // (But if they only have one weapon, don't stow it away, even if it's
+        // a launcher.)
         unwind_var<int> save_speedinc(mon->speed_increment);
-        mon->wield_melee_weapon(false);
+        const item_def *weap = mon->mslot_item(MSLOT_WEAPON);
+        const item_def *alt = mon->mslot_item(MSLOT_ALT_WEAPON);
+        if (!weap && alt)
+            mon->swap_weapons(false);
+        else if (!(mon->flags & MF_ARCHER))
+            mon->wield_melee_weapon(false);
     }
 
     if (mon->type == MONS_SLIME_CREATURE && mon->blob_size > 1)

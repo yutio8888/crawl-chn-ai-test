@@ -49,6 +49,7 @@
 #include "shout.h"
 #include "spl-damage.h"
 #include "spl-goditem.h"
+#include "spl-monench.h" // is_valid_tempering_target
 #include "spl-summoning.h" //AF_SPIDER
 #include "state.h"
 #include "stepdown.h"
@@ -337,16 +338,26 @@ void melee_attack::handle_phase_blocked()
              attacker == defender ? T_("its own") : atk_name(DESC_ITS).c_str());
     }
 
-    if (defender->is_player() && you.duration[DUR_DIVINE_SHIELD]
-        && coinflip() && attacker->as_monster()->res_blind() <= 1)
+    if (defender->divinely_shielded()
+        && coinflip() && attacker->res_blind() <= 1)
     {
-        const bool need_msg = !attacker->as_monster()->has_ench(ENCH_BLIND);
-        if (attacker->as_monster()->add_ench(mon_enchant(ENCH_BLIND, &you,
-                                        random_range(3, 5) * BASELINE_DELAY))
-            && need_msg)
+        if (monster* mon = attacker->as_monster())
         {
-            mprf(T_("%s is struck blind by the light of your shield."),
-                 attacker->name(DESC_THE).c_str());
+            const bool need_msg = !mon->has_ench(ENCH_BLIND);
+            if (mon->add_ench(mon_enchant(ENCH_BLIND, &you,
+                                random_range(3, 5) * BASELINE_DELAY))
+                && need_msg)
+            {
+                mprf(T_("%s is struck blind by the light of %s divine shield."),
+                        attacker->name(DESC_THE).c_str(),
+                        defender->name(DESC_ITS).c_str());
+            }
+        }
+        else
+        {
+            blind_player(random_range(3, 5), WHITE);
+            mprf(T_("You are blinded by the light of %s divine shield."),
+                        defender->name(DESC_ITS).c_str());
         }
     }
 
@@ -611,7 +622,7 @@ void melee_attack::do_vampire_lifesteal()
         if (!stab_attempt && !x_chance_in_y(2, 3))
             return;
 
-        const bool can_heal = actor_is_susceptible_to_vampirism(*mon);
+        const bool can_heal = actor_can_drain_life_from(you, *mon);
         const bool can_enthrall = stab_attempt && !mon->is_summoned()
                                   && !mon->alive()
                                   && mon->holiness() & (MH_NATURAL | MH_PLANT | MH_DEMONIC);
@@ -646,7 +657,7 @@ void melee_attack::do_vampire_lifesteal()
     }
 }
 
-void melee_attack::handle_concussion_brand()
+void melee_attack::handle_concussion_brand(bool unrand)
 {
     const coord_def old_pos = defender->pos();
     bool did_move = false;
@@ -695,6 +706,9 @@ void melee_attack::handle_concussion_brand()
     {
         schedule_trample_follow_fineff(attacker, old_pos);
     }
+
+    if (unrand && damage_done > 0 && (did_move || one_chance_in(4)))
+            schedule_stardust_fineff(attacker, 20 + damage_done * 3 / 2, 1, SHOOTING_STAR_CARINA);
 }
 
 static void _apply_flux_contam(monster &m)
@@ -812,6 +826,27 @@ void melee_attack::grow_burstshrooms(int hd)
 
     if (created && player_can_see)
         mprf(T_("Mushrooms sprout behind %s."), defender->name(DESC_THE).c_str());
+}
+
+static void _trigger_coolibah_bardiche(actor* attacker, actor* defender, int dam)
+{
+    if (defender->is_constricted() && defender->alive() && dam)
+    {
+        if (one_chance_in(3))
+            defender->floodify(attacker, min(20 + random2(dam * 6), 80));
+
+        coord_def pos = defender->pos();
+
+        if (one_chance_in(3) && in_bounds(pos) && env.grid(pos) != DNGN_DEEP_WATER
+            && env.grid(pos) != DNGN_LAVA && env.grid(pos) != DNGN_TOXIC_BOG)
+        {
+            mprf(T_("A bog forms beneath %s!"), defender->name(DESC_THE).c_str());
+            temp_change_terrain(pos, DNGN_TOXIC_BOG, min(20 + random2(dam * 6), 80),
+                TERRAIN_CHANGE_BOG, attacker->mid);
+
+            flash_tile(pos, LIGHTGREEN, 0, TILE_BOLT_BOG_FLASH);
+        }
+    }
 }
 
 /* An attack has been determined to have hit something
@@ -934,6 +969,11 @@ bool melee_attack::handle_phase_hit()
 
     maybe_trigger_jinxbite();
 
+    // Using a separate function and not a melee unrand effect because this
+    // needs to check constriction status before applying the entangling brand
+    if (weapon && is_unrandom_artefact(*weapon, UNRAND_COOLIBAH_BARDICHE))
+        _trigger_coolibah_bardiche(attacker, defender, damage_done);
+
     // Check for weapon brand & inflict that damage too
     apply_damage_brand();
 
@@ -941,7 +981,7 @@ bool melee_attack::handle_phase_hit()
         do_valour_beam();
 
     if (weapon && damage_brand == SPWPN_CONCUSSION)
-        handle_concussion_brand();
+        handle_concussion_brand(is_unrandom_artefact(*weapon, UNRAND_CARINA));
 
     if (weapon && testbits(weapon->flags, ISFLAG_CHAOTIC)
         && defender->alive())
@@ -1083,7 +1123,7 @@ static void _inflict_deathly_blight(monster &m)
         worked = m.add_ench(mon_enchant(ENCH_SLOW, &you, dur)) || worked;
     if (mons_has_attacks(m))
         worked = m.add_ench(mon_enchant(ENCH_WEAK, &you, dur)) || worked;
-    if (m.holiness() & (MH_NATURAL | MH_PLANT))
+    if (m.res_negative_energy() < 3)
         worked = m.add_ench(mon_enchant(ENCH_DRAINED, &you, dur, 2)) || worked;
     if (worked && you.can_see(m))
         simple_monster_message(m, T_(" decays."));
@@ -1164,7 +1204,7 @@ static void _devour(monster &victim)
          victim.name(DESC_THE).c_str());
 
     // give a clearer message for eating invisible things
-    if (!you.can_see(victim))
+    if (!you.aware_of(victim))
     {
         mprf(T_("It tastes like %s."),
              mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
@@ -1271,7 +1311,7 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
         const int howl_power = get_form()->get_howl_power();
         mpr(T_("You let out a bloodcurdling howl!"));
         draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, 0, true, 10);
-        for (monster_near_iterator mi(you.pos()); mi; ++mi)
+        for (monster_near_iterator mi(you.pos(), LOS_NO_TRANS); mi; ++mi)
         {
             if (could_harm_enemy(&you, *mi, true)
                 && mi->can_feel_fear(true) && !mi->has_ench(ENCH_FEAR)
@@ -1914,6 +1954,11 @@ bool melee_attack::attack()
 
     // Apparently I'm insane for believing that we can still stay general past
     // this point in the combat code, mebe I am! --Cryptic
+
+    // XXX: to_hit may be set already in handle_phase_attempted(), but cleaving
+    //      attacks skip that, so this must be done later.
+    if (to_hit != AUTOMATIC_HIT)
+        to_hit = calc_to_hit(true);
 
     // Calculate various ev values and begin to check them to determine the
     // correct handle_phase_ handler.
@@ -2705,11 +2750,8 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             if (damage_brand == SPWPN_ACID && !one_chance_in(3))
                 defender->corrode(&you);
 
-            if (damage_brand == SPWPN_WEAKNESS
-                && !(defender->holiness() & (MH_UNDEAD | MH_NONLIVING)))
-            {
+            if (damage_brand == SPWPN_WEAKNESS && defender->res_poison() < 3)
                 defender->weaken(&you, 6);
-            }
 
             if (damage_brand == SPWPN_VULNERABILITY)
             {
@@ -2800,6 +2842,21 @@ int melee_attack::player_apply_misc_modifiers(int damage)
     return damage;
 }
 
+static bool _player_construct_adjacent(coord_def pos)
+{
+    for (adjacent_iterator ai(pos); ai; ++ai)
+    {
+        monster* mon = monster_at(*ai);
+        if (mon && is_valid_tempering_target(*mon, you, true))
+        {
+            mprf(T_("Your blow resonates through %s."), mon->name(DESC_THE).c_str());
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Multipliers to be applied to the final (pre-stab, pre-AC) damage.
 // It might be tempting to try to pick and choose what pieces of the damage
 // get affected by such multipliers, but putting them at the end is the
@@ -2815,7 +2872,11 @@ int melee_attack::player_apply_final_multipliers(int damage, bool aux)
     damage = martial_damage_mod(damage);
 
     // resonance armour damage modifier
-    damage = resonance_damage_mod(damage, true);
+    if (you.wearing_ego(OBJ_ARMOUR, SPARM_RESONANCE)
+            && _player_construct_adjacent(defender->pos()))
+    {
+        damage = resonance_damage_mod(damage, true);
+    }
 
     // Electric charge bonus.
     if (charge_pow > 0 && defender->res_elec() <= 0)
@@ -4022,7 +4083,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         // deliberate fall-through
     case AF_VAMPIRIC:
-        if (!actor_is_susceptible_to_vampirism(*defender))
+        if (!actor_can_drain_life_from(*attacker, *defender))
             break;
 
         if (defender->stat_hp() < defender->stat_maxhp())
@@ -5314,7 +5375,8 @@ bool melee_attack::apply_damage_brand(const char *what)
 
 bool melee_attack::is_sundering_weapon() const
 {
-    return damage_brand == SPWPN_SUNDERING;
+    return damage_brand == SPWPN_SUNDERING
+        || attacker->unrand_equipped(UNRAND_TROG);
 }
 
 string mut_aux_attack_desc(mutation_type mut)
@@ -5481,10 +5543,7 @@ bool spellclaws_attack(int spell_level)
         mult = 1000 / delay;
 
     if (you.duration[DUR_ENKINDLED])
-    {
-        attk.to_hit = AUTOMATIC_HIT;
         mult += mult * spellclaws_level_mult[spell_level - 1] / 100;
-    }
 
     attk.dmg_mult = mult - 100;
 

@@ -338,6 +338,7 @@ bool mons_class_can_leave_corpse(monster_type mc);
 bool mons_class_leaves_hide(monster_type mc);
 bool mons_class_leaves_wand(monster_type mc);
 bool mons_class_leaves_organ(monster_type mc);
+bool mons_class_has_soul(monster_type mc);
 bool mons_is_zombified(const monster& mons);
 bool mons_class_can_be_zombified(monster_type mc);
 bool mons_can_be_zombified(const monster& mon);
@@ -407,7 +408,7 @@ bool mons_class_is_plant(monster_type mc);
 bool mons_class_is_draconic(monster_type mc);
 bool mons_is_plant(const monster& mon);
 bool mons_eats_items(const monster& mon);
-bool actor_is_susceptible_to_vampirism(const actor& act, bool known = false);
+bool actor_can_drain_life_from(const actor& agent, const actor& victim);
 monster_type mons_genus(monster_type mc);
 monster_type mons_species(monster_type mc);
 monster_type draconian_subspecies(const monster& mon);
@@ -518,7 +519,7 @@ mon_inv_type item_to_mslot(const item_def &item);
 
 bool mons_is_immotile(const monster& mons);
 
-int get_dist_to_nearest_monster();
+int get_dist_to_nearest_monster(bool skip_damage_immune = false);
 bool monster_nearby();
 actor *actor_by_mid(mid_t m, bool require_valid = false, bool allow_dead = false);
 monster *monster_by_mid(mid_t m, bool require_valid = false, bool allow_dead = false);

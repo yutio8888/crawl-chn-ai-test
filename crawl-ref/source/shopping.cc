@@ -864,6 +864,26 @@ static int _count_identical(const vector<item_def>& stock, const item_def& item)
     return count;
 }
 
+int shop_owned_consumable_count(const item_def& item)
+{
+    if (item.base_type == OBJ_WANDS)
+    {
+        if (!item_type_known(item))
+            return 0;
+
+        for (const item_def& inv : you.inv)
+            if (inv.base_type == OBJ_WANDS && inv.sub_type == item.sub_type)
+                return inv.charges;
+        return 0;
+    }
+
+    for (const item_def& inv : you.inv)
+        if (items_stack(inv, item))
+            return inv.quantity;
+
+    return 0;
+}
+
 /** Buy an item from a shop!
  *
  *  @param shop  the shop to purchase from.
@@ -1037,7 +1057,10 @@ class ShopEntry : public InvEntry
         const string keystr = colour_to_str(keycol);
         const string itemstr =
             colour_to_str(menu_colour(text, item_prefix(*item, false), tag, false));
-        return make_stringf(T_(" <%s>%c %c </%s><%s>%4d gold   %s%s</%s>"),
+        const int owned = shop_owned_consumable_count(*item);
+        const string ownedstr =
+            owned > 0 ? make_stringf(T_(" (owned: %d)"), owned) : "";
+        return make_stringf(T_(" <%s>%c %c </%s><%s>%4d gold   %s%s%s</%s>"),
                             keystr.c_str(),
                             hotkeys[0],
                             selected() ? '+' : on_list ? '$' : '-',
@@ -1046,6 +1069,7 @@ class ShopEntry : public InvEntry
                             cost,
                             text.c_str(),
                             shop_item_unknown(*item) ? T_(" (unknown)") : "",
+                            ownedstr.c_str(),
                             itemstr.c_str());
     }
 
@@ -1698,7 +1722,7 @@ string shop_name(const shop_struct& shop)
     {
         uint32_t seed = static_cast<uint32_t>(shop.keeper_name[0])
             | (static_cast<uint32_t>(shop.keeper_name[1]) << 8)
-            | (static_cast<uint32_t>(shop.keeper_name[1]) << 16);
+            | (static_cast<uint32_t>(shop.keeper_name[2]) << 16);
 
         sh_name += apostrophise(make_name(seed)) + " ";
     }
@@ -2450,15 +2474,21 @@ void ShoppingList::fill_out_menu(Menu& shopmenu)
         const int cost = thing_cost(thing);
         const bool unknown = thing_is_item(thing)
                              && shop_item_unknown(get_thing_item(thing));
+        const int owned = thing_is_item(thing)
+                          ? shop_owned_consumable_count(get_thing_item(thing))
+                          : 0;
+        const string ownedstr =
+            owned > 0 ? make_stringf(T_(" (owned: %d)"), owned) : "";
 
         const string etitle =
             make_stringf(
-                "%*s%5d gold  %s%s",
+                T_("%*s%5d gold  %s%s%s"),
                 longest,
                 describe_thing_pos(thing).c_str(),
                 cost,
                 name_thing(thing, DESC_A).c_str(),
-                unknown ? T_(" (unknown)") : "");
+                unknown ? T_(" (unknown)") : "",
+                ownedstr.c_str());
 
         MenuEntry *me = new MenuEntry(etitle, MEL_ITEM, 1, hotkey);
         me->data = &thing;

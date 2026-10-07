@@ -582,7 +582,6 @@ monster* get_rampage_target(coord_def move)
     const coord_def tracer_target = you.pos() + (move * tracer_range);
 
     bolt beam;
-    beam.range           = LOS_RADIUS;
     beam.aimed_at_spot   = true;
     beam.target          = tracer_target;
     beam.source_name     = "you";
@@ -1063,7 +1062,7 @@ static bool _handle_player_step(const coord_def& targ, int& delay, const int del
             const monster* current = monster_at(you.pos());
             if (!current || !fedhas_passthrough(current))
             {
-                mprf(T_("You %s carefully through the %s."),
+                mprf(T_("You %s slowly and carefully through the %s."),
                      translated_move_phrase(
                          _get_move_verb(rampaging).c_str(),
                          move_phrase_context::through_obstacle),
@@ -1268,9 +1267,6 @@ void move_player_action(coord_def move)
 
     if (you.running == RMODE_START)
         you.running = RMODE_CONTINUE;
-
-    if (player_in_branch(BRANCH_ABYSS))
-        maybe_shift_abyss_around_player();
 
     if (did_move)
     {

@@ -995,7 +995,9 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
 
         if (player_in_branch(BRANCH_ABYSS))
         {
-            mpr(T_("You feel the power of the Abyss delaying your translocation!"));
+            mpr(!you.runes[RUNE_ABYSSAL]
+                ? T_("You feel the power of the Abyss delaying your translocation and deflecting it away from its rune!")
+                : T_("You feel the power of the Abyss delaying your translocation!"));
             teleport_delay += 5 + random2(10);
         }
         else if (orb_limits_translocation())
@@ -1373,6 +1375,7 @@ bool you_teleport_to(const coord_def where_to, bool move_monsters)
 void you_teleport_now(string reason, bool manual_tele, bool wizard_tele)
 {
     bool randtele;
+    bool need_abyss_rune_warning = false;
 
     // While in the Abyss, teleport scrolls will always take the player slightly
     // further away from the rune. (But other effects moving you at random
@@ -1381,6 +1384,8 @@ void you_teleport_now(string reason, bool manual_tele, bool wizard_tele)
         && !you.props.exists(TELEPORTITIS_SOURCE))
     {
         int&areas = you.props[ABYSS_AREAS_SEEN_KEY].get_int();
+        if (areas > 0 && !you.runes[RUNE_ABYSSAL])
+            need_abyss_rune_warning = true;
         areas = max(0, areas - 2);
     }
 
@@ -1392,6 +1397,9 @@ void you_teleport_now(string reason, bool manual_tele, bool wizard_tele)
     }
     else
         randtele = _teleport_player(wizard_tele, reason);
+
+    if (need_abyss_rune_warning)
+        mprf(MSGCH_WARN, T_("You feel the abyssal rune grow more distant."));
 
     // Xom is amused by teleports that land you in a dangerous place, unless
     // the player is in the Abyss and teleported to escape from all the
@@ -2359,7 +2367,7 @@ static void _push_actor(actor& victim, coord_def dir, int dist, int pow,
             victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
             break;
         }
-        else if (!victim.is_habitable(next_pos))
+        else if (!in_bounds(next_pos) || !victim.is_habitable(next_pos))
             break;
         else
             victim.move_to(next_pos, MV_TRANSLOCATION, true);

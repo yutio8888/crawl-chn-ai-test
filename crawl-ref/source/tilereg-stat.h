@@ -34,6 +34,7 @@ public:
 
 protected:
     ShapeBuffer m_shape_buf;
+    coord_def m_mouse_cell {-1, -1};
     void _clear_buffers();
     bool _text_mouse_pos(int mouse_x, int mouse_y, int &cx, int &cy);
     int m_last_mouse_x = 0;

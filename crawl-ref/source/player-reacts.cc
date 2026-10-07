@@ -633,10 +633,9 @@ void player_reacts_to_instant_action()
 static bool _check_recite()
 {
     if (you.is_silenced()
-        || you.paralysed()
+        || you.cannot_act()
         || you.confused()
         || you.asleep()
-        || you.petrified()
         || you.berserk())
     {
         mprf(MSGCH_DURATION, T_("Your recitation is interrupted."));
@@ -1316,6 +1315,17 @@ void do_eel_flavour_msg()
     mprf(MSGCH_TALK, "%s", msg.c_str());
 }
 
+static void _update_sunder_status()
+{
+    if (you.attribute[ATTR_SUNDERING_CHARGE] > 0
+        && you.unrand_equipped(UNRAND_TROG) && you.berserk())
+    {
+        you.attribute[ATTR_SUNDERING_CHARGE]--;
+    }
+    else
+        you.attribute[ATTR_SUNDERING_CHARGE] = 0;
+}
+
 void player_reacts()
 {
     // don't allow reactions while stair peeking in descent mode
@@ -1389,7 +1399,7 @@ void player_reacts()
     if (you.attempted_attack)
         update_parrying_status();
     else
-        you.attribute[ATTR_SUNDERING_CHARGE] = 0;
+        _update_sunder_status();
 
     // Translocations and possibly other duration decrements can
     // escape a player from beholders and fearmongers. These should
@@ -1428,6 +1438,8 @@ void player_reacts()
 
     if (you.duration[DUR_PRIMORDIAL_NIGHTFALL])
         update_vision_range();
+
+    player_update_auras();
 
     incr_gem_clock();
     incr_zot_clock();

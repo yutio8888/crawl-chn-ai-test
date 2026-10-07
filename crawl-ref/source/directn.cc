@@ -1289,8 +1289,6 @@ coord_def direction_chooser::find_default_monster_target()
             // try a different target.
         }
     }
-    else if (!you.prev_grd_targ.origin())
-        return you.prev_grd_targ;
 
     // Otherwise, try aiming at the nearest target position found for this action.
     coord_def pos;
@@ -1592,7 +1590,6 @@ void direction_chooser::update_previous_target() const
 
     // Reset memory.
     you.prev_targ = MID_NOBODY;
-    you.prev_grd_targ.reset();
 
     // You can't target outside the map
     if (!map_bounds(target()))
@@ -1602,10 +1599,7 @@ void direction_chooser::update_previous_target() const
     // the player's primary target. Remember the initial target instead, unless
     // the player adjusted direction manually.
     if (is_ranged_attack && !player_changed_target && old_m && you.aware_of(*old_m))
-    {
         you.prev_targ = old_m->mid;
-        you.prev_grd_targ = old_m->pos();
-    }
     // Otherwise, if directly targeting a monster, remember that monster
     else
     {
@@ -1646,14 +1640,7 @@ void direction_chooser::update_previous_target() const
                     }
                 }
             }
-
-            // Didn't find any valid monsters in affected area, so remember the spot
-            // itself instead.
-            you.prev_grd_targ = target();
         }
-        // Simple targeting just remembers whatever space you aimed at.
-        else
-            you.prev_grd_targ = target();
     }
 }
 
@@ -2160,10 +2147,6 @@ void direction_chooser::handle_wizard_command(command_type key_command,
 
     case CMD_TARGET_WIZARD_GIVE_ITEM:  wizard_give_monster_item(m); break;
     case CMD_TARGET_WIZARD_POLYMORPH:  wizard_polymorph_monster(m); break;
-
-    case CMD_TARGET_WIZARD_BLESS_MONSTER:
-        wizard_apply_monster_blessing(m);
-        break;
 
     case CMD_TARGET_WIZARD_MAKE_SUMMONED:
         wizard_make_monster_summoned(m);
@@ -3004,11 +2987,6 @@ static bool _want_target_monster(const monster *mon, targ_mode_type mode,
             || mon->has_ench(ENCH_FRENZIED);
     case TARG_FRIEND:
         return mon->friendly();
-    case TARG_INJURED_FRIEND:
-        if (mon->friendly() && mons_get_damage_level(*mon) > MDAM_OKAY)
-            return true;
-        return !mon->wont_attack() && !mon->neutral()
-            && unpacifiable_reason(*mon).empty();
     case TARG_MOVABLE_OBJECT:
         return false;
     case TARG_MOBILE_MONSTER:
@@ -3299,7 +3277,7 @@ string feature_description_at(const coord_def& where, bool covering,
 
     if (covering && you.see_cell(where))
     {
-        if (feat_is_tree(grid) && env.forest_awoken_until)
+        if (env.map_knowledge(where).flags & MAP_AWOKEN_FOREST)
         {
             covering_description += T_(", awoken");
             covering_description += env.forest_is_hostile

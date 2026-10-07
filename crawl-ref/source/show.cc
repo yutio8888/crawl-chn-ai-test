@@ -147,6 +147,9 @@ static void _update_feat_at(const coord_def &gp)
     if (is_blasphemy(gp))
         env.map_knowledge(gp).flags |= MAP_BLASPHEMY;
 
+    if (feat_is_tree(feat) && forest_awoken(gp))
+        env.map_knowledge(gp).flags |= MAP_AWOKEN_FOREST;
+
     if (you.get_beholder(gp))
         env.map_knowledge(gp).flags |= MAP_WITHHELD;
 
@@ -332,8 +335,7 @@ static bool _update_monster(monster* mons)
     if (mons->visible_to(&you))
     {
         mons->ensure_has_client_id();
-        monster_info mi(mons);
-        env.map_knowledge(gp).set_monster(mi);
+        record_monster_seen_at(gp, *mons);
         return true;
     }
 
@@ -342,7 +344,7 @@ static bool _update_monster(monster* mons)
 
     if (you.aware_of(*mons))
     {
-        env.map_knowledge(gp).set_invisible_monster(mons);
+        record_invisible_monster_seen_at(gp, *mons);
         return true;
     }
 

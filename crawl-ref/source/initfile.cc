@@ -3509,7 +3509,7 @@ sound_mapping::sound_mapping(const string &s)
         mprf(MSGCH_ERROR, "Options error: invalid sound mapping '%s'", s.c_str());
         return;
     }
-#if !defined(USE_SOUND) || !defined(WINMM_PLAY_SOUNDS) || !defined(SOUND_PLAY_COMMAND) || !defined(USE_SDL)
+#if !(defined(USE_SOUND) && (defined(WINMM_PLAY_SOUNDS) || defined(SOUND_PLAY_COMMAND) || defined(USE_SDL)))
     static bool _sound_warning_issued = false;
     if (!_sound_warning_issued)
     {
@@ -5942,6 +5942,7 @@ bool parse_args(int argc, char **argv, bool rc_only)
         case CLO_MAPSTAT_DUMP_DISCONNECT:
 #ifdef DEBUG_STATISTICS
             crawl_state.map_stat_dump_disconnect = true;
+            break;
 #else
             end(1, false, "%s", dbg_stat_err);
 #endif

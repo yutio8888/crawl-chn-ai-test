@@ -186,7 +186,8 @@ aff_type targeter_charge::is_affected(coord_def loc)
 }
 
 targeter_beam::targeter_beam(const actor *act, int r, zap_type zap,
-                               int pow, int min_ex_rad, int max_ex_rad) :
+                               spell_type origin_spell, int pow,
+                               int min_ex_rad, int max_ex_rad) :
                                min_expl_rad(min_ex_rad),
                                max_expl_rad(max_ex_rad),
                                range(r)
@@ -199,6 +200,7 @@ targeter_beam::targeter_beam(const actor *act, int r, zap_type zap,
     beam.set_agent(act);
     origin = aim = act->pos();
     beam.attitude = ATT_FRIENDLY;
+    beam.origin_spell = origin_spell;
     zappy(zap, pow, false, beam);
     beam.set_is_tracer(true);
     beam.range = range;
@@ -258,8 +260,11 @@ void targeter_beam::set_explosion_target(bolt &tempbeam)
             break;
         }
         tempbeam.target = c;
-        if (anyone_there(c) && !tempbeam.ignores_monster(monster_at(c)))
+        if (anyone_there(c) && !penetrates_targets
+            && !tempbeam.ignores_monster(monster_at(c)))
+        {
             break;
+        }
     }
 }
 
@@ -326,7 +331,7 @@ aff_type targeter_beam::is_affected(coord_def loc)
                 current = AFF_MAYBE;
         }
     }
-    if (max_expl_rad > 0)
+    if (max_expl_rad > 0 && visit_count <= 0)
     {
         if ((loc - c).rdist() <= 9)
         {
@@ -581,7 +586,7 @@ bool targeter_passwall::affects_monster(const monster_info& /*mon*/)
 }
 
 targeter_dig::targeter_dig(int max_range) :
-    targeter_beam(&you, max_range, ZAP_DIG, 0, 0, 0)
+    targeter_beam(&you, max_range, ZAP_DIG, SPELL_DIG, 0, 0, 0)
 {
 }
 
@@ -1026,16 +1031,17 @@ targeter_cleave::targeter_cleave(coord_def target)
 {
     agent = &you;
     origin = you.pos();
-    range = you.reach_range() - (you.form == transformation::aqua ? 2 : 0);
+    bonus_reach = you.form == transformation::aqua ? 2 : 0;
+    cleave_range = you.reach_range() - bonus_reach;
     set_aim(target);
 }
 
 bool targeter_cleave::valid_aim(coord_def a)
 {
     const coord_def delta = a - origin;
-    if (delta.rdist() > range)
+    if (delta.rdist() > cleave_range + bonus_reach)
         return notify_fail(T_("You can't reach that far!"));
-    if (range == 2)
+    if (cleave_range == 2)
     {
         const coord_def first_middle(origin + delta / 2);
         const coord_def second_middle(a - delta / 2);
@@ -1520,8 +1526,10 @@ aff_type targeter_cone::is_affected(coord_def loc)
     return zapped[loc];
 }
 
-targeter_monster_sequence::targeter_monster_sequence(const actor *act, int pow, int r) :
-                          targeter_beam(act, r, ZAP_DEBUGGING_RAY, pow, 0, 0)
+targeter_monster_sequence::targeter_monster_sequence(const actor *act, int pow,
+                                                     int r) :
+                          targeter_beam(act, r, ZAP_DEBUGGING_RAY,
+                                        SPELL_NO_SPELL, pow, 0, 0)
 {
     // for `path_taken` to be set properly, the beam needs to be piercing, and
     // ZAP_DEBUGGING_RAY is not.
@@ -1851,8 +1859,10 @@ aff_type targeter_walls::is_affected(coord_def loc)
 }
 
 // note: starburst is not in spell_to_zap
-targeter_starburst_beam::targeter_starburst_beam(const actor *a, int _range, int pow, const coord_def &offset)
-    : targeter_beam(a, _range, ZAP_BOLT_OF_FIRE, pow, 0, 0)
+targeter_starburst_beam::targeter_starburst_beam(const actor *a, int _range,
+                                                 int pow,
+                                                 const coord_def &offset)
+    : targeter_beam(a, _range, ZAP_BOLT_OF_FIRE, SPELL_STARBURST, pow, 0, 0)
 {
     set_aim(a->pos() + offset);
 }
@@ -2016,7 +2026,8 @@ bool targeter_poisonous_vapours::valid_aim(coord_def a)
 }
 
 targeter_boulder::targeter_boulder(const actor* caster, int boulder_hp)
-    : targeter_beam(caster, LOS_MAX_RANGE, ZAP_IOOD, 0, 0, 0), hp(boulder_hp)
+    : targeter_beam(caster, LOS_MAX_RANGE, ZAP_IOOD, SPELL_BOULDER, 0, 0, 0),
+      hp(boulder_hp)
 {
 }
 
@@ -2112,8 +2123,9 @@ aff_type targeter_boulder::is_affected(coord_def loc)
     return AFF_NO;
 }
 
-targeter_chain::targeter_chain(const actor* caster, int r, zap_type ztype)
-    : targeter_beam(caster, r, ztype, 0, 0, 0)
+targeter_chain::targeter_chain(const actor* caster, int r, zap_type ztype,
+                               spell_type origin_spell)
+    : targeter_beam(caster, r, ztype, origin_spell, 0, 0, 0)
 {
 }
 
@@ -2195,10 +2207,11 @@ bool targeter_bind_soul::valid_aim(coord_def a)
 
 targeter_explosive_beam::targeter_explosive_beam(const actor *act,
                                                  zap_type ztype,
+                                                 spell_type origin_spell,
                                                  int pow, int r,
                                                  bool _explode_on_monsters,
                                                  bool _always_explode) :
-                          targeter_beam(act, r, ztype, pow, 0, 0),
+                          targeter_beam(act, r, ztype, origin_spell, pow, 0, 0),
                           explode_on_monsters(_explode_on_monsters),
                           always_explode(_always_explode)
 {
@@ -2261,7 +2274,8 @@ aff_type targeter_explosive_beam::is_affected(coord_def loc)
 }
 
 targeter_galvanic::targeter_galvanic(const actor *act, int pow, int r) :
-                        targeter_beam(act, r, ZAP_GALVANIC_BREATH, pow, 0, 0)
+                        targeter_beam(act, r, ZAP_GALVANIC_BREATH,
+                                      SPELL_GALVANIC_BREATH, pow, 0, 0)
 {
 }
 
@@ -2300,7 +2314,7 @@ aff_type targeter_galvanic::is_affected(coord_def loc)
 }
 
 targeter_gavotte::targeter_gavotte(const actor* caster)
-    : targeter_beam(caster, 1, ZAP_IOOD, 0, 0, 0)
+    : targeter_beam(caster, 1, ZAP_IOOD, SPELL_GELLS_GAVOTTE, 0, 0, 0)
 {
 }
 
@@ -2409,9 +2423,9 @@ aff_type targeter_magnavolt::is_affected(coord_def loc)
 }
 
 targeter_mortar::targeter_mortar(const actor* act, int max_range) :
-    targeter_beam(act, max_range, ZAP_HELLFIRE_MORTAR_DIG, 0, 0, 0)
+    targeter_beam(act, max_range, ZAP_HELLFIRE_MORTAR_DIG,
+                  SPELL_HELLFIRE_MORTAR, 0, 0, 0)
 {
-    beam.origin_spell = SPELL_HELLFIRE_MORTAR;
 }
 
 bool targeter_mortar::can_affect_unseen()
@@ -2544,7 +2558,8 @@ bool targeter_putrefaction::valid_aim(coord_def a)
 }
 
 targeter_soul_splinter::targeter_soul_splinter(const actor* caster, int r)
-    : targeter_beam(caster, r, ZAP_SOUL_SPLINTER, 0, 0, 0)
+    : targeter_beam(caster, r, ZAP_SOUL_SPLINTER, SPELL_SOUL_SPLINTER,
+                    0, 0, 0)
 {
 }
 
@@ -2895,5 +2910,48 @@ bool targeter_single_monster::valid_aim(coord_def a)
     if (hostile_only && mons_aligned(&you, mon))
         return notify_fail(no_hostile_msg);
 
+    return true;
+}
+
+targeter_divine_alms::targeter_divine_alms()
+    : targeter_smite(&you, LOS_RADIUS)
+{
+}
+
+bool targeter_divine_alms::valid_aim(coord_def a)
+{
+    if (!targeter_smite::valid_aim(a))
+        return false;
+
+    const monster* mon = monster_at(a);
+    if (!(mon && you.can_see(*mon)))
+        return notify_fail("");
+
+    if (!elyvilon_divine_alms_eligible(*mon))
+        return notify_fail("");
+
+    return true;
+}
+
+targeter_pacify::targeter_pacify()
+    : targeter_smite(&you, LOS_RADIUS)
+{
+}
+
+bool targeter_pacify::valid_aim(coord_def a)
+{
+    if (!targeter_smite::valid_aim(a))
+        return false;
+
+    const monster* mon = monster_at(a);
+    if (mon && you.aware_of(*mon))
+    {
+        string reason = unpacifiable_reason(*mon);
+        if (!reason.empty())
+            return notify_fail(reason);
+    }
+
+    // Either a known-valid monster or an empty tile (which might contain an
+    // invisible monster).
     return true;
 }

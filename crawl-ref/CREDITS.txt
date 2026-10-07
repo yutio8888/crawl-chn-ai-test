@@ -220,6 +220,7 @@
     hanchyan
     Tomas Krag Hansen
     Lexi Hattaway
+    Eivin Hatvik
     Taylor Hedberg
     Anders Heggestøyl
     Alex Henry
@@ -317,6 +318,7 @@
     Jonathon Nooner
     NormalPerson7
     Michael Nowack
+    A. Noyd
     Erkki Nurmi
     Mattias Nyberg
     nyra
@@ -343,6 +345,7 @@
     Pedro
     Pekkekke
     person50605
+    pumpkincat
     Alejandro Ramirez
     Rytis Petronis
     Arlen Phillips

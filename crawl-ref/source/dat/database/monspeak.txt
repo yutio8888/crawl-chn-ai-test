@@ -2389,6 +2389,10 @@ w:2
 w:2
 # The Lathe of Heaven
 @The_monster@ says, "What sane person could live in this world and not be crazy?"
+
+w:2
+# Harry Chapin, "Corey's Coming"
+@The_monster@ says, "Reality is only just a word."
 %%%%
 _crazy_yiuf_speech_verbs_
 
@@ -2690,6 +2694,10 @@ feline
 
 bovine
 
+ovine
+
+vulpine
+
 disdain
 
 pontify
@@ -2714,6 +2722,8 @@ aubergine
 
 sanguine
 
+flibbertigibbet
+
 twenty-three
 
 twenty-seven
@@ -2737,6 +2747,8 @@ alas
 rumpyflump
 
 sizzlefizz
+
+kazark
 %%%%
 ############ DISSOLUTION ### a sentient jelly who used to be human a long time ago
 Dissolution
@@ -4818,7 +4830,7 @@ Goji triumphant
 
 {{
   if you.invisible() then
-    return '@The_monster@ laughs triumpantly. "Goji even *more* invisible!"'
+    return '@The_monster@ laughs triumphantly. "Goji even *more* invisible!"'
   else
     return '@The_monster@ laughs. "Silly ' .. you.species():lower() .. "! You couldn't even see me."
   end
@@ -7455,9 +7467,9 @@ _Wiglaf_rare_
 
 @The_monster@ mutters, "Wee kobolds think thay ken whit a cannon is."
 
-@The_monster@ growls, "I'll break a bone for every stich ye rip."
+@The_monster@ growls, "I'll break a bone for every stitch ye rip."
 
-@The_monster@ mumbles, "If ye must ken, mah gran stiched it fur me."
+@The_monster@ mumbles, "If ye must ken, mah gran stitched it fur me."
 
 @The_monster@ sings a few bars of a dwarven mine shanty. Very poorly.
 
@@ -8855,7 +8867,7 @@ VISUAL:@The_monster@ pulls a severed tentacle out of their boot and sighs heavil
 
 @The_monster@ grins, "Not even the Unformed can stop the chosen ones of Beogh!"
 
-@The_monster@ shouts triumpantly, "Who's laughing NOW?"
+@The_monster@ shouts triumphantly, "Who's laughing NOW?"
 
 @The_monster@ shudders. "I think my head was attached to my elbow for a minute there..."
 

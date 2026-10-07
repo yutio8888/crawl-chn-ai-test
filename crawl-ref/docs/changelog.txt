@@ -3,7 +3,7 @@ Stone Soup 0.35 (through 0.35-a0-535-e467b9c7cb )
 
 Highlights
 ----------
-* A new species: Gale Centaurs, customizable descendents of the Four Winds.
+* A new species: Gale Centaurs, customisable descendants of the Four Winds.
 * A new portal: Gulch.
 
 Artefacts
@@ -29,7 +29,7 @@ Branches, Environment
   - Entering the Gulch inflicts three transient bad mutations.
   - It contains seven new enemies, many of them chaotic mutant beasts and
     abandoned experiments, focusing on debuffs, poison, and antimagic.
-  - Its layout features heavily randomized tunnels and intersections with mould
+  - Its layout features heavily randomised tunnels and intersections with mould
     patches, stacks of scrap, and only occasional strips of water.
   - Item rewards weight poison, Alchemy, Hexes, Forgecraft, and potions more
     heavily.
@@ -55,7 +55,7 @@ Character
     to trample groups of enemies backwards, as long as you keep moving.
   - At XL 5, you begin embodying one of the Four Winds based on your highest
     skill, granting additional benefits when rampaging:
-    - North Wind: You rapidly regenerate 70% of all damage taken whil
+    - North Wind: You rapidly regenerate 70% of all damage taken while
       rampaging. (Granted by Unarmed Combat and all melee weapon skills besides
       Short Blades.)
     - South Wind: You have +50% stealth while rampaging and successful stabs
@@ -141,7 +141,7 @@ Interface and Options
 * New option: alt_shatter_animation, which provides a different visual effect
   for Shatter without any screenshake, set by default as true on Webtiles and
   false otherwise.
-* New option: longwalk_range, which allows customizing the maximum distance
+* New option: longwalk_range, which allows customising the maximum distance
   pressing shift+[direction] can move the player.
 
 Items
@@ -157,7 +157,7 @@ Monsters
 * The Gulch comes with many new monsters:
   - Fungal shamblers, which raise up to 3 burstshrooms behind those they hit
     in melee.
-  - Mongrel wurms, crossbreeds drakes with Harpoon Shot, Scorch, and strong
+  - Mongrel wurms, crossbreed drakes with Harpoon Shot, Scorch, and strong
     poison bites.
   - Roaming sludgefish, which hurl sludge and launch bolts of antimagic.
   - Rusted inspectors, magic-weakening constructs with corrosive melee.
@@ -789,7 +789,7 @@ Tiles
   * Monsters: juggernaut simulacra, Maggie, Mara, Polyphemus, sky beast zombies.
     * Sprint specialties: flame-cult kobolds, witches, orb golems.
   * Spells: Confusion Gaze, Mass Regeneration, Vitrifying Gaze, Weakening Gaze.
-  * Icons: light egos, frenzied, magnetized, sentinel's mark.
+  * Icons: light egos, frenzied, magnetised, sentinel's mark.
   * Traps: Archmage's trap, devourer's trap, tyrant's trap.
   * Features: exits out of Sewers + Bailies + the Desolation of Salt +
               the Crucible of Flesh, stairs to and from Zot:5.

@@ -107,7 +107,7 @@ static unsigned short _cell_feat_show_colour(const map_cell& cell,
     if (feat == DNGN_SHALLOW_WATER && player_in_branch(BRANCH_SHOALS))
         colour = ETC_WAVES;
 
-    if (feat_is_tree(feat) && env.forest_awoken_until)
+    if (cell.flags & MAP_AWOKEN_FOREST)
         colour = ETC_AWOKEN_FOREST;
 
     if (feat == DNGN_MUD)
@@ -506,7 +506,7 @@ static cglyph_t _get_cell_glyph_with_class(const map_cell& cell,
             g.col = eitem->get_colour();
 
         // monster(mimic)-owned items have link = NON_ITEM+1+midx
-        if (cell.flags & (MAP_MORE_ITEMS || MAP_MORE_ITEMS_GOOD || MAP_MORE_ITEMS_ARTEFACT))
+        if (cell.flags & (MAP_MORE_ITEMS | MAP_MORE_ITEMS_GOOD | MAP_MORE_ITEMS_ARTEFACT))
             g.col |= COLFLAG_ITEM_HEAP;
         break;
     }

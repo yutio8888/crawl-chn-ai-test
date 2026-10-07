@@ -351,11 +351,9 @@ static bool _missile_brand_is_postfix(special_missile_type brand)
     return brand != SPMSL_NORMAL && !_missile_brand_is_prefix(brand);
 }
 
-const char* missile_brand_name(const item_def &item, mbn_type t)
+const char* special_missile_type_name(special_missile_type ego, mbn_type t)
 {
-    const special_missile_type brand
-        = static_cast<special_missile_type>(item.brand);
-    switch (brand)
+    switch (ego)
     {
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_FLAME:
@@ -408,10 +406,8 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
     }
 }
 
-const char* missile_brand_name_en(const item_def &item, mbn_type t)
+const char* special_missile_type_name_en(special_missile_type brand, mbn_type t)
 {
-    const special_missile_type brand
-        = static_cast<special_missile_type>(item.brand);
     switch (brand)
     {
 #if TAG_MAJOR_VERSION == 34
@@ -463,6 +459,16 @@ const char* missile_brand_name_en(const item_def &item, mbn_type t)
     default:
         return t == MBN_TERSE ? "buggy" : "bugginess";
     }
+}
+
+const char* missile_brand_name_en(const item_def &item, mbn_type t)
+{
+    return special_missile_type_name_en(get_ammo_brand(item), t);
+}
+
+const char* missile_brand_name(const item_def &item, mbn_type t)
+{
+    return special_missile_type_name(get_ammo_brand(item), t);
 }
 
 static const char *weapon_brands_terse[] =

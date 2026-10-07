@@ -6257,6 +6257,8 @@ TAGS:  transparent decor
 KPROP: _1 = no_tele_into
 KMASK: _1 = opaque
 KMASK: _1 = no_trap_gen
+KMASK: _1 = no_item_gen
+KMASK: _ = no_monster_gen
 FTILE: n_1 = floor_limestone
 : standard_overflow_setup(_G, { { "xom", "A" }, { "zin", "B" } }, true)
 MAP
@@ -8100,8 +8102,7 @@ ENDMAP
 
 NAME: nicolae_overflow_hidden_temple
 TAGS: temple_overflow_generic_5 temple_overflow_generic_4 temple_overflow_generic_3 \
-      temple_overflow_generic_2 temple_overflow_generic_1 no_monster_gen no_descent \
-      transparent
+      temple_overflow_generic_2 temple_overflow_generic_1 no_monster_gen no_descent
 {{
   local altarcount = 1
   if is_validating() then

@@ -122,6 +122,7 @@ public:
 
     bool revealed_this_turn;
     coord_def revealed_at_pos;
+    coord_def remembered_pos;
     level_id origin_level;
 
 public:
@@ -431,6 +432,7 @@ public:
     bool is_skeletal() const override;
     bool is_spiny() const;
     bool paralysed() const override;
+    bool cannot_keep_channelling() const;
     bool cannot_move() const override;
     bool cannot_act() const override;
     bool helpless() const override;
@@ -445,6 +447,7 @@ public:
     int silence_radius() const override;
     int liquefying_radius() const override;
     int umbra_radius() const override;
+    int awoken_forest_radius() const override;
     bool affects_agrid() const override;
     bool petrified() const override;
     bool petrifying() const override;
@@ -531,11 +534,11 @@ public:
     int stealth() const override { return 0; }
 
 
-    bool    shielded() const override;
     int     shield_class() const;
     int     shield_bonus() const override;
     void    shield_block_succeeded(actor *attacker) override;
     int     shield_bypass_ability(int tohit) const override;
+    bool    divinely_shielded() const override;
     int     missile_repulsion() const override;
 
     bool is_player() const override { return false; }

@@ -1339,11 +1339,43 @@ static void _print_stats_qv(int y, int topbar_x = -1)
 
 struct status_light
 {
-    status_light(int c, string t, int s = -1) : colour(c), text(t), status(s) {}
+    status_light(int c, string t, int s = -1)
+        : colour(c), text(t), status(s) {}
     colour_t colour;
     string text;
     int status;
 };
+
+#ifdef USE_TILE_LOCAL
+struct status_light_area
+{
+    int x;
+    int y;
+    int width;
+    int status;
+};
+
+// The areas of the screen with status lights, used to draw tooltips.
+static vector<status_light_area> _status_light_areas;
+
+// Record a status light starting at the current cursor position - call this
+// before printing the status.
+static void _record_status_light(const status_light& light, int width)
+{
+    _status_light_areas.push_back({wherex() - crawl_view.hudp.x,
+                                   wherey() - crawl_view.hudp.y,
+                                   width, light.status});
+}
+
+int status_light_at(int x, int y)
+{
+    for (const status_light_area& area : _status_light_areas)
+        if (area.y == y && x >= area.x && x < area.x + area.width)
+            return area.status;
+
+    return -1;
+}
+#endif
 
 static void _add_status_light_to_out(int i, vector<status_light>& out)
 {
@@ -1465,6 +1497,7 @@ static void _print_status_lights(int y)
     // The registry is a per-layout snapshot and must be dropped before any
     // early return, otherwise stale hitboxes remain active while no lights do.
     clear_status_hitboxes();
+    _status_light_areas.clear();
 #endif
     if (lights.empty() && last_number_of_lights == 0 && !show_status_button)
     {
@@ -1515,6 +1548,7 @@ static void _print_status_lights(int y)
             record_status_hitbox(light.status, status_x - 1,
                                  status_x + status_w - 2, y - 1);
             textcolour(light.colour);
+            _record_status_light(light, status_w);
             CPRINTF("%s", light.text.c_str());
             status_x += status_w + 1;
         }
@@ -1578,6 +1612,9 @@ static void _print_status_lights(int y)
                 }
 #endif
                 textcolour(lights[i_light].colour);
+#ifdef USE_TILE_LOCAL
+                _record_status_light(lights[i_light], strwidth(lights[i_light].text));
+#endif
                 NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
                 if (end_x < crawl_view.hudsz.x)
                     NOWRAP_EOL_CPRINTF(" ");
@@ -1601,6 +1638,7 @@ static void _print_status_lights(int y)
         if (lights.size() == 1)
         {
             textcolour(lights[0].colour);
+            _record_status_light(lights[0], strwidth(lights[0].text));
             CPRINTF("%s", lights[0].text.c_str());
         }
         else
@@ -1608,11 +1646,13 @@ static void _print_status_lights(int y)
             while (i_light < lights.size() && (int)i_light < crawl_view.hudsz.x - 1)
             {
                 textcolour(lights[i_light].colour);
-                if (i_light == lights.size() - 1
-                    && strwidth(lights[i_light].text) < crawl_view.hudsz.x - wherex())
-                {
+                const bool full = i_light == lights.size() - 1
+                    && strwidth(lights[i_light].text) < crawl_view.hudsz.x - wherex();
+                // Must do this before the print, as it uses the cursor position.
+                _record_status_light(lights[i_light],
+                                     full ? strwidth(lights[i_light].text) : 1);
+                if (full)
                     CPRINTF("%s",lights[i_light].text.c_str());
-                }
                 else if ((int)lights.size() > crawl_view.hudsz.x / 2)
                 {
                     // Use character-aware truncation (not byte-level %.1s)
@@ -3190,7 +3230,7 @@ static string _resist_composer(const char * name, int spacing, int value,
     int res_percent = -1;
 
     const static int _basic_res[] = {150, 100, 50, 33, 20};
-    const static int _neg_res[]   = {-1, 100, 50, 20, 0};
+    const static int _neg_res[]   = {-1, 100, 50, 25, 0};
     const static int _pois_res[]  = {150, 100, 33, 33, 0};
     const static int _corr_res[]  = {-1, 100, 50, -1, -1};
 

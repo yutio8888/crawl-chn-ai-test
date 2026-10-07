@@ -150,8 +150,6 @@ static void _player_change_level_reset()
     you.prev_targ  = MID_NOBODY;
     if (you.pet_target != MHITYOU)
         you.pet_target = MHITNOT;
-
-    you.prev_grd_targ.reset();
 }
 
 static void _player_change_level(level_id lev)
@@ -1118,7 +1116,7 @@ void floor_transition(dungeon_feature_type how,
         you.duration[DUR_OOZE_REGEN] = random_range(170, 210);
     }
 
-    if (you.unrand_equipped(UNRAND_VAINGLORY))
+    if (you.unrand_equipped(UNRAND_VAINGLORY, true))
         _vainglory_arrival();
 
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_MESMERISM))

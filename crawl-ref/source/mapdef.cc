@@ -618,7 +618,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
 
             const int colour = (*overlay)(x, y).colour;
             if (colour)
-                dgn_set_grid_colour_at(gc, colour);
+                env.grid_colours(gc) = colour;
 
             const terrain_property_t property = (*overlay)(x, y).property;
             if (property.flags >= FPROP_BLOODY)
@@ -629,11 +629,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
 
             const int fheight = (*overlay)(x, y).height;
             if (fheight != INVALID_HEIGHT)
-            {
-                if (!env.heightmap)
-                    dgn_initialise_heightmap();
-                dgn_height_at(gc) = fheight;
-            }
+                dgn_set_vault_height(gc, fheight);
 
             bool has_floor = false, has_rock = false;
             string name = (*overlay)(x, y).floortile;
@@ -3862,7 +3858,8 @@ mon_enchant mons_list::parse_ench(string &ench_str, bool perm)
     return mon_enchant(et, nullptr, dur, deg);
 }
 
-mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
+mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec,
+                                                     bool ignore_excluded)
 {
     mons_spec_slot slot;
 
@@ -3917,7 +3914,7 @@ mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
 
             for (const string &seg : segs)
             {
-                error = mspec.items.add_item(seg, false);
+                error = mspec.items.add_item(seg, false, ignore_excluded);
                 if (!error.empty())
                     return slot;
             }
@@ -4314,11 +4311,11 @@ mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
     return slot;
 }
 
-string mons_list::add_mons(const string &s, bool fix)
+string mons_list::add_mons(const string &s, bool fix, bool ignore_excluded)
 {
     error.clear();
 
-    mons_spec_slot slotmons = parse_mons_spec(s);
+    mons_spec_slot slotmons = parse_mons_spec(s, ignore_excluded);
     if (!error.empty())
         return error;
 

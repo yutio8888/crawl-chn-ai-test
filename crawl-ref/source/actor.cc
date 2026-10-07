@@ -301,6 +301,15 @@ bool actor::no_cast(bool items) const
 
 bool actor::reflection(bool items) const
 {
+    if (divinely_shielded())
+        return true;
+
+    if (items && is_player() && you.unrand_equipped(UNRAND_FIVE_VIRTUES) &&
+        five_virtues_sh_score() > 3)
+    {
+        return true;
+    }
+
     return items &&
            (wearing_jewellery(AMU_REFLECTION)
             || wearing_ego(OBJ_ARMOUR, SPARM_REFLECTION));
@@ -468,11 +477,11 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         bool force_plural = true;
 
         if (ctype == CONSTRICT_BVC)
-            attacker_desc = T_("The zombie hands");
+            attacker_desc = T_("the zombie hands");
         else if (ctype == CONSTRICT_ROOTS)
-            attacker_desc = T_("The grasping roots");
+            attacker_desc = T_("the grasping roots");
         else if (ctype == CONSTRICT_ENTANGLE)
-            attacker_desc = T_("The vines");
+            attacker_desc = T_("the vines");
         else
         {
             force_plural = false;
@@ -489,12 +498,12 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
                  constrictee->name(DESC_THE).c_str(),
                  constrictee->verb_for_display(escape_verb.c_str(),
                      contextual_move ? "move.bare" : nullptr).c_str(),
-                 lowercase(attacker_desc).c_str());
+                 attacker_desc.c_str());
         }
         else
         {
             mprf_p(T_("%s %s %s grip on %s."),
-                attacker_desc.c_str(),
+                uppercase_first(attacker_desc).c_str(),
                 conjugate_verb_for_display(N_("release"), force_plural).c_str(),
                 force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
                 constrictee->name(DESC_THE).c_str());
@@ -1183,6 +1192,12 @@ bool actor::stumble_away_from(coord_def targ, string src)
 bool actor::evil() const
 {
     return bool(holiness() & (MH_UNDEAD | MH_DEMONIC));
+}
+
+bool actor::has_soul() const
+{
+    return bool(holiness() & (MH_NATURAL | MH_PLANT | MH_HOLY | MH_DEMONIC))
+           && !is_firewood();
 }
 
 // Triggers post-movement effects for this actor as if they had just moved into

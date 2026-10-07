@@ -797,7 +797,7 @@ static bool _is_boolean_resist(beam_type flavour)
 
 // Gets the percentage of the total damage of this damage flavour that can
 // be resisted.
-static inline int _get_resistible_fraction(beam_type flavour)
+int beam_resistible_fraction(beam_type flavour)
 {
     switch (flavour)
     {
@@ -918,7 +918,7 @@ int resist_adjust_damage(const actor* defender, beam_type flavour, int rawdamage
 
     const bool is_mon = defender->is_monster();
 
-    const int resistible_fraction = _get_resistible_fraction(flavour);
+    const int resistible_fraction = beam_resistible_fraction(flavour);
 
     int resistible = rawdamage * resistible_fraction / 100;
     const int irresistible = rawdamage - resistible;
@@ -1851,11 +1851,11 @@ int brand_adjust_weapon_damage(int base_dam, int brand, bool random)
 
 int resonance_damage_mod(int dam, bool random)
 {
-    if (you.wearing_ego(OBJ_ARMOUR, SPARM_RESONANCE))
-    {
-        dam = random ? div_rand_round(dam * (100 + you.skill_rdiv(SK_FORGECRAFT, 3, 2)), 100)
-                     : dam * (100 + you.skill(SK_FORGECRAFT, 3) / 2) / 100;
-    }
+    int bonus = you.wearing_ego(OBJ_ARMOUR, SPARM_RESONANCE)
+                    * you.skill(SK_FORGECRAFT, 2);
+
+    dam = random ? div_rand_round(dam * 100 + bonus, 100)
+                 : dam * (100 + bonus) / 100;
 
     return dam;
 }

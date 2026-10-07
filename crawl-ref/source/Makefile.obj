@@ -75,7 +75,6 @@ game-options.o \
 geom2d.o \
 ghost.o \
 god-abil.o \
-god-blessing.o \
 god-companions.o \
 god-conduct.o \
 god-item.o \
@@ -338,6 +337,7 @@ catch2-tests/test_player_fixture.o \
 catch2-tests/test_randbook.o \
 catch2-tests/test_stringutil.o \
 catch2-tests/test_species.o \
+catch2-tests/test_shopping.o \
 catch2-tests/test_tags.o \
 catch2-tests/test_textdb_phase0.o \
 catch2-tests/test_tilecell.o \
@@ -441,7 +441,6 @@ game-type.h.o \
 gender-type.h.o \
 geom2d.h.o \
 god-abil.h.o \
-god-blessing.h.o \
 god-companions.h.o \
 god-item.h.o \
 god-passive.h.o \

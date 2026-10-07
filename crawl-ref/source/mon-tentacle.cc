@@ -23,6 +23,7 @@
 #include "nearby-danger.h"
 #include "terrain.h"
 #include "database.h"
+#include "view.h"
 
 const int MAX_KRAKEN_TENTACLE_DIST = 12;
 const int MAX_ACTIVE_KRAKEN_TENTACLES = 4;
@@ -248,8 +249,12 @@ static void _establish_connection(monster* tentacle,
         }
     }
 
+    vector<coord_def> changed_cells;
+    changed_cells.push_back(last->pos);
     while (current)
     {
+        changed_cells.push_back(current->pos);
+
         // Last monster we visited or placed
         monster* last_mon = monster_at(last->pos);
         if (!last_mon)
@@ -298,6 +303,20 @@ static void _establish_connection(monster* tentacle,
         last = current;
         current = current->last;
     }
+
+    // We must do view updates after the whole chain to get the right tiles.
+    bool updated = false;
+    for (const coord_def &pos : changed_cells)
+    {
+        if (you.see_cell(pos))
+        {
+            view_update_at(pos);
+            updated = true;
+        }
+    }
+
+    if (updated)
+        update_screen();
 }
 
 struct tentacle_attack_constraints

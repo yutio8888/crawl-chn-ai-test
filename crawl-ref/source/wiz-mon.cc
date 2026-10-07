@@ -23,7 +23,6 @@
 #include "english.h"
 #include "files.h"
 #include "ghost.h"
-#include "god-blessing.h"
 #include "invent.h"
 #include "item-prop.h"
 #include "items.h"
@@ -69,7 +68,7 @@ void wizard_create_spec_monster_name()
     }
 
     mons_list mlist;
-    string err = mlist.add_mons(specs);
+    string err = mlist.add_mons(specs, false, true);
 
     if (!err.empty())
     {
@@ -80,7 +79,8 @@ void wizard_create_spec_monster_name()
         if (strlen(specs) >= 3 && partial != MONS_PROGRAM_BUG)
         {
             mlist.clear();
-            newerr = mlist.add_mons(remove_prepended_the(mons_type_name(partial, DESC_PLAIN)));
+            newerr = mlist.add_mons(remove_prepended_the(mons_type_name(partial, DESC_PLAIN)),
+                                    false, true);
         }
 
         if (!newerr.empty())
@@ -550,24 +550,6 @@ void debug_make_monster_shout(monster* mon)
     }
 
     mpr(T_("== Done =="));
-}
-
-void wizard_apply_monster_blessing(monster* mon)
-{
-    mprf(MSGCH_PROMPT, T_("Apply blessing of the (S)hining One? "));
-
-    char type = (char) getchm(KMC_DEFAULT);
-    type = toalower(type);
-
-    if (type != 's')
-    {
-        canned_msg(MSG_OK);
-        return;
-    }
-    god_type god = GOD_SHINING_ONE;
-
-    if (!bless_follower(mon, god, true))
-        mprf(T_("%s won't bless this monster for you!"), god_name(god).c_str());
 }
 
 void wizard_give_monster_item(monster* mon)

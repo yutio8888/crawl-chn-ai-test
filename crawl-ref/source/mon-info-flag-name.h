@@ -166,4 +166,6 @@ static const vector<monster_info_flag_name> monster_info_flag_names = {
     { MB_REMEMBERED_INVIS, "remembered", "remembered", "remembered"},
     { MB_PHASE_SHIFT, NC_("flag short", "phased"),
       NC_("flag long", "out of phase"), NC_("flag short", "phased")},
+    { MB_DIVINE_SHIELD, NC_("flag short", "divine shielded"),
+      NC_("flag long", "divinely shielded"), NC_("flag short", "divine shielded")},
 };

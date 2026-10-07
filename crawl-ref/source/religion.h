@@ -134,7 +134,6 @@ bool yred_reap_chance();
 bool is_yred_undead_follower(const monster& mon);
 bool is_apostle_follower(const monster& mon);
 bool is_fellow_slime(const monster& mon);
-bool is_follower(const monster& mon);
 
 // Vehumet gift interface.
 bool vehumet_is_offering(spell_type spell, bool only = false);

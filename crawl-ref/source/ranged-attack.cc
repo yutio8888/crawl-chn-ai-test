@@ -172,6 +172,8 @@ bool ranged_attack::attack()
 // XXX: Are there any cases where this might fail?
 bool ranged_attack::handle_phase_attempted()
 {
+    to_hit = calc_to_hit(true);
+
     attacker->attacking(defender);
     return true;
 }
@@ -191,6 +193,8 @@ void ranged_attack::handle_phase_blocked()
                 punctuation = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
                               + " " + defender_shield->name(DESC_PLAIN).c_str();
             }
+            else if (defender->divinely_shielded())
+                punctuation = T_(" with a divine shield");
             else
                 punctuation = T_(" with an invisible shield");
         }
@@ -291,7 +295,7 @@ bool ranged_attack::handle_phase_hit()
     {
         set_attack_verb(0);
         announce_hit();
-        if (defender->trap_in_net(true))
+        if (defender->trap_in_net(!(weapon->flags & ISFLAG_SUMMONED)))
             _did_net = true;
         if (defender->is_player())
             xom_is_stimulated(50);
@@ -410,7 +414,10 @@ int ranged_attack::apply_mon_damage_modifiers(int damage)
 int ranged_attack::player_apply_final_multipliers(int damage, bool /*aux*/)
 {
     if (!throwing())
+    {
+        damage = player_archery_damage_bonus(damage, true);
         damage = apply_rev_penalty(damage);
+    }
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_SNIPING)
         && defender->incapacitated())
     {
@@ -481,11 +488,11 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
             break;
         case SPMSL_POISONED:
         case SPMSL_BLINDING:
-            if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+            if (defender->res_poison() >= 3)
                 susceptible = false;
             break;
         case SPMSL_CURARE:
-            if ((defender->is_player() && defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+            if ((defender->is_player() && defender->res_poison() >= 3)
                || defender->res_poison() > 0)
             {
                 susceptible = false;
@@ -496,7 +503,7 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
                 susceptible = false;
             break;
         case SPMSL_FRENZY:
-            if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING)
+            if (defender->res_poison() >= 3
                 || defender->is_player()
                    && !you.can_go_berserk(false, false, false)
                 || defender->is_monster()
@@ -538,7 +545,7 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
 
 bool ranged_attack::dart_check(special_missile_type type)
 {
-    if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+    if (defender->res_poison() >= 3)
     {
         if (needs_message)
         {
@@ -839,4 +846,13 @@ string ranged_attack::projectile_name() const
 bool ranged_attack::is_piercing() const
 {
     return pierce || is_penetrating_attack(*weapon);
+}
+
+int player_archery_damage_bonus(int dam, bool random)
+{
+    int bonus = you.wearing_ego(OBJ_ARMOUR, SPARM_ARCHERY) * you.skill(SK_ARMOUR);
+    dam = random ? div_rand_round(dam * 100 + bonus, 100)
+                 : dam * (100 + bonus) / 100;
+
+    return dam;
 }

@@ -816,7 +816,6 @@ static bool _handle_swoop_or_flank(monster& mons)
     tracer.target = target;
     tracer.set_is_tracer(true);
     tracer.pierce = true;
-    tracer.range = LOS_RADIUS;
     tracer.fire();
 
     for (unsigned int j = 0; j < tracer.path_taken.size() - 1; ++j)
@@ -2289,10 +2288,16 @@ void handle_monster_move(monster* mons)
 
     if (mons->has_ench(ENCH_CHANNEL_SEARING_RAY))
     {
+        if (mons->cannot_keep_channelling())
+        {
+            mons->del_ench(ENCH_CHANNEL_SEARING_RAY, true, false);
+            if (you.can_see(*mons))
+                mprf(T_("%s searing ray is interrupted."), mons->name(DESC_ITS).c_str());
+        }
         // If we are continuing to fire searing ray, remain in place.
         // XXX: Doesn't track how many turns this has been channelled, but that
         //      doesn't presently matter.
-        if (handle_searing_ray(*mons, 1))
+        else if (handle_searing_ray(*mons, 1))
         {
             mons->speed_increment -= non_move_energy;
             return;
@@ -2358,7 +2363,7 @@ void handle_monster_move(monster* mons)
         // Struggling against the net takes time.
         _swim_or_move_energy(*mons);
     }
-    else if (!mons->petrified())
+    else
     {
         // Calculates mmov based on monster target.
         mmov = _find_best_step(mons);
@@ -2728,13 +2733,6 @@ static void _post_monster_move(monster* mons)
         thorn_hunter_raise_barrier(*mons);
 
     update_mons_cloud_ring(mons);
-
-    const item_def * weapon = mons->mslot_item(MSLOT_WEAPON);
-    if (weapon && get_weapon_brand(*weapon) == SPWPN_SPECTRAL
-        && !mons_is_avatar(mons->type))
-    {
-        // TODO: implement monster spectral ego
-    }
 
     if (mons->behaviour == BEH_BATTY)
     {
@@ -3847,6 +3845,10 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
     // of doing literally nothing.
     if (mons.cannot_move())
     {
+        // Don't consider making intelligent attacks while impaired.
+        if (mons_is_fleeing(mons) || mons_is_confused(mons))
+            return false;
+
         int count = 0;
         actor* targ = nullptr;
         for (radius_iterator ri(mons.pos(), mons.reach_range(), C_SQUARE, LOS_NO_TRANS, true); ri; ++ri)
@@ -3855,6 +3857,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
             {
                 if (could_harm_enemy(&mons, act)
                     && !act->is_firewood()
+                    && mons.can_see(*act)
                     && one_chance_in(++count))
                 {
                     targ = act;

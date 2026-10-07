@@ -155,6 +155,7 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_EXPOSED,         MB_EXPOSED },
     { ENCH_STAMPEDE,        MB_STAMPEDE },
     { ENCH_PHASE_SHIFT,     MB_PHASE_SHIFT },
+    { ENCH_DIVINE_SHIELD,   MB_DIVINE_SHIELD },
 };
 
 static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
@@ -301,6 +302,7 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
     mb.reset();
     attitude = ATT_HOSTILE;
     pos = coord_def(0, 0);
+    mid = MID_NOBODY;
 
     type = p_type;
 
@@ -349,7 +351,7 @@ void monster_info::_populate_as_generic()
     if (mons_class_sees_invis(type, base_type))
         mb.set(MB_SEE_INVIS);
 
-    can_feel_fear = !!(holi & (MH_NATURAL | MH_DEMONIC | MH_HOLY));
+    can_feel_fear = !(holi & (MH_UNDEAD | MH_NONLIVING));
 
     if (mons_resists_drowning(type, base_type))
         mb.set(MB_RES_DROWN);
@@ -521,6 +523,7 @@ monster_info::monster_info(const monster* m, int milev)
     mb.reset();
     attitude = ATT_HOSTILE;
     pos = m->pos();
+    mid = m->mid;
 
     attitude = mons_attitude(*m);
 
@@ -581,7 +584,10 @@ monster_info::monster_info(const monster* m, int milev)
 
     _colour = m->colour;
 
-    summoner_id = MID_NOBODY;
+    // We set the summoner for all monsters, as it is needed for some damage
+    // displays, but the only mark them as summoned if we should display them
+    // as such in the UI.
+    summoner_id = m->summoner;
     if (m->is_summoned()
         && !(m->flags & MF_PERSISTS)
         && !m->is_child_monster() && !mons_is_tentacle_segment(m->type)
@@ -596,8 +602,6 @@ monster_info::monster_info(const monster* m, int milev)
 
         if (m->type == MONS_SPELLSPARK_SERVITOR && m->summoner == MID_PLAYER)
             mb.set(MB_PLAYER_SERVITOR);
-
-        summoner_id = m->summoner;
     }
     else if ((m->is_unrewarding()
                  || testbits(m->flags, MF_NO_REWARD)
@@ -665,8 +669,6 @@ monster_info::monster_info(const monster* m, int milev)
         mb.set(MB_UMBRAED);
     if (m->liquefied_ground())
         mb.set(MB_SLOW_MOVEMENT);
-    if (!actor_is_susceptible_to_vampirism(*m, true))
-        mb.set(MB_CANT_DRAIN);
     if (m->res_water_drowning())
         mb.set(MB_RES_DROWN);
     if (m->clarity())
@@ -1922,7 +1924,7 @@ int monster_info::reach_range(bool items) const
             const int wpn_reach = weapon_reach(*weapon);
             for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
                 if (attack[i].type == AT_HIT || attack[i].type == AT_WEAP_ONLY)
-                    range = max(range, attack[i].reach + wpn_reach);
+                    range = max(range, attack[i].reach + wpn_reach - 1);
         }
     }
 
@@ -2407,6 +2409,10 @@ string description_for_ench(enchant_type type)
 
 monster* monster_info::get_known_summoner() const
 {
+    // The MB_SUMMONED flag gates whether the monster should show as summoned.
+    if (!is(MB_SUMMONED))
+        return nullptr;
+
     monster* summoner = monster_by_mid(summoner_id);
 
     // Don't leak information about invisible summoners.

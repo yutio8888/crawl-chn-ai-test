@@ -68,6 +68,7 @@ struct status_info
     {
     };
 
+    bool is_expiring = false;
     int light_colour;
     string light_text; // status light
     string db_key;     // English TextDB key stem; empty means no status.txt entry
@@ -81,6 +82,8 @@ struct status_info
 // character state
 // returns true if the status has a description
 bool fill_status_info(int status, status_info& info);
+
+string status_light_description(const status_info& info);
 
 const char *duration_name(duration_type dur);
 duration_type duration_by_name(const string &name);

@@ -34,10 +34,9 @@
 #include "positional_format.h"
 #include "fineff.h"
 #include "god-abil.h"
-#include "god-blessing.h"
 #include "god-companions.h"
 #include "god-conduct.h"
-#include "god-passive.h" // passive_t::bless_followers, convert_orcs
+#include "god-passive.h" // convert_orcs
 #include "hints.h"
 #include "hiscores.h"
 #include "item-name.h"
@@ -918,7 +917,7 @@ static bool _beogh_maybe_convert_orc(monster &mons, killer_type killer,
     if (MON_KILL(killer) && !invalid_monster_index(killer_index))
     {
         const monster* responsible_monster = &env.mons[killer_index];
-        if (is_follower(*responsible_monster) && !one_chance_in(3))
+        if (is_apostle_follower(*responsible_monster) && !one_chance_in(3))
             return _beogh_forcibly_convert_orc(mons, killer);
     }
 
@@ -2111,13 +2110,6 @@ static bool _apply_necromancy(monster &mons, bool quiet, bool corpse_gone,
     return false;
 }
 
-static bool _god_will_bless_follower(monster* victim)
-{
-    return have_passive(passive_t::bless_followers_vs_evil)
-           && victim->evil()
-           && random2(you.piety()) >= piety_breakpoint(0);
-}
-
 static bool should_blame_you_for_kill(int killer_index, bool pet_kill) noexcept
 {
     if (killer_index == YOU_FAULTLESS)
@@ -2415,10 +2407,6 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
 
     if (YOU_KILL(killer) && gives_player_xp)
     {
-        // TSO follower blessing.
-        if (_god_will_bless_follower(&mons))
-            bless_follower();
-
         if (you.wearing_ego(OBJ_ARMOUR, SPARM_MAYHEM))
             _orb_of_mayhem(you, mons);
     }
@@ -2477,6 +2465,12 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         && !one_chance_in(3))
     {
         makhleb_tyrant_buff();
+    }
+
+    if ((killer == KILL_YOU || killer == KILL_YOU_MISSILE)
+        && gives_player_xp && have_passive(passive_t::inspire_followers))
+    {
+        tso_maybe_bless_follower();
     }
 
     // Apply unrand effects.
@@ -2579,6 +2573,28 @@ item_def* monster_die(monster& mons, killer_type killer,
     // trying to die again after scheduling an avoided_death fineff
     if (testbits(mons.flags, MF_PENDING_REVIVAL))
         return nullptr;
+
+    // If this is a tentacle segment, kill the parent instead.
+    if (mons_is_tentacle_segment(mons.type) && killer != KILL_TENTACLE_CLEANUP)
+    {
+        monster* parent = monster_by_mid(mons.tentacle_connect);
+        if (parent && parent->alive())
+        {
+            // Plumb through some information about the death that gets stamped
+            // on the monster.
+            if (testbits(mons.flags, MF_EXPLODE_KILL))
+                parent->flags |= MF_EXPLODE_KILL;
+            if (mons.props.exists(ATTACK_KILL_KEY))
+                parent->props[ATTACK_KILL_KEY] = true;
+
+            // Set this monster's HP to 1 so that the parent cleans it up.
+            mons.hit_points = 1;
+
+            monster_die(*parent, killer, killer_index, silent, mount_death, reset);
+
+            return nullptr;
+        }
+    }
 
     const bool was_visible = you.can_see(mons);
 
@@ -2996,7 +3012,6 @@ item_def* monster_die(monster& mons, killer_type killer,
                     visual.source = mons.pos();
                     visual.target = armoury->pos();
                     visual.flavour = BEAM_VISUAL;
-                    visual.range = LOS_RADIUS;
                     visual.aimed_at_spot = true;
                     visual.fire();
                 }
@@ -3060,10 +3075,15 @@ item_def* monster_die(monster& mons, killer_type killer,
                     "The tentacle is hauled back through the portal!" :
                     "With a roar, the tentacle is hauled back through the portal!");
             }
-            silent = true;
-            for (map_marker* mark : env.markers.get_markers_at(mons.pos(), MAT_MALIGN_GATEWAY))
+            for (map_marker* mark : env.markers.get_all(MAT_MALIGN_GATEWAY))
+            {
                 if (dynamic_cast<map_malign_gateway_marker*>(mark)->tentacle == mons.mid)
+                {
+                    revert_terrain_change(mark->pos, TERRAIN_CHANGE_MALIGN_GATEWAY);
                     env.markers.remove(mark);
+                }
+            }
+            silent = true;
         }
     }
     else if (mons.type == MONS_DROWNED_SOUL)
@@ -3178,9 +3198,6 @@ item_def* monster_die(monster& mons, killer_type killer,
 
             if (killer_mon->wearing_ego(OBJ_ARMOUR, SPARM_MAYHEM))
                 _orb_of_mayhem(*killer_mon, mons);
-
-            if (pet_kill && _god_will_bless_follower(&mons))
-                bless_follower(killer_mon);
 
             break;
         }
@@ -3482,22 +3499,9 @@ item_def* monster_die(monster& mons, killer_type killer,
                 mpr(T_("The star-spawn's tentacles wither and die."));
         }
     }
-    else if (mons_is_tentacle_or_tentacle_segment(mons.type)
-             && killer != KILL_TENTACLE_CLEANUP
-                 || mons.type == MONS_ELDRITCH_TENTACLE
-                 || mons.type == MONS_SNAPLASHER_VINE)
-    {
-        // XXX: Make sure this segment looks dead, or destroy_tentacle may
-        //      reset it before this function completes
-        mons.hit_points = -1;
+    // Clean up the tentacle's segments.
+    else if (mons_is_tentacle(mons.type) && killer != KILL_TENTACLE_CLEANUP)
         destroy_tentacle(&mons);
-    }
-    else if (mons.type == MONS_ELDRITCH_TENTACLE_SEGMENT
-             && killer != KILL_TENTACLE_CLEANUP)
-    {
-       monster_die(*monster_by_mid(mons.tentacle_connect), killer,
-                   killer_index, silent, mount_death);
-    }
     // Give the treant a last chance to release its hornets if it is killed in a
     // single blow from above half health
     else if (mons.type == MONS_SHAMBLING_MANGROVE && real_death)
