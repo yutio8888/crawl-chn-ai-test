@@ -654,8 +654,7 @@ jade gem
 javelin
 
 一根用于投掷的轻型穿透长矛。它会穿过命中的目标，
-可能击中路径中的所有目标，直到达到最大射程。
-{{
+可能击中路径中的所有目标，直到达到最大射程。{{
     if you.race() == "Kobold" or you.race() == "Spriggan" then
         return "很遗憾，对于你来说它太长了，不方便使用。"
     end
