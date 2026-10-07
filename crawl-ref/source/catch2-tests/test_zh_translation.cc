@@ -5190,7 +5190,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const string zh_and(T_(" and "));
     i18n_cache_clear();
 
-    const string dislikes = get_god_dislikes(GOD_TROG);
+    const string dislikes = get_god_dislikes(GOD_SHINING_ONE);
     const string likes = get_god_likes(GOD_TROG);
     const string zh_list_comma = !zh_comma_space.empty() ? zh_comma_space
                                                          : zh_comma;
@@ -5208,7 +5208,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         return n;
     };
 
-    // Trog has 4 really_dislikes: both comma and last-join fire.
+    // Trog now forbids its former disliked acts outright. TSO still has
+    // 4 really_dislikes, preserving both commas and the final disjunction.
     CHECK(dislikes.find(zh_or) != string::npos);
     CHECK(dislikes.find(zh_list_comma) != string::npos);
     CHECK(count_occ(dislikes, zh_list_comma) >= 2);
@@ -5226,7 +5227,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     {
         EnTranslationFixture english;
-        const string en_dislikes = get_god_dislikes(GOD_TROG);
+        const string en_dislikes = get_god_dislikes(GOD_SHINING_ONE);
         const string en_likes = get_god_likes(GOD_TROG);
         CHECK(en_dislikes.find(" or ") != string::npos);
         CHECK(en_dislikes.find(", ") != string::npos);

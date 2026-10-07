@@ -111,6 +111,10 @@ local ok, message = pcall(function()
   test.eq(vv.title_name, "流亡的芙芙", "Vv title_name")
 
   you.moveto(place.x - 1, place.y)
+  assert(monster.get_monster_at(1, 0) == nil,
+         "freshly placed Vv has no player-visible snapshot yet")
+  -- The upstream interface reads map knowledge rather than the live monster.
+  crawl.redraw_view()
   local mi = monster.get_monster_at(1, 0)
   assert(mi, "Could not get monster.info for Vv")
   test.eq(mi:name(), "Vv", "Vv monster.info canonical name")

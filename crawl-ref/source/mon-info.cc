@@ -1077,6 +1077,9 @@ string monster_info::db_name() const
 
 string monster_info::title_name() const
 {
+    // A database title must not hide the upstream visibility qualifier.
+    if (invisible_to_player())
+        return full_name(DESC_PLAIN);
     const string title = getMiscString(db_name() + " title");
     return title.empty() ? full_name(DESC_PLAIN) : title;
 }

@@ -1019,7 +1019,12 @@ LUAFN(mi_get_monster_at)
     monster* m = &env.mons[env.mgrid(p)];
     if (!you.aware_of(*m))
         return 0;
-    monster_info mi = *env.map_knowledge(p).monsterinfo();
+    const monster_info *known = env.map_knowledge(p).monsterinfo();
+    // Dungeon Lua can query a freshly placed monster before the view updates.
+    // Return no snapshot rather than dereferencing an absent cache entry.
+    if (!known)
+        return 0;
+    monster_info mi = *known;
     lua_push_moninf(ls, &mi);
     return 1;
 }
