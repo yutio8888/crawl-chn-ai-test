@@ -26,7 +26,7 @@ menu += lightred:.*equipped.* bound
 menu += lightred:.*equipped.*([[:space:]]束缚|（已束缚）)
 menu += red: (a|the) bound
 # CN: bound equipment display
-menu += red:(^|[[:space:]])束缚|（已束缚）
+menu += red:(^|[[:space:]])(weapon|armour|jewellery|magical staff)[[:space:]]+束缚|（已束缚）
 menu += lightgreen:.*equipped.*
 # CN: equipped
 menu += lightgreen:装备.*
