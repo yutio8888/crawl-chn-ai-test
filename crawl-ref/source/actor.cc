@@ -483,9 +483,12 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!intentional)
         {
+            const bool contextual_move = escape_verb == "blink"
+                || escape_verb == "hop" || escape_verb == "leap";
             mprf(T_("%s %s free of %s!"),
                  constrictee->name(DESC_THE).c_str(),
-                 constrictee->verb_for_display(escape_verb.c_str()).c_str(),
+                 constrictee->verb_for_display(escape_verb.c_str(),
+                     contextual_move ? "move.bare" : nullptr).c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else

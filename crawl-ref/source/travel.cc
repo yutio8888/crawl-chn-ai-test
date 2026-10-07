@@ -5244,7 +5244,7 @@ template <class C> void explore_discoveries::say_any(
 
     if (has_duplicates(coll.begin(), coll.end()))
     {
-        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), T_(category));
         return;
     }
 
@@ -5252,7 +5252,7 @@ template <class C> void explore_discoveries::say_any(
                            comma_separated_line(coll.begin(), coll.end()).c_str());
 
     if (formatted_string::parse_string(message).width() >= get_number_of_cols())
-        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), T_(category));
     else
         mpr(message);
 }
@@ -5299,7 +5299,7 @@ bool explore_discoveries::stop_explore() const
     say_any(apply_quantities(altars), "altar");
     say_any(apply_quantities(portals), "portal");
     say_any(apply_quantities(stairs), "stair");
-    say_any(apply_quantities(hatches), "hatch");
+    say_any(apply_quantities(hatches), N_("hatch"));
     say_any(apply_quantities(transporters), "transporter");
     say_any(apply_quantities(runed_doors), "runed door");
     say_any(apply_quantities(runelights), "runelights");

@@ -2263,7 +2263,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         buff << T_("flux bauble");
     break;
     case OBJ_DETECTED:
-        buff << "detected item";
+        buff << T_("detected item");
     break;
 
     default:

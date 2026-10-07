@@ -428,7 +428,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
         INFO("spell=" << i << ", English name=\""
              << spell_english_name(spell) << "\"");
-        REQUIRE(spell_by_name(spell_english_name(spell)) == spell);
+        // Upstream reuses Phase Shift's name for a new monster spell;
+        // the removed spell remains valid only for save compatibility.
+        if (spell == SPELL_PHASE_SHIFT_OLD)
+        {
+            REQUIRE(spell_removed(spell));
+            REQUIRE(string(spell_english_name(spell))
+                    == spell_english_name(SPELL_PHASE_SHIFT));
+            REQUIRE(spell_by_name(spell_english_name(spell)) == SPELL_PHASE_SHIFT);
+        }
+        else
+            REQUIRE(spell_by_name(spell_english_name(spell)) == spell);
     }
 }
 

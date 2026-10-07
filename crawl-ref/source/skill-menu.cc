@@ -2148,10 +2148,10 @@ static bool _process_skill_menu_key(int keyn)
             }
         // Fallthrough
         default:
-            if (ui::key_exits_popup(keyn, true) && skm.exit(false))
+            if (ui::key_exits_popup(keyn, true) && skm.exit())
                 return true;
             // Don't exit from !experience on random keys.
-            if (!skm.is_set(SKMF_EXPERIENCE) && skm.exit(false))
+            if (!skm.is_set(SKMF_EXPERIENCE) && skm.exit())
                 return true;
         }
     }

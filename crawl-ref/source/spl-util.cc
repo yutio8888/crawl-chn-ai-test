@@ -592,7 +592,9 @@ void init_spell_name_cache()
         // Also add the canonical English name for .des compatibility. The
         // accessor falls back to spl-data.h when no explicit override exists.
         const string en_name = lowercase_string(spell_english_name(type));
-        cache.emplace(en_name, type);
+        // Match upstream's last-entry precedence for aliases such as the
+        // removed and current Phase Shift spells.
+        cache[en_name] = type;
     }
 }
 

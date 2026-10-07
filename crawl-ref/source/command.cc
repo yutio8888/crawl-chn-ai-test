@@ -401,7 +401,7 @@ static const char *targeting_help_1 =
     "<w>e</w> : create/remove travel exclusion\n"
 ;
 #ifdef WIZARD
-static const char *targeting_help_wiz =
+static const char *targeting_help_wiz = N_(
     "<h>Wizard targeting commands:</h>\n"
     "<w>Ctrl-C</w> : cycle through beam paths\n"
     "<w>D</w>: get debugging information about the monster\n"
@@ -420,7 +420,7 @@ static const char *targeting_help_wiz =
     "<w>Ctrl-F</w>: place a mimic\n"
     "<w>Ctrl-B</w>: banish monster\n"
     "<w>Ctrl-K</w>: kill monster\n"
-;
+);
 #endif
 
 static const char *targeting_help_2 =

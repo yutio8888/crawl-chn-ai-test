@@ -4959,7 +4959,7 @@ spret cast_magnavolt(coord_def target, int pow, bool fail)
     monster* mon = monster_at(target);
 
     if ((!mon || !you.aware_of(*mon))
-        && !yesno("You can't see a target there. Cast anyway?", false, 'n'))
+        && !yesno(T_("You can't see a target there. Cast anyway?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return spret::abort;

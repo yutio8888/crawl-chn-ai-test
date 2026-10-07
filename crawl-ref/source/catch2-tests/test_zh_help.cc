@@ -847,7 +847,16 @@ TEST_CASE_METHOD(EnTranslationFixture,
             continue;
 
         INFO("monster round-trip: " << me->name);
-        CHECK(get_monster_by_name(me->name) == m);
+        // Mounted and unmounted Goji share a name; upstream's cache
+        // deliberately resolves it to the mounted form.
+        if (m == MONS_GOJI_UNMOUNTED)
+        {
+            REQUIRE(string(me->name) == get_monster_data(MONS_GOJI)->name);
+            CHECK(mons_rider_type(MONS_GOJI) == m);
+            CHECK(get_monster_by_name(me->name) == MONS_GOJI);
+        }
+        else
+            CHECK(get_monster_by_name(me->name) == m);
     }
 }
 

@@ -440,7 +440,8 @@ int list_wizard_commands(bool do_redraw_screen)
                        "<w>}</w>      toggle a bane\n"
                        "<w>_</w>      gain religion\n"
                        "<w>^</w>      set piety to a value\n"
-                       "<w>q</w>      set god gift timeout\n"
+                       + string(T_("<w>q</w>      set god gift timeout\n"))
+                       +
                        "<w>@</w>      set Str Int Dex\n"
                        "<w>Q</w>      set/reset top HUD test state\n"
                        "<w>#</w>      load character from a dump file\n"

@@ -73,7 +73,7 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
     {
         // Constriction escape will already produce an appropriate message.
         quiet = true;
-        stop_being_constricted(false, display_verb);
+        stop_being_constricted(false, verb);
     }
 
     if (!quiet)

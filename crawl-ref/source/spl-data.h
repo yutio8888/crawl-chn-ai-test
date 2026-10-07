@@ -1693,7 +1693,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_TOUCH_OF_PARADOX, "Touch of Paradox",
+    SPELL_TOUCH_OF_PARADOX, N_("Touch of Paradox"),
     spschool::translocation | spschool::hexes,
     spflag::helpful | spflag::monster,
     7,
@@ -4694,7 +4694,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PHASE_SHIFT, "Phase Shift",
+    SPELL_PHASE_SHIFT, N_("Phase Shift"),
     spschool::translocation,
     spflag::helpful | spflag::selfench | spflag::monster,
     6,

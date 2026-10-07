@@ -527,8 +527,8 @@ string electric_charge_impossible_reason(bool allow_safe_monsters)
         if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason, &invalid_target).origin())
         {
             const bool low_priorty = invalid_target
-                && !(you.aware_of(*mi)
-                     && (!you.can_see(*mi) || fedhas_passthrough(*mi)));
+                && !(you.aware_of(**mi)
+                     && (!you.can_see(**mi) || fedhas_passthrough(*mi)));
             if (!low_priorty || example_reason.empty())
             {
                 example_reason = make_stringf(T_("you can't charge at %s because %s"),
