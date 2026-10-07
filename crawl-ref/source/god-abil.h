@@ -160,6 +160,7 @@ bool is_slouchable(coord_def where);
 spret cheibriados_slouch(bool fail);
 void cheibriados_time_step(int pow);
 
+string format_ashenzari_curse_offer(const string &curse_names);
 void ashenzari_offer_new_curse();
 bool ashenzari_bind_item();
 bool ashenzari_shatter_item();

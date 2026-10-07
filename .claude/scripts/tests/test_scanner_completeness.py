@@ -1827,6 +1827,22 @@ class CjkInventoryTests(unittest.TestCase):
         (self.source / 'lookup-help.cc').write_text('mpr("怪物");')
         self.assertTrue(any('migrated lookup' in e for e in self.check()))
 
+    def test_audited_line_move_keeps_literal_hash_and_classification(self):
+        path = self.source / 'display.cc'
+        path.write_text('\n\n' + path.read_text())
+        self.assertTrue(self.check())
+        row = next(r for r in self.manifest['entries'] if r['path'] == 'display.cc')
+        before = dict(row)
+        actual = next(r for r in self.records() if r['path'] == 'display.cc')
+        self.assertEqual(before['literal'], actual['literal'])
+        self.assertEqual(before['literal_sha256'], actual['literal_sha256'])
+        self.assertEqual(before['column'], actual['column'])
+        row['line'] = actual['line']
+        self.assertEqual([], self.check())
+        self.assertEqual(before, dict(row, line=before['line']))
+        path.write_text(path.read_text().replace('怪物', '清除'))
+        self.assertTrue(self.check())
+
     def test_raw_strings_comments_escapes_and_character_literals(self):
         (self.source / 'catch2-tests/test_lex.cc').write_text(
             'auto a = u8R"tag(怪物 " // 清除 /* 怪物 */)tag";\n'

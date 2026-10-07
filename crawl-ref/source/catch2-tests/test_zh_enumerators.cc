@@ -495,7 +495,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(string(get_unrand_name_en(item)) == e->name);
     }
     REQUIRE(enum_values.size() == NUM_UNRANDARTS);
-    REQUIRE(current == 121);
+    // Issue #147: the thirteen audited upstream additions are all current;
+    // compatibility (19) and internal dummy (2) populations are unchanged.
+    REQUIRE(current == 134);
     REQUIRE(compatibility == 19);
     REQUIRE(internal == 2);
     emit_issue_protocol("zh_translation", "fixed_artefacts", issues);

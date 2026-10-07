@@ -22,6 +22,7 @@
 #include "english.h"
 #include "feature.h"
 #include "god-conduct.h"
+#include "god-abil.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
@@ -80,6 +81,35 @@
 string bind_random_body_part_message(string msg, bool plural);
 
 extern SkillMenu skm;
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: Ashenzari knowledge offers preserve complete sentences",
+                 "[zh-translation][ashenzari-offer]")
+{
+    CHECK(format_ashenzari_curse_offer("")
+          == "Ashenzari invites you to chain yourself with knowledge.");
+    CHECK(format_ashenzari_curse_offer("cunning")
+          == "Ashenzari invites you to chain yourself with knowledge of cunning.");
+    CHECK(format_ashenzari_curse_offer("cunning and fortitude")
+          == "Ashenzari invites you to chain yourself with knowledge of cunning and fortitude.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Ashenzari knowledge offers use their own complete catalog keys",
+                 "[zh-translation][ashenzari-offer]")
+{
+    // Exact catalog translations are owned by the catalog translator. These
+    // checks cover lookup and safe EN fallback before those keys are added.
+    CHECK(format_ashenzari_curse_offer("")
+          == T_("Ashenzari invites you to chain yourself with knowledge."));
+    const string knowledge = "SKILL_A";
+    CHECK(format_ashenzari_curse_offer(knowledge)
+          == make_stringf(
+              T_("Ashenzari invites you to chain yourself with knowledge of %s."),
+              knowledge.c_str()));
+    CHECK(format_ashenzari_curse_offer(knowledge).find(T_(" of "))
+          == string::npos);
+}
 
 namespace
 {

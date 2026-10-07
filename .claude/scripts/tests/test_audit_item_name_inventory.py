@@ -7,9 +7,11 @@ import hashlib
 import importlib.util
 import io
 import json
+import re
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -31,6 +33,8 @@ from i18n_shared import AuditInput
 QUALITY_M1_IMMUTABLE_BASELINE = (
     "695d5fbcd5ced6f12d1b68c99c91266b6713a477"
 )
+# Builder that the immutable fixture used before the trunk EN rebaseline.
+QUALITY_M1_BUILDER_BASELINE = "e77c8c906869f30639e3e4b8dfdae0c29a72bcd7"
 
 
 def review_input(path):
@@ -128,10 +132,19 @@ def quality_m1_fixture():
             QUALITY_M1_IMMUTABLE_BASELINE,
             require_head=False,
         )
-        with mock.patch.object(
-            MODULE, "audit_snapshot", return_value=snapshot
-        ):
-            payload, _internal_rows = MODULE.build_extended_inventory_v3()
+        # This historical experiment freezes both its inputs and the builder
+        # schema. The current trunk builder has different producer interfaces
+        # and EN counts; mixing it with the old snapshot invents drift.
+        historical = types.ModuleType("historical_item_inventory")
+        historical.__file__ = str(SCRIPT)
+        builder = subprocess.check_output(
+            ["git", "-C", str(MODULE.ROOT), "show",
+             f"{QUALITY_M1_BUILDER_BASELINE}:.claude/scripts/audit_item_name_inventory.py"],
+            env=SHARED.trusted_git_environment(), text=True,
+        )
+        exec(compile(builder, str(SCRIPT), "exec"), historical.__dict__)
+        with mock.patch.object(historical, "audit_snapshot", return_value=snapshot):
+            payload, _internal_rows = historical.build_extended_inventory_v3()
         payload["review_input"] = {"input_sha256": "a" * 64}
         payload["review_violations"] = {}
         files = MODULE.build_quality_m1_files(
@@ -713,6 +726,77 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             ]["key"],
         )
 
+    def test_deferred_item_names_are_literal_only(self):
+        for expression in ('"assassin centipede"', 'N_("assassin centipede")',
+                           'N_("assassin " "centipede")'):
+            with self.subTest(expression=expression):
+                text = 'Weapon_prop[] = {\n{ WPN_CENTIPEDE, ' + expression + ', 7 },\n};'
+                self.assertEqual({"key": "assassin centipede", "en": "assassin centipede"},
+                                 MODULE.property_literals(text, "Weapon_prop")["WPN_CENTIPEDE"])
+        for expression in ('N_(name)', 'UNKNOWN_("centipede")',
+                           'N_("centipede", name)', 'N_("centipede") + suffix',
+                           'N_("centipede"'):
+            with self.subTest(expression=expression):
+                text = 'Weapon_prop[] = {\n{ WPN_CENTIPEDE, ' + expression + ', 7 },\n};'
+                self.assertEqual({}, MODULE.property_literals(text, "Weapon_prop"))
+        self.assertEqual(
+            {"key": "centipede bauble", "en": "centipede bauble", "runtime_lookup": True},
+            MODULE.switch_literals(
+                'name(int type) { switch(type) { case BAUBLE_CENTIPEDE: return N_("centipede bauble"); } }',
+                "name")["BAUBLE_CENTIPEDE"],
+        )
+        for expression in ('N_(name)', 'N_("centipede bauble"',
+                           'N_("centipede bauble") + suffix', 'N_("centipede", "bauble")',
+                           'UNKNOWN_("centipede bauble")'):
+            self.assertEqual({}, MODULE.switch_literals(
+                'name(int type) { switch(type) { case BAUBLE_CENTIPEDE: return ' + expression + '; } }',
+                "name"))
+
+    def test_production_centipede_identities_and_translation_consumer(self):
+        payload = MODULE.build_inventory()
+        self.assertEqual(398, payload["count"])
+        rows = {row["identity"]: row for row in payload["rows"]}
+        for identity, key in (("weapon:WPN_CENTIPEDE", "assassin centipede"),
+                              ("bauble:BAUBLE_CENTIPEDE", "centipede bauble")):
+            self.assertEqual(key, rows[identity]["translation_key"])
+            self.assertEqual("current", rows[identity]["lifecycle"])
+        original = MODULE.active_source
+        def untranslated_consumer(path, *args, **kwargs):
+            text = original(path, *args, **kwargs)
+            return text.replace('T_(_bauble_type_name(sub_type))', '_bauble_type_name(sub_type)')
+        with mock.patch.object(MODULE, "active_source", side_effect=untranslated_consumer):
+            with self.assertRaisesRegex(RuntimeError, "bauble display translation consumer"):
+                MODULE.build_inventory()
+
+    def test_thirteen_upstream_unrand_additions_are_unique(self):
+        # Exact additions in 0.34.1..43d89d912d; renames of Prune and the
+        # Four Winds amulet do not contribute to the 142 -> 155 increase.
+        expected = {
+            "SWAMP_WITCH_SCALES": "swamp witch's dragon scales",
+            "FIMBULWINTER": 'athame "Fimbulwinter"',
+            "FIRE_DRAGON_OCCULTIST_SCALES": "fire dragon occultist's scales",
+            "ICE_DRAGON_ARCANIST_SCALES": "ice dragon arcanist's scales",
+            "CARINA": 'giant spiked club "Carina at Dusk"',
+            "COOLIBAH_BARDICHE": "coolibah bardiche",
+            "FIVE_VIRTUES": "staff of Five Virtues",
+            "STAGEHANDS_SWORD": "Stagehand's Sword",
+            "HANAS_SCIMITAR": "Hana's Scimitar",
+            "ARCANE_SPLINT": "arcane splint mail",
+            "BONE_SCALES": "bone scales",
+            "FORGEWARDEN": "Forgewarden's cuirass",
+            "CRAB_CLAWS": "ghost crab claws",
+        }
+        definitions = []
+        for block in MODULE.art_data_blocks(MODULE.active_source(MODULE.SRC / "art-data.txt")):
+            name = re.search(r"(?m)^NAME:\s*(.+?)\s*$", block)
+            if name:
+                definitions.append((MODULE.unrand_enum_identity(name.group(1), block), name.group(1)))
+        self.assertEqual(155, len(definitions))
+        self.assertEqual(155, len(dict(definitions)))
+        self.assertEqual(expected, {identity.removeprefix("UNRAND_"): name
+                                   for identity, name in definitions
+                                   if identity.removeprefix("UNRAND_") in expected})
+
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
             "identity": "weapon:WPN_TEST",
@@ -803,7 +887,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(0, proc.returncode, proc.stderr)
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
-        self.assertEqual(390, payload["count"])
+        self.assertEqual(398, payload["count"])
         self.assertEqual(
             "63f0eb9c721654284401130123b6149af5cb2a46cbe2a2fe0b74979223b113d2",
             payload["inventory_sha256"],
@@ -1003,10 +1087,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
 
     def test_issue29_source_inventory_freezes_every_production_boundary(self):
         payload, internal_rows = MODULE.build_extended_inventory()
-        self.assertEqual(390, payload["ordinary_v1"]["count"])
+        self.assertEqual(398, payload["ordinary_v1"]["count"])
         self.assertEqual(
             {
-                "unrand": 142,
+                "unrand": 155,
                 "unident": 7,
                 "appearance": 186,
                 "special": 23,

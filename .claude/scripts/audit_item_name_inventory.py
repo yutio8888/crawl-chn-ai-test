@@ -394,11 +394,13 @@ def switch_literals(text, name):
     body = function_body(text, name)
     pattern = re.compile(
         r"case\s+([A-Z][A-Z0-9_]+)\s*:\s*"
-        r"return\s+(?:(T_|C_)\()?"
-        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"\)?\s*;"
+        r"return\s+(?:(T_|C_|N_)\(\s*)?"
+        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"(?(2)\s*\))\s*;"
     )
     rows = {}
     for identity, wrapper, context, literal in pattern.findall(body):
+        if bool(context) != (wrapper == "C_"):
+            continue
         key = f"{context}|{literal}" if wrapper == "C_" else literal
         rows[identity] = {
             "key": key, "en": literal, "runtime_lookup": bool(wrapper),
@@ -415,10 +417,13 @@ def property_literals(text, array_name):
         raise RuntimeError(f"array not found: {array_name}")
     rows = {}
     for entry in re.finditer(
-        r"\{\s*([A-Z][A-Z0-9_]+)\s*,\s*((?:\"[^\"]*\"\s*)+)",
+        r"\{\s*([A-Z][A-Z0-9_]+)\s*,\s*"
+        r"(?:N_\(\s*((?:\"[^\"]*\"\s*)+)\s*\)"
+        r"|((?:\"[^\"]*\"\s*)+))\s*,",
         match.group(1),
     ):
-        identity, string_expr = entry.groups()
+        identity, marked_expr, plain_expr = entry.groups()
+        string_expr = marked_expr or plain_expr
         literal = "".join(re.findall(r'"([^"]*)"', string_expr))
         rows[identity] = {"key": literal, "en": literal}
     if array_name == "Armour_prop":
@@ -833,14 +838,10 @@ def build_inventory():
         "translation_present": "orb of zot" in db,
         "runtime_lookup": True,
     })
-    rows.append({
-        "identity": "bauble:BAUBLE_FLUX", "category": "bauble",
-        "lifecycle": "current", "english_source_name": "flux bauble",
-        "translation_key": "flux bauble",
-        "current_chinese_name": db.get("flux bauble"),
-        "translation_present": "flux bauble" in db,
-        "runtime_lookup": True,
-    })
+    # Deferred keys are translated at the real bauble display consumer.
+    if not re.search(r'buff\s*<<\s*T_\(_bauble_type_name\(sub_type\)\)', item_name):
+        raise RuntimeError("bauble display translation consumer changed")
+    add(rows, "bauble", switch_literals(item_name, "_bauble_type_name"), db)
 
     # Weapon brands: one identity with all three runtime forms.
     terse_block = re.search(
@@ -1287,7 +1288,8 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
             )),
         })
     enums = [definition["enum"] for definition in definitions]
-    if len(definitions) != 142 or len(enums) != 142:
+    # Thirteen upstream additions, individually audited for Issue #147.
+    if len(definitions) != 155 or len(enums) != 155:
         raise RuntimeError(
             f"unrand inventory drift: definitions={len(definitions)} "
             f"enums={len(enums)}"
@@ -2256,7 +2258,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     )
     counts = Counter(row["category"] for row in rows)
     expected_counts = {
-        "unrand": 142,
+        "unrand": 155,
         "unident": 7,
         "appearance": 186,
         "special": 23,
