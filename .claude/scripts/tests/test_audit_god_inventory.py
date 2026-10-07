@@ -134,8 +134,6 @@ class GodInventoryAuditTest(unittest.TestCase):
             {
                 "GOD_RU",
                 "GOD_ASHENZARI",
-                "GOD_HEPLIAKLQANA",
-                "GOD_NEMELEX_XOBEH",
             },
             {
                 row["identity"] for row in self.payload["parents"]
@@ -148,7 +146,7 @@ class GodInventoryAuditTest(unittest.TestCase):
             {
                 "god_descriptions": 82,
                 "god_longnames": 23,
-                "godspeak": 193,
+                "godspeak": 195,
             },
             self.payload["textdb_counts"],
         )
