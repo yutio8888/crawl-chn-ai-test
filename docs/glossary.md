@@ -213,6 +213,68 @@
 | spell library | 法术库 | hints、Divine Exegesis、记忆菜单与 catalog 一致；decision=D-C-096 |
 | Spider Nest | 蜘蛛巢穴 | 分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096 |
 
+### 界面机制参数（B0-3 归属整理）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
+
+### 神器传说专名与材料（B0-3 归属整理）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Hana | 哈娜 | unrand lore proper name；与神器所有格统一；decision=D-C-095 |
+| Zmysua | 兹米苏娅 | unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095 |
+| Yntzoia | 因佐娅 | unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095 |
+| Fimbulwinter | 芬布尔之冬 | unrand lore proper name；与武器专名统一；decision=D-C-095 |
+| Carina | 船底座 | unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095 |
+| coolibah | 库利巴木 | unrand material name；不以未确认分类学知识增补树种；decision=D-C-095 |
+
+### 新增随机命名组件（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Apeiromancy | 无穷术 | randname.txt；Ashenzari 随机神器词缀，apeiro 词根；由 Apeoromancy 拼写修正；decision=D-C-095 |
+| Apeoromancy | 无穷术 | 旧拼写仅供兼容，不另造中文名；decision=D-C-095 |
+| Armchairtaur | 扶手椅人马 | rand_arm.txt；armchair 与 -taur 的组合双关，不等同 Armataur 种族；decision=D-C-095 |
+| Eucatastrophe | 转危为喜 | rand_arm.txt；灾厄突然转为幸福结局的文学名词；decision=D-C-095 |
+| Orthopraxy | 正行 | rand_wpn.txt；正当宗教实践，区别 Orthodoxy 教义正统；decision=D-C-095 |
+| nickel | 镍 | gizmo.txt；材料／工程组件；decision=D-C-095 |
+| sivanium | 西瓦尼姆 | gizmo.txt；注释指 Shazam，虚构元素音译；decision=D-C-095 |
+| valorium | 瓦洛里姆 | gizmo.txt；注释指 Legion of Super-Heroes，虚构元素音译；decision=D-C-095 |
+| zarnium | 扎尼姆 | gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095 |
+| zigzags | 之字纹 | colourname.txt；未鉴定外观花纹；decision=D-C-095 |
+| deep | 深 | colourname.txt；颜色深浅修饰，不指楼层；decision=D-C-095 |
+| Absolute Zero | 绝对零度 | randbook.txt 新增冰系随机书名主题；物理概念，不声称恢复同名法术；decision=D-C-095 |
+| Frazil | 冰晶 | randbook.txt；湍流水中形成的小冰晶；decision=D-C-095 |
+| Frigidity | 寒冷 | randbook.txt；冰系书名主题，采用温度义；decision=D-C-095 |
+| Infrigidation | 致冷 | randbook.txt；致冷过程／状态；decision=D-C-095 |
+| Kibes | 冻疮 | randbook.txt；寒冷所致疮肿，非新游戏状态；decision=D-C-095 |
+| Névé | 粒雪 | randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095 |
+| Perniones | 冻疮 | randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095 |
+| the Cold Snap | 骤寒 | randbook.txt；寒冷突然到来；decision=D-C-095 |
+| the Floe | 浮冰 | randbook.txt；漂浮冰块；decision=D-C-095 |
+| the Frost Giant | 霜巨人 | randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095 |
+| the Mountaintop | 山巅 | randbook.txt；冰系书名地貌意象；decision=D-C-095 |
+| the Polar Bear | 北极熊 | randbook.txt；复用现行怪物名；decision=D-C-095 |
+| the Shard Shrike | 碎片伯劳 | randbook.txt；复用现行怪物名；decision=D-C-095 |
+| Algific | 酷寒的 | randbook.txt；冰系书名形容词；decision=D-C-095 |
+| Benumbed | 冻僵的 | randbook.txt；寒冷麻木意象；decision=D-C-095 |
+| Cauldrife | 寒冷的 | randbook.txt；苏格兰语冷／令人发冷；decision=D-C-095 |
+| Encoldened | 变冷的 | randbook.txt；变冷结果；decision=D-C-095 |
+| Hibernal | 冬日的 | randbook.txt；冬季意象，不是冬眠；decision=D-C-095 |
+| Key-cold | 冰冷无温的 | randbook.txt；如金属钥匙般冰冷／失去生命温度；decision=D-C-095 |
+| Nithering | 冻瑟的 | randbook.txt；苏格兰语寒冷蜷缩／发抖；decision=D-C-095 |
+| Nivean | 雪白的 | randbook.txt；雪色意象；decision=D-C-095 |
+| Nixious | 雪白的 | randbook.txt；古词如雪般白，非 noxious 有毒；decision=D-C-095 |
+| Ourie | 凄冷的 | randbook.txt；苏格兰语阴郁寒冷；decision=D-C-095 |
+| Shrammed | 冻僵的 | randbook.txt；英国方言受冻麻木；decision=D-C-095 |
+| Snowblind | 雪盲的 | randbook.txt；雪光致盲意象；decision=D-C-095 |
+| Subnivean | 雪下的 | randbook.txt；积雪下方，非零下温度；decision=D-C-095 |
+| Brom | 布罗姆 | randbook.txt Earth owner；复用既有法术专名；decision=D-C-095 |
+| Vhi | 维 | randbook.txt Air owner；复用既有法术专名；decision=D-C-095 |
+| Nazja | 纳兹亚 | randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095 |
+
 <!-- domain:combat -->
 ## 五、战斗与伤害
 
@@ -358,12 +420,6 @@
 | bone scales | 骨鳞甲 | unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；decision=D-C-095 |
 | Forgewarden's cuirass | 锻炉守卫胸甲 | unrand.txt；宗教图案胸甲；不把内部 plate 身份当显示名；decision=D-C-095 |
 | ghost crab claws | 幽灵螃蟹爪 | art-data.txt / unrand.txt；复用 ghost crab 实体，保留 claws 意象；decision=D-C-095 |
-| Hana | 哈娜 | unrand lore proper name；与神器所有格统一；decision=D-C-095 |
-| Zmysua | 兹米苏娅 | unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095 |
-| Yntzoia | 因佐娅 | unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095 |
-| Fimbulwinter | 芬布尔之冬 | unrand lore proper name；与武器专名统一；decision=D-C-095 |
-| Carina | 船底座 | unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095 |
-| coolibah | 库利巴木 | unrand material name；不以未确认分类学知识增补树种；decision=D-C-095 |
 | RageSunder | 怒裂 | art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095 |
 | Salvo | 齐射 | art-data.txt / status.txt；附带攻击其他目标的连续射击效果；decision=D-C-095 |
 | TrickPois | 诡毒 | art-data.txt；施加负面状态附带中毒；decision=D-C-095 |
@@ -381,60 +437,14 @@
 | ValArchmagi | 勇武大法师 | art-data.txt；法力充足时增强法术；decision=D-C-095 |
 | ^Dim | 卸下削弱法术 | art-data.txt；卸下后的临时法术减弱；显示释义，保护内部标记；decision=D-C-095 |
 | Apostate | 叛教 | art-data.txt；装备降低虔诚并减少后续获取；decision=D-C-095 |
+| Mist | 幽魂雾 | art-data.txt 新神器特效标签；明确 spectral mist，区别药水名雾；decision=D-C-095 |
 | giant spiked club | 巨刺棍 | Carina 神器所依赖的现行武器基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
 
 
-### 新增随机命名组件（trunk B0）
+### 物品补登记（B0-2）
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
-| Apeiromancy | 无穷术 | randname.txt；Ashenzari 随机神器词缀，apeiro 词根；由 Apeoromancy 拼写修正；decision=D-C-095 |
-| Apeoromancy | 无穷术 | 旧拼写仅供兼容，不另造中文名；decision=D-C-095 |
-| Armchairtaur | 扶手椅人马 | rand_arm.txt；armchair 与 -taur 的组合双关，不等同 Armataur 种族；decision=D-C-095 |
-| Eucatastrophe | 转危为喜 | rand_arm.txt；灾厄突然转为幸福结局的文学名词；decision=D-C-095 |
-| Orthopraxy | 正行 | rand_wpn.txt；正当宗教实践，区别 Orthodoxy 教义正统；decision=D-C-095 |
-| nickel | 镍 | gizmo.txt；材料／工程组件；decision=D-C-095 |
-| sivanium | 西瓦尼姆 | gizmo.txt；注释指 Shazam，虚构元素音译；decision=D-C-095 |
-| valorium | 瓦洛里姆 | gizmo.txt；注释指 Legion of Super-Heroes，虚构元素音译；decision=D-C-095 |
-| zarnium | 扎尼姆 | gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095 |
-| zigzags | 之字纹 | colourname.txt；未鉴定外观花纹；decision=D-C-095 |
-| deep | 深 | colourname.txt；颜色深浅修饰，不指楼层；decision=D-C-095 |
-| Absolute Zero | 绝对零度 | randbook.txt 新增冰系随机书名主题；物理概念，不声称恢复同名法术；decision=D-C-095 |
-| Frazil | 冰晶 | randbook.txt；湍流水中形成的小冰晶；decision=D-C-095 |
-| Frigidity | 寒冷 | randbook.txt；冰系书名主题，采用温度义；decision=D-C-095 |
-| Infrigidation | 致冷 | randbook.txt；致冷过程／状态；decision=D-C-095 |
-| Kibes | 冻疮 | randbook.txt；寒冷所致疮肿，非新游戏状态；decision=D-C-095 |
-| Névé | 粒雪 | randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095 |
-| Perniones | 冻疮 | randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095 |
-| the Cold Snap | 骤寒 | randbook.txt；寒冷突然到来；decision=D-C-095 |
-| the Floe | 浮冰 | randbook.txt；漂浮冰块；decision=D-C-095 |
-| the Frost Giant | 霜巨人 | randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095 |
-| the Mountaintop | 山巅 | randbook.txt；冰系书名地貌意象；decision=D-C-095 |
-| the Polar Bear | 北极熊 | randbook.txt；复用现行怪物名；decision=D-C-095 |
-| the Shard Shrike | 碎片伯劳 | randbook.txt；复用现行怪物名；decision=D-C-095 |
-| Algific | 酷寒的 | randbook.txt；冰系书名形容词；decision=D-C-095 |
-| Benumbed | 冻僵的 | randbook.txt；寒冷麻木意象；decision=D-C-095 |
-| Cauldrife | 寒冷的 | randbook.txt；苏格兰语冷／令人发冷；decision=D-C-095 |
-| Encoldened | 变冷的 | randbook.txt；变冷结果；decision=D-C-095 |
-| Hibernal | 冬日的 | randbook.txt；冬季意象，不是冬眠；decision=D-C-095 |
-| Key-cold | 冰冷无温的 | randbook.txt；如金属钥匙般冰冷／失去生命温度；decision=D-C-095 |
-| Nithering | 冻瑟的 | randbook.txt；苏格兰语寒冷蜷缩／发抖；decision=D-C-095 |
-| Nivean | 雪白的 | randbook.txt；雪色意象；decision=D-C-095 |
-| Nixious | 雪白的 | randbook.txt；古词如雪般白，非 noxious 有毒；decision=D-C-095 |
-| Ourie | 凄冷的 | randbook.txt；苏格兰语阴郁寒冷；decision=D-C-095 |
-| Shrammed | 冻僵的 | randbook.txt；英国方言受冻麻木；decision=D-C-095 |
-| Snowblind | 雪盲的 | randbook.txt；雪光致盲意象；decision=D-C-095 |
-| Subnivean | 雪下的 | randbook.txt；积雪下方，非零下温度；decision=D-C-095 |
-| Brom | 布罗姆 | randbook.txt Earth owner；复用既有法术专名；decision=D-C-095 |
-| Vhi | 维 | randbook.txt Air owner；复用既有法术专名；decision=D-C-095 |
-| Nazja | 纳兹亚 | randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095 |
-| Mist | 幽魂雾 | art-data.txt 新神器特效标签；明确 spectral mist，区别药水名雾；decision=D-C-095 |
-
-### 物品与护甲参数补登记（B0-2）
-
-| EN | ZH | 依据 / 作用域 |
-|----|----|---------------|
-| encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
 | shortbow | 短弓 | 基础武器名；catalog、hints、Hunter 与 tutorial 一致；decision=D-C-096 |
 | enlightenment | 启迪 | 药水效果／状态词根；一般宗教语境如入祭坛的 enlightenment 可译“觉悟”；decision=D-C-096 |
 | ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096 |
