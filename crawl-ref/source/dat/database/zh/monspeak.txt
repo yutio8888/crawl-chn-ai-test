@@ -374,19 +374,19 @@ VISUAL:@The_monster@ 看起来很烦躁。
 @The_monster@ 对 @foe@ 尖叫道："我想一个人待着！"
 %%%%
 _Terence_rare_
-@The_monster@ @at_foe@尖叫道："你那所谓的技巧救不了你！"
+@The_monster@ 对 @foe@ 尖叫道："你那所谓的技巧救不了你！"
 
-@The_monster@ @at_foe@尖叫道："你的力量哪去了？！"
+@The_monster@ 对 @foe@ 尖叫道："你的力量哪去了？！"
 
-@The_monster@ @at_foe@尖叫道："站住，懦夫！你想打，就拿出点荣誉来！"
+@The_monster@ 对 @foe@ 尖叫道："站住，懦夫！你想打，就拿出点荣誉来！"
 
-@The_monster@ @to_foe@说："我厌倦了战争。但如果你想要血，那就让你见血！"
+@The_monster@ 对 @foe@ 说："我厌倦了战争。但如果你想要血，那就让你见血！"
 
-@The_monster@ @at_foe@尖叫道："滚出去，别等我赶你出去！"
+@The_monster@ 对 @foe@ 尖叫道："滚出去，别等我赶你出去！"
 
-@The_monster@ @at_foe@尖叫道："我恨闯入者！"
+@The_monster@ 对 @foe@ 尖叫道："我恨闯入者！"
 
-@The_monster@ @at_foe@尖叫道："我挂了'请勿打扰'的牌子！你不识字吗？！"
+@The_monster@ 对 @foe@ 尖叫道："我挂了'请勿打扰'的牌子！你不识字吗？！"
 %%%%
 Terence triumphant
 
@@ -10081,11 +10081,11 @@ VISUAL:@The_monster@ 面带正义的愤慨，皱起眉头。
 %%%%
 Goji
 
-@The_monster@说：“别的骑手看到俺，肯定全都羡慕。可他们看不见！”
+@The_monster@说：“别的骑手现在看见俺，全都要眼红。除了他们看不见！”
 
 @The_monster@喊道：“隐蔽是赢下*所有*战斗的关键。”
 
-@The_monster@说：“俺总能出其不意。”
+@The_monster@说：“俺一直都是有出其不意的。”
 
 w:20
 VISUAL:{{
@@ -10118,14 +10118,14 @@ VISUAL:@The_monster@费力地将@possessive@武器从@possessive@鞍具中解开
 
 @The_monster@说：“就算是伯劳，也躲不开看不见的东西！”
 
-@The_monster@说：“这下俺肯定能当队长了。”
+@The_monster@说：“俺这回当队长，肯定的。”
 
 w:2
 @The_monster@说：“像蝴蝶一样飘，像……拿着长矛的蝴蝶一样刺！”
 %%%%
 Goji killed
 
-@The_monster@嘶哑地说：“可俺……应该……看不见才对……”
+@The_monster@嘶哑地说：“可俺……明明……谁都看不见俺……”
 %%%%
 Goji triumphant
 

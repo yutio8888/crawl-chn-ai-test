@@ -137,7 +137,7 @@ air (Air) armour ego
 %%%%
 archery (Archery) armour ego
 
-进行远程战斗时，它的累赘程度仅为正常值的三分之一，
+进行远程战斗时，它的负重仅为正常值的三分之一，
 并会根据穿戴者的护甲技能略微增加远程伤害。
 %%%%
 attunement (Attunement) armour ego
@@ -233,7 +233,7 @@ mayhem (Mayhem) armour ego
 %%%%
 mesmerism (Mesmerism) armour ego
 
-当你在近战中被击中时，它会短暂地使附近所有敌人晕眩，
+当你在近战中被击中时，它会短暂地使附近所有敌人眩晕，
 之后需要通过静止不动一段时间来重新充能。
 其持续时间、范围和充能速度随你的魔力释放技能提升而增加。
 
