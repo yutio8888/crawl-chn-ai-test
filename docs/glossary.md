@@ -802,8 +802,8 @@
 | insubstantial | 虚体 | duration-data.h；与 Insubst 同词根；decision=D-C-095 |
 | -Swift | -迅捷 | 行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法） |
 | -Sirocco | 灼热风冷却 | status.txt；移动会延后再次施放；decision=D-C-095 |
-| -Tail | 断尾待生 | status.txt；探索后尾巴才能长回；decision=D-C-095 |
-| -Jolt | 放电冷却 | status.txt；完全恢复生命后才能再次满强度放电；decision=D-C-095 |
+| -Tail | -尾巴 | status.txt；状态灯对齐实际显示，保留负号；探索后尾巴才能长回；decision=D-C-098（取代 D-C-095 的断尾待生译法） |
+| -Jolt | -电冲 | status.txt；状态灯对齐共享 catalog 标签，保留负号；完全恢复生命后才能再次满强度放电；decision=D-C-098（取代 D-C-095 的放电冷却译法） |
 | deflecting missiles | 偏转飞弹 | monstatus.txt；替代旧 repelling missiles 标签，复用 Deflect Missiles；decision=D-C-095 |
 | divinely shielded | 神圣护盾保护 | monstatus.txt；受神圣护盾保护；decision=D-C-095 |
 | exposed | 暴露 | monstatus.txt；更易遭非攻击伤害且意志降低；不译为防具破碎；decision=D-C-095 |
