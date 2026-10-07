@@ -608,6 +608,8 @@ def extract_keys_from_file(filepath: str):
 
     if is_lua:
         for key_runtime, offset in _extract_lua_calls(content):
+            if not key_runtime:
+                continue
             key = i18n_escape(key_runtime)
             lineno = _offset_to_lineno(offsets, offset)
             line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
@@ -618,6 +620,9 @@ def extract_keys_from_file(filepath: str):
         calls = _extract_cpp_calls(
             content, ignore_marker_definitions=filepath.endswith("/i18n.h"))
         for key_runtime, ctx_runtime, offset in calls:
+            # Empty strings are sentinels: runtime translation bypasses TextDB.
+            if not key_runtime:
+                continue
             key = i18n_escape(key_runtime)
             ctx = i18n_escape(ctx_runtime) if ctx_runtime is not None else None
             lineno = _offset_to_lineno(offsets, offset)
