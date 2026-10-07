@@ -15,7 +15,7 @@ __SCREAM	尖叫	domain=shouts; source=EN/ZH
 __SHOUT	喊叫	domain=shouts; source=EN/ZH
 __SKITTER	窸窣声	domain=shouts; source=EN/ZH
 Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅；缩短附近所有敌对召唤生物的剩余存续时间
-Absolute Zero	绝对零度	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt 新增冰系随机书名主题；物理概念，不声称恢复同名法术；decision=D-C-095
+Absolute Zero	绝对零度	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt 新增冰系随机书名主题；物理概念，不声称恢复同名法术；decision=D-C-095
 Abyss	深渊	domain=core; source=EN/ZH
 abyssal acolyte	深渊侍僧	domain=monsters; source=EN/ZH; 依据 / 作用域=abyssal-acolyte.yaml；复用 Abyss 与 acolyte；decision=D-C-095
 Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅；投掷后爆炸的腐蚀性酸液球
@@ -39,7 +39,7 @@ Aizul	艾祖尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mon
 Aizul title	疏忽的守卫艾祖尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Alchemist	炼金术士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Alchemy	炼金术	domain=magic; source=EN/ZH
-Algific	酷寒的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名形容词；decision=D-C-095
+Algific	酷寒的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名形容词；decision=D-C-095
 Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅；混乱视野内智慧生物，成功时施法者短暂眩晕
 Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅；战斗构装酿造并分发药水
 alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -65,8 +65,8 @@ Antaeus	安泰俄斯	domain=unique-monsters; source=EN/ZH; Scope / comment=uniqu
 Antaeus title	安泰俄斯，悲叹河的守卫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 antennae	触角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Antimagic Gaze	反魔法凝视	domain=spells; source=EN/ZH; 备注=✅
-Apeiromancy	无穷术	domain=items; source=EN/ZH; 依据 / 作用域=randname.txt；Ashenzari 随机神器词缀，apeiro 词根；由 Apeoromancy 拼写修正；decision=D-C-095
-Apeoromancy	无穷术	domain=items; source=EN/ZH; 依据 / 作用域=旧拼写仅供兼容，不另造中文名；decision=D-C-095
+Apeiromancy	无穷术	domain=core; source=EN/ZH; 依据 / 作用域=randname.txt；Ashenzari 随机神器词缀，apeiro 词根；由 Apeoromancy 拼写修正；decision=D-C-095
+Apeoromancy	无穷术	domain=core; source=EN/ZH; 依据 / 作用域=旧拼写仅供兼容，不另造中文名；decision=D-C-095
 apis	阿匹斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 apocalypse crab	天启螃蟹	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Apostate	叛教	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；装备降低虔诚并减少后续获取；decision=D-C-095
@@ -80,7 +80,7 @@ arcanist	奥术师	domain=monsters; source=EN/ZH; Scope / comment=monster; sourc
 Arcjolt	电弧震击	domain=spells; source=EN/ZH; 备注=✅
 Arena	竞技场	domain=core; source=EN/ZH; 注意事项=分支、地下城特征与世界显示文本统一；裁决 [D-A-044]
 armataur	甲马人	domain=species; source=EN/ZH; 裁决=D-C-095; 复合格式=trunk 已移除；保留 0.34.1／deprecated-armataur 兼容，不能用作 Gale Centaur 译名 | domain=monsters; source=EN/ZH; Scope / comment=monster; trunk 已移除，保留历史兼容；decision=D-C-095
-Armchairtaur	扶手椅人马	domain=items; source=EN/ZH; 依据 / 作用域=rand_arm.txt；armchair 与 -taur 的组合双关，不等同 Armataur 种族；decision=D-C-095
+Armchairtaur	扶手椅人马	domain=core; source=EN/ZH; 依据 / 作用域=rand_arm.txt；armchair 与 -taur 的组合双关，不等同 Armataur 种族；decision=D-C-095
 armor	护甲	domain=combat; source=EN/ZH
 armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
 Armour	护甲	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -142,7 +142,7 @@ Beastly Appendage	野兽肢体	domain=spells; source=EN/ZH; 备注=⚠️ 已移
 Beckoning Gale	招引之风	domain=spells; source=EN/ZH; 备注=🆕；扭曲目标周围空气，造成伤害并将其拉近
 begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Benumbed	冻僵的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷麻木意象；decision=D-C-095
+Benumbed	冻僵的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷麻木意象；decision=D-C-095
 Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
 Berserk	狂暴	domain=core; source=EN/ZH; 注意事项=近战加成但结束后减速 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近一个盟友进入狂暴
@@ -215,7 +215,7 @@ briar patch	荆棘丛	domain=monsters; source=EN/ZH; Scope / comment=monster; so
 Brigand	强盗	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Brimstone Fiend	硫磺邪魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 broad axe	阔刃斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
-Brom	布罗姆	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt Earth owner；复用既有法术专名；decision=D-C-095
+Brom	布罗姆	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt Earth owner；复用既有法术专名；decision=D-C-095
 Brom's Barrelling Boulder	布罗姆之碾压巨石	domain=spells; source=EN/ZH; 备注=✅；滚石碾过死者并推动幸存者
 broodmother	育母蜘蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Brothers in Arms	战友	domain=spells; source=EN/ZH; 备注=📝
@@ -237,11 +237,11 @@ Call Tide	呼唤潮汐	domain=spells; source=EN/ZH; 备注=✅
 camouflage	伪装	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 cane toad	海蟾蜍	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Cantrip	小戏法	domain=spells; source=EN/ZH; 备注=✅
-Carina	船底座	domain=items; source=EN/ZH; 依据 / 作用域=unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095
+Carina	船底座	domain=core; source=EN/ZH; 依据 / 作用域=unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095
 Cassandra title	注定毁灭的先知卡珊德拉	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 cast	施法（通用）/ 吟诵（仪式）/ 咏唱（神圣）	domain=core; source=EN/ZH; 注意事项=按语境选择
 catoblepas	卡托布勒帕斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Cauldrife	寒冷的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语冷／令人发冷；decision=D-C-095
+Cauldrife	寒冷的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语冷／令人发冷；decision=D-C-095
 Cause Fear	恐惧术	domain=spells; source=EN/ZH; 备注=✅
 Caustic Breath	腐蚀吐息	domain=spells; source=EN/ZH; 备注=✅
 caustic shrike	腐蚀伯劳	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -303,7 +303,7 @@ Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移�
 Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-coolibah	库利巴木	domain=items; source=EN/ZH; 依据 / 作用域=unrand material name；不以未确认分类学知识增补树种；decision=D-C-095
+coolibah	库利巴木	domain=core; source=EN/ZH; 依据 / 作用域=unrand material name；不以未确认分类学知识增补树种；decision=D-C-095
 coolibah bardiche	库利巴木长柄斧	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；整棵 coolibah tree 雕成；不无据指定树种；decision=D-C-095
 Corona	光晕	domain=spells; source=EN/ZH; 备注=🆕；环绕并勾勒目标轮廓，使其更易被击中
 Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -342,7 +342,7 @@ Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅；引导期�
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死精粹并生成瘴气云
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
-deep	深	domain=items; source=EN/ZH; 依据 / 作用域=colourname.txt；颜色深浅修饰，不指楼层；decision=D-C-095
+deep	深	domain=core; source=EN/ZH; 依据 / 作用域=colourname.txt；颜色深浅修饰，不指楼层；decision=D-C-095
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；排斥力场提高对所有投射物的闪避
 deflecting missiles	偏转飞弹	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.txt；替代旧 repelling missiles 标签，复用 Deflect Missiles；decision=D-C-095
@@ -434,8 +434,8 @@ empty mutation catalyst	空诱变催化器	domain=core; source=EN/ZH; 依据 / �
 enchant	附魔	domain=items; source=EN/ZH
 Enchanter	惑控师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Enchantress	妖术女王	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Encoldened	变冷的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；变冷结果；decision=D-C-095
-encumbrance rating	负重等级	domain=items; source=EN/ZH; 依据 / 作用域=护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096
+Encoldened	变冷的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；变冷结果；decision=D-C-095
+encumbrance rating	负重等级	domain=core; source=EN/ZH; 依据 / 作用域=护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096
 Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
 enlightenment	启迪	domain=items; source=EN/ZH; 依据 / 作用域=药水效果／状态词根；一般宗教语境如入祭坛的 enlightenment 可译“觉悟”；decision=D-C-096
 Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅；射出蛛网困住单个目标
@@ -454,7 +454,7 @@ Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source
 Erolcha	伊罗查	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erolcha title	狡猾的伊罗查	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
-Eucatastrophe	转危为喜	domain=items; source=EN/ZH; 依据 / 作用域=rand_arm.txt；灾厄突然转为幸福结局的文学名词；decision=D-C-095
+Eucatastrophe	转危为喜	domain=core; source=EN/ZH; 依据 / 作用域=rand_arm.txt；灾厄突然转为幸福结局的文学名词；decision=D-C-095
 Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eustachio title	奇伟的尤斯塔奇奥	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Evaporate	蒸发术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -481,7 +481,7 @@ fiery dragon vein	火龙脉	domain=core; source=EN/ZH; 依据 / 作用域=featur
 fiery jade	火玉晶	domain=monsters; source=EN/ZH; 依据 / 作用域=jade-crystal-fire.yaml；同系列；decision=D-C-095
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Fimbulwinter	芬布尔之冬	domain=items; source=EN/ZH; 依据 / 作用域=unrand lore proper name；与武器专名统一；decision=D-C-095
+Fimbulwinter	芬布尔之冬	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；与武器专名统一；decision=D-C-095
 Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -524,7 +524,7 @@ Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅；以施法�
 Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
 Frances	弗朗西斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Frances title	弗朗西斯，万魔殿女公爵	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Frazil	冰晶	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；湍流水中形成的小冰晶；decision=D-C-095
+Frazil	冰晶	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；湍流水中形成的小冰晶；decision=D-C-095
 Frederick	弗雷德里克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Frederick title	完美的弗雷德里克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Freeze	冰冻	domain=spells; source=EN/ZH; 备注=✅；相邻单体寒冷攻击，伤害无视护甲
@@ -532,7 +532,7 @@ Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 Freezing Cloud	冰冻云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Freezing Gust	冰冻阵风	domain=spells; source=EN/ZH; 备注=🆕；穿透性严寒气流，沿途留下寒气云
 Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
-Frigidity	寒冷	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名主题，采用温度义；decision=D-C-095
+Frigidity	寒冷	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名主题，采用温度义；decision=D-C-095
 frost cloud	霜云	domain=status; source=EN/ZH; 依据 / 作用域=clouds.txt；faint frost 的描述标题，非新独立云身份；decision=D-C-095
 Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅；短暂冰封周围墙壁并伤害邻近敌人
@@ -600,7 +600,7 @@ Grunn title	被惩罚的格伦	domain=monster-titles; source=EN/ZH; Scope / comm
 Gulch	污渠	domain=core; source=EN/ZH; 依据 / 作用域=branch-data.h / portals/gulch.des / branches.txt；宝库废物与诱变污水的排水空间；decision=D-C-095
 gutter gulch	排污渠	domain=core; source=EN/ZH; 依据 / 作用域=Gulch 分支长描述；普通称呼，不用山间峡谷意象；decision=D-C-095
 Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅；环形冰雹避开紧邻施法者的目标
-Hana	哈娜	domain=items; source=EN/ZH; 依据 / 作用域=unrand lore proper name；与神器所有格统一；decision=D-C-095
+Hana	哈娜	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；与神器所有格统一；decision=D-C-095
 Hana's Scimitar	哈娜之弯刀	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；雅拉弟子的所有格专名；decision=D-C-095
 Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Harold title	饱经风霜的哈罗德	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -619,7 +619,7 @@ Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 herald of the Abyss	深渊先驱	domain=monsters; source=EN/ZH; 依据 / 作用域=herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095
 Hexes	诅咒系	domain=magic; source=EN/ZH
 Hexslinger	诅咒射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Hibernal	冬日的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；冬季意象，不是冬眠；decision=D-C-095
+Hibernal	冬日的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冬季意象，不是冬眠；decision=D-C-095
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 hit	击中	domain=combat; source=EN/ZH
 Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发射的冰霜碎片，命中后施加脆霜减速
@@ -670,7 +670,7 @@ Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=
 Indom	刚毅	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；按生命上限快速恢复一定生命；不表示无敌；decision=D-C-095
 Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
 Infestation	虫群侵扰	domain=spells; source=EN/ZH; 备注=✅
-Infrigidation	致冷	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；致冷过程／状态；decision=D-C-095
+Infrigidation	致冷	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；致冷过程／状态；decision=D-C-095
 Infusion	灌注术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Injury Bond	伤害联结	domain=spells; source=EN/ZH; 备注=✅；与附近盟友联结，替其承担被减免伤害的一半
 Injury Mirror	伤害反射	domain=spells; source=EN/ZH; 备注=✅
@@ -709,10 +709,10 @@ Josephina	约瑟菲娜	domain=unique-monsters; source=EN/ZH; Scope / comment=uni
 Josephina title	冰巫妖约瑟菲娜	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Josephine	约瑟芬	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Josephine title	腐朽的死灵法师约瑟芬	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Key-cold	冰冷无温的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；如金属钥匙般冰冷／失去生命温度；decision=D-C-095
+Key-cold	冰冷无温的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；如金属钥匙般冰冷／失去生命温度；decision=D-C-095
 Khufu	胡夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Khufu title	不朽的法老胡夫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Kibes	冻疮	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷所致疮肿，非新游戏状态；decision=D-C-095
+Kibes	冻疮	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷所致疮肿，非新游戏状态；decision=D-C-095
 Kikubaaqudgha	奇库巴库哈	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-003]
 Kinetic Grapnel	动力抓钩	domain=spells; source=EN/ZH; 备注=✅
 Kirke	喀耳刻	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -844,7 +844,7 @@ naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 
 nagaraja	纳迦王	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
 Natasha	娜塔莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Natasha title	娜塔莎，生死仆从	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Nazja	纳兹亚	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095
+Nazja	纳兹亚	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095
 Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/ZH; 备注=✅；可修复并强化附近任意构装体
 Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅；修复并强化施法者锻造的构装体
 Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -857,12 +857,12 @@ Nergalle	内尔加勒	domain=unique-monsters; source=EN/ZH; Scope / comment=uniq
 Nergalle title	内尔加勒，亡者的传说守护者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Nessos	涅索斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Nessos title	半人马神射手涅索斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-nickel	镍	domain=items; source=EN/ZH; 依据 / 作用域=gizmo.txt；材料／工程组件；decision=D-C-095
+nickel	镍	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；材料／工程组件；decision=D-C-095
 Nikola	尼古拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Nikola title	疯狂的发明家尼古拉	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Nithering	冻瑟的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语寒冷蜷缩／发抖；decision=D-C-095
-Nivean	雪白的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；雪色意象；decision=D-C-095
-Nixious	雪白的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；古词如雪般白，非 noxious 有毒；decision=D-C-095
+Nithering	冻瑟的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语寒冷蜷缩／发抖；decision=D-C-095
+Nivean	雪白的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；雪色意象；decision=D-C-095
+Nixious	雪白的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；古词如雪般白，非 noxious 有毒；decision=D-C-095
 Nobody title	无名氏，未被哀悼者的怨恨	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 nonexistent spell	不存在的法术	domain=spells; source=EN/ZH; 备注=✅
 Norris	诺里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -872,7 +872,7 @@ Noxious Breath	毒瘴吐息	domain=spells; source=EN/ZH; 备注=✅
 Noxious Cloud	毒瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
 noxious fumes	毒烟	domain=status; source=EN/ZH; 依据 / 作用域=造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096
 Nullifying Breath	消魔吐息	domain=spells; source=EN/ZH; 备注=✅
-Névé	粒雪	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095
+Névé	粒雪	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095
 Oblivion Howl	湮灭嚎叫	domain=spells; source=EN/ZH; 备注=✅
 occultist	神秘学者	domain=monsters; source=EN/ZH; 依据 / 作用域=新增火龙鳞甲所依赖的现行角色基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095
 octopode	章鱼	domain=species; source=EN/ZH; 裁决=[D-A-040]
@@ -889,9 +889,9 @@ Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=�
 orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人骑士、兽人大祭司）
 orc sorcerer	兽人术士	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from orc wizard → 兽人巫师
 orc wizard	兽人巫师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Orthopraxy	正行	domain=items; source=EN/ZH; 依据 / 作用域=rand_wpn.txt；正当宗教实践，区别 Orthodoxy 教义正统；decision=D-C-095
+Orthopraxy	正行	domain=core; source=EN/ZH; 依据 / 作用域=rand_wpn.txt；正当宗教实践，区别 Orthodoxy 教义正统；decision=D-C-095
 Ostracise	排斥	domain=spells; source=EN/ZH; 备注=✅
-Ourie	凄冷的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语阴郁寒冷；decision=D-C-095
+Ourie	凄冷的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；苏格兰语阴郁寒冷；decision=D-C-095
 out of phase	相位偏移	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.txt；相位变换效果，区别单纯隐形；decision=D-C-095
 Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅；厚冰护体并提高护甲，移动后消失
 Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅；冻结视野内其他生物，邻接盟友可减伤
@@ -915,7 +915,7 @@ patch of ice thorns	冰棘丛	domain=core; source=EN/ZH; 依据 / 作用域=feat
 patch of mould	霉菌丛	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h / features.txt；长出可再生菌类的地表；decision=D-C-095
 penance	惩戒（律法神）/ 苦修（自我牺牲神）	domain=core; source=EN/ZH; 注意事项=按神祇类型选择
 Permafrost Eruption	永冻爆发	domain=spells; source=EN/ZH; 备注=✅；地底严寒与落石轰击敌人最密集处，不在施法者身旁爆发
-Perniones	冻疮	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095
+Perniones	冻疮	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095
 Petrification	石化	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Petrify	石化	domain=spells; source=EN/ZH; 备注=✅
 Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -1068,7 +1068,7 @@ Short Blades	短刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=s
 shortbow	短弓	domain=items; source=EN/ZH; 依据 / 作用域=基础武器名；catalog、hints、Hunter 与 tutorial 一致；decision=D-C-096
 shout	喊叫	domain=core; source=EN/ZH; 注意事项=非"吼叫"（那是 roar）
 shouts	喊道	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
-Shrammed	冻僵的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；英国方言受冻麻木；decision=D-C-095
+Shrammed	冻僵的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；英国方言受冻麻木；decision=D-C-095
 Shred	撕裂	domain=spells; source=EN/ZH; 备注=✅
 Shroud of Golubria	戈卢布里亚之幕	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Sick	患病	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -1083,7 +1083,7 @@ Singularity	奇点术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容
 Siphon Essence	吸取精华	domain=spells; source=EN/ZH; 备注=✅
 Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅；迷魂附近听众，离开施法者视野后解除移动限制
 Sirocco	灼热风	domain=spells; source=EN/ZH; 依据 / 作用域=spells.txt；灼热阵风推退邻敌；避免误译为沙尘暴；decision=D-C-095
-sivanium	西瓦尼姆	domain=items; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Shazam，虚构元素音译；decision=D-C-095
+sivanium	西瓦尼姆	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Shazam，虚构元素音译；decision=D-C-095
 skill	技能	domain=core; source=EN/ZH
 Sleep	睡眠	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅
 Sleetstrike	冰雨打击	domain=spells; source=EN/ZH; 备注=✅
@@ -1096,7 +1096,7 @@ snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; s
 snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Snorg title	饕餮的斯诺格	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-Snowblind	雪盲的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；雪光致盲意象；decision=D-C-095
+Snowblind	雪盲的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；雪光致盲意象；decision=D-C-095
 Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojobo title	索乔波，天狗女王	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Sojourning Bolt	羁旅箭	domain=spells; source=EN/ZH; 备注=📝 现行
@@ -1164,7 +1164,7 @@ Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
 strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Stunning Burst	眩晕爆发	domain=spells; source=EN/ZH; 备注=✅
 Sublimation of Blood	血液升华	domain=spells; source=EN/ZH; 备注=✅
-Subnivean	雪下的	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；积雪下方，非零下温度；decision=D-C-095
+Subnivean	雪下的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；积雪下方，非零下温度；decision=D-C-095
 Summon	召唤	domain=magic; source=EN/ZH; 状态=✅ 已确认
 Summon Air Elementals	召唤气元素	domain=spells; source=EN/ZH; 备注=✅
 Summon Butterflies	召唤蝴蝶	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -1225,12 +1225,12 @@ Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒法师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Terence title	老练的特伦斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-the Cold Snap	骤寒	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷突然到来；decision=D-C-095
-the Floe	浮冰	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；漂浮冰块；decision=D-C-095
-the Frost Giant	霜巨人	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095
-the Mountaintop	山巅	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名地貌意象；decision=D-C-095
-the Polar Bear	北极熊	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095
-the Shard Shrike	碎片伯劳	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095
+the Cold Snap	骤寒	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷突然到来；decision=D-C-095
+the Floe	浮冰	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；漂浮冰块；decision=D-C-095
+the Frost Giant	霜巨人	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095
+the Mountaintop	山巅	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名地貌意象；decision=D-C-095
+the Polar Bear	北极熊	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095
+the Shard Shrike	碎片伯劳	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
 the Wu Jian Council	无间门派	domain=gods; source=EN/ZH; 类型=实体／派别长名（门派=sect）
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -1274,7 +1274,7 @@ Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mons
 Urug title	兽人弩炮乌鲁格	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Uskayaw	乌斯卡亚	domain=gods; source=EN/ZH; 类型=音译
 ValArchmagi	勇武大法师	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；法力充足时增强法术；decision=D-C-095
-valorium	瓦洛里姆	domain=items; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Legion of Super-Heroes，虚构元素音译；decision=D-C-095
+valorium	瓦洛里姆	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Legion of Super-Heroes，虚构元素音译；decision=D-C-095
 vamp	吸血	domain=items; source=EN/ZH; Scope / comment=weapon brand terse; decision=D-B-016/D-B-020
 vampire	吸血鬼	domain=species; source=EN/ZH; 复合格式=吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师）
 Vampire Summon	召唤吸血鬼	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -1288,7 +1288,7 @@ Vashnia title	精英纳迦神射手瓦什妮亚	domain=monster-titles; source=EN
 Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
 Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Vex	激怒	domain=spells; source=EN/ZH; 备注=✅
-Vhi	维	domain=items; source=EN/ZH; 依据 / 作用域=randbook.txt Air owner；复用既有法术专名；decision=D-C-095
+Vhi	维	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt Air owner；复用既有法术专名；decision=D-C-095
 Vhi's Electric Charge	维之电击冲锋	domain=spells; source=EN/ZH; 备注=🆕；`charge` 是向敌人冲锋，不是静态“电荷”
 Vhi's Electrolunge	维之电击突进	domain=spells; source=EN/ZH; 备注=🆕；怪物版近身突进，与玩家版“冲锋”区分
 vine stalker	藤蔓行者	domain=species; source=EN/ZH
@@ -1343,14 +1343,14 @@ yaktaur	牦牛人马	domain=species; source=EN/ZH; 复合格式=牦牛人马 + �
 Yara's Violent Unravelling	亚拉之猛烈解构	domain=spells; source=EN/ZH; 备注=✅；撕裂附魔并转化为诱变爆炸
 yellow scales	黄色鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
-Yntzoia	因佐娅	domain=items; source=EN/ZH; 依据 / 作用域=unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095
+Yntzoia	因佐娅	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
-zarnium	扎尼姆	domain=items; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095
+zarnium	扎尼姆	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Zenata title	泽娜塔，西泽的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-zigzags	之字纹	domain=items; source=EN/ZH; 依据 / 作用域=colourname.txt；未鉴定外观花纹；decision=D-C-095
+zigzags	之字纹	domain=core; source=EN/ZH; 依据 / 作用域=colourname.txt；未鉴定外观花纹；decision=D-C-095
 Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
-Zmysua	兹米苏娅	domain=items; source=EN/ZH; 依据 / 作用域=unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095
+Zmysua	兹米苏娅	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095
 zombie	丧尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸”
 Zonguldrok	宗古德洛克	domain=core; source=EN/ZH; 注意事项=巫师实验室与相关物品传说专名；裁决 [D-A-049]
 Zot	佐特	domain=gods; source=EN/ZH; 类型=音译
