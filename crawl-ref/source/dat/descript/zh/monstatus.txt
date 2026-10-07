@@ -428,10 +428,6 @@ regenerating monstatus
 
 这个生物以与其最大生命值成比例的大幅提高的速度恢复生命值。
 %%%%
-repelling missiles monstatus
-
-这个生物在闪避投射物（无论是物理还是魔法）时拥有+15 EV。
-%%%%
 retreating monstatus
 
 这个生物被命令向指定方向撤退，在获得新指示或行进足够距离之前，
@@ -658,4 +654,30 @@ low-tier stab monstatus
 high-tier stab monstatus
 
 <blue>你对该生物进行的近战攻击将造成大幅增加的伤害，使用短剑时效果尤佳。</blue>
+%%%%
+deflecting missiles monstatus
+
+这个生物在闪避物理或魔法投射物时，闪避值增加24。
+%%%%
+divinely shielded monstatus
+
+这个生物受到神圣护盾保护。护盾会准确无误地挡下接下来数次可以格挡的攻击，
+然后消散。
+
+所有被格挡的投射物都会被反射，近战攻击者则可能被光芒致盲。
+%%%%
+exposed monstatus
+
+这个生物受到所有非攻击来源的伤害（中毒除外）都会增加，
+非攻击类投射物对其命中率也会提高，其意志力还会略微降低。
+%%%%
+out of phase monstatus
+
+这个生物处于轻微的相位偏移状态。面对无法看见隐形生物的敌人时，
+其闪避能力会大幅提高，受伤程度也会被隐藏。
+%%%%
+stampeding monstatus
+
+这个生物正以惊人的速度沿一个方向移动。它撞上的任何敌人都会被推退，
+并遭受伤害增加50%、命中率提高的攻击。
 %%%%
