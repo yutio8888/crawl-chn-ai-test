@@ -54,7 +54,6 @@
 #define DESCENT_DEBT_KEY "descent_debt"
 #define DESCENT_WATER_BRANCH_KEY "descent_water_branch"
 #define DESCENT_POIS_BRANCH_KEY "descent_poison_branch"
-#define RAMPAGE_HEAL_MAX 7
 #define BLIND_COLOUR_KEY "blind_colour"
 #define TRICKSTER_POW_KEY "trickster_power"
 #define CACOPHONY_XP_KEY "cacophony_xp"
@@ -411,8 +410,13 @@ public:
     // The biggest assigned monster id so far.
     mid_t last_mid;
 
+    // The biggest assigned unique item id so far.
+    mid_t last_item_uid;
+
     // Count of various types of actions made.
     map<pair<caction_type, int>, FixedVector<int, 27> > action_count;
+
+    FixedVector<int, NUM_TRANSFORMS> xp_by_form[27];
 
     // Which branches have been noted to have been left during this game.
     FixedBitVector<NUM_BRANCHES> branches_left;
@@ -879,8 +883,7 @@ public:
              bool is_attack_damage = false) override;
 
     bool wont_attack() const override { return true; };
-    mon_attitude_type temp_attitude() const override { return ATT_FRIENDLY; };
-    mon_attitude_type real_attitude() const override { return ATT_FRIENDLY; };
+    mon_attitude_type attitude() const override { return ATT_FRIENDLY; };
 
     monster_type mons_species(bool zombie_base = false) const override;
 
@@ -1294,7 +1297,7 @@ int get_real_mp(bool include_items);
 
 bool player_harmful_contamination();
 int contam_max_damage();
-string describe_contamination(bool verbose = true);
+string describe_contamination(bool verbose = true, bool show_damage = true);
 
 bool sanguine_armour_valid();
 void activate_sanguine_armour();

@@ -1312,12 +1312,15 @@ static bool _is_slow_equip(const item_def& item)
  *                   sequence from back to front, before any new item is equipped).
  * @param to_equip   The item slated to be equipped. May be nullptr if no item
  *                   is being equipped.
+ * @param always_fast   If true, treat any gear change as if it could happen
+ *                      instantly.
  *
  * @return True, if the changing gear should continue (either because there were
  *         no warnings, or the player chose to accept them). False, if we should
  *         abort the process.
  */
-bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_equip)
+bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_equip,
+                              bool always_fast)
 {
     // Switching to a launcher while berserk is likely a mistake.
     if (to_equip && you.berserk() && is_range_weapon(*to_equip))
@@ -1351,7 +1354,7 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
     }
 
     string reason;
-    if (needs_delay && !i_feel_safe(false, false, false, true, -1, &reason))
+    if (!always_fast && needs_delay && !i_feel_safe(false, false, false, true, -1, &reason))
     {
         string warning = make_stringf(T_("Spend multiple turns changing equipment while %s?"), reason.c_str());
         if (!yesno(warning.c_str(), true, 'n'))
@@ -1386,7 +1389,7 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
     return true;
 }
 
-bool try_equip_item(item_def& item)
+bool try_equip_item(item_def& item, bool instant)
 {
     if (item.base_type == OBJ_TALISMANS)
         return use_talisman(item);
@@ -1513,7 +1516,7 @@ bool try_equip_item(item_def& item)
     // Note: What we pass to this method may be a link to a temporary item copy
     //       in our inventory, if the item we are testing is currently on the
     //       foor.
-    if (!warn_about_changing_gear(to_remove, &item))
+    if (!warn_about_changing_gear(to_remove, &item, instant))
         return false;
 
     // Now do the actual removal and equipping.
@@ -1522,7 +1525,12 @@ bool try_equip_item(item_def& item)
     item_def& real_item = you.inv[_get_item_slot_maybe_with_move(item)];
     if (need_weapon_swap)
         you.equipment.swap_offhand_weapon_to_main();
-    do_equipment_change(&real_item, slot, to_remove);
+
+    // This is normally handled by EquipOnDelay, but not if we're bypassing that.
+    if (instant && you.has_mutation(MUT_SLOW_WIELD))
+        maybe_name_weapon(real_item);
+
+    do_equipment_change(&real_item, slot, to_remove, instant);
 
     return true;
 }
@@ -1621,17 +1629,23 @@ bool handle_chain_removal(vector<item_def*>& to_remove, bool interactive)
  * @param equip_slot   The slot to equip the new item in (if we're equipping one)
  * @param to_remove    A vector of items to remove (possibly empty, if we're not
  *                     removing anything).
+ * @param instant      If true, perform the change immediately, rather than after
+ *                     a delay (even for slow-swap items).
  */
 void do_equipment_change(item_def* to_equip, equipment_slot equip_slot,
-                         vector<item_def*> to_remove)
+                         vector<item_def*> to_remove, bool instant)
 {
     bool needs_delay = false;
-    if (to_equip && _is_slow_equip(*to_equip))
-        needs_delay = true;
-    for (const item_def* item : to_remove)
-        if (_is_slow_equip(*item))
+    if (!instant)
+    {
+        if (to_equip && _is_slow_equip(*to_equip))
             needs_delay = true;
+        for (const item_def* item : to_remove)
+            if (_is_slow_equip(*item))
+                needs_delay = true;
+    }
 
+    const bool is_summoned = to_equip && to_equip->summoned();
     const bool is_multi = (to_equip != nullptr && !to_remove.empty())
                             || to_remove.size() > 1;
 
@@ -1644,7 +1658,7 @@ void do_equipment_change(item_def* to_equip, equipment_slot equip_slot,
         for (int i = to_remove.size() - 1; i >= 0; --i)
         {
             item_def* item = to_remove[i];
-            if (_is_slow_equip(*item))
+            if (!instant && _is_slow_equip(*item))
                 start_delay<EquipOffDelay>(ARMOUR_EQUIP_DELAY, *item);
             // If this removal is queued after another removal, it needs to use
             // a delay. (This means it takes 10 aut instead of 5, but this should
@@ -1653,17 +1667,37 @@ void do_equipment_change(item_def* to_equip, equipment_slot equip_slot,
                 start_delay<EquipOffDelay>(1, *item);
             else
             {
-                mprf(T_("You %s %s."),
-                     item_unequip_verb(*item).c_str(),
-                     item->name(DESC_YOUR).c_str());
+                if (item->is_type(OBJ_WEAPONS, WPN_CENTIPEDE))
+                {
+                    mprf(T_("You rip the centipede off your %s and it falls limp."),
+                         you.arm_name(false).c_str());
+                }
+                else
+                {
+                    mprf(T_("You %s %s."), item_unequip_verb(*item).c_str(),
+                                    item->name(DESC_YOUR).c_str());
+                }
                 unequip_item(*item);
             }
+        }
+
+        // If we're swapping a real item for a temporary item, remember which
+        // item was swapped out.
+        //
+        // (For simplicity, we only do this in cases where a single item was
+        // changed. I'm not sure what more elaborate chain removals might be
+        // involved in this in future, but it's safer to not swap back than do
+        // do poorly-defined things.)
+        if (is_summoned && to_remove.size() == 1 && to_remove[0]->defined())
+        {
+            const mid_t id = to_remove[0]->give_unique_id();
+            to_equip->props[ITEM_SWAP_BACK_KEY].get_int() = id;
         }
     }
 
     if (to_equip)
     {
-        if (_is_slow_equip(*to_equip))
+        if (!instant && _is_slow_equip(*to_equip))
             start_delay<EquipOnDelay>(ARMOUR_EQUIP_DELAY, *to_equip, equip_slot);
         else if (needs_delay)
             start_delay<EquipOnDelay>(1, *to_equip, equip_slot);
@@ -1698,7 +1732,7 @@ bool can_unequip_item(item_def& item, bool silent)
     {
         if (!silent)
         {
-            mprf(MSGCH_PROMPT, T_("%s is stuck to your body!"),
+            mprf(MSGCH_PROMPT, T_("%s is chained to your body!"),
                                 item.name(DESC_YOUR).c_str());
         }
         return false;
@@ -1921,9 +1955,9 @@ void prompt_inscribe_item()
 
 // Perform a melee attack against every adjacent hostile target, and print a
 // special message if there are any.
-bool oni_drunken_swing()
+bool oni_drunken_swing(bool is_moonshine)
 {
-    // Use the same logic for target-picking that cleaving does
+    // Use mostly the same logic for target-picking that cleaving does
     vector<actor*> targets = get_player_attack_targets();
 
     // Test that we have at least one valid non-prompting attack
@@ -1940,14 +1974,14 @@ bool oni_drunken_swing()
 
     if (!targets.empty())
     {
+        string msg = you.weapon() ? make_stringf(T_("twirl %s"), you.weapon()->name(DESC_YOUR).c_str())
+                                  : T_("flex your muscles");
+
         bool success = false;
-        if (you.weapon())
-        {
-            mprf(T_("You take a swig of the potion and twirl %s."),
-                 you.weapon()->name(DESC_YOUR).c_str());
-        }
+        if (is_moonshine)
+            mprf(T_("You take an eager swig of the potion and %s. Strong stuff!"), msg.c_str());
         else
-            mpr(T_("You take a swig of the potion and bulge your muscles."));
+            mprf(T_("You take a swig of the potion and %s."), msg.c_str());
 
         for (actor* victim : targets)
         {
@@ -2032,11 +2066,8 @@ bool drink(item_def* potion)
     // Drunken master, swing!
     // We do this *before* actually drinking the potion for nicer messaging.
     bool did_swing = false;
-    if (you.has_mutation(MUT_DRUNKEN_BRAWLING)
-        && oni_likes_potion(static_cast<potion_type>(potion->sub_type)))
-    {
-        did_swing = oni_drunken_swing();
-    }
+    if (you.has_mutation(MUT_DRUNKEN_BRAWLING))
+        did_swing = oni_drunken_swing(potion->sub_type == POT_MOONSHINE);
 
     // Check for Delatra's gloves before potentially melding them.
     bool heal_on_id = you.unrand_equipped(UNRAND_DELATRAS_GLOVES);
@@ -2365,29 +2396,30 @@ bool uncancel_brand_weapon()
 
 bool enchant_weapon(item_def &wpn, bool quiet)
 {
-    bool success = false;
+    // Cannot be enchanted.
+    if (!is_enchantable_weapon(wpn))
+    {
+        if (!quiet)
+            canned_msg(MSG_NOTHING_HAPPENS);
+        return false;
+    }
 
     // Get item name now before changing enchantment.
     string iname = _item_name(wpn);
 
-    if (is_enchantable_weapon(wpn))
+    wpn.plus++;
+    // Make sure newly enchanted items appear as such.
+    item_set_appearance(wpn);
+
+    if (!quiet)
     {
-        wpn.plus++;
-        success = true;
-        if (!quiet)
-        {
-            const char* dur = wpn.plus < MAX_WPN_ENCHANT ? T_("moment") : T_("while");
-            mprf(T_("%s glows red for a %s."), iname.c_str(), dur);
-        }
+        const string dur = wpn.plus < MAX_WPN_ENCHANT ? T_("moment") : T_("while");
+        mprf(T_("%s glows red for a %s."), iname.c_str(), dur.c_str());
     }
 
-    if (!success && !quiet)
-        canned_msg(MSG_NOTHING_HAPPENS);
+    you.wield_change = true;
 
-    if (success)
-        you.wield_change = true;
-
-    return success;
+    return true;
 }
 
 /**
@@ -2528,17 +2560,20 @@ bool enchant_armour(item_def &arm, bool quiet)
         return false;
     }
 
-    string name = _item_name(arm);
+    // Get item name now before changing enchantment.
+    string iname = _item_name(arm);
 
-    ++arm.plus;
+    arm.plus++;
+    // Make sure newly enchanted items appear as such.
+    item_set_appearance(arm);
 
     if (!quiet)
     {
         const bool plural = armour_is_hide(arm)
                             && arm.sub_type != ARM_TROLL_LEATHER_ARMOUR;
         string glow = conjugate_verb_for_display(N_("glow"), plural);
-        const char* dur = is_enchantable_armour(arm) ? T_("moment") : T_("while");
-        mprf(T_("%s %s green for a %s."), name.c_str(), glow.c_str(), dur);
+        const string dur = is_enchantable_armour(arm) ? T_("moment") : T_("while");
+        mprf(T_("%s %s green for a %s."), iname.c_str(), glow.c_str(), dur.c_str());
     }
 
     return true;
@@ -2867,7 +2902,7 @@ bool scroll_hostile_check(scroll_type which_scroll)
     {
         const monster* mon = monster_at(*ri);
         if (!mon
-            || !mon->visible_to(&you)
+            || !you.aware_of(*mon)
             // Plants/fungi don't count.
             || (!mons_is_threatening(*mon) || mon->wont_attack())
                 && !mons_class_is_test(mon->type))

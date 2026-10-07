@@ -274,12 +274,12 @@ const vector<vector<god_power>> & get_all_god_powers()
                  "Beogh will send orc apostles to challenge you in battle as you gain piety." },
             { 0, "", "", "You can recruit apostles that you defeat into your service." },
             { 3, "", "", "Your apostles are sometimes healed when you deal damage." },
+            { 5, "walk on water" },
             { 5, ABIL_BEOGH_BLOOD_FOR_BLOOD, "rally a vengeful horde" },
             { 0, ABIL_BEOGH_RECRUIT_APOSTLE, "" },
             { 0, ABIL_BEOGH_DISMISS_APOSTLE_1, ""},
             { 0, ABIL_BEOGH_DISMISS_APOSTLE_2, ""},
             { 0, ABIL_BEOGH_DISMISS_APOSTLE_3, ""},
-            { 5, "walk on water" },
         },
 
         // Jiyva
@@ -1659,20 +1659,20 @@ bool mons_is_god_gift(const monster& mon, god_type god)
 bool is_yred_undead_follower(const monster& mon)
 {
     return mon.alive() && mon.holiness() & MH_UNDEAD
-           && mon.attitude == ATT_FRIENDLY
+           && mon.base_attitude == ATT_FRIENDLY
            && mons_is_god_gift(mon, GOD_YREDELEMNUL);
 }
 
 bool is_apostle_follower(const monster& mon)
 {
-    return mon.alive() && mon.attitude == ATT_FRIENDLY
+    return mon.alive() && mon.base_attitude == ATT_FRIENDLY
            && mon.type == MONS_ORC_APOSTLE;
 }
 
 bool is_fellow_slime(const monster& mon)
 {
     return mon.alive() && mons_is_slime(mon)
-           && mon.attitude == ATT_GOOD_NEUTRAL
+           && mon.base_attitude == ATT_GOOD_NEUTRAL
            && mons_is_god_gift(mon, GOD_JIYVA);
 }
 
@@ -2383,7 +2383,8 @@ void dock_piety(int piety_loss, int penance, bool no_lecture)
 // Scales a piety number, applying modifiers (faith).
 int piety_scale(int piety)
 {
-    return piety + (you.faith() * div_rand_round(piety, 4));
+    return piety + (you.faith() * div_rand_round(piety, 4))
+            - (you.unrand_equipped(UNRAND_FORGEWARDEN) * div_rand_round(piety, 4));
 }
 
 /** Gain or lose piety to reach a certain value.
@@ -3319,6 +3320,14 @@ bool god_forbids_form(god_type which_god, transformation which_trans)
 
     if (which_god == GOD_OKAWARU && which_trans == transformation::hive)
         return true;
+
+    if (which_god == GOD_TROG
+        && (which_trans == transformation::vision
+            || which_trans == transformation::jademantle))
+    {
+        return true;
+    }
+
     return false;
 }
 
@@ -3800,17 +3809,17 @@ static void _join_gozag()
 
 static void _join_okawaru()
 {
-    bool needs_message = false;
+    bool did_message = false;
     for (monster_iterator mi; mi; ++mi)
     {
-        if (mi->was_created_by(you))
+        if (mi->was_created_by(you) && mons_can_hate(mi->type))
         {
-            mi->del_ench(ENCH_SUMMON_TIMER);
-            needs_message = true;
+            if (!did_message)
+                mpr(T_("Your summoned allies are dismissed!"));
+            monster_die(**mi, KILL_TIMEOUT, NON_MONSTER);
+            did_message = true;
         }
     }
-    if (needs_message)
-        mpr(T_("Your summoned allies are dismissed!"));
 }
 
 /// Setup when joining the sacred cult of Ru.
@@ -4497,7 +4506,7 @@ int get_monster_tension(const monster& mons, god_type god)
     if (mons_is_irrelevant(&mons))
         return 0;
 
-    const mon_attitude_type att = mons_attitude(mons);
+    const mon_attitude_type att = mons.attitude();
 
     if (mons.helpless())
         return 0;

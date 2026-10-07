@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tag-version.h"
+#include "i18n.h"
 
 /*
  * This file is auto-generated. See util/form-gen.py and dat/forms.
@@ -30,6 +31,7 @@ struct form_entry
 
     // Row 5:
     int str_mod;
+    int int_mod;
     int dex_mod;
     size_type size;
     int hp_mod;

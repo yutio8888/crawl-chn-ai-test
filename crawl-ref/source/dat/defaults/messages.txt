@@ -222,6 +222,7 @@ msc += $boring:猛冲.*靠近
 msc += $boring:is recalled by Beogh
 # CN: $boring:recalled by Beogh
 msc += $boring:被比欧弗召回
+msc += $boring:finishes recrystalising
 
 # Ignore Uskayaw *** and **** power loss messages by default; they're spammy.
 msc += mute:Uskayaw will no longer force your foes to helplessly watch your dance\.
@@ -441,9 +442,7 @@ force_more_message += 发给了你.*牌
 force_more_message += deal. but finds you have enough
 # Chinese translation compatibility
 force_more_message += 你已经有足够的
-force_more_message += partake of a vision and a curse
-# Chinese translation compatibility
-force_more_message += 幻象与诅咒
+force_more_message += chain yourself with knowledge
 force_more_message += allow you to induct
 # Chinese translation compatibility
 force_more_message += 将.*纳入麾下

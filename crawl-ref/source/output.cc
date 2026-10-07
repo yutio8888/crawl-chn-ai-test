@@ -1339,10 +1339,9 @@ static void _print_stats_qv(int y, int topbar_x = -1)
 
 struct status_light
 {
-    status_light(int c, string t, int s = -1)
-        : colour(c), text(t), status(s) {}
-    colour_t colour;
-    string text;
+    status_light(formatted_string str, int _status = -1)
+        : text(str), status(_status) {}
+    formatted_string text;
     int status;
 };
 
@@ -1412,8 +1411,13 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
                     light_text = chop_string(topbar_text, 4, false);
             }
         }
-        status_light sl(inf.light_colour, light_text, i);
-        out.push_back(sl);
+        if (!inf.light_text_formatted.empty()
+            && !(_uses_top_bar() && Options.language == lang_t::ZH))
+        {
+            out.emplace_back(formatted_string::parse_string(inf.light_text_formatted), i);
+        }
+        else
+            out.emplace_back(formatted_string(light_text, inf.light_colour), i);
     }
 }
 
@@ -1430,8 +1434,10 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
 // using the '@' command. Things like confusion and sticky flame
 // hide their amounts and are thus always the same colour (so
 // we're not really exposing any new information). --bwr
-static void _get_status_lights(vector<status_light>& out)
+static vector<status_light> _get_status_lights()
 {
+    vector<status_light> out;
+
 #ifdef DEBUG_DIAGNOSTICS
     if (mouse_control::current_mode() != MOUSE_MODE_NORMAL
         || !(you.running > 0 || you.running < 0 && Options.travel_delay == -1))
@@ -1439,56 +1445,20 @@ static void _get_status_lights(vector<status_light>& out)
         static char static_pos_buf[80];
         snprintf(static_pos_buf, sizeof(static_pos_buf),
                  "%2d,%2d", you.pos().x, you.pos().y);
-        out.emplace_back(LIGHTGREY, static_pos_buf);
+        out.emplace_back(formatted_string(static_pos_buf, LIGHTGREY));
     }
 #endif
 
-    // We used to have to hardcode every status, now we just hardcode the
-    // statuses important enough to appear first. (Rightmost)
-    const unsigned int important_statuses[] =
-    {
-        STATUS_TESSERACT,
-        STATUS_ORB,
-        STATUS_ZOT,
-        STATUS_STAT_ZERO,
-        DUR_PARALYSIS,
-        DUR_CONF,
-        DUR_PETRIFYING,
-        DUR_PETRIFIED,
-        DUR_BERSERK,
-        DUR_TELEPORT,
-        DUR_ENKINDLED,
-        STATUS_MNEMOPHAGE,
-        DUR_HASTE,
-        DUR_SLOW,
-        STATUS_SPEED,
-        DUR_DEATHS_DOOR,
-        DUR_BLINK_COOLDOWN,
-        DUR_BERSERK_COOLDOWN,
-        DUR_EXHAUSTED,
-        DUR_WORD_OF_CHAOS_COOLDOWN,
-        DUR_DEATHS_DOOR_COOLDOWN,
-        DUR_QUAD_DAMAGE,
-        STATUS_SERPENTS_LASH,
-    };
+    for (status_iterator si; si; ++si)
+        _add_status_light_to_out(*si, out);
 
-    bitset<STATUS_LAST_STATUS + 1> done;
-    for (unsigned important : important_statuses)
-    {
-        _add_status_light_to_out(important, out);
-        done.set(important);
-    }
-
-    for (unsigned status = 0; status <= STATUS_LAST_STATUS ; ++status)
-        if (!done[status])
-            _add_status_light_to_out(status, out);
+    return out;
 }
 
 static void _print_status_lights(int y)
 {
-    vector<status_light> lights;
+    vector<status_light> lights = _get_status_lights();
     static int last_number_of_lights = 0;
-    _get_status_lights(lights);
     bool show_status_button = false;
 #if defined(USE_TILE_LOCAL) && defined(__ANDROID__)
     show_status_button = _uses_top_bar();
@@ -1512,7 +1482,7 @@ static void _print_status_lights(int y)
         size_t visible = lights.size();
         int occupied = 0;
         for (const status_light &light : lights)
-            occupied += strwidth(light.text) + 1;
+            occupied += light.text.width() + 1;
         string all_statuses;
         if (show_status_button)
         {
@@ -1530,7 +1500,7 @@ static void _print_status_lights(int y)
                 {
                     break;
                 }
-                occupied -= strwidth(lights[--visible].text) + 1;
+                occupied -= lights[--visible].text.width() + 1;
             }
             all_statuses = chop_string(all_statuses, crawl_view.hudsz.x, false);
         }
@@ -1540,16 +1510,15 @@ static void _print_status_lights(int y)
         for (size_t i = 0; i < visible; ++i)
         {
             const status_light &light = lights[i];
-            const int status_w = strwidth(light.text);
+            const int status_w = light.text.width();
             if (status_x + status_w - 1 > crawl_view.hudsz.x)
                 break;
 
             CGOTOXY(status_x, y, GOTO_STAT);
             record_status_hitbox(light.status, status_x - 1,
                                  status_x + status_w - 2, y - 1);
-            textcolour(light.colour);
             _record_status_light(light, status_w);
-            CPRINTF("%s", light.text.c_str());
+            light.text.display();
             status_x += status_w + 1;
         }
         if (status_x <= crawl_view.hudsz.x)
@@ -1596,7 +1565,7 @@ static void _print_status_lights(int y)
         while (true)
         {
             const int end_x = (wherex() - crawl_view.hudp.x)
-                    + (i_light < lights.size() ? strwidth(lights[i_light].text)
+                    + (i_light < lights.size() ? lights[i_light].text.width()
                                                : 10000);
 
             if (end_x <= crawl_view.hudsz.x)
@@ -1605,17 +1574,16 @@ static void _print_status_lights(int y)
                 if (i_light < lights.size())
                 {
                     const int status_x = wherex() - crawl_view.hudp.x;
-                    const int status_w = strwidth(lights[i_light].text);
+                    const int status_w = lights[i_light].text.width();
                     record_status_hitbox(lights[i_light].status,
                                          status_x, status_x + status_w - 1,
                                          (int)line_cur - 1);
                 }
 #endif
-                textcolour(lights[i_light].colour);
 #ifdef USE_TILE_LOCAL
-                _record_status_light(lights[i_light], strwidth(lights[i_light].text));
+                _record_status_light(lights[i_light], lights[i_light].text.width());
 #endif
-                NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
+                lights[i_light].text.display();
                 if (end_x < crawl_view.hudsz.x)
                     NOWRAP_EOL_CPRINTF(" ");
                 ++i_light;
@@ -1637,27 +1605,27 @@ static void _print_status_lights(int y)
         size_t i_light = 0;
         if (lights.size() == 1)
         {
-            textcolour(lights[0].colour);
-            _record_status_light(lights[0], strwidth(lights[0].text));
-            CPRINTF("%s", lights[0].text.c_str());
+            _record_status_light(lights[0], lights[0].text.width());
+            lights[0].text.display();
         }
         else
         {
             while (i_light < lights.size() && (int)i_light < crawl_view.hudsz.x - 1)
             {
-                textcolour(lights[i_light].colour);
                 const bool full = i_light == lights.size() - 1
-                    && strwidth(lights[i_light].text) < crawl_view.hudsz.x - wherex();
+                    && lights[i_light].text.width() < crawl_view.hudsz.x - wherex();
                 // Must do this before the print, as it uses the cursor position.
                 _record_status_light(lights[i_light],
-                                     full ? strwidth(lights[i_light].text) : 1);
+                                     full ? lights[i_light].text.width() : 1);
                 if (full)
-                    CPRINTF("%s",lights[i_light].text.c_str());
+                    lights[i_light].text.display();
                 else if ((int)lights.size() > crawl_view.hudsz.x / 2)
                 {
                     // Use character-aware truncation (not byte-level %.1s)
                     // to avoid corrupting CJK UTF-8 sequences (Issue 57).
-                    const char *ct = lights[i_light].text.c_str();
+                    lights[i_light].text.display(0, 0);
+                    const string plain_text = lights[i_light].text.tostring();
+                    const char *ct = plain_text.c_str();
                     int chlen = 1;
                     unsigned char fb = (unsigned char)*ct;
                     if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
@@ -1667,7 +1635,9 @@ static void _print_status_lights(int y)
                 }
                 else
                 {
-                    const char *ct = lights[i_light].text.c_str();
+                    lights[i_light].text.display(0, 0);
+                    const string plain_text = lights[i_light].text.tostring();
+                    const char *ct = plain_text.c_str();
                     int chlen = 1;
                     unsigned char fb = (unsigned char)*ct;
                     if (fb >= 0xC0 && fb < 0xE0) chlen = 2;

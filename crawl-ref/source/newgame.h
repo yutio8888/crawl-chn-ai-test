@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <array>
 #include <vector>
 
 #include "item-prop-enum.h"
@@ -39,7 +38,6 @@ struct job_group
 {
     const char* name;   ///< English deferred display key.
     coord_def position; ///< Relative coordinates of the title.
-    int width;          ///< Column width.
     vector<job_type> jobs; ///< List of jobs in the group.
 
     string display_name() const;
@@ -49,13 +47,12 @@ struct job_group
                 UINewGameMenu* menu, menu_letter &letter) const;
 };
 
-const std::array<job_group, 5>& newgame_job_groups();
+const vector<job_group>& newgame_job_groups();
 
 struct species_group
 {
     const char* name;   ///< Name of the group.
     coord_def position; ///< Relative coordinates of the title.
-    int width;          ///< Column width.
     vector<species_type> species_list; ///< List of species in the group.
 
     /// A method to attach the group to a freeform.

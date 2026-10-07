@@ -1697,9 +1697,18 @@ static bool _calc_score_exists()
     return !lua_isnil(dlua, -1);
 }
 
+static void _marshall_form_xp(writer &th)
+{
+    marshallByte(th, NUM_TRANSFORMS);
+    for (int xl = 0; xl < 27; ++xl)
+        for (int form = 0; form < NUM_TRANSFORMS; ++form)
+            marshallInt(th, you.xp_by_form[xl][form]);
+}
+
 static void _tag_construct_you(writer &th)
 {
     marshallInt(th, you.last_mid);
+    marshallInt(th, you.last_item_uid);
     marshallByte(th, you.raw_piety);
     marshallShort(th, you.pet_target);
 
@@ -2003,6 +2012,8 @@ static void _tag_construct_you(writer &th)
     string revision = "Git:";
     revision += Version::Long;
     marshallString(th, revision);
+
+    _marshall_form_xp(th);
 
     you.props.write(th);
 }
@@ -3114,6 +3125,25 @@ static void _read_old_uncancels(reader& th)
 }
 #endif
 
+static void _unmarshall_form_xp(reader &th)
+{
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() >= TAG_MINOR_FORM_XP_TRACKING)
+    {
+#endif
+    const int num_forms = unmarshallByte(th);
+    for (int xl = 0; xl < 27; ++xl)
+    {
+        for (int form = 0; form < num_forms; ++form)
+            you.xp_by_form[xl][form] = unmarshallInt(th);
+        for (int form = num_forms; form < NUM_TRANSFORMS; ++form)
+            you.xp_by_form[xl][form] = 0;
+    }
+#if TAG_MAJOR_VERSION == 34
+    }
+#endif
+}
+
 static void _tag_read_you(reader &th)
 {
     int count;
@@ -3128,6 +3158,12 @@ static void _tag_read_you(reader &th)
     ASSERT_RANGE(crawl_state.type, GAME_TYPE_UNSPECIFIED + 1, NUM_GAME_TYPE);
     // now start reading the chunk proper
     you.last_mid          = unmarshallInt(th);
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() < TAG_MINOR_UNIQUE_ITEM_ID)
+        you.last_item_uid = 0;
+    else
+#endif
+    you.last_item_uid = unmarshallInt(th);
     you.raw_piety             = unmarshallUByte(th);
     ASSERT(you.raw_piety <= MAX_PIETY);
 #if TAG_MAJOR_VERSION == 34
@@ -4780,6 +4816,8 @@ static void _tag_read_you(reader &th)
 
     crawl_state.save_rcs_version = unmarshallString(th);
 
+    _unmarshall_form_xp(th);
+
     you.props.clear();
     you.props.read(th);
 #if TAG_MAJOR_VERSION == 34
@@ -5125,6 +5163,14 @@ static void _tag_read_you_items(reader &th)
     else
 #endif
         you.cur_talisman = unmarshallByte(th);
+
+#if TAG_MAJOR_VERSION == 34
+    if (th.getMinorVersion() >= TAG_MINOR_TEMPORARY_WEAPONS
+        && th.getMinorVersion() < TAG_MINOR_UNIQUE_ITEM_ID)
+    {
+        unmarshallByte(th);
+    }
+#endif
 
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_EQUIP_SLOT_REWRITE)
@@ -6829,7 +6875,7 @@ void marshallMonster(writer &th, const monster& m)
     if (parts & MP_SPELLS)
         _marshallSpells(th, m.spells);
     marshallByte(th, m.god);
-    marshallByte(th, m.attitude);
+    marshallByte(th, m.base_attitude);
     marshallShort(th, m.foe);
     marshallInt(th, m.foe_memory);
     marshallShort(th, m.damage_friendly);
@@ -8072,12 +8118,12 @@ void unmarshallMonster(reader &th, monster& m)
     }
 
     m.god      = static_cast<god_type>(unmarshallByte(th));
-    m.attitude = static_cast<mon_attitude_type>(unmarshallByte(th));
+    m.base_attitude = static_cast<mon_attitude_type>(unmarshallByte(th));
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_CUT_STRICT_NEUTRAL
-        && m.attitude == ATT_OLD_STRICT_NEUTRAL)
+        && m.base_attitude == ATT_OLD_STRICT_NEUTRAL)
     {
-        m.attitude = ATT_GOOD_NEUTRAL;
+        m.base_attitude = ATT_GOOD_NEUTRAL;
     }
 #endif
     m.foe      = unmarshallShort(th);
@@ -8370,7 +8416,7 @@ void unmarshallMonster(reader &th, monster& m)
     // with the original attitude stored in a prop.
     if (m.props.exists("old_attitude"))
     {
-        m.attitude = static_cast<mon_attitude_type>(
+        m.base_attitude = static_cast<mon_attitude_type>(
                                         m.props["old_attitude"].get_short());
         m.props.erase("old_attitude");
     }
@@ -8394,6 +8440,9 @@ void unmarshallMonster(reader &th, monster& m)
 
     if (m.type == MONS_SLYMDRA && m.num_heads <= 0)
         m.num_heads = 1;
+
+    if (m.has_hydra_multi_attack() && !m.props.exists(ORIGINAL_HEADS_KEY))
+        m.props[ORIGINAL_HEADS_KEY] = m.num_heads;
 #endif
 
     if (m.type != MONS_PROGRAM_BUG && mons_species(m.type) == MONS_PROGRAM_BUG)

@@ -1466,6 +1466,14 @@ bool mons_is_hepliaklqana_ancestor(monster_type mc)
     return mons_class_flag(mc, M_ANCESTOR);
 }
 
+bool mons_is_jade_crystal(monster_type mc)
+{
+    return mc == MONS_JADE_CRYSTAL_AIR
+           || mc == MONS_JADE_CRYSTAL_EARTH
+           || mc == MONS_JADE_CRYSTAL_FIRE
+           || mc == MONS_JADE_CRYSTAL_ICE;
+}
+
 /**
  * How well does this monster resist blinding?
  *
@@ -2120,6 +2128,16 @@ mon_attack_def mons_attack_spec(const monster& m, int attk_number,
     }
     else if (mon.type == MONS_ERYTHROSPITE)
         attk.damage = 3 + m.get_experience_level() * 10 / 9;
+    else if (mon.type == MONS_ASSASSIN_CENTIPEDE)
+    {
+        attk.damage = 5 + m.get_experience_level() * 5 / 2;
+        if (m.get_experience_level() > 10)
+            attk.flavour = AF_POISON_PARALYSE;
+        else if (m.get_experience_level() > 5)
+            attk.flavour = AF_POISON_STRONG;
+        else
+            attk.flavour = AF_POISON;
+    }
 
     // Vampires get a bite aux in addition to normal attacks.
     if (mon.has_ench(ENCH_VAMPIRE_THRALL)
@@ -2845,6 +2863,12 @@ colour_t random_monster_colour()
     return col;
 }
 
+void mons_set_starting_heads(monster& mons, int heads)
+{
+    mons.num_heads = heads;
+    mons.props[ORIGINAL_HEADS_KEY] = heads;
+}
+
 // Generate a shiny, new and unscarred monster.
 void define_monster(monster& mons, bool friendly)
 {
@@ -2871,16 +2895,16 @@ void define_monster(monster& mons, bool friendly)
 
     case MONS_HYDRA:
         // Hydras start off with 4 to 8 heads.
-        mons.num_heads = random_range(4, 8);
+        mons_set_starting_heads(mons, random_range(4, 8));
         break;
 
     case MONS_LERNAEAN_HYDRA:
         // The Lernaean hydra starts off with 27 heads.
-        mons.num_heads = 27;
+        mons_set_starting_heads(mons, 27);
         break;
 
     case MONS_SLYMDRA:
-        mons.num_heads = random_range(3, 5);
+        mons_set_starting_heads(mons, random_range(3, 5));
         break;
 
     case MONS_TIAMAT:
@@ -3419,7 +3443,7 @@ bool mons_aligned(const actor *m1, const actor *m2)
     if (mons_is_projectile(m1->type) || mons_is_projectile(m2->type))
         return true; // they won't directly attack each-other, anyway
 
-    return mons_atts_aligned(m1->temp_attitude(), m2->temp_attitude());
+    return mons_atts_aligned(m1->attitude(), m2->attitude());
 }
 
 bool mons_atts_aligned(mon_attitude_type fr1, mon_attitude_type fr2)
@@ -3475,11 +3499,6 @@ bool should_attract_mons(const monster &m)
 bool mons_att_wont_attack(mon_attitude_type fr)
 {
     return fr == ATT_FRIENDLY || fr == ATT_GOOD_NEUTRAL || fr == ATT_MARIONETTE;
-}
-
-mon_attitude_type mons_attitude(const monster& m)
-{
-    return m.temp_attitude();
 }
 
 bool mons_is_confused(const monster& m, bool class_too)
@@ -3600,7 +3619,7 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
 {
     // If the _real_ (non-charmed) attitude is already that or better,
     // don't degrade it.
-    if (mon.attitude >= att)
+    if (mon.base_attitude >= att)
         return;
 
     // Must be done before attitude change, so that proper targets are affected
@@ -3608,7 +3627,7 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
         end_flayed_effect(&mon);
 
     // Make the monster permanently neutral.
-    mon.attitude = att;
+    mon.base_attitude = att;
     mon.flags |= MF_WAS_NEUTRAL;
 
     if (!testbits(mon.flags, MF_PACIFIED) // Don't allow repeatedly pacifying.
@@ -3637,7 +3656,10 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
     mon.behaviour = BEH_WANDER;
 
     // Remove haunting, which would otherwise cause monster to continue attacking
-    mon.del_ench(ENCH_HAUNTING, true, true);
+    mon.del_ench(ENCH_HAUNTING, true);
+
+    // Remove bullseye, since we shouldn't be shooting monster anymore
+    mon.del_ench(ENCH_BULLSEYE_TARGET, true);
 
     // Remove level annotation.
     mon.props[NO_ANNOTATE_KEY] = true;
@@ -4506,17 +4528,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     {
         string foe_name;
         const monster* m_foe = foe->as_monster();
-        if (m_foe->attitude == ATT_FRIENDLY
-            && !mons_is_unique(m_foe->type)
-            && !crawl_state.game_is_arena())
-        {
-            foe_name = foe->name(DESC_YOUR);
-            const string::size_type pos = foe_name.find("'");
-            if (pos != string::npos)
-                foe_name = foe_name.substr(0, pos);
-        }
-        else
-            foe_name = foe->name(DESC_THE);
+        foe_name = foe->name(DESC_THE);
 
         string prep = "at";
         if (s_type == S_SILENT || s_type == S_SHOUT || s_type == S_NORMAL_VOLUME)
@@ -4567,7 +4579,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@The_monster_possessive@",
                           apostrophise(name));
     }
-    else if (mons.attitude == ATT_FRIENDLY
+    else if (mons.base_attitude == ATT_FRIENDLY
              && !mons_is_unique(mons.type)
              && !crawl_state.game_is_arena()
              && you.can_see(mons))
@@ -5061,14 +5073,14 @@ void init_anon()
     mon.reset();
     mon.type = MONS_PROGRAM_BUG;
     mon.mid = MID_ANON_FRIEND;
-    mon.attitude = ATT_FRIENDLY;
+    mon.base_attitude = ATT_FRIENDLY;
     mon.hit_points = mon.max_hit_points = 1000;
 
     monster &yf = env.mons[YOU_FAULTLESS];
     yf.reset();
     yf.type = MONS_PROGRAM_BUG;
     yf.mid = MID_YOU_FAULTLESS;
-    yf.attitude = ATT_FRIENDLY; // higher than this, actually
+    yf.base_attitude = ATT_FRIENDLY; // higher than this, actually
     yf.hit_points = mon.max_hit_points = 1000;
 }
 
@@ -5422,7 +5434,7 @@ bool mons_is_wrath_avatar(const monster &mon)
 bool mons_is_player_shadow(const monster& mon)
 {
     return mon.type == MONS_PLAYER_SHADOW
-        && mon.attitude == ATT_FRIENDLY; // hostile shadows are god wrath
+        && mon.base_attitude == ATT_FRIENDLY; // hostile shadows are god wrath
 }
 
 // Zero-damage attacks with special effects (constriction, drowning, pure fire,
@@ -5929,7 +5941,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
         if (agent->is_monster()
             && (mons_is_hepliaklqana_ancestor(agent->type)
                 || mons_is_player_shadow(*agent->as_monster())
-                || agent->real_attitude() == ATT_MARIONETTE
+                || agent->attitude() == ATT_MARIONETTE
                 || agent->type == MONS_PLATINUM_PARAGON
                 || you_worship(GOD_FEDHAS)
                    && agent->deity() == GOD_FEDHAS
@@ -6085,6 +6097,10 @@ int mons_leash_range(monster_type mc)
 {
     switch (mc)
     {
+        case MONS_JADE_CRYSTAL_AIR:
+        case MONS_JADE_CRYSTAL_EARTH:
+        case MONS_JADE_CRYSTAL_FIRE:
+        case MONS_JADE_CRYSTAL_ICE:
         case MONS_RENDING_BLADE:
         case MONS_SOLAR_EMBER:
         case MONS_PHALANX_BEETLE:   return 1;

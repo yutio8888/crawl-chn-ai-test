@@ -696,7 +696,9 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
     }
 
     // First try: move monster onto your position.
-    bool swap = !monster_at(loc) && monster_habitable_grid(mons, loc);
+    // (The player pushes jade crystals instead, so they don't get caught behind them.)
+    bool swap = !mons_is_jade_crystal(mons->type)
+                && !monster_at(loc) && monster_habitable_grid(mons, loc);
 
     // Choose an appropriate habitat square at random around the target.
     if (!swap)
@@ -705,6 +707,7 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
 
         for (adjacent_iterator ai(mons->pos()); ai; ++ai)
             if (!monster_at(*ai) && monster_habitable_grid(mons, *ai)
+                && !feat_is_trap(env.grid(*ai))
                 && one_chance_in(++num_found))
             {
                 loc = *ai;
@@ -944,12 +947,22 @@ void player::finalise_movement(const actor* /*to_blame*/)
 
     if (last_move_pos != pos())
     {
-        cloud_struct* cloud = cloud_at(pos());
-        if (cloud && cloud->type == CLOUD_BLASTMOTES)
-            explode_blastmotes_at(pos()); // schedules a fineff
+        if (cloud_struct* cloud = cloud_at(pos()))
+        {
+            if (cloud->type == CLOUD_BLASTMOTES)
+                explode_blastmotes_at(pos()); // schedules a fineff
+            else if (cloud->type == CLOUD_GLIMMER)
+                enter_glimmer_cloud(*this, pos());
+        }
 
         if (env.grid(pos()) == DNGN_BINDING_SIGIL)
             trigger_binding_sigil(you);
+
+        if (feat_is_dragon_vein(env.grid(pos())))
+            trigger_dragon_vein();
+
+        if (env.grid(pos()) == DNGN_ICE_THORNS)
+            ice_thorns_trigger(you, pos());
 
         apply_cloud_trail(last_move_pos);
 
@@ -2936,6 +2949,28 @@ static void _handle_god_wrath(int exp)
     }
 }
 
+// Log experience gained whatever base form the player was in when they gained it.
+static void _log_form_xp(int exp)
+{
+    int xp_level = you.experience_level;
+    int xp_spent = 0;
+
+    // If the player gained enough XP to gain several XLs at once, assign only
+    // as much XP to each level as it would take to fully pass through that level.
+    while (xp_level < you.get_max_xl()
+           && you.experience + exp > exp_needed(xp_level + 1))
+    {
+        const int delta = exp_needed(xp_level + 1) - you.experience - xp_spent;
+        you.xp_by_form[xp_level-1][static_cast<int>(you.default_form)] += delta;
+        exp -= delta;
+        xp_spent += delta;
+        ++xp_level;
+    }
+
+    // Then assign the rest to their current level.
+    you.xp_by_form[xp_level-1][static_cast<int>(you.default_form)] += exp;
+}
+
 unsigned int gain_exp(unsigned int exp_gained)
 {
     if (crawl_state.game_is_arena())
@@ -2983,6 +3018,8 @@ void apply_exp()
     _handle_cacophony_recharge(skill_xp);
     _handle_batform_recharge(skill_xp);
     _handle_watery_grave_recharge(skill_xp);
+
+    _log_form_xp(exp_gained);
 
     if (player_under_penance(GOD_HEPLIAKLQANA))
         return; // no xp for you!
@@ -3197,13 +3234,14 @@ static void _revenant_spell_gift()
 
     const static vector<pair<spell_type, const char*>> enkindle_gifts =
     {
-        {SPELL_FOXFIRE, "wisps of flame dance over your body"},
-        {SPELL_FREEZE, "winter's chill grips you"},
-        {SPELL_SHOCK, "electricity surges through you"},
-        {SPELL_MAGIC_DART, "a surge of arcane energy buffets you"},
-        {SPELL_KINETIC_GRAPNEL, "the bite of steel pierces you"},
-        {SPELL_SANDBLAST, "sand stings your skin"},
-        {SPELL_POISONOUS_VAPOURS, "the taste of toxins fills your lungs"},
+        {SPELL_FOXFIRE, N_("wisps of flame dancing upon you")},
+        {SPELL_FREEZE, N_("the chill of winter seizing you")},
+        {SPELL_SHOCK, N_("electricity coursing through you")},
+        {SPELL_MAGIC_DART, N_("the impact of arcane energy battering you")},
+        {SPELL_KINETIC_GRAPNEL, N_("the bite of steel piercing you")},
+        {SPELL_SANDBLAST, N_("the sting of sand against your skin")},
+        {SPELL_POISONOUS_VAPOURS, N_("the taste of poison filling your lungs")},
+        {SPELL_ICE_THORNS, N_("icy daggers piercing you")}
     };
 
     vector<spell_type> gift_possibilities;
@@ -3643,6 +3681,9 @@ int player_stealth()
         stealth += (STEALTH_PIP * 2);
     }
 
+    if (you.form == transformation::hypnogecko)
+        stealth += STEALTH_PIP;
+
     if (feat_is_water(env.grid(you.pos())))
     {
         if (you.has_mutation(MUT_NIMBLE_SWIMMER))
@@ -3984,7 +4025,7 @@ unsigned int exp_needed(int lev, int exp_apt)
     switch (lev)
     {
     case 1:
-        level = 1;
+        level = 0;
         break;
     case 2:
         level = 10;
@@ -4013,7 +4054,7 @@ unsigned int exp_needed(int lev, int exp_apt)
     if (exp_apt == -99)
         exp_apt = species::get_exp_modifier(you.species);
 
-    return (unsigned int) ((level - 1) * apt_to_factor(exp_apt - 1));
+    return (unsigned int) (level * apt_to_factor(exp_apt - 1));
 }
 
 // returns bonuses from rings of slaying, etc.
@@ -4590,7 +4631,7 @@ int contam_max_damage()
  * @return      A string describing the player when in the given contamination
  *              level.
  */
-string describe_contamination(bool verbose)
+string describe_contamination(bool verbose, bool show_damage)
 {
     if (you.magic_contamination <= 0)
         return "";
@@ -4617,7 +4658,7 @@ string describe_contamination(bool verbose)
     string msg = verbose ? verbose_desc[lvl] : terse_desc[lvl];
 
     const int dmg = contam_max_damage();
-    if (dmg > 0)
+    if (show_damage && dmg > 0)
         msg = make_stringf(T_("%s (up to %d damage)"), msg.c_str(), dmg);
 
     return msg;
@@ -4661,7 +4702,7 @@ void contaminate_player(int change, bool controlled, bool msg)
         if (msg)
         {
             mprf(player_harmful_contamination() ? MSGCH_WARN : MSGCH_PLAIN,
-                 "%s", describe_contamination().c_str());
+                 "%s", describe_contamination(true, false).c_str());
         }
         if (player_harmful_contamination())
             xom_is_stimulated(new_level * 25);
@@ -5847,6 +5888,7 @@ player::player()
     banished_by.clear();
 
     last_mid = 0;
+    last_item_uid = 0;
     last_cast_spell = SPELL_NO_SPELL;
 
     // Non-saved UI state:
@@ -5939,6 +5981,9 @@ player::player()
     constricting = nullptr;
 
     clear_deferred_move();
+
+    for (int i = 0; i < 27; ++i)
+        xp_by_form[i].init(0);
 
     // Protected fields:
     clear_place_info();
@@ -6566,6 +6611,32 @@ int player::skill(skill_type sk, int scale, bool real, bool include_temp) const
         && sk >= SK_FIRST_MAGIC_SCHOOL && sk <= SK_LAST_MAGIC)
     {
         level += walking_scroll_skill_bonus(scale);
+    }
+
+    if (you.form == transformation::jademantle)
+    {
+        switch (sk)
+        {
+            case SK_ALCHEMY:
+            case SK_NECROMANCY:
+            case SK_SUMMONINGS:
+            case SK_CONJURATIONS:
+            case SK_FORGECRAFT:
+            case SK_TRANSLOCATIONS:
+            case SK_HEXES:
+                level = level * 2 / 3;
+                break;
+
+            case SK_FIRE_MAGIC:
+            case SK_ICE_MAGIC:
+            case SK_EARTH_MAGIC:
+            case SK_AIR_MAGIC:
+               level = level + (2 * scale);
+               break;
+
+            default:
+                break;
+        }
     }
 
     if (include_temp && skill_has_dilettante_penalty(sk))
@@ -7244,6 +7315,7 @@ bool player::is_insubstantial() const
 {
     return form == transformation::wisp
         || form == transformation::storm
+        || duration[DUR_INSUBSTANTIAL]
         || has_mutation(MUT_FORMLESS);
 }
 
@@ -7375,7 +7447,7 @@ bool player::res_constrict() const
 
 int player::res_blind() const
 {
-    if (bool(holiness() & MH_PLANT))
+    if (bool(holiness() & MH_PLANT) || you.form == transformation::mistmane)
         return 2;
     else if (undead_state() != US_ALIVE || you.form == transformation::jelly)
         return 1;
@@ -8117,7 +8189,8 @@ bool player::innate_sinv() const
 
     if (form == transformation::jelly
         || form == transformation::sphinx
-        || form == transformation::vampire)
+        || form == transformation::vampire
+        || form == transformation::vision)
     {
         return true;
     }
@@ -9701,6 +9774,8 @@ bool ench_triggers_trickster(enchant_type ench)
         case ENCH_WRETCHED:
         case ENCH_DEEP_SLEEP:
         case ENCH_VEXED:
+        case ENCH_DIMINISHED_SPELLS:
+        case ENCH_EXPOSED:
             return true;
 
         default:

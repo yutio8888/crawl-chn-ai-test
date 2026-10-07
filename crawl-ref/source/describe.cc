@@ -1241,7 +1241,12 @@ static int _item_training_target(const item_def &item)
         return current_skill < min_skill ? min_skill : max_skill;
     }
     if (item.base_type == OBJ_BAUBLES)
-        return get_form(transformation::flux)->min_skill * 10;
+    {
+        if (item.sub_type == BAUBLE_FLUX)
+            return get_form(transformation::flux)->min_skill * 10;
+        else if (item.sub_type == BAUBLE_CENTIPEDE)
+            return CENTIPEDE_BAUBLE_MINSKILL;
+    }
     return 0;
 }
 
@@ -1599,13 +1604,23 @@ brand_type weapon_ego_from_name(string name, vector<brand_type> *partial_matches
     return wpn;
 }
 
+// Check whether this item is actually in the player's inventory, rather than
+// merely a copy of an inventory item (as stash search creates), which we must
+// not interact with.
+static bool _is_original_inventory_item(const item_def &item)
+{
+    return in_inventory(item)
+           && item.link >= 0 && item.link <= ENDOFPACK
+           && &item == &you.inv[item.link];
+}
+
 static void _append_skill_needed(string &description, const item_def &item,
                                  bool indent = true, string skill_padding = "")
 {
     const skill_type skill = _item_training_skill(item);
     const int target_skill = _item_training_target(item);
     const bool below_target = _is_below_training_target(item, true);
-    const bool can_set_target = below_target && in_inventory(item)
+    const bool can_set_target = below_target && _is_original_inventory_item(item)
                                 && !you.has_mutation(MUT_DISTRIBUTED_TRAINING);
     const bool useful = !is_useless_item(item) && crawl_state.need_save;
     if (useful)
@@ -2698,25 +2713,43 @@ static string _describe_lignify_ac()
                         you.armour_class_scaled(1));
 }
 
-string describe_item_rarity(const item_def &item)
+static string _rarity_to_str(item_rarity_type rarity)
 {
-    item_rarity_type rarity = consumable_rarity(item);
-
     switch (rarity)
     {
     case RARITY_VERY_RARE:
-        return T_("very rare");
+        return N_("very rare");
     case RARITY_RARE:
-        return T_("rare");
+        return N_("rare");
     case RARITY_UNCOMMON:
-        return T_("uncommon");
+        return N_("uncommon");
     case RARITY_COMMON:
-        return T_("common");
+        return N_("common");
     case RARITY_VERY_COMMON:
-        return T_("very common");
+        return N_("very common");
     case RARITY_NONE:
+        return N_("not found normally");
     default:
-        return T_("buggy");
+        return N_("buggy");
+    }
+}
+
+string describe_item_rarity(const item_def &item, bool terse)
+{
+    item_rarity_type rarity = consumable_rarity(item);
+    string desc = _rarity_to_str(rarity);
+
+    if (terse)
+        return T_(desc.c_str());
+
+    if (rarity == RARITY_NONE)
+        return T_("It cannot be found normally.");
+    else
+    {
+        return make_stringf("It is %s %s.",
+                            (Options.language == lang_t::ZH ? string(T_(desc.c_str()))
+                                                          : article_a(desc)).c_str(),
+                            item.base_type == OBJ_POTIONS ? T_("potion") : T_("scroll"));
     }
 }
 
@@ -2807,9 +2840,8 @@ static string _describe_item_curse(const item_def &item)
 
     ostringstream desc;
 
-    desc << T_("\nIt has a curse which improves the following skills:\n");
-    desc << comma_separated_fn(curses.begin(), curses.end(), desc_curse_skills,
-                               ".\n", ".\n") << ".";
+    desc << T_("\nIt bears a divine curse which improves your skill at ");
+    desc << desc_curse_skills(curses) << ".";
 
     return desc.str();
 }
@@ -2888,6 +2920,8 @@ static string _cannot_use_reason(const item_def &item, bool temp=true)
             can_equip_item(item, temp, &reason);
             return reason;
         }
+    case OBJ_TALISMANS:
+        return cannot_put_on_talisman_reason(item, temp);
     default:
         // Non-equippable types (e.g. ammo) have no can_equip_item reason, but
         // can still be outright forbidden by your god.
@@ -2987,6 +3021,8 @@ string get_item_description(const item_def &item,
                     << " value: " << item_value(item, true)
                     << "\nannotate: "
                     << stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
+        if (item.props.exists(ITEM_UNIQUE_ID))
+            description << "\nUID: " << item.props[ITEM_UNIQUE_ID].get_int();
     }
 #endif
 
@@ -3236,10 +3272,7 @@ string get_item_description(const item_def &item,
                         describe_player_cancellation() << ".";
                 }
             }
-            description << "\n\n"
-                        << T_("It is ")
-                        << article_a(describe_item_rarity(item))
-                        << T_(" potion.");
+            description << "\n\n" << describe_item_rarity(item);
             need_extra_line = false;
         }
         break;
@@ -3268,9 +3301,7 @@ string get_item_description(const item_def &item,
             if (verbose)
                 _uselessness_desc(description, item);
 
-            description << "\n\n" << T_("It is ")
-                        << article_a(describe_item_rarity(item))
-                        << T_(" scroll.");
+            description << "\n\n" << describe_item_rarity(item);
             need_extra_line = false;
         }
         break;
@@ -3291,9 +3322,12 @@ string get_item_description(const item_def &item,
     case OBJ_BAUBLES:
         if (!is_useless_item(item, false))
         {
-            description << "\n" << _describe_talisman_form(transformation::flux);
-            _append_skill_needed(desc, item, false, "   ");
-            description << desc;
+            if (item.sub_type == BAUBLE_FLUX)
+            {
+                description << "\n" << _describe_talisman_form(transformation::flux);
+                _append_skill_needed(desc, item, false, "   ");
+                description << desc;
+            }
         }
         if (verbose)
             _uselessness_desc(description, item);
@@ -3752,6 +3786,21 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
             long_desc += make_stringf("\nIt does %dd%d damage.", dmg.num, dmg.size);
         }
     }
+    else if (feat_is_dragon_vein(feat))
+    {
+        long_desc += make_stringf(T_("\nIt inflicts %s damage when channelled."),
+                        spell_damage_string(dragon_vein_to_spell(feat),
+                                            false, calc_spell_power(SPELL_DRAGON_VEINS)).c_str());
+    }
+    else if (feat == DNGN_ICE_THORNS)
+    {
+        map_terrain_change_marker* mark = env.markers.get_terrain_change_at(pos, TERRAIN_CHANGE_ICE_THORNS);
+        if (mark)
+        {
+            dice_def dmg = zap_damage(ZAP_ICE_THORNS, mark->power, mark->source_mid != MID_PLAYER, false);
+            long_desc += make_stringf(T_("\nStepping on it inflicts %dd%d damage."), dmg.num, dmg.size);
+        }
+    }
 
     // mention that trees are usually flammable
     // (except for autumnal trees in Wucad Mu's Monastery)
@@ -4094,7 +4143,7 @@ static vector<command_type> _allowed_actions(const item_def& item)
 
     // this is a copy, we can't do anything with it. (Probably via stash
     // search.)
-    if (!valid_item_index(item.index()) && !in_inventory(item))
+    if (!valid_item_index(item.index()) && !_is_original_inventory_item(item))
         return actions;
 
     // XX CMD_ACTIVATE
@@ -4159,7 +4208,8 @@ static vector<command_type> _allowed_actions(const item_def& item)
     default:
         break;
     }
-    actions.push_back(CMD_DROP);
+    if (item_is_droppable(item))
+        actions.push_back(CMD_DROP);
     actions.push_back(CMD_ADJUST_INVENTORY);
     if (!you.has_mutation(MUT_DISTRIBUTED_TRAINING)
         && _is_below_training_target(item, false))
@@ -4362,7 +4412,7 @@ void target_item(item_def &item)
     if (skill == SK_NONE)
         return;
 
-    const int target = _item_training_target(item);
+    const int target = min(270, _item_training_target(item));
     if (target == 0)
         return;
 
@@ -8368,7 +8418,8 @@ static void _maybe_note_armour_modifier(vector<vector<string>>& items,
     if (mult[0] == 0 && mult[1] == 0 && mult[2] == 0)
         return;
 
-    const item_def *body_armour = you.body_armour();
+    const item_def *body_armour = you.equipment.get_first_slot_item(
+        SLOT_BODY_ARMOUR, true);
     const int base_ac = body_armour ? you.base_ac_from(*body_armour, 100, false)
                                     : 0;
 
@@ -8408,7 +8459,7 @@ static void _maybe_note_form_dice(vector<vector<string>>& items,
     return;
 
     vector<string> labels;
-    labels.push_back(label);
+    labels.push_back(T_(label.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[0].num, data[0].size, suffix.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[1].num, data[1].size, suffix.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[2].num, data[2].size, suffix.c_str()));
@@ -8468,7 +8519,7 @@ static void _maybe_populate_form_table(vector<vector<string>>& items,
         return;
 
     vector<string> labels;
-    labels.push_back(label);
+    labels.push_back(T_(label.c_str()));
     labels.push_back(_format_data_label(data[0], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
     labels.push_back(_format_data_label(data[1], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
     labels.push_back(_format_data_label(data[2], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
@@ -8563,6 +8614,19 @@ static string _describe_talisman_form(transformation form_type)
         _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Bat Swarm Recharge", skill, 0, true, false);
         _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), "Daze Power", skill, 0, false, false);
     }
+    if (form_type == transformation::jademantle)
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Crystal HP"), skill, 0, true, false);
+    if (form_type == transformation::hypnogecko)
+    {
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Shed Tail HP"), skill, 0, true, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), N_("Distraction Stab Chance"), skill, 0, true, true);
+    }
+    if (form_type == transformation::mistmane)
+    {
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Cloud range"), skill, 0, false, false, 10, 1);
+        _maybe_populate_form_table(items, bind(&Form::get_cloud_duration, form, placeholders::_1), N_("Cloud duration"), skill, 0, true, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), N_("Distill rate"), skill, 0, true, false);
+    }
 
     vector<int> column_width;
 
@@ -8606,13 +8670,14 @@ static string _describe_talisman_form(transformation form_type)
         description << T_("\nClass: ") << uppercase_first(holiness_description(form->holiness));
 
     // Now add various one-off bits of (generally non-scaling) data after that
-    TablePrinter pr(4, 80);
+    TablePrinter pr(form_type == transformation::jademantle ? 3 : 4, 80);
     pr.AddRow();
 
     if (form->size != SIZE_CHARACTER)
         pr.AddCell(T_("Size"), uppercase_first(get_size_adj(form->size)));
 
     _desc_form_val(pr, "Str", form->str_mod);
+    _desc_form_val(pr, "Int", form->int_mod);
     _desc_form_val(pr, "Dex", form->dex_mod);
 
     _desc_form_resist(pr, MR_RES_FIRE, form->res_fire());
@@ -8645,8 +8710,11 @@ static string _describe_talisman_form(transformation form_type)
         pr.AddCell(T_("Will"), "+");
     else if (form_type == transformation::vampire)
         pr.AddCell(T_("Stealth"), "++");
-    else if (form_type == transformation::spider)
+    else if (form_type == transformation::spider
+             || form_type == transformation::hypnogecko)
+    {
         pr.AddCell(T_("Stealth"), "+");
+    }
     else if (form_type == transformation::aqua)
         pr.AddCell(T_("Attack range"), "+2");
     else if (form_type == transformation::sphinx)
@@ -8665,9 +8733,19 @@ static string _describe_talisman_form(transformation form_type)
     {
         pr.AddCell(T_("Melee damage"), "-50%", RED);
     }
+    else if (form_type == transformation::fortress_crab)
+        pr.AddCell(T_("Armour egos"), "x2");
+    else if (form_type == transformation::jademantle)
+    {
+        pr.AddCell(T_("Elemental magic skill"), "+2");
+        pr.AddCell(T_("Other magic skill"), "-33%", RED);
+    }
 
-    if (form_type == transformation::vampire || form_type == transformation::sphinx)
+    if (form_type == transformation::vampire || form_type == transformation::sphinx
+        || form_type == transformation::vision)
+    {
         pr.AddCell(T_("SInv"), "+");
+    }
 
     // Don't output extra blank lines if there's no content.
     if (pr.NumCells() > 0)

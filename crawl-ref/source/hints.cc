@@ -1414,8 +1414,6 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
             return print_hint("HINT_CONVERT Uskayaw");
         case GOD_XOM:
             return print_hint("HINT_CONVERT Xom");
-        case GOD_YREDELEMNUL:
-            return print_hint("HINT_CONVERT Yredelemnul");
         default:
             print_hint("HINT_CONVERT");
 
@@ -1489,6 +1487,10 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
         break;
     }
 
+    case HINT_WIELD_MELEE_WEAPON:
+        print_hint("HINT_WIELD_MELEE_WEAPON");
+        break;
+
     case HINT_WIELD_WEAPON:
         print_hint("HINT_WIELD_WEAPON");
         break;
@@ -1515,7 +1517,7 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
 #endif
         print_hint("HINT_MONSTER_FRIENDLY");
 
-        if (!mons_att_wont_attack(m->attitude))
+        if (!mons_att_wont_attack(m->base_attitude))
             print_hint("HINT_TEMPORARILY_FRIENDLY");
 
         break;

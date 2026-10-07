@@ -724,7 +724,7 @@ bool summon_holy_warrior(int pow, bool punish)
                  punish ? BEH_HOSTILE : BEH_FRIENDLY,
                  you.pos(), MHITYOU, MG_FORCE_BEH | MG_AUTOFOE, GOD_SHINING_ONE);
     mg.set_summoned(punish ? 0 : &you, SPELL_NO_SPELL,
-                    punish ? 0 : random_range(80, 110) + pow / 2);
+                    punish ? 0 : random_range(800, 1100) + pow * 5);
 
     if (punish)
     {
@@ -1208,7 +1208,7 @@ bool is_gateway_target(const actor& caster, coord_def location, bool only_known)
         if (!only_known)
             return false;
 
-        if (creature->visible_to(&caster))
+        if (caster.aware_of(*creature))
             return false;
     }
 
@@ -1282,7 +1282,7 @@ spret cast_malign_gateway(actor * caster, int pow, bool fail, bool test)
             caster->mid,
             is_player ? BEH_FRIENDLY
                       : attitude_creation_behavior(
-                          caster->as_monster()->attitude),
+                          caster->as_monster()->attitude()),
             "",
             pow);
 
@@ -1916,7 +1916,6 @@ static bool _battlesphere_should_fire(actor* target,
 
 static void _fire_battlesphere(monster* battlesphere, bolt& beam)
 {
-    beam.thrower = battlesphere->summoner == MID_PLAYER ? KILL_YOU : KILL_MON;
     beam.set_is_tracer(false);
 
     battlesphere->foe = actor_at(beam.target)->mindex();
@@ -1981,8 +1980,7 @@ bool trigger_battlesphere(actor* agent)
     beam.flavour     = BEAM_MMISSILE;
     beam.pierce      = false;
     beam.target      = target->pos();
-    beam.source_id   = battlesphere->mid;
-    beam.attitude    = mons_attitude(*battlesphere);
+    beam.set_agent(agent);
 
     coord_def fallback_pos;
     // First, just try to fire from our present position
@@ -3939,13 +3937,7 @@ static void _paragon_tempest(const coord_def& target)
     {
         const coord_def old_pos = paragon->pos();
 
-        bolt visual;
-        visual.flavour = BEAM_VISUAL;
-        visual.colour = WHITE;
-        visual.source = old_pos;
-        visual.target = target;
-        visual.aimed_at_spot = true;
-        visual.fire();
+        bolt::visual_beam(old_pos, target, 15, WHITE).fire();
 
         paragon->move_to(target, MV_INTERNAL);
         paragon->check_redraw(old_pos);
@@ -4045,13 +4037,8 @@ spret cast_platinum_paragon(const coord_def& target, int pow, bool fail)
     paragon->ghost_demon_init();
 
     // Do the landing shockwave.
-    bolt shockwave;
-    shockwave.source_id = paragon->mid;
-    shockwave.source = target;
-    shockwave.target = target;
-    shockwave.is_explosion = true;
-    shockwave.ex_size = 1;
-    zappy(ZAP_PARAGON_IMPACT, pow, true, shockwave);
+    bolt shockwave(*paragon, ZAP_PARAGON_IMPACT, pow);
+    shockwave.source = shockwave.target = target;
     shockwave.explode(true, true);
 
     return spret::success;
@@ -4205,8 +4192,11 @@ static void _do_player_potion()
 
     mprf(T_("Mmmm... tastes like %s."), potion_type_name(potion));
 
-    if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && oni_likes_potion(potion))
+    if (you.has_mutation(MUT_DRUNKEN_BRAWLING))
         oni_drunken_swing();
+
+    if (you.form == transformation::mistmane)
+        mistmane_quaff_potion(potion);
 
     if (you.magic_points < you.max_magic_points)
     {
@@ -4497,7 +4487,7 @@ bool splinterfrost_block_fragment(monster& block, const coord_def& aim)
     bolt beam;
     zappy(ZAP_SPLINTERFROST_FRAGMENT, pow, !agent->is_player(), beam);
     beam.source = block.pos();
-    beam.attitude = block.attitude;
+    beam.attitude = block.attitude();
     beam.set_agent(agent);
     beam.target = aim;
     beam.seen = true;

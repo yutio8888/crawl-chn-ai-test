@@ -151,6 +151,7 @@ ignore += 不那么阴暗
 ignore += you emerge from the shadows\.
 # Chinese translation compatibility
 ignore += 从阴影中显现
+ignore += finished recrystalising\.
 
 # Uskayaw -- ignore all Uskayaw power gain/loss messages since they happen constantly
 #

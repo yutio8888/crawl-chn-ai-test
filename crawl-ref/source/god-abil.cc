@@ -1181,7 +1181,6 @@ bool zin_recite_to_single_monster(const coord_def& where)
     case zin_eff::ignite_chaos:
         ASSERT(prayertype == RECITE_CHAOTIC);
         {
-            bolt beam;
             dice_def dam_dice(0, 5 + spellpower/7);  // Dice added below if applicable.
             dam_dice.num = degree;
 
@@ -1792,7 +1791,7 @@ bool yred_can_bind_soul(monster* mon)
 {
     return mons_can_be_spectralised(*mon, true, true)
            && !mon->has_ench(ENCH_SOUL_RIPE)
-           && mon->attitude != ATT_FRIENDLY;
+           && mon->base_attitude != ATT_FRIENDLY;
 }
 
 int yred_get_bound_soul_hp(monster_type mt, bool estimate_only)
@@ -1852,6 +1851,9 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     // the proper stats from it.
     define_zombie(mon, mon->type, MONS_BOUND_SOUL);
 
+    if (orig.has_hydra_multi_attack())
+        mons_set_starting_heads(*mon, orig.props[ORIGINAL_HEADS_KEY].get_int());
+
     // Modify health based on invocations skill
     mon->max_hit_points = yred_get_bound_soul_hp(orig.type);
     mon->hit_points = mon->max_hit_points;
@@ -1872,7 +1874,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
 
     name_zombie_from_mon(*mon, orig);
 
-    mon->attitude = !force_hostile ? ATT_FRIENDLY : ATT_HOSTILE;
+    mon->base_attitude = !force_hostile ? ATT_FRIENDLY : ATT_HOSTILE;
     behaviour_event(mon, ME_ALERT, force_hostile ? &you : 0);
 
     mons_att_changed(mon);
@@ -1948,17 +1950,13 @@ bool fedhas_passthrough_class(const monster_type mc)
 bool fedhas_passthrough(const monster* target)
 {
     return target
-           && fedhas_passthrough_class(target->type)
-           && (mons_species(target->type) != MONS_OKLOB_PLANT
-               || target->attitude != ATT_HOSTILE);
+           && fedhas_passthrough_class(target->type);
 }
 
 bool fedhas_passthrough(const monster_info* target)
 {
     return target
-           && fedhas_passthrough_class(target->type)
-           && (mons_species(target->type) != MONS_OKLOB_PLANT
-               || target->attitude != ATT_HOSTILE);
+           && fedhas_passthrough_class(target->type);
 }
 
 void cheibriados_time_bend(int pow)
@@ -2253,6 +2251,7 @@ static map<curse_type, curse_data> _ashenzari_curses =
         "Ranged Combat", "Range",
         { SK_RANGED_WEAPONS, SK_THROWING },
     } },
+#if TAG_MAJOR_VERSION == 34
     { CURSE_ELEMENTS, {
         "Elements", "Elem",
         { SK_FIRE_MAGIC, SK_ICE_MAGIC, SK_AIR_MAGIC, SK_EARTH_MAGIC },
@@ -2285,7 +2284,104 @@ static map<curse_type, curse_data> _ashenzari_curses =
         "Devices", "Dev",
         { SK_EVOCATIONS, SK_SHAPESHIFTING },
     } },
+#endif
+    { CURSE_FIRE_MAGIC, {
+        N_("Fire Magic"), NC_("curse abbreviation", "Fire"),
+        { SK_FIRE_MAGIC },
+    } },
+    { CURSE_ICE_MAGIC, {
+        N_("Ice Magic"), NC_("curse abbreviation", "Ice"),
+        { SK_ICE_MAGIC },
+    } },
+    { CURSE_AIR_MAGIC, {
+        N_("Air Magic"), NC_("curse abbreviation", "Air"),
+        { SK_AIR_MAGIC },
+    } },
+    { CURSE_EARTH_MAGIC, {
+        N_("Earth Magic"), NC_("curse abbreviation", "Earth"),
+        { SK_EARTH_MAGIC },
+    } },
+    { CURSE_CONJURATIONS, {
+        N_("Conjurations"), NC_("curse abbreviation", "Conj"),
+        { SK_CONJURATIONS },
+    } },
+    { CURSE_ALCHEMY, {
+        N_("Alchemy"), NC_("curse abbreviation", "Alch"),
+        { SK_ALCHEMY },
+    } },
+    { CURSE_SUMMONINGS, {
+        N_("Summonings"), NC_("curse abbreviation", "Summ"),
+        { SK_SUMMONINGS },
+    } },
+    { CURSE_NECROMANCY, {
+        N_("Necromancy"), NC_("curse abbreviation", "Necro"),
+        { SK_NECROMANCY },
+    } },
+    { CURSE_FORGECRAFT, {
+        N_("Forgecraft"), NC_("curse abbreviation", "Forge"),
+        { SK_FORGECRAFT },
+    } },
+    { CURSE_HEXES, {
+        N_("Hexes"), NC_("curse abbreviation", "Hex"),
+        { SK_HEXES },
+    } },
+    { CURSE_TRANSLOCATIONS, {
+        N_("Translocations"), NC_("curse abbreviation", "Tloc"),
+        { SK_TRANSLOCATIONS },
+    } },
+    { CURSE_SPELLCASTING, {
+        N_("Spellcasting"), NC_("curse abbreviation", "Splcast"),
+        { SK_SPELLCASTING },
+    } },
+    { CURSE_ARMOUR, {
+        N_("Armour"), NC_("curse abbreviation", "Arm"),
+        { SK_ARMOUR },
+    } },
+    { CURSE_SHIELDS, {
+        N_("Shields"), NC_("curse abbreviation", "Shld"),
+        { SK_SHIELDS },
+    } },
+    { CURSE_DODGING, {
+        N_("Dodging"), NC_("curse abbreviation", "Dodg"),
+        { SK_DODGING },
+    } },
+    { CURSE_STEALTH, {
+        N_("Stealth"), NC_("curse abbreviation", "Stlth"),
+        { SK_STEALTH },
+    } },
+    { CURSE_FIGHTING, {
+        N_("Fighting"), NC_("curse abbreviation", "Fight"),
+        { SK_FIGHTING },
+    } },
+    { CURSE_EVOCATIONS, {
+        N_("Evocations"), NC_("curse abbreviation", "Evo"),
+        { SK_EVOCATIONS },
+    } },
+    { CURSE_SHAPESHIFTING, {
+        N_("Shapeshifting"), NC_("curse abbreviation", "Shape"),
+        { SK_SHAPESHIFTING },
+    } },
 };
+
+static bool _curse_is_removed(curse_type curse)
+{
+    switch (curse)
+    {
+#if TAG_MAJOR_VERSION == 34
+        case CURSE_ELEMENTS:
+        case CURSE_SORCERY:
+        case CURSE_COMPANIONS:
+        case CURSE_BEGUILING:
+        case CURSE_SELF:
+        case CURSE_FORTITUDE:
+        case CURSE_CUNNING:
+        case CURSE_DEVICES:
+            return true;
+#endif
+        default:
+            return false;
+    }
+}
 
 static bool _can_use_curse(const curse_data& c)
 {
@@ -2325,22 +2421,24 @@ static string ashenzari_curse_knowledge_list()
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
     return lowercase_string(comma_separated_fn(curses.begin(), curses.end(),
-                              curse_name));
+                              [](const CrawlStoreValue& curse)
+                              { return string(T_(curse_name(curse).c_str())); }));
 }
 
-string desc_curse_skills(const CrawlStoreValue& curse)
+string desc_curse_skills(const CrawlVector& curse)
 {
-    const curse_data& c =
-        _ashenzari_curses[static_cast<curse_type>(curse.get_int())];
-
     vector<skill_type> trainable;
+    for (const CrawlStoreValue& val : curse)
+    {
+        const curse_data& c =
+            _ashenzari_curses[static_cast<curse_type>(val.get_int())];
 
-    for (skill_type sk : c.boosted)
-        if (!is_useless_skill(sk))
-            trainable.push_back(sk);
+        for (skill_type sk : c.boosted)
+            if (!is_useless_skill(sk))
+                trainable.push_back(sk);
+    }
 
-    return c.name + ": "
-           + comma_separated_fn(trainable.begin(), trainable.end(), skill_name);
+    return comma_separated_fn(trainable.begin(), trainable.end(), skill_name);
 }
 
 /**
@@ -2348,41 +2446,23 @@ string desc_curse_skills(const CrawlStoreValue& curse)
  */
 static void _choose_curse_knowledge()
 {
-    // This loop choses two available skills without replacement,
-    // it is a two element version of a reservoir sampling algorithm.
-    //
-    // If Ashenzari curses need some fancier weighting this is the
-    // place to do that weighting.
-    curse_type first_choice = NUM_CURSES;
-    curse_type second_choice = NUM_CURSES;
-    int valid_curses = 0;
+    // Updated from a reservoir sample to shuffling an array since we now use
+    // three curse choices rather than two.
+    vector <curse_type> valid_curses;
     for (auto const& curse : _ashenzari_curses)
     {
-        if (_can_use_curse(curse.second))
-        {
-            ++valid_curses;
-            if (valid_curses == 1)
-                first_choice = curse.first;
-            else if (valid_curses == 2)
-            {
-                second_choice = curse.first;
-                if (coinflip())
-                    swap(first_choice, second_choice);
-            }
-            else if (one_chance_in(valid_curses))
-                first_choice = curse.first;
-            else if (one_chance_in(valid_curses - 1))
-                second_choice = curse.first;
-        }
+        if (_can_use_curse(curse.second) && !_curse_is_removed(curse.first))
+            valid_curses.push_back(curse.first);
     }
 
     you.props.erase(CURSE_KNOWLEDGE_KEY);
     CrawlVector &curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
-    if (first_choice != NUM_CURSES)
-        curses.push_back(first_choice);
-    if (second_choice != NUM_CURSES)
-        curses.push_back(second_choice);
+    shuffle_array(valid_curses);
+    int num_valid = static_cast<int>(valid_curses.size());
+
+    for (int i = 0; i < min(num_valid, 3); ++i)
+        curses.push_back(valid_curses[i]);
 
     // It's not an error for this to be empty, curses are still useful for
     // piety alone
@@ -2406,15 +2486,16 @@ void ashenzari_offer_new_curse()
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     const string curse_names = ashenzari_curse_knowledge_list();
     const string offer_string = curse_names.empty() ? "" :
-                                (" of " + curse_names);
+                                (T_(" of ") + curse_names);
 
-    mprf_p(MSGCH_GOD, T_("Ashenzari invites you to share a vision and a curse%s."),
-           offer_string.c_str());
+    mprf(MSGCH_GOD, T_("Ashenzari invites you to chain yourself with knowledge%s."),
+                    offer_string.c_str());
 }
 
 static void _do_curse_item(item_def &item)
 {
-    mprf(T_("Your %s glows briefly with a black light."), item.name(DESC_PLAIN).c_str());
+    mprf(T_("You bind %s in chains and feel the brush of Ashenzari's sight against your mind."),
+         item.name(DESC_YOUR).c_str());
     item.flags |= ISFLAG_CURSED;
 
     if (item.base_type == OBJ_WEAPONS)
@@ -2432,17 +2513,17 @@ static void _do_curse_item(item_def &item)
 }
 
 /**
- * Give a prompt to curse an item.
+ * Give a prompt to bind an item.
  *
- * This is the core logic behind Ash's Curse Item ability.
- * Player can abort without penalty.
+ * This is the core logic behind Ash's Ritual of Binding ability.
+ * Player can bind without penalty.
  * Player can curse only worn items.
  *
- * @return       Whether the player cursed anything.
+ * @return       Whether the player bound anything.
  */
-bool ashenzari_curse_item()
+bool ashenzari_bind_item()
 {
-    const string prompt_msg = make_stringf(T_("Curse which item? (Esc to abort)"));
+    const string prompt_msg = make_stringf(T_("Bind which item? (Esc to abort)"));
     const int item_slot = prompt_invent_item(prompt_msg.c_str(),
                                              menu_type::invlist,
                                              OSEL_CURSABLE, OPER_ANY);
@@ -2453,7 +2534,7 @@ bool ashenzari_curse_item()
 
     if (!item_is_selected(item, OSEL_CURSABLE))
     {
-        mprf(MSGCH_PROMPT, T_("You cannot curse that!"));
+        mprf(MSGCH_PROMPT, T_("You cannot bind that!"));
         return false;
     }
 
@@ -2474,9 +2555,9 @@ bool ashenzari_curse_item()
  *
  * @return      Whether the player uncursed anything.
  */
-bool ashenzari_uncurse_item()
+bool ashenzari_shatter_item()
 {
-    int item_slot = prompt_invent_item("Uncurse and destroy which item?",
+    int item_slot = prompt_invent_item(T_("Unbind and destroy which item?"),
                                        menu_type::invlist,
                                        OSEL_CURSED_WORN, OPER_ANY);
     if (prompt_failed(item_slot))
@@ -2486,13 +2567,14 @@ bool ashenzari_uncurse_item()
 
     if (!item_is_selected(item, OSEL_CURSED_WORN))
     {
-        mprf(MSGCH_PROMPT, T_("You cannot uncurse and destroy that!"));
+        mprf(MSGCH_PROMPT, T_("You cannot unchain and destroy that!"));
         return false;
     }
 
     if (item_is_melded(item))
     {
-        mprf(MSGCH_PROMPT, T_("You cannot shatter the curse on %s while it is melded with your body!"),
+        mprf(MSGCH_PROMPT, T_("You cannot shatter the chains on %s while it is "
+                           "melded with your body!"),
              item.name(DESC_THE).c_str());
         return false;
     }
@@ -2500,8 +2582,7 @@ bool ashenzari_uncurse_item()
     if (!yesno(make_stringf(T_("Really remove and destroy %s?%s"),
                             item.name(DESC_THE).c_str(),
                             you.props.exists(AVAILABLE_CURSE_KEY) ?
-                                T_(" Ashenzari will withdraw the offered vision "
-                                   "and curse!")
+                                T_(" Ashenzari will withdraw the current offer of knowledge!")
                                 : "").c_str(),
                             false, 'n'))
     {
@@ -2513,7 +2594,7 @@ bool ashenzari_uncurse_item()
     if (!handle_chain_removal(to_remove, true))
         return false;
 
-    mprf_p(T_("You shatter the curse binding %1$s!"), item.name(DESC_THE).c_str());
+    mprf_p(T_("You shatter the chains binding %1$s!"), item.name(DESC_THE).c_str());
 
     for (item_def* _item : to_remove)
     {
@@ -2527,7 +2608,7 @@ bool ashenzari_uncurse_item()
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     if (you.props.exists(AVAILABLE_CURSE_KEY))
     {
-        simple_god_message(T_(" withdraws the vision and curse."));
+        simple_god_message(T_(" withdraws the invitation to bind yourself further."));
         you.props.erase(AVAILABLE_CURSE_KEY);
     }
 
@@ -2595,7 +2676,7 @@ void spare_beogh_convert()
         // An invis player converting is ok, for simplicity.
         if (!mon || !cell_see_cell(you.pos(), *ri, LOS_DEFAULT))
             continue;
-        if (mon->attitude != ATT_HOSTILE)
+        if (mon->base_attitude != ATT_HOSTILE)
             continue;
         if (mons_genus(mon->type) != MONS_ORC)
             continue;
@@ -2612,7 +2693,7 @@ void spare_beogh_convert()
                     continue;
                 if (mons_genus(orc->type) != MONS_ORC)
                     continue;
-                if (mon->attitude != ATT_HOSTILE)
+                if (mon->base_attitude != ATT_HOSTILE)
                     continue;
                 witnesses.insert(orc->mid);
             }
@@ -3054,6 +3135,8 @@ bool valid_marionette_spell(spell_type spell)
         case SPELL_SILENCE:
         case SPELL_CALL_TIDE:
         case SPELL_DRUIDS_CALL:
+        case SPELL_PHASE_SHIFT:
+        case SPELL_STAMPEDE:
 
         // Would be buggy to try
         case SPELL_CREATE_TENTACLES:
@@ -3149,8 +3232,8 @@ static int _dithmenos_marionette_spells_possible(monster& target)
     // Save target state, so we can restore after we test.
     const int old_foe = target.foe;
     const coord_def old_target = target.target;
-    const mon_attitude_type old_attitude = target.attitude;
-    target.attitude = ATT_MARIONETTE;
+    const mon_attitude_type old_attitude = target.base_attitude;
+    target.base_attitude = ATT_MARIONETTE;
 
     int valid_count = 0;
     for (spell_type spell : mon_spells)
@@ -3160,7 +3243,7 @@ static int _dithmenos_marionette_spells_possible(monster& target)
     // Restore state, like nothing even happened
     target.foe = old_foe;
     target.target = old_target;
-    target.attitude = old_attitude;
+    target.base_attitude = old_attitude;
 
     return valid_count;
 }
@@ -3235,7 +3318,7 @@ spret dithmenos_marionette(monster& target, bool fail)
     const int old_foe = target.foe;
     const coord_def old_target = target.target;
     const int old_energy = target.speed_increment;
-    target.attitude = ATT_MARIONETTE;
+    target.base_attitude = ATT_MARIONETTE;
 
     // Attempt to cast all valid spells the monster has, in randomized order,
     // (but using all spells at least once before repeating). End early if the
@@ -3272,7 +3355,7 @@ spret dithmenos_marionette(monster& target, bool fail)
         target.foe = old_foe;
         target.target = old_target;
         target.speed_increment = old_energy;
-        target.attitude = ATT_HOSTILE;
+        target.base_attitude = ATT_HOSTILE;
     }
 
     if (!target.alive())
@@ -4304,11 +4387,8 @@ spret qazlal_disaster_area(bool fail)
             continue;
 
         const monster *mon = monster_at(*ri);
-        if (mon && mons_att_wont_attack(mon->attitude)
-            && !mons_is_projectile(mon->type))
-        {
+        if (mon && mon->wont_attack() && !mon->is_firewood())
             friendlies = true;
-        }
 
         const int range = you.pos().distance_from(*ri);
         if (range <= upheaval_radius)
@@ -5803,17 +5883,11 @@ static bool _get_stomped(monster& mons)
 
 bool uskayaw_stomp()
 {
-    // Demonic guardians are immune but check for other friendlies
-    const bool friendlies = apply_monsters_around_square([] (monster& mons) {
-        return could_harm(&you, &mons) && mons_att_wont_attack(mons.attitude);
-    }, you.pos());
+    vector<coord_def> adj;
+    for (adjacent_iterator ai(you.pos()); ai; ++ai)
+        adj.push_back(*ai);
 
-    // XXX: this 'friendlies' wording feels a little odd, but we do use it in a
-    // a few places already; see spl-vortex.cc, disaster area, etc.
-    if (friendlies
-        && !yesno(T_("There are friendlies around, "
-                  "are you sure you want to hurt them?"),
-                  true, 'n'))
+    if (warn_about_bad_targets(T_("The shockwave"), adj, nullptr, T_("Stomp anyway?")))
     {
         canned_msg(MSG_OK);
         return false;
@@ -7166,14 +7240,9 @@ void makhleb_vessel_of_slaughter()
     transform(random_range(70, 110), transformation::slaughter);
     you.transform_uncancellable = true;
 
-    bolt damnation;
-    zappy(ZAP_HURL_DAMNATION, 100, false, damnation);
-    damnation.thrower = KILL_YOU;
-    damnation.source_id = MID_PLAYER;
-    damnation.is_explosion = true;
+    bolt damnation(you, ZAP_HURL_DAMNATION, 100);
     damnation.ex_size = 3;
     damnation.damage = dice_def(3, 7 + you.experience_level);
-    damnation.source = you.pos();
     damnation.target = you.pos();
     damnation.explode(true, true);
 }

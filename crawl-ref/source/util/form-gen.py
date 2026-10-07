@@ -139,7 +139,7 @@ def parse_muts(s):
         raise ValueError("isn't a list")
     ret = []
     for a in s:
-        ret.append("{" + parse_str_list(a) + "}")
+        ret.append("{" + ', '.join("N_(" + quote(x) + ")" for x in a) + "}")
     return ',\n     '.join(ret)
 
 def parse_num(s, min, max):
@@ -326,6 +326,7 @@ keyfns = {
 
     'str': Field(lambda s: parse_num(s, -99, 127)),
     'dex': Field(lambda s: parse_num(s, -99, 127)),
+    'int': Field(lambda s: parse_num(s, -99, 127)),
     'size': Field(parse_size),
     'hp_mod': Field(lambda s: parse_num(s, 1, 200)),
     'move_speed': Field(lambda s: parse_num(s, 1, 100)),
@@ -388,6 +389,7 @@ defaults = {
     'resists': [ResVal('MR_NO_FLAGS', 0)],
 
     'str': 0,
+    'int': 0,
     'dex': 0,
     'size': "SIZE_CHARACTER",
     'hp_mod': 100,

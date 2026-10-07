@@ -244,6 +244,45 @@ static bool _monster_guesses_invis_player(const monster &mon)
     return false;
 }
 
+// Try to make any jade crystals near the player assume fixed positions on
+// each diagonal, if possible.
+static bool _adjust_jade_crystal_positioning(monster* mon)
+{
+    coord_def target = you.pos();
+    switch (mon->type)
+    {
+        case MONS_JADE_CRYSTAL_AIR:
+            target += coord_def(-1, -1);
+            break;
+
+        case MONS_JADE_CRYSTAL_EARTH:
+            target += coord_def(1, 1);
+            break;
+
+        case MONS_JADE_CRYSTAL_FIRE:
+            target += coord_def(-1, 1);
+            break;
+
+        case MONS_JADE_CRYSTAL_ICE:
+            target += coord_def(1, -1);
+            break;
+
+        default:
+            return false;
+    }
+
+    // But don't set targets this way while out of sight or they can sometimes
+    // get stuck on things.
+    if (in_bounds(target) && mon->see_cell(you.pos()))
+    {
+        mon->target = target;
+        mon->behaviour = BEH_SEEK;
+        return true;
+    }
+    else
+        return false;
+}
+
 /**
  * Evaluates the monster's AI state, and sets its target based on its foe.
  */
@@ -256,7 +295,7 @@ void handle_behaviour(monster* mon)
     {
         for (monster_iterator mi; mi; ++mi)
         {
-            if (mon->attitude != mi->attitude)
+            if (mon->base_attitude != mi->base_attitude)
             {
                 mon->foe       = mi->mindex();
                 mon->target    = mi->pos();
@@ -468,6 +507,11 @@ void handle_behaviour(monster* mon)
         else
             mon->del_ench(ENCH_MISDIRECTED);
     }
+
+    // Make jade crystals align nicely around the player and do no other
+    // behaviour adjustments.
+    if (_adjust_jade_crystal_positioning(mon))
+        return;
 
     while (changed)
     {
@@ -922,7 +966,7 @@ void handle_behaviour(monster* mon)
         // Wandering lurkers can eventually go back to lurking (but not if you
         // would just detect them again anyway).
         if (mon->behaviour == BEH_WANDER
-            && mon->attitude == ATT_HOSTILE
+            && mon->base_attitude == ATT_HOSTILE
             && mons_class_flag(mon->type, M_LURKER)
             && !have_passive(passive_t::see_unseen)
             && !mon->has_ench(ENCH_PREPARING_TO_LURK))
@@ -951,6 +995,9 @@ static bool _mons_check_foe(monster* mon, const coord_def& p,
            && (friendly || !is_sanctuary(p))
            && !foe->is_firewood()
            && !foe->props.exists(KIKU_WRETCH_KEY)
+           // Don't target friendly wall monsters from the 'other side' of the
+           // wall than the player is on, since this can be used to peek through walls.
+           && !monster_on_wrong_wall_side(mon, foe)
            || p == you.pos() && mon->has_ench(ENCH_FRENZIED);
 }
 
@@ -1091,21 +1138,11 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             break;
         }
 
-        // Monster types that you can't gain experience from cannot
-        // fight back, so don't bother having them do so. If you
-        // worship Fedhas, create a ring of friendly plants, and try
-        // to break out of the ring by killing a plant, you'll get
-        // a warning prompt and penance only once. Without the
-        // hostility check, the plant will remain friendly until it
-        // dies, and you'll get a warning prompt and penance once
-        // *per hit*. This may not be the best way to address the
-        // issue, though. -cao
-        if (!mons_is_threatening(*mon)
-            && mon->attitude != ATT_FRIENDLY
-            && mon->attitude != ATT_GOOD_NEUTRAL)
-        {
+        // Don't bother alerting monsters that can't fight you (but *do* aggro
+        // them if friendly, though this mostly applies to butterflies at the
+        // moment.)
+        if (!mons_is_threatening(*mon) && !mon->wont_attack())
             return;
-        }
 
         // Even when hit, don't make monsters set their foe to 'nothing' or to
         // an ally (which will cause hostile monsters to automatically set it to
@@ -1149,7 +1186,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
 
         if (src == &you && mon->angered_by_attacks())
         {
-            if (mon->attitude == ATT_FRIENDLY && mon->is_summoned()
+            if (mon->base_attitude == ATT_FRIENDLY && mon->is_summoned()
                 && mon->type != MONS_ELDRITCH_TENTACLE
                 && !mon->is_child_monster() && !mons_is_tentacle_segment(mon->type))
             {
@@ -1159,7 +1196,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             // Don't attempt to 'anger' monsters that are already hostile; this can
             // have weird and unexpected effects, such as prematurely ending hostile
             // effects.
-            else if (mon->temp_attitude() != ATT_HOSTILE)
+            else if (mon->attitude() != ATT_HOSTILE)
             {
                 // Pass aggro events along to the head, so that attitude changes
                 // can be propogated in a way that makes sense.
@@ -1167,9 +1204,9 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
                 if (head != mon)
                     behaviour_event(head, event, src, src_pos, allow_shout);
 
-                const bool was_friend = mons_att_wont_attack(mon->attitude);
-                mon->attitude = ATT_HOSTILE;
-                breakCharm    = true;
+                const bool was_friend = mons_att_wont_attack(mon->base_attitude);
+                mon->base_attitude = ATT_HOSTILE;
+                breakCharm = true;
 
                 // If we're angered a monster that previously would not have
                 // registered as hostile, let the player encounter them 'again'.
@@ -1293,8 +1330,8 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             break;
         }
 
-        // Neither do plants or nonliving beings.
-        if (mon->holiness() & (MH_PLANT | MH_NONLIVING))
+        // Neither do nonliving beings.
+        if (mon->holiness() & MH_NONLIVING)
         {
             mon->del_ench(ENCH_FEAR, true, true);
             break;
@@ -1361,10 +1398,10 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
     {
         mon->target = src_pos;
         if (src->is_player() && mon->angered_by_attacks()
-            && mon->temp_attitude() != ATT_HOSTILE)
+            && mon->attitude() != ATT_HOSTILE)
         {
             // Why only attacks by the player change attitude? -- 1KB
-            mon->attitude = ATT_HOSTILE;
+            mon->base_attitude = ATT_HOSTILE;
             // Non-hostile uniques might be removed from dungeon annotation
             // so we add them back.
             if (mon->props.exists(NO_ANNOTATE_KEY))
@@ -1532,7 +1569,7 @@ void make_mons_leave_level(monster* mon)
 bool monster_needs_los(const monster* mons)
 {
     return !crawl_state.game_is_arena()
-           && mons->attitude == ATT_FRIENDLY;
+           && mons->base_attitude == ATT_FRIENDLY;
 }
 
 // Check whether the player has line of sight to both the attacker and defender,
@@ -1555,11 +1592,26 @@ bool monster_los_is_valid(const monster* mons, const actor* targ)
     return monster_los_is_valid(mons, targ->pos());
 }
 
+// Try to roughly determine whether a monster is on the 'other side' of a wall
+// from the player, with a friendly wall monster inbetween them (in order to
+// prevent them from attacking the wall monster and leaking their existence to
+// the player.)
+//
+// This has some false-positives with corners, but I think that is far less
+// important than preventing the player from using these monsters to scout
+// across walls.
+bool monster_on_wrong_wall_side(const monster* attacker, const monster* target)
+{
+    return target->friendly() && cell_is_solid(target->pos())
+           && !attacker->wont_attack()
+           && !attacker->see_cell(you.pos());
+}
+
 vector<monster *> find_allies_targeting(const actor &a)
 {
     vector<monster *> result;
     for (monster* m : monster_near_iterator(you.pos(), LOS_DEFAULT))
-        if (m->friendly() && m->foe == a.mindex())
+        if (m->friendly() && !m->is_peripheral() && m->foe == a.mindex())
             result.push_back(m);
     return result;
 }
@@ -1567,7 +1619,7 @@ vector<monster *> find_allies_targeting(const actor &a)
 bool is_ally_target(const actor &a)
 {
     for (monster* m : monster_near_iterator(you.pos(), LOS_DEFAULT))
-        if (m->friendly() && m->foe == a.mindex())
+        if (m->friendly() && !m->is_peripheral() && m->foe == a.mindex())
             return true;
     return false;
 }

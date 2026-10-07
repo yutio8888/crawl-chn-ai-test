@@ -224,10 +224,6 @@ const char* EquipOffDelay::get_verb()
 
 bool EquipOffDelay::try_interrupt(bool force)
 {
-    // finish() can trigger interrupts, avoid a double message
-    if (interrupt_block::blocked())
-        return false;
-
     bool interrupt = false;
 
     if (force)
@@ -367,6 +363,7 @@ void stop_delay(bool stop_relocations, bool force)
     _clear_pending_delays();
 
     if ((!delay->is_relocation() || stop_relocations)
+        && delay->can_be_interrupted()
         && delay->try_interrupt(force))
     {
         _pop_delay();
@@ -764,8 +761,7 @@ bool EquipOffDelay::invalidated()
 
 void EquipOffDelay::finish()
 {
-    // Don't interrupt this delay if a distortion unwield puts us in danger.
-    const interrupt_block block_relocation_interrupt;
+    finishing = true;
 
     mprf(T_("You finish %s %s."), get_verb(), equip.name(DESC_YOUR).c_str());
     unequip_item(equip);
@@ -1100,7 +1096,8 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
         mpr(T_("Ancestor HP restored."));
     }
 
-    if (_should_stop_activity(delay.get(), ai, at))
+    if (delay->can_be_interrupted()
+        && _should_stop_activity(delay.get(), ai, at))
     {
         monster_interrupt_message(ai, at);
 

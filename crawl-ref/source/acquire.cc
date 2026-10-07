@@ -861,12 +861,7 @@ static int _book_weight(book_type book)
     return total_weight;
 }
 
-static bool _is_magic_skill(int skill)
-{
-    return skill >= SK_SPELLCASTING && skill < SK_INVOCATIONS;
-}
-
-static bool _skill_useless_with_god(int skill)
+static bool _skill_useless_with_god(skill_type skill)
 {
     if (skill == SK_INVOCATIONS)
     {
@@ -878,7 +873,7 @@ static bool _skill_useless_with_god(int skill)
     switch (you.religion)
     {
     case GOD_TROG:
-        return _is_magic_skill(skill);
+        return is_magic_skill(skill);
     case GOD_ZIN:
         if (skill == SK_SHAPESHIFTING)
             return true;
@@ -912,7 +907,7 @@ static bool _should_acquire_manual(int agent)
     {
         const int weight = _skill_rdiv(sk);
 
-        if (_is_magic_skill(sk))
+        if (is_magic_skill(sk))
             magic_weights += weight;
         else
             other_weights += weight;

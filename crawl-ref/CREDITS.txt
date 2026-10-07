@@ -99,6 +99,7 @@
     Austin Appleby
     araganzar
     argonaut
+    Argyros
     ArmiesAndCastles
     Juha Arpiainen
     Arxale
@@ -192,6 +193,7 @@
     Floodkiller
     floraline
     Flugkiller
+    foosh
     Brett Foster
     Kyle Fox
     Perry Fraser
@@ -392,6 +394,7 @@
     Brett Scarborough
     Roderick Schertler
     sdynet
+    SeijiOokami
     SentientSupper
     Roman Sêk
     Brennan Shacklett

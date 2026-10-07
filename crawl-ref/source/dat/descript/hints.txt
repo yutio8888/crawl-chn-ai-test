@@ -182,12 +182,6 @@ be treated like a plaything, randomly helped or harmed for Xom's own amusement.
 There is no way to guarantee Xom remains in a good mood - the best any follower
 can hope for is to avoid letting Xom grow bored!
 %%%%
-HINT_CONVERT Yredelemnul
-
-You've just converted to worshipping <w>Yredelemnul</w>. Unlike other gods,
-Yredelemnul only cares about souls. Your enemies may rise to serve you after
-death, and you can expend them to invoke Yredelemnul's aid.
-%%%%
 HINT_CONVERT
 
 You've just converted to worshipping <w>{{ return you.god() }}</w>. Your piety
@@ -758,18 +752,19 @@ overview button</w> in the command panel</localtiles>) for details.
 HINT_GOD_DISPLEASED
 
 Uh-oh, $1 is growing displeased because your piety is running low. Possibly this
-is the case because you're committing heretical acts, because $1 finds your
-worship lacking, or a combination of the two. If your piety goes to zero, then
-you'll be excommunicated. Better get cracking on raising your piety, and/or stop
-annoying your god. In any case, you'd better reread the religious description.
-To do so, press <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles> or press
-<w>Shift</w> and <w>right-click</w> on your avatar</localtiles>.
+is the case because you're committing heretical acts, because you're spending
+a lot of piety on $1's powers, or a combination of the two. If your piety goes
+to zero, then you'll be excommunicated. Better get cracking on raising your
+piety, and stop annoying your god. In any case, you'd better reread the
+religious description. To do so, press
+<w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles> or press <w>Shift</w> and
+<w>right-click</w> on your avatar</localtiles>.
 %%%%
 HINT_EXCOMMUNICATED
 
 Uh-oh, $1 just excommunicated you for running out of piety (your divine favour
 went to nothing). Maybe you repeatedly violated the religious rules, or maybe
-you failed to please your deity often enough, or some combination of the two.
+you spent piety faster than you could gain it, or some combination of the two.
 If you can find an altar dedicated to $1, you can re-convert, and all will be
 well.
 %%%%
@@ -818,7 +813,7 @@ HINT_CONVERTED_WRATH
 Unfortunately, while converting back would appease $1, it would annoy $2, so
 you're stuck with having to suffer the wrath of one god or another.
 %%%%
-HINT_WIELD_WEAPON
+HINT_WIELD_MELEE_WEAPON
 
 You can easily switch back to your weapon in slot a by
 pressing <w>$cmd[CMD_WEAPON_SWAP]</w>. To change the slot of an item, press

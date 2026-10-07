@@ -639,6 +639,8 @@ string SkillMenuSwitch::get_help()
                 causes.push_back(chinese ? T_("scribal knowledge")
                                          : "scribal knowledge");
             }
+            if (you.form == transformation::jademantle)
+                causes.push_back(T_("jademantle form"));
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
@@ -677,6 +679,8 @@ string SkillMenuSwitch::get_help()
                 causes.push_back(chinese ? T_("Bane of the Dilettante")
                                          : "the Bane of the Dilettante");
             }
+            if (you.form == transformation::jademantle)
+                causes.push_back(T_("jademantle form"));
             if (!result.empty())
                 result += " ";
             if (chinese)

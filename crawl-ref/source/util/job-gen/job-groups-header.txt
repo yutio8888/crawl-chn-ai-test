@@ -3,5 +3,7 @@
  */
 #pragma once
 
-static job_group job_groups[] =
+#include "i18n.h"
+
+static const vector<job_group> job_groups =
 {

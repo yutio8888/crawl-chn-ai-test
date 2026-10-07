@@ -21,6 +21,7 @@
 #include "mon-util.h"
 #include "monster.h"
 #include "player.h"
+#include "spl-monench.h" //corona_monster
 #include "stringutil.h"
 #include "teleport.h"
 #include "throw.h"
@@ -295,7 +296,7 @@ bool ranged_attack::handle_phase_hit()
     {
         set_attack_verb(0);
         announce_hit();
-        if (defender->trap_in_net(!(weapon->flags & ISFLAG_SUMMONED)))
+        if (defender->trap_in_net(!weapon->summoned()))
             _did_net = true;
         if (defender->is_player())
             xom_is_stimulated(50);
@@ -350,6 +351,15 @@ bool ranged_attack::handle_phase_hit()
         {
             return false;
         }
+    }
+
+    if (attacker->alive() && defender->alive()
+        && attacker->unrand_equipped(UNRAND_ARCANE_SPLINT))
+    {
+        if (defender->is_player())
+            you.backlight();
+        else
+            corona_monster(defender->as_monster(), attacker);
     }
 
     // XXX: unify this with melee_attack's code
@@ -851,7 +861,7 @@ bool ranged_attack::is_piercing() const
 int player_archery_damage_bonus(int dam, bool random)
 {
     int bonus = you.wearing_ego(OBJ_ARMOUR, SPARM_ARCHERY) * you.skill(SK_ARMOUR);
-    dam = random ? div_rand_round(dam * 100 + bonus, 100)
+    dam = random ? div_rand_round(dam * (100 + bonus), 100)
                  : dam * (100 + bonus) / 100;
 
     return dam;

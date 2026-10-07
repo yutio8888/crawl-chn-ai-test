@@ -986,10 +986,10 @@ static resists_t _ugly_thing_resists(bool very_ugly, attack_flavour u_att_flav)
 
     case AF_POISON:
     case AF_POISON_STRONG:
-        return MR_RES_POISON * (very_ugly ? 2 : 1);
+        return MR_RES_POISON;
 
     case AF_ELEC:
-        return MR_RES_ELEC * (very_ugly ? 2 : 1);
+        return MR_RES_ELEC;
 
     case AF_COLD:
         return MR_RES_COLD * (very_ugly ? 2 : 1);
@@ -1121,6 +1121,8 @@ spell_type ghost_demon::translate_spell(spell_type spell) const
 #if TAG_MAJOR_VERSION == 34
     case SPELL_CONTROLLED_BLINK:
         return SPELL_BLINK;
+    case SPELL_SIMULACRUM:
+        return SPELL_NO_SPELL;
 #endif
     case SPELL_SWIFTNESS:
         return SPELL_FLEETFOOT;

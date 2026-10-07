@@ -17,6 +17,7 @@
 #include "stringutil.h" // uppercase_first
 #include "tag-version.h"
 #include "database.h"
+#include "transformation.h"
 
 #include <functional>
 
@@ -1066,6 +1067,22 @@ void god_conduct_turn_start()
 
 void trigger_exploration_conducts()
 {
+    if (you.form == transformation::hypnogecko
+        && you.props.exists(HYPNOGECKO_LOST_TAIL_KEY))
+    {
+        int& remaining = you.props[HYPNOGECKO_LOST_TAIL_KEY].get_int();
+        if (you.newly_revealed_cells >= remaining)
+        {
+            you.props.erase(HYPNOGECKO_LOST_TAIL_KEY);
+            mprf(MSGCH_RECOVERY, T_("Your tail finishes growing back."));
+        }
+        else
+            remaining -= you.newly_revealed_cells;
+    }
+
+    if (you.form == transformation::mistmane)
+        mistmane_distill_potions(you.newly_revealed_cells);
+
     while (you.newly_revealed_cells > 0)
     {
         you.newly_revealed_cells--;

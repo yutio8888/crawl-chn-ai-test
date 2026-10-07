@@ -2074,6 +2074,65 @@ DESCRIP: ValArchmagi: Enhances your magic if you have at least 80% of your
  maximum magical power remaining (before spending MP to cast the spell).
 +^Dim: Unequipping it temporarily diminishes your spells.
 
+ENUM:    ARCANE_SPLINT
+NAME:    arcane splint mail
+INSCRIP: Corona
+OBJ:     OBJ_ARMOUR/ARM_CHAIN_MAIL
+PLUS:    +8
+COLOUR:  ETC_IRON
+TILE:    urand_arcane_splint
+TILE_EQ: ARCANE_SPLINT
+BRAND:   SPARM_ARCHERY
+STR:     +2
+DEX:     +2
+BOOL:    elec
+DESCRIP: Corona: Enemies hit by the wearer's projectiles are outlined in light.
+
+# This is internally a pds so small/large species can acquire and use it
+ENUM:    BONE_SCALES
+NAME:    bone scales
+OBJ:     OBJ_ARMOUR/ARM_PEARL_DRAGON_ARMOUR
+BASE_ENCUMBRANCE: +7
+PLUS:    +6
+COLOUR:  ETC_BONE
+TILE:    urand_bone_scales
+TILE_EQ: BONE_SCALES
+BRAND:   SPARM_DEATH
+SLAY:    +3
+SH:      +6
+BOOL:    poison, bane
+
+ENUM:    FORGEWARDEN
+NAME:    Forgewarden's cuirass
+INSCRIP: Apostate
+OBJ:     OBJ_ARMOUR/ARM_PLATE_ARMOUR
+PLUS:    +12
+COLOUR:  ETC_FIRE
+TILE:    urand_forgewarden
+TILE_EQ: FORGEWARDEN
+BRAND:   SPARM_RESONANCE
+FIRE:    2
+BOOL:    enh_forge, evil
+DESCRIP: Apostate: Equipping it will reduce your piety. While worn, you gain
+ piety at three quarters of the normal rate.
+
+ENUM:    CRAB_CLAWS
+NAME:    ghost crab claws
+INSCRIP: Mist
+OBJ:     OBJ_ARMOUR/ARM_GLOVES
+PLUS:    +2
+INT:     +2
+STR:     +4
+SLAY:    +4
+COLOUR:  ETC_MAGIC
+TILE:    urand_crab_claws
+TILE_EQ: GLOVE_GREEN
+BOOL:    evil, enh_necro, special
+DESCRIP: Mist:   It may create clouds of spectral mist when the wearer attacks
+ or casts spells, and grants immunity from such clouds. Necromancy spells have
+ a greater chance to produce spectral mist.
+MAX_LEVEL: 11
+
 # This entry must always be last.
 ENUM:   DUMMY2
 NAME:   DUMMY UNRANDART 2

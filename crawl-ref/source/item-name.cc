@@ -25,6 +25,7 @@
 #include "env.h" // LSTATE_STILL_WINDS
 #include "errors.h" // sysfail
 #include "evoke.h"
+#include "fight.h"
 #include "god-item.h"
 #include "god-passive.h" // passive_t::want_curses, no_haste
 #include "invent.h"
@@ -315,13 +316,13 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         buff << _item_inscription(*this);
     }
 
-    // These didn't have "cursed " prepended; add them here so that
+    // These didn't have "bound " prepended; add them here so that
     // it comes after the inscription.
     if (terse && descrip != DESC_DBNAME && descrip != DESC_BASENAME
         && !qualname
         && is_artefact(*this) && cursed())
     {
-        buff << (T_(" (curse)"));
+        buff << T_(" (bound)");
     }
 
     return buff.str();
@@ -930,6 +931,8 @@ const char* potion_type_name(int potiontype)
     case POT_RESISTANCE:        return T_("resistance");
     case POT_LIGNIFY:           return T_("lignification");
 
+    case POT_MIST:              return T_("mist");
+
     // FIXME: Remove this once known-items no longer uses this as a sentinel.
     default:
                                 return "bugginess";
@@ -1273,6 +1276,16 @@ const char* gizmo_effect_name(int type)
 
         default:
         case SPGIZMO_NORMAL:        return "";
+    }
+}
+
+static const char* _bauble_type_name(int type)
+{
+    switch (static_cast<bauble_type>(type))
+    {
+        default:
+        case BAUBLE_FLUX:       return N_("flux bauble");
+        case BAUBLE_CENTIPEDE:  return N_("centipede bauble");
     }
 }
 
@@ -1701,8 +1714,8 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
     const bool identified = ident || weap.is_identified();
 
-    const string curse_prefix = !dbname && !terse && weap.cursed()
-        ? (T_("cursed ")) : "";
+    const string curse_prefix = !dbname && !terse && weap.bound()
+        ? (T_("bound ")) : "";
     const string plus_text = identified && !dbname && !qualname ? _plus_prefix(weap) : "";
     const string chaotic = testbits(weap.flags, ISFLAG_CHAOTIC)
         ? (T_("chaotic ")) : "";
@@ -1831,7 +1844,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     }
     case OBJ_ARMOUR:
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         // Don't list unenchantable armor as +0.
         if (identified && !dbname && !qualname && armour_is_enchantable(*this))
@@ -2074,7 +2087,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         const bool is_randart = is_artefact(*this);
 
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         if (is_randart && !dbname)
         {
@@ -2157,7 +2170,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_STAVES:
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         if (is_artefact(*this) && !dbname)
         {
@@ -2266,11 +2279,12 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     break;
 
     case OBJ_BAUBLES:
-        buff << T_("flux bauble");
-    break;
+        buff << T_(_bauble_type_name(sub_type));
+        break;
+
     case OBJ_DETECTED:
         buff << T_("detected item");
-    break;
+        break;
 
     default:
         buff << "!";
@@ -2372,7 +2386,7 @@ void check_if_everything_is_identified()
         for (const auto s : all_item_subtypes(t))
         {
             if (!item_type_known(t, s)
-                && !item_known_excluded_from_set(t, s)
+                && !item_known_not_to_generate(t, s)
                 && unidentified++)
             {
                 you.props.erase(IDENTIFIED_ALL_KEY);
@@ -3261,17 +3275,6 @@ bool is_good_item(const item_def &item)
         if (!you.can_drink(false)) // still want to pick them up in lichform?
             return false;
 
-        // Recolor healing potions to indicate their additional goodness
-        //
-        // XX: By default, this doesn't actually change the color of anything
-        //     but !ambrosia, since yellow for 'emergency' takes priority over
-        //     cyan for 'good'. Should this get a *new* color?
-        if (you.has_mutation(MUT_DRUNKEN_BRAWLING)
-            && oni_likes_potion(static_cast<potion_type>(item.sub_type)))
-        {
-            return true;
-        }
-
         switch (item.sub_type)
         {
         case POT_EXPERIENCE:
@@ -3306,7 +3309,7 @@ bool is_bad_item(const item_def &item)
         switch (item.sub_type)
         {
         case POT_MOONSHINE:
-            return true;
+            return !you.has_mutation(MUT_DRUNKEN_BRAWLING);
         default:
             return false;
         CASE_REMOVED_POTIONS(item.sub_type);
@@ -3376,6 +3379,8 @@ bool is_dangerous_item(const item_def &item, bool temp)
             // intentional fallthrough
         case POT_LIGNIFY:
         case POT_ATTRACTION:
+        // Is usually useless, but Oni can drink them to attack things.
+        case POT_MOONSHINE:
             return true;
         default:
             return false;
@@ -3617,6 +3622,10 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
     if (use_check && ptyp == POT_INVISIBILITY)
         return "";
 
+    // Oni can drink any potion at any time, provided an enemy is nearby.
+    if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && !get_player_attack_targets().empty())
+        return "";
+
     get_potion_effect(ptyp)->can_quaff(&r, true);
     return r;
 }
@@ -3751,15 +3760,14 @@ bool is_useless_item(const item_def &item, bool temp, bool ident)
     }
 
     case OBJ_MISCELLANY:
-        if (is_xp_evoker(item) && evoker_plus(item.sub_type) >= MAX_EVOKER_ENCHANT)
+        if (is_xp_evoker(item) && !in_inventory(item)
+            && evoker_plus(item.sub_type) >= MAX_EVOKER_ENCHANT)
         {
+            // A maxed evoker is useless if we have one in our inventory.
             for (const item_def &inv_item : you.inv)
             {
                 if (inv_item.base_type == OBJ_MISCELLANY
-                    && inv_item.sub_type == item.sub_type
-                    // Have to check this way because stash passes item with pos == you.pos()
-                    // instead of pos == ITEM_IN_INVENTORY so in_inventory check doesn't work
-                    && inv_item.pos != item.pos && inv_item.link != item.link)
+                    && inv_item.sub_type == item.sub_type)
                 {
                     return true;
                 }

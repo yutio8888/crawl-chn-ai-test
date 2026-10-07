@@ -4705,6 +4705,84 @@ static const struct spell_desc spelldata[] =
     TILEG_PHASE_SHIFT,
 },
 
+{
+    SPELL_DRAGON_VEINS, N_("Dragon Veins"),
+    spschool::earth | spschool::fire | spschool::air | spschool::ice,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_FIRE, N_("Dragon Vein (Fire)"),
+    spschool::fire,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_ICE, N_("Dragon Vein (Ice)"),
+    spschool::ice,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_AIR, N_("Dragon Vein (Air)"),
+    spschool::air,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_EARTH, N_("Dragon Vein (Earth)"),
+    spschool::earth,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_ICE_THORNS, N_("Ice Thorns"),
+    spschool::earth | spschool::ice,
+    spflag::destructive | spflag::target | spflag::needs_target,
+    1,
+    25,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_ICE_THORNS,
+},
+
+
+{
+    SPELL_SIROCCO, N_("Sirocco"),
+    spschool::fire | spschool::air,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::destructive,
+    2,
+    50,
+    1, 1,
+    0,
+    TILEG_SIROCCO,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },
