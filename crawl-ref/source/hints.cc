@@ -2184,7 +2184,7 @@ static void _hints_describe_feature(int x, int y, ostringstream& ostr)
                     ostr << _get_hint("HINT_DESCRIBE_FADED_ALTAR_ATHEIST");
                 else
                 {
-                    ostr << _get_hint("HINT_DESCRIBE_FADED_ALTAR_ATHEIST",
+                    ostr << _get_hint("HINT_DESCRIBE_NONFADED_ALTAR_ATHEIST",
                                       god_name(altar_god));
                 }
             }
@@ -2200,7 +2200,7 @@ static void _hints_describe_feature(int x, int y, ostringstream& ostr)
             }
             else
             {
-                ostr << _get_hint("HINT_DESCRIBE_FADED_ALTAR",
+                ostr << _get_hint("HINT_DESCRIBE_NONFADED_ALTAR",
                                   god_name(you.religion), god_name(altar_god));
             }
             Hints.hints_events[HINT_SEEN_ALTAR] = false;

@@ -2258,10 +2258,12 @@ static string _query_database(TextDB &db, string key, bool canonicalise_key,
 
     if (db.translation && !untranslated)
         result = _database_fetch(db.translation->get(), key);
-    if (!_database_has_entry(result))
+    // SQLite represents a missing key as a zero-length datum. Treat it
+    // like a missing DBM entry so untranslated descriptions fall back to EN.
+    if (!_database_has_entry(result) || result.dsize == 0)
         result = _database_fetch(db.get(), key);
 
-    if (!_database_has_entry(result))
+    if (!_database_has_entry(result) || result.dsize == 0)
         return "";
 
     string str((const char *)result.dptr, result.dsize);
