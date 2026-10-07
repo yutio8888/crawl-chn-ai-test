@@ -8,6 +8,7 @@
 #include "artefact.h"
 #include "branch.h"
 #include "colour.h"
+#include "positional_format.h"
 #include "database.h"
 #include "dungeon.h" // DESCENT_STAIRS_KEY
 #include "duration-type.h"

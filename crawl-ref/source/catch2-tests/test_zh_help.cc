@@ -110,6 +110,7 @@ public:
 
         static const char fixture[] = R"lua(
 you = {
+    jademantle_crystals_desc = you.jademantle_crystals_desc,
     race = function() return "Mummy" end,
     hand = function() return "hand" end,
     flying = function() return false end,

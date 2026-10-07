@@ -26,7 +26,7 @@
 resolved_speech_actor resolve_speech_actor(const monster &mons)
 {
     description_level_type desc = DESC_THE;
-    if (mons.attitude == ATT_FRIENDLY
+    if (mons.base_attitude == ATT_FRIENDLY
         && !mons_is_unique(mons.type)
         && !crawl_state.game_is_arena()
         && you.can_see(mons))

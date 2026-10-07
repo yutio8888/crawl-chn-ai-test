@@ -632,10 +632,28 @@ sub art_to_str
 
         if ($field_type{$part} eq "str")
         {
+            # _format_dbrand translates each colon-separated label and body.
+            # Record those actual display keys, keeping the table value English.
+            if ($part =~ /^(DESCRIP|DBRAND)$/ && $artefact->{$part})
+            {
+                foreach my $line (split /\\n|\n/, $artefact->{$part})
+                {
+                    foreach my $key (split /:/, $line, 2)
+                    {
+                        $key =~ s/^\s+|\s+$//g;
+                        next if $key eq "";
+                        $key =~ s/"/\\"/g;
+                        $str .= "\n    // N_(\"$key\")\n    ";
+                    }
+                }
+            }
             my $temp = $artefact->{$part};
             $temp =~ s/"/\\"/g;
             $str .= ($temp eq "" && $part =~ /^(TYPE|INSCRIP|DESCRIP|DBRAND)$/)
-                ? "nullptr" : "\"$temp\"";
+                ? "nullptr"
+                : ($temp ne "" && $part =~ /^(NAME|APPEAR)$/
+                   && $artefact->{NAME} !~ /DUMMY/)
+                ? "N_(\"$temp\")" : "\"$temp\"";
         }
         else
         {
@@ -709,6 +727,7 @@ sub write_data
  **********************************************************************/
 
 #pragma once
+#include "i18n.h"
 #ifndef ART_FUNC_H
 #error "art-func.h must be included before art-data.h"
 #endif

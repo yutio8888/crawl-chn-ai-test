@@ -2746,7 +2746,7 @@ string describe_item_rarity(const item_def &item, bool terse)
         return T_("It cannot be found normally.");
     else
     {
-        return make_stringf("It is %s %s.",
+        return make_stringf(T_("It is %s %s."),
                             (Options.language == lang_t::ZH ? string(T_(desc.c_str()))
                                                           : article_a(desc)).c_str(),
                             item.base_type == OBJ_POTIONS ? T_("potion") : T_("scroll"));

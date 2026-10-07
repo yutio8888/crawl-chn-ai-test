@@ -1714,7 +1714,7 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
     const bool identified = ident || weap.is_identified();
 
-    const string curse_prefix = !dbname && !terse && weap.bound()
+    const string curse_prefix = !dbname && !terse && weap.cursed()
         ? (T_("bound ")) : "";
     const string plus_text = identified && !dbname && !qualname ? _plus_prefix(weap) : "";
     const string chaotic = testbits(weap.flags, ISFLAG_CHAOTIC)

@@ -3858,7 +3858,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     source.speed = 10;
     source.mid = 4321;
     source.foe = MHITYOU;
-    source.attitude = ATT_HOSTILE;
+    source.base_attitude = ATT_HOSTILE;
     source.set_position(coord_def(20, 20));
 
     bolt beam;

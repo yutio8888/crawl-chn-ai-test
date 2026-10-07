@@ -9137,7 +9137,7 @@ static string _overlay_foe_display(const actor &foe)
     if (!m_foe)
         return "";
     string display;
-    if (m_foe->attitude == ATT_FRIENDLY
+    if (m_foe->base_attitude == ATT_FRIENDLY
         && !mons_is_unique(m_foe->type)
         && !crawl_state.game_is_arena())
     {

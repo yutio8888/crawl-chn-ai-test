@@ -2088,7 +2088,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
 
     case ABIL_SIF_MUNA_DIVINE_EXEGESIS:
     case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
-        return can_cast_spells(quiet, reason);
+        return can_cast_spells(quiet, false, reason);
 
     case ABIL_FEDHAS_WALL_OF_BRIARS:
     {

@@ -103,7 +103,7 @@ struct issue10_world
         m->set_hit_dice(1);
         m->hit_points = m->max_hit_points = 50;
         m->speed = 10;
-        m->attitude = ATT_HOSTILE;
+        m->base_attitude = ATT_HOSTILE;
         m->behaviour = BEH_SEEK;
         m->foe = MHITYOU;
         m->set_position(p);
@@ -133,7 +133,7 @@ string target_description(const monster &m, bool ally_target)
 {
     monster_info mi(m.type);
     mi.pos = m.pos();
-    mi.attitude = m.attitude;
+    mi.attitude = m.attitude();
     if (ally_target)
         mi.mb.set(MB_ALLY_TARGET);
     describe_info info;
@@ -317,7 +317,7 @@ TEST_CASE("issue 10 monster target descriptions preserve direction and list shap
     issue10_world world;
     monster *target = world.place(MONS_ORC, coord_def(20, 21));
     monster *ally = world.place(MONS_HOBGOBLIN, coord_def(21, 21));
-    ally->attitude = ATT_FRIENDLY;
+    ally->base_attitude = ATT_FRIENDLY;
     ally->foe = target->mindex();
     const string single = target_description(*target, true);
     const string active = target_description(*ally, false);
@@ -325,7 +325,7 @@ TEST_CASE("issue 10 monster target descriptions preserve direction and list shap
     CHECK(active.find(target->name(DESC_THE)) != string::npos);
 
     monster *other = world.place(MONS_GOBLIN, coord_def(22, 21));
-    other->attitude = ATT_FRIENDLY;
+    other->base_attitude = ATT_FRIENDLY;
     other->foe = target->mindex();
     const string multiple = target_description(*target, true);
     CHECK(multiple.find("  " + ally->name(DESC_YOUR) + "\n") != string::npos);

@@ -208,7 +208,7 @@ private:
         candidate->set_hit_dice(1);
         candidate->hit_points = candidate->max_hit_points = 5;
         candidate->speed = 10;
-        candidate->attitude = ATT_HOSTILE;
+        candidate->base_attitude = ATT_HOSTILE;
         candidate->behaviour = BEH_SEEK;
         candidate->foe = MHITYOU;
         candidate->set_position(position);
@@ -246,7 +246,7 @@ monster make_source_monster()
     source.speed = 10;
     source.mid = 1234;
     source.foe = MHITYOU;
-    source.attitude = ATT_HOSTILE;
+    source.base_attitude = ATT_HOSTILE;
     source.set_position(coord_def(20, 20));
     return source;
 }
@@ -327,6 +327,7 @@ void ensure_phase1_overlay_loaded()
     const fork_message_overlay::load_report report =
         fork_message_overlay::load_monspell_overlay(
             textdb_phase0::dump_canonical_english_speakdb());
+    INFO("monspell overlay: " << report.diagnostic);
     REQUIRE(report.state == fork_message_overlay::domain_state::ENABLED);
 }
 
@@ -394,7 +395,7 @@ string legacy_beam_catchall(const monster &source, const bolt &beam)
     message = replace_all(message, "@beam@",
                           resolve_speech_beam(beam, true).display_text);
     description_level_type desc = DESC_THE;
-    if (source.attitude == ATT_FRIENDLY
+    if (source.base_attitude == ATT_FRIENDLY
         && !mons_is_unique(source.type)
         && !crawl_state.game_is_arena()
         && you.can_see(source))
@@ -463,13 +464,13 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
           == apostrophise(source.name(DESC_THE)));
 
     source.mname.clear();
-    source.attitude = ATT_FRIENDLY;
+    source.base_attitude = ATT_FRIENDLY;
     const resolved_speech_actor friendly = resolve_speech_actor(source);
     CHECK(friendly.sentence_display == "Your orc");
     CHECK(friendly.lower_display == "your orc");
     CHECK(apostrophise(friendly.lower_display) == "your orc's");
 
-    source.attitude = ATT_HOSTILE;
+    source.base_attitude = ATT_HOSTILE;
     scoped_zh_database localized_database;
     const resolved_speech_actor chinese = resolve_speech_actor(source);
     CHECK(chinese.sentence_display == chinese.lower_display);
@@ -2053,7 +2054,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     SECTION("Wiglaf binds a monster foe independently from beam target")
     {
         source.type = MONS_WIGLAF;
-        source.attitude = ATT_HOSTILE;
+        source.base_attitude = ATT_HOSTILE;
         monster *foe = world.placed_candidates()[0];
         REQUIRE(foe != nullptr);
         source.foe = foe->mindex();
@@ -2113,11 +2114,11 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     SECTION("speech player applicability preserves friendly foe fallback")
     {
         source.type = MONS_GASTRONOK;
-        source.attitude = ATT_FRIENDLY;
+        source.base_attitude = ATT_FRIENDLY;
         source.foe = MHITNOT;
         CHECK_FALSE(resolve_mon_speech_applicability(source).no_player);
 
-        source.attitude = ATT_HOSTILE;
+        source.base_attitude = ATT_HOSTILE;
         CHECK(resolve_mon_speech_applicability(source).no_player);
 
         source.foe = MHITYOU;
@@ -2228,7 +2229,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     REQUIRE(world.valid());
     monster &source = *world.placed_source();
     source.type = MONS_NERGALLE;
-    source.attitude = ATT_HOSTILE;
+    source.base_attitude = ATT_HOSTILE;
     source.foe = MHITYOU;
     bolt beam = make_target_beam(coord_def(25, 23));
     beam.source = source.pos();

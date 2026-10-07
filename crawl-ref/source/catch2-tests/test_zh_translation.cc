@@ -2,6 +2,9 @@
 
 #include "AppHdr.h"
 
+#include <locale.h>
+#include "syscalls.h"
+
 #include "i18n.h"                // T_()
 #include "ability.h"
 #include "ability-type.h"
@@ -4075,7 +4078,7 @@ struct scoped_env_monster_slot
         placed->set_hit_dice(1);
         placed->hit_points = placed->max_hit_points = 5;
         placed->speed = 10;
-        placed->attitude = ATT_HOSTILE;
+        placed->base_attitude = ATT_HOSTILE;
         placed->behaviour = BEH_SEEK;
         placed->set_position(pos);
         placed->set_new_monster_id();
@@ -4519,7 +4522,7 @@ struct scoped_monspeak_world
         placed->set_hit_dice(1);
         placed->hit_points = placed->max_hit_points = 5;
         placed->speed = 10;
-        placed->attitude = ATT_HOSTILE;
+        placed->base_attitude = ATT_HOSTILE;
         placed->behaviour = BEH_SEEK;
         placed->foe = MHITYOU;
         placed->set_position(position);
@@ -4876,23 +4879,34 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: newgame job group titles preserve selection data across languages",
                  "[zh-translation][newgame-job-groups]")
 {
+#ifdef UNIX
+    struct locale_restore
+    {
+        string saved = setlocale(LC_CTYPE, nullptr);
+        ~locale_restore() { setlocale(LC_CTYPE, saved.c_str()); }
+    } restore_ctype;
+    REQUIRE(ensure_utf8_ctype());
+#endif
     const auto& groups = newgame_job_groups();
     static const char* const english[] = {
-        "Warrior", "Zealot", "Adventurer", "Warrior-mage", "Mage"
+        "Warrior", "Warrior-mage", "Zealot", "Adventurer", "Metamorph", "Mage"
     };
     static const char* const chinese[] = {
-        "战士", "狂热者", "冒险家", "战法", "法师"
+        "战士", "战法", "狂热者", "冒险家", "变形者", "法师"
     };
+    // YAML determines category order, positions and membership. Metamorph
+    // uses the existing generic catalog entry through C_() fallback.
     const coord_def positions[] = {
         coord_def(0, 0), coord_def(0, 6), coord_def(1, 0),
-        coord_def(1, 5), coord_def(2, 0)
+        coord_def(1, 4), coord_def(1, 8), coord_def(2, 0)
     };
-    const int widths[] = { 20, 25, 20, 26, 22 };
+    const int title_widths[] = { 4, 4, 6, 6, 6, 4 };
     const vector<job_type> jobs[] = {
         { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND },
-        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT },
-        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER },
         { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER },
+        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT },
+        { JOB_ARTIFICER, JOB_WANDERER, JOB_DELVER },
+        { JOB_SHAPESHIFTER, JOB_STALKER, JOB_MYSTIC },
         { JOB_HEDGE_WIZARD, JOB_CONJURER, JOB_SUMMONER, JOB_NECROMANCER,
           JOB_FORGEWRIGHT, JOB_FIRE_ELEMENTALIST, JOB_ICE_ELEMENTALIST,
           JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST }
@@ -4904,9 +4918,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         INFO("job group=" << english[i]);
         CHECK(string(group.name) == english[i]);
         CHECK(group.position == positions[i]);
-        CHECK(group.width == widths[i]);
         CHECK(group.jobs == jobs[i]);
         const string saved_title = group.display_name();
+        CHECK(strwidth(saved_title) == title_widths[i]);
         CHECK(saved_title == chinese[i]);
         i18n_cache_clear();
         CHECK(saved_title == chinese[i]);
