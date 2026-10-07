@@ -51,6 +51,7 @@
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
+#include "spl-cast.h"
 #include "spell-type.h"
 #include "state.h"
 #include "stringutil.h"
@@ -1361,6 +1362,36 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // The status display remains a separately qualified lowercase lookup.
     REQUIRE(std::string(C_("status", "sign of ruin")) == "毁灭印记");
     REQUIRE(species::name(SP_POLTERGEIST) == "骚灵");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: repeat exegesis separates display and description keys",
+                 "[zh-translation][ability][lookup]")
+{
+    init_spell_descs();
+    init_spell_name_cache();
+    unwind_var<CrawlHashTable> restore_props(you.props);
+
+    you.props.erase(EXEGESIS_SPELL);
+    REQUIRE(ability_name(ABIL_SIF_MUNA_REPEAT_EXEGESIS, true)
+            == "Repeat Exegesis");
+    REQUIRE(ability_name(ABIL_SIF_MUNA_REPEAT_EXEGESIS, false)
+            == T_("Repeat Exegesis"));
+
+    you.props[EXEGESIS_SPELL] = static_cast<int>(SPELL_FIREBALL);
+    REQUIRE(ability_name(ABIL_SIF_MUNA_REPEAT_EXEGESIS, true)
+            == "Repeat Exegesis");
+    const string display_spell = spell_title(SPELL_FIREBALL);
+    REQUIRE(display_spell != spell_english_name(SPELL_FIREBALL));
+    const string display_ability = ability_name(ABIL_SIF_MUNA_REPEAT_EXEGESIS);
+    REQUIRE(display_ability.find(display_spell) != string::npos);
+    REQUIRE(display_ability.find(spell_english_name(SPELL_FIREBALL))
+            == string::npos);
+
+    const string description = getLongDescription("Fireball spell");
+    REQUIRE_FALSE(description.empty());
+    REQUIRE(get_ability_desc(ABIL_SIF_MUNA_REPEAT_EXEGESIS, false)
+            .find(description) == 0);
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

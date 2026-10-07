@@ -1135,7 +1135,7 @@ static void _print_stats_doom(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
         CPRINTF("%s", T_("Doom: "));
     else
         CPRINTF("%s", T_("Doom "));
@@ -1168,7 +1168,7 @@ static void _print_stats_contam(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
         CPRINTF("%s", T_("Contam: "));
     else
         CPRINTF("%s", T_("Cont "));
@@ -2090,7 +2090,7 @@ static void _render_top_bar()
     {
         const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                                you.magic_contamination / 10);
-        const string contam_label = _is_using_small_layout()
+        const string contam_label = _uses_compact_hud()
             ? T_("Cont ") : T_("Contam: ");
         const string contam_text = make_stringf("%s%d%% ",
                                                 contam_label.c_str(), contam);
@@ -2100,7 +2100,7 @@ static void _render_top_bar()
     }
     if (show_doom)
     {
-        const string doom_label = _is_using_small_layout()
+        const string doom_label = _uses_compact_hud()
             ? T_("Doom ") : T_("Doom: ");
         const string doom_text = make_stringf("%s%d%% ", doom_label.c_str(),
                                               you.attribute[ATTR_DOOM]);
