@@ -5534,7 +5534,7 @@ Yoink! You pull the item%s %stowards yourself.
 拿来！你将物品%.0s拉向自己%s。
 %%%%
 partway 
-，但只拉近了一段距离 
+，但只拉近了一段距离
 %%%%
 nothing
 虚无
@@ -7438,7 +7438,7 @@ The mutagenic energy flows into you.
 变异能量流入了你的身体。
 %%%%
  shudders as wild magic violently cascades through %s%s
- 在狂暴魔力剧烈涌过%s时颤抖%s
+ 在狂野魔法剧烈涌过%s时颤抖%s
 %%%%
 The nature of this place prevents your teleportation.
 这个地方的本质阻止了你的传送。
@@ -8648,7 +8648,7 @@ You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
 The shaft disappears in a puff of logic!
-竖井随着一缕逻辑消失了！
+竖井在一阵逻辑中消失了！
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
@@ -9602,7 +9602,7 @@ You shed your tail %sto distract predators!
 你甩掉尾巴%s，以分散捕食者的注意！
 %%%%
 and slip away 
-并悄然溜走 
+并悄然溜走
 %%%%
 Your assassin centipede leaps free of your %s with a hiss!
 你的刺客蜈蚣嘶嘶作响，从你的%s上跃下！
@@ -10106,7 +10106,7 @@ You feel purified!
 你感到被净化了！
 %%%%
  and grants %s more time in this world.
- ，并让%s在世间多停留一段时间
+，并让%s在世间多停留一段时间
 %%%%
 The light of Elyvilon comforts %s%s.
 艾利维隆的光芒抚慰了%s%s。
@@ -10250,7 +10250,7 @@ The liquid fire falls away from your body.
 液体火焰从你的身体上脱落了。
 %%%%
 You body stops petrifying.
-你的身体不再石化了。
+你的身体停止了石化。
 %%%%
 The spiked barbs fall from your body.
 尖锐的倒刺从你的身体上脱落了。
@@ -11131,7 +11131,7 @@ You %s towards %s%s!
 你%s%s%s！
 %%%%
  with incredible speed
- ，速度快得惊人
+，速度快得惊人
 %%%%
 You welcome %s%s into your grasp.
 你迎接%s%s落入掌握。
@@ -21593,7 +21593,7 @@ flag short|divine shielded
 神圣护盾
 %%%%
 flag long|divinely shielded
-神圣护盾保护
+受神圣护盾保护
 %%%%
 damnation bolt
 毁灭之矢
@@ -21890,7 +21890,7 @@ Your vision returns to normal.
 你的视力恢复正常了。
 %%%%
 You feel more solid again.
-你觉得身体又凝实了一些。
+你感到身体重新凝实了。
 %%%%
 You are insubstantial.
 你处于虚体状态。
@@ -24836,7 +24836,7 @@ a fearsome dragon!
 一条可怕的龙！
 %%%%
 bow your head before
-在其面前低头
+低头拜向
 %%%%
 Breath Dmg
 吐息伤害
@@ -24905,7 +24905,7 @@ pincers
 螯钳
 %%%%
 scuttle before
-在其面前横行
+横着爬到
 %%%%
 shell
 甲壳
@@ -24932,7 +24932,7 @@ hypha
 菌丝
 %%%%
 release spores on
-向其释放孢子
+把孢子撒向
 %%%%
 You are tiny and evasive.
 你体型微小，善于闪避。
@@ -25025,7 +25025,7 @@ Pseudopod
 伪足
 %%%%
 squish down before
-在其面前瘫成一团
+瘫软在
 %%%%
 acid body
 酸性身体
@@ -25202,7 +25202,7 @@ coils
 盘曲的蛇身
 %%%%
 coil in front of
-在其面前盘起身体
+盘踞在
 %%%%
 You have a powerful constriction melee attack.
 你拥有强大的近战绞缠攻击。
@@ -25259,7 +25259,7 @@ forepaw
 前爪
 %%%%
 curl up before
-在其面前蜷缩身体
+蜷伏在
 %%%%
 airstrike attack
 空袭攻击
@@ -25271,7 +25271,7 @@ hex mastery
 诅咒精通
 %%%%
 Hexes are much easier for you to cast and harder to resist.
-你施放诅咒更加容易，敌人也更难抵抗。
+你施放诅咒系法术要容易得多，敌人也更难抵抗。
 %%%%
 riddle compulsion
 谜语冲动
@@ -25289,7 +25289,7 @@ front pincers
 前螯
 %%%%
 crawl onto
-爬到其身上
+爬上
 %%%%
 ensnaring attack
 蛛网攻击
@@ -25340,7 +25340,7 @@ a stone statue.
 一尊石像。
 %%%%
 place yourself before
-置身于其面前
+肃立在
 %%%%
 Your melee attacks are powerful.
 你的近战攻击很强大。
@@ -25436,7 +25436,7 @@ root
 树根
 %%%%
 sway towards
-向其摇曳
+倾身朝向
 %%%%
 wood
 木质
@@ -25475,7 +25475,7 @@ hypnotic gaze
 催眠凝视
 %%%%
 You often daze monsters when they first notice you.
-怪物初次注意到你时，常会被你眩晕。
+怪物初次注意到你时，常会陷入眩晕。
 %%%%
 Vision
 灵视
@@ -25502,7 +25502,7 @@ Magic Parchment
 魔法羊皮纸
 %%%%
 unroll yourself before
-在其面前展开自己
+展开身体面向
 %%%%
 You have increased skill with all magical schools.
 你的所有魔法学派技能都得到提高。
@@ -25565,7 +25565,7 @@ strand
 雾缕
 %%%%
 swirl around
-在其周围盘旋
+环绕
 %%%%
 highly resistant
 高抗性
@@ -28179,10 +28179,10 @@ At your current Evocations and %s skills, it has a %d%% chance to deal up to %d 
 以你当前的魔力释放和%s技能，它有%d%%的几率造成最多%d点额外的%s伤害%s。
 %%%%
  that is resisted by flying
- ，飞行可抵抗此伤害
+，飞行可抵抗此伤害
 %%%%
 It cannot be found normally.
-它通常无法找到。
+它无法通过常规途径找到。
 %%%%
 It is %s %s.
 它是%s的%s。
@@ -31744,7 +31744,7 @@ There is an entrance to a sewer on this level. Hurry and find it before the port
 这个楼层有一个通往下水道的入口。在传送门生锈消失前找到它！
 %%%%
 There is an entrance to a gutter gulch on this level. Hurry and find it before the portal rusts away!
-这一层有通往排污渠的入口。快在传送门锈坏前找到它！
+这个楼层有一个通往排污渠的入口。快在传送门锈坏前找到它！
 %%%%
 You hear the drain falling apart.
 你听到排水口散架的声音。
@@ -32230,7 +32230,7 @@ status|Crystals
 晶体
 %%%%
 status|-Tail
-断尾待生
+-尾巴
 %%%%
 status|Vapour
 汽雾
@@ -32239,7 +32239,7 @@ ability cost|Drain
 削命
 %%%%
 , Bound item
-, 已束缚物品
+，已束缚物品
 %%%%
 verb|steam
 蒸腾
@@ -32770,7 +32770,7 @@ very common
 非常常见
 %%%%
 not found normally
-通常无法找到
+无法通过常规途径找到
 %%%%
 very long
 非常长
@@ -37994,6 +37994,12 @@ obsoleteness
  of 
 ，信仰
 %%%%
+Ashenzari invites you to chain yourself with knowledge.
+艾申扎利邀你以知识铸成枷锁束缚自己。
+%%%%
+Ashenzari invites you to chain yourself with knowledge of %s.
+艾申扎利邀你以%s方面的知识铸成枷锁束缚自己。
+%%%%
 Ashenzari invites you to chain yourself with knowledge%s.
 艾申扎利邀你以知识铸成枷锁束缚自己%s。
 %%%%
@@ -42553,7 +42559,7 @@ move.onto-surface|rampage
 冲上
 %%%%
 move.onto-surface|stampede
-奔踏而上
+奔踏上
 %%%%
 move.onto-surface|stumble
 踉跄踏上
@@ -42685,13 +42691,13 @@ move.over-terrain|rampage
 冲到
 %%%%
 move.over-terrain|stampede
-奔踏而过
+奔踏到
 %%%%
 move.over-terrain|stumble
-踉跄走过
+踉跄走到
 %%%%
 move.over-terrain|trott
-小跑经过
+小跑到
 %%%%
 move.over-terrain|stalk
 悄然走到
