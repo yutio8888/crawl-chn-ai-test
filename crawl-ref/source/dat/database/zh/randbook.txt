@@ -3520,36 +3520,28 @@ w:2
 Xom_book_title
 
 w:30
-
 @random_book_title@
 
 @_chaos_name_@
 
 w:1
-
 @_game_name_@
 
 w:2
-
 @player_death@
 
 w:8
-
 @_wacky_armour_name_@
 
 w:1
-
 @_politics_name_armour_@
 
 w:5
-
 @_power_name_@
 
 w:3
-
 @_discomfort_and_inaction_@
 
 w:3
-
 @_discomfort_weapon_@
 %%%%
