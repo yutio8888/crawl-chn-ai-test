@@ -12,6 +12,7 @@
 #include "monster.h"
 #include "player.h"
 #include "random.h"
+#include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
 
@@ -3861,6 +3862,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "Phase 0 canonical-driven message trace spans target and substring",
                  "[single-file][textdb][phase0]")
 {
+    init_spell_descs();
     ensure_test_data_root();
     databaseSystemInit();
     scoped_phase0_target_world world;
