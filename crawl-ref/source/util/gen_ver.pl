@@ -29,7 +29,9 @@ my $in_git = `git rev-parse --is-inside-work-tree 2> $nullfile`;
 if ($in_git)
 {
     `git describe --abbrev=0 --match '*-a[0-9]*' $mergebase 2> $nullfile`
-        or die "Error: Can't find an annotated upstream alpha tag.\n";
+        or die "Error: Can't find an annotated upstream alpha tag.\n"
+            . "Run `git fetch upstream --tags` or "
+            . "`bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags`.\n";
 }
 $_ = `git describe $describe_flags $mergebase 2> $nullfile`
     || ($in_git ? die "Error: git describe failed in the worktree.\n"

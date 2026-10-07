@@ -165,7 +165,10 @@ class TrunkVersionTest(unittest.TestCase):
         self.tag('0.35-trunk-001')
         self.ensure('0.35-trunk-001', ok=False)
         self.ensure(ok=False)
-        self.generate(ok=False)
+        result = self.run_cmd(['perl', 'util/gen_ver.pl', 'build.h'],
+                              cwd=self.source, ok=False)
+        self.assertIn('git fetch upstream --tags', result.stderr)
+        self.assertIn('ensure_version_info.sh --fetch-upstream-tags', result.stderr)
         self.assertEqual('0.34.1-zh5-1-001\n',
                          (self.util / 'release_ver').read_text())
 

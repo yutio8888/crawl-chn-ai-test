@@ -4775,7 +4775,8 @@ void get_system_environment()
     // This should end with the appropriate path delimiter.
     SysEnv.crawl_dir = check_string(getenv("CRAWL_DIR"));
 
-#if defined(TARGET_OS_MACOSX) && !defined(DGAMELAUNCH)
+// Explicit build-time save paths must take priority over the macOS default.
+#if defined(TARGET_OS_MACOSX) && !defined(DGAMELAUNCH) && !defined(SAVE_DIR_PATH)
     if (SysEnv.crawl_dir.empty())
     {
         SysEnv.crawl_dir
