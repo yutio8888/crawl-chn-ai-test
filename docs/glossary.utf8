@@ -1,7 +1,7 @@
--Jolt	放电冷却	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；完全恢复生命后才能再次满强度放电；decision=D-C-095
+-Jolt	-电冲	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；状态灯对齐共享 catalog 标签，保留负号；完全恢复生命后才能再次满强度放电；decision=D-C-098（取代 D-C-095 的放电冷却译法）
 -Sirocco	灼热风冷却	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；移动会延后再次施放；decision=D-C-095
 -Swift	-迅捷	domain=status; source=EN/ZH; 依据 / 作用域=行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法）
--Tail	断尾待生	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；探索后尾巴才能长回；decision=D-C-095
+-Tail	-尾巴	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；状态灯对齐实际显示，保留负号；探索后尾巴才能长回；decision=D-C-098（取代 D-C-095 的断尾待生译法）
 ^Dim	卸下削弱法术	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；卸下后的临时法术减弱；显示释义，保护内部标记；decision=D-C-095
 __BARK	吠叫	domain=shouts; source=EN/ZH
 __BELLOW	吼叫	domain=shouts; source=EN/ZH
