@@ -11274,6 +11274,9 @@ Your %s skill decreases to level %d!
 Your %s skill gained %d levels and is now at level %d!
 你的%s技能提升了%d级，现为%d级！
 %%%%
+You feel the winds around you beginning to shift...
+你感到周围的风向开始转变……
+%%%%
 Your %s skill increases to level %d!
 你的%s技能提升至%d级！
 %%%%
@@ -21915,6 +21918,9 @@ You stop stampeding.
 %%%%
 Your divinely inspired understanding of %s fades.
 你对%s的神赐理解消退了。
+%%%%
+The winds around you quicken.
+你周围的风加速了。
 %%%%
 Your tailwind grows less brisk.
 你的顺风逐渐减弱了。
