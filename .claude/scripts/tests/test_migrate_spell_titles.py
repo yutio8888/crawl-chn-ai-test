@@ -110,6 +110,30 @@ class SpellInventoryCliTest(unittest.TestCase):
             set(spells[0]),
         )
 
+    def test_title_markers_and_unknown_expressions(self):
+        original = SPL_DATA.read_text(encoding="utf-8")
+        for expression, expected_rc in (
+            ('"Magic Dart"', 0),
+            ('T_("Magic Dart")', 0),
+            ('N_("Magic Dart")', 0),
+            ('NC_("spell", "Magic Dart")', 2),
+            ('N_(dynamic_title)', 2),
+            ('N_("Magic " "Dart")', 2),
+        ):
+            with self.subTest(expression=expression), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "spl-data.h"
+                mutated = original.replace('"Magic Dart"', expression, 1)
+                path.write_text(mutated, encoding="utf-8")
+                result = self.run_cli(*self.inventory_args(spl_data=path))
+                self.assertEqual(expected_rc, result.returncode, result.stderr)
+                if expected_rc:
+                    self.assertIn("spell title is not one literal", result.stderr)
+                    self.assertEqual("", result.stdout)
+                else:
+                    row = next(row for row in json.loads(result.stdout)["spells"]
+                               if row["enum"] == "SPELL_MAGIC_DART")
+                    self.assertEqual("Magic Dart", row["english_title"])
+
     def test_external_input_is_explicitly_marked(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "spl-data.h"

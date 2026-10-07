@@ -127,11 +127,11 @@ def _split_fields(block: str) -> list[str]:
 def _cpp_string(expression: str) -> str:
     match = re.fullmatch(
         r'(?:(?P<plain>"(?:[^"\\]|\\.)*")'
-        r'|T_\(\s*(?P<translated>"(?:[^"\\]|\\.)*")\s*\))',
+        r'|(?:T_|N_)\(\s*(?P<translated>"(?:[^"\\]|\\.)*")\s*\))',
         expression,
     )
     if not match:
-        raise InventoryError(f"spell title is not one literal or T_(literal): {expression!r}")
+        raise InventoryError(f"spell title is not one literal, T_(literal) or N_(literal): {expression!r}")
     try:
         value = ast.literal_eval(match.group("plain") or match.group("translated"))
     except (SyntaxError, ValueError) as exc:
