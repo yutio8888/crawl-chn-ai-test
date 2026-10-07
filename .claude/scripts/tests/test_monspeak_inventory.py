@@ -2270,5 +2270,96 @@ class MonspeakInventoryTests(unittest.TestCase):
             MODULE._producer_consumer_facts(fixture, "negative anchors")
 
 
+
+class LuaIdentityConcatTests(unittest.TestCase):
+    """Trunk parser regressions without the historical inventory fixture."""
+
+    def test_whitelist_forms_and_literal_spans(self):
+        for accessor in MODULE._LUA_CONCAT_IDENTITIES:
+            with self.subTest(accessor=accessor):
+                block = "return 'Silly .. ' .. " + accessor + ' .. "!"'
+                protocol = MODULE._lua_block_protocol(block)
+                self.assertIsNone(protocol["error"])
+                self.assertEqual(["Silly .. {{LUA}}!"], MODULE._lua_return_branch_texts(block))
+        self.assertEqual(["left .. right"],
+                         MODULE._lua_return_branch_texts("return 'left .. ' .. 'right'"))
+        self.assertEqual(["{{LUA}}"], MODULE._lua_return_branch_texts("return you.species()"))
+        self.assertEqual(["{{LUA}}"], MODULE._lua_return_branch_texts("return crawl.t_(you.race())"))
+
+    def test_actual_goji_and_localized_identity_concatenation(self):
+        entries, error = SCAN._monspeak_textdb_positions(
+            str(ROOT / "crawl-ref/source"), "dat/database/monspeak.txt", "fixture")
+        self.assertIsNone(error)
+        en = entries["goji triumphant"][0]
+        # Translator-supplied return shape, kept only in this test fixture.
+        zh = en.replace("you.species():lower()", "crawl.t_(you.species())")
+        zh = zh.replace("Silly ", "“傻").replace("You couldn't even see me.", "你都看不见我。")
+        en_protocol = MODULE._lua_protocol(en, syntax_check=True)
+        zh_protocol = MODULE._lua_protocol(zh, syntax_check=True)
+        self.assertEqual([], en_protocol["malformed"])
+        self.assertEqual([], zh_protocol["malformed"])
+        self.assertTrue(MODULE._lua_skeletons_equal(en_protocol["skeletons"],
+                                                  zh_protocol["skeletons"]))
+        self.assertEqual(SCAN._monspeak_runtime_branches(en, entries),
+                         SCAN._monspeak_runtime_branches(zh, entries))
+        block = MODULE.hardened._lua_blocks(zh)[0]
+        returns = MODULE.conditional_display_lua_returns(block)
+        self.assertEqual(2, len(returns))
+        self.assertIn("“傻{{LUA}}!", returns[1])
+
+    def test_channel_and_line_layout_preserves_identity_slots(self):
+        en = 'return "VISUAL: before " .. you.race():lower() .. "!\\nSOUND: after"'
+        zh = 'return "VISUAL: 前" .. crawl.t_(you.race()) .. "！\\nSOUND: 后"'
+        self.assertEqual(["VISUAL: before {{LUA}}!\nSOUND: after"],
+                         MODULE._lua_return_branch_texts(en))
+        expected = [[["talk_visual", "sound"]]]
+        self.assertEqual(expected, MODULE._lua_return_branch_lines("{{" + en + "}}"))
+        self.assertEqual(expected, MODULE._lua_return_branch_lines("{{" + zh + "}}"))
+        self.assertNotEqual(expected, MODULE._lua_return_branch_lines(
+            "{{" + zh.replace("VISUAL:", "SOUND:") + "}}"))
+        self.assertNotEqual(expected, MODULE._lua_return_branch_lines(
+            "{{" + zh.replace("\\n", " ") + "}}"))
+
+    def test_slot_identity_order_and_cardinality_are_protocol(self):
+        en = "return 'left' .. you.species():lower() .. 'mid' .. you.race() .. 'end'"
+        localized = "return '左' .. crawl.t_(you.species()) .. '中' .. crawl.t_(you.race()) .. '末'"
+        left = [MODULE._lua_block_protocol(en)["skeleton"]]
+        self.assertTrue(MODULE._lua_skeletons_equal(
+            left, [MODULE._lua_block_protocol(localized)["skeleton"]]))
+        for value in (
+            localized.replace("you.species()", "you.race()"),
+            localized.replace(" .. '中' .. crawl.t_(you.race())", ""),
+            localized.replace("you.species()", "you.race()").replace(
+                "crawl.t_(you.race()) .. '末'", "crawl.t_(you.species()) .. '末'"),
+        ):
+            with self.subTest(value=value):
+                self.assertFalse(MODULE._lua_skeletons_equal(
+                    left, [MODULE._lua_block_protocol(value)["skeleton"]]))
+
+    def test_nonwhitelisted_expressions_fail_closed(self):
+        for expression in (
+            "'a' .. you.genus()", "'a' .. you.name()", "'a' .. variable",
+            "'a' .. you.species('x')", "'a' .. you.species():upper()",
+            "'a' .. crawl.t_(you.name())", "'a' .. evil()",
+            "'a' .. (you.species())", "'a' .. (1 + 2)",
+            "'a', you.species()", "'a' .. you.species() ..", "'a' + you.species()",
+            "'a' .. you.species() .. unknown()",
+        ):
+            with self.subTest(expression=expression):
+                protocol = MODULE._lua_block_protocol("return " + expression)
+                self.assertIn("unsupported return expression", protocol["error"])
+                with self.assertRaises(MODULE.InventoryError):
+                    MODULE._lua_return_branch_texts("return " + expression)
+
+    def test_literal_escape_and_incomplete_conditional_remain_blocking(self):
+        for block in (
+            "return 'a' .. you.species() .. '\\q'",
+            "if you.invisible() then\nreturn 'x' .. you.species()\nend",
+            "if you.invisible() then\nreturn 'x'\nelse\nreturn 'x' .. evil()\nend",
+        ):
+            with self.subTest(block=block), self.assertRaises(MODULE.InventoryError):
+                MODULE.conditional_display_lua_returns(block)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -31,7 +31,7 @@ from audit_monspell_phase0 import (
 from generate_message_overlay import ManifestError, load_manifest, validate_manifest
 from monspeak_inventory import (
     InventoryError as LuaInventoryError, _lua_sites_strict,
-    literal_conditional_lua_returns,
+    conditional_display_lua_returns,
 )
 
 
@@ -488,8 +488,11 @@ def _line_fragment(text: str) -> str:
     if text in {NON_CONTROL_FRAGMENT, DYNAMIC_FRAGMENT}:
         return text
     colon = text.find(":")
-    dynamic = bool(_DYNAMIC_PREFIX_RE.search(text)) \
-        or "[" in text or "]" in text or "{{" in text or "}}" in text
+    # An identity slot after the channel delimiter cannot change that
+    # channel. Only the still-unresolved prefix participates in this test.
+    prefix = text[:colon] if colon >= 0 else text
+    dynamic = bool(_DYNAMIC_PREFIX_RE.search(prefix)) \
+        or "[" in prefix or "]" in prefix or "{{" in prefix or "}}" in prefix
     if dynamic:
         return DYNAMIC_FRAGMENT + (":" if colon >= 0 else "")
     if 0 <= colon < MAX_EDGE:
@@ -713,7 +716,7 @@ class PredicateAnalyzer:
                 f"{key}:{ordinal}: unbalanced @ marker at offset {unbalanced}")
         return markers
 
-    def _literal_lua_outcomes(self, text: str, key: str,
+    def _display_lua_outcomes(self, text: str, key: str,
                               ordinal: int) -> list[str]:
         if "{{" not in text and "}}" not in text:
             return [text]
@@ -731,7 +734,7 @@ class PredicateAnalyzer:
                     if str(marker["canonical_key"]) in self.entries:
                         raise Unanalysable(
                             f"{key}:{ordinal}: recursive marker inside conditional Lua")
-                choices = literal_conditional_lua_returns(block)
+                choices = conditional_display_lua_returns(block)
                 if len(results) * len(choices) > MAX_SUMMARIES:
                     raise Unanalysable(f"{key}:{ordinal}: Lua branch product exceeds limit")
                 prefix = text[cursor:site["start"]]
@@ -743,7 +746,7 @@ class PredicateAnalyzer:
             raise Unanalysable(f"{key}:{ordinal}: embedded Lua: {exc}") from exc
 
     def _check_lua(self, text: str, key: str, ordinal: int) -> None:
-        self._literal_lua_outcomes(text, key, ordinal)
+        self._display_lua_outcomes(text, key, ordinal)
 
     def validate_limits(self, key: str, ordinal: int) -> None:
         memo: dict[tuple[str, int], tuple[int, int]] = {}
@@ -803,7 +806,7 @@ class PredicateAnalyzer:
         self._check_lua(text, key, ordinal)
         self._checked_markers(text, key, ordinal)
         all_results: set[PreSummary] = set()
-        for outcome in self._literal_lua_outcomes(text, key, ordinal):
+        for outcome in self._display_lua_outcomes(text, key, ordinal):
             result = {_pre_literal("")}
             for kind, value in _marker_parts(outcome):
                 if kind == "literal":
@@ -840,7 +843,7 @@ class PredicateAnalyzer:
         self._check_lua(text, key, ordinal)
         self._checked_markers(text, key, ordinal)
         all_results: set[PostSummary] = set()
-        for outcome in self._literal_lua_outcomes(text, key, ordinal):
+        for outcome in self._display_lua_outcomes(text, key, ordinal):
             result = {_post_literal("")}
             for kind, value in _marker_parts(outcome):
                 if kind == "marker":

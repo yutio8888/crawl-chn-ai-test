@@ -1563,6 +1563,19 @@ _LUA_RETURN_UNDERLYING_CALL = {
 }
 
 
+# Issue #147: identity slots in return concatenations. Genus remains an
+# existing standalone mapping, but is deliberately not in this new whitelist.
+_LUA_CONCAT_IDENTITIES = {}
+for _accessor in ("you.species()", "you.race()"):
+    for _expression in (_accessor, _accessor + ":lower()",
+                        "crawl.t_(" + _accessor + ")",
+                        "crawl.t_(" + _accessor + ":lower())",
+                        "crawl.t_(" + _accessor + "):lower()"):
+        _LUA_CONCAT_IDENTITIES[_expression] = _accessor
+_LUA_RETURN_DISPLAY_MAPPINGS |= frozenset(_LUA_CONCAT_IDENTITIES)
+_LUA_RETURN_UNDERLYING_CALL.update(_LUA_CONCAT_IDENTITIES)
+
+
 def _lua_string_spans(block: str) -> list[tuple[int, int]]:
     """Exact spans of Lua string literals of one block: double-quoted,
     single-quoted (both with backslash escapes) and ``[[ ]]`` long
@@ -1599,6 +1612,55 @@ def _lua_string_spans(block: str) -> list[tuple[int, int]]:
     return spans
 
 
+def _lua_display_parts(expression: str) -> list[tuple[str, str]] | None:
+    """Parse a finite return expression; never evaluate arbitrary Lua.
+
+    Only complete string literals and the exact identity whitelist may be
+    joined with '..'. Literal spans protect embedded dots/quotes; all other
+    tokens (including calls with arguments, arithmetic and comma returns)
+    fail closed. A historical standalone mapping is still accepted.
+    """
+    expression = expression.strip()
+    if expression in _LUA_RETURN_DISPLAY_MAPPINGS:
+        return [("identity", expression)]
+    spans = dict(_lua_string_spans(expression))
+    parts = []
+    cursor = 0
+    while cursor < len(expression):
+        if cursor in spans:
+            end = spans[cursor]
+            parts.append(("literal", expression[cursor:end]))
+        else:
+            accessor = next((value for value in sorted(
+                _LUA_CONCAT_IDENTITIES, key=len, reverse=True)
+                if expression.startswith(value, cursor)), None)
+            if accessor is None:
+                return None
+            end = cursor + len(accessor)
+            parts.append(("identity", accessor))
+        cursor = end
+        while cursor < len(expression) and expression[cursor].isspace():
+            cursor += 1
+        if cursor == len(expression):
+            return parts
+        if not expression.startswith("..", cursor):
+            return None
+        cursor += 2
+        while cursor < len(expression) and expression[cursor].isspace():
+            cursor += 1
+        if cursor == len(expression):
+            return None
+    return None
+
+
+def _lua_display_value(expression: str) -> str:
+    """Keep static text and replace each identity with the existing Lua slot."""
+    parts = _lua_display_parts(expression)
+    _require(parts is not None, f"unsupported Lua display expression {expression!r}")
+    return "".join(_lua_literal_value(value) if kind == "literal" else "{{LUA}}"
+                   for kind, value in parts)
+
+
 def _line_start_offsets(lines: list[str]) -> list[int]:
     """Absolute block offsets of every line start (``\n``-separated)."""
     offsets = [0]
@@ -1623,8 +1685,8 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
     (the only translatable part).  ``error`` is set when the block fails
     the structural validity check (stray braces, unbalanced strings,
     unexpected statements, assignment, forbidden control flow) or when a
-    return expression is not a string literal / declared display mapping
-    (CR-006)."""
+    return expression is not a string literal, declared display mapping,
+    or concatenation of literals and whitelisted identity slots."""
     spans = _lua_string_spans(block)
     masked_parts: list[str] = []
     cursor = 0
@@ -1705,6 +1767,14 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
                 skeleton_lines.append(stripped)
                 index += 1
                 continue
+            parts = _lua_display_parts(original_tail)
+            if parts is not None:
+                return_strings.append(original_tail)
+                skeleton_lines.append("return " + " .. ".join(
+                    _LUA_RETURN_MARKER if kind == "literal" else value
+                    for kind, value in parts))
+                index += 1
+                continue
             unsupported_returns.append(original_tail)
             skeleton_lines.append(original_line)
             index += 1
@@ -1717,7 +1787,7 @@ def _lua_block_protocol(block: str) -> dict[str, Any]:
         error = (
             f"unsupported return expression {unsupported_returns[0]!r}: "
             "only string literals and the declared display mappings "
-            "(you.race()/you.genus() and their crawl.t_() forms) may be "
+            "and literal concatenations with whitelisted species/race slots may be "
             "treated as translatable display text"
         )
     return {
@@ -1897,6 +1967,8 @@ def _lua_literal_value(expression: str) -> str | None:
     display mappings like ``you.race()`` have no statically known
     runtime text)."""
     expression = expression.strip()
+    if _lua_string_spans(expression) != [(0, len(expression))]:
+        return None
     if expression.startswith("[["):
         _require(expression.endswith("]]"),
                  f"unbalanced [[ long string literal {expression!r}")
@@ -2000,7 +2072,8 @@ def _lua_return_branch_texts(block: str) -> list[str]:
     the colon-free ``{{LUA}}`` placeholder, exactly like the pre-CR-023
     checker neutralization.  No recursive token expansion is applied
     here (``_lua_return_branch_expansions`` owns the CR-024/CR-025
-    expansion); this helper is the identity single-outcome view used by
+    expansion). Concatenations keep each literal's text around the same
+    placeholder for each identity slot. This is the single-outcome view used by
     the pre-CR-024 callers and tests.  Raises ``InventoryError`` on a
     structurally invalid block or an unsupported literal escape: the
     runtime topology must never be guessed."""
@@ -2009,22 +2082,24 @@ def _lua_return_branch_texts(block: str) -> list[str]:
 
 
 
-def literal_conditional_lua_returns(block: str) -> list[str]:
-    """Prove every path of a conditional chunk returns one literal string.
+def conditional_display_lua_returns(block: str) -> list[str]:
+    """Prove every path returns supported display text with optional identity slots.
 
     Reuse the existing protocol lexer, escape decoder and executable-syntax
     gate. A return-expression list alone does not prove completeness: each
-    if/elseif branch and the mandatory else must terminate in a literal return
+    if/elseif branch and the mandatory else must terminate in a display return
     or another complete conditional. Statements after a return, missing else,
-    nonliteral returns and nonconditional chunks remain unsupported.
+    unknown expressions and nonconditional chunks remain unsupported.
     """
     protocol = _lua_block_protocol(block)
     _require(protocol["error"] is None,
              f"unsupported conditional Lua: {protocol['error']}")
-    returns = [_lua_literal_value(value)
-               for value in protocol["return_strings"]]
-    _require(returns and all(value is not None for value in returns),
-             "conditional Lua requires literal-only returns")
+    _require(all(kind == "literal" or value in _LUA_CONCAT_IDENTITIES
+                 for expression in protocol["return_strings"]
+                 for kind, value in _lua_display_parts(expression)),
+             "conditional Lua identity is not whitelisted")
+    returns = [_lua_display_value(value) for value in protocol["return_strings"]]
+    _require(returns, "conditional Lua requires display returns")
     # Frames hold [current branch returns, an else branch was seen].
     frames: list[list[bool]] = []
     finished = False
@@ -2054,7 +2129,7 @@ def literal_conditional_lua_returns(block: str) -> list[str]:
                 frames[-1][0] = True
             else:
                 finished = True
-        elif statement == "return " + _LUA_RETURN_MARKER:
+        elif statement.startswith("return "):
             _require(frames and not frames[-1][0],
                      "misplaced or duplicate Lua return")
             frames[-1][0] = True
@@ -2097,7 +2172,8 @@ def _lua_return_branch_expansions(
     ``InventoryError`` on a structurally invalid expanded block, on an
     expanded block whose return branch count diverges from the other
     outcomes (the runtime topology must never be guessed) or on an
-    unsupported literal escape."""
+    unsupported literal escape. Concatenations retain literal prefixes and
+    suffixes around the same dynamic slot used by standalone mappings."""
     if not family_lookup:
         expanded_blocks = [(block, 0)]
     else:
@@ -2117,11 +2193,7 @@ def _lua_return_branch_expansions(
                 "expanded Lua block changed the return branch count: "
                 "the runtime topology must never be guessed")
         for index, expression in enumerate(protocol["return_strings"]):
-            value = _lua_literal_value(expression)
-            if value is None:
-                branches[index].add("{{LUA}}")
-            else:
-                branches[index].add(value)
+            branches[index].add(_lua_display_value(expression))
     assert branches is not None
     return [sorted(outcomes) for outcomes in branches]
 
@@ -3766,32 +3838,30 @@ def _foe_protocol_equal(
 def _lua_skeletons_equal(
     en_skeletons: list[str], zh_skeletons: list[str],
 ) -> bool:
-    """Byte equality of one variant's EN/ZH Lua skeletons under the
-    display-mapping equivalence (CR-006A).
+    """Compare Lua control and slot identities, allowing display wrappers.
 
-    String-literal returns normalize to the fixed marker; the declared
-    display mappings stay byte-exact in the skeleton.  The paired
-    comparison treats the raw Lua helper and its localizable
-    ``crawl.t_()`` wrapper as the same display mapping (same underlying
-    call), so EN ``you.race()`` correctly pairs with ZH
-    ``crawl.t_(you.race())``.  A swapped underlying call (``you.genus()``
-    for ``you.race()``, with or without the wrapper), an added/removed
-    wrapper around a different call, and every other byte drift
-    (operators, comparison literals, whitespace inside the expression)
-    fail the comparison."""
+    Literal terms normalize to the display marker. Race/species slots pair
+    raw accessors with crawl.t_()/lower() display transformations of the same
+    underlying accessor. Preserve slot order, count, concatenation operators,
+    comparison literals and all other control bytes; the historical standalone
+    genus mapping remains equivalent only to its own translation wrapper.
+    """
     if len(en_skeletons) != len(zh_skeletons):
         return False
-    for en_line, zh_line in zip(en_skeletons, zh_skeletons):
-        if en_line == zh_line:
-            continue
-        en_call = _LUA_RETURN_UNDERLYING_CALL.get(
-            en_line.strip()[len("return "):])
-        zh_call = _LUA_RETURN_UNDERLYING_CALL.get(
-            zh_line.strip()[len("return "):])
-        if en_call is not None and en_call == zh_call:
-            continue
-        return False
-    return True
+    def canonical(skeleton: str) -> str:
+        lines = []
+        for line in skeleton.split("\n"):
+            if line.startswith("return "):
+                terms = line[len("return "):].split(" .. ")
+                if all(term == _LUA_RETURN_MARKER or
+                       term in _LUA_RETURN_UNDERLYING_CALL for term in terms):
+                    line = "return " + " .. ".join(
+                        _LUA_RETURN_UNDERLYING_CALL.get(term, term) for term in terms)
+            lines.append(line)
+        return "\n".join(lines)
+
+    return all(canonical(en) == canonical(zh)
+               for en, zh in zip(en_skeletons, zh_skeletons))
 
 
 def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]]:
