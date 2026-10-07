@@ -49,9 +49,9 @@ Crawl 选项指南
                 tc_dangerous, tc_disconnected, tc_excluded, tc_exclude_circle,
                 tc_forbidden, runrest_ignore_message, runrest_stop_message,
                 interrupt_<delay>, delay_safe_poison, runrest_ignore_monster,
-                rest_wait_both, rest_wait_ancestor, rest_wait_percent,
-                explore_auto_rest, explore_auto_rest_status,
-                auto_exclude, travel_open_doors
+                rest_wait_both, rest_wait_ignore_mp, rest_wait_ancestor,
+                rest_wait_percent, explore_auto_rest, explore_auto_rest_status,
+                auto_exclude, travel_open_doors, longwalk_range
 3-g     命令增强。
                 auto_switch, easy_unequip, equip_unequip, jewellery_prompt,
                 easy_confirm, simple_targeting, force_spell_targeter,
@@ -61,12 +61,12 @@ Crawl 选项指南
                 consumable_shortcut, ability_slot, autofight_stop,
                 autofight_warning, autofight_fires, autofight_nomove_fires,
                 autofight_fire_stop, autofight_caught, autofight_wait,
-                autofight_prompt_range, automagic_enable, automagic_slot,
-                automagic_fight, automagic_stop, fail_severity_to_confirm,
-                easy_door, warn_hatches, enable_recast_spell, confirm_action,
-                regex_search, autopickup_search, bad_item_prompt,
-                auto_hide_spells, menu_arrow_control, single_column_item_menus,
-                show_paged_inventory
+                autofight_prompt_range, autofight_stampede, automagic_enable,
+                automagic_slot, automagic_fight, automagic_stop,
+                fail_severity_to_confirm, easy_door, warn_hatches,
+                enable_recast_spell, confirm_action, regex_search, autopickup_search,
+                bad_item_prompt, auto_hide_spells, menu_arrow_control,
+                single_column_item_menus, show_paged_inventory
 3-h     消息与显示增强。
                 hp_warning, mp_warning, hp_colour, mp_colour, stat_colour,
                 status_caption_colour, enemy_hp_colour, clear_messages,
@@ -920,6 +920,10 @@ rest_wait_both = false
         如果把 rest_wait_both 设为 true，只有生命值与法力都完全恢复时，休息
         才会停止，而不会在其中一项恢复时就停止。
 
+rest_wait_ignore_mp = false
+        不会因法力尚未恢复而继续休息。此选项优先于 rest_wait_both，适用于
+        不时持握反魔法武器、且不需要法力的角色。
+
 rest_wait_ancestor = false
         如果把 rest_wait_ancestor 设为 true，那么除了玩家生命值或法力（如果
         设置了 rest_wait_both，则是两者）之外，还必须等先祖的生命值完全恢复，
@@ -965,6 +969,15 @@ travel_open_doors = (avoid | approach | open)
         approach = 自动探索／自动移动不会开门，而会停在路径中任何门的前方。
             open = 自动探索／自动移动会开门。（默认）
         这不影响刻有符文的门；游戏始终会避开这类门。
+
+longwalk_range = (<integer> | los | visible | unlimited)
+        设置长距离行走的最大距离（默认按 shift+direction）。默认值为 15。
+          <integer> = 固定的最大距离，例如 longwalk_range = 15。
+          los = 当前视野范围。大多数种族的视野范围为 7，暗影围巾等物品会
+                影响此范围。
+          visible = 只经过可见的格子。除了视野范围外，蒸汽或迷雾等限制可见
+                    格子的云雾也会限制行走范围。
+          unlimited = 不限制距离。你会一直移动，直到其他情况使你停下。
 
 3-g     命令功能增强。
 ---------------------
@@ -1246,6 +1259,10 @@ autofight_prompt_range = true
         神祇厌恶的武器）时，若此选项为 true，自动战斗试图向敌人移动时就会
         显示提示，而不是只有真正尝试攻击时才显示。
 
+autofight_stampede = false
+        使用疾风半人马角色时，若此选项为 true，自动战斗会在可能时选择继续
+        奔踏穿过相邻的怪物，而不是留在原地战斗。
+
 automagic_enable = false
         启用旧版自动施法系统的选项；建议新玩家直接使用装入发射栏的法术。
         设为 true 时，自动战斗（即默认键位中的 tab）会对目标施放指定栏位中
@@ -1411,13 +1428,14 @@ mlist_allow_alternative_layout = false
         贴图版不支持此选项。
 
 monster_item_view_coordinates = false
-        在 ^x 查看说明中显示以玩家为中心的坐标。
+        在 ^x 查看说明、瞄准器和楼层地图中显示以玩家为中心的坐标。
 
 monster_item_view_features += <regex>, <regex>
         （列表选项）
-        在 ^x 查看说明中显示与 <regex> 匹配的地形特征。每个 <regex> 都是描述
-        地牢特征的正则表达式。此正则表达式应当匹配使用 'x' 命令时显示的说明。
-        如果正则表达式匹配多个说明，所有相应特征都会列出。
+        在 ^x 查看说明中显示与 <regex> 匹配的地形特征。此选项也会影响终端版
+        的 X 楼层地图。每个 <regex> 都是描述地牢特征的正则表达式。此正则
+        表达式应当匹配使用 'x' 命令时显示的说明。如果正则表达式匹配多个说明，
+        所有相应特征都会列出。
 
         此处有两个特殊关键词：如果任一模式匹配字符串 "stair"，就会显示所有
         能用楼梯命令互动的特征；如果任一模式匹配 "trap"，就会显示所有陷阱
@@ -1514,6 +1532,10 @@ use_animations += branch_entry
           player           - 玩家使用能力或施放法术时播放的动画。
           branch_entry     - 进入新分支时播放的动画。目前只有深渊和佐特界具有
                              动画。
+
+alt_shatter_animation = false
+        设为 true 时，施放粉碎的传统画面震动效果会替换为多波视觉特效，以
+        减轻头痛和恶心。WebTiles 游戏中默认值为 `true`，其他情况下为 `false`。
 
 unusual_monster_items += <regex>, <regex>, ...
         （列表选项）
@@ -2190,7 +2212,7 @@ tile_display_mode = (tiles | glyphs | hybrid)
 
         此选项仅在本地贴图版和 WebTiles 中可用。
 
-tile_level_map_hide_messages = true
+tile_level_map_hide_messages = false
 tile_level_map_hide_sidebar = false
         控制使用楼层地图时隐藏哪些画面元素。这些选项仅在 WebTiles 中可用。
 
@@ -2285,7 +2307,7 @@ dump_message_count = 20
 
 dump_order  = header,hiscore,stats,misc,apostles,inventory,skills,spells,
 dump_order += overview,mutations,messages,screenshot,monlist,kills,
-dump_order += notes,screenshots,vaults,skill_gains,action_counts
+dump_order += notes,screenshots,vaults,skill_gains,xp_by_form,action_counts
         （有序列表选项）
         控制记录中各节的顺序。
 
@@ -2869,7 +2891,7 @@ Lua 可以通过 "options.option_name" 引用选项。例如：
 即使有怪物在场，也允许自动移动／移动前进一步：
     travel_one_unsafe_move = true
 
-在 ^x 显示中列出相对于玩家的坐标：
+在 ^x 显示、瞄准器和楼层地图中列出相对于玩家的坐标：
     monster_item_view_coordinates = true
 
 ^x 显示可以列出一组由正则表达式控制的自定义特征。例如，要在 ^x 中包含
