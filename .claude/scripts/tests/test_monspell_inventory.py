@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -2193,6 +2195,121 @@ class MonspellInventoryTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.InventoryError,
                                         "must be supplied together"):
                 MODULE.main(partial)
+
+
+class TrunkLedgerScopeTests(unittest.TestCase):
+    BASELINES = {
+        "monspell": PRODUCTION_BASELINE,
+        "wpnnoise": "7b56bccf9ce06646b65acf056b1445ad2999512d",
+        "graffiti": "888354b254f86a6b2de13e7ec6b1b73992a629f7",
+    }
+    RENAMES = {
+        "summon illusion cast": "mara summon cast",
+        "unseen summon illusion cast": "unseen mara summon cast",
+    }
+
+    def validate_scope(self, domain, text):
+        from i18n_shared import AuditSnapshot, parse_entries_physical
+        before = AuditSnapshot(ROOT, self.BASELINES[domain], require_head=False)
+        current = AuditSnapshot(ROOT)
+        en_path = f"crawl-ref/source/dat/database/{domain}.txt"
+        zh_path = f"crawl-ref/source/dat/database/zh/{domain}.txt"
+        old_input, en_input, zh_input = before.read(en_path), current.read(en_path), current.read(zh_path)
+        old = {e.canonical_key: e for e in parse_entries_physical(old_input)}
+        en = {e.canonical_key: e for e in parse_entries_physical(en_input)}
+        zh = {e.canonical_key: e for e in parse_entries_physical(zh_input)}
+        self.assertTrue(old and en and zh)
+        self.assertIn(self.BASELINES[domain], text)
+        self.assertIn("不能当成当前 trunk 的全量通过结论", text)
+        for label, data in [("EN", en_input.bytes), ("ZH", zh_input.bytes)]:
+            self.assertIn(f"{label} source SHA-256: `{hashlib.sha256(data).hexdigest()}`", text)
+        self.assertEqual(
+            AuditSnapshot(ROOT, _git_plumbing(["rev-parse", "c55cf7f7a5"]),
+                          require_head=False).read(zh_path).bytes, zh_input.bytes,
+        )
+
+        def variants(entry):
+            result, error = MODULE.shared._parse_weighted_entry(
+                entry.value, {}, entry.canonical_key,
+            )
+            self.assertIsNone(error)
+            return [(v["weight"], v["raw_pattern"]) for v in result]
+
+        changed = {
+            key for key in old.keys() & en.keys()
+            if variants(old[key]) != variants(en[key])
+        }
+        expected = (en.keys() - old.keys()) | changed
+        body = text.split("<!-- BEGIN ISSUE147 TRUNK COVERAGE -->")[1].split(
+            "<!-- END ISSUE147 TRUNK COVERAGE -->"
+        )[0]
+        rows = re.findall(
+            r"^\| `([^`]+)` \| `([^`]+)` \| ([a-z-]+) \| (\d+) \| (\d+) \|$",
+            body, re.M,
+        )
+        self.assertEqual(len(expected), len(rows))
+        self.assertEqual(expected, {row[0] for row in rows})
+        for key, prior, kind, en_count, zh_count in rows:
+            self.assertEqual(len(variants(en[key])), int(en_count))
+            self.assertEqual(len(variants(zh[key])), int(zh_count))
+            if key in self.RENAMES:
+                self.assertEqual((self.RENAMES[key], "renamed-key"), (prior, kind))
+            elif key not in old:
+                self.assertEqual(("—", "new-key"), (prior, kind))
+            else:
+                expected_kind = "historical-proposal" if key == "_graffiti_vengeance_" else "new-variant"
+                self.assertEqual((key, expected_kind), (prior, kind))
+                if expected_kind == "historical-proposal":
+                    card = next(json.loads(line) for line in text.splitlines()
+                                if line.startswith('{') and json.loads(line).get("key") == key)
+                    self.assertEqual(
+                        variants(en[key]),
+                        [(v["weight"], v["text"]) for v in card["proposed_english_variants"]],
+                    )
+        self.assertEqual(
+            set(self.RENAMES.values()) if domain == "monspell" else set(),
+            old.keys() - en.keys(),
+        )
+        return rows
+
+    def test_historical_ledgers_enumerate_current_trunk_gaps(self):
+        for domain in self.BASELINES:
+            with self.subTest(domain=domain):
+                self.validate_scope(domain, (ROOT / f"docs/{domain}-review-results.md").read_text())
+
+    def test_scope_rejects_missing_rows_wrong_rename_and_stale_source(self):
+        text = (ROOT / "docs/monspell-review-results.md").read_text()
+        for mutation in [
+            re.sub(r"^\| `antimagic gaze goji cast`.*\n", "", text, flags=re.M),
+            text.replace("| `summon illusion cast` | `mara summon cast`", "| `summon illusion cast` | `wrong cast`"),
+            text.replace("EN source SHA-256: `", "EN stale source SHA-256: `"),
+        ]:
+            with self.subTest(mutation=mutation[:80]), self.assertRaises(AssertionError):
+                self.validate_scope("monspell", mutation)
+
+    def test_monspell_crosswalk_agrees_with_ac7_and_retained_stable_ids(self):
+        text = (ROOT / "docs/monspell-review-results.md").read_text()
+        rows = self.validate_scope("monspell", text)
+        drift = json.loads((ROOT / ".claude/data/message-overlay/monspell-drift-audit.json").read_text())
+        self.assertEqual(
+            {r[0] for r in rows if r[2] == "new-key"},
+            {entry["key"] for entry in drift["new-uncovered"]},
+        )
+        self.assertEqual(
+            self.RENAMES,
+            {entry["new_key"]: entry["old_key"] for entry in drift["textual-change"]},
+        )
+        catalog = {}
+        for filename in ["120-wave-a3-pilot.json", "300-wave-c1.json"]:
+            fragment = json.loads((ROOT / ".claude/data/message-overlay/monspell" / filename).read_text())
+            catalog.update({entry["canonical_key"]: entry for entry in fragment["entries"]})
+        for entry in drift["textual-change"]:
+            self.assertEqual(
+                entry["stable_ids_retained"],
+                [v["stable_id"] for v in catalog[entry["new_key"]]["variants"]],
+            )
+            for stable_id in entry["stable_ids_retained"]:
+                self.assertIn(stable_id, text)
 
 
 if __name__ == "__main__":

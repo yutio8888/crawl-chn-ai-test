@@ -1476,6 +1476,39 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "weight mismatch"):
                 MODULE.paired_component_rows(en, zh, "fixture")
 
+    def test_component_history_matches_english_content_not_ordinal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en, zh = root / "en.txt", root / "zh.txt"
+            old_en, old_zh = root / "old-en.txt", root / "old-zh.txt"
+            old_en.write_text("%%%%\nkey\n\nOld A\n\nOld B\n")
+            old_zh.write_text("%%%%\nkey\n\n旧甲\n\n旧乙\n")
+            en.write_text("%%%%\nkey\n\nNew\n\nOld B\n\nOld A\n")
+            zh.write_text("%%%%\nkey\n\n新增\n\n旧乙\n\n旧甲\n")
+            with mock.patch.object(
+                MODULE, "revision_textdb_rows",
+                side_effect=lambda path, revision: MODULE.textdb_rows(
+                    old_en if path == en else old_zh
+                ),
+            ):
+                rows = MODULE.paired_component_rows(en, zh, "randart-component", "base")
+                self.assertIsNone(rows[0]["_pre_review_chinese"])
+                self.assertEqual("adjust", rows[0]["_conclusion"])
+                self.assertIn("no prior Chinese", MODULE.conclusion_reason(rows[0]))
+                self.assertEqual(["旧乙", "旧甲"], [r["_pre_review_chinese"] for r in rows[1:]])
+                self.assertEqual(["keep", "keep"], [r["_conclusion"] for r in rows[1:]])
+                self.assertEqual(0, rows[2]["_metadata"]["review_base_ordinal"])
+                self.assertIn("ordinal moved", MODULE.conclusion_reason(rows[2]))
+                zh.write_text("%%%%\nkey\n\n新增\n\n修订乙\n\n旧甲\n")
+                rows = MODULE.paired_component_rows(en, zh, "randart-component", "base")
+                self.assertEqual("adjust", rows[1]["_conclusion"])
+                old_en.write_text("%%%%\nkey\n\nDuplicate\n\nDuplicate\n")
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base English"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+                old_zh.write_text("%%%%\nkey\n\n旧甲\n")
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base pairing"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+
     def test_weighted_metrics_distinguish_variants_from_raw_lines(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "input.txt"

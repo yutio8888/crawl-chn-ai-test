@@ -104,6 +104,43 @@ class GodInventoryAuditTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "colliding JSON object keys"):
             MODULE.canonical_json_value({1: "numeric", "1": "string"})
 
+    def test_shared_kill_conducts_and_extras_match_production(self):
+        default = {
+            "DID_KILL_LIVING", "DID_KILL_UNDEAD", "DID_KILL_DEMON",
+            "DID_KILL_HOLY", "DID_KILL_NONLIVING",
+        }
+        extras = {
+            "GOD_KIKUBAAQUDGHA": set(), "GOD_VEHUMET": set(),
+            "GOD_MAKHLEB": set(), "GOD_QAZLAL": set(),
+            "GOD_WU_JIAN": set(), "GOD_TROG": {"DID_KILL_WIZARD"},
+            "GOD_LUGONU": {"DID_BANISH"}, "GOD_BEOGH": {"DID_KILL_PRIEST"},
+        }
+        parents = {row["identity"]: row for row in self.payload["parents"]}
+        for god, extra in extras.items():
+            with self.subTest(god=god):
+                self.assertEqual(sorted(default | extra), parents[god]["liked_conduct_ids"])
+
+    def test_liked_conduct_parser_fails_closed(self):
+        source = MODULE.active_source(MODULE.GOD_CONDUCT)
+        known = MODULE.declared_tokens(MODULE.CONDUCT_TYPE, "DID_")
+        for row in ["UNKNOWN_KILL_CONDUCT", "unknown_helper({{DID_KILL_LIVING, f()}})",
+                    "default_kill_conduct_with_extra(unknown_map)",
+                    "{ { DID_UNKNOWN, f() } }", "{ { UNKNOWN_CONDUCT, f() } }"]:
+            with self.subTest(row=row), self.assertRaises(RuntimeError):
+                MODULE.liked_conduct_tokens(source, [row], known)
+        with self.assertRaisesRegex(RuntimeError, "helper body"):
+            MODULE.liked_conduct_tokens(
+                source.replace("lm.insert(extra.begin(), extra.end());", "lm.clear();"),
+                ["default_kill_conduct_with_extra({})"], known,
+            )
+        self.assertEqual(
+            [["DID_KILL_LIVING"]],
+            MODULE.liked_conduct_tokens(
+                "const like_map DEFAULT_KILL_CONDUCT = {{DID_KILL_LIVING, f()}};",
+                ["DEFAULT_KILL_CONDUCT"], known,
+            ),
+        )
+
     def test_production_parent_inventory_is_complete_unique_and_includes_pakellas(self):
         identities = [row["identity"] for row in self.payload["parents"]]
         self.assertEqual(MODULE.god_enum_identities(), identities)

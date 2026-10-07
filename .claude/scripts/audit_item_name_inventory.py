@@ -1665,7 +1665,7 @@ def _pre_review_variant_value(current, ordinal, base_values):
 
 @audit_snapshot_invocation(ROOT)
 def paired_component_rows(
-    en_path, zh_path, category, review_base=None, changed_keys=None
+    en_path, zh_path, category, review_base=None
 ):
     en_entries = textdb_rows(en_path)
     zh_entries = textdb_rows(zh_path)
@@ -1673,11 +1673,16 @@ def paired_component_rows(
         revision_textdb_rows(zh_path, review_base)
         if review_base else zh_entries
     )
+    base_en_entries = (
+        revision_textdb_rows(en_path, review_base)
+        if review_base else en_entries
+    )
     en = {entry.canonical_key: entry for entry in en_entries}
     zh = {entry.canonical_key: entry for entry in zh_entries}
     base_zh = {
         entry.canonical_key: entry for entry in base_zh_entries
     }
+    base_en = {entry.canonical_key: entry for entry in base_en_entries}
     if en.keys() != zh.keys():
         raise RuntimeError(
             f"{category} key mismatch: missing={sorted(en.keys()-zh.keys())} "
@@ -1694,11 +1699,51 @@ def paired_component_rows(
         base_values = (
             physical_candidates(base_zh[key]) if key in base_zh else []
         )
+        base_english = (
+            physical_candidates(base_en[key]) if key in base_en else []
+        )
         if len(en_values) != len(zh_values):
             raise RuntimeError(
                 f"{category}:{key} physical count mismatch "
                 f"{len(en_values)} != {len(zh_values)}"
             )
+        if len(base_english) != len(base_values):
+            # One historical randname block split a continuation with a blank
+            # line. Accept only a complete, ordered reconstruction of the
+            # unchanged English block and the unchanged Chinese paragraphs.
+            if base_english != en_values:
+                raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+            aligned = []
+            cursor = 0
+            for weight, current in zh_values:
+                combined = ""
+                while cursor < len(base_values):
+                    old_weight, text = base_values[cursor]
+                    if old_weight != (weight if not combined else 10):
+                        raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                    combined = text if not combined else combined + "\n" + text
+                    cursor += 1
+                    if combined == current:
+                        aligned.append((weight, current))
+                        break
+                else:
+                    raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+            if cursor != len(base_values):
+                raise RuntimeError(f"{category}:{key} unused review-base paragraphs")
+            base_values = aligned
+        matches = {}
+        for old_ordinal, ((weight, english), (zh_weight, chinese)) in enumerate(
+            zip(base_english, base_values)
+        ):
+            if weight != zh_weight:
+                raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+            matches.setdefault(english, []).append((old_ordinal, chinese))
+        for english, variants in matches.items():
+            if len({chinese for _, chinese in variants}) != 1:
+                raise RuntimeError(
+                    f"{category}:{key} ambiguous review-base English identity: {english}"
+                )
+        occurrences = Counter()
         for ordinal, (en_variant, zh_variant) in enumerate(
             zip(en_values, zh_values)
         ):
@@ -1721,14 +1766,27 @@ def paired_component_rows(
                 raise RuntimeError(
                     f"{category}:{key}:{ordinal} placeholder mismatch"
                 )
+            occurrence = occurrences[english]
+            occurrences[english] += 1
+            prior = matches.get(english, [])
+            old_ordinal, previous = (
+                prior[occurrence] if occurrence < len(prior) else (None, None)
+            )
+            metadata = {
+                "grammar_key": key, "physical_ordinal": ordinal,
+                "weight": en_weight,
+            }
+            if old_ordinal != ordinal:
+                metadata["review_base_match"] = (
+                    "new-English-component" if old_ordinal is None else "English-content"
+                )
+                metadata["review_base_ordinal"] = old_ordinal
             rows.append({
                 "identity": f"{category}:{key}:{ordinal:04d}",
                 "category": category,
                 "lifecycle": "current",
                 "english_source": english,
-                "_pre_review_chinese": _pre_review_variant_value(
-                    chinese, ordinal, base_values
-                ),
+                "_pre_review_chinese": previous,
                 "current_chinese": chinese,
                 "producer": f"TextDB weighted key {key} physical ordinal",
                 "consumer": (
@@ -1736,15 +1794,8 @@ def paired_component_rows(
                     "procedural string explicitly non-enumerable"
                 ),
                 "input": input_name,
-                "_metadata": {
-                    "grammar_key": key,
-                    "physical_ordinal": ordinal,
-                    "weight": en_weight,
-                },
-                "_conclusion": (
-                    "adjust" if changed_keys
-                    and (key, ordinal) in changed_keys else "keep"
-                ),
+                "_metadata": metadata,
+                "_conclusion": "keep" if previous == chinese else "adjust",
             })
     return rows
 
@@ -1818,6 +1869,31 @@ def conclusion_reason(row):
     boundary = (
         f"{row['identity']} at {row['producer']} -> {row['consumer']}"
     )
+    if row["category"] in {"gizmo", "randart-component"}:
+        match = metadata.get("review_base_match")
+        if match == "new-English-component":
+            return (
+                f"adjust: {boundary} introduces English component "
+                f"{row['english_source']!r}; there is no prior Chinese for this "
+                "English identity. The old physical ordinal belongs to another "
+                "word and is not semantic evidence. This records an addition, "
+                "not preservation of an old rendering; independent review "
+                "evidence must cover the new component."
+            )
+        shift = (
+            f" Physical ordinal moved from {metadata['review_base_ordinal']} "
+            f"to {metadata['physical_ordinal']}; match uses English content, "
+            "not the occupant of the old ordinal."
+            if match == "English-content" else ""
+        )
+        return (
+            f"{conclusion}: {boundary} matches the same English component "
+            f"{row['english_source']!r} in the review base.{shift} "
+            + ("Chinese is unchanged; retain its existing reviewed meaning."
+               if conclusion == "keep" else
+               "Chinese differs for this same word; record the adopted wording "
+               "correction rather than claiming the old rendering was preserved.")
+        )
     if conclusion == "keep" and metadata.get("deferred_array"):
         return (
             f"keep: {boundary} preserves the previously reviewed Chinese "
@@ -2186,7 +2262,6 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     gizmo_zh = SRC / "dat/database/zh/gizmo.txt"
     rows.extend(paired_component_rows(
         gizmo_en, gizmo_zh, "gizmo", review_base,
-        changed_physical_ordinals(gizmo_zh, review_base),
     ))
 
     en_items = {e.canonical_key: e for e in textdb_rows(description_en)}
@@ -2907,6 +2982,19 @@ def render_review_results_v3(inventory, rows, glossary_overlay=None):
         f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
         f"- Review base: `{inventory['baseline']}`",
         f"- Decision rows: `{inventory['count']}`",
+        "",
+        "Component evidence is matched by (grammar key, English text), with "
+        "occurrence indices for identical duplicates. Physical ordinals are "
+        "candidate locators and do not establish historical word identity.",
+        "",
+        "Issue #147 F2: the eight additions/replacements in frozen Chinese "
+        "`c55cf7f7a5` are covered by `issue147-b2-review-database.md` "
+        "(SHA-256 `da4d0ebee23b34732ab96dd091d117246eca631545c6ade3d263f9e200e9cb68`), "
+        "including its explicit Apeiromancy finding, and "
+        "`issue147-b2-review-delta.md` (SHA-256 "
+        "`bacff995ecb7392730b4c956ba7befc1e42b8b3d3210f1b08b51b34665a57da3`). "
+        "This evidence is specific to that frozen revision; generated "
+        "classification alone is not independent semantic approval.",
         "",
         "## Evidence cards",
         "",

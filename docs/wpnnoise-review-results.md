@@ -1,3 +1,33 @@
+# wpnnoise 历史审核台账与 trunk 覆盖边界（Issue #147 F2）
+
+## 历史边界
+
+严格 JSONL 块只覆盖历史提交 `7b56bccf9ce06646b65acf056b1445ad2999512d` 的 65 个 identity；其中 keep、route、变体数和 proposal 都是该快照的事实，不能当成当前 trunk 的全量通过结论。历史卡片保持冻结，以保留原审核和候选协议验证；本次不把新增生产键强塞入旧 schema 或放宽历史门禁。
+
+当前术语绑定为 `61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0`；哈希更新不表示重新独立审查旧译文。
+
+## 当前 trunk 的增量事实与审查证据
+
+以下增量按 `cb4d884e18` 源码/英文和冻结中文 `c55cf7f7a5` 核对。新增键及新增变体在历史卡片中存在明确覆盖缺口，不能由旧卡片的 keep 推导通过；B2 database 独立审查覆盖这些新增内容，delta/delta2 确认要求的修订已闭合。此处列出事实、对应证据和缺口，不生成未经审查的结论。
+
+- 独立证据：`issue147-b2-review-database.md`（SHA-256 `da4d0ebee23b34732ab96dd091d117246eca631545c6ade3d263f9e200e9cb68`，覆盖统计及“已核对、无问题的要点”）；`issue147-b2-review-delta.md`（SHA-256 `bacff995ecb7392730b4c956ba7befc1e42b8b3d3210f1b08b51b34665a57da3`）；`issue147-b2-review-delta2.md`（SHA-256 `00973e387a86ec5aa9cee449010846dc0c05e4e4b1c68f1615c36fced42137c7`）。
+- EN source SHA-256: `a303a726f66d936c8e689b1bdab547c582aa8446154beae101873f1f7927e792`
+- ZH source SHA-256: `a9205eb4d1ee315c561e3aaf1ea3782076bd20b6e7dc048e07a1ab0db9718b0d`
+
+<!-- BEGIN ISSUE147 TRUNK COVERAGE -->
+| 当前键 | 历史键 | 分类 | 当前 EN 变体 | 当前 ZH 变体 |
+|---|---|---|---:|---:|
+| `fire dragon occultist scales farewell` | `—` | new-key | 2 | 2 |
+| `fire dragon occultist scales greeting` | `—` | new-key | 3 | 3 |
+| `ice dragon arcanist scales farewell` | `—` | new-key | 2 | 2 |
+| `ice dragon arcanist scales greeting` | `—` | new-key | 3 | 3 |
+| `_real_song_no_tension_` | `_real_song_no_tension_` | new-variant | 22 | 22 |
+<!-- END ISSUE147 TRUNK COVERAGE -->
+
+4 个龙鳞 greeting/farewell 来自上游 6c2c9e6e9b，键数 65→69；旧台账没有这 4 张卡。上游 ce5df4a3ae 为 `_real_song_no_tension_` 新增第 22 个 EN 变体：`@The_weapon@ sings, "May the bird of paradise fly up your nose..."`。B2 明确审核龙鳞 4 键及这句歌词；历史卡片仍只绑定原 21 个 EN 变体及其当时 proposal。
+
+## 冻结历史证据
+
 <!-- BEGIN STRICT WPNNOISE REVIEW EVIDENCE v2 -->
 ```jsonl
 {"baseline": "7b56bccf9ce06646b65acf056b1445ad2999512d", "chinese_production_dump_sha256": "fbc39f38b816797c187710de3faf89f96bc98db4c9cc81c8f656f1af6e8cd5db", "en_lua_site_count": 2, "en_random_site_count": 84, "en_variant_count": 731, "english_production_dump_sha256": "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4", "glossary_sha256": "61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0", "identity_count": 65, "inventory_sha256": "9075c47325e29e56988fbf112b66e818dbe65ac7c96b33acd1b165b9158812e6", "terminal_conclusion_counts": {"adjust": 21, "defer implementation": 4, "keep": 40}, "zh_lua_site_count": 3, "zh_random_site_count": 83, "zh_variant_count": 720}
