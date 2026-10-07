@@ -25184,10 +25184,10 @@ You freeze nearby walls in an area that expands as you fight.
 你会冻结附近的墙壁，冻结区域随着战斗而扩大。
 %%%%
 ice wizardry
-冰系施法强化
+寒冰施法辅助
 %%%%
 You can cast Ice magic more easily.
-你施放冰系魔法更加容易。
+你施放寒冰魔法更加容易。
 %%%%
 Serpent
 蛇形
@@ -25235,7 +25235,7 @@ Healing from kills is doubled.
 杀敌带来的治疗量加倍。
 %%%%
 unshakeable will
-坚韧意志
+意志不可动摇
 %%%%
 Your willpower is unshakeable.
 你的意志力不可动摇。
@@ -25400,7 +25400,7 @@ Flare Dmg
 耀焰伤害
 %%%%
 sun companion
-太阳伴侣
+太阳伙伴
 %%%%
 You manifest a globe of solar heat that you carry with you.
 你会具现出一个太阳热量之球，并随身携带。
@@ -25418,10 +25418,10 @@ Your melee attacks sometimes make enemies vulnerable to fire.
 你的近战攻击有时会使敌人更容易受到火焰伤害。
 %%%%
 fire wizardry
-火系施法强化
+火焰施法辅助
 %%%%
 You can cast Fire magic much more easily.
-你施放火系魔法更加容易。
+你施放火焰魔法容易得多。
 %%%%
 tree-form
 树形态
@@ -25466,7 +25466,7 @@ a living vampire.
 一个活着的吸血鬼。
 %%%%
 bat form
-蝙蝠变形
+蝠群变形
 %%%%
 You can occasionally transform into a swarm of bats.
 你可以偶尔变成一群蝙蝠。
@@ -25568,10 +25568,10 @@ swirl around
 在其周围盘旋
 %%%%
 highly resistant
-强效抗性
+高抗性
 %%%%
 You are highly resistant to most damage types. (rF++, rC++, rN+++, rElec, rCorr)
-你对大多数伤害类型具有很强的抗性。(rF++, rC++, rN+++, rElec, rCorr)
+你对大多数伤害类型具有很高的抗性。(rF++, rC++, rN+++, rElec, rCorr)
 %%%%
 hover solemnly before
 庄严地盘旋在
