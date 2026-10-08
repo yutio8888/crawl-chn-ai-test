@@ -2057,7 +2057,7 @@ static void _render_top_bar()
     {
         const item_def *held = weapon ? weapon : offhand;
         const int weapon_text_width = held
-            ? 3 + strwidth(_wpn_name_corroded(*held))
+            ? 3 + strwidth(held->name(DESC_PLAIN, true))
             : 3 + strwidth(you.unarmed_attack_name());
         const int quiver_x = min(max(weapon_text_width + field_gap, 12),
                                  max(12, hud_width - 8));

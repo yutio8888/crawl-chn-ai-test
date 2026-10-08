@@ -357,6 +357,111 @@ class AndroidMessageStatusTests(unittest.TestCase):
     def run_cpp(self, source: str) -> None:
         quickbar.TargetingSafetyTests.run_cpp(self, source)
 
+    def test_compact_weapon_width_matches_printed_name(self) -> None:
+        output = (SOURCE / "output.cc").read_text(encoding="utf-8")
+        row = output[output.index("    // Row 4: Weapon + Quiver"):
+                     output.index("    // On seven-row layouts")]
+        self.run_cpp(COMMON + r'''
+#define PURE
+#define ARRAYSZ(array) (sizeof(array) / sizeof((array)[0]))
+enum { DESC_PLAIN, HUD_CAPTION_COLOUR, LIGHTGREY, GOTO_STAT };
+''' + status_text_contract() + r'''
+struct item_def {
+    string display_name;
+    char slot = 'a';
+    mutable int name_calls = 0;
+    string name(int description, bool terse) const {
+        assert(description == DESC_PLAIN && terse);
+        ++name_calls;
+        return display_name;
+    }
+};
+struct {
+    const item_def *main_hand = nullptr, *off_hand = nullptr;
+    const item_def *weapon() const { return main_hand; }
+    const item_def *offhand_weapon() const { return off_hand; }
+    string unarmed_attack_name() const { return "unarmed"; }
+} you;
+struct { coord_def hudsz = coord_def(60, 7); } crawl_view;
+struct { int uc_colour = 0; } form;
+auto get_form() -> decltype(&form) { return &form; }
+int wielded_weapon_colour(const item_def &) { return 0; }
+void textcolour(int) {}
+int cursor_x = 1, cursor_y = 1;
+int quiver_column = -1;
+string printed_weapon;
+void move_cursor(int x, int y, int) { cursor_x = x; cursor_y = y; }
+#define CGOTOXY move_cursor
+string make_stringf(const char *format, ...) {
+    char buffer[256];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    return buffer;
+}
+void cprintf(const char *format, const char *text) {
+    assert(string(format) == "%s" && cursor_y == 4);
+    printed_weapon += text;
+    cursor_x += strwidth(text);
+    assert(cursor_x <= crawl_view.hudsz.x + 1);
+}
+#define CPRINTF cprintf
+static void _print_weapon_name(const item_def &weapon, int width)
+''' + body("output.cc", "static void _print_weapon_name(") + r'''
+static void _print_unarmed_name()
+''' + body("output.cc", "static void _print_unarmed_name()") + r'''
+// Replace the UI dispatch only; the name printer and measured row are real.
+static void _print_stats_wp(int y, int width = -1) {
+    assert(y == 4);
+    const item_def *held = you.weapon() ? you.weapon() : you.offhand_weapon();
+    if (held) _print_weapon_name(*held, width);
+    else _print_unarmed_name();
+}
+static void _print_stats_qv(int y, int x) {
+    assert(y == 4);
+    quiver_column = x;
+}
+static void render_weapon_row() {
+    const int hud_width = crawl_view.hudsz.x;
+    const int field_gap = 2;
+''' + row + r'''
+}
+int main() {
+    struct sample { string name; int hud_width, quiver_x; string printed; };
+    const vector<sample> samples = {
+        {"axe", 60, 12, "a) axe    "},
+        {"ordinary battleaxe", 60, 23, "a) ordinary battleaxe"},
+        {"中文中文中文", 60, 17, "a) 中文中文中文"},
+        {"ordinary battleaxe", 20, 12, "a) ordinar"},
+    };
+    for (const auto &sample : samples) {
+        for (bool offhand : {false, true}) {
+            item_def held;
+            held.display_name = sample.name;
+            you.main_hand = offhand ? nullptr : &held;
+            you.off_hand = offhand ? &held : nullptr;
+            crawl_view.hudsz.x = sample.hud_width;
+            printed_weapon.clear();
+            quiver_column = -1;
+            render_weapon_row();
+            // Independently specified columns and output verify cell widths,
+            // the display-name arguments, truncation and the two-cell gap.
+            assert(quiver_column == sample.quiver_x);
+            assert(printed_weapon == sample.printed);
+            assert(cursor_x <= quiver_column - 1);
+            assert(held.name_calls == 2); // measurement and the real printer
+        }
+    }
+    you.main_hand = you.off_hand = nullptr;
+    crawl_view.hudsz.x = 20;
+    printed_weapon.clear();
+    render_weapon_row();
+    assert(quiver_column == 12);
+    assert(printed_weapon == "-) unarmed          ");
+}
+''')
+
     def test_status_count_digit_transitions_and_full_row_hitbox(self) -> None:
         self.run_cpp(status_fixture() + r'''
 int main() {
