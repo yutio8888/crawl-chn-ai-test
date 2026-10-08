@@ -75,7 +75,6 @@ game-options.o \
 geom2d.o \
 ghost.o \
 god-abil.o \
-god-blessing.o \
 god-companions.o \
 god-conduct.o \
 god-item.o \
@@ -96,6 +95,7 @@ jobs.o \
 json.o \
 kills.o \
 known-items.o \
+l-autofight.o \
 l-colour.o \
 l-crawl.o \
 l-debug.o \
@@ -158,6 +158,7 @@ mon-ench.o \
 mon-explode.o \
 mon-gear.o \
 mon-info.o \
+mon-lurk.o \
 mon-movetarget.o \
 mon-pathfind.o \
 mon-pick.o \
@@ -336,6 +337,7 @@ catch2-tests/test_player_fixture.o \
 catch2-tests/test_randbook.o \
 catch2-tests/test_stringutil.o \
 catch2-tests/test_species.o \
+catch2-tests/test_shopping.o \
 catch2-tests/test_tags.o \
 catch2-tests/test_textdb_phase0.o \
 catch2-tests/test_tilecell.o \
@@ -439,7 +441,6 @@ game-type.h.o \
 gender-type.h.o \
 geom2d.h.o \
 god-abil.h.o \
-god-blessing.h.o \
 god-companions.h.o \
 god-item.h.o \
 god-passive.h.o \
@@ -596,7 +597,6 @@ timed-effect-type.h.o \
 torment-source-type.h.o \
 transformation.h.o \
 transform.h.o \
-trap-type.h.o \
 travel-defs.h.o \
 tutorial.h.o \
 uncancel.h.o \

@@ -90,7 +90,6 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_BREATH_WEAPON,   MB_BREATH_WEAPON },
     { ENCH_ROLLING,         MB_ROLLING },
     { ENCH_WRETCHED,        MB_WRETCHED },
-    { ENCH_SCREAMED,        MB_SCREAMED },
     { ENCH_WORD_OF_RECALL,  MB_WORD_OF_RECALL },
     { ENCH_INJURY_BOND,     MB_INJURY_BOND },
     { ENCH_FLAYED,          MB_FLAYED },
@@ -153,6 +152,10 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_PARADOX_TOUCHED, MB_PARADOX },
     { ENCH_WARDING,         MB_WARDING },
     { ENCH_DIMINISHED_SPELLS, MB_DIMINISHED_SPELLS },
+    { ENCH_EXPOSED,         MB_EXPOSED },
+    { ENCH_STAMPEDE,        MB_STAMPEDE },
+    { ENCH_PHASE_SHIFT,     MB_PHASE_SHIFT },
+    { ENCH_DIVINE_SHIELD,   MB_DIVINE_SHIELD },
 };
 
 static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
@@ -160,8 +163,7 @@ static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
     // Suppress silly-looking combinations, even if they're
     // internally valid.
     if (mons.paralysed() && (ench == ENCH_SLOW || ench == ENCH_HASTE
-                      || ench == ENCH_SWIFT
-                      || ench == ENCH_PETRIFIED || ench == ENCH_PETRIFYING))
+                      || ench == ENCH_SWIFT || ench == ENCH_PETRIFIED))
     {
         return NUM_MB_FLAGS;
     }
@@ -202,18 +204,14 @@ static monster_info_flags ench_to_mb(const monster& mons, enchant_type ench)
         return mons.get_ench(ench).degree == 1 ? MB_CONTAM_LIGHT : MB_CONTAM_HEAVY;
     case ENCH_SLOWLY_DYING:
         if (mons.type == MONS_WITHERED_PLANT ||
-            mons.type == MONS_PILE_OF_DEBRIS)
+            mons.type == MONS_PILE_OF_DEBRIS ||
+            mons.type == MONS_STACK_OF_SCRAP)
         {
             return MB_CRUMBLING;
         }
         if (mons_class_is_fragile(mons.type))
             return MB_WITHERING;
         return MB_SLOWLY_DYING;
-    case ENCH_CONSTRICTED:
-        if (mons.constricted_type == CONSTRICT_BVC)
-            return MB_VILE_CLUTCH;
-        else if (mons.constricted_type == CONSTRICT_ROOTS)
-            return MB_GRASPING_ROOTS;
     default:
         return NUM_MB_FLAGS;
     }
@@ -255,7 +253,9 @@ static bool _is_public_key(string key)
      || key == VAULT_HD_KEY
      || key == POLY_SET_KEY
      || key == NOBODY_MEMORIES_KEY
-     || key == ORIGINAL_TYPE_KEY)
+     || key == ORIGINAL_TYPE_KEY
+     || key == SPLINTERFROST_POWER_KEY
+     || key == TREE_POSITION_KEY)
     {
         return true;
     }
@@ -302,6 +302,7 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
     mb.reset();
     attitude = ATT_HOSTILE;
     pos = coord_def(0, 0);
+    mid = MID_NOBODY;
 
     type = p_type;
 
@@ -311,6 +312,24 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
                 : classy_drac ? MONS_DRACONIAN
                 : type;
 
+    _populate_as_generic();
+
+    if (mons_is_unique(type) || mons_is_unique(base_type))
+    {
+        if (mons_is_the(type) || mons_is_the(base_type))
+            mb.set(MB_NAME_THE);
+        else
+        {
+            mb.set(MB_NAME_UNQUALIFIED);
+            mb.set(MB_NAME_THE);
+        }
+    }
+}
+
+// Fill out this monster_info as if the monster were any arbitrary example of
+// its monster type, rather than a specific monster.
+void monster_info::_populate_as_generic()
+{
     if (has_hydra_multi_attack())
         num_heads = 1;
     else
@@ -332,10 +351,15 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
     if (mons_class_sees_invis(type, base_type))
         mb.set(MB_SEE_INVIS);
 
+    can_feel_fear = !(holi & (MH_UNDEAD | MH_NONLIVING));
+
     if (mons_resists_drowning(type, base_type))
         mb.set(MB_RES_DROWN);
     if (mons_res_blind(type) > 1)
         mb.set(MB_UNBLINDABLE);
+
+    backlit = false;
+    umbraed = false;
 
     mitemuse = mons_class_itemuse(type);
 
@@ -383,17 +407,6 @@ monster_info::monster_info(monster_type p_type, monster_type p_base_type)
         ev += get_mons_class_ev(base_type);
     }
 
-    if (mons_is_unique(type) || mons_is_unique(base_type))
-    {
-        if (mons_is_the(type) || mons_is_the(base_type))
-            mb.set(MB_NAME_THE);
-        else
-        {
-            mb.set(MB_NAME_UNQUALIFIED);
-            mb.set(MB_NAME_THE);
-        }
-    }
-
     for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
         attack[i] = get_monster_data(type)->attack[i];
 
@@ -422,88 +435,26 @@ static description_level_type _article_for(const actor* a)
     return m && m->friendly() ? DESC_YOUR : DESC_A;
 }
 
-monster_info::monster_info(const monster* m, int milev)
+void monster_info::_add_constriction_info(const monster* m)
 {
-    ASSERT(m); // TODO: change to const monster &mon
-    mb.reset();
-    attitude = ATT_HOSTILE;
-    pos = m->pos();
-
-    attitude = mons_attitude(*m);
-
-    type = m->type;
-    threat = milev <= MILEV_NAME ? MTHRT_TRIVIAL : mons_threat_level(*m);
-
-    props.clear();
-    // CrawlHashTable::begin() const can fail if the hash is empty.
-    if (!m->props.empty())
+    // Name of what this monster is directly constricted by, if any
+    constrictor_name = "";
+    if (m->constricted_type == CONSTRICT_MELEE || m->constricted_type == CONSTRICT_ENTANGLE)
     {
-        for (const auto &entry : m->props)
-            if (_is_public_key(entry.first))
-                props[entry.first] = entry.second;
+        const actor * const constrictor = actor_by_mid(m->constricted_by);
+        ASSERT(constrictor);
+        constrictor_name = T_("constricted by ")
+                           + constrictor->name(_article_for(constrictor),
+                                               true);
     }
+    else if (m->constricted_type == CONSTRICT_BVC)
+        mb.set(MB_VILE_CLUTCH);
+    else if (m->constricted_type == CONSTRICT_ROOTS)
+        mb.set(MB_GRASPING_ROOTS);
+}
 
-    // Translate references to tentacles into just their locations
-    if (mons_is_tentacle_or_tentacle_segment(type))
-    {
-        _translate_tentacle_ref(*this, m, INWARDS_KEY);
-        _translate_tentacle_ref(*this, m, OUTWARDS_KEY);
-    }
-
-    base_type = m->base_monster;
-    if (base_type == MONS_NO_MONSTER)
-        base_type = type;
-
-    if (type == MONS_SLIME_CREATURE)
-        slime_size = m->blob_size;
-    else if (type == MONS_BALLISTOMYCETE)
-        is_active = !!m->ballisto_activity;
-    else if (has_hydra_multi_attack())
-        num_heads = m->num_heads;
-    else if (type == MONS_SEISMOSAURUS_EGG)
-        number = m->number;
-    // others use number for internal information
-    else
-        number = 0;
-
-    if (type == MONS_BOULDER && m->props.exists(BOULDER_DIRECTION_KEY))
-        mb.set(MB_ROLLING);
-
-    _colour = m->colour;
-
-    summoner_id = MID_NOBODY;
-    if (m->is_summoned()
-        && !(m->flags & MF_PERSISTS)
-        && !m->is_child_monster() && !mons_is_tentacle_segment(m->type)
-        && (!m->has_ench(ENCH_PHANTOM_MIRROR) || m->friendly()))
-    {
-        mb.set(MB_SUMMONED);
-
-        if (m->is_abjurable())
-            mb.set(MB_ABJURABLE);
-        else
-            mb.set(MB_MINION);
-
-        if (m->type == MONS_SPELLSPARK_SERVITOR && m->summoner == MID_PLAYER)
-            mb.set(MB_PLAYER_SERVITOR);
-
-        summoner_id = m->summoner;
-    }
-    else if ((m->is_unrewarding()
-                 || testbits(m->flags, MF_NO_REWARD)
-                 && mons_class_gives_xp(m->type, true)))
-    {
-        // This shows a note in the extended description that the monster is
-        // worth no experience.
-        mb.set(MB_NO_REWARD);
-
-        // This displays an icon over the monster, and a status line when
-        // examining them, which looks a little weird and unnecessary for
-        // friendly monsters, as it's *always* the case with them.
-        if (m->real_attitude() != ATT_FRIENDLY)
-            mb.set(MB_UNREWARDING);
-    }
-
+void monster_info::_add_name_info(const monster* m, int milev)
+{
     if (mons_is_unique(type) || mons_is_unique(base_type))
     {
         if (mons_is_the(type) || mons_is_the(base_type))
@@ -545,12 +496,6 @@ monster_info::monster_info(const monster* m, int milev)
     if (m->flags & MF_NAME_SPECIES)
         mb.set(MB_NO_NAME_TAG);
 
-    // Ghostliness needed for name
-    if (testbits(m->flags, MF_SPECTRALISED))
-        mb.set(MB_SPECTRALISED);
-    if (m->has_ench(ENCH_VAMPIRE_THRALL))
-        mb.set(MB_VAMPIRE_THRALL);
-
     if (milev <= MILEV_NAME)
     {
         if (mons_class_is_animated_weapon(type))
@@ -569,8 +514,119 @@ monster_info::monster_info(const monster* m, int milev)
         {
             inv[MSLOT_ARMOUR].reset(new item_def(*m->get_defining_object()));
         }
+    }
+}
+
+monster_info::monster_info(const monster* m, int milev)
+{
+    ASSERT(m); // TODO: change to const monster &mon
+    mb.reset();
+    attitude = ATT_HOSTILE;
+    pos = m->pos();
+    mid = m->mid;
+
+    attitude = m->attitude();
+
+    type = m->type;
+    base_type = m->base_monster;
+    if (base_type == MONS_NO_MONSTER)
+        base_type = type;
+
+    // If this monster is currently hidden to the player, treat it as an
+    // arbitrary healthy example of its type.
+    if (m->flags & MF_KNOWN_INVISIBLE && !you.can_see(*m))
+    {
+        mb.set(MB_KNOWN_INVIS);
+        _add_name_info(m, milev);
+
+        if (milev <= MILEV_NAME)
+            return;
+
+        _populate_as_generic();
+        // The constriction status of even invisible monsters is considered known
+        // (they're usually being constricted by something visible!)
+        _add_constriction_info(m);
         return;
     }
+
+    threat = milev <= MILEV_NAME ? MTHRT_TRIVIAL : mons_threat_level(*m);
+
+    props.clear();
+    // CrawlHashTable::begin() const can fail if the hash is empty.
+    if (!m->props.empty())
+    {
+        for (const auto &entry : m->props)
+            if (_is_public_key(entry.first))
+                props[entry.first] = entry.second;
+    }
+
+    // Translate references to tentacles into just their locations
+    if (mons_is_tentacle_or_tentacle_segment(type))
+    {
+        _translate_tentacle_ref(*this, m, INWARDS_KEY);
+        _translate_tentacle_ref(*this, m, OUTWARDS_KEY);
+    }
+
+    if (type == MONS_SLIME_CREATURE)
+        slime_size = m->blob_size;
+    else if (type == MONS_BALLISTOMYCETE)
+        is_active = !!m->ballisto_activity;
+    else if (has_hydra_multi_attack())
+        num_heads = m->num_heads;
+    else if (type == MONS_SEISMOSAURUS_EGG)
+        number = m->number;
+    // others use number for internal information
+    else
+        number = 0;
+
+    if (type == MONS_BOULDER && m->props.exists(BOULDER_DIRECTION_KEY))
+        mb.set(MB_ROLLING);
+
+    _colour = m->colour;
+
+    // We set the summoner for all monsters, as it is needed for some damage
+    // displays, but the only mark them as summoned if we should display them
+    // as such in the UI.
+    summoner_id = m->summoner;
+    if (m->is_summoned()
+        && !(m->flags & MF_PERSISTS)
+        && !m->is_child_monster() && !mons_is_tentacle_segment(m->type)
+        && (!m->has_ench(ENCH_PHANTOM_MIRROR) || m->friendly()))
+    {
+        mb.set(MB_SUMMONED);
+
+        if (m->is_abjurable())
+            mb.set(MB_ABJURABLE);
+        else
+            mb.set(MB_MINION);
+
+        if (m->type == MONS_SPELLSPARK_SERVITOR && m->summoner == MID_PLAYER)
+            mb.set(MB_PLAYER_SERVITOR);
+    }
+    else if ((m->is_unrewarding()
+                 || testbits(m->flags, MF_NO_REWARD)
+                 && mons_class_gives_xp(m->type, true)))
+    {
+        // This shows a note in the extended description that the monster is
+        // worth no experience.
+        mb.set(MB_NO_REWARD);
+
+        // This displays an icon over the monster, and a status line when
+        // examining them, which looks a little weird and unnecessary for
+        // friendly monsters, as it's *always* the case with them.
+        if (m->base_attitude != ATT_FRIENDLY)
+            mb.set(MB_UNREWARDING);
+    }
+
+    // Ghostliness needed for name
+    if (testbits(m->flags, MF_SPECTRALISED))
+        mb.set(MB_SPECTRALISED);
+    if (m->has_ench(ENCH_VAMPIRE_THRALL))
+        mb.set(MB_VAMPIRE_THRALL);
+
+    _add_name_info(m, milev);
+    if (milev <= MILEV_NAME)
+        return;
 
     holi = m->holiness();
 
@@ -592,6 +648,7 @@ monster_info::monster_info(const monster* m, int milev)
     menergy = mons_energy(*m);
     can_go_frenzy = m->can_go_frenzy();
     can_feel_fear = m->can_feel_fear(false);
+    can_shoot_through_monster = shoot_through_actor(&you, m);
     sleepwalking = m->sleepwalking();
     backlit = m->backlit(false);
     umbraed = m->umbra();
@@ -612,8 +669,6 @@ monster_info::monster_info(const monster* m, int milev)
         mb.set(MB_UMBRAED);
     if (m->liquefied_ground())
         mb.set(MB_SLOW_MOVEMENT);
-    if (!actor_is_susceptible_to_vampirism(*m, true))
-        mb.set(MB_CANT_DRAIN);
     if (m->res_water_drowning())
         mb.set(MB_RES_DROWN);
     if (m->clarity())
@@ -626,8 +681,6 @@ monster_info::monster_info(const monster* m, int milev)
         mb.set(MB_STABBABLE);
     else if (stab_bonus == 4)
         mb.set(MB_MAYBE_STABBABLE);
-
-    dam = mons_get_damage_level(*m);
 
     // BEH_SLEEP is meaningless on firewood, don't show it. But it *is*
     // meaningful on non-firewood non-threatening monsters (i.e. butterflies).
@@ -652,7 +705,7 @@ monster_info::monster_info(const monster* m, int milev)
         }
         else if (m->foe == MHITNOT
                  && m->behaviour != BEH_BATTY
-                 && m->attitude == ATT_HOSTILE)
+                 && m->attitude() == ATT_HOSTILE)
         {
             mb.set(MB_UNAWARE);
         }
@@ -666,6 +719,11 @@ monster_info::monster_info(const monster* m, int milev)
         if (flag != NUM_MB_FLAGS)
             mb.set(flag);
     }
+
+    if (!is(MB_PHASE_SHIFT) || you.can_see_invisible())
+        dam = mons_get_damage_level(*m);
+    else
+        dam = MDAM_OKAY;
 
     // Similarly, don't set invisibility stab UI for firewood.
     if (!you.visible_to(m) && !m->is_firewood() && !m->has_ench(ENCH_BLIND))
@@ -802,18 +860,8 @@ monster_info::monster_info(const monster* m, int milev)
     }
 
     // init names of constrictor and constrictees
-    constrictor_name = "";
+    _add_constriction_info(m);
     constricting_name.clear();
-
-    // Name of what this monster is directly constricted by, if any
-    if (m->constricted_type == CONSTRICT_MELEE || m->constricted_type == CONSTRICT_ENTANGLE)
-    {
-        const actor * const constrictor = actor_by_mid(m->constricted_by);
-        ASSERT(constrictor);
-        constrictor_name = T_("constricted by ")
-                           + constrictor->name(_article_for(constrictor),
-                                               true);
-    }
 
     // Names of what this monster is directly constricting, if any
     if (m->constricting)
@@ -847,7 +895,7 @@ monster_info::monster_info(const monster* m, int milev)
     if (m->props.exists(SOUL_SPLINTERED_KEY))
         mb.set(MB_SOUL_SPLINTERED);
 
-    if (m->type == MONS_ASPIRING_FLESH)
+    if (m->type == MONS_ASPIRING_FLESH && m->props.exists(PROTEAN_TARGET_KEY))
         props[PROTEAN_TARGET_KEY] = m->props[PROTEAN_TARGET_KEY];
 
     if (m->type == MONS_PLATINUM_PARAGON)
@@ -1047,11 +1095,18 @@ string monster_info::db_name() const
     if (type == MONS_SENSED)
         return get_monster_data(base_type)->name;
 
+    // Otherwise the game gets confused over the weapon and monster having the same name.
+    if (type == MONS_ASSASSIN_CENTIPEDE)
+        return "assassin centipede monster";
+
     return get_monster_data(type)->name;
 }
 
 string monster_info::title_name() const
 {
+    // A database title must not hide the upstream visibility qualifier.
+    if (invisible_to_player())
+        return full_name(DESC_PLAIN);
     const string title = getMiscString(db_name() + " title");
     return title.empty() ? full_name(DESC_PLAIN) : title;
 }
@@ -1153,8 +1208,8 @@ string monster_info::_core_name() const
             {
                 switch (spells[0].spell)
                 {
-                case SPELL_BANISHMENT:
-                    s = T_("living banishment spell");
+                case SPELL_PETRIFY:
+                    s = T_("living petrification spell");
                     break;
                 case SPELL_LEHUDIBS_CRYSTAL_SPEAR:
                     s = T_("living crystal spell");
@@ -1162,10 +1217,11 @@ string monster_info::_core_name() const
                 case SPELL_SMITING:
                     s = T_("living smiting commandment");
                     break;
-                case SPELL_PARALYSE:
-                    s = T_("living paralysis spell");
+                case SPELL_ICEBLAST:
+                    s = T_("living iceblast spell");
                     break;
                 default:
+                    s = make_stringf("living %s spell", lowercase_string(spell_title(spells[0].spell)).c_str());
                     break;
                 }
             }
@@ -1229,6 +1285,9 @@ string monster_info::common_name(description_level_type desc) const
 
     if (props.exists(HELPLESS_KEY))
         ss << (T_("helpless "));
+
+    if (is(MB_KNOWN_INVIS) || is(MB_REMEMBERED_INVIS))
+        ss << T_("invisible ");
 
     if (type == MONS_SPECTRAL_THING && !is(MB_NAME_ZOMBIE) && !nocore)
         ss << (T_("spectral "));
@@ -1404,7 +1463,7 @@ bool monster_info::less_than_wrapper(const monster_info& m1,
     return monster_info::less_than(m1, m2, true);
 }
 
-// Sort monsters by (in that order):    attitude, difficulty, type, brand
+// Sort monsters by (in that order): attitude, difficulty, type, visibility status
 bool monster_info::less_than(const monster_info& m1, const monster_info& m2,
                              bool zombified, bool fullname)
 {
@@ -1488,6 +1547,12 @@ bool monster_info::less_than(const monster_info& m1, const monster_info& m2,
         }
     }
 
+    if (m1.is(MB_KNOWN_INVIS) != m2.is(MB_KNOWN_INVIS))
+        return m2.is(MB_KNOWN_INVIS);
+
+    if (m1.is(MB_REMEMBERED_INVIS) != m2.is(MB_REMEMBERED_INVIS))
+        return m2.is(MB_REMEMBERED_INVIS);
+
     if (fullname || mons_is_pghost(m1.type))
         return m1.mname < m2.mname;
 
@@ -1516,7 +1581,7 @@ string monster_info::pluralised_name(bool fullname) const
     else if ((type == MONS_UGLY_THING || type == MONS_VERY_UGLY_THING
                 || type == MONS_DANCING_WEAPON || type == MONS_SPECTRAL_WEAPON
                 || type == MONS_ARMOUR_ECHO || type == MONS_MUTANT_BEAST
-                || type == MONS_HAUNTED_ARMOUR
+                || type == MONS_HAUNTED_ARMOUR || type == MONS_LIVING_SPELL
                 || !fullname)
             && !is(MB_NAME_REPLACE))
 
@@ -1574,6 +1639,11 @@ void monster_info::to_string(int count, string& desc, int& desc_colour,
         break;
     case ATT_HOSTILE:
         if (has_unusual_items())
+        {
+            colour_type = MLC_UNUSUAL;
+            break;
+        }
+        if (is(MB_KNOWN_INVIS) || is(MB_REMEMBERED_INVIS))
         {
             colour_type = MLC_UNUSUAL;
             break;
@@ -1848,19 +1918,18 @@ int monster_info::reach_range(bool items) const
     int range = 1;
 
     for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
-    {
-        const attack_flavour fl = e->attack[i].flavour;
-        if (fl == AF_RIFT)
-            range = 3;
-        else if (flavour_has_reach(fl))
-            range = max(2, range);
-    }
+        range = max(range, attack[i].reach);
 
     if (items)
     {
         const item_def *weapon = inv[MSLOT_WEAPON].get();
         if (weapon)
-            range = max(range, weapon_reach(*weapon));
+        {
+            const int wpn_reach = weapon_reach(*weapon);
+            for (int i = 0; i < MAX_NUM_ATTACKS; ++i)
+                if (attack[i].type == AT_HIT || attack[i].type == AT_WEAP_ONLY)
+                    range = max(range, attack[i].reach + wpn_reach - 1);
+        }
     }
 
     return range;
@@ -1868,20 +1937,7 @@ int monster_info::reach_range(bool items) const
 
 size_type monster_info::body_size() const
 {
-    const size_type class_size = mons_class_body_size(base_type);
-
-    // Slime creature size is increased by the number merged.
-    if (type == MONS_SLIME_CREATURE)
-    {
-        if (slime_size == 2)
-            return SIZE_MEDIUM;
-        else if (slime_size == 3)
-            return SIZE_LARGE;
-        else if (slime_size >= 4) // sizes 4 & 5
-            return SIZE_GIANT;
-    }
-
-    return class_size;
+    return mons_class_body_size(base_type, PSIZE_BODY, slime_size);
 }
 
 bool monster_info::net_immune() const
@@ -2075,7 +2131,12 @@ bool monster_info::unravellable() const
                   { return this->has_trivial_ench(ench); });
 }
 
-void get_monster_info(vector<monster_info>& mons)
+// Gets the monster_info of all monsters in LoS which the player can either see
+// or is aware of while they're invisible.
+//
+// If invis_mons is non-null, puts all invisible monsters into invis_mons instead of mons.
+void get_nearby_monster_info(vector<monster_info>& mons,
+                             vector<monster_info>* invis_mons)
 {
     vector<monster* > visible;
     if (crawl_state.game_is_arena())
@@ -2086,15 +2147,31 @@ void get_monster_info(vector<monster_info>& mons)
     else
         visible = get_nearby_monsters();
 
+    // Include invisible monsters the player knew *used* to be in LoS, even if
+    // they aren't sure where they are right now.
+    vector<monster_info> unknown = env.invis_knowledge.get_unknown_in_los();
+    for (auto entry : unknown)
+    {
+        if (invis_mons)
+            invis_mons->push_back(entry);
+        else
+            mons.push_back(entry);
+    }
+
     for (monster *mon : visible)
     {
         if (mons_is_threatening(*mon)
             || mon->is_child_tentacle())
         {
-            mons.emplace_back(mon);
+            if (invis_mons && !mon->visible_to(&you))
+                invis_mons->emplace_back(mon);
+            else
+                mons.emplace_back(mon);
         }
     }
     sort(mons.begin(), mons.end(), monster_info::less_than_wrapper);
+    if (invis_mons)
+        sort(invis_mons->begin(), invis_mons->end(), monster_info::less_than_wrapper);
 }
 
 void mons_to_string_pane(string& desc, int& desc_colour, bool fullname,
@@ -2208,7 +2285,7 @@ void mons_conditions_string(string& desc, const vector<monster_info>& mi,
                 missile_count++;
             if (mi[j].reach_range(false) > 1)
                 reach_count++;
-            if (_has_attack_flavour(mi[j], AF_CRUSH))
+            if (_has_attack_flavour(mi[j], AF_CONSTRICT))
                 constrict_count++;
             if (_has_attack_flavour(mi[j], AF_TRAMPLE))
                 trample_count++;
@@ -2336,10 +2413,14 @@ string description_for_ench(enchant_type type)
 
 monster* monster_info::get_known_summoner() const
 {
+    // The MB_SUMMONED flag gates whether the monster should show as summoned.
+    if (!is(MB_SUMMONED))
+        return nullptr;
+
     monster* summoner = monster_by_mid(summoner_id);
 
     // Don't leak information about invisible summoners.
-    if (!summoner || !you.can_see(*summoner))
+    if (!summoner || !you.aware_of(*summoner))
         return nullptr;
 
     // Don't leak the real Mara, if this happened to be made by them.
@@ -2362,4 +2443,9 @@ int monster_info::perception() const
         return 5;
 
     return monster_perception(hd, mintel, is(MB_SLEEPING) || is(MB_DORMANT));
+}
+
+bool monster_info::invisible_to_player() const
+{
+    return is(MB_KNOWN_INVIS) || is(MB_REMEMBERED_INVIS);
 }

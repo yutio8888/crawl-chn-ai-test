@@ -177,6 +177,17 @@ local function pick_room(e, options)
     options.did_necropolis_chance = true
   end
   -- Roll the chance to pick a Wizlab vault room if we haven't done so.
+  if not options.did_gulch_chance then
+    if crawl.x_chance_in_y(dgn.gulch_chance_percent, 100) then
+      for i, r in ipairs(options.room_type_weights) do
+        if r.generator == "tagged" and r.tag == "vaults_gulch" then
+          chosen = r
+        end
+      end
+    end
+    options.did_gulch_chance = true
+  end
+  -- Roll the chance to pick a Wizlab vault room if we haven't done so.
   if not options.did_wizlab_chance then
     if crawl.x_chance_in_y(dgn.wizlab_chance_percent, 100) then
       for i, r in ipairs(options.room_type_weights) do

@@ -116,9 +116,10 @@ spret zin_imprison(const coord_def& target, bool fail);
 void zin_sanctuary();
 
 void tso_divine_shield();
-void tso_expend_divine_shield_charge();
 
 void elyvilon_purification();
+bool elyvilon_divine_alms_eligible(const monster& target);
+void elyvilon_divine_alms(monster& target);
 void elyvilon_divine_vigour();
 void elyvilon_remove_divine_vigour();
 
@@ -126,6 +127,8 @@ bool vehumet_supports_spell(spell_type spell);
 
 void trog_do_trogs_hand(int power);
 void trog_remove_trogs_hand();
+monster_type trog_get_brother_type(int power);
+spret trog_brothers_in_arms(bool fail);
 
 string yred_cannot_light_torch_reason();
 bool yred_light_the_torch();
@@ -157,10 +160,11 @@ bool is_slouchable(coord_def where);
 spret cheibriados_slouch(bool fail);
 void cheibriados_time_step(int pow);
 
+string format_ashenzari_curse_offer(const string &curse_names);
 void ashenzari_offer_new_curse();
-bool ashenzari_curse_item();
-bool ashenzari_uncurse_item();
-string desc_curse_skills(const CrawlStoreValue& curse);
+bool ashenzari_bind_item();
+bool ashenzari_shatter_item();
+string desc_curse_skills(const CrawlVector& curse);
 string curse_abbr(const CrawlStoreValue& curse);
 string curse_name(const CrawlStoreValue& curse);
 const vector<skill_type>& curse_skills(const CrawlStoreValue& curse);
@@ -231,7 +235,7 @@ spret uskayaw_grand_finale(bool fail);
 
 bool hepliaklqana_choose_ancestor_type(int ancestor_type);
 spret hepliaklqana_idealise(bool fail);
-spret hepliaklqana_transference(bool fail);
+spret hepliaklqana_transference(const coord_def& target, bool fail);
 void hepliaklqana_choose_identity();
 
 bool wu_jian_can_wall_jump_in_principle(const coord_def& target);

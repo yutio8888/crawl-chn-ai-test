@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -144,6 +145,49 @@ class MoveI18nAuditTest(unittest.TestCase):
         self.assertIn("missing exact TextDB key: move.enter-area|walk",
                       result.stderr)
 
+    def test_species_stems_follow_trunk_present_verbs(self):
+        for stem, verb in (("Trott", "trot"), ("Wriggl", "wriggle"),
+                           ("Glid", "walk"), ("Hop", "hop")):
+            with self.subTest(stem=stem):
+                (self.source / "dat/species/test.yaml").write_text(
+                    f"walking_verb: {stem}\n", encoding="utf-8")
+                result = self.run_audit()
+                self.assertIn(verb, result.stdout)
+                if verb != "walk":
+                    self.assertIn(f"unclassified reachable verbs: {verb}", result.stderr)
+                if stem.lower() != verb:
+                    self.assertIsNone(re.search(rf"\b{stem.lower()}\b", result.stdout + result.stderr))
+
+    def test_stampede_has_toward_target_context(self):
+        (self.source / "movement.cc").write_text(
+            'static string _get_move_verb(bool) { return "stampede"; }\n',
+            encoding="utf-8")
+        result = self.run_audit()
+        self.assertIn("move.toward-target: unclassified reachable verbs: stampede",
+                      result.stderr)
+
+    def test_forced_move_sentinel_requires_all_special_prompt_routes(self):
+        player = (ROOT / "crawl-ref/source/player.cc").read_text(encoding="utf-8")
+        (self.source / "player.cc").write_text(player, encoding="utf-8")
+        (self.source / "throw.cc").write_text(
+            'void f() { check_moveto(p, "potentially stumble back", false, false); }',
+            encoding="utf-8")
+        result = self.run_audit()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertNotIn("potentially stumble back", result.stdout)
+        for old, new in (
+            ('move_verb == "potentially stumble back"', 'move_verb == "changed"'),
+            ('possible_forced_move_prompt(', 'unknown_prompt('),
+            ('possible_forced_prompt_context::cloud', 'possible_forced_prompt_context::exclusion'),
+            ('? possible_forced_move_prompt(', ': possible_forced_move_prompt('),
+        ):
+            with self.subTest(mutation=old):
+                (self.source / "player.cc").write_text(
+                    player.replace(old, new, 1), encoding="utf-8")
+                result = self.run_audit()
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("forced movement sentinel", result.stderr)
+
     def test_stale_manifest_verb_is_warning_only(self):
         self.contexts["move.bare"].append("ghost-step")
         self.write_manifest()
@@ -152,6 +196,19 @@ class MoveI18nAuditTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("WARNING: move.bare: stale manifest verbs: ghost-step",
                       result.stdout)
+
+    def test_current_manifest_classifies_stems_and_routes_sentinel(self):
+        result = subprocess.run(
+            [sys.executable, str(AUDIT), str(ROOT / "crawl-ref/source"),
+             "--source-txt", str(ROOT / "crawl-ref/source/dat/i18n/zh/source.txt"),
+             "--manifest", str(ROOT / ".claude/scripts/data/move_i18n_manifest.json")],
+            capture_output=True, text=True, check=False)
+        self.assertNotIn("unclassified reachable verbs", result.stderr)
+        self.assertNotIn("forced movement sentinel", result.stderr)
+        self.assertNotIn("trott", result.stdout + result.stderr)
+        self.assertNotIn("potentially stumble back", result.stdout + result.stderr)
+        # Missing exact catalog keys may still fail: classification is separate.
+        self.assertIn("trot", result.stdout)
 
 
 if __name__ == "__main__":

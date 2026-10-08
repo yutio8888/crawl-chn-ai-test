@@ -77,7 +77,7 @@ assert(string.find(welcome, race_display, 1, true)
 assert(not string.find(welcome, you.race(), 1, true)
        and not string.find(welcome, you.class(), 1, true),
        "welcome hint leaked raw race/class")
-for _, hint_key in ipairs({"dissection reminder", "HINT_CONVERT"}) do
+for _, hint_key in ipairs({"HINT_KILLED_MONSTER", "HINT_CONVERT"}) do
     local hint = crawl.test_hint_text(hint_key)
     assert(string.find(hint, god_display, 1, true),
            hint_key .. " did not render localized god")
@@ -163,11 +163,11 @@ local function assert_trove_marker_shape(item, label)
         sub_type = {string=true},
         ego_type = {string=true, boolean=true},
         plus1 = {number=true, boolean=true},
+        -- Upstream TroveMarker still persists this compatibility field on
+        -- trunk. The display version (0.35) is not the marker/save schema.
+        plus2 = {number=true, boolean=true},
         artefact_name = {string=true, boolean=true},
     }
-    if crawl.version("major") == "0.34" then
-        field_types.plus2 = {number=true, boolean=true}
-    end
     local count = 0
     for field, value in pairs(item) do
         count = count + 1

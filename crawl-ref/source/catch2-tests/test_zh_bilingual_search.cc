@@ -277,8 +277,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-search][ScopedLangEn]")
 {
     // Baseline: native ZH description should contain CJK.
-    const string zh_stairs = ::feature_description(DNGN_STONE_STAIRS_DOWN_I,
-                                                    NUM_TRAPS);
+    const string zh_stairs = ::feature_description(DNGN_STONE_STAIRS_DOWN_I);
     INFO("ZH staircase: \"" << zh_stairs << "\"");
     bool zh_has_cjk = false;
     for (char c : zh_stairs)
@@ -289,8 +288,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // Under ScopedLangEn: same feature returns English (ASCII-only).
     {
         ScopedLangEn en;
-        const string en_stairs = ::feature_description(DNGN_STONE_STAIRS_DOWN_I,
-                                                       NUM_TRAPS);
+        const string en_stairs = ::feature_description(DNGN_STONE_STAIRS_DOWN_I);
         INFO("EN staircase: \"" << en_stairs << "\"");
         bool en_has_cjk = false;
         for (char c : en_stairs)
@@ -302,8 +300,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
 
     // After guard: back to ZH.
-    const string zh_stairs2 = ::feature_description(DNGN_STONE_STAIRS_DOWN_I,
-                                                    NUM_TRAPS);
+    const string zh_stairs2 = ::feature_description(DNGN_STONE_STAIRS_DOWN_I);
     bool zh2_has_cjk = false;
     for (char c : zh_stairs2)
         if (static_cast<unsigned char>(c) >= 0x80)
@@ -322,12 +319,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                               const string &en_keyword) {
         INFO("feat: " << static_cast<int>(feat));
 
-        const string zh_desc = ::feature_description(feat, NUM_TRAPS);
+        const string zh_desc = ::feature_description(feat);
         INFO("ZH: \"" << zh_desc << "\"");
 
         {
             ScopedLangEn en;
-            const string en_desc = ::feature_description(feat, NUM_TRAPS);
+            const string en_desc = ::feature_description(feat);
             INFO("EN: \"" << en_desc << "\"");
             REQUIRE(en_desc.find(en_keyword) != string::npos);
         }

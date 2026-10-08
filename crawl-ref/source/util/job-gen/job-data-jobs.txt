@@ -1,6 +1,6 @@
 {tag_major_version_opener}
 {{ {enum}, {{
-    "{short_name}", "{name}",
+    "{short_name}", N_("{name}"),
     {str}, {int}, {dex},
     {{ {recommended_species} }},
 {spells},

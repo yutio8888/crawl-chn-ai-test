@@ -26,6 +26,7 @@
 #include "stairs.h"
 #include "state.h"
 #include "stringutil.h"
+#include "tile-env.h"
 #include "tileview.h"
 #include "unique-creature-list-type.h"
 #include "unwind.h"
@@ -103,6 +104,8 @@ LUAFN(debug_generate_level)
 {
     msg::suppress mx;
     env.map_knowledge.init(map_cell());
+    env.map_forgotten.reset();
+    tile_env.remembered_flavour.reset();
     los_changed();
     tile_init_default_flavour();
     tile_clear_flavour();
@@ -454,7 +457,7 @@ LUAFN(debug_check_moncasts)
             continue;
         // we need to reset the foe each time: some spells (e.g. lesser
         // and greater healing) could change it.
-        if (m2)
+        if (m2 && !mons_aligned(m1, m2))
             m1->foe = m2->mindex();
         else
             m1->foe = MHITNOT;

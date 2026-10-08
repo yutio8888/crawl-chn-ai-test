@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
+#include <set>
 #include <vector>
 
 #include "abyss.h"
@@ -22,7 +24,7 @@
 #include "directn.h"
 #include "dungeon.h"
 #include "english.h"
-#include "god-abil.h" // fedhas_passthrough for armataur charge
+#include "god-abil.h"
 #include "god-conduct.h"
 #include "item-prop.h"
 #include "items.h"
@@ -31,14 +33,14 @@
 #include "los.h"
 #include "losglobal.h"
 #include "losparam.h"
-#include "melee-attack.h" // armataur charge
+#include "melee-attack.h"
 #include "message.h"
 #include "mon-behv.h"
 #include "mon-death.h"
 #include "mon-place.h"
 #include "mon-tentacle.h"
 #include "mon-util.h"
-#include "movement.h" // armataur charge
+#include "movement.h"
 #include "movement-i18n.h"
 #include "nearby-danger.h"
 #include "orb.h"
@@ -90,7 +92,7 @@ spret cast_disjunction(int pow, bool fail)
 void disjunction_spell()
 {
     int steps = you.time_taken;
-    invalidate_agrid(true);
+    invalidate_agrid();
     for (int step = 0; step < steps; ++step)
     {
         vector<monster*> mvec;
@@ -221,10 +223,13 @@ spret spider_jump()
  * @param verb          What kind of movement is this, exactly?
  *                      (E.g. 'blink', 'hop'.)
  * @param hitfunc       A hitfunc passed to the direction_chooser.
- * @return              True if a target was found; false if the player aborted.
+ * @return              spret::success if a target was found; spret::abort if
+ *                      the player aborted; spret::seen_hups if finding a
+ *                      target had to be stopped early due to hups.
  */
-static bool _find_cblink_target(dist &target, bool safe_cancel,
-                                string verb, targeter *hitfunc = nullptr, bool physical = false)
+static spret _find_cblink_target(dist &target, bool safe_cancel,
+                                string verb, targeter *hitfunc = nullptr,
+                                bool physical = false)
 {
     while (true)
     {
@@ -245,7 +250,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             mprf(T_("Cancelling %s due to HUP."),
                  translated_move_phrase(verb.c_str(),
                                         move_phrase_context::bare));
-            return false;
+            return spret::seen_hups;
         }
 
         if (!target.isValid || target.target == you.pos())
@@ -261,7 +266,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             }
 
             canned_msg(MSG_OK);
-            return false;
+            return spret::abort;
         }
 
         const monster* beholder = you.get_beholder(target.target);
@@ -294,7 +299,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         }
 
         monster* target_mons = monster_at(target.target);
-        if (target_mons && you.can_see(*target_mons))
+        if (target_mons && you.aware_of(*target_mons))
         {
             mprf(T_("You can't %s onto %s!"),
                  translated_move_phrase(verb.c_str(),
@@ -303,7 +308,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             continue;
         }
 
-        if (!check_moveto(target.target, verb, false))
+        if (!check_moveto(target.target, verb, false, false))
         {
             continue;
             // try again (messages handled by check_moveto)
@@ -325,7 +330,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
             continue;
         }
 
-        return true;
+        return spret::success;
     }
 }
 
@@ -363,7 +368,7 @@ void wizard_blink()
         return wizard_blink();
     }
 
-    if (!check_moveto(beam.target, "blink", false))
+    if (!check_moveto(beam.target, "blink", false, false))
     {
         return wizard_blink();
         // try again (messages handled by check_moveto)
@@ -401,7 +406,7 @@ public:
             return AFF_NO; // XX is this handled by the valid blink check?
 
         const actor* p_act = actor_at(p);
-        if (p_act && (incl_unseen || agent->can_see(*p_act)))
+        if (p_act && (incl_unseen || agent->aware_of(*p_act)))
             return AFF_NO;
 
         // terrain details are cached in exp_map_max by set_aim
@@ -471,7 +476,8 @@ spret frog_hop(bool fail, dist *target)
 
     while (true)
     {
-        if (!_find_cblink_target(*target, true, "hop", &tgt, true))
+        spret result = _find_cblink_target(*target, true, "hop", &tgt, true);
+        if (result != spret::success)
             return spret::abort;
 
         if (grid_distance(you.pos(), target->target) > hop_range)
@@ -508,17 +514,29 @@ spret frog_hop(bool fail, dist *target)
 string electric_charge_impossible_reason(bool allow_safe_monsters)
 {
     // General movement checks are handled elsewhere.
-    int nearby_mons = 0;
+    int num_reasons = 0;
     string example_reason = "";
     string fail_reason;
-    for (monster_near_iterator mi(&you); mi; ++mi)
+    for (monster_near_iterator mi(&you, LOS_DEFAULT, true); mi; ++mi)
     {
-        ++nearby_mons;
-        if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason).origin())
+        // To increase clarity about the reason why the player cannot cast Vhi's,
+        // try to exclude things which are 'obviously' invalid targets (by being
+        // out of range or friendly). Otherwise, a single adjacent monster can
+        // prevent giving useful information about why any other monster is invalid.
+        bool invalid_target = false;
+        if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason, &invalid_target).origin())
         {
-            example_reason = make_stringf(T_("you can't charge at %s because %s"),
-                                          mi->name(DESC_THE).c_str(),
-                                          fail_reason.c_str());
+            const bool low_priorty = invalid_target
+                && !(you.aware_of(**mi)
+                     && (!you.can_see(**mi) || fedhas_passthrough(*mi)));
+            if (!low_priorty || example_reason.empty())
+            {
+                example_reason = make_stringf(T_("you can't charge at %s because %s"),
+                                            mi->name(DESC_THE).c_str(),
+                                            fail_reason.c_str());
+                if (!low_priorty)
+                    num_reasons++;
+            }
         }
         else if (allow_safe_monsters
                  || !mons_is_safe(*mi, false)
@@ -527,11 +545,9 @@ string electric_charge_impossible_reason(bool allow_safe_monsters)
             return "";
         }
     }
-    if (!nearby_mons)
-        return T_("you can't see anything to charge at.");
-    if (nearby_mons == 1)
+    if (!example_reason.empty() && num_reasons <= 1)
         return lowercase_string(example_reason);
-    return T_("there's one issue or another keeping you from charging at any nearby foe.");
+    return T_("there are no targets in range which are valid to charge at.");
 }
 
 string movement_impossible_reason()
@@ -549,37 +565,19 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
 
     const actor* act = actor_at(target);
 
-    // Target must be in range and non-adjacent
-    if (agent.pos() == target)
-    {
-        if (fail_reason)
-            *fail_reason = "You can't charge at yourself.";
-
-        return false;
-    }
-    else if (adjacent(agent.pos(), target))
-    {
-        if (fail_reason)
-            *fail_reason = "You're already next to there.";
-
-        return false;
-    }
-    else if (grid_distance(agent.pos(), target)
-             > spell_range(SPELL_ELECTRIC_CHARGE, &agent))
-    {
-        if (fail_reason)
-            *fail_reason = "That's out of range!";
-
-        return false;
-    }
-
     // No charging at things the caster cannot see.
     if (!act || !agent.can_see(*act)
         || agent.is_player() && act->is_monster()
            && fedhas_passthrough(act->as_monster()))
     {
-        if (fail_reason)
-            *fail_reason = "You can't see anything there to charge at.";
+        if (act && agent.aware_of(*act) && fail_reason)
+        {
+            *fail_reason = make_stringf(T_("%s %s visible enough to target properly."),
+                                            act->pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                                            act->verb_for_display(N_("aren't")).c_str());
+        }
+        else if (fail_reason)
+            *fail_reason = T_("You can't see anything there to charge at.");
 
         return false;
     }
@@ -588,7 +586,31 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
     if (mons_aligned(act, &agent) || act->is_firewood())
     {
         if (fail_reason)
-            *fail_reason = "Why would you want to do that?";
+            *fail_reason = T_("Why would you want to do that?");
+
+        return false;
+    }
+
+    // Target must be in range and non-adjacent
+    if (agent.pos() == target)
+    {
+        if (fail_reason)
+            *fail_reason = T_("You can't charge at yourself.");
+
+        return false;
+    }
+    else if (adjacent(agent.pos(), target))
+    {
+        if (fail_reason)
+            *fail_reason = T_("You're already next to there.");
+
+        return false;
+    }
+    else if (grid_distance(agent.pos(), target)
+             > spell_range(SPELL_ELECTRIC_CHARGE, &agent))
+    {
+        if (fail_reason)
+            *fail_reason = T_("That's out of range!");
 
         return false;
     }
@@ -600,17 +622,21 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
 // Returns (0, 0) if this charge is invalid for any reason.
 // (fail_reason will get set to an appropriate error message)
 coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
-                                           string* fail_reason)
+                                           string* fail_reason, bool* target_invalid)
 {
     // Double-check that this is a valid thing to try to charge at at all
     if (!valid_electric_charge_target(agent, target, fail_reason))
+    {
+        if (target_invalid)
+            *target_invalid = true;
         return coord_def(0, 0);
+    }
 
     ray_def ray;
     if (!find_ray(agent.pos(), target, ray, opc_solid))
     {
         if (fail_reason)
-            *fail_reason = "There's something in the way.";
+            *fail_reason = T_("There's something in the way.");
 
         return coord_def(0, 0);
     }
@@ -627,21 +653,20 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
             {
                 if (fail_reason)
                 {
-                    *fail_reason = "There's "
-                                   + feature_description_at(ray.pos())
-                                   + " in the way.";
+                    *fail_reason = make_stringf(T_("There's %s in the way."),
+                        feature_description_at(ray.pos()).c_str());
                 }
 
                 return coord_def(0, 0);
             }
 
             const monster* mon = monster_at(ray.pos());
-            if (mon && agent.can_see(*mon) && mons_class_is_stationary(mon->type))
+            if (mon && agent.aware_of(*mon) && mons_class_is_stationary(mon->type))
             {
                 if (fail_reason)
                 {
-                    *fail_reason = mon->name(DESC_THE)
-                                   + " is immovably fixed in your path.";
+                    *fail_reason = make_stringf(T_("%s is immovably fixed in your path."),
+                                                mon->name(DESC_THE).c_str());
                 }
 
                 return coord_def(0, 0);
@@ -865,7 +890,8 @@ spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target
  * @param safe_cancel   Whether it's OK to let the player cancel the control
  *                      of the blink (or whether there should be a prompt -
  *                      for e.g. read-identified ?blink)
- * @return              Whether the blink succeeded, aborted, or was miscast.
+ * @return              Whether the blink succeeded, aborted, or had to be
+ *                      cancelled due to hups.
  */
 spret controlled_blink(bool safe_cancel, dist *target)
 {
@@ -883,8 +909,10 @@ spret controlled_blink(bool safe_cancel, dist *target)
     if (orb_limits_translocation())
     {
         targeter_hop tgt(max(1, you.current_vision - 2), false);
-        if (!_find_cblink_target(*target, safe_cancel, "blink", &tgt))
-            return spret::abort;
+        spret result = _find_cblink_target(*target, safe_cancel, "blink",
+                                           &tgt);
+        if (result != spret::success)
+            return result;
         target->target = _fuzz_blink_destination(target->target);
         mprf(MSGCH_ORB, T_("You feel the Orb interfering with your translocation!"));
     }
@@ -892,8 +920,10 @@ spret controlled_blink(bool safe_cancel, dist *target)
     {
         targeter_smite tgt(&you, LOS_RADIUS);
         tgt.obeys_mesmerise = true;
-        if (!_find_cblink_target(*target, safe_cancel, "blink", &tgt))
-            return spret::abort;
+        spret result = _find_cblink_target(*target, safe_cancel, "blink",
+                                           &tgt);
+        if (result != spret::success)
+            return result;
     }
 
     // invisible monster that the targeter didn't know to avoid
@@ -965,7 +995,9 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
 
         if (player_in_branch(BRANCH_ABYSS))
         {
-            mpr(T_("You feel the power of the Abyss delaying your translocation!"));
+            mpr(!you.runes[RUNE_ABYSSAL]
+                ? T_("You feel the power of the Abyss delaying your translocation and deflecting it away from its rune!")
+                : T_("You feel the power of the Abyss delaying your translocation!"));
             teleport_delay += 5 + random2(10);
         }
         else if (orb_limits_translocation())
@@ -989,8 +1021,8 @@ bool cell_vetoes_teleport(const coord_def cell, bool check_monsters,
     if (monster_at(cell) && check_monsters)
         return true;
 
-    // As do all clouds; this may change.
-    if (cloud_at(cell) && !wizard_tele)
+    // As do any harmful clouds.
+    if (harmful_cloud_at(cell) && !wizard_tele)
         return true;
 
     if (cell_is_solid(cell))
@@ -1150,7 +1182,7 @@ static bool _teleport_player(bool wizard_tele, string reason="")
 
 static bool _is_hostile_teleport_target(const monster& mon)
 {
-    return mon.temp_attitude() == ATT_HOSTILE
+    return mon.attitude() == ATT_HOSTILE
             && mons_is_threatening(mon)
             && !testbits(env.pgrid(mon.pos()), FPROP_NO_TELE_INTO);
 }
@@ -1340,9 +1372,22 @@ bool you_teleport_to(const coord_def where_to, bool move_monsters)
     return true;
 }
 
-void you_teleport_now(bool wizard_tele, string reason)
+void you_teleport_now(string reason, bool manual_tele, bool wizard_tele)
 {
     bool randtele;
+    bool need_abyss_rune_warning = false;
+
+    // While in the Abyss, teleport scrolls will always take the player slightly
+    // further away from the rune. (But other effects moving you at random
+    // should not.)
+    if (manual_tele && player_in_branch(BRANCH_ABYSS)
+        && !you.props.exists(TELEPORTITIS_SOURCE))
+    {
+        int&areas = you.props[ABYSS_AREAS_SEEN_KEY].get_int();
+        if (areas > 0 && !you.runes[RUNE_ABYSSAL] && you.depth >= ABYSSAL_RUNE_MIN_LEVEL)
+            need_abyss_rune_warning = true;
+        areas = max(0, areas - 2);
+    }
 
     if (!wizard_tele && you.props.exists(TELEPORTITIS_SOURCE))
     {
@@ -1352,6 +1397,9 @@ void you_teleport_now(bool wizard_tele, string reason)
     }
     else
         randtele = _teleport_player(wizard_tele, reason);
+
+    if (need_abyss_rune_warning)
+        mprf(MSGCH_WARN, T_("You feel the abyssal rune grow more distant."));
 
     // Xom is amused by teleports that land you in a dangerous place, unless
     // the player is in the Abyss and teleported to escape from all the
@@ -1366,16 +1414,6 @@ void you_teleport_now(bool wizard_tele, string reason)
 
 spret cast_dimensional_bullseye(int pow, monster *target, bool fail)
 {
-    if (target == nullptr || !you.can_see(*target))
-    {
-        canned_msg(MSG_NOTHING_THERE);
-        // You cannot place a bullseye on invisible enemies, so just abort
-        return spret::abort;
-    }
-
-    if (stop_attack_prompt(target, false, you.pos()))
-        return spret::abort;
-
     fail_check();
 
     // We can only have a bullseye on one target a time, so remove the old one
@@ -1566,33 +1604,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         return spret::abort;
     }
 
-    fail_check();
-
-    // We need to modify the item *before* we move it, because
-    // move_top_item() might change the location, or merge
-    // with something at our position.
-    if (item_is_orb(item))
-    {
-        fake_noisy(30, where);
-
-        // There's also a 1-in-3 flat chance of apport failing.
-        if (one_chance_in(3))
-        {
-            orb_pickup_noise(where, 30,
-                "The Orb shrieks and becomes a dead weight against your magic!",
-                "The Orb lets out a furious burst of light and becomes "
-                    "a dead weight against your magic!");
-            return spret::success;
-        }
-        else // Otherwise it's just a noisy little shiny thing
-        {
-            orb_pickup_noise(where, 30,
-                "The Orb shrieks as your magic touches it!",
-                "The Orb lets out a furious burst of light as your magic touches it!");
-            start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, "Now pick up the Orb and get out of here!");
-        }
-    }
-
+    // Determine spot to pull items onto.
     beam.set_is_tracer(true);
     beam.aimed_at_spot = true;
     beam.affects_nothing = true;
@@ -1630,20 +1642,51 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         {
             // we've checked every position in beam.path_taken within max_dist
             mpr(T_("Not with that terrain in the way!"));
-            return spret::success; // of a sort
+            return spret::abort;
         }
         new_spot = beam.path_taken[location_on_path];
     }
+
+    fail_check();
+
+    for (stack_iterator si(where); si; ++si)
+    {
+        if (item_is_orb(*si))
+        {
+            fake_noisy(30, where);
+
+            // There's also a 1-in-3 flat chance of apport failing.
+            if (one_chance_in(3))
+            {
+                orb_pickup_noise(where, 30,
+                    T_("The Orb shrieks and becomes a dead weight against your magic!"),
+                    T_("The Orb lets out a furious burst of light and becomes "
+                       "a dead weight against your magic!"));
+                return spret::success;
+            }
+            else // Otherwise it's just a noisy little shiny thing
+            {
+                orb_pickup_noise(where, 30,
+                    T_("The Orb shrieks as your magic touches it!"),
+                    T_("The Orb lets out a furious burst of light as your magic touches it!"));
+                start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, T_("Now pick up the Orb and get out of here!"));
+            }
+        }
+    }
+
     dprf("Apport: new spot is %d/%d", new_spot.x, new_spot.y);
 
-    // Actually move the item.
-    mprf(T_("Yoink! You pull the item%s towards yourself."),
-         (item.quantity > 1) ? "s" : "");
+    // Actually move the items.
+    int num_moved = 0;
+    while (you.visible_igrd(where) != NON_ITEM)
+    {
+        if (move_top_item(where, new_spot))
+            ++num_moved;
+    }
 
-    move_top_item(where, new_spot);
-
-    // Mark the item as found now.
-    origin_set(new_spot);
+    mprf(T_("Yoink! You pull the item%s %stowards yourself."),
+         num_moved > 1 ? "s" : "",
+         new_spot != you.pos() ? T_("partway ") : "");
 
     return spret::success;
 }
@@ -1651,8 +1694,8 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
 bool golubria_valid_cell(coord_def p, bool just_check)
 {
     return in_bounds(p)
-           && env.grid(p) == DNGN_FLOOR
-           && (!monster_at(p) || just_check && !you.can_see(*monster_at(p)))
+           && feat_is_floor(env.grid(p))
+           && (!monster_at(p) || just_check && !you.aware_of(*monster_at(p)))
            && cell_see_cell(you.pos(), p, LOS_NO_TRANS);
 }
 
@@ -1678,65 +1721,42 @@ spret cast_golubrias_passage(int pow, const coord_def& where, bool fail)
         return spret::abort;
     }
 
-    int tries = 0;
-    int tries2 = 0;
-    const int range = GOLUBRIA_FUZZ_RANGE;
-    coord_def randomized_where = where;
-    coord_def randomized_here = you.pos();
-    do
-    {
-        tries++;
-        randomized_where = where;
-        randomized_where.x += random_range(-range, range);
-        randomized_where.y += random_range(-range, range);
-    }
-    while ((!golubria_valid_cell(randomized_where)
-            || randomized_where == you.pos())
-           && tries < 100);
+    vector<coord_def> here_candidates;
+    vector<coord_def> there_candidates;
+    for (radius_iterator ri(you.pos(), GOLUBRIA_FUZZ_RANGE, C_SQUARE); ri; ++ri)
+        if (golubria_valid_cell(*ri))
+            here_candidates.emplace_back(*ri);
 
-    do
-    {
-        tries2++;
-        randomized_here = you.pos();
-        randomized_here.x += random_range(-range, range);
-        randomized_here.y += random_range(-range, range);
-    }
-    while ((!golubria_valid_cell(randomized_here)
-            || randomized_here == randomized_where)
-           && tries2 < 100);
+    for (radius_iterator ri(where, GOLUBRIA_FUZZ_RANGE, C_SQUARE); ri; ++ri)
+        if (golubria_valid_cell(*ri) && *ri != you.pos())
+            there_candidates.emplace_back(*ri);
 
-    if (tries >= 100 || tries2 >= 100)
+    if (here_candidates.size() == 0 || there_candidates.size() == 0
+        || (here_candidates.size() == 1 && there_candidates.size() == 1
+            && here_candidates[0] == there_candidates[0]))
     {
-        if (you.trans_wall_blocking(randomized_where))
-        {
-            mpr(T_("You cannot create a passage on the other side of the "
-                "transparent wall."));
-        }
-        else
-        {
-            // XXX: bleh, dumb message
-            mpr(T_("Creating a passage of Golubria requires sufficient empty "
-                "space."));
-        }
-
+        mpr(T_("Creating a passage of Golubria requires sufficient empty space."));
         return spret::abort;
     }
+
+    coord_def here;
+    coord_def there;
+    do
+    {
+        here = here_candidates[random2(here_candidates.size())];
+        there = there_candidates[random2(there_candidates.size())];
+    }
+    while (here == there);
 
     fail_check();
-    place_specific_trap(randomized_where, TRAP_GOLUBRIA);
-    place_specific_trap(randomized_here, TRAP_GOLUBRIA);
-    env.level_state |= LSTATE_GOLUBRIA;
 
-    trap_def *trap = trap_at(randomized_where);
-    trap_def *trap2 = trap_at(randomized_here);
-    if (!trap || !trap2)
-    {
-        mpr(T_("Something buggy happened."));
-        return spret::abort;
-    }
+    temp_change_terrain(there, DNGN_PASSAGE_OF_GOLUBRIA,
+                        random_range(10, 19) * BASELINE_DELAY,
+                        TERRAIN_CHANGE_GOLUBRIA);
 
-    trap->reveal();
-    trap2->reveal();
+    temp_change_terrain(here, DNGN_PASSAGE_OF_GOLUBRIA,
+                        random_range(10, 19) * BASELINE_DELAY,
+                        TERRAIN_CHANGE_GOLUBRIA);
 
     return spret::success;
 }
@@ -1844,7 +1864,7 @@ spret cast_gravitas(int pow, const coord_def& where, bool fail)
          mons || feat_is_solid(env.grid(where)) ? " around " : "",
          mons ? mons->name(DESC_THE).c_str() :
                 feat_is_solid(env.grid(where)) ? feature_description(env.grid(where),
-                                                                     NUM_TRAPS, "",
+                                                                     "",
                                                                      DESC_THE)
                                                                     .c_str() : "");
 
@@ -1976,7 +1996,8 @@ void attract_monster(monster &mon, int max_move)
     mprf(T_("%s is attracted toward you."), mon.name(DESC_THE).c_str());
 
     _place_tloc_cloud(old_pos);
-    _place_tloc_cloud(ray.pos());
+    place_cloud(CLOUD_MAGIC_TRAIL, ray.pos(), random_range(3, 5), &you);
+    mon.check_redraw(old_pos);
     mon.finalise_movement();
 }
 
@@ -2007,7 +2028,7 @@ vector<monster *> find_chaos_targets(bool just_check)
             && !mi->is_peripheral()
             && !mi->wont_attack())
         {
-            if (!just_check || you.can_see(**mi))
+            if (!just_check || you.aware_of(**mi))
                 targets.push_back(*mi);
         }
     }
@@ -2131,7 +2152,7 @@ static vector<monster*> _get_monster_line(coord_def start, bool actual)
     {
         // If the player can't see the monster here, don't leak its position to
         // the targeter.
-        if (!mon || !actual && !you.can_see(*mon))
+        if (!mon || !actual && !you.aware_of(*mon))
             break;
 
         // Can't move anything with a stationary monster (or friend) in its cluster.
@@ -2199,6 +2220,9 @@ int piledriver_path_distance(const coord_def& target, bool actual)
         }
 
         // Found something to hit; this is where we stop.
+        // XXX: Note that this one checks true visibility and not just awareness.
+        //      Invis monster knowledge should not affect whether the spell is
+        //      castable or not.
         if (cell_is_solid(pos)
             || monster_at(pos) && (actual || you.can_see(*monster_at(pos))))
         {
@@ -2305,19 +2329,11 @@ dice_def gavotte_impact_damage(int pow, int dist, bool random)
         return dice_def(2, div_rand_round((pow * 3 / 4 + 35) * (dist + 5), 20) + 1);
 }
 
-static void _maybe_penance_for_collision(god_conduct_trigger conducts[3], actor& victim)
-{
-    if (victim.is_monster() && victim.alive())
-    {
-        //potentially penance
-        set_attack_conducts(conducts, *victim.as_monster(),
-            you.can_see(*victim.as_monster()));
-    }
-}
-
-static void _push_actor(actor& victim, coord_def dir, int dist, int pow)
+static void _push_actor(actor& victim, coord_def dir, int dist, int pow,
+                        const set<mid_t>& seen_at_start)
 {
     const bool immune = !could_harm(&you, &victim);
+    const bool known = seen_at_start.count(victim.mid);
 
     god_conduct_trigger conducts[3];
 
@@ -2332,25 +2348,26 @@ static void _push_actor(actor& victim, coord_def dir, int dist, int pow)
     {
         const coord_def next_pos = starting_pos + (dir * i);
 
-        if (!victim.can_pass_through_feat(env.grid(next_pos)) && i > 1
-            && !victim.is_player())
-        {
-            victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
-            _maybe_penance_for_collision(conducts, victim);
-            break;
-        }
-        else if (actor* act_at_space = actor_at(next_pos))
+        if (actor* act_at_space = actor_at(next_pos))
         {
             if (i > 1 && &victim != act_at_space && !victim.is_player()
                 && !act_at_space->is_player())
             {
+                set_attack_conducts(conducts, *victim.as_monster(), known);
+                set_attack_conducts(conducts, *act_at_space->as_monster(),
+                                    bool(seen_at_start.count(act_at_space->mid)));
                 victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
-                _maybe_penance_for_collision(conducts, victim);
-                _maybe_penance_for_collision(conducts, *act_at_space);
             }
             break;
         }
-        else if (!victim.is_habitable(next_pos))
+        else if (!victim.can_pass_through_feat(env.grid(next_pos)) && i > 1
+                 && !victim.is_player())
+        {
+            set_attack_conducts(conducts, *victim.as_monster(), known);
+            victim.collide(next_pos, &you, gavotte_impact_damage(pow, i, true).roll());
+            break;
+        }
+        else if (!in_bounds(next_pos) || !victim.is_habitable(next_pos))
             break;
         else
             victim.move_to(next_pos, MV_TRANSLOCATION, true);
@@ -2406,6 +2423,13 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
     if (!you.is_stationary() && !you.stasis())
         targs.push_back(&you);
 
+    // The player is responsible for the wellbeing of any ally they could see
+    // at the start of the cast.
+    set<mid_t> seen_at_start;
+    for (monster_near_iterator mi(you.pos()); mi; ++mi)
+        if (you.aware_of(**mi))
+            seen_at_start.insert(mi->mid);
+
     for (monster_near_iterator mi(you.pos()); mi; ++mi)
     {
         if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
@@ -2425,7 +2449,7 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
         // Some circumstances, such as lost souls sacrificing themselves, can
         // result in monsters dying before it even comes time to push them.
         if (targs[i]->alive())
-            _push_actor(*targs[i], dir, GAVOTTE_DISTANCE, pow);
+            _push_actor(*targs[i], dir, GAVOTTE_DISTANCE, pow, seen_at_start);
     }
 
     you.increase_duration(DUR_GAVOTTE_COOLDOWN, random_range(5, 9) - div_rand_round(pow, 50));
@@ -2436,99 +2460,93 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
 // Note: this is only used for the targeting display and prompts about
 // potentially harming allies. As such, it relies on player-known info and may
 // not reflect the exact results of the spell.
-static bool _gavotte_will_wall_slam(const monster* mon, coord_def dir)
-{
-    // Scan in our push direction. We want to find at least one tile of open
-    // space before the nearest solid feature or stationary monster. Non-stationary
-    // monsters are 'free'
-    int steps = GAVOTTE_DISTANCE;
-    coord_def pos = mon->pos();
-    while (steps)
-    {
-        pos += dir;
-
-        // It is possible to move out of bounds if we're near the level boundary
-        // and the player has not seen some of the terrain between this monster
-        // and the level edge (meaning it assumes that terrain is non-collidable)
-        if (!in_bounds(pos))
-            return steps < GAVOTTE_DISTANCE;
-
-        // Can never collide with the player (for the player's sake)
-        if (pos == you.pos())
-            return false;
-
-        // If we are moving out of the player's line of sight, use map knowledge
-        // to estimate collisions with walls the player has already seen, but do
-        // not leak info about unseen terrain.
-        const bool seen = you.see_cell(pos);
-        dungeon_feature_type feat = seen ? env.grid(pos)
-                                         : env.map_knowledge(pos).feat();
-
-        // Assume that monsters can pass through unknown terrain
-        if (feat == DNGN_UNSEEN)
-            feat = DNGN_FLOOR;
-
-        // If there is an obstructing feature here - or the player THINKS there
-        // is, at least - consider this monster affected if it moved at least
-        // one space before hitting it.
-        if (!mon->can_pass_through_feat(feat))
-            return steps < GAVOTTE_DISTANCE;
-
-        bool mons_in_way = false;
-        bool mons_in_way_is_stationary = false;
-
-        // Find any visible monster that may be in the way (or our memory of such)
-        if (seen)
-        {
-            monster* mon_at_pos = monster_at(pos);
-            if (mon_at_pos && you.can_see(*mon_at_pos))
-            {
-                mons_in_way = true;
-                mons_in_way_is_stationary = mon_at_pos->is_stationary();
-            }
-        }
-        else
-        {
-            monster_info* mon_at_pos = env.map_knowledge(pos).monsterinfo();
-            if (mon_at_pos)
-            {
-                mons_in_way = true;
-                mons_in_way_is_stationary = mons_class_is_stationary(mon_at_pos->type);
-            }
-        }
-
-        // If we're about to hit a blocker, check whether we will have moved at
-        // least one space before doing so. Skip over mobile monsters as 'free'
-        // spaces (since we can all pile up against a wall)
-        if (mons_in_way)
-        {
-            if (mons_in_way_is_stationary)
-                return steps < GAVOTTE_DISTANCE;
-            else
-                steps++;
-        }
-
-        steps--;
-    }
-
-    return false;
-}
-
 vector<monster*> gavotte_affected_monsters(const coord_def dir)
 {
-    vector<monster*> affected;
-
+    // The positions during the simulation.
+    map<coord_def, actor*> occupied;
+    // The actors who will be moved.
+    vector<actor*> movers;
     for (monster_near_iterator mi(you.pos()); mi; ++mi)
-    {
-        if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos())
-            && you.can_see(**mi))
+        if (you.aware_of(**mi))
         {
-            if (_gavotte_will_wall_slam(*mi, dir))
-                affected.push_back(*mi);
+            occupied[mi->pos()] = *mi;
+            if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
+                movers.push_back(*mi);
         }
+
+    occupied[you.pos()] = &you;
+    if (!you.is_stationary() && !you.stasis())
+        movers.push_back(&you);
+
+    // Push the actors nearest the pull direction first, exactly as cast_gavotte.
+    sort(movers.begin(), movers.end(), [dir](actor* a, actor* b)
+    {
+        return (a->pos().x * dir.x) + (a->pos().y * dir.y)
+               > (b->pos().x * dir.x) + (b->pos().y * dir.y);
+    });
+
+    set<monster*> harmed;
+    for (actor* mover : movers)
+    {
+        const coord_def start = mover->pos();
+        coord_def cur = start;
+        occupied.erase(start);
+
+        for (int i = 1; i <= GAVOTTE_DISTANCE; ++i)
+        {
+            const coord_def pos = start + (dir * i);
+            if (!in_bounds(pos))
+            {
+                if (i > 1 && !mover->is_player())
+                    harmed.insert(mover->as_monster());
+                break;
+            }
+
+            auto it = occupied.find(pos);
+            actor *occupant = it == occupied.end() ? nullptr : it->second;
+
+            // Hitting an actor. Stop and do damage unless it's the player.
+            if (occupant)
+            {
+                if (!occupant->is_player() && !mover->is_player() && i > 1)
+                {
+                    harmed.insert(mover->as_monster());
+                    harmed.insert(occupant->as_monster());
+                }
+                break;
+            }
+            else if (!you.see_cell(pos) && env.map_knowledge(pos).monsterinfo())
+            {
+                if (!mover->is_player() && i > 1)
+                    harmed.insert(mover->as_monster());
+                break;
+            }
+
+            dungeon_feature_type feat = env.map_knowledge(pos).feat();
+            // Assume monsters can pass through unseen terrain.
+            if (feat == DNGN_UNSEEN)
+                feat = DNGN_FLOOR;
+
+            // Hitting solid terrain from range; do damage.
+            if (!mover->can_pass_through_feat(feat) && i > 1
+                && !mover->is_player())
+            {
+                harmed.insert(mover->as_monster());
+                break;
+            }
+
+            // Stop without damage because of short distance or soft terrain.
+            if (!mover->is_habitable_feat(feat))
+                break;
+
+            // The tile is clear; slide onto it and keep going.
+            cur = pos;
+        }
+
+        occupied[cur] = mover;
     }
 
-    return affected;
+    return vector<monster*>(harmed.begin(), harmed.end());
 }
 
 spret cast_teleport_other(const coord_def& target, int power, bool fail)
@@ -2550,7 +2568,7 @@ vector<coord_def> get_bestial_landing_spots(coord_def target)
     {
         if (in_bounds(*ai) && you.see_cell_no_trans(*ai)
             && !cell_is_solid(*ai) && !is_feat_dangerous(env.grid(*ai))
-            && (!actor_at(*ai) || !you.can_see(*actor_at(*ai))))
+            && (!actor_at(*ai) || !you.aware_of(*actor_at(*ai))))
         {
             spots.push_back(*ai);
         }

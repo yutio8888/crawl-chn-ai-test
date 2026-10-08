@@ -17,6 +17,12 @@ nobody_memory_2: 0
 nobody_memory_3: 0
 pyrrhic: 0
 frenzied: 0
+unseen_invis_known: 0
+unseen_invis_remembered: 0
+dragon_vein_air: 0
+dragon_vein_earth: 0
+dragon_vein_fire: 0
+dragon_vein_ice: 0
 
 drain: 6
 might: 6
@@ -37,6 +43,7 @@ vitrified: 6
 confused: 6
 sentinel_mark: 6
 dimmed: 6
+glowing: 6
 
 laced_with_chaos: 7
 conc_venom: 7
@@ -52,6 +59,9 @@ resistance: 8
 ghostly: 8
 malmutated: 8
 magnetised: 8
+seen_invis: 8
+phase_shift: 8
+divine_shield: 8
 
 recall: 9
 teleporting: 9
@@ -85,7 +95,10 @@ vexed: 10
 paradox: 10
 warding: 10
 sundering: 10
+exposed: 10
 
 constricted: 11
 vile_clutch: 11
 pain_bond: 11
+mute: 11
+stampede: 11

@@ -394,11 +394,13 @@ def switch_literals(text, name):
     body = function_body(text, name)
     pattern = re.compile(
         r"case\s+([A-Z][A-Z0-9_]+)\s*:\s*"
-        r"return\s+(?:(T_|C_)\()?"
-        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"\)?\s*;"
+        r"return\s+(?:(T_|C_|N_)\(\s*)?"
+        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"(?(2)\s*\))\s*;"
     )
     rows = {}
     for identity, wrapper, context, literal in pattern.findall(body):
+        if bool(context) != (wrapper == "C_"):
+            continue
         key = f"{context}|{literal}" if wrapper == "C_" else literal
         rows[identity] = {
             "key": key, "en": literal, "runtime_lookup": bool(wrapper),
@@ -415,10 +417,13 @@ def property_literals(text, array_name):
         raise RuntimeError(f"array not found: {array_name}")
     rows = {}
     for entry in re.finditer(
-        r"\{\s*([A-Z][A-Z0-9_]+)\s*,\s*((?:\"[^\"]*\"\s*)+)",
+        r"\{\s*([A-Z][A-Z0-9_]+)\s*,\s*"
+        r"(?:N_\(\s*((?:\"[^\"]*\"\s*)+)\s*\)"
+        r"|((?:\"[^\"]*\"\s*)+))\s*,",
         match.group(1),
     ):
-        identity, string_expr = entry.groups()
+        identity, marked_expr, plain_expr = entry.groups()
+        string_expr = marked_expr or plain_expr
         literal = "".join(re.findall(r'"([^"]*)"', string_expr))
         rows[identity] = {"key": literal, "en": literal}
     if array_name == "Armour_prop":
@@ -833,14 +838,10 @@ def build_inventory():
         "translation_present": "orb of zot" in db,
         "runtime_lookup": True,
     })
-    rows.append({
-        "identity": "bauble:BAUBLE_FLUX", "category": "bauble",
-        "lifecycle": "current", "english_source_name": "flux bauble",
-        "translation_key": "flux bauble",
-        "current_chinese_name": db.get("flux bauble"),
-        "translation_present": "flux bauble" in db,
-        "runtime_lookup": True,
-    })
+    # Deferred keys are translated at the real bauble display consumer.
+    if not re.search(r'buff\s*<<\s*T_\(_bauble_type_name\(sub_type\)\)', item_name):
+        raise RuntimeError("bauble display translation consumer changed")
+    add(rows, "bauble", switch_literals(item_name, "_bauble_type_name"), db)
 
     # Weapon brands: one identity with all three runtime forms.
     terse_block = re.search(
@@ -1119,19 +1120,19 @@ RANDART_METRICS = {
     },
     "rand_wpn.txt": {
         "grammar_keys": 45,
-        "physical_variant_identities": 845,
-        "raw_nonempty_grammar_lines": 867,
+        "physical_variant_identities": 846,
+        "raw_nonempty_grammar_lines": 868,
         "explicit_weight_marker_lines": 22,
         "continuation_lines": 0,
-        "weight_mass": 8346,
+        "weight_mass": 8356,
     },
     "rand_arm.txt": {
         "grammar_keys": 19,
-        "physical_variant_identities": 529,
-        "raw_nonempty_grammar_lines": 537,
+        "physical_variant_identities": 531,
+        "raw_nonempty_grammar_lines": 539,
         "explicit_weight_marker_lines": 8,
         "continuation_lines": 0,
-        "weight_mass": 5242,
+        "weight_mass": 5262,
     },
     "rand_all.txt": {
         "grammar_keys": 18,
@@ -1287,7 +1288,8 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
             )),
         })
     enums = [definition["enum"] for definition in definitions]
-    if len(definitions) != 142 or len(enums) != 142:
+    # Thirteen upstream additions, individually audited for Issue #147.
+    if len(definitions) != 155 or len(enums) != 155:
         raise RuntimeError(
             f"unrand inventory drift: definitions={len(definitions)} "
             f"enums={len(enums)}"
@@ -1309,15 +1311,22 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         if base_source_db.get(key) != source_db.get(key):
             changed_names.add(key)
     expected_changed_names = {
-        "glaive of prune", 'morningstar "eos"',
-        "sword of cerebov", "amulet of the air",
+        # Issue #147: 13 new upstream definitions, Prune and Tranquility
+        # renames, plus the three surviving pre-trunk reviewed name changes.
+        "amulet of the air", "amulet of tranquility", "arcane splint mail",
+        'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
+        "fire dragon occultist's scales", "forgewarden's cuirass",
+        "ghost crab claws", 'giant spiked club "carina at dusk"',
+        "hana's scimitar", "ice dragon arcanist's scales",
+        'morningstar "eos"', "partisan of prune", "staff of five virtues",
+        "stagehand's sword", "swamp witch's dragon scales", "sword of cerebov",
     }
     if changed_names != expected_changed_names:
         raise RuntimeError(
             f"unrand SourceDB conclusion boundary drift: "
             f"{sorted(changed_names)}"
         )
-    adjust_names = {"glaive of prune", 'morningstar "eos"'}
+    adjust_names = {"partisan of prune", 'morningstar "eos"'}
 
     rows = []
     for enum_id, definition in zip(enums, definitions):
@@ -1656,7 +1665,7 @@ def _pre_review_variant_value(current, ordinal, base_values):
 
 @audit_snapshot_invocation(ROOT)
 def paired_component_rows(
-    en_path, zh_path, category, review_base=None, changed_keys=None
+    en_path, zh_path, category, review_base=None
 ):
     en_entries = textdb_rows(en_path)
     zh_entries = textdb_rows(zh_path)
@@ -1664,11 +1673,16 @@ def paired_component_rows(
         revision_textdb_rows(zh_path, review_base)
         if review_base else zh_entries
     )
+    base_en_entries = (
+        revision_textdb_rows(en_path, review_base)
+        if review_base else en_entries
+    )
     en = {entry.canonical_key: entry for entry in en_entries}
     zh = {entry.canonical_key: entry for entry in zh_entries}
     base_zh = {
         entry.canonical_key: entry for entry in base_zh_entries
     }
+    base_en = {entry.canonical_key: entry for entry in base_en_entries}
     if en.keys() != zh.keys():
         raise RuntimeError(
             f"{category} key mismatch: missing={sorted(en.keys()-zh.keys())} "
@@ -1685,11 +1699,51 @@ def paired_component_rows(
         base_values = (
             physical_candidates(base_zh[key]) if key in base_zh else []
         )
+        base_english = (
+            physical_candidates(base_en[key]) if key in base_en else []
+        )
         if len(en_values) != len(zh_values):
             raise RuntimeError(
                 f"{category}:{key} physical count mismatch "
                 f"{len(en_values)} != {len(zh_values)}"
             )
+        if len(base_english) != len(base_values):
+            # One historical randname block split a continuation with a blank
+            # line. Accept only a complete, ordered reconstruction of the
+            # unchanged English block and the unchanged Chinese paragraphs.
+            if base_english != en_values:
+                raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+            aligned = []
+            cursor = 0
+            for weight, current in zh_values:
+                combined = ""
+                while cursor < len(base_values):
+                    old_weight, text = base_values[cursor]
+                    if old_weight != (weight if not combined else 10):
+                        raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                    combined = text if not combined else combined + "\n" + text
+                    cursor += 1
+                    if combined == current:
+                        aligned.append((weight, current))
+                        break
+                else:
+                    raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+            if cursor != len(base_values):
+                raise RuntimeError(f"{category}:{key} unused review-base paragraphs")
+            base_values = aligned
+        matches = {}
+        for old_ordinal, ((weight, english), (zh_weight, chinese)) in enumerate(
+            zip(base_english, base_values)
+        ):
+            if weight != zh_weight:
+                raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+            matches.setdefault(english, []).append((old_ordinal, chinese))
+        for english, variants in matches.items():
+            if len({chinese for _, chinese in variants}) != 1:
+                raise RuntimeError(
+                    f"{category}:{key} ambiguous review-base English identity: {english}"
+                )
+        occurrences = Counter()
         for ordinal, (en_variant, zh_variant) in enumerate(
             zip(en_values, zh_values)
         ):
@@ -1712,14 +1766,27 @@ def paired_component_rows(
                 raise RuntimeError(
                     f"{category}:{key}:{ordinal} placeholder mismatch"
                 )
+            occurrence = occurrences[english]
+            occurrences[english] += 1
+            prior = matches.get(english, [])
+            old_ordinal, previous = (
+                prior[occurrence] if occurrence < len(prior) else (None, None)
+            )
+            metadata = {
+                "grammar_key": key, "physical_ordinal": ordinal,
+                "weight": en_weight,
+            }
+            if old_ordinal != ordinal:
+                metadata["review_base_match"] = (
+                    "new-English-component" if old_ordinal is None else "English-content"
+                )
+                metadata["review_base_ordinal"] = old_ordinal
             rows.append({
                 "identity": f"{category}:{key}:{ordinal:04d}",
                 "category": category,
                 "lifecycle": "current",
                 "english_source": english,
-                "_pre_review_chinese": _pre_review_variant_value(
-                    chinese, ordinal, base_values
-                ),
+                "_pre_review_chinese": previous,
                 "current_chinese": chinese,
                 "producer": f"TextDB weighted key {key} physical ordinal",
                 "consumer": (
@@ -1727,15 +1794,8 @@ def paired_component_rows(
                     "procedural string explicitly non-enumerable"
                 ),
                 "input": input_name,
-                "_metadata": {
-                    "grammar_key": key,
-                    "physical_ordinal": ordinal,
-                    "weight": en_weight,
-                },
-                "_conclusion": (
-                    "adjust" if changed_keys
-                    and (key, ordinal) in changed_keys else "keep"
-                ),
+                "_metadata": metadata,
+                "_conclusion": "keep" if previous == chinese else "adjust",
             })
     return rows
 
@@ -1809,6 +1869,31 @@ def conclusion_reason(row):
     boundary = (
         f"{row['identity']} at {row['producer']} -> {row['consumer']}"
     )
+    if row["category"] in {"gizmo", "randart-component"}:
+        match = metadata.get("review_base_match")
+        if match == "new-English-component":
+            return (
+                f"adjust: {boundary} introduces English component "
+                f"{row['english_source']!r}; there is no prior Chinese for this "
+                "English identity. The old physical ordinal belongs to another "
+                "word and is not semantic evidence. This records an addition, "
+                "not preservation of an old rendering; independent review "
+                "evidence must cover the new component."
+            )
+        shift = (
+            f" Physical ordinal moved from {metadata['review_base_ordinal']} "
+            f"to {metadata['physical_ordinal']}; match uses English content, "
+            "not the occupant of the old ordinal."
+            if match == "English-content" else ""
+        )
+        return (
+            f"{conclusion}: {boundary} matches the same English component "
+            f"{row['english_source']!r} in the review base.{shift} "
+            + ("Chinese is unchanged; retain its existing reviewed meaning."
+               if conclusion == "keep" else
+               "Chinese differs for this same word; record the adopted wording "
+               "correction rather than claiming the old rendering was preserved.")
+        )
     if conclusion == "keep" and metadata.get("deferred_array"):
         return (
             f"keep: {boundary} preserves the previously reviewed Chinese "
@@ -2177,7 +2262,6 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     gizmo_zh = SRC / "dat/database/zh/gizmo.txt"
     rows.extend(paired_component_rows(
         gizmo_en, gizmo_zh, "gizmo", review_base,
-        changed_physical_ordinals(gizmo_zh, review_base),
     ))
 
     en_items = {e.canonical_key: e for e in textdb_rows(description_en)}
@@ -2186,13 +2270,13 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         e.canonical_key: e
         for e in revision_textdb_rows(description_zh, review_base)
     }
-    allowed_zh_extra = {"athame"}
+    # Trunk now has an English athame description; retire the ZH-only exception.
+    allowed_zh_extra = set()
     if set(en_items) - set(zh_items) or set(zh_items) - set(en_items) != (
         allowed_zh_extra
     ):
         raise RuntimeError(
-            "ordinary description EN/ZH key mismatch outside explicit "
-            "athame compatibility key"
+            "ordinary description EN/ZH key mismatch"
         )
     changed_items = changed_textdb_keys(description_zh, review_base)
     for key in sorted(en_items):
@@ -2203,7 +2287,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
             "english_source": runtime_normalize_value(en_items[key].value),
             "_pre_review_chinese": runtime_normalize_value(
                 base_zh_items[key].value
-            ),
+            ) if key in base_zh_items else None,
             "current_chinese": runtime_normalize_value(zh_items[key].value),
             "producer": f"DescriptionDB key {key}",
             "consumer": "item_def::name(DESC_DBNAME) -> getLongDescription",
@@ -2256,13 +2340,13 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     )
     counts = Counter(row["category"] for row in rows)
     expected_counts = {
-        "unrand": 142,
+        "unrand": 155,
         "unident": 7,
         "appearance": 186,
         "special": 23,
-        "gizmo": 539,
-        "item-description": 307,
-        "randart-component": 2440,
+        "gizmo": 543,
+        "item-description": 317,
+        "randart-component": 2443,
         "randart-grammar": 115,
     }
     if dict(counts) != expected_counts:
@@ -2277,13 +2361,9 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         entry.canonical_key
         for entry in textdb_rows(SRC / "dat/descript/unrand.txt")
     }
-    allowed_unrand_extra = {
-        'athame "fimbulwinter"',
-        "fire dragon occultist's scales",
-        "ice dragon arcanist's scales",
-        "swamp witch's dragon scales",
-    }
-    if unrand_zh - unrand_en != allowed_unrand_extra:
+    # All four former ZH-only artefacts have production trunk EN descriptions.
+    allowed_unrand_extra = set()
+    if unrand_en - unrand_zh or unrand_zh - unrand_en != allowed_unrand_extra:
         raise RuntimeError("unrand compatibility key classification drift")
 
     source_evidence = build_source_evidence(rows, review_base)
@@ -2328,11 +2408,11 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     }
     expected_randart_totals = {
         "grammar_keys": 115,
-        "physical_variant_identities": 2440,
-        "raw_nonempty_grammar_lines": 2734,
+        "physical_variant_identities": 2443,
+        "raw_nonempty_grammar_lines": 2737,
         "explicit_weight_marker_lines": 293,
         "continuation_lines": 1,
-        "weight_mass": 27304,
+        "weight_mass": 27334,
     }
     if randart_totals != expected_randart_totals:
         raise RuntimeError(
@@ -2902,6 +2982,19 @@ def render_review_results_v3(inventory, rows, glossary_overlay=None):
         f"- Glossary SHA-256: `{inventory['glossary_sha256']}`",
         f"- Review base: `{inventory['baseline']}`",
         f"- Decision rows: `{inventory['count']}`",
+        "",
+        "Component evidence is matched by (grammar key, English text), with "
+        "occurrence indices for identical duplicates. Physical ordinals are "
+        "candidate locators and do not establish historical word identity.",
+        "",
+        "Issue #147 F2: the eight additions/replacements in frozen Chinese "
+        "`c55cf7f7a5` are covered by `issue147-b2-review-database.md` "
+        "(SHA-256 `da4d0ebee23b34732ab96dd091d117246eca631545c6ade3d263f9e200e9cb68`), "
+        "including its explicit Apeiromancy finding, and "
+        "`issue147-b2-review-delta.md` (SHA-256 "
+        "`bacff995ecb7392730b4c956ba7befc1e42b8b3d3210f1b08b51b34665a57da3`). "
+        "This evidence is specific to that frozen revision; generated "
+        "classification alone is not independent semantic approval.",
         "",
         "## Evidence cards",
         "",

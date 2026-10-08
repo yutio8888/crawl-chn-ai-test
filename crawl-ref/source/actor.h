@@ -98,7 +98,8 @@ public:
         return weapon(0);
     }
     virtual item_def *offhand_weapon() const { return nullptr; }
-    virtual random_var attack_delay(const item_def *projectile = nullptr) const = 0;
+    virtual random_var attack_delay(const item_def *projectile = nullptr,
+                                    bool include_temp = true) const = 0;
     virtual random_var melee_attack_delay() const = 0;
     virtual int has_claws(bool allow_tran = true) const = 0;
     virtual item_def *shield() const = 0;
@@ -137,7 +138,12 @@ public:
     virtual bool can_see_invisible() const = 0;
     virtual bool invisible() const = 0;
     virtual bool nightvision() const = 0;
+
+    // The maximum range of any attack this actor could make.
     virtual int reach_range(bool include_weapon = true) const = 0;
+
+    // Any (potentially temporary) bonus to the range of any attack this actor makes
+    virtual int reach_range_bonus() const = 0;
 
     // Would looker be able to see the actor when in LOS?
     virtual bool visible_to(const actor *looker) const = 0;
@@ -149,6 +155,11 @@ public:
     // Can the actor actually see the target?
     virtual bool can_see(const actor &target) const;
 
+    // Can the actor either see the target or (if the actor is the player) have
+    // enough information to confidently determine their location despite them
+    // being invisible?
+    virtual bool aware_of(const actor &target) const;
+
     // Visibility as required by messaging. In usual play:
     //   Does the player know what's happening to the actor?
     bool observable() const;
@@ -157,10 +168,10 @@ public:
     virtual bool is_fiery() const = 0;
     virtual bool is_skeletal() const = 0;
     virtual bool can_mutate() const = 0;
-    virtual bool can_safely_mutate(bool temp = true) const = 0;
+    virtual bool can_safely_mutate(bool include_temp = true) const = 0;
     virtual bool can_polymorph() const = 0;
-    virtual bool has_blood(bool temp = true) const = 0;
-    virtual bool has_bones(bool temp = true) const = 0;
+    virtual bool has_blood(bool include_temp = true) const = 0;
+    virtual bool has_bones(bool include_temp = true) const = 0;
     virtual bool is_stationary() const = 0;
     virtual bool malmutate(const actor* source, const string &reason = "") = 0;
     virtual bool polymorph(int dur) = 0;
@@ -173,7 +184,8 @@ public:
                       string source = "",
                       string aux = "",
                       bool cleanup_dead = true,
-                      bool attacker_effects = true) = 0;
+                      bool attacker_effects = true,
+                      bool is_attack_damage = false) = 0;
     virtual bool heal(int amount) = 0;
     virtual void banish(const actor *agent, const string &who = "",
                         bool force = false) = 0;
@@ -216,7 +228,7 @@ public:
     virtual bool can_feel_fear(bool include_unknown) const = 0;
 
     virtual int  skill(skill_type sk, int scale = 1, bool real = false,
-                       bool temp = true) const = 0;
+                       bool include_temp = true) const = 0;
     int  skill_rdiv(skill_type sk, int mult = 1, int div = 1) const;
 
     virtual int heads() const = 0;
@@ -233,23 +245,24 @@ public:
     int apply_ac(int damage, int max_damage = 0,
                  ac_type ac_rule = ac_type::normal,
                  bool for_real = true) const;
-    virtual int evasion(bool ignore_temporary = false,
+    virtual int evasion(bool include_temp = true,
                         const actor *attacker = nullptr) const = 0;
-    virtual bool shielded() const = 0;
     virtual int shield_block_limit() const;
     bool shield_exhausted() const;
     virtual int shield_bonus() const = 0;
     virtual int shield_bypass_ability(int tohit) const = 0;
     virtual void shield_block_succeeded(actor *attacker);
+    virtual bool divinely_shielded() const = 0;
     virtual int missile_repulsion() const = 0;
 
     virtual monster_type mons_species(bool zombie_base = false) const = 0;
 
-    virtual mon_holy_type holiness(bool temp = true, bool incl_form = true) const = 0;
-    virtual bool undead_or_demonic(bool temp = true) const = 0;
+    virtual mon_holy_type holiness(bool include_temp = true, bool incl_form = true) const = 0;
+    virtual bool undead_or_demonic(bool include_temp = true) const = 0;
     virtual bool holy_wrath_susceptible() const;
     virtual bool is_holy() const = 0;
-    virtual bool is_nonliving(bool temp = true, bool incl_form = true) const = 0;
+    virtual bool is_nonliving(bool include_temp = true, bool incl_form = true) const = 0;
+    virtual bool has_soul() const;
     virtual bool evil() const;
     virtual int  how_chaotic(bool check_spells_god = false) const = 0;
     virtual bool is_unbreathing() const = 0;
@@ -261,8 +274,8 @@ public:
     virtual int res_steam() const = 0;
     virtual int res_cold() const = 0;
     virtual int res_elec() const = 0;
-    virtual int res_poison(bool temp = true) const = 0;
-    virtual bool res_miasma(bool temp = true) const = 0;
+    virtual int res_poison(bool include_temp = true) const = 0;
+    virtual bool res_miasma(bool include_temp = true) const = 0;
     virtual bool res_water_drowning() const = 0;
     virtual bool res_sticky_flame() const = 0;
     virtual int res_holy_energy() const = 0;
@@ -270,13 +283,13 @@ public:
     virtual int res_negative_energy(bool intrinsic_only = false) const = 0;
     virtual bool res_torment() const = 0;
     virtual bool res_polar_vortex() const = 0;
-    virtual bool res_petrify(bool temp = true) const = 0;
+    virtual bool res_petrify(bool include_temp = true) const = 0;
     virtual bool res_constrict() const = 0;
     virtual int res_blind() const = 0;
     int get_res(int res) const;
     virtual int willpower() const = 0;
     virtual int check_willpower(const actor* source, int power) const;
-    virtual bool no_tele(bool blink = false, bool temp = true) const = 0;
+    virtual bool no_tele(bool blink = false, bool include_temp = true) const = 0;
     virtual int inaccuracy() const;
     int inaccuracy_penalty() const;
     virtual int slaying(bool throwing = false, bool random = true) const = 0;
@@ -290,7 +303,7 @@ public:
     virtual bool faith(bool items = true) const;
     virtual int archmagi(bool items = true) const;
     virtual bool no_cast(bool items = true) const;
-    virtual bool reflection(bool items = true) const;
+    bool reflection(bool items = true) const;
     virtual int extra_harm(bool items = true) const;
     virtual bool sunder_is_ready() const = 0;
 
@@ -329,7 +342,7 @@ public:
     //            and has a halo, returns false; so if you have a
     //            halo you're not affected by others' halos for this
     //            purpose)
-    virtual bool backlit(bool self_halo = true, bool temp = true) const = 0;
+    virtual bool backlit(bool self_halo = true, bool include_temp = true) const = 0;
     virtual bool umbra() const = 0;
     // Within any actor's halo?
     virtual bool haloed() const;
@@ -339,18 +352,18 @@ public:
     virtual int halo_radius() const = 0;
     // Silence radius.
     virtual int silence_radius() const = 0;
-    // Demonspawn silence radius
-    virtual int demon_silence_radius() const = 0;
     // Liquefying radius.
     virtual int liquefying_radius() const = 0;
     virtual int umbra_radius() const = 0;
+    // Radius within which trees are awakened.
+    virtual int awoken_forest_radius() const = 0;
+
+    virtual bool affects_agrid() const = 0;
 
     virtual bool petrifying() const = 0;
     virtual bool petrified() const = 0;
 
     virtual bool liquefied_ground() const = 0;
-
-    virtual bool handle_trap();
 
     virtual void god_conduct(conduct_type /*thing_done*/, int /*level*/) { }
 
@@ -363,8 +376,10 @@ public:
     }
 
     virtual bool wont_attack() const = 0;
-    virtual mon_attitude_type temp_attitude() const = 0;
-    virtual mon_attitude_type real_attitude() const = 0;
+    virtual mon_attitude_type attitude() const = 0;
+    bool friendly() const;
+    bool neutral() const;
+    bool good_neutral() const;
 
     virtual bool has_spell(spell_type spell) const = 0;
 
@@ -397,10 +412,10 @@ public:
     void start_constricting(actor &whom, constrict_type type, int duration = 0);
 
     void stop_constricting(mid_t whom, bool intentional = false,
-                           bool quiet = false, const string& escape_verb = "");
+                           bool quiet = false, const string& escape_verb = "break");
     void stop_constricting_all(bool intentional = false, bool quiet = false);
     void stop_directly_constricting_all(bool entangling_only = false);
-    void stop_being_constricted(bool quiet = false, const string& escape_verb = "");
+    void stop_being_constricted(bool quiet = false, const string& escape_verb = "break");
 
     virtual bool attempt_escape() = 0;
 
@@ -434,7 +449,7 @@ public:
 private:
     void constriction_damage_defender(actor &defender);
     void end_constriction(mid_t whom, bool intentional, bool quiet,
-                          const string& escape_verb = "");
+                          const string& escape_verb = "break");
 };
 
 bool actor_slime_wall_immune(const actor *actor);

@@ -25,6 +25,7 @@
 #include "env.h" // LSTATE_STILL_WINDS
 #include "errors.h" // sysfail
 #include "evoke.h"
+#include "fight.h"
 #include "god-item.h"
 #include "god-passive.h" // passive_t::want_curses, no_haste
 #include "invent.h"
@@ -315,13 +316,13 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         buff << _item_inscription(*this);
     }
 
-    // These didn't have "cursed " prepended; add them here so that
+    // These didn't have "bound " prepended; add them here so that
     // it comes after the inscription.
     if (terse && descrip != DESC_DBNAME && descrip != DESC_BASENAME
         && !qualname
         && is_artefact(*this) && cursed())
     {
-        buff << (T_(" (curse)"));
+        buff << T_(" (bound)");
     }
 
     return buff.str();
@@ -351,11 +352,9 @@ static bool _missile_brand_is_postfix(special_missile_type brand)
     return brand != SPMSL_NORMAL && !_missile_brand_is_prefix(brand);
 }
 
-const char* missile_brand_name(const item_def &item, mbn_type t)
+const char* special_missile_type_name(special_missile_type ego, mbn_type t)
 {
-    const special_missile_type brand
-        = static_cast<special_missile_type>(item.brand);
-    switch (brand)
+    switch (ego)
     {
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_FLAME:
@@ -408,10 +407,8 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
     }
 }
 
-const char* missile_brand_name_en(const item_def &item, mbn_type t)
+const char* special_missile_type_name_en(special_missile_type brand, mbn_type t)
 {
-    const special_missile_type brand
-        = static_cast<special_missile_type>(item.brand);
     switch (brand)
     {
 #if TAG_MAJOR_VERSION == 34
@@ -463,6 +460,16 @@ const char* missile_brand_name_en(const item_def &item, mbn_type t)
     default:
         return t == MBN_TERSE ? "buggy" : "bugginess";
     }
+}
+
+const char* missile_brand_name_en(const item_def &item, mbn_type t)
+{
+    return special_missile_type_name_en(get_ammo_brand(item), t);
+}
+
+const char* missile_brand_name(const item_def &item, mbn_type t)
+{
+    return special_missile_type_name(get_ammo_brand(item), t);
 }
 
 static const char *weapon_brands_terse[] =
@@ -924,6 +931,8 @@ const char* potion_type_name(int potiontype)
     case POT_RESISTANCE:        return T_("resistance");
     case POT_LIGNIFY:           return T_("lignification");
 
+    case POT_MIST:              return C_("potion full name", "mist");
+
     // FIXME: Remove this once known-items no longer uses this as a sentinel.
     default:
                                 return "bugginess";
@@ -1270,6 +1279,16 @@ const char* gizmo_effect_name(int type)
     }
 }
 
+static const char* _bauble_type_name(int type)
+{
+    switch (static_cast<bauble_type>(type))
+    {
+        default:
+        case BAUBLE_FLUX:       return N_("flux bauble");
+        case BAUBLE_CENTIPEDE:  return N_("centipede bauble");
+    }
+}
+
 static const char* _book_type_name(int booktype)
 {
     switch (static_cast<book_type>(booktype))
@@ -1359,7 +1378,6 @@ static const char* _book_type_name(int booktype)
     case BOOK_METALWORKING:           return "Metalworking";
     case BOOK_DUALITY:                return "Duality";
     case BOOK_CONTRAPTIONS:           return "Contraptions";
-    case BOOK_RANDART_LEVEL:          return "Fixed Level";
     case BOOK_RANDART_THEME:          return "Fixed Theme";
     default:                          return "Bugginess";
     }
@@ -1697,7 +1715,7 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
     const bool identified = ident || weap.is_identified();
 
     const string curse_prefix = !dbname && !terse && weap.cursed()
-        ? (T_("cursed ")) : "";
+        ? (T_("bound ")) : "";
     const string plus_text = identified && !dbname && !qualname ? _plus_prefix(weap) : "";
     const string chaotic = testbits(weap.flags, ISFLAG_CHAOTIC)
         ? (T_("chaotic ")) : "";
@@ -1826,7 +1844,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     }
     case OBJ_ARMOUR:
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         // Don't list unenchantable armor as +0.
         if (identified && !dbname && !qualname && armour_is_enchantable(*this))
@@ -2069,7 +2087,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         const bool is_randart = is_artefact(*this);
 
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         if (is_randart && !dbname)
         {
@@ -2152,7 +2170,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_STAVES:
         if (!terse && cursed())
-            buff << (T_("cursed "));
+            buff << T_("bound ");
 
         if (is_artefact(*this) && !dbname)
         {
@@ -2261,8 +2279,12 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     break;
 
     case OBJ_BAUBLES:
-        buff << T_("flux bauble");
-    break;
+        buff << T_(_bauble_type_name(sub_type));
+        break;
+
+    case OBJ_DETECTED:
+        buff << T_("detected item");
+        break;
 
     default:
         buff << "!";
@@ -2364,7 +2386,7 @@ void check_if_everything_is_identified()
         for (const auto s : all_item_subtypes(t))
         {
             if (!item_type_known(t, s)
-                && !item_known_excluded_from_set(t, s)
+                && !item_known_not_to_generate(t, s)
                 && unidentified++)
             {
                 you.props.erase(IDENTIFIED_ALL_KEY);
@@ -3253,17 +3275,6 @@ bool is_good_item(const item_def &item)
         if (!you.can_drink(false)) // still want to pick them up in lichform?
             return false;
 
-        // Recolor healing potions to indicate their additional goodness
-        //
-        // XX: By default, this doesn't actually change the color of anything
-        //     but !ambrosia, since yellow for 'emergency' takes priority over
-        //     cyan for 'good'. Should this get a *new* color?
-        if (you.has_mutation(MUT_DRUNKEN_BRAWLING)
-            && oni_likes_potion(static_cast<potion_type>(item.sub_type)))
-        {
-            return true;
-        }
-
         switch (item.sub_type)
         {
         case POT_EXPERIENCE:
@@ -3298,7 +3309,7 @@ bool is_bad_item(const item_def &item)
         switch (item.sub_type)
         {
         case POT_MOONSHINE:
-            return true;
+            return !you.has_mutation(MUT_DRUNKEN_BRAWLING);
         default:
             return false;
         CASE_REMOVED_POTIONS(item.sub_type);
@@ -3368,6 +3379,8 @@ bool is_dangerous_item(const item_def &item, bool temp)
             // intentional fallthrough
         case POT_LIGNIFY:
         case POT_ATTRACTION:
+        // Is usually useless, but Oni can drink them to attack things.
+        case POT_MOONSHINE:
             return true;
         default:
             return false;
@@ -3427,8 +3440,11 @@ static string _general_cannot_read_reason()
  * reason why. Otherwise (if they are able to read it), returns "", the empty
  * string. If item is nullptr, do only general reading checks.
  */
-string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
+string cannot_read_item_reason(const item_def *item, bool temp, bool ident,
+                               bool *god_forbids)
 {
+    if (god_forbids)
+        *god_forbids = false;
     // convoluted ordering is because the general checks below need to go before
     // the item id check, but non-temp messages go before general checks
     if (item && item->base_type == OBJ_SCROLLS
@@ -3441,10 +3457,6 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
         case SCR_AMNESIA:
             if (you.has_mutation(MUT_INNATE_CASTER))
                 return T_("You don't have control over your spell memory.");
-            // XX possibly amnesia should be allowed to work under Trog, despite
-            // being marked useless..
-            if (you_worship(GOD_TROG))
-                return T_("Trog doesn't allow you to memorise spells!");
             break;
         case SCR_ENCHANT_WEAPON:
         case SCR_BRAND_WEAPON:
@@ -3488,6 +3500,15 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
 
     if (!item)
         return "";
+
+    // Your god won't let you read scrolls they forbid.
+    if (god_forbids_item(*item, temp))
+    {
+        if (god_forbids)
+            *god_forbids = true;
+        return make_stringf(T_("%s forbids the use of this item."),
+                            uppercase_first(god_name(you.religion)).c_str());
+    }
 
     // item-specific checks
 
@@ -3542,8 +3563,10 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
 }
 
 string cannot_drink_item_reason(const item_def *item, bool temp,
-                                bool use_check, bool ident)
+                                bool use_check, bool ident, bool *god_forbids)
 {
+    if (god_forbids)
+        *god_forbids = false;
     // general permanent reasons
     if (!you.can_drink(false))
         return T_("You can't drink.");
@@ -3561,6 +3584,15 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
         get_potion_effect(ptyp)->can_quaff(&r, false);
         if (!r.empty())
             return r;
+
+        // Your god won't let you drink potions they forbid.
+        if (god_forbids_item(*item, temp))
+        {
+            if (god_forbids)
+                *god_forbids = true;
+            return make_stringf(T_("%s forbids the use of this item."),
+                                uppercase_first(god_name(you.religion)).c_str());
+        }
     }
 
     // general temp reasons
@@ -3588,6 +3620,10 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
 
     // potion of invis can be used even if temp useless, a warning is printed
     if (use_check && ptyp == POT_INVISIBILITY)
+        return "";
+
+    // Oni can drink any potion at any time, provided an enemy is nearby.
+    if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && !get_player_attack_targets().empty())
         return "";
 
     get_potion_effect(ptyp)->can_quaff(&r, true);
@@ -3645,11 +3681,15 @@ bool is_useless_item(const item_def &item, bool temp, bool ident)
     {
     case OBJ_WEAPONS:
     case OBJ_STAVES:
-        return !can_equip_item(item);
+        return !can_equip_item(item, temp);
 
     case OBJ_MISSILES:
         // All missiles are useless for felids.
         if (you.has_mutation(MUT_NO_GRASPING))
+            return true;
+
+        // Your god won't let you throw ammo they hate (e.g. chaos, frenzy).
+        if (god_forbids_item(item, temp))
             return true;
 
         return !is_throwable(&you, item);
@@ -3720,15 +3760,14 @@ bool is_useless_item(const item_def &item, bool temp, bool ident)
     }
 
     case OBJ_MISCELLANY:
-        if (is_xp_evoker(item) && evoker_plus(item.sub_type) >= MAX_EVOKER_ENCHANT)
+        if (is_xp_evoker(item) && !in_inventory(item)
+            && evoker_plus(item.sub_type) >= MAX_EVOKER_ENCHANT)
         {
+            // A maxed evoker is useless if we have one in our inventory.
             for (const item_def &inv_item : you.inv)
             {
                 if (inv_item.base_type == OBJ_MISCELLANY
-                    && inv_item.sub_type == item.sub_type
-                    // Have to check this way because stash passes item with pos == you.pos()
-                    // instead of pos == ITEM_IN_INVENTORY so in_inventory check doesn't work
-                    && inv_item.pos != item.pos && inv_item.link != item.link)
+                    && inv_item.sub_type == item.sub_type)
                 {
                     return true;
                 }
@@ -3879,7 +3918,7 @@ string item_prefix(const item_def &item, bool temp)
     else
         prefixes.push_back("unidentified");
 
-    if (god_hates_item(item))
+    if (god_forbids_item(item))
     {
         prefixes.push_back("evil_item");
         prefixes.push_back("forbidden");
@@ -3998,15 +4037,8 @@ void init_item_name_cache()
 
         for (const auto sub_type : all_item_subtypes(base_type))
         {
-            if (base_type == OBJ_BOOKS)
-            {
-                if (sub_type == BOOK_RANDART_LEVEL
-                    || sub_type == BOOK_RANDART_THEME)
-                {
-                    // These are randart only and have no fixed names.
-                    continue;
-                }
-            }
+            if (base_type == OBJ_BOOKS && sub_type == BOOK_RANDART_THEME)
+                continue;
 
             int npluses = 0;
             // this iterates through all skills for manuals, caching the

@@ -364,9 +364,32 @@ class MessageOverlayTests(unittest.TestCase):
                          MODULE.render_sidecar(validated))
         inventory_keys = {entry["key"] for entry in INVENTORY["entries"]}
         self.assertEqual(262, len(validated["entries"]))
-        self.assertEqual(
-            inventory_keys,
-            {entry["canonical_key"] for entry in validated["entries"]})
+        # Audited upstream 43d89d912d adds 19 whole-key legacy roots; the
+        # existing 262-key catalog keeps its IDs and full variant assertions.
+        new_uncovered = {
+            'antimagic gaze goji cast',
+            'bolt of antimagic roaming sludgefish cast',
+            'brain bite telencephalon cast',
+            'call down lightning telencephalon cast',
+            'cleansing flame cast',
+            'harpoon shot mongrel wurm cast',
+            'hurl sludge roaming sludgefish cast',
+            'malign gateway herald of the abyss cast',
+            'murky legion scrapshell chimera cast',
+            'phase shift abyssal acolyte cast',
+            'rusted inspector cast',
+            'scorch mongrel wurm cast',
+            'silent bolt of antimagic roaming sludgefish cast',
+            'silent murky legion scrapshell chimera cast',
+            'silent rusted inspector cast',
+            'thorn hunter cast',
+            'touch of paradox abyssal acolyte cast',
+            'unseen touch of paradox abyssal acolyte cast',
+            'warp space herald of the abyss cast',
+        }
+        catalog_keys = {entry["canonical_key"] for entry in validated["entries"]}
+        self.assertEqual(inventory_keys, catalog_keys | new_uncovered)
+        self.assertFalse(catalog_keys & new_uncovered)
         self.assertEqual(
             355,
             sum(len(entry["variants"]) for entry in validated["entries"]))
@@ -494,7 +517,7 @@ class MessageOverlayTests(unittest.TestCase):
                           "living spell cast",
                           "manifold assault natural cast",
                           "manticore cast",
-                          "mara summon cast",
+                          "summon illusion cast",
                           "metal splinters war gargoyle cast",
                           "minor healing dryad cast",
                           "non-humanoid wizard cast",
@@ -552,7 +575,7 @@ class MessageOverlayTests(unittest.TestCase):
                           "unseen dragon cast",
                           "unseen ensnare arachne cast",
                           "unseen ensnare natural cast",
-                          "unseen mara summon cast",
+                          "unseen summon illusion cast",
                           "unseen non-humanoid wizard cast",
                           "unseen thermic dynamo cast",
                           "unseen vv cast",
@@ -586,7 +609,7 @@ class MessageOverlayTests(unittest.TestCase):
         ]
         closure_keys = ["_unseen_breath_cast_", "_unseen_spit_cast_"]
         self.assertEqual(
-            inventory_keys - set(legacy_keys) - set(closure_keys),
+            inventory_keys - new_uncovered - set(legacy_keys) - set(closure_keys),
             set(candidates))
         self.assertEqual(250, len(candidates))
         self.assertEqual(

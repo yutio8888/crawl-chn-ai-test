@@ -51,7 +51,7 @@ int base_colour_calc::rand(bool non_random, coord_def pos) const
     uint32_t data[] = { (uint32_t)you.birth_time, (uint32_t)pos.x,
                         (uint32_t)pos.y, (uint32_t)you.frame_no,
                         (uint32_t)type, (uint32_t)you.depth };
-    return hash32(data, sizeof(data)) % rand_max;
+    return hash_uint32(data) % rand_max;
 }
 
 int element_colour_calc::get(const coord_def& loc, bool non_random) const
@@ -200,12 +200,11 @@ static int _etc_elemental(int rand, const coord_def& loc)
 int get_disjunct_phase(const coord_def& loc)
 {
     static int turns = you.num_turns;
-    static coord_def centre = find_centre_for(loc,
-                                              area_centre_type::disjunction);
+    static coord_def centre = find_centre_for(loc, area_type::disjunction);
 
     if (turns != you.num_turns || (centre-loc).abs() > 15)
     {
-        centre = find_centre_for(loc, area_centre_type::disjunction);
+        centre = find_centre_for(loc, area_type::disjunction);
         turns = you.num_turns;
     }
 
@@ -238,11 +237,11 @@ static int _etc_disjunction(int, const coord_def& loc)
 static int _etc_liquefied(int, const coord_def& loc)
 {
     static int turns = you.num_turns;
-    static coord_def centre = find_centre_for(loc, area_centre_type::liquid);
+    static coord_def centre = find_centre_for(loc, area_type::liquified);
 
     if (turns != you.num_turns || (centre-loc).abs() > 15)
     {
-        centre = find_centre_for(loc, area_centre_type::liquid);
+        centre = find_centre_for(loc, area_type::liquified);
         turns = you.num_turns;
     }
 
@@ -296,7 +295,7 @@ static int _etc_vortex(int rand, const coord_def& loc)
 
 bool get_orb_phase(const coord_def& loc)
 {
-    int dist = (loc - env.orb_pos).abs();
+    int dist = (loc - you.pos()).abs();
     return (you.frame_no - dist*2/3)&4;
 }
 
@@ -307,6 +306,10 @@ static int _etc_orb_glow(int, const coord_def& loc)
 
 int dam_colour(const monster_info& mi)
 {
+    // Hide wound state for invisible creatures.
+    if (mi.is(MB_REMEMBERED_INVIS) || mi.is(MB_KNOWN_INVIS))
+        return BLACK;
+
     switch (mi.dam)
     {
         case MDAM_OKAY:                 return Options.enemy_hp_colour[0];
@@ -663,6 +666,13 @@ void init_element_colours()
                               {20,  LIGHTMAGENTA},
                               {20,  LIGHTGREEN},
                               {100, LIGHTGREY},
+                            }));
+    add_element_colour(new random_element_colour_calc(
+                            ETC_JADE, "jade",
+                            { {10,  LIGHTBLUE},
+                              {10,  LIGHTRED},
+                              {10,  LIGHTCYAN},
+                              {10,  YELLOW},
                             }));
     // redefined by Lua later
     add_element_colour(new element_colour_calc(

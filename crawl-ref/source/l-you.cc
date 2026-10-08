@@ -252,7 +252,7 @@ LUAFN(you_can_train_skill)
     skill_type sk = l_skill(ls);
     if (sk > NUM_SKILLS)
         return 0;
-    PLUARET(boolean, you.can_currently_train[sk]);
+    PLUARET(boolean, !is_useless_skill(sk));
 }
 
 /*** Is this skill useless (removed, sacrificed, or unusable) to the player?
@@ -421,7 +421,8 @@ LUARET1(you_confused, boolean, you.confused())
  * @treturn int Swift level
  * @function swift
  */
-LUARET1(you_swift, integer, you.duration[DUR_SWIFTNESS] ? ((you.attribute[ATTR_SWIFTNESS] >= 0) ? 1 : -1) : 0)
+LUARET1(you_swift, integer, you.duration[DUR_SWIFTNESS]
+                            ? 1 : (you.duration[DUR_ANTISWIFT] ? -1 : 0))
 
 /*** What was the loudest noise you heard in the last turn?
  * Returns a number from [0, 1000], representing the current noise bar.
@@ -1132,6 +1133,16 @@ LUAFN(you_reach_range)
     return 1;
 }
 
+/*** How long to take the next step (including form, terrain, speed adjustments)?
+ * @treturn int movement cost as aut per step
+ * @function movement_cost
+ */
+ LUAFN(you_movement_cost)
+ {
+    int cost = player_overall_move_delay(1, true, true, false);
+    PLUARET(integer, cost);
+ }
+
 /*** Get the mutation level of a mutation.
  * If all optional parameters are false this returns zero.
  * @tparam string mutationname
@@ -1298,6 +1309,7 @@ LUAFN(you_train_skill)
 
 /*** Get a training target.
  * @tparam string name
+ * @tparam[opt=false] boolean base target the base skill level
  * @treturn number
  * @function get_training_target
  */
@@ -1306,12 +1318,14 @@ LUAFN(you_get_training_target)
     skill_type sk = l_skill(ls);
     if (sk > NUM_SKILLS)
         return 0;
-    PLUARET(number, (double) you.get_training_target(sk) * 0.1);
+    const bool base = lua_toboolean(ls, 2);
+    PLUARET(number, (double) you.get_training_target(sk, base) * 0.1);
 }
 
 /*** Set a training target.
  * @tparam string name
  * @tparam number target
+ * @tparam[opt=false] boolean base target the base skill level
  * @treturn number|nil if successfully set the new target
  * @function set_training_target
  */
@@ -1320,7 +1334,8 @@ LUAFN(you_set_training_target)
     skill_type sk = l_skill(ls);
     if (sk > NUM_SKILLS)
         return 0;
-    if (!you.set_training_target(sk, luaL_checknumber(ls, 2), true))
+    const bool base = lua_toboolean(ls, 3);
+    if (!you.set_training_target(sk, luaL_checknumber(ls, 2), true, base))
         return 0; // not a full-on error
     return 1;
 }
@@ -1387,8 +1402,7 @@ LUAFN(you_status)
  */
 LUAFN(you_quiver_valid)
 {
-    PLUARET(boolean, !you.quiver_action.is_empty()
-                   && you.quiver_action.get()->is_valid());
+    PLUARET(boolean, !quiver::is_empty());
 }
 
 /*** Is your quivered action enabled?
@@ -1397,8 +1411,7 @@ LUAFN(you_quiver_valid)
  */
 LUAFN(you_quiver_enabled)
 {
-    PLUARET(boolean, !you.quiver_action.is_empty()
-                   && you.quiver_action.get()->is_enabled());
+    PLUARET(boolean, quiver::get_secondary_action()->is_enabled());
 }
 
 /*** Does your quivered action use MP?
@@ -1448,6 +1461,37 @@ LUAFN(you_zot_orb_monster)
     }
     else
         lua_pushnil(ls);
+
+    return 1;
+}
+
+/*** Which of your jademantle crystals are charged?
+ * @treturn string A description of which crystals are currently charged.
+ * @function jademantle_crystals_desc
+ */
+LUAFN(you_jademantle_crystals_desc)
+{
+    if (!you.props.exists(JADEMANTLE_CRYSTAL_KEY))
+        lua_pushstring(ls, "None of your crystals are currently charged.");
+    else
+    {
+        const int elem = you.props[JADEMANTLE_CRYSTAL_KEY].get_int();
+        vector<string> lit_crystals;
+
+        if (elem & (int)spschool::earth)
+            lit_crystals.push_back("earthen");
+        if (elem & (int)spschool::fire)
+            lit_crystals.push_back("fiery");
+        if (elem & (int)spschool::air)
+            lit_crystals.push_back("airy");
+        if (elem & (int)spschool::ice)
+            lit_crystals.push_back("icy");
+
+        string msg = make_stringf("Your %s crystal%s are infused with energy.",
+                                  comma_separated_line(lit_crystals.begin(), lit_crystals.end()).c_str(),
+                                  lit_crystals.size() > 1 ? "s" : "");
+        lua_pushstring(ls, msg.c_str());
+    }
 
     return 1;
 }
@@ -1558,6 +1602,7 @@ static const struct luaL_Reg you_clib[] =
     { "status",       you_status },
     { "immune_to_hex", you_immune_to_hex },
     { "reach_range", you_reach_range },
+    { "movement_cost", you_movement_cost },
 
     { "stop_activity", you_stop_activity },
     { "taking_stairs", you_taking_stairs },
@@ -1599,6 +1644,8 @@ static const struct luaL_Reg you_clib[] =
     { "is_web_immune",     you_is_web_immune },
     { "has_good_stab",      you_has_good_stab },
     { "zot_orb_monster", you_zot_orb_monster },
+
+    { "jademantle_crystals_desc", you_jademantle_crystals_desc },
 
     { nullptr, nullptr },
 };
@@ -1683,7 +1730,7 @@ static int _you_unrands(lua_State *ls)
     return 1;
 }
 
-LUAWRAP(_you_die,ouch(INSTANT_DEATH, KILLED_BY_SOMETHING))
+LUAWRAP(_you_die, player_die(KILLED_BY_SOMETHING))
 
 static int _you_piety(lua_State *ls)
 {

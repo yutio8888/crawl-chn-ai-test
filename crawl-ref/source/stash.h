@@ -10,11 +10,18 @@
 #include <vector>
 
 #include "shopping.h"
-#include "trap-type.h"
 
 class input_history;
 class reader;
 class writer;
+struct map_cell;
+
+enum stash_sort_mode
+{
+    STASH_SORT_TYPE,
+    STASH_SORT_NAME,
+    STASH_SORT_DIST,
+};
 
 struct stash_search_result;
 class Stash
@@ -23,8 +30,6 @@ public:
     Stash(coord_def pos_ = coord_def());
     Stash(const Stash &) = default;
     Stash& operator=(const Stash &) = default;
-
-    static bool is_boring_feature(dungeon_feature_type feat);
 
     static string stash_item_name(const item_def &item);
     void update();
@@ -59,6 +64,8 @@ public:
 
     bool is_visited() const {  return visited; }
 
+    void populate_map_cell_with_item(map_cell& cell);
+
 private:
     void _update_corpses(int rot_time);
     void _update_identification();
@@ -69,9 +76,12 @@ private:
     coord_def pos;
     dungeon_feature_type feat;
     string feat_desc; // Only for interesting features.
-    trap_type trap;
 
     vector<item_def> items;
+    bool has_special;       // Whether a branded item is anywhere in this stack
+    bool has_artefact;      // Whether an artefact is anywhere in this stack
+    bool special_in_stack;  // Whether a branded item is below the top item in this stack
+    bool artefact_in_stack; // Whether an artefact is below the top item in this stack
 
     static bool are_items_same(const item_def &, const item_def &,
                                bool exact = false);
@@ -143,9 +153,6 @@ struct stash_search_result
     // Type of feature, if this result is for a feature.
     dungeon_feature_type feat;
 
-    // Type of trap, if this result is for a trap.
-    trap_type trap;
-
     // Whether the found items are in the player's inventory.
     bool in_inventory;
 
@@ -155,7 +162,7 @@ struct stash_search_result
 
     stash_search_result() : pos(), player_distance(0), match_type(), match(),
                             primary_sort(), item(), shop(nullptr), feat(),
-                            trap(TRAP_UNASSIGNED), in_inventory(false),
+                            in_inventory(false),
                             duplicates(0), duplicate_piles(0)
     {
     }
@@ -272,7 +279,7 @@ private:
                               vector<stash_search_result> &results,
                               bool curr_lev = false) const;
     bool display_search_results(vector<stash_search_result> &results,
-                                bool& sort_by_dist,
+                                stash_sort_mode& sort_mode,
                                 bool& filter_useless,
                                 bool& default_execute,
                                 base_pattern* search,
@@ -327,6 +334,8 @@ void maybe_update_stashes();
 bool is_stash(const coord_def& c);
 string get_stash_desc(const coord_def& c);
 void describe_stash(const coord_def& c);
+
+void populate_map_cell_with_item(const coord_def& c, map_cell& cell);
 
 vector<item_def> item_list_in_stash(const coord_def& pos);
 

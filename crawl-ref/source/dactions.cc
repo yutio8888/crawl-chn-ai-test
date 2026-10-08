@@ -66,8 +66,8 @@ static const char *daction_names[] =
     "hogs to humans",
 #if TAG_MAJOR_VERSION == 34
     "end spirit howl",
-#endif
     "gold to top of piles",
+#endif
     "bribe timeout",
     "remove Gozag shops",
     "apply Gozag bribes",
@@ -137,7 +137,7 @@ bool mons_matches_daction(const monster* mon, daction_type act)
     case DACT_BEOGH_VENGEANCE_CLEANUP:
         return mon->has_ench(ENCH_VENGEANCE_TARGET)
                && mon->get_ench(ENCH_VENGEANCE_TARGET).degree
-                  <= you.props[BEOGH_VENGEANCE_NUM_KEY].get_int();
+                  != you.props[BEOGH_VENGEANCE_NUM_KEY].get_int();
 
     case DACT_BANE_MORTALITY_CLEANUP:
         return mon->was_created_by(MON_SUMM_MORTALITY);
@@ -192,7 +192,7 @@ void apply_daction_to_mons(monster* mon, daction_type act, bool local,
         case DACT_ALLY_SLIME:
         case DACT_ALLY_PLANT:
             dprf("going hostile: %s", mon->name(DESC_PLAIN, true).c_str());
-            mon->attitude = ATT_HOSTILE;
+            mon->base_attitude = ATT_HOSTILE;
             mon->del_ench(ENCH_CHARM, true);
             if (local)
                 behaviour_event(mon, ME_ALERT, &you);
@@ -257,8 +257,8 @@ void apply_daction_to_mons(monster* mon, daction_type act, bool local,
         case DACT_BRIBE_TIMEOUT:
             if (mon->del_ench(ENCH_NEUTRAL_BRIBED))
             {
-                mon->attitude = ATT_NEUTRAL;
-                mon->flags   |= MF_WAS_NEUTRAL;
+                mon->base_attitude = ATT_NEUTRAL;
+                mon->flags |= MF_WAS_NEUTRAL;
                 mons_att_changed(mon);
             }
             if (mon->props.exists(NEUTRAL_BRIBE_KEY))
@@ -376,9 +376,6 @@ static void _apply_daction(daction_type act)
             if (item.is_type(OBJ_CORPSES, CORPSE_BODY))
                 item.freshness = 1; // thoroughly rotten
         break;
-    case DACT_GOLD_ON_TOP:
-        gozag_move_level_gold_to_top();
-        break;
     case DACT_REMOVE_GOZAG_SHOPS:
     {
         gozag_abandon_shops_on_level();
@@ -401,6 +398,7 @@ static void _apply_daction(daction_type act)
     case DACT_ALLY_UNCLEAN_CHAOTIC:
     case DACT_ALLY_SPELLCASTER:
     case DACT_ALLY_YRED_RELEASE_SOULS:
+    case DACT_GOLD_ON_TOP:
 #endif
     case NUM_DACTION_COUNTERS:
     case NUM_DACTIONS:
@@ -437,8 +435,8 @@ static void _daction_hog_to_human(monster *mon, bool in_transit)
     else
     {
         // It started life as a pig in Kirke's band.
-        orig.type     = MONS_HUMAN;
-        orig.attitude = mon->attitude;
+        orig.type = MONS_HUMAN;
+        orig.base_attitude = mon->base_attitude;
         orig.mid = mon->mid;
         define_monster(orig);
     }
@@ -482,10 +480,10 @@ static void _daction_hog_to_human(monster *mon, bool in_transit)
         // * A monster's attitude shouldn't downgrade from friendly
         //   or good-neutral because you helped it. It'd suck to
         //   lose a permanent ally that way.
-        if (mon->attitude == ATT_HOSTILE)
+        if (mon->base_attitude == ATT_HOSTILE)
         {
-            mon->attitude = ATT_GOOD_NEUTRAL;
-            mon->flags   |= MF_WAS_NEUTRAL;
+            mon->base_attitude = ATT_GOOD_NEUTRAL;
+            mon->flags |= MF_WAS_NEUTRAL;
             mons_att_changed(mon);
         }
     }

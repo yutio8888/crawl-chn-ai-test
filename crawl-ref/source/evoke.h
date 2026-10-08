@@ -11,12 +11,15 @@ using std::vector;
 
 struct dice_def;
 
+constexpr int CENTIPEDE_BAUBLE_MINSKILL = 4;
+
 string manual_skill_names(bool short_text=false);
 
 void wind_blast(actor* agent, int pow, coord_def target);
 
 string cannot_evoke_item_reason(const item_def *item=nullptr,
-                                bool temp=true, bool ident=true);
+                                bool temp=true, bool ident=true,
+                                bool *god_forbids=nullptr);
 bool item_currently_evokable(const item_def *item);
 bool item_ever_evokable(const item_def &item);
 bool evoke_item(item_def &item, dist *target=nullptr);
@@ -36,3 +39,4 @@ int mesmerism_orb_radius(bool max = false);
 int stardust_orb_max(bool max = false);
 int stardust_orb_power(int mp_spent, bool max_evo = false);
 void stardust_orb_trigger(int mp_spent);
+bool mirror_can_effect(monster *victim);

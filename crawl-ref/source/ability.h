@@ -40,6 +40,7 @@ enum class abflag
     card                = 0x00004000, // deck drawing (Nemelex)
     torchlight          = 0x00008000, // costs torchlight (Yred)
     drac_charges        = 0x00010000, // consumes draconian breath charges
+    silence_ok          = 0x00020000, // usable while silenced
 
     // targeting flags
     dir_or_target       = 0x10000000, // uses DIR_NONE targeting
@@ -77,6 +78,14 @@ bool check_ability_possible(const ability_type ability, bool quiet = false,
 bool ability_has_targeter(ability_type abil);
 unique_ptr<targeter> find_ability_targeter(ability_type ability);
 bool activate_talent(const talent& tal, dist *target = nullptr);
+bool handle_post_ability_effects(ability_type ability,
+                                 spret ability_result,
+                                 int piety_cost,
+                                 int mp_cost,
+                                 int hp_cost,
+                                 bool is_invocation);
+spret run_ability_uncancel(uncancellable_type kind, int piety_cost,
+                           int mp_cost, int hp_cost);
 bool is_religious_ability(ability_type abil);
 bool is_card_ability(ability_type abil);
 bool player_has_ability(ability_type abil, bool include_unusable = false);
@@ -89,8 +98,7 @@ ability_type fixup_ability(ability_type ability);
 
 int find_ability_slot(ability_type abil, char firstletter = 'f');
 int auto_assign_ability_slot(int slot);
-vector<ability_type> get_god_abilities(bool ignore_silence = true,
-                                       bool ignore_piety = true,
+vector<ability_type> get_god_abilities(bool ignore_piety = true,
                                        bool ignore_penance = true);
 void swap_ability_slots(int index1, int index2, bool silent = false);
 

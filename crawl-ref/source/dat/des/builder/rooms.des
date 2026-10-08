@@ -61,7 +61,7 @@ function sroom_kobold_lair(e)
 
     if you.in_branch("Orc") then
         e.kmons('B = kobold blastminer')
-        e.item("! = any blast wand charges:2 no_pickup / \
+        e.kitem("! = any blast wand charges:2 no_pickup / \
                     any beam wand charges:2 no_pickup")
         e.nsubst('1 = 2:B / 1:! / *:1')
     end
@@ -213,6 +213,7 @@ function sroom_morgue(e)
     e.kmons("! = " .. mons[1] .. " / " .. mons[2] .. " / " .. mons[3] ..
             " / " .. mons[4] .. " / " .. mons[5] .. " / " .. mons[6])
     e.kfeat("_ = .")
+    e.ftile(".1!2})]>_ = floor_necro_squares")
 
     dgn.delayed_decay(e, '!_', bodies)
 end

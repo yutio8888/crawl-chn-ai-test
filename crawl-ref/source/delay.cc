@@ -54,6 +54,7 @@
 #include "output.h"
 #include "player-equip.h"
 #include "player.h"
+#include "player-reacts.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -70,7 +71,6 @@
 #include "teleport.h"
 #include "terrain.h"
 #include "transform.h"
-#include "traps.h"
 #include "travel.h"
 #include "xom.h"
 #include "zot.h" // ZOT_CLOCK_PER_FLOOR
@@ -363,6 +363,7 @@ void stop_delay(bool stop_relocations, bool force)
     _clear_pending_delays();
 
     if ((!delay->is_relocation() || stop_relocations)
+        && delay->can_be_interrupted()
         && delay->try_interrupt(force))
     {
         _pop_delay();
@@ -519,8 +520,10 @@ void ImprintDelay::start()
 void TransformDelay::start()
 {
     if (form == transformation::none)
+    {
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin untransforming."));
+    }
     else
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin transforming."));
@@ -760,8 +763,9 @@ bool EquipOffDelay::invalidated()
 
 void EquipOffDelay::finish()
 {
-    mprf(T_("You finish %s %s."),
-         get_verb(), equip.name(DESC_YOUR).c_str());
+    finishing = true;
+
+    mprf(T_("You finish %s %s."), get_verb(), equip.name(DESC_YOUR).c_str());
     unequip_item(equip);
 
     // Banishment via coglin distortion unwield might not happen until the turn
@@ -844,21 +848,8 @@ void PasswallDelay::finish()
     you.move_to(dest, MV_DELIBERATE | MV_TRANSLOCATION);
 
     // the last phase of the delay is a fake (0-time) turn, so world_reacts
-    // and player_reacts aren't triggered. Need to do a tiny bit of cleanup.
-    // This isn't very elegant, and perhaps a version of player_reacts that is
-    // triggered by changing location would be better (per Pleasingfungus),
-    // but player_reacts is very sensitive to order and can't be easily
-    // refactored in this way.
-    you.update_beholders();
-    you.update_fearmongers();
-
-    // in addition to missing player_reacts we miss world_reacts until after
-    // we act, missing out on a trap.
-    if (you.trapped)
-    {
-        do_trap_effects();
-        you.trapped = false;
-    }
+    // and player_reacts aren't triggered.
+    player_reacts_to_instant_action();
 }
 
 void ShaftSelfDelay::finish()
@@ -1043,34 +1034,6 @@ static bool _should_stop_activity(Delay* delay,
            || Options.activity_interrupts[delay->name()][static_cast<int>(ai)];
 }
 
-// Turns autopickup off if we ran into an invisible monster or saw a monster
-// turn invisible.
-// Turns autopickup on if we saw an invisible monster become visible or
-// killed an invisible monster.
-void autotoggle_autopickup(bool off)
-{
-    if (off)
-    {
-        if (Options.autopickup_on > 0)
-        {
-            Options.autopickup_on = -1;
-            mprf(MSGCH_WARN,
-                 T_("Deactivating autopickup; reactivate with <w>%s</w>."),
-                 command_to_string(CMD_TOGGLE_AUTOPICKUP).c_str());
-        }
-        if (crawl_state.game_is_hints())
-        {
-            learned_something_new(HINT_INVISIBLE_DANGER);
-            Hints.hints_seen_invisible = you.num_turns;
-        }
-    }
-    else if (Options.autopickup_on < 0) // was turned off automatically
-    {
-        Options.autopickup_on = 1;
-        mprf(MSGCH_WARN, T_("Reactivating autopickup."));
-    }
-}
-
 // If we are being interrupted by a monster we've previously seen (and thus already
 // had its encounter message), print a shorter one instead so that the player
 // has some idea why they're being interrupted.
@@ -1104,13 +1067,6 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
         return false;
 
     const interrupt_block block_recursive_interrupts;
-    if (ai == activity_interrupt::hit_monster
-        || ai == activity_interrupt::monster_attacks)
-    {
-        const monster* mon = at.mons_data;
-        if (mon && !mon->visible_to(&you))
-            autotoggle_autopickup(true);
-    }
 
     if (crawl_state.is_repeating_cmd())
         return interrupt_cmd_repeat(ai, at);
@@ -1142,7 +1098,8 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
         mpr(T_("Ancestor HP restored."));
     }
 
-    if (_should_stop_activity(delay.get(), ai, at))
+    if (delay->can_be_interrupted()
+        && _should_stop_activity(delay.get(), ai, at))
     {
         monster_interrupt_message(ai, at);
 

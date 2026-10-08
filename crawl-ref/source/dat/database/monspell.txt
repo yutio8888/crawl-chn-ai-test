@@ -124,6 +124,10 @@ Creeping Frost cast
 
 @The_monster@ calls freezing cold from the walls.
 %%%%
+Cleansing Flame cast
+
+@The_monster@ channels a blast of cleansing flame!
+%%%%
 Divine Armament cast
 
 @The_monster@ beseeches @My_God@ to grant them a weapon.
@@ -183,16 +187,6 @@ Legendary Destruction cast
 Major Destruction cast
 
 @The_monster@ conjures a destructive force in the name of @possessive_God@!
-%%%%
-Mara Summon cast
-
-@The_monster@ weaves an illusion.
-
-@The_monster@ shimmers.
-%%%%
-unseen Mara summon cast
-
-Something weaves an illusion!
 %%%%
 Orb of Destruction orb spider cast
 
@@ -263,6 +257,16 @@ Sticky Flame cast
 Stunning Burst cast
 
 @The_monster@ fires a burst of electricity @at@ @target@.
+%%%%
+Summon Illusion cast
+
+@The_monster@ weaves an illusion.
+
+@The_monster@ shimmers.
+%%%%
+unseen Summon Illusion cast
+
+Something weaves an illusion!
 %%%%
 Throw Bolas cast
 
@@ -350,7 +354,7 @@ Chilling Breath cast
 unseen Chilling Breath cast
 
 @_unseen_breath_cast_@
-%%%%%
+%%%%
 Electrical Bolt cast
 
 @The_monster@ shoots out a bolt of @beam@ @at@ @target@!
@@ -402,7 +406,7 @@ unseen Searing Breath cast
 Slug Dart cast
 
 @The_monster@ launches a dart @at@ @target@.
-%%%%%
+%%%%
 Spit Lava cast
 
 @The_monster@ spits lava @at@ @target@.
@@ -563,6 +567,16 @@ unseen Geryon cast
 
 You hear a weird and mournful sound.
 %%%%
+Antimagic Gaze Goji cast
+
+{{
+if you.see_invisible() then
+    return "@The_monster@'s mount stares at you."
+else
+    return "@The_monster@ spurs @possessive@ mount on."
+end
+}}
+%%%%
 Smiting Jeremiah cast
 
 @The_monster@ lets out a twisted cry.
@@ -650,6 +664,22 @@ Paralyse Xtahua cast
 ########################################################################
 # Individual monsters
 ########################################################################
+%%%%
+Touch of Paradox abyssal acolyte cast
+
+@The_monster@ calls down @possessive_God@'s blessing.
+
+@The_monster@ invokes a beneficient rending in the name of @possessive_God@.
+%%%%
+unseen Touch of Paradox abyssal acolyte cast
+
+You hear some strange prayers to @possessive_God@.
+%%%%
+Phase Shift abyssal acolyte cast
+
+@The_monster@ fiercely shimmers while chanting indecipherable hymns.
+
+@The_monster@ mumbles a few prayers and slips further between dimensions.
 %%%%
 basilisk cast targeted
 
@@ -835,6 +865,18 @@ Fireball hell hog cast
 
 @The_monster@ breathes @beam@ @at@ @target@.
 %%%%
+Warp Space herald of the abyss cast
+
+@The_monster@ solemnly invokes the wrath of @possessive_God@ @at@ @target@!
+
+@The_monster@ gurgles dread orisons to @possessive_God@ against @target@!
+%%%%
+Malign Gateway herald of the abyss cast
+
+@The_monster@ beckons forth otherworldly terror in the name of @possessive_God@.
+
+@The_monster@ dispassionately intertwines distant dimensions.
+%%%%
 Beckoning Gale hippogriff cast
 
 @The_monster@ flaps @possessive@ wings @at@ @target@.
@@ -896,6 +938,18 @@ manticore cast
 Bolt of Magma molten gargoyle cast
 
 @The_monster@ blasts magma @at@ @target@!
+%%%%
+Harpoon Shot mongrel wurm cast
+
+@The_monster@ hacks up a harpoon shot aimed @at@ @foe@.
+
+@The_monster@ half-collapses as it coughs up a harpoon shot @at@ @foe@.
+%%%%
+Scorch mongrel wurm cast
+
+@The_monster@ nearly chokes as it lobs forward flames.
+
+@The_monster@ expels rasping flames.
 %%%%
 orange crystal statue cast
 
@@ -969,6 +1023,38 @@ Blink Away revenant cast
 
 __NONE
 %%%%
+Hurl Sludge roaming sludgefish cast
+
+@The_monster@ coughs and spits up spare sludge @at@ @target@.
+
+@The_monster@ concentrates and launches forth toxic muck @at@ @target@.
+%%%%
+Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@ writhes with glee as it focuses its will @at@ @target@.
+
+@The_monster@ burbles hungrily as it manifests raw antimagic @at@ @target@.
+%%%%
+silent Bolt of Antimagic roaming sludgefish cast
+
+@The_monster@ writhes with hunger as it focuses its will @at@ @target@.
+%%%%
+rusted inspector cast
+
+@The_monster@ fervently clicks and whirrs while staring @at@ @target@.
+
+@The_monster@ surveys @target@ with malign shimmering curiousity.
+
+@The_monster@ [rumbles|shudders] with under-developed magic as it glares @at@ @target@.
+%%%%
+silent rusted inspector cast
+
+@The_monster@ squirms violently as it stares @at@ @target@.
+
+@The_monster@ surveys @target@ with malign shimmering curiousity.
+
+@The_monster@ shudders with under-developed magic as it glares @at@ @target@.
+%%%%
 Battlecry satyr cast
 
 @The_monster@ plays a rousing melody on @possessive@ pipes!
@@ -980,6 +1066,20 @@ Cause Fear satyr cast
 Sleep satyr cast
 
 @The_monster@ plays a lulling melody on @possessive@ pipes!
+%%%%
+Murky Legion scrapshell chimera cast
+
+@The_monster@ thrashes about, unleashing tainted phantasms!
+
+@The_monster@'s components convulse as foul spirits manifest!
+
+@The_monster@ screeches thrice-fold calling forth its victims' souls!
+%%%%
+silent Murky Legion scrapshell chimera cast
+
+@The_monster@ thrashes silently as it unleashes tainted phantasms!
+
+@The_monster@'s components convulse as foul spirits manifest!
 %%%%
 Injury Mirror screaming refraction cast
 
@@ -1042,6 +1142,18 @@ sun moth cast
 
 @The_monster_possessive@ wings beat fiercely.
 %%%%
+Brain Bite telencephalon cast
+
+@The_monster@ pulsates in unstable patterns.
+
+@The_monster@ spins and shimmers in dizzy loops.
+%%%%
+Call Down Lightning telencephalon cast
+
+Electricity dances across @the_monster_possessive@ nodes.
+
+@The_monster@ bathes in capricious mystic energies.
+%%%%
 Rebounding Blaze thermic dynamo cast
 
 A wild whirl of fire shoots out from @the_monster@ @at@ @target@.
@@ -1057,6 +1169,10 @@ A wild whirl of ice shoots out from @the_monster@ @at@ @target@.
 unseen thermic dynamo cast
 
 You hear a violent whirl.
+%%%%
+thorn hunter cast
+
+@The_monster@ reaches out with @possessive@ roots.
 %%%%
 thrashing horror cast
 

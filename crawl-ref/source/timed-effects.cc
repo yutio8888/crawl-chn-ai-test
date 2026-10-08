@@ -10,7 +10,9 @@
 #include "abyss.h"
 #include "act-iter.h"
 #include "areas.h"
+#include "attitude-change.h"
 #include "beam.h"
+#include "bloodspatter.h"
 #include "cloud.h"
 #include "coordit.h"
 #include "corpse.h"
@@ -26,6 +28,7 @@
 #include "god-passive.h"
 #include "items.h"
 #include "libutil.h"
+#include "map-knowledge.h"
 #include "mapmark.h"
 #include "message.h"
 #include "mgen-data.h"
@@ -94,20 +97,17 @@ static void _magic_contamination_effects()
     // radius and damage.
     if (x_chance_in_y(min(2000, you.magic_contamination), 3200))
     {
-        bolt beam;
-
         const int pow = severe ? you.experience_level * 3 / 2
                                : you.experience_level;
-        zappy(ZAP_CONTAM_EXPLOSION, pow, false, beam);
 
-        beam.source       = you.pos();
+        bolt beam(you, ZAP_CONTAM_EXPLOSION, pow);
         beam.target       = you.pos();
-        beam.source_id    = MID_YOU_FAULTLESS;
         beam.aux_source   = "a magical explosion";
         beam.ex_size      = severe ? 2 : 1;
+        beam.no_anger_allies = true;
 
         // Ignores the player's own AC (it's your body exploding!), but not
-        // enemies.
+        // the AC of enemies.
         beam.ac_rule = ac_type::none;
         beam.is_explosion = false;
         beam.fire();
@@ -256,7 +256,7 @@ static bool _multiplicity_clone(monster* mon)
     {
         bool obviousness; // dummy argument
         monster *clone = clone_mons(mon, true, &obviousness,
-                                    mon->attitude, spot);
+                                    mon->attitude(), spot);
         if (!clone)
             return false;
         clone->foe = mon->foe;
@@ -479,10 +479,11 @@ void handle_time()
     }
 }
 
-static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time)
+static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time,
+                                 bool do_effects = true)
 {
     if (ench.duration <= time)
-        mon.del_ench(ench.ench, true);
+        mon.del_ench(ench.ench, true, do_effects);
     else
     {
         ench.duration -= time;
@@ -503,8 +504,10 @@ static void _timeout_enchantment(monster& mon, mon_enchant& ench, int time)
  * recalled from another floor.
  *
  * @param time  How many aut to simulate passing.
+ * @param no_drowning   If true, don't immediately kill monsters whose
+ *                      ENCH_FLIGHT wears off over deep water or lava.
  */
-void monster::timeout_enchantments(int time)
+void monster::timeout_enchantments(int time, bool no_drowning)
 {
     if (enchantments.empty())
         return;
@@ -528,7 +531,7 @@ void monster::timeout_enchantments(int time)
         case ENCH_MIRROR_DAMAGE: case ENCH_LIQUEFYING:
         case ENCH_SILVER_CORONA: case ENCH_DAZED:
         case ENCH_BREATH_WEAPON: case ENCH_WRETCHED:
-        case ENCH_SCREAMED: case ENCH_BLIND: case ENCH_WORD_OF_RECALL:
+        case ENCH_ABILITY_COOLDOWN: case ENCH_BLIND: case ENCH_WORD_OF_RECALL:
         case ENCH_INJURY_BOND: case ENCH_FLAYED: case ENCH_BARBS:
         case ENCH_AGILE: case ENCH_FROZEN: case ENCH_VITRIFIED:
         case ENCH_SIGN_OF_RUIN: case ENCH_SAP_MAGIC:
@@ -548,17 +551,22 @@ void monster::timeout_enchantments(int time)
         case ENCH_CHANGED_APPEARANCE: case ENCH_CHANNEL_SEARING_RAY:
         case ENCH_CONSTRICTED: case ENCH_CURSE_OF_AGONY:
         case ENCH_DIMENSION_ANCHOR: case ENCH_DOUBLED_VIGOUR: case ENCH_DUMB:
-        case ENCH_FLIGHT: case ENCH_HATCHING: case ENCH_INSTANT_CLEAVE:
+        case ENCH_HATCHING: case ENCH_INSTANT_CLEAVE:
         case ENCH_KINETIC_GRAPNEL: case ENCH_MAD: case ENCH_MISDIRECTED:
         case ENCH_MUTE: case ENCH_PHALANX_BARRIER: case ENCH_POISON_VULN:
         case ENCH_POLAR_VORTEX: case ENCH_POLAR_VORTEX_COOLDOWN:
-        case ENCH_PORTAL_PACIFIED: case ENCH_PORTAL_TIMER: case ENCH_RECITE_TIMER:
+        case ENCH_PORTAL_PACIFIED: case ENCH_RECITE_TIMER:
         case ENCH_DEFLECT_MISSILES: case ENCH_WARDING: case ENCH_FLOODED:
         case ENCH_INNER_FLAME:
         case ENCH_ROLLING: case ENCH_MERFOLK_AVATAR_SONG: case ENCH_INFESTATION:
         case ENCH_HELD: case ENCH_BULLSEYE_TARGET: case ENCH_FATIGUE:
-        case ENCH_TIDE: case ENCH_SLOWLY_DYING:
+        case ENCH_TIDE: case ENCH_SLOWLY_DYING: case ENCH_BRAMBLE_COOLDOWN:
+        case ENCH_EXPOSED:
             _timeout_enchantment(*this, entry.second, time);
+            break;
+
+        case ENCH_FLIGHT:
+            _timeout_enchantment(*this, entry.second, time, !no_drowning);
             break;
 
         case ENCH_FRENZIED: case ENCH_BERSERK:
@@ -588,6 +596,10 @@ void monster::timeout_enchantments(int time)
         case ENCH_CONFUSION:
             if (!mons_class_flag(type, M_CONFUSED))
                 _timeout_enchantment(*this, entry.second, time);
+            break;
+
+        case ENCH_PREPARING_TO_LURK:
+            del_ench(ENCH_PREPARING_TO_LURK, true, false);
             break;
 
         default:
@@ -622,7 +634,7 @@ void update_level(int elapsedTime)
     // Then simply time out effects for the remaining time.
     rot_corpses(elapsedTime);
     shoals_apply_tides(quick_turns, true);
-    timeout_tombs(elapsedTime);
+    env.markers.run_all(elapsedTime);
     timeout_terrain_changes(elapsedTime);
 
     if (env.sanctuary_time)
@@ -731,160 +743,154 @@ static void _drop_tomb(const coord_def& pos, bool premature, bool zin)
     }
 }
 
-static vector<map_malign_gateway_marker*> _get_malign_gateways()
+int count_malign_gateways(const actor& owner)
 {
-    vector<map_malign_gateway_marker*> mm_markers;
+    vector<map_marker*> markers = env.markers.get_all(MAT_MALIGN_GATEWAY);
 
-    for (map_marker *mark : env.markers.get_all(MAT_MALIGN))
+    int count = 0;
+    for (map_marker* marker : markers)
     {
-        if (mark->get_type() != MAT_MALIGN)
-            continue;
-
-        map_malign_gateway_marker *mmark = dynamic_cast<map_malign_gateway_marker*>(mark);
-
-        mm_markers.push_back(mmark);
+        map_malign_gateway_marker* mark = dynamic_cast<map_malign_gateway_marker*>(marker);
+        if (mark->summoner == owner.mid)
+            ++count;
     }
 
-    return mm_markers;
+    return count;
 }
 
-int count_malign_gateways()
+bool map_malign_gateway_marker::run(int time)
 {
-    return _get_malign_gateways().size();
-}
-
-void timeout_malign_gateways(int duration)
-{
-    // Passing 0 should allow us to just touch the gateway and see
-    // if it should decay. This, in theory, should resolve the one
-    // turn delay between it timing out and being recastable. -due
-    for (map_malign_gateway_marker *mmark : _get_malign_gateways())
+    // Produce clouds during the startup phase
+    if (delay > 0)
     {
-        if (duration)
-            mmark->duration -= duration;
+        const int pow = 3 + random2(10);
+        const int size = 2 + random2(5);
+        big_cloud(CLOUD_TLOC_ENERGY, 0, pos, pow, size);
+        delay -= time;
+    }
 
-        if (mmark->duration > 0)
+    if (delay <= 0)
+    {
+        // Make the tentacle if we haven't already
+        if (tentacle == MID_NOBODY)
         {
-            const int pow = 3 + random2(10);
-            const int size = 2 + random2(5);
-            big_cloud(CLOUD_TLOC_ENERGY, 0, mmark->pos, pow, size);
+            actor* caster = actor_by_mid(summoner);
+            mgen_data mg = mgen_data(MONS_ELDRITCH_TENTACLE,
+                                        behaviour,
+                                        pos,
+                                        MHITNOT,
+                                        MG_FORCE_PLACE);
+            mg.set_summoned(caster, SPELL_MALIGN_GATEWAY, 0, false, false);
+            if (!blame_string.empty())
+                mg.non_actor_summoner = blame_string;
+
+            if (monster *mons = create_monster(mg))
+            {
+                mons->flags |= MF_NO_REWARD;
+                int dur = random2avg(power, 6);
+                dur -= random2(4); // sequence point between random calls
+                dur *= 10;
+                mon_enchant kduration = mon_enchant(ENCH_PORTAL_PACIFIED,
+                                                    caster, dur);
+                mons->props[BASE_POSITION_KEY].get_coord()
+                                    = mons->pos();
+                mons->add_ench(kduration);
+                tentacle = mons->mid;
+            }
         }
+        // Otherwise, potentially close the portal due to time
         else
         {
-            monster* mons = monster_at(mmark->pos);
-            if (mmark->monster_summoned && !mons)
+            monster* mon = monster_by_mid(tentacle);
+            if (!mon)
             {
-                // The marker hangs around until later.
-                if (env.grid(mmark->pos) == DNGN_MALIGN_GATEWAY)
-                    env.grid(mmark->pos) = DNGN_FLOOR;
-
-                env.markers.remove(mmark);
+                revert_terrain_change(pos, TERRAIN_CHANGE_MALIGN_GATEWAY);
+                // Remove the marker now.
+                return true;
             }
-            else if (!mmark->monster_summoned && !mons)
+
+            duration -= time;
+            if (duration <= 0)
             {
-                bool is_player = mmark->is_player;
-                actor* caster = 0;
-                if (is_player)
-                    caster = &you;
+                if (you.see_cell(pos))
+                    mprf(T_("The portal closes; %s is severed."), mon->name(DESC_THE).c_str());
 
-                mgen_data mg = mgen_data(MONS_ELDRITCH_TENTACLE,
-                                         mmark->behaviour,
-                                         mmark->pos,
-                                         MHITNOT,
-                                         MG_FORCE_PLACE,
-                                         mmark->god);
-                mg.set_summoned(caster, SPELL_MALIGN_GATEWAY, 0, false, false);
-                if (!is_player)
-                    mg.non_actor_summoner = mmark->summoner_string;
+                revert_terrain_change(pos, TERRAIN_CHANGE_MALIGN_GATEWAY);
 
-                if (monster *tentacle = create_monster(mg))
-                {
-                    tentacle->flags |= MF_NO_REWARD;
-                    tentacle->add_ench(ENCH_PORTAL_TIMER);
-                    int dur = random2avg(mmark->power, 6);
-                    dur -= random2(4); // sequence point between random calls
-                    dur *= 10;
-                    mon_enchant kduration = mon_enchant(ENCH_PORTAL_PACIFIED,
-                                                        caster, dur);
-                    tentacle->props[BASE_POSITION_KEY].get_coord()
-                                        = tentacle->pos();
-                    tentacle->add_ench(kduration);
+                maybe_bloodify_square(pos);
+                mon->add_ench(ENCH_SEVERED);
 
-                    mmark->monster_summoned = true;
-                }
+                // Severed tentacles immediately become "hostile" to everyone
+                // (or frenzied)
+                mon->base_attitude = ATT_NEUTRAL;
+                mons_att_changed(mon);
+                if (!crawl_state.game_is_arena())
+                    behaviour_event(mon, ME_ALERT);
+
+                return true;
             }
         }
     }
+
+    return false;
 }
 
-void timeout_tombs(int duration)
+bool map_tomb_marker::run(int time)
 {
-    if (!duration)
-        return;
+    if (time <= 0)
+        return false;
 
-    for (map_marker *mark : env.markers.get_all(MAT_TOMB))
+    duration -= time;
+
+    // Empty tombs disappear early.
+    monster* mon_entombed = monster_at(pos);
+    bool empty_tomb = !(mon_entombed || you.pos() == pos);
+    bool zin = (source == -GOD_ZIN);
+
+    if (duration <= 0 || empty_tomb)
     {
-        if (mark->get_type() != MAT_TOMB)
-            continue;
+        _drop_tomb(pos, empty_tomb, zin);
 
-        map_tomb_marker *cmark = dynamic_cast<map_tomb_marker*>(mark);
-        cmark->duration -= duration;
+        monster* mon_src =
+            !invalid_monster_index(source) ? &env.mons[source] : nullptr;
+        // A monster's Tomb of Doroklohe spell.
+        if (mon_src && mon_src == mon_entombed)
+            mon_src->lose_energy(EUT_SPELL);
 
-        // Empty tombs disappear early.
-        monster* mon_entombed = monster_at(cmark->pos);
-        bool empty_tomb = !(mon_entombed || you.pos() == cmark->pos);
-        bool zin = (cmark->source == -GOD_ZIN);
-
-        if (cmark->duration <= 0 || empty_tomb)
-        {
-            _drop_tomb(cmark->pos, empty_tomb, zin);
-
-            monster* mon_src =
-                !invalid_monster_index(cmark->source) ? &env.mons[cmark->source]
-                                                      : nullptr;
-            // A monster's Tomb of Doroklohe spell.
-            if (mon_src
-                && mon_src == mon_entombed)
-            {
-                mon_src->lose_energy(EUT_SPELL);
-            }
-
-            env.markers.remove(cmark);
-        }
-    }
-}
-
-void timeout_binding_sigils()
-{
-    int num_seen = 0;
-    for (map_marker *mark : env.markers.get_all(MAT_TERRAIN_CHANGE))
-    {
-        map_terrain_change_marker *marker =
-                dynamic_cast<map_terrain_change_marker*>(mark);
-        if (marker->change_type == TERRAIN_CHANGE_BINDING_SIGIL)
-        {
-            if (you.see_cell(marker->pos))
-                num_seen++;
-            revert_terrain_change(marker->pos, TERRAIN_CHANGE_BINDING_SIGIL);
-        }
+        return true;
     }
 
-    if (num_seen > 1)
-        mprf(MSGCH_DURATION, "%s", T_("Your binding sigils disappear."));
-    else if (num_seen > 0)
-        mprf(MSGCH_DURATION, "%s", T_("Your binding sigil disappears."));
+    return false;
 }
 
-void end_terrain_change(terrain_change_type type)
+bool end_terrain_changes(const actor& source, terrain_change_type type)
 {
+    return end_terrain_changes(type, source.mid);
+}
+
+bool end_terrain_changes(terrain_change_type type, mid_t source_mid)
+{
+    bool did_revert = false;
     for (map_marker *mark : env.markers.get_all(MAT_TERRAIN_CHANGE))
     {
         map_terrain_change_marker *marker =
             dynamic_cast<map_terrain_change_marker*>(mark);
 
-        if (marker->change_type == type)
-            revert_terrain_change(marker->pos, type);
+        if ((type == NUM_TERRAIN_CHANGE_TYPES || marker->change_type == type)
+            && (source_mid == MID_NOBODY || marker->source_mid == source_mid))
+        {
+            marker->duration = 0;
+            did_revert = true;
+        }
     }
+
+    if (did_revert)
+    {
+        timeout_terrain_changes(0, true);
+        return true;
+    }
+
+    return false;
 }
 
 void end_enkindled_status()
@@ -914,6 +920,25 @@ void timeout_terrain_changes(int duration, bool force)
         map_terrain_change_marker *marker =
                 dynamic_cast<map_terrain_change_marker*>(mark);
 
+        actor* src = actor_by_mid(marker->source_mid);
+
+        // Hellfire mortar lava doesn't start timing out until the mortar is
+        // dead, but shouldn't disappear instantly once it does die.
+        if (marker->change_type == TERRAIN_CHANGE_HELLFIRE_MORTAR)
+        {
+            if (src)
+                marker->duration += duration;
+            else
+                marker->source_mid = 0;
+
+            // Don't remove the lava beneath an active mortar, even in cases
+            // where two mortars are 'competing' for the same tile.
+            // (It's harmless, but looks silly).
+            if (monster* mon = monster_at(marker->pos))
+                if (mon->type == MONS_HELLFIRE_MORTAR)
+                    marker->duration = max(marker->duration, 1);
+        }
+
         if (marker->duration != INFINITE_DURATION)
             marker->duration -= duration;
 
@@ -929,16 +954,17 @@ void timeout_terrain_changes(int duration, bool force)
             continue;
         }
 
-        if ((marker->change_type == TERRAIN_CHANGE_BOG
-             || marker->change_type == TERRAIN_CHANGE_BINDING_SIGIL)
+        if ((marker->source_mid == MID_PLAYER
+             && (marker->change_type == TERRAIN_CHANGE_BOG
+                 || marker->change_type == TERRAIN_CHANGE_BINDING_SIGIL
+                 || marker->change_type == TERRAIN_CHANGE_ICE_THORNS))
             && !you.see_cell(marker->pos))
         {
             marker->duration = 0;
         }
 
-        actor* src = actor_by_mid(marker->mon_num);
         if (marker->duration <= 0
-            || (marker->mon_num != 0
+            || (marker->source_mid != 0
                 && (!src || !src->alive()
                     || (src->is_monster() && src->as_monster()->pacified()))))
         {
@@ -958,18 +984,18 @@ void timeout_terrain_changes(int duration, bool force)
     });
 
     for (const auto &m_pos : revert)
-    {
         revert_terrain_change(m_pos.pos, m_pos.type);
 
+    for (const auto& m_pos : revert)
+    {
         // When multiple tiles are reverting at once, walls reappearing may
         // obscure otherwise-unambiguous information about terrain behind them,
         // so forcibly redraw anything the player could see at the start of them.
         if (m_pos.was_in_los)
         {
-            env.map_knowledge(m_pos.pos).set_feature(env.grid(m_pos.pos));
-#ifdef USE_TILE
-            tile_env.bk_bg(m_pos.pos) = tileidx_feature_base(env.grid(m_pos.pos));
-#endif
+            update_terrain_knowledge(m_pos.pos);
+            update_grid_colour_knowledge(m_pos.pos);
+            redraw_view_at(m_pos.pos);
         }
     }
 
@@ -989,10 +1015,24 @@ void timeout_terrain_changes(int duration, bool force)
 //
 
 static vector<coord_def> sfx_seeds;
+static vector<coord_def> mould_patches;
+
+void update_mould_tracking(const coord_def& pos)
+{
+    if (env.grid(pos) == DNGN_MOULD_PATCH)
+        mould_patches.push_back(pos);
+    else
+    {
+        auto p = std::find(mould_patches.begin(), mould_patches.end(), pos);
+        if (p != mould_patches.end())
+            mould_patches.erase(p);
+    }
+}
 
 void setup_environment_effects()
 {
     sfx_seeds.clear();
+    mould_patches.clear();
 
     for (int x = X_BOUND_1; x <= X_BOUND_2; ++x)
     {
@@ -1002,13 +1042,15 @@ void setup_environment_effects()
                 continue;
 
             const int grid = env.grid[x][y];
-            if (grid == DNGN_LAVA
+            if ((grid == DNGN_LAVA && !is_temp_terrain({x, y}))
                     || (grid == DNGN_SHALLOW_WATER
                         && player_in_branch(BRANCH_SWAMP)))
             {
                 const coord_def c(x, y);
                 sfx_seeds.push_back(c);
             }
+            else if (grid == DNGN_MOULD_PATCH)
+                mould_patches.push_back({x, y});
         }
     }
     dprf("%u environment effect seeds", (unsigned int)sfx_seeds.size());
@@ -1061,13 +1103,24 @@ void run_environment_effects()
         }
     }
 
-    run_corruption_effects(you.time_taken);
+    // If any mould patches have become unoccupied, schedule a new fungus spawning.
+    for (const coord_def& pos : mould_patches)
+    {
+        if (env.grid(pos) != DNGN_MOULD_PATCH)
+            continue;
+
+        if (!actor_at(pos) && !env.markers.get_active_feature_at(pos, DNGN_MOULD_PATCH))
+        {
+            env.markers.add(new map_active_feature_marker(pos, DNGN_MOULD_PATCH, MID_NOBODY,
+                                                          ATT_HOSTILE, 0, random_range(60, 180)));
+        }
+    }
+
+    env.markers.run_all(you.time_taken);
+
     shoals_apply_tides(div_rand_round(you.time_taken, BASELINE_DELAY),
                        false);
-    timeout_tombs(you.time_taken);
-    timeout_malign_gateways(you.time_taken);
     timeout_terrain_changes(you.time_taken);
-    run_cloud_spreaders(you.time_taken);
 }
 
 // Converts a movement speed to a duration. i.e., answers the
@@ -1086,4 +1139,145 @@ int speed_to_duration(int speed)
         speed = 100;
 
     return div_rand_round(100, speed);
+}
+
+// Active feature handling
+bool map_active_feature_marker::run(int time)
+{
+    // Only run while the current feature matches the marker (which it may not,
+    // due to temporary terrain changes stacked on top of it), but still time
+    // out the marker.
+    if (env.grid(pos) != feat)
+    {
+        duration -= time;
+        return duration < 0;
+    }
+
+    switch (feat)
+    {
+        case DNGN_SPIKE_LAUNCHER:   return run_spike_launcher(time);
+        case DNGN_MOULD_PATCH:      return run_mould_patch(time);
+        default:                    return true;
+    }
+}
+
+static void _fire_spike_launcher(actor* target, const actor* agent,
+                                 const coord_def& origin, int power)
+{
+    bolt spike;
+    zappy(ZAP_SPIKE_LAUNCHER, power, !(agent && agent->is_player()), spike);
+    spike.source = target->pos();
+    spike.target = target->pos();
+    spike.seen = true;
+    spike.range = 1;
+    spike.hit_verb = "skewers";
+    // Don't upset Ely if this hits a neutral monster
+    spike.no_anger_allies = true;
+    spike.set_agent(agent);
+
+    dungeon_feature_type feat = orig_terrain(origin);
+    switch (feat)
+    {
+        case DNGN_STONE_WALL:
+        case DNGN_CLEAR_STONE_WALL:
+            spike.name = "stone spike";
+            break;
+
+        case DNGN_METAL_WALL:
+            spike.name = "metal spike";
+            break;
+
+        case DNGN_CRYSTAL_WALL:
+            spike.name = "crystalline spike";
+            break;
+
+        // Rock already handled by zappy()
+        default:
+            break;
+    }
+
+    flash_tile(target->pos(), CYAN);
+    spike.fire();
+}
+
+bool map_active_feature_marker::run_spike_launcher(int time)
+{
+    // Check if the owner has died or gotten too far away from their launcher.
+    const actor* act = actor_by_mid(owner);
+    if (is_dependent && (!act || !act->see_cell_no_trans(pos) || grid_distance(act->pos(), pos) > 3))
+    {
+        if (!act && you.see_cell(pos))
+            mpr(T_("The spike launcher falls apart."));
+        else if (act && (act->is_player()) || you.see_cell(pos))
+        {
+            mprf_p(T_("%s spike launcher falls apart as %s %s too distant to "
+                      "maintain it."),
+                   act->name(DESC_ITS).c_str(),
+                   act->pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                   act->verb_for_display(NC_("verb", "grow"), "verb").c_str());
+        }
+        revert_terrain_change(pos, TERRAIN_CHANGE_SPIKE_LAUNCHER);
+        return true;
+    }
+
+    // Now, fire the launcher, if anything is in range.
+    action_timer -= time;
+    while (action_timer < 0)
+    {
+        // Don't allow friendly launchers to shoot out of the player's sight.
+        if (attitude == ATT_FRIENDLY && !you.see_cell_no_trans(pos))
+        {
+            action_timer = BASELINE_DELAY - abs(action_timer % BASELINE_DELAY);
+            break;
+        }
+
+        vector<actor*> targets;
+        for (adjacent_iterator ai(pos, false); ai; ++ai)
+        {
+            if (actor* targ = actor_at(*ai))
+            {
+                if (!act->see_cell_no_trans(*ai)
+                    || mons_atts_aligned(attitude, targ->attitude())
+                    || targ->is_firewood())
+                {
+                    continue;
+                }
+                targets.push_back(targ);
+            }
+        }
+        if (targets.size() == 0)
+        {
+            action_timer = BASELINE_DELAY - abs(action_timer % BASELINE_DELAY);
+            break;
+        }
+
+        _fire_spike_launcher(targets.at(random2(targets.size())), act, pos, power);
+        action_timer += BASELINE_DELAY;
+    }
+
+    duration -= time;
+    if (duration < 0)
+    {
+        if (you.see_cell(pos))
+            mprf(T_("%s spike launcher falls apart."), act->name(DESC_ITS).c_str());
+        revert_terrain_change(pos, TERRAIN_CHANGE_SPIKE_LAUNCHER);
+        return true;
+    }
+
+    return false;
+}
+
+bool map_active_feature_marker::run_mould_patch(int time)
+{
+    if (duration > 0)
+        duration -= time;
+
+    if (duration <= 0 && !actor_at(pos))
+    {
+        mgen_data mg(MONS_FUNGUS, BEH_HOSTILE, pos, MHITNOT, MG_FORCE_PLACE);
+        if (create_monster(mg))
+            return true;
+    }
+
+    return false;
 }

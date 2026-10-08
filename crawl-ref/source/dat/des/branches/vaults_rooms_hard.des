@@ -38,8 +38,8 @@ function init_protected_by_tso(e)
   e.tags('vaults_hard')
   e.kmons('A = angel')
   e.kmons('1 = generate_awake daeva')
-  e.kmons('2 = vault warden ; great sword ' .. h .. ' | battleaxe .. ' .. h ..
-                             'glaive ' .. h .. ' | great mace ' .. h .. ' . ' ..
+  e.kmons('2 = vault warden ; great sword ' .. h .. ' | battleaxe ' .. h ..
+                             ' | glaive ' .. h .. ' | great mace ' .. h ..
                              ' . chain mail | plate armour')
   e.kmons('3 = generate_awake vault guard / \
                generate_awake ironbound mechanist w:2')
@@ -55,8 +55,7 @@ end
 function st_box_setup(e)
   e.tags("no_item_gen")
   e.subst("% = %%%**|$")
-  e.kmons("7 = patrolling vault guard")
-  e.kmons("Z = frost giant / fire giant / titan w:5 / ettin / shadow dragon /\
+  e.kmons("6 = frost giant / fire giant / titan w:5 / ettin / shadow dragon /\
                golden dragon w:5 / storm dragon / quicksilver dragon w:2 /\
                iron dragon w:2 / swamp dragon / fire dragon / ice dragon /\
                catoblepas / crystal guardian / eye of devastation / \
@@ -65,8 +64,9 @@ function st_box_setup(e)
                deep elf death mage / deep elf demonologist /\
                deep elf annihilator / deep elf high priest / orc warlord /\
                base draconian w:15 / guardian sphinx / glowing shapeshifter")
-  e.subst("0 = 0:9 Z:1")
-  e.subst("9 = 9:3 Z:1")
+  e.kmons("7 = patrolling vault guard")
+  e.subst("0 = 0:9 6:1")
+  e.subst("9 = 9:3 6:1")
 end
 }}
 
@@ -417,11 +417,10 @@ xd.1xx.C.xx2%%x
 xxxxxx...xxxxxx
 ENDMAP
 
-NAME: grunt_vaults_funneled_arena
+NAME:  grunt_vaults_funneled_arena
+KMONS:  0 = 0 band
 NSUBST: 9 = 1:8 / *:9
-SUBST: 0 = 90000000
-KMONS: 0 = 0 band
-SUBST: $ = |***$$$$
+SUBST:  0 = 90000000, $ = |***$$$$
 : vaults_hard_standard(_G)
 MAP
   x.....xxxxx...xxxxx.....x
@@ -459,12 +458,9 @@ ENDMAP
 # st's greater box vaults!
 
 # 32 monsters, 38 %
-NAME:     st_greater_box_1
-TAGS:     vaults_orient_s
-NSUBST:   ' = 5:9 / 3:0 / *:.
-NSUBST:   " = 8:9 / *:.
-NSUBST:   - = 8:9 / *:.
-NSUBST:   8 = 2:8 / *:.
+NAME:   st_greater_box_1
+TAGS:   vaults_orient_s
+NSUBST: ' = 5:9 / 3:0 / *:., " = 8:9 / *:., - = 8:9 / *:., 8 = 2:8 / *:.
 : st_box_setup(_G)
 : vaults_hard_standard(_G)
 MAP
@@ -491,14 +487,11 @@ vvvvvvvvvvvvvv..vvvvvvvvvvvvvv
 ENDMAP
 
 # 32 monsters, 36 %
-NAME:     st_greater_box_2
-TAGS:     vaults_orient_s
-SHUFFLE:  ab
-SUBST:    a = +, b = v, c : v., d : v.
-NSUBST:   ' = 8:9 / *:.
-NSUBST:   " = 8:9 / *:.
-NSUBST:   - = 8:9 / *:.
-NSUBST:   8 = 2:8 / *:.
+NAME:    st_greater_box_2
+TAGS:    vaults_orient_s
+SHUFFLE: ab
+SUBST:   a = +, b = v, c : v., d : v.
+NSUBST:  ' = 8:9 / *:., " = 8:9 / *:., - = 8:9 / *:., 8 = 2:8 / *:.
 : st_box_setup(_G)
 : vaults_hard_standard(_G)
 MAP
@@ -527,8 +520,7 @@ ENDMAP
 # 36 monsters, 42 %
 NAME:     st_greater_box_3
 TAGS:     vaults_orient_s
-NSUBST:   ' = 12:9 / *:.
-NSUBST:   " = 10:9 / *:.
+NSUBST:   ' = 12:9 / *:., " = 10:9 / *:.
 : st_box_setup(_G)
 : vaults_hard_standard(_G)
 MAP
@@ -555,11 +547,9 @@ vvvvvvvvvvvvvv..vvvvvvvvvvvvvv
 ENDMAP
 
 # 31 monsters, 28 %, 8 |
-NAME:     st_greater_box_4
-TAGS:     vaults_orient_s
-NSUBST:   ' = 5:9 / 3:0 / *:.
-NSUBST:   " = 8:9 / *:.
-NSUBST:   - = 8:9 / 2:8 / *:.
+NAME:    st_greater_box_4
+TAGS:    vaults_orient_s
+NSUBST:  ' = 5:9 / 3:0 / *:., " = 8:9 / *:., - = 8:9 / 2:8 / *:.
 : st_box_setup(_G)
 : vaults_hard_standard(_G)
 MAP
@@ -586,11 +576,11 @@ vvvvvvvvvvvvvv..vvvvvvvvvvvvvv
 ENDMAP
 
 # 26 monsters, 36 %
-NAME:     st_greater_box_5
-TAGS:     vaults_orient_s
-NSUBST:   ' = 15:9 / 3:8 / *:.
-SHUFFLE:  abc
-SUBST:    a = +, b = v, c = v
+NAME:    st_greater_box_5
+TAGS:    vaults_orient_s
+NSUBST:  ' = 15:9 / 3:8 / *:.
+SHUFFLE: abc
+SUBST:   a = +, b = v, c = v
 : st_box_setup(_G)
 : vaults_hard_standard(_G)
 MAP
@@ -618,13 +608,13 @@ ENDMAP
 
 ####
 
-NAME: ontoclasm_vaults_water_temple
-TAGS: no_pool_fixup
+NAME:   ontoclasm_vaults_water_temple
+TAGS:   no_pool_fixup
 WEIGHT: 3
-KMASK: wW = no_monster_gen
+KMONS:  0 = 0 band
 NSUBST: 0 = 1:9 / *:0
-KMONS: 0 = 0 band
-SUBST: G : GU, % = %%%%*.
+SUBST:  G : GU, % = %%%%*.
+KMASK:  wW = no_monster_gen
 : vaults_hard_standard(_G)
 MAP
      ........
@@ -643,12 +633,12 @@ MAP
    xwwwxxxxwwwx
 ENDMAP
 
-NAME: ontoclasm_vaults_fire_temple
+NAME:   ontoclasm_vaults_fire_temple
 WEIGHT: 3
-KMASK: l = no_monster_gen
+KMONS:  0 = 0 band
 NSUBST: 0 = 1:9 / *:0
-KMONS: 0 = 0 band
-SUBST: G : GY, % = %%%%*.
+SUBST:  G : GY, % = %%%%*.
+KMASK:  l = no_monster_gen
 : vaults_hard_standard(_G)
 MAP
      ........
@@ -667,7 +657,7 @@ MAP
    xlllxxxxlllx
 ENDMAP
 
-NAME: ontoclasm_vaults_shout
+NAME:  ontoclasm_vaults_shout
 KMONS: 0 = 0 band
 : vaults_hard_standard(_G)
 MAP
@@ -683,7 +673,7 @@ MAP
 ..xxxxxxx
 ENDMAP
 
-NAME: ontoclasm_vaults_gallery
+NAME:   ontoclasm_vaults_gallery
 NSUBST: 9 = 1:0 / 1:8 / *:9
 : vaults_hard_standard(_G)
 MAP
@@ -724,10 +714,12 @@ WEIGHT: 3
 :      " / vault warden draugr w:" .. d)
 : mons("death knight w:" .. 7 - d .. " / deep elf death mage w:" .. d)
 : mons("phantasmal warrior w:" .. 7 - d .. " / flayed ghost w:" .. d)
+ITEM:   any
 SUBST:  0 : 0000z
 NSUBST: 0 = 1:0 / 3:% / * = 0009..
-NSUBST: z = 2:1 / 2:2 / 1:3 / 3:% / * = 11113$..
-: vaults_hard_standard(_G)
+NSUBST: z = 2:1 / 2:2 / 1:3 / 3:d / * = 11113$''
+FTILE:  '123$d = floor_necro_squares
+: vaults_hard_standard(_G, true, ".%09")
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxx
 xx00xx00xx00xx00xx00xx00xx
@@ -957,7 +949,7 @@ ENDMAP
 
 NAME: nicolae_vaults_quartermaster
 NSUBST: 0 = 1:9 / *:0
-KFEAT: % = alarm trap / . w:30
+KFEAT: % = trap_alarm / . w:30
 KITEM: % = any
 KMONS: 0 = 0 band
 : vaults_hard_standard(_G)
@@ -1166,7 +1158,7 @@ TAGS:  vaults_orient_s
 KMONS: 12 = vault guard
 KMONS: 3 = vault warden
 KITEM: 23 = $
-KFEAT: ^ = alarm trap
+KFEAT: ^ = trap_alarm
 : vaults_hard_standard(_G)
 MAP
 xxxxxxxxxxx
@@ -1266,7 +1258,7 @@ WEIGHT: 5
 KMONS: P = human ; nothing / orc ; nothing / elf ; nothing / troll ; nothing / \
            centaur ; nothing / kobold ; nothing
 KFEAT: g = iron_grate
-KFEAT: ^ = alarm trap
+KFEAT: ^ = trap_alarm
 KMONS: 1 = vault guard
 KMONS: 2 = vault warden
 KMONS: 3 = ironbound preserver / ironbound convoker
@@ -1524,7 +1516,7 @@ KMONS:  R = vault warden band
 KMONS:  S = vault sentinel
 KMONS:  s = vault guard w:30 / ironbound mechanist / \
             ironbound preserver / ironbound convoker
-KFEAT:  M = alarm trap
+KFEAT:  M = trap_alarm
 KMASK:  M = no_monster_gen
 KMASK:  M = opaque
 KPROP:  M = no_tele_into
@@ -1687,9 +1679,11 @@ xDnnx...xnnEx
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_1
+KMONS:   S = stack of scrap
 SHUFFLE: DE, FH, JK, LM, NO
-SUBST:   DFJLN = +, E : xxxx+, H : xxxx+, K : xxxx+, M : xxxx+, O : xxxx+, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DFJLN = +, E : xxxx+, H : xxxx+, K : xxxx+, M : xxxx+, O : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 ........................
@@ -1705,9 +1699,11 @@ MAP
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_2
+KMONS:   S = stack of scrap
 SHUFFLE: DE, FH, JK, LM
-SUBST:   DFJL = +, E : xxxx+, H : xxxx+, K : xxxx+, M : xxxx+, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DFJL = +, E : xxxx+, H : xxxx+, K : xxxx+, M : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 .......xxxxxx.
@@ -1727,9 +1723,11 @@ xxxxxx........
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_3
+KMONS:   S = stack of scrap
 SHUFFLE: DE, FH, JK
-SUBST:   DFJ = +, E : xxxx+, H : xxxx+, K : xxxx+, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DFJ = +, E : xxxx+, H : xxxx+, K : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 ..............
@@ -1746,9 +1744,11 @@ xEEx.xxxxxx...
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_4
+KMONS:   S = stack of scrap
 SHUFFLE: DE, FH
-SUBST:   DF = +, E : xxxx+, H : xxxx+, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DF = +, E : xxxx+, H : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 .xxxxxx..
@@ -1763,8 +1763,11 @@ MAP
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_5
+KMONS:   S = stack of scrap
 SHUFFLE: DEFH
-SUBST:   DEF = +, H : xxxx+, - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DEF = +, H : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 xxxxxx.......
@@ -1783,9 +1786,11 @@ xxxxxx.......
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_6
+KMONS:   S = stack of scrap
 SHUFFLE: DE, FH, JK/ML, LM
-SUBST:   DFJL = +, E : xxxx+, H : xxxx+, K = x, M : ++++x, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DFJL = +, E : xxxx+, H : xxxx+, K = x, M : ++++x
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 ................
@@ -1807,9 +1812,11 @@ MAP
 ENDMAP
 
 NAME:    nicolae_vaults_shipping_containers_7
+KMONS:   S = stack of scrap
 SHUFFLE: DE/FH/JK, FH, JK
-SUBST:   DEFJ = +, H : xxxx+, K : xxxx+, \
-         - = ......%0, % = %%%**|, 0 = 000998
+SUBST:   DEFJ = +, H : xxxx+, K : xxxx+
+NSUBST:  - = 1:%$ / 1:9 / 2:S.. / *:-
+SUBST:   - = ......%0, % = %%%**|, 0 = 000998
 : vaults_hard_standard(_G)
 MAP
 .....xxxxxx.
@@ -1979,6 +1986,7 @@ ITEM:    scroll of teleportation pre_id q:2 w:20 / \
 SHUFFLE: %!'"
 NSUBST:  % = 1:d / * = %$, ! = 1:d / * = %$, ' = 1:d / * = %$, " = 1:e / * = %$
 KMASK:   %$de = opaque
+KMASK:   %$de = allow_tele_closets
 TILE:    m = dngn_transparent_wall_green
 : vaults_hard_standard(_G)
 FTILE:   R = floor_metal_gold
@@ -2354,7 +2362,7 @@ ENDMAP
 # Each room is progressively more challenging; both the constructs, and their
 # creators.
 NAME:   constructs_gauntlet_mu_hangedman
-TAGS:   no_monster_gen no_item_gen no_pool_fixup no_descent
+TAGS:   no_item_gen no_pool_fixup no_descent
 TAGS:   vaults_orient_w vaults_hard
 DEPTH:  Vaults, !Vaults:$
 MONS:   gargoyle, peacekeeper, thermic dynamo
@@ -2365,8 +2373,10 @@ KMONS:  C = deep elf annihilator
 KMONS:  D = lich
 KMONS:  E = ironbound mechanist
 KMONS:  F = ancient lich / Boris w:2, ancient lich / dread lich w:2
+KMONS:  Syz = stack of scrap
 ITEM:   randbook disc:forgecraft / manual of forgecraft w:5
 KFEAT:  yz = .
+SUBST:  S : GSS
 COLOUR: y = yellow
 COLOUR: z = lightblue
 FTILE:  y = floor_rough_red
@@ -2397,9 +2407,9 @@ MAP
  c$$$%%ccclllll+.....cccwwwwc
  ccccccccccccccccccccccccccwc
  cccccccccccccccccccccccccc+c
-.cG.....+...$$ccWWWWWW+.....c
+.cS.....+...$$ccWWWWWW+.....c
 .c.cccccc..1.$ccWcccccc...2.c
-.c....Gcc..A..ccWWWWWWc..B..G
+.c....Scc..A..ccWWWWWWc..B..G
 .ccccc.cc..1..cccccccWc.2.1$c
 .+.....cc.....+WWWWWWWc...$%c
 ENDMAP
@@ -2749,7 +2759,7 @@ NAME:    nicolae_vaults_lava_storage_facility
 KMONS:   1 = yaktaur captain ; arbalest ego:flaming pre_id w:15 | \
              hand cannon ego:flaming pre_id w:3
 : local f = "great sword ego:flaming pre_id | long sword ego:flaming pre_id |"..
-: " battle axe ego:flaming pre_id | war axe ego:flaming pre_id | great mace " ..
+: " battleaxe ego:flaming pre_id | war axe ego:flaming pre_id | great mace " ..
 : "ego:flaming pre_id | dire flail ego:flaming pre_id | bardiche ego:flaming "..
 : "pre_id | glaive ego:flaming pre_id . ring mail ego:fire_resistance pre_id|"..
 : "chain mail ego:fire_resistance pre_id | " ..
@@ -2877,16 +2887,15 @@ xxxxxxx.....x*d*d*x
 ENDMAP
 
 NAME:   nicolae_vaults_under_constructs-ion
-KMONS:  1 = crystal guardian
-KMONS:  2 = peacekeeper / war gargoyle
-KMONS:  3 = dancing weapon
+MONS:   crystal guardian, peacekeeper / war gargoyle, dancing weapon
+KMONS:  S = stack of scrap
 : local glifz = "DEFHJKLMN"
 : for i = 1, string.len(glifz), 1 do
 :    subvault(string.sub(glifz, i, i) .. " : nico_constructs_doodad")
 : end
-NSUBST: J = 1 / *
-NSUBST: E = 2 / %%. / ., H = 2 / %%. / ., K = 2 / %%. / ., M = 2 / %%. / .
-NSUBST: DFLN = 1 / 1... / 2 / 2... / 3=3 / 3=3. / .
+NSUBST: J = 1:1 / *:*, E = 1:2 / 1:%%S / *:.
+NSUBST: H = 1:2 / 1:%%S / *:., K = 1:2 / 1:%%S / *:., M = 1:2 / 1:%%S / *:.
+NSUBST: DFLN = 1:1 / 1:1S.. / 1:2 / 1:2S.. / 3:3 / 3 = 3S / *:.
 : vaults_hard_standard(_G)
 MAP
 .............

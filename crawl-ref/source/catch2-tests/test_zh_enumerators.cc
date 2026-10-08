@@ -6,9 +6,7 @@
 #include "test_zh_helpers.h"
 
 #include "i18n.h"            // T_()
-#include "describe.h"        // full_trap_name
-#include "trap-def.h"        // trap_def::name
-#include "trap-type.h"
+#include "directn.h"         // feature_description
 #include "database.h"        // getLongDescription, getMiscString
 #include "religion.h"        // _god_name_en, get_god_powers, god_power
 #include "god-type.h"
@@ -37,6 +35,8 @@
 #include "job-type.h"        // job_type, NUM_JOBS
 #include "player.h"          // you
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
+#include "hints.h"           // hint_replace_cmds
+#include "format.h"          // formatted_string
 #include "unwind.h"          // unwind_var
 
 // batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
@@ -313,46 +313,55 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     struct trap_row
     {
-        trap_type type;
+        dungeon_feature_type type;
         const char* key;
         const char* chinese;
     };
 
     const trap_row rows[] = {
-        {TRAP_DISPERSAL, "dispersal trap", "空间驱离陷阱"},
-        {TRAP_TELEPORT, "teleport trap", "传送陷阱"},
-        {TRAP_TELEPORT_PERMANENT, "permanent teleport trap", "永久传送陷阱"},
-        {TRAP_TYRANT, "tyrant's trap", "暴君陷阱"},
-        {TRAP_ARCHMAGE, "archmage's trap", "大法师陷阱"},
-        {TRAP_HARLEQUIN, "harlequin's trap", "丑角陷阱"},
-        {TRAP_DEVOURER, "devourer's trap", "吞噬者陷阱"},
-        {TRAP_ALARM, "alarm trap", "警报陷阱"},
-        {TRAP_NET, "net trap", "网陷阱"},
-        {TRAP_ZOT, "Zot trap", "佐特陷阱"},
-        {TRAP_SHAFT, "shaft", "竖井"},
-        {TRAP_GOLUBRIA, "passage of Golubria", "戈卢布里亚之通道"},
-        {TRAP_PLATE, "pressure plate", "压力板"},
-        {TRAP_WEB, "web", "蜘蛛网"},
+        {DNGN_TRAP_DISPERSAL, "dispersal trap", "空间驱离陷阱"},
+        {DNGN_TRAP_TELEPORT, "teleport trap", "传送陷阱"},
+        {DNGN_TRAP_TELEPORT_PERMANENT, "permanent teleport trap", "永久传送陷阱"},
+        {DNGN_TRAP_TYRANT, "tyrant's trap", "暴君陷阱"},
+        {DNGN_TRAP_ARCHMAGE, "archmage's trap", "大法师陷阱"},
+        {DNGN_TRAP_HARLEQUIN, "harlequin's trap", "丑角陷阱"},
+        {DNGN_TRAP_DEVOURER, "devourer's trap", "吞噬者陷阱"},
+        {DNGN_TRAP_ALARM, "alarm trap", "警报陷阱"},
+        {DNGN_TRAP_NET, "net trap", "网陷阱"},
+        {DNGN_TRAP_ZOT, "Zot trap", "佐特陷阱"},
+        {DNGN_TRAP_SHAFT, "shaft", "竖井"},
+        {DNGN_PASSAGE_OF_GOLUBRIA, "passage of Golubria", "戈卢布里亚之通道"},
+        {DNGN_TRAP_PLATE, "pressure plate", "压力板"},
+        {DNGN_TRAP_WEB, "web", "蜘蛛网"},
 #if TAG_MAJOR_VERSION == 34
-        {TRAP_SPEAR, "spear trap", "长矛陷阱"},
-        {TRAP_BOLT, "bolt trap", "弩箭陷阱"},
-        {TRAP_GAS, "gas trap", "气体陷阱"},
-        {TRAP_SHADOW, "shadow trap", "暗影陷阱"},
-        {TRAP_SHADOW_DORMANT, "dormant shadow trap", "休眠暗影陷阱"},
+        {DNGN_TRAP_SPEAR, "spear trap", "长矛陷阱"},
+        {DNGN_TRAP_BOLT, "bolt trap", "弩箭陷阱"},
+        // Upstream merged the old gas trap into this compatibility terrain.
+        {DNGN_TRAP_MECHANICAL, "mechanical trap", "机械陷阱"},
+        {DNGN_TRAP_SHADOW, "shadow trap", "暗影陷阱"},
+        {DNGN_TRAP_SHADOW_DORMANT, "dormant shadow trap", "休眠暗影陷阱"},
 #endif
     };
 
     for (const trap_row& row : rows)
     {
-        REQUIRE(std::string(T_(row.key)) == row.chinese);
-        REQUIRE(full_trap_name(row.type) == row.chinese);
+        DYNAMIC_SECTION(row.key)
+        {
+            REQUIRE(std::string(T_(row.key)) == row.chinese);
+            REQUIRE(feature_description(row.type, "", DESC_BASENAME)
+                    == row.chinese);
+        }
     }
 
-    trap_def teleport_trap{};
-    teleport_trap.type = TRAP_TELEPORT;
-    REQUIRE(teleport_trap.name(DESC_PLAIN) == "传送陷阱");
-    REQUIRE(teleport_trap.name(DESC_A) == "传送陷阱");
-    REQUIRE(teleport_trap.name(DESC_THE) == "传送陷阱");
+    SECTION("teleport description levels")
+    {
+        REQUIRE(feature_description(DNGN_TRAP_TELEPORT, "", DESC_PLAIN)
+                == "传送陷阱");
+        REQUIRE(feature_description(DNGN_TRAP_TELEPORT, "", DESC_A)
+                == "传送陷阱");
+        REQUIRE(feature_description(DNGN_TRAP_TELEPORT, "", DESC_THE)
+                == "传送陷阱");
+    }
 }
 
 // =============================================================================
@@ -488,7 +497,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(string(get_unrand_name_en(item)) == e->name);
     }
     REQUIRE(enum_values.size() == NUM_UNRANDARTS);
-    REQUIRE(current == 121);
+    // Issue #147: the thirteen audited upstream additions are all current;
+    // compatibility (19) and internal dummy (2) populations are unchanged.
+    REQUIRE(current == 134);
     REQUIRE(compatibility == 19);
     REQUIRE(internal == 2);
     emit_issue_protocol("zh_translation", "fixed_artefacts", issues);
@@ -846,7 +857,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             {
                 if (val.find("attempt to") != std::string::npos)
                     continue;
-                scan_one(val.c_str(), key, path, issues);
+                // Hints display substitutes commands before parsing colours.
+                // Scan that consumer text, not colour names or the valid
+                // "$cmd[CMD_ADJUST_INVENTORY]i" two-key sequence. Unknown
+                // colour tags remain visible in the production parser.
+                if (source.uses_hint_db)
+                {
+                    // Other rules compare raw format/markup bytes. Keep that
+                    // contract: stripping tags can join spaces and punctuation
+                    // that were not adjacent in the source under review.
+                    auto hint_issues = scan_translation(val.c_str(), key, path);
+                    for (auto& issue : hint_issues)
+                        if (issue.kind != ZhIssue::MIXED_CN_EN)
+                            issues.push_back(std::move(issue));
+                    std::string display = val;
+                    hint_replace_cmds(display);
+                    display = formatted_string::parse_string(display).tostring();
+                    auto display_issues = scan_translation(display.c_str(), key, path);
+                    for (auto& issue : display_issues)
+                        if (issue.kind == ZhIssue::MIXED_CN_EN)
+                            issues.push_back(std::move(issue));
+                }
+                else
+                    scan_one(val.c_str(), key, path, issues);
             }
             else
             {
@@ -869,6 +902,28 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     WARN("zh enumerator summary: tutorial/hints/commands -> "
          << issues.size() << " issues");
     REQUIRE(true);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Hint display scanning preserves English leak detection",
+                 "[zh-translation][zh-helpers][issue147]")
+{
+    for (const char* key : {"HINT_WIELD_WEAPON", "HINT_REST_BETWEEN_FIGHTS",
+                            "HINT_SEEN_MONSTER_CONSOLE", "HINT_SKILL_TRAINING"})
+    {
+        INFO(key);
+        std::string text = getHintString(key);
+        REQUIRE_FALSE(text.empty());
+        hint_replace_cmds(text);
+        text = formatted_string::parse_string(text).tostring();
+        INFO(text);
+        CHECK_FALSE(rule_mixed_cn_en(text));
+        CHECK(rule_mixed_cn_en(text + " ordinary English leak"));
+    }
+    CHECK(rule_mixed_cn_en(formatted_string::parse_string(
+        "<brown>ordinary English leak 示例</brown>").tostring()));
+    CHECK(rule_mixed_cn_en(formatted_string::parse_string(
+        "<unknowncolour>示例</unknowncolour>").tostring()));
 }
 
 // =============================================================================

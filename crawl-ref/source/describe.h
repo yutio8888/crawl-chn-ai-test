@@ -15,7 +15,6 @@
 #include "enum.h"
 #include "mon-util.h"
 #include "tag-version.h"
-#include "trap-type.h"
 
 struct monster_info;
 
@@ -71,7 +70,12 @@ command_type describe_item_popup(const item_def &item,
                                  bool do_actions = false);
 bool describe_item(item_def &item, function<void (string&)> fixup_desc = nullptr,
     bool do_actions = true);
-string describe_item_rarity(const item_def &item);
+brand_type weapon_ego_from_name(string name, vector<brand_type> *partial_matches = nullptr);
+special_missile_type missile_ego_from_name(string name,
+                                           vector<special_missile_type> *partial_matches = nullptr);
+special_armour_type armour_ego_from_name(string name,
+                                         vector<special_armour_type> *partial_matches = nullptr);
+string describe_item_rarity(const item_def &item, bool terse = false);
 void get_item_desc(const item_def &item, describe_info &inf);
 void inscribe_item(item_def &item);
 void target_item(item_def &item);
@@ -96,6 +100,9 @@ void describe_deck(deck_type deck);
 void describe_mutation(mutation_type mut);
 void describe_bane(bane_type bane);
 string bane_long_description(bane_type bane, bool ignore_player = false);
+void describe_weapon_ego(brand_type wpn);
+void describe_armour_ego(special_armour_type arm);
+void describe_missile_ego(special_missile_type msl);
 
 string short_ghost_description(const monster *mon, bool abbrev = false);
 string get_ghost_description(const monster_info &mi, bool concise = false);
@@ -126,11 +133,6 @@ const char* jewellery_base_ability_string(int subtype);
 string artefact_inscription(const item_def& item);
 void add_inscription(item_def &item, string inscrip);
 
-string trap_name(trap_type trap);
-string trap_name_en(trap_type trap);
-string full_trap_name(trap_type trap);
-int str_to_trap(const string &s);
-
 string extra_cloud_info(cloud_type cloud_type);
 
 string desc_resist(int level, int max = 1,
@@ -140,3 +142,5 @@ string player_species_name();
 
 /* Public for testing purposes only: do not use elsewhere. */
 string _monster_habitat_description(const monster_info& mi);
+
+string ego_title_for_display(const string& key);

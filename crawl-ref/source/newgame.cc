@@ -1082,6 +1082,16 @@ bool choose_game(newgame_def& ng, newgame_def& choice,
     return false;
 }
 
+// Don't reselect the same weapon for a possibly-different character.
+void forget_weapon_if_random(newgame_def& ng_choice)
+{
+    if (_is_random_job(ng_choice.job) || _is_random_species(ng_choice.species))
+    {
+        ng_choice.weapon = WPN_UNKNOWN;
+        ng_choice.allowed_weapons.clear();
+    }
+}
+
 // Set ng_choice to defaults without overwriting name and game type.
 static void _set_default_choice(newgame_def& ng, newgame_def& ng_choice,
                                 const newgame_def& defaults)
@@ -1094,6 +1104,8 @@ static void _set_default_choice(newgame_def& ng, newgame_def& ng_choice,
     ng_choice = defaults;
     ng_choice.name = name;
     ng_choice.type = type;
+
+    forget_weapon_if_random(ng_choice);
 }
 
 static void _mark_fully_random(newgame_def& ng, newgame_def& ng_choice,
@@ -1138,42 +1150,10 @@ static void _construct_species_menu(const newgame_def& ng,
     }
 }
 
-static const std::array<job_group, 5> jobs_order =
-{{
-    {
-        NC_("job group", "Warrior"),
-        coord_def(0, 0), 20,
-        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND }
-    },
-    {
-        NC_("job group", "Zealot"),
-        coord_def(0, 6), 25,
-        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT }
-    },
-    {
-        NC_("job group", "Adventurer"),
-        coord_def(1, 0), 20,
-        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER, }
-    },
-    {
-        NC_("job group", "Warrior-mage"),
-        coord_def(1, 5), 26,
-        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER }
-    },
-    {
-        NC_("job group", "Mage"),
-        coord_def(2, 0), 22,
-        { JOB_HEDGE_WIZARD, JOB_CONJURER, JOB_SUMMONER, JOB_NECROMANCER,
-          JOB_FORGEWRIGHT, JOB_FIRE_ELEMENTALIST, JOB_ICE_ELEMENTALIST,
-          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST }
-    }
-}};
-
-const std::array<job_group, 5>& newgame_job_groups()
+const vector<job_group>& newgame_job_groups()
 {
-    return jobs_order;
+    return job_groups;
 }
-
 /**
  * Helper for _choose_job
  * constructs the menu used and highlights the previous job if there is one

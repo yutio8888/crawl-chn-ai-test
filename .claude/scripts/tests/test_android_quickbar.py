@@ -170,8 +170,8 @@ int main() {
                               source.index("void action_cycler::save(")]
         item = block_after(source, "struct item_action : public action")
         # Use production state construction and type/validity semantics, not
-        # an 'empty' boolean double: the initial and loaded ammo_action(-1)
-        # shows Empty but is_empty() is false, unlike a manually cleared action.
+        # an 'empty' boolean double: trunk treats invalid ammo_action(-1)
+        # as empty as well as the manually cleared base action.
         # Inventory, untested action types, and message output remain doubles;
         # real command dispatch, UI rendering, and turns require device tests.
         self.run_cpp(r'''
@@ -263,7 +263,7 @@ struct action_cycler {
 ''' + constructors + r'''
 int main() {
     action_cycler initial;
-    assert(!initial.is_empty() && !initial.get()->is_valid());
+    assert(initial.is_empty() && !initial.get()->is_valid());
     action_cycler cleared;
     cleared.clear();
     assert(cleared.is_empty() && cleared.get()->is_valid());
@@ -271,20 +271,24 @@ int main() {
     saved["type"].text = "ammo_action";
     saved["param"].number = -1;
     action_cycler loaded(_load_action(saved));
-    assert(!loaded.is_empty() && !loaded.get()->is_valid());
-    // Legacy/minimal saved empty action has no param, and loads as invalid.
+    assert(loaded.is_empty() && !loaded.get()->is_valid());
+    // A saved base action loads as a valid but explicitly empty action.
     saved["type"].text = "action";
     saved.erase("param");
     action_cycler loaded_empty(_load_action(saved));
-    assert(!loaded_empty.is_empty() && !loaded_empty.get()->is_valid());
+    assert(loaded_empty.is_empty() && loaded_empty.get()->is_valid());
+    // Missing type preserves the compatibility fallback to invalid ammo.
+    saved.erase("type");
+    action_cycler missing_type(_load_action(saved));
+    assert(missing_type.is_empty() && !missing_type.get()->is_valid());
     action_cycler enabled(make_shared<configured_action>(true));
     action_cycler disabled(make_shared<configured_action>(false));
     assert(disabled.get()->is_valid() && !disabled.get()->is_enabled());
     action_cycler *states[] = {&initial, &cleared, &loaded, &loaded_empty,
-                               &enabled, &disabled};
-    for (int i = 0; i < 6; ++i)
+                               &missing_type, &enabled, &disabled};
+    for (int i = 0; i < 7; ++i)
         for (bool have_candidates : {false, true}) {
-            const bool needs_action = i < 4;
+            const bool needs_action = i < 5;
             candidates = have_candidates;
             messages.clear();
             binding_used = 0;

@@ -156,3 +156,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(string(T_("  [<w>J</w>/<w>Enter</w>]: join"))
           == "  [<w>J</w>/<w>Enter</w>]: join");
 }
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: xv poison maxima qualify poison rather than paralysis",
+                 "[zh-translation][issue147][descriptions]")
+{
+    for (const auto type : {MONS_HORNET, MONS_FORMLESS_JELLYFISH})
+    {
+        CAPTURE(type);
+        const string description = issue6_monster_description(type);
+        const monster_info mi(type);
+        const attack_flavour flavour = type == MONS_HORNET
+            ? AF_POISON_PARALYSE : AF_MINIPARA;
+        const string expected = make_stringf("Poison (max %d) and %s",
+            flavour_damage(flavour, mi.hd, false),
+            type == MONS_HORNET ? "paralysis/slowing" : "momentary paralysis");
+        CHECK(description.find(expected) != string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: xv poison maxima preserve complete translated formats",
+                 "[zh-translation][issue147][descriptions]")
+{
+    for (const auto type : {MONS_HORNET, MONS_FORMLESS_JELLYFISH})
+    {
+        CAPTURE(type);
+        const string description = issue6_monster_description(type);
+        const monster_info mi(type);
+        const attack_flavour flavour = type == MONS_HORNET
+            ? AF_POISON_PARALYSE : AF_MINIPARA;
+        const string maximum = make_stringf(T_(" (max %d%s)"),
+            flavour_damage(flavour, mi.hd, false), "");
+        const string expected = make_stringf(type == MONS_HORNET
+            ? T_("Poison%s and paralysis/slowing")
+            : T_("Poison%s and momentary paralysis"), maximum.c_str());
+        CHECK(description.find(expected) != string::npos);
+    }
+}

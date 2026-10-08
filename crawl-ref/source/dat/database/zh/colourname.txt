@@ -575,6 +575,8 @@ any_pattern
 三角纹
 
 漩涡纹
+
+之字纹
 %%%%
 glowing_adj
 
@@ -585,6 +587,8 @@ glowing_adj
 灿烂的
 
 暗沉的
+
+深
 
 暗淡的
 

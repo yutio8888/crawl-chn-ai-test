@@ -11,6 +11,9 @@
 #include "transformation.h"
 #include "object-class-type.h"
 
+// The item uid to swap back to when this temporary item expires.
+#define ITEM_SWAP_BACK_KEY "item_swap_back"
+
 // Represents a single instance of an item being equipped in a slot by a player.
 struct player_equip_entry
 {
@@ -111,13 +114,16 @@ struct player_equip_set
                                        bool ignore_curses = false,
                                        bool quiet = true) const;
 
-    int needs_chain_removal(const item_def& item, vector<item_def*>& to_replace,
-                            bool cursed_okay = false);
+    int needs_chain_removal(equipment_slot slot, vector<item_def*>& to_replace,
+                            bool cursed_okay = false,
+                            const vector<item_def*>& already_removing = {});
 
     vector<item_def*> get_forced_removal_list(bool force_full_check = false,
-                                              bool is_save_cleanup = false);
+                                              bool is_save_cleanup = false,
+                                              size_t* num_direct = nullptr);
 
     void shift_twohander_to_slot(equipment_slot new_slot);
+    void swap_offhand_weapon_to_main();
 
 private:
     void handle_melding(vector<item_def*>& to_meld, bool skip_effects);
@@ -130,26 +136,32 @@ int get_player_equip_slot_count(equipment_slot slot, string* zero_reason = nullp
 FixedVector<int, NUM_EQUIP_SLOTS> get_total_player_equip_slots();
 const vector<equipment_slot>& get_alternate_slots(equipment_slot slot);
 
-bool can_equip_item(const item_def& item, bool include_form = false,
-                    string* veto_reason = nullptr);
+bool can_equip_item(const item_def& item, bool temp = false,
+                    string* veto_reason = nullptr,
+                    bool* god_forbids = nullptr);
 
 // XXX: the msg flag isn't implemented in all cases.
 void equip_item(equipment_slot slot, int item_slot, bool msg=true,
                 bool skip_effects=false);
-bool unequip_item(item_def& item, bool msg=true, bool skip_effects=false);
+bool unequip_item(item_def& item, bool msg=true, bool skip_effects=false,
+                  bool maybe_destroy=true);
 
 bool slot_is_melded(equipment_slot slot);
 
 void autoequip_item(item_def& item);
 
 void equip_effect(int item_slot, bool unmeld, bool msg);
-void unequip_effect(int item_slot, bool meld, bool msg);
+void unequip_effect(int item_slot, bool meld, bool msg, bool was_melded,
+                    bool maybe_destroy);
 
 struct item_def;
 void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld);
-void unequip_artefact_effect(item_def &item, bool *show_msgs, bool meld);
+void unequip_artefact_effect(item_def &item, bool *show_msgs, bool meld,
+                             bool was_melded = false);
 
 bool acrobat_boost_active();
 bool parrying_boost_active();
 
 void unwield_distortion(bool brand = false);
+
+item_def* get_item_swap_back(const item_def& item);

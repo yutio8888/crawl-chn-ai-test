@@ -1174,7 +1174,7 @@ static bool _shaft_safely()
 
         if (!in_bounds(pos)
             || is_feat_dangerous(env.grid(pos), true)
-            || cloud_at(pos) // XXX: ignore if is_harmless_cloud?
+            || harmful_cloud_at(pos)
             || monster_at(pos)
             || env.pgrid(pos) & FPROP_NO_TELE_INTO
             || _nonfriendly_nearby(pos))
@@ -1213,6 +1213,7 @@ static void _clear_env_map()
 {
     env.map_knowledge.init(map_cell());
     env.map_forgotten.reset();
+    tile_env.remembered_flavour.reset();
 }
 
 static void _grab_follower(monster* fol)
@@ -1618,7 +1619,6 @@ static void _generic_level_reset()
     // TODO: can more be pulled into here?
 
     you.prev_targ = MID_NOBODY;
-    you.prev_grd_targ.reset();
 
     // Lose all listeners.
     dungeon_events.clear();
@@ -1642,9 +1642,15 @@ static const vector<branch_type> portal_generation_order =
 #endif
     // do not pregenerate bazaar (TODO: this is non-ideal)
     // do not pregenerate trove
+    BRANCH_GULCH,
     BRANCH_WIZLAB,
     BRANCH_DESOLATION,
 };
+
+const vector<branch_type> &dgn_portal_generation_order()
+{
+    return portal_generation_order;
+}
 
 void update_portal_entrances()
 {
@@ -1871,6 +1877,19 @@ static const vector<branch_type> branch_generation_order =
     NUM_BRANCHES,
 };
 
+const vector<branch_type> &dgn_branch_generation_order()
+{
+    return branch_generation_order;
+}
+
+bool dgn_branch_will_generate(branch_type br)
+{
+    return br < NUM_BRANCHES &&
+        (brentry[br].is_valid()
+         || br == BRANCH_DUNGEON || br == BRANCH_VESTIBULE
+         || !is_connected_branch(br));
+}
+
 static bool _branch_pregenerates(branch_type b)
 {
     if (!you.deterministic_levelgen)
@@ -1929,10 +1948,7 @@ bool pregen_dungeon(const level_id &stopping_point)
         // `initialise_branch_depths` for some reason. The vestibule is invalid
         // because its depth isn't set until the player actually enters a
         // portal, similarly for other portal branches.
-        if (br < NUM_BRANCHES &&
-            (brentry[br].is_valid()
-             || br == BRANCH_DUNGEON || br == BRANCH_VESTIBULE
-             || !is_connected_branch(br)))
+        if (dgn_branch_will_generate(br))
         {
             for (int i = 1; i <= brdepth[br]; i++)
             {
@@ -2175,6 +2191,9 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         update_companions();
     }
 
+    // At this point there should be no monsters in the reset queue.
+    ASSERT(!any_pending_monster_reset());
+
 #ifdef USE_TILE
     if (load_mode != LOAD_VISITOR)
     {
@@ -2249,7 +2268,6 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
 
     // Shouldn't happen, but this is too unimportant to assert.
     clear_final_effects();
-    env.final_effect_monster_cache.clear();
 
     los_changed();
 
@@ -2299,13 +2317,16 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
 
     crawl_view.set_player_at(you.pos(), load_mode != LOAD_VISITOR);
 
-    // Actually "move" the followers if applicable.
+    // Place transiting monsters.
     if (load_mode == LOAD_ENTER_LEVEL)
+    {
         place_followers();
-
-    // Load monsters in transit.
-    if (load_mode == LOAD_ENTER_LEVEL)
         place_transiting_monsters();
+
+        // Silently recreate crystals on new floor.
+        if (you.form == transformation::jademantle)
+            jademantle_handle_crystal_revival(true);
+    }
 
     if (just_created_level && make_changes)
         replace_boris();
@@ -2349,6 +2370,8 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
 
         // no cross-level pursuits
         crawl_state.potential_pursuers.clear();
+
+        ash_detect_portals(is_map_persistent());
     }
 
     // Save the created/updated level out to disk:
@@ -2480,8 +2503,7 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
                 && feat_stair_direction(feat) != CMD_NO_CMD
                 && feat_stair_direction(stair_taken) != CMD_NO_CMD)
             {
-                string stair_str = feature_description(feat, NUM_TRAPS, "",
-                                                       DESC_THE);
+                string stair_str = feature_description(feat, "", DESC_THE);
                 string verb = stair_climb_verb(feat);
 
                 if (coinflip()
@@ -2501,8 +2523,6 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
             }
         }
 
-        ash_detect_portals(is_map_persistent());
-
         if (just_created_level)
             xom_new_level_noise_or_stealth();
     }
@@ -2511,7 +2531,7 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         decr_zot_clock();
 
     // Initialize halos, etc.
-    invalidate_agrid(true);
+    invalidate_agrid();
 
     // Maybe make a note if we reached a new level.
     // Don't do so if we are just moving around inside Pan, though.
@@ -2562,6 +2582,9 @@ void save_level(const level_id& lid)
 {
     if (you.level_visited(lid))
         travel_cache.get_level_info(lid).update();
+
+    // Reset any monsters that died/left this action.
+    flush_monster_reset();
 
     // Nail all items to the ground.
     fix_item_coordinates();
@@ -3231,7 +3254,7 @@ static const char *_type_name_with_article_display(game_type type)
 }
 
 // The translated values above do not include English articles, while the
-// English fallback does.  This display-only helper supplies the noun phrase
+// English fallback does. This display-only helper supplies the noun phrase
 // expected by messages which already provide their own article.
 static string _type_name_without_article_display(game_type type)
 {
@@ -3395,6 +3418,7 @@ static bool _restore_game(const string& filename)
     // disabled. Doing this here rather in tags code because it can trigger
     // UI, which may not be safe if everything isn't fully loaded.
     check_selected_skills();
+    init_four_winds();
 
     return true;
 }
@@ -3444,6 +3468,9 @@ bool is_existing_level(const level_id &level)
 
 void delete_level(const level_id &level)
 {
+    // This level's env.mons is being discarded, so clear any pending resets.
+    drop_pending_monster_resets();
+
     travel_cache.erase_level_info(level);
     StashTrack.remove_level(level);
     shopping_list.del_things_from(level);
@@ -3642,6 +3669,24 @@ static bool _convert_obsolete_species()
                    "if you want to remain a Vampire."));
         }
         change_species_to(SP_HUMAN);
+        return true;
+    }
+    else if (you.species == SP_ARMATAUR)
+    {
+        if (!yesno(T_(
+            "This Armataur save game cannot be loaded as-is. If you load it now,\n"
+            "your character will be converted to a Gale Centaur. Continue?"),
+                       false, 'N'))
+        {
+            you.save->abort(); // don't even rewrite the header
+            delete you.save;
+            you.save = 0;
+            game_ended(game_exit::abort,
+                T_("Please load the save in an earlier version "
+                   "if you want to remain an Armataur."));
+        }
+        change_species_to(SP_GALE_CENTAUR);
+        you.duration[DUR_STAMPEDE] = 0; // Was DUR_ROLLPAGE
         return true;
     }
 #endif

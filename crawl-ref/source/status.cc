@@ -7,6 +7,9 @@
 #include "art-enum.h" // bearserk
 #include "artefact.h"
 #include "branch.h"
+#include "colour.h"
+#include "positional_format.h"
+#include "database.h"
 #include "dungeon.h" // DESCENT_STAIRS_KEY
 #include "duration-type.h"
 #include "env.h"
@@ -158,6 +161,7 @@ static int _dur_colour(int exp_colour, bool expiring)
 
 static void _mark_expiring(status_info& inf, bool expiring)
 {
+    inf.is_expiring = expiring;
     if (expiring)
     {
         if (!inf.short_text.empty())
@@ -256,8 +260,10 @@ bool fill_status_info(int status, status_info& inf)
 
     case STATUS_DRACONIAN_BREATH:
     {
-        if ((!species::is_draconian(you.species) || you.experience_level < 7)
-                && you.form != transformation::dragon)
+        if ((!species::is_draconian(you.species)
+             || you.experience_level < 7
+             || form_changes_anatomy())
+            && you.form != transformation::dragon)
         {
             break;
         }
@@ -354,17 +360,6 @@ bool fill_status_info(int status, status_info& inf)
             inf.db_key       = "-Potion";
             inf.short_text   = T_("unable to drink");
             inf.long_text    = T_("You cannot drink potions.");
-        }
-        break;
-
-    case DUR_SWIFTNESS:
-        if (you.attribute[ATTR_SWIFTNESS] < 0)
-        {
-            inf.light_text   = T_("-Swift");
-            inf.db_key       = "-Swift";
-            inf.light_colour = RED;
-            inf.short_text   = T_("unswift");
-            inf.long_text    = T_("You are covering ground slowly.");
         }
         break;
 
@@ -500,20 +495,6 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = LIGHTMAGENTA;
             inf.light_text   = make_stringf(T_("Regen (%d)"), pbd_str);
             inf.db_key       = "Regen";
-        }
-        break;
-    }
-
-    case DUR_RAMPAGE_HEAL:
-    {
-        const int rh_pwr = you.props[RAMPAGE_HEAL_KEY].get_int();
-        if (rh_pwr > 0)
-        {
-            const int rh_lvl = you.get_mutation_level(MUT_ROLLPAGE);
-            inf.light_colour = rh_lvl < 2 ? LIGHTBLUE : LIGHTMAGENTA;
-            inf.light_text   = make_stringf(rh_lvl < 2 ? T_("MPRegen (%d)")
-                                                       : T_("Regen (%d)"), rh_pwr);
-            inf.db_key       = rh_lvl < 2 ? "MPRegen" : "Regen";
         }
         break;
     }
@@ -669,6 +650,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_text = T_("Fire");
             inf.db_key     = "Fire";
         }
+        break;
     }
 
     case STATUS_BEOGH:
@@ -1106,6 +1088,59 @@ bool fill_status_info(int status, status_info& inf)
         }
         break;
 
+    case DUR_INDOMITABLE:
+        inf.light_text = make_stringf("Indom (%d)", you.duration[DUR_INDOMITABLE] / 100);
+        inf.short_text = make_stringf("indomitable (%d)", you.duration[DUR_INDOMITABLE] / 100);
+        break;
+
+    case DUR_SALVO:
+        inf.light_text = make_stringf("Salvo (%d)", you.props[SALVO_KEY].get_int());
+        inf.short_text = make_stringf("salvo (%d)", you.props[SALVO_KEY].get_int());
+        break;
+
+    case STATUS_JADEMANTLE_CRYSTALS:
+    {
+        if (you.form == transformation::jademantle && you.props.exists(JADEMANTLE_CRYSTAL_KEY))
+        {
+            inf.light_text = NC_("status", "Crystals");
+            inf.db_key = "Crystals";
+            inf.light_colour = LIGHTGREEN;
+
+            const int crystals = you.props[JADEMANTLE_CRYSTAL_KEY].get_int();
+            inf.light_text_formatted =
+                make_stringf_p(C_("status crystals", "<%1$s>Cr<%2$s>ys<%3$s>ta<%4$s>ls"),
+                            (crystals & (int)spschool::earth) ? "yellow"    : "darkgrey",
+                            (crystals & (int)spschool::fire)  ? "lightred"  : "darkgrey",
+                            (crystals & (int)spschool::air)   ? "lightcyan" : "darkgrey",
+                            (crystals & (int)spschool::ice)   ? "lightblue" : "darkgrey");
+        }
+    }
+    break;
+
+    case STATUS_HYPNOTAIL:
+        if (you.form == transformation::hypnogecko)
+        {
+            if (you.props.exists(HYPNOGECKO_LOST_TAIL_KEY))
+            {
+                inf.light_text = NC_("status", "-Tail");
+                inf.db_key = "-Tail";
+                inf.light_colour = YELLOW;
+            }
+        }
+        break;
+
+    case DUR_VAPOURISE:
+    {
+        cloud_struct dummy;
+        dummy.type = mistmane_cloud_type(static_cast<potion_type>(you.props[MISTMANE_VAPOUR_KEY].get_int()));
+        inf.light_text = NC_("status", "Vapour");
+        inf.db_key = "Vapour";
+        inf.light_colour = element_colour(get_cloud_colour(dummy), you.pos(), true);
+        inf.short_text = make_stringf(T_("vapourise (%s)"), cloud_type_name(dummy.type, true).c_str());
+        inf.long_text = make_stringf(T_("producing %s"), cloud_type_name(dummy.type).c_str());
+    }
+    break;
+
     default:
         if (!found)
         {
@@ -1132,6 +1167,25 @@ bool fill_status_info(int status, status_info& inf)
             inf.long_text = C_("status", inf.long_text.c_str());
     }
     return true;
+}
+
+string status_light_description(const status_info& inf)
+{
+    // db_key is the canonical English stem, without translated text or counts.
+    string dbname = inf.db_key;
+    // Don't claim Zot is impending when it's not near.
+    if (dbname == "Zot" && inf.light_colour == WHITE)
+        dbname = "Zot count";
+    string dbdesc = getLongDescription(dbname + " status");
+    trim_string_right(dbdesc);
+
+    if (dbdesc.empty())
+        dbdesc = T_("No description found");
+
+    if (inf.is_expiring)
+        dbdesc += T_(" (expiring)");
+
+    return dbdesc;
 }
 
 static colour_t _gem_light_colour(int d_aut_left)
@@ -1545,4 +1599,82 @@ void duration_end_effect(duration_type dur)
 {
     if (_lookup_duration(dur)->decr.end.on_end)
         _lookup_duration(dur)->decr.end.on_end();
+}
+
+// Order of 'priority' status lights, to be drawn left-to-right on the HUD.
+// Any durations or statuses not listed here will be drawn afterward in enum order.
+static const vector<unsigned int> important_statuses =
+{
+    STATUS_TESSERACT,
+    STATUS_ORB,
+    STATUS_ZOT,
+    STATUS_STAT_ZERO,
+    DUR_PARALYSIS,
+    DUR_CONF,
+    DUR_PETRIFYING,
+    DUR_PETRIFIED,
+    DUR_BERSERK,
+    DUR_TELEPORT,
+    DUR_ENKINDLED,
+    STATUS_MNEMOPHAGE,
+    DUR_HASTE,
+    DUR_SLOW,
+    STATUS_SPEED,
+    DUR_DEATHS_DOOR,
+    DUR_BLINK_COOLDOWN,
+    DUR_BERSERK_COOLDOWN,
+    DUR_EXHAUSTED,
+    DUR_WORD_OF_CHAOS_COOLDOWN,
+    DUR_DEATHS_DOOR_COOLDOWN,
+    DUR_QUAD_DAMAGE,
+    STATUS_SERPENTS_LASH,
+};
+
+status_iterator::status_iterator()
+    : current(0), in_priority_phase(true)
+{
+    done.reset(false);
+}
+
+status_iterator::operator bool() const
+{
+    return current <= STATUS_LAST_STATUS;
+}
+
+int status_iterator::operator *() const
+{
+    if (in_priority_phase)
+        return important_statuses[current];
+    return current;
+}
+
+const int* status_iterator::operator->() const
+{
+    return &current;
+}
+
+void status_iterator::operator ++()
+{
+    if (in_priority_phase)
+    {
+        done.set(important_statuses[current]);
+        if (++current >= (int)important_statuses.size())
+        {
+            in_priority_phase = false;
+            current = -1;
+            ++(*this);
+        }
+    }
+    else
+    {
+        if (current <= STATUS_LAST_STATUS)
+            ++current;
+        while (current < STATUS_LAST_STATUS && done[current])
+            ++current;
+    }
+}
+
+void status_iterator::operator++(int)
+{
+    ++(*this);
 }

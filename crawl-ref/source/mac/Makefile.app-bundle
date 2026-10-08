@@ -19,13 +19,18 @@ CRAWL_BIN=crawl
 endif
 
 # XX why doesn't this check for TILES?
-APP_NAME := Dungeon Crawl Stone Soup
+# Override both values for distributions that coexist with the stable app.
+APP_NAME ?= Dungeon Crawl Stone Soup
+BUNDLE_IDENTIFIER ?= net.sourceforge.crawl-ref
+empty :=
+space := $(empty) $(empty)
+ESCAPED_APP_NAME := $(subst $(space),\$(space),$(APP_NAME))
 ifneq (,$(findstring tiles,$(MAKECMDGOALS)))
-BUNDLE_NAME := Dungeon\ Crawl\ Stone\ Soup\ -\ Tiles
+BUNDLE_NAME := $(ESCAPED_APP_NAME)\ -\ Tiles
 TILE_APP := y
 ZIP_QUALIFIER := -tiles
 else
-BUNDLE_NAME := Dungeon\ Crawl\ Stone\ Soup\ -\ Console
+BUNDLE_NAME := $(ESCAPED_APP_NAME)\ -\ Console
 ZIP_QUALIFIER := -console
 endif
 EXECUTABLE_PATH := $(CRAWL_SRC)/$(CRAWL_BIN)
@@ -131,6 +136,7 @@ endif
 copy-info-plist:
 	perl -lpe "s/%VERSION%/$(SRC_VERSION)/g;" \
 	     -e "s/%NAME%/$(APP_NAME)/g;" \
+	     -e "s/%BUNDLE_IDENTIFIER%/$(BUNDLE_IDENTIFIER)/g;" \
 	     -e "s/%YEAR%/(localtime)[5] + 1900/ge;" \
 	     -e "s/%EXECUTABLE%/$(BUNDLE_NAME)/g;" \
 	     Crawl-Info.plist >$(BUNDLE_DIRNAME)/Contents/Info.plist

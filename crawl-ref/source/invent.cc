@@ -54,7 +54,8 @@
 // Inventory menu shenanigans
 
 static void _get_inv_items_to_show(vector<const item_def*> &v,
-                                   int selector, int excluded_slot = -1);
+                                   int selector, int excluded_slot = -1,
+                                   bool droppable_only = false);
 
 InvTitle::InvTitle(Menu *mn, const string &title, invtitle_annotator tfn)
     : MenuEntry(title, MEL_TITLE)
@@ -345,9 +346,9 @@ void InvMenu::set_title(const string &s)
         }
 #ifdef __ANDROID__
         if (!tiles.is_using_small_layout())
-            str += T_("    (Left/Right to switch category)");
+            str += T_("    (Left/Right/Tab to switch category)");
 #else
-        str += T_("    (Left/Right to switch category)");
+        str += T_("    (Left/Right/Tab to switch category)");
 #endif
         set_title(new InvTitle(this, str, title_annotate));
         return;
@@ -455,6 +456,22 @@ void InvMenu::set_page(int page)
     if (tiles.is_using_small_layout())
         update_more();
 #endif
+}
+
+void InvMenu::hover_item(const item_def* item)
+{
+    for (size_t i = 0; i < items.size(); ++i)
+    {
+        InvEntry *inv = dynamic_cast<InvEntry*>(items[i]);
+        if (!inv)
+            continue;
+
+        if (inv->item->link == item->link)
+        {
+            set_hovered(i, true);
+            break;
+        }
+    }
 }
 
 bool InvMenu::process_command(command_type cmd)
@@ -642,11 +659,12 @@ string no_selectables_message(int item_selector)
     case OSEL_LAUNCHING:
         return T_("You aren't carrying any items that might be thrown or fired.");
     case OSEL_EVOKABLE:
+    case OSEL_EVOKABLE_ALL:
         if (you.get_mutation_level(MUT_NO_ARTIFICE)) // iffy
             return T_("You cannot evoke magical items.");
         return T_("You aren't carrying any items that you can evoke.");
     case OSEL_CURSED_WORN:
-        return T_("None of your equipped items are cursed.");
+        return T_("None of your equipped items are bound to you.");
     case OSEL_WORN_ARMOUR:
         return T_("You aren't wearing any pieces of armour.");
     case OSEL_WORN_JEWELLERY_OR_TALISMAN:
@@ -662,7 +680,7 @@ string no_selectables_message(int item_selector)
     case OSEL_ARTEFACT_WEAPON:
         return T_("You aren't carrying any artefact melee weapons.");
     case OSEL_CURSABLE:
-        return T_("You aren't wearing any cursable items.");
+        return T_("You aren't wearing any items which can be bound.");
     case OSEL_UNCURSED_WORN_RINGS:
         return T_("You aren't wearing any uncursed rings.");
     case OSEL_QUIVER_ACTION:
@@ -676,7 +694,8 @@ void InvMenu::load_inv_items(int item_selector, int excluded_slot,
                              function<MenuEntry* (MenuEntry*)> procfn)
 {
     vector<const item_def *> tobeshown;
-    _get_inv_items_to_show(tobeshown, item_selector, excluded_slot);
+    _get_inv_items_to_show(tobeshown, item_selector, excluded_slot,
+                           type == menu_type::drop);
 
     load_items(tobeshown, procfn, 'a', true, true);
 
@@ -851,7 +870,7 @@ int sort_item_qty(const InvEntry *a)
 }
 int sort_item_slot(const InvEntry *a)
 {
-    return isalpha(a->item->slot) ? letter_to_index(a->item->slot) : 0;
+    return isaalpha(a->item->slot) ? letter_to_index(a->item->slot) : 0;
 }
 
 bool sort_item_identified(const InvEntry *a)
@@ -1177,7 +1196,7 @@ int InvMenu::getkey() const
         return mkey;
 
     // this is sort of a mess. It seems to be converting a lot of keys to ' '
-    // so that invprompt_flag::escape_only can work right, but it almost
+    // so that alternate ways of exiting menus can work right, but it almost
     // certainly has other effects. Needless to say, it makes modifying key
     // handling in specific menus pretty annoying, but I don't dare touch it
     // right now.
@@ -1321,16 +1340,13 @@ vector<SelItem> select_items(const vector<const item_def*> &items,
 bool item_is_selected(const item_def &i, int selector)
 {
     const object_class_type itype = i.base_type;
-    if (selector == OSEL_ANY || selector == itype
-                                && itype != OBJ_ARMOUR)
-    {
+    if (selector == OSEL_ANY || selector == itype)
         return true;
-    }
 
     switch (selector)
     {
     case OBJ_ARMOUR:
-        return itype == OBJ_ARMOUR && can_equip_item(i, true);
+        return itype == OBJ_ARMOUR;
 
     case OSEL_WORN_ARMOUR:
         return itype == OBJ_ARMOUR && item_is_equipped(i);
@@ -1431,13 +1447,15 @@ bool item_is_selected(const item_def &i, int selector)
 }
 
 static void _get_inv_items_to_show(vector<const item_def*> &v,
-                                   int selector, int excluded_slot)
+                                   int selector, int excluded_slot,
+                                   bool droppable_only)
 {
     for (const auto &item : you.inv)
     {
         if (item.defined()
             && item.link != excluded_slot
-            && item_is_selected(item, selector))
+            && item_is_selected(item, selector)
+            && (!droppable_only || item_is_droppable(item)))
         {
             v.push_back(&item);
         }
@@ -1497,8 +1515,8 @@ static int _invent_select(const char *title = nullptr,
     menu.f_selitem = selitemfn;
     if (filter)
         menu.set_select_filter(*filter);
-    menu.load_inv_items(item_selector, excluded_slot);
     menu.set_type(type);
+    menu.load_inv_items(item_selector, excluded_slot);
 
     // Don't override title if there are no items.
     if (title && menu.item_count())
@@ -1513,6 +1531,10 @@ static int _invent_select(const char *title = nullptr,
         // And then jump to the first non-empty page.
         menu.cycle_page(1);
     }
+
+    // If this is the 'F'ire menu, pre-select the last item the player fired.
+    if (item_selector == OSEL_QUIVER_ACTION && you.last_fired >= 0)
+        menu.hover_item(&you.inv[you.last_fired]);
 
     menu.show(true);
 
@@ -1569,7 +1591,7 @@ static string _drop_menu_titlefn(const Menu*, const string &)
     if (tiles.is_using_small_layout())
         return string(T_("Drop what?")) + " " + slot_description();
 #endif
-    return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
+    return T_("Drop what? (Left/Right/Tab to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
 /**
@@ -1668,7 +1690,7 @@ static bool _has_warning_inscription(const item_def& item,
                     return true;
                 else if (item.base_type == OBJ_ARMOUR && r[i+1] == 'T')
                     return true;
-                else if (is_weapon(item) && r[i+i] == 'w')
+                else if (is_weapon(item) && r[i+1] == 'w')
                     return true;
             }
             else if (oper == OPER_EQUIP)
@@ -1677,7 +1699,7 @@ static bool _has_warning_inscription(const item_def& item,
                     return true;
                 else if (item.base_type == OBJ_ARMOUR && r[i+1] == 'W')
                     return true;
-                else if (is_weapon(item) && r[i+i] == 'w')
+                else if (is_weapon(item) && r[i+1] == 'w')
                     return true;
             }
         }
@@ -1691,9 +1713,8 @@ static bool _has_warning_inscription(const item_def& item,
 bool maybe_warn_about_removing(const item_def& item)
 {
     string prompt;
-    bool penance = false;
 
-    if (!needs_handle_warning(item, OPER_UNEQUIP, penance))
+    if (!needs_handle_warning(item, OPER_UNEQUIP))
         return true;
 
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
@@ -1704,12 +1725,13 @@ bool maybe_warn_about_removing(const item_def& item)
         prompt += T_("Really remove ");
 
     // now ask
-    if (item.cursed())
+    if (item.cursed() || (item.summoned())
+        || (is_artefact(item) && artefact_property(item, ARTP_FRAGILE)))
+    {
         prompt += T_("and destroy ");
+    }
     prompt += item.name(DESC_INVENTORY);
     prompt += "?";
-    if (penance)
-        prompt += T_(" This could place you under penance!");
     return yesno(prompt.c_str(), false, 'n');
 }
 
@@ -1753,7 +1775,7 @@ bool needs_notele_warning(const item_def &item, operation_types oper)
 }
 
 bool needs_handle_warning(const item_def &item, operation_types oper,
-                          bool &penance, bool check_inscriptions)
+                          bool check_inscriptions)
 {
     if (check_inscriptions && _has_warning_inscription(item, oper))
         return true;
@@ -1767,25 +1789,13 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
         return true;
     }
 
-    if ((oper == OPER_EVOKE || oper == OPER_PUTON)
-        && god_hates_item(item))
-    {
-        penance = true;
-        return true;
-    }
-
     if (needs_notele_warning(item, oper))
         return true;
 
-    if (oper == OPER_ATTACK && god_hates_item(item))
-    {
-        penance = true;
-        return true;
-    }
-
     if ((oper == OPER_EQUIP || oper == OPER_UNEQUIP))
     {
-        if (item.is_type(OBJ_JEWELLERY, AMU_FAITH)
+        if ((item.is_type(OBJ_JEWELLERY, AMU_FAITH)
+            || is_unrandom_artefact(item, UNRAND_FORGEWARDEN))
             && faith_has_penalty())
         {
             return true;
@@ -1806,6 +1816,15 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
         }
     }
 
+    if (oper == OPER_UNEQUIP && is_unrandom_artefact(item, UNRAND_VICTORY)
+        && item.props[VICTORY_STAT_KEY].get_int() > 0)
+    {
+        return true;
+    }
+
+    if (oper == OPER_UNEQUIP && (item.summoned()))
+        return true;
+
     return false;
 }
 
@@ -1815,9 +1834,8 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
 bool check_warning_inscriptions(const item_def& item,
                                  operation_types oper)
 {
-    bool penance = false;
     if (item.defined()
-        && needs_handle_warning(item, oper, penance))
+        && needs_handle_warning(item, oper))
     {
         if (oper == OPER_UNEQUIP)
         {
@@ -1833,10 +1851,6 @@ bool check_warning_inscriptions(const item_def& item,
         if (needs_notele_warning(item, oper))
             prompt += T_(" while about to teleport");
         prompt += "?";
-        if (god_despises_item(item, you.religion))
-            prompt += T_(" You'd be excommunicated if you did!");
-        else if (penance)
-            prompt += T_(" This could place you under penance!");
         return yesno(prompt.c_str(), false, 'n');
     }
 
@@ -1877,7 +1891,6 @@ int prompt_invent_item(const char *prompt,
     const bool allow_list_known = !(flags & invprompt_flag::hide_known);
     const bool must_exist = !(flags & invprompt_flag::unthings_ok);
     const bool auto_list = !(flags & invprompt_flag::manual_list);
-    const bool allow_easy_quit = !(flags & invprompt_flag::escape_only);
 
     if (!any_items_of_type(type_expect) && type_expect != OSEL_WIELD
         && type_expect != OSEL_QUIVER_ACTION)
@@ -2010,7 +2023,7 @@ int prompt_invent_item(const char *prompt,
                     break;
             }
         }
-        else if (key_is_escape(keyin) || allow_easy_quit && keyin == ' ')
+        else if (key_is_escape(keyin) || keyin == ' ')
         {
             ret = PROMPT_ABORT;
             break;
@@ -2040,13 +2053,10 @@ int prompt_invent_item(const char *prompt,
             ret = you.last_unequip;
             break;
         }
-        else if (!isspace(keyin))
+        else
         {
             // We've got a character we don't understand...
             canned_msg(MSG_HUH);
-        }
-        else
-        {
             // We're going to loop back up, so don't draw another prompt.
             need_prompt = false;
         }

@@ -361,6 +361,70 @@ def ordered_child_tables():
     }
 
 
+def liked_conduct_tokens(source, rows, known_conducts):
+    """Expand the finite like_map grammar, rejecting unknown map producers."""
+    clean = _strip_cpp_comments(source)
+
+    def literal_map(expression):
+        expression = expression.strip()
+        if not expression.startswith("{") or (
+            _matching_brace(expression, 0) != len(expression) - 1
+        ):
+            raise RuntimeError(f"unsupported liked conduct map: {expression}")
+        entries = ordered_initializer_rows("map = " + expression, r"\bmap")
+        tokens = []
+        for entry in entries:
+            match = re.match(r"^\{\s*(DID_[A-Z0-9_]+)\s*,\s*\S", entry)
+            if not match or _matching_brace(entry, 0) != len(entry) - 1:
+                raise RuntimeError(f"unsupported liked conduct entry: {entry}")
+            token = match.group(1)
+            if token not in known_conducts:
+                raise RuntimeError(f"unknown liked conduct identifier: {token}")
+            if token in tokens:
+                raise RuntimeError(f"duplicate liked conduct identifier: {token}")
+            tokens.append(token)
+        return tokens
+
+    defaults = None
+    helper_checked = False
+    result = []
+    for row in rows:
+        row = row.strip()
+        if re.fullmatch(r"like_map\s*\(\s*\)", row):
+            tokens = []
+        elif row.startswith("{"):
+            tokens = literal_map(row)
+        else:
+            extra = re.fullmatch(
+                r"default_kill_conduct_with_extra\s*\(\s*(\{.*\})\s*\)",
+                row, re.S,
+            )
+            if row != "DEFAULT_KILL_CONDUCT" and not extra:
+                raise RuntimeError(f"unsupported liked conduct producer: {row}")
+            if defaults is None:
+                match = re.search(r"\bDEFAULT_KILL_CONDUCT\s*=\s*\{", clean)
+                if not match:
+                    raise RuntimeError("DEFAULT_KILL_CONDUCT initializer not found")
+                start = clean.find("{", match.start())
+                defaults = literal_map(clean[start:_matching_brace(clean, start) + 1])
+            tokens = list(defaults)
+            if extra:
+                if not helper_checked:
+                    body = exact_function_body(
+                        clean, r"\blike_map\s+default_kill_conduct_with_extra",
+                    )
+                    if not re.fullmatch(
+                        r"\s*like_map\s+lm\s*=\s*DEFAULT_KILL_CONDUCT\s*;"
+                        r"\s*lm\.insert\(\s*extra\.begin\(\),\s*extra\.end\(\)\s*\)\s*;"
+                        r"\s*return\s+lm\s*;\s*", body,
+                    ):
+                        raise RuntimeError("unsupported default kill conduct helper body")
+                    helper_checked = True
+                tokens.extend(literal_map(extra.group(1)))
+        result.append(sorted(set(tokens)))
+    return result
+
+
 def weighted_topology(value, known_keys):
     """Mirror database.cc::_parse_weighted_entry for static topology."""
     lines = value.split("\n")
@@ -623,10 +687,10 @@ def build_inventory():
             sorted(set(re.findall(r"\bDID_[A-Z0-9_]+\b", row)))
             for row in child_tables["disliked_conducts"]
         ],
-        "liked_conducts": [
-            sorted(set(re.findall(r"\bDID_[A-Z0-9_]+\b", row)))
-            for row in child_tables["liked_conducts"]
-        ],
+        "liked_conducts": liked_conduct_tokens(
+            active_source(GOD_CONDUCT), child_tables["liked_conducts"],
+            known_conducts,
+        ),
     }
     unknown_child_tokens = {
         "abilities": {

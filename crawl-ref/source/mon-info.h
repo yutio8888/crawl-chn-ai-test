@@ -127,7 +127,9 @@ enum monster_info_flags
     MB_MAGIC_ARMOUR,
 #endif
     MB_WRETCHED,
+#if TAG_MAJOR_VERSION == 34
     MB_SCREAMED,
+#endif
     MB_WORD_OF_RECALL,
     MB_INJURY_BOND,
 #if TAG_MAJOR_VERSION == 34
@@ -208,7 +210,9 @@ enum monster_info_flags
     MB_WITHERING,
     MB_CRUMBLING,
     MB_ALLY_TARGET,
+#if TAG_MAJOR_VERSION == 34
     MB_CANT_DRAIN,
+#endif
     MB_CONCENTRATE_VENOM,
     MB_FIRE_CHAMPION,
     MB_SILENCE_IMMUNE,
@@ -268,6 +272,12 @@ enum monster_info_flags
     MB_TESSERACT_SPAWN,
     MB_SUNDERING_READY,
     MB_SEE_INVIS,
+    MB_EXPOSED,
+    MB_STAMPEDE,
+    MB_KNOWN_INVIS, // Fully invisible, but the player has inferred their location
+    MB_REMEMBERED_INVIS,
+    MB_PHASE_SHIFT,
+    MB_DIVINE_SHIELD,
     NUM_MB_FLAGS
 };
 
@@ -313,12 +323,14 @@ struct monster_info_base
     mon_attack_def attack[MAX_NUM_ATTACKS];
     bool can_go_frenzy;
     bool can_feel_fear;
+    bool can_shoot_through_monster;
     bool sleepwalking;
     bool backlit;
     bool umbraed;
     int last_seen_at_turn;
     int threat_range;
 
+    mid_t mid;
     mid_t client_id;
     mid_t summoner_id;
 };
@@ -337,7 +349,7 @@ struct monster_info : public monster_info_base
 #define MILEV_ALL 0
 #define MILEV_SKIP_SAFE -1
 #define MILEV_NAME -2
-    monster_info() { client_id = 0; }
+    monster_info() { mid = MID_NOBODY; client_id = 0; }
     explicit monster_info(const monster* m, int level = MILEV_ALL);
     explicit monster_info(monster_type p_type,
                           monster_type p_base_type = MONS_NO_MONSTER);
@@ -505,17 +517,20 @@ struct monster_info : public monster_info_base
     bool is_stationary() const;
     int perception() const;
 
+    bool invisible_to_player() const;
+
 protected:
     string _core_name() const;
     string _base_name() const;
     string _apply_adjusted_description(description_level_type desc, const string& s) const;
+
+    void _populate_as_generic();
+    void _add_name_info(const monster* m, int milev);
+    void _add_constriction_info(const monster* mon);
 };
 
-// Colour should be between -1 and 15 inclusive!
-bool set_monster_list_colour(monster_list_colour_type, int colour);
-void clear_monster_list_colours();
-
-void get_monster_info(vector<monster_info>& mons);
+void get_nearby_monster_info(vector<monster_info>& mons,
+                             vector<monster_info>* invis_mons = nullptr);
 
 void mons_to_string_pane(string& desc, int& desc_colour, bool fullname,
                            const vector<monster_info>& mi, int start,

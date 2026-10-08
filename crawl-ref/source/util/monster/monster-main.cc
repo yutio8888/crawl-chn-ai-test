@@ -24,6 +24,7 @@
 #include "syscalls.h"
 #include "tag-version.h"
 #include "version.h"
+#include "viewchar.h"
 
 const coord_def MONSTER_PLACE(20, 20);
 
@@ -572,7 +573,7 @@ static string monster_symbol(const monster& mon)
     if (me)
     {
         monster_info mi(&mon, MILEV_NAME);
-        symbol += me->basechar;
+        symbol += stringize_glyph((me->basechar));
         symbol = colour(mi.colour(), symbol);
     }
     return symbol;
@@ -1003,10 +1004,10 @@ int main(int argc, char* argv[])
                 if (attk.type == AT_CLAW && mon.has_claws() >= 3)
                     monsterattacks += colour(LIGHTGREEN, "(claw)");
 
-                if (_monster_has_reachcleave(mon))
-                    monsterattacks += "(reach)(cleave)";
-                else if (flavour_has_reach(attk.flavour))
-                    monsterattacks += "(reach)";
+                if (attk.reach > 1)
+                    monsterattacks += make_stringf("(reach %d)", attk.reach);
+                if (attk.cleaves)
+                    monsterattacks += "(cleave)";
 
                 switch (attk.flavour)
                 {
@@ -1014,7 +1015,6 @@ int main(int argc, char* argv[])
                     monsterattacks += "(swoop)";
                     break;
                 case AF_ACID:
-                case AF_REACH_TONGUE:
                     monsterattacks +=
                         colour(YELLOW, damage_flavour("acid", "4d3"));
                     break;
@@ -1083,7 +1083,7 @@ int main(int argc, char* argv[])
                         LIGHTRED, damage_flavour("strong poison", hd * 11 / 3,
                                                  hd * 13 / 2));
                     break;
-                case AF_REACH_CLEAVE_UGLY:
+                case AF_UGLY_THING:
                     monsterattacks += colour(
                         LIGHTBLUE, damage_flavour("ugly", hd, 3 * hd - 1));
                     break;
@@ -1093,7 +1093,6 @@ int main(int argc, char* argv[])
                 case AF_SCARAB:
                     monsterattacks += colour(LIGHTMAGENTA, "(scarab)");
                     break;
-                case AF_RIFT:
                 case AF_DISTORT:
                     monsterattacks += colour(LIGHTBLUE, "(distort)");
                     break;
@@ -1126,6 +1125,9 @@ int main(int argc, char* argv[])
                                              damage_flavour("(drown)",
                                                             hd * 3 / 4,
                                                             hd * 3 / 2));
+                    break;
+                case AF_CONTAM_WATER:
+                    monsterattacks += colour(YELLOW, "(contam + shallow water)");
                     break;
                 case AF_FLOOD:
                     monsterattacks += colour(LIGHTBLUE, "(flood)");
@@ -1184,10 +1186,10 @@ int main(int argc, char* argv[])
                 case AF_DOOM:
                     monsterattacks += colour(RED, "(doom)");
                     break;
-                case AF_CRUSH:
+                case AF_BURSTSHROOM:
+                    monsterattacks += colour(MAGENTA, "(burstshroom)");
+                case AF_CONSTRICT:
                 case AF_PLAIN:
-                case AF_REACH:
-                case AF_REACH_STING:
                     break;
 #if TAG_MAJOR_VERSION == 34
                 case AF_DISEASE:
@@ -1211,6 +1213,10 @@ int main(int argc, char* argv[])
                 case AF_DRAIN_INT:
                 case AF_DRAIN_DEX:
                 case AF_DRAIN_STAT:
+                case AF_REACH:
+                case AF_REACH_STING:
+                case AF_REACH_TONGUE:
+                case AF_RIFT:
                     monsterattacks += colour(LIGHTRED, "(?\?\?)");
                     break;
 #endif

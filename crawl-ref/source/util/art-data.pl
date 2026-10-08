@@ -24,6 +24,7 @@ my %field_type = (
     BASE_ACC => "num",
     BASE_DAM => "num",
     BASE_DELAY => "num",
+    BASE_ENCUMBRANCE => "num",
     BLINK    => "bool",
     BRAND    => "enum",
     CHAOTIC  => "bool",
@@ -557,7 +558,8 @@ my @art_order = (
     "SH", "HARM", "RAMPAGE", "ARCHMAGI", "ENH_CONJ", "ENH_HEXES", "\n",
     "ENH_SUMM", "ENH_NECRO", "ENH_TLOC", "unused", "ENH_FIRE", "\n",
     "ENH_ICE", "ENH_AIR", "ENH_EARTH", "ENH_ALCH", "\n",
-    "ACROBAT", "REGEN_MP", "WIZ", "ENH_FORGE", "SILENCE", "BANE",
+    "ACROBAT", "REGEN_MP", "WIZ", "ENH_FORGE", "SILENCE", "BANE", "\n",
+    "BASE_ENCUMBRANCE",
     "}",
 # end TAG_MAJOR_VERSION
 # start TAG_MAJOR_VERSION == 35
@@ -572,7 +574,8 @@ my @art_order = (
 #     "SH", "HARM", "RAMPAGE", "ARCHMAGI", "ENH_CONJ", "ENH_HEXES", "\n",
 #     "ENH_SUMM", "ENH_NECRO", "ENH_TLOC", "ENH_FIRE", "\n",
 #     "ENH_ICE", "ENH_AIR", "ENH_EARTH", "ENH_ALCH", "\n",
-#     "ACROBAT", "REGEN_MP", "ENH_FORGE", "SILENCE", "BANE",
+#     "ACROBAT", "REGEN_MP", "ENH_FORGE", "SILENCE", "BANE", "\n",
+#     "BASE_ENCUMBRANCE",
 #     "}",
 # end TAG_MAJOR_VERSION
 
@@ -629,10 +632,28 @@ sub art_to_str
 
         if ($field_type{$part} eq "str")
         {
+            # _format_dbrand translates each colon-separated label and body.
+            # Record those actual display keys, keeping the table value English.
+            if ($part =~ /^(DESCRIP|DBRAND)$/ && $artefact->{$part})
+            {
+                foreach my $line (split /\\n|\n/, $artefact->{$part})
+                {
+                    foreach my $key (split /:/, $line, 2)
+                    {
+                        $key =~ s/^\s+|\s+$//g;
+                        next if $key eq "";
+                        $key =~ s/"/\\"/g;
+                        $str .= "\n    // N_(\"$key\")\n    ";
+                    }
+                }
+            }
             my $temp = $artefact->{$part};
             $temp =~ s/"/\\"/g;
             $str .= ($temp eq "" && $part =~ /^(TYPE|INSCRIP|DESCRIP|DBRAND)$/)
-                ? "nullptr" : "\"$temp\"";
+                ? "nullptr"
+                : ($temp ne "" && $part =~ /^(NAME|APPEAR)$/
+                   && $artefact->{NAME} !~ /DUMMY/)
+                ? "N_(\"$temp\")" : "\"$temp\"";
         }
         else
         {
@@ -706,6 +727,7 @@ sub write_data
  **********************************************************************/
 
 #pragma once
+#include "i18n.h"
 #ifndef ART_FUNC_H
 #error "art-func.h must be included before art-data.h"
 #endif
@@ -967,7 +989,7 @@ HEADER_END
 #include "rltiles/tiledef-main.h"
 #include "rltiles/tiledef-player.h"
 
-int unrandart_to_tile(int unrand)
+tileidx_t unrandart_to_tile(int unrand)
 {
     switch (unrand)
     {
@@ -995,7 +1017,7 @@ HEADER_END
     $text .= (" " x 4) . "}\n";
     $text .= "}\n\n";
 
-    $text .= "int unrandart_to_doll_tile(int unrand)\n{\n";
+    $text .= "tileidx_t unrandart_to_doll_tile(int unrand)\n{\n";
     $text .= (" " x 4) . "switch (unrand)\n";
     $text .= (" " x 4) . "{\n";
     foreach my $part (sort keys %parts)

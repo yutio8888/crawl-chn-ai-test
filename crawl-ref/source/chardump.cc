@@ -96,6 +96,7 @@ static void _sdump_vault_list(dump_params &);
 static void _sdump_skill_gains(dump_params &);
 static void _sdump_action_counts(dump_params &);
 static void _sdump_apostles(dump_params &);
+static void _sdump_xp_by_form(dump_params &);
 static void _sdump_separator(dump_params &);
 static void _sdump_lua(dump_params &);
 static void _sdump_dlua_errors(dump_params &);
@@ -156,6 +157,7 @@ static dump_section_handler dump_handlers[] =
     { "action_counts",  _sdump_action_counts },
     { "skill_gains",    _sdump_skill_gains   },
     { "apostles",       _sdump_apostles      },
+    { "xp_by_form",     _sdump_xp_by_form    },
 
     // Conveniences for the .crawlrc artist.
     { "",               _sdump_newline       },
@@ -254,6 +256,7 @@ static branch_type single_portals[] =
     BRANCH_GAUNTLET,
     BRANCH_ICE_CAVE,
     BRANCH_VOLCANO,
+    BRANCH_GULCH,
     BRANCH_WIZLAB,
     BRANCH_DESOLATION,
 #if TAG_MAJOR_VERSION == 34
@@ -595,11 +598,11 @@ static string _sdump_rank_piety_info(RankPietyInfo r)
     string name = god_name(r.god);
 
     out =
-        make_stringf(" %16s | %1d | %7d | %3d | %3d | %3d | %3d | %3d | %3d | %3d \n",
+        make_stringf(" %16s | %1d | %7d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d \n",
                      chop_string(name, 16).c_str(), rank, r.start_time,
                      r.initial_piety, r.piety_gained, r.piety_on_gifts,
-                     r.piety_on_penance, r.piety_on_stepdowns, r.piety_decayed,
-                     r.piety_lost);
+                     r.piety_on_penance, r.piety_on_stepdowns, r.piety_at_max,
+                     r.piety_decayed, r.piety_lost);
 
     return out;
 }
@@ -711,17 +714,18 @@ T_("Table legend:\n"
 " F = Piety on gifts\n"
 " G = Piety on penance\n"
 " H = Piety on stepdowns\n"
-" I = Piety decays\n"
-" J = Piety lost (inc. decay)\n")
+" I = Piety wasted at max piety\n"
+" J = Piety decays\n"
+" K = Piety lost (inc. decay)\n")
 ;
 
-    text += "         A          B      C       D     E     F     G     H     I     J   \n";
-    text += "+-----------------+---+---------+-----+-----+-----+-----+-----+-----+-----+\n";
+    text += "         A          B      C       D     E     F     G     H     I     J     K   \n";
+    text += "+-----------------+---+---------+-----+-----+-----+-----+-----+-----+-----+-----+\n";
 
     for (const RankPietyInfo &mi : all_info)
         text += _sdump_rank_piety_info(mi);
 
-    text += "+-----------------+---+---------+-----+-----+-----+-----+-----+-----+-----+\n";
+    text += "+-----------------+---+---------+-----+-----+-----+-----+-----+-----+-----+-----+\n";
 
     text += "\n";
 
@@ -1587,7 +1591,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
         if ((transformation)subtype == transformation::none)
             return T_("Default");
         else
-            return get_form((transformation)subtype)->short_name;
+            return get_form((transformation)subtype)->get_short_name();
     case CACT_ATTACK:
         ASSERT_RANGE(subtype, 0, NUM_ATTACK_COUNT_TYPES);
         return T_(_attack_count_names[subtype]);
@@ -1756,7 +1760,7 @@ static void _sdump_mutations(dump_params &par)
     if (you.has_any_mutations())
     {
         text += "\n";
-        text += (formatted_string::parse_string(describe_mutations(false)));
+        text += (formatted_string::parse_string(describe_muts_for_chardump(false)));
         text += "\n\n";
     }
 }
@@ -1770,6 +1774,81 @@ static void _sdump_apostles(dump_params &par)
 
     for (int i = 1; i <= get_num_apostles(); ++i)
         par.text += formatted_string::parse_string(trimmed_string(apostle_short_description(i)) + "\n\n");
+
+    par.text += "\n";
+}
+
+static void _sdump_xp_by_form(dump_params &par)
+{
+    par.text += T_("Percentage of experience gained in each form (* = 100%):\n\n");
+
+    // Determine which forms the player gained any XP while using (to show only
+    // those in the table), as well as tabulating the total tracked XP gained
+    // per level, so we can calculate percentages later.
+    int xp_by_xl_total[27] = {};
+    bool used_form[NUM_TRANSFORMS] = {};
+    int max_xl = 0;
+    for (int xl = 0; xl < 27; ++xl)
+    {
+        for (int form = 0; form < NUM_TRANSFORMS; ++form)
+        {
+            if (you.xp_by_form[xl][form] > 0)
+            {
+                used_form[form] = true;
+                xp_by_xl_total[xl] += you.xp_by_form[xl][form];
+            }
+        }
+        if (xp_by_xl_total[xl] > 0)
+            max_xl = xl;
+    }
+
+    // Print table header
+    par.text += T_("Form     XL: |");
+    for (int xl = 1; xl <= max_xl + 1; xl++)
+        par.text += make_stringf("%3d", xl);
+    par.text += T_(" | XLs as\n");
+    par.text += "-------------+";
+    for (int xl = 1; xl <= max_xl + 1; xl++)
+        par.text += "---";
+    par.text += "-+---------\n";
+
+    // Print a row for each form any XP was gained as
+    for (int form = 0; form < NUM_TRANSFORMS; ++form)
+    {
+        if (!used_form[form])
+            continue;
+
+        const string display_name = form > 0
+            ? get_form(static_cast<transformation>(form))->get_short_name()
+            : T_("None");
+        par.text += make_stringf("%s%s |", display_name.c_str(),
+                                 string(max(0, 12 - strwidth(display_name)), ' ').c_str());
+
+        // We define an XL spent 'as' a form as one in which 95% or more of that
+        // level's XP was gained in that form. This is slightly arbitrary, and
+        // might warrant adjustment if we decide to do anything else with these
+        // stats.
+        int xl_as_primary = 0;
+        for (int xl = 0; xl <= max_xl; ++xl)
+        {
+            int xp = you.xp_by_form[xl][form];
+            if (xp > 0)
+            {
+                int perc = xp * 100 / xp_by_xl_total[xl];
+
+                if (perc >= 95)
+                    xl_as_primary++;
+
+                if (perc == 100)
+                    par.text += "  *";
+                else
+                    par.text += make_stringf("%3d", perc);
+            }
+            else
+                par.text += "   ";
+        }
+        par.text += make_stringf(" | %2d\n", xl_as_primary);
+    }
 
     par.text += "\n";
 }

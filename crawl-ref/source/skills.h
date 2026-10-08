@@ -16,7 +16,6 @@ struct skill_state
 {
     skill_state();
 
-    FixedBitVector<NUM_SKILLS>            can_currently_train;
     FixedVector<uint8_t, NUM_SKILLS>      skills;
     FixedVector<int, NUM_SKILLS>          real_skills;    // Those two are
     FixedVector<int, NUM_SKILLS>          changed_skills; // scaled by 10.
@@ -24,6 +23,7 @@ struct skill_state
     FixedVector<unsigned int, NUM_SKILLS> training;
     FixedVector<unsigned int, NUM_SKILLS> skill_points;
     FixedVector<unsigned int, NUM_SKILLS> training_targets;
+    FixedVector<unsigned int, NUM_SKILLS> base_training_targets;
     FixedVector<uint8_t, NUM_SKILLS>      skill_order;
     FixedVector<unsigned int, NUM_SKILLS> skill_manual_points;
     int skill_cost_level;
@@ -62,13 +62,11 @@ int calc_skill_cost_level(int xp, int start);
 int calc_skill_cost(int skill_cost_level);
 void check_skill_cost_change(bool quiet = false);
 
-bool skill_default_shown(skill_type sk);
+skill_set default_shown_skills();
 void reassess_starting_skills(bool balance_djinn = true);
 bool check_selected_skills();
 void init_train();
-void init_can_currently_train();
 void init_training();
-void update_can_currently_train();
 void reset_training();
 int calc_skill_level_change(skill_type sk, int starting_level, int sk_points);
 void check_skill_level_change(skill_type sk, bool do_level_up = true);
@@ -115,10 +113,10 @@ void init_skill_order();
 bool is_removed_skill(skill_type skill);
 skill_type random_skill();
 bool can_sacrifice_skill(mutation_type mut);
-bool is_useless_skill(skill_type skill);
-bool is_harmful_skill(skill_type skill);
-bool can_enable_skill(skill_type sk, bool override = false);
-bool trainable_skills(bool check_all = false);
+bool is_forbidden_skill(skill_type skill);
+bool is_useless_skill(skill_type skill, bool include_god = true);
+bool can_enable_skill(skill_type sk);
+bool trainable_skills();
 bool skills_being_trained();
 
 int species_apt(skill_type skill, species_type species = you.species);
@@ -137,14 +135,17 @@ void dump_skills(string &text);
 int skill_bump(skill_type skill, int scale = 1, bool allow_random = true);
 void fixup_skills();
 
-bool target_met(skill_type sk);
-bool target_met(skill_type sk, unsigned int target);
+bool target_met(skill_type sk, bool base);
+bool target_met(skill_type sk, unsigned int target, bool base);
 bool check_training_target(skill_type sk);
 bool check_training_targets();
 
 void set_training_status(skill_type sk, training_status st);
 void set_magic_training(training_status st);
 void cleanup_innate_magic_skills();
+
+void init_four_winds();
+void update_four_winds(bool force_recheck = false);
 
 static const skill_type skill_display_order[] =
 {

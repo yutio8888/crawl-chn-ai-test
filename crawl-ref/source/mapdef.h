@@ -29,7 +29,6 @@
 #include "mon-ench.h"
 #include "mon-flags.h"
 #include "tags.h"
-#include "trap-type.h"
 #include "travel-defs.h"
 
 #define NEVER_CORPSE_KEY "never_corpse"
@@ -709,7 +708,8 @@ public:
     mons_spec get_monster(int slot_index, int list_index) const;
 
     // Returns an error string if the monster is unrecognised.
-    string add_mons(const string &s, bool fix_slot = false);
+    string add_mons(const string &s, bool fix_slot = false,
+                    bool ignore_excluded = false);
     string set_mons(int slot, const string &s);
 
     bool empty()               const { return mons.empty(); }
@@ -745,7 +745,8 @@ private:
     mons_spec get_shaped_spec(const string &name, monster_type type) const;
     mons_spec get_zombified_monster(const string &name,
                                     monster_type zomb) const;
-    mons_spec_slot parse_mons_spec(string spec);
+    mons_spec_slot parse_mons_spec(string spec,
+                                   bool ignore_excluded = false);
     void parse_mons_spells(mons_spec &slot, vector<string> &spells);
     mon_enchant parse_ench(string &ench_str, bool perm);
     mons_spec pick_monster(mons_spec_slot &slot);
@@ -807,35 +808,19 @@ struct shop_spec
 };
 
 /**
- * @class trap_spec
- * @ingroup mapdef
- * @brief Specify how to create a trap.
- *
- * This specification struct is used when converting a vault-specified trap
- * string into something that the builder can use to place a trap.
-**/
-struct trap_spec
-{
-    trap_type tr_type; /*> One of the trap_type enum values. */
-    trap_spec(trap_type tr)
-        : tr_type(static_cast<trap_type>(tr)) { }
-};
-
-/**
  * @class feature_spec
  * @ingroup mapdef
  * @brief Specify how to create a feature.
  *
  * This specification struct is used firstly when a feature is specified in
- * vault code (any feature), and secondly, if that feature is either a trap or a
- * shop, as a container for a unique_ptr to that shop_spec or trap_spec.
+ * vault code (any feature), and secondly, if that feature is a shop, as a
+ * container for a unique_ptr to that shop_spec.
 **/
 struct feature_spec
 {
     int genweight;                 /**> The weight of this specific feature. */
     int feat;                      /**> The specific feature being placed. */
     unique_ptr<shop_spec> shop;    /**> A pointer to a shop_spec. */
-    unique_ptr<trap_spec> trap;    /**> A pointer to a trap_spec. */
     int glyph;                     /**> What glyph to use instead. */
     int mimic;                     /**> 1 chance in x to be a feature mimic. */
     bool no_mimic;                 /**> Prevents random feature mimic here. */
@@ -919,7 +904,6 @@ private:
     void parse_features(const string &);
     feature_spec_list parse_feature(const string &s);
     feature_spec parse_shop(string s, int weight, int mimic, bool no_mimic);
-    feature_spec parse_trap(string s, int weight);
 };
 
 class dlua_set_map

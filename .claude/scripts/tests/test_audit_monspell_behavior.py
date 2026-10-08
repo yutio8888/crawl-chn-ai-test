@@ -307,6 +307,72 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
                     "corrupt cast"):
             self.assertEqual(self._behaviors(report, "en", key), {"UNANALYSABLE"})
 
+    def test_literal_conditional_returns_enumerate_every_branch(self):
+        self.en["conditional cast"] = ["{{\nif you.see_invisible() then\n"
+            "return 'VISUAL: gestures.'\nelse\nreturn 'SOUND: chant'\nend\n}}"]
+        self.zh["conditional cast"] = ["{{\nif you.see_invisible() then\n"
+            "return 'VISUAL: 手势'\nelse\nreturn 'SOUND: 吟唱'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        expected = {"GESTURE", "VISUAL_APPLICABILITY", "VISUAL_CHANNEL",
+                    "SOUND_LIKE_CHANNEL"}
+        for language in ("en", "zh"):
+            self.assertEqual(self._behaviors(report, language,
+                                             "conditional cast"), expected)
+        self.assertNotIn("conditional cast", {
+            row["requested_root"] for row in report["locale_behavior_inconclusive"]})
+
+    def test_conditional_identity_concatenations_are_dynamic_slots(self):
+        self.en["identity cast"] = ["{{\nif you.invisible() then\n"
+            "return 'VISUAL: gesture'\nelse\n"
+            "return 'SOUND: Silly ' .. you.species():lower() .. '! chant'\nend\n}}"]
+        self.zh["identity cast"] = ["{{\nif you.invisible() then\n"
+            "return 'VISUAL: 手势'\nelse\n"
+            "return 'SOUND: “傻' .. crawl.t_(you.species()) .. '! 吟唱'\nend\n}}"]
+        self.en["literal concat cast"] = ["{{\nif you.invisible() then\n"
+            "return ' ges' .. 'tures'\nelse\nreturn 'plain'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        for language in ("en", "zh"):
+            self.assertEqual({"GESTURE", "VISUAL_APPLICABILITY", "VISUAL_CHANNEL",
+                              "SOUND_LIKE_CHANNEL"},
+                             self._behaviors(report, language, "identity cast"))
+        self.assertEqual({"GESTURE"}, self._behaviors(report, "en", "literal concat cast"))
+
+    def test_conditional_nonliteral_or_incomplete_returns_fail_closed(self):
+        cases = {
+            "unknown concat": "'gesture' .. you.name()",
+            "call": "you.name()",
+            "variable": "message",
+            "genus concat": "'gesture' .. you.genus()",
+            "genus return": "you.genus()",
+            "dynamic prefix": "you.species() .. ': gesture'",
+            "arguments": "'gesture' .. you.species('x')",
+            "method": "'gesture' .. you.species():upper()",
+            "wrapper": "'gesture' .. crawl.t_(you.name())",
+            "arithmetic": "'gesture' .. (1 + 2)",
+            "extra return": "'gesture', you.race()",
+            "trailing concat": "'gesture' .. you.race() ..",
+        }
+        for name, expression in cases.items():
+            self.en[name + " cast"] = [
+                "{{\nif you.see_invisible() then\nreturn 'plain'\nelse\nreturn "
+                + expression + "\nend\n}}"]
+        self.en["missing else cast"] = [
+            "{{\nif you.see_invisible() then\nreturn 'plain'\nend\n}}"]
+        self.en["empty branch cast"] = [
+            "{{\nif you.see_invisible() then\nelse\nreturn 'plain'\nend\n}}"]
+        self.en["recursive lua cast"] = [
+            "{{\nif you.see_invisible() then\nreturn '@gesture word@'\nelse\n"
+            "return 'plain'\nend\n}}"]
+        self._write_inputs()
+        report = self.report()
+        for key in [name + " cast" for name in cases] + [
+                "missing else cast", "empty branch cast", "recursive lua cast"]:
+            with self.subTest(key=key):
+                self.assertEqual(self._behaviors(report, "en", key),
+                                 {"UNANALYSABLE"})
+
     def test_weight_reachability_matches_cumulative_production_bounds(self):
         self.en.update({
             "negative leading cast": [(-5, " Gesture"), (10, "plain")],
@@ -865,12 +931,12 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
             355 - 12 - 2)
+        # Upstream 43d89d912d Goji stays legacy. Literal-only conditional
+        # branches are now exhaustively analyzed; absent ZH falls back to EN.
         self.assertEqual(report["coverage"]["unanalysable_occurrences"], 0)
-        self.assertEqual(
-            report["coverage"]["fail_closed_behavior_roots"], 0)
+        self.assertEqual(report["coverage"]["fail_closed_behavior_roots"], 0)
         self.assertTrue(report["coverage"]["catalog_coverage_complete"])
-        self.assertTrue(
-            report["coverage"]["en_zh_behavior_analysis_conclusive"])
+        self.assertTrue(report["coverage"]["en_zh_behavior_analysis_conclusive"])
         self.assertEqual(report["locale_behavior_mismatch"], [])
         self.assertEqual(report["locale_behavior_inconclusive"], [])
         self.assertTrue(report["phase2_ready"])

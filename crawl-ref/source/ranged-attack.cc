@@ -21,6 +21,7 @@
 #include "mon-util.h"
 #include "monster.h"
 #include "player.h"
+#include "spl-monench.h" //corona_monster
 #include "stringutil.h"
 #include "teleport.h"
 #include "throw.h"
@@ -34,7 +35,8 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
                              const item_def *wpn,
                              bool tele, actor *blame)
     : ::attack(attk, defn, blame), range_used(0), reflected(false),
-        will_mulch(false), teleport(tele), _did_net(false)
+        will_mulch(false), pierce(false),
+        teleport(tele), _did_net(false)
 {
     ASSERT(wpn && (wpn->base_type == OBJ_MISSILES || is_range_weapon(*wpn)));
 
@@ -67,6 +69,16 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
     }
 
     needs_message = defender_visible;
+}
+
+void ranged_attack::copy_params_to(ranged_attack &other) const
+{
+    other.teleport     = teleport;
+    other.will_mulch   = will_mulch;
+    other.pierce       = pierce;
+    other.proj_name    = proj_name;
+
+    attack::copy_params_to(other);
 }
 
 int ranged_attack::post_roll_to_hit_modifiers(int mhit, bool random)
@@ -102,10 +114,15 @@ bool ranged_attack::attack()
         return true;
     }
 
-    int ev = defender->evasion(false, attacker);
+    int ev = defender->evasion(true, attacker);
 
     // Works even if the defender is incapacitated
     ev += defender->missile_repulsion();
+    if (defender->is_monster() && defender->as_monster()->has_ench(ENCH_PHASE_SHIFT)
+        && !attacker->can_see_invisible())
+    {
+        ev += PHASE_SHIFT_EV_BONUS;
+    }
 
     ev_margin = test_hit(to_hit, ev, !attacker->is_player());
     bool shield_blocked = attack_shield_blocked();
@@ -114,7 +131,7 @@ bool ranged_attack::attack()
     if (attacker->is_player() && attacker != defender)
     {
         set_attack_conducts(conducts, *defender->as_monster(),
-                            you.can_see(*defender));
+                            you.aware_of(*defender));
     }
 
     if (shield_blocked)
@@ -156,6 +173,8 @@ bool ranged_attack::attack()
 // XXX: Are there any cases where this might fail?
 bool ranged_attack::handle_phase_attempted()
 {
+    to_hit = calc_to_hit(true);
+
     attacker->attacking(defender);
     return true;
 }
@@ -175,6 +194,8 @@ void ranged_attack::handle_phase_blocked()
                 punctuation = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
                               + " " + defender_shield->name(DESC_PLAIN).c_str();
             }
+            else if (defender->divinely_shielded())
+                punctuation = T_(" with a divine shield");
             else
                 punctuation = T_(" with an invisible shield");
         }
@@ -260,7 +281,7 @@ bool ranged_attack::handle_phase_hit()
 
     if (mulch_bonus()
         // XXX: this kind of hijacks the shield block check
-        || !is_penetrating_attack(*weapon))
+        || !is_piercing())
     {
         range_used = BEAM_STOP;
     }
@@ -275,7 +296,7 @@ bool ranged_attack::handle_phase_hit()
     {
         set_attack_verb(0);
         announce_hit();
-        if (defender->trap_in_net(true))
+        if (defender->trap_in_net(!weapon->summoned()))
             _did_net = true;
         if (defender->is_player())
             xom_is_stimulated(50);
@@ -332,6 +353,15 @@ bool ranged_attack::handle_phase_hit()
         }
     }
 
+    if (attacker->alive() && defender->alive()
+        && attacker->unrand_equipped(UNRAND_ARCANE_SPLINT))
+    {
+        if (defender->is_player())
+            you.backlight();
+        else
+            corona_monster(defender->as_monster(), attacker);
+    }
+
     // XXX: unify this with melee_attack's code
     if (attacker->is_player() && defender->is_monster())
     {
@@ -368,7 +398,7 @@ int ranged_attack::calc_mon_to_hit_base()
     return mon_to_hit_base(attacker->get_hit_dice(), attacker->as_monster()->is_archer());
 }
 
-int ranged_attack::apply_damage_modifiers(int damage)
+int ranged_attack::apply_mon_damage_modifiers(int damage)
 {
     ASSERT(attacker->is_monster());
 
@@ -394,13 +424,16 @@ int ranged_attack::apply_damage_modifiers(int damage)
 int ranged_attack::player_apply_final_multipliers(int damage, bool /*aux*/)
 {
     if (!throwing())
+    {
+        damage = player_archery_damage_bonus(damage, true);
         damage = apply_rev_penalty(damage);
+    }
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_SNIPING)
         && defender->incapacitated())
     {
         damage = damage * 3 / 2;
     }
-    return damage;
+    return attack::player_apply_final_multipliers(damage);
 }
 
 bool ranged_attack::mulch_bonus() const
@@ -428,7 +461,7 @@ bool ranged_attack::ignores_shield()
     if (defender->is_player() && player_omnireflects())
         return false;
 
-    return is_penetrating_attack(*weapon);
+    return is_piercing();
 }
 
 special_missile_type ranged_attack::random_chaos_missile_brand()
@@ -465,11 +498,11 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
             break;
         case SPMSL_POISONED:
         case SPMSL_BLINDING:
-            if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+            if (defender->res_poison() >= 3)
                 susceptible = false;
             break;
         case SPMSL_CURARE:
-            if ((defender->is_player() && defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+            if ((defender->is_player() && defender->res_poison() >= 3)
                || defender->res_poison() > 0)
             {
                 susceptible = false;
@@ -480,7 +513,7 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
                 susceptible = false;
             break;
         case SPMSL_FRENZY:
-            if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING)
+            if (defender->res_poison() >= 3
                 || defender->is_player()
                    && !you.can_go_berserk(false, false, false)
                 || defender->is_monster()
@@ -522,7 +555,7 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
 
 bool ranged_attack::dart_check(special_missile_type type)
 {
-    if (defender->holiness() & (MH_UNDEAD | MH_NONLIVING))
+    if (defender->res_poison() >= 3)
     {
         if (needs_message)
         {
@@ -793,7 +826,7 @@ bool ranged_attack::player_good_stab()
 
 void ranged_attack::set_attack_verb(int/* damage*/)
 {
-    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? T_("pierces through") : T_("hits");
+    attack_verb = !mulch_bonus() && is_piercing() ? T_("pierces through") : T_("hits");
 }
 
 void ranged_attack::announce_hit()
@@ -810,7 +843,26 @@ void ranged_attack::announce_hit()
          attack_strength_punctuation(damage_done).c_str());
 }
 
+void ranged_attack::set_projectile_prefix(string prefix)
+{
+    proj_name = prefix + " " + proj_name;
+}
+
 string ranged_attack::projectile_name() const
 {
     return proj_name;
+}
+
+bool ranged_attack::is_piercing() const
+{
+    return pierce || is_penetrating_attack(*weapon);
+}
+
+int player_archery_damage_bonus(int dam, bool random)
+{
+    int bonus = you.wearing_ego(OBJ_ARMOUR, SPARM_ARCHERY) * you.skill(SK_ARMOUR);
+    dam = random ? div_rand_round(dam * (100 + bonus), 100)
+                 : dam * (100 + bonus) / 100;
+
+    return dam;
 }

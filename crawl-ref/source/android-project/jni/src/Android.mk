@@ -95,7 +95,6 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/geom2d.cc \
     $(CRAWL_PATH)/ghost.cc \
     $(CRAWL_PATH)/god-abil.cc \
-    $(CRAWL_PATH)/god-blessing.cc \
     $(CRAWL_PATH)/god-companions.cc \
     $(CRAWL_PATH)/god-conduct.cc \
     $(CRAWL_PATH)/god-item.cc \
@@ -116,6 +115,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/json.cc \
     $(CRAWL_PATH)/kills.cc \
     $(CRAWL_PATH)/known-items.cc \
+    $(CRAWL_PATH)/l-autofight.cc \
     $(CRAWL_PATH)/l-colour.cc \
     $(CRAWL_PATH)/l-crawl.cc \
     $(CRAWL_PATH)/l-debug.cc \
@@ -180,6 +180,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/mon-explode.cc \
     $(CRAWL_PATH)/mon-gear.cc \
     $(CRAWL_PATH)/mon-info.cc \
+    $(CRAWL_PATH)/mon-lurk.cc \
     $(CRAWL_PATH)/mon-movetarget.cc \
     $(CRAWL_PATH)/mon-pathfind.cc \
     $(CRAWL_PATH)/mon-pick.cc \

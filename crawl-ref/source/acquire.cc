@@ -24,6 +24,7 @@
 #include "dungeon.h"
 #include "english.h"
 #include "god-abil.h"
+#include "god-conduct.h"
 #include "god-item.h"
 #include "god-passive.h"
 #include "item-name.h"
@@ -57,8 +58,8 @@
 #include "ui.h"
 
 static equipment_slot _acquirement_armour_slot(int);
-static armour_type _acquirement_armour_for_slot(equipment_slot);
-static armour_type _acquirement_shield_type();
+static armour_type _acquirement_armour_for_slot(equipment_slot, int);
+static armour_type _acquirement_shield_type(int);
 static armour_type _acquirement_body_armour();
 static armour_type _useless_armour_type();
 static bool _armour_slot_seen(equipment_slot);
@@ -91,7 +92,7 @@ static int _skill_rdiv(skill_type skill, int mult = 1)
 static int _acquirement_armour_subtype(int & /*quantity*/, int agent)
 {
     const equipment_slot slot_type = _acquirement_armour_slot(agent);
-    return _acquirement_armour_for_slot(slot_type);
+    return _acquirement_armour_for_slot(slot_type, agent);
 }
 
 /**
@@ -125,8 +126,8 @@ M filtered_vector_select(vector<pair<M, int>> weights, function<bool(M)> filter)
  * For most races, even odds for all armour slots when acquiring, or 50-50
  * split between body armour/aux armour when getting god gifts.
  *
- * Nagas and Armataurs get a high extra chance for bardings, especially if they haven't
- * seen any yet.
+ * Nagas and Gale Centaurs get a high extra chance for bardings, especially if
+ * they haven't seen any yet.
  *
  * Guaranteed to be wearable, in principle.
  *
@@ -170,7 +171,7 @@ static equipment_slot _acquirement_armour_slot(int agent)
  *
  * @return          The armour_type of the armour to be generated.
  */
-static armour_type _acquirement_armour_for_slot(equipment_slot slot_type)
+static armour_type _acquirement_armour_for_slot(equipment_slot slot_type, int agent)
 {
     switch (slot_type)
     {
@@ -187,7 +188,7 @@ static armour_type _acquirement_armour_for_slot(equipment_slot slot_type)
                 return random_choose(ARM_HELMET, ARM_HAT);
             return ARM_HAT;
         case SLOT_OFFHAND:
-            return _acquirement_shield_type();
+            return _acquirement_shield_type(agent);
         case SLOT_BODY_ARMOUR:
             return _acquirement_body_armour();
         default:
@@ -199,17 +200,19 @@ static armour_type _acquirement_armour_for_slot(equipment_slot slot_type)
  * Choose a random type of shield to be generated via acquirement or god gifts.
  *
  * Weighted by Shields skill: at 0 skill orb/buckler/kite/tower are equally
- * likely, while at 27 skill you get 25% kite and 75% tower.
+ * likely, while at 27 skill you get ~25% kite and 75% tower.
  *
  * @return A potentially wearable type of shield.
  */
-static armour_type _acquirement_shield_type()
+static armour_type _acquirement_shield_type(int agent)
 {
+    int orb_weight = agent == GOD_OKAWARU ? 0 : 28 - _skill_rdiv(SK_SHIELDS);
+
     vector<pair<armour_type, int>> weights = {
-        { ARM_ORB,           27 - _skill_rdiv(SK_SHIELDS) },
-        { ARM_BUCKLER,       27 - _skill_rdiv(SK_SHIELDS) },
-        { ARM_KITE_SHIELD,   27},
-        { ARM_TOWER_SHIELD,  27 + _skill_rdiv(SK_SHIELDS, 2) },
+        { ARM_ORB,           orb_weight },
+        { ARM_BUCKLER,       28 - _skill_rdiv(SK_SHIELDS) },
+        { ARM_KITE_SHIELD,   28},
+        { ARM_TOWER_SHIELD,  28 + _skill_rdiv(SK_SHIELDS, 2) },
     };
 
     return filtered_vector_select<armour_type>(weights, [] (armour_type shtyp) {
@@ -797,8 +800,8 @@ static int _find_acquirement_subtype(object_class_type &class_wanted,
         dummy.plus = 1; // empty wands would be useless
         dummy.flags |= ISFLAG_IDENTIFIED;
 
-        if (!is_useless_item(dummy, false) && !god_hates_item(dummy)
-            && (agent >= NUM_GODS || god_likes_item_type(dummy,
+        if (!is_useless_item(dummy, false)
+            && (agent >= NUM_GODS || god_likes_item_type(class_wanted, type_wanted,
                                                          (god_type)agent)))
         {
             break;
@@ -841,7 +844,6 @@ static int _book_weight(book_type book)
     ASSERT_RANGE(book, 0, NUM_BOOKS);
     ASSERT(book != BOOK_MANUAL);
     ASSERT(book != BOOK_PARCHMENT);
-    ASSERT(book != BOOK_RANDART_LEVEL);
     ASSERT(book != BOOK_RANDART_THEME);
 
     int total_weight = 0;
@@ -850,7 +852,7 @@ static int _book_weight(book_type book)
         // Skip over spells already in library.
         if (you.spell_library[stype])
             continue;
-        if (god_hates_spell(stype, you.religion))
+        if (god_forbids_spell(stype, you.religion))
             continue;
 
         total_weight += _spell_weight(stype);
@@ -859,12 +861,7 @@ static int _book_weight(book_type book)
     return total_weight;
 }
 
-static bool _is_magic_skill(int skill)
-{
-    return skill >= SK_SPELLCASTING && skill < SK_INVOCATIONS;
-}
-
-static bool _skill_useless_with_god(int skill)
+static bool _skill_useless_with_god(skill_type skill)
 {
     if (skill == SK_INVOCATIONS)
     {
@@ -876,7 +873,7 @@ static bool _skill_useless_with_god(int skill)
     switch (you.religion)
     {
     case GOD_TROG:
-        return _is_magic_skill(skill);
+        return is_magic_skill(skill);
     case GOD_ZIN:
         if (skill == SK_SHAPESHIFTING)
             return true;
@@ -910,7 +907,7 @@ static bool _should_acquire_manual(int agent)
     {
         const int weight = _skill_rdiv(sk);
 
-        if (_is_magic_skill(sk))
+        if (is_magic_skill(sk))
             magic_weights += weight;
         else
             other_weights += weight;
@@ -972,8 +969,8 @@ static bool _do_book_acquirement(item_def &book, int agent)
         return _acquire_manual(book);
     const int choice = random_choose_weighted(
                                     30, BOOK_RANDART_THEME,
-       agent == GOD_SIF_MUNA ? 10 : 40, NUM_BOOKS, // normal books
-                                     1, BOOK_RANDART_LEVEL);
+                                    // Normal books
+        agent == GOD_SIF_MUNA ? 5 : 40, NUM_BOOKS);
 
     switch (choice)
     {
@@ -1007,18 +1004,6 @@ static bool _do_book_acquirement(item_def &book, int agent)
     case BOOK_RANDART_THEME:
         acquire_themed_randbook(book, agent);
         break;
-
-    case BOOK_RANDART_LEVEL:
-    {
-        const int level = agent == GOD_XOM ?
-            random_range(1, 9) :
-            max(1, (_skill_rdiv(SK_SPELLCASTING) + 2) / 3);
-
-        book.sub_type  = BOOK_RANDART_LEVEL;
-        if (!make_book_level_randart(book, level, agent == GOD_SIF_MUNA))
-            return false;
-        break;
-    }
     } // switch book choice
 
 
@@ -1234,8 +1219,7 @@ int acquirement_create_item(object_class_type class_wanted,
         else
         {
             // This may clobber class_wanted (e.g. staves)
-            type_wanted = _find_acquirement_subtype(class_wanted, quant,
-                                                    agent);
+            type_wanted = _find_acquirement_subtype(class_wanted, quant, agent);
         }
         ASSERT(type_wanted != -1);
 
@@ -1246,7 +1230,7 @@ int acquirement_create_item(object_class_type class_wanted,
             want_arts = false;
 
         thing_created = items(want_arts, class_wanted, type_wanted,
-                              item_level, force_ego, agent);
+                              item_level, force_ego, agent, true);
 
         if (thing_created == NON_ITEM)
         {
@@ -1389,7 +1373,7 @@ int acquirement_create_item(object_class_type class_wanted,
         int oldflags = acq_item.flags;
         acq_item.flags |= ISFLAG_IDENTIFIED;
         if ((is_useless_item(acq_item, false) && agent != GOD_XOM)
-            || god_hates_item(acq_item))
+            || god_forbids_item(acq_item))
         {
             if (!quiet)
                 dprf("destroying useless item");
@@ -1413,7 +1397,7 @@ int acquirement_create_item(object_class_type class_wanted,
     }
 
     ASSERT(!is_useless_item(env.item[thing_created], false) || agent == GOD_XOM);
-    ASSERT(!god_hates_item(env.item[thing_created]));
+    ASSERT(!god_forbids_item(env.item[thing_created]));
 
     // If we have a zero coord_def, don't move the item to the grid. Used for
     // generating scroll of acquirement items.
@@ -1671,7 +1655,7 @@ static item_def _acquirement_item_def(object_class_type item_type, int agent)
 
     if (item_index != NON_ITEM)
     {
-        ASSERT(!god_hates_item(env.item[item_index]));
+        ASSERT(!god_forbids_item(env.item[item_index]));
 
         // We make a copy of the item def, but we don't keep the real item.
         item = env.item[item_index];

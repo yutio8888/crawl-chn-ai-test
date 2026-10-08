@@ -38,6 +38,8 @@ void handle_monster_move(monster* mon);
 
 void queue_monster_for_action(monster* mons);
 
+bool mon_do_stampede(monster& mon);
+
 void clear_monster_flags();
 
 bool mon_enemies_around(const monster* mons);

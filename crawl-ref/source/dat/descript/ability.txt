@@ -97,7 +97,9 @@ action will cancel the Dig status.
 Shaft Self ability
 
 Sends you to a random position one to three floors down, as if you jumped into
-a shaft trap. It takes some time to dig the shaft.
+a shaft trap. It takes some time to dig the shaft, and requires solid, dry
+ground beneath you. You cannot shaft yourself while standing on stairs or
+portals or while in watery terrain.
 %%%%
 Evoke Blink ability
 
@@ -112,6 +114,8 @@ Evoke Berserk Rage ability
 Evoke Invisibility ability
 
 Turns the user invisible for a short period of time.
+
+[[player invis desc]]
 %%%%
 End Transformation ability
 
@@ -475,7 +479,7 @@ debt paid.
 Channel Magic ability
 
 Dramatically increases the user's regeneration of magical power for a duration
-that increases with Invocations skill.
+that increases with Spellcasting skill.
 %%%%
 Forget Spell ability
 
@@ -484,8 +488,11 @@ Removes a known spell from memory, so as to free memory to learn others.
 Divine Exegesis ability
 
 Casts any spell from your spell library with guaranteed success. You receive a
-bonus to spell power based on your Invocations skill that is worth 50% more
-than equivalent levels of training in the relevant skills of the spell itself.
+bonus to spell power based on your Spellcasting skill that is worth the same as
+equivalent levels of training in the relevant skills of the spell itself.
+
+For a short time afterward, you may recast the same spell (using the Recast
+ability), at a greatly reduced piety cost.
 %%%%
 # Trog
 Berserk ability
@@ -505,6 +512,8 @@ also fortifies the user's willpower, protecting against many magical effects.
 Brothers in Arms ability
 
 Summons huge angry allies to wreak havoc.
+
+The strength of the summoned allies increases with the user's experience level.
 %%%%
 # Elyvilon
 Purification ability
@@ -512,32 +521,42 @@ Purification ability
 Purges your body of poison, confusion, slowness, petrification, weakness, and
 sickness. Any drained maximum health will also be fully restored.
 %%%%
-Heal Other ability
+Pacify ability
 
-Heals a creature other than yourself by a moderate amount, depending on
-Invocations skill. Using this ability on hostile monsters will try to turn them
-neutral. This works best on living creatures, with the undead and demons being
-progressively harder to pacify. Intelligent creatures are also more difficult
-to pacify.
+Attempts to soothe a hostile creature and convince them to give up their violent
+ways. If successful, the creature will turn neutral and attempt to leave the
+floor as quickly as possible. You will be granted its full experience value.
 
-Ghosts of dead adventurers and demon lords are too wrathful to be pacified,
-mindless creatures are too unintelligent to be pacified, and no monster can be
+This works best on holy and living creatures, with the undead and demons being
+progressively harder to pacify - particularly if they are intelligent.
+
+Neither mindless nor nonliving creatures can be pacified and no monster can be
 pacified while it is asleep.
 
-Whether the pacification succeeds or not, the invested piety and magic points
-are lost. If it does succeed, the monster is healed and you gain the monster's
-full experience value. Otherwise, the monster is unaffected and you gain
-nothing.
+Invocations skill increases your chance of success and allows you to pacify more
+powerful creatures.
+%%%%
+Divine Alms ability
+
+Comforts a friendly creature who is suffering, healing some of its wounds
+(based on your Invocations skill) and also curing poison, confusion, slowing,
+sickness, weakness, draining, and petrification.
+
+Any summoned creature who is healed by this ability may also be granted a
+small amount of additional time in this world.
 %%%%
 Heal Self ability
 
 Heals a moderate amount of health, depending on Invocations skill.
 %%%%
-Divine Vigour ability
+Aura of Vigour ability
 
 Greatly increases your maximum health and magic points, depending on
 Invocations skill. Your current health and magic points will also be increased
 proportionally.
+
+Any friendly creatures near you will also have their health doubled for as long
+as the effect lasts.
 %%%%
 # Lugonu
 Depart the Abyss ability
@@ -701,15 +720,16 @@ Calls forth acidic ooze from the walls of the dungeon around you, damaging foes
 depending on the number of slimy walls they remain adjacent to.
 %%%%
 # Ashenzari
-Curse Item ability
+Ritual of Binding ability
 
-Curses a chosen equipped item, binding it to the wearer until the curse
-and the item both are broken. Cursed items can no longer be enchanted or
-modified.
+Binds a chosen equipped item to the wearer in exchange for a sliver of
+Ashenzari's knowledge. Items bound in this way can no longer be enchanted
+or modified by most means, and cannot be removed without shattering them.
 %%%%
 Shatter The Chains ability
 
-Destroys a chosen cursed equipped item, relieving the wearer of the curse.
+Destroys a chosen bound item, relieving the wearer of its weight, but lessening
+their favour in Ashenzari's eyes.
 %%%%
 # Dithmenos
 Shadowslip ability
@@ -983,10 +1003,11 @@ Ancestor Life: Knight ability
 Remembers your ancestor as a knight, a strong melee combatant with superior
 defences. This choice is permanent and cannot be undone.
 %%%%
-Ancestor Life: Battlemage ability
+Ancestor Life: Elementalist ability
 
-Remembers your ancestor as a battlemage, a warrior capable of relentless offence
-with both melee and conjurations. This choice is permanent and cannot be undone.
+Remembers your ancestor as a elementalist, a powerful but fragile mage capable
+of unleashing destructive spells from a safe distance. This choice is permanent
+and cannot be undone.
 %%%%
 Ancestor Life: Hexer ability
 

@@ -47,7 +47,6 @@ spret cast_putrefaction(monster* target, int pow, bool fail)
     // Start the cloud at radius 1, regardless of the speed of the killing blow
     marker->speed_increment -= you.time_taken - 7;
     env.markers.add(marker);
-    env.markers.clear_need_activate();
 
     mprf(T_("Rot billows forth from %s wounds!"), target->name(DESC_ITS).c_str());
 
@@ -84,17 +83,9 @@ void explode_blastmotes_at(coord_def p)
     // associated with the cloud being deleted.
     delete_cloud(p);
 
-    bolt beam;
-    zappy(ZAP_BLASTMOTE, you.props[BLASTMOTE_POWER_KEY], false, beam);
-
+    bolt beam(you, ZAP_BLASTMOTE, you.props[BLASTMOTE_POWER_KEY]);
     beam.target        = p;
     beam.source        = p;
-    beam.source_id     = MID_PLAYER;
-    beam.attitude      = ATT_FRIENDLY;
-    beam.thrower       = KILL_YOU_MISSILE;
-    beam.is_explosion  = true;
-    beam.ex_size       = 1;
-
     const string boom  = "The cloud of blastmotes explodes!";
     const string sanct = "By Zin's power, the fiery explosion is contained.";
     schedule_explosion_fineff(beam, boom, sanct, EXPLOSION_FINEFF_CONCUSSION,
@@ -107,7 +98,7 @@ spret cast_freezing_cloud(int pow, const coord_def& target, bool fail)
     hitfunc.set_aim(target);
 
     if (stop_attack_prompt(hitfunc, "conjure a freezing cloud",
-                            [](const actor *act) { return act->is_player() || act->res_cold() < 3;},
+                            [](const actor *act) { return (act->is_player() || act->res_cold() < 3) && !act->cloud_immune();},
                             nullptr, nullptr, false, true))
     {
         return spret::abort;
@@ -202,7 +193,7 @@ spret scroll_of_poison(bool scroll_unknown)
     {
         if (const actor* act = actor_at(*ri))
         {
-            unknown_unseen = unknown_unseen || !you.can_see(*act);
+            unknown_unseen = unknown_unseen || !you.aware_of(*act);
             continue;
         }
 

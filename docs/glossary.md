@@ -110,6 +110,89 @@
 
 ---
 
+### 新增变形（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Vision | 灵视 | form/status; vision.yaml 与 status.txt；第三眼感知施法残余；decision=D-C-095 |
+| Jademantle | 玉衣 | form; jademantle.yaml 与 Jade status；玉晶覆盖上身，mantle 意象；decision=D-C-095 |
+| Hypnogecko | 迷魂壁虎 | form; hypnogecko.yaml 与 Gecko status；催眠性混种壁虎；decision=D-C-095 |
+| Mistmane | 雾鬃 | form/status; mistmane.yaml；头部化为雾团，保留 mane 意象；decision=D-C-095 |
+| Jade | 玉晶 | Jademantle 短名/status；四元素晶体；decision=D-C-095 |
+| Gecko | 壁虎 | Hypnogecko 短名/status；不译成泛称蜥蜴；decision=D-C-095 |
+| vision-form | 灵视形态 | form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095 |
+| jade-form | 玉衣形态 | form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095 |
+| gecko-form | 迷魂壁虎形态 | form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095 |
+| mistmane-form | 雾鬃形态 | form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095 |
+| banyan tree | 榕树 | tree.yaml 的新具体形体描述；Tree 形态身份未改名；decision=D-C-095 |
+| Surge Dmg | 元素涌流伤害 | Jademantle 数据中的伤害标签；decision=D-C-095 |
+| Glimmer Dmg | 微光伤害 | Vision 数据中的伤害标签；与 glimmer 云共用词根；decision=D-C-095 |
+
+### 魔法地脉（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| ley line / ley lines | 地脉 | Dragon Veins spell 与四种 dragon vein 地形；指贯穿地牢的魔法能量脉络；可写“元素能量地脉／土魔法地脉”等，不将“魔法地脉”另立术语；decision=D-C-096 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Aqua | 水灵 | form 名称／伤害标签；aqua:short_name；decision=D-C-098 |
+| aqua-form | 水灵形态 | form 名称／伤害标签；aqua:long_name；decision=D-C-098 |
+| Watery Grave Dmg | 水葬伤害 | form 名称／伤害标签；aqua:special_damage_name；decision=D-C-098 |
+| batswarm-form | 蝠群形态 | form 名称／伤害标签；bat-swarm:long_name；decision=D-C-098 |
+| bat-form | 蝙蝠形态 | form 名称／伤害标签；bat:long_name；decision=D-C-098 |
+| Blade | 刀刃 | form 名称／伤害标签；blade:short_name；decision=D-C-098 |
+| blade-form | 刀刃形态 | form 名称／伤害标签；blade:long_name；decision=D-C-098 |
+| death-form | 死亡形态 | form 名称／伤害标签；death:long_name；decision=D-C-098 |
+| dragon-form | 龙形态 | form 名称／伤害标签；dragon:long_name；decision=D-C-098 |
+| Breath Dmg | 吐息伤害 | form 名称／伤害标签；dragon:special_damage_name；decision=D-C-098 |
+| Eel | 电鳗 | form 名称／伤害标签；eel-hands:short_name；decision=D-C-098 |
+| Jolt damage | 放电伤害 | form 名称／伤害标签；eel-hands:special_damage_name；decision=D-C-098 |
+| Flux | 变形 | form 名称／伤害标签；flux:short_name；decision=D-C-098 |
+| flux-form | 变形形态 | form 名称／伤害标签；flux:long_name；decision=D-C-098 |
+| Contam Dmg | 辐射伤害 | form 名称／伤害标签；flux:special_damage_name；decision=D-C-098 |
+| crab-form | 蟹形态 | form 名称／伤害标签；fortress-crab:long_name；decision=D-C-098 |
+| fungus-form | 菌类形态 | form 名称／伤害标签；fungus:long_name；decision=D-C-098 |
+| Hive | 蜂巢 | form 名称／伤害标签；hive:short_name；decision=D-C-098 |
+| hive-form | 蜂巢形态 | form 名称／伤害标签；hive:long_name；decision=D-C-098 |
+| jelly-form | 果冻形态 | form 名称／伤害标签；jelly:long_name；decision=D-C-098 |
+| maw-form | 巨口形态 | form 名称／伤害标签；maw:long_name；decision=D-C-098 |
+| Medusa | 美杜莎 | form 名称／伤害标签；medusa:short_name；decision=D-C-098 |
+| medusa-form | 美杜莎形态 | form 名称／伤害标签；medusa:long_name；decision=D-C-098 |
+| Pig | 猪形 | form 名称／伤害标签；pig:short_name；decision=D-C-098 |
+| pig-form | 猪形态 | form 名称／伤害标签；pig:long_name；decision=D-C-098 |
+| Quill | 刺毛 | form 名称／伤害标签；quill:short_name；decision=D-C-098 |
+| quill-form | 刺毛形态 | form 名称／伤害标签；quill:long_name；decision=D-C-098 |
+| Quill Dmg | 刺毛伤害 | form 名称／伤害标签；quill:special_damage_name；decision=D-C-098 |
+| yak-form | 牦牛形态 | form 名称／伤害标签；rime-yak:long_name；decision=D-C-098 |
+| Frigid Wall Dmg | 冰墙伤害 | form 名称／伤害标签；rime-yak:special_damage_name；decision=D-C-098 |
+| Serpent | 蛇形 | form 名称／伤害标签；serpent:short_name；decision=D-C-098 |
+| amphisbaena-form | 双头蛇形态 | form 名称／伤害标签；serpent:long_name；decision=D-C-098 |
+| Slaughter | 屠戮 | form 名称／伤害标签；slaughter:short_name；decision=D-C-098 |
+| slaughter-form | 屠戮形态 | form 名称／伤害标签；slaughter:long_name；decision=D-C-098 |
+| sphinx-form | 斯芬克斯形态 | form 名称／伤害标签；sphinx:long_name；decision=D-C-098 |
+| spider-form | 蜘蛛形态 | form 名称／伤害标签；spider:long_name；decision=D-C-098 |
+| spore-form | 孢子形态 | form 名称／伤害标签；spore:long_name；decision=D-C-098 |
+| Burstshroom damage | 爆裂菇伤害 | form 名称／伤害标签；spore:special_damage_name；decision=D-C-098 |
+| statue-form | 石像形态 | form 名称／伤害标签；statue:long_name；decision=D-C-098 |
+| Storm | 风暴 | form 名称／伤害标签；storm:short_name；decision=D-C-098 |
+| storm-form | 风暴形态 | form 名称／伤害标签；storm:long_name；decision=D-C-098 |
+| Blinkbolt Dmg | 闪烁箭伤害 | form 名称／伤害标签；storm:special_damage_name；decision=D-C-098 |
+| Scarab | 甲虫 | form 名称／伤害标签；sun-scarab:short_name；decision=D-C-098 |
+| scarab-form | 甲虫形态 | form 名称／伤害标签；sun-scarab:long_name；decision=D-C-098 |
+| Flare Dmg | 耀焰伤害 | form 名称／伤害标签；sun-scarab:special_damage_name；decision=D-C-098 |
+| tree-form | 树形态 | form 名称／伤害标签；tree:long_name；decision=D-C-098 |
+| vampire-form | 吸血鬼形态 | form 名称／伤害标签；vampire:long_name；decision=D-C-098 |
+| scroll-form | 卷轴形态 | form 名称／伤害标签；walking-scroll:long_name；decision=D-C-098 |
+| Werewolf | 狼人 | form 名称／伤害标签；werewolf:short_name；decision=D-C-098 |
+| werewolf-form | 狼人形态 | form 名称／伤害标签；werewolf:long_name；decision=D-C-098 |
+| Wisp | 鬼火 | form 名称／伤害标签；wisp:short_name；decision=D-C-098 |
+| wisp-form | 鬼火形态 | form 名称／伤害标签；wisp:long_name；decision=D-C-098 |
+| Distill rate | 凝雾速率 | describe.cc / FormMistmane 的凝制雾药水速率标签；非物品名，不添每回合或百分比单位；decision=D-C-098 |
+
 <!-- domain:core -->
 ## 四、核心游戏术语
 
@@ -129,7 +212,7 @@
 | penance | 惩戒（律法神）/ 苦修（自我牺牲神） | 按神祇类型选择 |
 | flee | 逃跑 | — |
 | shout | 喊叫 | 非"吼叫"（那是 roar） |
-| curse | 诅咒 | — |
+| curse | 诅咒 | 真正的诅咒；Ashenzari 装备绑定显示用 bound → 已束缚；decision=D-C-095 |
 | soul | 灵魂 | — |
 | blood | 鲜血 / 血 | 强调用"鲜血"，普通用"血" |
 | Abyss | 深渊 | — |
@@ -162,6 +245,111 @@
 
 ---
 
+### 地点、地形与模式（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Gulch | 污渠 | branch-data.h / portals/gulch.des / branches.txt；宝库废物与诱变污水的排水空间；decision=D-C-095 |
+| gutter gulch | 排污渠 | Gulch 分支长描述；普通称呼，不用山间峡谷意象；decision=D-C-095 |
+| mutagenic drain | 诱变排水口 | feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095；词根统一见 D-C-096 |
+| purified mutation catalyst | 净化诱变催化器 | feature-data.h / features.txt；可打破的实验装置，非背包药剂；decision=D-C-095 |
+| empty mutation catalyst | 空诱变催化器 | features.txt；催化器被打开后排空的状态；decision=D-C-095 |
+| patch of mould | 霉菌丛 | feature-data.h / features.txt；长出可再生菌类的地表；decision=D-C-095 |
+| patch of ice thorns | 冰棘丛 | feature-data.h；与 Ice Thorns 同词根；decision=D-C-095 |
+| airy dragon vein | 气龙脉 | feature-data.h；龙脉地形四元素系列；decision=D-C-095 |
+| earthen dragon vein | 土龙脉 | feature-data.h；同系列；decision=D-C-095 |
+| fiery dragon vein | 火龙脉 | feature-data.h；同系列；decision=D-C-095 |
+| icy dragon vein | 冰龙脉 | feature-data.h；同系列；decision=D-C-095 |
+| assortment of trash | 杂乱垃圾 | features.txt；垃圾装饰地形新描述标题，非掉落物品；decision=D-C-095 |
+| Descent | 下行 | trunk ALPHA 可见模式名；向地牢深处推进的游戏模式，英文配置身份不变；decision=D-C-095 |
+
+### 机制与地点补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| piety | 虔诚值 | 神祇好感资源／数值及界面标签；一般叙述可简称“虔诚”，神眷作为解释性释义；弃用数值名“虔诚度”；decision=D-C-096 |
+| travel exclusion | 禁区 | 自动旅行／自动探索避开的地图标记；解释性限定可写“旅行禁区／移动禁区”，不会阻止玩家手动进入；decision=D-C-096 |
+| spell library | 法术库 | hints、Divine Exegesis、记忆菜单与 catalog 一致；decision=D-C-096 |
+| Spider Nest | 蜘蛛巢穴 | 分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096 |
+
+### 界面机制参数（B0-3 归属整理）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
+
+### 神器传说专名与材料（B0-3 归属整理）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Hana | 哈娜 | unrand lore proper name；与神器所有格统一；decision=D-C-095 |
+| Zmysua | 兹米苏娅 | unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095 |
+| Yntzoia | 因佐娅 | unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095 |
+| Fimbulwinter | 芬布尔之冬 | unrand lore proper name；与武器专名统一；decision=D-C-095 |
+| Carina | 船底座 | unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095 |
+| coolibah | 库利巴木 | unrand material name；不以未确认分类学知识增补树种；decision=D-C-095 |
+
+### 新增随机命名组件（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Apeiromancy | 无穷术 | randname.txt；Ashenzari 随机神器词缀，apeiro 词根；由 Apeoromancy 拼写修正；decision=D-C-095 |
+| Apeoromancy | 无穷术 | 旧拼写仅供兼容，不另造中文名；decision=D-C-095 |
+| Armchairtaur | 扶手椅人马 | rand_arm.txt；armchair 与 -taur 的组合双关，不等同 Armataur 种族；decision=D-C-095 |
+| Eucatastrophe | 转危为喜 | rand_arm.txt；灾厄突然转为幸福结局的文学名词；decision=D-C-095 |
+| Orthopraxy | 正行 | rand_wpn.txt；正当宗教实践，区别 Orthodoxy 教义正统；decision=D-C-095 |
+| nickel | 镍 | gizmo.txt；材料／工程组件；decision=D-C-095 |
+| sivanium | 西瓦尼姆 | gizmo.txt；注释指 Shazam，虚构元素音译；decision=D-C-095 |
+| valorium | 瓦洛里姆 | gizmo.txt；注释指 Legion of Super-Heroes，虚构元素音译；decision=D-C-095 |
+| zarnium | 扎尼姆 | gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095 |
+| zigzags | 之字纹 | colourname.txt；未鉴定外观花纹；decision=D-C-095 |
+| deep | 深 | colourname.txt；颜色深浅修饰，不指楼层；decision=D-C-095 |
+| Absolute Zero | 绝对零度 | randbook.txt 新增冰系随机书名主题；物理概念，不声称恢复同名法术；decision=D-C-095 |
+| Frazil | 冰晶 | randbook.txt；湍流水中形成的小冰晶；decision=D-C-095 |
+| Frigidity | 寒冷 | randbook.txt；冰系书名主题，采用温度义；decision=D-C-095 |
+| Infrigidation | 致冷 | randbook.txt；致冷过程／状态；decision=D-C-095 |
+| Kibes | 冻疮 | randbook.txt；寒冷所致疮肿，非新游戏状态；decision=D-C-095 |
+| Névé | 粒雪 | randbook.txt；逐渐压实的粒状积雪，保留重音英文键；decision=D-C-095 |
+| Perniones | 冻疮 | randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095 |
+| the Cold Snap | 骤寒 | randbook.txt；寒冷突然到来；decision=D-C-095 |
+| the Floe | 浮冰 | randbook.txt；漂浮冰块；decision=D-C-095 |
+| the Frost Giant | 霜巨人 | randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095 |
+| the Mountaintop | 山巅 | randbook.txt；冰系书名地貌意象；decision=D-C-095 |
+| the Polar Bear | 北极熊 | randbook.txt；复用现行怪物名；decision=D-C-095 |
+| the Shard Shrike | 碎片伯劳 | randbook.txt；复用现行怪物名；decision=D-C-095 |
+| Algific | 酷寒的 | randbook.txt；冰系书名形容词；decision=D-C-095 |
+| Benumbed | 冻僵的 | randbook.txt；寒冷麻木意象；decision=D-C-095 |
+| Cauldrife | 寒冷的 | randbook.txt；苏格兰语冷／令人发冷；decision=D-C-095 |
+| Encoldened | 变冷的 | randbook.txt；变冷结果；decision=D-C-095 |
+| Hibernal | 冬日的 | randbook.txt；冬季意象，不是冬眠；decision=D-C-095 |
+| Key-cold | 冰冷无温的 | randbook.txt；如金属钥匙般冰冷／失去生命温度；decision=D-C-095 |
+| Nithering | 冻瑟的 | randbook.txt；苏格兰语寒冷蜷缩／发抖；decision=D-C-095 |
+| Nivean | 雪白的 | randbook.txt；雪色意象；decision=D-C-095 |
+| Nixious | 雪白的 | randbook.txt；古词如雪般白，非 noxious 有毒；decision=D-C-095 |
+| Ourie | 凄冷的 | randbook.txt；苏格兰语阴郁寒冷；decision=D-C-095 |
+| Shrammed | 冻僵的 | randbook.txt；英国方言受冻麻木；decision=D-C-095 |
+| Snowblind | 雪盲的 | randbook.txt；雪光致盲意象；decision=D-C-095 |
+| Subnivean | 雪下的 | randbook.txt；积雪下方，非零下温度；decision=D-C-095 |
+| Brom | 布罗姆 | randbook.txt Earth owner；复用既有法术专名；decision=D-C-095 |
+| Vhi | 维 | randbook.txt Air owner；复用既有法术专名；decision=D-C-095 |
+| Nazja | 纳兹亚 | randbook.txt Forgecraft owner；复用既有法术专名；decision=D-C-095 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| hatch | 逃生口 | 自动探索发现类别；沿用既有 escape hatch 的逃生口，不混作普通门；decision=D-C-098 |
+| gift timeout | 神赐等待计数 | wiz-you.cc 完整提示句中的神赐等待计数；范围 0–255，不擅设单位为回合；decision=D-C-098 |
+| lonesome duellist | 孤高决斗者 | bazaar.des 完整消息中的称号；沿用共享旧 duelist 消息词根，duellist 拼写变化不另立中文名；decision=D-C-098 |
+| Yara's Duellist Academy | 亚拉的决斗学院 | wizlab.des 巫师实验室名；Yara 沿用亚拉；旧 Duelist 拼写只作历史兼容；decision=D-C-098 |
+
+### 组合物品显示名说明（B0-5）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| potion of mist | 雾药水 | 完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐） |
+
 <!-- domain:combat -->
 ## 五、战斗与伤害
 
@@ -183,6 +371,25 @@
 | immune | 免疫 |
 
 ---
+
+### 战斗机制补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| attack of opportunity / attacks of opportunity | 借机攻击 | player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| psychic force | 精神冲击 | fineff.cc psychokinetic_burst 的击退原因／攻击效果，不当作独立法术名；decision=D-C-098 |
+| glimmering dart | 微光飞镖 | zap-data.h 灵视攻击显示名；glimmer → 微光、Dart → 飞镖；decision=D-C-098 |
+| surge of energy | 能量涌流 | zap-data.h 玉衣攻击显示名；复用 Surge Dmg 的涌流词根；decision=D-C-098 |
+| fiery blast | 烈火冲击 | Dragon Veins 火元素射线显示名，不改法术名龙脉（火）；decision=D-C-098 |
+| frigid blast | 酷寒冲击 | Dragon Veins 冰元素射线显示名，不改法术名龙脉（冰）；decision=D-C-098 |
+| blast of wind | 狂风冲击 | Dragon Veins 气元素射线显示名，不改法术名龙脉（气）；decision=D-C-098 |
+| blast of rock | 岩石冲击 | Dragon Veins 土元素射线显示名，不改法术名龙脉（土）；decision=D-C-098 |
 
 <!-- domain:items -->
 ## 六、物品与装备
@@ -245,7 +452,7 @@
 | executioner's axe | 刽子手斧 | weapon; decision=D-B-017 |
 | amulet of the Air | 空气项链 | unrand; decision=D-B-021 |
 | Eiolaiphi | 埃奥莱菲 | unrand lore proper name; decision=D-B-021 |
-| glaive of Prune | 梅干长柄刀 | unrand; `Prune` is the giant-prune transformation pun; decision=D-B-021 |
+| glaive of Prune | 梅干长柄刀 | unrand; Prune 双关沿用 D-B-021；trunk 已改为 partisan of Prune，此名保留历史兼容；decision=D-C-095 |
 | morningstar "Eos" | 晨星锤"厄俄斯" | unrand; decision=D-B-017/D-B-021 |
 | Rutra | 鲁特拉 | unrand lore proper name; decision=D-B-021 |
 | St. Lee | 圣李 | unrand lore proper name; decision=D-B-021 |
@@ -271,6 +478,70 @@
 | vampiric | 吸血 | weapon brand adjective; decision=D-B-016/D-B-020 |
 
 ---
+
+### 新增护符、药水、武器与固定神器（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| vision talisman | 灵视护符 | item-prop.cc；对应 Vision；decision=D-C-095 |
+| jade talisman | 玉晶护符 | item-prop.cc；对应 Jademantle／Jade；decision=D-C-095 |
+| gecko talisman | 壁虎护符 | item-prop.cc；对应 Hypnogecko／Gecko；decision=D-C-095 |
+| mist talisman | 雾护符 | item-prop.cc；对应 Mistmane，物品名未带 mane；decision=D-C-095 |
+| centipede bauble | 蜈蚣球 | items.txt；球内的蜈蚣临时化为武器；沿用 flux bauble 的球词根；decision=D-C-095 |
+| `potion full name\|mist` | 雾 | 药水完整名上下文的效果片段；与雾药水同词根；decision=D-C-095 |
+| athame | 仪式匕首 | item-prop.cc / items.txt；由历史兼容恢复为现行武器；decision=D-C-095 |
+| detected item | 探测到的物品 | item-name.cc / items.txt；未知类别的探测物标记；decision=D-C-095 |
+| partisan of Prune | 梅干阔头枪 | art-data.txt；Prune 双关沿用 D-B-021，武器采用现行 partisan 基词；decision=D-C-095 |
+| amulet of Tranquility | 宁静项链 | art-data.txt；Four Winds 改名，保留 tranquility 字面意象；decision=D-C-095 |
+| amulet of the Four Winds | 四方之风项链 | 旧神器名仅保留兼容；当前改用 amulet of Tranquility；decision=D-C-095 |
+| swamp witch's dragon scales | 沼泽女巫龙鳞甲 | unrand.txt；保留归属，不武断确定龙鳞来源；decision=D-C-095 |
+| athame "Fimbulwinter" | 仪式匕首"芬布尔之冬" | unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095 |
+| fire dragon occultist's scales | 火龙神秘学者鳞甲 | unrand.txt；属于火龙神秘学者 Zmysua；decision=D-C-095 |
+| ice dragon arcanist's scales | 冰龙奥术师鳞甲 | unrand.txt；属于冰龙奥术师 Yntzoia；复用 arcanist；decision=D-C-095 |
+| giant spiked club "Carina at Dusk" | 巨刺棍"暮色船底座" | unrand.txt 的星空颂歌、art-data.txt 的 ShootingStar 铭文与流星效果共同确认 Carina 指船底座；decision=D-C-095 |
+| coolibah bardiche | 库利巴木长柄斧 | unrand.txt；整棵 coolibah tree 雕成；不无据指定树种；decision=D-C-095 |
+| staff of Five Virtues | 五德杖 | unrand.txt；五种行为／能力条件；显示名不强改为底层双头杖；decision=D-C-095 |
+| Stagehand's Sword | 舞台工之剑 | unrand.txt；伪装为戏剧道具的机关剑；不凭空设立人名；decision=D-C-095 |
+| Hana's Scimitar | 哈娜之弯刀 | unrand.txt；雅拉弟子的所有格专名；decision=D-C-095 |
+| arcane splint mail | 奥术条板甲 | unrand.txt；古老条板式护甲；splint 不误作夹板医疗器械；decision=D-C-095 |
+| bone scales | 骨鳞甲 | unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；decision=D-C-095 |
+| Forgewarden's cuirass | 锻炉守卫胸甲 | unrand.txt；宗教图案胸甲；不把内部 plate 身份当显示名；decision=D-C-095 |
+| ghost crab claws | 幽灵螃蟹爪 | art-data.txt / unrand.txt；复用 ghost crab 实体，保留 claws 意象；decision=D-C-095 |
+| RageSunder | 怒裂 | art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095 |
+| Salvo | 齐射 | art-data.txt / status.txt；附带攻击其他目标的连续射击效果；decision=D-C-095 |
+| TrickPois | 诡毒 | art-data.txt；施加负面状态附带中毒；decision=D-C-095 |
+| IceDoom | 寒冰厄运 | art-data.txt；寒冷伤害累积 doom，复用厄运；decision=D-C-095 |
+| FireExpos | 火焰暴露 | art-data.txt；火伤触发 exposed；decision=D-C-095 |
+| FireWiz | 火焰施法辅助 | art-data.txt；提高火焰魔法成功率；decision=D-C-095 |
+| IceExpos | 寒冰暴露 | art-data.txt；冷伤触发 exposed；decision=D-C-095 |
+| IceWiz | 寒冰施法辅助 | art-data.txt；提高寒冰魔法成功率；decision=D-C-095 |
+| ShootingStar | 流星 | art-data.txt；命中／击退产生 shooting star；非装备伤害形容词；decision=D-C-095 |
+| ConstrDrown | 束缚溺水 | art-data.txt；攻击已受束缚目标时灌水入肺；decision=D-C-095 |
+| ConstrBog | 束缚毒沼 | art-data.txt；攻击已受束缚目标时制造毒沼；decision=D-C-095 |
+| VirtueSH | 五德格挡 | art-data.txt；五条件带来 SH；decision=D-C-095 |
+| VirtueRefl | 五德反射 | art-data.txt；满足多条件带来反射；decision=D-C-095 |
+| DevInvis | 诡诈隐形 | art-data.txt；devious 状态攻击触发隐形；decision=D-C-095 |
+| ValArchmagi | 勇武大法师 | art-data.txt；法力充足时增强法术；decision=D-C-095 |
+| ^Dim | 卸下削弱法术 | art-data.txt；卸下后的临时法术减弱；显示释义，保护内部标记；decision=D-C-095 |
+| Apostate | 叛教者 | art-data.txt 铭文与稳定版称号共用 catalog 键；本次不新增上下文；decision=D-C-098（取代 D-C-097 的铭文译法） |
+| mist | 雾 | catalog 共享键；art-data.txt 的 Mist 铭文／说明标签与稳定版 mist 是同一大小写不敏感的运行时身份，沿用“雾”；decision=D-C-098（取代 D-C-095 的幽魂雾译法） |
+| giant spiked club | 巨刺棍 | Carina 神器所依赖的现行武器基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
+
+
+### 物品补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| shortbow | 短弓 | 基础武器名；catalog、hints、Hunter 与 tutorial 一致；decision=D-C-096 |
+| enlightenment | 启迪 | 药水效果／状态词根；一般宗教语境如入祭坛的 enlightenment 可译“觉悟”；decision=D-C-096 |
+| ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Archery | 箭术 | 护甲 ego 铭文；item-name.cc 的 SPARM_ARCHERY 显示键；不是技能 Ranged Weapons；decision=D-C-098 |
 
 <!-- domain:dialogue -->
 ## 七、对话动词（按语境选择）
@@ -371,6 +642,13 @@
 
 ---
 
+### 引文歌曲题名（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| A Whiter Shade of Pale | 《更淡的苍白》 | quotes 中普洛柯哈伦歌曲署名；反常色彩意象的项目译名，不声称官方中文曲名；decision=D-C-096 |
+| One of Us Cannot Be Wrong | 《我们之中有一个不会错》 | quotes 中伦纳德·科恩歌曲署名；保留 cannot be wrong 的情态；项目译名，不声称官方中文曲名；decision=D-C-096 |
+
 <!-- domain:species -->
 ## 十二、种族/物种名称
 
@@ -404,10 +682,10 @@
 | formicid | 蚁人 | — | — |
 | barachi | 蛙人 | — | — |
 | vine stalker | 藤蔓行者 | — | — |
-| armataur | 甲马人 | — | — |
+| armataur | 甲马人 | D-C-095 | trunk 已移除；保留 0.34.1／deprecated-armataur 兼容，不能用作 Gale Centaur 译名 |
 | coglin | 齿轮地精 | — | — |
 | mountain dwarf | 山矮人 | — | — |
-| oni | 鬼 | — | — |
+| oni | 鬼 | D-C-095 | 0.34.1 已有的现行种族；本次不是 Ogre 改名，ogre → 食人魔继续用于怪物 |
 | poltergeist | 骚灵 | [D-A-033] | — |
 | revenant | 归来者 | — | — |
 | faun | 牧神 | — | — |
@@ -419,6 +697,21 @@
 `Merfolkian → 人鱼`、`Meteoric → 流星`、`Trollish → 巨魔`。
 
 ---
+
+### 新种族（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Gale Centaur | 疾风半人马 | species; gale-centaur.yaml；保留 centaur 基词与 gale 风意象；decision=D-C-095 |
+| Foal | 小马驹 | Gale Centaur 幼体称呼；child_name，非独立种族；decision=D-C-095 |
+| Equine | 马形 | Gale Centaur adjective；按句法可用“马的”，不替代种族名；decision=D-C-095 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Orcataur | 兽人马 | gale-centaur.yaml 的 Beogh 称呼 orc_name；兽人与 -taur 的组合；不替换正式种族名；decision=D-C-098 |
 
 <!-- domain:skills -->
 ## 十三、技能名
@@ -450,6 +743,19 @@
 | Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
 
+### 技能参数补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| aptitude | 资质 | 种族／技能训练效率参数；弃用该参数的“天赋／能力倾向”；普通人物魔法天赋不受影响；decision=D-C-096 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| base skill target | 基础技能目标 | skill-menu.cc 完整提示句中的参数术语；指不计加成的原始技能训练目标，不要求存在同名独立 catalog 键；decision=D-C-098 |
+
 <!-- domain:status -->
 ## 十四、状态与效果
 
@@ -478,6 +784,48 @@
 | Frozen | 冰封 | status; source=status.txt |
 | Petrification | 石化 | status; source=status.txt |
 | Resistance | 抗性 | status; source=status.txt |
+
+### 新增云与状态（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| glimmer | 微光 | cloud.cc / clouds.txt；法术残余，可被灵视形态利用；decision=D-C-095 |
+| faint frost | 淡霜 | cloud.cc；轻微浮冰晶体，不误示强伤害；decision=D-C-095 |
+| frost cloud | 霜云 | clouds.txt；faint frost 的描述标题，非新独立云身份；decision=D-C-095 |
+| blinding haze | 致盲浓雾 | cloud.cc / clouds.txt；逗留其中会被致盲；decision=D-C-095 |
+| Crystals | 晶体 | status.cc / status.txt；玉衣充能指示；decision=D-C-095 |
+| Indom | 刚毅 | status.txt；按生命上限快速恢复一定生命；不表示无敌；decision=D-C-095 |
+| Tailwind | 顺风 | status.txt；下一次冲锋移动不耗时；decision=D-C-095 |
+| Exegesis | 释经 | status.txt；可低成本再次施放最近释经法术；decision=D-C-095 |
+| Vapour | 汽雾 | status.txt；饮药后待喷出的气体混合物；decision=D-C-095 |
+| Insubst | 虚体 | status.txt；无实体身体，免疫束缚等，非幽灵种族；decision=D-C-095 |
+| insubstantial | 虚体 | duration-data.h；与 Insubst 同词根；decision=D-C-095 |
+| -Swift | -迅捷 | 行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法） |
+| -Sirocco | 灼热风冷却 | status.txt；移动会延后再次施放；decision=D-C-095 |
+| -Tail | -尾巴 | status.txt；状态灯对齐实际显示，保留负号；探索后尾巴才能长回；decision=D-C-098（取代 D-C-095 的断尾待生译法） |
+| -Jolt | -电冲 | status.txt；状态灯对齐共享 catalog 标签，保留负号；完全恢复生命后才能再次满强度放电；decision=D-C-098（取代 D-C-095 的放电冷却译法） |
+| deflecting missiles | 偏转飞弹 | monstatus.txt；替代旧 repelling missiles 标签，复用 Deflect Missiles；decision=D-C-095 |
+| divinely shielded | 神圣护盾保护 | monstatus.txt；受神圣护盾保护；decision=D-C-095 |
+| exposed | 暴露 | monstatus.txt；更易遭非攻击伤害且意志降低；不译为防具破碎；decision=D-C-095 |
+| out of phase | 相位偏移 | monstatus.txt；相位变换效果，区别单纯隐形；decision=D-C-095 |
+| stampeding | 奔踏中 | monstatus.txt；与 Stampede 同词根；decision=D-C-095 |
+
+### 状态、云与诱变词根补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
+| barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
+| `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
+| `status\|ambrosia-drunk` | 仙酒醉 | 药水作用状态的稳定版共享上下文键；ambrosia 药水仍用神食；decision=D-C-098（取代 D-C-096 的神食酣醉标签译法） |
+| noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
+| mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
+| mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
+| mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
+| mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
+| mutagenic radiation | 诱变辐射 | 复用 Contamination 既有译法；decision=D-C-096 |
+| mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
+| mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
 
 <!-- domain:backgrounds -->
 ## 十五、角色背景
@@ -511,6 +859,14 @@
 | Warper | 折跃者 | background; source=backgrounds.txt |
 | Forgewright | 锻造师 | background; source=backgrounds.txt |
 
+### 新增背景与分组（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Mystic | 秘术师 | background; mystic.yaml；元素法术与变形并用，不与学派名“神秘”混同；decision=D-C-095 |
+| Stalker | 潜行者 | background; stalker.yaml；潜行、诱敌与变形；旧同名职业仅保留身份兼容；decision=D-C-095 |
+| Metamorph | 变形者 | job group; util/job-gen.py；总类，区别职业 Shapeshifter → 变形人；decision=D-C-095 |
+
 <!-- domain:abilities -->
 ## 十六、能力名
 
@@ -531,6 +887,37 @@
 | Vitalisation | 活力再生 | ability; source=ability.txt |
 | Imprison | 监禁 | ability; source=ability.txt |
 | Sanctuary | 庇护所 | ability; source=ability.txt |
+
+### 神祇能力与束缚体系（trunk B0）
+
+Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 束缚**，短名括注 **(bound) → （已束缚）**，菜单／费用用“已束缚物品”，动作用“束缚／解除束缚”，仪式意象用“枷锁”。后续 defaults 中文正则须覆盖对应显示形式；本阶段只定术语，不修改正则或资产。`curse → 诅咒`、`bound soul → 缚魂` 与 `Constriction → 束缚` 的各自语境保持有效；`cursed()`、CURSE 枚举、英文协议／查找键不随显示文案改名。
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Ritual of Binding | 束缚仪式 | ability.cc / ability.txt；把已装备物品束缚于自身；decision=D-C-095 |
+| Shatter the Chains | 打碎枷锁 | ability.cc；沿用既有措辞，摧毁物品才能解除束缚；decision=D-C-095 |
+| Shatter The Chains | 打碎枷锁 | ability.txt 的大小写变体；与能力名同译；decision=D-C-095 |
+| bind | 束缚 | Ashenzari 装备语境；bind an item → 束缚物品；decision=D-C-095 |
+| binding | 束缚 | Ashenzari 仪式／装备语境；binding sigil 属另一战斗机制，不从本项推导改名；decision=D-C-095 |
+| bound | 已束缚 / 束缚 | Ashenzari 装备状态／菜单；物品名前缀的共享 catalog 键（bound 后含空格）使用“束缚”，括注使用“（已束缚）”；decision=D-C-095；前缀由 D-C-098 对齐 |
+| Bound item | 绑定物品 | describe-god.cc 神祇详情页的独立共享 catalog 标签；菜单／费用的完整键仍用已束缚物品；decision=D-C-098（限定 D-C-095 的用词范围） |
+| unbind | 解除束缚 | Ashenzari 操作提示；仍需完整说明摧毁物品后果；decision=D-C-095 |
+| unbound | 未束缚 | Ashenzari 装备状态；与已束缚成对；decision=D-C-095 |
+| chains | 枷锁 | Ashenzari 仪式意象；chain yourself → 以枷锁束缚自己；decision=D-C-095 |
+| cursed | 诅咒的 | 稳定版共享 catalog 键，旧版装备前缀保留兼容；trunk Ashenzari 装备绑定状态改用 bound；真正诅咒仍用诅咒；decision=D-C-098（取代 D-C-095 的此键译法） |
+| Pacify | 安抚 | ability.txt；使敌对生物中立并离开，不再用治疗能力名表达；decision=D-C-095 |
+| Divine Alms | 神圣施济 | ability.txt；医治受苦友军，alms 保留施济语义；decision=D-C-095 |
+| Aura of Vigour | 活力光环 | ability.txt；提升自己生命／法力上限，并赋予邻近友军活力；decision=D-C-095 |
+| Divine Shield | 神圣护盾 | 既有能力；新增友军应用也沿用同词根；decision=D-C-095 |
+| divine shield | 神圣护盾 | 怪物获益与战斗消息；区别普通 shield → 盾牌；decision=D-C-095 |
+| Divine Vigour | 神圣活力 | 旧能力名保留 0.34.1 兼容；trunk 菜单用 Aura of Vigour；decision=D-C-095 |
+| divine vigour | 神圣活力 | monster enchant/message；Aura of Vigour 的效果名；decision=D-C-095 |
+| Divine Exegesis | 神圣释经 | 既有能力，登记词根以支持新增 Repeat Exegesis；decision=D-C-095 |
+| Repeat Exegesis | 重复释经 | ability.cc；对齐稳定版共享 catalog 键，重复最近的神圣释经法术；decision=D-C-098（取代 D-C-095 的此键译法） |
+| Elementalist | 元素师 | 与 elementalist 大小写不敏感的共享 catalog 身份同译；完整能力名、职业名各依其独立键；decision=D-C-098（取代 D-C-095 的此键译法） |
+| Battlemage | 战斗法师 | 旧先祖类型保留兼容；一般角色词不受替代；decision=D-C-095 |
+| Curse Item | 诅咒物品 | 旧能力标题保留兼容；当前装备仪式用 Ritual of Binding；decision=D-C-095 |
+| Ancestor Life: Elementalist | 先祖生涯：元素师 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
@@ -567,6 +954,94 @@
 | antennae | 触角 | mutation; source=mutations.txt |
 | stinger | 毒刺 | mutation; source=mutations.txt |
 
+### 新增变异与形态特征（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| spark swarm | 火花群 | 对齐稳定版共享 catalog 名称；火星与余烬环绕并照亮受火／电伤害的敌人，现象描述不作为名称；decision=D-C-098（取代 D-C-095 的火星群译法） |
+| stampede | 奔踏 | mutation-data.h；Gale Centaur 固有特征；与法术、状态同词根；decision=D-C-095 |
+| North Wind's embodiment | 北风化身 | mutation-data.h；四风强化系列；decision=D-C-095 |
+| South Wind's embodiment | 南风化身 | mutation-data.h；同系列；decision=D-C-095 |
+| West Wind's embodiment | 西风化身 | mutation-data.h；同系列；decision=D-C-095 |
+| East Wind's embodiment | 东风化身 | mutation-data.h；同系列；decision=D-C-095 |
+| autotomy | 自断尾 | hypnogecko.yaml / mutations.txt；受重伤后脱尾诱敌；decision=D-C-095 |
+| elemental crystals | 元素晶体 | jademantle.yaml；四元素晶体充能；decision=D-C-095 |
+| glimmercast | 微光施放 | vision.yaml；把施法残余转为攻击；decision=D-C-095 |
+| gather mist | 聚雾 | mistmane.yaml；探索时制造雾药水；decision=D-C-095 |
+| potion clouds | 药水云雾 | mistmane.yaml；喝药水准备喷出有害云；decision=D-C-095 |
+| fleshless physiology | 无肉生理 | mutations.txt；石像鬼特征分类，不误示亡灵；decision=D-C-095 |
+| plant physiology | 植物生理 | mutations.txt；树形态特征分类；decision=D-C-095 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| water reaching | 水体延伸 | form 伪变异／特征标签；aqua:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| water splatter | 水花飞溅 | form 伪变异／特征标签；aqua:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| steam response | 遇火生汽 | form 伪变异／特征标签；aqua:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| freeze response | 遇冷冻结 | form 伪变异／特征标签；aqua:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| extremely fast | 极快 | form 伪变异／特征标签；bat-swarm:fakemuts, bat:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| vampire fangs | 吸血鬼獠牙 | form 伪变异／特征标签；bat-swarm:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| bloodcurse | 血咒 | form 伪变异／特征标签；bat-swarm:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| torment resistance 1 | 折磨抗性1 | form 伪变异／特征标签；bat-swarm:fakemuts, statue:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| very stealthy | 潜行极佳 | form 伪变异／特征标签；bat-swarm:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| weak attacks | 攻击虚弱 | form 伪变异／特征标签；bat-swarm:badmuts, bat:badmuts, flux:badmuts, pig:fakemuts, walking-scroll:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| blade aux | 刀刃辅助攻击 | form 伪变异／特征标签；blade:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| blade parry | 刀刃格挡 | form 伪变异／特征标签；blade:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| vile attack | 恶毒攻击 | form 伪变异／特征标签；death:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| torment immunity | 折磨免疫 | form 伪变异／特征标签；death:fakemuts, fungus:fakemuts, slaughter:fakemuts, tree:fakemuts, wisp:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| dragon claw | 龙爪 | form 伪变异／特征标签；dragon:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| dragon scales | 龙鳞 | form 伪变异／特征标签；dragon:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| eel punch | 电鳗拳击 | form 伪变异／特征标签；eel-hands:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| eeljolt | 电鳗放电 | form 伪变异／特征标签；eel-hands:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| contaminating | 污染攻击 | form 伪变异／特征标签；flux:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| armoured shell | 坚甲 | form 伪变异／特征标签；fortress-crab:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| slow movement | 移动缓慢 | form 伪变异／特征标签；fortress-crab:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| terrified | 惊恐 | form 伪变异／特征标签；fungus:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| hive swarm | 蜂群护体 | form 伪变异／特征标签；hive:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| hive regen | 蜂巢再生 | form 伪变异／特征标签；hive:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| stealthy | 善于潜行 | form 伪变异／特征标签；hypnogecko:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| acid body | 酸性身体 | form 伪变异／特征标签；jelly:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| amorphous state | 无定形 | form 伪变异／特征标签；jelly:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| acidic touch | 酸蚀触击 | form 伪变异／特征标签；jelly:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| heavily diminished spells | 法术严重削弱 | form 伪变异／特征标签；jelly:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| maw attack | 巨口攻击 | form 伪变异／特征标签；maw:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| devouring maw | 吞噬巨口 | form 伪变异／特征标签；maw:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| growling stomach | 胃部咆哮 | form 伪变异／特征标签；maw:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| low body AC | 躯干护甲低 | form 伪变异／特征标签；maw:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| stinger hair | 毒须鬃发 | form 伪变异／特征标签；medusa:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| lithotoxin | 石化毒素 | form 伪变异／特征标签；medusa:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| slow casting | 施法缓慢 | form 伪变异／特征标签；mistmane:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| quills | 刺毛护体 | form 伪变异／特征标签；quill:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| frigid aura | 酷寒灵光 | form 伪变异／特征标签；rime-yak:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| ice wizardry | 寒冰施法辅助 | form 伪变异／特征标签；rime-yak:fakemuts；不声称是可遗传突变；与 IceWiz 同根，降低施法难度，不表示法术威力增强；catalog 待负责译者修订；decision=D-C-098 |
+| two hats | 双帽 | form 伪变异／特征标签；serpent:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| damage resistance | 伤害抗性 | form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| doubled heal-on-kills | 杀敌治疗加倍 | form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| unshakeable will | 意志不可动摇 | form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；保留 unshakeable 的绝对强度，不弱化为普通坚韧；catalog 待负责译者修订；decision=D-C-098 |
+| demonic bargain | 恶魔契约 | form 伪变异／特征标签；slaughter:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| airstrike attack | 空袭攻击 | form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| hex mastery | 诅咒精通 | form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| riddle compulsion | 谜语冲动 | form 伪变异／特征标签；sphinx:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| ensnaring attack | 蛛网攻击 | form 伪变异／特征标签；spider:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| jumping | 跳跃 | form 伪变异／特征标签；spider:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| poison vulnerability | 毒素弱点 | form 伪变异／特征标签；spider:badmuts, sun-scarab:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| weakening spores | 虚弱孢子 | form 伪变异／特征标签；spore:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| electrical cleaving | 电流横扫 | form 伪变异／特征标签；storm:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| evasive | 善于闪避 | form 伪变异／特征标签；storm:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| sun companion | 太阳伙伴 | form 伪变异／特征标签；sun-scarab:fakemuts；不声称是可遗传突变；指随身的太阳热球／余烬伙伴，companion 不增加伴侣的情爱关系；catalog 待负责译者修订；decision=D-C-098 |
+| searing attack | 灼热攻击 | form 伪变异／特征标签；sun-scarab:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| fire wizardry | 火焰施法辅助 | form 伪变异／特征标签；sun-scarab:fakemuts；不声称是可遗传突变；与 FireWiz 同根，降低施法难度，不表示法术威力增强；catalog 待负责译者修订；decision=D-C-098 |
+| resilient | 坚韧 | form 伪变异／特征标签；tree:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| bat form | 蝠群变形 | form 伪变异／特征标签；vampire:fakemuts；不声称是可遗传突变；vampire fakemut 的说明明确变成一群蝙蝠，复用 batswarm-form 的蝠群词根；catalog 待负责译者修订；decision=D-C-098 |
+| hypnotic gaze | 催眠凝视 | form 伪变异／特征标签；vampire:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| magic absorption | 吸收魔法 | form 伪变异／特征标签；walking-scroll:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| novice magic | 新手魔法 | form 伪变异／特征标签；walking-scroll:badmuts；不声称是可遗传突变；decision=D-C-098 |
+| werefury | 狼人狂怒 | form 伪变异／特征标签；werewolf:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| werehowl | 狼人嚎叫 | form 伪变异／特征标签；werewolf:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| highly resistant | 高抗性 | form 伪变异／特征标签；wisp:fakemuts；不声称是可遗传突变；表示多种伤害抗性较高，不套用 Might 的“强效”词根；catalog 待负责译者修订；decision=D-C-098 |
+
 <!-- domain:monsters -->
 ## 十八、怪物名称（首批）
 
@@ -586,7 +1061,7 @@
 | ancient lich | 远古巫妖 | monster; source=source.txt |
 | ancient zyme | 古酶 | monster; source=source.txt |
 | angel | 天使 | monster; source=source.txt |
-| armataur | 甲马人 | monster; source=source.txt |
+| armataur | 甲马人 | monster; trunk 已移除，保留历史兼容；decision=D-C-095 |
 | armour echo | 铠甲回响 | monster; source=source.txt |
 | apis | 阿匹斯 | monster; source=source.txt |
 | apocalypse crab | 天启螃蟹 | monster; source=source.txt |
@@ -662,6 +1137,47 @@
 | Serpent of Hell cocytus | 悲叹河地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 | Serpent of Hell dis | 铁城地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 | Serpent of Hell tartarus | 塔尔塔罗斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+
+### 新增怪物与先祖类型（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| elementalist | 元素师 | ancestor-elementalist.yaml；先祖由 Battlemage 改为 Elementalist；对齐稳定版共享 catalog 身份，不改独立职业／完整能力名键；decision=D-C-098（取代 D-C-095 的此键译法） |
+| abyssal acolyte | 深渊侍僧 | abyssal-acolyte.yaml；复用 Abyss 与 acolyte；decision=D-C-095 |
+| herald of the Abyss | 深渊先驱 | herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095 |
+| airy jade | 气玉晶 | jade-crystal-air.yaml；Jademantle 的气元素晶体；decision=D-C-095 |
+| earthen jade | 土玉晶 | jade-crystal-earth.yaml；同系列；decision=D-C-095 |
+| fiery jade | 火玉晶 | jade-crystal-fire.yaml；同系列；decision=D-C-095 |
+| icy jade | 冰玉晶 | jade-crystal-ice.yaml；同系列；decision=D-C-095 |
+| assassin centipede | 刺客蜈蚣 | assassin-centipede.yaml / items.txt；同名临时武器复用；decision=D-C-095 |
+| hypnotail | 迷魂尾 | hypnotail.yaml；迷魂壁虎脱落的诱敌尾巴；decision=D-C-095 |
+| fungal shambler | 蹒跚菌怪 | monsters.txt；吞噬活体后游荡的寄生菌；decision=D-C-095 |
+| glowmurk ghast | 浊光怨灵 | monsters.txt；闪烁的溺亡幽影，接触后消散；decision=D-C-095 |
+| mongrel wurm | 杂种蠕龙 | monsters.txt；幼龙等生物的蛇形杂交体，不误作普通蠕虫；decision=D-C-095 |
+| roaming sludgefish | 游荡泥鱼 | roaming-sludgefish.yaml；对齐稳定版共享 catalog 键；decision=D-C-098（取代 D-C-095 的此键译法） |
+| rusted inspector | 锈蚀监察者 | monsters.txt；失修、抑制魔法的金属监控构装体；decision=D-C-095 |
+| scrapshell chimera | 废铁壳奇美拉 | monsters.txt；水生血肉与废铁甲壳融合；decision=D-C-095 |
+| sewage sovereign | 污水君主 | monsters.txt；统治污水领域的巨型变异猪；decision=D-C-095 |
+| stack of scrap | 废铁堆 | stack-of-scrap.yaml / monsters.txt；金属废料堆叠构装体；decision=D-C-095 |
+| telencephalon | 端脑 | monsters.txt；魔法晶体与变异脑组织构成，保留原名解剖学术语；decision=D-C-095 |
+| lurker | 潜伏者 | mon-lurk.cc；未显现而等待触发的怪物机制类，非新增物种；区别 Stalker；decision=D-C-095 |
+| ghost crab | 幽灵螃蟹 | 新增神器命名所依赖的现行怪物基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
+| occultist | 神秘学者 | 新增火龙鳞甲所依赖的现行角色基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095 |
+
+### 描述专名补登记（B0-2）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| fenstrider witch | 沼行女巫 | 怪物名及幽灵螃蟹爪的制作群体；沿用 catalog，不混作 swamp witch 沼泽女巫；decision=D-C-096 |
+| West Wind | 西风 | Zephyr 传说中人格化的西风；与 West Wind's embodiment → 西风化身共用词根；decision=D-C-096 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| burstshroom | 爆裂菇 | 怪物／召唤构造实体名；沿用 catalog；spike launcher 复用 Construct Spike Launcher 的词根；decision=D-C-098 |
+| spike launcher | 尖刺发射器 | 怪物／召唤构造实体名；沿用 catalog；spike launcher 复用 Construct Spike Launcher 的词根；decision=D-C-098 |
 
 <!-- domain:unique-monsters -->
 ## 十九、独特怪物名称
@@ -754,6 +1270,26 @@
 | Xtahua | 扎塔瓦 | unique-monster; source=source.txt |
 | Zenata | 泽娜塔 | unique-monster; source=source.txt |
 
+### 新增独特怪物（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Goji | 戈吉 | goji.yaml / goji_unmounted.yaml；骑乘与落地两身份共用地精专名；decision=D-C-095 |
+
+
+### 新增随机怪物专名（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Desdemona | 苔丝狄蒙娜 | monname.txt；怪物随机人名，采用既有文学专名惯例；decision=D-C-095 |
+
+
+### catalog 补登记（B0-4）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Royal Jelly | 果冻王 | mon-util.cc 果冻王的实体显示名；沿用 catalog 与既有 jelly 词根；decision=D-C-098 |
+
 <!-- domain:monster-titles -->
 ## 二十、独特怪物称号（全部 86 项，Issue #71）
 
@@ -845,6 +1381,13 @@
 | Xak'krixis title | 王家远征炼金师扎克里西斯 | monster-title; source=database/zh/montitle.txt |
 | Xtahua title | 古老的扎塔瓦 | monster-title; source=database/zh/montitle.txt |
 | Zenata title | 泽娜塔，西泽的追寻者 | monster-title; source=database/zh/montitle.txt |
+
+
+### 新增独特怪物称号（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Goji, Who Cannot Be Seen | 戈吉，不可见者 | montitle.txt；骑乘幽灵蛾而自诩隐匿的独特怪物称号；decision=D-C-095 |
 
 <!-- domain:spells -->
 ## 二十一、法术名全表
@@ -944,7 +1487,7 @@
 | Summon Spiders | 召唤蜘蛛 | ✅ |
 | Summon Twister | 召唤旋风 | ⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审 |
 | Summon Tzitzimitl | 召唤齐齐米特尔 | ✅ |
-| Summon Ufetubus | 召唤乌菲特布斯 | ✅；复用实体 `ufetubus → 乌菲特布斯` |
+| Summon Ufetubus | 召唤乌菲特布斯 | trunk 已被 Ufetubi Swarm 替代；保留历史标题与实体音译；decision=D-C-095 |
 | Summon Undead | 召唤亡灵 | ✅ |
 | Summon Vermin | 召唤害虫 | ✅ |
 | Summon Water Elementals | 召唤水元素 | ✅ |
@@ -1003,7 +1546,7 @@
 | Antimagic Gaze | 反魔法凝视 | ✅ |
 | Confusion Gaze | 困惑凝视 | ✅ |
 | Draining Gaze | 衰竭凝视 | ✅；施加 Drain/衰竭，不治疗施法者 |
-| Mutagenic Gaze | 变异凝视 | ✅ |
+| Mutagenic Gaze | 变异凝视 | ✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096 |
 | Paralysis Gaze | 麻痹凝视 | ✅ |
 | Vitrifying Gaze | 玻璃化凝视 | ✅ |
 | Weakening Gaze | 虚弱凝视 | ✅ |
@@ -1374,7 +1917,7 @@
 | Petrify | 石化 | ✅ |
 | Phantom Blitz | 幻影突击 | ✅；发射保有施法者战斗能力的幻影复制体 |
 | Phantom Mirror | 幻影镜 | ✅；制造较脆弱但近似原体的怪物幻影 |
-| Phase Shift | 相位变换 | ⚠️ 已移除兼容；暂缓术语；恢复时复审 |
+| Phase Shift | 相位变换 | ✅ trunk 新 SPELL_PHASE_SHIFT 已复审：身体偏离常规空间；SPELL_PHASE_SHIFT_OLD 保留同名旧身份兼容；decision=D-C-095 |
 | Planar Overlay | 位面叠加 | ✅ |
 | Plane Rend | 位面撕裂 | ✅ |
 | Platinum Paragon | 白金典范 | ✅ |
@@ -1480,7 +2023,7 @@
 | Volatile Blastmotes | 不稳定爆尘 | ✅ |
 | Volley of Thorns | 荆棘齐射 | ✅ |
 | Vortex | 漩涡 | ⚠️ 已移除兼容；暂缓术语；恢复时复审；与 `Polar Vortex` 统一词根 |
-| Wall of Brambles | 荆棘之墙 | ✅ |
+| Wall of Brambles | 荆棘之墙 | trunk 已被 Cage of Brambles 替代；保留历史标题，不用于新法术；decision=D-C-095 |
 | Warning Cry | 警告之嚎 | ✅ |
 | Warp Body | 扭曲身体 | ✅；造成少量伤害和短暂变异，变异过多时改为玻璃化 |
 | Warp Space | 扭曲空间 | ✅；空间裂隙造成范围伤害并可能短距闪现目标 |
@@ -1490,10 +2033,29 @@
 | Woodweal | 林木疗愈 | 🆕；借相邻树木的叶与树皮活力治疗伤势 |
 | nonexistent spell | 不存在的法术 | ✅ |
 
-**汇总**：511 法术，✅ 保留 370，📝 修订 15，🆕 新增 28，⚠️ 已移除兼容 98。
+### 上游新增法术（trunk B0）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| Dragon Veins | 龙脉 | spl-data.h / spells.txt；显露地牢元素能量脉络，复数不另造词；decision=D-C-095 |
+| Dragon Vein (Fire) | 龙脉（火） | 同系列四元素触发法术；括号区分元素；decision=D-C-095 |
+| Dragon Vein (Ice) | 龙脉（冰） | 同系列四元素触发法术；decision=D-C-095 |
+| Dragon Vein (Air) | 龙脉（气） | 同系列四元素触发法术；decision=D-C-095 |
+| Dragon Vein (Earth) | 龙脉（土） | 同系列四元素触发法术；decision=D-C-095 |
+| Ice Thorns | 冰棘 | spells.txt；目标周围的尖锐冰刺；decision=D-C-095 |
+| Sirocco | 灼热风 | spells.txt；灼热阵风推退邻敌；避免误译为沙尘暴；decision=D-C-095 |
+| Ufetubi Swarm | 乌菲特布斯群 | spells.txt；一群狂暴 ufetubi；沿用现有实体音译；decision=D-C-095 |
+| Cage of Brambles | 荆棘牢笼 | spells.txt；围住各邻近敌人的环状荆棘墙；decision=D-C-095 |
+| Murky Legion | 浊影军团 | spells.txt；召唤浊光怨灵；保留 murky 与 legion 意象；decision=D-C-095 |
+| Touch of Paradox | 悖论之触 | spells.txt；使友军脱离常规空间；沿用 Touch 构词；decision=D-C-095 |
+| Bolt of Antimagic | 反魔箭 | spells.txt / spl-util.cc；标题与稳定版 bolt of antimagic 共用大小写不敏感的 catalog 键；decision=D-C-098（取代 D-C-095 的此键译法） |
+| Stampede | 奔踏 | spl-data.h / spells.txt；直线奔袭推退敌人，区别 Rampage → 冲锋；decision=D-C-095 |
+| Bolster | 强化 | spells.txt；对齐稳定版共享 catalog 键；增强近战与元素抗性，区别 Might → 强壮；decision=D-C-098（取代 D-C-095 的此键译法） |
+
+**历史汇总（0.34.1 复审批次）**：511 法术，✅ 保留 370，📝 修订 15，🆕 新增 28，⚠️ 已移除兼容 98。trunk 增量以 D-C-095 与上述 B0 表为准，不从这份历史统计推导现行法术集合。
 
 ---
 
-*最后更新：2026-07-12 | 来源：docs/decisions.md + docs/spell-naming-rules.md + [legacy issue 12 glossary][legacy-12-glossary] + zh-translator.md*
+*最后更新：2026-10-07 | 来源：docs/decisions.md + docs/spell-naming-rules.md + [legacy issue 12 glossary][legacy-12-glossary] + zh-translator.md*
 
 [legacy-12-glossary]: https://github.com/yutio8888/crawl-chn-issues-archive/blob/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/12/glossary_and_style.md

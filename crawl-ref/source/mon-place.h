@@ -17,7 +17,6 @@
 #include "monster-type.h"
 #include "spell-type.h"
 #include "tag-version.h"
-#include "trap-type.h"
 
 using std::vector;
 
@@ -90,8 +89,8 @@ monster_type pick_random_monster(level_id place,
                                  level_id *final_place = nullptr,
                                  bool allow_ood = true);
 
-conduct_type god_hates_monster(monster_type type);
-conduct_type god_hates_monster(const monster &mon);
+bool god_hates_monster(monster_type type);
+bool god_hates_monster(const monster &mon);
 bool mons_can_hate(monster_type type);
 void check_lovelessness(monster &mon);
 

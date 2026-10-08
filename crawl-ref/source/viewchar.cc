@@ -21,11 +21,7 @@ static const char32_t dchar_table[NUM_CSET][NUM_DCHAR_TYPES] =
             U'\x2248', //≈
             '~', // sadly, ∼ (U+223C, not ascii ~) and ≃ are not in WGL4
             U'\x00df',  '{',
-#if defined(TARGET_OS_WINDOWS) && !defined(USE_TILE_LOCAL)
-         U'\x2302', //⌂ // CP437 but "optional" in WGL4
-#else
-         U'\x2206', //∆ // WGL4 and DEC
-#endif
+          U'\xBF', // ¿
          '0', U'\x3c6', //φ
          ')',  '[',  '/',
 #if TAG_MAJOR_VERSION == 34
@@ -40,7 +36,7 @@ static const char32_t dchar_table[NUM_CSET][NUM_DCHAR_TYPES] =
             '$', U'\x2666', // ♦
          U'\x2022', // •
           '"',
-         U'\xa7', U'\x263c', U'\x25CB', U'\xB0', // §, ☼, ○, °
+         U'\xa7', U'\x03BE', U'\x03B6', U'\x2113', // §, ξ, ζ, ℓ
             U'\x2663', //♣
 #if TAG_MAJOR_VERSION == 34
          U'\xa9', //©

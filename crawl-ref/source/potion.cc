@@ -15,6 +15,7 @@
 #include "art-enum.h"
 #include "cloud.h"
 #include "english.h"
+#include "fight.h"
 #include "god-conduct.h"
 #include "god-passive.h"
 #include "god-wrath.h" // reduce_xp_penance
@@ -111,10 +112,6 @@ public:
         }
         if (!you.can_potion_heal(true) || temp && you.hp == you.hp_max)
         {
-            // It's not useless to drink at full health if you could hit things.
-            if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && has_drunken_brawl_targets())
-                return true;
-
             if (reason)
                 *reason = T_("You have no ailments to cure.");
             return false;
@@ -191,10 +188,6 @@ public:
         }
         if (temp && you.hp == you.hp_max)
         {
-            // It's not useless to drink at full health if you could hit things.
-            if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && has_drunken_brawl_targets())
-                return true;
-
             if (reason)
                 *reason = T_("Your health is already full.");
             return false;
@@ -609,10 +602,6 @@ public:
         }
         else if (temp && you.magic_points == you.max_magic_points)
         {
-            // It's not useless to drink at full health if you could hit things.
-            if (you.has_mutation(MUT_DRUNKEN_BRAWLING) && has_drunken_brawl_targets())
-                return true;
-
             if (reason)
                 *reason = T_("Your magic is already full.");
             return false;
@@ -786,7 +775,8 @@ public:
         if (effect(was_known))
         {
             you.transform_uncancellable = true;
-            did_god_conduct(DID_CHAOS, 10, was_known);
+            if (!was_known)
+                god_forgive_inadvertent_act(FORBID_TRANSFORMATION);
         }
         else
             mpr(T_("You feel woody for a moment."));
@@ -850,22 +840,18 @@ public:
         if (was_known && !check_known_quaff())
             return false;
 
-        string msg = "Really drink that potion of mutation";
-        msg += you.rmut_from_item() ? T_(" while resistant to mutation?") : "?";
-        const bool zin_check = you_worship(GOD_ZIN)
-                            && !have_passive(passive_t::cleanse_mut_potions);
-        if (zin_check)
-            msg += T_(" Zin will disapprove.");
-        if (was_known && (zin_check || you.rmut_from_item())
-                      && !yesno(msg.c_str(), false, 'n'))
+        if (was_known && you.rmut_from_item()
+            && !yesno(T_("Really drink that potion of mutation while resistant to mutation?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
         }
 
-        effect();
-        if (zin_check)
-            did_god_conduct(DID_DELIBERATE_MUTATING, 15, was_known);
+        if (effect() && !was_known
+            && !have_passive(passive_t::cleanse_mut_potions))
+        {
+            god_forgive_inadvertent_act(FORBID_TRANSFORMATION);
+        }
         return true;
     }
 };
@@ -881,6 +867,18 @@ public:
         static PotionMoonshine inst; return inst;
     }
 
+    bool can_quaff(string *reason = nullptr, bool temp = true) const override
+    {
+        if (!temp)
+            return true;
+
+        // Oni drunk brawling will skip this check if any monsters are in range,
+        // so this is entirely for the case where there isn't.
+        if (reason)
+            *reason = T_("There's no one nearby to share it with.");
+        return false;
+    }
+
     bool effect(bool=true, int=40, bool is_potion = true) const override
     {
         mpr(T_("You feel tipsy."));
@@ -893,6 +891,57 @@ public:
     {
         if (effect())
             xom_is_stimulated( 50 / _xom_factor(was_known));
+        return true;
+    }
+};
+
+class PotionMist : public PotionEffect
+{
+private:
+    PotionMist() : PotionEffect(POT_MIST) { }
+    DISALLOW_COPY_AND_ASSIGN(PotionMist);
+public:
+    static const PotionMist &instance()
+    {
+        static PotionMist inst; return inst;
+    }
+
+    bool effect(bool= true, int=40, bool is_potion = true) const override
+    {
+        const int dur = _scale_pot_duration(random_range(15, 25), is_potion);
+        if (you.is_insubstantial())
+            mprf(MSGCH_DURATION, T_("You become very slightly more insubstantial."));
+        else
+            mprf(MSGCH_DURATION, T_("Your body becomes insubstantial."));
+        you.increase_duration(DUR_INSUBSTANTIAL, dur, 40);
+
+        you.stop_being_caught();
+        you.stop_being_constricted();
+        if (you.duration[DUR_STICKY_FLAME])
+        {
+            mprf(MSGCH_RECOVERY, T_("The liquid fire falls away from your body."));
+            end_sticky_flame_player();
+        }
+        if (you.duration[DUR_PETRIFYING])
+        {
+            mprf(MSGCH_RECOVERY, T_("You body stops petrifying."));
+            you.duration[DUR_PETRIFYING] = 0;
+            you.redraw_evasion = true;
+        }
+        if (you.duration[DUR_BARBS])
+        {
+            mprf(MSGCH_RECOVERY, T_("The spiked barbs fall from your body."));
+            you.duration[DUR_BARBS] = 0;
+            you.attribute[ATTR_BARBS_POW] = 0;
+            you.props.erase(BARBS_MOVE_KEY);
+        }
+
+        return true;
+    }
+
+    bool quaff(bool was_known) const override
+    {
+        effect(was_known);
         return true;
     }
 };
@@ -915,6 +964,7 @@ static const unordered_map<potion_type, const PotionEffect*, std::hash<int>> pot
     { POT_MUTATION, &PotionMutation::instance(), },
     { POT_RESISTANCE, &PotionResistance::instance(), },
     { POT_LIGNIFY, &PotionLignify::instance(), },
+    { POT_MIST, &PotionMist::instance(), },
 };
 
 const PotionEffect* get_potion_effect(potion_type pot)
@@ -939,6 +989,7 @@ static const map<potion_type, string> _spore_msg =
     { POT_MAGIC, "magical" },
     { POT_BERSERK_RAGE, "infuriating" },
     { POT_RESISTANCE, "bolstering" },
+    { POT_MIST, N_("insubstantial") },
 };
 
 static void _handle_potion_fungus(potion_type potion)
@@ -1002,6 +1053,9 @@ bool quaff_potion(item_def &potion, bool force)
             mpr(T_("You extract magical energy from the potion."));
             inc_mp(random_range(5, 9));
         }
+
+        if (you.form == transformation::mistmane)
+            mistmane_quaff_potion(ptyp);
 
         if (you.has_mutation(MUT_POTION_FUNGUS))
             _handle_potion_fungus(ptyp);
@@ -1075,6 +1129,9 @@ bool mons_benefits_from_potion(const monster& mon, potion_type potion)
         case POT_RESISTANCE:
             return !mon.has_ench(ENCH_RESISTANCE);
 
+        case POT_MIST:
+            return !mon.is_insubstantial();
+
         default:
             return false;
     }
@@ -1132,6 +1189,11 @@ void mons_potion_effect(monster& mon, potion_type potion, const actor& source)
 
         case POT_RESISTANCE:
             enchant_actor_with_flavour(&mon, &source, BEAM_RESISTANCE);
+            break;
+
+        case POT_MIST:
+            simple_monster_message(mon, T_(" becomes insubstantial!"));
+            mon.add_ench(mon_enchant(ENCH_INSUBSTANTIAL, &source, random_range(300, 450)));
             break;
 
         default:

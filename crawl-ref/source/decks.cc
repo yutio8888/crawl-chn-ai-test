@@ -700,7 +700,7 @@ bool deck_draw(deck_type deck)
     return true;
 }
 
-spret deck_stack(bool fail)
+spret deck_stack(bool fail, int piety_cost, int mp_cost, int hp_cost)
 {
     if (crawl_state.is_replaying_keys())
     {
@@ -736,8 +736,7 @@ spret deck_stack(bool fail)
     fail_check();
 
     you.props[NEMELEX_STACK_KEY].get_vector().clear();
-    run_uncancel(UNC_STACK_FIVE, min(total_cards, 5));
-    return spret::success;
+    return run_ability_uncancel(UNC_STACK_FIVE, piety_cost, mp_cost, hp_cost);
 }
 
 class StackFiveMenu : public Menu
@@ -873,8 +872,10 @@ static void _draw_stack(int to_stack)
             status = string(T_("<lightred>That deck is empty!</lightred>")) + " ";
 
         if (stack.size() > 0)
+        {
             status += make_stringf(T_("Drawn so far: %s"),
                                    stack_contents().c_str());
+        }
         deck_menu.set_more(formatted_string::parse_string(
                    status + "\n" +
                    T_("Press '<w>!</w>' or '<w>?</w>' to toggle "
@@ -885,9 +886,16 @@ static void _draw_stack(int to_stack)
     deck_menu.show(false);
 }
 
-bool stack_five(int to_stack)
+bool stack_five()
 {
     auto& stack = you.props[NEMELEX_STACK_KEY].get_vector();
+
+    int total_cards = 0;
+    for (int i = FIRST_PLAYER_DECK; i <= LAST_PLAYER_DECK; ++i)
+        total_cards += deck_cards((deck_type)i);
+    total_cards += stack.size();
+
+    int to_stack = min(total_cards, 5);
 
     // TODO: this loop makes me sad
     while (stack.size() < to_stack)
@@ -945,13 +953,22 @@ spret deck_deal(bool fail)
     const int num_to_deal = min(num_cards, 4);
 
     for (int i = 0; i < num_to_deal; ++i)
+    {
         _evoke_deck(choice, true);
+        if (choice == DECK_OF_DESTRUCTION && i < num_to_deal - 1)
+        {
+            // Update the screen after each card is dealt, so the player can
+            // see the results of each card to make choices for the next.
+            redraw_screen();
+            update_screen();
+        }
+    }
 
     return spret::success;
 }
 
 // Draw the next three cards, discard two and pick one.
-spret deck_triple_draw(bool fail)
+spret deck_triple_draw(bool fail, int piety_cost, int mp_cost, int hp_cost)
 {
     if (crawl_state.is_replaying_keys())
     {
@@ -999,8 +1016,7 @@ spret deck_triple_draw(bool fail)
     for (int i = 0; i < num_to_draw; ++i)
         draw.push_back(_random_card(choice));
 
-    run_uncancel(UNC_DRAW_THREE, 0);
-    return spret::success;
+    return run_ability_uncancel(UNC_DRAW_THREE, piety_cost, mp_cost, hp_cost);
 }
 
 bool draw_three()
@@ -1188,6 +1204,8 @@ static void _damaging_card(card_type card, int power,
                        && coinflip()
                        && mons.corrode(&you);
             });
+            redraw_screen();
+            update_screen();
         }
         ztype = acidzaps[power_level];
         break;
@@ -1201,6 +1219,8 @@ static void _damaging_card(card_type card, int power,
         {
             mpr(T_("You reveal a symbol of torment!"));
             torment(&you, TORMENT_CARD_PAIN, you.pos());
+            redraw_screen();
+            update_screen();
         }
 
         ztype = painzaps[min(power_level, (int)ARRAYSZ(painzaps)-1)];
@@ -1211,7 +1231,6 @@ static void _damaging_card(card_type card, int power,
     }
 
     bolt beam;
-    beam.range = LOS_RADIUS;
 
     direction_chooser_args args;
     args.mode = TARG_HOSTILE;
@@ -1322,8 +1341,8 @@ static void _elements_card(int power)
     const monster_type element_list[][3] =
     {
         {MONS_RAIJU, MONS_WIND_DRAKE, MONS_SHOCK_SERPENT},
-        {MONS_BASILISK, MONS_CATOBLEPAS, MONS_WAR_GARGOYLE},
-        {MONS_FIRE_BAT, MONS_MOLTEN_GARGOYLE, MONS_FIRE_DRAGON},
+        {MONS_BASILISK, MONS_CATOBLEPAS, MONS_MOUNTAINSHELL},
+        {MONS_FIRE_BAT, MONS_LINDWURM, MONS_FIRE_DRAGON},
         {MONS_ICE_BEAST, MONS_POLAR_BEAR, MONS_ICE_DRAGON}
     };
 
@@ -1557,6 +1576,7 @@ static void _storm_card(int power)
         beam.explode_noise_msg = T_("You hear a clap of thunder!");
         beam.real_flavour      = beam.flavour;
         beam.colour            = LIGHTCYAN;
+        beam.tile_explode      = TILE_BOLT_ELECTRIC_BLAST;
         beam.source_id         = MID_PLAYER;
         beam.thrower           = KILL_YOU;
         beam.is_explosion      = true;
@@ -1599,7 +1619,7 @@ static void _illusion_card(int power)
 
     mon->type = MONS_PLAYER;
     mon->behaviour = BEH_SEEK;
-    mon->attitude = ATT_FRIENDLY;
+    mon->base_attitude = ATT_FRIENDLY;
     mon->set_position(you.pos());
     mon->mid = MID_PLAYER;
     env.mgrid(you.pos()) = mon->mindex();

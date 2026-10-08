@@ -181,6 +181,8 @@ gizmo_adjective
 
 钕质
 
+镍
+
 标称
 
 非确定性
@@ -248,6 +250,8 @@ gizmo_adjective
 
 正弦
 
+西瓦尼姆
+
 声波
 
 螺旋
@@ -291,6 +295,8 @@ gizmo_adjective
 
 真空
 
+瓦洛里姆
+
 钒质
 
 可变
@@ -302,6 +308,8 @@ gizmo_adjective
 电压
 
 伏打
+
+扎尼姆
 
 @gizmo_modifier@轴向
 

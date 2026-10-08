@@ -49,6 +49,7 @@
 #include "tag-version.h"
 #include "terrain.h"
 #include "tileview.h"
+#include "traps.h"
 #include "rltiles/tiledef-dngn.h"
 #include "rltiles/tiledef-player.h"
 
@@ -617,7 +618,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
 
             const int colour = (*overlay)(x, y).colour;
             if (colour)
-                dgn_set_grid_colour_at(gc, colour);
+                env.grid_colours(gc) = colour;
 
             const terrain_property_t property = (*overlay)(x, y).property;
             if (property.flags >= FPROP_BLOODY)
@@ -628,11 +629,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
 
             const int fheight = (*overlay)(x, y).height;
             if (fheight != INVALID_HEIGHT)
-            {
-                if (!env.heightmap)
-                    dgn_initialise_heightmap();
-                dgn_height_at(gc) = fheight;
-            }
+                dgn_set_vault_height(gc, fheight);
 
             bool has_floor = false, has_rock = false;
             string name = (*overlay)(x, y).floortile;
@@ -646,7 +643,6 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
                 if (colour)
                     floor = tile_dngn_coloured(floor, colour);
                 tile_env.flv(gc).floor = floor;
-                tile_init_flavour(gc);
                 has_floor = true;
             }
 
@@ -660,8 +656,7 @@ void map_lines::apply_grid_overlay(const coord_def &c, bool is_layout)
                 tile_dngn_index(name.c_str(), &rock);
                 if (colour)
                     rock = tile_dngn_coloured(rock, colour);
-                int offset = random2(tile_dngn_count(rock));
-                tile_env.flv(gc).wall = rock + offset;
+                tile_env.flv(gc).wall = rock;
                 has_rock = true;
             }
 
@@ -2429,6 +2424,13 @@ void map_def::read_full(reader& inf)
 
 int map_def::weight(const level_id &lid) const
 {
+    // Over several decades, less than a dozen vaults are left with >99 weight,
+    // and only one has above 1000. This should be fine for catching mistakes.
+    if (_weight.depth_value(lid) > 5000)
+    {
+        mprf(MSGCH_DANGER, "Error: testing weight of %d deployed for vault %s.",
+                           _weight.depth_value(lid), map_def::name.c_str());
+    }
     return _weight.depth_value(lid);
 }
 
@@ -3856,7 +3858,8 @@ mon_enchant mons_list::parse_ench(string &ench_str, bool perm)
     return mon_enchant(et, nullptr, dur, deg);
 }
 
-mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
+mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec,
+                                                     bool ignore_excluded)
 {
     mons_spec_slot slot;
 
@@ -3911,7 +3914,7 @@ mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
 
             for (const string &seg : segs)
             {
-                error = mspec.items.add_item(seg, false);
+                error = mspec.items.add_item(seg, false, ignore_excluded);
                 if (!error.empty())
                     return slot;
             }
@@ -4308,11 +4311,11 @@ mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec)
     return slot;
 }
 
-string mons_list::add_mons(const string &s, bool fix)
+string mons_list::add_mons(const string &s, bool fix, bool ignore_excluded)
 {
     error.clear();
 
-    mons_spec_slot slotmons = parse_mons_spec(s);
+    mons_spec_slot slotmons = parse_mons_spec(s, ignore_excluded);
     if (!error.empty())
         return error;
 
@@ -5765,13 +5768,6 @@ void item_list::parse_random_by_class(string c, item_spec &spec)
         spec.plus      = -1;
         return;
     }
-    else if (c == "fixed level book")
-    {
-        spec.base_type = OBJ_BOOKS;
-        spec.sub_type  = BOOK_RANDART_LEVEL;
-        spec.plus      = -1;
-        return;
-    }
     else if (c == "ring")
     {
         spec.base_type = OBJ_JEWELLERY;
@@ -5887,8 +5883,8 @@ item_list::item_spec_slot item_list::parse_item_spec(string spec, bool ignore_ex
         item_spec parsed_spec;
         if (!parse_single_spec(parsed_spec, specifier))
         {
-            dprf(DIAG_DNGN, "Failed to parse: %s", specifier.c_str());
-            continue;
+            error = make_stringf("Error parsing '%s':\n%s", spec.c_str(), error.c_str());
+            break;
         }
         if (ignore_excluded
             || parsed_spec.props.exists(NO_EXCLUDE_KEY)
@@ -6150,33 +6146,6 @@ void keyed_mapspec::parse_features(const string &s)
 }
 
 /**
- * Convert a trap string into a trap_spec.
- *
- * This function converts an incoming trap specification string from a vault
- * into a trap_spec.
- *
- * @param s       The string to be parsed.
- * @param weight  The weight of this string.
- * @return        A feature_spec with the contained, parsed trap_spec stored via
- *                unique_ptr as feature_spec->trap.
-**/
-feature_spec keyed_mapspec::parse_trap(string s, int weight)
-{
-    strip_tag(s, "trap");
-
-    trim_string(s);
-    lowercase(s);
-
-    const int trap = str_to_trap(s);
-    if (trap == -1)
-        err = make_stringf("bad trap name: '%s'", s.c_str());
-
-    feature_spec fspec(1, weight);
-    fspec.trap.reset(new trap_spec(static_cast<trap_type>(trap)));
-    return fspec;
-}
-
-/**
  * Convert a shop string into a shop_spec.
  *
  * This function converts an incoming shop specification string from a vault
@@ -6267,8 +6236,8 @@ feature_spec_list keyed_mapspec::parse_feature(const string &str)
         fsp.glyph = s[0];
         list.push_back(fsp);
     }
-    else if (strip_tag(s, "trap") || s == "web")
-        list.push_back(parse_trap(s, weight));
+    else if (strip_tag(s, "any trap") || strip_tag(s, "random trap"))
+        list.emplace_back(random_trap_for_place(), weight);
     else if (strip_tag(s, "shop"))
         list.push_back(parse_shop(s, weight, mimic, no_mimic));
     else if (auto ftype = dungeon_feature_by_name(s)) // DNGN_UNSEEN == 0
@@ -6318,7 +6287,7 @@ string keyed_mapspec::set_mask(const string &s, bool /*garbage*/)
         // Be sure to change the order of map_mask_type to match!
         static string flag_list[] =
             {"vault", "no_item_gen", "no_monster_gen", "no_pool_fixup",
-             "UNUSED",
+             "allow_tele_closets",
              "no_wall_fixup", "opaque", "no_trap_gen", ""};
         map_mask |= map_flags::parse(flag_list, s);
     }
@@ -6379,7 +6348,6 @@ feature_spec::feature_spec()
     feat = 0;
     glyph = -1;
     shop.reset(nullptr);
-    trap.reset(nullptr);
     mimic = 0;
     no_mimic = false;
 }
@@ -6390,7 +6358,6 @@ feature_spec::feature_spec(int f, int wt, int _mimic, bool _no_mimic)
     feat = f;
     glyph = -1;
     shop.reset(nullptr);
-    trap.reset(nullptr);
     mimic = _mimic;
     no_mimic = _no_mimic;
 }
@@ -6414,11 +6381,6 @@ void feature_spec::init_with(const feature_spec& other)
     glyph = other.glyph;
     mimic = other.mimic;
     no_mimic = other.no_mimic;
-
-    if (other.trap)
-        trap.reset(new trap_spec(*other.trap));
-    else
-        trap.reset(nullptr);
 
     if (other.shop)
         shop.reset(new shop_spec(*other.shop));

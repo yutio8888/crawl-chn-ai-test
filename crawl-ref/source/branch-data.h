@@ -443,6 +443,17 @@ const Branch branches[NUM_BRANCHES] =
       '%', {}, branch_noise::normal, DEFAULT_MON_DIE_SIZE,
       {}
     },
+
+    { BRANCH_GULCH, NUM_BRANCHES, -1, -1, 1, 20,
+      brflag::no_x_level_travel | brflag::no_items,
+      DNGN_ENTER_GULCH, DNGN_EXIT_GULCH, NUM_FEATURES,
+      "Gulch", "a gutter gulch", "Gulch",
+      "You enter the Vaults' gutter gulch!",
+      GREEN, LIGHTBLUE,
+      '^', {}, branch_noise::normal, DEFAULT_MON_DIE_SIZE,
+      {}
+    },
+
 };
 
 /*

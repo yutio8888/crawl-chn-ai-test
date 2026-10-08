@@ -130,7 +130,8 @@ skill_type arcane_mutation_to_skill(mutation_type mutation);
 bool cannot_use_schools(spschools_type schools);
 
 bool casting_is_useless(spell_type spell, bool temp);
-string casting_uselessness_reason(spell_type spell, bool temp);
+string casting_uselessness_reason(spell_type spell, bool temp,
+                                  bool *god_forbids=nullptr);
 bool spell_is_useless(spell_type spell, bool temp = true,
                       bool prevent = false, bool fake_spell = false) PURE;
 string spell_uselessness_reason(spell_type spell, bool temp = true,
@@ -142,6 +143,8 @@ int spell_highlight_by_utility(spell_type spell,
                                 bool transient = false,
                                 bool memcheck = false);
 bool spell_no_hostile_in_range(spell_type spell);
+bool protected_from_spell(spell_type spell, const monster &mon,
+                          const actor *agent);
 
 bool spell_is_soh_breath(spell_type spell);
 const vector<spell_type> *soh_breath_spells(spell_type spell);
@@ -151,6 +154,8 @@ bool spell_has_variable_range(spell_type spell);
 bool spell_can_be_enkindled(spell_type spell);
 
 bool is_monster_net_escape_spell(spell_type spell);
+
+spschool jade_crystal_to_school(monster_type type);
 
 bool spell_removed(spell_type spell);
 bool spell_is_monster_only(spell_type spell);

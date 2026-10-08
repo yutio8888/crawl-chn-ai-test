@@ -42,6 +42,7 @@ spret fire_los_attack_spell(spell_type spell, int pow, const actor* agent,
                             bool fail = false, int* damage_done = nullptr);
 int adjacent_huddlers(coord_def pos, bool only_in_sight = false);
 void sonic_damage(bool scream);
+dice_def mons_shatter_damage(int spell_hd);
 bool mons_shatter(monster* caster, bool actual = true);
 void shillelagh(actor *wielder, coord_def where, int pow);
 spret cast_freeze(int pow, monster* mons, bool fail);
@@ -81,14 +82,14 @@ void do_galvanic_jolt(const actor& agent, coord_def pos, dice_def damage);
 void do_eel_melee_jolt(coord_def pos);
 void do_eel_arcjolt();
 bool mons_should_fire_plasma(int pow, const actor &agent);
-spret cast_plasma_beam(int pow, const actor &agent, bool fail);
-vector<coord_def> plasma_beam_targets(const actor &agent, int pow, bool actual);
+spret cast_plasma_beam(int pow, const actor &agent, bool fail, bool is_tracer=false);
+vector<coord_def> plasma_beam_targets(const actor &agent, int pow);
 vector<coord_def> plasma_beam_paths(coord_def source, const vector<coord_def> &targets);
 dice_def base_fragmentation_damage(int pow, bool random);
 bool monster_type_is_fraggable(monster_type mc);
 bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
                               const coord_def target, bool quiet,
-                              const char **what, bool &hole);
+                              const char **what);
 spret cast_fragmentation(int powc, const actor *caster,
                               const coord_def target, bool fail);
 spret cast_polar_vortex(int powc, bool fail, bool no_prompt = false);
@@ -101,7 +102,7 @@ spret cast_thunderbolt(actor *caster, int pow, coord_def aim,
                             bool fail);
 bool mons_should_fire_permafrost(int pow, const actor &agent);
 spret cast_permafrost_eruption(actor &caster, int pow, bool fail);
-set<coord_def> permafrost_targets(const actor &caster, bool actual = true);
+set<coord_def> permafrost_targets(const actor &caster);
 
 actor* forest_near_enemy(const actor *mon);
 void forest_message(const coord_def pos, const string &msg,
@@ -122,7 +123,7 @@ vector<coord_def> get_ignition_blast_sources(const actor *agent,
                                              bool tracer = false);
 spret cast_ignition(const actor *caster, int pow, bool fail);
 
-spret cast_starburst(int pow, bool fail, bool tracer=false);
+spret cast_multibeam(spell_type spell, const coord_def& target, int pow, bool fail);
 
 void seeker_attack(monster& seeker, actor& target,
                    coord_def attack_pos = coord_def());
@@ -153,8 +154,8 @@ void end_maxwells_coupling(bool quiet = false);
 spret cast_noxious_bog(int pow, bool fail);
 vector<coord_def> find_bog_locations(const coord_def &center);
 
-vector<coord_def> find_near_hostiles(int range, bool affect_invis,
-                                     const actor& agent);
+vector<coord_def> find_near_hostiles(const actor& agent, int range,
+                                     bool include_sensed = false);
 
 int siphon_essence_range();
 bool siphon_essence_affects(const monster &m);
@@ -191,3 +192,7 @@ void do_catalyst_explosion(coord_def center, const item_def* wpn);
 spret cast_watery_grave();
 
 spret cast_golden_breath(bolt& beam, int power, bool fail);
+spret do_crystal_burst();
+
+spell_type dragon_vein_to_spell(dungeon_feature_type feat);
+void trigger_dragon_vein();

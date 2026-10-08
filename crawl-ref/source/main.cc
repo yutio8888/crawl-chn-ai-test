@@ -129,6 +129,7 @@
 #include "startup.h"
 #include "stash.h"
 #include "state.h"
+#include "stepdown.h"
 #include "stringutil.h"
 #include "tags.h"
 #include "target.h"
@@ -505,8 +506,6 @@ NORETURN static void _launch_game()
     tiles.redraw();
 #endif
 
-    run_uncancels();
-
     cursor_control ccon(!Options.use_fake_player_cursor);
     while (true)
         _input();
@@ -599,6 +598,9 @@ static void _show_commandline_options_help()
     puts("  -dump-disconnect    In mapstat when a disconnected level is "
          "generated, dump");
     puts("      map to map.dump and exit");
+    puts("  -veto-closets       In mapstat, veto levels with teleport closets "
+         "rather than");
+    puts("      masking the closets as in normal play");
     puts("  -objstat [<levels>] run monster and item stats on the given range "
          "of levels");
     puts("      Defaults to entire dungeon; same level syntax as -mapstat.");
@@ -1148,6 +1150,18 @@ static void _input()
 
     hints_new_turn();
 
+    if (has_uncancel())
+    {
+        resume_uncancel();
+        if (you.turn_is_over)
+        {
+            if (you.berserk())
+                _do_berserk_no_combat_penalty();
+            world_reacts();
+            return;
+        }
+    }
+
     if (you.cannot_act())
     {
         if (crawl_state.repeat_cmd != CMD_WIZARD)
@@ -1196,7 +1210,8 @@ static void _input()
     if (you_are_delayed()
         && !dynamic_cast<MacroProcessKeyDelay*>(current_delay().get()))
     {
-        stop_channelling_spells();
+        if (!current_delay().get()->is_macro())
+            stop_channelling_spells();
         handle_delay();
 
         // Some delays set you.turn_is_over.
@@ -1215,9 +1230,6 @@ static void _input()
                 _do_berserk_no_combat_penalty();
             world_reacts();
         }
-
-        if (!you_are_delayed())
-            update_can_currently_train();
 
 #ifdef USE_TILE_WEB
         tiles.flush_messages();
@@ -1356,9 +1368,12 @@ static void _input()
         // Chei's temporal distortion.
         viewwindow();
         update_screen();
-    }
 
-    update_can_currently_train();
+        // Do a cut-down version of reacting, if the player actually did
+        // something rather than just cancel the turn.
+        if (you.took_instant_action)
+            player_reacts_to_instant_action();
+    }
 
     _update_replay_state();
 
@@ -1369,7 +1384,8 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
                              bool known_shaft)
 {
     // Up and down both work for shops, portals, and altars.
-    if (ftype == DNGN_ENTER_SHOP || feat_is_altar(ftype))
+    if (ftype == DNGN_ENTER_SHOP || feat_is_altar(ftype)
+        || ftype == DNGN_PURIFIED_MUTATION_CATALYST)
     {
         if (crawl_state.doing_prev_cmd_again)
         {
@@ -1381,6 +1397,8 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
             canned_msg(MSG_TOO_BERSERK);
         else if (ftype == DNGN_ENTER_SHOP) // don't convert to capitalism
             shop();
+        else if (ftype == DNGN_PURIFIED_MUTATION_CATALYST)
+            use_mutation_catalyst();
         else
             try_god_conversion(feat_altar_god(ftype));
         // Even though we may have "succeeded", return false so we don't keep
@@ -1711,7 +1729,7 @@ static void _take_stairs(bool down)
 
     const dungeon_feature_type ygrd = env.grid(you.pos());
 
-    const bool shaft = (down && get_trap_type(you.pos()) == TRAP_SHAFT);
+    const bool shaft = (down && env.grid(you.pos()) == DNGN_TRAP_SHAFT);
 
     if (!_can_take_stairs(ygrd, down, shaft))
         return;
@@ -1737,12 +1755,10 @@ static void _take_stairs(bool down)
         start_delay<DescendingStairsDelay>(0);
     else if (ygrd == DNGN_TRANSPORTER)
         _take_transporter();
-    else if (get_trap_type(you.pos()) == TRAP_GOLUBRIA)
+    else if (env.grid(you.pos()) == DNGN_PASSAGE_OF_GOLUBRIA)
     {
         coord_def old_pos = you.pos();
-        bool trap_triggered = you.handle_trap();
-        // only returns false if no trap was found, which shouldn't happen
-        ASSERT(trap_triggered);
+        trigger_trap(you);
         you.turn_is_over = (you.pos() != old_pos);
     }
     else
@@ -1953,13 +1969,13 @@ static void _handle_autofight(command_type cmd, command_type prev_cmd)
 
     if (cmd == CMD_AUTOFIRE)
     {
-        auto a = quiver::get_secondary_action();
-        if (!a || !a->is_valid())
+        if (quiver::is_empty())
         {
-            mpr(T_("Nothing quivered!")); // Can this happen?
+            mpr(T_("Nothing quivered!"));
             return;
         }
 
+        auto a = quiver::get_secondary_action();
         const bool secondary_enabled = a->is_enabled();
 
         // Some quiver actions need to be triggered directly. Disabled quiver
@@ -2203,11 +2219,8 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_ENABLE_MORE:  crawl_state.show_more_prompt = true;  break;
 
     case CMD_TOGGLE_AUTOPICKUP:
-        if (Options.autopickup_on < 1)
-            Options.autopickup_on = 1;
-        else
-            Options.autopickup_on = 0;
-        mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0
+        Options.autopickup_on = !Options.autopickup_on;
+        mprf(T_("Autopickup is now %s."), Options.autopickup_on
              ? C_("autopickup state", "on")
              : C_("autopickup state", "off"));
         break;
@@ -2223,6 +2236,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_CLEAR_MAP:       clear_map_or_travel_trail(); break;
     case CMD_DISPLAY_OVERMAP: display_overview(); break;
     case CMD_DISPLAY_MAP:     _do_display_map(); break;
+    case CMD_IGNORE_INVISIBLE: env.invis_knowledge.suppress_invis_warning(); break;
 
 #ifdef USE_TILE
     case CMD_ZOOM_IN:   tiles.zoom_dungeon(true); break;
@@ -2488,7 +2502,7 @@ void process_command(command_type cmd, command_type prev_cmd)
                         ? T_("Are you sure you want to abandon this character and return to the main menu?")
                         : T_("Are you sure you want to abandon this character and quit the game?")))
         {
-            ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
+            player_die(KILLED_BY_QUITTING);
         }
         else
             canned_msg(MSG_OK);
@@ -2535,8 +2549,10 @@ static void _prep_input()
     you.time_taken = player_speed();
     you.shield_blocks = 0;              // no blocks this round
     you.reprisals.clear();
+    you.whirlwind_targets.clear();
     you.triggers_done.init(0);
     you.attempted_attack = false;
+    you.pos_at_turn_start = you.pos();
 
     you.redraw_status_lights = true;
     you.redraw_title = true;
@@ -2571,39 +2587,6 @@ static void _check_sanctuary()
         return;
 
     decrease_sanctuary_radius();
-}
-
-static void _check_trapped()
-{
-    if (you.trapped)
-    {
-        do_trap_effects();
-        you.trapped = false;
-    }
-}
-
-static void _update_golubria_traps(int dur)
-{
-    vector<coord_def> traps = find_golubria_on_level();
-    for (auto c : traps)
-    {
-        trap_def *trap = trap_at(c);
-        if (trap && trap->type == TRAP_GOLUBRIA)
-        {
-            trap->ammo_qty -= div_rand_round(dur, BASELINE_DELAY);
-            if (trap->ammo_qty <= 0)
-            {
-                if (you.see_cell(c))
-                    mpr(T_("Your passage of Golubria closes with a snap!"));
-                else
-                    mprf(MSGCH_SOUND, T_("You hear a snapping sound."));
-                trap->destroy();
-                noisy(spell_effect_noise(SPELL_GOLUBRIAS_PASSAGE), c);
-            }
-        }
-    }
-    if (traps.empty())
-        env.level_state &= ~LSTATE_GOLUBRIA;
 }
 
 static void _update_still_winds()
@@ -2665,6 +2648,9 @@ void world_reacts()
     if (!crawl_state.game_is_arena())
         player_reacts();
 
+    if (player_in_branch(BRANCH_ABYSS))
+        maybe_shift_abyss_around_player();
+
     abyss_morph();
     apply_noises();
     handle_monsters(true);
@@ -2693,31 +2679,40 @@ void world_reacts()
         // Please do not give it a custom ktyp or make it cool in any way
         // whatsoever, because players are insane. Usually, not being dragged
         // down by sanity is good, but this is not the case here.
-        ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
+        player_die(KILLED_BY_QUITTING);
     }
 
     handle_time();
+    // handle_time might have scheduled on death effects for monsters killed
+    // by contamination explosions etc.
+    fire_final_effects();
+
     manage_clouds();
+
+    handle_lurkers();
 
     // This needs to happen after `manage_clouds` is called as fog clouds
     // decaying will affect whether a monster is still in view
     print_mons_left_view_messages();
 
-    if (env.level_state & LSTATE_GOLUBRIA)
-        _update_golubria_traps(you.time_taken);
     if (env.level_state & LSTATE_STILL_WINDS)
         _update_still_winds();
     if (!crawl_state.game_is_arena())
         player_reacts_to_monsters();
 
     clear_monster_flags();
-
-    add_auto_excludes();
+    env.invis_knowledge.handle_time();
 
     viewwindow();
+
+    // Needs to happen after viewwindow() so that the map knowledge is up to
+    // date to decide which monsters to exclude.
+    add_auto_excludes();
+
     update_screen();
 
-    _check_trapped();
+    check_trapped();
+    trigger_exploration_conducts();
 
     if (you.cannot_act()
         && any_messages()
@@ -2856,7 +2851,7 @@ static void _swing_at_target(coord_def move)
     if (monster* mon = monster_at(target.target))
         if (!could_harm(&you, mon, true, true))
         {
-            if (!you.can_see(*mon))
+            if (!you.aware_of(*mon))
                 you.turn_is_over = true;
             return;
         }

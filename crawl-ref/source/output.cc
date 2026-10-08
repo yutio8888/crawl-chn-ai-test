@@ -36,6 +36,7 @@
 #include "macro.h" // command_to_string
 #include "menu.h"
 #include "message.h"
+#include "positional_format.h"
 #include "misc.h"
 #include "mutation.h"
 #include "notes.h"
@@ -100,7 +101,7 @@ static string _level_description_string_hud()
 
 static bool _low_vertical_space()
 {
-    return crawl_view.hudsz.y < 30;
+    return crawl_view.hudsz.y < 32;
 }
 
 /*
@@ -134,7 +135,9 @@ static bool _low_vertical_space()
 20 W: foobar
 22 Abil: Bes
 23
-24 XXXXXXXXX      status lights
+24 Doom 16%
+25 Cont 110%
+26 XXXXXXXXX      status lights
 .
 y  HPP MPP
  */
@@ -182,6 +185,8 @@ enum touchui_states
     TOUCH_V_WP    = 0x020A, // dummy
     TOUCH_T_QV    = 0x010B,
     TOUCH_V_QV    = 0x020B, // dummy
+    TOUCH_V_DOOM  = 0x2005,
+    TOUCH_V_CONTA = 0x1E06,
     TOUCH_V_LIGHT = 0x010C,
     // Explicit state used by the compact top bar. Top-bar coordinates are
     // already final screen coordinates; keeping a distinct state prevents
@@ -303,8 +308,14 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         case TOUCH_V_QV:
             x = 4; y = (super_small) ? 18 : 21;
             break;
-        case TOUCH_V_LIGHT:
+        case TOUCH_V_DOOM:
             x = 1; y = (super_small) ? 19 : 23;
+            break;
+        case TOUCH_V_CONTA:
+            x = 1; y = (super_small) ? 20 : 24;
+            break;
+        case TOUCH_V_LIGHT:
+            x = 1; y = (super_small) ? 21 : 25;
             break;
         case TOUCH_T_HP:
             x = 2; y = crawl_view.hudsz.y;
@@ -1007,9 +1018,9 @@ static void _print_stats_mp(int x, int y)
     else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
-            MP_Bar.vdraw(6, 19, you.magic_points, you.max_magic_points);
+            MP_Bar.vdraw(6, 21, you.magic_points, you.max_magic_points);
         else
-            MP_Bar.vdraw(6, 24, you.magic_points, you.max_magic_points);
+            MP_Bar.vdraw(6, 26, you.magic_points, you.max_magic_points);
     }
     else
         MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
@@ -1070,9 +1081,9 @@ static void _print_stats_hp(int x, int y)
     else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
-            HP_Bar.vdraw(2, 19, you.hp, you.hp_max);
+            HP_Bar.vdraw(2, 21, you.hp, you.hp_max);
         else
-            HP_Bar.vdraw(2, 24, you.hp, you.hp_max);
+            HP_Bar.vdraw(2, 26, you.hp, you.hp_max);
     }
     else
         HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
@@ -1124,7 +1135,10 @@ static void _print_stats_doom(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("%s: ", T_("Misfortune"));
+    if (!_uses_compact_hud())
+        CPRINTF("%s", T_("Doom: "));
+    else
+        CPRINTF("%s", T_("Doom "));
 
     if (you.attribute[ATTR_DOOM] >= 75)
         textcolour(LIGHTMAGENTA);
@@ -1141,23 +1155,41 @@ static void _print_stats_doom(int x, int y)
     you.redraw_doom = false;
 }
 
+int contamination_hud_clear_width(bool compact, int contamination_percent)
+{
+    const string caption = compact ? T_("Cont ") : T_("Contam: ");
+    // Keep the existing EN minimum, accounting for the actual caption and
+    // digits + %. The trailing space is already blank.
+    const string value = make_stringf("%d%%", contamination_percent);
+    return max(12, strwidth(caption) + strwidth(value));
+}
+
 static void _print_stats_contam(int x, int y)
 {
+    static int last_display_width = 12;
     CGOTOXY(x, y, GOTO_STAT);
 
     // Hide the bar entirely if the player has no contam
     if (you.magic_contamination == 0 && !Options.always_show_doom_contam)
     {
-        CPRINTF("            ");
+        const int width = max(last_display_width,
+                             contamination_hud_clear_width(_uses_compact_hud()));
+        const string blank(width, ' ');
+        CPRINTF("%s", blank.c_str());
+        last_display_width = 12;
         return;
     }
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("%s: ", T_("Contam"));
+    if (!_uses_compact_hud())
+        CPRINTF("%s", T_("Contam: "));
+    else
+        CPRINTF("%s", T_("Cont "));
 
     const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                            you.magic_contamination / 10);
+    last_display_width = contamination_hud_clear_width(_uses_compact_hud(), contam);
     if (contam >= 200)
         textcolour(RED);
     else if (contam >= 100)
@@ -1198,7 +1230,7 @@ static void _print_stats_ev(int x, int y)
     CGOTOXY(x+4, y, GOTO_STAT);
 
     // Color EV based on whether temporary effects are raising or lowering it
-    const int bonus = you.evasion_scaled(100) - you.evasion_scaled(100, true);
+    const int bonus = you.evasion_scaled(100) - you.evasion_scaled(100, false);
     textcolour(bonus < 0 ? RED
                          : bonus > 0 ? LIGHTBLUE
                                      : HUD_VALUE_COLOUR);
@@ -1212,11 +1244,8 @@ static void _print_stats_ev(int x, int y)
  *
  * @return     A colour enum for the given weapon.
  */
-static int _wpn_name_colour(const item_def &wpn)
+int wielded_weapon_colour(const item_def &wpn)
 {
-    if (you.corrosion_amount())
-        return RED;
-
     const string prefix = item_prefix(wpn);
     const int prefcol = menu_colour(wpn.name(DESC_INVENTORY),
                                     prefix, "stats", false);
@@ -1225,22 +1254,12 @@ static int _wpn_name_colour(const item_def &wpn)
     return LIGHTGREY;
 }
 
-static string _wpn_name_corroded(const item_def &weapon)
-{
-    if (!you.corrosion_amount() || weapon.base_type != OBJ_WEAPONS)
-        return weapon.name(DESC_PLAIN, true);
-
-    item_def wpn_copy = weapon;
-    wpn_copy.plus -= you.corrosion_amount();
-    return wpn_copy.name(DESC_PLAIN, true);
-}
-
 static void _print_unarmed_name()
 {
     textcolour(HUD_CAPTION_COLOUR);
     const string slot_name = "-) ";
     CPRINTF("%s", slot_name.c_str());
-    textcolour(you.corrosion_amount() ? RED : get_form()->uc_colour);
+    textcolour(get_form()->uc_colour);
     const int max_name_width = crawl_view.hudsz.x - slot_name.size();
     CPRINTF("%s", chop_string(you.unarmed_attack_name(),
                               max_name_width).c_str());
@@ -1253,9 +1272,9 @@ static void _print_weapon_name(const item_def &weapon, int width)
     const char slot_letter = weapon.slot;
     const string slot_name = make_stringf("%c) ", slot_letter);
     CPRINTF("%s", slot_name.c_str());
-    textcolour(_wpn_name_colour(weapon));
+    textcolour(wielded_weapon_colour(weapon));
     const int max_name_width = width - slot_name.size();
-    const string name = _wpn_name_corroded(weapon);
+    const string name = weapon.name(DESC_PLAIN, true);
     CPRINTF("%s", chop_string(name, max_name_width).c_str());
     textcolour(LIGHTGREY);
 }
@@ -1335,11 +1354,42 @@ static void _print_stats_qv(int y, int topbar_x = -1)
 
 struct status_light
 {
-    status_light(int c, string t, int s = -1) : colour(c), text(t), status(s) {}
-    colour_t colour;
-    string text;
+    status_light(formatted_string str, int _status = -1)
+        : text(str), status(_status) {}
+    formatted_string text;
     int status;
 };
+
+#ifdef USE_TILE_LOCAL
+struct status_light_area
+{
+    int x;
+    int y;
+    int width;
+    int status;
+};
+
+// The areas of the screen with status lights, used to draw tooltips.
+static vector<status_light_area> _status_light_areas;
+
+// Record a status light starting at the current cursor position - call this
+// before printing the status.
+static void _record_status_light(const status_light& light, int width)
+{
+    _status_light_areas.push_back({wherex() - crawl_view.hudp.x,
+                                   wherey() - crawl_view.hudp.y,
+                                   width, light.status});
+}
+
+int status_light_at(int x, int y)
+{
+    for (const status_light_area& area : _status_light_areas)
+        if (area.y == y && x >= area.x && x < area.x + area.width)
+            return area.status;
+
+    return -1;
+}
+#endif
 
 static void _add_status_light_to_out(int i, vector<status_light>& out)
 {
@@ -1376,8 +1426,13 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
                     light_text = chop_string(topbar_text, 4, false);
             }
         }
-        status_light sl(inf.light_colour, light_text, i);
-        out.push_back(sl);
+        if (!inf.light_text_formatted.empty()
+            && !(_uses_top_bar() && Options.language == lang_t::ZH))
+        {
+            out.emplace_back(formatted_string::parse_string(inf.light_text_formatted), i);
+        }
+        else
+            out.emplace_back(formatted_string(light_text, inf.light_colour), i);
     }
 }
 
@@ -1394,8 +1449,10 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
 // using the '@' command. Things like confusion and sticky flame
 // hide their amounts and are thus always the same colour (so
 // we're not really exposing any new information). --bwr
-static void _get_status_lights(vector<status_light>& out)
+static vector<status_light> _get_status_lights()
 {
+    vector<status_light> out;
+
 #ifdef DEBUG_DIAGNOSTICS
     if (mouse_control::current_mode() != MOUSE_MODE_NORMAL
         || !(you.running > 0 || you.running < 0 && Options.travel_delay == -1))
@@ -1403,56 +1460,20 @@ static void _get_status_lights(vector<status_light>& out)
         static char static_pos_buf[80];
         snprintf(static_pos_buf, sizeof(static_pos_buf),
                  "%2d,%2d", you.pos().x, you.pos().y);
-        out.emplace_back(LIGHTGREY, static_pos_buf);
+        out.emplace_back(formatted_string(static_pos_buf, LIGHTGREY));
     }
 #endif
 
-    // We used to have to hardcode every status, now we just hardcode the
-    // statuses important enough to appear first. (Rightmost)
-    const unsigned int important_statuses[] =
-    {
-        STATUS_TESSERACT,
-        STATUS_ORB,
-        STATUS_ZOT,
-        STATUS_STAT_ZERO,
-        DUR_PARALYSIS,
-        DUR_CONF,
-        DUR_PETRIFYING,
-        DUR_PETRIFIED,
-        DUR_BERSERK,
-        DUR_TELEPORT,
-        DUR_ENKINDLED,
-        STATUS_MNEMOPHAGE,
-        DUR_HASTE,
-        DUR_SLOW,
-        STATUS_SPEED,
-        DUR_DEATHS_DOOR,
-        DUR_BLINK_COOLDOWN,
-        DUR_BERSERK_COOLDOWN,
-        DUR_EXHAUSTED,
-        DUR_WORD_OF_CHAOS_COOLDOWN,
-        DUR_DEATHS_DOOR_COOLDOWN,
-        DUR_QUAD_DAMAGE,
-        STATUS_SERPENTS_LASH,
-    };
+    for (status_iterator si; si; ++si)
+        _add_status_light_to_out(*si, out);
 
-    bitset<STATUS_LAST_STATUS + 1> done;
-    for (unsigned important : important_statuses)
-    {
-        _add_status_light_to_out(important, out);
-        done.set(important);
-    }
-
-    for (unsigned status = 0; status <= STATUS_LAST_STATUS ; ++status)
-        if (!done[status])
-            _add_status_light_to_out(status, out);
+    return out;
 }
 
 static void _print_status_lights(int y)
 {
-    vector<status_light> lights;
+    vector<status_light> lights = _get_status_lights();
     static int last_number_of_lights = 0;
-    _get_status_lights(lights);
     bool show_status_button = false;
 #if defined(USE_TILE_LOCAL) && defined(__ANDROID__)
     show_status_button = _uses_top_bar();
@@ -1461,6 +1482,7 @@ static void _print_status_lights(int y)
     // The registry is a per-layout snapshot and must be dropped before any
     // early return, otherwise stale hitboxes remain active while no lights do.
     clear_status_hitboxes();
+    _status_light_areas.clear();
 #endif
     if (lights.empty() && last_number_of_lights == 0 && !show_status_button)
     {
@@ -1475,7 +1497,7 @@ static void _print_status_lights(int y)
         size_t visible = lights.size();
         int occupied = 0;
         for (const status_light &light : lights)
-            occupied += strwidth(light.text) + 1;
+            occupied += light.text.width() + 1;
         string all_statuses;
         if (show_status_button)
         {
@@ -1493,7 +1515,7 @@ static void _print_status_lights(int y)
                 {
                     break;
                 }
-                occupied -= strwidth(lights[--visible].text) + 1;
+                occupied -= lights[--visible].text.width() + 1;
             }
             all_statuses = chop_string(all_statuses, crawl_view.hudsz.x, false);
         }
@@ -1503,15 +1525,15 @@ static void _print_status_lights(int y)
         for (size_t i = 0; i < visible; ++i)
         {
             const status_light &light = lights[i];
-            const int status_w = strwidth(light.text);
+            const int status_w = light.text.width();
             if (status_x + status_w - 1 > crawl_view.hudsz.x)
                 break;
 
             CGOTOXY(status_x, y, GOTO_STAT);
             record_status_hitbox(light.status, status_x - 1,
                                  status_x + status_w - 2, y - 1);
-            textcolour(light.colour);
-            CPRINTF("%s", light.text.c_str());
+            _record_status_light(light, status_w);
+            light.text.display();
             status_x += status_w + 1;
         }
         if (status_x <= crawl_view.hudsz.x)
@@ -1558,7 +1580,7 @@ static void _print_status_lights(int y)
         while (true)
         {
             const int end_x = (wherex() - crawl_view.hudp.x)
-                    + (i_light < lights.size() ? strwidth(lights[i_light].text)
+                    + (i_light < lights.size() ? lights[i_light].text.width()
                                                : 10000);
 
             if (end_x <= crawl_view.hudsz.x)
@@ -1567,14 +1589,16 @@ static void _print_status_lights(int y)
                 if (i_light < lights.size())
                 {
                     const int status_x = wherex() - crawl_view.hudp.x;
-                    const int status_w = strwidth(lights[i_light].text);
+                    const int status_w = lights[i_light].text.width();
                     record_status_hitbox(lights[i_light].status,
                                          status_x, status_x + status_w - 1,
                                          (int)line_cur - 1);
                 }
 #endif
-                textcolour(lights[i_light].colour);
-                NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
+#ifdef USE_TILE_LOCAL
+                _record_status_light(lights[i_light], lights[i_light].text.width());
+#endif
+                lights[i_light].text.display();
                 if (end_x < crawl_view.hudsz.x)
                     NOWRAP_EOL_CPRINTF(" ");
                 ++i_light;
@@ -1596,24 +1620,27 @@ static void _print_status_lights(int y)
         size_t i_light = 0;
         if (lights.size() == 1)
         {
-            textcolour(lights[0].colour);
-            CPRINTF("%s", lights[0].text.c_str());
+            _record_status_light(lights[0], lights[0].text.width());
+            lights[0].text.display();
         }
         else
         {
             while (i_light < lights.size() && (int)i_light < crawl_view.hudsz.x - 1)
             {
-                textcolour(lights[i_light].colour);
-                if (i_light == lights.size() - 1
-                    && strwidth(lights[i_light].text) < crawl_view.hudsz.x - wherex())
-                {
-                    CPRINTF("%s",lights[i_light].text.c_str());
-                }
+                const bool full = i_light == lights.size() - 1
+                    && lights[i_light].text.width() < crawl_view.hudsz.x - wherex();
+                // Must do this before the print, as it uses the cursor position.
+                _record_status_light(lights[i_light],
+                                     full ? lights[i_light].text.width() : 1);
+                if (full)
+                    lights[i_light].text.display();
                 else if ((int)lights.size() > crawl_view.hudsz.x / 2)
                 {
                     // Use character-aware truncation (not byte-level %.1s)
                     // to avoid corrupting CJK UTF-8 sequences (Issue 57).
-                    const char *ct = lights[i_light].text.c_str();
+                    lights[i_light].text.display(0, 0);
+                    const string plain_text = lights[i_light].text.tostring();
+                    const char *ct = plain_text.c_str();
                     int chlen = 1;
                     unsigned char fb = (unsigned char)*ct;
                     if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
@@ -1623,7 +1650,9 @@ static void _print_status_lights(int y)
                 }
                 else
                 {
-                    const char *ct = lights[i_light].text.c_str();
+                    lights[i_light].text.display(0, 0);
+                    const string plain_text = lights[i_light].text.tostring();
+                    const char *ct = plain_text.c_str();
                     int chlen = 1;
                     unsigned char fb = (unsigned char)*ct;
                     if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
@@ -2028,7 +2057,7 @@ static void _render_top_bar()
     {
         const item_def *held = weapon ? weapon : offhand;
         const int weapon_text_width = held
-            ? 3 + strwidth(_wpn_name_corroded(*held))
+            ? 3 + strwidth(held->name(DESC_PLAIN, true))
             : 3 + strwidth(you.unarmed_attack_name());
         const int quiver_x = min(max(weapon_text_width + field_gap, 12),
                                  max(12, hud_width - 8));
@@ -2073,15 +2102,19 @@ static void _render_top_bar()
     {
         const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                                you.magic_contamination / 10);
-        const string contam_text = make_stringf("%s: %d%% ", T_("Contam"),
-                                                contam);
+        const string contam_label = _uses_compact_hud()
+            ? T_("Cont ") : T_("Contam: ");
+        const string contam_text = make_stringf("%s%d%% ",
+                                                contam_label.c_str(), contam);
         const int contam_x = max(1, right_edge - strwidth(contam_text) + 1);
         _print_stats_contam(contam_x, warning_row);
         right_edge = contam_x - field_gap;
     }
     if (show_doom)
     {
-        const string doom_text = make_stringf("%s: %d%% ", T_("Misfortune"),
+        const string doom_label = _uses_compact_hud()
+            ? T_("Doom ") : T_("Doom: ");
+        const string doom_text = make_stringf("%s%d%% ", doom_label.c_str(),
                                               you.attribute[ATTR_DOOM]);
         const int doom_x = max(1, right_edge - strwidth(doom_text) + 1);
         _print_stats_doom(doom_x, warning_row);
@@ -2420,26 +2453,14 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
     return desc;
 }
 
-// If past is true, the messages should be printed in the past tense
-// because they're needed for the morgue dump.
-string mpr_monster_list(bool past)
+static string _describe_from_list(string prefix,
+                                  const vector<monster_info>& mons)
 {
-    // Get monsters via the monster_pane_info, sorted by difficulty.
-    vector<monster_info> mons;
-    get_monster_info(mons);
-
-    string msg = "";
     if (mons.empty())
-    {
-        msg  = T_("There ");
-        msg += (past ? T_("were") : T_("are"));
-        msg += T_(" no monsters in sight!");
+        return "";
 
-        return msg;
-    }
-
+    string msg = prefix;
     vector<string> describe;
-
     int count = 0;
     for (unsigned int i = 0; i < mons.size(); ++i)
     {
@@ -2453,17 +2474,45 @@ string mpr_monster_list(bool past)
 
     describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
 
-    msg = T_("You ");
-    msg += (past ? T_("could") : T_("can"));
-    msg += T_(" see ");
-
     if (describe.size() == 1)
         msg += describe[0];
     else
         msg += comma_separated_line(describe.begin(), describe.end());
-    msg += ".";
 
     return msg;
+}
+
+// If past is true, the messages should be printed in the past tense
+// because they're needed for the morgue dump.
+string mpr_monster_list(bool past)
+{
+    // Get monsters via the monster_pane_info, sorted by difficulty.
+    // (But separate visible and invisible monsters, for better wording.)
+    vector<monster_info> mons;
+    vector<monster_info> invis_mons;
+    get_nearby_monster_info(mons, &invis_mons);
+
+    if (mons.empty() && invis_mons.empty())
+    {
+        return past ? T_("There were no monsters in sight!")
+                    : T_("There are no monsters in sight!");
+    }
+
+    const string visible = _describe_from_list("", mons);
+    const string invisible = _describe_from_list("", invis_mons);
+    if (invisible.empty())
+    {
+        return make_stringf(past ? T_("You could see %s.")
+                                : T_("You can see %s."), visible.c_str());
+    }
+    if (visible.empty())
+    {
+        return make_stringf(past ? T_("You were aware of %s.")
+                                : T_("You are aware of %s."), invisible.c_str());
+    }
+    return make_stringf(past ? T_("You could see %s and were aware of %s.")
+                            : T_("You can see %s and are aware of %s."),
+                        visible.c_str(), invisible.c_str());
 }
 
 #ifndef USE_TILE_LOCAL
@@ -2506,11 +2555,15 @@ static void _print_next_monster_desc(const vector<monster_info>& mons,
             CPRINTF(" ");
 
             monster_info mi = mons[start];
+            colour_t dam_col = dam_colour(mi);
+            if (dam_col != BLACK)
+            {
 #ifdef TARGET_OS_WINDOWS
-            textcolour(real_colour(dam_colour(mi) | COLFLAG_ITEM_HEAP, mi.pos));
+                textcolour(real_colour(dam_col | COLFLAG_ITEM_HEAP, mi.pos));
 #else
-            textcolour(real_colour(dam_colour(mi) | COLFLAG_REVERSE, mi.pos));
+                textcolour(real_colour(dam_col | COLFLAG_REVERSE, mi.pos));
 #endif
+            }
             CPRINTF(" ");
             textbackground(BLACK);
             textcolour(LIGHTGREY);
@@ -2524,21 +2577,21 @@ static void _print_next_monster_desc(const vector<monster_info>& mons,
             printed += 2;
         }
 
-        if (printed < crawl_view.mlistsz.x)
+        int available = crawl_view.mlistsz.x - printed;
+        if (available > 0)
         {
             int desc_colour;
             string desc;
             mons_to_string_pane(desc, desc_colour, zombified,
                                 mons, start, count);
             textcolour(desc_colour);
-            if (static_cast<int>(desc.length()) > crawl_view.mlistsz.x - printed)
+            if (strwidth(desc) > available && available > 1)
             {
-                ASSERT(crawl_view.mlistsz.x - 2 - printed >= 0);
-                desc.resize(crawl_view.mlistsz.x - 2 - printed, ' ');
+                desc = chop_string(desc, available - 2);
                 desc += "…)";
             }
             else
-                desc.resize(crawl_view.mlistsz.x - printed, ' ');
+                desc = chop_string(desc, available);
             CPRINTF("%s", desc.c_str());
         }
     }
@@ -2568,7 +2621,7 @@ int update_monster_pane()
         save_cursor_pos save;
 
         vector<monster_info> mons;
-        get_monster_info(mons);
+        get_nearby_monster_info(mons);
 
         // Count how many groups of monsters there are.
         unsigned int lines_needed = mons.size();
@@ -3168,7 +3221,7 @@ static string _resist_composer(const char * name, int spacing, int value,
     int res_percent = -1;
 
     const static int _basic_res[] = {150, 100, 50, 33, 20};
-    const static int _neg_res[]   = {-1, 100, 50, 20, 0};
+    const static int _neg_res[]   = {-1, 100, 50, 25, 0};
     const static int _pois_res[]  = {150, 100, 33, 33, 0};
     const static int _corr_res[]  = {-1, 100, 50, -1, -1};
 
@@ -3250,9 +3303,12 @@ static vector<formatted_string> _get_overview_resistances(
 
     out += _stealth_bar(cwidth, 20) + "\n";
 
-    const int regen = player_regen(); // round up
+    const int regen = player_regen() + (player_indomitable_regen_rate() * 10); // round up
     out += chop_string(T_("HPRegen"), cwidth);
-    out += make_stringf(T_("%d.%02d/turn\n"), regen/100, regen%100);
+    out += make_stringf_p(T_("%s%d.%02d%s/turn\n"),
+                            you.duration[DUR_INDOMITABLE] ? "<lightblue>" : "",
+                            regen/100, regen%100,
+                            you.duration[DUR_INDOMITABLE] ? "</lightblue>" : "");
 
     if (!you.has_mutation(MUT_HP_CASTING))
     {
@@ -3360,7 +3416,7 @@ static string _rampage_passive_string()
     const int rampage = you.rampaging();
     if (rampage)
     {
-        desc += you.has_mutation(MUT_ROLLPAGE) ? T_("roll") : T_("rampage");
+        desc += you.has_mutation(MUT_STAMPEDE) ? T_("stampede") : T_("rampage");
 
         const bool infinite = you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS);
         const char *inf = Options.char_set == CSET_ASCII ? "+inf"
@@ -3503,7 +3559,7 @@ static string _status_mut_rune_list(int sw)
             status.emplace_back(inf.short_text);
     }
 
-    int move_cost = (player_speed() * player_movement_speed()) / 10;
+    int move_cost = player_overall_move_delay(1, true, true, false);
     if (move_cost != 10)
     {
         const char *help = T_((move_cost <   8) ? "very quick"

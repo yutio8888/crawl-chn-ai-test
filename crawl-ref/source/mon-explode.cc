@@ -58,10 +58,7 @@ static void _setup_base_explosion(bolt & beam, const monster& origin)
         beam.thrower = KILL_MON;
 
     beam.aux_source.clear();
-    beam.attitude = origin.attitude;
-
-    // Cache a copy of the exploding monster so we can look up blame info after it dies.
-    env.final_effect_monster_cache.push_back(origin);
+    beam.attitude = origin.attitude();
 }
 
 static int _inferno_power(int hd)
@@ -134,6 +131,7 @@ static void _setup_lightning_explosion(bolt & beam, const monster& origin)
     beam.name      = "blast of lightning";
     beam.explode_noise_msg = T_("You hear a clap of thunder!");
     beam.colour    = LIGHTCYAN;
+    beam.tile_explode = TILE_BOLT_ELECTRIC_BLAST;
     beam.ex_size   = x_chance_in_y(origin.get_hit_dice(), 24) ? 3 : 2;
     if (origin.summoner)
         beam.origin_spell = SPELL_CONJURE_BALL_LIGHTNING;
@@ -348,7 +346,6 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     string sanct_msg = "";
     string boom_msg = make_stringf(T_("%s explodes!"), mons->full_name(DESC_THE).c_str());
     actor* agent = nullptr;
-    bool inner_flame = false;
 
     string poof_msg = "";
     if (mons->is_abjurable())
@@ -389,7 +386,6 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
         mons->flags    |= MF_EXPLODE_KILL;
         sanct_msg       = "By Zin's power, the fiery explosion is contained.";
         beam.aux_source = "ignited by their inner flame";
-        inner_flame = true;
     }
     else if (mons->props.exists(MAKHLEB_HAEMOCLASM_KEY))
     {
@@ -434,14 +430,12 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     if (type == MONS_LURKING_HORROR)
     {
         targeter_radius hitfunc(mons, LOS_SOLID);
-        flash_view_delay(UA_MONSTER, DARKGRAY, 300, &hitfunc);
+        flash_view_delay(UA_MONSTER, DARKGRAY, 300, 0, &hitfunc);
     }
     else
     {
-        const auto typ = inner_flame ? EXPLOSION_FINEFF_INNER_FLAME
-                                     : EXPLOSION_FINEFF_GENERIC;
-        schedule_explosion_fineff(beam, boom_msg, sanct_msg, typ, agent,
-                                  poof_msg);
+        schedule_explosion_fineff(beam, boom_msg, sanct_msg,
+                                  EXPLOSION_FINEFF_GENERIC, agent, poof_msg);
     }
 
     // Monster died in explosion, so don't print a death message for it.

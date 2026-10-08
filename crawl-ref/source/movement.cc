@@ -13,6 +13,7 @@
 #include "movement.h"
 
 #include "abyss.h"
+#include "act-iter.h"
 #include "art-enum.h"
 #include "bloodspatter.h"
 #include "cloud.h"
@@ -51,11 +52,13 @@
 #include "spl-summoning.h"
 #include "target-compass.h"
 #include "terrain.h"
+#include "throw.h"
 #include "traps.h"
 #include "travel.h"
 #include "travel-open-doors-type.h"
 #include "transform.h"
 #include "unwind.h"
+#include "viewchar.h"
 #include "xom.h" // XOM_CLOUD_TRAIL_TYPE_KEY
 #include "database.h"
 
@@ -74,18 +77,22 @@ void player_displace_monster(monster* mons, const coord_def &loc)
     ASSERT(monster_habitable_grid(mons, loc));
     ASSERT(!monster_at(loc));
 
-    // Friendly seekers dissipate when the player swaps into them.
-    if (loc != you.pos())
-        mprf(T_("You push %s out of the way."), mons->name(DESC_THE).c_str());
-    else if (mons_is_seeker(*mons))
+    // Don't print message for pushing crystals since this happens constantly.
+    if (!mons_is_jade_crystal(mons->type))
     {
-        simple_monster_message(*mons, T_(" dissipates!"), false,
-                               MSGCH_MONSTER_DAMAGE, MDAM_DEAD);
-        monster_die(*mons, KILL_RESET, NON_MONSTER, true);
-        return;
+        if (loc != you.pos())
+            mprf(T_("You push %s out of the way."), mons->name(DESC_THE).c_str());
+        // Friendly seekers dissipate when the player swaps into them.
+        else if (mons_is_seeker(*mons))
+        {
+            simple_monster_message(*mons, T_(" dissipates!"), false,
+                                MSGCH_MONSTER_DAMAGE, MDAM_DEAD);
+            monster_die(*mons, KILL_RESET, NON_MONSTER, true);
+            return;
+        }
+        else
+            mprf(T_("You swap places with %s."), mons->name(DESC_THE).c_str());
     }
-    else
-        mprf(T_("You swap places with %s."), mons->name(DESC_THE).c_str());
 
     mons->move_to(loc, MV_ALLOW_OVERLAP, true);
 }
@@ -264,60 +271,36 @@ bool apply_cloud_trail(const coord_def old_pos)
     return false;
 }
 
-bool cancel_confused_move(bool stationary)
+static bool _check_confused_attack(bool stationary)
 {
-    dungeon_feature_type dangerous = DNGN_FLOOR;
     monster *bad_mons = 0;
     string bad_suff, bad_adj;
     bool penance = false;
-    bool flight = false;
     for (adjacent_iterator ai(you.pos(), false); ai; ++ai)
     {
-        if (!stationary
-            && is_feat_dangerous(env.grid(*ai), true)
-            && need_expiration_warning(env.grid(*ai))
-            && (dangerous == DNGN_FLOOR || env.grid(*ai) == DNGN_LAVA))
+        string suffix, adj;
+        monster *mons = monster_at(*ai);
+        if (mons && bad_attack(mons, adj, suffix, penance))
         {
-            dangerous = env.grid(*ai);
-            if (need_expiration_warning(DUR_FLIGHT, env.grid(*ai)))
-                flight = true;
-            break;
-        }
-        else
-        {
-            string suffix, adj;
-            monster *mons = monster_at(*ai);
-            if (mons && bad_attack(mons, adj, suffix, penance))
-            {
-                bad_mons = mons;
-                bad_suff = suffix;
-                bad_adj = adj;
-                if (penance)
-                    break;
-            }
+            bad_mons = mons;
+            bad_suff = suffix;
+            bad_adj = adj;
+            if (penance)
+                break;
         }
     }
 
-    if (dangerous != DNGN_FLOOR || bad_mons)
+    if (bad_mons)
     {
         string prompt = "";
         prompt += T_("Are you sure you want to ");
         prompt += T_(!stationary ? "stumble around" : "swing wildly");
         prompt += T_(" while confused and next to ");
 
-        if (dangerous != DNGN_FLOOR)
-        {
-            prompt += (dangerous == DNGN_LAVA ? "lava" : "deep water");
-            prompt += flight ? T_(" while you are losing your buoyancy")
-                             : T_(" while your transformation is expiring");
-        }
-        else
-        {
-            string name = remove_prepended_the(bad_mons->name(DESC_PLAIN));
-            if (!starts_with(bad_adj, "your"))
-               bad_adj = "the " + bad_adj;
-            prompt += bad_adj + name + bad_suff;
-        }
+        string name = remove_prepended_the(bad_mons->name(DESC_PLAIN));
+        if (!starts_with(bad_adj, "your"))
+            bad_adj = "the " + bad_adj;
+        prompt += bad_adj + name + bad_suff;
         prompt += "?";
 
         if (penance)
@@ -327,11 +310,39 @@ bool cancel_confused_move(bool stationary)
             && !yesno(prompt.c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
+}
+
+/**
+ * Confirm that the player really wants to stumble around near danger
+ * May give many prompts, or no prompts if there is nothing bad to stumble into
+ *
+ * @param stationary  Whether the player is moving rather than attacking
+ * @return            If true, continue with the move, otherwise cancel it
+ */
+bool check_confused_move(bool stationary)
+{
+    if (!_check_confused_attack(stationary))
+        return false;
+
+    if (stationary)
+        return true;
+
+    // While confused we might stumble into any adjacent square, so run them all
+    // through the destination checks and prompt if any look dangerous.
+    vector<coord_def> areas;
+    for (adjacent_iterator ai(you.pos()); ai; ++ai)
+        areas.push_back(*ai);
+
+    const string verb = "stumble";
+    return check_terrain_warnings(areas, verb)
+        && check_moveto_cloud(areas, verb)
+        && check_moveto_trap(areas, verb)
+        && check_moveto_exclusions(areas, verb);
 }
 
 // Opens doors.
@@ -528,6 +539,9 @@ bool prompt_dangerous_portal(dungeon_feature_type ftype)
                      "deep as Abyss:%d and might not be able to return immediately. "
                      "Continue?"), abyss_default_depth(true)).c_str(), false, 'n');
     }
+    case DNGN_ENTER_GULCH:
+        return yesno(T_("If you enter this portal, the magical contamination on the "
+                     "other side will temporarily mutate you thrice. Continue?"), false, 'n');
     default:
         return true;
     }
@@ -571,18 +585,7 @@ monster* get_rampage_target(coord_def move)
     const int tracer_range = you.current_vision;
     const coord_def tracer_target = you.pos() + (move * tracer_range);
 
-    bolt beam;
-    beam.range           = LOS_RADIUS;
-    beam.aimed_at_spot   = true;
-    beam.target          = tracer_target;
-    beam.source_name     = "you";
-    beam.source          = you.pos();
-    beam.source_id       = MID_PLAYER;
-    beam.thrower         = KILL_YOU;
-    beam.pierce          = true;
-    beam.affects_nothing = true;
-    beam.set_is_tracer(true);
-    beam.fire();
+    bolt beam = bolt::path_tracer(you.pos(), tracer_target, tracer_range);
 
     // Iterate the tracer to see if the first visible target is a hostile mons.
     for (coord_def p : beam.path_taken)
@@ -593,7 +596,7 @@ monster* get_rampage_target(coord_def move)
         monster* mon = monster_at(p);
         if (!mon
             || fedhas_passthrough(mon)
-            || !you.can_see(*mon))
+            || !you.aware_of(*mon))
         {
             // Don't rampage if our tracer path is broken by something we can't
             // safely pass through before it reaches a monster.
@@ -653,8 +656,8 @@ static void _handle_trying_to_move_into_unpassable_terrain(coord_def targ)
         map_cell& knowledge = env.map_knowledge(targ);
         if (!knowledge.mapped() || knowledge.changed())
         {
-            dungeon_feature_type newfeat = env.grid(targ);
-            knowledge.set_feature(newfeat, env.grid_colours(targ), TRAP_UNASSIGNED);
+            update_terrain_knowledge(targ);
+            update_grid_colour_knowledge(targ);
             set_terrain_mapped(targ);
         }
     }
@@ -676,12 +679,15 @@ static bool _adjust_confused_movement(coord_def& move)
         return false;
     }
 
-    if (cancel_confused_move(false))
-        return false;
-
+    // First check general things that make movement unwise (e.g barbs).
     if (cancel_harmful_move())
         return false;
 
+    // Now check the squares we might reach for warnings.
+    if (!check_confused_move(false))
+        return false;
+
+    // Randomise the move destination.
     if (!one_chance_in(3))
     {
         move.x = random2(3) - 1;
@@ -726,8 +732,8 @@ static string _get_move_verb(bool is_rampage)
     {
         if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS))
             return "stride";
-        else if (you.has_mutation(MUT_ROLLPAGE))
-            return "roll";
+        else if (you.has_mutation(MUT_STAMPEDE))
+            return "stampede";
         else
             return "rampage";
     }
@@ -739,6 +745,26 @@ static string _get_move_verb(bool is_rampage)
            : walk_verb_to_present(lowercase_first(species::walking_verb(you.species)));
 }
 
+void east_wind_expose_monster(monster* mon)
+{
+    if (!mon->is_firewood() && !mon->wont_attack())
+    {
+        if (!mon->has_ench(ENCH_EXPOSED) && you.can_see(*mon))
+            mprf("A bitter wind exposes %s.", mon->name(DESC_THE).c_str());
+        mon->add_ench(mon_enchant(ENCH_EXPOSED, &you, random_range(30, 50)));
+    }
+}
+
+static void _do_east_wind(int num_steps)
+{
+    for (radius_iterator ri(you.pos(), 2, C_SQUARE, LOS_NO_TRANS, true); ri; ++ri)
+        if (monster* mon = monster_at(*ri))
+            east_wind_expose_monster(mon);
+
+    you.magic_points_regeneration += you.max_magic_points * num_steps * random_range(5, 7);
+    you.did_east_wind = 2; // One stage expires immediately, so that the next can remain visually.
+}
+
 static bool _cannot_step_into(const coord_def& pos)
 {
     return !you.can_pass_through(pos)
@@ -748,9 +774,130 @@ static bool _cannot_step_into(const coord_def& pos)
                 || env.grid(pos) == DNGN_SLIMY_WALL);
 }
 
+// Returns true if something is preventing the player from moving to pos.
+static bool _check_beholders(const coord_def& pos, bool quiet = false)
+{
+    if (monster* beholder = you.get_beholder(pos))
+    {
+        if (!quiet)
+            mprf(T_("You cannot move away from %s!"), beholder->name(DESC_THE).c_str());
+        return true;
+    }
+    else if (monster* fearmonger = you.get_fearmonger(pos))
+    {
+        if (!quiet)
+            mprf(T_("You cannot move closer to %s!"), fearmonger->name(DESC_THE).c_str());
+        return true;
+    }
+
+    return false;
+}
+
+vector<actor*> get_stampede_line(const coord_def& start, const coord_def& delta, bool only_known_to_player)
+{
+    // Iterate to find how many connected actors are in a row (possibly only those which the player can see.)
+    vector<actor*> move_targets;
+    coord_def pos = start;
+    while (actor* mon = actor_at(pos))
+    {
+        // Don't count things outside the player's LoS if checking known monsters.
+        if (only_known_to_player && !you.aware_of(*mon))
+            break;
+
+        // Can't move anything with a stationary monster in its cluster.
+        if (mon->is_stationary())
+            return vector<actor*>();
+
+        // Add this monster to the line and advance one step
+        move_targets.push_back(mon);
+        pos += delta;
+    }
+
+    return move_targets;
+}
+
+// Determine how many tiles the player would expect to move if they stampeded now
+static int _stampede_move_check(const coord_def& delta)
+{
+    if (!you.duration[DUR_STAMPEDE])
+        return 0;
+
+    // If the player can't move into the next tile, bail early.
+    if (is_feat_dangerous(env.grid(you.pos() + delta)))
+        return 0;
+
+    vector<actor*> move_targets = get_stampede_line(you.pos() + delta, delta, true);
+
+    if (move_targets.empty())
+        return 0;
+
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta))
+            return 0;
+
+    // Now we know we can stampede at least one tile. Check if we can stampede 2.
+
+    // Only bother checking the second step if the player can step there.
+    if (is_feat_dangerous(env.grid(you.pos() + delta + delta)))
+        return 1;
+
+    vector<actor*> second_move_targets = get_stampede_line(move_targets.back()->pos() + delta + delta, delta, true);
+
+    for (actor* act : second_move_targets)
+        if (!act->is_habitable(act->pos() + delta))
+            return 1;
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta + delta))
+            return 1;
+
+    return 2;
+}
+
+bool stampede_step(actor& agent, const coord_def& target, bool allow_solo)
+{
+    const coord_def delta = target - agent.pos();
+    vector<actor*> move_targets = get_stampede_line(target, delta);
+
+    // Check if we have targets that can be pushed.
+    // (Monster stampede is allowed to move the agent without anything to push.)
+    if (!allow_solo && move_targets.empty())
+        return false;
+    if (!agent.is_habitable(agent.pos() + delta))
+        return false;
+    for (actor* act : move_targets)
+        if (!act->is_habitable(act->pos() + delta))
+            return false;
+
+    // Now move everyone (and ourselves).
+    const coord_def old_pos = agent.pos();
+    for (int i = (int)move_targets.size() - 1; i >= 0; --i)
+        move_targets[i]->move_to(old_pos + delta * (i + 2), MV_DEFAULT, true);
+    agent.move_to(old_pos + delta, MV_DELIBERATE, true);
+
+    // Now finalise movement (to avoid dispersal traps causing all sorts of
+    // problems with keeping everyone together in the middle)
+    for (size_t i = 0; i < move_targets.size(); ++i)
+        if (move_targets[i]->alive())
+            move_targets[i]->finalise_movement();
+    agent.finalise_movement();
+
+    return true;
+}
+
+static bool _try_stampede(const coord_def& target)
+{
+    if (you.is_constricted() || you.cannot_move() || you.caught() || _check_beholders(target, true))
+        return false;
+
+    return stampede_step(you, target);
+}
+
 // Handles the player trying to move/attack/swap into a given location.
 // Returns true if handling of further steps should continue after this.
-static bool _handle_player_step(const coord_def& targ, int& delay, bool rampaging,
+static bool _handle_player_step(const coord_def& targ, int& delay, const int delay_scale,
+                                bool rampaging,
+                                bool first_step,
+                                bool& did_stampede,
                                 bool& did_move, bool& did_attack, bool& did_open_door)
 {
     const coord_def initial_pos = you.pos();
@@ -758,13 +905,24 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
     coord_def mon_swap_dest;
     bool fedhas_move = false;
 
+    // If we can't move, and don't have a non-move action, stop. We sometimes want
+    // to hit invisible monsters, but if we aren't aware of their location and
+    // can't move, it leaks information to allow the player to hit them.
+    if ((!mon || !you.aware_of(*mon))
+        && you.cannot_move()
+        && !feat_is_closed_door(env.grid(targ)))
+    {
+        canned_msg(MSG_CANNOT_MOVE);
+        return false;
+    }
+
     // First, check for fighting a monster.
     if (mon)
     {
-        if (mon->temp_attitude() == ATT_NEUTRAL
+        if (mon->attitude() == ATT_NEUTRAL
             && !mon->has_ench(ENCH_FRENZIED)
             && !you.confused()
-            && mon->visible_to(&you))
+            && you.aware_of(*mon))
         {
             simple_monster_message(*mon, T_(" refuses to make way for you. "
                             "(Use ctrl+direction or * direction to attack.)"));
@@ -774,13 +932,36 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
         // Attempt to attack the monster.
         if (!mon->wont_attack() || you.confused())
         {
-            if (!fight_melee(&you, mon, rampaging))
+            if (you.duration[DUR_STAMPEDE] && !you.confused() && first_step
+                && _try_stampede(targ))
+            {
+                if (you_worship(GOD_WU_JIAN))
+                    did_attack |= wu_jian_post_move_effects(false, initial_pos, false);
+
+                // Accumulate cost of moving across terrain, then average it.
+                int stampede_delay = player_movement_speed(true, true, delay_scale);
+                // Move a second time (assuming we ended up where we expected to).
+                if (you.pos() == targ && _try_stampede(you.pos() + (targ - initial_pos)))
+                {
+                    stampede_delay = div_rand_round(stampede_delay + player_movement_speed(true, true, delay_scale), 2);
+                    if (you_worship(GOD_WU_JIAN))
+                        did_attack |= wu_jian_post_move_effects(false, initial_pos, false);
+                }
+                did_move = true;
+                did_stampede = true;
+                delay += stampede_delay;
+
+                // Check that the target we were trampling still there.
+                if (invalid_monster(mon) || (mon->pos() - you.pos()) != (targ - initial_pos))
+                    return false;
+            }
+            if (!player_fight(mon, rampaging && !first_step))
             {
                 stop_running();
                 return false;
             }
 
-            if (rampaging && mon->alive())
+            if (rampaging && !first_step && mon->alive())
                 mon->stagger(5);
 
             did_attack = true;
@@ -826,12 +1007,7 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
     // Now we know we actually want to move *into* this spot, let's see if we can.
     // XXX: Liquids the player cannot enter are handled by check_moveto_terrain(),
     //      which has already been called, so no need to check again.
-    if (you.cannot_move())
-    {
-        canned_msg(MSG_CANNOT_MOVE);
-        return false;
-    }
-    else if (_cannot_step_into(targ))
+    if (_cannot_step_into(targ))
     {
         _handle_trying_to_move_into_unpassable_terrain(targ);
         you.digging = false;
@@ -847,21 +1023,8 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
         }
         // If we're rampaging, we've already determined that the endpoint is at
         // an appropriate range, so don't stop for beholders in the middle.
-        else if (!rampaging)
-        {
-            if (monster* beholder = you.get_beholder(targ))
-            {
-                mprf(T_("You cannot move away from %s!"),
-                     beholder->name(DESC_THE).c_str());
-                return false;
-            }
-            else if (monster* fearmonger = you.get_fearmonger(targ))
-            {
-                mprf(T_("You cannot move closer to %s!"),
-                    fearmonger->name(DESC_THE).c_str());
-                return false;
-            }
-        }
+        else if (!rampaging && _check_beholders(targ))
+            return false;
     }
 
     if (!you.attempt_escape()) // false means constricted and did not escape
@@ -888,12 +1051,12 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
         {
             // Moving over plants is slow. We will print a message about it but
             // only when moving from open space->plant.
-            delay += 5;
+            delay += 5 * delay_scale;
 
             const monster* current = monster_at(you.pos());
             if (!current || !fedhas_passthrough(current))
             {
-                mprf(T_("You %s carefully through the %s."),
+                mprf(T_("You %s slowly and carefully through the %s."),
                      translated_move_phrase(
                          _get_move_verb(rampaging).c_str(),
                          move_phrase_context::through_obstacle),
@@ -920,7 +1083,7 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
 
     // Calculate delay based on the tile we moved *into* (before any traps trigger
     // and potentially move us somewhere else).
-    delay += player_movement_speed();
+    delay += player_movement_speed(true, true, delay_scale);
     did_move = true;
 
     if (mon && !fedhas_move)
@@ -984,12 +1147,17 @@ void move_player_action(coord_def move)
     const bool rampage_attack = mon_target && grid_distance(you.pos(), mon_target->pos()) == num_steps;
 
     // Now, calculate any warnings we want to give the player for each step they will take.
+    const int stampede_steps = _stampede_move_check(move);
     coord_def targ = you.pos();
-    string move_verb = _get_move_verb(num_steps > 1);
-    const int end_step = rampage_attack ? num_steps - 2 : num_steps - 1;
-    for (int i = 0; i < num_steps; ++i)
+    string move_verb = _get_move_verb(num_steps + stampede_steps > 1);
+    const int end_step = rampage_attack ? num_steps - 2 : max(num_steps, stampede_steps) - 1 ;
+
+    // For the purposes of printing proper warnings, pretend we are taking
+    // additional normal steps.
+    for (int i = 0; i < max(num_steps, stampede_steps); ++i)
     {
-        if (you.cannot_move())
+        // Do not warn for the final (randomised) movement when confused.
+        if (you.cannot_move() || you.confused())
             break;
 
         targ += move;
@@ -1001,10 +1169,11 @@ void move_player_action(coord_def move)
         if (monster* mon_at = monster_at(targ))
         {
             coord_def dummy;
-            if (you.can_see(*mon_at)
-                && !mon_at->wont_attack()
-                   || !(fedhas_passthrough(mon_at)
-                        || swap_check(mon_at, dummy, true)))
+            if (!stampede_steps
+                && you.aware_of(*mon_at)
+                && (!mon_at->wont_attack()
+                    || !(fedhas_passthrough(mon_at)
+                         || swap_check(mon_at, dummy, true))))
             {
                 break;
             }
@@ -1022,13 +1191,18 @@ void move_player_action(coord_def move)
             return;
     }
 
+    const bool did_tailwind = num_steps > 1 && you.duration[DUR_TAILWIND];
+    if (did_tailwind)
+        you.duration[DUR_TAILWIND] = 0;
+
     // Print a message, if rampaging.
-    if (num_steps > 1)
+    if (num_steps > 1 && mon_target)
     {
-        mprf(T_("You %s towards %s!"),
-             translated_move_phrase(move_verb.c_str(),
-                                    move_phrase_context::toward_target),
-             mon_target->name(DESC_THE, true).c_str());
+        mprf_p(T_("You %s towards %s%s!"),
+                translated_move_phrase(move_verb.c_str(),
+                                       move_phrase_context::toward_target),
+                mon_target->name(DESC_THE, true).c_str(),
+                did_tailwind ? T_(" with incredible speed") : "");
 
         // Prevent full-LoS stabbing with Seven League Boots.
         if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS))
@@ -1041,10 +1215,12 @@ void move_player_action(coord_def move)
     const coord_def initial_pos = you.pos();
     targ = you.pos();
     int delay = 0;
+    int delay_scale = 60;
     int steps_taken = 0;
     bool did_move = false;
     bool did_attack = false;
     bool did_open_door = false;
+    bool did_stampede = false;
     for (; steps_taken < num_steps; ++steps_taken)
     {
         // If we have somehow ended up somewhere other than where we tried
@@ -1062,26 +1238,29 @@ void move_player_action(coord_def move)
             break;
         }
 
-        if (!_handle_player_step(targ, delay, num_steps > 1, did_move, did_attack, did_open_door))
+        if (!_handle_player_step(targ, delay, delay_scale,
+                                 num_steps > 1, steps_taken == 0, did_stampede,
+                                 did_move, did_attack, did_open_door))
+        {
+            // Need to mark another step here so that move delay will avoid a div-by-0
+            if (did_stampede)
+                ++steps_taken;
             break;
-
+        }
     }
 
     // Movement delay is the average of the delay of all steps we took, unless
     // we attacked without moving (in which case use the delay already set by
-    // fight_melee())
+    // player_fight())
     if (did_move)
     {
-        delay = div_rand_round(delay, steps_taken);
-        you.time_taken = div_rand_round(player_speed() * delay, BASELINE_DELAY);
+        you.time_taken = div_rand_round(player_speed(delay_scale) * delay,
+                                        BASELINE_DELAY * delay_scale * delay_scale * steps_taken);
         you.turn_is_over = true;
     }
 
     if (you.running == RMODE_START)
         you.running = RMODE_CONTINUE;
-
-    if (player_in_branch(BRANCH_ABYSS))
-        maybe_shift_abyss_around_player();
 
     if (did_move)
     {
@@ -1092,18 +1271,22 @@ void move_player_action(coord_def move)
             you.duration[DUR_NO_HOP] += you.time_taken;
         if (you.duration[DUR_MESMERISM_COOLDOWN])
             you.duration[DUR_MESMERISM_COOLDOWN] += you.time_taken;
+        if (you.duration[DUR_SIROCCO_COOLDOWN])
+            you.duration[DUR_SIROCCO_COOLDOWN] += you.time_taken;
 
-        if (you.unrand_equipped(UNRAND_LIGHTNING_SCALES)
-            || num_steps > 1 && !you.has_mutation(MUT_ROLLPAGE))
-        {
-            did_god_conduct(DID_HASTY, 1, true);
-        }
+        if (!did_attack && (num_steps > 1 || did_stampede) && you.has_mutation(MUT_STAMPEDE))
+            did_attack |= do_west_wind_shot();
 
         if (!did_attack)
             update_acrobat_status();
 
-        if (num_steps > 1)
-            apply_rampage_heal(steps_taken);
+        // Either a rampage movement or a stampede push will sustain stampede.
+        if ((num_steps > 1 || did_stampede) && you.has_mutation(MUT_STAMPEDE))
+        {
+            if (you.has_mutation(MUT_EAST_WIND))
+                _do_east_wind(did_stampede ? 2 : num_steps);
+            you.duration[DUR_STAMPEDE] = you.time_taken + 1;
+        }
     }
 
     if (!did_move && !did_attack && !did_open_door)
@@ -1111,6 +1294,9 @@ void move_player_action(coord_def move)
         stop_running();
         crawl_state.cancel_cmd_repeat();
     }
+
+    if (did_tailwind)
+        you.time_taken = 0;
 
     if (you.pos() != initial_pos)
         request_autopickup();

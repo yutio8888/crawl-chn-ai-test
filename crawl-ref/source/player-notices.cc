@@ -67,7 +67,7 @@ static bool _check_monster_alert(const monster& mon)
          || Options.monster_alert_min_threat < MTHRT_UNDEF
             && mons_threat_level(mon) >= Options.monster_alert_min_threat
          || Options.monster_alert_unusual && monster_info(&mon).has_unusual_items())
-        && !mon.is_firewood() && !mons_att_wont_attack(mon.attitude))
+        && !mon.is_firewood() && !mons_att_wont_attack(mon.base_attitude))
     {
         // If the player encountered this by moving, make sure to actually
         // draw the monster we're warning about.
@@ -278,10 +278,13 @@ static void _monster_headsup(const vector<monster*> &monsters,
  *                      described. Each element contains a monster, the number
  *                      of monsters to be included, and whether to refer to the
  *                      monster using the genus rather than the monster details.
+ * @param force_visible Whether to give a monster's proper name even when the
+ *                      player cannot see them.
  */
 static void _count_monster_types(const vector<monster*> &monsters,
                                     unordered_set<const monster*> &single,
-                                 vector<details> &species)
+                                 vector<details> &species,
+                                 bool force_visible = false)
 {
     const unsigned int max_types = 4;
 
@@ -289,7 +292,7 @@ static void _count_monster_types(const vector<monster*> &monsters,
     map<const string, details> species_s; // select which species to show
     for (const monster *mon : monsters)
     {
-        const string name = mon->name(DESC_PLAIN);
+        const string name = mon->name(DESC_PLAIN, force_visible);
         auto &det = species_s[name];
         det = {mon, name, det.count+1, false};
         genera[_mons_merge_genus(mon->type)]++;
@@ -314,12 +317,13 @@ static void _count_monster_types(const vector<monster*> &monsters,
 }
 
 
-static string _describe_monsters_from_species(const vector<details> &species)
+static string _describe_monsters_from_species(const vector<details> &species,
+                                              bool force_visible = false)
 {
     const string and_sep = " " + string(C_("monster notice list", "and")) + " ";
     const string comma_sep = T_(", ");
     return comma_separated_fn(species.begin(), species.end(),
-        [] (const details &det)
+        [force_visible] (const details &det)
         {
             string name = det.name;
             const monster_type base_type =
@@ -329,7 +333,7 @@ static string _describe_monsters_from_species(const vector<details> &species)
             // uniques keep their names.
             if ((det.mon->is_named() || mons_is_unique(base_type)) && det.count == 1)
             {
-                string title = getMiscString(det.mon->name(DESC_DBNAME) + " title");
+                string title = getMiscString(det.mon->name(DESC_DBNAME, force_visible) + " title");
                 if (!title.empty())
                     return title;
 
@@ -445,6 +449,11 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
         out << make_stringf(orbrun_fmt,
                             _describe_monsters_from_species(species).c_str());
     }
+    else if (sc == SC_LURKER_AMBUSH)
+    {
+        out << make_stringf(T_("%s ambushes you!"),
+                           _describe_monsters_from_species(species).c_str());
+    }
     else
         out << (T_("You encounter "))
             << _describe_monsters_from_species(species) << T_(".");
@@ -497,8 +506,14 @@ void notice_new_monsters(vector<monster*>& monsters, vector<monster*>& to_announ
 
 
     if (crawl_state.is_repeating_cmd() || you_are_delayed())
+    {
         for (monster* mon : monsters)
+        {
+            if (!mon->alive())
+                continue;
             _try_seen_interrupt(*mon, to_announce.empty() ? SC_NONE : SC_NEWLY_SEEN);
+        }
+    }
 }
 
 void queue_monster_announcement(monster& mons, seen_context_type sc)
@@ -520,11 +535,11 @@ void notice_queued_monsters()
 }
 
 // Returns a string describing the names of multiple monsters, nicely organized.
-string multimonster_name_string(vector<monster*> monsters)
+string multimonster_name_string(vector<monster*> monsters, bool force_visible)
 {
     unordered_set<const monster*> single;
     vector<details> species;
-    _count_monster_types(monsters, single, species);
+    _count_monster_types(monsters, single, species, force_visible);
     return _describe_monsters_from_species(species);
 }
 
@@ -540,7 +555,7 @@ void update_monsters_in_view()
     {
         if (you.see_cell(mi->pos()))
         {
-            if (mi->attitude == ATT_HOSTILE && !mi->is_firewood())
+            if (mi->base_attitude == ATT_HOSTILE && !mi->is_firewood())
                 num_hostile++;
 
             if (mi->visible_to(&you))
@@ -604,7 +619,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
     mons->flags |= MF_WAS_IN_VIEW;
 
     // Don't perform most of these effects for friendly/good neutral monsters.
-    if (mons->flags & MF_SEEN || mons_att_wont_attack(mons->attitude))
+    if (mons->flags & MF_SEEN || mons_att_wont_attack(mons->base_attitude))
         return;
 
     // First time we've seen this particular monster.

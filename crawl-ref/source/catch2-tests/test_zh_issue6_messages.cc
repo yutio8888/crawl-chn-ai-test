@@ -115,3 +115,30 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     EnTranslationFixture english_mode;
     CHECK(filtered_lang(input) == expected);
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: invisible monster titles retain upstream visibility",
+                 "[zh-translation][monster-info][invisibility]")
+{
+    init_monsters();
+    monster_info vv(MONS_VV);
+    REQUIRE(vv.title_name() == "流亡的芙芙");
+    REQUIRE(vv.db_name() == "Vv");
+    const string invisible_prefix = T_("invisible ");
+    for (const auto flag : {MB_KNOWN_INVIS, MB_REMEMBERED_INVIS})
+    {
+        vv.mb.reset();
+        vv.mb.set(flag);
+        CHECK(vv.invisible_to_player());
+        CHECK(vv.title_name() == invisible_prefix + "芙芙");
+        CHECK(vv.full_name(DESC_PLAIN) == invisible_prefix + "芙芙");
+        CHECK(vv.db_name() == "Vv");
+        {
+            EnTranslationFixture english;
+            CHECK(vv.title_name() == "invisible Vv");
+            CHECK(vv.full_name(DESC_PLAIN) == "invisible Vv");
+            CHECK(vv.db_name() == "Vv");
+        }
+        CHECK(vv.title_name() == invisible_prefix + "芙芙");
+    }
+}

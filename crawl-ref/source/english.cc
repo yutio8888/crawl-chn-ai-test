@@ -277,6 +277,9 @@ string conjugate_verb(const string &verb, bool plural)
     if (verb == "are" || verb == "be")
         return "is";
 
+    if (verb == "aren't")
+        return "isn't";
+
     if (verb == "have")
         return "has";
 
@@ -369,6 +372,8 @@ string walk_verb_to_present(string verb)
 {
     if (verb == "wriggl")
         return "wriggle";
+    if (verb == "trott")
+        return "trot";
     if (verb == "glid")
     {
         return "walk"; // it's a lie! tengu only get this

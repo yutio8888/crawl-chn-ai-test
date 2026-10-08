@@ -141,7 +141,7 @@ guaranteed to trigger if your foe does any damage.
 time-warped blood mutation
 
 Your blood has desynchronised itself from the flow of time. Whenever you fall
-below 50% of your maximum HP, the spilling of your blood surges strangely
+below 66% of your maximum HP, the spilling of your blood surges strangely
 through your surroundings, hasting two of your strongest allies in sight for
 each level of this mutation. After doing so, your blood will be unable to
 further dilate time until your HP has fully recovered.
@@ -161,7 +161,7 @@ form.
 
 You currently gain
 {{
-    num = math.min(you.how_mutated(true, false, false, true, false), 7) - 1
+    num = math.min(you.how_mutated(true, false, false, true, false) - 1, 7)
     return "+" .. num .. " EV and Slay +" .. num .. " from this mutation."
 }}
 %%%%
@@ -184,6 +184,14 @@ reckless mutation
 
 Your recklessness halves your SH, but the damage you deal with two-handed melee
 weapons is increased by 15%.
+%%%%
+spark swarm mutation
+
+A subtle flock of eager sparks and bright cinders chases after your movements.
+Whenever you deal fire damage to a foe without rFire∞ or electric damage to a
+foe without rElec∞, you have a chance to outline it with a soft glow of light,
+which makes it easier to hit and reveals it if invisible. Each level of this
+mutation increases the chance this happens.
 %%%%
 # ------ Auxes -----
 horns mutation
@@ -907,10 +915,8 @@ Whenever a potion restores your health or magic, it restores twice as much.
 %%%%
 drunken brawling mutation
 
-Whenever you drink a potion that restores health or magic, you perform an
-immediate attack against all enemies adjacent to you.
-
-(This includes potions of curing, heal wounds, magic, and ambrosia.)
+Whenever you drink a potion, you perform an immediate attack against all enemies
+within melee range.
 %%%%
 artefact enchanting mutation
 
@@ -1009,7 +1015,70 @@ accursed mutation
 
 Your accursed nature makes it harder to dispel malignant energies from your
 being, reducing the rate at which you can recover from Doom and Banes.
+%%%%
+stampede mutation
+
+You rampage swiftly towards enemies and can continue to trample forward once
+you reach them, pushing entire lines of enemies backwards as you attack.
+
+Performing any action besides a rampage movement will end your stampede.
+
+The second level of this mutation augments your stampede with the blessing of
+one of the four winds, based on your highest skill:
+
+ North Wind: Melee weapon skills (except Short Blades)\n
+South Wind: Short Blades or Stealth\n
+East Wind:  Magic skills (except Spellcasting)\n
+West Wind:  Ranged Weapons skill\n
+%%%%
+North Wind's embodiment mutation
+
+You rapidly regenerate up to 70% of all damage you suffer while Stampeding. The
+rate of this regeneration increases with your maximum HP.
+%%%%
+West Wind's embodiment mutation
+
+Whenever you rampage towards foes while wielding a ranged weapon, you also fire
+a penetrating shot that does increased damage and your next normal attack
+becomes empowered to fire at multiple foes at once.
+%%%%
+East Wind's embodiment mutation
+
+Whenever you Rampage, you regain a small percentage of your maxmimum MP and
+unleash a bitter wind that makes all enemies within 2 spaces of you Exposed,
+increasing the damage they take from non-attack sources by 35% and also their
+chance to be hit or affected by them.
+
+Additionally, casting spells will not cause you to stop Stampeding.
+%%%%
+South Wind's embodiment mutation
+
+Your stealth is increased by 50% while Rampaging and whenever you successfully
+stab an enemy, your next Rampage movement becomes instant.
+%%%%
 # ------ Fakemut descriptions ------
+fleshless physiology mutation
+
+Your body lacks a metabolism that can be affected by poison or disease. You do
+not need to breathe, protecting you from mushroom spores and drowning attacks.
+You also cannot be put to sleep.
+%%%%
+plant physiology mutation
+
+You do not need to breathe air, protecting you from mushroom spores and drowning
+attacks. You cannot be blinded or put to sleep.
+%%%%
+undead mutation
+
+You are fully undead, granting you immunity to poison, miasma, fear, sleep,
+negative energy, torment, drowning, and the effects of spore attacks.
+
+Your form cannot be further changed by magical means, protecting you from
+polymorph, but also preventing you from wearing talismans. If an effect would
+mutate you, your health will be temporarily drained instead.
+
+You are vulnerable to weapons of holy wrath and certain magics, and cannot go
+berserk.
 %%%%
 vampire fangs mutation
 
@@ -1187,6 +1256,56 @@ Your gaze has a hypnotic effect on many creatures. Whenever a living, demonic,
 or holy monster first notices you, it may become momentarily dazed, preventing
 it from shouting. Creatures which fail a Willpower check will be dazed for even
 longer.
+%%%%
+glimmercast mutation
+
+Whenever you cast spells while in sight of enemies (or witness monsters cast
+spells themselves), the leftover magical energy will condense into a short-lived
+cloud of glimmer. Touching that cloud will convert it into a small projectile
+which unerringly strikes a nearby enemy.
+
+Other creatures walking into those clouds will merely push them out of the way.
+%%%%
+elemental crystals mutation
+
+Four elemental crystals float alongside you - one corresponding to each of
+Earth, Fire, Air, and Ice magic. Casting a spell of one of those schools will
+cause a matching crystal with enemies in range of it to surge with power,
+damaging up to 3 enemies within 3 tiles and charging it.
+
+When all crystals become fully charged, you will temporarily gain resistance to
+elemental damage and regenerate a small amount of health over time.
+%%%%
+autotomy mutation
+
+When gravely wounded, you automatically shed your tail as a defensive response
+and step away to an adjacent tile. The shed tail will pulse with scintillating
+colours that distract all nearby monsters and force them to attack it instead of
+you.
+
+Your tail will eventually regrow as you explore more of the dungeon.
+%%%%
+gather mist mutation
+
+As you explore, you will gradually condense the dungeon air into potions of mist,
+which allow you to become intangible.
+
+You can carry no more than five of these at a time and they will be destroyed if
+you ever permanently leave this form.
+%%%%
+potion clouds mutation
+
+Whenever you drink a potion, vapours from it are transmuted within your mane. If
+you perform a melee attack shortly thereafter, you will spray hazardous clouds
+in a wide line in the direction of your attack, whose quantity and duration are
+increased by your Shapeshifting skill.
+
+The type of cloud created depends on the potion drank:
+
+ Mist and Curing: Blinding Haze\n
+Berserk Rage: Flame\n
+Mutation: Mutagenic Fog\n
+All Others: Noxious Fumes\n
 %%%%
 # ------ Makhleb destruction flavours ------
 Gehenna destruction mutation

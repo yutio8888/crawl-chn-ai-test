@@ -60,6 +60,10 @@
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
 #include "command.h"         // localized standalone guide resolution
+#include "env.h"
+#include "hints.h"
+#include "player.h"
+#include "unwind.h"
 
 #include <algorithm>
 #include <cstring>
@@ -106,6 +110,7 @@ public:
 
         static const char fixture[] = R"lua(
 you = {
+    jademantle_crystals_desc = you.jademantle_crystals_desc,
     race = function() return "Mummy" end,
     hand = function() return "hand" end,
     flying = function() return false end,
@@ -847,7 +852,16 @@ TEST_CASE_METHOD(EnTranslationFixture,
             continue;
 
         INFO("monster round-trip: " << me->name);
-        CHECK(get_monster_by_name(me->name) == m);
+        // Mounted and unmounted Goji share a name; upstream's cache
+        // deliberately resolves it to the mounted form.
+        if (m == MONS_GOJI_UNMOUNTED)
+        {
+            REQUIRE(string(me->name) == get_monster_data(MONS_GOJI)->name);
+            CHECK(mons_rider_type(MONS_GOJI) == m);
+            CHECK(get_monster_by_name(me->name) == MONS_GOJI);
+        }
+        else
+            CHECK(get_monster_by_name(me->name) == m);
     }
 }
 
@@ -919,11 +933,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     init_item_name_cache();
     static const char *const english[] = {
         "monster", "spell", "skill", "ability", "card", "item", "feature",
-        "god", "branch", "cloud", "passive", "status", "mutation", "bane"
+        "god", "branch", "cloud", "passive", "status", "mutation", "bane",
+        "weapon Ego", "armour Ego", "missile Ego"
     };
     static const char *const chinese[] = {
         "怪物", "法术", "技能", "能力", "卡牌", "物品", "地形",
-        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸"
+        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸",
+        "武器附魔", "护甲附魔", "弹药附魔"
     };
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(english) / sizeof(*english));
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(chinese) / sizeof(*chinese));
@@ -1069,4 +1085,73 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         INFO("branch: " << branches[b].longname << " → " << zh);
         CHECK_FALSE(zh.empty());
     }
+}
+
+namespace {
+void check_externalised_altar_hints()
+{
+    const coord_def position(1, 1);
+    REQUIRE(cloud_at(position) == nullptr);
+    unwind_var<dungeon_feature_type> feature(env.grid(position), DNGN_ALTAR_ZIN);
+    unwind_var<god_type> religion(you.religion, GOD_NO_GOD);
+    unwind_var<bool> hint_event(Hints.hints_events[HINT_SEEN_ALTAR]);
+
+    SECTION("unbeliever inspecting a named altar")
+    {
+        const string text = hints_describe_pos(position.x, position.y);
+        REQUIRE_FALSE(getHintString("HINT_DESCRIBE_NONFADED_ALTAR_ATHEIST").empty());
+        CHECK(text.find("<w>" + god_name(GOD_ZIN) + "</w>") != string::npos);
+        if (Options.language == lang_t::EN)
+        {
+            CHECK(text.find("You can get information about") != string::npos);
+            CHECK(text.find("random god") == string::npos);
+        }
+        CHECK(text.find("$1") == string::npos);
+    }
+    SECTION("believer inspecting another named altar")
+    {
+        you.religion = GOD_TROG;
+        const string text = hints_describe_pos(position.x, position.y);
+        REQUIRE_FALSE(getHintString("HINT_DESCRIBE_NONFADED_ALTAR").empty());
+        CHECK(text.find(god_name(GOD_TROG)) != string::npos);
+        CHECK(text.find("<w>" + god_name(GOD_ZIN) + "</w>") != string::npos);
+        if (Options.language == lang_t::EN)
+        {
+            CHECK(text.find(god_name(GOD_TROG) + " probably won't like it")
+                  != string::npos);
+            CHECK(text.find("information on <w>") != string::npos);
+            CHECK(text.find("random god") == string::npos);
+        }
+        CHECK(text.find("$1") == string::npos);
+        CHECK(text.find("$2") == string::npos);
+    }
+    SECTION("faded altar keeps the random-god hint")
+    {
+        env.grid(position) = DNGN_ALTAR_ECUMENICAL;
+        const string text = hints_describe_pos(position.x, position.y);
+        REQUIRE_FALSE(getHintString("HINT_DESCRIBE_FADED_ALTAR_ATHEIST").empty());
+        if (Options.language == lang_t::EN)
+        {
+            CHECK(text.find("random god") != string::npos);
+            CHECK(text.find("You can get information about") == string::npos);
+        }
+    }
+}
+} // anonymous namespace
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "en: externalised altar hints select the matching terrain",
+                 "[hints][zh-help]")
+{
+    check_externalised_altar_hints();
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: externalised altar hints preserve fallback and god display names",
+                 "[hints][zh-help]")
+{
+    // Missing ZH descriptions must fall back to EN, with localized god names.
+    // These checks also accept ZH descriptions once the assets are migrated.
+    check_externalised_altar_hints();
+    CHECK(getHintString("death").find("请节哀！") != string::npos);
 }

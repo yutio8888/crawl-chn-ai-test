@@ -285,7 +285,7 @@ static const armour_def Armour_prop[] =
     }},
 
     // Following all ARM_ entries for the benefit of util/gather_items
-    DRAGON_ARMOUR(STEAM,       "steam",                   5,   0,   400,
+    DRAGON_ARMOUR(STEAM,       "steam",                   5,   0,   375,
         ARMF_RES_STEAM),
     DRAGON_ARMOUR(ACID,        "acid",                    6,  -50,  400,
         ARMF_RES_CORR),
@@ -301,7 +301,7 @@ static const armour_def Armour_prop[] =
         ARMF_RES_NEG),
     DRAGON_ARMOUR(STORM,       "storm",                  10, -150,  650,
         ARMF_RES_ELEC),
-    DRAGON_ARMOUR(SHADOW,      "shadow",                 11, -150,  650,
+    DRAGON_ARMOUR(SHADOW,      "shadow",                 11, -150,  575,
         ARMF_STEALTH),
     DRAGON_ARMOUR(GOLDEN,      "golden",                 12, -230,  800,
         ARMF_RES_FIRE | ARMF_RES_COLD | ARMF_RES_POISON),
@@ -580,20 +580,20 @@ static const weapon_def Weapon_prop[] =
             { SPWPN_PAIN,            2 },
             { SPWPN_VAMPIRISM,       2 },
         }},
-    { WPN_GREAT_MACE,        "great mace",         17, -4, 17,
+    { WPN_GREAT_MACE,        "great mace",         18, -4, 17,
         SK_MACES_FLAILS, SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_CRUSHING, 3, 24, 100, M_AND_F_BRANDS },
-    { WPN_GIANT_CLUB,        "giant club",         20, -6, 16,
+    { WPN_GIANT_CLUB,        "giant club",         21, -6, 16,
         SK_MACES_FLAILS, SIZE_LARGE, NUM_SIZE_LEVELS,
         DAMV_CRUSHING, 1, 25, 21, CLUB_BRANDS },
-    { WPN_GIANT_SPIKED_CLUB, "giant spiked club",  22, -7, 18,
+    { WPN_GIANT_SPIKED_CLUB, "giant spiked club",  24, -7, 18,
         SK_MACES_FLAILS, SIZE_LARGE, NUM_SIZE_LEVELS,
         DAMV_CRUSHING | DAM_PIERCE, 1, 25, 26, CLUB_BRANDS },
 
     // Short Blades
     { WPN_DAGGER,            "dagger",              4,  6, 10,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
-        DAMV_PIERCING, 10, 50, 20, {
+        DAMV_PIERCING, 10, 40, 20, {
             { SPWPN_VENOM,          28 },
             { SPWPN_NORMAL,         20 },
             { SPWPN_SPEED,          10 },
@@ -630,12 +630,33 @@ static const weapon_def Weapon_prop[] =
         DAMV_PIERCING, 8, 0, 30, SBL_BRANDS },
     { WPN_RAPIER,           "rapier",               7,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
-        DAMV_PIERCING, 8, 25, 55, SBL_BRANDS },
+        DAMV_PIERCING, 8, 20, 55, SBL_BRANDS },
+    { WPN_ATHAME,       "athame",         7, 5, 13,
+        SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
+        DAMV_PIERCING, 2, 15, 100, {
+            { SPWPN_NORMAL,          28 },
+            { SPWPN_FLAMING,         10 },
+            { SPWPN_FREEZING,        10 },
+            { SPWPN_PROTECTION,      10 },
+            { SPWPN_ELECTROCUTION,   8 },
+            { SPWPN_DEVIOUS,         8 },
+            { SPWPN_VAMPIRISM,       8 },
+            { SPWPN_DRAINING,        6 },
+            { SPWPN_SPEED,           4 },
+            { SPWPN_PAIN,            4 },
+            { SPWPN_HOLY_WRATH,      2 },
+            { SPWPN_DISTORTION,      1 },
+            { SPWPN_ANTIMAGIC,       1 },
+        }},
 #if TAG_MAJOR_VERSION == 34
     { WPN_CUTLASS,          "old cutlass",          8,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         DAMV_SLICING | DAM_PIERCE, 0, 0, 0, {}},
 #endif
+    // Temporary weapon
+    { WPN_CENTIPEDE,          N_("assassin centipede"),          7,  4, 10,
+        SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
+        DAM_PIERCE, 0, 0, 0, {}},
 
     // Long Blades
     { WPN_FALCHION,              "falchion",               8,  2, 13,
@@ -659,7 +680,7 @@ static const weapon_def Weapon_prop[] =
     { WPN_GREAT_SWORD,           "great sword",           17, -3, 17,
         SK_LONG_BLADES,  SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_SLICING, 6, 20, 100, LBL_BRANDS },
-    { WPN_TRIPLE_SWORD,          "triple sword",          19, -4, 18,
+    { WPN_TRIPLE_SWORD,          "triple sword",          20, -4, 18,
         SK_LONG_BLADES,  SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_SLICING, 0, 24, 150, LBL_BRANDS },
 #if TAG_MAJOR_VERSION == 34
@@ -696,7 +717,7 @@ static const weapon_def Weapon_prop[] =
     { WPN_BATTLEAXE,         "battleaxe",          15, -4, 17,
         SK_AXES,       SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_CHOPPING, 6, 25, 100, AXE_BRANDS },
-    { WPN_EXECUTIONERS_AXE,  "executioner's axe",  18, -6, 19,
+    { WPN_EXECUTIONERS_AXE,  "executioner's axe",  20, -6, 19,
         SK_AXES,       SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_CHOPPING, 0, 25, 150, AXE_BRANDS },
 
@@ -738,7 +759,7 @@ static const weapon_def Weapon_prop[] =
     { WPN_GLAIVE,            "glaive",             15, -3, 17,
         SK_POLEARMS,     SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_CHOPPING, 5, 15, 100, POLEARM_BRANDS },
-    { WPN_BARDICHE,          "bardiche",           18, -6, 19,
+    { WPN_BARDICHE,          "bardiche",           20, -6, 19,
         SK_POLEARMS,     SIZE_MEDIUM, NUM_SIZE_LEVELS,
         DAMV_CHOPPING, 1, 25, 150, POLEARM_BRANDS },
 
@@ -955,7 +976,7 @@ static const gem_def Gem_prop[] =
     { GEM_SNAKE,   "jade",        BRANCH_SNAKE,   6000 },
     { GEM_SPIDER,  "milky-white", BRANCH_SPIDER,  6000 },
 
-    { GEM_SLIME,   "starry",      BRANCH_SLIME,   1500 }, // usually dived fast
+    { GEM_SLIME,   "starry",      BRANCH_SLIME,   1800 }, // usually dived
     { GEM_VAULTS,  "shining",     BRANCH_VAULTS,  7500 }, // big, travel time
     { GEM_CRYPT,   "ivory",       BRANCH_CRYPT,   6000 },
     { GEM_TOMB,    "sanguine",    BRANCH_TOMB,    6000 },
@@ -1082,6 +1103,7 @@ const set<pair<object_class_type, int> > removed_items =
     { OBJ_BOOKS,     BOOK_TRANSFIGURATIONS },
     { OBJ_BOOKS,     BOOK_OZOCUBU },
     { OBJ_BOOKS,     BOOK_NEARBY },
+    { OBJ_BOOKS,     BOOK_RANDART_LEVEL },
     { OBJ_RODS,      ROD_VENOM },
     { OBJ_RODS,      ROD_WARDING },
     { OBJ_RODS,      ROD_DESTRUCTION },
@@ -1166,7 +1188,7 @@ bool item_is_cursable(const item_def &item)
 /**
  * Is the item stationary (unmovable)?
  *
- * Currently only carrion and nets with a trapped victim are stationary.
+ * Currently only carrion is stationary.
  * @param item The item.
  * @return  True iff the item is stationary.
 */
@@ -1178,7 +1200,7 @@ bool item_is_stationary(const item_def &item)
 static bool _is_affordable(const item_def &item)
 {
     // Temp items never count.
-    if (item.flags & ISFLAG_SUMMONED)
+    if (item.summoned())
         return false;
 
     // Already in our grubby mitts.
@@ -1702,29 +1724,52 @@ bool is_enchantable_armour(const item_def &arm, bool unknown)
     if (!armour_is_enchantable(arm))
         return false;
 
-    // If we don't know the plusses, assume enchanting is possible.
-    if (unknown && !is_artefact(arm) && !arm.is_identified())
-        return true;
-
-    // Artefacts or highly enchanted armour cannot be enchanted.
-    if ((is_artefact(arm)
-        && (!you.has_mutation(MUT_ARTEFACT_ENCHANTING) || is_unrandom_artefact(arm))
-        || arm.plus >= armour_max_enchant(arm)))
+    // Artefacts (unless they're random artefacts and you have the relevant
+    // mutation) cannot be enchanted.
+    if (is_artefact(arm)
+           && (is_unrandom_artefact(arm)
+               || !you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
     {
         return false;
+    }
+
+    // Highly enchanted armour cannot be enchanted...
+    if (arm.plus >= armour_max_enchant(arm))
+    {
+        // ...but if we don't know the plusses, assume enchanting is possible.
+        return unknown && !arm.is_identified();
     }
 
     return true;
 }
 
-bool is_enchantable_weapon(const item_def &weapon, bool unknown)
+// Returns whether a weapon can be enchanted further.
+// If unknown is true, unidentified weapons will return true.
+bool is_enchantable_weapon(const item_def &wpn, bool unknown)
 {
-    return weapon.base_type == OBJ_WEAPONS
-       && (!is_artefact(weapon)
-           || (!is_unrandom_artefact(weapon)
-               && you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
-       && (unknown && !weapon.is_identified()
-           || weapon.plus < MAX_WPN_ENCHANT);
+    if (wpn.base_type != OBJ_WEAPONS
+        || wpn.summoned())
+    {
+        return false;
+    }
+
+    // Artefacts (unless they're random artefacts and you have the relevant
+    // mutation) cannot be enchanted.
+    if (is_artefact(wpn)
+           && (is_unrandom_artefact(wpn)
+               || !you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
+    {
+        return false;
+    }
+
+    // Highly enchanted weapons cannot be enchanted...
+    if (wpn.plus >= MAX_WPN_ENCHANT)
+    {
+        // ...but if we don't know the plusses, assume enchanting is possible.
+        return unknown && !wpn.is_identified();
+    }
+
+    return true;
 }
 
 //
@@ -1801,16 +1846,6 @@ hands_reqd_type basic_hands_reqd(const item_def &item, size_type size)
         return HANDS_TWO;
     return size >= Weapon_prop[Weapon_index[wpn_type]].min_1h_size ? HANDS_ONE
                                                                    : HANDS_TWO;
-}
-
-hands_reqd_type hands_reqd(const actor* ac, object_class_type base_type, int sub_type)
-{
-    item_def item;
-    item.base_type = base_type;
-    item.sub_type  = sub_type;
-    // This function is used for item generation only, so use the actor's
-    // (player's) base size, not its current form.
-    return ac->hands_reqd(item, true);
 }
 
 /**
@@ -1944,7 +1979,7 @@ bool is_brandable_weapon(const item_def &wpn, bool allow_ranged, bool divine)
     if (wpn.base_type != OBJ_WEAPONS)
         return false;
 
-    if (is_artefact(wpn))
+    if (is_artefact(wpn) || wpn.summoned())
         return false;
 
     if (!allow_ranged && is_range_weapon(wpn)
@@ -2088,11 +2123,7 @@ bool item_skills(const item_def &item, set<skill_type> &skills)
         return false;
 
     if (item.is_type(OBJ_BOOKS, BOOK_MANUAL))
-    {
-        const skill_type skill = static_cast<skill_type>(item.plus);
-        if (!skill_default_shown(skill))
-            skills.insert(skill);
-    }
+        skills.insert(static_cast<skill_type>(item.plus));
 
     if (item.base_type == OBJ_STAVES)
     {
@@ -2341,7 +2372,8 @@ int weapon_reach(const item_def &item)
     if (is_unrandom_artefact(item, UNRAND_RIFT))
         return 3;
     if (item_attack_skill(item) == SK_POLEARMS
-        || is_unrandom_artefact(item, UNRAND_LOCHABER_AXE))
+        || is_unrandom_artefact(item, UNRAND_LOCHABER_AXE)
+        || item.is_type(OBJ_WEAPONS, WPN_CENTIPEDE))
     {
         return 2;
     }
@@ -2650,9 +2682,13 @@ bool get_armour_see_invisible(const item_def &arm, bool check_artp)
     return false;
 }
 
-int get_armour_res_corr(const item_def &arm)
+int get_armour_res_corr(const item_def &arm, bool check_artp)
 {
     ASSERT(arm.base_type == OBJ_ARMOUR);
+
+    if (check_artp && is_artefact(arm))
+        if (artefact_property(arm, ARTP_RCORR))
+            return 1;
 
     // intrinsic armour abilities
     return get_armour_ego_type(arm) == SPARM_CORROSION_RESISTANCE
@@ -2735,6 +2771,21 @@ int get_jewellery_res_poison(const item_def &ring, bool check_artp)
     return res;
 }
 
+int get_jewellery_res_corr(const item_def &ring, bool check_artp)
+{
+    ASSERT(ring.base_type == OBJ_JEWELLERY);
+
+    int res = 0;
+
+    if (ring.sub_type == RING_RESIST_CORROSION)
+        res += 1;
+
+    if (check_artp && is_artefact(ring))
+        res += artefact_property(ring, ARTP_RCORR);
+
+    return res;
+}
+
 int get_jewellery_res_elec(const item_def &ring, bool check_artp)
 {
     ASSERT(ring.base_type == OBJ_JEWELLERY);
@@ -2802,6 +2853,11 @@ int property(const item_def &item, int prop_type)
             && is_unrandom_artefact(item, UNRAND_SLICK_SLIPPERS))
         {
             return 0;
+        }
+        else if (prop_type == PARM_EVASION && is_unrandom_artefact(item))
+        {
+            return armour_prop(item.sub_type, prop_type)
+                - artefact_property(item, ARTP_BASE_ENCUMBRANCE) * 10;
         }
         return armour_prop(item.sub_type, prop_type);
 
@@ -3088,6 +3144,15 @@ vector<equipment_slot> get_all_item_slots(const item_def& item)
                 return {SLOT_HELMET};
 
             case SLOT_GLOVES:
+                if (is_unrandom_artefact(item,UNRAND_CRAB_CLAWS))
+                {
+                    // Crab claws are wearable if you've sacrificed hand, but
+                    // should take the offhand slot otherwise
+                    if (you_can_wear(SLOT_OFFHAND))
+                        return {SLOT_GLOVES, SLOT_OFFHAND, SLOT_WEAPON};
+                    else
+                        return {SLOT_GLOVES, SLOT_WEAPON};
+                }
                 return {SLOT_GLOVES};
 
             default:
@@ -3182,13 +3247,17 @@ string talisman_type_name(int type)
     {
     case TALISMAN_QUILL:    return T_("quill talisman");
     case TALISMAN_INKWELL:  return T_("inkwell talisman");
+    case TALISMAN_VISION:   return T_("vision talisman");
+    case TALISMAN_GECKO:    return T_("gecko talisman");
     case TALISMAN_PROTEAN:  return T_("protean talisman");
     case TALISMAN_RIMEHORN: return T_("rimehorn talisman");
+    case TALISMAN_MIST:     return T_("mist talisman");
     case TALISMAN_SPIDER:   return T_("spider talisman");
     case TALISMAN_AQUA:     return T_("wellspring talisman");
     case TALISMAN_SCARAB:   return T_("scarab talisman");
     case TALISMAN_MEDUSA:   return T_("medusa talisman");
     case TALISMAN_SPORE:    return T_("spore talisman");
+    case TALISMAN_JADE:     return T_("jade talisman");
     case TALISMAN_MAW:      return T_("maw talisman");
     case TALISMAN_SERPENT:  return T_("serpent talisman");
     case TALISMAN_EEL:      return T_("eel talisman");
@@ -3211,21 +3280,25 @@ static const pair<talisman_type, int> _talisman_tiers[] =
 {
     { TALISMAN_QUILL,       1 },
     { TALISMAN_INKWELL,     1 },
+    { TALISMAN_VISION,      1 },
+    { TALISMAN_GECKO,       1 },
 
     { TALISMAN_RIMEHORN,    2 },
     { TALISMAN_SCARAB,      2 },
     { TALISMAN_MEDUSA,      2 },
     { TALISMAN_SPORE,       2 },
-    { TALISMAN_MAW,         2 },
+    { TALISMAN_JADE,        2 },
+    { TALISMAN_MIST,        2 },
 
     { TALISMAN_SERPENT,     3 },
-    { TALISMAN_BLADE,       3 },
     { TALISMAN_EEL,         3 },
     { TALISMAN_FORTRESS,    3 },
     { TALISMAN_WEREWOLF,    3 },
     { TALISMAN_SPIDER,      3 },
     { TALISMAN_AQUA,        3 },
+    { TALISMAN_MAW,         3 },
 
+    { TALISMAN_BLADE,       4 },
     { TALISMAN_STATUE,      4 },
     { TALISMAN_HIVE,        4 },
     { TALISMAN_DRAGON,      4 },
@@ -3375,9 +3448,11 @@ void seen_item(item_def &item)
             {
                 held = &you.inv[i];
                 if (held->quantity > 1)
+                {
                     mprf(T_("You learned that %s are actually %s."),
                             held->name(DESC_YOUR).c_str(),
                             held->name(DESC_A, false, true).c_str());
+                }
                 else
                     mprf(T_("You learned that %s is actually %s."),
                             held->name(DESC_YOUR).c_str(),
@@ -3713,6 +3788,13 @@ bool item_known_excluded_from_set(object_class_type type, int sub_type)
     return you.type_ids[item_sets[ist].cls][chosen];
 }
 
+bool item_known_not_to_generate(object_class_type type, int sub_type)
+{
+    return item_known_excluded_from_set(type, sub_type)
+           || (type == OBJ_POTIONS || type == OBJ_SCROLLS)
+               && consumable_rarity(type, sub_type) == RARITY_NONE;
+}
+
 item_set_type item_set_by_name(string name)
 {
     // We could cache this if we wanted to.
@@ -3729,22 +3811,6 @@ string item_name_for_set(item_set_type typ)
     it.base_type = item_sets[typ].cls;
     it.sub_type = item_for_set(typ);
     return sub_type_string(it, true);
-}
-
-// Whether drinking this potion will cause a drunken swing
-bool oni_likes_potion(potion_type type)
-{
-    switch (type)
-    {
-        case POT_CURING:
-        case POT_HEAL_WOUNDS:
-        case POT_MAGIC:
-        case POT_AMBROSIA:
-            return true;
-
-        default:
-            return false;
-    }
 }
 
 // Returns whether this item could theoretically be equipped by the player
@@ -3777,23 +3843,31 @@ bool is_usable_talisman(const item_def& item)
     return cannot_put_on_talisman_reason(item, false).empty();
 }
 
-bool item_gives_equip_slots(const item_def& item)
+// The equipment slot type(s) an item grants extra slots of (empty if none).
+vector<equipment_slot> item_granted_slots(const item_def& item)
 {
     if (!is_unrandom_artefact(item))
-        return false;
+        return {};
 
     switch (item.unrand_idx)
     {
         case UNRAND_FINGER_AMULET:
-        case UNRAND_JUSTICARS_REGALIA:
-        case UNRAND_FISTICLOAK:
-        case UNRAND_SKULL_OF_ZONGULDROK:
         case UNRAND_VAINGLORY:
-            return true;
-
+            return {SLOT_RING};
+        case UNRAND_JUSTICARS_REGALIA:
+            return {SLOT_AMULET};
+        case UNRAND_SKULL_OF_ZONGULDROK:
+            return {SLOT_HELMET};
+        case UNRAND_FISTICLOAK:
+            return {SLOT_GLOVES};
         default:
-            return false;
+            return {};
     }
+}
+
+bool item_gives_equip_slots(const item_def& item)
+{
+    return !item_granted_slots(item).empty();
 }
 
 bool item_grants_flight(const item_def& item)
@@ -3838,4 +3912,39 @@ int jewellery_usefulness_limit(jewellery_type type)
         default:
             return INT_MAX;
     }
+}
+
+// Whether equipping a given item affects the agrid (ie: causes a halo or umbra)
+bool item_affects_agrid(const item_def& item)
+{
+    if (item.base_type == OBJ_ARMOUR && get_armour_ego_type(item) == SPARM_LIGHT)
+        return true;
+
+    if (is_unrandom_artefact(item))
+    {
+        switch (item.unrand_idx)
+        {
+            case UNRAND_EOS:
+            case UNRAND_BRILLIANCE:
+            case UNRAND_VAINGLORY:
+            case UNRAND_SHADOWS:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    return false;
+}
+
+bool item_is_droppable(const item_def& item)
+{
+    if (item.base_type == OBJ_GIZMOS && item_is_equipped(item))
+        return false;
+
+    if (item.is_type(OBJ_POTIONS, POT_MIST))
+        return false;
+
+    return true;
 }

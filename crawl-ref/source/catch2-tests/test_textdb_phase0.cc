@@ -12,6 +12,7 @@
 #include "monster.h"
 #include "player.h"
 #include "random.h"
+#include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
 
@@ -880,9 +881,10 @@ TEST_CASE("Phase 0 canonical English SpeakDB dump is deterministic",
             monspell_variants += first[i].variants.size();
         }
     }
-    CHECK(monspell_keys.size() == 262);
-    CHECK(monspell_variants == 355);
-    CHECK(key_set_fingerprint(monspell_keys) == 0xc87868127106d293ULL);
+    // Audited upstream 43d89d912d data: 19 new keys and two Mara key renames.
+    CHECK(monspell_keys.size() == 281);
+    CHECK(monspell_variants == 391);
+    CHECK(key_set_fingerprint(monspell_keys) == 0x45d4901cb82f4b32ULL);
 }
 
 TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
@@ -1371,6 +1373,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"deep elf sorcerer", 0, 16, 0},
     {"default 'cap-g'", 0, 0, 0},
     {"default 'cap-j'", 0, 0, 0},
+    {"default 'j'", 0, 0, 0},
     {"default confused 'b'", 0, 0, 0},
     {"default confused 'r'", 0, 0, 0},
     {"default confused arachnid", 0, 0, 0},
@@ -1473,7 +1476,8 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"friendly '5'", 1, 0, 0},
     {"friendly cognitogaunt", 0, 0, 0},
     {"friendly donald", 0, 0, 0},
-    {"friendly good god 'cap-a'", 1, 0, 1},
+    {"friendly good god 'cap-a'", 0, 0, 1},
+    {"friendly good god 'Å'", 0, 0, 1},
     {"friendly hound", 0, 0, 0},
     {"friendly hound", 1, 0, 0},
     {"friendly hound", 2, 0, 0},
@@ -1509,6 +1513,13 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"goblin sharper", 1, 0, 0},
     {"goblin sharper", 2, 0, 0},
     {"goblin sharper", 3, 0, 0},
+    {"goji", 3, 0, 0},
+    {"goji", 3, 1, 0},
+    {"goji", 4, 0, 0},
+    {"goji", 4, 1, 0},
+    {"goji", 5, 0, 0},
+    {"goji", 5, 1, 0},
+    {"goji", 6, 0, 0},
     {"gozag donald", 0, 0, 0},
     {"gozag frederick triumphant", 1, 0, 0},
     {"gozag player ghost", 0, 0, 0},
@@ -1633,6 +1644,7 @@ static const frozen_monspeak_visual_line FROZEN_MONSPEAK_EN_VISUAL[] = {
     {"nergalle", 2, 0, 0},
     {"nergalle", 3, 0, 0},
     {"neutral good god 'cap-a'", 1, 0, 1},
+    {"neutral good god 'Å'", 1, 0, 1},
     {"no god donald", 0, 0, 0},
     {"norris", 0, 0, 0},
     {"norris", 1, 0, 0},
@@ -2658,7 +2670,10 @@ TEST_CASE("Issue 16 monspeak VISUAL channels survive the review at EN-aligned li
                              + to_string(position.branch) + "\n"
                              + to_string(position.line));
     }
-    REQUIRE(frozen_visual.size() == 912);
+    // Same 12 audited tuple changes as scan_i18n (98c1cf45de):
+    // glyph migration 10c3989740 and Goji b1db55a0c2.
+    // C++ TextDB keeps U+00C5 in keys; Python's casefold spells it U+00E5.
+    REQUIRE(frozen_visual.size() == 922);
     set<string> derived_visual;
     for (const textdb_phase0::canonical_entry &entry : english.entries)
     {
@@ -3099,7 +3114,8 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
             roots.push_back(entry.canonical_key);
         }
     }
-    REQUIRE(roots.size() == 262);
+    // Audited upstream 43d89d912d canonical monspell root universe.
+    REQUIRE(roots.size() == 281);
     const set<string> canonical_reachable =
         statically_reachable_weighted_keys(canonical, roots);
     const set<string> localized_reachable =
@@ -3846,6 +3862,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "Phase 0 canonical-driven message trace spans target and substring",
                  "[single-file][textdb][phase0]")
 {
+    init_spell_descs();
     ensure_test_data_root();
     databaseSystemInit();
     scoped_phase0_target_world world;
@@ -3858,7 +3875,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     source.speed = 10;
     source.mid = 4321;
     source.foe = MHITYOU;
-    source.attitude = ATT_HOSTILE;
+    source.base_attitude = ATT_HOSTILE;
     source.set_position(coord_def(20, 20));
 
     bolt beam;
@@ -4442,10 +4459,11 @@ TEST_CASE("write production TextDB Phase 0 artifact",
         }
         if (!localized)
         {
-            CHECK(monspell_keys.size() == 262);
-            CHECK(monspell_variants == 355);
+            // Same audited upstream 43d89d912d baseline as the canonical test.
+            CHECK(monspell_keys.size() == 281);
+            CHECK(monspell_variants == 391);
             CHECK(key_set_fingerprint(monspell_keys)
-                  == 0xc87868127106d293ULL);
+                  == 0x45d4901cb82f4b32ULL);
         }
         else
         {

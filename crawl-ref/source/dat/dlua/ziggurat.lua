@@ -192,7 +192,7 @@ end
 -- Lair, Snake, Swamp, Shoals, Spider, Slime,
 -- Orc, Elf, Vaults, Crypt, Tomb,
 -- Abyss, Gehenna, Cocytus, Dis, Tartarus,
--- Fire, Ice, Air, Earth, Negative Energy, Holy, Chaos,
+-- Fire, Ice, Air, Earth, Negative Energy, Acid, Holy, Chaos,
 -- Giants, Dragons, Draconians, Archers, Conjurers, Summoners,
 -- Pan, Lair Roulette, Vestibule / all Hells
 -- By using spec_fn to wrap monster-spec functions, monster weights
@@ -204,7 +204,7 @@ mset(with_props(spec_fn(function ()
   local f = 5 + you.zigs_completed() * 9
   local g = 10 + you.zigs_completed() * 12
   return "place:Lair:$ w:" .. d .. " / dire elephant w:" .. e .. " / " ..
-         "skyshark w:" .. e .. " /  catoblepas w:" .. e - 5 .. " / " ..
+         "sewage sovereign w:" .. e .. " /  catoblepas w:" .. e - 5 .. " / " ..
          "spriggan druid w:" .. e - 5 .. " / torpor snail w:" .. f + 5 .. " / " ..
          "hellephant w:" .. g .. " / caustic shrike w:" .. g
 end), { weight = 5 }))
@@ -380,7 +380,6 @@ mset(with_props(spec_fn(function ()
   return "gargoyle w:20 / earth elemental w:20 / mountainshell w:20 / " ..
          "torpor snail w:" .. d .. " / iron golem w:" .. d .. " / " ..
          "war gargoyle w:" .. d .. " / stone giant w:" .. d .. " / " ..
-         "caustic shrike w:" .. d .. " / entropy weaver w:" .. d .. " / " ..
          "iron dragon w:" .. d .. " / iron troll w:" .. d .. " / " ..
          "walking crystal tome w:" .. d .. " / walking earthen tome w:" .. d - 10 .. " / " ..
          "crystal guardian w:" .. e .. " / undying armoury w:" .. e .. " / " ..
@@ -388,11 +387,22 @@ mset(with_props(spec_fn(function ()
 end), { weight = 2 }))
 
 mset(with_props(spec_fn(function ()
+  local d = 10 + you.zigs_completed() * 5
+  local e = math.min(20, you.zigs_completed() + 4)
+  local f = 5 + you.zigs_completed() * you.zigs_completed() * 10
+  return "jelly w:1 / rust devil w:15 / entropy weaver w:15 / " ..
+         "yellow draconian w:15 / deep elf sorcerer w:5 / ancient lich w:1 / " ..
+         "yellow draconian annihilator w:" .. d .. " / " ..
+         "caustic shrike w:" .. d .. " / acid blob w:" .. d + 5 .. " / " ..
+         e .. "-headed slymdra w:" .. -5 + d * 3 .. " / orb of entropy w:" .. f
+end), { weight = 2 }))
+
+mset(with_props(spec_fn(function ()
   local d = math.max(2, math.floor((32 - you.depth()) / 5))
   local e = math.max(1, 4 - you.zigs_completed())
   local f = math.min(8, math.floor((you.depth()) / 5) + 4 + you.zigs_completed())
   local g = math.max(1, you.depth() + you.zigs_completed() * 2 - 4)
-  local h = math.max(4, you.zigs_completed() * 2)
+  local h = math.max(4, you.zigs_completed() * 2 - 4)
   return "soul eater w:" .. d .. " / laughing skull w:" .. d .. " / " ..
          "eye of draining w:" .. e .. " / deep elf death mage w:2 / " ..
          "shadow dragon w:8 / ghost crab w:4 / eidolon w:4 / " ..
@@ -442,9 +452,9 @@ mset(with_props(spec_fn(function ()
   local d = 20 + you.zigs_completed() * 6
   local e = 20 + you.zigs_completed() * 9
   return "swamp drake / rime drake / wind drake w:20 / death drake w:20 / " ..
-         "wyvern / hydra / steam dragon w:20 / acid dragon w:20 / " ..
-         "swamp dragon w:" .. d .. " / fire dragon w:" .. d .. " / " ..
-         "ice dragon w:" .. d .. " / storm dragon w:" .. d .. " / " ..
+         "mongrel wurm / wyvern / hydra / steam dragon w:20 / " ..
+         "acid dragon w:20 / swamp dragon w:" .. d .. " / " ..
+         "fire dragon w:" .. d .. " / ice dragon w:" .. d .. " / storm dragon w:" .. d .. " / " ..
          "shadow dragon w:" .. d .. " / iron dragon w:" .. d .. " / " ..
          "quicksilver dragon w:" .. e .. " / golden dragon w:" .. e .. " / " ..
          "wyrmhole w:" .. e
@@ -645,14 +655,19 @@ local function ziggurat_create_loot_at(c)
   -- dgn.good_scrolls is a list of items with total weight 1000
   local good_loot = dgn.item_spec("* no_pickup w:7000 /" ..
                                   dgn.good_scrolls)
+
+  -- Potions of experience can still do something in the first Zig, but will do
+  -- very little afterwards. As such, the weight shifts over to more potions of
+  -- mutation when doing multiple zigs.
+  local xpw = math.max(10, 190 - you.zigs_completed() * 30)
+  local mtw = math.min(470, 290 + you.zigs_completed() * 30)
   local super_loot = dgn.item_spec("| no_pickup w:7000 /" ..
-                                   "potion of experience no_pickup w:190 q:1 /" ..
-                                   "potion of mutation no_pickup w:290 /" ..
-                                   "potion of cancellation q:5 no_pickup / " ..
-                                   "potion of heal wounds q:5 no_pickup / " ..
-                                   "potion of magic q:5 no_pickup / " ..
-                                   "potion of haste q:5 no_pickup / " ..
-                                   dgn.good_scrolls)
+                    "potion of experience no_pickup q:1 w:" .. xpw .. " / " ..
+                    "potion of mutation no_pickup w:" .. mtw .. " / " ..
+                    "potion of cancellation q:5 no_pickup / " ..
+                    "potion of heal wounds q:5 no_pickup / " ..
+                    "potion of magic q:5 no_pickup / " ..
+                    "potion of haste q:5 no_pickup / " ..  dgn.good_scrolls)
 
   local loot_spots = find_free_space(nloot * 4)
 

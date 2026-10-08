@@ -69,6 +69,7 @@
 #include "nearby-danger.h"
 #include "options.h"
 #include "ouch.h"
+#include "output.h"
 #include "player.h"
 #include "player-stats.h"
 #include "random.h"
@@ -194,9 +195,10 @@ static void _decrement_petrification(int delay)
         // implicit assumption: all races that can be petrified are made of
         // flesh when not petrified. (Unfortunately, species::skin_name doesn't
         // really work here..)
-        const string flesh_equiv = get_form()->flesh_equivalent.empty() ?
+        const string flesh_key = get_form()->flesh_equivalent.empty() ?
                                             "flesh" :
                                             get_form()->flesh_equivalent;
+        const string flesh_equiv = C_("body part", flesh_key.c_str());
 
         mprf(MSGCH_DURATION, T_("You turn to %s%s."),
              flesh_equiv.c_str(),
@@ -304,7 +306,7 @@ int current_horror_level()
 {
     int horror_level = 0;
 
-    for (monster_near_iterator mi(&you, LOS_NO_TRANS); mi; ++mi)
+    for (monster_near_iterator mi(&you, LOS_NO_TRANS, true); mi; ++mi)
     {
         if (mons_aligned(*mi, &you)
             || !mons_is_threatening(**mi)
@@ -477,7 +479,7 @@ static void _handle_hoarding()
 {
     if (you.has_mutation(MUT_RENOUNCE_POTIONS))
     {
-        if (you.hp < you.hp_max / 2)
+        if (2 * you.hp < you.hp_max)
             you.props.erase(RENOUNCE_POTIONS_TIMER_KEY);
         else if (there_are_monsters_nearby(true, true, false))
             you.props[RENOUNCE_POTIONS_TIMER_KEY].get_int() = you.elapsed_time + 60;
@@ -487,7 +489,7 @@ static void _handle_hoarding()
 
     if (you.has_mutation(MUT_RENOUNCE_SCROLLS))
     {
-        if (you.hp <= you.hp_max / 2)
+        if (2 * you.hp < you.hp_max)
             you.props.erase(RENOUNCE_SCROLLS_TIMER_KEY);
         else if (there_are_monsters_nearby(true, true, false))
             you.props[RENOUNCE_SCROLLS_TIMER_KEY].get_int() = you.elapsed_time + 60;
@@ -501,10 +503,6 @@ static void _handle_hoarding()
  */
 void player_reacts_to_monsters()
 {
-    // In case Maurice managed to steal a needed item for example.
-    if (!you_are_delayed())
-        update_can_currently_train();
-
     check_monster_detect();
 
     if (have_passive(passive_t::detect_items) || you.has_mutation(MUT_JELLY_GROWTH)
@@ -525,7 +523,7 @@ void player_reacts_to_monsters()
         if (you.constricted_type == CONSTRICT_ROOTS)
             mprf(T_("The roots around you sink back into the ground."));
         else if (you.constricted_type == CONSTRICT_BVC)
-            mprf(T_("The zombie hands holding you return to the earth."));
+            mprf(T_("The zombie hands constricting you return to the earth."));
 
         you.stop_being_constricted(true);
     }
@@ -603,13 +601,42 @@ void player_reacts_to_monsters()
     you.update_fearmongers();
 }
 
+void check_trapped()
+{
+    if (you.trapped)
+    {
+        do_trap_effects();
+        you.trapped = false;
+    }
+}
+
+// Register taking an action which takes no time.
+void player_takes_instant_action()
+{
+    you.turn_is_over = false;
+    you.elapsed_time_at_last_input = you.elapsed_time;
+    update_turn_count();
+    you.took_instant_action = true;
+}
+
+// Those reactions which should happen even when no time has passed, as long
+// as the player has done something.
+void player_reacts_to_instant_action()
+{
+    you.took_instant_action = false;
+    mons_reset_just_seen();
+    you.update_beholders();
+    you.update_fearmongers();
+    check_trapped();
+    trigger_exploration_conducts();
+}
+
 static bool _check_recite()
 {
     if (you.is_silenced()
-        || you.paralysed()
+        || you.cannot_act()
         || you.confused()
         || you.asleep()
-        || you.petrified()
         || you.berserk())
     {
         mprf(MSGCH_DURATION, T_("Your recitation is interrupted."));
@@ -697,16 +724,6 @@ static void _decrement_transform_duration(int delay)
     }
 }
 
-static void _decrement_rampage_heal_duration(int delay)
-{
-    const int heal = you.props[RAMPAGE_HEAL_KEY].get_int();
-    if (heal > 0 && _decrement_a_duration(DUR_RAMPAGE_HEAL, delay))
-    {
-        you.props[RAMPAGE_HEAL_KEY] = heal - 1;
-        reset_rampage_heal_duration();
-    }
-}
-
 static void _handle_trickster_decay(int delay)
 {
     if (you.duration[DUR_TRICKSTER_GRACE] || delay == 0)
@@ -772,33 +789,29 @@ static void _decrement_durations()
     }
 
     // Possible reduction of silence radius.
-    if (you.duration[DUR_SILENCE])
-        invalidate_agrid();
-    // and liquefying radius.
-    if (you.duration[DUR_LIQUEFYING])
+    if (you.duration[DUR_SILENCE] || you.duration[DUR_LIQUEFYING])
         invalidate_agrid();
 
     _decrement_transform_duration(delay);
 
-    if (you.attribute[ATTR_SWIFTNESS] >= 0)
+    if (you.duration[DUR_SWIFTNESS])
     {
         if (_decrement_a_duration(DUR_SWIFTNESS, delay,
                                   T_("You feel sluggish."), coinflip(),
                                   T_("You start to feel a little slower.")))
         {
             // Start anti-swiftness.
-            you.duration[DUR_SWIFTNESS] = you.attribute[ATTR_SWIFTNESS];
-            you.attribute[ATTR_SWIFTNESS] = -1;
-        }
-    }
-    else
-    {
-        if (_decrement_a_duration(DUR_SWIFTNESS, delay,
-                                  T_("You no longer feel sluggish."), coinflip(),
-                                  T_("You start to feel a little faster.")))
-        {
+            you.duration[DUR_ANTISWIFT] = you.attribute[ATTR_SWIFTNESS];
             you.attribute[ATTR_SWIFTNESS] = 0;
         }
+    }
+    else if (you.duration[DUR_ANTISWIFT])
+    {
+        // We don't make this a normal duration so that it doesn't decrement
+        // later in this function on the turn where swiftness wears off.
+        _decrement_a_duration(DUR_ANTISWIFT, delay,
+                              "You no longer feel sluggish.", coinflip(),
+                              "You start to feel a little faster.");
     }
 
     // Decrement Powered By Death strength
@@ -809,7 +822,11 @@ static void _decrement_durations()
         reset_powered_by_death_duration();
     }
 
-    _decrement_rampage_heal_duration(delay);
+    if (_decrement_a_duration(DUR_SALVO, delay))
+    {
+        if (--you.props[SALVO_KEY].get_int() > 0)
+            you.duration[DUR_SALVO] = random_range(20, 40);
+    }
 
     dec_ambrosia_player(delay);
     dec_channel_player(delay);
@@ -992,12 +1009,6 @@ static void _decrement_durations()
         extract_barbs(barbs_msg.c_str());
     }
 
-    if (you.wearing_jewellery(AMU_WILDSHAPE))
-        did_god_conduct(DID_CHAOS, 1);
-
-    if (you.wearing_ego(OBJ_ARMOUR, SPARM_DEATH))
-        did_god_conduct(DID_EVIL, 1);
-
     if (!you.duration[DUR_ANCESTOR_DELAY]
         && have_passive(passive_t::frail)
         && hepliaklqana_ancestor() == MID_NOBODY)
@@ -1011,6 +1022,9 @@ static void _decrement_durations()
     {
         sun_scarab_spawn_ember(false);
     }
+
+    if (you.form == transformation::jademantle)
+        jademantle_handle_crystal_revival();
 
     const bool sanguine_armour_is_valid = sanguine_armour_valid();
     if (sanguine_armour_is_valid)
@@ -1210,14 +1224,19 @@ static void _regenerate_hp_and_mp(int delay)
     if (crawl_state.disables[DIS_PLAYER_REGEN])
         return;
 
-    const int old_hp = you.hp;
-    const int old_mp = you.magic_points;
-
     // HP Regeneration
     if (!you.duration[DUR_DEATHS_DOOR])
     {
         const int base_val = player_regen();
         you.hit_points_regeneration += div_rand_round(base_val * delay, BASELINE_DELAY);
+    }
+
+    if (you.duration[DUR_INDOMITABLE])
+    {
+        const int per_aut = player_indomitable_regen_rate();
+        const int total = min(per_aut * delay, you.duration[DUR_INDOMITABLE]);
+        you.duration[DUR_INDOMITABLE] -= total;
+        you.hit_points_regeneration += total;
     }
 
     while (you.hit_points_regeneration >= 100)
@@ -1300,11 +1319,25 @@ void do_eel_flavour_msg()
     mprf(MSGCH_TALK, "%s", msg.c_str());
 }
 
+static void _update_sunder_status()
+{
+    if (you.attribute[ATTR_SUNDERING_CHARGE] > 0
+        && you.unrand_equipped(UNRAND_TROG) && you.berserk())
+    {
+        you.attribute[ATTR_SUNDERING_CHARGE]--;
+    }
+    else
+        you.attribute[ATTR_SUNDERING_CHARGE] = 0;
+}
+
 void player_reacts()
 {
     // don't allow reactions while stair peeking in descent mode
     if (crawl_state.game_is_descent() && !env.properties.exists(DESCENT_STAIRS_KEY))
         return;
+
+    if (you.did_east_wind > 0)
+        --you.did_east_wind;
 
     // This happens as close as possible after the player acts, for better messaging
     if (you_worship(GOD_BEOGH))
@@ -1357,10 +1390,7 @@ void player_reacts()
 
     actor_apply_toxic_bog(&you);
 
-    if (you.duration[DUR_SPIKE_LAUNCHER_ACTIVE])
-        handle_spike_launcher(you.time_taken);
-
-    if (you.duration[DUR_RIME_YAK_AURA])
+    if (you.duration[DUR_FRIGID_WALLS_ACTIVE])
         frigid_walls_damage(you.time_taken);
 
     _regenerate_hp_and_mp(you.time_taken);
@@ -1373,7 +1403,7 @@ void player_reacts()
     if (you.attempted_attack)
         update_parrying_status();
     else
-        you.attribute[ATTR_SUNDERING_CHARGE] = 0;
+        _update_sunder_status();
 
     // Translocations and possibly other duration decrements can
     // escape a player from beholders and fearmongers. These should
@@ -1412,6 +1442,8 @@ void player_reacts()
 
     if (you.duration[DUR_PRIMORDIAL_NIGHTFALL])
         update_vision_range();
+
+    player_update_auras();
 
     incr_gem_clock();
     incr_zot_clock();

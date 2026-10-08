@@ -37,6 +37,7 @@
 #include "libutil.h"
 #include "losglobal.h"
 #include "los.h"
+#include "melee-attack.h"
 #include "mapmark.h"
 #include "message.h"
 #include "mon-abil.h"
@@ -50,6 +51,7 @@
 #include "mon-project.h"
 #include "mon-speak.h"
 #include "mon-tentacle.h"
+#include "movement.h"
 #include "nearby-danger.h"
 #include "player-notices.h"
 #include "religion.h"
@@ -162,11 +164,24 @@ static void _monster_regenerate(monster* mons)
 
     if (mons->has_ench(ENCH_REGENERATION))
         mons->heal(3 + div_rand_round(mons->max_hit_points, 20));
+}
 
-    if (mons_is_hepliaklqana_ancestor(mons->type))
+// Fire an interrupt when the last seen state of our ancestor goes from injured
+// to healed during a delay.
+static void _hepliaklqana_ancestor_check_interrupt(monster* mons)
+{
+    if (!mons_is_hepliaklqana_ancestor(mons->type)
+        || !you.can_see(*mons) || !you_are_delayed())
     {
-        if (mons->hit_points == mons->max_hit_points && you.can_see(*mons))
-            interrupt_activity(activity_interrupt::ancestor_hp);
+        return;
+    }
+
+    if (mons->hit_points < mons->max_hit_points)
+        you.running.ancestor_was_injured = true;
+    else if (you.running.ancestor_was_injured)
+    {
+        you.running.ancestor_was_injured = false;
+        interrupt_activity(activity_interrupt::ancestor_hp);
     }
 }
 
@@ -217,10 +232,10 @@ static void _melee_attack_player(monster &mons, monster* ru_target)
         mons.foe = ru_target->mindex();
         mprf(MSGCH_GOD, T_("You redirect %s's attack!"),
              mons.name(DESC_THE).c_str());
-        fight_melee(&mons, ru_target);
+        mons_fight(&mons, ru_target);
     }
     else
-        fight_melee(&mons, &you);
+        mons_fight(&mons, &you);
 }
 
 static energy_use_type _get_swim_or_move(monster& mon)
@@ -796,15 +811,8 @@ static bool _handle_swoop_or_flank(monster& mons)
 
     coord_def target = defender->pos();
 
-    bolt tracer;
-    tracer.source = mons.pos();
-    tracer.target = target;
-    tracer.set_is_tracer(true);
-    tracer.pierce = true;
-    tracer.range = LOS_RADIUS;
-    tracer.fire();
-
-    for (unsigned int j = 0; j < tracer.path_taken.size() - 1; ++j)
+    bolt tracer = bolt::path_tracer(mons.pos(), target);
+    for (int j = 0; j < (int)tracer.path_taken.size() - 1; ++j)
     {
         if (tracer.path_taken[j] != target)
             continue;
@@ -833,7 +841,7 @@ static bool _handle_swoop_or_flank(monster& mons)
             }
         }
         mons.move_to(tracer.path_taken[j+1], MV_DELIBERATE, true);
-        fight_melee(&mons, defender);
+        mons_fight(&mons, defender);
         mons.props[SWOOP_COOLDOWN_KEY].get_int() = you.elapsed_time
                                                   + 40 + random2(51);
         mons.finalise_movement();
@@ -877,7 +885,7 @@ static bool _handle_reaching(monster& mons)
         // The monster has to be attacking the correct position.
         && mons.target == foepos)
     {
-        fight_melee(&mons, foe);
+        mons_fight(&mons, foe);
         return true;
     }
 
@@ -1187,8 +1195,14 @@ static bool _scan_rending_blade_paths(coord_def start,
                 if (act->type == MONS_RENDING_BLADE)
                     continue;
 
+                // Don't factor in hitting invisible monsters (there are
+                // especially weird results with how the 'ideal score' target
+                // is calculated earlier using only visible monsters).
+                if (!you.can_see(*act))
+                    continue;
+
                 // Don't hurt allies.
-                if (mons_atts_aligned(ATT_FRIENDLY, act->temp_attitude()))
+                if (mons_atts_aligned(ATT_FRIENDLY, act->attitude()))
                 {
                     enemy_power = 0;
                     break;
@@ -1221,13 +1235,9 @@ static bool _scan_rending_blade_paths(coord_def start,
 
 static void _fire_rending_blade(monster& blade, coord_def target, int pow)
 {
-    bolt slash;
-    zappy(ZAP_RENDING_SLASH, pow, true, slash);
+    bolt slash(blade, ZAP_RENDING_SLASH, pow);
+    slash.set_agent(&you);
     slash.range = 4;
-    slash.source = blade.pos();
-    slash.source_id = blade.mid;
-    slash.thrower = KILL_MON_MISSILE;
-    slash.origin_spell = SPELL_RENDING_BLADE;
     slash.target = target;
     slash.aimed_at_spot = true;
     slash.hit_verb = "slices through";
@@ -1328,7 +1338,7 @@ static bool _handle_rending_blade_trigger(monster* blade)
 static void _handle_lightning_spire(monster& spire)
 {
     // 50% chance of casting each turn
-    if (coinflip() || spire.is_silenced())
+    if (coinflip())
         return;
 
     // Gather all eligable targets in sight
@@ -1368,23 +1378,25 @@ static void _burstshroom_grow(monster& mons)
     mons.number -= 1;
     if (mons.number <= 0)
     {
-        if (mons.was_created_by(you, MON_SUMM_SPORE) && !you.can_see(mons))
+        // Player-created mushrooms wither when out of sight.
+        const bool player_mushroom = mons.was_created_by(you, MON_SUMM_SPORE);
+        if (player_mushroom && !you.can_see(mons))
         {
             monster_die(mons, KILL_TIMEOUT, NON_MONSTER);
             return;
         }
 
-        vector<monster*> affected;
+        vector<actor*> affected;
         bool need_redraw = false;
         for (adjacent_iterator ai(mons.pos()); ai; ++ai)
         {
-            if (monster* mon_at = monster_at(*ai))
+            if (actor* act = actor_at(*ai))
             {
-                if (mons_aligned(&mons, mon_at))
+                if (mons_aligned(&mons, act))
                     continue;
 
-                if (!mon_at->is_unbreathing())
-                    affected.push_back(mon_at);
+                if (!act->is_unbreathing())
+                    affected.push_back(act);
             }
 
             if (you.see_cell(*ai) && !cell_is_solid(*ai))
@@ -1399,21 +1411,31 @@ static void _burstshroom_grow(monster& mons)
             animation_delay(20, true);
 
         bolt spores;
-        zappy(ZAP_BURSTSPORE, 1, false, spores);
-        spores.damage = get_form(transformation::spore)->get_special_damage();
-        spores.set_agent(&you);
+        zappy(ZAP_BURSTSPORE, mons.get_hit_dice() * 10, !player_mushroom, spores);
+        if (player_mushroom)
+        {
+            spores.damage = get_form(transformation::spore)->get_special_damage();
+            spores.set_agent(&you);
+        }
+        else
+            spores.set_agent(&mons);
         spores.source = mons.pos();
         spores.hit_verb = "engulf";
         spores.in_explosion_phase = true;
 
-        for (monster* targ : affected)
+        for (actor* targ : affected)
         {
             spores.explosion_affect_cell(targ->pos());
-            if (targ->alive() && !targ->has_ench(ENCH_DAZED)
-                && x_chance_in_y(get_form(transformation::spore)->get_level(10), targ->get_hit_dice() * 30))
+            if (targ->alive()
+                && ((targ->is_monster() && !targ->as_monster()->has_ench(ENCH_DAZED)
+                     && x_chance_in_y(mons.get_hit_dice() * 2, targ->get_hit_dice() * 3))
+                    || (targ->is_player() && !you.duration[DUR_DAZED] && one_chance_in(3))))
             {
                 targ->daze(random_range(2, 5));
-                simple_monster_message(*targ, T_(" is dazed by the spores."));
+                if (targ->is_monster())
+                    simple_monster_message(*targ->as_monster(), T_(" is dazed by the spores."));
+                else
+                    mprf(MSGCH_WARN, T_("You are dazed by the spores!"));
             }
         }
 
@@ -1421,6 +1443,62 @@ static void _burstshroom_grow(monster& mons)
     }
     else
         mons.lose_energy(EUT_MOVE);
+}
+
+// Handles one turn of a monster stampeding, moving them and potentially ending
+// the status if stampeding is no longer possible.
+//
+// Returns false if no stampede effect could happen (and thus the monster should
+// take a normal action this turn instead).
+bool mon_do_stampede(monster& mon)
+{
+    // If our movement is forcibly stopped, end immediately.
+    if (mon.cannot_move() || mon.is_constricted() || mon.cannot_act() || mon.caught())
+    {
+        mon.del_ench(ENCH_STAMPEDE);
+        return false;
+    }
+
+    // If continuing to move in our current direction will start to move us
+    // further away from our foe, mark stampede to end after this movement.
+    // (To allow the monster to 'overshoot', but not too far.)
+    bool should_end = false;
+    actor* foe = mon.get_foe();
+    coord_def target = foe && mon.can_see(*foe) ? foe->pos() : mon.target;
+    const coord_def step = mon.props[STAMPEDE_DIRECTION_KEY].get_coord();
+    if (grid_distance(mon.pos() + (step * 2), target) > grid_distance(mon.pos(), target))
+        should_end = true;
+
+    // Attempt to take up to two steps, leaving dust clouds as we do so.
+    if (stampede_step(mon, mon.pos() + step, true))
+    {
+        place_cloud(CLOUD_DUST, mon.pos() - step, random_range(2, 4), &mon);
+        if (stampede_step(mon, mon.pos() + step, true))
+            place_cloud(CLOUD_DUST, mon.pos() - step, random_range(2, 4), &mon);
+    }
+    // Couldn't take even one step, so end immediately and do something else.
+    else
+    {
+        mon.del_ench(ENCH_STAMPEDE);
+        return false;
+    }
+
+    // If there is some enemy in the direction of our charge at the end of it, attack them.
+    if (actor* act = actor_at(mon.pos() + step))
+    {
+        if (!mons_aligned(&mon, act))
+        {
+            melee_attack attk(&mon, act);
+            attk.to_hit_bonus = 15;
+            attk.dmg_mult = 50;
+            attk.launch_attack_set();
+        }
+    }
+
+    if (should_end)
+        mon.del_ench(ENCH_STAMPEDE);
+
+    return true;
 }
 
 static void _mons_fire_wand(monster& mons, spell_type mzap, bolt &beem)
@@ -1749,30 +1827,6 @@ static void _pre_monster_move(monster& mons)
         return;
     }
 
-    if (mons_stores_tracking_data(mons))
-    {
-        actor* foe = mons.get_foe();
-        if (foe)
-        {
-            if (!mons.props.exists(FAUX_PAS_KEY))
-                mons.props[FAUX_PAS_KEY].get_coord() = foe->pos();
-            else
-            {
-                if (mons.props[FAUX_PAS_KEY].get_coord().distance_from(mons.pos())
-                    > foe->pos().distance_from(mons.pos()))
-                {
-                    mons.props[FOE_APPROACHING_KEY].get_bool() = true;
-                }
-                else
-                    mons.props[FOE_APPROACHING_KEY].get_bool() = false;
-
-                mons.props[FAUX_PAS_KEY].get_coord() = foe->pos();
-            }
-        }
-        else
-            mons.props.erase(FAUX_PAS_KEY);
-    }
-
     fedhas_neutralise(&mons);
     slime_convert(&mons);
 
@@ -1797,7 +1851,7 @@ static void _pre_monster_move(monster& mons)
     if (mons.speed == 0)
         actor_apply_cloud(&mons);
 
-    if (mons.type == MONS_NO_MONSTER)
+    if (!mons.alive())
         return;
 
     // Apply monster enchantments once for every normal-speed
@@ -1808,14 +1862,7 @@ static void _pre_monster_move(monster& mons)
         mons.ench_countdown += 10;
         mons.apply_enchantments();
 
-        // If the monster *merely* died just break from the loop
-        // rather than quit altogether, since we have to deal with
-        // ballistomycete spores and ball lightning exploding at the end of the
-        // function, but do return if the monster's data has been
-        // reset, since then the monster type is invalid.
-        if (mons.type == MONS_NO_MONSTER)
-            return;
-        else if (mons.hit_points < 1)
+        if (!mons.alive())
             break;
     }
 
@@ -1849,9 +1896,18 @@ static bool _mons_take_special_action(monster &mons, int old_energy)
     // hitting their foes.
     if (mons.berserk_or_frenzied())
     {
-        if (!is_sanctuary(mons.pos()) && _handle_reaching(mons))
+        if (is_sanctuary(mons.pos()))
+            return false;
+
+        if (_handle_reaching(mons))
         {
             DEBUG_ENERGY_USE_REF("_handle_reaching()");
+            return true;
+        }
+
+        if (_handle_swoop_or_flank(mons))
+        {
+            DEBUG_ENERGY_USE_REF("_handle_swoop_or_flank()");
             return true;
         }
 
@@ -2075,12 +2131,13 @@ void handle_monster_move(monster* mons)
     }
 
     // Return to the player's side if they've gotten too separated
-    if (mons->type == MONS_HAUNTED_ARMOUR)
+    if (mons->type == MONS_HAUNTED_ARMOUR || mons_is_jade_crystal(mons->type))
     {
-        if (grid_distance(you.pos(), mons->pos()) > 5)
+        const int max_dist = mons->type == MONS_HAUNTED_ARMOUR ? 5 : 8;
+        if (grid_distance(you.pos(), mons->pos()) > max_dist)
         {
             coord_def spot;
-            if (find_habitable_spot_near(you.pos(), MONS_HAUNTED_ARMOUR, 3, spot,
+            if (find_habitable_spot_near(you.pos(), mons->type, 3, spot,
                                          -1, &you))
             {
                 simple_monster_message(*mons, T_(" returns to your side."));
@@ -2123,6 +2180,7 @@ void handle_monster_move(monster* mons)
         return;
 
     _monster_regenerate(mons);
+    _hepliaklqana_ancestor_check_interrupt(mons);
 
     if (skip_turn)
         return;
@@ -2149,6 +2207,12 @@ void handle_monster_move(monster* mons)
             && (++mons->move_spurt / 6 % 3 == 1 || mons->move_spurt / 3 % 5 == 1))
     {
         mons->speed_increment -= non_move_energy;
+        return;
+    }
+
+    if (mons->has_ench(ENCH_STAMPEDE) && mon_do_stampede(*mons))
+    {
+        mons->lose_energy(EUT_MOVE);
         return;
     }
 
@@ -2215,10 +2279,16 @@ void handle_monster_move(monster* mons)
 
     if (mons->has_ench(ENCH_CHANNEL_SEARING_RAY))
     {
+        if (mons->cannot_keep_channelling())
+        {
+            mons->del_ench(ENCH_CHANNEL_SEARING_RAY, true, false);
+            if (you.can_see(*mons))
+                mprf(T_("%s searing ray is interrupted."), mons->name(DESC_ITS).c_str());
+        }
         // If we are continuing to fire searing ray, remain in place.
         // XXX: Doesn't track how many turns this has been channelled, but that
         //      doesn't presently matter.
-        if (handle_searing_ray(*mons, 1))
+        else if (handle_searing_ray(*mons, 1))
         {
             mons->speed_increment -= non_move_energy;
             return;
@@ -2270,6 +2340,9 @@ void handle_monster_move(monster* mons)
         return;
     }
 
+    if (mons->type == MONS_THORN_HUNTER)
+        thorn_hunter_raise_barrier(*mons);
+
     if (_handle_pickup(mons))
     {
         DEBUG_ENERGY_USE("handle_pickup()");
@@ -2281,7 +2354,7 @@ void handle_monster_move(monster* mons)
         // Struggling against the net takes time.
         _swim_or_move_energy(*mons);
     }
-    else if (!mons->petrified())
+    else
     {
         // Calculates mmov based on monster target.
         mmov = _find_best_step(mons);
@@ -2300,9 +2373,9 @@ void handle_monster_move(monster* mons)
     if (!mons->alive())
         return;
 
-    // XXX: A bit hacky, but stores where we WILL move, if we don't take
-    //      another action instead (used for decision-making)
-    if (mons_stores_tracking_data(*mons))
+    // Stores where we WILL move, if we don't take another action instead
+    // (used for decision-making)
+    if (mons->type == MONS_BOULDER_BEETLE)
         mons->props[MMOV_KEY].get_coord() = mmov;
 
     if (_mons_take_special_action(*mons, old_energy))
@@ -2343,7 +2416,7 @@ void handle_monster_move(monster* mons)
                 if (!new_target && mons->confused() && one_chance_in(6))
                     _do_move_monster(*mons, coord_def(0,0));
                 _handle_battiness(*mons);
-                DEBUG_ENERGY_USE("fight_melee()");
+                DEBUG_ENERGY_USE("mons_fight()");
                 return;
             }
         }
@@ -2371,16 +2444,17 @@ void handle_monster_move(monster* mons)
             && !is_sanctuary(mons->pos())
             && (!(mons_aligned(mons, targ) || mons_is_seeker(*targ))
                 || mons->has_ench(ENCH_FRENZIED))
+            && !monster_on_wrong_wall_side(mons, targ)
             && monster_los_is_valid(mons, targ))
         {
             // Figure out if they fight.
             if ((!targ->is_firewood()
                     || mons->is_child_tentacle())
-                        && fight_melee(mons, targ))
+                        && mons_fight(mons, targ))
             {
                 _handle_battiness(*mons);
 
-                DEBUG_ENERGY_USE("fight_melee()");
+                DEBUG_ENERGY_USE("mons_fight()");
                 return;
             }
         }
@@ -2393,7 +2467,9 @@ void handle_monster_move(monster* mons)
             mons->props.erase(BLOCKED_DEADLINE_KEY);
         }
 
-        if (invalid_monster(mons) || mons->is_stationary())
+        if (invalid_monster(mons) || mons->is_stationary()
+            // Can't move on its own, but can be swapped with or pushed
+            || mons->type == MONS_HYPNOTAIL)
         {
             if (mons->speed_increment == old_energy)
                 mons->speed_increment -= non_move_energy;
@@ -2647,14 +2723,10 @@ static void _post_monster_move(monster* mons)
     if (mons->type == MONS_SEISMOSAURUS_EGG && egg_is_incubating(*mons))
         seismosaurus_egg_hatch(mons);
 
-    update_mons_cloud_ring(mons);
+    if (mons->type == MONS_THORN_HUNTER)
+        thorn_hunter_raise_barrier(*mons);
 
-    const item_def * weapon = mons->mslot_item(MSLOT_WEAPON);
-    if (weapon && get_weapon_brand(*weapon) == SPWPN_SPECTRAL
-        && !mons_is_avatar(mons->type))
-    {
-        // TODO: implement monster spectral ego
-    }
+    update_mons_cloud_ring(mons);
 
     if (mons->behaviour == BEH_BATTY)
     {
@@ -2671,7 +2743,7 @@ static void _post_monster_move(monster* mons)
     // after the player's turn.
     crawl_state.potential_pursuers.erase(mons);
 
-    if (mons->type != MONS_NO_MONSTER && mons->hit_points < 1)
+    if (!invalid_monster(mons) && mons->hit_points < 1)
         monster_die(*mons, KILL_NON_ACTOR, NON_MONSTER);
 }
 
@@ -2715,7 +2787,7 @@ void clear_monster_flags()
 static void _update_monster_attitude(monster *mon)
 {
     if (mons_can_hate(mon->type))
-        mon->attitude = ATT_HOSTILE;
+        mon->base_attitude = ATT_HOSTILE;
 }
 
 vector<monster *> just_seen_queue;
@@ -3043,8 +3115,11 @@ static void _mons_open_door(monster& mons, const coord_def &pos)
     find_connected_identical(pos, all_door);
     get_door_description(all_door.size(), &adj, &noun);
 
+    const bool player_adj_to_door = any_of(begin(all_door), end(all_door),
+        [](const coord_def &p) { return adjacent(you.pos(), p); });
+
     const bool broken = mons.foe == MHITYOU
-                            && ((adjacent(you.pos(), pos) && one_chance_in(3))
+                            && ((player_adj_to_door && one_chance_in(3))
                                 || mons.berserk());
     for (const auto &dc : all_door)
     {
@@ -3055,7 +3130,6 @@ static void _mons_open_door(monster& mons, const coord_def &pos)
             dgn_break_door(dc);
         else
             dgn_open_door(dc);
-        set_terrain_changed(dc);
     }
 
     if (was_seen)
@@ -3393,6 +3467,10 @@ bool mon_can_move_to_pos(const monster* mons, const coord_def& delta,
     // are aligned differently.
     if (monster* targmonster = monster_at(targ))
     {
+        // Thorn hunters can always freely move into their own briars
+        if (mons->type == MONS_THORN_HUNTER && targmonster->was_created_by(*mons))
+            return true;
+
         if (just_check)
         {
             if (targ == mons->pos())
@@ -3402,6 +3480,11 @@ bool mon_can_move_to_pos(const monster* mons, const coord_def& delta,
         }
 
         if (!monster_los_is_valid(mons, targ))
+            return false;
+
+        // Don't leak info to the player by hitting their allies from the other
+        // side of walls.
+        if (monster_on_wrong_wall_side(mons, targmonster))
             return false;
 
         // Cut down plants only when no alternative, or they're
@@ -3427,7 +3510,10 @@ bool mon_can_move_to_pos(const monster* mons, const coord_def& delta,
 
     // Friendlies shouldn't try to move onto the player's
     // location, if they are aiming for some other target.
-    if (mons->foe != MHITYOU
+    // (And jade crystals shouldn't at all, to keep from being stuck on the
+    // player instead of fanning out to their desired positions around you.)
+    if ((mons->foe != MHITYOU
+         || mons_is_jade_crystal(mons->type))
         && targ == you.pos()
         && (mons->foe != MHITNOT || mons->is_patrolling())
         && !_unfriendly_or_impaired(*mons))
@@ -3449,6 +3535,9 @@ bool mon_can_move_to_pos(const monster* mons, const coord_def& delta,
 // to get to the player if necessary.
 static bool _may_cutdown(monster* mons, monster* targ)
 {
+    if (!targ->is_firewood())
+        return false;
+
     // Save friendly plants from allies.
     // [ds] I'm deliberately making the alignment checks symmetric here.
     // The previous check involved good-neutrals never attacking friendlies
@@ -3458,13 +3547,25 @@ static bool _may_cutdown(monster* mons, monster* targ)
     {
         return false;
     }
-    // Outside of that case, can always cut mundane plants
-    // (but don't try to attack briars unless their damage will be insignificant)
-    return targ->is_firewood()
-        && (targ->type != MONS_BRIAR_PATCH
-            || (targ->friendly() && !mons_aligned(mons, targ))
-            || mons->type == MONS_THORN_HUNTER
-            || mons->armour_class() * mons->hit_points >= 400);
+
+    // Hostile monsters will always attack the player's briars, but otherwise
+    // avoid doing so unless the damage would be insignificant.
+    if (targ->type == MONS_BRIAR_PATCH)
+    {
+        if (mons->type == MONS_THORN_HUNTER && targ->was_created_by(*mons))
+            return false;
+        else
+        {
+            return targ->friendly() && !mons_aligned(mons, targ)
+                   || mons->armour_class() * mons->hit_points >= 400;
+        }
+    }
+    // Don't attack aligned barricades
+    else if (targ->type == MONS_SPLINTERFROST_BARRICADE && mons_aligned(mons, targ))
+        return false;
+
+    // Outside of these cases, can always cut mundane plants
+    return true;
 }
 
 static void _find_good_alternate_move(monster* mons, coord_def& delta,
@@ -3594,13 +3695,16 @@ static bool _monster_swaps_places(monster* mon, const coord_def& delta)
 
     const coord_def orig_m2_pos = m2->pos();
 
-    if (!mon->swap_with(m2, MV_DELIBERATE))
+    if (!mon->swap_with(m2, MV_DELIBERATE, true))
         return false;
 
     _swim_or_move_energy(*mon);
 
     mon->check_redraw(m2->pos());
     m2->check_redraw(mon->pos());
+
+    mon->finalise_movement();
+    m2->finalise_movement();
 
     // Pushing into a seeker gets you hit (only opposed monsters will try).
     // (This is to keep things repeatable actions like Foxfire from being overly
@@ -3717,22 +3821,20 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
     if (f == you.pos())
     {
         // XX is this actually reachable?
-        fight_melee(&mons, &you);
+        mons_fight(&mons, &you);
         return true;
     }
 
     // This includes the case where the monster attacks itself.
     if (monster* def = monster_at(f))
     {
-        fight_melee(&mons, def);
-        return true;
+        if (mons_fight(&mons, def))
+            return true;
     }
 
     if (mons.is_constricted() && !mons.cannot_move())
     {
-        if (mons.attempt_escape())
-            simple_monster_message(mons, T_(" escapes!"));
-        else
+        if (!mons.attempt_escape())
         {
             simple_monster_message(mons, T_(" struggles to escape constriction."));
             _swim_or_move_energy(mons);
@@ -3740,10 +3842,37 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
         }
     }
 
-    // We should have handled all cases of a monster attempting to attack instead of *just* move, so it should fine to simply silently
-    // stand in place here.
+    // If a bound monster cannot perform an attack or movement towards what it
+    // *wants* to, first check if there's anything nearby it could hit instead
+    // of doing literally nothing.
     if (mons.cannot_move())
-        return false;
+    {
+        // Don't consider making intelligent attacks while impaired.
+        if (mons_is_fleeing(mons) || mons_is_confused(mons))
+            return false;
+
+        int count = 0;
+        actor* targ = nullptr;
+        for (radius_iterator ri(mons.pos(), mons.reach_range(), C_SQUARE, LOS_NO_TRANS, true); ri; ++ri)
+        {
+            if (actor* act = actor_at(*ri))
+            {
+                if (could_harm_enemy(&mons, act)
+                    && !act->is_firewood()
+                    && mons.can_see(*act)
+                    && one_chance_in(++count))
+                {
+                    targ = act;
+                }
+            }
+        }
+
+        if (targ)
+            return mons_fight(&mons, targ);
+        // Nothing nearby to attack, so just wait in place.
+        else
+           return false;
+    }
 
     ASSERT(!cell_is_runed(f)); // should be checked in mons_can_traverse
 
@@ -3813,8 +3942,18 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
     if (mons_is_seeker(mons))
         --mons.steps_remaining;
 
-    mons.move_to(f, MV_DELIBERATE);
-    mons.check_redraw(mons.pos() - delta);
+    // Don't trample over our own briars if we're currently in range to fire
+    if (mons.type == MONS_THORN_HUNTER
+        && monster_at(f)
+        && monster_at(f)->was_created_by(mons)
+        && thorn_hunter_range_check(mons))
+    {
+        return false;
+    }
+
+    mons.move_to(f, MV_DELIBERATE, true);
+    mons.check_redraw(orig_pos);
+    mons.finalise_movement();
 
     _swim_or_move_energy(mons);
 
@@ -3988,16 +4127,10 @@ static bool _monster_move(monster* mons, coord_def& delta)
     const bool digs = _mons_can_cast_dig(mons, false) && feat_is_diggable(feat);
     if (digs)
     {
-        bolt beem;
         // XXX: Check for antimagic causing failure at this point. Ideally,
         //      monster spellcasting functions could allow this without duplication.
         if (_mons_can_cast_dig(mons, true))
-        {
-            setup_mons_cast(mons, beem, SPELL_DIG);
-            beem.target = target;
-            mons_cast(mons, beem, SPELL_DIG,
-                        mons->spell_slot_flags(SPELL_DIG));
-        }
+            try_mons_cast(*mons, SPELL_DIG, target);
         else
             simple_monster_message(*mons, T_(" falters for a moment."));
         mons->lose_energy(EUT_SPELL);
@@ -4042,7 +4175,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
         // with in handle_monster_move
         if (mons->pos() + delta == you.pos())
         {
-            ret = fight_melee(mons, &you);
+            ret = mons_fight(mons, &you);
             delta.reset();
         }
 
@@ -4057,9 +4190,12 @@ static bool _monster_move(monster* mons, coord_def& delta)
                 dprf("BUG: %s was marked as follower when not following!",
                      mons->name(DESC_PLAIN).c_str());
             }
-            else
+            // If the monster is not adjacent, it can spend its energy
+            // approaching the player. It'll later be untagged for following if
+            // it fails to catch up.
+            else if (adjacent(mons->pos(), you.pos()))
             {
-                ret    = true;
+                ret = false;
                 delta.reset();
 
                 dprf("%s is skipping movement in order to follow.",
@@ -4067,23 +4203,24 @@ static bool _monster_move(monster* mons, coord_def& delta)
             }
         }
 
-        // Check for attacking another monster.
-        if (monster* targ = monster_at(mons->pos() + delta))
+        // Check for attacking *another* monster
+        // Confused self-hit handled below
+        monster* targ = monster_at(mons->pos() + delta);
+        if (targ && !delta.origin())
         {
             if ((mons_aligned(mons, targ) || mons_is_seeker(*targ))
                 && !(mons->has_ench(ENCH_FRENZIED)
                      || mons->confused()))
             {
                 ret = _monster_swaps_places(mons, delta);
+                delta.reset();  // Swapping can fail, but even if it does, we
+                                // shouldn't try hitting our ally later on.
             }
-            else if (!delta.origin()) // confused self-hit handled below
+            else if (mons_fight(mons, targ))
             {
-                fight_melee(mons, targ);
                 ret = true;
+                delta.reset();
             }
-
-            // If the monster swapped places, the work's already done.
-            delta.reset();
         }
 
         // The monster could die after a melee attack due to a mummy
@@ -4117,7 +4254,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
         monster* targ = monster_at(mons->pos() + delta);
         if (!delta.origin() && targ && _may_cutdown(mons, targ))
         {
-            fight_melee(mons, targ);
+            mons_fight(mons, targ);
             ret = true;
         }
 
@@ -4163,6 +4300,9 @@ void seen_monsters_react()
     if (you.duration[DUR_TIME_STEP] || crawl_state.game_is_arena())
         return;
 
+    if (you.time_taken == 0)
+        return;
+
     const int stealth = player_stealth();
 
 #ifdef DEBUG_STEALTH
@@ -4185,10 +4325,7 @@ void seen_monsters_react()
                 monster_consider_shouting(**mi);
         }
 
-        if (!mi->visible_to(&you))
-            continue;
-
-        if (!mi->has_ench(ENCH_FRENZIED) && mi->can_see(you))
+        if (!mi->has_ench(ENCH_FRENZIED))
         {
             // Trigger Duvessa & Dowan upgrades
             if (mi->props.exists(ELVEN_ENERGIZE_KEY))
@@ -4196,8 +4333,8 @@ void seen_monsters_react()
                 mi->props.erase(ELVEN_ENERGIZE_KEY);
                 elven_twin_energize(*mi);
             }
-            else if (mi->type == MONS_BORIS && player_has_orb()
-                     && !mi->props.exists(BORIS_ORB_KEY))
+            else if (mi->can_see(you) && mi->type == MONS_BORIS
+                     && player_has_orb() && !mi->props.exists(BORIS_ORB_KEY))
             {
                 mi->props[BORIS_ORB_KEY] = true;
                 boris_covet_orb(*mi);

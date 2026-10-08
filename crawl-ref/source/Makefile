@@ -952,6 +952,9 @@ endif
 ifndef NOWIZARD
 DEFINES += -DWIZARD
 endif
+ifdef PROFILING
+CFOTHERS := -pg $(CFOTHERS)
+endif
 ifdef NO_OPTIMIZE
 CFOPTIMIZE  := -O0
 endif
@@ -996,7 +999,7 @@ endif
 
 ifneq ($(strip $(SAVEDIR)),)
   ifneq ($(filter ~%,$(SAVEDIR))$(ANDROID),)
-    CFOTHERS_L += -DSAVE_DIR_PATH=\"$(SAVEDIR)\"
+    INSTALL_PATH_CFLAGS_L += -DSAVE_DIR_PATH=\"$(SAVEDIR)\"
     savedir_fp :=
     shareddir_fp :=
   else
@@ -1005,7 +1008,7 @@ ifneq ($(strip $(SAVEDIR)),)
 	override SAVEDIR := $(strip $(prefix))/$(strip $(SAVEDIR))
       endif
     endif
-    CFOTHERS_L += -DSAVE_DIR_PATH=\"$(abspath $(SAVEDIR))\"
+    INSTALL_PATH_CFLAGS_L += -DSAVE_DIR_PATH=\"$(abspath $(SAVEDIR))\"
     savedir_fp := $(abspath $(strip $(DESTDIR))$(strip $(SAVEDIR)))
     shareddir_fp := $(savedir_fp)/saves
   endif
@@ -1013,7 +1016,7 @@ endif
 
 ifneq ($(strip $(SHAREDDIR)),)
   ifneq ($(filter ~%,$(SHAREDDIR)),)
-    CFOTHERS_L += -DSHARED_DIR_PATH=\"$(SHAREDDIR)\"
+    INSTALL_PATH_CFLAGS_L += -DSHARED_DIR_PATH=\"$(SHAREDDIR)\"
     shareddir_fp :=
   else
     ifeq ($(filter /%,$(SHAREDDIR)),)
@@ -1021,7 +1024,7 @@ ifneq ($(strip $(SHAREDDIR)),)
 	override SHAREDDIR := $(strip $(prefix))/$(strip $(SHAREDDIR))
       endif
     endif
-    CFOTHERS_L += -DSHARED_DIR_PATH=\"$(abspath $(SHAREDDIR))\"
+    INSTALL_PATH_CFLAGS_L += -DSHARED_DIR_PATH=\"$(abspath $(SHAREDDIR))\"
     shareddir_fp := $(abspath $(strip $(DESTDIR))$(strip $(SHAREDDIR)))
   endif
 endif
@@ -1033,7 +1036,7 @@ ifneq ($(strip $(DATADIR)),)
 	override DATADIR := $(strip $(prefix))/$(strip $(DATADIR))
     endif
   endif
-  CFOTHERS_L += -DDATA_DIR_PATH=\"$(abspath $(DATADIR))/\"
+  INSTALL_PATH_CFLAGS_L += -DDATA_DIR_PATH=\"$(abspath $(DATADIR))/\"
   FONTDIR = $(abspath $(DATADIR))/dat/tiles/
 else
   ifneq ($(prefix),)
@@ -1060,7 +1063,7 @@ ifneq ($(strip $(WEBDIR)),)
 	override WEBDIR := $(strip $(prefix))/$(strip $(WEBDIR))
     endif
   endif
-  CFOTHERS_L += -DWEB_DIR_PATH=\"$(abspath $(WEBDIR))/\"
+  INSTALL_PATH_CFLAGS_L += -DWEB_DIR_PATH=\"$(abspath $(WEBDIR))/\"
 else
   ifneq ($(prefix),)
 	WEBDIR := $(strip $(prefix))/$(strip $(WEBDIR))
@@ -1183,6 +1186,9 @@ ifeq (,$(shell echo 'int main(){return 1;}'|$(GXX) -x c++ - -o /dev/null -fuse-l
   LINKER_LDFLAG = -fuse-ld=gold
 endif
 endif
+endif
+ifdef PROFILING
+LINKER_LDFLAG += -pg
 endif
 ifneq ($(LINKER_LDFLAG),)
 LDFLAGS += $(LINKER_LDFLAG)
@@ -1330,6 +1336,11 @@ CFLAGS_L := $(CFOPTIMIZE_L) $(DEFINES_L) $(CFWARN_L) $(INCLUDES_L) $(CFOTHERS_L)
 ALL_CFLAGS := $(CFLAGS) $(CFLAGS_L)
 YACC_CFLAGS  := $(ALL_CFLAGS) -Wno-unused-function -Wno-sign-compare -DYYENABLE_NLS=0 -DYYLTYPE_IS_TRIVIAL=0 -Wno-null-conversion
 RLTILES_CFLAGS := $(ALL_CFLAGS) -Wno-tautological-compare
+# These objects embed install path macros such as SAVE_DIR_PATH,
+# SHARED_DIR_PATH, DATA_DIR_PATH, and WEB_DIR_PATH. Keep those macros out of
+# global CFLAGS so unrelated objects can reuse ccache across trunk revisions.
+INSTALL_PATH_CFLAGS_OBJECTS := files.o initfile.o tilesdl.o tileweb.o
+$(INSTALL_PATH_CFLAGS_OBJECTS): ALL_CFLAGS += $(INSTALL_PATH_CFLAGS_L)
 
 
 DOC_BASE        := ../docs
@@ -1346,9 +1357,12 @@ GENERATED_FILES := $(GENERATED_HEADERS) art-data.h mi-enum.h \
 
 LANGUAGES = $(filter-out en, $(notdir $(wildcard dat/descript/??)))
 SRC_PKG_BASE  := stone_soup
-SRC_VERSION   := $(shell git describe $(MERGE_BASE) 2>/dev/null || cat util/release_ver)
+# Export to gen_ver.pl and recursive make; never select stable/final tags.
+GIT_DESCRIBE_FLAGS := --match '*-a[0-9]*' --match '*-trunk-[0-9][0-9][0-9]'
+export GIT_DESCRIBE_FLAGS
+SRC_VERSION   := $(shell git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) 2>/dev/null || cat util/release_ver)
 MAJOR_VERSION = $(shell echo "$(SRC_VERSION)"|$(SED) -r 's/-.*//;s/^([^.]+\.[^.]+).*/\1/')
-RECENT_TAG    := $(shell git describe --abbrev=0 $(MERGE_BASE))
+RECENT_TAG    := $(shell git describe $(GIT_DESCRIBE_FLAGS) --abbrev=0 $(MERGE_BASE))
 WINARCH := $(shell $(GXX) -dumpmachine | grep -q x64_64 && echo win64 || echo win32)
 
 export SRC_VERSION
@@ -1409,7 +1423,7 @@ STATICFILES = $(TILEIMAGEFILES:%=webserver/game_data/static/%.png) \
 $(TILEINFOJS:%=$(RLTILES)/tileinfo-%.js): build-rltiles
 
 webserver/webtiles/version.txt: .ver
-	@git describe $(MERGE_BASE) > webserver/webtiles/version.txt
+	@git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) > webserver/webtiles/version.txt
 
 webserver/game_data/static/%.js: $(RLTILES)/%.js
 	$(QUIET_COPY)$(COPY) $< webserver/game_data/static/
@@ -1465,9 +1479,16 @@ TRACK_CFLAGS = $(strip $(subst ','\'',$(CC) $(CXX) $(ALL_CFLAGS)))
         # (stray ' for highlights)
 OLD_CFLAGS = $(strip $(subst ','\'',$(shell cat .cflags 2>/dev/null)))
         # (stray ' for highlights)
+TRACK_INSTALL_PATH_CFLAGS = $(strip $(subst ','\'',$(INSTALL_PATH_CFLAGS_L)))
+        # (stray ' for highlights)
+OLD_INSTALL_PATH_CFLAGS = $(strip $(subst ','\'',$(shell cat .install-path-cflags 2>/dev/null)))
+        # (stray ' for highlights)
 
 ifneq ($(TRACK_CFLAGS),$(OLD_CFLAGS))
   NEED_REBUILD = y
+endif
+ifneq ($(TRACK_INSTALL_PATH_CFLAGS),$(OLD_INSTALL_PATH_CFLAGS))
+  NEED_INSTALL_PATH_REBUILD = y
 endif
 
 .cflags: .force-cflags
@@ -1476,6 +1497,14 @@ ifdef NEED_REBUILD
 	@echo 'TRACK_CFLAGS = $(TRACK_CFLAGS) #EOL'
 	@echo 'OLD_CFLAGS   = $(OLD_CFLAGS) #EOL'
 	@echo '$(TRACK_CFLAGS)' > .cflags
+endif
+
+.install-path-cflags: .force-cflags
+ifdef NEED_INSTALL_PATH_REBUILD
+	@echo "    * rebuilding install-path-dependent objects: new paths"
+	@echo 'TRACK_INSTALL_PATH_CFLAGS = $(TRACK_INSTALL_PATH_CFLAGS) #EOL'
+	@echo 'OLD_INSTALL_PATH_CFLAGS   = $(OLD_INSTALL_PATH_CFLAGS) #EOL'
+	@echo '$(TRACK_INSTALL_PATH_CFLAGS)' > .install-path-cflags
 endif
 
 .android-cflags: .cflags
@@ -1752,7 +1781,7 @@ clean: clean-rltiles clean-webserver clean-android clean-monster clean-catch2 \
 	+$(MAKE) -C $(UTIL) clean
 	$(RM) $(GAME) $(GAME).exe $(GENERATED_FILES) $(EXTRA_OBJECTS) libw32c.o\
 	    libunix.o $(ALL_OBJECTS) $(ALL_OBJECTS:.o=.d) *.ixx  \
-	    .contrib-libs .cflags AppHdr.h.gch AppHdr.h.d util/fake_pty \
+	    .contrib-libs .cflags .install-path-cflags AppHdr.h.gch AppHdr.h.d util/fake_pty \
             rltiles/tiledef-unrand.cc
 	$(RM) -r build-win
 	$(RM) -r build
@@ -1899,6 +1928,10 @@ $(OBJECTS:%.o=%.cc) main.cc: $(CONTRIB_LIBS)
 
 $(UTIL)%.o: ALL_CFLAGS=$(YACC_CFLAGS)
 $(TILEDEFOBJS): ALL_CFLAGS=$(RLTILES_CFLAGS)
+
+ifneq ($(strip $(INSTALL_PATH_CFLAGS_L)),)
+$(INSTALL_PATH_CFLAGS_OBJECTS): .install-path-cflags
+endif
 
 # The "|" designates "order-only" dependencies. See: (make) Prerequisite Types.
 #
@@ -2088,7 +2121,7 @@ source: removeold prebuildyacc
 		tar xf - -C $(BSRC)contrib/$$x; \
 	  done
 	find build -name .gitignore -execdir rm -f '{}' +
-	git describe $(MERGE_BASE) > $(BSRC)util/release_ver
+	git describe $(GIT_DESCRIBE_FLAGS) $(MERGE_BASE) > $(BSRC)util/release_ver
 	cp build/LICENSE build/crawl-ref/LICENSE
 	mv build/crawl-ref build/$(PKG_SRC_DIR)
 
@@ -2241,9 +2274,11 @@ mac-app-console: all
 #
 
 NPROC := $(shell nproc 2>/dev/null || echo 1)
+ANDROID_APPLICATION_ID ?= org.develz.crawl
+ANDROID_APP_NAME ?= Dungeon Crawl Stone Soup
 
 android-project/app/build.gradle: android-project/app/build.gradle.in FORCE
-	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" <android-project/app/build.gradle.in >android-project/app/build.gradle
+	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" -e "s/@ANDROID_APPLICATION_ID@/$(ANDROID_APPLICATION_ID)/" -e "s/@ANDROID_APP_NAME@/$(ANDROID_APP_NAME)/" <android-project/app/build.gradle.in >android-project/app/build.gradle
 android-project/local.properties: android-project/local.properties.in
 	sed -e "s~@HOME@~${HOME}~" <android-project/local.properties.in >android-project/local.properties
 

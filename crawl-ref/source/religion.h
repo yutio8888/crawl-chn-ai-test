@@ -11,6 +11,7 @@
 #include "mgen-data.h"
 #include "player.h"
 #include "religion-enum.h"
+#include "transform.h"
 
 using std::vector;
 
@@ -66,11 +67,14 @@ void handle_god_time(int /*time_delta*/);
 int god_colour(god_type god);
 colour_t god_message_altar_colour(god_type god);
 int gozag_service_fee();
-bool player_can_join_god(god_type which_god, bool temp = true);
+string cannot_join_god_reason(god_type which_god, bool include_temp = true,
+                              bool check_gear = true);
+bool player_can_join_god(god_type which_god, bool include_temp = true);
+bool god_forbids_form(god_type which_god, transformation which_trans);
+bool transformed_player_can_join_god(god_type which_god);
 void join_trog_skills(void);
 void join_religion(god_type which_god);
 void god_pitch(god_type which_god);
-void print_god_rejection(god_type which_god);
 god_type choose_god(god_type def_god = NUM_GODS);
 vector<god_type> get_ecu_gods(coord_def pos);
 
@@ -108,9 +112,6 @@ bool god_hates_killing(god_type god, const monster& mon);
 bool god_hates_eating(god_type god, monster_type mc);
 
 bool god_likes_spell(spell_type spell, god_type god);
-bool god_hates_spellcasting(god_type god);
-bool god_hates_spell(spell_type spell, god_type god, bool fake_spell = false);
-string god_spell_warn_string(spell_type spell, god_type god);
 
 void initialize_ashenzari_props();
 bool god_protects_from_harm();
@@ -133,7 +134,6 @@ bool yred_reap_chance();
 bool is_yred_undead_follower(const monster& mon);
 bool is_apostle_follower(const monster& mon);
 bool is_fellow_slime(const monster& mon);
-bool is_follower(const monster& mon);
 
 // Vehumet gift interface.
 bool vehumet_is_offering(spell_type spell, bool only = false);
@@ -141,7 +141,7 @@ void vehumet_accept_gift(spell_type spell);
 
 mgen_data hepliaklqana_ancestor_gen_data();
 string hepliaklqana_ally_name();
-int hepliaklqana_ally_hp();
+int hepliaklqana_ally_hp(monster_type type);
 
 void upgrade_hepliaklqana_ancestor(bool quiet_force = false);
 void upgrade_hepliaklqana_weapon(monster_type mtyp, item_def &item);
@@ -157,7 +157,7 @@ void religion_turn_end();
 
 int get_tension(god_type god = you.religion);
 int get_monster_tension(const monster& mons, god_type god = you.religion);
-int get_fuzzied_monster_difficulty(const monster& mons);
+int okawaru_monster_difficulty(const monster& mons);
 
 typedef void (*delayed_callback)(const mgen_data &mg, monster *&mon, int placed);
 

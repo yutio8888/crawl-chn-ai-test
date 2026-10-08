@@ -3,7 +3,7 @@ monster: MONS_ONI
 name: Oni
 adjective: Oni
 difficulty: Intermediate
-difficulty_priority: 30
+difficulty_priority: 65
 aptitudes:
   xp: 0
   hp: 3
@@ -12,6 +12,7 @@ aptitudes:
   fighting: 3
   short_blades: -1
   long_blades: -1
+  polearms: -1
   ranged weapons: -3
   armour: -1
   shields: -1
@@ -53,6 +54,7 @@ recommended_jobs:
   - hedge wizard
   - air elementalist
   - fire elementalist
+  - mystic
 recommended_weapons:
   - maces and flails
   - polearms

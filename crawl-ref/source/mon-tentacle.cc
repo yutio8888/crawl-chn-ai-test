@@ -17,11 +17,13 @@
 #include "libutil.h" // map_find
 #include "losglobal.h"
 #include "mgen-data.h"
+#include "mon-behv.h"
 #include "mon-death.h"
 #include "mon-place.h"
 #include "nearby-danger.h"
 #include "terrain.h"
 #include "database.h"
+#include "view.h"
 
 const int MAX_KRAKEN_TENTACLE_DIST = 12;
 const int MAX_ACTIVE_KRAKEN_TENTACLES = 4;
@@ -185,24 +187,17 @@ bool mons_tentacle_adjacent(const monster* parent, const monster* child)
 monster& get_tentacle_head(const monster& mon)
 {
     const monster* m = &mon;
-    // For tentacle segments, find the associated tentacle.
-    if (m->is_child_tentacle_segment())
+
+    // Climb tentacle_connect until we reach the monster the part ultimately
+    // belongs to.
+    while (m->is_child_monster()
+           || mons_is_tentacle_segment(mons_base_type(*m)))
     {
-        monster* tentacle = monster_by_mid(m->tentacle_connect);
-        if (!tentacle)
-            return const_cast<monster&>(*m);
+        monster* parent = monster_by_mid(m->tentacle_connect);
+        if (!parent || parent == m)
+            break;
 
-        m = tentacle;
-    }
-
-    // For tentacles, find the associated head.
-    if (m->is_child_tentacle())
-    {
-        monster* head = monster_by_mid(m->tentacle_connect);
-        if (!head)
-            return const_cast<monster&>(*m);
-
-        m = head;
+        m = parent;
     }
 
     return const_cast<monster&>(*m);
@@ -243,6 +238,9 @@ static void _establish_connection(monster* tentacle,
 
             connect->max_hit_points = tentacle->max_hit_points;
             connect->hit_points = tentacle->hit_points;
+
+            if (head->props.exists(TREE_POSITION_KEY))
+                connect->props[TREE_POSITION_KEY].get_coord() = head->props[TREE_POSITION_KEY].get_coord();
         }
         else
         {
@@ -251,8 +249,12 @@ static void _establish_connection(monster* tentacle,
         }
     }
 
+    vector<coord_def> changed_cells;
+    changed_cells.push_back(last->pos);
     while (current)
     {
+        changed_cells.push_back(current->pos);
+
         // Last monster we visited or placed
         monster* last_mon = monster_at(last->pos);
         if (!last_mon)
@@ -288,6 +290,9 @@ static void _establish_connection(monster* tentacle,
 
             if (head->holiness() & MH_UNDEAD)
                 connect->flags |= MF_FAKE_UNDEAD;
+
+            if (head->props.exists(TREE_POSITION_KEY))
+                connect->props[TREE_POSITION_KEY].get_coord() = head->props[TREE_POSITION_KEY].get_coord();
         }
         else
         {
@@ -298,7 +303,53 @@ static void _establish_connection(monster* tentacle,
         last = current;
         current = current->last;
     }
+
+    // We must do view updates after the whole chain to get the right tiles.
+    bool updated = false;
+    for (const coord_def &pos : changed_cells)
+    {
+        if (you.see_cell(pos))
+        {
+            view_update_at(pos);
+            updated = true;
+        }
+    }
+
+    if (updated)
+        update_screen();
 }
+
+// Constraints on tentacle movement and connection. These are intended to make
+// tentacles move sensibly.
+//
+// There are two key constraints on the new tentacle layout:
+// - The tentacle must continuously move from the old to new layouts. To
+//   formalise this: we must be able to walk from the tip to the base of the
+//   new layout, tracking a "connect level", which is how far along the old
+//   body we have got. Number segments from 0 at the tip. When placing a new
+//   segment, if the connect level is L, it must be adjacent to old segments
+//   (L, L+1, ..., L+n) and no larger segment for some n >= 0; the new connect
+//   level is then L+n.
+// - The tentacle must have no holes. That is, if a segment touches a higher
+//   numbered segment, it must also touch all segments in between.
+//
+// The connection constraints are then the easy bit to describe - they enforce
+// these rules exactly.
+//
+// The rules for where the tip can go (if not just retracting one) are more
+// complicated. To state them, let L be the connect level of the old tip -
+// so the old tip touches segments (0, ..., L). Then if the new tip touches
+// some segment L + n, it must also touch all of (L, L+1, ... , L+n).
+//
+// This rule guarantees a valid layout in the case where the base does not
+// move. In most cases, we can build one from
+// (new tip, 0, L, c(L), c(c(L)), ...), where c(x) is the largest segment x
+// touches (this is a retraction of the old tentacle, plus the new segment).
+// In the case where the connect level of the new tip, C > L, we can instead
+// use the sequence (new tip, C, c(C), c(c(C)), ...). In either case,
+// holelessness after the tip is guaranteed by this being a subsequence of a
+// holeless sequence, and holeless at the tip is guaranteed by the rule in
+// the previous paragraph.
 
 struct tentacle_attack_constraints
 {
@@ -389,6 +440,7 @@ struct tentacle_attack_constraints
                         temp.string_distance -= delta;
                 }
 
+                // This would leave a hole, so reject it.
                 if (connect_level < max_val)
                    temp.path_distance = DISCONNECT_DIST;
             }
@@ -417,8 +469,9 @@ struct tentacle_connect_constraints
     map<coord_def, set<int> > * connection_constraints;
 
     monster* base_monster;
+    bool allow_holes;
 
-    tentacle_connect_constraints()
+    tentacle_connect_constraints() : allow_holes(false)
     {
         for (int i=0; i<8; i++)
             connect_idx[i] = i;
@@ -441,6 +494,7 @@ struct tentacle_connect_constraints
 
             auto constraint = map_find(*connection_constraints, temp.pos);
 
+            // Must still be in touch with the connect level we have reached.
             if (!constraint || !constraint->count(node.connect_level))
                 continue;
 
@@ -459,8 +513,32 @@ struct tentacle_connect_constraints
 
             int max = constraint->empty() ? INT_MAX : *constraint->rbegin();
 
+            // Don't shortcut and miss out some segments of the old tentacle.
             if (test_level < max)
                 continue;
+
+            // Prevent holes in the new tentacle.
+            if (!allow_holes)
+            {
+                bool hole = false;
+                for (const position_node *back = node.last; back && !hole;
+                     back = back->last)
+                {
+                    if (!adjacent(back->pos, temp.pos))
+                        continue;
+                    for (const position_node *mid = &node; mid != back;
+                         mid = mid->last)
+                    {
+                        if (!adjacent(back->pos, mid->pos))
+                        {
+                            hole = true;
+                            break;
+                        }
+                    }
+                }
+                if (hole)
+                    continue;
+            }
 
             temp.connect_level = test_level;
 
@@ -585,6 +663,17 @@ static bool _try_tentacle_connect(const coord_def & new_pos,
                  current_target, connect_costs,
                  visited, candidates);
 
+    // Fall back to a search allowing holes.
+    if (candidates.empty())
+    {
+        connect_costs.allow_holes = true;
+        visited.clear();
+        search_astar(temp,
+                     current_target, connect_costs,
+                     visited, candidates);
+        connect_costs.allow_holes = false;
+    }
+
     if (candidates.empty())
         return false;
 
@@ -624,6 +713,9 @@ static void _collect_foe_positions(monster *mons,
 {
     coord_def foe_pos(-1, -1);
     actor * foe = mons->get_foe();
+    // We put the foe in the vector first, though note that the
+    // pathfinding algorithm that uses this don't actually care about
+    // the order, so in fact tentacles ignore their foe.
     if (foe && sight_check(foe))
     {
         foe_positions.push_back(mons->get_foe()->pos());
@@ -710,6 +802,7 @@ void move_solo_tentacle(monster* tentacle)
                 [tentacle, base_position](const actor *test) -> bool
                 {
                     return test->visible_to(tentacle)
+                        && monster_los_is_valid(tentacle, test)
                         && cell_see_cell(base_position, test->pos(),
                                          LOS_SOLID_SEE);
                 });
@@ -1236,4 +1329,57 @@ void mons_create_tentacles(monster* head)
             mpr(T_("Tentacles burst from the starspawn's body!"));
     }
     return;
+}
+
+coord_def tree_anchor_pos(const coord_def vine_pos)
+{
+    for (adjacent_iterator tree_it(vine_pos); tree_it; tree_it++)
+    {
+        if (feat_is_tree(env.grid(*tree_it)))
+            return *tree_it;
+    }
+    return coord_def();
+}
+
+/**
+ * When destroying a tree, check for any vines it is supporting. These
+ * must find a new home or die.
+ *
+ * @param pos      The position of the tree being destroyed
+ * @param agent    The actor responsible for the destruction
+ */
+void reanchor_or_destroy_vines(const coord_def pos, actor *agent)
+{
+    for (adjacent_iterator ai(pos); ai; ai++)
+    {
+        monster *m = monster_at(*ai);
+        if (!m || (m->type != MONS_SNAPLASHER_VINE
+                   && m->type != MONS_SNAPLASHER_VINE_SEGMENT))
+        {
+            continue;
+        }
+
+        if (!m->props.exists(TREE_POSITION_KEY)
+            || m->props[TREE_POSITION_KEY].get_coord() != pos)
+        {
+            continue;
+        }
+
+        // Try to find a new tree for the vine.
+        coord_def new_tree = tree_anchor_pos(*ai);
+
+        if (new_tree.origin())
+            monster_die(*m, agent);
+        else
+        {
+            // Walk the vine fixing the tree positions.
+            while (m)
+            {
+                m->props[TREE_POSITION_KEY].get_coord() = new_tree;
+                if (!m->props.exists(OUTWARDS_KEY))
+                    break;
+                m = monster_by_mid(m->props[OUTWARDS_KEY].get_int());
+            }
+        }
+    }
 }

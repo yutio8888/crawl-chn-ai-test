@@ -147,8 +147,8 @@ enum brand_type // item_def.special
     SPWPN_SPEED,
     SPWPN_HEAVY,
 #if TAG_MAJOR_VERSION == 34
-    SPWPN_FLAME,   // ranged, only
-    SPWPN_FROST,   // ranged, only
+    SPWPN_FLAME_OLD,   // ranged, only
+    SPWPN_FROST_OLD,   // ranged, only
 #endif
     SPWPN_VAMPIRISM,
     SPWPN_PAIN,
@@ -655,6 +655,10 @@ enum weapon_type
     WPN_QUICK_BLADE,
     WPN_SHORT_SWORD,
     WPN_RAPIER,
+#if TAG_MAJOR_VERSION > 34
+    WPN_ATHAME,
+    WPN_CENTIPEDE,
+#endif
 
     WPN_FALCHION,
     WPN_LONG_SWORD,
@@ -739,6 +743,8 @@ enum weapon_type
     WPN_CUTLASS,
     WPN_ORCBOW,
     WPN_PARTISAN,
+    WPN_ATHAME,
+    WPN_CENTIPEDE,
 #endif
 
     NUM_WEAPONS,
@@ -901,12 +907,17 @@ enum talisman_type
     TALISMAN_MEDUSA,
     TALISMAN_EEL,
     TALISMAN_SPORE,
+    TALISMAN_VISION,
+    TALISMAN_JADE,
+    TALISMAN_GECKO,
+    TALISMAN_MIST,
     NUM_TALISMANS,
 };
 
 enum bauble_type
 {
     BAUBLE_FLUX,
+    BAUBLE_CENTIPEDE,
     NUM_BAUBLES,
 };
 

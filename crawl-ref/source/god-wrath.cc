@@ -31,6 +31,7 @@
 #include "items.h"
 #include "losglobal.h"
 #include "makeitem.h"
+#include "map-knowledge.h"
 #include "message.h"
 #include "misc.h"
 #include "mon-behv.h"
@@ -407,12 +408,9 @@ void lucy_check_meddling()
 
     vector<monster*> potential_banishees;
     for (monster_near_iterator mi(you.pos(), LOS_NO_TRANS); mi; ++mi)
-    {
-        monster *mon = *mi;
-        if (!mon || mon->attitude != ATT_HOSTILE || mon->is_peripheral())
-            continue;
-        potential_banishees.push_back(mon);
-    }
+        if (mi->attitude() == ATT_HOSTILE && !mi->is_peripheral())
+            potential_banishees.push_back(*mi);
+
     if (potential_banishees.empty())
         return;
 
@@ -421,7 +419,7 @@ void lucy_check_meddling()
     for (monster *mon : potential_banishees)
     {
         // We might have banished a summoner and poofed its summons, etc.
-        if (invalid_monster(mon) || !mon->alive())
+        if (!mon->alive())
             continue;
         // 80% chance of banishing god wrath summons, 30% chance of banishing
         // other creatures nearby.
@@ -506,12 +504,12 @@ static monster* _get_wrath_avatar(god_type god)
     if (!avatar)
         return nullptr;
 
-    avatar->type       = MONS_GOD_WRATH_AVATAR;
-    avatar->behaviour  = BEH_SEEK;
-    avatar->attitude   = ATT_HOSTILE;
-    avatar->flags      = MF_NO_REWARD | MF_JUST_SUMMONED | MF_SEEN
-                         | MF_WAS_IN_VIEW | MF_HARD_RESET | MF_NAME_REPLACE;
-    avatar->god        = god;
+    avatar->type            = MONS_GOD_WRATH_AVATAR;
+    avatar->behaviour       = BEH_SEEK;
+    avatar->base_attitude   = ATT_HOSTILE;
+    avatar->flags           = MF_NO_REWARD | MF_JUST_SUMMONED | MF_SEEN
+                            | MF_WAS_IN_VIEW | MF_HARD_RESET | MF_NAME_REPLACE;
+    avatar->god             = god;
     avatar->set_position(you.pos());
     avatar->set_new_monster_id();
     env.mgrid(you.pos()) = avatar->mindex();
@@ -627,9 +625,7 @@ static bool _makhleb_summon_servants()
                            false, GOD_MAKHLEB);
     }
     else
-    {
         simple_god_message(T_(" minions fail to arrive."), true, GOD_MAKHLEB);
-    }
 
     return true;
 
@@ -702,9 +698,7 @@ static bool _yredelemnul_retribution()
                            false, god);
     }
     else
-    {
         simple_god_message(T_(" servants fail to arrive."), true, god);
-    }
 
     if (coinflip())
     {
@@ -735,28 +729,15 @@ static bool _trog_retribution()
         // safely interrupt you, or tension's so high they're not making things
         // much worse, summon berserkers from the Brothers In Arms monster set.
         int count = 0;
-        int points = 2 + you.experience_level * 3;
-
         {
             msg::suppress msg;
 
-            while (points > 0)
+            const int wanted = random_range(3, 6);
+
+            for (int i = 0; i < wanted; ++i)
             {
-                int cost =
-                    min(min(random2avg((1 + you.experience_level / 4), 2) + 3,
-                            10),
-                        points);
-
-                // quick reduction for large values
-                if (points > 20 && coinflip())
-                {
-                    points -= 10;
-                    cost = min(1 + div_rand_round(you.experience_level, 2), 10);
-                }
-
-                points -= cost;
-
-                if (summon_berserker(cost * 20, 0))
+                const int pow = random_range(you.experience_level - 3, you.experience_level + 5);
+                if (summon_berserker(nullptr, trog_get_brother_type(pow)))
                     count++;
             }
         }
@@ -879,13 +860,9 @@ static bool _okawaru_retribution()
         count += _okawaru_random_servant();
 
     if (count > 0)
-    {
         simple_god_message(T_(" sends forces against you!"), false, god);
-    }
     else
-    {
         simple_god_message(T_(" forces are busy with other wars."), true, god);
-    }
 
     return true;
 }
@@ -943,7 +920,7 @@ static void _lugonu_transloc_retribution()
         // Give extra opportunities for embarrassing teleports.
         simple_god_message(T_(" wrath scatters you!"), true, god);
         you.props[TELEPORTITIS_SOURCE].get_int() = MID_NOBODY;
-        you_teleport_now(false, T_("Space warps around you!"));
+        you_teleport_now(T_("Space warps around you!"));
     }
     else if (coinflip())
     {
@@ -1007,13 +984,9 @@ static void _lugonu_minion_retribution()
     }
 
     if (success)
-    {
         simple_god_message(T_(" sends minions to punish you."), false, god);
-    }
     else
-    {
         simple_god_message(T_(" minions fail to arrive."), true, god);
-    }
 }
 
 /**
@@ -1377,9 +1350,11 @@ static bool _dithmenos_retribution()
         if (!pos.origin())
         {
             monster* shadow = create_player_shadow(pos, false, spell);
-            simple_god_message(shadow ? T_(" turns your shadow against you.")
-                                      : T_(" fails to turn your shadows against you."),
+            simple_god_message(shadow ? T_(" turns your own shadow against you.")
+                                      : T_(" fails to turn your shadow against you."),
                                false, god);
+            if (shadow)
+                mons_add_blame(shadow, "animated by the will of Dithmenos.");
         }
 
         break;
@@ -1442,13 +1417,9 @@ static void _qazlal_summon_elementals()
     }
 
     if (success)
-    {
         simple_god_message(T_(" incites the elements against you!"), false, god);
-    }
     else
-    {
         simple_god_message(T_(" fails to incite the elements against you."), false, god);
-    }
 }
 
 /**
@@ -1506,7 +1477,7 @@ static bool _qazlal_retribution()
 
 static bool _choose_hostile_monster(const monster& mon)
 {
-    return mon.attitude == ATT_HOSTILE;
+    return mon.base_attitude == ATT_HOSTILE;
 }
 
 static int _wu_jian_summon_weapons()
@@ -1571,7 +1542,7 @@ static bool _wu_jian_retribution()
         case 2:
             wu_jian_sifu_message(T_(" whispers: These will loosen your tongue!"));
             you.increase_duration(DUR_SILENCE, 5 + random2(11), 50);
-            invalidate_agrid(true);
+            invalidate_agrid();
             break;
         case 3:
             wu_jian_sifu_message(T_(" says: Suffer, mortal!"));
@@ -1580,9 +1551,7 @@ static bool _wu_jian_retribution()
         }
     }
     else
-    {
         simple_god_message(T_(" divine weapons fail to arrive."), true, god);
-    }
 
     return true;
 }
@@ -1937,8 +1906,7 @@ void gozag_abandon_shops_on_level()
             dungeon_change_base_terrain(pos, DNGN_ABANDONED_SHOP);
             if (env.map_knowledge(pos).feat() == DNGN_ENTER_SHOP)
             {
-                const colour_t col = env.map_knowledge(pos).feat_colour();
-                env.map_knowledge(pos).set_feature(DNGN_ABANDONED_SHOP, col);
+                update_terrain_knowledge(pos, !env.map_knowledge(pos).seen());
                 redraw_view_at(pos);
             }
             env.markers.remove(feat);

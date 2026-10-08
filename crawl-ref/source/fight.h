@@ -29,13 +29,16 @@ enum stab_type
     NUM_STABS
 };
 
-bool fight_melee(actor *attacker, actor *defender, bool is_rampage = false,
-                 bool *did_hit = nullptr, bool simu = false);
+bool mons_fight(monster* attacker, actor* defender,
+                bool* did_hit = nullptr, bool simu = false);
+bool player_fight(monster* defender, bool is_rampage = false,
+                  bool* did_hit = nullptr, bool simu = false);
 
 void player_attempted_attack(bool trigger_effects, bool maintain_statuses = true,
                              actor* primary_target = nullptr);
 
 beam_type get_beam_resist_type(beam_type flavour);
+int beam_resistible_fraction(beam_type flavour);
 int resist_adjust_damage(const actor *defender, beam_type flavour,
                          int rawdamage);
 
@@ -50,17 +53,17 @@ stab_type find_player_stab_type(const monster &victim);
 int stab_bonus_denom(stab_type stab);
 
 bool should_cleave_into(const actor &attacker, const actor &defender);
-bool _monster_has_reachcleave(const actor &attacker);
 bool force_player_cleave(coord_def target);
-bool attack_cleaves(const actor &attacker, const item_def *weapon = nullptr);
+bool attack_cleaves(const actor &attacker, const item_def *weapon = nullptr,
+                    int attack_num = -1);
 bool weapon_cleaves(const item_def &item);
 int weapon_hits_per_swing(const item_def &item);
 bool weapon_multihits(const item_def *item);
 void get_cleave_targets(const actor &attacker, const coord_def& def,
-                        list<actor*> &targets, int which_attack = -1,
-                        bool force_cleaving = false,
-                        const item_def *weapon = nullptr,
-                        int reach_bonus = 0);
+                        vector<actor*> &targets, int range = 1,
+                        bool only_known = false);
+vector<actor*> get_player_attack_targets(bool only_known = false);
+vector<actor*> get_player_cleave_targets(const coord_def& aim);
 
 class attack;
 int to_hit_pct(const monster_info& mi, attack &atk,

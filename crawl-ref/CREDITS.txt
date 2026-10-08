@@ -99,6 +99,7 @@
     Austin Appleby
     araganzar
     argonaut
+    Argyros
     ArmiesAndCastles
     Juha Arpiainen
     Arxale
@@ -161,6 +162,7 @@
     cut1less
     Matthew Daley
     David Damerell
+    Victor 'Vji' Davidescu
     Paul Dejean
     Denzi
     DevJac
@@ -191,6 +193,7 @@
     Floodkiller
     floraline
     Flugkiller
+    foosh
     Brett Foster
     Kyle Fox
     Perry Fraser
@@ -216,8 +219,10 @@
     Brian Haase
     Sophie Hamilton
     Chris Hamons
+    hanchyan
     Tomas Krag Hansen
     Lexi Hattaway
+    Eivin Hatvik
     Taylor Hedberg
     Anders Heggestøyl
     Alex Henry
@@ -308,16 +313,17 @@
     Eva Myers
     Mystic Sailboat
     nagdon
+    NagyDonat
     Naruni
     neofelis
     nirrattner
     Jonathon Nooner
     NormalPerson7
     Michael Nowack
+    A. Noyd
     Erkki Nurmi
     Mattias Nyberg
     nyra
-    Odds
     Weston Odom
     Dylan O'Donnell
     Heinrich Ody
@@ -341,6 +347,7 @@
     Pedro
     Pekkekke
     person50605
+    pumpkincat
     Alejandro Ramirez
     Rytis Petronis
     Arlen Phillips
@@ -352,6 +359,7 @@
     Iago Porto
     Alexander Posch
     Brian Power
+    Predelnik
     psywombats
     pubby
     pyy156941
@@ -381,10 +389,12 @@
     Risto Saarelma
     Sebastian Salman
     Petri Salminen
+    Lyla Sanders
     Sandman25
     Brett Scarborough
     Roderick Schertler
     sdynet
+    SeijiOokami
     SentientSupper
     Roman Sêk
     Brennan Shacklett
@@ -447,6 +457,7 @@
     Yelve Yakut
     Edward Z. Yang
     Yermak
+    Christopher 'GoodKnight' Yim
     YLam
     Andrew G. York
     Rob Young
@@ -454,6 +465,8 @@
     Zooko
     Zhang Haocheng
     Brian 'buehler' Faires
+    Dossy Shiobara
+    Jewel
 
 The Dungeon Crawl Stone Soup development team is:
     advil
@@ -498,6 +511,7 @@ The Dungeon Crawl Stone Soup development team is:
     Neil Moore
     nicolae
     Steven Noonan
+    Odds
     Stefan O'Rear
     Charles Otto
     Aaron Pixton

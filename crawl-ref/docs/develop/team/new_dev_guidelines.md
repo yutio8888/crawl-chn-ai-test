@@ -6,7 +6,7 @@ as well as links to useful resources.
 ## Setup
 
 Other team members will help you get the items in the [*new dev
-checklist*](../team/new_dev_checklist.txt) covered. Once you’ve been given
+checklist*](../team/new_dev_checklist.md) covered. Once you’ve been given
 commit access, configuring git properly so that you can make your first commit
 is a priority. See the [*git configuration doc*](../git/config.txt), especially
 the options about rebasing so you avoid making unnecessary merge commits.
@@ -20,9 +20,8 @@ also discuss changes with the community in the #dcss channel of the
 there as well.
 
 The #crawl-dev channel is bridged to Libera IRC for public participation, and is
-[*logged*](http://crawl.akrasiac.org/logs/cheibriados/) if you’d like to read
-or search previous discussions. Older discussions (back to ~2010) were logged
-[*here*](http://s-z.org/crawl-dev/#).
+logged [here](http://crawl.akrasiac.org/logs/cheibriados/) if you’d like to read
+or search previous discussions.
 
 Although most changes are simply discussed on Discord, it can be helpful to
 have a place to coordinate and organize larger-scale release plans. We have

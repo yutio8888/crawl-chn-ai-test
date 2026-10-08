@@ -379,6 +379,13 @@ static void _post_init(bool newc)
 
     read_init_file(true);
     Options.fixup_options();
+
+#ifdef USE_TILE
+    // Redraw the map in case the init file has changed anything - at least
+    // autopickup can have changed.
+    tile_draw_entire_map();
+#endif
+
     read_startup_prefs();
 #ifdef USE_TILE_WEB
     tiles.send_options();
@@ -441,7 +448,7 @@ static void _post_init(bool newc)
     if (newc)
         run_map_epilogues();
 
-    // Sanitize skills, init can_currently_train[].
+    // Sanitize skills and recompute training.
     fixup_skills();
 }
 
@@ -889,6 +896,7 @@ void UIStartupMenu::on_show()
         else if (keyn == '\t' && _game_defined(defaults))
         {
             ng_choice = defaults;
+            forget_weapon_if_random(ng_choice);
             return done = true;
         }
         else if (keyn == '?')

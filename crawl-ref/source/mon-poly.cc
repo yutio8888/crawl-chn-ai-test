@@ -52,7 +52,7 @@
 
 bool base_feature_is_mimic_at(coord_def c)
 {
-    return map_masked(c, MMT_MIMIC);
+    return testbits(env.pgrid(c), FPROP_MIMIC);
 }
 
 bool current_feature_is_mimic_at(coord_def c)
@@ -80,18 +80,15 @@ void monster_drop_things(monster* mons,
     // Drop weapons and missiles last (i.e., on top), so others pick up.
     for (int i = NUM_MONSTER_SLOTS - 1; i >= 0; --i)
     {
+        const mon_inv_type slot = static_cast<mon_inv_type>(i);
         int item = mons->inv[i];
         if (item == NON_ITEM || !suitable(env.item[item]))
             continue;
 
-        mons->do_unequip_effects(env.item[item], false, true);
-
-        int old_halo = mons->halo_radius();
-        int old_umbra = mons->umbra_radius();
-
-        if (testbits(env.item[item].flags, ISFLAG_SUMMONED))
+        if (env.item[item].summoned())
         {
             item_was_destroyed(env.item[item]);
+            mons->unequip(slot);
             destroy_item(item);
         }
         else
@@ -108,9 +105,12 @@ void monster_drop_things(monster* mons,
                 env.item[item].props.erase("autoinscribe");
             }
 
+            mons->unequip(slot);
+
             // If a monster is swimming, the items are ALREADY underwater.
-            if (move_item_to_grid(&item, mons->pos(), mons->swimming())
-                && player_under_penance(GOD_GOZAG)
+            move_item_to_grid(&item, mons->pos(), mons->swimming());
+
+            if (player_under_penance(GOD_GOZAG)
                 // Dropping items into water/lava may have destroyed them
                 && item != NON_ITEM
                 && env.item[item].base_type == OBJ_GOLD
@@ -122,13 +122,7 @@ void monster_drop_things(monster* mons,
                 mprf(MSGCH_GOD, GOD_GOZAG, "%s", msg.c_str());
                 blind_player(10 + random2(8), ETC_GOLD);
             }
-            mons->inv[i] = NON_ITEM;
         }
-
-        int new_halo = mons->halo_radius();
-        int new_umbra = mons->umbra_radius();
-        if (old_halo != new_halo || old_umbra != new_umbra)
-            invalidate_agrid(true);
     }
 
     // If the monster died in a wall, try to push the items out of it.
@@ -339,6 +333,11 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     mon_enchant tempered  = mons->get_ench(ENCH_TEMPERED);
     mon_enchant thrall    = mons->get_ench(ENCH_VAMPIRE_THRALL);
 
+    const bool was_seen = (bool)(mons->flags & MF_SEEN);
+
+    if (mons->affects_agrid())
+        invalidate_agrid();
+
     mons->number       = 0;
 
     // Note: define_monster(*) will clear out all enchantments! - bwr
@@ -420,6 +419,12 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     // generate a new polymorph set
     mons->props.erase(POLY_SET_KEY);
     init_poly_set(mons);
+
+    if (!do_seen && was_seen)
+        mons->flags |= MF_SEEN;
+
+    if (mons->affects_agrid())
+        invalidate_agrid();
 
     // Try to keep the monster caught in any existing nets, but if the new form
     // is net immune, remember to drop the net on the ground.
@@ -618,7 +623,6 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     if (targetc == MONS_NO_MONSTER)
         return simple_monster_message(*mons, T_(" shudders."));
 
-    const bool was_invisible = mons->has_ench(ENCH_INVIS) && !mons->friendly();
     bool could_see = you.can_see(*mons);
     bool need_note = could_see && mons_is_notable(*mons);
     string old_name_a = mons->full_name(DESC_A);
@@ -667,22 +671,8 @@ bool monster_polymorph(monster* mons, monster_type targetc,
         take_note(Note(NOTE_POLY_MONSTER, 0, 0, old_name_a, new_name));
     }
 
-    const bool is_invisible = mons->has_ench(ENCH_INVIS) && !mons->friendly();
-    if (you.see_cell(mons->pos()))
-    {
-        if (was_invisible && !is_invisible)
-        {
-            // If we poly an invisible monster reactivate autopickup.
-            // We need to check for actual invisibility rather than
-            // whether we can see the monster. There are several edge
-            // cases where a monster is visible to the player but we
-            // still need to turn autopickup back on, such as
-            // TSO's halo or sticky flame.
-            autotoggle_autopickup(false);
-        }
-        else if (could_see && !can_see)
-            autotoggle_autopickup(true);
-    }
+    if (could_see && !can_see)
+        mons->sense_if_invisible();
 
     // do this here, so that any "changes into" notes come first
     if (can_see)
@@ -754,8 +744,8 @@ void slimify_monster(monster* mon)
     // If a monster slimifies and you're not with Jiyva, it shouldn't change
     // that monster's attitude any more than other polymorph does. If you are
     // with Jiyva, either let it stay friendly or make it non-hostile.
-    if (you_worship(GOD_JIYVA) && mon->attitude != ATT_FRIENDLY)
-        mon->attitude = ATT_GOOD_NEUTRAL;
+    if (you_worship(GOD_JIYVA) && mon->base_attitude != ATT_FRIENDLY)
+        mon->base_attitude = ATT_GOOD_NEUTRAL;
 
     mons_make_god_gift(*mon, GOD_JIYVA);
 

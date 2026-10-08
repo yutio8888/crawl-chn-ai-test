@@ -179,7 +179,7 @@ STDERR_L2="$METRICS_DIR/lua-stderr.log"
 run_lua() {
     cd "$SOURCE_DIR"
     echo "  Building DB cache..."
-    make builddb PYTHON="$BUILD_PYTHON" > "$METRICS_DIR/lua-build.log" 2>&1 || {
+    make builddb PYTHON="$BUILD_PYTHON" -j4 > "$METRICS_DIR/lua-build.log" 2>&1 || {
         echo "  builddb failed (see $METRICS_DIR/lua-build.log)"
         return 1
     }
@@ -231,7 +231,7 @@ run_bot() {
     cd "$SOURCE_DIR"
     if [ "${1:-build}" = "build" ]; then
         echo "  Building current console binary once..."
-        make PYTHON="$BUILD_PYTHON" -j8 > "$METRICS_DIR/bot-build.log" 2>&1 || {
+        make PYTHON="$BUILD_PYTHON" -j4 > "$METRICS_DIR/bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/bot-build.log)"
             return 1
         }
@@ -321,7 +321,7 @@ run_help_bot() {
     cd "$SOURCE_DIR"
     # [zh-help] Catch2 uses different coverage flags in the same object tree;
     # always restore a current console build before the PTY test.
-    make PYTHON="$BUILD_PYTHON" -j8 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
+    make PYTHON="$BUILD_PYTHON" -j4 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/help-bot-build.log)"
             return 1
     }

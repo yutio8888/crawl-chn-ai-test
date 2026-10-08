@@ -420,8 +420,7 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
         return 0;
 
     if (mouse_control::current_mode() == MOUSE_MODE_NORMAL
-        && event.event == wm_mouse_event::PRESS
-        && event.button == wm_mouse_event::LEFT)
+        && event.event == wm_mouse_event::PRESS)
     {
         m_last_clicked_grid = m_cursor[CURSOR_MOUSE];
 
@@ -430,7 +429,10 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
         const coord_def gc(cx + m_cx_to_gx, cy + m_cy_to_gy);
         tiles.place_cursor(CURSOR_MOUSE, gc);
 
-        return CK_MOUSE_CLICK;
+        if (event.button == wm_mouse_event::LEFT)
+            return CK_MOUSE_CLICK;
+        else if (event.button == wm_mouse_event::RIGHT)
+            return CK_MOUSE_CMD;
     }
 
     if (mouse_control::current_mode() == MOUSE_MODE_MACRO
@@ -570,7 +572,7 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
 int tile_click_cell(const coord_def &gc, unsigned char mod)
 {
     monster* mon = monster_at(gc);
-    if (mon && you.can_see(*mon))
+    if (mon && you.aware_of(*mon))
     {
         if (_handle_distant_monster(mon, mod))
             return CK_MOUSE_CMD;
@@ -765,7 +767,7 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
     else // non-player squares
     {
         const monster* mon = monster_at(gc);
-        if (mon && you.can_see(*mon))
+        if (mon && you.aware_of(*mon))
         {
             has_monster = true;
             // TODO: is see_cell_no_trans too strong?

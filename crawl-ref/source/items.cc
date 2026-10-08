@@ -386,12 +386,9 @@ bool dec_inv_item_quantity(int obj, int amount)
 
     if (you.inv[obj].quantity <= amount)
     {
-        item_skills(you.inv[obj], you.skills_to_hide);
-
         you.inv[obj].base_type = OBJ_UNASSIGNED;
         you.inv[obj].quantity  = 0;
         you.inv[obj].props.clear();
-
         ret = true;
 
         // If we're repeating a command, the repetitions used up the
@@ -400,6 +397,9 @@ bool dec_inv_item_quantity(int obj, int amount)
         crawl_state.cancel_cmd_repeat();
         crawl_state.cancel_cmd_again();
         quiver::on_actions_changed();
+
+        if (you.last_fired == obj)
+            you.last_fired = -1;
     }
     else
         you.inv[obj].quantity -= amount;
@@ -994,10 +994,7 @@ void identify_item(item_def& item)
         identify_item_type(item.base_type, item.sub_type);
 
     if (in_inventory(item))
-    {
         shopping_list.cull_identical_items(item);
-        item_skills(item, you.skills_to_show);
-    }
 
     if (notes_are_active()
         && is_interesting_item(item)
@@ -1035,14 +1032,7 @@ static bool _id_floor_item(item_def &item)
     {
         if (item.is_identified())
             return false;
-
-        // autopickup hack for previously-unknown items
-        if (item_needs_autopickup(item))
-            item.props[NEEDS_AUTOPICKUP_KEY] = true;
         identify_item(item);
-        // but skip ones that we discover to be useless
-        if (item.props.exists(NEEDS_AUTOPICKUP_KEY) && is_useless_item(item))
-            item.props.erase(NEEDS_AUTOPICKUP_KEY);
         return true;
     }
 
@@ -1746,9 +1736,6 @@ static void _got_item(item_def& item)
     seen_item(item);
     shopping_list.cull_identical_items(item);
     item.flags |= ISFLAG_HANDLED;
-
-    if (item.props.exists(NEEDS_AUTOPICKUP_KEY))
-        item.props.erase(NEEDS_AUTOPICKUP_KEY);
 }
 
 void get_gold(const item_def& item, int quant, bool quiet)
@@ -1909,7 +1896,6 @@ static void _get_book(item_def& it)
         mprf(T_("You pick up %s and begin studying."),
              it.name(DESC_A).c_str());
     you.skill_manual_points[sk] += it.skill_points;
-    you.skills_to_show.insert(sk);
 }
 
 static void _get_voucher(item_def& it)
@@ -2048,7 +2034,6 @@ static void _get_orb()
     if (bezotted())
         mpr(T_("Zot can harm you no longer."));
 
-    env.orb_pos = you.pos(); // can be wrong in wizmode
     orb_pickup_noise(you.pos(), 30);
 
     start_orb_run(CHAPTER_ESCAPING, T_("Now all you have to do is get back out "
@@ -2458,7 +2443,6 @@ static int _place_item_in_free_slot(item_def &it, int quant_got,
     you.last_pickup[item.link] = quant_got;
     quiver::on_item_pickup(freeslot);
     quiver::on_actions_changed();
-    item_skills(item, you.skills_to_show);
 
     if (const item_def* newitem = auto_assign_item_slot(item))
         return newitem->link;
@@ -2630,7 +2614,6 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
                 inc_mitm_item_quantity(si->index(), item.quantity);
                 destroy_item(ob);
                 ob = si->index();
-                gozag_move_gold_to_top(p);
                 if (you.see_cell(p))
                 {
                     // XXX: Is it actually necessary to identify when the
@@ -2668,12 +2651,6 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
         item.link = env.igrid(p);
         env.igrid(p) = ob;
     }
-
-    if (item_is_orb(item))
-        env.orb_pos = p;
-
-    if (item.base_type != OBJ_GOLD)
-        gozag_move_gold_to_top(p);
 
     if (you.see_cell(p))
     {
@@ -2776,7 +2753,7 @@ int copy_item_to_grid(const item_def &item, const coord_def& p,
 
     if (mark_dropped)
     {
-        new_item.slot   = index_to_letter(item.link);
+        new_item.slot   = item.slot;
         new_item.flags |= ISFLAG_DROPPED;
         new_item.flags &= ~ISFLAG_THROWN;
         origin_set_unknown(new_item);
@@ -2873,12 +2850,6 @@ bool drop_item(int item_dropped, int quant_drop)
 
     if (item_is_equipped(item))
     {
-        if (item.base_type == OBJ_GIZMOS)
-        {
-            mpr(T_("That is permanently installed in your exoskeleton."));
-            return false;
-        }
-
         const bool is_wpn = is_weapon(item);
         if (!Options.easy_unequip && !is_wpn)
         {
@@ -3275,18 +3246,12 @@ bool item_needs_autopickup(const item_def &item, bool ignore_force)
     if (item.flags & ISFLAG_DROPPED)
         return false;
 
-    if (item.props.exists(NEEDS_AUTOPICKUP_KEY))
-        return true;
-
     return _is_option_autopickup(item, ignore_force);
 }
 
 bool can_autopickup()
 {
-    // [ds] Checking for autopickups == 0 is a bad idea because
-    // autopickup is still possible with inscriptions and
-    // pickup_thrown.
-    if (Options.autopickup_on <= 0)
+    if (!Options.autopickup_on)
         return false;
 
     if (!i_feel_safe())
@@ -3664,7 +3629,7 @@ int get_max_subtype(object_class_type base_type)
         NUM_TALISMANS,
         NUM_GEM_TYPES,
         1,
-        1,
+        NUM_BAUBLES,
     };
     COMPILE_CHECK(ARRAYSZ(max_subtype) == NUM_OBJECT_CLASSES);
 
@@ -3772,6 +3737,15 @@ bool item_def::appearance_initialized() const
     return rnd != 0 || is_unrandom_artefact(*this);
 }
 
+// Assigns a unique identifier to this item (if it doesn't already have one)
+// and returns it.
+int item_def::give_unique_id()
+{
+    if (!props.exists(ITEM_UNIQUE_ID))
+        props[ITEM_UNIQUE_ID].get_int() = ++you.last_item_uid;
+
+    return props[ITEM_UNIQUE_ID].get_int();
+}
 
 /**
  * Assuming this item is a randart weapon/armour, what colour is it?
@@ -4240,10 +4214,16 @@ colour_t item_def::talisman_colour() const
         return BROWN;
     case TALISMAN_INKWELL:
         return BLUE;
+    case TALISMAN_VISION:
+        return ETC_MAGIC;
+    case TALISMAN_GECKO:
+        return ETC_SHIMMER_BLUE;
     case TALISMAN_PROTEAN:
         return ETC_RANDOM;
     case TALISMAN_RIMEHORN:
         return LIGHTBLUE;
+    case TALISMAN_MIST:
+        return ETC_SMOKE;
     case TALISMAN_SPIDER:
         return LIGHTGREEN;
     case TALISMAN_AQUA:
@@ -4254,6 +4234,8 @@ colour_t item_def::talisman_colour() const
         return ETC_POISON;
     case TALISMAN_SPORE:
         return BROWN;
+    case TALISMAN_JADE:
+        return ETC_ELEMENTAL;
     case TALISMAN_MAW:
         return ETC_BLOOD;
     case TALISMAN_SERPENT:
@@ -4804,11 +4786,6 @@ bool get_item_by_name(item_def *item, const char* specs,
         }
         else if (type_wanted == BOOK_RANDART_THEME)
             build_themed_book(*item, capped_spell_filter(20));
-        else if (type_wanted == BOOK_RANDART_LEVEL)
-        {
-            int level = random_range(1, 9);
-            make_book_level_randart(*item, level);
-        }
         break;
 
     case OBJ_WANDS:
@@ -5013,17 +4990,7 @@ static int _get_item_base(const item_def &item)
  */
 static void _identify_last_item(item_def &item)
 {
-    if (!in_inventory(item) && item_needs_autopickup(item)
-        && (item.base_type == OBJ_STAVES
-            || item.base_type == OBJ_JEWELLERY))
-    {
-        item.props[NEEDS_AUTOPICKUP_KEY] = true;
-    }
-
     identify_item(item);
-
-    if (item.props.exists(NEEDS_AUTOPICKUP_KEY) && is_useless_item(item))
-        item.props.erase(NEEDS_AUTOPICKUP_KEY);
 
     const string class_name = item.base_type == OBJ_JEWELLERY ?
                                     item_base_name(item) :
@@ -5068,7 +5035,7 @@ bool maybe_identify_base_type(item_def &item)
     for (int i = item_base; i < item_count + item_base; i++)
     {
         const bool identified = you.type_ids[item.base_type][i]
-                             || item_known_excluded_from_set(item.base_type, i);
+                             || item_known_not_to_generate(item.base_type, i);
         ident_count += identified ? 1 : 0;
     }
 

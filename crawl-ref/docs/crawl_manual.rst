@@ -269,7 +269,7 @@ Willpower
 
 Size
   Different species have different sizes: Spriggans and Felids are very small;
-  Kobolds are small; Oni and Trolls are large; Nagas and Armataurs are large
+  Kobolds are small; Oni and Trolls are large; Nagas and Gale Centaurs are large
   with a medium torso; all other species are medium-sized. Many talismans will
   change your size. Size affects your evasion: the smaller your character, the
   more evasive it is. On the other hand, characters of larger than medium size
@@ -1646,17 +1646,16 @@ Deep Elves (DE)
    melee combat and physical defence, although they are capable at using bows
    and other ranged weapons.
 
-Armataurs (At)
-  The Armataurs are a large, scaled mammalian species, walking on four feet
-  and swinging a powerful tail behind them. Their elephant-back armies
-  terrorise the lands outside the Dungeon.
+Barachim (Ba)
+  Barachim are an amphibious humanoid species, spawned at the dawn of time as
+  servants for the gods. Inevitably, they rebelled and fled into the mortal
+  world; but even uncounted years later, the darkness still flees at their
+  approach, remembering those who they once served.
 
-  Armataurs instinctively roll when moving toward foes, getting a free move and
-  regenerating magic. They have great aptitudes with armour and shields, though
-  their body shape reduces the protection offered by body armour early on. At
-  higher levels they also regenerate both health and magic when rolling, making
-  them truly resilient.
-
+  Barachim's most remarkable trait is their grossly overmuscled legs, which
+  allow them to leap great distances. When not leaping, they are somewhat
+  slow-moving, and the long sight-lines that their heritage creates can be a
+  major disadvantage, but they can master almost any skill.
 
 Intermediate Species
 ====================
@@ -1774,26 +1773,6 @@ Oni (On)
   Their large size prevents them from wearing most forms of armour, and are poor
   at dodging, relying on their enormous bulk to survive battles instead.
 
-Barachim (Ba)
-  Barachim are an amphibious humanoid species, spawned at the dawn of time as
-  servants for the gods. Inevitably, they rebelled and fled into the mortal
-  world; but even uncounted years later, the darkness still flees at their
-  approach, remembering those who they once served.
-
-  Barachim's most remarkable trait is their grossly overmuscled legs, which
-  allow them to leap great distances. When not leaping, they are somewhat
-  slow-moving, and the long sight-lines that their heritage creates can be a
-  major disadvantage, but they can master almost any skill.
-
-Advanced Species
-================
-
-*Advanced* species have some substantial weaknesses, and/or add multiple complex
-new mechanics to gameplay. This category includes several species that
-experienced players may not find difficult per se, but that may require quite
-a bit of experience to adapt to. It also includes species that are just
-plain difficult, such as Mummies.
-
 Coglins (Co)
    Unlike most of their goblin kin, Coglins augment their tiny frames with
    charm-wrought steel. Their exoskeletons, capable of wielding weapons
@@ -1812,6 +1791,28 @@ Coglins (Co)
    that spirits of steel and sandalwood come to rest within every thing that
    draws blood, slowly and carefully re-attuning their exoskeletons to those
    spirits whenever they wield or remove weapons. Never scorn the spirits!
+
+Advanced Species
+================
+
+*Advanced* species have some substantial weaknesses, and/or add multiple complex
+new mechanics to gameplay. This category includes several species that
+experienced players may not find difficult per se, but that may require quite
+a bit of experience to adapt to. It also includes species that are just
+plain difficult, such as Mummies.
+
+Gale Centaur (GC)
+  Gale Centaurs are hardy hybrids with the lower body of a horse and the torso
+  of a human. Distant descendants of the Four Winds, they can stampede swiftly
+  towards enemies in battle and trample entire groups of them backward. As they
+  become more experienced, one of the Four Winds will further augment their
+  combat prowess based on the skills they have trained the most.
+
+  Their lineage gives them an excellent affinity for air and translocations
+  magic as well as invocations. Their defensive aptitudes are solid, though
+  their size impairs their evasion and unusual body shape reduces the benefit
+  they get from heavy armour. They learn many other skills slowly, but the
+  strength of their winds make them a force to be reckoned with nonetheless.
 
 Vine Stalkers (VS)
   Limber in shape, Vine Stalkers are anthropomorphic masses of thick vines.
@@ -1896,10 +1897,10 @@ Nagas (Na)
   invisible creatures, and have tough skin, but their tails are relatively slow
   and cannot move them around as quickly as can other creatures' legs (this only
   affects their movement rate; all other actions are at normal speed). Like
-  Armataurs, their body shape also prevents them from gaining full protection
-  from body armour. A Naga's biggest forte is stealth: Nagas are very good at
-  moving unnoticed. Their tails eventually grow strong enough to constrict
-  their foes in combat.
+  Gale Centaurs, their body shape also prevents them from gaining full
+  protection from body armour. A Naga's biggest forte is stealth: Nagas are very
+  good at moving unnoticed. Their tails eventually grow strong enough to
+  constrict their foes in combat.
 
   Nagas can spit poison; the accuracy and damage of this poison increases with
   the Naga's experience level.
@@ -2081,12 +2082,6 @@ Artificers
   help them through the early Dungeon. Wands have a limited number of uses,
   though, so they'll want to upgrade from their club ASAP.
 
-Shapeshifters
-  Shapeshifters use talismans to shift their body into different forms,
-  granting them uncanny power but making them unable to use some items.
-  They enter the dungeon with two talismans, some flux baubles, and a
-  potion of lignification.
-
 Wanderers
   Wanderers are "jacks-of-all-trades, masters of none". They start the game
   with a random assortment of skills, items, and maybe spells.
@@ -2096,6 +2091,31 @@ Delvers
   surface of the Dungeon. They're equipped with a wide variety of magical escape
   tools, and are well advised to use them to travel to earlier dungeon floors as
   quickly as possible.
+
+Metamorph backgrounds
+=====================
+
+Metamorphs use talismans to transform their bodies, giving them a variety of
+strange and unique power, but often limiting the equipment they can wear.
+
+Shapeshifters
+  Shapeshifters are melee combatants, trained in unarmed combat and capable of
+  eventually transforming into a variety of bestial forms. They enter the
+  dungeon with some flux baubles, a potion of lignification, and quill and
+  protean talismans - the latter of which will only reveal its true form as they
+  gain Shapeshifting skill.
+
+Stalkers
+  Stalkers are clever metamorphs who specialise in forms which improve their
+  subterfuge, allowing them to dispatch distracted enemies or debilitate them
+  with noxious clouds. They start with a dagger, some centipede baubles, and
+  gecko and mist talismans.
+
+Mystics
+  Mystics are esoteric mages who use talismans to augment their magical
+  abilities in unique ways. They start with a selection of spells that draw upon
+  the four elements, as well as vision and jade talismans, and a potion of
+  magic.
 
 Warrior-mage backgrounds
 ========================
@@ -2243,7 +2263,7 @@ command to target a specific monster with a reaching attack, or use Autofight
 
 Finally, Unarmed Combat skill increases the accuracy, damage, and speed of
 attacks made while unarmed. Note that most auxiliary attacks, such as an
-Armataur's tail-slap or a Minotaur's headbutt, are not affected by Unarmed
+Draconian's tail-slap or a Minotaur's headbutt, are not affected by Unarmed
 Combat. The only exception is the off-hand punch attack granted by using
 neither weapon nor shield, which Unarmed Combat makes somewhat more effective.
 

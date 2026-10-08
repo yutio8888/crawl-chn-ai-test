@@ -11,6 +11,7 @@ crawl_require('dlua/util.lua')
 util.namespace('callback')
 
 dgn.necropolis_chance_percent = 3
+dgn.gulch_chance_percent = 6
 dgn.wizlab_chance_percent = 5
 dgn.desolation_chance_percent = 5
 
@@ -714,14 +715,11 @@ dgn.loot_potions = [[
 dgn.aux_armour = "cloak / scarf / helmet / hat / pair of gloves " ..
     "/ pair of boots"
 
--- Scarves not influenced by good_item.
-dgn.good_aux_armour = "cloak good_item / scarf / helmet good_item " ..
-    "/ hat good_item / pair of gloves good_item / pair of boots good_item"
+dgn.good_aux_armour = "cloak good_item / scarf good_item / helmet good_item"
+    .. " / hat good_item / pair of gloves good_item / pair of boots good_item"
 
--- Scarves excluded since they can't be randart.
-dgn.randart_aux_armour = "cloak randart / helmet randart / hat randart " ..
-    "/ pair of gloves randart / pair of boots randart"
-
+dgn.randart_aux_armour = "cloak randart / scarf randart / helmet randart"
+    .. " / hat randart / pair of gloves randart / pair of boots randart"
 
 --[[
 Add an argument to every entry in a given string already containing a set of

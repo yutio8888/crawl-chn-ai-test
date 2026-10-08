@@ -47,6 +47,7 @@ enum beam_type                  // bolt::flavour
     BEAM_BOLAS,
     BEAM_MERCURY,
     BEAM_BAT_CLOUD,
+    BEAM_ANTIMAGIC,
 
     // Enchantments
     BEAM_SLOW,
@@ -83,7 +84,6 @@ enum beam_type                  // bolt::flavour
     BEAM_VIRULENCE,
     BEAM_AGILITY,
     BEAM_SAP_MAGIC,
-    BEAM_DRAIN_MAGIC,
     BEAM_TUKIMAS_DANCE,
     BEAM_RESISTANCE,
     BEAM_UNRAVELLING,

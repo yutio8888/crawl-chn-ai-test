@@ -34,6 +34,7 @@
 #include "prompt.h"
 #include "random-pick.h"
 #include "religion.h"
+#include "shopping.h"
 #include "spl-cast.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
@@ -164,7 +165,6 @@ bool book_exists(book_type bt)
 {
     switch (bt)
     {
-    case BOOK_RANDART_LEVEL:
     case BOOK_RANDART_THEME:
     case BOOK_MANUAL:
     case BOOK_PARCHMENT:
@@ -266,6 +266,11 @@ static unordered_set<int> _player_nonbook_spells =
     // Form spells
     SPELL_RUST_BREATH,
     SPELL_GOLDEN_BREATH,
+    // 'Fake' spells used for triggering Dragon Veins
+    SPELL_DRAGON_VEIN_FIRE,
+    SPELL_DRAGON_VEIN_ICE,
+    SPELL_DRAGON_VEIN_AIR,
+    SPELL_DRAGON_VEIN_EARTH,
 };
 
 bool is_player_spell(spell_type which_spell)
@@ -449,14 +454,18 @@ bool library_add_spells(vector<spell_type> spells, bool quiet)
                 you.hidden_spells.set(st, true);
         }
     }
-    if (!new_spells.empty() && !quiet)
+    if (!new_spells.empty())
     {
-        vector<string> spellnames(new_spells.size());
-        transform(new_spells.begin(), new_spells.end(), spellnames.begin(), spell_title);
-        mprf_p(T_("You add the spell%1$s %2$s to your library."),
-               spellnames.size() > 1 ? "s" : "",
-               comma_separated_line(spellnames.begin(),
-                                    spellnames.end()).c_str());
+        if (!quiet)
+        {
+            vector<string> spellnames(new_spells.size());
+            transform(new_spells.begin(), new_spells.end(), spellnames.begin(), spell_title);
+            mprf_p(T_("You add the spell%1$s %2$s to your library."),
+                   spellnames.size() > 1 ? "s" : "",
+                   comma_separated_line(spellnames.begin(),
+                                        spellnames.end()).c_str());
+        }
+        shopping_list.spells_added_to_library(new_spells, quiet);
     }
     return !new_spells.empty();
 }
@@ -818,7 +827,7 @@ private:
                 continue;
             }
 
-            const bool spell_hidden = you.hidden_spells.get(spell.spell);
+            const bool spell_hidden = you.current_hidden_spells()->get(spell.spell);
 
             if (spell_hidden)
                 hidden_count++;
@@ -970,7 +979,8 @@ public:
                     return examine_by_key(item.hotkeys[0]);
             case action::hide:
             case action::unhide:
-                you.hidden_spells.set(spell, !you.hidden_spells.get(spell));
+                auto *hidden = you.current_hidden_spells();
+                hidden->set(spell, !hidden->get(spell));
                 update_entries();
                 update_menu(true);
                 update_more();
@@ -983,9 +993,6 @@ public:
 
 static spell_type _choose_mem_spell(spell_list &spells)
 {
-    // If we've gotten this far, we know that at least one spell here is
-    // memorisable, which is enough.
-
     SpellLibraryMenu spell_menu(spells, SpellLibraryMenu::action::memorise);
 
     const vector<MenuEntry*> sel = spell_menu.show();
@@ -1022,7 +1029,9 @@ bool can_learn_spell(bool silent)
 
 bool learn_spell()
 {
-    spell_list spells(_get_spell_list());
+    // Include spells we can't currently memorise (e.g. all of them, while
+    // worshipping Trog) so the library can still be browsed and described.
+    spell_list spells(_get_spell_list(false, false));
     if (spells.empty())
         return false;
 
@@ -1148,9 +1157,6 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
 
     string mem_spell_warning_string = "";
 
-    if (!wizard)
-        mem_spell_warning_string = god_spell_warn_string(specspell, you.religion);
-
     if (interactive)
     {
         const string prompt = make_stringf_p(
@@ -1180,8 +1186,6 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         if (!already_learning_spell(specspell))
             start_delay<MemoriseDelay>(spell_difficulty(specspell), specspell);
         you.turn_is_over = true;
-
-        did_god_conduct(DID_SPELL_MEMORISE, 2 + random2(5));
     }
 
     quiver::on_actions_changed();
@@ -1242,7 +1246,14 @@ spret divine_exegesis(bool fail)
 
     ASSERT(is_valid_spell(spell));
 
-    return cast_a_spell(false, spell, nullptr, fail);
+    spret ret = cast_a_spell(false, spell, nullptr, fail);
+    if (ret == spret::success)
+    {
+        you.duration[DUR_EXEGESIS] = random_range(90, 140);
+        you.props[EXEGESIS_SPELL] = spell;
+    }
+
+    return ret;
 }
 
 static spell_list _get_player_servitor_spells()

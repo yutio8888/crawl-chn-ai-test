@@ -124,9 +124,11 @@ bool is_bad_item(const item_def &item);
 bool is_dangerous_item(const item_def& item, bool temp = false);
 bool is_useless_item(const item_def &item, bool temp = false,
                      bool ident = false);
-string cannot_read_item_reason(const item_def *item=nullptr, bool temp=true, bool ident=false);
+string cannot_read_item_reason(const item_def *item=nullptr, bool temp=true,
+                               bool ident=false, bool *god_forbids=nullptr);
 string cannot_drink_item_reason(const item_def *item=nullptr,
-                                bool temp=true, bool use_check=false, bool ident = false);
+                                bool temp=true, bool use_check=false,
+                                bool ident=false, bool *god_forbids=nullptr);
 
 string make_name(uint32_t seed = rng::get_uint32(),
                  makename_type name_type = MNAME_DEFAULT);
@@ -140,6 +142,8 @@ const char* weapon_brand_name(const item_def& item, bool terse, brand_type overr
 const char* special_armour_type_name(special_armour_type ego, bool terse);
 const char* special_armour_type_name_en(special_armour_type ego, bool terse);
 const char* armour_ego_name(const item_def& item, bool terse);
+const char* special_missile_type_name(special_missile_type ego, mbn_type t);
+const char* special_missile_type_name_en(special_missile_type ego, mbn_type t);
 const char* missile_brand_name(const item_def& item, mbn_type t);
 const char* missile_brand_name_en(const item_def& item, mbn_type t);
 

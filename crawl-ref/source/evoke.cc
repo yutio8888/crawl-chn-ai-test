@@ -35,6 +35,7 @@
 #include "invent.h"
 #include "item-prop.h"
 #include "items.h"
+#include "item-use.h"
 #include "level-state-type.h"
 #include "libutil.h"
 #include "losglobal.h"
@@ -88,7 +89,6 @@ static bool _evoke_horn_of_geryon()
 
     mprf(MSGCH_SOUND, T_("You produce a hideous howling noise!"));
     noisy(15, you.pos()); // same as hell effect noise
-    did_god_conduct(DID_EVIL, 3);
     int num = 1;
     const int adjusted_power = you.skill(SK_EVOCATIONS, 10);
     if (adjusted_power + random2(90) > 130)
@@ -294,10 +294,9 @@ static bool _box_of_beasts()
     }
 
     // T_() handles language-dependent verb fragments (flies/飞 vs leaps/跳)
-    const char* verb = mons->airborne() ? T_("flies") : T_("leaps");
+    const string verb = mons->airborne() ? T_("flies") : T_("leaps");
     mprf(T_("...and %s %s out!"),
-         mons->name(DESC_A).c_str(), verb);
-    did_god_conduct(DID_CHAOS, random_range(5,10));
+         mons->name(DESC_A).c_str(), verb.c_str());
 
     return true;
 }
@@ -313,12 +312,7 @@ static bool _place_webs()
     const int max_range = LOS_DEFAULT_RANGE / 2 + 2;
     for (monster_near_iterator mi(you.pos(), LOS_SOLID); mi; ++mi)
     {
-        trap_def *trap = trap_at((*mi)->pos());
-        // Don't destroy non-web traps or try to trap monsters
-        // currently caught by something.
         if (you.pos().distance_from((*mi)->pos()) > max_range
-            || (!trap && env.grid((*mi)->pos()) != DNGN_FLOOR)
-            || (trap && trap->type != TRAP_WEB)
             || (*mi)->friendly()
             || (*mi)->caught())
         {
@@ -328,14 +322,7 @@ static bool _place_webs()
         if (!x_chance_in_y(web_chance, 100))
             continue;
 
-        if (trap && trap->type == TRAP_WEB)
-            destroy_trap((*mi)->pos());
-
-        place_specific_trap((*mi)->pos(), TRAP_WEB, 1); // 1 ammo = temp
-        // Reveal the trap
-        env.grid((*mi)->pos()) = DNGN_TRAP_WEB;
-        trap = trap_at((*mi)->pos());
-        trap->trigger(**mi);
+        mi->trap_in_web();
         webbed = true;
     }
     return webbed;
@@ -399,9 +386,7 @@ static bool _sack_of_spiders()
 
     const bool made_mons = _spill_out_spiders();
     if (made_mons)
-    {
         mpr(T_("...and things crawl out!"));
-    }
 
     const bool webbed = _place_webs();
     if (!made_mons && !webbed)
@@ -411,9 +396,7 @@ static bool _sack_of_spiders()
     }
 
     if (!made_mons)
-    {
         mpr(T_("...but only cobwebs fall out."));
-    }
     return true;
 }
 
@@ -496,25 +479,15 @@ void wind_blast(actor* agent, int pow, coord_def target)
     far_to_near_sorter sorter = {agent->pos()};
     sort(act_list.begin(), act_list.end(), sorter);
 
-    bolt wind_beam;
-    wind_beam.hit             = AUTOMATIC_HIT;
-    wind_beam.pierce          = true;
-    wind_beam.affects_nothing = true;
-    wind_beam.source          = agent->pos();
-    wind_beam.range           = LOS_RADIUS;
-    wind_beam.set_is_tracer(true);
+    bolt wind_beam = bolt::path_tracer(agent->pos(), coord_def());
 
     if (agent->is_player())
     {
         // Nemelex card only.
         if (pow > 120)
-        {
             mpr(T_("A mighty gale blasts forth from the card!"));
-        }
         else
-        {
             mpr(T_("A fierce wind blows from the card."));
-        }
     }
 
     noisy(8, agent->pos());
@@ -557,9 +530,7 @@ void wind_blast(actor* agent, int pow, coord_def target)
             break;
         }
 
-        for (unsigned int j = 0;
-             j < wind_beam.path_taken.size() - 1 && push;
-             ++j)
+        for (int j = 0; j < (int)wind_beam.path_taken.size() - 1 && push; ++j)
         {
             if (wind_beam.path_taken[j] == cloud_list[i])
             {
@@ -637,6 +608,14 @@ static bool _phial_of_floods(dist *target)
     return false;
 }
 
+bool mirror_can_effect(monster *victim)
+{
+    // Mirrored monsters (including by Mara, rakshasas) can still be
+    // re-reflected.
+    return actor_is_illusion_cloneable(victim)
+        || victim->has_ench(ENCH_PHANTOM_MIRROR);
+}
+
 static spret _phantom_mirror(dist *target)
 {
     bolt beam;
@@ -645,7 +624,7 @@ static spret _phantom_mirror(dist *target)
     if (!target)
         target = &target_local;
 
-    targeter_smite tgt(&you, LOS_RADIUS);
+    targeter_phantom_mirror tgt(&you);
 
     direction_chooser_args args;
     args.restricts = DIR_TARGET;
@@ -656,23 +635,6 @@ static spret _phantom_mirror(dist *target)
     if (!spell_direction(*target, beam, &args))
         return spret::abort;
     victim = monster_at(beam.target);
-    if (!victim || !you.can_see(*victim))
-    {
-        if (beam.target == you.pos())
-            mpr(T_("You can't use the mirror on yourself."));
-        else
-            mpr(T_("You can't see anything there to clone."));
-        return spret::abort;
-    }
-
-    // Mirrored monsters (including by Mara, rakshasas) can still be
-    // re-reflected.
-    if (!actor_is_illusion_cloneable(victim)
-        && !victim->has_ench(ENCH_PHANTOM_MIRROR))
-    {
-        mpr(T_("The mirror can't reflect that."));
-        return spret::abort;
-    }
 
     monster_info mi(victim);
     habitat_type habitat = mons_habitat(*victim);
@@ -867,7 +829,6 @@ static spret _tremorstone()
     beam.source_id  = MID_PLAYER;
     beam.thrower    = KILL_YOU;
     zappy(ZAP_TREMORSTONE, power, false, beam);
-    beam.range = 3;
     beam.ex_size = 2;
     beam.target = center;
 
@@ -1005,8 +966,46 @@ static bool _evoke_ally_only(const item_def &item, bool ident)
     return false;
 }
 
-string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
+static bool _centipede_bauble(item_def& item)
 {
+    const int skill = you.skill(SK_SHAPESHIFTING, 10);
+
+    int index = items(false, OBJ_WEAPONS, WPN_CENTIPEDE, 0);
+
+    // Let's be real; this isn't going to happen.
+    if (index == NON_ITEM)
+        return false;
+
+    item_def& wpn = env.item[index];
+    wpn.props[ATTACKS_REMAINING_KEY] = random_range(20, 25);
+    wpn.plus = div_rand_round(max(0, skill - 40), 10);
+    wpn.plus = min(9, div_rand_round(max(0, skill - 40), 10));
+    wpn.flags = ISFLAG_SUMMONED | ISFLAG_IDENTIFIED;
+
+    if (!room_in_inventory(wpn))
+    {
+        mpr(T_("You don't have enough room in your inventory!"));
+        destroy_item(index);
+        return false;
+    }
+
+    if (!try_equip_item(wpn, true))
+    {
+        destroy_item(index);
+        return false;
+    }
+
+    dec_mitm_item_quantity(index, 1);
+    dec_inv_item_quantity(item.link, 1);
+
+    return true;
+}
+
+string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident,
+                                bool *god_forbids)
+{
+    if (god_forbids)
+        *god_forbids = false;
     // id is not at issue here
     if (temp && you.berserk())
         return T_("You are too berserk!");
@@ -1027,11 +1026,40 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
         return "";
     }
 
-    if (item->is_type(OBJ_BAUBLES, BAUBLE_FLUX))
+    // Your god won't let you evoke items they forbid.
+    if (god_forbids_item(*item, temp))
     {
-        if (you.form == transformation::flux && temp)
+        if (god_forbids)
+            *god_forbids = true;
+        return make_stringf(T_("%s forbids the use of this item."),
+                            uppercase_first(god_name(you.religion)).c_str());
+    }
+
+    if (item->base_type == OBJ_BAUBLES)
+    {
+        if (you.form == transformation::flux && temp && item->sub_type == BAUBLE_FLUX)
             return T_("you are already filled with unstable energy.");
 
+        if (item->sub_type == BAUBLE_CENTIPEDE)
+        {
+            if (temp && you.skill(SK_SHAPESHIFTING) < CENTIPEDE_BAUBLE_MINSKILL)
+            {
+                return make_stringf(T_("you need at least %s shapeshifting skill to use this effectively."),
+                                    to_string(CENTIPEDE_BAUBLE_MINSKILL).c_str());
+            }
+
+            item_def dummy;
+            dummy.base_type = OBJ_WEAPONS;
+            dummy.sub_type = WPN_CENTIPEDE;
+            string reason;
+            if (!can_equip_item(dummy, temp, &reason))
+                return reason;
+            if (you.allies_forbidden())
+                return T_("allies are forbidden to you.");
+        }
+
+        // XXX: Centipede bauble isn't actually changing you into flux form, of course,
+        //      but the same form-changing limitations apply.
         const string form_unreason = cant_transform_reason(transformation::flux, false, temp);
         if (!form_unreason.empty())
             return lowercase_first(form_unreason);
@@ -1083,9 +1111,10 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
 
 bool item_currently_evokable(const item_def *item)
 {
-    const string err = cannot_evoke_item_reason(item);
+    bool god_forbids = false;
+    const string err = cannot_evoke_item_reason(item, true, true, &god_forbids);
     if (!err.empty())
-        mpr(err);
+        mprf(god_forbids ? MSGCH_GOD : MSGCH_PLAIN, "%s", err.c_str());
     return err.empty();
 }
 
@@ -1110,16 +1139,23 @@ bool evoke_item(item_def& item, dist *preselect)
         return true;
 
     case OBJ_BAUBLES:
-        if (!check_transform_into(transformation::flux, false))
-            return false;
+        switch (item.sub_type)
+        {
+            case BAUBLE_FLUX:
+                if (!check_transform_into(transformation::flux, false))
+                    return false;
 
-        mprf(T_("You crush the flux bauble in your %s and feel its energy flooding your body."),
-            you.hand_name(false).c_str());
-        ASSERT(in_inventory(item));
-        dec_inv_item_quantity(item.link, 1);
-        transform(0, transformation::flux, true);
-        you.props[FLUX_ENERGY_KEY] = 45;
-        return true;
+                mprf(T_("You crush the flux bauble in your %s and feel its energy "
+                    "flooding your body."), you.hand_name(false).c_str());
+                ASSERT(in_inventory(item));
+                dec_inv_item_quantity(item.link, 1);
+                transform(0, transformation::flux, true);
+                you.props[FLUX_ENERGY_KEY] = 45;
+                return true;
+
+            case BAUBLE_CENTIPEDE:
+                return _centipede_bauble(item);
+        }
 
     case OBJ_MISCELLANY:
         ASSERT(in_inventory(item));
@@ -1199,7 +1235,7 @@ bool evoke_item(item_def& item, dist *preselect)
             you.duration[DUR_QUAD_DAMAGE] = 30 * BASELINE_DELAY;
             ASSERT(in_inventory(item));
             dec_inv_item_quantity(item.link, 1);
-            invalidate_agrid(true);
+            invalidate_agrid();
             break;
 
         case MISC_PHANTOM_MIRROR:
@@ -1426,6 +1462,6 @@ void stardust_orb_trigger(int mp_spent)
         && !you.has_mutation(MUT_HP_CASTING))
     {
         schedule_stardust_fineff(&you, stardust_orb_power(mp_spent),
-                                 stardust_orb_max());
+                                 stardust_orb_max(), SHOOTING_STAR_ORB);
     }
 }

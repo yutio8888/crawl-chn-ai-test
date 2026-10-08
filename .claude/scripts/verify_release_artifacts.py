@@ -16,7 +16,7 @@ from pathlib import Path, PurePosixPath
 
 
 RELEASE_TAG_RE = re.compile(
-    r"0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*-"
+    r"(?:0\.34\.1-zh[1-9][0-9]*-[1-9][0-9]*|[0-9]+\.[0-9]+-trunk)-"
     r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})\Z"
 )
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
@@ -55,10 +55,14 @@ class ArtifactRule:
 def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
     major = ".".join(tag.split("-", 1)[0].split(".")[:2])
     windows_root = f"stone_soup-tiles-{major}"
-    macos_root = "Dungeon Crawl Stone Soup - Tiles.app"
+    macos_name = "Dungeon Crawl Stone Soup"
+    if "-trunk-" in tag:
+        macos_name += " Trunk"
+    macos_name += " - Tiles"
+    macos_root = f"{macos_name}.app"
     macos_resources = f"{macos_root}/Contents/Resources"
     macos_executable = (
-        f"{macos_root}/Contents/MacOS/Dungeon Crawl Stone Soup - Tiles"
+        f"{macos_root}/Contents/MacOS/{macos_name}"
     )
     return (
         ArtifactRule(
@@ -703,7 +707,7 @@ def validate_release(
     if RELEASE_TAG_RE.fullmatch(tag) is None:
         raise ReleaseArtifactError(
             "release tag must match '0.34.1-zhA-B-CCC' with A and B >= 1 "
-            "and CCC in the range 001-999"
+            "and CCC in the range 001-999, or X.Y-trunk-NNN with NNN in 001-999"
         )
     if COMMIT_RE.fullmatch(commit) is None:
         raise ReleaseArtifactError("commit must be a lowercase 40-character SHA-1")

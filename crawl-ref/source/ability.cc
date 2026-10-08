@@ -66,6 +66,7 @@
 #include "notes.h"
 #include "options.h"
 #include "output.h"
+#include "player-reacts.h"
 #include "player-stats.h"
 #include "potion.h"
 #include "prompt.h"
@@ -171,6 +172,9 @@ skill_type invo_skill(god_type god)
     {
         case GOD_KIKUBAAQUDGHA:
             return SK_NECROMANCY;
+
+        case GOD_SIF_MUNA:
+            return SK_SPELLCASTING;
 
 #if TAG_MAJOR_VERSION == 34
         case GOD_PAKELLAS:
@@ -322,8 +326,9 @@ struct ability_def
 
 static int _lookup_ability_slot(ability_type abil);
 static spret _do_ability(const ability_def& abil, bool fail, dist *target,
-                         bolt& beam);
-static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp_cost);
+                         bolt& beam, int piety_cost, int mp_cost, int hp_cost);
+static void _finalize_ability_costs(const ability_def& abil, int piety_cost,
+                                    int mp_cost, int hp_cost);
 
 static vector<ability_def> &_get_ability_list()
 {
@@ -459,9 +464,8 @@ static vector<ability_def> &_get_ability_list()
         // Kikubaaqudgha
         { ABIL_KIKU_UNEARTH_WRETCHES, "Unearth Wretches",
             3, 0, 5, -1, {fail_basis::invo, 40, 5, 20}, abflag::none },
-        { ABIL_KIKU_SIGN_OF_RUIN,
-            NC_("spell or ability title", "Sign of Ruin"),
-            5, 0, 4, -1, {fail_basis::invo, 60, 5, 20}, abflag::target },
+        { ABIL_KIKU_SIGN_OF_RUIN, NC_("spell or ability title", "Sign of Ruin"),
+            5, 0, 4, LOS_MAX_RANGE, {fail_basis::invo, 60, 5, 20}, abflag::target },
         { ABIL_KIKU_GIFT_CAPSTONE_SPELLS, "Receive Forbidden Knowledge",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_KIKU_BLESS_WEAPON, "Brand Weapon With Pain",
@@ -517,11 +521,13 @@ static vector<ability_def> &_get_ability_list()
 
         // Sif Muna
         { ABIL_SIF_MUNA_CHANNEL_ENERGY, "Channel Magic",
-            0, 0, 2, -1, {fail_basis::invo, 60, 4, 25}, abflag::none },
+            0, 0, 3, -1, {fail_basis::invo, 65, 4, 25}, abflag::none },
         { ABIL_SIF_MUNA_FORGET_SPELL, "Forget Spell",
             0, 0, 8, -1, {fail_basis::invo}, abflag::none },
         { ABIL_SIF_MUNA_DIVINE_EXEGESIS, "Divine Exegesis",
-            0, 0, 12, -1, {fail_basis::invo, 80, 4, 25}, abflag::none },
+            0, 0, 12, -1, {fail_basis::invo, 100, 4, 25}, abflag::none },
+        { ABIL_SIF_MUNA_REPEAT_EXEGESIS, N_("Repeat Exegesis"),
+            0, 0, 3, -1, {fail_basis::invo}, abflag::none },
 
         // Trog
         { ABIL_TROG_BERSERK, "Berserk",
@@ -530,17 +536,19 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 2, -1, {fail_basis::invo, piety_breakpoint(2), 0, 1},
             abflag::none },
         { ABIL_TROG_BROTHERS_IN_ARMS, "Brothers in Arms",
-            0, 0, 5, -1, {fail_basis::invo, piety_breakpoint(5), 0, 1},
+            0, 0, 6, -1, {fail_basis::invo, 88, 0, 2},
             abflag::none },
 
         // Elyvilon
         { ABIL_ELYVILON_PURIFICATION, "Purification",
             2, 0, 2, -1, {fail_basis::invo, 20, 5, 20}, abflag::conf_ok },
-        { ABIL_ELYVILON_HEAL_OTHER, "Heal Other",
-            2, 0, 2, -1, {fail_basis::invo, 40, 5, 20}, abflag::none },
+        { ABIL_ELYVILON_PACIFY, N_("Pacify"),
+            2, 0, 2, LOS_MAX_RANGE, {fail_basis::invo, 40, 5, 20}, abflag::target },
         { ABIL_ELYVILON_HEAL_SELF, "Heal Self",
             2, 0, 3, -1, {fail_basis::invo, 40, 5, 20}, abflag::none },
-        { ABIL_ELYVILON_DIVINE_VIGOUR, "Divine Vigour",
+        { ABIL_ELYVILON_DIVINE_ALMS, N_("Divine Alms"),
+            3, 0, 0, -1, {fail_basis::invo, 40, 5, 20}, abflag::target },
+        { ABIL_ELYVILON_AURA_OF_VIGOUR, N_("Aura of Vigour"),
             0, 0, 6, -1, {fail_basis::invo, 80, 4, 25}, abflag::none },
 
         // Lugonu
@@ -576,18 +584,18 @@ static vector<ability_def> &_get_ability_list()
 
         // Beogh
         { ABIL_BEOGH_DISMISS_APOSTLE_1, "Dismiss Apostle #1",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
         { ABIL_BEOGH_DISMISS_APOSTLE_2, "Dismiss Apostle #2",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
         { ABIL_BEOGH_DISMISS_APOSTLE_3, "Dismiss Apostle #3",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
         { ABIL_BEOGH_SMITING, "Smiting",
             3, 0, 2, LOS_MAX_RANGE,
             {fail_basis::invo, 40, 5, 20}, abflag::none },
         { ABIL_BEOGH_RECALL_APOSTLES, "Recall Apostles",
             2, 0, 0, -1, {fail_basis::invo, 30, 6, 20}, abflag::none },
         { ABIL_BEOGH_RECRUIT_APOSTLE, "Recruit Apostle",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
         { ABIL_BEOGH_BLOOD_FOR_BLOOD, "Blood for Blood",
             8, 0, 20, -1, {fail_basis::invo, 70, 4, 25}, abflag::none },
 
@@ -619,16 +627,16 @@ static vector<ability_def> &_get_ability_list()
             10, 0, 12, -1, {fail_basis::invo, 80, 4, 25}, abflag::none },
 
         // Ashenzari
-        { ABIL_ASHENZARI_CURSE, "Curse Item",
+        { ABIL_ASHENZARI_BIND, N_("Ritual of Binding"),
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
-        { ABIL_ASHENZARI_UNCURSE, "Shatter the Chains",
+        { ABIL_ASHENZARI_SHATTER, N_("Shatter the Chains"),
             0, 0, 0, -1, {fail_basis::invo}, abflag::curse },
 
         // Dithmenos
         { ABIL_DITHMENOS_SHADOWSLIP, N_("Shadowslip"),
             4, 60, 4, -1, {fail_basis::invo, 50, 6, 30}, abflag::instant },
         { ABIL_DITHMENOS_APHOTIC_MARIONETTE, N_("Aphotic Marionette"),
-            5, 0, 3, -1, {fail_basis::invo, 60, 4, 25}, abflag::target },
+            5, 0, 3, LOS_MAX_RANGE, {fail_basis::invo, 60, 4, 25}, abflag::target },
         { ABIL_DITHMENOS_PRIMORDIAL_NIGHTFALL, N_("Primordial Nightfall"),
             8, 0, 13, -1, {fail_basis::invo, 80, 4, 25}, abflag::none },
 
@@ -715,19 +723,19 @@ static vector<ability_def> &_get_ability_list()
             2, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_HEPLIAKLQANA_TRANSFERENCE, "Transference",
             2, 0, 3, LOS_MAX_RANGE, {fail_basis::invo, 40, 5, 20},
-            abflag::none },
+            abflag::target },
         { ABIL_HEPLIAKLQANA_IDEALISE, "Idealise",
             4, 0, 4, -1, {fail_basis::invo, 60, 4, 25}, abflag::none },
 
         { ABIL_HEPLIAKLQANA_TYPE_KNIGHT, "Ancestor Life: Knight",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
-        { ABIL_HEPLIAKLQANA_TYPE_BATTLEMAGE, "Ancestor Life: Battlemage",
+        { ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST, N_("Ancestor Life: Elementalist"),
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_HEPLIAKLQANA_TYPE_HEXER, "Ancestor Life: Hexer",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
 
         { ABIL_HEPLIAKLQANA_IDENTITY, "Ancestor Identity",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::instant },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::instant | abflag::silence_ok },
 
         // Wu Jian
         { ABIL_WU_JIAN_SERPENTS_LASH, "Serpent's Lash",
@@ -748,7 +756,7 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
 
         { ABIL_RENOUNCE_RELIGION, "Renounce Religion",
-            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+            0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
         { ABIL_CONVERT_TO_BEOGH, "Convert to Beogh",
             0, 0, 0, -1, {fail_basis::invo}, abflag::conf_ok },
 #ifdef WIZARD
@@ -762,6 +770,22 @@ static vector<ability_def> &_get_ability_list()
 
     };
     return Ability_List;
+}
+
+static const ability_def& get_ability_def(ability_type abil)
+{
+    static map<ability_type, ability_def> abil_map;
+
+    // Initialize map on first lookup.
+    if (abil_map.empty())
+        for (const ability_def &ab_def : _get_ability_list())
+            abil_map.insert(make_pair(ab_def.ability, ab_def));
+
+    const ability_def* def = map_find(abil_map, abil);
+    if (def)
+        return *def;
+    else
+        return _get_ability_list()[0];
 }
 
 static map<ability_type, spell_type> breath_to_spell =
@@ -780,15 +804,6 @@ static map<ability_type, spell_type> breath_to_spell =
 spell_type draconian_breath_to_spell(ability_type abil)
 {
     return breath_to_spell[abil];
-}
-
-static const ability_def& get_ability_def(ability_type abil)
-{
-    for (const ability_def &ab_def : _get_ability_list())
-        if (ab_def.ability == abil)
-            return ab_def;
-
-    return _get_ability_list()[0];
 }
 
 vector<ability_type> get_defined_abilities()
@@ -965,7 +980,9 @@ static string _ashenzari_curse_text()
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
     return (T_("(Boost: "))
            + comma_separated_fn(curses.begin(), curses.end(),
-                                curse_abbr, "/", "/")
+                                [](const CrawlStoreValue& curse)
+                                { return string(C_("curse abbreviation", curse_abbr(curse).c_str())); },
+                                "/", "/")
            + ")";
 }
 
@@ -987,7 +1004,7 @@ const string make_cost_description(ability_type ability)
     if (ability == ABIL_CACOPHONY)
         ret += T_(", Noise");
 
-    if (ability == ABIL_ASHENZARI_CURSE
+    if (ability == ABIL_ASHENZARI_BIND
         && !you.props[CURSE_KNOWLEDGE_KEY].get_vector().empty())
     {
         ret += ", ";
@@ -1033,7 +1050,7 @@ const string make_cost_description(ability_type ability)
     }
 
     if (abil.flags & abflag::curse)
-        ret += T_(", Cursed item");
+        ret += T_(", Bound item");
 
     if (abil.flags & abflag::gold)
     {
@@ -1139,7 +1156,7 @@ static const string _detailed_cost_description(ability_type ability)
     if (abil.flags & abflag::curse)
     {
         have_cost = true;
-        ret << "\n" << T_("One cursed item");
+        ret << "\n" << T_("One bound item");
     }
 
     if (abil.flags & abflag::torchlight)
@@ -1239,7 +1256,8 @@ ability_type fixup_ability(ability_type ability)
         else
             return ability;
 
-    case ABIL_ELYVILON_HEAL_OTHER:
+    case ABIL_ELYVILON_PACIFY:
+    case ABIL_ELYVILON_DIVINE_ALMS:
     case ABIL_TSO_SUMMON_DIVINE_WARRIOR:
     case ABIL_TROG_BROTHERS_IN_ARMS:
     case ABIL_GOZAG_BRIBE_BRANCH:
@@ -1249,13 +1267,8 @@ ability_type fixup_ability(ability_type ability)
         else
             return ability;
 
-    case ABIL_SIF_MUNA_CHANNEL_ENERGY:
-        if (you.get_mutation_level(MUT_HP_CASTING))
-            return ABIL_NON_ABILITY;
-        return ability;
-
-    case ABIL_SIF_MUNA_FORGET_SPELL:
-        if (you.get_mutation_level(MUT_INNATE_CASTER))
+    case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
+        if (!you.duration[DUR_EXEGESIS])
             return ABIL_NON_ABILITY;
         return ability;
 
@@ -1297,6 +1310,18 @@ ability_type fixup_ability(ability_type ability)
         if (you.has_mutation(MUT_MAKHLEB_MARK_FANATIC))
             return ability;
         return ABIL_NON_ABILITY;
+
+    case ABIL_HEPLIAKLQANA_TYPE_KNIGHT:
+    case ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST:
+    case ABIL_HEPLIAKLQANA_TYPE_HEXER:
+        if (you.props.exists(HEPLIAKLQANA_ALLY_TYPE_KEY))
+            return ABIL_NON_ABILITY;
+        return ability;
+
+    case ABIL_NEMELEX_DRAW_STACK:
+        if (you.props[NEMELEX_STACK_KEY].get_vector().empty())
+            return ABIL_NON_ABILITY;
+        return ability;
 
     default:
         return ability;
@@ -1410,6 +1435,16 @@ string ability_name(ability_type ability, bool dbname)
                     return T_("Brand Self");
             }
 
+        case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
+            if (dbname)
+                return "Repeat Exegesis";
+            else if (!you.props.exists(EXEGESIS_SPELL))
+                return T_("Repeat Exegesis");
+            else
+                return make_stringf(T_("Recast %s"),
+                    spell_title(static_cast<spell_type>(
+                        you.props[EXEGESIS_SPELL].get_int())));
+
         default:
             if (!dbname && ability == ABIL_KIKU_SIGN_OF_RUIN)
                 return C_("spell or ability title", "Sign of Ruin");
@@ -1436,16 +1471,14 @@ static string _curse_desc()
     if (curses.empty())
         return "";
 
-    return T_("\nIf you bind an item with this curse Ashenzari will enhance "
-              "the following skills:\n")
-           + comma_separated_fn(curses.begin(), curses.end(), desc_curse_skills,
-                                T_(".\n"), T_(".\n")) + ".";
-
+    return T_("\nIf you bind an item with this ritual Ashenzari will enhance "
+           "the following skills:\n")
+           +  desc_curse_skills(curses) + T_(".");
 }
 
 static string _desc_sac_mut(const CrawlStoreValue &mut_store)
 {
-    return mut_upgrade_summary(static_cast<mutation_type>(mut_store.get_int()));
+    return innate_mut_upgrade_summary(static_cast<mutation_type>(mut_store.get_int()));
 }
 
 static string _sacrifice_desc(const ability_type ability)
@@ -1622,7 +1655,7 @@ string get_ability_desc(const ability_type ability, bool need_title)
 
     switch (ability)
     {
-        case ABIL_ASHENZARI_CURSE:
+        case ABIL_ASHENZARI_BIND:
             lookup += _curse_desc();
             break;
 
@@ -1641,6 +1674,14 @@ string get_ability_desc(const ability_type ability, bool need_title)
         {
             const mutation_type mut = makhleb_ability_to_mutation(ability);
             lookup += "\n" + get_mutation_desc(mut);
+        }
+        break;
+
+        case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
+        {
+            const char* spell_name = spell_english_name(static_cast<spell_type>(
+                you.props[EXEGESIS_SPELL].get_int()));
+            lookup = getLongDescription(make_stringf("%s spell", spell_name));
         }
         break;
 
@@ -1885,7 +1926,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
     if (you.is_silenced())
     {
         talent tal = get_talent(abil.ability);
-        if (tal.is_invocation && abil.ability != ABIL_RENOUNCE_RELIGION)
+        if (tal.is_invocation && !(abil.flags & abflag::silence_ok))
         {
             return fail(make_stringf_p(T_("You cannot call out to %s while %s."),
                                       god_name(you.religion).c_str(),
@@ -2017,7 +2058,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
         }
         return true;
 
-    case ABIL_ELYVILON_DIVINE_VIGOUR:
+    case ABIL_ELYVILON_AURA_OF_VIGOUR:
         if (you.duration[DUR_DIVINE_VIGOUR])
             return fail(T_("You have already been granted divine vigour!"));
         return true;
@@ -2046,7 +2087,8 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
         return true;
 
     case ABIL_SIF_MUNA_DIVINE_EXEGESIS:
-        return can_cast_spells(quiet, reason);
+    case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
+        return can_cast_spells(quiet, false, reason);
 
     case ABIL_FEDHAS_WALL_OF_BRIARS:
     {
@@ -2125,6 +2167,9 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
 
     case ABIL_HOP:
         return _can_hop(quiet, reason);
+
+    case ABIL_BESTIAL_TAKEDOWN:
+        return _can_movement_ability(quiet);
 
     case ABIL_INVENT_GIZMO:
     {
@@ -2227,16 +2272,30 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
             return fail(T_("You don't have enough experience to sacrifice."));
         return true;
 
-        // only available while your ancestor is alive.
+    // only available while your ancestor is alive.
     case ABIL_HEPLIAKLQANA_IDEALISE:
     case ABIL_HEPLIAKLQANA_RECALL:
     case ABIL_HEPLIAKLQANA_TRANSFERENCE:
+    {
         if (hepliaklqana_ancestor() == MID_NOBODY)
         {
             return fail(make_stringf(T_("%s is still trapped in memory!"),
                                      hepliaklqana_ally_name().c_str()));
         }
+
+        if (abil.ability != ABIL_HEPLIAKLQANA_RECALL)
+        {
+            monster* ancestor = hepliaklqana_ancestor_mon();
+            if (!ancestor || !you.can_see(*ancestor))
+            {
+                if (!quiet)
+                    mprf(T_("%s is not nearby!"), hepliaklqana_ally_name().c_str());
+                return false;
+            }
+        }
+
         return true;
+    }
 
     case ABIL_WU_JIAN_SERPENTS_LASH:
         if (you.attribute[ATTR_SERPENTS_LASH])
@@ -2388,7 +2447,7 @@ private:
 
 static vector<string> _desc_slouch_damage(const monster_info& mi)
 {
-    if (!monster_at(mi.pos) || !you.can_see(*monster_at(mi.pos)))
+    if (!monster_at(mi.pos) || !you.aware_of(*monster_at(mi.pos)))
         return vector<string>{};
     else if (!is_slouchable(mi.pos))
         return vector<string>{make_stringf(T_("not susceptible"))};
@@ -2467,6 +2526,8 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     case ABIL_CHEIBRIADOS_TIME_BEND:
     case ABIL_USKAYAW_STOMP:
         return make_unique<targeter_maybe_radius>(&you, LOS_NO_TRANS, 1, 0, 1);
+    case ABIL_MAKHLEB_VESSEL_OF_SLAUGHTER:
+        return make_unique<targeter_radius>(&you, LOS_SOLID, 3);
 
     // Multiposition:
     case ABIL_SPIDER_JUMP:
@@ -2529,7 +2590,7 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     case ABIL_TROG_HAND:
     case ABIL_ELYVILON_PURIFICATION:
     case ABIL_ELYVILON_HEAL_SELF:
-    case ABIL_ELYVILON_DIVINE_VIGOUR:
+    case ABIL_ELYVILON_AURA_OF_VIGOUR:
     case ABIL_LUGONU_ABYSS_EXIT:
     case ABIL_LUGONU_ABYSS_ENTER:
     case ABIL_NEMELEX_DRAW_DESTRUCTION: // Sometimes targeted, but not always.
@@ -2571,6 +2632,15 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     case ABIL_KIKU_SIGN_OF_RUIN:
         return make_unique<targeter_smite>(&you, LOS_RADIUS, 2, 2);
 
+    case ABIL_HEPLIAKLQANA_TRANSFERENCE:
+        return make_unique<targeter_transference>(have_passive(passive_t::transfer_drain) ? 1 : 0);
+
+    case ABIL_ELYVILON_DIVINE_ALMS:
+        return make_unique<targeter_divine_alms>();
+
+    case ABIL_ELYVILON_PACIFY:
+        return make_unique<targeter_pacify>();
+
     default:
         break;
     }
@@ -2579,6 +2649,7 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     {
         return make_unique<targeter_beam>(&you, ability_range(ability),
                                           ability_to_zap(ability),
+                                          SPELL_NO_SPELL,
                                           _ability_zap_pow(ability), 0, 0);
     }
 
@@ -2646,6 +2717,76 @@ static bool _not_free_religious_ability(ability_type ability)
                    || abil.get_mp_cost() > 0);
 }
 
+bool handle_post_ability_effects(ability_type ability,
+                                 spret ability_result,
+                                 int piety_cost,
+                                 int mp_cost,
+                                 int hp_cost,
+                                 bool is_invocation)
+{
+    const ability_def& abil = get_ability_def(ability);
+
+    switch (ability_result)
+    {
+        case spret::success:
+        {
+            practise_using_ability(abil.ability);
+            _finalize_ability_costs(abil, piety_cost, mp_cost, hp_cost);
+
+            // Ephemeral Shield activates on any invocation with a cost,
+            // even if that's just a cooldown or small amounts of HP.
+            // No rapidly wall-jumping or renaming your ancestor, alas.
+            if (_not_free_religious_ability(abil.ability)
+                && you.has_mutation(MUT_EPHEMERAL_SHIELD))
+            {
+                you.set_duration(DUR_EPHEMERAL_SHIELD, random_range(3, 5));
+                you.redraw_armour_class = true;
+            }
+
+            if (_not_free_religious_ability(abil.ability)
+                && you.unrand_equipped(UNRAND_DRAGONMASK)
+                && there_are_monsters_nearby(true, true, false))
+            {
+                if (x_chance_in_y(10 + 2 * abil.avg_piety_cost(), 100))
+                    _invoke_dragons();
+            }
+
+            // XXX: Merge Dismiss Apostle #1/2/3 into a single count
+            ability_type log_type = abil.ability;
+            if (log_type == ABIL_BEOGH_DISMISS_APOSTLE_2
+                || log_type == ABIL_BEOGH_DISMISS_APOSTLE_3)
+            {
+                log_type = ABIL_BEOGH_DISMISS_APOSTLE_1;
+            }
+
+            count_action(is_invocation ? CACT_INVOKE : CACT_ABIL, log_type);
+            return true;
+        }
+        case spret::fail:
+            if (!testbits(abil.flags, abflag::quiet_fail))
+                mpr(T_("You fail to use your ability."));
+            you.turn_is_over = true;
+            if (mp_cost)
+                refund_mp(mp_cost);
+            if (hp_cost)
+                refund_hp(hp_cost);
+            return false;
+        case spret::abort:
+            crawl_state.zero_turns_taken();
+            if (mp_cost)
+                refund_mp(mp_cost);
+            if (hp_cost)
+                refund_hp(hp_cost);
+            return false;
+        case spret::seen_hups:
+            return false;
+        case spret::none:
+        default:
+            die("Weird ability return type");
+            return false;
+    }
+}
+
 bool activate_talent(const talent& tal, dist *target)
 {
     const ability_def& abil = get_ability_def(tal.which);
@@ -2679,7 +2820,8 @@ bool activate_talent(const talent& tal, dist *target)
         args.hitfunc = hitfunc.get();
         args.restricts = testbits(abil.flags, abflag::target) ? DIR_ENFORCE_RANGE
                                                               : DIR_NONE;
-        args.mode = TARG_HOSTILE;
+        args.mode = abil.ability == ABIL_ELYVILON_DIVINE_ALMS ? TARG_FRIEND
+                                                              : TARG_HOSTILE;
         args.range = range;
         args.needs_path = !testbits(abil.flags, abflag::target);
         args.top_prompt = make_stringf(T_("%s: <w>%s</w>"),
@@ -2701,6 +2843,8 @@ bool activate_talent(const talent& tal, dist *target)
             // the player interacts with the targeter.
             dithmenos_cache_marionette_viability();
         }
+        else if (abil.ability == ABIL_ELYVILON_PACIFY)
+            args.get_desc_func = bind(desc_pacify_chance, placeholders::_1);
 
         if (abil.failure.base_chance)
         {
@@ -2742,6 +2886,7 @@ bool activate_talent(const talent& tal, dist *target)
     // cancelled.
     const int hp_cost = abil.get_hp_cost();
     const int mp_cost = abil.get_mp_cost();
+    const int piety_cost = abil.piety_cost.cost();
 
     if (mp_cost)
         pay_mp(mp_cost);
@@ -2749,65 +2894,11 @@ bool activate_talent(const talent& tal, dist *target)
     if (hp_cost)
         pay_hp(hp_cost);
 
-    const spret ability_result = _do_ability(abil, fail, target, beam);
-    switch (ability_result)
-    {
-        case spret::success:
-        {
-            ASSERT(!fail);
-            practise_using_ability(abil.ability);
-            _finalize_ability_costs(abil, mp_cost, hp_cost);
-
-            // Ephemeral Shield activates on any invocation with a cost,
-            // even if that's just a cooldown or small amounts of HP.
-            // No rapidly wall-jumping or renaming your ancestor, alas.
-            if (_not_free_religious_ability(abil.ability)
-                && you.has_mutation(MUT_EPHEMERAL_SHIELD))
-            {
-                you.set_duration(DUR_EPHEMERAL_SHIELD, random_range(3, 5));
-                you.redraw_armour_class = true;
-            }
-
-            if (_not_free_religious_ability(abil.ability)
-                && you.unrand_equipped(UNRAND_DRAGONMASK)
-                && there_are_monsters_nearby(true, true, false))
-            {
-                if (x_chance_in_y(10 + 2 * abil.avg_piety_cost(), 100))
-                    _invoke_dragons();
-            }
-
-            // XXX: Merge Dismiss Apostle #1/2/3 into a single count
-            ability_type log_type = abil.ability;
-            if (log_type == ABIL_BEOGH_DISMISS_APOSTLE_2
-                || log_type == ABIL_BEOGH_DISMISS_APOSTLE_3)
-            {
-                log_type = ABIL_BEOGH_DISMISS_APOSTLE_1;
-            }
-
-            count_action(tal.is_invocation ? CACT_INVOKE : CACT_ABIL, log_type);
-            return true;
-        }
-        case spret::fail:
-            if (!testbits(abil.flags, abflag::quiet_fail))
-                mpr(T_("You fail to use your ability."));
-            you.turn_is_over = true;
-            if (mp_cost)
-                refund_mp(mp_cost);
-            if (hp_cost)
-                refund_hp(hp_cost);
-            return false;
-        case spret::abort:
-            crawl_state.zero_turns_taken();
-            if (mp_cost)
-                refund_mp(mp_cost);
-            if (hp_cost)
-                refund_hp(hp_cost);
-            return false;
-        case spret::none:
-        default:
-            die("Weird ability return type");
-            return false;
-    }
+    const spret ability_result = _do_ability(abil, fail, target, beam,
+                                             piety_cost, mp_cost, hp_cost);
+    ASSERT(!(ability_result == spret::success && fail));
+    return handle_post_ability_effects(tal.which, ability_result, piety_cost,
+                                       mp_cost, hp_cost, tal.is_invocation);
 }
 
 /// If the player is stationary, print 'You cannot move.' and return true.
@@ -2849,18 +2940,17 @@ static bool _evoke_staff_of_olgreb(dist *target)
     {
         return false;
     }
-    did_god_conduct(DID_WIZARDLY_ITEM, 10);
     return true;
 }
 
-static vector<monster*> _get_siphon_victims(bool known)
+static vector<monster*> _get_siphon_victims(bool only_known)
 {
     vector<monster*> victims;
     for (monster_near_iterator mi(you.pos(), LOS_NO_TRANS); mi; ++mi)
     {
         if (grid_distance(you.pos(), mi->pos()) <= siphon_essence_range()
             && siphon_essence_affects(**mi)
-            && (you.can_see(**mi) || !known))
+            && (you.aware_of(**mi) || !only_known))
         {
             victims.push_back(*mi);
         }
@@ -3031,6 +3121,14 @@ public:
     }
 };
 
+spret run_ability_uncancel(uncancellable_type kind, int piety_cost,
+                           int mp_cost, int hp_cost)
+{
+    uncancellable uc{kind, piety_cost, mp_cost, hp_cost};
+    bool succeeded = run_uncancel(uc);
+    return succeeded ? spret::success : spret::seen_hups;
+}
+
 /*
  * Use an ability.
  *
@@ -3041,7 +3139,7 @@ public:
  *  or was canceled (spret::abort). Never returns spret::none.
  */
 static spret _do_ability(const ability_def& abil, bool fail, dist *target,
-                         bolt& beam)
+                         bolt& beam, int piety_cost, int mp_cost, int hp_cost)
 {
     // Note: the costs will not be applied until after this switch
     // statement... it's assumed that only failures have returned! - bwr
@@ -3131,14 +3229,14 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_IMPRINT_WEAPON:
         {
             item_def *wpn = nullptr;
-            auto success = use_an_item_menu(wpn, OPER_ANY, OSEL_ARTEFACT_WEAPON,
+            spret success = use_an_item_menu(wpn, OPER_ANY, OSEL_ARTEFACT_WEAPON,
                                 T_("Select an artefact weapon to imprint upon your Paragon."),
                                 [=](){return true;});
 
-            if (success == OPER_NONE)
+            if (success != spret::success)
                 return spret::abort;
 
-            if (god_hates_item(*wpn))
+            if (god_forbids_item(*wpn))
             {
                 mprf(MSGCH_WARN, T_("%s forbids using such a weapon!"),
                      god_name(you.religion).c_str());
@@ -3305,18 +3403,8 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
     case ABIL_TSO_CLEANSING_FLAME:
     {
-        targeter_radius hitfunc(&you, LOS_SOLID, 2);
-        {
-            if (stop_attack_prompt(hitfunc, "invoke Cleansing Flame",
-                                   [](const actor *act)
-                                     {
-                                        return act->res_holy_energy() < 3;
-                                     }))
-            {
-                return spret::abort;
-            }
-        }
         fail_check();
+        mpr(T_("You channel a blast of cleansing flame!"));
         cleansing_flame(_tso_cleansing_flame_power(),
                         cleansing_flame_source::invocation, you.pos(), &you);
         break;
@@ -3381,14 +3469,14 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         // XXX: Some invo formula
         you.duration[DUR_FATHOMLESS_SHACKLES] = random_range(15, 25) * BASELINE_DELAY;
         yred_make_blasphemy();
-        invalidate_agrid(true);
+        invalidate_agrid();
         break;
 
     case ABIL_YRED_BIND_SOUL:
     {
         monster* mons = monster_at(beam.target);
 
-        if (mons && you.can_see(*mons) && mons->is_illusion())
+        if (mons->is_illusion())
         {
             fail_check();
             mprf(T_("You attempt to bind %s soul, but %s is merely a clone!"),
@@ -3436,7 +3524,6 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
                               10 + random2avg(you.skill(SK_INVOCATIONS, 6), 2),
                               100);
 
-        did_god_conduct(DID_HASTY, 8); // Currently irrelevant.
         break;
 
     case ABIL_OKAWARU_DUEL:
@@ -3508,12 +3595,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_TROG_BROTHERS_IN_ARMS:
-    {
-        int pow = you.piety() + random2(you.piety() / 4);
-        // force a sequence point between random calls
-        pow -= random2(you.piety() / 4);
-        return cast_summon_berserker(pow, fail);
-    }
+        return trog_brothers_in_arms(fail);
 
     case ABIL_SIF_MUNA_FORGET_SPELL:
         if (cast_selective_amnesia() <= 0)
@@ -3527,11 +3609,17 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         fail_check();
         mpr(T_("You channel some magical energy."));
         you.increase_duration(DUR_CHANNEL_ENERGY,
-            4 + random2avg(you.skill_rdiv(SK_INVOCATIONS, 2, 3), 2), 100);
+            4 + random2avg(you.skill_rdiv(SK_SPELLCASTING, 3, 10), 2), 100);
         break;
 
     case ABIL_SIF_MUNA_DIVINE_EXEGESIS:
         return divine_exegesis(fail);
+
+    case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
+    {
+        unwind_var<bool> exegesis(you.divine_exegesis, true);
+        return cast_a_spell(false, static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int()), nullptr);
+    }
 
     case ABIL_ELYVILON_HEAL_SELF:
     {
@@ -3548,13 +3636,25 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         elyvilon_purification();
         break;
 
-    case ABIL_ELYVILON_HEAL_OTHER:
+    case ABIL_ELYVILON_PACIFY:
     {
+        fail_check();
         int pow = 30 + you.skill(SK_INVOCATIONS, 1);
-        return cast_healing(pow, fail);
+        cast_pacify(beam.target, pow);
+        break;
     }
 
-    case ABIL_ELYVILON_DIVINE_VIGOUR:
+    case ABIL_ELYVILON_DIVINE_ALMS:
+    {
+        fail_check();
+
+        monster* targ = monster_at(beam.target);
+        ASSERT(targ);
+        elyvilon_divine_alms(*targ);
+        return spret::success;
+    }
+
+    case ABIL_ELYVILON_AURA_OF_VIGOUR:
         fail_check();
         elyvilon_divine_vigour();
         break;
@@ -3568,7 +3668,6 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
     case ABIL_LUGONU_BANISH:
     {
-        beam.range = you.current_vision;
         const int pow = 68 + you.skill(SK_INVOCATIONS, 3);
 
         direction_chooser_args args;
@@ -3638,13 +3737,13 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_NEMELEX_TRIPLE_DRAW:
-        return deck_triple_draw(fail);
+        return deck_triple_draw(fail, piety_cost, mp_cost, hp_cost);
 
     case ABIL_NEMELEX_DEAL_FOUR:
         return deck_deal(fail);
 
     case ABIL_NEMELEX_STACK_FIVE:
-        return deck_stack(fail);
+        return deck_stack(fail, piety_cost, mp_cost, hp_cost);
 
     case ABIL_BEOGH_SMITING:
         return your_spells(SPELL_SMITING, _beogh_smiting_power(),
@@ -3725,13 +3824,13 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_CHEIBRIADOS_SLOUCH:
         return cheibriados_slouch(fail);
 
-    case ABIL_ASHENZARI_CURSE:
-        if (!ashenzari_curse_item())
+    case ABIL_ASHENZARI_BIND:
+        if (!ashenzari_bind_item())
             return spret::abort;
         break;
 
-    case ABIL_ASHENZARI_UNCURSE:
-        if (!ashenzari_uncurse_item())
+    case ABIL_ASHENZARI_SHATTER:
+        if (!ashenzari_shatter_item())
             return spret::abort;
         break;
 
@@ -3745,12 +3844,12 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return dithmenos_nightfall(fail);
 
     case ABIL_GOZAG_POTION_PETITION:
-        run_uncancel(UNC_POTION_PETITION, 0);
-        break;
+        return run_ability_uncancel(UNC_POTION_PETITION, piety_cost, mp_cost,
+                                    hp_cost);
 
     case ABIL_GOZAG_CALL_MERCHANT:
-        run_uncancel(UNC_CALL_MERCHANT, 0);
-        break;
+        return run_ability_uncancel(UNC_CALL_MERCHANT, piety_cost, mp_cost,
+                                    hp_cost);
 
     case ABIL_GOZAG_BRIBE_BRANCH:
         if (!gozag_bribe_branch())
@@ -3838,10 +3937,10 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_HEPLIAKLQANA_TRANSFERENCE:
-        return hepliaklqana_transference(fail); // TODO: dist arg
+        return hepliaklqana_transference(beam.target, fail);
 
     case ABIL_HEPLIAKLQANA_TYPE_KNIGHT:
-    case ABIL_HEPLIAKLQANA_TYPE_BATTLEMAGE:
+    case ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST:
     case ABIL_HEPLIAKLQANA_TYPE_HEXER:
         if (!hepliaklqana_choose_ancestor_type(abil.ability))
             return spret::abort;
@@ -3942,10 +4041,9 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
 // Pay piety and time costs, and flush UI for HP/MP costs which have already
 // been paid.
-static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp_cost)
+static void _finalize_ability_costs(const ability_def& abil, int piety_cost,
+                                    int mp_cost, int hp_cost)
 {
-    const int piety_cost = abil.piety_cost.cost();
-
     dprf("Cost: mp=%d; hp=%d; piety=%d",
          mp_cost, hp_cost, piety_cost);
 
@@ -3966,10 +4064,8 @@ static void _finalize_ability_costs(const ability_def& abil, int mp_cost, int hp
     // serpent's lash is activated.
     if (abil.flags & abflag::instant)
     {
-        you.turn_is_over = false;
-        you.elapsed_time_at_last_input = you.elapsed_time;
+        player_takes_instant_action();
         fire_final_effects();
-        update_turn_count();
     }
     else if (abil.ability != ABIL_WU_JIAN_WALLJUMP)
         you.turn_is_over = true;
@@ -4159,8 +4255,7 @@ bool player_has_ability(ability_type abil, bool include_unusable)
     if (is_religious_ability(abil))
     {
         // TODO: something less dumb than this?
-        auto god_abils = get_god_abilities(include_unusable, false,
-                                               include_unusable);
+        auto god_abils = get_god_abilities(false, include_unusable);
         return count(god_abils.begin(), god_abils.end(), abil);
     }
 
@@ -4211,9 +4306,15 @@ bool player_has_ability(ability_type abil, bool include_unusable)
     case ABIL_ENKINDLE:
         return you.has_mutation(MUT_MNEMOPHAGE);
     case ABIL_IMBUE_SERVITOR:
-        return you.has_spell(SPELL_SPELLSPARK_SERVITOR);
+        return you.has_spell(SPELL_SPELLSPARK_SERVITOR)
+                || (you.spell_library[SPELL_SPELLSPARK_SERVITOR]
+                    && you_worship(GOD_SIF_MUNA)
+                    && player_has_ability(ABIL_SIF_MUNA_DIVINE_EXEGESIS));
     case ABIL_IMPRINT_WEAPON:
-        return you.has_spell(SPELL_PLATINUM_PARAGON);
+        return you.has_spell(SPELL_PLATINUM_PARAGON)
+                || (you.spell_library[SPELL_PLATINUM_PARAGON]
+                    && you_worship(GOD_SIF_MUNA)
+                    && player_has_ability(ABIL_SIF_MUNA_DIVINE_EXEGESIS));
     // mutations
     case ABIL_DAMNATION:
         return you.get_mutation_level(MUT_HURL_DAMNATION);
@@ -4313,11 +4414,8 @@ vector<talent> your_talents(bool include_unusable, bool ignore_piety)
 
 
     // player_has_ability will just brute force these anyways (TODO)
-    for (ability_type abil : get_god_abilities(include_unusable, ignore_piety,
-                                               include_unusable))
-    {
+    for (ability_type abil : get_god_abilities(ignore_piety, include_unusable))
         _add_talent(talents, abil);
-    }
 
     // Side effect alert!
     // Find hotkeys for the non-hotkeyed talents. (XX: how does this relate
@@ -4485,11 +4583,11 @@ int find_ability_slot(const ability_type abil, char firstletter)
     case ABIL_RU_SACRIFICE_FORMS:
     case ABIL_RU_REJECT_SACRIFICES:
     case ABIL_HEPLIAKLQANA_TYPE_KNIGHT:
-    case ABIL_HEPLIAKLQANA_TYPE_BATTLEMAGE:
+    case ABIL_HEPLIAKLQANA_TYPE_ELEMENTALIST:
     case ABIL_HEPLIAKLQANA_TYPE_HEXER:
     case ABIL_HEPLIAKLQANA_IDENTITY: // move this?
-    case ABIL_ASHENZARI_CURSE:
-    case ABIL_ASHENZARI_UNCURSE:
+    case ABIL_ASHENZARI_BIND:
+    case ABIL_ASHENZARI_SHATTER:
     case ABIL_MAKHLEB_BRAND_SELF_1:
     case ABIL_MAKHLEB_BRAND_SELF_2:
     case ABIL_MAKHLEB_BRAND_SELF_3:
@@ -4554,8 +4652,7 @@ int find_ability_slot(const ability_type abil, char firstletter)
 }
 
 
-vector<ability_type> get_god_abilities(bool ignore_silence, bool ignore_piety,
-                                       bool ignore_penance)
+vector<ability_type> get_god_abilities(bool ignore_piety, bool ignore_penance)
 {
     vector<ability_type> abilities;
     if (you_worship(GOD_RU) && you.props.exists(AVAILABLE_SAC_KEY))
@@ -4572,40 +4669,9 @@ vector<ability_type> get_god_abilities(bool ignore_silence, bool ignore_piety,
     if (you_worship(GOD_ASHENZARI))
     {
         if (you.props.exists(AVAILABLE_CURSE_KEY))
-            abilities.push_back(ABIL_ASHENZARI_CURSE);
+            abilities.push_back(ABIL_ASHENZARI_BIND);
         if (ignore_piety || you.raw_piety > ASHENZARI_BASE_PIETY )
-            abilities.push_back(ABIL_ASHENZARI_UNCURSE);
-    }
-    // XXX: should we check ignore_piety?
-    if (you_worship(GOD_HEPLIAKLQANA)
-        && piety_rank() >= 2 && !you.props.exists(HEPLIAKLQANA_ALLY_TYPE_KEY))
-    {
-        for (int anc_type = ABIL_HEPLIAKLQANA_FIRST_TYPE;
-             anc_type <= ABIL_HEPLIAKLQANA_LAST_TYPE;
-             ++anc_type)
-        {
-            abilities.push_back(static_cast<ability_type>(anc_type));
-        }
-    }
-
-    if (!ignore_silence && you.is_silenced())
-    {
-        if (have_passive(passive_t::wu_jian_wall_jump))
-            abilities.push_back(ABIL_WU_JIAN_WALLJUMP);
-        return abilities;
-    }
-
-    // Remaining abilities are unusable if silenced.
-    if (you_worship(GOD_NEMELEX_XOBEH))
-    {
-        for (int deck = ABIL_NEMELEX_FIRST_DECK;
-             deck <= ABIL_NEMELEX_LAST_DECK;
-             ++deck)
-        {
-            abilities.push_back(static_cast<ability_type>(deck));
-        }
-        if (!you.props[NEMELEX_STACK_KEY].get_vector().empty())
-            abilities.push_back(ABIL_NEMELEX_DRAW_STACK);
+            abilities.push_back(ABIL_ASHENZARI_SHATTER);
     }
 
     for (const auto& power : get_god_powers(you.religion))

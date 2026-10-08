@@ -55,11 +55,8 @@ spret cast_iood(actor *caster, int pow, bolt *beam, float vx, float vy,
     int mtarg = !beam ? MHITNOT :
                 beam->target == you.pos() ? int{MHITYOU} : env.mgrid(beam->target);
 
-    monster *mon = place_monster(mgen_data(orb_type,
-                (is_player) ? BEH_FRIENDLY :
-                    ((monster*)caster)->friendly() ? BEH_FRIENDLY : BEH_HOSTILE,
-                coord_def(),
-                mtarg).set_summoned(caster, SPELL_IOOD, 0, false, false), true, true);
+    monster *mon = place_monster(mgen_data(orb_type, SAME_ATTITUDE(caster), coord_def(), mtarg)
+                                 .set_summoned(caster, SPELL_IOOD, 0, false, false), true, true);
     if (!mon)
     {
         mprf(MSGCH_ERROR, "Failed to spawn projectile.");
@@ -107,8 +104,9 @@ spret cast_iood(actor *caster, int pow, bolt *beam, float vx, float vy,
         mon->props[IOOD_VY].get_float() = vy;
     }
 
-    mon->props[IOOD_KC].get_byte() = (is_player) ? KC_YOU :
-        ((monster*)caster)->friendly() ? KC_FRIENDLY : KC_OTHER;
+    mon->props[IOOD_KC].get_byte() = (is_player) ? KC_YOU
+                                                 : caster->friendly() ? KC_FRIENDLY
+                                                                      : KC_OTHER;
     mon->props[IOOD_POW].get_short() = pow;
     mon->flags &= ~MF_JUST_SUMMONED;
     mon->props[IOOD_CASTER].get_string() = caster->as_monster()
@@ -287,16 +285,16 @@ static bool _iood_shielded(monster& mon, actor &victim)
     if (mon.type == MONS_GLOBE_OF_ANNIHILATION)
         return false;
 
-    if (victim.is_player() && you.duration[DUR_DIVINE_SHIELD])
+    if (victim.divinely_shielded())
         return true;
 
-    if (!victim.shielded() || victim.incapacitated() || victim.shield_exhausted())
+    const int pro_block = victim.shield_bonus();
+    if (pro_block <= 0 || victim.incapacitated() || victim.shield_exhausted())
         return false;
 
     const int to_hit = 15 + (mons_is_projectile(mon.type) ?
         mon.props[IOOD_POW].get_short()/12 : mon.get_hit_dice()/2);
     const int con_block = random2(to_hit);
-    const int pro_block = victim.shield_bonus();
     dprf("iood shield: pro %d, con %d", pro_block, con_block);
     return pro_block >= con_block;
 }
@@ -317,7 +315,7 @@ dice_def iood_damage(int pow, int dist, bool random)
 
 static void _iood_common_beam_setup(monster& orb, const coord_def& pos, bolt& beam)
 {
-    beam.attitude = orb.attitude;
+    beam.attitude = orb.attitude();
 
     actor *caster = actor_by_mid(orb.summoner);
     if (!caster)        // caster is dead/gone, blame the orb itself (as its
@@ -376,6 +374,7 @@ static void _annihilation_explode_setup(monster& globe, bolt& beam)
     // motivation enough to blast from further away.)
     makhleb_setup_destruction_beam(beam, dist > 1 ? pow : pow / 2, true);
 
+    beam.is_explosion = true;
     if (dist >= 4)
         beam.ex_size = 3;
     else if (dist >= 2)
@@ -392,11 +391,8 @@ static void _annihilation_explode_setup(monster& globe, bolt& beam)
         beam.target = globe.pos();
     }
 
-    if (beam.ex_size > 0)
-    {
-        beam.is_explosion = true;
-        beam.hit_verb = T_("blasts");
-    }
+    if (beam.ex_size > 1)
+        beam.hit_verb = "blasts";
     else
         beam.hit_verb = T_("feebly blasts");
 
@@ -413,8 +409,7 @@ static bool _iood_hit(monster& mon, const coord_def &pos, bool big_boom = false)
     if (mon.type == MONS_GLOBE_OF_ANNIHILATION)
     {
         _annihilation_explode_setup(mon, beam);
-        if (beam.ex_size > 0)
-            big_boom = true;
+        big_boom = true;
     }
     else
         _iood_hit_setup(mon, beam);
@@ -669,7 +664,9 @@ move_again:
                     }
                     else
                     {
-                        mprf(T_("%s reflects off an invisible shield around %s!"),
+                        mprf(victim->divinely_shielded()
+                                 ? T_("%s reflects off the divine shield protecting %s!")
+                                 : T_("%s reflects off an invisible shield around %s!"),
                              mon.name(DESC_THE, true).c_str(),
                              victim->name(DESC_THE, true).c_str());
                     }
@@ -681,10 +678,6 @@ move_again:
                 }
             }
             victim->shield_block_succeeded(&mon);
-
-            // Use up a charge of Divine Shield, if active.
-            if (victim->is_player())
-                tso_expend_divine_shield_charge();
 
             // mid_t is unsigned so won't fit in a plain int
             mon.props[IOOD_REFLECTOR] = (int64_t) victim->mid;

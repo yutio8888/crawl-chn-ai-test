@@ -12,5 +12,7 @@
  *   row 7: starting skills
  */
 
+#include "i18n.h"
+
 static const map<job_type, job_def> job_data =
 {

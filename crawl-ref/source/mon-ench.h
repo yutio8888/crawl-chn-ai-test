@@ -9,8 +9,8 @@
 #define MAX_ENCH_DEGREE_DEFAULT  4
 #define MAX_ENCH_DEGREE_ABJURATION  6
 
-#define SIMULACRUM_POWER_KEY "simulacrum power"
 #define FROZEN_IN_FEAR_KEY "mon_frozen_in_fear"
+#define STAMPEDE_DIRECTION_KEY "stampede_direction"
 
 class actor;
 class monster;

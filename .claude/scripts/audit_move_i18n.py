@@ -33,6 +33,8 @@ def normalise_walking_verb(stem: str) -> str:
     verb = stem.lower()
     if verb == "wriggl":
         return "wriggle"
+    if verb == "trott":
+        return "trot"
     if verb == "glid":
         return "walk"
     return verb
@@ -130,6 +132,46 @@ def function_body(text: str, signature: str) -> str:
     raise ValueError(f"unterminated body for {signature}")
 
 
+FORCED_MOVE_SENTINEL = "potentially stumble back"
+
+
+def verify_forced_move_sentinel(source: Path) -> None:
+    """Bind the non-verb sentinel to the special prompt consumers.
+
+    It never reaches translated_move_phrase: every hazardous terrain/cloud/
+    trap/exclusion branch routes it to possible_forced_move_prompt instead.
+    Losing one of these branches must block rather than silently remove a verb.
+    """
+    player = strip_cpp_comments((source / "player.cc").read_text(encoding="utf-8"))
+    consumers = {
+        "bool check_moveto_cloud(const vector<coord_def>": (1, {"cloud"}),
+        "bool check_moveto_trap(const vector<coord_def>":
+            (2, {"zot_trap", "onto_trap", "into_trap"}),
+        "static bool check_moveto_binding_sigil(const vector<coord_def>":
+            (1, {"binding_sigil"}),
+        "static bool check_moveto_expiring_flight(const vector<coord_def>":
+            (1, {"over_losing_buoyancy", "into_losing_buoyancy",
+                 "over_expiring_transformation", "into_expiring_transformation"}),
+        "static bool check_moveto_toxic_bog(const vector<coord_def>": (1, {"toxic_bog"}),
+        "bool check_moveto_exclusions(const vector<coord_def>": (1, {"exclusion"}),
+    }
+    for signature, (count, contexts) in consumers.items():
+        body = function_body(player, signature)
+        guards = re.findall(r'move_verb == "potentially stumble back"', body)
+        calls = call_arguments(body, {"possible_forced_move_prompt"})
+        actual_contexts = set(re.findall(
+            r"possible_forced_prompt_context::([a-z_]+)", body))
+        if len(guards) != count or len(calls) != count or actual_contexts != contexts:
+            raise ValueError(f"forced movement sentinel routing changed: {signature}")
+        # Each ternary routes its true branch directly to the special helper;
+        # block branches must open immediately after the sentinel comparison.
+        routed = re.findall(
+            r'move_verb == "potentially stumble back"\s*'
+            r'(?:\?\s*possible_forced_move_prompt\(|\)\s*\{)', body)
+        if len(routed) != count:
+            raise ValueError(f"forced movement sentinel guard changed: {signature}")
+
+
 def discover(source: Path) -> dict[str, set[str]]:
     movement = (source / "movement.cc").read_text(encoding="utf-8")
     dynamic = string_literals(strip_cpp_comments(function_body(
@@ -162,6 +204,11 @@ def discover(source: Path) -> dict[str, set[str]]:
                     literal = literal_argument(args[1])
                     if literal:
                         fixed_by_call[name].add(literal)
+
+    if any(FORCED_MOVE_SENTINEL in verbs for verbs in fixed_by_call.values()):
+        verify_forced_move_sentinel(source)
+        for verbs in fixed_by_call.values():
+            verbs.discard(FORCED_MOVE_SENTINEL)
 
     direct_context = {context: set() for context in CONTEXTS}
     context_names = {
@@ -211,7 +258,7 @@ def discover(source: Path) -> dict[str, set[str]]:
         "move.onto-surface": onto,
         "move.onto-actor": cblink,
         "move.through-obstacle": dynamic,
-        "move.toward-target": dynamic & {"stride", "roll", "rampage"},
+        "move.toward-target": dynamic & {"stride", "roll", "stampede", "rampage"},
         "move.over-terrain": over,
     }
     for context, verbs in direct_context.items():

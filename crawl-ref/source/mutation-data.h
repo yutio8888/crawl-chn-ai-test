@@ -249,6 +249,19 @@ static const mutation_def mut_data[] =
     TILEG_MUT_FEED_OFF_SUFFERING,
 },
 
+{ MUT_SPARK_SWARM, 3, 2, mutflag::good,
+  "spark swarm",
+
+  {"Foes burned or shocked in your presence may be outlined in light.",
+   "Foes burned or shocked in your presence are regularly outlined in light.", ""},
+  {"A subtle swarm of sparks and cinders bursts forth and dances around you.",
+   "Your quiet swarm of sparks and cinders mildly raises in intensity.", ""},
+  {"Your faint swarm of sparks and cinders peters out.",
+   "Your quiet swarm of sparks and cinders starts to taper off.", ""},
+
+  TILEG_MUT_SPARK_SWARM,
+},
+
 { MUT_LUCKY, 4, 2, mutflag::good,
    "lucky",
 
@@ -880,20 +893,18 @@ static const mutation_def mut_data[] =
   {"", "", ""},
 },
 
-{ MUT_ROLLPAGE, 0, 2, mutflag::good,
-  "rollpage",
+{ MUT_STAMPEDE, 0, 2, mutflag::good,
+  "stampede",
 
-  {"You regenerate magic when rolling toward enemies. (Rampage MPRegen)",
-   "You regenerate magic and health when rolling toward enemies. (Rampage Regen)",
-   ""},
+  {"You stampede swiftly towards enemies and can push them backward.",
+    "You stampede swiftly towards enemies and can push them backward.", ""},
+  {"You become able to stampede towards enemies.",
+   "Your stampede becomes supported by the winds.", ""},
+  {"You can no longer stampede toward enemies.", "", ""},
 
-  {"You begin to regenerate magic when rolling toward enemies.",
-   "You begin to regenerate health when rolling toward enemies.",
-   ""},
+  TILEG_MUT_STAMPEDE,
 
-  {"You can no longer roll toward enemies.",
-   "You can no longer regenerate health when rolling toward enemies.",
-   ""},
+  {0, "One of the Four Winds will empower you as you Stampede.", 0}
 },
 
 { MUT_SHAGGY_FUR, 2, 3, mutflag::good | mutflag::anatomy,
@@ -2342,9 +2353,9 @@ static const mutation_def mut_data[] =
 
 { MUT_FOUL_SHADOW, 0, 3, mutflag::good,
   "foul shadow",
-  {"You are faintly shadowed, very rarely releasing foul flame when damaged in melee.",
+  {N_("You are faintly shadowed, rarely releasing foul flame when damaged in melee."),
    "You are shadowed, sometimes releasing foul flame when damaged in melee.",
-   "You are darkly shadowed, frequently releasing foul flame when damaged in melee."},
+   N_("You are darkly shadowed, often releasing foul flame when damaged in melee.")},
   {"Your body darkens with foul flame.",
    "Your body becomes darker with foul flame.",
    "Your body becomes darker with foul flame."},
@@ -2373,9 +2384,9 @@ static const mutation_def mut_data[] =
 
 { MUT_DRUNKEN_BRAWLING, 0, 1, mutflag::good,
   "drunken brawling",
-  {"Whenever you drink a healing potion, you attack all around you.", "", ""},
-  {"You brawl whenever you drink a healing potion.", "", ""},
-  {"You no longer brawl whenever you drink a healing potion.", "", ""},
+  {N_("Whenever you drink a potion, you attack all enemies around you."), "", ""},
+  {N_("You brawl whenever you drink a potion."), "", ""},
+  {N_("You no longer brawl whenever you drink a potion."), "", ""},
 },
 
 { MUT_ARTEFACT_ENCHANTING, 0, 1, mutflag::good,
@@ -2449,6 +2460,42 @@ static const mutation_def mut_data[] =
   {"Your blood calms down again.",
    "Your blood feels a little less spiteful.", ""},
   TILEG_MUT_SPITEFUL_BLOOD,
+},
+
+{ MUT_NORTH_WIND, 0, 1, mutflag::good,
+  "North Wind's embodiment",
+
+  {"The North Wind lets you shrug off injuries taken while stampeding.", "", ""},
+  {"You feel the indomitable North Wind bolstering your fortitude.", "", ""},
+  {"The winds are changing....", "", ""},
+  TILEG_MUT_STAMPEDE_NORTH,
+},
+
+{ MUT_SOUTH_WIND, 0, 1, mutflag::good,
+  "South Wind's embodiment",
+
+  {"The South Wind quickens your rampage movements after stabbing.", "", ""},
+  {"You feel the capricious South Wind quickening your steps.", "", ""},
+  {"The winds are changing....", "", ""},
+  TILEG_MUT_STAMPEDE_SOUTH,
+},
+
+{ MUT_WEST_WIND, 0, 1, mutflag::good,
+  "West Wind's embodiment",
+
+  {"The West Wind empowers your ranged attacks as you Rampage.", "", ""},
+  {"You feel the generous West Wind guiding your aim.", "", ""},
+  {"The winds are changing....", "", ""},
+  TILEG_MUT_STAMPEDE_WEST,
+},
+
+{ MUT_EAST_WIND, 0, 1, mutflag::good,
+  "East Wind's embodiment",
+
+  {"The East Wind leaves your foes to susceptible to magic after you Rampage.", "", ""},
+  {"You feel the spiteful East Wind laying your enemies bare.", "", ""},
+  {"The winds are changing....", "", ""},
+  TILEG_MUT_STAMPEDE_EAST,
 },
 
 // Makhleb-specific mutations
@@ -2601,4 +2648,5 @@ static const mutation_category_def category_mut_data[] =
   { RANDOM_BAD_MUTATION, "bad"},
   { RANDOM_SLIME_MUTATION, "slime"},
   { RANDOM_CORRUPT_MUTATION, "corrupt"},
+  { RANDOM_CATALYST_MUTATION, "catalyst"},
 };

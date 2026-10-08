@@ -20,6 +20,7 @@
 #include "coordit.h"
 #include "directn.h"
 #include "env.h"
+#include "god-conduct.h"
 #include "god-passive.h"
 #include "god-abil.h"
 #include "item-prop.h"
@@ -591,7 +592,9 @@ void init_spell_name_cache()
         // Also add the canonical English name for .des compatibility. The
         // accessor falls back to spl-data.h when no explicit override exists.
         const string en_name = lowercase_string(spell_english_name(type));
-        cache.emplace(en_name, type);
+        // Match upstream's last-entry precedence for aliases such as the
+        // removed and current Phase Shift spells.
+        cache[en_name] = type;
     }
 }
 
@@ -892,8 +895,6 @@ bool add_spell_to_memory(spell_type spell)
 
     take_note(Note(NOTE_LEARN_SPELL, spell));
 
-    spell_skills(spell, you.skills_to_show);
-
 #ifdef USE_TILE_LOCAL
     tiles.layout_statcol();
     redraw_screen();
@@ -909,8 +910,6 @@ bool del_spell_from_memory_by_slot(int slot)
 
     if (you.last_cast_spell == you.spells[slot])
         you.last_cast_spell = SPELL_NO_SPELL;
-
-    spell_skills(you.spells[slot], you.skills_to_hide);
 
     mprf(T_("Your memory of %s unravels."), spell_title(you.spells[slot]));
 
@@ -1682,13 +1681,17 @@ bool casting_is_useless(spell_type spell, bool temp)
  * groups of spells (e.g. entire schools). Includes MP (which does use the
  * spell level if provided), confusion state, banned schools.
  *
- * @param spell      The spell in question.
- * @param temp       Include checks for volatile or temporary states
- *                   (status effects, mana)
- # @return           A reason why casting is useless, or "" if it isn't.
+ * @param spell             The spell in question.
+ * @param temp              Include checks for volatile or temporary states
+ *                          (status effects, mana)
+ * @param god_forbids[out]  If the player cannot use this item, set to whether
+ *                          the reason is god-based.
+ # @return                  A reason why casting is useless, or "" if it isn't.
  */
-string casting_uselessness_reason(spell_type spell, bool temp)
+string casting_uselessness_reason(spell_type spell, bool temp, bool *god_forbids)
 {
+    if (god_forbids)
+        *god_forbids = false;
     if (temp)
     {
         if (you.duration[DUR_CONF] > 0)
@@ -1718,6 +1721,16 @@ string casting_uselessness_reason(spell_type spell, bool temp)
 
         if (you.form == transformation::walking_scroll && spell_difficulty(spell) > 4)
             return T_("you cannot cast such powerful magic in your current form.");
+    }
+
+    // Your god won't let you cast spells they hate (evil/unclean/chaotic/hasty).
+    // Trog's blanket dislike of spellcasting is handled separately.
+    if (god_forbids_spell(spell, you.religion))
+    {
+        if (god_forbids)
+            *god_forbids = true;
+        return make_stringf(T_("%s won't allow you to cast this spell."),
+                            uppercase_first(god_name(you.religion)).c_str());
     }
 
     // Check for banned schools (Currently just Ru sacrifices)
@@ -1813,8 +1826,13 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
             return c_check;
     }
 
-    if (!prevent && temp && spell_no_hostile_in_range(spell))
+    if (temp
+        && (!prevent
+            || testbits(get_spell_flags(spell), spflag::needs_target))
+        && spell_no_hostile_in_range(spell))
+    {
         return T_("you can't see any hostile targets that would be affected.");
+    }
 
     switch (spell)
     {
@@ -1835,7 +1853,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
             return T_("your stasis precludes magical swiftness.");
         if (temp)
         {
-            if (you.duration[DUR_SWIFTNESS])
+            if (you.duration[DUR_SWIFTNESS] || you.duration[DUR_ANTISWIFT])
                 return T_("this spell is already in effect.");
             if (player_movement_speed(false) <= FASTEST_PLAYER_MOVE_SPEED)
                 return T_("you're already travelling as fast as you can.");
@@ -1891,7 +1909,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         break;
 
     case SPELL_MALIGN_GATEWAY:
-        if (temp && !can_cast_malign_gateway())
+        if (temp && !can_cast_malign_gateway(you))
         {
             return T_("the dungeon can only cope with one malign gateway"
                       " at a time.");
@@ -2097,6 +2115,11 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
             return T_("you are already charging a Fortress Blast.");
         break;
 
+    case SPELL_SIROCCO:
+        if (temp && you.duration[DUR_SIROCCO_COOLDOWN])
+            return T_("you need to wait for the hot winds to gather around you again.");
+        break;
+
     default:
         break;
     }
@@ -2116,7 +2139,7 @@ int spell_highlight_by_utility(spell_type spell, int default_colour,
                                bool transient, bool memcheck)
 {
     // If your god hates the spell, that overrides all other concerns.
-    if (god_hates_spell(spell, you.religion)
+    if (god_forbids_spell(spell, you.religion)
         || is_good_god(you.religion) && you.spellcasting_unholy())
     {
         return COL_FORBIDDEN;
@@ -2134,15 +2157,101 @@ int spell_highlight_by_utility(spell_type spell, int default_colour,
     return default_colour;
 }
 
+static bool _any_valid_targets(const unique_ptr<targeter>& tgt, int range,
+                               bool also_check_monster = false)
+{
+    for (radius_iterator ri(you.pos(), range, C_SQUARE, LOS_NO_TRANS);
+            ri; ++ri)
+    {
+        if (tgt->valid_aim(*ri))
+        {
+            if (also_check_monster)
+            {
+                monster_info* mon = env.map_knowledge(*ri).monsterinfo();
+                if (!mon || !tgt->affects_monster(*mon))
+                    continue;
+                if (mons_att_wont_attack(mon->attitude)
+                    || !mons_class_is_threatening(mon->type))
+                {
+                    continue;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool protected_from_spell(spell_type spell, const monster &mon,
+                          const actor *agent)
+{
+    return testbits(get_spell_flags(spell), spflag::direct_damage_only)
+           && mon.damage_immune(agent);
+}
+
+// Mirror targetting logic to check whether LRD can find a target.
+static bool _lrd_no_hostile_in_range(int pow, int range)
+{
+    unique_ptr<targeter> hitfunc = find_spell_targeter(SPELL_LRD, pow, range);
+
+    for (monster_near_iterator mi(you.pos(), LOS_DEFAULT); mi; ++mi)
+    {
+        const monster& mon = **mi;
+        if (!you.aware_of(mon) || !mons_is_threatening(mon))
+            continue;
+        if (mon.attitude() != ATT_HOSTILE && !mon.has_ench(ENCH_FRENZIED))
+            continue;
+        if (protected_from_spell(SPELL_LRD, mon, &you))
+            continue;
+
+        for (radius_iterator ri(mon.pos(), 2, C_SQUARE, LOS_DEFAULT); ri; ++ri)
+        {
+            if (!hitfunc->valid_aim(*ri))
+                continue;
+            hitfunc->set_aim(*ri);
+            if (hitfunc->is_affected(mon.pos()) >= AFF_MAYBE)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+static bool _multibeam_target_in_range(spell_type spell)
+{
+    bolt beam(you, spell, 100);
+    beam.target = you.pos() + coord_def(1, 0);
+    multi_beam tracer_beam(beam, MULTI_BEAM_FAN, 8);
+
+    targeting_tracer tracer = tracer_beam.trace();
+
+    return tracer.foe_info.count > 0;
+}
+
 bool spell_no_hostile_in_range(spell_type spell)
 {
     // sanity check: various things below will be prone to crash in these cases.
     if (!in_bounds(you.pos()) || !you.on_current_level)
         return true;
 
-    const int minRange = get_dist_to_nearest_monster();
+    const spell_flags flags = get_spell_flags(spell);
+    const int minRange = get_dist_to_nearest_monster(testbits(flags, spflag::direct_damage_only));
     const int pow = calc_spell_power(spell);
     const int range = calc_spell_range(spell, pow, true);
+
+    // If there are known invisible monsters around, assume that they *might*
+    // be in range for spells that can target invisible things.
+    //
+    // XXX: This is inexact since it doesn't account for resistances of said
+    //      invisible monster, but doing that comprehensively is quite hard
+    //      and probably not worth the trouble.
+    if (env.invis_knowledge.any_unknown_nearby()
+        && !testbits(flags, spflag::needs_target))
+    {
+        return false;
+    }
 
     switch (spell)
     {
@@ -2150,8 +2259,6 @@ bool spell_no_hostile_in_range(spell_type spell)
     case SPELL_APPORTATION:
     case SPELL_PASSWALL:
     case SPELL_GOLUBRIAS_PASSAGE:
-    // case SPELL_LRD: // TODO: LRD logic here is a bit confusing, it should error
-    //                 // now that it doesn't destroy walls
     case SPELL_FULMINANT_PRISM:
     case SPELL_FORGE_LIGHTNING_SPIRE:
     case SPELL_NOXIOUS_BOG:
@@ -2159,6 +2266,7 @@ bool spell_no_hostile_in_range(spell_type spell)
     case SPELL_GELLS_GAVOTTE:
     case SPELL_PLATINUM_PARAGON:
     case SPELL_SPLINTERFROST_SHELL:
+    case SPELL_DRAGON_VEINS:
     // This can always potentially hit out-of-LOS, although this is conditional
     // on spell-power.
     case SPELL_FIRE_STORM:
@@ -2168,25 +2276,8 @@ bool spell_no_hostile_in_range(spell_type spell)
     case SPELL_FROZEN_RAMPARTS:
     case SPELL_FULSOME_FUSILLADE:
     case SPELL_HELLFIRE_MORTAR:
+    case SPELL_POLAR_VORTEX:
         return minRange > you.current_vision;
-
-    case SPELL_POISONOUS_VAPOURS:
-    {
-        for (radius_iterator ri(you.pos(), range, C_SQUARE, LOS_NO_TRANS);
-             ri; ++ri)
-        {
-            const monster* mons = monster_at(*ri);
-            if (mons
-                && you.can_see(*mons)
-                && !mons->wont_attack()
-                && mons_is_threatening(*mons)
-                && mons->res_poison() <= 0)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
 
     // Special handling for cloud spells.
     case SPELL_FREEZING_CLOUD:
@@ -2203,10 +2294,15 @@ bool spell_no_hostile_in_range(spell_type spell)
                 if (entry.second == AFF_NO || entry.second == AFF_TRACER)
                     continue;
 
-                // Checks here are from get_dist_to_nearest_monster().
+                // General checks here mirror get_dist_to_nearest_monster().
                 const monster* mons = monster_at(entry.first);
-                if (mons && !mons->wont_attack() && mons_is_threatening(*mons))
+                if (mons && you.aware_of(*mons)
+                    && !mons->wont_attack()
+                    && mons_is_threatening(*mons)
+                    && tgt.affects_monster(monster_info(mons)))
+                {
                     return false;
+                }
             }
         }
 
@@ -2220,7 +2316,8 @@ bool spell_no_hostile_in_range(spell_type spell)
         return cast_ignite_poison(&you, -1, false, true) == spret::abort;
 
     case SPELL_STARBURST:
-        return cast_starburst(-1, false, true) == spret::abort;
+    case SPELL_SIROCCO:
+        return !_multibeam_target_in_range(spell);
 
     case SPELL_HAILSTORM:
         return cast_hailstorm(-1, false, true) == spret::abort;
@@ -2245,8 +2342,11 @@ bool spell_no_hostile_in_range(spell_type spell)
         for (coord_def t : arcjolt_targets(you, false))
         {
             const monster *mon = monster_at(t);
-            if (mon != nullptr && !mon->wont_attack())
+            if (mon != nullptr && !mon->wont_attack()
+                && !protected_from_spell(spell, *mon, &you))
+            {
                 return false;
+            }
         }
         return true;
 
@@ -2254,25 +2354,29 @@ bool spell_no_hostile_in_range(spell_type spell)
         for (coord_def t : chain_lightning_targets())
         {
             const monster *mon = monster_at(t);
-            if (mon != nullptr && !mon->wont_attack())
+            if (mon != nullptr && !mon->wont_attack()
+                && !protected_from_spell(spell, *mon, &you))
+            {
                 return false;
+            }
         }
         return true;
 
     case SPELL_SCORCH:
-        return find_near_hostiles(range, false, you).empty();
+        return find_near_hostiles(you, range).empty();
 
+    case SPELL_FLAME_WAVE:
     case SPELL_ISKENDERUNS_MYSTIC_BLAST:
-        return find_near_hostiles(range, false, you).empty();
+        return find_near_hostiles(you, range, true).empty();
 
     case SPELL_ANGUISH:
         for (monster_near_iterator mi(you.pos(), LOS_NO_TRANS); mi; ++mi)
         {
             const monster &mon = **mi;
-            if (you.can_see(mon)
+            if (you.aware_of(mon)
                 && mons_intel(mon) > I_BRAINLESS
                 && mon.willpower() != WILL_INVULN
-                && !mons_atts_aligned(you.temp_attitude(), mon.attitude)
+                && !mons_aligned(&you, &mon)
                 && !mon.has_ench(ENCH_ANGUISH))
             {
                 return false;
@@ -2282,10 +2386,23 @@ bool spell_no_hostile_in_range(spell_type spell)
         return true; // TODO
 
     case SPELL_PERMAFROST_ERUPTION:
-        return permafrost_targets(you, false).empty();
+        return permafrost_targets(you).empty();
+
+    case SPELL_LRD:
+        return _lrd_no_hostile_in_range(pow, range);
 
     case SPELL_PLASMA_BEAM:
-        return plasma_beam_targets(you, pow, false).empty();
+        return cast_plasma_beam(-1, you, false, true) == spret::abort;
+
+    case SPELL_PUTREFACTION:
+    case SPELL_DIMENSIONAL_BULLSEYE:
+    case SPELL_SURPRISING_CROCODILE:
+    case SPELL_SIMULACRUM:
+    case SPELL_ICE_THORNS:
+        return !_any_valid_targets(find_spell_targeter(spell, pow, range), range);
+
+    case SPELL_POISONOUS_VAPOURS:
+        return !_any_valid_targets(find_spell_targeter(spell, pow, range), range, true);
 
     default:
         break;
@@ -2293,8 +2410,6 @@ bool spell_no_hostile_in_range(spell_type spell)
 
     if (minRange < 0 || range < 0)
         return false;
-
-    const spell_flags flags = get_spell_flags(spell);
 
     // The healing spells.
     if (testbits(flags, spflag::helpful))
@@ -2516,6 +2631,18 @@ bool is_monster_net_escape_spell(spell_type spell)
             || spell == SPELL_BLINK_CLOSE;
 }
 
+spschool jade_crystal_to_school(monster_type type)
+{
+    switch (type)
+    {
+        case MONS_JADE_CRYSTAL_AIR:     return spschool::air;
+        case MONS_JADE_CRYSTAL_EARTH:   return spschool::earth;
+        case MONS_JADE_CRYSTAL_FIRE:    return spschool::fire;
+        case MONS_JADE_CRYSTAL_ICE:     return spschool::ice;
+        default:                        return spschool::none;
+    }
+}
+
 /* How to regenerate this:
    comm -2 -3 \
     <(clang -P -E -nostdinc -nobuiltininc spell-type.h -DTAG_MAJOR_VERSION=34 | sort) \
@@ -2582,7 +2709,7 @@ const set<spell_type> removed_spells =
     SPELL_MIASMA_CLOUD,
     SPELL_MISLEAD,
     SPELL_NECROMUTATION,
-    SPELL_PHASE_SHIFT,
+    SPELL_PHASE_SHIFT_OLD,
     SPELL_POISON_CLOUD,
     SPELL_POISON_WEAPON,
     SPELL_RANDOM_BOLT,

@@ -176,10 +176,22 @@ dazed monstatus
 This creature is temporarily unable to act, but any hostile action will cause it to
 immediately regain its senses.
 %%%%
+deflecting missiles monstatus
+
+This creature has +24 EV when dodging projectiles, whether physical or magical.
+%%%%
 diminished spells monstatus
 
 This creature's spells are less powerful - dealing less damage, being less able to
 overcome their target's willpower, and occasionally being weaker in other ways.
+%%%%
+divinely shielded monstatus
+
+This creature is protected by a divine shield which will unerringly block the
+next several blockable assaults before dissipating.
+
+All blocked projectiles will be reflected and melee attackers may be blinded by
+light.
 %%%%
 dormant monstatus
 
@@ -219,6 +231,12 @@ struggle against the web, which may eventually destroy it. Spellcasting is
 unimpaired.
 
 [[low-tier stab monstatus]]
+%%%%
+exposed monstatus
+
+This creature takes increased damage from all non-attack sources (except poison),
+non-attack projectiles are more accurate against them, and their Willpower is
+mildly reduced.
 %%%%
 extremely poisoned monstatus
 
@@ -400,6 +418,12 @@ This creature has been briefly distracted by something else.
 
 [[low-tier stab monstatus]]
 %%%%
+out of phase monstatus
+
+This creature is slightly out of phase and has greatly increased evasion against
+those who lacks the ability to see invisible creatures. Their degree of injury
+is also hidden.
+%%%%
 paralysed monstatus
 
 This creature is unable to move, act, block, or dodge attacks.
@@ -483,10 +507,6 @@ regenerating monstatus
 
 This creature regenerates health at a greatly increased rate, proportion to their
 maximum health.
-%%%%
-repelling missiles monstatus
-
-This creature has +15 EV when dodging projectiles, whether physical or magical.
 %%%%
 retreating monstatus
 
@@ -577,6 +597,12 @@ This creature's spells are significantly weakened.
 stilling the winds monstatus
 
 This creature is preventing any clouds from being created on the current floor.
+%%%%
+stampeding monstatus
+
+This creature is moving in a single direction at incredible speed. Any enemies
+they run into will be pushed backwards and attacked with 50% bonus damage and
+increased accuracy.
 %%%%
 strong monstatus
 

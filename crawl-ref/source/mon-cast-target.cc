@@ -26,7 +26,7 @@
 resolved_speech_actor resolve_speech_actor(const monster &mons)
 {
     description_level_type desc = DESC_THE;
-    if (mons.attitude == ATT_FRIENDLY
+    if (mons.base_attitude == ATT_FRIENDLY
         && !mons_is_unique(mons.type)
         && !crawl_state.game_is_arena()
         && you.can_see(mons))
@@ -139,7 +139,7 @@ resolved_speech_target resolve_speech_target(
         result.error = result.display;
     }
     else if (!invalid_monster_index(mons->foe)
-             && env.mons[mons->foe].type == MONS_NO_MONSTER)
+             && invalid_monster(&env.mons[mons->foe]))
     {
         result.kind = speech_target_kind::ERROR;
         result.source = speech_target_source::DIRECT_TARGET;
@@ -232,7 +232,7 @@ resolved_speech_target resolve_speech_target(
                     result.feature = env.grid(pbolt.target);
                     result.position = pbolt.target;
                     result.display = feature_description(
-                        result.feature, NUM_TRAPS, "", DESC_THE);
+                        result.feature, "", DESC_THE);
                 }
                 else
                 {

@@ -103,7 +103,8 @@ static TextDB AllDBs[] =
             "status.txt",
             "monstatus.txt",
             "mutations.txt",
-            "passives.txt", }),
+            "passives.txt",
+            "egos.txt", }),
 
     TextDB("gamestart", "descript/",
           { "species.txt",
@@ -903,7 +904,7 @@ _materialize_canonical_entries(const effective_textdb_entries &effective)
 }
 
 // Parameterized phase-0 dump core shared by the SpeakDB, MiscDB and ShoutDB
-// typed wrappers below.  Provenance cannot be recovered from DBM, so the
+// typed wrappers below. Provenance cannot be recovered from DBM, so the
 // canonical dump re-reads the production input sequence of the given TextDB.
 // The speak wrappers keep their exact public signatures and byte-identical
 // output; only database_name and the input family differ for misc/shout.
@@ -2257,10 +2258,12 @@ static string _query_database(TextDB &db, string key, bool canonicalise_key,
 
     if (db.translation && !untranslated)
         result = _database_fetch(db.translation->get(), key);
-    if (!_database_has_entry(result))
+    // SQLite represents a missing key as a zero-length datum. Treat it
+    // like a missing DBM entry so untranslated descriptions fall back to EN.
+    if (!_database_has_entry(result) || result.dsize == 0)
         result = _database_fetch(db.get(), key);
 
-    if (!_database_has_entry(result))
+    if (!_database_has_entry(result) || result.dsize == 0)
         return "";
 
     string str((const char *)result.dptr, result.dsize);

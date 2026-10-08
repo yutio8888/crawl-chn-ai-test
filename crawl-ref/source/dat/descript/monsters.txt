@@ -224,6 +224,15 @@ Gloorx Vloq
 
 A shadowy figure clothed in profound darkness.
 %%%%
+Goji
+
+An intrepid goblin who has somehow managed to tame a ghost moth as his mount.
+While the elaborate snarl of ropes he is using to remain upright on it surely
+undermines the moth's own mobility, even a hobbled ghost moth can be a deadly
+adversary.
+
+And Goji? Well. He's also here.
+%%%%
 Grinder
 
 An inefficient shadow imp previously employed as a torturer in one of the lower
@@ -433,7 +442,7 @@ who lost their life in their great exodus into the Dungeon, and even if this is
 a lie, she nonetheless seems to be on a first-name basis with many of them.
 
 More than any other orc still breathing, she knows the blood and sacrifice it
-took to make this place a refuge for her kind. She will not brook it being
+took to make this place a refuge for her kind. She will not brook its being
 intruded upon by anyone - least of all you.
 %%%%
 Nessos
@@ -632,6 +641,12 @@ outline of a vast, sinuous dragon is just barely perceptible behind. Its malice
 is palpable.
 %%%%
 # Non-unique monsters
+abyssal acolyte
+
+A missionary in the service of Lugonu, with remnants of its headless body
+spilling from a roaming spatial rift. It seeks to teach others the joy and
+strength of slowly decoupling from this particular plane of reality.
+%%%%
 acid blob
 
 A lump of sickly pustulent flesh, dripping with lethal acid.
@@ -650,6 +665,10 @@ air elemental
 
 A spirit drawn from the elemental plane of air. It exists in this world as a
 lightning-spitting spirit, stunning foes with its crackling bursts.
+%%%%
+airy jade
+
+A floating shard of crystaline jade which resonates with your air magic.
 %%%%
 alderking
 
@@ -715,10 +734,6 @@ A wizard fond of spectacle and destruction. They scorn the cowardice of other
 magicians, who hide from their foes rather than simply blasting them out of
 existence.
 %%%%
-armataur
-
-A curious quadraped, resembling a cross between an armadillo and a yaktaur.
-%%%%
 armour echo
 
 The sweat and toil of the armourer working leather and steel infuses an
@@ -733,6 +748,12 @@ The divided and churning remains of a protean progenitor, striving desperately
 for form. Whatever they become, the last of their progenitor's power ensure it
 will be stronger and swifter than any such creature found elsewhere in the
 dungeon.
+%%%%
+# Suffix to differentiate it from the item of the same name
+assassin centipede monster
+
+An oversized insect with dagger-sharp forcipules and a great abundance of limbs.
+Its sting injects crippling toxins whose potency increases as they mature.
 %%%%
 azure jelly
 
@@ -776,13 +797,6 @@ bat
 
 A large grey bat that, despite being herbivorous, is quite aggressive. It is
 myopic and uses echolocation to navigate.
-%%%%
-battlemage
-
-A humanoid construct of insubstantial memory, floating through the air. Though
-perhaps somewhat changed in shape and bearing few discernable features, still
-it seems somehow to resemble a warrior from the distantly remembered past,
-skilled with both conjurations and melee combat.
 %%%%
 battlesphere
 
@@ -1374,6 +1388,10 @@ A spirit drawn from the elemental plane of earth. It exists in this world as a
 sinuous stream of silt and stone, capable of smoothly flowing through solid
 rock.
 %%%%
+earthen jade
+
+A floating shard of crystaline jade which resonates with your earth magic.
+%%%%
 efreet
 
 An imposing, muscular figure engulfed in a cloud of searing flame.
@@ -1412,6 +1430,13 @@ elemental wellspring
 
 A swirling conflux of elemental water streaming from the elemental plane into
 this one, with powerful spirits and mighty floods flowing from it.
+%%%%
+elementalist
+
+A humanoid construct of insubstantial memory, floating through the air. Though
+perhaps somewhat changed in shape and bearing few discernable features, still
+it seems somehow to resemble a mage from the distantly remembered past, skilled
+with destructive elemental magic.
 %%%%
 elephant
 
@@ -1480,6 +1505,10 @@ fenstrider witch
 
 Followers of the ancient swamp ways, these witches rise above the muck and mire
 on a pair of stilt-like chicken legs. They are masters of pain and poison.
+%%%%
+fiery jade
+
+A floating shard of crystaline jade which resonates with your fire magic.
 %%%%
 fire bat
 
@@ -1563,9 +1592,18 @@ A slender prism of unstable, soft gold that crackles with barely-contained
 destructive energy. Any blow which cracks its fragile surface is likely to
 result in a violent explosion.
 %%%%
+fungal shambler
+
+Through considerable effort, certain strains of fungi may be cultivated and
+mutated to ravenously parasitise living tissue. This particular variety has
+consumed the flesh and possessions of whatever intruder was fed to it and now
+serves as a roving guard, wielding scavenged armaments and its own explosive
+spores.
+%%%%
 fungus
 
-A lumpy grey fungus, growing well in the dank underground dungeon.
+A lumpy {{ if you.branch() == "Gulch" then return "mauve"; else return "grey";
+end }} fungus, growing well in the dank underground dungeon.
 %%%%
 gargoyle
 
@@ -1626,6 +1664,13 @@ Hells themselves. It pursues a designated target inexorably, growing in size as
 it travels. If it collides with either a creature or wall, it will explode
 violently - though its creator is protected from the wild destruction unleashed
 as it does so.
+%%%%
+glowmurk ghast
+
+A shuddering, shimmering apparition borne from the drowned dead, repeatedly
+called to this plane by some cruel mystic experiment. It will share its memories
+and experiences of drowning in tainted waters with whatever it first touches,
+then dissipate.
 %%%%
 goblin
 
@@ -1756,6 +1801,12 @@ A hideous skeletal demon. It swoops through the air on powerful wings of
 ancient withered skin, taking sadistic joy from harrying those who would try to
 flee its grasp.
 %%%%
+herald of the abyss
+
+A mutated devotee of Lugonu, warped by years of living in the Abyss. It has
+ascended into an exalted representative of Lugonu's spite against the rest of
+all existence and solemnly tears apart reality in Lugonu's name.
+%%%%
 hexer
 
 A humanoid construct of insubstantial memory, floating through the air. Though
@@ -1816,6 +1867,12 @@ head off and causing two more to grow in its place. Very large claws, such as
 trolls', are long enough to do the same. Only a weapon branded with flame will
 cauterise the wound and prevent more heads from growing.
 %%%%
+hypnotail
+
+The shed tail of a hypnogecko, still pulsing with mesmerising colours and
+compelling any nearby predators to focus their attention on it instead of the
+unfortunate lizard it once belonged to.
+%%%%
 ice beast
 
 A terrible creature, formed of snow and crystalline ice. Its feet leave puddles
@@ -1838,6 +1895,10 @@ ice statue
 
 An imposing idol of some nameless arctic god, carved in glistening deep blue
 ice. Freezing vapours swirl about it, and a chill pervades the air.
+%%%%
+icy jade
+
+A floating shard of crystaline jade which resonates with your ice magic.
 %%%%
 iguana
 
@@ -2146,6 +2207,13 @@ the brim with explosives. It can rapidly fill an area with bomblets, and when
 commanded by its creator, will explode them all (and itself) to devastating
 effect.
 %%%%
+mongrel wurm
+
+A serpentine crossbreed, blending traits of lesser dragons and countless other
+creatures that nature never intended to interbreed. Its many stunted limbs
+struggle to propel its grime-coated body, while its oversized scaleless head
+wheezes with the pressure of clashing breath weapons.
+%%%%
 morphogenic ooze
 
 A multihued mire of roiling flesh and fluctuating sludge, striving and failing
@@ -2450,7 +2518,7 @@ An intricate mechanical beetle covered in reinforced metal plates that resemble
 a shield. It projects a kinetic barrier around its creator while adjacent to
 them, increasing their armour class.
 
-It will never voluntarily leave its creator's side, and if forcibly seperated,
+It will never voluntarily leave its creator's side, and if forcibly separated,
 will prioritise returning to them over any other concerns.
 %%%%
 phantasmal warrior
@@ -2669,6 +2737,13 @@ river rat
 A rodent with hair of a most peculiar green colour, and a powerful bite. It
 tends to form great swarms with its kin.
 %%%%
+roaming sludgefish
+
+A mutant sewer fish whose continuous exposure to wild magic has given it an
+appetite for magic itself. It swims through the air in a telekinetic bubble
+of the very sludge that gave birth to it, seeking out exotic prey from which
+to siphon novel magic.
+%%%%
 rock fish
 
 A strange stone-scaled fish that swims through solid rock with the same ease
@@ -2694,6 +2769,13 @@ rust devil
 
 A hideous humanoid figure with rust-spotted metal skin, spreading corrosion
 and decay to all it touches.
+%%%%
+rusted inspector
+
+A slithering metal construct, once built to monitor for mutated entities
+encroaching upon the Vaults and long-since abandoned. While it can still dampen
+most unwanted magic, a lack of proper maintenance has led to its becoming coated
+with a highly corrosive mystic rust.
 %%%%
 sacred lotus
 
@@ -2733,6 +2815,14 @@ scorpion
 A loathsome arachnid, armed to the teeth. Its body is covered in a thick
 carapace, its tail is tipped by a venomous sting, and its forelimbs are
 equipped with a pair of sharp grasping claws.
+%%%%
+scrapshell chimera
+
+A living engine of aquatic animal flesh fused with a colossal mass of bewitched
+metal scrap. Such hybrid terrors are perhaps the most successful experiments
+conducted in these tainted waters: its necromantically-attuned shell and a diet
+of furious drowned thieves has granted even this thrashing beast the ability to
+control the sunken souls of its countless victims.
 %%%%
 screaming refraction
 
@@ -2777,6 +2867,12 @@ servant of whispers
 A member of an order of monks who abandoned their former faith. It now serves
 a minor god of wind and whispers, who allows it to calm the air and, when
 in great need, to break the stillness with divine thunder.
+%%%%
+sewage sovereign
+
+A hulking mutant swine who feasts like a king upon the abundant fungus of
+its realm and lords over its other denizens with brute force and unstoppable
+bulk.
 %%%%
 shadow
 
@@ -3046,6 +3142,10 @@ spriggan rider
 A spriggan that has tamed a hornet as its mount, and is tasked with protecting
 the spriggan fens and cairns from intruders.
 %%%%
+stack of scrap
+
+A tarnished towering mess of half-assembled constructs and spare broken parts.
+%%%%
 star jelly
 
 A white gelatinous mound that pulses with a strange iridescence. Its body
@@ -3149,6 +3249,16 @@ titans attempted to pull themselves free of mortality through brute strength.
 They almost succeeded before rot dragged them to Ereshkigal. A glimmer of their
 former beauty remains, alluring despite the stench.
 %%%%
+telencephalon
+
+An abandoned arcane experiment, its original purpose more inscrutable than most.
+Made of magical crystal fused with mutant brain tissue, it bobs about
+autonomously and erratically, sparking all the while.
+
+When badly damaged, it will unleash a staggering telekinetic shockwave, knocking
+back those in its surroundings and inflicting irresistible confusion on any who
+might harm it.
+%%%%
 tengu
 
 A humanoid figure with the head and talons of a bird. Its ferociously combative
@@ -3204,8 +3314,11 @@ whirls of fire and ice occasionally escape and ricochet wildly off of walls.
 thorn hunter
 
 A predatory marsh plant, possessed of motility and a rudimentary intelligence.
-It ensnares its prey with protrusions of spiny brambles and then skewers the
-trapped creatures with its razor-sharp thorns.
+It ensnares its prey in rings of spiny brambles and then skewers the trapped
+creatures with its razor-sharp thorns.
+
+When injured or approached by enemies, it can even raise these brambles as a
+barricade around itself.
 %%%%
 toadstool
 
@@ -3530,8 +3643,8 @@ A muscular yellow-scaled humanoid with a reptilian tail and small wings.
 %%%%
 ynoxinul
 
-A winged demon covered in shiny metallic scales. It has a legion of minor
-demons under its command.
+A winged demon covered in shiny metallic scales. It has a legion of minor demons
+at its command, which it impels to savage fury.
 %%%%
 zombie
 
@@ -3737,10 +3850,6 @@ An undead creature in the shape of a bat, made of ice.
 flame-cult kobold
 
 A kobold that has been enchanted to explode in a blaze of fire.
-%%%%
-mad acolyte of Lugonu
-
-A devoted follower of Lugonu, driven mad by years of living in the Abyss.
 %%%%
 malarious merfolk avatar
 

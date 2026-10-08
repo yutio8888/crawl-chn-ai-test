@@ -18,6 +18,21 @@ SPEC.loader.exec_module(EXTRACT)
 
 
 class DeferredMarkerTests(unittest.TestCase):
+    def test_empty_sentinels_are_skipped_without_stripping_real_keys(self):
+        keys = self._extract_source(
+            'N_(""); T_(""); NC_("ctx", ""); C_("ctx", "");\n'
+            'N_(R"()"); N_("" "");\n'
+            'N_(" "); NC_("", "nonempty");\n')
+        self.assertEqual([(" ", None), ("nonempty", "")], keys)
+
+    def test_lua_empty_sentinel_is_skipped(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "sample.lua"
+            path.write_text('crawl.t_(""); crawl.t_(" ")', encoding="utf-8")
+            self.assertEqual([(" ", None)], [
+                (key, ctx) for key, ctx, *_ in
+                EXTRACT.extract_keys_from_file(str(path))])
+
     def _extract_source(self, source: str):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "sample.cc"

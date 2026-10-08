@@ -31,7 +31,7 @@
 // temporarily.
 void mons_att_changed(monster* mon)
 {
-    const mon_attitude_type att = mon->temp_attitude();
+    const mon_attitude_type att = mon->attitude();
     const monster_type mc = mons_base_type(*mon);
 
     if (mons_is_tentacle_head(mc)
@@ -40,13 +40,13 @@ void mons_att_changed(monster* mon)
         for (monster_iterator mi; mi; ++mi)
             if (mi->is_child_tentacle_of(mon))
             {
-                mi->attitude = att;
+                mi->base_attitude = att;
                 if (!mons_is_solo_tentacle(mc))
                 {
                     for (monster_iterator connect; connect; ++connect)
                     {
                         if (connect->is_child_tentacle_of(*mi))
-                            connect->attitude = att;
+                            connect->base_attitude = att;
                     }
                 }
 
@@ -56,7 +56,7 @@ void mons_att_changed(monster* mon)
             }
     }
 
-    if (mon->attitude == ATT_HOSTILE
+    if (mon->base_attitude == ATT_HOSTILE
         && (mons_is_god_gift(*mon, GOD_BEOGH)
            || mons_is_god_gift(*mon, GOD_YREDELEMNUL)))
     {
@@ -89,7 +89,7 @@ void beogh_follower_convert(monster* mons, bool orc_hit)
         || mons->has_ench(ENCH_FIRE_CHAMPION)
         || mons->flags & MF_APOSTLE_BAND
         // If marked for vengeance, only deathbed conversion.
-        || (mons->has_ench(ENCH_VENGEANCE_TARGET) && !deathbed))
+        || (mons->is_vengeance_target() && !deathbed))
     {
         return;
     }
@@ -105,8 +105,8 @@ void beogh_follower_convert(monster* mons, bool orc_hit)
         conv_t ctype = conv_t::sight;
         if (deathbed)
         {
-            ctype = mons->has_ench(ENCH_VENGEANCE_TARGET) ? conv_t::vengeance
-                                                          : conv_t::deathbed;
+            ctype = mons->is_vengeance_target() ? conv_t::vengeance
+                                                : conv_t::deathbed;
         }
 
         beogh_convert_orc(mons, ctype);
@@ -131,7 +131,7 @@ void slime_convert(monster* mons)
 void fedhas_neutralise(monster* mons)
 {
     if (have_passive(passive_t::friendly_plants)
-        && mons->attitude == ATT_HOSTILE
+        && mons->base_attitude == ATT_HOSTILE
         && fedhas_neutralises(*mons)
         && !testbits(mons->flags, MF_ATT_CHANGE_ATTEMPT))
     {
@@ -145,15 +145,8 @@ void fedhas_neutralise(monster* mons)
 void dismiss_god_summons(god_type god)
 {
     for (monster_iterator mi; mi; ++mi)
-    {
-        if (is_follower(**mi)
-            && mi->is_summoned()
-            && mons_is_god_gift(**mi, god))
-        {
-            // The monster disappears.
-            monster_die(**mi, KILL_RESET, NON_MONSTER);
-        }
-    }
+        if (mi->is_summoned() && mons_is_god_gift(**mi, god))
+            monster_die(**mi, KILL_TIMEOUT, NON_MONSTER);
 }
 
 static void _print_converted_orc_speech(const string& key,
@@ -215,7 +208,7 @@ void beogh_convert_orc(monster* orc, conv_t conv)
     }
 
     // Count as having gotten vengeance.
-    if (orc->has_ench(ENCH_VENGEANCE_TARGET))
+    if (orc->is_vengeance_target())
     {
         orc->del_ench(ENCH_VENGEANCE_TARGET);
         beogh_progress_vengeance();
@@ -247,14 +240,14 @@ static void _fedhas_neutralise_plant(monster* plant)
 {
     if (!plant
         || !fedhas_neutralises(*plant)
-        || plant->attitude != ATT_HOSTILE
+        || plant->base_attitude != ATT_HOSTILE
         || testbits(plant->flags, MF_ATT_CHANGE_ATTEMPT))
     {
         return;
     }
 
-    plant->attitude = ATT_GOOD_NEUTRAL;
-    plant->flags   |= MF_WAS_NEUTRAL;
+    plant->base_attitude = ATT_GOOD_NEUTRAL;
+    plant->flags |= MF_WAS_NEUTRAL;
     mons_att_changed(plant);
 }
 
@@ -281,8 +274,8 @@ static void _jiyva_convert_slime(monster* slime)
         }
     }
 
-    slime->attitude = ATT_GOOD_NEUTRAL;
-    slime->flags   |= MF_WAS_NEUTRAL;
+    slime->base_attitude = ATT_GOOD_NEUTRAL;
+    slime->flags |= MF_WAS_NEUTRAL;
 
     mons_make_god_gift(*slime, GOD_JIYVA);
 

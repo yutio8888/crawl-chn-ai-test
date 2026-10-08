@@ -162,4 +162,10 @@ static const vector<monster_info_flag_name> monster_info_flag_names = {
     { MB_DIMINISHED_SPELLS, "dim", "diminished spells", "dim"},
     { MB_TESSERACT_SPAWN, "", "called by a tesseract", ""},
     { MB_SUNDERING_READY, "", "ready to sunder", ""},
+    { MB_EXPOSED, "exposed", "exposed", "exposed"},
+    { MB_REMEMBERED_INVIS, "remembered", "remembered", "remembered"},
+    { MB_PHASE_SHIFT, NC_("flag short", "phased"),
+      NC_("flag long", "out of phase"), NC_("flag short", "phased")},
+    { MB_DIVINE_SHIELD, NC_("flag short", "divine shielded"),
+      NC_("flag long", "divinely shielded"), NC_("flag short", "divine shielded")},
 };

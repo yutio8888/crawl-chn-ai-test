@@ -110,7 +110,7 @@ for token in (
 bot.validate_panel_manifest()
 configured_forbidden = {case[0]: case[3] for case in bot.PANEL_CASES}
 expected_forbidden = {
-    'panel:mutations': ('You are immune to poison.',
+    'panel:mutations': ('You are undead, granting you many immunities and vulnerabilities.',
                         'Gained at a future XL.'),
     'panel:runes': ('Runes of Zot',),
     'panel:map': ('(Press ? for help)',),

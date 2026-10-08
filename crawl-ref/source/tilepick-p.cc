@@ -72,7 +72,7 @@ tileidx_t tilep_equ_weapon(const item_def &item)
         tile = TILEP_HAND1_FLAIL;
         break;
     case WPN_DIRE_FLAIL:
-        tile = TILEP_HAND1_GREAT_FLAIL;
+        tile = TILEP_HAND1_DIRE_FLAIL;
         break;
     case WPN_MORNINGSTAR:
         tile = TILEP_HAND1_MORNINGSTAR;
@@ -98,7 +98,7 @@ tileidx_t tilep_equ_weapon(const item_def &item)
 
     // Edge
     case WPN_DAGGER:
-        tile = TILEP_HAND1_DAGGER_SLANT;
+        tile = TILEP_HAND1_DAGGER;
         break;
     case WPN_SHORT_SWORD:
         tile = TILEP_HAND1_SHORT_SWORD_SLANT;
@@ -107,7 +107,7 @@ tileidx_t tilep_equ_weapon(const item_def &item)
         tile = TILEP_HAND1_LONG_SWORD_SLANT;
         break;
     case WPN_GREAT_SWORD:
-        tile = TILEP_HAND1_GREAT_SWORD_SLANT;
+        tile = TILEP_HAND1_GREAT_SWORD;
         break;
     case WPN_SCIMITAR:
         tile = TILEP_HAND1_SCIMITAR;
@@ -118,11 +118,17 @@ tileidx_t tilep_equ_weapon(const item_def &item)
     case WPN_RAPIER:
         tile = TILEP_HAND1_RAPIER;
         break;
+    case WPN_ATHAME:
+        tile = TILEP_HAND1_ATHAME;
+        break;
+    case WPN_CENTIPEDE:
+        tile = TILEP_HAND1_CENTIPEDE;
+        break;
     case WPN_DEMON_BLADE:
         tile = TILEP_HAND1_DEMON_BLADE;
         break;
     case WPN_QUICK_BLADE:
-        tile = TILEP_HAND1_DAGGER;
+        tile = TILEP_HAND1_QUICK_BLADE;
         break;
     case WPN_DOUBLE_SWORD:
         tile = TILEP_HAND1_DOUBLE_SWORD;
@@ -151,7 +157,7 @@ tileidx_t tilep_equ_weapon(const item_def &item)
         tile = TILEP_HAND1_EXECUTIONERS_AXE;
         break;
     case WPN_BARDICHE:
-        tile = TILEP_HAND1_GLAIVE3;
+        tile = TILEP_HAND1_BARDICHE;
         break;
 
     // Pole
@@ -415,9 +421,9 @@ tileidx_t tilep_equ_boots(const item_def &item)
     return tile ? tileidx_enchant_equ(item, tile) : 0;
 }
 
-tileidx_t tileidx_player()
+tile_with_flags_t tileidx_player()
 {
-    tileidx_t ch = TILEP_PLAYER;
+    tile_with_flags_t ch = TILEP_PLAYER;
 
     // Currently, the flying flag is only used for not drawing the tile in the
     // water. in_water() checks Beogh's water walking. If the flying flag is
@@ -523,11 +529,6 @@ tileidx_t tilep_species_to_base_tile(int sp, int level)
     case SP_PURPLE_DRACONIAN:
     case SP_PALE_DRACONIAN:
         return TILEP_BASE_DRACONIAN + _draconian_colour(sp, level);
-    case SP_ARMATAUR:
-#if TAG_MAJOR_VERSION == 34
-    case SP_CENTAUR:
-#endif
-        return TILEP_BASE_ARMATAUR;
 #if TAG_MAJOR_VERSION == 34
     case SP_METEORAN:
         return TILEP_BASE_METEORAN;
@@ -571,6 +572,11 @@ tileidx_t tilep_species_to_base_tile(int sp, int level)
         return TILEP_BASE_POLTERGEIST;
     case SP_REVENANT:
         return TILEP_BASE_REVENANT;
+#if TAG_MAJOR_VERSION == 34
+    case SP_CENTAUR:
+#endif
+    case SP_GALE_CENTAUR:
+        return TILEP_BASE_GALE_CENTAUR;
     default:
         return TILEP_BASE_HUMAN;
     }
@@ -744,7 +750,6 @@ void tilep_job_default(int job, dolls_data *doll)
             parts[TILEP_PART_LEG]   = TILEP_LEG_BELT_REDBROWN;
             break;
 
-#if TAG_MAJOR_VERSION == 34
         case JOB_STALKER:
             parts[TILEP_PART_HELM]  = TILEP_HELM_HOOD_GREEN;
             parts[TILEP_PART_BODY]  = TILEP_BODY_LEATHER_JACKET;
@@ -755,7 +760,6 @@ void tilep_job_default(int job, dolls_data *doll)
             parts[TILEP_PART_CLOAK] = TILEP_CLOAK_GREEN;
             parts[TILEP_PART_BOOTS] = TILEP_BOOTS_MIDDLE_BROWN2;
             break;
-#endif
 
         case JOB_BRIGAND:
             parts[TILEP_PART_HELM]  = TILEP_HELM_MASK_NINJA_BLACK;
@@ -837,6 +841,13 @@ void tilep_job_default(int job, dolls_data *doll)
             parts[TILEP_PART_BODY]  = TILEP_BODY_ROBE_RAINBOW;
             parts[TILEP_PART_HAND1] = TILEP_HAND1_STAFF_RUBY;
             parts[TILEP_PART_HAND2] = TILEP_HAND2_BOOK_MAGENTA_DIM;
+            parts[TILEP_PART_BOOTS] = TILEP_BOOTS_SHORT_BROWN;
+            break;
+
+        case JOB_MYSTIC:
+            parts[TILEP_PART_BODY]  = TILEP_BODY_ROBE_WHITE_GREEN;
+            parts[TILEP_PART_HAND1] = TILEP_HAND1_GANDALF;
+            parts[TILEP_PART_HAND2] = TILEP_HAND2_SPARK;
             parts[TILEP_PART_BOOTS] = TILEP_BOOTS_SHORT_BROWN;
             break;
 
@@ -943,7 +954,9 @@ void tilep_calc_flags(const dolls_data &doll, int flag[])
         flag[TILEP_PART_BEARD] = TILEP_FLAG_HIDE;
 
     if (is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_NAGA)
-        || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_ARMATAUR))
+        || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_GALE_CENTAUR)
+        || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_TRAN_WEREWOLF_NAGA)
+        || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_TRAN_WEREWOLF_GALE_CENTAUR))
     {
         flag[TILEP_PART_BOOTS] = flag[TILEP_PART_LEG] = TILEP_FLAG_HIDE;
         flag[TILEP_PART_BODY]  = TILEP_FLAG_CUT_BOTTOM;

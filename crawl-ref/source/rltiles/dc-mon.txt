@@ -124,6 +124,7 @@ oblivion_hound MONS_OBLIVION_HOUND
 hog MONS_HOG
 hell_hog MONS_HELL_HOG
 holy_swine MONS_HOLY_SWINE
+sewage_sovereign MONS_SEWAGE_SOVEREIGN
 %rim 1
 %sdir player/felids
 cat4 MONS_FELID
@@ -153,6 +154,7 @@ seismosaurus MONS_SEISMOSAURUS
 seismosaurus_egg1 MONS_SEISMOSAURUS_EGG
 seismosaurus_egg2
 seismosaurus_egg3
+hypnotail MONS_HYPNOTAIL
 %rim 1
 komodo_dragon MONS_KOMODO_DRAGON
 alligator MONS_ALLIGATOR
@@ -245,6 +247,7 @@ jellyfish MONS_FORMLESS_JELLYFISH
 ## Beetles ('B')
 %sdir mon/animals
 %rim 0
+assassin_centipede MONS_ASSASSIN_CENTIPEDE
 bombardier_beetle MONS_BOMBARDIER_BEETLE
 boulder_beetle MONS_BOULDER_BEETLE
 boulder_beetle_rolling0 MONS_BOULDER_BEETLE_ROLLING
@@ -272,6 +275,10 @@ goliath_frog MONS_GOLIATH_FROG
 skyshark MONS_SKYSHARK
 %sdir mon/aquatic
 rock_fish MONS_ROCK_FISH
+roaming_sludgefish0 MONS_ROAMING_SLUDGEFISH
+roaming_sludgefish1
+roaming_sludgefish2
+roaming_sludgefish3
 %sdir mon/undead
 marrowcuda MONS_MARROWCUDA
 
@@ -390,6 +397,14 @@ ball_lightning MONS_BALL_LIGHTNING /*'*'*/
 %rim 0
 creeping_inferno1 MONS_CREEPING_INFERNO
 creeping_inferno2
+jade_crystal_air MONS_JADE_CRYSTAL_AIR
+jade_crystal_air_charged MONS_JADE_CRYSTAL_AIR_CHARGED
+jade_crystal_earth MONS_JADE_CRYSTAL_EARTH
+jade_crystal_earth_charged MONS_JADE_CRYSTAL_EARTH_CHARGED
+jade_crystal_fire MONS_JADE_CRYSTAL_FIRE
+jade_crystal_fire_charged MONS_JADE_CRYSTAL_FIRE_CHARGED
+jade_crystal_ice MONS_JADE_CRYSTAL_ICE
+jade_crystal_ice_charged MONS_JADE_CRYSTAL_ICE_CHARGED
 %sdir mon/undead
 poltergeist MONS_POLTERGEIST
 polterguardian MONS_POLTERGUARDIAN
@@ -506,7 +521,7 @@ wendigo MONS_WENDIGO
 %sdir mon/nonliving
 ancestor MONS_ANCESTOR
 ancestor_knight MONS_ANCESTOR_KNIGHT
-ancestor_battlemage MONS_ANCESTOR_BATTLEMAGE
+ancestor_elementalist MONS_ANCESTOR_ELEMENTALIST
 ancestor_hexer MONS_ANCESTOR_HEXER
 
 ## Abominations ('X')
@@ -578,6 +593,7 @@ bomblet MONS_BOMBLET
 walking_alembic MONS_WALKING_ALEMBIC
 iron_golem MONS_IRON_GOLEM
 ushabti MONS_USHABTI
+rusted_inspector MONS_RUSTED_INSPECTOR
 peacekeeper MONS_PEACEKEEPER
 saltling MONS_SALTLING
 undertaker MONS_UNDERTAKER
@@ -596,6 +612,12 @@ roxanne MONS_ROXANNE
 %sdir mon/statues
 pile_of_debris_00 MONS_PILE_OF_DEBRIS
 pile_of_debris_01
+%weight 10
+stack_of_scrap0 MONS_STACK_OF_SCRAP
+stack_of_scrap1
+%weight 5
+stack_of_scrap2
+%weight 10
 pile_of_flesh0 MONS_PILE_OF_FLESH
 pile_of_flesh1
 pile_of_flesh2
@@ -707,10 +729,10 @@ zenata MONS_ZENATA
 %rim 1
 terence MONS_TERENCE
 %sdir mon/nonliving
+%rim 0
 player_shadow MONS_PLAYER_SHADOW
 %sdir mon/nonliving/shadows
-%rim 0
-shadow_armataur MONS_PLAYER_SHADOW_ARMATAUR
+shadow_gale_centaur MONS_PLAYER_SHADOW_GALE_CENTAUR
 shadow_barachi MONS_PLAYER_SHADOW_BARACHI
 shadow_coglin MONS_PLAYER_SHADOW_COGLIN
 shadow_demigod MONS_PLAYER_SHADOW_DEMIGOD
@@ -766,6 +788,9 @@ ironbound_beastmaster MONS_IRONBOUND_BEASTMASTER
 ironbound_convoker MONS_IRONBOUND_CONVOKER
 ironbound_preserver MONS_IRONBOUND_PRESERVER
 ironbound_frostheart MONS_IRONBOUND_FROSTHEART
+mon/abyss/abyssal_acolyte MONS_ABYSSAL_ACOLYTE
+mon/abyss/abyssal_acolyte_phased MONS_ABYSSAL_ACOLYTE_PHASED
+mon/abyss/herald_of_the_abyss MONS_HERALD_OF_THE_ABYSS
 servant_of_whispers MONS_SERVANT_OF_WHISPERS
 ragged_hierophant MONS_RAGGED_HIEROPHANT
 imperial_myrmidon MONS_IMPERIAL_MYRMIDON
@@ -775,10 +800,6 @@ killer_klown_purple
 killer_klown_red
 killer_klown_yellow
 %sdir mon/vault
-## From an Abyss rune vault
-%rim 0
-mad_acolyte_of_lugonu MONS_MAD_ACOLYTE_OF_LUGONU
-%rim 1
 ## From the Cigotuvi wizlab
 deformed_human MONS_DEFORMED_HUMAN
 ## From the Cloud Mage wizlab
@@ -836,6 +857,7 @@ rime_drake MONS_RIME_DRAKE
 lindwurm MONS_LINDWURM
 death_drake MONS_DEATH_DRAKE
 wind_drake MONS_WIND_DRAKE
+mongrel_wurm MONS_MONGREL_WURM
 wyrmhole0 MONS_WYRMHOLE
 wyrmhole1
 wyrmhole2
@@ -877,6 +899,7 @@ ballistomycete_spore MONS_BALLISTOMYCETE_SPORE
 glass_eye MONS_GLASS_EYE
 %rim 0
 mon/aberrations/glowing_orange_brain MONS_GLOWING_ORANGE_BRAIN
+mon/aberrations/telencephalon MONS_TELENCEPHALON
 %rim 1
 great_orb_of_eyes MONS_GREAT_ORB_OF_EYES
 %rim 0
@@ -906,7 +929,6 @@ minotaur MONS_MINOTAUR
 %rim 0
 jorogumo MONS_JOROGUMO
 fenstrider_witch MONS_FENSTRIDER_WITCH
-armataur MONS_ARMATAUR
 %rim 1
 tengu MONS_TENGU
 tengu_conjurer MONS_TENGU_CONJURER
@@ -959,6 +981,7 @@ twing2
 twing3
 twing4
 twing5
+mon/aberrations/scrapshell_chimera MONS_SCRAPSHELL_CHIMERA
 %sdir mon/unique
 %rim 1
 sojobo MONS_SOJOBO
@@ -1066,6 +1089,7 @@ guardian_serpent MONS_GUARDIAN_SERPENT
 %sdir mon/unique
 %rim 0
 erolcha MONS_EROLCHA
+erolcha_phased MONS_EROLCHA_PHASED
 lodul MONS_LODUL
 %sdir mon/humanoids
 oni MONS_ONI
@@ -1076,6 +1100,7 @@ two_headed_ogre MONS_TWO_HEADED_OGRE
 %rim 0
 swamp_ogre MONS_SWAMP_OGRE
 ogre_mage MONS_OGRE_MAGE
+ogre_mage_phased MONS_OGRE_MAGE_PHASED
 ironbound_thunderhulk MONS_IRONBOUND_THUNDERHULK
 
 ## Plants ('P')
@@ -1120,6 +1145,15 @@ treant MONS_TREANT
 alderking0 MONS_ALDERKING
 alderking1
 briar_patch MONS_BRIAR_PATCH
+fungal_shambler MONS_FUNGAL_SHAMBLER
+fungus_gulch0 MONS_FUNGUS_GULCH
+fungus_gulch1
+fungus_gulch2
+fungus_gulch3
+fungus_gulch_patch0 MONS_FUNGUS_GULCH_PATCH
+fungus_gulch_patch1
+fungus_gulch_patch2
+fungus_gulch_patch3
 %rim 1
 vine_stalker MONS_VINE_STALKER
 %rim 0
@@ -1203,9 +1237,10 @@ head_instructor MONS_HEADMASTER
 %sdir mon/humanoids/elves
 elf MONS_ELF
 deep_elf_knight MONS_DEEP_ELF_KNIGHT
+deep_elf_knight_phased MONS_DEEP_ELF_KNIGHT_PHASED
 deep_elf_archer MONS_DEEP_ELF_ARCHER
-deep_elf_zephyrmancer MONS_DEEP_ELF_AIR_MAGE
-deep_elf_pyromancer MONS_DEEP_ELF_FIRE_MAGE
+deep_elf_zephyrmancer MONS_DEEP_ELF_ZEPHYRMANCER
+deep_elf_pyromancer MONS_DEEP_ELF_PYROMANCER
 deep_elf_sorcerer MONS_DEEP_ELF_SORCERER
 deep_elf_death_mage MONS_DEEP_ELF_DEATH_MAGE
 deep_elf_demonologist MONS_DEEP_ELF_DEMONOLOGIST
@@ -1248,6 +1283,10 @@ ijyb MONS_IJYB
 %rim 0
 robin MONS_ROBIN
 sprozz MONS_SPROZZ
+goji MONS_GOJI
+goji_spearless MONS_GOJI_SPEARLESS
+goji_seen MONS_GOJI_SEEN
+goji_seen_spearless MONS_GOJI_SEEN_SPEARLESS
 %rim 1
 crazy_yiuf MONS_CRAZY_YIUF
 grum MONS_GRUM
@@ -1273,6 +1312,7 @@ boggart MONS_BOGGART
 spriggan MONS_SPRIGGAN
 spriggan_rider MONS_SPRIGGAN_RIDER
 spriggan_druid MONS_SPRIGGAN_DRUID
+spriggan_druid_staffless MONS_SPRIGGAN_DRUID_STAFFLESS
 spriggan_berserker MONS_SPRIGGAN_BERSERKER
 spriggan_defender MONS_SPRIGGAN_DEFENDER
 %rim 0
@@ -1353,6 +1393,7 @@ silent_spectre MONS_SILENT_SPECTRE
 lost_soul MONS_LOST_SOUL /*'*'*/
 soul_wisp MONS_SOUL_WISP
 drowned_soul MONS_DROWNED_SOUL
+glowmurk_ghast MONS_GLOWMURK_GHAST
 flayed_ghost MONS_FLAYED_GHOST
 martyred_shade MONS_MARTYRED_SHADE
 %sdir mon/nonliving
@@ -1427,6 +1468,7 @@ draco-job-knight MONS_DRACONIAN_KNIGHT
 draco-job-monk MONS_DRACONIAN_MONK
 draco-job-scorcher MONS_DRACONIAN_SCORCHER
 draco-job-shifter MONS_DRACONIAN_SHIFTER
+draconian_knight_phased MONS_DRACONIAN_KNIGHT_PHASED
 ## From the Wucad Mu wizard laboratory
 mon/vault/draconian_monk_ghost MONS_FAINT_GREY_DRACONIAN_MONK
 
@@ -1455,7 +1497,7 @@ serpent_form_gargoyle TRAN_SERPENT_GARGOYLE
 serpent_form_felid TRAN_SERPENT_FELID
 statue_form_humanoid TRAN_STATUE_HUMANOID
 %syn TRAN_STATUE_EQUIP_FIRST
-statue_form_armataur TRAN_STATUE_ARMATAUR
+statue_form_gale_centaur TRAN_STATUE_GALE_CENTAUR
 statue_form_naga TRAN_STATUE_NAGA
 statue_form_octopode TRAN_STATUE_OCTOPODE
 statue_form_djinni TRAN_STATUE_DJINN
@@ -1475,7 +1517,7 @@ dragon_form_octopode TRAN_DRAGON_OCTOPODE
 dragon_form_felid TRAN_DRAGON_FELID
 lich_form_humanoid TRAN_LICH_HUMANOID
 %syn TRAN_LICH_EQUIP_FIRST
-lich_form_armataur TRAN_LICH_ARMATAUR
+lich_form_gale_centaur TRAN_LICH_GALE_CENTAUR
 lich_form_djinn TRAN_LICH_DJINN
 lich_form_gargoyle TRAN_LICH_GARGOYLE
 lich_form_naga TRAN_LICH_NAGA
@@ -1487,7 +1529,7 @@ tree_form TRAN_TREE
 bat_swarm_form TRAN_BAT_SWARM
 bat_swarm_form_gargoyle TRAN_BAT_SWARM_GARGOYLE
 vampire_form_humanoid TRAN_VAMPIRE
-vampire_form_armataur TRAN_VAMPIRE_ARMATAUR
+vampire_form_gale_centaur TRAN_VAMPIRE_GALE_CENTAUR
 vampire_form_djinn TRAN_VAMPIRE_DJINN
 vampire_form_gargoyle TRAN_VAMPIRE_GARGOYLE
 vampire_form_felid TRAN_VAMPIRE_FELID
@@ -1497,9 +1539,10 @@ vampire_form_tengu TRAN_VAMPIRE_TENGU
 mushroom_form TRAN_MUSHROOM
 wisp_form TRAN_WISP
 storm_form TRAN_STORM_HUMANOID
+storm_form_gale_centaur TRANS_STORM_GALE_CENTAUR
 storm_form_felid TRAN_STORM_FELID
 storm_form_octopode TRAN_STORM_OCTOPODE
-slaughter_form_armataur TRAN_SLAUGHTER_ARMATAUR
+slaughter_form_gale_centaur TRAN_SLAUGHTER_GALE_CENTAUR
 slaughter_form_felid TRAN_SLAUGHTER_FELID
 slaughter_form_gargoyle TRAN_SLAUGHTER_GARGOYLE
 slaughter_form_humanoid TRAN_SLAUGHTER_HUMANOID
@@ -1511,7 +1554,7 @@ quill_form_felid TRAN_QUILL_FELID
 quill_form_octopode TRAN_QUILL_OCTOPODE
 hive_form_felid TRAN_HIVE_FELID
 hive_form_octopode TRAN_HIVE_OCTOPODE
-aqua_form_armataur TRAN_AQUA_ARMATAUR
+aqua_form_gale_centaur TRAN_AQUA_GALE_CENTAUR
 aqua_form_djinn TRAN_AQUA_DJINN
 aqua_form_felid TRAN_AQUA_FELID
 aqua_form_gargoyle TRAN_AQUA_GARGOYLE
@@ -1523,13 +1566,13 @@ sphinx_form_barding TRAN_SPHINX_BARDING
 sphinx_form_gargoyle TRAN_SPHINX_GARGOYLE
 sphinx_form_barding_gargoyle TRAN_SPHINX_BARDING_GARGOYLE
 sphinx_form_felid TRAN_SPHINX_FELID
-werewolf_form_armataur TRAN_WEREWOLF_ARMATAUR
 werewolf_form_djinn TRAN_WEREWOLF_DJINN
 werewolf_form_felid TRAN_WEREWOLF_FELID
 werewolf_form_gargoyle TRAN_WEREWOLF_GARGOYLE
 werewolf_form_humanoid TRAN_WEREWOLF_HUMANOID
 werewolf_form_naga TRAN_WEREWOLF_NAGA
 werewolf_form_octopode TRAN_WEREWOLF_OCTOPODE
+werewolf_form_gale_centaur TRAN_WEREWOLF_GALE_CENTAUR
 walking_scroll_form TRAN_WALKING_SCROLL
 fortress_crab_form TRAN_FORTRESS_CRAB
 fortress_crab_form_gargoyle TRAN_FORTRESS_CRAB_GARGOYLE
@@ -1543,6 +1586,29 @@ flux_form_octopode TRAN_FLUX_OCTOPODE
 blade_form_felid TRAN_BLADE_FELID
 eel_form_felid TRAN_EEL_FELID
 spore_form_felid TRAN_SPORE_FELID
+vision_form_felid TRAN_VISION_FELID
+jade_form_felid TRAN_JADE_FELID
+jade_form_felid_charged TRAN_JADE_FELID_CHARGED
+jade_form_octopode TRAN_JADE_OCTOPODE
+jade_form_octopode_charged TRAN_JADE_OCTOPODE_CHARGED
+hypnogecko_form_centaur TRAN_HYPNOGECKO_CENTAUR
+hypnogecko_form_centaur_tailless TRAN_HYPNOGECKO_CENTAUR_TAILLESS
+hypnogecko_form_coglin TRAN_HYPNOGECKO_COGLIN
+hypnogecko_form_coglin_tailless TRAN_HYPNOGECKO_COGLIN_TAILLESS
+hypnogecko_form_djinni TRAN_HYPNOGECKO_DJINNI
+hypnogecko_form_djinni_tailless TRAN_HYPNOGECKO_DJINNI_TAILLESS
+hypnogecko_form_felid TRAN_HYPNOGECKO_FELID
+hypnogecko_form_felid_tailless TRAN_HYPNOGECKO_FELID_TAILLESS
+hypnogecko_form_gargoyle TRAN_HYPNOGECKO_GARGOYLE
+hypnogecko_form_gargoyle_tailless TRAN_HYPNOGECKO_GARGOYLE_TAILLESS
+hypnogecko_form_humanoid TRAN_HYPNOGECKO_HUMANOID
+hypnogecko_form_humanoid_tailless TRAN_HYPNOGECKO_HUMANOID_TAILLESS
+hypnogecko_form_naga TRAN_HYPNOGECKO_NAGA
+hypnogecko_form_naga_tailless TRAN_HYPNOGECKO_NAGA_TAILLESS
+hypnogecko_form_octopode TRAN_HYPNOGECKO_OCTOPODE
+hypnogecko_form_octopode_tailless TRAN_HYPNOGECKO_OCTOPODE_TAILLESS
+mistmane_form_felid TRAN_MISTMANE_FELID
+mistmane_form_octopode TRAN_MISTMANE_OCTOPODE
 
 %rim 1
 

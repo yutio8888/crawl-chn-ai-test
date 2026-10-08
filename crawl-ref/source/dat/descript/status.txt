@@ -598,9 +598,10 @@ App status
 %%%%
 Tree status
 
-You have been transformed into a tree and are rooted to the ground, unable to
-move or teleport. You have minimal evasion but increased health and natural
-armour, and are resistant to poison, and immune to torment and drowning.
+You have been transformed into a banyan tree and are rooted to the ground,
+unable to move or teleport. You have minimal evasion but increased health and
+natural armour, and are resistant to poison, and immune to torment, negative
+energy, sleep, blinding, and do not need to breathe.
 
 Any equipped cloak, helmet, gloves, boots and body armour are melded.
 %%%%
@@ -1157,8 +1158,8 @@ will not happen again until your health fully recovers.
 %%%%
 Aqua status
 
-Your body is composed of elemental water that can reach to attack and drown
-enemies.
+Your body is composed mostly of elemental water that can reach to attack and
+drown enemies.
 %%%%
 Sphinx status
 
@@ -1288,3 +1289,83 @@ Multiple vicious blades are growing out of your body.
 Spore status
 
 Your arm is a mass of multicoloured fungus.
+%%%%
+Stampede status
+
+You are stampeding forward. Any movement you take into an enemy will trample
+them backwards, but your stampede will end as soon as you perform any action
+{{
+    if you.mutation("East Wind's embodiment") > 0 then
+        return "besides rampaging, stampeding, or casting spells."
+    else
+        return "besides rampaging or stampeding."
+    end
+}}
+%%%%
+Indom status
+
+You are rapidly regenerating health (at a rate dependent on your max HP) until
+you have healed the specified amount.
+%%%%
+Salvo status
+
+Your next several ranged attacks will cause you to fire a flurry of additional
+shots at other targets in sight.
+%%%%
+Tailwind status
+
+Your next Rampage movement will be instant.
+%%%%
+Exegesis status
+
+You have recently used Divine Exegesis and may repeat the same spell you can
+this way at a greatly reduced piety cost.
+%%%%
+-Jolt status
+
+You have recently discharged a full-power jolt of electricity and cannot do this
+again until you fully heal.
+%%%%
+-Sirocco status
+
+You have recently cast Sirocco and cannot cast it again until you spend several
+turns without moving.
+%%%%
+Vision status
+
+Your third eye is open, allowing you to see the magical energy left over from
+spellcasting and convert it into damaging projectiles.
+%%%%
+Jade status
+
+A mass of elemental crystal shrouds your upper body, granting you increased
+skill with elemental magic and the ability to unleash it in a powerful burst.
+%%%%
+Crystals status
+
+{{ return you.jademantle_crystals_desc()}}
+%%%%
+Gecko status
+
+You are a hypnogecko, a stealthy lizard who can shed their own tail as a decoy
+when badly injured.
+%%%%
+-Tail status
+
+You have recently shed your tail and need to explore more of the dungeon before
+it can grow back again.
+%%%%
+Insubst status
+
+Your body is insubstantial, granting you immunity to constriction, petrification,
+barbs, sticky flame, webs, nets, and being caught by bolas.
+%%%%
+Vapour status
+
+A gaseous mixture from a recently-consumed potion swirls within you. Your next
+melee attack will spew clouds based on the type of potion that was quaffed.
+%%%%
+Mistmane status
+
+Your head is a cloud of swirling mist. Any potions you drink will be metabolised
+into clouds of baleful gas which you can expel with your melee attack.

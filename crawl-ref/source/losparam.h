@@ -63,17 +63,6 @@ public:
 };
 extern const opacity_no_trans opc_no_trans;
 
-// Like opacity_no_trans, but only fully opaque (e.g. non-cloud) features
-// block.
-class opacity_fully_no_trans : public opacity_func
-{
-public:
-    CLONE(opacity_fully_no_trans)
-
-    opacity_type operator()(const coord_def& p) const override;
-};
-extern const opacity_fully_no_trans opc_fully_no_trans;
-
 // Make immobile monsters block in addition to no_trans.
 // This is used for spellspark servitor AI.
 // XXX: could use opacity_mons_immob? should?
@@ -149,6 +138,17 @@ public:
 };
 extern const opacity_no_actor opc_no_actor;
 
+// Make any actor the player can see, but cannot shoot through
+// (as well as all solid features) block.
+class opacity_unblocked_shot : public opacity_func
+{
+public:
+    CLONE(opacity_unblocked_shot)
+
+    opacity_type operator()(const coord_def& p) const override;
+};
+extern const opacity_unblocked_shot opc_unblocked_shot;
+
 // For the exclusion and map opacity types based on player map knowledge, an
 // unknown cell is considered clear.
 class opacity_excl : public opacity_func
@@ -159,6 +159,16 @@ public:
     opacity_type operator()(const coord_def& p) const override;
 };
 extern const opacity_excl opc_excl;
+
+// Blocks known fully opaque (i.e. non-cloud) cells based on player knowledge.
+class opacity_excl_no_trans : public opacity_func
+{
+public:
+    CLONE(opacity_excl_no_trans)
+
+    opacity_type operator()(const coord_def& p) const override;
+};
+extern const opacity_excl_no_trans opc_excl_no_trans;
 
 class opacity_map_default : public opacity_func
 {

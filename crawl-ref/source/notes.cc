@@ -33,7 +33,7 @@
 vector<Note> note_list;
 int last_screen_turn = -1;
 
-static bool _is_highest_skill(int skill)
+bool is_highest_skill(int skill)
 {
     for (int i = 0; i < NUM_SKILLS; ++i)
     {
@@ -45,7 +45,7 @@ static bool _is_highest_skill(int skill)
     return true;
 }
 
-static bool _is_noteworthy_hp(int hp, int maxhp)
+bool is_noteworthy_hp(int hp, int maxhp)
 {
     return hp > 0 && Options.note_hp_percent
            && hp <= (maxhp * Options.note_hp_percent) / 100;
@@ -146,7 +146,7 @@ static bool _is_noteworthy(const Note& note)
 
     // HP noteworthiness is handled in its own function.
     if (note.type == NOTE_HP_CHANGE
-        && !_is_noteworthy_hp(note.first, note.second))
+        && !is_noteworthy_hp(note.first, note.second))
     {
         return false;
     }
@@ -462,7 +462,7 @@ bool Note::hidden() const
     {
         return !(Options.note_all_skill_levels
                  || second <= 27 && Options.note_skill_levels[second]
-                 || Options.note_skill_max && _is_highest_skill(first));
+                 || Options.note_skill_max && is_highest_skill(first));
     }
     // Hide gems being shattered by default.
     if (type == NOTE_GEM_LOST)

@@ -176,7 +176,7 @@ FRAME_MARKER: probe:issue68 | lang=zh
 FRAME_MARKER: protocol:cloud:noxious | noxious fumes
 FRAME_MARKER: protocol:cloud:freezing | freezing vapour
 FRAME_MARKER: protocol:cloud:foul | foul pestilence
-FRAME_MARKER: protocol:trap:permanent | permanent teleport hook=permanent teleport
+FRAME_MARKER: protocol:trap:permanent | trap_teleport_permanent hook=trap_teleport_permanent
 FRAME_MARKER: phase:issue68:done | ok
 FRAME_MARKER: probe:issue48 | lang=zh
 FRAME_MARKER: path1:unid_appearance_msg | 歌唱之剑
@@ -196,6 +196,22 @@ if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
     fail "Bot checker accepted a missing manifest case"
 else
     pass "Bot checker rejects a missing manifest case"
+fi
+
+# The trap API and hook must use the current canonical terrain identity.
+sed 's/trap_teleport_permanent/permanent teleport/g' "$BOT_LOG" > "$BOT_LOG.legacy-trap"
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$BOT_LOG.legacy-trap" --bot-manifest all >/dev/null 2>&1; then
+    fail "Bot checker accepted the retired base trap token"
+else
+    pass "Bot checker requires the current canonical terrain trap token"
+fi
+sed 's/hook=trap_teleport_permanent/hook=永久传送陷阱/' "$BOT_LOG" > "$BOT_LOG.localized-hook"
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$BOT_LOG.localized-hook" --bot-manifest all >/dev/null 2>&1; then
+    fail "Bot checker accepted a localized trap hook token"
+else
+    pass "Bot checker rejects a localized trap hook token"
 fi
 
 # L2 has a separate manifest. Keep its expected order aligned with the Lua

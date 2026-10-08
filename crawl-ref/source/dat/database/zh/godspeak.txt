@@ -1662,3 +1662,25 @@ w:20
 你的魔力从你的[@random_body_part_external_singular@|@random_body_part_external_plural@]中流了出去！
 
 你的魔力从你的[@random_body_part_any_singular@|@random_body_part_any_plural@]中撕裂而出！
+%%%%
+Xom shifts sight and space
+
+w:30
+佐姆将时空折成一只耀眼的折纸[牦牛|牦牛|短尾矮袋鼠|短尾矮袋鼠|鸭子]！
+
+佐姆用炽烈的辉光填满了周围的空间流形！
+
+佐姆用量子丝线的悠悠球把戏晃花了所有人的眼！
+
+佐姆撕开了一道闪光的重力剪切裂隙！
+
+w:5
+佐姆的扭曲之手伸了出来！
+%%%%
+Xom chaos vex
+
+佐姆要人为一场血腥杀戮吹响号角！
+
+佐姆向你的敌人体内注入纯粹的混沌！
+
+佐姆煽起一场狂喜的死亡之舞！

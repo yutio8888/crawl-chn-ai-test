@@ -154,7 +154,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
     }
     player.index_to_letter = index_to_letter;
 
-    function inventory_item_desc(index, parens=false)
+    function inventory_item_desc(index, parens=false, colour=-1)
     {
         var item = player.inv[index];
         var elem = $("<span>");
@@ -162,7 +162,10 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             elem.text("(" + item.name + ")");
         else
             elem.text(item.name);
-        if (item.col != -1 && item.col != null)
+
+        if (colour != -1)
+            elem.addClass("fg" + colour);
+        else if (item.col != -1 && item.col != null)
             elem.addClass("fg" + item.col);
         return elem;
     }
@@ -172,17 +175,16 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
     {
         var elem;
         var wielded = offhand ? player.offhand_index : player.weapon_index;
+        var colour = offhand ? player.offhand_weapon_colour
+                             : player.weapon_colour;
         if (wielded == -1)
         {
             elem = $("<span>");
             elem.text(player.unarmed_attack);
-            elem.addClass("fg" + player.unarmed_attack_colour);
+            elem.addClass("fg" + colour);
         }
         else
-            elem = inventory_item_desc(wielded);
-
-        if (player.has_status("corroded"))
-            elem.addClass("corroded_weapon");
+            elem = inventory_item_desc(wielded, false, colour);
 
         return elem;
     }
@@ -312,9 +314,11 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             colour = "fg14";
 
         elem.addClass(colour);
+        var tooltip = $("#stats_status_lights_tooltip");
+        // Hide the tooltip so that it goes away if expired.
+        tooltip.hide();
         $("#stats_doom").html(elem);
 
-        var tooltip = $("#stats_status_lights_tooltip");
         elem.on("mouseenter mousemove", ev => {
                 tooltip.css({top: ev.pageY + "px"});
                 tooltip.html(util.formatted_string_to_html(player["doom_desc"]));
@@ -393,12 +397,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
                                     + player.title);
         $("#stats_wizmode").text(player.wizard ? "*WIZARD*" : player.explore ? "*EXPLORE*" : "");
 
-        // Setup species
-        // TODO: Move to a proper initialisation task
-        if ($("#stats").attr("data-species") != player.species)
-            $("#stats").attr("data-species", player.species);
-
-        var species_god = player.species;
+        var species_god = player.species_display_name;
         if (player.god != "")
             species_god += " of " + player.god;
         if (player.god == "Xom")
@@ -497,6 +496,8 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         $("#stats_place").text(place_desc);
 
         var tooltip = $("#stats_status_lights_tooltip");
+        // Hide the tooltip so that it goes away if expired.
+        tooltip.hide();
         $("#stats_status_lights").html("");
         for (var i = 0; i < player.status.length; ++i)
         {
@@ -505,7 +506,11 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             let status = $("<span>");
             status.addClass("status_light");
             status.addClass("fg" + status_inf.col);
-            status.text(status_inf.light);
+            if (status_inf.use_html)
+                status.html(util.formatted_string_to_html(status_inf.light))
+            else
+                status.text(status_inf.light);
+
             status.on("mouseenter mousemove", ev => {
                 tooltip.css({top: ev.pageY + "px"});
                 tooltip.html(util.formatted_string_to_html(status_inf.desc));
@@ -612,6 +617,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         .on("game_init.player", function () {
             $.extend(player, {
                 name: "", god: "", title: "", species: "",
+                species_display_name: "",
                 hp: 0, hp_max: 0, real_hp_max: 0, poison_survival: 0,
                 mp: 0, mp_max: 0, dd_real_mp_max: 0,
                 ac: 0, ev: 0, sh: 0,
@@ -625,6 +631,8 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
                 inv: {},
                 weapon_index: -1,
                 offhand_index: -1,
+                weapon_colour: 0,
+                offhand_weapon_colour: 0,
                 quiver_item: -1,
                 unarmed_attack: "",
                 pos: {x: 0, y: 0},

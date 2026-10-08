@@ -8,7 +8,7 @@ Use the usual navigation keys (<w>arrow</w> keys, <w>pgdn</w>/<w>pgup</w>, <w>ho
 items, and <w>Space</w>/<w>.</w> to toggle whether the selected item will be picked up or
 dropped. Pressing an item's letter key will also toggle its pickup/drop state.
 Gear, potions, scrolls, and evocable items are on separate pages which can be
-switched between by <w>left arrow</w> and <w>right arrow</w>.
+switched between by <w>left arrow</w> and <w>right arrow</w> or <w>Tab</w> and <w>Shift-Tab</w>.
 Press <w>Return</w> to accept the current set of items.
 
 Entering a number before selecting by letter will toggle just that quantity of
@@ -157,8 +157,10 @@ level-map
              (Moves cursor to the staircase destination if a known staircase is
              highlighted.)
 <w>G</w>          : View another level by choosing a branch and depth.
-<w>o</w>          : Move the cursor to the next autoexplore target.
-<w>{</w> or <w>}</w>     : Zoom out or in (tiles only).
+<w>o</w>          : Move the cursor to the next autoexplore target.{{
+if crawl.is_tiles() then
+    return "\n<w>{</w> or <w>}</w>     : Zoom out or in."
+end }}
 
 <h>Travel exclusions</h>
 <w>e</w>          : Create a travel exclusion, change its radius, or remove it.
@@ -185,6 +187,10 @@ level-map
 <w>Ctrl-C</w>     : Clear monster memory.
 <w>Ctrl-F</w>     : Forget level map.
 <w>Ctrl-U</w>     : Restore forgotten level map.{{
+if not crawl.is_tiles() then
+    return "\n"
+           .. "<w>=</w>          : Toggle always showing stair list."
+end }}{{
 if you.wizard() then
     return "\n\n"
           .. "<h>Wizard commands</h>\n"

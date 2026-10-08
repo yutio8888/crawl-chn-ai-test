@@ -279,12 +279,6 @@ bool wizard_create_feature(const coord_def& pos, dungeon_feature_type feat, bool
     return wizard_create_feature(t, feat, mimic);
 }
 
-static void _connect_door(coord_def pos)
-{
-    if (map_bounds(pos) && feat_is_door(env.grid(pos)))
-        tile_init_flavour(pos);
-}
-
 bool wizard_create_feature(dist &target, dungeon_feature_type feat, bool mimic)
 {
     if (feat == DNGN_UNSEEN)
@@ -332,37 +326,25 @@ bool wizard_create_feature(dist &target, dungeon_feature_type feat, bool mimic)
             success = debug_make_shop(pos);
             done = true;
         }
-        else if (feat_is_trap(feat))
-        {
-            success = debug_make_trap(pos, trap_type_from_feature(feat));
-            done = true;
-        }
         else
         {
             tile_env.flv(pos).feat = 0;
             tile_env.flv(pos).special = 0;
             env.grid_colours(pos) = 0;
-            const dungeon_feature_type old_feat = env.grid(pos);
             dungeon_terrain_changed(pos, feat, false, false, true);
-            // Update gate tiles, if existing.
-            if (feat_is_door(old_feat) || feat_is_door(feat))
-            {
-                _connect_door(pos - coord_def(1, 0));
-                _connect_door(pos + coord_def(1, 0));
-                _connect_door(pos - coord_def(0, 1));
-                _connect_door(pos + coord_def(0, 1));
-            }
+            tile_init_flavour(pos);
             if (pos == you.pos() && cell_is_solid(pos))
                 you.wizmode_teleported_into_rock = true;
         }
 
         if (mimic)
-            env.level_map_mask(pos) |= MMT_MIMIC;
+            env.pgrid(pos) |= FPROP_MIMIC;
 
         if (you.see_cell(pos))
         {
-            view_update_at(pos);
+            show_update_at(pos);
             StashTrack.update_stash(pos);
+            redraw_view_at(pos);
         }
         if (done)
             return success;
@@ -468,45 +450,6 @@ void wizard_map_level()
     }
 }
 
-bool debug_make_trap(const coord_def& pos, trap_type trap)
-{
-    if (env.grid(pos) != DNGN_FLOOR)
-    {
-        mprf(T_("You can only make a %s on a floor square."),
-             trap == TRAP_UNASSIGNED ? "trap" : full_trap_name(trap).c_str());
-        return false;
-    }
-
-    if (trap == TRAP_UNASSIGNED)
-    {
-        vector<WizardEntry> options;
-        for (int i = TRAP_FIRST_TRAP; i < NUM_TRAPS; ++i)
-        {
-            auto name = trap_name(static_cast<trap_type>(i));
-            options.emplace_back(WizardEntry(name, i));
-        }
-        sort(options.begin(), options.end());
-        options.emplace_back(WizardEntry('*', "any", TRAP_RANDOM));
-
-        auto menu = WizardMenu("Make which kind of trap?", options);
-        if (!menu.run(true))
-            return false;
-
-        trap = static_cast<trap_type>(menu.result());
-    }
-    place_specific_trap(pos, trap);
-
-    mprf(T_("Created %s."),
-         (trap == TRAP_RANDOM)
-            ? "a random trap"
-            : trap_at(pos)->name(DESC_A).c_str());
-
-    if (trap == TRAP_SHAFT && !is_valid_shaft_level())
-        mpr(T_("NOTE: Shaft traps aren't valid on this level."));
-
-    return true;
-}
-
 bool debug_make_shop(const coord_def& pos)
 {
     if (env.grid(pos) != DNGN_FLOOR)
@@ -529,7 +472,8 @@ bool debug_make_shop(const coord_def& pos)
     if (!menu.run(true))
         return false;
 
-    place_spec_shop(pos, static_cast<shop_type>(menu.result()));
+    make_spec_shop(pos, static_cast<shop_type>(menu.result()));
+    dungeon_terrain_changed(you.pos(), DNGN_ENTER_SHOP);
     mpr(T_("Done."));
     return true;
 }
@@ -649,15 +593,12 @@ static void debug_load_map_by_name(string name, bool primary)
         unwind_var<string_set> umt_a(you.uniq_map_tags_abyss, string_set());
         unwind_var<string_set> lum(env.level_uniq_maps, string_set());
         unwind_var<string_set> lumt(env.level_uniq_map_tags, string_set());
-        if (dgn_place_map(toplace, false, false, where))
+        if (dgn_add_vault_to_existing_level(toplace, where))
         {
             mprf(T_("Successfully placed %s."), toplace->name.c_str());
             // Fix up doors from vaults and any changes to the default walls
             // and floors from the vault.
             tile_init_flavour();
-            // Transporters would normally be made from map markers by the
-            // builder.
-            dgn_make_transporters_from_markers();
         }
         else
         {
@@ -704,7 +645,7 @@ static int _debug_time_explore()
 {
     viewwindow();
     update_screen();
-    start_explore(false);
+    start_explore(false, true);
 
     unwind_var<int> es(Options.explore_stop, 0);
 

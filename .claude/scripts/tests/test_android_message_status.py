@@ -84,15 +84,37 @@ def status_text_contract() -> str:
 
 def status_fixture() -> str:
     output = (SOURCE / "output.cc").read_text(encoding="utf-8")
-    getter = quickbar.block_after(output, "static void _get_status_lights")
-    priority = quickbar.block_after(getter, "const unsigned int important_statuses[]")
+    getter = quickbar.block_after(output, "static vector<status_light> _get_status_lights()")
+    priority = body("status.cc", "static const vector<unsigned int> important_statuses =")
     statuses = re.findall(r"\b(?:STATUS|DUR)_[A-Z_]+\b", priority)
     return COMMON + r'''
 #include <bitset>
+#include <iterator>
+#define PURE
 #define ARRAYSZ(array) (sizeof(array) / sizeof((array)[0]))
 using colour_t = int;
 enum { LIGHTCYAN, GOTO_STAT };
 ''' + "enum { " + ", ".join(statuses) + ", STATUS_LAST_STATUS = 256 };\n" + status_text_contract() + r'''
+void cprintf(const char *, ...);
+struct formatted_string : string {
+    formatted_string() = default;
+    formatted_string(const string &text, int) : string(text) {}
+    int width() const { return strwidth(*this); }
+    string tostring() const { return *this; }
+    void display(int = -1, int end = -1) const { if (end != 0) cprintf("%s", c_str()); }
+};
+static const vector<unsigned int> important_statuses =
+''' + priority + ''';
+class status_iterator : public iterator<forward_iterator_tag, int>
+''' + body("status.h", "class status_iterator :") + ''';
+status_iterator::status_iterator() : current(0), in_priority_phase(true)
+''' + body("status.cc", "status_iterator::status_iterator()") + '''
+status_iterator::operator bool() const
+''' + body("status.cc", "status_iterator::operator bool() const") + '''
+int status_iterator::operator *() const
+''' + body("status.cc", "int status_iterator::operator *() const") + '''
+void status_iterator::operator ++()
+''' + body("status.cc", "void status_iterator::operator ++()") + '''
 struct status_light
 ''' + quickbar.block_after(output, "struct status_light") + r''';
 struct { bool redraw_status_lights = true; } you;
@@ -104,7 +126,7 @@ struct { bool is_using_small_layout() { return top_bar; } } tiles;
 map<int, string> available_statuses;
 void _add_status_light_to_out(int status, vector<status_light> &out) {
     auto it = available_statuses.find(status);
-    if (it != available_statuses.end()) out.emplace_back(0, it->second, status);
+    if (it != available_statuses.end()) out.emplace_back(formatted_string(it->second, 0), status);
 }
 struct status_hitbox { int status, x1, x2, y; };
 vector<status_hitbox> _status_hitboxes;
@@ -121,6 +143,7 @@ int cursor_x = 1, cursor_y = 1;
 int message_columns = 20;
 int get_number_of_cols() { return message_columns; }
 int wherex() { return cursor_x; }
+int wherey() { return cursor_y; }
 void move_cursor(int x, int y, int) { cursor_x = x; cursor_y = y; }
 #define CGOTOXY move_cursor
 string vmake_stringf(const char *format, va_list args) {
@@ -177,7 +200,12 @@ void assert_text_at(int x, int y, const string &text) {
         next += bytes;
     }
 }
-static void _get_status_lights(vector<status_light> &out)
+struct status_light_area
+''' + quickbar.block_after(output, "struct status_light_area") + ''';
+vector<status_light_area> _status_light_areas;
+static void _record_status_light(const status_light& light, int width)
+''' + quickbar.block_after(output, "static void _record_status_light") + '''
+static vector<status_light> _get_status_lights()
 ''' + getter + r'''
 static void _print_status_lights(int y)
 ''' + quickbar.block_after(output, "static void _print_status_lights(int y)") + r'''
@@ -187,11 +215,15 @@ using command_type = int;
 command_type show_topbar_command_menu(bool *) { return CMD_NO_CMD; }
 struct StatRegion {
     int m_last_mouse_x = 0, m_last_mouse_y = 0;
+    coord_def m_mouse_cell;
     bool inside(int x, int y) {
         return x >= 0 && x < crawl_view.hudsz.x && y >= 0 && y < crawl_view.hudsz.y;
     }
-    bool _text_mouse_pos(int x, int y, int &cx, int &cy) {
+    bool mouse_pos(int x, int y, int &cx, int &cy) {
         cx = x; cy = y; return inside(x, y);
+    }
+    bool _text_mouse_pos(int x, int y, int &cx, int &cy) {
+        return mouse_pos(x, y, cx, cy);
     }
     int handle_mouse(wm_mouse_event &event);
 };
@@ -325,6 +357,111 @@ class AndroidMessageStatusTests(unittest.TestCase):
     def run_cpp(self, source: str) -> None:
         quickbar.TargetingSafetyTests.run_cpp(self, source)
 
+    def test_compact_weapon_width_matches_printed_name(self) -> None:
+        output = (SOURCE / "output.cc").read_text(encoding="utf-8")
+        row = output[output.index("    // Row 4: Weapon + Quiver"):
+                     output.index("    // On seven-row layouts")]
+        self.run_cpp(COMMON + r'''
+#define PURE
+#define ARRAYSZ(array) (sizeof(array) / sizeof((array)[0]))
+enum { DESC_PLAIN, HUD_CAPTION_COLOUR, LIGHTGREY, GOTO_STAT };
+''' + status_text_contract() + r'''
+struct item_def {
+    string display_name;
+    char slot = 'a';
+    mutable int name_calls = 0;
+    string name(int description, bool terse) const {
+        assert(description == DESC_PLAIN && terse);
+        ++name_calls;
+        return display_name;
+    }
+};
+struct {
+    const item_def *main_hand = nullptr, *off_hand = nullptr;
+    const item_def *weapon() const { return main_hand; }
+    const item_def *offhand_weapon() const { return off_hand; }
+    string unarmed_attack_name() const { return "unarmed"; }
+} you;
+struct { coord_def hudsz = coord_def(60, 7); } crawl_view;
+struct { int uc_colour = 0; } form;
+auto get_form() -> decltype(&form) { return &form; }
+int wielded_weapon_colour(const item_def &) { return 0; }
+void textcolour(int) {}
+int cursor_x = 1, cursor_y = 1;
+int quiver_column = -1;
+string printed_weapon;
+void move_cursor(int x, int y, int) { cursor_x = x; cursor_y = y; }
+#define CGOTOXY move_cursor
+string make_stringf(const char *format, ...) {
+    char buffer[256];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    return buffer;
+}
+void cprintf(const char *format, const char *text) {
+    assert(string(format) == "%s" && cursor_y == 4);
+    printed_weapon += text;
+    cursor_x += strwidth(text);
+    assert(cursor_x <= crawl_view.hudsz.x + 1);
+}
+#define CPRINTF cprintf
+static void _print_weapon_name(const item_def &weapon, int width)
+''' + body("output.cc", "static void _print_weapon_name(") + r'''
+static void _print_unarmed_name()
+''' + body("output.cc", "static void _print_unarmed_name()") + r'''
+// Replace the UI dispatch only; the name printer and measured row are real.
+static void _print_stats_wp(int y, int width = -1) {
+    assert(y == 4);
+    const item_def *held = you.weapon() ? you.weapon() : you.offhand_weapon();
+    if (held) _print_weapon_name(*held, width);
+    else _print_unarmed_name();
+}
+static void _print_stats_qv(int y, int x) {
+    assert(y == 4);
+    quiver_column = x;
+}
+static void render_weapon_row() {
+    const int hud_width = crawl_view.hudsz.x;
+    const int field_gap = 2;
+''' + row + r'''
+}
+int main() {
+    struct sample { string name; int hud_width, quiver_x; string printed; };
+    const vector<sample> samples = {
+        {"axe", 60, 12, "a) axe    "},
+        {"ordinary battleaxe", 60, 23, "a) ordinary battleaxe"},
+        {"中文中文中文", 60, 17, "a) 中文中文中文"},
+        {"ordinary battleaxe", 20, 12, "a) ordinar"},
+    };
+    for (const auto &sample : samples) {
+        for (bool offhand : {false, true}) {
+            item_def held;
+            held.display_name = sample.name;
+            you.main_hand = offhand ? nullptr : &held;
+            you.off_hand = offhand ? &held : nullptr;
+            crawl_view.hudsz.x = sample.hud_width;
+            printed_weapon.clear();
+            quiver_column = -1;
+            render_weapon_row();
+            // Independently specified columns and output verify cell widths,
+            // the display-name arguments, truncation and the two-cell gap.
+            assert(quiver_column == sample.quiver_x);
+            assert(printed_weapon == sample.printed);
+            assert(cursor_x <= quiver_column - 1);
+            assert(held.name_calls == 2); // measurement and the real printer
+        }
+    }
+    you.main_hand = you.off_hand = nullptr;
+    crawl_view.hudsz.x = 20;
+    printed_weapon.clear();
+    render_weapon_row();
+    assert(quiver_column == 12);
+    assert(printed_weapon == "-) unarmed          ");
+}
+''')
+
     def test_status_count_digit_transitions_and_full_row_hitbox(self) -> None:
         self.run_cpp(status_fixture() + r'''
 int main() {
@@ -332,8 +469,7 @@ int main() {
     for (int count : {0, 1, 9, 10, 11, 99, 100, 101}) {
         available_statuses.clear();
         for (int i = 0; i < count; ++i) available_statuses[100 + i] = "s" + to_string(i);
-        vector<status_light> ordered;
-        _get_status_lights(ordered);
+        vector<status_light> ordered = _get_status_lights();
         for (int width = 1; width <= 100; ++width) {
             crawl_view.hudsz.x = width;
             message_columns = max(1, width / 2);

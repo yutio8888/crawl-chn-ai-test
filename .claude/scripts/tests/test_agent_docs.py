@@ -2,9 +2,12 @@
 
 import copy
 import json
+import os
+import tempfile
 import tomllib
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import unittest
 import yaml
@@ -253,6 +256,27 @@ class AgentDocumentationTests(unittest.TestCase):
                     self.assertNotIn(phrase, text)
                 self.assertIn("zh-translator", text)
 
+    def test_release_notes_describe_trunk_save_directory(self) -> None:
+        workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+        step = next(step for step in workflow["jobs"]["release_draft"]["steps"]
+                    if "release-notes.md" in step.get("run", "")
+                    and "# DCSS" in step["run"])
+        with tempfile.TemporaryDirectory(dir="/tmp") as directory:
+            for tag in ("0.35-trunk-001", "0.34.1-zh5-1-001"):
+                env = dict(os.environ, GITHUB_REF_NAME=tag,
+                           GITHUB_SHA="a" * 40, RUNNER_TEMP=directory)
+                subprocess.run(["bash", "-eu", "-c", step["run"]],
+                               env=env, check=True, capture_output=True)
+                notes = (Path(directory) / "release-notes.md").read_text()
+                windows = next(line for line in notes.splitlines()
+                               if line.startswith("- Windows Tiles："))
+                if "trunk" in tag:
+                    self.assertIn(r"%APPDATA%\crawl-trunk", windows)
+                    self.assertNotIn("便携", windows)
+                else:
+                    self.assertEqual("- Windows Tiles：便携 ZIP，解压后运行 `crawl.exe`。",
+                                     windows)
+
     def test_chinese_deploy_contract_is_fail_closed(self) -> None:
         font = ROOT / "crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf"
         self.assertTrue(font.is_file())
@@ -336,6 +360,10 @@ class AgentDocumentationTests(unittest.TestCase):
         release_draft = workflow.split("  release_draft:\n", 1)[1]
         self.assertIn("runs-on: macos-latest", release_draft)
         self.assertNotIn("mapfile", release_draft)
+        self.assertIn('${release_flags[@]+"${release_flags[@]}"}', release_draft)
+        self.assertNotIn('"$title" "${release_flags[@]}"', release_draft)
+        self.assertIn(r'%APPDATA%\\crawl-trunk', release_draft)
+        self.assertIn('Windows Tiles：便携 ZIP', release_draft)
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertNotIn("- build_linux_console", release_needs)
         self.assertIn("- build_macos_tiles", release_needs)
@@ -399,9 +427,13 @@ class AgentDocumentationTests(unittest.TestCase):
                 for step in steps
                 if step.get("name") == "Prepare Android build"
             )
+            make_line = next(line for line in prepare["run"].replace("\\\n", " ").splitlines()
+                             if line.startswith("make "))
             self.assertEqual(
-                'make ANDROID="$GITHUB_RUN_NUMBER" TILES=y android -j4',
-                prepare["run"],
+                ['make', 'ANDROID=$GITHUB_RUN_NUMBER', 'TILES=y', 'NPROC=4',
+                 'ANDROID_APPLICATION_ID=$ANDROID_APPLICATION_ID',
+                 'ANDROID_APP_NAME=$ANDROID_APP_NAME', 'android', '-j4'],
+                shlex.split(make_line),
             )
             build_index = next(
                 index
@@ -512,7 +544,9 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertLess(release_validate_index, release_upload_index)
             for step in (require, sign, release_validate, release_upload):
                 self.assertEqual(
-                    "${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}",
+                    "${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || "
+                    "(startsWith(github.ref, 'refs/tags/') && "
+                    "contains(github.ref_name, '-trunk-'))) }}",
                     step["if"],
                 )
 
@@ -595,6 +629,14 @@ class AgentDocumentationTests(unittest.TestCase):
             (ROOT / ".github/workflows/ci.yml").read_text()
         )
         assert_contract(workflow)
+
+        wrong_identity = copy.deepcopy(workflow)
+        prepare = next(step for step in wrong_identity["jobs"]["build_android"]["steps"]
+                       if step.get("name") == "Prepare Android build")
+        prepare["run"] = prepare["run"].replace(
+            'ANDROID_APPLICATION_ID="$ANDROID_APPLICATION_ID"', '')
+        with self.assertRaises(AssertionError):
+            assert_contract(wrong_identity)
 
         wrong_path = copy.deepcopy(workflow)
         android_steps = wrong_path["jobs"]["build_android"]["steps"]

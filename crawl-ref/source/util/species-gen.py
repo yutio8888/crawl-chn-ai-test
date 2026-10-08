@@ -2,9 +2,6 @@
 
 """
 Generate species-data.h, aptitudes.h, species-groups.h, and species-type.h
-
-Works with both Python 2 & 3. If that changes, update how the Makefile calls
-this.
 """
 
 from __future__ import print_function
@@ -163,18 +160,17 @@ class Species(MutableMapping):
         self.print_unknown_warnings(s)
 
 SpeciesGroup = collections.namedtuple('SpeciesGroup',
-                                            ['position', 'width', 'species'])
+                                            ['position', 'species'])
 SpeciesGroupEntry = collections.namedtuple('SpeciesGroupEntry',
                                             ['priority', 'enum'])
 SPECIES_GROUPS_TEMPLATE = collections.OrderedDict()
-SPECIES_GROUPS_TEMPLATE['Simple'] = SpeciesGroup('coord_def(0, 0)', '50', [])
-SPECIES_GROUPS_TEMPLATE['Intermediate'] = SpeciesGroup('coord_def(1, 0)', '20', [])
-SPECIES_GROUPS_TEMPLATE['Advanced'] = SpeciesGroup('coord_def(2, 0)', '20', [])
+SPECIES_GROUPS_TEMPLATE['Simple'] = SpeciesGroup('coord_def(0, 0)', [])
+SPECIES_GROUPS_TEMPLATE['Intermediate'] = SpeciesGroup('coord_def(1, 0)', [])
+SPECIES_GROUPS_TEMPLATE['Advanced'] = SpeciesGroup('coord_def(2, 0)', [])
 SPECIES_GROUP_TEMPLATE = """
     {{
         "{name}",
         {position},
-        {width},
         {{ {species} }}
     }},
 """
@@ -335,7 +331,6 @@ def generate_species_groups(sg):
         out += SPECIES_GROUP_TEMPLATE.format(
             name = name,
             position = group.position,
-            width = group.width,
             species = ', '.join(
                 e.enum for e in reversed(sorted(group.species))),
         )
@@ -352,12 +347,12 @@ def generate_species_type_data(s):
 def maybe_write(filename, text):
     """Write `text` to `filename`, but only if the file would be created or changed"""
     if os.path.exists(filename):
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             cur = f.read()
         if cur == text:
             return
 
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         f.write(text)
 
 
@@ -388,7 +383,7 @@ def main():
             continue
         f_path = os.path.join(args.datadir, f_name)
         try:
-            species_spec = yaml.safe_load(open(f_path))
+            species_spec = yaml.safe_load(open(f_path, encoding='utf-8'))
         except yaml.YAMLError as e:
             print("Failed to load %s: %s" % (f_name, e))
             sys.exit(1)

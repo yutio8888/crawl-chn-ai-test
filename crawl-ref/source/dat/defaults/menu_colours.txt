@@ -20,13 +20,13 @@ menu += darkgrey:.*useless_item.*
 # Items disliked by your god.
 menu += $forbidden:.*forbidden.*
 
-# Handle cursed and equipped items early to override other colour settings.
-menu += lightred:.*equipped.* cursed
-# CN: equipped + cursed
-menu += lightred:装备.*诅咒
-menu += red: (a|the) cursed
-# CN: cursed (no articles in Chinese)
-menu += red:诅咒
+# Handle bound and equipped items early to override other colour settings.
+menu += lightred:.*equipped.* bound
+# CN: bound equipment display
+menu += lightred:.*equipped.*( 束缚|（已束缚）)
+menu += red: (a|the) bound
+# CN: bound equipment display
+menu += red:(^| )(weapon|armour|jewellery|magical staff) +(. [-+#] +)?(\(.*\) +)?束缚|（已束缚）
 menu += lightgreen:.*equipped.*
 # CN: equipped
 menu += lightgreen:装备.*

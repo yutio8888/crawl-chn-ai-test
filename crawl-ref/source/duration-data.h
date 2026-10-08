@@ -8,6 +8,7 @@
 #include "act-iter.h"
 #include "database.h"
 #include "cloud.h"
+#include "item-name.h"
 #include "mon-death.h"
 #include "god-abil.h"
 #include "god-companions.h"
@@ -22,6 +23,7 @@
 #include "stairs.h" // rise_through_ceiling
 #include "tag-version.h"
 #include "timed-effects.h"
+#include "transform.h"
 
 
 static void _end_invis()
@@ -88,7 +90,21 @@ static void _end_growing_destruction()
 
 static void _end_toxic_bog()
 {
-    end_terrain_change(TERRAIN_CHANGE_BOG);
+    end_terrain_changes(you, TERRAIN_CHANGE_BOG);
+}
+
+static void _end_exegesis()
+{
+    mprf(MSGCH_DURATION, T_("Your divinely inspired understanding of %s fades."),
+                         spell_title(static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int())));
+    you.props.erase(EXEGESIS_SPELL);
+}
+
+static void _end_vapourise()
+{
+  mprf(MSGCH_DURATION, T_("Your vapourised %s dissipates without effect."),
+       potion_type_name(static_cast<potion_type>(you.props[MISTMANE_VAPOUR_KEY].get_int())));
+  you.props.erase(MISTMANE_VAPOUR_KEY);
 }
 
 // properties of the duration.
@@ -347,12 +363,16 @@ static const duration_def duration_data[] =
       BLUE, "Swift",
       "swift", "swiftness",
       "You can move swiftly.", D_DISPELLABLE | D_EXPIRES, {}, 6},
+    { DUR_ANTISWIFT,
+      RED, "-Swift",
+      "unswift", "antiswiftness",
+      "You are covering ground slowly.", D_NEGATIVE, {}, 6},
     { DUR_TELEPORT,
       LIGHTBLUE, "Tele",
       "about to teleport", "teleport",
       "You are about to teleport.", D_DISPELLABLE /*but special-cased*/,
       {{ "", []() {
-          you_teleport_now();
+          you_teleport_now("", true);
           untag_followers();
       }}}},
     { DUR_DEATHS_DOOR,
@@ -373,13 +393,13 @@ static const duration_def duration_data[] =
       BLUE, "Quad",
       "quad damage", "",
       "", D_EXPIRES,
-      {{ "", []() { invalidate_agrid(true); }},
+      {{ "", []() { invalidate_agrid(); }},
         { "Quad Damage is wearing off."}}, 3 }, // per client.qc
     { DUR_SILENCE,
       0, "",
       "silenced", "silence",
       "You radiate silence.", D_DISPELLABLE | D_EXPIRES,
-      {{ "Your hearing returns.", []() { invalidate_agrid(true); }}}, 5 },
+      {{ "Your hearing returns.", []() { invalidate_agrid(); }}}, 5 },
     { DUR_STEALTH,
       BLUE, "Stealth",
       "especially stealthy", "stealth",
@@ -389,8 +409,12 @@ static const duration_def duration_data[] =
       RED, "Fear",
       "afraid", "",
       "You are terrified.", D_DISPELLABLE | D_EXPIRES | D_NEGATIVE,
-      {{ "Your fear fades away.", []() { you.clear_fearmongers(); }},
-        {}, true }},
+      // Clear before messaging, so that we don't break the invariant of
+      // fearmongers-iff-afraid during a message that could check it.
+      {{ "", []() {
+          you.clear_fearmongers();
+          mprf(MSGCH_RECOVERY, T_("Your fear fades away."));
+      }}, {}, true }},
     { DUR_VORTEX,
       LIGHTGREY, "Vortex",
       "in a vortex", "vortex",
@@ -414,7 +438,7 @@ static const duration_def duration_data[] =
       "liquefying", "",
       "You are liquefying the ground beneath you.", D_DISPELLABLE,
       {{ "The ground is no longer liquid beneath you.", []() {
-          invalidate_agrid(false);
+          invalidate_agrid();
       }}}},
     { DUR_HEROISM,
       LIGHTBLUE, "Hero",
@@ -438,7 +462,7 @@ static const duration_def duration_data[] =
       "disjoining", "disjunction",
       "You are disjoining your surroundings.", D_DISPELLABLE | D_EXPIRES,
       {{ "The translocation energy dissipates.", []() {
-            invalidate_agrid(true);
+            invalidate_agrid();
       }}}},
     { DUR_SENTINEL_MARK,
       LIGHTRED, "Mark",
@@ -787,6 +811,22 @@ static const duration_def duration_data[] =
       "engorged", "engorged",
       "Your maw is digesting a delicious meal.", D_NO_FLAGS,
       {{ "You finish digesting your meal." }}},
+    { DUR_STAMPEDE, WHITE, "Stampede", "", "", "", D_NO_FLAGS, {{ "You stop stampeding."}}},
+    { DUR_SALVO, LIGHTBLUE, "Salvo", "", "", "", D_NO_FLAGS},
+    { DUR_TAILWIND, LIGHTBLUE, "Tailwind", "ready to rush forward", "tailwind", "", D_NO_FLAGS, {{"Your tailwind grows less brisk."}}},
+    { DUR_SIROCCO_COOLDOWN,
+        YELLOW, "-Sirocco",
+        "on sirocco cooldown", "sirocco cooldown",
+        "You are unable to cast Sirocco.", D_COOLDOWN, {{"You feel hot winds gather around you again."}}},
+    { DUR_INSUBSTANTIAL,
+      LIGHTBLUE, "Insubst",
+      "insubstantial", "insubstantial",
+      "You are insubstantial.", D_DISPELLABLE,
+      {{ "", []() {
+          if (!you.is_insubstantial())
+            mprf(MSGCH_DURATION, T_("You feel more solid again."));
+          }
+      }}},
 
     // The following are visible in wizmode only, or are handled
     // specially in the status lights and/or the % or @ screens.
@@ -795,8 +835,12 @@ static const duration_def duration_data[] =
         {{ "", _end_invis }, { "You flicker for a moment.", 1}}, 6},
     { DUR_SLOW, 0, "", "", "slow", "", D_DISPELLABLE | D_NEGATIVE},
     { DUR_MESMERISED, 0, "", "", "mesmerised", "", D_DISPELLABLE | D_NEGATIVE,
-      {{ "You break out of your daze.", []() { you.clear_beholders(); }},
-         {}, true }},
+      // Clear before messaging, so that we don't break the invariant of
+      // beholders-iff-mesmerised during a message that could check it.
+      {{ "", []() {
+          you.clear_beholders();
+          mprf(MSGCH_RECOVERY, T_("You break out of your daze."));
+      }}, {}, true }},
     { DUR_MESMERISE_IMMUNE, 0, "", "", "mesmerisation immunity", "", D_NO_FLAGS, {{""}} },
     { DUR_HASTE, 0, "", "", "haste", "", D_DISPELLABLE, {}, 6},
     { DUR_FLIGHT, 0, "", "", "flight", "", D_DISPELLABLE /*but special-cased*/, {}, 10},
@@ -847,7 +891,6 @@ static const duration_def duration_data[] =
       }}}},
     { DUR_REVELATION, 0, "", "", "revelation", "", D_NO_FLAGS, {{""}}},
     { DUR_JINXBITE_LOST_INTEREST, 0, "", "", "", "", D_EXPIRES, {{"", _maybe_expire_jinxbite}}},
-    { DUR_RAMPAGE_HEAL, 0, "", "", "rampage heal", "", D_NO_FLAGS},
     { DUR_TEMP_CLOUD_IMMUNITY, 0, "", "", "temp cloud immunity", "", D_EXPIRES},
     { DUR_ALLY_RESET_TIMER, 0, "", "", "ally reset timer", "", D_NO_FLAGS},
     { DUR_BEOGH_DIVINE_CHALLENGE, WHITE, "Challenge", "", "apostle challenge",
@@ -857,13 +900,12 @@ static const duration_def duration_data[] =
     { DUR_CONSTRICTION_IMMUNITY, 0, "", "", "constrict immune", "", D_NO_FLAGS, {{""}}},
     { DUR_GRAVE_CLAW_RECHARGE, 0, "", "", "grave claw recharging", "", D_NO_FLAGS},
     { DUR_TIME_WARPED_BLOOD_COOLDOWN, 0, "", "", "time-warped blood cooldown", "", D_NO_FLAGS},
-    { DUR_SPIKE_LAUNCHER_ACTIVE, 0, "", "", "spike launcher", "", D_NO_FLAGS, {{"", end_spike_launcher}}},
     { DUR_PARAGON_ACTIVE, 0, "", "", "paragon active", "", D_NO_FLAGS},
     { DUR_FORTRESS_BLAST_TIMER, 0, "", "", "fortress blast charging", "", D_DISPELLABLE},
     { DUR_PHALANX_BARRIER, 0, "", "phalanx barrier", "phalanx barrier", "", D_NO_FLAGS},
     { DUR_TRICKSTER_GRACE, 0, "", "", "trickster", "", D_NO_FLAGS, {{""}}},
     { DUR_DROWSY, 0, "Drowsy", "", "drowsy", "", D_NEGATIVE, {{"You feel less drowsy."}}},
-    { DUR_RIME_YAK_AURA, 0, "", "", "cold aura", "", D_NO_FLAGS, {{""}}},
+    { DUR_FRIGID_WALLS_ACTIVE, 0, "", "", "cold aura", "", D_NO_FLAGS, {{""}}},
     { DUR_AUTODODGE, 0, "", "", "autododge", "", D_NO_FLAGS},
     { DUR_DAZED, 0, "", "", "dazed", "", D_NEGATIVE},
     { DUR_CONSTRICTED, 0, "", "", "constricted", "", D_NO_FLAGS},
@@ -872,6 +914,9 @@ static const duration_def duration_data[] =
        {{"Your slimification abates."}}},
     { DUR_OOZE_REGEN, LIGHTBLUE, "OozeRegen", "ooze regen", "ooze regen", "coated in regenerative ooze", D_NO_FLAGS,
        {{"The regenerative ooze finishes dripping off of you."}}},
+    { DUR_INDOMITABLE, LIGHTBLUE, "Indom", "", "", "", D_NO_FLAGS},
+    { DUR_EXEGESIS, WHITE, "Exegesis", "", "", "", D_NO_FLAGS, {{"", _end_exegesis}}},
+    { DUR_VAPOURISE, WHITE, "Vapour", "", "vapourise_ready", "", D_NO_FLAGS, {{"", _end_vapourise}}},
 
 #if TAG_MAJOR_VERSION == 34
     // And removed ones
@@ -929,5 +974,6 @@ static const duration_def duration_data[] =
     { DUR_CLUMSY, 0, "", "", "old clumsy", "", D_NO_FLAGS },
     { DUR_SLEEP_IMMUNITY, 0, "", "", "old sleep immunity", "", D_NO_FLAGS, {{""}}},
     { DUR_VILE_CLUTCH_OLD, 0, "", "", "old vile clutch", "", D_NO_FLAGS, {{""}}},
+    { DUR_SPIKE_LAUNCHER_ACTIVE, 0, "", "", "old spike launcher", "", D_NO_FLAGS, {{""}}},
 #endif
 };

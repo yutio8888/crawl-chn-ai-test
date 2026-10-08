@@ -33,8 +33,10 @@ def load_terms(path: Path) -> dict[str, set[str]]:
             raise ValueError(f"invalid OmegaT row at {path}:{lineno}")
         targets = [part.strip() for part in re.split(r"\s+/\s+", columns[1]) if part.strip()]
         for target in targets:
-            # Parenthetical labels describe context and are not literal output.
-            target = re.sub(r"（[^）]+）$", "", target).strip()
+            # A matching trailing qualifier in the English identity is part
+            # of the name (e.g. Dragon Vein (Fire)), not a context annotation.
+            if not re.search(r"(?:\([^()]+\)|（[^（）]+）)$", columns[0]):
+                target = re.sub(r"（[^）]+）$", "", target).strip()
             if target:
                 terms[columns[0]].add(target)
     if not terms:

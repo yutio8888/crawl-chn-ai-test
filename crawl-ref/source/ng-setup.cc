@@ -19,6 +19,7 @@
 #include "ng-init.h"
 #include "ng-wanderer.h"
 #include "options.h"
+#include "piety-info.h"
 #include "prompt.h"
 #include "religion.h"
 #include "shopping.h"
@@ -31,6 +32,7 @@
 #include "tag-version.h"
 #include "throw.h"
 #include "transform.h"
+#include "unwind.h"
 
 #define MIN_START_STAT       3
 
@@ -310,6 +312,9 @@ void give_items_skills(const newgame_def& ng)
     if (you.has_mutation(MUT_NO_ARMOUR)) // i.e. felids
         you.skills[SK_SHIELDS] = 0; // i.e. FeFi
 
+    if (species::undead_type(you.species) == US_UNDEAD)
+        you.skills[SK_SHAPESHIFTING] = 0; // Undead mystics
+
     if (you.has_mutation(MUT_WIELD_OFFHAND))
     {
         // Coglins would rather have two slings than one bow.
@@ -455,6 +460,9 @@ static void _setup_innate_spells()
         if (sp != SPELL_NO_SPELL)
             spellset.insert(sp);
 
+    // Ignore divine prohibitions on spells for zealot classes.
+    unwind_var<god_type> no_god(you.religion, GOD_NO_GOD);
+
     // Get spells at XL 3 and every odd level thereafter.
     vector<spell_type> chosen_spells;
     int const min_lev[] = {1,2, 2,3,4, 5,6,6, 6,7,7, 8,9};
@@ -503,6 +511,27 @@ void initial_dungeon_setup()
     you.zot_orb_monster = random_choose(MONS_ORB_OF_FIRE,
                                         MONS_ORB_OF_WINTER,
                                         MONS_ORB_OF_ENTROPY);
+}
+
+static void _set_starting_form(transformation form)
+{
+    // Undead mystics are allowed (if mediocre), but obviously can't start in a form.
+    if (species::undead_type(you.species) == US_UNDEAD)
+        return;
+
+    const talisman_type tal_type = talisman_for_form(form);
+    const item_def* talisman = nullptr;
+    for (auto& item : you.inv)
+    {
+        if (item.is_type(OBJ_TALISMANS, tal_type))
+        {
+            talisman = &item;
+            break;
+        }
+    }
+    ASSERT(talisman);
+    set_default_form(form, talisman);
+    set_form(form, 1);
 }
 
 static void _setup_generic(const newgame_def& ng,
@@ -606,30 +635,24 @@ static void _setup_generic(const newgame_def& ng,
     }
 
     if (you.char_class == JOB_SHAPESHIFTER)
-    {
-        const item_def* talisman = nullptr;
-        for (auto& item : you.inv)
-        {
-            if (item.is_type(OBJ_TALISMANS, TALISMAN_QUILL))
-            {
-                talisman = &item;
-                break;
-            }
-        }
-        ASSERT(talisman);
-        set_default_form(transformation::quill, talisman);
-        set_form(transformation::quill, 1); // hacky...
-    }
+        _set_starting_form(transformation::quill);
+    else if (you.char_class == JOB_MYSTIC)
+        _set_starting_form(transformation::vision);
+    else if (you.char_class == JOB_STALKER)
+        _set_starting_form(transformation::hypnogecko);
 
     reassess_starting_skills(false);
     init_skill_order();
-    init_can_currently_train();
     init_train();
     if (you.religion == GOD_TROG)
         join_trog_skills();
+    if (you.religion != GOD_NO_GOD)
+        you.piety_info.register_join();
     init_training();
     if (you.has_mutation(MUT_INNATE_CASTER))
         cleanup_innate_magic_skills();
+
+    init_four_winds();
 
     // Apply autoinscribe rules to inventory.
     request_autoinscribe();

@@ -40,7 +40,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MAGIC_DART, "Magic Dart",
     spschool::conjuration,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     1,
     25,
     LOS_RADIUS, LOS_RADIUS,
@@ -51,7 +51,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FIREBALL, "Fireball",
     spschool::conjuration | spschool::fire,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     5,
     200,
     5, 5,
@@ -128,7 +128,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_ARCJOLT, "Arcjolt",
     spschool::conjuration | spschool::air,
-    spflag::none,
+    spflag::direct_damage_only,
     5,
     200,
     2, 2,
@@ -139,7 +139,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_PLASMA_BEAM, "Plasma Beam",
     spschool::fire | spschool::air,
-    spflag::noisy | spflag::destructive,
+    spflag::noisy | spflag::destructive | spflag::direct_damage_only | spflag::needs_target,
     6,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -150,7 +150,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_PERMAFROST_ERUPTION, "Permafrost Eruption",
     spschool::ice | spschool::earth,
-    spflag::destructive,
+    spflag::destructive | spflag::needs_target,
     6,
     200,
     6, 6, // reduce cases of hitting something outside LOS
@@ -442,7 +442,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_LEHUDIBS_CRYSTAL_SPEAR, "Lehudib's Crystal Spear",
     spschool::conjuration | spschool::earth,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     8,
     200,
     3, 3,
@@ -678,7 +678,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FREEZE, "Freeze",
     spschool::ice,
-    spflag::dir_or_target | spflag::not_self | spflag::destructive,
+    spflag::dir_or_target | spflag::not_self | spflag::destructive | spflag::direct_damage_only,
     1,
     25,
     1, 1,
@@ -722,7 +722,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_OZOCUBUS_ARMOUR, "Ozocubu's Armour",
     spschool::ice,
-    spflag::no_ghost,
+    spflag::no_ghost | spflag::selfench,
     3,
     100,
     -1, -1,
@@ -892,7 +892,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_STONE_ARROW, "Stone Arrow",
     spschool::conjuration | spschool::earth,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     3,
     50,
     4, 4,
@@ -903,7 +903,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SHOCK, "Shock",
     spschool::conjuration | spschool::air,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     1,
     25,
     LOS_RADIUS, LOS_RADIUS,
@@ -961,7 +961,7 @@ static const struct spell_desc spelldata[] =
     SPELL_MINDBURST, "Mindburst",
     spschool::conjuration,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
-        | spflag::WL_check,
+        | spflag::WL_check | spflag::direct_damage_only,
     6,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1017,7 +1017,8 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_AIRSTRIKE, "Airstrike",
     spschool::air,
-    spflag::target | spflag::not_self | spflag::destructive,
+    spflag::target | spflag::not_self | spflag::destructive
+        | spflag::direct_damage_only,
     4,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1028,7 +1029,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MOMENTUM_STRIKE, "Momentum Strike",
     spschool::conjuration | spschool::translocation,
-    spflag::target | spflag::not_self,
+    spflag::target | spflag::not_self | spflag::direct_damage_only,
     2,
     50,
     4, 4,
@@ -1161,7 +1162,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_DISCHARGE, "Static Discharge",
     spschool::conjuration | spschool::air,
-    spflag::none,
+    spflag::direct_damage_only,
     2,
     50,
     1, 1,
@@ -1195,7 +1196,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_LRD, "Lee's Rapid Deconstruction",
     spschool::earth,
-    spflag::target | spflag::destructive,
+    spflag::target | spflag::destructive | spflag::direct_damage_only,
     5,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1207,7 +1208,7 @@ static const struct spell_desc spelldata[] =
     SPELL_SANDBLAST, "Sandblast",
     spschool::earth,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
-        | spflag::destructive,
+        | spflag::destructive | spflag::direct_damage_only,
     1,
     50,
     4, 4,
@@ -1241,7 +1242,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_CHAIN_LIGHTNING, "Chain Lightning",
     spschool::air | spschool::conjuration,
-    spflag::none,
+    spflag::direct_damage_only,
     9,
     200,
     -1, -1,
@@ -1342,7 +1343,7 @@ static const struct spell_desc spelldata[] =
     SPELL_HURL_DAMNATION, "Hurl Damnation",
     spschool::conjuration,
     spflag::dir_or_target | spflag::unholy
-        | spflag::needs_tracer,
+        | spflag::needs_tracer | spflag::direct_damage_only,
     // plus DS ability, staff of Dispater & Sceptre of Asmodeus
     9,
     200,
@@ -1386,14 +1387,14 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_UFETUBUS, "Summon Ufetubus",
+    SPELL_UFETUBI_SWARM, "Ufetubi Swarm",
     spschool::summoning,
     spflag::unholy | spflag::monster,
     4,
     0,
     -1, -1,
     0,
-    TILEG_SUMMON_UFETUBUS,
+    TILEG_UFETUBI_SWARM,
 },
 
 {
@@ -1690,6 +1691,17 @@ static const struct spell_desc spelldata[] =
     LOS_RADIUS, LOS_RADIUS,
     0,
     TILEG_HASTE_OTHER,
+},
+
+{
+    SPELL_TOUCH_OF_PARADOX, N_("Touch of Paradox"),
+    spschool::translocation | spschool::hexes,
+    spflag::helpful | spflag::monster,
+    7,
+    200,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_TOUCH_OF_PARADOX,
 },
 
 {
@@ -2251,8 +2263,8 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WALL_OF_BRAMBLES, "Wall of Brambles",
-    spschool::conjuration | spschool::earth,
+    SPELL_CAGE_OF_BRAMBLES, "Cage of Brambles",
+    spschool::earth,
     spflag::monster,
     5,
     100,
@@ -2331,7 +2343,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SEARING_RAY, "Searing Ray",
     spschool::conjuration,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     2,
     50,
     4, 4,
@@ -2650,6 +2662,17 @@ static const struct spell_desc spelldata[] =
 },
 
 {
+    SPELL_BOLT_OF_ANTIMAGIC, "Bolt of Antimagic",
+    spschool::conjuration | spschool::hexes,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
+    6,
+    200,
+    5, 5,
+    0,
+    TILEG_BOLT_OF_ANTIMAGIC,
+},
+
+{
     SPELL_BOLT_OF_FLESH, "Bolt of Flesh",
     spschool::conjuration | spschool::necromancy | spschool::summoning,
     spflag::dir_or_target | spflag::needs_tracer| spflag::monster
@@ -2901,6 +2924,17 @@ static const struct spell_desc spelldata[] =
 },
 
 {
+    SPELL_MURKY_LEGION, "Murky Legion",
+    spschool::summoning | spschool::necromancy,
+    spflag::unholy | spflag::chaotic | spflag::monster,
+    6,
+    0,
+    -1, -1,
+    0,
+    TILEG_MURKY_LEGION,
+},
+
+{
     SPELL_PARALYSIS_GAZE, "Paralysis Gaze",
     spschool::hexes,
     spflag::target | spflag::monster,
@@ -3092,7 +3126,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_ICEBLAST, "Iceblast",
     spschool::conjuration | spschool::ice,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     5,
     200,
     5, 5,
@@ -3247,7 +3281,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_IGNITION, "Ignition",
     spschool::fire,
-    spflag::destructive,
+    spflag::destructive | spflag::direct_damage_only,
     8,
     200,
     -1, -1,
@@ -3369,7 +3403,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_STARBURST, "Starburst",
     spschool::conjuration | spschool::fire,
-    spflag::none,
+    spflag::direct_damage_only,
     6,
     200,
     5, 5,
@@ -3402,7 +3436,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_HAILSTORM, "Hailstorm",
     spschool::conjuration | spschool::ice,
-    spflag::none,
+    spflag::direct_damage_only,
     3,
     100,
     3, 3, // Range special-cased in describe-spells
@@ -3458,7 +3492,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MAXWELLS_COUPLING, "Maxwell's Capacitive Coupling",
     spschool::air,
-    spflag::no_ghost | spflag::destructive,
+    spflag::no_ghost | spflag::destructive | spflag::needs_target,
     8,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -3535,7 +3569,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MANIFOLD_ASSAULT, "Manifold Assault",
     spschool::translocation,
-    spflag::none,
+    spflag::needs_target,
     7,
     200,
     -1, -1,
@@ -3646,7 +3680,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SCORCH, "Scorch",
     spschool::fire,
-    spflag::destructive,
+    spflag::destructive | spflag::needs_target,
     2,
     50,
     3, 3,
@@ -4068,7 +4102,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_HELLFIRE_MORTAR, "Hellfire Mortar",
     spschool::earth | spschool::fire | spschool::forgecraft,
-    spflag::dir_or_target | spflag::destructive,
+    spflag::dir_or_target | spflag::aim_at_space | spflag::destructive,
     7,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -4373,7 +4407,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FORTRESS_BLAST, "Fortress Blast",
     spschool::forgecraft,
-    spflag::destructive,
+    spflag::destructive | spflag::direct_damage_only,
     6,
     75,
     3, 3,
@@ -4638,6 +4672,117 @@ static const struct spell_desc spelldata[] =
     TILEG_SEISMIC_STOMP,
 },
 
+{
+    SPELL_STAMPEDE, "Stampede",
+    spschool::translocation,
+    spflag::monster,
+    4,
+    200,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_STAMPEDE,
+},
+
+{
+    SPELL_BOLSTER, "Bolster",
+    spschool::hexes,
+    spflag::helpful | spflag::selfench | spflag::monster,
+    6,
+    200,
+    -1, -1,
+    0,
+    TILEG_BOLSTER,
+},
+
+{
+    SPELL_PHASE_SHIFT, N_("Phase Shift"),
+    spschool::translocation,
+    spflag::helpful | spflag::selfench | spflag::monster,
+    6,
+    200,
+    -1, -1,
+    0,
+    TILEG_PHASE_SHIFT,
+},
+
+{
+    SPELL_DRAGON_VEINS, N_("Dragon Veins"),
+    spschool::earth | spschool::fire | spschool::air | spschool::ice,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_FIRE, N_("Dragon Vein (Fire)"),
+    spschool::fire,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_ICE, N_("Dragon Vein (Ice)"),
+    spschool::ice,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_AIR, N_("Dragon Vein (Air)"),
+    spschool::air,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_DRAGON_VEIN_EARTH, N_("Dragon Vein (Earth)"),
+    spschool::earth,
+    spflag::destructive,
+    3,
+    75,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_DRAGON_VEINS,
+},
+
+{
+    SPELL_ICE_THORNS, N_("Ice Thorns"),
+    spschool::earth | spschool::ice,
+    spflag::destructive | spflag::target | spflag::needs_target,
+    1,
+    25,
+    LOS_RADIUS, LOS_RADIUS,
+    0,
+    TILEG_ICE_THORNS,
+},
+
+
+{
+    SPELL_SIROCCO, N_("Sirocco"),
+    spschool::fire | spschool::air,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::destructive,
+    2,
+    50,
+    1, 1,
+    0,
+    TILEG_SIROCCO,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },
@@ -4680,7 +4825,7 @@ AXED_SPELL(SPELL_IRON_ELEMENTALS, "Summon Iron Elementals")
 AXED_SPELL(SPELL_LETHAL_INFUSION, "Lethal Infusion")
 AXED_SPELL(SPELL_MELEE, "Melee")
 AXED_SPELL(SPELL_MISLEAD, "Mislead")
-AXED_SPELL(SPELL_PHASE_SHIFT, "Phase Shift")
+AXED_SPELL(SPELL_PHASE_SHIFT_OLD, "Phase Shift")
 AXED_SPELL(SPELL_POISON_WEAPON, "Poison Weapon")
 AXED_SPELL(SPELL_RANDOM_BOLT, "Random Bolt")
 AXED_SPELL(SPELL_REARRANGE_PIECES, "Rearrange the Pieces")

@@ -21,14 +21,27 @@ mkdir dirname($outfile);
 #
 # Source tarbells distributed as part of a release include this file already
 # generated with the release version.
-$_ = `git describe $mergebase 2> $nullfile`
-    || (open(IN, "<", "$scriptpath/release_ver") ? <IN>
+# Make exports the same flags to recursive builds. Direct invocations (including
+# detached checkouts) use the identical default.
+my $describe_flags = $ENV{GIT_DESCRIBE_FLAGS}
+    // q{--match '*-a[0-9]*' --match '*-trunk-[0-9][0-9][0-9]'};
+my $in_git = `git rev-parse --is-inside-work-tree 2> $nullfile`;
+if ($in_git)
+{
+    `git describe --abbrev=0 --match '*-a[0-9]*' $mergebase 2> $nullfile`
+        or die "Error: Can't find an annotated upstream alpha tag.\n"
+            . "Run `git fetch upstream --tags` or "
+            . "`bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags`.\n";
+}
+$_ = `git describe $describe_flags $mergebase 2> $nullfile`
+    || ($in_git ? die "Error: git describe failed in the worktree.\n"
+        : open(IN, "<", "$scriptpath/release_ver") ? <IN>
         : die "Error: Can't get version information: `git describe` failed (no git, no repository, or shallow clone), and $scriptpath/release_ver doesn't exist.\n")
     or die "Error: couldn't get the version information\n";
 
 chomp;
 
-/v?(?<tag>(?<major>[0-9]+\.[0-9]+)(?:\.[0-9]+)?(?:-(?<pretyp>[a-zA-Z]+[0-9]+(?:-[0-9]+-[0-9]{3})?))?)(?:-[0-9]+-g[a-fA-F0-9]+)?/
+/v?(?<tag>(?<major>[0-9]+\.[0-9]+)(?:\.[0-9]+)?(?:-(?<pretyp>trunk-[0-9]{3}|[a-zA-Z]+[0-9]+(?:-[0-9]+-[0-9]{3})?))?)(?:-[0-9]+-g[a-fA-F0-9]+)?/
     or die "Version string '$_' is malformed.\n";
 
 my ($major, $tag, $pretyp) = @+{qw(major tag pretyp)};
@@ -37,7 +50,7 @@ my $rel = !defined($pretyp)
     || $pretyp =~ /^zh[1-9][0-9]*$/
     || $pretyp =~ /^zh[1-9][0-9]*-[1-9][0-9]*-(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$/
     ? "FINAL"
-    : $pretyp le "b" ? "ALPHA" : "BETA";
+    : $pretyp =~ /^trunk-/ || $pretyp le "b" ? "ALPHA" : "BETA";
 
 my $prefix = "CRAWL";
 

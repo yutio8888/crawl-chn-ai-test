@@ -14,6 +14,7 @@
 #include "english.h"
 #include "externs.h"
 #include "god-abil.h"
+#include "god-conduct.h"
 #include "invent.h"
 #include "libutil.h"
 #include "menu.h"
@@ -301,7 +302,7 @@ static int _spell_colour(spell_type spell, const item_def* const source_item)
         return COL_USELESS;
     }
 
-    if (god_hates_spell(spell, you.religion))
+    if (god_forbids_spell(spell, you.religion))
         return COL_FORBIDDEN;
 
     if (you.experience_level < spell_difficulty(spell)
@@ -433,6 +434,8 @@ static dice_def _spell_damage(spell_type spell, int hd, int pow)
             return boulder_damage(pow, false);
         case SPELL_LAUNCH_SPORANGIUM:
             return mon_explode_dam(MONS_CAUSTIC_SPORANGIUM, 1);
+        case SPELL_SHATTER:
+            return mons_shatter_damage(hd);
 
         // This is the per-turn *sticky flame* damage against the player.
         // The spell has no impact damage and otherwise uses different numbers
@@ -641,8 +644,10 @@ static void _describe_book(const spellbook_contents &book,
                   + chop_string(T_("Type"), school_column_width)
                   + chop_string(T_("Level"), level_column_width)).c_str());
         if (crawl_state.need_save)
+        {
             description.cprintf("%s",
                                 chop_string(T_("Known"), known_column_width).c_str());
+        }
     }
     description.cprintf("\n");
 
@@ -682,11 +687,11 @@ static void _describe_book(const spellbook_contents &book,
         const int effect_len = strwidth(effect_str);
         const int range_len = range_str.empty() ? 0 : 3;
         const int effect_range_space = effect_len && range_len ? 1 : 0;
-        // Monster spellbooks are rendered as two columns.  The historical
+        // Monster spellbooks are rendered as two columns. The historical
         // 32-column budget leaves no room for the popup's horizontal margins
         // once CJK spell names consume two display columns per character;
         // the generic tile text wrapper then breaks the second column in the
-        // middle of its range (e.g. moving "(7)" to the next line).  Keep a
+        // middle of its range (e.g. moving "(7)" to the next line). Keep a
         // small safety margin for the two-column layout.
         const int content_width = doublecolumn
                                   ? monster_spell_content_width
@@ -721,7 +726,7 @@ static void _describe_book(const spellbook_contents &book,
         if (doublecolumn && first_line_element)
         {
             // Pad the complete first cell to a fixed display width so every
-            // second-column entry starts at the same x position.  Use the
+            // second-column entry starts at the same x position. Use the
             // parsed text width because range_str may contain colour tags.
             const int target_width = content_width + spell_entry_prefix_width;
             const int padding = target_width - strwidth(spell_entry.tostring());
@@ -813,7 +818,7 @@ static void _write_book(const spellbook_contents &book,
         tiles.json_write_string("title", dith_marker + spell_title(spell));
         tiles.json_write_int("colour", _spell_colour(spell, source_item));
         tiles.json_write_name("tile");
-        tiles.write_tileidx(tileidx_spell(spell));
+        tiles.json_write_int(tileidx_spell(spell));
 
         // don't crash if we have more spells than letters.
         auto entry = find_if(spell_map.begin(), spell_map.end(),

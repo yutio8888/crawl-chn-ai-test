@@ -4,7 +4,25 @@
 
 #include "options.h"
 #include "syscalls.h"
+#include "artefact.h"
+#include "database.h"
+#include "files.h"
+#include "initfile.h"
+#include "invent.h"
+#include "item-prop.h"
+#include "item-status-flag-type.h"
+#include "message.h"
+#include "player.h"
+#include "player-equip.h"
+#include "randbook.h"
+#include "spl-book.h"
+#include "spl-util.h"
+#include "stringutil.h"
+#include "test_player_fixture.h"
+#include "test_zh_fixture.h"
+#include "unwind.h"
 
+#include <fstream>
 #include <unistd.h>
 
 namespace
@@ -35,6 +53,114 @@ private:
 };
 
 unsigned int temporary_options_file::next_id = 0;
+
+void load_default_menu_colours(game_options &options)
+{
+    options.include_utf8(datafile_path("defaults/standard_colours.txt"),
+                         false, false);
+    options.include_utf8(datafile_path("defaults/menu_colours.txt"),
+                         false, false);
+}
+}
+
+TEST_CASE("All bundled menu colour rules parse in both languages",
+          "[initfile][zh-defaults][menu-colours]")
+{
+    for (const auto language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture display(language, language == lang_t::ZH ? "zh" : nullptr);
+        INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
+        game_options options;
+        const size_t builtin_count = options.menu_colour_mappings.size();
+        clear_message_store();
+        load_default_menu_colours(options);
+        CHECK(get_last_messages(1000, true).find("Unknown color") == string::npos);
+
+        std::ifstream file(datafile_path("defaults/menu_colours.txt"));
+        REQUIRE(file.good());
+        size_t rule_count = 0;
+        for (string line; std::getline(file, line); )
+            if (starts_with(trim_string(line), "menu +=")
+                || starts_with(line, "menu_colour +="))
+            {
+                ++rule_count;
+            }
+        REQUIRE(rule_count > 0);
+        REQUIRE(options.menu_colour_mappings.size() == builtin_count + rule_count);
+        for (const colour_mapping &rule : options.menu_colour_mappings)
+        {
+            INFO(rule.pattern.tostring());
+            CHECK(rule.tag != "none");
+            CHECK(rule.colour >= BLACK);
+            CHECK(rule.colour < NUM_TERM_COLOURS);
+            CHECK(rule.pattern.valid());
+        }
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Chinese inventory colours bound equipment but not book titles",
+                 "[initfile][zh-defaults][menu-colours][inventory]")
+{
+    ZhTranslationFixture display;
+    init_spell_descs();
+    game_options defaults;
+    load_default_menu_colours(defaults);
+    unwind_var<vector<colour_mapping>> mappings(Options.menu_colour_mappings,
+                                                defaults.menu_colour_mappings);
+    you.religion = GOD_ASHENZARI;
+
+    const pair<object_class_type, int> equipment[] = {
+        {OBJ_WEAPONS, WPN_DAGGER}, {OBJ_ARMOUR, ARM_CHAIN_MAIL},
+        {OBJ_JEWELLERY, RING_PROTECTION}, {OBJ_STAVES, STAFF_FIRE},
+    };
+    for (const auto &kind : equipment)
+    {
+        item_def &item = you.inv[0];
+        item.clear();
+        item.base_type = kind.first;
+        item.sub_type = kind.second;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED | ISFLAG_CURSED;
+        item.plus = 2;
+        item.slot = 'a';
+        item.pos = ITEM_IN_INVENTORY;
+        item.link = 0;
+        INFO("class=" << item_class_name(item.base_type, true));
+        InvEntry entry(item);
+        REQUIRE(entry.get_text().find("束缚") != string::npos);
+        CHECK(entry.highlight_colour() == RED);
+        entry.select(1);
+        CHECK(entry.highlight_colour() == RED);
+    }
+
+    item_def &weapon = you.inv[0];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    equip_item(SLOT_WEAPON, 0, false);
+    InvEntry equipped(weapon);
+    REQUIRE(item_prefix(weapon, false).find("equipped") != string::npos);
+    CHECK(equipped.highlight_colour() == LIGHTRED);
+    unequip_item(weapon, false);
+
+    item_def &book = you.inv[1];
+    book.clear();
+    book.base_type = OBJ_BOOKS;
+    book.sub_type = BOOK_RANDART_THEME;
+    book.quantity = 1;
+    book.flags = ISFLAG_IDENTIFIED | ISFLAG_RANDART;
+    book.slot = 'b';
+    book.pos = ITEM_IN_INVENTORY;
+    book.link = 1;
+    _set_book_spell_list(book, {SPELL_MAGIC_DART});
+    book.props[BOOK_TITLED_KEY].get_bool() = true;
+    // A saved random title uses the ordinary artefact-name display path.
+    book.props[ARTEFACT_NAME_KEY].get_string() = "束缚的魔法书";
+    InvEntry title(book);
+    REQUIRE(title.get_text().find("束缚的") != string::npos);
+    REQUIRE(item_prefix(book, false).find("book") != string::npos);
+    CHECK(title.highlight_colour() != RED);
+    CHECK(title.highlight_colour() != LIGHTRED);
 }
 
 TEST_CASE("Chinese distribution defaults do not require init.txt",

@@ -19,6 +19,7 @@ cursor_green CURSOR3
 tutorial_cursor TUTORIAL_CURSOR
 travel_exclusion DISABLED
 rampage_indicator RAMPAGE
+rampage_indicator_instant RAMPAGE_INSTANT
 %sdir dngn/traps
 %alpha 128
 cobweb_none_0 TRAP_WEB
@@ -52,6 +53,7 @@ confused CONFUSED
 sleeping STAB_BRAND
 pain_mirror PAIN_MIRROR
 recall RECALL
+corona GLOWING
 drain DRAIN
 idealised IDEALISED
 bound_soul BOUND_SOUL
@@ -119,8 +121,18 @@ sentinel_mark SENTINEL_MARK
 strong_willed STRONG_WILLED
 tesseract_spawn TESSERACT_SPAWN
 sundering SUNDERING
+mute MUTE
+exposed EXPOSED
+stampede STAMPEDE
+invis_known UNSEEN_INVIS_KNOWN
+invis_remembered UNSEEN_INVIS_REMEMBERED
+seen_invis SEEN_INVIS
+phase_shifted PHASE_SHIFT
+divine_shield DIVINE_SHIELD
 
-something_under SOMETHING_UNDER
+item_stack1 ITEM_STACK_1
+item_stack2 ITEM_STACK_2
+item_stack3 ITEM_STACK_3
 new_stair NEW_STAIR
 new_transporter NEW_TRANSPORTER
 
@@ -170,6 +182,13 @@ demon_pentagram3 DEMON_NUM3
 demon_pentagram4 DEMON_NUM4
 demon_pentagram5 DEMON_NUM5
 %rim 0
+
+%sdir dngn
+
+air_vein_overlay DRAGON_VEIN_AIR
+earth_vein_overlay DRAGON_VEIN_EARTH
+fire_vein_overlay DRAGON_VEIN_FIRE
+ice_vein_overlay DRAGON_VEIN_ICE
 
 %sdir misc
 ray ITEM_SLOT_SELECTED

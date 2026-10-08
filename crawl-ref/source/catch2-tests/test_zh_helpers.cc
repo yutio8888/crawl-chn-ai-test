@@ -527,6 +527,7 @@ static size_t allowed_technical_literal_end(const std::string& text, size_t i)
         "auto_exclude",
         "Shift-right-click",
         "shift-numpad-5",
+        "Shift-numpad 5",
         "http://crawl.develz.org/",
     };
     for (const std::string& literal : exact_allowed)

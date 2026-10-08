@@ -32,6 +32,7 @@
 #include "prompt.h"
 #include "scroller.h"
 #include "showsymb.h"
+#include "sound.h"
 #include "state.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -401,7 +402,7 @@ static const char *targeting_help_1 =
     "<w>e</w> : create/remove travel exclusion\n"
 ;
 #ifdef WIZARD
-static const char *targeting_help_wiz =
+static const char *targeting_help_wiz = N_(
     "<h>Wizard targeting commands:</h>\n"
     "<w>Ctrl-C</w> : cycle through beam paths\n"
     "<w>D</w>: get debugging information about the monster\n"
@@ -417,10 +418,10 @@ static const char *targeting_help_wiz =
     "<w>\"</w>: get debugging information about a portal\n"
     "<w>~</w>: polymorph monster to specific type\n"
     "<w>,</w>: bring down the monster to 1 hp\n"
-    "<w>Ctrl-(</w>: place a mimic\n"
+    "<w>Ctrl-F</w>: place a mimic\n"
     "<w>Ctrl-B</w>: banish monster\n"
     "<w>Ctrl-K</w>: kill monster\n"
-;
+);
 #endif
 
 static const char *targeting_help_2 =
@@ -1180,6 +1181,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_SHOW_TERRAIN, "toggle view layers");
     _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "show dungeon Overview");
     _add_command(cols, 1, CMD_TOGGLE_AUTOPICKUP, "toggle auto-pickup");
+    _add_command(cols, 1, CMD_IGNORE_INVISIBLE, "suppress invisible monster warnings");
 #ifdef USE_SOUND
     _add_command(cols, 1, CMD_TOGGLE_SOUND, "mute/unmute sound effects");
 #endif

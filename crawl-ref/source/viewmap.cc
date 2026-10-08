@@ -32,6 +32,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "terrain.h"
+#include "tile-env.h"
 #include "tileview.h"
 #include "tiles-build-specific.h"
 #include "travel.h"
@@ -40,9 +41,6 @@
 #include "view.h"
 #include "viewchar.h"
 #include "viewgeom.h"
-
-#ifdef USE_TILE
-#endif
 
 #ifndef USE_TILE_LOCAL
 /**
@@ -155,6 +153,7 @@ bool is_feature(char32_t feature, const coord_def& where)
         return feat_stair_direction(grid) == CMD_GO_DOWNSTAIRS
                 && !feat_is_altar(grid)
                 && grid != DNGN_ENTER_SHOP
+                && grid != DNGN_PURIFIED_MUTATION_CATALYST
                 && grid != DNGN_TRANSPORTER;
     case '^':
         return feat_is_trap(grid);
@@ -395,8 +394,11 @@ class feature_list
             return feat_dir(feat);
         if (feat == DNGN_TRAP_SHAFT)
             return G_DOWN;
-        if (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP)
+        if (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP
+            || feat == DNGN_PURIFIED_MUTATION_CATALYST)
+        {
             return G_OTHER;
+        }
         if (get_feature_dchar(feat) == DCHAR_ARCH)
             return G_PORTAL;
         return G_NONE;
@@ -437,9 +439,93 @@ public:
     }
 };
 
-#ifndef USE_TILE_LOCAL
-static void _draw_title(const coord_def& cpos, const feature_list& feats, const int columns)
+#ifdef USE_TILE
+static void _describe_cell(const map_control_state &m_state)
 {
+    const coord_def &cpos = m_state.lpos.pos;
+    const map_cell &cell = env.map_knowledge(cpos);
+    msgwin_clear_temporary();
+    mprf(MSGCH_PROMPT, T_("Press: ? - help, v - describe, . - travel"));
+
+    // If viewing the level we are on, player-centered coordinates.
+    if (Options.monster_item_view_coordinates && m_state.on_level)
+    {
+        const coord_def relpos = cpos - you.pos();
+        mprf(MSGCH_PLAIN, T_("Location (%d, %d)"), relpos.x, -relpos.y);
+    }
+
+    const string mon = cell_monster_description(cpos);
+    if (!mon.empty())
+        mprf(MSGCH_EXAMINE, T_("<cyan>Here:</cyan> %s"), uppercase_first(mon).c_str());
+
+    const string items = cell_items_description(cpos);
+    if (!items.empty())
+        mprf(MSGCH_EXAMINE, "%s", items.c_str());
+
+    string desc = feature_description(cell.feat()).c_str();
+    if (!desc.empty())
+        mprf(MSGCH_EXAMINE_FILTER, "%s.", desc.c_str());
+
+    const cloud_type cloud = cell.cloud();
+    if (cloud != CLOUD_NONE)
+    {
+        mprf(MSGCH_EXAMINE, T_("There is a cloud of %s here."),
+             cloud_type_name(cloud).c_str());
+    }
+
+    flush_prev_message();
+}
+#endif
+
+#ifndef USE_TILE_LOCAL
+// Describe the symbol displayed for a cell, unless it's boring terrain.
+// Return a description, and also (…) if there is something underneath it.
+static pair<string, string> _describe_top_thing_in_cell(const coord_def &cpos)
+{
+    const map_cell &cell = env.map_knowledge(cpos);
+    string out, feat, item;
+    const string etc = " (…)";
+
+    if (auto mi = cell.monsterinfo())
+        out = get_monster_equipment_desc(*mi);
+
+    if (cell.cloud() != CLOUD_NONE)
+    {
+        if (!out.empty())
+            return {out, etc};
+        out = cloud_type_name(cell.cloud());
+    }
+    if (is_terrain_interesting(cell.feat()))
+    {
+        if (!out.empty())
+            return {out, etc};
+        feat = feature_description(cell.feat());
+    }
+    if (cell.item())
+    {
+        if (!out.empty())
+            return {out, etc};
+        item = cell.item()->name(DESC_A, false);
+    }
+
+    if (feat.empty() && item.empty())
+        return {out, ""};
+    else if (item.empty())
+        return {feat, ""};
+    else if (feat.empty())
+    {
+        bool is_single_item = NON_ITEM == cell.item()->link;
+        return {item, is_single_item ? "" : etc};
+    }
+    else if (show_terrain_before_item(cell.feat()))
+        return {feat, etc};
+    else
+        return {item, etc};
+}
+
+static void _draw_title(const map_control_state &m_state, const int columns)
+{
+    const coord_def &cpos = m_state.lpos.pos;
     const formatted_string help =
         formatted_string::parse_string(T_("(Press <w>?</w> for help)"));
     const int helplen = help.width();
@@ -447,30 +533,45 @@ static void _draw_title(const coord_def& cpos, const feature_list& feats, const 
     if (columns < helplen)
         return;
 
-    const formatted_string title = feats.format();
+    const formatted_string title = m_state.feats->format();
     const int titlelen = title.width();
     if (columns < titlelen)
         return;
 
-    string pstr = "";
+    string pstr, descr, extra;
+    if (!m_state.always_show_stairs)
+        tie(descr, extra) = _describe_top_thing_in_cell(cpos);
+    if (descr.empty())
+        extra = level_id::current().describe(true, true);
+    else
+        extra += " (" + level_id::current().describe(false, true) + ")";
+    // If viewing the level we are on, player-centered coordinates.
+    if (Options.monster_item_view_coordinates && m_state.on_level)
+    {
+        const coord_def relpos = cpos - you.pos();
+        extra += make_stringf(" (%d, %d)", relpos.x, -relpos.y);
+    }
 #ifdef WIZARD
     if (you.wizard)
-    {
-        char buf[10];
-        snprintf(buf, sizeof(buf), " (%d, %d)", cpos.x, cpos.y);
-        pstr = string(buf);
-    }
+        extra += make_stringf(" (%d, %d)", cpos.x, cpos.y);
 #endif // WIZARD
+    int xwidth = strwidth(extra);
+    int allowed = columns - helplen - 1;
+    if (xwidth < allowed)
+        pstr = chop_string(descr, allowed - xwidth, false) + extra;
+    else
+        pstr = chop_string(extra, allowed);
 
     cgotoxy(1, 1);
     textcolour(WHITE);
 
-    cprintf("%s", chop_string(
-                    uppercase_first(level_id::current().describe(true, true))
-                      + pstr, columns - helplen).c_str());
+    cprintf("%s", uppercase_first(pstr).c_str());
 
-    cgotoxy(max(1, (columns - titlelen) / 2), 1);
-    title.display();
+    if (descr.empty())
+    {
+        cgotoxy(max(1, (columns - titlelen) / 2), 1);
+        title.display();
+    }
 
     textcolour(LIGHTGREY);
     cgotoxy(max(1, columns - helplen + 1), 1);
@@ -503,16 +604,22 @@ static void _unforget_map()
     MapKnowledge &old(*env.map_forgotten);
 
     for (rectangle_iterator ri(0); ri; ++ri)
-        if (!env.map_knowledge(*ri).seen() && old(*ri).seen())
-        {
-            // Don't overwrite known squares, nor magic-mapped with
-            // magic-mapped data -- what was forgotten is less up to date.
+    {
+        // Don't overwrite known squares, nor magic-mapped with
+        // magic-mapped data -- what was forgotten is less up to date.
+        if (env.map_knowledge(*ri).seen() || !old(*ri).seen())
+            continue;
+
+        if (!env.map_knowledge(*ri).mapped())
             env.map_knowledge(*ri) = old(*ri);
-            env.map_seen.set(*ri);
-#ifdef USE_TILE
-            tiles.update_minimap(*ri);
-#endif
+        else
+        {
+            // Don't use set_terrain_seen as that clears the
+            // MAP_CHANGED_FLAG flag
+            env.map_knowledge(*ri).flags |= MAP_SEEN_FLAG;
         }
+        redraw_view_at(*ri);
+    }
 }
 
 static void _forget_map(bool wizard_forget = false)
@@ -546,6 +653,7 @@ static void _forget_map(bool wizard_forget = false)
 }
 
 map_control_state process_map_command(command_type cmd, const map_control_state &state);
+void describe_location(coord_def pos, map_control_state& state);
 
 static coord_def _recentre_map_target(const level_id level,
                                       const level_id original)
@@ -554,6 +662,9 @@ static coord_def _recentre_map_target(const level_id level,
         return you.pos();
 
     const auto bounds = known_map_bounds();
+    // This can happen if the map is entirely unknown.
+    if (!map_bounds(bounds.first))
+        return coord_def(GXM / 2, GYM / 2);
     return (bounds.first + bounds.second + 1) / 2;
 }
 
@@ -667,6 +778,9 @@ public:
         m_state.search_anchor = coord_def(-1, -1);
         m_state.chose = false;
         m_state.on_level = true;
+#ifndef USE_TILE_LOCAL
+        m_state.always_show_stairs = false;
+#endif
 
         goto_level();
     }
@@ -676,6 +790,11 @@ public:
     {
 #ifdef USE_TILE
         tiles.load_dungeon(m_state.lpos.pos);
+        if (m_state.lpos != m_described_pos)
+        {
+            _describe_cell(m_state);
+            m_described_pos = m_state.lpos;
+        }
 #endif
 
 #ifdef USE_TILE_LOCAL
@@ -687,7 +806,7 @@ public:
 #ifndef USE_TILE_LOCAL
         const auto view = _get_view_state(view_ul, m_state);
         view_ul = view.start;
-        _draw_title(m_state.lpos.pos, *m_state.feats, m_region.width);
+        _draw_title(m_state, m_region.width);
         const ui::Region map_region = {0, 1, m_region.width, m_region.height - 1};
         _draw_level_map(view_ul.x, view_ul.y, m_state.travel_mode,
                         m_state.on_level, map_region);
@@ -748,9 +867,15 @@ public:
                 }
                 else
                 {
-                    m_state.lpos.pos
-                        = tiles.get_cursor().clamped(known_map_bounds());
+                    m_state.lpos.pos = tiles.get_cursor();
+                    clamp_lpos();
                 }
+            }
+            else if (k == CK_MOUSE_CMD
+                && ev.type() == ui::Event::Type::MouseDown)
+            {
+                describe_location(tiles.get_cursor(), m_state);
+                return true;
             }
             _expose();
             return true;
@@ -758,6 +883,16 @@ public:
 #endif
 
         return false;
+    }
+
+    void clamp_lpos()
+    {
+        m_state.lpos.pos = m_state.lpos.pos.clamped(known_map_bounds());
+        if (!map_bounds(m_state.lpos.pos))
+        {
+            m_state.lpos.pos =
+                _recentre_map_target(m_state.lpos.id, m_state.original);
+        }
     }
 
     void process_command(command_type cmd)
@@ -776,7 +911,7 @@ public:
         if (m_state.lpos.id != level_id::current())
             goto_level();
 
-        m_state.lpos.pos = m_state.lpos.pos.clamped(known_map_bounds());
+        clamp_lpos();
     }
 
     void set_lpos(level_pos dest)
@@ -798,7 +933,7 @@ public:
         if (m_state.lpos.id != level_id::current())
             goto_level();
 
-        m_state.lpos.pos = m_state.lpos.pos.clamped(known_map_bounds());
+        clamp_lpos();
         m_reentry = true;
     }
 
@@ -876,7 +1011,8 @@ public:
     // This function should not be called while a map command is processing
     void update_far_viewing(coord_def viewed_location)
     {
-        m_state.lpos.pos = viewed_location.clamped(known_map_bounds());
+        m_state.lpos.pos = viewed_location;
+        clamp_lpos();
     }
 #endif
 
@@ -888,6 +1024,11 @@ private:
     // List of all interesting features for display in the (console) title.
     feature_list m_feats;
     bool m_reentry;
+
+#ifdef USE_TILE
+    // The cursor position last described on the message line.
+    level_pos m_described_pos;
+#endif
 
 #ifndef USE_TILE_LOCAL
     coord_def view_ul;
@@ -925,6 +1066,9 @@ bool show_map(level_pos &lpos, bool travel_mode, bool allow_offlevel)
 #endif
 
 #ifdef USE_TILE
+        msgwin_temporary_mode temp_msgs;
+        unwind_bool no_more(crawl_state.show_more_prompt, false);
+
         ui::cutoff_point ui_cutoff_point;
 #endif
 #ifdef USE_TILE_WEB
@@ -972,6 +1116,10 @@ bool show_map(level_pos &lpos, bool travel_mode, bool allow_offlevel)
         while (map_view->is_alive() && !crawl_state.seen_hups)
             ui::pump_events();
         ui::pop_layout();
+
+#ifdef USE_TILE
+        msgwin_clear_temporary();
+#endif
 
 #ifdef USE_TILE_LOCAL
         tiles.set_map_display(false);
@@ -1068,10 +1216,10 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
                 break;
             if (env.map_forgotten)
                 _unforget_map();
-            MapKnowledge *old = new MapKnowledge(env.map_knowledge);
-            // completely wipe out map
+            // completely wipe out map, including the forgotten map - this
+            // makes us reannounce interesting features.
             _forget_map(true);
-            env.map_forgotten.reset(old);
+            env.map_forgotten.reset();
             mpr(T_("Level map wiped."));
             break;
         }
@@ -1423,18 +1571,13 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         break; // allow mouse clicks to move cursor without leaving map mode
 #endif
     case CMD_MAP_DESCRIBE:
-        if (map_bounds(state.lpos.pos) && env.map_knowledge(state.lpos.pos).known())
-        {
-            if (full_describe_square(state.lpos.pos, false))
-            {
-                state.map_alive = false;
-                state.chose = false; // don't go to the location
-            }
-            // n.b. it's possible for the describe popup to trigger a reentrant
-            // call and overwrite state
-            state.redraw_map = true;
-        }
+        describe_location(state.lpos.pos, state);
         break;
+#ifndef USE_TILE_LOCAL
+    case CMD_MAP_TOGGLE_TITLE:
+        state.always_show_stairs = !prev_state.always_show_stairs;
+    break;
+#endif
 
     default:
         if (!state.travel_mode)
@@ -1443,6 +1586,21 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
     }
 
     return state;
+}
+
+void describe_location(coord_def pos, map_control_state& state)
+{
+    if (map_bounds(pos) && env.map_knowledge(pos).known())
+    {
+        if (full_describe_square(pos, false))
+        {
+            state.map_alive = false;
+            state.chose = false; // don't go to the location
+        }
+        // n.b. it's possible for the describe popup to trigger a reentrant
+        // call and overwrite state
+        state.redraw_map = true;
+    }
 }
 
 bool emphasise(const coord_def& where)

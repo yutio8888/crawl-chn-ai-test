@@ -24,6 +24,7 @@
 #include "coordit.h"
 #include "database.h"
 #include "describe.h"
+#include "directn.h"
 #include "dlua.h"
 #include "dgn-overview.h"
 #include "end.h"
@@ -89,7 +90,7 @@ static int crawl_script_args(lua_State *ls)
     return clua_stringtable(ls, crawl_state.script_args);
 }
 
-// Test-only deterministic injection for the three Zot orb variants.  This is
+// Test-only deterministic injection for the three Zot orb variants. This is
 // intentionally not part of the production CLua/DLua API.
 static bool zot_test_state_saved = false;
 static monster_type saved_zot_orb_monster;
@@ -141,7 +142,12 @@ static int crawl_set_test_language(lua_State *ls)
     if (value == "en")
         Options.language = lang_t::EN;
     else if (value == "zh")
-        Options.language = lang_t::ZH;
+    {
+        // An English startup has no translation layer. Reconcile the DBs when
+        // a bilingual fixture needs ZH; the option alone cannot load that layer.
+        Options.read_option_line("language=zh");
+        databaseSystemInit();
+    }
     else
         return luaL_error(ls, "unknown test language: %s", value.c_str());
     return 0;
@@ -207,7 +213,7 @@ static int crawl_test_trap_display_name(lua_State *ls)
     const string value = luaL_checkstring(ls, 1);
     if (value != "permanent teleport")
         return luaL_error(ls, "unknown test trap: %s", value.c_str());
-    lua_pushstring(ls, trap_name(TRAP_TELEPORT_PERMANENT).c_str());
+    lua_pushstring(ls, feature_description(DNGN_TRAP_TELEPORT_PERMANENT, "", DESC_BASENAME).c_str());
     return 1;
 }
 

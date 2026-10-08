@@ -1003,18 +1003,11 @@ production_facts 字段不匹配，是审计工具 producer/consumer 定位逻�
 
 ### defer implementation（2）
 
-- `hint:dissection reminder`
+- `hint:dissection reminder` — **退役（Issue #147 F1）**。
 
-  - 结论：`defer implementation`。
-  - deferral reason：该 identity 只有 ZH 测试消费且正文依赖失去生产入口的旧尸体机制
-  - owner：crawl-coder/zh-code-reviewer
-  - re-entry trigger：测试获得不承载旧玩法的稳定 fixture，或游戏重新引入有权威 EN 的 producer。
-  - actual behavior：测试设当前神为 Trog，通过 crawl.test_hint_text() 查询 ZH HintsDB；仅断言中文神名且无原始 Trog。正常游戏无查询。
-  - reviewer rationale：该 key 没有 EN 条目或生产 producer；ZH 正文描述旧尸体机制，目前仅被 ZH runtime 测试用于验证动态神名。没有英文或生产语境时不能凭空重译。
-  - rejected alternatives：
-    - 反向编造 EN：违反边界。
-    - 按旧尸体机制润色：误当当前事实。
-    - 直接删除：破坏测试。
+  - d9ad868a30 对齐 trunk 的 217 个现行 hint 时已删除此 ZH-only identity；它没有 EN 条目或游戏内 producer，正文承载已退役的尸体玩法。
+  - 原 `localized-test-only-compatibility` 的重新处理条件现已满足：`test/zh_runtime.lua` 改用现行 EN/ZH `HINT_KILLED_MONSTER`。Trog 分支直接渲染神名，仍同时断言本地化神名出现且原始 Trog 不出现。
+  - 不恢复该正文。下方冻结的 Issue #50 JSON 证据仅记录历史 `defer implementation` 判断，不代表当前 trunk inventory。
 
 - `hint:hint_fleeing_monster`
 

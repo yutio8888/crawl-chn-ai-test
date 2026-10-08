@@ -70,6 +70,7 @@ function vaults_default_options()
       -- Create tagged generators to represent portal entry vaults. Weights
       -- should be 0 since these generators are only chosen through chance rolls.
       { generator = "tagged", tag = "vaults_necropolis", weight = 0, max_rooms = 1 },
+      { generator = "tagged", tag = "vaults_gulch", weight = 0, max_rooms = 1 },
       { generator = "tagged", tag = "vaults_wizlab", weight = 0, max_rooms = 1 },
       { generator = "tagged", tag = "vaults_desolation", weight = 0, max_rooms = 1 },
 -- start TAG_MAJOR_VERSION == 34

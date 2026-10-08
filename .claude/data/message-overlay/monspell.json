@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "domain": "monspell",
-  "inventory_semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
+  "inventory_semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
   "supported_languages": [
     "en",
     "zh"

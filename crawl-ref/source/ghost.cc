@@ -433,7 +433,7 @@ void ghost_demon::init_player_ghost()
 
     name   = you.your_name;
     max_hp = min(get_real_hp(false, false), MAX_GHOST_HP);
-    ev     = min(you.evasion(true), MAX_GHOST_EVASION);
+    ev     = min(you.evasion(false), MAX_GHOST_EVASION);
     ac     = you.armour_class();
     dprf("ghost ac: %d, ev: %d", ac, ev);
 
@@ -795,6 +795,7 @@ void ghost_demon::init_orc_apostle(apostle_type type, int pow)
     {
         default:
         case APOSTLE_WARRIOR:
+            colour = YELLOW;
             max_hp = max_hp * 6 / 5;
             damage = 5 + div_rand_round(pow, 4);
             if (pow > 50)
@@ -802,6 +803,7 @@ void ghost_demon::init_orc_apostle(apostle_type type, int pow)
             break;
 
         case APOSTLE_WIZARD:
+            colour = LIGHTMAGENTA;
             max_hp = max_hp * 5 / 6;
             damage = 2 + div_rand_round(pow, 8);
             ev += div_rand_round(pow, 12);
@@ -813,6 +815,7 @@ void ghost_demon::init_orc_apostle(apostle_type type, int pow)
             break;
 
         case APOSTLE_PRIEST:
+            colour = LIGHTCYAN;
             damage = 3 + div_rand_round(pow, 6);
             break;
     }
@@ -983,10 +986,10 @@ static resists_t _ugly_thing_resists(bool very_ugly, attack_flavour u_att_flav)
 
     case AF_POISON:
     case AF_POISON_STRONG:
-        return MR_RES_POISON * (very_ugly ? 2 : 1);
+        return MR_RES_POISON;
 
     case AF_ELEC:
-        return MR_RES_ELEC * (very_ugly ? 2 : 1);
+        return MR_RES_ELEC;
 
     case AF_COLD:
         return MR_RES_COLD * (very_ugly ? 2 : 1);
@@ -1118,6 +1121,8 @@ spell_type ghost_demon::translate_spell(spell_type spell) const
 #if TAG_MAJOR_VERSION == 34
     case SPELL_CONTROLLED_BLINK:
         return SPELL_BLINK;
+    case SPELL_SIMULACRUM:
+        return SPELL_NO_SPELL;
 #endif
     case SPELL_SWIFTNESS:
         return SPELL_FLEETFOOT;

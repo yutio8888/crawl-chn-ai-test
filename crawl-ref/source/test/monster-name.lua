@@ -14,7 +14,7 @@ local function itemname(item_spec, name_type)
 end
 
 local function check_monster_name(mspec, monster_name_checks,
-                                  corpse_name_checks)
+                                  corpse_name_checks, use_display_name)
 
   dgn.reset_level()
   dgn.fill_grd_area(1, 1, dgn.GXM - 2, dgn.GYM - 2, 'floor')
@@ -40,7 +40,8 @@ local function check_monster_name(mspec, monster_name_checks,
     assert(mons, "Could not create monster from spec: " .. mspec)
     check_names(mons, name_checks,
                 function (mons, desc)
-                  return mons.mfull_name(desc)
+                  return use_display_name and mons.display_name
+                         or mons.mfull_name(desc)
                 end)
     return mons
   end
@@ -102,13 +103,25 @@ local name_checks = {
 }
 check_names(name_checks)
 
-local vv = check_monster_name("Vv", "芙芙")
-test.eq(vv.title_name(), "流亡的芙芙", "Vv title_name")
+-- This display regression needs ZH even when the naming suite starts in EN.
+local original_language = crawl.language()
+crawl.set_test_language("zh")
+local ok, message = pcall(function()
+  local vv = check_monster_name("Vv", "芙芙", nil, true)
+  test.eq(vv.title_name, "流亡的芙芙", "Vv title_name")
 
-local mi = monster.get_monster_at(place.x, place.y)
-assert(mi, "Could not get monster.info for Vv")
-test.eq(mi.name(), "Vv", "Vv monster.info canonical name")
-test.eq(mi.display_name(), "芙芙", "Vv monster.info display name")
-test.eq(mi.title_name(), "流亡的芙芙", "Vv monster.info title_name")
+  you.moveto(place.x - 1, place.y)
+  assert(monster.get_monster_at(1, 0) == nil,
+         "freshly placed Vv has no player-visible snapshot yet")
+  -- The upstream interface reads map knowledge rather than the live monster.
+  crawl.redraw_view()
+  local mi = monster.get_monster_at(1, 0)
+  assert(mi, "Could not get monster.info for Vv")
+  test.eq(mi:name(), "Vv", "Vv monster.info canonical name")
+  test.eq(mi:display_name(), "芙芙", "Vv monster.info display name")
+  test.eq(mi:title_name(), "流亡的芙芙", "Vv monster.info title_name")
+end)
+crawl.set_test_language(original_language)
+assert(ok, message)
 
 dgn.dismiss_monsters()

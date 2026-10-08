@@ -389,8 +389,8 @@ function choose_mset_3(e)
 -- Dragon
   elseif rnd < 81 then
     e.kmons("1 = swamp drake / rime drake / acid dragon / steam dragon /\
-               death drake / swamp dragon / fire dragon / ice dragon / wyvern /\
-               hydra")
+                 death drake w:5 / swamp dragon / fire dragon /\
+                 ice dragon / wyvern / hydra / mongrel wurm w:5")
 -- Ranged
   elseif rnd < 83 then
     e.kmons("1 = centaur / yaktaur / cyclops / centaur warrior w:6 /\
@@ -461,7 +461,8 @@ local rnd = crawl.random2(142)
 -- Lair
   elseif rnd < 19 then
     e.kmons("1 = caustic shrike / hellephant / spriggan druid / skyshark /\
-                 torpor snail / hydra / catoblepas / dire elephant")
+                 torpor snail / hydra / catoblepas / dire elephant /\
+                 sewage sovereign w:5")
 -- Spider
   elseif rnd < 26 then
     e.kmons("1 = place:Spider:$ w:70 / ghost moth w:5 / broodmother /\
@@ -479,7 +480,7 @@ local rnd = crawl.random2(142)
 -- "Forest"
   elseif rnd < 47 then
     e.kmons("1 = caustic shrike / dire elephant / thorn hunter / eleionoma /\
-                 satyr / alderking w:3 / spriggan defender /\
+                 satyr / fungal shambler w:3 / alderking w:3 / spriggan defender /\
                  spriggan air mage / spriggan druid w:3 / spriggan berserker")
 -- Shoals
   elseif rnd < 52 then
@@ -529,9 +530,9 @@ local rnd = crawl.random2(142)
 -- Dragon
   elseif rnd < 90 then
     e.kmons("1 = swamp drake / rime drake / acid dragon / steam dragon /\
-               death drake / swamp dragon / fire dragon / ice dragon /\
-               shadow dragon / iron dragon / quicksilver dragon /\
-               golden dragon / wyrmhole / wyvern / hydra")
+                 death drake / swamp dragon / fire dragon / ice dragon /\
+                 shadow dragon / iron dragon / quicksilver dragon /\
+                 golden dragon / wyrmhole / wyvern / hydra / mongrel wurm")
 -- Ranged
   elseif rnd < 93 then
     e.kmons("1 = Vashnia, centaur / yaktaur / cyclops / centaur warrior /\
@@ -770,6 +771,7 @@ KITEM:    F = demon whip mundane pre_id plus:5, \
               giant spiked club mundane pre_id plus:5
 KITEM:    G = dagger mundane pre_id plus:5, \
               rapier mundane pre_id plus:5, \
+              athame mundane pre_id plus:5, \
               quick blade mundane pre_id plus:5
 KITEM:    H = demon blade mundane pre_id plus:5, \
               double sword mundane pre_id plus:5, \

@@ -38,7 +38,8 @@ static const vector<spell_type> spellbook_templates[] =
 {
 
 {   // Book of Minor Magic
-    SPELL_MAGIC_DART,
+    SPELL_ICE_THORNS,
+    SPELL_SIROCCO,
     SPELL_BLINK,
     SPELL_CALL_IMP,
 },
@@ -258,6 +259,7 @@ static const vector<spell_type> spellbook_templates[] =
 },
 
 {   // Book of the Dragon
+    SPELL_DRAGON_VEINS,
     SPELL_CAUSE_FEAR,
     SPELL_FIREBALL,
     SPELL_DRAGON_CALL,
@@ -305,7 +307,9 @@ static const vector<spell_type> spellbook_templates[] =
     SPELL_DEATHS_DOOR,
 },
 
+#if TAG_MAJOR_VERSION == 34
 { }, // BOOK_RANDART_LEVEL
+#endif
 { }, // BOOK_RANDART_THEME
 { }, // BOOK_MANUAL
 #if TAG_MAJOR_VERSION == 34

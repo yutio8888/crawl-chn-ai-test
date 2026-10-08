@@ -2,7 +2,7 @@ enum: SP_KOBOLD
 monster: MONS_KOBOLD
 name: Kobold
 difficulty: Intermediate
-difficulty_priority: 90
+difficulty_priority: 80
 aptitudes:
   xp: 1
   hp: -2
@@ -40,6 +40,7 @@ recommended_jobs:
   - enchanter
   - conjurer
   - earth elementalist
+  - stalker
 recommended_weapons:
   - short blades
   - maces and flails

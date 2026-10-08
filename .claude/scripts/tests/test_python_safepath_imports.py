@@ -12,6 +12,8 @@ entry-point repair.
 from __future__ import annotations
 
 import os
+import json
+import tempfile
 import subprocess
 import sys
 import unittest
@@ -48,14 +50,22 @@ class PythonSafePathImportTests(unittest.TestCase):
     def test_scripts_dir_on_pythonpath_repairs_sibling_import(self) -> None:
         env = _safepath_env()
         env["PYTHONPATH"] = str(SCRIPTS)
-        result = subprocess.run(
-            [sys.executable, str(MOVE_AUDIT), str(ROOT / "crawl-ref" / "source")],
-            cwd=ROOT,
-            env=env,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        # The assertion is about imports, independent of untranslated trunk
+        # verbs in the checkout. Keep the production discovery and manifest,
+        # but supply an exact-key fixture with every registered translation.
+        manifest = json.loads((SCRIPTS / "data/move_i18n_manifest.json").read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            source_txt = Path(directory) / "source.txt"
+            source_txt.write_text("".join(
+                f"%%%%\n{context}|{verb}\nfixture translation\n"
+                for context, row in manifest["contexts"].items()
+                for verb in row["verbs"]
+            ), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(MOVE_AUDIT), str(ROOT / "crawl-ref" / "source"),
+                 "--source-txt", str(source_txt)],
+                cwd=ROOT, env=env, text=True, capture_output=True, check=False,
+            )
         self.assertEqual(0, result.returncode, result.stderr + result.stdout)
 
     def test_entry_points_export_executed_scripts_directory(self) -> None:

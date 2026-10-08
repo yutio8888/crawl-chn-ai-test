@@ -152,14 +152,24 @@ class MonsterNameSsotTests(unittest.TestCase):
             ):
                 audit._parse_required_textdb(str(path))
 
+    def test_trunk_english_definition_population_is_frozen(self) -> None:
+        definitions = audit._load_monster_definitions(
+            str(AUDIT_ROOT / "crawl-ref/source"))
+        self.assertEqual(689, len(definitions))
+        self.assertEqual(684, len({row.en_name.casefold() for row in definitions}))
+        self.assertEqual(2, sum(row.en_name == "Goji" for row in definitions))
+        self.assertNotIn("armataur", {row.en_name.casefold() for row in definitions})
+
     def test_real_repository_passes_complete_inventory(self) -> None:
         source_dir = AUDIT_ROOT / "crawl-ref" / "source"
         result = audit.audit_repository(
             str(source_dir),
             str(source_dir / "dat" / "i18n" / "zh" / "source.txt"),
         )
-        self.assertEqual(671, result.definition_count)
-        self.assertEqual(667, result.monster_count)
+        # 19 new YAML definitions minus Armataur (upstream e12fab6a22).
+        self.assertEqual(689, result.definition_count)
+        # The two Goji forms share a name: +18 names minus Armataur.
+        self.assertEqual(684, result.monster_count)
         self.assertEqual((), result.findings)
 
     def test_issue_24_inventory_cross_checks_production_enum(self) -> None:
@@ -482,6 +492,24 @@ class MonsterNameSsotTests(unittest.TestCase):
             fixture.zh_monsters["adder"] = "它可以轻松爬上梯子，经过一块石头。"
             result = fixture.audit()
         self.assertEqual((), result.findings)
+
+    def test_quote_reference_keys_do_not_count_as_prose_names(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            fixture.monster("clockwork-bee.yaml", "clockwork bee", "发条蜂")
+            fixture.en_quotes["clockwork bee"] = "<Launch Clockwork Bee spell>"
+            fixture.zh_quotes["clockwork bee"] = "<Launch Clockwork Bee spell>"
+            self.assertEqual((), fixture.audit().findings)
+            # A reference alongside real prose must not hide a mismatch.
+            fixture.en_quotes["clockwork bee"] += " The clockwork bee approaches."
+            self.assertTrue(any("quotes.txt mismatch" in finding
+                                for finding in fixture.audit().findings))
+            # A name inside display colour tags is still prose.
+            fixture.en_quotes["clockwork bee"] = "<white>clockwork bee</white>"
+            self.assertTrue(any("quotes.txt mismatch" in finding
+                                for finding in fixture.audit().findings))
+            fixture.zh_quotes["clockwork bee"] = "<white>发条蜂</white>"
+            self.assertEqual((), fixture.audit().findings)
 
     def test_unexcepted_quote_mismatch_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

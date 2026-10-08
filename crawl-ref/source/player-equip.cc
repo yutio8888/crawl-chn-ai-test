@@ -12,6 +12,7 @@
 #include "database.h"
 #include "delay.h"
 #include "english.h" // conjugate_verb
+#include "env.h"
 #include "god-abil.h"
 #include "god-conduct.h"
 #include "god-item.h"
@@ -455,19 +456,35 @@ bool slot_is_melded(equipment_slot slot)
  * can should go through here.
  *
  * @param item              The item being checked.
- * @param include_form      Whether to veto items that would go into a slot that
- *                          is melded by our current form.
+ * @param temp              If true, include temporary restrictions like those
+ *                          from the player's form and aspects of the item that
+ *                          could one day change (e.g. the brand). Religion
+ *                          is treated as permanent.
  * @param veto_reason[out]  If the player cannot use this item, and this is
  *                          non-null, it is set to the reason why they can't.
+ * @param god_forbids[out]  If the player cannot use this item, set to whether
+ *                          the reason is god-based.
  *
  * @return True if the player is capable of theoretically wearing this item.
  */
-bool can_equip_item(const item_def& item, bool include_form, string* veto_reason)
+bool can_equip_item(const item_def& item, bool temp, string* veto_reason,
+                    bool *god_forbids)
 {
 #define NO_EQUIP(x) {if (veto_reason) { *veto_reason = x; }; return 0;}
 
+    if (god_forbids)
+        *god_forbids = false;
     if (!item_type_is_equipment(item.base_type))
         NO_EQUIP(T_("That isn't an equippable item."))
+
+    // Your god won't let you make use of gear they abhor.
+    if (god_forbids_item(item, temp))
+    {
+        if (god_forbids)
+            *god_forbids = true;
+        NO_EQUIP(make_stringf(T_("%s forbids the use of this item."),
+                              uppercase_first(god_name(you.religion)).c_str()))
+    }
 
     vector<equipment_slot> slots = get_all_item_slots(item);
 
@@ -482,7 +499,7 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
             // If we don't have this slot, veto_reason will be set here.
             if (get_player_equip_slot_count(alt_slot, veto_reason))
             {
-                if (include_form && slot_is_melded(alt_slot))
+                if (temp && slot_is_melded(alt_slot))
                 {
                     // Note that this slot is blocked due to transformation, in
                     // the likely case that no other compatible slot exists.
@@ -506,7 +523,7 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
     // type, is there some *other* reason they cannot wear this item?
     if (item.base_type == OBJ_ARMOUR)
     {
-        const size_type player_size = you.body_size(PSIZE_TORSO, !include_form);
+        const size_type player_size = you.body_size(PSIZE_TORSO, !temp);
         const equipment_slot slot = get_armour_slot(static_cast<armour_type>(item.sub_type));
         if (slot == SLOT_BODY_ARMOUR || slot == SLOT_OFFHAND)
         {
@@ -533,17 +550,17 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
                 NO_EQUIP(T_("You can't wear that with your reptilian head."))
             else if (you.species == SP_OCTOPODE)
                 NO_EQUIP(T_("Your can't wear that!"))
-            else if (you.has_mutation(MUT_HORNS, include_form))
+            else if (you.has_mutation(MUT_HORNS, temp))
                 NO_EQUIP(T_("You can't fit that over your horns."))
-            else if (you.has_mutation(MUT_ANTENNAE, include_form))
+            else if (you.has_mutation(MUT_ANTENNAE, temp))
                 NO_EQUIP(T_("You can't fit that over your antennae."))
-            else if (you.has_mutation(MUT_BEAK, include_form))
+            else if (you.has_mutation(MUT_BEAK, temp))
                 NO_EQUIP(T_("You can't fit that over your beak."))
         }
     }
     else if (item.base_type == OBJ_WEAPONS)
     {
-        const size_type bsize = you.body_size(PSIZE_TORSO, !include_form);
+        const size_type bsize = you.body_size(PSIZE_TORSO, !temp);
         if (is_weapon_too_large(item, bsize)
             && !you.has_mutation(MUT_QUADRUMANOUS))
         {
@@ -794,62 +811,51 @@ void player_equip_set::find_removable_items_for_slot(equipment_slot base_slot,
     }
 
     if (!quiet && !found_item && cursed_item)
-        mprf(MSGCH_PROMPT, T_("%s is stuck to your body!"), cursed_item->name(DESC_YOUR).c_str());
+        mprf(MSGCH_PROMPT, T_("%s is chained to your body!"), cursed_item->name(DESC_YOUR).c_str());
 }
 
 /**
- * Tests whether removing a given item will reduce the player's available
- * equipment slots in a way that requires them to also remove other items.
+ * Given a set of items being removed, tests whether a given equipment slot
+ * type will be overfull after they are all removed.
  *
- * @param item             The item to remove.
- * @param to_replace[out]  If removing the item will cause a slot type to
- *                         overflow, a vector of all removable items in that
- *                         slot type will be added to this vector.
- * @param cursed_okay      True if cursed items are considered okay to remove
- *                         (generally because this is called by someone looking
- *                         to meld rather than remove them).
+ * @param slot              The slot type to check.
+ * @param to_replace[out]   If removing the item will cause this slot to
+ *                          overflow, a vector of all removable items in that
+ *                          slot type will be added to this vector.
+ * @param cursed_okay       True if cursed items are considered okay to remove
+ *                          (generally because this is called by someone looking
+ *                          to meld rather than remove them).
+ * @param already_removing  The set of items being removed.
  *
- * @return How many other items need to be removed before the player could
- *         remove this item. If this is non-zero and to_replace is still empty,
- *         that means that there are *no* valid candidates to remove, despite
- *         needing to do so (almost certainly because every slot of the needed
- *         type contains a cursed item.)
+ * @return How many occupants of the slot must still be removed. If this is
+ *         non-zero and to_replace is still empty, that means there are *no*
+ *         valid candidates to remove, despite needing to do so (almost
+ *         certainly because every occupant of the slot is cursed.)
  */
-int player_equip_set::needs_chain_removal(const item_def& item,
+int player_equip_set::needs_chain_removal(equipment_slot slot,
                                           vector<item_def*>& to_replace,
-                                          bool cursed_okay)
+                                          bool cursed_okay,
+                                          const vector<item_def*>& already_removing)
 {
-    if (!item_gives_equip_slots(item))
-        return 0;
-
-    // XXX: This likely doesn't properly handle the case where an item gives
-    //      slots of *multiple* types, but no such items yet exist. Consider
-    //      changing this code if one is ever added.
     unwind_var<player_equip_set> unwind_eq(you.equipment);
-    remove(item);
+    for (item_def* removing : already_removing)
+        remove(*removing);
 
-    for (int i = SLOT_UNUSED; i < NUM_EQUIP_SLOTS; ++i)
+    const int new_num_slots = get_player_equip_slot_count(slot);
+    int count = 0;
+    for (const player_equip_entry& entry : items)
     {
-        int new_num_slots = get_player_equip_slot_count(static_cast<equipment_slot>(i));
-        if (new_num_slots < num_slots[i])
-        {
-            int count = 0;
-            for (const player_equip_entry& entry : items)
-            {
-                if (entry.slot != i)
-                    continue;
+        if (entry.slot != slot)
+            continue;
 
-                ++count;
+        ++count;
 
-                if (cursed_okay || !entry.get_item().cursed())
-                    to_replace.push_back(&entry.get_item());
-            }
-
-            return count - new_num_slots;
-        }
+        item_def& eq = entry.get_item();
+        if (cursed_okay || !eq.cursed())
+            to_replace.push_back(&eq);
     }
 
-    return 0;
+    return count - new_num_slots;
 }
 
 // Sorter function to be used by get_forced_removal_list()
@@ -901,12 +907,16 @@ static bool _forced_removal_goodness(player_equip_entry* entry1, player_equip_en
  *                           purposes (ie: to scan and remove 'impossible'
  *                           items) and thus should allow for items to remain in
  *                           slots granted by melded items.
+ * @param num_direct[out]    If non-null, set to the number of items removed
+ *                           directly (ie: the leading entries of the returned
+ *                           vector); the rest are due to lost slots.
  *
  * @return A vector of references to all items that must be removed for the
  *         player's current state to become valid again.
  */
 vector<item_def*> player_equip_set::get_forced_removal_list(bool force_full_check,
-                                                            bool is_save_cleanup)
+                                                            bool is_save_cleanup,
+                                                            size_t* num_direct)
 {
     vector<item_def*> to_remove;
 
@@ -962,6 +972,12 @@ vector<item_def*> player_equip_set::get_forced_removal_list(bool force_full_chec
         }
     }
 
+    if (num_direct)
+        *num_direct = to_remove.size();
+
+    // Handle removals of items that occupy slots we are now missing.
+    handle_chain_removal(to_remove, false);
+
     return to_remove;
 }
 
@@ -1011,11 +1027,9 @@ void player_equip_set::remove(const item_def& item)
 {
     for (int i = (int)items.size() - 1; i >= 0; --i)
     {
+        // Preserve order to avoid swapping Coglin weapons display order.
         if (items[i].item == item.link)
-        {
-            items[i] = items[items.size() - 1];
-            items.pop_back();
-        }
+            items.erase(items.begin() + i);
     }
 
     if (is_unrandom_artefact(item))
@@ -1204,7 +1218,7 @@ void player_equip_set::handle_melding(vector<item_def*>& to_meld, bool skip_effe
 
     // Now, simultaneously do unequip effects for all melded items.
     for (item_def* meld_item : to_meld)
-        unequip_effect(meld_item->link, true, true);
+        unequip_effect(meld_item->link, true, true, false, true);
 }
 
 /**
@@ -1496,6 +1510,33 @@ void player_equip_set::shift_twohander_to_slot(equipment_slot new_slot)
     }
 }
 
+// Silently swap the weapon from the coglin-offhand slot to the weapon slot,
+// with no equip/unequip effects. This will move a main weapon to offhand if
+// there is one present, and do nothing if there is no offhand weapon.
+void player_equip_set::swap_offhand_weapon_to_main()
+{
+    player_equip_entry* weapon = nullptr;
+    player_equip_entry* offhand = nullptr;
+    for (player_equip_entry& entry : items)
+    {
+        if (entry.is_overflow || !is_weapon(entry.get_item()))
+            continue;
+
+        if (entry.slot == SLOT_WEAPON_OR_OFFHAND)
+            offhand = &entry;
+
+        if (entry.slot == SLOT_WEAPON)
+            weapon = &entry;
+    }
+
+    if (offhand)
+    {
+        offhand->slot = SLOT_WEAPON;
+        if (weapon)
+            weapon->slot = SLOT_WEAPON_OR_OFFHAND;
+    }
+}
+
 /**
  * Recalculate the player's max hp and set the current hp based on the %change
  * of max hp. This has resulted from our having equipped an artefact that
@@ -1505,7 +1546,7 @@ static void _calc_hp_artefact()
 {
     calc_hp();
     if (you.hp_max <= 0) // Borgnjor's abusers...
-        ouch(0, KILLED_BY_DRAINING);
+        player_die(KILLED_BY_DRAINING);
 }
 
 static void _flight_equip()
@@ -1557,7 +1598,6 @@ void equip_item(equipment_slot slot, int item_slot, bool msg, bool skip_effects)
         equip_effect(item_slot, false, msg);
 
     you.gear_change = true;
-    update_can_currently_train();
 
     if (is_weapon(item))
     {
@@ -1578,8 +1618,9 @@ void equip_item(equipment_slot slot, int item_slot, bool msg, bool skip_effects)
     check_item_hint(item, old_talents);
 }
 
-// Unequip and equipped item (possibly melded).
-bool unequip_item(item_def& item, bool msg, bool skip_effects)
+// Unequip an equipped item (possibly melded).
+bool unequip_item(item_def& item, bool msg, bool skip_effects,
+                  bool maybe_destroy)
 {
 #ifdef USE_TILE_LOCAL
     const unsigned int old_talents = your_talents().size();
@@ -1592,15 +1633,16 @@ bool unequip_item(item_def& item, bool msg, bool skip_effects)
                                     : DEQUIP_ARMOUR_SOUND);
 #endif
 
-    if (is_weapon(item) && you.has_mutation(MUT_SLOW_WIELD))
+    if (is_weapon(item) && you.has_mutation(MUT_SLOW_WIELD) && !skip_effects)
         say_farewell_to_weapon(item);
 
     const int item_slot = item.link;
+    bool was_melded = item_is_melded(item);
     you.equipment.remove(item);
     you.equipment.update();
 
     if (!skip_effects)
-        unequip_effect(item_slot, false, msg);
+        unequip_effect(item_slot, false, msg, was_melded, maybe_destroy);
 
     ash_check_bondage();
     you.last_unequip = item_slot;
@@ -1626,20 +1668,17 @@ bool unequip_item(item_def& item, bool msg, bool skip_effects)
 }
 
 static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld);
-static void _unequip_weapon_effect(item_def& item, bool showMsgs, bool meld);
+static void _unequip_weapon_effect(item_def& item, bool showMsgs, bool meld,
+                                   bool was_melded);
 static void _equip_armour_effect(item_def& arm, bool unmeld);
-static void _unequip_armour_effect(item_def& item, bool meld);
+static void _unequip_armour_effect(item_def& item, bool meld, bool was_melded);
 static void _equip_jewellery_effect(item_def &item, bool unmeld);
-static void _unequip_jewellery_effect(item_def &item, bool meld);
-static void _equip_use_warning(const item_def& item);
+static void _unequip_jewellery_effect(item_def &item, bool meld, bool was_melded);
 static void _handle_regen_item_equip(const item_def& item);
 
 void equip_effect(int item_slot, bool unmeld, bool msg)
 {
     item_def& item = you.inv[item_slot];
-
-    if (msg)
-        _equip_use_warning(item);
 
     const interrupt_block block_unmeld_interrupts(unmeld);
 
@@ -1655,6 +1694,9 @@ void equip_effect(int item_slot, bool unmeld, bool msg)
     else if (item.base_type == OBJ_JEWELLERY)
         _equip_jewellery_effect(item, unmeld);
 
+    if (item_affects_agrid(item))
+        invalidate_agrid();
+
     if (!unmeld)
         _handle_regen_item_equip(item);
 
@@ -1662,34 +1704,41 @@ void equip_effect(int item_slot, bool unmeld, bool msg)
         ash_check_bondage();
 }
 
-static void _unequip_maybe_destroy_item(item_def& item)
+static void _unequip_maybe_destroy_item(item_def& item, bool quiet)
 {
     // Cursed and fragile items should always be destroyed on unequip.
     if ((is_artefact(item) && artefact_property(item, ARTP_FRAGILE))
-        || item.cursed())
+        || item.cursed() || item.summoned())
     {
+        if (item.summoned() && !quiet)
+            mprf(T_("%s crumbles into nothing."), item.name(DESC_YOUR).c_str());
+
         dec_inv_item_quantity(item.link, 1);
     }
 }
 
-void unequip_effect(int item_slot, bool meld, bool msg)
+void unequip_effect(int item_slot, bool meld, bool msg, bool was_melded,
+                    bool maybe_destroy)
 {
     item_def& item = you.inv[item_slot];
 
     const interrupt_block block_meld_interrupts(meld);
 
     if (is_artefact(item))
-        unequip_artefact_effect(item, &msg, meld);
+        unequip_artefact_effect(item, &msg, meld, was_melded);
 
     if (is_weapon(item))
-        _unequip_weapon_effect(item, msg, meld);
+        _unequip_weapon_effect(item, msg, meld, was_melded);
     else if (item.base_type == OBJ_ARMOUR)
-        _unequip_armour_effect(item, meld);
+        _unequip_armour_effect(item, meld, was_melded);
     else if (item.base_type == OBJ_JEWELLERY)
-        _unequip_jewellery_effect(item, meld);
+        _unequip_jewellery_effect(item, meld, was_melded);
 
-    if (!meld)
-        _unequip_maybe_destroy_item(item);
+    if (item_affects_agrid(item))
+        invalidate_agrid();
+
+    if (!meld && maybe_destroy)
+        _unequip_maybe_destroy_item(item, !msg);
 }
 
 ///////////////////////////////////////////////////////////
@@ -1722,15 +1771,15 @@ void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld)
         you.redraw_evasion = true;
 
     if (proprt[ARTP_SEE_INVISIBLE])
-        autotoggle_autopickup(false);
+        env.invis_knowledge.clear();
 
     // Modify ability scores.
     notify_stat_change(STAT_STR, proprt[ARTP_STRENGTH],
-                       !(msg && proprt[ARTP_STRENGTH] && !unmeld));
+                       !(msg && proprt[ARTP_STRENGTH]));
     notify_stat_change(STAT_INT, proprt[ARTP_INTELLIGENCE],
-                       !(msg && proprt[ARTP_INTELLIGENCE] && !unmeld));
+                       !(msg && proprt[ARTP_INTELLIGENCE]));
     notify_stat_change(STAT_DEX, proprt[ARTP_DEXTERITY],
-                       !(msg && proprt[ARTP_DEXTERITY] && !unmeld));
+                       !(msg && proprt[ARTP_DEXTERITY]));
 
     if (proprt[ARTP_FLY])
         _flight_equip();
@@ -1745,13 +1794,10 @@ void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld)
         add_bane(NUM_BANES, "Equipping an artefact");
     }
 
-    if (proprt[ARTP_RAMPAGING] && msg && !unmeld
-        && !you.has_mutation(MUT_ROLLPAGE))
-    {
+    if (proprt[ARTP_RAMPAGING] && msg && !you.has_mutation(MUT_STAMPEDE))
         mpr(T_("You feel ready to rampage towards enemies."));
-    }
 
-    if (proprt[ARTP_ARCHMAGI] && msg && !unmeld)
+    if (proprt[ARTP_ARCHMAGI] && msg)
     {
         if (!you.skill(SK_SPELLCASTING))
             mpr(T_("You feel strangely lacking in power."));
@@ -1767,7 +1813,8 @@ void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld)
         calc_mp();
 }
 
-void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld)
+void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld,
+                             bool was_melded)
 {
     ASSERT(is_artefact(item));
 
@@ -1775,85 +1822,82 @@ void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld)
     artefact_properties(item, proprt);
     const bool msg = !show_msgs || *show_msgs;
 
-    if (proprt[ARTP_AC] || proprt[ARTP_SHIELDING])
-        you.redraw_armour_class = true;
-
-    if (proprt[ARTP_EVASION])
-        you.redraw_evasion = true;
-
-    if (proprt[ARTP_HP])
-        _calc_hp_artefact();
-
-    if (proprt[ARTP_MAGICAL_POWER] && !you.has_mutation(MUT_HP_CASTING))
+    // Almost all effects should trigger exactly once if this function is
+    // called twice to meld and then destroy an object - that is, either on
+    // !was_melded or on !meld and not on both.
+    if (!was_melded)
     {
-        const bool gives_mp = proprt[ARTP_MAGICAL_POWER] > 0;
-        if (msg)
-            canned_msg(gives_mp ? MSG_MANA_DECREASE : MSG_MANA_INCREASE);
-        if (gives_mp)
-            pay_mp(proprt[ARTP_MAGICAL_POWER]);
-        calc_mp();
+        // This doesn't trigger for melding because we must finish the
+        // transformation before landing the player (in case we are going into
+        // a flying form).
+        if (proprt[ARTP_FLY] != 0 && !meld)
+            land_player();
+
+        if (proprt[ARTP_AC] || proprt[ARTP_SHIELDING])
+            you.redraw_armour_class = true;
+
+        if (proprt[ARTP_EVASION])
+            you.redraw_evasion = true;
+
+        if (proprt[ARTP_HP])
+            _calc_hp_artefact();
+
+        if (proprt[ARTP_MAGICAL_POWER] && !you.has_mutation(MUT_HP_CASTING))
+        {
+            const bool gives_mp = proprt[ARTP_MAGICAL_POWER] > 0;
+            if (msg)
+                canned_msg(gives_mp ? MSG_MANA_DECREASE : MSG_MANA_INCREASE);
+            if (gives_mp)
+                pay_mp(proprt[ARTP_MAGICAL_POWER]);
+            calc_mp();
+        }
+
+        notify_stat_change(STAT_STR, -proprt[ARTP_STRENGTH],
+                           !(msg && proprt[ARTP_STRENGTH]));
+        notify_stat_change(STAT_INT, -proprt[ARTP_INTELLIGENCE],
+                           !(msg && proprt[ARTP_INTELLIGENCE]));
+        notify_stat_change(STAT_DEX, -proprt[ARTP_DEXTERITY],
+                           !(msg && proprt[ARTP_DEXTERITY]));
+
+        if (proprt[ARTP_RAMPAGING] && msg && !you.rampaging())
+            mpr(T_("You no longer feel able to rampage towards enemies."));
+
+        if (proprt[ARTP_ARCHMAGI] && msg)
+            mpr(T_("You feel strangely numb."));
+
+        if (proprt[ARTP_SEE_INVISIBLE])
+            _mark_unseen_monsters();
+
+        if (is_unrandom_artefact(item))
+        {
+            const unrandart_entry *entry = get_unrand_entry(item.unrand_idx);
+
+            if (entry->unequip_func)
+                entry->unequip_func(&item, show_msgs);
+        }
     }
 
-    notify_stat_change(STAT_STR, -proprt[ARTP_STRENGTH],     true);
-    notify_stat_change(STAT_INT, -proprt[ARTP_INTELLIGENCE], true);
-    notify_stat_change(STAT_DEX, -proprt[ARTP_DEXTERITY],    true);
-
-    if (proprt[ARTP_FLY] != 0 && !meld)
-        land_player();
-
-    if (proprt[ARTP_CONTAM] && !meld)
+    // On-removal effects get skipped when melding.
+    if (!meld)
     {
-        mpr(T_("Mutagenic energies flood into your body!"));
-        contaminate_player(1200, true);
+        if (proprt[ARTP_CONTAM])
+        {
+            mpr(T_("Mutagenic energies flood into your body!"));
+            contaminate_player(1200, true);
+        }
+
+        if (proprt[ARTP_DRAIN])
+            drain_player(150, true, true);
+
+        if (artefact_property(item, ARTP_FRAGILE))
+        {
+            mprf(T_("%s crumbles to dust!"), item.name(DESC_THE).c_str());
+
+            // Hide unwield messages for weapons that have already been destroyed.
+            if (item.base_type == OBJ_WEAPONS)
+                *show_msgs = false;
+        }
     }
-
-    if (proprt[ARTP_RAMPAGING] && msg && !meld
-        && !you.rampaging())
-    {
-        mpr(T_("You no longer feel able to rampage towards enemies."));
-    }
-
-    if (proprt[ARTP_ARCHMAGI] && msg && !meld)
-        mpr(T_("You feel strangely numb."));
-
-    if (proprt[ARTP_DRAIN] && !meld)
-        drain_player(150, true, true);
-
-    if (proprt[ARTP_SEE_INVISIBLE])
-        _mark_unseen_monsters();
-
-    if (is_unrandom_artefact(item))
-    {
-        const unrandart_entry *entry = get_unrand_entry(item.unrand_idx);
-
-        if (entry->unequip_func)
-            entry->unequip_func(&item, show_msgs);
-    }
-
-    if (artefact_property(item, ARTP_FRAGILE) && !meld)
-    {
-        mprf(T_("%s crumbles to dust!"), item.name(DESC_THE).c_str());
-
-        // Hide unwield messages for weapons that have already been destroyed.
-        if (item.base_type == OBJ_WEAPONS)
-            *show_msgs = false;
-    }
-}
-
-static void _equip_use_warning(const item_def& item)
-{
-    if (is_holy_item(item) && you_worship(GOD_YREDELEMNUL))
-        mpr(T_("You really shouldn't be using a holy item like this."));
-    else if (is_evil_item(item) && is_good_god(you.religion))
-        mpr(T_("You really shouldn't be using an evil item like this."));
-    else if (is_unclean_item(item) && you_worship(GOD_ZIN))
-        mpr(T_("You really shouldn't be using an unclean item like this."));
-    else if (is_chaotic_item(item) && you_worship(GOD_ZIN))
-        mpr(T_("You really shouldn't be using a chaotic item like this."));
-    else if (is_hasty_item(item) && you_worship(GOD_CHEIBRIADOS))
-        mpr(T_("You really shouldn't be using a hasty item like this."));
-    else if (is_wizardly_item(item) && you_worship(GOD_TROG))
-        mpr(T_("You really shouldn't be using a wizardly item like this."));
 }
 
 // Provide a function for handling initial wielding of 'special' weapons
@@ -1866,6 +1910,14 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
     int special = get_weapon_brand(item);
     if (showMsgs && item.base_type != OBJ_STAVES)
     {
+        // Making the assumption that this is the only way to wield one of these.
+        if (!unmeld && item.sub_type == WPN_CENTIPEDE)
+        {
+            mprf(T_("You grip the centipede bauble in your %s and it winds around "
+                 "your %s and fuses with it."),
+                 you.hand_name(false).c_str(), you.arm_name(false).c_str());
+        }
+
         const string item_name = item.name(DESC_YOUR);
         switch (special)
         {
@@ -2036,6 +2088,23 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
         }
     }
 
+    if (item.sub_type == WPN_ATHAME)
+    {
+        if (you.hp <= 2)
+        {
+            mprf("Your athame gleams mockingly in your nearly-%s state.",
+                 (you.is_nonliving() || you.is_lifeless_undead()) ? "destroyed" :
+                                                                    "dead");
+        }
+        else
+        {
+            mprf("Your athame demands its blood price!%s",
+                 you.has_blood() ? "" : " (Figuratively speaking.)");
+            ouch(max(you.hp / 10, 1), KILLED_BY_SELF_AIMED, MID_PLAYER,
+                 nullptr, nullptr, true);
+        }
+    }
+
     if (special == SPWPN_ANTIMAGIC)
         calc_mp();
 
@@ -2043,8 +2112,19 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
         mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
 }
 
-static void _unequip_weapon_effect(item_def& item, bool showMsgs, bool meld)
+static void _unequip_weapon_effect(item_def& item, bool showMsgs, bool meld,
+                                   bool was_melded)
 {
+    if (was_melded)
+    {
+        if (item.base_type == OBJ_WEAPONS
+            && get_weapon_brand(item) == SPWPN_DISTORTION)
+        {
+            unwield_distortion();
+        }
+        return;
+    }
+
     you.wield_change = true;
     quiver::on_weapon_changed();
 
@@ -2242,7 +2322,7 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
 
         case SPARM_SEE_INVISIBLE:
             mpr(T_("You feel perceptive."));
-            autotoggle_autopickup(false);
+            env.invis_knowledge.clear();
             break;
 
         case SPARM_INVISIBILITY:
@@ -2316,7 +2396,7 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
             break;
 
         case SPARM_RAMPAGING:
-            if (!you.has_mutation(MUT_ROLLPAGE))
+            if (!you.has_mutation(MUT_STAMPEDE))
                 mpr(T_("You feel ready to rampage towards enemies."));
             break;
 
@@ -2335,10 +2415,6 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
             }
             break;
 
-        case SPARM_LIGHT:
-            invalidate_agrid(true);
-            break;
-
         }
 
     }
@@ -2353,8 +2429,11 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
     }
 }
 
-static void _unequip_armour_effect(item_def& item, bool meld)
+static void _unequip_armour_effect(item_def& item, bool meld, bool was_melded)
 {
+    // No armour brands have an effect when destroyed from melded.
+    if (was_melded)
+        return;
     you.redraw_armour_class = true;
     you.redraw_evasion = true;
 
@@ -2464,10 +2543,6 @@ static void _unequip_armour_effect(item_def& item, bool meld)
     case SPARM_INFUSION:
         if (you.max_magic_points || you.has_mutation(MUT_HP_CASTING))
             mprf(T_("You feel magic leave your %s."), you.hand_name(true).c_str());
-        break;
-
-    case SPARM_LIGHT:
-        invalidate_agrid(true);
         break;
 
     default:
@@ -2629,7 +2704,7 @@ static void _equip_jewellery_effect(item_def &item, bool unmeld)
     switch (item.sub_type)
     {
     case RING_SEE_INVISIBLE:
-        autotoggle_autopickup(false);
+        env.invis_knowledge.clear();
         break;
 
     case RING_FLIGHT:
@@ -2726,8 +2801,15 @@ static void _equip_jewellery_effect(item_def &item, bool unmeld)
         mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
 }
 
-static void _unequip_jewellery_effect(item_def &item, bool meld)
+static void _unequip_jewellery_effect(item_def &item, bool meld, bool was_melded)
 {
+    // Only faith does anything when destroyed from melded.
+    if (was_melded)
+    {
+        if (item.sub_type == AMU_FAITH)
+            _remove_amulet_of_faith(item);
+        return;
+    }
     // The ring/amulet must already be removed from you.equipment at this point.
     switch (item.sub_type)
     {
@@ -2807,16 +2889,9 @@ static void _unequip_jewellery_effect(item_def &item, bool meld)
 
 static void _mark_unseen_monsters()
 {
-
     for (monster_iterator mi; mi; ++mi)
-    {
         if (testbits((*mi)->flags, MF_WAS_IN_VIEW) && !you.can_see(**mi))
-        {
-            (*mi)->revealed_this_turn = true;
-            (*mi)->revealed_at_pos = (*mi)->pos();
-        }
-
-    }
+            mi->sense_if_invisible();
 }
 
 // This brand is supposed to be dangerous because it does large
@@ -2839,7 +2914,7 @@ void unwield_distortion(bool brand)
     if (coinflip())
     {
         you.props[TELEPORTITIS_SOURCE].get_int() = MID_PLAYER;
-        you_teleport_now(false, "Space warps around you!");
+        you_teleport_now("Space warps around you!");
     }
     else if (coinflip())
     {
@@ -2853,4 +2928,27 @@ void unwield_distortion(bool brand)
         mpr(T_("Space warps into you!"));
         contaminate_player(random2avg(3000, 3), true);
     }
+}
+
+// If this is a temporary item that stored which permanent item was swapped off
+// to equip it, fetch that item if the player still has it in their inventory.
+item_def* get_item_swap_back(const item_def& item)
+{
+    if (!item.props.exists(ITEM_SWAP_BACK_KEY))
+        return nullptr;
+
+    const mid_t id = item.props[ITEM_SWAP_BACK_KEY].get_int();
+    mprf(T_("Swapping back to %d"), id);
+
+    for (int i = 0; i < MAX_GEAR; ++i)
+    {
+        if (you.inv[i].defined()
+            && you.inv[i].props.exists(ITEM_UNIQUE_ID)
+            && (mid_t)you.inv[i].props[ITEM_UNIQUE_ID].get_int() == id)
+        {
+            return &you.inv[i];
+        }
+    }
+
+    return nullptr;
 }

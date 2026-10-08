@@ -736,7 +736,7 @@ def _glyph_consumer_shape(oid: str, label: str) -> None:
         f"case base chars",
     )
     _require(
-        re.search(r'glyph_key\s*\+=\s*mchar;', source) is not None
+        len(re.findall(r'glyph_key\s*\+=\s*(?:mchar|stringize_glyph\(mchar\));', source)) == 1
         and re.search(r'glyph_key\s*\+=\s*"\'";', source) is not None,
         f"{label} shout.cc glyph key must append the base char and closing "
         f"apostrophe",

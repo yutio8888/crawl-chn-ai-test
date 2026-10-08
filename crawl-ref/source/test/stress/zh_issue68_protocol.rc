@@ -19,7 +19,7 @@ end
 
 function c_trap_is_safe(trap)
     trap_hook_arg = trap
-    return trap == "permanent teleport"
+    return trap == "trap_teleport_permanent"
 end
 
 local function replace_cloud(name)
@@ -75,21 +75,18 @@ function ready()
             return true
         ]]), "could not reset trap test level")
         local placed = crawl.call_dlua([[
-            local map = dgn.map_by_name("laboratory")
-            if not map then return -1 end
-            if not dgn.place_map(map, false, true) then return -2 end
-            dgn.dismiss_monsters()
-            local maps = dgn.maps_used_here()
-            local vault = maps[#maps]
-            if not vault then return -3 end
-            local p, size = vault:pos(), vault:size()
-            local x = p.x + math.floor(size.x / 2)
-            local y = p.y + math.floor(size.y / 2)
+            -- Traps are terrain in trunk: use the production feature setter,
+            -- rather than placing a legacy vault with trap specifications.
+            local x, y = math.floor(dgn.GXM / 2), math.floor(dgn.GYM / 2)
             dgn.grid(x, y, "floor")
+            -- The setter and dungeon_feature_name protocol use the vault ID.
+            local trap_feature = dgn.feature_number("trap_teleport_permanent")
+            assert(trap_feature ~= 0, "unknown permanent teleport terrain")
+            dgn.grid(x + 1, y, trap_feature)
             you.moveto(x, y)
             return 1
         ]])
-        assert(placed == 1, "could not prepare permanent teleport trap")
+        assert(placed == 1, "could not prepare trap_teleport_permanent")
         crawl.sendkeys(".")
     elseif action == 9 then
         crawl.sendkeys(".")
@@ -97,29 +94,31 @@ function ready()
         local trap_dx, trap_dy
         for dx = -40, 40 do
             for dy = -35, 35 do
-                if view.trap_at(dx, dy) == "permanent teleport" then
+                if view.trap_at(dx, dy) == "trap_teleport_permanent" then
                     trap_dx, trap_dy = dx, dy
                     break
                 end
             end
             if trap_dx then break end
         end
-        assert(trap_dx, "production vault trap was not observable")
+        assert(trap_dx, "production terrain trap was not observable")
         local moved = crawl.call_dlua(
             "local x,y=you.pos();" ..
             "dgn.grid(x+" .. trap_dx .. "-1,y+" .. trap_dy .. ",'floor');" ..
             "you.moveto(x+" .. trap_dx .. "-1,y+" .. trap_dy .. ");" ..
             "return true")
-        assert(moved, "could not move next to production vault trap")
+        assert(moved, "could not move next to production terrain trap")
         crawl.sendkeys(".")
     elseif action == 11 then
         crawl.sendkeys(".")
     elseif action == 12 then
         local trap = view.trap_at(1, 0)
-        assert(trap == "permanent teleport", "unexpected trap token: " .. tostring(trap))
+        assert(trap == "trap_teleport_permanent", "unexpected trap token: " .. tostring(trap))
         local safe = view.is_safe_square(1, 0)
-        assert(safe and trap_hook_arg == trap,
-               "c_trap_is_safe did not receive canonical trap token")
+        -- Upstream marks terrain traps non-traversable even if the hook
+        -- permits their prompt. Keep both that rule and the token assertion.
+        assert(not safe and trap_hook_arg == trap,
+               "terrain trap safety or canonical hook token changed")
         emit("protocol:trap:permanent", trap .. " hook=" .. tostring(trap_hook_arg))
         emit("phase:issue68:done", "done")
         crawl.sendkeys(string.char(19))

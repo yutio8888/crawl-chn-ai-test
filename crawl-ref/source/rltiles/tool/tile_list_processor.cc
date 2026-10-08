@@ -23,8 +23,7 @@ tile_list_processor::tile_list_processor() :
     m_start_value_module(""),
     m_texture(0),
     m_weight(1),
-    m_alpha(0.0),
-    m_domino(0)
+    m_alpha(0.0)
 {
 }
 
@@ -251,12 +250,6 @@ bool tile_list_processor::variation::operator<(
         return false;
 
     return variety < other.variety;
-}
-
-bool tile_list_processor::pending_variation::operator==(
-                                 const pending_variation& other) const noexcept
-{
-    return idx == other.idx && variety == other.variety;
 }
 
 void tile_list_processor::recolour(tile &img)
@@ -622,8 +615,35 @@ bool tile_list_processor::process_line(char *read_line, const char *list_file,
         }
         else if (strcmp(arg, "domino") == 0)
         {
-            CHECK_ARG(1);
-            m_domino = atoi(m_args[1]);
+            CHECK_ARG(2);
+
+            int idx = m_page.find(m_args[1]);
+            if (idx == -1)
+            {
+                fprintf(stderr, "Error (%s:%d): invalid tile name '%s'\n",
+                    list_file, line, m_args[1]);
+                return false;
+            }
+
+            for (size_t i = 2; i < m_args.size(); ++i)
+            {
+                int domino = atoi(m_args[i]);
+                if (domino <= 0 || domino > 8)
+                {
+                    fprintf(stderr, "Error (%s:%d): invalid domino '%s'\n",
+                        list_file, line, m_args[i]);
+                    return false;
+                }
+                variation new_v{ (unsigned int)idx, domino };
+                if (!m_dominoes.insert({ new_v, -1 }).second)
+                {
+                    fprintf(stderr,
+                        "Error (%s:%d): duplicate domino'\n",
+                        list_file, line);
+                    return false;
+                }
+                m_pending_dominoes.push_back(new_v);
+            }
         }
         else if (strcmp(arg, "shrink") == 0)
         {
@@ -765,16 +785,13 @@ bool tile_list_processor::process_line(char *read_line, const char *list_file,
                             list_file, line, m_args[i]);
                     return false;
                 }
-                pending_variation new_v{(unsigned int)idx, colour};
-                for (pending_variation v : m_pending_colour_variations)
+                variation new_v{(unsigned int)idx, colour};
+                if (!m_colour_variations.insert({new_v, -1}).second)
                 {
-                    if (new_v == v)
-                    {
-                        fprintf(stderr,
-                                "Error (%s:%d): duplicate colour variation'\n",
-                                list_file, line);
-                        return false;
-                    }
+                    fprintf(stderr,
+                            "Error (%s:%d): duplicate colour variation'\n",
+                            list_file, line);
+                    return false;
                 }
                 m_pending_colour_variations.push_back(new_v);
             }
@@ -800,16 +817,13 @@ bool tile_list_processor::process_line(char *read_line, const char *list_file,
                             list_file, line, m_args[i]);
                     return false;
                 }
-                pending_variation new_v{(unsigned int)idx, enchant};
-                for (pending_variation v : m_pending_enchant_variations)
+                variation new_v{(unsigned int)idx, enchant};
+                if (!m_enchant_variations.insert({new_v, -1}).second)
                 {
-                    if (new_v == v)
-                    {
-                        fprintf(stderr,
+                    fprintf(stderr,
                             "Error (%s:%d): duplicate enchant variation'\n",
                             list_file, line);
-                        return false;
-                    }
+                    return false;
                 }
                 m_pending_enchant_variations.push_back(new_v);
             }
@@ -1008,23 +1022,20 @@ void tile_list_processor::add_image(tile &img, const char *enumname)
     m_page.m_base_tiles.push_back(m_last_enum);
 
     m_page.m_probs.push_back(weight);
-    m_page.m_domino.push_back(m_domino);
 
     if (!m_categories.empty())
         m_ctg_counts[m_categories.size()-1]++;
 
-    for (pending_variation v : m_pending_colour_variations)
-    {
-        variation new_v{v.idx, m_last_enum, v.variety};
-        m_colour_variations.push_back(new_v);
-    }
+    for (variation v : m_pending_dominoes)
+        m_dominoes[v] = m_last_enum;
+    m_pending_dominoes.clear();
+
+    for (variation v : m_pending_colour_variations)
+        m_colour_variations[v] = m_last_enum;
     m_pending_colour_variations.clear();
 
-    for (pending_variation v : m_pending_enchant_variations)
-    {
-        variation new_v{v.idx, m_last_enum, v.variety};
-        m_enchant_variations.push_back(new_v);
-    }
+    for (variation v : m_pending_enchant_variations)
+        m_enchant_variations[v] = m_last_enum;
     m_pending_enchant_variations.clear();
 }
 
@@ -1072,6 +1083,58 @@ void tile_list_processor::add_abstracts(
     }
 }
 
+void tile_list_processor::write_variations(FILE* fp,
+                                         const char* name,
+                                         const char* func_name,
+                                         const char* lcname,
+                                         const map<variation, int>& variations)
+{
+    if (variations.empty())
+    {
+        fprintf(fp,
+            "tileidx_t tile_%s_%s(tileidx_t idx, int %s)\n"
+            "{\n"
+            "    UNUSED(%s);\n"
+            "    return idx;\n"
+            "}\n\n",
+            lcname, func_name, name, name);
+        return;
+    }
+
+    fprintf(fp,
+            "static _variation_pair %s_%s_pairs[] =\n"
+            "{\n",
+            lcname, name);
+
+    for (const pair<const variation, int>& v : variations)
+    {
+        int to_idx = v.second;
+        if (to_idx < 0)
+            continue;
+
+        fprintf(fp,
+                "    _variation_pair(tile_variation(%u + %s, %d), %d + %s),\n",
+                v.first.from_idx, m_start_value.c_str(), v.first.variety,
+                to_idx, m_start_value.c_str());
+    }
+
+    fprintf(fp, "%s", "};\n\n");
+
+    fprintf(fp,
+            "tileidx_t tile_%s_%s(tileidx_t idx, int %s)\n"
+            "{\n"
+            "    int num_pairs = sizeof(%s_%s_pairs) / sizeof(%s_%s_pairs[0]);\n"
+            "    tile_variation key(idx, %s);\n"
+            "    tileidx_t found;\n"
+            "    bool result = binary_search<tile_variation, tileidx_t>(\n"
+            "       key, %s_%s_pairs, num_pairs,\n"
+            "       &tile_variation::cmp, &found);\n"
+            "    return (result ? found : idx);\n"
+            "}\n\n",
+            lcname, func_name, name, lcname, name, lcname, name, name,
+            lcname, name);
+}
+
 bool tile_list_processor::write_data(bool image, bool code)
 {
     if (m_name == "")
@@ -1085,9 +1148,6 @@ bool tile_list_processor::write_data(bool image, bool code)
         fprintf(stderr, "%s", "Error: can't specify tiles when using %%abstract.\n");
         return false;
     }
-
-    std::sort(m_colour_variations.begin(), m_colour_variations.end());
-    std::sort(m_enchant_variations.begin(), m_enchant_variations.end());
 
     string lcname = m_name;
     string ucname = m_name;
@@ -1269,8 +1329,6 @@ bool tile_list_processor::write_data(bool image, bool code)
         fprintf(fp, "tileidx_t tile_%s_basetile(tileidx_t idx);\n", lcname.c_str());
         fprintf(fp, "int tile_%s_probs(tileidx_t idx);\n",
                 lcname.c_str());
-        fprintf(fp, "int tile_%s_dominoes(tileidx_t idx);\n",
-                lcname.c_str());
         fprintf(fp, "const char *tile_%s_name(tileidx_t idx);\n",
             lcname.c_str());
         fprintf(fp, "tile_info &tile_%s_info(tileidx_t idx);\n",
@@ -1279,6 +1337,8 @@ bool tile_list_processor::write_data(bool image, bool code)
             lcname.c_str());
         fprintf(fp, "bool tile_%s_equal(tileidx_t tile, tileidx_t idx);\n",
             lcname.c_str());
+        fprintf(fp, "tileidx_t tile_%s_apply_domino(tileidx_t idx, int domino);\n",
+                lcname.c_str());
         fprintf(fp, "tileidx_t tile_%s_coloured(tileidx_t idx, int col);\n",
             lcname.c_str());
         fprintf(fp, "tileidx_t tile_%s_enchanted(tileidx_t idx, int ench);\n",
@@ -1359,20 +1419,6 @@ bool tile_list_processor::write_data(bool image, bool code)
         fprintf(fp, "    ASSERT_RANGE(idx, %s, %s);\n",
                 m_start_value.c_str(), max.c_str());
         fprintf(fp, "    return _tile_%s_probs[idx - %s];\n",
-                lcname.c_str(), m_start_value.c_str());
-        fprintf(fp, "}\n\n");
-
-        fprintf(fp, "static int _tile_%s_dominoes[%s - %s] =\n{\n",
-                lcname.c_str(), max.c_str(), m_start_value.c_str());
-        for (unsigned int i = 0; i < m_page.m_domino.size(); i++)
-            fprintf(fp, "    %u,\n", m_page.m_domino[i]);
-        fprintf(fp, "};\n\n");
-
-        fprintf(fp, "int tile_%s_dominoes(tileidx_t idx)\n{\n",
-                    lcname.c_str());
-        fprintf(fp, "    ASSERT_RANGE(idx, %s, %s);\n",
-                m_start_value.c_str(), max.c_str());
-        fprintf(fp, "    return _tile_%s_dominoes[idx - %s];\n",
                 lcname.c_str(), m_start_value.c_str());
         fprintf(fp, "}\n\n");
 
@@ -1509,63 +1555,14 @@ bool tile_list_processor::write_data(bool image, bool code)
 
         fprintf(fp, "\ntypedef pair<tile_variation, tileidx_t> _variation_pair;\n\n");
 
-        fprintf(fp,
-            "static _variation_pair %s_colour_pairs[] =\n"
-            "{\n"
-            "    _variation_pair(tile_variation(0, 0), 0),\n",
-            lcname.c_str());
+        write_variations(fp, "domino", "apply_domino", lcname.c_str(),
+                         m_dominoes);
 
-        for (variation v : m_colour_variations)
-        {
-            fprintf(fp,
-                    "    _variation_pair(tile_variation(%u + %s, %d), %u + %s),\n",
-                    v.from_idx, m_start_value.c_str(), v.variety, v.to_idx,
-                    m_start_value.c_str());
-        }
+        write_variations(fp, "colour", "coloured", lcname.c_str(),
+                         m_colour_variations);
 
-        fprintf(fp, "%s", "};\n\n");
-
-        fprintf(fp,
-            "tileidx_t tile_%s_coloured(tileidx_t idx, int col)\n"
-            "{\n"
-            "    int num_pairs = sizeof(%s_colour_pairs) / sizeof(%s_colour_pairs[0]);\n"
-            "    tile_variation key(idx, col);\n"
-            "    tileidx_t found;\n"
-            "    bool result = binary_search<tile_variation, tileidx_t>(\n"
-            "       key, &%s_colour_pairs[0], num_pairs,\n"
-            "       &tile_variation::cmp, &found);\n"
-            "    return (result ? found : idx);\n"
-            "}\n\n",
-            lcname.c_str(), lcname.c_str(), lcname.c_str(), lcname.c_str());
-
-        fprintf(fp,
-            "static _variation_pair %s_enchant_pairs[] =\n"
-            "{\n"
-            "    _variation_pair(tile_variation(0, 0), 0),\n",
-            lcname.c_str());
-
-        for (variation v : m_enchant_variations)
-        {
-            fprintf(fp,
-                "    _variation_pair(tile_variation(%u + %s, %d), %u + %s),\n",
-                v.from_idx, m_start_value.c_str(), v.variety, v.to_idx,
-                m_start_value.c_str());
-        }
-
-        fprintf(fp, "%s", "};\n\n");
-
-        fprintf(fp,
-            "tileidx_t tile_%s_enchanted(tileidx_t idx, int ench)\n"
-            "{\n"
-            "    int num_pairs = sizeof(%s_enchant_pairs) / sizeof(%s_enchant_pairs[0]);\n"
-            "    tile_variation key(idx, ench);\n"
-            "    tileidx_t found;\n"
-            "    bool result = binary_search<tile_variation, tileidx_t>(\n"
-            "       key, &%s_enchant_pairs[0], num_pairs,\n"
-            "       &tile_variation::cmp, &found);\n"
-            "    return (result ? found : idx);\n"
-            "}\n\n",
-            lcname.c_str(), lcname.c_str(), lcname.c_str(), lcname.c_str());
+        write_variations(fp, "enchant", "enchanted", lcname.c_str(),
+                         m_enchant_variations);
 
         fclose(fp);
     }
@@ -1622,9 +1619,10 @@ bool tile_list_processor::write_data(bool image, bool code)
         add_abstracts(fp, "return (tile_%s_probs(idx));", lc_enum, uc_max_enum);
         fprintf(fp, "}\n\n");
 
-        fprintf(fp, "int tile_%s_dominoes(tileidx_t idx)\n{\n",
-                    lcname.c_str());
-        add_abstracts(fp, "return (tile_%s_dominoes(idx));", lc_enum, uc_max_enum);
+        fprintf(fp, "tileidx_t tile_%s_apply_domino(tileidx_t idx, int domino)\n{\n",
+                lcname.c_str());
+        add_abstracts(fp, "return (tile_%s_apply_domino(idx, domino));",
+                      lc_enum, uc_max_enum);
         fprintf(fp, "}\n\n");
 
         fprintf(fp, "const char *tile_%s_name(tileidx_t idx)\n{\n",

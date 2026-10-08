@@ -20,6 +20,7 @@
 #include "god-passive.h"
 #include "item-prop.h"
 #include "los.h"
+#include "losglobal.h"
 #include "message.h"
 #include "mon-behv.h"
 #include "mon-death.h"
@@ -52,7 +53,8 @@ bool actor::will_trigger_shaft() const
            // let's pretend that they always make their saving roll
            && !(is_monster()
                 && (mons_is_elven_twin(static_cast<const monster* >(this))
-                    || as_monster()->type == MONS_ORC_APOSTLE));
+                    || as_monster()->type == MONS_ORC_APOSTLE
+                    || testbits(as_monster()->flags, MF_PENDING_REVIVAL)));
 }
 
 level_id actor::shaft_dest() const
@@ -91,17 +93,25 @@ int actor::dragon_level() const {
     return min(get_experience_level(), 18);
 }
 
-bool actor::handle_trap()
-{
-    trap_def* trap = trap_at(pos());
-    if (trap)
-        trap->trigger(*this);
-    return trap != nullptr;
-}
-
 int actor::skill_rdiv(skill_type sk, int mult, int div) const
 {
     return div_rand_round(skill(sk, mult * 256), div * 256);
+}
+
+bool actor::friendly() const
+{
+    return attitude() == ATT_FRIENDLY;
+}
+
+bool actor::neutral() const
+{
+    const mon_attitude_type att = attitude();
+    return att == ATT_NEUTRAL || att == ATT_GOOD_NEUTRAL;
+}
+
+bool actor::good_neutral() const
+{
+    return attitude() == ATT_GOOD_NEUTRAL;
 }
 
 int actor::wearing_jewellery(int sub_type) const
@@ -121,15 +131,6 @@ int actor::check_willpower(const actor* source, int power) const
     if (source)
         wl = apply_willpower_bypass(*source, wl);
 
-    // Marionettes get better hex success against friends to avoid hex casts
-    // often being wasted with normal monster spellpower.
-    if (source && source->is_monster()
-        && source->as_monster()->attitude == ATT_MARIONETTE
-        && mons_atts_aligned(source->real_attitude(), temp_attitude()))
-    {
-        wl /= 2;
-    }
-
     const int adj_pow = ench_power_stepdown(power);
 
     const int wlchance = (100 + wl) - adj_pow;
@@ -147,7 +148,7 @@ void actor::set_position(const coord_def &c)
     const coord_def oldpos = position;
     position = c;
     los_actor_moved(this, oldpos);
-    areas_actor_moved(this, oldpos);
+    areas_actor_moved(this);
 }
 
 bool actor::can_hibernate(bool holi_only, bool intrinsic_only) const
@@ -203,7 +204,7 @@ void actor::shield_block_succeeded(actor *attacker)
         && (unrand_entry = get_unrand_entry(sh->unrand_idx))
         && unrand_entry->melee_effects)
     {
-        unrand_entry->melee_effects(sh, this, attacker, false, 0);
+        unrand_entry->melee_effects(sh, this, attacker, 0, nullptr);
     }
 }
 
@@ -293,6 +294,15 @@ bool actor::no_cast(bool items) const
 
 bool actor::reflection(bool items) const
 {
+    if (divinely_shielded())
+        return true;
+
+    if (items && is_player() && you.unrand_equipped(UNRAND_FIVE_VIRTUES) &&
+        five_virtues_sh_score() > 3)
+    {
+        return true;
+    }
+
     return items &&
            (wearing_jewellery(AMU_REFLECTION)
             || wearing_ego(OBJ_ARMOUR, SPARM_REFLECTION));
@@ -457,15 +467,14 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         && (you.see_cell(pos()) || you.see_cell(constrictee->pos())))
     {
         string attacker_desc;
-        const string verb = intentional ? "release" : "lose";
         bool force_plural = true;
 
         if (ctype == CONSTRICT_BVC)
-            attacker_desc = T_("The zombie hands");
+            attacker_desc = T_("the zombie hands");
         else if (ctype == CONSTRICT_ROOTS)
-            attacker_desc = T_("The roots");
+            attacker_desc = T_("the grasping roots");
         else if (ctype == CONSTRICT_ENTANGLE)
-            attacker_desc = T_("The vines");
+            attacker_desc = T_("the vines");
         else
         {
             force_plural = false;
@@ -474,21 +483,23 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
 
         // Print a different message when breaking free of constriction via
         // blinking or similar
-        if (!escape_verb.empty())
+        if (!intentional)
         {
+            const bool contextual_move = escape_verb == "blink"
+                || escape_verb == "hop" || escape_verb == "leap";
             mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
-                 lowercase(attacker_desc).c_str());
+                 constrictee->name(DESC_THE).c_str(),
+                 constrictee->verb_for_display(escape_verb.c_str(),
+                     contextual_move ? "move.bare" : nullptr).c_str(),
+                 attacker_desc.c_str());
         }
         else
         {
             mprf_p(T_("%s %s %s grip on %s."),
-                   attacker_desc.c_str(),
-                   force_plural ? verb.c_str()
-                                : conj_verb(verb).c_str(),
-                   force_plural ? T_("their")
-                                : pronoun(PRONOUN_POSSESSIVE).c_str(),
-                   constrictee->name(DESC_THE).c_str());
+                uppercase_first(attacker_desc).c_str(),
+                conjugate_verb_for_display(N_("release"), force_plural).c_str(),
+                force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
+                constrictee->name(DESC_THE).c_str());
         }
     }
 }
@@ -601,6 +612,10 @@ bool actor::has_invalid_constrictor(bool move) const
     if (!attacker || !attacker->alive())
         return true;
 
+    // All constriction requires no walls be in the way.
+    if (!cell_see_cell(attacker->pos(), pos(), LOS_SOLID))
+        return true;
+
     // Direct constriction (e.g. by nagas and octopode players or AT_CONSTRICT)
     // must happen with aux range. Entangling brand constriction gets to add
     // the polearm range on top of that.
@@ -611,8 +626,6 @@ bool actor::has_invalid_constrictor(bool move) const
 
     // Indirect constriction requires the defender not to move.
     return move
-        // Constriction doesn't work out of LOS, to avoid sauciness.
-        || !attacker->see_cell(pos())
         || !feat_has_solid_floor(env.grid(pos()));
 }
 
@@ -663,6 +676,11 @@ void actor::start_constricting(actor &whom, constrict_type ctype, int duration)
 
     if (whom.is_player())
         you.redraw_evasion = true;
+    else if (you.see_cell(whom.pos())
+             && (ctype != CONSTRICT_MELEE || visible_to(&you)))
+    {
+        whom.as_monster()->sense_if_invisible();
+    }
 
     if (duration > 0)
     {
@@ -758,12 +776,17 @@ void actor::constriction_damage_defender(actor &defender)
     if (damage <= 0 && is_player()
         && you.can_see(defender))
     {
-        exclamations = ", but do no damage.";
+        exclamations = " but do no damage.";
     }
     else
         exclamations = attack_strength_punctuation(damage);
 
-    if (is_player() || you.can_see(*this))
+    // Describe the source of constriction if you reasonably see the physical
+    // object doing the constriction (which isn't actually the 'constricter'
+    // itself in the case of ranged constriction).
+    if (is_player()
+        || (typ == CONSTRICT_MELEE && you.can_see(*this))
+        || (typ != CONSTRICT_MELEE && you.aware_of(defender)))
     {
         string attacker_desc;
         bool force_plural = true;
@@ -798,7 +821,7 @@ void actor::constriction_damage_defender(actor &defender)
 #endif
              exclamations.c_str());
     }
-    else if (you.can_see(defender) || defender.is_player())
+    else if (typ == CONSTRICT_MELEE && you.can_see(defender))
     {
         mprf(T_("%s %s constricted%s%s"),
              defender.name(DESC_THE).c_str(),
@@ -821,7 +844,7 @@ void actor::constriction_damage_defender(actor &defender)
          basedam, acdam, timescale_dam, infdam);
 
     if (defender.is_monster()
-        && defender.type != MONS_NO_MONSTER // already dead and reset
+        && !invalid_monster(defender.as_monster()) // already dead
         && defender.as_monster()->hit_points < 1)
     {
         monster_die(*defender.as_monster(), this);
@@ -1128,7 +1151,7 @@ coord_def actor::stumble_pos(coord_def targ) const
         return coord_def();
 
     const actor* other = actor_at(newpos);
-    if (other && can_see(*other))
+    if (other && aware_of(*other))
         return coord_def();
 
     return newpos;
@@ -1164,6 +1187,12 @@ bool actor::stumble_away_from(coord_def targ, string src)
 bool actor::evil() const
 {
     return bool(holiness() & (MH_UNDEAD | MH_DEMONIC));
+}
+
+bool actor::has_soul() const
+{
+    return bool(holiness() & (MH_NATURAL | MH_PLANT | MH_HOLY | MH_DEMONIC))
+           && !is_firewood();
 }
 
 // Triggers post-movement effects for this actor as if they had just moved into

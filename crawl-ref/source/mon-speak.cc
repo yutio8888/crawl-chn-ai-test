@@ -26,6 +26,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "view.h"
+#include "viewchar.h"
 
 // Try the exact key lookup along with the entire prefix list.
 // If that fails, start ignoring hostile/religion/branch/silence, in that order,
@@ -348,7 +349,7 @@ void maybe_mons_speaks(monster* mons)
         return;
 
     // per ef44f8a14, this seems to be handled elsewhere?
-    if (mons->attitude == ATT_NEUTRAL)
+    if (mons->attitude() == ATT_NEUTRAL)
         return;
 
     // too annoying for a permanent companion without more thought put into it
@@ -732,7 +733,7 @@ bool mons_speaks(monster* mons, const mon_speech_emission_observer *observer)
         if (isaupper(mons_base_char(mons->type)))
             key += "cap-";
 
-        key += mons_base_char(mons->type);
+        key += stringize_glyph(mons_base_char(mons->type));
         key += "'";
         msg = _get_speak_string(prefixes, key, mons, no_player, no_foe,
                                 no_foe_name, no_god, unseen);

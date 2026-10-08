@@ -38,8 +38,8 @@ surroundings.
 %%%%
 A white marble altar of Elyvilon
 
-An altar to Elyvilon the Healer, made from purest white marble and topped by a
-sculpture of the Chalice of Purification.
+An altar to Elyvilon the Healer, made from invigorated white marble and topped
+by a sculpture of the Chalice of Purification.
 %%%%
 A blossoming altar of Fedhas
 
@@ -233,7 +233,7 @@ cause temporary corrosion.
 %%%%
 A metal wall
 
-A wall of bluish-grey metal. As every dungeon electrician knows, it will ground
+A wall of shiny grey metal. As every dungeon electrician knows, it will ground
 even magical bolts of lightning.
 %%%%
 A rock wall
@@ -478,6 +478,45 @@ A statue of an orb of entropy
 
 A statue of a terrifying globe of profound nothingness, said to dwell within the
 Realm of Zot.
+%%%%
+A patch of mould
+
+A dense carpet of colourful mould, rustling with fecundity. The towering fungi
+which sprout from it can grow back in the blink of an eye, no matter how many
+times they are cut down.
+%%%%
+a purified mutation catalyst
+
+An experimental arcane still, brewing some incomplete- if refined- mutagenic
+serum. Breaking this open will bathe you in mystic mists, imparting upon you one
+beneficial mutation (excluding those that could restrict equipment slots).
+%%%%
+an empty mutation catalyst
+
+A complex arcane still, cracked open and fully emptied of its contents.
+%%%%
+an earthen dragon vein
+
+An exposed ley line of earth magic. It can be tapped into by stepping on it,
+causing shockwaves that damage the 3 closest enemies. This does greatly reduced
+damage to distant and flying enemies.
+%%%%
+a fiery dragon vein
+
+An exposed ley line of fire magic. It can be tapped into by stepping on it,
+blasting the 3 enemies with the least health with fire. Any enemies killed by
+this will briefly leave behind a cloud of fire.
+%%%%
+an icy dragon vein
+
+An exposed ley line of ice magic. It can be tapped into by stepping on it,
+inflicting cold damage on the 3 enemies with the most health and slowing their
+movement for a short time.
+%%%%
+an airy dragon vein
+
+An exposed ley line of air magic. It can be tapped into by stepping on it,
+blasting the 4 most distant enemies with cutting wind.
 %%%%
 ########################################################################
 ### Branch entrances and exits
@@ -874,6 +913,12 @@ A large concealed net launcher hanging from the dungeon's ceiling. Enchanted by
 the power of Zot, whenever an intelligent creature steps here - whether friend
 or foe - the net will land only on you.
 %%%%
+A patch of ice thorns
+
+A patch of ground covered in sharp frozen spines. It deals a small amount of
+damage to any non-flying creature that steps onto it (other than its creator)
+and then crumbles away. Its damage is partially reduced by rC.
+%%%%
 A permanent teleport trap
 
 A magical trap which will displace anyone passing over it to a random place on
@@ -982,6 +1027,11 @@ A salt-encrusted arch, covered with carved entreaties to the good gods to
 contain the evils sealed therein. Whatever protections this arch once offered
 have finally succumbed to the ravages of time, and a bitter breeze pours forth
 from the distant land beyond.
+%%%%
+A mutagenic drain
+
+A passage leading to a gutter gulch, gradually rusting away. Entering it will
+inflict three temporary mutations upon you, or decompose you if you're undead.
 %%%%
 A magical portal
 
@@ -1382,6 +1432,10 @@ Bones are a common sight in the Dungeon, but skulls left impaled in a shrike's
 manner on display send a more deliberate message to trespassers: the pike has
 room for one more skull, and whoever set it up is happy to help relieve its
 owner of theirs.
+%%%%
+An assortment of trash
+
+A scattered mess of fragmented, crumbling garbage, caked in ashes and dirt.
 %%%%
 # Graveyards, Crypt, Necropolis.
 A mourning vase

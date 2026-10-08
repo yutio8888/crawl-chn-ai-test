@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <sstream>
 
+#include "act-iter.h"
 #include "cloud.h"
 #include "coord.h"
 #include "coordit.h"
@@ -68,7 +69,7 @@ static bool _need_auto_exclude(const monster* mon, bool sleepy = false)
     {
         if (pat.matches(name)
             && _mon_needs_auto_exclude(mon, sleepy)
-            && (mon->attitude == ATT_HOSTILE))
+            && (mon->base_attitude == ATT_HOSTILE))
         {
             return true;
         }
@@ -97,16 +98,21 @@ void add_auto_excludes()
         return;
 
     vector<monster*> mons;
-    for (radius_iterator ri(you.pos(), LOS_DEFAULT); ri; ++ri)
+    // We don't use LOS_DEFAULT because we want to include monsters that are
+    // currently visible via revelation.
+    for (monster_near_iterator mi(you.pos(), LOS_NONE); mi; ++mi)
     {
-        monster *mon = monster_at(*ri);
-        if (!mon || mon->is_summoned())
+        monster *mon = *mi;
+        if (!you.can_see(*mon))
+            continue;
+
+        if (mon->is_summoned())
             continue;
 
         // Something of a speed hack, but some vaults have a TON of plants.
         if (mon->is_firewood())
             continue;
-        if (_need_auto_exclude(mon) && !is_exclude_root(*ri))
+        if (_need_auto_exclude(mon) && !is_exclude_root(mon->pos()))
         {
             int radius = _get_full_exclusion_radius();
             // Sting and Harpoon Shot's minimum ranges, respectively.
@@ -115,7 +121,7 @@ void add_auto_excludes()
             else if (mon->type == MONS_STARFLOWER)
                 radius = min(radius, 6);
 
-            set_exclude(*ri, radius, true);
+            set_exclude(mon->pos(), radius, true);
             mons.emplace_back(mon);
         }
     }
@@ -128,22 +134,22 @@ void add_auto_excludes()
     learned_something_new(HINT_AUTO_EXCLUSION);
 }
 
+// The opacity for an exclusion rooted at p.
+static const opacity_func &_exclusion_opacity(const coord_def &p)
+{
+    const monster_info *mi = env.map_knowledge(p).monsterinfo();
+    // Don't exclude past glass for stationary monsters.
+    if (mi && mi->is_stationary())
+        return opc_excl_no_trans;
+    return opc_excl;
+}
+
 travel_exclude::travel_exclude(const coord_def &p, int r,
                                bool autoexcl, string dsc, bool vaultexcl)
     : pos(p), radius(r),
+      los(p, _exclusion_opacity(p), circle_def(r, C_SQUARE)),
       uptodate(false), autoex(autoexcl), desc(dsc), vault(vaultexcl)
 {
-    const monster_info *mi = env.map_knowledge(p).monsterinfo();
-    if (mi)
-    {
-        // Don't exclude past glass for stationary monsters.
-        if (mi->is_stationary())
-            los = los_def(p, opc_fully_no_trans, circle_def(r, C_SQUARE));
-        else
-            los = los_def(p, opc_excl, circle_def(r, C_SQUARE));
-    }
-    else
-        los = los_def(p, opc_excl, circle_def(r, C_SQUARE));
     set_los();
 }
 
@@ -162,6 +168,7 @@ void travel_exclude::set_los()
     uptodate = true;
     if (radius > 1)
     {
+        los.set_opacity(_exclusion_opacity(pos));
         // Radius might have been changed, and this is cheap.
         los.set_bounds(circle_def(radius, C_SQUARE));
         los.update();
@@ -543,8 +550,10 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
         if (exc->desc.empty() && defer_updates)
         {
             if (cloud_struct* cloud = cloud_at(p))
+            {
                 exc->desc = make_stringf(T_("%s cloud"),
                                          cloud->cloud_name(true).c_str());
+            }
         }
         else if (exc->radius == radius)
             return;
@@ -561,9 +570,9 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
             // Don't list a monster in the exclusion annotation if the
             // exclusion was triggered by e.g. the flamethrowers' lua check.
             const map_cell& cell = env.map_knowledge(p);
-            if (cell.monster() != MONS_NO_MONSTER)
+            if (cell.mon_type() != MONS_NO_MONSTER)
             {
-                desc = mons_type_name(cell.monster(), DESC_PLAIN);
+                desc = mons_type_name(cell.mon_type(), DESC_PLAIN);
                 if (cell.detected_monster())
                     desc += T_(" (detected)");
             }

@@ -254,6 +254,8 @@ Minokawa
 
 # Unlikely hybrids
 
+Armchairtaur
+
 Giraffataur
 
 Elephantaur
@@ -409,6 +411,8 @@ Contentment
 Creativity
 
 Curiosity
+
+Eucatastrophe
 
 Freedom
 

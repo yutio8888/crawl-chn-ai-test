@@ -53,6 +53,7 @@
 #include "tilepick.h"
 #include "tileview.h"
 #include "ui.h"
+#include "unicode.h"
 #include "viewchar.h"
 #include "view.h"
 #include "positional_format.h"
@@ -375,7 +376,8 @@ static vector<string> _get_monster_keys(char32_t showchar)
         if (me->mc != i)
             continue;
 
-        if ((char32_t)me->basechar != showchar)
+        // Match either the default glyph or any player-remapped glyph for this monster.
+        if (me->basechar != showchar && mons_char(i) != showchar)
             continue;
 
         if (mons_species(i) == MONS_SERPENT_OF_HELL)
@@ -579,6 +581,34 @@ static MenuEntry* _passive_menu_gen(char letter, const string &str,
     return me;
 }
 
+static MenuEntry* _ego_menu_gen(char letter, const string& str, string& key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+    me->text = uppercase_first(ego_title_for_display(key));
+    return me;
+}
+
+static bool _weapon_ego_filter(string key, string /*body*/)
+{
+    lowercase(key);
+
+    return !strip_suffix(key, " weapon ego");
+}
+
+static bool _armour_ego_filter(string key, string /*body*/)
+{
+    lowercase(key);
+
+    return !strip_suffix(key, " armour ego");
+}
+
+static bool _missile_ego_filter(string key, string /*body*/)
+{
+    lowercase(key);
+
+    return !strip_suffix(key, " missile ego");
+}
+
 static void _recap_mon_keys(vector<string> &keys)
 {
     for (unsigned int i = 0, size = keys.size(); i < size; i++)
@@ -645,10 +675,7 @@ static void _recap_feat_keys(vector<string> &keys)
         if (type == DNGN_ENTER_SHOP)
             keys[i] = "A shop";
         else
-        {
-            keys[i] = feature_description(type, NUM_TRAPS, "", DESC_A,
-                                          NUM_BRANCHES);
-        }
+            keys[i] = feature_description(type, "", DESC_A, NUM_BRANCHES);
     }
 }
 
@@ -695,7 +722,7 @@ static MenuEntry* _monster_menu_gen(char letter, const string &str,
     mslot = fake_mon;
 
 #ifndef USE_TILE_LOCAL
-    int colour = mons_class_colour(m_type);
+    int colour = fake_mon.colour();
     if (colour == BLACK)
         colour = LIGHTGREY;
 
@@ -958,8 +985,12 @@ vector<string> LookupType::matching_keys(string regex) const
 
     if (no_search())
         key_list = simple_key_fetch();
-    else if (regex.size() == 1 && supports_glyph_lookup())
-        key_list = glyph_fetch(regex[0]);
+    else if (strwidth(regex) == 1 && supports_glyph_lookup())
+    {
+        char32_t c;
+        utf8towc(&c, &regex[0]);
+        key_list = glyph_fetch(c);
+    }
     else
         key_list = get_desc_keys(regex);
 
@@ -1483,7 +1514,7 @@ static int _describe_mutation(const string &key, const string &suffix,
 }
 
 static int _describe_bane(const string &key, const string &suffix,
-                              string /*footer*/)
+                          string /*footer*/)
 {
     string bane_name = key;
     if (!strip_suffix(bane_name, suffix))
@@ -1495,6 +1526,48 @@ static int _describe_bane(const string &key, const string &suffix,
         return 0;
     }
     describe_bane(bane);
+    return 0;
+}
+
+static int _describe_weapon_ego(const string &key, const string &suffix,
+                                string /*footer*/)
+{
+    const string weapon_ego_name = key.substr(0, key.size() - suffix.size());
+    const brand_type wpn = weapon_ego_from_name(weapon_ego_name.c_str());
+    if (wpn == NUM_SPECIAL_WEAPONS)
+    {
+        ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
+        return 0;
+    }
+    describe_weapon_ego(wpn);
+    return 0;
+}
+
+static int _describe_armour_ego(const string &key, const string &suffix,
+                                string /*footer*/)
+{
+    const string armour_ego_name = key.substr(0, key.size() - suffix.size());
+    const special_armour_type arm = armour_ego_from_name(armour_ego_name.c_str());
+    if (arm == NUM_SPECIAL_ARMOURS)
+    {
+        ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
+        return 0;
+    }
+    describe_armour_ego(arm);
+    return 0;
+}
+
+static int _describe_missile_ego(const string &key, const string &suffix,
+                                 string /*footer*/)
+{
+    const string missile_ego_name = key.substr(0, key.size() - suffix.size());
+    const special_missile_type msl = missile_ego_from_name(missile_ego_name.c_str());
+    if (msl == NUM_SPECIAL_MISSILES)
+    {
+        ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
+        return 0;
+    }
+    describe_missile_ego(msl);
     return 0;
 }
 
@@ -1542,6 +1615,20 @@ static const vector<LookupType> lookup_types = {
     LookupType('N', "bane", NC_("lookup type", "bane"), nullptr, _bane_filter,
                nullptr, nullptr, _bane_menu_gen,
                _describe_bane, lookup_type::db_suffix),
+    // XXX: Capitalise "Ego" when it's the second word in the menu
+    // titles that use it, so that it matches when the first word is
+    // capitalised, and so that the default settings in
+    // dat/defaults/menu_colours.txt don't colour the menu titles green
+    // just for containing "ego".
+    LookupType('W', "weapon Ego", NC_("lookup type", "weapon Ego"), nullptr, _weapon_ego_filter,
+               nullptr, nullptr, _ego_menu_gen,
+               _describe_weapon_ego, lookup_type::db_suffix),
+    LookupType('R', "armour Ego", NC_("lookup type", "armour Ego"), nullptr, _armour_ego_filter,
+               nullptr, nullptr, _ego_menu_gen,
+               _describe_armour_ego, lookup_type::db_suffix),
+    LookupType('E', "missile Ego", NC_("lookup type", "missile Ego"), nullptr, _missile_ego_filter,
+               nullptr, nullptr, _ego_menu_gen,
+               _describe_missile_ego, lookup_type::db_suffix),
 };
 
 /**
@@ -1610,7 +1697,7 @@ static bool _exact_lookup_match(const LookupType &lookup_type,
     if (lookup_type.no_search())
         return false; // no search, no exact match
 
-    if (lookup_type.supports_glyph_lookup() && regex.size() == 1)
+    if (lookup_type.supports_glyph_lookup() && strwidth(regex) == 1)
         return false; // glyph search doesn't have the concept
 
     if (lookup_type.filter_forbid && (*lookup_type.filter_forbid)(regex, ""))
@@ -1708,7 +1795,7 @@ bool LookupType::find_description(lookup_help_type lht, string &response) const
     bool exact_match = false;
     vector<string> key_list = lookup_help_matching_keys(lht, regex, &exact_match);
 
-    const bool by_symbol = supports_glyph_lookup() && regex.size() == 1;
+    const bool by_symbol = supports_glyph_lookup() && strwidth(regex) == 1;
     response = _keylist_invalid_reason(key_list, name(),
                                        regex, by_symbol);
     if (!response.empty())

@@ -103,20 +103,7 @@ void player::set_position(const coord_def &c)
     actor::set_position(c);
 
     if (real_move)
-    {
-        prev_grd_targ.reset();
-        if (duration[DUR_QUAD_DAMAGE])
-            invalidate_agrid(true);
-
-        if (player_has_orb() || you.unrand_equipped(UNRAND_CHARLATANS_ORB))
-        {
-            if (player_has_orb())
-                env.orb_pos = c;
-            invalidate_agrid(true);
-        }
-
         dungeon_events.fire_position_event(DET_PLAYER_MOVED, c);
-    }
 
 #ifdef USE_TILE
     // Remove the old player marker from the minimap
@@ -219,16 +206,18 @@ brand_type player::damage_brand(const item_def* wpn) const
     return get_form()->get_uc_brand();
 }
 
-static random_var _player_attack_delay(bool melee_only)
+static random_var _player_attack_delay(bool melee_only, bool include_temp = true)
 {
     const item_def *primary = you.weapon();
-    const random_var primary_delay = you.attack_delay_with(primary, melee_only);
+    const random_var primary_delay = you.attack_delay_with(
+        primary, melee_only, include_temp);
 
     const item_def *offhand = you.offhand_weapon();
     if (!offhand || is_melee_weapon(*offhand) != is_melee_weapon(*primary))
         return primary_delay;
 
-    const random_var offhand_delay = you.attack_delay_with(offhand, melee_only);
+    const random_var offhand_delay = you.attack_delay_with(
+        offhand, melee_only, include_temp);
     return div_rand_round(primary_delay + offhand_delay, 2);
 }
 
@@ -240,12 +229,13 @@ static random_var _player_attack_delay(bool melee_only)
  *                   attack delay. It can be casted to an int, in which case
  *                   its value is determined by the appropriate rolls.
  */
-random_var player::attack_delay(const item_def *projectile) const
+random_var player::attack_delay(const item_def *projectile,
+                                bool include_temp) const
 {
     if (projectile && projectile->base_type == OBJ_MISSILES)
-        return attack_delay_with(projectile);
+        return attack_delay_with(projectile, false, include_temp);
 
-    return _player_attack_delay(false);
+    return _player_attack_delay(false, include_temp);
 }
 
 // Return the delay caused by using the player's equipped weapon in melee, even
@@ -255,7 +245,8 @@ random_var player::melee_attack_delay() const
     return _player_attack_delay(true);
 }
 
-random_var player::attack_delay_with(const item_def *weap, bool melee_only) const
+random_var player::attack_delay_with(const item_def *weap, bool melee_only,
+                                     bool include_temp) const
 {
     random_var attk_delay(15);
     // a semi-arbitrary multiplier, to minimize loss of precision from integer
@@ -320,7 +311,7 @@ random_var player::attack_delay_with(const item_def *weap, bool melee_only) cons
         attk_delay += div_rand_round(random_var(aevp), DELAY_SCALE);
     }
 
-    if (you.duration[DUR_FINESSE])
+    if (you.duration[DUR_FINESSE] && include_temp)
     {
         ASSERT(!you.duration[DUR_BERSERK]);
         // Finesse shouldn't stack with Haste, so we make this attack take
@@ -751,8 +742,6 @@ bool player::can_go_berserk(bool intentional, bool potion, bool quiet,
         msg = T_("You're already berserk!");
     else if (duration[DUR_BERSERK_COOLDOWN] && temp)
         msg = T_("You're still recovering from your berserk rage.");
-    else if (duration[DUR_DEATHS_DOOR] && temp)
-        msg = T_("You can't enter a blood rage from death's door.");
     else if (beheld() && !you.unrand_equipped(UNRAND_DEMON_AXE) && temp)
         msg = T_("You are too mesmerised to rage.");
     else if (!intentional && !potion && clarity() && temp)

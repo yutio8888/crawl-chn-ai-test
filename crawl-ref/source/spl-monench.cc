@@ -72,7 +72,7 @@ int englaciate(coord_def where, int pow, actor *agent)
     }
 
     // Guarantee a minimum duration if not fully resisted.
-    duration = max(duration, 2 + random2(4));
+    duration = max(duration, 4 + random2(4));
 
     if (!mons)
         return slow_player(duration);
@@ -235,7 +235,7 @@ bool start_ranged_constriction(actor& caster, actor& target, int duration,
     if (!caster.can_constrict(target, type))
         return false;
 
-    if (you.can_see(target))
+    if (you.see_cell(target.pos()))
     {
         string msg;
         if (type == CONSTRICT_ROOTS)
@@ -306,18 +306,14 @@ bool apply_rimeblight(monster& victim, int power, bool quiet)
     return true;
 }
 
-void do_rimeblight_explosion(coord_def pos, int power, int size)
+static void _do_rimeblight_explosion(coord_def pos, int power, int size)
 {
-    bolt shards;
-    zappy(ZAP_RIMEBLIGHT_SHARDS, power, false, shards);
+    bolt shards(you, ZAP_RIMEBLIGHT_SHARDS, power);
     shards.ex_size = size;
-    shards.source_id     = MID_PLAYER;
-    shards.thrower       = KILL_YOU_MISSILE;
     shards.origin_spell  = SPELL_RIMEBLIGHT;
     shards.target        = pos;
     shards.source        = pos;
     shards.hit_verb      = "hits";
-    shards.aimed_at_spot = true;
     shards.explode();
 }
 
@@ -332,7 +328,7 @@ void tick_rimeblight(monster& victim)
         && you.see_cell_no_trans(victim.pos()))
     {
         mprf(T_("Shards of ice erupt from %s body!"), apostrophise(victim.name(DESC_THE)).c_str());
-        do_rimeblight_explosion(victim.pos(), pow, 1);
+        _do_rimeblight_explosion(victim.pos(), pow, 1);
     }
 
     // Injury bond or some other effects may have killed us by now
@@ -414,16 +410,9 @@ spret cast_percussive_tempering(const actor& caster, monster& target, int power,
 
     flash_tile(target.pos(), WHITE, 0, TILE_BOLT_PERCUSSIVE_TEMPERING);
 
-    bolt shockwave;
-    shockwave.set_agent(&caster);
-    shockwave.attitude = caster.temp_attitude();
-    shockwave.source = target.pos();
-    shockwave.target = target.pos();
-    shockwave.is_explosion = true;
-    shockwave.ex_size = 1;
-    shockwave.origin_spell = SPELL_PERCUSSIVE_TEMPERING;
+    bolt shockwave(caster, SPELL_PERCUSSIVE_TEMPERING, power);
+    shockwave.source = shockwave.target = target.pos();
     shockwave.aux_source = "blast of sparks and slag";
-    zappy(ZAP_PERCUSSIVE_TEMPERING, power, true, shockwave);
     shockwave.explode(true, true);
 
     target.heal(roll_dice(3, 10));
@@ -610,7 +599,7 @@ spret cast_gloom(const actor *caster, int pow, bool fail, bool tracer)
 
             const actor* victim = actor_at(*ri);
 
-            if (!victim || !caster->can_see(*victim) || !vulnerable(victim))
+            if (!victim || !caster->aware_of(*victim) || !vulnerable(victim))
                 continue;
 
             if (!mons_aligned(caster, victim))
@@ -644,21 +633,8 @@ spret cast_gloom(const actor *caster, int pow, bool fail, bool tracer)
 
     fail_check();
 
-    bolt beam;
-    beam.name = "gloom";
-    beam.flavour = BEAM_VISUAL;
-    beam.origin_spell = SPELL_GLOOM;
-    beam.set_agent(caster);
-    beam.colour = DARKGRAY;
-    beam.glyph = dchar_glyph(DCHAR_EXPLOSION);
-    beam.range = range;
+    bolt beam = bolt::visual_beam(caster->pos(), caster->pos(), 50, DARKGRAY, TILE_BOLT_GLOOM);
     beam.ex_size = range;
-    beam.is_explosion = true;
-    beam.source = caster->pos();
-    beam.target = caster->pos();
-    beam.hit = AUTOMATIC_HIT;
-    beam.loudness = 0;
-    beam.tile_explode = TILE_BOLT_GLOOM;
     beam.explode(true, true);
 
     for (radius_iterator ri(caster->pos(), range, C_SQUARE, LOS_SOLID_SEE, true);

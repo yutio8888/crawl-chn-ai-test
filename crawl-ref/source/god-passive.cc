@@ -40,8 +40,8 @@
 #include "mon-death.h"
 #include "mon-place.h"
 #include "mon-util.h"
-#include "output.h"
 #include "player.h"
+#include "player-reacts.h"
 #include "religion.h"
 #include "shout.h"
 #include "skills.h"
@@ -97,10 +97,10 @@ static const vector<god_passive> god_passives[] =
     {
         { -1, passive_t::protect_from_harm },
         { -1, passive_t::abjuration_protection_hd },
-        { -1, passive_t::bless_followers_vs_evil },
         { -1, passive_t::no_stabbing },
         {  0, passive_t::halo },
         {  1, passive_t::restore_hp_mp_vs_evil },
+        {  1, passive_t::inspire_followers },
     },
 
     // Kikubaaqudgha
@@ -211,7 +211,7 @@ static const vector<god_passive> god_passives[] =
         {  0, passive_t::detect_items },
         {  0, passive_t::bondage_skill_boost },
         {  1, passive_t::identify_items },
-        {  2, passive_t::sinv},
+        {  2, passive_t::see_unseen},
         {  3, passive_t::clarity },
         {  4, passive_t::avoid_traps },
         {  4, passive_t::scrying },
@@ -451,6 +451,9 @@ void ash_check_bondage()
 
     calc_hp(true);
     calc_mp(true);
+
+    // We may have reached training targets for some skills.
+    check_training_targets();
 }
 
 void ash_id_inventory()
@@ -487,16 +490,7 @@ void ash_id_item(item_def& item, bool silent)
     if (item.is_identified())
         return;
 
-    if ((item.base_type == OBJ_JEWELLERY || item.base_type == OBJ_STAVES)
-        && item_needs_autopickup(item))
-    {
-        item.props[NEEDS_AUTOPICKUP_KEY] = true;
-    }
-
     identify_item(item);
-
-    if (item.props.exists(NEEDS_AUTOPICKUP_KEY) && is_useless_item(item))
-        item.props.erase(NEEDS_AUTOPICKUP_KEY);
 
     if (!silent)
         mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
@@ -533,7 +527,7 @@ static bool _check_portal(coord_def where)
     const dungeon_feature_type feat = env.grid(where);
     if (feat != env.map_knowledge(where).feat() && is_ash_portal(feat))
     {
-        env.map_knowledge(where).set_feature(feat);
+        update_terrain_knowledge(where);
         set_terrain_mapped(where);
 
         if (!testbits(env.pgrid(where), FPROP_SEEN_OR_NOEXP))
@@ -634,29 +628,6 @@ void ash_scrying()
     }
 }
 
-void gozag_move_level_gold_to_top()
-{
-    if (you_worship(GOD_GOZAG))
-    {
-        for (rectangle_iterator ri(0); ri; ++ri)
-            gozag_move_gold_to_top(*ri);
-    }
-}
-
-void gozag_move_gold_to_top(const coord_def p)
-{
-    for (int gold = env.igrid(p); gold != NON_ITEM;
-         gold = env.item[gold].link)
-    {
-        if (env.item[gold].base_type == OBJ_GOLD)
-        {
-            unlink_item(gold);
-            move_item_to_grid(&gold, p, true);
-            break;
-        }
-    }
-}
-
 void gozag_count_level_gold()
 {
     ASSERT(you.on_current_level);
@@ -676,10 +647,6 @@ void gozag_count_level_gold()
 
     if (!player_in_branch(BRANCH_ABYSS))
         you.attribute[ATTR_GOLD_GENERATED] += gold;
-
-    if (you_worship(GOD_GOZAG))
-        for (auto pos : gold_places)
-            gozag_move_gold_to_top(pos);
 }
 
 int qazlal_sh_boost(int piety)
@@ -1004,7 +971,7 @@ monster* create_player_shadow(coord_def pos, bool friendly, spell_type spell_kno
         && is_weapon(*you.offhand_weapon()))
     {
         wpn2_index = _clone_player_weapon(you.offhand_weapon());
-        if (wpn_index == NON_ITEM)
+        if (wpn2_index == NON_ITEM)
             return nullptr;
     }
 
@@ -1020,7 +987,7 @@ monster* create_player_shadow(coord_def pos, bool friendly, spell_type spell_kno
         mg.hp += you.skill_rdiv(SK_INVOCATIONS, 5, 2);
 
     if (!friendly)
-        mg.hp = mg.hp * 2;
+        mg.hp = mg.hp * 3;
     else
         mg.set_summoned(&you, SPELL_NO_SPELL, random_range(4, 6) * BASELINE_DELAY, false);
 
@@ -1064,8 +1031,8 @@ monster* create_player_shadow(coord_def pos, bool friendly, spell_type spell_kno
         you.props[DITH_SHADOW_MID_KEY].get_int() = mon->mid;
     else
     {
-        mon->props[DITH_SHADOW_ATTACK_KEY].get_int() += you.experience_level;
-        mon->props[DITH_SHADOW_SPELLPOWER_KEY] = div_rand_round(you.experience_level * 2, 3);
+        mon->props[DITH_SHADOW_ATTACK_KEY].get_int() += 3 + (you.experience_level * 3 / 2);
+        mon->props[DITH_SHADOW_SPELLPOWER_KEY] = div_rand_round(you.experience_level * 3, 4);
     }
 
     // Now, if there was a previously-existing shadow that was in decoy mode,
@@ -1206,7 +1173,7 @@ void dithmenos_shadow_melee(actor* initial_target)
     mon->target     = target->pos();
     mon->foe        = target->mindex();
 
-    fight_melee(mon, target);
+    mons_fight(mon, target);
 
     // Store this action's target so that it can be reused on future turns.
     if (target->alive())
@@ -1279,7 +1246,6 @@ static bool _simple_shot_tracer(coord_def source, coord_def target,
 {
     bolt tracer;
     tracer.attitude = ATT_FRIENDLY;
-    tracer.range = LOS_RADIUS;
     tracer.source = source;
     tracer.target = target;
     tracer.source_id = source_mid;
@@ -1496,12 +1462,12 @@ void dithmenos_shadow_shoot(const coord_def& targ, missile_type thrown_projectil
     mons_throw(mon, atk);
 
     // Give Coglins a shot with their other weapon, if they have one
+    item_def *secondary = mon->mslot_item(MSLOT_ALT_WEAPON);
     if (you.has_mutation(MUT_WIELD_OFFHAND)
-        && mon->mslot_item(MSLOT_ALT_WEAPON)
-        && is_range_weapon(*mon->mslot_item(MSLOT_ALT_WEAPON)))
+        && secondary && secondary != launcher
+        && is_range_weapon(*secondary))
     {
-        mon->swap_weapons(false);
-        ranged_attack_beam atk2(*mon, *launcher, atk.beam);
+        ranged_attack_beam atk2(*mon, *secondary, atk.beam);
         mons_throw(mon, atk2);
     }
 
@@ -1521,7 +1487,6 @@ static int _shadow_zap_tracer(zap_type ztype, coord_def source, coord_def target
     zappy(ztype, 100, true, tracer);
 
     tracer.attitude = ATT_FRIENDLY;
-    tracer.range = LOS_RADIUS;
     tracer.source = source;
     tracer.target = target;
     tracer.source_id = MID_PLAYER_SHADOW_DUMMY;
@@ -1851,13 +1816,10 @@ void wu_jian_trigger_serpents_lash(bool wall_jump)
     }
     else
     {
-        you.turn_is_over = false;
-        you.elapsed_time_at_last_input = you.elapsed_time;
         you.attribute[ATTR_SERPENTS_LASH] -= wall_jump ? 2 : 1;
         you.redraw_status_lights = true;
-        update_turn_count();
+        player_takes_instant_action();
         fire_final_effects();
-        mons_reset_just_seen();
     }
 
     if (you.attribute[ATTR_SERPENTS_LASH] == 0)
@@ -1906,7 +1868,7 @@ void wu_jian_end_heavenly_storm()
     you.props.erase(WU_JIAN_HEAVENLY_STORM_KEY);
     you.duration[DUR_HEAVENLY_STORM] = 0;
     you.redraw_evasion = true;
-    invalidate_agrid(true);
+    invalidate_agrid();
     mprf(MSGCH_GOD, T_("The heavenly storm settles."));
 }
 
@@ -1933,7 +1895,7 @@ static int _wu_jian_number_of_attacks(int& dmg_penalty, bool wall_jump)
     // 10 aut for every character, to avoid punishing fast races.
     const int move_delay = (you.attribute[ATTR_SERPENTS_LASH]
                             ? 100
-                            : player_movement_speed() * player_speed())
+                            : player_overall_move_delay(BASELINE_DELAY))
                                                         * (wall_jump ? 2 : 1);
 
     int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;
@@ -1993,8 +1955,9 @@ static vector<monster*> _get_whirlwind_targets(coord_def pos)
 {
     vector<monster*> targets;
     for (adjacent_iterator ai(pos, true); ai; ++ai)
-        if (monster_at(*ai) && _can_attack_martial(monster_at(*ai)))
-            targets.push_back(monster_at(*ai));
+        if (monster* mon = monster_at(*ai))
+            if (_can_attack_martial(mon) && !you.whirlwind_targets.count(mon->mid))
+                targets.push_back(mon);
     sort(targets.begin(), targets.end());
     return targets;
 }
@@ -2033,6 +1996,7 @@ static bool _wu_jian_whirlwind(coord_def old_pos, coord_def new_pos,
                     T_(", with incredible momentum") : "");
 
         count_action(CACT_ATTACK, ATTACK_WHIRLWIND);
+        you.whirlwind_targets.insert(mons->mid);
 
         for (int i = 0; i < number_of_attacks; i++)
         {
@@ -2057,7 +2021,8 @@ static bool _wu_jian_whirlwind(coord_def old_pos, coord_def new_pos,
 
 static bool _wu_jian_trigger_martial_arts(coord_def old_pos,
                                           coord_def new_pos,
-                                          bool check_only = false)
+                                          bool check_only = false,
+                                          bool allow_lunge = true)
 {
     if (new_pos == old_pos
         || you.duration[DUR_CONF]
@@ -2068,7 +2033,7 @@ static bool _wu_jian_trigger_martial_arts(coord_def old_pos,
 
     bool attacked = false;
 
-    if (have_passive(passive_t::wu_jian_lunge))
+    if (allow_lunge && have_passive(passive_t::wu_jian_lunge))
         attacked = _wu_jian_lunge(old_pos, new_pos, check_only);
 
     if (have_passive(passive_t::wu_jian_whirlwind))
@@ -2146,11 +2111,12 @@ void wu_jian_wall_jump_effects()
 }
 
 bool wu_jian_post_move_effects(bool did_wall_jump,
-                               const coord_def& old_pos)
+                               const coord_def& old_pos,
+                               bool allow_lunge)
 {
     bool attacked = false;
     if (!did_wall_jump)
-        attacked = _wu_jian_trigger_martial_arts(old_pos, you.pos());
+        attacked = _wu_jian_trigger_martial_arts(old_pos, you.pos(), false, allow_lunge);
 
     if (you.attribute[ATTR_SERPENTS_LASH])
         place_cloud(CLOUD_DUST, old_pos, 2 + random2(3) , &you, 1, -1);
@@ -2387,4 +2353,50 @@ bool makhleb_haemoclasm_trigger_check(const monster& victim)
     // hit, scaling slightly with *how* many things could be hit.
     else
         return x_chance_in_y(6, 30 - count * 3);
+}
+
+void tso_maybe_bless_follower()
+{
+    // Chance scales from 20% at 1* to 35% at 6*.
+    int chance = 15 * (min(piety_breakpoint(5), (int)you.piety()) - 30)
+                                    / (piety_breakpoint(5) - piety_breakpoint(0)) + 20;
+    if (!x_chance_in_y(chance, 100))
+        return;
+
+    // Can either give a divine shield to an injured ally or extra energy to any
+    // ally who is able to act (and hasn't just gotten an energy infusion already).
+    monster* fervor_targ = nullptr;
+    monster* protection_targ = nullptr;
+    int fervor_count = 0;
+    int protection_count = 0;
+    for (monster_near_iterator mi(you.pos()); mi; ++mi)
+    {
+        if (mi->friendly() && !mi->is_peripheral())
+        {
+            if (mi->hit_points < mi->max_hit_points && !mi->has_ench(ENCH_DIVINE_SHIELD))
+                if (one_chance_in(++protection_count))
+                    protection_targ = *mi;
+
+            if (mi->speed_increment < 100 && !mi->cannot_act())
+                if (one_chance_in(++fervor_count))
+                    fervor_targ = *mi;
+        }
+    }
+
+    if (protection_targ && (!fervor_targ || coinflip()))
+    {
+        flash_tile(protection_targ->pos(), YELLOW, 35);
+        string msg = make_stringf(T_(" blesses %s with protection!"), protection_targ->name(DESC_THE).c_str());
+        simple_god_message(msg.c_str());
+        protection_targ->add_ench(mon_enchant(ENCH_DIVINE_SHIELD, &you, random_range(100, 150), random_range(4, 7)));
+    }
+    else if (fervor_targ)
+    {
+        flash_tile(fervor_targ->pos(), YELLOW, 35);
+        string msg = make_stringf(T_(" blesses %s with fervor!"), fervor_targ->name(DESC_THE).c_str());
+        simple_god_message(msg.c_str());
+
+        fervor_targ->speed_increment += 30;
+        queue_monster_for_action(fervor_targ);
+    }
 }

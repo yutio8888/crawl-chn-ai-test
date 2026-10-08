@@ -17,6 +17,7 @@ void wizard_cast_spec_spell();
 void wizard_memorise_spec_spell();
 void wizard_heal(bool super_heal);
 void wizard_set_gold();
+void wizard_set_gift_timeout();
 void wizard_set_piety();
 void wizard_set_piety_to(int new_piety, bool force = false);
 void wizard_exercise_skill();
@@ -45,4 +46,5 @@ void wizard_change_job_to(job_type job);
 void wizard_xom_acts();
 void wizard_suppress();
 void wizard_set_zot_clock();
+void wizard_reset_god_capstones();
 #endif

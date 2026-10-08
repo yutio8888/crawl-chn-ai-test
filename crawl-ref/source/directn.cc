@@ -63,6 +63,7 @@
  #include "tileview.h"
  #include "tile-flags.h"
 #endif
+#include "throw.h"
 #include "transform.h"
 #include "traps.h"
 #include "travel.h"
@@ -100,10 +101,10 @@ static void _wizard_make_friendly(monster* m)
     if (m == nullptr)
         return;
 
-    mon_attitude_type att = m->attitude;
+    mon_attitude_type att = m->base_attitude;
 
     // Propogate attitude change up to the ultimate head, if this is a tentacle.
-    m = &get_tentacle_head(get_tentacle_head(*m));
+    m = &get_tentacle_head(*m);
 
     // During arena mode, skip directly from friendly to hostile.
     if (crawl_state.arena_suspended && att == ATT_FRIENDLY)
@@ -112,7 +113,7 @@ static void _wizard_make_friendly(monster* m)
     switch (att)
     {
     case ATT_FRIENDLY:
-        m->attitude = ATT_GOOD_NEUTRAL;
+        m->base_attitude = ATT_GOOD_NEUTRAL;
         m->flags &= ~MF_NO_REWARD;
         m->flags |= MF_WAS_NEUTRAL;
         break;
@@ -120,14 +121,14 @@ static void _wizard_make_friendly(monster* m)
 #if TAG_MAJOR_VERSION == 34
     case ATT_OLD_STRICT_NEUTRAL:
 #endif
-        m->attitude = ATT_NEUTRAL;
+        m->base_attitude = ATT_NEUTRAL;
         break;
     case ATT_NEUTRAL:
-        m->attitude = ATT_HOSTILE;
+        m->base_attitude = ATT_HOSTILE;
         m->flags &= ~MF_WAS_NEUTRAL;
         break;
     case ATT_HOSTILE:
-        m->attitude = ATT_FRIENDLY;
+        m->base_attitude = ATT_FRIENDLY;
         m->flags |= MF_NO_REWARD;
         break;
     // This attitude is transient, so this should be impossible.
@@ -220,7 +221,7 @@ actor* direction_chooser::targeted_actor() const
 monster* direction_chooser::targeted_monster() const
 {
     monster* m = monster_at(target());
-    if (m && you.can_see(*m))
+    if (m && you.aware_of(*m))
         return m;
     else
         return nullptr;
@@ -230,7 +231,7 @@ monster* direction_chooser::targeted_monster() const
 static monster* _get_current_target()
 {
     monster* mon = monster_by_mid(you.prev_targ);
-    if (mon && mon->alive() && you.can_see(*mon))
+    if (mon && mon->alive() && you.aware_of(*mon))
         return mon;
     else
         return nullptr;
@@ -365,30 +366,6 @@ static cglyph_t _get_ray_glyph(const coord_def& pos, int colour, int glych,
             static_cast<unsigned short>(real_colour(colour, pos))};
 }
 
-// Unseen monsters in shallow water show a "strange disturbance".
-// (Unless flying!)
-// These should match tests in show.cc's _update_monster
-static bool _mon_exposed_in_water(const monster* mon)
-{
-    return env.grid(mon->pos()) == DNGN_SHALLOW_WATER && !mon->airborne()
-           && !cloud_at(mon->pos());
-}
-
-static bool _mon_exposed_in_cloud(const monster* mon)
-{
-    return cloud_at(mon->pos())
-           && is_opaque_cloud(cloud_at(mon->pos())->type)
-           && !mon->is_insubstantial();
-}
-
-static bool _mon_exposed(const monster* mon)
-{
-    if (!mon || !you.see_cell(mon->pos()) || mon->visible_to(&you))
-        return false;
-
-    return _mon_exposed_in_water(mon) || _mon_exposed_in_cloud(mon);
-}
-
 static bool _is_target_in_range(const coord_def& where, int range, targeter *hitfunc)
 {
     if (hitfunc)
@@ -428,7 +405,11 @@ direction_chooser::direction_chooser(dist& moves_,
     show_floor_desc(args.show_floor_desc),
     show_boring_feats(args.show_boring_feats),
     hitfunc(args.hitfunc),
+    is_ranged_attack(args.is_ranged_attack),
+    is_piercing(args.is_piercing),
+    is_autotargeting(false),
     default_place(args.default_place),
+    player_changed_target(false),
     renderer(*this),
     unrestricted(args.unrestricted),
     force_cancel(false),
@@ -836,10 +817,28 @@ static void _get_nearby_items(vector<item_def *> &list_items,
     }
 }
 
+bool is_terrain_interesting(dungeon_feature_type feat)
+{
+    vector <text_pattern> &filters = Options.monster_item_view_features;
+    if (filters.empty())
+        return true;
+    for (const text_pattern &pattern : filters)
+    {
+        if (pattern.matches(feature_description(feat))
+            || feat_stair_direction(feat) != CMD_NO_CMD
+               && pattern.matches("stair")
+            || feat_is_trap(feat)
+               && pattern.matches("trap"))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void _get_nearby_features(vector<coord_def> &list_features,
                           bool need_path, int range, targeter *hitfunc)
 {
-    vector <text_pattern> &filters = Options.monster_item_view_features;
     for (vision_iterator ri(you); ri; ++ri)
     {
         if (!_is_target_in_range(*ri, range, hitfunc))
@@ -855,24 +854,8 @@ static void _get_nearby_features(vector<coord_def> &list_features,
         if (hitfunc && !monster_at(*ri))
             list_features.push_back(*ri);
         // Not using a targeter, list features according to user preferences.
-        else if (!hitfunc)
-        {
-            if (!filters.empty())
-            {
-                for (const text_pattern &pattern : filters)
-                {
-                    if (pattern.matches(feature_description(env.grid(*ri)))
-                        || feat_stair_direction(env.grid(*ri)) != CMD_NO_CMD
-                           && pattern.matches("stair")
-                        || feat_is_trap(env.grid(*ri))
-                           && pattern.matches("trap"))
-                    {
-                        list_features.push_back(*ri);
-                        break;
-                    }
-                }
-            }
-        }
+        else if (!hitfunc && is_terrain_interesting(env.grid(*ri)))
+            list_features.push_back(*ri);
     }
 }
 
@@ -884,7 +867,7 @@ void full_describe_view()
     vector<item_def *> list_items;
     vector<coord_def> list_features;
     // Get monsters via the monster_info, sorted by difficulty.
-    get_monster_info(list_mons);
+    get_nearby_monster_info(list_mons);
     _get_nearby_items(list_items, false, get_los_radius(), nullptr);
     _get_nearby_features(list_features, false, get_los_radius(), nullptr);
 
@@ -947,7 +930,7 @@ range_view_annotator::~range_view_annotator()
     crawl_state.darken_range = nullptr;
 }
 
-monster_view_annotator::monster_view_annotator(vector<monster *> *monsters)
+monster_view_annotator::monster_view_annotator(vector<coord_def> *monsters)
 {
     if ((Options.use_animations & UA_MONSTER_IN_SIGHT) && monsters->size())
     {
@@ -1057,18 +1040,35 @@ static bool _blocked_ray(const coord_def &where)
 // allies). If that is not possible, returns the 'best' position found,
 // priotizing (in order): can affect the monster, doesn't harm the player, and
 // finally doesn't harm allies.
+//
+// If no aim can be found that affects the monster at all, return (0, 0).
 coord_def direction_chooser::find_acceptable_aim(const monster* focus)
 {
-    if (!hitfunc)
-        return coord_def();
+    if (is_ranged_attack)
+        return best_ranged_aim(focus->pos(), is_piercing);
+
+    // Without a targeter, we can't refine this any better.
+    if (!hitfunc || !behaviour->targeted())
+    {
+        if (cell_see_cell(you.pos(), focus->pos(), LOS_NO_TRANS))
+            return focus->pos();
+        else
+            return coord_def();
+    }
+
 
     const aff_type desired_aff = try_multizap ? AFF_MULTIPLE : AFF_YES;
+
+    // When using manual targeting, it's okay to present the player paths to
+    // an intended target that are blocked by plants, but autofight should never
+    // use these.
+    const aff_type min_acceptable_aff = is_autotargeting ? AFF_MAYBE : AFF_BAD;
 
     coord_def best_pos;
     aff_type best_player_aff = harmful_to_player ? AFF_NO : AFF_YES;
     aff_type best_target_aff = AFF_NO;
     aff_type best_friend_aff = valid_friends.empty() ? AFF_NO : AFF_YES;
-    for (radius_iterator ri(focus->pos(), LOS_DEFAULT); ri; ++ri)
+    for (radius_iterator ri(focus->pos(), LOS_NONE); ri; ++ri)
     {
         if (!you.see_cell_no_trans(*ri)
             && grid_distance(you.pos(), *ri) > range)
@@ -1082,7 +1082,7 @@ coord_def direction_chooser::find_acceptable_aim(const monster* focus)
         hitfunc->set_aim(*ri);
         // Has to at least hit the target in question to consider.
         aff_type target_aff = hitfunc->is_affected(focus->pos());
-        if (target_aff == AFF_NO)
+        if (target_aff < min_acceptable_aff)
             continue;
 
         // If this affects the player worse than a previously found position,
@@ -1127,12 +1127,8 @@ coord_def direction_chooser::find_acceptable_aim(const monster* focus)
     }
 
     // Return the best positon we found, assuming any of them were any good.
-    // (Fall back on the target's own position, if we haven't, and it is at
-    // least possible to aim at it.)
     if (!best_pos.origin())
         return best_pos;
-    else if (!hitfunc || hitfunc->valid_aim(focus->pos()))
-        return focus->pos();
     else
         return coord_def();
 }
@@ -1180,9 +1176,14 @@ void direction_chooser::calculate_target_info()
 
     harmful_to_player = hitfunc ? hitfunc->harmful_to_player() : true;
 
-    for (monster_near_iterator mi(&you, LOS_NO_TRANS); mi; ++mi)
+    for (monster_near_iterator mi(you.pos(), LOS_DEFAULT); mi; ++mi)
     {
-        if (!you.can_see(**mi))
+        if (!you.aware_of(**mi))
+            continue;
+
+        // We may be able to hit monsters we can't target directly, but only if
+        // we have a hitfunc.
+        if (!hitfunc && !cell_see_cell(you.pos(), mi->pos(), LOS_NO_TRANS))
             continue;
 
         if (_want_target_monster(*mi, mode, hitfunc))
@@ -1201,8 +1202,6 @@ void direction_chooser::calculate_target_info()
         }
     }
 
-    const bool check_past_range = hitfunc && hitfunc->can_affect_outside_range();
-
     // Find all foes that could be affected by what we're aiming. For those we
     // can aim at directly, put their coordinates into the list. For those we
     // can't, try to find a nearby square that can hit them, if one exists.
@@ -1211,13 +1210,14 @@ void direction_chooser::calculate_target_info()
         const bool in_range = range > -1 ? grid_distance(foe->pos(), you.pos()) <= range : true;
         const bool can_aim = (!hitfunc || hitfunc->valid_aim(foe->pos()))
                               && (!needs_path || !_blocked_ray(foe->pos()));
-        if (in_range && can_aim)
+        if (Options.simple_targeting && !is_autotargeting && in_range && can_aim)
             cycle_pos.push_back(foe->pos());
-        else if (!Options.simple_targeting && hitfunc
-                 && ((in_range && !can_aim) || check_past_range))
+        else
         {
             coord_def pos = find_acceptable_aim(foe);
-            if (!pos.origin())
+
+            // Don't include duplicate positions or we won't cycle properly.
+            if (!pos.origin() && find(cycle_pos.begin(), cycle_pos.end(), pos) == cycle_pos.end())
                 cycle_pos.push_back(pos);
         }
     }
@@ -1242,7 +1242,12 @@ coord_def direction_chooser::find_default_target()
     if (mode == TARG_NON_ACTOR || just_looking
         || (cycle_pos.empty() && mode != TARG_HOSTILE_OR_EMPTY))
     {
-        return you.pos();
+        // Default to the player's position if there are no other valid targets,
+        // but don't *select* the player when autotargeting.
+        if (is_autotargeting)
+            return coord_def();
+        else
+            return you.pos();
     }
 
     if (mode == TARG_MOVABLE_OBJECT)
@@ -1269,8 +1274,8 @@ coord_def direction_chooser::find_default_monster_target()
         // so verify it first.
         if (_want_target_monster(targ, mode, hitfunc))
         {
-            // If we shouldn't (or can't) refine our target, just return it.
-            if (Options.simple_targeting || !hitfunc)
+            // If we shouldn't refine our target, just return it.
+            if (Options.simple_targeting)
                 return targ->pos();
 
             // Possibly adjust our aim at this monster to avoid hitting
@@ -1312,6 +1317,8 @@ coord_def direction_chooser::find_default_monster_target()
     // If we can find literally nowhere else useful to aim, fall back to the player.
     if (!pos.origin())
         return pos;
+    else if (is_autotargeting)
+        return coord_def();
     else
         return you.pos();
 }
@@ -1338,6 +1345,7 @@ const coord_def& direction_chooser::target() const
 void direction_chooser::set_target(const coord_def& new_target)
 {
     moves.target = new_target;
+    player_changed_target = true;
 }
 
 #ifdef USE_TILE
@@ -1562,6 +1570,13 @@ void direction_chooser::fill_feature_cycle_points(char feature_class)
     feature_cache_type = feature_class;
 }
 
+static bool _is_affected(coord_def where, targeter* hitfunc)
+{
+    if (!hitfunc)
+        return cell_see_cell(you.pos(), where, LOS_NO_TRANS);
+    return hitfunc->is_affected(where);
+}
+
 // Determine what monster or position to remember for the next time the player
 // brings up the targeting interface.
 void direction_chooser::update_previous_target() const
@@ -1575,66 +1590,62 @@ void direction_chooser::update_previous_target() const
 
     // Reset memory.
     you.prev_targ = MID_NOBODY;
-    you.prev_grd_targ.reset();
 
     // You can't target outside the map
     if (!map_bounds(target()))
         return;
 
-    // If directly targeting a monster, remember that monster.
-    const monster* m = monster_at(target());
-    if (m && you.can_see(*m))
-        you.prev_targ = m->mid;
-    else if (looking_at_you())
-        you.prev_targ = MID_PLAYER;
-    // Otherwise, find a monster near to our target and remember *that*.
-    else if (!Options.simple_targeting)
+    // Ranged attack auto-adjustment can place the cursor on a monster that isn't
+    // the player's primary target. Remember the initial target instead, unless
+    // the player adjusted direction manually.
+    if (is_ranged_attack && !player_changed_target && old_m && you.aware_of(*old_m))
+        you.prev_targ = old_m->mid;
+    // Otherwise, if directly targeting a monster, remember that monster
+    else
     {
-        if (hitfunc)
-            hitfunc->set_aim(target());
-
-        // If our previous monster target is among affected targets, prefer that
-        // one for consistency's sake.
-        if (old_m && _want_target_monster(old_m, mode, hitfunc))
+        const monster* m = monster_at(target());
+        if (m && you.aware_of(*m))
+            you.prev_targ = m->mid;
+        else if (looking_at_you())
+            you.prev_targ = MID_PLAYER;
+        // Otherwise, find a monster near to our target and remember *that*.
+        else if (!Options.simple_targeting)
         {
-            if (hitfunc && hitfunc->is_affected(old_m->pos()))
+            if (hitfunc)
+                hitfunc->set_aim(target());
+
+            // If our previous monster target is among affected targets, prefer that
+            // one for consistency's sake.
+            if (old_m && _want_target_monster(old_m, mode, hitfunc)
+                && _is_affected(old_m->pos(), hitfunc))
             {
                 you.prev_targ = old_m->mid;
                 return;
             }
-        }
 
-        // Otherwise, pick the closest one to the center of our aim.
-        for (radius_iterator ri(target(), LOS_DEFAULT); ri; ++ri)
-        {
-            if (!you.see_cell(*ri))
-                continue;
-
-            if (monster* mon = monster_at(*ri))
+            // Otherwise, pick the closest one to the center of our aim.
+            for (radius_iterator ri(target(), LOS_DEFAULT); ri; ++ri)
             {
-                if (you.can_see(*mon)
-                    && _want_target_monster(mon, mode, hitfunc)
-                    && (!hitfunc || hitfunc->is_affected(mon->pos())))
+                if (!you.see_cell(*ri))
+                    continue;
+
+                if (monster* mon = monster_at(*ri))
                 {
-                    you.prev_targ = mon->mid;
-                    return;
+                    if (you.aware_of(*mon)
+                        && _want_target_monster(mon, mode, hitfunc)
+                        && _is_affected(mon->pos(), hitfunc))
+                    {
+                        you.prev_targ = mon->mid;
+                        return;
+                    }
                 }
             }
         }
-
-        // Didn't find any valid monsters in affected area, so remember the spot
-        // itself instead.
-        you.prev_grd_targ = target();
     }
-    // Simple targeting just remembers whatever space you aimed at.
-    else
-        you.prev_grd_targ = target();
 }
 
 bool direction_chooser::select(bool allow_out_of_range, bool endpoint)
 {
-    const monster* mons = monster_at(target());
-
     // leap never allows selecting from past the target point
     if ((restricts == DIR_ENFORCE_RANGE
          || !allow_out_of_range)
@@ -1642,7 +1653,7 @@ bool direction_chooser::select(bool allow_out_of_range, bool endpoint)
     {
         return false;
     }
-    moves.isEndpoint = endpoint || (mons && _mon_exposed(mons));
+    moves.isEndpoint = endpoint;
     moves.isValid  = true;
     moves.isTarget = true;
     update_previous_target();
@@ -1825,6 +1836,9 @@ static vector<string> _monster_description_suffixes(const monster_info& mi,
     _append_container(suffixes, mi.attributes());
     _append_container(suffixes, _get_monster_desc_vector(mi));
 
+    if (mi.is(MB_REMEMBERED_INVIS))
+        suffixes.push_back(T_("no longer here"));
+
     if (behavior)
         _append_container(suffixes, behavior->get_monster_desc(mi));
 
@@ -1843,14 +1857,8 @@ vector<string> get_monster_status_descriptors(const monster_info& mi)
 
 string cell_monster_description(const coord_def& pos, bool include_areas, targeting_behaviour* behavior)
 {
-    // Do we see anything?
-    const monster* mon = monster_at(pos);
-    if (!mon)
-        return "";
-
-    const bool visible = you.can_see(*mon);
-    const bool exposed = _mon_exposed(mon);
-    if (!visible && !exposed)
+    const monster_info* mi = env.map_knowledge(pos).monsterinfo();
+    if (!mi)
         return "";
 
     // OK, now we know that we have something to describe.
@@ -1859,15 +1867,12 @@ string cell_monster_description(const coord_def& pos, bool include_areas, target
     // Cell features go first.
     if (include_areas)
         _append_container(suffixes, _cell_description_suffixes(pos));
-    if (visible)
-    {
-        monster_info mi(mon);
-        // Only describe the monster if you can actually see it.
-        _append_container(suffixes, _monster_description_suffixes(mi, behavior));
-        text = get_monster_equipment_desc(mi);
-    }
-    else
-        text = T_("Disturbance");
+
+    const bool can_see = (!mi->is(MB_KNOWN_INVIS) && !mi->is(MB_REMEMBERED_INVIS));
+
+    // Only describe the monster if you can actually see it.
+    _append_container(suffixes, _monster_description_suffixes(*mi, behavior));
+    text = get_monster_equipment_desc(*mi, can_see ? DESC_FULL : DESC_NO_EQUIPMENT);
 
     // Build the final description string.
     if (!suffixes.empty())
@@ -1899,7 +1904,16 @@ string cell_items_description(const coord_def& pos)
     if (!in_bounds(pos))
         return "";
 
-    auto items = const_item_list_on_square(you.visible_igrd(pos));
+    vector<item_def> remembered;
+    vector<const item_def *> items;
+    if (env.map_knowledge(pos).visible())
+        items = const_item_list_on_square(you.visible_igrd(pos));
+    else
+    {
+        remembered = item_list_in_stash(pos);
+        for (const item_def &item : remembered)
+            items.push_back(&item);
+    }
 
     if (items.empty())
         return "";
@@ -2134,10 +2148,6 @@ void direction_chooser::handle_wizard_command(command_type key_command,
     case CMD_TARGET_WIZARD_GIVE_ITEM:  wizard_give_monster_item(m); break;
     case CMD_TARGET_WIZARD_POLYMORPH:  wizard_polymorph_monster(m); break;
 
-    case CMD_TARGET_WIZARD_BLESS_MONSTER:
-        wizard_apply_monster_blessing(m);
-        break;
-
     case CMD_TARGET_WIZARD_MAKE_SUMMONED:
         wizard_make_monster_summoned(m);
         break;
@@ -2221,7 +2231,7 @@ void direction_chooser::do_redraws()
 coord_def direction_chooser::find_summoner()
 {
     const auto *mon = monster_at(target());
-    if (mon && mon->is_summoned() && you.can_see(*mon))
+    if (mon && mon->is_summoned() && you.aware_of(*mon))
     {
         monster_info mi(mon);
         const monster *summ = mi.get_known_summoner();
@@ -2278,7 +2288,7 @@ void direction_chooser::full_describe()
                                                          range);
     for (auto m : nearby_mons)
         if (_want_target_monster(m, mode, hitfunc))
-            list_mons.push_back(monster_info(m));
+            list_mons.push_back(*env.map_knowledge(m->pos()).monsterinfo());
 
     if (targets_objects() || just_looking)
         _get_nearby_items(list_items, needs_path, range, hitfunc);
@@ -2676,9 +2686,17 @@ bool direction_chooser::noninteractive()
     // if target is unset, this will find previous or closest target; if
     // target is set this will adjust targeting depending on custom
     // behavior
+    is_autotargeting = true;
     calculate_target_info();
     if (moves.find_target)
+    {
         set_target(find_default_target());
+        if (moves.target.origin())
+        {
+            moves.isValid = false;
+            mpr("No reachable target in view!");
+        }
+    }
 
     update_validity();
     finalize_moves();
@@ -2713,6 +2731,7 @@ bool direction_chooser::choose_direction()
     // Find a default target.
     set_target(!default_place.origin() ? default_place
                                        : find_default_target());
+    player_changed_target = false;
 
     // If requested, show the beam on startup.
     if (show_beam)
@@ -2800,7 +2819,7 @@ string get_cell_mouseover_tag(const coord_def &gc)
         else
             desc = unseen_desc;
     }
-    else if (monster_at(gc) && you.can_see(*monster_at(gc)))
+    else if (monster_at(gc) && you.aware_of(*monster_at(gc)))
     {
         monster_info mi(monster_at(gc), MILEV_NAME);
         desc = mi.title_name();
@@ -2841,13 +2860,16 @@ bool full_describe_square(const coord_def &c, bool cleanup)
     // actions can work.
     if (you.on_current_level && c == you.pos())
         list_items = item_list_on_square(you.visible_igrd(c));
-    else if (env.map_knowledge(c).item())
+    else if (auto it = env.map_knowledge(c).item())
     {
         // otherwise, use stash info. These are item copies, not the real
         // things.
         stash_items = item_list_in_stash(c);
         for (item_def &i: stash_items)
             list_items.push_back(&i);
+        // Not part of a stash - e.g. a detected item.
+        if (list_items.empty())
+            list_items.push_back(it);
     }
     quantity += list_items.size();
 
@@ -2857,9 +2879,9 @@ bool full_describe_square(const coord_def &c, bool cleanup)
         ++quantity;
     }
 
-    // I'm not sure if features should be included. But it seems reasonable to
-    // at least include what full_describe_view shows
-    if (feat_stair_direction(feat) != CMD_NO_CMD || feat_is_trap(feat))
+    // Allow more important (and less common) features to be examined even if
+    // there's an item on top of them.
+    if (show_terrain_before_item(feat) || feat == DNGN_DECORATIVE_FLOOR)
     {
         list_features.push_back(c);
         ++quantity;
@@ -2934,7 +2956,7 @@ static void _describe_oos_square(const coord_def& where)
         if (!in_bounds(where))
             dprf("(out of bounds)");
         else
-            dprf("(map: %x)", env.map_knowledge(where).flags);
+            dprf("(map: %lx)", env.map_knowledge(where).flags);
 #endif
         return;
     }
@@ -2960,15 +2982,10 @@ static bool _want_target_monster(const monster *mon, targ_mode_type mode,
         return true;
     case TARG_HOSTILE:
     case TARG_HOSTILE_OR_EMPTY:
-        return mons_attitude(*mon) == ATT_HOSTILE
+        return mon->attitude() == ATT_HOSTILE
             || mon->has_ench(ENCH_FRENZIED);
     case TARG_FRIEND:
         return mon->friendly();
-    case TARG_INJURED_FRIEND:
-        if (mon->friendly() && mons_get_damage_level(*mon) > MDAM_OKAY)
-            return true;
-        return !mon->wont_attack() && !mon->neutral()
-            && unpacifiable_reason(*mon).empty();
     case TARG_MOVABLE_OBJECT:
         return false;
     case TARG_MOBILE_MONSTER:
@@ -3079,7 +3096,7 @@ void _walk_on_decor(dungeon_feature_type new_grid)
     string messageLookup = "";
     string decorLine = "";
     int frequency = 0;
-    bool peaceful = !there_are_monsters_nearby(true, false);
+    bool peaceful = !there_are_monsters_nearby(true);
 
     if (feat_is_food(new_grid))
     {
@@ -3160,12 +3177,9 @@ void _walk_on_decor(dungeon_feature_type new_grid)
     }
 }
 
-static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
+static string _base_feature_desc(dungeon_feature_type grid,
                                  level_id place = level_id::current())
 {
-    if (feat_is_trap(grid) && trap != NUM_TRAPS)
-        return full_trap_name(trap);
-
     if (grid == DNGN_ROCK_WALL && place.branch == BRANCH_PANDEMONIUM)
         return "wall of the weird stuff which makes up Pandemonium";
     else if (feat_is_stone_stair_down(grid) && place.branch == BRANCH_VAULTS
@@ -3214,12 +3228,12 @@ static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
         return T_(get_feature_def(grid).name);
 }
 
-string feature_description(dungeon_feature_type grid, trap_type trap,
+string feature_description(dungeon_feature_type grid,
                            const string & cover_desc,
                            description_level_type dtype,
                            level_id place)
 {
-    string desc = _base_feature_desc(grid, trap, place);
+    string desc = _base_feature_desc(grid, place);
     desc += cover_desc;
 
     if (grid == DNGN_FLOOR && dtype == DESC_A)
@@ -3247,14 +3261,13 @@ string raw_feature_description(const coord_def &where)
             return T_(rename->c_str());
     }
 
-    return _base_feature_desc(feat, get_trap_type(where));
+    return _base_feature_desc(feat);
 }
 
 string feature_description_at(const coord_def& where, bool covering,
                               description_level_type dtype)
 {
     dungeon_feature_type grid = env.map_knowledge(where).feat();
-    trap_type trap = env.map_knowledge(where).trap();
 
     string marker_desc = env.markers.property_at(where, MAT_ANY,
                                                  "feature_description");
@@ -3263,7 +3276,7 @@ string feature_description_at(const coord_def& where, bool covering,
 
     if (covering && you.see_cell(where))
     {
-        if (feat_is_tree(grid) && env.forest_awoken_until)
+        if (env.map_knowledge(where).flags & MAP_AWOKEN_FOREST)
         {
             covering_description += T_(", awoken");
             covering_description += env.forest_is_hostile
@@ -3275,7 +3288,9 @@ string feature_description_at(const coord_def& where, bool covering,
             covering_description = T_(", covered with ice");
 
         if (is_temp_terrain(where) && grid != DNGN_BINDING_SIGIL
-                                   && grid != DNGN_TRAP_DISPERSAL_INACTIVE)
+                                   && grid != DNGN_TRAP_DISPERSAL_INACTIVE
+                                   && grid != DNGN_ICE_THORNS
+                                   && !feat_is_dragon_vein(grid))
         {
             covering_description = T_(", temporary");
         }
@@ -3368,7 +3383,7 @@ string feature_description_at(const coord_def& where, bool covering,
     {
 #if TAG_MAJOR_VERSION == 34
     case DNGN_TRAP_MECHANICAL:
-        return feature_description(grid, trap, covering_description, dtype);
+        return feature_description(grid, covering_description, dtype);
 
     case DNGN_ENTER_PORTAL_VAULT:
         // Should have been handled at the top of the function.
@@ -3384,7 +3399,7 @@ string feature_description_at(const coord_def& where, bool covering,
     default:
         const string featdesc = grid == env.grid(where)
                               ? raw_feature_description(where)
-                              : _base_feature_desc(grid, trap);
+                              : _base_feature_desc(grid);
         return thing_do_grammar(dtype, featdesc + covering_description,
                 ignore_case);
     }
@@ -3529,9 +3544,8 @@ static vector<string> _get_monster_desc_vector(const monster_info& mi)
 
     if (mi.fire_blocker)
     {
-        descs.push_back((T_("fire blocked by ")) // FIXME, renamed features
-                        + feature_description(mi.fire_blocker, NUM_TRAPS, "",
-                                              DESC_A));
+        descs.push_back(T_("fire blocked by ") // FIXME, renamed features
+                        + feature_description(mi.fire_blocker, "", DESC_A));
     }
 
     return descs;
@@ -3590,11 +3604,14 @@ string get_monster_equipment_desc(const monster_info& mi,
     string weap = _describe_monster_weapon(mi);
 
     // Print the rest of the equipment only for full descriptions.
-    if (level == DESC_WEAPON)
+    if (level == DESC_NO_EQUIPMENT)
+        return desc;
+    else if (level == DESC_WEAPON)
         return desc + weap;
 
     item_def* mon_wpn = mi.inv[MSLOT_WEAPON].get();
     item_def* mon_arm = mi.inv[MSLOT_ARMOUR].get();
+    item_def* mon_aux = mi.inv[MSLOT_AUX_ARMOUR].get();
     item_def* mon_shd = mi.inv[MSLOT_SHIELD].get();
     item_def* mon_qvr = mi.inv[MSLOT_MISSILE].get();
     item_def* mon_alt = mi.inv[MSLOT_ALT_WEAPON].get();
@@ -3617,6 +3634,7 @@ string get_monster_equipment_desc(const monster_info& mi,
 #undef uninteresting
 
     vector<string> item_descriptions;
+    vector<string> wearing_descriptions;
 
     // Dancing weapons have all their weapon information in their full_name, so
     // we don't need to add another weapon description here (see Mantis 11887).
@@ -3642,24 +3660,23 @@ string get_monster_equipment_desc(const monster_info& mi,
     // as with dancing weapons, don't claim armour echoes 'wear' their armour
 
     if (mon_arm && mi.type != MONS_ARMOUR_ECHO && mi.type != MONS_HAUNTED_ARMOUR)
-    {
-        const string armour_desc = make_stringf(T_("wearing %s"),
-                                                mon_arm->name(DESC_A).c_str());
-        item_descriptions.push_back(armour_desc);
-    }
+        wearing_descriptions.push_back(mon_arm->name(DESC_A).c_str());
 
     if (mon_shd)
-    {
-        const string shield_desc = make_stringf(T_("wearing %s"),
-                                                mon_shd->name(DESC_A).c_str());
-        item_descriptions.push_back(shield_desc);
-    }
+        wearing_descriptions.push_back(mon_shd->name(DESC_A).c_str());
+
+    if (mon_aux)
+        wearing_descriptions.push_back(mon_aux->name(DESC_A).c_str());
 
     if (mon_rng)
+        wearing_descriptions.push_back(mon_rng->name(DESC_A).c_str());
+
+    // Merge all of these together to avoid "It is wearing X and wearing Y and wearing Y"
+    if (!wearing_descriptions.empty())
     {
-        const string rng_desc = make_stringf(T_("wearing %s"),
-                                             mon_rng->name(DESC_A).c_str());
-        item_descriptions.push_back(rng_desc);
+        item_descriptions.push_back(make_stringf(T_("wearing %s"),
+                comma_separated_line(wearing_descriptions.begin(),
+                                     wearing_descriptions.end()).c_str()));
     }
 
     if (mon_qvr)
@@ -3777,7 +3794,7 @@ static void _debug_describe_feature_at(const coord_def &where)
     char32_t ch = get_cell_glyph(where).ch;
     // TODO: expand out some of this in the cell description for console in a
     // more readable fashion
-    dprf("(%d,%d): %s - %s. (%d/%s)%s%s%s%s map: %x%s",
+    dprf("(%d,%d): %s - %s. (%d/%s)%s%s%s%s map: %lx%s",
          where.x, where.y,
          ch == '<' ? "<<" : stringize_glyph(ch).c_str(),
          feature_desc.c_str(),

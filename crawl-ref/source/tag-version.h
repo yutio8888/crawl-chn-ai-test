@@ -343,6 +343,33 @@ enum tag_minor_version
     TAG_MINOR_LUA_5_4,             // Upgrade from Lua 5.1 to Lua 5.4.
     TAG_MINOR_PIETY_LOGGING,       // Log piety events
     TAG_MINOR_MONINFO_CLEANUP,     // Stop marshalling some unused info and start marshalling some overlooked info
+    TAG_MINOR_FIX_HELLFIRE_MORTAR_LAVA_DURATION, // Fix lava from the hellfire mortar spell not lasting long enough
+    TAG_MINOR_FIX_PERMANENT_HELLFIRE_MORTAR, // Timeout permanent hellfire mortar lava
+    TAG_MINOR_NO_TRAP_DEF,         // Remove vestigal uses trap_def and refactor trap handling
+    TAG_MINOR_TERRAIN_CHANGE_MID,  // Marshall terrain change origin mids as int instead of shorts
+    TAG_MINOR_REFACTOR_MALIGN_MARKER,   // Refactor handling of map_malign_gateway_marker
+    TAG_MINOR_REMOVE_MORTAR_MARKERS, // Remove map_hellfire_mortar_lava_marker and refactor again
+    TAG_MINOR_FIX_VENGEANCE_CLEANUP, // Fix a crash when changing levels due to old vengeance targets
+    TAG_MINOR_FLAVOUR_KNOWLEDGE,   // Save player knowledge of feature flavour
+    TAG_MINOR_REMOVE_PIETY_DECAY,  // Remove piety decay and hysteresis mechanics
+    TAG_MINOR_TREE_POSITIONS,      // Save tree positions for forest vines
+    TAG_MINOR_DANGLING_CONSTRICTION, // Fix recalled companions leaving dangling constriction state
+    TAG_MINOR_EXEGESIS_HIDDEN,     // Divine exegesis gets a separate list of hidden spells
+    TAG_MINOR_FIX_DOOR_INFO_LEAK,  // Don't leak whether an out of view door has been covered in temporary terrain
+    TAG_MINOR_SWIFTNESS_REFACTOR,  // Split swiftness's backlash into DUR_ANTISWIFT
+    TAG_MINOR_MAX_PIETY_LOGGING,   // Separately log stepdown events and max piety wastage
+    TAG_MINOR_INVIS_REFORM,        // Improve player tracking of invisible monsters
+    TAG_MINOR_LURKER_MONSTERS,     // Add support for lurker monsters
+    TAG_MINOR_FIX_UNCANCELS,       // Fix monsters sometimes getting their turn before the effect of the players action
+    TAG_MINOR_MIMIC_PROP,          // Move flag for mimics from env.level_map_mask to env.pgrid
+    TAG_MINOR_MON_ATTACK_DEF_RANGE,// Add 'range' and 'cleaving' members to mon_attack_def
+    TAG_MINOR_FORGET_MONSTERS,     // Forget stale monster memories.
+    TAG_MINOR_BASE_TRAINING_TARGETS, // Separate training targets for base skill levels
+    TAG_MINOR_SHOP_KEEPER_NAME,    // Seed shopkeeper names from all three keeper_name bytes
+    TAG_MINOR_TERRAIN_CHANGE_POWER, // Marshall power in map_terrain_change_markers
+    TAG_MINOR_TEMPORARY_WEAPONS,   // Implement the ability to give the player transient weapons
+    TAG_MINOR_UNIQUE_ITEM_ID,      // Implement unique item IDs for better-handling transient weapons
+    TAG_MINOR_FORM_XP_TRACKING,    // Tracking of how much XP per level was gained in each form
 #endif
     NUM_TAG_MINORS,
     TAG_MINOR_VERSION = NUM_TAG_MINORS - 1

@@ -26,6 +26,17 @@ struct mon_attack_def
     attack_type     type;
     attack_flavour  flavour;
     int             damage;
+    int             reach;
+    bool            cleaves;
+
+    mon_attack_def(attack_type _type = AT_NONE,
+                   attack_flavour _flavour = AF_PLAIN,
+                   int _damage = 0,
+                   int _reach = 1,
+                   bool _cleaves = false)
+        : type(_type), flavour(_flavour), damage(_damage), reach(_reach),
+          cleaves(_cleaves)
+    {}
 };
 
 // Amount of mons->speed_increment used by different actions; defaults
@@ -123,7 +134,7 @@ struct monsterentry
 {
     short mc;            // monster number
 
-    char basechar;
+    char32_t basechar;
     colour_t colour;
     const char *name;
 
@@ -217,6 +228,7 @@ string mons_type_name_en(monster_type type, description_level_type desc);
 bool give_monster_proper_name(monster& mon);
 
 size_type mons_class_body_size(monster_type mc);
+size_type mons_class_body_size(monster_type mc, size_part_type type, int slime_size = 0);
 
 mon_itemuse_type mons_class_itemuse(monster_type mc);
 mon_itemuse_type mons_itemuse(const monster& mon);
@@ -236,6 +248,7 @@ bool mons_is_the(monster_type mc);
 bool mons_is_pghost(monster_type mc);
 bool mons_is_draconian_job(monster_type mc);
 bool mons_is_hepliaklqana_ancestor(monster_type mc);
+bool mons_is_jade_crystal(monster_type mc);
 
 int mutant_beast_tier(int xl);
 
@@ -256,7 +269,6 @@ string mon_attack_name(attack_type attack, bool with_object = true);
 string mon_attack_name_short(attack_type attack);
 bool flavour_triggers_damageless(attack_flavour flavour);
 int flavour_damage(attack_flavour flavour, int HD, bool random = true);
-bool flavour_has_reach(attack_flavour flavour);
 bool flavour_has_mobility(attack_flavour flavour);
 
 bool mons_class_flag(monster_type mc, monclass_flags_t bits);
@@ -327,6 +339,7 @@ bool mons_class_can_leave_corpse(monster_type mc);
 bool mons_class_leaves_hide(monster_type mc);
 bool mons_class_leaves_wand(monster_type mc);
 bool mons_class_leaves_organ(monster_type mc);
+bool mons_class_has_soul(monster_type mc);
 bool mons_is_zombified(const monster& mons);
 bool mons_class_can_be_zombified(monster_type mc);
 bool mons_can_be_zombified(const monster& mon);
@@ -343,7 +356,7 @@ void name_zombie_from_mon(monster& mon, const monster& orig);
 int mons_power(monster_type mc);
 
 char32_t mons_char(monster_type mc);
-char mons_base_char(monster_type mc);
+char32_t mons_base_char(monster_type mc);
 
 int mons_class_colour(monster_type mc);
 
@@ -354,6 +367,7 @@ monster_type draconian_colour_for_job(monster_type job);
 monster_type draconian_job_for_colour(monster_type colour);
 
 void define_monster(monster& mons, bool friendly = false);
+void mons_set_starting_heads(monster& mons, int heads);
 
 void mons_pacify(monster& mon, mon_attitude_type att = ATT_GOOD_NEUTRAL,
                  bool no_xp = false);
@@ -361,6 +375,7 @@ void mons_pacify(monster& mon, mon_attitude_type att = ATT_GOOD_NEUTRAL,
 bool mons_should_fire(const bolt &beam, const targeting_tracer& tracer,
                       bool ignore_good_idea = false);
 
+bool mon_type_has_spells(const monster_type mon_type);
 bool mons_has_los_ability(monster_type mon_type);
 bool is_offensive_spell(spell_type spell, maybe_bool needs_lof = maybe_bool::maybe);
 bool _mons_has_smite_attack(const monster* mons);
@@ -373,7 +388,6 @@ bool mons_aligned(const actor *m1, const actor *m2);
 bool mons_atts_aligned(mon_attitude_type fr1, mon_attitude_type fr2);
 
 bool mons_att_wont_attack(mon_attitude_type fr);
-mon_attitude_type mons_attitude(const monster& m);
 
 // Whether the monster is temporarily confused (class_too = false)
 // or confused at all (class_too = true; temporarily or by class).
@@ -395,7 +409,7 @@ bool mons_class_is_plant(monster_type mc);
 bool mons_class_is_draconic(monster_type mc);
 bool mons_is_plant(const monster& mon);
 bool mons_eats_items(const monster& mon);
-bool actor_is_susceptible_to_vampirism(const actor& act, bool known = false);
+bool actor_can_drain_life_from(const actor& agent, const actor& victim);
 monster_type mons_genus(monster_type mc);
 monster_type mons_species(monster_type mc);
 monster_type draconian_subspecies(const monster& mon);
@@ -422,7 +436,6 @@ bool mons_is_unbreathing(monster_type mc);
 
 bool herd_monster(const monster& mon);
 
-int cheibriados_monster_player_speed_delta(const monster& mon);
 bool cheibriados_thinks_mons_is_fast(const monster& mon);
 bool mons_is_projectile(monster_type mc);
 bool mons_is_projectile(const monster& mon);
@@ -433,6 +446,10 @@ bool mons_has_blood(monster_type mc);
 bool mons_is_sensed(monster_type mc);
 bool mons_offers_beogh_conversion(const monster& mon);
 bool mons_offers_beogh_conversion_now(const monster& mon);
+
+bool mons_is_rider(monster_type mc);
+monster_type mons_mount_type(monster_type mc);
+monster_type mons_rider_type(monster_type mc);
 
 bool invalid_monster(const monster* mon);
 bool invalid_monster_type(monster_type mt);
@@ -503,11 +520,10 @@ mon_inv_type item_to_mslot(const item_def &item);
 
 bool mons_is_immotile(const monster& mons);
 
-int get_dist_to_nearest_monster();
+int get_dist_to_nearest_monster(bool skip_damage_immune = false);
 bool monster_nearby();
-actor *actor_by_mid(mid_t m, bool require_valid = false);
-monster *monster_by_mid(mid_t m, bool require_valid = false);
-monster *cached_monster_copy_by_mid(mid_t m);
+actor *actor_by_mid(mid_t m, bool require_valid = false, bool allow_dead = false);
+monster *monster_by_mid(mid_t m, bool require_valid = false, bool allow_dead = false);
 bool mons_is_recallable(const actor* caller, const monster& targ);
 void init_anon();
 actor *find_agent(mid_t m, kill_category kc);
@@ -516,8 +532,6 @@ mon_threat_level_type mons_threat_level(const monster &mon,
                                         bool real = false);
 
 bool mons_foe_is_marked(const monster& mons);
-
-bool mons_stores_tracking_data(const monster& mons);
 
 bool mons_is_player_shadow(const monster& mon);
 bool mons_is_wrath_avatar(const monster &mon);
