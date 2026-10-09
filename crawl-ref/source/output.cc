@@ -1166,39 +1166,62 @@ int contamination_hud_clear_width(bool compact, int contamination_percent)
 
 static void _print_stats_contam(int x, int y)
 {
-    static int last_display_width = 12;
-    CGOTOXY(x, y, GOTO_STAT);
+    const bool compact = _uses_compact_hud();
+    const bool top_bar = _uses_top_bar();
+    const bool regular = !compact && !top_bar;
+    // Legacy compact coordinates are mapped from x=30 to the first column.
+    const int available = max(0, compact && !top_bar
+        ? crawl_view.hudsz.x : crawl_view.hudsz.x - x + 1);
+    const string caption = compact ? T_("Cont ") : T_("Contam: ");
+    const int contam = max(you.magic_contamination > 0 ? 1 : 0,
+                           you.magic_contamination / 10);
+    const string value = make_stringf("%d%%", contam);
+    const bool two_rows = regular
+        && strwidth(caption) + strwidth(value) > available;
 
-    // Hide the bar entirely if the player has no contam
-    if (you.magic_contamination == 0 && !Options.always_show_doom_contam)
+    // The regular HUD reserves the right of the INT and DEX rows for this
+    // field. Clear both rows on every update so digit shrinkage, disappearance,
+    // and switching between one and two rows leave no stale percentage.
+    // The top bar already clears whole rows before drawing neighbouring fields.
+    if (!top_bar)
     {
-        const int width = max(last_display_width,
-                             contamination_hud_clear_width(_uses_compact_hud()));
-        const string blank(width, ' ');
+        const string blank(regular ? available
+            : min(available, contamination_hud_clear_width(compact, contam)), ' ');
+        CGOTOXY(x, y, GOTO_STAT);
         CPRINTF("%s", blank.c_str());
-        last_display_width = 12;
-        return;
+        if (regular)
+        {
+            CGOTOXY(x, y + 1, GOTO_STAT);
+            CPRINTF("%s", blank.c_str());
+        }
     }
+    you.redraw_contam = false;
+    if (you.magic_contamination == 0 && !Options.always_show_doom_contam)
+        return;
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    if (!_uses_compact_hud())
-        CPRINTF("%s", T_("Contam: "));
-    else
-        CPRINTF("%s", T_("Cont "));
+    const string label = chop_string(caption, available, false);
+    CPRINTF("%s", label.c_str());
+    if (two_rows)
+        CGOTOXY(x, y + 1, GOTO_STAT);
+    else if (regular)
+    {
+        // Console wrapcprintf can advance after a multibyte caption because
+        // its line-end check uses byte length. Position the value by display
+        // cells instead of inheriting that cursor (which may be on the SH row).
+        CGOTOXY(x + strwidth(label), y, GOTO_STAT);
+    }
 
-    const int contam = max(you.magic_contamination > 0 ? 1 : 0,
-                           you.magic_contamination / 10);
-    last_display_width = contamination_hud_clear_width(_uses_compact_hud(), contam);
     if (contam >= 200)
         textcolour(RED);
     else if (contam >= 100)
         textcolour(YELLOW);
     else
         textcolour(DARKGRAY);
-
-    CPRINTF("%d%% ", contam);
-    you.redraw_contam = false;
+    const int value_width = two_rows ? available : available - strwidth(label);
+    const string visible_value = chop_string(value, max(0, value_width), false);
+    CPRINTF("%s", visible_value.c_str());
 }
 
 static void _print_stats_ac(int x, int y)
@@ -2441,7 +2464,7 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
     int col;
     mi.to_string(count, monpane_desc, col, fullname, adj);
 
-    if (count == 1)
+    if (count == 1 && Options.language != lang_t::ZH)
     {
         if (!mi.is(MB_NAME_THE))
             desc = (is_vowel(monpane_desc[0]) ? T_("an ") : T_("a ")) + desc;

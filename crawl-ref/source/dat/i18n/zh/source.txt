@@ -1832,7 +1832,7 @@ barrage of energy
 %s重击了你！
 %%%%
 %s snaps out of %s daze.
-%s从%s的晕眩中清醒过来。
+%s从%s晕眩中清醒过来。
 %%%%
 %s softly glows with a divine radiance!
 %s散发出柔和的神圣光辉！
@@ -6777,10 +6777,10 @@ stomp
 重踏
 %%%%
 stone staircase leading down
-向下通往的石梯
+向下的石阶
 %%%%
 stone staircase leading up
-向上通往的石梯
+向上的石阶
 %%%%
 Stop fighting!
 停止战斗！
@@ -10721,7 +10721,7 @@ You no longer feel sluggish.
 你不再感觉迟缓。
 %%%%
 You now have %1$d gold piece%2$s.
-你还有%1$d枚金币。
+你现在有%1$d枚金币%2$s。
 %%%%
 You now have %d runes.
 你现在有%d个符文。
@@ -14700,7 +14700,7 @@ astonishingly dangerous
 惊人地危险
 %%%%
 The spell is %s to miscast (%s risk of failure)%s
-施放此法术%s失败（%s失败风险）%s
+此法术施法失误时%s（失败风险为%s）%s
 %%%%
 Silent
 无声
@@ -16293,7 +16293,7 @@ dies
 死亡
 %%%%
  seems to regain %1$s courage.
-似乎重拾了%1$s的勇气。
+似乎重拾了%1$s勇气。
 %%%%
 %s is no longer %s.
 %s不再%s。
@@ -18860,7 +18860,7 @@ fragments
 碎片
 %%%%
 gore
-凝血
+血肉
 %%%%
 healing
 治疗
@@ -25962,7 +25962,7 @@ You %1$sdonated %2$d %3$s to Zin.\n
 你向辛恩捐献了%2$d%3$s。\n
 %%%%
 You %1$spaid %2$d %3$s to Gozag.\n
-你向戈扎格支付了%2$d%3$s。\n
+你%1$s向哥萨戈支付了%2$d%3$s。\n
 %%%%
 You %1$sused %2$d %3$s for miscellaneous purposes.\n
 你将%2$d%3$s用于了各种用途。\n
@@ -32695,7 +32695,7 @@ verb|fire
 %s试图对%s施下咒术！
 %%%%
 %s draws you further into %s thrall.
-%s将你进一步拉入%s的奴役。
+%s将你进一步拉入%s奴役之中。
 %%%%
 %s goes into a battle-frenzy!
 %s进入了战斗狂热状态！
@@ -45632,3 +45632,195 @@ blast of rock
 %%%%
 scorching wind
 灼热风
+%%%%
+uppercase stat prompt|Increase (S)trength, (I)ntelligence, or (D)exterity? 
+提升(S)力量、(I)智力还是(D)敏捷？
+%%%%
+shop sort|type
+类别
+%%%%
+shop sort|price
+价格
+%%%%
+shop sort|name
+名称
+%%%%
+stash sort|dist
+距离
+%%%%
+stash sort|type
+类别
+%%%%
+stash sort|name
+名称
+%%%%
+stash filter|hide
+隐藏
+%%%%
+stash filter|show
+显示
+%%%%
+? for help
+按 ? 查看帮助
+%%%%
+stash search|, or 
+，或
+%%%%
+flag short|remembered
+曾在此处
+%%%%
+flag long|remembered
+曾在此处
+%%%%
+You now have enough gold to %s.
+你现在有足够的金币来%s。
+%%%%
+You no longer have enough gold to %s.
+你的金币已不足以%s。
+%%%%
+Your %s go into a battle-frenzy!
+你的%s进入了战斗狂热状态！
+%%%%
+The %s go into a battle-frenzy!
+%s进入了战斗狂热状态！
+%%%%
+Your %s pick up the pace!
+你的%s加快了步伐！
+%%%%
+The %s pick up the pace!
+%s加快了步伐！
+%%%%
+You climb up.
+你走上了楼梯。
+%%%%
+You climb down.
+你走下了楼梯。
+%%%%
+You fly up.
+你沿楼梯飞了上去。
+%%%%
+You fly down.
+你沿楼梯飞了下去。
+%%%%
+There is an entrance to %s here.
+这里有通往%s的入口。
+%%%%
+There is %s here.
+这里有%s。
+%%%%
+stair quantity|%d %s
+%d座%s
+%%%%
+attack verb|gore
+顶撞
+%%%%
+weapon category|This %1$s falls into the '%2$s' category. 
+这件%1$s属于“%2$s”类。
+%%%%
+hit chance|You have about %1$d%% chance to hit with %2$s
+你使用%2$s的命中率约为%1$d%%
+%%%%
+hit chance|; and a %1$d%% chance to hit with your %2$s
+；你的%2$s攻击命中率为%1$d%%
+%%%%
+hit chance| (while you are blinded and from distance %d)
+（你失明时，在距离为%d的情况下）
+%%%%
+spell miscast|Miscasting this spell causes magic contamination and may %s.\n
+此法术施法失误会造成诱变辐射，并可能%s。\n
+%%%%
+spell miscast|Miscasting this spell causes magic contamination.\n
+此法术施法失误会造成诱变辐射。\n
+%%%%
+spell miscast|summon unnamed horrors
+召唤无名恐怖之物
+%%%%
+spell miscast|anchor you in place
+将你锚定在原地
+%%%%
+spell miscast|slow you
+使你减速
+%%%%
+spell miscast|envenom you
+使你中毒
+%%%%
+spell miscast|corrode you
+腐蚀你
+%%%%
+spell miscast|deal up to %1$d %2$s damage
+造成最多%1$d点%2$s伤害
+%%%%
+skill note|Reached skill level %1$d in %2$s
+%2$s技能达到等级%1$d
+%%%%
+skill note|Reduced skill %1$s to level %2$d
+%1$s技能降至等级%2$d
+%%%%
+monster defeat note|killed
+击杀
+%%%%
+monster defeat note|banished
+放逐
+%%%%
+monster defeat note|pacified
+安抚
+%%%%
+monster defeat note|bound
+束缚
+%%%%
+monster defeat note|slimified
+黏液化
+%%%%
+monster defeat note|%1$s %2$s
+%1$s%2$s
+%%%%
+monster defeat note|%1$s (ally) was %2$s
+%1$s（友军）被%2$s
+%%%%
+score religion|Was %1$s of %2$s%3$s
+曾是%2$s的%1$s%3$s
+%%%%
+damage source|%s's headbutt
+%s的头撞
+%%%%
+damage source|rolling by %s
+%s的滚撞
+%%%%
+damage source|%s's spines
+%s的尖刺
+%%%%
+damage source|their own ranged attack
+自己的远程攻击
+%%%%
+damage source|%s's ranged attack
+%s的远程攻击
+%%%%
+damage source|a ranged attack
+远程攻击
+%%%%
+damage source|unknown damage
+未知伤害
+%%%%
+stone idol
+石像
+%%%%
+petrified wood
+石化木
+%%%%
+stone door frame
+石门框
+%%%%
+stone arch
+石拱门
+%%%%
+stair discovery|Found %d stairs.
+发现了%d座楼梯。
+%%%%
+damage source|water from %s
+来自%s的水流
+%%%%
+%s throws %s at %s!
+%s将%s掷向%s！
+%%%%
+%s throws %s out of sight!
+%s将%s掷到了视线之外！

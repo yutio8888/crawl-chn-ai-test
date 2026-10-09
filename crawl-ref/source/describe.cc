@@ -1754,6 +1754,9 @@ static void _append_weapon_stats(string &description, const item_def &item)
             base_dam);
     }
 
+    // TextDB strips trailing whitespace from translated entries.
+    if (description.empty() || description.back() != ' ')
+        description += "  ";
     description += make_stringf(
         T_("Base attack delay: %.1f\n"
         "This weapon's minimum attack delay (%.1f) is reached at skill level %d."),
@@ -1893,21 +1896,15 @@ static string _category_string(const item_def &item, bool monster)
     if (is_unrandom_artefact(item, UNRAND_LOCHABER_AXE))
         return ""; // handled in art-data DBRAND
 
-    string description = "";
-    description += T_("This");
-    description += " ";
-    if (is_unrandom_artefact(item))
-        description += get_artefact_base_name(item);
-    else
-        description += T_("weapon");
-    description += T_(" falls into the");
-
+    const string weapon = is_unrandom_artefact(item)
+        ? get_artefact_base_name(item) : T_("weapon");
     const skill_type skill = item_attack_skill(item);
-
-    description +=
-        make_stringf(T_(" '%s' category. "),
-                     skill == SK_FIGHTING ? C_("weapon-category", "buggy")
-                                          : skill_name(skill));
+    string description = make_stringf_p(
+        C_("weapon category", "This %1$s falls into the '%2$s' category. "),
+        weapon.c_str(), skill == SK_FIGHTING
+            ? C_("weapon-category", "buggy") : skill_name(skill));
+    if (!ends_with(description, " "))
+        description += " ";
 
     switch (item_attack_skill(item))
     {
@@ -4980,12 +4977,13 @@ static string _miscast_damage_string(spell_type spell)
         { spschool::earth, T_("fragmentation") },
     };
 
-    const map <spschool, string> special_flavor = {
-        { spschool::summoning, T_("summon unnamed horrors") },
-        { spschool::translocation, T_("anchor you in place") },
-        { spschool::hexes, T_("slow you") },
-        { spschool::alchemy, T_("envenom you") },
-        { spschool::forgecraft, T_("corrode you") },
+    const bool zh = Options.language == lang_t::ZH;
+    const map<spschool, const char *> special_flavor = {
+        { spschool::summoning, NC_("spell miscast", "summon unnamed horrors") },
+        { spschool::translocation, NC_("spell miscast", "anchor you in place") },
+        { spschool::hexes, NC_("spell miscast", "slow you") },
+        { spschool::alchemy, NC_("spell miscast", "envenom you") },
+        { spschool::forgecraft, NC_("spell miscast", "corrode you") },
     };
 
     spschools_type disciplines = get_spell_disciplines(spell);
@@ -4993,7 +4991,7 @@ static string _miscast_damage_string(spell_type spell)
 
     for (const auto &flav : special_flavor)
         if (disciplines & flav.first)
-            descs.push_back(flav.second);
+            descs.emplace_back(C_("spell miscast", flav.second));
 
     int dam = max_miscast_damage(spell);
     vector <string> dam_flavors;
@@ -5003,13 +5001,15 @@ static string _miscast_damage_string(spell_type spell)
 
     if (!dam_flavors.empty())
     {
-        descs.push_back(make_stringf(T_("deals up to %d %s damage"), dam,
-                                     comma_separated_line(dam_flavors.begin(),
-                                                         dam_flavors.end(),
-                                                         T_(" or ")).c_str()));
+        const string flavors = comma_separated_line(
+            dam_flavors.begin(), dam_flavors.end(), T_(" or "));
+        descs.push_back(zh
+            ? make_stringf_p(C_("spell miscast", "deal up to %1$d %2$s damage"),
+                             dam, flavors.c_str())
+            : make_stringf(T_("deals up to %d %s damage"), dam, flavors.c_str()));
     }
 
-    return (descs.size() > 1 ? T_("either ") : "")
+    return (!zh && descs.size() > 1 ? T_("either ") : "")
          + comma_separated_line(descs.begin(), descs.end(), T_(" or "), T_("; "));
 }
 
@@ -5032,10 +5032,25 @@ static string _player_spell_desc(spell_type spell)
 
     ostringstream description;
 
-    description << T_("Miscasting this spell causes magic contamination")
-                << (fail_severity(spell) ?
-                    T_(" and also ") + _miscast_damage_string(spell) : "")
-                << T_(".\n");
+    if (Options.language == lang_t::ZH)
+    {
+        if (fail_severity(spell))
+        {
+            const string effects = _miscast_damage_string(spell);
+            description << make_stringf(
+                C_("spell miscast", "Miscasting this spell causes magic contamination and may %s.\n"),
+                effects.c_str());
+        }
+        else
+            description << C_("spell miscast", "Miscasting this spell causes magic contamination.\n");
+    }
+    else
+    {
+        description << T_("Miscasting this spell causes magic contamination")
+                    << (fail_severity(spell) ?
+                        T_(" and also ") + _miscast_damage_string(spell) : "")
+                    << T_(".\n");
+    }
 
     if (spell == SPELL_BATTLESPHERE)
     {
@@ -6438,8 +6453,11 @@ static string _monster_notice_chance(const monster_info& mi)
 
 static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxes, int chance)
 {
-    result << (T_(" and "))
-           << chance << (T_("% to hit with your "));
+    const bool zh = Options.language == lang_t::ZH;
+    if (!zh)
+        result << (T_(" and ")) << chance << (T_("% to hit with your "));
+    ostringstream attacks;
+    ostream &names = zh ? static_cast<ostream &>(attacks) : result;
 
     // Translate common aux attack names via T_()
     const map<string, string> aux_names = {
@@ -6462,18 +6480,24 @@ static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxe
         if (i > 0 && auxes.size() > 2)
         {
             if (i < auxes.size() - 1)
-                result << (T_(", "));
+                names << (T_(", "));
             else
-                result << (T_(", and "));
+                names << (T_(", and "));
         }
         else if (i == 1 && auxes.size() == 2)
-            result << (T_(" and "));
+            names << (T_(" and "));
 
         auto it = aux_names.find(auxes[i]);
         if (it != aux_names.end())
-            result << it->second;
+            names << it->second;
         else
-            result << auxes[i];
+            names << auxes[i];
+    }
+    if (zh)
+    {
+        result << make_stringf_p(
+            C_("hit chance", "; and a %1$d%% chance to hit with your %2$s"),
+            chance, attacks.str().c_str());
     }
 }
 
@@ -6542,6 +6566,22 @@ void describe_to_hit(const monster_info &mi, ostringstream &result,
 void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *weapon,
                          bool verbose, int distance_from)
 {
+    if (verbose && Options.language == lang_t::ZH)
+    {
+        const string attack_name = weapon
+            ? weapon->name(DESC_YOUR, false, false, false)
+            : you.hand_name(true);
+        result << make_stringf_p(
+            C_("hit chance", "You have about %1$d%% chance to hit with %2$s"),
+            hit_chance, attack_name.c_str());
+        if (you.duration[DUR_BLIND])
+        {
+            result << make_stringf(
+                C_("hit chance", " (while you are blinded and from distance %d)"),
+                distance_from);
+        }
+        return;
+    }
     if (verbose)
         result << (T_("about "));
 
@@ -7136,13 +7176,14 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
     if (crawl_state.game_started)
     {
-        result << (T_("You have "));
+        if (!zh)
+            result << (T_("You have "));
         describe_to_hit(mi, result, you.weapon(), true);
         if (mi.incapacitated()) // Affects ev and sh
             result << (T_(" (while incapacitated)"));
         else if (mi.base_ev != mi.ev)
             result << (T_(" (at present)"));
-        result << (T_(".\n"));
+        result << (zh ? C_("monster description", ".\n") : T_(".\n"));
     }
     result << _monster_attacks_description(mi);
     if (crawl_state.game_started)
@@ -7261,6 +7302,12 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                                    pronoun_upper.c_str());
         }
         result << str;
+        // Keep the next sentence separate even when translated entries lose
+        // trailing whitespace. Animated weapons already carry punctuation.
+        if (!mons_class_is_animated_weapon(mi.type) || plural)
+            result << C_("monster description", ".\n");
+        else
+            result << "\n";
     }
 
     if (!resist_descriptions.empty())

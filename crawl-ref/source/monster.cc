@@ -6502,7 +6502,7 @@ void monster::steal_item_from_player()
 
         you.del_gold(stolen_amount);
         mprf_p(T_("You now have %1$d gold piece%2$s."),
-             you.gold, you.gold != 1 ? "s" : "");
+             you.gold, Options.language != lang_t::ZH && you.gold != 1 ? "s" : "");
 
         return;
     }
