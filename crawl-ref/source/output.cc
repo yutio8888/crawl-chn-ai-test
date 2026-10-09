@@ -1167,9 +1167,10 @@ int contamination_hud_clear_width(bool compact, int contamination_percent)
 static void _print_stats_contam(int x, int y)
 {
     const bool compact = _uses_compact_hud();
-    const bool regular = !compact && !_uses_top_bar();
+    const bool top_bar = _uses_top_bar();
+    const bool regular = !compact && !top_bar;
     // Legacy compact coordinates are mapped from x=30 to the first column.
-    const int available = max(0, compact && !_uses_top_bar()
+    const int available = max(0, compact && !top_bar
         ? crawl_view.hudsz.x : crawl_view.hudsz.x - x + 1);
     const string caption = compact ? T_("Cont ") : T_("Contam: ");
     const int contam = max(you.magic_contamination > 0 ? 1 : 0,
@@ -1181,14 +1182,18 @@ static void _print_stats_contam(int x, int y)
     // The regular HUD reserves the right of the INT and DEX rows for this
     // field. Clear both rows on every update so digit shrinkage, disappearance,
     // and switching between one and two rows leave no stale percentage.
-    const string blank(regular ? available
-        : min(available, contamination_hud_clear_width(compact, contam)), ' ');
-    CGOTOXY(x, y, GOTO_STAT);
-    CPRINTF("%s", blank.c_str());
-    if (regular)
+    // The top bar already clears whole rows before drawing neighbouring fields.
+    if (!top_bar)
     {
-        CGOTOXY(x, y + 1, GOTO_STAT);
+        const string blank(regular ? available
+            : min(available, contamination_hud_clear_width(compact, contam)), ' ');
+        CGOTOXY(x, y, GOTO_STAT);
         CPRINTF("%s", blank.c_str());
+        if (regular)
+        {
+            CGOTOXY(x, y + 1, GOTO_STAT);
+            CPRINTF("%s", blank.c_str());
+        }
     }
     you.redraw_contam = false;
     if (you.magic_contamination == 0 && !Options.always_show_doom_contam)

@@ -121,16 +121,20 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
         for (bool with_object : {false, true})
+        {
             CHECK(mon_attack_name(AT_GORE, with_object)
                   == (language == lang_t::ZH ? "顶撞" : "gore"));
+        }
         monster_info remembered(MONS_SHADOWGHAST);
         remembered.mb.set(MB_REMEMBERED_INVIS);
         const auto attributes = remembered.attributes();
         const string flag = language == lang_t::ZH ? "曾在此处" : "remembered";
         CHECK(find(attributes.begin(), attributes.end(), flag) != attributes.end());
         if (language == lang_t::ZH)
+        {
             CHECK(find(attributes.begin(), attributes.end(), "remembered")
                   == attributes.end());
+        }
     }
 }
 

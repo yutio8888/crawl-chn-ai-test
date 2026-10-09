@@ -6494,9 +6494,11 @@ static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxe
             names << auxes[i];
     }
     if (zh)
+    {
         result << make_stringf_p(
             C_("hit chance", "; and a %1$d%% chance to hit with your %2$s"),
             chance, attacks.str().c_str());
+    }
 }
 
 /**
@@ -6573,9 +6575,11 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
             C_("hit chance", "You have about %1$d%% chance to hit with %2$s"),
             hit_chance, attack_name.c_str());
         if (you.duration[DUR_BLIND])
+        {
             result << make_stringf(
                 C_("hit chance", " (while you are blinded and from distance %d)"),
                 distance_from);
+        }
         return;
     }
     if (verbose)

@@ -310,9 +310,11 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_DEFEAT_MONSTER:
             if (second)
+            {
                 result << make_stringf_p(
                     C_("monster defeat note", "%1$s (ally) was %2$s"),
                     name.c_str(), C_("monster defeat note", desc.c_str()));
+            }
             else
             {
                 const string verb = uppercase_first(

@@ -2487,8 +2487,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (chinese)
             {
                 if (death_source_name == "you")
+                {
                     desc += terse ? C_("damage source", "their own ranged attack")
                                   : T_("Killed by their own ranged attack");
+                }
                 else if (!death_source_display_desc().empty())
                     desc += make_stringf(terse ? C_("damage source", "%s's ranged attack")
                                                    : T_("Killed by %s's ranged attack"),
