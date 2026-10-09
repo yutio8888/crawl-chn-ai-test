@@ -2201,7 +2201,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
             {
                 // Not exactly the same as the religion screen, but
                 // good enough to fill this slot for now.
-                desc += make_stringf(T_("Was %s of %s%s"),
+                desc += make_stringf_p(
+                    C_("score religion", "Was %1$s of %2$s%3$s"),
                              (piety >= piety_breakpoint(5)) ? T_("the Champion") :
                              (piety >= piety_breakpoint(4)) ? T_("a High Priest") :
                              (piety >= piety_breakpoint(3)) ? T_("an Elder") :
@@ -2294,7 +2295,9 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_MONSTER:
         if (chinese)
         {
-            if (terse || oneline)
+            if (terse)
+                desc += death_source_display_desc();
+            else if (oneline)
             {
                 desc += make_stringf(T_("killed by %s"),
                                      death_source_display_desc().c_str());
@@ -2322,7 +2325,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_HEADBUTT:
         if (chinese)
         {
-            desc += make_stringf(T_("killed by %s's headbutt"),
+            desc += make_stringf(terse ? C_("damage source", "%s's headbutt")
+                                      : T_("killed by %s's headbutt"),
                                  death_source_display_desc().c_str());
         }
         else if (terse)
@@ -2335,7 +2339,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_ROLLING:
         if (chinese)
         {
-            desc += make_stringf(T_("crushed by %s"),
+            desc += make_stringf(terse ? C_("damage source", "rolling by %s")
+                                      : T_("crushed by %s"),
                                  death_source_display_desc().c_str());
         }
         else if (terse)
@@ -2348,7 +2353,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_SPINES:
         if (chinese)
         {
-            desc += make_stringf(T_("impaled on %s's spines"),
+            desc += make_stringf(terse ? C_("damage source", "%s's spines")
+                                      : T_("impaled on %s's spines"),
                                  death_source_display_desc().c_str());
         }
         else if (terse)
@@ -2481,12 +2487,15 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (chinese)
             {
                 if (death_source_name == "you")
-                    desc += T_("Killed by their own ranged attack");
+                    desc += terse ? C_("damage source", "their own ranged attack")
+                                  : T_("Killed by their own ranged attack");
                 else if (!death_source_display_desc().empty())
-                    desc += make_stringf(T_("Killed by %s's ranged attack"),
+                    desc += make_stringf(terse ? C_("damage source", "%s's ranged attack")
+                                                   : T_("Killed by %s's ranged attack"),
                                          death_source_display_desc().c_str());
                 else
-                    desc += T_("Killed by a ranged attack");
+                    desc += terse ? C_("damage source", "a ranged attack")
+                                  : T_("Killed by a ranged attack");
             }
             else
                 desc += terse? terse_missile_cause() : auxkilldata;
@@ -2581,7 +2590,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             }
             else if (!death_source_name.empty())
             {
-                desc += make_stringf(terse ? T_("drowned by %s")
+                desc += make_stringf(terse ? C_("damage source", "water from %s")
                                             : T_("Drowned by %s"),
                                      death_source_display_desc().c_str());
                 needs_damage = true;
@@ -3098,7 +3107,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                             : (terse ? "" : "Killed by ") + auxkilldata;
         }
         else
-            desc += chinese ? (terse ? T_("died") : T_("Died")) : (terse ? "died" : "Died");
+            desc += chinese ? (terse ? C_("damage source", "unknown damage") : T_("Died")) : (terse ? "died" : "Died");
         needs_damage = true;
         break;
 

@@ -2186,7 +2186,7 @@ static string _get_trans_travel_dest(const level_pos &target,
     ostringstream dest;
 
     if (!skip_branch)
-        dest << branch;
+        dest << T_(branch);
     if (brdepth[branch_id] != 1)
     {
         if (!skip_branch)
@@ -5298,7 +5298,28 @@ bool explore_discoveries::stop_explore() const
     say_any(shops, "shop");
     say_any(apply_quantities(altars), "altar");
     say_any(apply_quantities(portals), "portal");
-    say_any(apply_quantities(stairs), "stair");
+    if (Options.language == lang_t::ZH)
+    {
+        vector<string> stair_descs;
+        int stair_count = 0;
+        for (const auto &stair : stairs)
+        {
+            stair_count += stair.thing;
+            stair_descs.push_back(make_stringf(C_("stair quantity", "%d %s"),
+                                               stair.thing, stair.name.c_str()));
+        }
+        if (!stair_descs.empty())
+        {
+            const string message = make_stringf(T_("Found %s."),
+                comma_separated_line(stair_descs.begin(), stair_descs.end()).c_str());
+            if (formatted_string::parse_string(message).width() >= get_number_of_cols())
+                mprf(C_("stair discovery", "Found %d stairs."), stair_count);
+            else
+                mpr(message);
+        }
+    }
+    else
+        say_any(apply_quantities(stairs), "stair");
     say_any(apply_quantities(hatches), N_("hatch"));
     say_any(apply_quantities(transporters), "transporter");
     say_any(apply_quantities(runed_doors), "runed door");

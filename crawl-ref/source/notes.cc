@@ -19,6 +19,7 @@
 #include "message.h"
 #include "mutation.h"
 #include "options.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "skills.h"
 #include "spl-util.h"
@@ -295,22 +296,31 @@ string Note::describe(bool when, bool where, bool what) const
                    << T_(" to Zin");
             break;
         case NOTE_GAIN_SKILL:
-            result << T_("Reached skill level ") << second
-                   << T_(" in ") << skill_name(static_cast<skill_type>(first));
+            result << make_stringf_p(
+                C_("skill note", "Reached skill level %1$d in %2$s"),
+                second, skill_name(static_cast<skill_type>(first)));
             break;
         case NOTE_LOSE_SKILL:
-            result << T_("Reduced skill ")
-                   << skill_name(static_cast<skill_type>(first))
-                   << T_(" to level ") << second;
+            result << make_stringf_p(
+                C_("skill note", "Reduced skill %1$s to level %2$d"),
+                skill_name(static_cast<skill_type>(first)), second);
             break;
         case NOTE_SEEN_MONSTER:
             result << T_("Encountered ") << name;
             break;
         case NOTE_DEFEAT_MONSTER:
             if (second)
-                result << name << T_(" (ally) was ") << desc;
+                result << make_stringf_p(
+                    C_("monster defeat note", "%1$s (ally) was %2$s"),
+                    name.c_str(), C_("monster defeat note", desc.c_str()));
             else
-                result << uppercase_first(desc) << " " << name;
+            {
+                const string verb = uppercase_first(
+                    C_("monster defeat note", desc.c_str()));
+                result << make_stringf_p(
+                    C_("monster defeat note", "%1$s %2$s"),
+                    verb.c_str(), name.c_str());
+            }
             break;
         case NOTE_POLY_MONSTER:
             result << name << T_(" changed into ") << desc;

@@ -1759,8 +1759,8 @@ static string _cell_interesting_terrain_description(const coord_def& pos)
     // feat_has_solid_floor().
     switch (feature)
     {
-    case DNGN_DEEP_WATER: return "water";
-    case DNGN_LAVA:       return "lava";
+    case DNGN_DEEP_WATER: return T_("water");
+    case DNGN_LAVA:       return T_("lava");
     default:              return "";
     }
 }
@@ -3034,24 +3034,10 @@ void describe_floor()
 {
     dungeon_feature_type grid = env.map_knowledge(you.pos()).feat();
 
-    const char* prefix = T_("There is ");
-    string feat;
-
-    switch (grid)
-    {
-    case DNGN_FLOOR:
-    case DNGN_MUD:
+    if (grid == DNGN_FLOOR || grid == DNGN_MUD)
         return;
 
-    case DNGN_ENTER_SHOP:
-        prefix = T_("There is an entrance to ");
-        break;
-
-    default:
-        break;
-    }
-
-    feat = feature_description_at(you.pos(), true, DESC_A);
+    const string feat = feature_description_at(you.pos(), true, DESC_A);
     if (feat.empty())
         return;
 
@@ -3061,7 +3047,9 @@ void describe_floor()
     if (feat_is_water(grid) || feat_is_lava(grid))
         return;
 
-    mprf(channel, T_("%s%s here."), prefix, feat.c_str());
+    mprf(channel, grid == DNGN_ENTER_SHOP
+         ? T_("There is an entrance to %s here.")
+         : T_("There is %s here."), feat.c_str());
     if (grid == DNGN_ENTER_GAUNTLET)
         mprf(MSGCH_EXAMINE, T_("Beware, the minotaur awaits!"));
     else if (feat_is_fountain(grid) || feat_is_food(grid))

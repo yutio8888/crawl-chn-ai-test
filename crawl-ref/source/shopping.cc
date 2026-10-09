@@ -974,7 +974,8 @@ enum shopping_order
 
 static const char * const shopping_order_names[NUM_ORDERS] =
 {
-    "type", "price", "name"
+    NC_("shop sort", "type"), NC_("shop sort", "price"),
+    NC_("shop sort", "name")
 };
 
 static shopping_order operator++(shopping_order &x)
@@ -1236,9 +1237,10 @@ void ShopMenu::update_help()
         hyphenated_hotkey_letters(item_count(), 'a').c_str(),
         menu_action == ACT_EXECUTE ? T_("mark item for purchase   ")
                                    : T_("examine item             ")));
+    const string order_name = C_("shop sort", shopping_order_names[order]);
     m += make_stringf(T_("\n[<w>/</w>] sort (%s)%s  %s"),
-        T_(shopping_order_names[order]),
-        string(7 - strwidth(T_(shopping_order_names[order])), ' ').c_str(),
+        order_name.c_str(),
+        string(max(0, 7 - strwidth(order_name)), ' ').c_str(),
         action_desc.c_str());
 
     m = pad_more_with(m, hyphenated_hotkey_letters(item_count(), 'A')
@@ -1714,6 +1716,7 @@ string shop_name(const shop_struct& shop)
     const shop_type type = shop.type;
 
     string sh_name = "";
+    const string separator = Options.language == lang_t::ZH ? "" : " ";
 
 #if TAG_MAJOR_VERSION == 34
     // xref ShopInfo::load
@@ -1721,14 +1724,14 @@ string shop_name(const shop_struct& shop)
         return shop.shop_type_name;
 #endif
     if (!shop.shop_name.empty())
-        sh_name += apostrophise(shop.shop_name) + " ";
+        sh_name += apostrophise(shop.shop_name) + separator;
     else
     {
         uint32_t seed = static_cast<uint32_t>(shop.keeper_name[0])
             | (static_cast<uint32_t>(shop.keeper_name[1]) << 8)
             | (static_cast<uint32_t>(shop.keeper_name[2]) << 16);
 
-        sh_name += apostrophise(make_name(seed)) + " ";
+        sh_name += apostrophise(make_name(seed)) + separator;
     }
 
     if (!shop.shop_type_name.empty())
@@ -1737,12 +1740,12 @@ string shop_name(const shop_struct& shop)
         sh_name += shop_type_name(type);
 
     if (!shop.shop_suffix_name.empty())
-        sh_name += " " + shop.shop_suffix_name;
+        sh_name += separator + shop.shop_suffix_name;
     else
     {
         string sh_suffix = _shop_type_suffix(type, shop.pos);
         if (!sh_suffix.empty())
-            sh_name += " " + sh_suffix;
+            sh_name += separator + sh_suffix;
     }
 
     return sh_name;

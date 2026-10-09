@@ -93,7 +93,10 @@ bool attribute_increase()
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
     }
-    mprf(MSGCH_PROMPT, T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
+    mprf(MSGCH_PROMPT, need_caps
+         ? C_("uppercase stat prompt",
+              "Increase (S)trength, (I)ntelligence, or (D)exterity? ")
+         : T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
     mouse_control mc(MOUSE_MODE_PROMPT);
 
     bool tried_lua = false;

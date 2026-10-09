@@ -239,9 +239,10 @@ static void _climb_message(dungeon_feature_type stair, bool going_up,
     }
     else if (stair != DNGN_ALTAR_IGNIS)
     {
-        mprf(T_("You %s %s."),
-             you.airborne() ? T_("fly") : T_("climb"),
-             going_up ? T_("up") : T_("down"));
+        if (you.airborne())
+            mpr(going_up ? T_("You fly up.") : T_("You fly down."));
+        else
+            mpr(going_up ? T_("You climb up.") : T_("You climb down."));
     }
 }
 

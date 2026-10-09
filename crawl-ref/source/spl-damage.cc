@@ -1395,36 +1395,36 @@ struct feature_frag
 
 static const map<dungeon_feature_type, feature_frag> fraggable_terrain = {
     // Stone and rock terrain
-    { DNGN_ROCK_WALL, { "rock", "wall" } },
-    { DNGN_SLIMY_WALL, { "rock", "wall" } },
-    { DNGN_STONE_WALL, { "rock", "wall" } },
-    { DNGN_PERMAROCK_WALL, { "rock", "wall" } },
-    { DNGN_CLEAR_ROCK_WALL, { "rock", "wall" } },
-    { DNGN_CLEAR_STONE_WALL, { "rock", "wall" } },
-    { DNGN_CLEAR_PERMAROCK_WALL, { "rock", "wall" } },
-    { DNGN_ORCISH_IDOL, { "rock", "stone idol" } },
-    { DNGN_GRANITE_STATUE, { "rock", "statue" } },
-    { DNGN_PETRIFIED_TREE, { "rock", "petrified wood" } },
-    { DNGN_SPIKE_LAUNCHER, { "rock", "spike launcher" } },
+    { DNGN_ROCK_WALL, { "rock", N_("wall") } },
+    { DNGN_SLIMY_WALL, { "rock", N_("wall") } },
+    { DNGN_STONE_WALL, { "rock", N_("wall") } },
+    { DNGN_PERMAROCK_WALL, { "rock", N_("wall") } },
+    { DNGN_CLEAR_ROCK_WALL, { "rock", N_("wall") } },
+    { DNGN_CLEAR_STONE_WALL, { "rock", N_("wall") } },
+    { DNGN_CLEAR_PERMAROCK_WALL, { "rock", N_("wall") } },
+    { DNGN_ORCISH_IDOL, { "rock", N_("stone idol") } },
+    { DNGN_GRANITE_STATUE, { "rock", N_("statue") } },
+    { DNGN_PETRIFIED_TREE, { "rock", N_("petrified wood") } },
+    { DNGN_SPIKE_LAUNCHER, { "rock", N_("spike launcher") } },
     // Stone arches and doors
-    { DNGN_OPEN_DOOR, { "rock", "stone door frame" } },
-    { DNGN_OPEN_CLEAR_DOOR, { "rock", "stone door frame" } },
-    { DNGN_CLOSED_DOOR, { "rock", "stone door frame" } },
-    { DNGN_CLOSED_CLEAR_DOOR, { "rock", "stone door frame" } },
-    { DNGN_RUNED_DOOR, { "rock", "stone door frame" } },
-    { DNGN_RUNED_CLEAR_DOOR, { "rock", "stone door frame" } },
-    { DNGN_SEALED_DOOR, { "rock", "stone door frame" } },
-    { DNGN_SEALED_CLEAR_DOOR, { "rock", "stone door frame" } },
-    { DNGN_BROKEN_DOOR, { "rock", "stone door frame" } },
-    { DNGN_BROKEN_CLEAR_DOOR, { "rock", "stone door frame" } },
-    { DNGN_STONE_ARCH, { "rock", "stone arch" } },
+    { DNGN_OPEN_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_OPEN_CLEAR_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_CLOSED_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_CLOSED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_RUNED_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_RUNED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_SEALED_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_SEALED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_BROKEN_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_BROKEN_CLEAR_DOOR, { "rock", N_("stone door frame") } },
+    { DNGN_STONE_ARCH, { "rock", N_("stone arch") } },
     // Metal -- small but nasty explosion
-    { DNGN_METAL_STATUE, { "metal", "metal statue", frag_damage_type::metal } },
-    { DNGN_METAL_WALL, { "metal", "metal wall", frag_damage_type::metal } },
-    { DNGN_GRATE, { "metal", "iron grate", frag_damage_type::metal } },
-    { DNGN_ZOT_STATUE, { "metal", "metal statue" } },
+    { DNGN_METAL_STATUE, { "metal", N_("metal statue"), frag_damage_type::metal } },
+    { DNGN_METAL_WALL, { "metal", N_("metal wall"), frag_damage_type::metal } },
+    { DNGN_GRATE, { "metal", N_("iron grate"), frag_damage_type::metal } },
+    { DNGN_ZOT_STATUE, { "metal", N_("metal statue") } },
     // Crystal -- large & nasty explosion
-    { DNGN_CRYSTAL_WALL, { "crystal", "crystal wall",
+    { DNGN_CRYSTAL_WALL, { "crystal", N_("crystal wall"),
                            frag_damage_type::crystal } },
 };
 
@@ -1565,7 +1565,7 @@ spret cast_fragmentation(int pow, const actor *caster,
     if (is_terrain)
     {
         if (you.see_cell(target))
-            mprf(T_("The %s shatters!"), what);
+            mprf(T_("The %s shatters!"), T_(what));
     }
     else if (target == you.pos()) // You explode.
     {

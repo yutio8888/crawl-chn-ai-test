@@ -3072,13 +3072,15 @@ static void _print_battlecry_announcement(const monster& chief,
 
     if (spell_cast == SPELL_BATTLECRY)
     {
-        mprf(channel, T_("%s %s go into a battle-frenzy!"),
-            chief.friendly() ? "Your" : "The", ally_desc.c_str());
+        mprf(channel, chief.friendly()
+            ? T_("Your %s go into a battle-frenzy!")
+            : T_("The %s go into a battle-frenzy!"), ally_desc.c_str());
     }
     else if (spell_cast == SPELL_HUNTING_CALL)
     {
-        mprf(channel, T_("%s %s pick up the pace!"),
-            chief.friendly() ? "Your" : "The", ally_desc.c_str());
+        mprf(channel, chief.friendly()
+            ? T_("Your %s pick up the pace!")
+            : T_("The %s pick up the pace!"), ally_desc.c_str());
     }
 }
 
@@ -9795,24 +9797,23 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
 
     if (thrower_seen || throwee_seen)
     {
-        const string destination = you.can_see(*foe) ?
-                                   make_stringf(T_("at %s"),
-                                                foe->name(DESC_THE).c_str()) :
-                                   T_("out of sight");
-
-        // ZH: Chinese has no articles — this branches on DESC_PLAIN vs DESC_THE
-        // to select the appropriate monster name format. Not a translation
-        // branch per se; this is a display layout rule.
-        mprf(T_("%s throws %s %s!"),
-             (thrower_seen ? (Options.language == lang_t::ZH
-                                  ? thrower.name(DESC_PLAIN).c_str()
-                                  : thrower.name(DESC_THE).c_str())
-                           : (T_("Something"))),
-             (throwee_seen ? (Options.language == lang_t::ZH
-                                  ? throwee.name(DESC_PLAIN, true).c_str()
-                                  : throwee.name(DESC_THE, true).c_str())
-                           : (T_("something"))),
-             destination.c_str());
+        // Localized names are display-only; movement still uses chosen_dest.
+        const string thrower_name = thrower_seen
+            ? thrower.name(Options.language == lang_t::ZH ? DESC_PLAIN : DESC_THE)
+            : T_("Something");
+        const string throwee_name = throwee_seen
+            ? throwee.name(Options.language == lang_t::ZH ? DESC_PLAIN : DESC_THE, true)
+            : T_("something");
+        if (you.can_see(*foe))
+        {
+            mprf(T_("%s throws %s at %s!"), thrower_name.c_str(),
+                 throwee_name.c_str(), foe->name(DESC_THE).c_str());
+        }
+        else
+        {
+            mprf(T_("%s throws %s out of sight!"), thrower_name.c_str(),
+                 throwee_name.c_str());
+        }
 
         bolt beam = bolt::visual_beam(thrower.pos(), chosen_dest, 30,
                                       mons_class_colour(throwee.type));

@@ -1239,10 +1239,12 @@ string StashTracker::stash_search_prompt()
             make_stringf(T_("Enter for \"%s\""), disp.c_str()));
     }
     if (lastsearch != ".")
-        opts.emplace_back("? for help");
+        opts.emplace_back(T_("? for help"));
 
     string prompt_qual =
-        comma_separated_line(opts.begin(), opts.end(), ", or ", ", or ");
+        comma_separated_line(opts.begin(), opts.end(),
+                             C_("stash search", ", or "),
+                             C_("stash search", ", or "));
 
     if (!prompt_qual.empty())
         prompt_qual = " [" + prompt_qual + "]";
@@ -1762,7 +1764,7 @@ formatted_string StashSearchMenu::calc_title()
             " <w>%s</w> useless & duplicates [<w>=</w>]"
             "</lightgrey>"),
             menu_action == ACT_EXECUTE ? T_("travel") : T_("view"),
-            sort_style, filtered));
+            C_("stash sort", sort_style), C_("stash filter", filtered)));
     }
     fs.cprintf(string(max(0, strwidth(prefixes[!f])-strwidth(prefixes[f])),
                       ' '));
@@ -1853,10 +1855,12 @@ bool StashTracker::display_search_results(
     else if (sort_mode == STASH_SORT_TYPE)
         stable_sort(results->begin(), results->end(), _compare_by_type);
 
-    StashSearchMenu stashmenu(sort_mode == STASH_SORT_DIST ? "dist"
-                              : sort_mode == STASH_SORT_TYPE ? "type"
-                                                             : "name",
-                              filter_useless ? "hide" : "show");
+    StashSearchMenu stashmenu(
+        sort_mode == STASH_SORT_DIST ? NC_("stash sort", "dist")
+            : sort_mode == STASH_SORT_TYPE ? NC_("stash sort", "type")
+                                          : NC_("stash sort", "name"),
+        filter_useless ? NC_("stash filter", "hide")
+                       : NC_("stash filter", "show"));
     stashmenu.set_tag("stash");
     stashmenu.action_cycle = Menu::CYCLE_TOGGLE;
     stashmenu.menu_action  = default_execute ? Menu::ACT_EXECUTE

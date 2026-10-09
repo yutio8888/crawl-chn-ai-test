@@ -268,12 +268,12 @@ static void _sdump_visits(dump_params &par)
 {
     string &text(par.text);
 
-    const char* have = "have ";
-    const char* seen = "seen";
+    const char* have = Options.language == lang_t::ZH ? "" : "have ";
+    const char* seen = Options.language == lang_t::ZH ? "" : "seen";
     if (par.se) // you died -> past tense
     {
         have = "";
-        seen = "saw";
+        seen = Options.language == lang_t::ZH ? "" : "saw";
     }
 
     const vector<PlaceInfo> branches_visited = you.get_all_place_info(true, true);
@@ -284,8 +284,8 @@ static void _sdump_visits(dump_params &par)
 
     text += make_stringf_p(T_("You %1$svisited %2$d branch"),
                          have, (int)branches_visited.size());
-    if (branches_visited.size() != 1)
-        text += T_("es");
+    if (Options.language != lang_t::ZH && branches_visited.size() != 1)
+        text += "es";
     if (brdepth[root_branch] > 1 || branches_visited.size() != 1)
     {
         text += make_stringf_p(T_(" of the dungeon, and %1$s %2$d of its levels.\n"),
@@ -298,8 +298,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited Pandemonium %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += make_stringf_p(T_(", and %1$s %2$d of its levels.\n"),
                                  seen, place_info.levels_seen);
         }
@@ -311,8 +311,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the Abyss %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -323,8 +323,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited %2$d bazaar"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -335,8 +335,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the chambers of the Necropolis %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -351,8 +351,8 @@ static void _sdump_visits(dump_params &par)
                                  (num_zigs == you.zigs_completed) ? T_("completed")
                                                                   : T_("visited"),
                                  num_zigs);
-            if (num_zigs > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && num_zigs > 1)
+                text += "s";
             if (num_zigs != you.zigs_completed && you.zigs_completed)
                 text += make_stringf(T_(" (completing %d)"), you.zigs_completed);
             text += make_stringf_p(T_(", and %1$s %2$d of %3$s levels"),
@@ -392,7 +392,7 @@ static void _sdump_gold(dump_params &par)
 
     int lines = 0;
 
-    const char* have = "have ";
+    const char* have = Options.language == lang_t::ZH ? "" : "have ";
     if (par.se) // you died -> past tense
         have = "";
 
@@ -1025,6 +1025,18 @@ static string spell_type_shortname(spschool spell_class, bool slash)
 static void _sdump_spells(dump_params &par)
 {
     string &text(par.text);
+    // Compound damage expressions must stay intact, including their closing
+    // parenthesis. Keep a separating space before the failure column.
+    int damage_width = max(10, strwidth(T_("Damage")) + 1);
+    for (int j = 0; j < 52; ++j)
+    {
+        const spell_type spell = get_spell_by_letter(index_to_letter(j));
+        if (spell != SPELL_NO_SPELL)
+            damage_width = max(damage_width, strwidth(spell_damage_string(spell)) + 1);
+    }
+    const auto library = get_sorted_spell_list(true, false);
+    for (const spell_type spell : library)
+        damage_width = max(damage_width, strwidth(spell_damage_string(spell)) + 1);
 
     if (!you.has_mutation(MUT_INNATE_CASTER))
     {
@@ -1064,7 +1076,7 @@ static void _sdump_spells(dump_params &par)
         text += " " + chop_string(T_("Your Spells"), 25)
                 + chop_string(T_("Type"), 15)
                 + chop_string(T_("Power"), 11)
-                + chop_string(T_("Damage"), 10)
+                + chop_string(T_("Damage"), damage_width)
                 + chop_string(T_("Failure"), 12)
                 + T_("Level") + "\n";
 
@@ -1104,11 +1116,11 @@ static void _sdump_spells(dump_params &par)
                 const string spell_damage = spell_damage_string(spell);
                 spell_line += spell_damage.length() ? spell_damage : T_("N/A");
 
-                spell_line = chop_string(spell_line, 62);
+                spell_line = chop_string(spell_line, 52 + damage_width);
 
                 spell_line += failure_rate_to_string(raw_spell_fail(spell));
 
-                spell_line = chop_string(spell_line, 74);
+                spell_line = chop_string(spell_line, 64 + damage_width);
 
                 spell_line += make_stringf("%d", spell_difficulty(spell));
 
@@ -1132,11 +1144,9 @@ static void _sdump_spells(dump_params &par)
         text += " " + chop_string(T_("Spells"), 25)
                 + chop_string(T_("Type"), 15)
                 + chop_string(T_("Power"), 11)
-                + chop_string(T_("Damage"), 10)
+                + chop_string(T_("Damage"), damage_width)
                 + chop_string(T_("Failure"), 12)
                 + T_("Level") + "\n";
-
-        auto const library = get_sorted_spell_list(true, false);
 
         for (const spell_type spell : library)
         {
@@ -1173,14 +1183,14 @@ static void _sdump_spells(dump_params &par)
             const string spell_damage = spell_damage_string(spell);
             spell_line += spell_damage.length() ? spell_damage : T_("N/A");
 
-            spell_line = chop_string(spell_line, 62);
+            spell_line = chop_string(spell_line, 52 + damage_width);
 
             if (memorisable)
                 spell_line += failure_rate_to_string(raw_spell_fail(spell));
             else
                 spell_line += T_("N/A");
 
-            spell_line = chop_string(spell_line, 74);
+            spell_line = chop_string(spell_line, 64 + damage_width);
 
             spell_line += make_stringf("%d", spell_difficulty(spell));
 
