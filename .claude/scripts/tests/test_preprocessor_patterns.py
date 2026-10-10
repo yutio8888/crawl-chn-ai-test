@@ -414,9 +414,9 @@ void f() {
 '''
         with tempfile.TemporaryDirectory() as td:
             # Reproduce macOS's /var -> /private/var canonicalization on Linux.
-            physical_root = Path(td) / 'physical'
+            physical_root = Path(td).resolve() / 'physical'
             physical_root.mkdir()
-            root = Path(td) / 'linked'
+            root = Path(td).resolve() / 'linked'
             root.symlink_to(physical_root, target_is_directory=True)
             target = root / 'sample.cc'
             target.write_text(source)
@@ -450,7 +450,7 @@ void f() {
 }
 '''
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'sample.cc'; target.write_text(source)
             database = self.database(root, 'disabled', ('sample.cc',), ('-Dappend(x)=clear()',))
             self.assertNotIn(b'bare display', CppCompilationDatabase(database).source(target).source)
@@ -463,9 +463,9 @@ void f() {
 
     def test_lifetime_helpers_from_mutually_exclusive_builds_are_separate(self):
         with tempfile.TemporaryDirectory() as td:
-            physical_root = Path(td) / 'physical'
+            physical_root = Path(td).resolve() / 'physical'
             physical_root.mkdir()
-            root = Path(td) / 'linked'
+            root = Path(td).resolve() / 'linked'
             root.symlink_to(physical_root, target_is_directory=True)
             (root / 'helper.cc').write_text('''const char *choose() {
 #ifdef BORROW
@@ -489,7 +489,7 @@ void f() {
 
     def test_missing_configuration_and_real_cpp_or_syntax_errors_block(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'sample.cc'
             (root / 'other.cc').write_text('void g() {}\n')
             missing = self.database(root, 'missing', ('other.cc',))
@@ -508,7 +508,7 @@ void f() {
 
     def test_tu_only_request_rejects_source_line_directives_in_included_header(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'main.cc'
             target.write_text('#include "body.h"\nvoid f() {}\n')
             header = root / 'body.h'
@@ -525,7 +525,7 @@ void f() {
 
     def test_explicit_configuration_requires_parser_without_optional_flag(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'sample.cc'; target.write_text('void f() {}\n')
             database = self.database(root, 'source', ('sample.cc',))
             for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
@@ -537,7 +537,7 @@ void f() {
 
     def test_macro_parse_failure_reports_original_invocation_line(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'sample.cc'
             target.write_text('#include "calls.h"\nvoid f(){\n  BAD();\n}\n')
             (root / 'calls.h').write_text('#define BAD() int value =\n')
@@ -550,7 +550,7 @@ void f() {
 
     def test_header_keeps_enclosing_class_and_physical_findings(self):
         with tempfile.TemporaryDirectory(prefix='issue120-包含 空格-') as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / '成员.h'
             header.write_text('''const char *borrowed = LOOKUP("cached");
 void f() {
@@ -586,7 +586,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_deleted_mpr_header_uses_real_context_and_keeps_risk_and_syntax_checks(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / 'mpr.h'
             source = ('class formatted_string;\n'
                       'void mpr(const formatted_string &) = delete;\n'
@@ -622,7 +622,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_header_argument_and_repeated_inclusion_keep_actual_macro_context(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / 'argument.h'
             header.write_text('VALUE\n')
             (root / 'main.cc').write_text('''void f() {
@@ -648,7 +648,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_header_helpers_are_expanded_and_isolated_by_translation_unit(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / 'slot.h'
             header.write_text('static const char *p = choose();\n')
             (root / 'helper.h').write_text('inline const char *choose(){return GET("key");}\n')
@@ -668,7 +668,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_one_successful_header_context_cannot_hide_a_later_failure(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / 'body.h'
             header.write_text('VALUE;\n')
             (root / 'good.cc').write_text('#define VALUE int n = 1\n#include "body.h"\n')
@@ -689,7 +689,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_header_context_absence_cpp_syntax_and_line_forgery_block(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             header = root / 'body.h'
             unit = root / 'main.cc'
             good_unit = 'void f(){\n#include "body.h"\n}\n'
@@ -712,7 +712,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_header_batch_preprocesses_each_unit_once_and_keeps_ancestors(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             (root / 'one.h').write_text('void f() { CALL(); }\n')
             (root / 'two.h').write_text('void g() {}\n')
             (root / 'outer.h').write_text('class Outer{\n#include "one.h"\n};\n')
@@ -735,7 +735,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_compilation_database_preserves_flags_and_rejects_ambiguous_entries(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             (root / 'sample.cc').write_text('#ifdef FLAG\nint selected;\n#endif\n')
             database = self.database(root, 'source', ('sample.cc',), ('-DFLAG',))
             loaded = CppCompilationDatabase(database)
@@ -810,10 +810,13 @@ void unrelated(){ mprf("%s", std::string("outside"));
                 for entry in json.loads(database.read_text()):
                     source = entry['file']
                     obj = str(Path(source).with_suffix('.o'))
+                    probe_makefile = Path(td) / 'probe.mk'
+                    probe_makefile.write_text('MAKECMDGOALS := ' + goal + '\n'
+                        + 'include Makefile\n.PHONY: ' + obj + '\n'
+                        + obj + ': ' + source + '\n' + recipe + '\n')
                     probe = subprocess.run(
                         ['make', '-C', str(source_dir), '-n', '-o', source, obj,
-                         '--eval=MAKECMDGOALS := ' + goal,
-                         '--eval=.PHONY: ' + obj + '\n' + obj + ': ' + source + '\n' + recipe,
+                         '-f', str(probe_makefile),
                          *options],
                         capture_output=True, text=True)
                     self.assertEqual(probe.returncode, 0, probe.stdout + probe.stderr)
@@ -862,10 +865,13 @@ void unrelated(){ mprf("%s", std::string("outside"));
             for entry in json.loads(database.read_text()):
                 source = entry['file']
                 obj = str(Path(source).with_suffix('.o'))
+                probe_makefile = Path(td) / 'probe.mk'
+                probe_makefile.write_text('include Makefile\n.PHONY: ' + obj + '\n'
+                    + obj + ': ' + source + '\n' + recipe + '\n')
                 probe = subprocess.run(
                     ['make', '-C', str(source_dir), '-n', '-o', source, obj,
                      'HOSTCXX=' + self.compiler, 'TILES=y', 'DEBUG=y', 'ANDROID=1', 'V=1',
-                     '--eval=.PHONY: ' + obj + '\n' + obj + ': ' + source + '\n' + recipe],
+                     '-f', str(probe_makefile)],
                     capture_output=True, text=True)
                 self.assertEqual(probe.returncode, 0, probe.stdout + probe.stderr)
                 commands = [shlex.split(line) for line in probe.stdout.splitlines()
@@ -876,7 +882,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_export_does_not_read_stale_dependencies_or_build_files(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             tile_dir = root / 'crawl-ref/source/rltiles'
             (tile_dir / 'tool').mkdir(parents=True)
             scripts = root / '.claude/scripts'
@@ -895,7 +901,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
                  'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=commands.json'],
                 capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertTrue(database.is_file())
+            self.assertTrue(database.is_file(), result.stdout + result.stderr)
             after = {str(path.relative_to(root)): path.read_bytes()
                      for path in root.rglob('*') if path.is_file() and path != database}
             self.assertEqual(after, before)
@@ -909,7 +915,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_export_collection_failure_preserves_previous_database(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             database = root / 'database.json'
             database.write_bytes(b'previous database\n')
             result = subprocess.run(
@@ -927,7 +933,7 @@ void unrelated(){ mprf("%s", std::string("outside"));
 
     def test_output_and_dependency_options_cannot_overwrite_artifacts(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             target = root / 'sample.cc'; target.write_text('int value;\n')
             output = root / 'object.o'; output.write_bytes(b'object sentinel')
             dependency = root / 'deps.d'; dependency.write_bytes(b'dependency sentinel')
