@@ -103,13 +103,7 @@ bool shell_safe(const char *file)
 
 bool key_is_escape(int key)
 {
-    switch (key)
-    {
-    CASE_ESCAPE
-        return true;
-    default:
-        return false;
-    }
+    return key == ESCAPE || key == CONTROL('G') || key == -1;
 }
 
 // Returns true if s contains tag 'tag', and strips out tag from s.

@@ -571,6 +571,12 @@ Makefile 导出器拒绝 header、utility、rltiles、Catch2 等有特殊上下�
 不同 DB 的 helper 不混合。原始源码结果始终保留，宏配置不能删掉已有风险。
 进程内复用同一 DB 的展开结果，不使用后台服务或持久缓存。
 
+原始 annotation 适配保留 Windows `static BOOL WINAPI` 回调的调用约定，
+仅在实际函数声明前缀中等长置空 `WINAPI`，签名和函数体仍严格解析。
+显式展开入口将实际 clang/GCC diagnostic push/pop/ignored pragma 等长
+置空，使 Catch2 的 if 与函数体之间的警告控制不干扰语法；不处理其他 pragma，
+不改风险表达式、字节偏移或换行，真实语法错误仍阻断。
+
 完整替换的剩余语法、header 上下文和平台覆盖边界见
 `docs/issue120-scanner-preproc-report.md` 的显式实验记录。
 

@@ -37927,10 +37927,10 @@ status|Fire
 着火
 %%%%
 status|Fire+
-火焰+
+着火+
 %%%%
 status|Fire++
-火焰++
+着火++
 %%%%
 status|Flay
 剥皮

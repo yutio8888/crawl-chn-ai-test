@@ -48,6 +48,7 @@
 #include "newgame.h"
 #include "notes.h"
 #include "options.h"
+#include "player-equip.h"
 #include "player.h"
 #include "player-reacts.h"
 #include "player-save-info.h"
@@ -5461,8 +5462,9 @@ TEST_CASE("issue147: real summoning messages preserve upstream English and ZH ar
         scoped_monspeak_world world;
         // A real boulder cast queues an action. Keep that test-only action
         // from surviving after the summoned monster slot is reset.
-        unwind_var<decltype(monster_queue)> restore_queue(monster_queue);
-        monster_queue = decltype(monster_queue)();
+        using monster_action_queue = decltype(monster_queue);
+        unwind_var<monster_action_queue> restore_queue(monster_queue);
+        monster_queue = monster_action_queue();
         unwind_var<map_markers> restore_markers(env.markers);
         vector<mid_t> old_mids;
         for (int i = 0; i < MAX_MONSTERS; ++i)
@@ -5652,8 +5654,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you = player();
     init_duration_index();
     you.duration[DUR_STICKY_FLAME] = 10;
-    const auto row = GENERATE(table<int, const char*>({
-        {7, "Fire"}, {8, "Fire+"}, {12, "Fire+"}, {13, "Fire++"},
+    const auto row = GENERATE(table<int, const char*, const char*>({
+        {7, "Fire", "着火"}, {8, "Fire+", "着火+"},
+        {12, "Fire+", "着火+"}, {13, "Fire++", "着火++"},
     }));
     const string key = std::get<1>(row);
     you.props[STICKY_FLAME_POWER_KEY] = std::get<0>(row);
@@ -5665,6 +5668,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(info.db_key == key);
         CHECK(info.light_text == (language == lang_t::ZH
                                  ? string(C_("status", key.c_str())) : key));
+        if (language == lang_t::ZH)
+            CHECK(info.light_text == std::get<2>(row));
         if (language == lang_t::ZH && key == "Fire")
         {
             CHECK(info.light_text != T_("Fire"));
@@ -5781,7 +5786,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     weapon.base_type = OBJ_WEAPONS;
     weapon.sub_type = WPN_DAGGER;
     weapon.quantity = 1;
-    you.equip[EQ_WEAPON] = 0;
+    weapon.link = 0;
+    equip_item(SLOT_WEAPON, 0, false, true);
     monster target;
     target.type = MONS_ORC;
     target.hit_points = target.max_hit_points = 20;
@@ -5846,7 +5852,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         INFO(pane);
         CHECK(pane.find(body) != string::npos);
         const string title = language == lang_t::ZH
-            ? string(C_("flag long", "surrounded by mutagenic energy"))
+            ? string(T_("Surrounded by mutagenic energy"))
             : "Surrounded by mutagenic energy";
         CHECK(pane.find(title + ":") != string::npos);
         if (language == lang_t::ZH)
