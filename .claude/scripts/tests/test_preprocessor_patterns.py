@@ -888,14 +888,6 @@ void unrelated(){ mprf("%s", std::string("outside"));
             scripts = root / '.claude/scripts'
             scripts.mkdir(parents=True)
             shutil.copy(ROOT / 'crawl-ref/source/rltiles/Makefile', tile_dir)
-            # If an export quietly exits without a database, capture the flags
-            # as expanded in the recipe (not their earlier parse-time value).
-            fixture_makefile = tile_dir / 'Makefile'
-            fixture_makefile.write_text(fixture_makefile.read_text().replace(
-                '@set -eu;',
-                '@$(info ISSUE120 export MAKE_VERSION=$(MAKE_VERSION) '
-                'MAKEFLAGS=$(MAKEFLAGS))set -eu;',
-            ))
             shutil.copy(SCRIPTS / 'export_compile_commands.py', scripts)
             (tile_dir / 'tool/main.d').write_text('$(error stale dependency was read)\n')
             (tile_dir / '.cflags').write_text('existing compiler flags\n')
@@ -903,23 +895,39 @@ void unrelated(){ mprf("%s", std::string("outside"));
             before = {str(path.relative_to(root)): path.read_bytes()
                       for path in root.rglob('*') if path.is_file()}
             database = root / 'commands.json'
-            result = subprocess.run(
-                ['make', '-C', str(tile_dir), 'i18n-compile-commands',
-                 'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
-                 'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=commands.json'],
-                capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertTrue(database.is_file(), result.stdout + result.stderr)
-            after = {str(path.relative_to(root)): path.read_bytes()
-                     for path in root.rglob('*') if path.is_file() and path != database}
-            self.assertEqual(after, before)
-            result = subprocess.run(
-                ['make', '-n', '-C', str(tile_dir), 'i18n-compile-commands',
-                 'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
-                 'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=not-created.json'],
-                capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertFalse((root / 'not-created.json').exists())
+            command = ['make', '-C', str(tile_dir), 'i18n-compile-commands',
+                       'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                       'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=commands.json']
+            # GNU make 3.81 can put assignments first when no short option
+            # is set. An "n" in commands.json is not the dry-run flag.
+            assignment_flags = ('MAKEFLAGS=I18N_COMPILE_COMMANDS=commands.json '
+                                'I18N_SCAN_FILES=all PYTHON=' + sys.executable
+                                + ' HOSTCXX=' + self.compiler)
+            for options in ([], [assignment_flags]):
+                with self.subTest(makeflags=options):
+                    database.unlink(missing_ok=True)
+                    result = subprocess.run(command + options,
+                                            capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertTrue(database.is_file(), result.stdout + result.stderr)
+                    after = {str(path.relative_to(root)): path.read_bytes()
+                             for path in root.rglob('*')
+                             if path.is_file() and path != database}
+                    self.assertEqual(after, before)
+            before_dryrun = {str(path.relative_to(root)): path.read_bytes()
+                             for path in root.rglob('*') if path.is_file()}
+            for dryrun in ('-n', '--dry-run'):
+                with self.subTest(dryrun=dryrun):
+                    result = subprocess.run(
+                        ['make', dryrun, '-C', str(tile_dir), 'i18n-compile-commands',
+                         'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                         'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=not-created.json'],
+                        capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertFalse((root / 'not-created.json').exists())
+                    after_dryrun = {str(path.relative_to(root)): path.read_bytes()
+                                    for path in root.rglob('*') if path.is_file()}
+                    self.assertEqual(after_dryrun, before_dryrun)
 
     def test_export_collection_failure_preserves_previous_database(self):
         with tempfile.TemporaryDirectory() as td:

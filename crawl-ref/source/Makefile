@@ -1954,7 +1954,7 @@ i18n-compile-commands:
 	$(if $(filter all,$(I18N_SCAN_FILES)),$(if $(word 2,$(I18N_SCAN_FILES)),$(error Use all alone)))
 	$(if $(filter-out $(I18N_SOURCES),$(I18N_SELECTED)),$(error I18N_SCAN_FILES must belong to the selected build goal))
 	+@set -eu; \
-	  test -z "$(findstring n,$(filter-out --%,$(firstword $(MAKEFLAGS))))" || exit 0; \
+	  test -z "$(if $(findstring =,$(firstword $(MAKEFLAGS))),,$(findstring n,$(filter-out --%,$(firstword $(MAKEFLAGS)))))" || exit 0; \
 	  command_dir=$$(mktemp -d); trap 'rm -rf "$$command_dir"' 0; \
 	  $(MAKE) --no-print-directory $(I18N_SELECTED:%=%.i18n-command) I18N_COMMAND_DIR="$$command_dir"; \
 	  $(PYTHON) $(I18N_EXPORTER) collect "$(I18N_COMPILE_COMMANDS)" "$$command_dir" $(I18N_SELECTED)
