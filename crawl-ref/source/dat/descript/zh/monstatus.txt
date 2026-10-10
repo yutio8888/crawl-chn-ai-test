@@ -559,7 +559,7 @@ surrounded by freezing clouds monstatus
 %%%%
 surrounded by mutagenic energy monstatus
 
-这个生物周围环绕着一圈变异雾气。
+这个生物周围环绕着一圈诱变雾气。
 %%%%
 surrounded by negative energy monstatus
 

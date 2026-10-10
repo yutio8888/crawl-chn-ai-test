@@ -1787,7 +1787,7 @@ barrage of energy
 %s重击了你！
 %%%%
 %s snaps out of %s daze.
-%s从%s的晕眩中清醒过来。
+%s从%s的眩晕中清醒过来。
 %%%%
 %s softly glows with a divine radiance!
 %s散发出柔和的神圣光辉！
@@ -2507,7 +2507,7 @@ A divine shield appears in front of you!
 一个神圣护盾在你面前显现！
 %%%%
 A donation of $%d equates to an increase of piety by %d.
-一笔$%d的捐赠相当于%d的虔诚增长。
+捐赠$%d相当于增加%d点虔诚值。
 %%%%
 A door shatters!
 一扇门碎裂了！
@@ -3780,7 +3780,7 @@ Do you want to play with this combination? [Y/n/q]
 不喜欢背叛%s！
 %%%%
  does not appreciate the extra mutagenic glow surrounding you!
- 对你周围额外的变异光芒感到不满！
+ 对你周围额外的诱变光芒感到不满！
 %%%%
  does not welcome meddling.
  不容他人干涉。
@@ -4529,10 +4529,10 @@ is covered in magical glow
 被诅咒承受痛苦的承诺。
 %%%%
  is dazed by the mutagenic energy.
-被变异能量弄得晕眩。
+被诱变能量弄得眩晕。
 %%%%
  is dazed by the spores.
- 被孢子弄得晕头转向。
+ 被孢子弄得眩晕。
 %%%%
  is devoured by a tear in reality.
 被现实中的一道裂缝吞噬了。
@@ -4685,7 +4685,7 @@ is no longer touched by paradox.
 不再虚弱。
 %%%%
  is not enthusiastic about the mutagenic glow surrounding you.
- 对你周围的变异光芒不太感兴趣。
+ 对你周围的诱变光芒不太感兴趣。
 %%%%
  is on fire!
 着火了！
@@ -5216,16 +5216,16 @@ Mushrooms sprout behind %s.
 蘑菇在%s背后冒了出来。
 %%%%
 Mutagenic energies flood into your body!
-变异能量涌入你的身体！
+诱变能量涌入你的身体！
 %%%%
 Mutagenic energy floods into your body!
-变异能量涌入你的身体！
+诱变能量涌入你的身体！
 %%%%
 Mutagenic energy flows into you.
-变异能量流入了你的身体。
+诱变能量流入了你的身体。
 %%%%
 Mutagenic energy flows through %s!
-变异能量流经%s！
+诱变能量流经%s！
 %%%%
 mutation
 突变
@@ -5490,7 +5490,7 @@ pinch
 掐
 %%%%
 Placed new exclusion.
-已放置新的排除区域。
+已放置新的禁区。
 %%%%
 places
 地点
@@ -5760,7 +5760,7 @@ reduced
 降低
 %%%%
 Reduced exclusion size to a single square.
-已将排除区域缩小到一格。
+已将禁区缩小到一格。
 %%%%
 reflection
 反射
@@ -5805,7 +5805,7 @@ remove some of your equipment
 卸下部分装备
 %%%%
 Removed exclusion.
-已移除排除区域。
+已移除禁区。
 %%%%
 Removed Food
 已移除食品
@@ -6540,7 +6540,7 @@ Stop fighting!
 停止战斗！
 %%%%
 Stopped running for exclusion.
-因排除区域而停止奔跑。
+因禁区而停止奔跑。
 %%%%
  stops burning.
 不再燃烧。
@@ -7180,7 +7180,7 @@ The mud splashes down.
 泥浆溅下去了。
 %%%%
 The mutagenic energy flows into you.
-变异能量流入了你的身体。
+诱变能量流入了你的身体。
 %%%%
 The nature of this place prevents your teleportation.
 这个地方的本质阻止了你的传送。
@@ -7603,7 +7603,7 @@ This helmet is too small for your head.
 这个头盔对你的头来说太小了。
 %%%%
 This is %s sacrifice. Piety after sacrifice: %s
-这是%s献祭。献祭后的虔诚度：%s
+这是%s献祭。献祭后的虔诚值：%s
 %%%%
 This item has been removed.\n
 这个物品已被移除。\n
@@ -7636,7 +7636,7 @@ This spell isn't strong enough to banish yourself.
 这个法术不够强，无法放逐你自己。
 %%%%
 This transporter is marked as excluded!
-这个传送器被标记为排除！
+这个传送器设有禁区标记！
 %%%%
 This wall is too hard to dig through.
 这面墙太硬了，无法挖穿。
@@ -9161,7 +9161,7 @@ You cannot see a target there!
 你在那里看不到目标！
 %%%%
 You cannot set exclusions on this level.
-你无法在此层级设置排除区域。
+你无法在这一层设置禁区。
 %%%%
 You cannot shatter the curse on %s while it is
 你无法在%s与你的身体融合时粉碎其诅咒！
@@ -9503,7 +9503,7 @@ You feel a bond with %s.
 你感到与%s的连接。
 %%%%
 You feel a build-up of mutagenic energy.
-你感到变异能量的积聚。
+你感到诱变能量的积聚。
 %%%%
 You feel a dangerous fate closing in on you...
 你感到危险命运正向你逼近……
@@ -10726,7 +10726,7 @@ You're confused, stopping %s.
 你感到困惑，停止了%s。
 %%%%
 You're in a travel-excluded area, stopping %s.
-你处于探索排除区域，停止%s。
+你处于禁区，停止%s。
 %%%%
 You're too berserk to give orders, and you can't shout!
 你太狂暴了，无法下达命令，也无法喊叫！
@@ -17795,7 +17795,7 @@ You wake up.
 你醒来了。
 %%%%
 You snap out of the daze.
-你从恍惚中清醒过来。
+你从眩晕中清醒过来。
 %%%%
 Your digger instincts prevent you from falling into the shaft!
 你挖掘者的本能阻止你掉入竖井！
@@ -18968,7 +18968,7 @@ Whenever you drink a healing potion, you attack all around you.
 每当你饮用治疗药水时，你会攻击周围的所有敌人。
 %%%%
 You absorb twice as much mutagenic energy from being contaminated.
-你从污染中吸收双倍的变异能量。
+你从污染中吸收双倍的诱变能量。
 %%%%
 You are agile. (Dex +4, Str/Int -1)
 你很敏捷。（敏捷+4，力量/智力-1）
@@ -20141,7 +20141,7 @@ open air damage
 空袭伤害
 %%%%
 drain, daze, or confuse
-吸取、晕眩或混乱
+吸取、眩晕或混乱
 %%%%
 random ugly thing damage
 随机丑东西伤害
@@ -20651,7 +20651,7 @@ surrounded by chaotic energy
 被混沌能量环绕
 %%%%
 surrounded by mutagenic energy
-被变异能量环绕
+被诱变能量环绕
 %%%%
 surrounded by fog
 被雾气环绕
@@ -21335,7 +21335,7 @@ You are ready to speak a word of chaos again.
 你准备好再次说出混沌之言了。
 %%%%
 You break out of your daze.
-你从恍惚中清醒过来。
+你从眩晕中清醒过来。
 %%%%
 You can once more reach out to the dragon horde.
 你可以再次召唤龙群了。
@@ -24057,13 +24057,13 @@ Table legend:\n A = Kills in this place as a percentage of kills in the entire g
 表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
 %%%%
 Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
-表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
+表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚值\n E = 获得的虔诚值\n F = 因神赐等待未获得的虔诚值\n G = 用于赎罪的虔诚值\n H = 因递减规则未获得的虔诚值\n I = 自然衰减的虔诚值\n J = 损失的虔诚值（含衰减）\n
 %%%%
 Conducts for god: %s\n
 神明戒律：%s\n
 %%%%
 Piety from conduct\n
-戒律获得的虔诚度\n
+通过行为获得的虔诚值\n
 %%%%
 Conduct
 戒律
@@ -24534,7 +24534,7 @@ Murder takes root in your soul.
 杀戮在你灵魂中扎下了根。
 %%%%
 Mutagenic power surges through your limbs.
-突变能量在你四肢中涌动。
+诱变力量在你四肢中涌动。
 %%%%
 One of your hands has vanished, leaving only a stump!
 你的一只手消失了，只剩下一个残桩！
@@ -24663,7 +24663,7 @@ The malignance inside you grows.
 你体内的恶念增长了。
 %%%%
 The mutagenic power surging through your limbs dissipates.
-在你四肢中涌动的突变能量消散了。
+在你四肢中涌动的诱变力量消散了。
 %%%%
 The shadows grow bolder once more.
 阴影再次变得大胆。
@@ -24831,7 +24831,7 @@ You are reciting Zin's Axioms of Law.
 你正在诵读辛的法律公理。
 %%%%
 You are regenerating under the effects of ambrosia.
-你正在仙酿的作用下再生。
+你正在神食的作用下再生。
 %%%%
 You are resistant to the elements.
 你对元素有抗性。
@@ -26634,7 +26634,7 @@ Base shield rating:
 基础盾牌评级: 
 %%%%
      Encumbrance rating: 
-     负重评级: 
+     负重等级: 
 %%%%
      Max blocks/turn: 
      每回合最大格挡: 
@@ -27595,7 +27595,7 @@ Dex:
 敏: 
 %%%%
        Encumbrance rating: 
-       负重评级: 
+       负重等级: 
 %%%%
 puncture
 穿刺
@@ -27856,7 +27856,7 @@ This transformation would significantly lower your maximum hit points. Transform
 此变形会显著降低你的最大生命值。仍然变形吗？
 %%%%
 Put travel exclusion on door? (Y/n)
-在门上设置旅行排除区域？(Y/n)
+在门上设置旅行禁区？(Y/n)
 %%%%
 ; use anyway?
 ；仍然使用吗？
@@ -29500,7 +29500,7 @@ It reduces your willpower to zero.
 它将你的意志力降为零。
 %%%%
 It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.
-视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚消耗的两倍。
+视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚值消耗的两倍。
 %%%%
 It shrouds the wearer in darkness, reducing the range at which they can see and be seen by others.
 将穿戴者笼罩于黑暗中，缩短其视野范围以及被他人看见的距离。
@@ -33109,7 +33109,7 @@ Jiyva will unlock the Slime Pits vault.
 对你的吟诵嗤之以鼻。
 %%%%
  is dazed by your recitation.
-被你的吟诵震慑了。
+被你的吟诵弄得眩晕。
 %%%%
  is confused by your recitation.
 被你的吟诵迷惑了。
@@ -33419,19 +33419,19 @@ Healing.
 治疗。
 %%%%
 Piety needs to be between 0 and %d.
-虔诚度必须在 0 到 %d 之间。
+虔诚值必须在 0 到 %d 之间。
 %%%%
 Ru piety can't be greater than %d.
-鲁的虔诚度不能超过 %d。
+鲁的虔诚值不能超过 %d。
 %%%%
 Interest must be between 0 and 255.
 兴趣值必须在 0 到 255 之间。
 %%%%
 Set piety to %d, interest to %d.
-虔诚度设为 %d，兴趣值设为 %d。
+虔诚值设为 %d，兴趣值设为 %d。
 %%%%
 Setting piety to %d.
-虔诚度设为 %d。
+虔诚值设为 %d。
 %%%%
 Enter new gold value (current = %d, Enter for %d): 
 输入新金币值（当前 = %d，回车设为 %d）：
@@ -33446,7 +33446,7 @@ Current progress to next sacrifice: %d  Progress needed: %d
 当前献祭进度：%d  需要进度：%d
 %%%%
 Enter new piety value (current = %d, Enter for 0): 
-输入新虔诚度值（当前 = %d，回车视为 0）：
+输入新虔诚值（当前 = %d，回车视为 0）：
 %%%%
 That skill doesn't seem to exist.
 该技能似乎不存在。
@@ -34764,7 +34764,7 @@ weapon of %s
 %8d %s，%s（等级%d
 %%%%
 %d %sexclusion%s
-%d个%s排除区%s
+%d个%s禁区%s
 %%%%
 %d (base %d)
 %d（基础%d）
@@ -35274,7 +35274,7 @@ Encountered
 变成了
 %%%%
  piety under 
-的虔诚信徒，虔诚度
+虔诚等级，信仰
 %%%%
 Gained mutation: 
 获得突变：
@@ -35631,7 +35631,7 @@ HP     :
 生命值：
 %%%%
 Piety  : 
-虔诚度：
+虔诚值：
 %%%%
 Gold   : 
 金币：
@@ -35802,7 +35802,7 @@ obsoleteness
 你可以重新改信，一切都会好起来。
 %%%%
 %s Skill %4.1f Aptitude %c%d
-%s技能 %4.1f 天赋 %c%d
+%s技能 %4.1f 资质 %c%d
 %%%%
 ) *EXPLORE*
 ）*EXPLORE*
@@ -36024,7 +36024,7 @@ You can get information about <w>
 你可以获取关于<w>的信息
 %%%%
 You even kept some of your piety! 
-你甚至保留了一些虔诚度！
+你甚至保留了一些虔诚值！
 %%%%
 You hit %s.
 你击中了%s。
@@ -36184,7 +36184,7 @@ magical condensation
 魔法凝结
 %%%%
 mutagenic fog
-致变雾气
+诱变雾气
 %%%%
 purple smoke
 紫烟
@@ -38896,13 +38896,13 @@ spell title|Sting
 毒刺
 %%%%
  basks in your mutagenic energy and changes!
- 沐浴在你的变异能量中并发生了变化！
+ 沐浴在你的诱变能量中并发生了变化！
 %%%%
  basks in the mutagenic energy from its kin and changes!
- 沐浴在同族的变异能量中并发生了变化！
+ 沐浴在同族的诱变能量中并发生了变化！
 %%%%
  basks in the mutagenic energy and changes!
- 沐浴在变异能量中并发生了变化！
+ 沐浴在诱变能量中并发生了变化！
 %%%%
  your recitation
  并吟诵
@@ -40414,10 +40414,10 @@ Really %s into that %s?
 确定要%s那个%s吗？
 %%%%
 Really %s into a travel-excluded area?
-确定要%s探索排除区域吗？
+确定要%s禁区吗？
 %%%%
 You might %s into a travel-excluded area, are you sure?
-你可能会%s探索排除区域，确定要继续吗？
+你可能会%s禁区，确定要继续吗？
 %%%%
 This might make you stumble backwards into that cloud of %s. Continue?
 这可能使你踉跄着退入那片%s。要继续吗？
@@ -40438,7 +40438,7 @@ This might make you stumble backwards into a toxic bog. Continue?
 这可能使你踉跄着退入毒沼。要继续吗？
 %%%%
 This might make you stumble backwards into a travel-excluded area. Continue?
-这可能使你踉跄着退入探索排除区域。要继续吗？
+这可能使你踉跄着退入禁区。要继续吗？
 %%%%
 Are you sure you want to %s over %s while you are losing your buoyancy?
 你确定要%s%s上方吗？你的浮力正在消失。
@@ -40534,7 +40534,7 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
 %%%%
 <w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
-<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：能力倾向表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
+<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：资质表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
 %%%%
 <w>T</w>: Tiles key help\n
 <w>T</w>：图形界面按键帮助\n
@@ -40729,7 +40729,7 @@ The training percentage (in <brown>brown</brown>) shows the relative amount of t
 训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练该技能的相对比例。
 %%%%
 The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.
-训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的经验值，相对于当前
+训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的相对经验值，以资质为零的技能从零级升到一级所需的经验值为基准。
 %%%%
 Press the letter of a skill to set a training target. When the target is reached a message will appear and the training of the skill will be disabled.
 按技能对应的字母来设定训练目标。达到目标后会有消息显示，训练会自动停止。
@@ -40831,7 +40831,7 @@ Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>,
 上下逃生口分别可以用<w><<</w>和<w>></w>来快速离开当前楼层。注意，你通常无法立即返回。
 %%%%
 \nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.
-\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为排除区域。此排除标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
+\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为禁区。此禁区标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
 %%%%
 This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\n
 这是你加入宗教的机会！通常，神祇会帮助其信徒，赐予各种力量，但其中许多神祇会要求你以奉献一生、不断进贡或娱乐作为回报。\n
@@ -40900,7 +40900,7 @@ A magic seal in the Gauntlet prevents long-range teleports.
 手套关卡中的魔法封印阻止了远距离传送。
 %%%%
 This %s%s is marked as excluded! Open it anyway?
-这个%s%s被标记为已排除！要打开它吗？
+这个%s%s设有禁区标记！仍要打开它吗？
 %%%%
 \nTrigger chance:  %d%%\nBase damage:     %d\n\n
 \n触发几率：%d%%\n基础伤害：%d\n\n

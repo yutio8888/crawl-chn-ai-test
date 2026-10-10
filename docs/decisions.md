@@ -3839,6 +3839,72 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-096 — Issue #147 共享术语修复（稳定线权威子集）
+
+- **Type**: C — Terminology registration and consistency ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source authority**: 冻结 trunk 提交
+  `32f0ede89ed48563682b68436944e84c10621afb` 的 D-C-096 与 glossary；
+  原权威 glossary SHA-256
+  `61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0`。
+  本节只移植稳定线共享条目所需的裁决，不移植 trunk 新实体或完整交接清单。
+- **Scope**: Issue #147 冻结共享集合 72 个英文查找身份；inventory SHA-256
+  `289dd9f4c88216743151853efe997f806236aa99b82f92df6fef9102fd694b90`。
+  按逐条独立语言审阅的完整提案修订 68 项、重译 2 项、保留 2 项。
+  英文 key、格式符、控制标记及未列入集合的正文保持不变。
+- **Context boundaries**:
+  - piety 的资源／数值名和标签为“虔诚值”；一般叙述可简称“虔诚”，
+    神眷作为神祇好感的解释性释义。数额／消耗参数不用“虔诚度”；
+    不将“虔诚的信徒”机械改成“虔诚值的信徒”。Notes 中星级叙述
+    按消费者拼接译为“虔诚等级”，不把星级当作数值资源。
+  - aptitude 的种族／技能训练效率参数采用“资质”；普通人物魔法天赋
+    不受影响。训练成本完整说明须保留资质为零、技能零级升至一级的基准。
+    encumbrance rating 采用“负重等级”，表示护甲对动作／施法的阻碍，
+    不表示物品重量或背包负重。
+  - travel exclusion 采用“禁区”；解释性限定可写“旅行禁区／移动禁区”，
+    不保留“排除区域”作为另一套名称；该标记不会禁止玩家手动进入。
+  - Spider Nest 分支名采用“蜘蛛巢穴”，不缩写为“蜘蛛巢”。
+  - ambrosia 药水效果词根采用“神食”；普通传说中的 ambrosial nectar
+    按语境翻译，不强制替换成药水名。共享状态短标签例外见 D-C-098。
+  - dazed 状态及同一机制的 daze／dazing 采用“眩晕”，不全局替换其他
+    机制的“震慑”或普通“恍惚”。barbs 的移动伤害刺及普通描述用“倒刺”。
+  - noxious fumes 的命名及明确指称该云类型的正文采用“毒烟”，
+    与 poison gas 的“毒气”区分；云的性质说明无需硬插名称。
+- **Mutagenic choice**: 普通致因形容词与本集合复合词采用“诱变”；
+  energy／energies 为“诱变能量”，power 为“诱变力量”，glow 为
+  “诱变光芒”，fog 为“诱变雾气”。区别过程／结果 mutation／mutate 的
+  “变异”；不得把 power 的力量含义改作 energy 的能量。
+  已定稿固定法术名 `Mutagenic Gaze → 变异凝视` 保留，其正文使用
+  “诱变能量”；名称例外不扩展到普通复合词。魔法污染易感正文必须保留
+  “从魔法污染中吸收双倍诱变能量”的倍量与来源条件。
+- **Verification boundaries**: 本次资产修订不解决 monstatus 中文标签到
+  原英文 DescriptionDB 身份的查找证据缺口，也不声称已证明 weight-0
+  魔法污染易感变异的自然获得途径。静态消费者证据不等于运行时验证；
+  独立候选审阅、匹配验证 profile 与 CI 由主负责人组织。
+- **Applied**: 2026-10-10，限定共享集合提案及必要 glossary／既有导出同步；
+  不代表合并 readiness。
+
+---
+
+### D-C-098 — Issue #147 共享状态短标签例外（稳定线权威子集）
+
+- **Type**: C — Shared-key constraint and catalog terminology ruling
+- **Status**: active
+- **Date**: 2026-10-07
+- **Source authority**: 冻结 trunk 提交
+  `32f0ede89ed48563682b68436944e84c10621afb` 的 D-C-098；
+  本节只移植本集合涉及的两个共享状态上下文键例外。
+- **Choice**:
+  - `status|Barbs → 尖刺`
+  - `status|ambrosia-drunk → 仙酒醉`
+- **Scope**: 两个标签沿用稳定版共享 catalog 译文，取代 D-C-096 对这两个
+  状态短标签的“倒刺／神食酣醉”要求；普通 barbs → 倒刺、
+  ambrosia → 神食仍有效。不引入新上下文键，不扩大标签例外到正文。
+- **Applied**: 2026-10-10，两条资产按独立审阅结论保留，glossary 明确登记例外。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -3984,3 +4050,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-092 | Monster full-inventory review | 795 identities；13 display-name + 102 description changes；124 compatibility deferrals | active |
 | D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
+| D-C-096 | Issue #147 stable shared terminology subset | 72 shared identities；context boundaries + mutagenic roots | active |
+| D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk → 仙酒醉 | active |

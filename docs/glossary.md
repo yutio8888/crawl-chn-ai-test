@@ -148,6 +148,15 @@
 | level | 等级 / 层 | 角色用"等级"，楼层用"层" |
 | Evocations | 魔力释放 | 技能名；普通动词 evoke/activate 仍按语境译为“激活/使用”；decision=D-A-052 |
 
+### 共享术语补登记（D-C-096 稳定线子集）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| piety | 虔诚值 | 神祇好感资源／数值及界面标签；一般叙述可简称“虔诚”，神眷作为解释性释义；弃用数值名“虔诚度”；decision=D-C-096 |
+| travel exclusion | 禁区 | 自动旅行／自动探索避开的地图标记；解释性限定可写“旅行禁区／移动禁区”，不会阻止玩家手动进入；decision=D-C-096 |
+| Spider Nest | 蜘蛛巢穴 | 分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096 |
+| encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
+
 ### 常用状态与效果
 
 | EN | ZH | 注意事项 |
@@ -205,6 +214,12 @@
 | identify | 鉴定 |
 | enchant | 附魔 |
 | curse | 诅咒 |
+
+### 药水效果词根补登记（D-C-096 稳定线子集）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096 |
 
 ### 基础物品显示名称（脚本 SSOT）
 
@@ -450,6 +465,12 @@
 | Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
 
+### 技能训练参数补登记（D-C-096 稳定线子集）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| aptitude | 资质 | 种族／技能训练效率参数；弃用该参数的“天赋／能力倾向”；普通人物魔法天赋不受影响；decision=D-C-096 |
+
 <!-- domain:status -->
 ## 十四、状态与效果
 
@@ -478,6 +499,21 @@
 | Frozen | 冰封 | status; source=status.txt |
 | Petrification | 石化 | status; source=status.txt |
 | Resistance | 抗性 | status; source=status.txt |
+
+### 状态、云与诱变词根补登记（D-C-096 / D-C-098 稳定线子集）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
+| barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
+| `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
+| `status\|ambrosia-drunk` | 仙酒醉 | 药水作用状态的稳定版共享上下文键；ambrosia 药水仍用神食；decision=D-C-098（取代 D-C-096 的神食酣醉标签译法） |
+| noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
+| mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
+| mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
+| mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
+| mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
+| mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
 
 <!-- domain:backgrounds -->
 ## 十五、角色背景
@@ -1003,7 +1039,7 @@
 | Antimagic Gaze | 反魔法凝视 | ✅ |
 | Confusion Gaze | 困惑凝视 | ✅ |
 | Draining Gaze | 衰竭凝视 | ✅；施加 Drain/衰竭，不治疗施法者 |
-| Mutagenic Gaze | 变异凝视 | ✅ |
+| Mutagenic Gaze | 变异凝视 | ✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096 |
 | Paralysis Gaze | 麻痹凝视 | ✅ |
 | Vitrifying Gaze | 玻璃化凝视 | ✅ |
 | Weakening Gaze | 虚弱凝视 | ✅ |
