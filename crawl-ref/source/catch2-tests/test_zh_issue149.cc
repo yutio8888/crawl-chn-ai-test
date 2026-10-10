@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <set>
 #include <utility>
 
@@ -36,8 +37,13 @@
 #include "syscalls.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
+#include "travel.h"
 #include "unicode.h"
 #include "unwind.h"
+
+// The overview has no public snapshot API; preserve its existing discovery
+// table while preparing a fixture with an undiscovered Temple.
+extern map<branch_type, set<level_id>> stair_level;
 
 namespace
 {
@@ -461,7 +467,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     init_monsters();
     init_properties();
     unwind_var<player> restore_player(you);
-    unwind_var<vector<string>> order(Options.dump_order, {});
+    unwind_var<vector<string>> order(Options.dump_order, {"hiscore"});
     unwind_var<string> directory(Options.morgue_dir, ".");
     unwind_var<bool> updating(crawl_state.updating_scores, true);
     unwind_var<bool> saving(crawl_state.need_save, false);
@@ -481,7 +487,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         unlink_u((filename + ".txt").c_str());
         unlink_u((filename + ".lst").c_str());
     });
-    for (const char* cause : {"puff of frost", "Unknown legacy beam"})
+    // Lowercase names are raw beam identities. Uppercase kaux is the separate
+    // historic protocol for an already assembled shooting sentence.
+    for (const char* cause : {"puff of frost", "unknown legacy beam"})
     {
         scorefile_entry entry(2, MID_NOBODY, KILLED_BY_BEAM, cause, true,
                               "Blorkula the Orcula");
@@ -504,6 +512,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             ifstream file(filename + ".txt");
             REQUIRE(file.good());
             const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+            INFO(dump);
             CHECK(dump.find(display_cause) != string::npos);
             if (language == lang_t::ZH && string(cause) == "puff of frost")
                 CHECK(dump.find(cause) == string::npos);
@@ -696,9 +705,22 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     unwind_var<player> restore_player(you);
     unwind_var<branch_type> root(root_branch, BRANCH_DUNGEON);
     unwind_var<int> depth(brdepth[BRANCH_DUNGEON], 15);
+    unwind_var<int> temple_depth(brdepth[BRANCH_TEMPLE], 1);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<TravelCache> explored(travel_cache, TravelCache());
+    unwind_var<map<branch_type, set<level_id>>> discovered(stair_level, {});
     issue149_player();
     you.where_are_you = BRANCH_DUNGEON;
     you.depth = 5;
+    // A real D:5 arrival has a travel record for the stairs back to D:4.
+    // Unseen branch ranges are conditional on that explored-level cache.
+    stair_info arrival;
+    arrival.position = you.pos();
+    arrival.grid = DNGN_STONE_STAIRS_UP_I;
+    arrival.destination = level_pos(level_id(BRANCH_DUNGEON, 4), you.pos());
+    arrival.guessed_pos = false;
+    travel_cache.get_level_info(level_id::current()).get_stairs().push_back(arrival);
+    REQUIRE(find_deepest_explored(level_id(BRANCH_DUNGEON, 0)) == level_id::current());
     item_def& dagger = you.inv[0];
     dagger.base_type = OBJ_WEAPONS;
     dagger.sub_type = WPN_DAGGER;
@@ -718,6 +740,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         {
             const string overview = overview_description_string(onscreen);
             INFO(overview);
+            CHECK(overview.find("(5/15)") != string::npos);
             CHECK(overview.find(language == lang_t::ZH ? "神殿" : "Temple") != string::npos);
             CHECK((overview.find("Temple:") != string::npos) == (language == lang_t::EN));
             CHECK(overview.find(":4-7") != string::npos);
