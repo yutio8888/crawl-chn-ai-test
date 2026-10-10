@@ -8,6 +8,7 @@
 #include <cstring>
 #include <locale.h>
 
+#include "libutil.h"
 #include "random.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -84,6 +85,63 @@ random_substring_run run_random_substring_default_observer(
     result.rng_count = rng::current_generator().get_count();
     return result;
 }
+}
+
+TEST_CASE( "unwrap_desc joins literal CJK paragraph lines",
+           "[single-file][textdb][unwrap-desc]" )
+{
+    struct unwrap_case
+    {
+        const char *name;
+        const char *input;
+        const char *expected;
+    };
+    const unwrap_case cases[] =
+    {
+        { "empty", "", "" },
+        { "English", "first\nsecond", "first second\n" },
+        { "Han", "中\n文\n段落", "中文段落\n" },
+        { "CJK punctuation before Han", "中文。\n段落", "中文。段落\n" },
+        { "CJK punctuation after Han", "中文\n《段落》", "中文《段落》\n" },
+        { "fullwidth punctuation", "中文，\n段落", "中文，段落\n" },
+        { "supplementary Han", "𠀀\n文\n𰀀", "𠀀文𰀀\n" },
+        { "compatibility Han", "\uF900\n\U0002F800", "\uF900\U0002F800\n" },
+        { "ASCII before Han", "ASCII\n中文", "ASCII 中文\n" },
+        { "ASCII after Han", "中文\nASCII", "中文 ASCII\n" },
+        { "ASCII punctuation", "中文.\n段落", "中文. 段落\n" },
+        { "emoji before Han", "😀\n中文", "😀 中文\n" },
+        { "emoji after Han", "中文\n😀", "中文 😀\n" },
+        { "fullwidth letter before Han", "Ａ\n中文", "Ａ 中文\n" },
+        { "fullwidth letter after Han", "中文\nＡ", "中文 Ａ\n" },
+        { "fullwidth digit before Han", "１\n中文", "１ 中文\n" },
+        { "fullwidth digit after Han", "中文\n１", "中文 １\n" },
+        { "ideographic space", "中文　\n段落", "中文　 段落\n" },
+        { "existing spaces", "中文 \n段落", "中文  段落\n" },
+        { "invalid UTF-8 before Han", "\xFF\n中文", "\xFF 中文\n" },
+        { "bare UTF-8 continuation", "\x80\n中文", "\x80 中文\n" },
+        { "incomplete UTF-8 before Han", "\xE4\n中文", "\xE4 中文\n" },
+        { "incomplete UTF-8 after Han", "中文\n\xE4", "中文 \xE4\n" },
+        { "paragraphs", "中文\n\n段落", "中文\n\n段落\n" },
+        { "indented line", "中文\n 段落", "中文\n 段落\n" },
+        { "nowrap", ":nowrap\n中文\n段落", "中文\n段落" },
+        { "forced newline", "中文\\n段落", "中文\n段落\n" },
+        { "adjacent tags", "<red>中文</red>\n<blue>段落</blue>",
+          "<red>中文</red><blue>段落</blue>\n" },
+        { "tag before Han", "<red>中文</red>\n段落",
+          "<red>中文</red> 段落\n" },
+        { "tag after Han", "中文\n<red>段落</red>",
+          "中文 <red>段落</red>\n" },
+    };
+
+    for (const unwrap_case &test : cases)
+    {
+        DYNAMIC_SECTION( test.name )
+        {
+            CHECK(unwrap_desc(string(test.input)) == test.expected);
+        }
+    }
+
+    CHECK(unwrap_desc(string("中\0\n文", 8)) == string("中\0 文\n", 9));
 }
 
 TEST_CASE( "maybe_pick_random_substring tracing preserves behaviour",
