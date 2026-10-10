@@ -281,8 +281,8 @@ static void _sdump_visits(dump_params &par)
 
     text += make_stringf_p(T_("You %1$svisited %2$d branch"),
                          have, (int)branches_visited.size());
-    if (branches_visited.size() != 1)
-        text += T_("es");
+    if (Options.language != lang_t::ZH && branches_visited.size() != 1)
+        text += "es";
     if (brdepth[root_branch] > 1 || branches_visited.size() != 1)
     {
         text += make_stringf_p(T_(" of the dungeon, and %1$s %2$d of its levels.\n"),
@@ -295,8 +295,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited Pandemonium %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += make_stringf_p(T_(", and %1$s %2$d of its levels.\n"),
                                  seen, place_info.levels_seen);
         }
@@ -308,8 +308,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the Abyss %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -320,8 +320,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited %2$d bazaar"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -332,8 +332,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the chambers of the Necropolis %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -348,8 +348,8 @@ static void _sdump_visits(dump_params &par)
                                  (num_zigs == you.zigs_completed) ? T_("completed")
                                                                   : T_("visited"),
                                  num_zigs);
-            if (num_zigs > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && num_zigs > 1)
+                text += "s";
             if (num_zigs != you.zigs_completed && you.zigs_completed)
                 text += make_stringf(T_(" (completing %d)"), you.zigs_completed);
             text += make_stringf_p(T_(", and %1$s %2$d of %3$s levels"),

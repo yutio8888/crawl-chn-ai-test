@@ -7,6 +7,8 @@
 #include "ability-type.h"
 #include "acquire.h"
 #include "art-enum.h"
+#include "beam.h"
+#include "branch.h"
 #include "artefact.h"
 #include "chardump.h"
 #include "database.h"
@@ -30,6 +32,7 @@
 #include "losglobal.h"
 #include "macro.h"
 #include "mapdef.h"
+#include "mapmark.h"
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
@@ -53,6 +56,7 @@
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
+#include "spl-summoning.h"
 #include "spell-type.h"
 #include "state.h"
 #include "stringutil.h"
@@ -5422,5 +5426,207 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(item.unrand_idx == UNRAND_FOUR_WINDS);
         CHECK(string(get_unrand_entry(item.unrand_idx)->name) == "amulet of the Four Winds");
         CHECK(item.props[ARTEFACT_APPEAR_KEY].get_string() == original_appearance);
+    }
+}
+
+TEST_CASE("issue147: real summoning messages preserve upstream English and ZH arguments",
+          "[zh-translation][issue147][summoning-format]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    unwind_var<bool> restore_need_save(crawl_state.need_save, false);
+    unwind_var<use_animations_type> restore_animations(
+        Options.use_animations, use_animations_type());
+    const char* cases[] = {"foxfire", "marshlight", "boulder", "two cannons",
+                           "one cannon", "crocodile", "monarch", "detonate"};
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_agent : {true, false})
+    for (int case_index = 0; case_index < 8; ++case_index)
+    {
+        CAPTURE(language, player_agent, cases[case_index]);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        scoped_monspeak_world world;
+        unwind_var<map_markers> restore_markers(env.markers);
+        vector<mid_t> old_mids;
+        for (int i = 0; i < MAX_MONSTERS; ++i)
+            old_mids.push_back(env.mons[i].mid);
+        unwinder clear_summons([&]() {
+            for (int i = 0; i < MAX_MONSTERS; ++i)
+                if (env.mons[i].mid && env.mons[i].mid != old_mids[i])
+                {
+                    env.mid_cache.erase(env.mons[i].mid);
+                    env.mons[i].reset();
+                }
+        });
+        monster* other = world.place(MONS_ORC, coord_def(20, 21));
+        REQUIRE(other != nullptr);
+        other->hit_points = other->max_hit_points = 1000;
+        actor& agent = player_agent ? static_cast<actor&>(you)
+                                   : static_cast<actor&>(*other);
+        const string name = agent.name(DESC_THE);
+        const string possessive = agent.pronoun(PRONOUN_POSSESSIVE);
+        const char* suffix = player_agent ? "" : "s";
+        const bool chinese = language == lang_t::ZH;
+        string expected;
+        if (case_index == 4)
+        {
+            // Exactly one free cannon placement exercises num_seen == 1.
+            for (int x = 15; x <= 30; ++x)
+                for (int y = 15; y <= 30; ++y)
+                    env.grid(coord_def(x, y)) = DNGN_ROCK_WALL;
+            env.grid(you.pos()) = DNGN_FLOOR;
+            env.grid(other->pos()) = DNGN_FLOOR;
+            env.grid(coord_def(21, 20)) = DNGN_FLOOR;
+            env.grid(coord_def(22, 20)) = DNGN_FLOOR;
+            invalidate_los();
+        }
+        rng::subgenerator fixed_rng(147, case_index);
+        msg::tee messages;
+        switch (case_index)
+        {
+        case 0:
+        case 1:
+            REQUIRE(cast_foxfire(agent, 50, false, case_index == 1) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s summons some %s!"), name.c_str(),
+                               case_index == 1 ? T_("Marshlight") : T_("foxfire"))
+                : make_stringf("%s conjure%s some %s!", name.c_str(), suffix,
+                               case_index == 1 ? "marshlight" : "foxfire");
+            break;
+        case 2:
+            REQUIRE(cast_broms_barrelling_boulder(agent, coord_def(24, 20), 50, false)
+                    == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s sends a boulder rolling forward!"), name.c_str())
+                : make_stringf("%s send%s a boulder barrelling forward!", name.c_str(), suffix);
+            break;
+        case 3:
+        case 4:
+            REQUIRE(cast_hoarfrost_cannonade(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_(case_index == 3 ? "%s sculpts two cannons from ice!"
+                                                 : "%s sculpts a cannon from ice!"), name.c_str())
+                : make_stringf(case_index == 3 ? "%s sculpt%s a pair of cannons out of ice!"
+                                              : "%s sculpt%s a cannon out of ice!", name.c_str(), suffix);
+            break;
+        case 5:
+            // Movement redraw requires a full game world. Exercise the exact
+            // production emission builder, independently of dragging/combat.
+            mpr(surprising_crocodile_dismount_message(agent));
+            expected = chinese
+                ? make_stringf(T_("%s dismounts %s alligator."), name.c_str(), possessive.c_str())
+                : make_stringf("%s dismount%s %s crocodile.", name.c_str(), suffix, possessive.c_str());
+            break;
+        case 6:
+            REQUIRE(cast_monarch_bomb(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s constructs an explosive harbinger and releases it."), name.c_str())
+                : make_stringf("%s construct%s an explosive harbinger and set it loose.", name.c_str(), suffix);
+            break;
+        case 7:
+            REQUIRE(monarch_detonation(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s orders the %s explosives to detonate!"), name.c_str(), possessive.c_str())
+                : make_stringf("%s command%s %s explosives to detonate!", name.c_str(), suffix, possessive.c_str());
+            break;
+        }
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find(expected + "\n") != string::npos);
+        if (chinese)
+        {
+            CHECK(contains_non_ascii(expected));
+            CHECK_FALSE(rule_mixed_cn_en(expected));
+            CHECK_FALSE(rule_format_broken(messages.get_store(), ""));
+            if (case_index < 2)
+            {
+                CHECK(messages.get_store().find(case_index == 0 ? "foxfire" : "marshlight")
+                      == string::npos);
+            }
+        }
+    }
+}
+
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "issue147: visit dumps keep English plurals out of Chinese",
+                 "[zh-translation][issue147][morgue][visits]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"visits"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    unwind_var<branch_type> root(root_branch, BRANCH_DUNGEON);
+    unwind_var<int> dungeon_depth(brdepth[BRANCH_DUNGEON], 15);
+    const string filename = "catch2-issue147-visits";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    scorefile_entry dead_entry;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    for (int count : {1, 2})
+    for (bool dead : {false, true})
+    {
+        CAPTURE(language, count, dead);
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 20;
+        you.experience_level = 1;
+        you.set_position(coord_def(20, 20));
+        for (branch_type branch : {BRANCH_DUNGEON, BRANCH_PANDEMONIUM,
+                                  BRANCH_ABYSS, BRANCH_BAZAAR,
+                                  BRANCH_NECROPOLIS, BRANCH_ZIGGURAT})
+        {
+            PlaceInfo &place = you.get_place_info(branch);
+            place.num_visits = count;
+            place.levels_seen = count;
+        }
+        if (count > 1)
+        {
+            PlaceInfo &lair = you.get_place_info(BRANCH_LAIR);
+            lair.num_visits = 1;
+            lair.levels_seen = 1;
+        }
+        REQUIRE(you.get_all_place_info(true, true).size() == size_t(count));
+        REQUIRE(dump_char(filename, true, false, dead ? &dead_entry : nullptr));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        if (language == lang_t::ZH)
+        {
+            CHECK(dump.find(to_string(count) + "个分支") != string::npos);
+            CHECK(dump.find("分支es") == string::npos);
+            CHECK(dump.find("次s") == string::npos);
+            CHECK(dump.find("市集s") == string::npos);
+            CHECK(dump.find("金字塔s") == string::npos);
+        }
+        else
+        {
+            const string tense = dead ? "You visited " : "You have visited ";
+            const string suffix = count > 1 ? "s" : "";
+            CHECK(dump.find(tense + to_string(count) + " branch" + (count > 1 ? "es" : "")) != string::npos);
+            CHECK(dump.find(tense + "Pandemonium " + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + "the Abyss " + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + to_string(count) + " bazaar" + suffix) != string::npos);
+            CHECK(dump.find(tense + "the chambers of the Necropolis "
+                            + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + to_string(count) + " ziggurat" + suffix) != string::npos);
+        }
+        CHECK(you.get_place_info(BRANCH_PANDEMONIUM).num_visits == unsigned(count));
     }
 }
