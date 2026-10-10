@@ -888,6 +888,14 @@ void unrelated(){ mprf("%s", std::string("outside"));
             scripts = root / '.claude/scripts'
             scripts.mkdir(parents=True)
             shutil.copy(ROOT / 'crawl-ref/source/rltiles/Makefile', tile_dir)
+            # If an export quietly exits without a database, capture the flags
+            # as expanded in the recipe (not their earlier parse-time value).
+            fixture_makefile = tile_dir / 'Makefile'
+            fixture_makefile.write_text(fixture_makefile.read_text().replace(
+                '@set -eu;',
+                '@$(info ISSUE120 export MAKE_VERSION=$(MAKE_VERSION) '
+                'MAKEFLAGS=$(MAKEFLAGS))set -eu;',
+            ))
             shutil.copy(SCRIPTS / 'export_compile_commands.py', scripts)
             (tile_dir / 'tool/main.d').write_text('$(error stale dependency was read)\n')
             (tile_dir / '.cflags').write_text('existing compiler flags\n')
