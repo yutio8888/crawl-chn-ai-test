@@ -534,6 +534,7 @@ bool Form::player_can_swim() const
 
 /**
  * What message should be printed when the player prays at an altar?
+ * Returns an English action; god_pitch translates it at display time.
  * To be inserted into "You %s the altar of foo."
  *
  * If the form has a valid custom action, print that; otherwise, default to the
@@ -551,7 +552,7 @@ string Form::player_prayer_action() const
     // XXX: if we ever get a default-permaflying species again that wants to
     // have a separate verb, we'll want to check for that right here.
     if (you.airborne())
-        return T_("hover solemnly before");
+        return "hover solemnly before";
     // Otherwise, if you have a verb, use that...
     if (!prayer_action.empty())
         return prayer_action;

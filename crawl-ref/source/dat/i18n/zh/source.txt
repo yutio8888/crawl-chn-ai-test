@@ -18935,7 +18935,7 @@ Spells you cast may paralyse nearby enemies.
 你施放的法术可能会麻痹附近的敌人。
 %%%%
 The East Wind leaves your foes to susceptible to magic after you Rampage.
-东风使你在狂暴后敌人更容易受到魔法影响。
+东风会在你冲锋后使敌人更容易受到魔法影响。
 %%%%
 The North Wind lets you shrug off injuries taken while stampeding.
 北风让你能够无视奔踏时受到的伤害。
@@ -18944,7 +18944,7 @@ The South Wind quickens your rampage movements after stabbing.
 南风在刺击后加速你的冲锋移动。
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
-西风在你狂暴时增强你的远程攻击。
+西风在你冲锋时增强你的远程攻击。
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
 受伤时，伤害在你的生命和魔力储备之间分摊。
@@ -42923,3 +42923,24 @@ xom cleaving|%s looks sharp.
 %%%%
 xom cleaving|%s looks sharp (like it always does).
 %s看起来很锋利（一如既往）。
+%%%%
+You sit before the altar of %s.
+你坐在%s的祭坛前。
+%%%%
+You curl up in front of the altar of %s.
+你蜷伏在%s的祭坛前。
+%%%%
+You are insubstantial and cannot be petrified, ensnared, or set on fire.
+你处于虚体状态，无法被石化、束缚或点燃。
+%%%%
+almost no armour
+几乎无法穿戴护甲
+%%%%
+You cannot wear most types of armour.
+你无法穿戴大多数类型的护甲。
+%%%%
+amphibious
+两栖
+%%%%
+insubstantial
+虚体

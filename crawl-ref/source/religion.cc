@@ -4007,9 +4007,14 @@ void god_pitch(god_type which_god)
         mpr(T_("You bow before the missionary of Beogh."));
     else
     {
-        mprf(T_("You %s the altar of %s."),
-             get_form()->player_prayer_action().c_str(),
-             god_name(which_god).c_str());
+        const string action = get_form()->player_prayer_action();
+        const string god = god_name(which_god);
+        if (action == "sit before")
+            mprf(T_("You sit before the altar of %s."), god.c_str());
+        else if (action == "curl up in front of")
+            mprf(T_("You curl up in front of the altar of %s."), god.c_str());
+        else
+            mprf(T_("You %s the altar of %s."), T_(action.c_str()), god.c_str());
     }
     // these are included in default force_more_message
 
