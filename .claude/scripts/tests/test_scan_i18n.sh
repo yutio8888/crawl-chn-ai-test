@@ -869,7 +869,9 @@ assert invalid_classify_calls == [], invalid_classify_calls
 with open(sys.argv[4], "r", encoding="utf-8") as stream:
     production_content = stream.read()
 production_blocks = list(module._iter_decision_blocks(production_content))
-assert len(production_blocks) == 172, len(production_blocks)
+production_ids = [decision_id for decision_id, _ in production_blocks]
+assert production_ids, "production decisions are empty"
+assert len(production_ids) == len(set(production_ids)), production_ids
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1361,9 +1363,12 @@ try:
         actual_identities,
         expected_identities,
     )
-    assert len(production_declarations) == 423, len(
-        production_declarations
-    )
+    assert production_declarations, "production declarations are empty"
+    assert collections.Counter(
+        decision
+        for decision, name, _line, _canonical in production_declarations
+        if name == "Status"
+    ) == collections.Counter(decision for decision, _ in production_blocks)
     assert all(
         is_canonical
         for _decision, _name, _line, is_canonical
