@@ -36,6 +36,7 @@
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
+#include "mon-act.h"
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
@@ -74,6 +75,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <queue>
 #include <array>
 #include <string>
 #include <tuple>
@@ -85,6 +87,8 @@
 string bind_random_body_part_message(string msg, bool plural);
 
 extern SkillMenu skm;
+extern std::priority_queue<pair<monster*, int>, vector<pair<monster*, int>>,
+                           MonsterActionQueueCompare> monster_queue;
 
 namespace
 {
@@ -5451,6 +5455,10 @@ TEST_CASE("issue147: real summoning messages preserve upstream English and ZH ar
         you.species = SP_HUMAN;
         you.hp = you.hp_max = 1000;
         scoped_monspeak_world world;
+        // A real boulder cast queues an action. Keep that test-only action
+        // from surviving after the summoned monster slot is reset.
+        unwind_var<decltype(monster_queue)> restore_queue(monster_queue);
+        monster_queue = decltype(monster_queue)();
         unwind_var<map_markers> restore_markers(env.markers);
         vector<mid_t> old_mids;
         for (int i = 0; i < MAX_MONSTERS; ++i)
