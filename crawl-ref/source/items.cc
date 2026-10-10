@@ -1231,10 +1231,22 @@ static string _origin_monster_name(const item_def &item)
 {
     const monster_type monnum = static_cast<monster_type>(item.orig_monnum);
     if (monnum == MONS_PLAYER_GHOST)
-        return "a player ghost";
+    {
+        return Options.language == lang_t::ZH ? T_("player ghost")
+                                              : "a player ghost";
+    }
     else if (monnum == MONS_PANDEMONIUM_LORD)
-        return "a pandemonium lord";
-    return mons_type_name(monnum, DESC_A);
+        return Options.language == lang_t::ZH ? T_("pandemonium lord")
+                                              : "a pandemonium lord";
+    if (Options.language != lang_t::ZH)
+        return mons_type_name(monnum, DESC_A);
+
+    string name = mons_type_name(monnum, DESC_PLAIN);
+    // M_NAME_THE uniques retain an English article even with DESC_PLAIN.
+    // Strip it only at this Chinese display sink, preserving canonical names.
+    if (starts_with(name, "the "))
+        name.erase(0, 4);
+    return name;
 }
 
 static string _origin_place_desc(const item_def &item)
@@ -1316,6 +1328,18 @@ string origin_desc(const item_def &item)
     if (_origin_is_original_equip(item))
         return T_("Original Equipment");
 
+    // Keep these ordinary origins whole: English puts the place last,
+    // whereas Chinese places it before the action. Consumers add punctuation.
+    const string place = _origin_place_desc(item);
+    if (!item.orig_monnum)
+        return make_stringf(T_("You found it %s"), place.c_str());
+    if (item.orig_monnum > 0 && item.orig_monnum != MONS_DANCING_WEAPON)
+    {
+        const string monster = _origin_monster_name(item);
+        return make_stringf_p(T_("You took it off %1$s %2$s"),
+                              monster.c_str(), place.c_str());
+    }
+
     string desc;
     if (item.orig_monnum)
     {
@@ -1360,16 +1384,8 @@ string origin_desc(const item_def &item)
         }
         else if (item.orig_monnum == MONS_DANCING_WEAPON)
             desc += T_("You subdued it ");
-        else
-        {
-            desc += (T_("You took ") + _article_it(item) + " off ")
-                    + _origin_monster_name(item) + " ";
-        }
     }
-    else
-        desc += (T_("You found ") + _article_it(item) + " ");
 
-    string place = _origin_place_desc(item);
     if (!place.empty())
     {
         if (Options.language == lang_t::ZH)

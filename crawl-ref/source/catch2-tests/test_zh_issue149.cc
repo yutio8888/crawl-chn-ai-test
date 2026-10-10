@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iterator>
+#include <utility>
 
 #include "beam.h"
 #include "chardump.h"
@@ -11,12 +12,14 @@
 #include "files.h"
 #include "hiscores.h"
 #include "item-prop.h"
+#include "items.h"
 #include "i18n.h"
 #include "mon-info.h"
 #include "mon-util.h"
 #include "notes.h"
 #include "options.h"
 #include "player.h"
+#include "religion.h"
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "state.h"
@@ -162,6 +165,156 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(text.find(language == lang_t::ZH ? "命中率" : "% to hit")
               != string::npos);
         CHECK(text.find("命中用你的") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 151 ordinary item origins localize complete sentences",
+                 "[zh-translation][issue149][issue151][descriptions]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        item_def item;
+        item.base_type = OBJ_WEAPONS;
+        item.sub_type = WPN_DAGGER;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        item.orig_place = level_id(BRANCH_DUNGEON, 3);
+        for (monster_type monster : {MONS_GOBLIN, MONS_ROBIN, MONS_ENCHANTRESS,
+                                     MONS_PLAYER_GHOST,
+                                     MONS_PANDEMONIUM_LORD})
+        {
+            INFO("monster=" << monster);
+            item.orig_monnum = monster;
+            REQUIRE(origin_describable(item));
+            string name = language == lang_t::ZH
+                          ? mons_type_name(monster, DESC_PLAIN)
+                          : mons_type_name_en(monster, DESC_A);
+            if (language == lang_t::ZH && monster == MONS_PLAYER_GHOST)
+                name = T_("player ghost");
+            else if (language == lang_t::ZH && monster == MONS_PANDEMONIUM_LORD)
+                name = T_("pandemonium lord");
+            else if (language == lang_t::ZH && monster == MONS_ENCHANTRESS)
+                name = "妖术女王";
+            const string expected = language == lang_t::ZH
+                ? "在地牢第3层你从" + name + "身上拿走了它"
+                : "You took it off " + name + " on level 3 of the Dungeon";
+            CHECK(origin_desc(item) == expected);
+            // The actual description consumer adds one sentence terminator.
+            const string description = get_item_description(item);
+            CHECK(description.find(expected + ".") != string::npos);
+            CHECK(description.find(expected + "..") == string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(description.find(" off ") == string::npos);
+                CHECK(origin_desc(item).find("a ") == string::npos);
+                CHECK(origin_desc(item).find("an ") == string::npos);
+                CHECK(origin_desc(item).find("the ") == string::npos);
+            }
+            CHECK(item.orig_monnum == monster);
+            CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+            CHECK(mons_type_name_en(monster, DESC_PLAIN).find("罗宾")
+                  == string::npos);
+            if (monster == MONS_ENCHANTRESS)
+                CHECK(mons_type_name_en(monster, DESC_PLAIN) == "the Enchantress");
+        }
+        item.orig_monnum = 0;
+        CHECK(origin_desc(item) == (language == lang_t::ZH
+              ? "在地牢第3层你找到了它"
+              : "You found it on level 3 of the Dungeon"));
+        CHECK(item.orig_monnum == 0);
+        CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+        item.quantity = 2;
+        CHECK_FALSE(origin_describable(item));
+        CHECK(origin_desc(item).empty());
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 149 religion dumps retain attitude and English tense",
+                 "[zh-translation][issue149][morgue]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() {
+        setlocale(LC_CTYPE, saved_locale.c_str());
+    });
+    REQUIRE(ensure_utf8_ctype());
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order, {"religion"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    unwind_var<bool> updating(crawl_state.updating_scores);
+    unwind_var<bool> saving(crawl_state.need_save);
+    const string name = "catch2-issue149-religion-" + to_string(getpid());
+    unwinder cleanup([name]() {
+        unlink_u((name + ".txt").c_str());
+        unlink_u((name + ".lst").c_str());
+    });
+    const scorefile_entry death;
+    const vector<pair<int, const char *>> ranks = {
+        {0, "noncommittal"},
+        {100, "aware of your devotion"},
+        {500, "pleased with you"},
+        {1000, "most pleased with you"},
+        {5000, "greatly pleased with you"},
+        {10000, "extremely pleased with you"},
+        {50000, "exalted by your worship"}
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool dead : {false, true})
+        {
+            INFO("dead=" << dead);
+            crawl_state.updating_scores = dead;
+            crawl_state.need_save = !dead;
+            for (const auto &rank : ranks)
+            {
+                INFO("gold=" << rank.first);
+                issue149_player();
+                you.religion = GOD_GOZAG;
+                you.gold = rank.first;
+                REQUIRE(dump_char(name, true, false, dead ? &death : nullptr));
+                ifstream file(name + ".txt");
+                REQUIRE(file.good());
+                const string dump((istreambuf_iterator<char>(file)),
+                                  istreambuf_iterator<char>());
+                const string expected = language == lang_t::ZH
+                    ? string(dead ? "哥萨戈当时" : "哥萨戈") + T_(rank.second) + "。"
+                    : string(dead ? "Gozag was " : "Gozag is ") + rank.second + ".";
+                INFO("expected=" << expected << "; dump=" << dump);
+                CHECK(dump.find(expected + "\n") != string::npos);
+                CHECK(dump.find("原为") == string::npos);
+                CHECK(you.religion == GOD_GOZAG);
+                CHECK(you.gold == rank.first);
+                CHECK(string(_god_name_en(you.religion)) == "Gozag");
+            }
+            issue149_player();
+            you.religion = GOD_XOM;
+            you.raw_piety = 100;
+            you.gift_timeout = 10;
+            REQUIRE(dump_char(name, true, false, dead ? &death : nullptr));
+            ifstream file(name + ".txt");
+            REQUIRE(file.good());
+            const string dump((istreambuf_iterator<char>(file)),
+                              istreambuf_iterator<char>());
+            INFO("Xom dump=" << dump);
+            CHECK(dump.find(language == lang_t::ZH
+                            ? dead ? "你曾是佐姆的玩具。\n" : "你是佐姆的玩具。\n"
+                            : dead ? "You were a toy of Xom.\n" : "You are a toy of Xom.\n")
+                  != string::npos);
+            CHECK(dump.find("柯苏特") == string::npos);
+            CHECK(you.religion == GOD_XOM);
+            CHECK(string(_god_name_en(you.religion)) == "Xom");
+        }
+        // Wizard numeric/text summaries still use the generic, separate key.
+        CHECK(string(T_("%s was %s."))
+              == (language == lang_t::ZH ? "%s原为%s。" : "%s was %s."));
     }
 }
 
