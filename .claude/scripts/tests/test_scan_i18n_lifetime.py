@@ -139,6 +139,28 @@ class LifetimeScannerTests(unittest.TestCase):
         self.assertEqual({f["rule"] for f in data["findings"]},
                          {"LIFE002", "LIFE003"})
 
+    def test_member_initializers_do_not_confuse_method_locals_or_namespace_storage(self):
+        proc, data = self.json_scan({"sample.cc": r'''
+            const char *T_(const char *);
+            const char *global = T_("startup");
+            class Cache {
+                const char *member = T_("member");
+                void update() {
+                    const char *local = T_("local");
+                    static const char *cached = T_("static");
+                    struct Local {
+                        const char *nested = T_("nested member");
+                        void f() { const char *temporary = T_("temporary"); }
+                    };
+                }
+            };
+        '''}, "--include-warn")
+        self.assertEqual(proc.returncode, 1, proc.stderr)
+        self.assertEqual([f["storage"] for f in data["findings"]],
+                         ["namespace-global", "member", "function-static", "member"])
+        self.assertEqual([f["risk"] for f in data["findings"]],
+                         ["WARN", "HIGH", "HIGH", "HIGH"])
+
     def test_warnings_are_advisory_and_hidden_by_default(self):
         files = {"sample.cc": r'''
             #include <string>

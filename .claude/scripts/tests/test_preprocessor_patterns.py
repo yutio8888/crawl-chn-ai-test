@@ -2,11 +2,13 @@
 """Issue 120: exercise real scanner entries, patterns and macro adapters."""
 import json
 from pathlib import Path
+import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPTS = ROOT / '.claude/scripts'
@@ -339,6 +341,32 @@ void f() {
             missing = b'void f(){ int x = __builtin_va_arg(ap, int) }'
             self.assertTrue(parse_preprocessed_cpp(parser, missing).root_node.has_error)
 
+    def test_deleted_free_function_adapter_preserves_signature_and_risk_nodes(self):
+        if PARSER_IMPORT_ERROR is not None:
+            self.skipTest(f'tree-sitter not installed: {PARSER_IMPORT_ERROR}')
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        for declaration in (b'void mpr(const formatted_string &) = delete;',
+                            b'void mpr(const formatted_string &named) = delete;',
+                            b'void mpr(const formatted_string &)\n =\n delete;'):
+            source = declaration + b'\nvoid f(){mprf("%s", std::string("bad"));}\n'
+            tree = parse_preprocessed_cpp(parser, source)
+            self.assertFalse(tree.root_node.has_error)
+            self.assertEqual(tree.root_node.end_byte, len(source))
+            self.assertEqual(tree.root_node.end_point[0], source.count(b'\n'))
+            self.assertIn('function_declarator', str(tree.root_node))
+            self.assertIn('call_expression', str(tree.root_node))
+        for invalid in (b'void mpr(const formatted_string &) = delete',
+                        b'void mpr(const formatted_string &) = delete reason;',
+                        b'void mpr(const formatted_string &) = delete[] p;',
+                        b'void mpr(const formatted_string &,) = delete;',
+                        b'void mpr(const formatted_string &) = delete; int x = ;'):
+            with self.subTest(source=invalid):
+                try:
+                    tree = parse_preprocessed_cpp(parser, invalid)
+                except ValueError:
+                    continue
+                self.assertTrue(tree.root_node.has_error)
+
     def test_utf8_and_space_paths_use_real_clang_filename_decoding(self):
         with tempfile.TemporaryDirectory(prefix='issue120-路径 space-') as td:
             path = Path(td) / '测试 file.cc'
@@ -503,6 +531,191 @@ void f() {
                 self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
                 self.assertIn(str(target) + ':3:', result.stdout + result.stderr)
 
+    def test_header_keeps_enclosing_class_and_physical_findings(self):
+        with tempfile.TemporaryDirectory(prefix='issue120-包含 空格-') as td:
+            root = Path(td)
+            header = root / '成员.h'
+            header.write_text('''const char *borrowed = LOOKUP("cached");
+void f() {
+  CALL(std::string("bad"));
+  auto text = "You " + std::string("enter");
+}
+''')
+            unit = root / 'main.cc'
+            unit.write_text('''#define LOOKUP(x) C_("context", x)
+#define CALL(x) mprf("%s", x)
+class Holder {
+#include "成员.h"
+};
+void unrelated(){ mprf("%s", std::string("outside"));
+  static const char *p = T_("outside"); }
+''')
+            database = self.database(root, 'class', ('main.cc',))
+            for scanner, expected_line in (('scan_varargs_string.py', 3),
+                                            ('scan_string_concat.py', 4),
+                                            ('scan_i18n_lifetime.py', 1)):
+                with self.subTest(scanner=scanner):
+                    result = self.run_cli(scanner, header, [database])
+                    self.assertEqual(result.returncode, 1, result.stderr)
+                    data = json.loads(result.stdout)
+                    configured = [f for f in data['findings']
+                                  if f.get('configuration') == str(database)]
+                    self.assertTrue(configured, result.stdout)
+                    self.assertTrue(any(f['line'] == expected_line for f in configured))
+                    self.assertTrue(all(Path(f['file']).name == header.name for f in configured))
+                    self.assertTrue(all(f['translation_unit'] == str(unit) for f in configured))
+                    if scanner == 'scan_i18n_lifetime.py':
+                        self.assertTrue(any(f['risk'] == 'HIGH' for f in configured))
+
+    def test_deleted_mpr_header_uses_real_context_and_keeps_risk_and_syntax_checks(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            header = root / 'mpr.h'
+            source = ('class formatted_string;\n'
+                      'void mpr(const formatted_string &) = delete;\n'
+                      'inline void f() {\n'
+                      '  mprf("%s", std::string("bad"));\n'
+                      '  auto text = "You " + std::string("enter");\n'
+                      '  static const char *cached = T_("key");\n'
+                      '}\n')
+            header.write_text(source)
+            unit = root / 'main.cc'
+            unit.write_text('#include "mpr.h"\n')
+            database = self.database(root, 'deleted', ('main.cc',))
+            for scanner, line in (('scan_varargs_string.py', 4),
+                                  ('scan_string_concat.py', 5),
+                                  ('scan_i18n_lifetime.py', 6)):
+                with self.subTest(scanner=scanner):
+                    result = self.run_cli(scanner, header, [database])
+                    self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                    data = json.loads(result.stdout)
+                    self.assertEqual(data.get('coverage', data.get('meta', {}).get('coverage'))['failed'], [])
+                    diagnostic_root = ROOT if scanner == 'scan_varargs_string.py' else root
+                    self.assertTrue(any(f.get('configuration') == str(database)
+                                        and (diagnostic_root / f['file']).resolve() == header.resolve()
+                                        and f['line'] == line
+                                        and f['translation_unit'] == str(unit)
+                                        for f in data['findings']), result.stdout)
+                    for invalid in ('= delete\n', '= delete reason;\n'):
+                        header.write_text(source.replace('= delete;\n', invalid))
+                        rejected = self.run_cli(scanner, header, [database])
+                        self.assertEqual(rejected.returncode, 2, rejected.stdout + rejected.stderr)
+                        self.assertIn(str(header) + ':2:', rejected.stderr)
+                    header.write_text(source)
+
+    def test_header_argument_and_repeated_inclusion_keep_actual_macro_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            header = root / 'argument.h'
+            header.write_text('VALUE\n')
+            (root / 'main.cc').write_text('''void f() {
+#define VALUE std::string("bad")
+  mprf("%s",
+#include "argument.h"
+  );
+#undef VALUE
+#define VALUE "safe"
+  mprf("%s",
+#include "argument.h"
+  );
+}
+''')
+            database = self.database(root, 'repeated', ('main.cc',))
+            result = self.run_cli('scan_varargs_string.py', header, [database])
+            self.assertEqual(result.returncode, 1, result.stderr)
+            findings = json.loads(result.stdout)['findings']
+            configured = [f for f in findings if f.get('configuration') == str(database)]
+            self.assertEqual(len(configured), 1, findings)
+            self.assertEqual(configured[0]['arg'], 'std::string("bad")')
+            self.assertEqual(configured[0]['line'], 1)
+
+    def test_header_helpers_are_expanded_and_isolated_by_translation_unit(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            header = root / 'slot.h'
+            header.write_text('static const char *p = choose();\n')
+            (root / 'helper.h').write_text('inline const char *choose(){return GET("key");}\n')
+            for name, macro in (('borrowed.cc', 'T_(x)'), ('also-borrowed.cc', 'T_(x)'),
+                                ('safe.cc', '(x)')):
+                (root / name).write_text('#define GET(x) ' + macro + '\n'
+                    '#include "helper.h"\nvoid f(){\n#include "slot.h"\n}\n')
+            database = self.database(root, 'helpers', ('borrowed.cc', 'also-borrowed.cc', 'safe.cc'))
+            result = self.run_cli('scan_i18n_lifetime.py', header, [database])
+            self.assertEqual(result.returncode, 1, result.stderr)
+            findings = [f for f in json.loads(result.stdout)['findings']
+                        if f.get('configuration') == str(database)]
+            self.assertEqual(len(findings), 2, result.stdout)
+            self.assertEqual({f['translation_unit'] for f in findings},
+                             {str(root / 'borrowed.cc'), str(root / 'also-borrowed.cc')})
+            self.assertTrue(all(f['line'] == 1 and f['risk'] == 'HIGH' for f in findings))
+
+    def test_one_successful_header_context_cannot_hide_a_later_failure(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            header = root / 'body.h'
+            header.write_text('VALUE;\n')
+            (root / 'good.cc').write_text('#define VALUE int n = 1\n#include "body.h"\n')
+            (root / 'bad.cc').write_text('#define VALUE int n =\n#include "body.h"\n')
+            database = self.database(root, 'mixed', ('good.cc', 'bad.cc'))
+            for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
+                            'scan_i18n_lifetime.py'):
+                with self.subTest(scanner=scanner):
+                    result = self.run_cli(scanner, header, [database])
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                    self.assertIn(str(header) + ':1:', result.stderr)
+                    self.assertIn(str(root / 'bad.cc'), result.stderr)
+                    if result.stdout:
+                        data = json.loads(result.stdout)
+                        coverage = data.get('coverage', data.get('meta', {}).get('coverage'))
+                        self.assertEqual(coverage['scanned'], 0)
+                        self.assertTrue(coverage['failed'])
+
+    def test_header_context_absence_cpp_syntax_and_line_forgery_block(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            header = root / 'body.h'
+            unit = root / 'main.cc'
+            good_unit = 'void f(){\n#include "body.h"\n}\n'
+            database = self.database(root, 'context', ('main.cc',))
+            for source, body, diagnostic in (
+                    ('void f(){}\n', 'int n;\n', 'no compiled inclusion context'),
+                    ('#if 0\n#include "body.h"\n#endif\n', 'int n;\n', 'no compiled inclusion context'),
+                    (good_unit, '#include "missing.h"\n', 'preprocessor failed'),
+                    (good_unit, 'int n = ;\n', str(header) + ':1:'),
+                    (good_unit, '#line 900\nint n;\n', 'source-authored'),
+                    ('#include "body.h"\nvoid f(){int n=;}\n', 'int good;\n', str(unit) + ':2:')):
+                unit.write_text(source)
+                header.write_text(body)
+                for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
+                                'scan_i18n_lifetime.py'):
+                    with self.subTest(scanner=scanner, diagnostic=diagnostic):
+                        result = self.run_cli(scanner, header, [database])
+                        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                        self.assertIn(diagnostic, result.stderr)
+
+    def test_header_batch_preprocesses_each_unit_once_and_keeps_ancestors(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / 'one.h').write_text('void f() { CALL(); }\n')
+            (root / 'two.h').write_text('void g() {}\n')
+            (root / 'outer.h').write_text('class Outer{\n#include "one.h"\n};\n')
+            for name in ('a.cc', 'b.cc'):
+                (root / name).write_text('#define CALL() mprf("%s", std::string("bad"))\n'
+                    '#include "outer.h"\n#include "two.h"\n')
+            database = CppCompilationDatabase(self.database(root, 'batch', ('a.cc', 'b.cc')))
+            with mock.patch('i18n_shared.preprocess_cpp', wraps=preprocess_cpp) as expand:
+                contexts = list(database.contexts([root / 'one.h', root / 'two.h']))
+            self.assertEqual(expand.call_count, 2)
+            self.assertEqual(len(contexts), 2)
+            for context in contexts:
+                self.assertIn(b'class Outer{', context.source)
+                self.assertIn(str(root / 'outer.h'), context.original_files)
+                self.assertEqual(set(context.covered_files),
+                                 {str(root / 'one.h'), str(root / 'two.h')})
+                parse_preprocessed_cpp(Parser(Language(tree_sitter_cpp.language())),
+                                       context.source, preprocessed=context,
+                                       filepath=context.translation_unit)
+
     def test_compilation_database_preserves_flags_and_rejects_ambiguous_entries(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -537,12 +750,163 @@ void f() {
                 self.assertIn('-std=c++11', entry['arguments'])
             self.assertEqual(len(CppCompilationDatabase(database).commands), 2)
             before = database.read_bytes()
+            for dry_run in ('-n', '--dry-run'):
+                result = subprocess.run(command + [dry_run], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(database.read_bytes(), before)
             for invalid in ('I18N_SCAN_FILES=mpr.h', 'I18N_SCAN_FILES=util/levcomp.cc',
                             'I18N_SCAN_FILES=catch2-tests/catch_amalgamated.cc',
+                            'I18N_SCAN_FILES=directn.cc directn.cc',
+                            'I18N_SCAN_FILES=all directn.cc',
+                            'I18N_BUILD_GOAL=unknown', 'I18N_BUILD_GOAL=',
+                            'I18N_BUILD_GOAL=crawl catch2-tests', 'crawl',
                             'I18N_SCAN_FILES=', 'I18N_COMPILE_COMMANDS='):
                 result = subprocess.run(command + [invalid], capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(database.read_bytes(), before)
+
+    def test_export_matches_actual_object_recipe_across_build_goals(self):
+        source_dir = ROOT / 'crawl-ref/source'
+        # Reuse the production compile recipe, but remove its build prerequisites
+        # for this read-only make -n probe. Make still evaluates the real object
+        # target's flags, independently of the export sibling's target context.
+        recipe = next(line for line in (source_dir / 'Makefile').read_text().splitlines()
+                      if line.startswith('\t$(QUIET_CXX)$(CXX) $(STDFLAG) $(ALL_CFLAGS)')
+                      and '-x c++-header' not in line)
+        files = ['directn.cc', 'util/levcomp.tab.cc', 'rltiles/tiledef-main.cc']
+        with tempfile.TemporaryDirectory() as td:
+            database = Path(td) / 'commands.json'
+            for goal, options in (('crawl', []), ('crawl', ['TILES=y']),
+                                  ('crawl', ['WEBTILES=y']), ('debug', []),
+                                  ('debug-lite', []), ('profile', []),
+                                  ('catch2-tests', []), ('monster', [])):
+                selected = files + (['catch2-tests/catch_amalgamated.cc']
+                                    if goal == 'catch2-tests' else [])
+                options = ['FORCE_CXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                           'V=1', 'EXTRA_FLAGS=-DISSUE120_EXPORT_VALUE=123', *options]
+                result = subprocess.run(
+                    ['make', '-C', str(source_dir), '-j4', 'i18n-compile-commands',
+                     'I18N_BUILD_GOAL=' + goal, 'I18N_SCAN_FILES=' + ' '.join(selected),
+                     'I18N_COMPILE_COMMANDS=' + str(database), *options],
+                    capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                for entry in json.loads(database.read_text()):
+                    source = entry['file']
+                    obj = str(Path(source).with_suffix('.o'))
+                    probe = subprocess.run(
+                        ['make', '-C', str(source_dir), '-n', '-o', source, obj,
+                         '--eval=MAKECMDGOALS := ' + goal,
+                         '--eval=.PHONY: ' + obj + '\n' + obj + ': ' + source + '\n' + recipe,
+                         *options],
+                        capture_output=True, text=True)
+                    self.assertEqual(probe.returncode, 0, probe.stdout + probe.stderr)
+                    commands = [shlex.split(line) for line in probe.stdout.splitlines()
+                                if ' -c ' + source + ' -o ' + obj in line]
+                    with self.subTest(goal=goal, options=options, source=source):
+                        self.assertEqual(commands, [entry['arguments']])
+
+    def test_export_all_uses_selected_build_inventory_and_tilegen_host_flags(self):
+        with tempfile.TemporaryDirectory() as td:
+            database = Path(td) / 'commands.json'
+            source_dir = ROOT / 'crawl-ref/source'
+            common = ['make', '-C', str(source_dir), '-j4', 'i18n-compile-commands',
+                      'FORCE_CXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                      'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=' + str(database)]
+            inventories = {}
+            for goal in ('crawl', 'catch2-tests'):
+                result = subprocess.run(common + ['I18N_BUILD_GOAL=' + goal],
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                entries = json.loads(database.read_text())
+                inventories[goal] = {entry['file'] for entry in entries}
+                self.assertEqual(len(entries), len(inventories[goal]))
+                self.assertIn('util/levcomp.lex.cc', inventories[goal])
+                self.assertIn('rltiles/tiledef-main.cc', inventories[goal])
+            self.assertIn('main.cc', inventories['crawl'])
+            self.assertNotIn('main.cc', inventories['catch2-tests'])
+            self.assertIn('catch2-tests/test_main.cc', inventories['catch2-tests'])
+            self.assertFalse(any(name.startswith('catch2-tests/')
+                                 for name in inventories['crawl']))
+
+            # This is the actual host-tool recipe; it must not acquire the
+            # target game's flags merely because a cross build selected it.
+            source_dir /= 'rltiles'
+            recipe = next(line for line in (source_dir / 'Makefile').read_text().splitlines()
+                          if line.startswith('\t$(QUIET_HOSTCXX)$(HOSTCXX)'))
+            result = subprocess.run(
+                ['make', '-C', str(source_dir), '-j4', 'i18n-compile-commands',
+                 'HOSTCXX=' + self.compiler, 'CXX=missing-target-compiler',
+                 'PYTHON=' + sys.executable, 'I18N_SCAN_FILES=all', 'TILES=y',
+                 'DEBUG=y', 'ANDROID=1', 'I18N_COMPILE_COMMANDS=' + str(database)],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            loaded = CppCompilationDatabase(database)
+            self.assertTrue(loaded.commands)
+            for entry in json.loads(database.read_text()):
+                source = entry['file']
+                obj = str(Path(source).with_suffix('.o'))
+                probe = subprocess.run(
+                    ['make', '-C', str(source_dir), '-n', '-o', source, obj,
+                     'HOSTCXX=' + self.compiler, 'TILES=y', 'DEBUG=y', 'ANDROID=1', 'V=1',
+                     '--eval=.PHONY: ' + obj + '\n' + obj + ': ' + source + '\n' + recipe],
+                    capture_output=True, text=True)
+                self.assertEqual(probe.returncode, 0, probe.stdout + probe.stderr)
+                commands = [shlex.split(line) for line in probe.stdout.splitlines()
+                            if ' -c ' + source + ' -o ' + obj in line]
+                self.assertEqual(commands, [entry['arguments']])
+                self.assertIn('-DUSE_TILE', entry['arguments'])
+                self.assertNotIn('-DCLUA_BINDINGS', entry['arguments'])
+
+    def test_export_does_not_read_stale_dependencies_or_build_files(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            tile_dir = root / 'crawl-ref/source/rltiles'
+            (tile_dir / 'tool').mkdir(parents=True)
+            scripts = root / '.claude/scripts'
+            scripts.mkdir(parents=True)
+            shutil.copy(ROOT / 'crawl-ref/source/rltiles/Makefile', tile_dir)
+            shutil.copy(SCRIPTS / 'export_compile_commands.py', scripts)
+            (tile_dir / 'tool/main.d').write_text('$(error stale dependency was read)\n')
+            (tile_dir / '.cflags').write_text('existing compiler flags\n')
+            (tile_dir / 'tool/main.o').write_bytes(b'existing object\n')
+            before = {str(path.relative_to(root)): path.read_bytes()
+                      for path in root.rglob('*') if path.is_file()}
+            database = root / 'commands.json'
+            result = subprocess.run(
+                ['make', '-C', str(tile_dir), 'i18n-compile-commands',
+                 'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                 'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=commands.json'],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue(database.is_file())
+            after = {str(path.relative_to(root)): path.read_bytes()
+                     for path in root.rglob('*') if path.is_file() and path != database}
+            self.assertEqual(after, before)
+            result = subprocess.run(
+                ['make', '-n', '-C', str(tile_dir), 'i18n-compile-commands',
+                 'HOSTCXX=' + self.compiler, 'PYTHON=' + sys.executable,
+                 'I18N_SCAN_FILES=all', 'I18N_COMPILE_COMMANDS=not-created.json'],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertFalse((root / 'not-created.json').exists())
+
+    def test_export_collection_failure_preserves_previous_database(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            database = root / 'database.json'
+            database.write_bytes(b'previous database\n')
+            result = subprocess.run(
+                [sys.executable, str(SCRIPTS / 'export_compile_commands.py'),
+                 'entry', str(root), 'first.cc', '--', self.compiler,
+                 '-c', 'first.cc', '-o', 'first.o'], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            result = subprocess.run(
+                [sys.executable, str(SCRIPTS / 'export_compile_commands.py'),
+                 'collect', str(database), str(root), 'first.cc', 'missing.cc'],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(database.read_bytes(), b'previous database\n')
+            self.assertFalse(list(root.glob('database.json.*')))
 
     def test_output_and_dependency_options_cannot_overwrite_artifacts(self):
         with tempfile.TemporaryDirectory() as td:

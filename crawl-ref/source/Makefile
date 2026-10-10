@@ -894,9 +894,13 @@ endif
 # Figure out the build settings for this type of build
 #
 
+# An export selects the same goal-dependent flags without building that goal.
+I18N_BUILD_GOAL ?= crawl
+BUILD_FLAG_GOALS = $(MAKECMDGOALS) $(if $(filter i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)),$(I18N_BUILD_GOAL))
+
 # Debug
 # No optimization, full debugging.
-ifneq (,$(filter debug,$(MAKECMDGOALS)))
+ifneq (,$(filter debug,$(BUILD_FLAG_GOALS)))
 	FULLDEBUG=YesPlease
 	DEBUG=YesPlease
 	NO_OPTIMIZE=YesPlease
@@ -905,7 +909,7 @@ endif
 
 # Debug-Lite
 # No optimization, but little/no debugging spew.
-ifneq (,$(filter debug-lite,$(MAKECMDGOALS)))
+ifneq (,$(filter debug-lite,$(BUILD_FLAG_GOALS)))
 	DEBUG=YesPlease
 	NO_OPTIMIZE=YesPlease
 	COVERAGE=YesPlease
@@ -913,7 +917,7 @@ endif
 
 # Profile
 # Optimized, with full debugging.
-ifneq (,$(filter profile,$(MAKECMDGOALS)))
+ifneq (,$(filter profile,$(BUILD_FLAG_GOALS)))
 	FULLDEBUG=YesPlease
 	DEBUG=YesPlease
 	COVERAGE=YesPlease
@@ -923,7 +927,7 @@ endif
 # direct executable/dump builds do not rely on callers passing STDFLAG.
 CATCH2_GOALS = catch2-tests catch2-tests-executable plug-and-play-tests \
                textdb-phase0-dump textdb-monspell-candidate-dump
-ifneq (,$(filter $(CATCH2_GOALS),$(MAKECMDGOALS)))
+ifneq (,$(filter $(CATCH2_GOALS),$(BUILD_FLAG_GOALS)))
 	COVERAGE=YesPlease
 	STDFLAG = -std=c++14
 endif
@@ -1430,7 +1434,7 @@ CATCH2_TEST_OBJECTS = $(OBJECTS) $(TEST_OBJECTS) catch2-tests/catch_amalgamated.
 # The amalgamated Catch2 v3 source provides a default main unless this is
 # defined. crawl's test_main.cc owns main so it can initialise shared runtime
 # tables before handing control to Catch::Session.
-catch2-tests/catch_amalgamated.o: ALL_CFLAGS += -DCATCH_AMALGAMATED_CUSTOM_MAIN
+catch2-tests/catch_amalgamated.o catch2-tests/catch_amalgamated.cc.i18n-command: ALL_CFLAGS += -DCATCH_AMALGAMATED_CUSTOM_MAIN
 
 
 ifneq (,$(filter plug-and-play-tests,$(MAKECMDGOALS)))
@@ -1502,6 +1506,7 @@ DEPS := $(ALL_OBJECTS:.o=.d)
 # util/good-depfile, then replace it with a rule that forces a rebuild.
 # That rebuild will overwrite the stopgap .d file with a good one for
 # the next build.
+ifeq (,$(filter i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
 ifndef NEED_REBUILD
   VALID_DEPS := $(shell checkdep () { \
                           x_d="$$1"; \
@@ -1519,6 +1524,7 @@ ifndef NEED_REBUILD
                         done)
 endif
 -include $(VALID_DEPS)
+endif
 
 
 # This information is included in crash reports, and is printed with
@@ -1897,8 +1903,8 @@ endif
 
 $(OBJECTS:%.o=%.cc) main.cc: $(CONTRIB_LIBS)
 
-$(UTIL)%.o: ALL_CFLAGS=$(YACC_CFLAGS)
-$(TILEDEFOBJS): ALL_CFLAGS=$(RLTILES_CFLAGS)
+$(UTIL)%.o $(UTIL)%.cc.i18n-command: ALL_CFLAGS=$(YACC_CFLAGS)
+$(TILEDEFOBJS) $(TILEDEFSRCS:%=%.i18n-command): ALL_CFLAGS=$(RLTILES_CFLAGS)
 
 # The "|" designates "order-only" dependencies. See: (make) Prerequisite Types.
 #
@@ -1920,15 +1926,38 @@ ifndef NO_INLINE_DEPGEN
 	@if [ -f $(@:%.o=%.d) ]; then touch -r $@ $(@:%.o=%.d); fi
 endif
 
-# Explicit scanner experiment: export this configuration's ordinary core TUs.
-# Dependencies/generated headers must already exist; this target builds nothing.
-# Target-specific utility/rltiles/Catch2 flags and header inclusion contexts are
-# deliberately outside this exporter. Android uses the NDK's actual TU commands.
+# Export real per-target compile arguments without dependencies or compilation.
+# Synthetic targets share the declarations above with their object counterparts.
+# Header contexts come from TUs; prebuilt inputs are compiled from util/ paths.
+I18N_GOALS = crawl debug debug-lite profile monster $(CATCH2_GOALS)
+I18N_OBJECTS = $(if $(filter monster,$(I18N_BUILD_GOAL)),$(MONSTER_OBJS),$(if $(filter plug-and-play-tests,$(I18N_BUILD_GOAL)),$(CATCH2_PNP_OBJECTS),$(if $(filter $(CATCH2_GOALS),$(I18N_BUILD_GOAL)),$(CATCH2_TEST_OBJECTS),$(GAME_OBJS))))
+I18N_SOURCES = $(sort $(filter-out icon.cc,$(I18N_OBJECTS:.o=.cc)))
+I18N_SELECTED = $(if $(filter all,$(I18N_SCAN_FILES)),$(I18N_SOURCES),$(I18N_SCAN_FILES))
+# Export and compilation use different dependency behavior; never mix goals.
+ifneq (,$(filter i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
+ifneq (,$(filter-out i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
+$(error Run i18n-compile-commands separately from build targets)
+endif
+endif
+I18N_EXPORTER = ../../.claude/scripts/export_compile_commands.py
+
+.PHONY: $(I18N_SOURCES:%=%.i18n-command)
+$(I18N_SOURCES:%=%.i18n-command):
+	$(QUIET_PYTHON)$(PYTHON) $(I18N_EXPORTER) entry "$(I18N_COMMAND_DIR)" "$(@:%.i18n-command=%)" -- $(CXX) $(STDFLAG) $(ALL_CFLAGS) $(INLINE_DEPGEN_CFLAGS) -c "$(@:%.i18n-command=%)" -o "$(@:%.cc.i18n-command=%.o)"
+
 i18n-compile-commands:
 	$(if $(strip $(I18N_COMPILE_COMMANDS)),,$(error Set I18N_COMPILE_COMMANDS to the output JSON path))
-	$(if $(strip $(I18N_SCAN_FILES)),,$(error Set I18N_SCAN_FILES to core .cc filenames))
-	$(if $(filter-out $(filter-out %/%,$(OBJECTS:.o=.cc)) main.cc,$(I18N_SCAN_FILES)),$(error I18N_SCAN_FILES must contain ordinary core .cc files))
-	$(QUIET_PYTHON)$(PYTHON) -c 'import json, sys; from pathlib import Path; split = sys.argv.index("--"); files = sys.argv[2:split]; command = sys.argv[split + 1:]; entries = [{"directory": str(Path.cwd()), "file": name, "arguments": command + ["-c", name, "-o", str(Path(name).with_suffix(".o"))]} for name in files]; Path(sys.argv[1]).write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")' "$(I18N_COMPILE_COMMANDS)" $(I18N_SCAN_FILES) -- $(CXX) $(STDFLAG) $(ALL_CFLAGS)
+	$(if $(strip $(I18N_BUILD_GOAL)),,$(error Select one I18N_BUILD_GOAL per database))
+	$(if $(filter-out $(I18N_GOALS),$(I18N_BUILD_GOAL)),$(error Unsupported I18N_BUILD_GOAL))
+	$(if $(word 2,$(I18N_BUILD_GOAL)),$(error Select one I18N_BUILD_GOAL per database))
+	$(if $(strip $(I18N_SCAN_FILES)),,$(error Set I18N_SCAN_FILES to TU filenames or all))
+	$(if $(filter all,$(I18N_SCAN_FILES)),$(if $(word 2,$(I18N_SCAN_FILES)),$(error Use all alone)))
+	$(if $(filter-out $(I18N_SOURCES),$(I18N_SELECTED)),$(error I18N_SCAN_FILES must belong to the selected build goal))
+	+@set -eu; \
+	  test -z "$(findstring n,$(filter-out --%,$(firstword $(MAKEFLAGS))))" || exit 0; \
+	  command_dir=$$(mktemp -d); trap 'rm -rf "$$command_dir"' 0; \
+	  $(MAKE) --no-print-directory $(I18N_SELECTED:%=%.i18n-command) I18N_COMMAND_DIR="$$command_dir"; \
+	  $(PYTHON) $(I18N_EXPORTER) collect "$(I18N_COMPILE_COMMANDS)" "$$command_dir" $(I18N_SELECTED)
 
 icon.o: util/crawl.rc dat/tiles/stone_soup_icon.ico .cflags
 	$(QUIET_WINDRES)$(WINDRES) util/crawl.rc icon.o

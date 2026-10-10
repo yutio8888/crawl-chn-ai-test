@@ -986,6 +986,7 @@ def format_json(findings, source_dir, coverage):
             "reason": f["reason"],
             "sink": f.get("sink"),
             **({"configuration": f["configuration"]} if "configuration" in f else {}),
+            **({"translation_unit": f["translation_unit"]} if "translation_unit" in f else {}),
         })
         summary[f["rule"]][f["risk"]] += 1
         per_file[rel_path][f["risk"]] += 1
@@ -1071,7 +1072,7 @@ def main():
     argparser.add_argument("--require-parser", action="store_true",
                            help="Exit 2 if tree-sitter is unavailable")
     argparser.add_argument("--compile-commands", action="append", default=[], metavar="DB",
-                           help="Supplement raw findings with expanded target TUs; one build configuration per DB, repeat for more")
+                            help="Supplement raw findings with real TU/header inclusion contexts; one build configuration per DB, repeat for more")
 
     args = argparser.parse_args()
 
@@ -1133,44 +1134,58 @@ def main():
     # ── Scan files ────────────────────────────────────────────────────────
     include_wrapped = args.all
     all_findings = []
+    failed_files = set()
+
+    def consume(filepath, configuration=None, expanded=None):
+        raw_findings, source_bytes, display_sinks = scan_file(
+            filepath, ts_parser, include_wrapped, validate_parse, expanded,
+            supplementary=bool(databases) and expanded is None)
+        for finding in raw_findings:
+            node = finding["node"]
+            origin, line, column = filepath, node.start_point[0] + 1, node.start_point[1] + 1
+            if expanded is not None:
+                location = expanded.finding_location(
+                    node.start_point[0], node.end_point[0] - (node.end_point[1] == 0), filepath)
+                if location is None:
+                    continue
+                origin, line = location
+                column = 1
+            if _hard_exclude(finding, origin, source_bytes):
+                continue
+            score, reasons = _score_finding(finding, origin, source_bytes, display_sinks)
+            risk = _score_to_risk(score)
+            risk_order = {"LOW": 0, "MED": 1, "HIGH": 2}
+            if risk_order[risk] < risk_order[args.min_risk]:
+                continue
+            if args.skip_low and risk == "LOW":
+                continue
+            finding.update(file=origin, line=line, col=column,
+                           score=score, risk=risk, reason=reasons)
+            if configuration is not None:
+                finding["configuration"] = configuration
+            if expanded is not None:
+                finding["translation_unit"] = expanded.translation_unit
+            all_findings.append(finding)
+
     for filepath in files_to_scan:
         try:
-            inputs = [("raw-source" if databases else None, None)]
-            inputs += [(str(db.path), db.source(filepath)) for db in databases]
-            file_findings = []
-            for configuration, expanded in inputs:
-                raw_findings, source_bytes, display_sinks = scan_file(
-                    filepath, ts_parser, include_wrapped, validate_parse, expanded,
-                    supplementary=bool(databases) and expanded is None)
-                for finding in raw_findings:
-                    if _hard_exclude(finding, filepath, source_bytes):
-                        continue
-                    score, reasons = _score_finding(
-                        finding, filepath, source_bytes, display_sinks)
-                    risk = _score_to_risk(score)
-                    risk_order = {"LOW": 0, "MED": 1, "HIGH": 2}
-                    if risk_order[risk] < risk_order[args.min_risk]:
-                        continue
-                    if args.skip_low and risk == "LOW":
-                        continue
-                    node = finding["node"]
-                    finding["file"] = filepath
-                    finding["line"] = node.start_point[0] + 1
-                    finding["col"] = node.start_point[1] + 1
-                    if expanded is not None:
-                        finding["line"] = expanded.original_line(node.start_point[0])
-                        finding["col"] = 1
-                    if configuration is not None:
-                        finding["configuration"] = configuration
-                    finding["score"] = score
-                    finding["risk"] = risk
-                    finding["reason"] = reasons
-                    file_findings.append(finding)
-            all_findings.extend(file_findings)
-            coverage.scanned += 1
+            consume(filepath, "raw-source" if databases else None)
         except (OSError, ValueError) as exc:
+            failed_files.add(filepath)
             coverage.failed.append(f"{filepath}: {exc}")
-            continue
+    for database in databases:
+        try:
+            for expanded in database.contexts(files_to_scan):
+                try:
+                    consume(expanded.translation_unit, str(database.path), expanded)
+                except (OSError, ValueError) as exc:
+                    failed_files.update(expanded.covered_files)
+                    coverage.failed.append(f"{database.path}: {exc}")
+        except (OSError, ValueError) as exc:
+            failed_files.update(files_to_scan)
+            coverage.failed.append(f"{database.path}: {exc}")
+    failed_realpaths = {os.path.realpath(name) for name in failed_files}
+    coverage.scanned = sum(os.path.realpath(fp) not in failed_realpaths for fp in files_to_scan)
 
     # ── Output ────────────────────────────────────────────────────────────
     out_dir = _display_root(files_to_scan, args.source_dir)

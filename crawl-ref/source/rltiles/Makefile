@@ -129,7 +129,9 @@ player.png tiledef-player.h tileinfo-player.js: dc-mon.txt dc-tentacles.txt dc-z
 
 DEPS := $(OBJECTS:%.o=%.d) $(INPUTS:%=%.d)
 
+ifeq (,$(filter i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
 -include $(DEPS)
+endif
 
 clean:
 	$(DELETE) $(HEADERS) $(OBJECTS) $(TILEGEN) $(SOURCE) $(IMAGES) $(HTML) \
@@ -144,3 +146,31 @@ $(TILEGEN): $(OBJECTS)
 	$(QUIET_HOSTLINK)$(HOSTCXX) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 .PHONY: all clean distclean
+
+# Tilegen is a host tool, including during cross builds. Export its own flags
+# separately from the generated tiledef objects compiled by the parent make.
+PYTHON ?= python3
+# Export and compilation use different dependency behavior; never mix goals.
+ifneq (,$(filter i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
+ifneq (,$(filter-out i18n-compile-commands %.i18n-command,$(MAKECMDGOALS)))
+$(error Run i18n-compile-commands separately from build targets)
+endif
+endif
+I18N_EXPORTER = ../../../.claude/scripts/export_compile_commands.py
+I18N_SOURCES = $(OBJECTS:.o=.cc)
+I18N_SELECTED = $(if $(filter all,$(I18N_SCAN_FILES)),$(I18N_SOURCES),$(I18N_SCAN_FILES))
+
+.PHONY: i18n-compile-commands $(I18N_SOURCES:%=%.i18n-command)
+$(I18N_SOURCES:%=%.i18n-command):
+	$(PYTHON) $(I18N_EXPORTER) entry "$(I18N_COMMAND_DIR)" "$(@:%.i18n-command=%)" -- $(HOSTCXX) $(CFLAGS) -MMD -c "$(@:%.i18n-command=%)" -o "$(@:%.cc.i18n-command=%.o)"
+
+i18n-compile-commands:
+	$(if $(strip $(I18N_COMPILE_COMMANDS)),,$(error Set I18N_COMPILE_COMMANDS to the output JSON path))
+	$(if $(strip $(I18N_SCAN_FILES)),,$(error Set I18N_SCAN_FILES to tilegen TU filenames or all))
+	$(if $(filter all,$(I18N_SCAN_FILES)),$(if $(word 2,$(I18N_SCAN_FILES)),$(error Use all alone)))
+	$(if $(filter-out $(I18N_SOURCES),$(I18N_SELECTED)),$(error I18N_SCAN_FILES must contain tilegen TU filenames))
+	+@set -eu; \
+	  test -z "$(findstring n,$(filter-out --%,$(firstword $(MAKEFLAGS))))" || exit 0; \
+	  command_dir=$$(mktemp -d); trap 'rm -rf "$$command_dir"' 0; \
+	  $(MAKE) --no-print-directory $(I18N_SELECTED:%=%.i18n-command) I18N_COMMAND_DIR="$$command_dir"; \
+	  $(PYTHON) $(I18N_EXPORTER) collect "$(I18N_COMPILE_COMMANDS)" "$$command_dir" $(I18N_SELECTED)

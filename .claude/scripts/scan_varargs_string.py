@@ -616,12 +616,19 @@ def scan_file(filepath, parser, validate_parse=False, preprocessed=None,
     findings = []
     type_bindings = _build_type_bindings(tree.root_node, src)
     _walk(tree.root_node, src, findings, type_bindings)
+    retained = []
     for f in findings:
         f["file"] = filepath
         if preprocessed is not None:
-            f["line"] = preprocessed.original_line(f["node"].start_point[0])
+            node = f["node"]
+            location = preprocessed.finding_location(
+                node.start_point[0], node.end_point[0] - (node.end_point[1] == 0), filepath)
+            if location is None:
+                continue
+            f["file"], f["line"] = location
         del f["node"]
-    return findings
+        retained.append(f)
+    return retained
 
 
 SKIP_FILES = {"catch_amalgamated.cc"}
@@ -641,7 +648,7 @@ def main():
     ap.add_argument("--include-warn", action="store_true",
                     help="Report WARN (CALL_NO_CSTR) findings too")
     ap.add_argument("--compile-commands", action="append", default=[], metavar="DB",
-                    help="Supplement raw findings with expanded target TUs; one build configuration per DB, repeat for more")
+                    help="Supplement raw findings with real TU/header inclusion contexts; one build configuration per DB, repeat for more")
     args = ap.parse_args()
 
     if not TREE_SITTER_AVAILABLE:
@@ -694,25 +701,36 @@ def main():
         return 2
 
     all_findings = []
+    failed_files = set()
     for fp in files:
         try:
+            findings = scan_file(fp, parser, validate_parse,
+                                 supplementary=bool(databases))
             if databases:
-                # Raw recovery findings are supplemental. Every requested
-                # configuration below must still preprocess and parse strictly.
-                raw_findings = scan_file(fp, parser, supplementary=True)
-                for finding in raw_findings:
+                for finding in findings:
                     finding["configuration"] = "raw-source"
-                all_findings.extend(raw_findings)
-                for database in databases:
-                    findings = scan_file(fp, parser, preprocessed=database.source(fp))
+            all_findings.extend(findings)
+        except (OSError, ValueError) as exc:
+            failed_files.add(fp)
+            coverage.failed.append(f"{fp}: {exc}")
+    for database in databases:
+        try:
+            for expanded in database.contexts(files):
+                try:
+                    findings = scan_file(expanded.translation_unit, parser,
+                                         preprocessed=expanded)
                     for finding in findings:
                         finding["configuration"] = str(database.path)
+                        finding["translation_unit"] = expanded.translation_unit
                     all_findings.extend(findings)
-            else:
-                all_findings.extend(scan_file(fp, parser, validate_parse))
-            coverage.scanned += 1
+                except (OSError, ValueError) as exc:
+                    failed_files.update(expanded.covered_files)
+                    coverage.failed.append(f"{database.path}: {exc}")
         except (OSError, ValueError) as exc:
-            coverage.failed.append(f"{fp}: {exc}")
+            failed_files.update(files)
+            coverage.failed.append(f"{database.path}: {exc}")
+    failed_realpaths = {os.path.realpath(name) for name in failed_files}
+    coverage.scanned = sum(os.path.realpath(fp) not in failed_realpaths for fp in files)
 
     if not args.include_warn:
         all_findings = [f for f in all_findings if f["risk"] != "WARN"]
