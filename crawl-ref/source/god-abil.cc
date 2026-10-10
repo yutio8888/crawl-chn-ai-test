@@ -6172,9 +6172,11 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
     auto ancestor_mapped = map_find(ancestor_types, ancestor_choice);
     ASSERT(ancestor_mapped);
     const auto ancestor_type = *ancestor_mapped;
-    const string ancestor_type_name = mons_type_name(ancestor_type, DESC_A);
+    const string ancestor_type_name = mons_type_name_en(ancestor_type, DESC_A);
+    const string display_type_name = Options.language == lang_t::ZH
+        ? mons_type_name(ancestor_type, DESC_PLAIN) : ancestor_type_name;
 
-    if (!yesno(make_stringf(T_("Are you sure you want to remember your ancestor as %s?"), ancestor_type_name.c_str()).c_str(),
+    if (!yesno(make_stringf(T_("Are you sure you want to remember your ancestor as %s?"), display_type_name.c_str()).c_str(),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6195,7 +6197,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
     god_speaks(you.religion, T_("It is so."));
     take_note(Note(NOTE_ANCESTOR_TYPE, 0, 0, ancestor_type_name));
     const string mile_text
-        = make_stringf(T_("remembered their ancestor %s as %s."),
+        = make_stringf("remembered their ancestor %s as %s.",
                        hepliaklqana_ally_name().c_str(),
                        ancestor_type_name.c_str());
     mark_milestone("ancestor.class", mile_text);
@@ -6308,8 +6310,10 @@ spret hepliaklqana_transference(const coord_def& target, bool fail)
 static void _hepliaklqana_choose_name()
 {
     const string old_name = hepliaklqana_ally_name();
-    string prompt  = make_stringf(T_("Remember %s name as what? "),
-                                  apostrophise(old_name).c_str());
+    const string prompt = Options.language == lang_t::ZH
+        ? make_stringf(C_("ancestor rename prompt", "Remember %s's name as what?"),
+                       old_name.c_str()) + " "
+        : make_stringf("Remember %s name as what? ", apostrophise(old_name).c_str());
 
     char buf[18];
     int ret = msgwin_get_line(prompt, buf, sizeof buf, nullptr, old_name);
@@ -6337,9 +6341,9 @@ static void _hepliaklqana_choose_gender()
 {
     static const map<gender_type, string> gender_map =
     {
-        { GENDER_NEUTRAL, "neither" },
-        { GENDER_MALE,    "male"    },
-        { GENDER_FEMALE,  "female"  },
+        { GENDER_NEUTRAL, NC_("ancestor gender", "neither") },
+        { GENDER_MALE,    NC_("ancestor gender", "male")    },
+        { GENDER_FEMALE,  NC_("ancestor gender", "female")  },
     };
 
     const gender_type current_gender =
@@ -6348,7 +6352,7 @@ static void _hepliaklqana_choose_gender()
     ASSERT(desc);
 
     mprf(T_("Was %s a) male, b) female, or c) neither? (Currently %s.)"), hepliaklqana_ally_name().c_str(),
-             desc->c_str());
+             C_("ancestor gender", desc->c_str()));
 
     int keyin = toalower(get_ch());
     if (!isaalpha(keyin))
@@ -6378,7 +6382,7 @@ static void _hepliaklqana_choose_gender()
 
     you.props[HEPLIAKLQANA_ALLY_GENDER_KEY] = new_gender;
     mprf(T_("%s was always %s, you are pretty sure."), hepliaklqana_ally_name().c_str(),
-             map_find(gender_map, new_gender)->c_str());
+             C_("ancestor gender", map_find(gender_map, new_gender)->c_str()));
     upgrade_hepliaklqana_ancestor(true);
 }
 

@@ -429,8 +429,8 @@ static string _get_unseen_branches()
 
                 snprintf(buffer, sizeof buffer,
                     "<darkgrey>%6s: %s:%d</darkgrey>",
-                    it->abbrevname,
-                    branches[you.where_are_you].abbrevname,
+                    T_(it->abbrevname),
+                    T_(branches[you.where_are_you].abbrevname),
                     in_dungeon ? 12 : branches[you.where_are_you].numlevels);
 
                 disp += buffer;
@@ -451,8 +451,8 @@ static string _get_unseen_branches()
                     {
                         snprintf(buffer, sizeof buffer,
                             "<darkgrey>%6s: %s:%d-%d</darkgrey>",
-                                it->abbrevname,
-                                branches[parent].abbrevname,
+                                T_(it->abbrevname),
+                                T_(branches[parent].abbrevname),
                                 it->mindepth,
                                 it->maxdepth);
                     }
@@ -460,8 +460,8 @@ static string _get_unseen_branches()
                     {
                         snprintf(buffer, sizeof buffer,
                             "<darkgrey>%6s: %s:%d</darkgrey>",
-                                it->abbrevname,
-                                branches[parent].abbrevname,
+                                T_(it->abbrevname),
+                                T_(branches[parent].abbrevname),
                                 it->mindepth);
                     }
 

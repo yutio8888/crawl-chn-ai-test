@@ -4,21 +4,30 @@
 
 #include <fstream>
 #include <iterator>
+#include <set>
 #include <utility>
 
 #include "beam.h"
 #include "chardump.h"
+#include "colour.h"
+#include "branch.h"
+#include "dgn-overview.h"
+#include "env.h"
 #include "describe.h"
 #include "files.h"
 #include "hiscores.h"
 #include "item-prop.h"
+#include "item-name.h"
 #include "items.h"
 #include "i18n.h"
 #include "mon-info.h"
+#include "mon-death.h"
+#include "monster.h"
 #include "mon-util.h"
 #include "notes.h"
 #include "options.h"
 #include "player.h"
+#include "player-equip.h"
 #include "religion.h"
 #include "spl-cast.h"
 #include "spl-util.h"
@@ -364,6 +373,337 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             REQUIRE_FALSE(tail.empty());
             CHECK(tail.front() == ' ');
             CHECK(tail.find(failure) != string::npos);
+        }
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 157 staff and armour comparisons preserve bilingual delays",
+                 "[zh-translation][issue149][issue157][descriptions]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    unwind_var<bool> saving(crawl_state.need_save, true);
+    for (int scenario : {0, 1, 2})
+    {
+        INFO("scenario=" << scenario);
+        string english_numbers;
+        for (lang_t language : {lang_t::EN, lang_t::ZH})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            issue149_player();
+            you.base_stats[STAT_STR] = you.base_stats[STAT_DEX] = 10;
+            if (scenario != 0)
+            {
+                item_def& weapon = you.inv[0];
+                weapon.base_type = OBJ_WEAPONS;
+                weapon.sub_type = scenario == 1 ? WPN_LONG_SWORD : WPN_LONGBOW;
+                weapon.quantity = 1;
+                weapon.flags = ISFLAG_IDENTIFIED;
+                weapon.pos = ITEM_IN_INVENTORY;
+                weapon.link = 0;
+                you.equipment.add(weapon, SLOT_WEAPON);
+                you.equipment.update();
+                REQUIRE(you.weapon() == &weapon);
+            }
+            item_def candidate;
+            candidate.base_type = scenario == 2 ? OBJ_ARMOUR : OBJ_STAVES;
+            candidate.sub_type = scenario == 2 ? ARM_ROBE : STAFF_CONJURATION;
+            candidate.quantity = 1;
+            candidate.flags = ISFLAG_IDENTIFIED;
+            const player_stats before = you.calc_stats(100);
+            const string description = get_item_description(candidate);
+            INFO(description);
+            const string prefix = language == lang_t::EN ? "Your attack delay would " : "你的攻击延迟";
+            const size_t begin = description.find(prefix);
+            REQUIRE(begin != string::npos);
+            const string line = description.substr(begin, description.find('\n', begin) - begin);
+            if (language == lang_t::EN)
+            {
+                CHECK(line.find(scenario == 0 ? "increase" : scenario == 1 ? "decrease" : "remain unchanged") != string::npos);
+                if (scenario != 2)
+                {
+                    const size_t numbers = line.find('(');
+                    REQUIRE(numbers != string::npos);
+                    english_numbers = line.substr(numbers, line.find(')', numbers) - numbers + 1);
+                    if (scenario == 0)
+                        CHECK(english_numbers == "(1.0 -> 1.2)");
+                }
+            }
+            else
+            {
+                CHECK(line.find("Your attack delay") == string::npos);
+                CHECK(line.find(scenario == 0 ? "增加" : scenario == 1 ? "减少" : "不变") != string::npos);
+                if (scenario != 2)
+                    CHECK(line.find(english_numbers) != string::npos);
+            }
+            CHECK(you.calc_stats(100).delay == before.delay);
+            CHECK(candidate.sub_type == (scenario == 2 ? ARM_ROBE : STAFF_CONJURATION));
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 157 frost death localizes morgue without changing kaux",
+                 "[zh-translation][issue149][issue157][morgue][protocol]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order, {});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    unwind_var<bool> updating(crawl_state.updating_scores, true);
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    issue149_player();
+    you.your_name = "Issue157";
+    you.hp = 0;
+    const string filename = "catch2-issue157-death-" + to_string(getpid());
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    for (const char* cause : {"puff of frost", "Unknown legacy beam"})
+    {
+        scorefile_entry entry(2, MID_NOBODY, KILLED_BY_BEAM, cause, true,
+                              "Blorkula the Orcula");
+        entry.init(1600000000);
+        const string raw = entry.raw_string();
+        REQUIRE_FALSE(raw.empty());
+        REQUIRE(entry.get_fields().str_field("kaux") == cause);
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            scorefile_entry saved;
+            REQUIRE(saved.parse(raw));
+            const string verbose = saved.death_description(scorefile_entry::DDV_VERBOSE);
+            INFO(verbose);
+            const string display_cause = language == lang_t::ZH ? T_(cause) : cause;
+            CHECK(verbose.find(display_cause) != string::npos);
+            if (language == lang_t::ZH && string(cause) == "puff of frost")
+                CHECK(verbose.find(cause) == string::npos);
+            REQUIRE(dump_char(filename, true, false, &saved));
+            ifstream file(filename + ".txt");
+            REQUIRE(file.good());
+            const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+            CHECK(dump.find(display_cause) != string::npos);
+            if (language == lang_t::ZH && string(cause) == "puff of frost")
+                CHECK(dump.find(cause) == string::npos);
+            CHECK(saved.get_fields().str_field("kaux") == cause);
+            CHECK(saved.raw_string() == raw);
+            CHECK(saved.death_description(scorefile_entry::DDV_LOGVERBOSE).find(cause) != string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 154 and 155 named monsters assemble display grammar once",
+                 "[zh-translation][issue149][issue154][issue155][monsters]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    issue149_player();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (monster_type type : {MONS_ANCESTOR, MONS_ANCESTOR_KNIGHT,
+                                  MONS_ANCESTOR_ELEMENTALIST, MONS_ANCESTOR_HEXER})
+        {
+            monster_info ancestor(type);
+            ancestor.mname = "Xochitl";
+            ancestor.props[MON_GENDER_KEY] = GENDER_NEUTRAL;
+            const string name = ancestor.full_name();
+            CHECK(name.find("Xochitl") != string::npos);
+            CHECK(name.find(ancestor.common_name()) != string::npos);
+            CHECK((name.find(" the ") != string::npos) == (language == lang_t::EN));
+            CHECK(string(ancestor.pronoun(PRONOUN_SUBJECTIVE)) == (language == lang_t::ZH ? "它" : "they"));
+            CHECK(ancestor.pronoun_plurality() == (language == lang_t::EN));
+            CHECK(ancestor.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
+            CHECK(ancestor.mname == "Xochitl");
+            monster actual;
+            actual.type = type;
+            actual.props[MON_GENDER_KEY] = GENDER_NEUTRAL;
+            CHECK(actual.pronoun(PRONOUN_SUBJECTIVE, true) == ancestor.pronoun(PRONOUN_SUBJECTIVE));
+            CHECK(actual.pronoun_plurality(true) == (language == lang_t::EN));
+        }
+        for (monster_type type : {MONS_PLAYER_GHOST, MONS_PLAYER_ILLUSION})
+        {
+            monster_info ghost(type);
+            ghost.mname = "SpecialOrigin";
+            const string displayed = ghost.full_name();
+            CHECK(displayed.find("的的") == string::npos);
+            CHECK(displayed == (language == lang_t::ZH
+                ? string("SpecialOrigin的") + (type == MONS_PLAYER_GHOST ? "鬼魂" : "幻象")
+                : string("SpecialOrigin's ") + (type == MONS_PLAYER_GHOST ? "ghost" : "illusion")));
+            CHECK(ghost.mname == "SpecialOrigin");
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 155 every panlord body adjective fits its full template",
+                 "[zh-translation][issue149][issue155][descriptions]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    issue149_player();
+    const set<string> expected = {"armoured", "vast, spindly", "fat", "obese",
+        "muscular", "spiked", "splotchy", "slender", "tentacled", "emaciated",
+        "bug-like", "skeletal", "mantis", "slithering"};
+    set<string> covered;
+    for (int n = 0; n < 160; ++n)
+    {
+        const string name = n == 0 ? "Ugrogiot" : "Issue155Panlord" + to_string(n);
+        for (bool flying : {false, true})
+        {
+            monster_info demon(MONS_PANDEMONIUM_LORD);
+            demon.mname = name;
+            demon.ghost_colour = ETC_RANDOM;
+            demon.mb.set(MB_AIRBORNE, flying);
+            for (lang_t language : {lang_t::EN, lang_t::ZH})
+            {
+                TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+                describe_info description;
+                bool has_stats = false;
+                get_monster_db_desc(demon, description, has_stats);
+                const string text = description.body.str();
+                INFO(name << " flying=" << flying << ": " << text);
+                CHECK(text.find(name) != string::npos);
+                CHECK(text.find("的的") == string::npos);
+                if (language == lang_t::EN)
+                {
+                    bool found = false;
+                    for (const string& adjective : expected)
+                        if (text.find(adjective + " body") != string::npos)
+                        {
+                            covered.insert(adjective);
+                            found = true;
+                        }
+                    CHECK(found);
+                }
+                else
+                    for (const string& adjective : expected)
+                        CHECK(text.find(adjective + "的躯体") == string::npos);
+                CHECK(demon.mname == name);
+            }
+        }
+    }
+    CHECK(covered == expected);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 156 named corpse creation keeps English identities",
+                 "[zh-translation][issue149][issue156][items][protocol]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    for (monster_type type : {MONS_ROBIN, MONS_JESSICA, MONS_ENCHANTRESS})
+    {
+        monster dead;
+        dead.type = type;
+        dead.set_position(coord_def(20, 21));
+        unwind_var<dungeon_feature_type> floor(env.grid(dead.pos()), DNGN_FLOOR);
+        item_def* corpse = place_corpse_or_gold(dead, true);
+        REQUIRE(corpse != nullptr);
+        const int index = corpse->index();
+        unwinder cleanup([index]() { destroy_item(index); });
+        const string identity = mons_type_name_en(type, DESC_PLAIN);
+        REQUIRE(get_corpse_name(*corpse) == identity);
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            for (int form : {CORPSE_BODY, CORPSE_SKELETON})
+            {
+                corpse->sub_type = form;
+                const string displayed = corpse->name(DESC_PLAIN);
+                INFO(displayed);
+                CHECK((displayed.find(" of ") != string::npos) == (language == lang_t::EN));
+                const string translated_name = language == lang_t::ZH
+                    ? type == MONS_ENCHANTRESS ? T_("Enchantress") : mons_type_name(type, DESC_PLAIN)
+                    : identity;
+                CHECK(displayed.find(translated_name) != string::npos);
+                if (language == lang_t::ZH && type == MONS_ENCHANTRESS)
+                    CHECK(displayed.find("the ") == string::npos);
+                CHECK(get_corpse_name(*corpse) == identity);
+                CHECK(corpse->orig_monnum == type);
+            }
+        }
+        // A historic localized snapshot and a custom name have no lookup key.
+        for (const string& legacy : {string("旧名字"), string("CustomName")})
+        {
+            corpse->props[CORPSE_NAME_KEY] = legacy;
+            CHECK(corpse->name(DESC_PLAIN).find(legacy) != string::npos);
+            CHECK(get_corpse_name(*corpse) == legacy);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 149 carried stash and unexplored temple localize display labels",
+                 "[zh-translation][issue149][stash][overview]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<branch_type> root(root_branch, BRANCH_DUNGEON);
+    unwind_var<int> depth(brdepth[BRANCH_DUNGEON], 15);
+    issue149_player();
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 5;
+    item_def& dagger = you.inv[0];
+    dagger.base_type = OBJ_WEAPONS;
+    dagger.sub_type = WPN_DAGGER;
+    dagger.quantity = 1;
+    dagger.flags = ISFLAG_IDENTIFIED;
+    dagger.pos = ITEM_IN_INVENTORY;
+    dagger.link = 0;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string displayed = Stash::stash_item_name(dagger);
+        CHECK(displayed.find(dagger.name(DESC_INVENTORY_EQUIP)) != string::npos);
+        CHECK((displayed.find("[carried] ") != string::npos) == (language == lang_t::EN));
+        CHECK(dagger.link == 0);
+        CHECK(dagger.pos == ITEM_IN_INVENTORY);
+        for (bool onscreen : {false, true})
+        {
+            const string overview = overview_description_string(onscreen);
+            INFO(overview);
+            CHECK(overview.find(language == lang_t::ZH ? "神殿" : "Temple") != string::npos);
+            CHECK((overview.find("Temple:") != string::npos) == (language == lang_t::EN));
+            CHECK(overview.find(":4-7") != string::npos);
+            CHECK(string(branches[BRANCH_TEMPLE].abbrevname) == "Temple");
+            CHECK(string(branches[BRANCH_DUNGEON].abbrevname) == "D");
         }
     }
 }

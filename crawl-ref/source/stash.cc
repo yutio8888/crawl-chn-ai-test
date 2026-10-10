@@ -444,7 +444,7 @@ string Stash::stash_item_name(const item_def &item)
     {
         name = item.name(DESC_INVENTORY_EQUIP); // add `(worn)`, etc
         // use [] to match with the location info
-        name.insert(0, "[carried] ");
+        name.insert(0, string(T_("[carried]")) + " ");
         return name;
     }
     else

@@ -2267,7 +2267,27 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             && !(name_flags & MF_NAME_SPECIES) && name_type != MF_NAME_SUFFIX
             && !dbname)
         {
-            buff << " of " << _name;
+            if (Options.language == lang_t::ZH)
+            {
+                // The stored corpse name is an identity. Old localized saves
+                // and custom names simply retain their original display value.
+                const char* translated = zh_monster_name(_name);
+                // M_NAME_THE uniques retain their article in the canonical
+                // stored identity, but the catalog contains the bare name.
+                const monster_type original = static_cast<monster_type>(orig_monnum);
+                if (!translated && starts_with(_name, "the ")
+                    && mons_is_unique(original) && mons_is_the(original)
+                    && _name == mons_type_name_en(original, DESC_PLAIN))
+                {
+                    translated = zh_monster_name(_name.substr(4));
+                }
+                const string display_name = translated ? translated : _name;
+                const string body = buff.str();
+                buff.str(make_stringf_p(C_("named corpse", "%1$s of %2$s"),
+                                       body.c_str(), display_name.c_str()));
+            }
+            else
+                buff << " of " << _name;
         }
         break;
     }

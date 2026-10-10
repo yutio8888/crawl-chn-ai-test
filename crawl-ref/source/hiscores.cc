@@ -3364,7 +3364,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!semiverbose)
                 {
                     if (chinese)
-                        desc += make_stringf(T_("... caused by %s"), auxkilldata.c_str());
+                        desc += make_stringf(T_("... caused by %s"), T_(auxkilldata.c_str()));
                     else
                         desc += auxkilldata == "damnation" ? "... with " :
                          auxkilldata == "creeping frost" ? "... by " :
