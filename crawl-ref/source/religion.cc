@@ -642,6 +642,10 @@ void maybe_clear_traitor(god_type god)
 
 bool active_penance(god_type god)
 {
+#if TAG_MAJOR_VERSION == 34
+    if (god == GOD_PAKELLAS)
+        return false;
+#endif
     // Good gods only have active wrath when they hate your current god.
     return player_under_penance(god)
            && !is_unavailable_god(god)
@@ -649,9 +653,6 @@ bool active_penance(god_type god)
            && god != GOD_GOZAG
            && god != GOD_RU
            && god != GOD_HEPLIAKLQANA
-#if TAG_MAJOR_VERSION == 34
-           && god != GOD_PAKELLAS
-#endif
            && god != GOD_ELYVILON
            && (god == you.religion && !(is_good_god(god) || god == GOD_BEOGH)
                || god_hates_your_god(god, you.religion));

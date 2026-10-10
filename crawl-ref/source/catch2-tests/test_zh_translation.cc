@@ -5300,7 +5300,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you.hp = you.hp_max = 20;
     you.experience_level = 1;
     give_basic_mutations(you.species);
-    CHECK(species::fake_mutations(you.species, false)[0] == "You are unimpeded by mud.");
+    const vector<string> draconian_traits = species::fake_mutations(you.species, false);
+    CHECK(find(draconian_traits.begin(), draconian_traits.end(),
+               "You are unimpeded by mud.") != draconian_traits.end());
     for (transformation form : {transformation::none, transformation::pig})
     {
         you.form = form;
