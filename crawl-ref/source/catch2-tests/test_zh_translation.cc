@@ -21,6 +21,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "format.h"
 #include "files.h"
 #include "god-conduct.h"
 #include "hiscores.h"
@@ -31,6 +32,8 @@
 #include "jobs.h"
 #include "losglobal.h"
 #include "macro.h"
+#include "melee-attack.h"
+#include "mon-info.h"
 #include "mapdef.h"
 #include "mapmark.h"
 #include "message.h"
@@ -50,6 +53,7 @@
 #include "player-save-info.h"
 #include "positional_format.h"
 #include "random.h"
+#include "quiver.h"
 #include "religion.h"
 #include "skill-menu.h"
 #include "skills.h"
@@ -5636,5 +5640,223 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(dump.find(tense + to_string(count) + " ziggurat" + suffix) != string::npos);
         }
         CHECK(you.get_place_info(BRANCH_PANDEMONIUM).num_visits == unsigned(count));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: sticky flame status uses context without changing DB identity",
+                 "[zh-translation][issue147][context-labels][status]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<uint32_t> restore_level_state(env.level_state, 0);
+    you = player();
+    init_duration_index();
+    you.duration[DUR_STICKY_FLAME] = 10;
+    const auto row = GENERATE(table<int, const char*>({
+        {7, "Fire"}, {8, "Fire+"}, {12, "Fire+"}, {13, "Fire++"},
+    }));
+    const string key = std::get<1>(row);
+    you.props[STICKY_FLAME_POWER_KEY] = std::get<0>(row);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        status_info info;
+        REQUIRE(fill_status_info(DUR_STICKY_FLAME, info));
+        CHECK(info.db_key == key);
+        CHECK(info.light_text == (language == lang_t::ZH
+                                 ? string(C_("status", key.c_str())) : key));
+        if (language == lang_t::ZH && key == "Fire")
+        {
+            CHECK(info.light_text != T_("Fire"));
+            CHECK(info.light_text == "着火");
+        }
+        const string display = info.light_text;
+        i18n_cache_clear();
+        CHECK(info.light_text == display);
+        CHECK(info.db_key == key);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: ranged firing action statistics retain English action identity",
+                 "[zh-translation][issue147][context-labels][morgue]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"action_counts"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    const string filename = "catch2-issue147-context-actions";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    you = player();
+    you.experience_level = you.max_level = 1;
+    count_action(CACT_FIRE, WPN_SHORTBOW, -1);
+    const auto identity = make_pair(CACT_FIRE, caction_compound(WPN_SHORTBOW, -1));
+    REQUIRE(you.action_count.count(identity) == 1);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        REQUIRE(dump_char(filename, true));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        CHECK(dump.find(language == lang_t::ZH ? "发射:" : "Fire:") != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(dump.find(string(T_("Fire")) + ":") == string::npos);
+        CHECK(you.action_count.size() == 1);
+        CHECK(you.action_count.at(identity)[0] == 1);
+        CHECK(caction_extract_types(identity.second) == make_pair(int(WPN_SHORTBOW), -1));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: terse Zot death cause is distinct from place and xlog fields",
+                 "[zh-translation][issue147][context-labels][hiscores]")
+{
+    // Read a real-format historic score through the production parser.
+    const string raw = "name=context-test:race=Human:cls=Fighter:xl=1:"
+                       "ktyp=zot:killer=Zot:kaux=Zot:br=Zot:lvl=1:absdepth=27\n";
+    scorefile_entry entry;
+    REQUIRE(entry.parse(raw));
+    REQUIRE(entry.get_death_type() == KILLED_BY_ZOT);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(entry.death_description(scorefile_entry::DDV_TERSE)
+              == (language == lang_t::ZH ? "佐特" : "Zot"));
+        const string normal = entry.death_description(scorefile_entry::DDV_NORMAL);
+        CHECK(normal.find(language == lang_t::ZH
+              ? "逗留太久，被佐特吞噬"
+              : "Tarried too long and was consumed by Zot") != string::npos);
+        const string place = entry.death_place(scorefile_entry::DDV_NORMAL);
+        CHECK(place.find(language == lang_t::ZH ? "佐特领域" : "Zot") != string::npos);
+        CHECK(entry.raw_string() == raw);
+        CHECK(entry.get_fields().str_field("ktyp") == "zot");
+        CHECK(entry.get_fields().str_field("killer") == "Zot");
+        CHECK(entry.get_fields().str_field("kaux") == "Zot");
+        CHECK(entry.get_fields().str_field("br") == "Zot");
+    }
+}
+
+namespace
+{
+// Expose the base class's protected virtual interface only in this test.
+// Virtual dispatch still runs melee_attack's actual private overrides.
+struct context_hit_attack : melee_attack
+{
+    using melee_attack::melee_attack;
+    using attack::set_attack_verb;
+    using attack::announce_hit;
+};
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: successful hit announcement preserves ordinary action semantics",
+                 "[zh-translation][issue147][context-labels][combat]")
+{
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    rng::subgenerator scoped_rng(147, 147);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 20;
+    you.experience_level = 1;
+    you.set_position(coord_def(20, 20));
+    item_def& weapon = you.inv[0];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    weapon.quantity = 1;
+    you.equip[EQ_WEAPON] = 0;
+    monster target;
+    target.type = MONS_ORC;
+    target.hit_points = target.max_hit_points = 20;
+    target.set_position(coord_def(21, 20));
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        context_hit_attack swing(&you, &target);
+        swing.damage_done = 1;
+        swing.needs_message = true;
+        swing.set_attack_verb(swing.damage_done);
+        CHECK(swing.attack_verb == (language == lang_t::ZH ? "击中" : "hit"));
+        string emitted;
+        {
+            msgwin_temporary_mode temporary;
+            temporary_message_rollback rollback;
+            msg::tee capture(emitted);
+            swing.announce_hit();
+        }
+        INFO(emitted);
+        CHECK(emitted.find(language == lang_t::ZH ? "你击中了" : "You hit ") != string::npos);
+        CHECK(emitted.find(target.name(DESC_THE)) != string::npos);
+        CHECK(mon_attack_name(AT_HIT, false)
+              == (language == lang_t::ZH ? "攻击" : "hit"));
+        const auto action = quiver::get_primary_action();
+        REQUIRE(action);
+        CHECK(action->quiver_verb() == (language == lang_t::ZH ? "攻击" : "hit"));
+        CHECK(weapon.base_type == OBJ_WEAPONS);
+        CHECK(weapon.sub_type == WPN_DAGGER);
+        CHECK(swing.attk_type == AT_HIT);
+        CHECK(target.hit_points == 20);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monster status pane looks up real English monstatus identity",
+                 "[zh-translation][issue147][context-labels][monstatus]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    monster_info info(MONS_ORC);
+    info.pos = coord_def(20, 20);
+    info.attitude = ATT_HOSTILE;
+    // Stable enum for the real mutagenic-energy monstatus entry.
+    info.mb.set(MB_CLOUD_RING_MUTATION);
+    const string identity = "surrounded by mutagenic energy monstatus";
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string body = trimmed_string(getLongDescription(identity));
+        REQUIRE_FALSE(body.empty());
+        CHECK(body == (language == lang_t::ZH
+            ? "这个生物周围环绕着一圈诱变雾气。"
+            : "This creature trails a ring of mutagenic fog around itself."));
+        const string pane = get_monster_status_descriptions(info).tostring();
+        INFO(pane);
+        CHECK(pane.find(body) != string::npos);
+        const string title = language == lang_t::ZH
+            ? string(C_("flag long", "surrounded by mutagenic energy"))
+            : "Surrounded by mutagenic energy";
+        CHECK(pane.find(title + ":") != string::npos);
+        if (language == lang_t::ZH)
+        {
+            REQUIRE(title != "surrounded by mutagenic energy");
+            // This was the old consumer's key; no invented DescriptionDB entry.
+            CHECK(getLongDescription(title + " monstatus").empty());
+            CHECK(pane.find("Surrounded by mutagenic energy") == string::npos);
+        }
+        CHECK(Options.language == language);
+        CHECK(info.is(MB_CLOUD_RING_MUTATION));
     }
 }

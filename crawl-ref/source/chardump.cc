@@ -1383,7 +1383,7 @@ static string _describe_action(caction_type type)
     case CACT_MELEE:
         return T_("Melee");
     case CACT_FIRE:
-        return T_("Fire");
+        return C_("verb", "Fire");
     case CACT_THROW:
         return T_("Throw");
     case CACT_ARMOUR:

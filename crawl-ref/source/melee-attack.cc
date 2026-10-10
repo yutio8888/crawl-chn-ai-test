@@ -2895,7 +2895,7 @@ void melee_attack::set_attack_verb(int damage)
         && weap_type != WPN_UNARMED)
     {
         if (weap_type != WPN_UNKNOWN)
-            attack_verb = T_("hit");
+            attack_verb = C_("verb", "hit");
         else
             attack_verb = T_("clumsily bash");
         return;
@@ -3079,7 +3079,7 @@ void melee_attack::set_attack_verb(int damage)
         else
         {
             if (damage < HIT_WEAK)
-                attack_verb = T_("hit");
+                attack_verb = C_("verb", "hit");
             else if (damage < HIT_MED)
                 attack_verb = T_("punch");
             else if (damage < HIT_STRONG)
@@ -3120,7 +3120,7 @@ void melee_attack::set_attack_verb(int damage)
 
     case WPN_UNKNOWN:
     default:
-        attack_verb = T_("hit");
+        attack_verb = C_("verb", "hit");
         break;
     }
 }

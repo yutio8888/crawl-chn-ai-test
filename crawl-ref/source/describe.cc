@@ -7526,16 +7526,26 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 #endif
 }
 
-static formatted_string _get_monster_status_descriptions(const monster_info& mi)
+formatted_string get_monster_status_descriptions(const monster_info& mi)
 {
     vector<string> descriptors = get_monster_status_descriptors(mi);
     if (descriptors.empty())
         return formatted_string();
 
-    ostringstream out;
-    for (string& tag : descriptors)
+    // Localized descriptors are titles, never DescriptionDB identities.
+    // Language changes only the text, not descriptor membership or order.
+    vector<string> english_descriptors;
     {
-        const string key = make_stringf("%s monstatus", tag.c_str());
+        ScopedLangEn en;
+        english_descriptors = get_monster_status_descriptors(mi);
+    }
+    ASSERT(descriptors.size() == english_descriptors.size());
+
+    ostringstream out;
+    for (size_t i = 0; i < descriptors.size(); ++i)
+    {
+        const string& tag = descriptors[i];
+        const string key = english_descriptors[i] + " monstatus";
         string lookup = getLongDescription(key);
         if (lookup.empty())
             continue;
@@ -7605,7 +7615,7 @@ int describe_monster(const monster_info &mi, const string& /*footer*/)
 #endif
 
     const formatted_string quote = formatted_string(trimmed_string(inf.quote));
-    const formatted_string status_desc = _get_monster_status_descriptions(mi);
+    const formatted_string status_desc = get_monster_status_descriptions(mi);
 
 
     auto desc_sw = make_shared<Switcher>();
