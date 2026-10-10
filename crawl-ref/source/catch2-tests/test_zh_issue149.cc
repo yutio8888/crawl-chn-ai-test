@@ -12,6 +12,7 @@
 #include "colour.h"
 #include "branch.h"
 #include "dgn-overview.h"
+#include "dungeon.h"
 #include "env.h"
 #include "describe.h"
 #include "files.h"
