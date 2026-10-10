@@ -2198,8 +2198,13 @@ string monster::pronoun(pronoun_type pro, bool force_visible) const
     const bool seen = force_visible || you.aware_of(*this);
     if (seen && props.exists(MON_GENDER_KEY))
     {
-        return decline_pronoun((gender_type)props[MON_GENDER_KEY].get_int(),
-                               pro);
+        gender_type gender = (gender_type)props[MON_GENDER_KEY].get_int();
+        if (Options.language == lang_t::ZH && gender == GENDER_NEUTRAL
+            && mons_is_hepliaklqana_ancestor(type))
+        {
+            gender = GENDER_NEUTER;
+        }
+        return decline_pronoun(gender, pro);
     }
     return mons_pronoun(type, pro, seen);
 }
@@ -2207,6 +2212,8 @@ string monster::pronoun(pronoun_type pro, bool force_visible) const
 bool monster::pronoun_plurality(bool force_visible) const
 {
     const bool seen = force_visible || you.aware_of(*this);
+    if (Options.language == lang_t::ZH && mons_is_hepliaklqana_ancestor(type))
+        return false;
     if (seen && props.exists(MON_GENDER_KEY))
         return props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL;
 

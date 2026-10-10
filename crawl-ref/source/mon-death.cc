@@ -165,7 +165,7 @@ static bool _fill_out_corpse(const monster& mons, item_def& corpse)
     }
     else if (mons_is_unique(mtype))
     {
-        corpse.props[CORPSE_NAME_KEY] = mons_type_name(mtype, DESC_PLAIN);
+        corpse.props[CORPSE_NAME_KEY] = mons_type_name_en(mtype, DESC_PLAIN);
         corpse.props[CORPSE_NAME_TYPE_KEY].get_int64() = 0;
     }
 

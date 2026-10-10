@@ -411,7 +411,7 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_ANCESTOR_TYPE:
             result << T_("Remembered your ancestor ") << hepliaklqana_ally_name()
-                   << T_(" as ") << name;
+                   << T_(" as ") << C_("ancestor class", name.c_str());
             break;
 #if TAG_MAJOR_VERSION == 34
         case NOTE_ANCESTOR_SPECIALIZATION:
@@ -601,7 +601,8 @@ void load_notes(reader& inf)
 void make_user_note()
 {
     char buf[400];
-    bool validline = !msgwin_get_line("Enter note: ", buf, sizeof(buf));
+    const string prompt = string(T_("Enter note:")) + " ";
+    bool validline = !msgwin_get_line(prompt, buf, sizeof(buf));
     if (!validline || (!*buf))
         return;
     Note unote(NOTE_USER_NOTE);

@@ -45842,3 +45842,87 @@ god attitude|You were %s\n
 %%%%
 god attitude|You are %s\n
 你是%s\n
+%%%%
+monster full name|%1$s the %2$s
+%2$s%1$s
+%%%%
+named monster ghost|%s's ghost
+%s的鬼魂
+%%%%
+named monster illusion|%s's illusion
+%s的幻象
+%%%%
+ancestor rename prompt|Remember %s's name as what?
+你想将%s的名字记作什么？
+%%%%
+ancestor gender|neither
+中性
+%%%%
+ancestor gender|male
+男性
+%%%%
+ancestor gender|female
+女性
+%%%%
+named corpse|%1$s of %2$s
+%2$s的%1$s
+%%%%
+\nYour attack delay would %s.
+\n你的攻击延迟将%s。
+%%%%
+[carried]
+[携带]
+%%%%
+Enter note:
+输入笔记：
+%%%%
+ancestor class|a knight
+骑士
+%%%%
+ancestor class|an elementalist
+元素师
+%%%%
+ancestor class|a hexer
+诅咒师
+%%%%
+panlord body adjective|armoured
+装甲
+%%%%
+panlord body adjective|vast, spindly
+巨大而瘦长
+%%%%
+panlord body adjective|fat
+肥胖
+%%%%
+panlord body adjective|obese
+臃肿
+%%%%
+panlord body adjective|muscular
+肌肉发达
+%%%%
+panlord body adjective|spiked
+长满尖刺
+%%%%
+panlord body adjective|splotchy
+斑驳
+%%%%
+panlord body adjective|slender
+修长
+%%%%
+panlord body adjective|tentacled
+长有触手
+%%%%
+panlord body adjective|emaciated
+消瘦
+%%%%
+panlord body adjective|bug-like
+虫状
+%%%%
+panlord body adjective|skeletal
+骨架般
+%%%%
+panlord body adjective|mantis
+螳螂状
+%%%%
+panlord body adjective|slithering
+蜿蜒

@@ -39,6 +39,7 @@
 #include "mon-util.h"
 #include "nearby-danger.h"
 #include "options.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "shout.h"
 #include "skills.h"
@@ -1193,12 +1194,14 @@ string monster_info::_core_name() const
         switch (type)
         {
         case MONS_PLAYER_GHOST:
-            s = apostrophise(mname)
-                + (T_(" ghost"));
+            s = Options.language == lang_t::ZH
+                ? make_stringf(C_("named monster ghost", "%s's ghost"), mname.c_str())
+                : apostrophise(mname) + " ghost";
             break;
         case MONS_PLAYER_ILLUSION:
-            s = apostrophise(mname)
-                + (T_(" illusion"));
+            s = Options.language == lang_t::ZH
+                ? make_stringf(C_("named monster illusion", "%s's illusion"), mname.c_str())
+                : apostrophise(mname) + " illusion";
             break;
         case MONS_PANDEMONIUM_LORD:
             s = mname;
@@ -1446,7 +1449,9 @@ string monster_info::full_name(description_level_type desc) const
 
     if (has_proper_name())
     {
-        string s = mname + T_(" the ") + common_name();
+        const string common = common_name();
+        string s = make_stringf_p(C_("monster full name", "%1$s the %2$s"),
+                                 mname.c_str(), common.c_str());
         if (desc == DESC_ITS)
             s = apostrophise(s);
         return s;
@@ -2384,14 +2389,22 @@ const char *monster_info::pronoun(pronoun_type variant) const
 {
     if (props.exists(MON_GENDER_KEY))
     {
-        return decline_pronoun((gender_type)props[MON_GENDER_KEY].get_int(),
-                               variant);
+        gender_type gender = (gender_type)props[MON_GENDER_KEY].get_int();
+        // English singular they stays neutral; the Chinese ancestor is one person.
+        if (Options.language == lang_t::ZH && gender == GENDER_NEUTRAL
+            && mons_is_hepliaklqana_ancestor(type))
+        {
+            gender = GENDER_NEUTER;
+        }
+        return decline_pronoun(gender, variant);
     }
     return mons_pronoun(type, variant, true);
 }
 
 bool monster_info::pronoun_plurality() const
 {
+    if (Options.language == lang_t::ZH && mons_is_hepliaklqana_ancestor(type))
+        return false;
     if (props.exists(MON_GENDER_KEY))
         return props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL;
 

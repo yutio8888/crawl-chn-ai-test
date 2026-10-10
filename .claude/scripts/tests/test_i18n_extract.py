@@ -262,7 +262,7 @@ class DeferredMarkerTests(unittest.TestCase):
         expected = {
             ("It affects your AC (%d).", None),
             ("negative energy", "element"),
-            ("armoured", None),
+            ("armoured", "panlord body adjective"),
             (" It smells delicious!", None),
             ("Shadowslip", None),
             ("spit", "attack verb"),

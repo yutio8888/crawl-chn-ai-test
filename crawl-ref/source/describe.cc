@@ -935,20 +935,20 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     static const char* body_types[] =
     {
-        N_("armoured"),
-        N_("vast, spindly"),
-        N_("fat"),
-        N_("obese"),
-        N_("muscular"),
-        N_("spiked"),
-        N_("splotchy"),
-        N_("slender"),
-        N_("tentacled"),
-        N_("emaciated"),
-        N_("bug-like"),
-        N_("skeletal"),
-        N_("mantis"),
-        N_("slithering"),
+        NC_("panlord body adjective", "armoured"),
+        NC_("panlord body adjective", "vast, spindly"),
+        NC_("panlord body adjective", "fat"),
+        NC_("panlord body adjective", "obese"),
+        NC_("panlord body adjective", "muscular"),
+        NC_("panlord body adjective", "spiked"),
+        NC_("panlord body adjective", "splotchy"),
+        NC_("panlord body adjective", "slender"),
+        NC_("panlord body adjective", "tentacled"),
+        NC_("panlord body adjective", "emaciated"),
+        NC_("panlord body adjective", "bug-like"),
+        NC_("panlord body adjective", "skeletal"),
+        NC_("panlord body adjective", "mantis"),
+        NC_("panlord body adjective", "slithering"),
     };
 
     static const char* wing_names[] =
@@ -1058,7 +1058,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
-    const string body = T_(HRANDOM_ELEMENT(body_types, 2));
+    const string body = C_("panlord body adjective", HRANDOM_ELEMENT(body_types, 2));
     const string wings = T_(HRANDOM_ELEMENT(wing_names, 3));
     const char* head = HRANDOM_ELEMENT(head_names, 1);
 
@@ -2169,8 +2169,9 @@ static string _equipment_property_change_description(const item_def &item,
     {
         // We round attack delay to the nearest aut to match what is displayed
         // elsewhere.
-        description += "\nYour attack delay would "
-            + _describe_point_diff(cur.delay / 10, next.delay / 10, true) + ".";
+        const string difference = _describe_point_diff(cur.delay / 10, next.delay / 10, true);
+        description += make_stringf(T_("\nYour attack delay would %s."),
+                                    difference.c_str());
     }
 
     return description;
