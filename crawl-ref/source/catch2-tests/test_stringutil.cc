@@ -88,7 +88,7 @@ random_substring_run run_random_substring_default_observer(
 }
 
 TEST_CASE( "unwrap_desc joins literal CJK paragraph lines",
-           "[single-file][textdb][unwrap-desc]" )
+           "[single-file][textdb][unwrap-desc][zh-translation]" )
 {
     struct unwrap_case
     {
