@@ -374,6 +374,46 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 159 wizard skill feedback preserves its numeric argument",
+                 "[zh-translation][issue159][wizard][formats]")
+{
+    struct skill_feedback
+    {
+        const char* action;
+        double level;
+        const char* expected_number;
+    };
+    const skill_feedback examples[] = {
+        {"Increased", 12.0, "12.0"},
+        {"Lowered",    8.5,  "8.5"},
+        {"Reset",      8.5,  "8.5"},
+        {"Increased", 27.0, "27.0"},
+        {"Reset",     27.0, "27.0"},
+        {"Lowered",    0.0,  "0.0"},
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto& example : examples)
+        {
+            INFO("action=" << example.action << "; level=" << example.level);
+            // Match wizard_set_skill's actual variadic call: two const char*
+            // arguments followed by a double. This exercises the catalog and
+            // positional formatter without reimplementing the skill setter.
+            const string displayed = make_stringf_p(
+                T_("%s %s to skill level %.1f."), example.action,
+                skill_name(SK_STAVES), example.level);
+            const string expected = string(example.action)
+                + (language == lang_t::ZH ? "杖类技能等级至 "
+                                          : " Staves to skill level ")
+                + example.expected_number
+                + (language == lang_t::ZH ? "。" : ".");
+            CHECK(displayed == expected);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: playtest combat and morgue formats are complete",
                  "[zh-translation][combat][morgue][android-playtest]")
 {

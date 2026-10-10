@@ -35855,7 +35855,7 @@ Can't change a useless skill.
 无法修改无用的技能。
 %%%%
 %s %s to skill level %.1f.
-%1$s%2$s技能等级至 %.1f。
+%1$s%2$s技能等级至 %3$.1f。
 %%%%
 Ignoring mut resistance to apply mutation.
 忽略突变抗性以强制应用突变。
