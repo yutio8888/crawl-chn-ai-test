@@ -21,6 +21,8 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 BASELINE = "aaafab60aff68e631df0fd2b6136075166045267"
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 RESULTS = ROOT / "docs/miscast-review-results.md"
 
 
@@ -62,8 +64,13 @@ class MiscastInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(
             json.dumps(cls.zh_artifact, ensure_ascii=False), encoding="utf-8"
         )
+        historical_glossary = cls.root / "historical-glossary.md"
+        historical_glossary.write_bytes(subprocess.check_output([
+            "git", "-C", str(ROOT), "show",
+            f"{GLOSSARY_FIXTURE_REF}:docs/glossary.md",
+        ]))
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, historical_glossary
         )
         records = MODULE._strict_block(RESULTS)
         # The checked-in ledger binds the real production-dump byte hashes.

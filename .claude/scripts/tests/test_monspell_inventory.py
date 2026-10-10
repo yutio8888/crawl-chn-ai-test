@@ -34,6 +34,8 @@ CANDIDATE = subprocess.run(
     check=True, text=True, capture_output=True,
 ).stdout.strip()
 PRODUCTION_BASELINE = "8e974d60549c1946403b3866efa56cb48db364b8"
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 PRODUCTION_EN_ARTIFACT_SHA256 = (
     "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
 )
@@ -616,7 +618,12 @@ class MonspellInventoryTests(unittest.TestCase):
             )
             return inventory
 
-        inventory = build(ROOT / "docs/glossary.md")
+        historical_glossary = self.root / "historical-glossary.md"
+        historical_glossary.write_bytes(subprocess.check_output([
+            "git", "-C", str(ROOT), "show",
+            f"{GLOSSARY_FIXTURE_REF}:docs/glossary.md",
+        ]))
+        inventory = build(historical_glossary)
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
         MODULE.validate_results(

@@ -846,7 +846,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const char* enter = translated_move_phrase(
         "walk", move_phrase_context::enter_area);
     REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
-            == "确定要走进探索排除区域吗？");
+            == "确定要走进禁区吗？");
 
     const char* through = translated_move_phrase(
         "stride", move_phrase_context::through_obstacle);
@@ -1256,7 +1256,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Row{possible_forced_prompt_context::toxic_bog, "",
             "这可能使你踉跄着退入毒沼。要继续吗？"},
         Row{possible_forced_prompt_context::exclusion, "",
-            "这可能使你踉跄着退入探索排除区域。要继续吗？"},
+            "这可能使你踉跄着退入禁区。要继续吗？"},
         Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
             "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
         Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",
@@ -1485,7 +1485,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                            "Chance is 10% + twice the piety cost of the "
                            "ability used."))
             == "视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。"
-               "触发几率为10% + 所使用能力的虔诚消耗的两倍。");
+               "触发几率为10% + 所使用能力的虔诚值消耗的两倍。");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -5787,6 +5787,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     weapon.sub_type = WPN_DAGGER;
     weapon.quantity = 1;
     weapon.link = 0;
+    weapon.pos = ITEM_IN_INVENTORY;
     equip_item(SLOT_WEAPON, 0, false, true);
     monster target;
     target.type = MONS_ORC;
