@@ -2276,6 +2276,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                 // stored identity, but the catalog contains the bare name.
                 const monster_type original = static_cast<monster_type>(orig_monnum);
                 if (!translated && starts_with(_name, "the ")
+                    && !invalid_monster_type(original)
                     && mons_is_unique(original) && mons_is_the(original)
                     && _name == mons_type_name_en(original, DESC_PLAIN))
                 {

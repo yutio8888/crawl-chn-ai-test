@@ -655,6 +655,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(corpse->orig_monnum == type);
             }
         }
+        // Purchasing or acquiring an item can replace orig_monnum with a
+        // non-monster source. It must not be used to resolve a custom name.
+        {
+            TranslationFixture chinese(lang_t::ZH, "zh");
+            corpse->orig_monnum = -IT_SRC_SHOP;
+            corpse->props[CORPSE_NAME_KEY] = "the CustomName";
+            CHECK(corpse->name(DESC_PLAIN).find("the CustomName") != string::npos);
+            CHECK(get_corpse_name(*corpse) == "the CustomName");
+            CHECK(corpse->orig_monnum == -IT_SRC_SHOP);
+        }
         // A historic localized snapshot and a custom name have no lookup key.
         for (const string& legacy : {string("旧名字"), string("CustomName")})
         {
