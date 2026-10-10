@@ -45824,3 +45824,21 @@ damage source|water from %s
 %%%%
 %s throws %s out of sight!
 %s将%s掷到了视线之外！
+%%%%
+You took it off %1$s %2$s
+%2$s你从%1$s身上拿走了它
+%%%%
+You found it %s
+%s你找到了它
+%%%%
+god attitude|%s was %s.
+%s当时%s。
+%%%%
+god attitude|%s is %s.
+%s%s。
+%%%%
+god attitude|You were %s\n
+你曾是%s\n
+%%%%
+god attitude|You are %s\n
+你是%s\n

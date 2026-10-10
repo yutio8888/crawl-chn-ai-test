@@ -49,8 +49,8 @@ string god_prayer_reaction()
     // translatable template so a translated character dump never displays
     // the English "is" or "was" between the deity and its reaction.
     return make_stringf(crawl_state.player_is_dead()
-                        ? T_("%s was %s.")
-                        : T_("%s is %s."),
+                        ? C_("god attitude", "%s was %s.")
+                        : C_("god attitude", "%s is %s."),
                         god.c_str(), reaction);
 }
 

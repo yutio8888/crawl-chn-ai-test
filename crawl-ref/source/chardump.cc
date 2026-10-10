@@ -893,9 +893,13 @@ static void _sdump_religion(dump_params &par)
         else
         {
             if (par.se)
-                text += make_stringf(T_("You were %s\n"), describe_xom_favour().c_str());
+            {
+                text += make_stringf(C_("god attitude", "You were %s\n"),
+                                     describe_xom_favour().c_str());
+            }
             else
-                text += make_stringf(T_("You are %s\n"), describe_xom_favour().c_str());
+                text += make_stringf(C_("god attitude", "You are %s\n"),
+                                     describe_xom_favour().c_str());
         }
     }
 }

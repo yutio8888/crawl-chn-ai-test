@@ -742,6 +742,7 @@ struct hud_test_snapshot
     int piety = 0;
     int religion_penance = 0;
     int sif_muna_penance = 0;
+    FixedVector<ability_type, 52> ability_letter_table;
     int invis = 0;
     int confusion = 0;
     int slow = 0;
@@ -792,6 +793,7 @@ static void _save_hud_test_state()
     _hud_test_snapshot.piety = you.raw_piety;
     _hud_test_snapshot.religion_penance = you.penance[you.religion];
     _hud_test_snapshot.sif_muna_penance = you.penance[GOD_SIF_MUNA];
+    _hud_test_snapshot.ability_letter_table = you.ability_letter_table;
     _hud_test_snapshot.invis = you.duration[DUR_INVIS];
     _hud_test_snapshot.confusion = you.duration[DUR_CONF];
     _hud_test_snapshot.slow = you.duration[DUR_SLOW];
@@ -808,9 +810,6 @@ static void _restore_hud_test_state()
         return;
 
     you.hp_max_adj_temp = _hud_test_snapshot.hp_max_adj_temp;
-    calc_hp();
-    set_hp(min(_hud_test_snapshot.hp, you.hp_max));
-    set_mp(min(_hud_test_snapshot.mp, you.max_magic_points));
     you.set_gold(_hud_test_snapshot.gold);
     you.num_turns = _hud_test_snapshot.turns;
     you.attribute[ATTR_DOOM] = _hud_test_snapshot.doom;
@@ -822,7 +821,9 @@ static void _restore_hud_test_state()
     you.raw_piety = _hud_test_snapshot.piety;
     you.penance[you.religion] = _hud_test_snapshot.religion_penance;
     you.penance[GOD_SIF_MUNA] = _hud_test_snapshot.sif_muna_penance;
-    set_god_ability_slots();
+    // Restore exact hotkeys rather than assigning powers for a temporary god.
+    // The original state may have no god or have custom ability bindings.
+    you.ability_letter_table = _hud_test_snapshot.ability_letter_table;
     you.duration[DUR_INVIS] = _hud_test_snapshot.invis;
     you.duration[DUR_CONF] = _hud_test_snapshot.confusion;
     you.duration[DUR_SLOW] = _hud_test_snapshot.slow;
@@ -830,6 +831,10 @@ static void _restore_hud_test_state()
     you.duration[DUR_FLIGHT] = _hud_test_snapshot.flight;
     you.duration[DUR_POISONING] = _hud_test_snapshot.poisoning;
     Options.equip_bar = _hud_test_snapshot.equip_bar;
+    // Maximum HP also depends on the restored god's passives and penance.
+    calc_hp();
+    set_hp(min(_hud_test_snapshot.hp, you.hp_max));
+    set_mp(min(_hud_test_snapshot.mp, you.max_magic_points));
     _hud_test_snapshot.valid = false;
     notify_stat_change();
     _redraw_hud_test_state();
