@@ -5799,7 +5799,7 @@ remembered their ancestor %s as %s.
 将先祖%s铭记为%s。
 %%%%
 remove
-摘下
+卸下
 %%%%
 remove some of your equipment
 卸下部分装备
@@ -22781,7 +22781,7 @@ pierce
 刺穿
 %%%%
 Translocation
-传送
+传送系
 %%%%
 Error
 错误
@@ -42944,3 +42944,9 @@ amphibious
 %%%%
 insubstantial
 虚体
+%%%%
+verb|hit
+击中
+%%%%
+death cause terse|Zot
+佐特
