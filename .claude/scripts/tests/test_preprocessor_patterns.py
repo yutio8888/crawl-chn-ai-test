@@ -506,6 +506,23 @@ void f() {
                         result = self.run_cli(scanner, target, [database])
                         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
 
+    def test_tu_only_request_rejects_source_line_directives_in_included_header(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target = root / 'main.cc'
+            target.write_text('#include "body.h"\nvoid f() {}\n')
+            header = root / 'body.h'
+            database = self.database(root, 'source', ('main.cc',))
+            for directive in ('#line 900\n', '#line 900 "body.h"\n'):
+                header.write_text(directive + 'int n;\n')
+                for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
+                                'scan_i18n_lifetime.py'):
+                    with self.subTest(directive=directive, scanner=scanner):
+                        result = self.run_cli(scanner, target, [database])
+                        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                        self.assertIn(str(header), result.stderr)
+                        self.assertIn('source-authored', result.stderr)
+
     def test_explicit_configuration_requires_parser_without_optional_flag(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

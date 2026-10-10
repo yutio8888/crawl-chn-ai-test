@@ -588,8 +588,9 @@ tilegen 是宿主工具，使用其自身 Makefile 的 `HOSTCXX`、`CFLAGS` 和�
 finding。源码中的 `#line` 暂不支持并明确拒绝，包括所含头文件中的指令。
 展开后的合法 deleted free-function 声明（如 `mpr(const formatted_string &) = delete;`）
 通过受限适配解析：只将确认为函数声明的 `= delete` 等长置空，保留完整签名、
-分号和换行。非法 delete 操作数、缺分号及周围真实语法错误仍阻断；不添加
-ERROR 白名单，也不把 tree-sitter 当作完整 C++ 类型检查器。
+分号和换行。本适配范围内的非法 delete 操作数、缺分号及周围语法错误仍阻断；
+其他声明形式保持 tree-sitter 原生解析能力，不声称完整 C++ 语法或类型检查。
+不添加 ERROR 白名单。
 
 支持 Unix 风格 Clang（包括 Android NDK Clang），暂不支持 GCC、响应文件、
 外部 driver config 和间接预处理参数。自动 driver config 被关闭；所需

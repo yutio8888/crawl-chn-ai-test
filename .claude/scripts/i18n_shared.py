@@ -1196,17 +1196,16 @@ def _extract_cpp_preprocessed(path: Path, output: bytes,
     append(text[previous:], previous)
     if not target_seen:
         raise ValueError(f"preprocessor did not emit target provenance: {path}")
-    if targets is not None:
-        # A source-authored same-file #line can otherwise forge physical rows.
-        # Check every real input, including excluded descendants that could
-        # forge an include return into a requested header. #line support remains
-        # fail-closed until physical/presumed provenance is implemented.
-        for name in dict.fromkeys(frame_paths):
-            if not (name.startswith("<") and name.endswith(">")):
-                try:
-                    _reject_source_line_directives(Path(name).read_bytes())
-                except ValueError as exc:
-                    raise ValueError(f"{name}: {exc}") from exc
+    # A source-authored same-file #line can otherwise forge physical rows.
+    # Check every real input for both TU-only and header requests, including
+    # excluded descendants that could forge an include return. #line remains
+    # fail-closed until physical/presumed provenance is implemented.
+    for name in dict.fromkeys(frame_paths):
+        if not (name.startswith("<") and name.endswith(">")):
+            try:
+                _reject_source_line_directives(Path(name).read_bytes())
+            except ValueError as exc:
+                raise ValueError(f"{name}: {exc}") from exc
     needed = {i for i, name in enumerate(frame_paths) if name in requested}
     covered = tuple(sorted(requested.intersection(frame_paths)))
     for frame in tuple(needed):

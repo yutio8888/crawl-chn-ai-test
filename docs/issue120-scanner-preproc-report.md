@@ -544,10 +544,16 @@ C++14/自定义 Catch2 main 分支与导出目标一并核查；跨目标参数�
 合法 deleted free function 误解析为 initialized function declaration
 和缺 operand 的 delete expression。适配只接受单个具名函数声明的精确
 `= delete;` 形状，等长置空 initializer，继续解析其签名、参数、终止分号及
-相邻代码。成员 deleted function 保持原生解析；非法 delete 操作数、缺
-分号和错误签名继续阻断，不使用节点/文件 ERROR 白名单。现有测试文件
+相邻代码。成员 deleted function 保持原生解析能力；本适配范围内的非法
+delete 操作数、缺分号和错误签名继续阻断，不使用节点/文件 ERROR 白名单。
+这不保证原生 parser 拒绝所有其他声明形式的非法操作数。现有测试文件
 扩展了源位置/字节边界正反例和三个真实 CLI 的头文件上下文回归，保留
 varargs、concat、lifetime 风险以及准确的头文件/TU/调用行身份。
+
+独立审阅的仅 `.cc` 输入负例发现：varargs/concat 未检查所含头文件中的
+同文件 `#line`。现将所有实际 include frame 的源指令检查覆盖 TU-only 和
+header 两种请求；新增三个 CLI 对该头文件路径的失败回归。旧候选与负例
+证据保留，未经实际测试不将新候选宣称通过。
 
 源码 `#line` 仍 fail-closed。后续必须区分物理文件/行与 compiler presumed
 file/line，并验证 generated input 和 marker 的进入、返回及伪造边界，
