@@ -522,7 +522,7 @@ static bool _is_cjk_unwrap_char(char32_t c)
         || (c >= 0x3001 && c <= 0x3003)  // CJK punctuation (not spaces).
         || (c >= 0x3008 && c <= 0x3011)
         || (c >= 0x3014 && c <= 0x301F)
-        || c == 0x3030 || c == 0x303D
+        // U+3030 and U+303D also have emoji forms; preserve their separators.
         || (c >= 0xFF01 && c <= 0xFF0F) // Fullwidth punctuation.
         || (c >= 0xFF1A && c <= 0xFF20)
         || (c >= 0xFF3B && c <= 0xFF40)
