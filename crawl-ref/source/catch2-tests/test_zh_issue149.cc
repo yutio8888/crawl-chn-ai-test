@@ -465,6 +465,14 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     unwind_var<bool> updating(crawl_state.updating_scores, true);
     unwind_var<bool> saving(crawl_state.need_save, false);
     issue149_player();
+    // Match the normal level initialization and the existing real-score
+    // fixture: an uninitialized zero map ID indexes a nonexistent vault.
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
     you.your_name = "Issue157";
     you.hp = 0;
     const string filename = "catch2-issue157-death-" + to_string(getpid());
