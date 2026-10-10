@@ -33586,7 +33586,7 @@ Ancestor Life: Battlemage
 先祖生命：战斗法师
 %%%%
 Ancestor Life: Hexer
-先祖生命：咒术师
+先祖生命：诅咒师
 %%%%
 Ancestor Life: Knight
 先祖生命：骑士
@@ -45884,6 +45884,9 @@ ancestor class|an elementalist
 %%%%
 ancestor class|a hexer
 诅咒师
+%%%%
+Your life essence is reduced to manifest your ancestor. (-10% HP)
+你的生命精华因显现先祖而减少。（-10% 生命值）
 %%%%
 panlord body adjective|armoured
 装甲

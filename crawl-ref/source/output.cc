@@ -2462,7 +2462,9 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
 
     string monpane_desc;
     int col;
-    mi.to_string(count, monpane_desc, col, fullname, adj);
+    const string display_adj = adj ? T_(adj) : "";
+    mi.to_string(count, monpane_desc, col, fullname,
+                 adj ? display_adj.c_str() : nullptr);
 
     if (count == 1 && Options.language != lang_t::ZH)
     {
