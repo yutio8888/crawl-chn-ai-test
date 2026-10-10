@@ -5218,9 +5218,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 147 species mutations localize descriptions and real dumps",
                  "[zh-translation][issue147][mutations][morgue]")
 {
+#if defined(UNIX) && !defined(__ANDROID__)
     const string saved_locale = setlocale(LC_CTYPE, nullptr);
     unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
     REQUIRE(ensure_utf8_ctype());
+#endif
     init_properties();
     init_monsters();
     init_spell_descs();
@@ -5229,7 +5231,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     unwind_var<bool> testing(crawl_state.test, true);
     unwind_var<vector<string>> order(Options.dump_order, {"mutations"});
     unwind_var<string> directory(Options.morgue_dir, ".");
-    const string filename = "catch2-issue147-mutations-" + to_string(getpid());
+    // Catch2 cases run sequentially in the isolated verification directory.
+    // Refuse to overwrite an existing artifact on any platform.
+    const string filename = "catch2-issue147-mutations";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
     unwinder cleanup([filename]() {
         unlink_u((filename + ".txt").c_str());
         unlink_u((filename + ".lst").c_str());
@@ -5309,9 +5315,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 147 altar prayers preserve species and form actions",
                  "[zh-translation][issue147][religion]")
 {
+#if defined(UNIX) && !defined(__ANDROID__)
     const string saved_locale = setlocale(LC_CTYPE, nullptr);
     unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
     REQUIRE(ensure_utf8_ctype());
+#endif
     init_properties();
     init_monsters();
     init_spell_descs();
@@ -5383,9 +5391,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 147 stable Four Winds uses the actual unrand description",
                  "[zh-translation][issue147][descriptions][unrand]")
 {
+#if defined(UNIX) && !defined(__ANDROID__)
     const string saved_locale = setlocale(LC_CTYPE, nullptr);
     unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
     REQUIRE(ensure_utf8_ctype());
+#endif
     init_properties();
     unwind_var<player> restore_player(you);
     you = player();
