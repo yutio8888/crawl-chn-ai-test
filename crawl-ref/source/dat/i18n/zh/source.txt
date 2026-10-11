@@ -42986,3 +42986,72 @@ move.bare|fly down
 %%%%
 <magenta>[]</magenta>: Transient mutations.\n
 <magenta>[]</magenta>: 临时变异。\n
+%%%%
+You kneel at the altar of %s.
+你跪在%s的祭坛前。
+%%%%
+You coil in front of the altar of %s.
+你盘踞在%s的祭坛前。
+%%%%
+You hover solemnly before the altar of %s.
+你庄严地悬停在%s的祭坛前。
+%%%%
+You sway towards the altar of %s.
+你朝%s的祭坛摇曳。
+%%%%
+You perch on the altar of %s.
+你栖在%s的祭坛上。
+%%%%
+You swirl around the altar of %s.
+你绕着%s的祭坛旋转。
+%%%%
+You bow your head before the altar of %s.
+你在%s的祭坛前低下头。
+%%%%
+You release spores on the altar of %s.
+你向%s的祭坛释放孢子。
+%%%%
+You squish down before the altar of %s.
+你在%s的祭坛前伏下柔软的身躯。
+%%%%
+You crawl onto the altar of %s.
+你爬上%s的祭坛。
+%%%%
+You place yourself before the altar of %s.
+你来到%s的祭坛前。
+%%%%
+You curl up before the altar of %s.
+你蜷伏在%s的祭坛前。
+%%%%
+You unroll yourself before the altar of %s.
+你在%s的祭坛前展开身体。
+%%%%
+You scuttle before the altar of %s.
+你快步爬到%s的祭坛前。
+%%%%
+You can't wear anything in your present form.
+你当前形态无法穿戴任何东西。
+%%%%
+You can't remove anything in your present form.
+你当前形态无法卸下任何东西。
+%%%%
+You can't wear jewellery.
+你无法佩戴珠宝。
+%%%%
+You can't remove jewellery.
+你无法卸下珠宝。
+%%%%
+You can't wear jewellery in your present form.
+你当前形态无法佩戴珠宝。
+%%%%
+You can't remove jewellery in your present form.
+你当前形态无法卸下珠宝。
+%%%%
+unwield
+卸下
+%%%%
+Your life essence is reduced to manifest your ancestor. (-10% HP)
+你的生命精华因显现先祖而减少。（-10% 生命值）
+%%%%
+You took it off %1$s %2$s
+%2$s你从%1$s身上拿走了它
