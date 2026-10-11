@@ -5806,6 +5806,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: death capture preserves canonical killer and weapon",
                  "[zh-translation][death-protocol][issue-167]")
 {
+    init_monsters();
     init_properties();
     init_duration_index();
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
@@ -5983,6 +5984,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: special death sources retain canonical identities",
                  "[zh-translation][death-protocol][issue-167]")
 {
+    init_monsters();
     init_properties();
     init_duration_index();
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
@@ -6051,13 +6053,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation][milestone-protocol][issue-168]")
 {
     init_properties();
+    init_duration_index();
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
     unwind_var<player> restore_player(you);
     you = player();
+    you.your_name = "Issue168Trunk";
+    you.hp = you.hp_max = 20;
+    you.base_stats.init(10);
     you.species = SP_HUMAN;
     you.char_class = JOB_MONK;
     you.chr_class_name = get_job_name(you.char_class);
     you.set_position(coord_def(20, 20));
+    unwind_var<unsigned> map_id(env.level_map_ids(you.pos()), INVALID_MAP_INDEX);
     const auto base = GENERATE(OBJ_RUNES, OBJ_GEMS);
     item_def collectible;
     collectible.base_type = base;
