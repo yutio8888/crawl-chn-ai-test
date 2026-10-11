@@ -1,8 +1,8 @@
 ---
 name: zh-translator
 description: DCSS Chinese translator — translates English game text to Chinese following project conventions
-model: command-code/muse-spark-1.2-contributor
-fallbackModels: command-code/muse-spark-1.2-contributor
+model: openai-codex/gpt-6.1-sol
+fallbackModels: openai-codex/gpt-6.1-sol
 tools: read, grep, find, ls, bash, edit, write
 thinking: max
 systemPromptMode: replace

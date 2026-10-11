@@ -1,8 +1,8 @@
 ---
 name: translation-reviewer
 description: DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice
-model: commandcode/google/gemini-3.7-flash
-fallbackModels: commandcode/google/gemini-3.7-flash
+model: openai-codex/gpt-6.1-sol
+fallbackModels: openai-codex/gpt-6.1-sol
 tools: read, grep, find, ls, bash
 thinking: off
 systemPromptMode: replace

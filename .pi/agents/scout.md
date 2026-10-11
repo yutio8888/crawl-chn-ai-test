@@ -1,8 +1,8 @@
 ---
 name: scout
 description: Fast codebase recon that returns compressed context for handoff
-model: command-code/muse-spark-1.2-contributor
-fallbackModels: command-code/muse-spark-1.2-contributor
+model: openai-codex/gpt-6.1-sol
+fallbackModels: openai-codex/gpt-6.1-sol
 tools: read, grep, find, ls, bash, write, intercom
 thinking: max
 systemPromptMode: replace

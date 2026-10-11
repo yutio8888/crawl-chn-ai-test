@@ -1,7 +1,7 @@
 ---
 name: ocr
 description: Extracts text from images using a vision-capable model. Use for OCR, reading screenshots, or extracting text from diagrams/photos.
-model: openai-codex/gpt-5.6-sol
+model: openai-codex/gpt-6.1-sol
 tools: read
 systemPromptMode: replace
 inheritProjectContext: true
