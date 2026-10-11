@@ -5960,7 +5960,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(get_last_messages(1, true).find(expected) != string::npos);
             }
             CAPTURE(language, intensity, old_power, emitted);
-            CHECK(emitted == expected + "\n");
+            CHECK(strip_tee_colour_tag(emitted) == expected + "\n");
             CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
             CHECK(you.props[STICKY_FLAME_POWER_KEY].get_int() == max(intensity, old_power));
             const bool changes_source = intensity > old_power;
@@ -6019,7 +6019,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     CHECK(get_last_messages(1, true).find(expected) != string::npos);
                 }
                 CAPTURE(type, language, action, emitted);
-                CHECK(emitted == expected + "\n");
+                CHECK(strip_tee_colour_tag(emitted) == expected + "\n");
                 CHECK(emitted.find("the the ") == string::npos);
                 CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
                 CHECK(target.name(DESC_THE) == name);
@@ -6067,7 +6067,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     CHECK(get_last_messages(1, true).find(expected) != string::npos);
                 }
                 CAPTURE(language, flying, going_up, emitted);
-                CHECK(emitted == expected + "\n");
+                CHECK(strip_tee_colour_tag(emitted) == expected + "\n");
                 CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
                 CHECK(you.duration[DUR_FLIGHT] == (flying ? 10 : 0));
             }
