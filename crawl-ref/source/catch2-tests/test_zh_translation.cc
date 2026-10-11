@@ -5807,10 +5807,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation][death-protocol][issue-167]")
 {
     init_properties();
+    init_duration_index();
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
     unwind_var<player> restore_player(you);
     you = player();
+    you.your_name = "Issue167Trunk";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
     you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
     const int hp = GENERATE(10, 0);
     const bool armed = GENERATE(false, true);
     const int modifier = GENERATE(0, 1, 2);
@@ -5871,6 +5890,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const bool reveal_source = hp <= 0 || you.can_see(*killer);
     const string monster_zh = reveal_source ? killer->full_name(DESC_A)
                                            : killer->name(DESC_A, false);
+    // Death-cause-only capture must be completed before score serialization.
+    chinese.init(1600000000);
     const string raw_zh = chinese.raw_string();
     const xlog_fields zh_fields = chinese.get_fields();
     CHECK(zh_fields.str_field("dam") == "7");
@@ -5890,6 +5911,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             expected_killer += " (glowing shapeshifter) (illusionary)";
         scorefile_entry english_entry(7, killer->mid, KILLED_BY_MONSTER,
                                      nullptr, true);
+        english_entry.init(1600000000);
         const xlog_fields raw_en(english_entry.raw_string());
         CHECK(raw_en.str_field("killer") == zh_fields.str_field("killer"));
         CHECK(raw_en.str_field("kaux") == zh_fields.str_field("kaux"));
@@ -5940,6 +5962,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
     // Reusing an entry for parsed scores must discard the live snapshots.
     scorefile_entry quitting(0, MID_NOBODY, KILLED_BY_QUITTING, "", true);
+    quitting.init(1600000000);
     REQUIRE(assigned.parse(quitting.raw_string()));
     CHECK(assigned.death_description(scorefile_entry::DDV_VERBOSE).find(weapon_zh)
           == string::npos);
@@ -5961,10 +5984,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-translation][death-protocol][issue-167]")
 {
     init_properties();
+    init_duration_index();
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
     unwind_var<player> restore_player(you);
     you = player();
+    you.your_name = "Issue167Trunk";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
     you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
     you.hp = 0;
     const auto type = GENERATE(MONS_SIGMUND, MONS_PLAYER_SHADOW,
                                MONS_PANDEMONIUM_LORD);
@@ -5980,6 +6022,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         : killer->full_name(DESC_A)
           + (type == MONS_PANDEMONIUM_LORD ? T_(" the pandemonium lord") : "");
     scorefile_entry entry(3, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+    entry.init(1600000000);
     const xlog_fields fields(entry.raw_string());
     REQUIRE(Options.language == lang_t::ZH);
     {
