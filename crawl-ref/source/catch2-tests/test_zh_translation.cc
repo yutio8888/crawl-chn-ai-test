@@ -24,6 +24,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "files.h"
 #include "god-conduct.h"
 #include "god-abil.h"
 #include "hiscores.h"
@@ -79,6 +80,8 @@
 #include "xom.h"
 
 #include <cstring>
+#include <cstdlib>
+#include <fstream>
 #include <array>
 #include <string>
 #include <tuple>
@@ -6059,3 +6062,98 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(you.gems_found[i] == gems_before[i]);
     CHECK(you.num_turns == turns_before);
 }
+
+#if defined(DGL_MILESTONES) && defined(UNIX)
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: DGL file writer consumes rune and gem English milestones",
+                 "[zh-translation][milestone-protocol][issue-168][dgl]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    // Suppress only web transport in combined builds. The normal-character
+    // DGL file gate remains active and is exercised below.
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    char temporary[] = "/tmp/catch2-trunk-issue168-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string directory = temporary;
+    const string filename = catpath(directory,
+        "milestones" + crawl_state.game_type_qualifier());
+    unwinder cleanup([&]() {
+        unlink_u(filename.c_str());
+        rmdir(directory.c_str());
+    });
+    unwind_var<string> shared_dir(Options.shared_dir, directory);
+    const coord_def position(20, 20);
+    unwind_var<unsigned> map_id(env.level_map_ids(position), INVALID_MAP_INDEX);
+
+    const auto read_records = [&]() {
+        std::ifstream file(filename);
+        REQUIRE(file.good());
+        vector<string> records;
+        string line;
+        while (std::getline(file, line))
+            records.push_back(line);
+        REQUIRE(file.eof());
+        return records;
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (object_class_type base : {OBJ_RUNES, OBJ_GEMS})
+    {
+        CAPTURE(language, base);
+        TranslationFixture translation(language,
+            language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.your_name = "Issue168Trunk";
+        you.birth_time = 1599999900;
+        you.species = SP_HUMAN;
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.hp = you.hp_max = 20;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        you.num_turns = 42;
+        you.set_position(position);
+        REQUIRE_FALSE(crawl_state.game_is_arena());
+        REQUIRE(crawl_state.need_save);
+        REQUIRE_FALSE(you.wizard);
+        REQUIRE_FALSE(you.explore);
+        REQUIRE_FALSE(you.suppress_wizard);
+        item_def collectible;
+        collectible.base_type = base;
+        collectible.sub_type = base == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+        collectible.quantity = 1;
+        collectible.flags |= ISFLAG_IDENTIFIED;
+        string expected;
+        {
+            ScopedLangEn english;
+            expected = "found " + collectible.name(DESC_A) + ".";
+        }
+        const string type = base == OBJ_RUNES ? "rune" : "gem.found";
+        unlink_u(filename.c_str());
+        milestone_check(collectible);
+        REQUIRE(Options.language == language);
+        const vector<string> records = read_records();
+        REQUIRE(records.size() == 1);
+        const xlog_fields fields(records.front());
+        CHECK(fields.str_field("type") == type);
+        CHECK(fields.str_field("milestone") == expected);
+        CHECK(fields.int_field("turn") == you.num_turns);
+        CHECK(fields.str_field("name") == you.your_name);
+        CHECK(you.props["last_milestone"].get_string() == expected);
+        CHECK(you.props["last_milestone_type"].get_string() == type);
+        CHECK(you.props["last_milestone_turn"].get_int() == you.num_turns);
+        // The same normal player repeats the real producer/consumer call;
+        // the duplicate gate must leave the complete file unchanged.
+        milestone_check(collectible);
+        CHECK(Options.language == language);
+        CHECK(read_records() == records);
+        CHECK_FALSE(you.wizard);
+        CHECK_FALSE(you.explore);
+        CHECK_FALSE(you.suppress_wizard);
+    }
+    CHECK(Options.language == lang_t::ZH);
+}
+#endif
