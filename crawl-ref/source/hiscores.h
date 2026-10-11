@@ -53,7 +53,12 @@ public:
     JsonWrapper xlog_json() const;
 #endif
 
-    void add_field(const string &key, PRINTF(2, ));
+#ifdef __GNUC__
+    void add_field(const string &key, const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 3, 4)));
+#else
+    void add_field(const string &key, const char *format, ...);
+#endif
 
     string str_field(const string &) const;
     int int_field(const string &) const;

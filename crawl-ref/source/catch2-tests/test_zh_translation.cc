@@ -29,6 +29,7 @@
 #include "god-abil.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
+#include "item-use.h"
 #include "item-name.h"
 #include "items.h"
 #include "item-prop.h"
@@ -5913,8 +5914,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                                scorefile_entry::DDV_VERBOSE})
         {
             const string description = entry->death_description(verbosity);
-            CHECK(description.find(monster_zh) != string::npos);
-            CHECK(description.find(weapon_zh) != string::npos);
+            const auto terse_name = [verbosity](string name) {
+                if (verbosity == scorefile_entry::DDV_TERSE)
+                {
+                    if (starts_with(name, "a "))
+                        name.erase(0, 2);
+                    else if (starts_with(name, "an "))
+                        name.erase(0, 3);
+                }
+                return name;
+            };
+            CHECK(description.find(terse_name(monster_zh)) != string::npos);
+            CHECK(description.find(terse_name(weapon_zh)) != string::npos);
             if (armed)
                 CHECK(description.find(T_(" (from an undying armoury)")) != string::npos);
             if (modifier == 1)
@@ -6157,3 +6168,415 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(Options.language == lang_t::ZH);
 }
 #endif
+
+TEST_CASE("issue169: sticky flame cleanup follows real duration consumers",
+          "[zh-translation][issue-169][sticky-flame]")
+{
+    init_properties();
+    init_duration_index();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, false);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool invisible : {false, true})
+    for (int power : {1, 6})
+    {
+        CAPTURE(language, invisible, power);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        you.duration[DUR_INVIS] = invisible ? 50 : 0;
+        const int invis_duration = you.duration[DUR_INVIS];
+        you.equipment.update();
+        scoped_monspeak_world world;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        rng::subgenerator fixed_rng(169, power);
+        const auto check_cleared = []() {
+            CHECK(you.duration[DUR_STICKY_FLAME] == 0);
+            CHECK_FALSE(you.props.exists(STICKY_FLAMER_KEY));
+            CHECK_FALSE(you.props.exists(STICKY_FLAME_AUX_KEY));
+            CHECK_FALSE(you.props.exists(STICKY_FLAME_POWER_KEY));
+        };
+        REQUIRE(sticky_flame_player(power, 3, "an orc", "sticky flame"));
+        REQUIRE(you.duration[DUR_STICKY_FLAME] == 30);
+        const int hp_before = you.hp;
+        const int turns_before = you.num_turns;
+        const string finished = T_("The liquid flame finally runs out.");
+        {
+            msg::tee messages;
+            dec_sticky_flame_player(BASELINE_DELAY);
+            CHECK(you.duration[DUR_STICKY_FLAME] == 20);
+            CHECK(you.props[STICKY_FLAMER_KEY].get_string() == "an orc");
+            CHECK(you.props[STICKY_FLAME_AUX_KEY].get_string() == "sticky flame");
+            CHECK(you.props[STICKY_FLAME_POWER_KEY].get_int() == power);
+            CHECK(messages.get_store().find(finished) == string::npos);
+        }
+        CHECK(you.hp < hp_before);
+        CHECK(you.hp >= hp_before - 2 * power);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        {
+            msg::tee messages;
+            // The consumer clamps this delay to the remaining 20 aut.
+            dec_sticky_flame_player(100);
+            CHECK(messages.get_store().find(finished) != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp > 0);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        CHECK(you.num_turns == turns_before);
+
+        REQUIRE(sticky_flame_player(power, 9, "an orc", "sticky flame"));
+        const int hp_before_moving = you.hp;
+        shake_off_sticky_flame();
+        CHECK(you.duration[DUR_STICKY_FLAME] == 30);
+        CHECK(you.props.exists(STICKY_FLAME_POWER_KEY));
+        {
+            msg::tee messages;
+            shake_off_sticky_flame();
+            CHECK(messages.get_store().find(T_("You shake off the liquid flame."))
+                  != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp == hp_before_moving);
+        REQUIRE(sticky_flame_player(power, 3, "an orc", "sticky flame"));
+        env.grid(you.pos()) = DNGN_SHALLOW_WATER;
+        const int hp_before_water = you.hp;
+        {
+            msg::tee messages;
+            dec_sticky_flame_player(BASELINE_DELAY);
+            CHECK(messages.get_store().find(
+                T_("You dive into the water, extinguishing the flames!")) != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp == hp_before_water);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("issue170: god pitch emits complete altar sentences and keeps default pauses",
+          "[zh-translation][issue-170][altar][force-more]")
+{
+    init_properties();
+    init_mut_index();
+    init_duration_index();
+    game_options defaults;
+    defaults.include_utf8(datafile_path("defaults/messages.txt"), false, false);
+    // Use the parsed production filters, rather than a test-only regex copy.
+    const message_filter *english_pause = nullptr;
+    const message_filter *chinese_pause = nullptr;
+    for (const auto &filter : defaults.force_more_message)
+    {
+        if (filter.pattern.tostring() == "You .* the altar of")
+            english_pause = &filter;
+        if (filter.pattern.tostring() == "你.*的祭坛")
+            chinese_pause = &filter;
+    }
+    REQUIRE(english_pause != nullptr);
+    REQUIRE(chinese_pause != nullptr);
+    struct prayer_case
+    {
+        species_type species;
+        transformation form;
+        bool flying;
+        const char *action;
+    };
+    const prayer_case prayers[] = {
+        {SP_HUMAN, transformation::none, false, "kneel at"},
+        {SP_FELID, transformation::none, false, "sit before"},
+        {SP_OCTOPODE, transformation::none, false, "curl up in front of"},
+        {SP_NAGA, transformation::none, false, "coil in front of"},
+        {SP_HUMAN, transformation::none, true, "hover solemnly before"},
+        {SP_HUMAN, transformation::tree, false, "sway towards"},
+        {SP_HUMAN, transformation::bat, true, "perch on"},
+        {SP_HUMAN, transformation::wisp, true, "swirl around"},
+        {SP_HUMAN, transformation::dragon, false, "bow your head before"},
+        {SP_HUMAN, transformation::fungus, false, "release spores on"},
+        {SP_HUMAN, transformation::jelly, false, "squish down before"},
+        {SP_HUMAN, transformation::spider, false, "crawl onto"},
+        {SP_HUMAN, transformation::storm, true, "place yourself before"},
+        {SP_HUMAN, transformation::sphinx, false, "curl up before"},
+        {SP_HUMAN, transformation::walking_scroll, false, "unroll yourself before"},
+        {SP_HUMAN, transformation::fortress_crab, false, "scuttle before"},
+        // Flying overrides the species verb but not a naturally flying form's
+        // custom action; a form that forbids flight keeps its ground action.
+        {SP_NAGA, transformation::none, true, "hover solemnly before"},
+        {SP_HUMAN, transformation::tree, true, "sway towards"},
+    };
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    // Keep this test noninteractive; filter matching is checked explicitly.
+    unwind_var<vector<message_filter>> mores(Options.force_more_message, {});
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const auto &prayer : prayers)
+    {
+        CAPTURE(language, prayer.action);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = prayer.species;
+        you.form = prayer.form;
+        you.duration[DUR_FLIGHT] = prayer.flying ? 10 : 0;
+        you.penance[GOD_TROG] = 1; // real early refusal, after the announcement
+        you.turn_is_over = true;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        const string key = "You " + string(prayer.action) + " the altar of %s.";
+        string expected;
+        const string god = god_name(GOD_TROG);
+        {
+            ScopedLangEn canonical;
+            CHECK(get_form()->player_prayer_action() == prayer.action);
+        }
+        CHECK(Options.language == language);
+        expected = make_stringf(T_(key.c_str()), god.c_str());
+        if (language == lang_t::ZH)
+        {
+            REQUIRE(string(T_(key.c_str())) != key);
+            CHECK(contains_non_ascii(god));
+            CHECK(expected.find(prayer.action) == string::npos);
+        }
+        const player before = you;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        god_pitch(GOD_TROG);
+        const string first_line = strip_tee_colour_tag(
+            messages.get_store().substr(0, messages.get_store().find('\n')));
+        CHECK(first_line == expected);
+        CHECK((language == lang_t::ZH ? chinese_pause : english_pause)
+              ->is_filtered(MSGCH_PLAIN, first_line));
+        CHECK(Options.language == language);
+        CHECK(you.religion == before.religion);
+        CHECK(you.penance[GOD_TROG] == before.penance[GOD_TROG]);
+        CHECK(you.raw_piety == before.raw_piety);
+        CHECK(you.species == before.species);
+        CHECK(you.form == before.form);
+        CHECK(you.duration[DUR_FLIGHT] == before.duration[DUR_FLIGHT]);
+        CHECK_FALSE(you.turn_is_over);
+    }
+    // The missionary route is a separate preexisting complete sentence.
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.penance[GOD_BEOGH] = 1;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        REQUIRE(env.grid(you.pos()) != DNGN_ALTAR_BEOGH);
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        god_pitch(GOD_BEOGH);
+        CHECK(strip_tee_colour_tag(messages.get_store()).find(
+            T_("You bow before the missionary of Beogh.")) == 0);
+        CHECK(you.religion == GOD_NO_GOD);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("issue171: A-menu legend follows temporary mutation state",
+          "[zh-translation][issue-171][mutation-legend]")
+{
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool transient : {false, true})
+    for (bool future : {false, true})
+    for (bool suppressed : {false, true})
+    {
+        CAPTURE(language, transient, future, suppressed);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = suppressed ? transformation::tree : transformation::none;
+        if (transient)
+        {
+            you.mutation[MUT_STRONG] = 1;
+            you.temp_mutation[MUT_STRONG] = 1;
+        }
+        if (suppressed)
+            you.mutation[MUT_CLAWS] = 1;
+        const player before = you;
+        const char *transient_key = "<magenta>[]</magenta>: Transient mutations.\n";
+        const string expected_transient = T_(transient_key);
+        string expected;
+        if (suppressed)
+            expected += "<darkgrey>()</darkgrey>: Suppressed.\n";
+        if (transient)
+            expected += expected_transient;
+        if (future)
+            expected += "<darkgrey>[]</darkgrey>: "
+                + string(T_("Gained at a future XL.")) + "\n";
+        const string legend = mutation_menu_legend(future);
+        CHECK(legend == expected);
+        if (transient && language == lang_t::ZH)
+        {
+            CHECK(expected_transient != transient_key);
+            CHECK(expected_transient.find("<magenta>[]</magenta>") == 0);
+            CHECK(expected_transient.back() == '\n');
+        }
+        i18n_cache_clear();
+        CHECK(mutation_menu_legend(future) == legend);
+        CHECK(Options.language == language);
+        for (int i = 0; i < NUM_MUTATIONS; ++i)
+        {
+            CHECK(you.mutation[i] == before.mutation[i]);
+            CHECK(you.temp_mutation[i] == before.temp_mutation[i]);
+            CHECK(you.innate_mutation[i] == before.innate_mutation[i]);
+        }
+    }
+}
+
+TEST_CASE("issue172: complete equipment refusals preserve the real operation gate",
+          "[zh-translation][issue-172][equipment-refusal]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool wear : {false, true})
+    for (int domain : {0, 1, 2})
+    {
+        CAPTURE(language, wear, domain);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = domain == 2 ? transformation::none : transformation::wisp;
+        you.transform_uncancellable = true;
+        if (domain == 2)
+            you.mutation[MUT_NO_JEWELLERY] = 1;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        const operation_types oper = domain == 0
+            ? (wear ? OPER_WEAR : OPER_TAKEOFF)
+            : (wear ? OPER_PUTON : OPER_REMOVE);
+        const char *key = domain == 0
+            ? (wear ? "You can't wear anything in your present form."
+                    : "You can't remove anything in your present form.")
+            : domain == 1
+                ? (wear ? "You can't wear jewellery in your present form."
+                        : "You can't remove jewellery in your present form.")
+                : (wear ? "You can't wear jewellery."
+                        : "You can't remove jewellery.");
+        if (domain == 0)
+            REQUIRE_FALSE(form_can_wear());
+        else
+        {
+            REQUIRE(you_can_wear(SLOT_RING, true) == false);
+            REQUIRE(you_can_wear(SLOT_AMULET, true) == false);
+        }
+        you.hp = you.hp_max = 100;
+        you.gold = 123;
+        you.time_taken = 10;
+        you.turn_is_over = false;
+        item_def &target = you.inv[0];
+        target.base_type = domain == 0 ? OBJ_ARMOUR : OBJ_JEWELLERY;
+        target.sub_type = domain == 0 ? int(ARM_ROBE) : int(RING_PROTECTION);
+        target.quantity = 1;
+        target.flags = ISFLAG_IDENTIFIED;
+        target.pos = ITEM_IN_INVENTORY;
+        target.link = 0;
+        const player before = you;
+        const string expected = T_(key);
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        CHECK_FALSE(use_an_item(oper, &target));
+        CHECK(strip_tee_colour_tag(messages.get_store()) == expected + "\n");
+        if (language == lang_t::ZH)
+        {
+            CHECK(expected != key);
+            CHECK_FALSE(contains_non_ascii(key));
+            CHECK(contains_non_ascii(expected));
+            CHECK(messages.get_store().find(" in your present form") == string::npos);
+        }
+        CHECK(Options.language == language);
+        CHECK(you.hp == before.hp);
+        CHECK(you.gold == before.gold);
+        CHECK(you.time_taken == before.time_taken);
+        CHECK(you.turn_is_over == before.turn_is_over);
+        CHECK(you.form == before.form);
+        CHECK(you.inv[0].flags == before.inv[0].flags);
+        CHECK(you.inv[0].quantity == before.inv[0].quantity);
+        CHECK(you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT).empty());
+    }
+}
+
+TEST_CASE("issue172: real weapon removal and equipment preview use unwield",
+          "[zh-translation][issue-172][unwield]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        item_def &weapon = you.inv[0];
+        weapon.base_type = OBJ_WEAPONS;
+        weapon.sub_type = WPN_SHORTBOW;
+        weapon.quantity = 1;
+        weapon.flags = ISFLAG_IDENTIFIED;
+        weapon.pos = ITEM_IN_INVENTORY;
+        weapon.link = 0;
+        weapon.slot = 'a';
+        rng::subgenerator fixed_rng(172, 172);
+        REQUIRE(make_item_randart(weapon, true));
+        weapon.flags |= ISFLAG_IDENTIFIED;
+        for (int prop = 0; prop < ART_PROPERTIES; ++prop)
+            artefact_set_property(weapon, static_cast<artefact_prop_type>(prop), 0);
+        artefact_set_property(weapon, ARTP_AC, 3);
+        equip_item(SLOT_WEAPON, 0, false, true);
+        REQUIRE(you.weapon() == &weapon);
+        const string verb = T_("unwield");
+        CHECK(item_unequip_verb(weapon) == verb);
+        if (language == lang_t::EN)
+            CHECK(verb == "unwield");
+        else
+            CHECK(verb != "unwield");
+        const string preview = get_item_description(weapon);
+        const string preview_prefix = T_("If you ") + verb + T_(" this ");
+        CHECK(preview.find(preview_prefix) != string::npos);
+        CHECK(preview.find("take off weapon") == string::npos);
+        const string expected = make_stringf(T_("You %s %s."), verb.c_str(),
+                                             weapon.name(DESC_YOUR).c_str());
+        string canonical;
+        {
+            ScopedLangEn english;
+            canonical = weapon.name(DESC_A);
+        }
+        const auto flags = weapon.flags;
+        you.time_taken = BASELINE_DELAY;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        do_equipment_change(nullptr, SLOT_WEAPON, {&weapon}, false);
+        CHECK(strip_tee_colour_tag(messages.get_store()).find(expected + "\n") == 0);
+        CHECK(messages.get_store().find("take off weapon") == string::npos);
+        CHECK(you.weapon() == nullptr);
+        CHECK(you.time_taken == BASELINE_DELAY / 2);
+        CHECK(weapon.flags == flags);
+        CHECK(weapon.quantity == 1);
+        CHECK(you.hp == 100);
+        CHECK(Options.language == language);
+        {
+            ScopedLangEn english;
+            CHECK(weapon.name(DESC_A) == canonical);
+        }
+        CHECK(Options.language == language);
+    }
+}
