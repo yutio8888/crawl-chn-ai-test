@@ -927,7 +927,7 @@ string item_unequip_verb(const item_def& item)
 {
     const operation_types oper = _item_type_to_remove_oper(item.base_type);
     if (oper == OPER_WIELD)
-        return T_("take off weapon");
+        return T_("unwield");
     else
         return _oper_name(oper);
 }
@@ -954,8 +954,9 @@ static bool _can_generically_use_armour(bool wear=true)
 
     if (!form_can_wear())
     {
-        mprf(MSGCH_PROMPT, T_("You can't %s anything in your present form."),
-            wear ? "wear" : "remove");
+        mpr(wear ? T_("You can't wear anything in your present form.")
+                 : T_("You can't remove anything in your present form."),
+            MSGCH_PROMPT);
         return false;
     }
 
@@ -1012,9 +1013,19 @@ static bool _can_generically_use(operation_types oper)
             && you_can_wear(SLOT_AMULET, true) == false
             && you.transform_uncancellable)
         {
-            mprf(MSGCH_PROMPT, T_("You can't %s jewellery%s."),
-                oper == OPER_PUTON ? "wear" : "remove",
-                you.has_mutation(MUT_NO_JEWELLERY) ? "" :  " in your present form");
+            if (you.has_mutation(MUT_NO_JEWELLERY))
+            {
+                mpr(oper == OPER_PUTON ? T_("You can't wear jewellery.")
+                                       : T_("You can't remove jewellery."),
+                    MSGCH_PROMPT);
+            }
+            else
+            {
+                mpr(oper == OPER_PUTON
+                    ? T_("You can't wear jewellery in your present form.")
+                    : T_("You can't remove jewellery in your present form."),
+                    MSGCH_PROMPT);
+            }
             return false;
         }
         break;

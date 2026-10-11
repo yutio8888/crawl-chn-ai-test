@@ -5041,7 +5041,7 @@ void dec_sticky_flame_player(int delay)
         max(0, you.duration[DUR_STICKY_FLAME]
                     - (delay * (1 + you.wearing_jewellery(AMU_DISSIPATION))));
 
-    if (you.duration[DUR_STICKY_FLAME == 0])
+    if (you.duration[DUR_STICKY_FLAME] == 0)
     {
         mprf(MSGCH_RECOVERY, T_("The liquid flame finally runs out."));
         end_sticky_flame_player();

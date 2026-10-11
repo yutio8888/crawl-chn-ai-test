@@ -1242,10 +1242,20 @@ static string _origin_monster_name(const item_def &item)
 {
     const monster_type monnum = static_cast<monster_type>(item.orig_monnum);
     if (monnum == MONS_PLAYER_GHOST)
-        return "a player ghost";
+        return Options.language == lang_t::ZH ? T_("player ghost")
+                                              : "a player ghost";
     else if (monnum == MONS_PANDEMONIUM_LORD)
-        return "a pandemonium lord";
-    return mons_type_name(monnum, DESC_A);
+        return Options.language == lang_t::ZH ? T_("pandemonium lord")
+                                              : "a pandemonium lord";
+    if (Options.language != lang_t::ZH)
+        return mons_type_name(monnum, DESC_A);
+
+    string name = mons_type_name(monnum, DESC_PLAIN);
+    // M_NAME_THE uniques keep an English article even with DESC_PLAIN.
+    // Remove it at this display sink, never from canonical monster data.
+    if (starts_with(name, "the "))
+        name.erase(0, 4);
+    return name;
 }
 
 static string _origin_place_desc(const item_def &item)
@@ -1319,6 +1329,26 @@ bool origin_is_acquirement(const item_def& item, item_source_type *type)
     return false;
 }
 
+static bool _origin_is_monster_loot(const item_def &item)
+{
+    return item.orig_monnum > 0 && item.orig_monnum != MONS_DANCING_WEAPON;
+}
+
+static string _monster_origin_desc(const item_def &item)
+{
+    const string monster = _origin_monster_name(item);
+    const string place = _origin_place_desc(item);
+    return make_stringf_p(T_("You took it off %1$s %2$s"),
+                          monster.c_str(), place.c_str());
+}
+
+string origin_display_desc(const item_def &item)
+{
+    if (origin_describable(item) && _origin_is_monster_loot(item))
+        return _monster_origin_desc(item);
+    return origin_desc(item);
+}
+
 string origin_desc(const item_def &item)
 {
     if (!origin_describable(item))
@@ -1326,6 +1356,14 @@ string origin_desc(const item_def &item)
 
     if (_origin_is_original_equip(item))
         return T_("Original Equipment");
+
+    // Item-note callers serialize this string. Only the two display consumers
+    // use origin_display_desc; keep this target branch canonical in notes.
+    if (_origin_is_monster_loot(item))
+    {
+        ScopedLangEn protocol_language;
+        return _monster_origin_desc(item);
+    }
 
     string desc;
     if (item.orig_monnum)
@@ -1371,11 +1409,6 @@ string origin_desc(const item_def &item)
         }
         else if (item.orig_monnum == MONS_DANCING_WEAPON)
             desc += T_("You subdued it ");
-        else
-        {
-            desc += (T_("You took ") + _article_it(item) + " off ")
-                    + _origin_monster_name(item) + " ";
-        }
     }
     else
         desc += (T_("You found ") + _article_it(item) + " ");

@@ -983,7 +983,7 @@ static void _sdump_inventory(dump_params &par)
                 inv_count--;
 
                 if (origin_describable(item) && _dump_item_origin(item))
-                    text += "\n" "   (" + origin_desc(item) + ")";
+                    text += "\n" "   (" + origin_display_desc(item) + ")";
 
                 if (is_dumpable_artefact(item))
                     text += chardump_desc(item);

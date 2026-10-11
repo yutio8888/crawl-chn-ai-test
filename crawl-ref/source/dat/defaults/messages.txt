@@ -498,7 +498,7 @@ force_more_message += You bow before the missionary of Beogh
 force_more_message += 在.*传教士面前鞠躬
 force_more_message += You .* the altar of
 # Chinese translation compatibility
-force_more_message += 你.*了.*的祭坛
+force_more_message += 你.*的祭坛
 force_more_message += will bless one of your weapons
 # Chinese translation compatibility
 force_more_message += 为你的武器加持|祝福你的武器
