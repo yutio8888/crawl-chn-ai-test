@@ -6403,6 +6403,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         string messages;
         msg::tee capture(messages);
         dec_sticky_flame_player(10);
+        capture.force_update();
         CHECK(you.duration[DUR_STICKY_FLAME] == expected_duration);
         CHECK(you.duration[DUR_INVIS] == (invisible ? 100 : 0));
         CHECK(you.hp == 1000 - 2 * delay / BASELINE_DELAY);
@@ -6634,7 +6635,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
         you = player();
         you.species = SP_HUMAN;
-        you.form = transformation::bat;
+        you.form = transformation::wisp;
         you.transform_uncancellable = true;
         if (row.no_jewellery)
             you.mutation[MUT_NO_JEWELLERY] = 1;
@@ -6665,7 +6666,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
         CHECK(you.time_taken == time);
         CHECK(you.turn_is_over == turn);
-        CHECK(you.form == transformation::bat);
+        CHECK(you.form == transformation::wisp);
         CHECK(you.transform_uncancellable);
         CHECK(you.equipment.items.empty());
         CHECK(std::equal(you.mutation.begin(), you.mutation.end(), mutations.begin()));
