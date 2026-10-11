@@ -45961,7 +45961,7 @@ You bow your head before the altar of %s.
 你在%s的祭坛前低下头。
 %%%%
 You release spores on the altar of %s.
-你向%s的祭坛释放孢子。
+你将孢子释放到%s的祭坛上。
 %%%%
 You squish down before the altar of %s.
 你在%s的祭坛前伏下柔软的身躯。
