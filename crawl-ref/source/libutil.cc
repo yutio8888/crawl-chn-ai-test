@@ -103,13 +103,7 @@ bool shell_safe(const char *file)
 
 bool key_is_escape(int key)
 {
-    switch (key)
-    {
-    CASE_ESCAPE
-        return true;
-    default:
-        return false;
-    }
+    return key == ESCAPE || key == CONTROL('G') || key == -1;
 }
 
 // Returns true if s contains tag 'tag', and strips out tag from s.
@@ -502,6 +496,33 @@ mouse_control::~mouse_control()
     ms_current_mode = m_previous_mode;
 }
 
+// Only these characters can join across an ordinary description line break.
+// Display width also includes emoji and fullwidth letters/digits, which still
+// need the existing separator. Keep this independent of the current locale.
+static bool _is_cjk_unwrap_char(char32_t c)
+{
+    return (c >= 0x3400 && c <= 0x4DBF)   // Unified ideographs, extension A.
+        || (c >= 0x4E00 && c <= 0x9FFF)   // Unified ideographs.
+        || (c >= 0xF900 && c <= 0xFAFF)   // Compatibility ideographs.
+        || (c >= 0x20000 && c <= 0x2A6DF) // Extension B.
+        || (c >= 0x2A700 && c <= 0x2B73F) // Extension C.
+        || (c >= 0x2B740 && c <= 0x2B81F) // Extension D.
+        || (c >= 0x2B820 && c <= 0x2CEAF) // Extension E.
+        || (c >= 0x2CEB0 && c <= 0x2EBEF) // Extension F.
+        || (c >= 0x2EBF0 && c <= 0x2EE5F) // Extension I.
+        || (c >= 0x2F800 && c <= 0x2FA1F) // Compatibility supplement.
+        || (c >= 0x30000 && c <= 0x3134F) // Extension G.
+        || (c >= 0x31350 && c <= 0x323AF) // Extension H.
+        || (c >= 0x3001 && c <= 0x3003)  // CJK punctuation (not spaces).
+        || (c >= 0x3008 && c <= 0x3011)
+        || (c >= 0x3014 && c <= 0x301F)
+        // U+3030 and U+303D also have emoji forms; preserve their separators.
+        || (c >= 0xFF01 && c <= 0xFF0F) // Fullwidth punctuation.
+        || (c >= 0xFF1A && c <= 0xFF20)
+        || (c >= 0xFF3B && c <= 0xFF40)
+        || (c >= 0xFF5B && c <= 0xFF65);
+}
+
 string unwrap_desc(string&& desc)
 {
     // Don't append a newline to an empty description.
@@ -530,8 +551,30 @@ string unwrap_desc(string&& desc)
 
     // Don't add whitespaces between tags
     desc = replace_all(desc, ">\n<", "><");
-    // Newlines are still whitespace.
-    desc = replace_all(desc, "\n", " ");
+    // Ordinary newlines separate words, but not adjacent Han/CJK punctuation.
+    // Inspect literal neighbours only; tags and substitutions are not decoded.
+    string joined;
+    joined.reserve(desc.size());
+    char32_t previous = 0;
+    for (size_t i = 0; i < desc.size(); )
+    {
+        char32_t current;
+        const int length = utf8towc(&current, desc.c_str() + i);
+        // Preserve every original byte, including invalid UTF-8 and NULs.
+        const size_t bytes = length ? length : 1;
+        if (current == '\n')
+        {
+            char32_t next;
+            utf8towc(&next, desc.c_str() + i + 1);
+            if (!_is_cjk_unwrap_char(previous) || !_is_cjk_unwrap_char(next))
+                joined += ' ';
+        }
+        else
+            joined.append(desc, i, bytes);
+        previous = current;
+        i += bytes;
+    }
+    desc = std::move(joined);
     // Can force a newline with a literal "\n".
     desc = replace_all(desc, "\\n", "\n");
 

@@ -7,6 +7,8 @@
 #include "ability-type.h"
 #include "acquire.h"
 #include "art-enum.h"
+#include "beam.h"
+#include "branch.h"
 #include "artefact.h"
 #include "chardump.h"
 #include "database.h"
@@ -19,6 +21,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "format.h"
 #include "files.h"
 #include "god-conduct.h"
 #include "hiscores.h"
@@ -29,10 +32,14 @@
 #include "jobs.h"
 #include "losglobal.h"
 #include "macro.h"
+#include "melee-attack.h"
+#include "mon-info.h"
 #include "mapdef.h"
+#include "mapmark.h"
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
+#include "mon-act.h"
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
@@ -41,11 +48,13 @@
 #include "newgame.h"
 #include "notes.h"
 #include "options.h"
+#include "player-equip.h"
 #include "player.h"
 #include "player-reacts.h"
 #include "player-save-info.h"
 #include "positional_format.h"
 #include "random.h"
+#include "quiver.h"
 #include "religion.h"
 #include "skill-menu.h"
 #include "skills.h"
@@ -53,6 +62,7 @@
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
+#include "spl-summoning.h"
 #include "spell-type.h"
 #include "state.h"
 #include "stringutil.h"
@@ -70,6 +80,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <queue>
 #include <array>
 #include <string>
 #include <tuple>
@@ -81,6 +92,8 @@
 string bind_random_body_part_message(string msg, bool plural);
 
 extern SkillMenu skm;
+extern std::priority_queue<pair<monster*, int>, vector<pair<monster*, int>>,
+                           MonsterActionQueueCompare> monster_queue;
 
 namespace
 {
@@ -833,7 +846,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const char* enter = translated_move_phrase(
         "walk", move_phrase_context::enter_area);
     REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
-            == "确定要走进探索排除区域吗？");
+            == "确定要走进禁区吗？");
 
     const char* through = translated_move_phrase(
         "stride", move_phrase_context::through_obstacle);
@@ -1243,7 +1256,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Row{possible_forced_prompt_context::toxic_bog, "",
             "这可能使你踉跄着退入毒沼。要继续吗？"},
         Row{possible_forced_prompt_context::exclusion, "",
-            "这可能使你踉跄着退入探索排除区域。要继续吗？"},
+            "这可能使你踉跄着退入禁区。要继续吗？"},
         Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
             "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
         Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",
@@ -1472,7 +1485,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                            "Chance is 10% + twice the piety cost of the "
                            "ability used."))
             == "视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。"
-               "触发几率为10% + 所使用能力的虔诚消耗的两倍。");
+               "触发几率为10% + 所使用能力的虔诚值消耗的两倍。");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -5422,5 +5435,435 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(item.unrand_idx == UNRAND_FOUR_WINDS);
         CHECK(string(get_unrand_entry(item.unrand_idx)->name) == "amulet of the Four Winds");
         CHECK(item.props[ARTEFACT_APPEAR_KEY].get_string() == original_appearance);
+    }
+}
+
+TEST_CASE("issue147: real summoning messages preserve upstream English and ZH arguments",
+          "[zh-translation][issue147][summoning-format]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    unwind_var<bool> restore_need_save(crawl_state.need_save, false);
+    unwind_var<use_animations_type> restore_animations(
+        Options.use_animations, use_animations_type());
+    const char* cases[] = {"foxfire", "marshlight", "boulder", "two cannons",
+                           "one cannon", "crocodile", "monarch", "detonate"};
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_agent : {true, false})
+    for (int case_index = 0; case_index < 8; ++case_index)
+    {
+        CAPTURE(language, player_agent, cases[case_index]);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        scoped_monspeak_world world;
+        // A real boulder cast queues an action. Keep that test-only action
+        // from surviving after the summoned monster slot is reset.
+        using monster_action_queue = decltype(monster_queue);
+        unwind_var<monster_action_queue> restore_queue(monster_queue);
+        monster_queue = monster_action_queue();
+        unwind_var<map_markers> restore_markers(env.markers);
+        vector<mid_t> old_mids;
+        for (int i = 0; i < MAX_MONSTERS; ++i)
+            old_mids.push_back(env.mons[i].mid);
+        unwinder clear_summons([&]() {
+            for (int i = 0; i < MAX_MONSTERS; ++i)
+                if (env.mons[i].mid && env.mons[i].mid != old_mids[i])
+                {
+                    env.mid_cache.erase(env.mons[i].mid);
+                    env.mons[i].reset();
+                }
+        });
+        monster* other = world.place(MONS_ORC, coord_def(20, 21));
+        REQUIRE(other != nullptr);
+        other->hit_points = other->max_hit_points = 1000;
+        actor& agent = player_agent ? static_cast<actor&>(you)
+                                   : static_cast<actor&>(*other);
+        const string name = agent.name(DESC_THE);
+        const string possessive = agent.pronoun(PRONOUN_POSSESSIVE);
+        const char* suffix = player_agent ? "" : "s";
+        const bool chinese = language == lang_t::ZH;
+        string expected;
+        if (case_index == 4)
+        {
+            // Exactly one free cannon placement exercises num_seen == 1.
+            for (int x = 15; x <= 30; ++x)
+                for (int y = 15; y <= 30; ++y)
+                    env.grid(coord_def(x, y)) = DNGN_ROCK_WALL;
+            env.grid(you.pos()) = DNGN_FLOOR;
+            env.grid(other->pos()) = DNGN_FLOOR;
+            env.grid(coord_def(21, 20)) = DNGN_FLOOR;
+            env.grid(coord_def(22, 20)) = DNGN_FLOOR;
+            invalidate_los();
+        }
+        rng::subgenerator fixed_rng(147, case_index);
+        msg::tee messages;
+        switch (case_index)
+        {
+        case 0:
+        case 1:
+            REQUIRE(cast_foxfire(agent, 50, false, case_index == 1) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s summons some %s!"), name.c_str(),
+                               case_index == 1 ? T_("Marshlight") : T_("foxfire"))
+                : make_stringf("%s conjure%s some %s!", name.c_str(), suffix,
+                               case_index == 1 ? "marshlight" : "foxfire");
+            break;
+        case 2:
+            REQUIRE(cast_broms_barrelling_boulder(agent, coord_def(24, 20), 50, false)
+                    == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s sends a boulder rolling forward!"), name.c_str())
+                : make_stringf("%s send%s a boulder barrelling forward!", name.c_str(), suffix);
+            break;
+        case 3:
+        case 4:
+            REQUIRE(cast_hoarfrost_cannonade(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_(case_index == 3 ? "%s sculpts two cannons from ice!"
+                                                 : "%s sculpts a cannon from ice!"), name.c_str())
+                : make_stringf(case_index == 3 ? "%s sculpt%s a pair of cannons out of ice!"
+                                              : "%s sculpt%s a cannon out of ice!", name.c_str(), suffix);
+            break;
+        case 5:
+            // Movement redraw requires a full game world. Exercise the exact
+            // production emission builder, independently of dragging/combat.
+            mpr(surprising_crocodile_dismount_message(agent));
+            expected = chinese
+                ? make_stringf(T_("%s dismounts %s alligator."), name.c_str(), possessive.c_str())
+                : make_stringf("%s dismount%s %s crocodile.", name.c_str(), suffix, possessive.c_str());
+            break;
+        case 6:
+            REQUIRE(cast_monarch_bomb(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s constructs an explosive harbinger and releases it."), name.c_str())
+                : make_stringf("%s construct%s an explosive harbinger and set it loose.", name.c_str(), suffix);
+            break;
+        case 7:
+            REQUIRE(monarch_detonation(agent, 50, false) == spret::success);
+            expected = chinese
+                ? make_stringf(T_("%s orders the %s explosives to detonate!"), name.c_str(), possessive.c_str())
+                : make_stringf("%s command%s %s explosives to detonate!", name.c_str(), suffix, possessive.c_str());
+            break;
+        }
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find(expected + "\n") != string::npos);
+        if (chinese)
+        {
+            CHECK(contains_non_ascii(expected));
+            CHECK_FALSE(rule_mixed_cn_en(expected));
+            CHECK_FALSE(rule_format_broken(messages.get_store(), ""));
+            if (case_index < 2)
+            {
+                CHECK(messages.get_store().find(case_index == 0 ? "foxfire" : "marshlight")
+                      == string::npos);
+            }
+        }
+    }
+}
+
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "issue147: visit dumps keep English plurals out of Chinese",
+                 "[zh-translation][issue147][morgue][visits]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"visits"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    unwind_var<branch_type> root(root_branch, BRANCH_DUNGEON);
+    unwind_var<int> dungeon_depth(brdepth[BRANCH_DUNGEON], 15);
+    const string filename = "catch2-issue147-visits";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    scorefile_entry dead_entry;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    for (int count : {1, 2})
+    for (bool dead : {false, true})
+    {
+        CAPTURE(language, count, dead);
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 20;
+        you.experience_level = 1;
+        you.set_position(coord_def(20, 20));
+        for (branch_type branch : {BRANCH_DUNGEON, BRANCH_PANDEMONIUM,
+                                  BRANCH_ABYSS, BRANCH_BAZAAR,
+                                  BRANCH_NECROPOLIS, BRANCH_ZIGGURAT})
+        {
+            PlaceInfo &place = you.get_place_info(branch);
+            place.num_visits = count;
+            place.levels_seen = count;
+        }
+        if (count > 1)
+        {
+            PlaceInfo &lair = you.get_place_info(BRANCH_LAIR);
+            lair.num_visits = 1;
+            lair.levels_seen = 1;
+        }
+        REQUIRE(you.get_all_place_info(true, true).size() == size_t(count));
+        REQUIRE(dump_char(filename, true, false, dead ? &dead_entry : nullptr));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        if (language == lang_t::ZH)
+        {
+            CHECK(dump.find(to_string(count) + "个分支") != string::npos);
+            CHECK(dump.find("分支es") == string::npos);
+            CHECK(dump.find("次s") == string::npos);
+            CHECK(dump.find("市集s") == string::npos);
+            CHECK(dump.find("金字塔s") == string::npos);
+        }
+        else
+        {
+            const string tense = dead ? "You visited " : "You have visited ";
+            const string suffix = count > 1 ? "s" : "";
+            CHECK(dump.find(tense + to_string(count) + " branch" + (count > 1 ? "es" : "")) != string::npos);
+            CHECK(dump.find(tense + "Pandemonium " + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + "the Abyss " + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + to_string(count) + " bazaar" + suffix) != string::npos);
+            CHECK(dump.find(tense + "the chambers of the Necropolis "
+                            + to_string(count) + " time" + suffix) != string::npos);
+            CHECK(dump.find(tense + to_string(count) + " ziggurat" + suffix) != string::npos);
+        }
+        CHECK(you.get_place_info(BRANCH_PANDEMONIUM).num_visits == unsigned(count));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: sticky flame status uses context without changing DB identity",
+                 "[zh-translation][issue147][context-labels][status]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<uint32_t> restore_level_state(env.level_state, 0);
+    you = player();
+    init_duration_index();
+    you.duration[DUR_STICKY_FLAME] = 10;
+    const auto row = GENERATE(table<int, const char*, const char*>({
+        {7, "Fire", "着火"}, {8, "Fire+", "着火+"},
+        {12, "Fire+", "着火+"}, {13, "Fire++", "着火++"},
+    }));
+    const string key = std::get<1>(row);
+    you.props[STICKY_FLAME_POWER_KEY] = std::get<0>(row);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        status_info info;
+        REQUIRE(fill_status_info(DUR_STICKY_FLAME, info));
+        CHECK(info.db_key == key);
+        CHECK(info.light_text == (language == lang_t::ZH
+                                 ? string(C_("status", key.c_str())) : key));
+        if (language == lang_t::ZH)
+            CHECK(info.light_text == std::get<2>(row));
+        if (language == lang_t::ZH && key == "Fire")
+        {
+            CHECK(info.light_text != T_("Fire"));
+            CHECK(info.light_text == "着火");
+        }
+        const string display = info.light_text;
+        i18n_cache_clear();
+        CHECK(info.light_text == display);
+        CHECK(info.db_key == key);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: ranged firing action statistics retain English action identity",
+                 "[zh-translation][issue147][context-labels][morgue]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"action_counts"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    const string filename = "catch2-issue147-context-actions";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    you = player();
+    you.experience_level = you.max_level = 1;
+    count_action(CACT_FIRE, WPN_SHORTBOW, -1);
+    const auto identity = make_pair(CACT_FIRE, caction_compound(WPN_SHORTBOW, -1));
+    REQUIRE(you.action_count.count(identity) == 1);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        REQUIRE(dump_char(filename, true));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        CHECK(dump.find(language == lang_t::ZH ? "发射:" : "Fire:") != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(dump.find(string(T_("Fire")) + ":") == string::npos);
+        CHECK(you.action_count.size() == 1);
+        CHECK(you.action_count.at(identity)[0] == 1);
+        CHECK(caction_extract_types(identity.second) == make_pair(int(WPN_SHORTBOW), -1));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: terse Zot death cause is distinct from place and xlog fields",
+                 "[zh-translation][issue147][context-labels][hiscores]")
+{
+    // Read a real-format historic score through the production parser.
+    const string raw = "name=context-test:race=Human:cls=Fighter:xl=1:"
+                       "ktyp=zot:killer=Zot:kaux=Zot:br=Zot:lvl=1:absdepth=27\n";
+    scorefile_entry entry;
+    REQUIRE(entry.parse(raw));
+    REQUIRE(entry.get_death_type() == KILLED_BY_ZOT);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(entry.death_description(scorefile_entry::DDV_TERSE)
+              == (language == lang_t::ZH ? "佐特" : "Zot"));
+        const string normal = entry.death_description(scorefile_entry::DDV_NORMAL);
+        CHECK(normal.find(language == lang_t::ZH
+              ? "逗留太久，被佐特吞噬"
+              : "Tarried too long and was consumed by Zot") != string::npos);
+        const string place = entry.death_place(scorefile_entry::DDV_NORMAL);
+        CHECK(place.find(language == lang_t::ZH ? "佐特领域" : "Zot") != string::npos);
+        CHECK(entry.raw_string() == raw);
+        CHECK(entry.get_fields().str_field("ktyp") == "zot");
+        CHECK(entry.get_fields().str_field("killer") == "Zot");
+        CHECK(entry.get_fields().str_field("kaux") == "Zot");
+        CHECK(entry.get_fields().str_field("br") == "Zot");
+    }
+}
+
+namespace
+{
+// Expose the base class's protected virtual interface only in this test.
+// Virtual dispatch still runs melee_attack's actual private overrides.
+struct context_hit_attack : melee_attack
+{
+    using melee_attack::melee_attack;
+    using attack::set_attack_verb;
+    using attack::announce_hit;
+};
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: successful hit announcement preserves ordinary action semantics",
+                 "[zh-translation][issue147][context-labels][combat]")
+{
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    rng::subgenerator scoped_rng(147, 147);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 20;
+    you.experience_level = 1;
+    you.set_position(coord_def(20, 20));
+    item_def& weapon = you.inv[0];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    weapon.quantity = 1;
+    weapon.link = 0;
+    weapon.pos = ITEM_IN_INVENTORY;
+    equip_item(SLOT_WEAPON, 0, false, true);
+    monster target;
+    target.type = MONS_ORC;
+    target.hit_points = target.max_hit_points = 20;
+    target.set_position(coord_def(21, 20));
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        context_hit_attack swing(&you, &target);
+        swing.damage_done = 1;
+        swing.needs_message = true;
+        swing.set_attack_verb(swing.damage_done);
+        CHECK(swing.attack_verb == (language == lang_t::ZH ? "击中" : "hit"));
+        string emitted;
+        {
+            msgwin_temporary_mode temporary;
+            temporary_message_rollback rollback;
+            msg::tee capture(emitted);
+            swing.announce_hit();
+        }
+        INFO(emitted);
+        CHECK(emitted.find(language == lang_t::ZH ? "你击中了" : "You hit ") != string::npos);
+        CHECK(emitted.find(target.name(DESC_THE)) != string::npos);
+        CHECK(mon_attack_name(AT_HIT, false)
+              == (language == lang_t::ZH ? "攻击" : "hit"));
+        const auto action = quiver::get_primary_action();
+        REQUIRE(action);
+        CHECK(action->quiver_verb() == (language == lang_t::ZH ? "攻击" : "hit"));
+        CHECK(weapon.base_type == OBJ_WEAPONS);
+        CHECK(weapon.sub_type == WPN_DAGGER);
+        CHECK(swing.attk_type == AT_HIT);
+        CHECK(target.hit_points == 20);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monster status pane looks up real English monstatus identity",
+                 "[zh-translation][issue147][context-labels][monstatus]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    monster_info info(MONS_ORC);
+    info.pos = coord_def(20, 20);
+    info.attitude = ATT_HOSTILE;
+    // Stable enum for the real mutagenic-energy monstatus entry.
+    info.mb.set(MB_CLOUD_RING_MUTATION);
+    const string identity = "surrounded by mutagenic energy monstatus";
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string body = trimmed_string(getLongDescription(identity));
+        REQUIRE_FALSE(body.empty());
+        CHECK(body == (language == lang_t::ZH
+            ? "这个生物周围环绕着一圈诱变雾气。"
+            : "This creature trails a ring of mutagenic fog around itself."));
+        const string pane = get_monster_status_descriptions(info).tostring();
+        INFO(pane);
+        CHECK(pane.find(body) != string::npos);
+        const string title = language == lang_t::ZH
+            ? string(T_("Surrounded by mutagenic energy"))
+            : "Surrounded by mutagenic energy";
+        CHECK(pane.find(title + ":") != string::npos);
+        if (language == lang_t::ZH)
+        {
+            REQUIRE(title != "surrounded by mutagenic energy");
+            // This was the old consumer's key; no invented DescriptionDB entry.
+            CHECK(getLongDescription(title + " monstatus").empty());
+            CHECK(pane.find("Surrounded by mutagenic energy") == string::npos);
+        }
+        CHECK(Options.language == language);
+        CHECK(info.is(MB_CLOUD_RING_MUTATION));
     }
 }

@@ -180,6 +180,7 @@ class PreprocessorPatternTests(unittest.TestCase):
     def test_each_macro_and_missing_semicolon_at_same_location(self):
         cases = (
             b'NORETURN static void f() { int x = 1; }\n',
+            b'static BOOL WINAPI f() { int x = 1; }\n',
             b'void f() { auto x = "prefix" CRAWL "suffix"; }\n',
             b'void f() { auto x = "!" LETTERS; }\n',
             b'void f() { int x = va_arg(args, int); }\n',
@@ -209,6 +210,8 @@ class PreprocessorPatternTests(unittest.TestCase):
                   b'#define TEXT2 "prefix" LETTERS\n'
                   b'auto letters_raw = R"x("prefix" LETTERS)x";\n'
                   b'int LETTERS = 0;\n'
+                  b'auto winapi_raw = R"x(static BOOL WINAPI f())x";\n'
+                  b'int WINAPI = 0;\n'
                   b'auto raw = R"x("prefix" CRAWL va_arg(args, int))x";\n'
                   b'int CRAWL = 0;\n')
         self.assertEqual(source, parse_cpp_annotations(parser, source).root_node.text)
@@ -230,12 +233,81 @@ class PreprocessorPatternTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1, result.stderr)
             self.assertEqual(json.loads(result.stdout)['summary']['HIGH'], 1)
 
+    def test_winapi_annotation_preserves_signature_body_and_risks(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'winapi.cc'
+            for source in (
+                    b'static BOOL WINAPI f(int x,) { return 1; }',
+                    b'static BOOL WINAPI f() { return ; int x = ; }',
+                    b'static BOOL WINAPI f() { int x = 1 }'):
+                path.write_bytes(source)
+                self.check_cli(path, False)
+            path.write_bytes(b'static BOOL WINAPI f() { mprf("%s", std::string("bad")); return 1; }')
+            result = subprocess.run(
+                [sys.executable, str(SCRIPTS / 'scan_varargs_string.py'),
+                 '--files', str(path), '--format', 'json', '--require-parser'],
+                capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertEqual(json.loads(result.stdout)['summary']['HIGH'], 1)
+
 
 class PreprocessorOutputTests(unittest.TestCase):
     def setUp(self):
         self.compiler = shutil.which('clang++')
         if self.compiler is None:
             self.skipTest('clang++ is not installed')
+
+    def test_diagnostic_pragmas_between_if_and_body_preserve_strict_scans(self):
+        source = ('#define SECTION _Pragma("clang diagnostic push") '
+                  'if (bool section = true) _Pragma("clang diagnostic pop")\n'
+                  'void f() {\n'
+                  '  SECTION { mprf("%s", std::string("bad")); }\n'
+                  '}\n')
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'section.cc'
+            path.write_text(source)
+            expanded = preprocess_cpp(path, self.compiler)
+            tree = parse_preprocessed_cpp(parser, expanded.source,
+                                          preprocessed=expanded, filepath=path)
+            self.assertFalse(tree.root_node.has_error)
+            self.assertEqual(len(expanded.source), tree.root_node.end_byte)
+            self.assertEqual(
+                [i for i in range(tree.root_node.start_byte, tree.root_node.end_byte)
+                 if expanded.source[i] == 10],
+                [tree.root_node.start_byte + i
+                 for i, b in enumerate(tree.root_node.text) if b == 10])
+            db = Path(td) / 'commands.json'
+            db.write_text(json.dumps([{'directory': td, 'file': str(path),
+                                      'arguments': [self.compiler, '-c', str(path)]}]))
+            for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
+                            'scan_i18n_lifetime.py'):
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPTS / scanner), '--files', str(path),
+                     '--compile-commands', str(db), '--format', 'json'],
+                    capture_output=True, text=True)
+                with self.subTest(scanner=scanner):
+                    self.assertIn(result.returncode, (0, 1), result.stderr)
+                    data = json.loads(result.stdout)
+                    coverage = data.get('coverage', data.get('meta', {}).get('coverage'))
+                    self.assertEqual(coverage['scanned'], 1)
+                    self.assertEqual(coverage['failed'], [])
+                    if scanner == 'scan_varargs_string.py':
+                        self.assertTrue(any(f['risk'] == 'HIGH' and f['line'] == 3
+                                            for f in data['findings']))
+                path.write_text(source.replace('std::string("bad"));',
+                                               'std::string("bad"))'))
+                rejected = subprocess.run(
+                    [sys.executable, str(SCRIPTS / scanner), '--files', str(path),
+                     '--compile-commands', str(db), '--format', 'json'],
+                    capture_output=True, text=True)
+                self.assertEqual(rejected.returncode, 2, rejected.stderr)
+                path.write_text(source)
+            # Literal text and non-diagnostic directives must remain intact.
+            raw = b'void f(){ auto s = R"x(\n#pragma clang diagnostic pop\n)x"; }\n'
+            self.assertEqual(raw, parse_preprocessed_cpp(parser, raw).root_node.text)
+            packed = b'void f(){ if(true)\n#pragma pack(push,1)\n{ int x=1; } }\n'
+            self.assertEqual(packed, parse_preprocessed_cpp(parser, packed).root_node.text)
 
     def test_real_macro_expansion_configurations_and_original_lines(self):
         source = '''#include "calls.h"

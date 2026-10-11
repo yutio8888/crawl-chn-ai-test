@@ -50,6 +50,9 @@ APPROVED_ACTIONS = {
     "_singing_no_tension_": [("protocol_transition", 5)],
 }
 
+# Immutable glossary input for historical inventory/hash fixtures.
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 
 def exact_artifact(oid: str, directory: str) -> dict:
     scoped = MODULE.shared._derive_scoped_dump(
@@ -206,7 +209,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             json.dumps(cls.zh_artifact, ensure_ascii=False), encoding="utf-8"
         )
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_FIXTURE_REF,
         )
         # The exact approved candidate (pinned immutable OID): EN is
         # byte-identical to the baseline; ZH is 731/731 with the reviewed
@@ -274,7 +278,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         second_en.write_bytes(self.en_path.read_bytes())
         second_zh.write_bytes(self.zh_path.read_bytes())
         rebuilt = MODULE.build_inventory(
-            BASELINE, second_en, second_zh, ROOT / "docs/glossary.md"
+            BASELINE, second_en, second_zh, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_FIXTURE_REF,
         )
         self.assertEqual(first["inventory_sha256"], rebuilt["inventory_sha256"])
         # Fixture-bound digest: the docs-frozen digest 6b3e4d18... is bound to

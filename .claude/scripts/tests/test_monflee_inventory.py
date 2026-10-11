@@ -34,6 +34,8 @@ NON_DESCENDANT = subprocess.run(
     check=True, text=True, capture_output=True,
 ).stdout.strip()
 PRODUCTION_BASELINE = "5f168f7b1130f9d2ec9c264f27e4ddc9b64d64d6"
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 PRODUCTION_EN_ARTIFACT_SHA256 = (
     "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
 )
@@ -274,11 +276,16 @@ class MonfleeInventoryTests(unittest.TestCase):
         zh_path = self.write_dump(
             "production-zh.json", exact_artifact(PRODUCTION_BASELINE, "zh")
         )
+        historical_glossary = self.root / "historical-glossary.md"
+        historical_glossary.write_bytes(subprocess.check_output([
+            "git", "-C", str(ROOT), "show",
+            f"{GLOSSARY_FIXTURE_REF}:docs/glossary.md",
+        ]))
         inventory = MODULE.build_inventory(
             PRODUCTION_BASELINE,
             en_path,
             zh_path,
-            ROOT / "docs/glossary.md",
+            historical_glossary,
         )
         inventory["dumps"]["english"]["artifact_sha256"] = (
             PRODUCTION_EN_ARTIFACT_SHA256

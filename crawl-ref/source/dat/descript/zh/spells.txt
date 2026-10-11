@@ -523,7 +523,7 @@ Force Lance spell
 %%%%
 Forceful Invitation spell
 
-从蛇穴、蜘蛛巢、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
+从蛇穴、蜘蛛巢穴、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
 具体分支因施法者而异。
 %%%%
 Foxfire spell
@@ -844,9 +844,9 @@ Maxwell's Capacitive Coupling spell
 %%%%
 Mephitic Cloud spell
 
-召出一个脆弱的瓶子，瓶子爆炸后形成一团短暂存在的有害烟雾。
-烟雾可能使任何没有毒抗的生物陷入混乱。
-越坚韧、经验等级越高的生物越不容易受影响。
+召出一个脆弱的瓶子，瓶子爆炸后形成短暂存在的毒烟云。
+这些云可能使任何没有毒抗的生物陷入混乱。
+越坚韧、经验越丰富的生物越不容易受影响。
 %%%%
 Mesmerise spell
 
@@ -915,7 +915,7 @@ Cigotuvi's Putrefaction spell
 %%%%
 Noxious Cloud spell
 
-产生大量有毒烟雾，这可能会引起混乱。
+产生一大片毒烟云，可能引起混乱。
 %%%%
 Olgreb's Toxic Radiance spell
 
@@ -938,9 +938,9 @@ Orb of Electricity spell
 %%%%
 Ozocubu's Armour spell
 
-在施法者的身体上覆一层厚的冰，只要他们呆在现在的位置，就有大量的防御加成。
+在施法者身体表面覆上一层厚冰，只要施法者留在原地，就能获得显著的护甲加成。
 如果施法者移动到新位置，冰会破裂、脱落。
-该法术对重甲效果变弱，施法者的护甲的负担等级越高，加成越低。
+该法术对重甲效果变弱，施法者护甲的负重等级越高，加成越低。
 %%%%
 Ozocubu's Refrigeration spell
 
@@ -1834,8 +1834,10 @@ Mud Breath spell
 %%%%
 Mutagenic Gaze spell
 
-使目标体内积累变异能量，最终可能达到足以造成有害变异或不稳定魔法能量
-爆炸的程度。该法术需要视线，但无需直达射线。
+使目标体内积累诱变能量，最终达到足以造成有害变异或不稳定魔法能量
+爆炸的程度。
+
+该法术需要视线，但无需直达射线。
 %%%%
 Nazja's All-Purpose Tempering spell
 

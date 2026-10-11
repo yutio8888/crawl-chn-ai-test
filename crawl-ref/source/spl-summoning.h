@@ -177,6 +177,7 @@ string surprising_crocodile_unusable_reason(const actor& agent,
                                             const coord_def& target, bool actual);
 bool surprising_crocodile_can_drag(const actor& agent, const coord_def& target,
                                    bool actual);
+string surprising_crocodile_dismount_message(const actor& agent);
 spret cast_surprising_crocodile(actor& agent, const coord_def& targ,
                                 int pow, bool fail);
 

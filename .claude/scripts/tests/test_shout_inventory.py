@@ -23,6 +23,9 @@ MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 BASELINE = "3d67767ee477f543c4e6db9a17981aae40a75307"
 
+# Immutable glossary input for historical inventory/hash fixtures.
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 
 def _git_plumbing(arguments: list, input_text: str | None = None) -> str:
     """Run a git plumbing command in the repository without touching the
@@ -323,7 +326,8 @@ class ShoutInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(json.dumps(cls.zh, ensure_ascii=False),
                                encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_FIXTURE_REF,
         )
 
     @classmethod

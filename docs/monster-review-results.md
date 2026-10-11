@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`366e807eaae5403b6c3925df5970cd237b447ead76fdb717b71273473b5db67e`
-- 清单 SHA-256：`f9b1a42d4b39d8f69190701ef003260373104306df53bdd404a7d48682f68398`
+- 术语表 SHA-256：`054a3e8f50ddb1152345676c4c28f061a39a06c0efd3bc095181e862aa77ee93`
+- 清单 SHA-256：`55960e9003d13a510ef6ca4a536a09b697892208c30943b7c29c59ef0ad7dbde`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -329,7 +329,7 @@
 | `monster:MONS_ROTTING_DEVIL` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_HELLWING` | current; exposure=ordinary; name=hellwing→地狱之翼; genus=MONS_HELLWING; species=MONS_HELLWING; data=crawl-ref/source/dat/mons/hellwing.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SIXFIRHY` | current; exposure=ordinary; name=sixfirhy→六翼魔; genus=MONS_SIXFIRHY; species=MONS_SIXFIRHY; data=crawl-ref/source/dat/mons/sixfirhy.yaml; desc=EN/ZH | keep |
-| `monster:MONS_NEQOXEC` | current; exposure=ordinary; name=neqoxec→内科塞克; genus=MONS_NEQOXEC; species=MONS_NEQOXEC; data=crawl-ref/source/dat/mons/neqoxec.yaml; desc=EN/ZH | keep |
+| `monster:MONS_NEQOXEC` | current; exposure=ordinary; name=neqoxec→内科塞克; genus=MONS_NEQOXEC; species=MONS_NEQOXEC; data=crawl-ref/source/dat/mons/neqoxec.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORANGE_DEMON` | current; exposure=ordinary; name=orange demon→橙色恶魔; genus=MONS_ORANGE_DEMON; species=MONS_ORANGE_DEMON; data=crawl-ref/source/dat/mons/orange-demon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SMOKE_DEMON` | current; exposure=ordinary; name=smoke demon→烟雾恶魔; genus=MONS_SMOKE_DEMON; species=MONS_SMOKE_DEMON; data=crawl-ref/source/dat/mons/smoke-demon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_YNOXINUL` | current; exposure=ordinary; name=ynoxinul→伊诺辛努; genus=MONS_YNOXINUL; species=MONS_YNOXINUL; data=crawl-ref/source/dat/mons/ynoxinul.yaml; desc=EN/ZH | keep |
@@ -679,7 +679,7 @@
 | `monster:MONS_SEARING_WRETCH` | current; exposure=ordinary; name=searing wretch→灼炎苦尸; genus=MONS_GHOUL; species=MONS_SEARING_WRETCH; data=crawl-ref/source/dat/mons/searing-wretch.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_STOKER` | current; exposure=ordinary; name=stoker→焚炉者; genus=MONS_LICH; species=MONS_STOKER; data=crawl-ref/source/dat/mons/stoker.yaml; desc=EN/ZH | keep |
 | `monster:MONS_QUICKSILVER_ELEMENTAL` | current; exposure=ordinary; name=quicksilver elemental→水银元素; genus=MONS_ELEMENTAL; species=MONS_QUICKSILVER_ELEMENTAL; data=crawl-ref/source/dat/mons/quicksilver-elemental.yaml; desc=EN/ZH | keep |
-| `monster:MONS_CRYSTAL_ECHIDNA` | current; exposure=ordinary; name=crystal echidna→水晶针鼹; genus=MONS_CRYSTAL_ECHIDNA; species=MONS_CRYSTAL_ECHIDNA; data=crawl-ref/source/dat/mons/crystal-echidna.yaml; desc=EN/ZH | keep |
+| `monster:MONS_CRYSTAL_ECHIDNA` | current; exposure=ordinary; name=crystal echidna→水晶针鼹; genus=MONS_CRYSTAL_ECHIDNA; species=MONS_CRYSTAL_ECHIDNA; data=crawl-ref/source/dat/mons/crystal-echidna.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PUTRID_MOUTH` | current; exposure=ordinary; name=putrid mouth→腐臭之口; genus=MONS_WRAITH; species=MONS_PUTRID_MOUTH; data=crawl-ref/source/dat/mons/putrid-mouth.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TAINTED_LEVIATHAN` | current; exposure=ordinary; name=tainted leviathan→污秽利维坦; genus=MONS_GIANT; species=MONS_TAINTED_LEVIATHAN; data=crawl-ref/source/dat/mons/tainted-leviathan.yaml; desc=EN/ZH | keep |
 | `monster:MONS_WENDIGO` | current; exposure=ordinary; name=wendigo→温迪戈; genus=MONS_WENDIGO; species=MONS_WENDIGO; data=crawl-ref/source/dat/mons/wendigo.yaml; desc=EN/ZH | keep |
